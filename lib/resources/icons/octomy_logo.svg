@@ -27,7 +27,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
-     inkscape:cx="35.040138"
+     inkscape:cx="73.678473"
      inkscape:cy="79.476126"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -50,7 +50,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -146,8 +146,8 @@
       </g>
     </g>
     <g
-       inkscape:export-ydpi="620.69"
-       inkscape:export-xdpi="620.69"
+       inkscape:export-ydpi="107.86829"
+       inkscape:export-xdpi="107.86829"
        inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
        id="g4598"
        transform="matrix(0.12869243,0,0,-0.12869243,-2076.9447,-509.39726)">
@@ -164,8 +164,8 @@
          r="59.778477" />
     </g>
     <use
-       inkscape:export-ydpi="620.69"
-       inkscape:export-xdpi="620.69"
+       inkscape:export-ydpi="107.86829"
+       inkscape:export-xdpi="107.86829"
        inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
        height="100%"
        width="100%"
@@ -175,8 +175,8 @@
        y="0"
        x="0" />
     <text
-       inkscape:export-ydpi="620.69"
-       inkscape:export-xdpi="620.69"
+       inkscape:export-ydpi="47.93"
+       inkscape:export-xdpi="47.93"
        inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
        sodipodi:linespacing="125%"
        id="text4787"
@@ -190,16 +190,16 @@
          id="tspan4789"
          sodipodi:role="line">OctoMY</tspan></text>
     <path
-       inkscape:export-ydpi="620.69"
-       inkscape:export-xdpi="620.69"
+       inkscape:export-ydpi="47.93"
+       inkscape:export-xdpi="47.93"
        inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
        inkscape:connector-curvature="0"
        d="m -2186.5383,-435.39159 0,0.59531 1.0666,0 0,2.79467 0.7359,0 0,-2.79467 1.0583,0 0,-0.59531 -2.8608,0 z m 6.2094,0 -0.926,2.17455 -0.8847,-2.17455 -1.0749,0 0,3.38998 0.7111,0 0,-2.79467 1.0749,2.79467 0.3555,0 1.1079,-2.79467 0,2.79467 0.7111,0 0,-3.38998 -1.0749,0 z"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:medium;line-height:125%;font-family:'Century Gothic Std';-inkscape-font-specification:'Century Gothic Std Bold';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        id="path4808" />
     <path
-       inkscape:export-ydpi="620.69"
-       inkscape:export-xdpi="620.69"
+       inkscape:export-ydpi="107.86829"
+       inkscape:export-xdpi="107.86829"
        inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
        id="path4819"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:medium;line-height:125%;font-family:'Century Gothic Std';-inkscape-font-specification:'Century Gothic Std Bold';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -219,23 +219,23 @@
        sodipodi:open="true"
        d="m -2309.5803,442.05624 a 4.3838034,4.3838034 0 0 1 4.3838,-4.3838 4.3838034,4.3838034 0 0 1 4.3838,4.3838"
        inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
-       inkscape:export-xdpi="620.69"
-       inkscape:export-ydpi="620.69" />
+       inkscape:export-xdpi="107.86829"
+       inkscape:export-ydpi="107.86829" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.28692424;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m -2306.7474,-445.74115 0,3.67693"
        id="path4692"
        inkscape:connector-curvature="0"
        inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
-       inkscape:export-xdpi="620.69"
-       inkscape:export-ydpi="620.69" />
+       inkscape:export-xdpi="107.86829"
+       inkscape:export-ydpi="107.86829" />
     <path
        inkscape:connector-curvature="0"
        id="path4702"
        d="m -2303.6454,-445.74115 0,3.67693"
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.28692424;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
-       inkscape:export-xdpi="620.69"
-       inkscape:export-ydpi="620.69" />
+       inkscape:export-xdpi="107.86829"
+       inkscape:export-ydpi="107.86829" />
   </g>
 </svg>

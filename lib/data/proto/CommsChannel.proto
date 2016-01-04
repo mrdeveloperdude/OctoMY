@@ -1,0 +1,37 @@
+package tarantulink;
+
+option java_package = "com.playmio.tarantulink";
+option java_outer_classname = "CommsChannelProto";
+
+//import "myproject/other_protos.proto";
+//syntax "proto3"
+
+message Vector3 {
+	optional float x=1;
+	optional float y=2;
+	optional float z=3;
+}
+	
+message MainMessage {
+	optional int32 version = 1;	
+	
+	//Sensor range is 1xx
+	optional Vector3 location=100; //http://developer.android.com/guide/topics/location/strategies.html;
+	optional Vector3 accelerometer=101;
+	optional Vector3 gyroscope=102;
+	optional Vector3 gravity=103;
+	optional Vector3 geomagneticRotationVector=104;
+	optional Vector3 magneticField=105;
+	optional Vector3 orientation=106;
+	optional Vector3 lineraAcceleration=107;
+	optional Vector3 rotationVector=108;
+	optional float ambientTemperature=109;
+	optional float relativeHumidity=110;
+	optional float atmosphericPressure=111;
+	optional float light=112;
+	optional float proximity=113;
+		
+	//Text message range is 2xx
+	optional string lastErrorMessage=200;   
+}
+
