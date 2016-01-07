@@ -29,5 +29,5 @@ LIBS +=         -lopencv_core -lopencv_imgproc -lopencv_objdetect -lopencv_highg
 INCLUDEPATH +=    /usr/include/opencv
 }
 
-LIBS += -lusb
+#LIBS += -lusb
 

@@ -20,6 +20,3 @@ agent.depends = lib
 remote.depends = lib
 test.depends = lib
 
-RESOURCES += \
-	lib/resources/icons.qrc
-

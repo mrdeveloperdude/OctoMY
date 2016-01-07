@@ -45,7 +45,7 @@ void StyleManager::apply(){
 		app->setWindowIcon(icon);
 		loadFonts(*app);
 		applyStyle(*app);
-		applyStyleSheet(*app);
+		//applyStyleSheet(*app); //Disabled for now (it looks but ugly)
 		if(0!=w){
 			w->setUpdatesEnabled(true);
 		}

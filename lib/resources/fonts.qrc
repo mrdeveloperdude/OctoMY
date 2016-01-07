@@ -4,5 +4,7 @@
         <file>fonts/CenturyGothicStd-Bold.otf</file>
         <file>fonts/CenturyGothicStd-BoldItalic.otf</file>
         <file>fonts/CenturyGothicStd-Italic.otf</file>
+        <file>fonts/code128.ttf</file>
+        <file>fonts/digital-7 (mono).ttf</file>
     </qresource>
 </RCC>

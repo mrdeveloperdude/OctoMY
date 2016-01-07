@@ -26,4 +26,6 @@ class ServerMain:public QObject{
 };
 
 int main(int argc, char *argv[]);
+
+
 #endif // SERVERMAIN_HPP

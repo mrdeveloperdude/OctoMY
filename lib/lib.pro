@@ -53,7 +53,11 @@ SOURCES +=\
 	basic/ClientWindow.cpp \
 	widgets/CompasWidget.cpp \
 	widgets/Logo.cpp \
-    basic/StyleManager.cpp
+    basic/StyleManager.cpp \
+    basic/RemoteWindow.cpp \
+    widgets/ImageLabel.cpp \
+    widgets/SvgWidget.cpp \
+    basic/Remote.cpp
 
 
 HEADERS  += \
@@ -108,14 +112,19 @@ HEADERS  += \
 	basic/ClientWindow.hpp \
 	widgets/CompasWidget.hpp \
 	widgets/Logo.hpp \
-    basic/StyleManager.hpp
+    basic/StyleManager.hpp \
+    basic/RemoteWindow.hpp \
+    widgets/ImageLabel.hpp \
+    widgets/SvgWidget.hpp \
+    basic/Remote.hpp
 
 FORMS    += \
 	ui/TryToggle.ui \
 	ui/StatsWindow.ui \
 	ui/ResponsiveTest.ui \
 	ui/ServerWindow.ui \
-	ui/ClientWindow.ui
+	ui/ClientWindow.ui \
+    ui/RemoteWindow.ui
 
 RESOURCES += \
 	resources/icons.qrc \

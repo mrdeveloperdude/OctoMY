@@ -11,5 +11,8 @@
         <file>icons/servo.svg</file>
         <file>icons/control.svg</file>
         <file>icons/connection.svg</file>
+        <file>icons/control2.svg</file>
+        <file>icons/octomy_logo.svg</file>
+        <file>icons/octomy_logo_bare.svg</file>
     </qresource>
 </RCC>

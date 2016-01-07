@@ -16,7 +16,15 @@ class StatusMessage{
 		qint32 temperature;
 
 	public:
-		StatusMessage();
+		StatusMessage(
+				const qint64 timestamp
+				,const QVector3D gps
+				,const QVector3D slam
+				,const QVector3D gyroscope
+				,const QVector3D accellerometer
+				,const qint32 compass
+				,const qint32 temperature
+				);
 
 		QDataStream& operator<<(QDataStream&);
 		QDataStream& operator>>(QDataStream &);
