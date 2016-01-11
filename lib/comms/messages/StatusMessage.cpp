@@ -2,11 +2,12 @@
 
 StatusMessage::StatusMessage(
 		const qint64 timestamp
-		, const QVector3D gps
+		, const QGeoCoordinate  gps
 		, const QVector3D slam
 		, const QVector3D gyroscope
 		, const QVector3D accellerometer
-		, const qint32 compass
+		, const qreal compassAzimuth
+		, const qreal compassAccuracy
 		, const qint32 temperature
 		):
 	timestamp(timestamp)
@@ -14,32 +15,36 @@ StatusMessage::StatusMessage(
   , slam(slam)
   , gyroscope(gyroscope)
   , accellerometer(accellerometer)
-  ,compass(compass)
-  ,temperature(temperature)
+  , compassAzimuth(compassAzimuth)
+  , compassAccuracy(compassAccuracy)
+  , temperature(temperature)
 {
 
 }
 
 
 
-QDataStream& StatusMessage::operator<<( QDataStream&ds){
-	ds >> timestamp;
-	ds >> gps;
-	ds >> slam;
-	ds >> gyroscope;
-	ds >> accellerometer;
-	ds >> compass;
-	ds >> temperature;
+QDataStream &operator>>(QDataStream &ds, StatusMessage &sm){
+	ds >> sm.timestamp;
+	ds >> sm.gps;
+	ds >> sm.slam;
+	ds >> sm.gyroscope;
+	ds >> sm.accellerometer;
+	ds >> sm.compassAzimuth;
+	ds >> sm.compassAccuracy;
+	ds >> sm.temperature;
 	return ds;
 }
 
-QDataStream& StatusMessage::operator>> (QDataStream &ds){
-	ds << timestamp;
-	ds << gps;
-	ds << slam;
-	ds << gyroscope;
-	ds << accellerometer;
-	ds << compass;
-	ds << temperature;
+QDataStream &operator<<(QDataStream &ds, const StatusMessage &sm){
+	ds << sm.timestamp;
+	ds << sm.gps;
+	ds << sm.slam;
+	ds << sm.gyroscope;
+	ds << sm.accellerometer;
+	ds << sm.compassAzimuth;
+	ds << sm.compassAccuracy;
+	ds << sm.temperature;
 	return ds;
 }
+

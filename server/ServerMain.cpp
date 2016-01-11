@@ -1,6 +1,6 @@
 #include "ServerMain.hpp"
 #include "basic/ServerWindow.hpp"
-#include "comms/Server.hpp"
+#include "comms/CommsChannel.hpp"
 
 #include <QDebug>
 #include <QTimer>
@@ -53,7 +53,7 @@ ServerMain::ServerMain(int argc, char *argv[]):
 	const QStringList args = parser.positionalArguments();
 	// source is args.at(0), destination is args.at(1)
 
-	Server *server=new Server();
+	CommsChannel *server=new CommsChannel();
 
 	ServerWindow w(parser,server);
 	server->setLogOutput(&w);

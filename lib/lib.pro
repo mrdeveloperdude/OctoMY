@@ -48,7 +48,6 @@ SOURCES +=\
 	widgets/TryToggle.cpp \
 	widgets/FlowLayout.cpp \
 	basic/ServerWindow.cpp \
-	comms/Server.cpp \
 	comms/Client.cpp \
 	basic/ClientWindow.cpp \
 	widgets/CompasWidget.cpp \
@@ -57,7 +56,9 @@ SOURCES +=\
     basic/RemoteWindow.cpp \
     widgets/ImageLabel.cpp \
     widgets/SvgWidget.cpp \
-    basic/Remote.cpp
+    basic/Remote.cpp \
+    sensory/SensorInput.cpp \
+    comms/CommsChannel.cpp
 
 
 HEADERS  += \
@@ -107,7 +108,6 @@ HEADERS  += \
 	widgets/TryToggle.hpp \
 	widgets/FlowLayout.hpp \
 	basic/ServerWindow.hpp \
-	comms/Server.hpp \
 	comms/Client.hpp \
 	basic/ClientWindow.hpp \
 	widgets/CompasWidget.hpp \
@@ -116,7 +116,9 @@ HEADERS  += \
     basic/RemoteWindow.hpp \
     widgets/ImageLabel.hpp \
     widgets/SvgWidget.hpp \
-    basic/Remote.hpp
+    basic/Remote.hpp \
+    sensory/SensorInput.hpp \
+    comms/CommsChannel.hpp
 
 FORMS    += \
 	ui/TryToggle.ui \

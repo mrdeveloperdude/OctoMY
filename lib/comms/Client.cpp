@@ -1,7 +1,7 @@
 #include "Client.hpp"
 #include <QDateTime>
 
-#include "Server.hpp"
+#include "CommsChannel.hpp"
 #include "basic/LogDestination.hpp"
 
 Client::Client(QHostAddress host, quint16 port, LogDestination *log):
@@ -70,8 +70,8 @@ bool Client::idle(){
 QString Client::getSummary(QString sep) const {
 	QString out;
 	QTextStream ts(&out);
-	ts << "host: "<<host.toString()<<":"<<port<<sep;
-	ts << "Δ: "<<deltaTime<<sep;
+	ts << "host: "<<host.toString()<<":"<<QString::number(port)<<sep;
+	ts << "DELTA: "<<deltaTime<<sep;
 	ts << "TOA: "<<timeoutAccumulator<<sep;
 	ts << flowControl.getSummary(sep);
 	return out;

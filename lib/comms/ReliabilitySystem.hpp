@@ -17,7 +17,7 @@ class PacketQueue : public QList<PacketData>{
 
 		bool exists( unsigned int sequence );
 
-		void insert_sorted( const PacketData & p, unsigned int max_sequence );
+		void insertSorted( const PacketData & p, unsigned int max_sequence );
 #ifdef NET_UNIT_TEST
 		void verify_sorted( unsigned int max_sequence );
 #endif

@@ -32,7 +32,9 @@ class Settings:QObject{
 	private:
 		explicit Settings();
 		virtual ~Settings();
-		explicit Settings(Settings &a);
+
+		Q_DISABLE_COPY(Settings)
+		//explicit Settings(Settings &a);
 	public:
 
 		QString getPlatformFingerprint();

@@ -1,56 +1,41 @@
 #ifndef REMOTE_HPP
 #define REMOTE_HPP
 
+#include "sensory/SensorInput.hpp"
+#include "comms/CommsChannel.hpp"
+#include "comms/messages/StatusMessage.hpp"
+
 #include <QObject>
 
-#include <QGeoPositionInfoSource>
-
-#include <QCompassFilter>
-
-class QSensor;
-class QAccelerometer;
-class QCompass;
-class QCompassReading;
-class QAccelerometerReading;
-
-class Remote : public QObject,  public QCompassFilter{
+class Remote : public QObject{
 		Q_OBJECT
 	private:
 
-		QGeoPositionInfoSource *source;
-		QAccelerometer *accelerometer;
-		QCompass*compass;
-
-	private:
-
-		qreal lastCompassFilterValue;
-		qreal lastCompassSmoothValue;
-
+		SensorInput sensors;
+		CommsChannel *server;
+		StatusMessage statusMessage;
+		qint64 lastSend;
 
 	public:
 		explicit Remote(QObject *parent = 0);
-
+		virtual ~Remote();
 
 		void hookSignals(QObject *o);
 		void unHookSignals(QObject *o);
-
-	protected:
-		bool filter(QCompassReading *reading);
-
 	private:
 
-		QByteArray getFirstSensorForType(QByteArray type);
+		void sendStatus();
 
 	private slots:
 
-		void onAccelerometerReadingChanged() ;
-		void onCompassReadingChanged() ;
+		void onServerReceivePacket(QByteArray,QHostAddress,quint16);
+		void onServerError(QString);
 
-	signals:
-
-		void compassUpdated(QCompassReading *);
-		void accelerometerUpdated(QAccelerometerReading *);
-
+	private slots:
+		void onPositionUpdated(const QGeoPositionInfo &info);
+		void onCompassUpdated(QCompassReading *);
+		void onAccelerometerUpdated(QAccelerometerReading *);
+		void onGyroscopeUpdated(QGyroscopeReading *r);
 
 
 };

@@ -8,6 +8,8 @@ CONFIG += static
 # RUN TESTS ON RELEASE BUILD
 # NOTE: RUN_WEB_TESTS SHOULD BE ON WHEN THE BUILDING MACHINE IS CONNECTED TO INTERNET
 
+#  Enable tests by default for now (will be enabled autoamtically for release builds in test.pro otherize)
+DEFINES += USE_TESTS
 DEFINES += USE_BASIC_TESTS
 #DEFINES += USE_WEB_TESTS
 #DEFINES += EXTERNAL_LIB_ESPEAK

@@ -162,7 +162,7 @@ void ReliabilitySystem::processAck( unsigned int ack
 
 		if ( wasAcked ) {
 			rtt += ( itor->time - rtt ) * 0.1f;
-			acked_queue.insert_sorted( *itor, max_sequence );
+			acked_queue.insertSorted( *itor, max_sequence );
 			acked.push_back( itor->sequence );
 			acked_packets++;
 			itor = pending_ack_queue.erase( itor );

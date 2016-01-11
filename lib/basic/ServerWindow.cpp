@@ -12,7 +12,7 @@
 #include <QHostInfo>
 #include <QNetworkInterface>
 
-ServerWindow::ServerWindow(QCommandLineParser &opts, Server *server, QWidget *parent) :
+ServerWindow::ServerWindow(QCommandLineParser &opts, CommsChannel *server, QWidget *parent) :
 	QMainWindow(parent)
   , cs(server)
   , ui(new Ui::ServerWindow)
@@ -101,7 +101,7 @@ void ServerWindow::updateClientsList(){
 	QMap<quint64, Client *> &clients=cs->getClients();
 	int n=0;
 	for (QMap<quint64, Client *>::iterator i = clients.begin(), e=clients.end(); i != e; ++i){
-		const Client *nl=i.value();
+		Client *nl=i.value();
 		if(0!=nl){
 			QStandardItem *newItem = new QStandardItem;
 			newItem->setText(nl->getListText());
@@ -148,7 +148,6 @@ void ServerWindow::prepareMap(){
 		homeMap();
 	}
 }
-
 
 
 void ServerWindow::prepareLocalAddresses(){

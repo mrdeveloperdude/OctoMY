@@ -49,10 +49,12 @@ Settings::~Settings(){
 	settings=0;
 }
 
+/*
 Settings::Settings(Settings &){
 	WWMETHODGATE();
+	//This is simply an inert placeholder
 }
-
+*/
 
 
 

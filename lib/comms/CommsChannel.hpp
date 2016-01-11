@@ -18,7 +18,7 @@
 class ServerWindow;
 class Client;
 
-class Server : public QObject{
+class CommsChannel : public QObject{
 		Q_OBJECT
 	private:
 		QUdpSocket udpSocket;
@@ -31,7 +31,7 @@ class Server : public QObject{
 
 	public:
 
-		explicit Server(LogDestination *mw=0);
+		explicit CommsChannel(LogDestination *mw=0);
 
 	private:
 

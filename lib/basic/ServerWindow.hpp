@@ -9,7 +9,7 @@
 #include <QHostInfo>
 #include <QCommandLineParser>
 
-#include "comms/Server.hpp"
+#include "comms/CommsChannel.hpp"
 
 #include "plot/StatsWindow.hpp"
 
@@ -26,7 +26,7 @@ namespace Ui {
 class ServerWindow : public QMainWindow, public LogDestination{
 		Q_OBJECT
 	private:
-		Server *cs;
+		CommsChannel *cs;
 		Ui::ServerWindow *ui;
 		QTimer summaryTimer;
 		StatsWindow stats;
@@ -54,7 +54,7 @@ class ServerWindow : public QMainWindow, public LogDestination{
 
 
 	public:
-		explicit ServerWindow(QCommandLineParser &opts, Server *server, QWidget *parent = 0);
+		explicit ServerWindow(QCommandLineParser &opts, CommsChannel *server, QWidget *parent = 0);
 		~ServerWindow();
 
 	public:

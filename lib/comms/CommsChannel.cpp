@@ -1,4 +1,4 @@
-#include "Server.hpp"
+#include "CommsChannel.hpp"
 
 #include "basic/Standard.hpp"
 #include "basic/ServerWindow.hpp"
@@ -9,7 +9,7 @@
 
 
 
-inline bool sequence_more_recent( unsigned int s1, unsigned int s2, unsigned int max_sequence ){
+inline bool sequenceMoreRecent( unsigned int s1, unsigned int s2, unsigned int max_sequence ){
 	return (( s1 > s2 ) && ( s1 - s2 <= max_sequence/2 )) || (( s2 > s1 ) && ( s2 - s1 > max_sequence/2 ));
 }
 
@@ -24,21 +24,21 @@ bool PacketQueue::exists( unsigned int sequence ){
 	return false;
 }
 
-void PacketQueue::insert_sorted( const PacketData & p, unsigned int max_sequence ){
+void PacketQueue::insertSorted( const PacketData & p, unsigned int max_sequence ){
 	if ( empty() ){
 		push_back( p );
 	}
 	else {
-		if ( !sequence_more_recent( p.sequence, front().sequence, max_sequence ) ){
+		if ( !sequenceMoreRecent( p.sequence, front().sequence, max_sequence ) ){
 			push_front( p );
 		}
-		else if ( sequence_more_recent( p.sequence, back().sequence, max_sequence ) ){
+		else if ( sequenceMoreRecent( p.sequence, back().sequence, max_sequence ) ){
 			push_back( p );
 		}
 		else {
 			for ( PacketQueue::iterator itor = begin(); itor != end(); itor++ ){
 				//assert( itor->sequence != p.sequence );
-				if ( sequence_more_recent( itor->sequence, p.sequence, max_sequence ) ){
+				if ( sequenceMoreRecent( itor->sequence, p.sequence, max_sequence ) ){
 					insert( itor, p );
 					break;
 				}
@@ -60,7 +60,7 @@ void PacketQueue::verify_sorted( unsigned int max_sequence ){
 #endif
 
 
-Server::Server(LogDestination *mw):
+CommsChannel::CommsChannel(LogDestination *mw):
 	QObject(0)
   , udpSocket(this)
   , idleTimer(this)
@@ -82,27 +82,27 @@ Server::Server(LogDestination *mw):
 }
 
 
-void Server::start(QHostAddress localAddress, quint16 localPort){
+void CommsChannel::start(QHostAddress localAddress, quint16 localPort){
 	this->localAddress=localAddress;
 	this->localPort=localPort;
 	bool b = udpSocket.bind(localAddress, localPort);
 	qDebug()<<"Binding to UDP socket for "<< localAddress <<":"<< localPort<< (b?" succeeded": " failed");
 }
 
-void Server::stop(){
+void CommsChannel::stop(){
 	udpSocket.close();
 	qDebug()<<"Closing UDP socket for "<< localAddress <<":"<< localPort;
 }
 
-void Server::setLogOutput(LogDestination *mw){
+void CommsChannel::setLogOutput(LogDestination *mw){
 	this->mw=mw;
 }
 
-bool Server::sendPackage( QByteArray ba, QHostAddress host, quint16 port){
+bool CommsChannel::sendPackage( QByteArray ba, QHostAddress host, quint16 port){
 	Client *nl=getClient(host,port);
 	if(0!=nl){
 		QByteArray datagram;
-		QDataStream ds(&datagram, QIODevice::WriteOnly);
+		QDataStream ds(&datagram,QIODevice::WriteOnly);
 		ds<<nl->reliabilitySystem.localSequence();
 		ds<<nl->reliabilitySystem.remoteSequence();
 		ds<<nl->reliabilitySystem.generateAckBits();
@@ -124,7 +124,7 @@ bool Server::sendPackage( QByteArray ba, QHostAddress host, quint16 port){
 	return false;
 }
 
-void Server::receivePacketRaw( QByteArray datagram, QHostAddress host , quint16 port ){
+void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress host , quint16 port ){
 	qDebug()<<"RECEIVED RAW '"<<datagram<<"'' FROM "<<host<<":"<<port;
 	Client *nl=getClient(host,port);
 	if(0!=nl){
@@ -151,7 +151,7 @@ void Server::receivePacketRaw( QByteArray datagram, QHostAddress host , quint16 
 }
 
 
-QString Server::getSummary(){
+QString CommsChannel::getSummary(){
 	int connected=0;
 	int disconnected=0;
 	for (QMap<quint64, Client *>::iterator i = clients.begin(), e=clients.end(); i != e; ++i){
@@ -171,12 +171,12 @@ QString Server::getSummary(){
 	return out;
 }
 
-QMap<quint64, Client *> &Server::getClients (){
+QMap<quint64, Client *> &CommsChannel::getClients (){
 	return clients;
 }
 
 //Slot called when data arrives on socket
-void Server::onReadyRead(){
+void CommsChannel::onReadyRead(){
 	while (udpSocket.hasPendingDatagrams()){
 		QByteArray datagram;
 		datagram.resize(udpSocket.pendingDatagramSize());
@@ -188,25 +188,25 @@ void Server::onReadyRead(){
 }
 
 
-void Server::onUdpError(QAbstractSocket::SocketError){
+void CommsChannel::onUdpError(QAbstractSocket::SocketError){
 	emit error(udpSocket.errorString());
 }
 
 
-void Server::appendLog(QString msg){
+void CommsChannel::appendLog(QString msg){
 	if(0!=mw){
 		mw->appendLog(msg);
 	}
 }
 
-Client *Server::getClient(QHostAddress host, quint16 port){
+Client *CommsChannel::getClient(QHostAddress host, quint16 port){
 	const quint64 hash=Client::generateHash(host,port);
 	QMap<quint64, Client *> ::const_iterator it=clients.find(hash);
 	return clients.end()==it?clients.insert(hash, new Client(host,port, mw)).value():it.value();
 }
 
 
-void Server::onIdleTimer(){
+void CommsChannel::onIdleTimer(){
 	QByteArray ba;
 	ba.resize(12);
 	for (QMap<quint64, Client *>::iterator i = clients.begin(), e=clients.end(); i != e; ++i){

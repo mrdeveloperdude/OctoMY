@@ -2,6 +2,7 @@
 
 #include "basic/RemoteWindow.hpp"
 #include "basic/Remote.hpp"
+#include "comms/CommsChannel.hpp"
 
 #include <QDebug>
 #include <QTimer>
