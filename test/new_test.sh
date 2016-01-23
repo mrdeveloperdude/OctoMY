@@ -46,3 +46,5 @@ do
 	sed  -i  "s/Template/$ORIGINAL/g" "$n"
 done
 
+git add "$NEW"/*
+
