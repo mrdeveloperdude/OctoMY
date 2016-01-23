@@ -1,0 +1,5 @@
+#ifndef MESSAGETYPE
+#define MESSAGETYPE
+
+#endif // MESSAGETYPE
+

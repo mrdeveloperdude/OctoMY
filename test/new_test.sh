@@ -3,7 +3,17 @@
 
 if [ "" == "$1" ]
 then
-	echo "USAGE: $0 <name> <type> where <name> is the name to use for new test project (in CamelCase) and <type> (optional, default = test) is either test or stress"
+	echo ""
+	echo "USAGE: $0 <name> <type>"
+	echo ""
+	echo "  where"
+	echo ""
+	echo "    <name> is the name to use for new test project (in CamelCase)"
+	echo ""
+	echo "  and"
+	echo ""
+	echo "    <type> is either test or stress (optional, default = test)"
+	echo ""
 	exit 1
 fi
 

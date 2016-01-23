@@ -1,0 +1,5 @@
+#ifndef SENSORDATATYPE
+#define SENSORDATATYPE
+
+#endif // SENSORDATATYPE
+
