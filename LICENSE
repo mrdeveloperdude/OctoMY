@@ -1,6 +1,18 @@
 Copyright (c) 2016, Lennart Rolland
 All rights reserved.
 
+This license is the default license that applies to all files in the project
+unless additional file-spesific licenses are added, in which case those
+licenses will override this license.
+
+In summary this project is licensed as 100% commercial-friendly open-source
+(BSD) and some parts may even be public domain. This project uses Qt tools
+and the community edition of Qt platform and tools impose a LGPL with
+linking clause on any binaries produced. Since this project is not meant to
+be distributed in binary form anyways this has little impact.
+
+Default license:
+
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
