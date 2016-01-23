@@ -1,5 +1,13 @@
 #ifndef QUERYTYPE
 #define QUERYTYPE
 
+
+enum QueryType{
+	NOOP
+	, ENUMERATE_ONE_DEVICE
+	, ENUMERATE_ALL_DEVICES
+};
+
+
 #endif // QUERYTYPE
 

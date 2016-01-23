@@ -8,7 +8,7 @@
 
 class StatusMessage{
 	public:
-
+		bool ok;
 		qint64 timestamp;
 		QGeoCoordinate gps;
 		QVector3D slam;
@@ -20,7 +20,8 @@ class StatusMessage{
 
 	public:
 		StatusMessage(
-				const qint64 timestamp=0
+				const bool ok=false
+				, const qint64 timestamp=0
 				, const QGeoCoordinate gps=QGeoCoordinate()
 				, const QVector3D slam=QVector3D()
 				, const QVector3D gyroscope=QVector3D()
@@ -29,6 +30,8 @@ class StatusMessage{
 				, const qreal compassAccuracy=0
 				, const qint32 temperature=0
 				);
+
+		StatusMessage(QDataStream &);
 
 };
 

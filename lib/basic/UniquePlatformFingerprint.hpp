@@ -18,6 +18,8 @@ class UniquePlatformFingerprint{
 		QString getHEX();
 		QString getBase32ww();
 		QByteArray getRaw();
+		quint64 getQuint64();
+		qint64 getQint64();
 		bool isValid();
 };
 

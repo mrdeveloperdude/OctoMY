@@ -1,8 +1,10 @@
 #include "Client.hpp"
+#include "comms/CommsChannel.hpp"
+#include "basic/LogDestination.hpp"
+
+
 #include <QDateTime>
 
-#include "CommsChannel.hpp"
-#include "basic/LogDestination.hpp"
 
 Client::Client(QHostAddress host, quint16 port, LogDestination *log):
 	host(host)

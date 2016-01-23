@@ -1,63 +1,13 @@
 #include "CommsChannel.hpp"
 
 #include "basic/Standard.hpp"
-#include "basic/ServerWindow.hpp"
-#include "Client.hpp"
+#include "hub/HubWindow.hpp"
+#include "hub/Client.hpp"
 
 #include <QDataStream>
 #include <QDateTime>
 
 
-
-inline bool sequenceMoreRecent( unsigned int s1, unsigned int s2, unsigned int max_sequence ){
-	return (( s1 > s2 ) && ( s1 - s2 <= max_sequence/2 )) || (( s2 > s1 ) && ( s2 - s1 > max_sequence/2 ));
-}
-
-
-
-bool PacketQueue::exists( unsigned int sequence ){
-	for ( iterator itor = begin(); itor != end(); ++itor ){
-		if ( itor->sequence == sequence ){
-			return true;
-		}
-	}
-	return false;
-}
-
-void PacketQueue::insertSorted( const PacketData & p, unsigned int max_sequence ){
-	if ( empty() ){
-		push_back( p );
-	}
-	else {
-		if ( !sequenceMoreRecent( p.sequence, front().sequence, max_sequence ) ){
-			push_front( p );
-		}
-		else if ( sequenceMoreRecent( p.sequence, back().sequence, max_sequence ) ){
-			push_back( p );
-		}
-		else {
-			for ( PacketQueue::iterator itor = begin(); itor != end(); itor++ ){
-				//assert( itor->sequence != p.sequence );
-				if ( sequenceMoreRecent( itor->sequence, p.sequence, max_sequence ) ){
-					insert( itor, p );
-					break;
-				}
-			}
-		}
-	}
-}
-#ifdef NET_UNIT_TEST
-void PacketQueue::verify_sorted( unsigned int max_sequence ){
-	PacketQueue::iterator prev = end();
-	for ( PacketQueue::iterator itor = begin(); itor != end(); itor++ ){
-		assert( itor->sequence <= max_sequence );
-		if ( prev != end() ){
-			assert( sequence_more_recent( itor->sequence, prev->sequence, max_sequence ) );
-			prev = itor;
-		}
-	}
-}
-#endif
 
 
 CommsChannel::CommsChannel(LogDestination *mw):
@@ -86,12 +36,12 @@ void CommsChannel::start(QHostAddress localAddress, quint16 localPort){
 	this->localAddress=localAddress;
 	this->localPort=localPort;
 	bool b = udpSocket.bind(localAddress, localPort);
-	qDebug()<<"Binding to UDP socket for "<< localAddress <<":"<< localPort<< (b?" succeeded": " failed");
+	qDebug()<<"Binding UDP socket for "<< localAddress <<":"<< localPort<< (b?" succeeded": " failed");
 }
 
 void CommsChannel::stop(){
 	udpSocket.close();
-	qDebug()<<"Closing UDP socket for "<< localAddress <<":"<< localPort;
+	qDebug()<<"Unbinding UDP socket for "<< localAddress <<":"<< localPort;
 }
 
 void CommsChannel::setLogOutput(LogDestination *mw){
@@ -125,28 +75,32 @@ bool CommsChannel::sendPackage( QByteArray ba, QHostAddress host, quint16 port){
 }
 
 void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress host , quint16 port ){
-	qDebug()<<"RECEIVED RAW '"<<datagram<<"'' FROM "<<host<<":"<<port;
+	qDebug()<<"RECEIVED "<<datagram.size()<<" RAW BYTES FROM "<<host<<":"<<port;
 	Client *nl=getClient(host,port);
 	if(0!=nl){
-		QDataStream ds(&datagram, QIODevice::ReadOnly);
+		QSharedPointer<QDataStream> ds(new QDataStream(&datagram, QIODevice::ReadOnly));
 		const int header = 12;
 		const int size=datagram.size();
 		if ( size <= header ){
+			qDebug()<<"QD=message too short";
 			emit error("Message too short: " + datagram);
 			return;
 		}
 		unsigned int packet_sequence = 0;
 		unsigned int packet_ack = 0;
 		unsigned int packet_ack_bits = 0;
-		ds >> packet_sequence;
-		ds >> packet_ack;
-		ds >> packet_ack_bits;
-		QByteArray ba;
-		ds >> ba;
+		*ds >> packet_sequence;
+		*ds >> packet_ack;
+		*ds >> packet_ack_bits;
 		nl->reliabilitySystem.packetReceived( packet_sequence, size- header );
 		nl->reliabilitySystem.processAck( packet_ack, packet_ack_bits );
 		nl->receive();
-		emit receivePacket(ba,host, port);
+		qDebug()<<"QD=recv";
+		emit receivePacket(ds,host, port);
+	}
+	else {
+		qDebug()<<"QD=no client for message";
+		emit error("Error fetching client on message receive");
 	}
 }
 
@@ -202,7 +156,12 @@ void CommsChannel::appendLog(QString msg){
 Client *CommsChannel::getClient(QHostAddress host, quint16 port){
 	const quint64 hash=Client::generateHash(host,port);
 	QMap<quint64, Client *> ::const_iterator it=clients.find(hash);
-	return clients.end()==it?clients.insert(hash, new Client(host,port, mw)).value():it.value();
+	if(clients.end()==it){
+		Client *c=new Client(host,port, mw);
+		it=clients.insert(hash, c);
+		emit clientAdded(c);
+	}
+	return it.value();
 }
 
 
@@ -229,5 +188,38 @@ void CommsChannel::onIdleTimer(){
 		printf( "\n" );
 	}
 #endif
+
+}
+
+
+void CommsChannel::hookSignals(QObject &ob){
+	qRegisterMetaType<Client *>("Client *");
+	qRegisterMetaType<QHostAddress>("QHostAddress");
+	qRegisterMetaType<QSharedPointer<QDataStream>>("QSharedPointer<QDataStream>");
+	if(!connect(this,SIGNAL(receivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)),&ob,SLOT(onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)),WWCONTYPE)){
+		qDebug()<<"could not connect "<<ob.objectName();
+	}
+	if(!connect(this,SIGNAL(error(QString)),&ob,SLOT(onError(QString)),WWCONTYPE)){
+		qDebug()<<"could not connect "<<ob.objectName();
+	}
+	if(!connect(this,SIGNAL(clientAdded(Client *)),&ob,SLOT(onClientAdded(Client *)),WWCONTYPE)){
+		qDebug()<<"could not connect "<<ob.objectName();
+	}
+}
+
+
+void CommsChannel::unHookSignals(QObject &ob){
+	qRegisterMetaType<Client *>("Client *");
+	qRegisterMetaType<QHostAddress>("QHostAddress");
+	qRegisterMetaType<QSharedPointer<QDataStream>>("QSharedPointer<QDataStream>");
+	if(!disconnect(this,SIGNAL(receivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)),&ob,SLOT(onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)))){
+		qDebug()<<"could not disconnect "<<ob.objectName();
+	}
+	if(!disconnect(this,SIGNAL(error(QString)),&ob,SLOT(onError(QString)))){
+		qDebug()<<"could not disconnect "<<ob.objectName();
+	}
+	if(!disconnect(this,SIGNAL(clientAdded(Client *)),&ob,SLOT(onClientAdded(Client *)))){
+		qDebug()<<"could not disconnect "<<ob.objectName();
+	}
 
 }

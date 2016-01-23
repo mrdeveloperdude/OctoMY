@@ -14,5 +14,10 @@
         <file>icons/control2.svg</file>
         <file>icons/octomy_logo.svg</file>
         <file>icons/octomy_logo_bare.svg</file>
+        <file>icons/view_details.png</file>
+        <file>icons/view_grid.png</file>
+        <file>icons/view_list.png</file>
+        <file>icons/view_tree.png</file>
+        <file>icons/identicon.svg</file>
     </qresource>
 </RCC>

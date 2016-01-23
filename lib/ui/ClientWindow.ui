@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>OctoMY™ - Hub Client</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
@@ -36,8 +36,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>300</width>
-        <height>433</height>
+        <width>139</width>
+        <height>41</height>
        </rect>
       </property>
       <attribute name="icon">
@@ -76,8 +76,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>300</width>
-        <height>433</height>
+        <width>244</width>
+        <height>231</height>
        </rect>
       </property>
       <attribute name="icon">
@@ -518,8 +518,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>300</width>
-        <height>433</height>
+        <width>232</width>
+        <height>67</height>
        </rect>
       </property>
       <attribute name="icon">
@@ -612,8 +612,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>300</width>
-        <height>433</height>
+        <width>224</width>
+        <height>352</height>
        </rect>
       </property>
       <attribute name="icon">
@@ -800,8 +800,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>300</width>
-        <height>433</height>
+        <width>184</width>
+        <height>177</height>
        </rect>
       </property>
       <attribute name="icon">

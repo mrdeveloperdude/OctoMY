@@ -6,30 +6,38 @@
 #include "comms/messages/StatusMessage.hpp"
 
 #include <QObject>
+#include <QCommandLineParser>
+
 
 class Remote : public QObject{
 		Q_OBJECT
 	private:
 
+		QCommandLineParser &opts;
+		CommsChannel *comms;
 		SensorInput sensors;
-		CommsChannel *server;
 		StatusMessage statusMessage;
 		qint64 lastSend;
 
+		QString hubAddress;
+		quint16 hubPort;
+
+
 	public:
-		explicit Remote(QObject *parent = 0);
+		explicit Remote(QCommandLineParser &opts, QObject *parent = 0);
 		virtual ~Remote();
 
+		void start(QString adrLocal, quint16 portLocal, QString hubAddress, quint16 hubPort);
 		void hookSignals(QObject *o);
 		void unHookSignals(QObject *o);
-	private:
-
 		void sendStatus();
 
 	private slots:
 
-		void onServerReceivePacket(QByteArray,QHostAddress,quint16);
-		void onServerError(QString);
+		void onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16);
+		void onError(QString);
+		void onClientAdded(Client *);
+
 
 	private slots:
 		void onPositionUpdated(const QGeoPositionInfo &info);

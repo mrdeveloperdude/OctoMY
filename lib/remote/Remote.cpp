@@ -1,37 +1,42 @@
 #include "Remote.hpp"
-#include "Standard.hpp"
+
+#include "basic/Standard.hpp"
 
 #include <QDebug>
 #include <QDataStream>
+#include <QSharedPointer>
 #include <QAccelerometerReading>
 #include <QGyroscopeReading>
 #include <QGeoPositionInfo>
 
 
-
-Remote::Remote(QObject *parent):
+Remote::Remote(QCommandLineParser &opts, QObject *parent):
 	QObject(parent)
-  , server (new CommsChannel(0))
+  , opts(opts)
+  , comms (new CommsChannel(0))
   , lastSend(0)
+  , hubPort(0)
 {
 	hookSignals(this);
-	if(0!=server){
-		qRegisterMetaType<QHostAddress>("QHostAddress");
-		if(!connect(server, SIGNAL(receivePacket(QByteArray,QHostAddress,quint16)),this,SLOT(onServerReceivePacket(QByteArray,QHostAddress,quint16)),WWCONTYPE)){
-			qWarning()<<"ERROR: Could not connect";
-		}
-		if(!connect(server, SIGNAL(error(QString)),this,SLOT(onServerError(QString)),WWCONTYPE)){
-			qWarning()<<"ERROR: Could not connect";
-		}
-		server->start(QHostAddress("127.0.0.1"),54345);
-		//Get this show started
-		sendStatus();
+	if(0!=comms){
+		comms->hookSignals(*this);
 	}
 }
 
 Remote::~Remote(){
-	delete server;
-	server=0;
+	delete comms;
+	comms=0;
+}
+
+void Remote::start(QString listenAddress, quint16 listenPort, QString hubAddress, quint16 hubPort){
+	this->hubAddress=hubAddress;
+	this->hubPort=hubPort;
+	if(0!=comms){
+			qDebug()<<"REMOTE comms start for server "<<listenAddress<<":"<<listenPort<<" (hub "<<hubAddress<<":"<<hubPort<<")";
+		comms->start(QHostAddress(listenAddress),listenPort);
+		//Get this show started
+		sendStatus();
+	}
 }
 
 void Remote::hookSignals(QObject *o){
@@ -43,14 +48,17 @@ void Remote::unHookSignals(QObject *o){
 	sensors.unHookSignals(o);
 }
 
-void Remote::onServerReceivePacket(QByteArray packet,QHostAddress,quint16){
-	QDataStream ds(packet);
+void Remote::onReceivePacket(QSharedPointer<QDataStream> ds,QHostAddress,quint16){
 	qint32 magic=0;
-	ds>>magic;
+	*ds>>magic;
 	qDebug()<<"GOT MAGIC: "<<magic;
 }
 
-void Remote::onServerError(QString){
+void Remote::onError(QString){
+
+}
+
+void Remote::onClientAdded(Client *){
 
 }
 
@@ -92,10 +100,11 @@ void Remote::sendStatus(){
 		QByteArray datagram;
 		QDataStream ds(&datagram,QIODevice::WriteOnly);
 		ds<<statusMessage;
-		server->sendPackage(datagram,QHostAddress("10.0.0.75"),54345);
+		comms->sendPackage(datagram,QHostAddress(hubAddress),hubPort);
 		lastSend=now;
 	}
 }
+
 
 
 

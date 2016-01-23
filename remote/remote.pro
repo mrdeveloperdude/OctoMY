@@ -17,13 +17,15 @@ message("FROM remote.pro:")
 include($$TOP_PWD/status.pri)
 
 DISTFILES += \
-    android/AndroidManifest.xml \
-    android/gradle/wrapper/gradle-wrapper.jar \
-    android/gradlew \
-    android/res/values/libs.xml \
-    android/build.gradle \
-    android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew.bat
+	android/AndroidManifest.xml \
+	android/gradle/wrapper/gradle-wrapper.jar \
+	android/gradlew \
+	android/res/values/libs.xml \
+	android/build.gradle \
+	android/gradle/wrapper/gradle-wrapper.properties \
+	android/gradlew.bat \
+    android/src/org/octomy/remote/Remote.java
+
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 

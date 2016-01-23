@@ -2,7 +2,7 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
 	lib\
-	server\
+	hub\
 	agent\
 	remote\
 	test
@@ -10,12 +10,12 @@ SUBDIRS += \
 
 # Dependency stuff adapted from https://vilimpoc.org/blog/2014/02/21/qmake-subdirs-project-automatic-dependencies/
 lib.subdir   = lib
-server.subdir   = server
+hub.subdir   = hub
 agent.subdir   = agent
 remote.subdir   = remote
 test.subdir   = test
 
-server.depends = lib
+hub.depends = lib
 agent.depends = lib
 remote.depends = lib
 test.depends = lib

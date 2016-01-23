@@ -1,5 +1,13 @@
 #ifndef DEVICESTATUSTYPE
 #define DEVICESTATUSTYPE
 
+
+enum DeviceStatusType{
+	IDLE
+	, ACTIVE
+	, WARNING
+	, ERROR
+};
+
 #endif // DEVICESTATUSTYPE
 

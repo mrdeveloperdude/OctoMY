@@ -4,6 +4,7 @@ include(test.pri)
 contains(DEFINES, USE_BASIC_TESTS){
 TEST_PROJECTS+= \
 	testCommsChannel \
+	testIdenticon \
 
 STRESS_PROJECTS+= \
 

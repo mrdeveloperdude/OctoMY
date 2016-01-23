@@ -1,15 +1,39 @@
-#ifndef SERVER_HPP
-#define SERVER_HPP
+#ifndef HUB_HPP
+#define HUB_HPP
+
+#include "comms/CommsChannel.hpp"
+
+#include <QCommandLineParser>
+
+class Hub: QObject{
+		Q_OBJECT
+	private:
+		QCommandLineParser &opts;
+		CommsChannel *comms;
+		int lastSentPackets;
+		int lastReceivedPackets;
+		int lastLostPackets;
+		int lastAckedPackets;
 
 
-class Server
-{
 	public:
-		Server();
 
-	signals:
+		explicit Hub(QCommandLineParser &opts, QObject *parent = 0);
+		virtual ~Hub();
 
-	public slots:
+
+		void hookSignals(QObject *o);
+		void unHookSignals(QObject *o);
+
+		QCommandLineParser &getOptions();
+		CommsChannel *getComms();
+
+	private slots:
+
+		void onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16);
+		void onError(QString);
+		void onClientAdded(Client *);
+
 };
 
-#endif // SERVER_HPP
+#endif // HUB_HPP

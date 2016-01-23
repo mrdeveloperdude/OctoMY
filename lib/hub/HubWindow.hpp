@@ -1,33 +1,32 @@
-#ifndef SERVERWINDOW_HPP
-#define SERVERWINDOW_HPP
+#ifndef HUBWINDOW_HPP
+#define HUBWINDOW_HPP
 
 
 #include "widgets/TryToggle.hpp"
+#include "comms/CommsChannel.hpp"
+#include "plot/StatsWindow.hpp"
+#include "basic/LogDestination.hpp"
+#include "hub/Hub.hpp"
 
 
 #include <QMainWindow>
 #include <QHostInfo>
 #include <QCommandLineParser>
 
-#include "comms/CommsChannel.hpp"
-
-#include "plot/StatsWindow.hpp"
-
-#include "basic/LogDestination.hpp"
 
 namespace qmapcontrol{
 	class MapControl;
 }
 
 namespace Ui {
-	class ServerWindow;
+	class HubWindow;
 }
 
-class ServerWindow : public QMainWindow, public LogDestination{
+class HubWindow : public QMainWindow, public LogDestination{
 		Q_OBJECT
 	private:
-		CommsChannel *cs;
-		Ui::ServerWindow *ui;
+		Ui::HubWindow *ui;
+		Hub *hub;
 		QTimer summaryTimer;
 		StatsWindow stats;
 
@@ -41,21 +40,14 @@ class ServerWindow : public QMainWindow, public LogDestination{
 
 		double randomWalk=0.0f;
 
-
-		int lastSentPackets=0;
-		int lastReceivedPackets=0;
-		int lastLostPackets=0;
-		int lastAckedPackets=0;
-
-		QCommandLineParser &opts;
 		qmapcontrol::MapControl *mc=0;
 
-		QStandardItemModel simClients;
+		//QStandardItemModel simClients;
 
 
 	public:
-		explicit ServerWindow(QCommandLineParser &opts, CommsChannel *server, QWidget *parent = 0);
-		~ServerWindow();
+		explicit HubWindow(Hub *hub, QWidget *parent = 0);
+		~HubWindow();
 
 	public:
 		void appendLog(const QString& text);
@@ -64,23 +56,26 @@ class ServerWindow : public QMainWindow, public LogDestination{
 	private:
 
 		void prepareMap();
-		void updateClientsList();
 		void homeMap();
-		void prepareLocalAddresses();
 
 		void appendGraphData(double rtt, int sent,int received,int lost,int acked, float sendBW,float receiveBW);
 
 
 	private slots:
 		void onListenStateChanged(TryToggleState);
-		void onReceivePacket(QByteArray ba,QHostAddress host,quint16 port);
+		void onReceivePacket(QSharedPointer<QDataStream> ,QHostAddress ,quint16 );
 		void onError(QString msg);
+		void onClientAdded(Client *c);
 		void onLocalHostLookupComplete(QHostInfo hi);
 		void onRemoteHostLookupComplete(QHostInfo hi);
 		void onSummaryTimer();
+
+
 		void on_pushButtonSendData_clicked();
 		void on_pushButtonShowStats_clicked();
-		void on_listViewClients_clicked(const QModelIndex &index);
+		void on_toolButtonAddLocalRemote_clicked();
+		void on_toolButtonAddLocalAgent_clicked();
+		void on_horizontalSliderIdenticon_sliderMoved(int position);
 };
 
-#endif // SERVERWINDOW_HPP
+#endif // HUBWINDOW_HPP

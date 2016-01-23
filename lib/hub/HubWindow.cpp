@@ -1,31 +1,50 @@
-#include "ServerWindow.hpp"
-#include "ui_ServerWindow.h"
+#include "HubWindow.hpp"
+#include "ui_HubWindow.h"
 #include "basic/Standard.hpp"
 #include "map/mapcontrol.h"
 #include "map/osmmapadapter.h"
 #include "map/openaerialmapadapter.h"
 #include "map/maplayer.h"
 #include "map/linestring.h"
-#include "comms/Client.hpp"
+#include "hub/Client.hpp"
+#include "comms/messages/MessageType.hpp"
+#include "hub/Hub.hpp"
+#include "ClientWindow.hpp"
+#include "utility/Utility.hpp"
+#include "models/ClientModel.hpp"
+
+
+#include "remote/Remote.hpp"
+#include "remote/RemoteWindow.hpp"
+
+
+//#include "agent/Agent.hpp"
+//#include "agent/AgentWindow.hpp"
 
 #include <QScrollBar>
 #include <QHostInfo>
 #include <QNetworkInterface>
 
-ServerWindow::ServerWindow(QCommandLineParser &opts, CommsChannel *server, QWidget *parent) :
-	QMainWindow(parent)
-  , cs(server)
-  , ui(new Ui::ServerWindow)
-  , summaryTimer(this)
-  , opts(opts)
 
+
+HubWindow::HubWindow(Hub *hub, QWidget *parent) :
+	QMainWindow(parent)
+  , ui(new Ui::HubWindow)
+  , hub(hub)
+  , summaryTimer(this)
 {
 	summaryTimer.setInterval(100);
 	ui->setupUi(this);
-	ui->lineEditLocalPort->configure("1234","local_port","The port of the local host");
+	QAbstractItemModel *data = new ClientModel(hub->getComms()->getClients(), this);
+	ui->widgetMulti->configure("Icons","hubwindiow-clients-list");
+	ui->widgetMulti->setModel(data);
+
+	ui->tabWidget->setEnabled(false);
+	ui->tabWidget->setCurrentWidget(ui->tabIncomming);
+	ui->lineEditLocalPort->configure("","local_port","The port of the local host");
 	ui->lineEditRemoteAddress->configure("localhost","remote_address","The address of the remote host");
-	ui->lineEditRemotePort->configure("1234","remote_port","The port of the remote host");
-	ui->tryToggleListen->setText("Connect","Disconnect...","Disconnect");
+	ui->lineEditRemotePort->configure("","remote_port","The port of the remote host");
+	ui->tryToggleListen->setText("Listen","Preparing...","Listening");
 	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onListenStateChanged(TryToggleState)),WWCONTYPE)){
 		qDebug()<<"could not connect";
 	}
@@ -33,6 +52,7 @@ ServerWindow::ServerWindow(QCommandLineParser &opts, CommsChannel *server, QWidg
 		qDebug()<<"could not connect";
 	}
 
+	QCommandLineParser &opts=hub->getOptions();
 	if(opts.isSet("local-port")){
 		ui->lineEditLocalPort->setText(opts.value("local-port"));
 		qDebug()<<"OVERRIDING LOCAL PORT WITH VALUE FROM CMDLINE: "<<opts.value("local-port");
@@ -44,27 +64,19 @@ ServerWindow::ServerWindow(QCommandLineParser &opts, CommsChannel *server, QWidg
 	ui->lineEditLocalPort->setValidator( new QIntValidator(0, 65535, this) );
 	ui->lineEditRemotePort->setValidator( new QIntValidator(0, 65535, this) );
 
-
-	qRegisterMetaType<QHostAddress>("QHostAddress");
-	if(0!=cs){
-		if(!connect(cs,SIGNAL(receivePacket(QByteArray,QHostAddress,quint16)),this,SLOT(onReceivePacket(QByteArray,QHostAddress,quint16)),WWCONTYPE)){
-			qDebug()<<"could not connect";
-		}
-		if(!connect(cs,SIGNAL(error(QString)),this,SLOT(onError(QString)),WWCONTYPE)){
-			qDebug()<<"could not connect";
-		}
-	}
-
+	hub->getComms()->hookSignals(*this);
 
 	prepareMap();
-	prepareLocalAddresses();
-	ui->listViewClients->setModel(&simClients);
+	utility::populateComboboxWithLocalAdresses(*ui->comboBoxIP);
 	ui->tabWidget->setCurrentIndex(0);
 	//updateClientsList();
 	appendLog("READY");
+
+
 }
 
-ServerWindow::~ServerWindow() {
+HubWindow::~HubWindow() {
+	hub->getComms()->unHookSignals(*this);
 	delete ui;
 }
 
@@ -72,49 +84,9 @@ ServerWindow::~ServerWindow() {
 
 /////////////////////////////
 
-#include <QPainter>
-#include <QPixmap>
-#include <QImage>
-#include <QGraphicsEffect>
 
 
-QImage tint(QImage src, QColor color, qreal strength=1.0){
-	if(src.isNull()) return QImage();
-	QGraphicsScene scene;
-	QGraphicsPixmapItem item;
-	item.setPixmap(QPixmap::fromImage(src));
-	QGraphicsColorizeEffect effect;
-	effect.setColor(color);
-	effect.setStrength(strength);
-	item.setGraphicsEffect(&effect);
-	scene.addItem(&item);
-	QImage res(src);
-	QPainter ptr(&res);
-	scene.render(&ptr, QRectF(), src.rect() );
-	return res;
-}
-
-
-
-void ServerWindow::updateClientsList(){
-	simClients.clear();
-	QMap<quint64, Client *> &clients=cs->getClients();
-	int n=0;
-	for (QMap<quint64, Client *>::iterator i = clients.begin(), e=clients.end(); i != e; ++i){
-		Client *nl=i.value();
-		if(0!=nl){
-			QStandardItem *newItem = new QStandardItem;
-			newItem->setText(nl->getListText());
-			QVariant v = qVariantFromValue((void *) nl);
-			newItem->setData(v);
-			QIcon ic(QPixmap::fromImage(tint(QImage("://icons/spider.svg"),nl->connected?QColor(0,192,0):QColor(192,0,0),1.0)));
-			newItem->setIcon(ic);
-			simClients.setItem(n++,newItem);
-		}
-	}
-}
-
-void ServerWindow::prepareMap(){
+void HubWindow::prepareMap(){
 	mc=ui->widgetMap;
 	if(0!=mc){
 		mc->showScale(true);
@@ -150,23 +122,10 @@ void ServerWindow::prepareMap(){
 }
 
 
-void ServerWindow::prepareLocalAddresses(){
-	ui->comboBoxIP->clear();
-	QList<QNetworkInterface> list= QNetworkInterface::allInterfaces();
-	for(int i=0; i<list.size();i++) {
-		QNetworkInterface inter = list.at(i);
-		if (inter.flags().testFlag(QNetworkInterface::IsUp) && !inter.flags().testFlag(QNetworkInterface::IsLoopBack)) {
-			QList<QNetworkAddressEntry> list2= inter.addressEntries();
-			for(int j=0; j<list2.size();j++) {
-				QNetworkAddressEntry entry = list2.at(j);
-				ui->comboBoxIP->addItem(entry.ip().toString());
-			}
-		}
-	}
-}
 
 
-void ServerWindow::homeMap() {
+
+void HubWindow::homeMap() {
 	if(0!=mc){
 		qDebug()<<"HOME";
 		QList<QPointF> londalen;
@@ -176,27 +135,17 @@ void ServerWindow::homeMap() {
 	}
 }
 
-void ServerWindow::onSummaryTimer(){
-	if(0==cs){
+void HubWindow::onSummaryTimer(){
+	CommsChannel *comms=hub->getComms();
+	if(0==comms){
 		ui->plainTextEditSummary->setPlainText("N/A");
 	}
 	else{
-		updateClientsList();
-		ui->plainTextEditSummary->setPlainText(cs->getSummary());
-		const ReliabilitySystem rs;//=cs->getReliabilitySystem();
-		const int sentPackets=rs.sentPackets()-lastSentPackets;
-		const int receivedPackets=rs.receivedPackets()-lastReceivedPackets;
-		const int lostPackets=rs.lostPackets()-lastLostPackets;
-		const int ackedPackets=rs.ackedPackets()-lastAckedPackets;
-		lastSentPackets+=sentPackets;
-		lastReceivedPackets+=receivedPackets;
-		lastLostPackets+=lostPackets;
-		lastAckedPackets+=ackedPackets;
-		appendGraphData(rs.roundTripTime(), sentPackets, receivedPackets, lostPackets, ackedPackets, rs.sentBandwidth(), rs.ackedBandwidth());
+
 	}
 }
 
-void ServerWindow::appendLog(const QString& text){
+void HubWindow::appendLog(const QString& text){
 	WWMETHODGATE();
 	ui->logScroll->appendPlainText(text);
 	QScrollBar *vsb=ui->logScroll->verticalScrollBar();
@@ -205,31 +154,36 @@ void ServerWindow::appendLog(const QString& text){
 	}
 }
 
-void ServerWindow::onListenStateChanged(TryToggleState s){
+void HubWindow::onListenStateChanged(TryToggleState s){
 	ui->lineEditLocalPort->setEnabled(OFF==s);
 	ui->pushButtonSendData->setEnabled(ON==s);
-	ON==s?summaryTimer.start():summaryTimer.stop();
-	appendLog("New connection state: "+ToggleStateToSTring(s));
+	const bool on=ON==s;
+	ui->tabWidget->setEnabled(on);
+	on?summaryTimer.start():summaryTimer.stop();
+	appendLog("New listening state: "+ToggleStateToSTring(s));
 	if(TRYING==s){
 		QHostInfo::lookupHost("localhost",this, SLOT(onLocalHostLookupComplete(QHostInfo)));
 	}
 	else if(OFF==s){
-		if(0!=cs){
-			cs->stop();
+		CommsChannel *comms=hub->getComms();
+		if(0!=comms){
+			comms->stop();
 		}
 	}
 }
 
 
 
-void ServerWindow::onLocalHostLookupComplete(QHostInfo hi){
+void HubWindow::onLocalHostLookupComplete(QHostInfo hi){
 	for(QHostAddress adr:hi.addresses()){
 		if(adr.isNull()){
 			ui->logScroll->appendHtml("Skipping invalid address during local host lookup: "+adr.toString());
 		}
 		else{
-			if(0!=cs){
-				cs->start(adr, ui->lineEditLocalPort->text().toInt());
+			CommsChannel *comms=hub->getComms();
+			if(0!=comms){
+				qDebug()<<"HUB comms start for " << adr.toString()<<":" << ui->lineEditLocalPort->text();
+				comms->start(adr, ui->lineEditLocalPort->text().toInt());
 				ui->tryToggleListen->setState(ON);
 			}
 			return;
@@ -239,7 +193,8 @@ void ServerWindow::onLocalHostLookupComplete(QHostInfo hi){
 	ui->tryToggleListen->setState(OFF);
 }
 
-void ServerWindow::onRemoteHostLookupComplete(QHostInfo hi){
+
+void HubWindow::onRemoteHostLookupComplete(QHostInfo hi){
 	for(QHostAddress adr:hi.addresses()){
 		if(adr.isNull()){
 			ui->logScroll->appendHtml("Skipping invalid address during remote host lookup: "+adr.toString());
@@ -254,7 +209,8 @@ void ServerWindow::onRemoteHostLookupComplete(QHostInfo hi){
 					ba.append("X");
 				}
 				quint64 port=ui->lineEditRemotePort->text().toInt();
-				cs->sendPackage(ba,adr,port);
+				CommsChannel *comms=hub->getComms();
+				comms->sendPackage(ba,adr,port);
 			}
 			appendLog( "SENDING "+QString::number(l)+" DATA PACKETS OF SIZE "+QString::number(sz)+" to "+ui->lineEditRemoteAddress->text()+ "("+adr.toString()+"):"+ui->lineEditRemotePort->text());
 			return;
@@ -264,11 +220,33 @@ void ServerWindow::onRemoteHostLookupComplete(QHostInfo hi){
 }
 
 
-void ServerWindow::onReceivePacket(QByteArray ba, QHostAddress host, quint16 port){
-	ui->logScroll->appendHtml("GOT DATA: '"+ba+"'' from "+host.toString()+":"+QString::number(port));
+
+void HubWindow::onReceivePacket(QSharedPointer<QDataStream> ds, QHostAddress host, quint16 port){
+	ui->logScroll->appendHtml("GOT packet from "+host.toString()+":"+QString::number(port));
+	qint32 mt=INVALID;
+	*ds >> mt;
+	switch((MessageType)mt){
+		//Implemented
+		case(STATUS):{
+				StatusMessage sm(ds);
+			}break;
+			//Not implemented yet
+		case(QUERY):
+		case(QUERY_RESULT):
+		case(COMMAND):
+			{
+				qDebug()<<"WARNING: Handler for message type "<<mt<<" not implemented yet";
+			}break;
+			//Unknown/errors
+		default:
+
+		case(INVALID):{
+				qDebug()<<"ERROR: Unknown message type found: "<<mt;
+			}break;
+	}
 }
 
-void ServerWindow::onError(QString msg){
+void HubWindow::onError(QString msg){
 	if("Unable to send a message"==msg){
 
 	}
@@ -277,8 +255,19 @@ void ServerWindow::onError(QString msg){
 	}
 }
 
-void ServerWindow::on_pushButtonSendData_clicked(){
-	if(0!=cs){
+
+
+void HubWindow::onClientAdded(Client *c){
+	if(0!=c){
+		appendLog("CLIENT ADDED: "+c->getSummary());
+		ui->widgetMulti->update();
+	}
+}
+
+
+void HubWindow::on_pushButtonSendData_clicked(){
+	CommsChannel *comms=hub->getComms();
+	if(0!=comms){
 		QHostInfo::lookupHost(ui->lineEditRemoteAddress->text(),this, SLOT(onRemoteHostLookupComplete(QHostInfo)));
 	}
 	else{
@@ -287,7 +276,7 @@ void ServerWindow::on_pushButtonSendData_clicked(){
 }
 
 
-void ServerWindow::on_pushButtonShowStats_clicked(){
+void HubWindow::on_pushButtonShowStats_clicked(){
 
 	stats.addGraph("RTT",graphRTT,QPen(QBrush( QColor(0,192,128)), 2, Qt::SolidLine));
 	stats.addGraph("Sent",graphSent, QPen(QBrush(QColor(192,128,0)), 2, Qt::SolidLine));
@@ -313,7 +302,7 @@ void ServerWindow::on_pushButtonShowStats_clicked(){
 	stats.addGraph("Random data",graphRTT);
 
  */
-void ServerWindow::appendGraphData(double rtt, int sent,int received,int lost,int acked, float sendBW,float receiveBW){
+void HubWindow::appendGraphData(double rtt, int sent,int received,int lost,int acked, float sendBW,float receiveBW){
 	double now=QDateTime::currentMSecsSinceEpoch()/1000.0;
 	graphRTT[now]=QCPData(now,rtt);
 	graphSent[now]=QCPData(now,sent);
@@ -325,23 +314,26 @@ void ServerWindow::appendGraphData(double rtt, int sent,int received,int lost,in
 	stats.repaintPlot();
 }
 
-#include "ClientWindow.hpp"
+void HubWindow::on_toolButtonAddLocalRemote_clicked(){
+	//TODO: synthesize options object that points to parent hub
+	Remote *remote=new Remote(hub->getOptions());
+	RemoteWindow *w=new RemoteWindow (remote,0);
+	//		remote->setLogOutput(&w);
+	w->show();
+}
 
-void ServerWindow::on_listViewClients_clicked(const QModelIndex &index){
-	QStandardItem *item=simClients.itemFromIndex(index);
-	if(0!=item){
-		Client *c=(Client *)item->data().value<void *>();
-		if(0!=c){
-			appendLog("OPENING CLINET "+c->getListText());
-			ClientWindow *cw=new ClientWindow(c,0);
-			cw->show();
-		}
-		else{
-			appendLog("could not find client for item");
-		}
-	}
-	else{
-		appendLog("could not find item");
-	}
+void HubWindow::on_toolButtonAddLocalAgent_clicked(){
+	/*
+	//TODO: synthesize options object that points to parent hub
+	Agent *agent=new Agent(hub->getOptions());
+	AgentWindow *w=new AgentWindow (agent,0);
+	//		remote->setLogOutput(&w);
+	w->show();
+	*/
+}
 
+
+
+void HubWindow::on_horizontalSliderIdenticon_sliderMoved(int position){
+	//ui->widgetIdenticon->setIdenticonData(ui->horizontalSliderIdenticon->value());
 }

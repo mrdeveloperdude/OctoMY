@@ -45,6 +45,8 @@ namespace utility{
 	void placeInScreen(QWidget &w,QPointF gravity=QPointF(0.5,0.5), int pref=-1);
 	int getNonPrimaryScreen();
 	void sendFakeKeyEvent(QWidget *target, Qt::Key k, QString ks);
+	void populateComboboxWithLocalAdresses(QComboBox &cb);
+	QImage tint(QImage src, QColor color, qreal strength=1.0);
 
 	// String
 

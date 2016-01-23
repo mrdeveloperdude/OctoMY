@@ -1,8 +1,8 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
-#include "ReliabilitySystem.hpp"
-#include "FlowControl.hpp"
+#include "comms/ReliabilitySystem.hpp"
+#include "comms/FlowControl.hpp"
 #include "comms/messages/StatusMessage.hpp"
 
 #include <QHostAddress>

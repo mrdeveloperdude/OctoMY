@@ -14,8 +14,6 @@ class RemoteMain: public QObject{
 		int argc;
 		char **argv;
 		QCoreApplication *app;
-	private:
-		QCoreApplication*createApplication(int &argc, char *argv[], bool useGUI);
 	public:
 		explicit RemoteMain(int argc, char *argv[]);
 		virtual ~RemoteMain();

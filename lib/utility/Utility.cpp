@@ -1,34 +1,42 @@
 #include "utility/Utility.hpp"
 #include "basic/Standard.hpp"
 
-#include <QLayout>
-#include <QGridLayout>
-#include <QWidget>
-#include <QString>
-#include <QFile>
-#include <QDebug>
-#include <QTextStream>
-#include <QPixmap>
-#include <QIcon>
-#include <QLabel>
-#include <QComboBox>
-#include <QWindow>
-#include <QToolTip>
-#include <QStackedLayout>
-#include <cmath>
-#include <QStringBuilder>
-#include <QPushButton>
-#include <QDateTime>
-#include <QKeyEvent>
-#include <QCoreApplication>
-#include <QFileInfo>
-#include <QMediaContent>
-#include <QButtonGroup>
-#include <QTableView>
-#include <QHeaderView>
-#include <QDesktopWidget>
-#include <QApplication>
 
+#include <QApplication>
+#include <QButtonGroup>
+#include <QComboBox>
+#include <QCoreApplication>
+#include <QDateTime>
+#include <QDebug>
+#include <QDesktopWidget>
+#include <QFile>
+#include <QFileInfo>
+#include <QGraphicsEffect>
+#include <QGridLayout>
+#include <QHeaderView>
+#include <QIcon>
+#include <QImage>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QLayout>
+#include <QMediaContent>
+#include <QNetworkAddressEntry>
+#include <QPainter>
+#include <QPixmap>
+#include <QPixmap>
+#include <QPushButton>
+#include <QStackedLayout>
+#include <QString>
+#include <QStringBuilder>
+#include <QTableView>
+#include <QTextStream>
+#include <QToolTip>
+#include <QWidget>
+#include <QWindow>
+#include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
+
+#include <cmath>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -468,6 +476,26 @@ namespace utility{
 	}
 
 
+
+
+	void populateComboboxWithLocalAdresses(QComboBox &cb){
+		cb.clear();
+		cb.addItem("127.0.0.1");
+		QList<QNetworkInterface> list= QNetworkInterface::allInterfaces();
+		for(int i=0; i<list.size();i++) {
+			QNetworkInterface inter = list.at(i);
+			if (inter.flags().testFlag(QNetworkInterface::IsUp) && !inter.flags().testFlag(QNetworkInterface::IsLoopBack)) {
+				QList<QNetworkAddressEntry> list2= inter.addressEntries();
+				for(int j=0; j<list2.size();j++) {
+					QNetworkAddressEntry entry = list2.at(j);
+					cb.addItem(entry.ip().toString());
+				}
+			}
+		}
+	}
+
+
+
 	QString perror(){
 		return QString::fromLatin1(strerror(errno));
 	}
@@ -731,6 +759,26 @@ namespace utility{
 		}
 #undef NETWORK_ERROR_TO_STRING_STANSA
 		return "UNKNOWN("+QString::number(ne)+")";
+	}
+
+
+
+
+
+	QImage tint(QImage src, QColor color, qreal strength){
+		if(src.isNull()) return QImage();
+		QGraphicsScene scene;
+		QGraphicsPixmapItem item;
+		item.setPixmap(QPixmap::fromImage(src));
+		QGraphicsColorizeEffect effect;
+		effect.setColor(color);
+		effect.setStrength(strength);
+		item.setGraphicsEffect(&effect);
+		scene.addItem(&item);
+		QImage res(src);
+		QPainter ptr(&res);
+		scene.render(&ptr, QRectF(), src.rect() );
+		return res;
 	}
 
 

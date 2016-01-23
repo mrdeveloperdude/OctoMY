@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QTimer>
 
-#include "comms/Client.hpp"
+#include "hub/Client.hpp"
 
 namespace Ui {
 	class ClientWindow;

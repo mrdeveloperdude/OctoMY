@@ -5,11 +5,13 @@
 
 
 
+
 struct PacketData{
 		unsigned int sequence;			// packet sequence number
 		float time;					    // time offset since packet was sent or received (depending on context)
 		int size;						// packet size in bytes
 };
+
 
 
 class PacketQueue : public QList<PacketData>{
@@ -22,7 +24,6 @@ class PacketQueue : public QList<PacketData>{
 		void verify_sorted( unsigned int max_sequence );
 #endif
 };
-
 
 
 

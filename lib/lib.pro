@@ -8,7 +8,6 @@ SOURCES +=\
 	basic/Standard.cpp \
 	basic/UniquePlatformFingerprint.cpp \
 	comms/FlowControl.cpp \
-	comms/LogDestination.cpp \
 	comms/messages/StatusMessage.cpp \
 	comms/ReliabilitySystem.cpp \
 	map/arrowpoint.cpp \
@@ -47,18 +46,27 @@ SOURCES +=\
 	widgets/TextEntry.cpp \
 	widgets/TryToggle.cpp \
 	widgets/FlowLayout.cpp \
-	basic/ServerWindow.cpp \
-	comms/Client.cpp \
-	basic/ClientWindow.cpp \
 	widgets/CompasWidget.cpp \
 	widgets/Logo.cpp \
     basic/StyleManager.cpp \
-    basic/RemoteWindow.cpp \
     widgets/ImageLabel.cpp \
     widgets/SvgWidget.cpp \
-    basic/Remote.cpp \
     sensory/SensorInput.cpp \
-    comms/CommsChannel.cpp
+    comms/CommsChannel.cpp \
+    comms/messages/QueryMessage.cpp \
+    comms/messages/QueryResultMessage.cpp \
+    widgets/MultiView.cpp \
+    models/ClientModel.cpp \
+    hub/Client.cpp \
+    hub/ClientWindow.cpp \
+    hub/Hub.cpp \
+    hub/HubWindow.cpp \
+    remote/Remote.cpp \
+    remote/RemoteWindow.cpp \
+    basic/LogDestination.cpp \
+    3d/PoseView.cpp \
+    3d/QtLogo3D.cpp \
+    widgets/IdenticonWidget.cpp
 
 
 HEADERS  += \
@@ -107,26 +115,40 @@ HEADERS  += \
 	widgets/TextEntry.hpp \
 	widgets/TryToggle.hpp \
 	widgets/FlowLayout.hpp \
-	basic/ServerWindow.hpp \
-	comms/Client.hpp \
-	basic/ClientWindow.hpp \
 	widgets/CompasWidget.hpp \
 	widgets/Logo.hpp \
     basic/StyleManager.hpp \
-    basic/RemoteWindow.hpp \
     widgets/ImageLabel.hpp \
     widgets/SvgWidget.hpp \
-    basic/Remote.hpp \
     sensory/SensorInput.hpp \
-    comms/CommsChannel.hpp
+    comms/CommsChannel.hpp \
+    comms/messages/QueryMessage.hpp \
+    comms/messages/QueryResultMessage.hpp \
+    comms/messages/MessageType.hpp \
+    comms/DataType.hpp \
+    comms/DeviceStatusType.hpp \
+    comms/DeviceType.hpp \
+    comms/QueryType.hpp \
+    widgets/MultiView.hpp \
+    models/ClientModel.hpp \
+    remote/RemoteWindow.hpp \
+    remote/Remote.hpp \
+    hub/Hub.hpp \
+    hub/HubWindow.hpp \
+    hub/ClientWindow.hpp \
+    hub/Client.hpp \
+    3d/PoseView.hpp \
+    3d/QtLogo3D.hpp \
+    widgets/IdenticonWidget.hpp
 
 FORMS    += \
 	ui/TryToggle.ui \
 	ui/StatsWindow.ui \
 	ui/ResponsiveTest.ui \
-	ui/ServerWindow.ui \
 	ui/ClientWindow.ui \
-    ui/RemoteWindow.ui
+    ui/RemoteWindow.ui \
+    ui/HubWindow.ui \
+    widgets/MultiView.ui
 
 RESOURCES += \
 	resources/icons.qrc \

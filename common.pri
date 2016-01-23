@@ -15,8 +15,6 @@ DEFINES += USE_BASIC_TESTS
 #DEFINES += EXTERNAL_LIB_ESPEAK
 #DEFINES += EXTERNAL_LIB_OPENCV
 
-
-
 # OPTIONAL FEATURES AND EXTERNAL LIBS
 # NOTE: ALL ARE OFF BY DEFAULT TO KEEP DEPENDENCIES LOW & PREDICTABLE
 # NOTE: PLEASE USE THE local_overrides.pri FILE TO INCLUDE THEM (SEE BELOW)
@@ -33,6 +31,12 @@ DEFINES += USE_BASIC_TESTS
 
 # Add only plugins that are used and supported by the Qt build you are using
 QT += core gui opengl widgets xml network multimedia multimediawidgets svg printsupport quick sql positioning sensors testlib
+
+android{
+	QT += androidextras
+#NOTE: Each individual project will look for her own android config (making it possible for each tier to have separate adaptations
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+}
 
 static {
 	DEFINES += STATIC

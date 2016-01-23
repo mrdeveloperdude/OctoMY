@@ -11,8 +11,6 @@
 
 UniquePlatformFingerprint::UniquePlatformFingerprint():id(""),b32ww(""){
 	//	QNetworkInterface *inter=new QNetworkInterface();
-
-
 	QList<QNetworkInterface> interfaceList=QNetworkInterface::allInterfaces();
 	for(QList<QNetworkInterface>::iterator it=interfaceList.begin(),eit=interfaceList.end();it!=eit;++it){
 		QNetworkInterface iface=(*it);
@@ -28,17 +26,16 @@ UniquePlatformFingerprint::UniquePlatformFingerprint():id(""),b32ww(""){
 
 		if(""!=mac){
 			QCryptographicHash hash(QCryptographicHash::Sha1);
-			hash.addData("30691772764913072071865163056420114973107080075087047");
-			QByteArray ba=mac.toLatin1();
+			hash.addData("Robots running OctoMY™");
+			QByteArray ba=mac.toUtf8();
 			hash.addData(ba.data());
+			hash.addData("will pave the way to true autonomy.");
 			raw=hash.result();
 			id=raw.toHex().toUpper();
 			b32ww=BaseTranscode::transcode(BaseTranscode::Bytes, BaseTranscode::Base32ww,raw);
 			break;
 		}
-
 	}
-
 }
 
 UniquePlatformFingerprint *UniquePlatformFingerprint::instance=0;
@@ -70,6 +67,26 @@ QString UniquePlatformFingerprint::getBase32ww(){
 
 QByteArray UniquePlatformFingerprint::getRaw(){
 	return raw;
+}
+
+
+quint64 UniquePlatformFingerprint::getQuint64(){
+	quint64 out=0;
+	for(int i=0;i<8;++i){
+		out<<=8;
+		out|=(unsigned char)raw[i];
+	}
+	return out;
+}
+
+qint64 UniquePlatformFingerprint::getQint64(){
+	qint64 out=0;
+	for(int i=0;i<8;++i){
+		//qDebug()<<"BYTE: "<<i<<" is "<<QString::number(raw[i]);
+		out<<=8;
+		out|=raw[i];
+	}
+	return out;
 }
 
 bool UniquePlatformFingerprint::isValid(){

@@ -5,20 +5,41 @@
 
 SvgWidget::SvgWidget(QWidget *parent):
 	QWidget(parent)
-  , r(QString(":/icons/octomy_logo_bare.svg"))
+  , svg(0)
 {
 
 }
 
-
-void SvgWidget::paintEvent(QPaintEvent *){
-	// Keep aspect ratio:
-	QSize originalSvgSize = r.defaultSize();
-	QSize originalWidgetSize = size();
-	QPainter painter(this);
-	originalSvgSize.scale(originalWidgetSize,Qt::KeepAspectRatio);
-	painter.translate(QPointF(((qreal)originalWidgetSize.width()-(qreal)originalSvgSize.width())*0.5,((qreal)originalWidgetSize.height()-(qreal)originalSvgSize.height())*0.5));
-	painter.scale((qreal)originalSvgSize.width()/(qreal)originalWidgetSize.width(), (qreal)originalSvgSize.height()/(qreal)originalWidgetSize.height());
-	r.render(&painter);
+SvgWidget::~SvgWidget(){
 }
 
+void SvgWidget::paintEvent(QPaintEvent *){
+	if(0!=svg){
+		// Keep aspect ratio:
+		QSize originalSvgSize = svg->defaultSize();
+		QSize originalWidgetSize = size();
+		QPainter painter(this);
+		originalSvgSize.scale(originalWidgetSize,Qt::KeepAspectRatio);
+		painter.translate(QPointF(((qreal)originalWidgetSize.width()-(qreal)originalSvgSize.width())*0.5,((qreal)originalWidgetSize.height()-(qreal)originalSvgSize.height())*0.5));
+		painter.scale((qreal)originalSvgSize.width()/(qreal)originalWidgetSize.width(), (qreal)originalSvgSize.height()/(qreal)originalWidgetSize.height());
+		svg->render(&painter);
+	}
+}
+
+
+//NOTE: this will override the svgURL propoerty by pointing directly to the given svg
+void SvgWidget::setSvg(QSvgRenderer &svg){
+	qDebug()<<"Setting SVG by object";
+	this->svg=&svg;
+	lastURL="";
+}
+
+
+void SvgWidget::setSvgURL(QString url){
+	qDebug()<<"Setting SVG by URL:"<<url;
+	svg=new QSvgRenderer(url);
+	lastURL=url;
+}
+QString SvgWidget::svgURL() const{
+	return lastURL;
+}

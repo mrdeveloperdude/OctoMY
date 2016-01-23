@@ -15,7 +15,7 @@
 
 #define TIMEOUT_TRESHOLD 1
 
-class ServerWindow;
+class HubWindow;
 class Client;
 
 class CommsChannel : public QObject{
@@ -33,13 +33,6 @@ class CommsChannel : public QObject{
 
 		explicit CommsChannel(LogDestination *mw=0);
 
-	private:
-
-
-		void appendLog(QString);
-
-		Client *getClient(QHostAddress host, quint16 port);
-
 	public:
 
 		void start(QHostAddress localAddress, quint16 localPort);
@@ -52,10 +45,20 @@ class CommsChannel : public QObject{
 
 		QMap<quint64, Client *> &getClients ();
 
+		void hookSignals(QObject &ob);
+		void unHookSignals(QObject &ob);
+
+
+	private:
+		void appendLog(QString);
+		Client *getClient(QHostAddress host, quint16 port);
+
+
 	signals:
 
-		void receivePacket(QByteArray data,QHostAddress host, quint16 port);
+		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
 		void error(QString message);
+		void clientAdded(Client *c);
 
 	private slots:
 

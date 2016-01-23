@@ -1,12 +1,18 @@
 #include "RemoteWindow.hpp"
 #include "ui_RemoteWindow.h"
 #include "Remote.hpp"
+#include "comms/CommsChannel.hpp"
+#include "utility/Utility.hpp"
 
 #include <QDebug>
 #include <QAccelerometerReading>
 #include <QCompassReading>
 #include <QGyroscopeReading>
+#include <QScrollBar>
 
+#ifdef Q_OS_ANDROID
+#include <QAndroidJniObject>
+#endif
 
 RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 	QWidget(parent)
@@ -14,12 +20,24 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
   , remote(remote)
 {
 	ui->setupUi(this);
+	ui->lineEditServerAddress->configure("","server-address");
+	ui->lineEditServerPort->configure("","server-port");
+	ui->lineEditLocalPort->configure("","listen-port");
 	ui->stackedWidget->setCurrentWidget(ui->pageConnect);
+	utility::populateComboboxWithLocalAdresses(*ui->comboBoxLocalAddress);
+	ui->tryToggleListen->setText("Connect","Connecting...","Connected");
+	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState))),WWCONTYPE){
+		qDebug()<<"ERROR: could not connect";
+	}
 	if(0!=remote){
+		ui->labelLocal->setText("WAITING FOR LOCAL");
+		ui->labelHub->setText("WAITING FOR HUB");
 		ui->labelGPS->setText("WAITING FOR GPS");
-		ui->labelCompass->setText("WAITING FOR COMPASS");
+		ui->labelCompass->setText("W+AITING FOR COMPASS");
 		ui->labelGyroscope->setText("WAITING FOR GYRO");
-		remote->hookSignals(this);
+		ui->labelAccelerometer->setText("WAITING FOR ACCELEROMETER");
+		ui->labelTouch->setText("WAITING FOR TOUCH");
+		//		remote->hookSignals(this);
 	}
 	else{
 		ui->labelGPS->setText("N/A");
@@ -29,6 +47,7 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 	QPalette p=ui->logScroll->palette();
 	p.setColor(QPalette::Base, QColor(0, 0, 0, 64));
 	ui->logScroll->setPalette(p);
+
 #ifdef Q_OS_ANDROID
 	showFullScreen();
 #endif
@@ -39,11 +58,25 @@ RemoteWindow::~RemoteWindow(){
 }
 
 
-
+void RemoteWindow::onTryToggleConnectionChanged(TryToggleState s){
+	appendLog("TRYSTATE CHANGED TO "+ToggleStateToSTring(s));
+	if(TRYING==s && 0!=remote){
+		remote->start(ui->comboBoxLocalAddress->currentText(),ui->lineEditLocalPort->text().toInt(), ui->lineEditServerAddress->text(), ui->lineEditServerPort->text().toInt());
+		ui->labelLocal->setText("LOCAL:"+ui->comboBoxLocalAddress->currentText()+":"+ui->lineEditLocalPort->text());
+		ui->labelHub->setText("HUB: "+ui->lineEditServerAddress->text()+ ":"+ui->lineEditServerPort->text());
+		ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+	}
+	if(ON==s){
+		installEventFilter(this);
+	}
+	else{
+		removeEventFilter(this);
+	}
+}
 
 void RemoteWindow::onPositionUpdated(const QGeoPositionInfo &info){
 	ui->labelGPS->setText("POSITION: "+info.coordinate().toString()+"@"+info.timestamp().toString());
-	qDebug() << "Position updated:" << info;
+	appendLog("Position updated: "+info.coordinate().toString()+"@"+info.timestamp().toString());
 }
 
 
@@ -59,37 +92,85 @@ void RemoteWindow::onGyroscopeUpdated(QGyroscopeReading *r){
 	ui->labelGyroscope->setText("GYRO: <"+QString::number(r->x())+", "+QString::number(r->y())+", "+ QString::number(r->z())+">");
 }
 
-void RemoteWindow::on_pushButtonStart_clicked(){
-	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
-}
-
-
-
 
 void RemoteWindow::keyReleaseEvent(QKeyEvent *e){
 	if(Qt::Key_Back==e->key()){
 		if(ui->pageConnect==ui->stackedWidget->currentWidget()){
-			qDebug()<<"EXITING APP ON BACK BUTTON";
+			appendLog("EXITING APP ON BACK BUTTON");
 			ui->stackedWidget->setCurrentWidget(ui->pageConfirmQuit);
 		}
 		else if(ui->pageRunning==ui->stackedWidget->currentWidget()){
-			qDebug()<<"GOING TO CONNECTION SCREEN ON BACK BUTTON";
+			appendLog("GOING TO CONNECTION SCREEN ON BACK BUTTON");
 			ui->stackedWidget->setCurrentWidget(ui->pageConnect);
 		}
 		else if(ui->pageConfirmQuit==ui->stackedWidget->currentWidget()){
-			qDebug()<<"GOING TO CONNECTION SCREEN ON BACK BUTTON";
+			appendLog("GOING TO CONNECTION SCREEN ON BACK BUTTON");
 			ui->stackedWidget->setCurrentWidget(ui->pageConnect);
 		}
 		else{
-			qDebug()<<"ERROR ON BACK BUTTON";
+			appendLog("ERROR ON BACK BUTTON");
 		}
 		e->accept();
 	}
 	else{
-		qDebug()<<"UNKNOWN BUTTON: "<<e;
+		appendLog("UNKNOWN BUTTON: "+QString::number(e->key()));
 	}
+}
+
+
+bool RemoteWindow::eventFilter(QObject *object, QEvent *event){
+	qDebug()<<"EVENT: "<<object<<": "<<event;
+	if (event->type() == QEvent::MouseMove || event->type() == QEvent::MouseButtonPress ){
+		QMouseEvent *r= static_cast<QMouseEvent *>(event);
+		ui->labelTouch->setText("TOUCH: <"+QString::number(r->globalX())+", "+QString::number(r->globalY())+">");
+	}
+	//object == ui->widgetBackground && (
+	return false;
 }
 
 void RemoteWindow::on_pushButtonConfirmQuit_clicked(){
 	exit(0);
+}
+
+
+
+void RemoteWindow::notifyAndroid(QString s){
+	//TODO: This crashes with some jni exception stuff. Figure out why
+#ifdef Q_OS_ANDROID
+	qDebug()<<"QT: Android NOTIF: "<<s;
+	QAndroidJniObject::callStaticMethod<void>("org/octomy/remote/Remote",
+											  "notify",
+											  "(Ljava/lang/String;)V",
+											  QAndroidJniObject::fromString(s).object<jstring>());
+#endif
+}
+
+
+void RemoteWindow::toastAndroid(QString s){
+	//TODO: This crashes with some jni exception stuff. Figure out why
+#ifdef Q_OS_ANDROID
+	qDebug()<<"QT: Android TOAST: "<<s;
+	QAndroidJniObject::callStaticMethod<void>("org/octomy/remote/Remote",
+											  "toast",
+											  "(Ljava/lang/String;)V",
+											  QAndroidJniObject::fromString(s).object<jstring>());
+#endif
+}
+
+
+void RemoteWindow::on_pushButtonTest_clicked(){
+	appendLog("TEST BUTTON CLICKED");
+	notifyAndroid("TESTING 123");
+	toastAndroid("TOASTING 123");
+	remote->sendStatus();
+}
+
+
+void RemoteWindow::appendLog(const QString& text){
+	WWMETHODGATE();
+	ui->logScroll->appendPlainText(text);
+	QScrollBar *vsb=ui->logScroll->verticalScrollBar();
+	if(0!=vsb){
+		vsb->setValue(vsb->maximum());
+	}
 }
