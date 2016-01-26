@@ -41,7 +41,8 @@ void CommsTester::startSendTest(CommsTester &cc2){
 	qRegisterMetaType<QByteArray>("QByteArray");
 	for(int i=0,delay=1000;delay>0;delay=1000/++i){
 		qDebug()<<"\n\n------ testing with delay:"<<delay << " and summary: " <<cc2.cc->getSummary();
-		cc->sendPackage(datagram,cc2.adr,cc2.port);
+		//TODO: Convert this to use couriers
+		//cc->sendPackage(datagram,cc2.adr,cc2.port);
 		QTest::qWait(delay);
 	}
 	QTest::qWait(4000);

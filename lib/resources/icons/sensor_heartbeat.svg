@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="14.111111mm"
+   height="14.111111mm"
+   viewBox="0 0 49.999998 49.999998"
+   id="svg6237"
+   version="1.1"
+   inkscape:version="0.91 r"
+   sodipodi:docname="sensor_heartbeat.svg">
+  <defs
+     id="defs6239" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.6"
+     inkscape:cx="56.555169"
+     inkscape:cy="20.540032"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1879"
+     inkscape:window-height="1056"
+     inkscape:window-x="41"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata6242">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-69.285713,-621.64795)">
+    <path
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 86.692236,632.38535 c -6.32052,-0.19545 -12.822723,7.15534 -7.30153,16.24064 l 9.867703,0 1.750227,-5.7736 a 0.94455839,0.94455839 0 0 1 1.824669,0.062 l 1.599443,6.9179 2.61962,-10.135 a 0.94455839,0.94455839 0 0 1 0.92283,-0.70807 0.94455839,0.94455839 0 0 1 0.903745,0.69947 l 2.394397,8.9344 7.90848,0 C 117.33831,635.2 99.240343,625.56368 94.285784,638.45672 c -1.601235,-4.16683 -4.575523,-5.97997 -7.593548,-6.0733 z m 11.290599,11.25814 -2.687377,10.3973 a 0.94455839,0.94455839 0 0 1 -1.834208,-0.024 l -1.67102,-7.228 -0.926648,3.0557 a 0.94455839,0.94455839 0 0 1 -0.903744,0.6709 l -9.26362,0 c 2.630485,3.3836 6.960001,6.9436 13.589566,10.4012 6.630966,-3.4583 10.962116,-7.0189 13.592426,-10.4031 l -7.33015,0 a 0.94455839,0.94455839 0 0 1 -0.912336,-0.7004 l -1.652889,-6.1678 z"
+       id="path4728"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>

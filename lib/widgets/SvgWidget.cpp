@@ -22,6 +22,7 @@ void SvgWidget::paintEvent(QPaintEvent *){
 		originalSvgSize.scale(originalWidgetSize,Qt::KeepAspectRatio);
 		painter.translate(QPointF(((qreal)originalWidgetSize.width()-(qreal)originalSvgSize.width())*0.5,((qreal)originalWidgetSize.height()-(qreal)originalSvgSize.height())*0.5));
 		painter.scale((qreal)originalSvgSize.width()/(qreal)originalWidgetSize.width(), (qreal)originalSvgSize.height()/(qreal)originalWidgetSize.height());
+		//qDebug()<<"RENDERING SVG: "<<originalSvgSize;
 		svg->render(&painter);
 	}
 }

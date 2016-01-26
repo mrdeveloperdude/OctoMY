@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>OctoMY™ - Hub</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../resources/icons.qrc">
+    <normaloff>:/icons/hub.svg</normaloff>:/icons/hub.svg</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_3">
     <item row="1" column="1">
@@ -27,7 +31,7 @@
        <string/>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>6</number>
       </property>
       <widget class="QWidget" name="tabIncomming">
        <property name="toolTip">
@@ -372,6 +376,16 @@
         </item>
         <item>
          <widget class="IdenticonWidget" name="widgetIdenticon" native="true"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabAviation">
+       <attribute name="title">
+        <string>Aviation</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <widget class="WidgetSix" name="widgetAviation" native="true"/>
         </item>
        </layout>
       </widget>
@@ -909,6 +923,12 @@
    <header>widgets/TextEntry.hpp</header>
   </customwidget>
   <customwidget>
+   <class>IdenticonWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/IdenticonWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>qmapcontrol::MapControl</class>
    <extends>QWidget</extends>
    <header>map/mapcontrol.h</header>
@@ -926,9 +946,9 @@
    <header>3d/PoseView.hpp</header>
   </customwidget>
   <customwidget>
-   <class>IdenticonWidget</class>
+   <class>WidgetSix</class>
    <extends>QWidget</extends>
-   <header>widgets/IdenticonWidget.hpp</header>
+   <header>widgets/qfi/WidgetSix.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

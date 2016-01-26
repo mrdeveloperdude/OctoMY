@@ -38,6 +38,8 @@ class Client{
 		QString getSummary(QString sep="\n") const ;
 		const QString getListText() const;
 
+		quint64 getHash();
+
 	public:
 		static quint64 generateHash(QHostAddress host, quint16 port);
 

@@ -7,6 +7,8 @@
 #include <QCompassReading>
 
 class StatusMessage{
+	private:
+		qint64 sz=-1;
 	public:
 		bool ok;
 		qint64 timestamp;
@@ -32,6 +34,8 @@ class StatusMessage{
 				);
 
 		StatusMessage(QDataStream &);
+
+		qint64 size();
 
 };
 

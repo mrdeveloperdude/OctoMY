@@ -20,30 +20,33 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
   , remote(remote)
 {
 	ui->setupUi(this);
-	ui->lineEditServerAddress->configure("","server-address");
-	ui->lineEditServerPort->configure("","server-port");
+	ui->lineEditHubAddress->configure("","hub-address");
+	ui->lineEditHubPort->configure("","hub-port");
 	ui->lineEditLocalPort->configure("","listen-port");
 	ui->stackedWidget->setCurrentWidget(ui->pageConnect);
 	utility::populateComboboxWithLocalAdresses(*ui->comboBoxLocalAddress);
 	ui->tryToggleListen->setText("Connect","Connecting...","Connected");
-	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState))),WWCONTYPE){
+	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState)),WWCONTYPE)){
 		qDebug()<<"ERROR: could not connect";
 	}
 	if(0!=remote){
 		ui->labelLocal->setText("WAITING FOR LOCAL");
 		ui->labelHub->setText("WAITING FOR HUB");
 		ui->labelGPS->setText("WAITING FOR GPS");
-		ui->labelCompass->setText("W+AITING FOR COMPASS");
+		ui->labelCompass->setText("WAITING FOR COMPASS");
 		ui->labelGyroscope->setText("WAITING FOR GYRO");
 		ui->labelAccelerometer->setText("WAITING FOR ACCELEROMETER");
-		ui->labelTouch->setText("WAITING FOR TOUCH");
-		//		remote->hookSignals(this);
+		remote->hookSignals(this);
 	}
 	else{
+		ui->labelLocal->setText("N/A");
+		ui->labelHub->setText("N/A");
 		ui->labelGPS->setText("N/A");
 		ui->labelCompass->setText("N/A");
 		ui->labelGyroscope->setText("N/A");
+		ui->labelAccelerometer->setText("N/A");
 	}
+	ui->labelTouch->setText("WAITING FOR TOUCH");
 	QPalette p=ui->logScroll->palette();
 	p.setColor(QPalette::Base, QColor(0, 0, 0, 64));
 	ui->logScroll->setPalette(p);
@@ -61,9 +64,9 @@ RemoteWindow::~RemoteWindow(){
 void RemoteWindow::onTryToggleConnectionChanged(TryToggleState s){
 	appendLog("TRYSTATE CHANGED TO "+ToggleStateToSTring(s));
 	if(TRYING==s && 0!=remote){
-		remote->start(ui->comboBoxLocalAddress->currentText(),ui->lineEditLocalPort->text().toInt(), ui->lineEditServerAddress->text(), ui->lineEditServerPort->text().toInt());
+		remote->start(ui->comboBoxLocalAddress->currentText(),ui->lineEditLocalPort->text().toInt(), ui->lineEditHubAddress->text(), ui->lineEditHubPort->text().toInt());
 		ui->labelLocal->setText("LOCAL:"+ui->comboBoxLocalAddress->currentText()+":"+ui->lineEditLocalPort->text());
-		ui->labelHub->setText("HUB: "+ui->lineEditServerAddress->text()+ ":"+ui->lineEditServerPort->text());
+		ui->labelHub->setText("HUB: "+ui->lineEditHubAddress->text()+ ":"+ui->lineEditHubPort->text());
 		ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 	}
 	if(ON==s){
@@ -75,8 +78,8 @@ void RemoteWindow::onTryToggleConnectionChanged(TryToggleState s){
 }
 
 void RemoteWindow::onPositionUpdated(const QGeoPositionInfo &info){
-	ui->labelGPS->setText("POSITION: "+info.coordinate().toString()+"@"+info.timestamp().toString());
-	appendLog("Position updated: "+info.coordinate().toString()+"@"+info.timestamp().toString());
+	ui->labelGPS->setText("GPS: "+QString::number(info.coordinate().latitude())+", "+QString::number(info.coordinate().longitude()));
+	appendLog("GPS update: "+info.coordinate().toString()+"@"+info.timestamp().toString());
 }
 
 
@@ -135,6 +138,7 @@ void RemoteWindow::on_pushButtonConfirmQuit_clicked(){
 
 
 void RemoteWindow::notifyAndroid(QString s){
+	(void)s;
 	//TODO: This crashes with some jni exception stuff. Figure out why
 #ifdef Q_OS_ANDROID
 	qDebug()<<"QT: Android NOTIF: "<<s;
@@ -147,6 +151,7 @@ void RemoteWindow::notifyAndroid(QString s){
 
 
 void RemoteWindow::toastAndroid(QString s){
+	(void)s;
 	//TODO: This crashes with some jni exception stuff. Figure out why
 #ifdef Q_OS_ANDROID
 	qDebug()<<"QT: Android TOAST: "<<s;

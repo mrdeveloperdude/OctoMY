@@ -85,6 +85,11 @@ const QString Client::getListText() const{
 	return name;
 }
 
+
+quint64 Client::getHash(){
+	return hash;
+}
+
 quint64 Client::generateHash(QHostAddress host, quint16 port){
 	return (((quint64)host.toIPv4Address())<<32)|port;
 }

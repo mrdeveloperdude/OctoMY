@@ -1,5 +1,7 @@
 #include "StatusMessage.hpp"
 
+#include <QDebug>
+
 StatusMessage::StatusMessage(
 		const bool ok
 		, const qint64 timestamp
@@ -28,6 +30,20 @@ StatusMessage::StatusMessage(QDataStream &ds){
 	ds >> *this;
 }
 
+
+qint64 StatusMessage::size(){
+	if(sz<0){
+		QByteArray ba;
+		{
+			QDataStream ds(&ba,QIODevice::WriteOnly);
+			ds<<this;
+		}
+		sz=ba.size();
+		qDebug()<<"Counted bytesize of StatusMessage to be "<<sz;
+	}
+	return sz;
+
+}
 
 #include "MessageType.hpp"
 

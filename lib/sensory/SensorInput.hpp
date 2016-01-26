@@ -38,7 +38,8 @@ class SensorInput : public QObject,  public QCompassFilter{
 		void unHookSignals(QObject *o);
 
 	public:
-		virtual bool filter(QCompassReading *reading);
+
+		bool filter(QCompassReading *reading) override;
 
 
 	private slots:

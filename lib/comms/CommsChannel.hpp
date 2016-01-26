@@ -12,22 +12,72 @@
 #include "FlowControl.hpp"
 
 #include "basic/LogDestination.hpp"
+#include "Courier.hpp"
 
 #define TIMEOUT_TRESHOLD 1
 
 class HubWindow;
 class Client;
+class Courier;
+
+/*
+Architecture:
+
+TCP tries to pretend on behalf of the user that network traffic is a dependable
+linear unbroken stream of bytes. From the user's perspective this has the
+benefit of being easy to understand and use. The two major downsides however
+are that:
+
+1. This far from how a network actually works and so it is hard to make TCP work
+   it has taken decades of evolution for TCP to become as good as it is today,
+   but it is still limited by this fallacy
+
+2. Some needs may actually be better met by not thinking about the network as a
+   linear stream of bytes, so going the length to pretend that it is actually
+   just gets in the way.
+
+CommChannel is an API wrapping UDP in Qt in a way that allows the user to
+exploit the benefits of communications over UDP by modelling closesly the
+benefits in a way that hides their inherent complexities.
+
+The CommChannel API works like this:
+
+1. Users of the API register "couriers" that each is responsible for keeping the
+   latest data fresh and ready for sending should an oportunity present itself.
+   Couriers each tend to a certain type of packet with a certain priority and
+   desired sending frequency. It is up to each courier to maintain it's own
+   state.
+
+2. CommChannel is in charge and decides the speed at which packets are sent and
+   which couriers get ther packets sent on each opportunity.
+
+3. CommChannel may at any time send non-payload data in each packet or even
+   special purpose network-only packets to sustain its operation. If there is no
+   data to be sent by couriers, CommChannel may send no-op packets that
+   facilitates the calculation of the network characteristics such as
+   round trip time. This is done transparentyl to the couriers.
+
+
+Notes:
+
+1. CommChannel binds to a local address and port, but does not really
+   discriminate from where inbound traffic arrives. All packets are treated
+   equal as all packes contain identification of the source.
+
+*/
 
 class CommsChannel : public QObject{
 		Q_OBJECT
 	private:
 		QUdpSocket udpSocket;
-		QHostAddress localAddress;
-		quint16 localPort;
-		QTimer idleTimer;
+		QHostAddress bindAddress;
+		quint16 bindPort;
+		QTimer sendingTimer;
+		//Clients as identifued by their fingerprints
 		QMap<quint64, Client *> clients;
 		LogDestination *mw;
-
+		//All registered couriers
+		QList<Courier *> couriers;
 
 	public:
 
@@ -35,12 +85,11 @@ class CommsChannel : public QObject{
 
 	public:
 
-		void start(QHostAddress localAddress, quint16 localPort);
+		void start(QHostAddress bindAddress, quint16 bindPort);
 		void stop();
 
-
 		void setLogOutput(LogDestination *mw);
-		bool sendPackage(QByteArray ba,QHostAddress host, quint16 port);
+
 		QString getSummary();
 
 		QMap<quint64, Client *> &getClients ();
@@ -48,8 +97,14 @@ class CommsChannel : public QObject{
 		void hookSignals(QObject &ob);
 		void unHookSignals(QObject &ob);
 
+		void registerCourier(Courier &);
+		void unregisterCourier(Courier &);
+
 
 	private:
+
+		bool sendPackage(QByteArray ba,QHostAddress host, quint16 port);
+
 		void appendLog(QString);
 		Client *getClient(QHostAddress host, quint16 port);
 
@@ -63,7 +118,7 @@ class CommsChannel : public QObject{
 	private slots:
 
 		void receivePacketRaw(QByteArray ba,QHostAddress host, quint16 port);
-		void onIdleTimer();
+		void onSendingTimer();
 
 	public slots:
 

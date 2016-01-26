@@ -8,12 +8,24 @@ include($$TOP_PWD/lib/inc.pri)
 include($$TOP_PWD/lib/ext.pri)
 
 HEADERS += \
-	AgentMain.hpp
+	AgentMain.hpp \
 
 SOURCES += \
-	main.cpp \
-	AgentMain.cpp
+	AgentMain.cpp \
 
 message("FROM agent.pro:")
 include($$TOP_PWD/status.pri)
+
+DISTFILES += \
+	android/AndroidManifest.xml \
+	android/gradle/wrapper/gradle-wrapper.jar \
+	android/gradlew \
+	android/res/values/libs.xml \
+	android/build.gradle \
+	android/gradle/wrapper/gradle-wrapper.properties \
+	android/gradlew.bat \
+	android/src/org/octomy/agent/Agent.java
+
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 

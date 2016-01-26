@@ -1,7 +1,7 @@
 #include "Remote.hpp"
 
 #include "basic/Standard.hpp"
-
+#include "hub/Client.hpp"
 #include <QDebug>
 #include <QDataStream>
 #include <QSharedPointer>
@@ -32,7 +32,7 @@ void Remote::start(QString listenAddress, quint16 listenPort, QString hubAddress
 	this->hubAddress=hubAddress;
 	this->hubPort=hubPort;
 	if(0!=comms){
-			qDebug()<<"REMOTE comms start for server "<<listenAddress<<":"<<listenPort<<" (hub "<<hubAddress<<":"<<hubPort<<")";
+		qDebug()<<"REMOTE comms start for server "<<listenAddress<<":"<<listenPort<<" (hub "<<hubAddress<<":"<<hubPort<<")";
 		comms->start(QHostAddress(listenAddress),listenPort);
 		//Get this show started
 		sendStatus();
@@ -54,12 +54,12 @@ void Remote::onReceivePacket(QSharedPointer<QDataStream> ds,QHostAddress,quint16
 	qDebug()<<"GOT MAGIC: "<<magic;
 }
 
-void Remote::onError(QString){
-
+void Remote::onError(QString e){
+	qDebug()<<"REMOTE: Comms error: "<<e;
 }
 
-void Remote::onClientAdded(Client *){
-
+void Remote::onClientAdded(Client *c){
+	qDebug()<<"REMOTE: Client added: "<<c->getHash();
 }
 
 void Remote::onPositionUpdated(const QGeoPositionInfo &info){
@@ -100,7 +100,8 @@ void Remote::sendStatus(){
 		QByteArray datagram;
 		QDataStream ds(&datagram,QIODevice::WriteOnly);
 		ds<<statusMessage;
-		comms->sendPackage(datagram,QHostAddress(hubAddress),hubPort);
+		//TODO:Convert to use courier instead
+//		comms->sendPackage(datagram,QHostAddress(hubAddress),hubPort);
 		lastSend=now;
 	}
 }

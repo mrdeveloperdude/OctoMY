@@ -208,9 +208,10 @@ void HubWindow::onRemoteHostLookupComplete(QHostInfo hi){
 				for(int i=0;i<sz2;++i){
 					ba.append("X");
 				}
-				quint64 port=ui->lineEditRemotePort->text().toInt();
-				CommsChannel *comms=hub->getComms();
-				comms->sendPackage(ba,adr,port);
+//				quint64 port=ui->lineEditRemotePort->text().toInt();
+	//			CommsChannel *comms=hub->getComms();
+				//TODO: convert this to use couriers
+				//comms->sendPackage(ba,adr,port);
 			}
 			appendLog( "SENDING "+QString::number(l)+" DATA PACKETS OF SIZE "+QString::number(sz)+" to "+ui->lineEditRemoteAddress->text()+ "("+adr.toString()+"):"+ui->lineEditRemotePort->text());
 			return;
@@ -335,5 +336,6 @@ void HubWindow::on_toolButtonAddLocalAgent_clicked(){
 
 
 void HubWindow::on_horizontalSliderIdenticon_sliderMoved(int position){
+	(void)position;
 	//ui->widgetIdenticon->setIdenticonData(ui->horizontalSliderIdenticon->value());
 }

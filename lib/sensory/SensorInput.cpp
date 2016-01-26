@@ -64,7 +64,7 @@ SensorInput::SensorInput(QObject *parent):
 			//gyroscpe->addFilter(this);
 			gyroscope->setSkipDuplicates(true);
 			gyroscope->start();
-			if(!connect(gyroscope, SIGNAL(readingChanged()),this,SLOT(onCompassReadingChanged()),WWCONTYPE)){
+			if(!connect(gyroscope, SIGNAL(readingChanged()),this,SLOT(onGyroscopeReadingChanged()),WWCONTYPE)){
 				qWarning()<<"ERROR: Could not connect";
 			}
 		}

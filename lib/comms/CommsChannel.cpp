@@ -13,7 +13,7 @@
 CommsChannel::CommsChannel(LogDestination *mw):
 	QObject(0)
   , udpSocket(this)
-  , idleTimer(this)
+  , sendingTimer(this)
   , mw(mw)
 {
 	if(!connect(&udpSocket, SIGNAL(readyRead()),this, SLOT(onReadyRead()),WWCONTYPE)){
@@ -23,25 +23,27 @@ CommsChannel::CommsChannel(LogDestination *mw):
 	if(!connect(&udpSocket, SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(onUdpError(QAbstractSocket::SocketError)),WWCONTYPE)){
 		qWarning()<<"Could not connect";
 	}
-	idleTimer.setInterval(TIMEOUT_TRESHOLD*500);
-	idleTimer.setTimerType(Qt::PreciseTimer);
-	if(!connect(&idleTimer, SIGNAL(timeout()),this,SLOT(onIdleTimer()),WWCONTYPE)){
+	sendingTimer.setSingleShot(true);
+	sendingTimer.setTimerType(Qt::PreciseTimer);
+	if(!connect(&sendingTimer, SIGNAL(timeout()),this,SLOT(onSendingTimer()),WWCONTYPE)){
 		qWarning()<<"Could not connect";
 	}
-	idleTimer.start();
+	sendingTimer.start(0);
 }
 
 
-void CommsChannel::start(QHostAddress localAddress, quint16 localPort){
-	this->localAddress=localAddress;
-	this->localPort=localPort;
-	bool b = udpSocket.bind(localAddress, localPort);
-	qDebug()<<"Binding UDP socket for "<< localAddress <<":"<< localPort<< (b?" succeeded": " failed");
+void CommsChannel::start(QHostAddress bindAddress, quint16 bindPort){
+	this->bindAddress=bindAddress;
+	this->bindPort=bindPort;
+	bool b = udpSocket.bind(bindAddress, bindPort);
+	sendingTimer.start();
+	qDebug()<<"Binding UDP socket for "<< bindAddress <<":"<< bindPort<< (b?" succeeded": " failed");
 }
 
 void CommsChannel::stop(){
+	sendingTimer.stop();
 	udpSocket.close();
-	qDebug()<<"Unbinding UDP socket for "<< localAddress <<":"<< localPort;
+	qDebug()<<"Unbinding UDP socket for "<< bindAddress <<":"<< bindPort;
 }
 
 void CommsChannel::setLogOutput(LogDestination *mw){
@@ -66,7 +68,7 @@ bool CommsChannel::sendPackage( QByteArray ba, QHostAddress host, quint16 port){
 			return false;
 		}
 		else{
-			qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET";
+			//qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET";
 		}
 		nl->send(written);
 		return true;
@@ -165,30 +167,70 @@ Client *CommsChannel::getClient(QHostAddress host, quint16 port){
 }
 
 
-void CommsChannel::onIdleTimer(){
-	QByteArray ba;
-	ba.resize(12);
-	for (QMap<quint64, Client *>::iterator i = clients.begin(), e=clients.end(); i != e; ++i){
-		Client *nl=i.value();
-		if(nl->idle()){
-			sendPackage(ba, nl->host, nl->port);
+void CommsChannel::onSendingTimer(){
+	//Prepare a priority list of couriers to process for this packet
+	qint64 mostUrgentCourier=1000000;
+	QMap<quint64, Courier *> pri;
+	const qint64 now=QDateTime::currentMSecsSinceEpoch();
+	for(QList<Courier *>::iterator i=couriers.begin(),e=couriers.end();i!=e; ++i){
+		Courier *c=*i;
+		if(0!=c){
+			CourierMandate cm=c->mandate();
+			if(cm.active){
+				qint64 ci=now-cm.lastOportunity;
+				qint64 next=ci-cm.interval;
+				if(next>0 && next < mostUrgentCourier){
+					mostUrgentCourier=next;
+				}
+				quint64 score=cm.priority*(next>0?next:0);
+				pri.insert(score,c);
+			}
+		}
+	}
+	QByteArray datagram;
+	QDataStream ds(&datagram,QIODevice::WriteOnly);
+
+
+	// Write a header with a "magic number" and a version
+	ds << (quint32)0x0C701111;//Protocol MAGIC identifuer
+	ds << (qint32)1;//Protocol version
+	ds.setVersion(QDataStream::Qt_5_5);
+	// Write CommChannel reliability data
+/*
+	//TODO: remove client completely or move this to Client class? Make a decision
+	ds<<nl->reliabilitySystem.localSequence();
+	ds<<nl->reliabilitySystem.remoteSequence();
+	ds<<nl->reliabilitySystem.generateAckBits();
+
+	if(pri.size()>0){
+		qint32 byteBudget=400;
+		for (QMap<quint64, Courier *>::iterator i = pri.begin(), e=pri.end(); i != e; ++i){
+			Courier *c=i.value();
+			quint32 bytesAdded=c->sendingOportunity(ds);
+			if(datagram.size()>512){
+				qWarning()<<"WARNING: UDP packet size exceeded 512 bytes";
+			}
+			const qint64 written=udpSocket.writeDatagram(datagram,host,port);
+			if(written<0){
+				qDebug()<<"ERROR WRITING TO UDP SOCKET:"<<udpSocket.errorString();
+				return false;
+			}
+			else{
+				//qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET";
+			}
+			nl->send(written);
+
+
 		}
 	}
 
-#ifdef SHOW_ACKS
-	// show packets that were acked this frame
-	unsigned int * acks = NULL;
-	int ack_count = 0;
-	reliabilitySystem.GetAcks( &acks, ack_count );
-	if ( ack_count > 0 ){
-		printf( "acks: %d", acks[0] );
-		for ( int i = 1; i < ack_count; ++i ){
-			printf( ",%d", acks[i] );
-		}
-		printf( "\n" );
+	//Do idle packet
+	else{
+		qDebug()<<"IDLE PACKET";
 	}
-#endif
-
+		*/
+	//Prepare for next round (this implies a stop() )
+	sendingTimer.start(MIN(mostUrgentCourier,1000));//Our interval is 1000ms at the longest
 }
 
 
@@ -223,3 +265,36 @@ void CommsChannel::unHookSignals(QObject &ob){
 	}
 
 }
+
+
+
+void CommsChannel::registerCourier(Courier &c){
+	if(couriers.contains(&c)){
+		qDebug()<<"ERROR: courier was allready registered";
+		return;
+	}
+	couriers.append(&c);
+}
+
+void CommsChannel::unregisterCourier(Courier &c){
+	if(!couriers.contains(&c)){
+		qDebug()<<"ERROR: courier was not registered";
+		return;
+	}
+	couriers.removeAll(&c);
+}
+
+
+#ifdef SHOW_ACKS
+// show packets that were acked this frame
+unsigned int * acks = NULL;
+int ack_count = 0;
+reliabilitySystem.GetAcks( &acks, ack_count );
+if ( ack_count > 0 ){
+	printf( "acks: %d", acks[0] );
+	for ( int i = 1; i < ack_count; ++i ){
+		printf( ",%d", acks[i] );
+	}
+	printf( "\n" );
+}
+#endif

@@ -19,5 +19,18 @@
         <file>icons/view_list.png</file>
         <file>icons/view_tree.png</file>
         <file>icons/identicon.svg</file>
+        <file>icons/battery.svg</file>
+        <file>icons/sensor_accellerometer.svg</file>
+        <file>icons/sensor_compass.svg</file>
+        <file>icons/sensor_gps.svg</file>
+        <file>icons/sensor_gyroscope.svg</file>
+        <file>icons/sensor_heartbeat.svg</file>
+        <file>icons/sensor_light.svg</file>
+        <file>icons/sensor_temperature.svg</file>
+        <file>icons/timer.svg</file>
+        <file>icons/sensor_camera.svg</file>
+        <file>icons/remote.svg</file>
+        <file>icons/agent.svg</file>
+        <file>icons/hub.svg</file>
     </qresource>
 </RCC>
