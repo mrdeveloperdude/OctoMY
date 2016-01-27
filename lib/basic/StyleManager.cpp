@@ -41,7 +41,7 @@ void StyleManager::apply(){
 		if(0!=w){
 			w->setUpdatesEnabled(false);
 		}
-		QIcon icon(":/icons/spider.svg");
+		QIcon icon(":/icons/octomy_logo_bare.svg");
 		app->setWindowIcon(icon);
 		loadFonts(*app);
 		applyStyle(*app);

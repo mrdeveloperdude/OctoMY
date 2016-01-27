@@ -25,7 +25,7 @@ class SensorsCourier : public Courier{
 
 		//Override to acton sending opportunity.
 		//Return true if you took advantage of the opportunity
-		quint64 sendingOportunity(QDataStream &ds) override;
+		quint64 sendingOportunity(QDataStream &ds, quint32 availableBytes) override;
 
 	private slots:
 		void onPositionUpdated(const QGeoPositionInfo &info);

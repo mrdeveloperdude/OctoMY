@@ -150,9 +150,11 @@ void AgentWindow::toastAndroid(QString s){
 
 void AgentWindow::on_pushButtonTest_clicked(){
 	appendLog("TEST BUTTON CLICKED");
-	notifyAndroid("TESTING 123");
-	toastAndroid("TOASTING 123");
-	agent->sendStatus();
+	//notifyAndroid("TESTING 123");
+	//toastAndroid("TOASTING 123");
+	//agent->sendStatus();
+	ui->stackedWidget->setCurrentIndex(3);
+
 }
 
 

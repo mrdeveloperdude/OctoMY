@@ -16,6 +16,12 @@
 
 #define TIMEOUT_TRESHOLD 1
 
+#define OCTOMY_PROTOCOL_MAGIC (0x0C701111)
+#define OCTOMY_PROTOCOL_VERSION_CURRENT (1)
+#define OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT (QDataStream::Qt_5_5)
+
+
+
 class HubWindow;
 class Client;
 class Courier;
@@ -78,7 +84,7 @@ class CommsChannel : public QObject{
 		LogDestination *mw;
 		//All registered couriers
 		QList<Courier *> couriers;
-
+		const quint64 client_fingerprint;
 	public:
 
 		explicit CommsChannel(LogDestination *mw=0);
@@ -103,10 +109,10 @@ class CommsChannel : public QObject{
 
 	private:
 
-		bool sendPackage(QByteArray ba,QHostAddress host, quint16 port);
+		bool sendPackageRaw(QByteArray ba,QHostAddress host, quint16 port);
 
 		void appendLog(QString);
-		Client *getClient(QHostAddress host, quint16 port);
+		Client *getClient(const quint64 fingerprint, const QHostAddress adr,const  quint16 port);
 
 
 	signals:

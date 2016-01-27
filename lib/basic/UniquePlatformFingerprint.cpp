@@ -9,7 +9,13 @@
 
 #include "utility/BaseTranscode.hpp"
 
-UniquePlatformFingerprint::UniquePlatformFingerprint():id(""),b32ww(""){
+UniquePlatformFingerprint::UniquePlatformFingerprint():
+	id("")
+  , b32ww("")
+  , qint(0)
+  , quint(0)
+{
+
 	//	QNetworkInterface *inter=new QNetworkInterface();
 	QList<QNetworkInterface> interfaceList=QNetworkInterface::allInterfaces();
 	for(QList<QNetworkInterface>::iterator it=interfaceList.begin(),eit=interfaceList.end();it!=eit;++it){
@@ -33,6 +39,13 @@ UniquePlatformFingerprint::UniquePlatformFingerprint():id(""),b32ww(""){
 			raw=hash.result();
 			id=raw.toHex().toUpper();
 			b32ww=BaseTranscode::transcode(BaseTranscode::Bytes, BaseTranscode::Base32ww,raw);
+			for(int i=0;i<8;++i){
+				//qDebug()<<"BYTE: "<<i<<" is "<<QString::number(raw[i]);
+				qint<<=8;
+				quint<<=8;
+				qint|=raw[i];
+				quint|=(unsigned char)raw[i];
+			}
 			break;
 		}
 	}
@@ -71,22 +84,11 @@ QByteArray UniquePlatformFingerprint::getRaw(){
 
 
 quint64 UniquePlatformFingerprint::getQuint64(){
-	quint64 out=0;
-	for(int i=0;i<8;++i){
-		out<<=8;
-		out|=(unsigned char)raw[i];
-	}
-	return out;
+	return quint;
 }
 
 qint64 UniquePlatformFingerprint::getQint64(){
-	qint64 out=0;
-	for(int i=0;i<8;++i){
-		//qDebug()<<"BYTE: "<<i<<" is "<<QString::number(raw[i]);
-		out<<=8;
-		out|=raw[i];
-	}
-	return out;
+	return qint;
 }
 
 bool UniquePlatformFingerprint::isValid(){

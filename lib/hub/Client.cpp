@@ -6,10 +6,15 @@
 #include <QDateTime>
 
 
-Client::Client(QHostAddress host, quint16 port, LogDestination *log):
-	host(host)
-  , port(port)
-  , hash(generateHash(host,port))
+//Client::Client(QHostAddress host, quint16 port, LogDestination *log):
+//	host(host)
+//  , port(port)
+//  , hash(generateHash(host,port))
+
+Client::Client(quint64 fingerprint, QHostAddress host, quint16 port, LogDestination *log):
+	fingerprint(fingerprint)
+ , host(host)
+   , port(port)
   , log(log)
   , lastSendTime(QDateTime::currentMSecsSinceEpoch())
   , lastReceiveTime(lastSendTime)
@@ -30,7 +35,7 @@ void Client::send(qint64 written){
 	deltaTime=delta/1000.0f;
 	timeoutAccumulator += deltaTime;
 	if ( timeoutAccumulator > TIMEOUT_TRESHOLD ) {
-		qDebug()<<host <<":"<<port<<" timed out";
+		qDebug()<<"CLIENT "<<fingerprint<<" timed out";
 		connected=false;
 	}
 	if(connected){
@@ -40,7 +45,7 @@ void Client::send(qint64 written){
 	if(connected!=lastConnected){
 		lastConnected=connected;
 		flowControl.reset();
-		appendLog("New flow state: " +QString(connected?"CONNECTED":"DISCONNECTED")+ " for "+host.toString()+":"+QString::number(port));
+		appendLog("CLIENT: New flow state: " +QString(connected?"CONNECTED":"DISCONNECTED")+ " for "+QString::number(fingerprint));
 	}
 	reliabilitySystem.packetSent(written);
 }
@@ -72,9 +77,10 @@ bool Client::idle(){
 QString Client::getSummary(QString sep) const {
 	QString out;
 	QTextStream ts(&out);
-	ts << "host: "<<host.toString()<<":"<<QString::number(port)<<sep;
-	ts << "DELTA: "<<deltaTime<<sep;
-	ts << "TOA: "<<timeoutAccumulator<<sep;
+	ts << "ID: "<<fingerprint;
+	ts << ", NET: "<<host.toIPv4Address()<<":"<<port;
+	ts << ", DELTA: "<<deltaTime<<sep;
+	ts << ", TOA: "<<timeoutAccumulator<<sep;
 	ts << flowControl.getSummary(sep);
 	return out;
 }
@@ -87,10 +93,7 @@ const QString Client::getListText() const{
 
 
 quint64 Client::getHash(){
-	return hash;
+	return fingerprint;
 }
 
-quint64 Client::generateHash(QHostAddress host, quint16 port){
-	return (((quint64)host.toIPv4Address())<<32)|port;
-}
 

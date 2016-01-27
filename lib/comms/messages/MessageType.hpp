@@ -2,7 +2,8 @@
 #define MESSAGETYPE
 
 enum MessageType{
-	 INVALID
+	 INVALID=0
+	, NOOP_MSG
 	, QUERY
 	, QUERY_RESULT
 	, COMMAND

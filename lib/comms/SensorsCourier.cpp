@@ -19,9 +19,13 @@ CourierMandate SensorsCourier::mandate(){
 
 //Act on sending opportunity.
 //Return number of bytes that we wrote (0> means we took advantage of the opportunity)
-quint64 SensorsCourier::sendingOportunity(QDataStream &ds){
+quint64 SensorsCourier::sendingOportunity(QDataStream &ds, quint32 availableBytes){
 	(void)ds;
 	if(man.active){
+		quint32 sz=msg.size();
+		if(sz>availableBytes){
+			return 0;
+		}
 		ds<<msg;
 		man.active=false;
 		return msg.size();

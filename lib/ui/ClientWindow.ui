@@ -29,20 +29,20 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="pageConnection">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>139</width>
-        <height>41</height>
+        <width>300</width>
+        <height>433</height>
        </rect>
       </property>
       <attribute name="icon">
        <iconset>
-        <normalon>:/icons/connection.svg</normalon>
+        <normalon>:/icons/network.svg</normalon>
        </iconset>
       </attribute>
       <attribute name="label">
@@ -76,13 +76,13 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>244</width>
-        <height>231</height>
+        <width>300</width>
+        <height>433</height>
        </rect>
       </property>
       <attribute name="icon">
        <iconset>
-        <normalon>:/icons/eye.svg</normalon>
+        <normalon>:/icons/sensor_camera.svg</normalon>
        </iconset>
       </attribute>
       <attribute name="label">
@@ -474,7 +474,7 @@
       </property>
       <attribute name="icon">
        <iconset>
-        <normalon>:/icons/sensor.svg</normalon>
+        <normalon>:/icons/pose.svg</normalon>
        </iconset>
       </attribute>
       <attribute name="label">
@@ -518,8 +518,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>232</width>
-        <height>67</height>
+        <width>300</width>
+        <height>433</height>
        </rect>
       </property>
       <attribute name="icon">
@@ -612,13 +612,13 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>224</width>
-        <height>352</height>
+        <width>300</width>
+        <height>433</height>
        </rect>
       </property>
       <attribute name="icon">
        <iconset>
-        <normalon>:/icons/arrow_right.svg</normalon>
+        <normalon>:/icons/remote.svg</normalon>
        </iconset>
       </attribute>
       <attribute name="label">
@@ -800,8 +800,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>184</width>
-        <height>177</height>
+        <width>300</width>
+        <height>433</height>
        </rect>
       </property>
       <attribute name="icon">

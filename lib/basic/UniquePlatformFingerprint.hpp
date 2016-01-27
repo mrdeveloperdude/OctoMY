@@ -9,6 +9,8 @@ class UniquePlatformFingerprint{
 		QByteArray raw;
 		QString id;
 		QString b32ww;
+		qint64 qint;
+		quint64 quint;
 	private:
 		UniquePlatformFingerprint();
 

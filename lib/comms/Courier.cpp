@@ -31,7 +31,7 @@ CourierMandate Courier::mandate(){
 
 //Override to acton sending opportunity.
 //Return true if you took advantage of the opportunity
-quint64 Courier::sendingOportunity(QDataStream &ds){
+quint64 Courier::sendingOportunity(QDataStream &ds, quint32 availableBytes){
 	(void)ds;
 	return 0;
 }

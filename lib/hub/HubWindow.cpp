@@ -407,11 +407,6 @@ void HubWindow::appendGraphData(double rtt, int sent,int received,int lost,int a
 }
 
 
-void HubWindow::on_horizontalSliderIdenticon_sliderMoved(int position){
-	(void)position;
-	//ui->widgetIdenticon->setIdenticonData(ui->horizontalSliderIdenticon->value());
-}
-
 void HubWindow::on_comboBoxAddLocal_currentIndexChanged(const QString &arg1){
 	if("Remote"==arg1){
 		//TODO: synthesize options object that points to parent hub

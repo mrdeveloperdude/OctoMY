@@ -39,7 +39,7 @@ class Courier : public QObject{
 
 		//Override to acton sending opportunity.
 		//Return true if you took advantage of the opportunity
-		virtual quint64 sendingOportunity(QDataStream &ds);
+		virtual quint64 sendingOportunity(QDataStream &ds, quint32 availableBytes);
 
 };
 

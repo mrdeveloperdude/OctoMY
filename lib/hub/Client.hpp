@@ -12,9 +12,11 @@ class LogDestination;
 
 class Client{
 	public:
+		const quint64 fingerprint;
 		const QHostAddress host;
 		const quint16 port;
-		const quint64 hash;
+		//const quint64 hash;
+
 		LogDestination *log;
 		ReliabilitySystem reliabilitySystem;
 		FlowControl flowControl;
@@ -30,18 +32,16 @@ class Client{
 
 	public:
 
-		Client(QHostAddress host, quint16 port, LogDestination *log=0);
+		//Client(QHostAddress host, quint16 port, LogDestination *log=0);
+		Client(quint64 fingerprint, QHostAddress host, quint16 port, LogDestination *log=0);
 		void send(qint64 written);
 		void receive();
 		bool idle();
 		void appendLog(QString);
 		QString getSummary(QString sep="\n") const ;
 		const QString getListText() const;
-
 		quint64 getHash();
 
-	public:
-		static quint64 generateHash(QHostAddress host, quint16 port);
 
 	signals:
 		void onStatusMessage(StatusMessage sm);

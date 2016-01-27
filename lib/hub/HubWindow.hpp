@@ -77,7 +77,6 @@ class HubWindow : public QMainWindow, public LogDestination{
 
 		void on_pushButtonSendData_clicked();
 		void on_pushButtonShowStats_clicked();
-		void on_horizontalSliderIdenticon_sliderMoved(int position);
 		void on_comboBoxAddLocal_currentIndexChanged(const QString &arg1);
 		void on_tabWidget_currentChanged(int index);
 };

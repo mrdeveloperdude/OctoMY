@@ -8,7 +8,7 @@
 /*
 
 
-QIcon ic(QPixmap::fromImage(tint(QImage("://icons/spider.svg"),nl->connected?QColor(0,192,0):QColor(192,0,0),1.0)));
+QIcon ic(QPixmap::fromImage(tint(QImage(":/icons/octomy_logo_bare.svg"),nl->connected?QColor(0,192,0):QColor(192,0,0),1.0)));
 
 Client *c=(Client *)item->data().value<void *>();
 if(0!=c){
