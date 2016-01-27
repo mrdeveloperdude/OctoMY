@@ -15,7 +15,7 @@
    id="svg11211"
    version="1.1"
    inkscape:version="0.91 r"
-   sodipodi:docname="actor.svg">
+   sodipodi:docname="agent.svg">
   <defs
      id="defs11213" />
   <sodipodi:namedview
@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.959798"
-     inkscape:cx="84.622452"
-     inkscape:cy="-39.941948"
+     inkscape:zoom="11.2"
+     inkscape:cx="28.634573"
+     inkscape:cy="10.583269"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -48,7 +48,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -58,7 +58,7 @@
      id="layer1"
      transform="translate(-597.85712,-324.50507)">
     <g
-       transform="matrix(0.06681547,0,0,0.06681547,708.38094,334.93418)"
+       transform="matrix(0.0892857,0,0,0.0892857,737.14281,330.03395)"
        id="layer1-08"
        inkscape:label="Layer 1"
        style="fill:#000000;fill-opacity:1">

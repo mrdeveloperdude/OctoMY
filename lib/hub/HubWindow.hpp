@@ -28,7 +28,9 @@ class HubWindow : public QMainWindow, public LogDestination{
 		Ui::HubWindow *ui;
 		Hub *hub;
 		QTimer summaryTimer;
+		QTimer gaugeTimer;
 		StatsWindow stats;
+		quint64 startTime;
 
 		QCPDataMap graphRTT;
 		QCPDataMap graphSent;
@@ -55,6 +57,7 @@ class HubWindow : public QMainWindow, public LogDestination{
 
 	private:
 
+
 		void prepareMap();
 		void homeMap();
 
@@ -68,14 +71,15 @@ class HubWindow : public QMainWindow, public LogDestination{
 		void onClientAdded(Client *c);
 		void onLocalHostLookupComplete(QHostInfo hi);
 		void onRemoteHostLookupComplete(QHostInfo hi);
+		void onGaugeTimer();
 		void onSummaryTimer();
 
 
 		void on_pushButtonSendData_clicked();
 		void on_pushButtonShowStats_clicked();
-		void on_toolButtonAddLocalRemote_clicked();
-		void on_toolButtonAddLocalAgent_clicked();
 		void on_horizontalSliderIdenticon_sliderMoved(int position);
+		void on_comboBoxAddLocal_currentIndexChanged(const QString &arg1);
+		void on_tabWidget_currentChanged(int index);
 };
 
 #endif // HUBWINDOW_HPP

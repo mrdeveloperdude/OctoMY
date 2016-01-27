@@ -18,8 +18,8 @@
 #include "remote/RemoteWindow.hpp"
 
 
-//#include "agent/Agent.hpp"
-//#include "agent/AgentWindow.hpp"
+#include "agent/Agent.hpp"
+#include "agent/AgentWindow.hpp"
 
 #include <QScrollBar>
 #include <QHostInfo>
@@ -31,17 +31,19 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	QMainWindow(parent)
   , ui(new Ui::HubWindow)
   , hub(hub)
-  , summaryTimer(this)
+  , startTime(QDateTime::currentMSecsSinceEpoch())
 {
 	summaryTimer.setInterval(100);
+	gaugeTimer.setInterval(1000/60);
+	gaugeTimer.setTimerType(Qt::PreciseTimer);
 	ui->setupUi(this);
 	QAbstractItemModel *data = new ClientModel(hub->getComms()->getClients(), this);
-	ui->widgetMulti->configure("Icons","hubwindiow-clients-list");
-	ui->widgetMulti->setModel(data);
+	ui->widgetIncommingNodes->configure("Icons","hubwindiow-clients-list");
+	ui->widgetIncommingNodes->setModel(data);
 
 	ui->tabWidget->setEnabled(false);
 	ui->tabWidget->setCurrentWidget(ui->tabIncomming);
-	ui->lineEditLocalPort->configure("","local_port","The port of the local host");
+	ui->lineEditBindPort->configure("","listen-port","The port to listen for incomming netork traffic");
 	ui->lineEditRemoteAddress->configure("localhost","remote_address","The address of the remote host");
 	ui->lineEditRemotePort->configure("","remote_port","The port of the remote host");
 	ui->tryToggleListen->setText("Listen","Preparing...","Listening");
@@ -52,22 +54,26 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		qDebug()<<"could not connect";
 	}
 
+	if(!connect(&gaugeTimer,SIGNAL(timeout()),this,SLOT(onGaugeTimer()),WWCONTYPE)){
+		qDebug()<<"could not connect";
+	}
+
 	QCommandLineParser &opts=hub->getOptions();
 	if(opts.isSet("local-port")){
-		ui->lineEditLocalPort->setText(opts.value("local-port"));
+		ui->lineEditBindPort->setText(opts.value("local-port"));
 		qDebug()<<"OVERRIDING LOCAL PORT WITH VALUE FROM CMDLINE: "<<opts.value("local-port");
 	}
 	if(opts.isSet("remote-port")){
 		ui->lineEditRemotePort->setText(opts.value("remote-port"));
 		qDebug()<<"OVERRIDING REMOTE PORT WITH VALUE FROM CMDLINE: "<<opts.value("remote-port");
 	}
-	ui->lineEditLocalPort->setValidator( new QIntValidator(0, 65535, this) );
+	ui->lineEditBindPort->setValidator( new QIntValidator(0, 65535, this) );
 	ui->lineEditRemotePort->setValidator( new QIntValidator(0, 65535, this) );
 
 	hub->getComms()->hookSignals(*this);
 
 	prepareMap();
-	utility::populateComboboxWithLocalAdresses(*ui->comboBoxIP);
+	utility::populateComboboxWithLocalAdresses(*ui->comboBoxBindAddress);
 	ui->tabWidget->setCurrentIndex(0);
 	//updateClientsList();
 	appendLog("READY");
@@ -135,6 +141,87 @@ void HubWindow::homeMap() {
 	}
 }
 
+
+void HubWindow::onGaugeTimer(){
+	const float cmsse=QDateTime::currentMSecsSinceEpoch()-startTime;
+	const float ms = cmsse/1000.0f;
+
+	float alpha     =  0.0f;
+	float beta      =  0.0f;
+	float roll      =  0.0f;
+	float pitch     =  0.0f;
+	float heading   =  0.0f;
+	float slipSkid  =  0.0f;
+	float turnRate  =  0.0f;
+	float devH      =  0.0f;
+	float devV      =  0.0f;
+	float airspeed  =  0.0f;
+	float altitude  =  0.0f;
+	float pressure  = 28.0f;
+	float climbRate =  0.0f;
+	float machNo    =  0.0f;
+	float adf       =  0.0f;
+	float dme       =  0.0f;
+
+
+	alpha     =   20.0f * sin( ms /  10.0f );
+	beta      =   15.0f * sin( ms /  10.0f );
+	roll      =  180.0f * sin( ms /  10.0f );
+	pitch     =   90.0f * sin( ms /  20.0f );
+	heading   =  360.0f * sin( ms /  40.0f );
+	slipSkid  =    1.0f * sin( ms /  10.0f );
+	turnRate  =    7.0f * sin( ms /  10.0f );
+	devH      =    1.0f * sin( ms /  20.0f );
+	devV      =    1.0f * sin( ms /  20.0f );
+	airspeed  =  125.0f * sin( ms /  40.0f ) +  125.0f;
+	altitude  = 9000.0f * sin( ms /  40.0f ) + 9000.0f;
+	pressure  =    2.0f * sin( ms /  20.0f ) +   30.0f;
+	climbRate =  650.0f * sin( ms /  20.0f );
+	machNo    = airspeed / 650.0f;
+	adf       = -360.0f * sin( ms /  50.0f );
+	dme       =   99.0f * sin( ms / 100.0f );
+
+	ui->widgetPFD->setFlightPathMarker ( alpha, beta );
+	ui->widgetPFD->setRoll          ( roll     );
+	ui->widgetPFD->setPitch         ( pitch     );
+	ui->widgetPFD->setSlipSkid      ( slipSkid  );
+	ui->widgetPFD->setTurnRate      ( turnRate / 6.0f );
+	ui->widgetPFD->setDevH          ( devH      );
+	ui->widgetPFD->setDevV          ( devV      );
+	ui->widgetPFD->setHeading       ( heading   );
+	ui->widgetPFD->setAirspeed      ( airspeed  );
+	ui->widgetPFD->setMachNo        ( machNo    );
+	ui->widgetPFD->setAltitude      ( altitude  );
+	ui->widgetPFD->setPressure      ( pressure  );
+	ui->widgetPFD->setClimbRate     ( climbRate / 100.0f );
+
+	ui->widgetNAV->setHeading    ( heading   );
+	ui->widgetNAV->setHeadingBug ( 0.0f );
+	ui->widgetNAV->setCourse     ( 0.0f );
+	ui->widgetNAV->setBearing    ( adf  , true );
+	ui->widgetNAV->setDeviation  ( devH , true );
+	ui->widgetNAV->setDistance   ( dme  , true );
+
+	ui->widgetSix->setRoll      ( roll      );
+	ui->widgetSix->setPitch     ( pitch     );
+	ui->widgetSix->setAltitude  ( altitude  );
+	ui->widgetSix->setPressure  ( pressure  );
+	ui->widgetSix->setAirspeed  ( airspeed  );
+	ui->widgetSix->setHeading   ( heading   );
+	ui->widgetSix->setSlipSkid  ( slipSkid * 15.0f );
+	ui->widgetSix->setTurnRate  ( turnRate  );
+	ui->widgetSix->setClimbRate ( climbRate );
+	if(ui->tabWidgetAviation->currentWidget()==ui->tabPFD){
+		ui->widgetPFD->update();
+	}
+	if(ui->tabWidgetAviation->currentWidget()==ui->tabNAV){
+		ui->widgetNAV->update();
+	}
+	if(ui->tabWidgetAviation->currentWidget()==ui->tabSix){
+		ui->widgetSix->update();
+	}
+}
+
 void HubWindow::onSummaryTimer(){
 	CommsChannel *comms=hub->getComms();
 	if(0==comms){
@@ -155,9 +242,13 @@ void HubWindow::appendLog(const QString& text){
 }
 
 void HubWindow::onListenStateChanged(TryToggleState s){
-	ui->lineEditLocalPort->setEnabled(OFF==s);
+	ui->lineEditBindPort->setEnabled(OFF==s);
+	ui->comboBoxBindAddress->setEnabled(OFF==s);
 	ui->pushButtonSendData->setEnabled(ON==s);
 	const bool on=ON==s;
+	if(!on){
+		ui->tabWidget->setCurrentIndex(0);
+	}
 	ui->tabWidget->setEnabled(on);
 	on?summaryTimer.start():summaryTimer.stop();
 	appendLog("New listening state: "+ToggleStateToSTring(s));
@@ -182,8 +273,8 @@ void HubWindow::onLocalHostLookupComplete(QHostInfo hi){
 		else{
 			CommsChannel *comms=hub->getComms();
 			if(0!=comms){
-				qDebug()<<"HUB comms start for " << adr.toString()<<":" << ui->lineEditLocalPort->text();
-				comms->start(adr, ui->lineEditLocalPort->text().toInt());
+				qDebug()<<"HUB comms start for " << adr.toString()<<":" << ui->lineEditBindPort->text();
+				comms->start(adr, ui->lineEditBindPort->text().toInt());
 				ui->tryToggleListen->setState(ON);
 			}
 			return;
@@ -208,8 +299,8 @@ void HubWindow::onRemoteHostLookupComplete(QHostInfo hi){
 				for(int i=0;i<sz2;++i){
 					ba.append("X");
 				}
-//				quint64 port=ui->lineEditRemotePort->text().toInt();
-	//			CommsChannel *comms=hub->getComms();
+				//				quint64 port=ui->lineEditRemotePort->text().toInt();
+				//			CommsChannel *comms=hub->getComms();
 				//TODO: convert this to use couriers
 				//comms->sendPackage(ba,adr,port);
 			}
@@ -261,7 +352,7 @@ void HubWindow::onError(QString msg){
 void HubWindow::onClientAdded(Client *c){
 	if(0!=c){
 		appendLog("CLIENT ADDED: "+c->getSummary());
-		ui->widgetMulti->update();
+		ui->widgetIncommingNodes->update();
 	}
 }
 
@@ -315,27 +406,30 @@ void HubWindow::appendGraphData(double rtt, int sent,int received,int lost,int a
 	stats.repaintPlot();
 }
 
-void HubWindow::on_toolButtonAddLocalRemote_clicked(){
-	//TODO: synthesize options object that points to parent hub
-	Remote *remote=new Remote(hub->getOptions());
-	RemoteWindow *w=new RemoteWindow (remote,0);
-	//		remote->setLogOutput(&w);
-	w->show();
-}
-
-void HubWindow::on_toolButtonAddLocalAgent_clicked(){
-	/*
-	//TODO: synthesize options object that points to parent hub
-	Agent *agent=new Agent(hub->getOptions());
-	AgentWindow *w=new AgentWindow (agent,0);
-	//		remote->setLogOutput(&w);
-	w->show();
-	*/
-}
-
-
 
 void HubWindow::on_horizontalSliderIdenticon_sliderMoved(int position){
 	(void)position;
 	//ui->widgetIdenticon->setIdenticonData(ui->horizontalSliderIdenticon->value());
+}
+
+void HubWindow::on_comboBoxAddLocal_currentIndexChanged(const QString &arg1){
+	if("Remote"==arg1){
+		//TODO: synthesize options object that points to parent hub
+		Remote *remote=new Remote(hub->getOptions());
+		RemoteWindow *w=new RemoteWindow (remote,0);
+		w->show();
+
+	}
+	else if("Agent"==arg1){
+		//TODO: synthesize options object that points to parent hub
+		Agent *agent=new Agent(hub->getOptions());
+		AgentWindow *w=new AgentWindow (agent,0);
+		w->show();
+	}
+	ui->comboBoxAddLocal->setCurrentIndex(0);
+}
+
+void HubWindow::on_tabWidget_currentChanged(int)
+{
+	ui->tabWidget->currentWidget()==ui->tabAviation?gaugeTimer.start():gaugeTimer.stop();
 }

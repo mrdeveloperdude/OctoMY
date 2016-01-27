@@ -77,7 +77,7 @@ HubMain::HubMain(int argc, char *argv[]):
 		Q_INIT_RESOURCE(style);
 		Q_INIT_RESOURCE(fonts);
 		Q_INIT_RESOURCE(icons);
-		Q_INIT_RESOURCE(icons);
+		Q_INIT_RESOURCE(qfi);
 		QTimer::singleShot(0, this, SLOT(run()));
 		ret=app->exec();
 	}

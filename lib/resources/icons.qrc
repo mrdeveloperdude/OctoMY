@@ -1,17 +1,14 @@
 <RCC>
     <qresource prefix="/">
-        <file>icons/spider.svg</file>
         <file>icons/eye.svg</file>
-        <file>icons/sensor.svg</file>
         <file>icons/settings.svg</file>
         <file>icons/arrow_up.svg</file>
         <file>icons/arrow_right.svg</file>
         <file>icons/arrow_left.svg</file>
         <file>icons/arrow_down.svg</file>
         <file>icons/servo.svg</file>
-        <file>icons/control.svg</file>
         <file>icons/connection.svg</file>
-        <file>icons/control2.svg</file>
+        <file>icons/control.svg</file>
         <file>icons/octomy_logo.svg</file>
         <file>icons/octomy_logo_bare.svg</file>
         <file>icons/view_details.png</file>
@@ -32,5 +29,8 @@
         <file>icons/remote.svg</file>
         <file>icons/agent.svg</file>
         <file>icons/hub.svg</file>
+        <file>icons/map.svg</file>
+        <file>icons/pose.svg</file>
+        <file>icons/network.svg</file>
     </qresource>
 </RCC>

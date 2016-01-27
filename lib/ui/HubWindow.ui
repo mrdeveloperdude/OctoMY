@@ -24,14 +24,89 @@
     <normaloff>:/icons/hub.svg</normaloff>:/icons/hub.svg</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_3">
-    <item row="1" column="1">
+   <layout class="QGridLayout" name="gridLayout_5">
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QComboBox" name="comboBoxBindAddress">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Select for which address/interface this hub should listen for incomming connections from agents and remotes</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="TextEntry" name="lineEditBindPort">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Select on which port this hub should listen for incomming connections by remotes and agents</string>
+        </property>
+        <property name="maxLength">
+         <number>6</number>
+        </property>
+        <property name="placeholderText">
+         <string>Listen port</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="TryToggle" name="tryToggleListen" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>10</width>
+          <height>10</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Click to toggle server listening</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="toolTip">
        <string/>
       </property>
       <property name="currentIndex">
-       <number>6</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="tabIncomming">
        <property name="toolTip">
@@ -39,10 +114,10 @@
        </property>
        <attribute name="icon">
         <iconset resource="../resources/icons.qrc">
-         <normaloff>:/icons/control2.svg</normaloff>:/icons/control2.svg</iconset>
+         <normaloff>:/icons/agent.svg</normaloff>:/icons/agent.svg</iconset>
        </attribute>
        <attribute name="title">
-        <string>Incomming</string>
+        <string>Nodes</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
         <property name="leftMargin">
@@ -60,119 +135,119 @@
         <property name="spacing">
          <number>0</number>
         </property>
-        <item row="0" column="0">
-         <widget class="QToolButton" name="toolButtonAddLocalAgent">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="toolTip">
-           <string>Start a local agent. Used for testing purposes (Comming soon)</string>
-          </property>
-          <property name="text">
-           <string>Add Local Agent</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QToolButton" name="toolButtonAddLocalRemote">
-          <property name="toolTip">
-           <string>Start a local remote (used for testing purposes)</string>
-          </property>
-          <property name="text">
-           <string>Add Local Remote</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="2">
-         <spacer name="horizontalSpacer_3">
+         <widget class="QSplitter" name="splitter">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>498</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="0" colspan="3">
-         <widget class="MultiView" name="widgetMulti" native="true">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+          <widget class="QWidget" name="layoutWidget">
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="1" column="0">
+             <widget class="MultiView" name="widgetIncommingNodes" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="MultiView" name="widgetActiveNodes" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="2">
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <widget class="QComboBox" name="comboBoxAddLocal">
+                <item>
+                 <property name="text">
+                  <string>Add:</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Remote</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="../resources/icons.qrc">
+                   <normaloff>:/icons/remote.svg</normaloff>:/icons/remote.svg</iconset>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Agent</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="../resources/icons.qrc">
+                   <normaloff>:/icons/agent.svg</normaloff>:/icons/agent.svg</iconset>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="layoutWidget">
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QPlainTextEdit" name="plainTextEditSummary">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="lineWidth">
+               <number>0</number>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="backgroundVisible">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonShowStats">
+              <property name="text">
+               <string>Stats</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tabActive">
-       <property name="toolTip">
-        <string>Manage active remotes and agents</string>
-       </property>
-       <attribute name="icon">
-        <iconset resource="../resources/icons.qrc">
-         <normaloff>:/icons/spider.svg</normaloff>:/icons/spider.svg</iconset>
-       </attribute>
-       <attribute name="title">
-        <string>Active</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_5">
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <item row="0" column="0">
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QPlainTextEdit" name="plainTextEditSummary">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
-            </property>
-            <property name="lineWidth">
-             <number>0</number>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-            <property name="backgroundVisible">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButtonShowStats">
-            <property name="text">
-             <string>Stats</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </item>
        </layout>
       </widget>
@@ -182,7 +257,7 @@
        </property>
        <attribute name="icon">
         <iconset resource="../resources/icons.qrc">
-         <normaloff>:/icons/settings.svg</normaloff>:/icons/settings.svg</iconset>
+         <normaloff>:/icons/map.svg</normaloff>:/icons/map.svg</iconset>
        </attribute>
        <attribute name="title">
         <string>Map</string>
@@ -221,7 +296,7 @@
        </property>
        <attribute name="icon">
         <iconset resource="../resources/icons.qrc">
-         <normaloff>:/icons/eye.svg</normaloff>:/icons/eye.svg</iconset>
+         <normaloff>:/icons/network.svg</normaloff>:/icons/network.svg</iconset>
        </attribute>
        <attribute name="title">
         <string>Network</string>
@@ -344,6 +419,10 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tabPose">
+       <attribute name="icon">
+        <iconset resource="../resources/icons.qrc">
+         <normaloff>:/icons/pose.svg</normaloff>:/icons/pose.svg</iconset>
+       </attribute>
        <attribute name="title">
         <string>Pose</string>
        </attribute>
@@ -354,6 +433,10 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tabIdenticon">
+       <attribute name="icon">
+        <iconset resource="../resources/icons.qrc">
+         <normaloff>:/icons/octomy_logo_bare.svg</normaloff>:/icons/octomy_logo_bare.svg</iconset>
+       </attribute>
        <attribute name="title">
         <string>Identicon</string>
        </attribute>
@@ -380,18 +463,56 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tabAviation">
+       <attribute name="icon">
+        <iconset resource="../resources/icons.qrc">
+         <normaloff>:/icons/sensor_heartbeat.svg</normaloff>:/icons/sensor_heartbeat.svg</iconset>
+       </attribute>
        <attribute name="title">
         <string>Aviation</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_6">
         <item row="0" column="0">
-         <widget class="WidgetSix" name="widgetAviation" native="true"/>
+         <widget class="QTabWidget" name="tabWidgetAviation">
+          <property name="currentIndex">
+           <number>2</number>
+          </property>
+          <widget class="QWidget" name="tabSix">
+           <attribute name="title">
+            <string>Six</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_7">
+            <item row="0" column="0">
+             <widget class="WidgetSix" name="widgetSix" native="true"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabPFD">
+           <attribute name="title">
+            <string>PFD</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_8">
+            <item row="0" column="0">
+             <widget class="WidgetPFD" name="widgetPFD" native="true"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabNAV">
+           <attribute name="title">
+            <string>Nav</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_9">
+            <item row="0" column="0">
+             <widget class="WidgetNAV" name="widgetNAV" native="true"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
         </item>
        </layout>
       </widget>
      </widget>
     </item>
-    <item row="1" column="2">
+    <item row="1" column="1">
      <widget class="QPlainTextEdit" name="logScroll">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
@@ -831,81 +952,6 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1" colspan="2">
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QComboBox" name="comboBoxIP">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string>Select for which address/interface this hub should listen for incomming connections from agents and remotes</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="TextEntry" name="lineEditLocalPort">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string>Select on which port this hub should listen for incomming connections by remotes and agents</string>
-        </property>
-        <property name="maxLength">
-         <number>6</number>
-        </property>
-        <property name="placeholderText">
-         <string>Listen port</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="TryToggle" name="tryToggleListen" native="true">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>10</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>Click to toggle server listening</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
    </layout>
   </widget>
  </widget>
@@ -949,6 +995,18 @@
    <class>WidgetSix</class>
    <extends>QWidget</extends>
    <header>widgets/qfi/WidgetSix.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetPFD</class>
+   <extends>QWidget</extends>
+   <header>widgets/qfi/WidgetPFD.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetNAV</class>
+   <extends>QWidget</extends>
+   <header>widgets/qfi/WidgetNAV.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

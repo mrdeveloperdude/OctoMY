@@ -15,7 +15,7 @@
    id="svg9331"
    version="1.1"
    inkscape:version="0.91 r"
-   sodipodi:docname="sensor_gyro.svg">
+   sodipodi:docname="sensor_gyroscope.svg">
   <defs
      id="defs9333" />
   <sodipodi:namedview
@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
-     inkscape:cx="21.805994"
+     inkscape:cx="-15.822188"
      inkscape:cy="-23.951675"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -48,7 +48,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -59,7 +59,7 @@
      transform="translate(-97.85714,155.49493)">
     <g
        id="g4202"
-       transform="matrix(0.34727618,0,0,0.34727618,9.9866299,-302.08491)">
+       transform="matrix(0.63583576,0,0,0.63583576,-83.800022,-444.66288)">
       <g
          id="g4204">
         <ellipse
