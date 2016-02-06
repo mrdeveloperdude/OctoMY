@@ -106,7 +106,7 @@
        <string/>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tabIncomming">
        <property name="toolTip">
@@ -208,7 +208,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="layoutWidget">
+          <widget class="QWidget" name="layoutWidget2">
            <layout class="QVBoxLayout" name="verticalLayout">
             <item>
              <widget class="QPlainTextEdit" name="plainTextEditSummary">
@@ -428,7 +428,14 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
-         <widget class="PoseView" name="openGLWidgetPose"/>
+         <widget class="QPushButton" name="pushButtonOpenModel">
+          <property name="text">
+           <string>Open Model</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="PoseView" name="widgetPose" native="true"/>
         </item>
        </layout>
       </widget>
@@ -975,11 +982,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PoseView</class>
-   <extends>QOpenGLWidget</extends>
-   <header>3d/PoseView.hpp</header>
-  </customwidget>
-  <customwidget>
    <class>WidgetSix</class>
    <extends>QWidget</extends>
    <header>widgets/qfi/WidgetSix.h</header>
@@ -995,6 +997,12 @@
    <class>WidgetNAV</class>
    <extends>QWidget</extends>
    <header>widgets/qfi/WidgetNAV.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PoseView</class>
+   <extends>QWidget</extends>
+   <header>3d/PoseView.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

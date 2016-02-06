@@ -424,7 +424,11 @@ void HubWindow::on_comboBoxAddLocal_currentIndexChanged(const QString &arg1){
 	ui->comboBoxAddLocal->setCurrentIndex(0);
 }
 
-void HubWindow::on_tabWidget_currentChanged(int)
-{
+void HubWindow::on_tabWidget_currentChanged(int){
 	ui->tabWidget->currentWidget()==ui->tabAviation?gaugeTimer.start():gaugeTimer.stop();
+}
+
+
+void HubWindow::on_pushButtonOpenModel_clicked(){
+	qDebug()<<"BUTTON PRESSED";
 }

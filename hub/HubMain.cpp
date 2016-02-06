@@ -10,7 +10,7 @@
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 
-
+#include "3d/PoseView.hpp"
 HubMain::HubMain(int argc, char *argv[]):
 	QObject(0)
   , sm(0)
@@ -49,6 +49,8 @@ HubMain::HubMain(int argc, char *argv[]):
 
 	const bool headless=parser.isSet(headlessOption);
 
+
+
 	Hub *hub=new Hub(parser);
 	if(!headless){
 		qDebug()<<"GUI ENABLED";
@@ -62,22 +64,26 @@ HubMain::HubMain(int argc, char *argv[]):
 		app=new QCoreApplication(argc, argv);
 	}
 
+//	app=new QApplication(argc, argv); PoseView widget; widget.show();
+
 	if(0!=app){
 
 		QSurfaceFormat fmt;
 		fmt.setDepthBufferSize(24);
+		/*
 		if (QCoreApplication::arguments().contains(QStringLiteral("--multisample")))
 			fmt.setSamples(4);
 		if (QCoreApplication::arguments().contains(QStringLiteral("--coreprofile"))) {
 			fmt.setVersion(3, 2);
 			fmt.setProfile(QSurfaceFormat::CoreProfile);
-		}
+		}*/
 		QSurfaceFormat::setDefaultFormat(fmt);
 
 		Q_INIT_RESOURCE(style);
 		Q_INIT_RESOURCE(fonts);
 		Q_INIT_RESOURCE(icons);
 		Q_INIT_RESOURCE(qfi);
+		Q_INIT_RESOURCE(3d);
 		QTimer::singleShot(0, this, SLOT(run()));
 		ret=app->exec();
 	}

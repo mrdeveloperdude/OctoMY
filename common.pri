@@ -2,6 +2,8 @@
 CONFIG += qt c++11 # xcb debug thread 3dnow mmx stl sse sse2 largefile
 CONFIG -= rtti exceptions c++0x c++14
 CONFIG += static
+# Support all kinds of architectures (universal builds etc)
+CONFIG += x86 x86_64
 #CONFIG += console
 
 
@@ -11,6 +13,7 @@ CONFIG += static
 #  Enable tests by default for now (will be enabled autoamtically for release builds in test.pro otherize)
 DEFINES += USE_TESTS
 DEFINES += USE_BASIC_TESTS
+#DEFINES += USE_QT3D
 #DEFINES += USE_WEB_TESTS
 #DEFINES += EXTERNAL_LIB_ESPEAK
 #DEFINES += EXTERNAL_LIB_OPENCV
@@ -31,6 +34,11 @@ DEFINES += USE_BASIC_TESTS
 
 # Add only plugins that are used and supported by the Qt build you are using
 QT += core gui opengl widgets xml network multimedia multimediawidgets svg printsupport quick sql positioning sensors testlib
+
+contains(DEFINES, USE_QT3D){
+QT += 3dcore 3drenderer 3dinput
+}
+
 
 android{
 	QT += androidextras

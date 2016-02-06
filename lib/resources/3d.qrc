@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>3d/models/velociraptor_mesh_materials.dae</file>
+        <file>3d/shaders/ads_fragment.frag</file>
+        <file>3d/shaders/ads_fragment.vert</file>
+        <file>3d/shaders/es_ads_fragment.frag</file>
+        <file>3d/shaders/es_ads_fragment.vert</file>
+        <file>3d/textures/grating_tiled.png</file>
+        <file>3d/shaders/fshader.glsl</file>
+        <file>3d/shaders/vshader.glsl</file>
+    </qresource>
+</RCC>

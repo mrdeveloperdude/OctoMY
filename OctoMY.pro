@@ -5,8 +5,7 @@ SUBDIRS += \
 	hub\
 	agent\
 	remote\
-	test
-
+	test \
 
 # Dependency stuff adapted from https://vilimpoc.org/blog/2014/02/21/qmake-subdirs-project-automatic-dependencies/
 lib.subdir   = lib

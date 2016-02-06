@@ -241,6 +241,7 @@ void Camera::displayCapturedImage()
 
 void Camera::readyForCapture(bool ready)
 {
+	(void)ready;
 	//ui->takeImageButton->setEnabled(ready);
 }
 

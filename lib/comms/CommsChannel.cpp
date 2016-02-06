@@ -220,7 +220,7 @@ void CommsChannel::onSendingTimer(){
 	//Do idle packet
 	else{
 		ds<<(qint32)NOOP_MSG;
-		qDebug()<<"IDLE PACKET";
+		//qDebug()<<"IDLE PACKET";
 	}
 
 	//Prepare for next round (this implies a stop() )

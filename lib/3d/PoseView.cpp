@@ -1,252 +1,194 @@
 #include "PoseView.hpp"
 
+#include "scene/GeometryEngine.hpp"
+#include "scene/Limb.hpp"
 
 #include <QMouseEvent>
 #include <QOpenGLShaderProgram>
 #include <QCoreApplication>
+#include <QOpenGLTexture>
 
 #include <cmath>
 
-PoseView::PoseView(QWidget *parent)
-	: QOpenGLWidget(parent),
-	  m_xRot(0),
-	  m_yRot(0),
-	  m_zRot(0),
-	  m_program(0)
+
+PoseView::PoseView(QWidget *parent) :
+	QOpenGLWidget(parent),
+	geometries(0),
+	texture(0),
+	angularSpeed(0)
 {
-	m_core = QCoreApplication::arguments().contains(QStringLiteral("--coreprofile"));
-	// --transparent causes the clear color to be transparent. Therefore, on systems that
-	// support it, the widget will become transparent apart from the logo.
-	m_transparent = QCoreApplication::arguments().contains(QStringLiteral("--transparent"));
-	if (m_transparent)
-		setAttribute(Qt::WA_TranslucentBackground);
+
+	QSurfaceFormat format;
+	format.setDepthBufferSize(24);
+	QSurfaceFormat::setDefaultFormat(format);
+	Limb *base=new Limb(sim,0,QVector3D(0,0,0),QVector3D(1,0,0),QVector3D(0,1,0),1,HINGE_STIFF, QVector3D(0,0,1),QVector3D(0,1,0));
+	Limb *tibia=new Limb(sim,base,QVector3D(0,1,0),QVector3D(1,0,0),QVector3D(0,1,0),2,HINGE_REVOLUTE, QVector3D(0,0,1),QVector3D(0,1,0));
+	Limb *femur=new Limb(sim,tibia,QVector3D(0,1,0),QVector3D(1,0,0),QVector3D(0,1,0),2,HINGE_REVOLUTE, QVector3D(0,0,1),QVector3D(0,1,0));
+
+	sim.addLimb(base);
+
+	sim.addLimb(tibia);
+	sim.addLimb(femur);
+
+
+
 }
 
 PoseView::~PoseView()
 {
-	cleanup();
-}
-
-QSize PoseView::minimumSizeHint() const
-{
-	return QSize(50, 50);
-}
-
-QSize PoseView::sizeHint() const
-{
-	return QSize(400, 400);
-}
-
-static void qNormalizeAngle(int &angle)
-{
-	while (angle < 0)
-		angle += 360 * 16;
-	while (angle > 360 * 16)
-		angle -= 360 * 16;
-}
-
-void PoseView::setXRotation(int angle)
-{
-	qNormalizeAngle(angle);
-	if (angle != m_xRot) {
-		m_xRot = angle;
-		emit xRotationChanged(angle);
-		update();
-	}
-}
-
-void PoseView::setYRotation(int angle)
-{
-	qNormalizeAngle(angle);
-	if (angle != m_yRot) {
-		m_yRot = angle;
-		emit yRotationChanged(angle);
-		update();
-	}
-}
-
-void PoseView::setZRotation(int angle)
-{
-	qNormalizeAngle(angle);
-	if (angle != m_zRot) {
-		m_zRot = angle;
-		emit zRotationChanged(angle);
-		update();
-	}
-}
-
-void PoseView::cleanup()
-{
+	// Make sure the context is current when deleting the texture
+	// and the buffers.
 	makeCurrent();
-	m_logoVbo.destroy();
-	delete m_program;
-	m_program = 0;
+	delete texture;
+	delete geometries;
 	doneCurrent();
 }
 
-static const char *vertexShaderSourceCore =
-	"#version 150\n"
-	"in vec4 vertex;\n"
-	"in vec3 normal;\n"
-	"out vec3 vert;\n"
-	"out vec3 vertNormal;\n"
-	"uniform mat4 projMatrix;\n"
-	"uniform mat4 mvMatrix;\n"
-	"uniform mat3 normalMatrix;\n"
-	"void main() {\n"
-	"   vert = vertex.xyz;\n"
-	"   vertNormal = normalMatrix * normal;\n"
-	"   gl_Position = projMatrix * mvMatrix * vertex;\n"
-	"}\n";
+void PoseView::mousePressEvent(QMouseEvent *e)
+{
+	// Save mouse press position
+	mousePressPosition = QVector2D(e->localPos());
+}
 
-static const char *fragmentShaderSourceCore =
-	"#version 150\n"
-	"in highp vec3 vert;\n"
-	"in highp vec3 vertNormal;\n"
-	"out highp vec4 fragColor;\n"
-	"uniform highp vec3 lightPos;\n"
-	"void main() {\n"
-	"   highp vec3 L = normalize(lightPos - vert);\n"
-	"   highp float NL = max(dot(normalize(vertNormal), L), 0.0);\n"
-	"   highp vec3 color = vec3(0.39, 1.0, 0.0);\n"
-	"   highp vec3 col = clamp(color * 0.2 + color * 0.8 * NL, 0.0, 1.0);\n"
-	"   fragColor = vec4(col, 1.0);\n"
-	"}\n";
+void PoseView::mouseReleaseEvent(QMouseEvent *e)
+{
+	// Mouse release position - mouse press position
+	QVector2D diff = QVector2D(e->localPos()) - mousePressPosition;
 
-static const char *vertexShaderSource =
-	"attribute vec4 vertex;\n"
-	"attribute vec3 normal;\n"
-	"varying vec3 vert;\n"
-	"varying vec3 vertNormal;\n"
-	"uniform mat4 projMatrix;\n"
-	"uniform mat4 mvMatrix;\n"
-	"uniform mat3 normalMatrix;\n"
-	"void main() {\n"
-	"   vert = vertex.xyz;\n"
-	"   vertNormal = normalMatrix * normal;\n"
-	"   gl_Position = projMatrix * mvMatrix * vertex;\n"
-	"}\n";
+	// Rotation axis is perpendicular to the mouse position difference
+	// vector
+	QVector3D n = QVector3D(diff.y(), diff.x(), 0.0).normalized();
 
-static const char *fragmentShaderSource =
-	"varying highp vec3 vert;\n"
-	"varying highp vec3 vertNormal;\n"
-	"uniform highp vec3 lightPos;\n"
-	"void main() {\n"
-	"   highp vec3 L = normalize(lightPos - vert);\n"
-	"   highp float NL = max(dot(normalize(vertNormal), L), 0.0);\n"
-	"   highp vec3 color = vec3(0.39, 1.0, 0.0);\n"
-	"   highp vec3 col = clamp(color * 0.2 + color * 0.8 * NL, 0.0, 1.0);\n"
-	"   gl_FragColor = vec4(col, 1.0);\n"
-	"}\n";
+	// Accelerate angular speed relative to the length of the mouse sweep
+	qreal acc = diff.length() / 100.0;
+
+	// Calculate new rotation axis as weighted sum
+	rotationAxis = (rotationAxis * angularSpeed + n * acc).normalized();
+
+	// Increase angular speed
+	angularSpeed += acc;
+}
+
+void PoseView::timerEvent(QTimerEvent *)
+{
+	// Decrease angular speed (friction)
+	angularSpeed *= 0.99;
+
+	// Stop rotation when speed goes below threshold
+	if (angularSpeed < 0.01) {
+		angularSpeed = 0.0;
+	} else {
+		// Update rotation
+		rotation = QQuaternion::fromAxisAndAngle(rotationAxis, angularSpeed) * rotation;
+
+		// Request an update
+		update();
+	}
+}
 
 void PoseView::initializeGL()
 {
-	// In this example the widget's corresponding top-level window can change
-	// several times during the widget's lifetime. Whenever this happens, the
-	// QOpenGLWidget's associated context is destroyed and a new one is created.
-	// Therefore we have to be prepared to clean up the resources on the
-	// aboutToBeDestroyed() signal, instead of the destructor. The emission of
-	// the signal will be followed by an invocation of initializeGL() where we
-	// can recreate all resources.
-	connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, &PoseView::cleanup);
-
 	initializeOpenGLFunctions();
-	glClearColor(0, 0, 0, m_transparent ? 0 : 1);
 
-	m_program = new QOpenGLShaderProgram;
-	m_program->addShaderFromSourceCode(QOpenGLShader::Vertex, m_core ? vertexShaderSourceCore : vertexShaderSource);
-	m_program->addShaderFromSourceCode(QOpenGLShader::Fragment, m_core ? fragmentShaderSourceCore : fragmentShaderSource);
-	m_program->bindAttributeLocation("vertex", 0);
-	m_program->bindAttributeLocation("normal", 1);
-	m_program->link();
+	glClearColor(0, 0, 0, 1);
 
-	m_program->bind();
-	m_projMatrixLoc = m_program->uniformLocation("projMatrix");
-	m_mvMatrixLoc = m_program->uniformLocation("mvMatrix");
-	m_normalMatrixLoc = m_program->uniformLocation("normalMatrix");
-	m_lightPosLoc = m_program->uniformLocation("lightPos");
+	initShaders();
+	initTextures();
 
-	// Create a vertex array object. In OpenGL ES 2.0 and OpenGL 2.x
-	// implementations this is optional and support may not be present
-	// at all. Nonetheless the below code works in all cases and makes
-	// sure there is a VAO when one is needed.
-	m_vao.create();
-	QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao);
-
-	// Setup our vertex buffer object.
-	m_logoVbo.create();
-	m_logoVbo.bind();
-	m_logoVbo.allocate(m_logo.constData(), m_logo.count() * sizeof(GLfloat));
-
-	// Store the vertex attribute bindings for the program.
-	setupVertexAttribs();
-
-	// Our camera never changes in this example.
-	m_camera.setToIdentity();
-	m_camera.translate(0, 0, -1);
-
-	// Light position is fixed.
-	m_program->setUniformValue(m_lightPosLoc, QVector3D(0, 0, 70));
-
-	m_program->release();
-}
-
-void PoseView::setupVertexAttribs()
-{
-	m_logoVbo.bind();
-	QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
-	f->glEnableVertexAttribArray(0);
-	f->glEnableVertexAttribArray(1);
-	f->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
-	f->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void *>(3 * sizeof(GLfloat)));
-	m_logoVbo.release();
-}
-
-void PoseView::paintGL()
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Enable depth buffer
 	glEnable(GL_DEPTH_TEST);
+
+	// Enable back face culling
 	glEnable(GL_CULL_FACE);
 
-	m_world.setToIdentity();
-	m_world.rotate(180.0f - (m_xRot / 16.0f), 1, 0, 0);
-	m_world.rotate(m_yRot / 16.0f, 0, 1, 0);
-	m_world.rotate(m_zRot / 16.0f, 0, 0, 1);
+	geometries = new GeometryEngine;
 
-	QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao);
-	m_program->bind();
-	m_program->setUniformValue(m_projMatrixLoc, m_proj);
-	m_program->setUniformValue(m_mvMatrixLoc, m_camera * m_world);
-	QMatrix3x3 normalMatrix = m_world.normalMatrix();
-	m_program->setUniformValue(m_normalMatrixLoc, normalMatrix);
+	// Use QBasicTimer because its faster than QTimer
+	timer.start(1000/60, this);
+}
 
-	glDrawArrays(GL_TRIANGLES, 0, m_logo.vertexCount());
+void PoseView::initShaders()
+{
+	// Compile vertex shader
+	qDebug()<<"----- adding framgent shader to program";
+	if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/3d/shaders/vshader.glsl")){
+		close();
+		return;
+	}
 
-	m_program->release();
+	// Compile fragment shader
+	qDebug()<<"----- adding vertex shader to program";
+	if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/3d/shaders/fshader.glsl")){
+		close();
+		return;
+	}
+
+	// Link shader pipeline
+	qDebug()<<"----- linking program";
+	if (!program.link()){
+		close();
+		return;
+	}
+
+	// Bind shader pipeline for use
+	qDebug()<<"----- binding program";
+	if (!program.bind()){
+		close();
+		return;
+	}
+}
+
+void PoseView::initTextures()
+{
+	// Load cube.png image
+	texture = new QOpenGLTexture(QImage(":/3d/textures/grating_tiled.png"));
+
+	// Set nearest filtering mode for texture minification
+	texture->setMinificationFilter(QOpenGLTexture::Nearest);
+
+	// Set bilinear filtering mode for texture magnification
+	texture->setMagnificationFilter(QOpenGLTexture::Linear);
+
+	// Wrap texture coordinates by repeating
+	// f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
+	texture->setWrapMode(QOpenGLTexture::Repeat);
 }
 
 void PoseView::resizeGL(int w, int h)
 {
-	m_proj.setToIdentity();
-	m_proj.perspective(45.0f, GLfloat(w) / h, 0.01f, 100.0f);
+	// Calculate aspect ratio
+	qreal aspect = qreal(w) / qreal(h ? h : 1);
+
+	// Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
+	const qreal zNear = 3.0, zFar = 7.0, fov = 45.0;
+
+	// Reset projection
+	projection.setToIdentity();
+
+	// Set perspective projection
+	projection.perspective(fov, aspect, zNear, zFar);
 }
 
-void PoseView::mousePressEvent(QMouseEvent *event)
+void PoseView::paintGL()
 {
-	m_lastPos = event->pos();
+	sim.update();
+	// Clear color and depth buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	texture->bind();
+
+	// Calculate model view transformation
+	QMatrix4x4 matrix;
+	matrix.translate(0.0, 0.0, -5.0);
+	matrix.rotate(rotation);
+
+	// Set modelview-projection matrix
+	program.setUniformValue("mvp_matrix", projection * matrix);
+
+	// Use texture unit 0 which contains cube.png
+	program.setUniformValue("texture", 0);
+
+	// Draw cube geometry
+	geometries->drawCubeGeometry(&program);
 }
 
-void PoseView::mouseMoveEvent(QMouseEvent *event)
-{
-	int dx = event->x() - m_lastPos.x();
-	int dy = event->y() - m_lastPos.y();
-
-	if (event->buttons() & Qt::LeftButton) {
-		setXRotation(m_xRot + 8 * dy);
-		setYRotation(m_yRot + 8 * dx);
-	} else if (event->buttons() & Qt::RightButton) {
-		setXRotation(m_xRot + 8 * dy);
-		setZRotation(m_zRot + 8 * dx);
-	}
-	m_lastPos = event->pos();
-}

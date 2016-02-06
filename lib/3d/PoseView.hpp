@@ -6,60 +6,46 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 #include <QMatrix4x4>
+#include <QBasicTimer>
+#include <QOpenGLShaderProgram>
+#include <QOpenGLTexture>
 
-#include "QtLogo3D.hpp"
+#include "scene/GeometryEngine.hpp"
+#include "scene/Simulation.hpp"
 
-QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
-class PoseView : public QOpenGLWidget, protected QOpenGLFunctions
-{
-	Q_OBJECT
+class PoseView : public QOpenGLWidget, protected QOpenGLFunctions{
+		Q_OBJECT
+	private:
+		QBasicTimer timer;
+		QOpenGLShaderProgram program;
+		GeometryEngine *geometries;
+		QOpenGLTexture *texture;
+		QMatrix4x4 projection;
+		QVector2D mousePressPosition;
+		QVector3D rotationAxis;
+		qreal angularSpeed;
+		QQuaternion rotation;
+		Simulation sim;
 
-public:
-	PoseView(QWidget *parent = 0);
-	~PoseView();
+	public:
+		explicit PoseView(QWidget *parent = 0);
+		~PoseView();
 
-	QSize minimumSizeHint() const Q_DECL_OVERRIDE;
-	QSize sizeHint() const Q_DECL_OVERRIDE;
+	protected:
+		void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+		void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+		void timerEvent(QTimerEvent *e) Q_DECL_OVERRIDE;
 
-public slots:
-	void setXRotation(int angle);
-	void setYRotation(int angle);
-	void setZRotation(int angle);
-	void cleanup();
+		void initializeGL() Q_DECL_OVERRIDE;
+		void resizeGL(int w, int h) Q_DECL_OVERRIDE;
+		void paintGL() Q_DECL_OVERRIDE;
 
-signals:
-	void xRotationChanged(int angle);
-	void yRotationChanged(int angle);
-	void zRotationChanged(int angle);
+		void initShaders();
+		void initTextures();
 
-protected:
-	void initializeGL() Q_DECL_OVERRIDE;
-	void paintGL() Q_DECL_OVERRIDE;
-	void resizeGL(int width, int height) Q_DECL_OVERRIDE;
-	void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-	void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
-private:
-	void setupVertexAttribs();
 
-	bool m_core;
-	int m_xRot;
-	int m_yRot;
-	int m_zRot;
-	QPoint m_lastPos;
-	QtLogo3D m_logo;
-	QOpenGLVertexArrayObject m_vao;
-	QOpenGLBuffer m_logoVbo;
-	QOpenGLShaderProgram *m_program;
-	int m_projMatrixLoc;
-	int m_mvMatrixLoc;
-	int m_normalMatrixLoc;
-	int m_lightPosLoc;
-	QMatrix4x4 m_proj;
-	QMatrix4x4 m_camera;
-	QMatrix4x4 m_world;
-	bool m_transparent;
 };
 
 #endif // POSEVIEW_HPP

@@ -1,11 +1,12 @@
 TARGET = octomy
 TEMPLATE = lib
+CONFIG += staticlib
 
 include($$TOP_PWD/common.pri)
+include(qlalr.pri)
 
 SOURCES +=\
 	3d/PoseView.cpp \
-	3d/QtLogo3D.cpp \
 	agent/Agent.cpp \
 	agent/AgentWindow.cpp \
 	basic/LogDestination.cpp \
@@ -90,13 +91,36 @@ SOURCES +=\
 	widgets/SvgWidget.cpp \
 	widgets/TextEntry.cpp \
 	widgets/TryToggle.cpp \
-
-
+    3d/scene/Limb.cpp \
+    3d/scene/QtLogo3D.cpp \
+    3d/scene/GeometryEngine.cpp \
+    gear/gbody.cpp \
+    gear/gconstraint.cpp \
+    gear/gconstraint_jointloop.cpp \
+    gear/gelement.cpp \
+    gear/gjoint.cpp \
+    gear/gjoint_composite.cpp \
+    gear/gjoint_fixed.cpp \
+    gear/gjoint_free.cpp \
+    gear/gjoint_planar.cpp \
+    gear/gjoint_prismatic.cpp \
+    gear/gjoint_revolute.cpp \
+    gear/gjoint_spherical.cpp \
+    gear/gjoint_translational.cpp \
+    gear/gjoint_universal.cpp \
+    gear/gspringdamper.cpp \
+    gear/gsystem.cpp \
+    gear/gsystem_constrained.cpp \
+    gear/gsystem_ik.cpp \
+    gear/liegroup.cpp \
+    gear/liegroup.inl \
+    gear/liegroup_rmatrix3_ext.inl \
+    gear/rmatrix3j.cpp \
+    3d/scene/Simulation.cpp
 
 
 HEADERS  += \
 	3d/PoseView.hpp \
-	3d/QtLogo3D.hpp \
 	agent/Agent.hpp \
 	agent/AgentWindow.hpp \
 	basic/LogDestination.hpp \
@@ -188,6 +212,36 @@ HEADERS  += \
 	widgets/SvgWidget.hpp \
 	widgets/TextEntry.hpp \
 	widgets/TryToggle.hpp \
+    3d/scene/Limb.hpp \
+    3d/scene/QtLogo3D.hpp \
+    3d/scene/GeometryEngine.hpp \
+    gear/gbody.h \
+    gear/gconstraint.h \
+    gear/gconstraint_jointloop.h \
+    gear/gcoordinate.h \
+    gear/gear.h \
+    gear/gelement.h \
+    gear/gforce.h \
+    gear/gjoint.h \
+    gear/gjoint_composite.h \
+    gear/gjoint_fixed.h \
+    gear/gjoint_free.h \
+    gear/gjoint_planar.h \
+    gear/gjoint_prismatic.h \
+    gear/gjoint_revolute.h \
+    gear/gjoint_spherical.h \
+    gear/gjoint_translational.h \
+    gear/gjoint_universal.h \
+    gear/greal.h \
+    gear/gspringdamper.h \
+    gear/gsystem.h \
+    gear/gsystem_constrained.h \
+    gear/gsystem_ik.h \
+    gear/liegroup.h \
+    gear/liegroup_rmatrix3_ext.h \
+    gear/rmatrix3j.h \
+    3d/scene/Simulation.hpp
+
 
 
 
@@ -216,9 +270,25 @@ RESOURCES += \
 	resources/fonts.qrc \
 	resources/style.qrc \
 	resources/qfi.qrc \
+	resources/3d.qrc
 
+
+#According to the link below, native widget support for Qt3D will not be available until at least Qt5.8 or later
+#Untill that time comes we will keep back the qt3d enthusiasm and write generalized 3D code that is easy to port when the day comes
+#http://stackoverflow.com/questions/35074830/show-qt3d-stuff-inside-qwidget-in-qt5
+contains(DEFINES, USE_QT3D){
+HEADERS += \
+	3d/qt3d/Qt3DWindow.hpp \
+	3d/qt3d/SceneModifier.hpp \
+
+SOURCES += \
+	3d/qt3d/Qt3DWindow.cpp \
+	3d/qt3d/SceneModifier.cpp \
+
+}
 
 include(ext.pri)
 
 message("FROM lib.pro:")
 include($$TOP_PWD/status.pri)
+

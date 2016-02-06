@@ -74,11 +74,11 @@ class HubWindow : public QMainWindow, public LogDestination{
 		void onGaugeTimer();
 		void onSummaryTimer();
 
-
 		void on_pushButtonSendData_clicked();
 		void on_pushButtonShowStats_clicked();
 		void on_comboBoxAddLocal_currentIndexChanged(const QString &arg1);
 		void on_tabWidget_currentChanged(int index);
+		void on_pushButtonOpenModel_clicked();
 };
 
 #endif // HUBWINDOW_HPP

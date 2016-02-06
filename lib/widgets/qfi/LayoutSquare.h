@@ -60,60 +60,60 @@
 
 class LayoutSquare : public QLayout
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 
-    explicit LayoutSquare( QWidget *parent, int spacing = -1 );
+	explicit LayoutSquare( QWidget *parent, int spacing = -1 );
 
-    explicit LayoutSquare( int spacing = -1 );
+	explicit LayoutSquare( int spacing = -1 );
 
-    ~LayoutSquare();
+	~LayoutSquare();
 
-    void addItem( QLayoutItem *item );
+	void addItem( QLayoutItem *item );
 
-    void addWidget( QWidget *widget );
+	void addWidget( QWidget *widget );
 
-    int count() const;
+	int count() const;
 
-    Qt::Orientations expandingDirections() const;
+	Qt::Orientations expandingDirections() const;
 
-    QRect geometry();
+	QRect geometry() const;
 
-    bool hasHeightForWidth() const;
+	bool hasHeightForWidth() const;
 
-    bool hasItem() const;
+	bool hasItem() const;
 
-    QLayoutItem* itemAt( int index ) const;
+	QLayoutItem* itemAt( int index ) const;
 
-    QSize minimumSize() const;
+	QSize minimumSize() const;
 
-    QLayoutItem* replaceItem( QLayoutItem *item );
+	QLayoutItem* replaceItem( QLayoutItem *item );
 
-    void setGeometry( const QRect &rect );
+	void setGeometry( const QRect &rect );
 
-    QSize sizeHint() const;
+	QSize sizeHint() const;
 
-    QLayoutItem* take();
+	QLayoutItem* take();
 
-    QLayoutItem* takeAt( int index );
+	QLayoutItem* takeAt( int index );
 
 private:
 
-    QLayoutItem *m_item;
+	QLayoutItem *m_item;
 
-    QRect *m_rectLast;
-    QRect *m_geometry;
+	QRect *m_rectLast;
+	QRect *m_geometry;
 
-    bool areRectsEqual( const QRect &rect_1, const QRect &rect_2 ) const;
+	bool areRectsEqual( const QRect &rect_1, const QRect &rect_2 ) const;
 
-    QPoint calculateCenterPnt( QSize fromSize, QSize itemSize ) const;
+	QPoint calculateCenterPnt( QSize fromSize, QSize itemSize ) const;
 
-    QSize calculateProperSize( QSize fromSize ) const;
+	QSize calculateProperSize( QSize fromSize ) const;
 
-    void init( int spacing );
+	void init( int spacing );
 
-    void setRectLast( const QRect &rect );
+	void setRectLast( const QRect &rect );
 };
 
 ////////////////////////////////////////////////////////////////////////////////
