@@ -1,5 +1,5 @@
-# ![OctoMY™ Logo](octomy_logo.png) OctoMY™ N-limbed madness!
+# ![OctoMY™ Logo](design/octomy_logo.png) OctoMY™ N-limbed madness!
 
-[Go to project-page](https://octomy.org)
+[Go to official project-page](http://www.octomy.org)
 
 
