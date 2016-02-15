@@ -4,6 +4,7 @@
 #include "Agent.hpp"
 #include "comms/CommsChannel.hpp"
 #include "utility/Utility.hpp"
+#include "hw/actuators/HexyTool.hpp"
 
 #include <QDebug>
 #include <QAccelerometerReading>
@@ -15,10 +16,11 @@
 #include <QAndroidJniObject>
 #endif
 
-AgentWindow::AgentWindow(Agent *agent, QWidget *parent) :
-	QWidget(parent)
-  , ui(new Ui::AgentWindow)
-  , agent(agent)
+AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
+	: QWidget(parent)
+	, ui(new Ui::AgentWindow)
+	, agent(agent)
+	, hexy(0)
 {
 	ui->setupUi(this);
 	ui->lineEditHubAddress->configure("","hub-address");
@@ -153,8 +155,11 @@ void AgentWindow::on_pushButtonTest_clicked(){
 	//notifyAndroid("TESTING 123");
 	//toastAndroid("TOASTING 123");
 	//agent->sendStatus();
-	ui->stackedWidget->setCurrentIndex(3);
-
+	//ui->stackedWidget->setCurrentIndex(3);
+	if(0==hexy){
+		hexy=new HexyTool;
+		hexy->show();
+	}
 }
 
 

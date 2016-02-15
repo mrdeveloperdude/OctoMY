@@ -45,7 +45,6 @@ Limb::Limb(Simulation &sim
 		parent->addChild(this);
 	}
 
-
 	double Lx = 0.3, Ly = 0.05, Lz = 0.05; // link dimension
 	double M = 1; // link mass
 	double Ixx = 1./12.*M*(Ly*Ly+Lz*Lz), Iyy = 1./12.*M*(Lx*Lx+Lz*Lz), Izz = 1./12.*M*(Lx*Lx+Ly*Ly), Ixy = 0, Ixz = 0, Iyz = 0; // moments of inertia with respect to the mass center
@@ -53,7 +52,6 @@ Limb::Limb(Simulation &sim
 
 	// set mass and moments of inertia of each link
 	link->setMass(M, Ixx, Iyy, Izz, Ixy, Ixz, Iyz, T_link_com); // Internally, moments of inertia with respect to {link} are calculated using the moments of inertia with respect to {com} and T_link_com.
-
 
 	joint->connectBodies((0!=parent)?parent->link:sim.getGround(), link);
 	joint->setPosition((0!=parent)?Vec3(0.5*Lx,0,0):Vec3(0,0,0), Vec3(-0.5*Lx,0,0)); // (0,0,0) = position of joint1 in {global}, (-0.5*Lx,0,0) = position of join1 in {link1}

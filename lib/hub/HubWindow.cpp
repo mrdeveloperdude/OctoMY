@@ -32,10 +32,16 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
   , ui(new Ui::HubWindow)
   , hub(hub)
   , startTime(QDateTime::currentMSecsSinceEpoch())
+  , randomWalk(0.0)
+  , mc(0)
+  , hexy(0)
+
 {
 	summaryTimer.setInterval(100);
 	gaugeTimer.setInterval(1000/60);
 	gaugeTimer.setTimerType(Qt::PreciseTimer);
+	hexyTimer.setSingleShot(true);
+	hexyTimer.setTimerType(Qt::PreciseTimer);
 	ui->setupUi(this);
 	QAbstractItemModel *data = new ClientModel(hub->getComms()->getClients(), this);
 	ui->widgetIncommingNodes->configure("Icons","hubwindiow-clients-list");
@@ -55,6 +61,11 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	}
 
 	if(!connect(&gaugeTimer,SIGNAL(timeout()),this,SLOT(onGaugeTimer()),WWCONTYPE)){
+		qDebug()<<"could not connect";
+	}
+
+
+	if(!connect(&hexyTimer,SIGNAL(timeout()),this,SLOT(onHexyTimer()))){
 		qDebug()<<"could not connect";
 	}
 
@@ -140,6 +151,7 @@ void HubWindow::homeMap() {
 		mc->setViewAndZoomIn ( londalen) ;
 	}
 }
+
 
 
 void HubWindow::onGaugeTimer(){
@@ -431,4 +443,55 @@ void HubWindow::on_tabWidget_currentChanged(int){
 
 void HubWindow::on_pushButtonOpenModel_clicked(){
 	qDebug()<<"BUTTON PRESSED";
+}
+
+
+
+void HubWindow::onHexyTimer(){
+	if(0==hexy){
+		return;
+	}
+	qreal pos[HexySerial::SERVO_COUNT]={0.0f};
+	const quint64 now=QDateTime::currentMSecsSinceEpoch();
+	const quint64 ival=now- lastTime;
+	if(ival>0){
+		lastTime=now;
+		angle+=(((qreal)ival)/1000.0);
+		angle-=floor(angle);
+		for(int i=0;i<HexySerial::SERVO_COUNT;++i){
+			pos[i]=sin(angle*M_PI*2.0+(qreal)i*3.0);
+			if(0==i){
+				//qDebug()<<"SERVO "<<i<<": "<<pos[i];
+			}
+		}
+		hexy->move(pos,0b00000000000000000000000000000011);
+	}
+	hexyTimer.start();
+}
+
+void HubWindow::onHexySettingsChanged(){
+	hexyTimer.start();
+}
+
+#include "hw/actuators/HexyTool.hpp"
+HexyTool *ht=0;
+void HubWindow::on_pushButtonTest_clicked(){
+	qDebug()<<"TEST BUTTON PRESSED";
+	if(0==ht){
+		ht=new HexyTool(0);
+	}
+	ht->show();
+	/*
+	if(0==hexy){
+		hexy=new HexySerial;
+		connect( hexy, SIGNAL(settingsChanged()), this, SLOT(onHexySettingsChanged()));
+	}
+	else{
+		delete hexy;
+		hexy=0;
+	}
+	if(0!=hexy){
+		hexy->configure();
+	}
+	*/
 }

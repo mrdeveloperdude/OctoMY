@@ -7,6 +7,7 @@
 #include "plot/StatsWindow.hpp"
 #include "basic/LogDestination.hpp"
 #include "hub/Hub.hpp"
+#include "hw/actuators/HexySerial.hpp"
 
 
 #include <QMainWindow>
@@ -29,8 +30,11 @@ class HubWindow : public QMainWindow, public LogDestination{
 		Hub *hub;
 		QTimer summaryTimer;
 		QTimer gaugeTimer;
+		QTimer hexyTimer;
 		StatsWindow stats;
 		quint64 startTime;
+		quint64 lastTime;
+		qreal angle=0.0f;
 
 		QCPDataMap graphRTT;
 		QCPDataMap graphSent;
@@ -40,9 +44,10 @@ class HubWindow : public QMainWindow, public LogDestination{
 		QCPDataMap graphSendBW;
 		QCPDataMap graphReceiveBW;
 
-		double randomWalk=0.0f;
+		double randomWalk;
 
-		qmapcontrol::MapControl *mc=0;
+		qmapcontrol::MapControl *mc;
+		HexySerial *hexy;
 
 		//QStandardItemModel simClients;
 
@@ -73,12 +78,15 @@ class HubWindow : public QMainWindow, public LogDestination{
 		void onRemoteHostLookupComplete(QHostInfo hi);
 		void onGaugeTimer();
 		void onSummaryTimer();
+		void onHexyTimer();
+		void onHexySettingsChanged();
 
 		void on_pushButtonSendData_clicked();
 		void on_pushButtonShowStats_clicked();
 		void on_comboBoxAddLocal_currentIndexChanged(const QString &arg1);
 		void on_tabWidget_currentChanged(int index);
 		void on_pushButtonOpenModel_clicked();
+		void on_pushButtonTest_clicked();
 };
 
 #endif // HUBWINDOW_HPP

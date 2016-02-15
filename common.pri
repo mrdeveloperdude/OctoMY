@@ -33,7 +33,7 @@ DEFINES += USE_BASIC_TESTS
 }
 
 # Add only plugins that are used and supported by the Qt build you are using
-QT += core gui opengl widgets xml network multimedia multimediawidgets svg printsupport quick sql positioning sensors testlib
+QT += core gui opengl widgets xml network multimedia multimediawidgets svg printsupport quick sql positioning sensors testlib serialport
 
 contains(DEFINES, USE_QT3D){
 QT += 3dcore 3drenderer 3dinput

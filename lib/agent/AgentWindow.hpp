@@ -13,6 +13,7 @@ class QAccelerometerReading;
 class QCompassReading;
 class QGyroscopeReading;
 class CommsChannel;
+class HexyTool;
 
 
 namespace Ui {
@@ -25,6 +26,7 @@ class AgentWindow : public QWidget, public LogDestination{
 	private:
 		Ui::AgentWindow *ui;
 		Agent *agent;
+		HexyTool *hexy;
 
 	public:
 		explicit AgentWindow(Agent *agent, QWidget *parent = 0);

@@ -116,7 +116,12 @@ SOURCES +=\
     gear/liegroup.inl \
     gear/liegroup_rmatrix3_ext.inl \
     gear/rmatrix3j.cpp \
-    3d/scene/Simulation.cpp
+    3d/scene/Simulation.cpp \
+    hw/actuators/HexySerial.cpp \
+    hw/actuators/SerialSettingsDialog.cpp \
+    hw/actuators/HexyLeg.cpp \
+    hw/actuators/HexyTool.cpp \
+    widgets/NumberEntry.cpp
 
 
 HEADERS  += \
@@ -240,7 +245,12 @@ HEADERS  += \
     gear/liegroup.h \
     gear/liegroup_rmatrix3_ext.h \
     gear/rmatrix3j.h \
-    3d/scene/Simulation.hpp
+    3d/scene/Simulation.hpp \
+    hw/actuators/HexySerial.hpp \
+    hw/actuators/SerialSettingsDialog.hpp \
+    hw/actuators/HexyLeg.hpp \
+    hw/actuators/HexyTool.hpp \
+    widgets/NumberEntry.hpp
 
 
 
@@ -263,6 +273,9 @@ FORMS    += \
 	ui/ResponsiveTest.ui \
 	ui/StatsWindow.ui \
 	ui/TryToggle.ui \
+    ui/SerialSettingsDialog.ui \
+    ui/NumberEntry.ui \
+    ui/HexyTool.ui
 
 
 RESOURCES += \
