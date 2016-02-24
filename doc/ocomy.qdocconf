@@ -1,0 +1,23 @@
+include($QT_INSTALL_DOCS/global/qt-html-templates-offline.qdocconf)
+include($QT_INSTALL_DOCS/global/qt-module-defaults.qdocconf)
+
+
+project = OctoMY™
+description = N-limbed madness™
+url = http://octomy.org/documentation
+version                 = $QT_VERSION
+
+sourcedirs = ../lib/basic
+headerdirs = ../lib/basic
+imagedirs = images
+
+sources.fileextensions = "*.cpp *.qdoc *.qml"
+headers.fileextensions = "*.hpp"
+
+outputformats = HTML
+outputdir  =    html
+HTML.templatedir = html_templates
+HTML.tocdepth = 2
+HTML.stylesheets = style.css
+HTML.scripts = script.js
+

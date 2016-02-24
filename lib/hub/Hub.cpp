@@ -12,6 +12,7 @@ Hub::Hub(QCommandLineParser &opts, QObject *parent):
   , lastLostPackets(0)
   , lastAckedPackets(0)
 {
+	setObjectName("Hub");
 	hookSignals(this);
 	if(0!=comms){
 		comms->hookSignals(*this);
@@ -47,12 +48,16 @@ void Hub::onReceivePacket(QSharedPointer<QDataStream> ds,QHostAddress,quint16){
 	qDebug()<<"GOT MAGIC: "<<magic;
 }
 
-void Hub::onError(QString){
-
+void Hub::onError(QString e){
+qDebug()<<"error: "<<e;
 }
 
 
 
-void Hub::onClientAdded(Client *){
+void Hub::onClientAdded(Client *c){
+	qDebug()<<"client added:"<<c->getSummary();
+}
 
+void Hub::onConnectionStatusChanged(bool s){
+	qDebug()<<"conchanged :"<<s;
 }

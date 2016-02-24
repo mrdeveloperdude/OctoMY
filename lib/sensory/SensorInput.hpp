@@ -34,8 +34,8 @@ class SensorInput : public QObject,  public QCompassFilter{
 		explicit SensorInput(QObject *parent = 0);
 
 
-		void hookSignals(QObject *o);
-		void unHookSignals(QObject *o);
+		void hookSignals(QObject &);
+		void unHookSignals(QObject &);
 
 	public:
 

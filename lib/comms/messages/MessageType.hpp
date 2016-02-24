@@ -4,10 +4,13 @@
 enum MessageType{
 	 INVALID=0
 	, NOOP_MSG
+	, PING
+	, PONG
 	, QUERY
 	, QUERY_RESULT
 	, COMMAND
 	, STATUS
+	, DIRECT_POSE
 };
 
 

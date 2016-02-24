@@ -34,6 +34,9 @@ class Hub: QObject{
 		void onError(QString);
 		void onClientAdded(Client *);
 
+	public slots:
+		void onConnectionStatusChanged(bool s);
+
 };
 
 #endif // HUB_HPP

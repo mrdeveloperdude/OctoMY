@@ -480,7 +480,6 @@ namespace utility{
 
 	void populateComboboxWithLocalAdresses(QComboBox &cb){
 		cb.clear();
-		cb.addItem("127.0.0.1");
 		QList<QNetworkInterface> list= QNetworkInterface::allInterfaces();
 		for(int i=0; i<list.size();i++) {
 			QNetworkInterface inter = list.at(i);
@@ -492,6 +491,7 @@ namespace utility{
 				}
 			}
 		}
+		cb.addItem("127.0.0.1");
 	}
 
 

@@ -3,13 +3,13 @@
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met: 
+// modification, are permitted provided that the following conditions are met:
 //
 // 1. Redistributions of source code must retain the above copyright notice, this
-//    list of conditions and the following disclaimer. 
+//    list of conditions and the following disclaimer.
 // 2. Redistributions in binary form must reproduce the above copyright notice,
 //    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution. 
+//    and/or other materials provided with the distribution.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -63,10 +63,10 @@ void GJointTranslational::update()
 	if ( bReversed ) {
 		T = SE3(1,0,0,0,1,0,0,0,1, -coordinates[0].q, -coordinates[1].q, -coordinates[2].q);
 		inv_T = SE3(1,0,0,0,1,0,0,0,1, coordinates[0].q, coordinates[1].q, coordinates[2].q);
-		
+
 		Sdq = se3(0, 0, 0, -coordinates[0].dq, -coordinates[1].dq, -coordinates[2].dq);
 		Sddq = se3(0, 0, 0, -coordinates[0].ddq, -coordinates[1].ddq, -coordinates[2].ddq);
-		
+
 		DSdqDt = Sddq;
 		S[3] = S[10] = S[17] = -1.0;
 	} else {
@@ -75,7 +75,7 @@ void GJointTranslational::update()
 
 		Sdq = se3(0, 0, 0, coordinates[0].dq, coordinates[1].dq, coordinates[2].dq);
 		Sddq = se3(0, 0, 0, coordinates[0].ddq, coordinates[1].ddq, coordinates[2].ddq);
-		
+
 		DSdqDt = Sddq;
 		S[3] = S[10] = S[17] = 1.0;
 	}
@@ -83,11 +83,13 @@ void GJointTranslational::update()
 
 RMatrix GJointTranslational::get_DSDq(GCoordinate *pCoordinate_)
 {
+	Q_UNUSED(pCoordinate_);
 	return Zeros(6,3);
 }
 
 RMatrix GJointTranslational::get_DdSDq(GCoordinate *pCoordinate_)
 {
+	Q_UNUSED(pCoordinate_);
 	return Zeros(6,3);
 }
 

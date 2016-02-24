@@ -3,7 +3,7 @@
 
 #include "sensory/SensorInput.hpp"
 #include "comms/CommsChannel.hpp"
-#include "comms/messages/StatusMessage.hpp"
+#include "comms/messages/SensorsMessage.hpp"
 
 #include <QObject>
 #include <QCommandLineParser>
@@ -16,7 +16,7 @@ class Agent : public QObject{
 		QCommandLineParser &opts;
 		CommsChannel *comms;
 		SensorInput sensors;
-		StatusMessage statusMessage;
+		SensorsMessage statusMessage;
 		qint64 lastSend;
 
 		QString hubAddress;
@@ -28,8 +28,8 @@ class Agent : public QObject{
 		virtual ~Agent();
 
 		void start(QString adrLocal, quint16 portLocal, QString hubAddress, quint16 hubPort);
-		void hookSignals(QObject *o);
-		void unHookSignals(QObject *o);
+		void hookSignals(QObject &o);
+		void unHookSignals(QObject &o);
 		void sendStatus();
 
 	private slots:

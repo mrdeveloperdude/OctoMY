@@ -3,12 +3,16 @@
 #include "remote/RemoteWindow.hpp"
 #include "remote/Remote.hpp"
 #include "comms/CommsChannel.hpp"
+#include "basic/LogHandler.hpp"
 
 #include <QDebug>
 #include <QTimer>
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QFileInfo>
+
+
 
 
 
@@ -20,6 +24,9 @@ RemoteMain::RemoteMain(int argc, char *argv[]):
   , argv(argv)
   , app(0)
 {
+	setObjectName("RemoteMain");
+	LogHandler::setLogging(true);
+	qsrand(QDateTime::currentMSecsSinceEpoch());
 	QCommandLineParser parser;
 	parser.setApplicationDescription("Robust real-time communication and control software for robots");
 	parser.addHelpOption();
@@ -48,18 +55,14 @@ RemoteMain::RemoteMain(int argc, char *argv[]):
 	parser.process(arguments);
 	const bool headless=parser.isSet(headlessOption);
 
+	app=(headless?(new QCoreApplication(argc, argv)):(new QApplication(argc, argv)));
+	qDebug()<<(headless?"HEADLESS":"GUI ENABLED");
 	Remote *remote=new Remote(parser);
 	if(!headless){
-		qDebug()<<"GUI ENABLED";
-		app=new QApplication(argc, argv);
 		RemoteWindow *w=new RemoteWindow (remote,0);
-		//		remote->setLogOutput(&w);
 		w->show();
 	}
-	else{
-		qDebug()<<"HEADLESS";
-		app=new QCoreApplication(argc, argv);
-	}
+
 
 
 	if(0!=app){
@@ -68,6 +71,7 @@ RemoteMain::RemoteMain(int argc, char *argv[]):
 		Q_INIT_RESOURCE(icons);
 		QTimer::singleShot(0, this, SLOT(run()));
 		ret=app->exec();
+		qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done, quitting";
 	}
 	else{
 		qWarning()<<"ERROR: no app, quitting";
@@ -92,5 +96,4 @@ int main(int argc, char *argv[]){
 	RemoteMain m(argc,argv);
 	//RemoteMain m;
 }
-
 

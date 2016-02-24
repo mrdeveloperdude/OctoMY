@@ -1,7 +1,7 @@
 #include "Agent.hpp"
 
 #include "basic/Standard.hpp"
-#include "hub/Client.hpp"
+#include "comms/Client.hpp"
 #include <QDebug>
 #include <QDataStream>
 #include <QSharedPointer>
@@ -17,7 +17,8 @@ Agent::Agent(QCommandLineParser &opts, QObject *parent):
   , lastSend(0)
   , hubPort(0)
 {
-	hookSignals(this);
+	setObjectName("Agent");
+	hookSignals(*this);
 	if(0!=comms){
 		comms->hookSignals(*this);
 	}
@@ -39,12 +40,12 @@ void Agent::start(QString listenAddress, quint16 listenPort, QString hubAddress,
 	}
 }
 
-void Agent::hookSignals(QObject *o){
+void Agent::hookSignals(QObject &o){
 	sensors.hookSignals(o);
 }
 
 
-void Agent::unHookSignals(QObject *o){
+void Agent::unHookSignals(QObject &o){
 	sensors.unHookSignals(o);
 }
 

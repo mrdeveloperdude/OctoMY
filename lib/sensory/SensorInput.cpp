@@ -112,54 +112,42 @@ void SensorInput::onGyroscopeReadingChanged() {
 */
 
 
-void SensorInput::hookSignals(QObject *o){
-	if(0!=o){
-		if(0!=source){
-			if(!connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)),o,SLOT(onPositionUpdated(QGeoPositionInfo)),WWCONTYPE)){
-				qWarning()<<"ERROR: Could not connect";
-			}
-		}
+void SensorInput::hookSignals(QObject &o){
 
-		if(!connect(this, SIGNAL(compassUpdated(QCompassReading*)),o,SLOT(onCompassUpdated(QCompassReading *)),WWCONTYPE)){
+	if(0!=source){
+		if(!connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)),&o,SLOT(onPositionUpdated(QGeoPositionInfo)),WWCONTYPE)){
 			qWarning()<<"ERROR: Could not connect";
 		}
-		if(!connect(this, SIGNAL(accelerometerUpdated(QAccelerometerReading*)),o,SLOT(onAccelerometerUpdated(QAccelerometerReading *)),WWCONTYPE)){
-			qWarning()<<"ERROR: Could not connect";
-		}
-		if(!connect(this, SIGNAL(gyroscopeUpdated(QGyroscopeReading*)),o,SLOT(onGyroscopeUpdated(QGyroscopeReading *)),WWCONTYPE)){
-			qWarning()<<"ERROR: Could not connect";
-		}
-
 	}
-	else{
-		qWarning()<<"Missing object";
+
+	if(!connect(this, SIGNAL(compassUpdated(QCompassReading*)),&o,SLOT(onCompassUpdated(QCompassReading *)),WWCONTYPE)){
+		qWarning()<<"ERROR: Could not connect";
+	}
+	if(!connect(this, SIGNAL(accelerometerUpdated(QAccelerometerReading*)),&o,SLOT(onAccelerometerUpdated(QAccelerometerReading *)),WWCONTYPE)){
+		qWarning()<<"ERROR: Could not connect";
+	}
+	if(!connect(this, SIGNAL(gyroscopeUpdated(QGyroscopeReading*)),&o,SLOT(onGyroscopeUpdated(QGyroscopeReading *)),WWCONTYPE)){
+		qWarning()<<"ERROR: Could not connect";
 	}
 }
 
 
 
-void SensorInput::unHookSignals(QObject *o){
-	if(0!=o){
-		if(0!=source){
-			if(!disconnect(source, SIGNAL(positionUpdated(QGeoPositionInfo)),o,SLOT(onPositionUpdated(QGeoPositionInfo)))){
-				qWarning()<<"ERROR: Could not disconnect";
-			}
-		}
-		if(!disconnect(this, SIGNAL(compassUpdated(QCompassReading*)),o,SLOT(onCompassUpdated(QCompassReading *)))){
+void SensorInput::unHookSignals(QObject &o){
+	if(0!=source){
+		if(!disconnect(source, SIGNAL(positionUpdated(QGeoPositionInfo)),&o,SLOT(onPositionUpdated(QGeoPositionInfo)))){
 			qWarning()<<"ERROR: Could not disconnect";
 		}
-		if(!disconnect(this, SIGNAL(accelerometerUpdated(QAccelerometerReading*)),o,SLOT(onAccelerometerUpdated(QAccelerometerReading *)))){
-			qWarning()<<"ERROR: Could not disconnect";
-		}
-		if(!disconnect(this, SIGNAL(gyroscopeUpdated(QGyroscopeReading*)),o,SLOT(onGyroscopeUpdated(QGyroscopeReading *)))){
-			qWarning()<<"ERROR: Could not disconnect";
-		}
-
 	}
-	else{
-		qWarning()<<"Missing object";
+	if(!disconnect(this, SIGNAL(compassUpdated(QCompassReading*)),&o,SLOT(onCompassUpdated(QCompassReading *)))){
+		qWarning()<<"ERROR: Could not disconnect";
 	}
-
+	if(!disconnect(this, SIGNAL(accelerometerUpdated(QAccelerometerReading*)),&o,SLOT(onAccelerometerUpdated(QAccelerometerReading *)))){
+		qWarning()<<"ERROR: Could not disconnect";
+	}
+	if(!disconnect(this, SIGNAL(gyroscopeUpdated(QGyroscopeReading*)),&o,SLOT(onGyroscopeUpdated(QGyroscopeReading *)))){
+		qWarning()<<"ERROR: Could not disconnect";
+	}
 }
 
 

@@ -39,7 +39,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 		ui->labelCompass->setText("WAITING FOR COMPASS");
 		ui->labelGyroscope->setText("WAITING FOR GYRO");
 		ui->labelAccelerometer->setText("WAITING FOR ACCELEROMETER");
-		agent->hookSignals(this);
+		agent->hookSignals(*this);
 	}
 	else{
 		ui->labelLocal->setText("N/A");

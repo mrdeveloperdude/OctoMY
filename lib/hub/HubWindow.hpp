@@ -62,6 +62,7 @@ class HubWindow : public QMainWindow, public LogDestination{
 
 	private:
 
+		void startProcess(QString base);
 
 		void prepareMap();
 		void homeMap();
@@ -80,6 +81,7 @@ class HubWindow : public QMainWindow, public LogDestination{
 		void onSummaryTimer();
 		void onHexyTimer();
 		void onHexySettingsChanged();
+		void onConnectionStatusChanged(bool);
 
 		void on_pushButtonSendData_clicked();
 		void on_pushButtonShowStats_clicked();

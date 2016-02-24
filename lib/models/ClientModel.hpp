@@ -10,6 +10,7 @@
 #include <QMap>
 
 class Client;
+class ClientDirectory;
 
 class ClientModel : public QAbstractItemModel{
 		Q_OBJECT
@@ -25,7 +26,7 @@ class ClientModel : public QAbstractItemModel{
 
 	private:
 
-		QMap<quint64, Client *> &clients;
+		ClientDirectory *clients;
 
 		QIcon services;
 		QVector<Node> *tree;
@@ -37,17 +38,13 @@ class ClientModel : public QAbstractItemModel{
 		Node *parent(Node *child) const;
 		int row(Node *node) const;
 
-		int rc() const{
-			return clients.size();
-		}
+		int rc() const;
 
-		int cc() const{
-			return 1;
-		}
+		int cc() const;
 
 
 	public:
-		explicit ClientModel(QMap<quint64, Client *> &, QObject *parent = 0);
+		explicit ClientModel(ClientDirectory *, QObject *parent = 0);
 		virtual ~ClientModel();
 
 	public:

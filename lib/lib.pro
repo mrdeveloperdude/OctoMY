@@ -15,14 +15,10 @@ SOURCES +=\
 	basic/StyleManager.cpp \
 	basic/UniquePlatformFingerprint.cpp \
 	comms/CommsChannel.cpp \
-	comms/Courier.cpp \
 	comms/FlowControl.cpp \
 	comms/messages/QueryMessage.cpp \
 	comms/messages/QueryResultMessage.cpp \
-	comms/messages/StatusMessage.cpp \
 	comms/ReliabilitySystem.cpp \
-	comms/SensorsCourier.cpp \
-	hub/Client.cpp \
 	hub/ClientWindow.cpp \
 	hub/Hub.cpp \
 	hub/HubWindow.cpp \
@@ -91,37 +87,55 @@ SOURCES +=\
 	widgets/SvgWidget.cpp \
 	widgets/TextEntry.cpp \
 	widgets/TryToggle.cpp \
-    3d/scene/Limb.cpp \
-    3d/scene/QtLogo3D.cpp \
-    3d/scene/GeometryEngine.cpp \
-    gear/gbody.cpp \
-    gear/gconstraint.cpp \
-    gear/gconstraint_jointloop.cpp \
-    gear/gelement.cpp \
-    gear/gjoint.cpp \
-    gear/gjoint_composite.cpp \
-    gear/gjoint_fixed.cpp \
-    gear/gjoint_free.cpp \
-    gear/gjoint_planar.cpp \
-    gear/gjoint_prismatic.cpp \
-    gear/gjoint_revolute.cpp \
-    gear/gjoint_spherical.cpp \
-    gear/gjoint_translational.cpp \
-    gear/gjoint_universal.cpp \
-    gear/gspringdamper.cpp \
-    gear/gsystem.cpp \
-    gear/gsystem_constrained.cpp \
-    gear/gsystem_ik.cpp \
-    gear/liegroup.cpp \
-    gear/liegroup.inl \
-    gear/liegroup_rmatrix3_ext.inl \
-    gear/rmatrix3j.cpp \
-    3d/scene/Simulation.cpp \
-    hw/actuators/HexySerial.cpp \
-    hw/actuators/SerialSettingsDialog.cpp \
-    hw/actuators/HexyLeg.cpp \
-    hw/actuators/HexyTool.cpp \
-    widgets/NumberEntry.cpp
+	3d/scene/Limb.cpp \
+	3d/scene/QtLogo3D.cpp \
+	3d/scene/GeometryEngine.cpp \
+	gear/gbody.cpp \
+	gear/gconstraint.cpp \
+	gear/gconstraint_jointloop.cpp \
+	gear/gelement.cpp \
+	gear/gjoint.cpp \
+	gear/gjoint_composite.cpp \
+	gear/gjoint_fixed.cpp \
+	gear/gjoint_free.cpp \
+	gear/gjoint_planar.cpp \
+	gear/gjoint_prismatic.cpp \
+	gear/gjoint_revolute.cpp \
+	gear/gjoint_spherical.cpp \
+	gear/gjoint_translational.cpp \
+	gear/gjoint_universal.cpp \
+	gear/gspringdamper.cpp \
+	gear/gsystem.cpp \
+	gear/gsystem_constrained.cpp \
+	gear/gsystem_ik.cpp \
+	gear/liegroup.cpp \
+	gear/liegroup.inl \
+	gear/liegroup_rmatrix3_ext.inl \
+	gear/rmatrix3j.cpp \
+	3d/scene/Simulation.cpp \
+	hw/actuators/HexySerial.cpp \
+	hw/actuators/SerialSettingsDialog.cpp \
+	hw/actuators/HexyLeg.cpp \
+	hw/actuators/HexyTool.cpp \
+	widgets/NumberEntry.cpp \
+	comms/couriers/Courier.cpp \
+	comms/couriers/SensorsCourier.cpp \
+	comms/couriers/DirectPoseCourier.cpp \
+	puppet/Pose.cpp \
+	widgets/LocalAddressEntry.cpp \
+	comms/messages/SensorsMessage.cpp \
+	comms/Client.cpp \
+	basic/LogHandler.cpp \
+	widgets/ConnectionWidget.cpp \
+    widgets/hexedit/QHexEdit.cpp \
+    widgets/hexedit/QHexEditComments.cpp \
+    widgets/hexedit/QHexEditData.cpp \
+    widgets/hexedit/QHexEditDataDevice.cpp \
+    widgets/hexedit/QHexEditDataReader.cpp \
+    widgets/hexedit/QHexEditDataWriter.cpp \
+    widgets/hexedit/QHexEditHighlighter.cpp \
+    widgets/hexedit/QHexEditPrivate.cpp \
+    widgets/hexedit/SparseRangeMap.cpp
 
 
 HEADERS  += \
@@ -134,7 +148,6 @@ HEADERS  += \
 	basic/StyleManager.hpp \
 	basic/UniquePlatformFingerprint.hpp \
 	comms/CommsChannel.hpp \
-	comms/Courier.hpp \
 	comms/DataType.hpp \
 	comms/DeviceStatusType.hpp \
 	comms/DeviceType.hpp \
@@ -142,11 +155,8 @@ HEADERS  += \
 	comms/messages/MessageType.hpp \
 	comms/messages/QueryMessage.hpp \
 	comms/messages/QueryResultMessage.hpp \
-	comms/messages/StatusMessage.hpp \
 	comms/QueryType.hpp \
 	comms/ReliabilitySystem.hpp \
-	comms/SensorsCourier.hpp \
-	hub/Client.hpp \
 	hub/ClientWindow.hpp \
 	hub/Hub.hpp \
 	hub/HubWindow.hpp \
@@ -217,40 +227,58 @@ HEADERS  += \
 	widgets/SvgWidget.hpp \
 	widgets/TextEntry.hpp \
 	widgets/TryToggle.hpp \
-    3d/scene/Limb.hpp \
-    3d/scene/QtLogo3D.hpp \
-    3d/scene/GeometryEngine.hpp \
-    gear/gbody.h \
-    gear/gconstraint.h \
-    gear/gconstraint_jointloop.h \
-    gear/gcoordinate.h \
-    gear/gear.h \
-    gear/gelement.h \
-    gear/gforce.h \
-    gear/gjoint.h \
-    gear/gjoint_composite.h \
-    gear/gjoint_fixed.h \
-    gear/gjoint_free.h \
-    gear/gjoint_planar.h \
-    gear/gjoint_prismatic.h \
-    gear/gjoint_revolute.h \
-    gear/gjoint_spherical.h \
-    gear/gjoint_translational.h \
-    gear/gjoint_universal.h \
-    gear/greal.h \
-    gear/gspringdamper.h \
-    gear/gsystem.h \
-    gear/gsystem_constrained.h \
-    gear/gsystem_ik.h \
-    gear/liegroup.h \
-    gear/liegroup_rmatrix3_ext.h \
-    gear/rmatrix3j.h \
-    3d/scene/Simulation.hpp \
-    hw/actuators/HexySerial.hpp \
-    hw/actuators/SerialSettingsDialog.hpp \
-    hw/actuators/HexyLeg.hpp \
-    hw/actuators/HexyTool.hpp \
-    widgets/NumberEntry.hpp
+	3d/scene/Limb.hpp \
+	3d/scene/QtLogo3D.hpp \
+	3d/scene/GeometryEngine.hpp \
+	gear/gbody.h \
+	gear/gconstraint.h \
+	gear/gconstraint_jointloop.h \
+	gear/gcoordinate.h \
+	gear/gear.h \
+	gear/gelement.h \
+	gear/gforce.h \
+	gear/gjoint.h \
+	gear/gjoint_composite.h \
+	gear/gjoint_fixed.h \
+	gear/gjoint_free.h \
+	gear/gjoint_planar.h \
+	gear/gjoint_prismatic.h \
+	gear/gjoint_revolute.h \
+	gear/gjoint_spherical.h \
+	gear/gjoint_translational.h \
+	gear/gjoint_universal.h \
+	gear/greal.h \
+	gear/gspringdamper.h \
+	gear/gsystem.h \
+	gear/gsystem_constrained.h \
+	gear/gsystem_ik.h \
+	gear/liegroup.h \
+	gear/liegroup_rmatrix3_ext.h \
+	gear/rmatrix3j.h \
+	3d/scene/Simulation.hpp \
+	hw/actuators/HexySerial.hpp \
+	hw/actuators/SerialSettingsDialog.hpp \
+	hw/actuators/HexyLeg.hpp \
+	hw/actuators/HexyTool.hpp \
+	widgets/NumberEntry.hpp \
+	comms/couriers/SensorsCourier.hpp \
+	comms/couriers/Courier.hpp \
+	comms/couriers/DirectPoseCourier.hpp \
+	puppet/Pose.hpp \
+	widgets/LocalAddressEntry.hpp \
+	comms/messages/SensorsMessage.hpp \
+	comms/Client.hpp \
+	basic/LogHandler.hpp \
+	widgets/ConnectionWidget.hpp \
+    widgets/hexedit/QHexEdit.hpp \
+    widgets/hexedit/QHexEditComments.hpp \
+    widgets/hexedit/QHexEditData.hpp \
+    widgets/hexedit/QHexEditDataDevice.hpp \
+    widgets/hexedit/QHexEditDataReader.hpp \
+    widgets/hexedit/QHexEditDataWriter.hpp \
+    widgets/hexedit/QHexEditHighlighter.hpp \
+    widgets/hexedit/QHexEditPrivate.hpp \
+    widgets/hexedit/SparseRangeMap.hpp
 
 
 
@@ -273,9 +301,10 @@ FORMS    += \
 	ui/ResponsiveTest.ui \
 	ui/StatsWindow.ui \
 	ui/TryToggle.ui \
-    ui/SerialSettingsDialog.ui \
-    ui/NumberEntry.ui \
-    ui/HexyTool.ui
+	ui/SerialSettingsDialog.ui \
+	ui/NumberEntry.ui \
+	ui/HexyTool.ui \
+	widgets/ConnectionWidget.ui
 
 
 RESOURCES += \

@@ -1,7 +1,7 @@
 #ifndef SENSORSCOURIER_HPP
 #define SENSORSCOURIER_HPP
 #include "Courier.hpp"
-#include "comms/messages/StatusMessage.hpp"
+#include "comms/messages/SensorsMessage.hpp"
 
 #include <QObject>
 
@@ -15,7 +15,7 @@ class SensorsCourier : public Courier{
 		Q_OBJECT
 	private:
 		CourierMandate man;
-		StatusMessage msg;
+		SensorsMessage msg;
 	public:
 		explicit SensorsCourier(QObject *parent = 0);
 
@@ -25,7 +25,7 @@ class SensorsCourier : public Courier{
 
 		//Override to acton sending opportunity.
 		//Return true if you took advantage of the opportunity
-		quint64 sendingOportunity(QDataStream &ds, quint32 availableBytes) override;
+		quint64 sendingOpportunity(QDataStream &ds, quint32 availableBytes) override;
 
 	private slots:
 		void onPositionUpdated(const QGeoPositionInfo &info);

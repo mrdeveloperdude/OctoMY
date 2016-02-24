@@ -12,7 +12,7 @@
 #include "FlowControl.hpp"
 
 #include "basic/LogDestination.hpp"
-#include "Courier.hpp"
+#include "couriers/Courier.hpp"
 
 #define TIMEOUT_TRESHOLD 1
 
@@ -25,6 +25,8 @@
 class HubWindow;
 class Client;
 class Courier;
+class ClientDirectory;
+class ClientSignature;
 
 /*
 Architecture:
@@ -75,21 +77,30 @@ Notes:
 class CommsChannel : public QObject{
 		Q_OBJECT
 	private:
+		static const quint64 CONNECTION_TIMEOUT=1000*5;//5 sec connection timeout
 		QUdpSocket udpSocket;
-		QHostAddress bindAddress;
-		quint16 bindPort;
 		QTimer sendingTimer;
 		//Clients as identifued by their fingerprints
-		QMap<quint64, Client *> clients;
+		ClientDirectory *clients;
 		LogDestination *mw;
 		//All registered couriers
 		QList<Courier *> couriers;
-		const quint64 client_fingerprint;
+		//const quint32 localClientPlatform;		const quint32 localClientExecutable;
+		ClientSignature localSignature;
+		quint64 lastRX;
+		quint64 lastTX;
+		quint64 lastRXST;
+		quint64 lastTXST;
+		quint64 sendCount;
+		quint64 recCount;
+		bool connected;
 	public:
 
 		explicit CommsChannel(LogDestination *mw=0);
 
 	public:
+
+		ClientDirectory *getClients();
 
 		void start(QHostAddress bindAddress, quint16 bindPort);
 		void stop();
@@ -98,7 +109,7 @@ class CommsChannel : public QObject{
 
 		QString getSummary();
 
-		QMap<quint64, Client *> &getClients ();
+
 
 		void hookSignals(QObject &ob);
 		void unHookSignals(QObject &ob);
@@ -106,20 +117,21 @@ class CommsChannel : public QObject{
 		void registerCourier(Courier &);
 		void unregisterCourier(Courier &);
 
+		bool isConnected(){return connected;}
+
+		qint64 sendRawData(QByteArray datagram,ClientSignature sig);
+
 
 	private:
 
-		bool sendPackageRaw(QByteArray ba,QHostAddress host, quint16 port);
-
 		void appendLog(QString);
-		Client *getClient(const quint64 fingerprint, const QHostAddress adr,const  quint16 port);
-
 
 	signals:
 
-		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
+//		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
 		void error(QString message);
 		void clientAdded(Client *c);
+		void connectionStatusChanged(bool c);
 
 	private slots:
 

@@ -2,6 +2,7 @@
 
 #include "hub/HubWindow.hpp"
 #include "hub/Hub.hpp"
+#include "basic/LogHandler.hpp"
 
 #include <QDebug>
 #include <QTimer>
@@ -19,7 +20,9 @@ HubMain::HubMain(int argc, char *argv[]):
   , argv(argv)
   , app(0)
 {
-
+	qsrand(QDateTime::currentMSecsSinceEpoch());
+	setObjectName("HubMain");
+	LogHandler::setLogging(true);
 	QCommandLineParser parser;
 	parser.setApplicationDescription("Robust real-time communication and control library for robots");
 	parser.addHelpOption();
@@ -51,20 +54,16 @@ HubMain::HubMain(int argc, char *argv[]):
 
 
 
+	app=(headless?(new QCoreApplication(argc, argv)):(new QApplication(argc, argv)));
+	qDebug()<<(headless?"HEADLESS":"GUI ENABLED");
 	Hub *hub=new Hub(parser);
 	if(!headless){
-		qDebug()<<"GUI ENABLED";
-		app=new QApplication(argc, argv);
 		HubWindow *w=new HubWindow (hub,0);
-		//		remote->setLogOutput(&w);
 		w->show();
 	}
-	else{
-		qDebug()<<"HEADLESS";
-		app=new QCoreApplication(argc, argv);
-	}
 
-//	app=new QApplication(argc, argv); PoseView widget; widget.show();
+
+	//	app=new QApplication(argc, argv); PoseView widget; widget.show();
 
 	if(0!=app){
 
@@ -86,6 +85,7 @@ HubMain::HubMain(int argc, char *argv[]):
 		Q_INIT_RESOURCE(3d);
 		QTimer::singleShot(0, this, SLOT(run()));
 		ret=app->exec();
+		qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done, quitting";
 	}
 	else{
 		qWarning()<<"ERROR: no app, quitting";

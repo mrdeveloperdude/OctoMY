@@ -1,12 +1,13 @@
-#ifndef STATUSMESSAGE_HPP
-#define STATUSMESSAGE_HPP
+#ifndef SENSORSMESSAGE_HPP
+#define SENSORSMESSAGE_HPP
 
 #include <QDataStream>
 #include <QVector3D>
+#include <QVector2D>
 #include <QGeoCoordinate>
 #include <QCompassReading>
 
-class StatusMessage{
+class SensorsMessage{
 	private:
 		qint64 sz=-1;
 	public:
@@ -19,9 +20,10 @@ class StatusMessage{
 		qreal compassAzimuth;
 		qreal compassAccuracy;
 		qint32 temperature;
+		QVector2D touch;
 
 	public:
-		StatusMessage(
+		SensorsMessage(
 				const bool ok=false
 				, const qint64 timestamp=0
 				, const QGeoCoordinate gps=QGeoCoordinate()
@@ -31,16 +33,17 @@ class StatusMessage{
 				, const qreal compassAzimuth=0
 				, const qreal compassAccuracy=0
 				, const qint32 temperature=0
+				, const QVector2D touch=QVector2D(0,0)
 				);
 
-		StatusMessage(QDataStream &);
+		SensorsMessage(QDataStream &);
 
 		qint64 size();
 
 };
 
 
-QDataStream &operator<<(QDataStream &, const StatusMessage &);
-QDataStream &operator>>(QDataStream &, StatusMessage &);
+QDataStream &operator<<(QDataStream &, const SensorsMessage &);
+QDataStream &operator>>(QDataStream &, SensorsMessage &);
 
-#endif // STATUSMESSAGE_HPP
+#endif // SENSORSMESSAGE_HPP

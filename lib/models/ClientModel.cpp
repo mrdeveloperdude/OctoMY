@@ -1,6 +1,6 @@
 #include "ClientModel.hpp"
 
-#include "hub/Client.hpp"
+#include "comms/Client.hpp"
 
 #include <QIcon>
 #include <QPixmap>
@@ -38,11 +38,11 @@ else{
 
 
 
-ClientModel::ClientModel(QMap<quint64, Client *> &clients, QObject *parent)
+ClientModel::ClientModel(ClientDirectory *clients, QObject *parent)
 	: QAbstractItemModel(parent)
 	, clients(clients)
 	, services(QPixmap(":/images/services.png"))
-	, tree(new QVector<Node>(clients.size(), Node(0)))
+	, tree(new QVector<Node>(0, Node(0)))
 {
 
 }
@@ -137,4 +137,13 @@ ClientModel::Node *ClientModel::parent(Node *child) const{
 int ClientModel::row(Node *node) const{
 	const Node *first = node->parent ? &(node->parent->children->at(0)) : &(tree->at(0));
 	return node - first;
+}
+
+
+int ClientModel::rc() const{
+	return clients->count();
+}
+
+int ClientModel::cc() const{
+	return 1;
 }

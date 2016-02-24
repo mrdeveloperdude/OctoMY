@@ -132,8 +132,8 @@ void IdenticonWidget::regenerateIdenticon(){
 void IdenticonWidget::setIdenticonData(quint64 data){
 	if(0==data){
 		//data=9693658694970463214;
-		data=UniquePlatformFingerprint::getInstance().getQuint64();
-		qDebug()<<"Identicon defaulting to fingerprint: "<<data<<"  ("<<UniquePlatformFingerprint::getInstance().getHEX()<<")";
+		data=UniquePlatformFingerprint::getInstance().platform().getQuint64();
+		qDebug()<<"Identicon defaulting to fingerprint: "<<data<<"  ("<<UniquePlatformFingerprint::getInstance().platform().getHEX()<<")";
 	}
 	if(this->data!=data){
 		this->data=data;

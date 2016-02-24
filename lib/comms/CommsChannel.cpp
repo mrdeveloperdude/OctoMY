@@ -2,8 +2,12 @@
 
 #include "basic/Standard.hpp"
 #include "hub/HubWindow.hpp"
-#include "hub/Client.hpp"
+#include "comms/Client.hpp"
 #include "basic/UniquePlatformFingerprint.hpp"
+#include "messages/MessageType.hpp"
+
+#include "puppet/Pose.hpp"
+
 
 #include <QDataStream>
 #include <QDateTime>
@@ -15,90 +19,86 @@ CommsChannel::CommsChannel(LogDestination *mw):
 	QObject(0)
   , udpSocket(this)
   , sendingTimer(this)
+  , clients(new ClientDirectory)
   , mw(mw)
-  , client_fingerprint(UniquePlatformFingerprint::getInstance().getQuint64())
+  , localSignature(UniquePlatformFingerprint::getInstance().platform().getQuint32(), UniquePlatformFingerprint::getInstance().executable().getQuint32())
+  , lastRX(0)
+  , lastTX(0)
+  , lastRXST(0)
+  , lastTXST(0)
+  , sendCount(0)
+  , recCount(0)
+  , connected(false)
 {
+	setObjectName("CommsChannel");
 	if(!connect(&udpSocket, SIGNAL(readyRead()),this, SLOT(onReadyRead()),WWCONTYPE)){
-		qWarning()<<"Could not connect";
+		qWarning()<<"Could not connect UDP readyRead";
 	}
 	qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
 	if(!connect(&udpSocket, SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(onUdpError(QAbstractSocket::SocketError)),WWCONTYPE)){
-		qWarning()<<"Could not connect";
+		qWarning()<<"Could not connect UDP error";
 	}
 	sendingTimer.setSingleShot(true);
 	sendingTimer.setTimerType(Qt::PreciseTimer);
 	if(!connect(&sendingTimer, SIGNAL(timeout()),this,SLOT(onSendingTimer()),WWCONTYPE)){
-		qWarning()<<"Could not connect";
+		qWarning()<<"Could not connect sending timer";
 	}
 	sendingTimer.start(0);
 }
 
 
-void CommsChannel::start(QHostAddress bindAddress, quint16 bindPort){
-	this->bindAddress=bindAddress;
-	this->bindPort=bindPort;
-	bool b = udpSocket.bind(bindAddress, bindPort);
-	sendingTimer.start();
-	qDebug()<<"Binding UDP socket for "<< bindAddress <<":"<< bindPort<< (b?" succeeded": " failed");
+ClientDirectory *CommsChannel::getClients(){
+	return clients;
 }
 
+void CommsChannel::start(QHostAddress bindAddress, quint16 bindPort){
+	localSignature.host=bindAddress;
+	localSignature.port=bindPort;
+	bool b = udpSocket.bind(bindAddress, bindPort);
+	qDebug()<<"----- comms bind "<< localSignature.toString()<< (b?" succeeded": " failed");
+	if(b){
+		sendingTimer.start();
+	}
+	else{
+		stop();
+	}
+}
+
+
+
 void CommsChannel::stop(){
+	connected=false;
 	sendingTimer.stop();
 	udpSocket.close();
-	qDebug()<<"Unbinding UDP socket for "<< bindAddress <<":"<< bindPort;
+	emit connectionStatusChanged(false);
+	qDebug()<<"----- comms unbind "<< localSignature.toString();
 }
 
 void CommsChannel::setLogOutput(LogDestination *mw){
 	this->mw=mw;
 }
 
-bool CommsChannel::sendPackageRaw( QByteArray ba, QHostAddress host, quint16 port){
-	/*
-		QByteArray datagram;
-		QDataStream ds(&datagram,QIODevice::WriteOnly);
-		ds<<nl->reliabilitySystem.localSequence();
-		ds<<nl->reliabilitySystem.remoteSequence();
-		ds<<nl->reliabilitySystem.generateAckBits();
-		ds<<ba;
-		if(datagram.size()>512){
-			qWarning()<<"WARNING: UDP packet size exceeded 512 bytes";
-		}
-		const qint64 written=udpSocket.writeDatagram(datagram,host,port);
-		if(written<0){
-			qDebug()<<"ERROR WRITING TO UDP SOCKET:"<<udpSocket.errorString();
-			return false;
-		}
-		else{
-			//qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET";
-		}
-		nl->send(written);
 
-
-		*/
-	return true;
-	/*
-		Client *nl=getClient(host,port);
-		if(0!=nl){
-
+void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHost , quint16 remotePort ){
+	qDebug()<<"RECEIV";
+	lastRX=QDateTime::currentMSecsSinceEpoch();
+	recCount++;
+	if(lastRX-lastRXST>1000){
+		qDebug()<<"REC count="<<QString::number(recCount)<<"/sec";
+		lastRXST=lastRX;
+		recCount=0;
 	}
-	return false;
-	*/
-}
-
-#include "messages/MessageType.hpp"
-
-void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress host , quint16 port ){
 	QSharedPointer<QDataStream> ds(new QDataStream(&datagram, QIODevice::ReadOnly));
 	const int header = 20; //magic(4) + version(4) + fingerprint(8) + messageType(4)
 	const int size=datagram.size();
 	if ( size <= header ){
-		emit error("Message too short: " + datagram.size());
+		emit error("ERROR: Message too short: " +QString::number(datagram.size()));
 		return;
 	}
 	quint32 octomy_protocol_magic=0;
 	*ds >> octomy_protocol_magic;
 	if(OCTOMY_PROTOCOL_MAGIC!=octomy_protocol_magic){
-		emit error("OctoMY Protocol Magic mismatch: "+QString::number(octomy_protocol_magic,16)+ " vs. "+QString::number((quint32)OCTOMY_PROTOCOL_MAGIC,16));
+		emit error("ERROR: OctoMY Protocol Magic mismatch: "+QString::number(octomy_protocol_magic,16)+ " vs. "+QString::number((quint32)OCTOMY_PROTOCOL_MAGIC,16));
 		return;
 	}
 	quint32 octomy_protocol_version=0;
@@ -108,33 +108,42 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress host , qu
 				ds->setVersion(OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT);
 			}break;
 		default:{
-				emit error("OctoMY Protocol version unsupported: "+QString::number(octomy_protocol_version));
+				emit error("ERROR: OctoMY Protocol version unsupported: "+QString::number(octomy_protocol_version));
 				return;
 			}break;
 	}
-	quint64 client_fingerprint=0;
-	*ds >> client_fingerprint;
-	Client *client=getClient(client_fingerprint, host,port);
-	if(0==client){
-		emit error("Error fetching client by id "+QString::number(client_fingerprint,16));
+	quint32 remoteClientPlatform=0;
+	quint32 remoteClientExecutable=0;
+	*ds >> remoteClientPlatform;
+	*ds >> remoteClientExecutable;
+	ClientSignature remoteSignature(remoteClientPlatform, remoteClientExecutable, remoteHost,remotePort);
+	Client *remoteClient=clients->getBest(remoteSignature,true);
+	if(0==remoteClient){
+		emit error("ERROR: Could not fetch client by id: '"+remoteSignature.toString()+"'");
 		return;
 	}
 	else {
-		//qDebug()<<"RECEIVED "<<datagram.size()<<" RAW BYTES FROM "<<host<<":"<<port<<" ("<<client_fingerprint<<")";
+		qDebug()<<"Data received from client '"<<remoteSignature.toString()<<"'";
 		unsigned int packet_sequence = 0;
 		unsigned int packet_ack = 0;
 		unsigned int packet_ack_bits = 0;
 		*ds >> packet_sequence;
 		*ds >> packet_ack;
 		*ds >> packet_ack_bits;
-		client->reliabilitySystem.packetReceived( packet_sequence, size-header );
-		client->reliabilitySystem.processAck( packet_ack, packet_ack_bits );
-		client->receive();
+		remoteClient->reliabilitySystem.packetReceived( packet_sequence, size-header );
+		remoteClient->reliabilitySystem.processAck( packet_ack, packet_ack_bits );
+		remoteClient->receive();
 		qint32 octomy_message_type_int=0;
 		*ds >> octomy_message_type_int;
 		const MessageType octomy_message_type=(MessageType)octomy_message_type_int;
 		switch(octomy_message_type){
 			case(QUERY):{
+				}break;
+			case(PING):{
+					//TODO: Record PING received time and schedule PONG message to be sent in return
+				}break;
+			case(PONG):{
+					//TODO: Look up matching PING and broadcast positive status
 				}break;
 			case(QUERY_RESULT):{
 				}break;
@@ -144,26 +153,47 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress host , qu
 				}break;
 			case(NOOP_MSG):{
 				}break;
+			case(DIRECT_POSE):{
+					Pose pose;
+					*ds >> pose;
+					qDebug()<<"GOT POSE MESSAGE: "<<pose.toString();
+				}break;
 			default:
 			case(INVALID):{
-					emit error("OctoMY message type invalid: "+QString::number((quint32)octomy_message_type,16));
+					emit error("ERROR: OctoMY message type invalid: "+QString::number((quint32)octomy_message_type,16));
 					return;
 				}break;
 		}
-		emit receivePacket(ds,host, port);
+		//emit receivePacket(ds,host, port);
 	}
 }
 
+
 void CommsChannel::onSendingTimer(){
-	Client *client=getClient(client_fingerprint, bindAddress, bindPort);
-	if(0==client){
-		emit error("Error fetching client by id "+QString::number(client_fingerprint,16));
+	const quint64 now=QDateTime::currentMSecsSinceEpoch();
+	const quint64 timeSinceLastRX=now-lastRX;
+	Client *localClient=clients->getBest(localSignature, true);
+	if(0==localClient){
+		emit error(QStringLiteral("Error fetching local client by id ")+localSignature.toString());
 		return;
+	}
+	if(connected && timeSinceLastRX>CONNECTION_TIMEOUT){
+		stop();
+	}
+	else if(!connected && timeSinceLastRX<=CONNECTION_TIMEOUT){
+		connected=true;
+		emit connectionStatusChanged(true);
+	}
+	lastRX=now;
+	sendCount++;
+	if(now-lastTXST>1000){
+		qDebug()<<"SEND count="<<QString::number(sendCount)<<"/sec";
+		lastTXST=now;
+		sendCount=0;
 	}
 	//Prepare a priority list of couriers to process for this packet
 	qint64 mostUrgentCourier=1000000;
 	QMap<quint64, Courier *> pri;
-	const qint64 now=QDateTime::currentMSecsSinceEpoch();
 	for(QList<Courier *>::iterator i=couriers.begin(),e=couriers.end();i!=e; ++i){
 		Courier *c=*i;
 		if(0!=c){
@@ -179,47 +209,58 @@ void CommsChannel::onSendingTimer(){
 			}
 		}
 	}
-	QByteArray datagram;
-	QDataStream ds(&datagram,QIODevice::WriteOnly);
-	// Write a header with protocol "magic number" and a version
-	ds << (quint32)OCTOMY_PROTOCOL_MAGIC;//Protocol MAGIC identifier
-	ds << (qint32)OCTOMY_PROTOCOL_VERSION_CURRENT;//Protocol version
-	ds.setVersion(OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT); //Qt Datastream version
-	//Write client fingerprint
-	ds << client_fingerprint;
-	// Write CommChannel reliability data
-	ds<<client->reliabilitySystem.localSequence();
-	ds<<client->reliabilitySystem.remoteSequence();
-	ds<<client->reliabilitySystem.generateAckBits();
-	//Write message payload as constructed by couriers
+	//Write one message per courier in pri list
+	//NOTE: several possible optimizations exist, for example grouping messages
+	//to same node int one packet etc.
 	if(pri.size()>0){
-		qint32 availableBytes=400;
 		for (QMap<quint64, Courier *>::iterator i = pri.begin(), e=pri.end(); i != e; ++i){
-			Courier *c=i.value();
-			quint32 bytesAdded=c->sendingOportunity(ds,availableBytes);
-			availableBytes-=bytesAdded;
-			if(availableBytes<=0){
-				break;
+			Courier *courier=i.value();
+			if(0!=courier){
+				QByteArray datagram;
+				QDataStream ds(&datagram,QIODevice::WriteOnly);
+				// Write a header with protocol "magic number" and a version
+				ds << (quint32)OCTOMY_PROTOCOL_MAGIC;//Protocol MAGIC identifier
+				ds << (qint32)OCTOMY_PROTOCOL_VERSION_CURRENT;//Protocol version
+				ds.setVersion(OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT); //Qt Datastream version
+				//Write client fingerprint
+				ds << localSignature.platform;
+				ds << localSignature.executable;
+				// Write reliability data
+				ds<<localClient->reliabilitySystem.localSequence();
+				ds<<localClient->reliabilitySystem.remoteSequence();
+				ds<<localClient->reliabilitySystem.generateAckBits();
+				//Process courier
+				qint32 availableBytes=512-(7*4);
+				quint32 bytesUsed=courier->sendingOpportunity(ds,availableBytes);
+				availableBytes-=bytesUsed;
+				const quint32 sz=datagram.size();
+				if(sz>512){
+					qWarning()<<"ERROR: UDP packet size exceeded 512 bytes, dropping write";
+				}
+				else if(availableBytes<=0){
+					qWarning()<<"ERROR: courier trying to send too much data: "<<QString::number(bytesUsed)<<" , dropping write";
+				}
+				else{
+					const ClientSignature &sig=courier->getDestination();
+					const qint64 written=udpSocket.writeDatagram(datagram,sig.host,sig.port);
+					qDebug()<<"WROTE "<<written<<" bytes to "<<sig.host<<":"<<sig.port;
+					if(written<sz){
+						qDebug()<<"ERROR WRITING TO UDP SOCKET:"<<udpSocket.errorString();
+						return;
+					}
+					else{
+						//qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET";
+					}
+					localClient->send(written);
+				}
 			}
 		}
-		const quint32 sz=datagram.size();
-		if(sz>512){
-			qWarning()<<"WARNING: UDP packet size exceeded 512 bytes, fragmentation may have occured";
-		}
-		const qint64 written=udpSocket.writeDatagram(datagram,client->host,client->port);
-		if(written<sz){
-			qDebug()<<"ERROR WRITING TO UDP SOCKET:"<<udpSocket.errorString();
-			return;
-		}
-		else{
-			//qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET";
-		}
-		client->send(written);
 	}
 
 	//Do idle packet
 	else{
-		ds<<(qint32)NOOP_MSG;
+		//TODO: make sure idle packet is sent
+		//ds<<(qint32)NOOP_MSG;
 		//qDebug()<<"IDLE PACKET";
 	}
 
@@ -227,9 +268,15 @@ void CommsChannel::onSendingTimer(){
 	sendingTimer.start(MIN(mostUrgentCourier,1000));//Our interval is 1000ms at the longest
 }
 
-
+//Only for testing purposes! Real data should pass through the courier system
+//and be dispatched by logic in sending timer
+qint64 CommsChannel::sendRawData(QByteArray datagram,ClientSignature sig){
+	return udpSocket.writeDatagram(datagram,sig.host,sig.port);
+}
 
 QString CommsChannel::getSummary(){
+	QString out="TODO";
+	/*
 	int connected=0;
 	int disconnected=0;
 	for (QMap<quint64, Client *>::iterator i = clients.begin(), e=clients.end(); i != e; ++i){
@@ -243,19 +290,21 @@ QString CommsChannel::getSummary(){
 			}
 		}
 	}
-	QString out;
+
 	QTextStream ts(&out);
 	ts<<connected<<" of " << (disconnected+connected) <<" connected\n";
+	*/
+
 	return out;
 }
 
-QMap<quint64, Client *> &CommsChannel::getClients (){
-	return clients;
-}
+
 
 //Slot called when data arrives on socket
 void CommsChannel::onReadyRead(){
+	qDebug()<<"READY READ";
 	while (udpSocket.hasPendingDatagrams()){
+		qDebug()<<" + UDP PACKET";
 		QByteArray datagram;
 		datagram.resize(udpSocket.pendingDatagramSize());
 		QHostAddress host;
@@ -277,28 +326,24 @@ void CommsChannel::appendLog(QString msg){
 	}
 }
 
-Client *CommsChannel::getClient(const quint64 fingerprint, const QHostAddress adr, const quint16 port){
-	QMap<quint64, Client *> ::const_iterator it=clients.find(fingerprint);
-	if(clients.end()==it){
-		Client *c=new Client(fingerprint, adr,port, mw);
-		it=clients.insert(fingerprint, c);
-		emit clientAdded(c);
-	}
-	return it.value();
-}
-
 
 void CommsChannel::hookSignals(QObject &ob){
 	qRegisterMetaType<Client *>("Client *");
+	/*
 	qRegisterMetaType<QHostAddress>("QHostAddress");
 	qRegisterMetaType<QSharedPointer<QDataStream>>("QSharedPointer<QDataStream>");
+
 	if(!connect(this,SIGNAL(receivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)),&ob,SLOT(onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)),WWCONTYPE)){
 		qDebug()<<"could not connect "<<ob.objectName();
 	}
+	*/
 	if(!connect(this,SIGNAL(error(QString)),&ob,SLOT(onError(QString)),WWCONTYPE)){
 		qDebug()<<"could not connect "<<ob.objectName();
 	}
 	if(!connect(this,SIGNAL(clientAdded(Client *)),&ob,SLOT(onClientAdded(Client *)),WWCONTYPE)){
+		qDebug()<<"could not connect "<<ob.objectName();
+	}
+	if(!connect(this,SIGNAL(connectionStatusChanged(bool)),&ob,SLOT(onConnectionStatusChanged(bool)),WWCONTYPE)){
 		qDebug()<<"could not connect "<<ob.objectName();
 	}
 }
@@ -306,18 +351,22 @@ void CommsChannel::hookSignals(QObject &ob){
 
 void CommsChannel::unHookSignals(QObject &ob){
 	qRegisterMetaType<Client *>("Client *");
+	/*
 	qRegisterMetaType<QHostAddress>("QHostAddress");
 	qRegisterMetaType<QSharedPointer<QDataStream>>("QSharedPointer<QDataStream>");
+
 	if(!disconnect(this,SIGNAL(receivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)),&ob,SLOT(onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)))){
-		qDebug()<<"could not disconnect "<<ob.objectName();
-	}
+		qWarning()<<"could not disconnect "<<ob.objectName();
+	}*/
 	if(!disconnect(this,SIGNAL(error(QString)),&ob,SLOT(onError(QString)))){
-		qDebug()<<"could not disconnect "<<ob.objectName();
+		qWarning()<<"could not disconnect "<<ob.objectName();
 	}
 	if(!disconnect(this,SIGNAL(clientAdded(Client *)),&ob,SLOT(onClientAdded(Client *)))){
-		qDebug()<<"could not disconnect "<<ob.objectName();
+		qWarning()<<"could not disconnect "<<ob.objectName();
 	}
-
+	if(!disconnect(this,SIGNAL(connectionStatusChanged(bool)),&ob,SLOT(onConnectionStatusChanged(bool)))){
+		qWarning()<<"could not disconnect "<<ob.objectName();
+	}
 }
 
 

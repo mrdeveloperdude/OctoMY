@@ -1,8 +1,8 @@
-#include "StatusMessage.hpp"
+#include "SensorsMessage.hpp"
 
 #include <QDebug>
 
-StatusMessage::StatusMessage(
+SensorsMessage::SensorsMessage(
 		const bool ok
 		, const qint64 timestamp
 		, const QGeoCoordinate  gps
@@ -12,6 +12,7 @@ StatusMessage::StatusMessage(
 		, const qreal compassAzimuth
 		, const qreal compassAccuracy
 		, const qint32 temperature
+		, const QVector2D touch
 		):
 	ok(ok)
   , timestamp(timestamp)
@@ -22,16 +23,17 @@ StatusMessage::StatusMessage(
   , compassAzimuth(compassAzimuth)
   , compassAccuracy(compassAccuracy)
   , temperature(temperature)
+  , touch(touch)
 {
 
 }
 
-StatusMessage::StatusMessage(QDataStream &ds){
+SensorsMessage::SensorsMessage(QDataStream &ds){
 	ds >> *this;
 }
 
 
-qint64 StatusMessage::size(){
+qint64 SensorsMessage::size(){
 	if(sz<0){
 		QByteArray ba;
 		{
@@ -47,7 +49,7 @@ qint64 StatusMessage::size(){
 
 #include "MessageType.hpp"
 
-QDataStream &operator>>(QDataStream &ds, StatusMessage &sm){
+QDataStream &operator>>(QDataStream &ds, SensorsMessage &sm){
 	qint32 mt=INVALID;
 	ds >> mt;
 	sm.ok=(STATUS==mt);
@@ -60,11 +62,12 @@ QDataStream &operator>>(QDataStream &ds, StatusMessage &sm){
 		ds >> sm.compassAzimuth;
 		ds >> sm.compassAccuracy;
 		ds >> sm.temperature;
+		ds >> sm.touch;
 	}
 	return ds;
 }
 
-QDataStream &operator<<(QDataStream &ds, const StatusMessage &sm){
+QDataStream &operator<<(QDataStream &ds, const SensorsMessage &sm){
 	ds << STATUS;
 	ds << sm.timestamp;
 	ds << sm.gps;
@@ -74,6 +77,8 @@ QDataStream &operator<<(QDataStream &ds, const StatusMessage &sm){
 	ds << sm.compassAzimuth;
 	ds << sm.compassAccuracy;
 	ds << sm.temperature;
+	ds << sm.touch;
 	return ds;
 }
+
 

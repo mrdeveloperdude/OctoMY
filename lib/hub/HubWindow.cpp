@@ -6,7 +6,7 @@
 #include "map/openaerialmapadapter.h"
 #include "map/maplayer.h"
 #include "map/linestring.h"
-#include "hub/Client.hpp"
+#include "comms/Client.hpp"
 #include "comms/messages/MessageType.hpp"
 #include "hub/Hub.hpp"
 #include "ClientWindow.hpp"
@@ -25,7 +25,8 @@
 #include <QHostInfo>
 #include <QNetworkInterface>
 
-
+#include "widgets/hexedit/QHexEdit.hpp"
+#include "widgets/hexedit/QHexEditData.hpp"
 
 HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	QMainWindow(parent)
@@ -37,6 +38,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
   , hexy(0)
 
 {
+	setObjectName("HubWindow");
 	summaryTimer.setInterval(100);
 	gaugeTimer.setInterval(1000/60);
 	gaugeTimer.setTimerType(Qt::PreciseTimer);
@@ -49,9 +51,13 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 	ui->tabWidget->setEnabled(false);
 	ui->tabWidget->setCurrentWidget(ui->tabIncomming);
-	ui->lineEditBindPort->configure("","listen-port","The port to listen for incomming netork traffic");
-	ui->lineEditRemoteAddress->configure("localhost","remote_address","The address of the remote host");
-	ui->lineEditRemotePort->configure("","remote_port","The port of the remote host");
+
+	//Listen
+	ui->comboBoxLocalAddress->configure("hub-listen-address","Local address");
+	ui->lineEditBindPort->configure("","hub-listen-port","The port to listen for incomming netork traffic");
+
+	ui->lineEditRemoteAddress->configure("localhost","hub-listen_address","The address of the remote host");
+	ui->lineEditRemotePort->configure("","hub-port","The port of the remote host");
 	ui->tryToggleListen->setText("Listen","Preparing...","Listening");
 	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onListenStateChanged(TryToggleState)),WWCONTYPE)){
 		qDebug()<<"could not connect";
@@ -59,16 +65,12 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	if(!connect(&summaryTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()),WWCONTYPE)){
 		qDebug()<<"could not connect";
 	}
-
 	if(!connect(&gaugeTimer,SIGNAL(timeout()),this,SLOT(onGaugeTimer()),WWCONTYPE)){
 		qDebug()<<"could not connect";
 	}
-
-
 	if(!connect(&hexyTimer,SIGNAL(timeout()),this,SLOT(onHexyTimer()))){
 		qDebug()<<"could not connect";
 	}
-
 	QCommandLineParser &opts=hub->getOptions();
 	if(opts.isSet("local-port")){
 		ui->lineEditBindPort->setText(opts.value("local-port"));
@@ -84,7 +86,14 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	hub->getComms()->hookSignals(*this);
 
 	prepareMap();
-	utility::populateComboboxWithLocalAdresses(*ui->comboBoxBindAddress);
+
+	QByteArray ba("HELLO WORLD");
+	QHexEditData* hexdata = QHexEditData::fromMemory(ba);
+
+	ui->hexEditor->setData(hexdata);
+
+
+
 	ui->tabWidget->setCurrentIndex(0);
 	//updateClientsList();
 	appendLog("READY");
@@ -107,13 +116,15 @@ void HubWindow::prepareMap(){
 	mc=ui->widgetMap;
 	if(0!=mc){
 		mc->showScale(true);
-		QDir dir("map.cache/");
+		QDir dir("./map.cache/");
 		if (!dir.exists()) dir.mkpath(".");
 		mc->enablePersistentCache ( dir,8192);
 		// create MapAdapter to get maps from
 		//		qmapcontrol::MapAdapter* mapadapter = new qmapcontrol::OSMMapAdapter();
 		//qmapcontrol::MapAdapter* mapadapter = new qmapcontrol::OpenAerialMapAdapter();
-		qmapcontrol::TileMapAdapter* mapadapter = new qmapcontrol::TileMapAdapter("tile.openstreetmap.org", "/%1/%2/%3.png", 256, 0, 17);
+		//	qmapcontrol::TileMapAdapter* mapadapter = new qmapcontrol::TileMapAdapter("tile.openstreetmap.org", "/%1/%2/%3.png", 256, 0, 17);
+
+		qmapcontrol::TileMapAdapter* mapadapter = new qmapcontrol::TileMapAdapter("cache.kartverket.no/grunnkart/wmts", "/%1/%2/%3.png", 256, 0, 17);
 
 		// create a map layer with the mapadapter
 		qmapcontrol::Layer* l = new qmapcontrol::MapLayer("Custom Layer", mapadapter);
@@ -255,7 +266,7 @@ void HubWindow::appendLog(const QString& text){
 
 void HubWindow::onListenStateChanged(TryToggleState s){
 	ui->lineEditBindPort->setEnabled(OFF==s);
-	ui->comboBoxBindAddress->setEnabled(OFF==s);
+	ui->comboBoxLocalAddress->setEnabled(OFF==s);
 	ui->pushButtonSendData->setEnabled(ON==s);
 	const bool on=ON==s;
 	if(!on){
@@ -298,6 +309,7 @@ void HubWindow::onLocalHostLookupComplete(QHostInfo hi){
 
 
 void HubWindow::onRemoteHostLookupComplete(QHostInfo hi){
+	qDebug()<<"## onRemoteHostLookupComplete";
 	for(QHostAddress adr:hi.addresses()){
 		if(adr.isNull()){
 			ui->logScroll->appendHtml("Skipping invalid address during remote host lookup: "+adr.toString());
@@ -314,7 +326,8 @@ void HubWindow::onRemoteHostLookupComplete(QHostInfo hi){
 				//				quint64 port=ui->lineEditRemotePort->text().toInt();
 				//			CommsChannel *comms=hub->getComms();
 				//TODO: convert this to use couriers
-				//comms->sendPackage(ba,adr,port);
+
+				//	comms->sendPackage(ba,adr,port);
 			}
 			appendLog( "SENDING "+QString::number(l)+" DATA PACKETS OF SIZE "+QString::number(sz)+" to "+ui->lineEditRemoteAddress->text()+ "("+adr.toString()+"):"+ui->lineEditRemotePort->text());
 			return;
@@ -332,7 +345,7 @@ void HubWindow::onReceivePacket(QSharedPointer<QDataStream> ds, QHostAddress hos
 	switch((MessageType)mt){
 		//Implemented
 		case(STATUS):{
-				StatusMessage sm(ds);
+				SensorsMessage sm(ds);
 			}break;
 			//Not implemented yet
 		case(QUERY):
@@ -372,7 +385,11 @@ void HubWindow::onClientAdded(Client *c){
 void HubWindow::on_pushButtonSendData_clicked(){
 	CommsChannel *comms=hub->getComms();
 	if(0!=comms){
-		QHostInfo::lookupHost(ui->lineEditRemoteAddress->text(),this, SLOT(onRemoteHostLookupComplete(QHostInfo)));
+		//QHostInfo::lookupHost(ui->lineEditRemoteAddress->text(),this, SLOT(onRemoteHostLookupComplete(QHostInfo)));
+		QByteArray ba;
+		ba="HELLO WORLD";
+		quint64 w=comms->sendRawData(ba,ClientSignature(0,0,QHostAddress(ui->lineEditRemoteAddress->text()),ui->lineEditRemotePort->text().toInt()));
+		qDebug()<<"Wrote "<<w<<" bytes raw helloworld packet";
 	}
 	else{
 		appendLog("NOT READY TO SEND DATA");
@@ -419,19 +436,37 @@ void HubWindow::appendGraphData(double rtt, int sent,int received,int lost,int a
 }
 
 
+
+void HubWindow::startProcess(QString base){
+	const QString program = QFileInfo(QCoreApplication::applicationFilePath()).absolutePath()+"/../"+base+"/"+base;
+	qDebug()<<"Starting process: "<<program;
+	QStringList arguments;
+	//arguments << "-style" << "fusion";
+	QProcess *proc = new QProcess(this);
+	proc->setProcessChannelMode(QProcess::ForwardedChannels);
+	proc->start(program, arguments);
+	//TODO: make async
+	proc->waitForStarted();
+	if(QProcess::Running!=proc->state()){
+		qDebug()<<"ERROR could not start: "<<proc->errorString();
+		proc->deleteLater();
+		proc=0;
+	}
+	else{
+		qDebug()<<"A-OK";
+	}
+
+}
+
 void HubWindow::on_comboBoxAddLocal_currentIndexChanged(const QString &arg1){
 	if("Remote"==arg1){
-		//TODO: synthesize options object that points to parent hub
-		Remote *remote=new Remote(hub->getOptions());
-		RemoteWindow *w=new RemoteWindow (remote,0);
-		w->show();
+		//TODO: synthesize arguments object that points to parent hub
+		startProcess("remote");
 
 	}
 	else if("Agent"==arg1){
-		//TODO: synthesize options object that points to parent hub
-		Agent *agent=new Agent(hub->getOptions());
-		AgentWindow *w=new AgentWindow (agent,0);
-		w->show();
+		//TODO: synthesize arguments that points to parent hub
+		startProcess("agent");
 	}
 	ui->comboBoxAddLocal->setCurrentIndex(0);
 }
@@ -458,7 +493,7 @@ void HubWindow::onHexyTimer(){
 		lastTime=now;
 		angle+=(((qreal)ival)/1000.0);
 		angle-=floor(angle);
-		for(int i=0;i<HexySerial::SERVO_COUNT;++i){
+		for(quint32 i=0;i<HexySerial::SERVO_COUNT;++i){
 			pos[i]=sin(angle*M_PI*2.0+(qreal)i*3.0);
 			if(0==i){
 				//qDebug()<<"SERVO "<<i<<": "<<pos[i];
@@ -471,6 +506,11 @@ void HubWindow::onHexyTimer(){
 
 void HubWindow::onHexySettingsChanged(){
 	hexyTimer.start();
+}
+
+void HubWindow::onConnectionStatusChanged(bool s){
+	qDebug()<<"connection state changed: "<<s;
+
 }
 
 #include "hw/actuators/HexyTool.hpp"
@@ -495,3 +535,4 @@ void HubWindow::on_pushButtonTest_clicked(){
 	}
 	*/
 }
+
