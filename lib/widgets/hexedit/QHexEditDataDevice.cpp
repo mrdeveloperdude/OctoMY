@@ -6,7 +6,7 @@ QHexEditDataDevice::QHexEditDataDevice(QHexEditData *hexeditdata): QIODevice(hex
 	this->_writer = new QHexEditDataWriter(hexeditdata, this);
 }
 
-qint64 QHexEditDataDevice::size()
+qint64 QHexEditDataDevice::size() const
 {
 	return this->_hexeditdata->length();
 }

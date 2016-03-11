@@ -58,69 +58,77 @@
 /** Attitude Director Indicator widget. */
 class qfi_ADI : public QGraphicsView
 {
-    Q_OBJECT
+		Q_OBJECT
+		Q_PROPERTY(QString theme READ theme WRITE setTheme )
+	public:
 
-public:
+		/** Constructor. */
+		qfi_ADI( QWidget *parent = 0 );
 
-    /** Constructor. */
-    qfi_ADI( QWidget *parent = 0 );
+		/** Destructor. */
+		virtual ~qfi_ADI();
 
-    /** Destructor. */
-    virtual ~qfi_ADI();
+		/** Reinitiates widget. */
+		void reinit();
 
-    /** Reinitiates widget. */
-    void reinit();
+		/** Refreshes (redraws) widget. */
+		void update();
 
-    /** Refreshes (redraws) widget. */
-    void update();
+		/** @param roll angle [deg] */
+		void setRoll( float roll );
 
-    /** @param roll angle [deg] */
-    void setRoll( float roll );
+		/** @param pitch angle [deg] */
+		void setPitch( float pitch );
 
-    /** @param pitch angle [deg] */
-    void setPitch( float pitch );
+		/** @param theme name */
+		void setTheme(QString theme);
 
-protected:
+		/** @return theme name */
+		QString theme();
 
-    void resizeEvent( QResizeEvent *event );
+	protected:
 
-private:
+		void resizeEvent( QResizeEvent *event );
 
-    QGraphicsScene *m_scene;
+	private:
 
-    QGraphicsSvgItem *m_itemBack;
-    QGraphicsSvgItem *m_itemFace;
-    QGraphicsSvgItem *m_itemRing;
-    QGraphicsSvgItem *m_itemCase;
+		QGraphicsScene *m_scene;
 
-    float m_roll;
-    float m_pitch;
+		QGraphicsSvgItem *m_itemBack;
+		QGraphicsSvgItem *m_itemFace;
+		QGraphicsSvgItem *m_itemRing;
+		QGraphicsSvgItem *m_itemCase;
 
-    float m_faceDeltaX_new;
-    float m_faceDeltaX_old;
-    float m_faceDeltaY_new;
-    float m_faceDeltaY_old;
+		float m_roll;
+		float m_pitch;
 
-    float m_scaleX;
-    float m_scaleY;
+		float m_faceDeltaX_new;
+		float m_faceDeltaX_old;
+		float m_faceDeltaY_new;
+		float m_faceDeltaY_old;
 
-    const int m_originalHeight;
-    const int m_originalWidth;
+		float m_scaleX;
+		float m_scaleY;
 
-    const float m_originalPixPerDeg;
+		const int m_originalHeight;
+		const int m_originalWidth;
 
-    QPointF m_originalAdiCtr;
+		const float m_originalPixPerDeg;
 
-    const int m_backZ;
-    const int m_faceZ;
-    const int m_ringZ;
-    const int m_caseZ;
+		QPointF m_originalAdiCtr;
 
-    void init();
+		const int m_backZ;
+		const int m_faceZ;
+		const int m_ringZ;
+		const int m_caseZ;
 
-    void reset();
+		QString m_theme;
 
-    void updateView();
+		void init();
+
+		void reset();
+
+		void updateView();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

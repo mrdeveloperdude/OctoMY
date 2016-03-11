@@ -8,6 +8,23 @@
 #include <QStringBuilder>
 
 
+/*
+HW Descriptor for Arduino
+
+Actuator{
+enum motor_type{step, dc}
+int gear_ratio_numerator, gear_ratio_denominator;
+int encoder_steps;
+bool potensiometer
+bool tachometer
+bool encoder;
+bool endstop_a;
+bool endstop_b;
+
+}
+
+*/
+
 HexySerial::HexySerial(QObject *parent)
 	: QObject(parent)
 	, lastPos{0}

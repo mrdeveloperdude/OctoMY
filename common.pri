@@ -1,6 +1,6 @@
 #Align these with the actual build of Qt in use (see image/scripts/qt.sh for options)
-CONFIG += qt c++11 # xcb debug thread 3dnow mmx stl sse sse2 largefile
-CONFIG -= rtti exceptions c++0x c++14
+CONFIG += qt c++14 # xcb debug thread 3dnow mmx stl sse sse2 largefile
+CONFIG -= rtti exceptions c++0x c++11
 CONFIG += static
 # Support all kinds of architectures (universal builds etc)
 CONFIG += x86 x86_64
@@ -86,8 +86,8 @@ debug{
 
 
 # Strive towards the most modern standard of C++ language available
-QMAKE_CXXFLAGS -= -std=c++14
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++14
+QMAKE_CXXFLAGS -= -std=c++11
 QMAKE_CXXFLAGS -= -std=c++0x
 
 

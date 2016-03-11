@@ -58,56 +58,64 @@
 /** Airspeed Indicator widget. */
 class qfi_ASI : public QGraphicsView
 {
-    Q_OBJECT
+		Q_OBJECT
+		Q_PROPERTY(QString theme READ theme WRITE setTheme )
+	public:
 
-public:
+		/** Constructor. */
+		qfi_ASI( QWidget *parent = 0 );
 
-    /** Constructor. */
-    qfi_ASI( QWidget *parent = 0 );
+		/** Destructor. */
+		virtual ~qfi_ASI();
 
-    /** Destructor. */
-    virtual ~qfi_ASI();
+		/** Reinitiates widget. */
+		void reinit();
 
-    /** Reinitiates widget. */
-    void reinit();
+		/** Refreshes (redraws) widget. */
+		void update();
 
-    /** Refreshes (redraws) widget. */
-    void update();
+		/** @param airspeed [kts] */
+		void setAirspeed( float airspeed );
 
-    /** @param airspeed [kts] */
-    void setAirspeed( float airspeed );
+		/** @param theme name */
+		void setTheme(QString theme);
 
-protected:
+		/** @return theme name */
+		QString theme();
 
-    void resizeEvent( QResizeEvent *event );
+	protected:
 
-private:
+		void resizeEvent( QResizeEvent *event );
 
-    QGraphicsScene *m_scene;
+	private:
 
-    QGraphicsSvgItem *m_itemFace;
-    QGraphicsSvgItem *m_itemHand;
-    QGraphicsSvgItem *m_itemCase;
+		QGraphicsScene *m_scene;
 
-    float m_airspeed;
+		QGraphicsSvgItem *m_itemFace;
+		QGraphicsSvgItem *m_itemHand;
+		QGraphicsSvgItem *m_itemCase;
 
-    float m_scaleX;
-    float m_scaleY;
+		float m_airspeed;
 
-    const int m_originalHeight;
-    const int m_originalWidth;
+		float m_scaleX;
+		float m_scaleY;
 
-    QPointF m_originalAsiCtr;
+		const int m_originalHeight;
+		const int m_originalWidth;
 
-    const int m_faceZ;
-    const int m_handZ;
-    const int m_caseZ;
+		QPointF m_originalAsiCtr;
 
-    void init();
+		const int m_faceZ;
+		const int m_handZ;
+		const int m_caseZ;
 
-    void reset();
+		QString m_theme;
 
-    void updateView();
+		void init();
+
+		void reset();
+
+		void updateView();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

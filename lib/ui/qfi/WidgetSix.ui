@@ -24,6 +24,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="theme" stdset="0">
+        <string>scifi</string>
+       </property>
       </widget>
      </item>
      <item row="0" column="1">
@@ -33,6 +36,9 @@
          <horstretch>1</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="theme" stdset="0">
+        <string>scifi</string>
        </property>
       </widget>
      </item>
@@ -44,6 +50,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="theme" stdset="0">
+        <string>scifi</string>
+       </property>
       </widget>
      </item>
      <item row="1" column="0">
@@ -53,6 +62,9 @@
          <horstretch>1</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="theme" stdset="0">
+        <string>scifi</string>
        </property>
       </widget>
      </item>
@@ -64,6 +76,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="theme" stdset="0">
+        <string>scifi</string>
+       </property>
       </widget>
      </item>
      <item row="1" column="2">
@@ -73,6 +88,9 @@
          <horstretch>1</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="theme" stdset="0">
+        <string>scifi</string>
        </property>
       </widget>
      </item>

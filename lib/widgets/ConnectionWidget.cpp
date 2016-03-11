@@ -58,12 +58,12 @@ QHostAddress ConnectionWidget::getTargetAddress(){
 
 
 void ConnectionWidget::hookSignals(QObject &ob){
-
+	Q_UNUSED(ob);
 }
 
 
 void ConnectionWidget::unHookSignals(QObject &ob){
-
+	Q_UNUSED(ob);
 
 }
 

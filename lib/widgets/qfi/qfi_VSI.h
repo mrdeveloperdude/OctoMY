@@ -58,56 +58,66 @@
 /** Vertical Speed Indicator widget. */
 class qfi_VSI : public QGraphicsView
 {
-    Q_OBJECT
+		Q_OBJECT
 
-public:
+		Q_PROPERTY(QString theme READ theme WRITE setTheme )
 
-    /** Constructor. */
-    qfi_VSI( QWidget *parent = 0 );
+	public:
 
-    /** Destructor. */
-    virtual ~qfi_VSI();
+		/** Constructor. */
+		qfi_VSI( QWidget *parent = 0 );
 
-    /** Reinitiates widget. */
-    void reinit();
+		/** Destructor. */
+		virtual ~qfi_VSI();
 
-    /** Refreshes (redraws) widget. */
-    void update();
+		/** Reinitiates widget. */
+		void reinit();
 
-    /** @param climb rate [ft/min] */
-    void setClimbRate( float climbRate );
+		/** Refreshes (redraws) widget. */
+		void update();
 
-protected:
+		/** @param climb rate [ft/min] */
+		void setClimbRate( float climbRate );
 
-    void resizeEvent( QResizeEvent *event );
+		/** @param theme name */
+		void setTheme(QString theme);
 
-private:
+		/** @return theme name */
+		QString theme();
 
-    QGraphicsScene *m_scene;
+	protected:
 
-    QGraphicsSvgItem *m_itemFace;
-    QGraphicsSvgItem *m_itemHand;
-    QGraphicsSvgItem *m_itemCase;
+		void resizeEvent( QResizeEvent *event );
 
-    float m_climbRate;
+	private:
 
-    float m_scaleX;
-    float m_scaleY;
+		QGraphicsScene *m_scene;
 
-    const int m_originalHeight;
-    const int m_originalWidth;
+		QGraphicsSvgItem *m_itemFace;
+		QGraphicsSvgItem *m_itemHand;
+		QGraphicsSvgItem *m_itemCase;
 
-    QPointF m_originalVsiCtr;
+		float m_climbRate;
 
-    const int m_faceZ;
-    const int m_handZ;
-    const int m_caseZ;
+		float m_scaleX;
+		float m_scaleY;
 
-    void init();
+		const int m_originalHeight;
+		const int m_originalWidth;
 
-    void reset();
+		QPointF m_originalVsiCtr;
 
-    void updateView();
+		const int m_faceZ;
+		const int m_handZ;
+		const int m_caseZ;
+
+		QString m_theme;
+
+		void init();
+
+		void reset();
+
+		void updateView();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -67,31 +67,41 @@ namespace Ui
 
 class WidgetVSI : public QWidget
 {
-	Q_OBJECT
+		Q_OBJECT
 
-public:
+		Q_PROPERTY(QString theme READ theme WRITE setTheme)
 
-	explicit WidgetVSI( QWidget *parent = 0 );
+	public:
 
-	~WidgetVSI();
+		explicit WidgetVSI( QWidget *parent = 0 );
 
-	inline void update()
-	{
-		m_vsi->update();
-	}
+		~WidgetVSI();
 
-	inline void setClimbRate( float climbRate )
-	{
-		m_vsi->setClimbRate( climbRate );
-	}
+		inline void update()
+		{
+			m_vsi->update();
+		}
 
-private:
+		inline void setClimbRate( float climbRate )
+		{
+			m_vsi->setClimbRate( climbRate );
+		}
 
-	Ui::WidgetVSI *m_ui;
-	qfi_VSI       *m_vsi;
-	LayoutSquare  *m_layoutSq;
+		inline void setTheme(QString theme){
+			m_vsi->setTheme(theme);
+		}
 
-	void setupUi();
+		inline QString theme(){
+			return m_vsi->theme();
+		}
+
+	private:
+
+		Ui::WidgetVSI *m_ui;
+		qfi_VSI       *m_vsi;
+		LayoutSquare  *m_layoutSq;
+
+		void setupUi();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

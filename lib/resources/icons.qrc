@@ -32,5 +32,9 @@
         <file>icons/map.svg</file>
         <file>icons/pose.svg</file>
         <file>icons/network.svg</file>
+        <file>icons/mandate.svg</file>
+        <file>icons/qrcode.svg</file>
+        <file>icons/aviation.svg</file>
+        <file>icons/encryption.svg</file>
     </qresource>
 </RCC>

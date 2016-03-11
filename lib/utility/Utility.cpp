@@ -435,6 +435,19 @@ namespace utility{
 		return "";
 	}
 
+
+	QByteArray fileToByteArray(QString fn){
+		QFile file(fn);
+		if(file.open(QFile::ReadOnly)){
+			return file.readAll();
+		}
+		return "";
+	}
+
+
+
+
+
 	bool stringToFile(QString fn, QString data, bool append){
 		QFile file(fn);
 		if(file.open(append?QFile::WriteOnly|QFile::Append:QFile::WriteOnly)){

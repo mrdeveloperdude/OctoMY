@@ -105,7 +105,7 @@ QHexEditData::InsertCommand* QHexEditData::internalInsert(qint64 pos, const QByt
 	if(pos < 0 || pos > this->length() || !ba.length())
 		return nullptr;
 
-	int i;
+	int i=0;
 	qint64 datapos;
 	ModifiedItem* mi;
 

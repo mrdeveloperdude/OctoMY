@@ -58,67 +58,77 @@
 /** Turn Coordinator widget. */
 class qfi_TC : public QGraphicsView
 {
-    Q_OBJECT
+		Q_OBJECT
 
-public:
+		Q_PROPERTY(QString theme READ theme WRITE setTheme )
+	public:
 
-    /** Constructor. */
-    qfi_TC( QWidget *parent = 0 );
+		/** Constructor. */
+		qfi_TC( QWidget *parent = 0 );
 
-    /** Destructor. */
-    virtual ~qfi_TC();
+		/** Destructor. */
+		virtual ~qfi_TC();
 
-    /** Reinitiates widget. */
-    void reinit();
+		/** Reinitiates widget. */
+		void reinit();
 
-    /** Refreshes (redraws) widget. */
-    void update();
+		/** Refreshes (redraws) widget. */
+		void update();
 
-    /** @param turn rate [deg/s] */
-    void setTurnRate( float turnRate );
+		/** @param turn rate [deg/s] */
+		void setTurnRate( float turnRate );
 
-    /** @param slip/skid ball angle [deg] */
-    void setSlipSkid( float slipSkid );
+		/** @param slip/skid ball angle [deg] */
+		void setSlipSkid( float slipSkid );
 
-protected:
+		/** @param theme name */
+		void setTheme(QString theme);
 
-    void resizeEvent( QResizeEvent *event );
+		/** @return theme name */
+		QString theme();
 
-private:
+	protected:
 
-    QGraphicsScene *m_scene;
+		void resizeEvent( QResizeEvent *event );
 
-    QGraphicsSvgItem *m_itemBack;
-    QGraphicsSvgItem *m_itemBall;
-    QGraphicsSvgItem *m_itemFace_1;
-    QGraphicsSvgItem *m_itemFace_2;
-    QGraphicsSvgItem *m_itemMark;
-    QGraphicsSvgItem *m_itemCase;
+	private:
 
-    float m_turnRate;
-    float m_slipSkid;
 
-    float m_scaleX;
-    float m_scaleY;
+		QGraphicsScene *m_scene;
 
-    const int m_originalHeight;
-    const int m_originalWidth;
+		QGraphicsSvgItem *m_itemBack;
+		QGraphicsSvgItem *m_itemBall;
+		QGraphicsSvgItem *m_itemFace_1;
+		QGraphicsSvgItem *m_itemFace_2;
+		QGraphicsSvgItem *m_itemMark;
+		QGraphicsSvgItem *m_itemCase;
 
-    QPointF m_originalMarkCtr;
-    QPointF m_originalBallCtr;
+		float m_turnRate;
+		float m_slipSkid;
 
-    const int m_backZ;
-    const int m_ballZ;
-    const int m_face1Z;
-    const int m_face2Z;
-    const int m_markZ;
-    const int m_caseZ;
+		float m_scaleX;
+		float m_scaleY;
 
-    void init();
+		const int m_originalHeight;
+		const int m_originalWidth;
 
-    void reset();
+		QPointF m_originalMarkCtr;
+		QPointF m_originalBallCtr;
 
-    void updateView();
+		const int m_backZ;
+		const int m_ballZ;
+		const int m_face1Z;
+		const int m_face2Z;
+		const int m_markZ;
+		const int m_caseZ;
+
+		QString m_theme;
+
+		void init();
+
+		void reset();
+
+		void updateView();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

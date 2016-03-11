@@ -67,56 +67,65 @@ namespace Ui
 
 class WidgetNAV : public QWidget
 {
-	Q_OBJECT
+		Q_OBJECT
+		Q_PROPERTY(QString theme READ theme WRITE setTheme )
+	public:
 
-public:
+		explicit WidgetNAV( QWidget *parent = 0 );
 
-	explicit WidgetNAV( QWidget *parent = 0 );
+		virtual ~WidgetNAV();
 
-	virtual ~WidgetNAV();
+		inline void update()
+		{
+			m_nav->update();
+		}
 
-	inline void update()
-	{
-		m_nav->update();
-	}
+		inline void setHeading( float heading )
+		{
+			m_nav->setHeading( heading );
+		}
 
-	inline void setHeading( float heading )
-	{
-		m_nav->setHeading( heading );
-	}
+		inline void setHeadingBug( float headingBug )
+		{
+			m_nav->setHeadingBug( headingBug );
+		}
 
-	inline void setHeadingBug( float headingBug )
-	{
-		m_nav->setHeadingBug( headingBug );
-	}
+		inline void setCourse( float course )
+		{
+			m_nav->setCourse( course );
+		}
 
-	inline void setCourse( float course )
-	{
-		m_nav->setCourse( course );
-	}
+		inline void setBearing( float bearing, bool visible = false )
+		{
+			m_nav->setBearing( bearing, visible );
+		}
 
-	inline void setBearing( float bearing, bool visible = false )
-	{
-		m_nav->setBearing( bearing, visible );
-	}
+		inline void setDeviation( float deviation, bool visible = false )
+		{
+			m_nav->setDeviation( deviation, visible );
+		}
 
-	inline void setDeviation( float deviation, bool visible = false )
-	{
-		m_nav->setDeviation( deviation, visible );
-	}
+		inline void setDistance( float distance, bool visible = false )
+		{
+			m_nav->setDistance( distance, visible );
+		}
 
-	inline void setDistance( float distance, bool visible = false )
-	{
-		m_nav->setDistance( distance, visible );
-	}
 
-private:
+		inline void setTheme(QString theme){
+			m_nav->setTheme(theme);
+		}
 
-	Ui::WidgetNAV *m_ui;
-	qfi_NAV       *m_nav;
-	LayoutSquare  *m_layoutSq;
+		inline QString theme(){
+			return m_nav->theme();
+		}
 
-	void setupUi();
+	private:
+
+		Ui::WidgetNAV *m_ui;
+		qfi_NAV       *m_nav;
+		LayoutSquare  *m_layoutSq;
+
+		void setupUi();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

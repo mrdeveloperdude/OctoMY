@@ -67,36 +67,45 @@ namespace Ui
 
 class WidgetALT : public QWidget
 {
-	Q_OBJECT
+		Q_OBJECT
+		Q_PROPERTY(QString theme READ theme WRITE setTheme )
+	public:
 
-public:
+		explicit WidgetALT( QWidget *parent = 0 );
 
-	explicit WidgetALT( QWidget *parent = 0 );
+		~WidgetALT();
 
-	~WidgetALT();
+		inline void update()
+		{
+			m_alt->update();
+		}
 
-	inline void update()
-	{
-		m_alt->update();
-	}
+		inline void setAltitude( float altitude )
+		{
+			m_alt->setAltitude( altitude );
+		}
 
-	inline void setAltitude( float altitude )
-	{
-		m_alt->setAltitude( altitude );
-	}
+		inline void setPressure( float pressure )
+		{
+			m_alt->setPressure( pressure );
+		}
 
-	inline void setPressure( float pressure )
-	{
-		m_alt->setPressure( pressure );
-	}
+		inline void setTheme(QString theme){
+			m_alt->setTheme(theme);
+		}
 
-private:
+		inline QString theme(){
+			return m_alt->theme();
+		}
 
-	Ui::WidgetALT *m_ui;
-	qfi_ALT       *m_alt;
-	LayoutSquare  *m_layoutSq;
 
-	void setupUi();
+	private:
+
+		Ui::WidgetALT *m_ui;
+		qfi_ALT       *m_alt;
+		LayoutSquare  *m_layoutSq;
+
+		void setupUi();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

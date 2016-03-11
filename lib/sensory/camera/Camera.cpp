@@ -16,6 +16,7 @@ Camera::Camera(QObject *parent) : QObject(parent)
   , applicationExiting(false)
 {
 	foreach (const QCameraInfo &cameraInfo, QCameraInfo::availableCameras()) {
+		(void)cameraInfo;
 		//TODO:Put them here
 	}
 	setCamera(QCameraInfo::defaultCamera());
@@ -76,6 +77,7 @@ void Camera::updateRecordTime(){
 
 void Camera::processCapturedImage(int requestId, const QImage& img){
 	Q_UNUSED(requestId);
+	Q_UNUSED(img);
 	//QImage scaledImage = img.scaled(ui->viewfinder->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
 	//ui->lastImagePreviewLabel->setPixmap(QPixmap::fromImage(scaledImage));
@@ -148,6 +150,7 @@ void Camera::displayCaptureError(int id, const QCameraImageCapture::Error error,
 {
 	Q_UNUSED(id);
 	Q_UNUSED(error);
+	Q_UNUSED(errorString);
 	//QMessageBox::warning(this, tr("Image Capture Error"), errorString);
 	isCapturingImage = false;
 }

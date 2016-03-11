@@ -3,13 +3,13 @@
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met: 
+// modification, are permitted provided that the following conditions are met:
 //
 // 1. Redistributions of source code must retain the above copyright notice, this
-//    list of conditions and the following disclaimer. 
+//    list of conditions and the following disclaimer.
 // 2. Redistributions in binary form must reproduce the above copyright notice,
 //    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution. 
+//    and/or other materials provided with the distribution.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -43,12 +43,12 @@ bool GSystemIK::buildConstrIK_dq(RMatrix &J, RMatrix &V, std::vector<GBody*> pbo
 
 	nb = int(pbodies.size());
 
-	if ( pos.size() != nb || V_target.size() != nb || idxC.size() != nb ) return false;
+	if ( pos.size() != (size_t)nb || V_target.size() != (size_t)nb || idxC.size() != (size_t)nb ) return false;
 
 	// counts the number of IK constraints
 	ncik = 0;
 	for (i=0; i<nb; i++) {
-		for ( j=0; j<int(idxC[i].size()); j++) { 
+		for ( j=0; j<int(idxC[i].size()); j++) {
 			if ( idxC[i][j] < 0 || idxC[i][j] > 5 ) return false;
 		}
 		ncik += int(idxC[i].size());

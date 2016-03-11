@@ -58,66 +58,75 @@
 /** Barometric Altimeter widget. */
 class qfi_ALT : public QGraphicsView
 {
-    Q_OBJECT
+		Q_OBJECT
+		Q_PROPERTY(QString theme READ theme WRITE setTheme )
+	public:
 
-public:
+		/** Constructor. */
+		qfi_ALT( QWidget *parent = 0 );
 
-    /** Constructor. */
-    qfi_ALT( QWidget *parent = 0 );
+		/** Destructor. */
+		virtual ~qfi_ALT();
 
-    /** Destructor. */
-    virtual ~qfi_ALT();
+		/** Reinitiates widget. */
+		void reinit();
 
-    /** Reinitiates widget. */
-    void reinit();
+		/** Refreshes (redraws) widget. */
+		void update();
 
-    /** Refreshes (redraws) widget. */
-    void update();
+		/** @param altitude [ft] */
+		void setAltitude( float altitude );
 
-    /** @param altitude [ft] */
-    void setAltitude( float altitude );
+		/** @param pressure [inHg] */
+		void setPressure( float aressure );
 
-    /** @param pressure [inHg] */
-    void setPressure( float aressure );
+		/** @param theme name */
+		void setTheme(QString theme);
 
-protected:
+		/** @return theme name */
+		QString theme();
 
-    void resizeEvent( QResizeEvent *event );
+	protected:
 
-private:
+		void resizeEvent( QResizeEvent *event );
 
-    QGraphicsScene *m_scene;
+	private:
 
-    QGraphicsSvgItem *m_itemFace_1;
-    QGraphicsSvgItem *m_itemFace_2;
-    QGraphicsSvgItem *m_itemFace_3;
-    QGraphicsSvgItem *m_itemHand_1;
-    QGraphicsSvgItem *m_itemHand_2;
-    QGraphicsSvgItem *m_itemCase;
+		QGraphicsScene *m_scene;
 
-    float m_altitude;
-    float m_pressure;
+		QGraphicsSvgItem *m_itemFace_1;
+		QGraphicsSvgItem *m_itemFace_2;
+		QGraphicsSvgItem *m_itemFace_3;
+		QGraphicsSvgItem *m_itemHand_1;
+		QGraphicsSvgItem *m_itemHand_2;
+		QGraphicsSvgItem *m_itemCase;
 
-    float m_scaleX;
-    float m_scaleY;
+		float m_altitude;
+		float m_pressure;
 
-    const int m_originalHeight;
-    const int m_originalWidth;
+		float m_scaleX;
+		float m_scaleY;
 
-    QPointF m_originalAltCtr;
+		const int m_originalHeight;
+		const int m_originalWidth;
 
-    const int m_face1Z;
-    const int m_face2Z;
-    const int m_face3Z;
-    const int m_hand1Z;
-    const int m_hand2Z;
-    const int m_caseZ;
+		QPointF m_originalAltCtr;
 
-    void init();
+		const int m_face1Z;
+		const int m_face2Z;
+		const int m_face3Z;
+		const int m_hand1Z;
+		const int m_hand2Z;
+		const int m_caseZ;
 
-    void reset();
 
-    void updateView();
+		QString m_theme;
+
+		void init();
+
+		void reset();
+
+		void updateView();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

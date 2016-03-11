@@ -26,7 +26,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	ui->lineEditHubAddress->configure("","hub-address");
 	ui->lineEditHubPort->configure("","hub-port");
 	ui->lineEditLocalPort->configure("","listen-port");
-	ui->stackedWidget->setCurrentWidget(ui->pageConnect);
+	ui->stackedWidget->setCurrentWidget(ui->pageTest);
 	utility::populateComboboxWithLocalAdresses(*ui->comboBoxLocalAddress);
 	ui->tryToggleListen->setText("Connect","Connecting...","Connected");
 	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState)),WWCONTYPE)){

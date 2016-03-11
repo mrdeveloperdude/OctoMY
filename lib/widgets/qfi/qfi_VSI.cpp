@@ -62,141 +62,154 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 qfi_VSI::qfi_VSI( QWidget *parent ) :
-    QGraphicsView ( parent ),
+	QGraphicsView ( parent ),
 
-    m_scene ( 0 ),
+	m_scene ( 0 ),
 
-    m_itemFace ( 0 ),
-    m_itemHand ( 0 ),
-    m_itemCase ( 0 ),
+	m_itemFace ( 0 ),
+	m_itemHand ( 0 ),
+	m_itemCase ( 0 ),
 
-    m_climbRate ( 0.0f ),
+	m_climbRate ( 0.0f ),
 
-    m_scaleX ( 1.0f ),
-    m_scaleY ( 1.0f ),
+	m_scaleX ( 1.0f ),
+	m_scaleY ( 1.0f ),
 
-    m_originalHeight ( 240 ),
-    m_originalWidth  ( 240 ),
+	m_originalHeight ( 240 ),
+	m_originalWidth  ( 240 ),
 
-    m_originalVsiCtr ( 120.0f , 120.0f ),
+	m_originalVsiCtr ( 120.0f , 120.0f ),
 
-    m_faceZ ( -20 ),
-    m_handZ ( -10 ),
-    m_caseZ (  10 )
+	m_faceZ ( -20 ),
+	m_handZ ( -10 ),
+	m_caseZ (  10 ),
+	m_theme("default")
 {
-    reset();
+	reset();
 
-    m_scene = new QGraphicsScene( this );
-    setScene( m_scene );
+	m_scene = new QGraphicsScene( this );
+	setScene( m_scene );
 
-    m_scene->clear();
+	m_scene->clear();
 
-    init();
+	init();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 qfi_VSI::~qfi_VSI()
 {
-    if ( m_scene )
-    {
-        m_scene->clear();
-        delete m_scene;
-        m_scene = 0;
-    }
+	if ( m_scene )
+	{
+		m_scene->clear();
+		delete m_scene;
+		m_scene = 0;
+	}
 
-    reset();
+	reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_VSI::reinit()
 {
-    if ( m_scene )
-    {
-        m_scene->clear();
+	if ( m_scene )
+	{
+		m_scene->clear();
 
-        init();
-    }
+		init();
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_VSI::update()
 {
-    updateView();
+	updateView();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_VSI::setClimbRate( float climbRate )
 {
-    m_climbRate = climbRate;
+	m_climbRate = climbRate;
 
-    if ( m_climbRate < -2000.0f ) m_climbRate = -2000.0f;
-    if ( m_climbRate >  2000.0f ) m_climbRate =  2000.0f;
+	if ( m_climbRate < -2000.0f ) m_climbRate = -2000.0f;
+	if ( m_climbRate >  2000.0f ) m_climbRate =  2000.0f;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void qfi_VSI::setTheme(QString theme){
+	m_theme=theme;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+QString qfi_VSI::theme(){
+	return m_theme;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_VSI::resizeEvent( QResizeEvent *event )
 {
-    ////////////////////////////////////
-    QGraphicsView::resizeEvent( event );
-    ////////////////////////////////////
+	////////////////////////////////////
+	QGraphicsView::resizeEvent( event );
+	////////////////////////////////////
 
-    reinit();
+	reinit();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_VSI::init()
 {
-    m_scaleX = (float)width()  / (float)m_originalWidth;
-    m_scaleY = (float)height() / (float)m_originalHeight;
+	m_scaleX = (float)width()  / (float)m_originalWidth;
+	m_scaleY = (float)height() / (float)m_originalHeight;
 
-    reset();
+	reset();
 
-    m_itemFace = new QGraphicsSvgItem( ":/qfi/images/vsi/vsi_face.svg" );
-    m_itemFace->setCacheMode( QGraphicsItem::NoCache );
-    m_itemFace->setZValue( m_faceZ );
-    m_itemFace->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
-    m_scene->addItem( m_itemFace );
+	m_itemFace = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/vsi/vsi_face.svg" );
+	m_itemFace->setCacheMode( QGraphicsItem::NoCache );
+	m_itemFace->setZValue( m_faceZ );
+	m_itemFace->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
+	m_scene->addItem( m_itemFace );
 
-    m_itemHand = new QGraphicsSvgItem( ":/qfi/images/vsi/vsi_hand.svg" );
-    m_itemHand->setCacheMode( QGraphicsItem::NoCache );
-    m_itemHand->setZValue( m_handZ );
-    m_itemHand->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
-    m_itemHand->setTransformOriginPoint( m_originalVsiCtr );
-    m_scene->addItem( m_itemHand );
+	m_itemHand = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/vsi/vsi_hand.svg" );
+	m_itemHand->setCacheMode( QGraphicsItem::NoCache );
+	m_itemHand->setZValue( m_handZ );
+	m_itemHand->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
+	m_itemHand->setTransformOriginPoint( m_originalVsiCtr );
+	m_scene->addItem( m_itemHand );
 
-    m_itemCase = new QGraphicsSvgItem( ":/qfi/images/vsi/vsi_case.svg" );
-    m_itemCase->setCacheMode( QGraphicsItem::NoCache );
-    m_itemCase->setZValue( m_caseZ );
-    m_itemCase->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
-    m_scene->addItem( m_itemCase );
+	m_itemCase = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/vsi/vsi_case.svg" );
+	m_itemCase->setCacheMode( QGraphicsItem::NoCache );
+	m_itemCase->setZValue( m_caseZ );
+	m_itemCase->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
+	m_scene->addItem( m_itemCase );
 
-    centerOn( width() / 2.0f , height() / 2.0f );
+	centerOn( width() / 2.0f , height() / 2.0f );
 
-    updateView();
+	updateView();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_VSI::reset()
 {
-    m_itemFace = 0;
-    m_itemHand = 0;
-    m_itemCase = 0;
+	m_itemFace = 0;
+	m_itemHand = 0;
+	m_itemCase = 0;
 
-    m_climbRate = 0.0f;
+	m_climbRate = 0.0f;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_VSI::updateView()
 {
-    m_itemHand->setRotation( m_climbRate * 0.086f );
+	m_itemHand->setRotation( m_climbRate * 0.086f );
 
-    m_scene->update();
+	m_scene->update();
 }

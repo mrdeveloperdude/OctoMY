@@ -67,36 +67,45 @@ namespace Ui
 
 class WidgetADI : public QWidget
 {
-	Q_OBJECT
+		Q_OBJECT
+		Q_PROPERTY(QString theme READ theme WRITE setTheme )
+	public:
 
-public:
+		explicit WidgetADI( QWidget *parent = 0 );
 
-	explicit WidgetADI( QWidget *parent = 0 );
+		~WidgetADI();
 
-	~WidgetADI();
+		inline void update()
+		{
+			m_adi->update();
+		}
 
-	inline void update()
-	{
-		m_adi->update();
-	}
+		inline void setRoll( float roll )
+		{
+			m_adi->setRoll( roll );
+		}
 
-	inline void setRoll( float roll )
-	{
-		m_adi->setRoll( roll );
-	}
+		inline void setPitch( float pitch )
+		{
+			m_adi->setPitch( pitch );
+		}
 
-	inline void setPitch( float pitch )
-	{
-		m_adi->setPitch( pitch );
-	}
+		inline void setTheme(QString theme){
+			m_adi->setTheme(theme);
+		}
 
-private:
+		inline QString theme(){
+			return m_adi->theme();
+		}
 
-	Ui::WidgetADI *m_ui;
-	qfi_ADI       *m_adi;
-	LayoutSquare  *m_layoutSq;
 
-	void setupUi();
+	private:
+
+		Ui::WidgetADI *m_ui;
+		qfi_ADI       *m_adi;
+		LayoutSquare  *m_layoutSq;
+
+		void setupUi();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

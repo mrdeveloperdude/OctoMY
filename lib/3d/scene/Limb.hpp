@@ -34,8 +34,7 @@ class Hinge{
 				HingeType type=HINGE_REVOLUTE
 				, QVector3D axis1=QVector3D (1,0,0)
 				, QVector3D axis2=QVector3D (1,0,0)
-
-				);
+		);
 };
 
 

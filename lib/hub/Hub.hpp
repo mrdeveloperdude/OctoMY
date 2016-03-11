@@ -2,6 +2,7 @@
 #define HUB_HPP
 
 #include "comms/CommsChannel.hpp"
+#include "security/KeyStore.hpp"
 
 #include <QCommandLineParser>
 
@@ -14,6 +15,7 @@ class Hub: QObject{
 		int lastReceivedPackets;
 		int lastLostPackets;
 		int lastAckedPackets;
+		KeyStore keystore;
 
 
 	public:

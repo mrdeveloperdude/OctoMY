@@ -58,54 +58,63 @@
 /** Horizontal Situation Indicator widget. */
 class qfi_HSI : public QGraphicsView
 {
-    Q_OBJECT
+		Q_OBJECT
+		Q_PROPERTY(QString theme READ theme WRITE setTheme )
+	public:
 
-public:
+		/** Constructor. */
+		qfi_HSI( QWidget *parent = 0 );
 
-    /** Constructor. */
-    qfi_HSI( QWidget *parent = 0 );
+		/** Destructor. */
+		virtual ~qfi_HSI();
 
-    /** Destructor. */
-    virtual ~qfi_HSI();
+		/** Reinitiates widget. */
+		void reinit();
 
-    /** Reinitiates widget. */
-    void reinit();
+		/** Refreshes (redraws) widget. */
+		void update();
 
-    /** Refreshes (redraws) widget. */
-    void update();
+		/** @param heading [deg] */
+		void setHeading( float heading );
 
-    /** @param heading [deg] */
-    void setHeading( float heading );
+		/** @param theme name */
+		void setTheme(QString theme);
 
-protected:
+		/** @return theme name */
+		QString theme();
 
-    void resizeEvent( QResizeEvent *event );
+	protected:
 
-private:
+		void resizeEvent( QResizeEvent *event );
 
-    QGraphicsScene *m_scene;
+	private:
 
-    QGraphicsSvgItem *m_itemFace;
-    QGraphicsSvgItem *m_itemCase;
+		QGraphicsScene *m_scene;
 
-    float m_heading;
+		QGraphicsSvgItem *m_itemFace;
+		QGraphicsSvgItem *m_itemCase;
 
-    float m_scaleX;
-    float m_scaleY;
+		float m_heading;
 
-    const int m_originalHeight;
-    const int m_originalWidth;
+		float m_scaleX;
+		float m_scaleY;
 
-    QPointF m_originalHsiCtr;
+		const int m_originalHeight;
+		const int m_originalWidth;
 
-    const int m_faceZ;
-    const int m_caseZ;
+		QPointF m_originalHsiCtr;
 
-    void init();
+		const int m_faceZ;
+		const int m_caseZ;
 
-    void reset();
 
-    void updateView();
+		QString m_theme;
+
+		void init();
+
+		void reset();
+
+		void updateView();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

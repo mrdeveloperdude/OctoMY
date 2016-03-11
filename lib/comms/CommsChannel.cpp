@@ -157,6 +157,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 					Pose pose;
 					*ds >> pose;
 					qDebug()<<"GOT POSE MESSAGE: "<<pose.toString();
+
 				}break;
 			default:
 			case(INVALID):{
@@ -187,7 +188,7 @@ void CommsChannel::onSendingTimer(){
 	lastRX=now;
 	sendCount++;
 	if(now-lastTXST>1000){
-		qDebug()<<"SEND count="<<QString::number(sendCount)<<"/sec";
+		//qDebug()<<"SEND count="<<QString::number(sendCount)<<"/sec";
 		lastTXST=now;
 		sendCount=0;
 	}

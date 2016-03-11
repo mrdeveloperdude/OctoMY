@@ -15,6 +15,9 @@ Hinge::Hinge(
 	, axis1(axis1)
 	, axis2(axis2)
 {
+	Q_UNUSED(this->type);
+	Q_UNUSED(this->axis1);
+	Q_UNUSED(this->axis2);
 
 }
 
@@ -41,6 +44,11 @@ Limb::Limb(Simulation &sim
 	, link(new GBody)
 	, joint(new GJointRevolute)
 {
+
+	Q_UNUSED(this->sim);
+	Q_UNUSED(this->parent);
+	Q_UNUSED(this->length);
+
 	if(0!=parent){
 		parent->addChild(this);
 	}

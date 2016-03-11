@@ -69,6 +69,7 @@ namespace utility{
 	// File
 
 	QString fileToString(QString fn);
+	QByteArray fileToByteArray(QString fn);
 	bool stringToFile(QString fn, QString data, bool append=false);
 	bool verifyMedia(QString name);
 

@@ -67,31 +67,40 @@ namespace Ui
 
 class WidgetASI : public QWidget
 {
-	Q_OBJECT
+		Q_OBJECT
+		Q_PROPERTY(QString theme READ theme WRITE setTheme )
+	public:
 
-public:
+		explicit WidgetASI( QWidget *parent = 0 );
 
-	explicit WidgetASI( QWidget *parent = 0 );
+		~WidgetASI();
 
-	~WidgetASI();
+		inline void update()
+		{
+			m_asi->update();
+		}
 
-	inline void update()
-	{
-		m_asi->update();
-	}
+		inline void setAirspeed( float airspeed )
+		{
+			m_asi->setAirspeed( airspeed );
+		}
 
-	inline void setAirspeed( float airspeed )
-	{
-		m_asi->setAirspeed( airspeed );
-	}
+		inline void setTheme(QString theme){
+			m_asi->setTheme(theme);
+		}
 
-private:
+		inline QString theme(){
+			return m_asi->theme();
+		}
 
-	Ui::WidgetASI *m_ui;
-	qfi_ASI       *m_asi;
-	LayoutSquare  *m_layoutSq;
 
-	void setupUi();
+	private:
+
+		Ui::WidgetASI *m_ui;
+		qfi_ASI       *m_asi;
+		LayoutSquare  *m_layoutSq;
+
+		void setupUi();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

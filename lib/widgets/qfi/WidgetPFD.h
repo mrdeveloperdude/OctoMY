@@ -67,93 +67,101 @@ namespace Ui
 
 class WidgetPFD : public QWidget
 {
-	Q_OBJECT
+		Q_OBJECT
+		Q_PROPERTY(QString theme READ theme WRITE setTheme )
+	public:
 
-public:
+		explicit WidgetPFD( QWidget *parent = 0 );
 
-	explicit WidgetPFD( QWidget *parent = 0 );
+		virtual ~WidgetPFD();
 
-	virtual ~WidgetPFD();
+		inline void update()
+		{
+			m_pfd->update();
+		}
 
-	inline void update()
-	{
-		m_pfd->update();
-	}
+		inline void setRoll( float roll )
+		{
+			m_pfd->setRoll( roll );
+		}
 
-	inline void setRoll( float roll )
-	{
-		m_pfd->setRoll( roll );
-	}
+		inline void setPitch( float pitch )
+		{
+			m_pfd->setPitch( pitch );
+		}
 
-	inline void setPitch( float pitch )
-	{
-		m_pfd->setPitch( pitch );
-	}
+		inline void setFlightPathMarker( float aoa, float sideslip )
+		{
+			m_pfd->setFlightPathMarker( aoa, sideslip );
+		}
 
-	inline void setFlightPathMarker( float aoa, float sideslip )
-	{
-		m_pfd->setFlightPathMarker( aoa, sideslip );
-	}
+		inline void setSlipSkid( float slipSkid )
+		{
+			m_pfd->setSlipSkid( slipSkid );
+		}
 
-	inline void setSlipSkid( float slipSkid )
-	{
-		m_pfd->setSlipSkid( slipSkid );
-	}
+		inline void setDevH( float devH )
+		{
+			m_pfd->setBarH( devH );
+			m_pfd->setDotH( devH );
+		}
 
-	inline void setDevH( float devH )
-	{
-		m_pfd->setBarH( devH );
-		m_pfd->setDotH( devH );
-	}
+		inline void setDevV( float devV )
+		{
+			m_pfd->setBarV( devV );
+			m_pfd->setDotV( devV );
+		}
 
-	inline void setDevV( float devV )
-	{
-		m_pfd->setBarV( devV );
-		m_pfd->setDotV( devV );
-	}
+		inline void setAltitude( float altitude )
+		{
+			m_pfd->setAltitude( altitude );
+		}
 
-	inline void setAltitude( float altitude )
-	{
-		m_pfd->setAltitude( altitude );
-	}
+		inline void setPressure( float pressure )
+		{
+			m_pfd->setPressure( pressure, qfi_PFD::IN );
+		}
 
-	inline void setPressure( float pressure )
-	{
-		m_pfd->setPressure( pressure, qfi_PFD::IN );
-	}
+		inline void setAirspeed( float airspeed )
+		{
+			m_pfd->setAirspeed( airspeed );
+		}
 
-	inline void setAirspeed( float airspeed )
-	{
-		m_pfd->setAirspeed( airspeed );
-	}
+		inline void setMachNo( float machNo )
+		{
+			m_pfd->setMachNo( machNo );
+		}
 
-	inline void setMachNo( float machNo )
-	{
-		m_pfd->setMachNo( machNo );
-	}
+		inline void setHeading( float heading )
+		{
+			m_pfd->setHeading( heading );
+		}
 
-	inline void setHeading( float heading )
-	{
-		m_pfd->setHeading( heading );
-	}
+		inline void setTurnRate( float turnRate )
+		{
+			m_pfd->setTurnRate( turnRate );
+		}
 
-	inline void setTurnRate( float turnRate )
-	{
-		m_pfd->setTurnRate( turnRate );
-	}
+		inline void setClimbRate( float climbRate )
+		{
+			m_pfd->setClimbRate( climbRate );
+		}
+		inline void setTheme(QString theme){
+			m_pfd->setTheme(theme);
+		}
 
-	inline void setClimbRate( float climbRate )
-	{
-		m_pfd->setClimbRate( climbRate );
-	}
+		inline QString theme(){
+			return m_pfd->theme();
+		}
 
-private:
 
-	Ui::WidgetPFD *m_ui;
-	qfi_PFD       *m_pfd;
-	LayoutSquare  *m_layoutSq;
+	private:
 
-	void setupUi();
+		Ui::WidgetPFD *m_ui;
+		qfi_PFD       *m_pfd;
+		LayoutSquare  *m_layoutSq;
+
+		void setupUi();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

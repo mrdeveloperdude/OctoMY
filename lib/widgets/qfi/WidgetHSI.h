@@ -67,31 +67,40 @@ namespace Ui
 
 class WidgetHSI : public QWidget
 {
-	Q_OBJECT
+		Q_OBJECT
+		Q_PROPERTY(QString theme READ theme WRITE setTheme )
+	public:
 
-public:
+		explicit WidgetHSI( QWidget *parent = 0 );
 
-	explicit WidgetHSI( QWidget *parent = 0 );
+		~WidgetHSI();
 
-	~WidgetHSI();
+		inline void update()
+		{
+			m_hsi->update();
+		}
 
-	inline void update()
-	{
-		m_hsi->update();
-	}
+		inline void setHeading( float heading )
+		{
+			m_hsi->setHeading( heading );
+		}
 
-	inline void setHeading( float heading )
-	{
-		m_hsi->setHeading( heading );
-	}
+		inline void setTheme(QString theme){
+			m_hsi->setTheme(theme);
+		}
 
-private:
+		inline QString theme(){
+			return m_hsi->theme();
+		}
 
-	Ui::WidgetHSI *m_ui;
-	qfi_HSI       *m_hsi;
-	LayoutSquare  *m_layoutSq;
 
-	void setupUi();
+	private:
+
+		Ui::WidgetHSI *m_ui;
+		qfi_HSI       *m_hsi;
+		LayoutSquare  *m_layoutSq;
+
+		void setupUi();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

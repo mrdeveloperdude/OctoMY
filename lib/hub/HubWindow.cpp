@@ -24,9 +24,23 @@
 #include <QScrollBar>
 #include <QHostInfo>
 #include <QNetworkInterface>
+#include <QString>
+#include <QStringList>
+#include <QTextStream>
+#include <QProcess>
+
 
 #include "widgets/hexedit/QHexEdit.hpp"
 #include "widgets/hexedit/QHexEditData.hpp"
+
+#include "calc_parser.hpp"
+
+
+
+#include "tls/qpolarsslpki.hpp"
+#include "tls/qpolarsslhash.hpp"
+
+
 
 HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	QMainWindow(parent)
@@ -45,6 +59,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	hexyTimer.setSingleShot(true);
 	hexyTimer.setTimerType(Qt::PreciseTimer);
 	ui->setupUi(this);
+
 	QAbstractItemModel *data = new ClientModel(hub->getComms()->getClients(), this);
 	ui->widgetIncommingNodes->configure("Icons","hubwindiow-clients-list");
 	ui->widgetIncommingNodes->setModel(data);
@@ -122,9 +137,9 @@ void HubWindow::prepareMap(){
 		// create MapAdapter to get maps from
 		//		qmapcontrol::MapAdapter* mapadapter = new qmapcontrol::OSMMapAdapter();
 		//qmapcontrol::MapAdapter* mapadapter = new qmapcontrol::OpenAerialMapAdapter();
-		//	qmapcontrol::TileMapAdapter* mapadapter = new qmapcontrol::TileMapAdapter("tile.openstreetmap.org", "/%1/%2/%3.png", 256, 0, 17);
+		qmapcontrol::TileMapAdapter* mapadapter = new qmapcontrol::TileMapAdapter("tile.openstreetmap.org", "/%1/%2/%3.png", 256, 0, 17);
 
-		qmapcontrol::TileMapAdapter* mapadapter = new qmapcontrol::TileMapAdapter("cache.kartverket.no/grunnkart/wmts", "/%1/%2/%3.png", 256, 0, 17);
+		//qmapcontrol::TileMapAdapter* mapadapter = new qmapcontrol::TileMapAdapter("cache.kartverket.no/grunnkart/wmts", "/%1/%2/%3.png", 256, 0, 17);
 
 		// create a map layer with the mapadapter
 		qmapcontrol::Layer* l = new qmapcontrol::MapLayer("Custom Layer", mapadapter);
@@ -517,10 +532,13 @@ void HubWindow::onConnectionStatusChanged(bool s){
 HexyTool *ht=0;
 void HubWindow::on_pushButtonTest_clicked(){
 	qDebug()<<"TEST BUTTON PRESSED";
+	/*
 	if(0==ht){
 		ht=new HexyTool(0);
 	}
 	ht->show();
+	*/
+
 	/*
 	if(0==hexy){
 		hexy=new HexySerial;
@@ -534,5 +552,104 @@ void HubWindow::on_pushButtonTest_clicked(){
 		hexy->configure();
 	}
 	*/
+
 }
 
+
+void HubWindow::on_pushButtonParsePlan_clicked(){
+	qDebug()<<"INSTANCIATING PARSER";
+	CalcParser p;
+	qDebug()<<"RUNNING PARSER";
+	QString raw=ui->plainTextEditPlan->document()->toPlainText();
+	qDebug()<<"PARSING RAW TEXT:"<<raw;
+	bool ret=p.parse(raw);
+	qDebug()<<"PARSING RESULTED IN "<<(ret?"SUCCESS":"FAILURE");
+}
+
+void HubWindow::on_lineEditQR_textChanged(const QString &text){
+	ui->widgetQR->setQRData(text);
+}
+
+#include "tls/qpolarsslpki.hpp"
+
+void HubWindow::on_pushButtonGenerateKeyPair_clicked(){
+	qpolarssl::Pki pki;
+	int ret=0;
+	ret=pki.generateKeyPair(2048);
+	if(0==ret){
+		QByteArray key=pki.getPEMKey();
+		QByteArray pubkey=pki.getPEMPubkey();
+		ui->plainTextEditPrivateKey->setPlainText(key);
+		ui->plainTextEditPublicKey->setPlainText(pubkey);
+	}
+	else{
+		qWarning("ERROR Exporting generated key as PEM");
+	}
+
+}
+
+void HubWindow::on_pushButtonTestKeyPair_clicked(){
+	//const auto priPath = QString("/home/lennart/keypairs/private_key.pem"); 	const auto pubPath = QString("/home/lennart/keypairs/public_key.pem"); utility::fileToByteArray(pubPath);
+	int ret=0;
+	qpolarssl::Pki pkiPrivate;
+	QByteArray priKeyData  = ui->plainTextEditPrivateKey->toPlainText().toUtf8();
+	if( (ret=pkiPrivate.parseKey(priKeyData) != 0) ){
+		QMessageBox msgBox;
+		msgBox.setIcon(QMessageBox::Critical);
+		msgBox.setText("Parsing of private key failed with code "+QString::number(ret));
+		msgBox.exec();
+		return;
+	}
+	else if(!pkiPrivate.isValid()){
+		QMessageBox msgBox;
+		msgBox.setIcon(QMessageBox::Critical);
+		msgBox.setText("PKI was invalid after parsing of private key");
+		msgBox.exec();
+		return;
+	}
+
+	qpolarssl::Pki pkiPublic;
+	QByteArray pubKeyData  = ui->plainTextEditPublicKey->toPlainText().toUtf8();
+	if( (ret=pkiPublic.parsePublicKey(pubKeyData) != 0) ){
+		QMessageBox msgBox;
+		msgBox.setIcon(QMessageBox::Critical);
+		msgBox.setText("Parsing of public key failed with code -"+QString::number(-ret,16));
+		msgBox.exec();
+		return;
+	}
+	else if(!pkiPublic.isValid()){
+		QMessageBox msgBox;
+		msgBox.setIcon(QMessageBox::Critical);
+		msgBox.setText("PKI was invalid after parsing of public key");
+		msgBox.exec();
+		return;
+	}
+
+	const QByteArray sourceData = QString("OctoMY™ test data in cleartext").toUtf8();
+
+	const QByteArray signature = pkiPrivate.sign(sourceData, qpolarssl::THash::SHA256);
+
+	const int siglen=signature.length();
+	if((siglen <= 64) ){
+		QMessageBox msgBox;
+		msgBox.setIcon(QMessageBox::Critical);
+		msgBox.setText("Signature size "+QString::number(siglen)+" was less than 64");
+		msgBox.exec();
+		return;
+	}
+
+	ret = pkiPublic.verify(sourceData, signature, qpolarssl::THash::SHA256);
+
+	if(ret!=0){
+		QMessageBox msgBox;
+		msgBox.setIcon(QMessageBox::Critical);
+		msgBox.setText("Signature verification failed with code -"+QString::number(-ret,16));
+		msgBox.exec();
+		return;
+	}
+
+	QMessageBox msgBox;
+	msgBox.setIcon(QMessageBox::Information);
+	msgBox.setText("Signature verification succeeded.");
+	msgBox.exec();
+}

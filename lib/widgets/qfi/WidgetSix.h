@@ -63,78 +63,93 @@
 
 namespace Ui
 {
-    class WidgetSix;
+	class WidgetSix;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 class WidgetSix : public QWidget
 {
-    Q_OBJECT
+		Q_OBJECT
+		Q_PROPERTY(QString theme READ theme WRITE setTheme )
+	public:
 
-public:
+		explicit WidgetSix( QWidget *parent = 0 );
 
-    explicit WidgetSix( QWidget *parent = 0 );
+		~WidgetSix();
 
-    ~WidgetSix();
+		void update();
 
-    void update();
+		inline void setRoll( float roll )
+		{
+			m_widgetADI->setRoll( roll );
+		}
 
-    inline void setRoll( float roll )
-    {
-        m_widgetADI->setRoll( roll );
-    }
+		inline void setPitch( float pitch )
+		{
+			m_widgetADI->setPitch( pitch );
+		}
 
-    inline void setPitch( float pitch )
-    {
-        m_widgetADI->setPitch( pitch );
-    }
+		inline void setAltitude( float altitude )
+		{
+			m_widgetALT->setAltitude( altitude );
+		}
 
-    inline void setAltitude( float altitude )
-    {
-        m_widgetALT->setAltitude( altitude );
-    }
+		inline void setPressure( float pressure )
+		{
+			m_widgetALT->setPressure( pressure );
+		}
 
-    inline void setPressure( float pressure )
-    {
-        m_widgetALT->setPressure( pressure );
-    }
+		inline void setAirspeed( float airspeed )
+		{
+			m_widgetASI->setAirspeed( airspeed );
+		}
 
-    inline void setAirspeed( float airspeed )
-    {
-        m_widgetASI->setAirspeed( airspeed );
-    }
+		inline void setHeading( float heading )
+		{
+			m_widgetHSI->setHeading( heading );
+		}
 
-    inline void setHeading( float heading )
-    {
-        m_widgetHSI->setHeading( heading );
-    }
+		inline void setTurnRate( float turnRate )
+		{
+			m_widgetTC->setTurnRate( turnRate );
+		}
 
-    inline void setTurnRate( float turnRate )
-    {
-        m_widgetTC->setTurnRate( turnRate );
-    }
+		inline void setSlipSkid( float slipSkid )
+		{
+			m_widgetTC->setSlipSkid( slipSkid );
+		}
 
-    inline void setSlipSkid( float slipSkid )
-    {
-        m_widgetTC->setSlipSkid( slipSkid );
-    }
+		inline void setClimbRate( float climbRate )
+		{
+			m_widgetVSI->setClimbRate( climbRate );
+		}
 
-    inline void setClimbRate( float climbRate )
-    {
-        m_widgetVSI->setClimbRate( climbRate );
-    }
+		inline void setTheme(QString theme){
+			m_widgetADI ->setTheme(theme);
+			m_widgetALT ->setTheme(theme);
+			m_widgetASI ->setTheme(theme);
+			m_widgetHSI ->setTheme(theme);
+			m_widgetTC  ->setTheme(theme);
+			m_widgetVSI ->setTheme(theme);
+		}
 
-private:
+		inline QString theme(){
+			//NOTE: awsumes all have same theme
+			return m_widgetVSI->theme();
+		}
 
-    Ui::WidgetSix *m_ui;
 
-    WidgetADI *m_widgetADI;
-    WidgetALT *m_widgetALT;
-    WidgetASI *m_widgetASI;
-    WidgetHSI *m_widgetHSI;
-    WidgetTC  *m_widgetTC;
-    WidgetVSI *m_widgetVSI;
+	private:
+
+		Ui::WidgetSix *m_ui;
+
+		WidgetADI *m_widgetADI;
+		WidgetALT *m_widgetALT;
+		WidgetASI *m_widgetASI;
+		WidgetHSI *m_widgetHSI;
+		WidgetTC  *m_widgetTC;
+		WidgetVSI *m_widgetVSI;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

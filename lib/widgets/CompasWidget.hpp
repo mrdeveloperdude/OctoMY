@@ -16,6 +16,7 @@ QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
 class CompasWidget : public QOpenGLWidget, protected QOpenGLFunctions{
 		Q_OBJECT
+
 	private:
 		void setupVertexAttribs();
 		void setupVertexAttribs2();

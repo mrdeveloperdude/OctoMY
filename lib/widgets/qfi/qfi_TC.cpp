@@ -62,184 +62,198 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 qfi_TC::qfi_TC( QWidget *parent ) :
-    QGraphicsView ( parent ),
+	QGraphicsView ( parent ),
 
-    m_scene ( 0 ),
+	m_scene ( 0 ),
 
-    m_itemBack   ( 0 ),
-    m_itemBall   ( 0 ),
-    m_itemFace_1 ( 0 ),
-    m_itemFace_2 ( 0 ),
-    m_itemMark   ( 0 ),
-    m_itemCase   ( 0 ),
+	m_itemBack   ( 0 ),
+	m_itemBall   ( 0 ),
+	m_itemFace_1 ( 0 ),
+	m_itemFace_2 ( 0 ),
+	m_itemMark   ( 0 ),
+	m_itemCase   ( 0 ),
 
-    m_turnRate ( 0.0f ),
-    m_slipSkid ( 0.0f ),
+	m_turnRate ( 0.0f ),
+	m_slipSkid ( 0.0f ),
 
-    m_scaleX ( 1.0f ),
-    m_scaleY ( 1.0f ),
+	m_scaleX ( 1.0f ),
+	m_scaleY ( 1.0f ),
 
-    m_originalHeight ( 240 ),
-    m_originalWidth  ( 240 ),
+	m_originalHeight ( 240 ),
+	m_originalWidth  ( 240 ),
 
-    m_originalMarkCtr ( 120.0f , 120.0f ),
-    m_originalBallCtr ( 120.0f , -36.0f ),
+	m_originalMarkCtr ( 120.0f , 120.0f ),
+	m_originalBallCtr ( 120.0f , -36.0f ),
 
-    m_backZ  ( -70 ),
-    m_ballZ  ( -60 ),
-    m_face1Z ( -50 ),
-    m_face2Z ( -40 ),
-    m_markZ  ( -30 ),
-    m_caseZ  (  10 )
+	m_backZ  ( -70 ),
+	m_ballZ  ( -60 ),
+	m_face1Z ( -50 ),
+	m_face2Z ( -40 ),
+	m_markZ  ( -30 ),
+	m_caseZ  (  10 ),
+	m_theme("default")
 {
-    reset();
+	reset();
 
-    m_scene = new QGraphicsScene( this );
-    setScene( m_scene );
+	m_scene = new QGraphicsScene( this );
+	setScene( m_scene );
 
-    m_scene->clear();
+	m_scene->clear();
 
-    init();
+	init();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 qfi_TC::~qfi_TC()
 {
-    if ( m_scene )
-    {
-        m_scene->clear();
-        delete m_scene;
-        m_scene = 0;
-    }
+	if ( m_scene )
+	{
+		m_scene->clear();
+		delete m_scene;
+		m_scene = 0;
+	}
 
-    reset();
+	reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_TC::reinit()
 {
-    if ( m_scene )
-    {
-        m_scene->clear();
+	if ( m_scene )
+	{
+		m_scene->clear();
 
-        init();
-    }
+		init();
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_TC::update()
 {
-    updateView();
+	updateView();
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+void qfi_TC::setTheme(QString theme){
+	m_theme=theme;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+QString qfi_TC::theme(){
+	return m_theme;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_TC::setTurnRate( float turnRate )
 {
-    m_turnRate = turnRate;
+	m_turnRate = turnRate;
 
-    if ( m_turnRate < -6.0f ) m_turnRate = -6.0f;
-    if ( m_turnRate >  6.0f ) m_turnRate =  6.0f;
+	if ( m_turnRate < -6.0f ) m_turnRate = -6.0f;
+	if ( m_turnRate >  6.0f ) m_turnRate =  6.0f;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_TC::setSlipSkid( float slipSkid )
 {
-    m_slipSkid = slipSkid;
+	m_slipSkid = slipSkid;
 
-    if ( m_slipSkid < -15.0f ) m_slipSkid = -15.0f;
-    if ( m_slipSkid >  15.0f ) m_slipSkid =  15.0f;
+	if ( m_slipSkid < -15.0f ) m_slipSkid = -15.0f;
+	if ( m_slipSkid >  15.0f ) m_slipSkid =  15.0f;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_TC::resizeEvent( QResizeEvent *event )
 {
-    ////////////////////////////////////
-    QGraphicsView::resizeEvent( event );
-    ////////////////////////////////////
+	////////////////////////////////////
+	QGraphicsView::resizeEvent( event );
+	////////////////////////////////////
 
-    reinit();
+	reinit();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_TC::init()
 {
-    m_scaleX = (float)width()  / (float)m_originalWidth;
-    m_scaleY = (float)height() / (float)m_originalHeight;
+	m_scaleX = (float)width()  / (float)m_originalWidth;
+	m_scaleY = (float)height() / (float)m_originalHeight;
 
-    reset();
+	reset();
 
-    m_itemBack = new QGraphicsSvgItem( ":/qfi/images/tc/tc_back.svg" );
-    m_itemBack->setCacheMode( QGraphicsItem::NoCache );
-    m_itemBack->setZValue( m_backZ );
-    m_itemBack->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
-    m_scene->addItem( m_itemBack );
+	m_itemBack = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_back.svg" );
+	m_itemBack->setCacheMode( QGraphicsItem::NoCache );
+	m_itemBack->setZValue( m_backZ );
+	m_itemBack->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
+	m_scene->addItem( m_itemBack );
 
-    m_itemBall = new QGraphicsSvgItem( ":/qfi/images/tc/tc_ball.svg" );
-    m_itemBall->setCacheMode( QGraphicsItem::NoCache );
-    m_itemBall->setZValue( m_ballZ );
-    m_itemBall->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
-    m_itemBall->setTransformOriginPoint( m_originalBallCtr );
-    m_scene->addItem( m_itemBall );
+	m_itemBall = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_ball.svg" );
+	m_itemBall->setCacheMode( QGraphicsItem::NoCache );
+	m_itemBall->setZValue( m_ballZ );
+	m_itemBall->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
+	m_itemBall->setTransformOriginPoint( m_originalBallCtr );
+	m_scene->addItem( m_itemBall );
 
-    m_itemFace_1 = new QGraphicsSvgItem( ":/qfi/images/tc/tc_face_1.svg" );
-    m_itemFace_1->setCacheMode( QGraphicsItem::NoCache );
-    m_itemFace_1->setZValue( m_face1Z );
-    m_itemFace_1->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
-    m_scene->addItem( m_itemFace_1 );
+	m_itemFace_1 = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_face_1.svg" );
+	m_itemFace_1->setCacheMode( QGraphicsItem::NoCache );
+	m_itemFace_1->setZValue( m_face1Z );
+	m_itemFace_1->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
+	m_scene->addItem( m_itemFace_1 );
 
-    m_itemFace_2 = new QGraphicsSvgItem( ":/qfi/images/tc/tc_face_2.svg" );
-    m_itemFace_2->setCacheMode( QGraphicsItem::NoCache );
-    m_itemFace_2->setZValue( m_face2Z );
-    m_itemFace_2->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
-    m_scene->addItem( m_itemFace_2 );
+	m_itemFace_2 = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_face_2.svg" );
+	m_itemFace_2->setCacheMode( QGraphicsItem::NoCache );
+	m_itemFace_2->setZValue( m_face2Z );
+	m_itemFace_2->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
+	m_scene->addItem( m_itemFace_2 );
 
-    m_itemMark = new QGraphicsSvgItem( ":/qfi/images/tc/tc_mark.svg" );
-    m_itemMark->setCacheMode( QGraphicsItem::NoCache );
-    m_itemMark->setZValue( m_markZ );
-    m_itemMark->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
-    m_itemMark->setTransformOriginPoint( m_originalMarkCtr );
-    m_scene->addItem( m_itemMark );
+	m_itemMark = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_mark.svg" );
+	m_itemMark->setCacheMode( QGraphicsItem::NoCache );
+	m_itemMark->setZValue( m_markZ );
+	m_itemMark->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
+	m_itemMark->setTransformOriginPoint( m_originalMarkCtr );
+	m_scene->addItem( m_itemMark );
 
-    m_itemCase = new QGraphicsSvgItem( ":/qfi/images/tc/tc_case.svg" );
-    m_itemCase->setCacheMode( QGraphicsItem::NoCache );
-    m_itemCase->setZValue( m_caseZ );
-    m_itemCase->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
-    m_scene->addItem( m_itemCase );
+	m_itemCase = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_case.svg" );
+	m_itemCase->setCacheMode( QGraphicsItem::NoCache );
+	m_itemCase->setZValue( m_caseZ );
+	m_itemCase->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
+	m_scene->addItem( m_itemCase );
 
-    centerOn( width() / 2.0f , height() / 2.0f );
+	centerOn( width() / 2.0f , height() / 2.0f );
 
-    updateView();
+	updateView();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_TC::reset()
 {
-    m_itemCase = 0;
+	m_itemCase = 0;
 
-    m_turnRate = 0.0f;
-    m_slipSkid = 0.0f;
+	m_turnRate = 0.0f;
+	m_slipSkid = 0.0f;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void qfi_TC::updateView()
 {
-    m_scaleX = (float)width()  / (float)m_originalWidth;
-    m_scaleY = (float)height() / (float)m_originalHeight;
+	m_scaleX = (float)width()  / (float)m_originalWidth;
+	m_scaleY = (float)height() / (float)m_originalHeight;
 
-    m_itemBall->setRotation( -m_slipSkid );
+	m_itemBall->setRotation( -m_slipSkid );
 
-    float angle = ( m_turnRate / 3.0f ) * 20.0f;
+	float angle = ( m_turnRate / 3.0f ) * 20.0f;
 
-    m_itemMark->setRotation( angle );
+	m_itemMark->setRotation( angle );
 
-    m_scene->update();
+	m_scene->update();
 }

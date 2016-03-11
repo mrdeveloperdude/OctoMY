@@ -3,13 +3,13 @@
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met: 
+// modification, are permitted provided that the following conditions are met:
 //
 // 1. Redistributions of source code must retain the above copyright notice, this
-//    list of conditions and the following disclaimer. 
+//    list of conditions and the following disclaimer.
 // 2. Redistributions in binary form must reproduce the above copyright notice,
 //    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution. 
+//    and/or other materials provided with the distribution.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -68,7 +68,7 @@ GJoint* GSystem::getJoint(int idx_)
 {
 	if ( idx_ >= int(pJoints.size()) ) return NULL;
 	std::list<GJoint*>::iterator iter_pjoint = pJoints.begin();
-	std::advance(iter_pjoint, idx_); 
+	std::advance(iter_pjoint, idx_);
 	return *iter_pjoint;
 }
 
@@ -127,7 +127,7 @@ gReal GSystem::getMass()
 	for (iter_pbody = pBodies.begin(); iter_pbody != pBodies.end(); iter_pbody++) {
 		mass += (*iter_pbody)->getMass();
 	}
-	
+
 	return mass;
 }
 
@@ -238,7 +238,7 @@ Vec3 GSystem::getDerivative_PositionCOMGlobal_Dq_2(GCoordinate *pCoordinate_)
 			if ( w[0] != 0 || w[1] != 0 || w[2] != 0 || v[0] != 0 || v[1] != 0 || v[2] != 0 ) {
 				c = (*iter_pbody)->getPositionCOM();
 				DpDq += (*iter_pbody)->getMass() * ( (*iter_pbody)->T_global.GetRotation() * ( Cross(w, c) + v ) );
-			} 
+			}
 		}
 
 		DpDq *= ((gReal)1./mass_total);
@@ -305,7 +305,7 @@ void GSystem::calcDerivative_PositionCOMGlobal_Dq(std::vector<GCoordinate *> pCo
 		// save previous settings
 		M[i] = (*iter_pbody)->fwdJointChain.M1;
 		jlc_type[i] = (*iter_pbody)->fwdJointChain.jointLoopConstraintType;
-		
+
 		// prerequisites for (*iter_pbody)->getDerivative_PositionCOMGlobal_Dq(...)
 		(*iter_pbody)->fwdJointChain.setM(SE3());
 		(*iter_pbody)->fwdJointChain.jointLoopConstraintType = GConstraintJointLoop::JOINTLOOP_ORIENTATION_POSITION;
@@ -341,7 +341,7 @@ void GSystem::calcDerivative_PositionCOMGlobal_Dq(RMatrix &DpDq_)
 		// save previous settings
 		M[i] = (*iter_pbody)->fwdJointChain.M1;
 		jlc_type[i] = (*iter_pbody)->fwdJointChain.jointLoopConstraintType;
-		
+
 		// prerequisites for (*iter_pbody)->getDerivative_PositionCOMGlobal_Dq(...)
 		(*iter_pbody)->fwdJointChain.setM(SE3());
 		(*iter_pbody)->fwdJointChain.jointLoopConstraintType = GConstraintJointLoop::JOINTLOOP_ORIENTATION_POSITION;
@@ -392,7 +392,7 @@ void GSystem::calcDerivative_MomentumGlobal_Dq_Ddq(std::vector<GCoordinate*> pCo
 		// save previous settings
 		M[i] = (*iter_pbody)->fwdJointChain.M1;
 		jlc_type[i] = (*iter_pbody)->fwdJointChain.jointLoopConstraintType;
-		
+
 		// prerequisites for (*iter_pbody)->getDerivative_MomentumGlobal_Dq(...) and (*iter_pbody)->getDerivative_MomentumGlobal_Ddq(...)
 		(*iter_pbody)->fwdJointChain.setM(SE3());
 		(*iter_pbody)->fwdJointChain.jointLoopConstraintType = GConstraintJointLoop::JOINTLOOP_ORIENTATION_POSITION;
@@ -432,7 +432,7 @@ void GSystem::calcDerivative_MomentumGlobal_Dq_Ddq(RMatrix &DHgDq_, RMatrix &DHg
 		// save previous settings
 		M[i] = (*iter_pbody)->fwdJointChain.M1;
 		jlc_type[i] = (*iter_pbody)->fwdJointChain.jointLoopConstraintType;
-		
+
 		// prerequisites for (*iter_pbody)->getDerivative_MomentumGlobal_Dq(...) and (*iter_pbody)->getDerivative_MomentumGlobal_Ddq(...)
 		(*iter_pbody)->fwdJointChain.setM(SE3());
 		(*iter_pbody)->fwdJointChain.jointLoopConstraintType = GConstraintJointLoop::JOINTLOOP_ORIENTATION_POSITION;
@@ -471,7 +471,7 @@ void GSystem::calcDerivative_MomentumCOM_Dq_Ddq(std::vector<GCoordinate*> pCoord
 		// save previous settings
 		M[i] = (*iter_pbody)->fwdJointChain.M1;
 		jlc_type[i] = (*iter_pbody)->fwdJointChain.jointLoopConstraintType;
-		
+
 		// prerequisites for (*iter_pbody)->getDerivative_MomentumGlobal_Dq(...) and (*iter_pbody)->getDerivative_MomentumGlobal_Ddq(...)
 		(*iter_pbody)->fwdJointChain.setM(SE3());
 		(*iter_pbody)->fwdJointChain.jointLoopConstraintType = GConstraintJointLoop::JOINTLOOP_ORIENTATION_POSITION;
@@ -521,7 +521,7 @@ void GSystem::calcDerivative_MomentumCOM_Dq_Ddq(RMatrix &DHcDq_, RMatrix &DHcDdq
 		// save previous settings
 		M[i] = (*iter_pbody)->fwdJointChain.M1;
 		jlc_type[i] = (*iter_pbody)->fwdJointChain.jointLoopConstraintType;
-		
+
 		// prerequisites for (*iter_pbody)->getDerivative_MomentumGlobal_Dq(...) and (*iter_pbody)->getDerivative_MomentumGlobal_Ddq(...)
 		(*iter_pbody)->fwdJointChain.setM(SE3());
 		(*iter_pbody)->fwdJointChain.jointLoopConstraintType = GConstraintJointLoop::JOINTLOOP_ORIENTATION_POSITION;
@@ -613,11 +613,11 @@ bool GSystem::buildSystem(GBody *pGround_, bool b_scan_fwd_joint_chain_)
 	pCoordinates.clear();
 	pBodies.clear();
 	pJoints.clear();
-	
+
 	if ( pGround_ == NULL ) return false;
 
 	pGround = pGround_;
-	
+
 	if ( !_scanBodiesAndJoints(pGround_) ) return false;
 
 	pBodies.pop_front();	// pGround is popped out.
@@ -662,7 +662,7 @@ bool GSystem::buildSystemWith(GBody *pGround_, std::vector<GBody*> pFirstBodiesI
 		}
 	}
 
-	pBodies.push_back(pGround_); 
+	pBodies.push_back(pGround_);
 
 	// start scanning only from the child bodies which are listed in pFirstBodiesIn_
 	for (iter_pbody = childbodies.begin(); iter_pbody != childbodies.end(); iter_pbody++) {
@@ -687,7 +687,7 @@ bool GSystem::buildSystemWith(GBody *pGround_, std::vector<GBody*> pFirstBodiesI
 		}
 	}
 
-	pBodies.pop_front(); 
+	pBodies.pop_front();
 
 	if ( !_scanCoordinates() ) return false;
 
@@ -729,7 +729,7 @@ bool GSystem::buildSystemWithout(GBody *pGround_, std::vector<GBody*> pFirstBodi
 		}
 	}
 
-	pBodies.push_back(pGround_); 
+	pBodies.push_back(pGround_);
 
 	// start scanning only from the child bodies which are NOT listed in pFirstBodiesOut_
 	for (iter_pbody = childbodies.begin(); iter_pbody != childbodies.end(); iter_pbody++) {
@@ -754,7 +754,7 @@ bool GSystem::buildSystemWithout(GBody *pGround_, std::vector<GBody*> pFirstBodi
 		}
 	}
 
-	pBodies.pop_front(); 
+	pBodies.pop_front();
 
 	if ( !_scanCoordinates() ) return false;
 
@@ -892,7 +892,7 @@ void GSystem::getEquationsOfMotion(RMatrix &M, RMatrix &b)
 
 bool GSystem::calcProductOfInvMassAndMatrix(RMatrix &invM_A, const RMatrix &A)
 {
-	if ( A.RowSize() != pCoordinates.size() ) return false;
+	if ( (size_t)A.RowSize() != pCoordinates.size() ) return false;
 	invM_A.SetZero(A.RowSize(), A.ColSize());
 
 	int i;
@@ -926,17 +926,17 @@ bool GSystem::calcProductOfInvMassAndMatrix(RMatrix &invM_A, const RMatrix &A)
 	for (i=0; i<A.ColSize(); i++) {
 		set_ddq(Zeros(pCoordinates.size(),1)); // this isn't necessary for real tree structure systems, but works for the cut joints in closed-loop
 		set_tau(&(A[i*A.RowSize()]));
-		
+
 		for (std::list<GBody *>::reverse_iterator riter_pbody = pBodies.rbegin(); riter_pbody != pBodies.rend(); riter_pbody++) {
 			(*riter_pbody)->update_aB_zeroV_zeroeta();
 			(*riter_pbody)->update_beta_zeroeta();
 		}
-		
+
 		for (std::list<GBody *>::iterator iter_pbody = pBodies.begin(); iter_pbody != pBodies.end(); iter_pbody++) {
 			(*iter_pbody)->update_ddq();
 			(*iter_pbody)->update_dV(true);
 		}
-		
+
 		get_ddq(&(invM_A[i*invM_A.RowSize()]));
 	}
 
@@ -951,7 +951,7 @@ bool GSystem::calcProductOfInvMassAndMatrix(RMatrix &invM_A, const RMatrix &A)
 
 bool GSystem::calcProductOfInvMassAndMatrix2(RMatrix &invM_A, const RMatrix &A)
 {
-	if ( A.RowSize() != pCoordinates.size() ) return false;
+	if ( (size_t)A.RowSize() != pCoordinates.size() ) return false;
 	invM_A.SetZero(A.RowSize(), A.ColSize());
 
 	int i;
@@ -989,7 +989,7 @@ void GSystem::initDynamicsWithZeroGravityAndVelocity()
 		(*iter_pbody)->update_T();
 		(*iter_pbody)->set_eta_zero();
 	}
-	
+
 	for (std::list<GBody *>::reverse_iterator riter_pbody = pBodies.rbegin(); riter_pbody != pBodies.rend(); riter_pbody++) {
 		(*riter_pbody)->update_aI();
 		(*riter_pbody)->update_Psi();
@@ -1012,7 +1012,7 @@ void GSystem::calcDynamicsWithZeroGravityAndVelocity()
 		(*riter_pbody)->update_aB_zeroV_zeroeta();
 		(*riter_pbody)->update_beta_zeroeta();
 	}
-	
+
 	for (std::list<GBody *>::iterator iter_pbody = pBodies.begin(); iter_pbody != pBodies.end(); iter_pbody++) {
 		if ( (*iter_pbody)->pBaseJoint->isPrescribed() ) {
 			(*iter_pbody)->update_dV(false);
@@ -1085,10 +1085,10 @@ void GSystem::initBodyForcesAndJointTorques()
 bool GSystem::stepSimulation(gReal h_)
 {
 	// apply force elements to the bodies and joints
-	// ** this will add forces/torques to the bodies and joints 
+	// ** this will add forces/torques to the bodies and joints
 	// ** therefore, initBodyForcesAndJointTorques() must be called before calling stepSimulation() for initialization of the forces/torques
 	for (std::list<GForce *>::iterator iter_psd = pForces.begin(); iter_psd != pForces.end(); iter_psd++) {
-		(*iter_psd)->applyForce(); 
+		(*iter_psd)->applyForce();
 	}
 
 	// calculate joint accelerations (for unprescribed coordinates) and torques (for prescribed coordinates)
@@ -1214,13 +1214,13 @@ bool GSystem::_scanBodiesAndJoints(GBody *pbody_)
 	GJoint *pjoint_;
 	GBody *pbody_next_;
 	std::list<GJoint*>::iterator iter_pjoint;
-	
+
 	if ( pbody_ == NULL ) return false;
 	if ( find(pBodies.begin(), pBodies.end(), pbody_) != pBodies.end() ) return false;
 
 	// add pbody_ to system
 	pBodies.push_back(pbody_);
-	
+
 	for (iter_pjoint = pbody_->pJoints.begin(); iter_pjoint != pbody_->pJoints.end(); iter_pjoint++) {
 
 		if ( (*iter_pjoint) == NULL ) return false;
@@ -1228,10 +1228,10 @@ bool GSystem::_scanBodiesAndJoints(GBody *pbody_)
 		pjoint_ = *iter_pjoint;
 
 		if ( find(pJoints.begin(), pJoints.end(), pjoint_) == pJoints.end() ) {
-		
+
 			// if needed, swap the bodies of pjoint_
-			if ( pjoint_->pRightBody == pbody_ ) { 
-				if ( !pjoint_->reverse() ) return false; 
+			if ( pjoint_->pRightBody == pbody_ ) {
+				if ( !pjoint_->reverse() ) return false;
 			}
 
 			// add pjoint_ to system
@@ -1353,7 +1353,7 @@ bool GSystem::_getReady()
 
 	// load joint information on each body (one time call)
 	for (iter_pbody = pBodies.begin(); iter_pbody != pBodies.end(); iter_pbody++) {
-		(*iter_pbody)->load_base_joint_info();	
+		(*iter_pbody)->load_base_joint_info();
 	}
 
 	return true;
