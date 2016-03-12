@@ -23,15 +23,11 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	, hexy(0)
 {
 	ui->setupUi(this);
-	ui->lineEditHubAddress->configure("","hub-address");
-	ui->lineEditHubPort->configure("","hub-port");
-	ui->lineEditLocalPort->configure("","listen-port");
-	ui->stackedWidget->setCurrentWidget(ui->pageTest);
-	utility::populateComboboxWithLocalAdresses(*ui->comboBoxLocalAddress);
-	ui->tryToggleListen->setText("Connect","Connecting...","Connected");
-	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState)),WWCONTYPE)){
-		qDebug()<<"ERROR: could not connect";
+	ui->widgetConnection->configure("agent");
+	if(!connect(ui->widgetConnection,SIGNAL(connectStateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState)),WWCONTYPE)){
+		qWarning()<<"ERROR: could not connect";
 	}
+	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 	if(0!=agent){
 		ui->labelLocal->setText("WAITING FOR LOCAL");
 		ui->labelHub->setText("WAITING FOR HUB");
@@ -64,13 +60,21 @@ AgentWindow::~AgentWindow(){
 }
 
 
+
 void AgentWindow::onTryToggleConnectionChanged(TryToggleState s){
 	appendLog("TRYSTATE CHANGED TO "+ToggleStateToSTring(s));
-	if(TRYING==s && 0!=agent){
-		agent->start(ui->comboBoxLocalAddress->currentText(),ui->lineEditLocalPort->text().toInt(), ui->lineEditHubAddress->text(), ui->lineEditHubPort->text().toInt());
-		ui->labelLocal->setText("LOCAL:"+ui->comboBoxLocalAddress->currentText()+":"+ui->lineEditLocalPort->text());
-		ui->labelHub->setText("HUB: "+ui->lineEditHubAddress->text()+ ":"+ui->lineEditHubPort->text());
-		ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+	switch(s){
+		case(TRYING):{
+				agent->start(ui->widgetConnection->getLocalAddress(),ui->widgetConnection->getLocalPort(), ui->widgetConnection->getTargetAddress(), ui->widgetConnection->getTargetPort());
+				ui->labelLocal->setText("LOCAL:"+ui->widgetConnection->getLocalAddress().toString()+":"+QString::number(ui->widgetConnection->getLocalPort()));
+				ui->labelHub->setText("HUB: "+ui->widgetConnection->getTargetAddress().toString()+ ":"+ QString::number(ui->widgetConnection->getTargetPort()));
+			}break;
+		case(ON):{
+
+			}break;
+		default:
+		case(OFF):{
+			}break;
 	}
 }
 
@@ -173,3 +177,12 @@ void AgentWindow::appendLog(const QString& text){
 }
 
 
+
+void AgentWindow::on_pushButtonCamera_clicked(){
+	ui->stackedWidget->setCurrentWidget(ui->pageCamera);
+
+}
+
+void AgentWindow::on_pushButtonBack_clicked(){
+	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+}

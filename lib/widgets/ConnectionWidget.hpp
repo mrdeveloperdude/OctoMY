@@ -35,6 +35,11 @@ class ConnectionWidget : public QWidget
 		void unHookSignals(QObject &ob);
 
 
+		void setEditsEnabled(bool e);
+
+	private slots:
+		void onConnectStateChanged(TryToggleState s);
+
 	private:
 		Ui::ConnectionWidget *ui;
 

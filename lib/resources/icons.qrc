@@ -36,5 +36,9 @@
         <file>icons/qrcode.svg</file>
         <file>icons/aviation.svg</file>
         <file>icons/encryption.svg</file>
+        <file>icons/actuator_control.svg</file>
+        <file>icons/gait_control.svg</file>
+        <file>icons/path_control.svg</file>
+        <file>icons/pose_control.svg</file>
     </qresource>
 </RCC>

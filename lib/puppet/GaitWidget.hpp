@@ -18,6 +18,8 @@ class GaitWidget : public QWidget{
 		void paintEvent(QPaintEvent *);
 		void mouseReleaseEvent ( QMouseEvent * event ) ;
 		void  keyPressEvent(QKeyEvent *event);
+		void hideEvent(QHideEvent *);
+		void showEvent(QShowEvent *);
 
 	public slots:
 		void onUpdateTimer();

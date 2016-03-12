@@ -4,6 +4,7 @@
 #include "sensory/SensorInput.hpp"
 #include "comms/CommsChannel.hpp"
 #include "comms/messages/SensorsMessage.hpp"
+#include "widgets/TryToggle.hpp"
 
 #include <QObject>
 #include <QCommandLineParser>
@@ -19,7 +20,7 @@ class Agent : public QObject{
 		SensorsMessage statusMessage;
 		qint64 lastSend;
 
-		QString hubAddress;
+		QHostAddress hubAddress;
 		quint16 hubPort;
 
 
@@ -27,10 +28,13 @@ class Agent : public QObject{
 		explicit Agent(QCommandLineParser &opts, QObject *parent = 0);
 		virtual ~Agent();
 
-		void start(QString adrLocal, quint16 portLocal, QString hubAddress, quint16 hubPort);
+		void start(QHostAddress listenAddress, quint16 listenPort, QHostAddress hubAddress, quint16 hubPort);
 		void hookSignals(QObject &o);
 		void unHookSignals(QObject &o);
 		void sendStatus();
+
+	public slots:
+		void onConnectionStatusChanged(TryToggleState);
 
 	private slots:
 

@@ -10,7 +10,6 @@ GaitWidget::GaitWidget(QWidget *parent)
 	if(!connect(&timer,SIGNAL(timeout()),this,SLOT(onUpdateTimer()))){
 		qWarning()<<"ERROR: Could not connect";
 	}
-	timer.start(1000/60);
 
 }
 
@@ -66,4 +65,13 @@ void  GaitWidget::keyPressEvent(QKeyEvent *event){
 	}
 
 
+}
+
+
+void GaitWidget::hideEvent(QHideEvent *){
+	timer.stop();
+}
+
+void GaitWidget::showEvent(QShowEvent *){
+	timer.start(1000/60);
 }

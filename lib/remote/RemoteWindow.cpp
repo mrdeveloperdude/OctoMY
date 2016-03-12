@@ -5,6 +5,13 @@
 #include "utility/Utility.hpp"
 #include "comms/Client.hpp"
 
+#include "map/mapcontrol.h"
+#include "map/osmmapadapter.h"
+#include "map/openaerialmapadapter.h"
+#include "map/maplayer.h"
+#include "map/linestring.h"
+
+
 #include <QDebug>
 #include <QAccelerometerReading>
 #include <QCompassReading>
@@ -22,7 +29,7 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 {
 	ui->setupUi(this);
 	if(0!=remote){
-		ui->stackedWidget->setCurrentWidget(ui->pageConnect);
+		ui->stackedWidgetScreen->setCurrentWidget(ui->pageConnect);
 		ui->widgetConnection->configure("remote");
 		if(!connect(ui->widgetConnection,SIGNAL(connectStateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState)),WWCONTYPE)){
 			qWarning()<<"ERROR: could not connect";
@@ -52,6 +59,8 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 		QPalette p=ui->logScroll->palette();
 		p.setColor(QPalette::Base, QColor(0, 0, 0, 64));
 		ui->logScroll->setPalette(p);
+		updateControlLevel();
+		prepareMap();
 	}
 	else{
 		setDisabled(true);
@@ -65,6 +74,57 @@ RemoteWindow::~RemoteWindow(){
 	delete ui;
 }
 
+
+void RemoteWindow::prepareMap(){
+	qmapcontrol::MapControl *mc=ui->widgetMap;
+	if(0!=mc){
+		mc->showScale(true);
+		QDir dir("./map.cache/");
+		if (!dir.exists()) dir.mkpath(".");
+		mc->enablePersistentCache ( dir,8192);
+		// create MapAdapter to get maps from
+		//		qmapcontrol::MapAdapter* mapadapter = new qmapcontrol::OSMMapAdapter();
+		//qmapcontrol::MapAdapter* mapadapter = new qmapcontrol::OpenAerialMapAdapter();
+		qmapcontrol::TileMapAdapter* mapadapter = new qmapcontrol::TileMapAdapter("tile.openstreetmap.org", "/%1/%2/%3.png", 256, 0, 17);
+
+		//qmapcontrol::TileMapAdapter* mapadapter = new qmapcontrol::TileMapAdapter("cache.kartverket.no/grunnkart/wmts", "/%1/%2/%3.png", 256, 0, 17);
+
+		// create a map layer with the mapadapter
+		qmapcontrol::Layer* l = new qmapcontrol::MapLayer("Custom Layer", mapadapter);
+		// add Layer to the MapControl
+		mc->addLayer(l);
+
+		// create a LineString
+		QList<qmapcontrol::Point*> points;
+
+		points.append(new qmapcontrol::Point( 5.456635,60.384571, "HQ"));
+		points.append(new qmapcontrol::Point(  5.456249,60.384317, "Launch point"));
+
+		// A QPen also can use transparency
+		QPen* linepen = new QPen(QColor(0, 0, 255, 100));
+		linepen->setWidth(5);
+		// Add the Points and the QPen to a LineString
+		qmapcontrol::LineString* ls = new qmapcontrol::LineString(points, "Launch vector", linepen);
+
+		// Add the LineString to the layer
+		l->addGeometry(ls);
+		homeMap();
+	}
+}
+
+
+
+
+void RemoteWindow::homeMap() {
+	qmapcontrol::MapControl *mc=ui->widgetMap;
+	if(0!=mc){
+		qDebug()<<"HOME";
+		QList<QPointF> londalen;
+		londalen <<QPointF(5.452844, 60.385883);
+		londalen <<QPointF(5.457945, 60.380353);
+		mc->setViewAndZoomIn ( londalen) ;
+	}
+}
 
 
 void RemoteWindow::appendLog(const QString& text){
@@ -106,17 +166,17 @@ void RemoteWindow::toastAndroid(QString s){
 
 void RemoteWindow::keyReleaseEvent(QKeyEvent *e){
 	if(Qt::Key_Back==e->key()){
-		if(ui->pageConnect==ui->stackedWidget->currentWidget()){
+		if(ui->pageConnect==ui->stackedWidgetScreen->currentWidget()){
 			appendLog("EXITING APP ON BACK BUTTON");
-			ui->stackedWidget->setCurrentWidget(ui->pageConfirmQuit);
+			ui->stackedWidgetScreen->setCurrentWidget(ui->pageConfirmQuit);
 		}
-		else if(ui->pageRunning==ui->stackedWidget->currentWidget()){
+		else if(ui->pageStatus==ui->stackedWidgetScreen->currentWidget()){
 			appendLog("GOING TO CONNECTION SCREEN ON BACK BUTTON");
-			ui->stackedWidget->setCurrentWidget(ui->pageConnect);
+			ui->stackedWidgetScreen->setCurrentWidget(ui->pageConnect);
 		}
-		else if(ui->pageConfirmQuit==ui->stackedWidget->currentWidget()){
+		else if(ui->pageConfirmQuit==ui->stackedWidgetScreen->currentWidget()){
 			appendLog("GOING TO CONNECTION SCREEN ON BACK BUTTON");
-			ui->stackedWidget->setCurrentWidget(ui->pageConnect);
+			ui->stackedWidgetScreen->setCurrentWidget(ui->pageConnect);
 		}
 		else{
 			appendLog("ERROR ON BACK BUTTON");
@@ -215,7 +275,7 @@ void RemoteWindow::onTryToggleConnectionChanged(TryToggleState s){
 				ui->labelHub->setText("HUB: "+ui->widgetConnection->getTargetAddress().toString()+ ":"+ QString::number(ui->widgetConnection->getTargetPort()));
 			}break;
 		case(ON):{
-				page=ui->pageRunning;
+				page=ui->pageStatus;
 				installEventFilter(this);
 			}break;
 		default:
@@ -225,7 +285,7 @@ void RemoteWindow::onTryToggleConnectionChanged(TryToggleState s){
 			}break;
 	}
 	ui->widgetConnection->setEnabled(ce);
-	ui->stackedWidget->setCurrentWidget(page);
+	ui->stackedWidgetScreen->setCurrentWidget(page);
 }
 
 
@@ -241,3 +301,36 @@ void RemoteWindow::on_pushButtonTest_clicked(){
 	toastAndroid("TOASTING 123");
 }
 
+void RemoteWindow::updateControlLevel(){
+	qDebug()<<"SWITCHING CONTROL LEVEL TO "<<ui->comboBoxControlLevel->currentText();
+	const int idx=ui->comboBoxControlLevel->currentIndex();
+	ui->stackedWidgetControl->setCurrentIndex(idx);
+	switch(idx){
+		default:
+		case(0):{
+
+			}break;
+		case(1):{
+
+			}break;
+		case(2):{
+
+			}break;
+		case(3):{
+
+			}break;
+	}
+
+}
+
+void RemoteWindow::on_comboBoxControlLevel_currentIndexChanged(int ){
+	updateControlLevel();
+}
+
+void RemoteWindow::on_pushButtonControl_clicked(){
+	ui->stackedWidgetScreen->setCurrentWidget(ui->pageControl);
+}
+
+void RemoteWindow::on_pushButtonStatus_clicked(){
+	ui->stackedWidgetScreen->setCurrentWidget(ui->pageStatus);
+}

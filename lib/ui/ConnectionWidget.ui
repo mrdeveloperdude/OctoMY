@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>441</width>
-    <height>219</height>
+    <height>94</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -20,36 +20,26 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="LocalAddressEntry" name="comboBoxLocalAddress">
+   <item row="1" column="0">
+    <widget class="TextEntry" name="lineEditTargetAddress">
+     <property name="placeholderText">
+      <string>Target address</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3" colspan="2">
+    <widget class="TextEntry" name="lineEditTargetPort">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>:</string>
+     <property name="maxLength">
+      <number>6</number>
      </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="5">
-    <widget class="TryToggle" name="tryToggleListen" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>10</width>
-       <height>10</height>
-      </size>
+     <property name="placeholderText">
+      <string>Target port</string>
      </property>
     </widget>
    </item>
@@ -69,10 +59,20 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="TextEntry" name="lineEditTargetAddress">
-     <property name="placeholderText">
-      <string>Target address</string>
+   <item row="0" column="0">
+    <widget class="LocalAddressEntry" name="comboBoxLocalAddress">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>:</string>
      </property>
     </widget>
    </item>
@@ -83,19 +83,19 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="3" colspan="2">
-    <widget class="TextEntry" name="lineEditTargetPort">
+   <item row="0" column="5" rowspan="2">
+    <widget class="TryToggle" name="tryToggleListen" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+      <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="maxLength">
-      <number>6</number>
-     </property>
-     <property name="placeholderText">
-      <string>Target port</string>
+     <property name="minimumSize">
+      <size>
+       <width>10</width>
+       <height>10</height>
+      </size>
      </property>
     </widget>
    </item>

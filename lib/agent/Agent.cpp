@@ -29,16 +29,25 @@ Agent::~Agent(){
 	comms=0;
 }
 
-void Agent::start(QString listenAddress, quint16 listenPort, QString hubAddress, quint16 hubPort){
+
+
+void Agent::start(QHostAddress listenAddress, quint16 listenPort, QHostAddress hubAddress, quint16 hubPort){
 	this->hubAddress=hubAddress;
 	this->hubPort=hubPort;
 	if(0!=comms){
-		qDebug()<<"Agent comms start for server "<<listenAddress<<":"<<listenPort<<" (hub "<<hubAddress<<":"<<hubPort<<")";
-		comms->start(QHostAddress(listenAddress),listenPort);
-		//Get this show started
-		sendStatus();
+		Client *c=comms->getClients()->getByHost(hubAddress,hubPort,true);
+		if(0!=c){
+			//	poseCourier->setDestination(c->signature);
+			qDebug()<<"comms.start remote "<<listenAddress<<":"<<listenPort<<" -> hub "<<hubAddress.toString()<<":"<<hubPort<<"";
+			comms->start(listenAddress,listenPort);
+		}
+		else{
+			qWarning()<<"ERROR: could not get client for agent";
+		}
 	}
 }
+
+
 
 void Agent::hookSignals(QObject &o){
 	sensors.hookSignals(o);
@@ -47,6 +56,11 @@ void Agent::hookSignals(QObject &o){
 
 void Agent::unHookSignals(QObject &o){
 	sensors.unHookSignals(o);
+}
+
+
+void Agent::onConnectionStatusChanged(TryToggleState){
+
 }
 
 void Agent::onReceivePacket(QSharedPointer<QDataStream> ds,QHostAddress,quint16){
@@ -100,7 +114,7 @@ void Agent::sendStatus(){
 		QDataStream ds(&datagram,QIODevice::WriteOnly);
 		ds<<statusMessage;
 		//TODO:Convert to use courier instead
-//		comms->sendPackage(datagram,QHostAddress(hubAddress),hubPort);
+		//		comms->sendPackage(datagram,QHostAddress(hubAddress),hubPort);
 		lastSend=now;
 	}
 }

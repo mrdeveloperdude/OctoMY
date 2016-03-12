@@ -53,6 +53,8 @@ class AgentWindow : public QWidget, public LogDestination{
 
 		void on_pushButtonConfirmQuit_clicked();
 		void on_pushButtonTest_clicked();
+		void on_pushButtonCamera_clicked();
+		void on_pushButtonBack_clicked();
 };
 
 
