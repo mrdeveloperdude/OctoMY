@@ -2,7 +2,7 @@ TEMPLATE = subdirs
 
 
 SUBDIRS += \
-	lib \
+	libs \
 	hub \
 	agent \
 	remote \
@@ -11,20 +11,18 @@ SUBDIRS += \
 
 
 # Dependency stuff adapted from https://vilimpoc.org/blog/2014/02/21/qmake-subdirs-project-automatic-dependencies/
-lib.subdir   = lib
-hub.subdir   = hub
-agent.subdir   = agent
-remote.subdir   = remote
-test.subdir   = test
-doc.subdir   = doc
-
-hub.depends = lib
-agent.depends = lib
-remote.depends = lib
-test.depends = lib
-doc.depends = lib hub remote agent test
+libs.subdir=		libs
+hub.subdir=			hub
+agent.subdir=		agent
+remote.subdir=		remote
+test.subdir=		test
+doc.subdir=			doc
 
 
-QMAKE_TARGET_COMPANY = "OctoMY™"
-QMAKE_TARGET_COPYRIGHT = "Copyright © 2013-2016 Lennart Rolland <lennartrolland@gmail.com>"
-QMAKE_TARGET_DESCRIPTION = "N-Limbed madness™"
+hub.depends=		libs
+agent.depends=		libs
+remote.depends=		libs
+test.depends=		libs
+doc.depends=		libs hub remote agent test
+
+include($$TOP_PWD/common.pri)

@@ -6,10 +6,9 @@
 #USE THIS IF YOU DEPEND ON SYSTEM LIBS (AS OPPOSED TO LOCAL BUILDS FROM SOURCE)
 #LIBS += -lnfc -lnodave -lcrypto++ -lqrencode -lespeak -lusb
 
-EXT = $$TOP_PWD/lib/ext
-
 # EXAMPLE NON-OS EXTERNAL DEPENDENCY
 contains(DEFINES, EXTERNAL_LIB_QRENCODE){
+EXT = $$TOP_PWD/ext
 LIBS +=         -L$$EXT/qrencode-3.4.3/.libs -lqrencode_ww
 INCLUDEPATH +=    $$EXT/qrencode-3.4.3
 DEPENDPATH +=     $$EXT/qrencode-3.4.3/.libs

@@ -1,11 +1,14 @@
 #include "basic/StyleManager.hpp"
 #include "basic/Standard.hpp"
 #include "utility/Utility.hpp"
+#include "../libstyle/OctoStyle.hpp"
 
 #include <QProxyStyle>
 #include <QFontDatabase>
 #include <QWidget>
 #include <QDebug>
+#include <QStyleFactory>
+#include <QtPlugin>
 
 class OctoMYProxyStyle : public QProxyStyle{
 		const qint64 OCTOMY_SLIDER_HANDLE_SIZE=35;
@@ -87,8 +90,14 @@ void StyleManager::loadFonts(QApplication &app){
 
 void StyleManager::applyStyle(QApplication &app){
 	WWMETHODGATE();
-	//DELETE 2014-09-26
-	app.setStyle(new OctoMYProxyStyle);
+
+	QStringList availableStyles=QStyleFactory::keys();
+	foreach (QString s, availableStyles) {
+		qDebug()<<"STYLE: "<<s;
+	}
+	Q_INIT_RESOURCE(OctoStyle);
+	app.setStyle(new OctoStyle);
+	//app.setStyle(new OctoMYProxyStyle);
 	app.setCursorFlashTime(500);
 }
 

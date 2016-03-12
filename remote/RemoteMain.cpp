@@ -15,7 +15,6 @@
 
 
 
-
 RemoteMain::RemoteMain(int argc, char *argv[]):
 	QObject(0)
   , sm(0)
@@ -69,6 +68,7 @@ RemoteMain::RemoteMain(int argc, char *argv[]):
 		Q_INIT_RESOURCE(style);
 		Q_INIT_RESOURCE(fonts);
 		Q_INIT_RESOURCE(icons);
+
 		QTimer::singleShot(0, this, SLOT(run()));
 		ret=app->exec();
 		qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done, quitting";
@@ -93,6 +93,7 @@ void RemoteMain::run(){
 
 
 int main(int argc, char *argv[]){
+
 	RemoteMain m(argc,argv);
 	//RemoteMain m;
 }

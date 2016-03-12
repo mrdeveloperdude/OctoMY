@@ -70,6 +70,8 @@ AgentMain::AgentMain(int argc, char *argv[]):
 		Q_INIT_RESOURCE(style);
 		Q_INIT_RESOURCE(fonts);
 		Q_INIT_RESOURCE(icons);
+
+
 		QTimer::singleShot(0, this, SLOT(run()));
 		ret=app->exec();
 		qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done, quitting";

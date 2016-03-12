@@ -4,8 +4,8 @@ TARGET = agent
 # AGENT TIER REPRESENTS THE ROBOT ITSELF: ANY CODE HERE IS INTENDED RUN ONBOARD THE ROBOT
 
 include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib/inc.pri)
-include($$TOP_PWD/lib/ext.pri)
+include($$TOP_PWD/libs/inc.pri)
+include($$TOP_PWD/libs/ext.pri)
 
 HEADERS += \
 	AgentMain.hpp \
@@ -13,8 +13,7 @@ HEADERS += \
 SOURCES += \
 	AgentMain.cpp \
 
-message("FROM agent.pro:")
-include($$TOP_PWD/status.pri)
+android {
 
 DISTFILES += \
 	android/AndroidManifest.xml \
@@ -29,3 +28,7 @@ DISTFILES += \
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
+}
+
+message("FROM agent.pro:")
+include($$TOP_PWD/status.pri)

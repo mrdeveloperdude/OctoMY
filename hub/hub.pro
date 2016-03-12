@@ -8,8 +8,8 @@ TARGET = hub
 
 
 include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib/inc.pri)
-include($$TOP_PWD/lib/ext.pri)
+include($$TOP_PWD/libs/inc.pri)
+include($$TOP_PWD/libs/ext.pri)
 
 HEADERS += \
 	HubMain.hpp

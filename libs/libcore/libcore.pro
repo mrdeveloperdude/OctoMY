@@ -1,11 +1,12 @@
-TARGET = octomy
-TEMPLATE = lib
-CONFIG += staticlib
+TARGET =	core
+TEMPLATE =	lib
+CONFIG +=	staticlib
 
 include($$TOP_PWD/common.pri)
 include(flex.pri)
 include(qlalr.pri)
 
+INCLUDEPATH += .
 
 SOURCES +=\
 	3d/PoseView.cpp \
@@ -138,50 +139,12 @@ SOURCES +=\
 	widgets/SvgWidget.cpp \
 	widgets/TextEntry.cpp \
 	widgets/TryToggle.cpp \
-	zbar/config.c \
-	zbar/convert.c \
-	zbar/decoder.c \
-	zbar/decoder/code128.c \
-	zbar/decoder/code39.c \
-	zbar/decoder/ean.c \
-	zbar/decoder/i25.c \
-	zbar/decoder/qr_finder.c \
-	zbar/error.c \
-	zbar/image.c \
-	zbar/img_scanner.c \
-	zbar/processor.c \
-	zbar/processor/null.c \
-	zbar/processor/posix.c \
-	zbar/qrcode/bch15_5.c \
-	zbar/qrcode/binarize.c \
-	zbar/qrcode/isaac.c \
-	zbar/qrcode/qrdec.c \
-	zbar/qrcode/rs.c \
-	zbar/qrcode/util.c \
-	zbar/refcnt.c \
-	zbar/scanner.c \
-	zbar/svg.c \
-	zbar/symbol.c \
-	zbar/video.c \
-	zbar/video/null.c \
-	zbar/window.c \
-	zbar/window/null.c \
-    camera/Camera.cpp \
-    camera/CameraSettings.cpp \
-    widgets/QRWidget.cpp \
-    qr/bitstream.c \
-    qr/mask.c \
-    qr/mmask.c \
-    qr/mqrspec.c \
-    qr/qrenc.c \
-    qr/qrencode.c \
-    qr/qrinput.c \
-    qr/qrspec.c \
-    qr/rscode.c \
-    qr/split.c \
-    security/KeyStore.cpp \
-    puppet/GaitController.cpp \
-    puppet/GaitWidget.cpp
+	camera/Camera.cpp \
+	camera/CameraSettings.cpp \
+	widgets/QRWidget.cpp \
+	security/KeyStore.cpp \
+	puppet/GaitController.cpp \
+	puppet/GaitWidget.cpp
 
 
 
@@ -326,53 +289,12 @@ HEADERS  += \
 	widgets/SvgWidget.hpp \
 	widgets/TextEntry.hpp \
 	widgets/TryToggle.hpp \
-	zbar/config.h \
-	zbar/debug.h \
-	zbar/decoder/code128.h \
-	zbar/decoder/code39.h \
-	zbar/decoder/ean.h \
-	zbar/decoder.h \
-	zbar/decoder/i25.h \
-	zbar/decoder/qr_finder.h \
-	zbar/error.h \
-	zbar/event.h \
-	zbar/image.h \
-	zbar/img_scanner.h \
-	zbar/mutex.h \
-	zbar/processor.h \
-	zbar/processor/posix.h \
-	zbar/qrcode/bch15_5.h \
-	zbar/qrcode/binarize.h \
-	zbar/qrcode.h \
-	zbar/qrcode/isaac.h \
-	zbar/qrcode/qrdec.h \
-	zbar/qrcode/rs.h \
-	zbar/qrcode/util.h \
-	zbar/refcnt.h \
-	zbar/svg.h \
-	zbar/symbol.h \
-	zbar/thread.h \
-	zbar/timer.h \
-	zbar/video.h \
-	zbar/window.h \
-	zbar/zbar.h \
-    camera/Camera.hpp \
-    camera/CameraSettings.hpp \
-    widgets/QRWidget.hpp \
-    qr/bitstream.h \
-    qr/config.h \
-    qr/mask.h \
-    qr/mmask.h \
-    qr/mqrspec.h \
-    qr/qrencode.h \
-    qr/qrencode_inner.h \
-    qr/qrinput.h \
-    qr/qrspec.h \
-    qr/rscode.h \
-    qr/split.h \
-    security/KeyStore.hpp \
-    puppet/GaitController.hpp \
-    puppet/GaitWidget.hpp
+	camera/Camera.hpp \
+	camera/CameraSettings.hpp \
+	widgets/QRWidget.hpp \
+	security/KeyStore.hpp \
+	puppet/GaitController.hpp \
+	puppet/GaitWidget.hpp
 
 
 
@@ -397,9 +319,9 @@ FORMS    += \
 	ui/SerialSettingsDialog.ui \
 	ui/NumberEntry.ui \
 	ui/HexyTool.ui \
-    ui/Camera.ui \
-    ui/CameraSettings.ui \
-    ui/ConnectionWidget.ui
+	ui/Camera.ui \
+	ui/CameraSettings.ui \
+	ui/ConnectionWidget.ui
 
 
 RESOURCES += \
@@ -456,10 +378,6 @@ SOURCES += \
 	3d/qt3d/SceneModifier.cpp \
 
 }
-
-include(tls/tls.pri)
-
-include(ext.pri)
 
 message("FROM lib.pro:")
 include($$TOP_PWD/status.pri)

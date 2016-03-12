@@ -4,8 +4,8 @@ TARGET = remote
 # REMOTE TIER REPRESENTS THE DEVICE USED TO CONTROL THE ROBOT SUCH AS A HANHELD REMOTE CONTROL OR PHONE WITH REMOTE CONTROL APP
 
 include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib/inc.pri)
-include($$TOP_PWD/lib/ext.pri)
+include($$TOP_PWD/libs/inc.pri)
+include($$TOP_PWD/libs/ext.pri)
 
 HEADERS += \
 	RemoteMain.hpp
@@ -13,8 +13,7 @@ HEADERS += \
 SOURCES += \
 	RemoteMain.cpp
 
-message("FROM remote.pro:")
-include($$TOP_PWD/status.pri)
+android {
 
 DISTFILES += \
 	android/AndroidManifest.xml \
@@ -24,8 +23,12 @@ DISTFILES += \
 	android/build.gradle \
 	android/gradle/wrapper/gradle-wrapper.properties \
 	android/gradlew.bat \
-    android/src/org/octomy/remote/Remote.java
-
+	android/src/org/octomy/remote/Remote.java
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
+}
+
+
+message("FROM remote.pro:")
+include($$TOP_PWD/status.pri)

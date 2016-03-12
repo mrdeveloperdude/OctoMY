@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QApplication>
 
-#include "basic/StyleManager.hpp"
+#include "../libs/libcore/basic/StyleManager.hpp"
 
 class AgentMain: public QObject{
 		Q_OBJECT

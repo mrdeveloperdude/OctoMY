@@ -1,10 +1,8 @@
 #include "widgets/QRWidget.hpp"
 #include "basic/Standard.hpp"
-#ifdef EXTERNAL_LIB_QRENCODE
-#include <qrencode.h>
-#else
-#include "qr/qrencode.h"
-#endif
+
+#include "../libqr/qrencode.h"
+
 
 #include <QPainter>
 #include <QDebug>

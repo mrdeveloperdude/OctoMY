@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QApplication>
 
-#include "basic/StyleManager.hpp"
+#include "../libs/libcore/basic/StyleManager.hpp"
 
 class HubMain:public QObject{
 		Q_OBJECT

@@ -1,7 +1,7 @@
 #include "TestCommsChannel.hpp"
 
-#include "comms/CommsChannel.hpp"
-#include "basic/Standard.hpp"
+#include "../../libs/libcore/comms/CommsChannel.hpp"
+#include "../../libs/libcore/basic/Standard.hpp"
 
 #include <QSignalSpy>
 

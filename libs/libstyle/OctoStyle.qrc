@@ -1,0 +1,6 @@
+<RCC version="1.0">
+	<qresource>
+		<file>resources/arrow.png</file>
+		<file>resources/groupbox.png</file>
+	</qresource>
+</RCC>

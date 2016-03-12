@@ -37,8 +37,8 @@
 
 
 
-#include "tls/qpolarsslpki.hpp"
-#include "tls/qpolarsslhash.hpp"
+#include "../libpki/qpolarsslpki.hpp"
+#include "../libpki/qpolarsslhash.hpp"
 
 
 
@@ -570,7 +570,7 @@ void HubWindow::on_lineEditQR_textChanged(const QString &text){
 	ui->widgetQR->setQRData(text);
 }
 
-#include "tls/qpolarsslpki.hpp"
+#include "../libpki/qpolarsslpki.hpp"
 
 void HubWindow::on_pushButtonGenerateKeyPair_clicked(){
 	qpolarssl::Pki pki;

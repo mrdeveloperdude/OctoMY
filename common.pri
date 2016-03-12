@@ -7,6 +7,12 @@ CONFIG += x86 x86_64
 #CONFIG += console
 
 
+QMAKE_TARGET_COMPANY =		"OctoMY™"
+QMAKE_TARGET_COPYRIGHT =	"Copyright © 2013-2016 Lennart Rolland <lennartrolland@gmail.com>"
+QMAKE_TARGET_DESCRIPTION =	"N-Limbed madness™"
+
+
+
 # RUN TESTS ON RELEASE BUILD
 # NOTE: RUN_WEB_TESTS SHOULD BE ON WHEN THE BUILDING MACHINE IS CONNECTED TO INTERNET
 
@@ -170,4 +176,6 @@ QMAKE_LFLAGS += $$QMAKE_CXXFLAGS
 
 DISTFILES += \
 	$$PWD/local_overrides.pri
+
+
 

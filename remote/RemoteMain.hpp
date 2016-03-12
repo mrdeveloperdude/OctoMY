@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QApplication>
 
-#include "basic/StyleManager.hpp"
+#include "../libs/libcore/basic/StyleManager.hpp"
 
 class RemoteMain: public QObject{
 		Q_OBJECT

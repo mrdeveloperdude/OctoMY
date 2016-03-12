@@ -6,7 +6,7 @@
 #include <QMap>
 #include <QSharedPointer>
 
-#include "tls/qpolarsslpki.hpp"
+#include "../libpki/qpolarsslpki.hpp"
 
 class KeyStore{
 	private:
