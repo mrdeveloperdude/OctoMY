@@ -45,7 +45,6 @@ contains(DEFINES, USE_QT3D){
 QT += 3dcore 3drenderer 3dinput
 }
 
-
 android{
 	QT += androidextras
 #NOTE: Each individual project will look for her own android config (making it possible for each tier to have separate adaptations

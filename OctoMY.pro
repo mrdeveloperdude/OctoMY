@@ -1,6 +1,5 @@
 TEMPLATE = subdirs
 
-
 SUBDIRS += \
 	libs \
 	hub \
@@ -8,7 +7,6 @@ SUBDIRS += \
 	remote \
 	test \
 	doc \
-
 
 # Dependency stuff adapted from https://vilimpoc.org/blog/2014/02/21/qmake-subdirs-project-automatic-dependencies/
 libs.subdir=		libs
@@ -24,5 +22,3 @@ agent.depends=		libs
 remote.depends=		libs
 test.depends=		libs
 doc.depends=		libs hub remote agent test
-
-include($$TOP_PWD/common.pri)

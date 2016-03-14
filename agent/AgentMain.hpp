@@ -1,26 +1,24 @@
 #ifndef AGENTMAIN_HPP
 #define AGENTMAIN_HPP
 
+#include "basic/GenericMain.hpp"
 
-#include <QObject>
-#include <QApplication>
+class Agent;
+class AgentWindow;
 
-#include "../libs/libcore/basic/StyleManager.hpp"
-
-class AgentMain: public QObject{
+class AgentMain: public GenericMain{
 		Q_OBJECT
 	private:
-		StyleManager *sm;
-		int ret;
-		int argc;
-		char **argv;
-		QCoreApplication *app;
+
+		Agent *agent;
+		AgentWindow *window;
+
 	public:
 		explicit AgentMain(int argc, char *argv[]);
-		virtual ~AgentMain();
 
-	private slots:
-		void run();
+		virtual void start();
+		virtual void stop();
+
 
 };
 

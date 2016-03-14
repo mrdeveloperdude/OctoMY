@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <png.h>
+//#include <png.h>
 #include <getopt.h>
 
 #include "qrencode.h"
@@ -237,7 +237,7 @@ static FILE *openFile(const char *outfile)
 
 	return fp;
 }
-
+#ifdef OCTOMY_QR_SAVING
 static int writePNG(QRcode *qrcode, const char *outfile)
 {
 	static FILE *fp; // avoid clobbering by setjmp.
@@ -522,6 +522,8 @@ static int writeSVG( QRcode *qrcode, const char *outfile )
 
 	return 0;
 }
+#endif
+
 
 static void writeANSI_margin(FILE* fp, int realwidth,
 							 char* buffer, int buffer_s,

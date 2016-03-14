@@ -138,6 +138,6 @@ void MultiView::configure(QString val, QString key){
 		qDebug()<<"ERROR: NO SUITABLE BUTTON NAME FOUDND FOR "<<val;
 		return;
 	}
-	onViewButtonClicked(but);
+	//onViewButtonClicked(but);
 }
 

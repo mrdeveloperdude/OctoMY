@@ -5,11 +5,11 @@
 #include "utility/Utility.hpp"
 #include "comms/Client.hpp"
 
-#include "map/mapcontrol.h"
-#include "map/osmmapadapter.h"
-#include "map/openaerialmapadapter.h"
-#include "map/maplayer.h"
-#include "map/linestring.h"
+#include "../libmap/mapcontrol.h"
+#include "../libmap/osmmapadapter.h"
+#include "../libmap/openaerialmapadapter.h"
+#include "../libmap/maplayer.h"
+#include "../libmap/linestring.h"
 
 
 #include <QDebug>

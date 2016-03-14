@@ -448,7 +448,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="pageStatus">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -1335,6 +1335,12 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>qmapcontrol::MapControl</class>
+   <extends>QWidget</extends>
+   <header>../libmap/mapcontrol.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>GaitWidget</class>
    <extends>QWidget</extends>
    <header>puppet/GaitWidget.hpp</header>
@@ -1350,12 +1356,6 @@
    <class>ConnectionWidget</class>
    <extends>QWidget</extends>
    <header>widgets/ConnectionWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>qmapcontrol::MapControl</class>
-   <extends>QWidget</extends>
-   <header>map/mapcontrol.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -23,6 +23,7 @@ namespace Ui {
 	class HubWindow;
 }
 
+
 class HubWindow : public QMainWindow, public LogDestination{
 		Q_OBJECT
 	private:
@@ -87,12 +88,11 @@ class HubWindow : public QMainWindow, public LogDestination{
 		void on_pushButtonShowStats_clicked();
 		void on_comboBoxAddLocal_currentIndexChanged(const QString &arg1);
 		void on_tabWidget_currentChanged(int index);
-		void on_pushButtonOpenModel_clicked();
 		void on_pushButtonTest_clicked();
-		void on_pushButtonParsePlan_clicked();
 		void on_lineEditQR_textChanged(const QString &arg1);
 		void on_pushButtonGenerateKeyPair_clicked();
 		void on_pushButtonTestKeyPair_clicked();
+
 };
 
 #endif // HUBWINDOW_HPP

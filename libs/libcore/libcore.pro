@@ -3,8 +3,6 @@ TEMPLATE =	lib
 CONFIG +=	staticlib
 
 include($$TOP_PWD/common.pri)
-include(flex.pri)
-include(qlalr.pri)
 
 INCLUDEPATH += .
 
@@ -61,32 +59,6 @@ SOURCES +=\
 	hw/actuators/HexySerial.cpp \
 	hw/actuators/HexyTool.cpp \
 	hw/actuators/SerialSettingsDialog.cpp \
-	map/arrowpoint.cpp \
-	map/bingapimapadapter.cpp \
-	map/circlepoint.cpp \
-	map/curve.cpp \
-	map/emptymapadapter.cpp \
-	map/fixedimageoverlay.cpp \
-	map/geometry.cpp \
-	map/geometrylayer.cpp \
-	map/googleapimapadapter.cpp \
-	map/googlemapadapter.cpp \
-	map/gps_position.cpp \
-	map/imagemanager.cpp \
-	map/imagepoint.cpp \
-	map/invisiblepoint.cpp \
-	map/layer.cpp \
-	map/layermanager.cpp \
-	map/linestring.cpp \
-	map/mapadapter.cpp \
-	map/mapcontrol.cpp \
-	map/maplayer.cpp \
-	map/mapnetwork.cpp \
-	map/openaerialmapadapter.cpp \
-	map/osmmapadapter.cpp \
-	map/point.cpp \
-	map/tilemapadapter.cpp \
-	map/wmsmapadapter.cpp \
 	models/ClientModel.cpp \
 	plot/qcustomplot.cpp \
 	plot/StatsWindow.cpp \
@@ -144,7 +116,11 @@ SOURCES +=\
 	widgets/QRWidget.cpp \
 	security/KeyStore.cpp \
 	puppet/GaitController.cpp \
-	puppet/GaitWidget.cpp
+	puppet/GaitWidget.cpp \
+	puppet/Puppet.cpp \
+    basic/GenericMain.cpp \
+    plan/parser/PlanHighlighter.cpp \
+    widgets/PlanEditor.cpp
 
 
 
@@ -209,33 +185,6 @@ HEADERS  += \
 	hw/actuators/HexySerial.hpp \
 	hw/actuators/HexyTool.hpp \
 	hw/actuators/SerialSettingsDialog.hpp \
-	map/arrowpoint.h \
-	map/bingapimapadapter.h \
-	map/circlepoint.h \
-	map/curve.h \
-	map/emptymapadapter.h \
-	map/fixedimageoverlay.h \
-	map/geometry.h \
-	map/geometrylayer.h \
-	map/googleapimapadapter.h \
-	map/googlemapadapter.h \
-	map/gps_position.h \
-	map/imagemanager.h \
-	map/imagepoint.h \
-	map/invisiblepoint.h \
-	map/layer.h \
-	map/layermanager.h \
-	map/linestring.h \
-	map/mapadapter.h \
-	map/mapcontrol.h \
-	map/maplayer.h \
-	map/mapnetwork.h \
-	map/openaerialmapadapter.h \
-	map/osmmapadapter.h \
-	map/point.h \
-	map/qmapcontrol_global.h \
-	map/tilemapadapter.h \
-	map/wmsmapadapter.h \
 	models/ClientModel.hpp \
 	plot/qcustomplot.hpp \
 	plot/StatsWindow.hpp \
@@ -294,7 +243,11 @@ HEADERS  += \
 	widgets/QRWidget.hpp \
 	security/KeyStore.hpp \
 	puppet/GaitController.hpp \
-	puppet/GaitWidget.hpp
+	puppet/GaitWidget.hpp \
+	puppet/Puppet.hpp \
+    basic/GenericMain.hpp \
+    plan/parser/PlanHighlighter.hpp \
+    widgets/PlanEditor.hpp
 
 
 
@@ -321,7 +274,8 @@ FORMS    += \
 	ui/HexyTool.ui \
 	ui/Camera.ui \
 	ui/CameraSettings.ui \
-	ui/ConnectionWidget.ui
+	ui/ConnectionWidget.ui \
+    widgets/PlanEditor.ui
 
 
 RESOURCES += \
@@ -331,42 +285,10 @@ RESOURCES += \
 	resources/qfi.qrc \
 	resources/3d.qrc
 
-
-
-# Link to flex library
-LIBS += -lfl
-
-# Specify flex sources.
-# NOTE: the basename of this file will need to match class names etc.
-#       Please see extra comments inside file for more details.
-FLEXSOURCES = plan/parser/calc.l
-
-# Specify qlalr sources.
-# NOTE: the basename of this file will need to match class names etc.
-#       Please see extra comments inside file for more details.
-QLALRSOURCES = plan/parser/calc.g
-
-# All static source files
-# NOTE: Please don't specify the intermediate sources here. They will be added
-#       automatically by variable_out mechanism of extra qmake_extra_compilers
-SOURCES += \
-	plan/parser/GeneralPurposeParser.cpp
-
-HEADERS += \
-	plan/parser/GeneralPurposeParser.hpp
-
-# Include the qmake_extra_compilers for flex and qlalr
-include(flex.pri)
-include(qlalr.pri)
-
-
-
 OTHER_FILES += \
-	$$FLEXSOURCES \
-	$$QLALRSOURCES
 
 #According to the link below, native widget support for Qt3D will not be available until at least Qt5.8 or later
-#Untill that time comes we will keep back the qt3d enthusiasm and write generalized 3D code that is easy to port when the day comes
+#Untill that time comes we will keep back the qt3d enthusiasm and write generalized 3D code that is easy to port
 #http://stackoverflow.com/questions/35074830/show-qt3d-stuff-inside-qwidget-in-qt5
 contains(DEFINES, USE_QT3D){
 HEADERS += \

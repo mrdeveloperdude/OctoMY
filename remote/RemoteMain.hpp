@@ -1,29 +1,29 @@
 #ifndef REMOTEMAIN_HPP
 #define REMOTEMAIN_HPP
 
-#include <QObject>
-#include <QApplication>
+#include "basic/GenericMain.hpp"
 
-#include "../libs/libcore/basic/StyleManager.hpp"
+class Remote;
+class RemoteWindow;
 
-class RemoteMain: public QObject{
+class RemoteMain: public GenericMain{
 		Q_OBJECT
 	private:
-		StyleManager *sm;
-		int ret;
-		int argc;
-		char **argv;
-		QCoreApplication *app;
+
+		Remote *remote;
+		RemoteWindow *window;
+
 	public:
 		explicit RemoteMain(int argc, char *argv[]);
-		virtual ~RemoteMain();
 
-	private slots:
-		void run();
+		virtual void start();
+		virtual void stop();
+
 
 };
 
 int main(int argc, char *argv[]);
+
 
 
 #endif // REMOTEMAIN_HPP

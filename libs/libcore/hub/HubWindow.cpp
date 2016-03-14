@@ -1,11 +1,11 @@
 #include "HubWindow.hpp"
 #include "ui_HubWindow.h"
 #include "basic/Standard.hpp"
-#include "map/mapcontrol.h"
-#include "map/osmmapadapter.h"
-#include "map/openaerialmapadapter.h"
-#include "map/maplayer.h"
-#include "map/linestring.h"
+#include "../libmap/mapcontrol.h"
+#include "../libmap/osmmapadapter.h"
+#include "../libmap/openaerialmapadapter.h"
+#include "../libmap/maplayer.h"
+#include "../libmap/linestring.h"
 #include "comms/Client.hpp"
 #include "comms/messages/MessageType.hpp"
 #include "hub/Hub.hpp"
@@ -33,13 +33,11 @@
 #include "widgets/hexedit/QHexEdit.hpp"
 #include "widgets/hexedit/QHexEditData.hpp"
 
-#include "calc_parser.hpp"
 
 
 
 #include "../libpki/qpolarsslpki.hpp"
 #include "../libpki/qpolarsslhash.hpp"
-
 
 
 HubWindow::HubWindow(Hub *hub, QWidget *parent) :
@@ -50,7 +48,6 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
   , randomWalk(0.0)
   , mc(0)
   , hexy(0)
-
 {
 	setObjectName("HubWindow");
 	summaryTimer.setInterval(100);
@@ -59,12 +56,12 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	hexyTimer.setSingleShot(true);
 	hexyTimer.setTimerType(Qt::PreciseTimer);
 	ui->setupUi(this);
-
+	/*
 	QAbstractItemModel *data = new ClientModel(hub->getComms()->getClients(), this);
 	ui->widgetIncommingNodes->configure("Icons","hubwindiow-clients-list");
 	ui->widgetIncommingNodes->setModel(data);
-
-	ui->tabWidget->setEnabled(false);
+*/
+	ui->tabWidget->setEnabled(true);
 	ui->tabWidget->setCurrentWidget(ui->tabIncomming);
 
 	//Listen
@@ -107,9 +104,11 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 	ui->hexEditor->setData(hexdata);
 
-
-
 	ui->tabWidget->setCurrentIndex(0);
+
+	appendLog("SETTING UP PLAN EDITOR");
+	ui->widgetPlanEditor->configure("hub.plan");
+
 	//updateClientsList();
 	appendLog("READY");
 
@@ -119,6 +118,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 HubWindow::~HubWindow() {
 	hub->getComms()->unHookSignals(*this);
 	delete ui;
+
 }
 
 
@@ -287,7 +287,7 @@ void HubWindow::onListenStateChanged(TryToggleState s){
 	if(!on){
 		ui->tabWidget->setCurrentIndex(0);
 	}
-	ui->tabWidget->setEnabled(on);
+	//ui->tabWidget->setEnabled(on);
 	on?summaryTimer.start():summaryTimer.stop();
 	appendLog("New listening state: "+ToggleStateToSTring(s));
 	if(TRYING==s){
@@ -491,9 +491,6 @@ void HubWindow::on_tabWidget_currentChanged(int){
 }
 
 
-void HubWindow::on_pushButtonOpenModel_clicked(){
-	qDebug()<<"BUTTON PRESSED";
-}
 
 
 
@@ -556,15 +553,6 @@ void HubWindow::on_pushButtonTest_clicked(){
 }
 
 
-void HubWindow::on_pushButtonParsePlan_clicked(){
-	qDebug()<<"INSTANCIATING PARSER";
-	CalcParser p;
-	qDebug()<<"RUNNING PARSER";
-	QString raw=ui->plainTextEditPlan->document()->toPlainText();
-	qDebug()<<"PARSING RAW TEXT:"<<raw;
-	bool ret=p.parse(raw);
-	qDebug()<<"PARSING RESULTED IN "<<(ret?"SUCCESS":"FAILURE");
-}
 
 void HubWindow::on_lineEditQR_textChanged(const QString &text){
 	ui->widgetQR->setQRData(text);

@@ -62,17 +62,17 @@ void QRWidget::paintEvent(QPaintEvent *){
 					qr=0;
 				}
 				else{
-					error="could not encode QR input: "+QString(strerror(errno));
+//					error="could not encode QR input: "+QString(strerror(errno));
 				}
 			}
 			else{
-				error="could not append QR input: "+QString(strerror(errno));
+			//	error="could not append QR input: "+QString(strerror(errno));
 			}
 			QRinput_free(qri);
 			qri=0;
 		}
 		else{
-			error="could not create QR input object: "+QString(strerror(errno));
+		//	error="could not create QR input object: "+QString(strerror(errno));
 		}
 		if(error.length()>0){
 			QColor error("red");

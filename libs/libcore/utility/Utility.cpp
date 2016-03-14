@@ -776,6 +776,18 @@ namespace utility{
 
 
 
+	QString padstring(int level, QString base){
+		QString out="";
+		if(""==base){
+			base=" ";
+		}
+		const int l=base.length();
+		for(int i=0;i<level;++i){
+			out+=QString(base.at(i%l));
+		}
+		return out;
+	}
+
 
 
 	QImage tint(QImage src, QColor color, qreal strength){

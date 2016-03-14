@@ -65,6 +65,7 @@ namespace utility{
 	QString toHash(QString input, QCryptographicHash::Algorithm algo=QCryptographicHash::Sha1, bool upperCase=true);
 	QString nameToNormalForm(QString name);
 	QString networkErrorToString( QNetworkReply::NetworkError ne);
+	QString padstring(int level, QString base=" ");
 
 	// File
 

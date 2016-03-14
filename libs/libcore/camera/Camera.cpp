@@ -389,12 +389,14 @@ void Camera::setExposureCompensation(int index)
 
 void Camera::displayRecorderError()
 {
-	QMessageBox::warning(this, tr("Capture error"), mediaRecorder->errorString());
+	//QMessageBox::warning(this, tr("Capture error"), mediaRecorder->errorString());
+	qWarning()<<"WARNING: Capture error :"<<mediaRecorder->errorString();
 }
 
 void Camera::displayCameraError()
 {
-	QMessageBox::warning(this, tr("Camera error"), camera->errorString());
+	//QMessageBox::warning(this, tr("Camera error"), camera->errorString());
+	qWarning()<<"WARNING: Camera error :"<<camera->errorString();
 }
 
 void Camera::updateCameraDevice(QAction *action)

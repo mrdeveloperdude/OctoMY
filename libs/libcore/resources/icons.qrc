@@ -40,5 +40,7 @@
         <file>icons/gait_control.svg</file>
         <file>icons/path_control.svg</file>
         <file>icons/pose_control.svg</file>
+        <file>icons/tidy.svg</file>
+        <file>icons/parse.svg</file>
     </qresource>
 </RCC>

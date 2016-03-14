@@ -1,27 +1,29 @@
 #ifndef SERVERMAIN_HPP
 #define SERVERMAIN_HPP
 
-#include <QObject>
-#include <QApplication>
 
-#include "../libs/libcore/basic/StyleManager.hpp"
+#include "basic/GenericMain.hpp"
 
-class HubMain:public QObject{
+class Hub;
+class HubWindow;
+
+class HubMain: public GenericMain{
 		Q_OBJECT
 	private:
-		StyleManager *sm;
-		int ret;
-		int argc;
-		char **argv;
-		QCoreApplication *app;
+
+		Hub *hub;
+		HubWindow *window;
+
 	public:
 		explicit HubMain(int argc, char *argv[]);
-		virtual ~HubMain();
 
-	private slots:
-		void run();
+		virtual void start();
+		virtual void stop();
+
 
 };
+
+
 
 int main(int argc, char *argv[]);
 

@@ -4,7 +4,9 @@
 
 #include <QObject>
 
+
 #include <QtSerialPort/QSerialPort>
+
 
 
 class SerialSettingsDialog;
