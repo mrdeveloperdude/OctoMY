@@ -42,5 +42,10 @@
         <file>icons/pose_control.svg</file>
         <file>icons/tidy.svg</file>
         <file>icons/parse.svg</file>
+        <file>icons/center.svg</file>
+        <file>icons/home.svg</file>
+        <file>icons/bluetooth.svg</file>
+        <file>icons/serial.svg</file>
+        <file>icons/usb.svg</file>
     </qresource>
 </RCC>

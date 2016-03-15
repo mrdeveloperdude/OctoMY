@@ -65,7 +65,7 @@
     </spacer>
    </item>
    <item row="1" column="0" colspan="3">
-    <widget class="QPlainTextEdit" name="plainTextEditPlan">
+    <widget class="CodeEditor" name="plainTextEditPlan">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
@@ -509,6 +509,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CodeEditor</class>
+   <extends>QPlainTextEdit</extends>
+   <header>widgets/PlanEditor.hpp</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../resources/icons.qrc"/>
  </resources>

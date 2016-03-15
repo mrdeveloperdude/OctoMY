@@ -39,6 +39,9 @@
      <property name="enabled">
       <bool>false</bool>
      </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
        <string>Servo</string>

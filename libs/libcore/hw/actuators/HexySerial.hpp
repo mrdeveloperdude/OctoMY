@@ -9,7 +9,7 @@
 
 
 
-class SerialSettingsDialog;
+class SerialSettings;
 
 class HexySerial : public QObject{
 		Q_OBJECT
@@ -17,7 +17,7 @@ class HexySerial : public QObject{
 		const static quint32 SERVO_COUNT=32;
 	private:
 
-		SerialSettingsDialog *settings;
+		SerialSettings *settings;
 		QSerialPort *serial;
 		QByteArray inBuf;
 		quint32 lastPos[SERVO_COUNT];

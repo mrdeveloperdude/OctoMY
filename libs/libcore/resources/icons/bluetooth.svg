@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="14.111111mm"
+   height="14.111111mm"
+   viewBox="0 0 49.999998 49.999998"
+   id="svg7410"
+   version="1.1"
+   inkscape:version="0.91 r"
+   sodipodi:docname="bluetooth.svg">
+  <defs
+     id="defs7412" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.8"
+     inkscape:cx="112.49268"
+     inkscape:cy="-33.732403"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1879"
+     inkscape:window-height="1056"
+     inkscape:window-x="41"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7415">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-112.14286,-67.362206)">
+    <path
+       id="path2984"
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:13.42755318;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       d="m 135.77464,72.438557 0,15.991098 -7.13631,-7.1363 -2.42482,2.4253 8.73057,8.730599 -8.66373,8.697596 2.42932,2.4204 7.06497,-7.092396 0,16.087396 12.06628,-12.0663 -8.05167,-8.051696 7.98033,-8.010799 -11.99494,-11.994898 z m 3.42948,8.279699 3.7203,3.720199 -3.7203,3.7348 0,-7.454999 z m 0,15.990998 3.78664,3.786696 -3.78664,3.7871 0,-7.573796 z m -2.08809,19.710096 c -17.06806,0 -17.72585,-17.858497 -17.7512,-23.713696 l -0.005,0 c 0,-0.097 -1.3e-4,-0.2332 0,-0.341 -1.3e-4,-0.1094 0,-0.2472 0,-0.3458 l 0.005,0 c 0.0254,-5.855299 0.68314,-23.713797 17.7512,-23.713797 16.98467,0 17.76808,18.383198 17.8048,23.713797 l 0.005,0 c 0,0.095 2.6e-4,0.2358 0,0.3458 1.6e-4,0.1082 0,0.2478 0,0.341 l -0.005,0 c -0.0367,5.330499 -0.82013,23.713696 -17.8048,23.713696 z"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>

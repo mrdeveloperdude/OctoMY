@@ -4,15 +4,17 @@
 #include <QWidget>
 
 class QRWidget : public QWidget{
-    Q_OBJECT
+	Q_OBJECT
 private:
-    QString data;
+	QString data;
+	QPixmap *m_doubleBuffer;
+	bool dirty;
 public:
-    explicit QRWidget(QWidget *parent = 0);
-    void setQRData(QString data);
+	explicit QRWidget(QWidget *parent = 0);
+	void setQRData(QString data);
 
 protected:
-    void paintEvent(QPaintEvent *);
+	void paintEvent(QPaintEvent *);
 
 
 signals:

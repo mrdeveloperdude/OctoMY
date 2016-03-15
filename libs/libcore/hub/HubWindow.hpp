@@ -47,7 +47,6 @@ class HubWindow : public QMainWindow, public LogDestination{
 
 		double randomWalk;
 
-		qmapcontrol::MapControl *mc;
 		HexySerial *hexy;
 
 		//QStandardItemModel simClients;
@@ -64,9 +63,6 @@ class HubWindow : public QMainWindow, public LogDestination{
 	private:
 
 		void startProcess(QString base);
-
-		void prepareMap();
-		void homeMap();
 
 		void appendGraphData(double rtt, int sent,int received,int lost,int acked, float sendBW,float receiveBW);
 

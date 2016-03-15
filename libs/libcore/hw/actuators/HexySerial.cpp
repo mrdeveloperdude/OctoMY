@@ -1,6 +1,6 @@
 #include "HexySerial.hpp"
 
-#include "SerialSettingsDialog.hpp"
+#include "SerialSettings.hpp"
 
 
 #include <QDebug>
@@ -30,7 +30,7 @@ HexySerial::HexySerial(QObject *parent)
 	, lastPos{0}
 {
 	serial = new QSerialPort(this);
-	settings = new SerialSettingsDialog;
+	settings = new SerialSettings;
 
 	connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError)));
 	connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
@@ -46,7 +46,7 @@ HexySerial::~HexySerial(){
 
 
 void HexySerial::openSerialPort(){
-	SerialSettingsDialog::Settings p = settings->settings();
+	SerialSettings::Settings p = settings->settings();
 	serial->setPortName(p.name);
 	serial->setBaudRate(p.baudRate);
 	serial->setDataBits(p.dataBits);

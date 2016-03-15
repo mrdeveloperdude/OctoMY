@@ -6,7 +6,7 @@ PlanHighlighter::PlanHighlighter(QTextDocument *parent)
 {
 	HighlightingRule rule;
 
-	keywordFormat.setForeground(Qt::darkBlue);
+	keywordFormat.setForeground(QColor("#e9d000"));
 	keywordFormat.setFontWeight(QFont::Bold);
 	QStringList keywordPatterns;
 	keywordPatterns << "\\bplan\\b" << "\\bpuppet\\b" << "\\bmember\\b"
@@ -18,7 +18,7 @@ PlanHighlighter::PlanHighlighter(QTextDocument *parent)
 	}
 
 	classFormat.setFontWeight(QFont::Bold);
-	classFormat.setForeground(Qt::darkMagenta);
+	classFormat.setForeground(QColor("#d0e900"));
 	rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
 	rule.format = classFormat;
 	highlightingRules.append(rule);
@@ -30,13 +30,13 @@ PlanHighlighter::PlanHighlighter(QTextDocument *parent)
 
 	multiLineCommentFormat.setForeground(Qt::red);
 
-	quotationFormat.setForeground(Qt::darkGreen);
+	quotationFormat.setForeground(QColor("#00d0e9"));
 	rule.pattern = QRegExp("\".*\"");
 	rule.format = quotationFormat;
 	highlightingRules.append(rule);
 
 	functionFormat.setFontItalic(true);
-	functionFormat.setForeground(Qt::blue);
+	functionFormat.setForeground(QColor("#00e9d0"));
 	rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
 	rule.format = functionFormat;
 	highlightingRules.append(rule);

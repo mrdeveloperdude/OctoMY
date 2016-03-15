@@ -1,6 +1,7 @@
 TARGET =	core
 TEMPLATE =	lib
 CONFIG +=	staticlib
+QT +=		serialport
 
 include($$TOP_PWD/common.pri)
 
@@ -58,7 +59,6 @@ SOURCES +=\
 	hw/actuators/HexyLeg.cpp \
 	hw/actuators/HexySerial.cpp \
 	hw/actuators/HexyTool.cpp \
-	hw/actuators/SerialSettingsDialog.cpp \
 	models/ClientModel.cpp \
 	plot/qcustomplot.cpp \
 	plot/StatsWindow.cpp \
@@ -118,9 +118,11 @@ SOURCES +=\
 	puppet/GaitController.cpp \
 	puppet/GaitWidget.cpp \
 	puppet/Puppet.cpp \
-    basic/GenericMain.cpp \
-    plan/parser/PlanHighlighter.cpp \
-    widgets/PlanEditor.cpp
+	basic/GenericMain.cpp \
+	plan/parser/PlanHighlighter.cpp \
+	widgets/PlanEditor.cpp \
+	widgets/MapEditor.cpp \
+	hw/actuators/SerialSettings.cpp
 
 
 
@@ -184,7 +186,6 @@ HEADERS  += \
 	hw/actuators/HexyLeg.hpp \
 	hw/actuators/HexySerial.hpp \
 	hw/actuators/HexyTool.hpp \
-	hw/actuators/SerialSettingsDialog.hpp \
 	models/ClientModel.hpp \
 	plot/qcustomplot.hpp \
 	plot/StatsWindow.hpp \
@@ -245,9 +246,11 @@ HEADERS  += \
 	puppet/GaitController.hpp \
 	puppet/GaitWidget.hpp \
 	puppet/Puppet.hpp \
-    basic/GenericMain.hpp \
-    plan/parser/PlanHighlighter.hpp \
-    widgets/PlanEditor.hpp
+	basic/GenericMain.hpp \
+	plan/parser/PlanHighlighter.hpp \
+	widgets/PlanEditor.hpp \
+	widgets/MapEditor.hpp \
+	hw/actuators/SerialSettings.hpp
 
 
 
@@ -269,13 +272,14 @@ FORMS    += \
 	ui/ResponsiveTest.ui \
 	ui/StatsWindow.ui \
 	ui/TryToggle.ui \
-	ui/SerialSettingsDialog.ui \
 	ui/NumberEntry.ui \
 	ui/HexyTool.ui \
 	ui/Camera.ui \
 	ui/CameraSettings.ui \
 	ui/ConnectionWidget.ui \
-    widgets/PlanEditor.ui
+	widgets/PlanEditor.ui \
+	widgets/MapEditor.ui \
+	ui/SerialSettings.ui
 
 
 RESOURCES += \
