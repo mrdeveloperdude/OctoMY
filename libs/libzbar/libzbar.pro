@@ -51,7 +51,6 @@ SOURCES	+= \
 	image.c \
 	img_scanner.c \
 	processor.c \
-	processor/null.c \
 	processor/posix.c \
 	qrcode/bch15_5.c \
 	qrcode/binarize.c \
@@ -64,8 +63,9 @@ SOURCES	+= \
 	svg.c \
 	symbol.c \
 	video.c \
-	video/null.c \
 	window.c \
-	window/null.c \
+    processor/processor_null.c \
+    window/window_null.c \
+    video/video_null.c
 
 

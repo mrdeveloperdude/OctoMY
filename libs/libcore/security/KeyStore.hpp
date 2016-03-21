@@ -5,14 +5,54 @@
 #include <QString>
 #include <QMap>
 #include <QSharedPointer>
+#include <QMutex>
 
 #include "../libpki/qpolarsslpki.hpp"
+
+
+class AtomicBoolean{
+	public:
+		AtomicBoolean(bool v):mMutex(),mBool(false){
+			set(v);
+		}
+		bool set(bool v) {
+			QMutexLocker ml(&mMutex);
+			return mBool=v;
+		}
+
+		bool get() {
+			QMutexLocker ml(&mMutex);
+			return mBool;
+		}
+
+
+		void operator=(const bool &b){
+			set(b);
+		}
+
+		operator bool(){
+			return get();
+		}
+
+
+	private:
+		QMutex mMutex;
+		bool mBool;
+		Q_DISABLE_COPY(AtomicBoolean)
+};
+
+class GenerateKeyRunnable;
 
 class KeyStore{
 	private:
 
 		qpolarssl::Pki local_pki;
 		QMap<QString, QSharedPointer<qpolarssl::Pki>> peer_pki;
+		AtomicBoolean ready;
+		QString fn;
+		quint32 keyBits;
+
+		friend class GenerateKeyRunnable;
 
 	public:
 		explicit KeyStore();

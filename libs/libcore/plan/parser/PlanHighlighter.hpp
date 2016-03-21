@@ -12,31 +12,44 @@ class QTextDocument;
 
 class PlanHighlighter : public QSyntaxHighlighter
 {
-	Q_OBJECT
+		Q_OBJECT
 
-public:
-	PlanHighlighter(QTextDocument *parent = 0);
+	public:
+		PlanHighlighter(QTextDocument *parent = 0);
 
-protected:
-	void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
+	protected:
+		void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
 
-private:
-	struct HighlightingRule
-	{
-		QRegExp pattern;
-		QTextCharFormat format;
-	};
-	QVector<HighlightingRule> highlightingRules;
+	private:
+		struct HighlightingRule{
+				QRegExp pattern;
+				QTextCharFormat format;
+				HighlightingRule(		QRegExp p,  QTextCharFormat f)
+					: pattern(p)
+					, format(f)
+				{
 
-	QRegExp commentStartExpression;
-	QRegExp commentEndExpression;
+				}
+				HighlightingRule() {
 
-	QTextCharFormat keywordFormat;
-	QTextCharFormat classFormat;
-	QTextCharFormat singleLineCommentFormat;
-	QTextCharFormat multiLineCommentFormat;
-	QTextCharFormat quotationFormat;
-	QTextCharFormat functionFormat;
+				}
+		};
+		QVector<HighlightingRule> highlightingRules;
+
+		QRegExp commentStartExpression;
+		QRegExp commentEndExpression;
+
+		QTextCharFormat operatorFormat;
+		QTextCharFormat parenFormat;
+		QTextCharFormat keywordFormat;
+		QTextCharFormat hubFormat;
+		QTextCharFormat remoteFormat;
+		QTextCharFormat agentFormat;
+		QTextCharFormat classFormat;
+		QTextCharFormat singleLineCommentFormat;
+		QTextCharFormat multiLineCommentFormat;
+		QTextCharFormat stringFormat;
+		QTextCharFormat functionFormat;
 };
 
 #endif // PLANHIGHLIGHTER_HPP

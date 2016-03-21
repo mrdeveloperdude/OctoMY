@@ -9,6 +9,46 @@
 template <typename T>
 class GaitController;
 
+
+template <typename T=quint16, T L=6>
+class GaitSequenceGenerator{
+	private:
+		T lut[L];
+		T i=0;
+	public:
+
+		enum GaitType{
+			TRIPOD,
+			WAVE,
+			RIPPLE
+		};
+
+		explicit GaitSequenceGenerator(GaitType type=TRIPOD){
+			switch(type){
+				case(TRIPOD):{
+						T a=0;
+						T b=0;
+						for(i=0;i<L;++i){
+							a|=(i*2);
+							b|=(i*2+1);
+							lut[i]=0;
+						}
+						for(i=0;i<L;++i){
+							lut[i]=(i&1)>0?a:b;
+						}
+
+					}break;
+			}
+
+		}
+
+		T generate(){
+			i=(i+1)%L;
+			return lut[i];
+		}
+};
+
+
 template <typename T>
 class GaitLimb{
 	public:
@@ -194,6 +234,8 @@ class GaitController{
 		};
 
 	public:
+
+		GaitSequenceGenerator<quint16, 6> seq;
 		quint32 limbCount;
 		quint32 maxLiftCount;
 		quint64 tickTime; //tick==cycle makes no overlap, tick < cycle gives overlap
@@ -317,6 +359,7 @@ class GaitController{
 				}
 			}
 			//Adpative lift set selector
+			/*
 			for(int s=0;s<maxLiftCount-liftedLimbs;++s){
 				const int high=getLimbWithHighestError();
 				if(high>=0){
@@ -325,6 +368,26 @@ class GaitController{
 					}
 				}
 			}
+			*/
+			//Sequential lift set selector
+			for(int s=0;s<maxLiftCount-liftedLimbs;++s){
+				const int high=getLimbWithHighestError();
+				if(high>=0){
+					if(limbs[high]->score > stridelength*0.3){
+						quint16 liftSet=seq.generate();
+						quint16 limb=1;
+						for(int i=0;i<6;++i){
+							if((liftSet & limb) >0){
+								limbs[i]->liftPending=true;
+							}
+							limb<<=1;
+						}
+					}
+				}
+			}
+
+
+
 			for(quint32 i=0;i<limbCount;++i){
 				limbs[i]->update(now, updateInterval);
 			}

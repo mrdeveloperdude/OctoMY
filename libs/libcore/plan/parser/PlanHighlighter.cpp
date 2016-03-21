@@ -4,45 +4,77 @@
 PlanHighlighter::PlanHighlighter(QTextDocument *parent)
 	: QSyntaxHighlighter(parent)
 {
-	HighlightingRule rule;
 
+
+	//Operator
+	/*
+	operatorFormat.setForeground(QColor("green"));
+	operatorFormat.setFontItalic(true);
+	QStringList operatorPatterns;
+	operatorPatterns << "\\b+\\b" ; //<< "\\b\\-\\b" << "\\b\\*\\b" << "\\b\\!\\b"<< "\\b\\%\\b"<< "\\b\\&\\b" << "\\b\\/\\b";
+	foreach (const QString &pattern, operatorPatterns) {
+		rule.pattern = QRegExp(pattern);
+		rule.format = operatorFormat;
+		highlightingRules.append(rule);
+	}
+	*/
+
+	//Paren
+	parenFormat.setForeground(QColor("#ffffff"));
+	QStringList parenPatterns;
+	parenPatterns << "\\b\\{\\b" << "\\b\\}\\b"  << "\\b\\[\\b" << "\\b\\]\\b" << "\\b\\(\\b" << "\\b\\)\\b";
+	foreach (const QString &pattern, parenPatterns) {
+		highlightingRules.append(HighlightingRule (QRegExp(pattern), parenFormat));
+	}
+
+	//Keyword
 	keywordFormat.setForeground(QColor("#e9d000"));
 	keywordFormat.setFontWeight(QFont::Bold);
 	QStringList keywordPatterns;
-	keywordPatterns << "\\bplan\\b" << "\\bpuppet\\b" << "\\bmember\\b"
-					<< "\\blimb\\b";
+	keywordPatterns << "\\bplan\\b" << "\\bpuppet\\b" << "\\bmember\\b" << "\\blimb\\b";
 	foreach (const QString &pattern, keywordPatterns) {
-		rule.pattern = QRegExp(pattern);
-		rule.format = keywordFormat;
-		highlightingRules.append(rule);
+		highlightingRules.append(HighlightingRule (QRegExp(pattern), keywordFormat));
 	}
+
+
+
+
+	//Hub
+	hubFormat.setForeground(QColor("#45de47"));
+	hubFormat.setFontWeight(QFont::Bold);
+	highlightingRules.append(HighlightingRule (QRegExp("\\bhub\\b"), hubFormat));
+
+	//Remote
+	remoteFormat.setForeground(QColor("#2faad0"));
+	remoteFormat.setFontWeight(QFont::Bold);
+	highlightingRules.append(HighlightingRule (QRegExp("\\bremote\\b"), remoteFormat));
+
+	//Agent
+	agentFormat.setForeground(QColor("#da3333"));
+	agentFormat.setFontWeight(QFont::Bold);
+	highlightingRules.append(HighlightingRule (QRegExp("\\bagent\\b"), agentFormat));
+
+	operatorFormat.setFontWeight(QFont::Bold);
+	operatorFormat.setForeground(QColor("#d0e900"));
+	highlightingRules.append(HighlightingRule (QRegExp("\\b[\\\\+" + QRegExp::escape("e+-*/!=<>")+ "]+\\b"), operatorFormat));
 
 	classFormat.setFontWeight(QFont::Bold);
 	classFormat.setForeground(QColor("#d0e900"));
-	rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
-	rule.format = classFormat;
-	highlightingRules.append(rule);
+	highlightingRules.append(HighlightingRule (QRegExp("\\bQ[A-Za-z]+\\b"), classFormat));
 
-	singleLineCommentFormat.setForeground(Qt::red);
-	rule.pattern = QRegExp("//[^\n]*");
-	rule.format = singleLineCommentFormat;
-	highlightingRules.append(rule);
+	singleLineCommentFormat.setForeground(QColor("#666666"));
+	highlightingRules.append(HighlightingRule (QRegExp("//[^\n]*"), singleLineCommentFormat));
+	commentStartExpression = QRegExp("/\\*");
+	commentEndExpression = QRegExp("\\*/");
+	multiLineCommentFormat.setForeground(QColor("#666666"));
 
-	multiLineCommentFormat.setForeground(Qt::red);
-
-	quotationFormat.setForeground(QColor("#00d0e9"));
-	rule.pattern = QRegExp("\".*\"");
-	rule.format = quotationFormat;
-	highlightingRules.append(rule);
+	stringFormat.setForeground(QColor("#00d0e9"));
+	highlightingRules.append(HighlightingRule (QRegExp("\".*\""), stringFormat));
 
 	functionFormat.setFontItalic(true);
 	functionFormat.setForeground(QColor("#00e9d0"));
-	rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
-	rule.format = functionFormat;
-	highlightingRules.append(rule);
+	highlightingRules.append(HighlightingRule (QRegExp("\\b[A-Za-z0-9_]+(?=\\()"), functionFormat));
 
-	commentStartExpression = QRegExp("/\\*");
-	commentEndExpression = QRegExp("\\*/");
 }
 
 void PlanHighlighter::highlightBlock(const QString &text){
@@ -69,7 +101,7 @@ void PlanHighlighter::highlightBlock(const QString &text){
 			commentLength = text.length() - startIndex;
 		} else {
 			commentLength = endIndex - startIndex
-							+ commentEndExpression.matchedLength();
+					+ commentEndExpression.matchedLength();
 		}
 		setFormat(startIndex, commentLength, multiLineCommentFormat);
 		startIndex = commentStartExpression.indexIn(text, startIndex + commentLength);

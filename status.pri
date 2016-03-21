@@ -4,6 +4,7 @@
 # the final values given to important
 # parameters for the build
 
+
 message("")
 message("------ " $${TARGET} " " $${DEFINES} " ------")
 message("| Qt: " $$[QT_VERSION] " @ " $$[QT_INSTALL_PREFIX])
@@ -24,5 +25,6 @@ message("| INCLUDEPATH:    " $${INCLUDEPATH})
 message("| DEPENDPATH:     " $${DEPENDPATH})
 message("| PRE_TARGETDEPS: " $${PRE_TARGETDEPS})
 message("| LOCAL_OVERRIDES ENABLED: " $${LOCAL_OVERRIDES})
+message("| C++ Compiler Version: " $$system(c++ --version) )
 message("---------------------------------------------")
 

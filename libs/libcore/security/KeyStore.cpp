@@ -3,12 +3,34 @@
 #include <QJsonObject>
 #include <QJsonParseError>
 #include <QFile>
+#include <QRunnable>
+#include <QThreadPool>
 
-QString fn="keystore.json";
-quint32 keyBits=4096;
+class GenerateKeyRunnable : public QRunnable{
+	private:
+		KeyStore &ks;
+	public:
+		GenerateKeyRunnable(KeyStore &ks): ks(ks)
+		{
 
-KeyStore::KeyStore(){
-	bootstrap();
+		}
+	public:
+		void run() {
+			qDebug() << "Started keystore bootstrap @ " << QThread::currentThread();
+			ks.bootstrap();
+			qDebug() << "Ended keystore bootstrap @ " << QThread::currentThread();
+		}
+};
+
+
+KeyStore::KeyStore():
+	ready(false)
+  , fn("keystore.json")
+  , keyBits(4096)
+{
+	// QThreadPool takes ownership and deletes runnable automatically after completion
+	QThreadPool::globalInstance()->start(new GenerateKeyRunnable(*this));// <-- concurrent approach (skips long wait in start of app)
+	//bootstrap(); <-- old singlethreaded approach
 }
 
 
@@ -25,8 +47,8 @@ void KeyStore::bootstrap(){
 		local_pki.reset();
 		local_pki.generateKeyPair(keyBits);
 		save();
+		load();
 	}
-	load();
 }
 
 
@@ -49,6 +71,7 @@ void KeyStore::load(){
 			QVariantMap remote=(*b).toMap();
 			peer_pki[remote["id"].toString()]->parsePublicKey(remote["PublicKey"].toByteArray());
 		}
+		ready=true;
 	}
 }
 
@@ -71,16 +94,25 @@ void KeyStore::save(){
 }
 
 QByteArray KeyStore::sign(const QByteArray &source){
+	if(!ready){
+		return QByteArray();
+	}
 	return local_pki.sign(source,qpolarssl::THash::SHA256);
 }
 
 
 bool KeyStore::verify(const QByteArray &message, const QByteArray &signature){
+	if(!ready){
+		return false;
+	}
 	return local_pki.verify(message, signature,qpolarssl::THash::SHA256);
 }
 
 
 bool KeyStore::verify(const QString &fingerprint, const QByteArray &message, const QByteArray &signature){
+	if(!ready){
+		return false;
+	}
 	QMap<QString, QSharedPointer<qpolarssl::Pki> >::iterator f=peer_pki.find(fingerprint);
 	if(peer_pki.end()==f){
 		return false;
@@ -94,10 +126,16 @@ bool KeyStore::verify(const QString &fingerprint, const QByteArray &message, con
 
 
 bool KeyStore::hasPubKeyForFingerprint(const QString &fingerprint){
+	if(!ready){
+		return false;
+	}
 	return (peer_pki.end()==peer_pki.find(fingerprint));
 }
 
 void KeyStore::setPubKeyForFingerprint(const QString &fingerprint,const QString &pubkeyPEM){
+	if(!ready){
+		return;
+	}
 	QSharedPointer<qpolarssl::Pki> remote_pki=QSharedPointer<qpolarssl::Pki>(new qpolarssl::Pki);
 	remote_pki->parsePublicKey(pubkeyPEM.toUtf8());
 	peer_pki[fingerprint]=remote_pki;
@@ -105,10 +143,16 @@ void KeyStore::setPubKeyForFingerprint(const QString &fingerprint,const QString 
 
 
 QString KeyStore::getLocalPublicKey(){
+	if(!ready){
+		return "";
+	}
 	return local_pki.getPEMPubkey();
 }
 
 QString KeyStore::getLocalPrivateKey(){
+	if(!ready){
+		return "";
+	}
 	return local_pki.getPEMKey();
 }
 

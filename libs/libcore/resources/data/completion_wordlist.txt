@@ -1,0 +1,11 @@
+plan
+puppet
+actuator
+descriptor
+hexy
+sensor
+remote
+hub
+agent
+camera
+

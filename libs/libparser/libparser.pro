@@ -1,5 +1,5 @@
-TARGET = parser
-TEMPLATE = lib
+TARGET =	parser
+TEMPLATE =	lib
 CONFIG +=	staticlib
 include($$TOP_PWD/common.pri)
 
@@ -25,11 +25,15 @@ QLALRSOURCES = octomy.g
 # NOTE: Please don't specify the intermediate sources here. They will be added
 #       automatically by variable_out mechanism of extra qmake_extra_compilers
 SOURCES += \
-	GeneralPurposeParser.cpp
+	octomy_table.cpp \
+	octomy_lexer.cpp \
+	octomy_parser.cpp \
+
 
 HEADERS += \
-	GeneralPurposeParser.hpp
-
+	octomy_table_p.h \
+	octomy_lexer.h \
+	octomy_parser.hpp \
 
 
 

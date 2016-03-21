@@ -1,10 +1,21 @@
 #Align these with the actual build of Qt in use (see image/scripts/qt.sh for options)
-CONFIG += qt c++14 # xcb debug thread 3dnow mmx stl sse sse2 largefile
-CONFIG -= rtti exceptions c++0x c++11
-CONFIG += static
+
+CONFIG -= rtti exceptions c++0x c++11 c++14 c++1y
+CONFIG += qt # xcb debug thread 3dnow mmx stl sse sse2 largefile
+CONFIG += c++14
+
+#
+#CONFIG += static
 # Support all kinds of architectures (universal builds etc)
 CONFIG += x86 x86_64
 #CONFIG += console
+
+# Stop build if no std is selected
+!contains(CONFIG, c++14){
+!contains(CONFIG, c++11){
+error( "CONFIG MUST CONTAIN c++11 or c++14. Both are missing, aborting build!")
+}
+}
 
 
 QMAKE_TARGET_COMPANY =		"OctoMY™"
@@ -91,9 +102,19 @@ debug{
 
 
 # Strive towards the most modern standard of C++ language available
-QMAKE_CXXFLAGS += -std=c++14
+
+QMAKE_CXXFLAGS -= -std=c++14
 QMAKE_CXXFLAGS -= -std=c++11
 QMAKE_CXXFLAGS -= -std=c++0x
+QMAKE_CXXFLAGS -= -std=c++1y
+#QMAKE_CXXFLAGS -= -stdlib=libc++
+
+contains(CONFIG, c++14){
+	QMAKE_CXXFLAGS += -std=c++14 -std=c++1y
+}
+contains(CONFIG, c++11){
+	QMAKE_CXXFLAGS += -std=c++11
+}
 
 
 # Add support for ccache (uncommend to enable)

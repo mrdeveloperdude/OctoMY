@@ -192,7 +192,6 @@ HEADERS  += \
 	puppet/Pose.hpp \
 	remote/Remote.hpp \
 	remote/RemoteWindow.hpp \
-	sensory/camera/Camera.hpp \
 	sensory/SensorInput.hpp \
 	utility/BaseTranscode.hpp \
 	utility/InfInt.hpp \
@@ -287,7 +286,8 @@ RESOURCES += \
 	resources/fonts.qrc \
 	resources/style.qrc \
 	resources/qfi.qrc \
-	resources/3d.qrc
+	resources/3d.qrc \
+    resources/data.qrc
 
 OTHER_FILES += \
 

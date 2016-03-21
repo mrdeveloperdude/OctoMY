@@ -11,47 +11,69 @@ class QWidget;
 
 class LineNumberArea;
 
+class QCompleter;
+class QAbstractItemModel;
 
 class CodeEditor : public QPlainTextEdit
 {
-	Q_OBJECT
+		Q_OBJECT
 
-public:
-	CodeEditor(QWidget *parent = 0);
+	public:
+		CodeEditor(QWidget *parent = 0);
 
-	void lineNumberAreaPaintEvent(QPaintEvent *event);
-	int lineNumberAreaWidth();
+		void lineNumberAreaPaintEvent(QPaintEvent *event);
+		int lineNumberAreaWidth();
 
-protected:
-	void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+	private:
+		QString textUnderCursor() const;
 
-private slots:
-	void updateLineNumberAreaWidth(int newBlockCount);
-	void highlightCurrentLine();
-	void updateLineNumberArea(const QRect &, int);
+		QAbstractItemModel *modelFromFile(const QString& fileName);
 
-private:
-	QWidget *lineNumberArea;
+		void blockIndent(bool in=true);
+	public:
+
+		void setCompleter(QCompleter *completer);
+		QCompleter *completer() const;
+
+
+	protected:
+		void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
+		void focusInEvent(QFocusEvent *e) Q_DECL_OVERRIDE;
+		void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+
+	private slots:
+		void insertCompletion(const QString &completion);
+		void updateLineNumberAreaWidth(int newBlockCount);
+		void highlightCurrentLine();
+		void updateLineNumberArea(const QRect &, int);
+
+	private:
+		QWidget *lineNumberArea;
+		QCompleter *m_completer;
 };
 
 
+
+
+
+
 class LineNumberArea : public QWidget{
-public:
-	LineNumberArea(CodeEditor *editor) : QWidget(editor) {
-		codeEditor = editor;
-	}
+	public:
+		LineNumberArea(CodeEditor *editor) : QWidget(editor) {
+			codeEditor = editor;
+		}
 
-	QSize sizeHint() const Q_DECL_OVERRIDE {
-		return QSize(codeEditor->lineNumberAreaWidth(), 0);
-	}
+		QSize sizeHint() const Q_DECL_OVERRIDE {
+			return QSize(codeEditor->lineNumberAreaWidth(), 0);
+		}
 
-protected:
-	void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE {
-		codeEditor->lineNumberAreaPaintEvent(event);
-	}
+	protected:
+		void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE {
+			codeEditor->lineNumberAreaPaintEvent(event);
+		}
 
-private:
-	CodeEditor *codeEditor;
+	private:
+		CodeEditor *codeEditor;
 };
 
 class PlanHighlighter;

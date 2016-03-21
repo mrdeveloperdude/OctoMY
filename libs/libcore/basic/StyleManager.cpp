@@ -90,11 +90,12 @@ void StyleManager::loadFonts(QApplication &app){
 
 void StyleManager::applyStyle(QApplication &app){
 	WWMETHODGATE();
-
+	/*
 	QStringList availableStyles=QStyleFactory::keys();
 	foreach (QString s, availableStyles) {
 		qDebug()<<"STYLE: "<<s;
 	}
+	*/
 	Q_INIT_RESOURCE(OctoStyle);
 	app.setStyle(new OctoStyle);
 	//app.setStyle(new OctoMYProxyStyle);
