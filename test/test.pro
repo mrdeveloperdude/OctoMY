@@ -5,6 +5,7 @@ contains(DEFINES, USE_BASIC_TESTS){
 TEST_PROJECTS+= \
 	testCommsChannel \
 	testIdenticon \
+	testParser \
 
 STRESS_PROJECTS+= \
 

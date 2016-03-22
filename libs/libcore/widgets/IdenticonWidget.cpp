@@ -98,7 +98,7 @@ void IdenticonWidget::regenerateIdenticon(){
 		p8=realBits(d, 0xff);d=(d>>8);
 		p9=realBits(d, 0xff);d=(d>>8);
 	}
-	qDebug()<<"Identicon params: "<<p1<<p2<<p3<<p4<<p5<<p6<<p7<<p8<<p9;
+	//qDebug()<<"Identicon params: "<<p1<<p2<<p3<<p4<<p5<<p6<<p7<<p8<<p9;
 	const QString c1=hsl(p1,0.75f,0.55f);
 	const QString c2=hsl(p2,0.75f,0.55f);
 	const QString c3=hsl(p3,0.75f,0.25f);
@@ -133,7 +133,7 @@ void IdenticonWidget::setIdenticonData(quint64 data){
 	if(0==data){
 		//data=9693658694970463214;
 		data=UniquePlatformFingerprint::getInstance().platform().getQuint64();
-		qDebug()<<"Identicon defaulting to fingerprint: "<<data<<"  ("<<UniquePlatformFingerprint::getInstance().platform().getHEX()<<")";
+		//qDebug()<<"Identicon defaulting to fingerprint: "<<data<<"  ("<<UniquePlatformFingerprint::getInstance().platform().getHEX()<<")";
 	}
 	if(this->data!=data){
 		this->data=data;
@@ -143,7 +143,7 @@ void IdenticonWidget::setIdenticonData(quint64 data){
 
 
 void IdenticonWidget::setSvgURL(QString url){
-	qDebug()<<"SETTING SVG URL: "<<lastURL<<" -> "<<url;
+	//qDebug()<<"SETTING SVG URL: "<<lastURL<<" -> "<<url;
 	if(url!=lastURL){
 		lastURL=url;
 		regenerateIdenticon();

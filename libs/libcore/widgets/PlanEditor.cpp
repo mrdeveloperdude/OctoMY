@@ -3,7 +3,7 @@
 
 #include "utility/Utility.hpp"
 #include "plan/parser/PlanHighlighter.hpp"
-//#include "../libparser/octomy_parser.hpp"
+#include "../libparser/octomy_parser.hpp"
 
 
 #include <QDebug>
@@ -345,7 +345,7 @@ void PlanEditor::on_toolButtonTidy_clicked(){
 }
 
 void PlanEditor::on_toolButtonParse_clicked(){
-	/*
+/*
 	qDebug()<<"INSTANCIATING PARSER";
 	OctomyParser p;
 	qDebug()<<"DUMPING GRAMMAR FOR DEBUG PURPOSES";
@@ -355,5 +355,5 @@ void PlanEditor::on_toolButtonParse_clicked(){
 	qDebug()<<"PARSING RAW TEXT:"<<raw;
 	bool ret=p.parse(raw);
 	qDebug()<<"PARSING RESULTED IN "<<(ret?"SUCCESS":"FAILURE");
-	*/
+*/
 }

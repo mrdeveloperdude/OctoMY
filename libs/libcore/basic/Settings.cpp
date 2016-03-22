@@ -96,7 +96,7 @@ void Settings::delayedSync(){
 	WWMETHODGATE();
 	syncTimer.stop();
 	if(0!=settings)	{
-		qDebug()<<"SETTINGS SYNC PERFORMED";
+		//qDebug()<<"SETTINGS SYNC PERFORMED";
 		settings->sync();
 		lastSync=QDateTime::currentMSecsSinceEpoch();
 	}

@@ -65,7 +65,6 @@ SOURCES +=\
 	puppet/Pose.cpp \
 	remote/Remote.cpp \
 	remote/RemoteWindow.cpp \
-	sensory/camera/Camera.cpp \
 	sensory/SensorInput.cpp \
 	utility/BaseTranscode.cpp \
 	utility/Status.cpp \
@@ -287,7 +286,7 @@ RESOURCES += \
 	resources/style.qrc \
 	resources/qfi.qrc \
 	resources/3d.qrc \
-    resources/data.qrc
+	resources/data.qrc
 
 OTHER_FILES += \
 

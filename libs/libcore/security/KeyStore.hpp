@@ -43,7 +43,8 @@ class AtomicBoolean{
 
 class GenerateKeyRunnable;
 
-class KeyStore{
+class KeyStore: public QObject{
+		Q_OBJECT
 	private:
 
 		qpolarssl::Pki local_pki;
@@ -55,7 +56,7 @@ class KeyStore{
 		friend class GenerateKeyRunnable;
 
 	public:
-		explicit KeyStore();
+		explicit KeyStore(QObject *parent=0);
 		virtual ~KeyStore();
 
 	private:
@@ -80,6 +81,10 @@ class KeyStore{
 
 		QString getLocalPublicKey();
 		QString getLocalPrivateKey();
+
+	signals:
+
+		void keystoreReady();
 
 };
 

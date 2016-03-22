@@ -1,43 +1,3 @@
-/****************************************************************************
-**
-** Copyright (C) 2015 The Qt Company Ltd.
-** Contact: http://www.qt.io/licensing/
-**
-** This file is part of the examples of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** You may use this file under the terms of the BSD license as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of The Qt Company Ltd nor the names of its
-**     contributors may be used to endorse or promote products derived
-**     from this software without specific prior written permission.
-**
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
 #include "Camera.hpp"
 #include "ui_Camera.h"
 #include "CameraSettings.hpp"
@@ -67,11 +27,10 @@ Camera::Camera(QWidget *parent)
 
 {
 	ui->setupUi(this);
-
 	//Camera devices:
-
 	QActionGroup *videoDevicesGroup = new QActionGroup(this);
 	videoDevicesGroup->setExclusive(true);
+	qDebug()<<"ADDING CAMERAS TO LIST: ";
 	foreach (const QCameraInfo &cameraInfo, QCameraInfo::availableCameras()) {
 		QAction *videoDeviceAction = new QAction(cameraInfo.description(), videoDevicesGroup);
 		videoDeviceAction->setCheckable(true);
@@ -79,11 +38,9 @@ Camera::Camera(QWidget *parent)
 		if (cameraInfo == QCameraInfo::defaultCamera()){
 			videoDeviceAction->setChecked(true);
 		}
-
 		ui->listWidget->addAction(videoDeviceAction);
-		//ui->menuDevices->addAction(videoDeviceAction);
+		qDebug()<<" + "<<cameraInfo.description();
 	}
-
 	connect(videoDevicesGroup, SIGNAL(triggered(QAction*)), SLOT(updateCameraDevice(QAction*)));
 	connect(ui->captureWidget, SIGNAL(currentChanged(int)), SLOT(updateCaptureMode()));
 	ui->pushButtonToggleCamera->setChecked(true);
@@ -99,28 +56,40 @@ Camera::~Camera()
 
 void Camera::setCamera(const QCameraInfo &cameraInfo)
 {
-	delete imageCapture;
-	delete mediaRecorder;
-	delete camera;
 
-	camera = new QCamera(cameraInfo);
+	{
+		delete camera;
+		camera = new QCamera(cameraInfo);
+		if(!connect(camera, SIGNAL(stateChanged(QCamera::State)), this, SLOT(updateCameraState(QCamera::State)))){
+			qWarning()<<"ERROR: could not connect";
+		}
+		if(!connect(camera, SIGNAL(error(QCamera::Error)), this, SLOT(displayCameraError()))){
+			qWarning()<<"ERROR: could not connect";
+		}
+	}
 
-	connect(camera, SIGNAL(stateChanged(QCamera::State)), this, SLOT(updateCameraState(QCamera::State)));
-	connect(camera, SIGNAL(error(QCamera::Error)), this, SLOT(displayCameraError()));
+	{
+		delete mediaRecorder;
+		mediaRecorder = new QMediaRecorder(camera);
+		if(!connect(mediaRecorder, SIGNAL(stateChanged(QMediaRecorder::State)), this, SLOT(updateRecorderState(QMediaRecorder::State)))){
+			qWarning()<<"ERROR: could not connect";
+		}
+	}
 
-	mediaRecorder = new QMediaRecorder(camera);
-	connect(mediaRecorder, SIGNAL(stateChanged(QMediaRecorder::State)), this, SLOT(updateRecorderState(QMediaRecorder::State)));
-
-	imageCapture = new QCameraImageCapture(camera);
-
-
-	connect(mediaRecorder, SIGNAL(durationChanged(qint64)), this, SLOT(updateRecordTime()));
-	connect(mediaRecorder, SIGNAL(error(QMediaRecorder::Error)), this, SLOT(displayRecorderError()));
-
+	{
+		delete imageCapture;
+		imageCapture = new QCameraImageCapture(camera);
+		if(!connect(mediaRecorder, SIGNAL(durationChanged(qint64)), this, SLOT(updateRecordTime()))){
+			qWarning()<<"ERROR: could not connect";
+		}
+		if(!connect(mediaRecorder, SIGNAL(error(QMediaRecorder::Error)), this, SLOT(displayRecorderError()))){
+			qWarning()<<"ERROR: could not connect";
+		}
+	}
 	mediaRecorder->setMetaData(QMediaMetaData::Title, QVariant(QLatin1String("OctoMY™")));
-
-	connect(ui->exposureCompensation, SIGNAL(valueChanged(int)), SLOT(setExposureCompensation(int)));
-
+	if(!connect(ui->exposureCompensation, SIGNAL(valueChanged(int)), SLOT(setExposureCompensation(int)))){
+		qWarning()<<"ERROR: could not connect";
+	}
 	camera->setViewfinder(ui->viewfinder);
 
 
@@ -132,7 +101,9 @@ void Camera::setCamera(const QCameraInfo &cameraInfo)
 
 	if (videoProbe->setSource(camera)) {
 		// Probing succeeded, videoProbe->isValid() should be true.
-		connect(videoProbe, SIGNAL(videoFrameProbed(QVideoFrame)), this, SLOT(detectBarcodes(QVideoFrame)));
+		if(!connect(videoProbe, SIGNAL(videoFrameProbed(QVideoFrame)), this, SLOT(detectBarcodes(QVideoFrame)))){
+			qWarning()<<"ERROR: could not connect";
+		}
 	}
 	else{
 		qWarning()<<"ERROR: Could not set up probing of camera";
@@ -142,18 +113,23 @@ void Camera::setCamera(const QCameraInfo &cameraInfo)
 	updateLockStatus(camera->lockStatus(), QCamera::UserRequest);
 	updateRecorderState(mediaRecorder->state());
 
-	connect(imageCapture, SIGNAL(readyForCaptureChanged(bool)), this, SLOT(readyForCapture(bool)));
-	connect(imageCapture, SIGNAL(imageCaptured(int,QImage)), this, SLOT(processCapturedImage(int,QImage)));
-	connect(imageCapture, SIGNAL(imageSaved(int,QString)), this, SLOT(imageSaved(int,QString)));
-	connect(imageCapture, SIGNAL(error(int,QCameraImageCapture::Error,QString)), this,
-			SLOT(displayCaptureError(int,QCameraImageCapture::Error,QString)));
-
-	connect(camera, SIGNAL(lockStatusChanged(QCamera::LockStatus,QCamera::LockChangeReason)),
-			this, SLOT(updateLockStatus(QCamera::LockStatus,QCamera::LockChangeReason)));
-
+	if(!connect(imageCapture, SIGNAL(readyForCaptureChanged(bool)), this, SLOT(readyForCapture(bool)))){
+		qWarning()<<"ERROR: could not connect";
+	}
+	if(!connect(imageCapture, SIGNAL(imageCaptured(int,QImage)), this, SLOT(processCapturedImage(int,QImage)))){
+		qWarning()<<"ERROR: could not connect";
+	}
+	if(!connect(imageCapture, SIGNAL(imageSaved(int,QString)), this, SLOT(imageSaved(int,QString)))){
+		qWarning()<<"ERROR: could not connect";
+	}
+	if(!connect(imageCapture, SIGNAL(error(int,QCameraImageCapture::Error,QString)), this, SLOT(displayCaptureError(int,QCameraImageCapture::Error,QString)))){
+		qWarning()<<"ERROR: could not connect";
+	}
+	if(!connect(camera, SIGNAL(lockStatusChanged(QCamera::LockStatus,QCamera::LockChangeReason)), this, SLOT(updateLockStatus(QCamera::LockStatus,QCamera::LockChangeReason)))){
+		qWarning()<<"ERROR: could not connect";
+	}
 	ui->captureWidget->setTabEnabled(0, (camera->isCaptureModeSupported(QCamera::CaptureStillImage)));
 	ui->captureWidget->setTabEnabled(1, (camera->isCaptureModeSupported(QCamera::CaptureVideo)));
-
 	updateCaptureMode();
 	camera->start();
 }

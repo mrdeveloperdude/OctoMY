@@ -4,9 +4,6 @@ CONFIG +=	staticlib
 include($$TOP_PWD/common.pri)
 
 # Include the qmake_extra_compilers for flex and qlalr
-include(flex.pri)
-include(qlalr.pri)
-
 
 # Link to flex library
 LIBS += -lfl
@@ -24,19 +21,27 @@ QLALRSOURCES = octomy.g
 # All static source files
 # NOTE: Please don't specify the intermediate sources here. They will be added
 #       automatically by variable_out mechanism of extra qmake_extra_compilers
-SOURCES += \
-	octomy_table.cpp \
-	octomy_lexer.cpp \
-	octomy_parser.cpp \
+
+#SOURCES += \
+	#octomy_table.cpp \
+	#octomy_lexer.cpp \
+	#octomy_parser.cpp \
 
 
-HEADERS += \
-	octomy_table_p.h \
-	octomy_lexer.h \
-	octomy_parser.hpp \
+#HEADERS += \
+	#octomy_table_p.h \
+	#octomy_lexer.h \
+	#octomy_parser.hpp \
 
-
+include(flex.pri)
+include(qlalr.pri)
 
 OTHER_FILES += \
 	$$FLEXSOURCES \
 	$$QLALRSOURCES \
+
+include($$TOP_PWD/status.pri)
+message("| FLEXSOURCES:    " $${FLEXSOURCES})
+message("| QLALRSOURCES:   " $${QLALRSOURCES})
+message("| GENERATED_HEADERS:   " $${GENERATED_HEADERS})
+message("| GENERATED_SOURCES:    " $${GENERATED_SOURCES})

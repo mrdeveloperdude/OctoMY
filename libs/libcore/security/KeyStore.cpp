@@ -23,10 +23,11 @@ class GenerateKeyRunnable : public QRunnable{
 };
 
 
-KeyStore::KeyStore():
-	ready(false)
-  , fn("keystore.json")
-  , keyBits(4096)
+KeyStore::KeyStore(QObject *parent)
+	: QObject(parent)
+	, ready(false)
+	, fn("keystore.json")
+	, keyBits(4096)
 {
 	// QThreadPool takes ownership and deletes runnable automatically after completion
 	QThreadPool::globalInstance()->start(new GenerateKeyRunnable(*this));// <-- concurrent approach (skips long wait in start of app)
@@ -72,6 +73,7 @@ void KeyStore::load(){
 			peer_pki[remote["id"].toString()]->parsePublicKey(remote["PublicKey"].toByteArray());
 		}
 		ready=true;
+		emit keystoreReady();
 	}
 }
 
