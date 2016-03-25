@@ -160,7 +160,7 @@ namespace qmapcontrol
 			{
 				cacheDir.mkpath( cacheDir.absolutePath() );
 			}
-			qDebug()<<"Map Disk Cache: "<<cacheDir.absolutePath();
+			//qDebug()<<"Map Disk Cache: "<<cacheDir.absolutePath();
 			diskCache->setCacheDirectory( cacheDir.absolutePath() );
 			diskCache->setMaximumCacheSize( qDiskSizeMB *1024*1024 ); //Megabytes to bytes
 			net->setDiskCache(diskCache);

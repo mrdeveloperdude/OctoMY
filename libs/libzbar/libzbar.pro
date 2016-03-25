@@ -7,7 +7,17 @@ include($$TOP_PWD/common.pri)
 INCLUDEPATH += .
 
 HEADERS	+= \
+	c++/Decoder.h \
+	c++/Exception.h \
+	c++/Image.hpp \
+	c++/ImageScanner.h \
 	config.h \
+	c++/Processor.h \
+	c++/QZBarImage.h \
+	c++/Scanner.h \
+	c++/Symbol.h \
+	c++/Video.h \
+	c++/Window.h \
 	debug.h \
 	decoder/code128.h \
 	decoder/code39.h \
@@ -37,6 +47,9 @@ HEADERS	+= \
 	video.h \
 	window.h \
 	zbar.h \
+	ZBarScanner.hpp \
+
+
 
 SOURCES	+= \
 	config.c \
@@ -48,14 +61,15 @@ SOURCES	+= \
 	decoder/i25.c \
 	decoder/qr_finder.c \
 	error.c \
-	image.c \
 	img_scanner.c \
 	processor.c \
 	processor/posix.c \
+	processor/processor_null.c \
 	qrcode/bch15_5.c \
 	qrcode/binarize.c \
 	qrcode/isaac.c \
 	qrcode/qrdec.c \
+	qrcode/qrdectxt.c \
 	qrcode/rs.c \
 	qrcode/util.c \
 	refcnt.c \
@@ -63,9 +77,8 @@ SOURCES	+= \
 	svg.c \
 	symbol.c \
 	video.c \
+	video/video_null.c \
 	window.c \
-    processor/processor_null.c \
-    window/window_null.c \
-    video/video_null.c
-
-
+	window/window_null.c \
+	ZBarScanner.cpp \
+    zimage.c

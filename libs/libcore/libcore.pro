@@ -15,12 +15,16 @@ SOURCES +=\
 	3d/scene/Simulation.cpp \
 	agent/Agent.cpp \
 	agent/AgentWindow.cpp \
+	basic/GenericMain.cpp \
 	basic/LogDestination.cpp \
 	basic/LogHandler.cpp \
 	basic/Settings.cpp \
 	basic/Standard.cpp \
 	basic/StyleManager.cpp \
 	basic/UniquePlatformFingerprint.cpp \
+	camera/Camera.cpp \
+	camera/CameraSettings.cpp \
+	camera/PoorMansProbe.cpp \
 	comms/Client.cpp \
 	comms/CommsChannel.cpp \
 	comms/couriers/Courier.cpp \
@@ -59,12 +63,18 @@ SOURCES +=\
 	hw/actuators/HexyLeg.cpp \
 	hw/actuators/HexySerial.cpp \
 	hw/actuators/HexyTool.cpp \
+	hw/actuators/SerialSettings.cpp \
 	models/ClientModel.cpp \
+	plan/parser/PlanHighlighter.cpp \
 	plot/qcustomplot.cpp \
 	plot/StatsWindow.cpp \
+	puppet/GaitController.cpp \
+	puppet/GaitWidget.cpp \
 	puppet/Pose.cpp \
+	puppet/Puppet.cpp \
 	remote/Remote.cpp \
 	remote/RemoteWindow.cpp \
+	security/KeyStore.cpp \
 	sensory/SensorInput.cpp \
 	utility/BaseTranscode.cpp \
 	utility/Status.cpp \
@@ -87,8 +97,10 @@ SOURCES +=\
 	widgets/LightWidget.cpp \
 	widgets/LocalAddressEntry.cpp \
 	widgets/Logo.cpp \
+	widgets/MapEditor.cpp \
 	widgets/MultiView.cpp \
 	widgets/NumberEntry.cpp \
+	widgets/PlanEditor.cpp \
 	widgets/qfi/LayoutSquare.cpp \
 	widgets/qfi/qfi_ADI.cpp \
 	widgets/qfi/qfi_ALT.cpp \
@@ -107,21 +119,11 @@ SOURCES +=\
 	widgets/qfi/WidgetSix.cpp \
 	widgets/qfi/WidgetTC.cpp \
 	widgets/qfi/WidgetVSI.cpp \
+	widgets/QRWidget.cpp \
 	widgets/SvgWidget.cpp \
 	widgets/TextEntry.cpp \
 	widgets/TryToggle.cpp \
-	camera/Camera.cpp \
-	camera/CameraSettings.cpp \
-	widgets/QRWidget.cpp \
-	security/KeyStore.cpp \
-	puppet/GaitController.cpp \
-	puppet/GaitWidget.cpp \
-	puppet/Puppet.cpp \
-	basic/GenericMain.cpp \
-	plan/parser/PlanHighlighter.cpp \
-	widgets/PlanEditor.cpp \
-	widgets/MapEditor.cpp \
-	hw/actuators/SerialSettings.cpp
+
 
 
 
@@ -133,12 +135,16 @@ HEADERS  += \
 	3d/scene/Simulation.hpp \
 	agent/Agent.hpp \
 	agent/AgentWindow.hpp \
+	basic/GenericMain.hpp \
 	basic/LogDestination.hpp \
 	basic/LogHandler.hpp \
 	basic/Settings.hpp \
 	basic/Standard.hpp \
 	basic/StyleManager.hpp \
 	basic/UniquePlatformFingerprint.hpp \
+	camera/Camera.hpp \
+	camera/CameraSettings.hpp \
+	camera/PoorMansProbe.hpp \
 	comms/Client.hpp \
 	comms/CommsChannel.hpp \
 	comms/couriers/Courier.hpp \
@@ -185,12 +191,18 @@ HEADERS  += \
 	hw/actuators/HexyLeg.hpp \
 	hw/actuators/HexySerial.hpp \
 	hw/actuators/HexyTool.hpp \
+	hw/actuators/SerialSettings.hpp \
 	models/ClientModel.hpp \
+	plan/parser/PlanHighlighter.hpp \
 	plot/qcustomplot.hpp \
 	plot/StatsWindow.hpp \
+	puppet/GaitController.hpp \
+	puppet/GaitWidget.hpp \
 	puppet/Pose.hpp \
+	puppet/Puppet.hpp \
 	remote/Remote.hpp \
 	remote/RemoteWindow.hpp \
+	security/KeyStore.hpp \
 	sensory/SensorInput.hpp \
 	utility/BaseTranscode.hpp \
 	utility/InfInt.hpp \
@@ -214,8 +226,10 @@ HEADERS  += \
 	widgets/LightWidget.hpp \
 	widgets/LocalAddressEntry.hpp \
 	widgets/Logo.hpp \
+	widgets/MapEditor.hpp \
 	widgets/MultiView.hpp \
 	widgets/NumberEntry.hpp \
+	widgets/PlanEditor.hpp \
 	widgets/qfi/LayoutSquare.h \
 	widgets/qfi/qfi_ADI.h \
 	widgets/qfi/qfi_ALT.h \
@@ -234,29 +248,22 @@ HEADERS  += \
 	widgets/qfi/WidgetSix.h \
 	widgets/qfi/WidgetTC.h \
 	widgets/qfi/WidgetVSI.h \
+	widgets/QRWidget.hpp \
 	widgets/SvgWidget.hpp \
 	widgets/TextEntry.hpp \
 	widgets/TryToggle.hpp \
-	camera/Camera.hpp \
-	camera/CameraSettings.hpp \
-	widgets/QRWidget.hpp \
-	security/KeyStore.hpp \
-	puppet/GaitController.hpp \
-	puppet/GaitWidget.hpp \
-	puppet/Puppet.hpp \
-	basic/GenericMain.hpp \
-	plan/parser/PlanHighlighter.hpp \
-	widgets/PlanEditor.hpp \
-	widgets/MapEditor.hpp \
-	hw/actuators/SerialSettings.hpp
-
 
 
 FORMS    += \
 	ui/AgentWindow.ui \
+	ui/CameraSettings.ui \
+	ui/Camera.ui \
 	ui/ClientWindow.ui \
+	ui/ConnectionWidget.ui \
+	ui/HexyTool.ui \
 	ui/HubWindow.ui \
 	ui/MultiView.ui \
+	ui/NumberEntry.ui \
 	ui/qfi/WidgetADI.ui \
 	ui/qfi/WidgetALT.ui \
 	ui/qfi/WidgetASI.ui \
@@ -268,16 +275,11 @@ FORMS    += \
 	ui/qfi/WidgetVSI.ui \
 	ui/RemoteWindow.ui \
 	ui/ResponsiveTest.ui \
+	ui/SerialSettings.ui \
 	ui/StatsWindow.ui \
 	ui/TryToggle.ui \
-	ui/NumberEntry.ui \
-	ui/HexyTool.ui \
-	ui/Camera.ui \
-	ui/CameraSettings.ui \
-	ui/ConnectionWidget.ui \
-	widgets/PlanEditor.ui \
 	widgets/MapEditor.ui \
-	ui/SerialSettings.ui
+	widgets/PlanEditor.ui \
 
 
 RESOURCES += \

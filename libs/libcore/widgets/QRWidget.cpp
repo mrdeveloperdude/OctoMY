@@ -12,6 +12,8 @@ QRWidget::QRWidget(QWidget *parent)
 	: QWidget(parent)
 	, data("")
 	, m_doubleBuffer(0)
+	, fg("black")
+	, bg("white")
 	, dirty(true)
 {
 }
@@ -51,10 +53,8 @@ void QRWidget::paintEvent(QPaintEvent *){
 				if(0==ret){
 					QRcode *qr=QRcode_encodeInput(qri);
 					if(0!=qr){
-						QColor fg("black");
-						QColor bg("white");
 						const int s=qr->width>0?qr->width:1;
-						const double scale=size/s;
+						const double scale=size/(s+2);
 						//painter.setBrush(bg);
 						painter.setPen(Qt::NoPen);
 						//painter.drawRect(ox,oy,size,size);
@@ -65,7 +65,7 @@ void QRWidget::paintEvent(QPaintEvent *){
 								const int xx=yy+x;
 								const unsigned char b=qr->data[xx];
 								if(b &0x01){
-									const double rx1=x*scale, ry1=y*scale;
+									const double rx1=(x+1)*scale, ry1=(y+1)*scale;
 									QRectF r(rx1, ry1, scale, scale);
 									painter.drawRects(&r,1);
 								}

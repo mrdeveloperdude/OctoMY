@@ -51,7 +51,7 @@ void GenericMain::run(){
 	headless=parser.isSet(headlessOption);
 
 	app=(headless?(new QCoreApplication(argc, argv)):(new QApplication(argc, argv)));
-	qDebug()<<(headless?"HEADLESS":"GUI ENABLED");
+	//qDebug()<<(headless?"HEADLESS":"GUI ENABLED");
 	start();
 
 

@@ -2,12 +2,16 @@
 #include "ui_Camera.h"
 #include "CameraSettings.hpp"
 
+#include "PoorMansProbe.hpp"
+#include "../libzbar/ZBarScanner.hpp"
+
+#include "utility/Utility.hpp"
+
 #include <QMediaService>
 #include <QMediaRecorder>
+#include <QCamera>
 #include <QCameraViewfinder>
-#include <QCameraInfo>
 #include <QMediaMetaData>
-
 #include <QMessageBox>
 #include <QPalette>
 
@@ -22,29 +26,20 @@ Camera::Camera(QWidget *parent)
 	, imageCapture(0)
 	, mediaRecorder(0)
 	, videoProbe(0)
+	, poorVideoProbe(0)
+	, zbar(0)
 	, isCapturingImage(false)
 	, applicationExiting(false)
+	, videoDevicesGroup(0)
 
 {
 	ui->setupUi(this);
-	//Camera devices:
-	QActionGroup *videoDevicesGroup = new QActionGroup(this);
-	videoDevicesGroup->setExclusive(true);
-	qDebug()<<"ADDING CAMERAS TO LIST: ";
-	foreach (const QCameraInfo &cameraInfo, QCameraInfo::availableCameras()) {
-		QAction *videoDeviceAction = new QAction(cameraInfo.description(), videoDevicesGroup);
-		videoDeviceAction->setCheckable(true);
-		videoDeviceAction->setData(QVariant::fromValue(cameraInfo));
-		if (cameraInfo == QCameraInfo::defaultCamera()){
-			videoDeviceAction->setChecked(true);
-		}
-		ui->listWidget->addAction(videoDeviceAction);
-		qDebug()<<" + "<<cameraInfo.description();
+	//Start timer to poll for camera device changes
+	if(!connect(&devChangeTimer,SIGNAL(timeout()),this,SLOT(onDevChangeTimer()))){
+		qWarning()<<"ERROR: could not connect";
 	}
-	connect(videoDevicesGroup, SIGNAL(triggered(QAction*)), SLOT(updateCameraDevice(QAction*)));
-	connect(ui->captureWidget, SIGNAL(currentChanged(int)), SLOT(updateCaptureMode()));
-	ui->pushButtonToggleCamera->setChecked(true);
-	setCamera(QCameraInfo::defaultCamera());
+	devChangeTimer.setTimerType(Qt::VeryCoarseTimer);//No need for precision
+	devChangeTimer.start(5000);//Poll for camera changes every 5 sec
 }
 
 Camera::~Camera()
@@ -54,84 +49,114 @@ Camera::~Camera()
 	delete camera;
 }
 
-void Camera::setCamera(const QCameraInfo &cameraInfo)
+void Camera::setCamera(const QCameraInfo &ci)
 {
 
+	//Free old camera
 	{
 		delete camera;
-		camera = new QCamera(cameraInfo);
-		if(!connect(camera, SIGNAL(stateChanged(QCamera::State)), this, SLOT(updateCameraState(QCamera::State)))){
-			qWarning()<<"ERROR: could not connect";
-		}
-		if(!connect(camera, SIGNAL(error(QCamera::Error)), this, SLOT(displayCameraError()))){
-			qWarning()<<"ERROR: could not connect";
-		}
-	}
-
-	{
+		camera=0;
 		delete mediaRecorder;
-		mediaRecorder = new QMediaRecorder(camera);
-		if(!connect(mediaRecorder, SIGNAL(stateChanged(QMediaRecorder::State)), this, SLOT(updateRecorderState(QMediaRecorder::State)))){
-			qWarning()<<"ERROR: could not connect";
-		}
-	}
-
-	{
+		mediaRecorder=0;
 		delete imageCapture;
-		imageCapture = new QCameraImageCapture(camera);
-		if(!connect(mediaRecorder, SIGNAL(durationChanged(qint64)), this, SLOT(updateRecordTime()))){
-			qWarning()<<"ERROR: could not connect";
-		}
-		if(!connect(mediaRecorder, SIGNAL(error(QMediaRecorder::Error)), this, SLOT(displayRecorderError()))){
-			qWarning()<<"ERROR: could not connect";
-		}
+		imageCapture=0;
 	}
-	mediaRecorder->setMetaData(QMediaMetaData::Title, QVariant(QLatin1String("OctoMY™")));
-	if(!connect(ui->exposureCompensation, SIGNAL(valueChanged(int)), SLOT(setExposureCompensation(int)))){
-		qWarning()<<"ERROR: could not connect";
-	}
-	camera->setViewfinder(ui->viewfinder);
-
-
-	if(0!=videoProbe){
-		videoProbe->deleteLater();
-		videoProbe=0;
-	}
-	videoProbe = new QVideoProbe(this);
-
-	if (videoProbe->setSource(camera)) {
-		// Probing succeeded, videoProbe->isValid() should be true.
-		if(!connect(videoProbe, SIGNAL(videoFrameProbed(QVideoFrame)), this, SLOT(detectBarcodes(QVideoFrame)))){
-			qWarning()<<"ERROR: could not connect";
-		}
+	if(ci.isNull()){
+		qDebug()<<"Selected camera is invalid, locking down UI";
+		setEnabled(false);
 	}
 	else{
-		qWarning()<<"ERROR: Could not set up probing of camera";
-	}
+		setEnabled(true);
+		qDebug()<<"Using camera: "<<ci;
+		{
+			cameraInfo=ci;
+			camera = new QCamera(ci);
+			if(!connect(camera, SIGNAL(stateChanged(QCamera::State)), this, SLOT(updateCameraState(QCamera::State)))){
+				qWarning()<<"ERROR: could not connect";
+			}
+			if(!connect(camera, SIGNAL(error(QCamera::Error)), this, SLOT(displayCameraError()))){
+				qWarning()<<"ERROR: could not connect";
+			}
+		}
+		{
+			mediaRecorder = new QMediaRecorder(camera);
+			if(!connect(mediaRecorder, SIGNAL(stateChanged(QMediaRecorder::State)), this, SLOT(updateRecorderState(QMediaRecorder::State)))){
+				qWarning()<<"ERROR: could not connect";
+			}
+		}
+		{
+			imageCapture = new QCameraImageCapture(camera);
+			if(!connect(mediaRecorder, SIGNAL(durationChanged(qint64)), this, SLOT(updateRecordTime()))){
+				qWarning()<<"ERROR: could not connect";
+			}
+			if(!connect(mediaRecorder, SIGNAL(error(QMediaRecorder::Error)), this, SLOT(displayRecorderError()))){
+				qWarning()<<"ERROR: could not connect";
+			}
+		}
+		mediaRecorder->setMetaData(QMediaMetaData::Title, QVariant(QLatin1String("OctoMY™")));
+		if(!connect(ui->exposureCompensation, SIGNAL(valueChanged(int)), SLOT(setExposureCompensation(int)))){
+			qWarning()<<"ERROR: could not connect";
+		}
 
-	updateCameraState(camera->state());
-	updateLockStatus(camera->lockStatus(), QCamera::UserRequest);
-	updateRecorderState(mediaRecorder->state());
 
-	if(!connect(imageCapture, SIGNAL(readyForCaptureChanged(bool)), this, SLOT(readyForCapture(bool)))){
-		qWarning()<<"ERROR: could not connect";
+		//TODO: Handles iOS
+#ifdef Q_OS_ANDROID
+		camera->setViewfinder(ui->viewfinder);
+		if(0!=videoProbe){
+			videoProbe->deleteLater();
+			videoProbe=0;
+		}
+		videoProbe = new QVideoProbe(this);
+		if (videoProbe->setSource(camera)) {
+			// Probing succeeded, videoProbe->isValid() should be true.
+			if(!connect(videoProbe, SIGNAL(videoFrameProbed(QVideoFrame)), this, SLOT(detectBarcodes(QVideoFrame)))){
+				qWarning()<<"ERROR: could not connect";
+			}
+		}
+		else{
+			qWarning()<<"ERROR: Could not set up probing of camera";
+		}
+#else
+		if(0!=poorVideoProbe){
+			poorVideoProbe->deleteLater();
+			poorVideoProbe=0;
+		}
+		poorVideoProbe=new PoorMansProbe(this);
+		if (poorVideoProbe->setSource(camera)) {
+			// Probing succeeded, videoProbe->isValid() should be true.
+			if(!connect(poorVideoProbe, SIGNAL(videoFrameProbed(QVideoFrame)), this, SLOT(detectBarcodes(QVideoFrame)))){
+				qWarning()<<"ERROR: could not connect";
+			}
+		}
+		else{
+			qWarning()<<"ERROR: Could not set up probing of camera";
+		}
+
+#endif
+		updateCameraState(camera->state());
+		updateLockStatus(camera->lockStatus(), QCamera::UserRequest);
+		updateRecorderState(mediaRecorder->state());
+
+		if(!connect(imageCapture, SIGNAL(readyForCaptureChanged(bool)), this, SLOT(readyForCapture(bool)))){
+			qWarning()<<"ERROR: could not connect";
+		}
+		if(!connect(imageCapture, SIGNAL(imageCaptured(int,QImage)), this, SLOT(processCapturedImage(int,QImage)))){
+			qWarning()<<"ERROR: could not connect";
+		}
+		if(!connect(imageCapture, SIGNAL(imageSaved(int,QString)), this, SLOT(imageSaved(int,QString)))){
+			qWarning()<<"ERROR: could not connect";
+		}
+		if(!connect(imageCapture, SIGNAL(error(int,QCameraImageCapture::Error,QString)), this, SLOT(displayCaptureError(int,QCameraImageCapture::Error,QString)))){
+			qWarning()<<"ERROR: could not connect";
+		}
+		if(!connect(camera, SIGNAL(lockStatusChanged(QCamera::LockStatus,QCamera::LockChangeReason)), this, SLOT(updateLockStatus(QCamera::LockStatus,QCamera::LockChangeReason)))){
+			qWarning()<<"ERROR: could not connect";
+		}
+		ui->captureWidget->setTabEnabled(0, (camera->isCaptureModeSupported(QCamera::CaptureStillImage)));
+		ui->captureWidget->setTabEnabled(1, (camera->isCaptureModeSupported(QCamera::CaptureVideo)));
+		updateCaptureMode();
+		camera->start();
 	}
-	if(!connect(imageCapture, SIGNAL(imageCaptured(int,QImage)), this, SLOT(processCapturedImage(int,QImage)))){
-		qWarning()<<"ERROR: could not connect";
-	}
-	if(!connect(imageCapture, SIGNAL(imageSaved(int,QString)), this, SLOT(imageSaved(int,QString)))){
-		qWarning()<<"ERROR: could not connect";
-	}
-	if(!connect(imageCapture, SIGNAL(error(int,QCameraImageCapture::Error,QString)), this, SLOT(displayCaptureError(int,QCameraImageCapture::Error,QString)))){
-		qWarning()<<"ERROR: could not connect";
-	}
-	if(!connect(camera, SIGNAL(lockStatusChanged(QCamera::LockStatus,QCamera::LockChangeReason)), this, SLOT(updateLockStatus(QCamera::LockStatus,QCamera::LockChangeReason)))){
-		qWarning()<<"ERROR: could not connect";
-	}
-	ui->captureWidget->setTabEnabled(0, (camera->isCaptureModeSupported(QCamera::CaptureStillImage)));
-	ui->captureWidget->setTabEnabled(1, (camera->isCaptureModeSupported(QCamera::CaptureVideo)));
-	updateCaptureMode();
-	camera->start();
 }
 
 void Camera::keyPressEvent(QKeyEvent * event)
@@ -431,7 +456,58 @@ void Camera::on_pushButtonSettings_clicked()
 }
 
 
-
 void Camera::detectBarcodes(const QVideoFrame &frame){
-	qDebug()<<"GOT FRAME "<<frame;
+	//qDebug()<<"GOT FRAME "<<frame;
+	if(0==zbar){
+		zbar=new ZBarScanner;
+	}
+	if(0!=zbar){
+		zbar->scan(frame);
+	}
 }
+
+
+
+void Camera::onDevChangeTimer(){
+	QList<QCameraInfo>  cams=QCameraInfo::availableCameras();
+	const int l=cams.size();
+	//qDebug()<<"CAMS FOUND ON POLL: "<<l;
+	QString summary="";
+	foreach (const QCameraInfo &cameraInfo, cams) {
+		//qDebug()<<"CAM: "<<cameraInfo.description() << cameraInfo.deviceName();
+		summary+=cameraInfo.description()+cameraInfo.deviceName();
+	}
+	const QString camListHashNew=utility::toHash(summary);
+	if(camListHashNew!=camListHash){
+		camListHash=camListHashNew;
+		if(0!=videoDevicesGroup){
+			videoDevicesGroup->deleteLater();
+			videoDevicesGroup=0;
+		}
+		if(0==videoDevicesGroup){
+			videoDevicesGroup = new QActionGroup(this);
+			videoDevicesGroup->setExclusive(true);
+			if(!connect(videoDevicesGroup, SIGNAL(triggered(QAction*)), SLOT(updateCameraDevice(QAction*)))){
+				qWarning()<<"ERROR: Could not connect";
+			}
+			if(!connect(ui->captureWidget, SIGNAL(currentChanged(int)), SLOT(updateCaptureMode()))){
+				qWarning()<<"ERROR: Could not connect";
+			}
+			ui->pushButtonToggleCamera->setChecked(true);
+			const QCameraInfo &def=QCameraInfo::defaultCamera();
+			const QCameraInfo last=0!=camera?cameraInfo:def;
+			foreach (const QCameraInfo &ci, cams) {
+				QAction *videoDeviceAction = new QAction(cameraInfo.description(), videoDevicesGroup);
+				videoDeviceAction->setCheckable(true);
+				videoDeviceAction->setData(QVariant::fromValue(cameraInfo));
+				if (ci == last){
+					videoDeviceAction->setChecked(true);
+				}
+				ui->listWidget->addAction(videoDeviceAction);
+			}
+			setCamera(last);
+		}
+		emit cameraDevicesChanged();
+	}
+}
+

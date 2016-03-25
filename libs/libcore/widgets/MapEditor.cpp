@@ -66,7 +66,7 @@ void MapEditor::prepareMap(){
 void MapEditor::homeMap() {
 	qmapcontrol::MapControl *mc=ui->widgetMap;
 	if(0!=mc){
-		qDebug()<<"HOME";
+		//qDebug()<<"HOME";
 		QList<QPointF> londalen;
 		londalen <<QPointF(5.452844, 60.385883);
 		londalen <<QPointF(5.457945, 60.380353);

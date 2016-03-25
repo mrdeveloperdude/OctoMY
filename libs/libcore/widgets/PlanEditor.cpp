@@ -72,9 +72,7 @@ int CodeEditor::lineNumberAreaWidth(){
 		max /= 10;
 		++digits;
 	}
-
 	int space = 3 + fontMetrics().width(QLatin1Char('9')) * digits;
-
 	return space;
 }
 
@@ -218,7 +216,9 @@ void CodeEditor::setCompleter(QCompleter *c){
 	m_completer->setWidget(this);
 	m_completer->setCompletionMode(QCompleter::PopupCompletion);
 	m_completer->setCaseSensitivity(Qt::CaseInsensitive);
-	QObject::connect(m_completer, SIGNAL(activated(QString)), this, SLOT(insertCompletion(QString)));
+	if(!connect(m_completer, SIGNAL(activated(QString)), this, SLOT(insertCompletion(QString)))){
+		qWarning()<<"ERROR: could not connect";
+	}
 }
 
 
@@ -255,6 +255,7 @@ void CodeEditor::focusInEvent(QFocusEvent *e){
 
 void CodeEditor::keyPressEvent(QKeyEvent *e){
 	if (0!=m_completer && m_completer->popup()->isVisible()) {
+		qDebug()<<"completer visible, passing along key: "<<e->key();
 		// The following keys are forwarded by the completer to the widget
 		switch (e->key()) {
 			case Qt::Key_Enter:
@@ -285,11 +286,13 @@ void CodeEditor::keyPressEvent(QKeyEvent *e){
 
 	bool isShortcut = ((e->modifiers() & Qt::ControlModifier) && e->key() == Qt::Key_Space); // CTRL+Space
 	if (!m_completer || !isShortcut){ // do not process the shortcut when we have a completer
+		qDebug()<<"no";
 		QPlainTextEdit::keyPressEvent(e);
 	}
 
 	const bool ctrlOrShift = e->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier);
 	if (!m_completer || (ctrlOrShift && e->text().isEmpty())){
+		qDebug()<<"c|s";
 		return;
 	}
 
@@ -298,14 +301,17 @@ void CodeEditor::keyPressEvent(QKeyEvent *e){
 	QString completionPrefix = textUnderCursor();
 
 	if (!isShortcut && (hasModifier || e->text().isEmpty()|| completionPrefix.length() < 3 || eow.contains(e->text().right(1)))) {
+		qDebug()<<"close @ eow";
 		m_completer->popup()->hide();
 		return;
 	}
 
 	if (completionPrefix != m_completer->completionPrefix()) {
+		qDebug()<<"popup @ eow";
 		m_completer->setCompletionPrefix(completionPrefix);
 		m_completer->popup()->setCurrentIndex(m_completer->completionModel()->index(0, 0));
 	}
+	qDebug()<<"popup @ eow 2";
 	QRect cr = cursorRect();
 	cr.setWidth(m_completer->popup()->sizeHintForColumn(0) + m_completer->popup()->verticalScrollBar()->sizeHint().width());
 	m_completer->complete(cr); // popup it up!
@@ -322,6 +328,7 @@ PlanEditor::PlanEditor(QWidget *parent)
 {
 	ui->setupUi(this);
 	highlighter = new PlanHighlighter(ui->plainTextEditPlan->document());
+	ui->plainTextEditPlan->setFocus();
 }
 
 PlanEditor::~PlanEditor(){

@@ -144,13 +144,13 @@ void SerialSettings::fillPortsInfo(){
 	QString description;
 	QString manufacturer;
 	QString serialNumber;
-	qDebug()<<"SERIAL DEVICES FOUND:";
+	//qDebug()<<"SERIAL DEVICES FOUND:";
 	foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
 		QStringList list;
 		description = info.description();
 		manufacturer = info.manufacturer();
 		serialNumber = info.serialNumber();
-		qDebug()<<" + "<<info.portName();
+		//qDebug()<<" + "<<info.portName();
 		list << info.portName()
 			 << (!description.isEmpty() ? description : blankString)
 			 << (!manufacturer.isEmpty() ? manufacturer : blankString)

@@ -16,9 +16,9 @@ class GenerateKeyRunnable : public QRunnable{
 		}
 	public:
 		void run() {
-			qDebug() << "Started keystore bootstrap @ " << QThread::currentThread();
+			//qDebug() << "Started keystore bootstrap @ " << QThread::currentThread();
 			ks.bootstrap();
-			qDebug() << "Ended keystore bootstrap @ " << QThread::currentThread();
+			//qDebug() << "Ended keystore bootstrap @ " << QThread::currentThread();
 		}
 };
 
@@ -44,7 +44,7 @@ KeyStore::~KeyStore(){
 void KeyStore::bootstrap(){
 	QFile f(fn);
 	if(!f.exists()){
-		qDebug()<<"KEYSTORE: no keystore file found, generating local keypair and saving";
+		//qDebug()<<"KEYSTORE: no keystore file found, generating local keypair and saving";
 		local_pki.reset();
 		local_pki.generateKeyPair(keyBits);
 		save();
@@ -54,7 +54,7 @@ void KeyStore::bootstrap(){
 
 
 void KeyStore::load(){
-	qDebug()<<"KEYSTORE: Loading from file";
+	//qDebug()<<"KEYSTORE: Loading from file";
 	QJsonParseError jsonError;
 	QJsonDocument doc = QJsonDocument::fromJson(utility::fileToByteArray(fn), &jsonError);
 	if (jsonError.error != 0){
@@ -78,7 +78,7 @@ void KeyStore::load(){
 }
 
 void KeyStore::save(){
-	qDebug()<<"KEYSTORE: Saving to file";
+	//qDebug()<<"KEYSTORE: Saving to file";
 	QVariantMap map;
 	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();
 	map["localPrivateKey"]=local_pki.getPEMKey();

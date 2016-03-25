@@ -18,20 +18,6 @@ FLEXSOURCES = octomy.l
 #       Please see extra comments inside file for more details.
 QLALRSOURCES = octomy.g
 
-# All static source files
-# NOTE: Please don't specify the intermediate sources here. They will be added
-#       automatically by variable_out mechanism of extra qmake_extra_compilers
-
-#SOURCES += \
-	#octomy_table.cpp \
-	#octomy_lexer.cpp \
-	#octomy_parser.cpp \
-
-
-#HEADERS += \
-	#octomy_table_p.h \
-	#octomy_lexer.h \
-	#octomy_parser.hpp \
 
 include(flex.pri)
 include(qlalr.pri)

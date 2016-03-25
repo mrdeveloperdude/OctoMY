@@ -10,11 +10,10 @@
 
 -- This gives filenames to the parser itself
 %decl octomy_parser.hpp
+
 %impl octomy_parser.cpp
 
-
 %token TOK_NUMBER
-
 %token TOK_DESCRIPTOR
 %token TOK_PLAN
 %token TOK_PUPPET
@@ -81,27 +80,147 @@ class OctomyParser{
 
 		OctomyLexer lexer;
 		octomy_table table;
-		int stack[10];
+
+		union Value {
+				int i;
+				unsigned u;
+				unsigned long ul;
+				unsigned long long ull;
+				long l;
+				double d;
+				float f;
+				const QString *s;
+		};
+
+		inline void reallocateStack(){
+			if (! stack_size)
+				stack_size = 128;
+			else
+				stack_size <<= 1;
+
+			sym_stack = reinterpret_cast<Value*> (realloc(sym_stack, stack_size * sizeof(Value)));
+			state_stack = reinterpret_cast<int*> (realloc(state_stack, stack_size * sizeof(int)));
+		}
+
+		inline Value &sym(int index)
+		{ return sym_stack [tos + index - 1]; }
+
+
+		bool isTypename(const QString *s) const
+		{
+			return types.contains(s);
+		}
+
+		inline const QString *intern(const QString &s)
+		{ return &*string_repository.insert(s); }
+
+
+		int tos;
+		int stack_size;
+		Value *sym_stack;
+		int *state_stack;
+		Value yylval;
+		QSet<QString> string_repository;
+		QSet<const QString*> types;
+
+		struct /*Context*/ {
+				int line;
+				const QString *function_name;
+				QString fileName;
+
+				void init()
+				{
+					line = 1;
+					function_name = 0;
+					fileName.clear();
+				}
+		} context;
+
+
+
 	public:
-		OctomyParser(){
+		OctomyParser()
+			: tos(0)
+			, stack_size(0)
+			, sym_stack(0)
+			, state_stack(0)
+		{
 			qDebug()<<"PARSER CTOR";
-			for(int i=0;i<10;++i){
-				stack[i]=2;
+		}
+
+		~OctomyParser(){
+			if (stack_size) {
+				free(sym_stack);
+				free(state_stack);
 			}
 		}
 
 
 		bool parse(QString s){
-			qDebug()<<"GPARSER PARSE";
+			qDebug()<<"PARSER PARSE";
 			bool status=lexer.init(s.toStdString().c_str());
-			int t=0;
-			do{
-				t=nextToken();
-				consumeRule(t);
-			}while(t>0);
+			const int INITIAL_STATE = 0;
+			int yytoken = -1;
+			reallocateStack();
+			context.init();
+			tos = 0;
+			state_stack[++tos] = INITIAL_STATE;
+			while (true){
+				if (yytoken == -1 && - table.TERMINAL_COUNT != table.action_index [state_stack [tos]]){
+					yytoken = nextToken();
+				}
+
+				int act = table.t_action (state_stack [tos], yytoken);
+
+				if (act == table.ACCEPT_STATE) {
+					return true;
+				}
+				else if (act > 0) {
+					if (++tos == stack_size){
+						reallocateStack();
+					}
+					sym_stack [tos] = yylval;
+					state_stack [tos] = act;
+					yytoken = -1;
+				}
+				else if (act < 0) {
+					int r = - act - 1;
+					int ridx = table.rule_index [r];
+					qDebug()<< "*** reduce using rule %d %s ::=" << (r + 1) << table.spell[table.rule_info [ridx]];
+					++ridx;
+					for (int i = ridx; i < ridx + table.rhs [r]; ++i) {
+						int symbol = table.rule_info [i];
+						if (const char *name = table.spell [symbol]){
+							printf (" %s", name);
+						}
+						else{
+							printf (" #%d", symbol);
+						}
+					}
+					printf ("\n");
+
+					tos -= table.rhs [r];
+					act = state_stack [tos++];
+
+
+
+					state_stack [tos] = table.nt_action (act, table.lhs [r] - table.TERMINAL_COUNT);
+				}
+
+				else
+				{
+					// ### ERROR RECOVERY HERE
+					break;
+				}
+			}
+
+			//fprintf (stderr, "%s:%d: Syntax Error\n", qPrintable(context.fileName), context.line);
+			qWarning()<<"SYNTAX ERROR: "<< qPrintable(context.fileName) << ":"<< context.line <<"\n";
+
+			return false;
+
 			status &=lexer.deinit();
 			return status;
-
 		}
 
 		QString toString(){
@@ -128,16 +247,6 @@ class OctomyParser{
 
 		void consumeRule(int rule);
 
-		int &sym(int index){
-			qDebug()<<"PARSER SYM";
-			if(index<1){
-				index=1;
-			}
-			else if(index>10){
-				index=10;
-			}
-			return stack[index-1];
-		}
 };
 
 
@@ -177,33 +286,90 @@ void OctomyParser::consumeRule(int ruleno){
 
 	switch (ruleno) {
 		./
-Plan::= TOK_PLAN TOK_LBRACE PlanParts TOK_RBRACE;
+		Plan::= TOK_PLAN TOK_LBRACE PlanParts TOK_RBRACE;
 		/.
 		case $rule_number:
-			qDebug() << "Plan:" << sym(1) << sym(2) << sym(3);
+			qDebug() << "Plan";
 			break;
 			./
 
-PlanParts::= PlanParts Puppet;
-PlanParts::= ;
+			PlanParts::= PlanParts Agent;
+			PlanParts::= PlanParts Hub;
+			PlanParts::= PlanParts Remote;
+			PlanParts::= ;
 
-Puppet::= TOK_PUPPET TOK_LBRACE PuppetParts TOK_RBRACE;
 
-PuppetParts::= PuppetParts Member;
-PuppetParts::= ;
+			Agent::= TOK_AGENT TOK_LBRACE AgentParts TOK_RBRACE;
+			/.
+		case $rule_number:
+			qDebug() << "Agent";
+			break;
+			./
 
-Member::= TOK_MEMBER TOK_LBRACE MemberParts TOK_RBRACE;
 
-MemberParts::= MemberParts Var;
-MemberParts::= ;
+			AgentParts::= AgentParts Puppet;
+			AgentParts::= ;
 
-Var::= TOK_IDENTIFIER TOK_ASSIGN TOK_STRING;
-Var::= TOK_IDENTIFIER TOK_ASSIGN TOK_NUMBER;
-Var::= TOK_IDENTIFIER TOK_ASSIGN Bool;
+			Hub::= TOK_HUB TOK_LBRACE HubParts TOK_RBRACE;
+			/.
+		case $rule_number:
+			qDebug() << "Hub";
+			break;
+			./
 
-Bool::= TOK_TRUE;
-Bool::= TOK_FALSE;
 
+			HubParts::= ;
+
+			Remote::= TOK_REMOTE TOK_LBRACE RemoteParts TOK_RBRACE;
+			/.
+		case $rule_number:
+			qDebug() << "Remote";
+			break;
+			./
+
+			RemoteParts::= ;
+
+
+			Puppet::= TOK_PUPPET TOK_LBRACE PuppetParts TOK_RBRACE;
+			/.
+		case $rule_number:
+			qDebug() << "Puppet";
+			break;
+			./
+
+			PuppetParts::= PuppetParts Member;
+			PuppetParts::= ;
+
+			Member::= TOK_MEMBER TOK_LBRACE MemberParts TOK_RBRACE;
+			/.
+		case $rule_number:
+			qDebug() << "Member";
+			break;
+			./
+
+
+			MemberParts::= MemberParts Var;
+			MemberParts::= ;
+
+			Var::= TOK_IDENTIFIER TOK_ASSIGN TOK_STRING;
+			Var::= TOK_IDENTIFIER TOK_ASSIGN TOK_NUMBER;
+			Var::= TOK_IDENTIFIER TOK_ASSIGN Bool;
+
+			/.
+		case $rule_number:
+			qDebug() << "Var";
+			break;
+			./
+
+
+			Bool::= TOK_TRUE;
+			Bool::= TOK_FALSE;
+
+			/.
+		case $rule_number:
+			qDebug() << "Bool";
+			break;
+			./
 
 
 			/.

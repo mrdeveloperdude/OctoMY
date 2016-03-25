@@ -8,7 +8,7 @@ FlowControl::FlowControl():
   , good_conditions_time(0.0f)
   , penalty_reduction_accumulator(0.0f)
 {
-	qDebug()<<"Flow control initialized\n";
+	//qDebug()<<"Flow control initialized\n";
 }
 
 void FlowControl::reset()	{
