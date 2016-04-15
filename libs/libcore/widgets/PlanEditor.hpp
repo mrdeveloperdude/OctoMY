@@ -1,8 +1,15 @@
 #ifndef PLANEDITOR_HPP
 #define PLANEDITOR_HPP
 
+
+
+#include "../../libs/libparser/octomy_parser.hpp"
+
+
+
 #include <QWidget>
 #include <QPlainTextEdit>
+#include <QTimer>
 
 class QPaintEvent;
 class QResizeEvent;
@@ -17,6 +24,10 @@ class QAbstractItemModel;
 class CodeEditor : public QPlainTextEdit
 {
 		Q_OBJECT
+	private:
+		QWidget *lineNumberArea;
+		QCompleter *m_completer;
+		QVector<ParseError> errors;
 
 	public:
 		CodeEditor(QWidget *parent = 0);
@@ -35,6 +46,7 @@ class CodeEditor : public QPlainTextEdit
 		void setCompleter(QCompleter *completer);
 		QCompleter *completer() const;
 
+		void setErrors(QVector<ParseError> errors);
 
 	protected:
 		void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
@@ -46,14 +58,10 @@ class CodeEditor : public QPlainTextEdit
 		void updateLineNumberAreaWidth(int newBlockCount);
 		void highlightCurrentLine();
 		void updateLineNumberArea(const QRect &, int);
-
-	private:
-		QWidget *lineNumberArea;
-		QCompleter *m_completer;
 };
 
 
-
+///////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -76,6 +84,10 @@ class LineNumberArea : public QWidget{
 		CodeEditor *codeEditor;
 };
 
+///////////////////////////////////////////////////////////////////////////////
+
+
+
 class PlanHighlighter;
 
 namespace Ui {
@@ -89,17 +101,30 @@ class PlanEditor : public QWidget{
 		Ui::PlanEditor *ui;
 		PlanHighlighter *highlighter;
 		QString plan_fn;
+		QTimer saveTimer;
+
 	public:
 		explicit PlanEditor(QWidget *parent = 0);
 		virtual ~PlanEditor();
 
 		void configure(QString plan_fn);
 
-	public slots:
+		void setText(QString);
+		void appendText(QString);
 
+	protected:
+		void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
+	public slots:
+		void onTextChanged();
+		void save();
+		void tidy();
+		void enableSaveButton();
 		void on_toolButtonTidy_clicked();
 		void on_toolButtonParse_clicked();
 
+	private slots:
+		void on_toolButtonSave_clicked();
+		void on_pushButtonTest_clicked();
 };
 
 #endif // PLANEDITOR_HPP

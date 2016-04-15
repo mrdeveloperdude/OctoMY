@@ -5,6 +5,7 @@
 #include "comms/CommsChannel.hpp"
 #include "utility/Utility.hpp"
 #include "hw/actuators/HexyTool.hpp"
+#include "hw/BluetoothList.hpp"
 
 #include <QDebug>
 #include <QAccelerometerReading>
@@ -23,11 +24,18 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	, hexy(0)
 {
 	ui->setupUi(this);
+	//Set our custom identicon as window icon
+	Identicon id(QStringLiteral(":/icons/identicon.svg"),0);
+	QIcon icon;//=windowIcon();
+	icon.addPixmap(id.pixmap());
+	//	icon.addFile(QStringLiteral(":/icons/agent.svg"), QSize(), QIcon::Normal, QIcon::Off);
+	setWindowIcon(icon);
+
 	ui->widgetConnection->configure("agent");
 	if(!connect(ui->widgetConnection,SIGNAL(connectStateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState)),WWCONTYPE)){
 		qWarning()<<"ERROR: could not connect";
 	}
-	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+	ui->stackedWidget->setCurrentWidget(ui->pageConnect);
 	if(0!=agent){
 		ui->labelLocal->setText("WAITING FOR LOCAL");
 		ui->labelHub->setText("WAITING FOR HUB");
@@ -49,6 +57,8 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	QPalette p=ui->logScroll->palette();
 	p.setColor(QPalette::Base, QColor(0, 0, 0, 64));
 	ui->logScroll->setPalette(p);
+
+	ui->widgetPlanEditor->configure("agent.plan");
 
 #ifdef Q_OS_ANDROID
 	showFullScreen();
@@ -180,9 +190,29 @@ void AgentWindow::appendLog(const QString& text){
 
 void AgentWindow::on_pushButtonCamera_clicked(){
 	ui->stackedWidget->setCurrentWidget(ui->pageCamera);
-
 }
 
 void AgentWindow::on_pushButtonBack_clicked(){
+	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+}
+
+void AgentWindow::on_pushButtonPair_clicked()
+{
+	ui->stackedWidget->setCurrentWidget(ui->pagePair);
+}
+
+void AgentWindow::on_pushButtonPlan_clicked()
+{
+	if(0!=agent){
+		BluetoothList bl;
+		ui->widgetPlanEditor->setText(bl.toSpecStanzas());
+		ui->widgetPlanEditor->appendText(agent->getCameras().toSpecStanzas());
+		ui->widgetPlanEditor->appendText(agent->getSensorInput().toSpecStanzas());
+	}
+	ui->stackedWidget->setCurrentWidget(ui->pagePlan);
+}
+
+void AgentWindow::on_pushButtonTestConnect_clicked()
+{
 	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 }

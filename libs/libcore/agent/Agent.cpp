@@ -77,6 +77,10 @@ void Agent::onClientAdded(Client *c){
 	qDebug()<<"Agent: Client added: "<<c->getHash();
 }
 
+void Agent::onConnectionStatusChanged(bool){
+
+}
+
 void Agent::onPositionUpdated(const QGeoPositionInfo &info){
 	statusMessage.gps=info.coordinate();
 	sendStatus();
@@ -120,20 +124,10 @@ void Agent::sendStatus(){
 }
 
 
+SensorInput &Agent::getSensorInput(){
+	return sensors;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+CameraList &Agent::getCameras(){
+	return cameras;
+}

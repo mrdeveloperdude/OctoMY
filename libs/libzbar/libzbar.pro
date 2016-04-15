@@ -4,7 +4,7 @@ CONFIG +=	staticlib
 
 include($$TOP_PWD/common.pri)
 
-INCLUDEPATH += .
+INCLUDEPATH += ./
 
 HEADERS	+= \
 	c++/Decoder.h \
@@ -48,7 +48,7 @@ HEADERS	+= \
 	window.h \
 	zbar.h \
 	ZBarScanner.hpp \
-
+    QtIconv.h
 
 
 SOURCES	+= \
@@ -81,4 +81,9 @@ SOURCES	+= \
 	window.c \
 	window/window_null.c \
 	ZBarScanner.cpp \
-    zimage.c
+	zimage.c \
+    QtIconv.cpp
+
+
+# There is no support for iconv in Android, so we brin our own
+

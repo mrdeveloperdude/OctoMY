@@ -74,6 +74,10 @@ class SerialSettings : public QWidget{
 
 		Settings settings() const;
 
+	public:
+
+		QString toSpecStanzas(QString space);
+
 	private slots:
 		void showPortInfo(int idx);
 		void apply();

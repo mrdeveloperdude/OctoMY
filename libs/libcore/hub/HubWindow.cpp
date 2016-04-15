@@ -96,7 +96,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 	ui->hexEditor->setData(hexdata);
 
-	ui->tabWidget->setCurrentIndex(0);
+	ui->tabWidget->setCurrentWidget(ui->tabPlan);
 
 	appendLog("SETTING UP PLAN EDITOR");
 	ui->widgetPlanEditor->configure("hub.plan");
@@ -272,7 +272,7 @@ void HubWindow::onRemoteHostLookupComplete(QHostInfo hi){
 		}
 		else{
 			const int l=ui->horizontalSliderSendCount->value();
-			const int sz=(500*ui->horizontalSliderSendSize->value())/100;
+			const int sz=int(500*ui->horizontalSliderSendSize->value())/100;
 			for(int i=0;i<l;++i){
 				QByteArray ba=("PING "+QString::number(i)+"/"+QString::number(l)).toUtf8()+" ";
 				const int sz2=sz-ba.size();

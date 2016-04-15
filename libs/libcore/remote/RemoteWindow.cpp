@@ -243,8 +243,11 @@ void RemoteWindow::on_pushButtonConfirmQuit_clicked(){
 
 void RemoteWindow::on_pushButtonTest_clicked(){
 	appendLog("TEST BUTTON CLICKED");
+	/*
 	notifyAndroid("TESTING 123");
 	toastAndroid("TOASTING 123");
+	*/
+
 }
 
 void RemoteWindow::updateControlLevel(){
@@ -278,5 +281,15 @@ void RemoteWindow::on_pushButtonControl_clicked(){
 }
 
 void RemoteWindow::on_pushButtonStatus_clicked(){
+	ui->stackedWidgetScreen->setCurrentWidget(ui->pageStatus);
+}
+
+void RemoteWindow::on_pushButtonPair_clicked()
+{
+	ui->stackedWidgetScreen->setCurrentWidget(ui->pagePair);
+}
+
+void RemoteWindow::on_pushButtonBack_clicked()
+{
 	ui->stackedWidgetScreen->setCurrentWidget(ui->pageStatus);
 }

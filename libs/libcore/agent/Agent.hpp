@@ -5,9 +5,11 @@
 #include "comms/CommsChannel.hpp"
 #include "comms/messages/SensorsMessage.hpp"
 #include "widgets/TryToggle.hpp"
+#include "camera/CameraList.hpp"
 
 #include <QObject>
 #include <QCommandLineParser>
+
 
 
 class Agent : public QObject{
@@ -22,6 +24,7 @@ class Agent : public QObject{
 
 		QHostAddress hubAddress;
 		quint16 hubPort;
+		CameraList cameras;
 
 
 	public:
@@ -33,6 +36,9 @@ class Agent : public QObject{
 		void unHookSignals(QObject &o);
 		void sendStatus();
 
+		SensorInput &getSensorInput();
+		CameraList &getCameras();
+
 	public slots:
 		void onConnectionStatusChanged(TryToggleState);
 
@@ -41,6 +47,7 @@ class Agent : public QObject{
 		void onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16);
 		void onError(QString);
 		void onClientAdded(Client *);
+		void onConnectionStatusChanged(bool);
 
 
 	private slots:

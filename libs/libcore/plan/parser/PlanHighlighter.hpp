@@ -7,19 +7,15 @@
 
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
+#include <QVector>
+
+
 
 class QTextDocument;
 
 class PlanHighlighter : public QSyntaxHighlighter
 {
 		Q_OBJECT
-
-	public:
-		PlanHighlighter(QTextDocument *parent = 0);
-
-	protected:
-		void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
-
 	private:
 		struct HighlightingRule{
 				QRegExp pattern;
@@ -28,12 +24,11 @@ class PlanHighlighter : public QSyntaxHighlighter
 					: pattern(p)
 					, format(f)
 				{
-
 				}
 				HighlightingRule() {
-
 				}
 		};
+	private:
 		QVector<HighlightingRule> highlightingRules;
 
 		QRegExp commentStartExpression;
@@ -50,6 +45,16 @@ class PlanHighlighter : public QSyntaxHighlighter
 		QTextCharFormat multiLineCommentFormat;
 		QTextCharFormat stringFormat;
 		QTextCharFormat functionFormat;
+
+	public:
+		PlanHighlighter(QTextDocument *parent = 0);
+
+
+	protected:
+		void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
+
+
+
 };
 
 #endif // PLANHIGHLIGHTER_HPP

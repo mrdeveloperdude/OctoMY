@@ -807,4 +807,87 @@ namespace utility{
 	}
 
 
+
+
+	QString toSoundex(QString in){
+		QString out="";
+		const int l=in.size();
+		if(l<1){
+			return "0000";
+		}
+		in=in.toLower();
+		out+=in[0];
+		QChar lastChar='0';
+		int ct=0;
+		for(int i=1;i<l;++i){
+			QCharRef ch=in[i];
+			if(lastChar!=ch){
+				switch(ch.toLatin1()){
+					case('b'):
+					case('f'):
+					case('p'):
+					case('v'):
+						{out+='1'; ct++;}break;
+					case('c'):
+					case('g'):
+					case('j'):
+					case('k'):
+					case('q'):
+					case('s'):
+					case('x'):
+					case('z'):
+						{out+='2'; ct++;}break;
+					case('d'):
+					case('t'):
+						{out+='3'; ct++;}break;
+					case('l'):
+						{out+='4'; ct++;}break;
+					case('m'):
+					case('n'):
+						{out+='4'; ct++;}break;
+					case('r'):
+						{out+='5'; ct++;}break;
+				}
+				if(ct==4){
+					break;
+				}
+				lastChar=ch;
+			}
+			if(out.size()<4){
+				out+=QString("0").repeated(4-out.size());
+			}
+			return out;
+		}
+	}
+
+
+	int levenshtein_distance(const QString &s1, const QString  &s2)
+	{
+		int s1len = s1.size();
+		int s2len = s2.size();
+
+		auto column_start = (decltype(s1len))1;
+
+		auto column = new decltype(s1len)[s1len + 1];
+		std::iota(column + column_start, column + s1len + 1, column_start);
+
+		for (auto x = column_start; x <= s2len; x++) {
+			column[0] = x;
+			auto last_diagonal = x - column_start;
+			for (auto y = column_start; y <= s1len; y++) {
+				auto old_diagonal = column[y];
+				auto possibilities = {
+					column[y] + 1,
+					column[y - 1] + 1,
+					last_diagonal + (s1[y - 1] == s2[x - 1]? 0 : 1)
+				};
+				column[y] = std::min(possibilities);
+				last_diagonal = old_diagonal;
+			}
+		}
+		auto result = column[s1len];
+		delete[] column;
+		return result;
+	}
+
 }

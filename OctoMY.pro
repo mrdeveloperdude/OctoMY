@@ -1,12 +1,26 @@
 TEMPLATE = subdirs
 
+include(common.pri)
+
 SUBDIRS += \
 	libs \
 	hub \
 	agent \
 	remote \
+
+
+contains(DEFINES, USE_TEST){
+SUBDIRS += \
 	test \
+}
+
+
+contains(DEFINES, USE_DOCS){
+SUBDIRS += \
 	doc \
+}
+
+
 
 # Dependency stuff adapted from https://vilimpoc.org/blog/2014/02/21/qmake-subdirs-project-automatic-dependencies/
 libs.subdir=		libs

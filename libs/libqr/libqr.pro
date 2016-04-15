@@ -4,7 +4,7 @@ CONFIG +=	staticlib
 
 include($$TOP_PWD/common.pri)
 
-INCLUDEPATH += .
+INCLUDEPATH += ./
 
 HEADERS	+= \
 	bitstream.h \

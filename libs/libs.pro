@@ -1,4 +1,4 @@
-				  TEMPLATE = subdirs
+ TEMPLATE = subdirs
 
 SUBDIRS += \
 	libcore \
@@ -7,6 +7,7 @@ SUBDIRS += \
 	libmap \
 	libqr \
 	libzbar \
+	libqhttp \
 	liboctostyle \
 
 # Dependency stuff adapted from https://vilimpoc.org/blog/2014/02/21/qmake-subdirs-project-automatic-dependencies/
@@ -16,8 +17,8 @@ libparser.subdir=		libparser
 libmap.subdir=			libmap
 libqr.subdir=			libqr
 libzbar.subdir=			libzbar
+libqhttp.subdir=		libqhttp
 liboctostyle.subdir=	libstyle
-
 
 
 include($$TOP_PWD/common.pri)

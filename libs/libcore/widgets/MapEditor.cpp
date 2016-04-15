@@ -8,11 +8,26 @@
 #include "../libmap/LineString.hpp"
 
 
-MapEditor::MapEditor(QWidget *parent) :
-	QWidget(parent),
-	ui(new Ui::MapEditor)
+
+#include <QGeoPositionInfoSource>
+
+MapEditor::MapEditor(QWidget *parent)
+	: QWidget(parent)
+	, ui(new Ui::MapEditor)
+	, gps(QGeoPositionInfoSource::createDefaultSource(this))
 {
 	ui->setupUi(this);
+	if (0 != gps) {
+		gps->setPreferredPositioningMethods(QGeoPositionInfoSource::SatellitePositioningMethods);
+		if(0!=gps){
+			if(!connect(gps, SIGNAL(positionUpdated(QGeoPositionInfo)),this,SLOT(onPositionUpdated(QGeoPositionInfo)))){
+				qWarning()<<"ERROR: Could not connect";
+			}
+		}
+	}
+	else{
+		ui->toolButtonCenter->setEnabled(false);
+	}
 	prepareMap();
 }
 
@@ -75,6 +90,34 @@ void MapEditor::homeMap() {
 }
 
 
+void MapEditor::onPositionUpdated(QGeoPositionInfo pi){
+	if(pi.isValid() ){
+		QGeoCoordinate c=pi.coordinate();
+		if(c.isValid()){
+			qmapcontrol::MapControl *mc=ui->widgetMap;
+			if(0!=mc){
+				QPointF p(c.longitude(), c.latitude());
+				//qDebug()<<"CENTER";
+				QList<QPointF> center;
+				center <<p;
+				center <<p;
+				mc->setViewAndZoomIn ( center) ;
+			}
+		}
+	}
+}
+
 void MapEditor::on_toolButtonHome_clicked(){
+	ui->toolButtonCenter->setChecked(false);
 	homeMap();
+}
+
+void MapEditor::on_toolButtonCenter_toggled(bool checked)
+{
+	if(checked){
+		gps->startUpdates();
+	}
+	else{
+		gps->stopUpdates();
+	}
 }

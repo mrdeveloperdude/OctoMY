@@ -816,6 +816,7 @@ static void qrencode(const unsigned char *intext, int length, const char *outfil
 		exit(EXIT_FAILURE);
 	}
 	switch(image_type) {
+		/*
 		case PNG_TYPE:
 			writePNG(qrcode, outfile);
 			break;
@@ -825,6 +826,7 @@ static void qrencode(const unsigned char *intext, int length, const char *outfil
 		case SVG_TYPE:
 			writeSVG(qrcode, outfile);
 			break;
+			*/
 		case ANSI_TYPE:
 		case ANSI256_TYPE:
 			writeANSI(qrcode, outfile);

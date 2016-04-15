@@ -1097,6 +1097,30 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
+   <class>IdenticonWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/IdenticonWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Camera</class>
+   <extends>QWidget</extends>
+   <header>camera/Camera.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MapEditor</class>
+   <extends>QWidget</extends>
+   <header>widgets/MapEditor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QRWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/QRWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>TryToggle</class>
    <extends>QWidget</extends>
    <header>widgets/TryToggle.hpp</header>
@@ -1106,12 +1130,6 @@
    <class>TextEntry</class>
    <extends>QLineEdit</extends>
    <header>widgets/TextEntry.hpp</header>
-  </customwidget>
-  <customwidget>
-   <class>IdenticonWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/IdenticonWidget.hpp</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>LocalAddressEntry</class>
@@ -1149,27 +1167,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>Camera</class>
-   <extends>QWidget</extends>
-   <header>camera/Camera.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>QRWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/QRWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>PlanEditor</class>
    <extends>QWidget</extends>
    <header>widgets/PlanEditor.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>MapEditor</class>
-   <extends>QWidget</extends>
-   <header>widgets/MapEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

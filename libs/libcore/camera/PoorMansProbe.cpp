@@ -76,6 +76,12 @@ bool PoorMansProbe::present(const QVideoFrame &frame)
 bool PoorMansProbe::setSource(QCamera *source){
 	this->source=source;
 	source->setViewfinder(this);
+	QCameraViewfinderSettings viewfinderSettings;
+	viewfinderSettings.setResolution(640, 480);
+	viewfinderSettings.setMinimumFrameRate(0.0);
+	viewfinderSettings.setMaximumFrameRate(30.0);
+	source->setViewfinderSettings(viewfinderSettings);
+	return true;
 }
 
 

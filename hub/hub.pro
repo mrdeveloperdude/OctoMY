@@ -17,6 +17,26 @@ HEADERS += \
 SOURCES += \
 	HubMain.cpp
 
-message("FROM hub.pro:")
+
+
+
+android {
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+DISTFILES += \
+	$$ANDROID_PACKAGE_SOURCE_DIR/AndroidManifest.xml \
+	$$ANDROID_PACKAGE_SOURCE_DIR/build.gradle \
+	$$ANDROID_PACKAGE_SOURCE_DIR/gradlew \
+	$$ANDROID_PACKAGE_SOURCE_DIR/gradlew.bat \
+	$$ANDROID_PACKAGE_SOURCE_DIR/gradle/wrapper/gradle-wrapper.jar \
+	$$ANDROID_PACKAGE_SOURCE_DIR/gradle/wrapper/gradle-wrapper.properties \
+	$$ANDROID_PACKAGE_SOURCE_DIR/res/values/libs.xml \
+	$$ANDROID_PACKAGE_SOURCE_DIR/src/org/octomy/hub/Hub.java
+
+}
+
+message("FROM hub.pro:" $$ANDROID_PACKAGE_SOURCE_DIR)
 include($$TOP_PWD/status.pri)
+
 

@@ -23,6 +23,7 @@ void QRWidget::setQRData(QString data){
 	if(this->data!=data){
 		dirty=true;
 		this->data=data;
+		this->setToolTip(data);
 		update();
 	}
 }

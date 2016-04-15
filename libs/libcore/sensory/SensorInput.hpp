@@ -14,11 +14,13 @@ class QCompassReading;
 class QAccelerometerReading;
 class QGyroscope;
 class QGyroscopeReading;
+class QSensor;
 
 class SensorInput : public QObject,  public QCompassFilter{
 		Q_OBJECT
 	private:
 
+		QList<QSensor*> m_availableSensors;
 		QGeoPositionInfoSource *source;
 		QAccelerometer *accelerometer;
 		QCompass*compass;
@@ -37,10 +39,16 @@ class SensorInput : public QObject,  public QCompassFilter{
 		void hookSignals(QObject &);
 		void unHookSignals(QObject &);
 
-	public:
+
+		QString toSpecStanzas(QString space="");
+
+	private:
 
 		bool filter(QCompassReading *reading) override;
 
+	private:
+
+		void load();
 
 	private slots:
 

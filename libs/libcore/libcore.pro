@@ -5,7 +5,7 @@ QT +=		serialport
 
 include($$TOP_PWD/common.pri)
 
-INCLUDEPATH += .
+INCLUDEPATH += ./
 
 SOURCES +=\
 	3d/PoseView.cpp \
@@ -123,6 +123,13 @@ SOURCES +=\
 	widgets/SvgWidget.cpp \
 	widgets/TextEntry.cpp \
 	widgets/TryToggle.cpp \
+	widgets/PairingWidget.cpp \
+	security/PortableID.cpp \
+	widgets/WaitingSpinnerWidget.cpp \
+    basic/Iconv.cpp \
+    puppet/FaceWidget.cpp \
+    camera/CameraList.cpp \
+    hw/BluetoothList.cpp
 
 
 
@@ -252,6 +259,13 @@ HEADERS  += \
 	widgets/SvgWidget.hpp \
 	widgets/TextEntry.hpp \
 	widgets/TryToggle.hpp \
+	widgets/PairingWidget.hpp \
+	security/PortableID.hpp \
+	widgets/WaitingSpinnerWidget.hpp \
+    basic/Iconv.hpp \
+    puppet/FaceWidget.hpp \
+    camera/CameraList.hpp \
+    hw/BluetoothList.hpp
 
 
 FORMS    += \
@@ -280,6 +294,7 @@ FORMS    += \
 	ui/TryToggle.ui \
 	widgets/MapEditor.ui \
 	widgets/PlanEditor.ui \
+	widgets/PairingWidget.ui
 
 
 RESOURCES += \

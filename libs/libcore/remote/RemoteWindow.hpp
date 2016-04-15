@@ -74,6 +74,8 @@ class RemoteWindow : public QWidget, public LogDestination{
 		void on_comboBoxControlLevel_currentIndexChanged(int index);
 		void on_pushButtonControl_clicked();
 		void on_pushButtonStatus_clicked();
+		void on_pushButtonPair_clicked();
+		void on_pushButtonBack_clicked();
 };
 
 #endif // REMOTEWINDOW_HPP

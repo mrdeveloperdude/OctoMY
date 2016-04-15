@@ -165,6 +165,23 @@ void SerialSettings::fillPortsInfo(){
 	ui->serialPortInfoListBox->addItem(tr("Custom"));
 }
 
+
+
+QString SerialSettings::toSpecStanzas(QString space){
+	QString out="";
+	foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
+		out+=space+"serial {\n";
+		out+=space+"\ttype=\""+info.description()+"\"\n";
+		out+=space+"\tid=\""+info.serialNumber()+"\"\n";
+		out+=space+"\t// Manufacturer="+info.manufacturer()+" \n";
+		out+=space+"\t// Vendor="+QString::number(info.vendorIdentifier(), 16)+" \n";
+		out+=space+"\t// Location="+info.systemLocation()+" \n";
+		out+=space+"}\n\n";
+	}
+	return out;
+}
+
+
 void SerialSettings::updateSettings(){
 	currentSettings.name = ui->serialPortInfoListBox->currentText();
 

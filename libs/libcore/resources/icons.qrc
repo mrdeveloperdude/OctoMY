@@ -47,5 +47,13 @@
         <file>icons/bluetooth.svg</file>
         <file>icons/serial.svg</file>
         <file>icons/usb.svg</file>
+        <file>icons/pair.svg</file>
+        <file>icons/identity.svg</file>
+        <file>icons/record.svg</file>
+        <file>icons/snap.svg</file>
+        <file>icons/focus.svg</file>
+        <file>icons/pause.svg</file>
+        <file>icons/load.svg</file>
+        <file>icons/save.svg</file>
     </qresource>
 </RCC>

@@ -29,8 +29,11 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <item row="0" column="0">
+   <item row="0" column="1">
     <widget class="QToolButton" name="toolButtonTidy">
+     <property name="toolTip">
+      <string>Tidy up formatting of text</string>
+     </property>
      <property name="text">
       <string>...</string>
      </property>
@@ -40,18 +43,7 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QToolButton" name="toolButtonParse">
-     <property name="text">
-      <string>Parse</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../resources/icons.qrc">
-       <normaloff>:/icons/parse.svg</normaloff>:/icons/parse.svg</iconset>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="2">
+   <item row="0" column="4">
     <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -64,7 +56,35 @@
      </property>
     </spacer>
    </item>
-   <item row="1" column="0" colspan="3">
+   <item row="0" column="2">
+    <widget class="QToolButton" name="toolButtonParse">
+     <property name="toolTip">
+      <string>Parse the plan</string>
+     </property>
+     <property name="text">
+      <string>Parse</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../resources/icons.qrc">
+       <normaloff>:/icons/parse.svg</normaloff>:/icons/parse.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QToolButton" name="toolButtonSave">
+     <property name="toolTip">
+      <string>Save plan</string>
+     </property>
+     <property name="text">
+      <string>Save</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../resources/icons.qrc">
+       <normaloff>:/icons/save.svg</normaloff>:/icons/save.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="5">
     <widget class="CodeEditor" name="plainTextEditPlan">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -504,6 +524,13 @@
      </property>
      <property name="tabStopWidth">
       <number>30</number>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QPushButton" name="pushButtonTest">
+     <property name="text">
+      <string>default</string>
      </property>
     </widget>
    </item>

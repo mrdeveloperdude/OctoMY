@@ -15,15 +15,17 @@ SOURCES += \
 
 android {
 
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
 DISTFILES += \
-	android/AndroidManifest.xml \
-	android/gradle/wrapper/gradle-wrapper.jar \
-	android/gradlew \
-	android/res/values/libs.xml \
-	android/build.gradle \
-	android/gradle/wrapper/gradle-wrapper.properties \
-	android/gradlew.bat \
-	android/src/org/octomy/remote/Remote.java
+	$$ANDROID_PACKAGE_SOURCE_DIR/AndroidManifest.xml \
+	$$ANDROID_PACKAGE_SOURCE_DIR/gradle/wrapper/gradle-wrapper.jar \
+	$$ANDROID_PACKAGE_SOURCE_DIR/gradlew \
+	$$ANDROID_PACKAGE_SOURCE_DIR/res/values/libs.xml \
+	$$ANDROID_PACKAGE_SOURCE_DIR/build.gradle \
+	$$ANDROID_PACKAGE_SOURCE_DIR/gradle/wrapper/gradle-wrapper.properties \
+	$$ANDROID_PACKAGE_SOURCE_DIR/gradlew.bat \
+	$$ANDROID_PACKAGE_SOURCE_DIR/src/org/octomy/remote/Remote.java
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 

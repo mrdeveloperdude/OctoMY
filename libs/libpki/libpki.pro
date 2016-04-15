@@ -4,7 +4,7 @@ CONFIG +=	staticlib
 
 include($$TOP_PWD/common.pri)
 
-INCLUDEPATH += .
+INCLUDEPATH += ./
 INCLUDEPATH += mbedtls/include/
 
 DEFINES     += MBEDTLS_CONFIG_FILE='\\"mbedtls_config.h\\"'

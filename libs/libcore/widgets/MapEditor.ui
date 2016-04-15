@@ -41,6 +41,9 @@
    </item>
    <item row="0" column="0">
     <widget class="QToolButton" name="toolButtonHome">
+     <property name="toolTip">
+      <string>Go to home location</string>
+     </property>
      <property name="text">
       <string>HOME</string>
      </property>
@@ -65,12 +68,18 @@
    </item>
    <item row="0" column="1">
     <widget class="QToolButton" name="toolButtonCenter">
+     <property name="toolTip">
+      <string>Go to current location from GPS</string>
+     </property>
      <property name="text">
       <string>...</string>
      </property>
      <property name="icon">
       <iconset resource="../resources/icons.qrc">
        <normaloff>:/icons/center.svg</normaloff>:/icons/center.svg</iconset>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

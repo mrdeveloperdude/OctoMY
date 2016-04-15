@@ -6,6 +6,7 @@
 #include <QCompass>
 #include <QGyroscope>
 
+
 SensorInput::SensorInput(QObject *parent):
 	QObject(parent)
   , source(QGeoPositionInfoSource::createDefaultSource(this))
@@ -14,6 +15,9 @@ SensorInput::SensorInput(QObject *parent):
   , lastCompassFilterValue(0)
   , lastCompassSmoothValue(0)
 {
+
+	qDebug()<<"SENSOR INPUT STARTING";
+	load();
 	if (0 != source) {
 		source->setPreferredPositioningMethods(QGeoPositionInfoSource::AllPositioningMethods);
 		source->startUpdates();
@@ -72,7 +76,8 @@ SensorInput::SensorInput(QObject *parent):
 }
 
 
-void SensorInput::onAccelerometerReadingChanged() {
+void SensorInput::onAccelerometerReadingChanged()
+{
 	if(0!=accelerometer){
 		QAccelerometerReading *r=accelerometer->reading();
 		if(0!=r){
@@ -81,7 +86,8 @@ void SensorInput::onAccelerometerReadingChanged() {
 	}
 }
 
-void SensorInput::onCompassReadingChanged() {
+void SensorInput::onCompassReadingChanged()
+{
 	if(0!=compass){
 		QCompassReading *r=compass->reading();
 		if(0!=r){
@@ -91,7 +97,8 @@ void SensorInput::onCompassReadingChanged() {
 }
 
 
-void SensorInput::onGyroscopeReadingChanged() {
+void SensorInput::onGyroscopeReadingChanged()
+{
 	if(0!=gyroscope){
 		QGyroscopeReading *r=gyroscope->reading();
 		if(0!=r){
@@ -112,7 +119,8 @@ void SensorInput::onGyroscopeReadingChanged() {
 */
 
 
-void SensorInput::hookSignals(QObject &o){
+void SensorInput::hookSignals(QObject &o)
+{
 
 	if(0!=source){
 		if(!connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)),&o,SLOT(onPositionUpdated(QGeoPositionInfo)),WWCONTYPE)){
@@ -133,7 +141,8 @@ void SensorInput::hookSignals(QObject &o){
 
 
 
-void SensorInput::unHookSignals(QObject &o){
+void SensorInput::unHookSignals(QObject &o)
+{
 	if(0!=source){
 		if(!disconnect(source, SIGNAL(positionUpdated(QGeoPositionInfo)),&o,SLOT(onPositionUpdated(QGeoPositionInfo)))){
 			qWarning()<<"ERROR: Could not disconnect";
@@ -153,13 +162,40 @@ void SensorInput::unHookSignals(QObject &o){
 
 
 
+void SensorInput::load()
+{
+	m_availableSensors.clear();
+	foreach (const QByteArray &type, QSensor::sensorTypes()) {
+		qDebug() << " + Found type" << type;
+		foreach (const QByteArray &identifier, QSensor::sensorsForType(type)) {
+			QSensor* sensor = new QSensor(type, this);
+			sensor->setIdentifier(identifier);
+			if (!sensor->connectToBackend()) {
+				qDebug() << "    * Skipping inactive sensor " << identifier;
+				continue;
+			}
+			qDebug() << "    * Adding identifier" << identifier;
+			m_availableSensors.append(sensor);
+		}
+	}
+}
 
-
+QString SensorInput::toSpecStanzas(QString space){
+	QString out="";
+	for(QList<QSensor*>::iterator i=m_availableSensors.begin(), e=m_availableSensors.end();i!=e;++i){
+		out+=space+"sensor {\n";
+		out+=space+"\ttype="+(*i)->type()+"\n";
+		out+=space+"\tid="+(*i)->identifier()+"\n";
+		out+=space+"}\n\n";
+	}
+	return out;
+}
 
 ///////////////////// Filters
 
 
-bool SensorInput::filter(QCompassReading *reading){
+bool SensorInput::filter(QCompassReading *reading)
+{
 	lastCompassSmoothValue=lastCompassSmoothValue*0.95+reading->azimuth()*0.05;
 	const qreal minDelta=1.0;
 	if(lastCompassSmoothValue-minDelta > lastCompassFilterValue || lastCompassSmoothValue+minDelta < lastCompassFilterValue ){

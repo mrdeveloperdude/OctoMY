@@ -1,8 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-
-
+#include "CameraList.hpp"
 
 #include <QCameraImageCapture>
 #include <QMediaRecorder>
@@ -22,13 +21,14 @@ class ZBarScanner;
 class QActionGroup;
 class QCamera;
 class QCameraInfo;
+class QComboBox;
+class QListWidgetItem;
 
 class Camera : public QWidget{
 		Q_OBJECT
 
 	private:
 		Ui::Camera *ui;
-		QTimer devChangeTimer;
 		QCamera *camera;
 		QCameraInfo cameraInfo;
 		QCameraImageCapture *imageCapture;
@@ -44,7 +44,7 @@ class Camera : public QWidget{
 		bool isCapturingImage;
 		bool applicationExiting;
 		QActionGroup *videoDevicesGroup;
-		QString camListHash;
+		CameraList cl;
 
 
 	public:
@@ -54,7 +54,7 @@ class Camera : public QWidget{
 	private slots:
 		void setCamera(const QCameraInfo &cameraInfo);
 
-		void onDevChangeTimer();
+		void onCameraDevicesChanged();
 
 		void startCamera();
 		void stopCamera();
@@ -64,8 +64,8 @@ class Camera : public QWidget{
 		void stop();
 		void setMuted(bool);
 
-		void toggleLock();
-		void takeImage();
+		void tryFocus();
+		void captureImage();
 		void displayCaptureError(int, QCameraImageCapture::Error, const QString &errorString);
 
 		void configureCaptureSettings();
@@ -73,7 +73,7 @@ class Camera : public QWidget{
 		void displayRecorderError();
 		void displayCameraError();
 
-		void updateCameraDevice(QAction *action);
+		void updateCameraDevice(QListWidgetItem *action);
 
 		void updateCameraState(QCamera::State);
 		void updateCaptureMode();
@@ -91,22 +91,49 @@ class Camera : public QWidget{
 		void readyForCapture(bool ready);
 		void imageSaved(int id, const QString &fileName);
 
-		void on_pushButtonToggleCamera_clicked();
-
-		void on_pushButtonSettings_clicked();
-
 		void showMessage(QString msg);
 
 		void detectBarcodes(const QVideoFrame &);
+
+		//////////////////////////////////
+
+		void on_toolButtonCaptureImage_clicked();
+
+		void on_toolButtonRecordVideo_toggled(bool checked);
+
+		void on_toolButtonBack_clicked();
+
+		void on_toolButtonSettings_clicked();
+
+		void on_toolButtonFocus_clicked();
 
 	protected:
 		void keyPressEvent(QKeyEvent *event);
 		void keyReleaseEvent(QKeyEvent *event);
 		void closeEvent(QCloseEvent *event);
 
-	signals:
 
-		void cameraDevicesChanged();
+		///
+
+	public:
+
+
+		QAudioEncoderSettings getAudioSettings() const;
+		void setAudioSettings(const QAudioEncoderSettings&);
+
+		QVideoEncoderSettings getVideoSettings() const;
+		void setVideoSettings(const QVideoEncoderSettings&);
+
+		QImageEncoderSettings getImageSettings() const;
+		void setImageSettings(const QImageEncoderSettings &settings);
+
+		QString format() const;
+		void setFormat(const QString &format);
+
+
+	private:
+		QVariant boxValue(const QComboBox*) const;
+		void selectComboBoxItem(QComboBox *box, const QVariant &value);
 
 };
 

@@ -64,7 +64,18 @@ class KeyStore: public QObject{
 		void load();
 		void save();
 
+
+	private:
+		static KeyStore *instance;
 	public:
+		static  KeyStore & getInstance();
+
+
+	public:
+
+		bool isReady(){
+			return ready;
+		}
 
 		//Sign message with our private key
 		QByteArray sign(const QByteArray &source);

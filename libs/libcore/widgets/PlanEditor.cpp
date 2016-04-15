@@ -4,10 +4,12 @@
 #include "utility/Utility.hpp"
 #include "plan/parser/PlanHighlighter.hpp"
 #include "../libparser/octomy_parser.hpp"
+#include "../libparser/OctomyPlan.hpp"
 
 
 #include <QDebug>
 #include <QPainter>
+#include <QTimer>
 
 #include <QCompleter>
 #include <QScrollBar>
@@ -22,13 +24,19 @@ CodeEditor::CodeEditor(QWidget *parent)
 	, m_completer(0)
 {
 
-
-	connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
-	connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
-	connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
-
-	updateLineNumberAreaWidth(0);
+	if(!connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)))){
+		qWarning()<<"ERROR: Could not connect";
+	}
+	if(!connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)))){
+		qWarning()<<"ERROR: Could not connect";
+	}
+	if(!connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()))){
+		qWarning()<<"ERROR: Could not connect";
+	}
 	highlightCurrentLine();
+
+	//setAcceptRichText(false);
+	horizontalScrollBar()->hide();
 
 	QCompleter *c=new QCompleter(this);
 	c->setModel(modelFromFile(":/data/completion_wordlist.txt"));
@@ -37,6 +45,7 @@ CodeEditor::CodeEditor(QWidget *parent)
 	c->setWrapAround(false);
 	setCompleter(c);
 
+	updateLineNumberAreaWidth(0);
 }
 
 
@@ -176,6 +185,39 @@ void CodeEditor::highlightCurrentLine(){
 
 
 
+
+void CodeEditor::setErrors(QVector<ParseError> errors){
+	this->errors=errors;
+
+	//Errors
+	QTextCharFormat errorFormat;
+	errorFormat.setUnderlineColor( QColor( Qt::red ) );
+	errorFormat.setUnderlineStyle( QTextCharFormat::WaveUnderline );
+	errorFormat.setFontUnderline( true );
+
+	for(QVector<ParseError>::iterator i=errors.begin(), e=errors.end();i!=e;++i){
+		ParseError error=*i;
+
+		if(error.context.isValid()){
+			QTextCursor cursor;
+			cursor.movePosition( QTextCursor::Start );
+			cursor.movePosition( QTextCursor::Down, QTextCursor::MoveAnchor, error.context.line()- 1 );
+			cursor.movePosition( QTextCursor::StartOfLine );
+			cursor.movePosition( QTextCursor::Right, QTextCursor::MoveAnchor, 0 );
+			cursor.movePosition( QTextCursor::WordRight, QTextCursor::KeepAnchor );
+			setTextCursor( cursor ); // added
+			QTextCharFormat oldfmt = currentCharFormat();
+			errorFormat.setToolTip(error.message+"\n"+error.hint);
+			setCurrentCharFormat( errorFormat );
+			cursor.movePosition( QTextCursor::WordLeft );
+			setTextCursor( cursor ); // added
+			setCurrentCharFormat( oldfmt );
+		}
+	}
+}
+
+
+
 void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event){
 	QPainter painter(lineNumberArea);
 	painter.fillRect(event->rect(), QColor("#66000000"));
@@ -254,6 +296,13 @@ void CodeEditor::focusInEvent(QFocusEvent *e){
 
 
 void CodeEditor::keyPressEvent(QKeyEvent *e){
+	const bool isShortcut = ((e->modifiers() & Qt::ControlModifier) && e->key() == Qt::Key_Space); // CTRL+Space
+	QTextCursor updateCursor = this->textCursor();
+	const bool ctrlOrShift = e->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier);
+	static QString eow("~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-="); // end of word
+	const bool hasModifier = (e->modifiers() != Qt::NoModifier) && !ctrlOrShift;
+	QString completionPrefix = textUnderCursor();
+
 	if (0!=m_completer && m_completer->popup()->isVisible()) {
 		qDebug()<<"completer visible, passing along key: "<<e->key();
 		// The following keys are forwarded by the completer to the widget
@@ -273,49 +322,74 @@ void CodeEditor::keyPressEvent(QKeyEvent *e){
 
 	if(e->key()== Qt::Key_Tab){
 		e->accept();
-		qDebug()<<"TAB";
+		//qDebug()<<"TAB";
 		blockIndent(!(e->modifiers() & Qt::ShiftModifier));
 		return;
 	}
 	else if(e->key() == Qt::Key_Backtab){
 		e->accept();
-		qDebug()<<"BACK TAB";
+		//qDebug()<<"BACK TAB";
 		blockIndent(false);
 		return;
 	}
 
-	bool isShortcut = ((e->modifiers() & Qt::ControlModifier) && e->key() == Qt::Key_Space); // CTRL+Space
-	if (!m_completer || !isShortcut){ // do not process the shortcut when we have a completer
-		qDebug()<<"no";
+
+
+
+
+	if (0!=m_completer || !isShortcut){ // do not process the shortcut when we have a completer
+		//qDebug()<<"no";
 		QPlainTextEdit::keyPressEvent(e);
 	}
 
-	const bool ctrlOrShift = e->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier);
+
+
+	// End + Newline
+	if (e->key() == Qt::Key_Return && e->modifiers() == Qt::ControlModifier) {
+		updateCursor.movePosition(QTextCursor::EndOfBlock,QTextCursor::MoveAnchor);
+		updateCursor.insertText("\n");
+		this->setTextCursor(updateCursor);
+	}
+	// Auto-indentation
+	if (e->key() == Qt::Key_Return && (e->modifiers() == Qt::NoModifier || e->modifiers() == Qt::ControlModifier || e->modifiers() == Qt::ShiftModifier)) {
+		QString data = toPlainText();
+		int cursorPosition = updateCursor.position();
+		int i;
+		for (i=cursorPosition-2; i>=0; i--){
+			if (data.mid(i,1) == "\n") {
+				break;
+			}
+		}
+		while (data.mid(i+1,1) == "\t"){
+			updateCursor.insertText("\t");
+			i++;
+		}
+	}
+
+
 	if (!m_completer || (ctrlOrShift && e->text().isEmpty())){
-		qDebug()<<"c|s";
+		//qDebug()<<"c|s";
 		return;
 	}
 
-	static QString eow("~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-="); // end of word
-	bool hasModifier = (e->modifiers() != Qt::NoModifier) && !ctrlOrShift;
-	QString completionPrefix = textUnderCursor();
 
 	if (!isShortcut && (hasModifier || e->text().isEmpty()|| completionPrefix.length() < 3 || eow.contains(e->text().right(1)))) {
-		qDebug()<<"close @ eow";
+		//qDebug()<<"close @ eow";
 		m_completer->popup()->hide();
 		return;
 	}
 
 	if (completionPrefix != m_completer->completionPrefix()) {
-		qDebug()<<"popup @ eow";
+		//qDebug()<<"popup @ eow";
 		m_completer->setCompletionPrefix(completionPrefix);
 		m_completer->popup()->setCurrentIndex(m_completer->completionModel()->index(0, 0));
 	}
-	qDebug()<<"popup @ eow 2";
+	//qDebug()<<"popup @ eow 2";
 	QRect cr = cursorRect();
 	cr.setWidth(m_completer->popup()->sizeHintForColumn(0) + m_completer->popup()->verticalScrollBar()->sizeHint().width());
 	m_completer->complete(cr); // popup it up!
 }
+
 
 
 
@@ -327,13 +401,23 @@ PlanEditor::PlanEditor(QWidget *parent)
 	, highlighter(0)
 {
 	ui->setupUi(this);
+	if(!connect(ui->plainTextEditPlan, SIGNAL(textChanged()), this, SLOT(onTextChanged()))){
+		qWarning()<<"ERROR: Could not connect";
+	}
+	if(!connect(&saveTimer, SIGNAL(timeout()), this, SLOT(save()))){
+		qWarning()<<"ERROR: Could not connect";
+	}
+
+
 	highlighter = new PlanHighlighter(ui->plainTextEditPlan->document());
 	ui->plainTextEditPlan->setFocus();
+	saveTimer.setSingleShot(true);
+	saveTimer.setTimerType(Qt::PreciseTimer);
+
 }
 
 PlanEditor::~PlanEditor(){
-	qDebug()<<"SAVING PLAN TO "<<plan_fn;
-	utility::stringToFile(plan_fn, ui->plainTextEditPlan->toPlainText());
+	save();
 	delete ui;
 	delete highlighter;
 }
@@ -341,26 +425,128 @@ PlanEditor::~PlanEditor(){
 
 void PlanEditor::configure(QString p){
 	plan_fn=p;
-	qDebug()<<"LOADING PLAN FROM "<<plan_fn;
+	qDebug()<<"LOADING: "<<plan_fn;
+	QSignalBlocker sb(ui->plainTextEditPlan);
 	ui->plainTextEditPlan->setPlainText(utility::fileToString(plan_fn));
 }
 
+void PlanEditor::setText(QString txt){
+	ui->plainTextEditPlan->setPlainText(txt);
+}
+
+void PlanEditor::appendText(QString txt){
+	ui->plainTextEditPlan->appendPlainText(txt);
+}
 
 
 void PlanEditor::on_toolButtonTidy_clicked(){
-	qDebug()<<"TIDY CLIIECKED";
+	tidy();
+}
+
+void PlanEditor::tidy(){
+	qDebug()<<"TIDY";
+	OctomyParser p;
+	QString raw=ui->plainTextEditPlan->document()->toPlainText();
+	if(p.parse(raw)){
+		ui->plainTextEditPlan->setPlainText(p.treesToString());
+	}
+	QVector<ParseError> errors=p.getErrors();
+	ui->plainTextEditPlan->setErrors(errors);
 }
 
 void PlanEditor::on_toolButtonParse_clicked(){
-/*
-	qDebug()<<"INSTANCIATING PARSER";
+	qDebug()<<"PARSE";
 	OctomyParser p;
-	qDebug()<<"DUMPING GRAMMAR FOR DEBUG PURPOSES";
-	qDebug()<<p.toString();
-	qDebug()<<"RUNNING PARSER";
 	QString raw=ui->plainTextEditPlan->document()->toPlainText();
-	qDebug()<<"PARSING RAW TEXT:"<<raw;
-	bool ret=p.parse(raw);
-	qDebug()<<"PARSING RESULTED IN "<<(ret?"SUCCESS":"FAILURE");
-*/
+	if(p.parse(raw)){
+		OctomyPlan plan;
+		if(!plan.fromParseTrees(p.getTrees())){
+			qWarning()<<"ERROR: Could not parse input into plan";
+		}
+	}
+	QVector<ParseError> errors=p.getErrors();
+	ui->plainTextEditPlan->setErrors(errors);
+}
+
+void PlanEditor::onTextChanged()
+{
+	saveTimer.start(10000);//If no change for X sec, we auto save
+}
+
+void PlanEditor::save()
+{
+	ui->toolButtonSave->setEnabled(false);
+	qDebug()<<"SAVING: "<<plan_fn;
+	QString txt=ui->plainTextEditPlan->toPlainText();
+	//TODO: Should we really change data before saving like this? I mean will all users appreciate this?
+	if(!txt.endsWith("\n")){
+		txt+="\n";
+	}
+	utility::stringToFile(plan_fn, txt);
+	QTimer::singleShot(1000,this,SLOT(enableSaveButton()));
+}
+
+void PlanEditor::enableSaveButton()
+{
+	ui->toolButtonSave->setEnabled(true);
+}
+
+
+void PlanEditor::on_toolButtonSave_clicked()
+{
+	save();
+}
+
+void PlanEditor::keyPressEvent(QKeyEvent *e)
+{
+	Qt::Key key=static_cast<Qt::Key>(e->key());
+	//qDebug()<<"KEY:"<<key;
+	//Handle some stdandard keyboard shortcuts for text editor
+	if(e->matches(QKeySequence::Save)){
+		e->accept();
+		save();
+		return;
+	}
+	else if(e->matches(QKeySequence::New)){
+		e->accept();
+		ui->plainTextEditPlan->setPlainText("");
+		return;
+	}
+	else if((Qt::Key_F==key) && (e->modifiers()==( Qt::ShiftModifier | Qt::ControlModifier))){
+		e->accept();
+		tidy();
+		return;
+	}
+}
+
+void PlanEditor::on_pushButtonTest_clicked()
+{
+	qDebug()<<"TEST";
+	QString txt="plan{\n"
+				" agent{\n"
+				"  puppet{\n"
+				"   member{\n"
+				"   }\n"
+				"  }\n"
+				" }\n"
+				" agent{\n"
+				"  puppet{\n"
+				"   member{\n"
+				"    lol1 = 123;\n"
+				"    lol2=321 \n"
+				"    lol3 = 3.14159265;\n"
+				"    lol4=7.43e-23 \n"
+				"    lol5= true;\n"
+				"    lol6 =false   \n"
+				"    lol7  = \"foo\";\n"
+				"    lol8  =  \"bar\"\n"
+				"   }\n"
+				"  }\n"
+				" }\n"
+				" hub{\n"
+				" }\n"
+				" remote{\n"
+				" }\n"
+				"}\n";
+	ui->plainTextEditPlan->setPlainText(txt);
 }

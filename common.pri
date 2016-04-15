@@ -28,6 +28,7 @@ QMAKE_TARGET_DESCRIPTION =	"N-Limbed madness™"
 # NOTE: RUN_WEB_TESTS SHOULD BE ON WHEN THE BUILDING MACHINE IS CONNECTED TO INTERNET
 
 #  Enable tests by default for now (will be enabled autoamtically for release builds in test.pro otherize)
+#DEFINES += USE_DOCS
 #DEFINES += USE_TESTS
 #DEFINES += USE_BASIC_TESTS
 #DEFINES += USE_QT3D
@@ -50,7 +51,7 @@ QMAKE_TARGET_DESCRIPTION =	"N-Limbed madness™"
 }
 
 # Add only plugins that are used and supported by the Qt build you are using
-QT += core gui opengl widgets xml network multimedia multimediawidgets svg printsupport quick sql positioning sensors testlib serialport
+QT += core gui opengl widgets xml network multimedia multimediawidgets svg printsupport quick sql positioning sensors testlib serialport bluetooth
 
 contains(DEFINES, USE_QT3D){
 QT += 3dcore 3drenderer 3dinput

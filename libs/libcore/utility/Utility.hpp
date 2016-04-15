@@ -1,7 +1,7 @@
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
 
-#include "basic/Standard.hpp"
+#include "../../libcore/basic/Standard.hpp"
 #include <inttypes.h>
 #include <stddef.h>
 //#include <string> #include <vector>
@@ -66,6 +66,8 @@ namespace utility{
 	QString nameToNormalForm(QString name);
 	QString networkErrorToString( QNetworkReply::NetworkError ne);
 	QString padstring(int level, QString base=" ");
+	QString toSoundex(QString in);
+	int levenshtein_distance(const QString &s1, const QString  &s2);
 
 	// File
 
