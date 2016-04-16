@@ -34,3 +34,8 @@ Makefile*
 *.qmlproject.user.*
 
 local_overrides.pri
+
+/build
+/mxe
+/scripts
+*.txt

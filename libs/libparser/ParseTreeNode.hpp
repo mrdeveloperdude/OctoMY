@@ -24,6 +24,7 @@ class ParseTreeNode{
 		ParseTreeNode *parent();
 		bool hasVariable(QString identifier);
 		QVariant getVariable(QString identifier);
+		QMap<QString, QVariant> &getVariables();
 		QVector<ParseTreeNode *> &getChildren();
 		void addVariable(QString identifier, QVariant value);
 		void addChild(ParseTreeNode *c);
@@ -33,3 +34,4 @@ class ParseTreeNode{
 
 
 #endif // PARSETREENODE_HPP
+

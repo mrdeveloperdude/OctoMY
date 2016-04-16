@@ -5,22 +5,23 @@
 #include <QVector>
 #include <QMap>
 
-
-class AgentSpec;
+class AgentNode;
 
 class OctomyPlan
 {
 
 	private:
-		QMap<QString, AgentSpec *> agents;
+		QMap<QString, AgentNode *> agents;
 
 	public:
 		OctomyPlan();
 
-
 	public:
 		bool fromParseTrees(QVector<ParseTreeNode *>trees);
-void fail(QString){};
+
+		void fail(QString){
+
+		}
 
 };
 

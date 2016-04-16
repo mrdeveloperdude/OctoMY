@@ -37,6 +37,12 @@ QVariant ParseTreeNode::getVariable(QString identifier)
 	return QVariant();
 }
 
+
+QMap<QString, QVariant> &ParseTreeNode::getVariables()
+{
+	return m_variables;
+}
+
 QVector<ParseTreeNode *> &ParseTreeNode::getChildren()
 {
 	return m_children;
