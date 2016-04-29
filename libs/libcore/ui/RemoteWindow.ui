@@ -33,7 +33,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="pageStatus">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -654,7 +654,7 @@
      <widget class="QWidget" name="pagePair">
       <layout class="QVBoxLayout" name="verticalLayout_8">
        <item>
-        <widget class="PairingWidget" name="widgetPairing" native="true">
+        <widget class="CameraPairingWidget" name="widgetPairing" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -757,7 +757,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidgetControl">
          <property name="currentIndex">
-          <number>3</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="pageActuator">
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -786,8 +786,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>82</width>
-                <height>34</height>
+                <width>422</width>
+                <height>507</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -958,18 +958,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>GaitWidget</class>
-   <extends>QWidget</extends>
-   <header>puppet/GaitWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ConnectionWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/ConnectionWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>MapEditor</class>
    <extends>QWidget</extends>
    <header>widgets/MapEditor.hpp</header>
@@ -982,9 +970,21 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PairingWidget</class>
+   <class>GaitWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/PairingWidget.hpp</header>
+   <header>puppet/GaitWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ConnectionWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/ConnectionWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CameraPairingWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/CameraPairingWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

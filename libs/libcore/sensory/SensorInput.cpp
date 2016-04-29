@@ -161,13 +161,16 @@ void SensorInput::unHookSignals(QObject &o)
 
 
 
-
 void SensorInput::load()
 {
 	m_availableSensors.clear();
-	foreach (const QByteArray &type, QSensor::sensorTypes()) {
+	QList<QByteArray> sensorTypes=QSensor::sensorTypes();
+	for(QList<QByteArray> ::iterator it=sensorTypes.begin(),e=sensorTypes.end();it!=e;++it){
+		QByteArray &type=*it;
 		qDebug() << " + Found type" << type;
-		foreach (const QByteArray &identifier, QSensor::sensorsForType(type)) {
+		QList<QByteArray> sensorsForTypes=QSensor::sensorsForType(type);
+		for(QList<QByteArray> ::iterator it2=sensorsForTypes.begin(),e2=sensorsForTypes.end();it2!=e2;++it2){
+			QByteArray &identifier=*it2;
 			QSensor* sensor = new QSensor(type, this);
 			sensor->setIdentifier(identifier);
 			if (!sensor->connectToBackend()) {

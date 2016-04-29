@@ -28,7 +28,7 @@ NumberEntry::NumberEntry(QWidget *parent) :
 
 void NumberEntry::configure(int min, int max, int step, int val, QString suf, QString tip, QString key){
 	WWMETHODGATE();
-	qDebug()<<"CONFIG: MIN="<<min<<", MAX="<<max<<", STEP="<<step<<", VAL="<<val<<", SUFFIX="<<suf<< ", TIP"<<tip<< ", KEY"<<key;
+	//qDebug()<<"CONFIG: MIN="<<min<<", MAX="<<max<<", STEP="<<step<<", VAL="<<val<<", SUFFIX="<<suf<< ", TIP"<<tip<< ", KEY"<<key;
 	ui->spinBox->setRange(min,max);
 	ui->spinBox->setSuffix(suf);
 	ui->spinBox->setSingleStep(1);

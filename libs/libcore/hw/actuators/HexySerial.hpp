@@ -4,7 +4,7 @@
 
 #include <QObject>
 
-
+#include <QTimer>
 #include <QtSerialPort/QSerialPort>
 
 
@@ -21,30 +21,39 @@ class HexySerial : public QObject{
 		QSerialPort *serial;
 		QByteArray inBuf;
 		quint32 lastPos[SERVO_COUNT];
+		quint32 dirtyMoveFlags;
+		QTimer sendTimer;
 
 	public:
 		explicit HexySerial(QObject *parent = 0);
 		virtual ~HexySerial();
 
+	public:
+		void configure();
 
-	private slots:
+	public slots:
 		void openSerialPort();
 		void closeSerialPort();
+	private slots:
+		void syncMove();
 		void writeData(const QByteArray &data);
 		void readData();
+		void dataWritten(qint64);
 		void handleError(QSerialPort::SerialPortError error);
 		void onSettingsChanged();
 
 	signals:
 
 		void settingsChanged();
+		void connectionChanged();
+		void readyToWrite();
 
 	public:
 
 		bool isConnected();
+
 	public:
 
-		void configure();
 		void kill(quint32 flags=0xffffffff);
 		void center();
 		void version();

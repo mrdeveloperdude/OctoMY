@@ -204,7 +204,8 @@ class OctomyParser{
 	private:
 
 		//Manage stack memory
-		void reallocateStack(){
+		void reallocateStack()
+		{
 			int sz=stack.size();
 			if (sz<128){
 				sz = 128;
@@ -226,7 +227,8 @@ class OctomyParser{
 		{
 			return &*strings.insert(s);
 		}
-		void registerVariable(QString identifier, QVariant value){
+		void registerVariable(QString identifier, QVariant value)
+		{
 			if(0==currentNode){
 				addError("ERROR: Trying to register var on 0 node");
 				return;
@@ -239,13 +241,15 @@ class OctomyParser{
 			currentNode->addVariable(identifier,value);
 		}
 
-		void addError(QString message, QString hint=""){
+		void addError(QString message, QString hint="")
+		{
 			ParseError error(lexer.context,message, hint);
 			qWarning()<<"ERROR: "<<error.toString();
 			errors.append(error);
 		}
 
-		void pushNode(QString name){
+		void pushNode(QString name)
+		{
 			qDebug()<<"PUSH "<<name;
 			ParseTreeNode *ptn=new ParseTreeNode(name);
 			if(0!=ptn){
@@ -259,7 +263,8 @@ class OctomyParser{
 			}
 		}
 
-		void popNode(){
+		void popNode()
+		{
 			qDebug()<<"POP";
 			if(0==currentNode){
 				addError("ERROR: Trying to pop 0 node");
@@ -491,6 +496,15 @@ class OctomyParser{
 		QVector<ParseError> getErrors()
 		{
 			return errors;
+		}
+
+		QString getErrorText()
+		{
+			QString out="";
+			for(QVector<ParseError>::iterator i=errors.begin(), e=errors.end();e!=i;++i){
+				out+=(*i).toString()+"\n";
+			}
+			return out;
 		}
 
 		QVector<ParseTreeNode *> getTrees()
@@ -741,6 +755,8 @@ void OctomyParser::consumeRule(int ruleno){
 /*./
 		PuppetParts::= PuppetParts Var;
 		PuppetParts::= PuppetParts Member;
+		PuppetParts::= PuppetParts Controller;
+		PuppetParts::= PuppetParts Sensor;
 		PuppetParts::= ;
 
 

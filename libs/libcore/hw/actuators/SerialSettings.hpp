@@ -38,6 +38,8 @@
 #include <QWidget>
 #include <QtSerialPort/QSerialPort>
 
+#include "SerialList.hpp"
+
 QT_USE_NAMESPACE
 
 QT_BEGIN_NAMESPACE
@@ -69,16 +71,25 @@ class SerialSettings : public QWidget{
 				bool localEchoEnabled;
 		};
 
+	private:
+		Ui::SerialSettings *ui;
+		Settings currentSettings;
+		QIntValidator *intValidator;
+		QList<QSerialPortInfo> availablePorts;
+		SerialList sl;
+
+	public:
+
 		explicit SerialSettings(QWidget *parent = 0);
 		~SerialSettings();
 
 		Settings settings() const;
 
-	public:
+	public Q_SLOTS:
 
-		QString toSpecStanzas(QString space);
 
 	private slots:
+		void onSerialDevicesChanged();
 		void showPortInfo(int idx);
 		void apply();
 		void checkCustomBaudRatePolicy(int idx);
@@ -93,10 +104,7 @@ class SerialSettings : public QWidget{
 		void fillPortsInfo();
 		void updateSettings();
 
-	private:
-		Ui::SerialSettings *ui;
-		Settings currentSettings;
-		QIntValidator *intValidator;
+
 };
 
 #endif // SERIALSETTINGSDIALOG_H

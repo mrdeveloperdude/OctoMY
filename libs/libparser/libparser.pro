@@ -36,10 +36,10 @@ HEADERS += \
     Context.hpp \
     ParseTreeNode.hpp \
     ParseError.hpp \
-    OctomyPlan.hpp
+    OctomyParseContext.hpp
 
 SOURCES += \
     Context.cpp \
     ParseTreeNode.cpp \
     ParseError.cpp \
-    OctomyPlan.cpp
+    OctomyParseContext.cpp

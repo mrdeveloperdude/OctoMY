@@ -1,6 +1,9 @@
 #include "HubWindow.hpp"
+
 #include "ui_HubWindow.h"
+
 #include "basic/Standard.hpp"
+
 #include "comms/Client.hpp"
 #include "comms/messages/MessageType.hpp"
 #include "hub/Hub.hpp"
@@ -8,13 +11,21 @@
 #include "utility/Utility.hpp"
 #include "models/ClientModel.hpp"
 
-
 #include "remote/Remote.hpp"
 #include "remote/RemoteWindow.hpp"
 
-
 #include "agent/Agent.hpp"
 #include "agent/AgentWindow.hpp"
+
+#include "widgets/hexedit/QHexEdit.hpp"
+#include "widgets/hexedit/QHexEditData.hpp"
+#include "hw/actuators/HexyTool.hpp"
+
+#include "../libpki/qpolarsslpki.hpp"
+#include "../libpki/qpolarsslhash.hpp"
+
+#include "puppet/GaitController.hpp"
+
 
 #include <QScrollBar>
 #include <QHostInfo>
@@ -25,15 +36,6 @@
 #include <QProcess>
 
 
-#include "widgets/hexedit/QHexEdit.hpp"
-#include "widgets/hexedit/QHexEditData.hpp"
-
-
-
-
-#include "../libpki/qpolarsslpki.hpp"
-#include "../libpki/qpolarsslhash.hpp"
-
 
 HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	QMainWindow(parent)
@@ -42,6 +44,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
   , startTime(QDateTime::currentMSecsSinceEpoch())
   , randomWalk(0.0)
   , hexy(0)
+  , m_gait(0)
 {
 	setObjectName("HubWindow");
 	summaryTimer.setInterval(100);
@@ -98,19 +101,36 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 	ui->tabWidget->setCurrentWidget(ui->tabPlan);
 
+
+
+
+	HexyTool *ht=ui->widgetHexyTool;
+	if(0==hexy){
+		hexy=new HexySerial;
+		if(0!=hexy){
+			connect( hexy, SIGNAL(settingsChanged()), this, SLOT(onHexySettingsChanged()));
+		}
+	}
+
+
+	m_gait=new GaitController<qreal> ();
+	if(0!=m_gait){
+		ui->widgetGait->setGait(*m_gait);
+	}
+
+
 	appendLog("SETTING UP PLAN EDITOR");
 	ui->widgetPlanEditor->configure("hub.plan");
 
 	//updateClientsList();
 	appendLog("READY");
 
-
 }
 
 HubWindow::~HubWindow() {
 	hub->getComms()->unHookSignals(*this);
 	delete ui;
-
+	delete m_gait;
 }
 
 
@@ -439,6 +459,9 @@ void HubWindow::onHexyTimer(){
 	if(0==hexy){
 		return;
 	}
+	if(0!=m_gait){
+		m_gait->update();
+	}
 	qreal pos[HexySerial::SERVO_COUNT]={0.0f};
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	const quint64 ival=now- lastTime;
@@ -466,31 +489,9 @@ void HubWindow::onConnectionStatusChanged(bool s){
 
 }
 
-#include "hw/actuators/HexyTool.hpp"
-HexyTool *ht=0;
+
 void HubWindow::on_pushButtonTest_clicked(){
 	qDebug()<<"TEST BUTTON PRESSED";
-	/*
-	if(0==ht){
-		ht=new HexyTool(0);
-	}
-	ht->show();
-	*/
-
-	/*
-	if(0==hexy){
-		hexy=new HexySerial;
-		connect( hexy, SIGNAL(settingsChanged()), this, SLOT(onHexySettingsChanged()));
-	}
-	else{
-		delete hexy;
-		hexy=0;
-	}
-	if(0!=hexy){
-		hexy->configure();
-	}
-	*/
-
 }
 
 

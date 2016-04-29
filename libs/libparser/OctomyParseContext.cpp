@@ -1,6 +1,8 @@
-#include "OctomyPlan.hpp"
+#include "OctomyParseContext.hpp"
 
-OctomyPlan::OctomyPlan()
+OctomyParseContext::OctomyParseContext()
+	: m_plan(0)
+	, m_ok(true)
 {
 
 }
@@ -9,23 +11,33 @@ OctomyPlan::OctomyPlan()
 class Node{
 	protected:
 		ParseTreeNode &m_node;
-		OctomyPlan &m_plan;
+		OctomyParseContext &m_plan;
 		QString m_name;
 		QString m_id;
-		QVector<QString> m_errors;
 		bool m_ok;
 		QMap<QString, QVariant> m_variables;
 
 
 	protected:
 
-		void fail(QString msg){
+		void fail(QString msg)
+		{
+			m_plan.fail(msg);
 			m_ok=false;
-			m_errors.append(msg);
+		}
+
+		void warn(QString msg)
+		{
+			m_plan.warn(msg);
+		}
+
+		void info (QString msg)
+		{
+			m_plan.info(msg);
 		}
 
 	public:
-		Node(ParseTreeNode &node, QString expectedName, OctomyPlan &plan)
+		Node(ParseTreeNode &node, QString expectedName, OctomyParseContext &plan)
 			: m_node(node)
 			, m_plan(plan)
 			, m_name(node.name())
@@ -33,10 +45,10 @@ class Node{
 			, m_ok(true)
 		{
 			if(expectedName != m_name){
-				fail("ERROR: Trying to parse "+expectedName+" with "+m_name);
+				fail("Trying to parse "+expectedName+" with "+m_name);
 			}
 			else if(""==m_id){
-				fail("ERROR: "+m_name+" did not have ID");
+				fail(""+m_name+" did not have ID");
 			}
 			else{
 				m_variables=node.getVariables();
@@ -64,13 +76,27 @@ class Node{
 			m_variables.insert(identifier, value);
 		}
 
+		bool isOK()
+		{
+			return m_ok;
+		}
 
-		QString id(){
+		QString id()
+		{
 			return m_id;
 		}
 };
 
 
+
+class NodeFactory
+{
+	public:
+		Node *	getNodeForParse(ParseTreeNode &node, OctomyParseContext &plan)
+		{
+
+		}
+};
 
 
 class DescriptorNode: public Node
@@ -78,10 +104,35 @@ class DescriptorNode: public Node
 	protected:
 
 	public:
-		DescriptorNode(ParseTreeNode &node, OctomyPlan &plan, QString name)
+		DescriptorNode(ParseTreeNode &node, OctomyParseContext &plan, QString name)
 			: Node(node, name, plan)
 		{
 			if(m_ok){
+
+			}
+		}
+	public:
+
+};
+
+
+
+
+
+class ControllerNode: public DescriptorNode
+{
+	protected:
+
+		QString m_type;
+	public:
+		ControllerNode(ParseTreeNode &node, OctomyParseContext &plan)
+			: DescriptorNode(node, plan, "controller")
+			, m_type(node.hasVariable("type")?node.getVariable("type").toString():"")
+		{
+			if(m_ok){
+				if(""==m_type){
+					fail(""+m_name+" did not have a type");
+				}
 
 			}
 		}
@@ -97,7 +148,7 @@ class MemberNode: public Node
 		QVector<MemberNode *> m_members;
 		QMap<QString, DescriptorNode *> m_descriptors;
 	public:
-		MemberNode(ParseTreeNode &node, OctomyPlan &plan,  QString name="member")
+		MemberNode(ParseTreeNode &node, OctomyParseContext &plan,  QString name="member")
 			: Node(node, name, plan)
 		{
 			if(m_ok){
@@ -112,24 +163,33 @@ class MemberNode: public Node
 								registerSubMember(member);
 							}
 							else{
-								fail("ERROR: Could not allocate submemeber");
+								fail("Could not allocate submemeber");
 							}
 						}
-						else if ("camera"==name || "controller"==name || "serial"==name || "bluetooth"==name || "nfc"==name ){
+						else if ("camera"==name || "serial"==name || "bluetooth"==name || "nfc"==name ){
 							DescriptorNode *desc=new DescriptorNode(*subnode, m_plan, name);
 							if(0!=desc){
 								m_descriptors[name]=desc;
 							}
 							else{
-								fail("ERROR: Could not allocate descriptor");
+								fail("Could not allocate descriptor");
+							}
+						}
+						else if ("controller"==name){
+							DescriptorNode *controller=new ControllerNode(*subnode, m_plan);
+							if(0!=controller){
+								m_descriptors[name]=controller;
+							}
+							else{
+								fail("Could not allocate controller");
 							}
 						}
 						else{
-							fail("ERROR: Found unknown node identifier '"+name+"'");
+							fail("Found unknown node identifier '"+name+"' for member");
 						}
 					}
 					else{
-						fail("ERROR: Found subnode = 0 in agent "+m_id);
+						fail("Found subnode = 0 in agent "+m_id);
 					}
 				}
 			}
@@ -150,7 +210,7 @@ class PuppetNode: public MemberNode
 	protected:
 
 	public:
-		PuppetNode(ParseTreeNode &node, OctomyPlan &plan, QString name="puppet")
+		PuppetNode(ParseTreeNode &node, OctomyParseContext &plan, QString name="puppet")
 			: MemberNode(node, plan, name)
 		{
 			if(m_ok){
@@ -173,7 +233,7 @@ class SpecNode: public Node
 
 
 	public:
-		SpecNode(ParseTreeNode &node, OctomyPlan &plan, QString name="spec")
+		SpecNode(ParseTreeNode &node, OctomyParseContext &plan, QString name="spec")
 			: Node(node, name, plan)
 			, m_puppet(0)
 		{
@@ -181,25 +241,35 @@ class SpecNode: public Node
 				QVector<ParseTreeNode *> &subnodes=m_node.getChildren();
 				for(QVector<ParseTreeNode *>::iterator i=subnodes.begin(), e=subnodes.end();i!=e;++i){
 					ParseTreeNode *subnode=(*i);
+					QVector<QString> unsupported;
+					unsupported.append("agent");
+					unsupported.append("hub");
+					unsupported.append("remote");
+					unsupported.append("member");
+					unsupported.append("controller");
+					unsupported.append("serial");
 					if(0!=subnode){
 						const QString name=node.name();
 						if("puppet"==name){
 							if(0!=m_puppet){
-								fail("ERROR: Trying to add second puppet to "+m_id);
+								fail("Trying to add second puppet to "+m_id);
 							}
 							else{
 								m_puppet=new PuppetNode(*subnode, m_plan);
 								if(0==m_puppet){
-									fail("ERROR: Could not allocate puppet");
+									fail("Could not allocate puppet");
 								}
 							}
 						}
+						else if(unsupported.contains(name)){
+							info("Unsupported name found for spec: "+name);
+						}
 						else{
-							fail("ERROR: Found unknown node identifier '"+name+"'");
+							fail("Found unknown node identifier '"+name+"' for spec");
 						}
 					}
 					else{
-						fail("ERROR: Found subnode = 0 in "+m_name+" with id '"+m_id+"'");
+						fail("Found subnode = 0 in "+m_name+" with id '"+m_id+"'");
 					}
 				}
 			}
@@ -213,7 +283,7 @@ class AgentNode: public SpecNode
 	protected:
 
 	public:
-		AgentNode(ParseTreeNode &node, OctomyPlan &plan)
+		AgentNode(ParseTreeNode &node, OctomyParseContext &plan)
 			: SpecNode(node, plan, "agent")
 		{
 
@@ -226,7 +296,7 @@ class RemoteNode: public SpecNode
 	protected:
 
 	public:
-		RemoteNode(ParseTreeNode &node, OctomyPlan &plan)
+		RemoteNode(ParseTreeNode &node, OctomyParseContext &plan)
 			: SpecNode(node, plan, "remote")
 		{
 
@@ -239,7 +309,7 @@ class HubNode: public SpecNode
 	protected:
 
 	public:
-		HubNode(ParseTreeNode &node, OctomyPlan &plan)
+		HubNode(ParseTreeNode &node, OctomyParseContext &plan)
 			: SpecNode(node, plan, "hub")
 		{
 
@@ -256,7 +326,7 @@ class PlanNode: public Node
 		QMap<QString, HubNode *> m_hubs;
 
 	public:
-		PlanNode(ParseTreeNode &node, OctomyPlan &plan)
+		PlanNode(ParseTreeNode &node, OctomyParseContext &plan)
 			: Node(node, "plan", plan)
 		{
 			if(m_ok){
@@ -271,7 +341,7 @@ class PlanNode: public Node
 
 							}
 							else{
-								fail("ERROR: Could not allocate agent");
+								fail("Could not allocate agent");
 							}
 						}
 						else if ("remote"==name){
@@ -280,7 +350,7 @@ class PlanNode: public Node
 
 							}
 							else{
-								fail("ERROR: Could not allocate remote");
+								fail("Could not allocate remote");
 							}
 
 						}
@@ -290,7 +360,7 @@ class PlanNode: public Node
 
 							}
 							else{
-								fail("ERROR: Could not allocate hub");
+								fail("Could not allocate hub");
 							}
 
 						}
@@ -302,9 +372,26 @@ class PlanNode: public Node
 
 };
 
+/*
+
+  Notes for octomy plan
+
+  spec may contain any node with subnodes, it does not need to start on tier
+  level. They are stored in the parse context and used as bases for other
+  nodes or actual parts of real tiers in a plan.
+
+  nodes have checksums calculated for them so that they can be compared, and
+  tier nodes may have their checksums compared during effectuation of new plans
+  to verify that the plan's integrity is intact.
+
+  nodes may be compared using a diff tool to find out exactly where they differ
 
 
-bool OctomyPlan::fromParseTrees(QVector<ParseTreeNode *> trees)
+*/
+
+
+
+bool OctomyParseContext::fromParseTrees(QVector<ParseTreeNode *> trees)
 {
 	//errors.clear();
 	ParseTreeNode *planTree=0;
@@ -316,34 +403,44 @@ bool OctomyPlan::fromParseTrees(QVector<ParseTreeNode *> trees)
 			if("plan"==name){
 				if(0==planTree){
 					planTree=node;
-					//Plan
+					m_plan=new PlanNode(*node,*this);
+					if(0!=m_plan){
+						if(!m_plan->isOK()){
+							fail("Could not parse plan");
+						}
+					}
+					else{
+						fail("Could not allocate plan");
+					}
 				}
 				else{
-					fail("ERROR: Found more than one plan in trees");
+					fail("Found more than one plan in trees");
 				}
 			}
 			else if ("spec"==name){
 				if(0!=planTree){
-					fail("ERROR: Found spec occurance after plan");
+					fail("Found spec occurance after plan");
 				}
 				else{
 					SpecNode *spec=new SpecNode(*node, *this);
 					if(0!=spec){
-
+						if(!spec->isOK()){
+							fail("Could not parse spec");
+						}
 					}
 					else{
-						fail("ERROR: Could not allocate spec");
+						fail("Could not allocate spec");
 					}
 				}
 			}
 			else{
-				fail("ERROR: Found unknown identifier in parsetrees");
+				fail("Found unknown identifier in parsetrees");
 			}
 		}
 		else{
-			fail("ERROR: Found node = 0 in trees");
+			fail("Found node = 0 in trees");
 		}
 	}
-	qDebug()<<"Scanned "<<agents.count()<<" agent specs";
-	return false;//errors.count()>0;
+	//	qDebug()<<"Scanned "<<agents.count()<<" agent specs";
+	return isOK();
 }

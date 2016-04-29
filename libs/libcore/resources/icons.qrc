@@ -55,5 +55,11 @@
         <file>icons/pause.svg</file>
         <file>icons/load.svg</file>
         <file>icons/save.svg</file>
+        <file>icons/lan.svg</file>
+        <file>icons/nfc.svg</file>
+        <file>icons/security_warning.svg</file>
+        <file>icons/warning.svg</file>
+        <file>icons/zoo.svg</file>
+        <file>icons/under_construction.svg</file>
     </qresource>
 </RCC>

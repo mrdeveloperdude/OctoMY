@@ -34,33 +34,34 @@ void CameraList::setUpDeviceTimer(const quint64 ms)
 
 QString CameraList::toSpecStanzas(QString space){
 	QString out="";
-	foreach (const QCameraInfo &ci, cams) {
+	for(QList<QCameraInfo>::iterator it=deviceList.begin(),e=deviceList.end();it!=e;++it){
+		const QCameraInfo dev=*it;
 		out+=space+"camera {\n";
-		out+=space+"\ttype=\""+ci.description()+"\"\n";
-		out+=space+"\tid=\""+ci.deviceName()+"\"\n";
-		out+=space+"\t// Position="+(QCamera::BackFace==ci.position()?"BackFace":QCamera::FrontFace==ci.position()?"FrontFace":"Unspecified")+"\n";
-		out+=space+"\t// Orientation="+QString::number(ci.orientation())+" degrees\n";
-
+		out+=space+"\ttype=\""+dev.description()+"\"\n";
+		out+=space+"\tid=\""+dev.deviceName()+"\"\n";
+		out+=space+"\t// Position="+(QCamera::BackFace==dev.position()?"BackFace":QCamera::FrontFace==dev.position()?"FrontFace":"Unspecified")+"\n";
+		out+=space+"\t// Orientation="+QString::number(dev.orientation())+" degrees\n";
 		out+=space+"}\n\n";
 	}
 	return out;
 }
 
-QString CameraList::cameraListToHash(QList<QCameraInfo> cams){
+QString CameraList::deviceListToHash(QList<QCameraInfo> devices){
 	QString summary="";
-	foreach (const QCameraInfo &ci, cams) {
+	for(QList<QCameraInfo>::iterator it=devices.begin(),e=devices.end();it!=e;++it){
+		const QCameraInfo dev=*it;
 		//qDebug()<<"CAM: "<<cameraInfo.description() << cameraInfo.deviceName();
-		summary+=ci.description()+ci.deviceName();
+		summary+=dev.description()+dev.deviceName();
 	}
 	return utility::toHash(summary);
 }
 
 void CameraList::onDevChangeTimer()
 {
-	cams=QCameraInfo::availableCameras();
-	QString camListHashNew=cameraListToHash(cams);
-	if(camListHashNew!=camListHash){
-		camListHash=camListHashNew;
+	deviceList=QCameraInfo::availableCameras();
+	QString deviceListHashNew=deviceListToHash(deviceList);
+	if(deviceListHashNew!=deviceListHash){
+		deviceListHash=deviceListHashNew;
 		emit cameraDevicesChanged();
 	}
 }

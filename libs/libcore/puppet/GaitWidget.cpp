@@ -5,19 +5,11 @@
 #include <QMouseEvent>
 GaitWidget::GaitWidget(QWidget *parent)
 	: QWidget(parent)
-
+	, m_gait(0)
 {
-	if(!connect(&timer,SIGNAL(timeout()),this,SLOT(onUpdateTimer()))){
-		qWarning()<<"ERROR: Could not connect";
-	}
+
 
 }
-
-void GaitWidget::onUpdateTimer(){
-	gait.update();
-	update();
-}
-
 
 void GaitWidget::paintEvent(QPaintEvent *){
 	QPainter painter(this);
@@ -28,50 +20,71 @@ void GaitWidget::paintEvent(QPaintEvent *){
 	painter.setBrush(bg);
 	painter.setPen(Qt::NoPen);
 	painter.drawRect(0,0,w,h);
-	gait.paint(painter);
+	if(0!=m_gait){
+		m_gait->paint(painter);
+	}
 }
 
 
 void GaitWidget::mouseReleaseEvent ( QMouseEvent * event ){
-	QRectF r=rect();
-	QPointF pos=event->pos();
-	gait.setDirection(pos.x()-r.width()/2,pos.y()-r.height()/2);
+	if(0!=m_gait){
+		QRectF r=rect();
+		QPointF pos=event->pos();
+		m_gait->setDirection(pos.x()-r.width()/2,pos.y()-r.height()/2);
+	}
 	setFocus();
 }
 
 
-void  GaitWidget::keyPressEvent(QKeyEvent *event){
-	const int key=event->key();
-	switch(key){
-		case(Qt::Key_P):{
-				gait.togglePause();
-				return;
-			}
-
-		case(Qt::Key_0):
-		case(Qt::Key_1):
-		case(Qt::Key_2):
-		case(Qt::Key_3):
-		case(Qt::Key_4):
-		case(Qt::Key_5):
-		case(Qt::Key_6):
-		case(Qt::Key_7):
-		case(Qt::Key_8):
-		case(Qt::Key_9):{
-
-				gait.toggleLimb(key-Qt::Key_0);
-				return;
-			}
+void GaitWidget::mouseMoveEvent(QMouseEvent *event){
+	if(0!=m_gait){
+		QRectF r=rect();
+		QPointF pos=event->pos();
+		m_gait->setTarget(pos.x()-r.width()/2,pos.y()-r.height()/2);
 	}
+}
 
+void GaitWidget::setGait(GaitController <qreal> &gait){
+	if(0!=m_gait){
+		m_gait->unHookSignals(*this);
+	}
+	m_gait=&gait;
+	m_gait->hookSignals(*this);
+}
 
+void GaitWidget::onGaitUpdated(){
+	update();
+}
+
+void  GaitWidget::keyPressEvent(QKeyEvent *event){
+	if(0!=m_gait){
+		const int key=event->key();
+		switch(key){
+			case(Qt::Key_P):{
+					m_gait->togglePause();
+					return;
+				}
+			case(Qt::Key_L):{
+					m_gait->toggleSingleLimb();
+					return;
+				}
+
+			case(Qt::Key_0):
+			case(Qt::Key_1):
+			case(Qt::Key_2):
+			case(Qt::Key_3):
+			case(Qt::Key_4):
+			case(Qt::Key_5):
+			case(Qt::Key_6):
+			case(Qt::Key_7):
+			case(Qt::Key_8):
+			case(Qt::Key_9):{
+
+					m_gait->toggleLimb(key-Qt::Key_0);
+					return;
+				}
+		}
+	}
 }
 
 
-void GaitWidget::hideEvent(QHideEvent *){
-	timer.stop();
-}
-
-void GaitWidget::showEvent(QShowEvent *){
-	timer.start(1000/60);
-}

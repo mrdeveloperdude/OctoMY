@@ -28,13 +28,16 @@ class GaitSequenceGenerator{
 				case(TRIPOD):{
 						T a=0;
 						T b=0;
+						//Alternate odd/even limbs
+						T L2=L/2;
 						for(i=0;i<L;++i){
-							a|=(i*2);
-							b|=(i*2+1);
+							a|=(1<<(i*2));
+							b|=(2<<(i*2));
 							lut[i]=0;
 						}
 						for(i=0;i<L;++i){
 							lut[i]=(i&1)>0?a:b;
+							//qDebug()<<"SEQ LUT ("<<i<<"): "<<  QString("%1").arg( lut[i], 16, 2, QChar('0'));
 						}
 
 					}break;
@@ -42,20 +45,27 @@ class GaitSequenceGenerator{
 
 		}
 
+		//Returns integer flag where each bit represents one limb
 		T generate(){
 			i=(i+1)%L;
-			return lut[i];
+			T out= lut[i];
+			//qDebug()<<"GATSEQ: "<< QString("%1").arg( out, 16, 2, QChar('0'));
+			return out;
 		}
 };
 
+const qreal LIMB_UNIT_LENGTH=0.2;
 
 template <typename T>
 class GaitLimb{
 	public:
 		GaitController<T> &body;
 		quint32 id;
+		const T LENGTH_COXA=LIMB_UNIT_LENGTH;
+		const T LENGTH_FEMUR=LIMB_UNIT_LENGTH;
+		const T LENGTH_TIBIA=LIMB_UNIT_LENGTH;
 		T angle;
-		T cz;//Food distance over ground
+		T cz;//Foot distance over ground
 		T bx,by;//Base position of limb relative to center of body
 		T nx,ny;//Neutral position of foot relative to base
 		T sx,sy;//Last foothold position in absolute ground plane coords
@@ -70,8 +80,12 @@ class GaitLimb{
 		bool balance; //true if this limb is part of balance calculation
 		quint64 cycleStart; //timestamp of moment when this limb was put in lift cycle
 		quint64 cycleTime; //length of one cycle in ms
-		T minStride; //Shortest påossible stride (in both distance and time
+		T minStride; //Shortest possible stride (in both distance and time
 		T servoSpeed; //Speed of servo (assumes servos run continuously at max speed )
+		T tibiaAngle;
+		T coxaAngle;
+		T femurAngle;
+
 
 
 
@@ -93,19 +107,22 @@ class GaitLimb{
 			, lift(liftPending)
 			, balance(false)
 			, cycleStart(0)
-			, cycleTime(1337)
-			, minStride(0.3)
+			, cycleTime(23370)
+			, minStride(0.6)
 			, servoSpeed(1000)
-
+			, tibiaAngle(0)
+			, coxaAngle(0)
+			, femurAngle(0)
 		{
 		}
 
 		void update(quint64 now, quint64 updateInterval){
+			quint64 feedcycle=cycleTime/body.feedrate;
 			if(lift){
 				quint64 cycleInterval=now-cycleStart;
-				if(cycleInterval>=cycleTime){
-					const quint64 cyclesSinceLastUpdate=cycleInterval/cycleTime;
-					cycleInterval-=cycleTime*cyclesSinceLastUpdate;
+				if(cycleInterval>=feedcycle){
+					const quint64 cyclesSinceLastUpdate=cycleInterval/(feedcycle+1);
+					cycleInterval-=feedcycle*cyclesSinceLastUpdate;
 					ox=body.cx;
 					oy=body.cy;
 					lift=false;
@@ -114,7 +131,7 @@ class GaitLimb{
 					//qDebug()<<"LIMB "<<id<<" touch down";
 				}
 				T cyclePosition=cycleInterval;
-				cyclePosition/=((T)cycleTime);
+				cyclePosition/=((T)feedcycle);
 				const T p=1.0-(cos(cyclePosition*M_PI)+1.0)*0.5;//Easing
 				const T ip=1.0-p;
 				cx=sx*ip+tx*p;
@@ -138,8 +155,8 @@ class GaitLimb{
 			if(liftPending){
 				liftPending=false;
 				//Calculate target
-				tx=nx+body.cx+((body.ddx*cycleTime*2)/updateInterval)+body.cobx/updateInterval;
-				ty=ny+body.cy+((body.ddy*cycleTime*2)/updateInterval)+body.coby/updateInterval;
+				tx=nx+body.cx+((body.ddx*feedcycle*2)/updateInterval)+body.cobx/updateInterval;
+				ty=ny+body.cy+((body.ddy*feedcycle*2)/updateInterval)+body.coby/updateInterval;
 				//Calculate cycletime
 				T stridex=cx-tx;
 				T stridey=cy-ty;
@@ -148,24 +165,25 @@ class GaitLimb{
 				if(cycleTime>10){
 					lift=true;
 					cycleStart=now;
-					qDebug()<<"LIMB "<<id<<" lift with cyctime " <<cycleTime;
+					//qDebug()<<"LIMB "<<id<<" lift with cyctime " <<cycleTime;
 				}
 			}
 			enabled=enabledPending;
+			IK();
 		}
 
 		//Inspired by https://github.com/TXBDan/BETH_Raspi/blob/master/ik.cpp
 		void IK(){
-			const T LENGTH_COXA=1.0;
-			const T LENGTH_FEMUR=1.0;
-			const T LENGTH_TIBIA=1.0;
-			T CoxaFootDist = sqrt( pow(cy, 2) + pow(cx, 2) );
-			T IKSW = sqrt( pow(CoxaFootDist-LENGTH_COXA, 2) + pow(cz, 2) );
-			T IKA1 = atan2( (CoxaFootDist - LENGTH_COXA) , cz );
+			T dz=cz;
+			T dx=cx-body.cx;
+			T dy=cy-body.cy;
+			T CoxaFootDist = sqrt( pow(dy, 2) + pow(dx, 2) );
+			T IKSW = sqrt( pow(CoxaFootDist-LENGTH_COXA, 2) + pow(dz, 2) );
+			T IKA1 = atan2( (CoxaFootDist - LENGTH_COXA) , dz );
 			T IKA2 = acos( (pow(LENGTH_TIBIA, 2) - pow(LENGTH_FEMUR, 2) - pow(IKSW, 2) ) / (-2.0*IKSW*LENGTH_FEMUR) );
-			T tibiaAngle = acos( (pow(IKSW, 2) - pow(LENGTH_TIBIA, 2) - pow(LENGTH_FEMUR, 2)) / (-2.0*LENGTH_FEMUR*LENGTH_TIBIA) );
-			T coxaAngle=atan2( cy , cx) ;
-			T femurAngle= IKA1 + IKA2 ;
+			tibiaAngle = acos( (pow(IKSW, 2) - pow(LENGTH_TIBIA, 2) - pow(LENGTH_FEMUR, 2)) / (-2.0*LENGTH_FEMUR*LENGTH_TIBIA) );
+			coxaAngle=atan2( dy , dx) ;
+			femurAngle= IKA1 + IKA2 ;
 		}
 
 		void paint(QPainter &painter){
@@ -223,6 +241,27 @@ class GaitLimb{
 };
 
 
+class GaitControllerMessenger:
+		public QObject
+{
+		Q_OBJECT
+	public:
+		explicit GaitControllerMessenger()
+			:QObject(0)
+		{
+
+		}
+
+		virtual ~GaitControllerMessenger(){
+
+		}
+
+	signals:
+
+		void gaitUpdated();
+
+
+};
 
 template <typename T>
 class GaitController{
@@ -242,12 +281,11 @@ class GaitController{
 		quint64 lastTickStart;
 		quint64 lastUpdate;
 		quint32 currentLiftIndex;//The first limb of the lift set. Full set is calculated based on the values of symetric + limb.enabled + liftCount
-		bool symetric;//TODO: make this a mode instead and implement it
 
 		Mode mode;
-		T stridelengthTarget; //
+		T stridelengthTarget; // --V
 		T stridelength; //How fast the robot wants to move (stridelength). 1.0 means normal walk speed. 2.0 means run speed. 0.5 means "tripping"
-		T feedrateTarget; //
+		T feedrateTarget; // --V
 		T feedrate; //How fast animation is progressing relative to "normal". <1.0 means slow motion. 0.0 means pause, 2.0 means double speed etc. NOTE: there is a limitation on how fast servos may respond and when the feedrate is high it might start acting strange (servo speed is not part of the calculation, it is simply assumed that servos are always fast enough
 
 		T dxT,dyT; //Target direction vector
@@ -258,17 +296,21 @@ class GaitController{
 		T cogx,cogy; //Current center of gravity (kept at 0,0 for now)
 		T cobx,coby; //Current center of balance (average position of 3 feet farthest from center of gravity)
 
+		bool singleLimbMode;
+
 		QVector<GaitLimb<T> *> limbs;
+
+
+		GaitControllerMessenger msg;
 
 	public:
 		GaitController()
-			: limbCount(8)
+			: limbCount(6)
 			, maxLiftCount(3)
 			, tickTime(10000)
 			, lastTickStart(0)
 			, lastUpdate(0)
 			, currentLiftIndex(0)
-			, symetric(false)
 			, stridelengthTarget(0.0)
 			, stridelength(stridelengthTarget)
 			, feedrateTarget(1.0)
@@ -276,6 +318,7 @@ class GaitController{
 			, dxT(0), dyT(-1), dx(dxT), dy(dyT), adx(dx), ady(dy), ddx(dx), ddy(dy), cx(0), cy(0)
 			, cogx(0), cogy(0)
 			, cobx(0), coby(0)
+			, singleLimbMode(false)
 		{
 			limbs.resize(limbCount+1);
 			T a=(M_PI*2)/(limbCount*2);
@@ -290,16 +333,17 @@ class GaitController{
 
 
 		void update(){
+
+			// Update time-keeping
 			const quint64 now=QDateTime::currentMSecsSinceEpoch();
 			if(0==lastUpdate){
 				lastUpdate=now-1;
 			}
 			const quint64 updateInterval=now-lastUpdate;
 			lastUpdate=now;
-
 			quint64 tickInterval=now-lastTickStart;
 
-
+			// Calculate center of balance & center of gravity
 			cobx=0;
 			coby=0;
 			cogx=0;
@@ -330,13 +374,17 @@ class GaitController{
 			cogx-=cx;
 			cogy-=cy;
 
-
-
 			T t=updateInterval/1000.0;//sec
+
+			// Update feedrate
+			T damp2=pow(0.95,t);
+			T idamp2=1.0-damp2;
+			feedrate=feedrateTarget*idamp2+feedrate*damp2;
+
+			// Update stridelength
 			T damp=pow(0.9,t);
 			T idamp=1.0-damp;
 			stridelength=stridelengthTarget*idamp+stridelength*damp;
-			feedrate=feedrateTarget*idamp+feedrate*damp;
 			dx=dxT*idamp+dx*damp;
 			dy=dyT*idamp+dy*damp;
 			ddx=(feedrate*dx*(stridelength)*t);
@@ -348,6 +396,7 @@ class GaitController{
 				lastTickStart=now;
 			}
 
+			// Count enabled and lifted limbs
 			quint32 enabledLimbs=0;
 			quint32 liftedLimbs=0;
 			for(quint32 i=0;i<limbCount;++i){
@@ -358,25 +407,26 @@ class GaitController{
 					liftedLimbs++;
 				}
 			}
-			//Adpative lift set selector
-			/*
-			for(int s=0;s<maxLiftCount-liftedLimbs;++s){
-				const int high=getLimbWithHighestError();
-				if(high>=0){
-					if(limbs[high]->score > stridelength*0.3){
-						limbs[high]->liftPending=true;
+
+			if(!singleLimbMode){
+				const bool adaptive=false;
+				// Adpative lift set selector
+				if(adaptive){
+					for(int s=0, e=maxLiftCount-liftedLimbs;s<e;++s){
+						const int high=getLimbWithHighestError();
+						if(high>=0){
+							if(limbs[high]->score > stridelength*0.4){
+								limbs[high]->liftPending=true;
+							}
+						}
 					}
 				}
-			}
-			*/
-			//Sequential lift set selector
-			for(int s=0;s<maxLiftCount-liftedLimbs;++s){
-				const int high=getLimbWithHighestError();
-				if(high>=0){
-					if(limbs[high]->score > stridelength*0.3){
+				// Sequential lift set selector
+				else{
+					if(liftedLimbs<=0){
 						quint16 liftSet=seq.generate();
 						quint16 limb=1;
-						for(int i=0;i<6;++i){
+						for(quint32 i=0;i<limbCount;++i){
 							if((liftSet & limb) >0){
 								limbs[i]->liftPending=true;
 							}
@@ -386,51 +436,28 @@ class GaitController{
 				}
 			}
 
-
-
+			// Update limbs
 			for(quint32 i=0;i<limbCount;++i){
 				limbs[i]->update(now, updateInterval);
 			}
 
-			/*
-					int b1=findBalancer();
-					int b2=findBalancer();
-					int b3=findBalancer();
-					if(-1!=b1 && -1!=b2 && -1!=b3){
-						cobx=(limbs[b1]->cx+limbs[b2]->cx+limbs[b3]->cx)/3.0-cx;
-						coby=(limbs[b1]->cy+limbs[b2]->cy+limbs[b3]->cy)/3.0-cy;
-					}
-					else{
-						cobx=0;
-						coby=0;
-					}
-					*/
-
-
-			/*
-					T a=0;
-					T ax=0;
-					T ay=0;
-					for(quint32 i=0;i<limbCount;++i){
-						if(limbs[i]->enabled){
-							ax+=limbs[i]->sx;
-							ay+=limbs[i]->sy;
-							a++;
-						}
-					}
-
-					ax/=a;
-					ay/=a;
-					ax-=cx;
-					ay-=cy;
-					T damp=0.95;
-					adx=damp*adx+(1.0-damp)*ax;
-					ady=damp*ady+(1.0-damp)*ay;
-					*/
-
-
 			cx+=ddx;
 			cy+=ddy;
+
+			emit msg.gaitUpdated();
+		}
+
+
+		void hookSignals(QObject &o){
+			if(!msg.connect(&msg,SIGNAL(gaitUpdated()), &o,SLOT(onGaitUpdated()))){
+				qWarning()<<"ERRO: Could not connect";
+			}
+		}
+
+		void unHookSignals(QObject &o){
+			if(!msg.disconnect(&msg,SIGNAL(gaitUpdated()), &o,SLOT(onGaitUpdated()))){
+				qWarning()<<"ERRO: Could not disconnect";
+			}
 		}
 
 		int findBalancer(){
@@ -513,6 +540,16 @@ class GaitController{
 			return candidate;
 		}
 
+		void getLimbVars(quint32 id, T &cox, T &fem, T &tib ){
+			if(id<limbCount){
+
+				cox=limbs[id]->coxaAngle;
+				fem=limbs[id]->femurAngle;
+				tib=limbs[id]->tibiaAngle;
+
+				//	cox=fem=tib=limbs[id]->coxaAngle;
+			}
+		}
 
 
 		void setDirection(T x, T y){
@@ -533,6 +570,31 @@ class GaitController{
 			qDebug()<<"NEW STRIDE LENGTH: "<<stridelengthTarget;
 		}
 
+		void setTarget(T x, T y){
+			if(singleLimbMode){
+				T l=sqrt(x*x+y*y);
+				if(l<=0){
+					l=0.0000001;
+				}
+				dxT=x/l;
+				dyT=y/l;
+				l/=400;
+				if(l>1){
+					l=1;
+				}
+				dxT*=l;
+				dyT*=l;
+
+				limbs[0]->cx=dxT;
+				limbs[0]->cy=dyT;
+			}
+		}
+
+		void setFeedrate(T f){
+			qDebug()<<"FEEDRATE: "<<f;
+			feedrateTarget=f;
+		}
+
 		void toggleLimb(int limb){
 
 			if(limb>=1 && limb<=limbCount){
@@ -545,6 +607,16 @@ class GaitController{
 			qDebug()<<"TOGGLING PAUSE";
 			feedrateTarget=(feedrateTarget>0.1?0.0:1.0);
 		}
+
+
+
+		void toggleSingleLimb(){
+			singleLimbMode=!singleLimbMode;
+			qDebug()<<"TOGGLING SINGLE LIMB MODE TO "<<(singleLimbMode?"ON":"OFF");
+
+		}
+
+
 
 		void paint(QPainter &painter){
 			painter.setRenderHint(QPainter::Antialiasing,true);
@@ -583,21 +655,26 @@ class GaitController{
 			for(T x=gx-w;x<w;x+=step){
 				painter.drawLine(QPointF(x-1,0),QPointF(x+1,h));
 			}
-			for(quint32 i=0;i<limbCount;++i){
-				limbs[i]->paint(painter);
+			if(singleLimbMode){
+				limbs[0]->paint(painter);
+			}
+			else{
+
+				for(quint32 i=0;i<limbCount;++i){
+					limbs[i]->paint(painter);
+				}
+
+				const T r=0.01;
+				QPointF cob(cobx,coby);
+				painter.setPen(green);
+				painter.drawEllipse(cob,r,r);
+
+				QPointF cog(cogx,cogy);
+				painter.setPen(purple);
+				painter.drawEllipse(cog,r,r);
 			}
 
-			const T r=0.01;
-			QPointF cob(cobx,coby);
-			painter.setPen(green);
-			painter.drawEllipse(cob,r,r);
-
-			QPointF cog(cogx,cogy);
-			painter.setPen(purple);
-			painter.drawEllipse(cog,r,r);
-
 		}
-
 
 };
 

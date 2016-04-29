@@ -9,20 +9,25 @@
 class GaitWidget : public QWidget{
 		Q_OBJECT
 	private:
-		GaitController<qreal> gait;
-		QTimer timer;
+		GaitController<qreal> *m_gait;
 	public:
 		explicit GaitWidget(QWidget *parent = 0);
+
+	public:
+
+		void setGait(GaitController <qreal> &gait);
+
+
+	public slots:
+
+		void onGaitUpdated();
+
 
 	protected:
 		void paintEvent(QPaintEvent *);
 		void mouseReleaseEvent ( QMouseEvent * event ) ;
-		void  keyPressEvent(QKeyEvent *event);
-		void hideEvent(QHideEvent *);
-		void showEvent(QShowEvent *);
-
-	public slots:
-		void onUpdateTimer();
+		void mouseMoveEvent(QMouseEvent *event);
+		void keyPressEvent(QKeyEvent *event);
 
 };
 

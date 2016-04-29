@@ -92,7 +92,7 @@ GenericMain::~GenericMain(){
 void GenericMain::inLoop(){
 	sm=new StyleManager;
 	if(0!=sm){
-		sm->apply();
+		//sm->apply();
 	}
 
 }

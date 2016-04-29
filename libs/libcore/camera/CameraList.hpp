@@ -12,8 +12,8 @@ class CameraList: public QObject
 		Q_OBJECT
 	private:
 		QTimer devChangeTimer;
-		QString camListHash;
-		QList<QCameraInfo>  cams;
+		QString deviceListHash;
+		QList<QCameraInfo>  deviceList;
 
 	public:
 		CameraList(QObject *parent=0);
@@ -22,7 +22,7 @@ class CameraList: public QObject
 		QString toSpecStanzas(QString space="");
 
 	private:
-		QString cameraListToHash(QList<QCameraInfo> cameras);
+		QString deviceListToHash(QList<QCameraInfo> devices);
 
 
 	private slots:

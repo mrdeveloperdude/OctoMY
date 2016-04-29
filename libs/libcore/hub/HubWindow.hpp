@@ -23,6 +23,8 @@ namespace Ui {
 	class HubWindow;
 }
 
+template<typename T>
+class GaitController;
 
 class HubWindow : public QMainWindow, public LogDestination{
 		Q_OBJECT
@@ -48,6 +50,7 @@ class HubWindow : public QMainWindow, public LogDestination{
 		double randomWalk;
 
 		HexySerial *hexy;
+		GaitController<qreal> *m_gait;
 
 		//QStandardItemModel simClients;
 

@@ -123,13 +123,17 @@ SOURCES +=\
 	widgets/SvgWidget.cpp \
 	widgets/TextEntry.cpp \
 	widgets/TryToggle.cpp \
-	widgets/PairingWidget.cpp \
 	security/PortableID.cpp \
 	widgets/WaitingSpinnerWidget.cpp \
-    basic/Iconv.cpp \
-    puppet/FaceWidget.cpp \
-    camera/CameraList.cpp \
-    hw/BluetoothList.cpp
+	basic/Iconv.cpp \
+	puppet/FaceWidget.cpp \
+	camera/CameraList.cpp \
+	hw/BluetoothList.cpp \
+	widgets/CameraPairingWidget.cpp \
+	widgets/PairingWidget.cpp \
+    hw/actuators/SerialList.cpp \
+    hw/actuators/ServoInput.cpp \
+    puppet/LimbIKWidget.cpp
 
 
 
@@ -259,13 +263,17 @@ HEADERS  += \
 	widgets/SvgWidget.hpp \
 	widgets/TextEntry.hpp \
 	widgets/TryToggle.hpp \
-	widgets/PairingWidget.hpp \
 	security/PortableID.hpp \
 	widgets/WaitingSpinnerWidget.hpp \
-    basic/Iconv.hpp \
-    puppet/FaceWidget.hpp \
-    camera/CameraList.hpp \
-    hw/BluetoothList.hpp
+	basic/Iconv.hpp \
+	puppet/FaceWidget.hpp \
+	camera/CameraList.hpp \
+	hw/BluetoothList.hpp \
+	widgets/CameraPairingWidget.hpp \
+	widgets/PairingWidget.hpp \
+    hw/actuators/SerialList.hpp \
+    hw/actuators/ServoInput.hpp \
+    puppet/LimbIKWidget.hpp
 
 
 FORMS    += \
@@ -294,7 +302,9 @@ FORMS    += \
 	ui/TryToggle.ui \
 	widgets/MapEditor.ui \
 	widgets/PlanEditor.ui \
-	widgets/PairingWidget.ui
+	widgets/CameraPairingWidget.ui \
+	widgets/PairingWidget.ui \
+    ui/ServoInput.ui
 
 
 RESOURCES += \
@@ -304,6 +314,8 @@ RESOURCES += \
 	resources/qfi.qrc \
 	resources/3d.qrc \
 	resources/data.qrc
+
+
 
 OTHER_FILES += \
 

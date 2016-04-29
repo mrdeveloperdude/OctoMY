@@ -4,7 +4,7 @@
 #include "utility/Utility.hpp"
 #include "plan/parser/PlanHighlighter.hpp"
 #include "../libparser/octomy_parser.hpp"
-#include "../libparser/OctomyPlan.hpp"
+#include "../libparser/OctomyParseContext.hpp"
 
 
 #include <QDebug>
@@ -413,6 +413,7 @@ PlanEditor::PlanEditor(QWidget *parent)
 	ui->plainTextEditPlan->setFocus();
 	saveTimer.setSingleShot(true);
 	saveTimer.setTimerType(Qt::PreciseTimer);
+	ui->plainTextEditParseErrors->setVisible(false);
 
 }
 
@@ -439,9 +440,6 @@ void PlanEditor::appendText(QString txt){
 }
 
 
-void PlanEditor::on_toolButtonTidy_clicked(){
-	tidy();
-}
 
 void PlanEditor::tidy(){
 	qDebug()<<"TIDY";
@@ -454,28 +452,45 @@ void PlanEditor::tidy(){
 	ui->plainTextEditPlan->setErrors(errors);
 }
 
-void PlanEditor::on_toolButtonParse_clicked(){
+void PlanEditor::on_pushButtonTidy_clicked()
+{
+	tidy();
+}
+
+void PlanEditor::on_pushButtonParse_clicked(){
 	qDebug()<<"PARSE";
 	OctomyParser p;
 	QString raw=ui->plainTextEditPlan->document()->toPlainText();
+	ui->plainTextEditParseErrors->setVisible(false);
+	ui->plainTextEditParseErrors->clear();
 	if(p.parse(raw)){
-		OctomyPlan plan;
-		if(!plan.fromParseTrees(p.getTrees())){
+		OctomyParseContext plan;
+		bool ok=plan.fromParseTrees(p.getTrees());
+		if(!ok){
+			ui->plainTextEditParseErrors->appendPlainText(plan.getErrorText());
+			ui->plainTextEditParseErrors->setVisible(true);
 			qWarning()<<"ERROR: Could not parse input into plan";
 		}
 	}
+	else{
+		qWarning()<<"ERROR: Could not parse raw plan into tree";
+		ui->plainTextEditParseErrors->appendPlainText(p.getErrorText());
+		ui->plainTextEditParseErrors->setVisible(true);
+	}
 	QVector<ParseError> errors=p.getErrors();
 	ui->plainTextEditPlan->setErrors(errors);
+	qWarning()<<"DONE PARSING";
 }
 
 void PlanEditor::onTextChanged()
 {
-	saveTimer.start(10000);//If no change for X sec, we auto save
+	//Changes followed by X sec pause means we auto save
+	saveTimer.start(10000);
 }
 
 void PlanEditor::save()
 {
-	ui->toolButtonSave->setEnabled(false);
+	ui->pushButtonSave->setEnabled(false);
 	qDebug()<<"SAVING: "<<plan_fn;
 	QString txt=ui->plainTextEditPlan->toPlainText();
 	//TODO: Should we really change data before saving like this? I mean will all users appreciate this?
@@ -488,11 +503,11 @@ void PlanEditor::save()
 
 void PlanEditor::enableSaveButton()
 {
-	ui->toolButtonSave->setEnabled(true);
+	ui->pushButtonSave->setEnabled(true);
 }
 
 
-void PlanEditor::on_toolButtonSave_clicked()
+void PlanEditor::on_pushButtonSave_clicked()
 {
 	save();
 }
@@ -550,3 +565,4 @@ void PlanEditor::on_pushButtonTest_clicked()
 				"}\n";
 	ui->plainTextEditPlan->setPlainText(txt);
 }
+

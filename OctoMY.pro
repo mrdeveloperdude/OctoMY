@@ -7,6 +7,7 @@ SUBDIRS += \
 	hub \
 	agent \
 	remote \
+	zoo \
 
 
 contains(DEFINES, USE_TEST){
@@ -27,6 +28,7 @@ libs.subdir=		libs
 hub.subdir=			hub
 agent.subdir=		agent
 remote.subdir=		remote
+zoo.subdir=			zoo
 test.subdir=		test
 doc.subdir=			doc
 
@@ -34,5 +36,6 @@ doc.subdir=			doc
 hub.depends=		libs
 agent.depends=		libs
 remote.depends=		libs
+zoo.depends=		libs
 test.depends=		libs
 doc.depends=		libs hub remote agent test

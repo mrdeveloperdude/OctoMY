@@ -28,13 +28,23 @@ bool endstop_b;
 HexySerial::HexySerial(QObject *parent)
 	: QObject(parent)
 	, lastPos{0}
+	, dirtyMoveFlags(0xFFFFFFFF)
 {
 	serial = new QSerialPort(this);
 	settings = new SerialSettings;
 
-	connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError)));
-	connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
-	connect(settings,SIGNAL(settingsChanged()), this, SLOT(onSettingsChanged()));
+	if(!connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError)))){
+		qWarning()<<"ERROR: Could not connect";
+	}
+	if(!connect(serial, SIGNAL(readyRead()), this, SLOT(readData()))){
+		qWarning()<<"ERROR: Could not connect";
+	}
+	if(!connect(serial, SIGNAL(bytesWritten(qint64)), this, SLOT(dataWritten(qint64)))){
+		qWarning()<<"ERROR: Could not connect";
+	}
+	if(!connect(settings,SIGNAL(settingsChanged()), this, SLOT(onSettingsChanged()))){
+		qWarning()<<"ERROR: Could not connect";
+	}
 }
 
 HexySerial::~HexySerial(){
@@ -42,6 +52,12 @@ HexySerial::~HexySerial(){
 	kill();
 
 	delete settings;
+}
+
+void HexySerial::configure(){
+	if(0!=settings){
+		settings->show();
+	}
 }
 
 
@@ -55,6 +71,7 @@ void HexySerial::openSerialPort(){
 	serial->setFlowControl(p.flowControl);
 	if (serial->open(QIODevice::ReadWrite)) {
 		qDebug()<<tr("Connected to %1 : %2, %3, %4, %5, %6").arg(p.name).arg(p.stringBaudRate).arg(p.stringDataBits).arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl);
+		emit connectionChanged();
 	} else {
 		qDebug()<<"ERROR OPENING: "<<serial->errorString();
 	}
@@ -63,14 +80,29 @@ void HexySerial::openSerialPort(){
 void HexySerial::closeSerialPort(){
 	if (serial->isOpen()){
 		serial->close();
+		emit connectionChanged();
 	}
 	qDebug()<<"Disconnected";
 }
 
 
 void HexySerial::writeData(const QByteArray &data){
-	//qDebug()<<"OUT: "<<data;
-	serial->write(data);
+	if(0==data.size()){
+		qWarning()<<"ERROR: WRITING CALLED WITH NO DATA";
+	}
+	else{
+		const qint64 accepted=serial->write(data);
+		if(accepted<0){
+			qWarning()<<"ERROR: write was not accepted. ERROR="<<serial->errorString();
+		}
+		else{
+			if(data.size()>accepted){
+				qWarning()<<"ERROR: Data truncation occurred, serial port would not accept more";
+			}
+			//serial->flush();
+			//qDebug()<<"WRITING: "<<data.size()<<" accepted "<<accepted;
+		}
+	}
 }
 
 void HexySerial::readData(){
@@ -79,7 +111,35 @@ void HexySerial::readData(){
 	//TODO:parse and handle data
 }
 
+
+
+void HexySerial::dataWritten( qint64 written){
+	qint64 left=serial->bytesToWrite();
+	//qDebug()<<"DATA WRITTEN: "<<written <<" (left:"<<left<<") ";
+	if(left<=0 && dirtyMoveFlags >0){
+		syncMove();
+	}
+}
+
+
 void HexySerial::handleError(QSerialPort::SerialPortError error){
+	/*
+	NoError,
+	DeviceNotFoundError,
+	PermissionError,
+	OpenError,
+	ParityError,
+	FramingError,
+	BreakConditionError,
+	WriteError,
+	ReadError,
+	ResourceError,
+	UnsupportedOperationError,
+	UnknownError,
+	TimeoutError,
+	NotOpenError
+			*/
+			qDebug()<<"HANDLED ERROR: "<<error;
 	if (error == QSerialPort::ResourceError) {
 		qDebug()<<"Critical Error"<<serial->errorString();
 		closeSerialPort();
@@ -87,16 +147,15 @@ void HexySerial::handleError(QSerialPort::SerialPortError error){
 }
 
 void HexySerial::onSettingsChanged(){
-	closeSerialPort();
-	openSerialPort();
-	//version();
-	writeData("\n");
+	{
+		QSignalBlocker(this);
+		closeSerialPort();
+		openSerialPort();
+		settings->hide();
+		//version();
+		writeData("\n");
+	}
 	emit settingsChanged();
-}
-
-
-void HexySerial::configure(){
-	settings->show();
 }
 
 
@@ -114,11 +173,17 @@ void HexySerial::kill(quint32 flags){
 	}
 	else{
 		QString data;
+		quint32 f=1;
 		for(quint32 i=0;i<SERVO_COUNT;++i){
-			if((flags & (0x1<<i))>0){
+			if((flags & f)>0){
 				data += QLatin1Literal("#") +  QString::number(i) + QLatin1String("L\n");
 			}
+			else{
+				//data+="LOL";
+			}
+			f<<=1;
 		}
+		qDebug()<<"KILL: "<<data<<" foir "<<flags;
 		writeData(data.toLatin1());
 	}
 }
@@ -144,23 +209,34 @@ inline qreal fclamp(qreal x, qreal a, qreal b){
 }
 
 
-//TODO: look at binary extension introdyuced in 2.1 version of hexy firmware to improve performance
-void HexySerial::move(qreal pos[], quint32 flags){
+void HexySerial::syncMove(){
 	QString data;
-	quint32 j=0;
+	//qDebug()<<"SYNC-MOVE: "<< QString("%1").arg( dirtyMoveFlags, 16, 2, QChar('0'));
 	for(quint32 i=0;i<SERVO_COUNT;++i){
-		if((flags & (0x1<<i))>0){
+		if((dirtyMoveFlags & (0x1<<i))>0){
+			data += "#" +QString::number(i) + "P" + QString::number(lastPos[i]) +"\n";
+		}
+	}
+	writeData(data.toLatin1());
+	dirtyMoveFlags=0;
+
+}
+
+//TODO: look at binary extension introduced in 2.1 version of hexy firmware to improve performance
+void HexySerial::move(qreal pos[], quint32 flags){
+	for(quint32 i=0;i<SERVO_COUNT;++i){
+		quint32 flag=(0x1<<i);
+		if((flags & flag)>0){
 			const quint32 p=(quint32)(fclamp(pos[i],-1.0,1.0)*1000.0+1500.0);
 			//Skip unecessary communication if value did not change
 			if(lastPos[i]!=p){
 				lastPos[i]=p;
-				data += "#" +QString::number(i) + "P" + QString::number(p) +"\n";
-				if(0==i) {
-					//qDebug()<<data;
-				}
+				dirtyMoveFlags|=flag;
 			}
-			j++;
 		}
 	}
-	writeData(data.toLatin1());
+	//qDebug()<<"MOVE: flags="<< QString("%1").arg( flags, 16, 2, QChar('0'))<< ", dirtyMoveFlags="<<QString("%1").arg( dirtyMoveFlags, 16, 2, QChar('0'));
+	if(dirtyMoveFlags>0 && 0==serial->bytesToWrite()){
+		syncMove();
+	}
 }

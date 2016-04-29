@@ -1,68 +1,38 @@
 #ifndef PAIRINGWIDGET_HPP
 #define PAIRINGWIDGET_HPP
 
-
-#include "security/PortableID.hpp"
-
 #include <QWidget>
-#include <QTimer>
-#include <QCamera>
+#include <QModelIndex>
 
 namespace Ui {
 	class PairingWidget;
 }
 
-
-
-class QVideoProbe;
-class PoorMansProbe;
-class ZBarScanner;
-class QVideoFrame;
-class QVideoWidget;
-class KeyStore;
-
 class PairingWidget : public QWidget
 {
 		Q_OBJECT
-	private:
-
-		Ui::PairingWidget *ui;
-
-		QTimer countDownTimer;
-		qint64 badgeDisableTime;
-		qint64 scanDisableTime;
-		static const qint64 TIMEOUT;
-
-
-		QCamera *camera;
-		QVideoProbe *videoProbe;
-		PoorMansProbe *poorVideoProbe;
-		ZBarScanner *zbar;
-
-		QVideoWidget *viewfinder;
-
-		KeyStore &keystore;
-
 
 	public:
 		explicit PairingWidget(QWidget *parent = 0);
 		~PairingWidget();
 
+
+	private slots:
+		void on_checkBoxSecurity_toggled(bool checked);
+		void on_pushButtonBack_clicked();
+		void on_pushButtonPairLAN_clicked();
+		void on_pushButtonPairCamera_clicked();
+		void on_pushButtonBack_2_clicked();
+		void on_pushButtonPairZOO_clicked();
+		void on_pushButtonPairBluetooth_clicked();
+		void on_pushButtonPairNFC_clicked();
+		void on_pushButtonBack_3_clicked();
+		void on_pushButtonBack_4_clicked();
+		void on_listWidgetScanned_doubleClicked(const QModelIndex &index);
+		void on_listWidgetPaired_doubleClicked(const QModelIndex &index);
+
 	private:
-		PortableID getMyPortableID();
-	private slots:
-		void onCountDownTimeout();
-		void detectBarcodes(const QVideoFrame &);
-		void onKeystoreReady();
-		void cameraStatusUpdated(QCamera::Status);
-
-	private slots:
-		void on_pushButtonBadge_toggled(bool checked);
-		void on_pushButtonScanner_toggled(bool checked);
-
-
-
-
+		Ui::PairingWidget *ui;
 };
 
 #endif // PAIRINGWIDGET_HPP

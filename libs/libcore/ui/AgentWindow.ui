@@ -42,7 +42,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>6</number>
      </property>
      <widget class="QWidget" name="pageRunning">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -1342,14 +1342,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="PairingWidget" name="widgetPairing" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
+        <widget class="PairingWidget" name="widgetPairing" native="true"/>
        </item>
       </layout>
      </widget>
@@ -1426,18 +1419,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>IdenticonWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/IdenticonWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>Camera</class>
-   <extends>QWidget</extends>
-   <header>camera/Camera.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>GaitWidget</class>
    <extends>QWidget</extends>
    <header>puppet/GaitWidget.hpp</header>
@@ -1450,9 +1431,21 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PairingWidget</class>
+   <class>IdenticonWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/PairingWidget.hpp</header>
+   <header>widgets/IdenticonWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Camera</class>
+   <extends>QWidget</extends>
+   <header>camera/Camera.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PlanEditor</class>
+   <extends>QWidget</extends>
+   <header>widgets/PlanEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -1462,9 +1455,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PlanEditor</class>
+   <class>PairingWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/PlanEditor.hpp</header>
+   <header>widgets/PairingWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -60,6 +60,10 @@ SerialSettings::SerialSettings(QWidget *parent) :
 	connect(ui->baudRateBox, SIGNAL(currentIndexChanged(int)), this, SLOT(checkCustomBaudRatePolicy(int)));
 	connect(ui->serialPortInfoListBox, SIGNAL(currentIndexChanged(int)), this, SLOT(checkCustomDevicePathPolicy(int)));
 
+	if(!connect(&sl,SIGNAL(serialDevicesChanged()),this,SLOT(onSerialDevicesChanged()))){
+		qWarning()<<"ERROR: could not connect";
+	}
+
 	fillPortsParameters();
 	fillPortsInfo();
 
@@ -75,8 +79,9 @@ SerialSettings::Settings SerialSettings::settings() const{
 }
 
 void SerialSettings::showPortInfo(int idx){
-	if (idx == -1)
+	if (idx == -1){
 		return;
+	}
 
 	QStringList list = ui->serialPortInfoListBox->itemData(idx).toStringList();
 	ui->descriptionLabel->setText(tr("Description: %1").arg(list.count() > 1 ? list.at(1) : tr(blankString)));
@@ -105,8 +110,9 @@ void SerialSettings::checkCustomBaudRatePolicy(int idx){
 void SerialSettings::checkCustomDevicePathPolicy(int idx){
 	bool isCustomPath = !ui->serialPortInfoListBox->itemData(idx).isValid();
 	ui->serialPortInfoListBox->setEditable(isCustomPath);
-	if (isCustomPath)
+	if (isCustomPath){
 		ui->serialPortInfoListBox->clearEditText();
+	}
 }
 
 void SerialSettings::fillPortsParameters(){
@@ -129,9 +135,7 @@ void SerialSettings::fillPortsParameters(){
 	ui->parityBox->addItem(tr("Space"), QSerialPort::SpaceParity);
 
 	ui->stopBitsBox->addItem(QStringLiteral("1"), QSerialPort::OneStop);
-#ifdef Q_OS_WIN
-	ui->stopBitsBox->addItem(tr("1.5"), QSerialPort::OneAndHalfStop);
-#endif
+
 	ui->stopBitsBox->addItem(QStringLiteral("2"), QSerialPort::TwoStop);
 
 	ui->flowControlBox->addItem(tr("None"), QSerialPort::NoFlowControl);
@@ -145,7 +149,9 @@ void SerialSettings::fillPortsInfo(){
 	QString manufacturer;
 	QString serialNumber;
 	//qDebug()<<"SERIAL DEVICES FOUND:";
-	foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
+	QList<QSerialPortInfo> availablePorts=QSerialPortInfo::availablePorts();
+	for(QList<QSerialPortInfo>::iterator it=availablePorts.begin(),e=availablePorts.end();it!=e;++it){
+		const QSerialPortInfo info=*it;
 		QStringList list;
 		description = info.description();
 		manufacturer = info.manufacturer();
@@ -167,27 +173,14 @@ void SerialSettings::fillPortsInfo(){
 
 
 
-QString SerialSettings::toSpecStanzas(QString space){
-	QString out="";
-	foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
-		out+=space+"serial {\n";
-		out+=space+"\ttype=\""+info.description()+"\"\n";
-		out+=space+"\tid=\""+info.serialNumber()+"\"\n";
-		out+=space+"\t// Manufacturer="+info.manufacturer()+" \n";
-		out+=space+"\t// Vendor="+QString::number(info.vendorIdentifier(), 16)+" \n";
-		out+=space+"\t// Location="+info.systemLocation()+" \n";
-		out+=space+"}\n\n";
-	}
-	return out;
-}
-
 
 void SerialSettings::updateSettings(){
 	currentSettings.name = ui->serialPortInfoListBox->currentText();
 
 	if (ui->baudRateBox->currentIndex() == 4) {
 		currentSettings.baudRate = ui->baudRateBox->currentText().toInt();
-	} else {
+	}
+	else {
 		currentSettings.baudRate = static_cast<QSerialPort::BaudRate>( ui->baudRateBox->itemData(ui->baudRateBox->currentIndex()).toInt());
 	}
 	currentSettings.stringBaudRate = QString::number(currentSettings.baudRate);
@@ -204,4 +197,9 @@ void SerialSettings::updateSettings(){
 	currentSettings.flowControl = static_cast<QSerialPort::FlowControl>( ui->flowControlBox->itemData(ui->flowControlBox->currentIndex()).toInt());
 	currentSettings.stringFlowControl = ui->flowControlBox->currentText();
 
+}
+
+
+void SerialSettings::onSerialDevicesChanged(){
+	fillPortsInfo();
 }

@@ -119,11 +119,11 @@ class PlanEditor : public QWidget{
 		void save();
 		void tidy();
 		void enableSaveButton();
-		void on_toolButtonTidy_clicked();
-		void on_toolButtonParse_clicked();
+		void on_pushButtonTidy_clicked();
+		void on_pushButtonParse_clicked();
 
 	private slots:
-		void on_toolButtonSave_clicked();
+		void on_pushButtonSave_clicked();
 		void on_pushButtonTest_clicked();
 };
 
