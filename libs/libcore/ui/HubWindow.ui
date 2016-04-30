@@ -31,7 +31,7 @@
        <string/>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>10</number>
       </property>
       <widget class="QWidget" name="tabPlan">
        <attribute name="icon">

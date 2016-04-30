@@ -26,6 +26,7 @@ class Identicon{
 		QDomDocument domDocument();
 
 		QPixmap pixmap();
+		QImage image();
 
 	private:
 

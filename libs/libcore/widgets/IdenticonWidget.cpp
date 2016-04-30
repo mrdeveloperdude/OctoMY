@@ -83,71 +83,94 @@ QPixmap Identicon::pixmap(){
 }
 
 
+QImage Identicon::image(){
+	regenerateIdenticon();
+	QSvgRenderer svg( doc.toByteArray() );
+	QSize ds=svg.defaultSize();
+	qDebug()<<"Generating image from identicon with size: "<<ds;
+	QImage px(ds, QImage::Format_RGBA8888);
+	px.fill(QColor(0,0,0,0));
+	QPainter painter( &px );
+	svg.render( &painter );
+	return px;
+}
+
+
 void Identicon::regenerateIdenticon(){
 	if(dirty){
-		QFile file(url);
-		file.open(QIODevice::ReadOnly);
-		QByteArray baData = file.readAll();
-		doc.setContent(baData);
-		auto o=doc.documentElement();
-		quint64 d=data;
-		qreal p1=0.0;
-		qreal p2=0.0;
-		qreal p3=0.0;
-		qreal p4=0.0;
-		qreal p5=0.0;
-		qreal p6=0.0;
-		//	qreal p7=0.0;
-		//	qreal p8=0.0;
-		//	qreal p9=0.0;
-		bool debug=false;
-		if(debug){
-			qreal dd=(data/20.0);
-			p1=dd;
-			p2=dd;
-			p3=dd;
-			p4=dd;
-			p5=dd;
-			p6=dd;
-			//		p7=dd;
-			//		p8=dd;
-			//		p9=dd;
+		if(url.isEmpty() || url.isNull()){
+			qWarning()<<"ERROR: URL is invalid, aborting render of identicon SVG.";
 		}
 		else{
-			//	qDebug()<<"DATA: "<<d;
-			p1=realBits(d, 0xff);d=(d>>8);
-			p2=realBits(d, 0xff);d=(d>>8);
-			p3=realBits(d, 0xff);d=(d>>8);
-			p4=realBits(d, 0xff);d=(d>>8);
-			p5=realBits(d, 0xff);d=(d>>8);
-			p6=realBits(d, 0xff);d=(d>>8);
-			//		p7=realBits(d, 0xff);d=(d>>8);
-			//		p8=realBits(d, 0xff);d=(d>>8);
-			//		p9=realBits(d, 0xff);d=(d>>8);
+			QFile file(url);
+			if(!file.exists()){
+				qWarning ()<<"ERROR: file not found while regenerating identicon from URL: "<<url;
+			}
+			else{
+				file.open(QIODevice::ReadOnly);
+				QByteArray baData = file.readAll();
+				doc.setContent(baData);
+				auto o=doc.documentElement();
+				quint64 d=data;
+				qreal p1=0.0;
+				qreal p2=0.0;
+				qreal p3=0.0;
+				qreal p4=0.0;
+				qreal p5=0.0;
+				qreal p6=0.0;
+				//	qreal p7=0.0;
+				//	qreal p8=0.0;
+				//	qreal p9=0.0;
+				bool debug=false;
+				if(debug){
+					qreal dd=(data/20.0);
+					p1=dd;
+					p2=dd;
+					p3=dd;
+					p4=dd;
+					p5=dd;
+					p6=dd;
+					//		p7=dd;
+					//		p8=dd;
+					//		p9=dd;
+				}
+				else{
+					//	qDebug()<<"DATA: "<<d;
+					p1=realBits(d, 0xff);d=(d>>8);
+					p2=realBits(d, 0xff);d=(d>>8);
+					p3=realBits(d, 0xff);d=(d>>8);
+					p4=realBits(d, 0xff);d=(d>>8);
+					p5=realBits(d, 0xff);d=(d>>8);
+					p6=realBits(d, 0xff);d=(d>>8);
+					//		p7=realBits(d, 0xff);d=(d>>8);
+					//		p8=realBits(d, 0xff);d=(d>>8);
+					//		p9=realBits(d, 0xff);d=(d>>8);
+				}
+				//qDebug()<<"Identicon params: "<<p1<<p2<<p3<<p4<<p5<<p6<<p7<<p8<<p9;
+				const QString c1=hsl(p1,0.75f,0.55f);
+				const QString c2=hsl(p2,0.75f,0.55f);
+				const QString c3=hsl(p3,0.75f,0.25f);
+				setAttrRecur(o, "circle", "circleTop", "style", "stroke:" + c1+ ";fill:" + c3+ ";opacity:1;fill-opacity:1;fill-rule:evenodd;stroke-width:3.86077285;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1");
+				setAttrRecur(o, "circle", "circleBottom", "style", "stroke:" + c1+ ";fill:" + c3 + ";opacity:1;fill-opacity:1;fill-rule:evenodd;stroke-width:3.86077285;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1");
+				setAttrRecur(o, "path", "pathLeg", "style", "stroke:"+c2+";fill:none;opacity:1;fill-opacity:1;fill-rule:evenodd;stroke-width:3.86077285;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1");
+				setAttrRecur(o, "path", "pathSmile", "style", "opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:"+c2+";stroke-width:1.28692424;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1");
+				const float w=11.3653;
+				const float end=0.3f;
+				const float w1=p4*w*(1.0f-end)+end*w;
+				const float w2=w-w1;
+				const float ranA=M_PI*0.5f;
+				const float minA1=1;
+				const float a1=(p5*ranA)+minA1;
+				const float x1=sin(a1)*w1;
+				const float y1=cos(a1)*w1;
+				const float minA2=a1*0.5f;
+				const float a2=(p6*ranA)+minA2;
+				const float x2=sin(a2)*w2;
+				const float y2=cos(a2)*w2;
+				setAttrRecur(o, "path", "pathLeg", "d", "m -2297.5041,-441.98664 "+QString::number(x1)+"," +QString::number(y1)+" "+QString::number(x2)+"," +QString::number(y2));
+				dirty=false;
+			}
 		}
-		//qDebug()<<"Identicon params: "<<p1<<p2<<p3<<p4<<p5<<p6<<p7<<p8<<p9;
-		const QString c1=hsl(p1,0.75f,0.55f);
-		const QString c2=hsl(p2,0.75f,0.55f);
-		const QString c3=hsl(p3,0.75f,0.25f);
-		setAttrRecur(o, "circle", "circleTop", "style", "stroke:" + c1+ ";fill:" + c3+ ";opacity:1;fill-opacity:1;fill-rule:evenodd;stroke-width:3.86077285;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1");
-		setAttrRecur(o, "circle", "circleBottom", "style", "stroke:" + c1+ ";fill:" + c3 + ";opacity:1;fill-opacity:1;fill-rule:evenodd;stroke-width:3.86077285;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1");
-		setAttrRecur(o, "path", "pathLeg", "style", "stroke:"+c2+";fill:none;opacity:1;fill-opacity:1;fill-rule:evenodd;stroke-width:3.86077285;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1");
-		setAttrRecur(o, "path", "pathSmile", "style", "opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:"+c2+";stroke-width:1.28692424;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1");
-		const float w=11.3653;
-		const float end=0.3f;
-		const float w1=p4*w*(1.0f-end)+end*w;
-		const float w2=w-w1;
-		const float ranA=M_PI*0.5f;
-		const float minA1=1;
-		const float a1=(p5*ranA)+minA1;
-		const float x1=sin(a1)*w1;
-		const float y1=cos(a1)*w1;
-		const float minA2=a1*0.5f;
-		const float a2=(p6*ranA)+minA2;
-		const float x2=sin(a2)*w2;
-		const float y2=cos(a2)*w2;
-		setAttrRecur(o, "path", "pathLeg", "d", "m -2297.5041,-441.98664 "+QString::number(x1)+"," +QString::number(y1)+" "+QString::number(x2)+"," +QString::number(y2));
-		dirty=false;
 	}
 }
 

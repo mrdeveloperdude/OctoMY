@@ -39,3 +39,6 @@ local_overrides.pri
 /mxe
 /scripts
 *.txt
+
+/design/footage*
+/docker

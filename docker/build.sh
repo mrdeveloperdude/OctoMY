@@ -19,7 +19,7 @@ qt_version="5.6.0"
 qt_version_short="${qt_version%.*}"
 qt_build_log="qt-${qt_version}-build-log.txt"
 qt_prefix_dir="/usr/local/Qt"
-qt_qmake="${qt_prefix_dir}/${qt_version_short}/clang_64/bin/qmake"
+
 
 
 function do_apt(){
@@ -32,6 +32,25 @@ function do_apt(){
 
 	local EXCLUDE=""
 	local PKGS="";
+	local DEPS=""
+		DEPS+=" libasound2-dev"
+		DEPS+=" libgstreamer0.10-dev"
+		DEPS+=" libgstreamer-plugins-base0.10-dev"
+		DEPS+=" libsqlite-dev"
+		DEPS+=" libsqlite3-dev"
+		DEPS+=" libssl-dev"
+		DEPS+=" gnutls-dev"
+		DEPS+=" libgnutls-dev"
+		DEPS+=" libsslcommon2-dev"
+		DEPS+=" build-essential"
+		DEPS+=" perl"
+		DEPS+=" python"
+		DEPS+=" git"
+		DEPS+=" wget"
+		DEPS+=" libgl1-mesa-dev"
+		DEPS+=" clang"
+		DEPS+=" pigz"
+		DEPS+=" ca-certificates"
 
 	cd $PW
 	mkdir -p "$NAME"
@@ -66,7 +85,7 @@ RUN echo "APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;" >> /etc/apt
 RUN apt-key update \
  && apt-get update \
  && apt-get build-dep -y qt5-default \
- && apt-get install -y build-essential perl python git wget libgl1-mesa-dev clang pigz \
+ && apt-get install -y  $DEPS \
 #RUN apt-get install -y aptitude
 #RUN apt-get purge \$(aptitude search '~i!~M!~prequired!~pimportant!~R~prequired!~R~R~prequired!~R~pimportant!~R~R~pimportant!busybox!grub!initramfs-tools' | awk '{print $2}')
 #RUN apt-get purge -y aptitude
@@ -130,7 +149,7 @@ function do_qt(){
 #	OPTS+=" -no-sql-sqlite" 
 	OPTS+=" -no-sql-sqlite2" 
 	OPTS+=" -no-sql-tds"
-	#OPTS+=" -no-iconv"
+#	OPTS+=" -no-iconv"
 #	OPTS+=" -no-dbus"
 #	OPTS+=" -no-glib"
 	OPTS+=" -no-gif"
@@ -156,7 +175,7 @@ function do_qt(){
 	OPTS+=" -skip qtcanvas3d"
 	OPTS+=" -skip qtdeclarative"
 	OPTS+=" -skip qtenginio"
-	OPTS+=" -skip qtgraphicaleffects"
+#	OPTS+=" -skip qtgraphicaleffects"
 	OPTS+=" -skip qtwayland"
 
 	cat << EOT >Dockerfile
@@ -168,7 +187,7 @@ RUN ln -s /src/qt-everywhere-opensource-src-${qt_version} /src/qt
 RUN cd /src/qt && ./configure $OPTS 
 #> ${qt_build_log}
 
-RUN cd /src/qt && make -j $(grep -c ^processor /proc/cpuinfo) all 
+RUN cd /src/qt && make -j $(grep -c ^processor /proc/cpuinfo) all ; exit 0
 #> ${qt_build_log}
 
 #EXPOSE 80
@@ -191,6 +210,8 @@ EOT
 
 function do_zoo(){
 	local NAME="${BASE}_zoo"
+	local octomy_bin_dir="/OctoMY"
+	local qt_qmake="/src/qt/qtbase/bin/qmake"
 	mkdir -p "$NAME"
 	
 	cd "$PW/$NAME"
@@ -199,14 +220,17 @@ function do_zoo(){
 FROM		${BASE}_qt
 MAINTAINER	${maintainer}
 
-RUN cd / && git clone https://github.com/mrdeveloperdude/OctoMY.git
-RUN cd OctoMY && ${qt_qmake} && make
+RUN apt-key update \
+ && apt-get update \
+ && apt-get install -y ca-certificates 
 
-CMD 
+RUN cd /src && git clone https://github.com/mrdeveloperdude/OctoMY.git
+RUN mkdir -p ${octomy_bin_dir} && cd ${octomy_bin_dir} && ${qt_qmake} /src/OctoMY/OctoMY.pro && make
 
-#EXPOSE 80
 
-#CMD ["/usr/sbin/apache2", "-D",  "FOREGROUND"]
+EXPOSE 8080:80
+
+CMD ["/usr/sbin/apache2", "-D",  "FOREGROUND"]
 
 EOT
 	cd $PW
