@@ -1,8 +1,8 @@
 #ifndef SVGWIDGET_HPP
 #define SVGWIDGET_HPP
 
-#include <QWidget>
-#include <QSvgRenderer>
+#include <QtWidgets/QWidget>
+#include <QtSvg/QSvgRenderer>
 
 class SvgWidget : public QWidget{
 		Q_OBJECT

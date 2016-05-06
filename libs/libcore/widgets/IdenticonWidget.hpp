@@ -2,36 +2,11 @@
 #define IDENTICONWIDGET_HPP
 
 #include "widgets/SvgWidget.hpp"
-#include <QWidget>
-#include <QSvgRenderer>
+#include "Identicon.hpp"
 
 
 #include <QDomDocument>
 
-class Identicon{
-	private:
-		quint64 data;
-		QString url;
-		bool dirty;
-		QByteArray ba;
-		QDomDocument doc;
-	public:
-		explicit Identicon(QString url="", quint64 data=0);
-		virtual  ~Identicon();
-
-	public:
-		void setSvgURL(QString);
-		void setIdenticonData(quint64);
-
-		QDomDocument domDocument();
-
-		QPixmap pixmap();
-		QImage image();
-
-	private:
-
-		void regenerateIdenticon();
-};
 
 class IdenticonWidget : public SvgWidget{
 		Q_OBJECT

@@ -6,9 +6,9 @@ TARGET = zoo
 
 # Start with common for project...
 include($$TOP_PWD/common.pri)
+
 # ... but ZOO is a server app, so better start acting like one!
 CONFIG += console
-QT -= gui opengl widgets printsupport quick serialport multimedia multimediawidgets svg positioning sensors bluetooth
 
 include($$TOP_PWD/libs/inc.pri)
 include($$TOP_PWD/libs/ext.pri)

@@ -123,6 +123,7 @@ SOURCES +=\
 	widgets/SvgWidget.cpp \
 	widgets/TextEntry.cpp \
 	widgets/TryToggle.cpp \
+	widgets/Identicon.cpp \
 	security/PortableID.cpp \
 	widgets/WaitingSpinnerWidget.cpp \
 	basic/Iconv.cpp \
@@ -131,9 +132,9 @@ SOURCES +=\
 	hw/BluetoothList.cpp \
 	widgets/CameraPairingWidget.cpp \
 	widgets/PairingWidget.cpp \
-    hw/actuators/SerialList.cpp \
-    hw/actuators/ServoInput.cpp \
-    puppet/LimbIKWidget.cpp
+	hw/actuators/SerialList.cpp \
+	hw/actuators/ServoInput.cpp \
+	puppet/LimbIKWidget.cpp
 
 
 
@@ -263,6 +264,7 @@ HEADERS  += \
 	widgets/SvgWidget.hpp \
 	widgets/TextEntry.hpp \
 	widgets/TryToggle.hpp \
+	widgets/Identicon.hpp \
 	security/PortableID.hpp \
 	widgets/WaitingSpinnerWidget.hpp \
 	basic/Iconv.hpp \
@@ -271,9 +273,9 @@ HEADERS  += \
 	hw/BluetoothList.hpp \
 	widgets/CameraPairingWidget.hpp \
 	widgets/PairingWidget.hpp \
-    hw/actuators/SerialList.hpp \
-    hw/actuators/ServoInput.hpp \
-    puppet/LimbIKWidget.hpp
+	hw/actuators/SerialList.hpp \
+	hw/actuators/ServoInput.hpp \
+	puppet/LimbIKWidget.hpp
 
 
 FORMS    += \
@@ -304,7 +306,7 @@ FORMS    += \
 	widgets/PlanEditor.ui \
 	widgets/CameraPairingWidget.ui \
 	widgets/PairingWidget.ui \
-    ui/ServoInput.ui
+	ui/ServoInput.ui
 
 
 RESOURCES += \

@@ -13,6 +13,8 @@
 #include <QBuffer>
 #include <QByteArray>
 
+#include <QtGui/QImage>
+#include <QtGui/QPixmap>
 
 using namespace qhttp::server;
 

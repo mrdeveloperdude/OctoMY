@@ -12,9 +12,9 @@ CONFIG += x86 x86_64
 
 # Stop build if no std is selected
 !contains(CONFIG, c++14){
-!contains(CONFIG, c++11){
-error( "CONFIG MUST CONTAIN c++11 or c++14. Both are missing, aborting build!")
-}
+	!contains(CONFIG, c++11){
+		error( "CONFIG MUST CONTAIN c++11 or c++14. Both are missing, aborting build!")
+	}
 }
 
 
@@ -54,13 +54,13 @@ QMAKE_TARGET_DESCRIPTION =	"N-Limbed madness™"
 QT += core gui opengl widgets xml network multimedia multimediawidgets svg printsupport quick sql positioning sensors testlib serialport bluetooth
 
 contains(DEFINES, USE_QT3D){
-QT += 3dcore 3drenderer 3dinput
+	QT += 3dcore 3drenderer 3dinput
 }
 
 android{
 	QT += androidextras
-#NOTE: Each individual project will look for her own android config (making it possible for each tier to have separate adaptations
-ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+	#NOTE: Each individual project will look for her own android config (making it possible for each tier to have separate adaptations
+	ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 }
 
 static {
