@@ -187,9 +187,9 @@ class GaitLimb{
 		}
 
 		void paint(QPainter &painter){
-			const T w=painter.device()->width();
-			const T h=painter.device()->height();
-			const T s=0.5;
+//			const T w=painter.device()->width();
+	//		const T h=painter.device()->height();
+		//	const T s=0.5;
 
 			//QPointF origo(w2,h2);
 			QPointF origin(bx,by);
@@ -199,23 +199,23 @@ class GaitLimb{
 			QPointF old(sx-body.cx,sy-body.cy);
 			QPen base(QBrush(Qt::NoBrush),0.02);
 			QPen white(base);
-			white.setWidth(0.04);
+			white.setWidthF(0.04);
 			white.setColor(QColor(enabled?(lift?"white":"gray"):"darkred"));
 			QPen green(base);
-			green.setWidth(0.04);
+			green.setWidthF(0.04);
 			green.setColor(QColor("green"));
 			QPen purple(base);
-			purple.setWidth(0.01);
+			purple.setWidthF(0.01);
 			purple.setColor(QColor("purple").darker());
 			QPen red(base);
-			red.setWidth(0.02);
+			red.setWidthF(0.02);
 			red.setColor(QColor(balance?"yellow":"red"));
 			QPen teal(base);
-			teal.setWidth(0.01);
+			teal.setWidthF(0.01);
 			teal.setColor(QColor("teal"));
 
 			QPen blue(base);
-			blue.setWidth(0.01);
+			blue.setWidthF(0.01);
 			blue.setColor(QColor("blue"));
 
 			const T r=0.02;
