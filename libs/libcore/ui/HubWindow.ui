@@ -31,7 +31,7 @@
        <string/>
       </property>
       <property name="currentIndex">
-       <number>10</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabPlan">
        <attribute name="icon">
@@ -1129,15 +1129,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>TryToggle</class>
+   <class>GaitWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/TryToggle.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>MapEditor</class>
-   <extends>QWidget</extends>
-   <header>widgets/MapEditor.hpp</header>
+   <header>puppet/GaitWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -1155,7 +1149,19 @@
   <customwidget>
    <class>PlanEditor</class>
    <extends>QWidget</extends>
-   <header>widgets/PlanEditor.hpp</header>
+   <header>widgets/planedit/PlanEditor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TryToggle</class>
+   <extends>QWidget</extends>
+   <header>widgets/TryToggle.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MapEditor</class>
+   <extends>QWidget</extends>
+   <header>widgets/MapEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -1214,12 +1220,6 @@
    <class>HexyTool</class>
    <extends>QWidget</extends>
    <header>hw/actuators/HexyTool.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>GaitWidget</class>
-   <extends>QWidget</extends>
-   <header>puppet/GaitWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

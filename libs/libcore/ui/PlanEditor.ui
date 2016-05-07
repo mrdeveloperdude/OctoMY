@@ -977,7 +977,7 @@
   <customwidget>
    <class>CodeEditor</class>
    <extends>QPlainTextEdit</extends>
-   <header>widgets/PlanEditor.hpp</header>
+   <header>widgets/planedit/CodeEditor.hpp</header>
   </customwidget>
  </customwidgets>
  <resources>

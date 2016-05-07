@@ -625,16 +625,16 @@ class GaitController{
 			QPen base(QBrush(Qt::NoBrush),2);
 
 			QPen brown(base);
-			brown.setWidth(0.01);
+			brown.setWidthF(0.01);
 			brown.setStyle(Qt::SolidLine);
 			brown.setColor(QColor("brown"));
 
 			QPen green(base);
-			green.setWidth(0.04);
+			green.setWidthF(0.04);
 			green.setColor(QColor("green"));
 
 			QPen purple(base);
-			purple.setWidth(0.01);
+			purple.setWidthF(0.01);
 			purple.setColor(QColor("purple").darker());
 
 			painter.translate(w/2,h/2);

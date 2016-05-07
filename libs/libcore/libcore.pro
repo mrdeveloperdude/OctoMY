@@ -100,7 +100,6 @@ SOURCES +=\
 	widgets/MapEditor.cpp \
 	widgets/MultiView.cpp \
 	widgets/NumberEntry.cpp \
-	widgets/PlanEditor.cpp \
 	widgets/qfi/LayoutSquare.cpp \
 	widgets/qfi/qfi_ADI.cpp \
 	widgets/qfi/qfi_ALT.cpp \
@@ -134,7 +133,10 @@ SOURCES +=\
 	widgets/PairingWidget.cpp \
 	hw/actuators/SerialList.cpp \
 	hw/actuators/ServoInput.cpp \
-	puppet/LimbIKWidget.cpp
+	puppet/LimbIKWidget.cpp \
+    widgets/planedit/CodeEditor.cpp \
+    widgets/planedit/PlanEditor.cpp \
+    widgets/planedit/LineNumberArea.cpp
 
 
 
@@ -241,7 +243,6 @@ HEADERS  += \
 	widgets/MapEditor.hpp \
 	widgets/MultiView.hpp \
 	widgets/NumberEntry.hpp \
-	widgets/PlanEditor.hpp \
 	widgets/qfi/LayoutSquare.h \
 	widgets/qfi/qfi_ADI.h \
 	widgets/qfi/qfi_ALT.h \
@@ -275,7 +276,10 @@ HEADERS  += \
 	widgets/PairingWidget.hpp \
 	hw/actuators/SerialList.hpp \
 	hw/actuators/ServoInput.hpp \
-	puppet/LimbIKWidget.hpp
+	puppet/LimbIKWidget.hpp \
+    widgets/planedit/PlanEditor.hpp \
+    widgets/planedit/CodeEditor.hpp \
+    widgets/planedit/LineNumberArea.hpp
 
 
 FORMS    += \
@@ -302,11 +306,11 @@ FORMS    += \
 	ui/SerialSettings.ui \
 	ui/StatsWindow.ui \
 	ui/TryToggle.ui \
-	widgets/MapEditor.ui \
-	widgets/PlanEditor.ui \
-	widgets/CameraPairingWidget.ui \
-	widgets/PairingWidget.ui \
-	ui/ServoInput.ui
+	ui/ServoInput.ui \
+    ui/PlanEditor.ui \
+    ui/CameraPairingWidget.ui \
+    ui/MapEditor.ui \
+    ui/PairingWidget.ui
 
 
 RESOURCES += \

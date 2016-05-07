@@ -42,7 +42,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>6</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="pageRunning">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -1445,7 +1445,7 @@
   <customwidget>
    <class>PlanEditor</class>
    <extends>QWidget</extends>
-   <header>widgets/PlanEditor.hpp</header>
+   <header>widgets/planedit/PlanEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
