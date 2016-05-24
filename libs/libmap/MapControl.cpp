@@ -548,6 +548,7 @@ namespace qmapcontrol
 		m_imagemanager->setCacheDir( path, qDiskSizeMB );
 	}
 
+
 	void MapControl::setProxy(QString host, int port, const QString username, const QString password)
 	{
 		m_imagemanager->setProxy(host, port, username, password);

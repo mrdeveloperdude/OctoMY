@@ -151,6 +151,7 @@ namespace qmapcontrol
 		net->setProxy(host, port, username, password);
 	}
 
+
 	void ImageManager::setCacheDir(const QDir& path, const int qDiskSizeMB)
 	{
 		if ( !path.absolutePath().isEmpty() )
@@ -170,6 +171,7 @@ namespace qmapcontrol
 			net->setDiskCache(0);
 		}
 	}
+
 
 	int ImageManager::loadQueueSize() const
 	{

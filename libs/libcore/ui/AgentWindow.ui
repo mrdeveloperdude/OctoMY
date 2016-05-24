@@ -44,6 +44,13 @@
      <property name="currentIndex">
       <number>2</number>
      </property>
+     <widget class="QWidget" name="pageWelcome">
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <widget class="WelcomeWidget" name="widgetWelcome" native="true"/>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="pageRunning">
       <layout class="QGridLayout" name="gridLayout_2">
        <property name="leftMargin">
@@ -1425,12 +1432,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ConnectionWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/ConnectionWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>IdenticonWidget</class>
    <extends>QWidget</extends>
    <header>widgets/IdenticonWidget.hpp</header>
@@ -1449,6 +1450,12 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ConnectionWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/ConnectionWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>FaceWidget</class>
    <extends>QWidget</extends>
    <header>puppet/FaceWidget.hpp</header>
@@ -1458,6 +1465,12 @@
    <class>PairingWidget</class>
    <extends>QWidget</extends>
    <header>widgets/PairingWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WelcomeWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/WelcomeWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

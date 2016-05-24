@@ -6,7 +6,7 @@
 void TestParser::test(){
 	OctomyParser p;
 	p.parse("plan{ remote{} hub {} agent{puppy{ memeber { } } } }");
-	qDebug()<<"PARSE RESULT: "<<p.toString();
+	qDebug()<<"PARSE RESULT: "<<p.treesToString();
 }
 
 

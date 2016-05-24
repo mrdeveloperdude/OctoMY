@@ -3,7 +3,7 @@
 
 #include "comms/CommsChannel.hpp"
 #include "security/KeyStore.hpp"
-
+#include "zoo/ZooClient.hpp"
 #include <QCommandLineParser>
 
 class Hub: QObject{
@@ -11,6 +11,7 @@ class Hub: QObject{
 	private:
 		QCommandLineParser &opts;
 		CommsChannel *comms;
+		ZooClient *zoo;
 		int lastSentPackets;
 		int lastReceivedPackets;
 		int lastLostPackets;
@@ -29,6 +30,8 @@ class Hub: QObject{
 
 		QCommandLineParser &getOptions();
 		CommsChannel *getComms();
+
+		ZooClient *getZoo();
 
 	private slots:
 

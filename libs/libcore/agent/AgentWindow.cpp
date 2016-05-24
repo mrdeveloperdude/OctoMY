@@ -6,6 +6,8 @@
 #include "utility/Utility.hpp"
 #include "hw/actuators/HexyTool.hpp"
 #include "hw/BluetoothList.hpp"
+#include "basic/Settings.hpp"
+#include "widgets/WelcomeWidget.hpp"
 
 #include <QDebug>
 #include <QAccelerometerReading>
@@ -24,6 +26,22 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	, hexy(0)
 {
 	ui->setupUi(this);
+	Settings &s=Settings::getInstance();
+	//Select correct starting page
+	QWidget *startPage=ui->pageConnect;
+	ui->stackedWidget->setCurrentWidget(s.getCustomSettingBool("octomy.initialized")?startPage:ui->pageWelcome);
+	//Make sure to switch page on "initialize"
+	connect(ui->widgetWelcome, &WelcomeWidget::initialized, [=]() {
+		ui->stackedWidget->setCurrentWidget(startPage);
+	} );
+
+	connect(ui->widgetIdenticon_2, &IdenticonWidget::doubleClicked, [=]() {
+		ui->stackedWidget->setCurrentWidget(ui->pageWelcome);
+	} );
+
+	ui->widgetFace->setVisible(s.getCustomSettingBool("octomy.face"));
+	ui->widgetIdenticon_2->setVisible(!ui->widgetFace->isVisible());
+
 	//Set our custom identicon as window icon
 	Identicon id(QStringLiteral(":/icons/identicon.svg"),0);
 	QIcon icon;//=windowIcon();
@@ -35,7 +53,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	if(!connect(ui->widgetConnection,SIGNAL(connectStateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState)),WWCONTYPE)){
 		qWarning()<<"ERROR: could not connect";
 	}
-	ui->stackedWidget->setCurrentWidget(ui->pageConnect);
+
 	if(0!=agent){
 		ui->labelLocal->setText("WAITING FOR LOCAL");
 		ui->labelHub->setText("WAITING FOR HUB");

@@ -136,11 +136,17 @@ FaceWidget::FaceWidget(QWidget *parent)
 	, leftEye(QVector2D(-0.2,0),-0.1*M_PI)
 	, rightEye(QVector2D(0.2,0),0.1*M_PI)
 	, bgBrush("black")
+	, eyeSteer(0,0)
 {
 	if(!connect(&timer,SIGNAL(timeout()),this,SLOT(onUpdateTimer()))){
 		qWarning()<<"ERROR: Could not connect";
 	}
 
+	//	qDebug()<<"BUT: "<<but<<" squint "<< squint;
+	leftEye.setExpression(lowerLidSteer,upperLidSteer,squintSteer);
+	rightEye.setExpression(lowerLidSteer,upperLidSteer,squintSteer);
+	leftEye.setSteer(eyeSteer);
+	rightEye.setSteer(eyeSteer);
 }
 
 
@@ -229,6 +235,7 @@ void FaceWidget::mouseMoveEvent(QMouseEvent *e){
 	}
 	eyeSteer=m*0.1;
 
+
 	//	qDebug()<<"BUT: "<<but<<" squint "<< squint;
 	if(lastPress.x()>0){
 		leftEye.setExpression(lowerLidSteer,upperLidSteer,squintSteer);
@@ -241,3 +248,9 @@ void FaceWidget::mouseMoveEvent(QMouseEvent *e){
 }
 
 
+
+void FaceWidget::leaveEvent(QEvent *){
+	eyeSteer=QVector2D(0,0);
+	leftEye.setSteer(eyeSteer);
+	rightEye.setSteer(eyeSteer);
+}

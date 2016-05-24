@@ -1,10 +1,17 @@
 <RCC>
     <qresource prefix="/">
-        <file>fonts/CenturyGothicStd.otf</file>
-        <file>fonts/CenturyGothicStd-Bold.otf</file>
-        <file>fonts/CenturyGothicStd-BoldItalic.otf</file>
-        <file>fonts/CenturyGothicStd-Italic.otf</file>
-        <file>fonts/code128.ttf</file>
-        <file>fonts/digital-7 (mono).ttf</file>
+        <file>fonts/CenturyGothic/CenturyGothicStd.otf</file>
+        <file>fonts/CenturyGothic/CenturyGothicStd-Bold.otf</file>
+        <file>fonts/CenturyGothic/CenturyGothicStd-BoldItalic.otf</file>
+        <file>fonts/CenturyGothic/CenturyGothicStd-Italic.otf</file>
+        <file>fonts/Other/code128.ttf</file>
+        <file>fonts/Other/digital-7 (mono).ttf</file>
+        <file>fonts/Dosis/Dosis-Regular.otf</file>
+        <file>fonts/Dosis/Dosis-Bold.otf</file>
+        <file>fonts/Dosis/Dosis-ExtraBold.otf</file>
+        <file>fonts/Dosis/Dosis-ExtraLight.otf</file>
+        <file>fonts/Dosis/Dosis-Light.otf</file>
+        <file>fonts/Dosis/Dosis-Medium.otf</file>
+        <file>fonts/Dosis/Dosis-SemiBold.otf</file>
     </qresource>
 </RCC>

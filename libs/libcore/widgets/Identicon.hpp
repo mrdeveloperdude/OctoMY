@@ -23,8 +23,8 @@ class Identicon{
 
 		QDomDocument domDocument();
 
-		QPixmap pixmap();
-		QImage image();
+		QPixmap pixmap(qint32 w=-1,qint32 h=-1,qreal zoom=0.0);
+		QImage image(qint32 w=-1,qint32 h=-1,qreal zoom=0.0);
 
 	private:
 

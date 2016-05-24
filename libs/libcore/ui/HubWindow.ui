@@ -31,7 +31,7 @@
        <string/>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>7</number>
       </property>
       <widget class="QWidget" name="tabPlan">
        <attribute name="icon">
@@ -412,6 +412,28 @@
          </spacer>
         </item>
        </layout>
+      </widget>
+      <widget class="QWidget" name="tabZoo">
+       <attribute name="icon">
+        <iconset resource="../resources/icons.qrc">
+         <normaloff>:/icons/zoo.svg</normaloff>:/icons/zoo.svg</iconset>
+       </attribute>
+       <attribute name="title">
+        <string>Zoo</string>
+       </attribute>
+       <widget class="QPushButton" name="pushButtonUDPPunch">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>20</y>
+          <width>291</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Send UDP Punch</string>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="tabPKI">
        <attribute name="icon">

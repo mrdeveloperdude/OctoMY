@@ -10,15 +10,26 @@ SUBDIRS += \
 	zoo \
 
 
-contains(DEFINES, USE_TEST){
-SUBDIRS += \
-	test \
+# NOTE: USE_TESTS is enabled when useful in local_override.pri
+contains(DEFINES, USE_TESTS){
+	# Warn tghe user that there is potential problems in build config for tests
+	contains(DEFINES, USE_BASIC_TESTS | USE_WEB_TESTS){
+		message(TEST PROJECT WAS ADDED TO OCTOMY BUILD)
+	}
+	else{
+		warning(USE_TESTS defined without USE_BASIC_TESTS or USE_WEB_TESTS)
+	}
+
+	SUBDIRS += \
+		test \
+
 }
 
 
 contains(DEFINES, USE_DOCS){
-SUBDIRS += \
-	doc \
+	message(DOCUMENTATION PROJECT WAS ADDED TO OCTOMY BUILD)
+	SUBDIRS += \
+		doc \
 }
 
 

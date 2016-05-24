@@ -31,6 +31,18 @@
 
 #define WWCONTYPE (Qt::ConnectionType) (Qt::QueuedConnection | Qt::UniqueConnection)
 
+
+
+
+
+#define OC_METHODGATE()		WWMETHODGATE()
+#define OC_FUNCTIONGATE()	WWFUNCTIONGATE()
+#define OC_TIMEOUTWARN(to)	WWTIMEOUTWARN(to)
+#define OC_ASSERT(a)		WWASSERT(a)
+#define OC_CONTYPE			WWCONTYPE
+
+
+
 #define WEB_TIMEOUT (4000)
 
 QDebug operator<< (QDebug d, void *p);

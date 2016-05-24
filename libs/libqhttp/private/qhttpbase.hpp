@@ -158,7 +158,9 @@ public:
 	void            collectData(int atMost) {
 		icollectCapacity = atMost;
 		icollectedData.clear();
-		icollectedData.reserve(atMost);
+		if(atMost > 0){
+			icollectedData.reserve(atMost);
+		}
 	}
 
 	bool            shouldCollect() const {

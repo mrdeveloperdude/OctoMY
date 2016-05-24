@@ -35,7 +35,7 @@
       <number>0</number>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="pagePairingMethod">
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -882,15 +882,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>CameraPairingWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/CameraPairingWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>IdenticonWidget</class>
    <extends>QWidget</extends>
    <header>widgets/IdenticonWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CameraPairingWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/CameraPairingWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

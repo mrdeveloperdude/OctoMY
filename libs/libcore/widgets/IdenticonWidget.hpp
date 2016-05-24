@@ -28,6 +28,16 @@ class IdenticonWidget : public SvgWidget{
 	public:
 		void setIdenticonData(quint64);
 
+	signals:
+		void doubleClicked();
+
+	protected:
+
+		void mouseDoubleClickEvent(QMouseEvent *);
+
+
+
+
 };
 
 #endif // IDENTICONWIDGET_HPP

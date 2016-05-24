@@ -23,6 +23,8 @@
 *
 */
 
+#include "../libcore/basic/NetworkOptimizer.hpp"
+
 #include "MapNetwork.hpp"
 #include <QNetworkRequest>
 #include <QUrl>
@@ -37,13 +39,14 @@ namespace qmapcontrol
 {
 	MapNetwork::MapNetwork(ImageManager* parent)
 		: parent(parent)
-		, http(new QNetworkAccessManager(this))
+		, http(new QNetworkAccessManager)
 		, loaded(0)
 		, networkActive( false )
 		, cacheEnabled(false)
 	{
 		connect(http, SIGNAL(finished(QNetworkReply *)), this, SLOT(requestFinished(QNetworkReply *)));
 		http->setCookieJar(new QNetworkCookieJar(http));
+
 	}
 
 	MapNetwork::~MapNetwork(){
@@ -57,8 +60,7 @@ namespace qmapcontrol
 			reply = 0;
 		}
 
-		http->deleteLater();
-		http = 0;
+		http->deleteLater(); 		http = 0;
 	}
 
 	void MapNetwork::loadImage(const QString& host, const QString& url){
@@ -155,13 +157,15 @@ namespace qmapcontrol
 		return loadingMap.size();
 	}
 
+
 	void MapNetwork::setDiskCache(QNetworkDiskCache *qCache){
 		cacheEnabled = (qCache != 0);
-		if (http)
+		if (0!=http)
 		{
 			http->setCache(qCache);
 		}
 	}
+
 
 	void MapNetwork::abortLoading()	{
 		//qDebug() << "MapNetwork::abortLoading";

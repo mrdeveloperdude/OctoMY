@@ -92,6 +92,7 @@ class HubWindow : public QMainWindow, public LogDestination{
 		void on_pushButtonGenerateKeyPair_clicked();
 		void on_pushButtonTestKeyPair_clicked();
 
+		void on_pushButtonUDPPunch_clicked();
 };
 
 #endif // HUBWINDOW_HPP

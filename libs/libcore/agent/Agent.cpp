@@ -2,6 +2,9 @@
 
 #include "basic/Standard.hpp"
 #include "comms/Client.hpp"
+#include "zoo/ZooClient.hpp"
+#include "basic/UniquePlatformFingerprint.hpp"
+
 #include <QDebug>
 #include <QDataStream>
 #include <QSharedPointer>
@@ -14,6 +17,7 @@ Agent::Agent(QCommandLineParser &opts, QObject *parent):
 	QObject(parent)
   , opts(opts)
   , comms (new CommsChannel(0))
+  , zoo (new ZooClient())
   , lastSend(0)
   , hubPort(0)
 {
@@ -32,6 +36,16 @@ Agent::~Agent(){
 
 
 void Agent::start(QHostAddress listenAddress, quint16 listenPort, QHostAddress hubAddress, quint16 hubPort){
+
+	QByteArray OCID=UniquePlatformFingerprint::getInstance().platform().getHEX().toUtf8();
+
+	if(0!=zoo){
+		zoo->setURL(QUrl("http://localhost:8123/api"));
+		//zoo->setURL(QUrl("http://localhost/lennart/octomy/index.php"));
+		//zoo->putNode(OCID); 		zoo->getNode(OCID);
+	}
+
+
 	this->hubAddress=hubAddress;
 	this->hubPort=hubPort;
 	if(0!=comms){

@@ -61,5 +61,8 @@
         <file>icons/warning.svg</file>
         <file>icons/zoo.svg</file>
         <file>icons/under_construction.svg</file>
+        <file>icons/youtube.svg</file>
+        <file>icons/google_pluss.svg</file>
+        <file>icons/execute.svg</file>
     </qresource>
 </RCC>

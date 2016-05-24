@@ -10,7 +10,7 @@
 
 
 
-void setAttrRecur(QDomElement &elem, QString tag, QString id, QString attr, QString val){
+static void setAttrRecur(QDomElement &elem, QString tag, QString id, QString attr, QString val){
 	if (0==elem.tagName().compare(tag) && elem.hasAttribute("id") && 0==elem.attribute("id").compare(id)){
 		elem.setAttribute(attr, val);
 	}
@@ -23,22 +23,24 @@ void setAttrRecur(QDomElement &elem, QString tag, QString id, QString attr, QStr
 	}
 }
 
-float frand(){
+/*
+static float frand(){
 	return (rand()/(float)RAND_MAX);
 }
 
-QString hsla(qreal h, qreal s, qreal l, qreal a){
+static QString hsla(qreal h, qreal s, qreal l, qreal a){
 	return "hsla("+QString::number(h*360.0f)+", "+QString::number((int)(s*100))+"%, "+QString::number((int)(l*100))+"%, "+QString::number(a)+")";
 }
+*/
 
-QString hsl(qreal h, qreal s, qreal l){
+static QString hsl(qreal h, qreal s, qreal l){
 	QColor c=QColor::fromHslF(h,s,l);
 	return "rgb("+QString::number(c.red())+", "+QString::number(c.green())+", "+QString::number(c.blue())+")";
 }
 
 
 
-qreal realBits(quint64 d,quint64 bits){
+static qreal realBits(quint64 d,quint64 bits){
 	//qDebug()<<"---realBits for data "<<d <<" with "<<bits <<" bits";
 	const qreal d2=(d & bits);
 	//qDebug()<<"framed: "<<d2;
@@ -68,12 +70,26 @@ QDomDocument Identicon::domDocument(){
 	return doc;
 }
 
-QPixmap Identicon::pixmap(){
+static QSizeF calcSize(QSizeF ds,qint32 w,qint32 h,qreal zoom){
+	if(w<1 && h<1){
+		return ds;
+	}
+	const qreal da=ds.width()/ds.height();
+//	const qreal ca=((qreal)(w<1?1:w)/(qreal)(h<1?1:h));
+	QSizeF low(w,(qreal)h/da);
+	QSizeF high((qreal)w*da,h);
+	qDebug()<<"ORIG: "<<ds<<" ASPECT: "<<da<<" LOW: "<<low<<" HIGH: "<<high;
+	zoom=(zoom<0)?0:(zoom>1)?1:zoom;
+	qreal izoom=1.0-zoom;
+	return low*izoom+high*zoom;
+}
+
+QPixmap Identicon::pixmap(qint32 w,qint32 h,qreal zoom){
 	regenerateIdenticon();
 	QSvgRenderer svg( doc.toByteArray() );
-	QSize ds=svg.defaultSize();
-	//qDebug()<<"Generating pixmap from identicon with size: "<<ds;
-	QPixmap px(ds);
+	QSizeF ds=calcSize(svg.defaultSize(),w,h,zoom);
+	qDebug()<<"Generating pixmap from identicon with size: "<<ds;
+	QPixmap px(ds.toSize());
 	px.fill(QColor(0,0,0,0));
 	QPainter painter( &px );
 	svg.render( &painter );
@@ -82,12 +98,12 @@ QPixmap Identicon::pixmap(){
 }
 
 
-QImage Identicon::image(){
+QImage Identicon::image(qint32 w,qint32 h,qreal zoom){
 	regenerateIdenticon();
 	QSvgRenderer svg( doc.toByteArray() );
-	QSize ds=svg.defaultSize();
+	QSizeF ds=calcSize(svg.defaultSize(),w,h,zoom);
 	qDebug()<<"Generating image from identicon with size: "<<ds;
-	QImage px(ds, QImage::Format_RGBA8888);
+	QImage px(ds.toSize(), QImage::Format_RGBA8888);
 	px.fill(QColor(0,0,0,0));
 	QPainter painter( &px );
 	svg.render( &painter );

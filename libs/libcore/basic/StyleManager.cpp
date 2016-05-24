@@ -76,15 +76,24 @@ void StyleManager::loadFonts(QApplication &app){
 	WWMETHODGATE();
 	qputenv("QT_QPA_FONTDIR", "/");
 	//Main
-	loadFont (":/fonts/CenturyGothicStd.otf");
-	loadFont (":/fonts/CenturyGothicStd-Bold.otf");
-	loadFont (":/fonts/CenturyGothicStd-Italic.otf");
-	loadFont (":/fonts/CenturyGothicStd-BoldItalic.otf");
+	/*
+	loadFont (":/fonts/CenturyGothic/CenturyGothicStd.otf");
+	loadFont (":/fonts/CenturyGothic/CenturyGothicStd-Bold.otf");
+	loadFont (":/fonts/CenturyGothic/CenturyGothicStd-Italic.otf");
+	loadFont (":/fonts/CenturyGothic/CenturyGothicStd-BoldItalic.otf");
+	*/
+	loadFont (":/fonts/Dosis/Dosis-Regular.otf");
+	loadFont (":/fonts/Dosis/Dosis-Bold.otf");
+	loadFont (":/fonts/Dosis/Dosis-ExtraBold.otf");
+	loadFont (":/fonts/Dosis/Dosis-ExtraLight.otf");
+	loadFont (":/fonts/Dosis/Dosis-Light.otf");
+	loadFont (":/fonts/Dosis/Dosis-Medium.otf");
+	loadFont (":/fonts/Dosis/Dosis-SemiBold.otf");
 	//LCD
 	loadFont (":/fonts/digital-7 (mono).ttf");
 	//Set standard font
 	QFont font;
-	font.setFamily("CenturyGothicStd");
+	font.setFamily("Dosis");
 	app.setFont(font);
 }
 

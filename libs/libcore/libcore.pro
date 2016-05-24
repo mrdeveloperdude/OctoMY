@@ -134,11 +134,20 @@ SOURCES +=\
 	hw/actuators/SerialList.cpp \
 	hw/actuators/ServoInput.cpp \
 	puppet/LimbIKWidget.cpp \
-    widgets/planedit/CodeEditor.cpp \
-    widgets/planedit/PlanEditor.cpp \
-    widgets/planedit/LineNumberArea.cpp
-
-
+	widgets/planedit/CodeEditor.cpp \
+	widgets/planedit/PlanEditor.cpp \
+	widgets/planedit/LineNumberArea.cpp \
+	zoo/ZooServer.cpp \
+	web/Mustache.cpp \
+	zoo/ZooClient.cpp \
+	zoo/WebRequest.cpp \
+	basic/NetworkOptimizer.cpp \
+	zoo/ZooRecordState.cpp \
+	zoo/ZooRecord.cpp \
+	zoo/ZooStorage.cpp \
+    zoo/ZooConstants.cpp \
+    widgets/WelcomeWidget.cpp \
+    zoo/PunchRegistry.cpp
 
 
 HEADERS  += \
@@ -277,9 +286,21 @@ HEADERS  += \
 	hw/actuators/SerialList.hpp \
 	hw/actuators/ServoInput.hpp \
 	puppet/LimbIKWidget.hpp \
-    widgets/planedit/PlanEditor.hpp \
-    widgets/planedit/CodeEditor.hpp \
-    widgets/planedit/LineNumberArea.hpp
+	widgets/planedit/PlanEditor.hpp \
+	widgets/planedit/CodeEditor.hpp \
+	widgets/planedit/LineNumberArea.hpp \
+	zoo/ZooServer.hpp \
+	web/Mustache.hpp \
+	zoo/ZooClient.hpp \
+	zoo/WebRequest.hpp \
+	basic/NetworkOptimizer.hpp \
+	zoo/ZooRecordState.hpp \
+	zoo/ZooRecord.hpp \
+	zoo/ZooStorage.hpp \
+    zoo/ZooConstants.hpp \
+    widgets/WelcomeWidget.hpp \
+    zoo/PunchRegistry.hpp
+
 
 
 FORMS    += \
@@ -307,10 +328,11 @@ FORMS    += \
 	ui/StatsWindow.ui \
 	ui/TryToggle.ui \
 	ui/ServoInput.ui \
-    ui/PlanEditor.ui \
-    ui/CameraPairingWidget.ui \
-    ui/MapEditor.ui \
-    ui/PairingWidget.ui
+	ui/PlanEditor.ui \
+	ui/CameraPairingWidget.ui \
+	ui/MapEditor.ui \
+	ui/PairingWidget.ui \
+    ui/WelcomeWidget.ui
 
 
 RESOURCES += \

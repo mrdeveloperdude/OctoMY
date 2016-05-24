@@ -7,6 +7,7 @@ Hub::Hub(QCommandLineParser &opts, QObject *parent):
 	QObject(parent)
   , opts(opts)
   , comms (new CommsChannel(0))
+  , zoo (new ZooClient())
   , lastSentPackets(0)
   , lastReceivedPackets(0)
   , lastLostPackets(0)
@@ -17,6 +18,15 @@ Hub::Hub(QCommandLineParser &opts, QObject *parent):
 	if(0!=comms){
 		comms->hookSignals(*this);
 	}
+
+	//QByteArray OCID=UniquePlatformFingerprint::getInstance().platform().getHEX().toUtf8();
+
+	if(0!=zoo){
+		zoo->setURL(QUrl("http://localhost:8123/api"));
+		//zoo->setURL(QUrl("http://localhost/lennart/octomy/index.php"));
+		//zoo->putNode(OCID); 		zoo->getNode(OCID);
+	}
+
 }
 
 Hub::~Hub(){
@@ -42,6 +52,13 @@ CommsChannel *Hub::getComms(){
 	return comms;
 }
 
+
+
+ZooClient *Hub::getZoo(){
+	return zoo;
+}
+
+
 void Hub::onReceivePacket(QSharedPointer<QDataStream> ds,QHostAddress,quint16){
 	qint32 magic=0;
 	*ds>>magic;
@@ -49,7 +66,7 @@ void Hub::onReceivePacket(QSharedPointer<QDataStream> ds,QHostAddress,quint16){
 }
 
 void Hub::onError(QString e){
-qDebug()<<"error: "<<e;
+	qDebug()<<"error: "<<e;
 }
 
 

@@ -757,7 +757,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidgetControl">
          <property name="currentIndex">
-          <number>2</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="pageActuator">
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -958,27 +958,27 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MapEditor</class>
-   <extends>QWidget</extends>
-   <header>widgets/MapEditor.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>NumberEntry</class>
-   <extends>QWidget</extends>
-   <header>widgets/NumberEntry.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>GaitWidget</class>
    <extends>QWidget</extends>
    <header>puppet/GaitWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>MapEditor</class>
+   <extends>QWidget</extends>
+   <header>widgets/MapEditor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>ConnectionWidget</class>
    <extends>QWidget</extends>
    <header>widgets/ConnectionWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>NumberEntry</class>
+   <extends>QWidget</extends>
+   <header>widgets/NumberEntry.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

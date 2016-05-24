@@ -10,7 +10,7 @@
 #include <QObject>
 #include <QCommandLineParser>
 
-
+class ZooClient;
 
 class Agent : public QObject{
 		Q_OBJECT
@@ -18,6 +18,7 @@ class Agent : public QObject{
 
 		QCommandLineParser &opts;
 		CommsChannel *comms;
+		ZooClient *zoo;
 		SensorInput sensors;
 		SensorsMessage statusMessage;
 		qint64 lastSend;

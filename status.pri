@@ -26,6 +26,7 @@ message("| DEPENDPATH:     " $${DEPENDPATH})
 message("| PRE_TARGETDEPS: " $${PRE_TARGETDEPS})
 message("| QMAKE_EXTRA_COMPILERS: " $${QMAKE_EXTRA_COMPILERS})
 message("| LOCAL_OVERRIDES ENABLED: " $${LOCAL_OVERRIDES})
+message("| DEFINES: " $${DEFINES})
 message("| C++ Compiler Version: " $$system(c++ --version) )
 message("---------------------------------------------")
 

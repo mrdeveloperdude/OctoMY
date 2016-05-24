@@ -583,3 +583,13 @@ void HubWindow::on_pushButtonTestKeyPair_clicked(){
 	msgBox.setText("Signature verification succeeded.");
 	msgBox.exec();
 }
+
+void HubWindow::on_pushButtonUDPPunch_clicked()
+{
+	if(nullptr!=hub){
+		ZooClient *zoo=hub->getZoo();
+		if(nullptr!=zoo){
+			zoo->punchUDP("12345");
+		}
+	}
+}

@@ -73,6 +73,7 @@ class FaceWidget : public QWidget
 		void showEvent(QShowEvent *);
 		void mousePressEvent(QMouseEvent *);
 		void mouseMoveEvent(QMouseEvent *);
+		void leaveEvent(QEvent *);
 
 	public slots:
 		void onUpdateTimer();
