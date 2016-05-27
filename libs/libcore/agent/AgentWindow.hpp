@@ -35,6 +35,8 @@ class AgentWindow : public QWidget, public LogDestination{
 
 		void appendLog(const QString& text);
 
+		void updateVisibility();
+
 
 	private:
 		void notifyAndroid(QString);
@@ -45,19 +47,15 @@ class AgentWindow : public QWidget, public LogDestination{
 		virtual void keyReleaseEvent(QKeyEvent *);
 
 	private slots:
-		void onPositionUpdated(const QGeoPositionInfo &info);
-		void onCompassUpdated(QCompassReading *);
-		void onAccelerometerUpdated(QAccelerometerReading *);
-		void onGyroscopeUpdated(QGyroscopeReading *r);
 		void onTryToggleConnectionChanged(TryToggleState);
 
 		void on_pushButtonConfirmQuit_clicked();
-		void on_pushButtonTest_clicked();
 		void on_pushButtonCamera_clicked();
 		void on_pushButtonBack_clicked();
+
 		void on_pushButtonPair_clicked();
+
 		void on_pushButtonPlan_clicked();
-		void on_pushButtonTestConnect_clicked();
 };
 
 

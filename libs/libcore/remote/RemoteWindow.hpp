@@ -42,6 +42,7 @@ class RemoteWindow : public QWidget, public LogDestination{
 		void toastAndroid(QString);
 
 		void updateControlLevel();
+		void updateActiveAgent();
 		void prepareMap();
 		void homeMap();
 
@@ -70,12 +71,9 @@ class RemoteWindow : public QWidget, public LogDestination{
 	private slots:
 		void onTryToggleConnectionChanged(TryToggleState);
 		void on_pushButtonConfirmQuit_clicked();
-		void on_pushButtonTest_clicked();
 		void on_comboBoxControlLevel_currentIndexChanged(int index);
-		void on_pushButtonControl_clicked();
-		void on_pushButtonStatus_clicked();
-		void on_pushButtonPair_clicked();
 		void on_pushButtonBack_clicked();
+		void on_comboBoxAgent_currentIndexChanged(int index);
 };
 
 #endif // REMOTEWINDOW_HPP

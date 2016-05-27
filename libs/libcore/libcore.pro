@@ -130,7 +130,6 @@ SOURCES +=\
 	camera/CameraList.cpp \
 	hw/BluetoothList.cpp \
 	widgets/CameraPairingWidget.cpp \
-	widgets/PairingWidget.cpp \
 	hw/actuators/SerialList.cpp \
 	hw/actuators/ServoInput.cpp \
 	puppet/LimbIKWidget.cpp \
@@ -147,7 +146,12 @@ SOURCES +=\
 	zoo/ZooStorage.cpp \
     zoo/ZooConstants.cpp \
     widgets/WelcomeWidget.cpp \
-    zoo/PunchRegistry.cpp
+    zoo/PunchRegistry.cpp \
+    widgets/RealtimeValuesWidget.cpp \
+    widgets/AgentPairingWizard.cpp \
+    widgets/ControlPairingWidget.cpp \
+    comms/PairingManager.cpp \
+    zoo/NearestNeighbours.cpp
 
 
 HEADERS  += \
@@ -282,7 +286,6 @@ HEADERS  += \
 	camera/CameraList.hpp \
 	hw/BluetoothList.hpp \
 	widgets/CameraPairingWidget.hpp \
-	widgets/PairingWidget.hpp \
 	hw/actuators/SerialList.hpp \
 	hw/actuators/ServoInput.hpp \
 	puppet/LimbIKWidget.hpp \
@@ -299,7 +302,12 @@ HEADERS  += \
 	zoo/ZooStorage.hpp \
     zoo/ZooConstants.hpp \
     widgets/WelcomeWidget.hpp \
-    zoo/PunchRegistry.hpp
+    zoo/PunchRegistry.hpp \
+    widgets/RealtimeValuesWidget.hpp \
+    widgets/AgentPairingWizard.hpp \
+    widgets/ControlPairingWidget.hpp \
+    comms/PairingManager.hpp \
+    zoo/NearestNeighbours.hpp
 
 
 
@@ -331,8 +339,10 @@ FORMS    += \
 	ui/PlanEditor.ui \
 	ui/CameraPairingWidget.ui \
 	ui/MapEditor.ui \
-	ui/PairingWidget.ui \
-    ui/WelcomeWidget.ui
+    ui/WelcomeWidget.ui \
+    ui/AgentPairingWizard.ui \
+    ui/RealtimeValuesWidget.ui \
+    remote/ControlPairingWidget.ui
 
 
 RESOURCES += \

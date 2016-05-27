@@ -7,8 +7,9 @@
 #include "ZooStorage.hpp"
 
 #include "PunchRegistry.hpp"
-
+#include "NearestNeighbours.hpp"
 #include <QString>
+
 
 class QHttpRequest;
 class QHttpResponse;
@@ -21,6 +22,7 @@ class ZooServer : public qhttp::server::QHttpServer
 		Identicon identicon;
 		ZooStorage storage;
 		PunchRegistry punches;
+		NearestNeighbours<QString> near;
 
 	public:
 		using QHttpServer::QHttpServer;

@@ -64,5 +64,6 @@
         <file>icons/youtube.svg</file>
         <file>icons/google_pluss.svg</file>
         <file>icons/execute.svg</file>
+        <file>icons/stats.svg</file>
     </qresource>
 </RCC>

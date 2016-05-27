@@ -5,6 +5,9 @@
 #include "utility/Utility.hpp"
 #include "comms/Client.hpp"
 
+#include "basic/Settings.hpp"
+
+
 #include "../libmap/MapControl.hpp"
 #include "../libmap/OSMMapAdapter.hpp"
 #include "../libmap/OpenAerialMapAdapter.hpp"
@@ -28,8 +31,18 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
   , remote(remote)
 {
 	ui->setupUi(this);
+
 	if(0!=remote){
-		ui->stackedWidgetScreen->setCurrentWidget(ui->pageConnect);
+
+		Settings &s=Settings::getInstance();
+		//Select correct starting page
+		QWidget *startPage=ui->pageRunning;
+		ui->stackedWidgetScreen->setCurrentWidget(s.getCustomSettingBool("octomy.initialized")?startPage:ui->pageWelcome);
+		//Make sure to switch page on "done"
+		connect(ui->widgetWelcome, &ControlPairingWidget::done, [=]() {
+			ui->stackedWidgetScreen->setCurrentWidget(startPage);
+		} );
+
 		ui->widgetConnection->configure("remote");
 		if(!connect(ui->widgetConnection,SIGNAL(connectStateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState)),WWCONTYPE)){
 			qWarning()<<"ERROR: could not connect";
@@ -208,8 +221,6 @@ void RemoteWindow::onServoPositionChanged(int val){
 
 
 
-
-
 void RemoteWindow::onTryToggleConnectionChanged(TryToggleState s){
 	appendLog("TRYSTATE CHANGED TO "+ToggleStateToSTring(s));
 	bool ce=false;
@@ -240,16 +251,6 @@ void RemoteWindow::on_pushButtonConfirmQuit_clicked(){
 }
 
 
-
-void RemoteWindow::on_pushButtonTest_clicked(){
-	appendLog("TEST BUTTON CLICKED");
-	/*
-	notifyAndroid("TESTING 123");
-	toastAndroid("TOASTING 123");
-	*/
-
-}
-
 void RemoteWindow::updateControlLevel(){
 	qDebug()<<"SWITCHING CONTROL LEVEL TO "<<ui->comboBoxControlLevel->currentText();
 	const int idx=ui->comboBoxControlLevel->currentIndex();
@@ -268,28 +269,36 @@ void RemoteWindow::updateControlLevel(){
 		case(3):{
 
 			}break;
+		case(4):{
+
+			}break;
 	}
 
+}
+
+
+void RemoteWindow::updateActiveAgent(){
+	QString agentName=ui->comboBoxAgent->currentText();
+	if("Pair with another"==agentName){
+		ui->stackedWidgetScreen->setCurrentWidget(ui->pageWelcome);
+	}
+	else{
+		qDebug()<<"SWITCHING ACTIVE AGENT TO "<<agentName;
+		const int idx=ui->comboBoxControlLevel->currentIndex();
+		ui->stackedWidgetControl->setCurrentIndex(idx);
+	}
 }
 
 void RemoteWindow::on_comboBoxControlLevel_currentIndexChanged(int ){
 	updateControlLevel();
 }
 
-void RemoteWindow::on_pushButtonControl_clicked(){
-	ui->stackedWidgetScreen->setCurrentWidget(ui->pageControl);
-}
-
-void RemoteWindow::on_pushButtonStatus_clicked(){
-	ui->stackedWidgetScreen->setCurrentWidget(ui->pageStatus);
-}
-
-void RemoteWindow::on_pushButtonPair_clicked()
-{
-	ui->stackedWidgetScreen->setCurrentWidget(ui->pagePair);
-}
-
 void RemoteWindow::on_pushButtonBack_clicked()
 {
-	ui->stackedWidgetScreen->setCurrentWidget(ui->pageStatus);
+	ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
+}
+
+void RemoteWindow::on_comboBoxAgent_currentIndexChanged(int index)
+{
+	updateActiveAgent();
 }

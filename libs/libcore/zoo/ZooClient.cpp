@@ -131,6 +131,53 @@ void ZooClient::putNodeCrumb(const QString OCID, const QByteArray data) {
 
 
 
+void ZooClient::doPairingEscrow(const QString OCID, TVariantMapHandler handler) {
+	qhttp::client::TRequstHandler reqHandler= [this, OCID](qhttp::client::QHttpRequest* req){
+		//qDebug()<<"Getting node by OCID:"<<OCID << " REQ";
+		QVariantMap cmd;
+		cmd["action"] = ZooConstants::OCTOMY_ZOO_API_GET_NODE_CRUMB;
+		cmd["ocid"] = OCID;
+		QByteArray body  = QJsonDocument::fromVariant(cmd).toJson();
+		//qDebug()<<"SENDING RAW JSON: "<<body;
+		req->addHeader("user-agent",			ZooConstants::OCTOMY_USER_AGENT);
+		req->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
+		req->addHeader("accept",				"application/json");
+		req->addHeader("content-type",			"application/json");
+		req->addHeader("connection",			"keep-alive");
+		req->addHeaderValue("content-length", 	body.length());
+		req->end(body);
+		//qDebug()<<"Getting node by OCID:"<<OCID << " REQ END";
+	};
+
+	qhttp::client::TResponseHandler resHandler=	[this, OCID, handler](qhttp::client::QHttpResponse* res) {
+		//qDebug()<<"Getting node by OCID:"<<OCID << " RES";
+		res->collectData(10000);
+		res->onEnd([this, res, OCID, handler](){
+			bool ok=true;
+			//qDebug()<<"Getting node by OCID:"<<OCID<<" RES: ON END";
+			QJsonDocument doc = QJsonDocument::fromJson(res->collectedData());
+			QByteArray data=doc.toJson();
+			QVariantMap root = QJsonDocument::fromJson(data).toVariant().toMap();
+			if ( root.isEmpty() ) {
+				qWarning() << "ERROR: The result is an invalid json";
+				qWarning() << "ERROR: OFFENDING JSON IS: "<<data;
+				ok=false;
+			}
+			else{
+				qDebug()<<"RETURNED STATUS  WAS: "<<root.value("status")<<", MSG:  "<<root.value("message");
+				ok=ok &&("ok"==root.value("status"));
+			}
+			//qDebug()<<"Getting node by OCID:"<<OCID<<" RES: ON END DONE";
+			emit getNodeDone();
+			handler(ok,root);
+		});
+		//qDebug()<<"Getting node by OCID:"<<OCID << " RES DONE";
+	};
+	m_client->request(qhttp::EHTTP_POST, m_serverURL, reqHandler, resHandler);
+}
+
+
+
 
 void ZooClient::punchUDP(const QString punchToken) {
 

@@ -189,6 +189,24 @@ void ZooServer::serveIdenticon(qhttp::server::QHttpRequest* req, qhttp::server::
 
 const QRegularExpression reOCID("^[0-9A-F]{40}$"); // trimmed 40-digit upper-case hex string
 const QRegularExpression rePunchToken("^[0-9]{5}$"); // trimmed 5-digit integer decimal string
+const QRegularExpression rePairingPin("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
+
+
+struct PairingCookie{
+		QString ID;
+		QString pubKey;
+		QString pairingPin;
+		QString nodeType;
+
+		QVariantMap toVariantMap(){
+			QVariantMap map;
+			map["ID"]=QVariant(ID);
+			map["pubKey"]=QVariant(pubKey);
+			map["pairingPin"]=QVariant(pairingPin);
+			map["nodeType"]=QVariant(nodeType);
+			return map;
+		}
+};
 
 
 
@@ -254,6 +272,18 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 		else {
 			qWarning()<<"ERROR: OCID did not match validation:" <<ocid;
 			msg="ERROR: OCID did not match validation:" +ocid;
+			ok=false;
+		}
+	}
+	else if(ZooConstants::OCTOMY_ZOO_API_DO_PAIRING_ESCROW==action){
+		QString pairingPin=root.value("pairingPin").toString();
+		if(rePairingPin.match(pairingPin).hasMatch()){
+			PairingCookie pCookie;
+			map["data"]=pCookie.toVariantMap();
+		}
+		else {
+			qWarning()<<"ERROR: pairingPin did not match validation:" <<pairingPin;
+			msg="ERROR: pairingPin did not match validation:" +pairingPin;
 			ok=false;
 		}
 	}

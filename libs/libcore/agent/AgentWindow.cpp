@@ -10,9 +10,6 @@
 #include "widgets/WelcomeWidget.hpp"
 
 #include <QDebug>
-#include <QAccelerometerReading>
-#include <QCompassReading>
-#include <QGyroscopeReading>
 #include <QScrollBar>
 
 #ifdef Q_OS_ANDROID
@@ -28,19 +25,15 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	ui->setupUi(this);
 	Settings &s=Settings::getInstance();
 	//Select correct starting page
-	QWidget *startPage=ui->pageConnect;
+	QWidget *startPage=ui->pageRunning;
 	ui->stackedWidget->setCurrentWidget(s.getCustomSettingBool("octomy.initialized")?startPage:ui->pageWelcome);
-	//Make sure to switch page on "initialize"
-	connect(ui->widgetWelcome, &WelcomeWidget::initialized, [=]() {
+	//Make sure to switch page on "done"
+	connect(ui->widgetWelcome, &AgentPairingWizard::done, [=]() {
+
 		ui->stackedWidget->setCurrentWidget(startPage);
 	} );
 
-	connect(ui->widgetIdenticon_2, &IdenticonWidget::doubleClicked, [=]() {
-		ui->stackedWidget->setCurrentWidget(ui->pageWelcome);
-	} );
-
-	ui->widgetFace->setVisible(s.getCustomSettingBool("octomy.face"));
-	ui->widgetIdenticon_2->setVisible(!ui->widgetFace->isVisible());
+	updateVisibility();
 
 	//Set our custom identicon as window icon
 	Identicon id(QStringLiteral(":/icons/identicon.svg"),0);
@@ -54,29 +47,15 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 		qWarning()<<"ERROR: could not connect";
 	}
 
-	if(0!=agent){
-		ui->labelLocal->setText("WAITING FOR LOCAL");
-		ui->labelHub->setText("WAITING FOR HUB");
-		ui->labelGPS->setText("WAITING FOR GPS");
-		ui->labelCompass->setText("WAITING FOR COMPASS");
-		ui->labelGyroscope->setText("WAITING FOR GYRO");
-		ui->labelAccelerometer->setText("WAITING FOR ACCELEROMETER");
-		agent->hookSignals(*this);
-	}
-	else{
-		ui->labelLocal->setText("N/A");
-		ui->labelHub->setText("N/A");
-		ui->labelGPS->setText("N/A");
-		ui->labelCompass->setText("N/A");
-		ui->labelGyroscope->setText("N/A");
-		ui->labelAccelerometer->setText("N/A");
-	}
+
 	ui->labelCamera->setText("WAITING FOR CAMERA");
 	QPalette p=ui->logScroll->palette();
 	p.setColor(QPalette::Base, QColor(0, 0, 0, 64));
 	ui->logScroll->setPalette(p);
 
 	ui->widgetPlanEditor->configure("agent.plan");
+
+
 
 #ifdef Q_OS_ANDROID
 	showFullScreen();
@@ -88,14 +67,22 @@ AgentWindow::~AgentWindow(){
 }
 
 
+void AgentWindow::updateVisibility(){
+	Settings &s=Settings::getInstance();
+	ui->widgetFace->setVisible(s.getCustomSettingBool("octomy.face"));
+	ui->logScroll->setVisible(s.getCustomSettingBool("octomy.debug"));
+	ui->widgetIdenticon->setVisible(s.getCustomSettingBool("octomy.identicon"));
+}
+
+
 
 void AgentWindow::onTryToggleConnectionChanged(TryToggleState s){
 	appendLog("TRYSTATE CHANGED TO "+ToggleStateToSTring(s));
 	switch(s){
 		case(TRYING):{
 				agent->start(ui->widgetConnection->getLocalAddress(),ui->widgetConnection->getLocalPort(), ui->widgetConnection->getTargetAddress(), ui->widgetConnection->getTargetPort());
-				ui->labelLocal->setText("LOCAL:"+ui->widgetConnection->getLocalAddress().toString()+":"+QString::number(ui->widgetConnection->getLocalPort()));
-				ui->labelHub->setText("HUB: "+ui->widgetConnection->getTargetAddress().toString()+ ":"+ QString::number(ui->widgetConnection->getTargetPort()));
+				//				ui->labelLocal->setText("LOCAL:"+ui->widgetConnection->getLocalAddress().toString()+":"+QString::number(ui->widgetConnection->getLocalPort()));
+				//			ui->labelHub->setText("HUB: "+ui->widgetConnection->getTargetAddress().toString()+ ":"+ QString::number(ui->widgetConnection->getTargetPort()));
 			}break;
 		case(ON):{
 
@@ -105,25 +92,6 @@ void AgentWindow::onTryToggleConnectionChanged(TryToggleState s){
 			}break;
 	}
 }
-
-void AgentWindow::onPositionUpdated(const QGeoPositionInfo &info){
-	ui->labelGPS->setText("GPS: "+QString::number(info.coordinate().latitude())+", "+QString::number(info.coordinate().longitude()));
-	appendLog("GPS update: "+QString::number(info.coordinate().latitude())+", "+QString::number(info.coordinate().longitude()));
-}
-
-
-void AgentWindow::onCompassUpdated(QCompassReading *r){
-	ui->labelCompass->setText("COMPASS: "+QString::number(r->azimuth()));
-}
-
-void AgentWindow::onAccelerometerUpdated(QAccelerometerReading *r){
-	ui->labelAccelerometer->setText("ACCEL: <"+QString::number(r->x())+", "+QString::number(r->y())+", "+ QString::number(r->z())+">");
-}
-
-void AgentWindow::onGyroscopeUpdated(QGyroscopeReading *r){
-	ui->labelGyroscope->setText("GYRO: <"+QString::number(r->x())+", "+QString::number(r->y())+", "+ QString::number(r->z())+">");
-}
-
 
 void AgentWindow::keyReleaseEvent(QKeyEvent *e){
 	if(Qt::Key_Back==e->key()){
@@ -182,18 +150,6 @@ void AgentWindow::toastAndroid(QString s){
 }
 
 
-void AgentWindow::on_pushButtonTest_clicked(){
-	appendLog("TEST BUTTON CLICKED");
-	//notifyAndroid("TESTING 123");
-	//toastAndroid("TOASTING 123");
-	//agent->sendStatus();
-	//ui->stackedWidget->setCurrentIndex(3);
-	if(0==hexy){
-		hexy=new HexyTool;
-		hexy->show();
-	}
-}
-
 
 void AgentWindow::appendLog(const QString& text){
 	WWMETHODGATE();
@@ -214,23 +170,15 @@ void AgentWindow::on_pushButtonBack_clicked(){
 	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 }
 
+
 void AgentWindow::on_pushButtonPair_clicked()
 {
-	ui->stackedWidget->setCurrentWidget(ui->pagePair);
+	ui->widgetWelcome->reset();
+	ui->stackedWidget->setCurrentWidget(ui->pageWelcome);
+
 }
 
 void AgentWindow::on_pushButtonPlan_clicked()
 {
-	if(0!=agent){
-		BluetoothList bl;
-		ui->widgetPlanEditor->setText(bl.toSpecStanzas());
-		ui->widgetPlanEditor->appendText(agent->getCameras().toSpecStanzas());
-		ui->widgetPlanEditor->appendText(agent->getSensorInput().toSpecStanzas());
-	}
 	ui->stackedWidget->setCurrentWidget(ui->pagePlan);
-}
-
-void AgentWindow::on_pushButtonTestConnect_clicked()
-{
-	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 }
