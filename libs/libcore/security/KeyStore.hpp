@@ -11,6 +11,11 @@
 
 
 class AtomicBoolean{
+	private:
+		QMutex mMutex;
+		bool mBool;
+		Q_DISABLE_COPY(AtomicBoolean)
+
 	public:
 		AtomicBoolean(bool v):mMutex(),mBool(false){
 			set(v);
@@ -34,11 +39,6 @@ class AtomicBoolean{
 			return get();
 		}
 
-
-	private:
-		QMutex mMutex;
-		bool mBool;
-		Q_DISABLE_COPY(AtomicBoolean)
 };
 
 class GenerateKeyRunnable;
@@ -77,17 +77,17 @@ class KeyStore: public QObject{
 			return ready;
 		}
 
-		//Sign message with our private key
+		// Sign message with our private key
 		QByteArray sign(const QByteArray &source);
-		//Verify signature with our pubkey
+		// Verify signature with our pub-key
 		bool verify(const QByteArray &message, const QByteArray &signature);
 
-		//Verify signature with pubkey of tier recognized by fiven fingerprint id
+		// Verify signature with pub-key of tier recognized by fiven fingerprint id
 		bool verify(const QString &fingerprint, const QByteArray &message, const QByteArray &signature);
 
-		//Check if we have pubkey for tier identified by give fingerprint ID
+		// Check if we have pub-key for tier identified by give fingerprint ID
 		bool hasPubKeyForFingerprint(const QString &fingerprint);
-		//Set pubkey for tier identified by give fingerprint ID to given UTF8 encoded string containing pubkey PEM format
+		// Set pub-key for tier identified by give fingerprint ID to given UTF8 encoded string containing pubkey PEM format
 		void setPubKeyForFingerprint(const QString &fingerprint,const QString &pubkeyPEM);
 
 		QString getLocalPublicKey();

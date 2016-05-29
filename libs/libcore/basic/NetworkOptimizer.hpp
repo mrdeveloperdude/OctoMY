@@ -4,7 +4,7 @@
 #include <QNetworkAccessManager>
 
 /**
-  Provide a cetnralized location to perform optimizations as described in this link:
+  Provide a centralized location to perform optimizations as described in this link:
 
   http://devdays.kdab.com/wp-content/uploads/2013/11/speeding-up-your-Qt-app-with-new-QtNetwork-features.pdf
 

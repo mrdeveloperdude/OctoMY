@@ -22,7 +22,7 @@ class ZooServer : public qhttp::server::QHttpServer
 		Identicon identicon;
 		ZooStorage storage;
 		PunchRegistry punches;
-		NearestNeighbours<QString> near;
+		//NearestNeighbours near;
 
 	public:
 		using QHttpServer::QHttpServer;

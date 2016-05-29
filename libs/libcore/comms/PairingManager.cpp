@@ -67,11 +67,6 @@ void PairingManager::stop(){
 	qDebug()<<"PAIRING MANAGER STOPPED";
 }
 
-void PairingManager::setPin(QString p){
-	qDebug()<<"PAIRING MANAGER PIN SET TO "<<p;
-	pin=p;
-}
-
 void PairingManager::setRole(PairingRole r){
 	qDebug()<<"PAIRING MANAGER ROLE SET TO "<<r;
 	role=r;

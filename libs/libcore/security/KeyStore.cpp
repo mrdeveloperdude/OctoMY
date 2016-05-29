@@ -56,7 +56,7 @@ KeyStore::KeyStore(QObject *parent)
 			return;
 		}
 	}
-	//Fall back to single threaded wday
+	// Fall back to single threaded wday
 	qDebug()<<"KEYSTORE: Falling back to serial bootstrap";
 	bootstrap();
 }

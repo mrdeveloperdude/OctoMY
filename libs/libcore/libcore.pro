@@ -151,7 +151,16 @@ SOURCES +=\
     widgets/AgentPairingWizard.cpp \
     widgets/ControlPairingWidget.cpp \
     comms/PairingManager.cpp \
-    zoo/NearestNeighbours.cpp
+    zoo/NearestNeighbours.cpp \
+    basic/Fingerprint.cpp \
+    random/DevURandomRNG.cpp \
+    random/SystemPRNG.cpp \
+    random/DevRandomRNG.cpp \
+    random/ParkMillerPRNG.cpp \
+    random/EfficientPRNG.cpp \
+    random/RNG.cpp \
+    random/MersennePRNG.cpp \
+    random/TausPRNG.cpp
 
 
 HEADERS  += \
@@ -307,7 +316,16 @@ HEADERS  += \
     widgets/AgentPairingWizard.hpp \
     widgets/ControlPairingWidget.hpp \
     comms/PairingManager.hpp \
-    zoo/NearestNeighbours.hpp
+    zoo/NearestNeighbours.hpp \
+    basic/Fingerprint.hpp \
+    random/DevURandomRNG.hpp \
+    random/SystemPRNG.hpp \
+    random/DevRandomRNG.hpp \
+    random/ParkMillerPRNG.hpp \
+    random/EfficientPRNG.hpp \
+    random/RNG.hpp \
+    random/MersennePRNG.hpp \
+    random/TausPRNG.hpp
 
 
 

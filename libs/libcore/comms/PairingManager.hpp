@@ -100,7 +100,6 @@ class PairingManager: public QObject
 		Q_OBJECT
 	private:
 		PairingRole role;
-		QString pin;
 		QTimer timer;
 		ZooClient *zoo;
 		quint64 lastZooPair;

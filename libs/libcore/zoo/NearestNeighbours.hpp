@@ -7,9 +7,9 @@
 
 
 struct NearestNode{
-		QString id;
 		qreal x;
 		qreal y;
+		QString id;
 		quint64 ts;
 
 		NearestNode(QString id, qreal x, qreal y )
@@ -48,12 +48,12 @@ class NearestNeighbours
 		NearestNeighbours();
 
 		void add(QString id, qreal x, qreal y){
-			all[id]=NearestNode(id,x,y);
+//			all[id]=NearestNode(id,x,y);
 		}
 
-
-		QList <T*> findWithinRange(qreal x, qreal y, qreal r){
-			QList <T * > out;
+/*
+		QList <QString> findWithinRange(qreal x, qreal y, qreal r){
+			QList <QString> out;
 			for(auto it=all.begin(), e=all.end(); it!=e; ++it){
 				NearestNode<T> t=(*it);
 				if(t.distanceTo(x,y)<r){
@@ -74,6 +74,7 @@ class NearestNeighbours
 			}
 
 		}
+		*/
 };
 
 #endif // NEARESTNEIGHBOURS_HPP
