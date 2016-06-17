@@ -12,6 +12,7 @@ ServoInput::ServoInput(QWidget *parent)
 	, m_id(s_sid++)
 	, m_low_trim(INITIAL_SERVO_TRIM)
 	, m_high_trim(INITIAL_SERVO_TRIM)
+	, settings(nullptr)
 
 {
 	ui->setupUi(this);
@@ -22,7 +23,7 @@ ServoInput::ServoInput(QWidget *parent)
 	if(!connect(ui->checkBoxEnabled,SIGNAL(clicked(bool)), this,SLOT(onServoKilled()))){
 		qWarning()<<"ERROR: Could not connect";
 	}
-	configure(m_id,m_low_trim,m_high_trim);
+	configure(nullptr, m_id,m_low_trim,m_high_trim);
 	ui->spinBoxHighTrim->hide();
 	ui->spinBoxLowTrim->hide();
 	ui->spinBoxHighTrim->setValue(m_low_trim);
@@ -35,8 +36,9 @@ ServoInput::~ServoInput()
 }
 
 
-void ServoInput::configure(quint32 id, int low_trim, int high_trim)
+void ServoInput::configure(Settings *s, quint32 id, int low_trim, int high_trim)
 {
+	settings=s;
 	m_low_trim=low_trim;
 	m_high_trim=high_trim;
 	m_id=id;
@@ -46,7 +48,7 @@ void ServoInput::configure(quint32 id, int low_trim, int high_trim)
 }
 
 void ServoInput::reconfigureTrim(){
-	ui->numberEntryServoPosition->configure(500-m_low_trim,2500+m_high_trim,50,ui->numberEntryServoPosition->value()," µs","Servo position","servo_position");
+	ui->numberEntryServoPosition->configure(settings, 500-m_low_trim,2500+m_high_trim,50,ui->numberEntryServoPosition->value()," µs","Servo position","servo_position");
 }
 
 void ServoInput::disableServo(){

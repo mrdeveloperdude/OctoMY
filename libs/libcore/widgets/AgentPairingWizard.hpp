@@ -1,7 +1,7 @@
 #ifndef AGENTPAIRINGWIZARD_HPP
 #define AGENTPAIRINGWIZARD_HPP
 
-#include "comms/PairingManager.hpp"
+#include "comms/discovery/DiscoveryClient.hpp"
 
 #include <QWidget>
 
@@ -18,15 +18,13 @@ class AgentPairingWizard : public QWidget
 	private:
 		Ui::AgentPairingWizard *ui;
 
-		PairingManager pm;
+		DiscoveryClient discovery;
 
 
 	public:
 		explicit AgentPairingWizard(QWidget *parent = 0);
 		~AgentPairingWizard();
 
-	private:
-		void save();
 	public:
 		void reset();
 
@@ -41,7 +39,8 @@ class AgentPairingWizard : public QWidget
 		void on_pushButtonDone_clicked();
 		void on_pushButtonYoutubeTutorial_clicked();
 		void on_pushButtonCameraPair_clicked();
-		void on_pushButtonSkip_clicked();
+
+		void on_pushButtonDiscoverNow_clicked();
 
 	signals:
 		void done();

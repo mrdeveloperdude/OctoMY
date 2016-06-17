@@ -41,12 +41,13 @@ class CameraPairingWidget : public QWidget
 
 		QVideoWidget *viewfinder;
 
-		KeyStore &keystore;
+
 
 
 	public:
 		explicit CameraPairingWidget(QWidget *parent = 0);
 		~CameraPairingWidget();
+
 
 	private:
 		PortableID getMyPortableID();

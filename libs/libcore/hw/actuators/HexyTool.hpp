@@ -11,6 +11,8 @@ namespace Ui {
 	class HexyTool;
 }
 
+class Settings;
+
 class HexyTool : public QWidget
 {
 		Q_OBJECT
@@ -20,12 +22,15 @@ class HexyTool : public QWidget
 		qreal pos[HexySerial::SERVO_COUNT]={0.0};
 		GaitController<qreal> gait;
 		QTimer gaitTimer;
+		Settings *settings;
 
 	public:
 		explicit HexyTool(QWidget *parent = 0);
 		~HexyTool();
 
 	public:
+
+		void configure(Settings *settings);
 
 		void killAll();
 	private slots:

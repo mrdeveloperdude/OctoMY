@@ -15,7 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QLabel" name="label_8">
+    <widget class="QLabel" name="labelNetworkSymbol">
      <property name="text">
       <string/>
      </property>
@@ -28,7 +28,7 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="labelGPSSymbol">
      <property name="text">
       <string/>
      </property>
@@ -57,7 +57,7 @@
     </widget>
    </item>
    <item row="1" column="3">
-    <widget class="QLabel" name="label_3">
+    <widget class="QLabel" name="labelCompassSymbol">
      <property name="text">
       <string/>
      </property>
@@ -83,7 +83,7 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QLabel" name="label_5">
+    <widget class="QLabel" name="labelAccelerometerSymbol">
      <property name="text">
       <string/>
      </property>
@@ -109,7 +109,7 @@
     </widget>
    </item>
    <item row="2" column="3">
-    <widget class="QLabel" name="label_6">
+    <widget class="QLabel" name="labelGyroscopeSymbol">
      <property name="text">
       <string/>
      </property>
@@ -148,7 +148,7 @@
     </widget>
    </item>
    <item row="0" column="4">
-    <widget class="QLabel" name="labelHub">
+    <widget class="QLabel" name="labelControl">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
        <horstretch>0</horstretch>
@@ -156,7 +156,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>HUB</string>
+      <string>CONTROL</string>
      </property>
     </widget>
    </item>

@@ -46,7 +46,7 @@ CameraPairingWidget::CameraPairingWidget(QWidget *parent)
 	, poorVideoProbe(0)
 	, zbar(0)
 	, viewfinder(0)
-	, keystore(KeyStore::getInstance())
+
 {
 	ui->setupUi(this);
 	ui->widgetQR->setVisible(false);
@@ -78,7 +78,8 @@ PortableID CameraPairingWidget::getMyPortableID()
 	out.tier="remote";
 	out.id=UniquePlatformFingerprint::getInstance().platform().getHEX();
 	out.name="granny";
-	QString pub=keystore.getLocalPublicKey();
+	//TODO:Reintegrate with keystore somehow
+	QString pub;//=keystore.getLocalPublicKey();
 	out.pubkey=pub.mid(27,pub.length()-27-26).replace(QRegExp("\n"), "");
 	return out;
 }
@@ -87,11 +88,14 @@ PortableID CameraPairingWidget::getMyPortableID()
 
 void CameraPairingWidget::on_pushButtonBadge_toggled(bool show)
 {
+	/*
+	 * //TODO:Reintegrate with keystore somehow
 	if(show && !keystore.isReady()){
 		qDebug()<<"Cannot show badge, keystore not ready";
 		ui->pushButtonBadge->setChecked(false);
 		return;
 	}
+	*/
 	ui->widgetQR->setVisible(show);
 	ui->widgetQR->setQRData(getMyPortableID().toString());
 	ui->widgetIdenticon->setVisible(show);

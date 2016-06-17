@@ -250,7 +250,7 @@ class QHexEditData : public QObject
         };
 
     private:
-        explicit QHexEditData(QIODevice* iodevice, QObject *parent = 0);
+        explicit QHexEditData(QIODevice* iodevice, QObject *parent = nullptr);
         ~QHexEditData();
 
     public:

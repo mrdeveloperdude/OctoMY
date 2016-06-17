@@ -1,5 +1,5 @@
-#ifndef FACEWIDGET_HPP
-#define FACEWIDGET_HPP
+#ifndef EYESWIDGET_HPP
+#define EYESWIDGET_HPP
 
 #include <QWidget>
 #include <QTimer>
@@ -45,7 +45,7 @@ class Eye{
 };
 
 
-class FaceWidget : public QWidget
+class EyesWidget : public QWidget
 {
 		Q_OBJECT
 	private:
@@ -66,7 +66,7 @@ class FaceWidget : public QWidget
 		QVector2D lastPress;
 
 	public:
-		explicit FaceWidget(QWidget *parent = 0);
+		explicit EyesWidget(QWidget *parent = 0);
 	protected:
 		void paintEvent(QPaintEvent *);
 		void hideEvent(QHideEvent *);
@@ -79,4 +79,4 @@ class FaceWidget : public QWidget
 		void onUpdateTimer();
 };
 
-#endif // FACEWIDGET_HPP
+#endif // EYESWIDGET_HPP

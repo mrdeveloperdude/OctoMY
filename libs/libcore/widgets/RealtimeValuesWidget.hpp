@@ -17,17 +17,24 @@ class QAccelerometerReading;
 class QGyroscopeReading;
 class QGyroscopeReading;
 
+class Agent;
 
 class RealtimeValuesWidget : public QWidget
 {
 		Q_OBJECT
+	private:
+		Ui::RealtimeValuesWidget *ui;
+		Agent *agent;
 
 	public:
 		explicit RealtimeValuesWidget(QWidget *parent = 0);
 		~RealtimeValuesWidget();
 
-	private:
-		Ui::RealtimeValuesWidget *ui;
+	public:
+		void resetView();
+		void setAgent(Agent *agent);
+		Agent *getAgent();
+
 
 	private slots:
 		void onPositionUpdated(const QGeoPositionInfo &info);

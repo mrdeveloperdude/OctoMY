@@ -1,12 +1,13 @@
 #ifndef AGENTWINDOW_HPP
 #define AGENTWINDOW_HPP
 
+#include "widgets/TryToggle.hpp"
+#include "basic/LogDestination.hpp"
+
 
 #include <QWidget>
 #include <QGeoPositionInfo>
-
-#include "widgets/TryToggle.hpp"
-#include "basic/LogDestination.hpp"
+#include <QMenu>
 
 class Agent;
 class QAccelerometerReading;
@@ -27,6 +28,7 @@ class AgentWindow : public QWidget, public LogDestination{
 		Ui::AgentWindow *ui;
 		Agent *agent;
 		HexyTool *hexy;
+		QMenu menu;
 
 	public:
 		explicit AgentWindow(Agent *agent, QWidget *parent = 0);
@@ -47,6 +49,12 @@ class AgentWindow : public QWidget, public LogDestination{
 		virtual void keyReleaseEvent(QKeyEvent *);
 
 	private slots:
+
+		void onFaceVisibilityChanged(bool);
+		void onLogVisibilityChanged(bool);
+		void onStatsVisibilityChanged(bool);
+
+
 		void onTryToggleConnectionChanged(TryToggleState);
 
 		void on_pushButtonConfirmQuit_clicked();
@@ -56,7 +64,10 @@ class AgentWindow : public QWidget, public LogDestination{
 		void on_pushButtonPair_clicked();
 
 		void on_pushButtonPlan_clicked();
+		void on_pushButtonMenu_clicked();
 };
 
 
 #endif // AGENTWINDOW_HPP
+
+

@@ -11,17 +11,22 @@ namespace Ui {
 	class ConnectionWidget;
 }
 
+class Settings;
+
 class ConnectionWidget : public QWidget
 {
 		Q_OBJECT
+	private:
 
-	public:
-		explicit ConnectionWidget(QWidget *parent = 0);
+		Ui::ConnectionWidget *ui;
+		Settings *settings;
+		public:
+			explicit ConnectionWidget(QWidget *parent = 0);
 		~ConnectionWidget();
 
 	public:
 
-		void configure(QString base);
+		void configure(Settings *settings, QString base);
 
 
 		quint16 getLocalPort();
@@ -40,8 +45,6 @@ class ConnectionWidget : public QWidget
 	private slots:
 		void onConnectStateChanged(TryToggleState s);
 
-	private:
-		Ui::ConnectionWidget *ui;
 
 	signals:
 

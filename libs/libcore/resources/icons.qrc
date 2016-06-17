@@ -65,5 +65,11 @@
         <file>icons/google_pluss.svg</file>
         <file>icons/execute.svg</file>
         <file>icons/stats.svg</file>
+        <file>icons/reload.svg</file>
+        <file>icons/roll_dice.svg</file>
+        <file>icons/menu.svg</file>
+        <file>icons/kill.svg</file>
+        <file>icons/mask.svg</file>
+        <file>icons/speech.svg</file>
     </qresource>
 </RCC>

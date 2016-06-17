@@ -1,7 +1,10 @@
 #include "Agent.hpp"
+#include "AgentWindow.hpp"
 
 #include "basic/Standard.hpp"
+
 #include "comms/Client.hpp"
+#include "comms/discovery/DiscoveryClient.hpp"
 #include "zoo/ZooClient.hpp"
 #include "basic/UniquePlatformFingerprint.hpp"
 
@@ -13,24 +16,13 @@
 #include <QGeoPositionInfo>
 
 
-Agent::Agent(QCommandLineParser &opts, QObject *parent):
-	QObject(parent)
-  , opts(opts)
-  , comms (new CommsChannel(0))
-  , zoo (new ZooClient())
-  , lastSend(0)
-  , hubPort(0)
+Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
+	: Node(launcher.getOptions(), "agent", parent)
+	, window(nullptr)
 {
-	setObjectName("Agent");
-	hookSignals(*this);
-	if(0!=comms){
-		comms->hookSignals(*this);
-	}
 }
 
 Agent::~Agent(){
-	delete comms;
-	comms=0;
 }
 
 
@@ -39,7 +31,7 @@ void Agent::start(QHostAddress listenAddress, quint16 listenPort, QHostAddress h
 
 	QByteArray OCID=UniquePlatformFingerprint::getInstance().platform().getHEX().toUtf8();
 
-	if(0!=zoo){
+	if(nullptr!=zoo){
 		zoo->setURL(QUrl("http://localhost:8123/api"));
 		//zoo->setURL(QUrl("http://localhost/lennart/octomy/index.php"));
 		//zoo->putNode(OCID); 		zoo->getNode(OCID);
@@ -48,7 +40,7 @@ void Agent::start(QHostAddress listenAddress, quint16 listenPort, QHostAddress h
 
 	this->hubAddress=hubAddress;
 	this->hubPort=hubPort;
-	if(0!=comms){
+	if(nullptr!=comms){
 		Client *c=comms->getClients()->getByHost(hubAddress,hubPort,true);
 		if(0!=c){
 			//	poseCourier->setDestination(c->signature);
@@ -63,85 +55,17 @@ void Agent::start(QHostAddress listenAddress, quint16 listenPort, QHostAddress h
 
 
 
-void Agent::hookSignals(QObject &o){
-	sensors.hookSignals(o);
+
+QWidget *Agent::showWindow(){
+	if(nullptr==window){
+		window=new AgentWindow(this, nullptr);
+	}
+	if(nullptr!=window){
+		window->show();
+	}
+	return window;
 }
-
-
-void Agent::unHookSignals(QObject &o){
-	sensors.unHookSignals(o);
-}
-
 
 void Agent::onConnectionStatusChanged(TryToggleState){
 
-}
-
-void Agent::onReceivePacket(QSharedPointer<QDataStream> ds,QHostAddress,quint16){
-	qint32 magic=0;
-	*ds>>magic;
-	qDebug()<<"GOT MAGIC: "<<magic;
-}
-
-void Agent::onError(QString e){
-	qDebug()<<"Agent: Comms error: "<<e;
-}
-
-void Agent::onClientAdded(Client *c){
-	qDebug()<<"Agent: Client added: "<<c->getHash();
-}
-
-void Agent::onConnectionStatusChanged(bool){
-
-}
-
-void Agent::onPositionUpdated(const QGeoPositionInfo &info){
-	statusMessage.gps=info.coordinate();
-	sendStatus();
-}
-
-
-void Agent::onCompassUpdated(QCompassReading *r){
-	if(0!=r){
-		statusMessage.compassAzimuth=r->azimuth();
-		statusMessage.compassAccuracy=r->calibrationLevel();
-		sendStatus();
-	}
-}
-
-void Agent::onAccelerometerUpdated(QAccelerometerReading *r){
-	if(0!=r){
-		statusMessage.accellerometer=QVector3D(r->x(), r->y(), r->z());
-		sendStatus();
-	}
-}
-
-void Agent::onGyroscopeUpdated(QGyroscopeReading *r){
-	if(0!=r){
-		statusMessage.gyroscope=QVector3D(r->x(), r->y(), r->z());
-		sendStatus();
-	}
-}
-
-
-void Agent::sendStatus(){
-	const qint64 now=QDateTime::currentMSecsSinceEpoch();
-	const qint64 interval=now-lastSend;
-	if(interval>100){
-		QByteArray datagram;
-		QDataStream ds(&datagram,QIODevice::WriteOnly);
-		ds<<statusMessage;
-		//TODO:Convert to use courier instead
-		//		comms->sendPackage(datagram,QHostAddress(hubAddress),hubPort);
-		lastSend=now;
-	}
-}
-
-
-SensorInput &Agent::getSensorInput(){
-	return sensors;
-}
-
-CameraList &Agent::getCameras(){
-	return cameras;
 }

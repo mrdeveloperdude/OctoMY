@@ -15,7 +15,7 @@ class QHexEditHighlighter : public QObject
 		typedef SparseRangeMap<QColor> ColorMap;
 
 	public:
-		explicit QHexEditHighlighter(QHexEditData* hexeditdata, QColor backdefault, QColor foredefault, QObject *parent = 0);
+		explicit QHexEditHighlighter(QHexEditData* hexeditdata, QColor backdefault, QColor foredefault, QObject *parent = nullptr);
 		void colors(qint64 pos, QColor& bc, QColor& fc) const;
 		QColor defaultBackColor() const;
 		QColor defaultForeColor() const;

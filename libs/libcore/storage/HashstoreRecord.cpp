@@ -1,6 +1,6 @@
-#include "ZooRecord.hpp"
+#include "HashstoreRecord.hpp"
 
-#include "ZooStorage.hpp"
+#include "Hashstore.hpp"
 
 #include <QDebug>
 
@@ -9,68 +9,75 @@
 #include <QDataStream>
 
 
-ZooRecord::ZooRecord(const ZooRecord &other)
-	: d_ptr(new ZooRecordPrivate(other.d_func()->m_storage,other.d_func()->m_key))
+HashstoreRecord::HashstoreRecord(const HashstoreRecord &other)
+	: d_ptr(new HashstoreRecordPrivate(other.d_func()->m_storage,other.d_func()->m_key))
 {
 
 }
 
 
-ZooRecord::ZooRecord(ZooStorage &storage, const QString key)
-	: d_ptr(new ZooRecordPrivate(storage, key))
+HashstoreRecord::HashstoreRecord(Hashstore &storage, const QString key)
+	: d_ptr(new HashstoreRecordPrivate(storage, key))
 {
 }
 
-ZooRecord::ZooRecord(ZooRecordPrivate &dd)
+HashstoreRecord::HashstoreRecord(HashstoreRecordPrivate &dd)
 	: d_ptr(&dd)
 {
 }
 
 
-ZooStorage &ZooRecord::storage()
+Hashstore &HashstoreRecord::storage()
 {
-	Q_D(ZooRecord);
+	Q_D(HashstoreRecord);
 	return d->m_storage;
-
 }
 
-QString ZooRecord::key()
+const QString HashstoreRecord::key()
 {
-	Q_D(ZooRecord);
+	Q_D(HashstoreRecord);
 	return d->m_key;
 }
 
-ZooRecordState ZooRecord::state(){
-	Q_D(ZooRecord);
+HashstoreRecordState HashstoreRecord::state(){
+	Q_D(HashstoreRecord);
 	return d->state();
 }
 
 
 
-bool ZooRecord::put(const QByteArray &value){
-	Q_D(ZooRecord);
+bool HashstoreRecord::put(const QByteArray &value){
+	Q_D(HashstoreRecord);
 	return d->put(value);
 }
 
 
-QByteArray ZooRecord::get(){
-	Q_D(ZooRecord);
+QByteArray HashstoreRecord::get(){
+	Q_D(HashstoreRecord);
 	return d->get();
 }
 
 
 
-ZooRecord::ZooRecord(ZooRecord && other) : ZooRecord() {
+HashstoreRecord::HashstoreRecord(HashstoreRecord && other) : HashstoreRecord() {
 	swap(*this, other);
 }
 
-ZooRecord & ZooRecord::operator=(ZooRecord other) {
+HashstoreRecord & HashstoreRecord::operator=(HashstoreRecord other) {
 	swap(*this, other);
 	return *this;
 }
 
+bool HashstoreRecord::operator==(HashstoreRecord &other){
+	return ( (other.d_func() == this->d_func() ) || (other.key() == key() ) );
+}
 
-void swap(ZooRecord& first, ZooRecord& second) /* nothrow */ {
+
+bool HashstoreRecord::operator!=(HashstoreRecord &other){
+	return !operator==(other);
+}
+
+void swap(HashstoreRecord& first, HashstoreRecord& second) /* nothrow */ {
 	using std::swap;
 	swap(first.d_ptr, second.d_ptr);
 }
@@ -79,8 +86,8 @@ void swap(ZooRecord& first, ZooRecord& second) /* nothrow */ {
 //////////////////////////////////////////////////////////////////////////////
 
 
-ZooRecordState ZooRecordPrivate::state(){
-	return ZooRecordState(false,false,false,false);
+HashstoreRecordState HashstoreRecordPrivate::state(){
+	return HashstoreRecordState(false,false,false,false);
 }
 
 
@@ -92,28 +99,30 @@ static QString dirPath(QDir dir, QString key, quint8 levels){
 		dirPath+=key[level]+sep;
 	}
 	QString ret=dir.absoluteFilePath(dirPath);
-	qDebug()<<"DIR: "<<dir.absolutePath()<<" + PATH: "<<dirPath<<" = ABS:"<<ret;
+	//qDebug()<<"DIR: "<<dir.absolutePath()<<" + PATH: "<<dirPath<<" = ABS:"<<ret;
 	return ret;
 }
 
 
 static const QRegularExpression reSanitizeKey("/[^0-9A-F]/"); // trimmed 40-digit upper-case hex string
 
+//TODO: match and report instead of replace
 static QString sanitizeKeyFilename(QString key) {
 	return key.replace(reSanitizeKey,"_");
 }
 
-ZooRecordPrivate::ZooRecordPrivate(ZooStorage &storage, const QString key)
+HashstoreRecordPrivate::HashstoreRecordPrivate(Hashstore &storage, const QString key)
 	: m_storage(storage)
 	, m_key(sanitizeKeyFilename(key))
-	, m_path(dirPath(storage.dir(), m_key, ZooStorage::DIR_LEVELS))
+	, m_path(dirPath(storage.dir(), m_key, Hashstore::DIR_LEVELS))
 	, m_file(m_path + m_key)
+	, m_flags(0)
 {
 
 }
 
 
-bool ZooRecordPrivate::put(const QByteArray &value){
+bool HashstoreRecordPrivate::put(const QByteArray &value){
 	if(""==m_path){
 		qWarning()<<"ERROR: path was invalid";
 		return false;
@@ -126,7 +135,7 @@ bool ZooRecordPrivate::put(const QByteArray &value){
 				return false;
 			}
 			else{
-				qDebug()<<"MKDIR "<<m_path;
+				//qDebug()<<"MKDIR "<<m_path;
 			}
 		}
 	}
@@ -134,22 +143,23 @@ bool ZooRecordPrivate::put(const QByteArray &value){
 		qWarning()<<"ERROR: could not open file for writing: "<<m_path;
 		return false;
 	}
-	QDataStream out(&m_file);
-	out << value;
+	m_file.write(value);
+	m_file.close();
 	return true;
 }
 
 
 
-QByteArray ZooRecordPrivate::get(){
+QByteArray HashstoreRecordPrivate::get(){
 	if(!m_file.exists()){
 		return QByteArray();
 	}
 	if(!m_file.open(QIODevice::ReadOnly)){
-		qWarning()<<"ERROR: could not open file for reading: "<<m_path;
+		qWarning()<<"ERROR: could not open file for reading: "<<m_path<<". Reason:"<<m_file.errorString();
 		return QByteArray();
 	}
 	QByteArray ret=m_file.readAll();
+	//qDebug()<<"READ ALL: "<<ret<<m_file.size();
 	m_file.close();
 	return ret;
 }
@@ -159,23 +169,23 @@ QByteArray ZooRecordPrivate::get(){
 //////////////////////////////////////////////////////////////////////////////
 
 
-void ZooRecord::allocateOnDisk(){
+void HashstoreRecord::allocateOnDisk(){
 	QString const k=key();
-	if(k.size()<ZooStorage::DIR_LEVELS){
+	if(k.size()<Hashstore::DIR_LEVELS){
 		qWarning()<<"ERROR: key was invalid";
 	}
 }
 
 
-void ZooRecord::loadFromDisk(){
+void HashstoreRecord::loadFromDisk(){
 	{
-		ZooRecordState s=state();
+		HashstoreRecordState s=state();
 		if(!s.keyExists()){
 			allocateOnDisk();
 		}
 	}
 	{
-		ZooRecordState s=state();
+		HashstoreRecordState s=state();
 		if(!s.keyExists()){
 			qWarning()<<"ERROR: allocation of key "<<key()<<" failed";
 			return;
@@ -185,7 +195,7 @@ void ZooRecord::loadFromDisk(){
 		}
 	}
 	{
-		ZooRecordState s=state();
+		HashstoreRecordState s=state();
 		if(!s.onDisk()){
 			qWarning()<<"ERROR: loading of data for key "<<key()<<" into memory failed";
 			return;
@@ -193,15 +203,15 @@ void ZooRecord::loadFromDisk(){
 	}
 }
 
-void ZooRecord::saveToDisk(){
+void HashstoreRecord::saveToDisk(){
 	{
-		ZooRecordState s=state();
+		HashstoreRecordState s=state();
 		if(!s.keyExists()){
 			allocateOnDisk();
 		}
 	}
 	{
-		ZooRecordState s=state();
+		HashstoreRecordState s=state();
 		if(!s.keyExists()){
 			qWarning()<<"ERROR: allocation of key "<<key()<<" failed";
 			return;
@@ -211,7 +221,7 @@ void ZooRecord::saveToDisk(){
 		}
 	}
 	{
-		ZooRecordState s=state();
+		HashstoreRecordState s=state();
 		if(!s.onDisk()){
 			qWarning()<<"ERROR: loading of data for key "<<key()<<" into memory failed";
 			return;

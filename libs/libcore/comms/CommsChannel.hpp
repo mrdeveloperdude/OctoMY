@@ -51,13 +51,13 @@ benefits in a way that hides their inherent complexities.
 The CommChannel API works like this:
 
 1. Users of the API register "couriers" that each is responsible for keeping the
-   latest data fresh and ready for sending should an oportunity present itself.
+   latest data fresh and ready for sending should an opportunity present itself.
    Couriers each tend to a certain type of packet with a certain priority and
    desired sending frequency. It is up to each courier to maintain it's own
    state.
 
 2. CommChannel is in charge and decides the speed at which packets are sent and
-   which couriers get ther packets sent on each opportunity.
+   which couriers get their packets sent on each opportunity.
 
 3. CommChannel may at any time send non-payload data in each packet or even
    special purpose network-only packets to sustain its operation. If there is no
@@ -96,7 +96,7 @@ class CommsChannel : public QObject{
 		bool connected;
 	public:
 
-		explicit CommsChannel(LogDestination *mw=0);
+		explicit CommsChannel(QObject *parent=nullptr, LogDestination *mw=nullptr);
 
 	public:
 

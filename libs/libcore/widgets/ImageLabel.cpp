@@ -13,6 +13,7 @@ void ImageLabel::setPixmap ( const QPixmap & p)
 	QLabel::setPixmap(p);
 }
 
+
 int ImageLabel::heightForWidth( int width ) const
 {
 	return ((qreal)pix.height()*width)/pix.width();

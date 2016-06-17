@@ -1,46 +1,24 @@
 #ifndef HUB_HPP
 #define HUB_HPP
 
-#include "comms/CommsChannel.hpp"
-#include "security/KeyStore.hpp"
-#include "zoo/ZooClient.hpp"
-#include <QCommandLineParser>
+#include "basic/Node.hpp"
 
-class Hub: QObject{
+#include "basic/NodeLauncher.hpp"
+
+class Client;
+class HubWindow;
+
+class Hub: public Node{
 		Q_OBJECT
-	private:
-		QCommandLineParser &opts;
-		CommsChannel *comms;
-		ZooClient *zoo;
-		int lastSentPackets;
-		int lastReceivedPackets;
-		int lastLostPackets;
-		int lastAckedPackets;
-		KeyStore keystore;
-
-
+	public:
+		HubWindow *window;
 	public:
 
-		explicit Hub(QCommandLineParser &opts, QObject *parent = 0);
+		explicit Hub(NodeLauncher<Hub> &launcher, QObject *parent = nullptr);
 		virtual ~Hub();
 
+		virtual QWidget *showWindow();
 
-		void hookSignals(QObject *o);
-		void unHookSignals(QObject *o);
-
-		QCommandLineParser &getOptions();
-		CommsChannel *getComms();
-
-		ZooClient *getZoo();
-
-	private slots:
-
-		void onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16);
-		void onError(QString);
-		void onClientAdded(Client *);
-
-	public slots:
-		void onConnectionStatusChanged(bool s);
 
 };
 

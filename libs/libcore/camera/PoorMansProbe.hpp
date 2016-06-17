@@ -17,7 +17,7 @@ class PoorMansProbe : public QAbstractVideoSurface
 	private:
 		QCamera *source;
 	public:
-		explicit PoorMansProbe(QObject *parent = 0);
+		explicit PoorMansProbe(QObject *parent = nullptr);
 
 		QList<QVideoFrame::PixelFormat> supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const;
 

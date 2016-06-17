@@ -6,7 +6,7 @@
 #include "comms/Client.hpp"
 
 #include "basic/Settings.hpp"
-
+#include "basic/GenericKeyEventHandler.hpp"
 
 #include "../libmap/MapControl.hpp"
 #include "../libmap/OSMMapAdapter.hpp"
@@ -20,6 +20,7 @@
 #include <QCompassReading>
 #include <QGyroscopeReading>
 #include <QScrollBar>
+#include <QComboBox>
 
 #ifdef Q_OS_ANDROID
 #include <QAndroidJniObject>
@@ -32,21 +33,19 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	if(0!=remote){
+	addAgentToList("Fuktard", ":/icons/agent.svg");
+	addAgentToList("Hexy", ":/icons/agent.svg");
+	addAgentToList("Golem", ":/icons/agent.svg");
 
-		Settings &s=Settings::getInstance();
+	if(nullptr!=remote){
+		Settings &s=remote->getSettings();
 		//Select correct starting page
 		QWidget *startPage=ui->pageRunning;
-		ui->stackedWidgetScreen->setCurrentWidget(s.getCustomSettingBool("octomy.initialized")?startPage:ui->pageWelcome);
+		ui->stackedWidgetScreen->setCurrentWidget(s.getCustomSettingBool("octomy.delivered")?startPage:ui->pagePairing);
 		//Make sure to switch page on "done"
-		connect(ui->widgetWelcome, &ControlPairingWidget::done, [=]() {
+		connect(ui->widgetPairing, &ControlPairingWidget::done, [=]() {
 			ui->stackedWidgetScreen->setCurrentWidget(startPage);
 		} );
-
-		ui->widgetConnection->configure("remote");
-		if(!connect(ui->widgetConnection,SIGNAL(connectStateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState)),WWCONTYPE)){
-			qWarning()<<"ERROR: could not connect";
-		}
 		if(0!=remote){
 			ui->labelLocal->setText("WAITING FOR LOCAL");
 			ui->labelHub->setText("WAITING FOR HUB");
@@ -54,7 +53,7 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 			ui->labelCompass->setText("WAITING FOR COMPASS");
 			ui->labelGyroscope->setText("WAITING FOR GYRO");
 			ui->labelAccelerometer->setText("WAITING FOR ACCELEROMETER");
-			remote->hookSignals(*this);
+			remote->hookSensorSignals(*this);
 		}
 		else{
 			ui->labelLocal->setText("N/A");
@@ -64,15 +63,32 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 			ui->labelGyroscope->setText("N/A");
 			ui->labelAccelerometer->setText("N/A");
 		}
-		ui->numericEntryServoTest->configure(500,2500,200,1500," µs","Test remote servo control via network", "servo-position-1");
+		ui->numericEntryServoTest->configure(&s,500,2500,200,1500," µs","Test remote servo control via network", "servo-position-1");
 		if(!connect(ui->numericEntryServoTest,SIGNAL(valueChanged(int)),this,SLOT(onServoPositionChanged(int)))){
 			qWarning()<<"ERROR: could not connect";
 		}
 		ui->labelTouch->setText("WAITING FOR TOUCH");
-		QPalette p=ui->logScroll->palette();
-		p.setColor(QPalette::Base, QColor(0, 0, 0, 64));
-		ui->logScroll->setPalette(p);
+		ui->stackedWidgetScreen->setCurrentWidget(s.getCustomSettingBool("octomy.delivered")?startPage:ui->pagePairing);
+		ui->comboBoxControlLevel->setCurrentText(s.getCustomSetting("octomy.remote.control.level",ui->comboBoxControlLevel->currentText()));
 		updateControlLevel();
+		GenericKeyEventHandler *gkh=new GenericKeyEventHandler(ui->plainTextEditSpeechText);
+		gkh->setEventProcessor([=](QObject *o, QKeyEvent *keyEvent){
+			auto t=keyEvent->type();
+			if(t==QEvent::KeyPress || t==QEvent::KeyRelease){
+				keyEvent->accept();
+				if (nullptr!=keyEvent && keyEvent->key() == Qt::Key_Return && keyEvent->modifiers() == Qt::ControlModifier)
+				{
+					// Ctrl + return pressed
+					if (t == QEvent::KeyRelease) {
+						ui->pushButtonSay->click();
+					}
+
+					// This event has been handled
+					return true;
+				}
+			}
+			return false;
+		});
 	}
 	else{
 		setDisabled(true);
@@ -87,12 +103,22 @@ RemoteWindow::~RemoteWindow(){
 }
 
 void RemoteWindow::appendLog(const QString& text){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	ui->logScroll->appendPlainText(text);
 	QScrollBar *vsb=ui->logScroll->verticalScrollBar();
 	if(0!=vsb){
 		vsb->setValue(vsb->maximum());
 	}
+}
+
+
+
+void RemoteWindow::addAgentToList(QString name, QString iconPath){
+	QIcon icon1;
+	icon1.addFile(iconPath, QSize(), QIcon::Normal, QIcon::Off);
+	ui->comboBoxAgent->insertItem(0, icon1, name);
+	ui->comboBoxAgent->setCurrentIndex(0);
+
 }
 
 
@@ -125,6 +151,7 @@ void RemoteWindow::toastAndroid(QString s){
 
 void RemoteWindow::keyReleaseEvent(QKeyEvent *e){
 	if(Qt::Key_Back==e->key()){
+		/*
 		if(ui->pageConnect==ui->stackedWidgetScreen->currentWidget()){
 			appendLog("EXITING APP ON BACK BUTTON");
 			ui->stackedWidgetScreen->setCurrentWidget(ui->pageConfirmQuit);
@@ -133,9 +160,15 @@ void RemoteWindow::keyReleaseEvent(QKeyEvent *e){
 			appendLog("GOING TO CONNECTION SCREEN ON BACK BUTTON");
 			ui->stackedWidgetScreen->setCurrentWidget(ui->pageConnect);
 		}
+		else
+		*/
+		if(ui->pageRunning==ui->stackedWidgetScreen->currentWidget()){
+			appendLog("GOING TO CONFIRM QUIT SCREEN ON BACK BUTTON");
+			ui->stackedWidgetScreen->setCurrentWidget(ui->pageConfirmQuit);
+		}
 		else if(ui->pageConfirmQuit==ui->stackedWidgetScreen->currentWidget()){
-			appendLog("GOING TO CONNECTION SCREEN ON BACK BUTTON");
-			ui->stackedWidgetScreen->setCurrentWidget(ui->pageConnect);
+			appendLog("GOING TO RUNNING SCREEN ON BACK BUTTON");
+			ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
 		}
 		else{
 			appendLog("ERROR ON BACK BUTTON");
@@ -179,7 +212,7 @@ void RemoteWindow::onClientAdded(Client *c){
 
 void RemoteWindow::onConnectionStatusChanged(bool c){
 	qDebug()<<"REMOTEW comms: new connection status: "<<c;
-	ui->widgetConnection->setConnectState(c?ON:OFF);
+	//ui->widgetConnection->setConnectState(c?ON:OFF);
 }
 
 //////////////////////////////////////////////////
@@ -223,6 +256,7 @@ void RemoteWindow::onServoPositionChanged(int val){
 
 void RemoteWindow::onTryToggleConnectionChanged(TryToggleState s){
 	appendLog("TRYSTATE CHANGED TO "+ToggleStateToSTring(s));
+	/*
 	bool ce=false;
 	QWidget *page=ui->pageConnect;
 	switch(s){
@@ -243,6 +277,7 @@ void RemoteWindow::onTryToggleConnectionChanged(TryToggleState s){
 	}
 	ui->widgetConnection->setEnabled(ce);
 	ui->stackedWidgetScreen->setCurrentWidget(page);
+	*/
 }
 
 
@@ -258,19 +293,14 @@ void RemoteWindow::updateControlLevel(){
 	switch(idx){
 		default:
 		case(0):{
-
 			}break;
 		case(1):{
-
 			}break;
 		case(2):{
-
 			}break;
 		case(3):{
-
 			}break;
 		case(4):{
-
 			}break;
 	}
 
@@ -280,17 +310,13 @@ void RemoteWindow::updateControlLevel(){
 void RemoteWindow::updateActiveAgent(){
 	QString agentName=ui->comboBoxAgent->currentText();
 	if("Pair with another"==agentName){
-		ui->stackedWidgetScreen->setCurrentWidget(ui->pageWelcome);
+		ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
 	}
 	else{
 		qDebug()<<"SWITCHING ACTIVE AGENT TO "<<agentName;
 		const int idx=ui->comboBoxControlLevel->currentIndex();
 		ui->stackedWidgetControl->setCurrentIndex(idx);
 	}
-}
-
-void RemoteWindow::on_comboBoxControlLevel_currentIndexChanged(int ){
-	updateControlLevel();
 }
 
 void RemoteWindow::on_pushButtonBack_clicked()
@@ -301,4 +327,20 @@ void RemoteWindow::on_pushButtonBack_clicked()
 void RemoteWindow::on_comboBoxAgent_currentIndexChanged(int index)
 {
 	updateActiveAgent();
+}
+
+void RemoteWindow::on_comboBoxControlLevel_activated(const QString &cLevel)
+{
+	Settings *settings=(nullptr!=remote)?(&remote->getSettings()):nullptr;
+	if(nullptr!=settings){
+		settings->setCustomSetting("octomy.remote.control.level",cLevel);
+	}
+	updateControlLevel();
+}
+
+void RemoteWindow::on_pushButtonSay_clicked()
+{
+	QString text=ui->plainTextEditSpeechText->toPlainText();
+	ui->logScroll->appendLog("SAID: "+text);
+	ui->plainTextEditSpeechText->clear();
 }

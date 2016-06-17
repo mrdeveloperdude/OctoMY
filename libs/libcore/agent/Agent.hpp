@@ -7,55 +7,32 @@
 #include "widgets/TryToggle.hpp"
 #include "camera/CameraList.hpp"
 
+#include "basic/Node.hpp"
+#include "basic/NodeLauncher.hpp"
+
+
 #include <QObject>
 #include <QCommandLineParser>
 
 class ZooClient;
+class DiscoveryClient;
+class AgentWindow;
 
-class Agent : public QObject{
+class Agent : public Node{
+
 		Q_OBJECT
-	private:
-
-		QCommandLineParser &opts;
-		CommsChannel *comms;
-		ZooClient *zoo;
-		SensorInput sensors;
-		SensorsMessage statusMessage;
-		qint64 lastSend;
-
-		QHostAddress hubAddress;
-		quint16 hubPort;
-		CameraList cameras;
-
-
 	public:
-		explicit Agent(QCommandLineParser &opts, QObject *parent = 0);
+		AgentWindow *window;
+	public:
+		explicit Agent(NodeLauncher<Agent> &launcher, QObject *parent = nullptr);
 		virtual ~Agent();
 
 		void start(QHostAddress listenAddress, quint16 listenPort, QHostAddress hubAddress, quint16 hubPort);
-		void hookSignals(QObject &o);
-		void unHookSignals(QObject &o);
-		void sendStatus();
 
-		SensorInput &getSensorInput();
-		CameraList &getCameras();
+				virtual QWidget *showWindow();
 
 	public slots:
 		void onConnectionStatusChanged(TryToggleState);
-
-	private slots:
-
-		void onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16);
-		void onError(QString);
-		void onClientAdded(Client *);
-		void onConnectionStatusChanged(bool);
-
-
-	private slots:
-		void onPositionUpdated(const QGeoPositionInfo &info);
-		void onCompassUpdated(QCompassReading *);
-		void onAccelerometerUpdated(QAccelerometerReading *);
-		void onGyroscopeUpdated(QGyroscopeReading *r);
 
 
 };

@@ -14,6 +14,9 @@ TEST_PROJECTS+= \
 	testIdenticon \
 	testParser \
 	testZooComms \
+	testHashstore \
+	testTetraGPSEncoder \
+
 
 STRESS_PROJECTS+= \
 

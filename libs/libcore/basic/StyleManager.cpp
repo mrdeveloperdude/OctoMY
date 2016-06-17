@@ -15,7 +15,7 @@ class OctoMYProxyStyle : public QProxyStyle{
 		const qint64 OCTOMY_CURSOR_WSIZE=3;
 	public:
 		int pixelMetric ( PixelMetric metric, const QStyleOption * option = 0, const QWidget * widget = 0 ) const{
-			WWMETHODGATE();
+			OC_METHODGATE();
 			switch(metric) {
 				case PM_SliderLength : return OCTOMY_SLIDER_HANDLE_SIZE;
 				case PM_SliderThickness: return OCTOMY_SLIDER_HANDLE_SIZE;
@@ -31,11 +31,11 @@ class OctoMYProxyStyle : public QProxyStyle{
 ///////////////////////////////////////
 
 StyleManager::StyleManager(){
-	WWMETHODGATE();
+	OC_METHODGATE();
 }
 
 void StyleManager::apply(){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	QCoreApplication *capp=static_cast<QCoreApplication *>(QCoreApplication::instance());
 	QApplication *app=qobject_cast<QApplication *>(capp);
 	//GUI enabled
@@ -60,7 +60,7 @@ void StyleManager::apply(){
 }
 
 bool StyleManager::loadFont(QString name){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	const int fontId =	QFontDatabase::addApplicationFont ( name);
 	if(fontId<0){
 		qWarning() << "ERROR: Could not load font for "<<name<< "( "<<fontId<<" )";
@@ -73,7 +73,7 @@ bool StyleManager::loadFont(QString name){
 
 
 void StyleManager::loadFonts(QApplication &app){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	qputenv("QT_QPA_FONTDIR", "/");
 	//Main
 	/*
@@ -98,7 +98,7 @@ void StyleManager::loadFonts(QApplication &app){
 }
 
 void StyleManager::applyStyle(QApplication &app){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	/*
 	QStringList availableStyles=QStyleFactory::keys();
 	foreach (QString s, availableStyles) {
@@ -113,7 +113,7 @@ void StyleManager::applyStyle(QApplication &app){
 
 
 void StyleManager::applyStyleSheet(QApplication &app){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	app.setStyleSheet ( utility::fileToString(":/style/style.qss"));
 }
 

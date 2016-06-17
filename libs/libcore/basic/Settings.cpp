@@ -9,75 +9,54 @@
 #include <QFile>
 
 
-Settings *Settings::instance=0;
 
 const qint64  Settings::MAX_SYNC_INTERVAL=(1000 * 10); //Never sync more often than once every 10 sec
-const QString Settings::CASUAL_COMPANY_NAME = "Playmio.com™";
-const QString Settings::CASUAL_DOMAIN_NAME = "playmio.com™";
-const QString Settings::CASUAL_BRAND_NAME = "OctoMY™";
-const QString Settings::CASUAL_APPLICATION_NAME = "OctoMY™";
-const QString Settings::HOTLINE = "+47 97688353";
+const QString Settings::ORGANIZATION_NAME = "OctoMY™";
+const QString Settings::DOMAIN_NAME = "octomy.org™";
+const QString Settings::BRAND_NAME = "OctoMY™";
+const QString Settings::APPLICATION_NAME = "OctoMY™";
 const QString Settings::USERAGENT= "OctoMY/1.0";
 
 
 const QString Settings::KEY_CUSTOM_SETTING_BASE="";  // SET TO EMPTY STRING TO ALLOW SMOOTH TRANSITION FROM CUSTOM TO ACTUAL SETTING IN LATER VERSIONS "custom-setting-";
 
 
-Settings::Settings():
-	QObject(0)
-  , settings(0)
-  , versionFile(0)
+Settings::Settings(QObject *parent):
+	QObject(parent)
+  , settings(nullptr)
   , lastSync(0)
 {
-	WWMETHODGATE();
-	QCoreApplication::setApplicationVersion("1.0");
-	QCoreApplication::setOrganizationName(CASUAL_COMPANY_NAME);
-	QCoreApplication::setOrganizationDomain(CASUAL_DOMAIN_NAME);
-	QCoreApplication::setApplicationName(CASUAL_APPLICATION_NAME);
+	OC_METHODGATE();
 	settings=new QSettings;
 	syncTimer.setTimerType(Qt::VeryCoarseTimer);
-	if(!connect(&syncTimer,SIGNAL(timeout()),this,SLOT(delayedSync()),WWCONTYPE)){
+	if(!connect(&syncTimer,SIGNAL(timeout()),this,SLOT(delayedSync()),OC_CONTYPE)){
 		qWarning()<<"ERROR: Could not connect settings sync timer";
 	}
 }
 
 
 Settings::~Settings(){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	//DELETE 2014-09-26
 	delete settings;
 	settings=0;
 }
 
-/*
-Settings::Settings(Settings &){
-	WWMETHODGATE();
-	//This is simply an inert placeholder
-}
-*/
 
 
-
-//TODO: REPLACE SINGLETON
-Settings &Settings::getInstance(){
-	if(0==instance){
-		instance=new Settings;
-	}
-	if(0==instance){
-		qWarning() << "ERROR: Settings object null!";
-	}
-	return *instance;
-}
 
 
 void Settings::resetConfiguration(){
-	WWMETHODGATE();
+	OC_METHODGATE();
+	if(nullptr!=settings)	{
+		settings->clear();
+	}
 }
 
 
 void Settings::sync(){
-	WWMETHODGATE();
-	if(0!=settings)	{
+	OC_METHODGATE();
+	if(nullptr!=settings)	{
 		const qint64 now=QDateTime::currentMSecsSinceEpoch();
 		const qint64 timeSinceLastSync=now-lastSync;
 		if(timeSinceLastSync>MAX_SYNC_INTERVAL){
@@ -93,7 +72,7 @@ void Settings::sync(){
 
 
 void Settings::delayedSync(){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	syncTimer.stop();
 	if(0!=settings)	{
 		//qDebug()<<"SETTINGS SYNC PERFORMED";
@@ -109,7 +88,7 @@ void Settings::delayedSync(){
 
 
 QString Settings::getCustomSetting(const QString &sub, QString def){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	if(0==settings){
 		return def;
 	}
@@ -117,7 +96,7 @@ QString Settings::getCustomSetting(const QString &sub, QString def){
 }
 
 void Settings::setCustomSetting(const QString &sub,QString val){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	if(0!=settings){
 		settings->setValue(KEY_CUSTOM_SETTING_BASE+sub,val);
 		//		qDebug()<<(KEY_CUSTOM_SETTING_BASE+sub)<<"="<<val;
@@ -127,7 +106,7 @@ void Settings::setCustomSetting(const QString &sub,QString val){
 
 
 qint64  Settings::getCustomSettingLong(const QString &sub, qint64 def){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	if(0==settings){
 		return def;
 	}
@@ -135,7 +114,7 @@ qint64  Settings::getCustomSettingLong(const QString &sub, qint64 def){
 }
 
 void Settings::setCustomSettingLong(const QString &sub,qint64  val){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	if(0!=settings){
 		settings->setValue(KEY_CUSTOM_SETTING_BASE+sub,val);
 		//		qDebug()<<(KEY_CUSTOM_SETTING_BASE+sub)<<"="<<val;
@@ -148,7 +127,7 @@ void Settings::setCustomSettingLong(const QString &sub,qint64  val){
 
 
 bool Settings::getCustomSettingBool(const QString &sub,bool def){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	if(0==settings){
 		return def;
 	}
@@ -157,7 +136,7 @@ bool Settings::getCustomSettingBool(const QString &sub,bool def){
 }
 
 void Settings::setCustomSettingBool(const QString &sub,bool val){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	if(0!=settings){
 		settings->setValue(KEY_CUSTOM_SETTING_BASE+sub,val);
 		//		qDebug()<<(KEY_CUSTOM_SETTING_BASE+sub)<<"="<<val;
@@ -166,7 +145,7 @@ void Settings::setCustomSettingBool(const QString &sub,bool val){
 }
 
 bool Settings::hasCustomSetting(const QString &sub){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	if(0==settings){
 		return false;
 	}

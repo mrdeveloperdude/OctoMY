@@ -4,7 +4,7 @@
 # the final values given to important
 # parameters for the build
 
-#lolbob{
+lolbob{
 message("")
 message("------ " $${TARGET} " " $${DEFINES} " ------")
 message("| Qt: " $$[QT_VERSION] " @ " $$[QT_INSTALL_PREFIX])
@@ -30,4 +30,4 @@ message("| DEFINES: " $${DEFINES})
 message("| C++ Compiler Version: " $$system(c++ --version) )
 message("---------------------------------------------")
 
-#}
+}

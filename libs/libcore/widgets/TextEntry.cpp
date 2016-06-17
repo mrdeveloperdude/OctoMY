@@ -5,24 +5,25 @@
 TextEntry::TextEntry(QWidget *parent) :
 	QLineEdit(parent)
 {
-	WWMETHODGATE();
+	OC_METHODGATE();
 }
 
 TextEntry::~TextEntry(){
-	WWMETHODGATE();
+	OC_METHODGATE();
 }
 
 
 
-void TextEntry::configure(QString val, QString key, QString tip){
-	WWMETHODGATE();
+void TextEntry::configure(Settings *s,QString val, QString key, QString tip){
+	OC_METHODGATE();
+	settings=s;
 	if(""!=tip){
 		setToolTip(tip);
 	}
 	k=key.trimmed();
-	if(""!=k){
-		val=Settings::getInstance().getCustomSetting(k,val);
-		if(!connect(this,SIGNAL(textChanged(QString)),this,SLOT(onValueChanged()),WWCONTYPE)){
+	if(""!=k && nullptr!=settings){
+		val=settings->getCustomSetting(k,val);
+		if(!connect(this,SIGNAL(textChanged(QString)),this,SLOT(onValueChanged()),OC_CONTYPE)){
 			qWarning()<<"ERROR: Could not connect";
 		}
 	}
@@ -31,7 +32,9 @@ void TextEntry::configure(QString val, QString key, QString tip){
 
 
 void TextEntry::onValueChanged(){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	QString v=text();
-	Settings::getInstance().setCustomSetting(k,v);
+	if(nullptr!=settings){
+		settings->setCustomSetting(k,v);
+	}
 }

@@ -10,16 +10,16 @@ LightWidget::LightWidget(QWidget *parent,const QColor &color):
   , color(color)
   , on(false)
 {
-	WWMETHODGATE();
+	OC_METHODGATE();
 }
 
 bool LightWidget::isLightOn() const{
-	WWMETHODGATE();
+	OC_METHODGATE();
 	return on;
 }
 
 void LightWidget::setLightOn(bool o){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	if (on == o){
 		return;
 	}
@@ -28,7 +28,7 @@ void LightWidget::setLightOn(bool o){
 }
 
 void LightWidget::setLightColor(QColor c){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	color=c;
 	update();
 }
@@ -39,17 +39,17 @@ void LightWidget::toggleLight(){
 }
 
 void LightWidget::turnLightOff() {
-	WWMETHODGATE();
+	OC_METHODGATE();
 	setLightOn(false);
 }
 void LightWidget::turnLightOn() {
-	WWMETHODGATE();
+	OC_METHODGATE();
 	setLightOn(true);
 }
 
 
 void LightWidget::paintEvent(QPaintEvent *){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	QPainter painter(this);
 	painter.setPen(Qt::NoPen);
 	painter.setRenderHint(QPainter::Antialiasing);

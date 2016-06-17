@@ -27,6 +27,9 @@
 #include "puppet/GaitController.hpp"
 
 
+#include "comms/CommsChannel.hpp"
+#include "zoo/ZooClient.hpp"
+
 #include <QScrollBar>
 #include <QHostInfo>
 #include <QNetworkInterface>
@@ -47,84 +50,85 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
   , m_gait(0)
 {
 	setObjectName("HubWindow");
-	summaryTimer.setInterval(100);
-	gaugeTimer.setInterval(1000/60);
-	gaugeTimer.setTimerType(Qt::PreciseTimer);
-	hexyTimer.setSingleShot(true);
-	hexyTimer.setTimerType(Qt::PreciseTimer);
-	ui->setupUi(this);
-	/*
+	if(nullptr!=hub){
+		summaryTimer.setInterval(100);
+		gaugeTimer.setInterval(1000/60);
+		gaugeTimer.setTimerType(Qt::PreciseTimer);
+		hexyTimer.setSingleShot(true);
+		hexyTimer.setTimerType(Qt::PreciseTimer);
+		ui->setupUi(this);
+		/*
 	QAbstractItemModel *data = new ClientModel(hub->getComms()->getClients(), this);
 	ui->widgetIncommingNodes->configure("Icons","hubwindiow-clients-list");
 	ui->widgetIncommingNodes->setModel(data);
 */
-	ui->tabWidget->setEnabled(true);
-	ui->tabWidget->setCurrentWidget(ui->tabIncomming);
+		ui->tabWidget->setEnabled(true);
+		ui->tabWidget->setCurrentWidget(ui->tabIncomming);
 
-	//Listen
-	ui->comboBoxLocalAddress->configure("hub-listen-address","Local address");
-	ui->lineEditBindPort->configure("","hub-listen-port","The port to listen for incomming netork traffic");
+		//Listen
+		ui->comboBoxLocalAddress->configure(&hub->getSettings(), "hub-listen-address","Local address");
+		ui->lineEditBindPort->configure(&hub->getSettings(), "","hub-listen-port","The port to listen for incomming netork traffic");
 
-	ui->lineEditRemoteAddress->configure("localhost","hub-listen_address","The address of the remote host");
-	ui->lineEditRemotePort->configure("","hub-port","The port of the remote host");
-	ui->tryToggleListen->setText("Listen","Preparing...","Listening");
-	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onListenStateChanged(TryToggleState)),WWCONTYPE)){
-		qDebug()<<"could not connect";
-	}
-	if(!connect(&summaryTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()),WWCONTYPE)){
-		qDebug()<<"could not connect";
-	}
-	if(!connect(&gaugeTimer,SIGNAL(timeout()),this,SLOT(onGaugeTimer()),WWCONTYPE)){
-		qDebug()<<"could not connect";
-	}
-	if(!connect(&hexyTimer,SIGNAL(timeout()),this,SLOT(onHexyTimer()))){
-		qDebug()<<"could not connect";
-	}
-	QCommandLineParser &opts=hub->getOptions();
-	if(opts.isSet("local-port")){
-		ui->lineEditBindPort->setText(opts.value("local-port"));
-		qDebug()<<"OVERRIDING LOCAL PORT WITH VALUE FROM CMDLINE: "<<opts.value("local-port");
-	}
-	if(opts.isSet("remote-port")){
-		ui->lineEditRemotePort->setText(opts.value("remote-port"));
-		qDebug()<<"OVERRIDING REMOTE PORT WITH VALUE FROM CMDLINE: "<<opts.value("remote-port");
-	}
-	ui->lineEditBindPort->setValidator( new QIntValidator(0, 65535, this) );
-	ui->lineEditRemotePort->setValidator( new QIntValidator(0, 65535, this) );
-
-	hub->getComms()->hookSignals(*this);
-
-	QByteArray ba("HELLO WORLD");
-	QHexEditData* hexdata = QHexEditData::fromMemory(ba);
-
-	ui->hexEditor->setData(hexdata);
-
-	ui->tabWidget->setCurrentWidget(ui->tabPlan);
-
-
-
-
-	HexyTool *ht=ui->widgetHexyTool;
-	if(0==hexy){
-		hexy=new HexySerial;
-		if(0!=hexy){
-			connect( hexy, SIGNAL(settingsChanged()), this, SLOT(onHexySettingsChanged()));
+		ui->lineEditRemoteAddress->configure(&hub->getSettings(), "localhost","hub-listen_address","The address of the remote host");
+		ui->lineEditRemotePort->configure(&hub->getSettings(), "","hub-port","The port of the remote host");
+		ui->tryToggleListen->setText("Listen","Preparing...","Listening");
+		if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onListenStateChanged(TryToggleState)),OC_CONTYPE)){
+			qDebug()<<"could not connect";
 		}
+		if(!connect(&summaryTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()),OC_CONTYPE)){
+			qDebug()<<"could not connect";
+		}
+		if(!connect(&gaugeTimer,SIGNAL(timeout()),this,SLOT(onGaugeTimer()),OC_CONTYPE)){
+			qDebug()<<"could not connect";
+		}
+		if(!connect(&hexyTimer,SIGNAL(timeout()),this,SLOT(onHexyTimer()))){
+			qDebug()<<"could not connect";
+		}
+		QCommandLineParser &opts=hub->getOptions();
+		if(opts.isSet("local-port")){
+			ui->lineEditBindPort->setText(opts.value("local-port"));
+			qDebug()<<"OVERRIDING LOCAL PORT WITH VALUE FROM CMDLINE: "<<opts.value("local-port");
+		}
+		if(opts.isSet("remote-port")){
+			ui->lineEditRemotePort->setText(opts.value("remote-port"));
+			qDebug()<<"OVERRIDING REMOTE PORT WITH VALUE FROM CMDLINE: "<<opts.value("remote-port");
+		}
+		ui->lineEditBindPort->setValidator( new QIntValidator(0, 65535, this) );
+		ui->lineEditRemotePort->setValidator( new QIntValidator(0, 65535, this) );
+
+		hub->getComms()->hookSignals(*this);
+
+		QByteArray ba("HELLO WORLD");
+		QHexEditData* hexdata = QHexEditData::fromMemory(ba);
+
+		ui->hexEditor->setData(hexdata);
+
+		ui->tabWidget->setCurrentWidget(ui->tabPlan);
+
+
+
+
+		HexyTool *ht=ui->widgetHexyTool;
+		if(0==hexy){
+			hexy=new HexySerial;
+			if(0!=hexy){
+				connect( hexy, SIGNAL(settingsChanged()), this, SLOT(onHexySettingsChanged()));
+			}
+		}
+
+
+		m_gait=new GaitController<qreal> ();
+		if(0!=m_gait){
+			ui->widgetGait->setGait(*m_gait);
+		}
+
+
+		appendLog("SETTING UP PLAN EDITOR");
+		ui->widgetPlanEditor->configure("hub.plan");
+
+		//updateClientsList();
+		appendLog("READY");
 	}
-
-
-	m_gait=new GaitController<qreal> ();
-	if(0!=m_gait){
-		ui->widgetGait->setGait(*m_gait);
-	}
-
-
-	appendLog("SETTING UP PLAN EDITOR");
-	ui->widgetPlanEditor->configure("hub.plan");
-
-	//updateClientsList();
-	appendLog("READY");
-
 }
 
 HubWindow::~HubWindow() {
@@ -232,12 +236,8 @@ void HubWindow::onSummaryTimer(){
 }
 
 void HubWindow::appendLog(const QString& text){
-	WWMETHODGATE();
-	ui->logScroll->appendPlainText(text);
-	QScrollBar *vsb=ui->logScroll->verticalScrollBar();
-	if(0!=vsb){
-		vsb->setValue(vsb->maximum());
-	}
+	OC_METHODGATE();
+	ui->logScroll->appendLog(text);
 }
 
 void HubWindow::onListenStateChanged(TryToggleState s){
@@ -267,7 +267,7 @@ void HubWindow::onListenStateChanged(TryToggleState s){
 void HubWindow::onLocalHostLookupComplete(QHostInfo hi){
 	for(QHostAddress adr:hi.addresses()){
 		if(adr.isNull()){
-			ui->logScroll->appendHtml("Skipping invalid address during local host lookup: "+adr.toString());
+			ui->logScroll->appendLog("Skipping invalid address during local host lookup: "+adr.toString());
 		}
 		else{
 			CommsChannel *comms=hub->getComms();
@@ -288,7 +288,7 @@ void HubWindow::onRemoteHostLookupComplete(QHostInfo hi){
 	qDebug()<<"## onRemoteHostLookupComplete";
 	for(QHostAddress adr:hi.addresses()){
 		if(adr.isNull()){
-			ui->logScroll->appendHtml("Skipping invalid address during remote host lookup: "+adr.toString());
+			ui->logScroll->appendLog("Skipping invalid address during remote host lookup: "+adr.toString());
 		}
 		else{
 			const int l=ui->horizontalSliderSendCount->value();
@@ -309,13 +309,13 @@ void HubWindow::onRemoteHostLookupComplete(QHostInfo hi){
 			return;
 		}
 	}
-	ui->logScroll->appendHtml("No valid addresses found during remote host lookup, aborting send");
+	ui->logScroll->appendLog("No valid addresses found during remote host lookup, aborting send");
 }
 
 
 
 void HubWindow::onReceivePacket(QSharedPointer<QDataStream> ds, QHostAddress host, quint16 port){
-	ui->logScroll->appendHtml("GOT packet from "+host.toString()+":"+QString::number(port));
+	ui->logScroll->appendLog("GOT packet from "+host.toString()+":"+QString::number(port));
 	qint32 mt=INVALID;
 	*ds >> mt;
 	switch((MessageType)mt){
@@ -587,7 +587,7 @@ void HubWindow::on_pushButtonTestKeyPair_clicked(){
 void HubWindow::on_pushButtonUDPPunch_clicked()
 {
 	if(nullptr!=hub){
-		ZooClient *zoo=hub->getZoo();
+		ZooClient *zoo=hub->getZooClient();
 		if(nullptr!=zoo){
 			zoo->punchUDP("12345");
 		}

@@ -7,7 +7,7 @@ class BluetoothList : public QObject
 {
 		Q_OBJECT
 	public:
-		explicit BluetoothList(QObject *parent = 0);
+		explicit BluetoothList(QObject *parent = nullptr);
 
 	public:
 		QString toSpecStanzas(QString space="");

@@ -7,10 +7,8 @@
 #include "hw/actuators/HexyTool.hpp"
 #include "hw/BluetoothList.hpp"
 #include "basic/Settings.hpp"
-#include "widgets/WelcomeWidget.hpp"
 
 #include <QDebug>
-#include <QScrollBar>
 
 #ifdef Q_OS_ANDROID
 #include <QAndroidJniObject>
@@ -23,39 +21,93 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	, hexy(0)
 {
 	ui->setupUi(this);
-	Settings &s=Settings::getInstance();
-	//Select correct starting page
-	QWidget *startPage=ui->pageRunning;
-	ui->stackedWidget->setCurrentWidget(s.getCustomSettingBool("octomy.initialized")?startPage:ui->pageWelcome);
-	//Make sure to switch page on "done"
-	connect(ui->widgetWelcome, &AgentPairingWizard::done, [=]() {
+	ui->widgetFace->setAgent(agent);
 
-		ui->stackedWidget->setCurrentWidget(startPage);
-	} );
+	if(nullptr!=agent){
+		Settings &s=agent->getSettings();
 
-	updateVisibility();
+		//Select correct starting page
+		QWidget *startPage=ui->pageRunning;
+		ui->stackedWidget->setCurrentWidget(s.getCustomSettingBool("octomy.delivered")?startPage:ui->pageDelivery);
+		//Make sure to switch page on "done"
+		connect(ui->widgetDelivery, &AgentDeliveryWizard::done, [=](bool pairNow) {
+			ui->stackedWidget->setCurrentWidget(pairNow?ui->pagePairing:startPage);
+		} );
 
-	//Set our custom identicon as window icon
-	Identicon id(QStringLiteral(":/icons/identicon.svg"),0);
-	QIcon icon;//=windowIcon();
-	icon.addPixmap(id.pixmap());
-	//	icon.addFile(QStringLiteral(":/icons/agent.svg"), QSize(), QIcon::Normal, QIcon::Off);
-	setWindowIcon(icon);
+		connect(ui->widgetPairing, &AgentPairingWizard::done, [=]() {
+			ui->stackedWidget->setCurrentWidget(startPage);
+		} );
 
-	ui->widgetConnection->configure("agent");
-	if(!connect(ui->widgetConnection,SIGNAL(connectStateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState)),WWCONTYPE)){
-		qWarning()<<"ERROR: could not connect";
+		updateVisibility();
+
+		//Set our custom identicon as window icon
+		Identicon id(QStringLiteral(":/icons/identicon.svg"),0);
+		QIcon icon;//=windowIcon();
+		icon.addPixmap(id.pixmap());
+		//	icon.addFile(QStringLiteral(":/icons/agent.svg"), QSize(), QIcon::Normal, QIcon::Off);
+		setWindowIcon(icon);
+
+		ui->widgetConnection->configure(&s,"agent");
+		if(!connect(ui->widgetConnection,SIGNAL(connectStateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState)),OC_CONTYPE)){
+			qWarning()<<"ERROR: could not connect";
+		}
+
+		ui->widgetPlanEditor->configure("agent.plan");
+
+
+		QAction *cameraAction = new QAction(tr("Camera"), this);
+		cameraAction->setStatusTip(tr("Do the camera dance"));
+		cameraAction->setIcon(QIcon(":/icons/eye.svg"));
+		connect(cameraAction, &QAction::triggered, this, &AgentWindow::on_pushButtonCamera_clicked);
+		menu.addAction(cameraAction);
+
+
+		QAction *pairingAction = new QAction(tr("Pair"), this);
+		pairingAction->setStatusTip(tr("Do the pairing dance"));
+		pairingAction->setIcon(QIcon(":/icons/pair.svg"));
+		connect(pairingAction, &QAction::triggered, this, &AgentWindow::on_pushButtonPair_clicked);
+		menu.addAction(pairingAction);
+
+		QAction *planAction = new QAction(tr("Plan"), this);
+		planAction->setStatusTip(tr("Do the planning dance"));
+		planAction->setIcon(QIcon(":/icons/mandate.svg"));
+		connect(planAction, &QAction::triggered, this, &AgentWindow::on_pushButtonPlan_clicked);
+		menu.addAction(planAction);
+
+
+		QAction *faceAction = new QAction(tr("Show Face"), this);
+		faceAction->setStatusTip(tr("Show face in main screen"));
+		faceAction->setCheckable(true);
+		faceAction->setChecked(s.getCustomSettingBool("octomy.face"));
+		connect(faceAction, &QAction::triggered, this, &AgentWindow::onFaceVisibilityChanged);
+		menu.addAction(faceAction);
+
+		QAction *logAction = new QAction(tr("Show Log"), this);
+		logAction->setStatusTip(tr("Show log in main screen"));
+		logAction->setCheckable(true);
+		logAction->setChecked(s.getCustomSettingBool("octomy.debug.log"));
+		connect(logAction, &QAction::triggered, this, &AgentWindow::onLogVisibilityChanged);
+		menu.addAction(logAction);
+
+
+		QAction *statsAction = new QAction(tr("Show Stats"), this);
+		statsAction->setStatusTip(tr("Show stats in main screen"));
+		statsAction->setCheckable(true);
+		statsAction->setChecked(s.getCustomSettingBool("octomy.debug.stats"));
+		connect(statsAction, &QAction::triggered, this, &AgentWindow::onStatsVisibilityChanged);
+		menu.addAction(statsAction);
+
+
+		QAction *unbornAction = new QAction(tr("Unbirth!"), this);
+		unbornAction->setStatusTip(tr("Delete the identity of this agent to restart birth"));
+		unbornAction->setIcon(QIcon(":/icons/kill.svg"));
+		Settings *sp=&s;
+		connect(unbornAction, &QAction::triggered, this, [sp](){
+			qDebug()<<"UNBIRTHED!";
+			sp->setCustomSettingBool("octomy.delivered",false);
+		});
+		menu.addAction(unbornAction);
 	}
-
-
-	ui->labelCamera->setText("WAITING FOR CAMERA");
-	QPalette p=ui->logScroll->palette();
-	p.setColor(QPalette::Base, QColor(0, 0, 0, 64));
-	ui->logScroll->setPalette(p);
-
-	ui->widgetPlanEditor->configure("agent.plan");
-
-
 
 #ifdef Q_OS_ANDROID
 	showFullScreen();
@@ -68,10 +120,7 @@ AgentWindow::~AgentWindow(){
 
 
 void AgentWindow::updateVisibility(){
-	Settings &s=Settings::getInstance();
-	ui->widgetFace->setVisible(s.getCustomSettingBool("octomy.face"));
-	ui->logScroll->setVisible(s.getCustomSettingBool("octomy.debug"));
-	ui->widgetIdenticon->setVisible(s.getCustomSettingBool("octomy.identicon"));
+	ui->widgetFace->updateVisibility();
 }
 
 
@@ -92,6 +141,37 @@ void AgentWindow::onTryToggleConnectionChanged(TryToggleState s){
 			}break;
 	}
 }
+
+void AgentWindow::onFaceVisibilityChanged(bool on){
+	qDebug()<<"FACE VIS IS NOW: "<<on;
+	Settings *s=(nullptr!=agent)?(&agent->getSettings()):nullptr;
+	if(nullptr!=s){
+		s->setCustomSettingBool("octomy.face",on);
+	}
+	updateVisibility();
+}
+
+
+void AgentWindow::onLogVisibilityChanged(bool on){
+	qDebug()<<"LOG VIS IS NOW: "<<on;
+	Settings *s=(nullptr!=agent)?(&agent->getSettings()):nullptr;
+	if(nullptr!=s){
+		s->setCustomSettingBool("octomy.debug.log",on);
+	}
+	updateVisibility();
+}
+
+void AgentWindow::onStatsVisibilityChanged(bool on){
+	qDebug()<<"STATS VIS IS NOW: "<<on;
+	Settings *s=(nullptr!=agent)?(&agent->getSettings()):nullptr;
+	if(nullptr!=s){
+		s->setCustomSettingBool("octomy.debug.stats",on);
+	}
+	updateVisibility();
+}
+
+
+
 
 void AgentWindow::keyReleaseEvent(QKeyEvent *e){
 	if(Qt::Key_Back==e->key()){
@@ -152,12 +232,7 @@ void AgentWindow::toastAndroid(QString s){
 
 
 void AgentWindow::appendLog(const QString& text){
-	WWMETHODGATE();
-	ui->logScroll->appendPlainText(text);
-	QScrollBar *vsb=ui->logScroll->verticalScrollBar();
-	if(0!=vsb){
-		vsb->setValue(vsb->maximum());
-	}
+	ui->widgetFace->appendLog(text);
 }
 
 
@@ -173,12 +248,19 @@ void AgentWindow::on_pushButtonBack_clicked(){
 
 void AgentWindow::on_pushButtonPair_clicked()
 {
-	ui->widgetWelcome->reset();
-	ui->stackedWidget->setCurrentWidget(ui->pageWelcome);
+	ui->widgetPairing->reset();
+	ui->stackedWidget->setCurrentWidget(ui->pagePairing);
 
 }
 
 void AgentWindow::on_pushButtonPlan_clicked()
 {
 	ui->stackedWidget->setCurrentWidget(ui->pagePlan);
+}
+
+
+
+void AgentWindow::on_pushButtonMenu_clicked()
+{
+	menu.exec(mapToGlobal(ui->pushButtonMenu->pos()));
 }

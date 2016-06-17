@@ -9,7 +9,7 @@ ClientWindow::ClientWindow(Client *client,QWidget *parent) :
 {
 	ui->setupUi(this);
 	summaryTimer.setInterval(100);
-	if(!connect(&summaryTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()),WWCONTYPE)){
+	if(!connect(&summaryTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()),OC_CONTYPE)){
 		qDebug()<<"could not connect";
 	}
 	summaryTimer.start();

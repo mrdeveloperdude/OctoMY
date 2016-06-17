@@ -3,14 +3,15 @@
 
 #include "basic/Standard.hpp"
 
-ConnectionWidget::ConnectionWidget(QWidget *parent) :
-	QWidget(parent),
-	ui(new Ui::ConnectionWidget)
+ConnectionWidget::ConnectionWidget(QWidget *parent)
+	: QWidget(parent)
+	, ui(new Ui::ConnectionWidget)
+	, settings(nullptr)
 {
 	ui->setupUi(this);
 	ui->tryToggleListen->setText("Connect","Connecting...","Connected");
 	setEditsEnabled(false);
-	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onConnectStateChanged(TryToggleState)),WWCONTYPE)){
+	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onConnectStateChanged(TryToggleState)),OC_CONTYPE)){
 		qWarning()<<"ERROR: could not connect";
 	}
 }
@@ -24,15 +25,15 @@ ConnectionWidget::~ConnectionWidget()
 }
 
 
-void ConnectionWidget::configure(QString base){
+void ConnectionWidget::configure(Settings *s,QString base){
+	settings=s;
 	//Local
-	ui->comboBoxLocalAddress->configure(base+"-listen-address","Local address");
-	ui->lineEditLocalPort->configure("",base+"-listen-port","Local port");
+	ui->comboBoxLocalAddress->configure(settings, base+"-listen-address","Local address");
+	ui->lineEditLocalPort->configure(settings, "",base+"-listen-port","Local port");
 
 	//Target
-	ui->lineEditTargetAddress->configure("",base+"-target-address","Target address");
-	ui->lineEditTargetPort->configure("",base+"-target-port", "Target port");
-
+	ui->lineEditTargetAddress->configure(settings, "",base+"-target-address","Target address");
+	ui->lineEditTargetPort->configure(settings, "",base+"-target-port", "Target port");
 
 	setEditsEnabled(true);
 }

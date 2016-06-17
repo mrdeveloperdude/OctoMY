@@ -1,23 +1,23 @@
-#ifndef ZOORECORDSTATE_HPP
-#define ZOORECORDSTATE_HPP
+#ifndef HASHSTORERECORDSTATE_HPP
+#define HASHSTORERECORDSTATE_HPP
 
 #include <QtGlobal>
 
 /**
  * Immutable class containing the state of a Zoo record
 */
-class ZooRecordState{
+class HashstoreRecordState{
 	private:
 		const quint16 flags;
 	public:
 
-		explicit ZooRecordState(bool keyExists, bool inMemory, bool onDisk, bool diskSynced)
+		explicit HashstoreRecordState(bool keyExists, bool inMemory, bool onDisk, bool diskSynced)
 			: flags( (keyExists?0:1) | (inMemory?0:2) | (onDisk?0:4) | (diskSynced?0:8) )
 		{
 
 		}
 
-		virtual ~ZooRecordState(){
+		virtual ~HashstoreRecordState(){
 
 		}
 
@@ -27,4 +27,4 @@ class ZooRecordState{
 		inline bool diskSynced()const {return (flags&8)>0;} // Has disk been synchronized since latest incarnation of data for this record was stored safely on disk?
 };
 
-#endif // ZOORECORDSTATE_HPP
+#endif // HASHSTORERECORDSTATE_HPP

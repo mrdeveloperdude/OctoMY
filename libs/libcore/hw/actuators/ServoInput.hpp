@@ -7,9 +7,11 @@ namespace Ui {
 	class ServoInput;
 }
 
+class Settings;
+
 const int INITIAL_SERVO_TRIM=150;
 
-class ServoInput : public QWidget
+class ServoInput: public QWidget
 {
 		Q_OBJECT
 	private:
@@ -18,14 +20,15 @@ class ServoInput : public QWidget
 		quint32 m_id;
 		int m_low_trim;
 		int m_high_trim;
+		Settings *settings;
 
 	public:
 		explicit ServoInput(QWidget *parent = 0);
-		~ServoInput();
+		virtual ~ServoInput();
 
 	public:
 
-		void configure(quint32 id, int low_trim=INITIAL_SERVO_TRIM, int high_trim=INITIAL_SERVO_TRIM);
+		void configure(Settings *settings, quint32 id, int low_trim=INITIAL_SERVO_TRIM, int high_trim=INITIAL_SERVO_TRIM);
 
 		void reconfigureTrim();
 

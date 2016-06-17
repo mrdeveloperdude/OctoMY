@@ -1,4 +1,54 @@
-#include "GenericMain.hpp"
+#ifndef NODELAUNCHER_HPP
+#define NODELAUNCHER_HPP
+
+
+
+#include <QObject>
+#include <QApplication>
+#include <QCommandLineParser>
+
+#include "../libcore/basic/StyleManager.hpp"
+#include "basic/Settings.hpp"
+#include "security/KeyStore.hpp"
+
+
+class Node;
+class Settings;
+
+template <typename T>
+class NodeLauncher{
+
+	private:
+
+		T *node;
+		QWidget *window;
+
+		StyleManager *style;
+		int ret;
+		int argc;
+		char **argv;
+		QCoreApplication *app;
+
+	protected:
+		QCommandLineParser opts;
+		bool headless;
+
+	public:
+		explicit NodeLauncher(int argc, char *argv[]);
+		virtual ~NodeLauncher();
+
+		void run();
+
+		void start();
+		void stop();
+
+		QCommandLineParser &getOptions(){
+			return opts;
+		}
+
+	private slots:
+		void inLoop();
+};
 
 #include "comms/CommsChannel.hpp"
 #include "basic/LogHandler.hpp"
@@ -9,46 +59,57 @@
 #include <QFileInfo>
 #include <QSurfaceFormat>
 
-GenericMain::GenericMain(int argc, char *argv[]):
-	QObject(0)
-  , sm(0)
-  , ret(EXIT_SUCCESS)
-  , argc(argc)
-  , argv(argv)
-  , app(0)
+template <typename T>
+NodeLauncher<T>::NodeLauncher(int argc, char *argv[])
+	: node(nullptr)
+	, window(nullptr)
+	, style(nullptr)
+	, ret(EXIT_SUCCESS)
+	, argc(argc)
+	, argv(argv)
+	, app(nullptr)
+	, headless(true)
 {
 }
 
-void GenericMain::run(){
+template <typename T>
+void NodeLauncher<T>::run(){
+	QCoreApplication::setOrganizationName(Settings::ORGANIZATION_NAME);
+	QCoreApplication::setOrganizationDomain(Settings::DOMAIN_NAME);
+
+	//TODO: change to coroect values depending on which role we are playing
+	QCoreApplication::setApplicationVersion("1.0");
+	QCoreApplication::setApplicationName(Settings::APPLICATION_NAME);
+
 	qsrand(QDateTime::currentMSecsSinceEpoch());
-	setObjectName("GenericMain");
+
 	LogHandler::setLogging(true);
-	parser.setApplicationDescription("Robust real-time communication and control software for robots");
-	parser.addHelpOption();
-	parser.addVersionOption();
+	opts.setApplicationDescription("Robust real-time communication and control software for robots");
+	opts.addHelpOption();
+	opts.addVersionOption();
 
 	QCommandLineOption localHostOption(QStringList() <<  "l" << "local-host", QCoreApplication::translate("main", "Select server host to listen."), QCoreApplication::translate("main", "local-host"));
-	parser.addOption(localHostOption);
+	opts.addOption(localHostOption);
 
 	QCommandLineOption localPortOption(QStringList() <<  "p" << "local-port", QCoreApplication::translate("main", "Select server port to listen."), QCoreApplication::translate("main", "local-port"));
-	parser.addOption(localPortOption);
+	opts.addOption(localPortOption);
 
 	QCommandLineOption remoteHostOption(QStringList() <<  "r" << "remote-host", QCoreApplication::translate("main", "Select remote host to target."), QCoreApplication::translate("main", "remote-host"));
-	parser.addOption(remoteHostOption);
+	opts.addOption(remoteHostOption);
 
 	QCommandLineOption remotePortOption(QStringList() <<  "o" << "remote-port", QCoreApplication::translate("main", "Select remote port to target."), QCoreApplication::translate("main", "remote-port"));
-	parser.addOption(remotePortOption);
+	opts.addOption(remotePortOption);
 
 	QCommandLineOption headlessOption(QStringList() <<  "h" << "head-less", QCoreApplication::translate("main", "Don't display GUI"), QCoreApplication::translate("main", "head-less"));
-	parser.addOption(headlessOption);
+	opts.addOption(headlessOption);
 
 	// Process the actual command line arguments given by the user
 	QStringList arguments;
 	for(int i=0;i<argc;++i){
 		arguments<<argv[i];
 	}
-	parser.process(arguments);
-	headless=parser.isSet(headlessOption);
+	opts.process(arguments);
+	headless=opts.isSet(headlessOption);
 
 	app=(headless?(new QCoreApplication(argc, argv)):(new QApplication(argc, argv)));
 	//qDebug()<<(headless?"HEADLESS":"GUI ENABLED");
@@ -71,11 +132,12 @@ void GenericMain::run(){
 		Q_INIT_RESOURCE(style);
 		Q_INIT_RESOURCE(fonts);
 		Q_INIT_RESOURCE(icons);
+		Q_INIT_RESOURCE(images);
 		Q_INIT_RESOURCE(qfi);
 		Q_INIT_RESOURCE(3d);
 
 
-		QTimer::singleShot(0, this, SLOT(inLoop()));
+		//QTimer::singleShot(0, this, SLOT(inLoop()));
 		ret=app->exec();
 		qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done, quitting";
 	}
@@ -85,15 +147,37 @@ void GenericMain::run(){
 	stop();
 }
 
-GenericMain::~GenericMain(){
+
+template <typename T>
+void NodeLauncher<T>::start(){
+	node=new T(*this, nullptr);
+	if(!headless && nullptr!=node){
+		window=node->showWindow();
+	}
+}
+
+
+template <typename T>
+void NodeLauncher<T>::stop(){
+	delete node;
+	node=nullptr;
+}
+
+template <typename T>
+NodeLauncher<T>::~NodeLauncher(){
 
 }
 
-void GenericMain::inLoop(){
-	sm=new StyleManager;
-	if(0!=sm){
+template <typename T>
+void NodeLauncher<T>::inLoop(){
+	style=new StyleManager;
+	if(0!=style){
 		//sm->apply();
 	}
 
 }
 
+
+
+
+#endif // NODELAUNCHER_HPP

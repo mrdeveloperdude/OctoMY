@@ -19,7 +19,7 @@ class ZooConstants
 		static const QByteArray OCTOMY_ZOO_API_GET_NODE_CRUMB;
 		static const QByteArray OCTOMY_ZOO_API_PUT_NODE_CRUMB;
 
-		static const QByteArray OCTOMY_ZOO_API_DO_PAIRING_ESCROW;
+		static const QByteArray OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
 
 		static const QByteArray OCTOMY_ZOO_API_UDP_PUNCH;
 

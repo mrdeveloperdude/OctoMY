@@ -30,7 +30,7 @@ class RemoteWindow : public QWidget, public LogDestination{
 		Remote *remote;
 
 	public:
-		explicit RemoteWindow(Remote *remote, QWidget *parent = 0);
+		explicit RemoteWindow(Remote *remote, QWidget *parent = nullptr);
 		virtual ~RemoteWindow();
 
 		void appendLog(const QString& text);
@@ -45,6 +45,10 @@ class RemoteWindow : public QWidget, public LogDestination{
 		void updateActiveAgent();
 		void prepareMap();
 		void homeMap();
+
+
+
+		void addAgentToList(QString name, QString iconPath);
 
 	public:
 
@@ -71,9 +75,10 @@ class RemoteWindow : public QWidget, public LogDestination{
 	private slots:
 		void onTryToggleConnectionChanged(TryToggleState);
 		void on_pushButtonConfirmQuit_clicked();
-		void on_comboBoxControlLevel_currentIndexChanged(int index);
 		void on_pushButtonBack_clicked();
 		void on_comboBoxAgent_currentIndexChanged(int index);
+		void on_comboBoxControlLevel_activated(const QString &arg1);
+		void on_pushButtonSay_clicked();
 };
 
 #endif // REMOTEWINDOW_HPP

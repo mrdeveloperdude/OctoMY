@@ -8,7 +8,7 @@ class HexyLeg : public QObject{
 
 
 	public:
-		explicit HexyLeg(QObject *parent = 0);
+		explicit HexyLeg(QObject *parent = nullptr);
 
 
 };

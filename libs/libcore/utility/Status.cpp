@@ -8,7 +8,7 @@ namespace utility{
 	  , mMessage(m)
 	  , mCode(code)
 	{
-		WWMETHODGATE();
+		OC_METHODGATE();
 	}
 
 	Status::Status(const QString m,STATUS s,int code):
@@ -16,7 +16,7 @@ namespace utility{
 	  , mMessage(m)
 	  , mCode(code)
 	{
-		WWMETHODGATE();
+		OC_METHODGATE();
 	}
 
 	Status::Status(bool ok,const QString m,int code):
@@ -24,7 +24,7 @@ namespace utility{
 	  , mMessage(m)
 	  , mCode(code)
 	{
-		WWMETHODGATE();
+		OC_METHODGATE();
 
 	}
 
@@ -33,54 +33,54 @@ namespace utility{
 	  , mMessage(s.mMessage)
 	  , mCode(s.mCode)
 	{
-		WWMETHODGATE();
+		OC_METHODGATE();
 	}
 
 	Status::~Status(){
-		WWMETHODGATE();
+		OC_METHODGATE();
 	}
 
 
 
 	void Status::setStatus(STATUS s,const QString m,int c){
-		WWMETHODGATE();
+		OC_METHODGATE();
 		mMessage=m;
 		mStatus=s;
 		mCode=c;
 	}
 
 	void Status::setStatus(const QString m,STATUS s, int c){
-		WWMETHODGATE();
+		OC_METHODGATE();
 		mMessage=m;
 		mStatus=s;
 		mCode=c;
 	}
 
 	void Status::setStatus(bool ok,const QString m,int c){
-		WWMETHODGATE();
+		OC_METHODGATE();
 		mMessage=m;
 		mStatus=ok?OK:ERROR;
 		mCode=c;
 	}
 
 	void Status::setStatus(const Status &s){
-		WWMETHODGATE();
+		OC_METHODGATE();
 		mMessage=s.mMessage;
 		mStatus=s.mStatus;
 		mCode=s.mStatus;
 	}
 
 	void Status::setOK(){
-		WWMETHODGATE();
+		OC_METHODGATE();
 		setStatus(OK,"",0);
 	}
 
 	Status::STATUS Status::getStatus()const{
-		WWMETHODGATE();
+		OC_METHODGATE();
 		return mStatus;
 	}
 	QString Status::getStatusMessage()const{
-		WWMETHODGATE();
+		OC_METHODGATE();
 		return mMessage;
 	}
 	int Status::getStatusCode()const{
@@ -88,12 +88,12 @@ namespace utility{
 	}
 
 	bool Status::isOK()const{
-		WWMETHODGATE();
+		OC_METHODGATE();
 		return OK==mStatus;
 	}
 
 	QString Status::toString(){
-		WWMETHODGATE();
+		OC_METHODGATE();
 		if(isOK()){
 			return "STATUS{OK}";
 		}
@@ -103,7 +103,7 @@ namespace utility{
 }
 
 QDebug operator<<(QDebug d, utility::Status &s){
-	WWFUNCTIONGATE();
+	OC_FUNCTIONGATE();
 	d.nospace() << s.toString();
 	return d.space();
 }

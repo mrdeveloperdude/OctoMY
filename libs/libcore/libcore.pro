@@ -15,7 +15,6 @@ SOURCES +=\
 	3d/scene/Simulation.cpp \
 	agent/Agent.cpp \
 	agent/AgentWindow.cpp \
-	basic/GenericMain.cpp \
 	basic/LogDestination.cpp \
 	basic/LogHandler.cpp \
 	basic/Settings.cpp \
@@ -126,7 +125,6 @@ SOURCES +=\
 	security/PortableID.cpp \
 	widgets/WaitingSpinnerWidget.cpp \
 	basic/Iconv.cpp \
-	puppet/FaceWidget.cpp \
 	camera/CameraList.cpp \
 	hw/BluetoothList.cpp \
 	widgets/CameraPairingWidget.cpp \
@@ -141,17 +139,11 @@ SOURCES +=\
 	zoo/ZooClient.cpp \
 	zoo/WebRequest.cpp \
 	basic/NetworkOptimizer.cpp \
-	zoo/ZooRecordState.cpp \
-	zoo/ZooRecord.cpp \
-	zoo/ZooStorage.cpp \
     zoo/ZooConstants.cpp \
-    widgets/WelcomeWidget.cpp \
     zoo/PunchRegistry.cpp \
     widgets/RealtimeValuesWidget.cpp \
     widgets/AgentPairingWizard.cpp \
     widgets/ControlPairingWidget.cpp \
-    comms/PairingManager.cpp \
-    zoo/NearestNeighbours.cpp \
     basic/Fingerprint.cpp \
     random/DevURandomRNG.cpp \
     random/SystemPRNG.cpp \
@@ -160,7 +152,24 @@ SOURCES +=\
     random/EfficientPRNG.cpp \
     random/RNG.cpp \
     random/MersennePRNG.cpp \
-    random/TausPRNG.cpp
+    random/TausPRNG.cpp \
+    widgets/AgentDeliveryWizard.cpp \
+    widgets/ImageLabel2.cpp \
+    widgets/FaceWidget.cpp \
+    puppet/EyesWidget.cpp \
+    basic/AgentNameGenerator.cpp \
+    widgets/LogWidget.cpp \
+    storage/HashstoreRecord.cpp \
+    storage/Hashstore.cpp \
+    storage/HashstoreRecordState.cpp \
+    basic/TetraGPSEncoder.cpp \
+    3d/Logo3DWidget.cpp \
+    comms/discovery/DiscoveryClient.cpp \
+    comms/discovery/DiscoveryServer.cpp \
+    comms/discovery/DiscoveryParticipant.cpp \
+    comms/discovery/DiscoveryServerSession.cpp \
+    basic/Node.cpp \
+    basic/NodeLauncher.cpp
 
 
 HEADERS  += \
@@ -171,7 +180,6 @@ HEADERS  += \
 	3d/scene/Simulation.hpp \
 	agent/Agent.hpp \
 	agent/AgentWindow.hpp \
-	basic/GenericMain.hpp \
 	basic/LogDestination.hpp \
 	basic/LogHandler.hpp \
 	basic/Settings.hpp \
@@ -291,7 +299,6 @@ HEADERS  += \
 	security/PortableID.hpp \
 	widgets/WaitingSpinnerWidget.hpp \
 	basic/Iconv.hpp \
-	puppet/FaceWidget.hpp \
 	camera/CameraList.hpp \
 	hw/BluetoothList.hpp \
 	widgets/CameraPairingWidget.hpp \
@@ -306,17 +313,11 @@ HEADERS  += \
 	zoo/ZooClient.hpp \
 	zoo/WebRequest.hpp \
 	basic/NetworkOptimizer.hpp \
-	zoo/ZooRecordState.hpp \
-	zoo/ZooRecord.hpp \
-	zoo/ZooStorage.hpp \
     zoo/ZooConstants.hpp \
-    widgets/WelcomeWidget.hpp \
     zoo/PunchRegistry.hpp \
     widgets/RealtimeValuesWidget.hpp \
     widgets/AgentPairingWizard.hpp \
     widgets/ControlPairingWidget.hpp \
-    comms/PairingManager.hpp \
-    zoo/NearestNeighbours.hpp \
     basic/Fingerprint.hpp \
     random/DevURandomRNG.hpp \
     random/SystemPRNG.hpp \
@@ -325,7 +326,24 @@ HEADERS  += \
     random/EfficientPRNG.hpp \
     random/RNG.hpp \
     random/MersennePRNG.hpp \
-    random/TausPRNG.hpp
+    random/TausPRNG.hpp \
+    widgets/AgentDeliveryWizard.hpp \
+    widgets/ImageLabel2.hpp \
+    widgets/FaceWidget.hpp \
+    puppet/EyesWidget.hpp \
+    basic/AgentNameGenerator.hpp \
+    widgets/LogWidget.hpp \
+    storage/HashstoreRecord.hpp \
+    storage/Hashstore.hpp \
+    storage/HashstoreRecordState.hpp \
+    basic/TetraGPSEncoder.hpp \
+    3d/Logo3DWidget.hpp \
+    comms/discovery/DiscoveryClient.hpp \
+    comms/discovery/DiscoveryServer.hpp \
+    comms/discovery/DiscoveryParticipant.hpp \
+    comms/discovery/DiscoveryServerSession.hpp \
+    basic/Node.hpp \
+    basic/NodeLauncher.hpp
 
 
 
@@ -357,10 +375,12 @@ FORMS    += \
 	ui/PlanEditor.ui \
 	ui/CameraPairingWidget.ui \
 	ui/MapEditor.ui \
-    ui/WelcomeWidget.ui \
     ui/AgentPairingWizard.ui \
     ui/RealtimeValuesWidget.ui \
-    remote/ControlPairingWidget.ui
+    remote/ControlPairingWidget.ui \
+    widgets/AgentDeliveryWizard.ui \
+    widgets/FaceWidget.ui \
+    widgets/LogWidget.ui
 
 
 RESOURCES += \
@@ -369,7 +389,8 @@ RESOURCES += \
 	resources/style.qrc \
 	resources/qfi.qrc \
 	resources/3d.qrc \
-	resources/data.qrc
+	resources/data.qrc \
+    resources/images.qrc
 
 
 

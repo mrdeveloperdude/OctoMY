@@ -29,7 +29,7 @@ void QRWidget::setQRData(QString data){
 }
 
 void QRWidget::paintEvent(QPaintEvent *){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	const double w=width();
 	const double h=height();
 	const double aspect=w/h;

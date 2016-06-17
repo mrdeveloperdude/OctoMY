@@ -104,7 +104,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabServos">
       <attribute name="title">
@@ -148,8 +148,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>100</width>
-            <height>30</height>
+            <width>570</width>
+            <height>212</height>
            </rect>
           </property>
           <property name="sizePolicy">
@@ -236,15 +236,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TryToggle</class>
-   <extends>QWidget</extends>
-   <header>widgets/TryToggle.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>GaitWidget</class>
    <extends>QWidget</extends>
    <header>puppet/GaitWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TryToggle</class>
+   <extends>QWidget</extends>
+   <header>widgets/TryToggle.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

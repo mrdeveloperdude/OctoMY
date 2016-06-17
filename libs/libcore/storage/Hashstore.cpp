@@ -1,4 +1,4 @@
-#include "ZooStorage.hpp"
+#include "Hashstore.hpp"
 
 
 #include <QLockFile>
@@ -8,9 +8,9 @@
 #include <QDebug>
 
 
-const quint8 ZooStorage::DIR_LEVELS=4;
+const quint8 Hashstore::DIR_LEVELS=4;
 
-ZooStorage::ZooStorage(QDir dir)
+Hashstore::Hashstore(QDir dir)
 	: m_dir(dir)
 	, lockFilename(dir.absoluteFilePath(QStringLiteral("zoo_storage.lock")))
 	, lock(lockFilename)
@@ -24,21 +24,21 @@ ZooStorage::ZooStorage(QDir dir)
 	}
 }
 
-ZooStorage::~ZooStorage(){
+Hashstore::~Hashstore(){
 	lock.unlock();
 }
 
-const QDir ZooStorage::dir() const {
+const QDir Hashstore::dir() const {
 	return m_dir;
 }
 
 
-ZooRecord ZooStorage::resolve(const QString &key){
+HashstoreRecord Hashstore::resolve(const QString &key){
 	if(index.contains(key)){
 		return index[key];
 	}
 	else{
-		ZooRecord rec(*this, key);
+		HashstoreRecord rec(*this, key);
 		index.insert(key,rec);
 		return rec;
 	}
@@ -47,7 +47,7 @@ ZooRecord ZooStorage::resolve(const QString &key){
 
 
 
-QString ZooStorage::generatePathFromKey(const QString &key) const{
+QString Hashstore::generatePathFromKey(const QString &key) const{
 	if(key.size()<DIR_LEVELS){
 		qWarning()<<"ERROR: key was invalid";
 		return "";

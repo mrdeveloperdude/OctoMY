@@ -37,7 +37,7 @@ MultiView::MultiView(QWidget *parent) :
 	}
 	//Start of with no data
 	setModel(0);
-	if(!connect(ui->buttonGroupView,SIGNAL(buttonClicked(QAbstractButton*)),this,SLOT(onViewButtonClicked(QAbstractButton*)),WWCONTYPE)){
+	if(!connect(ui->buttonGroupView,SIGNAL(buttonClicked(QAbstractButton*)),this,SLOT(onViewButtonClicked(QAbstractButton*)),OC_CONTYPE)){
 		qDebug()<<"ERROR: could not connect";
 	}
 	//Trigger change
@@ -111,15 +111,18 @@ void MultiView::onViewButtonClicked(QAbstractButton*but){
 		qDebug()<<"ERROR: Unknwon button click detected";
 		return;
 	}
-	Settings::getInstance().setCustomSetting(k,item);
+	if(nullptr!=settings){
+		settings->setCustomSetting(k,item);
+	}
 }
 
 
 
-void MultiView::configure(QString val, QString key){
+void MultiView::configure(Settings &s, QString val, QString key){
+	settings=&s;
 	k=key.trimmed();
-	if(""!=k){
-		val=Settings::getInstance().getCustomSetting(k,val);
+	if(""!=k && nullptr!=settings){
+		val=settings->getCustomSetting(k,val);
 	}
 	QAbstractButton *but=0;
 	if("Grid"==val){

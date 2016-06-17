@@ -15,10 +15,10 @@ CommsTester::CommsTester(QString name, QHostAddress adr, quint16 port):
 	if(0!=cc){
 		qRegisterMetaType<QHostAddress>("QHostAddress");
 		qRegisterMetaType<QByteArray>("QByteArray");
-		if(!connect(cc,SIGNAL(receivePacket(QByteArray,QHostAddress,quint16)),this, SLOT(onReceivePacket(QByteArray,QHostAddress,quint16)),WWCONTYPE)){
+		if(!connect(cc,SIGNAL(receivePacket(QByteArray,QHostAddress,quint16)),this, SLOT(onReceivePacket(QByteArray,QHostAddress,quint16)),OC_CONTYPE)){
 			qDebug()<<"could not connect";
 		}
-		if(!connect(cc,SIGNAL(error(QString)),this,SLOT(onError(QString)),WWCONTYPE)){
+		if(!connect(cc,SIGNAL(error(QString)),this,SLOT(onError(QString)),OC_CONTYPE)){
 			qDebug()<<"could not connect";
 		}
 		cc->start(adr,port);

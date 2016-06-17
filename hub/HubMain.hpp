@@ -2,27 +2,7 @@
 #define SERVERMAIN_HPP
 
 
-#include "basic/GenericMain.hpp"
-
-class Hub;
-class HubWindow;
-
-class HubMain: public GenericMain{
-		Q_OBJECT
-	private:
-
-		Hub *hub;
-		HubWindow *window;
-
-	public:
-		explicit HubMain(int argc, char *argv[]);
-
-		virtual void start();
-		virtual void stop();
-
-
-};
-
+#include "basic/NodeLauncher.hpp"
 
 
 int main(int argc, char *argv[]);

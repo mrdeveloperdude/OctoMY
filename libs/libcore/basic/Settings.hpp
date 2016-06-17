@@ -5,48 +5,29 @@
 #include <QFile>
 #include <QTimer>
 
-#define WW_QML_PREFIX "qrc:/qml/"
-
 class Settings:QObject{
 		Q_OBJECT
 	private:
 		QSettings *settings;
-		static Settings *instance;
-
-		QFile *versionFile;
 		qint64 lastSync;
 		QTimer syncTimer;
 
 	public:
 		static const qint64 MAX_SYNC_INTERVAL;
 
-		static const QString CASUAL_COMPANY_NAME;
-		static const QString CASUAL_DOMAIN_NAME;
-		static const QString CASUAL_BRAND_NAME;
-		static const QString CASUAL_APPLICATION_NAME;
-		static const QString HOTLINE;
+		static const QString ORGANIZATION_NAME;
+		static const QString DOMAIN_NAME;
+		static const QString BRAND_NAME;
+		static const QString APPLICATION_NAME;
 		static const QString USERAGENT;
 
 		static const QString KEY_CUSTOM_SETTING_BASE;
 
-	private:
-		explicit Settings();
+	public:
+		explicit Settings(QObject *parent=nullptr);
 		virtual ~Settings();
 
-		Q_DISABLE_COPY(Settings)
-		//explicit Settings(Settings &a);
 	public:
-
-		QString getPlatformFingerprint();
-		QString getCasualCompanyName();
-		QString getCasualBrandName();
-		QString getHotline();
-		QString getUserAgent();
-
-		QString getVersion();
-		void setVersion(QString version);
-
-
 
 		QString getCustomSetting(const QString &sub,QString def="");
 		void setCustomSetting(const QString &sub,QString val);
@@ -59,7 +40,6 @@ class Settings:QObject{
 
 
 	public:
-		static Settings &getInstance();
 
 		void resetConfiguration();
 

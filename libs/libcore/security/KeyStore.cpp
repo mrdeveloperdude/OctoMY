@@ -18,7 +18,7 @@ class GenerateKeyRunnable : public QRunnable{
 	public:
 		void run() {
 			//qDebug() << "Started keystore bootstrap @ " << QThread::currentThread();
-			ks.bootstrap();
+			ks.bootstrapWorker();
 			//qDebug() << "Ended keystore bootstrap @ " << QThread::currentThread()<<" with result: " << ks.getLocalPublicKey();
 		}
 };
@@ -29,24 +29,29 @@ class GenerateKeyRunnable : public QRunnable{
 
 
 
-KeyStore *KeyStore::instance=0;
-
-KeyStore & KeyStore::getInstance(){
-	if(0==instance){
-		instance=new KeyStore();
+KeyStore::KeyStore(QObject *parent, QString filename, bool implicitBootstrap)
+	: QObject(parent)
+	, ready(false)
+	, fn(filename)
+	, keyBits(4096)
+	, implicitBootstrap(implicitBootstrap)
+{
+	if(implicitBootstrap){
+		bootstrap();
 	}
-	return *instance;
+	else if(QFile(fn).exists()){
+		load();
+	}
 }
 
 
 
+KeyStore::~KeyStore(){
+	save();
+}
 
-KeyStore::KeyStore(QObject *parent)
-	: QObject(parent)
-	, ready(false)
-	, fn("keystore.json")
-	, keyBits(4096)
-{
+
+void KeyStore::bootstrap(){
 	// QThreadPool takes ownership and deletes runnable automatically after completion
 	QThreadPool *tp=QThreadPool::globalInstance();
 	if(0!=tp){
@@ -58,17 +63,11 @@ KeyStore::KeyStore(QObject *parent)
 	}
 	// Fall back to single threaded wday
 	qDebug()<<"KEYSTORE: Falling back to serial bootstrap";
-	bootstrap();
+	bootstrapWorker();
 }
 
 
-
-KeyStore::~KeyStore(){
-	save();
-}
-
-
-void KeyStore::bootstrap(){
+void KeyStore::bootstrapWorker(){
 	QFile f(fn);
 	if(!f.exists()){
 		qDebug()<<"KEYSTORE: no keystore file found, generating local keypair and saving";

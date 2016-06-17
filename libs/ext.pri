@@ -30,3 +30,9 @@ INCLUDEPATH +=    /usr/include/opencv
 
 #LIBS += -lusb
 
+HEADERS += \
+    $$PWD/libcore/basic/GenericKeyEventHandler.hpp
+
+SOURCES += \
+    $$PWD/libcore/basic/GenericKeyEventHandler.cpp
+

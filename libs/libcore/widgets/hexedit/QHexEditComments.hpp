@@ -11,7 +11,7 @@ class QHexEditComments : public QObject
 	Q_OBJECT
 
 	public:
-		explicit QHexEditComments(QObject *parent = 0);
+		explicit QHexEditComments(QObject *parent = nullptr);
 		void commentRange(qint64 from, qint64 to, const QString& note);
 		void uncommentRange(qint64 from, qint64 to);
 		void clearComments();

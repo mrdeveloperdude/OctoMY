@@ -25,7 +25,7 @@ class HexySerial : public QObject{
 		QTimer sendTimer;
 
 	public:
-		explicit HexySerial(QObject *parent = 0);
+		explicit HexySerial(QObject *parent = nullptr);
 		virtual ~HexySerial();
 
 	public:

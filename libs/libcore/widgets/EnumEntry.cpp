@@ -2,27 +2,29 @@
 #include "basic/Standard.hpp"
 #include "basic/Settings.hpp"
 
-EnumEntry::EnumEntry(QWidget *parent) :
-	QComboBox(parent)
+EnumEntry::EnumEntry(QWidget *parent)
+	: QComboBox(parent)
+	, settings(nullptr)
 {
-	WWMETHODGATE();
+	OC_METHODGATE();
 }
 
 EnumEntry::~EnumEntry(){
-	WWMETHODGATE();
+	OC_METHODGATE();
 }
 
 
 
-void EnumEntry::configure(QString val, QString key, QString tip){
-	WWMETHODGATE();
+void EnumEntry::configure(Settings &s, QString val, QString key, QString tip){
+	OC_METHODGATE();
+	settings=&s;
 	if(""!=tip){
 		setToolTip(tip);
 	}
 	k=key.trimmed();
 	if(""!=k){
-		val=Settings::getInstance().getCustomSetting(k,val);
-		if(!connect(this,SIGNAL(currentTextChanged(QString)),this,SLOT(onValueChanged(QString)),WWCONTYPE)){
+		val=settings->getCustomSetting(k,val);
+		if(!connect(this,SIGNAL(currentTextChanged(QString)),this,SLOT(onValueChanged(QString)),OC_CONTYPE)){
 			qWarning()<<"ERROR: Could not connect";
 		}
 	}
@@ -31,6 +33,8 @@ void EnumEntry::configure(QString val, QString key, QString tip){
 
 
 void EnumEntry::onValueChanged(QString v){
-	WWMETHODGATE();
-	Settings::getInstance().setCustomSetting(k,v);
+	OC_METHODGATE();
+	if(nullptr!=settings){
+		settings->setCustomSetting(k,v);
+	}
 }

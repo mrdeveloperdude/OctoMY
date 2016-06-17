@@ -3,11 +3,12 @@
 #include "basic/Standard.hpp"
 #include "basic/Settings.hpp"
 
-NumberEntry::NumberEntry(QWidget *parent) :
-	QWidget(parent),
-	ui(new Ui::NumberEntry)
+NumberEntry::NumberEntry(QWidget *parent)
+	: QWidget(parent)
+	, ui(new Ui::NumberEntry)
+	, settings(nullptr)
 {
-	WWMETHODGATE();
+	OC_METHODGATE();
 	ui->setupUi(this);
 	ui->spinBox->setFocusPolicy(Qt::StrongFocus);
 	ui->horizontalSlider->setFocusPolicy(Qt::StrongFocus);
@@ -26,8 +27,9 @@ NumberEntry::NumberEntry(QWidget *parent) :
 }
 
 
-void NumberEntry::configure(int min, int max, int step, int val, QString suf, QString tip, QString key){
-	WWMETHODGATE();
+void NumberEntry::configure(Settings *s, int min, int max, int step, int val, QString suf, QString tip, QString key){
+	OC_METHODGATE();
+	settings=s;
 	//qDebug()<<"CONFIG: MIN="<<min<<", MAX="<<max<<", STEP="<<step<<", VAL="<<val<<", SUFFIX="<<suf<< ", TIP"<<tip<< ", KEY"<<key;
 	ui->spinBox->setRange(min,max);
 	ui->spinBox->setSuffix(suf);
@@ -45,47 +47,47 @@ void NumberEntry::configure(int min, int max, int step, int val, QString suf, QS
 }
 
 void NumberEntry::setValue(const int val){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	ui->horizontalSlider->setValue(val);
 }
 
 
 
 void NumberEntry::setValueInternal(const int val){
-	WWMETHODGATE();
-	if(""!=k){
-		Settings::getInstance().setCustomSettingLong(k,val);
+	OC_METHODGATE();
+	if(""!=k && nullptr!=settings){
+		settings->setCustomSettingLong(k,val);
 	}
 }
 
 
 int NumberEntry::value(){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	return ui->horizontalSlider->value();
 }
 
 
 int NumberEntry::minimum(){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	return ui->horizontalSlider->minimum();
 }
 
 
 int NumberEntry::maximum(){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	return ui->horizontalSlider->maximum();
 }
 
 NumberEntry::~NumberEntry(){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	delete ui;
 }
 
 void NumberEntry::reloadData(){
-	WWMETHODGATE();
+	OC_METHODGATE();
 	int val=ui->horizontalSlider->value();
-	if(""!=k){
-		val=Settings::getInstance().getCustomSettingLong(k,val);
+	if(""!=k && nullptr!=settings){
+		val=settings->getCustomSettingLong(k,val);
 	}
 	ui->horizontalSlider->setValue(val);
 }

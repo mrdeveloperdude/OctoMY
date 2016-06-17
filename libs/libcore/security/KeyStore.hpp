@@ -52,23 +52,22 @@ class KeyStore: public QObject{
 		AtomicBoolean ready;
 		QString fn;
 		quint32 keyBits;
+		bool implicitBootstrap;
 
 		friend class GenerateKeyRunnable;
 
 	public:
-		explicit KeyStore(QObject *parent=0);
+		explicit KeyStore(QObject *parent=0, QString="", bool implicitBootstrap=false);
 		virtual ~KeyStore();
 
-	private:
+	public:
+
 		void bootstrap();
+	private:
+
+		void bootstrapWorker();
 		void load();
 		void save();
-
-
-	private:
-		static KeyStore *instance;
-	public:
-		static  KeyStore & getInstance();
 
 
 	public:

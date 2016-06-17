@@ -44,7 +44,7 @@ class ClientModel : public QAbstractItemModel{
 
 
 	public:
-		explicit ClientModel(ClientDirectory *, QObject *parent = 0);
+		explicit ClientModel(ClientDirectory *, QObject *parent = nullptr);
 		virtual ~ClientModel();
 
 	public:

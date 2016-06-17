@@ -4,10 +4,11 @@
 #include "../libqhttp/qhttpserver.hpp"
 #include "widgets/Identicon.hpp"
 
-#include "ZooStorage.hpp"
+#include "../storage/Hashstore.hpp"
+#include "comms/discovery/DiscoveryServer.hpp"
+
 
 #include "PunchRegistry.hpp"
-#include "NearestNeighbours.hpp"
 #include <QString>
 
 
@@ -20,9 +21,9 @@ class ZooServer : public qhttp::server::QHttpServer
 {
 	private:
 		Identicon identicon;
-		ZooStorage storage;
+		Hashstore storage;
 		PunchRegistry punches;
-		//NearestNeighbours near;
+		DiscoveryServer discovery;
 
 	public:
 		using QHttpServer::QHttpServer;

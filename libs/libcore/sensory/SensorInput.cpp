@@ -34,7 +34,7 @@ SensorInput::SensorInput(QObject *parent):
 			//accelerometer->addFilter(this);
 			accelerometer->setSkipDuplicates(true);
 			accelerometer->start();
-			if(!connect(accelerometer, SIGNAL(readingChanged()),this,SLOT(onAccelerometerReadingChanged()),WWCONTYPE)){
+			if(!connect(accelerometer, SIGNAL(readingChanged()),this,SLOT(onAccelerometerReadingChanged()),OC_CONTYPE)){
 				qWarning()<<"ERROR: Could not connect";
 			}
 		}
@@ -51,7 +51,7 @@ SensorInput::SensorInput(QObject *parent):
 			compass->addFilter(this);
 			compass->setSkipDuplicates(true);
 			compass->start();
-			if(!connect(compass, SIGNAL(readingChanged()),this,SLOT(onCompassReadingChanged()),WWCONTYPE)){
+			if(!connect(compass, SIGNAL(readingChanged()),this,SLOT(onCompassReadingChanged()),OC_CONTYPE)){
 				qWarning()<<"ERROR: Could not connect";
 			}
 		}
@@ -68,7 +68,7 @@ SensorInput::SensorInput(QObject *parent):
 			//gyroscpe->addFilter(this);
 			gyroscope->setSkipDuplicates(true);
 			gyroscope->start();
-			if(!connect(gyroscope, SIGNAL(readingChanged()),this,SLOT(onGyroscopeReadingChanged()),WWCONTYPE)){
+			if(!connect(gyroscope, SIGNAL(readingChanged()),this,SLOT(onGyroscopeReadingChanged()),OC_CONTYPE)){
 				qWarning()<<"ERROR: Could not connect";
 			}
 		}
@@ -123,18 +123,18 @@ void SensorInput::hookSignals(QObject &o)
 {
 
 	if(0!=source){
-		if(!connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)),&o,SLOT(onPositionUpdated(QGeoPositionInfo)),WWCONTYPE)){
+		if(!connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)),&o,SLOT(onPositionUpdated(QGeoPositionInfo)),OC_CONTYPE)){
 			qWarning()<<"ERROR: Could not connect";
 		}
 	}
 
-	if(!connect(this, SIGNAL(compassUpdated(QCompassReading*)),&o,SLOT(onCompassUpdated(QCompassReading *)),WWCONTYPE)){
+	if(!connect(this, SIGNAL(compassUpdated(QCompassReading*)),&o,SLOT(onCompassUpdated(QCompassReading *)),OC_CONTYPE)){
 		qWarning()<<"ERROR: Could not connect";
 	}
-	if(!connect(this, SIGNAL(accelerometerUpdated(QAccelerometerReading*)),&o,SLOT(onAccelerometerUpdated(QAccelerometerReading *)),WWCONTYPE)){
+	if(!connect(this, SIGNAL(accelerometerUpdated(QAccelerometerReading*)),&o,SLOT(onAccelerometerUpdated(QAccelerometerReading *)),OC_CONTYPE)){
 		qWarning()<<"ERROR: Could not connect";
 	}
-	if(!connect(this, SIGNAL(gyroscopeUpdated(QGyroscopeReading*)),&o,SLOT(onGyroscopeUpdated(QGyroscopeReading *)),WWCONTYPE)){
+	if(!connect(this, SIGNAL(gyroscopeUpdated(QGyroscopeReading*)),&o,SLOT(onGyroscopeUpdated(QGyroscopeReading *)),OC_CONTYPE)){
 		qWarning()<<"ERROR: Could not connect";
 	}
 }

@@ -5,59 +5,36 @@
 #include "comms/CommsChannel.hpp"
 #include "comms/messages/SensorsMessage.hpp"
 
-#include "comms/couriers/DirectPoseCourier.hpp"
+#include "puppet/Pose.hpp"
+
+#include "basic/Node.hpp"
+#include "basic/NodeLauncher.hpp"
 
 #include <QObject>
-#include <QCommandLineParser>
 #include <QVector2D>
 
+class DirectPoseCourier;
+class RemoteWindow;
 
-class Remote : public QObject{
+class Remote : public Node{
 		Q_OBJECT
 	private:
-
-		QCommandLineParser &opts;
-		CommsChannel *comms;
-		SensorInput sensors;
-		SensorsMessage statusMessage;
-		qint64 lastSend;
-
-		QHostAddress hubAddress;
-		quint16 hubPort;
 		DirectPoseCourier *poseCourier;
-
+		RemoteWindow *window;
 
 	public:
-		explicit Remote(QCommandLineParser &opts, QObject *parent = 0);
+		explicit Remote(NodeLauncher<Remote> &launcher, QObject *parent = nullptr);
 		virtual ~Remote();
 
 		void start(QHostAddress adrLocal, quint16 portLocal, QHostAddress hubAddress, quint16 hubPort);
-		void hookSignals(QObject &);
-		void unHookSignals(QObject &);
 
-
-		//Internal network events
-	private slots:
-
-		void onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16);
-		void onError(QString);
-		void onClientAdded(Client *);
-		void onConnectionStatusChanged(bool s);
+		virtual QWidget *showWindow();
 
 		//External commands
 	public slots:
 
 
 		void onDirectPoseChanged(Pose);
-
-		//Internal sensors
-	private slots:
-
-
-		void onPositionUpdated(const QGeoPositionInfo &info);
-		void onCompassUpdated(QCompassReading *);
-		void onAccelerometerUpdated(QAccelerometerReading *);
-		void onGyroscopeUpdated(QGyroscopeReading *r);
 
 		//External sensors
 	public slots:

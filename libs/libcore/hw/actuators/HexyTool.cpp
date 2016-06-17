@@ -1,6 +1,6 @@
 #include "HexyTool.hpp"
 #include "ui_HexyTool.h"
-
+#include "basic/Standard.hpp"
 #include "hw/actuators/ServoInput.hpp"
 
 #include <QSpacerItem>
@@ -9,6 +9,7 @@ HexyTool::HexyTool(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::HexyTool)
 	, serial(new HexySerial(this))
+	, settings(nullptr)
 {
 	ui->setupUi(this);
 	ui->tryToggleConnect->setText("Connect","Connecting","Connected");
@@ -32,11 +33,11 @@ HexyTool::HexyTool(QWidget *parent)
 	for(quint32 i=0;i<HexySerial::SERVO_COUNT;++i){
 		ServoInput *si=new ServoInput();
 		if(0!=si){
-			si->configure(i);
-			if(!connect(si,SIGNAL(servoMoved(quint32, qreal)),this,SLOT(onServoMoved(quint32, qreal)))){
+			si->configure(settings,i);
+			if(!connect(si,SIGNAL(servoMoved(quint32, qreal)),this,SLOT(onServoMoved(quint32, qreal)),OC_CONTYPE)){
 				qWarning()<<"ERROR: could not connect";
 			}
-			if(!connect(si,SIGNAL(servoKilled(quint32)),this,SLOT(onServoKilled(quint32)))){
+			if(!connect(si,SIGNAL(servoKilled(quint32)),this,SLOT(onServoKilled(quint32)),OC_CONTYPE)){
 				qWarning()<<"ERROR: could not connect";
 			}
 			ui->scrollAreaWidgetContents->layout()->addWidget(si);
@@ -157,6 +158,14 @@ void HexyTool::onServoKilled(quint32 id)
 }
 
 
+void HexyTool::configure(Settings *s){
+	settings=s;
+	int i=0;
+	auto sis=ui->scrollAreaWidgetContents->findChildren<ServoInput *>();
+	for(ServoInput *si:sis){
+		si->configure(settings,i++);
+	}
+}
 
 void HexyTool::killAll(){
 	qDebug()<<"KILL ALL";

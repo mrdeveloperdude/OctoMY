@@ -15,8 +15,8 @@
 
 
 
-CommsChannel::CommsChannel(LogDestination *mw):
-	QObject(0)
+CommsChannel::CommsChannel(QObject *parent, LogDestination *mw):
+	QObject(parent)
   , udpSocket(this)
   , sendingTimer(this)
   , clients(new ClientDirectory)
@@ -31,16 +31,16 @@ CommsChannel::CommsChannel(LogDestination *mw):
   , connected(false)
 {
 	setObjectName("CommsChannel");
-	if(!connect(&udpSocket, SIGNAL(readyRead()),this, SLOT(onReadyRead()),WWCONTYPE)){
+	if(!connect(&udpSocket, SIGNAL(readyRead()),this, SLOT(onReadyRead()),OC_CONTYPE)){
 		qWarning()<<"Could not connect UDP readyRead";
 	}
 	qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
-	if(!connect(&udpSocket, SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(onUdpError(QAbstractSocket::SocketError)),WWCONTYPE)){
+	if(!connect(&udpSocket, SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(onUdpError(QAbstractSocket::SocketError)),OC_CONTYPE)){
 		qWarning()<<"Could not connect UDP error";
 	}
 	sendingTimer.setSingleShot(true);
 	sendingTimer.setTimerType(Qt::PreciseTimer);
-	if(!connect(&sendingTimer, SIGNAL(timeout()),this,SLOT(onSendingTimer()),WWCONTYPE)){
+	if(!connect(&sendingTimer, SIGNAL(timeout()),this,SLOT(onSendingTimer()),OC_CONTYPE)){
 		qWarning()<<"Could not connect sending timer";
 	}
 	sendingTimer.start(0);
@@ -334,17 +334,17 @@ void CommsChannel::hookSignals(QObject &ob){
 	qRegisterMetaType<QHostAddress>("QHostAddress");
 	qRegisterMetaType<QSharedPointer<QDataStream>>("QSharedPointer<QDataStream>");
 
-	if(!connect(this,SIGNAL(receivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)),&ob,SLOT(onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)),WWCONTYPE)){
+	if(!connect(this,SIGNAL(receivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)),&ob,SLOT(onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)),OC_CONTYPE)){
 		qDebug()<<"could not connect "<<ob.objectName();
 	}
 	*/
-	if(!connect(this,SIGNAL(error(QString)),&ob,SLOT(onError(QString)),WWCONTYPE)){
+	if(!connect(this,SIGNAL(error(QString)),&ob,SLOT(onError(QString)),OC_CONTYPE)){
 		qDebug()<<"could not connect "<<ob.objectName();
 	}
-	if(!connect(this,SIGNAL(clientAdded(Client *)),&ob,SLOT(onClientAdded(Client *)),WWCONTYPE)){
+	if(!connect(this,SIGNAL(clientAdded(Client *)),&ob,SLOT(onClientAdded(Client *)),OC_CONTYPE)){
 		qDebug()<<"could not connect "<<ob.objectName();
 	}
-	if(!connect(this,SIGNAL(connectionStatusChanged(bool)),&ob,SLOT(onConnectionStatusChanged(bool)),WWCONTYPE)){
+	if(!connect(this,SIGNAL(connectionStatusChanged(bool)),&ob,SLOT(onConnectionStatusChanged(bool)),OC_CONTYPE)){
 		qDebug()<<"could not connect "<<ob.objectName();
 	}
 }

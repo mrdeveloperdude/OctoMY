@@ -1,4 +1,4 @@
-#include "FaceWidget.hpp"
+#include "EyesWidget.hpp"
 
 #include <QDateTime>
 #include <QPainter>
@@ -128,7 +128,7 @@ void Eye::paint(QPainter &painter){
 
 
 
-FaceWidget::FaceWidget(QWidget *parent)
+EyesWidget::EyesWidget(QWidget *parent)
 	: QWidget(parent)
 	, startTime(QDateTime::currentMSecsSinceEpoch())
 	, lastTime(0)
@@ -150,7 +150,7 @@ FaceWidget::FaceWidget(QWidget *parent)
 }
 
 
-void FaceWidget::paintEvent(QPaintEvent *){
+void EyesWidget::paintEvent(QPaintEvent *){
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	//const quint64 sinceStart=now-startTime;
 	const quint64 sinceLastTime=now-lastTime;
@@ -193,32 +193,32 @@ void FaceWidget::paintEvent(QPaintEvent *){
 }
 
 
-void FaceWidget::onUpdateTimer(){
+void EyesWidget::onUpdateTimer(){
 	update();
 }
 
 
 
-void FaceWidget::hideEvent(QHideEvent *){
+void EyesWidget::hideEvent(QHideEvent *){
 	timer.stop();
 	setMouseTracking(false);
 
 }
 
-void FaceWidget::showEvent(QShowEvent *){
+void EyesWidget::showEvent(QShowEvent *){
 	timer.start(1000/60);
 	setMouseTracking(true);
 }
 
 
-void FaceWidget::mousePressEvent(QMouseEvent *e){
+void EyesWidget::mousePressEvent(QMouseEvent *e){
 	QVector2D p=QVector2D(e->pos());
 	QSize sz=size();
 	QVector2D s=QVector2D(sz.width(),sz.height());
 	lastPress=(p-(s/2))/s;
 }
 
-void FaceWidget::mouseMoveEvent(QMouseEvent *e){
+void EyesWidget::mouseMoveEvent(QMouseEvent *e){
 	QVector2D p=QVector2D(e->pos());
 	QSize sz=size();
 	QVector2D s=QVector2D(sz.width(),sz.height());
@@ -249,7 +249,7 @@ void FaceWidget::mouseMoveEvent(QMouseEvent *e){
 
 
 
-void FaceWidget::leaveEvent(QEvent *){
+void EyesWidget::leaveEvent(QEvent *){
 	eyeSteer=QVector2D(0,0);
 	leftEye.setSteer(eyeSteer);
 	rightEye.setSteer(eyeSteer);

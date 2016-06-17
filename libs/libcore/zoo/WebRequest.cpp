@@ -33,12 +33,12 @@ WebRequest::WebRequest(QString friendlyName):
 {
 	OC_METHODGATE();
 	reqStart=QDateTime::currentMSecsSinceEpoch();
-	req.setRawHeader("User-Agent", Settings::getInstance().getUserAgent().toUtf8());
+	req.setRawHeader("User-Agent", Settings::USERAGENT.toUtf8());
 }
 
 
 WebRequest::~WebRequest(){
-	WWMETHODGATE();
+	OC_METHODGATE();
 }
 
 
@@ -85,43 +85,43 @@ QString WebRequest::signature(){
 
 void WebRequest::hookManagerSignals(){
 	OC_METHODGATE();
-	if(!connect(&nam, SIGNAL(authenticationRequired(QNetworkReply *, QAuthenticator *)),this, SLOT(onManagerAuthenticationRequired(QNetworkReply *, QAuthenticator *)),WWCONTYPE)){
+	if(!connect(&nam, SIGNAL(authenticationRequired(QNetworkReply *, QAuthenticator *)),this, SLOT(onManagerAuthenticationRequired(QNetworkReply *, QAuthenticator *)),OC_CONTYPE)){
 		qWarning()<< signature()<<"ERROR: Could not connect";
 	}
-	if(!connect(&nam, SIGNAL(networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility)),this, SLOT(onManagerNetworkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility)),WWCONTYPE)){
+	if(!connect(&nam, SIGNAL(networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility)),this, SLOT(onManagerNetworkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility)),OC_CONTYPE)){
 		qWarning()<< signature()<<"ERROR: Could not connect";
 	}
-	if(!connect(&nam, SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)),this, SLOT(onManagerProxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)),WWCONTYPE)){
+	if(!connect(&nam, SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)),this, SLOT(onManagerProxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)),OC_CONTYPE)){
 		qWarning()<< signature()<<"ERROR: Could not connect";
 	}
 }
 
 void WebRequest::hookReplySignals(){
 	OC_METHODGATE();
-	if(!connect(&timer, SIGNAL(timeout()),this, SLOT(onReplyTimeout()),WWCONTYPE)){
+	if(!connect(&timer, SIGNAL(timeout()),this, SLOT(onReplyTimeout()),OC_CONTYPE)){
 		qWarning()<< signature()<<"ERROR: Could not connect";
 	}
-	if(!connect(rep, SIGNAL(metaDataChanged()),this, SLOT(onReplyMetaDataChanged()),WWCONTYPE)){
+	if(!connect(rep, SIGNAL(metaDataChanged()),this, SLOT(onReplyMetaDataChanged()),OC_CONTYPE)){
 		qWarning()<< signature()<<"ERROR: Could not connect";
 	}
-	if(!connect(rep, SIGNAL(finished()), this, SLOT(onReplyFinished()),WWCONTYPE)){
+	if(!connect(rep, SIGNAL(finished()), this, SLOT(onReplyFinished()),OC_CONTYPE)){
 		qWarning()<< signature()<<"ERROR: Could not connect";
 	}
-	if(!connect(rep, SIGNAL(error(QNetworkReply::NetworkError)),this, SLOT(onReplyError(QNetworkReply::NetworkError)),WWCONTYPE)){
+	if(!connect(rep, SIGNAL(error(QNetworkReply::NetworkError)),this, SLOT(onReplyError(QNetworkReply::NetworkError)),OC_CONTYPE)){
 		qWarning()<< signature()<<"ERROR: Could not connect";
 	}
 #ifndef QT_NO_SSL
 	if(!connect(rep, SIGNAL(encrypted()),this, SLOT(onReplyEncrypted()))){
 		qWarning()<< signature()<<"ERROR: Could not connect";
 	}
-	if(!connect(rep, SIGNAL(sslErrors(QList<QSslError>)),this, SLOT(onReplySslErrors(QList<QSslError>)),WWCONTYPE)){
+	if(!connect(rep, SIGNAL(sslErrors(QList<QSslError>)),this, SLOT(onReplySslErrors(QList<QSslError>)),OC_CONTYPE)){
 		qWarning()<< signature()<<"ERROR: Could not connect";
 	}
 #endif
-	if(!connect(rep, SIGNAL(uploadProgress(qint64,qint64)),this, SLOT(onReplyProgress(qint64,qint64)),WWCONTYPE)){
+	if(!connect(rep, SIGNAL(uploadProgress(qint64,qint64)),this, SLOT(onReplyProgress(qint64,qint64)),OC_CONTYPE)){
 		qWarning()<< signature()<<"ERROR: Could not connect";
 	}
-	if(!connect(rep, SIGNAL(downloadProgress(qint64,qint64)),this, SLOT(onReplyProgress(qint64,qint64)),WWCONTYPE)){
+	if(!connect(rep, SIGNAL(downloadProgress(qint64,qint64)),this, SLOT(onReplyProgress(qint64,qint64)),OC_CONTYPE)){
 		qWarning()<< signature()<<"ERROR: Could not connect";
 	}
 }
@@ -208,7 +208,7 @@ void WebRequest::optimizeRequest(){
 void WebRequest::startRequest(QUrl u, bool onlyHead, qint64 to){
 	OC_METHODGATE();
 	if(UNSET_METHOD!=method){
-		qWarning()<< signature() << "ERROR: WebRequWWMETHODGATEutable. Aborting second call to startRequest (was "<<method<<")";
+		qWarning()<< signature() << "ERROR: WebRequOC_METHODGATEutable. Aborting second call to startRequest (was "<<method<<")";
 		return;
 	}
 	url=u;

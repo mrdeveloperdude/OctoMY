@@ -21,25 +21,15 @@
 #endif
 
 
-#define WWMETHODGATE()  { if(0==this){ qWarning()<<"0==this"; } } BUFFER_HONEYPOT
-#define WWFUNCTIONGATE()  { } BUFFER_HONEYPOT
+#define OC_METHODGATE()  { if(0==this){ qWarning()<<"0==this"; } } BUFFER_HONEYPOT
+#define OC_FUNCTIONGATE()  { } BUFFER_HONEYPOT
 
-#define WWTIMEOUTWARN(to) ScopedTimer(Q_FUNC_INFO,(qint64)to);
+#define OC_TIMEOUTWARN(to) ScopedTimer(Q_FUNC_INFO,(qint64)to);
 
-#define WWASSERT(a) { const bool c=(a); if(!c){ qWarning()<< "WWASSERT FAILED: " #a; } }
-
-
-#define WWCONTYPE (Qt::ConnectionType) (Qt::QueuedConnection | Qt::UniqueConnection)
+#define OC_ASSERT(a) { const bool c=(a); if(!c){ qWarning()<< "OC_ASSERT FAILED: " #a; } }
 
 
-
-
-
-#define OC_METHODGATE()		WWMETHODGATE()
-#define OC_FUNCTIONGATE()	WWFUNCTIONGATE()
-#define OC_TIMEOUTWARN(to)	WWTIMEOUTWARN(to)
-#define OC_ASSERT(a)		WWASSERT(a)
-#define OC_CONTYPE			WWCONTYPE
+#define OC_CONTYPE (Qt::ConnectionType) (Qt::QueuedConnection | Qt::UniqueConnection)
 
 
 

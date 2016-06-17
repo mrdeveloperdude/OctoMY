@@ -412,7 +412,7 @@ namespace utility{
 
 		qDebug()<<"set show";
 		quitButton->show();
-		if(!QObject::connect(quitButton, SIGNAL(clicked()),quitButton,SLOT(quit()),WWCONTYPE)) {
+		if(!QObject::connect(quitButton, SIGNAL(clicked()),quitButton,SLOT(quit()),OC_CONTYPE)) {
 			delete quitButton;
 			quitButton=0;
 			qWarning()<<"ERROR: Could not connect";
@@ -632,7 +632,7 @@ namespace utility{
 
 
 	void placeInScreen(QWidget &w,QPointF gravity, int pref){
-		WWFUNCTIONGATE();
+		OC_FUNCTIONGATE();
 		QDesktopWidget *desktop=QApplication::desktop();
 		if(0!=desktop){
 			const int c=desktop->screenCount();
@@ -647,7 +647,7 @@ namespace utility{
 	}
 
 	int getNonPrimaryScreen(){
-		WWFUNCTIONGATE();
+		OC_FUNCTIONGATE();
 		QDesktopWidget *desktop=QApplication::desktop();
 		int pref=0;
 		if(0!=desktop){
@@ -663,7 +663,7 @@ namespace utility{
 	}
 
 	QString toHash(QString input, QCryptographicHash::Algorithm algo, bool upperCase){
-		WWFUNCTIONGATE();
+		OC_FUNCTIONGATE();
 		QCryptographicHash ch(algo);
 		ch.addData(input.toUtf8());
 		QByteArray raw=ch.result();
@@ -688,7 +688,7 @@ namespace utility{
 	}
 
 	void toggleButtonSelection(QAbstractButton *button, bool on, bool clearOnOff){
-		WWFUNCTIONGATE();
+		OC_FUNCTIONGATE();
 		if(button->objectName() == "pushButtonRegister" && !on){
 			button->setVisible(false);
 		}
@@ -698,7 +698,7 @@ namespace utility{
 	}
 
 	QString nameToNormalForm(QString name){
-		WWFUNCTIONGATE();
+		OC_FUNCTIONGATE();
 		if(name.isEmpty()){
 			return name;
 		}
@@ -734,7 +734,7 @@ namespace utility{
 
 
 	QString networkErrorToString( QNetworkReply::NetworkError ne){
-		WWFUNCTIONGATE();
+		OC_FUNCTIONGATE();
 #define NETWORK_ERROR_TO_STRING_STANSA(a)  case(QNetworkReply::a): return #a + QStringLiteral("(") +QString::number(QNetworkReply::a) + QStringLiteral(")")
 		switch(ne){
 			NETWORK_ERROR_TO_STRING_STANSA(NoError);

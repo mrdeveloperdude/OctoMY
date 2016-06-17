@@ -7,6 +7,8 @@
 #include "widgets/IdenticonWidget.hpp"
 #include "web/Mustache.hpp"
 
+#include "comms/discovery/DiscoveryParticipant.hpp"
+
 #include "ZooConstants.hpp"
 
 #include <QtNetwork/QHostAddress>
@@ -23,6 +25,9 @@
 #include <QDir>
 
 #include <QRegularExpression>
+#include <QSharedPointer>
+
+#include <QTcpServer>
 
 
 
@@ -189,25 +194,8 @@ void ZooServer::serveIdenticon(qhttp::server::QHttpRequest* req, qhttp::server::
 
 const QRegularExpression reOCID("^[0-9A-F]{40}$"); // trimmed 40-digit upper-case hex string
 const QRegularExpression rePunchToken("^[0-9]{5}$"); // trimmed 5-digit integer decimal string
-const QRegularExpression rePairingPin("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
-
-
-struct PairingCookie{
-		QString ID;
-		QString pubKey;
-		QString pairingPin;
-		QString nodeType;
-
-		QVariantMap toVariantMap(){
-			QVariantMap map;
-			map["ID"]=QVariant(ID);
-			map["pubKey"]=QVariant(pubKey);
-			map["pairingPin"]=QVariant(pairingPin);
-			map["nodeType"]=QVariant(nodeType);
-			return map;
-		}
-};
-
+const QRegularExpression rePinPSK("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
+const QRegularExpression reGeoPSK("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
 
 
 void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
@@ -244,7 +232,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 		QString ocid=root.value("ocid").toString();
 		if(reOCID.match(ocid).hasMatch()){
 			//qDebug()<<"GOT API CONNECTION WITH OCID="<<ocid;
-			ZooRecord rec=storage.resolve(ocid);
+			HashstoreRecord rec=storage.resolve(ocid);
 			QByteArray ba=rec.get();
 			QJsonDocument jdoc= QJsonDocument::fromBinaryData(ba);
 			map["data"]=jdoc.toVariant().toMap();
@@ -261,7 +249,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 		QString ocid=root.value("ocid").toString();
 		if(reOCID.match(ocid).hasMatch()){
 			//qDebug()<<"GOT API CONNECTION WITH OCID="<<ocid;
-			ZooRecord rec=storage.resolve(ocid);
+			HashstoreRecord rec=storage.resolve(ocid);
 			QVariantMap data=root.value("data").toMap();
 			QByteArray ba;
 			QDataStream ds(ba);
@@ -275,15 +263,26 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 			ok=false;
 		}
 	}
-	else if(ZooConstants::OCTOMY_ZOO_API_DO_PAIRING_ESCROW==action){
-		QString pairingPin=root.value("pairingPin").toString();
-		if(rePairingPin.match(pairingPin).hasMatch()){
-			PairingCookie pCookie;
-			map["data"]=pCookie.toVariantMap();
+	else if(ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW==action){
+		QString publicKey=root["publicKey"].toString();
+		QString localAddress=root["localAddress"].toString();
+		quint16 localPort=root["localPort"].toInt();
+		QTcpServer *tc=tcpServer();
+		QString publicAddress="";
+		quint16 publicPort=root["publicPort"].toInt();
+		if(nullptr!=tc){
+			publicAddress=tc->serverAddress().toString();
 		}
-		else {
-			qWarning()<<"ERROR: pairingPin did not match validation:" <<pairingPin;
-			msg="ERROR: pairingPin did not match validation:" +pairingPin;
+		QSharedPointer<DiscoveryParticipant> part(new DiscoveryParticipant(publicKey, publicAddress, publicPort,localAddress, localPort));
+		part->addPin(root.value("manualPin").toString());
+		part->addPin(root.value("geoPin").toString());
+		DiscoveryServerSession *ses=discovery.request(part);
+		if(nullptr!=ses){
+			map["participants"]=ses->toVariantMap();
+		}
+		else{
+			res->setStatusCode(qhttp::ESTATUS_INTERNAL_SERVER_ERROR);
+			msg="ERROR: No session";
 			ok=false;
 		}
 	}

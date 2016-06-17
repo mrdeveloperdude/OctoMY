@@ -17,7 +17,7 @@ class SensorsCourier : public Courier{
 		CourierMandate man;
 		SensorsMessage msg;
 	public:
-		explicit SensorsCourier(QObject *parent = 0);
+		explicit SensorsCourier(QObject *parent = nullptr);
 
 	public:
 		//Let the CommChannel know what we want
