@@ -1,18 +1,19 @@
 #ifndef DISCOVERYCLIENT_HPP
 #define DISCOVERYCLIENT_HPP
 
+
+#include "DiscoveryRole.hpp"
+#include "DiscoveryClientStore.hpp"
+
 #include <QTimer>
 #include <QObject>
 #include <QDateTime>
 #include <QUrl>
 
-enum DiscoveryRole{
-	ROLE_AGENT
-	, ROLE_CONTROL
-};
 
 
 class DiscoveryParticipant;
+class Node;
 
 namespace qhttp{
 	namespace client{
@@ -24,28 +25,40 @@ class DiscoveryClient: public QObject
 {
 		Q_OBJECT
 	private:
-		DiscoveryRole role;
 		QTimer timer;
 		quint64 lastZooPair;
-		DiscoveryParticipant *zooSession;
-
+		//QMap<QString, DiscoveryParticipant *> participants;
 		QUrl  m_serverURL;
 		qhttp::client::QHttpClient     *m_client;
+		Node &node;
+		const QString ourPubKey;
+		const QString ourID;
+		const QString zeroID;
+
+	private:
+		void registerPossibleParticipant(QVariantMap map);
 
 	public:
-		DiscoveryClient(QObject *parent=0);
+		DiscoveryClient(Node &node);
 
 	public:
 
 		void start();
 		void stop();
-		void setRole(DiscoveryRole);
 
 		void discover();
+
+		Node &getNode();
+
+//		QMap<QString, DiscoveryParticipant *> &getParticipants();
 
 	private slots:
 
 		void onTimer();
+
+	signals:
+
+		void nodeDiscovered(QString id);
 };
 
 #endif // DISCOVERYCLIENT_HPP

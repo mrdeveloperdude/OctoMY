@@ -22,19 +22,26 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 {
 	ui->setupUi(this);
 	ui->widgetFace->setAgent(agent);
+	ui->widgetDelivery->configure(agent);
+	ui->widgetPairing->configure(agent);
 
 	if(nullptr!=agent){
 		Settings &s=agent->getSettings();
 
 		//Select correct starting page
 		QWidget *startPage=ui->pageRunning;
-		ui->stackedWidget->setCurrentWidget(s.getCustomSettingBool("octomy.delivered")?startPage:ui->pageDelivery);
+		qDebug()<<"#########################################################";
+		qDebug()<<"#########################################################";
+
+		qDebug()<<"###Local key: "<<agent->getKeyStore().getLocalPublicKey();
+
+		ui->stackedWidget->setCurrentWidget(agent->getKeyStore().hasLocalKeyFile()?startPage:ui->pageDelivery);
 		//Make sure to switch page on "done"
 		connect(ui->widgetDelivery, &AgentDeliveryWizard::done, [=](bool pairNow) {
 			ui->stackedWidget->setCurrentWidget(pairNow?ui->pagePairing:startPage);
 		} );
 
-		connect(ui->widgetPairing, &AgentPairingWizard::done, [=]() {
+		connect(ui->widgetPairing, &PairingWizard::done, [=]() {
 			ui->stackedWidget->setCurrentWidget(startPage);
 		} );
 
@@ -58,20 +65,20 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 		QAction *cameraAction = new QAction(tr("Camera"), this);
 		cameraAction->setStatusTip(tr("Do the camera dance"));
 		cameraAction->setIcon(QIcon(":/icons/eye.svg"));
-		connect(cameraAction, &QAction::triggered, this, &AgentWindow::on_pushButtonCamera_clicked);
+		connect(cameraAction, &QAction::triggered, this, &AgentWindow::onStartCameraPairing);
 		menu.addAction(cameraAction);
 
 
 		QAction *pairingAction = new QAction(tr("Pair"), this);
 		pairingAction->setStatusTip(tr("Do the pairing dance"));
 		pairingAction->setIcon(QIcon(":/icons/pair.svg"));
-		connect(pairingAction, &QAction::triggered, this, &AgentWindow::on_pushButtonPair_clicked);
+		connect(pairingAction, &QAction::triggered, this, &AgentWindow::onStartPairing);
 		menu.addAction(pairingAction);
 
 		QAction *planAction = new QAction(tr("Plan"), this);
 		planAction->setStatusTip(tr("Do the planning dance"));
 		planAction->setIcon(QIcon(":/icons/mandate.svg"));
-		connect(planAction, &QAction::triggered, this, &AgentWindow::on_pushButtonPlan_clicked);
+		connect(planAction, &QAction::triggered, this, &AgentWindow::onStartPlanEditor);
 		menu.addAction(planAction);
 
 
@@ -172,6 +179,31 @@ void AgentWindow::onStatsVisibilityChanged(bool on){
 
 
 
+void AgentWindow::onStartCameraPairing()
+{
+	ui->stackedWidget->setCurrentWidget(ui->pageCamera);
+}
+
+void AgentWindow::onStartPairing()
+{
+	ui->widgetPairing->reset();
+	ui->stackedWidget->setCurrentWidget(ui->pagePairing);
+
+}
+
+
+void AgentWindow::onStartPlanEditor()
+{
+	ui->stackedWidget->setCurrentWidget(ui->pagePlan);
+}
+
+
+void AgentWindow::appendLog(const QString& text){
+	ui->widgetFace->appendLog(text);
+}
+
+
+
 
 void AgentWindow::keyReleaseEvent(QKeyEvent *e){
 	if(Qt::Key_Back==e->key()){
@@ -197,10 +229,6 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e){
 	}
 }
 
-
-void AgentWindow::on_pushButtonConfirmQuit_clicked(){
-	exit(0);
-}
 
 
 
@@ -230,37 +258,19 @@ void AgentWindow::toastAndroid(QString s){
 }
 
 
-
-void AgentWindow::appendLog(const QString& text){
-	ui->widgetFace->appendLog(text);
-}
-
-
-
-void AgentWindow::on_pushButtonCamera_clicked(){
-	ui->stackedWidget->setCurrentWidget(ui->pageCamera);
-}
-
 void AgentWindow::on_pushButtonBack_clicked(){
 	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 }
 
 
-void AgentWindow::on_pushButtonPair_clicked()
-{
-	ui->widgetPairing->reset();
-	ui->stackedWidget->setCurrentWidget(ui->pagePairing);
-
-}
-
-void AgentWindow::on_pushButtonPlan_clicked()
-{
-	ui->stackedWidget->setCurrentWidget(ui->pagePlan);
-}
-
-
-
 void AgentWindow::on_pushButtonMenu_clicked()
 {
 	menu.exec(mapToGlobal(ui->pushButtonMenu->pos()));
+}
+
+
+
+
+void AgentWindow::on_pushButtonConfirmQuit_clicked(){
+	exit(0);
 }

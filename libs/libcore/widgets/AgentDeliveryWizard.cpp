@@ -150,15 +150,20 @@ void AgentDeliveryWizard::on_pushButtonPairNow_clicked()
 void AgentDeliveryWizard::onBirthComplete(){
 	if(nullptr!=node){
 		KeyStore &keystore=node->getKeyStore();
-
-
-		if(keystore.isReady() && !birthTimer.isActive()){
+		if((keystore.isReady() || keystore.isError()) && !birthTimer.isActive()){
 			qDebug()<<"XXX - Birth complete!";
 			birthTimer.stop();
 			spinner->stop();
-			ui->stackedWidget->setCurrentWidget(ui->pageBirthDone);
-			if(nullptr!=settings){
-				settings->setCustomSettingBool("octomy.delivered",true);
+
+			if(keystore.isError()){
+				qWarning()<<"XXX - ERROR: Birthdefects detected!";
+				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
+			}
+			else{
+				ui->stackedWidget->setCurrentWidget(ui->pageBirthDone);
+				if(nullptr!=settings){
+					settings->setCustomSettingBool("octomy.delivered",true);
+				}
 			}
 		}
 		else{

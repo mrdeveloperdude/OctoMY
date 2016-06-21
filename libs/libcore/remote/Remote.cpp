@@ -14,7 +14,7 @@
 
 
 Remote::Remote(NodeLauncher<Remote> &launcher, QObject *parent)
-	: Node(launcher.getOptions(), "remote", parent)
+	: Node(launcher.getOptions(), "remote", ROLE_CONTROL, TYPE_REMOTE, parent)
 	, poseCourier(new DirectPoseCourier(this))
 	, window(nullptr)
 {

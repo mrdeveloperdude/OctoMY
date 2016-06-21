@@ -31,7 +31,7 @@
        <string/>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabPlan">
        <attribute name="icon">
@@ -49,6 +49,16 @@
           </property>
           <widget class="PlanEditor" name="widgetPlanEditor" native="true"/>
          </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabPair">
+       <attribute name="title">
+        <string>Pair</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_8">
+        <item>
+         <widget class="PairingWizard" name="widgetPairing" native="true"/>
         </item>
        </layout>
       </widget>
@@ -721,26 +731,21 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>GaitWidget</class>
-   <extends>QWidget</extends>
-   <header>puppet/GaitWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>MapEditor</class>
-   <extends>QWidget</extends>
-   <header>widgets/MapEditor.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LogWidget</class>
-   <extends>QPlainTextEdit</extends>
-   <header>widgets/LogWidget.hpp</header>
-  </customwidget>
-  <customwidget>
    <class>IdenticonWidget</class>
    <extends>QWidget</extends>
    <header>widgets/IdenticonWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QRWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/QRWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GaitWidget</class>
+   <extends>QWidget</extends>
+   <header>puppet/GaitWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -756,15 +761,20 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>TryToggle</class>
+   <class>MapEditor</class>
    <extends>QWidget</extends>
-   <header>widgets/TryToggle.hpp</header>
+   <header>widgets/MapEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QRWidget</class>
+   <class>LogWidget</class>
+   <extends>QPlainTextEdit</extends>
+   <header>widgets/LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>TryToggle</class>
    <extends>QWidget</extends>
-   <header>widgets/QRWidget.hpp</header>
+   <header>widgets/TryToggle.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -817,6 +827,12 @@
    <class>HexyTool</class>
    <extends>QWidget</extends>
    <header>hw/actuators/HexyTool.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PairingWizard</class>
+   <extends>QWidget</extends>
+   <header>widgets/PairingWizard.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -9,31 +9,59 @@
 #include "camera/CameraList.hpp"
 #include "sensory/SensorInput.hpp"
 #include "comms/messages/SensorsMessage.hpp"
+#include "utility/Utility.hpp"
+#include "utility/ScopedTimer.hpp"
+#include "basic/StyleManager.hpp"
 
 #include <QCommandLineParser>
 #include <QAccelerometerReading>
 #include <QGyroscopeReading>
 #include <QGeoPositionInfo>
+#include <QStandardPaths>
+#include <QDir>
 
-Node::Node(QCommandLineParser &opts, QString base, QObject *parent)
-	: QObject(parent)
-	, opts(opts)
-	, keystore (nullptr,base,false)
-	, discovery (new DiscoveryClient)
+Node::Node(QCommandLineParser &opts, QString base, DiscoveryRole role, DiscoveryType type, QObject *parent)
+	: QObject (parent)
+	, opts (opts)
+	, settings(nullptr, base)
+	, baseDir( settings.getCustomSetting("content_dir", QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)) )
+	, keystore (nullptr, baseDir + "/keystore.json")
+	, peers (nullptr, baseDir + "/peers.json")
+	, discovery (new DiscoveryClient(*this))
+	, role (role)
+	, type (type)
 	, comms (new CommsChannel(this))
 	, zoo (new ZooClient(this))
-	, sensors(new SensorInput(this))
-	, hubPort(0)
-	, cameras(new CameraList(this))
-	, lastStatusSend(0)
-	, sensorMessage(new SensorsMessage)
-
+	, sensors (new SensorInput(this))
+	, hubPort (0)
+	, cameras (new CameraList(this))
+	, lastStatusSend (0)
+	, sensorMessage (new SensorsMessage)
 {
+	ScopedTimer nodeBootTimer(base+"-boot");
 	setObjectName(base);
-	hookSensorSignals(*this);
-	if(nullptr!=comms){
-		comms->hookSignals(*this);
+	QCoreApplication::setApplicationVersion("1.0");
+	QCoreApplication::setApplicationName(Settings::APPLICATION_NAME_BASE+" "+base);
+
+	// Only Agents are "born"
+	if(ROLE_AGENT!=role){
+		keystore.bootstrap();
 	}
+
+
+	StyleManager *style=new StyleManager(QColor(TYPE_AGENT==type?"#e83636":TYPE_REMOTE==type?"#36bee8":"#36e843"));
+	if(nullptr!=style){
+		style->apply();
+	}
+
+	if(!QDir().mkpath(baseDir)){
+		qWarning()<<"ERROR: Could not create basedir for node";
+	}
+
+//	discovery->configure(this);
+	hookSensorSignals(*this);
+	hookCommsSignals(*this);
+
 	//QByteArray OCID=UniquePlatformFingerprint::getInstance().platform().getHEX().toUtf8();
 	if(nullptr!=zoo){
 		zoo->setURL(QUrl("http://localhost:8123/api"));
@@ -43,57 +71,103 @@ Node::Node(QCommandLineParser &opts, QString base, QObject *parent)
 
 }
 
+Node::~Node(){
+	unHookSensorSignals(*this);
+	unHookCommsSignals(*this);
+	delete sensorMessage;
+	sensorMessage=nullptr;
 
-QCommandLineParser &Node::getOptions(){
+}
+
+QCommandLineParser &Node::getOptions()
+{
 	return opts;
 }
 
-Settings &Node::getSettings(){
+Settings &Node::getSettings()
+{
 	return settings;
 }
 
-KeyStore  &Node::getKeyStore(){
+KeyStore  &Node::getKeyStore()
+{
 	return keystore;
 }
 
-DiscoveryClient *Node::getDiscoveryClient(){
+DiscoveryClientStore &Node::getPeers()
+{
+	return  peers;
+}
+
+DiscoveryClient *Node::getDiscoveryClient()
+{
 	return discovery;
 }
 
-CommsChannel *Node::getComms(){
+DiscoveryRole Node::getRole()
+{
+	return role;
+}
+
+
+DiscoveryType Node::getType()
+{
+	return type;
+}
+
+CommsChannel *Node::getComms()
+{
 	return comms;
 }
 
-ZooClient *Node::getZooClient(){
+ZooClient *Node::getZooClient()
+{
 	return zoo;
 }
 
-SensorInput *Node::getSensorInput(){
+SensorInput *Node::getSensorInput()
+{
 	return sensors;
 }
 
-CameraList *Node::getCameras(){
+CameraList *Node::getCameras()
+{
 	return cameras;
 }
 
-QWidget *Node::showWindow(){
+QWidget *Node::showWindow()
+{
 	return nullptr;
 }
 
-void Node::hookSensorSignals(QObject &o){
+
+void Node::hookSensorSignals(QObject &o)
+{
 	if(nullptr!=sensors){
 		sensors->hookSignals(o);
 	}
+}
+
+
+void Node::unHookSensorSignals(QObject &o)
+{
+	if(nullptr!=sensors){
+		sensors->unHookSignals(o);
+	}
+}
+
+
+
+void Node::hookCommsSignals(QObject &o)
+{
 	if(nullptr!=comms){
 		comms->hookSignals(o);
 	}
 }
 
 
-void Node::unHookSensorSignals(QObject &o){
-	if(nullptr!=sensors){
-		sensors->unHookSignals(o);
-	}
+void Node::unHookCommsSignals(QObject &o)
+{
 	if(nullptr!=comms){
 		comms->unHookSignals(o);
 	}

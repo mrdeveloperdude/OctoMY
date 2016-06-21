@@ -71,5 +71,6 @@
         <file>icons/kill.svg</file>
         <file>icons/mask.svg</file>
         <file>icons/speech.svg</file>
+        <file>icons/edit.svg</file>
     </qresource>
 </RCC>

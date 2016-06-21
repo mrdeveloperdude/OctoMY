@@ -14,20 +14,23 @@ const qint64  Settings::MAX_SYNC_INTERVAL=(1000 * 10); //Never sync more often t
 const QString Settings::ORGANIZATION_NAME = "OctoMY™";
 const QString Settings::DOMAIN_NAME = "octomy.org™";
 const QString Settings::BRAND_NAME = "OctoMY™";
-const QString Settings::APPLICATION_NAME = "OctoMY™";
+const QString Settings::APPLICATION_NAME_BASE = BRAND_NAME;
 const QString Settings::USERAGENT= "OctoMY/1.0";
 
 
 const QString Settings::KEY_CUSTOM_SETTING_BASE="";  // SET TO EMPTY STRING TO ALLOW SMOOTH TRANSITION FROM CUSTOM TO ACTUAL SETTING IN LATER VERSIONS "custom-setting-";
 
 
-Settings::Settings(QObject *parent):
-	QObject(parent)
-  , settings(nullptr)
-  , lastSync(0)
+Settings::Settings(QObject *parent, QString g)
+	: QObject(parent)
+	, group(g.trimmed())
+	, settings(new QSettings)
+	, lastSync(0)
 {
 	OC_METHODGATE();
-	settings=new QSettings;
+	if(""!=group){
+		settings->beginGroup(group);
+	}
 	syncTimer.setTimerType(Qt::VeryCoarseTimer);
 	if(!connect(&syncTimer,SIGNAL(timeout()),this,SLOT(delayedSync()),OC_CONTYPE)){
 		qWarning()<<"ERROR: Could not connect settings sync timer";
@@ -37,9 +40,12 @@ Settings::Settings(QObject *parent):
 
 Settings::~Settings(){
 	OC_METHODGATE();
+	if(""!=group){
+		settings->endGroup();
+	}
 	//DELETE 2014-09-26
 	delete settings;
-	settings=0;
+	settings=nullptr;
 }
 
 
@@ -74,7 +80,7 @@ void Settings::sync(){
 void Settings::delayedSync(){
 	OC_METHODGATE();
 	syncTimer.stop();
-	if(0!=settings)	{
+	if(nullptr!=settings)	{
 		//qDebug()<<"SETTINGS SYNC PERFORMED";
 		settings->sync();
 		lastSync=QDateTime::currentMSecsSinceEpoch();
@@ -97,17 +103,24 @@ QString Settings::getCustomSetting(const QString &sub, QString def){
 
 void Settings::setCustomSetting(const QString &sub,QString val){
 	OC_METHODGATE();
-	if(0!=settings){
-		settings->setValue(KEY_CUSTOM_SETTING_BASE+sub,val);
-		//		qDebug()<<(KEY_CUSTOM_SETTING_BASE+sub)<<"="<<val;
-		sync();
+	if(nullptr!=settings){
+		QString s=(KEY_CUSTOM_SETTING_BASE+sub).trimmed();
+		if(""!=s){
+			settings->setValue(s,val);
+			//		qDebug()<<(KEY_CUSTOM_SETTING_BASE+sub)<<"="<<val;
+			sync();
+		}
+		else{
+			qWarning()<<"ERROR: Key was empty";
+		}
+
 	}
 }
 
 
 qint64  Settings::getCustomSettingLong(const QString &sub, qint64 def){
 	OC_METHODGATE();
-	if(0==settings){
+	if(nullptr==settings){
 		return def;
 	}
 	return settings->value(KEY_CUSTOM_SETTING_BASE+sub, def).toLongLong();
@@ -115,7 +128,7 @@ qint64  Settings::getCustomSettingLong(const QString &sub, qint64 def){
 
 void Settings::setCustomSettingLong(const QString &sub,qint64  val){
 	OC_METHODGATE();
-	if(0!=settings){
+	if(nullptr!=settings){
 		settings->setValue(KEY_CUSTOM_SETTING_BASE+sub,val);
 		//		qDebug()<<(KEY_CUSTOM_SETTING_BASE+sub)<<"="<<val;
 		sync();
@@ -128,7 +141,7 @@ void Settings::setCustomSettingLong(const QString &sub,qint64  val){
 
 bool Settings::getCustomSettingBool(const QString &sub,bool def){
 	OC_METHODGATE();
-	if(0==settings){
+	if(nullptr==settings){
 		return def;
 	}
 	return settings->value(KEY_CUSTOM_SETTING_BASE+sub, def).toBool();
@@ -137,7 +150,7 @@ bool Settings::getCustomSettingBool(const QString &sub,bool def){
 
 void Settings::setCustomSettingBool(const QString &sub,bool val){
 	OC_METHODGATE();
-	if(0!=settings){
+	if(nullptr!=settings){
 		settings->setValue(KEY_CUSTOM_SETTING_BASE+sub,val);
 		//		qDebug()<<(KEY_CUSTOM_SETTING_BASE+sub)<<"="<<val;
 		sync();
@@ -146,7 +159,7 @@ void Settings::setCustomSettingBool(const QString &sub,bool val){
 
 bool Settings::hasCustomSetting(const QString &sub){
 	OC_METHODGATE();
-	if(0==settings){
+	if(nullptr==settings){
 		return false;
 	}
 	const QString bad="THIS_SETTING_WILL_NEVER_OCCUR_NATURALLY";

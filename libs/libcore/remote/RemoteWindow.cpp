@@ -14,6 +14,8 @@
 #include "../libmap/MapLayer.hpp"
 #include "../libmap/LineString.hpp"
 
+#include "comms/discovery/DiscoveryClient.hpp"
+
 
 #include <QDebug>
 #include <QAccelerometerReading>
@@ -37,13 +39,16 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 	addAgentToList("Hexy", ":/icons/agent.svg");
 	addAgentToList("Golem", ":/icons/agent.svg");
 
+	ui->widgetPairing->configure(remote);
+
 	if(nullptr!=remote){
 		Settings &s=remote->getSettings();
+
 		//Select correct starting page
 		QWidget *startPage=ui->pageRunning;
 		ui->stackedWidgetScreen->setCurrentWidget(s.getCustomSettingBool("octomy.delivered")?startPage:ui->pagePairing);
 		//Make sure to switch page on "done"
-		connect(ui->widgetPairing, &ControlPairingWidget::done, [=]() {
+		connect(ui->widgetPairing, &PairingWizard::done, [=]() {
 			ui->stackedWidgetScreen->setCurrentWidget(startPage);
 		} );
 		if(0!=remote){
@@ -317,11 +322,6 @@ void RemoteWindow::updateActiveAgent(){
 		const int idx=ui->comboBoxControlLevel->currentIndex();
 		ui->stackedWidgetControl->setCurrentIndex(idx);
 	}
-}
-
-void RemoteWindow::on_pushButtonBack_clicked()
-{
-	ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
 }
 
 void RemoteWindow::on_comboBoxAgent_currentIndexChanged(int index)

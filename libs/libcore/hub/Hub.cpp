@@ -6,7 +6,7 @@
 
 
 Hub::Hub(NodeLauncher<Hub> &launcher, QObject *parent)
-	: Node(launcher.getOptions(), "hub", parent)
+	: Node(launcher.getOptions(), "hub", ROLE_CONTROL, TYPE_HUB, parent)
 	, window(nullptr)
 {
 }

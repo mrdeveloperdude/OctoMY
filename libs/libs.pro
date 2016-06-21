@@ -20,6 +20,7 @@ libzbar.subdir=			libzbar
 libqhttp.subdir=		libqhttp
 liboctostyle.subdir=	libstyle
 
+libzbar.depends=libcore
 
 include($$TOP_PWD/common.pri)
 

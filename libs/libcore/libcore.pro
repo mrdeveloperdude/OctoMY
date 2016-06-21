@@ -8,6 +8,7 @@ include($$TOP_PWD/common.pri)
 INCLUDEPATH += ./
 
 SOURCES +=\
+	3d/Logo3DWidget.cpp \
 	3d/PoseView.cpp \
 	3d/scene/GeometryEngine.cpp \
 	3d/scene/Limb.cpp \
@@ -15,13 +16,21 @@ SOURCES +=\
 	3d/scene/Simulation.cpp \
 	agent/Agent.cpp \
 	agent/AgentWindow.cpp \
+	basic/AgentNameGenerator.cpp \
+	basic/Fingerprint.cpp \
+	basic/Iconv.cpp \
 	basic/LogDestination.cpp \
 	basic/LogHandler.cpp \
+	basic/NetworkOptimizer.cpp \
+	basic/Node.cpp \
+	basic/NodeLauncher.cpp \
 	basic/Settings.cpp \
 	basic/Standard.cpp \
 	basic/StyleManager.cpp \
+	basic/TetraGPSEncoder.cpp \
 	basic/UniquePlatformFingerprint.cpp \
 	camera/Camera.cpp \
+	camera/CameraList.cpp \
 	camera/CameraSettings.cpp \
 	camera/PoorMansProbe.cpp \
 	comms/Client.cpp \
@@ -29,6 +38,10 @@ SOURCES +=\
 	comms/couriers/Courier.cpp \
 	comms/couriers/DirectPoseCourier.cpp \
 	comms/couriers/SensorsCourier.cpp \
+	comms/discovery/DiscoveryClient.cpp \
+	comms/discovery/DiscoveryParticipant.cpp \
+	comms/discovery/DiscoveryServer.cpp \
+	comms/discovery/DiscoveryServerSession.cpp \
 	comms/FlowControl.cpp \
 	comms/messages/QueryMessage.cpp \
 	comms/messages/QueryResultMessage.cpp \
@@ -62,25 +75,47 @@ SOURCES +=\
 	hw/actuators/HexyLeg.cpp \
 	hw/actuators/HexySerial.cpp \
 	hw/actuators/HexyTool.cpp \
+	hw/actuators/SerialList.cpp \
 	hw/actuators/SerialSettings.cpp \
+	hw/actuators/ServoInput.cpp \
+	hw/BluetoothList.cpp \
 	models/ClientModel.cpp \
 	plan/parser/PlanHighlighter.cpp \
 	plot/qcustomplot.cpp \
 	plot/StatsWindow.cpp \
+	puppet/EyesWidget.cpp \
 	puppet/GaitController.cpp \
 	puppet/GaitWidget.cpp \
+	puppet/LimbIKWidget.cpp \
 	puppet/Pose.cpp \
 	puppet/Puppet.cpp \
+	random/DevRandomRNG.cpp \
+	random/DevURandomRNG.cpp \
+	random/EfficientPRNG.cpp \
+	random/MersennePRNG.cpp \
+	random/ParkMillerPRNG.cpp \
+	random/RNG.cpp \
+	random/SystemPRNG.cpp \
+	random/TausPRNG.cpp \
 	remote/Remote.cpp \
 	remote/RemoteWindow.cpp \
 	security/KeyStore.cpp \
+	security/PortableID.cpp \
 	sensory/SensorInput.cpp \
+	storage/Hashstore.cpp \
+	storage/HashstoreRecord.cpp \
+	storage/HashstoreRecordState.cpp \
 	utility/BaseTranscode.cpp \
+	utility/ScopedTimer.cpp \
 	utility/Status.cpp \
 	utility/Utility.cpp \
+	web/Mustache.cpp \
+	widgets/AgentDeliveryWizard.cpp \
+	widgets/CameraPairingWidget.cpp \
 	widgets/CompasWidget.cpp \
 	widgets/ConnectionWidget.cpp \
 	widgets/EnumEntry.cpp \
+	widgets/FaceWidget.cpp \
 	widgets/FlowLayout.cpp \
 	widgets/hexedit/QHexEditComments.cpp \
 	widgets/hexedit/QHexEdit.cpp \
@@ -91,14 +126,20 @@ SOURCES +=\
 	widgets/hexedit/QHexEditHighlighter.cpp \
 	widgets/hexedit/QHexEditPrivate.cpp \
 	widgets/hexedit/SparseRangeMap.cpp \
+	widgets/Identicon.cpp \
 	widgets/IdenticonWidget.cpp \
+	widgets/ImageLabel2.cpp \
 	widgets/ImageLabel.cpp \
 	widgets/LightWidget.cpp \
 	widgets/LocalAddressEntry.cpp \
 	widgets/Logo.cpp \
+	widgets/LogWidget.cpp \
 	widgets/MapEditor.cpp \
 	widgets/MultiView.cpp \
 	widgets/NumberEntry.cpp \
+	widgets/planedit/CodeEditor.cpp \
+	widgets/planedit/LineNumberArea.cpp \
+	widgets/planedit/PlanEditor.cpp \
 	widgets/qfi/LayoutSquare.cpp \
 	widgets/qfi/qfi_ADI.cpp \
 	widgets/qfi/qfi_ALT.cpp \
@@ -118,61 +159,26 @@ SOURCES +=\
 	widgets/qfi/WidgetTC.cpp \
 	widgets/qfi/WidgetVSI.cpp \
 	widgets/QRWidget.cpp \
+	widgets/RealtimeValuesWidget.cpp \
 	widgets/SvgWidget.cpp \
 	widgets/TextEntry.cpp \
 	widgets/TryToggle.cpp \
-	widgets/Identicon.cpp \
-	security/PortableID.cpp \
 	widgets/WaitingSpinnerWidget.cpp \
-	basic/Iconv.cpp \
-	camera/CameraList.cpp \
-	hw/BluetoothList.cpp \
-	widgets/CameraPairingWidget.cpp \
-	hw/actuators/SerialList.cpp \
-	hw/actuators/ServoInput.cpp \
-	puppet/LimbIKWidget.cpp \
-	widgets/planedit/CodeEditor.cpp \
-	widgets/planedit/PlanEditor.cpp \
-	widgets/planedit/LineNumberArea.cpp \
-	zoo/ZooServer.cpp \
-	web/Mustache.cpp \
-	zoo/ZooClient.cpp \
+	zoo/PunchRegistry.cpp \
 	zoo/WebRequest.cpp \
-	basic/NetworkOptimizer.cpp \
-    zoo/ZooConstants.cpp \
-    zoo/PunchRegistry.cpp \
-    widgets/RealtimeValuesWidget.cpp \
-    widgets/AgentPairingWizard.cpp \
-    widgets/ControlPairingWidget.cpp \
-    basic/Fingerprint.cpp \
-    random/DevURandomRNG.cpp \
-    random/SystemPRNG.cpp \
-    random/DevRandomRNG.cpp \
-    random/ParkMillerPRNG.cpp \
-    random/EfficientPRNG.cpp \
-    random/RNG.cpp \
-    random/MersennePRNG.cpp \
-    random/TausPRNG.cpp \
-    widgets/AgentDeliveryWizard.cpp \
-    widgets/ImageLabel2.cpp \
-    widgets/FaceWidget.cpp \
-    puppet/EyesWidget.cpp \
-    basic/AgentNameGenerator.cpp \
-    widgets/LogWidget.cpp \
-    storage/HashstoreRecord.cpp \
-    storage/Hashstore.cpp \
-    storage/HashstoreRecordState.cpp \
-    basic/TetraGPSEncoder.cpp \
-    3d/Logo3DWidget.cpp \
-    comms/discovery/DiscoveryClient.cpp \
-    comms/discovery/DiscoveryServer.cpp \
-    comms/discovery/DiscoveryParticipant.cpp \
-    comms/discovery/DiscoveryServerSession.cpp \
-    basic/Node.cpp \
-    basic/NodeLauncher.cpp
+	zoo/ZooClient.cpp \
+	zoo/ZooConstants.cpp \
+	zoo/ZooServer.cpp \
+    widgets/PairingWizard.cpp \
+    comms/discovery/DiscoveryRole.cpp \
+    comms/discovery/DiscoveryClientStore.cpp \
+    basic/AtomicBoolean.cpp \
+    basic/GenerateRunnable.cpp
+
 
 
 HEADERS  += \
+	3d/Logo3DWidget.hpp \
 	3d/PoseView.hpp \
 	3d/scene/GeometryEngine.hpp \
 	3d/scene/Limb.hpp \
@@ -180,13 +186,21 @@ HEADERS  += \
 	3d/scene/Simulation.hpp \
 	agent/Agent.hpp \
 	agent/AgentWindow.hpp \
+	basic/AgentNameGenerator.hpp \
+	basic/Fingerprint.hpp \
+	basic/Iconv.hpp \
 	basic/LogDestination.hpp \
 	basic/LogHandler.hpp \
+	basic/NetworkOptimizer.hpp \
+	basic/Node.hpp \
+	basic/NodeLauncher.hpp \
 	basic/Settings.hpp \
 	basic/Standard.hpp \
 	basic/StyleManager.hpp \
+	basic/TetraGPSEncoder.hpp \
 	basic/UniquePlatformFingerprint.hpp \
 	camera/Camera.hpp \
+	camera/CameraList.hpp \
 	camera/CameraSettings.hpp \
 	camera/PoorMansProbe.hpp \
 	comms/Client.hpp \
@@ -197,6 +211,10 @@ HEADERS  += \
 	comms/DataType.hpp \
 	comms/DeviceStatusType.hpp \
 	comms/DeviceType.hpp \
+	comms/discovery/DiscoveryClient.hpp \
+	comms/discovery/DiscoveryParticipant.hpp \
+	comms/discovery/DiscoveryServer.hpp \
+	comms/discovery/DiscoveryServerSession.hpp \
 	comms/FlowControl.hpp \
 	comms/messages/MessageType.hpp \
 	comms/messages/QueryMessage.hpp \
@@ -235,26 +253,48 @@ HEADERS  += \
 	hw/actuators/HexyLeg.hpp \
 	hw/actuators/HexySerial.hpp \
 	hw/actuators/HexyTool.hpp \
+	hw/actuators/SerialList.hpp \
 	hw/actuators/SerialSettings.hpp \
+	hw/actuators/ServoInput.hpp \
+	hw/BluetoothList.hpp \
 	models/ClientModel.hpp \
 	plan/parser/PlanHighlighter.hpp \
 	plot/qcustomplot.hpp \
 	plot/StatsWindow.hpp \
+	puppet/EyesWidget.hpp \
 	puppet/GaitController.hpp \
 	puppet/GaitWidget.hpp \
+	puppet/LimbIKWidget.hpp \
 	puppet/Pose.hpp \
 	puppet/Puppet.hpp \
+	random/DevRandomRNG.hpp \
+	random/DevURandomRNG.hpp \
+	random/EfficientPRNG.hpp \
+	random/MersennePRNG.hpp \
+	random/ParkMillerPRNG.hpp \
+	random/RNG.hpp \
+	random/SystemPRNG.hpp \
+	random/TausPRNG.hpp \
 	remote/Remote.hpp \
 	remote/RemoteWindow.hpp \
 	security/KeyStore.hpp \
+	security/PortableID.hpp \
 	sensory/SensorInput.hpp \
+	storage/Hashstore.hpp \
+	storage/HashstoreRecord.hpp \
+	storage/HashstoreRecordState.hpp \
 	utility/BaseTranscode.hpp \
 	utility/InfInt.hpp \
+	utility/ScopedTimer.hpp \
 	utility/Status.hpp \
 	utility/Utility.hpp \
+	web/Mustache.hpp \
+	widgets/AgentDeliveryWizard.hpp \
+	widgets/CameraPairingWidget.hpp \
 	widgets/CompasWidget.hpp \
 	widgets/ConnectionWidget.hpp \
 	widgets/EnumEntry.hpp \
+	widgets/FaceWidget.hpp \
 	widgets/FlowLayout.hpp \
 	widgets/hexedit/QHexEditComments.hpp \
 	widgets/hexedit/QHexEditDataDevice.hpp \
@@ -265,14 +305,20 @@ HEADERS  += \
 	widgets/hexedit/QHexEdit.hpp \
 	widgets/hexedit/QHexEditPrivate.hpp \
 	widgets/hexedit/SparseRangeMap.hpp \
+	widgets/Identicon.hpp \
 	widgets/IdenticonWidget.hpp \
+	widgets/ImageLabel2.hpp \
 	widgets/ImageLabel.hpp \
 	widgets/LightWidget.hpp \
 	widgets/LocalAddressEntry.hpp \
 	widgets/Logo.hpp \
+	widgets/LogWidget.hpp \
 	widgets/MapEditor.hpp \
 	widgets/MultiView.hpp \
 	widgets/NumberEntry.hpp \
+	widgets/planedit/CodeEditor.hpp \
+	widgets/planedit/LineNumberArea.hpp \
+	widgets/planedit/PlanEditor.hpp \
 	widgets/qfi/LayoutSquare.h \
 	widgets/qfi/qfi_ADI.h \
 	widgets/qfi/qfi_ALT.h \
@@ -292,58 +338,21 @@ HEADERS  += \
 	widgets/qfi/WidgetTC.h \
 	widgets/qfi/WidgetVSI.h \
 	widgets/QRWidget.hpp \
+	widgets/RealtimeValuesWidget.hpp \
 	widgets/SvgWidget.hpp \
 	widgets/TextEntry.hpp \
 	widgets/TryToggle.hpp \
-	widgets/Identicon.hpp \
-	security/PortableID.hpp \
 	widgets/WaitingSpinnerWidget.hpp \
-	basic/Iconv.hpp \
-	camera/CameraList.hpp \
-	hw/BluetoothList.hpp \
-	widgets/CameraPairingWidget.hpp \
-	hw/actuators/SerialList.hpp \
-	hw/actuators/ServoInput.hpp \
-	puppet/LimbIKWidget.hpp \
-	widgets/planedit/PlanEditor.hpp \
-	widgets/planedit/CodeEditor.hpp \
-	widgets/planedit/LineNumberArea.hpp \
-	zoo/ZooServer.hpp \
-	web/Mustache.hpp \
-	zoo/ZooClient.hpp \
+	zoo/PunchRegistry.hpp \
 	zoo/WebRequest.hpp \
-	basic/NetworkOptimizer.hpp \
-    zoo/ZooConstants.hpp \
-    zoo/PunchRegistry.hpp \
-    widgets/RealtimeValuesWidget.hpp \
-    widgets/AgentPairingWizard.hpp \
-    widgets/ControlPairingWidget.hpp \
-    basic/Fingerprint.hpp \
-    random/DevURandomRNG.hpp \
-    random/SystemPRNG.hpp \
-    random/DevRandomRNG.hpp \
-    random/ParkMillerPRNG.hpp \
-    random/EfficientPRNG.hpp \
-    random/RNG.hpp \
-    random/MersennePRNG.hpp \
-    random/TausPRNG.hpp \
-    widgets/AgentDeliveryWizard.hpp \
-    widgets/ImageLabel2.hpp \
-    widgets/FaceWidget.hpp \
-    puppet/EyesWidget.hpp \
-    basic/AgentNameGenerator.hpp \
-    widgets/LogWidget.hpp \
-    storage/HashstoreRecord.hpp \
-    storage/Hashstore.hpp \
-    storage/HashstoreRecordState.hpp \
-    basic/TetraGPSEncoder.hpp \
-    3d/Logo3DWidget.hpp \
-    comms/discovery/DiscoveryClient.hpp \
-    comms/discovery/DiscoveryServer.hpp \
-    comms/discovery/DiscoveryParticipant.hpp \
-    comms/discovery/DiscoveryServerSession.hpp \
-    basic/Node.hpp \
-    basic/NodeLauncher.hpp
+	zoo/ZooClient.hpp \
+	zoo/ZooConstants.hpp \
+	zoo/ZooServer.hpp \
+    widgets/PairingWizard.hpp \
+    comms/discovery/DiscoveryRole.hpp \
+    comms/discovery/DiscoveryClientStore.hpp \
+    basic/AtomicBoolean.hpp \
+    basic/GenerateRunnable.hpp
 
 
 
@@ -375,12 +384,11 @@ FORMS    += \
 	ui/PlanEditor.ui \
 	ui/CameraPairingWidget.ui \
 	ui/MapEditor.ui \
-    ui/AgentPairingWizard.ui \
-    ui/RealtimeValuesWidget.ui \
-    remote/ControlPairingWidget.ui \
-    widgets/AgentDeliveryWizard.ui \
-    widgets/FaceWidget.ui \
-    widgets/LogWidget.ui
+	ui/RealtimeValuesWidget.ui \
+	widgets/AgentDeliveryWizard.ui \
+	widgets/FaceWidget.ui \
+	widgets/LogWidget.ui \
+    ui/PairingWizard.ui
 
 
 RESOURCES += \
@@ -390,7 +398,7 @@ RESOURCES += \
 	resources/qfi.qrc \
 	resources/3d.qrc \
 	resources/data.qrc \
-    resources/images.qrc
+	resources/images.qrc
 
 
 

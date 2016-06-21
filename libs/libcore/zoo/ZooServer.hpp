@@ -7,6 +7,8 @@
 #include "../storage/Hashstore.hpp"
 #include "comms/discovery/DiscoveryServer.hpp"
 
+#include "basic/Settings.hpp"
+#include "security/KeyStore.hpp"
 
 #include "PunchRegistry.hpp"
 #include <QString>
@@ -14,12 +16,23 @@
 
 class QHttpRequest;
 class QHttpResponse;
+class QCommandLineParser;
+class QProcessEnvironment;
 
 
 
 class ZooServer : public qhttp::server::QHttpServer
 {
+	//	Q_OBJECT
 	private:
+
+		QString base;
+		QCommandLineParser &opts;
+		QProcessEnvironment &env;
+		Settings settings;
+		QString baseDir;
+		KeyStore keystore;
+
 		Identicon identicon;
 		Hashstore storage;
 		PunchRegistry punches;
@@ -30,8 +43,9 @@ class ZooServer : public qhttp::server::QHttpServer
 
 	public:
 
-		explicit ZooServer();
+		explicit ZooServer(QCommandLineParser &opts, QProcessEnvironment &env, QObject *parent=nullptr);
 
+		virtual~ZooServer();
 		void start(const QString pathOrPortNumber);
 
 	public:

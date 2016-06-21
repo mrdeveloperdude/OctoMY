@@ -11,7 +11,12 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<DiscoveryPartic
 		qWarning()<<"ERROR: participant was 0";
 		return nullptr;
 	}
+	if(!part->isValidServer()){
+		qWarning()<<"ERROR: participant was invalid";
+		return nullptr;
+	}
 	DiscoveryServerSession *ses=nullptr;
+	if(part)
 	if(!part->pins.isEmpty()){
 		QString pin;
 		for(QString p: part->pins){

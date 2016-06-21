@@ -17,7 +17,7 @@
 
 
 Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
-	: Node(launcher.getOptions(), "agent", parent)
+	: Node(launcher.getOptions(), "agent", ROLE_AGENT, TYPE_AGENT, parent)
 	, window(nullptr)
 {
 }

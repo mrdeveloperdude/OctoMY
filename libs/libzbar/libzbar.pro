@@ -39,6 +39,7 @@ HEADERS	+= \
 	qrcode/qrdec.h \
 	qrcode/rs.h \
 	qrcode/util.h \
+	QtIconv.h \
 	refcnt.h \
 	svg.h \
 	symbol.h \
@@ -48,7 +49,7 @@ HEADERS	+= \
 	window.h \
 	zbar.h \
 	ZBarScanner.hpp \
-    QtIconv.h
+
 
 
 SOURCES	+= \
@@ -72,6 +73,7 @@ SOURCES	+= \
 	qrcode/qrdectxt.c \
 	qrcode/rs.c \
 	qrcode/util.c \
+	QtIconv.cpp \
 	refcnt.c \
 	scanner.c \
 	svg.c \
@@ -82,8 +84,7 @@ SOURCES	+= \
 	window/window_null.c \
 	ZBarScanner.cpp \
 	zimage.c \
-    QtIconv.cpp
 
 
-# There is no support for iconv in Android, so we brin our own
+# There is no support for iconv in Android, so we bring our own as QtIconv.?pp
 

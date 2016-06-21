@@ -75,7 +75,6 @@ class RemoteWindow : public QWidget, public LogDestination{
 	private slots:
 		void onTryToggleConnectionChanged(TryToggleState);
 		void on_pushButtonConfirmQuit_clicked();
-		void on_pushButtonBack_clicked();
 		void on_comboBoxAgent_currentIndexChanged(int index);
 		void on_comboBoxControlLevel_activated(const QString &arg1);
 		void on_pushButtonSay_clicked();

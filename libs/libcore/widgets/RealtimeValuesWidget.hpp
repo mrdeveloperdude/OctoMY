@@ -9,11 +9,8 @@ namespace Ui {
 
 
 class QGeoPositionInfo;
-
 class QCompassReading;
-
 class QAccelerometerReading;
-
 class QGyroscopeReading;
 class QGyroscopeReading;
 

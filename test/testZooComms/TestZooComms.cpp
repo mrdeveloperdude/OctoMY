@@ -4,10 +4,21 @@
 
 #include <QSignalSpy>
 
+#include <QProcessEnvironment>
+#include <QCommandLineParser>
+
 // YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
 void TestZooComms::test(){
 	QString port="8123";
-	ZooServer server;
+
+	QProcessEnvironment env=QProcessEnvironment::systemEnvironment();
+
+	QCommandLineParser opts;
+
+	opts.setApplicationDescription("Robust real-time communication and control software for robots");
+	opts.addHelpOption();
+
+	ZooServer server(opts, env, nullptr);
 	server.start(port);
 
 	ZooClient *client=new ZooClient(this);

@@ -42,7 +42,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="pageDelivery">
       <layout class="QGridLayout" name="gridLayout_5">
@@ -84,7 +84,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="AgentPairingWizard" name="widgetPairing" native="true"/>
+        <widget class="PairingWizard" name="widgetPairing" native="true"/>
        </item>
       </layout>
      </widget>
@@ -810,6 +810,12 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>FaceWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/FaceWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>GaitWidget</class>
    <extends>QWidget</extends>
    <header>puppet/GaitWidget.hpp</header>
@@ -840,21 +846,15 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>AgentPairingWizard</class>
+   <class>PairingWizard</class>
    <extends>QWidget</extends>
-   <header>widgets/AgentPairingWizard.hpp</header>
+   <header>widgets/PairingWizard.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>AgentDeliveryWizard</class>
    <extends>QWidget</extends>
    <header>widgets/AgentDeliveryWizard.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>FaceWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/FaceWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

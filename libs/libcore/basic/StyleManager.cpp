@@ -14,6 +14,13 @@ class OctoMYProxyStyle : public QProxyStyle{
 		const qint64 OCTOMY_SLIDER_HANDLE_SIZE=35;
 		const qint64 OCTOMY_CURSOR_WSIZE=3;
 	public:
+
+		explicit OctoMYProxyStyle(QString key)
+			: QProxyStyle(key)
+		{
+
+		}
+
 		int pixelMetric ( PixelMetric metric, const QStyleOption * option = 0, const QWidget * widget = 0 ) const{
 			OC_METHODGATE();
 			switch(metric) {
@@ -30,7 +37,9 @@ class OctoMYProxyStyle : public QProxyStyle{
 
 ///////////////////////////////////////
 
-StyleManager::StyleManager(){
+StyleManager::StyleManager(QColor tinge)
+	: tinge(tinge)
+{
 	OC_METHODGATE();
 }
 
@@ -39,22 +48,22 @@ void StyleManager::apply(){
 	QCoreApplication *capp=static_cast<QCoreApplication *>(QCoreApplication::instance());
 	QApplication *app=qobject_cast<QApplication *>(capp);
 	//GUI enabled
-	if (0!=app) {
-		QWidget *w=app->activeWindow();
-		if(0!=w){
-			w->setUpdatesEnabled(false);
+	if (nullptr!=app) {
+		QWidget *activeWindow=app->activeWindow();
+		if(nullptr!=activeWindow){
+			activeWindow->setUpdatesEnabled(false);
 		}
 		QIcon icon(":/icons/octomy_logo_bare.svg");
 		app->setWindowIcon(icon);
 		loadFonts(*app);
 		applyStyle(*app);
 		//applyStyleSheet(*app); //Disabled for now (it looks but ugly)
-		if(0!=w){
-			w->setUpdatesEnabled(true);
+		if(nullptr!=activeWindow){
+			activeWindow->setUpdatesEnabled(true);
 		}
 	}
 	//GUI not enabled
-	else if(0!=capp){
+	else if(nullptr!=capp){
 		//qDebug()<<"No GUI, skipping styles";
 	}
 }
@@ -106,8 +115,45 @@ void StyleManager::applyStyle(QApplication &app){
 	}
 	*/
 	Q_INIT_RESOURCE(OctoStyle);
-	app.setStyle(new OctoStyle);
-	//app.setStyle(new OctoMYProxyStyle);
+	//app.setStyle(new OctoStyle);
+	//
+
+
+	//app.setStyle(QStyleFactory::create("fusion"));
+	app.setStyle(new OctoMYProxyStyle("fusion"));
+
+	//Set dark theme with main colors adjusted to match complementary hue of tinge
+	QPalette palette;
+	const qreal hh=(tinge.hslHueF()-0.5);
+	const qreal h=(hh<=0.0)?(hh+1.0):hh;
+	const qreal s=0.06;
+	const QColor complementary=    QColor::fromHslF(h, tinge.hslSaturationF()*2, tinge.valueF()).toRgb();
+	const QColor lightest=QColor::fromHslF(h, s*4, 0.95,  1.0).toRgb();
+	const QColor light=   QColor::fromHslF(h, s,   0.2,   1.0).toRgb();
+	const QColor dark=    QColor::fromHslF(h, s*2, 0.05,  1.0).toRgb();
+	const QColor darkest= QColor::fromHslF(h, s*4, 0.0125,1.0).toRgb();
+	//qDebug()<<"COLORMIX: "<<hh<<" -> "<<h<<" tinge="<<tinge<<",  light="<<light<<",  dark="<<dark<<", ";
+	palette.setColor(QPalette::Window, light);
+	palette.setColor(QPalette::WindowText, lightest);
+	palette.setColor(QPalette::Base, dark);
+	palette.setColor(QPalette::AlternateBase, light);
+	palette.setColor(QPalette::ToolTipBase, light);
+	palette.setColor(QPalette::ToolTipText, lightest);
+	palette.setColor(QPalette::Text, lightest);
+	palette.setColor(QPalette::Button, light);
+	palette.setColor(QPalette::ButtonText, lightest);
+	palette.setColor(QPalette::BrightText, complementary);
+
+	palette.setColor(QPalette::Highlight, tinge);
+	palette.setColor(QPalette::HighlightedText, darkest);
+
+	palette.setColor(QPalette::Disabled, QPalette::Text, Qt::darkGray);
+	palette.setColor(QPalette::Disabled, QPalette::ButtonText, Qt::darkGray);
+
+	app.setPalette(palette);
+
+
+
 	app.setCursorFlashTime(500);
 }
 

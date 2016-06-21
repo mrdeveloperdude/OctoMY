@@ -35,6 +35,7 @@
 #include <QWindow>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
+#include <QDir>
 
 #include <cmath>
 #include <iostream>
@@ -446,6 +447,14 @@ namespace utility{
 
 
 
+	bool ensureDirExistsForFile(QString fn){
+		QFile file(fn);
+		QDir dir = QFileInfo(file).absoluteDir();
+		if(!dir.exists()){
+			return dir.mkpath(dir.absolutePath());
+		}
+		return true;
+	}
 
 
 	bool stringToFile(QString fn, QString data, bool append){

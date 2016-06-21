@@ -6,22 +6,6 @@
 #include <QRunnable>
 #include <QThreadPool>
 
-class GenerateKeyRunnable : public QRunnable{
-	private:
-		KeyStore &ks;
-	public:
-		GenerateKeyRunnable(KeyStore &ks)
-			: ks(ks)
-		{
-
-		}
-	public:
-		void run() {
-			//qDebug() << "Started keystore bootstrap @ " << QThread::currentThread();
-			ks.bootstrapWorker();
-			//qDebug() << "Ended keystore bootstrap @ " << QThread::currentThread()<<" with result: " << ks.getLocalPublicKey();
-		}
-};
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -29,17 +13,14 @@ class GenerateKeyRunnable : public QRunnable{
 
 
 
-KeyStore::KeyStore(QObject *parent, QString filename, bool implicitBootstrap)
+KeyStore::KeyStore(QObject *parent, QString fn)
 	: QObject(parent)
 	, ready(false)
-	, fn(filename)
+	, error(false)
+	, filename(fn)
 	, keyBits(4096)
-	, implicitBootstrap(implicitBootstrap)
 {
-	if(implicitBootstrap){
-		bootstrap();
-	}
-	else if(QFile(fn).exists()){
+	if(QFile(filename).exists()){
 		load();
 	}
 }
@@ -55,7 +36,7 @@ void KeyStore::bootstrap(){
 	// QThreadPool takes ownership and deletes runnable automatically after completion
 	QThreadPool *tp=QThreadPool::globalInstance();
 	if(0!=tp){
-		const bool ret=tp->tryStart(new GenerateKeyRunnable(*this));
+		const bool ret=tp->tryStart(new GenerateRunnable<KeyStore>(*this));
 		if(ret){
 			//qDebug()<<"KEYSTORE: Successfully started background thread";
 			return;
@@ -68,7 +49,7 @@ void KeyStore::bootstrap(){
 
 
 void KeyStore::bootstrapWorker(){
-	QFile f(fn);
+	QFile f(filename);
 	if(!f.exists()){
 		qDebug()<<"KEYSTORE: no keystore file found, generating local keypair and saving";
 		local_pki.reset();
@@ -82,9 +63,11 @@ void KeyStore::bootstrapWorker(){
 void KeyStore::load(){
 	//qDebug()<<"KEYSTORE: Loading from file";
 	QJsonParseError jsonError;
-	QJsonDocument doc = QJsonDocument::fromJson(utility::fileToByteArray(fn), &jsonError);
-	if (jsonError.error != 0){
-		qWarning() << "ERROR: Parsing json data: "<<jsonError.errorString();
+	QByteArray raw=utility::fileToByteArray(filename);
+	QJsonDocument doc = QJsonDocument::fromJson(raw, &jsonError);
+	if (QJsonParseError::NoError != jsonError.error){
+		qWarning() << "ERROR: Parsing json data: "<<jsonError.errorString()<< " for data "<<raw<<" from file "<<filename;
+		error=true;
 	}
 	else{
 		//qDebug()<<"PARSED JSON: "<<doc.toJson();
@@ -99,12 +82,12 @@ void KeyStore::load(){
 			peer_pki[remote["id"].toString()]->parsePublicKey(remote["PublicKey"].toByteArray());
 		}
 		ready=true;
-		emit keystoreReady();
 	}
+	emit keystoreReady();
 }
 
 void KeyStore::save(){
-	//qDebug()<<"KEYSTORE: Saving to file";
+	qDebug()<<"KEYSTORE: Saving to file: "<<filename;
 	QVariantMap map;
 	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();
 	map["localPrivateKey"]=local_pki.getPEMKey();
@@ -118,7 +101,7 @@ void KeyStore::save(){
 	}
 	map["remotePublicKeys"]=remotes;
 	QJsonDocument doc=QJsonDocument::fromVariant(map);
-	utility::stringToFile(fn,doc.toJson());
+	utility::stringToFile(filename,doc.toJson());
 }
 
 QByteArray KeyStore::sign(const QByteArray &source){

@@ -8,61 +8,30 @@
 #include <QMutex>
 
 #include "../libpki/qpolarsslpki.hpp"
+#include "basic/AtomicBoolean.hpp"
 
+#include "basic/GenerateRunnable.hpp"
 
-class AtomicBoolean{
-	private:
-		QMutex mMutex;
-		bool mBool;
-		Q_DISABLE_COPY(AtomicBoolean)
+#include <QFile>
 
-	public:
-		AtomicBoolean(bool v):mMutex(),mBool(false){
-			set(v);
-		}
-		bool set(bool v) {
-			QMutexLocker ml(&mMutex);
-			return mBool=v;
-		}
-
-		bool get() {
-			QMutexLocker ml(&mMutex);
-			return mBool;
-		}
-
-
-		void operator=(const bool &b){
-			set(b);
-		}
-
-		operator bool(){
-			return get();
-		}
-
-};
-
-class GenerateKeyRunnable;
 
 class KeyStore: public QObject{
 		Q_OBJECT
 	private:
 
 		qpolarssl::Pki local_pki;
-		QMap<QString, QSharedPointer<qpolarssl::Pki>> peer_pki;
+		QMap<QString, QSharedPointer<qpolarssl::Pki> > peer_pki;
 		AtomicBoolean ready;
-		QString fn;
+		AtomicBoolean error;
+		QString filename;
 		quint32 keyBits;
-		bool implicitBootstrap;
 
-		friend class GenerateKeyRunnable;
+		friend class GenerateRunnable<KeyStore>;
 
 	public:
-		explicit KeyStore(QObject *parent=0, QString="", bool implicitBootstrap=false);
+		explicit KeyStore(QObject *parent=0, QString="");
 		virtual ~KeyStore();
 
-	public:
-
-		void bootstrap();
 	private:
 
 		void bootstrapWorker();
@@ -72,8 +41,18 @@ class KeyStore: public QObject{
 
 	public:
 
+		//Make if needed, load if otherwise
+		void bootstrap();
+
 		bool isReady(){
 			return ready;
+		}
+		bool isError(){
+			return error;
+		}
+
+		bool hasLocalKeyFile(){
+			return QFile(filename).exists();
 		}
 
 		// Sign message with our private key
@@ -97,6 +76,7 @@ class KeyStore: public QObject{
 		void keystoreReady();
 
 };
+
 
 #endif // KEYSTORE_HPP
 

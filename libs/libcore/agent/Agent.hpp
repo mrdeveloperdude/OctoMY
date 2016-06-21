@@ -29,7 +29,7 @@ class Agent : public Node{
 
 		void start(QHostAddress listenAddress, quint16 listenPort, QHostAddress hubAddress, quint16 hubPort);
 
-				virtual QWidget *showWindow();
+		virtual QWidget *showWindow();
 
 	public slots:
 		void onConnectionStatusChanged(TryToggleState);

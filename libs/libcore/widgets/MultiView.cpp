@@ -36,7 +36,7 @@ MultiView::MultiView(QWidget *parent) :
 		tree->setAttribute(Qt::WA_MacShowFocusRect, false);
 	}
 	//Start of with no data
-	setModel(0);
+	setModel(nullptr);
 	if(!connect(ui->buttonGroupView,SIGNAL(buttonClicked(QAbstractButton*)),this,SLOT(onViewButtonClicked(QAbstractButton*)),OC_CONTYPE)){
 		qDebug()<<"ERROR: could not connect";
 	}
@@ -47,29 +47,31 @@ MultiView::MultiView(QWidget *parent) :
 void MultiView::setModel(QAbstractItemModel *data){
 	QItemSelectionModel *selections = 0==data?0:new QItemSelectionModel(data);
 	QListView *list = ui->listView;
-	if(0!=list){
+	if(nullptr!=list){
 		QItemSelectionModel *oldSel = list->selectionModel();
 		list->setModel(data);
 		delete oldSel;
-		if(0!=selections){
+		if(nullptr!=selections){
 			list->setSelectionModel(selections);
 		}
 	}
 	QTableView *table = ui->tableView;
-	if(0!=table ){
+	if(nullptr!=table ){
 		QItemSelectionModel *oldSel = table->selectionModel();
 		table->setModel(data);
 		delete oldSel;
-		if(0!=selections){
+		oldSel=nullptr;
+		if(nullptr!=selections){
 			table->setSelectionModel(selections);
 		}
 	}
 	QTreeView *tree = ui->treeView;
-	if(0!=tree ){
+	if(nullptr!=tree ){
 		QItemSelectionModel *oldSel = tree->selectionModel();
 		tree->setModel(data);
 		delete oldSel;
-		if(0!=selections){
+		oldSel=nullptr;
+		if(nullptr!=selections){
 			tree->setSelectionModel(selections);
 		}
 	}
@@ -83,7 +85,7 @@ MultiView::~MultiView(){
 void MultiView::onViewButtonClicked(QAbstractButton*but){
 	QAbstractButton*c=ui->buttonGroupView->checkedButton();
 	QString item="";
-	if(c!=but && 0 != but){
+	if(c!=but && nullptr != but){
 		qDebug()<<"CLICKING BUTTON: "<<but->objectName();
 		but->click();
 	}
@@ -124,7 +126,7 @@ void MultiView::configure(Settings &s, QString val, QString key){
 	if(""!=k && nullptr!=settings){
 		val=settings->getCustomSetting(k,val);
 	}
-	QAbstractButton *but=0;
+	QAbstractButton *but=nullptr;
 	if("Grid"==val){
 		but=ui->pushButtonViewGrid;
 	}

@@ -1,7 +1,5 @@
 #include "DiscoveryClient.hpp"
 
-#include "DiscoverySession.hpp"
-
 #include "basic/Standard.hpp"
 
 #include "zoo/ZooClient.hpp"
@@ -9,6 +7,10 @@
 
 #include "security/KeyStore.hpp"
 
+#include "comms/discovery/DiscoveryParticipant.hpp"
+
+#include "basic/Node.hpp"
+#include "utility/Utility.hpp"
 
 #include <functional>
 #include "../libqhttp/qhttpclient.hpp"
@@ -69,24 +71,18 @@
 
 */
 
-static const QDebug &operator<<(QDebug &d, const DiscoveryRole &role){
-	switch(role){
-		case(ROLE_AGENT):{d.nospace() << "ROLE_AGENT";}break;
-		case(ROLE_CONTROL):{d.nospace() << "ROLE_AGENT";}break;
-		default: d.nospace() << "ROLE_UNKNOWN";
-	}
-	return d.maybeSpace();
-}
 
-DiscoveryClient::DiscoveryClient(QObject *parent)
-	: QObject(parent)
-	, role(ROLE_AGENT)
+DiscoveryClient::DiscoveryClient(Node &node)
+	: QObject(&node)
 	, lastZooPair(0)
-	, zooSession(nullptr)
 	, m_serverURL("http://localhost:8123/api")
 	, m_client(new qhttp::client::QHttpClient(this))
+	, node(node)
+	, ourPubKey(node.getKeyStore().getLocalPublicKey().trimmed())
+	, ourID(utility::toHash(ourPubKey))
+	, zeroID(utility::toHash(""))
 {
-	timer.setInterval(2000);
+	timer.setInterval(500);
 	timer.setTimerType(Qt::VeryCoarseTimer);
 	if(!connect(&timer,SIGNAL(timeout()),this,SLOT(onTimer()),OC_CONTYPE)){
 		qDebug()<<"ERROR: Could not connect";
@@ -95,6 +91,9 @@ DiscoveryClient::DiscoveryClient(QObject *parent)
 
 void DiscoveryClient::start(){
 	qDebug()<<"DISCOVERY CLIENT STARTED";
+	if(!timer.isActive()){
+		onTimer();
+	}
 	timer.start();
 }
 
@@ -103,92 +102,121 @@ void DiscoveryClient::stop(){
 	timer.stop();
 }
 
-void DiscoveryClient::setRole(DiscoveryRole r){
-	qDebug()<<"DISCOVERY CLIENT ROLE SET TO "<<r;
-	role=r;
-}
-
 
 
 void DiscoveryClient::discover(){
 	qDebug()<<"DISCOVERY CLIENT RUN";
-	if(nullptr==zooSession){
-		zooSession=new DiscoveryParticipant();
-		qDebug()<<"ZOO PAIR SESSION CREATED!";
-	}
-	if(nullptr!=zooSession){
 
-		qhttp::client::TRequstHandler reqHandler= [this](qhttp::client::QHttpRequest* req){
-			QVariantMap cmd;
-			cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
-			//TODO:Reintegrate with keystore somehow
-			cmd["publicKey"] =""; // KeyStore::getInstance().getLocalPublicKey();
-			cmd["localAddress"] = "10.0.0.3";
-			cmd["localPort"] = 12345;
-			cmd["publicPort"] = 54321;
-			cmd["manualPin"] ="12345";
-			QByteArray body  = QJsonDocument::fromVariant(cmd).toJson();
-			//qDebug()<<"SENDING RAW JSON: "<<body;
-			req->addHeader("user-agent",			ZooConstants::OCTOMY_USER_AGENT);
-			req->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
-			req->addHeader("accept",				"application/json");
-			req->addHeader("content-type",			"application/json");
-			req->addHeader("connection",			"keep-alive");
-			req->addHeaderValue("content-length", 	body.length());
-			req->end(body);
-			//qDebug()<<"Getting node by OCID:"<<OCID << " REQ END";
-		};
+	qhttp::client::TRequstHandler reqHandler= [this](qhttp::client::QHttpRequest* req){
+		QVariantMap cmd;
+		cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
+		cmd["publicKey"] = ourPubKey;
+		cmd["localAddress"] = "10.0.0.3";
+		cmd["localPort"] = 12345;
+		cmd["publicPort"] = 54321;
+		cmd["manualPin"] ="12345";
+		cmd["role"] = DiscoveryRoleToString(node.getRole());
+		cmd["type"] = DiscoveryTypeToString(node.getType());
+		QByteArray body  = QJsonDocument::fromVariant(cmd).toJson();
+		//qDebug()<<"SENDING RAW JSON: "<<body;
+		req->addHeader("user-agent",			ZooConstants::OCTOMY_USER_AGENT);
+		req->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
+		req->addHeader("accept",				"application/json");
+		req->addHeader("content-type",			"application/json");
+		req->addHeader("connection",			"keep-alive");
+		req->addHeaderValue("content-length", 	body.length());
+		req->end(body);
+		//qDebug()<<"Getting node by OCID:"<<OCID << " REQ END";
+	};
 
-		qhttp::client::TResponseHandler resHandler=	[this](qhttp::client::QHttpResponse* res) {
-			//qDebug()<<"Getting node by OCID:"<<OCID << " RES";
-			res->collectData(10000);
-			res->onEnd([this, res](){
-				qhttp::TStatusCode status=res->status();
-				if(qhttp::ESTATUS_OK==status){
-				}
+	qhttp::client::TResponseHandler resHandler=	[this](qhttp::client::QHttpResponse* res) {
+		//qDebug()<<"Getting node by OCID:"<<OCID << " RES";
+		res->collectData(10000);
+		res->onEnd([this, res](){
+			qhttp::TStatusCode status=res->status();
+			if(qhttp::ESTATUS_OK==status){
+			}
 
-				bool ok=true;
-				QString message="";
-				//qDebug()<<"Getting node by OCID:"<<OCID<<" RES: ON END";
-				QJsonDocument doc = QJsonDocument::fromJson(res->collectedData());
-				QByteArray data=doc.toJson();
-				QVariantMap root = QJsonDocument::fromJson(data).toVariant().toMap();
-				if ( root.isEmpty() ) {
-					qWarning() << "ERROR: The result is an invalid json";
-					qWarning() << "ERROR: OFFENDING JSON IS: "<<data;
-					message="ERROR: invalid json body in response";
-					ok=false;
-				}
-				else{
-					qDebug()<<"RETURNED STATUS  WAS: "<<root.value("status")<<", MSG:  "<<root.value("message");
-					if(root.contains("participants")){
-						qDebug()<<"PARTICIPANTS: "<<root.value("participants");
+			bool ok=true;
+			QString message="";
+			//qDebug()<<"Getting node by OCID:"<<OCID<<" RES: ON END";
+			QJsonDocument doc = QJsonDocument::fromJson(res->collectedData());
+			QByteArray data=doc.toJson();
+			QVariantMap root = QJsonDocument::fromJson(data).toVariant().toMap();
+			if ( root.isEmpty() ) {
+				qWarning() << "ERROR: The result is an invalid json";
+				qWarning() << "ERROR: OFFENDING JSON IS: "<<data;
+				message="ERROR: invalid json body in response";
+				ok=false;
+			}
+			else{
+				qDebug()<<"RETURNED STATUS  WAS: "<<root.value("status")<<", MSG:  "<<root.value("message");
+				if(root.contains("participants")){
+					qDebug()<<"PARTICIPANTS: "<<root.value("participants");
+					QVariantList partList=root.value("participants").toList();
+					for(QVariant part:partList){
+						QVariantMap map=part.toMap();
+						registerPossibleParticipant(map);
 					}
-					ok=ok &&("ok"==root.value("status"));
-
 				}
-			});
-			//qDebug()<<"Getting node by OCID:"<<OCID << " RES DONE";
-		};
-		m_client->request(qhttp::EHTTP_POST, m_serverURL, reqHandler, resHandler);
+				ok=ok &&("ok"==root.value("status"));
+			}
+		});
+		//qDebug()<<"Getting node by OCID:"<<OCID << " RES DONE";
+	};
+	m_client->request(qhttp::EHTTP_POST, m_serverURL, reqHandler, resHandler);
 
+
+}
+
+void DiscoveryClient::registerPossibleParticipant(QVariantMap map){
+	const QString partID=utility::toHash(map["publicKey"].toString().trimmed());
+	// Is this a genuine participant?
+	if(partID!=zeroID && ourID!=partID){
+		DiscoveryClientStore &peers=node.getPeers();
+		//TODO: Scrutinize newcomer for security
+		DiscoveryParticipant *old=nullptr;
+		if(peers.hasParticipant(partID)){
+			old=peers.getParticipant(partID);
+			qDebug()<<" + Found replacement participant:"<<partID;
+		}
+		else{
+			qDebug()<<" + Found new participant:"<<partID;
+		}
+		DiscoveryParticipant *p=new  DiscoveryParticipant(map);
+		if(p->isValidClient()){
+			peers.setParticipant(p);
+			delete old;
+			emit nodeDiscovered(partID);
+		}
+		else{
+			qDebug()<<" + Participant failed validity test, skipping:"<<partID;
+		}
+	}
+	else{
+		qDebug()<<" + Skipping invalid new participant:"<<partID;
 	}
 }
 
+Node &DiscoveryClient::getNode()
+{
+	return node;
+}
 
-
-
-
+/*
+QMap<QString, DiscoveryParticipant *> &DiscoveryClient::getParticipants(){
+	return participants;
+}*/
 
 const quint64 ZOO_PAIR_INTERVAL=20000;
 
 void DiscoveryClient::onTimer(){
-	qDebug()<<"PING";
+	//qDebug()<<"PING";
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	if(now>ZOO_PAIR_INTERVAL+lastZooPair){
 		qDebug()<<"ZOO PAIR TIME!";
 		lastZooPair=now;
-		discover();
+		//discover();
 	}
-
+	discover();
 }

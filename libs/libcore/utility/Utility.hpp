@@ -39,7 +39,7 @@ namespace utility{
 	bool isEnabledButtonGroup(QButtonGroup* group);
 	void toggleButtonGroup(QButtonGroup* group,bool on,bool clearOnOff=true);
 	void toggleButtonVisible(QButtonGroup* group,bool visible);
-	QString  getSelectedButtonName(QButtonGroup* group,QString def="");
+	QString getSelectedButtonName(QButtonGroup* group,QString def="");
 	void toggleButtonSelection(QAbstractButton* button, bool on, bool clearOnOff=true);
 	void fitContent(QTableView &tv);
 	void placeInScreen(QWidget &w,QPointF gravity=QPointF(0.5,0.5), int pref=-1);
@@ -57,7 +57,7 @@ namespace utility{
 	QString humanReadableSize(qint64 bytes,int prec=2);
 	int snprint_hex(char *dst, size_t size, const uint8_t *pbtData, const size_t szBytes);
 	QString toHEX(const uint8_t *pbtData, const size_t szBytes);
-	QString  hexdump(void *mem, unsigned int len, QString topic="");
+	QString hexdump(void *mem, unsigned int len, QString topic="");
 	QString humanReadablize(QString orig, int space=4, QString sep="-");
 	bool isPositiveInteger(QString s);
 	QString perror();
@@ -73,6 +73,7 @@ namespace utility{
 
 	QString fileToString(QString fn);
 	QByteArray fileToByteArray(QString fn);
+	bool ensureDirExistsForFile(QString fn);
 	bool stringToFile(QString fn, QString data, bool append=false);
 	bool verifyMedia(QString name);
 

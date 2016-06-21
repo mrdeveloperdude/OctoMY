@@ -180,7 +180,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>82</width>
+                <width>98</width>
                 <height>34</height>
                </rect>
               </property>
@@ -484,7 +484,7 @@
      <widget class="QWidget" name="pagePairing">
       <layout class="QGridLayout" name="gridLayout_5">
        <item row="0" column="0">
-        <widget class="ControlPairingWidget" name="widgetPairing" native="true">
+        <widget class="PairingWizard" name="widgetPairing" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -501,9 +501,21 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>FaceWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/FaceWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>GaitWidget</class>
    <extends>QWidget</extends>
    <header>puppet/GaitWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PairingWizard</class>
+   <extends>QWidget</extends>
+   <header>widgets/PairingWizard.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -519,21 +531,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ControlPairingWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/ControlPairingWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>LogWidget</class>
    <extends>QPlainTextEdit</extends>
    <header>widgets/LogWidget.hpp</header>
-  </customwidget>
-  <customwidget>
-   <class>FaceWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/FaceWidget.hpp</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

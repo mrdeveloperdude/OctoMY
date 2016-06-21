@@ -16,6 +16,18 @@
 class DirectPoseCourier;
 class RemoteWindow;
 
+
+/*
+
+  A remote is categorized as a control together with hub, and use the same
+  interface to control agents.
+
+  But what separates a remote from a hub is that the remote represents a
+  compact portable handheld device for controlling agents instead of the more
+  stationary, more automated approach used by hub.
+
+*/
+
 class Remote : public Node{
 		Q_OBJECT
 	private:

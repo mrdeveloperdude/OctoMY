@@ -50,6 +50,11 @@ class AgentWindow : public QWidget, public LogDestination{
 
 	private slots:
 
+		void onStartCameraPairing();
+		void onStartPairing();
+		void onStartPlanEditor();
+	private slots:
+
 		void onFaceVisibilityChanged(bool);
 		void onLogVisibilityChanged(bool);
 		void onStatsVisibilityChanged(bool);
@@ -57,13 +62,9 @@ class AgentWindow : public QWidget, public LogDestination{
 
 		void onTryToggleConnectionChanged(TryToggleState);
 
+	private slots:
 		void on_pushButtonConfirmQuit_clicked();
-		void on_pushButtonCamera_clicked();
 		void on_pushButtonBack_clicked();
-
-		void on_pushButtonPair_clicked();
-
-		void on_pushButtonPlan_clicked();
 		void on_pushButtonMenu_clicked();
 };
 

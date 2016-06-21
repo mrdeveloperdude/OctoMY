@@ -46,8 +46,6 @@ class NodeLauncher{
 			return opts;
 		}
 
-	private slots:
-		void inLoop();
 };
 
 #include "comms/CommsChannel.hpp"
@@ -63,7 +61,6 @@ template <typename T>
 NodeLauncher<T>::NodeLauncher(int argc, char *argv[])
 	: node(nullptr)
 	, window(nullptr)
-	, style(nullptr)
 	, ret(EXIT_SUCCESS)
 	, argc(argc)
 	, argv(argv)
@@ -76,10 +73,6 @@ template <typename T>
 void NodeLauncher<T>::run(){
 	QCoreApplication::setOrganizationName(Settings::ORGANIZATION_NAME);
 	QCoreApplication::setOrganizationDomain(Settings::DOMAIN_NAME);
-
-	//TODO: change to coroect values depending on which role we are playing
-	QCoreApplication::setApplicationVersion("1.0");
-	QCoreApplication::setApplicationName(Settings::APPLICATION_NAME);
 
 	qsrand(QDateTime::currentMSecsSinceEpoch());
 
@@ -113,11 +106,11 @@ void NodeLauncher<T>::run(){
 
 	app=(headless?(new QCoreApplication(argc, argv)):(new QApplication(argc, argv)));
 	//qDebug()<<(headless?"HEADLESS":"GUI ENABLED");
-	start();
+
+	if(nullptr!=app){
 
 
-	if(0!=app){
-
+		start();
 		QSurfaceFormat fmt;
 		fmt.setDepthBufferSize(24);
 		/*
@@ -137,7 +130,7 @@ void NodeLauncher<T>::run(){
 		Q_INIT_RESOURCE(3d);
 
 
-		//QTimer::singleShot(0, this, SLOT(inLoop()));
+
 		ret=app->exec();
 		qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done, quitting";
 	}
@@ -167,16 +160,6 @@ template <typename T>
 NodeLauncher<T>::~NodeLauncher(){
 
 }
-
-template <typename T>
-void NodeLauncher<T>::inLoop(){
-	style=new StyleManager;
-	if(0!=style){
-		//sm->apply();
-	}
-
-}
-
 
 
 

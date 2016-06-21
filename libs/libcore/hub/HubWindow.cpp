@@ -26,6 +26,7 @@
 
 #include "puppet/GaitController.hpp"
 
+#include "utility/ScopedTimer.hpp"
 
 #include "comms/CommsChannel.hpp"
 #include "zoo/ZooClient.hpp"
@@ -56,7 +57,11 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		gaugeTimer.setTimerType(Qt::PreciseTimer);
 		hexyTimer.setSingleShot(true);
 		hexyTimer.setTimerType(Qt::PreciseTimer);
-		ui->setupUi(this);
+		{
+			ScopedTimer setupUITimer("hub setupUI");
+			ui->setupUi(this);
+		}
+		ui->widgetPairing->configure(hub);
 		/*
 	QAbstractItemModel *data = new ClientModel(hub->getComms()->getClients(), this);
 	ui->widgetIncommingNodes->configure("Icons","hubwindiow-clients-list");
@@ -64,6 +69,8 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 */
 		ui->tabWidget->setEnabled(true);
 		ui->tabWidget->setCurrentWidget(ui->tabIncomming);
+		ui->widgetActiveNodes->configure(hub->getSettings(),"active_nodes","List");
+		ui->widgetIncommingNodes->configure(hub->getSettings(),"incomming_nodes","List");
 
 		//Listen
 		ui->comboBoxLocalAddress->configure(&hub->getSettings(), "hub-listen-address","Local address");

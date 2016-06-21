@@ -8,6 +8,7 @@
 class Settings:QObject{
 		Q_OBJECT
 	private:
+		QString group;
 		QSettings *settings;
 		qint64 lastSync;
 		QTimer syncTimer;
@@ -18,13 +19,13 @@ class Settings:QObject{
 		static const QString ORGANIZATION_NAME;
 		static const QString DOMAIN_NAME;
 		static const QString BRAND_NAME;
-		static const QString APPLICATION_NAME;
+		static const QString APPLICATION_NAME_BASE;
 		static const QString USERAGENT;
 
 		static const QString KEY_CUSTOM_SETTING_BASE;
 
 	public:
-		explicit Settings(QObject *parent=nullptr);
+		explicit Settings(QObject *parent=nullptr, QString group="");
 		virtual ~Settings();
 
 	public:

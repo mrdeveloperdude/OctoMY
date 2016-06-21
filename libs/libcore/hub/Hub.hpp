@@ -5,6 +5,19 @@
 
 #include "basic/NodeLauncher.hpp"
 
+
+/*
+
+  A hub is categorized as a control together with remote, and use the same
+  interface to control agents.
+
+  But what separates a hub from a remote is that the hub represents a stationary
+  automated program that may concert the operation of several agents. In
+  contrast remote is used to control a single agent at the time.
+
+*/
+
+
 class Client;
 class HubWindow;
 

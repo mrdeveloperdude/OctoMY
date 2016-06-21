@@ -8,6 +8,7 @@
 #include "web/Mustache.hpp"
 
 #include "comms/discovery/DiscoveryParticipant.hpp"
+#include "utility/ScopedTimer.hpp"
 
 #include "ZooConstants.hpp"
 
@@ -28,19 +29,50 @@
 #include <QSharedPointer>
 
 #include <QTcpServer>
+#include <QStandardPaths>
+#include <QCommandLineParser>
+#include <QProcessEnvironment>
 
 
-
-ZooServer::ZooServer()
-	: QHttpServer()
+ZooServer::ZooServer(QCommandLineParser &opts, QProcessEnvironment &env, QObject *parent)
+	: QHttpServer(parent)
+	, base("zoo")
+	, opts(opts)
+	, env(env)
+	, settings(nullptr, base)
+	, baseDir( settings.getCustomSetting("content_dir", QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)) )
+	, keystore (nullptr, baseDir+"/keystore.json")
 	, identicon(":/icons/identicon.svg")
 	, storage(QDir::current())
+
 {
+	ScopedTimer zooBootTimer(base+"-boot");
+	setObjectName(base);
+	QCoreApplication::setApplicationVersion("1.0");
+	QCoreApplication::setApplicationName(Settings::APPLICATION_NAME_BASE+" "+base);
+
+	keystore.bootstrap();
+
+
+	if(!QDir().mkpath(baseDir)){
+		qWarning()<<"ERROR: Could not create basedir for zoo";
+	}
+
+
+	QCoreApplication::setApplicationVersion("1.0");
+	QCoreApplication::setApplicationName(Settings::APPLICATION_NAME_BASE+" "+base);
+
+
 	qDebug()<<"Current dir for storage is: "<<storage.dir().absolutePath();
 }
 
 
-static QDebug operator<<(QDebug d, qhttp::server::QHttpRequest &s){
+ZooServer::~ZooServer(){
+
+}
+
+static QDebug operator<<(QDebug d, qhttp::server::QHttpRequest &s)
+{
 	d.nospace() << "HTTP_VERSION: "<<s.httpVersion();
 	d.nospace() << ", METHOD: "<<s.methodString();
 	d.nospace() << ", REMOTE_ADDR: "<<s.remoteAddress()<<":"<<s.remotePort();
@@ -55,7 +87,8 @@ static QDebug operator<<(QDebug d, qhttp::server::QHttpRequest &s){
 	return d.space();
 }
 
-static QDebug operator<<(QDebug d, qhttp::server::QHttpRequest *s){
+static QDebug operator<<(QDebug d, qhttp::server::QHttpRequest *s)
+{
 	if(0!=s){
 		d <<*s;
 	}
@@ -266,6 +299,10 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 	else if(ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW==action){
 		QString publicKey=root["publicKey"].toString();
 		QString localAddress=root["localAddress"].toString();
+		DiscoveryRole role=DiscoveryRoleFromString(root["role"].toString());
+		DiscoveryType type=DiscoveryTypeFromString(root["type"].toString());
+
+
 		quint16 localPort=root["localPort"].toInt();
 		QTcpServer *tc=tcpServer();
 		QString publicAddress="";
@@ -273,7 +310,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 		if(nullptr!=tc){
 			publicAddress=tc->serverAddress().toString();
 		}
-		QSharedPointer<DiscoveryParticipant> part(new DiscoveryParticipant(publicKey, publicAddress, publicPort,localAddress, localPort));
+		QSharedPointer<DiscoveryParticipant> part(new DiscoveryParticipant(publicKey, publicAddress, publicPort,localAddress, localPort, role, type));
 		part->addPin(root.value("manualPin").toString());
 		part->addPin(root.value("geoPin").toString());
 		DiscoveryServerSession *ses=discovery.request(part);
