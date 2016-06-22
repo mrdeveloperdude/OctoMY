@@ -126,8 +126,8 @@ class CommsChannel : public QObject{
 
 		void appendLog(QString);
 
+		// CommsChannel signals
 	signals:
-
 //		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
 		void error(QString message);
 		void clientAdded(Client *c);

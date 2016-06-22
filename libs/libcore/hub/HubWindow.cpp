@@ -230,32 +230,6 @@ void HubWindow::onRemoteHostLookupComplete(QHostInfo hi){
 }
 
 
-
-void HubWindow::onReceivePacket(QSharedPointer<QDataStream> ds, QHostAddress host, quint16 port){
-	ui->logScroll->appendLog("GOT packet from "+host.toString()+":"+QString::number(port));
-	qint32 mt=INVALID;
-	*ds >> mt;
-	switch((MessageType)mt){
-		//Implemented
-		case(STATUS):{
-				SensorsMessage sm(ds);
-			}break;
-			//Not implemented yet
-		case(QUERY):
-		case(QUERY_RESULT):
-		case(COMMAND):
-			{
-				qDebug()<<"WARNING: Handler for message type "<<mt<<" not implemented yet";
-			}break;
-			//Unknown/errors
-		default:
-
-		case(INVALID):{
-				qDebug()<<"ERROR: Unknown message type found: "<<mt;
-			}break;
-	}
-}
-
 void HubWindow::onError(QString msg){
 	if("Unable to send a message"==msg){
 

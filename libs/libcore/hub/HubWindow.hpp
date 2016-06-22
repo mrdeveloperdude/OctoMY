@@ -53,15 +53,18 @@ class HubWindow : public QMainWindow, public LogDestination{
 
 
 
+		// CommChannel slots
 	private slots:
-		void onListenStateChanged(TryToggleState);
-		void onReceivePacket(QSharedPointer<QDataStream> ,QHostAddress ,quint16 );
 		void onError(QString msg);
 		void onClientAdded(Client *c);
+		void onConnectionStatusChanged(bool);
+
+	private slots:
+		void onListenStateChanged(TryToggleState);
 		void onLocalHostLookupComplete(QHostInfo hi);
 		void onRemoteHostLookupComplete(QHostInfo hi);
 		void onSummaryTimer();
-		void onConnectionStatusChanged(bool);
+
 
 		void on_pushButtonSendData_clicked();
 		void on_pushButtonShowStats_clicked();

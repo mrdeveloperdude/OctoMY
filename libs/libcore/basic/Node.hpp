@@ -91,7 +91,6 @@ class Node : public QObject
 
 		// CommsChannel slots
 	private slots:
-		void onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16);
 		void onError(QString);
 		void onClientAdded(Client *);
 		void onConnectionStatusChanged(bool);

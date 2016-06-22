@@ -56,8 +56,6 @@ class RemoteWindow : public QWidget, public LogDestination{
 
 		//CommsChannel slots
 	public slots:
-
-		void onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16);
 		void onError(QString);
 		void onClientAdded(Client *);
 		void onConnectionStatusChanged(bool);

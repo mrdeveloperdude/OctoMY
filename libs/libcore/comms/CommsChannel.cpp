@@ -15,20 +15,20 @@
 
 
 
-CommsChannel::CommsChannel(QObject *parent, LogDestination *mw):
-	QObject(parent)
-  , udpSocket(this)
-  , sendingTimer(this)
-  , clients(new ClientDirectory)
-  , mw(mw)
-  , localSignature(UniquePlatformFingerprint::getInstance().platform().getQuint32(), UniquePlatformFingerprint::getInstance().executable().getQuint32())
-  , lastRX(0)
-  , lastTX(0)
-  , lastRXST(0)
-  , lastTXST(0)
-  , sendCount(0)
-  , recCount(0)
-  , connected(false)
+CommsChannel::CommsChannel(QObject *parent, LogDestination *mw)
+	: QObject(parent)
+	, udpSocket(this)
+	, sendingTimer(this)
+	, clients(new ClientDirectory)
+	, mw(mw)
+	, localSignature(UniquePlatformFingerprint::getInstance().platform().getQuint32(), UniquePlatformFingerprint::getInstance().executable().getQuint32())
+	, lastRX(0)
+	, lastTX(0)
+	, lastRXST(0)
+	, lastTXST(0)
+	, sendCount(0)
+	, recCount(0)
+	, connected(false)
 {
 	setObjectName("CommsChannel");
 	if(!connect(&udpSocket, SIGNAL(readyRead()),this, SLOT(onReadyRead()),OC_CONTYPE)){
@@ -330,14 +330,6 @@ void CommsChannel::appendLog(QString msg){
 
 void CommsChannel::hookSignals(QObject &ob){
 	qRegisterMetaType<Client *>("Client *");
-	/*
-	qRegisterMetaType<QHostAddress>("QHostAddress");
-	qRegisterMetaType<QSharedPointer<QDataStream>>("QSharedPointer<QDataStream>");
-
-	if(!connect(this,SIGNAL(receivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)),&ob,SLOT(onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)),OC_CONTYPE)){
-		qDebug()<<"could not connect "<<ob.objectName();
-	}
-	*/
 	if(!connect(this,SIGNAL(error(QString)),&ob,SLOT(onError(QString)),OC_CONTYPE)){
 		qDebug()<<"could not connect "<<ob.objectName();
 	}
@@ -352,13 +344,6 @@ void CommsChannel::hookSignals(QObject &ob){
 
 void CommsChannel::unHookSignals(QObject &ob){
 	qRegisterMetaType<Client *>("Client *");
-	/*
-	qRegisterMetaType<QHostAddress>("QHostAddress");
-	qRegisterMetaType<QSharedPointer<QDataStream>>("QSharedPointer<QDataStream>");
-
-	if(!disconnect(this,SIGNAL(receivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)),&ob,SLOT(onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16)))){
-		qWarning()<<"could not disconnect "<<ob.objectName();
-	}*/
 	if(!disconnect(this,SIGNAL(error(QString)),&ob,SLOT(onError(QString)))){
 		qWarning()<<"could not disconnect "<<ob.objectName();
 	}

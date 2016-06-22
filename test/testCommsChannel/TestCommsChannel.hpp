@@ -23,7 +23,6 @@ class CommsTester:public QObject{
 		QString toString();
 
 	public slots:
-		void onReceivePacket(QByteArray,QHostAddress,quint16);
 		void onError(QString);
 
 

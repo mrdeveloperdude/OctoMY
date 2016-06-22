@@ -190,11 +190,10 @@ void Node::sendStatus(){
 }
 
 
-void Node::onReceivePacket(QSharedPointer<QDataStream> ds, QHostAddress, quint16){
-	qint32 magic=0;
-	*ds>>magic;
-	qDebug()<<"GOT PACKET WITH MAGIC: "<<magic;
-}
+
+//////////////////////////////////////////////////
+//CommsChannel slots
+
 
 void Node::onError(QString e){
 	qDebug()<<"Comms error: "<<e;
@@ -214,6 +213,10 @@ void Node::onConnectionStatusChanged(bool s){
 	}
 }
 
+
+
+//////////////////////////////////////////////////
+//Internal sensor slots
 
 void Node::onPositionUpdated(const QGeoPositionInfo &info){
 	if(nullptr!=sensorMessage){

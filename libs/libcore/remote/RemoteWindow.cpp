@@ -202,9 +202,6 @@ bool RemoteWindow::eventFilter(QObject *object, QEvent *event){
 //////////////////////////////////////////////////
 //CommsChannel slots
 
-void RemoteWindow::onReceivePacket(QSharedPointer<QDataStream>,QHostAddress,quint16){
-	//qDebug()<<"REMOTE comms: "
-}
 
 void RemoteWindow::onError(QString e){
 	qDebug()<<"REMOTEW comms: error "<<e;
