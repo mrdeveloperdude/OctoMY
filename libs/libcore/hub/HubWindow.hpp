@@ -32,13 +32,8 @@ class HubWindow : public QMainWindow, public LogDestination{
 		Ui::HubWindow *ui;
 		Hub *hub;
 		QTimer summaryTimer;
-		QTimer hexyTimer;
 		quint64 lastTime;
 		qreal angle=0.0f;
-
-
-
-		HexySerial *hexy;
 		GaitController<qreal> *m_gait;
 
 		//QStandardItemModel simClients;
@@ -46,7 +41,7 @@ class HubWindow : public QMainWindow, public LogDestination{
 
 	public:
 		explicit HubWindow(Hub *hub, QWidget *parent = 0);
-		~HubWindow();
+		virtual ~HubWindow();
 
 	public:
 		void appendLog(const QString& text);
@@ -66,8 +61,6 @@ class HubWindow : public QMainWindow, public LogDestination{
 		void onLocalHostLookupComplete(QHostInfo hi);
 		void onRemoteHostLookupComplete(QHostInfo hi);
 		void onSummaryTimer();
-		void onHexyTimer();
-		void onHexySettingsChanged();
 		void onConnectionStatusChanged(bool);
 
 		void on_pushButtonSendData_clicked();

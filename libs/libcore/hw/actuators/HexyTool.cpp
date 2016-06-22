@@ -29,7 +29,6 @@ HexyTool::HexyTool(QWidget *parent)
 	}
 
 
-
 	for(quint32 i=0;i<HexySerial::SERVO_COUNT;++i){
 		ServoInput *si=new ServoInput();
 		if(0!=si){
@@ -57,6 +56,41 @@ HexyTool::HexyTool(QWidget *parent)
 	gait.setDirection(0.5,0.5);
 }
 
+/*
+ OLD STUFF FROM HUBWINDOW
+	hexyTimer.setSingleShot(true);
+	hexyTimer.setTimerType(Qt::PreciseTimer);
+
+		if(!connect(&hexyTimer,SIGNAL(timeout()),this,SLOT(onHexyTimer()))){
+			qDebug()<<"could not connect";
+		}
+
+void HubWindow::onHexyTimer(){
+	if(0==hexy){
+		return;
+	}
+	if(0!=m_gait){
+		m_gait->update();
+	}
+	qreal pos[HexySerial::SERVO_COUNT]={0.0f};
+	const quint64 now=QDateTime::currentMSecsSinceEpoch();
+	const quint64 ival=now- lastTime;
+	if(ival>0){
+		lastTime=now;
+		angle+=(((qreal)ival)/1000.0);
+		angle-=floor(angle);
+		for(quint32 i=0;i<HexySerial::SERVO_COUNT;++i){
+			pos[i]=sin(angle*M_PI*2.0+(qreal)i*3.0);
+			if(0==i){
+				//qDebug()<<"SERVO "<<i<<": "<<pos[i];
+			}
+		}
+		hexy->move(pos,0b00000000000000000000000000000011);
+	}
+	hexyTimer.start();
+}
+
+*/
 void HexyTool::onUpdateGaitTimer(){
 	//qDebug()<<"----------------------UPDATE";
 	gait.update();

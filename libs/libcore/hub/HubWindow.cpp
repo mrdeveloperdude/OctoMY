@@ -45,7 +45,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	QMainWindow(parent)
   , ui(new Ui::HubWindow)
   , hub(hub)
-  , hexy(0)
+
   , m_gait(0)
 {
 	setObjectName("HubWindow");
@@ -54,8 +54,6 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		QSplashScreen *splash=new QSplashScreen(this, QPixmap(":/images/hub_butterfly.svg"), Qt::WindowStaysOnTopHint);
 		splash->show();
 		summaryTimer.setInterval(100);
-		hexyTimer.setSingleShot(true);
-		hexyTimer.setTimerType(Qt::PreciseTimer);
 		{
 			ScopedTimer setupUITimer("hub setupUI");
 			ui->setupUi(this);
@@ -92,9 +90,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 			qDebug()<<"could not connect";
 		}
 
-		if(!connect(&hexyTimer,SIGNAL(timeout()),this,SLOT(onHexyTimer()))){
-			qDebug()<<"could not connect";
-		}
+
 		QCommandLineParser &opts=hub->getOptions();
 		if(opts.isSet("local-port")){
 			ui->lineEditBindPort->setText(opts.value("local-port"));
@@ -113,15 +109,6 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		QHexEditData* hexdata = QHexEditData::fromMemory(ba);
 
 		ui->hexEditor->setData(hexdata);
-
-		HexyTool *ht=ui->widgetHexyTool;
-		if(0==hexy){
-			hexy=new HexySerial;
-			if(0!=hexy){
-				connect( hexy, SIGNAL(settingsChanged()), this, SLOT(onHexySettingsChanged()));
-			}
-		}
-
 
 		m_gait=new GaitController<qreal> ();
 		if(0!=m_gait){
@@ -347,38 +334,6 @@ void HubWindow::on_tabWidget_currentChanged(int){
 
 }
 
-
-
-
-
-void HubWindow::onHexyTimer(){
-	if(0==hexy){
-		return;
-	}
-	if(0!=m_gait){
-		m_gait->update();
-	}
-	qreal pos[HexySerial::SERVO_COUNT]={0.0f};
-	const quint64 now=QDateTime::currentMSecsSinceEpoch();
-	const quint64 ival=now- lastTime;
-	if(ival>0){
-		lastTime=now;
-		angle+=(((qreal)ival)/1000.0);
-		angle-=floor(angle);
-		for(quint32 i=0;i<HexySerial::SERVO_COUNT;++i){
-			pos[i]=sin(angle*M_PI*2.0+(qreal)i*3.0);
-			if(0==i){
-				//qDebug()<<"SERVO "<<i<<": "<<pos[i];
-			}
-		}
-		hexy->move(pos,0b00000000000000000000000000000011);
-	}
-	hexyTimer.start();
-}
-
-void HubWindow::onHexySettingsChanged(){
-	hexyTimer.start();
-}
 
 void HubWindow::onConnectionStatusChanged(bool s){
 	qDebug()<<"connection state changed: "<<s;
