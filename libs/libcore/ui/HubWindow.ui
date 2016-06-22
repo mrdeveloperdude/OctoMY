@@ -53,7 +53,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>5</number>
+        <number>4</number>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -290,82 +290,15 @@
          <item>
           <widget class="QTabWidget" name="tabWidgetUtilities">
            <property name="currentIndex">
-            <number>3</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="tabKeys">
             <attribute name="title">
              <string>Keys</string>
             </attribute>
-            <layout class="QGridLayout" name="gridLayout_6">
-             <item row="0" column="0" rowspan="4">
-              <widget class="QGroupBox" name="groupBox">
-               <property name="title">
-                <string>Key Pair</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_5">
-                <item>
-                 <widget class="QPushButton" name="pushButtonTestKeyPair">
-                  <property name="text">
-                   <string>Test</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButtonGenerateKeyPair">
-                  <property name="text">
-                   <string>Generate</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButtonSaveKeyPair">
-                  <property name="text">
-                   <string>Save</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButtonLoadKeyPair">
-                  <property name="text">
-                   <string>Load</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="verticalSpacer_2">
-                  <property name="orientation">
-                   <enum>Qt::Vertical</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>20</width>
-                    <height>40</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="label_5">
-               <property name="text">
-                <string>Public Key</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QPlainTextEdit" name="plainTextEditPublicKey"/>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLabel" name="label_6">
-               <property name="text">
-                <string>Private Key</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QPlainTextEdit" name="plainTextEditPrivateKey"/>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="PKIManager" name="widgetPKIManager" native="true"/>
              </item>
             </layout>
            </widget>
@@ -860,6 +793,12 @@
    <class>HUDWidget</class>
    <extends>QWidget</extends>
    <header>widgets/HUDWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PKIManager</class>
+   <extends>QWidget</extends>
+   <header>widgets/PKIManager.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

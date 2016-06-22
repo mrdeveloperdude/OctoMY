@@ -174,7 +174,8 @@ SOURCES +=\
     comms/discovery/DiscoveryClientStore.cpp \
     basic/AtomicBoolean.cpp \
     basic/GenerateRunnable.cpp \
-    widgets/HUDWidget.cpp
+    widgets/HUDWidget.cpp \
+    widgets/PKIManager.cpp
 
 
 
@@ -354,7 +355,8 @@ HEADERS  += \
     comms/discovery/DiscoveryClientStore.hpp \
     basic/AtomicBoolean.hpp \
     basic/GenerateRunnable.hpp \
-    widgets/HUDWidget.hpp
+    widgets/HUDWidget.hpp \
+    widgets/PKIManager.hpp
 
 
 
@@ -391,7 +393,8 @@ FORMS    += \
 	widgets/FaceWidget.ui \
 	widgets/LogWidget.ui \
     ui/PairingWizard.ui \
-    hub/HUDWidget.ui
+    hub/HUDWidget.ui \
+    widgets/PKIManager.ui
 
 
 RESOURCES += \
