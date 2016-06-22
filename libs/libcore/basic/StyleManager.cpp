@@ -128,10 +128,10 @@ void StyleManager::applyStyle(QApplication &app){
 	const qreal h=(hh<=0.0)?(hh+1.0):hh;
 	const qreal s=0.06;
 	const QColor complementary=    QColor::fromHslF(h, tinge.hslSaturationF()*2, tinge.valueF()).toRgb();
-	const QColor lightest=QColor::fromHslF(h, s*4, 0.95,  1.0).toRgb();
+	const QColor lightest=QColor::fromHslF(h, s*8, 0.95,  1.0).toRgb();
 	const QColor light=   QColor::fromHslF(h, s,   0.2,   1.0).toRgb();
 	const QColor dark=    QColor::fromHslF(h, s*2, 0.05,  1.0).toRgb();
-	const QColor darkest= QColor::fromHslF(h, s*4, 0.0125,1.0).toRgb();
+	const QColor darkest= QColor::fromHslF(h, s*8, 0.0125,1.0).toRgb();
 	//qDebug()<<"COLORMIX: "<<hh<<" -> "<<h<<" tinge="<<tinge<<",  light="<<light<<",  dark="<<dark<<", ";
 	palette.setColor(QPalette::Window, light);
 	palette.setColor(QPalette::WindowText, lightest);

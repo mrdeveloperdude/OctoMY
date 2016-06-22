@@ -173,7 +173,8 @@ SOURCES +=\
     comms/discovery/DiscoveryRole.cpp \
     comms/discovery/DiscoveryClientStore.cpp \
     basic/AtomicBoolean.cpp \
-    basic/GenerateRunnable.cpp
+    basic/GenerateRunnable.cpp \
+    widgets/HUDWidget.cpp
 
 
 
@@ -352,7 +353,8 @@ HEADERS  += \
     comms/discovery/DiscoveryRole.hpp \
     comms/discovery/DiscoveryClientStore.hpp \
     basic/AtomicBoolean.hpp \
-    basic/GenerateRunnable.hpp
+    basic/GenerateRunnable.hpp \
+    widgets/HUDWidget.hpp
 
 
 
@@ -388,7 +390,8 @@ FORMS    += \
 	widgets/AgentDeliveryWizard.ui \
 	widgets/FaceWidget.ui \
 	widgets/LogWidget.ui \
-    ui/PairingWizard.ui
+    ui/PairingWizard.ui \
+    hub/HUDWidget.ui
 
 
 RESOURCES += \

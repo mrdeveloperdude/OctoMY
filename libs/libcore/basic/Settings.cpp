@@ -93,6 +93,32 @@ void Settings::delayedSync(){
 
 
 
+QByteArray Settings::getCustomSettingByteArray(const QString &sub, QByteArray def){
+	OC_METHODGATE();
+	if(0==settings){
+		return def;
+	}
+	return settings->value(KEY_CUSTOM_SETTING_BASE+sub, def).toByteArray();
+}
+
+void Settings::setCustomSettingByteArray(const QString &sub, QByteArray val){
+	OC_METHODGATE();
+	if(nullptr!=settings){
+		QString s=(KEY_CUSTOM_SETTING_BASE+sub).trimmed();
+		if(""!=s){
+			settings->setValue(s,val);
+			//		qDebug()<<(KEY_CUSTOM_SETTING_BASE+sub)<<"="<<val;
+			sync();
+		}
+		else{
+			qWarning()<<"ERROR: Key was empty";
+		}
+	}
+}
+
+
+
+
 QString Settings::getCustomSetting(const QString &sub, QString def){
 	OC_METHODGATE();
 	if(0==settings){
@@ -101,7 +127,7 @@ QString Settings::getCustomSetting(const QString &sub, QString def){
 	return settings->value(KEY_CUSTOM_SETTING_BASE+sub, def).toString();
 }
 
-void Settings::setCustomSetting(const QString &sub,QString val){
+void Settings::setCustomSetting(const QString &sub, QString val){
 	OC_METHODGATE();
 	if(nullptr!=settings){
 		QString s=(KEY_CUSTOM_SETTING_BASE+sub).trimmed();

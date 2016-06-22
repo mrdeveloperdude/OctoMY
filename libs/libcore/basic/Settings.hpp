@@ -4,6 +4,7 @@
 #include <QString>
 #include <QFile>
 #include <QTimer>
+#include <QByteArray>
 
 class Settings:QObject{
 		Q_OBJECT
@@ -29,6 +30,10 @@ class Settings:QObject{
 		virtual ~Settings();
 
 	public:
+
+		QByteArray getCustomSettingByteArray(const QString &sub, QByteArray def=QByteArray());
+		void setCustomSettingByteArray(const QString &sub, QByteArray val);
+
 
 		QString getCustomSetting(const QString &sub,QString def="");
 		void setCustomSetting(const QString &sub,QString val);

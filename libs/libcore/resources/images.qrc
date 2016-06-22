@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>images/birth.jpeg</file>
+        <file>images/hub_butterfly.svg</file>
     </qresource>
 </RCC>

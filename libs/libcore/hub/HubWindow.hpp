@@ -32,10 +32,8 @@ class HubWindow : public QMainWindow, public LogDestination{
 		Ui::HubWindow *ui;
 		Hub *hub;
 		QTimer summaryTimer;
-		QTimer gaugeTimer;
 		QTimer hexyTimer;
 		StatsWindow stats;
-		quint64 startTime;
 		quint64 lastTime;
 		qreal angle=0.0f;
 
@@ -77,7 +75,6 @@ class HubWindow : public QMainWindow, public LogDestination{
 		void onClientAdded(Client *c);
 		void onLocalHostLookupComplete(QHostInfo hi);
 		void onRemoteHostLookupComplete(QHostInfo hi);
-		void onGaugeTimer();
 		void onSummaryTimer();
 		void onHexyTimer();
 		void onHexySettingsChanged();
