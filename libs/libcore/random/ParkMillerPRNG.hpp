@@ -6,6 +6,10 @@
 // This is a good all around prng. It holds very little state, but still provides resonable speed and accuracy
 
 class ParkMillerPRNG: public RNG {
+	private:
+
+		qint32 SEED;
+
 	public:
 		ParkMillerPRNG();
 		~ParkMillerPRNG();
@@ -16,10 +20,12 @@ class ParkMillerPRNG: public RNG {
 
 		// Generates a random number on [0,0xffffffff]-interval
 		// This is the main generator function that all the others are based on
-		uint32_t generateInt32(void);
+		quint32 generateInt32(void);
 
 		//Initializes entropysouce with a seed if needed
-		void init(uint32_t s);
+		void init(quint32 s);
+
+		virtual void init();
 };
 
 

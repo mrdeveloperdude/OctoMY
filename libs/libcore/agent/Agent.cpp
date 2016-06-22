@@ -6,7 +6,6 @@
 #include "comms/Client.hpp"
 #include "comms/discovery/DiscoveryClient.hpp"
 #include "zoo/ZooClient.hpp"
-#include "basic/UniquePlatformFingerprint.hpp"
 
 #include <QDebug>
 #include <QDataStream>
@@ -28,8 +27,6 @@ Agent::~Agent(){
 
 
 void Agent::start(QHostAddress listenAddress, quint16 listenPort, QHostAddress hubAddress, quint16 hubPort){
-
-	QByteArray OCID=UniquePlatformFingerprint::getInstance().platform().getHEX().toUtf8();
 
 	if(nullptr!=zoo){
 		zoo->setURL(QUrl("http://localhost:8123/api"));

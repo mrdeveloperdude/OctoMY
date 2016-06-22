@@ -8,7 +8,10 @@
 #include "TausPRNG.hpp"
 
 //Constructor
-TausPRNG::TausPRNG() {
+TausPRNG::TausPRNG()
+	: RNG("TausPRNG")
+{
+
 }
 //Destructor
 TausPRNG::~TausPRNG() {

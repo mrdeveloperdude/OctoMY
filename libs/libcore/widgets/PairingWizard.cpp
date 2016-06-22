@@ -85,7 +85,7 @@ class EditButtonDelegate: public QItemDelegate
 				QPixmap px;
 				const QString type=data["type"].toString();
 				if("TYPE_AGENT"==type){
-					Identicon id(QStringLiteral(":/icons/identicon.svg"), data["ID"].toString().toInt(nullptr,16));
+					Identicon id(QStringLiteral(":/icons/identicon.svg"), data["ID"].toByteArray());
 					px=id.pixmap(buttonSize,buttonSize);
 				}
 				else if ("TYPE_REMOTE"==type){
@@ -314,7 +314,7 @@ void PairingWizard::reset(){
 void PairingWizard::startEdit(int row){
 	qDebug()<<"STARTING EDIT FOR "<<row;
 	ui->stackedWidget->setCurrentWidget(ui->pagePeerDetail);
-	ui->widgetIdenticon->setIdenticonData(row);
+	ui->widgetIdenticon->setIdenticonData("LOL");
 	ui->widgetQR->setQRData(""+row);
 }
 

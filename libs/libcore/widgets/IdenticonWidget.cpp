@@ -32,7 +32,7 @@ void IdenticonWidget::regenerateIdenticon(){
 	update();
 }
 
-void IdenticonWidget::setIdenticonData(quint64 data){
+void IdenticonWidget::setIdenticonData(QByteArray data){
 	identicon.setIdenticonData(data);
 	regenerateIdenticon();
 }

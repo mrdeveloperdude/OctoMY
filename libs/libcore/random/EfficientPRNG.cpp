@@ -15,8 +15,12 @@ EfficientPRNG::~EfficientPRNG() {
 }
 
 //Ctor
-EfficientPRNG::EfficientPRNG() :
-		noise(0), carry(0), seed(1337) {
+EfficientPRNG::EfficientPRNG()
+	: RNG("EfficientPRNG")
+	, noise(0)
+	, carry(0)
+	, seed(1337)
+{
 	//Skip first result which is always 0
 	generateInt32();
 	generateInt32();
@@ -49,7 +53,7 @@ inline uint32_t EfficientPRNG::generateInt32(void) {
 	noise >>= 1;
 	seed >>= 1;
 	seed |= (carry << 30);
-//            noise &= 0xFF;
+	//            noise &= 0xFF;
 
 	return noise;
 }

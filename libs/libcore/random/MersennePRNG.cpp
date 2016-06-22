@@ -54,6 +54,7 @@ void MersennePRNG::init() {
 
 // Initializes PRNG with a seed if needed
 void MersennePRNG::init(quint32 s) {
+	//memset(mt,0,MT_N);
 	mt[0] = s & 0xffffffffUL;
 	for (mti = 1; mti < MT_N; mti++) {
 		mt[mti] = (1812433253UL * (mt[mti - 1] ^ (mt[mti - 1] >> 30)) + mti);
@@ -65,10 +66,12 @@ void MersennePRNG::init(quint32 s) {
 
 
 MersennePRNG::MersennePRNG()
-	: mti(MT_N + 1)
+	: RNG("MersennePRNG")
+	, mti(MT_N + 1)
 {
-
+	init();
 }
+
 
 //Initialize by an array with array-length, init_key is the array for initializing keys, key_length is its length
 void MersennePRNG::init(quint32 init_key[], size_t key_length) {

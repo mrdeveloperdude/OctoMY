@@ -16,6 +16,7 @@ TEST_PROJECTS+= \
 	testZooComms \
 	testHashstore \
 	testTetraGPSEncoder \
+	testRNG \
 
 
 STRESS_PROJECTS+= \

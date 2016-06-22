@@ -21,7 +21,14 @@ enum RNGMerit {
 
 // Random number generator baseclass
 class RNG {
+	private:
+
+		QString name;
+
 	public:
+
+		//Ctor
+		explicit RNG(QString name);
 
 		//Dtor
 		virtual ~RNG();
@@ -39,6 +46,16 @@ class RNG {
 		// Initialize by an array with array-length init_key is the array for
 		// initializing keys key_length is its length
 		virtual void init(quint32 init_key[], size_t key_length);
+
+		// Convenience wrapper to initialize by a bytearray.
+		// Uses init(quint32 init_key[], size_t key_length); under the hood
+		void init(QByteArray key);
+
+
+		// Convenience wrapper to initialize by a QVector<quint32>.
+		// Uses init(quint32 init_key[], size_t key_length); under the hood
+		void init(QVector<quint32> key);
+
 
 		// Generates a random number on [0,0xffffffff]-interval
 		// This is the main generator function that all the others are based on
@@ -76,6 +93,11 @@ class RNG {
 		// Return true if this source is dependant on any pseudo rng
 		virtual bool hasPseudo()=0;
 
+		// Return name of this (P)RNG implementation
+		inline QString getName(){
+			return name;
+		}
+
 		// Returns true if this is an PRNG as opposed to an RNG (i.e. will produce
 		// a deterministic sequence of output given the same seed)
 		//	virtual bool isDeterministic(void)=0;
@@ -85,7 +107,10 @@ class RNG {
 		// or api that may block execution inline virtual bool CanBlock()=0;
 
 		// Entropy source factory. Provides new entropy sources based on desired merit
-		static RNG * sourceFactory(RNGMerit m = GENERAL);
+		static RNG * sourceFactory(RNGMerit m);
+
+		// Entropy source factory. Provides new entropy sources based on named implementation
+		static RNG * sourceFactory(QString name);
 
 };
 

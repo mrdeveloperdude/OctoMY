@@ -53,9 +53,8 @@ static qreal realBits(quint64 d,quint64 bits){
 
 
 
-Identicon::Identicon(QString url, quint64 data)
-	: data(1)//NOT 0 to trigger generation of default fingerprint below
-	, url(url)
+Identicon::Identicon(QString url, QByteArray data)
+	: url(url)
 	, dirty(true)
 {
 	setIdenticonData(data);
@@ -125,6 +124,10 @@ void Identicon::regenerateIdenticon(){
 				file.open(QIODevice::ReadOnly);
 				QByteArray baData = file.readAll();
 				doc.setContent(baData);
+				//TODO: Update identicon rendering to take input in fiorm of
+				//      data from deterministic PRNG seeded from ID derived from
+				//      publicKey
+				/*
 				auto o=doc.documentElement();
 				quint64 d=data;
 				qreal p1=0.0;
@@ -183,6 +186,7 @@ void Identicon::regenerateIdenticon(){
 				const float x2=sin(a2)*w2;
 				const float y2=cos(a2)*w2;
 				setAttrRecur(o, "path", "pathLeg", "d", "m -2297.5041,-441.98664 "+QString::number(x1)+"," +QString::number(y1)+" "+QString::number(x2)+"," +QString::number(y2));
+				*/
 				dirty=false;
 			}
 		}
@@ -194,12 +198,7 @@ void Identicon::setSvgURL(QString url){
 	dirty=true;
 }
 
-void Identicon::setIdenticonData(quint64 data){
-	if(0==data){
-		//data=9693658694970463214;
-		data=UniquePlatformFingerprint::getInstance().platform().getQuint64();
-		//qDebug()<<"Identicon defaulting to fingerprint: "<<data<<"  ("<<UniquePlatformFingerprint::getInstance().platform().getHEX()<<")";
-	}
+void Identicon::setIdenticonData(QByteArray data){
 	if(this->data!=data){
 		this->data=data;
 		dirty=true;

@@ -26,7 +26,7 @@ class IdenticonWidget : public SvgWidget{
 		void regenerateIdenticon();
 
 	public:
-		void setIdenticonData(quint64);
+		void setIdenticonData(QByteArray);
 
 	signals:
 		void doubleClicked();

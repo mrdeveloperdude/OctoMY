@@ -28,7 +28,7 @@ public:
 
 	//Generates a random number on [0,0xffffffff]-interval
 	//This is the main generator function that all the others are based on
-	virtual uint32_t generateInt32(void) {
+	virtual quint32 generateInt32(void) {
 		s1 = ((s1 & -2) << 12) ^ (((s1 << 13) ^ s1) >> 19);
 		s2 = ((s2 & -8) << 4) ^ (((s2 << 2) ^ s2) >> 25);
 		s3 = ((s3 & -16) << 17) ^ (((s3 << 3) ^ s3) >> 11);
@@ -36,7 +36,7 @@ public:
 	}
 
 	//Initializes entropysouce with a seed if needed (mt[MT_N])
-	virtual void init(uint32_t s) {
+	virtual void init(quint32 s) {
 		s1 = 1243598713U ^ s;
 		if (s1 < 2) {
 			s1 = 1243598713U;

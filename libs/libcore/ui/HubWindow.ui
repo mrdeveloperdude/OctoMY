@@ -53,7 +53,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>3</number>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -267,20 +267,16 @@
         <attribute name="title">
          <string>Plan</string>
         </attribute>
-        <widget class="QSplitter" name="splitter_2">
-         <property name="geometry">
-          <rect>
-           <x>9</x>
-           <y>9</y>
-           <width>675</width>
-           <height>371</height>
-          </rect>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <widget class="PlanEditor" name="widgetPlanEditor" native="true"/>
-        </widget>
+        <layout class="QVBoxLayout" name="verticalLayout_19">
+         <item>
+          <widget class="QSplitter" name="splitter_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <widget class="PlanEditor" name="widgetPlanEditor" native="true"/>
+          </widget>
+         </item>
+        </layout>
        </widget>
        <widget class="QWidget" name="tabUtilities">
         <attribute name="title">

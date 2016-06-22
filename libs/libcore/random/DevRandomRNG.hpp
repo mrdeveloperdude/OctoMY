@@ -7,21 +7,24 @@
 //It alto happens to be the slowest, least scalable and most cumbersome to use. Worst case scenario
 
 class DevRandomRNG: public RNG {
-public:
-	//Ctor
-	DevRandomRNG();
-	//Dtor
-	~DevRandomRNG();
+	public:
+		static FILE *fh;
 
-	//Return true if this source is dependant on any pseudo rng
-	inline bool hasPseudo();
+	public:
+		//Ctor
+		DevRandomRNG();
+		//Dtor
+		~DevRandomRNG();
 
-	//Generates a random number on [0,0xffffffff]-interval
-	//This is the main generator function that all the others are based on
-	uint32_t generateInt32(void);
+		//Return true if this source is dependant on any pseudo rng
+		inline bool hasPseudo();
 
-	//Initializes entropysouce with a seed if needed
-	void init(uint32_t s);
+		//Generates a random number on [0,0xffffffff]-interval
+		//This is the main generator function that all the others are based on
+		quint32 generateInt32(void);
+
+		//Initializes entropysouce with a seed if needed
+		void init(quint32 s);
 
 };
 

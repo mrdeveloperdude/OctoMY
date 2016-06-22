@@ -9,7 +9,9 @@
 FILE *DevURandomRNG::fh = 0;
 
 //Constructor
-DevURandomRNG::DevURandomRNG() {
+DevURandomRNG::DevURandomRNG()
+	: RNG("DevURandomRNG")
+{
 }
 
 //Destructor
@@ -20,20 +22,20 @@ DevURandomRNG::~DevURandomRNG() {
 
 //Return true if this source is dependant on any pseudo rng
 inline bool DevURandomRNG::hasPseudo() {
-	return true;
+	return false;
 }
 
 //Generates a random number on [0,0xffffffff]-interval
 //This is the main generator function that all the others are based on
-uint32_t DevURandomRNG::generateInt32(void) {
+quint32 DevURandomRNG::generateInt32(void) {
 	uint32_t s = 0;
 	//int r =  //TODO: Check r
-	fread(&s, sizeof(uint32_t), 1, fh);
+	fread(&s, sizeof(quint32), 1, fh);
 	return s;
 }
 
 //Initializes entropysouce with a seed if needed
-void DevURandomRNG::init(uint32_t) {
+void DevURandomRNG::init(quint32) {
 	//Open file if closed
 	if (0 == fh) {
 		//Open entrophy pool

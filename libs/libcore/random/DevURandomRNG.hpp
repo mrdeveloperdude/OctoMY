@@ -8,22 +8,22 @@
 // and the quality of its output is lower. However it solves the blocking I/O issue with DevRandom
 
 class DevURandomRNG: public RNG {
-public:
-	static FILE *fh;
-public:
+	public:
+		static FILE *fh;
+	public:
 
-	//Ctor
-	DevURandomRNG();
-	//Dtor
-	~DevURandomRNG();
+		//Ctor
+		DevURandomRNG();
+		//Dtor
+		~DevURandomRNG();
 
-	//Return true if this source is dependant on any pseudo rng
-	inline bool hasPseudo();
-	//Generates a random number on [0,0xffffffff]-interval
-	//This is the main generator function that all the others are based on
-	uint32_t generateInt32(void);
-	//Initializes entropysouce with a seed if needed
-	void init(uint32_t s);
+		//Return true if this source is dependant on any pseudo rng
+		inline bool hasPseudo();
+		//Generates a random number on [0,0xffffffff]-interval
+		//This is the main generator function that all the others are based on
+		quint32 generateInt32(void);
+		//Initializes entropysouce with a seed if needed
+		void init(quint32 s);
 };
 
 #endif // DEVURANDOMRNG_HPP

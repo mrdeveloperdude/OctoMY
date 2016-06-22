@@ -57,3 +57,4 @@ const Fingerprint &UniquePlatformFingerprint::platform() const {
 const  Fingerprint &UniquePlatformFingerprint::executable() const {
 	return executablePrint;
 }
+

@@ -25,21 +25,21 @@ public:
 
 	//Generates a random number on [0,0xffffffff]-interval
 	//This is the main generator function that all the others are based on
-	uint32_t generateInt32(void);
+	quint32 generateInt32(void);
 
 	//Initializes entropysouce with a seed if needed (mt[MT_N])
-	void init(uint32_t s);
+	void init(quint32 s);
 
 	void init();
 
 	//Initialize by an array with array-length init_key is the array for initializing keys key_length is its length
-	void init(uint32_t init_key[], size_t key_length);
+	virtual void init(quint32 init_key[], size_t key_length);
 
 private:
 	//The array for the state vector
-	uint32_t mt[MT_N];
+	quint32 mt[MT_N];
 	//mti==N+1 means mt[N] is not initialized
-	int32_t mti;
+	qint32 mti;
 
 };
 

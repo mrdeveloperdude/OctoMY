@@ -4,22 +4,22 @@
 #include <QtGlobal>
 #include <QDomDocument>
 #include <QtGui/QPixmap>
-
+#include <QByteArray>
 
 class Identicon{
 	private:
-		quint64 data;
+		QByteArray data;
 		QString url;
 		bool dirty;
 		QByteArray ba;
 		QDomDocument doc;
 	public:
-		explicit Identicon(QString url="", quint64 data=0);
+		explicit Identicon(QString url="", QByteArray data=QByteArray());
 		virtual  ~Identicon();
 
 	public:
 		void setSvgURL(QString);
-		void setIdenticonData(quint64);
+		void setIdenticonData(QByteArray);
 
 		QDomDocument domDocument();
 

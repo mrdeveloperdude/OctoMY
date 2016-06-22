@@ -182,9 +182,9 @@ void ZooServer::serveIdenticon(qhttp::server::QHttpRequest* req, qhttp::server::
 {
 	QUrlQuery query(req->url().query());
 	QString id=query.queryItemValue("id");
-	quint64 idInt=0;
+	QByteArray idBA=0;
 	if(""!=id){
-		idInt=id.toInt();
+		idBA=id.toUtf8();
 	}
 
 	QString w=query.queryItemValue("w");
@@ -202,7 +202,7 @@ void ZooServer::serveIdenticon(qhttp::server::QHttpRequest* req, qhttp::server::
 	hInt=(hInt>1000)?1000:hInt;
 
 
-	identicon.setIdenticonData(idInt);
+	identicon.setIdenticonData(idBA);
 	QByteArray bytes;
 	QBuffer buffer( &bytes );
 	buffer.open( QIODevice::WriteOnly );
