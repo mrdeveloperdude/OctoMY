@@ -4,7 +4,7 @@
 
 #include "widgets/TryToggle.hpp"
 #include "comms/CommsChannel.hpp"
-#include "plot/StatsWindow.hpp"
+
 #include "basic/LogDestination.hpp"
 #include "hub/Hub.hpp"
 #include "hw/actuators/HexySerial.hpp"
@@ -33,19 +33,10 @@ class HubWindow : public QMainWindow, public LogDestination{
 		Hub *hub;
 		QTimer summaryTimer;
 		QTimer hexyTimer;
-		StatsWindow stats;
 		quint64 lastTime;
 		qreal angle=0.0f;
 
-		QCPDataMap graphRTT;
-		QCPDataMap graphSent;
-		QCPDataMap graphReceived;
-		QCPDataMap graphLost;
-		QCPDataMap graphAcked;
-		QCPDataMap graphSendBW;
-		QCPDataMap graphReceiveBW;
 
-		double randomWalk;
 
 		HexySerial *hexy;
 		GaitController<qreal> *m_gait;
@@ -65,7 +56,6 @@ class HubWindow : public QMainWindow, public LogDestination{
 
 		void startProcess(QString base);
 
-		void appendGraphData(double rtt, int sent,int received,int lost,int acked, float sendBW,float receiveBW);
 
 
 	private slots:

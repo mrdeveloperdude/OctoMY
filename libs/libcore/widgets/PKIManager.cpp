@@ -3,6 +3,8 @@
 
 #include "../libpki/qpolarsslpki.hpp"
 
+#include <QDebug>
+
 PKIManager::PKIManager(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::PKIManager)

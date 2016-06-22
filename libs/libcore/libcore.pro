@@ -175,7 +175,8 @@ SOURCES +=\
     basic/AtomicBoolean.cpp \
     basic/GenerateRunnable.cpp \
     widgets/HUDWidget.cpp \
-    widgets/PKIManager.cpp
+    widgets/PKIManager.cpp \
+    plot/NetworkStats.cpp
 
 
 
@@ -356,7 +357,8 @@ HEADERS  += \
     basic/AtomicBoolean.hpp \
     basic/GenerateRunnable.hpp \
     widgets/HUDWidget.hpp \
-    widgets/PKIManager.hpp
+    widgets/PKIManager.hpp \
+    plot/NetworkStats.hpp
 
 
 
