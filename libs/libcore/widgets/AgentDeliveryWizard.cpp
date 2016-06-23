@@ -5,6 +5,8 @@
 #include "widgets/WaitingSpinnerWidget.hpp"
 
 #include <QDebug>
+#include <QRegularExpressionValidator>
+#include <QRegularExpression>
 
 
 AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
@@ -14,6 +16,13 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	, settings(nullptr)
 {
 	ui->setupUi(this);
+	QRegularExpression re("\\p{Ll}{3,20}");
+	if(!re.isValid()){
+		qWarning()<<"ERROR: Name validator regex was invalid: "<<re.errorString();
+	}
+	ui->lineEditName->setValidator(new QRegularExpressionValidator(re, this));
+	//Rule from http://stackoverflow.com/questions/38001256/handling-accented-letters-in-qregularexpressions-in-qt5/38001274#38001274
+	//          http://www.regular-expressions.info/unicode.html
 	spinner=new WaitingSpinnerWidget(ui->labelBirthImage, true, false);
 	SpinnerStyle style;
 	style.setColor(QColor("white"));
@@ -78,7 +87,7 @@ void AgentDeliveryWizard::configure(Node *n){
 				int next=ui->stackedWidget->currentIndex();
 				while(true){
 					next = (next + 1) % ui->stackedWidget->count();
-					QWidget *nextWidget = ui->stackedWidget->widget(next);
+//					QWidget *nextWidget = ui->stackedWidget->widget(next);
 					/*
 					if((!ui->checkBoxFace->isChecked()) && (ui->pageFace==nextWidget)){
 						continue;
