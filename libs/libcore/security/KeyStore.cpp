@@ -186,6 +186,11 @@ QString KeyStore::getLocalPrivateKey(){
 	return local_pki.getPEMKey();
 }
 
+
+QString KeyStore::getLocalID(){
+	return utility::toHash(getLocalPublicKey());
+}
+
 /*
  *
 void HubWindow::on_pushButtonTestKeyPair_clicked(){

@@ -72,6 +72,8 @@ class KeyStore: public QObject{
 		QString getLocalPublicKey();
 		QString getLocalPrivateKey();
 
+		QString getLocalID();
+
 	signals:
 
 		void keystoreReady();

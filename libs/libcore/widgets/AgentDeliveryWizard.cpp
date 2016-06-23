@@ -16,22 +16,25 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	, settings(nullptr)
 {
 	ui->setupUi(this);
-	QRegularExpression re("\\p{Ll}{3,20}");
+	const quint32 minLetters=3;
+	QRegularExpression re("\\p{Ll}{"+QString::number(minLetters)+",20}");
 	if(!re.isValid()){
 		qWarning()<<"ERROR: Name validator regex was invalid: "<<re.errorString();
 	}
+	//Regex rules from http://stackoverflow.com/questions/38001256/handling-accented-letters-in-qregularexpressions-in-qt5/38001274#38001274
+	//             and http://www.regular-expressions.info/unicode.html
 	ui->lineEditName->setValidator(new QRegularExpressionValidator(re, this));
-	//Rule from http://stackoverflow.com/questions/38001256/handling-accented-letters-in-qregularexpressions-in-qt5/38001274#38001274
-	//          http://www.regular-expressions.info/unicode.html
-	spinner=new WaitingSpinnerWidget(ui->labelBirthImage, true, false);
-	SpinnerStyle style;
-	style.setColor(QColor("white"));
-	style.setRelatveSize(true);
-	style.setNumberOfLines(24);
-	style.setLineLength(10);
-	style.setInnerRadius(40);
-	style.setLineWidth(3);
-	spinner->setStyle(style);
+	{
+		spinner=new WaitingSpinnerWidget(ui->labelBirthImage, true, false);
+		SpinnerStyle style;
+		style.setColor(QColor("white"));
+		style.setRelatveSize(true);
+		style.setNumberOfLines(24);
+		style.setLineLength(10);
+		style.setInnerRadius(40);
+		style.setLineWidth(3);
+		spinner->setStyle(style);
+	}
 	birthTimer.setInterval(4000); //Minimum birth time gives this moment some depth in case keygen should finish quickly.
 	birthTimer.setSingleShot(true);
 
@@ -39,6 +42,11 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 		qWarning()<<"ERROR: Could not connect";
 	}
 
+	if(!connect(ui->lineEditName, &QLineEdit::textEdited, this, [=](QString s){
+				ui->pushButtonOnward->setEnabled(s.length()>=minLetters);
+})){
+		qWarning()<<"ERROR: Could not connect";
+	}
 }
 
 
@@ -62,6 +70,18 @@ void AgentDeliveryWizard::reset(){
 	*/
 	ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
 
+}
+#include "random/RNG.hpp"
+QString generateRandomGender(){
+	RNG *rng=RNG::sourceFactory("devu");
+	QString gender="Genderless";
+	if(nullptr!=rng){
+		QStringList alternatives;
+		alternatives<<"Male"<<"Female"<<"Genderless";
+		gender=alternatives[rng->generateInt32()%alternatives.size()];
+		delete rng;
+	}
+	return gender;
 }
 
 #include "basic/Node.hpp"
@@ -87,8 +107,7 @@ void AgentDeliveryWizard::configure(Node *n){
 				int next=ui->stackedWidget->currentIndex();
 				while(true){
 					next = (next + 1) % ui->stackedWidget->count();
-//					QWidget *nextWidget = ui->stackedWidget->widget(next);
-					/*
+					/*				QWidget *nextWidget = ui->stackedWidget->widget(next);
 					if((!ui->checkBoxFace->isChecked()) && (ui->pageFace==nextWidget)){
 						continue;
 					}
@@ -105,15 +124,16 @@ void AgentDeliveryWizard::configure(Node *n){
 				const QWidget *currentWidget=ui->stackedWidget->currentWidget();
 				const QWidget *nextWidget = ui->stackedWidget->widget(next);
 				qDebug()<<"ONWARD TRANSITION FROM "<<currentWidget->objectName()<<" TO "<<nextWidget->objectName();
+
+				if(nextWidget==ui->pageBirthInProgress){
+					QString name=ui->lineEditName->text();
+					name[0]=name[0].toUpper();
+					ui->labelName->setText(name);
+					QString gender=0>ui->comboBoxGender->currentIndex()?ui->comboBoxGender->currentText():generateRandomGender();
+					ui->labelGender->setText(gender);
+					qDebug()<<"NAME: "<<name<<", GENDER: "<<gender;
+				}
 				/*
-				if(currentWidget==ui->pageBasics){
-					ui->checkBoxFace_2->setChecked(ui->checkBoxFace->isChecked());
-					ui->checkBoxZooBlog_2->setChecked(ui->checkBoxZooBlog->isChecked());
-					ui->checkBoxDebugMode_2->setChecked(ui->checkBoxDebugMode->isChecked());
-				}
-				else if(currentWidget==ui->pageFace){
-					ui->checkBoxFace->setChecked(ui->checkBoxFace_2->isChecked());
-				}
 				else if(currentWidget==ui->pageZoo){
 					ui->checkBoxZooBlog->setChecked(ui->checkBoxZooBlog_2->isChecked());
 				}
@@ -169,10 +189,10 @@ void AgentDeliveryWizard::onBirthComplete(){
 				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
 			}
 			else{
+				QString id=keystore.getLocalID();
+				qDebug()<<"ID: "<<id;
+				ui->labelID->setText(id);
 				ui->stackedWidget->setCurrentWidget(ui->pageBirthDone);
-				if(nullptr!=settings){
-					settings->setCustomSettingBool("octomy.delivered",true);
-				}
 			}
 		}
 		else{

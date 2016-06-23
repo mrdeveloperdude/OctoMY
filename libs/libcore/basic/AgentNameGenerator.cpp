@@ -127,7 +127,7 @@ QString AgentNameGenerator::generate (){
 		out.append(nameStem[randomInt()%(sizeof(nameStem)/sizeof(char *))]);
 		out.append(nameSuffix[randomInt()%(sizeof(nameSuffix)/sizeof(char *))]);
 	}
-	out[0]=out[0].toUpper();
+	//out[0]=out[0].toUpper();
 	return out;
 }
 
