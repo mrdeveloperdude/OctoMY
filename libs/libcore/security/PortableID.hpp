@@ -6,7 +6,8 @@
 /**
  * @brief The PortableID class provides a mechanism to generate a portable
  * identification string for a tier in the OctoMY™ system.
- *
+ * This is currently used by camera pairing, and will also
+ * be used in other pairing
  *
  */
 

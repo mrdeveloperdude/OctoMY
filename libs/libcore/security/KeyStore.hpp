@@ -38,8 +38,9 @@ class KeyStore: public QObject{
 		void load();
 		void save();
 
-
 	public:
+
+		void clear();
 
 		//Make if needed, load if otherwise
 		void bootstrap();

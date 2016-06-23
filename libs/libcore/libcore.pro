@@ -176,7 +176,8 @@ SOURCES +=\
     basic/GenerateRunnable.cpp \
     widgets/HUDWidget.cpp \
     widgets/PKIManager.cpp \
-    plot/NetworkStats.cpp
+    plot/NetworkStats.cpp \
+    random/FileRandomRNG.cpp
 
 
 
@@ -358,7 +359,8 @@ HEADERS  += \
     basic/GenerateRunnable.hpp \
     widgets/HUDWidget.hpp \
     widgets/PKIManager.hpp \
-    plot/NetworkStats.hpp
+    plot/NetworkStats.hpp \
+    random/FileRandomRNG.hpp
 
 
 

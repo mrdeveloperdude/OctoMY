@@ -104,6 +104,25 @@ void KeyStore::save(){
 	utility::stringToFile(filename,doc.toJson());
 }
 
+void KeyStore::clear(){
+	QFile file(filename);
+	if(file.exists()){
+		if(file.remove()){
+			qDebug()<<"KEYSTORE: Cleared: "<<filename;
+			local_pki.reset();
+			ready=false;
+			error=false;
+		}
+		else{
+			qWarning()<<"ERROR: Could not clear "<<filename;
+		}
+	}
+	else{
+		qDebug()<<"KEYSTORE: Could not clear "<<filename<<" did not exist";
+	}
+
+}
+
 QByteArray KeyStore::sign(const QByteArray &source){
 	if(!ready){
 		return QByteArray();

@@ -109,9 +109,12 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 		unbornAction->setStatusTip(tr("Delete the identity of this agent to restart birth"));
 		unbornAction->setIcon(QIcon(":/icons/kill.svg"));
 		Settings *sp=&s;
-		connect(unbornAction, &QAction::triggered, this, [sp](){
-			qDebug()<<"UNBIRTHED!";
-			sp->setCustomSettingBool("octomy.delivered",false);
+		connect(unbornAction, &QAction::triggered, this, [=](){
+			if(nullptr!=agent){
+				agent->getKeyStore().clear();
+				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
+				qDebug()<<"UNBIRTHED!";
+			}
 		});
 		menu.addAction(unbornAction);
 	}

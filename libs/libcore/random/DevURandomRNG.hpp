@@ -1,29 +1,18 @@
 #ifndef DEVURANDOMRNG_HPP
 #define DEVURANDOMRNG_HPP
 
-#include "RNG.hpp"
+#include "FileRandomRNG.hpp"
+
 
 // This entropy source is the second most accurate and safe available. It is a "pseudo-interpolated quantum quality noise source".
 // It is idetical to DevRandom, except that it uses pseudo random numbers when the entropy is empty. Its characteristics are thus very comparable to DevRandom (slow, low scalability etc)
 // and the quality of its output is lower. However it solves the blocking I/O issue with DevRandom
 
-class DevURandomRNG: public RNG {
-	public:
-		static FILE *fh;
+class DevURandomRNG: public FileRandomRNG {
 	public:
 
-		//Ctor
-		DevURandomRNG();
-		//Dtor
-		~DevURandomRNG();
+		explicit DevURandomRNG();
 
-		//Return true if this source is dependant on any pseudo rng
-		inline bool hasPseudo();
-		//Generates a random number on [0,0xffffffff]-interval
-		//This is the main generator function that all the others are based on
-		quint32 generateInt32(void);
-		//Initializes entropysouce with a seed if needed
-		void init(quint32 s);
 };
 
 #endif // DEVURANDOMRNG_HPP
