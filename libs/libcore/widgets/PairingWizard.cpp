@@ -5,6 +5,7 @@
 #include "basic/Node.hpp"
 #include "widgets/Identicon.hpp"
 #include "comms/discovery/DiscoveryParticipant.hpp"
+#include "security/PortableID.hpp"
 
 #include <QDebug>
 #include <QRegularExpression>
@@ -82,21 +83,11 @@ class EditButtonDelegate: public QItemDelegate
 
 				QVariantMap data=index.data(Qt::DisplayRole).toMap();
 
-				QPixmap px;
-				const QString type=data["type"].toString();
-				if("TYPE_AGENT"==type){
-					Identicon id(QStringLiteral(":/icons/identicon.svg"), data["ID"].toByteArray());
-					px=id.pixmap(buttonSize,buttonSize);
-				}
-				else if ("TYPE_REMOTE"==type){
-					px=svgToPixmap(":/icons/remote.svg", buttonSize, buttonSize, 0.0);
-				}
-				else if ("TYPE_HUB"==type){
-					px=svgToPixmap(":/icons/hub.svg", buttonSize, buttonSize, 0.0);
-				}
-				else{
-					qWarning()<<"ERROR: Unknown type "<<type<<" when rendering peer in delegate. Data was "<<data;
-				}
+
+
+				PortableID id(data);
+				Identicon ic(QStringLiteral(":/icons/identicon.svg"),id);
+				QPixmap px=ic.pixmap(buttonSize,buttonSize);
 
 				painter->drawPixmap(QRect(border, border, buttonSize,buttonSize), px, QRect(0,0,buttonSize,buttonSize));
 
@@ -314,7 +305,8 @@ void PairingWizard::reset(){
 void PairingWizard::startEdit(int row){
 	qDebug()<<"STARTING EDIT FOR "<<row;
 	ui->stackedWidget->setCurrentWidget(ui->pagePeerDetail);
-	ui->widgetIdenticon->setIdenticonData("LOL");
+	PortableID id;
+	ui->widgetIdenticon->setPortableID(id);
 	ui->widgetQR->setQRData(""+row);
 }
 

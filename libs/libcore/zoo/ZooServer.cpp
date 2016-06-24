@@ -10,6 +10,8 @@
 #include "comms/discovery/DiscoveryParticipant.hpp"
 #include "utility/ScopedTimer.hpp"
 
+#include "security/PortableID.hpp"
+
 #include "ZooConstants.hpp"
 
 #include <QtNetwork/QHostAddress>
@@ -201,8 +203,8 @@ void ZooServer::serveIdenticon(qhttp::server::QHttpRequest* req, qhttp::server::
 	wInt=(wInt>1000)?1000:wInt;
 	hInt=(hInt>1000)?1000:hInt;
 
-
-	identicon.setIdenticonData(idBA);
+	PortableID pid;
+	identicon.setPortableID(pid);
 	QByteArray bytes;
 	QBuffer buffer( &bytes );
 	buffer.open( QIODevice::WriteOnly );

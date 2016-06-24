@@ -7,6 +7,7 @@
 
 #include <QDomDocument>
 
+class PortableI;
 
 class IdenticonWidget : public SvgWidget{
 		Q_OBJECT
@@ -26,7 +27,7 @@ class IdenticonWidget : public SvgWidget{
 		void regenerateIdenticon();
 
 	public:
-		void setIdenticonData(QByteArray);
+		void setPortableID(PortableID &id);
 
 	signals:
 		void doubleClicked();

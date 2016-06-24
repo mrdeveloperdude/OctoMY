@@ -1,11 +1,26 @@
 #include "PortableID.hpp"
 
 #include <QStringList>
+#include <QDateTime>
+
 
 
 PortableID::PortableID()
 	: mBirthDate(0)
 	, mType(DiscoveryType::TYPE_UNKNOWN)
+{
+
+}
+
+
+PortableID::PortableID(QVariantMap &data)
+	: mName(data["name"].toString())
+	, mGender(data["gender"].toString())
+	, mID(data["id"].toString())
+	, mBirthDate(QDateTime::fromString(data["createDate"].toString()).toMSecsSinceEpoch())
+	, mType(DiscoveryTypeFromString(data["type"].toString()))
+
+
 {
 
 }

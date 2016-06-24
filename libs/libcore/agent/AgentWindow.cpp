@@ -7,8 +7,10 @@
 #include "hw/actuators/HexyTool.hpp"
 #include "hw/BluetoothList.hpp"
 #include "basic/Settings.hpp"
+#include "security/PortableID.hpp"
 
 #include <QDebug>
+#include <QMessageBox>
 
 #ifdef Q_OS_ANDROID
 #include <QAndroidJniObject>
@@ -48,7 +50,8 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 		updateVisibility();
 
 		//Set our custom identicon as window icon
-		Identicon id(QStringLiteral(":/icons/identicon.svg"),0);
+		PortableID pid;
+		Identicon id(QStringLiteral(":/icons/identicon.svg"),pid);
 		QIcon icon;//=windowIcon();
 		icon.addPixmap(id.pixmap());
 		//	icon.addFile(QStringLiteral(":/icons/agent.svg"), QSize(), QIcon::Normal, QIcon::Off);
@@ -104,6 +107,12 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 		connect(statsAction, &QAction::triggered, this, &AgentWindow::onStatsVisibilityChanged);
 		menu.addAction(statsAction);
 
+		QAction *certAction = new QAction(tr("Show Birth Certificate"), this);
+		certAction->setStatusTip(tr("Show the birth certificate of this agent"));
+		certAction->setIcon(QIcon(":/icons/eye.svg"));
+		connect(certAction, &QAction::triggered, this, &AgentWindow::onStartShowBirthCertificate);
+		menu.addAction(certAction);
+
 
 		QAction *unbornAction = new QAction(tr("Unbirth!"), this);
 		unbornAction->setStatusTip(tr("Delete the identity of this agent to restart birth"));
@@ -111,9 +120,12 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 		Settings *sp=&s;
 		connect(unbornAction, &QAction::triggered, this, [=](){
 			if(nullptr!=agent){
-				agent->getKeyStore().clear();
-				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
-				qDebug()<<"UNBIRTHED!";
+				QMessageBox::StandardButton reply = QMessageBox::question(this, "Unbirth", "Are you sure you want to DELETE the personality of this robot forever?", QMessageBox::No|QMessageBox::Yes);
+				if (QMessageBox::Yes==reply) {
+					agent->getKeyStore().clear();
+					ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
+					qDebug()<<"UNBIRTHED!";
+				}
 			}
 		});
 		menu.addAction(unbornAction);
@@ -180,6 +192,14 @@ void AgentWindow::onStatsVisibilityChanged(bool on){
 	updateVisibility();
 }
 
+
+void AgentWindow::onStartShowBirthCertificate(){
+	PortableID id;
+	id.setID(agent->getKeyStore().getLocalID());
+	id.setType(TYPE_AGENT);
+	ui->widgetBirthCertificate->setPortableID(id);
+	ui->stackedWidget->setCurrentWidget(ui->pageBirthCertificate);
+}
 
 
 void AgentWindow::onStartCameraPairing()
@@ -276,4 +296,24 @@ void AgentWindow::on_pushButtonMenu_clicked()
 
 void AgentWindow::on_pushButtonConfirmQuit_clicked(){
 	exit(0);
+}
+
+void AgentWindow::on_pushButtonBack_2_clicked()
+{
+	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+}
+
+void AgentWindow::on_pushButtonBack_4_clicked()
+{
+	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+}
+
+void AgentWindow::on_pushButtonBack_3_clicked()
+{
+	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+}
+
+void AgentWindow::on_pushButtonBack_5_clicked()
+{
+	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 }

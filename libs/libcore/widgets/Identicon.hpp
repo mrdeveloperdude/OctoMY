@@ -1,25 +1,37 @@
 #ifndef IDENTICON_HPP
 #define IDENTICON_HPP
 
+#include "security/PortableID.hpp"
+
 #include <QtGlobal>
 #include <QDomDocument>
 #include <QtGui/QPixmap>
 #include <QByteArray>
 
+class RNG;
+
 class Identicon{
+
 	private:
 		QByteArray data;
 		QString url;
 		bool dirty;
-		QByteArray ba;
+		PortableID mID;
 		QDomDocument doc;
+		RNG *rng;
+
 	public:
-		explicit Identicon(QString url="", QByteArray data=QByteArray());
+		explicit Identicon(QString url, PortableID &id);
+		explicit Identicon(QString url="");
 		virtual  ~Identicon();
+
+	private:
+
+		float frand();
 
 	public:
 		void setSvgURL(QString);
-		void setIdenticonData(QByteArray);
+		void setPortableID(PortableID id);
 
 		QDomDocument domDocument();
 

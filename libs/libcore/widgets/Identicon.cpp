@@ -1,5 +1,6 @@
 #include "Identicon.hpp"
 #include "basic/UniquePlatformFingerprint.hpp"
+#include "random/RNG.hpp"
 
 #include <QtSvg/QSvgRenderer>
 #include <QtGui/QPainter>
@@ -7,6 +8,26 @@
 #include <QFile>
 
 
+
+Identicon::Identicon(QString url, PortableID &id)
+	: url(url)
+	, dirty(true)
+	, rng(RNG::sourceFactory("mt"))
+{
+	setPortableID(id);
+}
+
+Identicon::Identicon(QString url)
+	: url(url)
+	, dirty(true)
+	, rng(RNG::sourceFactory("mt"))
+{
+
+}
+
+Identicon::~Identicon(){
+	delete rng;
+}
 
 
 
@@ -23,15 +44,15 @@ static void setAttrRecur(QDomElement &elem, QString tag, QString id, QString att
 	}
 }
 
-/*
-static float frand(){
-	return (rand()/(float)RAND_MAX);
+
+float Identicon::frand(){
+	return rng->generateReal1();
 }
 
 static QString hsla(qreal h, qreal s, qreal l, qreal a){
 	return "hsla("+QString::number(h*360.0f)+", "+QString::number((int)(s*100))+"%, "+QString::number((int)(l*100))+"%, "+QString::number(a)+")";
 }
-*/
+
 
 static QString hsl(qreal h, qreal s, qreal l){
 	QColor c=QColor::fromHslF(h,s,l);
@@ -53,17 +74,6 @@ static qreal realBits(quint64 d,quint64 bits){
 
 
 
-Identicon::Identicon(QString url, QByteArray data)
-	: url(url)
-	, dirty(true)
-{
-	setIdenticonData(data);
-}
-
-Identicon::~Identicon(){
-
-}
-
 QDomDocument Identicon::domDocument(){
 	regenerateIdenticon();
 	return doc;
@@ -74,7 +84,7 @@ static QSizeF calcSize(QSizeF ds,qint32 w,qint32 h,qreal zoom){
 		return ds;
 	}
 	const qreal da=ds.width()/ds.height();
-//	const qreal ca=((qreal)(w<1?1:w)/(qreal)(h<1?1:h));
+	//	const qreal ca=((qreal)(w<1?1:w)/(qreal)(h<1?1:h));
 	QSizeF low(w,(qreal)h/da);
 	QSizeF high((qreal)w*da,h);
 	qDebug()<<"ORIG: "<<ds<<" ASPECT: "<<da<<" LOW: "<<low<<" HIGH: "<<high;
@@ -124,46 +134,15 @@ void Identicon::regenerateIdenticon(){
 				file.open(QIODevice::ReadOnly);
 				QByteArray baData = file.readAll();
 				doc.setContent(baData);
-				//TODO: Update identicon rendering to take input in fiorm of
-				//      data from deterministic PRNG seeded from ID derived from
-				//      publicKey
-				/*
+				rng->init(mID.id().toUtf8());
 				auto o=doc.documentElement();
-				quint64 d=data;
-				qreal p1=0.0;
-				qreal p2=0.0;
-				qreal p3=0.0;
-				qreal p4=0.0;
-				qreal p5=0.0;
-				qreal p6=0.0;
-				//	qreal p7=0.0;
-				//	qreal p8=0.0;
-				//	qreal p9=0.0;
-				bool debug=false;
-				if(debug){
-					qreal dd=(data/20.0);
-					p1=dd;
-					p2=dd;
-					p3=dd;
-					p4=dd;
-					p5=dd;
-					p6=dd;
-					//		p7=dd;
-					//		p8=dd;
-					//		p9=dd;
-				}
-				else{
-					//	qDebug()<<"DATA: "<<d;
-					p1=realBits(d, 0xff);d=(d>>8);
-					p2=realBits(d, 0xff);d=(d>>8);
-					p3=realBits(d, 0xff);d=(d>>8);
-					p4=realBits(d, 0xff);d=(d>>8);
-					p5=realBits(d, 0xff);d=(d>>8);
-					p6=realBits(d, 0xff);d=(d>>8);
-					//		p7=realBits(d, 0xff);d=(d>>8);
-					//		p8=realBits(d, 0xff);d=(d>>8);
-					//		p9=realBits(d, 0xff);d=(d>>8);
-				}
+				qreal p1=frand();
+				qreal p2=frand();
+				qreal p3=frand();
+				qreal p4=frand();
+				qreal p5=frand();
+				qreal p6=frand();
+
 				//qDebug()<<"Identicon params: "<<p1<<p2<<p3<<p4<<p5<<p6<<p7<<p8<<p9;
 				const QString c1=hsl(p1,0.75f,0.55f);
 				const QString c2=hsl(p2,0.75f,0.55f);
@@ -186,7 +165,7 @@ void Identicon::regenerateIdenticon(){
 				const float x2=sin(a2)*w2;
 				const float y2=cos(a2)*w2;
 				setAttrRecur(o, "path", "pathLeg", "d", "m -2297.5041,-441.98664 "+QString::number(x1)+"," +QString::number(y1)+" "+QString::number(x2)+"," +QString::number(y2));
-				*/
+
 				dirty=false;
 			}
 		}
@@ -198,9 +177,7 @@ void Identicon::setSvgURL(QString url){
 	dirty=true;
 }
 
-void Identicon::setIdenticonData(QByteArray data){
-	if(this->data!=data){
-		this->data=data;
-		dirty=true;
-	}
+void Identicon::setPortableID(PortableID id){
+	mID=id;
+	dirty=true;
 }

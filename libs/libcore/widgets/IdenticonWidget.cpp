@@ -1,6 +1,7 @@
 #include "IdenticonWidget.hpp"
 
-#include "basic/UniquePlatformFingerprint.hpp"
+
+#include "security/PortableID.hpp"
 
 #include <QPainter>
 #include <QFile>
@@ -32,8 +33,8 @@ void IdenticonWidget::regenerateIdenticon(){
 	update();
 }
 
-void IdenticonWidget::setIdenticonData(QByteArray data){
-	identicon.setIdenticonData(data);
+void IdenticonWidget::setPortableID(PortableID &id){
+	identicon.setPortableID(id);
 	regenerateIdenticon();
 }
 

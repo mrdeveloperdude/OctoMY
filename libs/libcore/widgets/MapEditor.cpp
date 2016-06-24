@@ -5,6 +5,7 @@
 #include "../libmap/OSMMapAdapter.hpp"
 #include "../libmap/OpenAerialMapAdapter.hpp"
 #include "../libmap/MapLayer.hpp"
+#include "../libmap/GoogleMapAdapter.hpp"
 #include "../libmap/LineString.hpp"
 
 
@@ -47,7 +48,10 @@ void MapEditor::prepareMap(){
 		// create MapAdapter to get maps from
 		//		qmapcontrol::MapAdapter* mapadapter = new qmapcontrol::OSMMapAdapter();
 		//qmapcontrol::MapAdapter* mapadapter = new qmapcontrol::OpenAerialMapAdapter();
-		qmapcontrol::TileMapAdapter* mapadapter = new qmapcontrol::TileMapAdapter("tile.openstreetmap.org", "/%1/%2/%3.png", 256, 0, 17);
+		//qmapcontrol::TileMapAdapter* mapadapter = new qmapcontrol::TileMapAdapter("tile.openstreetmap.org", "/%1/%2/%3.png", 256, 0, 17);
+		qmapcontrol::TileMapAdapter* mapadapter = new qmapcontrol::GoogleMapAdapter(qmapcontrol::GoogleMapAdapter::satellite);
+
+
 
 		//qmapcontrol::TileMapAdapter* mapadapter = new qmapcontrol::TileMapAdapter("cache.kartverket.no/grunnkart/wmts", "/%1/%2/%3.png", 256, 0, 17);
 

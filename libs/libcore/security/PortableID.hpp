@@ -4,6 +4,8 @@
 #include "comms/discovery/DiscoveryRole.hpp"
 
 #include <QString>
+#include <QVariantMap>
+
 
 /**
  * @brief The PortableID class provides a mechanism to generate a portable
@@ -12,6 +14,7 @@
  * be used in other pairing
  *
  */
+
 
 
 class PortableID
@@ -26,6 +29,7 @@ class PortableID
 
 	public:
 		explicit PortableID();
+		explicit PortableID(QVariantMap &data);
 		virtual ~PortableID();
 
 

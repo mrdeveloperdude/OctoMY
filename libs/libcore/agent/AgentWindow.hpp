@@ -53,6 +53,8 @@ class AgentWindow : public QWidget, public LogDestination{
 		void onStartCameraPairing();
 		void onStartPairing();
 		void onStartPlanEditor();
+		void onStartShowBirthCertificate();
+
 	private slots:
 
 		void onFaceVisibilityChanged(bool);
@@ -66,6 +68,10 @@ class AgentWindow : public QWidget, public LogDestination{
 		void on_pushButtonConfirmQuit_clicked();
 		void on_pushButtonBack_clicked();
 		void on_pushButtonMenu_clicked();
+		void on_pushButtonBack_2_clicked();
+		void on_pushButtonBack_4_clicked();
+		void on_pushButtonBack_3_clicked();
+		void on_pushButtonBack_5_clicked();
 };
 
 
