@@ -16,7 +16,6 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<DiscoveryPartic
 		return nullptr;
 	}
 	DiscoveryServerSession *ses=nullptr;
-	if(part)
 	if(!part->pins.isEmpty()){
 		QString pin;
 		for(QString p: part->pins){

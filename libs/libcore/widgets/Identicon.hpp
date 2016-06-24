@@ -14,15 +14,14 @@ class Identicon{
 
 	private:
 		QByteArray data;
-		QString url;
 		bool dirty;
 		PortableID mID;
 		QDomDocument doc;
 		RNG *rng;
 
 	public:
-		explicit Identicon(QString url, PortableID &id);
-		explicit Identicon(QString url="");
+		explicit Identicon(PortableID &id);
+		explicit Identicon();
 		virtual  ~Identicon();
 
 	private:
@@ -30,7 +29,7 @@ class Identicon{
 		float frand();
 
 	public:
-		void setSvgURL(QString);
+		//void setSvgURL(QString);
 		void setPortableID(PortableID id);
 
 		QDomDocument domDocument();

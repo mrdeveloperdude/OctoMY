@@ -28,13 +28,6 @@ Agent::~Agent(){
 
 void Agent::start(QHostAddress listenAddress, quint16 listenPort, QHostAddress hubAddress, quint16 hubPort){
 
-	if(nullptr!=zoo){
-		zoo->setURL(QUrl("http://localhost:8123/api"));
-		//zoo->setURL(QUrl("http://localhost/lennart/octomy/index.php"));
-		//zoo->putNode(OCID); 		zoo->getNode(OCID);
-	}
-
-
 	this->hubAddress=hubAddress;
 	this->hubPort=hubPort;
 	if(nullptr!=comms){

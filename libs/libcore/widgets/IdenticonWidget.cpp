@@ -39,11 +39,6 @@ void IdenticonWidget::setPortableID(PortableID &id){
 }
 
 
-void IdenticonWidget::setSvgURL(QString url){
-	identicon.setSvgURL(url);
-	regenerateIdenticon();
-}
-
 
 void IdenticonWidget::mouseDoubleClickEvent(QMouseEvent *){
 	emit doubleClicked();

@@ -64,7 +64,7 @@ Node::Node(QCommandLineParser &opts, QString base, DiscoveryRole role, Discovery
 
 	//QByteArray OCID=UniquePlatformFingerprint::getInstance().platform().getHEX().toUtf8();
 	if(nullptr!=zoo){
-		zoo->setURL(QUrl("http://localhost:8123/api"));
+		zoo->setURL(QUrl("http://10.0.0.153:8123/api"));//katana wlan iface
 		//zoo->setURL(QUrl("http://localhost/lennart/octomy/index.php"));
 		//zoo->putNode(OCID); 		zoo->getNode(OCID);
 	}

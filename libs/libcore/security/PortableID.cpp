@@ -12,15 +12,13 @@ PortableID::PortableID()
 
 }
 
-
+#include "utility/Utility.hpp"
 PortableID::PortableID(QVariantMap &data)
 	: mName(data["name"].toString())
 	, mGender(data["gender"].toString())
-	, mID(data["id"].toString())
+	, mID((data["id"].isValid() && !data["id"].isNull())?data["id"].toString():utility::toHash(data["publicKey"].toString()))
 	, mBirthDate(QDateTime::fromString(data["createDate"].toString()).toMSecsSinceEpoch())
 	, mType(DiscoveryTypeFromString(data["type"].toString()))
-
-
 {
 
 }

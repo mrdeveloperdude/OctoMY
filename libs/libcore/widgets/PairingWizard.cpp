@@ -16,6 +16,7 @@
 #include <QItemDelegate>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QSvgRenderer>
 
 // QDesktopServices::openUrl(QUrl("https://www.youtube.com/watch?v=mTiqZm-Ea70", QUrl::TolerantMode));
 
@@ -86,10 +87,11 @@ class EditButtonDelegate: public QItemDelegate
 
 
 				PortableID id(data);
-				Identicon ic(QStringLiteral(":/icons/identicon.svg"),id);
+				//qDebug()<<"ID: "<<id.id()<< " FROM DATA: "<<data;
+				Identicon ic(id);
 				QPixmap px=ic.pixmap(buttonSize,buttonSize);
 
-				painter->drawPixmap(QRect(border, border, buttonSize,buttonSize), px, QRect(0,0,buttonSize,buttonSize));
+
 
 
 				QStyleOptionButton button;
@@ -97,6 +99,9 @@ class EditButtonDelegate: public QItemDelegate
 				int h = buttonSize;//button height
 				int x = r.left() + r.width() - w - border*2;//the X coordinate
 				int y = r.top()+border;//the Y coordinate
+
+				painter->drawPixmap(QRect(border, y, buttonSize,buttonSize), px, QRect(0,0,buttonSize,buttonSize));
+
 				button.rect = QRect(x,y,w,h);
 				button.text.clear();
 				button.state = QStyle::State_Enabled;
@@ -150,15 +155,26 @@ class PairingList: public QAbstractListModel
 {
 	private:
 		DiscoveryClientStore &store;
-		DiscoveryRole roleFilter;
+		DiscoveryType typeFilter;
 		PairingWizard &pwiz;
 
 
+	private:
+		bool filter(DiscoveryType &t) const{
+			switch(typeFilter){
+				case(TYPE_AGENT):return ((TYPE_REMOTE==t)||(TYPE_HUB==t));
+				case(TYPE_REMOTE):return ((TYPE_HUB==t)||(TYPE_AGENT==t));
+				case(TYPE_HUB):return ((TYPE_AGENT==t)||(TYPE_REMOTE==t)||(TYPE_HUB==t)); //Hubs are onmnivorus
+			}
+			return false;
+		}
+
+
 	public:
-		explicit PairingList(DiscoveryClientStore &store, DiscoveryRole roleFilter, PairingWizard &pwiz)
+		explicit PairingList(DiscoveryClientStore &store, DiscoveryType typeFilter, PairingWizard &pwiz)
 			: QAbstractListModel(&pwiz)
 			, store(store)
-			, roleFilter(roleFilter)
+			, typeFilter(typeFilter)
 			, pwiz(pwiz)
 		{
 		}
@@ -167,7 +183,7 @@ class PairingList: public QAbstractListModel
 		{
 		}
 
-
+	public:
 		int rowCount(const QModelIndex &) const
 		{
 			int ret=0;
@@ -175,7 +191,7 @@ class PairingList: public QAbstractListModel
 			for(QMap<QString, DiscoveryParticipant *>::const_iterator it=participants.begin(), e=participants.end(); it!=e;++it){
 				DiscoveryParticipant *p=it.value();
 				if(nullptr!=p){
-					if(roleFilter==p->role){
+					if(filter(p->type)){
 						ret++;
 					}
 				}
@@ -192,16 +208,31 @@ class PairingList: public QAbstractListModel
 		QVariant data(const QModelIndex &index, int role) const
 		{
 			QMap<QString, DiscoveryParticipant *> &participants=store.getParticipants();
-			QMap<QString, DiscoveryParticipant *>::const_iterator it = participants.begin();
-			it+=index.row();
-			DiscoveryParticipant *part=it.value();
+			int targetRow=index.row();
+			int rowCounter=0;
+			DiscoveryParticipant *part=nullptr;
+
+			for(QMap<QString, DiscoveryParticipant *>::const_iterator it=participants.begin(), e=participants.end(); it!=e;++it){
+				DiscoveryParticipant *p=it.value();
+				if(nullptr!=p){
+					if(filter(p->type)){
+						if(rowCounter==targetRow){
+							part=p;
+							break;
+						}
+						rowCounter++;
+					}
+				}
+			}
 
 			if (nullptr!=part) {
-				if(Qt::DisplayRole == role ) {
-					return part->toVariantMap();
-				}
-				else if (Qt::ToolTipRole == role){
-					return DiscoveryTypeToString(part->type) +": " +part->ID;
+				if(filter(part->type)){
+					if(Qt::DisplayRole == role ) {
+						return part->toVariantMap();
+					}
+					else if (Qt::ToolTipRole == role){
+						return DiscoveryTypeToString(part->type) +": " +part->ID;
+					}
 				}
 			}
 			return QVariant();
@@ -240,14 +271,15 @@ void PairingWizard::configure(Node *n)
 {
 	node=n;
 	if(nullptr!=node){
+		ui->labelID->setText(node->getKeyStore().getLocalID());
 		DiscoveryClient *discovery=node->getDiscoveryClient();
-		DiscoveryRole role=node->getRole();
+		DiscoveryType type=node->getType();
 
 		if(!connect(discovery, &DiscoveryClient::nodeDiscovered, [=](QString partID)
 		{
 					if(nullptr==ui->listViewNodes->model()){
 
-					list=new PairingList(node->getPeers(),ROLE_AGENT==role?ROLE_CONTROL:ROLE_AGENT,*this);
+					list=new PairingList(node->getPeers(),type,*this);
 					ui->listViewNodes->setModel(list);
 
 					if(nullptr==delegate){
@@ -267,14 +299,16 @@ void PairingWizard::configure(Node *n)
 
 
 
-		switch(role){
+		switch(type){
 			default:
-			case(ROLE_UNKNOWN):
-			case(ROLE_AGENT):{
+			case(TYPE_ZOO):
+			case(TYPE_UNKNOWN):
+			case(TYPE_AGENT):{
 					ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageAgent);
 					ui->stackedWidgetPairMessage->setCurrentWidget(ui->pagePairMessageAgent);
 				}break;
-			case(ROLE_CONTROL):{
+			case(TYPE_REMOTE):
+			case(TYPE_HUB):{
 					ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
 					ui->stackedWidgetPairMessage->setCurrentWidget(ui->pagePairMessageControl);
 				}break;
@@ -304,10 +338,19 @@ void PairingWizard::reset(){
 
 void PairingWizard::startEdit(int row){
 	qDebug()<<"STARTING EDIT FOR "<<row;
-	ui->stackedWidget->setCurrentWidget(ui->pagePeerDetail);
-	PortableID id;
-	ui->widgetIdenticon->setPortableID(id);
-	ui->widgetQR->setQRData(""+row);
+	QModelIndex  index=list->index(row,0);
+	if(index.isValid()){
+		setUpdatesEnabled(false);
+		QVariantMap map=index.data(Qt::DisplayRole).toMap();
+		//qDebug()<<"DATA FOR "<<row<<": "<<map;
+		PortableID id(map);
+		ui->widgetParticipantCertificate->setPortableID(id);
+		ui->stackedWidget->setCurrentWidget(ui->pagePeerDetail);
+		setUpdatesEnabled(true);
+	}
+	else{
+		qWarning()<<"ERROR: Index was invalid for row "<<row;
+	}
 }
 
 Node *PairingWizard::getNode(){

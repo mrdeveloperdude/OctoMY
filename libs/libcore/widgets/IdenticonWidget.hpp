@@ -12,15 +12,11 @@ class PortableI;
 class IdenticonWidget : public SvgWidget{
 		Q_OBJECT
 
-		Q_PROPERTY(QString svgURL READ svgURL WRITE setSvgURL DESIGNABLE true)
-
 	private:
 		Identicon identicon;
 
 	public:
 		explicit IdenticonWidget(QWidget *parent = 0);
-
-		void setSvgURL(QString url);
 
 	protected:
 

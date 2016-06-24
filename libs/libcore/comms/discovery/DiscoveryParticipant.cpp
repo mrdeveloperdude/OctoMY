@@ -18,7 +18,7 @@ DiscoveryParticipant::DiscoveryParticipant()
 }
 
 DiscoveryParticipant::DiscoveryParticipant(QString publicKey, QString public_address, quint16 public_port, QString local_address, quint16 local_port, DiscoveryRole role, DiscoveryType type)
-	: publicKey(publicKey.trimmed())
+	: publicKey(publicKey)
 	, publicAddress(public_address)
 	, publicPort(public_port)
 	, localAddress(local_address)
@@ -34,7 +34,7 @@ DiscoveryParticipant::DiscoveryParticipant(QString publicKey, QString public_add
 
 
 DiscoveryParticipant::DiscoveryParticipant(QVariantMap map)
-	: publicKey(map["publicKey"].toString().trimmed())
+	: publicKey(map["publicKey"].toString())
 	, publicAddress(map["publicAddress"].toString().trimmed())
 	, publicPort(map["publicPort"].toInt())
 	, localAddress(map["localAddress"].toString().trimmed())

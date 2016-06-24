@@ -45,7 +45,6 @@ ZooServer::ZooServer(QCommandLineParser &opts, QProcessEnvironment &env, QObject
 	, settings(nullptr, base)
 	, baseDir( settings.getCustomSetting("content_dir", QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)) )
 	, keystore (nullptr, baseDir+"/keystore.json")
-	, identicon(":/icons/identicon.svg")
 	, storage(QDir::current())
 
 {
@@ -304,12 +303,10 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 		QString localAddress=root["localAddress"].toString();
 		DiscoveryRole role=DiscoveryRoleFromString(root["role"].toString());
 		DiscoveryType type=DiscoveryTypeFromString(root["type"].toString());
-
-
 		quint16 localPort=root["localPort"].toInt();
-		QTcpServer *tc=tcpServer();
 		QString publicAddress="";
 		quint16 publicPort=root["publicPort"].toInt();
+		QTcpServer *tc=tcpServer();
 		if(nullptr!=tc){
 			publicAddress=tc->serverAddress().toString();
 		}
@@ -358,7 +355,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 	for(QVariant pp:l){
 		QVariantMap p=pp.toMap();
 		qDebug()<< " + "
-					<<utility::toHash(p["publicKey"].toString().trimmed())
+					<<utility::toHash(p["publicKey"].toString())
 				<<" = "
 				<< p["type"].toString();
 

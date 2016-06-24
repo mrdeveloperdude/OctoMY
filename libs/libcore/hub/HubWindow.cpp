@@ -121,7 +121,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 		//updateClientsList();
 		appendLog("READY");
-		QTimer::singleShot(2500,splash,SLOT(deleteLater()));
+		QTimer::singleShot(1500,splash,SLOT(deleteLater()));
 		splash=nullptr;
 	}
 }

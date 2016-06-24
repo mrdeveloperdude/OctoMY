@@ -78,7 +78,7 @@ DiscoveryClient::DiscoveryClient(Node &node)
 	, m_serverURL("http://localhost:8123/api")
 	, m_client(new qhttp::client::QHttpClient(this))
 	, node(node)
-	, ourPubKey(node.getKeyStore().getLocalPublicKey().trimmed())
+	, ourPubKey(node.getKeyStore().getLocalPublicKey())
 	, ourID(utility::toHash(ourPubKey))
 	, zeroID(utility::toHash(""))
 {
@@ -136,7 +136,7 @@ void DiscoveryClient::discover(){
 			qhttp::TStatusCode status=res->status();
 			bool ok=true;
 			QString message="";
-			if(qhttp::ESTATUS_OK==status){
+			if(qhttp::ESTATUS_OK!=status){
 				ok=false;
 				message="ERROR: HTTP Code was "+QString::number(status)+" instead of 200 OK: ";
 			}
@@ -168,6 +168,7 @@ void DiscoveryClient::discover(){
 					ok=ok && rok;
 				}
 			}
+			qDebug()<<"STATUS("<<ok<<"):"<<message;
 		});
 		//qDebug()<<"Getting node by OCID:"<<OCID << " RES DONE";
 	};
@@ -177,8 +178,9 @@ void DiscoveryClient::discover(){
 }
 
 void DiscoveryClient::registerPossibleParticipant(QVariantMap map){
-	const QString partID=utility::toHash(map["publicKey"].toString().trimmed());
+	const QString partID=utility::toHash(map["publicKey"].toString());
 	// Is this a genuine participant?
+	//qDebug()<<"ZERO: "<<zeroID<<" OUR: "<<ourID<<" PART:"<<partID;
 	if(partID!=zeroID && ourID!=partID){
 		DiscoveryClientStore &peers=node.getPeers();
 		//TODO: Scrutinize newcomer for security

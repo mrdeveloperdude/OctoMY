@@ -10,9 +10,9 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="35.698353mm"
-   height="42.198288mm"
-   viewBox="0 0 126.49023 149.52149"
+   width="64"
+   height="64"
+   viewBox="0 0 64.000002 63.999996"
    id="svg6146"
    version="1.1"
    inkscape:version="0.91 r"
@@ -71,9 +71,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.979899"
-     inkscape:cx="26.454059"
-     inkscape:cy="70.79937"
+     inkscape:zoom="7.919596"
+     inkscape:cx="39.783934"
+     inkscape:cy="52.533214"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -85,7 +85,8 @@
      inkscape:window-height="1056"
      inkscape:window-x="41"
      inkscape:window-y="24"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     units="px" />
   <metadata
      id="metadata6151">
     <rdf:RDF>
@@ -102,10 +103,10 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(914.67369,-494.74432)">
+     transform="translate(914.67369,-580.26583)">
     <g
        id="g6940"
-       transform="translate(-181.05762,-8.6582262)">
+       transform="matrix(0.41004522,0,0,0.41004522,-607.79128,375.19274)">
       <path
          style="opacity:1;fill:url(#linearGradient5812);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:12.81299973;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
          d="m -670.37096,510.99043 c -17.63635,2e-4 -31.93339,14.29724 -31.93359,31.93359 0.008,2.09378 0.22195,4.1788 0.63701,6.22523 0.47696,2.38064 0.67741,3.50683 -1.39732,5.21338 -11.78222,9.71263 -18.67733,24.21117 -18.69867,39.58092 -3.3e-4,28.38347 23.0091,51.39291 51.39257,51.39259 28.38347,3.2e-4 51.39291,-23.00912 51.39258,-51.39259 -0.0226,-15.45854 -6.9986,-30.03588 -18.90746,-39.74835 -1.67362,-1.50139 -1.72481,-2.45408 -1.25152,-4.65674 0.46234,-2.17162 0.69754,-4.38839 0.7,-6.61444 -2e-4,-17.63635 -14.29725,-31.93339 -31.9336,-31.93359 z"

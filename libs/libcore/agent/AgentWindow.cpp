@@ -51,7 +51,8 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 
 		//Set our custom identicon as window icon
 		PortableID pid;
-		Identicon id(QStringLiteral(":/icons/identicon.svg"),pid);
+		pid.setID(agent->getKeyStore().getLocalID());
+		Identicon id(pid);
 		QIcon icon;//=windowIcon();
 		icon.addPixmap(id.pixmap());
 		//	icon.addFile(QStringLiteral(":/icons/agent.svg"), QSize(), QIcon::Normal, QIcon::Off);
