@@ -395,13 +395,13 @@ FORMS    += \
 	ui/CameraPairingWidget.ui \
 	ui/MapEditor.ui \
 	ui/RealtimeValuesWidget.ui \
-	widgets/AgentDeliveryWizard.ui \
-	widgets/FaceWidget.ui \
-	widgets/LogWidget.ui \
     ui/PairingWizard.ui \
     hub/HUDWidget.ui \
-    widgets/PKIManager.ui \
-    widgets/PortableIDWidget.ui
+    ui/AgentDeliveryWizard.ui \
+    ui/FaceWidget.ui \
+    ui/LogWidget.ui \
+    ui/PKIManager.ui \
+    ui/PortableIDWidget.ui
 
 
 RESOURCES += \
