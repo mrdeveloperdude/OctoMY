@@ -7,7 +7,7 @@
 #include <QDebug>
 #include <QRegularExpressionValidator>
 #include <QRegularExpression>
-
+#include <QDateTime>
 
 AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	: QWidget(parent)
@@ -128,9 +128,9 @@ void AgentDeliveryWizard::configure(Node *n){
 				if(nextWidget==ui->pageBirthInProgress){
 					QString name=ui->lineEditName->text();
 					name[0]=name[0].toUpper();
-					ui->labelName->setText(name);
+					mID.setName(name);
 					QString gender=0>ui->comboBoxGender->currentIndex()?ui->comboBoxGender->currentText():generateRandomGender();
-					ui->labelGender->setText(gender);
+					mID.setGender(gender);
 					qDebug()<<"NAME: "<<name<<", GENDER: "<<gender;
 				}
 				/*
@@ -191,7 +191,10 @@ void AgentDeliveryWizard::onBirthComplete(){
 			else{
 				QString id=keystore.getLocalID();
 				qDebug()<<"ID: "<<id;
-				ui->labelID->setText(id);
+				mID.setID(id);
+				mID.setType(TYPE_AGENT);
+				mID.setBirthDate(QDateTime::currentMSecsSinceEpoch());
+				ui->widgetBirthCertificate->setPortableID(mID);
 				ui->stackedWidget->setCurrentWidget(ui->pageBirthDone);
 			}
 		}

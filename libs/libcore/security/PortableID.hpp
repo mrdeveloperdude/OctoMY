@@ -1,6 +1,8 @@
 #ifndef PORTABLEID_HPP
 #define PORTABLEID_HPP
 
+#include "comms/discovery/DiscoveryRole.hpp"
+
 #include <QString>
 
 /**
@@ -15,19 +17,36 @@
 class PortableID
 {
 
-	public:
-		QString tier;
-		QString name;
-		QString id;
-		QString pubkey;
+	private:
+		QString mName;
+		QString mGender;
+		QString mID;
+		quint64 mBirthDate;
+		DiscoveryType mType;
 
 	public:
-		PortableID();
+		explicit PortableID();
+		virtual ~PortableID();
+
 
 	public:
 
-		bool fromString(QString);
-		QString toString();
+		void setName(QString name);
+		void setGender(QString gender);
+		void setID(QString id);
+		void setBirthDate(quint64 birthDate);
+		void setType(DiscoveryType type);
+
+		QString name() const;
+		QString gender() const;
+		QString id() const;
+		quint64 birthDate() const;
+		DiscoveryType type() const;
+
+	public:
+
+		bool fromPortableString(QString);
+		QString toPortableString();
 };
 
 #endif // PORTABLEID_HPP

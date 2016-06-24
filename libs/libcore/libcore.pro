@@ -177,7 +177,8 @@ SOURCES +=\
     widgets/HUDWidget.cpp \
     widgets/PKIManager.cpp \
     plot/NetworkStats.cpp \
-    random/FileRandomRNG.cpp
+    random/FileRandomRNG.cpp \
+    widgets/PortableIDWidget.cpp
 
 
 
@@ -360,7 +361,8 @@ HEADERS  += \
     widgets/HUDWidget.hpp \
     widgets/PKIManager.hpp \
     plot/NetworkStats.hpp \
-    random/FileRandomRNG.hpp
+    random/FileRandomRNG.hpp \
+    widgets/PortableIDWidget.hpp
 
 
 
@@ -398,7 +400,8 @@ FORMS    += \
 	widgets/LogWidget.ui \
     ui/PairingWizard.ui \
     hub/HUDWidget.ui \
-    widgets/PKIManager.ui
+    widgets/PKIManager.ui \
+    widgets/PortableIDWidget.ui
 
 
 RESOURCES += \

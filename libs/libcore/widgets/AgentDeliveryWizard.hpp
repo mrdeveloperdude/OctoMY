@@ -2,7 +2,9 @@
 #define AGENTDELIVERYWIZARD_HPP
 
 #include "security/KeyStore.hpp"
+#include "security/PortableID.hpp"
 #include "basic/AgentNameGenerator.hpp"
+
 
 #include <QWidget>
 #include <QTimer>
@@ -27,6 +29,7 @@ class AgentDeliveryWizard : public QWidget
 		AgentNameGenerator ng;
 		Settings *settings;
 		Node *node;
+		PortableID mID;
 
 	public:
 		explicit AgentDeliveryWizard(QWidget *parent = 0);

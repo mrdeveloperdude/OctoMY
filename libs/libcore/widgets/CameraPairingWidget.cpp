@@ -75,12 +75,12 @@ CameraPairingWidget::~CameraPairingWidget()
 PortableID CameraPairingWidget::getMyPortableID()
 {
 	PortableID out;
-	out.tier="remote";
-	out.id=UniquePlatformFingerprint::getInstance().platform().getHEX();
-	out.name="granny";
+//	out.tier="remote";
+//	out.id=UniquePlatformFingerprint::getInstance().platform().getHEX();
+	//out.name="granny";
 	//TODO:Reintegrate with keystore somehow
 	QString pub;//=keystore.getLocalPublicKey();
-	out.pubkey=pub.mid(27,pub.length()-27-26).replace(QRegExp("\n"), "");
+	//out.pubkey=pub.mid(27,pub.length()-27-26).replace(QRegExp("\n"), "");
 	return out;
 }
 
@@ -97,7 +97,7 @@ void CameraPairingWidget::on_pushButtonBadge_toggled(bool show)
 	}
 	*/
 	ui->widgetQR->setVisible(show);
-	ui->widgetQR->setQRData(getMyPortableID().toString());
+	ui->widgetQR->setQRData(getMyPortableID().toPortableString());
 	ui->widgetIdenticon->setVisible(show);
 	ui->pushButtonScanner->setVisible(!show);
 	qDebug()<<"Badge "<<(show?"on":"off");

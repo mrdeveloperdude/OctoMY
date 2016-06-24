@@ -4,24 +4,78 @@
 
 
 PortableID::PortableID()
+	: mBirthDate(0)
+	, mType(DiscoveryType::TYPE_UNKNOWN)
 {
 
+}
+
+PortableID::~PortableID()
+{
 
 }
 
 
-bool PortableID::fromString(QString s){
+
+void PortableID::setName(QString name){
+	mName=name;
+}
+
+void PortableID::setGender(QString gender){
+	mGender=gender;
+}
+
+void PortableID::setID(QString id){
+	mID=id;
+}
+
+
+void PortableID::setBirthDate(quint64 birthDate){
+	mBirthDate=birthDate;
+}
+
+
+void PortableID::setType(DiscoveryType type){
+	mType=type;
+}
+
+
+
+
+QString PortableID::name() const{
+	return mName;
+}
+QString PortableID::gender() const{
+	return mGender;
+}
+QString PortableID::id() const{
+	return mID;
+}
+
+
+quint64 PortableID::birthDate() const{
+	return mBirthDate;
+}
+
+
+bool PortableID::fromPortableString(QString s){
 	QStringList parts = s.split(QRegExp ("(\\.)"));
 	if(parts.size()!=4){
 		return false;
 	}
-	tier=parts.at(0).trimmed();
-	name=parts.at(1).trimmed();
-	id=parts.at(2).trimmed();
-	pubkey=parts.at(3).trimmed();
+	mName=parts.at(0).trimmed();
+	mGender=parts.at(1).trimmed();
+	mID=parts.at(2).trimmed();
+	mBirthDate=parts.at(3).trimmed().toInt();
 	return true;
 }
 
-QString PortableID::toString(){
-	return tier + "." +name + "." +id+ "." +pubkey;
+QString PortableID::toPortableString(){
+	return mName + "." +mGender + "." +mID+ "." +QString::number(mBirthDate);
+}
+
+
+
+DiscoveryType PortableID::type() const{
+	return mType;
 }

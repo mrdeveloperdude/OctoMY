@@ -115,7 +115,6 @@ quint32 AgentNameGenerator::randomInt(){
 		return ::rand();
 	}
 	else{
-		qDebug()<<"PROPER RAND";
 		return rng->generateInt32();
 	}
 }
