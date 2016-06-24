@@ -109,7 +109,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 
 		QAction *certAction = new QAction(tr("Show Birth Certificate"), this);
 		certAction->setStatusTip(tr("Show the birth certificate of this agent"));
-		certAction->setIcon(QIcon(":/icons/eye.svg"));
+		certAction->setIcon(QIcon(":/icons/certificate.svg"));
 		connect(certAction, &QAction::triggered, this, &AgentWindow::onStartShowBirthCertificate);
 		menu.addAction(certAction);
 
