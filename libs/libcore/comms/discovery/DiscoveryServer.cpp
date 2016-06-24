@@ -23,14 +23,14 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<DiscoveryPartic
 			pin=p;
 			//Look up the pin in question
 			if(registry.contains(pin)){
-				qDebug()<<"PIN "<<pin<<" matched with a session";
+				//qDebug()<<"PIN "<<pin<<" matched with a session";
 				ses=registry[pin];
 				break;
 			}
 		}
 		if(""!=pin){
 			if(nullptr==ses){
-				qDebug()<<"Creating new session";
+				//qDebug()<<"Creating new session";
 				ses=new DiscoveryServerSession();
 				if(!ses->set(part)){
 					qWarning()<<"ERROR: Newly created session will be terminated as participant was not welcome";
@@ -38,7 +38,7 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<DiscoveryPartic
 					ses=nullptr;
 				}
 				else{
-					qDebug()<<"Adding session to registry under pin "<<pin;
+					//qDebug()<<"Adding session to registry under pin "<<pin;
 					registry[pin]=ses;
 				}
 			}

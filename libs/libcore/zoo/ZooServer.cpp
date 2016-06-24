@@ -11,6 +11,7 @@
 #include "utility/ScopedTimer.hpp"
 
 #include "security/PortableID.hpp"
+#include "utility/Utility.hpp"
 
 #include "ZooConstants.hpp"
 
@@ -113,9 +114,9 @@ void ZooServer::start(const QString pathOrPortNumber)
 	qhttp::server::TServerHandler conHandler=[this](qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res){
 		req->collectData(10000);
 		req->onEnd([this, req, res](){
-			qDebug()<<req;
+			//qDebug()<<req;
 			QString path=req->url().path();
-			qDebug()<<"URL: "<<path;
+			//qDebug()<<"URL: "<<path;
 			if("/"==path){
 				serveIndex(req,res);
 				return;
@@ -256,7 +257,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 	}
 
 	QString action=root.value("action").toString();
-	qDebug()<<"------------------ "<<action<<" ---------------------------------";
+	//qDebug()<<"------------------ "<<action<<" ---------------------------------";
 
 	bool ok=true;
 	QString msg="Have a nice day";
@@ -328,7 +329,6 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 	else if(ZooConstants::OCTOMY_ZOO_API_UDP_PUNCH==action){
 		QString punchToken=root.value("punchToken").toString();
 		if(rePunchToken.match(punchToken).hasMatch()){
-			//qDebug()<<"GOT API CONNECTION WITH OCID="<<ocid;
 			QString remoteAddress=req->remoteAddress();
 			quint16 remotePort=req->remotePort();
 			QString localAddress=root["localAddress"].toString();
@@ -352,6 +352,19 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 
 	map["status"] = ok?"ok":"error";
 	map["message"] = msg;
+
+	qDebug()<<"PAIR: "<<msg+":";
+	QList<QVariant> l=map["participants"].toList();
+	for(QVariant pp:l){
+		QVariantMap p=pp.toMap();
+		qDebug()<< " + "
+					<<utility::toHash(p["publicKey"].toString().trimmed())
+				<<" = "
+				<< p["type"].toString();
+
+
+	}
+
 
 	QByteArray body  = QJsonDocument::fromVariant(map).toJson();
 

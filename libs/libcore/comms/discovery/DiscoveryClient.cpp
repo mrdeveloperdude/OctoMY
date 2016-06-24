@@ -134,32 +134,39 @@ void DiscoveryClient::discover(){
 		res->collectData(10000);
 		res->onEnd([this, res](){
 			qhttp::TStatusCode status=res->status();
-			if(qhttp::ESTATUS_OK==status){
-			}
-
 			bool ok=true;
 			QString message="";
-			//qDebug()<<"Getting node by OCID:"<<OCID<<" RES: ON END";
-			QJsonDocument doc = QJsonDocument::fromJson(res->collectedData());
-			QByteArray data=doc.toJson();
-			QVariantMap root = QJsonDocument::fromJson(data).toVariant().toMap();
-			if ( root.isEmpty() ) {
-				qWarning() << "ERROR: The result is an invalid json";
-				qWarning() << "ERROR: OFFENDING JSON IS: "<<data;
-				message="ERROR: invalid json body in response";
+			if(qhttp::ESTATUS_OK==status){
 				ok=false;
+				message="ERROR: HTTP Code was "+QString::number(status)+" instead of 200 OK: ";
 			}
 			else{
-				qDebug()<<"RETURNED STATUS  WAS: "<<root.value("status")<<", MSG:  "<<root.value("message");
-				if(root.contains("participants")){
-					qDebug()<<"PARTICIPANTS: "<<root.value("participants");
-					QVariantList partList=root.value("participants").toList();
-					for(QVariant part:partList){
-						QVariantMap map=part.toMap();
-						registerPossibleParticipant(map);
-					}
+				//qDebug()<<"Getting node by OCID:"<<OCID<<" RES: ON END";
+				QJsonDocument doc = QJsonDocument::fromJson(res->collectedData());
+				QByteArray data=doc.toJson();
+				QVariantMap root = QJsonDocument::fromJson(data).toVariant().toMap();
+				if ( root.isEmpty() ) {
+					qWarning() << "ERROR: The result is an invalid json";
+					qWarning() << "ERROR: OFFENDING JSON IS: "<<data;
+					message="ERROR: invalid json body in response";
+					ok=false;
 				}
-				ok=ok &&("ok"==root.value("status"));
+				else{
+					qDebug()<<"RETURNED STATUS WAS: "<<root.value("status").toString()<<", MSG:  "<<root.value("message").toString();
+					if(root.contains("participants")){
+						qDebug()<<"PARTICIPANTS: "<<root.value("participants");
+						QVariantList partList=root.value("participants").toList();
+						for(QVariant part:partList){
+							QVariantMap map=part.toMap();
+							registerPossibleParticipant(map);
+						}
+					}
+					bool rok=("ok"==root.value("status").toString());
+					if(!rok){
+						message=root.value("message").toString();
+					}
+					ok=ok && rok;
+				}
 			}
 		});
 		//qDebug()<<"Getting node by OCID:"<<OCID << " RES DONE";

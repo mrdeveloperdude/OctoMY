@@ -123,11 +123,11 @@ const QRegularExpression rePin("^[0-9A-H]{5}$"); // trimmed 5-digit string with 
 void DiscoveryParticipant::addPin(QString pin)
 {
 	if(rePin.match(pin).hasMatch()){
-		qDebug()<<"ACCEPTED PIN:" <<pin;
+		//qDebug()<<"ACCEPTED PIN:" <<pin;
 		pins<<pin;
 	}
 	else {
-		qWarning()<<"ERROR: pin did not match validation:" <<pin;
+		//qDebug()<<"Pin "<<pin<<" did not match validation:";
 	}
 }
 
