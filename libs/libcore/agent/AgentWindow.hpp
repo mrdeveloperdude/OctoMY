@@ -39,7 +39,8 @@ class AgentWindow : public QWidget, public LogDestination{
 
 		void updateVisibility();
 
-
+	private:
+		void updateIdentity();
 	private:
 		void notifyAndroid(QString);
 		void toastAndroid(QString);

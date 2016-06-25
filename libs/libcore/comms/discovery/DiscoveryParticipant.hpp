@@ -48,6 +48,8 @@ struct DiscoveryParticipant{
 
 		QVariantMap toVariantMap();
 
+		QString toString();
+
 };
 
 

@@ -60,6 +60,7 @@ class Node : public QObject
 
 	public:
 
+		void updateDiscoveryClient();
 		void sendStatus();
 
 		void hookSensorSignals(QObject &o);

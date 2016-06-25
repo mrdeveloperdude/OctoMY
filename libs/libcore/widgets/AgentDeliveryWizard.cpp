@@ -2,7 +2,9 @@
 #include "ui_AgentDeliveryWizard.h"
 
 #include "basic/Settings.hpp"
+#include "basic/Standard.hpp"
 #include "widgets/WaitingSpinnerWidget.hpp"
+#include "basic/Node.hpp"
 
 #include <QDebug>
 #include <QRegularExpressionValidator>
@@ -38,13 +40,13 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	birthTimer.setInterval(4000); //Minimum birth time gives this moment some depth in case keygen should finish quickly.
 	birthTimer.setSingleShot(true);
 
-	if(!connect(&birthTimer, SIGNAL(timeout()), this,SLOT(onBirthComplete()))){
+	if(!connect(&birthTimer, SIGNAL(timeout()), this,SLOT(onBirthComplete()),OC_CONTYPE)){
 		qWarning()<<"ERROR: Could not connect";
 	}
 
 	if(!connect(ui->lineEditName, &QLineEdit::textEdited, this, [=](QString s){
 				ui->pushButtonOnward->setEnabled(s.length()>=minLetters);
-})){
+},OC_CONTYPE)){
 		qWarning()<<"ERROR: Could not connect";
 	}
 }
@@ -84,7 +86,7 @@ QString generateRandomGender(){
 	return gender;
 }
 
-#include "basic/Node.hpp"
+
 void AgentDeliveryWizard::configure(Node *n){
 	node=n;
 	if(nullptr!=node){
@@ -92,7 +94,7 @@ void AgentDeliveryWizard::configure(Node *n){
 		KeyStore &keystore=node->getKeyStore();
 		KeyStore *keystorep=&keystore;
 
-		if(!connect(&keystore, SIGNAL(keystoreReady()), this, SLOT(onBirthComplete()))){
+		if(!connect(&keystore, SIGNAL(keystoreReady()), this, SLOT(onBirthComplete()),OC_CONTYPE)){
 			qWarning()<<"ERROR: Could not connect";
 		}
 
@@ -151,7 +153,7 @@ void AgentDeliveryWizard::configure(Node *n){
 					}
 				}
 				ui->stackedWidget->setCurrentIndex(next);
-			});
+			},OC_CONTYPE);
 		}
 
 		ui->lineEditName->setText(ng.generate());

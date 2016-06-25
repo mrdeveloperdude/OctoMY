@@ -118,6 +118,22 @@ QVariantMap DiscoveryParticipant::toVariantMap()
 	return map;
 }
 
+
+
+QString DiscoveryParticipant::toString()
+{
+
+	return "ID: "+ID
+			+", publicAddress:"+publicAddress+":"+QString::number(publicPort)
+			+", localAddress:"+localAddress+":"+QString::number(localPort)
+			+", lastTime:"+QString::number(lastTime)
+			+", pins:"+pins.join(";")
+			+", publicKey:"+publicKey
+			+", role:"+DiscoveryRoleToString(role)
+			+", type:"+DiscoveryTypeToString(type);
+
+}
+
 const QRegularExpression rePin("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
 
 void DiscoveryParticipant::addPin(QString pin)

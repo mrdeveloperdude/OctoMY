@@ -14,7 +14,6 @@ SOURCES +=\
 	3d/scene/Limb.cpp \
 	3d/scene/QtLogo3D.cpp \
 	3d/scene/Simulation.cpp \
-	agent/Agent.cpp \
 	agent/AgentWindow.cpp \
 	basic/AgentNameGenerator.cpp \
 	basic/Fingerprint.cpp \
@@ -178,7 +177,8 @@ SOURCES +=\
     widgets/PKIManager.cpp \
     plot/NetworkStats.cpp \
     random/FileRandomRNG.cpp \
-    widgets/PortableIDWidget.cpp
+    widgets/PortableIDWidget.cpp \
+    agent/Agent.cpp
 
 
 

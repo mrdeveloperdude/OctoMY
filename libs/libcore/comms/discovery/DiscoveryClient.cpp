@@ -89,6 +89,8 @@ DiscoveryClient::DiscoveryClient(Node &node)
 	}
 }
 
+
+
 void DiscoveryClient::start(){
 	qDebug()<<"DISCOVERY CLIENT STARTED";
 	if(!timer.isActive()){

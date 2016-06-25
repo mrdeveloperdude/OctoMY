@@ -16,6 +16,24 @@
 #include <QAndroidJniObject>
 #endif
 
+void AgentWindow::updateIdentity(){
+	if(nullptr!=agent){
+		agent->updateDiscoveryClient();
+		//Set our custom identicon as window icon
+		PortableID pid;
+		pid.setID(agent->getKeyStore().getLocalID());
+		Identicon id(pid);
+		QIcon icon;//=windowIcon();
+		icon.addPixmap(id.pixmap());
+		//	icon.addFile(QStringLiteral(":/icons/agent.svg"), QSize(), QIcon::Normal, QIcon::Off);
+		setWindowIcon(icon);
+	}
+	ui->widgetFace->setAgent(agent);
+	ui->widgetDelivery->configure(agent);
+	ui->widgetPairing->configure(agent);
+
+}
+
 AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::AgentWindow)
@@ -23,23 +41,17 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	, hexy(0)
 {
 	ui->setupUi(this);
-	ui->widgetFace->setAgent(agent);
-	ui->widgetDelivery->configure(agent);
-	ui->widgetPairing->configure(agent);
+
+	updateIdentity();
 
 	if(nullptr!=agent){
 		Settings &s=agent->getSettings();
-
 		//Select correct starting page
 		QWidget *startPage=ui->pageRunning;
-		qDebug()<<"#########################################################";
-		qDebug()<<"#########################################################";
-
-		qDebug()<<"###Local key: "<<agent->getKeyStore().getLocalPublicKey();
-
 		ui->stackedWidget->setCurrentWidget(agent->getKeyStore().hasLocalKeyFile()?startPage:ui->pageDelivery);
-		//Make sure to switch page on "done"
+
 		connect(ui->widgetDelivery, &AgentDeliveryWizard::done, [=](bool pairNow) {
+			updateIdentity();
 			ui->stackedWidget->setCurrentWidget(pairNow?ui->pagePairing:startPage);
 		} );
 
@@ -49,14 +61,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 
 		updateVisibility();
 
-		//Set our custom identicon as window icon
-		PortableID pid;
-		pid.setID(agent->getKeyStore().getLocalID());
-		Identicon id(pid);
-		QIcon icon;//=windowIcon();
-		icon.addPixmap(id.pixmap());
-		//	icon.addFile(QStringLiteral(":/icons/agent.svg"), QSize(), QIcon::Normal, QIcon::Off);
-		setWindowIcon(icon);
+
 
 		ui->widgetConnection->configure(&s,"agent");
 		if(!connect(ui->widgetConnection,SIGNAL(connectStateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState)),OC_CONTYPE)){
@@ -124,6 +129,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 				QMessageBox::StandardButton reply = QMessageBox::question(this, "Unbirth", "Are you sure you want to DELETE the personality of this robot forever?", QMessageBox::No|QMessageBox::Yes);
 				if (QMessageBox::Yes==reply) {
 					agent->getKeyStore().clear();
+					updateIdentity();
 					ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
 					qDebug()<<"UNBIRTHED!";
 				}

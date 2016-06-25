@@ -6,6 +6,7 @@
 #include "widgets/Identicon.hpp"
 #include "comms/discovery/DiscoveryParticipant.hpp"
 #include "security/PortableID.hpp"
+#include "basic/Standard.hpp"
 
 #include <QDebug>
 #include <QRegularExpression>
@@ -259,6 +260,21 @@ PairingWizard::PairingWizard(QWidget *parent)
 	ui->setupUi(this);
 
 	reset();
+
+
+	// Hook onward buttons to go to the correct page in stack
+	QList<QPushButton *> onwardButtons = ui->stackedWidget->findChildren<QPushButton *>(QRegularExpression("pushButtonOnward.*"));
+	//qDebug()<<"FOUND "<<onwardButtons.size()<<" ONWARDs";
+	for (QList<QPushButton*>::iterator it = onwardButtons.begin(), e=onwardButtons.end(); it != e; ++it) {
+		QPushButton*onward=(*it);
+		//qDebug()<<" + ONWARD: "<<onward->objectName();
+		connect(onward, &QPushButton::clicked,this,[=](bool b){
+			// Skip pages that are not relevant to the selection made in "basic" page
+			int next = (ui->stackedWidget->currentIndex() + 1) % ui->stackedWidget->count();
+			ui->stackedWidget->setCurrentIndex(next);
+		},OC_CONTYPE);
+	}
+
 }
 
 PairingWizard::~PairingWizard()
@@ -315,18 +331,6 @@ void PairingWizard::configure(Node *n)
 
 		}
 
-		// Hook onward buttons to go to the correct page in stack
-		QList<QPushButton *> onwardButtons = ui->stackedWidget->findChildren<QPushButton *>(QRegularExpression("pushButtonOnward.*"));
-		//qDebug()<<"FOUND "<<onwardButtons.size()<<" ONWARDs";
-		for (QList<QPushButton*>::iterator it = onwardButtons.begin(), e=onwardButtons.end(); it != e; ++it) {
-			QPushButton*onward=(*it);
-			//qDebug()<<" + ONWARD: "<<onward->objectName();
-			connect(onward, &QPushButton::clicked,this,[=](bool b){
-				// Skip pages that are not relevant to the selection made in "basic" page
-				int next = (ui->stackedWidget->currentIndex() + 1) % ui->stackedWidget->count();
-				ui->stackedWidget->setCurrentIndex(next);
-			});
-		}
 	}
 }
 

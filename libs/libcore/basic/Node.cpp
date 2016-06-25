@@ -58,7 +58,6 @@ Node::Node(QCommandLineParser &opts, QString base, DiscoveryRole role, Discovery
 		qWarning()<<"ERROR: Could not create basedir for node";
 	}
 
-//	discovery->configure(this);
 	hookSensorSignals(*this);
 	hookCommsSignals(*this);
 
@@ -174,6 +173,10 @@ void Node::unHookCommsSignals(QObject &o)
 }
 
 
+void Node::updateDiscoveryClient(){
+	delete discovery;
+	discovery=new DiscoveryClient(*this);
+}
 
 
 void Node::sendStatus(){

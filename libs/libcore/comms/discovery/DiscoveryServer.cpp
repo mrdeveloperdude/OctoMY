@@ -12,7 +12,7 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<DiscoveryPartic
 		return nullptr;
 	}
 	if(!part->isValidServer()){
-		qWarning()<<"ERROR: participant was invalid";
+		qWarning()<<"ERROR: participant was invalid: "<<part->toString();
 		return nullptr;
 	}
 	DiscoveryServerSession *ses=nullptr;
