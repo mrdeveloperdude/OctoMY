@@ -46,7 +46,7 @@ class RemoteWindow : public QWidget, public LogDestination{
 		void prepareMap();
 		void homeMap();
 
-
+		void updateIdentity();
 
 		void addAgentToList(QString name, QString iconPath);
 

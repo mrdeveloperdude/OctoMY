@@ -163,10 +163,20 @@ void DiscoveryParticipant::addTrust(QString trust)
 	trusts<<trust;
 }
 
-
 void DiscoveryParticipant::generateID()
 {
 	QCryptographicHash hash(QCryptographicHash::Sha1);
 	hash.addData(publicKey.toUtf8());
 	ID=hash.result().toHex().toLower();
 }
+
+QString DiscoveryParticipant::fullPublicAddress()
+{
+	return publicAddress+":"+QString::number(publicPort);
+}
+
+QString DiscoveryParticipant::fullLocalAddress()
+{
+	return localAddress+":"+QString::number(localPort);
+}
+

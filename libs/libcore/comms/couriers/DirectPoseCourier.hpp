@@ -16,7 +16,7 @@ class DirectPoseCourier:public Courier{
 	public:
 		void setPose(Pose &);
 		CourierMandate mandate() override;
-		quint64 sendingOpportunity(QDataStream &ds, quint32 availableBytes) override;
+		quint16 sendingOpportunity(QDataStream &ds) override;
 
 };
 

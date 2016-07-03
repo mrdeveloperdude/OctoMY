@@ -17,6 +17,7 @@
 #include "../libqhttp/qhttpclientrequest.hpp"
 #include "../libqhttp/qhttpclientresponse.hpp"
 
+#include "comms/CommsChannel.hpp"
 
 
 #include <QDebug>
@@ -97,11 +98,13 @@ void DiscoveryClient::start(){
 		onTimer();
 	}
 	timer.start();
+	node.getComms()->registerCourier(courier);
 }
 
 void DiscoveryClient::stop(){
 	qDebug()<<"DISCOVERY CLIENT STOPPED";
 	timer.stop();
+	node.getComms()->unregisterCourier(courier);
 }
 
 

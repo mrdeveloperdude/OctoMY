@@ -178,7 +178,9 @@ SOURCES +=\
     plot/NetworkStats.cpp \
     random/FileRandomRNG.cpp \
     widgets/PortableIDWidget.cpp \
-    agent/Agent.cpp
+    agent/Agent.cpp \
+    comms/couriers/DiscoveryCourier.cpp \
+    comms/messages/MessageType.cpp
 
 
 
@@ -362,7 +364,8 @@ HEADERS  += \
     widgets/PKIManager.hpp \
     plot/NetworkStats.hpp \
     random/FileRandomRNG.hpp \
-    widgets/PortableIDWidget.hpp
+    widgets/PortableIDWidget.hpp \
+    comms/couriers/DiscoveryCourier.hpp
 
 
 

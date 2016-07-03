@@ -5,6 +5,7 @@
 #include <QHostAddress>
 #include <QUdpSocket>
 #include <QList>
+#include <QMap>
 #include <QTimer>
 #include <QDateTime>
 
@@ -24,7 +25,6 @@
 
 class HubWindow;
 class Client;
-class Courier;
 class ClientDirectory;
 class ClientSignature;
 
@@ -85,6 +85,7 @@ class CommsChannel : public QObject{
 		LogDestination *mw;
 		//All registered couriers
 		QList<Courier *> couriers;
+		QMap<quint32, Courier *> couriersByID;
 		//const quint32 localClientPlatform;		const quint32 localClientExecutable;
 		ClientSignature localSignature;
 		quint64 lastRX;
@@ -94,6 +95,10 @@ class CommsChannel : public QObject{
 		quint64 sendCount;
 		quint64 recCount;
 		bool connected;
+
+		//Receive ciounter used in debug messages to make sense of the order of things
+		static quint32 totalRecCount;
+
 	public:
 
 		explicit CommsChannel(QObject *parent=nullptr, LogDestination *mw=nullptr);
@@ -117,6 +122,13 @@ class CommsChannel : public QObject{
 		void registerCourier(Courier &);
 		void unregisterCourier(Courier &);
 
+		inline Courier *getCourierByID(quint32 id){
+			if(couriersByID.contains(id)){
+				return couriersByID[id];
+			}
+			return nullptr;
+		}
+
 		bool isConnected(){return connected;}
 
 		qint64 sendRawData(QByteArray datagram,ClientSignature sig);
@@ -126,9 +138,11 @@ class CommsChannel : public QObject{
 
 		void appendLog(QString);
 
+		void sendData(const quint64 now, Client *localClient, Courier *courier, const ClientSignature *sig=nullptr);
+
 		// CommsChannel signals
 	signals:
-//		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
+		//		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
 		void error(QString message);
 		void clientAdded(Client *c);
 		void connectionStatusChanged(bool c);

@@ -93,7 +93,7 @@ class Client{
 
 		//Client(QHostAddress host, quint16 port, LogDestination *log=0);
 		Client(ClientSignature signature, LogDestination *log=0);
-		void send(qint64 written);
+		void countSend(qint64 written);
 		void receive();
 		bool idle();
 		void appendLog(QString);

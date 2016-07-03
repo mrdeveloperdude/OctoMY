@@ -30,7 +30,7 @@ Client::Client(ClientSignature signature, LogDestination *log)
 
 }
 
-void Client::send(qint64 written){
+void Client::countSend(qint64 written){
 	const qint64 now=QDateTime::currentMSecsSinceEpoch();
 	if(lastSendTime<=0) {
 		lastSendTime=now-1;

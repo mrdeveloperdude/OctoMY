@@ -28,6 +28,16 @@
 #include <QAndroidJniObject>
 #endif
 
+
+void RemoteWindow::updateIdentity(){
+	if(nullptr!=remote){
+		remote->updateDiscoveryClient();
+	}
+	ui->widgetPairing->configure(remote);
+
+}
+
+
 RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 	QWidget(parent)
   , ui(new Ui::RemoteWindow)
@@ -39,7 +49,7 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 	addAgentToList("Hexy", ":/icons/agent.svg");
 	addAgentToList("Golem", ":/icons/agent.svg");
 
-	ui->widgetPairing->configure(remote);
+	updateIdentity();
 
 	if(nullptr!=remote){
 		Settings &s=remote->getSettings();
@@ -49,6 +59,7 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 		ui->stackedWidgetScreen->setCurrentWidget(s.getCustomSettingBool("octomy.delivered")?startPage:ui->pagePairing);
 		//Make sure to switch page on "done"
 		connect(ui->widgetPairing, &PairingWizard::done, [=]() {
+			updateIdentity();
 			ui->stackedWidgetScreen->setCurrentWidget(startPage);
 		} );
 		if(0!=remote){

@@ -12,13 +12,11 @@
 #include <QDataStream>
 #include <QDateTime>
 
-
+quint32 CommsChannel::totalRecCount=0;
 
 
 CommsChannel::CommsChannel(QObject *parent, LogDestination *mw)
 	: QObject(parent)
-	, udpSocket(this)
-	, sendingTimer(this)
 	, clients(new ClientDirectory)
 	, mw(mw)
 	, localSignature(UniquePlatformFingerprint::getInstance().platform().getQuint32(), UniquePlatformFingerprint::getInstance().executable().getQuint32())
@@ -31,16 +29,16 @@ CommsChannel::CommsChannel(QObject *parent, LogDestination *mw)
 	, connected(false)
 {
 	setObjectName("CommsChannel");
-	if(!connect(&udpSocket, SIGNAL(readyRead()),this, SLOT(onReadyRead()),OC_CONTYPE)){
+	if(!connect(&udpSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()), OC_CONTYPE)){
 		qWarning()<<"Could not connect UDP readyRead";
 	}
 	qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
-	if(!connect(&udpSocket, SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(onUdpError(QAbstractSocket::SocketError)),OC_CONTYPE)){
+	if(!connect(&udpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onUdpError(QAbstractSocket::SocketError)), OC_CONTYPE)){
 		qWarning()<<"Could not connect UDP error";
 	}
 	sendingTimer.setSingleShot(true);
 	sendingTimer.setTimerType(Qt::PreciseTimer);
-	if(!connect(&sendingTimer, SIGNAL(timeout()),this,SLOT(onSendingTimer()),OC_CONTYPE)){
+	if(!connect(&sendingTimer, SIGNAL(timeout()), this, SLOT(onSendingTimer()), OC_CONTYPE)){
 		qWarning()<<"Could not connect sending timer";
 	}
 	sendingTimer.start(0);
@@ -79,102 +77,247 @@ void CommsChannel::setLogOutput(LogDestination *mw){
 }
 
 
+
 void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHost , quint16 remotePort ){
-	qDebug()<<"RECEIV";
 	lastRX=QDateTime::currentMSecsSinceEpoch();
+	totalRecCount++;
 	recCount++;
+	qDebug()<<totalRecCount<<"--- RECEIV";
 	if(lastRX-lastRXST>1000){
-		qDebug()<<"REC count="<<QString::number(recCount)<<"/sec";
+		qDebug().noquote()<<"REC count="<<QString::number(recCount)<<"/sec";
 		lastRXST=lastRX;
 		recCount=0;
 	}
 	QSharedPointer<QDataStream> ds(new QDataStream(&datagram, QIODevice::ReadOnly));
 	const int header = 20; //magic(4) + version(4) + fingerprint(8) + messageType(4)
 	const int size=datagram.size();
+	int totalAvailable=size;
+	qDebug()<<totalRecCount<<"PACKET INITIAL SIZE: "<<size;
 	if ( size <= header ){
-		emit error("ERROR: Message too short: " +QString::number(datagram.size()));
+		QString es=QString::number(totalRecCount)+" ERROR: Message too short: " +QString::number(size);
+		qWarning()<<es;
+		emit error(es);
 		return;
 	}
 	quint32 octomy_protocol_magic=0;
 	*ds >> octomy_protocol_magic;
+	totalAvailable-=sizeof(quint32);
 	if(OCTOMY_PROTOCOL_MAGIC!=octomy_protocol_magic){
-		emit error("ERROR: OctoMY Protocol Magic mismatch: "+QString::number(octomy_protocol_magic,16)+ " vs. "+QString::number((quint32)OCTOMY_PROTOCOL_MAGIC,16));
+		QString es=QString::number(totalRecCount)+" ERROR: OctoMY Protocol Magic mismatch: "+QString::number(octomy_protocol_magic,16)+ " vs. "+QString::number((quint32)OCTOMY_PROTOCOL_MAGIC,16);
+		qWarning()<<es;
+		emit error(es);
 		return;
 	}
 	quint32 octomy_protocol_version=0;
 	*ds >> octomy_protocol_version;
+	totalAvailable-=sizeof(quint32);
 	switch(octomy_protocol_version){
 		case(OCTOMY_PROTOCOL_VERSION_CURRENT):{
 				ds->setVersion(OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT);
 			}break;
 		default:{
-				emit error("ERROR: OctoMY Protocol version unsupported: "+QString::number(octomy_protocol_version));
+				QString es=QString::number(totalRecCount)+"ERROR: OctoMY Protocol version unsupported: "+QString::number(octomy_protocol_version);
+				qWarning()<<es;
+				emit error(es);
 				return;
 			}break;
 	}
 	quint32 remoteClientPlatform=0;
 	quint32 remoteClientExecutable=0;
 	*ds >> remoteClientPlatform;
+	totalAvailable-=sizeof(quint32);
 	*ds >> remoteClientExecutable;
+	totalAvailable-=sizeof(quint32);
 	ClientSignature remoteSignature(remoteClientPlatform, remoteClientExecutable, remoteHost,remotePort);
 	Client *remoteClient=clients->getBest(remoteSignature,true);
 	if(0==remoteClient){
-		emit error("ERROR: Could not fetch client by id: '"+remoteSignature.toString()+"'");
+		QString es=QString::number(totalRecCount)+"ERROR: Could not fetch client by id: '"+remoteSignature.toString()+"'";
+		qWarning()<<es;
+		emit error(es);
 		return;
 	}
 	else {
-		qDebug()<<"Data received from client '"<<remoteSignature.toString()<<"'";
 		unsigned int packet_sequence = 0;
 		unsigned int packet_ack = 0;
 		unsigned int packet_ack_bits = 0;
 		*ds >> packet_sequence;
+		totalAvailable-=sizeof(unsigned int);
 		*ds >> packet_ack;
+		totalAvailable-=sizeof(unsigned int);
 		*ds >> packet_ack_bits;
+		totalAvailable-=sizeof(unsigned int);
+		qDebug()<<totalRecCount<<"Data received from client '"<<remoteSignature.toString()<<"' with seq="<<packet_sequence<<" ack="<<packet_ack<<" bits="<<packet_ack_bits<<" and bodysize="<<totalAvailable;
 		remoteClient->reliabilitySystem.packetReceived( packet_sequence, size-header );
 		remoteClient->reliabilitySystem.processAck( packet_ack, packet_ack_bits );
 		remoteClient->receive();
-		qint32 octomy_message_type_int=0;
-		*ds >> octomy_message_type_int;
-		const MessageType octomy_message_type=(MessageType)octomy_message_type_int;
-		switch(octomy_message_type){
-			case(QUERY):{
-				}break;
-			case(PING):{
-					//TODO: Record PING received time and schedule PONG message to be sent in return
-				}break;
-			case(PONG):{
-					//TODO: Look up matching PING and broadcast positive status
-				}break;
-			case(QUERY_RESULT):{
-				}break;
-			case(COMMAND):{
-				}break;
-			case(STATUS):{
-				}break;
-			case(NOOP_MSG):{
-				}break;
-			case(DIRECT_POSE):{
-					Pose pose;
-					*ds >> pose;
-					qDebug()<<"GOT POSE MESSAGE: "<<pose.toString();
+		quint16 parts=0;
+		const quint32 minAvailableForPart  = ( sizeof(quint32) + sizeof(quint16) );
+		while(totalAvailable > minAvailableForPart){
+			parts++;
+			qDebug()<<totalRecCount<<parts<<"STARTING NEW PART WITH "<<totalAvailable<<" vs. "<<minAvailableForPart;
+			quint32 octomy_message_type_int=0;
+			*ds >> octomy_message_type_int;
+			totalAvailable-=sizeof(quint32);
+			quint16 bytesAvailable=0;
+			*ds >> bytesAvailable;
+			totalAvailable-=sizeof(quint16);
+			if(octomy_message_type_int<Courier::FIRST_USER_ID){
+				//Use message type enum for built in messages
+				const MessageType octomy_message_type=(MessageType)octomy_message_type_int;
+				qDebug()<<totalRecCount<<parts<<"MESSAGE TYPE WAS"<<octomy_message_type<<"("<<QString::number(octomy_message_type_int)<<")";
+				switch(octomy_message_type){
+					case(PING):{
+							qDebug()<<totalRecCount<<parts<<"GOT PING";
+							//TODO: Record PING received time and schedule PONG message to be sent in return
+						}break;
+					case(PONG):{
+							qDebug()<<totalRecCount<<parts<<"GOT PONG";
+							//TODO: Look up matching PING and broadcast positive status
+						}break;
+					case(NOOP_MSG):{
+							qDebug()<<totalRecCount<<parts<<"GOT NOOP_MSG";
+						}break;
+					case(DIRECT_POSE):{
+							Pose pose;
+							*ds >> pose;
+							totalAvailable-=pose.size();
+							qDebug()<<totalRecCount<<parts<<"GOT POSE MESSAGE: "<<pose.toString();
 
-				}break;
-			default:
-			case(INVALID):{
-					emit error("ERROR: OctoMY message type invalid: "+QString::number((quint32)octomy_message_type,16));
+						}break;
+					default:
+					case(INVALID):{
+							QString es=QString::number(totalRecCount)+" "+QString::number(parts)+" ERROR: OctoMY message type invalid: "+QString::number((quint32)octomy_message_type,16);
+							qWarning()<<es;
+							emit error(es);
+							return;
+						}break;
+				}
+			}
+			else{
+				//Use courier id for extendable messages
+				Courier *c=getCourierByID(octomy_message_type_int);
+				if(nullptr!=c){
+					const quint16 bytesSpent=c->dataReceived(*ds, bytesAvailable);
+					const int left=bytesAvailable-bytesSpent;
+					qDebug()<<totalRecCount<<parts<<"Courier message "<<octomy_message_type_int<<" "<<c->getName()<<" bavail="<<bytesAvailable<<" tbavail="<<totalAvailable<<" bspent="<<bytesSpent<<" left="<<left<<"  ";
+					totalAvailable-=bytesSpent;
+					if(left>=0){
+						if(left>0){
+							qDebug()<<totalRecCount<<parts<<"SKIPPING "<<left<<" LEFTOVER BYTES AFTER COURIER WAS DONE";
+							ds->skipRawData(left);
+							totalAvailable-=left;
+						}
+						else{
+							qDebug()<<totalRecCount<<parts<<"ALL GOOD. COURIER BEHAVED EXEMPLARY";
+						}
+					}
+					else{
+						QString es=QString::number(totalRecCount)+" "+QString::number(parts)+" ERROR: Courier read more than was available!";
+						qWarning()<<es;
+						emit error(es);
+						return;
+					}
+					qDebug()<<"TAV:"<<totalAvailable<<" AV:"<<bytesAvailable<<" DS.ATEND:"<<ds->atEnd();
+				}
+				else{
+					//TODO: Look at possibility of registering couriers on demand using something like this:
+					//emit wakeOnComms(octomy_message_type_int)
+					QString es=QString::number(totalRecCount)+" "+QString::number(parts)+" ERROR: No courier found for ID: "+QString::number(octomy_message_type_int);
+					qWarning().noquote()<<es;
+					emit error(es);
 					return;
-				}break;
+				}
+				qDebug()<<totalRecCount<<parts<<"PART DONE";
+			}
 		}
-		//emit receivePacket(ds,host, port);
+		if(totalAvailable > 0 ){
+			QString es="WARNING: Not all bytes in datagram were read/used. There were "+QString::number(totalAvailable)+" bytes left after reading "+QString::number(parts)+" parts";
+			qWarning()<<es;
+			return;
+		}
 	}
 }
 
+
+void CommsChannel::sendData(const quint64 now, Client *localClient, Courier *courier, const ClientSignature *sig1){
+	const ClientSignature *sig=(nullptr!=courier && nullptr==sig1)?(&courier->getDestination()):sig1;
+	if(nullptr==sig){
+		qWarning()<<"ERROR: no courier and no client when sending data";
+		return;
+	}
+	const qint32 availableBytes=512-(7*4);
+	QByteArray datagram;
+	QDataStream ds(&datagram,QIODevice::WriteOnly);
+	quint32 bytesUsed=0;
+	// Write a header with protocol "magic number" and a version
+	ds << (quint32)OCTOMY_PROTOCOL_MAGIC;//Protocol MAGIC identifier
+	bytesUsed += sizeof(quint32);
+	ds << (qint32)OCTOMY_PROTOCOL_VERSION_CURRENT;//Protocol version
+	bytesUsed += sizeof(qint32);
+	ds.setVersion(OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT); //Qt Datastream version
+	//Write client fingerprint
+	ds << localSignature.platform;
+	bytesUsed += sizeof(quint32);
+	ds << localSignature.executable;
+	bytesUsed += sizeof(quint32);
+	// Write reliability data
+	ds << localClient->reliabilitySystem.localSequence();
+	bytesUsed += sizeof(unsigned int);
+	ds << localClient->reliabilitySystem.remoteSequence();
+	bytesUsed += sizeof(unsigned int);
+	ds << localClient->reliabilitySystem.generateAckBits();
+	bytesUsed += sizeof(unsigned int);
+	qDebug()<<"SEND GLOBAL HEADER SIZE: "<<bytesUsed;
+	// Send using courier.
+	//NOTE: When courier reports "sendActive" that means that it wants to send,
+	//      and so even if it writes 0 bytes, there will be a section id present
+	//      in packet reserved for it with the 0 bytes following it
+	if(nullptr!=courier){
+		ds << courier->getID();
+		bytesUsed += sizeof(quint32);
+		ds << courier->mandate().payloadSize;
+		bytesUsed += sizeof(quint16);
+		qDebug()<<"SEND LOCAL HEADER SIZE: "<<bytesUsed<<datagram.size();
+		const quint64 opportunityBytes=courier->sendingOpportunity(ds);
+		bytesUsed += opportunityBytes;
+		qDebug()<<"SEND FULL SIZE: "<<bytesUsed<<datagram.size()<<opportunityBytes;
+		courier->setLastOpportunity(now);
+	}
+	// Send idle packet
+	else{
+		ds<<(quint32)NOOP_MSG;
+		bytesUsed+=sizeof(quint32);
+		ds << (quint16)0;
+		bytesUsed += sizeof(quint16);
+		qDebug()<<"IDLE PACKET";
+	}
+	const quint32 sz=datagram.size();
+	qDebug()<<"SEND DS SIZE: "<<sz;
+	if(sz>512){
+		qWarning()<<"ERROR: UDP packet size exceeded 512 bytes, dropping write";
+	}
+	else if( (availableBytes-bytesUsed) <= 0){
+		qWarning()<<"ERROR: courier trying to send too much data: "<<QString::number(bytesUsed)<<" , dropping write";
+	}
+	else{
+		const qint64 written=udpSocket.writeDatagram(datagram,sig->host,sig->port);
+		qDebug()<<"WROTE "<<written<<" bytes to "<<sig->host<<":"<<sig->port;
+		if(written<sz){
+			qDebug()<<"ERROR WRITING TO UDP SOCKET:"<<udpSocket.errorString();
+			return;
+		}
+		else{
+			//qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET";
+		}
+		localClient->countSend(written);
+	}
+}
 
 void CommsChannel::onSendingTimer(){
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	const quint64 timeSinceLastRX=now-lastRX;
 	Client *localClient=clients->getBest(localSignature, true);
-	if(0==localClient){
+	if(nullptr==localClient){
 		emit error(QStringLiteral("Error fetching local client by id ")+localSignature.toString());
 		return;
 	}
@@ -193,80 +336,55 @@ void CommsChannel::onSendingTimer(){
 		sendCount=0;
 	}
 	//Prepare a priority list of couriers to process for this packet
-	qint64 mostUrgentCourier=1000000;
+	const qint64 MIN_RATE=1000;
+	qint64 mostUrgentCourier=MIN_RATE;
 	QMap<quint64, Courier *> pri;
-	for(QList<Courier *>::iterator i=couriers.begin(),e=couriers.end();i!=e; ++i){
-		Courier *c=*i;
-		if(0!=c){
+	QList <const ClientSignature *> idle;
+	for(Courier *c:couriers){
+		if(nullptr!=c){
 			CourierMandate cm=c->mandate();
-			if(cm.active){
-				qint64 ci=now-cm.lastOportunity;
-				qint64 next=ci-cm.interval;
-				if(next>0 && next < mostUrgentCourier){
-					mostUrgentCourier=next;
+			if(cm.sendActive){
+				const quint64 last = c->getLastOpportunity();
+				const qint64 interval = now - last;
+				const qint64 overdue = interval - cm.interval;
+				if(cm.interval<mostUrgentCourier){
+					mostUrgentCourier=cm.interval;
 				}
-				quint64 score=cm.priority*(next>0?next:0);
-				pri.insert(score,c);
-			}
-		}
-	}
-	//Write one message per courier in pri list
-	//NOTE: several possible optimizations exist, for example grouping messages
-	//to same node int one packet etc.
-	if(pri.size()>0){
-		for (QMap<quint64, Courier *>::iterator i = pri.begin(), e=pri.end(); i != e; ++i){
-			Courier *courier=i.value();
-			if(0!=courier){
-				QByteArray datagram;
-				QDataStream ds(&datagram,QIODevice::WriteOnly);
-				// Write a header with protocol "magic number" and a version
-				ds << (quint32)OCTOMY_PROTOCOL_MAGIC;//Protocol MAGIC identifier
-				ds << (qint32)OCTOMY_PROTOCOL_VERSION_CURRENT;//Protocol version
-				ds.setVersion(OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT); //Qt Datastream version
-				//Write client fingerprint
-				ds << localSignature.platform;
-				ds << localSignature.executable;
-				// Write reliability data
-				ds<<localClient->reliabilitySystem.localSequence();
-				ds<<localClient->reliabilitySystem.remoteSequence();
-				ds<<localClient->reliabilitySystem.generateAckBits();
-				//Process courier
-				qint32 availableBytes=512-(7*4);
-				quint32 bytesUsed=courier->sendingOpportunity(ds,availableBytes);
-				availableBytes-=bytesUsed;
-				const quint32 sz=datagram.size();
-				if(sz>512){
-					qWarning()<<"ERROR: UDP packet size exceeded 512 bytes, dropping write";
-				}
-				else if(availableBytes<=0){
-					qWarning()<<"ERROR: courier trying to send too much data: "<<QString::number(bytesUsed)<<" , dropping write";
+				//We are overdue
+				if(overdue>0) {
+					quint64 score=(cm.priority*overdue)/cm.interval;
+					pri.insert(score,c);
+					qDebug()<<c->getName()<<c->getID()<<"PRICALC: "<<last<<interval<<overdue<<" OVERDUE SCORE:"<<score;
 				}
 				else{
-					const ClientSignature &sig=courier->getDestination();
-					const qint64 written=udpSocket.writeDatagram(datagram,sig.host,sig.port);
-					qDebug()<<"WROTE "<<written<<" bytes to "<<sig.host<<":"<<sig.port;
-					if(written<sz){
-						qDebug()<<"ERROR WRITING TO UDP SOCKET:"<<udpSocket.errorString();
-						return;
+					const ClientSignature *clisig=&c->getDestination();
+					idle.push_back(clisig);
+					if (-overdue > mostUrgentCourier){
+						mostUrgentCourier=-overdue;
+						qDebug()<<c->getName()<<c->getID()<<"PRICALC: "<<last<<interval<<overdue<<" URGENCY:"<<mostUrgentCourier;
 					}
 					else{
-						//qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET";
+						qDebug()<<c->getName()<<c->getID()<<"PRICALC: "<<last<<interval<<overdue<<" MEH";
 					}
-					localClient->send(written);
 				}
 			}
 		}
 	}
+	// Write one message per courier in pri list
+	// NOTE: several possible optimizations exist, for example grouping messages
+	//       to same node in one packet etc.
 
-	//Do idle packet
-	else{
-		//TODO: make sure idle packet is sent
-		//ds<<(qint32)NOOP_MSG;
-		//qDebug()<<"IDLE PACKET";
+	for (QMap<quint64, Courier *>::iterator i = pri.begin(), e=pri.end(); i != e; ++i){
+		Courier *courier=i.value();
+		sendData(now, localClient, courier, nullptr); //Client *localClient, Courier *courier, const ClientSignature *sig1){
 	}
-
-	//Prepare for next round (this implies a stop() )
-	sendingTimer.start(MIN(mostUrgentCourier,1000));//Our interval is 1000ms at the longest
+	for(const ClientSignature *sig:idle){
+		sendData(now, localClient, nullptr, sig);
+	}
+	// Prepare for next round (this implies a stop() )
+	quint64 delay=MIN(mostUrgentCourier,MIN_RATE);
+	qDebug()<<"DELAY: "<<delay<<" ("<<mostUrgentCourier<<")";
+	sendingTimer.start(delay);
 }
 
 //Only for testing purposes! Real data should pass through the courier system
@@ -303,14 +421,14 @@ QString CommsChannel::getSummary(){
 
 //Slot called when data arrives on socket
 void CommsChannel::onReadyRead(){
-	qDebug()<<"READY READ";
+	qDebug()<<"----- READY READ";
 	while (udpSocket.hasPendingDatagrams()){
-		qDebug()<<" + UDP PACKET";
+		qDebug()<<"      + UDP PACKET";
 		QByteArray datagram;
 		datagram.resize(udpSocket.pendingDatagramSize());
 		QHostAddress host;
 		quint16 port=0;
-		udpSocket.readDatagram(datagram.data(), datagram.size(),&host, &port);
+		udpSocket.readDatagram(datagram.data(), datagram.size(), &host, &port);
 		receivePacketRaw(datagram,host,port);
 	}
 }
@@ -363,6 +481,7 @@ void CommsChannel::registerCourier(Courier &c){
 		return;
 	}
 	couriers.append(&c);
+	couriersByID[c.getID()]=&c;
 }
 
 void CommsChannel::unregisterCourier(Courier &c){
@@ -370,7 +489,9 @@ void CommsChannel::unregisterCourier(Courier &c){
 		qDebug()<<"ERROR: courier was not registered";
 		return;
 	}
+	couriersByID.remove(c.getID());
 	couriers.removeAll(&c);
+
 }
 
 

@@ -49,6 +49,9 @@ void StyleManager::apply(){
 	QApplication *app=qobject_cast<QApplication *>(capp);
 	//GUI enabled
 	if (nullptr!=app) {
+		Q_INIT_RESOURCE(style);
+		Q_INIT_RESOURCE(fonts);
+		Q_INIT_RESOURCE(OctoStyle);
 		QWidget *activeWindow=app->activeWindow();
 		if(nullptr!=activeWindow){
 			activeWindow->setUpdatesEnabled(false);
@@ -114,10 +117,8 @@ void StyleManager::applyStyle(QApplication &app){
 		qDebug()<<"STYLE: "<<s;
 	}
 	*/
-	Q_INIT_RESOURCE(OctoStyle);
-	//app.setStyle(new OctoStyle);
-	//
 
+	//app.setStyle(new OctoStyle);
 
 	//app.setStyle(QStyleFactory::create("fusion"));
 	app.setStyle(new OctoMYProxyStyle("fusion"));

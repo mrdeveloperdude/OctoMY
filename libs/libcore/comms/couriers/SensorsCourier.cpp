@@ -19,15 +19,15 @@ CourierMandate SensorsCourier::mandate(){
 
 //Act on sending opportunity.
 //Return number of bytes that we wrote (0> means we took advantage of the opportunity)
-quint64 SensorsCourier::sendingOpportunity(QDataStream &ds, quint32 availableBytes){
+quint16 SensorsCourier::sendingOpportunity(QDataStream &ds){
 	(void)ds;
-	if(man.active){
+	if(man.sendActive){
 		quint32 sz=msg.size();
-		if(sz>availableBytes){
+		if(sz>man.payloadSize){
 			return 0;
 		}
 		ds<<msg;
-		man.active=false;
+		man.sendActive=false;
 		return msg.size();
 	}
 	return 0;
@@ -37,7 +37,7 @@ quint64 SensorsCourier::sendingOpportunity(QDataStream &ds, quint32 availableByt
 
 void SensorsCourier::onPositionUpdated(const QGeoPositionInfo &info){
 	msg.gps=info.coordinate();
-	man.active=true;
+	man.sendActive=true;
 }
 
 
@@ -45,14 +45,14 @@ void SensorsCourier::onCompassUpdated(QCompassReading *r){
 	if(0!=r){
 		msg.compassAzimuth=r->azimuth();
 		msg.compassAccuracy=r->calibrationLevel();
-		man.active=true;
+		man.sendActive=true;
 	}
 }
 
 void SensorsCourier::onAccelerometerUpdated(QAccelerometerReading *r){
 	if(0!=r){
 		msg.accellerometer=QVector3D(r->x(), r->y(), r->z());
-		man.active=true;
+		man.sendActive=true;
 	}
 	//ui->labelAccelerometer->setText("ACCEL: <"+QString::number(r->x())+", "+QString::number(r->y())+", "+ QString::number(r->z())+">");
 }
@@ -60,7 +60,7 @@ void SensorsCourier::onAccelerometerUpdated(QAccelerometerReading *r){
 void SensorsCourier::onGyroscopeUpdated(QGyroscopeReading *r){
 	if(0!=r){
 		msg.gyroscope=QVector3D(r->x(), r->y(), r->z());
-		man.active=true;
+		man.sendActive=true;
 	}
 	//ui->labelGyroscope->setText("GYRO: <"+QString::number(r->x())+", "+QString::number(r->y())+", "+ QString::number(r->z())+">");
 }

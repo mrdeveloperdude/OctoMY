@@ -50,6 +50,10 @@ struct DiscoveryParticipant{
 
 		QString toString();
 
+
+		QString fullPublicAddress();
+		QString fullLocalAddress();
+
 };
 
 
