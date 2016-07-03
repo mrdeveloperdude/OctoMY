@@ -6,6 +6,7 @@
 #include <QList>
 #include <QMap>
 #include <QString>
+#include <QVariantMap>
 
 class DiscoveryParticipant;
 
@@ -14,16 +15,16 @@ class DiscoveryCourier : public Courier
 		Q_OBJECT
 
 	private:
-		QMap<QString, DiscoveryParticipant *> factors;
-		QList<DiscoveryParticipant *> order;
+		DiscoveryParticipant &part;
+		QVariantMap data;
 
 	public:
-		explicit DiscoveryCourier(QObject *parent = 0);
+		explicit DiscoveryCourier(DiscoveryParticipant &part, QObject *parent = nullptr);
 
 
 	public:
 
-		void registerDiscoveryAuthentication(DiscoveryParticipant &);
+
 
 		//Let the CommChannel know what we want
 		CourierMandate mandate() override;
@@ -31,6 +32,14 @@ class DiscoveryCourier : public Courier
 		//Override to act on sending opportunity.
 		//Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
 		quint16 sendingOpportunity(QDataStream &ds) override;
+
+		//Override to act on data received
+		//Return number of bytes actually read.
+		quint16 dataReceived(QDataStream &ds, quint16 availableBytes) override;
+
+	signals:
+
+		void authenticationUpdate();
 
 };
 

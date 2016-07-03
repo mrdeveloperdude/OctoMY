@@ -4,7 +4,7 @@
 
 #include "DiscoveryRole.hpp"
 #include "DiscoveryClientStore.hpp"
-#include "comms/couriers/DiscoveryCourier.hpp"
+
 
 #include <QTimer>
 #include <QObject>
@@ -35,7 +35,6 @@ class DiscoveryClient: public QObject
 		const QString ourPubKey;
 		const QString ourID;
 		const QString zeroID;
-		DiscoveryCourier courier;
 
 	private:
 		void registerPossibleParticipant(QVariantMap map);

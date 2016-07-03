@@ -8,6 +8,7 @@
 #include "security/KeyStore.hpp"
 
 #include "comms/discovery/DiscoveryParticipant.hpp"
+#include "comms/couriers/DiscoveryCourier.hpp"
 
 #include "basic/Node.hpp"
 #include "utility/Utility.hpp"
@@ -98,13 +99,12 @@ void DiscoveryClient::start(){
 		onTimer();
 	}
 	timer.start();
-	node.getComms()->registerCourier(courier);
+
 }
 
 void DiscoveryClient::stop(){
 	qDebug()<<"DISCOVERY CLIENT STOPPED";
 	timer.stop();
-	node.getComms()->unregisterCourier(courier);
 }
 
 
@@ -201,6 +201,13 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map){
 		if(p->isValidClient()){
 			peers.setParticipant(p);
 			delete old;
+			DiscoveryCourier *courier=new DiscoveryCourier(*p);
+			if(nullptr!=courier){
+				courier->setDestination(p->clientSignature());
+				node.getComms()->registerCourier(*courier);
+				//node.getComms()->unregisterCourier(courier);
+			}
+
 			emit nodeDiscovered(partID);
 		}
 		else{

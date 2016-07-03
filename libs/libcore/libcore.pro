@@ -180,7 +180,8 @@ SOURCES +=\
     widgets/PortableIDWidget.cpp \
     agent/Agent.cpp \
     comms/couriers/DiscoveryCourier.cpp \
-    comms/messages/MessageType.cpp
+    comms/messages/MessageType.cpp \
+    comms/ClientSignature.cpp
 
 
 
@@ -365,7 +366,8 @@ HEADERS  += \
     plot/NetworkStats.hpp \
     random/FileRandomRNG.hpp \
     widgets/PortableIDWidget.hpp \
-    comms/couriers/DiscoveryCourier.hpp
+    comms/couriers/DiscoveryCourier.hpp \
+    comms/ClientSignature.hpp
 
 
 

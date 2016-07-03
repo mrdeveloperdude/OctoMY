@@ -180,3 +180,8 @@ QString DiscoveryParticipant::fullLocalAddress()
 	return localAddress+":"+QString::number(localPort);
 }
 
+
+
+ClientSignature DiscoveryParticipant::clientSignature(){
+	return ClientSignature(0,0,QHostAddress(localAddress),localPort);
+}

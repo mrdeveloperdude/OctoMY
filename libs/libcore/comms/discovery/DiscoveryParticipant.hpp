@@ -2,8 +2,11 @@
 #define DISCOVERYPARTICIPANT_HPP
 
 #include "DiscoveryRole.hpp"
+#include "comms/ClientSignature.hpp"
+
 #include <QString>
 #include <QVariantMap>
+#include <QBluetoothAddress>
 
 
 struct DiscoveryParticipant{
@@ -23,6 +26,7 @@ struct DiscoveryParticipant{
 
 		quint64 lastTime;
 
+		QBluetoothAddress bluetoothAddress;
 
 		DiscoveryParticipant();
 
@@ -53,6 +57,9 @@ struct DiscoveryParticipant{
 
 		QString fullPublicAddress();
 		QString fullLocalAddress();
+
+
+		ClientSignature clientSignature();
 
 };
 
