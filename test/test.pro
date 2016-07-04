@@ -17,6 +17,7 @@ TEST_PROJECTS+= \
 	testHashstore \
 	testTetraGPSEncoder \
 	testRNG \
+	testKey \
 
 
 STRESS_PROJECTS+= \

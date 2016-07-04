@@ -13,6 +13,7 @@
 #include "basic/GenerateRunnable.hpp"
 
 #include <QFile>
+#include <QCryptographicHash>
 
 
 class KeyStore: public QObject{

@@ -181,7 +181,8 @@ SOURCES +=\
     agent/Agent.cpp \
     comms/couriers/DiscoveryCourier.cpp \
     comms/messages/MessageType.cpp \
-    comms/ClientSignature.cpp
+    comms/ClientSignature.cpp \
+    security/Key.cpp
 
 
 
@@ -367,7 +368,8 @@ HEADERS  += \
     random/FileRandomRNG.hpp \
     widgets/PortableIDWidget.hpp \
     comms/couriers/DiscoveryCourier.hpp \
-    comms/ClientSignature.hpp
+    comms/ClientSignature.hpp \
+    security/Key.hpp
 
 
 
