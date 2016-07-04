@@ -929,6 +929,7 @@ static void qrencodeStructured(const unsigned char *intext, int length, const ch
 			snprintf(filename, FILENAME_MAX, "%s-%02d", base, i);
 		}
 		switch(image_type) {
+			#ifdef OCTOMY_QR_SAVING
 			case PNG_TYPE:
 				writePNG(p->code, filename);
 				break;
@@ -938,6 +939,7 @@ static void qrencodeStructured(const unsigned char *intext, int length, const ch
 			case SVG_TYPE:
 				writeSVG(p->code, filename);
 				break;
+#endif
 			case ANSI_TYPE:
 			case ANSI256_TYPE:
 				writeANSI(p->code, filename);

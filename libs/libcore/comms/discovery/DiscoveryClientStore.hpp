@@ -2,12 +2,19 @@
 #define DISCOVERYCLIENTSTORE_HPP
 
 #include "basic/AtomicBoolean.hpp"
-
 #include "basic/GenerateRunnable.hpp"
-
 #include "DiscoveryParticipant.hpp"
 
 #include <QObject>
+
+
+/*
+
+  DiscoveryClientStore is used by Node to keep track of DiscoveryParticpants
+  during discovery. It is also used to persist the information Node has on its
+  particpants.
+
+*/
 
 class DiscoveryClientStore: public QObject{
 		Q_OBJECT

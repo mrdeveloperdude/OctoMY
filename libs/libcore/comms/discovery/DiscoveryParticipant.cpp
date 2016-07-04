@@ -62,6 +62,12 @@ DiscoveryParticipant::DiscoveryParticipant(const DiscoveryParticipant &o)
 }
 
 
+DiscoveryParticipant::~DiscoveryParticipant()
+{
+
+}
+
+
 bool DiscoveryParticipant::operator==(const DiscoveryParticipant &o) const
 {
 	return o.publicAddress == publicAddress
