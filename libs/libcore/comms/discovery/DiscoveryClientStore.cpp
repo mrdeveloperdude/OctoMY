@@ -74,7 +74,7 @@ void DiscoveryClientStore::load()
 		QVariantList remotes=map["participants"].toList();
 		for(QVariantList::iterator b=remotes.begin(), e=remotes.end(); b!=e; ++b){
 			DiscoveryParticipant *peer=new DiscoveryParticipant((*b).toMap());
-			peers[peer->ID]=peer;
+			peers[peer->id()]=peer;
 		}
 		ready=true;
 	}
@@ -118,7 +118,7 @@ DiscoveryParticipant * DiscoveryClientStore::getParticipant(const QString &id)
 void DiscoveryClientStore::setParticipant(DiscoveryParticipant *participant)
 {
 	if(nullptr!=participant){
-		peers[participant->ID]=participant;
+		peers[participant->id()]=participant;
 	}
 }
 

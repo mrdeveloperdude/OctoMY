@@ -3,77 +3,28 @@
 
 #include "DiscoveryRole.hpp"
 #include "comms/ClientSignature.hpp"
+#include "basic/NodeAssociate.hpp"
 
 #include <QString>
 #include <QVariantMap>
 #include <QBluetoothAddress>
+#include <QDateTime>
+
 
 /*
+ DiscoveryParticipant is an ephemeral representation of the data kept during
+ node discovery by DiscoveryClient and DiscoveryServer.
 
-  DiscoveryParticipant is a means to store the address info and trust level
-  for one of Node's friends in a manner suitable for persistence via
-  DiscoveryClientStore.
+ The actual trust that is gathered will be stored in the NodeAssociate member
+ which acts as the persistable counterpart.
 
 */
-
-struct NetworkAddress{
-		QHostAddress ip;
-		quint16 port;
-};
-
-
-class NodeAssociate{
-	public:
-		// The full text of the RSA public key for this participant
-		QString publicKey;
-		// The deterministaclly generated ID for this participant (a.k.a. Soul ID)
-		// NOTE: This is simply the SHA1 of the pubkey
-		QString ID;
-	public:
-		// A list of the trusts assigned to this participant
-		QStringList trusts;
-		// The most updated trusted type and role for this participant
-		DiscoveryRole role;
-		DiscoveryType type;
-		// When was the last trusted sighting of this associate?
-		quint64 lastSeenMS;
-
-	public:
-		NetworkAddress publicNetworkAddress;
-		NetworkAddress localNetworkAddress;
-		QBluetoothAddress bluetoothAddress;
-		QByteArray NFCAddress;
-};
-
 class DiscoveryParticipant{
 
 	public:
-		// The full text of the RSA public key for this participant
-		QString publicKey;
-		// The deterministaclly generated ID for this participant (a.k.a. Soul ID)
-		// NOTE: This is simply the SHA1 of the pubkey
-		QString ID;
+		NodeAssociate assoc;
 		// An ephemeral list of pins used during discovery. Pins may be manually entered, generated from GPS coordinates etc.
 		QStringList pins;
-		// A list of the trusts assigned to this participant
-		QStringList trusts;
-		// The most updated trusted type and role for this participant
-		DiscoveryRole role;
-		DiscoveryType type;
-
-		quint64 lastTime;
-
-		// The most updated trusted contact info for participant
-	public:
-
-		NodeAssociate assoc;
-
-		QString publicAddress;
-		quint16 publicPort;
-		QString localAddress;
-		quint16 localPort;
-		QBluetoothAddress bluetoothAddress;
-
 
 	public:
 
@@ -85,17 +36,16 @@ class DiscoveryParticipant{
 
 	public:
 
-		void clearTrust();
-		void clearPins();
 
-		void addTrust(QString pin);
+		void clearPins();
 		void addPin(QString pin);
 
-		void generateID();
+		void clearTrust();
+		void addTrust(QString pin);
 
 		bool operator==(const DiscoveryParticipant &o) const;
 
-		bool isSet();
+		//bool isSet();
 
 		bool isValidServer();
 		bool isValidClient();
@@ -105,11 +55,30 @@ class DiscoveryParticipant{
 		QString toString();
 
 
-		QString fullPublicAddress();
-		QString fullLocalAddress();
+		//QString fullPublicAddress();
+		//QString fullLocalAddress();
 
 
 		ClientSignature clientSignature();
+
+	public:
+
+		inline QString id() const
+		{
+			return assoc.id();
+		}
+
+
+		inline DiscoveryType type() const
+		{
+			return assoc.type();
+		}
+
+		inline NodeAssociate &associate()
+		{
+			return assoc;
+		}
+
 
 };
 

@@ -192,7 +192,8 @@ class PairingList: public QAbstractListModel
 			for(QMap<QString, DiscoveryParticipant *>::const_iterator it=participants.begin(), e=participants.end(); it!=e;++it){
 				DiscoveryParticipant *p=it.value();
 				if(nullptr!=p){
-					if(filter(p->type)){
+					DiscoveryType t=p->type();
+					if(filter(t)){
 						ret++;
 					}
 				}
@@ -216,7 +217,8 @@ class PairingList: public QAbstractListModel
 			for(QMap<QString, DiscoveryParticipant *>::const_iterator it=participants.begin(), e=participants.end(); it!=e;++it){
 				DiscoveryParticipant *p=it.value();
 				if(nullptr!=p){
-					if(filter(p->type)){
+					DiscoveryType t=p->type();
+					if(filter(t)){
 						if(rowCounter==targetRow){
 							part=p;
 							break;
@@ -227,12 +229,13 @@ class PairingList: public QAbstractListModel
 			}
 
 			if (nullptr!=part) {
-				if(filter(part->type)){
+				DiscoveryType t=part->type();
+				if(filter(t)){
 					if(Qt::DisplayRole == role ) {
 						return part->toVariantMap();
 					}
 					else if (Qt::ToolTipRole == role){
-						return DiscoveryTypeToString(part->type) +": " +part->ID;
+						return DiscoveryTypeToString(t) +": " +part->id();
 					}
 				}
 			}
@@ -287,7 +290,7 @@ void PairingWizard::configure(Node *n)
 {
 	node=n;
 	if(nullptr!=node){
-		ui->labelID->setText(node->getKeyStore().getLocalID());
+		ui->labelID->setText(node->getKeyStore().getLocalKey().id());
 		DiscoveryClient *discovery=node->getDiscoveryClient();
 		DiscoveryType type=node->getType();
 

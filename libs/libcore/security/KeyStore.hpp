@@ -9,6 +9,7 @@
 
 #include "../libpki/qpolarsslpki.hpp"
 #include "basic/AtomicBoolean.hpp"
+#include "Key.hpp"
 
 #include "basic/GenerateRunnable.hpp"
 
@@ -20,12 +21,13 @@ class KeyStore: public QObject{
 		Q_OBJECT
 	private:
 
-		qpolarssl::Pki local_pki;
-		QMap<QString, QSharedPointer<qpolarssl::Pki> > peer_pki;
+		Key localKey;
+		//qpolarssl::Pki local_pki;
+		QMap<QString, Key > peers;
 		AtomicBoolean ready;
 		AtomicBoolean error;
 		QString filename;
-		quint32 keyBits;
+		//quint32 keyBits;
 
 		friend class GenerateRunnable<KeyStore>;
 
@@ -68,12 +70,10 @@ class KeyStore: public QObject{
 		// Check if we have pub-key for tier identified by give fingerprint ID
 		bool hasPubKeyForFingerprint(const QString &fingerprint);
 		// Set pub-key for tier identified by give fingerprint ID to given UTF8 encoded string containing pubkey PEM format
-		void setPubKeyForFingerprint(const QString &fingerprint,const QString &pubkeyPEM);
+		void setPubKeyForFingerprint(const QString &pubkeyPEM);
 
-		QString getLocalPublicKey();
-		QString getLocalPrivateKey();
+		Key getLocalKey();
 
-		QString getLocalID();
 
 	signals:
 

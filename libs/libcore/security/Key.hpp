@@ -2,6 +2,9 @@
 #define KEY_HPP
 
 #include "../libpki/qpolarsslpki.hpp"
+#include "basic/Standard.hpp"
+
+#include "SecurityConstants.hpp"
 
 #include <QByteArray>
 #include <QScopedPointer>
@@ -42,10 +45,16 @@ class KeyPrivate{
 
 	public:
 
+
+
 		// Parse public or private key in PEM format
-		explicit KeyPrivate(QString key, bool isPublic = true);
+		explicit KeyPrivate(QVariantMap key, bool isPublic);
+		// Parse public or private key in PEM format
+		explicit KeyPrivate(QString key, bool isPublic);
 		// Generate key-pair of given bit length
 		explicit KeyPrivate(quint32 bits);
+		//Empty key
+		explicit KeyPrivate();
 
 		virtual ~KeyPrivate();
 
@@ -58,23 +67,21 @@ class KeyPrivate{
 ////////////////////////////////////////////////////////////////////////
 
 class Key{
-		// OctoMY™ sanctioned values for key-generation
+
+
 	public:
-
-		static const quint32 OCTOMY_KEY_BITS=4096;
-		static const QCryptographicHash::Algorithm OCTOMY_KEY_HASH=QCryptographicHash::Sha512;
-
-	protected:
-
 		inline explicit Key() Q_DECL_NOTHROW
-		//: d_ptr(new KeyPrivate())
+			: d_ptr(new KeyPrivate())
 		{
-			qDebug()<<"inline explicit Key() Q_DECL_NOTHROW";
+			OC_METHODGATE();
+			//qDebug()<<"inline explicit Key() Q_DECL_NOTHROW";
 		}
+
 	public:
 		virtual ~Key()
 		{
-			qDebug()<<"virtual ~Key()";
+			OC_METHODGATE();
+			//qDebug()<<"virtual ~Key()";
 		}
 
 
@@ -83,6 +90,9 @@ class Key{
 		QScopedPointer<KeyPrivate>  d_ptr;
 		Q_DECLARE_PRIVATE(Key)
 	public:
+
+
+		explicit Key(QVariantMap map, bool isPublic);
 		explicit Key(QString key, bool isPublic);
 		explicit Key(quint32 bits);
 		explicit Key(KeyPrivate &dd);
@@ -101,34 +111,92 @@ class Key{
 
 		inline QString key()
 		{
+			OC_METHODGATE();
 			Q_D(Key);
 			return d->mKey;
 		}
 
 		inline QString pubKey()
 		{
+			OC_METHODGATE();
 			Q_D(Key);
 			return d->mPubKey;
 		}
 
-		inline QString id()
+		inline QString id() const
 		{
-			Q_D(Key);
+			OC_METHODGATE();
+			const Q_D(Key);
 			return d->mID;
 		}
 
 
 		inline int kid()
 		{
+			OC_METHODGATE();
 			Q_D(Key);
 			return d->mKID;
 		}
 
 		inline int kct()
 		{
+			OC_METHODGATE();
 			Q_D(Key);
 			return d->mKCT;
 		}
+
+		inline QVariantMap toVariantMap(bool onlyPublic)
+		{
+			OC_METHODGATE();
+			QVariantMap map;
+			if(!onlyPublic){
+				map["privateKey"]=key();
+			}
+			map["publicKey"]=pubKey();
+			map["id"]=id();
+			return map;
+		}
+
+		inline QString toString()
+		{
+			OC_METHODGATE();
+			return "Key: "+id()+" priv="+(key().isEmpty()?"UNSET":"SET")+" pub="+(pubKey().isEmpty()?"UNSET":"SET");
+		}
+
+		inline bool isValid(bool onlyPublic)
+		{
+			OC_METHODGATE();
+			Q_D(Key);
+			OC_ASSERT(nullptr!=d);
+			if(d->mPubKey.isEmpty()){
+				return false;
+			}
+			if(!onlyPublic && d->mKey.isEmpty()){
+				return false;
+			}
+			return true;
+		}
+
+		// Sign message with our private key
+		inline QByteArray sign(const QByteArray &source)
+		{
+			OC_METHODGATE();
+			Q_D(Key);
+			OC_ASSERT(nullptr!=d);
+			return d->mPKI.sign(source, OCTOMY_KEY_HASH_POLAR);
+		}
+
+
+		// Verify signature with our pub-key
+		inline bool verify(const QByteArray &message, const QByteArray &signature)
+		{
+			OC_METHODGATE();
+			Q_D(Key);
+			OC_ASSERT(nullptr!=d);
+			return (0==d->mPKI.verify(message, signature, OCTOMY_KEY_HASH_POLAR));
+		}
+
+
 
 };
 

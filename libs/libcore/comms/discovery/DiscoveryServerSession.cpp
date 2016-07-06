@@ -16,18 +16,18 @@ bool DiscoveryServerSession::set(QSharedPointer<DiscoveryParticipant> part){
 		return false;
 	}
 	// Allready there
-	if(participants.contains(part->ID)){
+	if(participants.contains(part->id())){
 		//qDebug()<<"Participant " << part->ID << "already in session";
 		return true;
 	}
 	// This session is overcrowded, bounce
 	if(participants.size()>100)	{
-		qWarning()<<"ERROR: Session was full, participant "<<part->ID<<" bounced";
+		qWarning()<<"ERROR: Session was full, participant "<<part->id()<<" bounced";
 		return false;
 	}
 	// There is room, insert us
 	//qDebug()<<"Session had room for participant "<< part->ID;
-	participants[part->ID]=part;
+	participants[part->id()]=part;
 	return true;
 }
 

@@ -86,18 +86,23 @@ Pki::getPEMPubkey(){
 
 
 QByteArray
-Pki::sign(const QByteArray& message, THash algorithm) {
-	return d_ptr->sign(message,
+Pki::sign(const QByteArray& message, THash algorithm)
+{
+	const QByteArray ret=d_ptr->sign(message,
 					   Conversion::toPolar(algorithm)
 					   );
+	qDebug()<<"SIGNING "<<message<<" with "<<((int)algorithm)<<" RETURNS "<<ret;
+	return ret;
 }
 
 int
-Pki::verify(const QByteArray& message, const QByteArray& signature,
-					   THash algorithm) {
-	return d_ptr->verify(message, signature,
+Pki::verify(const QByteArray& message, const QByteArray& signature, THash algorithm)
+{
+	const int ret= d_ptr->verify(message, signature,
 						 Conversion::toPolar(algorithm)
 						 );
+	qDebug()<<"VERIFYING "<<message<<" with "<<signature<<" and " <<((int)algorithm)<<" RETURNS "<<ret;
+	return ret;
 }
 
 QByteArray

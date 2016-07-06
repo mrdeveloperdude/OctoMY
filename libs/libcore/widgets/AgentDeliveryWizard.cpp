@@ -191,7 +191,7 @@ void AgentDeliveryWizard::onBirthComplete(){
 				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
 			}
 			else{
-				QString id=keystore.getLocalID();
+				QString id=keystore.getLocalKey().id();
 				qDebug()<<"ID: "<<id;
 				mID.setID(id);
 				mID.setType(TYPE_AGENT);

@@ -37,6 +37,8 @@
 #include <QProcessEnvironment>
 
 
+const quint64 ZooServer::BACKGROUND_TIMER_INTERVAL=1000*10; //10 sec
+
 ZooServer::ZooServer(QCommandLineParser &opts, QProcessEnvironment &env, QObject *parent)
 	: QHttpServer(parent)
 	, base("zoo")
@@ -60,12 +62,14 @@ ZooServer::ZooServer(QCommandLineParser &opts, QProcessEnvironment &env, QObject
 		qWarning()<<"ERROR: Could not create basedir for zoo";
 	}
 
-
-	QCoreApplication::setApplicationVersion("1.0");
-	QCoreApplication::setApplicationName(Settings::APPLICATION_NAME_BASE+" "+base);
-
-
 	qDebug()<<"Current dir for storage is: "<<storage.dir().absolutePath();
+
+	if(!connect(&backgroundTimer, SIGNAL(timeout()),this, SLOT(onBackgroundTimer()),OC_CONTYPE)){
+		qWarning()<<"ERROR: Could not connect";
+	}
+
+	backgroundTimer.setInterval(BACKGROUND_TIMER_INTERVAL);
+	backgroundTimer.setTimerType(Qt::CoarseTimer);
 }
 
 
@@ -108,6 +112,10 @@ void ZooServer::start(const QString pathOrPortNumber)
 })){
 		qWarning()<<"ERROR: Could not connect";
 	}
+
+
+
+	backgroundTimer.start();
 
 
 	qhttp::server::TServerHandler conHandler=[this](qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res){
@@ -299,18 +307,26 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 		}
 	}
 	else if(ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW==action){
+		/*
 		QString publicKey=root["publicKey"].toString();
 		QString localAddress=root["localAddress"].toString();
 		DiscoveryRole role=DiscoveryRoleFromString(root["role"].toString());
 		DiscoveryType type=DiscoveryTypeFromString(root["type"].toString());
 		quint16 localPort=root["localPort"].toInt();
-		QString publicAddress="";
+
 		quint16 publicPort=root["publicPort"].toInt();
+		*/
+		qDebug()<<"FULL MAP IS: "<<root;
+		QSharedPointer<DiscoveryParticipant> part(new DiscoveryParticipant(root)); //publicKey, publicAddress, publicPort,localAddress, localPort, role, type)
+		QString publicAddress="";
+		quint16 publicPort=0;
 		QTcpServer *tc=tcpServer();
 		if(nullptr!=tc){
 			publicAddress=tc->serverAddress().toString();
+			publicPort=tc->serverPort();
 		}
-		QSharedPointer<DiscoveryParticipant> part(new DiscoveryParticipant(publicKey, publicAddress, publicPort,localAddress, localPort, role, type));
+		part->associate().publicAddress().ip=QHostAddress(publicAddress);
+		part->associate().publicAddress().port=publicPort;
 		part->addPin(root.value("manualPin").toString());
 		part->addPin(root.value("geoPin").toString());
 		DiscoveryServerSession *ses=discovery.request(part);
@@ -355,9 +371,9 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 	for(QVariant pp:l){
 		QVariantMap p=pp.toMap();
 		qDebug()<< " + "
-					<<utility::toHash(p["publicKey"].toString())
+				<<utility::toHash(p["publicKey"].toString())
 				<<" = "
-				<< p["type"].toString();
+			   << p["type"].toString();
 
 
 	}
@@ -372,6 +388,12 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 	res->addHeaderValue("content-length", body.length());
 	res->setStatusCode(qhttp::ESTATUS_OK);
 	res->end(body);
-
 }
 
+
+
+void ZooServer::onBackgroundTimer(){
+	qDebug()<<"Background processing start --------------------";
+
+	qDebug()<<"Background processing end ----------------------";
+}

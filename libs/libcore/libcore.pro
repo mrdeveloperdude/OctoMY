@@ -182,7 +182,10 @@ SOURCES +=\
     comms/couriers/DiscoveryCourier.cpp \
     comms/messages/MessageType.cpp \
     comms/ClientSignature.cpp \
-    security/Key.cpp
+    security/Key.cpp \
+    basic/NetworkAddress.cpp \
+    basic/NodeAssociate.cpp \
+    security/SecurityConstants.cpp
 
 
 
@@ -369,7 +372,10 @@ HEADERS  += \
     widgets/PortableIDWidget.hpp \
     comms/couriers/DiscoveryCourier.hpp \
     comms/ClientSignature.hpp \
-    security/Key.hpp
+    security/Key.hpp \
+    basic/NetworkAddress.hpp \
+    basic/NodeAssociate.hpp \
+    security/SecurityConstants.hpp
 
 
 

@@ -21,7 +21,7 @@
 #endif
 
 
-#define OC_METHODGATE()  { if(0==this){ qWarning()<<"0==this"; } } BUFFER_HONEYPOT
+#define OC_METHODGATE()  { if(((const long long unsigned int)this)<1024){ qWarning()<<"this<1024"; } } BUFFER_HONEYPOT
 #define OC_FUNCTIONGATE()  { } BUFFER_HONEYPOT
 
 #define OC_TIMEOUTWARN(to) ScopedTimer(Q_FUNC_INFO,(qint64)to);

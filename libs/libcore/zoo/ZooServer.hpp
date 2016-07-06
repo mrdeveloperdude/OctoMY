@@ -12,6 +12,7 @@
 
 #include "PunchRegistry.hpp"
 #include <QString>
+#include <QTimer>
 
 
 class QHttpRequest;
@@ -38,6 +39,9 @@ class ZooServer : public qhttp::server::QHttpServer
 		PunchRegistry punches;
 		DiscoveryServer discovery;
 
+		QTimer backgroundTimer;
+		static const quint64 BACKGROUND_TIMER_INTERVAL;
+
 	public:
 		using QHttpServer::QHttpServer;
 
@@ -54,6 +58,10 @@ class ZooServer : public qhttp::server::QHttpServer
 		void serveIndex(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res);
 		void serveIdenticon(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res);
 		void serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res);
+
+	public slots:
+
+		void onBackgroundTimer();
 
 };
 

@@ -22,22 +22,23 @@ CourierMandate DiscoveryCourier::mandate()
 //Hide adrresses by XORing them with a "random" number to counter bad
 //gateway firmware
 static const quint32 IP_XOR=0x13e7268a;
-static const quint32 BT_XOR=0x13e7268a13e7268a;
+static const quint64 BT_XOR=0x13e7268a13e7268a;
 
 //Override to act on sending opportunity.
 //Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
 quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 {
 	quint16 bytes=0;
-	QHostAddress pubAddr(part.publicAddress);
+
+	QHostAddress pubAddr=part.associate().publicAddress().ip;
 	const quint32 ip4PubAddr=pubAddr.toIPv4Address() ^ IP_XOR;
 	ds << ip4PubAddr;
 	bytes += sizeof(quint32);
-	ds << part.publicPort;
+	ds << part.associate().publicAddress().port;
 	bytes += sizeof(quint16);
-	ds << (part.bluetoothAddress.toUInt64() ^ BT_XOR);
+	ds << (part.associate().bluetoothAddress().toUInt64() ^ BT_XOR);
 	bytes += sizeof(quint64);
-	qDebug()<<"TX "<<bytes<<"="<<pubAddr.toString()<<":"<<part.publicPort<<", bt="<<part.bluetoothAddress.toUInt64();
+	qDebug()<<"TX "<<bytes<<"="<<pubAddr.toString()<<", bt="<<part.associate().bluetoothAddress().toUInt64();
 	return 0;
 }
 

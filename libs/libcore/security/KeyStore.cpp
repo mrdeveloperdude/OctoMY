@@ -1,5 +1,8 @@
 #include "KeyStore.hpp"
 #include "utility/Utility.hpp"
+
+#include "SecurityConstants.hpp"
+
 #include <QJsonObject>
 #include <QJsonParseError>
 #include <QFile>
@@ -18,7 +21,6 @@ KeyStore::KeyStore(QObject *parent, QString fn)
 	, ready(false)
 	, error(false)
 	, filename(fn)
-	, keyBits(4096)
 {
 	if(QFile(filename).exists()){
 		load();
@@ -52,8 +54,8 @@ void KeyStore::bootstrapWorker(){
 	QFile f(filename);
 	if(!f.exists()){
 		qDebug()<<"KEYSTORE: no keystore file found, generating local keypair and saving";
-		local_pki.reset();
-		local_pki.generateKeyPair(keyBits);
+		localKey=Key(OCTOMY_KEY_BITS);
+		//local_pki.reset();		local_pki.generateKeyPair(keyBits);
 		save();
 	}
 	load();
@@ -72,14 +74,17 @@ void KeyStore::load(){
 	else{
 		//qDebug()<<"PARSED JSON: "<<doc.toJson();
 		QVariantMap map = doc.object().toVariantMap();
+		localKey=Key(map,false);
+		/*
 		local_pki.reset();
 		local_pki.parseKey(map["localPrivateKey"].toByteArray());
 		local_pki.parsePublicKey(map["localPublicKey"].toByteArray());
-		QVariantList remotes=map["remotePublicKeys"].toList();
-		peer_pki.clear();
+		*/
+		QVariantList remotes=map["remoteKeys"].toList();
+		peers.clear();
 		for(QVariantList::iterator b=remotes.begin(), e=remotes.end(); b!=e; ++b){
 			QVariantMap remote=(*b).toMap();
-			peer_pki[remote["id"].toString()]->parsePublicKey(remote["PublicKey"].toByteArray());
+			peers[remote["id"].toString()]=Key(remote,true);
 		}
 		ready=true;
 	}
@@ -90,16 +95,15 @@ void KeyStore::save(){
 	qDebug()<<"KEYSTORE: Saving to file: "<<filename;
 	QVariantMap map;
 	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();
-	map["localPrivateKey"]=local_pki.getPEMKey();
-	map["localPublicKey"]=local_pki.getPEMPubkey();
+	map["localKey"]=localKey.toVariantMap();
 	QVariantList remotes;
-	for(QMap<QString, QSharedPointer<qpolarssl::Pki> >::iterator b=peer_pki.begin(), e=peer_pki.end(); b!=e; ++b){
+	for(QMap<QString, Key >::iterator b=peers.begin(), e=peers.end(); b!=e; ++b){
 		QVariantMap remote;
 		remote["id"]=b.key();
-		remote["PublicKey"]=b.value()->getPEMPubkey();
+		remote["key"]=b.value().toVariantMap();
 		remotes.push_back(remote);
 	}
-	map["remotePublicKeys"]=remotes;
+	map["remoteKeys"]=remotes;
 	QJsonDocument doc=QJsonDocument::fromVariant(map);
 	utility::stringToFile(filename,doc.toJson());
 }
@@ -109,7 +113,7 @@ void KeyStore::clear(){
 	if(file.exists()){
 		if(file.remove()){
 			qDebug()<<"KEYSTORE: Cleared: "<<filename;
-			local_pki.reset();
+			localKey=Key();
 			ready=false;
 			error=false;
 		}
@@ -123,11 +127,13 @@ void KeyStore::clear(){
 
 }
 
+
+
 QByteArray KeyStore::sign(const QByteArray &source){
 	if(!ready){
 		return QByteArray();
 	}
-	return local_pki.sign(source,qpolarssl::THash::SHA256);
+	return localKey.sign(source);
 }
 
 
@@ -135,7 +141,7 @@ bool KeyStore::verify(const QByteArray &message, const QByteArray &signature){
 	if(!ready){
 		return false;
 	}
-	return local_pki.verify(message, signature,qpolarssl::THash::SHA256);
+	return localKey.verify(message, signature);
 }
 
 
@@ -143,15 +149,12 @@ bool KeyStore::verify(const QString &fingerprint, const QByteArray &message, con
 	if(!ready){
 		return false;
 	}
-	QMap<QString, QSharedPointer<qpolarssl::Pki> >::iterator f=peer_pki.find(fingerprint);
-	if(peer_pki.end()==f){
+	QMap<QString, Key >::iterator f=peers.find(fingerprint);
+	if(peers.end()==f){
 		return false;
 	}
-	QSharedPointer<qpolarssl::Pki> remote_pki=f.value();
-	if(remote_pki){
-		return remote_pki->verify(message, signature,qpolarssl::THash::SHA256);
-	}
-	return false;
+	Key remote=f.value();
+	return remote.verify(message, signature);
 }
 
 
@@ -159,37 +162,22 @@ bool KeyStore::hasPubKeyForFingerprint(const QString &fingerprint){
 	if(!ready){
 		return false;
 	}
-	return (peer_pki.end()==peer_pki.find(fingerprint));
+	return (peers.end()==peers.find(fingerprint));
 }
 
-void KeyStore::setPubKeyForFingerprint(const QString &fingerprint,const QString &pubkeyPEM){
+void KeyStore::setPubKeyForFingerprint(const QString &pubkeyPEM){
 	if(!ready){
 		return;
 	}
-	QSharedPointer<qpolarssl::Pki> remote_pki=QSharedPointer<qpolarssl::Pki>(new qpolarssl::Pki);
-	remote_pki->parsePublicKey(pubkeyPEM.toUtf8());
-	peer_pki[fingerprint]=remote_pki;
+	Key peer(pubkeyPEM, true);
+	peers[peer.id()]=peer;
 }
 
 
-QString KeyStore::getLocalPublicKey(){
-	if(!ready){
-		return "";
-	}
-	return local_pki.getPEMPubkey();
+Key KeyStore::getLocalKey(){
+	return localKey;
 }
 
-QString KeyStore::getLocalPrivateKey(){
-	if(!ready){
-		return "";
-	}
-	return local_pki.getPEMKey();
-}
-
-
-QString KeyStore::getLocalID(){
-	return utility::toHash(getLocalPublicKey());
-}
 
 /*
  *
