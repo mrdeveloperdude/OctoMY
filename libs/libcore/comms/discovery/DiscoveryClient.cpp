@@ -80,7 +80,7 @@ DiscoveryClient::DiscoveryClient(Node &node)
 	, m_serverURL("http://localhost:8123/api")
 	, m_client(new qhttp::client::QHttpClient(this))
 	, node(node)
-	, key(node.getKeyStore().getLocalKey())
+	, key(node.getKeyStore().localKey())
 	//, ourPubKey(node.getKeyStore().getLocalPublicKey())
 	//, ourID(utility::toHash(ourPubKey))
 	//, zeroID(utility::toHash(""))
@@ -116,7 +116,7 @@ void DiscoveryClient::discover(){
 	qhttp::client::TRequstHandler reqHandler= [this](qhttp::client::QHttpRequest* req){
 		QVariantMap cmd;
 		cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
-		cmd["key"] = node.getKeyStore().getLocalKey().toVariantMap(true);
+		cmd["key"] = node.getKeyStore().localKey().toVariantMap(true);
 		cmd["localAddress"] = "10.0.0.3";
 		cmd["localPort"] = 12345;
 		cmd["publicPort"] = 54321;
@@ -189,7 +189,7 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map){
 	Key key(map["key"].toMap(),true);
 	const QString partID=key.id();
 
-	const QString ourID=node.getKeyStore().getLocalKey().id();
+	const QString ourID=node.getKeyStore().localKey().id();
 	//const QString partID=utility::toHash(map["publicKey"].toString());
 	// Is this a genuine participant?
 	//qDebug()<<"ZERO: "<<zeroID<<" OUR: "<<ourID<<" PART:"<<partID;

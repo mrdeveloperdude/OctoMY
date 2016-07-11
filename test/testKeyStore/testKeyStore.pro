@@ -1,13 +1,12 @@
 include($$TOP_PWD/test/test.pri)
 
-TARGET = test_template
+TARGET = test_keystore
 
 HEADERS += \
-	TestTemplate.hpp
+	TestKeyStore.hpp
 
 SOURCES += \
-	TestTemplate.cpp
+	TestKeyStore.cpp
 
 include($$TOP_PWD/status.pri)
 include($$TOP_PWD/test/test_autorun.pri)
-

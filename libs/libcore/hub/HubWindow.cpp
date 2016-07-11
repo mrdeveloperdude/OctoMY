@@ -91,7 +91,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		}
 
 
-		QCommandLineParser &opts=hub->getOptions();
+		const QCommandLineParser &opts=hub->getOptions();
 		if(opts.isSet("local-port")){
 			ui->lineEditBindPort->setText(opts.value("local-port"));
 			qDebug()<<"OVERRIDING LOCAL PORT WITH VALUE FROM CMDLINE: "<<opts.value("local-port");

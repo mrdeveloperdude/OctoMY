@@ -1,12 +1,12 @@
 #include "Hub.hpp"
 #include "HubWindow.hpp"
 
-
+#include "basic/AppContext.hpp"
 
 
 
 Hub::Hub(NodeLauncher<Hub> &launcher, QObject *parent)
-	: Node(launcher.getOptions(), "hub", ROLE_CONTROL, TYPE_HUB, parent)
+	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "hub", this), ROLE_CONTROL, TYPE_HUB, parent)
 	, window(nullptr)
 {
 }

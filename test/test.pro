@@ -1,5 +1,8 @@
 TEMPLATE = subdirs
-include(test.pri)
+include($$TOP_PWD/test/test.pri)
+TARGET = test_all
+
+
 
 # NOTE: USE_TESTS is enabled when useful in local_override.pri
 #       and this file will be included in build only when it is
@@ -18,6 +21,8 @@ TEST_PROJECTS+= \
 	testTetraGPSEncoder \
 	testRNG \
 	testKey \
+	testKeyStore \
+	testDiscovery \
 
 
 STRESS_PROJECTS+= \
@@ -37,4 +42,4 @@ SUBDIRS += \
 SUBDIRS += \
 		$$STRESS_PROJECTS
 
-
+include($$TOP_PWD/status.pri)

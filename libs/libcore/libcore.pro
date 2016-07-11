@@ -185,7 +185,9 @@ SOURCES +=\
     security/Key.cpp \
     basic/NetworkAddress.cpp \
     basic/NodeAssociate.cpp \
-    security/SecurityConstants.cpp
+    security/SecurityConstants.cpp \
+    widgets/ConnectionManager.cpp \
+    basic/AppContext.cpp
 
 
 
@@ -375,7 +377,9 @@ HEADERS  += \
     security/Key.hpp \
     basic/NetworkAddress.hpp \
     basic/NodeAssociate.hpp \
-    security/SecurityConstants.hpp
+    security/SecurityConstants.hpp \
+    widgets/ConnectionManager.hpp \
+    basic/AppContext.hpp
 
 
 
@@ -414,7 +418,8 @@ FORMS    += \
     ui/FaceWidget.ui \
     ui/LogWidget.ui \
     ui/PKIManager.ui \
-    ui/PortableIDWidget.ui
+    ui/PortableIDWidget.ui \
+    widgets/ConnectionManager.ui
 
 
 RESOURCES += \

@@ -46,7 +46,7 @@ class AgentDeliveryWizard : public QWidget
 		void done(bool);
 
 	private slots:
-		void onBirthComplete();
+		void onBirthComplete(bool);
 
 	private slots:
 		void on_pushButtonDone_clicked();

@@ -2,6 +2,7 @@
 #include "zoo/ZooServer.hpp"
 #include "basic/LogHandler.hpp"
 #include "basic/Settings.hpp"
+#include "basic/AppContext.hpp"
 
 #include <QCoreApplication>
 
@@ -10,11 +11,8 @@
 
 
 int main(int argc, char *argv[]){
-	QCoreApplication::setOrganizationName(Settings::ORGANIZATION_NAME);
-	QCoreApplication::setOrganizationDomain(Settings::DOMAIN_NAME);
 	qsrand(QDateTime::currentMSecsSinceEpoch());
 	LogHandler::setLogging(true);
-
 
 	QCoreApplication app(argc, argv);
 
@@ -59,7 +57,7 @@ int main(int argc, char *argv[]){
 	}
 	opts.process(arguments);
 
-	ZooServer server(opts, env, nullptr);
+	ZooServer server(new AppContext(opts, env, "zoo"), nullptr);
 	server.start(port);
 
 	return app.exec();

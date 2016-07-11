@@ -32,7 +32,7 @@ class DiscoveryClientStore: public QObject{
 		friend class GenerateRunnable<DiscoveryClientStore>;
 
 	public:
-		explicit DiscoveryClientStore(QObject *parent=0, QString="");
+		explicit DiscoveryClientStore(QString="", QObject *parent=nullptr);
 		virtual ~DiscoveryClientStore();
 
 	private:

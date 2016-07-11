@@ -10,6 +10,7 @@
 #include "basic/Settings.hpp"
 #include "security/KeyStore.hpp"
 
+
 #include "PunchRegistry.hpp"
 #include <QString>
 #include <QTimer>
@@ -20,6 +21,7 @@ class QHttpResponse;
 class QCommandLineParser;
 class QProcessEnvironment;
 
+class AppContext;
 
 
 class ZooServer : public qhttp::server::QHttpServer
@@ -27,11 +29,12 @@ class ZooServer : public qhttp::server::QHttpServer
 	//	Q_OBJECT
 	private:
 
-		QString base;
-		QCommandLineParser &opts;
-		QProcessEnvironment &env;
-		Settings settings;
-		QString baseDir;
+		//QString base;
+		//QCommandLineParser &opts;
+		//QProcessEnvironment &env;
+		//Settings settings;
+		//QString baseDir;
+		AppContext *mContext;
 		KeyStore keystore;
 
 		Identicon identicon;
@@ -47,10 +50,13 @@ class ZooServer : public qhttp::server::QHttpServer
 
 	public:
 
-		explicit ZooServer(QCommandLineParser &opts, QProcessEnvironment &env, QObject *parent=nullptr);
+		explicit ZooServer( AppContext *context, QObject *parent=nullptr);
 
 		virtual~ZooServer();
-		void start(const QString pathOrPortNumber);
+
+		bool start(const QString pathOrPortNumber);
+		void stop();
+		bool isStarted() const;
 
 	public:
 

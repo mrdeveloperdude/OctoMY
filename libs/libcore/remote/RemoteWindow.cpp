@@ -322,8 +322,8 @@ void RemoteWindow::updateControlLevel(){
 
 void RemoteWindow::updateActiveAgent(){
 	QString agentName=ui->comboBoxAgent->currentText();
-	if("Pair with another"==agentName){
-		ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
+	if("Manage Connections"==agentName){
+		ui->stackedWidgetScreen->setCurrentWidget(ui->pageManageConnections);
 	}
 	else{
 		qDebug()<<"SWITCHING ACTIVE AGENT TO "<<agentName;

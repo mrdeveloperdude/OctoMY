@@ -6,14 +6,15 @@
 #include <QObject>
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QProcessEnvironment>
 
 #include "../libcore/basic/StyleManager.hpp"
 #include "basic/Settings.hpp"
 #include "security/KeyStore.hpp"
 
-
 class Node;
 class Settings;
+
 
 template <typename T>
 class NodeLauncher{
@@ -31,6 +32,7 @@ class NodeLauncher{
 
 	protected:
 		QCommandLineParser opts;
+		QProcessEnvironment env;
 		bool headless;
 
 	public:
@@ -44,6 +46,10 @@ class NodeLauncher{
 
 		QCommandLineParser &getOptions(){
 			return opts;
+		}
+
+		QProcessEnvironment &getEnvironment(){
+			return env;
 		}
 
 };
@@ -65,6 +71,7 @@ NodeLauncher<T>::NodeLauncher(int argc, char *argv[])
 	, argc(argc)
 	, argv(argv)
 	, app(nullptr)
+	, env(QProcessEnvironment::systemEnvironment())
 	, headless(true)
 {
 }
@@ -76,7 +83,9 @@ void NodeLauncher<T>::run(){
 
 	qsrand(QDateTime::currentMSecsSinceEpoch());
 
+
 	LogHandler::setLogging(true);
+
 	opts.setApplicationDescription("Robust real-time communication and control software for robots");
 	opts.addHelpOption();
 	opts.addVersionOption();
@@ -111,23 +120,22 @@ void NodeLauncher<T>::run(){
 
 
 		start();
+		/*
 		QSurfaceFormat fmt;
 		fmt.setDepthBufferSize(24);
-		/*
+
 		if (QCoreApplication::arguments().contains(QStringLiteral("--multisample")))
 			fmt.setSamples(4);
 		if (QCoreApplication::arguments().contains(QStringLiteral("--coreprofile"))) {
 			fmt.setVersion(3, 2);
 			fmt.setProfile(QSurfaceFormat::CoreProfile);
-		}*/
+		}
 		QSurfaceFormat::setDefaultFormat(fmt);
-
+*/
 		Q_INIT_RESOURCE(icons);
 		Q_INIT_RESOURCE(images);
 		Q_INIT_RESOURCE(qfi);
 		Q_INIT_RESOURCE(3d);
-
-
 
 		ret=app->exec();
 		qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done, quitting";

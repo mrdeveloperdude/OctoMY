@@ -290,7 +290,7 @@ void PairingWizard::configure(Node *n)
 {
 	node=n;
 	if(nullptr!=node){
-		ui->labelID->setText(node->getKeyStore().getLocalKey().id());
+		ui->labelID->setText(node->getKeyStore().localKey().id());
 		DiscoveryClient *discovery=node->getDiscoveryClient();
 		DiscoveryType type=node->getType();
 

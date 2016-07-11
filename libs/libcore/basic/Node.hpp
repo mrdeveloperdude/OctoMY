@@ -25,16 +25,14 @@ class QCompassReading;
 class QAccelerometerReading;
 class QGyroscopeReading;
 class Client;
-
+class AppContext;
 
 class Node : public QObject
 {
 		Q_OBJECT
 	protected:
 
-		QCommandLineParser &opts;
-		Settings settings;
-		QString baseDir;
+		AppContext *mContext;
 		KeyStore keystore;
 		DiscoveryClientStore peers;
 
@@ -45,17 +43,15 @@ class Node : public QObject
 		ZooClient *zoo;
 		SensorInput *sensors;
 
-		QHostAddress hubAddress;
-		quint16 hubPort;
+		NetworkAddress controlAddress;
 		CameraList *cameras;
 
 		qint64 lastStatusSend;
 		SensorsMessage *sensorMessage;
 
 
-
 	public:
-		explicit Node(QCommandLineParser &opts, QString base, DiscoveryRole role, DiscoveryType type, QObject *parent = nullptr);
+		explicit Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject *parent = nullptr);
 		virtual ~Node();
 
 	public:
@@ -69,13 +65,10 @@ class Node : public QObject
 		void hookCommsSignals(QObject &o);
 		void unHookCommsSignals(QObject &o);
 
-		QCommandLineParser &getOptions();
+		const QCommandLineParser &getOptions() const;
 		Settings &getSettings();
 		KeyStore  &getKeyStore();
 		DiscoveryClientStore &getPeers();
-
-
-
 
 		DiscoveryClient *getDiscoveryClient();
 		DiscoveryRole getRole();
@@ -88,7 +81,9 @@ class Node : public QObject
 
 		virtual QWidget *showWindow();
 
-
+		// KeyStore slots
+	private slots:
+		void onKeystoreReady(bool);
 
 		// CommsChannel slots
 	private slots:
@@ -103,8 +98,6 @@ class Node : public QObject
 		void onCompassUpdated(QCompassReading *);
 		void onAccelerometerUpdated(QAccelerometerReading *);
 		void onGyroscopeUpdated(QGyroscopeReading *r);
-
-
 
 };
 

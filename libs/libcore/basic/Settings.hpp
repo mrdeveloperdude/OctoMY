@@ -21,12 +21,13 @@ class Settings:QObject{
 		static const QString DOMAIN_NAME;
 		static const QString BRAND_NAME;
 		static const QString APPLICATION_NAME_BASE;
+		static const QString APPLICATION_VERSION;
 		static const QString USERAGENT;
 
 		static const QString KEY_CUSTOM_SETTING_BASE;
 
 	public:
-		explicit Settings(QObject *parent=nullptr, QString group="");
+		explicit Settings(QString group="", QString appName="", QString appVersion="", QObject *parent=nullptr);
 		virtual ~Settings();
 
 	public:

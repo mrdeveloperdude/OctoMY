@@ -4,6 +4,7 @@
 #include "comms/Client.hpp"
 #include "comms/couriers/DirectPoseCourier.hpp"
 #include "remote/RemoteWindow.hpp"
+#include "basic/AppContext.hpp"
 
 #include <QDebug>
 #include <QDataStream>
@@ -14,7 +15,7 @@
 
 
 Remote::Remote(NodeLauncher<Remote> &launcher, QObject *parent)
-	: Node(launcher.getOptions(), "remote", ROLE_CONTROL, TYPE_REMOTE, parent)
+	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "remote", this), ROLE_CONTROL, TYPE_REMOTE, parent)
 	, poseCourier(new DirectPoseCourier(this))
 	, window(nullptr)
 {
@@ -24,12 +25,9 @@ Remote::~Remote(){
 }
 
 void Remote::start(QHostAddress listenAddress, quint16 listenPort, QHostAddress hubAddress, quint16 hubPort){
+	this->controlAddress=NetworkAddress(hubAddress, hubPort);
 	if(nullptr!=comms){
 		comms->registerCourier(*poseCourier);
-	}
-	this->hubAddress=hubAddress;
-	this->hubPort=hubPort;
-	if(0!=comms){
 		Client *c=comms->getClients()->getByHost(hubAddress,hubPort,true);
 		if(0!=c){
 			poseCourier->setDestination(c->signature);

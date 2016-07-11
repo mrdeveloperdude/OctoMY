@@ -115,9 +115,9 @@ void CameraPairingWidget::on_pushButtonBadge_toggled(bool show)
 }
 
 
-void CameraPairingWidget::onKeystoreReady()
+void CameraPairingWidget::onKeystoreReady(bool ok)
 {
-
+qDebug()<<"Keystore ready: "<<ok;
 }
 
 void CameraPairingWidget::detectBarcodes(const QVideoFrame &frame)

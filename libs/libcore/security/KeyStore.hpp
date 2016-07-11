@@ -21,18 +21,19 @@ class KeyStore: public QObject{
 		Q_OBJECT
 	private:
 
-		Key localKey;
+		Key mLocalKey;
 		//qpolarssl::Pki local_pki;
-		QMap<QString, Key > peers;
-		AtomicBoolean ready;
-		AtomicBoolean error;
-		QString filename;
+		QMap<QString, Key > mPeers;
+		AtomicBoolean mReady;
+		AtomicBoolean mError;
+		AtomicBoolean mInProgress;
+		QString mFilename;
 		//quint32 keyBits;
 
 		friend class GenerateRunnable<KeyStore>;
 
 	public:
-		explicit KeyStore(QObject *parent=0, QString="");
+		explicit KeyStore(QString="", QObject *parent=nullptr);
 		virtual ~KeyStore();
 
 	private:
@@ -46,17 +47,26 @@ class KeyStore: public QObject{
 		void clear();
 
 		//Make if needed, load if otherwise
-		void bootstrap();
+		void bootstrap(bool loadOnly=false, bool runInBackground=true);
 
-		bool isReady(){
-			return ready;
-		}
-		bool isError(){
-			return error;
+		inline bool isReady()
+		{
+			return mReady;
 		}
 
-		bool hasLocalKeyFile(){
-			return QFile(filename).exists();
+		inline bool hasError()
+		{
+			return mError;
+		}
+
+		inline bool hasLocalKeyFile() const
+		{
+			return QFile(mFilename).exists();
+		}
+
+		inline Key &localKey()
+		{
+			return mLocalKey;
 		}
 
 		// Sign message with our private key
@@ -72,15 +82,19 @@ class KeyStore: public QObject{
 		// Set pub-key for tier identified by give fingerprint ID to given UTF8 encoded string containing pubkey PEM format
 		void setPubKeyForFingerprint(const QString &pubkeyPEM);
 
-		Key getLocalKey();
+
+		friend const QDebug &operator<<(QDebug &d, KeyStore &ks);
 
 
 	signals:
 
-		void keystoreReady();
+		void keystoreReady(bool ok);
 
 };
 
+
+
+const QDebug &operator<<(QDebug &d, KeyStore &ks);
 
 #endif // KEYSTORE_HPP
 

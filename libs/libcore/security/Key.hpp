@@ -43,6 +43,9 @@ class KeyPrivate{
 	private:
 		static QString hash(QString input);
 
+	private:
+
+		void parse(bool isPublic);
 	public:
 
 

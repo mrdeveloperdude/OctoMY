@@ -94,7 +94,7 @@ void AgentDeliveryWizard::configure(Node *n){
 		KeyStore &keystore=node->getKeyStore();
 		KeyStore *keystorep=&keystore;
 
-		if(!connect(&keystore, SIGNAL(keystoreReady()), this, SLOT(onBirthComplete()),OC_CONTYPE)){
+		if(!connect(&keystore, SIGNAL(keystoreReady(bool)), this, SLOT(onBirthComplete(bool)),OC_CONTYPE)){
 			qWarning()<<"ERROR: Could not connect";
 		}
 
@@ -178,20 +178,20 @@ void AgentDeliveryWizard::on_pushButtonPairNow_clicked()
 }
 
 
-void AgentDeliveryWizard::onBirthComplete(){
+void AgentDeliveryWizard::onBirthComplete(bool){
 	if(nullptr!=node){
 		KeyStore &keystore=node->getKeyStore();
-		if((keystore.isReady() || keystore.isError()) && !birthTimer.isActive()){
+		if((keystore.isReady() || keystore.hasError()) && !birthTimer.isActive()){
 			qDebug()<<"XXX - Birth complete!";
 			birthTimer.stop();
 			spinner->stop();
 
-			if(keystore.isError()){
+			if(keystore.hasError()){
 				qWarning()<<"XXX - ERROR: Birthdefects detected!";
 				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
 			}
 			else{
-				QString id=keystore.getLocalKey().id();
+				QString id=keystore.localKey().id();
 				qDebug()<<"ID: "<<id;
 				mID.setID(id);
 				mID.setType(TYPE_AGENT);

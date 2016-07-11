@@ -12,6 +12,8 @@
 #include "utility/Utility.hpp"
 #include "utility/ScopedTimer.hpp"
 #include "basic/StyleManager.hpp"
+#include "AppContext.hpp"
+
 
 #include <QCommandLineParser>
 #include <QAccelerometerReading>
@@ -20,41 +22,41 @@
 #include <QStandardPaths>
 #include <QDir>
 
-Node::Node(QCommandLineParser &opts, QString base, DiscoveryRole role, DiscoveryType type, QObject *parent)
+Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject *parent)
 	: QObject (parent)
-	, opts (opts)
-	, settings(nullptr, base)
-	, baseDir( settings.getCustomSetting("content_dir", QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)) )
-	, keystore (nullptr, baseDir + "/keystore.json")
-	, peers (nullptr, baseDir + "/peers.json")
+	, mContext(context)
+	, keystore (mContext->baseDir() + "/keystore.json")
+	, peers (mContext->baseDir() + "/peers.json")
 	, discovery (new DiscoveryClient(*this))
 	, role (role)
 	, type (type)
 	, comms (new CommsChannel(this))
 	, zoo (new ZooClient(this))
 	, sensors (new SensorInput(this))
-	, hubPort (0)
+	//, hubPort (0)
 	, cameras (new CameraList(this))
 	, lastStatusSend (0)
 	, sensorMessage (new SensorsMessage)
 {
-	ScopedTimer nodeBootTimer(base+"-boot");
-	setObjectName(base);
-	QCoreApplication::setApplicationVersion("1.0");
-	QCoreApplication::setApplicationName(Settings::APPLICATION_NAME_BASE+" "+base);
+	ScopedTimer nodeBootTimer(mContext->base()+"-boot");
+	setObjectName(mContext->base());
 
-	// Only Agents are "born"
-	if(ROLE_AGENT!=role){
-		keystore.bootstrap();
+	if(!connect(&keystore, &KeyStore::keystoreReady, this, &Node::onKeystoreReady)){
+		qWarning()<<"ERROR: Could not connect "<<keystore.objectName();
+	}
+	else{
+		qDebug()<<"CONNECTED NODE TO KEYSTORE";
 	}
 
+	// Only Agents are "born"
+	keystore.bootstrap(ROLE_AGENT==role);
 
 	StyleManager *style=new StyleManager(QColor(TYPE_AGENT==type?"#e83636":TYPE_REMOTE==type?"#36bee8":"#36e843"));
 	if(nullptr!=style){
 		style->apply();
 	}
 
-	if(!QDir().mkpath(baseDir)){
+	if(!QDir().mkpath(mContext->baseDir())){
 		qWarning()<<"ERROR: Could not create basedir for node";
 	}
 
@@ -68,6 +70,9 @@ Node::Node(QCommandLineParser &opts, QString base, DiscoveryRole role, Discovery
 		//zoo->putNode(OCID); 		zoo->getNode(OCID);
 	}
 
+
+
+
 }
 
 Node::~Node(){
@@ -78,14 +83,14 @@ Node::~Node(){
 
 }
 
-QCommandLineParser &Node::getOptions()
+const QCommandLineParser &Node::getOptions() const
 {
-	return opts;
+	return mContext->options();
 }
 
 Settings &Node::getSettings()
 {
-	return settings;
+	return mContext->settings();
 }
 
 KeyStore  &Node::getKeyStore()
@@ -192,10 +197,17 @@ void Node::sendStatus(){
 	}
 }
 
+//////////////////////////////////////////////////
+// Key Store slots
+
+void Node::onKeystoreReady(bool ok)
+{
+	qDebug()<<"Key Store: "<<(keystore.isReady()?"READY":"UNREADY")<<", "<<(keystore.hasError()?"ERROR":"OK");
+}
 
 
 //////////////////////////////////////////////////
-//CommsChannel slots
+// CommsChannel slots
 
 
 void Node::onError(QString e){
@@ -219,7 +231,7 @@ void Node::onConnectionStatusChanged(bool s){
 
 
 //////////////////////////////////////////////////
-//Internal sensor slots
+// Internal sensor slots
 
 void Node::onPositionUpdated(const QGeoPositionInfo &info){
 	if(nullptr!=sensorMessage){

@@ -1,12 +1,11 @@
 include($$TOP_PWD/test/test.pri)
 
-TARGET = test_rng
+TARGET = test_discovery
 
 HEADERS += \
-	TestRNG.hpp
+	TestDiscovery.hpp
 
 SOURCES += \
-	TestRNG.cpp
+	TestDiscovery.cpp
 
 include($$TOP_PWD/status.pri)
-include($$TOP_PWD/test/test_autorun.pri)

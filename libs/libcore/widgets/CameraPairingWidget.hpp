@@ -54,7 +54,7 @@ class CameraPairingWidget : public QWidget
 	private slots:
 		void onCountDownTimeout();
 		void detectBarcodes(const QVideoFrame &);
-		void onKeystoreReady();
+		void onKeystoreReady(bool);
 		void cameraStatusUpdated(QCamera::Status);
 
 	private slots:

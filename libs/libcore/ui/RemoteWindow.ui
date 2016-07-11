@@ -48,7 +48,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="pageRunning">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -64,7 +64,7 @@
            </property>
            <item>
             <property name="text">
-             <string>Pair with another</string>
+             <string>Manage Connections</string>
             </property>
             <property name="icon">
              <iconset resource="../resources/icons.qrc">
@@ -180,8 +180,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>440</width>
-                <height>560</height>
+                <width>98</width>
+                <height>34</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -495,6 +495,13 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="pageManageConnections">
+      <layout class="QVBoxLayout" name="verticalLayout_10">
+       <item>
+        <widget class="ConnectionManager" name="widgetConnectionManager" native="true"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
@@ -534,6 +541,12 @@
    <class>LogWidget</class>
    <extends>QPlainTextEdit</extends>
    <header>widgets/LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>ConnectionManager</class>
+   <extends>QWidget</extends>
+   <header>widgets/ConnectionManager.hpp</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

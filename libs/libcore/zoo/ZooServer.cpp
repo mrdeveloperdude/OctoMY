@@ -15,6 +15,8 @@
 
 #include "ZooConstants.hpp"
 
+#include "basic/AppContext.hpp"
+
 #include <QtNetwork/QHostAddress>
 #include <QJsonDocument>
 #include <QUrlQuery>
@@ -39,30 +41,29 @@
 
 const quint64 ZooServer::BACKGROUND_TIMER_INTERVAL=1000*10; //10 sec
 
-ZooServer::ZooServer(QCommandLineParser &opts, QProcessEnvironment &env, QObject *parent)
+ZooServer::ZooServer(AppContext *context, QObject *parent)
 	: QHttpServer(parent)
-	, base("zoo")
-	, opts(opts)
-	, env(env)
-	, settings(nullptr, base)
-	, baseDir( settings.getCustomSetting("content_dir", QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)) )
-	, keystore (nullptr, baseDir+"/keystore.json")
+	//, base("zoo")
+	//, opts(opts)
+	//, env(env)
+	//, settings(base)
+	, mContext(context)
+	//, baseDir( settings.getCustomSetting("content_dir", QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)) )
+	, keystore (mContext->baseDir() + "/keystore.json")
 	, storage(QDir::current())
 
 {
-	ScopedTimer zooBootTimer(base+"-boot");
-	setObjectName(base);
-	QCoreApplication::setApplicationVersion("1.0");
-	QCoreApplication::setApplicationName(Settings::APPLICATION_NAME_BASE+" "+base);
+	ScopedTimer zooBootTimer(mContext->base()+"-boot");
+	setObjectName(mContext->base());
 
 	keystore.bootstrap();
 
 
-	if(!QDir().mkpath(baseDir)){
+	if(!QDir().mkpath(mContext->baseDir())){
 		qWarning()<<"ERROR: Could not create basedir for zoo";
 	}
 
-	qDebug()<<"Current dir for storage is: "<<storage.dir().absolutePath();
+	qDebug()<<"Current dir for zoo storage is: "<<storage.dir().absolutePath();
 
 	if(!connect(&backgroundTimer, SIGNAL(timeout()),this, SLOT(onBackgroundTimer()),OC_CONTYPE)){
 		qWarning()<<"ERROR: Could not connect";
@@ -105,7 +106,7 @@ static QDebug operator<<(QDebug d, qhttp::server::QHttpRequest *s)
 }
 
 
-void ZooServer::start(const QString pathOrPortNumber)
+bool ZooServer::start(const QString pathOrPortNumber)
 {
 	if(!connect(this,  &QHttpServer::newConnection, [this](qhttp::server::QHttpConnection*){
 				//qDebug()<<"a new connection was made!\n";
@@ -146,12 +147,30 @@ void ZooServer::start(const QString pathOrPortNumber)
 
 	if ( !isListening ) {
 		qWarning()<<"ERROR: Could not listen to "<<qPrintable(pathOrPortNumber);
-		QCoreApplication::quit();
-		return;
+		//QCoreApplication::quit();
+		return false;
 	}
 	else {
 		qDebug()<<"Listening to "<<qPrintable(pathOrPortNumber);
 	}
+	return true;
+}
+
+
+void ZooServer::stop()
+{
+	if ( !isListening() ) {
+		qWarning()<<"ERROR: Trying to stop server while not listeining";
+	}
+	else {
+		qDebug()<<"Stopping server";
+		stopListening();
+	}
+}
+
+bool ZooServer::isStarted()const
+{
+	return isListening();
 }
 
 void ZooServer::serveFallback(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
@@ -286,7 +305,6 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 			msg="ERROR: OCID did not match validation: "+ocid;
 			ok=false;
 		}
-
 	}
 	else if(ZooConstants::OCTOMY_ZOO_API_PUT_NODE_CRUMB==action){
 		QString ocid=root.value("ocid").toString();

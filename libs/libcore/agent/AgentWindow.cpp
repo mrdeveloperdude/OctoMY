@@ -21,7 +21,7 @@ void AgentWindow::updateIdentity(){
 		agent->updateDiscoveryClient();
 		//Set our custom identicon as window icon
 		PortableID pid;
-		pid.setID(agent->getKeyStore().getLocalKey().id());
+		pid.setID(agent->getKeyStore().localKey().id());
 		Identicon id(pid);
 		QIcon icon;//=windowIcon();
 		icon.addPixmap(id.pixmap());
@@ -202,7 +202,7 @@ void AgentWindow::onStatsVisibilityChanged(bool on){
 
 void AgentWindow::onStartShowBirthCertificate(){
 	PortableID id;
-	id.setID(agent->getKeyStore().getLocalKey().id());
+	id.setID(agent->getKeyStore().localKey().id());
 	id.setType(TYPE_AGENT);
 	ui->widgetBirthCertificate->setPortableID(id);
 	ui->stackedWidget->setCurrentWidget(ui->pageBirthCertificate);

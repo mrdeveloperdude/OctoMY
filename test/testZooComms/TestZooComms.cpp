@@ -1,6 +1,7 @@
 #include "TestZooComms.hpp"
 #include "zoo/ZooServer.hpp"
 #include "zoo/ZooClient.hpp"
+#include "basic/AppContext.hpp"
 
 #include <QSignalSpy>
 
@@ -18,7 +19,7 @@ void TestZooComms::test(){
 	opts.setApplicationDescription("Robust real-time communication and control software for robots");
 	opts.addHelpOption();
 
-	ZooServer server(opts, env, nullptr);
+	ZooServer server(new AppContext(opts, env, "zoo"), nullptr);
 	server.start(port);
 
 	ZooClient *client=new ZooClient(this);

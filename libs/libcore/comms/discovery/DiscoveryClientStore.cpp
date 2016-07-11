@@ -11,7 +11,7 @@
 #include <QVariantMap>
 #include <QVariantList>
 
-DiscoveryClientStore::DiscoveryClientStore(QObject *parent, QString fn)
+DiscoveryClientStore::DiscoveryClientStore(QString fn, QObject *parent)
 	: QObject(parent)
 	, ready(false)
 	, error(false)

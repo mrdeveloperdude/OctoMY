@@ -17,6 +17,13 @@ struct NetworkAddress{
 
 		}
 
+		NetworkAddress(QHostAddress ip, quint16 port)
+			: ip(ip)
+			, port(port)
+		{
+
+		}
+
 		NetworkAddress()
 			: port(0)
 		{

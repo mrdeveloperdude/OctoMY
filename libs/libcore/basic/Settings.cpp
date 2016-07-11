@@ -10,29 +10,39 @@
 
 
 
-const qint64  Settings::MAX_SYNC_INTERVAL=(1000 * 10); //Never sync more often than once every 10 sec
-const QString Settings::ORGANIZATION_NAME = "OctoMY™";
-const QString Settings::DOMAIN_NAME = "octomy.org™";
-const QString Settings::BRAND_NAME = "OctoMY™";
-const QString Settings::APPLICATION_NAME_BASE = BRAND_NAME;
-const QString Settings::USERAGENT= "OctoMY/1.0";
+const qint64  Settings::MAX_SYNC_INTERVAL =		(1000 * 10); //Never sync more often than once every 10 sec
+const QString Settings::ORGANIZATION_NAME =		"OctoMY™";
+const QString Settings::DOMAIN_NAME =			"octomy.org™";
+const QString Settings::BRAND_NAME =			"OctoMY™";
+const QString Settings::APPLICATION_NAME_BASE =	BRAND_NAME;
+const QString Settings::APPLICATION_VERSION =	"1.0";
+const QString Settings::USERAGENT =				"OctoMY/"+APPLICATION_VERSION;
 
 
 const QString Settings::KEY_CUSTOM_SETTING_BASE="";  // SET TO EMPTY STRING TO ALLOW SMOOTH TRANSITION FROM CUSTOM TO ACTUAL SETTING IN LATER VERSIONS "custom-setting-";
 
 
-Settings::Settings(QObject *parent, QString g)
+Settings::Settings(QString g, QString appName, QString appVersion, QObject *parent)
 	: QObject(parent)
 	, group(g.trimmed())
 	, settings(new QSettings)
 	, lastSync(0)
 {
 	OC_METHODGATE();
+
+	QCoreApplication::setOrganizationName(Settings::ORGANIZATION_NAME);
+	QCoreApplication::setOrganizationDomain(Settings::DOMAIN_NAME);
+	if(""!=appVersion){
+		QCoreApplication::setApplicationVersion(appVersion);
+	}
+	if(""!=appName){
+		QCoreApplication::setApplicationName(appName);
+	}
 	if(""!=group){
 		settings->beginGroup(group);
 	}
 	syncTimer.setTimerType(Qt::VeryCoarseTimer);
-	if(!connect(&syncTimer,SIGNAL(timeout()),this,SLOT(delayedSync()),OC_CONTYPE)){
+	if(!connect(&syncTimer, SIGNAL(timeout()), this, SLOT(delayedSync()), OC_CONTYPE)){
 		qWarning()<<"ERROR: Could not connect settings sync timer";
 	}
 }

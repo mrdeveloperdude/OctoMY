@@ -13,15 +13,7 @@ KeyPrivate::KeyPrivate( QVariantMap map, bool isPublic )
 {
 	OC_METHODGATE();
 	//qDebug()<<"KeyPrivate::KeyPrivate( QVariantMap key, bool isPublic ):"<<map<<isPublic <<" for " <<mKID<<"/"<<mKCT;
-	ScopedTimer timer("Key Parsing");
-	if(isPublic){
-		mPKI.parsePublicKey(mPubKey.toUtf8());
-	}
-	else{
-		mPKI.parseKey(mKey.toUtf8());
-		mPubKey=mPKI.getPEMPubkey();
-	}
-	mID=hash(mPubKey);
+	parse(isPublic);
 }
 
 KeyPrivate::KeyPrivate( QString key, bool isPublic )
@@ -31,15 +23,7 @@ KeyPrivate::KeyPrivate( QString key, bool isPublic )
 {
 	OC_METHODGATE();
 //	qDebug()<<"KeyPrivate::KeyPrivate( QString key, bool isPublic ):"<<key<<isPublic <<" for " <<mKID<<"/"<<mKCT;
-	ScopedTimer timer("Key Parsing");
-	if(isPublic){
-		mPKI.parsePublicKey(mPubKey.toUtf8());
-	}
-	else{
-		mPKI.parseKey(mKey.toUtf8());
-		mPubKey=mPKI.getPEMPubkey();
-	}
-	mID=hash(mPubKey);
+	parse(isPublic);
 }
 
 
@@ -60,6 +44,28 @@ KeyPrivate::KeyPrivate(quint32 bits)
 	}
 }
 
+
+void KeyPrivate::parse(bool isPublic)
+{
+	ScopedTimer timer("Key Parsing");
+	if(isPublic){
+		QByteArray raw=mPubKey.toUtf8();
+		if(0!=mPKI.parsePublicKey(raw)){
+			qWarning()<<"ERROR: Could not parse pubkey: "<<raw;
+		}
+	}
+	else{
+		QByteArray raw=mKey.toUtf8();
+		if(0!=mPKI.parseKey(raw)){
+			qWarning()<<"ERROR: Could not parse key: "<<raw;
+		}
+		mPubKey=mPKI.getPEMPubkey();
+		if(mPubKey.isEmpty()){
+			qWarning()<<"ERROR: Could not get pubkey from key: "<<raw;
+		}
+	}
+	mID=hash(mPubKey);
+}
 
 KeyPrivate::KeyPrivate()
 	: mKID(mKCT++)
