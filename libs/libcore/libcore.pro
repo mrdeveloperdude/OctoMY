@@ -187,7 +187,9 @@ SOURCES +=\
     basic/NodeAssociate.cpp \
     security/SecurityConstants.cpp \
     widgets/ConnectionManager.cpp \
-    basic/AppContext.cpp
+    basic/AppContext.cpp \
+    comms/ClientDirectory.cpp \
+    comms/couriers/CourierMandate.cpp
 
 
 
@@ -379,7 +381,9 @@ HEADERS  += \
     basic/NodeAssociate.hpp \
     security/SecurityConstants.hpp \
     widgets/ConnectionManager.hpp \
-    basic/AppContext.hpp
+    basic/AppContext.hpp \
+    comms/ClientDirectory.hpp \
+    comms/couriers/CourierMandate.hpp
 
 
 
@@ -413,13 +417,13 @@ FORMS    += \
 	ui/MapEditor.ui \
 	ui/RealtimeValuesWidget.ui \
     ui/PairingWizard.ui \
-    hub/HUDWidget.ui \
     ui/AgentDeliveryWizard.ui \
     ui/FaceWidget.ui \
     ui/LogWidget.ui \
     ui/PKIManager.ui \
     ui/PortableIDWidget.ui \
-    widgets/ConnectionManager.ui
+    ui/ConnectionManager.ui \
+    ui/HUDWidget.ui
 
 
 RESOURCES += \

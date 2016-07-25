@@ -67,3 +67,4 @@ DiscoveryType DiscoveryTypeFromString(QString s){
 	if("TYPE_ZOO"==s)return TYPE_ZOO;
 	return TYPE_UNKNOWN;
 }
+

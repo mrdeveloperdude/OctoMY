@@ -36,10 +36,10 @@ QHexEditPrivate::QHexEditPrivate(QScrollArea *scrollarea, QScrollBar *vscrollbar
 	this->setFocusPolicy(Qt::StrongFocus);
 	this->setBackgroundRole(QPalette::Base);
 	this->setSelectedCursorBrush(Qt::lightGray);
-	this->setLineColor(QColor(0xFF, 0xFF, 0xA0));
+	this->setLineColor(QColor(0xFF, 0xFF, 0xA0, 0x20));
 	this->setAddressForeColor(Qt::darkBlue);
-	this->setAddressBackColor(QColor(0xF0, 0xF0, 0xFE));
-	this->setAlternateLineColor(QColor(0xF0, 0xF0, 0xFE));
+	this->setAddressBackColor(QColor(0xF0, 0xF0, 0xFE, 0x20));
+	this->setAlternateLineColor(QColor(0xF0, 0xF0, 0xFE, 0x20));
 
 	this->_timBlink = new QTimer();
 	this->_timBlink->setInterval(QHexEditPrivate::CURSOR_BLINK_INTERVAL);

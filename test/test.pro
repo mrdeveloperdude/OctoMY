@@ -1,7 +1,7 @@
 TEMPLATE = subdirs
 include($$TOP_PWD/test/test.pri)
 TARGET = test_all
-
+CONFIG += ordered
 
 
 # NOTE: USE_TESTS is enabled when useful in local_override.pri
@@ -23,6 +23,8 @@ TEST_PROJECTS+= \
 	testKey \
 	testKeyStore \
 	testDiscovery \
+	testDeliveryWizard\
+	testNetworkAddress\
 
 
 STRESS_PROJECTS+= \

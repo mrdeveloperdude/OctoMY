@@ -1,6 +1,7 @@
 #include "ClientModel.hpp"
 
 #include "comms/Client.hpp"
+#include "comms/ClientDirectory.hpp"
 
 #include <QIcon>
 #include <QPixmap>

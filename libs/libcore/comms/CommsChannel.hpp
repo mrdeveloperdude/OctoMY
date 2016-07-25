@@ -101,13 +101,13 @@ class CommsChannel : public QObject{
 
 	public:
 
-		explicit CommsChannel(QObject *parent=nullptr, LogDestination *mw=nullptr);
+		explicit CommsChannel(const ClientSignature &sig, LogDestination *mw=nullptr, QObject *parent=nullptr);
 
 	public:
 
 		ClientDirectory *getClients();
 
-		void start(QHostAddress bindAddress, quint16 bindPort);
+		void start(NetworkAddress address);
 		void stop();
 
 		void setLogOutput(LogDestination *mw);
@@ -138,7 +138,7 @@ class CommsChannel : public QObject{
 
 		void appendLog(QString);
 
-		void sendData(const quint64 now, Client *localClient, Courier *courier, const ClientSignature *sig=nullptr);
+		void sendData(const quint64 &now, QSharedPointer<Client> localClient, Courier *courier, const ClientSignature *sig=nullptr);
 
 		// CommsChannel signals
 	signals:

@@ -19,15 +19,12 @@
 class DiscoveryClientStore: public QObject{
 		Q_OBJECT
 
-
 	private:
 
-
-		QMap<QString, DiscoveryParticipant *> peers;
-		AtomicBoolean ready;
-		AtomicBoolean error;
-		QString filename;
-
+		QMap<QString, DiscoveryParticipant *> mPeers;
+		AtomicBoolean mReady;
+		AtomicBoolean mError;
+		QString mFilename;
 
 		friend class GenerateRunnable<DiscoveryClientStore>;
 
@@ -47,15 +44,16 @@ class DiscoveryClientStore: public QObject{
 		void bootstrap();
 
 		bool isReady(){
-			return ready;
+			return mReady;
 		}
 		bool isError(){
-			return error;
+			return mError;
 		}
 
 
 		bool hasParticipant(const QString &id);
 		DiscoveryParticipant * getParticipant(const QString &id);
+		DiscoveryParticipant * removeParticipant(const QString &id);
 		void setParticipant(DiscoveryParticipant *participant);
 
 

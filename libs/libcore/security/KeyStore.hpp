@@ -71,6 +71,7 @@ class KeyStore: public QObject{
 
 		// Sign message with our private key
 		QByteArray sign(const QByteArray &source);
+
 		// Verify signature with our pub-key
 		bool verify(const QByteArray &message, const QByteArray &signature);
 
@@ -79,12 +80,11 @@ class KeyStore: public QObject{
 
 		// Check if we have pub-key for tier identified by give fingerprint ID
 		bool hasPubKeyForFingerprint(const QString &fingerprint);
+
 		// Set pub-key for tier identified by give fingerprint ID to given UTF8 encoded string containing pubkey PEM format
 		void setPubKeyForFingerprint(const QString &pubkeyPEM);
 
-
 		friend const QDebug &operator<<(QDebug &d, KeyStore &ks);
-
 
 	signals:
 

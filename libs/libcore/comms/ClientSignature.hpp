@@ -4,39 +4,48 @@
 
 #include <QHostAddress>
 
+#include "basic/NetworkAddress.hpp"
+
 class Client;
 
 
 /**
- *  \brief Communication between OctoMY clients can be challenging, especially
- *  with many clients interconnected in complex ways.
- *
- * Clients need a way to identify eachother as well as the level of trust that
- * exists between them.
- *
- * The ClientSignature class represents all the identification and trust that
- * this client has for another connected client.
- *
- * Identification usually starts with an initial network address (IPv4/hostname)
- * and is later enriched during different handshakes to hold network-neutral id,
- * security tokens and alternate network addresses.
- *
+
+  ClientSignature is a minimal remote identification that is used solely by
+  CommsChannel.
+
+  The signature contains an ID and the public network address used in
+  communication. ClientSignature is mutable, and may be updated.
+
+  It accomodates the special need for uniquely identifying
+  the communicating clients using only 8 bytes to represent their identity, as
+  opposed to the 512 bytes used in a full ID string.
+
+  This is accomplished by converting the first 16 HEX digits of the full ID
+  string into one 64 bit unsigned int.
+
  */
 
 class ClientSignature{
 
-	public:
+	private:
 
-		quint32 platform;
-		quint32 executable;
-		QHostAddress host;
-		quint16 port;
+		quint64 mShortHandID;
+		NetworkAddress mAddress;
 
 	public:
-		explicit ClientSignature(const quint32 platform=0, const quint32 executable=0, const QHostAddress host=QHostAddress(), const quint16 port=0);
-
+		explicit ClientSignature();
+		ClientSignature(const ClientSignature &other);
+		explicit ClientSignature(const quint64 &shortHandID, const NetworkAddress &address);
+		explicit ClientSignature(const QString &fullID, const NetworkAddress &address);
 
 		const QString toString() const;
+
+		quint64 shortHandID() const;
+		NetworkAddress address() const;
+
+		void setAddress(const NetworkAddress &address);
+		void setShortHandID(const quint64 &shortHandID);
 
 
 };

@@ -50,7 +50,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 {
 	setObjectName("HubWindow");
 	if(nullptr!=hub){
-		restoreGeometry(hub->getSettings().getCustomSettingByteArray("window.geometry"));
+		restoreGeometry(hub->settings().getCustomSettingByteArray("window.geometry"));
 		QSplashScreen *splash=new QSplashScreen(this, QPixmap(":/images/hub_butterfly.svg"), Qt::WindowStaysOnTopHint);
 		splash->show();
 		summaryTimer.setInterval(100);
@@ -73,15 +73,15 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 
 
-		ui->widgetActiveNodes->configure(hub->getSettings(),"active_nodes","List");
-		ui->widgetIncommingNodes->configure(hub->getSettings(),"incomming_nodes","List");
+		ui->widgetActiveNodes->configure(hub->settings(),"active_nodes","List");
+		ui->widgetIncommingNodes->configure(hub->settings(),"incomming_nodes","List");
 
 		//Listen
-		ui->comboBoxLocalAddress->configure(&hub->getSettings(), "hub-listen-address","Local address");
-		ui->lineEditBindPort->configure(&hub->getSettings(), "","hub-listen-port","The port to listen for incomming netork traffic");
+		ui->comboBoxLocalAddress->configure(&hub->settings(), "hub-listen-address","Local address");
+		ui->lineEditBindPort->configure(&hub->settings(), "","hub-listen-port","The port to listen for incomming netork traffic");
 
-		ui->lineEditRemoteAddress->configure(&hub->getSettings(), "localhost","hub-listen_address","The address of the remote host");
-		ui->lineEditRemotePort->configure(&hub->getSettings(), "","hub-port","The port of the remote host");
+		ui->lineEditRemoteAddress->configure(&hub->settings(), "localhost","hub-listen_address","The address of the remote host");
+		ui->lineEditRemotePort->configure(&hub->settings(), "","hub-port","The port of the remote host");
 		ui->tryToggleListen->setText("Listen","Preparing...","Listening");
 		if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onListenStateChanged(TryToggleState)),OC_CONTYPE)){
 			qDebug()<<"could not connect";
@@ -91,7 +91,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		}
 
 
-		const QCommandLineParser &opts=hub->getOptions();
+		const QCommandLineParser &opts=hub->options();
 		if(opts.isSet("local-port")){
 			ui->lineEditBindPort->setText(opts.value("local-port"));
 			qDebug()<<"OVERRIDING LOCAL PORT WITH VALUE FROM CMDLINE: "<<opts.value("local-port");
@@ -103,7 +103,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		ui->lineEditBindPort->setValidator( new QIntValidator(0, 65535, this) );
 		ui->lineEditRemotePort->setValidator( new QIntValidator(0, 65535, this) );
 
-		hub->getComms()->hookSignals(*this);
+		hub->comms()->hookSignals(*this);
 
 		QByteArray ba("HELLO WORLD");
 		QHexEditData* hexdata = QHexEditData::fromMemory(ba);
@@ -128,8 +128,8 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 HubWindow::~HubWindow() {
 	if(nullptr!=hub){
-		hub->getSettings().setCustomSettingByteArray("window.geometry", saveGeometry());
-		hub->getComms()->unHookSignals(*this);
+		hub->settings().setCustomSettingByteArray("window.geometry", saveGeometry());
+		hub->comms()->unHookSignals(*this);
 	}
 	delete ui;
 	delete m_gait;
@@ -143,7 +143,7 @@ HubWindow::~HubWindow() {
 
 
 void HubWindow::onSummaryTimer(){
-	CommsChannel *comms=hub->getComms();
+	CommsChannel *comms=hub->comms();
 	if(0==comms){
 		ui->plainTextEditSummary->setPlainText("N/A");
 	}
@@ -172,7 +172,7 @@ void HubWindow::onListenStateChanged(TryToggleState s){
 		QHostInfo::lookupHost("localhost",this, SLOT(onLocalHostLookupComplete(QHostInfo)));
 	}
 	else if(OFF==s){
-		CommsChannel *comms=hub->getComms();
+		CommsChannel *comms=hub->comms();
 		if(0!=comms){
 			comms->stop();
 		}
@@ -187,10 +187,10 @@ void HubWindow::onLocalHostLookupComplete(QHostInfo hi){
 			ui->logScroll->appendLog("Skipping invalid address during local host lookup: "+adr.toString());
 		}
 		else{
-			CommsChannel *comms=hub->getComms();
+			CommsChannel *comms=hub->comms();
 			if(0!=comms){
 				qDebug()<<"HUB comms start for " << adr.toString()<<":" << ui->lineEditBindPort->text();
-				comms->start(adr, ui->lineEditBindPort->text().toInt());
+				comms->start(NetworkAddress(adr, ui->lineEditBindPort->text().toInt()));
 				ui->tryToggleListen->setState(ON);
 			}
 			return;
@@ -250,12 +250,12 @@ void HubWindow::onClientAdded(Client *c){
 
 
 void HubWindow::on_pushButtonSendData_clicked(){
-	CommsChannel *comms=hub->getComms();
-	if(0!=comms){
+	CommsChannel *comms=hub->comms();
+	if(nullptr!=comms){
 		//QHostInfo::lookupHost(ui->lineEditRemoteAddress->text(),this, SLOT(onRemoteHostLookupComplete(QHostInfo)));
 		QByteArray ba;
 		ba="HELLO WORLD";
-		quint64 w=comms->sendRawData(ba,ClientSignature(0,0,QHostAddress(ui->lineEditRemoteAddress->text()),ui->lineEditRemotePort->text().toInt()));
+		quint64 w=comms->sendRawData(ba,ClientSignature(hub->keyStore().localKey().id(),NetworkAddress(QHostAddress(ui->lineEditRemoteAddress->text()),ui->lineEditRemotePort->text().toInt())));
 		qDebug()<<"Wrote "<<w<<" bytes raw helloworld packet";
 	}
 	else{
@@ -328,7 +328,7 @@ void HubWindow::on_lineEditQR_textChanged(const QString &text){
 void HubWindow::on_pushButtonUDPPunch_clicked()
 {
 	if(nullptr!=hub){
-		ZooClient *zoo=hub->getZooClient();
+		ZooClient *zoo=hub->zooClient();
 		if(nullptr!=zoo){
 			zoo->punchUDP("12345");
 		}

@@ -1,4 +1,5 @@
 #include "CommsChannel.hpp"
+#include "ClientDirectory.hpp"
 
 #include "basic/Standard.hpp"
 #include "hub/HubWindow.hpp"
@@ -15,11 +16,11 @@
 quint32 CommsChannel::totalRecCount=0;
 
 
-CommsChannel::CommsChannel(QObject *parent, LogDestination *mw)
+CommsChannel::CommsChannel(const ClientSignature &sig, LogDestination *mw, QObject *parent)
 	: QObject(parent)
 	, clients(new ClientDirectory)
 	, mw(mw)
-	, localSignature(UniquePlatformFingerprint::getInstance().platform().getQuint32(), UniquePlatformFingerprint::getInstance().executable().getQuint32())
+	, localSignature(sig)
 	, lastRX(0)
 	, lastTX(0)
 	, lastRXST(0)
@@ -41,7 +42,6 @@ CommsChannel::CommsChannel(QObject *parent, LogDestination *mw)
 	if(!connect(&sendingTimer, SIGNAL(timeout()), this, SLOT(onSendingTimer()), OC_CONTYPE)){
 		qWarning()<<"Could not connect sending timer";
 	}
-	sendingTimer.start(0);
 }
 
 
@@ -49,10 +49,9 @@ ClientDirectory *CommsChannel::getClients(){
 	return clients;
 }
 
-void CommsChannel::start(QHostAddress bindAddress, quint16 bindPort){
-	localSignature.host=bindAddress;
-	localSignature.port=bindPort;
-	bool b = udpSocket.bind(bindAddress, bindPort);
+void CommsChannel::start(NetworkAddress address){
+	localSignature.setAddress(address);
+	bool b = udpSocket.bind(localSignature.address().ip(), localSignature.address().port());
 	qDebug()<<"----- comms bind "<< localSignature.toString()<< (b?" succeeded": " failed");
 	if(b){
 		sendingTimer.start();
@@ -122,14 +121,12 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 				return;
 			}break;
 	}
-	quint32 remoteClientPlatform=0;
-	quint32 remoteClientExecutable=0;
-	*ds >> remoteClientPlatform;
-	totalAvailable-=sizeof(quint32);
-	*ds >> remoteClientExecutable;
-	totalAvailable-=sizeof(quint32);
-	ClientSignature remoteSignature(remoteClientPlatform, remoteClientExecutable, remoteHost,remotePort);
-	Client *remoteClient=clients->getBest(remoteSignature,true);
+	quint64 remoteClientShorthandID=0;
+	*ds >> remoteClientShorthandID;
+	totalAvailable-=sizeof(quint64);
+	//TODO: Create shorthand ID from full ID string.
+	ClientSignature remoteSignature(remoteClientShorthandID, NetworkAddress(remoteHost,remotePort));
+	QSharedPointer<Client> remoteClient=clients->getBySignature(remoteSignature,true);
 	if(0==remoteClient){
 		QString es=QString::number(totalRecCount)+"ERROR: Could not fetch client by id: '"+remoteSignature.toString()+"'";
 		qWarning()<<es;
@@ -151,7 +148,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 		remoteClient->reliabilitySystem.processAck( packet_ack, packet_ack_bits );
 		remoteClient->receive();
 		quint16 parts=0;
-		const quint32 minAvailableForPart  = ( sizeof(quint32) + sizeof(quint16) );
+		const qint32 minAvailableForPart  = ( sizeof(quint32) + sizeof(quint16) );
 		while(totalAvailable > minAvailableForPart){
 			parts++;
 			qDebug()<<totalRecCount<<parts<<"STARTING NEW PART WITH "<<totalAvailable<<" vs. "<<minAvailableForPart;
@@ -199,7 +196,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 				if(nullptr!=c){
 					const quint16 bytesSpent=c->dataReceived(*ds, bytesAvailable);
 					const int left=bytesAvailable-bytesSpent;
-					qDebug()<<totalRecCount<<parts<<"Courier message "<<octomy_message_type_int<<" "<<c->getName()<<" bavail="<<bytesAvailable<<" tbavail="<<totalAvailable<<" bspent="<<bytesSpent<<" left="<<left<<"  ";
+					qDebug()<<totalRecCount<<parts<<"Courier message "<<octomy_message_type_int<<" "<<c->name()<<" bavail="<<bytesAvailable<<" tbavail="<<totalAvailable<<" bspent="<<bytesSpent<<" left="<<left<<"  ";
 					totalAvailable-=bytesSpent;
 					if(left>=0){
 						if(left>0){
@@ -239,8 +236,8 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 }
 
 
-void CommsChannel::sendData(const quint64 now, Client *localClient, Courier *courier, const ClientSignature *sig1){
-	const ClientSignature *sig=(nullptr!=courier && nullptr==sig1)?(&courier->getDestination()):sig1;
+void CommsChannel::sendData(const quint64 &now, QSharedPointer<Client> localClient, Courier *courier, const ClientSignature *sig1){
+	const ClientSignature *sig=(nullptr!=courier && nullptr==sig1)?(&courier->destination()):sig1;
 	if(nullptr==sig){
 		qWarning()<<"ERROR: no courier and no client when sending data";
 		return;
@@ -256,10 +253,8 @@ void CommsChannel::sendData(const quint64 now, Client *localClient, Courier *cou
 	bytesUsed += sizeof(qint32);
 	ds.setVersion(OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT); //Qt Datastream version
 	//Write client fingerprint
-	ds << localSignature.platform;
-	bytesUsed += sizeof(quint32);
-	ds << localSignature.executable;
-	bytesUsed += sizeof(quint32);
+	ds << localSignature.shortHandID();
+	bytesUsed += sizeof(quint64);
 	// Write reliability data
 	ds << localClient->reliabilitySystem.localSequence();
 	bytesUsed += sizeof(unsigned int);
@@ -267,20 +262,20 @@ void CommsChannel::sendData(const quint64 now, Client *localClient, Courier *cou
 	bytesUsed += sizeof(unsigned int);
 	ds << localClient->reliabilitySystem.generateAckBits();
 	bytesUsed += sizeof(unsigned int);
-	qDebug()<<"SEND GLOBAL HEADER SIZE: "<<bytesUsed;
+	//qDebug()<<"SEND GLOBAL HEADER SIZE: "<<bytesUsed;
 	// Send using courier.
 	//NOTE: When courier reports "sendActive" that means that it wants to send,
 	//      and so even if it writes 0 bytes, there will be a section id present
 	//      in packet reserved for it with the 0 bytes following it
 	if(nullptr!=courier){
-		ds << courier->getID();
+		ds << courier->id();
 		bytesUsed += sizeof(quint32);
 		ds << courier->mandate().payloadSize;
 		bytesUsed += sizeof(quint16);
-		qDebug()<<"SEND LOCAL HEADER SIZE: "<<bytesUsed<<datagram.size();
+		//qDebug()<<"SEND LOCAL HEADER SIZE: "<<bytesUsed<<datagram.size();
 		const quint64 opportunityBytes=courier->sendingOpportunity(ds);
 		bytesUsed += opportunityBytes;
-		qDebug()<<"SEND FULL SIZE: "<<bytesUsed<<datagram.size()<<opportunityBytes;
+		//qDebug()<<"SEND FULL SIZE: "<<bytesUsed<<datagram.size()<<opportunityBytes;
 		courier->setLastOpportunity(now);
 	}
 	// Send idle packet
@@ -292,7 +287,7 @@ void CommsChannel::sendData(const quint64 now, Client *localClient, Courier *cou
 		qDebug()<<"IDLE PACKET";
 	}
 	const quint32 sz=datagram.size();
-	qDebug()<<"SEND DS SIZE: "<<sz;
+	//qDebug()<<"SEND DS SIZE: "<<sz;
 	if(sz>512){
 		qWarning()<<"ERROR: UDP packet size exceeded 512 bytes, dropping write";
 	}
@@ -300,8 +295,9 @@ void CommsChannel::sendData(const quint64 now, Client *localClient, Courier *cou
 		qWarning()<<"ERROR: courier trying to send too much data: "<<QString::number(bytesUsed)<<" , dropping write";
 	}
 	else{
-		const qint64 written=udpSocket.writeDatagram(datagram,sig->host,sig->port);
-		qDebug()<<"WROTE "<<written<<" bytes to "<<sig->host<<":"<<sig->port;
+		auto na=sig->address();
+		const qint64 written=udpSocket.writeDatagram(datagram, na.ip(), na.port());
+		qDebug()<<"WROTE "<<written<<" bytes to "<<sig;
 		if(written<sz){
 			qDebug()<<"ERROR WRITING TO UDP SOCKET:"<<udpSocket.errorString();
 			return;
@@ -316,7 +312,7 @@ void CommsChannel::sendData(const quint64 now, Client *localClient, Courier *cou
 void CommsChannel::onSendingTimer(){
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	const quint64 timeSinceLastRX=now-lastRX;
-	Client *localClient=clients->getBest(localSignature, true);
+	QSharedPointer<Client> localClient=clients->getBySignature(localSignature, true);
 	if(nullptr==localClient){
 		emit error(QStringLiteral("Error fetching local client by id ")+localSignature.toString());
 		return;
@@ -344,27 +340,27 @@ void CommsChannel::onSendingTimer(){
 		if(nullptr!=c){
 			CourierMandate cm=c->mandate();
 			if(cm.sendActive){
-				const quint64 last = c->getLastOpportunity();
+				const quint64 last = c->lastOpportunity();
 				const qint64 interval = now - last;
 				const qint64 overdue = interval - cm.interval;
-				if(cm.interval<mostUrgentCourier){
+				if((qint64)cm.interval<mostUrgentCourier){
 					mostUrgentCourier=cm.interval;
 				}
 				//We are overdue
 				if(overdue>0) {
 					quint64 score=(cm.priority*overdue)/cm.interval;
 					pri.insert(score,c);
-					qDebug()<<c->getName()<<c->getID()<<"PRICALC: "<<last<<interval<<overdue<<" OVERDUE SCORE:"<<score;
+					qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" OVERDUE SCORE:"<<score;
 				}
 				else{
-					const ClientSignature *clisig=&c->getDestination();
+					const ClientSignature *clisig=&c->destination();
 					idle.push_back(clisig);
 					if (-overdue > mostUrgentCourier){
 						mostUrgentCourier=-overdue;
-						qDebug()<<c->getName()<<c->getID()<<"PRICALC: "<<last<<interval<<overdue<<" URGENCY:"<<mostUrgentCourier;
+						qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" URGENCY:"<<mostUrgentCourier;
 					}
 					else{
-						qDebug()<<c->getName()<<c->getID()<<"PRICALC: "<<last<<interval<<overdue<<" MEH";
+						qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" MEH";
 					}
 				}
 			}
@@ -377,20 +373,21 @@ void CommsChannel::onSendingTimer(){
 	for (QMap<quint64, Courier *>::iterator i = pri.begin(), e=pri.end(); i != e; ++i){
 		Courier *courier=i.value();
 		sendData(now, localClient, courier, nullptr); //Client *localClient, Courier *courier, const ClientSignature *sig1){
+		//(const quint64 now, Client *localClient, Courier *courier, const ClientSignature *sig1){
 	}
 	for(const ClientSignature *sig:idle){
 		sendData(now, localClient, nullptr, sig);
 	}
 	// Prepare for next round (this implies a stop() )
 	quint64 delay=MIN(mostUrgentCourier,MIN_RATE);
-	qDebug()<<"DELAY: "<<delay<<" ("<<mostUrgentCourier<<")";
+	//qDebug()<<"DELAY: "<<delay<<" ("<<mostUrgentCourier<<")";
 	sendingTimer.start(delay);
 }
 
 //Only for testing purposes! Real data should pass through the courier system
 //and be dispatched by logic in sending timer
 qint64 CommsChannel::sendRawData(QByteArray datagram,ClientSignature sig){
-	return udpSocket.writeDatagram(datagram,sig.host,sig.port);
+	return udpSocket.writeDatagram(datagram, sig.address().ip(), sig.address().port());
 }
 
 QString CommsChannel::getSummary(){
@@ -477,11 +474,16 @@ void CommsChannel::unHookSignals(QObject &ob){
 
 void CommsChannel::registerCourier(Courier &c){
 	if(couriers.contains(&c)){
-		qDebug()<<"ERROR: courier was allready registered";
+		qWarning()<<"ERROR: courier was allready registered";
+		return;
+	}
+	else if(couriers.size()>10){
+		qWarning()<<"ERROR: too many couriers, skipping registration of new one: "<<c.id()<<c.name();
 		return;
 	}
 	couriers.append(&c);
-	couriersByID[c.getID()]=&c;
+	couriersByID[c.id()]=&c;
+	qDebug()<<"Registered courier: "<<c.id()<<c.name()<<" for a total of "<<couriers.size()<<" couriers";
 }
 
 void CommsChannel::unregisterCourier(Courier &c){
@@ -489,9 +491,8 @@ void CommsChannel::unregisterCourier(Courier &c){
 		qDebug()<<"ERROR: courier was not registered";
 		return;
 	}
-	couriersByID.remove(c.getID());
+	couriersByID.remove(c.id());
 	couriers.removeAll(&c);
-
 }
 
 

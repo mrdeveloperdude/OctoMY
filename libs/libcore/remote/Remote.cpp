@@ -2,6 +2,7 @@
 
 #include "basic/Standard.hpp"
 #include "comms/Client.hpp"
+#include "comms/ClientDirectory.hpp"
 #include "comms/couriers/DirectPoseCourier.hpp"
 #include "remote/RemoteWindow.hpp"
 #include "basic/AppContext.hpp"
@@ -15,7 +16,7 @@
 
 
 Remote::Remote(NodeLauncher<Remote> &launcher, QObject *parent)
-	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "remote", this), ROLE_CONTROL, TYPE_REMOTE, parent)
+	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "remote", parent), ROLE_CONTROL, TYPE_REMOTE, parent)
 	, poseCourier(new DirectPoseCourier(this))
 	, window(nullptr)
 {
@@ -24,18 +25,18 @@ Remote::Remote(NodeLauncher<Remote> &launcher, QObject *parent)
 Remote::~Remote(){
 }
 
-void Remote::start(QHostAddress listenAddress, quint16 listenPort, QHostAddress hubAddress, quint16 hubPort){
-	this->controlAddress=NetworkAddress(hubAddress, hubPort);
-	if(nullptr!=comms){
-		comms->registerCourier(*poseCourier);
-		Client *c=comms->getClients()->getByHost(hubAddress,hubPort,true);
-		if(0!=c){
+void Remote::start(const NetworkAddress &localAddress, const NetworkAddress &partnerAddress){
+	mPartnerAddress=partnerAddress;
+	if(nullptr!=mComms){
+		mComms->registerCourier(*poseCourier);
+		QSharedPointer<Client> c=mComms->getClients()->getByAddress(partnerAddress,true);
+		if(nullptr!=c){
 			poseCourier->setDestination(c->signature);
-			qDebug()<<"comms.start remote "<<listenAddress<<":"<<listenPort<<" -> hub "<<hubAddress.toString()<<":"<<hubPort<<"";
-			comms->start(listenAddress,listenPort);
+			qDebug()<<"comms.start remote "<<localAddress.toString()<< " -> partner "<<partnerAddress.toString();
+			mComms->start(localAddress);
 		}
 		else{
-			qWarning()<<"ERROR: could not get client for hub";
+			qWarning()<<"ERROR: could not get client for remote";
 		}
 	}
 }
@@ -61,8 +62,8 @@ void Remote::onDirectPoseChanged(Pose p){
 
 
 void Remote::onTouchUpdated(QVector2D v){
-	if(nullptr!=sensorMessage){
-		sensorMessage->touch=v;
+	if(nullptr!=mSensorMessage){
+		mSensorMessage->touch=v;
 		sendStatus();
 	}
 }

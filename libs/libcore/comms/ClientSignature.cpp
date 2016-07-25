@@ -1,16 +1,57 @@
 #include "ClientSignature.hpp"
 
+ClientSignature::ClientSignature()
+{
 
-ClientSignature::ClientSignature(const quint32 platform, const quint32 executable, const QHostAddress host, const quint16 port)
-	: platform(platform)
-	, executable(executable)
-	, host(host)
-	, port(port)
+}
+
+
+ClientSignature::ClientSignature(const ClientSignature &other)
+	: mShortHandID(other.mShortHandID)
+	, mAddress(other.mAddress)
+{
+
+}
+
+ClientSignature::ClientSignature(const quint64 &shortHandID, const NetworkAddress &address)
+	: mShortHandID(shortHandID)
+	, mAddress(address)
+{
+}
+
+
+
+ClientSignature::ClientSignature(const QString &fullID, const NetworkAddress &address)
+	: mShortHandID(fullID.mid(0,16).toULongLong(nullptr,16))
+	, mAddress(address)
 {
 }
 
 
 const QString ClientSignature::toString() const
 {
-	return ""+QString::number(platform,16)+":"+QString::number(executable,16)+"-"+host.toString()+":"+QString::number(port);
+	return QString::number(mShortHandID,16)+"-"+mAddress.toString();
+}
+
+
+quint64 ClientSignature::shortHandID() const
+{
+	return mShortHandID;
+}
+
+NetworkAddress ClientSignature::address() const
+{
+	return mAddress;
+}
+
+
+void ClientSignature::setAddress(const NetworkAddress &address)
+{
+	mAddress=address;
+}
+
+
+void ClientSignature::setShortHandID(const quint64 &id)
+{
+	mShortHandID=id;
 }

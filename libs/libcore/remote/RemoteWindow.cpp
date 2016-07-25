@@ -52,7 +52,7 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 	updateIdentity();
 
 	if(nullptr!=remote){
-		Settings &s=remote->getSettings();
+		Settings &s=remote->settings();
 
 		//Select correct starting page
 		QWidget *startPage=ui->pageRunning;
@@ -220,7 +220,7 @@ void RemoteWindow::onError(QString e){
 
 void RemoteWindow::onClientAdded(Client *c){
 
-	qDebug()<<"REMOTEW comms: client added "<<(0==c?"null":QString::number(c->getHash(),16));
+	qDebug()<<"REMOTEW comms: client added "<<(0==c?"null":QString::number(c->getShortHandID(),16));
 }
 
 void RemoteWindow::onConnectionStatusChanged(bool c){
@@ -326,7 +326,7 @@ void RemoteWindow::updateActiveAgent(){
 		ui->stackedWidgetScreen->setCurrentWidget(ui->pageManageConnections);
 	}
 	else{
-		qDebug()<<"SWITCHING ACTIVE AGENT TO "<<agentName;
+		//qDebug()<<"SWITCHING ACTIVE AGENT TO "<<agentName;
 		const int idx=ui->comboBoxControlLevel->currentIndex();
 		ui->stackedWidgetControl->setCurrentIndex(idx);
 	}
@@ -339,7 +339,7 @@ void RemoteWindow::on_comboBoxAgent_currentIndexChanged(int index)
 
 void RemoteWindow::on_comboBoxControlLevel_activated(const QString &cLevel)
 {
-	Settings *settings=(nullptr!=remote)?(&remote->getSettings()):nullptr;
+	Settings *settings=(nullptr!=remote)?(&remote->settings()):nullptr;
 	if(nullptr!=settings){
 		settings->setCustomSetting("octomy.remote.control.level",cLevel);
 	}

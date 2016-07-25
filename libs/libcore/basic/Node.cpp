@@ -22,34 +22,36 @@
 #include <QStandardPaths>
 #include <QDir>
 
+ClientSignature sig;
+
 Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject *parent)
 	: QObject (parent)
 	, mContext(context)
-	, keystore (mContext->baseDir() + "/keystore.json")
-	, peers (mContext->baseDir() + "/peers.json")
-	, discovery (new DiscoveryClient(*this))
-	, role (role)
-	, type (type)
-	, comms (new CommsChannel(this))
-	, zoo (new ZooClient(this))
-	, sensors (new SensorInput(this))
+	, mKeystore (mContext->baseDir() + "/keystore.json")
+	, mPeers (mContext->baseDir() + "/peers.json")
+	, mDiscovery (new DiscoveryClient(*this))
+	, mRole (role)
+	, mType (type)
+	, mComms (new CommsChannel(sig, nullptr, (QObject *)this))
+	, mZooClient (new ZooClient(this))
+	, mSensors (new SensorInput(this))
 	//, hubPort (0)
-	, cameras (new CameraList(this))
-	, lastStatusSend (0)
-	, sensorMessage (new SensorsMessage)
+	, mCameras (new CameraList(this))
+	, mLastStatusSend (0)
+	, mSensorMessage (new SensorsMessage)
 {
-	ScopedTimer nodeBootTimer(mContext->base()+"-boot");
+	//ScopedTimer nodeBootTimer(mContext->base()+"-boot");
 	setObjectName(mContext->base());
 
-	if(!connect(&keystore, &KeyStore::keystoreReady, this, &Node::onKeystoreReady)){
-		qWarning()<<"ERROR: Could not connect "<<keystore.objectName();
+	if(!connect(&mKeystore, &KeyStore::keystoreReady, this, &Node::onKeystoreReady)){
+		qWarning()<<"ERROR: Could not connect "<<mKeystore.objectName();
 	}
 	else{
-		qDebug()<<"CONNECTED NODE TO KEYSTORE";
+		//qDebug()<<"CONNECTED NODE TO KEYSTORE";
 	}
 
 	// Only Agents are "born"
-	keystore.bootstrap(ROLE_AGENT==role);
+	mKeystore.bootstrap(ROLE_AGENT==role);
 
 	StyleManager *style=new StyleManager(QColor(TYPE_AGENT==type?"#e83636":TYPE_REMOTE==type?"#36bee8":"#36e843"));
 	if(nullptr!=style){
@@ -64,8 +66,8 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	hookCommsSignals(*this);
 
 	//QByteArray OCID=UniquePlatformFingerprint::getInstance().platform().getHEX().toUtf8();
-	if(nullptr!=zoo){
-		zoo->setURL(QUrl("http://10.0.0.153:8123/api"));//katana wlan iface
+	if(nullptr!=mZooClient){
+		mZooClient->setURL(QUrl("http://10.0.0.153:8123/api"));//katana wlan iface
 		//zoo->setURL(QUrl("http://localhost/lennart/octomy/index.php"));
 		//zoo->putNode(OCID); 		zoo->getNode(OCID);
 	}
@@ -78,65 +80,65 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 Node::~Node(){
 	unHookSensorSignals(*this);
 	unHookCommsSignals(*this);
-	delete sensorMessage;
-	sensorMessage=nullptr;
+	delete mSensorMessage;
+	mSensorMessage=nullptr;
 
 }
 
-const QCommandLineParser &Node::getOptions() const
+const QCommandLineParser &Node::options() const
 {
 	return mContext->options();
 }
 
-Settings &Node::getSettings()
+Settings &Node::settings()
 {
 	return mContext->settings();
 }
 
-KeyStore  &Node::getKeyStore()
+KeyStore  &Node::keyStore()
 {
-	return keystore;
+	return mKeystore;
 }
 
-DiscoveryClientStore &Node::getPeers()
+DiscoveryClientStore &Node::peers()
 {
-	return  peers;
+	return  mPeers;
 }
 
-DiscoveryClient *Node::getDiscoveryClient()
+DiscoveryClient *Node::discoveryClient()
 {
-	return discovery;
+	return mDiscovery;
 }
 
-DiscoveryRole Node::getRole()
+DiscoveryRole Node::role()
 {
-	return role;
+	return mRole;
 }
 
 
-DiscoveryType Node::getType()
+DiscoveryType Node::type()
 {
-	return type;
+	return mType;
 }
 
-CommsChannel *Node::getComms()
+CommsChannel *Node::comms()
 {
-	return comms;
+	return mComms;
 }
 
-ZooClient *Node::getZooClient()
+ZooClient *Node::zooClient()
 {
-	return zoo;
+	return mZooClient;
 }
 
-SensorInput *Node::getSensorInput()
+SensorInput *Node::sensorInput()
 {
-	return sensors;
+	return mSensors;
 }
 
-CameraList *Node::getCameras()
+CameraList *Node::cameras()
 {
-	return cameras;
+	return mCameras;
 }
 
 QWidget *Node::showWindow()
@@ -147,16 +149,16 @@ QWidget *Node::showWindow()
 
 void Node::hookSensorSignals(QObject &o)
 {
-	if(nullptr!=sensors){
-		sensors->hookSignals(o);
+	if(nullptr!=mSensors){
+		mSensors->hookSignals(o);
 	}
 }
 
 
 void Node::unHookSensorSignals(QObject &o)
 {
-	if(nullptr!=sensors){
-		sensors->unHookSignals(o);
+	if(nullptr!=mSensors){
+		mSensors->unHookSignals(o);
 	}
 }
 
@@ -164,36 +166,36 @@ void Node::unHookSensorSignals(QObject &o)
 
 void Node::hookCommsSignals(QObject &o)
 {
-	if(nullptr!=comms){
-		comms->hookSignals(o);
+	if(nullptr!=mComms){
+		mComms->hookSignals(o);
 	}
 }
 
 
 void Node::unHookCommsSignals(QObject &o)
 {
-	if(nullptr!=comms){
-		comms->unHookSignals(o);
+	if(nullptr!=mComms){
+		mComms->unHookSignals(o);
 	}
 }
 
 
 void Node::updateDiscoveryClient(){
-	delete discovery;
-	discovery=new DiscoveryClient(*this);
+	delete mDiscovery;
+	mDiscovery=new DiscoveryClient(*this);
 }
 
 
 void Node::sendStatus(){
 	const qint64 now=QDateTime::currentMSecsSinceEpoch();
-	const qint64 interval=now-lastStatusSend;
+	const qint64 interval=now-mLastStatusSend;
 	if(interval>100){
 		QByteArray datagram;
 		QDataStream ds(&datagram,QIODevice::WriteOnly);
-		ds<<sensorMessage;
+		ds<<mSensorMessage;
 		//TODO:Convert to use courier instead
 		//		comms->sendPackage(datagram,QHostAddress(hubAddress),hubPort);
-		lastStatusSend=now;
+		mLastStatusSend=now;
 	}
 }
 
@@ -202,7 +204,7 @@ void Node::sendStatus(){
 
 void Node::onKeystoreReady(bool ok)
 {
-	qDebug()<<"Key Store: "<<(keystore.isReady()?"READY":"UNREADY")<<", "<<(keystore.hasError()?"ERROR":"OK");
+	//qDebug()<<"Key Store READY="<<mKeystore.isReady()<<", ERROR="<<mKeystore.hasError();
 }
 
 
@@ -215,7 +217,7 @@ void Node::onError(QString e){
 }
 
 void Node::onClientAdded(Client *c){
-	qDebug()<<"Client added: "<<c->getHash() <<QString::number(c->getHash(),16);
+	qDebug()<<"Client added: "<<c->toString();
 }
 
 void Node::onConnectionStatusChanged(bool s){
@@ -234,31 +236,31 @@ void Node::onConnectionStatusChanged(bool s){
 // Internal sensor slots
 
 void Node::onPositionUpdated(const QGeoPositionInfo &info){
-	if(nullptr!=sensorMessage){
-		sensorMessage->gps=info.coordinate();
+	if(nullptr!=mSensorMessage){
+		mSensorMessage->gps=info.coordinate();
 		sendStatus();
 	}
 }
 
 
 void Node::onCompassUpdated(QCompassReading *r){
-	if(nullptr!=r && nullptr!=sensorMessage){
-		sensorMessage->compassAzimuth=r->azimuth();
-		sensorMessage->compassAccuracy=r->calibrationLevel();
+	if(nullptr!=r && nullptr!=mSensorMessage){
+		mSensorMessage->compassAzimuth=r->azimuth();
+		mSensorMessage->compassAccuracy=r->calibrationLevel();
 		sendStatus();
 	}
 }
 
 void Node::onAccelerometerUpdated(QAccelerometerReading *r){
-	if(nullptr!=r && nullptr!=sensorMessage){
-		sensorMessage->accellerometer=QVector3D(r->x(), r->y(), r->z());
+	if(nullptr!=r && nullptr!=mSensorMessage){
+		mSensorMessage->accellerometer=QVector3D(r->x(), r->y(), r->z());
 		sendStatus();
 	}
 }
 
 void Node::onGyroscopeUpdated(QGyroscopeReading *r){
-	if(nullptr!=r && nullptr!=sensorMessage){
-		sensorMessage->gyroscope=QVector3D(r->x(), r->y(), r->z());
+	if(nullptr!=r && nullptr!=mSensorMessage){
+		mSensorMessage->gyroscope=QVector3D(r->x(), r->y(), r->z());
 		sendStatus();
 	}
 }

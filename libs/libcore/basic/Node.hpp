@@ -33,25 +33,25 @@ class Node : public QObject
 	protected:
 
 		AppContext *mContext;
-		KeyStore keystore;
-		DiscoveryClientStore peers;
+		KeyStore mKeystore;
+		DiscoveryClientStore mPeers;
 
-		DiscoveryClient *discovery;
-		DiscoveryRole role;
-		DiscoveryType type;
-		CommsChannel *comms;
-		ZooClient *zoo;
-		SensorInput *sensors;
+		DiscoveryClient *mDiscovery;
+		DiscoveryRole mRole;
+		DiscoveryType mType;
+		CommsChannel *mComms;
+		ZooClient *mZooClient;
+		SensorInput *mSensors;
 
-		NetworkAddress controlAddress;
-		CameraList *cameras;
+		NetworkAddress mPartnerAddress;
+		CameraList *mCameras;
 
-		qint64 lastStatusSend;
-		SensorsMessage *sensorMessage;
+		qint64 mLastStatusSend;
+		SensorsMessage *mSensorMessage;
 
 
 	public:
-		explicit Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject *parent = nullptr);
+		explicit Node(AppContext *context, DiscoveryRole mRole, DiscoveryType mType, QObject *parent = nullptr);
 		virtual ~Node();
 
 	public:
@@ -65,19 +65,18 @@ class Node : public QObject
 		void hookCommsSignals(QObject &o);
 		void unHookCommsSignals(QObject &o);
 
-		const QCommandLineParser &getOptions() const;
-		Settings &getSettings();
-		KeyStore  &getKeyStore();
-		DiscoveryClientStore &getPeers();
+		const QCommandLineParser &options() const;
+		Settings &settings();
+		KeyStore  &keyStore();
+		DiscoveryClientStore &peers();
+		DiscoveryClient *discoveryClient();
+		DiscoveryRole role();
+		DiscoveryType type();
+		CommsChannel *comms();
+		ZooClient *zooClient();
+		SensorInput *sensorInput();
 
-		DiscoveryClient *getDiscoveryClient();
-		DiscoveryRole getRole();
-		DiscoveryType getType();
-		CommsChannel *getComms();
-		ZooClient *getZooClient();
-		SensorInput *getSensorInput();
-
-		CameraList *getCameras();
+		CameraList *cameras();
 
 		virtual QWidget *showWindow();
 

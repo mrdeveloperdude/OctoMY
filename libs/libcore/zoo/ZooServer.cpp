@@ -43,17 +43,13 @@ const quint64 ZooServer::BACKGROUND_TIMER_INTERVAL=1000*10; //10 sec
 
 ZooServer::ZooServer(AppContext *context, QObject *parent)
 	: QHttpServer(parent)
-	//, base("zoo")
-	//, opts(opts)
-	//, env(env)
-	//, settings(base)
 	, mContext(context)
-	//, baseDir( settings.getCustomSetting("content_dir", QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)) )
 	, keystore (mContext->baseDir() + "/keystore.json")
 	, storage(QDir::current())
 
 {
-	ScopedTimer zooBootTimer(mContext->base()+"-boot");
+	Q_ASSERT(nullptr!=mContext);
+	//ScopedTimer zooBootTimer(mContext->base()+"-boot");
 	setObjectName(mContext->base());
 
 	keystore.bootstrap();
@@ -65,7 +61,7 @@ ZooServer::ZooServer(AppContext *context, QObject *parent)
 
 	qDebug()<<"Current dir for zoo storage is: "<<storage.dir().absolutePath();
 
-	if(!connect(&backgroundTimer, SIGNAL(timeout()),this, SLOT(onBackgroundTimer()),OC_CONTYPE)){
+	if(!connect(&backgroundTimer, &QTimer::timeout, this, &ZooServer::onBackgroundTimer,OC_CONTYPE)){
 		qWarning()<<"ERROR: Could not connect";
 	}
 
@@ -343,8 +339,8 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 			publicAddress=tc->serverAddress().toString();
 			publicPort=tc->serverPort();
 		}
-		part->associate().publicAddress().ip=QHostAddress(publicAddress);
-		part->associate().publicAddress().port=publicPort;
+		part->associate().publicAddress().setIP(QHostAddress(publicAddress));
+		part->associate().publicAddress().setPort(publicPort);
 		part->addPin(root.value("manualPin").toString());
 		part->addPin(root.value("geoPin").toString());
 		DiscoveryServerSession *ses=discovery.request(part);
@@ -411,7 +407,6 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 
 
 void ZooServer::onBackgroundTimer(){
-	qDebug()<<"Background processing start --------------------";
-
-	qDebug()<<"Background processing end ----------------------";
+	//qDebug()<<"Background processing start --------------------";
+	//qDebug()<<"Background processing end ----------------------";
 }

@@ -37,12 +37,12 @@ CourierMandate TestCourier::mandate(){
 quint16 TestCourier::sendingOpportunity(QDataStream &ds ){
 	sendCount++;
 	if(sendCount>=maxSends){
-		qDebug()<<"MAX SENDS ("<<maxSends<<") RECEIVED FOR "<<getDestination().toString()<<" STOPPING";
+		qDebug()<<"MAX SENDS ("<<maxSends<<") RECEIVED FOR "<<destination().toString()<<" STOPPING";
 		man.sendActive=false;
 	}
 	ds << datagram;
 	const bool done=soFar++>=ct->testCount;
-	qDebug()<<"SENDING OPPORTUNITY: "<<getDestination().toString()<< man.payloadSize<<(done?"DONE":"");
+	qDebug()<<"SENDING OPPORTUNITY: "<<destination().toString()<< man.payloadSize<<(done?"DONE":"");
 	if(done){
 		emit ct->finished();
 	}
@@ -54,7 +54,7 @@ quint16 TestCourier::sendingOpportunity(QDataStream &ds ){
 quint16 TestCourier::dataReceived(QDataStream &ds, quint16 availableBytes){
 	recCount++;
 	if(recCount>=maxRecs){
-		qDebug()<<"MAX RECS ("<<maxRecs<<") RECEIVED FOR "<<getDestination().toString()<<" STOPPING";
+		qDebug()<<"MAX RECS ("<<maxRecs<<") RECEIVED FOR "<<destination().toString()<<" STOPPING";
 		man.receiveActive=false;
 	}
 	QByteArray in;
@@ -77,6 +77,7 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 	, myPort(myPort)
 	, basePort(basePort)
 	, portRange(portRange)
+	, cc (sig)
 	, testCount(testCount)
 	, rng(RNG::sourceFactory("mt"))
 {
@@ -91,7 +92,8 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 		}
 		if(rng->generateReal2()>0.7 || true){
 			qDebug() << myAddress << ":" << myPort << " --> " << toPort;
-			ClientSignature sig(0,0,myAddress, toPort);
+			QString myID="1234";
+			ClientSignature sig(myID, NetworkAddress(myAddress, toPort));
 			TestCourier *tc=new TestCourier(sig, this, testCount, testCount);
 			QVERIFY(nullptr!=tc);
 			cc.registerCourier(*tc);
@@ -116,7 +118,7 @@ void CommsTester::onReadyRead(){
 
 void CommsTester::startSendTest(){
 	qDebug()<<"Starting test for "<<toString();
-	cc.start(myAddress, myPort);
+	cc.start(NetworkAddress(myAddress, myPort));
 }
 
 

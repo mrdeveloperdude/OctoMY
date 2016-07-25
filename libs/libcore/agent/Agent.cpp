@@ -4,6 +4,8 @@
 #include "basic/Standard.hpp"
 
 #include "comms/Client.hpp"
+#include "comms/ClientDirectory.hpp"
+
 #include "comms/discovery/DiscoveryClient.hpp"
 #include "zoo/ZooClient.hpp"
 #include "basic/AppContext.hpp"
@@ -18,7 +20,7 @@
 
 
 Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
-	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "agent", this), ROLE_AGENT, TYPE_AGENT, parent)
+	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "agent", parent), ROLE_AGENT, TYPE_AGENT, parent)
 	, window(nullptr)
 {
 }
@@ -28,20 +30,21 @@ Agent::~Agent(){
 
 
 
-void Agent::start(QHostAddress listenAddress, quint16 listenPort, QHostAddress hubAddress, quint16 hubPort){
-	this->controlAddress=NetworkAddress(hubAddress, hubPort);
-	if(nullptr!=comms){
-		Client *c=comms->getClients()->getByHost(hubAddress,hubPort,true);
+void Agent::start(const NetworkAddress &localAddress, const NetworkAddress &partnerAddress)
+{
+	mPartnerAddress=partnerAddress;
+	if(nullptr!=mComms){
+		QSharedPointer<Client> c=mComms->getClients()->getByAddress(partnerAddress,true);
 		if(nullptr!=c){
-			//	poseCourier->setDestination(c->signature);
-			qDebug()<<"comms.start remote "<<listenAddress<<":"<<listenPort<<" -> hub "<<hubAddress.toString()<<":"<<hubPort<<"";
-			comms->start(listenAddress,listenPort);
+			qDebug()<<"comms.start agent "<<localAddress.toString()<< " -> partner "<<partnerAddress.toString();
+			mComms->start(localAddress);
 		}
 		else{
 			qWarning()<<"ERROR: could not get client for agent";
 		}
 	}
 }
+
 
 
 

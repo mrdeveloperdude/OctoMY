@@ -25,6 +25,7 @@ class DiscoveryParticipant{
 		NodeAssociate assoc;
 		// An ephemeral list of pins used during discovery. Pins may be manually entered, generated from GPS coordinates etc.
 		QStringList pins;
+		bool isDeleted;
 
 	public:
 
@@ -47,40 +48,42 @@ class DiscoveryParticipant{
 
 		//bool isSet();
 
-		bool isValidServer();
-		bool isValidClient();
+		bool isValidForServer();
+		bool isValidForClient();
 
 		QVariantMap toVariantMap();
 
 		QString toString();
 
-
-		//QString fullPublicAddress();
-		//QString fullLocalAddress();
-
-
 		ClientSignature clientSignature();
+
+		bool updateFromServer(QVariantMap &map, bool trustedSource=false);
 
 	public:
 
 		inline QString id() const
 		{
+			OC_METHODGATE();
 			return assoc.id();
 		}
 
 
 		inline DiscoveryType type() const
 		{
+			OC_METHODGATE();
 			return assoc.type();
 		}
 
 		inline NodeAssociate &associate()
 		{
+			OC_METHODGATE();
 			return assoc;
 		}
 
 
 };
+
+const QDebug &operator<<(QDebug &d, DiscoveryParticipant &part);
 
 
 #endif // DISCOVERYPARTICIPANT_HPP

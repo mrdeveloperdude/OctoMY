@@ -39,6 +39,7 @@ class KeyPrivate{
 		qpolarssl::Pki mPKI;
 		static int mKCT;
 		int mKID;
+		bool mValid;
 
 	private:
 		static QString hash(QString input);
@@ -171,6 +172,7 @@ class Key{
 			OC_METHODGATE();
 			Q_D(Key);
 			OC_ASSERT(nullptr!=d);
+			/*
 			if(d->mPubKey.isEmpty()){
 				return false;
 			}
@@ -178,6 +180,8 @@ class Key{
 				return false;
 			}
 			return true;
+			*/
+			return d->mValid;
 		}
 
 		// Sign message with our private key

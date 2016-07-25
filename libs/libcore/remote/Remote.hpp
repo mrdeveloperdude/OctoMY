@@ -8,6 +8,8 @@
 #include "puppet/Pose.hpp"
 
 #include "basic/Node.hpp"
+#include "basic/NetworkAddress.hpp"
+
 #include "basic/NodeLauncher.hpp"
 
 #include <QObject>
@@ -38,7 +40,7 @@ class Remote : public Node{
 		explicit Remote(NodeLauncher<Remote> &launcher, QObject *parent = nullptr);
 		virtual ~Remote();
 
-		void start(QHostAddress adrLocal, quint16 portLocal, QHostAddress hubAddress, quint16 hubPort);
+		void start(const NetworkAddress &localAddress, const NetworkAddress &partnerAddress);
 
 		virtual QWidget *showWindow();
 

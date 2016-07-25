@@ -6,7 +6,7 @@
 
 
 Hub::Hub(NodeLauncher<Hub> &launcher, QObject *parent)
-	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "hub", this), ROLE_CONTROL, TYPE_HUB, parent)
+	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "hub", parent), ROLE_CONTROL, TYPE_HUB, parent)
 	, window(nullptr)
 {
 }

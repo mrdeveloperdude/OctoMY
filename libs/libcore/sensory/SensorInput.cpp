@@ -16,7 +16,7 @@ SensorInput::SensorInput(QObject *parent):
   , lastCompassSmoothValue(0)
 {
 
-	qDebug()<<"SENSOR INPUT STARTING";
+	//qDebug()<<"SENSOR INPUT STARTING";
 	load();
 	if (0 != source) {
 		source->setPreferredPositioningMethods(QGeoPositionInfoSource::AllPositioningMethods);

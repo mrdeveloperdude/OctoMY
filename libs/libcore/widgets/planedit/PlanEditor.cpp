@@ -60,7 +60,7 @@ PlanEditor::~PlanEditor(){
 
 void PlanEditor::configure(QString p){
 	plan_fn=p;
-	qDebug()<<"LOADING: "<<plan_fn;
+	//qDebug()<<"LOADING PLAN FROM FILE: "<<plan_fn;
 	QSignalBlocker sb(ui->plainTextEditPlan);
 	ui->plainTextEditPlan->setPlainText(utility::fileToString(plan_fn));
 }

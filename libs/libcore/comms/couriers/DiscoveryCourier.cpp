@@ -5,12 +5,14 @@
 
 DiscoveryCourier::DiscoveryCourier(DiscoveryParticipant &part, QObject *parent)
 	: Courier("Discovery", Courier::FIRST_USER_ID+2, parent)
-	, part(part)
+	, mPart(part)
 {
-
+	qDebug()<<"CREATED DiscoveryCourier with PART="<<mPart;
 }
 
-
+DiscoveryCourier::~DiscoveryCourier(){
+	qDebug()<<"DELETED DiscoveryCourier with PART="<<mPart;
+}
 
 //Let the CommChannel know what we want
 CourierMandate DiscoveryCourier::mandate()
@@ -28,17 +30,20 @@ static const quint64 BT_XOR=0x13e7268a13e7268a;
 //Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
 quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 {
+	qDebug()<<"Sending oportunity for "<<mName;
 	quint16 bytes=0;
 
-	QHostAddress pubAddr=part.associate().publicAddress().ip;
+	NodeAssociate &ass=mPart.associate();
+	NetworkAddress &nadr=ass.publicAddress();
+	QHostAddress pubAddr=nadr.ip();
 	const quint32 ip4PubAddr=pubAddr.toIPv4Address() ^ IP_XOR;
 	ds << ip4PubAddr;
 	bytes += sizeof(quint32);
-	ds << part.associate().publicAddress().port;
+	ds << mPart.associate().publicAddress().port();
 	bytes += sizeof(quint16);
-	ds << (part.associate().bluetoothAddress().toUInt64() ^ BT_XOR);
+	ds << (mPart.associate().bluetoothAddress().toUInt64() ^ BT_XOR);
 	bytes += sizeof(quint64);
-	qDebug()<<"TX "<<bytes<<"="<<pubAddr.toString()<<", bt="<<part.associate().bluetoothAddress().toUInt64();
+	qDebug()<<"TX "<<bytes<<"="<<pubAddr.toString()<<", bt="<<mPart.associate().bluetoothAddress().toUInt64();
 	return 0;
 }
 

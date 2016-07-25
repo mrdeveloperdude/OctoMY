@@ -32,6 +32,9 @@ void PortableIDWidget::setPortableID(PortableID id){
 	ui->widgetIdenticon->setPortableID(id);
 	ui->widgetQR->setQRData(mID.id());
 	ui->labelBirthdate->setText(QDateTime::fromMSecsSinceEpoch(mID.birthDate()).toString("yyyy.MM.dd hh:mm:ss.zzz"));
+
+	//ui->widgetIdenticon->setMinimumHeight(100);	ui->widgetQR->setMinimumHeight(100);
+	update();
 }
 
 PortableID PortableIDWidget::getPortableID(){

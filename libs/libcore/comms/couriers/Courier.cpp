@@ -1,23 +1,9 @@
 
 #include "Courier.hpp"
 
+
 #include "comms/CommsChannel.hpp"
 
-CourierMandate::CourierMandate(
-		const quint16 payloadSize
-		, const quint8 priority
-		, const quint64 interval
-		, const bool receiveActive
-		, const bool sendActive
-		)
-	:  payloadSize(payloadSize)
-	, priority(priority)
-	, interval(interval)
-	, receiveActive(receiveActive)
-	, sendActive(sendActive)
-{
-
-}
 
 
 
@@ -29,19 +15,19 @@ const quint32 Courier::FIRST_USER_ID=1024;
 
 Courier::Courier(QString name, quint32 id, QObject *parent)
 	: QObject(parent)
-	, name(name)
-	, id(id)
-	, lastOpportunity(0)
+	, mName(name)
+	, mID(id)
+	, mLastOpportunity(0)
 {
 
 }
 
 void Courier::setDestination(const ClientSignature sig){
-	destination=sig;
+	mDestination=sig;
 }
 
-const ClientSignature &Courier::getDestination() const{
-	return destination;
+const ClientSignature &Courier::destination() const{
+	return mDestination;
 }
 
 

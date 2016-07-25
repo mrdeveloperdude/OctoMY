@@ -15,64 +15,72 @@
 
 // YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
 void TestDiscovery::test(){
-
+	qDebug()<<"INIT -----------------------";
 	QProcessEnvironment env=QProcessEnvironment::systemEnvironment();
 	QCommandLineParser opts;
 	opts.setApplicationDescription("Test Discovery");
 	opts.addHelpOption();
 
-	AppContext *context=new AppContext(opts, env, "testDiscoveryAgent", this);
-	QVERIFY(nullptr!=context);
+	AppContext *zooContext=new AppContext(opts, env, "testDiscoveryZoo", this);
+	AppContext *agentContext=new AppContext(opts, env, "testDiscoveryAgent", this);
+	AppContext *remoteContext=new AppContext(opts, env, "testDiscoveryRemote", this);
+
+	QSignalSpy *spyAgentKeyReady=nullptr;
+	QSignalSpy *spyRemoteKeyReady=nullptr;
+
+	if(nullptr!=zooContext){
+		qDebug()<<"ZOO -----------------------";
+		QString port="8123";
+		ZooServer *zooServer=new ZooServer (zooContext, this);
+		QVERIFY(nullptr!=zooServer);
+		zooServer->start(port);
+		qDebug()<<"APP DIR: "<<QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+	}
+
+	if(nullptr!=agentContext){
 
 
-	/*
-	QString port="8123";
-	ZooServer *zooServer=new ZooServer (opts, env, this);
-	QVERIFY(nullptr!=zooServer);
-	zooServer->start(port);
-*/
+		qDebug()<<"AGENT -----------------------";
+		Node *testAgent=new Node(agentContext, DiscoveryRole::ROLE_AGENT, DiscoveryType::TYPE_AGENT, this);
+		QVERIFY(nullptr!=testAgent);
+		KeyStore *agentKeystore=&testAgent->keyStore();
+		QVERIFY(nullptr!=agentKeystore);
+		spyAgentKeyReady=new QSignalSpy(agentKeystore,SIGNAL(keystoreReady(bool)));
+		bool conret1=connect(agentKeystore, &KeyStore::keystoreReady, [=](bool ok){
+			qDebug()<<"AGENT KEYSTORE READY "<<ok;
+			QVERIFY(agentKeystore->isReady());
+			QVERIFY(!agentKeystore->hasError());
+		} );
+		QVERIFY(conret1);
+		qDebug()<<"APP DIR: "<<QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+	}
 
+	if(nullptr!=remoteContext){
+		qDebug()<<"REMOTE -----------------------";
+		Node *testRemote=new Node(remoteContext, DiscoveryRole::ROLE_CONTROL, DiscoveryType::TYPE_REMOTE, this);
+		QVERIFY(nullptr!=testRemote);
+		KeyStore *remoteKeystore=&testRemote->keyStore();
+		QVERIFY(nullptr!=remoteKeystore);
+		spyRemoteKeyReady=new QSignalSpy(remoteKeystore, SIGNAL(keystoreReady(bool)));
+		bool conret2=connect(remoteKeystore, &KeyStore::keystoreReady, [=](){
+			qDebug()<<"REMOTE KEYSTORE READY";
+			QVERIFY(remoteKeystore->isReady());
+			QVERIFY(!remoteKeystore->hasError());
+		} );
+		QVERIFY(conret2);
+		qDebug()<<"APP DIR: "<<QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+	}
 
-	//	qDebug()<<"APP DIR: "<<QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-
-
-
-	Node *testAgent=new Node(context, DiscoveryRole::ROLE_AGENT, DiscoveryType::TYPE_AGENT, this);
-	QVERIFY(nullptr!=testAgent);
-	KeyStore *agentKeystore=&testAgent->getKeyStore();
-	QVERIFY(nullptr!=agentKeystore);
-	QSignalSpy spyAgentKeyReady(agentKeystore,SIGNAL(keystoreReady(bool)));
-	bool conret1=connect(agentKeystore, &KeyStore::keystoreReady, [=](bool ok){
-		qDebug()<<"AGENT KEYSTORE READY "<<ok;
-		QVERIFY(agentKeystore->isReady());
-		QVERIFY(!agentKeystore->hasError());
-	} );
-
-	QVERIFY(conret1);
-
-	/*
-	qDebug()<<"APP DIR: "<<QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-
-	Node *testRemote=new Node(opts, "testDiscoveryRemote", DiscoveryRole::ROLE_CONTROL, DiscoveryType::TYPE_REMOTE, this);
-	QVERIFY(nullptr!=testRemote);
-	KeyStore *remoteKeystore=&testRemote->getKeyStore();
-	QVERIFY(nullptr!=remoteKeystore);
-	QSignalSpy spyRemoteKeyReady(remoteKeystore, SIGNAL(keystoreReady(bool)));
-	bool conret2=connect(remoteKeystore, &KeyStore::keystoreReady, [=](){
-		qDebug()<<"REMOTE KEYSTORE READY";
-		QVERIFY(remoteKeystore->isReady());
-		QVERIFY(!remoteKeystore->isError());
-	} );
-	QVERIFY(conret2);
-	qDebug()<<"APP DIR: "<<QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-*/
+	qDebug()<<"DE-INIT -----------------------";
 	quint64 spyWait=20000;//20 sec
-	QVERIFY(spyAgentKeyReady.wait(spyWait));	QVERIFY(1==spyAgentKeyReady.count());
+	qDebug()<<"SPYTIME: "<<spyWait;
 
-	//QVERIFY(spyRemoteKeyReady.wait(spyWait));	QVERIFY(1==spyRemoteKeyReady.count());
-
-	//zooServer->start(port);
-
+	if(nullptr!=spyAgentKeyReady){
+		QVERIFY(spyAgentKeyReady->wait(spyWait));	QVERIFY(1==spyAgentKeyReady->count());
+	}
+	if(nullptr!=spyRemoteKeyReady){
+		QVERIFY(spyRemoteKeyReady->wait(spyWait));	QVERIFY(1==spyRemoteKeyReady->count());
+	}
 }
 
 

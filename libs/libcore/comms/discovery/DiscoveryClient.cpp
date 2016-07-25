@@ -80,7 +80,7 @@ DiscoveryClient::DiscoveryClient(Node &node)
 	, m_serverURL("http://localhost:8123/api")
 	, m_client(new qhttp::client::QHttpClient(this))
 	, node(node)
-	, key(node.getKeyStore().localKey())
+	, key(node.keyStore().localKey())
 	//, ourPubKey(node.getKeyStore().getLocalPublicKey())
 	//, ourID(utility::toHash(ourPubKey))
 	//, zeroID(utility::toHash(""))
@@ -111,18 +111,18 @@ void DiscoveryClient::stop(){
 
 
 void DiscoveryClient::discover(){
-	qDebug()<<"DISCOVERY CLIENT RUN";
+	//qDebug()<<"DISCOVERY CLIENT RUN";
 
 	qhttp::client::TRequstHandler reqHandler= [this](qhttp::client::QHttpRequest* req){
 		QVariantMap cmd;
 		cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
-		cmd["key"] = node.getKeyStore().localKey().toVariantMap(true);
+		cmd["key"] = node.keyStore().localKey().toVariantMap(true);
 		cmd["localAddress"] = "10.0.0.3";
 		cmd["localPort"] = 12345;
 		cmd["publicPort"] = 54321;
 		cmd["manualPin"] ="12345";
-		cmd["role"] = DiscoveryRoleToString(node.getRole());
-		cmd["type"] = DiscoveryTypeToString(node.getType());
+		cmd["role"] = DiscoveryRoleToString(node.role());
+		cmd["type"] = DiscoveryTypeToString(node.type());
 		QByteArray body  = QJsonDocument::fromVariant(cmd).toJson();
 		//qDebug()<<"SENDING RAW JSON: "<<body;
 		req->addHeader("user-agent",			ZooConstants::OCTOMY_USER_AGENT);
@@ -158,23 +158,27 @@ void DiscoveryClient::discover(){
 					ok=false;
 				}
 				else{
-					qDebug()<<"RETURNED STATUS WAS: "<<root.value("status").toString()<<", MSG:  "<<root.value("message").toString();
-					if(root.contains("participants")){
-						qDebug()<<"PARTICIPANTS: "<<root.value("participants");
-						QVariantList partList=root.value("participants").toList();
-						for(QVariant part:partList){
-							QVariantMap map=part.toMap();
-							registerPossibleParticipant(map);
-						}
-					}
+					//qDebug()<<"RETURNED STATUS WAS: "<<root.value("status").toString()<<", MSG:  "<<root.value("message").toString();
 					bool rok=("ok"==root.value("status").toString());
 					if(!rok){
 						message=root.value("message").toString();
 					}
 					ok=ok && rok;
+					if(ok){
+						if(root.contains("participants")){
+							//qDebug()<<"PARTICIPANTS: "<<root.value("participants");
+							QVariantList partList=root.value("participants").toList();
+							for(QVariant part:partList){
+								QVariantMap map=part.toMap();
+								registerPossibleParticipant(map);
+							}
+						}
+					}
 				}
 			}
-			qDebug()<<"STATUS("<<ok<<"):"<<message;
+			if(!ok){
+				qDebug()<<"STATUS("<<ok<<"):"<<message;
+			}
 		});
 		//qDebug()<<"Getting node by OCID:"<<OCID << " RES DONE";
 	};
@@ -188,41 +192,46 @@ static const QString zeroID=utility::toHash("", OCTOMY_KEY_HASH);
 void DiscoveryClient::registerPossibleParticipant(QVariantMap map){
 	Key key(map["key"].toMap(),true);
 	const QString partID=key.id();
-
-	const QString ourID=node.getKeyStore().localKey().id();
-	//const QString partID=utility::toHash(map["publicKey"].toString());
-	// Is this a genuine participant?
-	//qDebug()<<"ZERO: "<<zeroID<<" OUR: "<<ourID<<" PART:"<<partID;
-	if(partID!=zeroID && ourID!=partID){
-		DiscoveryClientStore &peers=node.getPeers();
-		//TODO: Scrutinize newcomer for security
-		DiscoveryParticipant *old=nullptr;
-		if(peers.hasParticipant(partID)){
-			old=peers.getParticipant(partID);
-			qDebug()<<" + Found replacement participant:"<<partID;
-		}
-		else{
-			qDebug()<<" + Found new participant:"<<partID;
-		}
-		DiscoveryParticipant *p=new  DiscoveryParticipant(map);
-		if(p->isValidClient()){
-			peers.setParticipant(p);
-			delete old;
-			DiscoveryCourier *courier=new DiscoveryCourier(*p);
-			if(nullptr!=courier){
-				courier->setDestination(p->clientSignature());
-				node.getComms()->registerCourier(*courier);
-				//node.getComms()->unregisterCourier(courier);
-			}
-
-			emit nodeDiscovered(partID);
-		}
-		else{
-			qDebug()<<" + Participant failed validity test, skipping:"<<partID;
-		}
+	const QString ourID=node.keyStore().localKey().id();
+	if(partID==zeroID)
+	{
+		//qDebug()<<" + Skipping new participant with zero ID: "<<partID;
+	}
+	else if(partID==ourID)
+	{
+		//qDebug()<<" + Skipping new participant with our ID: "<<partID;
 	}
 	else{
-		qDebug()<<" + Skipping invalid new participant:"<<partID;
+		DiscoveryClientStore &peers=node.peers();
+		DiscoveryParticipant *part=nullptr;
+		if(peers.hasParticipant(partID)){
+			part=peers.getParticipant(partID);
+			part->updateFromServer(map, false);
+		}
+		else{
+			part=new DiscoveryParticipant(map);
+			if(nullptr!=part){
+				if(part->isValidForClient()){
+					DiscoveryCourier *courier=new DiscoveryCourier(*part);
+					if(nullptr!=courier){
+						peers.setParticipant(part);
+						courier->setDestination(part->clientSignature());
+						node.comms()->registerCourier(*courier);
+						emit nodeDiscovered(partID);
+					}
+					else{
+						qWarning()<<"ERROR: Could not create courier for part with ID "<<partID;
+						delete part;
+						part=nullptr;
+					}
+				}
+				else{
+					qDebug()<<" + Deleting invalid new participant:"<<partID;
+					delete part;
+					part=nullptr;
+				}
+			}
+		}
 	}
 }
 
@@ -244,7 +253,9 @@ void DiscoveryClient::onTimer(){
 	if(now>ZOO_PAIR_INTERVAL+lastZooPair){
 		qDebug()<<"ZOO PAIR TIME!";
 		lastZooPair=now;
+
 		//discover();
+		//TODO: node.getComms()->unregisterCourier(courier); <-- remove old unused and timed out couriers
 	}
 	discover();
 }

@@ -15,11 +15,12 @@ class DiscoveryCourier : public Courier
 		Q_OBJECT
 
 	private:
-		DiscoveryParticipant &part;
-		QVariantMap data;
+		DiscoveryParticipant &mPart;
+		QVariantMap mData;
 
 	public:
 		explicit DiscoveryCourier(DiscoveryParticipant &part, QObject *parent = nullptr);
+		virtual ~DiscoveryCourier();
 
 
 	public:

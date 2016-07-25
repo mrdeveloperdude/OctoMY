@@ -95,7 +95,7 @@ QPixmap Identicon::pixmap(qint32 w,qint32 h,qreal zoom){
 	regenerateIdenticon();
 	QSvgRenderer svg( doc.toByteArray() );
 	QSizeF ds=calcSize(svg.defaultSize(),w,h,zoom);
-	qDebug()<<"Generating pixmap from identicon with size: "<<ds;
+	//qDebug()<<"Generating pixmap from identicon with size: "<<ds;
 	QPixmap px(ds.toSize());
 	px.fill(QColor(0,0,0,0));
 	QPainter painter( &px );
@@ -109,7 +109,7 @@ QImage Identicon::image(qint32 w,qint32 h,qreal zoom){
 	regenerateIdenticon();
 	QSvgRenderer svg( doc.toByteArray() );
 	QSizeF ds=calcSize(svg.defaultSize(),w,h,zoom);
-	qDebug()<<"Generating image from identicon with size: "<<ds;
+	//qDebug()<<"Generating image from identicon with size: "<<ds;
 	QImage px(ds.toSize(), QImage::Format_RGBA8888);
 	px.fill(QColor(0,0,0,0));
 	QPainter painter( &px );
@@ -189,4 +189,5 @@ void Identicon::setSvgURL(QString url){
 void Identicon::setPortableID(PortableID id){
 	mID=id;
 	dirty=true;
+	regenerateIdenticon();
 }

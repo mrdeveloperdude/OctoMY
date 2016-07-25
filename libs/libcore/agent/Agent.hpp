@@ -19,7 +19,6 @@ class DiscoveryClient;
 class AgentWindow;
 
 class Agent : public Node{
-
 		Q_OBJECT
 	public:
 		AgentWindow *window;
@@ -27,7 +26,7 @@ class Agent : public Node{
 		explicit Agent(NodeLauncher<Agent> &launcher, QObject *parent = nullptr);
 		virtual ~Agent();
 
-		void start(QHostAddress listenAddress, quint16 listenPort, QHostAddress hubAddress, quint16 hubPort);
+		void start(const NetworkAddress &localAddress, const NetworkAddress &partnerAddress);
 
 		virtual QWidget *showWindow();
 

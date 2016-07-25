@@ -30,14 +30,14 @@ void SvgWidget::paintEvent(QPaintEvent *){
 
 //NOTE: this will override the svgURL propoerty by pointing directly to the given svg
 void SvgWidget::setSvg(QSvgRenderer &svg){
-	qDebug()<<"Setting SVG by object";
+	//qDebug()<<"Setting SVG by object";
 	this->svg=&svg;
 	lastURL="";
 }
 
 
 void SvgWidget::setSvgURL(QString url){
-	qDebug()<<"Setting SVG by URL:"<<url;
+	//qDebug()<<"Setting SVG by URL:"<<url;
 	svg=new QSvgRenderer(url);
 	lastURL=url;
 }

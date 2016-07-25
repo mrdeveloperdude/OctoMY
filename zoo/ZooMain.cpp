@@ -57,7 +57,7 @@ int main(int argc, char *argv[]){
 	}
 	opts.process(arguments);
 
-	ZooServer server(new AppContext(opts, env, "zoo"), nullptr);
+	ZooServer server(new AppContext(opts, env, "zoo", nullptr), nullptr);
 	server.start(port);
 
 	return app.exec();

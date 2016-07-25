@@ -13,11 +13,11 @@
 
 DiscoveryClientStore::DiscoveryClientStore(QString fn, QObject *parent)
 	: QObject(parent)
-	, ready(false)
-	, error(false)
-	, filename(fn)
+	, mReady(false)
+	, mError(false)
+	, mFilename(fn)
 {
-	if(QFile(filename).exists()){
+	if(QFile(mFilename).exists()){
 		load();
 	}
 }
@@ -49,7 +49,7 @@ void DiscoveryClientStore::bootstrap()
 
 void DiscoveryClientStore::bootstrapWorker()
 {
-	QFile f(filename);
+	QFile f(mFilename);
 	if(!f.exists()){
 		qDebug()<<"DiscoveryClientStore: no store file found, saving for first time";
 		save();
@@ -62,11 +62,11 @@ void DiscoveryClientStore::load()
 {
 	//qDebug()<<"DiscoveryClientStore: Loading from file";
 	QJsonParseError jsonError;
-	QByteArray raw=utility::fileToByteArray(filename);
+	QByteArray raw=utility::fileToByteArray(mFilename);
 	QJsonDocument doc = QJsonDocument::fromJson(raw, &jsonError);
 	if (QJsonParseError::NoError != jsonError.error){
-		qWarning() << "ERROR: Parsing json data: "<<jsonError.errorString()<< " for data "<<raw<<" from file "<<filename;
-		error=true;
+		qWarning() << "ERROR: Parsing json data: "<<jsonError.errorString()<< " for data "<<raw<<" from file "<<mFilename;
+		mError=true;
 	}
 	else{
 		//qDebug()<<"PARSED JSON: "<<doc.toJson();
@@ -74,25 +74,25 @@ void DiscoveryClientStore::load()
 		QVariantList remotes=map["participants"].toList();
 		for(QVariantList::iterator b=remotes.begin(), e=remotes.end(); b!=e; ++b){
 			DiscoveryParticipant *peer=new DiscoveryParticipant((*b).toMap());
-			peers[peer->id()]=peer;
+			mPeers[peer->id()]=peer;
 		}
-		ready=true;
+		mReady=true;
 	}
 	emit discoveryStoreReady();
 }
 
 void DiscoveryClientStore::save()
 {
-	qDebug()<<"DiscoveryClientStore: Saving to file: "<<filename;
+	qDebug()<<"DiscoveryClientStore: Saving to file: "<<mFilename;
 	QVariantMap map;
 	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();
 	QVariantList remotes;
-	for(QMap<QString, DiscoveryParticipant *>::const_iterator b=peers.begin(), e=peers.end(); b!=e; ++b){
+	for(QMap<QString, DiscoveryParticipant *>::const_iterator b=mPeers.begin(), e=mPeers.end(); b!=e; ++b){
 		remotes.push_back(b.value()->toVariantMap());
 	}
 	map["participants"]=remotes;
 	QJsonDocument doc=QJsonDocument::fromVariant(map);
-	utility::stringToFile(filename,doc.toJson());
+	utility::stringToFile(mFilename,doc.toJson());
 }
 
 
@@ -100,7 +100,7 @@ void DiscoveryClientStore::save()
 
 bool DiscoveryClientStore::hasParticipant(const QString &id)
 {
-	return (peers.find(id)!=peers.end());
+	return (mPeers.find(id)!=mPeers.end());
 }
 
 
@@ -108,9 +108,20 @@ bool DiscoveryClientStore::hasParticipant(const QString &id)
 DiscoveryParticipant * DiscoveryClientStore::getParticipant(const QString &id)
 {
 	if(hasParticipant(id)){
-		return peers[id];
+		return mPeers[id];
 	}
 	return nullptr;
+}
+
+
+DiscoveryParticipant * DiscoveryClientStore::removeParticipant(const QString &id)
+{
+	DiscoveryParticipant *ret=nullptr;
+	if(hasParticipant(id)){
+		ret=mPeers[id];
+		mPeers.remove(id);
+	}
+	return ret;
 }
 
 
@@ -118,12 +129,14 @@ DiscoveryParticipant * DiscoveryClientStore::getParticipant(const QString &id)
 void DiscoveryClientStore::setParticipant(DiscoveryParticipant *participant)
 {
 	if(nullptr!=participant){
-		peers[participant->id()]=participant;
+		auto id=participant->id();
+		qDebug()<<"REGISTERING PARTICIPANT WITH ID: "<<id;
+		mPeers[id]=participant;
 	}
 }
 
 
 QMap<QString, DiscoveryParticipant *> &DiscoveryClientStore::getParticipants()
 {
-	return peers;
+	return mPeers;
 }

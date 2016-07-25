@@ -56,6 +56,7 @@ class CommsTester:public QObject{
 
 		quint16 basePort;
 		quint16 portRange;
+		ClientSignature sig;
 		CommsChannel cc;
 		quint16 testCount;
 

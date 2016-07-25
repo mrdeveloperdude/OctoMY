@@ -21,7 +21,7 @@ void AgentWindow::updateIdentity(){
 		agent->updateDiscoveryClient();
 		//Set our custom identicon as window icon
 		PortableID pid;
-		pid.setID(agent->getKeyStore().localKey().id());
+		pid.setID(agent->keyStore().localKey().id());
 		Identicon id(pid);
 		QIcon icon;//=windowIcon();
 		icon.addPixmap(id.pixmap());
@@ -45,10 +45,10 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	updateIdentity();
 
 	if(nullptr!=agent){
-		Settings &s=agent->getSettings();
+		Settings &s=agent->settings();
 		//Select correct starting page
 		QWidget *startPage=ui->pageRunning;
-		ui->stackedWidget->setCurrentWidget(agent->getKeyStore().hasLocalKeyFile()?startPage:ui->pageDelivery);
+		ui->stackedWidget->setCurrentWidget(agent->keyStore().hasLocalKeyFile()?startPage:ui->pageDelivery);
 
 		connect(ui->widgetDelivery, &AgentDeliveryWizard::done, [=](bool pairNow) {
 			updateIdentity();
@@ -128,7 +128,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 			if(nullptr!=agent){
 				QMessageBox::StandardButton reply = QMessageBox::question(this, "Unbirth", "Are you sure you want to DELETE the personality of this robot forever?", QMessageBox::No|QMessageBox::Yes);
 				if (QMessageBox::Yes==reply) {
-					agent->getKeyStore().clear();
+					agent->keyStore().clear();
 					updateIdentity();
 					ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
 					qDebug()<<"UNBIRTHED!";
@@ -158,7 +158,7 @@ void AgentWindow::onTryToggleConnectionChanged(TryToggleState s){
 	appendLog("TRYSTATE CHANGED TO "+ToggleStateToSTring(s));
 	switch(s){
 		case(TRYING):{
-				agent->start(ui->widgetConnection->getLocalAddress(),ui->widgetConnection->getLocalPort(), ui->widgetConnection->getTargetAddress(), ui->widgetConnection->getTargetPort());
+				agent->start(NetworkAddress(ui->widgetConnection->getLocalAddress(),ui->widgetConnection->getLocalPort()), NetworkAddress(ui->widgetConnection->getTargetAddress(), ui->widgetConnection->getTargetPort()));
 				//				ui->labelLocal->setText("LOCAL:"+ui->widgetConnection->getLocalAddress().toString()+":"+QString::number(ui->widgetConnection->getLocalPort()));
 				//			ui->labelHub->setText("HUB: "+ui->widgetConnection->getTargetAddress().toString()+ ":"+ QString::number(ui->widgetConnection->getTargetPort()));
 			}break;
@@ -173,7 +173,7 @@ void AgentWindow::onTryToggleConnectionChanged(TryToggleState s){
 
 void AgentWindow::onFaceVisibilityChanged(bool on){
 	qDebug()<<"FACE VIS IS NOW: "<<on;
-	Settings *s=(nullptr!=agent)?(&agent->getSettings()):nullptr;
+	Settings *s=(nullptr!=agent)?(&agent->settings()):nullptr;
 	if(nullptr!=s){
 		s->setCustomSettingBool("octomy.face",on);
 	}
@@ -183,7 +183,7 @@ void AgentWindow::onFaceVisibilityChanged(bool on){
 
 void AgentWindow::onLogVisibilityChanged(bool on){
 	qDebug()<<"LOG VIS IS NOW: "<<on;
-	Settings *s=(nullptr!=agent)?(&agent->getSettings()):nullptr;
+	Settings *s=(nullptr!=agent)?(&agent->settings()):nullptr;
 	if(nullptr!=s){
 		s->setCustomSettingBool("octomy.debug.log",on);
 	}
@@ -192,7 +192,7 @@ void AgentWindow::onLogVisibilityChanged(bool on){
 
 void AgentWindow::onStatsVisibilityChanged(bool on){
 	qDebug()<<"STATS VIS IS NOW: "<<on;
-	Settings *s=(nullptr!=agent)?(&agent->getSettings()):nullptr;
+	Settings *s=(nullptr!=agent)?(&agent->settings()):nullptr;
 	if(nullptr!=s){
 		s->setCustomSettingBool("octomy.debug.stats",on);
 	}
@@ -202,7 +202,7 @@ void AgentWindow::onStatsVisibilityChanged(bool on){
 
 void AgentWindow::onStartShowBirthCertificate(){
 	PortableID id;
-	id.setID(agent->getKeyStore().localKey().id());
+	id.setID(agent->keyStore().localKey().id());
 	id.setType(TYPE_AGENT);
 	ui->widgetBirthCertificate->setPortableID(id);
 	ui->stackedWidget->setCurrentWidget(ui->pageBirthCertificate);

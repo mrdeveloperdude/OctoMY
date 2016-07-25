@@ -64,7 +64,7 @@ class EditButtonDelegate: public QItemDelegate
 		{
 			QSvgRenderer svg(fn);
 			QSizeF ds=calcSize(svg.defaultSize(),w,h,zoom);
-			qDebug()<<"Generating pixmap from identicon with size: "<<ds;
+			//qDebug()<<"Generating pixmap from identicon with size: "<<ds;
 			QPixmap px(ds.toSize());
 			px.fill(QColor(0,0,0,0));
 			QPainter painter( &px );
@@ -198,7 +198,7 @@ class PairingList: public QAbstractListModel
 					}
 				}
 			}
-			qDebug()<<"rowcount: "<<ret;
+			//qDebug()<<"rowcount: "<<ret;
 			return ret;
 		}
 
@@ -290,15 +290,15 @@ void PairingWizard::configure(Node *n)
 {
 	node=n;
 	if(nullptr!=node){
-		ui->labelID->setText(node->getKeyStore().localKey().id());
-		DiscoveryClient *discovery=node->getDiscoveryClient();
-		DiscoveryType type=node->getType();
+		ui->labelID->setText(node->keyStore().localKey().id());
+		DiscoveryClient *discovery=node->discoveryClient();
+		DiscoveryType type=node->type();
 
 		if(!connect(discovery, &DiscoveryClient::nodeDiscovered, [=](QString partID)
 		{
 					if(nullptr==ui->listViewNodes->model()){
 
-					list=new PairingList(node->getPeers(),type,*this);
+					list=new PairingList(node->peers(),type,*this);
 					ui->listViewNodes->setModel(list);
 
 					if(nullptr==delegate){
@@ -307,10 +307,10 @@ void PairingWizard::configure(Node *n)
 					//ui->tableViewNodes->setItemDelegate(delegate);
 					ui->listViewNodes->setItemDelegate(delegate);
 
-					qDebug()<<"SET TABLE MODEL";
+					//qDebug()<<"SET TABLE MODEL";
 	}
 
-					qDebug()<<"PW: partID: "<<partID;
+					qDebug()<<"PAIRING WIZARD partID: "<<partID;
 					ui->listViewNodes->update();
 	})){
 			qWarning()<<"ERROR: Could not connect";
@@ -366,7 +366,7 @@ Node *PairingWizard::getNode(){
 
 void PairingWizard::showEvent(QShowEvent *){
 	if(nullptr!=node){
-		DiscoveryClient *client=node->getDiscoveryClient();
+		DiscoveryClient *client=node->discoveryClient();
 		if(nullptr!=client){
 			client->start();
 		}
@@ -375,7 +375,7 @@ void PairingWizard::showEvent(QShowEvent *){
 
 void PairingWizard::hideEvent(QHideEvent *){
 	if(nullptr!=node){
-		DiscoveryClient *client=node->getDiscoveryClient();
+		DiscoveryClient *client=node->discoveryClient();
 		if(nullptr!=client){
 			client->stop();
 		}
@@ -385,7 +385,7 @@ void PairingWizard::hideEvent(QHideEvent *){
 void PairingWizard::on_pushButtonMaybeOnward_clicked()
 {
 	if(nullptr!=node){
-		DiscoveryClientStore &store=node->getPeers();
+		DiscoveryClientStore &store=node->peers();
 		if(store.getParticipants().size()>0){
 			emit done();
 			return;
@@ -415,7 +415,7 @@ void PairingWizard::on_pushButtonCameraPair_clicked()
 void PairingWizard::on_pushButtonDiscoverNow_clicked()
 {
 	if(nullptr!=node){
-		DiscoveryClient *client=node->getDiscoveryClient();
+		DiscoveryClient *client=node->discoveryClient();
 		if(nullptr!=client){
 			client->discover();
 		}

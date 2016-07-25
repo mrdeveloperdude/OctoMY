@@ -32,7 +32,7 @@ class DiscoveryClient: public QObject
 		QUrl  m_serverURL;
 		qhttp::client::QHttpClient     *m_client;
 		Node &node;
-		Key key;
+		Key &key;
 		//const QString ourPubKey;
 		//const QString ourID;
 		//const QString zeroID;

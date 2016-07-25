@@ -1,58 +1,37 @@
 #ifndef NETWORKADDRESS_HPP
 #define NETWORKADDRESS_HPP
 
+
 #include <QHostAddress>
 #include <QVariantMap>
 
 
-struct NetworkAddress{
-		QHostAddress ip;
-		quint16 port;
+
+class NetworkAddress{
+	private:
+		QHostAddress mIP;
+		quint16 mPort;
 
 	public:
-		NetworkAddress(QVariantMap map)
-			: ip(map["ip"].toString())
-			, port(map["port"].toInt())
-		{
+		explicit NetworkAddress();
+		NetworkAddress(const NetworkAddress &other);
+		explicit NetworkAddress(QHostAddress ip, quint16 port);
+		explicit NetworkAddress(QVariantMap map);
+		virtual ~NetworkAddress();
 
-		}
-
-		NetworkAddress(QHostAddress ip, quint16 port)
-			: ip(ip)
-			, port(port)
-		{
-
-		}
-
-		NetworkAddress()
-			: port(0)
-		{
-
-		}
-
-		QVariantMap toVariantMap()
-		{
-			QVariantMap map;
-			map["ip"]=ip.toString();
-			map["port"]=port;
-			return map;
-		}
-
-		QString toString()
-		{
-			return ip.toString()+":"+QString::number(port);
-		}
-
-		bool isValid()
-		{
-			return ( (0!=port) && (!ip.isNull()) );
-		}
-
-		bool operator==(const NetworkAddress &o) const
-		{
-			return o.port==port && o.ip==ip;
-		}
+	public:
+		QHostAddress ip();
+		quint16 port();
+		void setPort(quint16 port);
+		void setIP(QHostAddress ip);
+		QVariantMap toVariantMap();
+		QString toString() const;
+		bool isValid(bool allowLoopback=true, bool allowMulticast=false);
+		bool operator==(const NetworkAddress &o) const;
+		bool operator!=(const NetworkAddress &o) const;
 
 };
+
+const QDebug &operator<<(QDebug &d, const NetworkAddress &na);
 
 #endif // NETWORKADDRESS_HPP

@@ -26,7 +26,7 @@ class AppContext;
 
 class ZooServer : public qhttp::server::QHttpServer
 {
-	//	Q_OBJECT
+		Q_OBJECT
 	private:
 
 		//QString base;
@@ -64,6 +64,7 @@ class ZooServer : public qhttp::server::QHttpServer
 		void serveIndex(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res);
 		void serveIdenticon(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res);
 		void serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res);
+
 
 	public slots:
 

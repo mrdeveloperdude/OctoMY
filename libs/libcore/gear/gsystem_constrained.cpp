@@ -3,13 +3,13 @@
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met: 
+// modification, are permitted provided that the following conditions are met:
 //
 // 1. Redistributions of source code must retain the above copyright notice, this
-//    list of conditions and the following disclaimer. 
+//    list of conditions and the following disclaimer.
 // 2. Redistributions in binary form must reproduce the above copyright notice,
 //    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution. 
+//    and/or other materials provided with the distribution.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -34,9 +34,9 @@
 
 using namespace std;
 
-bool isZero(RMatrix A, gReal eps)
+static bool isZero(RMatrix A, gReal eps)
 {
-	bool iszero = true; 
+	bool iszero = true;
 	for (int i=0; i<A.Size(); i++) { if ( fabs(A[i]) > eps ) { iszero = false; break; } }
 	return iszero;
 }
@@ -49,7 +49,7 @@ bool GSystemConstrained::buildSystem(GBody *pGround_, bool b_scan_fwd_joint_chai
 {
 	pConstraints.clear();
 	if ( !GSystem::buildSystem(pGround_, b_scan_fwd_joint_chain_) ) return false;
-	if ( !_findClosedJointLoopConstraints() ) return false; 
+	if ( !_findClosedJointLoopConstraints() ) return false;
 	if ( !_getReady() ) return false;
 	return true;
 }
@@ -60,10 +60,10 @@ void GSystemConstrained::calcDynamics()
 	int n = getNumCoordinates(), nu = pcoordsU.size(), nv = pcoordsV.size(), nc = getNumConstraints();
 
 	// if nc == 0, call unconstrained dynamics and return
-	if ( nc == 0 ) { 
+	if ( nc == 0 ) {
 		GSystem::calcDynamics();
-		_lambda = Zeros(0,0); 
-		return; 
+		_lambda = Zeros(0,0);
+		return;
 	}
 
 	// memories for calculation
@@ -82,7 +82,7 @@ void GSystemConstrained::calcDynamics()
 	for (int i=0; i<nu; i++) { tauur[i] = pcoordsU[i]->tau; }
 
 	// calculates constraint Jacobian and its derivative
-	_update_J(); 
+	_update_J();
 	_copy_J(J, pCoordinates);
 	_copy_J(Jv, pcoordsV);
 	_copy_J(Ju, pcoordsU);
@@ -114,7 +114,7 @@ void GSystemConstrained::calcDynamics()
 	for (int i=0; i<nv; i++) { pcoordsV[i]->tau = tauv[i]; pcoordsV[i]->ddq = ddqvr[i] + ddqvc[i]; }
 
 	// save the constraint force
-	_lambda = lambda; 
+	_lambda = lambda;
 }
 
 void GSystemConstrained::calcInverseDynamics()
@@ -122,10 +122,10 @@ void GSystemConstrained::calcInverseDynamics()
 	int n = getNumCoordinates(), nc = getNumConstraints();
 
 	// if nc == 0, call unconstrained inverse dynamics and return
-	if ( nc == 0 ) { 
+	if ( nc == 0 ) {
 		GSystem::calcInverseDynamics();
-		_lambda = Zeros(0,0); 
-		return; 
+		_lambda = Zeros(0,0);
+		return;
 	}
 
 	// memories for calculation
@@ -135,8 +135,8 @@ void GSystemConstrained::calcInverseDynamics()
 	GSystem::calcInverseDynamics();
 	get_tau(taur.GetPtr());
 
-	// calculates constraint Jacobian 
-	_update_J(); 
+	// calculates constraint Jacobian
+	_update_J();
 	_copy_J(J, pCoordinates);
 	Jt = ~J;
 
@@ -158,10 +158,10 @@ bool GSystemConstrained::stepSimulation(gReal h_)
 	vector<GCoordinate*> pcoordsV = getUnprescribedCoordinates();
 
 	// apply force elements to the bodies and joints
-	// ** this will add forces/torques to the bodies and joints 
+	// ** this will add forces/torques to the bodies and joints
 	// ** therefore, initBodyForcesAndJointTorques() must be called before calling stepSimulation() for initialization of the forces/torques
 	for (std::list<GForce *>::iterator iter_psd = pForces.begin(); iter_psd != pForces.end(); iter_psd++) {
-		(*iter_psd)->applyForce(); 
+		(*iter_psd)->applyForce();
 	}
 
 	// calculate joint accelerations (for unprescribed coordinates) and torques (for prescribed coordinates)
@@ -222,7 +222,7 @@ bool GSystemConstrained::checkConstrainedKinematics(gReal eps)
 
 bool GSystemConstrained::checkConstrainedDynamics(gReal eps)
 {
-	RMatrix J, dJdt, M, b, dq = get_dq(), ddq = get_ddq(), tau = get_tau();	
+	RMatrix J, dJdt, M, b, dq = get_dq(), ddq = get_ddq(), tau = get_tau();
 	updateKinematics();
 	getConstraintJacobian(J);
 	getConstraintJacobianDerivative(dJdt);
@@ -272,7 +272,7 @@ bool GSystemConstrained::_findClosedJointLoopConstraints()
 		// find joint loop for each cut joint
 		if ( !_findClosedJointLoop(*iter_pcutjoint, ploopjoints) ) return false;
 
-		// set joint loop constraints 
+		// set joint loop constraints
 		(*iter_constr_jointloop).setJoints(ploopjoints);
 		(*iter_constr_jointloop).setT(SE3());	// identity
 
@@ -290,7 +290,7 @@ bool GSystemConstrained::_findClosedJointLoopConstraints()
 	return true;
 }
 
- 
+
 bool GSystemConstrained::_findClosedJointLoop(GJoint *pCutJoint_, list<GJoint *> &loopjoints_)
 {
 	if ( !_findJointLoop(pCutJoint_, loopjoints_) ) return false;
@@ -298,7 +298,7 @@ bool GSystemConstrained::_findClosedJointLoop(GJoint *pCutJoint_, list<GJoint *>
 	return true;
 }
 
- 
+
 bool GSystemConstrained::_findJointLoop(GJoint *pEndJoint_, list<GJoint *> &loopJoints_)
 {
 	GJoint *pjoint;
@@ -365,10 +365,10 @@ bool GSystemConstrained::_adjust_qv(std::vector<GCoordinate*> pcoords)
 	RMatrix C, Jv, del_qv((int)pcoords.size(),1);
 
 	// Newton-Raphson iteration
-	while (1) { 
+	while (1) {
 		_update_C();
 		_copy_C(C);
-		
+
 		// stop iteration if fabs(C[i]) is very small
 		if ( isZero(C, tolerance_C) ) break;
 
@@ -387,7 +387,7 @@ bool GSystemConstrained::_adjust_qv(std::vector<GCoordinate*> pcoords)
 				pcoords[i]->q += drand(perturb_amount);
 			}
 		}
-		
+
 		// in case of too many iteration, stop iteration and return false
 		if ( cnt++ > maxIterNum ) {
 			return false;
@@ -406,14 +406,14 @@ bool GSystemConstrained::_adjust_dqv(std::vector<GCoordinate*> pcoords, bool bup
 
 	if ( getNumConstraints() == 0 ) return true;
 
-	RMatrix dq0 = get_dq(), del_dqv((int)pcoords.size(),1), J, Jv; 
-	if ( bupdate_J ) { 
-		_update_J(); 
+	RMatrix dq0 = get_dq(), del_dqv((int)pcoords.size(),1), J, Jv;
+	if ( bupdate_J ) {
+		_update_J();
 	}
 	_copy_J(J, pCoordinates);
 	_copy_J(Jv, pcoords);
 	//if ( !SolveAxEqualB(Jv, del_dqv, -(J*dq)) ) return false; // solve J * dq0 + Jv * del_dqv = 0
-	solve_Ax_b_pInv(del_dqv, Jv, -(J*dq0), tolerance_pinv); // solve J * dq0 + Jv * del_dqv = 0 
+	solve_Ax_b_pInv(del_dqv, Jv, -(J*dq0), tolerance_pinv); // solve J * dq0 + Jv * del_dqv = 0
 	for (int i=0; i<(int)pcoords.size(); i++) {
 		pcoords[i]->dq += del_dqv[i];
 	}
@@ -431,8 +431,8 @@ bool GSystemConstrained::_adjust_ddqv(std::vector<GCoordinate*> pcoords, bool bu
 	if ( getNumConstraints() == 0 ) return true;
 
 	RMatrix dq = get_dq(), ddq0 = get_ddq(), del_ddqv((int)pcoords.size(),1), J, Jv, dJdt;
-	if ( bupdate_J ) { 
-		_update_J(); 
+	if ( bupdate_J ) {
+		_update_J();
 	}
 	_copy_J(J, pCoordinates);
 	_copy_J(Jv, pcoords);
@@ -455,12 +455,12 @@ bool GSystemConstrained::_adjust_ddqv(std::vector<GCoordinate*> pcoords, bool bu
 //	int i, nu, nv;
 //	static RMatrix tau_u, tau_v;
 //	list<GCoordinate *>::iterator iter_pcoord;
-//	
+//
 //	nu = getNumCoordinatesIndependent();
 //	nv = getNumCoordinatesDependent();
 //
 //	tauu.clear();
-//	
+//
 //	if ( nv == 0 ) {
 //		for (iter_pcoord = pCoordinatesU.begin(); iter_pcoord != pCoordinatesU.end(); iter_pcoord++) {
 //			tauu.push_back((*iter_pcoord)->tau);
@@ -470,7 +470,7 @@ bool GSystemConstrained::_adjust_ddqv(std::vector<GCoordinate*> pcoords, bool bu
 //
 //	tau_u.ReNew(nu, 1);
 //	tau_v.ReNew(nv, 1);
-//	
+//
 //	for (iter_pcoord = pCoordinatesU.begin(), i=0; iter_pcoord != pCoordinatesU.end(); iter_pcoord++, i++) {
 //		tau_u[i] = (*iter_pcoord)->tau;
 //	}

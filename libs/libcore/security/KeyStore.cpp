@@ -36,7 +36,7 @@ KeyStore::~KeyStore()
 
 void KeyStore::bootstrap(bool loadOnly, bool runInBackground)
 {
-	qDebug()<<"Keystore bootstrap() loadOnly="<<loadOnly<<", bg="<<runInBackground<<", "<<*this;
+	//qDebug()<<"Keystore bootstrap() loadOnly="<<loadOnly<<", bg="<<runInBackground<<", "<<*this;
 	if(mReady){
 		emit keystoreReady(!mError);
 		return;
@@ -79,7 +79,6 @@ void KeyStore::bootstrapWorker()
 	if(!f.exists()){
 		qDebug()<<"KEYSTORE: no keystore file found, generating local keypair and saving";
 		mLocalKey=Key(OCTOMY_KEY_BITS);
-		//local_pki.reset();		local_pki.generateKeyPair(keyBits);
 		save();
 	}
 	load();
@@ -89,7 +88,7 @@ void KeyStore::bootstrapWorker()
 
 void KeyStore::load()
 {
-	qDebug()<<"KEYSTORE: Loading from file: " << *this;
+	//qDebug()<<"KEYSTORE: Loading from file: " << *this;
 	QJsonParseError jsonError;
 	QByteArray raw=utility::fileToByteArray(mFilename);
 	QJsonDocument doc = QJsonDocument::fromJson(raw, &jsonError);
@@ -98,15 +97,10 @@ void KeyStore::load()
 		mError=true;
 	}
 	else{
-		qDebug()<<"PARSED JSON: "<<doc.toJson();
+		//qDebug()<<"PARSING JSON: "<<doc.toJson();
 		QVariantMap map = doc.object().toVariantMap();
-		mLocalKey=Key(map,false);
-		mError=mLocalKey.isValid(false);
-		/*
-		local_pki.reset();
-		local_pki.parseKey(map["localPrivateKey"].toByteArray());
-		local_pki.parsePublicKey(map["localPublicKey"].toByteArray());
-		*/
+		mLocalKey=Key(map["localKey"].toMap(),false);
+		mError=mError||(!mLocalKey.isValid(false));
 		QVariantList remotes=map["remoteKeys"].toList();
 		mPeers.clear();
 		for(QVariantList::iterator b=remotes.begin(), e=remotes.end(); b!=e; ++b){
@@ -114,14 +108,15 @@ void KeyStore::load()
 			mPeers[remote["id"].toString()]=Key(remote,true);
 		}
 		mReady=true;
+		//qDebug()<<"RESULT AFTER LOAD: "<<this;
 	}
-	qDebug()<<"EMITTING KEYSTORE READY "<<(!mError);
+	//qDebug()<<"EMITTING KEYSTORE READY WITH"<<(mError?"ERROR":"A-OK");
 	emit keystoreReady(!mError);
 }
 
 void KeyStore::save()
 {
-	qDebug()<<"KEYSTORE: Saving to file: "<<*this;
+	//qDebug()<<"KEYSTORE: Saving to file: "<<*this;
 	QVariantMap map;
 	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();
 	map["localKey"]=mLocalKey.toVariantMap(false);
@@ -134,7 +129,9 @@ void KeyStore::save()
 	}
 	map["remoteKeys"]=remotes;
 	QJsonDocument doc=QJsonDocument::fromVariant(map);
-	utility::stringToFile(mFilename,doc.toJson());
+	QString raw=doc.toJson();
+	//qDebug()<<"SAVING JSON: "<<raw;
+	utility::stringToFile(mFilename,raw);
 }
 
 void KeyStore::clear()
@@ -144,6 +141,7 @@ void KeyStore::clear()
 		if(file.remove()){
 			qDebug()<<"KEYSTORE: Cleared: "<<*this;
 			mLocalKey=Key();
+			mPeers.clear();
 			mReady=false;
 			mError=false;
 		}

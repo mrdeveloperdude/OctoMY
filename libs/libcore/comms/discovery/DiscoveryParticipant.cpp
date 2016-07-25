@@ -12,14 +12,18 @@
 //////////////////////////////////////////////////////////////////////////
 
 DiscoveryParticipant::DiscoveryParticipant()
+	: isDeleted(false)
 {
-
+	OC_METHODGATE();
+	Q_ASSERT(!isDeleted);
 }
 
 DiscoveryParticipant::DiscoveryParticipant(QString publicKey, QString public_address, quint16 public_port, QString local_address, quint16 local_port, DiscoveryRole role, DiscoveryType type)
 //: assoc()
+	: isDeleted(false)
 {
-
+	OC_METHODGATE();
+	Q_ASSERT(!isDeleted);
 }
 
 
@@ -27,7 +31,10 @@ DiscoveryParticipant::DiscoveryParticipant(QString publicKey, QString public_add
 
 DiscoveryParticipant::DiscoveryParticipant(QVariantMap map)
 	: assoc(map, true)
+	, isDeleted(false)
 {
+	OC_METHODGATE();
+	Q_ASSERT(!isDeleted);
 }
 
 
@@ -37,42 +44,53 @@ DiscoveryParticipant::DiscoveryParticipant(QVariantMap map)
 DiscoveryParticipant::DiscoveryParticipant(const DiscoveryParticipant &o)
 	: assoc(o.assoc)
 	, pins(pins)
+	, isDeleted(false)
 {
-
+	OC_METHODGATE();
+	Q_ASSERT(!isDeleted);
 }
 
 
 DiscoveryParticipant::~DiscoveryParticipant()
 {
-
+	isDeleted=true;
 }
 
 
 bool DiscoveryParticipant::operator==(const DiscoveryParticipant &o) const
 {
+	OC_METHODGATE();
+	Q_ASSERT(!isDeleted);
 	return assoc == o.assoc;
 }
 /*
 bool DiscoveryParticipant::isSet()
 {
+OC_METHODGATE();
 	return (0!=localPort);
 }
 */
 
-bool DiscoveryParticipant::isValidServer()
+bool DiscoveryParticipant::isValidForServer()
 {
+	OC_METHODGATE();
+	Q_ASSERT(!isDeleted);
 	return (!pins.isEmpty()) && assoc.isValid() ;
 }
 
 
-bool DiscoveryParticipant::isValidClient()
+bool DiscoveryParticipant::isValidForClient()
 {
+	OC_METHODGATE();
+	Q_ASSERT(!isDeleted);
 	return assoc.isValid();
 }
 
 
 QVariantMap DiscoveryParticipant::toVariantMap()
 {
+	OC_METHODGATE();
+	Q_ASSERT(!isDeleted);
 	QVariantMap map=assoc.toVariantMap();
 	map["pins"]=pins;
 	return map;
@@ -82,9 +100,9 @@ QVariantMap DiscoveryParticipant::toVariantMap()
 
 QString DiscoveryParticipant::toString()
 {
-
+	OC_METHODGATE();
+	Q_ASSERT(!isDeleted);
 	return assoc.toString()+", pins:"+pins.join(";");
-
 }
 
 const QRegularExpression rePin("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
@@ -92,12 +110,16 @@ const QRegularExpression rePin("^[0-9A-H]{5}$"); // trimmed 5-digit string with 
 
 void DiscoveryParticipant::clearPins()
 {
+	OC_METHODGATE();
+	Q_ASSERT(!isDeleted);
 	pins.clear();
 }
 
 
 void DiscoveryParticipant::addPin(QString pin)
 {
+	OC_METHODGATE();
+	Q_ASSERT(!isDeleted);
 	if(rePin.match(pin).hasMatch()){
 		//qDebug()<<"ACCEPTED PIN:" <<pin;
 		pins<<pin;
@@ -113,27 +135,39 @@ void DiscoveryParticipant::addPin(QString pin)
 
 void DiscoveryParticipant::clearTrust()
 {
+	OC_METHODGATE();
+	Q_ASSERT(!isDeleted);
 	assoc.clearTrust();
 }
 
 void DiscoveryParticipant::addTrust(QString trust)
 {
+	OC_METHODGATE();
+	Q_ASSERT(!isDeleted);
 	assoc.addTrust(trust);
 }
 
-/*
-QString DiscoveryParticipant::fullPublicAddress()
+
+ClientSignature DiscoveryParticipant::clientSignature()
 {
-	return assoc.publicAddress();
+	OC_METHODGATE();
+	Q_ASSERT(!isDeleted);
+	return ClientSignature(assoc.id(), assoc.publicAddress());
 }
 
-QString DiscoveryParticipant::fullLocalAddress()
+bool DiscoveryParticipant::updateFromServer(QVariantMap &map, bool trustedSource)
 {
-	return localAddress+":"+QString::number(localPort);
+	return assoc.update(map, trustedSource);
 }
 
-*/
 
-ClientSignature DiscoveryParticipant::clientSignature(){
-	return ClientSignature(0,0,assoc.localAddress().ip,assoc.localAddress().port);
+
+
+const QDebug &operator<<(QDebug &d, DiscoveryParticipant &part)
+{
+	OC_FUNCTIONGATE();
+	Q_ASSERT(!part.isDeleted);
+	d.nospace() << "DiscoveryParticipant( assoc="<<part.toString()<<")";
+	return d.maybeSpace();
 }
+

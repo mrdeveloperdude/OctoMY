@@ -22,7 +22,7 @@ FaceWidget::~FaceWidget()
 
 void FaceWidget::updateVisibility(){
 	Agent *agent=ui->widgetRealtimeValues->getAgent();
-	Settings *s=(nullptr!=agent)?&agent->getSettings():nullptr;
+	Settings *s=(nullptr!=agent)?&agent->settings():nullptr;
 	if(nullptr!=s){
 		ui->widgetEyes->setVisible(s->getCustomSettingBool("octomy.face"));
 		ui->logScroll->setVisible(s->getCustomSettingBool("octomy.debug.log"));

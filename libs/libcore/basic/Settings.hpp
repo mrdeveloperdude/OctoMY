@@ -9,9 +9,9 @@
 class Settings:QObject{
 		Q_OBJECT
 	private:
-		QString group;
-		QSettings *settings;
-		qint64 lastSync;
+		QString mGroup;
+		QSettings *mSettings;
+		qint64 mLastSync;
 		QTimer syncTimer;
 
 	public:
@@ -27,7 +27,7 @@ class Settings:QObject{
 		static const QString KEY_CUSTOM_SETTING_BASE;
 
 	public:
-		explicit Settings(QString group="", QString appName="", QString appVersion="", QObject *parent=nullptr);
+		explicit Settings(QString mGroup="", QString appName="", QString appVersion="", QObject *parent=nullptr);
 		virtual ~Settings();
 
 	public:

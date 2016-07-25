@@ -88,12 +88,6 @@ void StyleManager::loadFonts(QApplication &app){
 	OC_METHODGATE();
 	qputenv("QT_QPA_FONTDIR", "/");
 	//Main
-	/*
-	loadFont (":/fonts/CenturyGothic/CenturyGothicStd.otf");
-	loadFont (":/fonts/CenturyGothic/CenturyGothicStd-Bold.otf");
-	loadFont (":/fonts/CenturyGothic/CenturyGothicStd-Italic.otf");
-	loadFont (":/fonts/CenturyGothic/CenturyGothicStd-BoldItalic.otf");
-	*/
 	loadFont (":/fonts/Dosis/Dosis-Regular.otf");
 	loadFont (":/fonts/Dosis/Dosis-Bold.otf");
 	loadFont (":/fonts/Dosis/Dosis-ExtraBold.otf");
@@ -102,7 +96,8 @@ void StyleManager::loadFonts(QApplication &app){
 	loadFont (":/fonts/Dosis/Dosis-Medium.otf");
 	loadFont (":/fonts/Dosis/Dosis-SemiBold.otf");
 	//LCD
-	loadFont (":/fonts/digital-7 (mono).ttf");
+	loadFont (":/fonts/Other/digital-7 (mono).ttf");
+	loadFont (":/fonts/Other/code128.ttf");
 	//Set standard font
 	QFont font;
 	font.setFamily("Dosis");
@@ -128,7 +123,7 @@ void StyleManager::applyStyle(QApplication &app){
 	const qreal hh=(tinge.hslHueF()-0.5);
 	const qreal h=(hh<=0.0)?(hh+1.0):hh;
 	const qreal s=0.06;
-	const QColor complementary=    QColor::fromHslF(h, tinge.hslSaturationF()*2, tinge.valueF()).toRgb();
+	const QColor complementary=    QColor::fromHslF(qBound(0.0,h,1.0), qBound(0.0,tinge.hslSaturationF()*2.0,1.0), qBound(0.0,tinge.valueF(),1.0)).toRgb();
 	const QColor lightest=QColor::fromHslF(h, s*8, 0.95,  1.0).toRgb();
 	const QColor light=   QColor::fromHslF(h, s,   0.2,   1.0).toRgb();
 	const QColor dark=    QColor::fromHslF(h, s*2, 0.05,  1.0).toRgb();

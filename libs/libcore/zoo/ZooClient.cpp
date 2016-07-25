@@ -32,7 +32,7 @@ ZooClient::~ZooClient(){
 
 
 void ZooClient::setURL(const QUrl& serverURL) {
-	qDebug()<<"Setting new URL: "<<serverURL;
+	//qDebug()<<"Setting new URL: "<<serverURL;
 	m_serverURL   = serverURL;
 }
 

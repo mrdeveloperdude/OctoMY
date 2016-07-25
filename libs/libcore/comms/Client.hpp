@@ -54,45 +54,17 @@ class Client{
 		bool idle();
 		void appendLog(QString);
 		QString getSummary(QString sep="\n") const ;
+		QString toString() const ;
 		const QString getListText() const;
-		quint64 getHash() const;
+		//quint64 getHash() const;
+
+		quint64 getShortHandID() const;
 
 
 
 		//void onStatusMessage(SensorsMessage sm);
 };
 
-
-
-/**
-  * \brief ClientDirectory holds all clients beknownst to us.
-  *
-  */
-
-class ClientDirectory: public QObject{
-		Q_OBJECT
-	private:
-		QMap<quint64, Client *> byHash;
-		QMap<quint64, Client *> byHost;
-		QSet<Client *> all;
-	public:
-
-		explicit ClientDirectory():QObject(0){}
-	public:
-
-		void insert(Client *c);
-		Client *getByHash(const quint32 fingerprint, const quint32 nonce, const bool addIfMissing=false);
-		Client *getByHost(const QHostAddress adr,const  quint16 port, const bool addIfMissing=false);
-		Client *getBest(const ClientSignature signarture, const bool addIfMissing=false);
-		Client *getBest(const quint32 platform, const quint32 executable, const QHostAddress host,const  quint16 port, const bool addIfMissing=false);
-
-		int count();
-
-	signals:
-		void clientAdded(Client *);
-
-
-};
 
 
 #endif // CLIENT_HPP

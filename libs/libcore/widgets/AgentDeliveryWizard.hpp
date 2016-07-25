@@ -22,7 +22,7 @@ class AgentDeliveryWizard : public QWidget
 {
 		Q_OBJECT
 
-	private:
+	protected:
 		Ui::AgentDeliveryWizard *ui;
 		QTimer birthTimer;
 		WaitingSpinnerWidget *spinner;
@@ -30,6 +30,10 @@ class AgentDeliveryWizard : public QWidget
 		Settings *settings;
 		Node *node;
 		PortableID mID;
+
+	public:
+
+		static const quint64 MINIMUM_BIRTH_TIME;
 
 	public:
 		explicit AgentDeliveryWizard(QWidget *parent = 0);
@@ -46,12 +50,13 @@ class AgentDeliveryWizard : public QWidget
 		void done(bool);
 
 	private slots:
-		void onBirthComplete(bool);
+		void onBirthComplete();
 
 	private slots:
 		void on_pushButtonDone_clicked();
 		void on_pushButtonPairNow_clicked();
 		void on_pushButtonRandomName_clicked();
+		void on_pushButtonOnward_clicked();
 };
 
 #endif // AGENTDELIVERYWIZARD_HPP
