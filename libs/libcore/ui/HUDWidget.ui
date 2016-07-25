@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HUDWidget</class>
+ <widget class="QWidget" name="HUDWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>772</width>
+    <height>628</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="tabWidgetAviation">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tabSix">
+      <attribute name="title">
+       <string>Six</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="0" column="0">
+        <widget class="WidgetSix" name="widgetSix" native="true"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabPFD">
+      <attribute name="title">
+       <string>PFD</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_8">
+       <item row="0" column="0">
+        <widget class="WidgetPFD" name="widgetPFD" native="true"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabNAV">
+      <attribute name="title">
+       <string>Nav</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_9">
+       <item row="0" column="0">
+        <widget class="WidgetNAV" name="widgetNAV" native="true"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>WidgetSix</class>
+   <extends>QWidget</extends>
+   <header>widgets/qfi/WidgetSix.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetPFD</class>
+   <extends>QWidget</extends>
+   <header>widgets/qfi/WidgetPFD.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetNAV</class>
+   <extends>QWidget</extends>
+   <header>widgets/qfi/WidgetNAV.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
