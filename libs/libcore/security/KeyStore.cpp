@@ -10,10 +10,7 @@
 #include <QThreadPool>
 
 
-
 /////////////////////////////////////////////////////////////////////////////
-
-
 
 
 KeyStore::KeyStore(QString fn, QObject *parent)
@@ -25,7 +22,6 @@ KeyStore::KeyStore(QString fn, QObject *parent)
 {
 
 }
-
 
 
 KeyStore::~KeyStore()
@@ -133,6 +129,7 @@ void KeyStore::save()
 	//qDebug()<<"SAVING JSON: "<<raw;
 	utility::stringToFile(mFilename,raw);
 }
+
 
 void KeyStore::clear()
 {

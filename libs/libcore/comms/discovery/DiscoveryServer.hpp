@@ -13,6 +13,8 @@ class DiscoveryServer{
 
 		DiscoveryServerSession *request(QSharedPointer<DiscoveryParticipant> part);
 
+		void prune(quint64 deadline);
+
 
 };
 #endif // DISCOVERYSERVER_HPP

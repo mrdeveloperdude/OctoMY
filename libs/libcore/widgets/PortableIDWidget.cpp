@@ -25,13 +25,22 @@ void PortableIDWidget::setPortableID(PortableID id){
 	ui->labelGender->setVisible(isAgent && !mID.gender().isEmpty());
 	ui->labelGenderCaption->setVisible(isAgent && !mID.gender().isEmpty());
 	ui->labelIDCaption->setText(isAgent?"Soul ID": "ID");
-	ui->labelBirthdateCaption->setText(isAgent?"Birth date": "Create date");
 	ui->labelName->setText(mID.name());
 	ui->labelGender->setText(mID.gender());
 	ui->labelID->setText(mID.id());
 	ui->widgetIdenticon->setPortableID(id);
 	ui->widgetQR->setQRData(mID.id());
-	ui->labelBirthdate->setText(QDateTime::fromMSecsSinceEpoch(mID.birthDate()).toString("yyyy.MM.dd hh:mm:ss.zzz"));
+	const quint64 ts=mID.birthDate();
+	if(ts>0){
+		ui->labelBirthdate->setVisible(true);
+		ui->labelBirthdateCaption->setVisible(true);
+		ui->labelBirthdate->setText(QDateTime::fromMSecsSinceEpoch(ts).toString("yyyy.MM.dd hh:mm:ss.zzz"));
+		ui->labelBirthdateCaption->setText(isAgent?"Birth date": "Create date");
+	}
+	else{
+		ui->labelBirthdate->setVisible(false);
+		ui->labelBirthdateCaption->setVisible(false);
+	}
 
 	//ui->widgetIdenticon->setMinimumHeight(100);	ui->widgetQR->setMinimumHeight(100);
 	update();

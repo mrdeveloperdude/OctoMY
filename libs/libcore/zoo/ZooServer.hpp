@@ -44,6 +44,9 @@ class ZooServer : public qhttp::server::QHttpServer
 
 		QTimer backgroundTimer;
 		static const quint64 BACKGROUND_TIMER_INTERVAL;
+		static const quint64 PRUNE_DEADLINE;
+
+
 
 	public:
 		using QHttpServer::QHttpServer;

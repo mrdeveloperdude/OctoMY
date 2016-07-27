@@ -23,16 +23,17 @@ class PairingWizard : public QWidget
 
 	private:
 		Ui::PairingWizard *ui;
-		Node *node;
-		PairingList *list;
-		EditButtonDelegate *delegate;
+		Node *mNode;
+		PairingList *mList;
+		EditButtonDelegate *mDelegate;
+		QString mTemplate;
 
 	public:
 		explicit PairingWizard(QWidget *parent = 0);
 		virtual ~PairingWizard();
 	public:
 
-		void configure(Node *node);
+		void configure(Node *mNode);
 
 	public:
 		void reset();

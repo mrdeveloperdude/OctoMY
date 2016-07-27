@@ -40,6 +40,8 @@
 
 
 const quint64 ZooServer::BACKGROUND_TIMER_INTERVAL=1000*10; //10 sec
+const quint64 ZooServer::PRUNE_DEADLINE=1000*60*5; //5 min
+
 
 ZooServer::ZooServer(AppContext *context, QObject *parent)
 	: QHttpServer(parent)
@@ -330,7 +332,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 
 		quint16 publicPort=root["publicPort"].toInt();
 		*/
-		qDebug()<<"FULL MAP IS: "<<root;
+		//qDebug()<<"FULL MAP IS: "<<root;
 		QSharedPointer<DiscoveryParticipant> part(new DiscoveryParticipant(root)); //publicKey, publicAddress, publicPort,localAddress, localPort, role, type)
 		QString publicAddress="";
 		quint16 publicPort=0;
@@ -407,6 +409,5 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 
 
 void ZooServer::onBackgroundTimer(){
-	//qDebug()<<"Background processing start --------------------";
-	//qDebug()<<"Background processing end ----------------------";
+	discovery.prune(QDateTime::currentMSecsSinceEpoch()-PRUNE_DEADLINE);//Prune all not seen for some time
 }

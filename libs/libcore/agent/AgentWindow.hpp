@@ -26,13 +26,15 @@ class AgentWindow : public QWidget, public LogDestination{
 
 	private:
 		Ui::AgentWindow *ui;
-		Agent *agent;
-		HexyTool *hexy;
-		QMenu menu;
+		Agent *mAgent;
+		HexyTool *mHexy;
+		QMenu mMenu;
 
 	public:
-		explicit AgentWindow(Agent *agent, QWidget *parent = 0);
+		explicit AgentWindow(Agent *mAgent, QWidget *parent = 0);
 		virtual ~AgentWindow();
+
+
 
 
 		void appendLog(const QString& text);
@@ -41,6 +43,7 @@ class AgentWindow : public QWidget, public LogDestination{
 
 	private:
 		void updateIdentity();
+		void prepareMenu();
 	private:
 		void notifyAndroid(QString);
 		void toastAndroid(QString);

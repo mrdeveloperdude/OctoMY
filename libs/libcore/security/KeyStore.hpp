@@ -10,10 +10,13 @@
 #include "../libpki/qpolarsslpki.hpp"
 #include "basic/AtomicBoolean.hpp"
 #include "Key.hpp"
+#include "security/PortableID.hpp"
 
 #include "basic/GenerateRunnable.hpp"
 
 #include <QFile>
+#include <QFileInfo>
+#include <QDateTime>
 #include <QCryptographicHash>
 
 
@@ -67,6 +70,17 @@ class KeyStore: public QObject{
 		inline Key &localKey()
 		{
 			return mLocalKey;
+		}
+
+		inline PortableID localPortableID()
+		{
+			PortableID pid;
+			//pid.setName("Arne");
+			//pid.setGender("Male");
+			pid.setID(mLocalKey.id());
+			pid.setBirthDate(QFileInfo(mFilename).created().toMSecsSinceEpoch());
+			//pid.setType(DiscoveryType type);
+			return pid;
 		}
 
 		// Sign message with our private key

@@ -114,6 +114,7 @@ void DiscoveryClient::discover(){
 	//qDebug()<<"DISCOVERY CLIENT RUN";
 
 	qhttp::client::TRequstHandler reqHandler= [this](qhttp::client::QHttpRequest* req){
+		//qDebug()<<"REQ";
 		QVariantMap cmd;
 		cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
 		cmd["key"] = node.keyStore().localKey().toVariantMap(true);
@@ -136,9 +137,10 @@ void DiscoveryClient::discover(){
 	};
 
 	qhttp::client::TResponseHandler resHandler=	[this](qhttp::client::QHttpResponse* res) {
-		//qDebug()<<"Getting node by OCID:"<<OCID << " RES";
+		//qDebug()<<"RES";
 		res->collectData(10000);
 		res->onEnd([this, res](){
+			//qDebug()<<"RES END";
 			qhttp::TStatusCode status=res->status();
 			bool ok=true;
 			QString message="";
@@ -147,7 +149,6 @@ void DiscoveryClient::discover(){
 				message="ERROR: HTTP Code was "+QString::number(status)+" instead of 200 OK: ";
 			}
 			else{
-				//qDebug()<<"Getting node by OCID:"<<OCID<<" RES: ON END";
 				QJsonDocument doc = QJsonDocument::fromJson(res->collectedData());
 				QByteArray data=doc.toJson();
 				QVariantMap root = QJsonDocument::fromJson(data).toVariant().toMap();
@@ -168,11 +169,24 @@ void DiscoveryClient::discover(){
 						if(root.contains("participants")){
 							//qDebug()<<"PARTICIPANTS: "<<root.value("participants");
 							QVariantList partList=root.value("participants").toList();
+							if(partList.size()<=0){
+								qWarning()<<" + Participants count was 0 in response";
+								message="ERROR: Participants count was 0 in response";
+								ok=false;
+							}
 							for(QVariant part:partList){
 								QVariantMap map=part.toMap();
 								registerPossibleParticipant(map);
 							}
 						}
+						else{
+							qWarning()<<" + No participants in response";
+							message="ERROR: No participants in response";
+							ok=false;
+						}
+					}
+					else{
+						qWarning()<<" + Not OK";
 					}
 				}
 			}
@@ -190,12 +204,13 @@ void DiscoveryClient::discover(){
 static const QString zeroID=utility::toHash("", OCTOMY_KEY_HASH);
 
 void DiscoveryClient::registerPossibleParticipant(QVariantMap map){
+	//qDebug()<<"REG";
 	Key key(map["key"].toMap(),true);
 	const QString partID=key.id();
 	const QString ourID=node.keyStore().localKey().id();
 	if(partID==zeroID)
 	{
-		//qDebug()<<" + Skipping new participant with zero ID: "<<partID;
+		qWarning()<<"ERROR: Skipping new participant with zero ID: "<<partID;
 	}
 	else if(partID==ourID)
 	{
@@ -205,8 +220,10 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map){
 		DiscoveryClientStore &peers=node.peers();
 		DiscoveryParticipant *part=nullptr;
 		if(peers.hasParticipant(partID)){
+			//qDebug()<<" + Updating participant with ID: "<<partID;
 			part=peers.getParticipant(partID);
 			part->updateFromServer(map, false);
+			emit nodeDiscovered(partID);
 		}
 		else{
 			part=new DiscoveryParticipant(map);
@@ -217,6 +234,7 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map){
 						peers.setParticipant(part);
 						courier->setDestination(part->clientSignature());
 						node.comms()->registerCourier(*courier);
+						qDebug()<<" + Adding new participant with ID: "<<partID;
 						emit nodeDiscovered(partID);
 					}
 					else{
@@ -230,6 +248,9 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map){
 					delete part;
 					part=nullptr;
 				}
+			}
+			else{
+				qWarning()<<"ERROR: Could not allocate participant: "<<partID;
 			}
 		}
 	}
@@ -251,10 +272,9 @@ void DiscoveryClient::onTimer(){
 	//qDebug()<<"PING";
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	if(now>ZOO_PAIR_INTERVAL+lastZooPair){
-		qDebug()<<"ZOO PAIR TIME!";
+		//qDebug()<<"ZOO PAIR TIME!";
 		lastZooPair=now;
-
-		//discover();
+//		discover();
 		//TODO: node.getComms()->unregisterCourier(courier); <-- remove old unused and timed out couriers
 	}
 	discover();

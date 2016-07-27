@@ -16,6 +16,8 @@
 
 #include "comms/discovery/DiscoveryClient.hpp"
 
+#include "security/PortableID.hpp"
+
 
 #include <QDebug>
 #include <QAccelerometerReading>
@@ -29,19 +31,11 @@
 #endif
 
 
-void RemoteWindow::updateIdentity(){
-	if(nullptr!=remote){
-		remote->updateDiscoveryClient();
-	}
-	ui->widgetPairing->configure(remote);
-
-}
-
 
 RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 	QWidget(parent)
   , ui(new Ui::RemoteWindow)
-  , remote(remote)
+  , mRemote(remote)
 {
 	ui->setupUi(this);
 
@@ -105,6 +99,8 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 			}
 			return false;
 		});
+
+		prepareMenu();
 	}
 	else{
 		setDisabled(true);
@@ -116,6 +112,16 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 
 RemoteWindow::~RemoteWindow(){
 	delete ui;
+}
+
+
+
+void RemoteWindow::updateIdentity(){
+	if(nullptr!=mRemote){
+		mRemote->updateDiscoveryClient();
+	}
+	ui->widgetPairing->configure(mRemote);
+
 }
 
 void RemoteWindow::appendLog(const QString& text){
@@ -204,14 +210,48 @@ bool RemoteWindow::eventFilter(QObject *object, QEvent *event){
 		ui->labelTouch->setText("TOUCH: <"+QString::number(r->globalX())+", "+QString::number(r->globalY())+">");
 		QPointF p=r->localPos();
 		QSize s=size();
-		remote->onTouchUpdated(QVector2D(p.x()/(qreal)s.width(), p.y()/(qreal)s.height()));
+		mRemote->onTouchUpdated(QVector2D(p.x()/(qreal)s.width(), p.y()/(qreal)s.height()));
 	}
 	//object == ui->widgetBackground && (
 	return false;
 }
 
+
+
 //////////////////////////////////////////////////
-//CommsChannel slots
+// Internal slots
+
+
+
+void RemoteWindow::onStartShowBirthCertificate(){
+	PortableID id;
+	Settings *s=(nullptr!=mRemote)?(&mRemote->settings()):nullptr;
+	if(nullptr!=s){
+		id.fromPortableString(s->getCustomSetting("octomy.portable.id",""));
+	}
+	id.setID(mRemote->keyStore().localKey().id());
+	id.setType(TYPE_REMOTE);
+	ui->widgetBirthCertificate->setPortableID(id);
+	ui->stackedWidgetScreen->setCurrentWidget(ui->pageMyID);
+}
+
+
+void RemoteWindow::onStartPairing()
+{
+	ui->widgetPairing->reset();
+	ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
+}
+
+
+void RemoteWindow::onStartPlanEditor()
+{
+	ui->stackedWidgetScreen->setCurrentWidget(ui->pagePlan);
+}
+
+
+
+//////////////////////////////////////////////////
+// CommsChannel slots
 
 
 void RemoteWindow::onError(QString e){
@@ -229,7 +269,7 @@ void RemoteWindow::onConnectionStatusChanged(bool c){
 }
 
 //////////////////////////////////////////////////
-//Internal sensor slots
+// Internal sensor slots
 
 void RemoteWindow::onPositionUpdated(const QGeoPositionInfo &info){
 	ui->labelGPS->setText("GPS: "+QString::number(info.coordinate().latitude())+", "+QString::number(info.coordinate().longitude()));
@@ -254,10 +294,10 @@ void RemoteWindow::onGyroscopeUpdated(QGyroscopeReading *r){
 
 
 void RemoteWindow::onServoPositionChanged(int val){
-	if(0!=remote){
+	if(0!=mRemote){
 		Pose p;
 		p.pos1=val;
-		remote->onDirectPoseChanged(p);
+		mRemote->onDirectPoseChanged(p);
 	}
 }
 
@@ -332,6 +372,50 @@ void RemoteWindow::updateActiveAgent(){
 	}
 }
 
+void RemoteWindow::prepareMenu(){
+	/*
+	QAction *cameraAction = new QAction(tr("Camera"), this);
+	cameraAction->setStatusTip(tr("Do the camera dance"));
+	cameraAction->setIcon(QIcon(":/icons/eye.svg"));
+	connect(cameraAction, &QAction::triggered, this, &RemoteWindow::onStartCameraPairing);
+	mMenu.addAction(cameraAction);
+*/
+
+	QAction *pairingAction = new QAction(tr("Pair"), this);
+	pairingAction->setStatusTip(tr("Do the pairing dance"));
+	pairingAction->setIcon(QIcon(":/icons/pair.svg"));
+	connect(pairingAction, &QAction::triggered, this, &RemoteWindow::onStartPairing);
+	mMenu.addAction(pairingAction);
+
+	QAction *certAction = new QAction(tr("Show My ID"), this);
+	certAction->setStatusTip(tr("Show the identification of this remote"));
+	certAction->setIcon(QIcon(":/icons/certificate.svg"));
+	connect(certAction, &QAction::triggered, this, &RemoteWindow::onStartShowBirthCertificate);
+	mMenu.addAction(certAction);
+
+	/*
+	QAction *unbornAction = new QAction(tr("Unbirth!"), this);
+	unbornAction->setStatusTip(tr("Delete the identity of this agent to restart birth"));
+	unbornAction->setIcon(QIcon(":/icons/kill.svg"));
+	Settings *sp=&s;
+	connect(unbornAction, &QAction::triggered, this, [=](){
+		if(nullptr!=agent){
+			QMessageBox::StandardButton reply = QMessageBox::question(this, "Unbirth", "Are you sure you want to DELETE the personality of this robot forever?", QMessageBox::No|QMessageBox::Yes);
+			if (QMessageBox::Yes==reply) {
+				agent->keyStore().clear();
+				updateIdentity();
+				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
+				qDebug()<<"UNBIRTHED!";
+			}
+		}
+	});
+	mMenu.addAction(unbornAction);
+	*/
+}
+
+
+
+
 void RemoteWindow::on_comboBoxAgent_currentIndexChanged(int index)
 {
 	updateActiveAgent();
@@ -339,7 +423,7 @@ void RemoteWindow::on_comboBoxAgent_currentIndexChanged(int index)
 
 void RemoteWindow::on_comboBoxControlLevel_activated(const QString &cLevel)
 {
-	Settings *settings=(nullptr!=remote)?(&remote->settings()):nullptr;
+	Settings *settings=(nullptr!=mRemote)?(&mRemote->settings()):nullptr;
 	if(nullptr!=settings){
 		settings->setCustomSetting("octomy.remote.control.level",cLevel);
 	}
@@ -351,4 +435,14 @@ void RemoteWindow::on_pushButtonSay_clicked()
 	QString text=ui->plainTextEditSpeechText->toPlainText();
 	ui->logScroll->appendLog("SAID: "+text);
 	ui->plainTextEditSpeechText->clear();
+}
+
+void RemoteWindow::on_pushButtonMenu_clicked()
+{
+	mMenu.exec(mapToGlobal(ui->pushButtonMenu->pos()));
+}
+
+void RemoteWindow::on_pushButtonBack_6_clicked()
+{
+	ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
 }

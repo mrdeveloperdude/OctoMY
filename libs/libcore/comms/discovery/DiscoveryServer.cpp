@@ -6,7 +6,8 @@
 
 
 
-DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<DiscoveryParticipant> part){
+DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<DiscoveryParticipant> part)
+{
 	if(nullptr==part){
 		qWarning()<<"ERROR: participant was 0";
 		return nullptr;
@@ -57,3 +58,34 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<DiscoveryPartic
 }
 
 
+
+
+void DiscoveryServer::prune(quint64 deadline)
+{
+	quint64 participantPruneCount=0;
+	quint64 sessionPruneCount=0;
+	for(QMap<QString, DiscoveryServerSession *>::iterator it=registry.begin();it!=registry.end() /* not hoisted */; /* no increment */ ){
+		QString key=it.key();
+		DiscoveryServerSession *ses=it.value();
+		if(nullptr!=ses){
+			const quint64 tmp=ses->prune(deadline);
+			if(tmp>0){
+				participantPruneCount+=tmp;
+				if(ses->count()<=0){
+					delete ses;
+					ses=nullptr;
+					registry.erase(it++);
+					sessionPruneCount++;
+					continue;
+				}
+			}
+		}
+		++it;
+	}
+	if(participantPruneCount>0){
+		qDebug()<<"PRUNING "<<participantPruneCount<<" participants from server";
+	}
+	if(sessionPruneCount>0){
+		qDebug()<<"PRUNING "<<sessionPruneCount<<" sessions from server";
+	}
+}

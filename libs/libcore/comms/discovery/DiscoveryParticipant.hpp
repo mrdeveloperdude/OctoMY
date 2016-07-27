@@ -30,7 +30,7 @@ class DiscoveryParticipant{
 	public:
 
 		explicit DiscoveryParticipant();
-		explicit DiscoveryParticipant(QString publicKey, QString publicAddress, quint16 publicPort, QString localAddress, quint16 localPort, DiscoveryRole role, DiscoveryType type);
+		//explicit DiscoveryParticipant(QString publicKey, QString publicAddress, quint16 publicPort, QString localAddress, quint16 localPort, DiscoveryRole role, DiscoveryType type);
 		explicit DiscoveryParticipant(QVariantMap map);
 		explicit DiscoveryParticipant(const DiscoveryParticipant &o);
 		virtual ~DiscoveryParticipant();
@@ -78,6 +78,13 @@ class DiscoveryParticipant{
 		{
 			OC_METHODGATE();
 			return assoc;
+		}
+
+
+		inline quint64 lastSeen() const
+		{
+			OC_METHODGATE();
+			return assoc.lastSeen();
 		}
 
 

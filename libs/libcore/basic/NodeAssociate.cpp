@@ -161,3 +161,9 @@ QBluetoothAddress &NodeAssociate::bluetoothAddress()
 }
 
 
+
+
+quint64 NodeAssociate::lastSeen() const
+{
+	return mLastSeenMS;
+}

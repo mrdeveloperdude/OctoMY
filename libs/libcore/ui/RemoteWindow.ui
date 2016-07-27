@@ -48,7 +48,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="pageRunning">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -146,6 +146,17 @@
            </item>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonMenu">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="../resources/icons.qrc">
+             <normaloff>:/icons/menu.svg</normaloff>:/icons/menu.svg</iconset>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -180,7 +191,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>98</width>
+                <width>84</width>
                 <height>34</height>
                </rect>
               </property>
@@ -502,6 +513,90 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="pageMyID">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="1" column="0">
+        <widget class="PortableIDWidget" name="widgetBirthCertificate" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QPushButton" name="pushButtonBack_6">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="../resources/icons.qrc">
+             <normaloff>:/icons/arrow_left.svg</normaloff>:/icons/arrow_left.svg</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pagePlan">
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QPushButton" name="pushButtonBack_5">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="../resources/icons.qrc">
+             <normaloff>:/icons/arrow_left.svg</normaloff>:/icons/arrow_left.svg</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <widget class="PlanEditor" name="widgetPlanEditor" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
@@ -514,6 +609,12 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>PortableIDWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/PortableIDWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>GaitWidget</class>
    <extends>QWidget</extends>
    <header>puppet/GaitWidget.hpp</header>
@@ -523,6 +624,12 @@
    <class>PairingWizard</class>
    <extends>QWidget</extends>
    <header>widgets/PairingWizard.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PlanEditor</class>
+   <extends>QWidget</extends>
+   <header>widgets/planedit/PlanEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

@@ -8,6 +8,7 @@
 #include <QWidget>
 #include <QGeoPositionInfo>
 #include <QHostAddress>
+#include <QMenu>
 
 
 class Remote;
@@ -27,10 +28,11 @@ class RemoteWindow : public QWidget, public LogDestination{
 
 	private:
 		Ui::RemoteWindow *ui;
-		Remote *remote;
+		Remote *mRemote;
+		QMenu mMenu;
 
 	public:
-		explicit RemoteWindow(Remote *remote, QWidget *parent = nullptr);
+		explicit RemoteWindow(Remote *mRemote, QWidget *parent = nullptr);
 		virtual ~RemoteWindow();
 
 		void appendLog(const QString& text);
@@ -43,6 +45,7 @@ class RemoteWindow : public QWidget, public LogDestination{
 
 		void updateControlLevel();
 		void updateActiveAgent();
+		void prepareMenu();
 		void prepareMap();
 		void homeMap();
 
@@ -53,6 +56,11 @@ class RemoteWindow : public QWidget, public LogDestination{
 	public:
 
 		virtual void keyReleaseEvent(QKeyEvent *);
+
+	private slots:
+		void onStartPairing();
+		void onStartPlanEditor();
+		void onStartShowBirthCertificate();
 
 		//CommsChannel slots
 	public slots:
@@ -76,6 +84,8 @@ class RemoteWindow : public QWidget, public LogDestination{
 		void on_comboBoxAgent_currentIndexChanged(int index);
 		void on_comboBoxControlLevel_activated(const QString &arg1);
 		void on_pushButtonSay_clicked();
+		void on_pushButtonMenu_clicked();
+		void on_pushButtonBack_6_clicked();
 };
 
 #endif // REMOTEWINDOW_HPP

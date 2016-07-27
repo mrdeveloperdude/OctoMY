@@ -59,6 +59,8 @@ class NodeAssociate{
 		NetworkAddress &publicAddress();
 		NetworkAddress &localAddress();
 		QBluetoothAddress &bluetoothAddress();
+		quint64 lastSeen() const;
+
 };
 
 

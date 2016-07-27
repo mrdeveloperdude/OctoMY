@@ -9,16 +9,24 @@
 
 class DiscoveryParticipant;
 
-struct DiscoveryServerSession{
+class DiscoveryServerSession{
+	private:
 
-		QMap<QString, QSharedPointer<DiscoveryParticipant> > participants;
 
-		DiscoveryServerSession();
+		QMap<QString, QSharedPointer<DiscoveryParticipant> > mParticipantsByID;
+
+	public:
+		explicit DiscoveryServerSession();
 
 		bool set(QSharedPointer<DiscoveryParticipant> p);
 
 
 		QVariantList toVariantMap();
+
+
+		quint64 prune(quint64 deadline);
+
+		quint64 count();
 
 };
 #endif // DISCOVERYSERVERSESSION_HPP

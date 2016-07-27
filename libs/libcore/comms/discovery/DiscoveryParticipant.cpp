@@ -18,14 +18,15 @@ DiscoveryParticipant::DiscoveryParticipant()
 	Q_ASSERT(!isDeleted);
 }
 
+/*
 DiscoveryParticipant::DiscoveryParticipant(QString publicKey, QString public_address, quint16 public_port, QString local_address, quint16 local_port, DiscoveryRole role, DiscoveryType type)
-//: assoc()
+: assoc(put something in here)
 	: isDeleted(false)
 {
 	OC_METHODGATE();
 	Q_ASSERT(!isDeleted);
 }
-
+*/
 
 
 
@@ -43,7 +44,7 @@ DiscoveryParticipant::DiscoveryParticipant(QVariantMap map)
 
 DiscoveryParticipant::DiscoveryParticipant(const DiscoveryParticipant &o)
 	: assoc(o.assoc)
-	, pins(pins)
+	, pins(o.pins)
 	, isDeleted(false)
 {
 	OC_METHODGATE();

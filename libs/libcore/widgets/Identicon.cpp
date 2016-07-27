@@ -85,7 +85,7 @@ static QSizeF calcSize(QSizeF ds,qint32 w,qint32 h,qreal zoom){
 	//	const qreal ca=((qreal)(w<1?1:w)/(qreal)(h<1?1:h));
 	QSizeF low(w,(qreal)h/da);
 	QSizeF high((qreal)w*da,h);
-	qDebug()<<"ORIG: "<<ds<<" ASPECT: "<<da<<" LOW: "<<low<<" HIGH: "<<high;
+	//qDebug()<<"ORIG: "<<ds<<" ASPECT: "<<da<<" LOW: "<<low<<" HIGH: "<<high;
 	zoom=(zoom<0)?0:(zoom>1)?1:zoom;
 	qreal izoom=1.0-zoom;
 	return low*izoom+high*zoom;

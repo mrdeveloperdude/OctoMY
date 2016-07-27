@@ -52,7 +52,7 @@ class EditButtonDelegate: public QItemDelegate
 			//	const qreal ca=((qreal)(w<1?1:w)/(qreal)(h<1?1:h));
 			QSizeF low(w,(qreal)h/da);
 			QSizeF high((qreal)w*da,h);
-			qDebug()<<"ORIG: "<<ds<<" ASPECT: "<<da<<" LOW: "<<low<<" HIGH: "<<high;
+			//qDebug()<<"ORIG: "<<ds<<" ASPECT: "<<da<<" LOW: "<<low<<" HIGH: "<<high;
 			const qreal zoom=(z<0)?0:(z>1)?1:z;
 			const qreal izoom=1.0-zoom;
 			return low*izoom+high*zoom;
@@ -82,18 +82,12 @@ class EditButtonDelegate: public QItemDelegate
 				const qint32 border=2;
 				const qint32 buttonSize=r.height()-border*2;
 
-
 				QVariantMap data=index.data(Qt::DisplayRole).toMap();
-
-
 
 				PortableID id(data);
 				//qDebug()<<"ID: "<<id.id()<< " FROM DATA: "<<data;
 				Identicon ic(id);
 				QPixmap px=ic.pixmap(buttonSize,buttonSize);
-
-
-
 
 				QStyleOptionButton button;
 				int w = buttonSize*2;//button width
@@ -198,7 +192,7 @@ class PairingList: public QAbstractListModel
 					}
 				}
 			}
-			//qDebug()<<"rowcount: "<<ret;
+			//qDebug()<<"PairingList Rowcount: "<<ret;
 			return ret;
 		}
 
@@ -255,12 +249,14 @@ class PairingList: public QAbstractListModel
 PairingWizard::PairingWizard(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::PairingWizard)
-	, node(nullptr)
-	, list(nullptr)
-	, delegate (nullptr)
+	, mNode(nullptr)
+	, mList(nullptr)
+	, mDelegate (nullptr)
 
 {
 	ui->setupUi(this);
+	mTemplate=ui->labelBodyPair->text();
+	ui->labelBodyPair->setText("<h1>Please wait...<h1>");
 
 	reset();
 
@@ -288,29 +284,30 @@ PairingWizard::~PairingWizard()
 
 void PairingWizard::configure(Node *n)
 {
-	node=n;
-	if(nullptr!=node){
-		ui->labelID->setText(node->keyStore().localKey().id());
-		DiscoveryClient *discovery=node->discoveryClient();
-		DiscoveryType type=node->type();
-
+	mNode=n;
+	if(nullptr!=mNode){
+		DiscoveryClient *discovery=mNode->discoveryClient();
+		DiscoveryType type=mNode->type();
+		PortableID pid=mNode->keyStore().localPortableID();
+		pid.setType(type);
+		ui->widgetMyCertificate->setPortableID(pid);
 		if(!connect(discovery, &DiscoveryClient::nodeDiscovered, [=](QString partID)
 		{
 					if(nullptr==ui->listViewNodes->model()){
 
-					list=new PairingList(node->peers(),type,*this);
-					ui->listViewNodes->setModel(list);
+					mList=new PairingList(mNode->peers(),type,*this);
+					ui->listViewNodes->setModel(mList);
 
-					if(nullptr==delegate){
-					delegate=new EditButtonDelegate(*this);
+					if(nullptr==mDelegate){
+					mDelegate=new EditButtonDelegate(*this);
 	}
 					//ui->tableViewNodes->setItemDelegate(delegate);
-					ui->listViewNodes->setItemDelegate(delegate);
+					ui->listViewNodes->setItemDelegate(mDelegate);
 
 					//qDebug()<<"SET TABLE MODEL";
 	}
 
-					qDebug()<<"PAIRING WIZARD partID: "<<partID;
+					//qDebug()<<"PAIRING WIZARD partID: "<<partID;
 					ui->listViewNodes->update();
 	})){
 			qWarning()<<"ERROR: Could not connect";
@@ -323,13 +320,28 @@ void PairingWizard::configure(Node *n)
 			case(TYPE_ZOO):
 			case(TYPE_UNKNOWN):
 			case(TYPE_AGENT):{
+					ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Agent").replace(QRegularExpression("\\[DEST\\]"), "Control"));
 					ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageAgent);
-					ui->stackedWidgetPairMessage->setCurrentWidget(ui->pagePairMessageAgent);
+					ui->checkBoxBlock->setVisible(true);
+					ui->checkBoxControl->setVisible(true);
+					ui->checkBoxTrustNode->setVisible(false);
+
 				}break;
-			case(TYPE_REMOTE):
-			case(TYPE_HUB):{
+			case(TYPE_REMOTE):{
+					ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Remote").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
 					ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
-					ui->stackedWidgetPairMessage->setCurrentWidget(ui->pagePairMessageControl);
+					ui->checkBoxBlock->setVisible(true);
+					ui->checkBoxControl->setVisible(false);
+					ui->checkBoxTrustNode->setVisible(true);
+
+				}break;
+			case(TYPE_HUB):{
+					ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Hub").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
+					ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
+					ui->checkBoxBlock->setVisible(true);
+					ui->checkBoxControl->setVisible(true);
+					ui->checkBoxTrustNode->setVisible(true);
+
 				}break;
 
 		}
@@ -345,7 +357,7 @@ void PairingWizard::reset(){
 
 void PairingWizard::startEdit(int row){
 	qDebug()<<"STARTING EDIT FOR "<<row;
-	QModelIndex  index=list->index(row,0);
+	QModelIndex  index=mList->index(row,0);
 	if(index.isValid()){
 		setUpdatesEnabled(false);
 		QVariantMap map=index.data(Qt::DisplayRole).toMap();
@@ -361,12 +373,12 @@ void PairingWizard::startEdit(int row){
 }
 
 Node *PairingWizard::getNode(){
-	return node;
+	return mNode;
 }
 
 void PairingWizard::showEvent(QShowEvent *){
-	if(nullptr!=node){
-		DiscoveryClient *client=node->discoveryClient();
+	if(nullptr!=mNode){
+		DiscoveryClient *client=mNode->discoveryClient();
 		if(nullptr!=client){
 			client->start();
 		}
@@ -374,8 +386,8 @@ void PairingWizard::showEvent(QShowEvent *){
 }
 
 void PairingWizard::hideEvent(QHideEvent *){
-	if(nullptr!=node){
-		DiscoveryClient *client=node->discoveryClient();
+	if(nullptr!=mNode){
+		DiscoveryClient *client=mNode->discoveryClient();
 		if(nullptr!=client){
 			client->stop();
 		}
@@ -384,8 +396,8 @@ void PairingWizard::hideEvent(QHideEvent *){
 
 void PairingWizard::on_pushButtonMaybeOnward_clicked()
 {
-	if(nullptr!=node){
-		DiscoveryClientStore &store=node->peers();
+	if(nullptr!=mNode){
+		DiscoveryClientStore &store=mNode->peers();
 		if(store.getParticipants().size()>0){
 			emit done();
 			return;
@@ -402,7 +414,6 @@ void PairingWizard::on_pushButtonTryAgain_clicked()
 
 void PairingWizard::on_pushButtonDone_clicked()
 {
-	//pm.stop();//Not necessary, well handled by hide event handler above
 	emit done();
 }
 
@@ -414,8 +425,8 @@ void PairingWizard::on_pushButtonCameraPair_clicked()
 
 void PairingWizard::on_pushButtonDiscoverNow_clicked()
 {
-	if(nullptr!=node){
-		DiscoveryClient *client=node->discoveryClient();
+	if(nullptr!=mNode){
+		DiscoveryClient *client=mNode->discoveryClient();
 		if(nullptr!=client){
 			client->discover();
 		}
@@ -427,4 +438,5 @@ void PairingWizard::on_pushButtonSaveEdits_clicked()
 {
 	//TODO: Save changes
 	ui->stackedWidget->setCurrentWidget(ui->pagePairWithPeers);
+
 }
