@@ -1,6 +1,6 @@
 #include "DiscoveryServerSession.hpp"
 
-#include "DiscoveryParticipant.hpp"
+#include "basic/NodeAssociate.hpp"
 
 #include <QDebug>
 
@@ -10,7 +10,7 @@ DiscoveryServerSession::DiscoveryServerSession()
 }
 
 
-bool DiscoveryServerSession::set(QSharedPointer<DiscoveryParticipant> part){
+bool DiscoveryServerSession::set(QSharedPointer<NodeAssociate> part){
 	if(nullptr==part){
 		qWarning()<<"ERROR: participant was 0";
 		return false;
@@ -34,7 +34,7 @@ bool DiscoveryServerSession::set(QSharedPointer<DiscoveryParticipant> part){
 
 QVariantList DiscoveryServerSession::toVariantMap(){
 	QVariantList list;
-	for(QSharedPointer<DiscoveryParticipant> part:mParticipantsByID){
+	for(QSharedPointer<NodeAssociate> part:mParticipantsByID){
 		list.append(part->toVariantMap());
 	}
 	return list;
@@ -44,9 +44,9 @@ QVariantList DiscoveryServerSession::toVariantMap(){
 quint64 DiscoveryServerSession::prune(quint64 deadline)
 {
 	quint64 ct=0;
-	for (QMap<QString, QSharedPointer<DiscoveryParticipant> >::iterator  it = mParticipantsByID.begin(); it != mParticipantsByID.end() /* not hoisted */; /* no increment */){
+	for (QMap<QString, QSharedPointer<NodeAssociate>>::iterator  it = mParticipantsByID.begin(); it != mParticipantsByID.end() /* not hoisted */; /* no increment */){
 		QString key=it.key();
-		QSharedPointer<DiscoveryParticipant> part=it.value();
+		QSharedPointer<NodeAssociate> part=it.value();
 		if(part->lastSeen()<=deadline){
 			mParticipantsByID.erase(it++);
 			ct++;

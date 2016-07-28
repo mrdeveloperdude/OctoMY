@@ -14,13 +14,19 @@ SOURCES +=\
 	3d/scene/Limb.cpp \
 	3d/scene/QtLogo3D.cpp \
 	3d/scene/Simulation.cpp \
+	agent/Agent.cpp \
 	agent/AgentWindow.cpp \
 	basic/AgentNameGenerator.cpp \
+	basic/AppContext.cpp \
+	basic/AtomicBoolean.cpp \
 	basic/Fingerprint.cpp \
+	basic/GenerateRunnable.cpp \
 	basic/Iconv.cpp \
 	basic/LogDestination.cpp \
 	basic/LogHandler.cpp \
+	basic/NetworkAddress.cpp \
 	basic/NetworkOptimizer.cpp \
+	basic/NodeAssociate.cpp \
 	basic/Node.cpp \
 	basic/NodeLauncher.cpp \
 	basic/Settings.cpp \
@@ -33,15 +39,21 @@ SOURCES +=\
 	camera/CameraSettings.cpp \
 	camera/PoorMansProbe.cpp \
 	comms/Client.cpp \
+	comms/ClientDirectory.cpp \
+	comms/ClientSignature.cpp \
 	comms/CommsChannel.cpp \
 	comms/couriers/Courier.cpp \
+	comms/couriers/CourierMandate.cpp \
 	comms/couriers/DirectPoseCourier.cpp \
+	comms/couriers/DiscoveryCourier.cpp \
 	comms/couriers/SensorsCourier.cpp \
 	comms/discovery/DiscoveryClient.cpp \
-	comms/discovery/DiscoveryParticipant.cpp \
+	comms/discovery/DiscoveryRole.cpp \
 	comms/discovery/DiscoveryServer.cpp \
 	comms/discovery/DiscoveryServerSession.cpp \
+	comms/discovery/NodeAssociateStore.cpp \
 	comms/FlowControl.cpp \
+	comms/messages/MessageType.cpp \
 	comms/messages/QueryMessage.cpp \
 	comms/messages/QueryResultMessage.cpp \
 	comms/messages/SensorsMessage.cpp \
@@ -80,6 +92,7 @@ SOURCES +=\
 	hw/BluetoothList.cpp \
 	models/ClientModel.cpp \
 	plan/parser/PlanHighlighter.cpp \
+	plot/NetworkStats.cpp \
 	plot/qcustomplot.cpp \
 	plot/StatsWindow.cpp \
 	puppet/EyesWidget.cpp \
@@ -91,6 +104,7 @@ SOURCES +=\
 	random/DevRandomRNG.cpp \
 	random/DevURandomRNG.cpp \
 	random/EfficientPRNG.cpp \
+	random/FileRandomRNG.cpp \
 	random/MersennePRNG.cpp \
 	random/ParkMillerPRNG.cpp \
 	random/RNG.cpp \
@@ -98,8 +112,10 @@ SOURCES +=\
 	random/TausPRNG.cpp \
 	remote/Remote.cpp \
 	remote/RemoteWindow.cpp \
+	security/Key.cpp \
 	security/KeyStore.cpp \
 	security/PortableID.cpp \
+	security/SecurityConstants.cpp \
 	sensory/SensorInput.cpp \
 	storage/Hashstore.cpp \
 	storage/HashstoreRecord.cpp \
@@ -112,6 +128,7 @@ SOURCES +=\
 	widgets/AgentDeliveryWizard.cpp \
 	widgets/CameraPairingWidget.cpp \
 	widgets/CompasWidget.cpp \
+	widgets/ConnectionManager.cpp \
 	widgets/ConnectionWidget.cpp \
 	widgets/EnumEntry.cpp \
 	widgets/FaceWidget.cpp \
@@ -125,6 +142,7 @@ SOURCES +=\
 	widgets/hexedit/QHexEditHighlighter.cpp \
 	widgets/hexedit/QHexEditPrivate.cpp \
 	widgets/hexedit/SparseRangeMap.cpp \
+	widgets/HUDWidget.cpp \
 	widgets/Identicon.cpp \
 	widgets/IdenticonWidget.cpp \
 	widgets/ImageLabel2.cpp \
@@ -136,9 +154,12 @@ SOURCES +=\
 	widgets/MapEditor.cpp \
 	widgets/MultiView.cpp \
 	widgets/NumberEntry.cpp \
+	widgets/PairingWizard.cpp \
+	widgets/PKIManager.cpp \
 	widgets/planedit/CodeEditor.cpp \
 	widgets/planedit/LineNumberArea.cpp \
 	widgets/planedit/PlanEditor.cpp \
+	widgets/PortableIDWidget.cpp \
 	widgets/qfi/LayoutSquare.cpp \
 	widgets/qfi/qfi_ADI.cpp \
 	widgets/qfi/qfi_ALT.cpp \
@@ -168,28 +189,7 @@ SOURCES +=\
 	zoo/ZooClient.cpp \
 	zoo/ZooConstants.cpp \
 	zoo/ZooServer.cpp \
-    widgets/PairingWizard.cpp \
-    comms/discovery/DiscoveryRole.cpp \
-    basic/AtomicBoolean.cpp \
-    basic/GenerateRunnable.cpp \
-    widgets/HUDWidget.cpp \
-    widgets/PKIManager.cpp \
-    plot/NetworkStats.cpp \
-    random/FileRandomRNG.cpp \
-    widgets/PortableIDWidget.cpp \
-    agent/Agent.cpp \
-    comms/couriers/DiscoveryCourier.cpp \
-    comms/messages/MessageType.cpp \
-    comms/ClientSignature.cpp \
-    security/Key.cpp \
-    basic/NetworkAddress.cpp \
-    basic/NodeAssociate.cpp \
-    security/SecurityConstants.cpp \
-    widgets/ConnectionManager.cpp \
-    basic/AppContext.cpp \
-    comms/ClientDirectory.cpp \
-    comms/couriers/CourierMandate.cpp \
-    comms/discovery/NodeAssociateStore.cpp
+
 
 
 
@@ -203,11 +203,16 @@ HEADERS  += \
 	agent/Agent.hpp \
 	agent/AgentWindow.hpp \
 	basic/AgentNameGenerator.hpp \
+	basic/AppContext.hpp \
+	basic/AtomicBoolean.hpp \
 	basic/Fingerprint.hpp \
+	basic/GenerateRunnable.hpp \
 	basic/Iconv.hpp \
 	basic/LogDestination.hpp \
 	basic/LogHandler.hpp \
+	basic/NetworkAddress.hpp \
 	basic/NetworkOptimizer.hpp \
+	basic/NodeAssociate.hpp \
 	basic/Node.hpp \
 	basic/NodeLauncher.hpp \
 	basic/Settings.hpp \
@@ -219,18 +224,24 @@ HEADERS  += \
 	camera/CameraList.hpp \
 	camera/CameraSettings.hpp \
 	camera/PoorMansProbe.hpp \
+	comms/ClientDirectory.hpp \
 	comms/Client.hpp \
+	comms/ClientSignature.hpp \
 	comms/CommsChannel.hpp \
 	comms/couriers/Courier.hpp \
+	comms/couriers/CourierMandate.hpp \
 	comms/couriers/DirectPoseCourier.hpp \
+	comms/couriers/DiscoveryCourier.hpp \
 	comms/couriers/SensorsCourier.hpp \
 	comms/DataType.hpp \
 	comms/DeviceStatusType.hpp \
 	comms/DeviceType.hpp \
 	comms/discovery/DiscoveryClient.hpp \
-	comms/discovery/DiscoveryParticipant.hpp \
+	comms/discovery/DiscoveryRole.hpp \
 	comms/discovery/DiscoveryServer.hpp \
 	comms/discovery/DiscoveryServerSession.hpp \
+	comms/discovery/NodeAssociate.hpp \
+	comms/discovery/NodeAssociateStore.hpp \
 	comms/FlowControl.hpp \
 	comms/messages/MessageType.hpp \
 	comms/messages/QueryMessage.hpp \
@@ -275,6 +286,7 @@ HEADERS  += \
 	hw/BluetoothList.hpp \
 	models/ClientModel.hpp \
 	plan/parser/PlanHighlighter.hpp \
+	plot/NetworkStats.hpp \
 	plot/qcustomplot.hpp \
 	plot/StatsWindow.hpp \
 	puppet/EyesWidget.hpp \
@@ -286,6 +298,7 @@ HEADERS  += \
 	random/DevRandomRNG.hpp \
 	random/DevURandomRNG.hpp \
 	random/EfficientPRNG.hpp \
+	random/FileRandomRNG.hpp \
 	random/MersennePRNG.hpp \
 	random/ParkMillerPRNG.hpp \
 	random/RNG.hpp \
@@ -293,8 +306,10 @@ HEADERS  += \
 	random/TausPRNG.hpp \
 	remote/Remote.hpp \
 	remote/RemoteWindow.hpp \
+	security/Key.hpp \
 	security/KeyStore.hpp \
 	security/PortableID.hpp \
+	security/SecurityConstants.hpp \
 	sensory/SensorInput.hpp \
 	storage/Hashstore.hpp \
 	storage/HashstoreRecord.hpp \
@@ -308,6 +323,7 @@ HEADERS  += \
 	widgets/AgentDeliveryWizard.hpp \
 	widgets/CameraPairingWidget.hpp \
 	widgets/CompasWidget.hpp \
+	widgets/ConnectionManager.hpp \
 	widgets/ConnectionWidget.hpp \
 	widgets/EnumEntry.hpp \
 	widgets/FaceWidget.hpp \
@@ -321,6 +337,7 @@ HEADERS  += \
 	widgets/hexedit/QHexEdit.hpp \
 	widgets/hexedit/QHexEditPrivate.hpp \
 	widgets/hexedit/SparseRangeMap.hpp \
+	widgets/HUDWidget.hpp \
 	widgets/Identicon.hpp \
 	widgets/IdenticonWidget.hpp \
 	widgets/ImageLabel2.hpp \
@@ -332,9 +349,12 @@ HEADERS  += \
 	widgets/MapEditor.hpp \
 	widgets/MultiView.hpp \
 	widgets/NumberEntry.hpp \
+	widgets/PairingWizard.hpp \
+	widgets/PKIManager.hpp \
 	widgets/planedit/CodeEditor.hpp \
 	widgets/planedit/LineNumberArea.hpp \
 	widgets/planedit/PlanEditor.hpp \
+	widgets/PortableIDWidget.hpp \
 	widgets/qfi/LayoutSquare.h \
 	widgets/qfi/qfi_ADI.h \
 	widgets/qfi/qfi_ALT.h \
@@ -364,26 +384,7 @@ HEADERS  += \
 	zoo/ZooClient.hpp \
 	zoo/ZooConstants.hpp \
 	zoo/ZooServer.hpp \
-    widgets/PairingWizard.hpp \
-    comms/discovery/DiscoveryRole.hpp \
-    basic/AtomicBoolean.hpp \
-    basic/GenerateRunnable.hpp \
-    widgets/HUDWidget.hpp \
-    widgets/PKIManager.hpp \
-    plot/NetworkStats.hpp \
-    random/FileRandomRNG.hpp \
-    widgets/PortableIDWidget.hpp \
-    comms/couriers/DiscoveryCourier.hpp \
-    comms/ClientSignature.hpp \
-    security/Key.hpp \
-    basic/NetworkAddress.hpp \
-    basic/NodeAssociate.hpp \
-    security/SecurityConstants.hpp \
-    widgets/ConnectionManager.hpp \
-    basic/AppContext.hpp \
-    comms/ClientDirectory.hpp \
-    comms/couriers/CourierMandate.hpp \
-    comms/discovery/NodeAssociateStore.hpp
+
 
 
 
@@ -416,14 +417,14 @@ FORMS    += \
 	ui/CameraPairingWidget.ui \
 	ui/MapEditor.ui \
 	ui/RealtimeValuesWidget.ui \
-    ui/PairingWizard.ui \
-    ui/AgentDeliveryWizard.ui \
-    ui/FaceWidget.ui \
-    ui/LogWidget.ui \
-    ui/PKIManager.ui \
-    ui/PortableIDWidget.ui \
-    ui/ConnectionManager.ui \
-    ui/HUDWidget.ui
+	ui/PairingWizard.ui \
+	ui/AgentDeliveryWizard.ui \
+	ui/FaceWidget.ui \
+	ui/LogWidget.ui \
+	ui/PKIManager.ui \
+	ui/PortableIDWidget.ui \
+	ui/ConnectionManager.ui \
+	ui/HUDWidget.ui
 
 
 RESOURCES += \

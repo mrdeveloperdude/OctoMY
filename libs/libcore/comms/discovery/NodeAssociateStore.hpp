@@ -3,16 +3,15 @@
 
 #include "basic/AtomicBoolean.hpp"
 #include "basic/GenerateRunnable.hpp"
-#include "DiscoveryParticipant.hpp"
+#include "basic/NodeAssociate.hpp"
 
 #include <QObject>
 
 
 /*
 
-  DiscoveryClientStore is used by Node to keep track of DiscoveryParticpants
-  during discovery. It is also used to persist the information Node has on its
-  particpants.
+  NodeAssociateStore is used to keep track of and persist the information this
+  Node has on its associates. Think of it as a fully automated "contact list".
 
 */
 
@@ -21,7 +20,7 @@ class NodeAssociateStore: public QObject{
 
 	private:
 
-		QMap<QString, DiscoveryParticipant *> mPeers;
+		QMap<QString, QSharedPointer<NodeAssociate> > mPeers;
 		AtomicBoolean mReady;
 		AtomicBoolean mError;
 		QString mFilename;
@@ -52,12 +51,12 @@ class NodeAssociateStore: public QObject{
 
 
 		bool hasParticipant(const QString &id);
-		DiscoveryParticipant * getParticipant(const QString &id);
-		DiscoveryParticipant * removeParticipant(const QString &id);
-		void setParticipant(DiscoveryParticipant *participant);
+		QSharedPointer<NodeAssociate> getParticipant(const QString &id);
+		QSharedPointer<NodeAssociate> removeParticipant(const QString &id);
+		void setParticipant(QSharedPointer<NodeAssociate> participant);
 
 
-		QMap<QString, DiscoveryParticipant *> &getParticipants();
+		QMap<QString, QSharedPointer<NodeAssociate> > &getParticipants();
 
 	signals:
 

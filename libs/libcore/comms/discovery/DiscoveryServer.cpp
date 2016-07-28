@@ -6,7 +6,7 @@
 
 
 
-DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<DiscoveryParticipant> part)
+DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<NodeAssociate> part)
 {
 	if(nullptr==part){
 		qWarning()<<"ERROR: participant was 0";
@@ -17,9 +17,10 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<DiscoveryPartic
 		return nullptr;
 	}
 	DiscoveryServerSession *ses=nullptr;
-	if(!part->pins.isEmpty()){
+	const QStringList &pins=part->pins();
+	if(!pins.isEmpty()){
 		QString pin;
-		for(QString p: part->pins){
+		for(QString p: pins){
 			pin=p;
 			//Look up the pin in question
 			if(registry.contains(pin)){

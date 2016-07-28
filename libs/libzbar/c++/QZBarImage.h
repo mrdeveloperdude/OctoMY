@@ -81,7 +81,7 @@ namespace zbar {
 			QImage qimg;
 	};
 
-};
+}
 
 
 #endif

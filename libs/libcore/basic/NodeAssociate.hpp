@@ -6,6 +6,8 @@
 #include "basic/NetworkAddress.hpp"
 
 #include <QBluetoothAddress>
+#include "comms/ClientSignature.hpp"
+
 #include <QByteArray>
 #include <QVariantMap>
 #include <QDateTime>
@@ -18,7 +20,6 @@
   NodeAssociateStore.
 
 */
-
 
 
 class NodeAssociate{
@@ -38,9 +39,13 @@ class NodeAssociate{
 		QBluetoothAddress mBluetoothAddress;
 		QByteArray mNFCAddress;
 
+		QStringList mPins;
+
 	public:
-		NodeAssociate(const QVariantMap map, bool isPublic);
-		NodeAssociate();
+		explicit NodeAssociate();
+		explicit NodeAssociate(const QVariantMap map, bool isPublic=true);
+		virtual ~NodeAssociate();
+
 
 	public:
 		bool update(const QVariantMap map, bool trustedSource=false);
@@ -48,12 +53,25 @@ class NodeAssociate{
 	public:
 		QString id() const;
 		DiscoveryType type() const;
+
+		bool isValidForClient(bool onlyPublic=true);
+		bool isValidForServer();
+
+
+		ClientSignature toClientSignature();
+
+
+		void clearPins();
+		void addPin(QString pin);
+		const QStringList &pins();
+
+
 		void clearTrust();
 		void addTrust(QString trust);
 		QVariantMap toVariantMap();
 		void fromVariantMap(const QVariantMap map);
 		QString toString();
-		bool isValid(bool onlyPublic=true);
+
 		bool operator==(const NodeAssociate &o) const;
 		bool operator!=(const NodeAssociate &o) const;
 		NetworkAddress &publicAddress();
@@ -63,5 +81,7 @@ class NodeAssociate{
 
 };
 
+
+const QDebug &operator<<(QDebug &d, NodeAssociate &ass);
 
 #endif // NODEASSOCIATE_HPP

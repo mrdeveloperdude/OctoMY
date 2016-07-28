@@ -1,4 +1,4 @@
-#include "DiscoveryParticipant.hpp"
+#include "QSharedPointer<NodeAssociate>.hpp"
 #include <QDateTime>
 
 #include <QRegularExpression>
@@ -6,31 +6,21 @@
 #include <QCryptographicHash>
 #include <QByteArray>
 
-
+/*
 
 
 //////////////////////////////////////////////////////////////////////////
 
-DiscoveryParticipant::DiscoveryParticipant()
+QSharedPointer<NodeAssociate>::QSharedPointer<NodeAssociate>()
 	: isDeleted(false)
 {
 	OC_METHODGATE();
 	Q_ASSERT(!isDeleted);
 }
 
-/*
-DiscoveryParticipant::DiscoveryParticipant(QString publicKey, QString public_address, quint16 public_port, QString local_address, quint16 local_port, DiscoveryRole role, DiscoveryType type)
-: assoc(put something in here)
-	: isDeleted(false)
-{
-	OC_METHODGATE();
-	Q_ASSERT(!isDeleted);
-}
-*/
 
 
-
-DiscoveryParticipant::DiscoveryParticipant(QVariantMap map)
+QSharedPointer<NodeAssociate>::QSharedPointer<NodeAssociate>(QVariantMap map)
 	: assoc(map, true)
 	, isDeleted(false)
 {
@@ -42,7 +32,7 @@ DiscoveryParticipant::DiscoveryParticipant(QVariantMap map)
 
 
 
-DiscoveryParticipant::DiscoveryParticipant(const DiscoveryParticipant &o)
+QSharedPointer<NodeAssociate>::QSharedPointer<NodeAssociate>(const QSharedPointer<NodeAssociate> &o)
 	: assoc(o.assoc)
 	, pins(o.pins)
 	, isDeleted(false)
@@ -52,27 +42,20 @@ DiscoveryParticipant::DiscoveryParticipant(const DiscoveryParticipant &o)
 }
 
 
-DiscoveryParticipant::~DiscoveryParticipant()
+QSharedPointer<NodeAssociate>::~QSharedPointer<NodeAssociate>()
 {
 	isDeleted=true;
 }
 
 
-bool DiscoveryParticipant::operator==(const DiscoveryParticipant &o) const
+bool QSharedPointer<NodeAssociate>::operator==(const QSharedPointer<NodeAssociate> &o) const
 {
 	OC_METHODGATE();
 	Q_ASSERT(!isDeleted);
 	return assoc == o.assoc;
 }
-/*
-bool DiscoveryParticipant::isSet()
-{
-OC_METHODGATE();
-	return (0!=localPort);
-}
-*/
 
-bool DiscoveryParticipant::isValidForServer()
+bool QSharedPointer<NodeAssociate>::isValidForServer()
 {
 	OC_METHODGATE();
 	Q_ASSERT(!isDeleted);
@@ -80,7 +63,7 @@ bool DiscoveryParticipant::isValidForServer()
 }
 
 
-bool DiscoveryParticipant::isValidForClient()
+bool QSharedPointer<NodeAssociate>::isValidForClient()
 {
 	OC_METHODGATE();
 	Q_ASSERT(!isDeleted);
@@ -88,7 +71,7 @@ bool DiscoveryParticipant::isValidForClient()
 }
 
 
-QVariantMap DiscoveryParticipant::toVariantMap()
+QVariantMap QSharedPointer<NodeAssociate>::toVariantMap()
 {
 	OC_METHODGATE();
 	Q_ASSERT(!isDeleted);
@@ -99,7 +82,7 @@ QVariantMap DiscoveryParticipant::toVariantMap()
 
 
 
-QString DiscoveryParticipant::toString()
+QString QSharedPointer<NodeAssociate>::toString()
 {
 	OC_METHODGATE();
 	Q_ASSERT(!isDeleted);
@@ -109,7 +92,7 @@ QString DiscoveryParticipant::toString()
 const QRegularExpression rePin("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
 
 
-void DiscoveryParticipant::clearPins()
+void QSharedPointer<NodeAssociate>::clearPins()
 {
 	OC_METHODGATE();
 	Q_ASSERT(!isDeleted);
@@ -117,7 +100,7 @@ void DiscoveryParticipant::clearPins()
 }
 
 
-void DiscoveryParticipant::addPin(QString pin)
+void QSharedPointer<NodeAssociate>::addPin(QString pin)
 {
 	OC_METHODGATE();
 	Q_ASSERT(!isDeleted);
@@ -134,14 +117,14 @@ void DiscoveryParticipant::addPin(QString pin)
 
 
 
-void DiscoveryParticipant::clearTrust()
+void QSharedPointer<NodeAssociate>::clearTrust()
 {
 	OC_METHODGATE();
 	Q_ASSERT(!isDeleted);
 	assoc.clearTrust();
 }
 
-void DiscoveryParticipant::addTrust(QString trust)
+void QSharedPointer<NodeAssociate>::addTrust(QString trust)
 {
 	OC_METHODGATE();
 	Q_ASSERT(!isDeleted);
@@ -149,14 +132,14 @@ void DiscoveryParticipant::addTrust(QString trust)
 }
 
 
-ClientSignature DiscoveryParticipant::clientSignature()
+ClientSignature QSharedPointer<NodeAssociate>::clientSignature()
 {
 	OC_METHODGATE();
 	Q_ASSERT(!isDeleted);
 	return ClientSignature(assoc.id(), assoc.publicAddress());
 }
 
-bool DiscoveryParticipant::updateFromServer(QVariantMap &map, bool trustedSource)
+bool QSharedPointer<NodeAssociate>::updateFromServer(QVariantMap &map, bool trustedSource)
 {
 	return assoc.update(map, trustedSource);
 }
@@ -164,11 +147,24 @@ bool DiscoveryParticipant::updateFromServer(QVariantMap &map, bool trustedSource
 
 
 
-const QDebug &operator<<(QDebug &d, DiscoveryParticipant &part)
+const QDebug &operator<<(QDebug &d, QSharedPointer<NodeAssociate> &part)
 {
 	OC_FUNCTIONGATE();
 	Q_ASSERT(!part.isDeleted);
-	d.nospace() << "DiscoveryParticipant( assoc="<<part.toString()<<")";
+	d.nospace() << "QSharedPointer<NodeAssociate>( assoc="<<part.toString()<<")";
 	return d.maybeSpace();
 }
 
+
+
+const QDebug &operator<<(QDebug &d, QSharedPointer<NodeAssociate> &part)
+{
+	OC_FUNCTIONGATE();
+	Q_ASSERT(!part.isDeleted);
+	d.nospace() << "QSharedPointer<NodeAssociate>( assoc="<<part.toString()<<")";
+	return d.maybeSpace();
+}
+
+
+
+*/

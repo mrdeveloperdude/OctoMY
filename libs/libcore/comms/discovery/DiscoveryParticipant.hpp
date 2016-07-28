@@ -9,42 +9,45 @@
 #include <QVariantMap>
 #include <QBluetoothAddress>
 #include <QDateTime>
+#include <QSharedPointer>
 
 
 /*
- DiscoveryParticipant is an ephemeral representation of the data kept during
+ QSharedPointer<NodeAssociate> is an ephemeral representation of the data kept during
  node discovery by DiscoveryClient and DiscoveryServer.
 
  The actual trust that is gathered will be stored in the NodeAssociate member
  which acts as the persistable counterpart.
 
 */
-class DiscoveryParticipant{
+
+//typedef QSharedPointer<NodeAssociate> QSharedPointer<NodeAssociate>;
+
+/*
+class QSharedPointer<NodeAssociate>{
 
 	public:
-		NodeAssociate assoc;
+//		NodeAssociate assoc;
 		// An ephemeral list of pins used during discovery. Pins may be manually entered, generated from GPS coordinates etc.
 		QStringList pins;
-		bool isDeleted;
+//		bool isDeleted;
 
 	public:
 
-		explicit DiscoveryParticipant();
-		//explicit DiscoveryParticipant(QString publicKey, QString publicAddress, quint16 publicPort, QString localAddress, quint16 localPort, DiscoveryRole role, DiscoveryType type);
-		explicit DiscoveryParticipant(QVariantMap map);
-		explicit DiscoveryParticipant(const DiscoveryParticipant &o);
-		virtual ~DiscoveryParticipant();
+		explicit QSharedPointer<NodeAssociate>();
+		//explicit QSharedPointer<NodeAssociate>(QString publicKey, QString publicAddress, quint16 publicPort, QString localAddress, quint16 localPort, DiscoveryRole role, DiscoveryType type);
+		explicit QSharedPointer<NodeAssociate>(QVariantMap map);
+		explicit QSharedPointer<NodeAssociate>(const QSharedPointer<NodeAssociate> &o);
+		virtual ~QSharedPointer<NodeAssociate>();
 
 	public:
 
 
-		void clearPins();
-		void addPin(QString pin);
 
 		void clearTrust();
 		void addTrust(QString pin);
 
-		bool operator==(const DiscoveryParticipant &o) const;
+		bool operator==(const QSharedPointer<NodeAssociate> &o) const;
 
 		//bool isSet();
 
@@ -90,7 +93,7 @@ class DiscoveryParticipant{
 
 };
 
-const QDebug &operator<<(QDebug &d, DiscoveryParticipant &part);
+const QDebug &operator<<(QDebug &d, QSharedPointer<NodeAssociate> &part);
 
-
+*/
 #endif // DISCOVERYPARTICIPANT_HPP

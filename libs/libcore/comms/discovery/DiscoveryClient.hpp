@@ -4,6 +4,7 @@
 
 #include "DiscoveryRole.hpp"
 #include "NodeAssociateStore.hpp"
+#include "basic/NodeAssociate.hpp"
 
 
 #include <QTimer>
@@ -13,7 +14,7 @@
 
 
 
-class DiscoveryParticipant;
+
 class Node;
 
 namespace qhttp{
@@ -28,7 +29,6 @@ class DiscoveryClient: public QObject
 	private:
 		QTimer timer;
 		quint64 lastZooPair;
-		//QMap<QString, DiscoveryParticipant *> participants;
 		QUrl  m_serverURL;
 		qhttp::client::QHttpClient     *m_client;
 		Node &node;
@@ -51,8 +51,6 @@ class DiscoveryClient: public QObject
 		void discover();
 
 		Node &getNode();
-
-//		QMap<QString, DiscoveryParticipant *> &getParticipants();
 
 	private slots:
 

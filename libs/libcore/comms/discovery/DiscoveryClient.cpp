@@ -2,12 +2,14 @@
 
 #include "basic/Standard.hpp"
 
+#include "basic/NodeAssociate.hpp"
+
 #include "zoo/ZooClient.hpp"
 #include "zoo/ZooConstants.hpp"
 
 #include "security/KeyStore.hpp"
 
-#include "comms/discovery/DiscoveryParticipant.hpp"
+
 #include "comms/couriers/DiscoveryCourier.hpp"
 
 #include "basic/Node.hpp"
@@ -218,35 +220,31 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map){
 	}
 	else{
 		NodeAssociateStore &peers=node.peers();
-		DiscoveryParticipant *part=nullptr;
+		QSharedPointer<NodeAssociate> part;
 		if(peers.hasParticipant(partID)){
 			//qDebug()<<" + Updating participant with ID: "<<partID;
 			part=peers.getParticipant(partID);
-			part->updateFromServer(map, false);
+			part->update(map, false);
 			emit nodeDiscovered(partID);
 		}
 		else{
-			part=new DiscoveryParticipant(map);
+			part=QSharedPointer<NodeAssociate>(new NodeAssociate(map));
 			if(nullptr!=part){
 				if(part->isValidForClient()){
-					DiscoveryCourier *courier=new DiscoveryCourier(*part);
+					DiscoveryCourier *courier=new DiscoveryCourier(part);
 					if(nullptr!=courier){
 						peers.setParticipant(part);
-						courier->setDestination(part->clientSignature());
+						courier->setDestination(part->toClientSignature());
 						node.comms()->registerCourier(*courier);
 						qDebug()<<" + Adding new participant with ID: "<<partID;
 						emit nodeDiscovered(partID);
 					}
 					else{
 						qWarning()<<"ERROR: Could not create courier for part with ID "<<partID;
-						delete part;
-						part=nullptr;
 					}
 				}
 				else{
 					qDebug()<<" + Deleting invalid new participant:"<<partID;
-					delete part;
-					part=nullptr;
 				}
 			}
 			else{
@@ -261,10 +259,6 @@ Node &DiscoveryClient::getNode()
 	return node;
 }
 
-/*
-QMap<QString, DiscoveryParticipant *> &DiscoveryClient::getParticipants(){
-	return participants;
-}*/
 
 const quint64 ZOO_PAIR_INTERVAL=20000;
 

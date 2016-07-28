@@ -73,7 +73,7 @@ void NodeAssociateStore::load()
 		QVariantMap map = doc.object().toVariantMap();
 		QVariantList remotes=map["participants"].toList();
 		for(QVariantList::iterator b=remotes.begin(), e=remotes.end(); b!=e; ++b){
-			DiscoveryParticipant *peer=new DiscoveryParticipant((*b).toMap());
+			QSharedPointer<NodeAssociate> peer=QSharedPointer<NodeAssociate>(new NodeAssociate((*b).toMap()));
 			mPeers[peer->id()]=peer;
 		}
 		mReady=true;
@@ -87,7 +87,7 @@ void NodeAssociateStore::save()
 	QVariantMap map;
 	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();
 	QVariantList remotes;
-	for(QMap<QString, DiscoveryParticipant *>::const_iterator b=mPeers.begin(), e=mPeers.end(); b!=e; ++b){
+	for(QMap<QString, QSharedPointer<NodeAssociate> >::const_iterator b=mPeers.begin(), e=mPeers.end(); b!=e; ++b){
 		remotes.push_back(b.value()->toVariantMap());
 	}
 	map["participants"]=remotes;
@@ -105,18 +105,19 @@ bool NodeAssociateStore::hasParticipant(const QString &id)
 
 
 
-DiscoveryParticipant * NodeAssociateStore::getParticipant(const QString &id)
+QSharedPointer<NodeAssociate> NodeAssociateStore::getParticipant(const QString &id)
 {
 	if(hasParticipant(id)){
 		return mPeers[id];
 	}
-	return nullptr;
+	QSharedPointer<NodeAssociate> ret;
+	return ret;
 }
 
 
-DiscoveryParticipant * NodeAssociateStore::removeParticipant(const QString &id)
+QSharedPointer<NodeAssociate> NodeAssociateStore::removeParticipant(const QString &id)
 {
-	DiscoveryParticipant *ret=nullptr;
+	QSharedPointer<NodeAssociate> ret;
 	if(hasParticipant(id)){
 		ret=mPeers[id];
 		mPeers.remove(id);
@@ -126,7 +127,7 @@ DiscoveryParticipant * NodeAssociateStore::removeParticipant(const QString &id)
 
 
 
-void NodeAssociateStore::setParticipant(DiscoveryParticipant *participant)
+void NodeAssociateStore::setParticipant(QSharedPointer<NodeAssociate> participant)
 {
 	if(nullptr!=participant){
 		auto id=participant->id();
@@ -136,7 +137,7 @@ void NodeAssociateStore::setParticipant(DiscoveryParticipant *participant)
 }
 
 
-QMap<QString, DiscoveryParticipant *> &NodeAssociateStore::getParticipants()
+QMap<QString, QSharedPointer<NodeAssociate> > &NodeAssociateStore::getParticipants()
 {
 	return mPeers;
 }

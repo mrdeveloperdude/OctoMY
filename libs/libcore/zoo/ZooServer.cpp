@@ -7,7 +7,7 @@
 #include "widgets/IdenticonWidget.hpp"
 #include "web/Mustache.hpp"
 
-#include "comms/discovery/DiscoveryParticipant.hpp"
+#include "basic/NodeAssociate.hpp"
 #include "utility/ScopedTimer.hpp"
 
 #include "security/PortableID.hpp"
@@ -333,7 +333,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 		quint16 publicPort=root["publicPort"].toInt();
 		*/
 		//qDebug()<<"FULL MAP IS: "<<root;
-		QSharedPointer<DiscoveryParticipant> part(new DiscoveryParticipant(root)); //publicKey, publicAddress, publicPort,localAddress, localPort, role, type)
+		QSharedPointer<NodeAssociate> part(new NodeAssociate(root));
 		QString publicAddress="";
 		quint16 publicPort=0;
 		QTcpServer *tc=tcpServer();
@@ -341,8 +341,8 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 			publicAddress=tc->serverAddress().toString();
 			publicPort=tc->serverPort();
 		}
-		part->associate().publicAddress().setIP(QHostAddress(publicAddress));
-		part->associate().publicAddress().setPort(publicPort);
+		part->publicAddress().setIP(QHostAddress(publicAddress));
+		part->publicAddress().setPort(publicPort);
 		part->addPin(root.value("manualPin").toString());
 		part->addPin(root.value("geoPin").toString());
 		DiscoveryServerSession *ses=discovery.request(part);

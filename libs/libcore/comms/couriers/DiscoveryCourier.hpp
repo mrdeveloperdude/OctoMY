@@ -2,30 +2,28 @@
 #define DISCOVERYCOURIER_HPP
 
 #include "Courier.hpp"
+#include "basic/NodeAssociate.hpp"
 
 #include <QList>
 #include <QMap>
 #include <QString>
 #include <QVariantMap>
-
-class DiscoveryParticipant;
+#include <QSharedPointer>
 
 class DiscoveryCourier : public Courier
 {
 		Q_OBJECT
 
 	private:
-		DiscoveryParticipant &mPart;
+		QSharedPointer<NodeAssociate> mAss;
 		QVariantMap mData;
 
 	public:
-		explicit DiscoveryCourier(DiscoveryParticipant &part, QObject *parent = nullptr);
+		explicit DiscoveryCourier(QSharedPointer<NodeAssociate> ass, QObject *parent = nullptr);
 		virtual ~DiscoveryCourier();
 
 
 	public:
-
-
 
 		//Let the CommChannel know what we want
 		CourierMandate mandate() override;

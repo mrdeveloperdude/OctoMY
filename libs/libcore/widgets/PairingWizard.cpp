@@ -4,7 +4,7 @@
 #include "basic/Settings.hpp"
 #include "basic/Node.hpp"
 #include "widgets/Identicon.hpp"
-#include "comms/discovery/DiscoveryParticipant.hpp"
+#include "basic/NodeAssociate.hpp"
 #include "security/PortableID.hpp"
 #include "basic/Standard.hpp"
 
@@ -184,9 +184,9 @@ class PairingList: public QAbstractListModel
 		int rowCount(const QModelIndex &) const
 		{
 			int ret=0;
-			QMap<QString, DiscoveryParticipant *> &participants=store.getParticipants();
-			for(QMap<QString, DiscoveryParticipant *>::const_iterator it=participants.begin(), e=participants.end(); it!=e;++it){
-				DiscoveryParticipant *p=it.value();
+			QMap<QString, QSharedPointer<NodeAssociate> > participants=store.getParticipants();
+			for(QMap<QString, QSharedPointer<NodeAssociate> >::const_iterator it=participants.begin(), e=participants.end(); it!=e;++it){
+				QSharedPointer<NodeAssociate> p=it.value();
 				if(nullptr!=p){
 					DiscoveryType t=p->type();
 					if(filter(t)){
@@ -205,13 +205,13 @@ class PairingList: public QAbstractListModel
 
 		QVariant data(const QModelIndex &index, int role) const
 		{
-			QMap<QString, DiscoveryParticipant *> &participants=store.getParticipants();
+			QMap<QString, QSharedPointer<NodeAssociate> > &participants=store.getParticipants();
 			int targetRow=index.row();
 			int rowCounter=0;
-			DiscoveryParticipant *part=nullptr;
+			QSharedPointer<NodeAssociate> part;
 
-			for(QMap<QString, DiscoveryParticipant *>::const_iterator it=participants.begin(), e=participants.end(); it!=e;++it){
-				DiscoveryParticipant *p=it.value();
+			for(QMap<QString, QSharedPointer<NodeAssociate> >::const_iterator it=participants.begin(), e=participants.end(); it!=e;++it){
+				QSharedPointer<NodeAssociate> p=it.value();
 				if(nullptr!=p){
 					DiscoveryType t=p->type();
 					if(filter(t)){

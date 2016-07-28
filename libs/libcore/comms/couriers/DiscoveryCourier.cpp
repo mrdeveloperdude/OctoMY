@@ -1,17 +1,17 @@
 #include "DiscoveryCourier.hpp"
 
-#include "comms/discovery/DiscoveryParticipant.hpp"
+#include "basic/NodeAssociate.hpp"
 #include "comms/messages/MessageType.hpp"
 
-DiscoveryCourier::DiscoveryCourier(DiscoveryParticipant &part, QObject *parent)
+DiscoveryCourier::DiscoveryCourier(QSharedPointer<NodeAssociate> ass, QObject *parent)
 	: Courier("Discovery", Courier::FIRST_USER_ID+2, parent)
-	, mPart(part)
+	, mAss(ass)
 {
-	qDebug()<<"CREATED DiscoveryCourier with PART="<<mPart;
+	qDebug()<<"CREATED DiscoveryCourier with PART="<<mAss->toString();
 }
 
 DiscoveryCourier::~DiscoveryCourier(){
-	qDebug()<<"DELETED DiscoveryCourier with PART="<<mPart;
+	qDebug()<<"DELETED DiscoveryCourier with PART="<<mAss->toString();
 }
 
 //Let the CommChannel know what we want
@@ -33,17 +33,16 @@ quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 	qDebug()<<"Sending opportunity for "<<mName;
 	quint16 bytes=0;
 
-	NodeAssociate &ass=mPart.associate();
-	NetworkAddress &nadr=ass.publicAddress();
+	NetworkAddress &nadr=mAss->publicAddress();
 	QHostAddress pubAddr=nadr.ip();
 	const quint32 ip4PubAddr=pubAddr.toIPv4Address() ^ IP_XOR;
 	ds << ip4PubAddr;
 	bytes += sizeof(quint32);
-	ds << mPart.associate().publicAddress().port();
+	ds << mAss->publicAddress().port();
 	bytes += sizeof(quint16);
-	ds << (mPart.associate().bluetoothAddress().toUInt64() ^ BT_XOR);
+	ds << (mAss->bluetoothAddress().toUInt64() ^ BT_XOR);
 	bytes += sizeof(quint64);
-	qDebug()<<"TX "<<bytes<<"="<<pubAddr.toString()<<", bt="<<mPart.associate().bluetoothAddress().toUInt64();
+	qDebug()<<"TX "<<bytes<<"="<<pubAddr.toString()<<", bt="<<mAss->bluetoothAddress().toUInt64();
 	return 0;
 }
 

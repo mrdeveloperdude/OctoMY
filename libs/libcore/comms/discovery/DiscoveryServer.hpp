@@ -1,7 +1,7 @@
 #ifndef DISCOVERYSERVER_HPP
 #define DISCOVERYSERVER_HPP
 
-#include "DiscoveryParticipant.hpp"
+#include "basic/NodeAssociate.hpp"
 #include "DiscoveryServerSession.hpp"
 
 #include <QSharedPointer>
@@ -11,7 +11,7 @@ class DiscoveryServer{
 		QMap<QString, DiscoveryServerSession *> registry;
 	public:
 
-		DiscoveryServerSession *request(QSharedPointer<DiscoveryParticipant> part);
+		DiscoveryServerSession *request(QSharedPointer<NodeAssociate> part);
 
 		void prune(quint64 deadline);
 

@@ -1,6 +1,6 @@
-#include "NodeAssociate.hpp"
+#include "basic/NodeAssociate.hpp"
 
-
+#include <QRegularExpression>
 
 NodeAssociate::NodeAssociate(const QVariantMap map, bool isPublic)
 	: mKey( map["key"].toMap(), isPublic)
@@ -24,6 +24,11 @@ NodeAssociate::NodeAssociate()
 }
 
 
+
+NodeAssociate::~NodeAssociate(){
+	qDebug()<<"DELETING node associate with ID "<<id();
+}
+
 bool NodeAssociate::update(const QVariantMap map, bool trustedSource){
 	OC_METHODGATE();
 	bool passesSecurityCheck=false;
@@ -45,6 +50,8 @@ bool NodeAssociate::update(const QVariantMap map, bool trustedSource){
 	}
 	return false;
 }
+
+
 
 
 QString NodeAssociate::id() const
@@ -72,6 +79,36 @@ void NodeAssociate::addTrust(QString trust)
 	mTrusts.push_back(trust);
 }
 
+
+
+const QRegularExpression rePin("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
+
+
+void NodeAssociate::clearPins()
+{
+	OC_METHODGATE();
+	mPins.clear();
+}
+
+
+void NodeAssociate::addPin(QString pin)
+{
+	OC_METHODGATE();
+	if(rePin.match(pin).hasMatch()){
+		//qDebug()<<"ACCEPTED PIN:" <<pin;
+		mPins<<pin;
+	}
+	else {
+		//qDebug()<<"Pin "<<pin<<" did not match validation:";
+	}
+}
+
+const QStringList &NodeAssociate::pins(){
+	OC_METHODGATE();
+	return mPins;
+}
+
+
 QVariantMap NodeAssociate::toVariantMap()
 {
 	OC_METHODGATE();
@@ -82,6 +119,7 @@ QVariantMap NodeAssociate::toVariantMap()
 	map["key"]=mKey.toVariantMap(true);
 	map["role"]=DiscoveryRoleToString(mRole);
 	map["type"]=DiscoveryTypeToString(mType);
+	map["pins"]=mPins;
 	return map;
 }
 
@@ -107,12 +145,12 @@ QString NodeAssociate::toString()
 			+", localAddress:"+mLocalNetworkAddress.toString()
 			+", lastSeenMS:"+QString::number(mLastSeenMS)
 			+", role:"+DiscoveryRoleToString(mRole)
-			+", type:"+DiscoveryTypeToString(mType);
-
+			+", type:"+DiscoveryTypeToString(mType)
+			+", pins:"+mPins.join(";");
 }
 
 
-bool NodeAssociate::isValid(bool onlyPublic)
+bool NodeAssociate::isValidForClient(bool onlyPublic)
 {
 	OC_METHODGATE();
 	return (
@@ -123,6 +161,21 @@ bool NodeAssociate::isValid(bool onlyPublic)
 					)
 				);
 }
+
+
+bool NodeAssociate::isValidForServer()
+{
+	OC_METHODGATE();
+	return (!mPins.isEmpty()) && isValidForClient(true) ;
+}
+
+
+ClientSignature NodeAssociate::toClientSignature()
+{
+	OC_METHODGATE();
+	return ClientSignature(id(), publicAddress());
+}
+
 
 
 bool NodeAssociate::operator==(const NodeAssociate &o) const{
@@ -167,3 +220,12 @@ quint64 NodeAssociate::lastSeen() const
 {
 	return mLastSeenMS;
 }
+
+
+const QDebug &operator<<(QDebug &d, NodeAssociate &ass)
+{
+	OC_FUNCTIONGATE();
+	d.nospace() << "NodeAssociate("<<ass.toString()<<")";
+	return d.maybeSpace();
+}
+

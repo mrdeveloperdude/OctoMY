@@ -1,24 +1,25 @@
 #ifndef DISCOVERYSERVERSESSION_HPP
 #define DISCOVERYSERVERSESSION_HPP
 
+
+#include "basic/NodeAssociate.hpp"
+
 #include <QDateTime>
 #include <QMap>
 #include <QVariantMap>
 
 #include <QSharedPointer>
 
-class DiscoveryParticipant;
-
 class DiscoveryServerSession{
 	private:
 
 
-		QMap<QString, QSharedPointer<DiscoveryParticipant> > mParticipantsByID;
+		QMap<QString, QSharedPointer<NodeAssociate>> mParticipantsByID;
 
 	public:
 		explicit DiscoveryServerSession();
 
-		bool set(QSharedPointer<DiscoveryParticipant> p);
+		bool set(QSharedPointer<NodeAssociate> p);
 
 
 		QVariantList toVariantMap();
