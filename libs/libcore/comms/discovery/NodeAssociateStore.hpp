@@ -28,7 +28,7 @@ class NodeAssociateStore: public QObject{
 		friend class GenerateRunnable<NodeAssociateStore>;
 
 	public:
-		explicit NodeAssociateStore(QString="", QObject *parent=nullptr);
+		explicit NodeAssociateStore(QString filename="", QObject *parent=nullptr);
 		virtual ~NodeAssociateStore();
 
 	private:
@@ -40,7 +40,7 @@ class NodeAssociateStore: public QObject{
 	public:
 
 		//Make if needed, load if otherwise
-		void bootstrap();
+		void bootstrap(bool inBackground=true);
 
 		bool isReady(){
 			return mReady;

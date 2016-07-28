@@ -52,7 +52,9 @@ class NodeAssociate{
 
 	public:
 		QString id() const;
+		Key key();
 		DiscoveryType type() const;
+		DiscoveryRole role() const;
 
 		bool isValidForClient(bool onlyPublic=true);
 		bool isValidForServer();

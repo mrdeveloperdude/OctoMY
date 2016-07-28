@@ -60,10 +60,23 @@ QString NodeAssociate::id() const
 	return mKey.id();
 }
 
+
+Key NodeAssociate::key()
+{
+	OC_METHODGATE();
+	return mKey;
+}
+
 DiscoveryType NodeAssociate::type() const
 {
 	OC_METHODGATE();
 	return mType;
+}
+
+DiscoveryRole NodeAssociate::role() const
+{
+	OC_METHODGATE();
+	return mRole;
 }
 
 

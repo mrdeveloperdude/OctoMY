@@ -30,19 +30,21 @@ NodeAssociateStore::~NodeAssociateStore()
 }
 
 
-void NodeAssociateStore::bootstrap()
+void NodeAssociateStore::bootstrap(bool inBackground)
 {
 	// QThreadPool takes ownership and deletes runnable automatically after completion
-	QThreadPool *tp=QThreadPool::globalInstance();
-	if(0!=tp){
-		const bool ret=tp->tryStart(new GenerateRunnable<NodeAssociateStore>(*this));
-		if(ret){
-			//qDebug()<<"NodeAssociateStore: Successfully started background thread";
-			return;
+	if(inBackground){
+		QThreadPool *tp=QThreadPool::globalInstance();
+		if(0!=tp){
+			const bool ret=tp->tryStart(new GenerateRunnable<NodeAssociateStore>(*this));
+			if(ret){
+				//qDebug()<<"NodeAssociateStore: Successfully started background thread";
+				return;
+			}
 		}
+		// Fall back to single threaded wday
+		qDebug()<<"NodeAssociateStore: Falling back to serial bootstrap";
 	}
-	// Fall back to single threaded wday
-	qDebug()<<"NodeAssociateStore: Falling back to serial bootstrap";
 	bootstrapWorker();
 }
 

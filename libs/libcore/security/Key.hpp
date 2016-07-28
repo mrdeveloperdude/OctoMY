@@ -39,7 +39,8 @@ class KeyPrivate{
 		qpolarssl::Pki mPKI;
 		static int mKCT;
 		int mKID;
-		bool mValid;
+		bool mValidPrivate;
+		bool mValidPublic;
 
 	private:
 		static QString hash(QString input);
@@ -164,7 +165,9 @@ class Key{
 		inline QString toString()
 		{
 			OC_METHODGATE();
-			return "Key: "+id()+" priv="+(key().isEmpty()?"UNSET":"SET")+" pub="+(pubKey().isEmpty()?"UNSET":"SET");
+			Q_D(Key);
+			OC_ASSERT(nullptr!=d);
+			return "Key: "+id()+" priv="+(key().isEmpty()?"UNSET":"SET")+ (d->mValidPrivate?"(VALID)":"(INVALID)") +" pub="+(pubKey().isEmpty()?"UNSET":"SET")+ (d->mValidPublic?"(VALID)":"(INVALID)");
 		}
 
 		inline bool isValid(bool onlyPublic)
@@ -172,16 +175,7 @@ class Key{
 			OC_METHODGATE();
 			Q_D(Key);
 			OC_ASSERT(nullptr!=d);
-			/*
-			if(d->mPubKey.isEmpty()){
-				return false;
-			}
-			if(!onlyPublic && d->mKey.isEmpty()){
-				return false;
-			}
-			return true;
-			*/
-			return d->mValid;
+			return ( onlyPublic ? (d->mValidPublic) : (d->mValidPublic&&d->mValidPrivate) );
 		}
 
 		// Sign message with our private key

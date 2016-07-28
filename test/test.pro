@@ -25,6 +25,7 @@ TEST_PROJECTS+= \
 	testDiscovery \
 	testDeliveryWizard\
 	testNetworkAddress\
+	testNodeAssociateStore\
 
 
 STRESS_PROJECTS+= \
