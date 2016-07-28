@@ -217,7 +217,7 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map){
 		//qDebug()<<" + Skipping new participant with our ID: "<<partID;
 	}
 	else{
-		DiscoveryClientStore &peers=node.peers();
+		NodeAssociateStore &peers=node.peers();
 		DiscoveryParticipant *part=nullptr;
 		if(peers.hasParticipant(partID)){
 			//qDebug()<<" + Updating participant with ID: "<<partID;

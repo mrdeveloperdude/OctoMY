@@ -1,4 +1,4 @@
-#include "DiscoveryClientStore.hpp"
+#include "NodeAssociateStore.hpp"
 
 #include "utility/Utility.hpp"
 
@@ -11,7 +11,7 @@
 #include <QVariantMap>
 #include <QVariantList>
 
-DiscoveryClientStore::DiscoveryClientStore(QString fn, QObject *parent)
+NodeAssociateStore::NodeAssociateStore(QString fn, QObject *parent)
 	: QObject(parent)
 	, mReady(false)
 	, mError(false)
@@ -24,43 +24,43 @@ DiscoveryClientStore::DiscoveryClientStore(QString fn, QObject *parent)
 
 
 
-DiscoveryClientStore::~DiscoveryClientStore()
+NodeAssociateStore::~NodeAssociateStore()
 {
 	save();
 }
 
 
-void DiscoveryClientStore::bootstrap()
+void NodeAssociateStore::bootstrap()
 {
 	// QThreadPool takes ownership and deletes runnable automatically after completion
 	QThreadPool *tp=QThreadPool::globalInstance();
 	if(0!=tp){
-		const bool ret=tp->tryStart(new GenerateRunnable<DiscoveryClientStore>(*this));
+		const bool ret=tp->tryStart(new GenerateRunnable<NodeAssociateStore>(*this));
 		if(ret){
-			//qDebug()<<"DiscoveryClientStore: Successfully started background thread";
+			//qDebug()<<"NodeAssociateStore: Successfully started background thread";
 			return;
 		}
 	}
 	// Fall back to single threaded wday
-	qDebug()<<"DiscoveryClientStore: Falling back to serial bootstrap";
+	qDebug()<<"NodeAssociateStore: Falling back to serial bootstrap";
 	bootstrapWorker();
 }
 
 
-void DiscoveryClientStore::bootstrapWorker()
+void NodeAssociateStore::bootstrapWorker()
 {
 	QFile f(mFilename);
 	if(!f.exists()){
-		qDebug()<<"DiscoveryClientStore: no store file found, saving for first time";
+		qDebug()<<"NodeAssociateStore: no store file found, saving for first time";
 		save();
 	}
 	load();
 }
 
 
-void DiscoveryClientStore::load()
+void NodeAssociateStore::load()
 {
-	//qDebug()<<"DiscoveryClientStore: Loading from file";
+	//qDebug()<<"NodeAssociateStore: Loading from file";
 	QJsonParseError jsonError;
 	QByteArray raw=utility::fileToByteArray(mFilename);
 	QJsonDocument doc = QJsonDocument::fromJson(raw, &jsonError);
@@ -81,9 +81,9 @@ void DiscoveryClientStore::load()
 	emit discoveryStoreReady();
 }
 
-void DiscoveryClientStore::save()
+void NodeAssociateStore::save()
 {
-	qDebug()<<"DiscoveryClientStore: Saving to file: "<<mFilename;
+	qDebug()<<"NodeAssociateStore: Saving to file: "<<mFilename;
 	QVariantMap map;
 	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();
 	QVariantList remotes;
@@ -98,14 +98,14 @@ void DiscoveryClientStore::save()
 
 
 
-bool DiscoveryClientStore::hasParticipant(const QString &id)
+bool NodeAssociateStore::hasParticipant(const QString &id)
 {
 	return (mPeers.find(id)!=mPeers.end());
 }
 
 
 
-DiscoveryParticipant * DiscoveryClientStore::getParticipant(const QString &id)
+DiscoveryParticipant * NodeAssociateStore::getParticipant(const QString &id)
 {
 	if(hasParticipant(id)){
 		return mPeers[id];
@@ -114,7 +114,7 @@ DiscoveryParticipant * DiscoveryClientStore::getParticipant(const QString &id)
 }
 
 
-DiscoveryParticipant * DiscoveryClientStore::removeParticipant(const QString &id)
+DiscoveryParticipant * NodeAssociateStore::removeParticipant(const QString &id)
 {
 	DiscoveryParticipant *ret=nullptr;
 	if(hasParticipant(id)){
@@ -126,7 +126,7 @@ DiscoveryParticipant * DiscoveryClientStore::removeParticipant(const QString &id
 
 
 
-void DiscoveryClientStore::setParticipant(DiscoveryParticipant *participant)
+void NodeAssociateStore::setParticipant(DiscoveryParticipant *participant)
 {
 	if(nullptr!=participant){
 		auto id=participant->id();
@@ -136,7 +136,7 @@ void DiscoveryClientStore::setParticipant(DiscoveryParticipant *participant)
 }
 
 
-QMap<QString, DiscoveryParticipant *> &DiscoveryClientStore::getParticipants()
+QMap<QString, DiscoveryParticipant *> &NodeAssociateStore::getParticipants()
 {
 	return mPeers;
 }

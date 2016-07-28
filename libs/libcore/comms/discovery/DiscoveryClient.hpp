@@ -3,7 +3,7 @@
 
 
 #include "DiscoveryRole.hpp"
-#include "DiscoveryClientStore.hpp"
+#include "NodeAssociateStore.hpp"
 
 
 #include <QTimer>

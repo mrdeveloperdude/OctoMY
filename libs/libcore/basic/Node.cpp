@@ -100,7 +100,7 @@ KeyStore  &Node::keyStore()
 	return mKeystore;
 }
 
-DiscoveryClientStore &Node::peers()
+NodeAssociateStore &Node::peers()
 {
 	return  mPeers;
 }

@@ -1,5 +1,5 @@
-#ifndef DISCOVERYCLIENTSTORE_HPP
-#define DISCOVERYCLIENTSTORE_HPP
+#ifndef NODEASSOCIATESTORE_HPP
+#define NODEASSOCIATESTORE_HPP
 
 #include "basic/AtomicBoolean.hpp"
 #include "basic/GenerateRunnable.hpp"
@@ -16,7 +16,7 @@
 
 */
 
-class DiscoveryClientStore: public QObject{
+class NodeAssociateStore: public QObject{
 		Q_OBJECT
 
 	private:
@@ -26,11 +26,11 @@ class DiscoveryClientStore: public QObject{
 		AtomicBoolean mError;
 		QString mFilename;
 
-		friend class GenerateRunnable<DiscoveryClientStore>;
+		friend class GenerateRunnable<NodeAssociateStore>;
 
 	public:
-		explicit DiscoveryClientStore(QString="", QObject *parent=nullptr);
-		virtual ~DiscoveryClientStore();
+		explicit NodeAssociateStore(QString="", QObject *parent=nullptr);
+		virtual ~NodeAssociateStore();
 
 	private:
 		void bootstrapWorker();
@@ -65,4 +65,4 @@ class DiscoveryClientStore: public QObject{
 };
 
 
-#endif // DISCOVERYCLIENTSTORE_HPP
+#endif // NODEASSOCIATESTORE_HPP

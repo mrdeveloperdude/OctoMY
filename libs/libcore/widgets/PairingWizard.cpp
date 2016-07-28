@@ -149,7 +149,7 @@ class EditButtonDelegate: public QItemDelegate
 class PairingList: public QAbstractListModel
 {
 	private:
-		DiscoveryClientStore &store;
+		NodeAssociateStore &store;
 		DiscoveryType typeFilter;
 		PairingWizard &pwiz;
 
@@ -168,7 +168,7 @@ class PairingList: public QAbstractListModel
 
 
 	public:
-		explicit PairingList(DiscoveryClientStore &store, DiscoveryType typeFilter, PairingWizard &pwiz)
+		explicit PairingList(NodeAssociateStore &store, DiscoveryType typeFilter, PairingWizard &pwiz)
 			: QAbstractListModel(&pwiz)
 			, store(store)
 			, typeFilter(typeFilter)
@@ -405,7 +405,7 @@ void PairingWizard::hideEvent(QHideEvent *)
 void PairingWizard::on_pushButtonMaybeOnward_clicked()
 {
 	if(nullptr!=mNode){
-		DiscoveryClientStore &store=mNode->peers();
+		NodeAssociateStore &store=mNode->peers();
 		if(store.getParticipants().size()>0){
 			emit done();
 			return;

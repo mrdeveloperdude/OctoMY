@@ -15,7 +15,7 @@
 
   NodeAssociate is a means to store the address info and trust level
   for one of Node's friends in a manner suitable for persistence via
-  DiscoveryClientStore.
+  NodeAssociateStore.
 
 */
 

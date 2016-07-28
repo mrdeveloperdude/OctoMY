@@ -5,7 +5,7 @@
 
 #include "basic/Settings.hpp"
 #include "security/KeyStore.hpp"
-#include "comms/discovery/DiscoveryClientStore.hpp"
+#include "comms/discovery/NodeAssociateStore.hpp"
 
 #include <QObject>
 #include <QHostAddress>
@@ -34,7 +34,7 @@ class Node : public QObject
 
 		AppContext *mContext;
 		KeyStore mKeystore;
-		DiscoveryClientStore mPeers;
+		NodeAssociateStore mPeers;
 
 		DiscoveryClient *mDiscovery;
 		DiscoveryRole mRole;
@@ -68,7 +68,7 @@ class Node : public QObject
 		const QCommandLineParser &options() const;
 		Settings &settings();
 		KeyStore  &keyStore();
-		DiscoveryClientStore &peers();
+		NodeAssociateStore &peers();
 		DiscoveryClient *discoveryClient();
 		DiscoveryRole role();
 		DiscoveryType type();

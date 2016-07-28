@@ -170,7 +170,6 @@ SOURCES +=\
 	zoo/ZooServer.cpp \
     widgets/PairingWizard.cpp \
     comms/discovery/DiscoveryRole.cpp \
-    comms/discovery/DiscoveryClientStore.cpp \
     basic/AtomicBoolean.cpp \
     basic/GenerateRunnable.cpp \
     widgets/HUDWidget.cpp \
@@ -189,7 +188,8 @@ SOURCES +=\
     widgets/ConnectionManager.cpp \
     basic/AppContext.cpp \
     comms/ClientDirectory.cpp \
-    comms/couriers/CourierMandate.cpp
+    comms/couriers/CourierMandate.cpp \
+    comms/discovery/NodeAssociateStore.cpp
 
 
 
@@ -366,7 +366,6 @@ HEADERS  += \
 	zoo/ZooServer.hpp \
     widgets/PairingWizard.hpp \
     comms/discovery/DiscoveryRole.hpp \
-    comms/discovery/DiscoveryClientStore.hpp \
     basic/AtomicBoolean.hpp \
     basic/GenerateRunnable.hpp \
     widgets/HUDWidget.hpp \
@@ -383,7 +382,8 @@ HEADERS  += \
     widgets/ConnectionManager.hpp \
     basic/AppContext.hpp \
     comms/ClientDirectory.hpp \
-    comms/couriers/CourierMandate.hpp
+    comms/couriers/CourierMandate.hpp \
+    comms/discovery/NodeAssociateStore.hpp
 
 
 
