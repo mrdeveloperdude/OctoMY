@@ -160,6 +160,8 @@ class PairingList: public QAbstractListModel
 				case(TYPE_AGENT):return ((TYPE_REMOTE==t)||(TYPE_HUB==t));
 				case(TYPE_REMOTE):return ((TYPE_HUB==t)||(TYPE_AGENT==t));
 				case(TYPE_HUB):return ((TYPE_AGENT==t)||(TYPE_REMOTE==t)||(TYPE_HUB==t)); //Hubs are onmnivorus
+				default:
+					return false;
 			}
 			return false;
 		}
@@ -246,6 +248,8 @@ class PairingList: public QAbstractListModel
 
 
 //////////////////////
+
+
 PairingWizard::PairingWizard(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::PairingWizard)
@@ -260,7 +264,6 @@ PairingWizard::PairingWizard(QWidget *parent)
 
 	reset();
 
-
 	// Hook onward buttons to go to the correct page in stack
 	QList<QPushButton *> onwardButtons = ui->stackedWidget->findChildren<QPushButton *>(QRegularExpression("pushButtonOnward.*"));
 	//qDebug()<<"FOUND "<<onwardButtons.size()<<" ONWARDs";
@@ -273,8 +276,8 @@ PairingWizard::PairingWizard(QWidget *parent)
 			ui->stackedWidget->setCurrentIndex(next);
 		},OC_CONTYPE);
 	}
-
 }
+
 
 PairingWizard::~PairingWizard()
 {
@@ -350,12 +353,14 @@ void PairingWizard::configure(Node *n)
 }
 
 
-void PairingWizard::reset(){
+void PairingWizard::reset()
+{
 	ui->stackedWidget->setCurrentWidget(ui->pagePairWithPeers);
 }
 
 
-void PairingWizard::startEdit(int row){
+void PairingWizard::startEdit(int row)
+{
 	qDebug()<<"STARTING EDIT FOR "<<row;
 	QModelIndex  index=mList->index(row,0);
 	if(index.isValid()){
@@ -372,11 +377,13 @@ void PairingWizard::startEdit(int row){
 	}
 }
 
-Node *PairingWizard::getNode(){
+Node *PairingWizard::getNode()
+{
 	return mNode;
 }
 
-void PairingWizard::showEvent(QShowEvent *){
+void PairingWizard::showEvent(QShowEvent *)
+{
 	if(nullptr!=mNode){
 		DiscoveryClient *client=mNode->discoveryClient();
 		if(nullptr!=client){
@@ -385,7 +392,8 @@ void PairingWizard::showEvent(QShowEvent *){
 	}
 }
 
-void PairingWizard::hideEvent(QHideEvent *){
+void PairingWizard::hideEvent(QHideEvent *)
+{
 	if(nullptr!=mNode){
 		DiscoveryClient *client=mNode->discoveryClient();
 		if(nullptr!=client){
@@ -438,5 +446,7 @@ void PairingWizard::on_pushButtonSaveEdits_clicked()
 {
 	//TODO: Save changes
 	ui->stackedWidget->setCurrentWidget(ui->pagePairWithPeers);
-
+	const bool block=ui->checkBoxBlock->isChecked();
+	const bool controlThem=ui->checkBoxControl->isChecked();
+	const bool trustThem=ui->checkBoxTrustNode->isChecked();
 }

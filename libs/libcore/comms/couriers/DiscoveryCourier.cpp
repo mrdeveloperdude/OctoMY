@@ -30,7 +30,7 @@ static const quint64 BT_XOR=0x13e7268a13e7268a;
 //Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
 quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 {
-	qDebug()<<"Sending oportunity for "<<mName;
+	qDebug()<<"Sending opportunity for "<<mName;
 	quint16 bytes=0;
 
 	NodeAssociate &ass=mPart.associate();
