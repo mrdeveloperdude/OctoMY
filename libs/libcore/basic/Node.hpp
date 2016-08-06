@@ -65,6 +65,9 @@ class Node : public QObject
 		void hookCommsSignals(QObject &o);
 		void unHookCommsSignals(QObject &o);
 
+		void hookPeerSignals(QObject &o);
+		void unHookPeerSignals(QObject &o);
+
 		const QCommandLineParser &options() const;
 		Settings &settings();
 		KeyStore  &keyStore();
@@ -72,13 +75,19 @@ class Node : public QObject
 		DiscoveryClient *discoveryClient();
 		DiscoveryRole role();
 		DiscoveryType type();
+		QString name();
 		CommsChannel *comms();
 		ZooClient *zooClient();
 		SensorInput *sensorInput();
 
+		QSharedPointer<NodeAssociate> localNodeAssociate();
+
 		CameraList *cameras();
 
 		virtual QWidget *showWindow();
+
+	signals:
+
 
 		// KeyStore slots
 	private slots:

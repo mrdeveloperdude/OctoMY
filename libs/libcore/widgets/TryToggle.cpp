@@ -3,13 +3,13 @@
 
 TryToggle::TryToggle(QWidget *parent) :
 	QWidget(parent)
-  , state(OFF)
+  , mState(OFF)
   , ui(new Ui::TryToggle)
 {
 	ui->setupUi(this);
-	timer.setInterval(100);
-	timer.setTimerType(Qt::PreciseTimer);
-	connect(&timer,SIGNAL(timeout()),this,SLOT(onTimeout()));
+	mTimer.setInterval(100);
+	mTimer.setTimerType(Qt::PreciseTimer);
+	connect(&mTimer,SIGNAL(timeout()),this,SLOT(onTimeout()));
 	qRegisterMetaType<TryToggleState>("TryToggleState");
 }
 
@@ -18,36 +18,41 @@ TryToggle::~TryToggle(){
 }
 
 void TryToggle::setText(QString t1i,QString t2i,QString t3i){
-	t1=t1i;
-	t2=t2i;
-	t3=t3i;
+	mT1=t1i;
+	mT2=t2i;
+	mT3=t3i;
 	updateText();
+}
+
+TryToggleState TryToggle::state()
+{
+	return mState;
 }
 
 void TryToggle::updateText(){
 	QString t="";
-	switch(state){
+	switch(mState){
 		default:t="ERROR";  break;
-		case(OFF):t=t1;  break;
-		case(TRYING):t=t2;  break;
-		case(ON):t=t3;  break;
+		case(OFF):t=mT1;  break;
+		case(TRYING):t=mT2;  break;
+		case(ON):t=mT3;  break;
 	}
 	ui->pushButtonToggle->setText(t);
 }
 
 void TryToggle::setState(const TryToggleState s){
 	qDebug()<<"SET STATE: "<<s;
-	if(s!=state){
+	if(s!=mState){
 		//qDebug()<<" + DIFFERENT FROM LAST: "<<state;
 		if(TRYING==s){
-			timer.start();
+			mTimer.start();
 		}
 		else{
-			timer.stop();
+			mTimer.stop();
 		}
 		ui->widgetLight->setLightOn(!(OFF==s));
 		ui->pushButtonToggle->setChecked(!(OFF==s));
-		state=s;
+		mState=s;
 		updateText();
 		//qDebug()<<"Emitting " <<state;
 		emit stateChanged(s);
@@ -60,7 +65,7 @@ void TryToggle::animateClick(){
 
 void TryToggle::on_pushButtonToggle_toggled(bool checked){
 	//qDebug()<<"Clicked " <<checked;
-	if(checked && OFF==state){
+	if(checked && OFF==mState){
 		setState(TRYING);
 	}
 	else if(!checked){

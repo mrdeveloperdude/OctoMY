@@ -2,6 +2,9 @@
 #define GENERATERUNNABLE_HPP
 
 #include <QRunnable>
+#include <QThread>
+
+#include <QDebug>
 
 template<typename T>
 class GenerateRunnable : public QRunnable{
@@ -11,14 +14,15 @@ class GenerateRunnable : public QRunnable{
 		GenerateRunnable(T &ks)
 			: ks(ks)
 		{
-
+			//qDebug() << "GENERATE RUNNABLE CTOR";
 		}
 	public:
 		void run() {
-			//qDebug() << "Started keystore bootstrap @ " << QThread::currentThread();
+			//qDebug() << "GENERATE RUNNABLE start bootstrap @ " << QThread::currentThread();
 			ks.bootstrapWorker();
-			//qDebug() << "Ended keystore bootstrap @ " << QThread::currentThread()<<" with result: " << ks.getLocalPublicKey();
+			//qDebug() << "GENERATE RUNNABLE end bootstrap @ " << QThread::currentThread();
 		}
 };
 
 #endif // GENERATERUNNABLE_HPP
+

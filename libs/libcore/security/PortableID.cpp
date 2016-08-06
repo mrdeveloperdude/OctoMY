@@ -16,7 +16,7 @@ PortableID::PortableID()
 PortableID::PortableID(QVariantMap &data)
 	: mName(data["name"].toString())
 	, mGender(data["gender"].toString())
-	, mID((data["id"].isValid() && !data["id"].isNull())?data["id"].toString():utility::toHash(data["publicKey"].toString()))
+	, mID(data["id"].toString())
 	, mBirthDate(QDateTime::fromString(data["createDate"].toString()).toMSecsSinceEpoch())
 	, mType(DiscoveryTypeFromString(data["type"].toString()))
 {

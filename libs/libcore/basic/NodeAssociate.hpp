@@ -7,6 +7,7 @@
 
 #include <QBluetoothAddress>
 #include "comms/ClientSignature.hpp"
+#include "security/PortableID.hpp"
 
 #include <QByteArray>
 #include <QVariantMap>
@@ -26,6 +27,9 @@ class NodeAssociate{
 	private:
 		Key mKey;
 
+		QString mName;
+		QString mGender;
+
 		// A list of the trusts assigned to this associate
 		QStringList mTrusts;
 		// The most updated trusted type and role for this associate
@@ -33,6 +37,8 @@ class NodeAssociate{
 		DiscoveryType mType;
 		// When was the last trusted sighting of this associate?
 		quint64 mLastSeenMS;
+
+		quint64 mBirthDate;
 
 		NetworkAddress mPublicNetworkAddress;
 		NetworkAddress mLocalNetworkAddress;
@@ -52,6 +58,8 @@ class NodeAssociate{
 
 	public:
 		QString id() const;
+		QString name() const;
+		QString gender() const;
 		Key key();
 		DiscoveryType type() const;
 		DiscoveryRole role() const;
@@ -62,14 +70,21 @@ class NodeAssociate{
 
 		ClientSignature toClientSignature();
 
+		PortableID toPortableID();
+
 
 		void clearPins();
 		void addPin(QString pin);
+		bool hasPin(QString pin);
 		const QStringList &pins();
 
 
 		void clearTrust();
 		void addTrust(QString trust);
+		void removeTrust(QString trust);
+		bool hasTrust(QString trust);
+		const QStringList &trusts();
+
 		QVariantMap toVariantMap();
 		void fromVariantMap(const QVariantMap map);
 		QString toString();

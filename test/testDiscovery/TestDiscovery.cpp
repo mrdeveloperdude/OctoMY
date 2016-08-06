@@ -46,7 +46,7 @@ void TestDiscovery::test(){
 		KeyStore *agentKeystore=&testAgent->keyStore();
 		QVERIFY(nullptr!=agentKeystore);
 		spyAgentKeyReady=new QSignalSpy(agentKeystore,SIGNAL(keystoreReady(bool)));
-		bool conret1=connect(agentKeystore, &KeyStore::keystoreReady, [=](bool ok){
+		bool conret1=connect(agentKeystore, &KeyStore::storeReady, [=](bool ok){
 			qDebug()<<"AGENT KEYSTORE READY "<<ok;
 			QVERIFY(agentKeystore->isReady());
 			QVERIFY(!agentKeystore->hasError());
@@ -61,8 +61,8 @@ void TestDiscovery::test(){
 		QVERIFY(nullptr!=testRemote);
 		KeyStore *remoteKeystore=&testRemote->keyStore();
 		QVERIFY(nullptr!=remoteKeystore);
-		spyRemoteKeyReady=new QSignalSpy(remoteKeystore, SIGNAL(keystoreReady(bool)));
-		bool conret2=connect(remoteKeystore, &KeyStore::keystoreReady, [=](){
+		spyRemoteKeyReady=new QSignalSpy(remoteKeystore, SIGNAL(storeReady(bool)));
+		bool conret2=connect(remoteKeystore, &KeyStore::storeReady, [=](){
 			qDebug()<<"REMOTE KEYSTORE READY";
 			QVERIFY(remoteKeystore->isReady());
 			QVERIFY(!remoteKeystore->hasError());

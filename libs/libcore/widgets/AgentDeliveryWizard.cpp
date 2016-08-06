@@ -17,8 +17,9 @@ const quint64 AgentDeliveryWizard::MINIMUM_BIRTH_TIME=3000;
 AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::AgentDeliveryWizard)
-	, spinner(nullptr)
-	, settings(nullptr)
+	, mSpinner(nullptr)
+	, mSettings(nullptr)
+	, mBirthDate(0)
 {
 	ui->setupUi(this);
 	const qint32 minLetters=3;
@@ -30,7 +31,7 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	//             and http://www.regular-expressions.info/unicode.html
 	ui->lineEditName->setValidator(new QRegularExpressionValidator(re, this));
 	{
-		spinner=new WaitingSpinnerWidget(ui->labelBirthImage, true, false);
+		mSpinner=new WaitingSpinnerWidget(ui->labelBirthImage, true, false);
 		SpinnerStyle style;
 		style.setColor(QColor("white"));
 		style.setRelatveSize(true);
@@ -38,12 +39,12 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 		style.setLineLength(10);
 		style.setInnerRadius(40);
 		style.setLineWidth(3);
-		spinner->setStyle(style);
+		mSpinner->setStyle(style);
 	}
-	birthTimer.setInterval(MINIMUM_BIRTH_TIME); //Minimum birth time gives this moment some depth in case keygen should finish quickly.
-	birthTimer.setSingleShot(true);
+	mBirthTimer.setInterval(MINIMUM_BIRTH_TIME); //Minimum birth time gives this moment some depth in case keygen should finish quickly.
+	mBirthTimer.setSingleShot(true);
 
-	if(!connect(&birthTimer, &QTimer::timeout, this, &AgentDeliveryWizard::onBirthComplete, OC_CONTYPE)){
+	if(!connect(&mBirthTimer, &QTimer::timeout, this, &AgentDeliveryWizard::onBirthComplete, OC_CONTYPE)){
 		qWarning()<<"ERROR: Could not connect";
 	}
 
@@ -58,8 +59,9 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 
 
 void AgentDeliveryWizard::save(){
-	if(nullptr!=settings){
-	}
+	QString gender=ui->comboBoxGender->currentText();
+	QString name=ui->lineEditName->text();
+	QString id=ui->lineEditName->text();
 }
 
 void AgentDeliveryWizard::reset(){
@@ -80,15 +82,15 @@ static QString generateRandomGender(){
 
 
 void AgentDeliveryWizard::configure(Node *n){
-	if(node!=n){
-		node=n;
-		if(nullptr!=node){
-			settings=&node->settings();
-			KeyStore &keystore=node->keyStore();
-			if(!connect(&keystore, &KeyStore::keystoreReady, this, &AgentDeliveryWizard::onBirthComplete, OC_CONTYPE)){
+	if(mNode!=n){
+		mNode=n;
+		if(nullptr!=mNode){
+			mSettings=&mNode->settings();
+			KeyStore &keystore=mNode->keyStore();
+			if(!connect(&keystore, &KeyStore::storeReady, this, &AgentDeliveryWizard::onBirthComplete, OC_CONTYPE)){
 				qWarning()<<"ERROR: Could not connect";
 			}
-			ui->lineEditName->setText(ng.generate());
+			ui->lineEditName->setText(mNameGenerator.generate());
 			reset();
 		}
 	}
@@ -102,22 +104,34 @@ AgentDeliveryWizard::~AgentDeliveryWizard()
 
 
 void AgentDeliveryWizard::onBirthComplete(){
-	if(nullptr!=node){
-		KeyStore &keystore=node->keyStore();
-		if((keystore.isReady() || keystore.hasError()) && !birthTimer.isActive()){
+	if(nullptr!=mNode){
+		KeyStore &keystore=mNode->keyStore();
+		if(keystore.isReady() && !mBirthTimer.isActive()){
 			qDebug()<<"XXX - Birth complete!";
-			birthTimer.stop();
-			spinner->stop();
+			mBirthTimer.stop();
+			mSpinner->stop();
 			if(keystore.hasError()){
 				qWarning()<<"XXX - ERROR: Birthdefects detected!";
+				qDebug()<<"XXX: DATA AFTER AFILED LOAD WAS: "<<keystore;
+				//Go back to try again
 				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
 			}
 			else{
 				QString id=keystore.localKey().id();
 				qDebug()<<"XXX - All is good, ID: "<<id;
-				mID.setID(id);
-				mID.setType(TYPE_AGENT);
-				mID.setBirthDate(QDateTime::currentMSecsSinceEpoch());
+				qDebug()<<"XXX: DATA AFTER OK LOAD WAS: "<<keystore;
+				mBirthDate=QDateTime::currentMSecsSinceEpoch();
+				QVariantMap map;
+				map["key"]=keystore.localKey().toVariantMap(true);
+				map["name"]=ui->lineEditName->text();
+				map["gender"]=ui->comboBoxGender->currentText();
+				map["type"]=DiscoveryTypeToString(TYPE_AGENT);
+				map["role"]=DiscoveryRoleToString(ROLE_AGENT);
+				map["birthDate"]=mBirthDate;
+				mMyData= QSharedPointer<NodeAssociate> (new NodeAssociate(map));
+				mID=mMyData->toPortableID();
+				mNode->peers().setParticipant(mMyData);
+				mNode->peers().save();
 				ui->widgetBirthCertificate->setPortableID(mID);
 				ui->stackedWidget->setCurrentWidget(ui->pageDone);
 			}
@@ -125,6 +139,9 @@ void AgentDeliveryWizard::onBirthComplete(){
 		else{
 			qDebug()<<"XXX - Birth almost complete...";
 		}
+	}
+	else{
+		qWarning()<<"ERROR: No node";
 	}
 }
 
@@ -142,21 +159,21 @@ void AgentDeliveryWizard::on_pushButtonPairNow_clicked()
 
 void AgentDeliveryWizard::on_pushButtonRandomName_clicked()
 {
-	ui->lineEditName->setText(ng.generate());
+	ui->lineEditName->setText(mNameGenerator.generate());
 }
 
 void AgentDeliveryWizard::on_pushButtonOnward_clicked()
 {
-	if(nullptr!=node){
-		KeyStore &keystore=node->keyStore();
+	if(nullptr!=mNode){
+		KeyStore &keystore=mNode->keyStore();
 		QString name=ui->lineEditName->text();
 		name[0]=name[0].toUpper();
 		mID.setName(name);
 		QString gender=0>ui->comboBoxGender->currentIndex()?ui->comboBoxGender->currentText():generateRandomGender();
 		mID.setGender(gender);
 		qDebug()<<"XXX - Started birth for NAME: "<<name<<", GENDER: "<<gender;
-		spinner->start();
-		birthTimer.start();
+		mSpinner->start();
+		mBirthTimer.start();
 		keystore.clear();
 		keystore.bootstrap(false,true);
 		ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);

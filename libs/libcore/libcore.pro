@@ -189,6 +189,9 @@ SOURCES +=\
 	zoo/ZooClient.cpp \
 	zoo/ZooConstants.cpp \
 	zoo/ZooServer.cpp \
+    basic/AsyncStore.cpp \
+    widgets/PairingListModel.cpp \
+    widgets/PairingEditButtonDelegate.cpp
 
 
 
@@ -384,6 +387,9 @@ HEADERS  += \
 	zoo/ZooClient.hpp \
 	zoo/ZooConstants.hpp \
 	zoo/ZooServer.hpp \
+    basic/AsyncStore.hpp \
+    widgets/PairingListModel.hpp \
+    widgets/PairingEditButtonDelegate.hpp
 
 
 

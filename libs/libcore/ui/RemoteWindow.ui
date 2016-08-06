@@ -48,7 +48,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="pageRunning">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -81,6 +81,15 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <item>
+            <property name="text">
+             <string>Connection</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../resources/icons.qrc">
+              <normaloff>:/icons/network.svg</normaloff>:/icons/network.svg</iconset>
+            </property>
+           </item>
            <item>
             <property name="text">
              <string extracomment="Control individual servos">Actuator</string>
@@ -162,8 +171,69 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidgetControl">
          <property name="currentIndex">
-          <number>4</number>
+          <number>1</number>
          </property>
+         <widget class="QWidget" name="pageConnection">
+          <layout class="QVBoxLayout" name="verticalLayout_11">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="ConnectionWidget" name="widgetConnection" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>10</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
          <widget class="QWidget" name="pageActuator">
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <property name="spacing">
@@ -191,8 +261,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>84</width>
-                <height>34</height>
+                <width>440</width>
+                <height>560</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -506,13 +576,6 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="pageManageConnections">
-      <layout class="QVBoxLayout" name="verticalLayout_10">
-       <item>
-        <widget class="ConnectionManager" name="widgetConnectionManager" native="true"/>
-       </item>
-      </layout>
-     </widget>
      <widget class="QWidget" name="pageMyID">
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="1" column="0">
@@ -650,9 +713,9 @@
    <header>widgets/LogWidget.hpp</header>
   </customwidget>
   <customwidget>
-   <class>ConnectionManager</class>
+   <class>ConnectionWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/ConnectionManager.hpp</header>
+   <header>widgets/ConnectionWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

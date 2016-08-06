@@ -6,7 +6,6 @@
 ConnectionWidget::ConnectionWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::ConnectionWidget)
-	, settings(nullptr)
 {
 	ui->setupUi(this);
 	ui->tryToggleListen->setText("Connect","Connecting...","Connected");
@@ -25,15 +24,17 @@ ConnectionWidget::~ConnectionWidget()
 }
 
 
-void ConnectionWidget::configure(Settings *s,QString base){
-	settings=s;
+void ConnectionWidget::configure(NetworkAddress &localAddress, NetworkAddress &remoteAddress){
+	mLocalAddress=localAddress;
+	mRemoteAddress=remoteAddress;
+
 	//Local
-	ui->comboBoxLocalAddress->configure(settings, base+"-listen-address","Local address");
-	ui->lineEditLocalPort->configure(settings, "",base+"-listen-port","Local port");
+	ui->comboBoxLocalAddress->setCurrentText(mLocalAddress.ip().toString());
+	ui->lineEditLocalPort->setText(QString::number(mLocalAddress.port()));
 
 	//Target
-	ui->lineEditTargetAddress->configure(settings, "",base+"-target-address","Target address");
-	ui->lineEditTargetPort->configure(settings, "",base+"-target-port", "Target port");
+	ui->lineEditTargetAddress->setText(mRemoteAddress.ip().toString());
+	ui->lineEditTargetPort->setText(QString::number(mRemoteAddress.port()));
 
 	setEditsEnabled(true);
 }
@@ -66,6 +67,11 @@ quint16 ConnectionWidget::getTargetPort(){
 
 QHostAddress ConnectionWidget::getTargetAddress(){
 	return QHostAddress(ui->lineEditTargetAddress->text());
+}
+
+TryToggleState ConnectionWidget::connectState()
+{
+	return ui->tryToggleListen->state();
 }
 
 

@@ -43,7 +43,7 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	//ScopedTimer nodeBootTimer(mContext->base()+"-boot");
 	setObjectName(mContext->base());
 
-	if(!connect(&mKeystore, &KeyStore::keystoreReady, this, &Node::onKeystoreReady)){
+	if(!connect(&mKeystore, &KeyStore::storeReady, this, &Node::onKeystoreReady)){
 		qWarning()<<"ERROR: Could not connect "<<mKeystore.objectName();
 	}
 	else{
@@ -52,6 +52,8 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 
 	// Only Agents are "born"
 	mKeystore.bootstrap(ROLE_AGENT==role);
+
+	mPeers.bootstrap(true, false);
 
 	StyleManager *style=new StyleManager(QColor(TYPE_AGENT==type?"#e83636":TYPE_REMOTE==type?"#36bee8":"#36e843"));
 	if(nullptr!=style){
@@ -121,6 +123,35 @@ DiscoveryType Node::type()
 	return mType;
 }
 
+QString Node::name()
+{
+	QSharedPointer<NodeAssociate>  me=localNodeAssociate();
+	QString name;
+	if(nullptr!=me){
+		name=me->name();
+	}
+	if(""!=name.trimmed()){
+		switch(mType){
+			case(TYPE_AGENT):{
+					name="Agent ";
+				}break;
+			case(TYPE_HUB):{
+					name="Hub ";
+				}break;
+			case(TYPE_REMOTE):{
+					name="Remote ";
+				}break;
+			case(TYPE_ZOO):{
+					name="Zoo ";
+				}break;
+			default:
+				name="Unknown ";
+		};
+		name+=me->id().mid(0,8);
+	}
+	return "";
+}
+
 CommsChannel *Node::comms()
 {
 	return mComms;
@@ -134,6 +165,12 @@ ZooClient *Node::zooClient()
 SensorInput *Node::sensorInput()
 {
 	return mSensors;
+}
+
+QSharedPointer<NodeAssociate> Node::localNodeAssociate()
+{
+	QSharedPointer<NodeAssociate> me=mPeers.getParticipant(mKeystore.localKey().id());
+	return me;
 }
 
 CameraList *Node::cameras()
@@ -178,6 +215,21 @@ void Node::unHookCommsSignals(QObject &o)
 		mComms->unHookSignals(o);
 	}
 }
+
+
+
+
+void Node::hookPeerSignals(QObject &o)
+{
+	mPeers.hookSignals(o);
+}
+
+
+void Node::unHookPeerSignals(QObject &o)
+{
+	mPeers.unHookSignals(o);
+}
+
 
 
 void Node::updateDiscoveryClient(){

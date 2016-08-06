@@ -13,9 +13,9 @@ namespace Ui {
 
 class Node;
 class PairingTable;
-class PairingList;
+class PairingListModel;
 
-class EditButtonDelegate;
+class PairingEditButtonDelegate;
 
 class PairingWizard : public QWidget
 {
@@ -24,9 +24,10 @@ class PairingWizard : public QWidget
 	private:
 		Ui::PairingWizard *ui;
 		Node *mNode;
-		PairingList *mList;
-		EditButtonDelegate *mDelegate;
+		PairingListModel *mList;
+		PairingEditButtonDelegate *mDelegate;
 		QString mTemplate;
+		QString mCurrentlyEditing;
 
 	public:
 		explicit PairingWizard(QWidget *parent = 0);
@@ -52,9 +53,6 @@ class PairingWizard : public QWidget
 		void on_pushButtonTryAgain_clicked();
 		void on_pushButtonDone_clicked();
 		void on_pushButtonCameraPair_clicked();
-
-		void on_pushButtonDiscoverNow_clicked();
-
 		void on_pushButtonSaveEdits_clicked();
 
 	signals:

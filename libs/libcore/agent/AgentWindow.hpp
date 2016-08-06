@@ -34,9 +34,6 @@ class AgentWindow : public QWidget, public LogDestination{
 		explicit AgentWindow(Agent *mAgent, QWidget *parent = 0);
 		virtual ~AgentWindow();
 
-
-
-
 		void appendLog(const QString& text);
 
 		void updateVisibility();

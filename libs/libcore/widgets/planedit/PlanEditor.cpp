@@ -125,7 +125,7 @@ void PlanEditor::onTextChanged()
 void PlanEditor::save()
 {
 	ui->pushButtonSave->setEnabled(false);
-	qDebug()<<"SAVING: "<<plan_fn;
+	//qDebug()<<"SAVING: "<<plan_fn;
 	QString txt=ui->plainTextEditPlan->toPlainText();
 	//TODO: Should we really change data before saving like this? I mean will all users appreciate this?
 	if(!txt.endsWith("\n")){

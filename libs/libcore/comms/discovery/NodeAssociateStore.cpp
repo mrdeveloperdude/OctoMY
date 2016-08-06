@@ -12,14 +12,9 @@
 #include <QVariantList>
 
 NodeAssociateStore::NodeAssociateStore(QString fn, QObject *parent)
-	: QObject(parent)
-	, mReady(false)
-	, mError(false)
-	, mFilename(fn)
+	: AsyncStore(fn, parent)
 {
-	if(QFile(mFilename).exists()){
-		load();
-	}
+	qDebug()<<"NodeAssociateStore() file="<<fn;
 }
 
 
@@ -30,30 +25,13 @@ NodeAssociateStore::~NodeAssociateStore()
 }
 
 
-void NodeAssociateStore::bootstrap(bool inBackground)
-{
-	// QThreadPool takes ownership and deletes runnable automatically after completion
-	if(inBackground){
-		QThreadPool *tp=QThreadPool::globalInstance();
-		if(0!=tp){
-			const bool ret=tp->tryStart(new GenerateRunnable<NodeAssociateStore>(*this));
-			if(ret){
-				//qDebug()<<"NodeAssociateStore: Successfully started background thread";
-				return;
-			}
-		}
-		// Fall back to single threaded wday
-		qDebug()<<"NodeAssociateStore: Falling back to serial bootstrap";
-	}
-	bootstrapWorker();
-}
 
-
-void NodeAssociateStore::bootstrapWorker()
+void NodeAssociateStore::bootstrapWorkerImpl()
 {
+	qDebug()<<"KeyStore() bootstrapWorkerImpl() file="<<mFilename;
 	QFile f(mFilename);
 	if(!f.exists()){
-		qDebug()<<"NodeAssociateStore: no store file found, saving for first time";
+		qDebug()<<"NodeAssociateStore: no keystore file found, saving";
 		save();
 	}
 	load();
@@ -62,7 +40,7 @@ void NodeAssociateStore::bootstrapWorker()
 
 void NodeAssociateStore::load()
 {
-	//qDebug()<<"NodeAssociateStore: Loading from file";
+	qDebug()<<"NodeAssociateStore: Loading from file";
 	QJsonParseError jsonError;
 	QByteArray raw=utility::fileToByteArray(mFilename);
 	QJsonDocument doc = QJsonDocument::fromJson(raw, &jsonError);
@@ -72,15 +50,16 @@ void NodeAssociateStore::load()
 	}
 	else{
 		//qDebug()<<"PARSED JSON: "<<doc.toJson();
+		mPeers.clear();
 		QVariantMap map = doc.object().toVariantMap();
-		QVariantList remotes=map["participants"].toList();
-		for(QVariantList::iterator b=remotes.begin(), e=remotes.end(); b!=e; ++b){
+		QVariantList peers=map["peers"].toList();
+		for(QVariantList::iterator b=peers.begin(), e=peers.end(); b!=e; ++b){
 			QSharedPointer<NodeAssociate> peer=QSharedPointer<NodeAssociate>(new NodeAssociate((*b).toMap()));
-			mPeers[peer->id()]=peer;
+			setParticipant(peer);
 		}
 		mReady=true;
 	}
-	emit discoveryStoreReady();
+	emit storeReady(!mError);
 }
 
 void NodeAssociateStore::save()
@@ -92,7 +71,7 @@ void NodeAssociateStore::save()
 	for(QMap<QString, QSharedPointer<NodeAssociate> >::const_iterator b=mPeers.begin(), e=mPeers.end(); b!=e; ++b){
 		remotes.push_back(b.value()->toVariantMap());
 	}
-	map["participants"]=remotes;
+	map["peers"]=remotes;
 	QJsonDocument doc=QJsonDocument::fromVariant(map);
 	utility::stringToFile(mFilename,doc.toJson());
 }
@@ -106,6 +85,10 @@ bool NodeAssociateStore::hasParticipant(const QString &id)
 }
 
 
+const int NodeAssociateStore::getParticipantCount() const
+{
+	return mPeers.size();
+}
 
 QSharedPointer<NodeAssociate> NodeAssociateStore::getParticipant(const QString &id)
 {
@@ -123,6 +106,8 @@ QSharedPointer<NodeAssociate> NodeAssociateStore::removeParticipant(const QStrin
 	if(hasParticipant(id)){
 		ret=mPeers[id];
 		mPeers.remove(id);
+		emit peerRemoved(id);
+		emit peersChanged();
 	}
 	return ret;
 }
@@ -134,7 +119,12 @@ void NodeAssociateStore::setParticipant(QSharedPointer<NodeAssociate> participan
 	if(nullptr!=participant){
 		auto id=participant->id();
 		qDebug()<<"REGISTERING PARTICIPANT WITH ID: "<<id;
+		const bool isNew=!hasParticipant(id);
 		mPeers[id]=participant;
+		if(isNew){
+			emit peerAdded(id);
+			emit peersChanged();
+		}
 	}
 }
 
@@ -142,4 +132,37 @@ void NodeAssociateStore::setParticipant(QSharedPointer<NodeAssociate> participan
 QMap<QString, QSharedPointer<NodeAssociate> > &NodeAssociateStore::getParticipants()
 {
 	return mPeers;
+}
+
+
+
+void NodeAssociateStore::hookSignals(QObject &ob){
+	if(!connect(this, SIGNAL(storeReady(bool)), &ob, SLOT(onStoreReady(bool)),OC_CONTYPE)){
+		qDebug()<<"could not connect "<<ob.objectName();
+	}
+	if(!connect(this,SIGNAL(peerAdded(QString)),&ob,SLOT(onPeerAdded(QString)),OC_CONTYPE)){
+		qDebug()<<"could not connect "<<ob.objectName();
+	}
+	if(!connect(this,SIGNAL(peerRemoved(QString)),&ob,SLOT(onPeerRemoved(QString)),OC_CONTYPE)){
+		qDebug()<<"could not connect "<<ob.objectName();
+	}
+	if(!connect(this,SIGNAL(peersChanged()),&ob,SLOT(onPeersChanged()),OC_CONTYPE)){
+		qDebug()<<"could not connect "<<ob.objectName();
+	}
+}
+
+
+void NodeAssociateStore::unHookSignals(QObject &ob){
+	if(!disconnect(this,SIGNAL(storeReady(bool)),&ob,SLOT(onStoreReady(bool)))){
+		qDebug()<<"could not disconnect "<<ob.objectName();
+	}
+	if(!disconnect(this,SIGNAL(peerAdded(QString)),&ob,SLOT(onPeerAdded(QString)))){
+		qDebug()<<"could not disconnect "<<ob.objectName();
+	}
+	if(!disconnect(this,SIGNAL(peerRemoved(QString)),&ob,SLOT(onPeerRemoved(QString)))){
+		qDebug()<<"could not disconnect "<<ob.objectName();
+	}
+	if(!disconnect(this,SIGNAL(peersChanged()),&ob,SLOT(onPeersChanged()))){
+		qDebug()<<"could not disconnect "<<ob.objectName();
+	}
 }

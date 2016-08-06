@@ -1,37 +1,34 @@
 #ifndef KEYSTORE_HPP
 #define KEYSTORE_HPP
 
-#include <QByteArray>
-#include <QString>
-#include <QMap>
-#include <QSharedPointer>
-#include <QMutex>
 
 #include "../libpki/qpolarsslpki.hpp"
-#include "basic/AtomicBoolean.hpp"
+
 #include "Key.hpp"
 #include "security/PortableID.hpp"
 
 #include "basic/GenerateRunnable.hpp"
 
+#include "basic/AsyncStore.hpp"
+
+
+#include <QByteArray>
+#include <QCryptographicHash>
+#include <QDateTime>
 #include <QFile>
 #include <QFileInfo>
-#include <QDateTime>
-#include <QCryptographicHash>
+#include <QMap>
+#include <QMutex>
+#include <QSharedPointer>
+#include <QString>
 
 
-class KeyStore: public QObject{
+class KeyStore: public AsyncStore{
 		Q_OBJECT
 	private:
 
 		Key mLocalKey;
-		//qpolarssl::Pki local_pki;
 		QMap<QString, Key > mPeers;
-		AtomicBoolean mReady;
-		AtomicBoolean mError;
-		AtomicBoolean mInProgress;
-		QString mFilename;
-		//quint32 keyBits;
 
 		friend class GenerateRunnable<KeyStore>;
 
@@ -39,33 +36,17 @@ class KeyStore: public QObject{
 		explicit KeyStore(QString="", QObject *parent=nullptr);
 		virtual ~KeyStore();
 
-	private:
 
-		void bootstrapWorker();
-		void load();
-		void save();
+	protected:
+		void bootstrapWorkerImpl() override;
+	public:
+		void load() override;
+		void save() override;
 
 	public:
 
 		void clear();
 
-		//Make if needed, load if otherwise
-		void bootstrap(bool loadOnly=false, bool runInBackground=true);
-
-		inline bool isReady()
-		{
-			return mReady;
-		}
-
-		inline bool hasError()
-		{
-			return mError;
-		}
-
-		inline bool hasLocalKeyFile() const
-		{
-			return QFile(mFilename).exists();
-		}
 
 		inline Key &localKey()
 		{
@@ -100,10 +81,6 @@ class KeyStore: public QObject{
 
 		friend const QDebug &operator<<(QDebug &d, KeyStore &ks);
 
-	signals:
-
-		void keystoreReady(bool ok);
-
 };
 
 
@@ -111,10 +88,4 @@ class KeyStore: public QObject{
 const QDebug &operator<<(QDebug &d, KeyStore &ks);
 
 #endif // KEYSTORE_HPP
-
-
-
-
-
-
 

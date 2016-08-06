@@ -8,6 +8,8 @@
 
 DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<NodeAssociate> part)
 {
+	quint32 participantAddCount=0;
+	quint32 sessionAddCount=0;
 	if(nullptr==part){
 		qWarning()<<"ERROR: participant was 0";
 		return nullptr;
@@ -41,19 +43,35 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<NodeAssociate> 
 				else{
 					//qDebug()<<"Adding session to registry under pin "<<pin;
 					registry[pin]=ses;
+					sessionAddCount++;
+					participantAddCount++;
 				}
 			}
-			else if(!ses->set(part)){
-				qWarning()<<"ERROR: participant was not welcome in existing session";
-				ses=nullptr;
+			else {
+				if(!ses->has(part->id())){
+					if(!ses->set(part)){
+						qWarning()<<"ERROR: participant was not welcome in existing session";
+						ses=nullptr;
+					}
+					else{
+						participantAddCount++;
+					}
+
+				}
 			}
 		}
 		else{
-			qWarning()<<"ERROR: no pins";
+			qWarning()<<"ERROR: no pin";
 		}
 	}
 	else{
 		qWarning()<<"ERROR: participant had no pins";
+	}
+	if(sessionAddCount>0){
+		qDebug()<<"ADDING "<<sessionAddCount<<" sessions to server";
+	}
+	if(participantAddCount>0){
+		qDebug()<<"ADDING "<<participantAddCount<<" participants to server";
 	}
 	return ses;
 }

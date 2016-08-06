@@ -3,6 +3,7 @@
 
 #include "widgets/TryToggle.hpp"
 #include "basic/LogDestination.hpp"
+#include "widgets/WaitingSpinnerWidget.hpp"
 
 
 #include <QWidget>
@@ -30,6 +31,7 @@ class RemoteWindow : public QWidget, public LogDestination{
 		Ui::RemoteWindow *ui;
 		Remote *mRemote;
 		QMenu mMenu;
+		WaitingSpinnerWidget *mSpinner;
 
 	public:
 		explicit RemoteWindow(Remote *mRemote, QWidget *parent = nullptr);
@@ -40,35 +42,57 @@ class RemoteWindow : public QWidget, public LogDestination{
 
 
 	private:
+		// Android spesifc notifications
+
 		void notifyAndroid(QString);
 		void toastAndroid(QString);
 
+
 		void updateControlLevel();
 		void updateActiveAgent();
+
+		void updateIdentity();
+		void addAgentToList(QString name, QString iconPath);
+
+		// Menu stuff
+
 		void prepareMenu();
+
+		// Map stuff
+
 		void prepareMap();
 		void homeMap();
 
-		void updateIdentity();
+		// Spinner
+		void prepareSpinner();
 
-		void addAgentToList(QString name, QString iconPath);
 
 	public:
 
 		virtual void keyReleaseEvent(QKeyEvent *);
 
+
+		// Internal slots
 	private slots:
 		void onStartPairing();
 		void onStartPlanEditor();
 		void onStartShowBirthCertificate();
 
-		//CommsChannel slots
+		// Peer Store slots
+	public slots:
+		void onPeerAdded(QString id);
+		void onPeerRemoved(QString id);
+		void onPeersChanged();
+		void onStoreReady(bool);
+
+
+		// CommsChannel slots
 	public slots:
 		void onError(QString);
 		void onClientAdded(Client *);
 		void onConnectionStatusChanged(bool);
 
-		//Internal Sensor slots
+		// Internal Sensor slots
 	private slots:
 		void onPositionUpdated(const QGeoPositionInfo &info);
 		void onCompassUpdated(QCompassReading *);

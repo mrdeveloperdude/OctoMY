@@ -20,9 +20,9 @@ class TryToggle : public QWidget
 {
 		Q_OBJECT
 	private:
-		QTimer timer;
-		TryToggleState state;
-		QString t1,t2,t3;
+		QTimer mTimer;
+		TryToggleState mState;
+		QString mT1,mT2,mT3;
 
 	public:
 		explicit TryToggle(QWidget *parent = 0);
@@ -30,12 +30,15 @@ class TryToggle : public QWidget
 
 	public:
 		void setText(QString, QString, QString);
+		TryToggleState state();
 
 	private:
 		void updateText();
 
+
 	public slots:
 		void setState(const TryToggleState s);
+
 
 		void animateClick();
 	private slots:

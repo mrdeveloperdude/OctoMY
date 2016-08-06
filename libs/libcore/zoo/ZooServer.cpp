@@ -334,6 +334,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 		*/
 		//qDebug()<<"FULL MAP IS: "<<root;
 		QSharedPointer<NodeAssociate> part(new NodeAssociate(root));
+		qDebug()<<"GOT ROOT"<<part->toString();
 		QString publicAddress="";
 		quint16 publicPort=0;
 		QTcpServer *tc=tcpServer();
@@ -347,7 +348,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 		part->addPin(root.value("geoPin").toString());
 		DiscoveryServerSession *ses=discovery.request(part);
 		if(nullptr!=ses){
-			map["participants"]=ses->toVariantMap();
+			map["peers"]=ses->toVariantMap();
 		}
 		else{
 			res->setStatusCode(qhttp::ESTATUS_INTERNAL_SERVER_ERROR);
@@ -382,18 +383,18 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 	map["status"] = ok?"ok":"error";
 	map["message"] = msg;
 
+
+	/*
 	qDebug()<<"PAIR: "<<msg+":";
-	QList<QVariant> l=map["participants"].toList();
+	QList<QVariant> l=map["peers"].toList();
 	for(QVariant pp:l){
 		QVariantMap p=pp.toMap();
 		qDebug()<< " + "
 				<<utility::toHash(p["publicKey"].toString())
 				<<" = "
 			   << p["type"].toString();
-
-
 	}
-
+	*/
 
 	QByteArray body  = QJsonDocument::fromVariant(map).toJson();
 

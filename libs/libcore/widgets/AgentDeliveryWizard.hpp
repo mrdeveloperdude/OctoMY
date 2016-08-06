@@ -4,6 +4,7 @@
 #include "security/KeyStore.hpp"
 #include "security/PortableID.hpp"
 #include "basic/AgentNameGenerator.hpp"
+#include "basic/NodeAssociate.hpp"
 
 
 #include <QWidget>
@@ -24,12 +25,14 @@ class AgentDeliveryWizard : public QWidget
 
 	protected:
 		Ui::AgentDeliveryWizard *ui;
-		QTimer birthTimer;
-		WaitingSpinnerWidget *spinner;
-		AgentNameGenerator ng;
-		Settings *settings;
-		Node *node;
+		QTimer mBirthTimer;
+		WaitingSpinnerWidget *mSpinner;
+		AgentNameGenerator mNameGenerator;
+		Settings *mSettings;
+		Node *mNode;
 		PortableID mID;
+		QSharedPointer<NodeAssociate> mMyData;
+		quint64 mBirthDate;
 
 	public:
 
@@ -44,7 +47,7 @@ class AgentDeliveryWizard : public QWidget
 	public:
 		void reset();
 
-		void configure(Node *node);
+		void configure(Node *mNode);
 
 	signals:
 		void done(bool);

@@ -111,6 +111,13 @@ void DiscoveryClient::stop(){
 }
 
 
+static void merge( QVariantMap  &c, QVariantMap  &b){
+	//QVariantMap  c(a);
+	for(QVariantMap::const_iterator i=b.begin(), e=b.end() ; i!=e ; ++i){
+		c.insert(i.key(), i.value());
+	}
+	//return c;
+}
 
 void DiscoveryClient::discover(){
 	//qDebug()<<"DISCOVERY CLIENT RUN";
@@ -120,12 +127,25 @@ void DiscoveryClient::discover(){
 		QVariantMap cmd;
 		cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
 		cmd["key"] = node.keyStore().localKey().toVariantMap(true);
-		cmd["localAddress"] = "10.0.0.3";
-		cmd["localPort"] = 12345;
-		cmd["publicPort"] = 54321;
 		cmd["manualPin"] ="12345";
-		cmd["role"] = DiscoveryRoleToString(node.role());
-		cmd["type"] = DiscoveryTypeToString(node.type());
+		QSharedPointer<NodeAssociate> me=node.localNodeAssociate();
+		if(nullptr!=me){
+			QVariantMap map=me->toVariantMap();
+			merge(cmd, map);
+
+			/*
+							cmd["localAddress"] = "10.0.0.3";
+							cmd["localPort"] = 12345;
+							cmd["publicPort"] = 54321;
+							cmd["name"] = node.name();
+							cmd["gender"] = node
+							cmd["role"] = DiscoveryRoleToString(node.role());
+							cmd["type"] = DiscoveryTypeToString(node.type());
+									*/
+		}
+		else{
+			qWarning()<<"ERROR: no me";
+		}
 		QByteArray body  = QJsonDocument::fromVariant(cmd).toJson();
 		//qDebug()<<"SENDING RAW JSON: "<<body;
 		req->addHeader("user-agent",			ZooConstants::OCTOMY_USER_AGENT);
@@ -148,7 +168,7 @@ void DiscoveryClient::discover(){
 			QString message="";
 			if(qhttp::ESTATUS_OK!=status){
 				ok=false;
-				message="ERROR: HTTP Code was "+QString::number(status)+" instead of 200 OK: ";
+				message="ERROR: HTTP Code was "+QString::number(status)+" instead of 200 OK";
 			}
 			else{
 				QJsonDocument doc = QJsonDocument::fromJson(res->collectedData());
@@ -168,9 +188,9 @@ void DiscoveryClient::discover(){
 					}
 					ok=ok && rok;
 					if(ok){
-						if(root.contains("participants")){
-							//qDebug()<<"PARTICIPANTS: "<<root.value("participants");
-							QVariantList partList=root.value("participants").toList();
+						if(root.contains("peers")){
+							//qDebug()<<"PARTICIPANTS: "<<root.value("peers");
+							QVariantList partList=root.value("peers").toList();
 							if(partList.size()<=0){
 								qWarning()<<" + Participants count was 0 in response";
 								message="ERROR: Participants count was 0 in response";
@@ -268,7 +288,7 @@ void DiscoveryClient::onTimer(){
 	if(now>ZOO_PAIR_INTERVAL+lastZooPair){
 		//qDebug()<<"ZOO PAIR TIME!";
 		lastZooPair=now;
-//		discover();
+		//		discover();
 		//TODO: node.getComms()->unregisterCourier(courier); <-- remove old unused and timed out couriers
 	}
 	discover();

@@ -20,6 +20,7 @@ class DiscoveryServerSession{
 		explicit DiscoveryServerSession();
 
 		bool set(QSharedPointer<NodeAssociate> p);
+		bool has(QString id);
 
 
 		QVariantList toVariantMap();

@@ -31,6 +31,10 @@ bool DiscoveryServerSession::set(QSharedPointer<NodeAssociate> part){
 	return true;
 }
 
+bool DiscoveryServerSession::has(QString id){
+	return mParticipantsByID.contains(id);
+}
+
 
 QVariantList DiscoveryServerSession::toVariantMap(){
 	QVariantList list;

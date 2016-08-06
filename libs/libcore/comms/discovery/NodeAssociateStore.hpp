@@ -4,6 +4,7 @@
 #include "basic/AtomicBoolean.hpp"
 #include "basic/GenerateRunnable.hpp"
 #include "basic/NodeAssociate.hpp"
+#include "basic/AsyncStore.hpp"
 
 #include <QObject>
 
@@ -15,42 +16,29 @@
 
 */
 
-class NodeAssociateStore: public QObject{
+
+class NodeAssociateStore: public AsyncStore{
 		Q_OBJECT
 
 	private:
-
 		QMap<QString, QSharedPointer<NodeAssociate> > mPeers;
-		AtomicBoolean mReady;
-		AtomicBoolean mError;
-		QString mFilename;
-
 		friend class GenerateRunnable<NodeAssociateStore>;
 
 	public:
 		explicit NodeAssociateStore(QString filename="", QObject *parent=nullptr);
 		virtual ~NodeAssociateStore();
 
-	private:
-		void bootstrapWorker();
-		void load();
-		void save();
+	protected:
+		void bootstrapWorkerImpl() override;
+	public:
+		void load() override;
+		void save() override;
 
 
 	public:
 
-		//Make if needed, load if otherwise
-		void bootstrap(bool inBackground=true);
-
-		bool isReady(){
-			return mReady;
-		}
-		bool isError(){
-			return mError;
-		}
-
-
 		bool hasParticipant(const QString &id);
+		const int getParticipantCount() const ;
 		QSharedPointer<NodeAssociate> getParticipant(const QString &id);
 		QSharedPointer<NodeAssociate> removeParticipant(const QString &id);
 		void setParticipant(QSharedPointer<NodeAssociate> participant);
@@ -58,10 +46,17 @@ class NodeAssociateStore: public QObject{
 
 		QMap<QString, QSharedPointer<NodeAssociate> > &getParticipants();
 
+		void hookSignals(QObject &ob);
+		void unHookSignals(QObject &ob);
+
+
 	signals:
 
-		void discoveryStoreReady();
+		void peerAdded(QString id);
+		void peerRemoved(QString id);
+		void peersChanged();
 };
 
 
 #endif // NODEASSOCIATESTORE_HPP
+

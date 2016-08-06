@@ -45,10 +45,10 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	updateIdentity();
 
 	if(nullptr!=agent){
-		Settings &s=agent->settings();
+		//Settings &s=agent->settings();
 		//Select correct starting page
 		QWidget *startPage=ui->pageRunning;
-		ui->stackedWidget->setCurrentWidget(agent->keyStore().hasLocalKeyFile()?startPage:ui->pageDelivery);
+		ui->stackedWidget->setCurrentWidget(agent->keyStore().fileExists()?startPage:ui->pageDelivery);
 
 		connect(ui->widgetDelivery, &AgentDeliveryWizard::done, [=](bool pairNow) {
 			updateIdentity();
@@ -61,18 +61,13 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 
 		updateVisibility();
 
-
-
-		ui->widgetConnection->configure(&s,"agent");
 		if(!connect(ui->widgetConnection,SIGNAL(connectStateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState)),OC_CONTYPE)){
 			qWarning()<<"ERROR: could not connect";
 		}
 
 		ui->widgetPlanEditor->configure("agent.plan");
 
-
 		prepareMenu();
-
 
 	}
 
@@ -94,7 +89,6 @@ void AgentWindow::prepareMenu(){
 	connect(cameraAction, &QAction::triggered, this, &AgentWindow::onStartCameraPairing);
 	mMenu.addAction(cameraAction);
 
-
 	QAction *pairingAction = new QAction(tr("Pair"), this);
 	pairingAction->setStatusTip(tr("Do the pairing dance"));
 	pairingAction->setIcon(QIcon(":/icons/pair.svg"));
@@ -107,11 +101,9 @@ void AgentWindow::prepareMenu(){
 	connect(planAction, &QAction::triggered, this, &AgentWindow::onStartPlanEditor);
 	mMenu.addAction(planAction);
 
-
 	QAction *faceAction = new QAction(tr("Show Face"), this);
 	faceAction->setStatusTip(tr("Show face in main screen"));
 	faceAction->setCheckable(true);
-
 
 	if(nullptr!=s){
 		faceAction->setChecked(s->getCustomSettingBool("octomy.face"));
@@ -217,14 +209,13 @@ void AgentWindow::onStatsVisibilityChanged(bool on){
 
 
 void AgentWindow::onStartShowBirthCertificate(){
-	PortableID id;
-	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
-	if(nullptr!=s){
-		id.fromPortableString(s->getCustomSetting("octomy.portable.id",""));
+	PortableID pid;
+	if(nullptr!=mAgent){
+		QString id=mAgent->keyStore().localKey().id();
+		QSharedPointer<NodeAssociate> myAss=mAgent->peers().getParticipant(id);
+		pid=myAss->toPortableID();
 	}
-	id.setID(mAgent->keyStore().localKey().id());
-	id.setType(TYPE_AGENT);
-	ui->widgetBirthCertificate->setPortableID(id);
+	ui->widgetBirthCertificate->setPortableID(pid);
 	ui->stackedWidget->setCurrentWidget(ui->pageBirthCertificate);
 }
 

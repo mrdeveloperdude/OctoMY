@@ -36,21 +36,17 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 	QWidget(parent)
   , ui(new Ui::RemoteWindow)
   , mRemote(remote)
+  , mSpinner(nullptr)
 {
 	ui->setupUi(this);
-
-	addAgentToList("Fuktard", ":/icons/agent.svg");
-	addAgentToList("Hexy", ":/icons/agent.svg");
-	addAgentToList("Golem", ":/icons/agent.svg");
-
 	updateIdentity();
-
 	if(nullptr!=remote){
 		Settings &s=remote->settings();
 
 		//Select correct starting page
 		QWidget *startPage=ui->pageRunning;
-		ui->stackedWidgetScreen->setCurrentWidget(s.getCustomSettingBool("octomy.delivered")?startPage:ui->pagePairing);
+		qDebug()<<"STARTPAGE: "<<mRemote<< mRemote->peers().getParticipantCount();
+		ui->stackedWidgetScreen->setCurrentWidget((nullptr!=mRemote && (mRemote->peers().getParticipantCount()>0))?startPage:ui->pagePairing);
 		//Make sure to switch page on "done"
 		connect(ui->widgetPairing, &PairingWizard::done, [=]() {
 			updateIdentity();
@@ -78,8 +74,9 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 			qWarning()<<"ERROR: could not connect";
 		}
 		ui->labelTouch->setText("WAITING FOR TOUCH");
-		ui->stackedWidgetScreen->setCurrentWidget(s.getCustomSettingBool("octomy.delivered")?startPage:ui->pagePairing);
 		ui->comboBoxControlLevel->setCurrentText(s.getCustomSetting("octomy.remote.control.level",ui->comboBoxControlLevel->currentText()));
+		prepareMenu();
+		prepareSpinner();
 		updateControlLevel();
 		GenericKeyEventHandler *gkh=new GenericKeyEventHandler(ui->plainTextEditSpeechText);
 		gkh->setEventProcessor([=](QObject *o, QKeyEvent *keyEvent){
@@ -99,11 +96,10 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 			}
 			return false;
 		});
-
-		prepareMenu();
 	}
 	else{
 		setDisabled(true);
+		qWarning()<<"ERROR: no remote";
 	}
 #ifdef Q_OS_ANDROID
 	showFullScreen();
@@ -114,15 +110,42 @@ RemoteWindow::~RemoteWindow(){
 	delete ui;
 }
 
-
-
 void RemoteWindow::updateIdentity(){
+	qDebug()<<"UPDATE IDENTITY";
 	if(nullptr!=mRemote){
 		mRemote->updateDiscoveryClient();
 	}
 	ui->widgetPairing->configure(mRemote);
+	mRemote->hookPeerSignals(*this);
 
+	ui->comboBoxAgent->clear();
+	if(nullptr!=mRemote){
+		NodeAssociateStore &peerStore=mRemote->peers();
+		QMap<QString, QSharedPointer<NodeAssociate> > &peers=peerStore.getParticipants();
+		for(QMap<QString, QSharedPointer<NodeAssociate> >::iterator i=peers.begin(), e=peers.end();i!=e; ++i){
+			const QString id=i.key();
+			QSharedPointer<NodeAssociate> peer=i.value();
+			QString name=peer->name().trimmed();
+			if(""==name){
+				name=peer->id().mid(0,16);
+			}
+			addAgentToList(name, ":/icons/agent.svg");
+		}
+	}
+	else{
+		qWarning()<<"ERROR: no remote";
+	}
 }
+
+
+
+void RemoteWindow::addAgentToList(QString name, QString iconPath){
+	QIcon icon;
+	icon.addFile(iconPath, QSize(), QIcon::Normal, QIcon::Off);
+	ui->comboBoxAgent->insertItem(0, icon, name);
+	ui->comboBoxAgent->setCurrentIndex(0);
+}
+
 
 void RemoteWindow::appendLog(const QString& text){
 	OC_METHODGATE();
@@ -133,15 +156,6 @@ void RemoteWindow::appendLog(const QString& text){
 	}
 }
 
-
-
-void RemoteWindow::addAgentToList(QString name, QString iconPath){
-	QIcon icon1;
-	icon1.addFile(iconPath, QSize(), QIcon::Normal, QIcon::Off);
-	ui->comboBoxAgent->insertItem(0, icon1, name);
-	ui->comboBoxAgent->setCurrentIndex(0);
-
-}
 
 
 void RemoteWindow::notifyAndroid(QString s){
@@ -223,7 +237,8 @@ bool RemoteWindow::eventFilter(QObject *object, QEvent *event){
 
 
 
-void RemoteWindow::onStartShowBirthCertificate(){
+void RemoteWindow::onStartShowBirthCertificate()
+{
 	PortableID id;
 	Settings *s=(nullptr!=mRemote)?(&mRemote->settings()):nullptr;
 	if(nullptr!=s){
@@ -251,19 +266,51 @@ void RemoteWindow::onStartPlanEditor()
 
 
 //////////////////////////////////////////////////
+// Peer Store slots
+
+
+void RemoteWindow::onPeerAdded(QString id)
+{
+	qDebug()<<"REMOTEW peer added: "<<id;
+}
+
+void RemoteWindow::onPeerRemoved(QString id)
+{
+	qDebug()<<"REMOTEW peer removed: "<<id;
+}
+
+void RemoteWindow::onPeersChanged()
+{
+	qDebug()<<"REMOTEW peers changed: ";
+	updateIdentity();
+}
+
+
+void RemoteWindow::onStoreReady(bool ok)
+{
+	qDebug()<<"REMOTEW peers load compelte: "<<(ok?"OK":"ERROR");
+	updateIdentity();
+}
+
+
+//////////////////////////////////////////////////
 // CommsChannel slots
 
 
-void RemoteWindow::onError(QString e){
+void RemoteWindow::onError(QString e)
+{
 	qDebug()<<"REMOTEW comms: error "<<e;
 }
 
-void RemoteWindow::onClientAdded(Client *c){
+void RemoteWindow::onClientAdded(Client *c)
+{
 
 	qDebug()<<"REMOTEW comms: client added "<<(0==c?"null":QString::number(c->getShortHandID(),16));
 }
 
-void RemoteWindow::onConnectionStatusChanged(bool c){
+void RemoteWindow::onConnectionStatusChanged(bool c)
+{
+	OC_METHODGATE();
 	qDebug()<<"REMOTEW comms: new connection status: "<<c;
 	//ui->widgetConnection->setConnectState(c?ON:OFF);
 }
@@ -271,21 +318,29 @@ void RemoteWindow::onConnectionStatusChanged(bool c){
 //////////////////////////////////////////////////
 // Internal sensor slots
 
-void RemoteWindow::onPositionUpdated(const QGeoPositionInfo &info){
+void RemoteWindow::onPositionUpdated(const QGeoPositionInfo &info)
+{
+	OC_METHODGATE();
 	ui->labelGPS->setText("GPS: "+QString::number(info.coordinate().latitude())+", "+QString::number(info.coordinate().longitude()));
 	appendLog("GPS update: "+info.coordinate().toString()+"@"+info.timestamp().toString());
 }
 
 
-void RemoteWindow::onCompassUpdated(QCompassReading *r){
+void RemoteWindow::onCompassUpdated(QCompassReading *r)
+{
+	OC_METHODGATE();
 	ui->labelCompass->setText("COMPASS: "+QString::number(r->azimuth()));
 }
 
-void RemoteWindow::onAccelerometerUpdated(QAccelerometerReading *r){
+void RemoteWindow::onAccelerometerUpdated(QAccelerometerReading *r)
+{
+	OC_METHODGATE();
 	ui->labelAccelerometer->setText("ACCEL: <"+QString::number(r->x())+", "+QString::number(r->y())+", "+ QString::number(r->z())+">");
 }
 
-void RemoteWindow::onGyroscopeUpdated(QGyroscopeReading *r){
+void RemoteWindow::onGyroscopeUpdated(QGyroscopeReading *r)
+{
+	OC_METHODGATE();
 	ui->labelGyroscope->setText("GYRO: <"+QString::number(r->x())+", "+QString::number(r->y())+", "+ QString::number(r->z())+">");
 }
 
@@ -293,7 +348,9 @@ void RemoteWindow::onGyroscopeUpdated(QGyroscopeReading *r){
 
 
 
-void RemoteWindow::onServoPositionChanged(int val){
+void RemoteWindow::onServoPositionChanged(int val)
+{
+	OC_METHODGATE();
 	if(0!=mRemote){
 		Pose p;
 		p.pos1=val;
@@ -307,7 +364,9 @@ void RemoteWindow::onServoPositionChanged(int val){
 
 
 
-void RemoteWindow::onTryToggleConnectionChanged(TryToggleState s){
+void RemoteWindow::onTryToggleConnectionChanged(TryToggleState s)
+{
+	OC_METHODGATE();
 	appendLog("TRYSTATE CHANGED TO "+ToggleStateToSTring(s));
 	/*
 	bool ce=false;
@@ -334,53 +393,37 @@ void RemoteWindow::onTryToggleConnectionChanged(TryToggleState s){
 }
 
 
-void RemoteWindow::on_pushButtonConfirmQuit_clicked(){
+void RemoteWindow::on_pushButtonConfirmQuit_clicked()
+{
+	OC_METHODGATE();
 	exit(0);
 }
 
 
-void RemoteWindow::updateControlLevel(){
+void RemoteWindow::updateControlLevel()
+{
+	OC_METHODGATE();
 	qDebug()<<"SWITCHING CONTROL LEVEL TO "<<ui->comboBoxControlLevel->currentText();
 	const int idx=ui->comboBoxControlLevel->currentIndex();
 	ui->stackedWidgetControl->setCurrentIndex(idx);
-	switch(idx){
-		default:
-		case(0):{
-			}break;
-		case(1):{
-			}break;
-		case(2):{
-			}break;
-		case(3):{
-			}break;
-		case(4):{
-			}break;
-	}
-
-}
-
-
-void RemoteWindow::updateActiveAgent(){
-	QString agentName=ui->comboBoxAgent->currentText();
-	if("Manage Connections"==agentName){
-		ui->stackedWidgetScreen->setCurrentWidget(ui->pageManageConnections);
-	}
-	else{
-		//qDebug()<<"SWITCHING ACTIVE AGENT TO "<<agentName;
-		const int idx=ui->comboBoxControlLevel->currentIndex();
-		ui->stackedWidgetControl->setCurrentIndex(idx);
+	if(nullptr!=mSpinner){
+		mSpinner->setStarted( (0!=idx) &&  ( OFF != ui->widgetConnection->connectState() ) );
 	}
 }
 
-void RemoteWindow::prepareMenu(){
-	/*
-	QAction *cameraAction = new QAction(tr("Camera"), this);
-	cameraAction->setStatusTip(tr("Do the camera dance"));
-	cameraAction->setIcon(QIcon(":/icons/eye.svg"));
-	connect(cameraAction, &QAction::triggered, this, &RemoteWindow::onStartCameraPairing);
-	mMenu.addAction(cameraAction);
-*/
 
+void RemoteWindow::updateActiveAgent()
+{
+	OC_METHODGATE();
+	//qDebug()<<"SWITCHING ACTIVE AGENT TO "<<agentName;
+	const int idx=ui->comboBoxControlLevel->currentIndex();
+	ui->stackedWidgetControl->setCurrentIndex(idx);
+
+}
+
+void RemoteWindow::prepareMenu()
+{
+	OC_METHODGATE();
 	QAction *pairingAction = new QAction(tr("Pair"), this);
 	pairingAction->setStatusTip(tr("Do the pairing dance"));
 	pairingAction->setIcon(QIcon(":/icons/pair.svg"));
@@ -392,25 +435,22 @@ void RemoteWindow::prepareMenu(){
 	certAction->setIcon(QIcon(":/icons/certificate.svg"));
 	connect(certAction, &QAction::triggered, this, &RemoteWindow::onStartShowBirthCertificate);
 	mMenu.addAction(certAction);
+}
 
-	/*
-	QAction *unbornAction = new QAction(tr("Unbirth!"), this);
-	unbornAction->setStatusTip(tr("Delete the identity of this agent to restart birth"));
-	unbornAction->setIcon(QIcon(":/icons/kill.svg"));
-	Settings *sp=&s;
-	connect(unbornAction, &QAction::triggered, this, [=](){
-		if(nullptr!=agent){
-			QMessageBox::StandardButton reply = QMessageBox::question(this, "Unbirth", "Are you sure you want to DELETE the personality of this robot forever?", QMessageBox::No|QMessageBox::Yes);
-			if (QMessageBox::Yes==reply) {
-				agent->keyStore().clear();
-				updateIdentity();
-				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
-				qDebug()<<"UNBIRTHED!";
-			}
-		}
-	});
-	mMenu.addAction(unbornAction);
-	*/
+void RemoteWindow::prepareSpinner()
+{
+	OC_METHODGATE();
+	mSpinner=new WaitingSpinnerWidget(ui->stackedWidgetControl, true, true);
+	SpinnerStyle style;
+	style.setColor(QColor("white"));
+	style.setRelatveSize(true);
+	style.setNumberOfLines(24);
+	style.setLineLength(10);
+	style.setInnerRadius(40);
+	style.setLineWidth(3);
+	mSpinner->setText("Reconnecting..");
+	mSpinner->setStyle(style);
+
 }
 
 
@@ -418,6 +458,7 @@ void RemoteWindow::prepareMenu(){
 
 void RemoteWindow::on_comboBoxAgent_currentIndexChanged(int index)
 {
+	OC_METHODGATE();
 	updateActiveAgent();
 }
 

@@ -155,6 +155,7 @@ class WaitingSpinnerWidget : public QWidget {
 		bool    mDisableParentWhenSpinning;
 		int     mCurrentCounter;
 		bool    mIsSpinning;
+		QString mText;
 
 
 
@@ -174,6 +175,7 @@ class WaitingSpinnerWidget : public QWidget {
 
 
 		void setText(QString text);
+
 		bool isSpinning() const;
 
 
@@ -203,6 +205,7 @@ class WaitingSpinnerWidget : public QWidget {
 	public slots:
 		void start();
 		void stop();
+		void setStarted(bool start);
 
 
 };

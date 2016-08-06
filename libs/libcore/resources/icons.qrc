@@ -73,5 +73,8 @@
         <file>icons/speech.svg</file>
         <file>icons/edit.svg</file>
         <file>icons/certificate.svg</file>
+        <file>icons/block.svg</file>
+        <file>icons/trust.svg</file>
+        <file>icons/ignore.svg</file>
     </qresource>
 </RCC>

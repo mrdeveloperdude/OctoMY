@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>441</width>
-    <height>94</height>
+    <width>298</width>
+    <height>56</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,17 +20,38 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="horizontalSpacing">
+    <number>0</number>
+   </property>
    <item row="1" column="0">
-    <widget class="TextEntry" name="lineEditTargetAddress">
+    <widget class="QLineEdit" name="lineEditTargetAddress">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="placeholderText">
       <string>Target address</string>
      </property>
     </widget>
    </item>
    <item row="1" column="3" colspan="2">
-    <widget class="TextEntry" name="lineEditTargetPort">
+    <widget class="QLineEdit" name="lineEditTargetPort">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -44,9 +65,9 @@
     </widget>
    </item>
    <item row="0" column="3" colspan="2">
-    <widget class="TextEntry" name="lineEditLocalPort">
+    <widget class="QLineEdit" name="lineEditLocalPort">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -60,9 +81,9 @@
     </widget>
    </item>
    <item row="0" column="0">
-    <widget class="LocalAddressEntry" name="comboBoxLocalAddress">
+    <widget class="QComboBox" name="comboBoxLocalAddress">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -86,7 +107,7 @@
    <item row="0" column="5" rowspan="2">
     <widget class="TryToggle" name="tryToggleListen" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -107,16 +128,6 @@
    <extends>QWidget</extends>
    <header>widgets/TryToggle.hpp</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>TextEntry</class>
-   <extends>QLineEdit</extends>
-   <header>widgets/TextEntry.hpp</header>
-  </customwidget>
-  <customwidget>
-   <class>LocalAddressEntry</class>
-   <extends>QComboBox</extends>
-   <header>widgets/LocalAddressEntry.hpp</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -33,9 +33,6 @@ class DiscoveryClient: public QObject
 		qhttp::client::QHttpClient     *m_client;
 		Node &node;
 		Key &key;
-		//const QString ourPubKey;
-		//const QString ourID;
-		//const QString zeroID;
 
 	private:
 		void registerPossibleParticipant(QVariantMap map);

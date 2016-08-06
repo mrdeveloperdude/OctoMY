@@ -23,9 +23,11 @@ TEST_PROJECTS+= \
 	testKey \
 	testKeyStore \
 	testDiscovery \
-	testDeliveryWizard\
-	testNetworkAddress\
-	testNodeAssociateStore\
+	testDeliveryWizard \
+	testNetworkAddress \
+	testNodeAssociate \
+	testNodeAssociateStore \
+	testPortableID \
 
 
 STRESS_PROJECTS+= \
