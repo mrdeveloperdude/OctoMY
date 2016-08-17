@@ -4,6 +4,7 @@
 #include "comms/CommsChannel.hpp"
 #include "utility/Utility.hpp"
 #include "comms/Client.hpp"
+#include "widgets/ControlDeliveryWizard.hpp"
 
 #include "basic/Settings.hpp"
 #include "basic/GenericKeyEventHandler.hpp"
@@ -42,25 +43,34 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 	updateIdentity();
 	if(nullptr!=mRemote){
 		Settings &s=remote->settings();
-
 		//Select correct starting page
-		QWidget *startPage=ui->pageRunning;
 		if(!mRemote->keyStore().localKey().isValid(true)){
 			qDebug()<<"STARTING WITH DELIVERY";
-			startPage=ui->pageDelivery;
+			ui->stackedWidgetScreen->setCurrentWidget(ui->pageDelivery);
 		}
 		else if(mRemote->peers().getParticipantCount()<=0){
 			qDebug()<<"STARTING WITH PAIRING";
-			startPage=ui->pagePairing;
+			ui->widgetPairing->reset();
+			ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
 		}
 		else{
 			qDebug()<<"STARTING WITH RUN";
+			ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
 		}
-		ui->stackedWidgetScreen->setCurrentWidget(startPage);
+
+
+		connect(ui->widgetDelivery, &ControlDeliveryWizard::done, [=](bool pairNow) {
+			updateIdentity();
+			ui->stackedWidgetScreen->setCurrentWidget(pairNow?ui->pagePairing:ui->pageRunning);
+		} );
+
+		ui->widgetDelivery->reset();
+
+
 		//Make sure to switch page on "done"
 		connect(ui->widgetPairing, &PairingWizard::done, [=]() {
 			updateIdentity();
-			ui->stackedWidgetScreen->setCurrentWidget(startPage);
+			ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
 		} );
 
 		ui->labelLocal->setText("WAITING FOR LOCAL");
@@ -124,8 +134,9 @@ void RemoteWindow::updateIdentity(){
 		mRemote->updateDiscoveryClient();
 		mRemote->hookPeerSignals(*this);
 	}
-	ui->widgetPairing->configure(mRemote);
 
+	ui->widgetDelivery->configure(mRemote);
+	ui->widgetPairing->configure(mRemote);
 
 	ui->comboBoxAgent->clear();
 	if(nullptr!=mRemote){

@@ -67,7 +67,7 @@ void PairingEditButtonDelegate::paint(QPainter *painter, const QStyleOptionViewI
 		QVariantMap data=index.data(Qt::DisplayRole).toMap();
 
 		PortableID id(data);
-		//qDebug()<<"ID: "<<id.id()<< " FROM DATA: "<<data;
+		qDebug()<<"ID: "<<id.id()<< " FROM DATA: "<<data;
 		Identicon ic(id);
 		QPixmap px=ic.pixmap(buttonSize,buttonSize);
 

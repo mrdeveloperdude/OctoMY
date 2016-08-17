@@ -261,8 +261,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>440</width>
-                <height>560</height>
+                <width>98</width>
+                <height>34</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -663,11 +663,7 @@
      <widget class="QWidget" name="pageDelivery">
       <layout class="QVBoxLayout" name="verticalLayout_10">
        <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Please wait while remote is prepared...</string>
-         </property>
-        </widget>
+        <widget class="ControlDeliveryWizard" name="widgetDelivery" native="true"/>
        </item>
       </layout>
      </widget>
@@ -727,6 +723,12 @@
    <class>ConnectionWidget</class>
    <extends>QWidget</extends>
    <header>widgets/ConnectionWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ControlDeliveryWizard</class>
+   <extends>QWidget</extends>
+   <header>widgets/ControlDeliveryWizard.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

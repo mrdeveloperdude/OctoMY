@@ -1,9 +1,8 @@
-#ifndef AGENTDELIVERYWIZARD_HPP
-#define AGENTDELIVERYWIZARD_HPP
+#ifndef CONTROLDELIVERYWIZARD_HPP
+#define CONTROLDELIVERYWIZARD_HPP
 
 #include "security/KeyStore.hpp"
 #include "security/PortableID.hpp"
-#include "basic/AgentNameGenerator.hpp"
 #include "basic/NodeAssociate.hpp"
 
 
@@ -14,20 +13,19 @@
 class WaitingSpinnerWidget;
 
 namespace Ui {
-	class AgentDeliveryWizard;
+	class ControlDeliveryWizard;
 }
 
 class Settings;
 class Node;
-class AgentDeliveryWizard : public QWidget
+class ControlDeliveryWizard : public QWidget
 {
 		Q_OBJECT
 
 	protected:
-		Ui::AgentDeliveryWizard *ui;
+		Ui::ControlDeliveryWizard *ui;
 		QTimer mBirthTimer;
 		WaitingSpinnerWidget *mSpinner;
-		AgentNameGenerator mNameGenerator;
 		Settings *mSettings;
 		Node *mNode;
 		PortableID mID;
@@ -39,8 +37,8 @@ class AgentDeliveryWizard : public QWidget
 		static const quint64 MINIMUM_BIRTH_TIME;
 
 	public:
-		explicit AgentDeliveryWizard(QWidget *parent = 0);
-		~AgentDeliveryWizard();
+		explicit ControlDeliveryWizard(QWidget *parent = 0);
+		~ControlDeliveryWizard();
 
 	private:
 		void save();
@@ -58,9 +56,8 @@ class AgentDeliveryWizard : public QWidget
 	private slots:
 		void on_pushButtonDone_clicked();
 		void on_pushButtonPairNow_clicked();
-		void on_pushButtonRandomName_clicked();
 		void on_pushButtonOnward_clicked();
-		void on_pushButtonRandomGender_clicked();
+
 };
 
-#endif // AGENTDELIVERYWIZARD_HPP
+#endif // CONTROLDELIVERYWIZARD_HPP

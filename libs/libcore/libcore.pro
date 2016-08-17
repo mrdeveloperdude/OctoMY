@@ -126,6 +126,7 @@ SOURCES +=\
 	utility/Utility.cpp \
 	web/Mustache.cpp \
 	widgets/AgentDeliveryWizard.cpp \
+widgets/ControlDeliveryWizard.cpp \
 	widgets/CameraPairingWidget.cpp \
 	widgets/CompasWidget.cpp \
 	widgets/ConnectionManager.cpp \
@@ -189,11 +190,11 @@ SOURCES +=\
 	zoo/ZooClient.cpp \
 	zoo/ZooConstants.cpp \
 	zoo/ZooServer.cpp \
-    basic/AsyncStore.cpp \
-    widgets/PairingListModel.cpp \
-    widgets/PairingEditButtonDelegate.cpp \
-    widgets/HardwareWizard.cpp \
-    widgets/SerialDeviceListModel.cpp
+	basic/AsyncStore.cpp \
+	widgets/PairingListModel.cpp \
+	widgets/PairingEditButtonDelegate.cpp \
+	widgets/HardwareWizard.cpp \
+	widgets/SerialDeviceListModel.cpp
 
 
 
@@ -326,6 +327,7 @@ HEADERS  += \
 	utility/Utility.hpp \
 	web/Mustache.hpp \
 	widgets/AgentDeliveryWizard.hpp \
+widgets/ControlDeliveryWizard.hpp \
 	widgets/CameraPairingWidget.hpp \
 	widgets/CompasWidget.hpp \
 	widgets/ConnectionManager.hpp \
@@ -389,11 +391,11 @@ HEADERS  += \
 	zoo/ZooClient.hpp \
 	zoo/ZooConstants.hpp \
 	zoo/ZooServer.hpp \
-    basic/AsyncStore.hpp \
-    widgets/PairingListModel.hpp \
-    widgets/PairingEditButtonDelegate.hpp \
-    widgets/HardwareWizard.hpp \
-    widgets/SerialDeviceListModel.hpp
+	basic/AsyncStore.hpp \
+	widgets/PairingListModel.hpp \
+	widgets/PairingEditButtonDelegate.hpp \
+	widgets/HardwareWizard.hpp \
+	widgets/SerialDeviceListModel.hpp
 
 
 
@@ -429,13 +431,14 @@ FORMS    += \
 	ui/RealtimeValuesWidget.ui \
 	ui/PairingWizard.ui \
 	ui/AgentDeliveryWizard.ui \
+ui/ControlDeliveryWizard.ui \
 	ui/FaceWidget.ui \
 	ui/LogWidget.ui \
 	ui/PKIManager.ui \
 	ui/PortableIDWidget.ui \
 	ui/ConnectionManager.ui \
 	ui/HUDWidget.ui \
-    widgets/HardwareWizard.ui
+	widgets/HardwareWizard.ui
 
 
 RESOURCES += \
