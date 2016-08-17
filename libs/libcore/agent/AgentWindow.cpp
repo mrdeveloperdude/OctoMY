@@ -44,11 +44,11 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 
 	updateIdentity();
 
-	if(nullptr!=agent){
+	if(nullptr!=mAgent){
 		//Settings &s=agent->settings();
 		//Select correct starting page
 		QWidget *startPage=ui->pageRunning;
-		ui->stackedWidget->setCurrentWidget(agent->keyStore().fileExists()?startPage:ui->pageDelivery);
+		ui->stackedWidget->setCurrentWidget(mAgent->keyStore().fileExists()?startPage:ui->pageDelivery);
 
 		connect(ui->widgetDelivery, &AgentDeliveryWizard::done, [=](bool pairNow) {
 			updateIdentity();

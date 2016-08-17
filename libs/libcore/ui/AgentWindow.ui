@@ -42,7 +42,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="pageDelivery">
       <layout class="QGridLayout" name="gridLayout_5">
@@ -299,9 +299,6 @@
               <width>200</width>
               <height>0</height>
              </size>
-            </property>
-            <property name="svgURL" stdset="0">
-             <string>:/icons/identicon.svg</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <property name="spacing">

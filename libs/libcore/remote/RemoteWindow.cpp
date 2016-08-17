@@ -40,35 +40,37 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 {
 	ui->setupUi(this);
 	updateIdentity();
-	if(nullptr!=remote){
+	if(nullptr!=mRemote){
 		Settings &s=remote->settings();
 
 		//Select correct starting page
 		QWidget *startPage=ui->pageRunning;
-		qDebug()<<"STARTPAGE: "<<mRemote<< mRemote->peers().getParticipantCount();
-		ui->stackedWidgetScreen->setCurrentWidget((nullptr!=mRemote && (mRemote->peers().getParticipantCount()>0))?startPage:ui->pagePairing);
+		if(!mRemote->keyStore().localKey().isValid(true)){
+			qDebug()<<"STARTING WITH DELIVERY";
+			startPage=ui->pageDelivery;
+		}
+		else if(mRemote->peers().getParticipantCount()<=0){
+			qDebug()<<"STARTING WITH PAIRING";
+			startPage=ui->pagePairing;
+		}
+		else{
+			qDebug()<<"STARTING WITH RUN";
+		}
+		ui->stackedWidgetScreen->setCurrentWidget(startPage);
 		//Make sure to switch page on "done"
 		connect(ui->widgetPairing, &PairingWizard::done, [=]() {
 			updateIdentity();
 			ui->stackedWidgetScreen->setCurrentWidget(startPage);
 		} );
-		if(0!=remote){
-			ui->labelLocal->setText("WAITING FOR LOCAL");
-			ui->labelHub->setText("WAITING FOR HUB");
-			ui->labelGPS->setText("WAITING FOR GPS");
-			ui->labelCompass->setText("WAITING FOR COMPASS");
-			ui->labelGyroscope->setText("WAITING FOR GYRO");
-			ui->labelAccelerometer->setText("WAITING FOR ACCELEROMETER");
-			remote->hookSensorSignals(*this);
-		}
-		else{
-			ui->labelLocal->setText("N/A");
-			ui->labelHub->setText("N/A");
-			ui->labelGPS->setText("N/A");
-			ui->labelCompass->setText("N/A");
-			ui->labelGyroscope->setText("N/A");
-			ui->labelAccelerometer->setText("N/A");
-		}
+
+		ui->labelLocal->setText("WAITING FOR LOCAL");
+		ui->labelHub->setText("WAITING FOR HUB");
+		ui->labelGPS->setText("WAITING FOR GPS");
+		ui->labelCompass->setText("WAITING FOR COMPASS");
+		ui->labelGyroscope->setText("WAITING FOR GYRO");
+		ui->labelAccelerometer->setText("WAITING FOR ACCELEROMETER");
+		remote->hookSensorSignals(*this);
+
 		ui->numericEntryServoTest->configure(&s,500,2500,200,1500," µs","Test remote servo control via network", "servo-position-1");
 		if(!connect(ui->numericEntryServoTest,SIGNAL(valueChanged(int)),this,SLOT(onServoPositionChanged(int)))){
 			qWarning()<<"ERROR: could not connect";
@@ -98,6 +100,12 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent) :
 		});
 	}
 	else{
+		ui->labelLocal->setText("N/A");
+		ui->labelHub->setText("N/A");
+		ui->labelGPS->setText("N/A");
+		ui->labelCompass->setText("N/A");
+		ui->labelGyroscope->setText("N/A");
+		ui->labelAccelerometer->setText("N/A");
 		setDisabled(true);
 		qWarning()<<"ERROR: no remote";
 	}
@@ -114,9 +122,10 @@ void RemoteWindow::updateIdentity(){
 	qDebug()<<"UPDATE IDENTITY";
 	if(nullptr!=mRemote){
 		mRemote->updateDiscoveryClient();
+		mRemote->hookPeerSignals(*this);
 	}
 	ui->widgetPairing->configure(mRemote);
-	mRemote->hookPeerSignals(*this);
+
 
 	ui->comboBoxAgent->clear();
 	if(nullptr!=mRemote){
@@ -151,7 +160,7 @@ void RemoteWindow::appendLog(const QString& text){
 	OC_METHODGATE();
 	ui->logScroll->appendPlainText(text);
 	QScrollBar *vsb=ui->logScroll->verticalScrollBar();
-	if(0!=vsb){
+	if(nullptr!=vsb){
 		vsb->setValue(vsb->maximum());
 	}
 }

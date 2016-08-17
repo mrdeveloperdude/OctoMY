@@ -717,9 +717,6 @@
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
-                 <property name="svgURL" stdset="0">
-                  <string>:/icons/identicon.svg</string>
-                 </property>
                 </widget>
                </item>
                <item>
@@ -730,9 +727,6 @@
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
-                 <property name="svgURL" stdset="0">
-                  <string>:/icons/identicon.svg</string>
-                 </property>
                 </widget>
                </item>
                <item>
@@ -742,9 +736,6 @@
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
-                 </property>
-                 <property name="svgURL" stdset="0">
-                  <string>:/icons/identicon.svg</string>
                  </property>
                 </widget>
                </item>
