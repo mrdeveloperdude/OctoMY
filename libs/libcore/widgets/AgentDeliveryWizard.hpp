@@ -60,6 +60,7 @@ class AgentDeliveryWizard : public QWidget
 		void on_pushButtonPairNow_clicked();
 		void on_pushButtonRandomName_clicked();
 		void on_pushButtonOnward_clicked();
+		void on_pushButtonRandomGender_clicked();
 };
 
 #endif // AGENTDELIVERYWIZARD_HPP

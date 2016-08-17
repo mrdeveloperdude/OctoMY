@@ -1,6 +1,5 @@
 #include "IdenticonWidget.hpp"
 
-
 #include "security/PortableID.hpp"
 
 #include <QPainter>
@@ -9,18 +8,12 @@
 #include <QDebug>
 #include <QSvgRenderer>
 
-
-
-
 ///////////////////////////////////////////////////////////////////////////
 
 IdenticonWidget::IdenticonWidget(QWidget *parent)
 	: SvgWidget(parent)
 {
 }
-
-
-
 
 void IdenticonWidget::regenerateIdenticon(){
 	QDomDocument doc=identicon.domDocument();
@@ -37,7 +30,6 @@ void IdenticonWidget::setPortableID(PortableID &id){
 	identicon.setPortableID(id);
 	regenerateIdenticon();
 }
-
 
 
 void IdenticonWidget::mouseDoubleClickEvent(QMouseEvent *){

@@ -68,52 +68,58 @@ void PairingWizard::configure(Node *n)
 	if(nullptr!=mNode){
 		DiscoveryClient *discovery=mNode->discoveryClient();
 		DiscoveryType type=mNode->type();
-		PortableID pid=mNode->keyStore().localPortableID();
-		pid.setType(type);
-		ui->widgetMyCertificate->setPortableID(pid);
-		if(!connect(discovery, &DiscoveryClient::nodeDiscovered, [=](QString partID)
-		{
-					if(nullptr==ui->listViewNodes->model()){
+		QSharedPointer<NodeAssociate>  ass=mNode->localNodeAssociate();
+		if(nullptr!=ass){
+			PortableID pid=ass->toPortableID();
+			ui->widgetMyCertificate->setPortableID(pid);
+			if(!connect(discovery, &DiscoveryClient::nodeDiscovered, [=](QString partID)
+			{
+						if(nullptr==ui->listViewNodes->model()){
 
-					mList=new PairingListModel(mNode->peers(),type,*this);
-					ui->listViewNodes->setModel(mList);
+						mList=new PairingListModel(mNode->peers(),type,*this);
+						ui->listViewNodes->setModel(mList);
 
-					if(nullptr==mDelegate){
-					mDelegate=new PairingEditButtonDelegate(*this);
-	}
-					//ui->tableViewNodes->setItemDelegate(delegate);
-					ui->listViewNodes->setItemDelegate(mDelegate);
+						if(nullptr==mDelegate){
+						mDelegate=new PairingEditButtonDelegate(*this);
+		}
+						//ui->tableViewNodes->setItemDelegate(delegate);
+						ui->listViewNodes->setItemDelegate(mDelegate);
 
-					//qDebug()<<"SET TABLE MODEL";
-	}
-
-					//qDebug()<<"PAIRING WIZARD partID: "<<partID;
-					ui->listViewNodes->update();
-	})){
-			qWarning()<<"ERROR: Could not connect";
+						//qDebug()<<"SET TABLE MODEL";
 		}
 
+						//qDebug()<<"PAIRING WIZARD partID: "<<partID;
+						ui->listViewNodes->update();
+		})){
+				qWarning()<<"ERROR: Could not connect";
+			}
 
 
-		switch(type){
-			default:
-			case(TYPE_ZOO):
-			case(TYPE_UNKNOWN):
-			case(TYPE_AGENT):{
-					ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Agent").replace(QRegularExpression("\\[DEST\\]"), "Control"));
-					ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageAgent);
 
-				}break;
-			case(TYPE_REMOTE):{
-					ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Remote").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
-					ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
+			switch(type){
+				default:
+				case(TYPE_ZOO):
+				case(TYPE_UNKNOWN):
+				case(TYPE_AGENT):{
+						ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Agent").replace(QRegularExpression("\\[DEST\\]"), "Control"));
+						ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageAgent);
 
-				}break;
-			case(TYPE_HUB):{
-					ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Hub").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
-					ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
-				}break;
+					}break;
+				case(TYPE_REMOTE):{
+						ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Remote").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
+						ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
+
+					}break;
+				case(TYPE_HUB):{
+						ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Hub").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
+						ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
+					}break;
+			}
 		}
+		else{
+			qWarning()<<"ERROR: No ass";
+		}
+
 	}
 }
 

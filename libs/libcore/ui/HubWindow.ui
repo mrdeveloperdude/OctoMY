@@ -53,7 +53,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>5</number>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -510,7 +510,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidgetDevelopment">
            <property name="currentIndex">
-            <number>2</number>
+            <number>3</number>
            </property>
            <widget class="QWidget" name="tabGait">
             <attribute name="title">
@@ -647,13 +647,108 @@
             <attribute name="title">
              <string>Identicon</string>
             </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_11">
+            <layout class="QVBoxLayout" name="verticalLayout_8">
              <item>
-              <widget class="IdenticonWidget" name="widgetIdenticon" native="true">
-               <property name="svgURL" stdset="0">
-                <string>:/icons/identicon.svg</string>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="horizontalLayout_8">
+               <item>
+                <widget class="QLabel" name="labelIdenticonID">
+                 <property name="text">
+                  <string>ID:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="lineEditIdenticonID"/>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButtonRandomIdenticonID">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="../resources/icons.qrc">
+                   <normaloff>:/icons/roll_dice.svg</normaloff>:/icons/roll_dice.svg</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_9">
+               <item>
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>Agent</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>Remote</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>Hub</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <widget class="IdenticonWidget" name="widgetIdenticonAgent" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="svgURL" stdset="0">
+                  <string>:/icons/identicon.svg</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="IdenticonWidget" name="widgetIdenticonRemote" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="svgURL" stdset="0">
+                  <string>:/icons/identicon.svg</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="IdenticonWidget" name="widgetIdenticonHub" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="svgURL" stdset="0">
+                  <string>:/icons/identicon.svg</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>

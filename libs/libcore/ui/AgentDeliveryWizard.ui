@@ -44,7 +44,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="pageDelivery">
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -346,8 +346,8 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../resources/icons.qrc"/>
   <include location="../resources/images.qrc"/>
+  <include location="../resources/icons.qrc"/>
  </resources>
  <connections/>
 </ui>

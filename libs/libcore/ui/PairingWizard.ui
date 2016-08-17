@@ -44,7 +44,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="pagePairWithPeers">
       <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -410,15 +410,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>CameraPairingWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/CameraPairingWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>PortableIDWidget</class>
    <extends>QWidget</extends>
    <header>widgets/PortableIDWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CameraPairingWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/CameraPairingWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

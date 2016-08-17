@@ -95,6 +95,12 @@ void AgentWindow::prepareMenu(){
 	connect(pairingAction, &QAction::triggered, this, &AgentWindow::onStartPairing);
 	mMenu.addAction(pairingAction);
 
+	QAction *hardwareAction = new QAction(tr("Configure HW"), this);
+	hardwareAction->setStatusTip(tr("Connect to the body of the robot"));
+	hardwareAction->setIcon(QIcon(":/icons/actuator_control.svg"));
+	connect(hardwareAction, &QAction::triggered, this, &AgentWindow::onStartHardware);
+	mMenu.addAction(hardwareAction);
+
 	QAction *planAction = new QAction(tr("Plan"), this);
 	planAction->setStatusTip(tr("Do the planning dance"));
 	planAction->setIcon(QIcon(":/icons/mandate.svg"));
@@ -213,7 +219,13 @@ void AgentWindow::onStartShowBirthCertificate(){
 	if(nullptr!=mAgent){
 		QString id=mAgent->keyStore().localKey().id();
 		QSharedPointer<NodeAssociate> myAss=mAgent->peers().getParticipant(id);
-		pid=myAss->toPortableID();
+		if(nullptr!=myAss){
+			pid=myAss->toPortableID();
+		}
+		else{
+			qWarning()<<"ERROR: No ass";
+		}
+
 	}
 	ui->widgetBirthCertificate->setPortableID(pid);
 	ui->stackedWidget->setCurrentWidget(ui->pageBirthCertificate);
@@ -230,6 +242,14 @@ void AgentWindow::onStartPairing()
 	ui->widgetPairing->reset();
 	ui->stackedWidget->setCurrentWidget(ui->pagePairing);
 }
+
+
+void AgentWindow::onStartHardware()
+{
+	ui->widgetHardware->reset();
+	ui->stackedWidget->setCurrentWidget(ui->pageHardware);
+}
+
 
 
 void AgentWindow::onStartPlanEditor()

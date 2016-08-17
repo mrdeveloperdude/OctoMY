@@ -53,6 +53,7 @@ class AgentWindow : public QWidget, public LogDestination{
 
 		void onStartCameraPairing();
 		void onStartPairing();
+		void onStartHardware();
 		void onStartPlanEditor();
 		void onStartShowBirthCertificate();
 

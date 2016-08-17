@@ -179,3 +179,8 @@ void AgentDeliveryWizard::on_pushButtonOnward_clicked()
 		ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);
 	}
 }
+
+void AgentDeliveryWizard::on_pushButtonRandomGender_clicked()
+{
+	ui->comboBoxGender->setCurrentIndex((rand()%(ui->comboBoxGender->count()-1))+1);
+}

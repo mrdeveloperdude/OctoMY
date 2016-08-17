@@ -28,6 +28,8 @@ class Identicon{
 
 		float frand();
 
+		void erectLimb(QDomElement &o, QString limbStyle, bool top, bool left, bool mid,float p1,float p2,float p3,float p4,float p5,float p6);
+
 	public:
 		//void setSvgURL(QString);
 		void setPortableID(PortableID id);

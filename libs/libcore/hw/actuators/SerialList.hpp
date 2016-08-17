@@ -9,15 +9,19 @@ class SerialList : public QObject
 {
 		Q_OBJECT
 	private:
-		QTimer deviceChangeTimer;
-		QString deviceListHash;
-		QList<QSerialPortInfo> deviceList;
+		QTimer mDeviceChangeTimer;
+		QString mDeviceListHash;
+		QList<QSerialPortInfo> mDeviceList;
 
 	public:
 		SerialList(QObject *parent=0);
 	public:
 		void setUpDeviceTimer(const quint64 ms=5000);
 		QString toSpecStanzas(QString space="");
+
+		int count();
+
+		QSerialPortInfo device(int index);
 
 	private:
 		QString deviceListToHash(QList<QSerialPortInfo> devices);

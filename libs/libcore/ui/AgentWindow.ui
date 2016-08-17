@@ -42,7 +42,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>8</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="pageDelivery">
       <layout class="QGridLayout" name="gridLayout_5">
@@ -100,6 +100,48 @@
         <widget class="PairingWizard" name="widgetPairing" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pageHardware">
+      <layout class="QVBoxLayout" name="verticalLayout_10">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QPushButton" name="pushButtonBack_6">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="../resources/icons.qrc">
+             <normaloff>:/icons/arrow_left.svg</normaloff>:/icons/arrow_left.svg</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="HardwareWizard" name="widgetHardware" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -948,9 +990,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>IdenticonWidget</class>
+   <class>PlanEditor</class>
    <extends>QWidget</extends>
-   <header>widgets/IdenticonWidget.hpp</header>
+   <header>widgets/planedit/PlanEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -960,21 +1002,27 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>IdenticonWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/IdenticonWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>Camera</class>
    <extends>QWidget</extends>
    <header>camera/Camera.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PlanEditor</class>
-   <extends>QWidget</extends>
-   <header>widgets/planedit/PlanEditor.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>AgentDeliveryWizard</class>
    <extends>QWidget</extends>
    <header>widgets/AgentDeliveryWizard.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>HardwareWizard</class>
+   <extends>QWidget</extends>
+   <header>widgets/HardwareWizard.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -19,7 +19,6 @@ class IdenticonWidget : public SvgWidget{
 		explicit IdenticonWidget(QWidget *parent = 0);
 
 	protected:
-
 		void regenerateIdenticon();
 
 	public:
@@ -29,11 +28,7 @@ class IdenticonWidget : public SvgWidget{
 		void doubleClicked();
 
 	protected:
-
 		void mouseDoubleClickEvent(QMouseEvent *);
-
-
-
 
 };
 

@@ -42,7 +42,7 @@ class KeyPrivate{
 		bool mValidPrivate;
 		bool mValidPublic;
 
-	private:
+	public:
 		static QString hash(QString input);
 
 	private:
@@ -110,6 +110,13 @@ class Key{
 		bool operator!=(Key &other);
 
 		friend void swap(Key& first, Key& second) /* nothrow */;
+
+	public:
+		inline static QString hash(QString input)
+		{
+			return KeyPrivate::hash(input);
+		}
+
 
 		// Actual usable methods
 	public:

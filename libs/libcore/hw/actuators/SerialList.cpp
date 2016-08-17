@@ -17,7 +17,7 @@ Q_DECLARE_METATYPE(QSerialPortInfo)
 SerialList::SerialList(QObject *parent)
 	: QObject(parent)
 {
-	setUpDeviceTimer(5000);
+	setUpDeviceTimer(2000);
 }
 
 
@@ -25,18 +25,19 @@ void SerialList::setUpDeviceTimer(const quint64 ms)
 {
 	onDevChangeTimer();
 	//Start timer to poll for serial device changes
-	if(!connect(&deviceChangeTimer,SIGNAL(timeout()),this,SLOT(onDevChangeTimer()))){
+	if(!connect(&mDeviceChangeTimer,SIGNAL(timeout()),this,SLOT(onDevChangeTimer()))){
 		qWarning()<<"ERROR: could not connect";
 	}
-	deviceChangeTimer.setTimerType(Qt::VeryCoarseTimer);//No need for precision
-	deviceChangeTimer.start(ms);//Poll for serial changes ever X ms
+	mDeviceChangeTimer.setTimerType(Qt::VeryCoarseTimer);//No need for precision
+	mDeviceChangeTimer.start(ms);//Poll for serial changes ever X ms
 }
 
 
 
-QString SerialList::toSpecStanzas(QString space){
+QString SerialList::toSpecStanzas(QString space)
+{
 	QString out="";
-	for(QList<QSerialPortInfo>::iterator it=deviceList.begin(),e=deviceList.end();it!=e;++it){
+	for(QList<QSerialPortInfo>::iterator it=mDeviceList.begin(),e=mDeviceList.end();it!=e;++it){
 		const QSerialPortInfo dev=*it;
 		out+=space+"serial {\n";
 		out+=space+"\ttype=\""+dev.description()+"\"\n";
@@ -50,7 +51,18 @@ QString SerialList::toSpecStanzas(QString space){
 }
 
 
-QString SerialList::deviceListToHash(QList<QSerialPortInfo> devices){
+int SerialList::count()
+{
+	return mDeviceList.count();
+}
+
+QSerialPortInfo SerialList::device(int index)
+{
+	return mDeviceList[index];
+}
+
+QString SerialList::deviceListToHash(QList<QSerialPortInfo> devices)
+{
 	QString summary="";
 	for(QList<QSerialPortInfo>::iterator it=devices.begin(),e=devices.end();it!=e;++it){
 		const QSerialPortInfo dev=*it;
@@ -62,10 +74,11 @@ QString SerialList::deviceListToHash(QList<QSerialPortInfo> devices){
 
 void SerialList::onDevChangeTimer()
 {
-	deviceList=QSerialPortInfo::availablePorts();
-	QString deviceListHashNew=deviceListToHash(deviceList);
-	if(deviceListHashNew!=deviceListHash){
-		deviceListHash=deviceListHashNew;
+	mDeviceList=QSerialPortInfo::availablePorts();
+	//qDebug()<<"bump: "<<mDeviceList.count();
+	QString deviceListHashNew=deviceListToHash(mDeviceList);
+	if(deviceListHashNew!=mDeviceListHash){
+		mDeviceListHash=deviceListHashNew;
 		emit serialDevicesChanged();
 	}
 }

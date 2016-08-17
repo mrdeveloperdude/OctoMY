@@ -67,13 +67,14 @@ class HubWindow : public QMainWindow, public LogDestination{
 
 
 		void on_pushButtonSendData_clicked();
-		void on_pushButtonShowStats_clicked();
 		void on_comboBoxAddLocal_currentIndexChanged(const QString &arg1);
 		void on_tabWidget_currentChanged(int index);
 		void on_pushButtonTest_clicked();
 		void on_lineEditQR_textChanged(const QString &arg1);
 
 		void on_pushButtonUDPPunch_clicked();
+		void on_pushButtonRandomIdenticonID_clicked();
+		void on_lineEditIdenticonID_textChanged(const QString &arg1);
 };
 
 #endif // HUBWINDOW_HPP

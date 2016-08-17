@@ -31,6 +31,9 @@
 #include "comms/CommsChannel.hpp"
 #include "zoo/ZooClient.hpp"
 
+#include "security/Key.hpp"
+
+
 #include <QScrollBar>
 #include <QHostInfo>
 #include <QNetworkInterface>
@@ -69,9 +72,6 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 		ui->tabWidgetDevelopment->setCurrentIndex(0);
 		ui->tabWidgetUtilities->setCurrentIndex(0);
-
-
-
 
 		ui->widgetActiveNodes->configure(hub->settings(),"active_nodes","List");
 		ui->widgetIncommingNodes->configure(hub->settings(),"incomming_nodes","List");
@@ -126,7 +126,8 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	}
 }
 
-HubWindow::~HubWindow() {
+HubWindow::~HubWindow()
+{
 	if(nullptr!=hub){
 		hub->settings().setCustomSettingByteArray("window.geometry", saveGeometry());
 		hub->comms()->unHookSignals(*this);
@@ -142,7 +143,8 @@ HubWindow::~HubWindow() {
 
 
 
-void HubWindow::onSummaryTimer(){
+void HubWindow::onSummaryTimer()
+{
 	CommsChannel *comms=hub->comms();
 	if(0==comms){
 		ui->plainTextEditSummary->setPlainText("N/A");
@@ -152,12 +154,14 @@ void HubWindow::onSummaryTimer(){
 	}
 }
 
-void HubWindow::appendLog(const QString& text){
+void HubWindow::appendLog(const QString& text)
+{
 	OC_METHODGATE();
 	ui->logScroll->appendLog(text);
 }
 
-void HubWindow::onListenStateChanged(TryToggleState s){
+void HubWindow::onListenStateChanged(TryToggleState s)
+{
 	ui->lineEditBindPort->setEnabled(OFF==s);
 	ui->comboBoxLocalAddress->setEnabled(OFF==s);
 	ui->pushButtonSendData->setEnabled(ON==s);
@@ -181,7 +185,8 @@ void HubWindow::onListenStateChanged(TryToggleState s){
 
 
 
-void HubWindow::onLocalHostLookupComplete(QHostInfo hi){
+void HubWindow::onLocalHostLookupComplete(QHostInfo hi)
+{
 	for(QHostAddress adr:hi.addresses()){
 		if(adr.isNull()){
 			ui->logScroll->appendLog("Skipping invalid address during local host lookup: "+adr.toString());
@@ -201,7 +206,8 @@ void HubWindow::onLocalHostLookupComplete(QHostInfo hi){
 }
 
 
-void HubWindow::onRemoteHostLookupComplete(QHostInfo hi){
+void HubWindow::onRemoteHostLookupComplete(QHostInfo hi)
+{
 	qDebug()<<"## onRemoteHostLookupComplete";
 	for(QHostAddress adr:hi.addresses()){
 		if(adr.isNull()){
@@ -230,7 +236,8 @@ void HubWindow::onRemoteHostLookupComplete(QHostInfo hi){
 }
 
 
-void HubWindow::onError(QString msg){
+void HubWindow::onError(QString msg)
+{
 	if("Unable to send a message"==msg){
 
 	}
@@ -241,7 +248,8 @@ void HubWindow::onError(QString msg){
 
 
 
-void HubWindow::onClientAdded(Client *c){
+void HubWindow::onClientAdded(Client *c)
+{
 	if(0!=c){
 		appendLog("CLIENT ADDED: "+c->getSummary());
 		ui->widgetIncommingNodes->update();
@@ -249,7 +257,8 @@ void HubWindow::onClientAdded(Client *c){
 }
 
 
-void HubWindow::on_pushButtonSendData_clicked(){
+void HubWindow::on_pushButtonSendData_clicked()
+{
 	CommsChannel *comms=hub->comms();
 	if(nullptr!=comms){
 		//QHostInfo::lookupHost(ui->lineEditRemoteAddress->text(),this, SLOT(onRemoteHostLookupComplete(QHostInfo)));
@@ -264,13 +273,11 @@ void HubWindow::on_pushButtonSendData_clicked(){
 }
 
 
-void HubWindow::on_pushButtonShowStats_clicked(){
-
-}
 
 
 
-void HubWindow::startProcess(QString base){
+void HubWindow::startProcess(QString base)
+{
 	const QString program = QFileInfo(QCoreApplication::applicationFilePath()).absolutePath()+"/../"+base+"/"+base;
 	qDebug()<<"Starting process: "<<program;
 	QStringList arguments;
@@ -304,24 +311,28 @@ void HubWindow::on_comboBoxAddLocal_currentIndexChanged(const QString &arg1){
 	ui->comboBoxAddLocal->setCurrentIndex(0);
 }
 
-void HubWindow::on_tabWidget_currentChanged(int){
+void HubWindow::on_tabWidget_currentChanged(int)
+{
 
 }
 
 
-void HubWindow::onConnectionStatusChanged(bool s){
+void HubWindow::onConnectionStatusChanged(bool s)
+{
 	qDebug()<<"connection state changed: "<<s;
 
 }
 
 
-void HubWindow::on_pushButtonTest_clicked(){
+void HubWindow::on_pushButtonTest_clicked()
+{
 	qDebug()<<"TEST BUTTON PRESSED";
 }
 
 
 
-void HubWindow::on_lineEditQR_textChanged(const QString &text){
+void HubWindow::on_lineEditQR_textChanged(const QString &text)
+{
 	ui->widgetQR->setQRData(text);
 }
 
@@ -333,4 +344,26 @@ void HubWindow::on_pushButtonUDPPunch_clicked()
 			zoo->punchUDP("12345");
 		}
 	}
+}
+
+void HubWindow::on_pushButtonRandomIdenticonID_clicked()
+{
+	OC_METHODGATE();
+	QString id=Key::hash(QString::number(qrand()));
+	ui->lineEditIdenticonID->setText(id);
+}
+
+void HubWindow::on_lineEditIdenticonID_textChanged(const QString &arg1)
+{
+	OC_METHODGATE();
+	QString id=ui->lineEditIdenticonID->text();
+	PortableID pid;
+	pid.setName("Dummy Identicon");
+	pid.setID(id);
+	pid.setType(TYPE_AGENT);
+	ui->widgetIdenticonAgent->setPortableID(pid);
+	pid.setType(TYPE_REMOTE);
+	ui->widgetIdenticonRemote->setPortableID(pid);
+	pid.setType(TYPE_HUB);
+	ui->widgetIdenticonHub->setPortableID(pid);
 }

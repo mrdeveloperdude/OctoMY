@@ -191,7 +191,9 @@ SOURCES +=\
 	zoo/ZooServer.cpp \
     basic/AsyncStore.cpp \
     widgets/PairingListModel.cpp \
-    widgets/PairingEditButtonDelegate.cpp
+    widgets/PairingEditButtonDelegate.cpp \
+    widgets/HardwareWizard.cpp \
+    widgets/SerialDeviceListModel.cpp
 
 
 
@@ -389,7 +391,9 @@ HEADERS  += \
 	zoo/ZooServer.hpp \
     basic/AsyncStore.hpp \
     widgets/PairingListModel.hpp \
-    widgets/PairingEditButtonDelegate.hpp
+    widgets/PairingEditButtonDelegate.hpp \
+    widgets/HardwareWizard.hpp \
+    widgets/SerialDeviceListModel.hpp
 
 
 
@@ -430,7 +434,8 @@ FORMS    += \
 	ui/PKIManager.ui \
 	ui/PortableIDWidget.ui \
 	ui/ConnectionManager.ui \
-	ui/HUDWidget.ui
+	ui/HUDWidget.ui \
+    widgets/HardwareWizard.ui
 
 
 RESOURCES += \
