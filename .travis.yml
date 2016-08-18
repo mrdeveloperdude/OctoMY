@@ -1,6 +1,7 @@
 install:
   - sudo apt-get update
-  - sudo apt-get install libqt5-dev qt5-qmake
+  - sudo apt-get install qt5-default qtbase5-dev qt5-qmake qtbase5-dev-tools build-essential
+  - sudo scripts/prep.sh
 
 script:
   - mkdir build
