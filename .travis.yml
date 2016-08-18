@@ -1,9 +1,13 @@
 sudo: required
 dist: trusty
+language: c++
+
 install:
   - sudo apt-get update
   - sudo apt-get install qt5-default qtbase5-dev qt5-qmake qtbase5-dev-tools build-essential
-  - sudo scripts/prep.sh
+  - sudo ls
+  - sudo pwd
+#  - sudo scripts/prep.sh
 
 script:
   - mkdir build
