@@ -1,0 +1,10 @@
+install:
+  - sudo apt-get update
+  - sudo apt-get install libqt5-dev qt5-qmake
+
+script:
+  - mkdir build
+  - cd build
+  - qmake -project
+  - qmake ../OctoMY.pro
+  - make
