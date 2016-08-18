@@ -72,25 +72,26 @@ void PairingWizard::configure(Node *n)
 		if(nullptr!=ass){
 			PortableID pid=ass->toPortableID();
 			ui->widgetMyCertificate->setPortableID(pid);
+			if(nullptr==ui->listViewNodes->model()){
+
+				mList=new PairingListModel(mNode->peers(),type,*this);
+				ui->listViewNodes->setModel(mList);
+
+				if(nullptr==mDelegate){
+					mDelegate=new PairingEditButtonDelegate(*this);
+				}
+				ui->listViewNodes->setItemDelegate(mDelegate);
+				//qDebug()<<"SET TABLE MODEL";
+			}
 			if(!connect(discovery, &DiscoveryClient::nodeDiscovered, [=](QString partID)
 			{
-						if(nullptr==ui->listViewNodes->model()){
 
-						mList=new PairingListModel(mNode->peers(),type,*this);
-						ui->listViewNodes->setModel(mList);
-
-						if(nullptr==mDelegate){
-						mDelegate=new PairingEditButtonDelegate(*this);
-		}
-						//ui->tableViewNodes->setItemDelegate(delegate);
-						ui->listViewNodes->setItemDelegate(mDelegate);
-
-						//qDebug()<<"SET TABLE MODEL";
-		}
 
 						//qDebug()<<"PAIRING WIZARD partID: "<<partID;
 						ui->listViewNodes->update();
-		})){
+		}
+						))
+			{
 				qWarning()<<"ERROR: Could not connect";
 			}
 
@@ -117,7 +118,7 @@ void PairingWizard::configure(Node *n)
 			}
 		}
 		else{
-			qWarning()<<"ERROR: No ass";
+			qWarning()<<"ERROR: No local ass";
 		}
 
 	}

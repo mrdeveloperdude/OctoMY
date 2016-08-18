@@ -75,5 +75,10 @@
         <file>icons/block.svg</file>
         <file>icons/trust.svg</file>
         <file>icons/ignore.svg</file>
+        <file>icons/connection_off.svg</file>
+        <file>icons/connection_low.svg</file>
+        <file>icons/connection_medium.svg</file>
+        <file>icons/connection_high.svg</file>
+        <file>icons/connection_full.svg</file>
     </qresource>
 </RCC>
