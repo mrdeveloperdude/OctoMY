@@ -7,7 +7,7 @@ install:
   - sudo apt-get install qt5-default qtbase5-dev qt5-qmake qtbase5-dev-tools build-essential qtconnectivity5-dev qtbase5-dev         qtmobility-dev      qtmobility-dev      qtbase5-dev         qtbase5-dev         qttools5-dev        qttools5-dev        qtmobility-dev       qtmobility-dev      qtbase5-dev         qttools5-dev        qtmobility-dev      qtmultimedia5-dev   qtmobility-dev      qtbase5-dev         qtconnectivity5-dev libqt5opengl5-dev   qtmobility-dev      qtpositioning5-dev  qtbase5-dev         qtmobility-dev      qtdeclarative5-dev  qtscript5-dev        qtscript5-dev        qtmobility-dev libqt5sensors5-dev libqt5serialport5-dev qtmobility-dev        qtbase5-dev           libqt5svg5-dev        qtmobility-dev qtbase5-dev qttools5-dev qtmobility-dev libqt5webkit5-dev qtbase5-dev libqt5x11extras5-dev qtbase5-dev libqt5xmlpatterns5-dev
   - sudo ls
   - sudo pwd
-  - sudo scripts/prep.sh
+#  - sudo chmod +x scripts/prep.sh  - sudo scripts/prep.sh
 
 script:
   - mkdir build
