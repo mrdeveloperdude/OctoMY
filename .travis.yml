@@ -8,3 +8,19 @@ script:
   - qmake -project
   - qmake ../OctoMY.pro
   - make
+
+
+notifications:
+  email:
+    recipients:
+      - lennartrolland@gmail.com
+    on_success: change
+    on_failure: always
+  irc:
+    channels:
+      - "chat.freenode.net#octomy"
+    on_success: change
+    on_failure: always
+    template:
+      - "%{repository} (%{commit}) : %{message} %{foo} "
+      - "Build details: %{build_url}"
