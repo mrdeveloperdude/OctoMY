@@ -42,7 +42,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="pageDelivery">
       <layout class="QGridLayout" name="gridLayout_5">
@@ -963,15 +963,21 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FaceWidget</class>
+   <class>IdenticonWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/FaceWidget.hpp</header>
+   <header>widgets/IdenticonWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PortableIDWidget</class>
    <extends>QWidget</extends>
    <header>widgets/PortableIDWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FaceWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/FaceWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -996,12 +1002,6 @@
    <class>ConnectionWidget</class>
    <extends>QWidget</extends>
    <header>widgets/ConnectionWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>IdenticonWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/IdenticonWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

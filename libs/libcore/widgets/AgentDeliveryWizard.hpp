@@ -42,8 +42,6 @@ class AgentDeliveryWizard : public QWidget
 		explicit AgentDeliveryWizard(QWidget *parent = 0);
 		~AgentDeliveryWizard();
 
-	private:
-		void save();
 	public:
 		void reset();
 

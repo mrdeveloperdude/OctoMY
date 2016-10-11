@@ -48,6 +48,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 		//Settings &s=agent->settings();
 		//Select correct starting page
 		QWidget *startPage=ui->pageRunning;
+		ui->widgetDelivery->reset();
 		ui->stackedWidget->setCurrentWidget(mAgent->keyStore().fileExists()?startPage:ui->pageDelivery);
 
 		connect(ui->widgetDelivery, &AgentDeliveryWizard::done, [=](bool pairNow) {
@@ -152,6 +153,7 @@ void AgentWindow::prepareMenu(){
 			if (QMessageBox::Yes==reply) {
 				mAgent->keyStore().clear();
 				updateIdentity();
+				ui->widgetDelivery->reset();
 				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
 				qDebug()<<"UNBIRTHED!";
 			}
