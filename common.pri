@@ -17,10 +17,11 @@ CONFIG += x86 x86_64
 	}
 }
 
-
 QMAKE_TARGET_COMPANY =		"OctoMY™"
-QMAKE_TARGET_COPYRIGHT =	"Copyright © 2013-2016 Lennart Rolland <lennartrolland@gmail.com>"
+QMAKE_TARGET_COPYRIGHT =	"Copyright © 2012-2016 Lennart Rolland <lennartrolland@gmail.com>"
 QMAKE_TARGET_DESCRIPTION =	"N-Limbed madness™"
+
+
 
 
 
@@ -51,7 +52,7 @@ QMAKE_TARGET_DESCRIPTION =	"N-Limbed madness™"
 }
 
 # Add only plugins that are used and supported by the Qt build you are using
-QT += core gui opengl widgets xml network multimedia multimediawidgets svg printsupport quick sql positioning sensors testlib serialport bluetooth
+QT += core gui opengl widgets network multimedia multimediawidgets positioning serialport bluetooth sensors xml svg sql testlib quick printsupport
 
 contains(DEFINES, USE_QT3D){
 	QT += 3dcore 3drenderer 3dinput
@@ -118,8 +119,16 @@ contains(CONFIG, c++11){
 }
 
 
-# Add support for ccache (uncommend to enable)
-#unix:exists(/usr/bin/ccache):QMAKE_CXX=ccache $$QMAKE_CXX
+# Automatic support for ccache
+
+CCACHE_EXISTS=$$system("which ccache >/dev/null 2>&1; echo $?")
+equals(CCACHE_EXISTS, "0"){
+QMAKE_CXX="ccache $$QMAKE_CXX"
+# message("GOT CCACHE")
+}
+
+
+# message("QMAKE_CXX: $$QMAKE_CXX, CCACHE_EXISTS: $$CCACHE_EXISTS")
 
 # The most comprehensive and strict set of checks available
 QMAKE_CXXFLAGS += -pedantic -Wall -Wextra
@@ -178,6 +187,10 @@ QMAKE_CFLAGS += -Wno-unused-parameter -Wno-sometimes-uninitialized
 QMAKE_CXXFLAGS -= -O
 QMAKE_CXXFLAGS -= -O2
 QMAKE_CXXFLAGS -= -O3
+
+# Add verbose logging to linker (enable for debugging)
+
+#QMAKE_CXXFLAGS += -Wl,--verbose
 
 # Optimize for size in release
 release{

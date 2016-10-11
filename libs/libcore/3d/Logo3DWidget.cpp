@@ -1,23 +1,7 @@
+#ifdef LOLBOB
 #include "Logo3DWidget.hpp"
 
 #include <QGuiApplication>
-
-#include <Qt3DCore/QEntity>
-#include <Qt3DCore/QCamera>
-#include <Qt3DCore/QCameraLens>
-#include <Qt3DCore/QTransform>
-#include <Qt3DCore/QAspectEngine>
-
-#include <Qt3DInput/QInputAspect>
-
-#include <Qt3DRender/QRenderAspect>
-#include <Qt3DRender/QFrameGraph>
-#include <Qt3DRender/QForwardRenderer>
-#include <Qt3DRender/QPhongMaterial>
-#include <Qt3DRender/QCylinderMesh>
-#include <Qt3DRender/QSphereMesh>
-#include <Qt3DRender/QTorusMesh>
-#include <Qt3DRender/QWindow>
 
 #include <QPropertyAnimation>
 
@@ -160,3 +144,4 @@ Logo3DWidget::Logo3DWidget(QObject *parent) : QObject(parent)
 
 
 }
+#endif

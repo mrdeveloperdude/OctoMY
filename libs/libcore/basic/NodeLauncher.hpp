@@ -83,8 +83,9 @@ void NodeLauncher<T>::run(){
 
 	qsrand(QDateTime::currentMSecsSinceEpoch());
 
-
+#ifndef Q_OS_ANDROID
 	LogHandler::setLogging(true);
+#endif
 
 	opts.setApplicationDescription("Robust real-time communication and control software for robots");
 	opts.addHelpOption();

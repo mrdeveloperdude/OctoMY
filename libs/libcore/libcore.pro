@@ -194,7 +194,8 @@ widgets/ControlDeliveryWizard.cpp \
 	widgets/PairingListModel.cpp \
 	widgets/PairingEditButtonDelegate.cpp \
 	widgets/HardwareWizard.cpp \
-	widgets/SerialDeviceListModel.cpp
+	widgets/SerialDeviceListModel.cpp \
+    basic/Vibrate.cpp
 
 
 
@@ -246,7 +247,6 @@ HEADERS  += \
 	comms/discovery/DiscoveryRole.hpp \
 	comms/discovery/DiscoveryServer.hpp \
 	comms/discovery/DiscoveryServerSession.hpp \
-	comms/discovery/NodeAssociate.hpp \
 	comms/discovery/NodeAssociateStore.hpp \
 	comms/FlowControl.hpp \
 	comms/messages/MessageType.hpp \
@@ -395,7 +395,8 @@ widgets/ControlDeliveryWizard.hpp \
 	widgets/PairingListModel.hpp \
 	widgets/PairingEditButtonDelegate.hpp \
 	widgets/HardwareWizard.hpp \
-	widgets/SerialDeviceListModel.hpp
+	widgets/SerialDeviceListModel.hpp \
+    basic/Vibrate.hpp
 
 
 

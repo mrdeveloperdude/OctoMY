@@ -7,9 +7,9 @@
 //#include <string> #include <vector>
 #include <QString>
 #include <QStringList>
+#include <QWidget>
 #include <QAbstractButton>
-#include <QNetworkReply>
-
+#include <QtNetwork>
 
 class QLayout;
 class QWidget;

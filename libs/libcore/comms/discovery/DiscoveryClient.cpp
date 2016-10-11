@@ -79,7 +79,6 @@
 DiscoveryClient::DiscoveryClient(Node &node)
 	: QObject(&node)
 	, lastZooPair(0)
-	, m_serverURL("http://localhost:8123/api")
 	, m_client(new qhttp::client::QHttpClient(this))
 	, node(node)
 	, key(node.keyStore().localKey())
@@ -111,6 +110,14 @@ void DiscoveryClient::stop(){
 }
 
 
+
+
+void DiscoveryClient::setURL(const QUrl& serverURL) {
+	m_serverURL  = serverURL;
+	qDebug()<<"Setting new URL: "<<m_serverURL;
+}
+
+
 static void merge( QVariantMap  &c, QVariantMap  &b){
 	//QVariantMap  c(a);
 	for(QVariantMap::const_iterator i=b.begin(), e=b.end() ; i!=e ; ++i){
@@ -123,7 +130,7 @@ void DiscoveryClient::discover(){
 	//qDebug()<<"DISCOVERY CLIENT RUN";
 
 	qhttp::client::TRequstHandler reqHandler= [this](qhttp::client::QHttpRequest* req){
-		//qDebug()<<"REQ";
+
 		QVariantMap cmd;
 		cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
 		cmd["key"] = node.keyStore().localKey().toVariantMap(true);
@@ -146,8 +153,12 @@ void DiscoveryClient::discover(){
 		else{
 			qWarning()<<"ERROR: no me";
 		}
-		QByteArray body  = QJsonDocument::fromVariant(cmd).toJson();
-		//qDebug()<<"SENDING RAW JSON: "<<body;
+
+		qDebug()<<"SENDING VAR: "<<cmd;
+		QJsonDocument jdoc=QJsonDocument::fromVariant(cmd);
+		qDebug()<<"SENDING JDOC: "<<jdoc;
+		QByteArray body  = jdoc.toJson(QJsonDocument::Indented);
+		qDebug()<<"SENDING RAW JSON: "<<body;
 		req->addHeader("user-agent",			ZooConstants::OCTOMY_USER_AGENT);
 		req->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
 		req->addHeader("accept",				"application/json");
@@ -160,8 +171,9 @@ void DiscoveryClient::discover(){
 
 	qhttp::client::TResponseHandler resHandler=	[this](qhttp::client::QHttpResponse* res) {
 		//qDebug()<<"RES";
-		res->collectData(10000);
+		res->collectData(20000);
 		res->onEnd([this, res](){
+			qDebug()<<"RES to "<<m_serverURL;
 			//qDebug()<<"RES END";
 			qhttp::TStatusCode status=res->status();
 			bool ok=true;
@@ -218,6 +230,7 @@ void DiscoveryClient::discover(){
 		});
 		//qDebug()<<"Getting node by OCID:"<<OCID << " RES DONE";
 	};
+	qDebug()<<"DISCOVERY CLIENT OUTREACH TO "<<m_serverURL;
 	m_client->request(qhttp::EHTTP_POST, m_serverURL, reqHandler, resHandler);
 
 

@@ -42,6 +42,7 @@ class DiscoveryClient: public QObject
 
 	public:
 
+		void setURL(const QUrl&);
 		void start();
 		void stop();
 

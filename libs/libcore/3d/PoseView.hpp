@@ -1,6 +1,6 @@
 #ifndef POSEVIEW_HPP
 #define POSEVIEW_HPP
-
+#ifdef LOLBOB
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
@@ -47,5 +47,6 @@ class PoseView : public QOpenGLWidget, protected QOpenGLFunctions{
 
 
 };
+#endif //LOLBOB
 
 #endif // POSEVIEW_HPP

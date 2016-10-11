@@ -1,5 +1,7 @@
 #include "PoseView.hpp"
 
+#ifdef LOLBOB
+
 #include "scene/GeometryEngine.hpp"
 #include "scene/Limb.hpp"
 
@@ -192,3 +194,4 @@ void PoseView::paintGL()
 	geometries->drawCubeGeometry(&program);
 }
 
+#endif

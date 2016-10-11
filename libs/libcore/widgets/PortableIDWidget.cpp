@@ -20,14 +20,22 @@ void PortableIDWidget::setPortableID(PortableID id){
 	const DiscoveryType type=mID.type();
 	const bool isAgent=TYPE_AGENT==type;
 	ui->groupBoxBirthCertificate->setTitle(isAgent?"Birth Certificate": "Identification");
+
+	ui->labelType->setVisible(!isAgent);
+	ui->labelTypeCaption->setVisible(!isAgent);
+	ui->labelType->setText(DiscoveryTypeToString(type));
+
 	ui->labelName->setVisible(isAgent && !mID.name().isEmpty());
 	ui->labelNameCaption->setVisible(isAgent && !mID.name().isEmpty());
+	ui->labelName->setText(mID.name());
+
 	ui->labelGender->setVisible(isAgent && !mID.gender().isEmpty());
 	ui->labelGenderCaption->setVisible(isAgent && !mID.gender().isEmpty());
-	ui->labelIDCaption->setText(isAgent?"Soul ID": "ID");
-	ui->labelName->setText(mID.name());
 	ui->labelGender->setText(mID.gender());
+
+	ui->labelIDCaption->setText(isAgent?"Soul ID": "ID");
 	ui->labelID->setText(mID.id());
+
 	ui->widgetIdenticon->setPortableID(id);
 	ui->widgetQR->setQRData(mID.id());
 	const quint64 ts=mID.birthDate();

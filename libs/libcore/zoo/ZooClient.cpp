@@ -133,7 +133,7 @@ void ZooClient::putNodeCrumb(const QString OCID, const QByteArray data) {
 
 void ZooClient::doPairingEscrow(const QString OCID, TVariantMapHandler handler) {
 	qhttp::client::TRequstHandler reqHandler= [this, OCID](qhttp::client::QHttpRequest* req){
-		//qDebug()<<"Getting node by OCID:"<<OCID << " REQ";
+		qDebug()<<"doPairingEscrow handler for " << m_serverURL;
 		QVariantMap cmd;
 		cmd["action"] = ZooConstants::OCTOMY_ZOO_API_GET_NODE_CRUMB;
 		cmd["ocid"] = OCID;

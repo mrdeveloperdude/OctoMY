@@ -39,6 +39,7 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	, mCameras (new CameraList(this))
 	, mLastStatusSend (0)
 	, mSensorMessage (new SensorsMessage)
+	, mServerURL("http://10.0.0.86:8123/api") //katana wlan iface)
 {
 	//ScopedTimer nodeBootTimer(mContext->base()+"-boot");
 	setObjectName(mContext->base());
@@ -68,14 +69,15 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	hookCommsSignals(*this);
 
 	//QByteArray OCID=UniquePlatformFingerprint::getInstance().platform().getHEX().toUtf8();
+
+
 	if(nullptr!=mZooClient){
-		mZooClient->setURL(QUrl("http://10.0.0.153:8123/api"));//katana wlan iface
-		//zoo->setURL(QUrl("http://localhost/lennart/octomy/index.php"));
-		//zoo->putNode(OCID); 		zoo->getNode(OCID);
+		mZooClient->setURL(mServerURL);
 	}
 
-
-
+	if(nullptr!=mDiscovery){
+		mDiscovery->setURL(mServerURL);
+	}
 
 }
 
@@ -235,6 +237,7 @@ void Node::unHookPeerSignals(QObject &o)
 void Node::updateDiscoveryClient(){
 	delete mDiscovery;
 	mDiscovery=new DiscoveryClient(*this);
+	mDiscovery->setURL(mServerURL);
 }
 
 

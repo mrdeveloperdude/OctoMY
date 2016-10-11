@@ -266,7 +266,18 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 
 
 
-	QJsonDocument jdoc= QJsonDocument::fromJson(data);
+	QJsonParseError error;
+	QJsonDocument jdoc= QJsonDocument::fromJson(data, &error);
+	if(QJsonParseError::NoError!=error.error){
+		const static char KMessage[] = "Error parsing json";
+		res->addHeader("connection", "close");
+		res->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
+		res->addHeaderValue("content-length", strlen(KMessage));
+		res->setStatusCode(qhttp::ESTATUS_BAD_REQUEST);
+		res->end(KMessage);
+		qWarning()<<"ERROR: could not parse json of request, closing. Message="<<error.errorString()<<", Offending data: " << data;
+		return;
+	}
 	QVariantMap root = jdoc.toVariant().toMap();
 	if ( root.isEmpty()  || !root.contains("action") ){
 		const static char KMessage[] = "Invalid JSon format!";
@@ -275,7 +286,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 		res->addHeaderValue("content-length", strlen(KMessage));
 		res->setStatusCode(qhttp::ESTATUS_BAD_REQUEST);
 		res->end(KMessage);
-		qWarning()<<"ERROR: no action found in json of request, closing";
+		qWarning()<<"ERROR: no action found in json of request, closing. Offending data: " << data;
 
 		return;
 	}

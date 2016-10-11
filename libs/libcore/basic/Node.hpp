@@ -9,6 +9,7 @@
 
 #include <QObject>
 #include <QHostAddress>
+#include <QUrl>
 
 class CommsChannel;
 class ZooClient;
@@ -48,6 +49,8 @@ class Node : public QObject
 
 		qint64 mLastStatusSend;
 		SensorsMessage *mSensorMessage;
+
+		QUrl mServerURL;
 
 
 	public:
