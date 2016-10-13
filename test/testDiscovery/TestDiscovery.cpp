@@ -2,8 +2,8 @@
 
 #include "zoo/ZooServer.hpp"
 #include "zoo/ZooClient.hpp"
-#include "comms/discovery/DiscoveryClient.hpp"
-#include "comms/discovery/DiscoveryRole.hpp"
+#include "discovery/DiscoveryClient.hpp"
+#include "discovery/DiscoveryRole.hpp"
 #include "basic/Node.hpp"
 #include "basic/AppContext.hpp"
 

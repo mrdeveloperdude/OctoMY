@@ -15,13 +15,7 @@ class ZooConstants
 		static const QByteArray OCTOMY_API_VERSION_POINT_ONE;
 		static const QByteArray OCTOMY_API_VERSION_CURRENT;
 
-
-		static const QByteArray OCTOMY_ZOO_API_GET_NODE_CRUMB;
-		static const QByteArray OCTOMY_ZOO_API_PUT_NODE_CRUMB;
-
 		static const QByteArray OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
-
-		static const QByteArray OCTOMY_ZOO_API_UDP_PUNCH;
 
 	public:
 		ZooConstants();

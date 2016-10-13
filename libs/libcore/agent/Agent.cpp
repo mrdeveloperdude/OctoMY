@@ -6,7 +6,7 @@
 #include "comms/Client.hpp"
 #include "comms/ClientDirectory.hpp"
 
-#include "comms/discovery/DiscoveryClient.hpp"
+#include "discovery/DiscoveryClient.hpp"
 #include "zoo/ZooClient.hpp"
 #include "basic/AppContext.hpp"
 

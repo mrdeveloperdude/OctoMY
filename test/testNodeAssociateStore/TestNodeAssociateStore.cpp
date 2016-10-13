@@ -1,6 +1,6 @@
 #include "TestNodeAssociateStore.hpp"
 
-#include "comms/discovery/NodeAssociateStore.hpp"
+#include "discovery/NodeAssociateStore.hpp"
 
 
 

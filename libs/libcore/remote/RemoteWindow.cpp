@@ -15,7 +15,7 @@
 #include "../libmap/MapLayer.hpp"
 #include "../libmap/LineString.hpp"
 
-#include "comms/discovery/DiscoveryClient.hpp"
+#include "discovery/DiscoveryClient.hpp"
 
 #include "security/PortableID.hpp"
 

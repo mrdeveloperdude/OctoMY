@@ -1,7 +1,7 @@
 #ifndef PAIRINGLISTMODEL_HPP
 #define PAIRINGLISTMODEL_HPP
 
-#include "comms/discovery/DiscoveryRole.hpp"
+#include "discovery/DiscoveryRole.hpp"
 
 #include <QDebug>
 #include <QAbstractListModel>

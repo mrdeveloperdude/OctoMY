@@ -57,13 +57,13 @@ ZooServer::ZooServer(AppContext *context, QObject *parent)
 	keystore.bootstrap();
 
 
-	if(!QDir().mkpath(mContext->baseDir())){
+	if(!QDir().mkpath(mContext->baseDir())) {
 		qWarning()<<"ERROR: Could not create basedir for zoo";
 	}
 
 	qDebug()<<"Current dir for zoo storage is: "<<storage.dir().absolutePath();
 
-	if(!connect(&backgroundTimer, &QTimer::timeout, this, &ZooServer::onBackgroundTimer,OC_CONTYPE)){
+	if(!connect(&backgroundTimer, &QTimer::timeout, this, &ZooServer::onBackgroundTimer,OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
@@ -72,7 +72,8 @@ ZooServer::ZooServer(AppContext *context, QObject *parent)
 }
 
 
-ZooServer::~ZooServer(){
+ZooServer::~ZooServer()
+{
 
 }
 
@@ -94,10 +95,9 @@ static QDebug operator<<(QDebug d, qhttp::server::QHttpRequest &s)
 
 static QDebug operator<<(QDebug d, qhttp::server::QHttpRequest *s)
 {
-	if(0!=s){
+	if(0!=s) {
 		d <<*s;
-	}
-	else{
+	} else {
 		d.nospace()<<"NULL";
 	}
 	return d.space();
@@ -106,9 +106,9 @@ static QDebug operator<<(QDebug d, qhttp::server::QHttpRequest *s)
 
 bool ZooServer::start(const QString pathOrPortNumber)
 {
-	if(!connect(this,  &QHttpServer::newConnection, [this](qhttp::server::QHttpConnection*){
-				//qDebug()<<"a new connection was made!\n";
-})){
+	if(!connect(this,  &QHttpServer::newConnection, [this](qhttp::server::QHttpConnection*) {
+	//qDebug()<<"a new connection was made!\n";
+})) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
@@ -117,25 +117,22 @@ bool ZooServer::start(const QString pathOrPortNumber)
 	backgroundTimer.start();
 
 
-	qhttp::server::TServerHandler conHandler=[this](qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res){
+	qhttp::server::TServerHandler conHandler=[this](qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res) {
 		req->collectData(10000);
-		req->onEnd([this, req, res](){
+		req->onEnd([this, req, res]() {
 			//qDebug()<<req;
 			QString path=req->url().path();
 			//qDebug()<<"URL: "<<path;
-			if("/"==path){
+			if("/"==path) {
 				serveIndex(req,res);
 				return;
-			}
-			else if(path.startsWith("/identicon") || path.startsWith("/favicon.ico")){
+			} else if(path.startsWith("/identicon") || path.startsWith("/favicon.ico")) {
 				serveIdenticon(req,res);
 				return;
-			}
-			else if(path.startsWith("/api")){
+			} else if(path.startsWith("/api")) {
 				serveAPI(req,res);
 				return;
-			}
-			else{
+			} else {
 				serveFallback(req,res);
 			}
 		});
@@ -147,8 +144,7 @@ bool ZooServer::start(const QString pathOrPortNumber)
 		qWarning()<<"ERROR: Could not listen to "<<qPrintable(pathOrPortNumber);
 		//QCoreApplication::quit();
 		return false;
-	}
-	else {
+	} else {
 		qDebug()<<"Listening to "<<qPrintable(pathOrPortNumber);
 	}
 	return true;
@@ -159,8 +155,7 @@ void ZooServer::stop()
 {
 	if ( !isListening() ) {
 		qWarning()<<"ERROR: Trying to stop server while not listeining";
-	}
-	else {
+	} else {
 		qDebug()<<"Stopping server";
 		stopListening();
 	}
@@ -210,18 +205,18 @@ void ZooServer::serveIdenticon(qhttp::server::QHttpRequest* req, qhttp::server::
 	QUrlQuery query(req->url().query());
 	QString id=query.queryItemValue("id");
 	QByteArray idBA=0;
-	if(""!=id){
+	if(""!=id) {
 		idBA=id.toUtf8();
 	}
 
 	QString w=query.queryItemValue("w");
 	quint64 wInt=64;
-	if(""!=w){
+	if(""!=w) {
 		wInt=w.toInt();
 	}
 	QString h=query.queryItemValue("h");
 	quint64 hInt=64;
-	if(""!=h){
+	if(""!=h) {
 		hInt=h.toInt();
 	}
 
@@ -234,11 +229,10 @@ void ZooServer::serveIdenticon(qhttp::server::QHttpRequest* req, qhttp::server::
 	QBuffer buffer( &bytes );
 	buffer.open( QIODevice::WriteOnly );
 	QImage image=identicon.image(wInt,hInt);
-	if(image.isNull()){
+	if(image.isNull()) {
 		qWarning()<<"ERROR:Image is null";
 		return;
-	}
-	else{
+	} else {
 		image.save( &buffer, "PNG" );
 	}
 
@@ -268,7 +262,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 
 	QJsonParseError error;
 	QJsonDocument jdoc= QJsonDocument::fromJson(data, &error);
-	if(QJsonParseError::NoError!=error.error){
+	if(QJsonParseError::NoError!=error.error) {
 		const static char KMessage[] = "Error parsing json";
 		res->addHeader("connection", "close");
 		res->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
@@ -279,7 +273,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 		return;
 	}
 	QVariantMap root = jdoc.toVariant().toMap();
-	if ( root.isEmpty()  || !root.contains("action") ){
+	if ( root.isEmpty()  || !root.contains("action") ) {
 		const static char KMessage[] = "Invalid JSon format!";
 		res->addHeader("connection", "close");
 		res->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
@@ -294,11 +288,11 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 	QString action=root.value("action").toString();
 	//qDebug()<<"------------------ "<<action<<" ---------------------------------";
 
-	bool ok=true;
-	QString msg="Have a nice day";
-
+	res->setStatusCode(qhttp::ESTATUS_OK);
 	QVariantMap map;
 	//map["action"] = action;
+	/* TODO:Schedule for removal
+	 *
 	if(ZooConstants::OCTOMY_ZOO_API_GET_NODE_CRUMB==action){
 		QString ocid=root.value("ocid").toString();
 		if(reOCID.match(ocid).hasMatch()){
@@ -333,67 +327,36 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 			ok=false;
 		}
 	}
-	else if(ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW==action){
-		/*
-		QString publicKey=root["publicKey"].toString();
-		QString localAddress=root["localAddress"].toString();
-		DiscoveryRole role=DiscoveryRoleFromString(root["role"].toString());
-		DiscoveryType type=DiscoveryTypeFromString(root["type"].toString());
-		quint16 localPort=root["localPort"].toInt();
-
-		quint16 publicPort=root["publicPort"].toInt();
+	else
 		*/
-		//qDebug()<<"FULL MAP IS: "<<root;
-		QSharedPointer<NodeAssociate> part(new NodeAssociate(root));
-		qDebug()<<"GOT ROOT"<<part->toString();
-		QString publicAddress="";
-		quint16 publicPort=0;
-		QTcpServer *tc=tcpServer();
-		if(nullptr!=tc){
-			publicAddress=tc->serverAddress().toString();
-			publicPort=tc->serverPort();
-		}
-		part->publicAddress().setIP(QHostAddress(publicAddress));
-		part->publicAddress().setPort(publicPort);
-		part->addPin(root.value("manualPin").toString());
-		part->addPin(root.value("geoPin").toString());
-		DiscoveryServerSession *ses=discovery.request(part);
-		if(nullptr!=ses){
-			map["peers"]=ses->toVariantMap();
-		}
-		else{
-			res->setStatusCode(qhttp::ESTATUS_INTERNAL_SERVER_ERROR);
-			msg="ERROR: No session";
-			ok=false;
-		}
+	if(ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW==action) {
+		handleDiscoveryEscrow(root,map,req,res);
 	}
+	/* TODO: Schedule for removal
 	else if(ZooConstants::OCTOMY_ZOO_API_UDP_PUNCH==action){
-		QString punchToken=root.value("punchToken").toString();
-		if(rePunchToken.match(punchToken).hasMatch()){
-			QString remoteAddress=req->remoteAddress();
-			quint16 remotePort=req->remotePort();
-			QString localAddress=root["localAddress"].toString();
-			quint16 localPort=root["localPort"].toInt();
-			punches.update(punchToken, remoteAddress,remotePort,localAddress, localPort);
-			UDPPunch *punch=punches[punchToken];
-			if(nullptr!=punch){
-				map["data"]=punch->toVariantMap();
-			}
-		}
-		else {
-			qWarning()<<"ERROR: punchToken did not match validation:" <<punchToken;
-			msg="ERROR: punchToken did not match validation:" +punchToken;
-			ok=false;
+	QString punchToken=root.value("punchToken").toString();
+	if(rePunchToken.match(punchToken).hasMatch()){
+		QString remoteAddress=req->remoteAddress();
+		quint16 remotePort=req->remotePort();
+		QString localAddress=root["localAddress"].toString();
+		quint16 localPort=root["localPort"].toInt();
+		punches.update(punchToken, remoteAddress,remotePort,localAddress, localPort);
+		UDPPunch *punch=punches[punchToken];
+		if(nullptr!=punch){
+			map["data"]=punch->toVariantMap();
 		}
 	}
-	else{
-		msg="ERROR: Don't know how to handle action: "+action;
+	else {
+		qWarning()<<"ERROR: punchToken did not match validation:" <<punchToken;
+		msg="ERROR: punchToken did not match validation:" +punchToken;
 		ok=false;
 	}
-
-	map["status"] = ok?"ok":"error";
-	map["message"] = msg;
-
+	}
+	*/
+	else {
+		map["message"] ="ERROR: Don't know how to handle action: "+action;
+		map["status"] ="error";
+	}
 
 	/*
 	qDebug()<<"PAIR: "<<msg+":";
@@ -408,18 +371,52 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 	*/
 
 	QByteArray body  = QJsonDocument::fromVariant(map).toJson();
-
 	res->addHeader("server", ZooConstants::OCTOMY_SERVER);
 	res->addHeader("content-type","application/json");
 	res->addHeader("connection", "keep-alive");
 	res->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
 	res->addHeaderValue("content-length", body.length());
-	res->setStatusCode(qhttp::ESTATUS_OK);
 	res->end(body);
 }
 
 
+void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
+{
+	/*
+	QString publicKey=root["publicKey"].toString();
+	QString localAddress=root["localAddress"].toString();
+	DiscoveryRole role=DiscoveryRoleFromString(root["role"].toString());
+	DiscoveryType type=DiscoveryTypeFromString(root["type"].toString());
+	quint16 localPort=root["localPort"].toInt();
 
-void ZooServer::onBackgroundTimer(){
+	quint16 publicPort=root["publicPort"].toInt();
+	*/
+	//qDebug()<<"FULL MAP IS: "<<root;
+	QSharedPointer<NodeAssociate> part(new NodeAssociate(root));
+	qDebug()<<"GOT ROOT"<<part->toString();
+	QString publicAddress="";
+	quint16 publicPort=0;
+	QTcpServer *tc=tcpServer();
+	if(nullptr!=tc) {
+		publicAddress=tc->serverAddress().toString();
+		publicPort=tc->serverPort();
+	}
+	part->publicAddress().setIP(QHostAddress(publicAddress));
+	part->publicAddress().setPort(publicPort);
+	part->addPin(root.value("manualPin").toString());
+	part->addPin(root.value("geoPin").toString());
+	DiscoveryServerSession *ses=discovery.request(part);
+	if(nullptr!=ses) {
+		map["peers"]=ses->toVariantMap();
+	} else {
+		res->setStatusCode(qhttp::ESTATUS_INTERNAL_SERVER_ERROR);
+		map["status"] = "error";
+		map["message"] = "ERROR: No session";
+	}
+}
+
+
+void ZooServer::onBackgroundTimer()
+{
 	discovery.prune(QDateTime::currentMSecsSinceEpoch()-PRUNE_DEADLINE);//Prune all not seen for some time
 }

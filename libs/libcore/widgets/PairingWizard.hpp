@@ -1,7 +1,7 @@
 #ifndef PAIRINGWIZARD_HPP
 #define PAIRINGWIZARD_HPP
 
-#include "comms/discovery/DiscoveryClient.hpp"
+#include "discovery/DiscoveryClient.hpp"
 
 #include <QWidget>
 

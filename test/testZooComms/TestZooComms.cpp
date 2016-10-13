@@ -34,6 +34,7 @@ void TestZooComms::test(){
 	QString key2="XC97D8A6C744EC29B3FD2C8EC0E9CA56760BA98A";
 	QByteArray val1="lolbob-1";
 	QByteArray  val2="lolbob-2";
+	/* TODO: remove/update
 	client->putNodeCrumb(key1,val1);
 	if(!spyPut.wait(1000)){
 		qWarning()<<"spyPut-1 wait timed out";
@@ -42,6 +43,7 @@ void TestZooComms::test(){
 	if(!spyPut.wait(1000)){
 		qWarning()<<"spyPut-2 wait timed out";
 	}
+
 	TVariantMapHandler gotNodeCrumb1=[this, val1](bool ok, QVariantMap map){
 		qDebug()<<"gotNode["<<ok<<"]: "<<map<<" vs. "<<val1;
 	};
@@ -57,7 +59,7 @@ void TestZooComms::test(){
 	if(!spyGet.wait(1000)){
 		qWarning()<<"spyGet-2 wait timed out";
 	}
-
+*/
 	QCOMPARE(spyPut.count(), 2);
 	QCOMPARE(spyGet.count(), 2);
 

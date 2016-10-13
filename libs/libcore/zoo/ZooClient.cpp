@@ -36,6 +36,7 @@ void ZooClient::setURL(const QUrl& serverURL) {
 	m_serverURL   = serverURL;
 }
 
+/* TODO:Scheduled for removal
 void ZooClient::getNodeCrumb(QString OCID, TVariantMapHandler handler) {
 	qhttp::client::TRequstHandler reqHandler= [this, OCID](qhttp::client::QHttpRequest* req){
 		//qDebug()<<"Getting node by OCID:"<<OCID << " REQ";
@@ -80,10 +81,10 @@ void ZooClient::getNodeCrumb(QString OCID, TVariantMapHandler handler) {
 	};
 	m_client->request(qhttp::EHTTP_POST, m_serverURL, reqHandler, resHandler);
 }
+*/
 
 
-
-
+/* TODO:Scheduled for removal
 void ZooClient::putNodeCrumb(const QString OCID, const QByteArray data) {
 
 	qhttp::client::TRequstHandler reqHandler= [this, OCID, data](qhttp::client::QHttpRequest* req){
@@ -128,14 +129,14 @@ void ZooClient::putNodeCrumb(const QString OCID, const QByteArray data) {
 	m_client->request(qhttp::EHTTP_POST, m_serverURL, reqHandler, resHandler);
 	emit putNodeDone();
 }
-
+*/
 
 
 void ZooClient::doPairingEscrow(const QString OCID, TVariantMapHandler handler) {
 	qhttp::client::TRequstHandler reqHandler= [this, OCID](qhttp::client::QHttpRequest* req){
 		qDebug()<<"doPairingEscrow handler for " << m_serverURL;
 		QVariantMap cmd;
-		cmd["action"] = ZooConstants::OCTOMY_ZOO_API_GET_NODE_CRUMB;
+		cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
 		cmd["ocid"] = OCID;
 		QByteArray body  = QJsonDocument::fromVariant(cmd).toJson();
 		//qDebug()<<"SENDING RAW JSON: "<<body;
@@ -178,7 +179,7 @@ void ZooClient::doPairingEscrow(const QString OCID, TVariantMapHandler handler) 
 
 
 
-
+/* TODO:Scheduled for removal
 void ZooClient::punchUDP(const QString punchToken) {
 
 	qhttp::client::TRequstHandler reqHandler= [this, punchToken](qhttp::client::QHttpRequest* req){
@@ -223,6 +224,6 @@ void ZooClient::punchUDP(const QString punchToken) {
 	m_client->request(qhttp::EHTTP_POST, m_serverURL, reqHandler, resHandler);
 
 }
-
+*/
 
 

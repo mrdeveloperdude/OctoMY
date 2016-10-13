@@ -2,7 +2,7 @@
 #define NODEASSOCIATE_HPP
 
 #include "security/Key.hpp"
-#include "comms/discovery/DiscoveryRole.hpp"
+#include "discovery/DiscoveryRole.hpp"
 #include "basic/NetworkAddress.hpp"
 
 #include <QBluetoothAddress>

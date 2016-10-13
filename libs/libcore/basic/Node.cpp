@@ -3,7 +3,7 @@
 #include "comms/CommsChannel.hpp"
 #include "comms/Client.hpp"
 
-#include "comms/discovery/DiscoveryClient.hpp"
+#include "discovery/DiscoveryClient.hpp"
 
 #include "zoo/ZooClient.hpp"
 #include "camera/CameraList.hpp"

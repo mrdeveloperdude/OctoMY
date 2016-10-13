@@ -167,17 +167,17 @@ void SensorInput::load()
 	QList<QByteArray> sensorTypes=QSensor::sensorTypes();
 	for(QList<QByteArray> ::iterator it=sensorTypes.begin(),e=sensorTypes.end();it!=e;++it){
 		QByteArray &type=*it;
-		qDebug() << " + Found type" << type;
+		//qDebug() << " + Found type" << type;
 		QList<QByteArray> sensorsForTypes=QSensor::sensorsForType(type);
 		for(QList<QByteArray> ::iterator it2=sensorsForTypes.begin(),e2=sensorsForTypes.end();it2!=e2;++it2){
 			QByteArray &identifier=*it2;
 			QSensor* sensor = new QSensor(type, this);
 			sensor->setIdentifier(identifier);
 			if (!sensor->connectToBackend()) {
-				qDebug() << "    * Skipping inactive sensor " << identifier;
+				//qDebug() << "    * Skipping inactive sensor " << identifier;
 				continue;
 			}
-			qDebug() << "    * Adding identifier" << identifier;
+			//qDebug() << "    * Adding identifier" << identifier;
 			m_availableSensors.append(sensor);
 		}
 	}

@@ -1,7 +1,7 @@
 #ifndef PORTABLEID_HPP
 #define PORTABLEID_HPP
 
-#include "comms/discovery/DiscoveryRole.hpp"
+#include "discovery/DiscoveryRole.hpp"
 
 #include <QString>
 #include <QVariantMap>

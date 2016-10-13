@@ -1,11 +1,11 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
-#include "comms/discovery/DiscoveryRole.hpp"
+#include "discovery/DiscoveryRole.hpp"
+#include "discovery/NodeAssociateStore.hpp"
 
 #include "basic/Settings.hpp"
 #include "security/KeyStore.hpp"
-#include "comms/discovery/NodeAssociateStore.hpp"
 
 #include <QObject>
 #include <QHostAddress>

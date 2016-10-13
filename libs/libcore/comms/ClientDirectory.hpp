@@ -14,6 +14,8 @@ class Client;
 
 /**
   * \brief ClientDirectory holds all clients beknownst to CommChannel.
+  * \note This is NOT the same as NodeAssociate, as it is not meant as an addressbook
+  * but rather as the working memory during opperation (for lack of better words)
   *
   */
 

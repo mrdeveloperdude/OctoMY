@@ -18,6 +18,7 @@ SOURCES +=\
 	agent/AgentWindow.cpp \
 	basic/AgentNameGenerator.cpp \
 	basic/AppContext.cpp \
+	basic/AsyncStore.cpp \
 	basic/AtomicBoolean.cpp \
 	basic/Fingerprint.cpp \
 	basic/GenerateRunnable.cpp \
@@ -34,6 +35,7 @@ SOURCES +=\
 	basic/StyleManager.cpp \
 	basic/TetraGPSEncoder.cpp \
 	basic/UniquePlatformFingerprint.cpp \
+	basic/Vibrate.cpp \
 	camera/Camera.cpp \
 	camera/CameraList.cpp \
 	camera/CameraSettings.cpp \
@@ -47,17 +49,17 @@ SOURCES +=\
 	comms/couriers/DirectPoseCourier.cpp \
 	comms/couriers/DiscoveryCourier.cpp \
 	comms/couriers/SensorsCourier.cpp \
-	comms/discovery/DiscoveryClient.cpp \
-	comms/discovery/DiscoveryRole.cpp \
-	comms/discovery/DiscoveryServer.cpp \
-	comms/discovery/DiscoveryServerSession.cpp \
-	comms/discovery/NodeAssociateStore.cpp \
 	comms/FlowControl.cpp \
 	comms/messages/MessageType.cpp \
 	comms/messages/QueryMessage.cpp \
 	comms/messages/QueryResultMessage.cpp \
 	comms/messages/SensorsMessage.cpp \
 	comms/ReliabilitySystem.cpp \
+	discovery/DiscoveryClient.cpp \
+	discovery/DiscoveryRole.cpp \
+	discovery/DiscoveryServer.cpp \
+	discovery/DiscoveryServerSession.cpp \
+	discovery/NodeAssociateStore.cpp \
 	gear/gbody.cpp \
 	gear/gconstraint.cpp \
 	gear/gconstraint_jointloop.cpp \
@@ -126,14 +128,15 @@ SOURCES +=\
 	utility/Utility.cpp \
 	web/Mustache.cpp \
 	widgets/AgentDeliveryWizard.cpp \
-widgets/ControlDeliveryWizard.cpp \
 	widgets/CameraPairingWidget.cpp \
 	widgets/CompasWidget.cpp \
 	widgets/ConnectionManager.cpp \
 	widgets/ConnectionWidget.cpp \
+	widgets/ControlDeliveryWizard.cpp \
 	widgets/EnumEntry.cpp \
 	widgets/FaceWidget.cpp \
 	widgets/FlowLayout.cpp \
+	widgets/HardwareWizard.cpp \
 	widgets/hexedit/QHexEditComments.cpp \
 	widgets/hexedit/QHexEdit.cpp \
 	widgets/hexedit/QHexEditData.cpp \
@@ -155,32 +158,17 @@ widgets/ControlDeliveryWizard.cpp \
 	widgets/MapEditor.cpp \
 	widgets/MultiView.cpp \
 	widgets/NumberEntry.cpp \
+	widgets/PairingEditButtonDelegate.cpp \
+	widgets/PairingListModel.cpp \
 	widgets/PairingWizard.cpp \
 	widgets/PKIManager.cpp \
 	widgets/planedit/CodeEditor.cpp \
 	widgets/planedit/LineNumberArea.cpp \
 	widgets/planedit/PlanEditor.cpp \
 	widgets/PortableIDWidget.cpp \
-	widgets/qfi/LayoutSquare.cpp \
-	widgets/qfi/qfi_ADI.cpp \
-	widgets/qfi/qfi_ALT.cpp \
-	widgets/qfi/qfi_ASI.cpp \
-	widgets/qfi/qfi_HSI.cpp \
-	widgets/qfi/qfi_NAV.cpp \
-	widgets/qfi/qfi_PFD.cpp \
-	widgets/qfi/qfi_TC.cpp \
-	widgets/qfi/qfi_VSI.cpp \
-	widgets/qfi/WidgetADI.cpp \
-	widgets/qfi/WidgetALT.cpp \
-	widgets/qfi/WidgetASI.cpp \
-	widgets/qfi/WidgetHSI.cpp \
-	widgets/qfi/WidgetNAV.cpp \
-	widgets/qfi/WidgetPFD.cpp \
-	widgets/qfi/WidgetSix.cpp \
-	widgets/qfi/WidgetTC.cpp \
-	widgets/qfi/WidgetVSI.cpp \
 	widgets/QRWidget.cpp \
 	widgets/RealtimeValuesWidget.cpp \
+	widgets/SerialDeviceListModel.cpp \
 	widgets/SvgWidget.cpp \
 	widgets/TextEntry.cpp \
 	widgets/TryToggle.cpp \
@@ -190,12 +178,7 @@ widgets/ControlDeliveryWizard.cpp \
 	zoo/ZooClient.cpp \
 	zoo/ZooConstants.cpp \
 	zoo/ZooServer.cpp \
-	basic/AsyncStore.cpp \
-	widgets/PairingListModel.cpp \
-	widgets/PairingEditButtonDelegate.cpp \
-	widgets/HardwareWizard.cpp \
-	widgets/SerialDeviceListModel.cpp \
-    basic/Vibrate.cpp
+
 
 
 
@@ -211,6 +194,7 @@ HEADERS  += \
 	agent/AgentWindow.hpp \
 	basic/AgentNameGenerator.hpp \
 	basic/AppContext.hpp \
+	basic/AsyncStore.hpp \
 	basic/AtomicBoolean.hpp \
 	basic/Fingerprint.hpp \
 	basic/GenerateRunnable.hpp \
@@ -227,6 +211,7 @@ HEADERS  += \
 	basic/StyleManager.hpp \
 	basic/TetraGPSEncoder.hpp \
 	basic/UniquePlatformFingerprint.hpp \
+	basic/Vibrate.hpp \
 	camera/Camera.hpp \
 	camera/CameraList.hpp \
 	camera/CameraSettings.hpp \
@@ -243,11 +228,6 @@ HEADERS  += \
 	comms/DataType.hpp \
 	comms/DeviceStatusType.hpp \
 	comms/DeviceType.hpp \
-	comms/discovery/DiscoveryClient.hpp \
-	comms/discovery/DiscoveryRole.hpp \
-	comms/discovery/DiscoveryServer.hpp \
-	comms/discovery/DiscoveryServerSession.hpp \
-	comms/discovery/NodeAssociateStore.hpp \
 	comms/FlowControl.hpp \
 	comms/messages/MessageType.hpp \
 	comms/messages/QueryMessage.hpp \
@@ -255,6 +235,11 @@ HEADERS  += \
 	comms/messages/SensorsMessage.hpp \
 	comms/QueryType.hpp \
 	comms/ReliabilitySystem.hpp \
+	discovery/DiscoveryClient.hpp \
+	discovery/DiscoveryRole.hpp \
+	discovery/DiscoveryServer.hpp \
+	discovery/DiscoveryServerSession.hpp \
+	discovery/NodeAssociateStore.hpp \
 	gear/gbody.h \
 	gear/gconstraint.h \
 	gear/gconstraint_jointloop.h \
@@ -327,14 +312,15 @@ HEADERS  += \
 	utility/Utility.hpp \
 	web/Mustache.hpp \
 	widgets/AgentDeliveryWizard.hpp \
-widgets/ControlDeliveryWizard.hpp \
 	widgets/CameraPairingWidget.hpp \
 	widgets/CompasWidget.hpp \
 	widgets/ConnectionManager.hpp \
 	widgets/ConnectionWidget.hpp \
+	widgets/ControlDeliveryWizard.hpp \
 	widgets/EnumEntry.hpp \
 	widgets/FaceWidget.hpp \
 	widgets/FlowLayout.hpp \
+	widgets/HardwareWizard.hpp \
 	widgets/hexedit/QHexEditComments.hpp \
 	widgets/hexedit/QHexEditDataDevice.hpp \
 	widgets/hexedit/QHexEditData.hpp \
@@ -356,32 +342,17 @@ widgets/ControlDeliveryWizard.hpp \
 	widgets/MapEditor.hpp \
 	widgets/MultiView.hpp \
 	widgets/NumberEntry.hpp \
+	widgets/PairingEditButtonDelegate.hpp \
+	widgets/PairingListModel.hpp \
 	widgets/PairingWizard.hpp \
 	widgets/PKIManager.hpp \
 	widgets/planedit/CodeEditor.hpp \
 	widgets/planedit/LineNumberArea.hpp \
 	widgets/planedit/PlanEditor.hpp \
 	widgets/PortableIDWidget.hpp \
-	widgets/qfi/LayoutSquare.h \
-	widgets/qfi/qfi_ADI.h \
-	widgets/qfi/qfi_ALT.h \
-	widgets/qfi/qfi_ASI.h \
-	widgets/qfi/qfi_HSI.h \
-	widgets/qfi/qfi_NAV.h \
-	widgets/qfi/qfi_PFD.h \
-	widgets/qfi/qfi_TC.h \
-	widgets/qfi/qfi_VSI.h \
-	widgets/qfi/WidgetADI.h \
-	widgets/qfi/WidgetALT.h \
-	widgets/qfi/WidgetASI.h \
-	widgets/qfi/WidgetHSI.h \
-	widgets/qfi/WidgetNAV.h \
-	widgets/qfi/WidgetPFD.h \
-	widgets/qfi/WidgetSix.h \
-	widgets/qfi/WidgetTC.h \
-	widgets/qfi/WidgetVSI.h \
 	widgets/QRWidget.hpp \
 	widgets/RealtimeValuesWidget.hpp \
+	widgets/SerialDeviceListModel.hpp \
 	widgets/SvgWidget.hpp \
 	widgets/TextEntry.hpp \
 	widgets/TryToggle.hpp \
@@ -391,12 +362,7 @@ widgets/ControlDeliveryWizard.hpp \
 	zoo/ZooClient.hpp \
 	zoo/ZooConstants.hpp \
 	zoo/ZooServer.hpp \
-	basic/AsyncStore.hpp \
-	widgets/PairingListModel.hpp \
-	widgets/PairingEditButtonDelegate.hpp \
-	widgets/HardwareWizard.hpp \
-	widgets/SerialDeviceListModel.hpp \
-    basic/Vibrate.hpp
+
 
 
 
@@ -411,15 +377,6 @@ FORMS    += \
 	ui/HubWindow.ui \
 	ui/MultiView.ui \
 	ui/NumberEntry.ui \
-	ui/qfi/WidgetADI.ui \
-	ui/qfi/WidgetALT.ui \
-	ui/qfi/WidgetASI.ui \
-	ui/qfi/WidgetHSI.ui \
-	ui/qfi/WidgetNAV.ui \
-	ui/qfi/WidgetPFD.ui \
-	ui/qfi/WidgetSix.ui \
-	ui/qfi/WidgetTC.ui \
-	ui/qfi/WidgetVSI.ui \
 	ui/RemoteWindow.ui \
 	ui/ResponsiveTest.ui \
 	ui/SerialSettings.ui \
@@ -432,21 +389,20 @@ FORMS    += \
 	ui/RealtimeValuesWidget.ui \
 	ui/PairingWizard.ui \
 	ui/AgentDeliveryWizard.ui \
-ui/ControlDeliveryWizard.ui \
+	ui/ControlDeliveryWizard.ui \
 	ui/FaceWidget.ui \
 	ui/LogWidget.ui \
 	ui/PKIManager.ui \
 	ui/PortableIDWidget.ui \
 	ui/ConnectionManager.ui \
 	ui/HUDWidget.ui \
-	widgets/HardwareWizard.ui
+	ui/HardwareWizard.ui
 
 
 RESOURCES += \
 	resources/icons.qrc \
 	resources/fonts.qrc \
 	resources/style.qrc \
-	resources/qfi.qrc \
 	resources/3d.qrc \
 	resources/data.qrc \
 	resources/images.qrc
@@ -456,7 +412,7 @@ RESOURCES += \
 OTHER_FILES += \
 
 #According to the link below, native widget support for Qt3D will not be available until at least Qt5.8 or later
-#Untill that time comes we will keep back the qt3d enthusiasm and write generalized 3D code that is easy to port
+#Untill that time comes we will hold back the qt3d enthusiasm and write generalized 3D code that is easy to port
 #http://stackoverflow.com/questions/35074830/show-qt3d-stuff-inside-qwidget-in-qt5
 contains(DEFINES, USE_QT3D){
 HEADERS += \

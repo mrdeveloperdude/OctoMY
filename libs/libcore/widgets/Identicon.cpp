@@ -144,7 +144,7 @@ void Identicon::erectLimb(QDomElement &o, QString limbStyle, bool top, bool left
 		const float stepY=sin(angle)*limbStepSize*(top?1:-1);
 		m+=QString::number(stepX)+", "+QString::number(stepY)+" ";
 	}
-	qDebug()<<"LIMB: "<<name<<m << " dirAngle="<<dirAngle<<" spreadAngle=" << spreadAngle<<" startAngle=" << startAngle;
+	//qDebug()<<"LIMB: "<<name<<m << " dirAngle="<<dirAngle<<" spreadAngle=" << spreadAngle<<" startAngle=" << startAngle;
 	setAttrRecur(o, "path", name, "d", m);
 	setAttrRecur(o, "path", name, "style", limbStyle);
 
@@ -186,7 +186,7 @@ void Identicon::regenerateIdenticon(){
 				qreal p9=frand();
 				qreal p10=frand();
 
-				qDebug()<<"Identicon params: "<<mID.id()<<p1<<p2<<p3<<p4<<p5<<p6<<p7;
+				//qDebug()<<"Identicon params: "<<mID.id()<<p1<<p2<<p3<<p4<<p5<<p6<<p7;
 				const QString body_color_high=hsl(p1,0.75f,0.55f);
 				const QString body_color_low=hsl(p1,0.75f,0.425f);
 				const QString background_color_high=hsl(p2,0.75f,0.25f);
