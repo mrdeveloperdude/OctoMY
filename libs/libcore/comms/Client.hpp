@@ -27,6 +27,7 @@ class LogDestination;
  * The Client class thus represents a communication partner that could, would,
  * will, does and did communicate with us through a CommsChannel.
  *
+ * TODO: Rename this class to "PeerData" or similar?
  */
 
 class Client{

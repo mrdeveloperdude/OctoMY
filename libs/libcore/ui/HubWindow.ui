@@ -312,7 +312,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidgetUtilities">
            <property name="currentIndex">
-            <number>0</number>
+            <number>3</number>
            </property>
            <widget class="QWidget" name="tabKeys">
             <attribute name="title">
@@ -510,7 +510,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidgetDevelopment">
            <property name="currentIndex">
-            <number>3</number>
+            <number>6</number>
            </property>
            <widget class="QWidget" name="tabGait">
             <attribute name="title">
@@ -768,13 +768,6 @@
              <string>Zoo</string>
             </attribute>
             <layout class="QVBoxLayout" name="verticalLayout_12">
-             <item>
-              <widget class="QPushButton" name="pushButtonUDPPunch">
-               <property name="text">
-                <string>Send UDP Punch</string>
-               </property>
-              </widget>
-             </item>
              <item>
               <spacer name="verticalSpacer_3">
                <property name="orientation">

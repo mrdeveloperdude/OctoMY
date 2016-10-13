@@ -72,7 +72,6 @@ class HubWindow : public QMainWindow, public LogDestination{
 		void on_pushButtonTest_clicked();
 		void on_lineEditQR_textChanged(const QString &arg1);
 
-		void on_pushButtonUDPPunch_clicked();
 		void on_pushButtonRandomIdenticonID_clicked();
 		void on_lineEditIdenticonID_textChanged(const QString &arg1);
 };

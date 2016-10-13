@@ -48,7 +48,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>5</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="pageRunning">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -171,7 +171,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidgetControl">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="pageConnection">
           <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -261,8 +261,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>98</width>
-                <height>34</height>
+                <width>440</width>
+                <height>561</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -673,15 +673,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FaceWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/FaceWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>PortableIDWidget</class>
    <extends>QWidget</extends>
    <header>widgets/PortableIDWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FaceWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/FaceWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -703,6 +703,12 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ConnectionWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/ConnectionWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>MapEditor</class>
    <extends>QWidget</extends>
    <header>widgets/MapEditor.hpp</header>
@@ -718,12 +724,6 @@
    <class>LogWidget</class>
    <extends>QPlainTextEdit</extends>
    <header>widgets/LogWidget.hpp</header>
-  </customwidget>
-  <customwidget>
-   <class>ConnectionWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/ConnectionWidget.hpp</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>ControlDeliveryWizard</class>

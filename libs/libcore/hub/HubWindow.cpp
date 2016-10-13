@@ -336,15 +336,6 @@ void HubWindow::on_lineEditQR_textChanged(const QString &text)
 	ui->widgetQR->setQRData(text);
 }
 
-void HubWindow::on_pushButtonUDPPunch_clicked()
-{
-	if(nullptr!=hub){
-		ZooClient *zoo=hub->zooClient();
-		if(nullptr!=zoo){
-			zoo->punchUDP("12345");
-		}
-	}
-}
 
 void HubWindow::on_pushButtonRandomIdenticonID_clicked()
 {

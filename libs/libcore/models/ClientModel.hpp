@@ -12,6 +12,9 @@
 class Client;
 class ClientDirectory;
 
+/*!
+ * \brief The ClientModel class is a QAbstractItemModel implementation for displaying clients in the UI
+ */
 class ClientModel : public QAbstractItemModel{
 		Q_OBJECT
 

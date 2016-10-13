@@ -437,8 +437,24 @@ void RemoteWindow::updateActiveAgent()
 	OC_METHODGATE();
 	//qDebug()<<"SWITCHING ACTIVE AGENT TO "<<agentName;
 	const int idx=ui->comboBoxControlLevel->currentIndex();
-	ui->stackedWidgetControl->setCurrentIndex(idx);
+	/*
 
+	  Agent control widget
+
+	  The remote interface give teh user ability to multiplex over available agents and available control levls
+
+	  But the interface for controlling one agent at one level remains to be developed.
+
+	  One suggestion is to make a special purpose "agent control" widget that keeps
+	  the state for controlling each agent. The remote window widget would then stack up these
+	  so that it would keep one for each active agent.
+
+	  That way switching between active remote control sessions becomes easy while retaining
+	  full state.
+
+	  I will deliberate on this and see if there are other more suitable architectures to consider.
+*/
+	ui->stackedWidgetControl->setCurrentWidget(ui->pageConnection);
 }
 
 void RemoteWindow::prepareMenu()
