@@ -24,6 +24,8 @@ libqfi.subdir=			libqfi
 
 libzbar.depends=libcore
 
+libcore.depends=libqfi
+
 include($$TOP_PWD/common.pri)
 
 

@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidgetAviation">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabSix">
       <attribute name="title">
@@ -57,19 +57,19 @@
   <customwidget>
    <class>WidgetSix</class>
    <extends>QWidget</extends>
-   <header>widgets/qfi/WidgetSix.h</header>
+   <header>../libqfi/widgets/qfi/WidgetSix.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>WidgetPFD</class>
    <extends>QWidget</extends>
-   <header>widgets/qfi/WidgetPFD.h</header>
+   <header>../libqfi/widgets/qfi/WidgetPFD.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>WidgetNAV</class>
    <extends>QWidget</extends>
-   <header>widgets/qfi/WidgetNAV.h</header>
+   <header>../libqfi/widgets/qfi/WidgetNAV.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

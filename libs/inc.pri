@@ -68,4 +68,14 @@ DEPENDPATH +=		$$STYLE_IN_DIR
 PRE_TARGETDEPS +=	$$STYLE_OUT_DIR/libstyle.a
 
 
+
+QFI_IN_DIR =		$$TOP_PWD/libs/libqfi
+QFI_OUT_DIR =		$$TOP_BUILD/libs/libqfi
+LIBS +=				-L$$QFI_OUT_DIR -lqfi
+INCLUDEPATH +=		$$QFI_IN_DIR
+DEPENDPATH +=		$$QFI_IN_DIR
+PRE_TARGETDEPS +=	$$QFI_OUT_DIR/libqfi.a
+
+
+
 #message("FROM inc.pri:") include($$TOP_PWD/status.pri)

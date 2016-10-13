@@ -5,8 +5,6 @@ QT +=		serialport
 
 include($$TOP_PWD/common.pri)
 
-INCLUDEPATH += ./
-
 SOURCES +=\
 	3d/Logo3DWidget.cpp \
 	3d/PoseView.cpp \

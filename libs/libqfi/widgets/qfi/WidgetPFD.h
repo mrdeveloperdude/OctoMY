@@ -52,7 +52,7 @@
 
 #include <QWidget>
 
-#include "widgets/qfi/qfi_PFD.h"
+#include "../libqfi/widgets/qfi/qfi_PFD.h"
 
 #include "LayoutSquare.h"
 

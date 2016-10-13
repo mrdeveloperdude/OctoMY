@@ -135,7 +135,6 @@ void NodeLauncher<T>::run(){
 */
 		Q_INIT_RESOURCE(icons);
 		Q_INIT_RESOURCE(images);
-		Q_INIT_RESOURCE(qfi);
 		Q_INIT_RESOURCE(3d);
 
 		ret=app->exec();
