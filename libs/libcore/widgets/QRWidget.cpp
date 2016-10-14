@@ -1,5 +1,5 @@
 #include "widgets/QRWidget.hpp"
-#include "basic/Standard.hpp"
+#include "../libutil/utility/Standard.hpp"
 
 #include "../libqr/qrencode.h"
 

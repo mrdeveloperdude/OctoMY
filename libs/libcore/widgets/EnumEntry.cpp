@@ -1,5 +1,5 @@
 #include "EnumEntry.hpp"
-#include "basic/Standard.hpp"
+#include "../libutil/utility/Standard.hpp"
 #include "basic/Settings.hpp"
 
 EnumEntry::EnumEntry(QWidget *parent)

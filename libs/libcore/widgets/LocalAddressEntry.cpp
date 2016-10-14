@@ -1,8 +1,8 @@
 #include "LocalAddressEntry.hpp"
 
-#include "basic/Standard.hpp"
+#include "../libutil/utility/Standard.hpp"
 #include "basic/Settings.hpp"
-#include "utility/Utility.hpp"
+#include "../libutil/utility/Utility.hpp"
 
 LocalAddressEntry::LocalAddressEntry(QWidget *parent)
 	: QComboBox(parent)

@@ -1,7 +1,7 @@
 #include "HUDWidget.hpp"
 #include "ui_HUDWidget.h"
 
-#include "basic/Standard.hpp"
+#include "../libutil/utility/Standard.hpp"
 #include <QDateTime>
 
 HUDWidget::HUDWidget(QWidget *parent)

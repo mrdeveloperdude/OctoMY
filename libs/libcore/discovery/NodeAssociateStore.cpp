@@ -1,6 +1,6 @@
 #include "NodeAssociateStore.hpp"
 
-#include "utility/Utility.hpp"
+#include "../libutil/utility/Utility.hpp"
 
 #include <QFile>
 #include <QThreadPool>
@@ -85,7 +85,7 @@ bool NodeAssociateStore::hasParticipant(const QString &id)
 }
 
 
-const int NodeAssociateStore::getParticipantCount() const
+int NodeAssociateStore::getParticipantCount() const
 {
 	return mPeers.size();
 }

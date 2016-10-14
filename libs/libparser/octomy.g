@@ -88,7 +88,7 @@
 #include "../../libs/libparser/Context.hpp"
 #include "../../libs/libparser/ParseTreeNode.hpp"
 #include "../../libs/libparser/ParseError.hpp"
-#include "../../libs/libcore/utility/Utility.hpp"
+#include "../../libs/libutil/utility/Utility.hpp"
 
 #include <QString>
 #include <QDebug>

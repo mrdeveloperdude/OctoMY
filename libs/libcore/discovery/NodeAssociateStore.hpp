@@ -38,7 +38,7 @@ class NodeAssociateStore: public AsyncStore{
 	public:
 
 		bool hasParticipant(const QString &id);
-		const int getParticipantCount() const ;
+		int getParticipantCount() const ;
 		QSharedPointer<NodeAssociate> getParticipant(const QString &id);
 		QSharedPointer<NodeAssociate> removeParticipant(const QString &id);
 		void setParticipant(QSharedPointer<NodeAssociate> participant);

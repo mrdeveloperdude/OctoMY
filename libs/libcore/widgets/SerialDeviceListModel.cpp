@@ -1,7 +1,7 @@
 #include "SerialDeviceListModel.hpp"
 
 #include "hw/actuators/SerialList.hpp"
-#include "basic/Standard.hpp"
+#include "../libutil/utility/Standard.hpp"
 
 SerialDeviceListModel::SerialDeviceListModel(QObject *parent)
 	: QAbstractListModel(parent)

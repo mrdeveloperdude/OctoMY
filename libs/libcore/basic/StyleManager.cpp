@@ -1,6 +1,6 @@
 #include "basic/StyleManager.hpp"
-#include "basic/Standard.hpp"
-#include "utility/Utility.hpp"
+#include "../libutil/utility/Standard.hpp"
+#include "../libutil/utility/Utility.hpp"
 #include "../libstyle/OctoStyle.hpp"
 
 #include <QProxyStyle>

@@ -1,6 +1,6 @@
 #include "ClientWindow.hpp"
 #include "ui_ClientWindow.h"
-#include "basic/Standard.hpp"
+#include "../libutil/utility/Standard.hpp"
 
 ClientWindow::ClientWindow(Client *client,QWidget *parent) :
 	QWidget(parent)

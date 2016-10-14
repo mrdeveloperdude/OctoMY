@@ -2,13 +2,13 @@
 
 #include "ui_HubWindow.h"
 
-#include "basic/Standard.hpp"
+#include "../libutil/utility/Standard.hpp"
 
 #include "comms/Client.hpp"
 #include "comms/messages/MessageType.hpp"
 #include "hub/Hub.hpp"
 #include "ClientWindow.hpp"
-#include "utility/Utility.hpp"
+#include "../libutil/utility/Utility.hpp"
 #include "models/ClientModel.hpp"
 
 #include "remote/Remote.hpp"
@@ -26,7 +26,7 @@
 
 #include "puppet/GaitController.hpp"
 
-#include "utility/ScopedTimer.hpp"
+#include "../libutil/utility/ScopedTimer.hpp"
 
 #include "comms/CommsChannel.hpp"
 #include "zoo/ZooClient.hpp"

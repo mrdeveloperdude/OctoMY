@@ -68,7 +68,6 @@ DEPENDPATH +=		$$STYLE_IN_DIR
 PRE_TARGETDEPS +=	$$STYLE_OUT_DIR/libstyle.a
 
 
-
 QFI_IN_DIR =		$$TOP_PWD/libs/libqfi
 QFI_OUT_DIR =		$$TOP_BUILD/libs/libqfi
 LIBS +=				-L$$QFI_OUT_DIR -lqfi
@@ -77,5 +76,19 @@ DEPENDPATH +=		$$QFI_IN_DIR
 PRE_TARGETDEPS +=	$$QFI_OUT_DIR/libqfi.a
 
 
+CL_IN_DIR =			$$TOP_PWD/libs/libcl
+CL_OUT_DIR =		$$TOP_BUILD/libs/libcl
+LIBS +=				-L$$CL_OUT_DIR -lcl
+INCLUDEPATH +=		$$CL_IN_DIR
+DEPENDPATH +=		$$CL_IN_DIR
+PRE_TARGETDEPS +=	$$CL_OUT_DIR/libcl.a
+
+
+UTIL_IN_DIR =		$$TOP_PWD/libs/libutil
+UTIL_OUT_DIR =		$$TOP_BUILD/libs/libutil
+LIBS +=				-L$$UTIL_OUT_DIR -lutil
+INCLUDEPATH +=		$$UTIL_IN_DIR
+DEPENDPATH +=		$$UTIL_IN_DIR
+PRE_TARGETDEPS +=	$$UTIL_OUT_DIR/libutil.a
 
 #message("FROM inc.pri:") include($$TOP_PWD/status.pri)

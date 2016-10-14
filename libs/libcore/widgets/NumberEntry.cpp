@@ -1,6 +1,6 @@
 #include "NumberEntry.hpp"
 #include "ui_NumberEntry.h"
-#include "basic/Standard.hpp"
+#include "../libutil/utility/Standard.hpp"
 #include "basic/Settings.hpp"
 
 NumberEntry::NumberEntry(QWidget *parent)

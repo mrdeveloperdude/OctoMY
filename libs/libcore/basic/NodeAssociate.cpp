@@ -204,7 +204,7 @@ void NodeAssociate::fromVariantMap(const QVariantMap map)
 	mTrusts=map["trusts"].toStringList();
 }
 
-#include "utility/Utility.hpp"
+#include "../libutil/utility/Utility.hpp"
 
 QString NodeAssociate::toString()
 {

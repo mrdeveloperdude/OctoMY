@@ -5,7 +5,7 @@
 #include "PoorMansProbe.hpp"
 #include "../libzbar/ZBarScanner.hpp"
 
-#include "utility/Utility.hpp"
+#include "../libutil/utility/Utility.hpp"
 
 #include <QMediaService>
 #include <QMediaRecorder>

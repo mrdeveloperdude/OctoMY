@@ -1,6 +1,6 @@
 #include "HexyTool.hpp"
 #include "ui_HexyTool.h"
-#include "basic/Standard.hpp"
+#include "../libutil/utility/Standard.hpp"
 #include "hw/actuators/ServoInput.hpp"
 
 #include <QSpacerItem>

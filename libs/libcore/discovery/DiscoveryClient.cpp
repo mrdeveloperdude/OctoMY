@@ -1,6 +1,6 @@
 #include "DiscoveryClient.hpp"
 
-#include "basic/Standard.hpp"
+#include "../libutil/utility/Standard.hpp"
 
 #include "basic/NodeAssociate.hpp"
 
@@ -13,7 +13,7 @@
 #include "comms/couriers/DiscoveryCourier.hpp"
 
 #include "basic/Node.hpp"
-#include "utility/Utility.hpp"
+#include "../libutil/utility/Utility.hpp"
 
 #include <functional>
 #include "../libqhttp/qhttpclient.hpp"

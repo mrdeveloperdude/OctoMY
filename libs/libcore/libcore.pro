@@ -29,7 +29,6 @@ SOURCES +=\
 	basic/Node.cpp \
 	basic/NodeLauncher.cpp \
 	basic/Settings.cpp \
-	basic/Standard.cpp \
 	basic/StyleManager.cpp \
 	basic/TetraGPSEncoder.cpp \
 	basic/UniquePlatformFingerprint.cpp \
@@ -120,10 +119,6 @@ SOURCES +=\
 	storage/Hashstore.cpp \
 	storage/HashstoreRecord.cpp \
 	storage/HashstoreRecordState.cpp \
-	utility/BaseTranscode.cpp \
-	utility/ScopedTimer.cpp \
-	utility/Status.cpp \
-	utility/Utility.cpp \
 	web/Mustache.cpp \
 	widgets/AgentDeliveryWizard.cpp \
 	widgets/CameraPairingWidget.cpp \
@@ -178,9 +173,6 @@ SOURCES +=\
 	zoo/ZooServer.cpp \
 
 
-
-
-
 HEADERS  += \
 	3d/Logo3DWidget.hpp \
 	3d/PoseView.hpp \
@@ -205,7 +197,6 @@ HEADERS  += \
 	basic/Node.hpp \
 	basic/NodeLauncher.hpp \
 	basic/Settings.hpp \
-	basic/Standard.hpp \
 	basic/StyleManager.hpp \
 	basic/TetraGPSEncoder.hpp \
 	basic/UniquePlatformFingerprint.hpp \
@@ -303,11 +294,6 @@ HEADERS  += \
 	storage/Hashstore.hpp \
 	storage/HashstoreRecord.hpp \
 	storage/HashstoreRecordState.hpp \
-	utility/BaseTranscode.hpp \
-	utility/InfInt.hpp \
-	utility/ScopedTimer.hpp \
-	utility/Status.hpp \
-	utility/Utility.hpp \
 	web/Mustache.hpp \
 	widgets/AgentDeliveryWizard.hpp \
 	widgets/CameraPairingWidget.hpp \
@@ -360,8 +346,6 @@ HEADERS  += \
 	zoo/ZooClient.hpp \
 	zoo/ZooConstants.hpp \
 	zoo/ZooServer.hpp \
-
-
 
 
 

@@ -8,10 +8,10 @@
 #include "web/Mustache.hpp"
 
 #include "basic/NodeAssociate.hpp"
-#include "utility/ScopedTimer.hpp"
+#include "../libutil/utility/ScopedTimer.hpp"
 
 #include "security/PortableID.hpp"
-#include "utility/Utility.hpp"
+#include "../libutil/utility/Utility.hpp"
 
 #include "ZooConstants.hpp"
 

@@ -2,8 +2,8 @@
 #ifndef WEBREQUEST_HPP
 #define WEBREQUEST_HPP
 
-#include "utility/Utility.hpp"
-#include "basic/Standard.hpp"
+#include "../libutil/utility/Utility.hpp"
+#include "../libutil/utility/Standard.hpp"
 
 #include <QDebug>
 #include <QObject>

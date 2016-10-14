@@ -1,6 +1,6 @@
 #include "Fingerprint.hpp"
 
-#include "utility/BaseTranscode.hpp"
+#include "../libutil/utility/BaseTranscode.hpp"
 
 #include <QCryptographicHash>
 

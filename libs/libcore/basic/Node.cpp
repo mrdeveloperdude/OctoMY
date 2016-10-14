@@ -9,8 +9,8 @@
 #include "camera/CameraList.hpp"
 #include "sensory/SensorInput.hpp"
 #include "comms/messages/SensorsMessage.hpp"
-#include "utility/Utility.hpp"
-#include "utility/ScopedTimer.hpp"
+#include "../libutil/utility/Utility.hpp"
+#include "../libutil/utility/ScopedTimer.hpp"
 #include "basic/StyleManager.hpp"
 #include "AppContext.hpp"
 

@@ -3,7 +3,7 @@
 
 #include "Agent.hpp"
 #include "comms/CommsChannel.hpp"
-#include "utility/Utility.hpp"
+#include "../libutil/utility/Utility.hpp"
 #include "hw/actuators/HexyTool.hpp"
 #include "hw/BluetoothList.hpp"
 #include "basic/Settings.hpp"

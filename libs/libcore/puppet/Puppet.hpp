@@ -1,7 +1,7 @@
 #ifndef PUPPET_HPP
 #define PUPPET_HPP
 
-#include "utility/Utility.hpp"
+#include "../libutil/utility/Utility.hpp"
 #include <QVector>
 #include <QDebug>
 

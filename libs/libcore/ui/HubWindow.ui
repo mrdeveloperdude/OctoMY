@@ -53,7 +53,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>5</number>
+        <number>4</number>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -358,7 +358,7 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="tabNetwork">
+           <widget class="QWidget" name="tabNetworkUtils">
             <attribute name="title">
              <string>Network</string>
             </attribute>
@@ -510,7 +510,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidgetDevelopment">
            <property name="currentIndex">
-            <number>6</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="tabGait">
             <attribute name="title">
@@ -613,7 +613,6 @@
                  </layout>
                 </item>
                </layout>
-               <zorder></zorder>
               </widget>
              </item>
              <item>
@@ -630,7 +629,6 @@
               </spacer>
              </item>
             </layout>
-            <zorder>verticalSpacer</zorder>
             <zorder>groupBoxConnect</zorder>
            </widget>
            <widget class="QWidget" name="tabHUD">

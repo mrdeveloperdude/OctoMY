@@ -1,7 +1,7 @@
 #ifndef RNG_HPP
 #define RNG_HPP
 
-#include "basic/Standard.hpp"
+#include "../libutil/utility/Standard.hpp"
 
 // Classification of RNG
 enum RNGMerit {

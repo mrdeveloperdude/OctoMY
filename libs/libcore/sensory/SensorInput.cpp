@@ -1,5 +1,5 @@
 #include "SensorInput.hpp"
-#include "basic/Standard.hpp"
+#include "../libutil/utility/Standard.hpp"
 #include <QDebug>
 #include <QSensor>
 #include <QAccelerometer>
