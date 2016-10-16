@@ -52,7 +52,7 @@ QMAKE_TARGET_DESCRIPTION =	"N-Limbed madness™"
 }
 
 # Add only plugins that are used and supported by the Qt build you are using
-QT += core gui opengl widgets network multimedia multimediawidgets positioning serialport bluetooth sensors xml svg sql testlib quick printsupport
+QT += core gui opengl widgets network multimedia multimediawidgets positioning serialport bluetooth sensors xml svg sql testlib quick printsupport openglextensions
 
 contains(DEFINES, USE_QT3D){
 	QT += 3dcore 3drenderer 3dinput

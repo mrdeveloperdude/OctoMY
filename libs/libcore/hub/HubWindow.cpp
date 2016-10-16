@@ -33,6 +33,8 @@
 
 #include "security/Key.hpp"
 
+#include "HelloGLCLViewRenderer.hpp"
+
 
 #include <QScrollBar>
 #include <QHostInfo>
@@ -46,13 +48,12 @@
 
 HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	QMainWindow(parent)
-  , ui(new Ui::HubWindow)
-  , hub(hub)
-
-  , m_gait(0)
+	, ui(new Ui::HubWindow)
+	, hub(hub)
+	, m_gait(0)
 {
 	setObjectName("HubWindow");
-	if(nullptr!=hub){
+	if(nullptr!=hub) {
 		restoreGeometry(hub->settings().getCustomSettingByteArray("window.geometry"));
 		QSplashScreen *splash=new QSplashScreen(this, QPixmap(":/images/hub_butterfly.svg"), Qt::WindowStaysOnTopHint);
 		splash->show();
@@ -63,10 +64,10 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		}
 		ui->widgetPairing->configure(hub);
 		/*
-	QAbstractItemModel *data = new ClientModel(hub->getComms()->getClients(), this);
-	ui->widgetIncommingNodes->configure("Icons","hubwindiow-clients-list");
-	ui->widgetIncommingNodes->setModel(data);
-*/
+		QAbstractItemModel *data = new ClientModel(hub->getComms()->getClients(), this);
+		ui->widgetIncommingNodes->configure("Icons","hubwindiow-clients-list");
+		ui->widgetIncommingNodes->setModel(data);
+		*/
 		ui->tabWidget->setEnabled(true);
 		ui->tabWidget->setCurrentWidget(ui->tabPairing);
 
@@ -83,20 +84,22 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		ui->lineEditRemoteAddress->configure(&hub->settings(), "localhost","hub-listen_address","The address of the remote host");
 		ui->lineEditRemotePort->configure(&hub->settings(), "","hub-port","The port of the remote host");
 		ui->tryToggleListen->setText("Listen","Preparing...","Listening");
-		if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onListenStateChanged(TryToggleState)),OC_CONTYPE)){
+		if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onListenStateChanged(TryToggleState)),OC_CONTYPE)) {
 			qDebug()<<"could not connect";
 		}
-		if(!connect(&summaryTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()),OC_CONTYPE)){
+		if(!connect(&summaryTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()),OC_CONTYPE)) {
 			qDebug()<<"could not connect";
 		}
 
+
+		initCL();
 
 		const QCommandLineParser &opts=hub->options();
-		if(opts.isSet("local-port")){
+		if(opts.isSet("local-port")) {
 			ui->lineEditBindPort->setText(opts.value("local-port"));
 			qDebug()<<"OVERRIDING LOCAL PORT WITH VALUE FROM CMDLINE: "<<opts.value("local-port");
 		}
-		if(opts.isSet("remote-port")){
+		if(opts.isSet("remote-port")) {
 			ui->lineEditRemotePort->setText(opts.value("remote-port"));
 			qDebug()<<"OVERRIDING REMOTE PORT WITH VALUE FROM CMDLINE: "<<opts.value("remote-port");
 		}
@@ -111,7 +114,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		ui->hexEditor->setData(hexdata);
 
 		m_gait=new GaitController<qreal> ();
-		if(0!=m_gait){
+		if(0!=m_gait) {
 			ui->widgetGait->setGait(*m_gait);
 		}
 
@@ -128,7 +131,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 HubWindow::~HubWindow()
 {
-	if(nullptr!=hub){
+	if(nullptr!=hub) {
 		hub->settings().setCustomSettingByteArray("window.geometry", saveGeometry());
 		hub->comms()->unHookSignals(*this);
 	}
@@ -146,10 +149,9 @@ HubWindow::~HubWindow()
 void HubWindow::onSummaryTimer()
 {
 	CommsChannel *comms=hub->comms();
-	if(0==comms){
+	if(0==comms) {
 		ui->plainTextEditSummary->setPlainText("N/A");
-	}
-	else{
+	} else {
 
 	}
 }
@@ -166,18 +168,17 @@ void HubWindow::onListenStateChanged(TryToggleState s)
 	ui->comboBoxLocalAddress->setEnabled(OFF==s);
 	ui->pushButtonSendData->setEnabled(ON==s);
 	const bool on=ON==s;
-	if(!on){
+	if(!on) {
 		ui->tabWidget->setCurrentIndex(0);
 	}
 	//ui->tabWidget->setEnabled(on);
 	on?summaryTimer.start():summaryTimer.stop();
 	appendLog("New listening state: "+ToggleStateToSTring(s));
-	if(TRYING==s){
+	if(TRYING==s) {
 		QHostInfo::lookupHost("localhost",this, SLOT(onLocalHostLookupComplete(QHostInfo)));
-	}
-	else if(OFF==s){
+	} else if(OFF==s) {
 		CommsChannel *comms=hub->comms();
-		if(0!=comms){
+		if(0!=comms) {
 			comms->stop();
 		}
 	}
@@ -187,13 +188,12 @@ void HubWindow::onListenStateChanged(TryToggleState s)
 
 void HubWindow::onLocalHostLookupComplete(QHostInfo hi)
 {
-	for(QHostAddress adr:hi.addresses()){
-		if(adr.isNull()){
+	for(QHostAddress adr:hi.addresses()) {
+		if(adr.isNull()) {
 			ui->logScroll->appendLog("Skipping invalid address during local host lookup: "+adr.toString());
-		}
-		else{
+		} else {
 			CommsChannel *comms=hub->comms();
-			if(0!=comms){
+			if(0!=comms) {
 				qDebug()<<"HUB comms start for " << adr.toString()<<":" << ui->lineEditBindPort->text();
 				comms->start(NetworkAddress(adr, ui->lineEditBindPort->text().toInt()));
 				ui->tryToggleListen->setState(ON);
@@ -209,17 +209,16 @@ void HubWindow::onLocalHostLookupComplete(QHostInfo hi)
 void HubWindow::onRemoteHostLookupComplete(QHostInfo hi)
 {
 	qDebug()<<"## onRemoteHostLookupComplete";
-	for(QHostAddress adr:hi.addresses()){
-		if(adr.isNull()){
+	for(QHostAddress adr:hi.addresses()) {
+		if(adr.isNull()) {
 			ui->logScroll->appendLog("Skipping invalid address during remote host lookup: "+adr.toString());
-		}
-		else{
+		} else {
 			const int l=ui->horizontalSliderSendCount->value();
 			const int sz=int(500*ui->horizontalSliderSendSize->value())/100;
-			for(int i=0;i<l;++i){
+			for(int i=0; i<l; ++i) {
 				QByteArray ba=("PING "+QString::number(i)+"/"+QString::number(l)).toUtf8()+" ";
 				const int sz2=sz-ba.size();
-				for(int i=0;i<sz2;++i){
+				for(int i=0; i<sz2; ++i) {
 					ba.append("X");
 				}
 				//				quint64 port=ui->lineEditRemotePort->text().toInt();
@@ -238,10 +237,9 @@ void HubWindow::onRemoteHostLookupComplete(QHostInfo hi)
 
 void HubWindow::onError(QString msg)
 {
-	if("Unable to send a message"==msg){
+	if("Unable to send a message"==msg) {
 
-	}
-	else{
+	} else {
 		appendLog("GOT ERROR: "+msg);
 	}
 }
@@ -250,7 +248,7 @@ void HubWindow::onError(QString msg)
 
 void HubWindow::onClientAdded(Client *c)
 {
-	if(0!=c){
+	if(0!=c) {
 		appendLog("CLIENT ADDED: "+c->getSummary());
 		ui->widgetIncommingNodes->update();
 	}
@@ -260,14 +258,13 @@ void HubWindow::onClientAdded(Client *c)
 void HubWindow::on_pushButtonSendData_clicked()
 {
 	CommsChannel *comms=hub->comms();
-	if(nullptr!=comms){
+	if(nullptr!=comms) {
 		//QHostInfo::lookupHost(ui->lineEditRemoteAddress->text(),this, SLOT(onRemoteHostLookupComplete(QHostInfo)));
 		QByteArray ba;
 		ba="HELLO WORLD";
 		quint64 w=comms->sendRawData(ba,ClientSignature(hub->keyStore().localKey().id(),NetworkAddress(QHostAddress(ui->lineEditRemoteAddress->text()),ui->lineEditRemotePort->text().toInt())));
 		qDebug()<<"Wrote "<<w<<" bytes raw helloworld packet";
-	}
-	else{
+	} else {
 		appendLog("NOT READY TO SEND DATA");
 	}
 }
@@ -287,24 +284,41 @@ void HubWindow::startProcess(QString base)
 	proc->start(program, arguments);
 	//TODO: make async
 	proc->waitForStarted();
-	if(QProcess::Running!=proc->state()){
+	if(QProcess::Running!=proc->state()) {
 		qDebug()<<"ERROR could not start: "<<proc->errorString();
 		proc->deleteLater();
 		proc=0;
-	}
-	else{
+	} else {
 		qDebug()<<"A-OK";
 	}
-
 }
 
-void HubWindow::on_comboBoxAddLocal_currentIndexChanged(const QString &arg1){
-	if("Remote"==arg1){
+
+
+void HubWindow::initCL()
+{
+	qDebug()<<"INIT CL ----- ";
+	CLGLViewRenderer * rendrer=new HelloGLCLViewRenderer();
+	rendrer->initialize(ui->openGLWidgetCLGLView->glctx());
+	ui->openGLWidgetCLGLView->setRenderer(rendrer);
+
+	if(!connect(ui->pushButtonCLGLDisplay, &QPushButton::toggled,ui->openGLWidgetCLGLView,&CLGLView::onDisplayToggle,OC_CONTYPE)) {
+		qDebug()<<"could not connect";
+	}
+	if(!connect(ui->pushButtonCLGLRender, &QPushButton::toggled,ui->openGLWidgetCLGLView,&CLGLView::onRenderToggle,OC_CONTYPE)) {
+		qDebug()<<"could not connect";
+	}
+}
+
+
+
+void HubWindow::on_comboBoxAddLocal_currentIndexChanged(const QString &arg1)
+{
+	if("Remote"==arg1) {
 		//TODO: synthesize arguments object that points to parent hub
 		startProcess("remote");
 
-	}
-	else if("Agent"==arg1){
+	} else if("Agent"==arg1) {
 		//TODO: synthesize arguments that points to parent hub
 		startProcess("agent");
 	}
@@ -320,7 +334,6 @@ void HubWindow::on_tabWidget_currentChanged(int)
 void HubWindow::onConnectionStatusChanged(bool s)
 {
 	qDebug()<<"connection state changed: "<<s;
-
 }
 
 

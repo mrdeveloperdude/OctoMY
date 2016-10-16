@@ -53,7 +53,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>4</number>
+        <number>5</number>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -510,7 +510,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidgetDevelopment">
            <property name="currentIndex">
-            <number>1</number>
+            <number>7</number>
            </property>
            <widget class="QWidget" name="tabGait">
             <attribute name="title">
@@ -629,7 +629,6 @@
               </spacer>
              </item>
             </layout>
-            <zorder>groupBoxConnect</zorder>
            </widget>
            <widget class="QWidget" name="tabHUD">
             <attribute name="title">
@@ -781,6 +780,36 @@
              </item>
             </layout>
            </widget>
+           <widget class="QWidget" name="tabCL">
+            <attribute name="title">
+             <string>OpenCL</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="0" column="0">
+              <widget class="QPushButton" name="pushButtonCLGLRender">
+               <property name="text">
+                <string>Render</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pushButtonCLGLDisplay">
+               <property name="text">
+                <string>Display</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" colspan="2">
+              <widget class="CLGLView" name="openGLWidgetCLGLView"/>
+             </item>
+            </layout>
+           </widget>
           </widget>
          </item>
         </layout>
@@ -899,6 +928,11 @@
    <extends>QWidget</extends>
    <header>widgets/PKIManager.hpp</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CLGLView</class>
+   <extends>QOpenGLWidget</extends>
+   <header>../libcl/widgets/CLGLView.hpp</header>
   </customwidget>
  </customwidgets>
  <resources>

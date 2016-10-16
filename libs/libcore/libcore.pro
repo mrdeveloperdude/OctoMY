@@ -171,6 +171,9 @@ SOURCES +=\
 	zoo/ZooClient.cpp \
 	zoo/ZooConstants.cpp \
 	zoo/ZooServer.cpp \
+    hub/HelloGLCLViewRenderer.cpp \
+    hub/HelloCLWorkerFactory.cpp \
+    hub/HelloCLWorker.cpp
 
 
 HEADERS  += \
@@ -346,6 +349,9 @@ HEADERS  += \
 	zoo/ZooClient.hpp \
 	zoo/ZooConstants.hpp \
 	zoo/ZooServer.hpp \
+    hub/HelloGLCLViewRenderer.hpp \
+    hub/HelloCLWorkerFactory.hpp \
+    hub/HelloCLWorker.hpp
 
 
 

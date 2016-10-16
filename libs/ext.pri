@@ -22,17 +22,26 @@ INCLUDEPATH +=    /usr/include/espeak
 }
 
 
-#This is used for OpenCV
+# This is used for OpenCV
 contains(DEFINES, EXTERNAL_LIB_OPENCV){
 LIBS +=         -lopencv_core -lopencv_imgproc -lopencv_objdetect -lopencv_highgui
 INCLUDEPATH +=    /usr/include/opencv
 }
 
+
+
+# This is used for OpenCL
+INCLUDEPATH+="./OpenCL-ICD-Loader/inc"
+LIBS+= -L./OpenCL-ICD-Loader/build/bin
+LIBS+= -lOpenCL
+
+
+
 #LIBS += -lusb
 
 HEADERS += \
-    $$PWD/libcore/basic/GenericKeyEventHandler.hpp
+	$$PWD/libcore/basic/GenericKeyEventHandler.hpp
 
 SOURCES += \
-    $$PWD/libcore/basic/GenericKeyEventHandler.cpp
+	$$PWD/libcore/basic/GenericKeyEventHandler.cpp
 
