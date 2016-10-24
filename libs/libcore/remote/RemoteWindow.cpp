@@ -221,8 +221,8 @@ void RemoteWindow::updateControlLevel()
 void RemoteWindow::updateActiveAgent()
 {
 	OC_METHODGATE();
-	const int idx=ui->comboBoxControlLevel->currentIndex();
-	const QString agentName=ui->comboBoxControlLevel->currentText();
+	const int idx=ui->comboBoxAgent->currentIndex();
+	const QString agentName=ui->comboBoxAgent->currentText();
 	qDebug()<<"SWITCHING ACTIVE AGENT TO "<<agentName<<"("<<idx<<")";
 	if(idx>=0) {
 		QMap<int, ClientWidget *>::const_iterator it=mClientWidgets.find(idx);
@@ -240,7 +240,13 @@ void RemoteWindow::updateActiveAgent()
 			cw=it.value();
 		}
 		if(nullptr!=cw) {
+			ClientWidget *old=qobject_cast<ClientWidget *>(ui->stackedWidgetControl->currentWidget());
+			int oldIndex=ui->stackedWidgetControl->currentIndex();
+			qDebug()<<"SWITCHING FROM "<<old << " TO "<<cw;
 			ui->stackedWidgetControl->setCurrentWidget(cw);
+			int newIndex=ui->stackedWidgetControl->currentIndex();
+			qDebug()<<"SWITCHING FROM "<<oldIndex << " TO "<<newIndex;
+			updateControlLevel();
 		}
 	}
 }
