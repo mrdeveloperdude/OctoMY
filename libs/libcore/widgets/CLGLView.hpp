@@ -1,6 +1,29 @@
 #ifndef CLGLVIEW_HPP
 #define CLGLVIEW_HPP
 
+#include <QtGlobal>
+
+#ifndef USE_OPENCL
+
+#include <QOpenGLWidget>
+
+class CLGLView : public QOpenGLWidget
+{
+	Q_OBJECT
+
+public:
+	explicit CLGLView(QWidget *parent = nullptr);
+	virtual ~CLGLView();
+
+	//QOpenGLWidget interface
+public:
+	void initializeGL() Q_DECL_OVERRIDE;
+	void resizeGL(int w, int h) Q_DECL_OVERRIDE;
+	void paintGL() Q_DECL_OVERRIDE;
+};
+
+#else
+
 #include "../libutil/utility/IncludeOpenGL.hpp"
 #include "../libutil/utility/FPSCalculator.hpp"
 #include "../libutil/utility/ArcBall.hpp"
@@ -88,5 +111,7 @@ signals:
 
 	void arcBallChange(QMatrix4x4 mat);
 };
+
+#endif
 
 #endif // CLGLVIEW_HPP

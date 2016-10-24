@@ -831,6 +831,35 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
+   <class>PlanEditor</class>
+   <extends>QWidget</extends>
+   <header>widgets/planedit/PlanEditor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LogWidget</class>
+   <extends>QPlainTextEdit</extends>
+   <header>widgets/LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>PairingWizard</class>
+   <extends>QWidget</extends>
+   <header>widgets/PairingWizard.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GaitWidget</class>
+   <extends>QWidget</extends>
+   <header>puppet/GaitWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MapEditor</class>
+   <extends>QWidget</extends>
+   <header>widgets/MapEditor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>IdenticonWidget</class>
    <extends>QWidget</extends>
    <header>widgets/IdenticonWidget.hpp</header>
@@ -843,33 +872,10 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>GaitWidget</class>
-   <extends>QWidget</extends>
-   <header>puppet/GaitWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>Camera</class>
    <extends>QWidget</extends>
    <header>camera/Camera.hpp</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>PlanEditor</class>
-   <extends>QWidget</extends>
-   <header>widgets/planedit/PlanEditor.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>MapEditor</class>
-   <extends>QWidget</extends>
-   <header>widgets/MapEditor.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LogWidget</class>
-   <extends>QPlainTextEdit</extends>
-   <header>widgets/LogWidget.hpp</header>
   </customwidget>
   <customwidget>
    <class>TryToggle</class>
@@ -912,12 +918,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PairingWizard</class>
-   <extends>QWidget</extends>
-   <header>widgets/PairingWizard.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>HUDWidget</class>
    <extends>QWidget</extends>
    <header>widgets/HUDWidget.hpp</header>
@@ -932,7 +932,7 @@
   <customwidget>
    <class>CLGLView</class>
    <extends>QOpenGLWidget</extends>
-   <header>../libcl/widgets/CLGLView.hpp</header>
+   <header>widgets/CLGLView.hpp</header>
   </customwidget>
  </customwidgets>
  <resources>

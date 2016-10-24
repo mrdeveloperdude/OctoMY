@@ -62,6 +62,10 @@ android{
 	QT += androidextras
 	#NOTE: Each individual project will look for her own android config (making it possible for each tier to have separate adaptations
 	ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+	contains(DEFINES, USE_OPENCL){
+		warning("OpenCL support was enabled but is not supported in Android, so disabling it for now")
+		DEFINES -= USE_OPENCL
+	}
 }
 
 static {

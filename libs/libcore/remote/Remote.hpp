@@ -21,7 +21,7 @@ class RemoteWindow;
 
 /*
 
-  A remote is categorized as a control together with hub, and use the same
+  A remote is lik hub, categorized as a control, and use the same
   interface to control agents.
 
   But what separates a remote from a hub is that the remote represents a

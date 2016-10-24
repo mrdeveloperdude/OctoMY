@@ -75,14 +75,14 @@ INCLUDEPATH +=		$$QFI_IN_DIR
 DEPENDPATH +=		$$QFI_IN_DIR
 PRE_TARGETDEPS +=	$$QFI_OUT_DIR/libqfi.a
 
-
+contains(DEFINES, USE_OPENCL){
 CL_IN_DIR =			$$TOP_PWD/libs/libcl
 CL_OUT_DIR =		$$TOP_BUILD/libs/libcl
 LIBS +=				-L$$CL_OUT_DIR -lcl
 INCLUDEPATH +=		$$CL_IN_DIR
 DEPENDPATH +=		$$CL_IN_DIR
 PRE_TARGETDEPS +=	$$CL_OUT_DIR/libcl.a
-
+}
 
 UTIL_IN_DIR =		$$TOP_PWD/libs/libutil
 UTIL_OUT_DIR =		$$TOP_BUILD/libs/libutil

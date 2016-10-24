@@ -79,7 +79,6 @@ SOURCES +=\
 	gear/liegroup.inl \
 	gear/liegroup_rmatrix3_ext.inl \
 	gear/rmatrix3j.cpp \
-	hub/ClientWindow.cpp \
 	hub/Hub.cpp \
 	hub/HubWindow.cpp \
 	hw/actuators/HexyLeg.cpp \
@@ -166,14 +165,14 @@ SOURCES +=\
 	widgets/TextEntry.cpp \
 	widgets/TryToggle.cpp \
 	widgets/WaitingSpinnerWidget.cpp \
+	widgets/CLGLView.cpp \
 	zoo/PunchRegistry.cpp \
 	zoo/WebRequest.cpp \
 	zoo/ZooClient.cpp \
 	zoo/ZooConstants.cpp \
 	zoo/ZooServer.cpp \
-    hub/HelloGLCLViewRenderer.cpp \
-    hub/HelloCLWorkerFactory.cpp \
-    hub/HelloCLWorker.cpp
+	hub/ClientWidget.cpp \
+	hub/IContextProvider.cpp
 
 
 HEADERS  += \
@@ -257,7 +256,6 @@ HEADERS  += \
 	gear/liegroup.h \
 	gear/liegroup_rmatrix3_ext.h \
 	gear/rmatrix3j.h \
-	hub/ClientWindow.hpp \
 	hub/Hub.hpp \
 	hub/HubWindow.hpp \
 	hw/actuators/HexyLeg.hpp \
@@ -344,14 +342,14 @@ HEADERS  += \
 	widgets/TextEntry.hpp \
 	widgets/TryToggle.hpp \
 	widgets/WaitingSpinnerWidget.hpp \
+	widgets/CLGLView.hpp \
 	zoo/PunchRegistry.hpp \
 	zoo/WebRequest.hpp \
 	zoo/ZooClient.hpp \
 	zoo/ZooConstants.hpp \
 	zoo/ZooServer.hpp \
-    hub/HelloGLCLViewRenderer.hpp \
-    hub/HelloCLWorkerFactory.hpp \
-    hub/HelloCLWorker.hpp
+	hub/ClientWidget.hpp \
+	hub/IContextProvider.hpp
 
 
 
@@ -359,7 +357,6 @@ FORMS    += \
 	ui/AgentWindow.ui \
 	ui/CameraSettings.ui \
 	ui/Camera.ui \
-	ui/ClientWindow.ui \
 	ui/ConnectionWidget.ui \
 	ui/HexyTool.ui \
 	ui/HubWindow.ui \
@@ -384,7 +381,8 @@ FORMS    += \
 	ui/PortableIDWidget.ui \
 	ui/ConnectionManager.ui \
 	ui/HUDWidget.ui \
-	ui/HardwareWizard.ui
+	ui/HardwareWizard.ui \
+	ui/ClientWidget.ui
 
 
 RESOURCES += \
@@ -410,6 +408,20 @@ HEADERS += \
 SOURCES += \
 	3d/qt3d/Qt3DWindow.cpp \
 	3d/qt3d/SceneModifier.cpp \
+
+}
+
+
+contains(DEFINES, USE_OPENCL){
+HEADERS += \
+	hub/HelloGLCLViewRenderer.hpp \
+	hub/HelloCLWorkerFactory.hpp \
+	hub/HelloCLWorker.hpp \
+
+SOURCES += \
+	hub/HelloGLCLViewRenderer.cpp \
+	hub/HelloCLWorkerFactory.cpp \
+	hub/HelloCLWorker.cpp \
 
 }
 

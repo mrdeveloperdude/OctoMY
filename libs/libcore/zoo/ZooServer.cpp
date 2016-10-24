@@ -118,7 +118,7 @@ bool ZooServer::start(const QString pathOrPortNumber)
 
 
 	qhttp::server::TServerHandler conHandler=[this](qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res) {
-		req->collectData(10000);
+		req->collectData(OC_COLLECT_AT_MOST);
 		req->onEnd([this, req, res]() {
 			//qDebug()<<req;
 			QString path=req->url().path();
@@ -290,6 +290,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 
 	res->setStatusCode(qhttp::ESTATUS_OK);
 	QVariantMap map;
+	map["status"] = "ok";
 	//map["action"] = action;
 	/* TODO:Schedule for removal
 	 *

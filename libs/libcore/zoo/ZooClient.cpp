@@ -1,5 +1,6 @@
 #include "ZooClient.hpp"
 
+#include "../libutil/utility/Standard.hpp"
 
 #include "../libqhttp/qhttpclient.hpp"
 #include "../libqhttp/qhttpclientrequest.hpp"
@@ -57,7 +58,7 @@ void ZooClient::getNodeCrumb(QString OCID, TVariantMapHandler handler) {
 
 	qhttp::client::TResponseHandler resHandler=	[this, OCID, handler](qhttp::client::QHttpResponse* res) {
 		//qDebug()<<"Getting node by OCID:"<<OCID << " RES";
-		res->collectData(10000);
+		res->collectData(OC_COLLECT_AT_MOST);
 		res->onEnd([this, res, OCID, handler](){
 			bool ok=true;
 			//qDebug()<<"Getting node by OCID:"<<OCID<<" RES: ON END";
@@ -107,7 +108,7 @@ void ZooClient::putNodeCrumb(const QString OCID, const QByteArray data) {
 
 	qhttp::client::TResponseHandler resHandler=	[this, OCID](qhttp::client::QHttpResponse* res) {
 		//qDebug()<<"Putting node by OCID:"<<OCID<<" RES";
-		res->collectData(10000);
+		res->collectData(OC_COLLECT_AT_MOST);
 		res->onEnd([this, res, OCID](){
 			//qDebug()<<"Putting node by OCID:"<<OCID<<" RES: ON END";
 			QJsonDocument doc = QJsonDocument::fromJson(res->collectedData());
@@ -152,7 +153,7 @@ void ZooClient::doPairingEscrow(const QString OCID, TVariantMapHandler handler) 
 
 	qhttp::client::TResponseHandler resHandler=	[this, OCID, handler](qhttp::client::QHttpResponse* res) {
 		//qDebug()<<"Getting node by OCID:"<<OCID << " RES";
-		res->collectData(10000);
+		res->collectData(OC_COLLECT_AT_MOST);
 		res->onEnd([this, res, OCID, handler](){
 			bool ok=true;
 			//qDebug()<<"Getting node by OCID:"<<OCID<<" RES: ON END";
@@ -202,7 +203,7 @@ void ZooClient::punchUDP(const QString punchToken) {
 
 	qhttp::client::TResponseHandler resHandler=	[this, punchToken](qhttp::client::QHttpResponse* res) {
 		//qDebug()<<"Putting node by OCID:"<<OCID<<" RES";
-		res->collectData(10000);
+		res->collectData(OC_COLLECT_AT_MOST);
 		res->onEnd([this, res, punchToken](){
 			//qDebug()<<"Putting node by OCID:"<<OCID<<" RES: ON END";
 			QJsonDocument doc = QJsonDocument::fromJson(res->collectedData());

@@ -11,7 +11,7 @@ SUBDIRS += \
 	libqhttp \
 	liboctostyle \
 	libqfi \
-	libcl \
+
 
 
 # Dependency stuff adapted from https://vilimpoc.org/blog/2014/02/21/qmake-subdirs-project-automatic-dependencies/
@@ -25,9 +25,18 @@ libzbar.subdir=			libzbar
 libqhttp.subdir=		libqhttp
 liboctostyle.subdir=	libstyle
 libqfi.subdir=			libqfi
-libcl.subdir=			libcl
+
 
 libcore.depends=libutil
+
+
+contains(DEFINES, USE_OPENCL){
+SUBDIRS += \
+	libcl \
+
+libcl.subdir=			libcl
+}
+
 
 include($$TOP_PWD/common.pri)
 

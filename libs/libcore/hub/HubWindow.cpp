@@ -7,7 +7,7 @@
 #include "comms/Client.hpp"
 #include "comms/messages/MessageType.hpp"
 #include "hub/Hub.hpp"
-#include "ClientWindow.hpp"
+#include "ClientWidget.hpp"
 #include "../libutil/utility/Utility.hpp"
 #include "models/ClientModel.hpp"
 
@@ -91,8 +91,9 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 			qDebug()<<"could not connect";
 		}
 
-
+#ifdef USE_OPENCL
 		initCL();
+#endif
 
 		const QCommandLineParser &opts=hub->options();
 		if(opts.isSet("local-port")) {
@@ -294,7 +295,7 @@ void HubWindow::startProcess(QString base)
 }
 
 
-
+#ifdef USE_OPENCL
 void HubWindow::initCL()
 {
 	qDebug()<<"INIT CL ----- ";
@@ -310,7 +311,7 @@ void HubWindow::initCL()
 	}
 }
 
-
+#endif
 
 void HubWindow::on_comboBoxAddLocal_currentIndexChanged(const QString &arg1)
 {

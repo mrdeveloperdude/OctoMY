@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>460</width>
-    <height>613</height>
+    <width>696</width>
+    <height>571</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -48,7 +48,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="pageRunning">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -169,357 +169,39 @@
         </layout>
        </item>
        <item>
-        <widget class="QStackedWidget" name="stackedWidgetControl">
-         <property name="currentIndex">
-          <number>0</number>
+        <widget class="QSplitter" name="splitterLog">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <widget class="QWidget" name="pageConnection">
-          <layout class="QVBoxLayout" name="verticalLayout_11">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="ConnectionWidget" name="widgetConnection" native="true">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>10</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_5">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="pageActuator">
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QScrollArea" name="scrollArea">
-             <property name="widgetResizable">
-              <bool>true</bool>
-             </property>
-             <widget class="QWidget" name="scrollAreaWidgetContents">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>440</width>
-                <height>561</height>
-               </rect>
+         <property name="opaqueResize">
+          <bool>false</bool>
+         </property>
+         <property name="handleWidth">
+          <number>8</number>
+         </property>
+         <widget class="QStackedWidget" name="stackedWidgetControl">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="pageControl">
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="labelClientWidgetPlaceholder">
+              <property name="text">
+               <string>Placeholder for clientwidgets added runtime</string>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_5">
-               <item>
-                <widget class="NumberEntry" name="numericEntryServoTest" native="true">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer_4">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
              </widget>
-            </widget>
-           </item>
-          </layout>
+            </item>
+           </layout>
+          </widget>
          </widget>
-         <widget class="QWidget" name="pagePose">
-          <layout class="QGridLayout" name="gridLayout"/>
-         </widget>
-         <widget class="QWidget" name="pageGait">
-          <layout class="QVBoxLayout" name="verticalLayout_6">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="GaitWidget" name="widgetGait" native="true"/>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="pagePath">
-          <layout class="QVBoxLayout" name="verticalLayout_7">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="MapEditor" name="widgetMapEditor" native="true">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="pageStatus">
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <widget class="QLabel" name="labelLocal">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>LOCAL</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="labelHub">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>HUB</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="labelGPS">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="lineWidth">
-              <number>0</number>
-             </property>
-             <property name="text">
-              <string>GPS</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="labelCompass">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>COMPASS</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="labelAccelerometer">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>ACCELEROMETER</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="labelGyroscope">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>GYROSCOPE</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="labelTouch">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>TOUCH</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="LogWidget" name="logScroll">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="pageExpression">
-          <layout class="QVBoxLayout" name="verticalLayout_8">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="FaceWidget" name="widgetFace" native="true">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="pageSpeech">
-          <layout class="QVBoxLayout" name="verticalLayout_9">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QPushButton" name="pushButtonSay">
-             <property name="text">
-              <string>Say</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPlainTextEdit" name="plainTextEditSpeechText"/>
-           </item>
-          </layout>
+         <widget class="LogWidget" name="logScroll">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
          </widget>
         </widget>
        </item>
@@ -673,22 +355,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>PortableIDWidget</class>
+   <class>PlanEditor</class>
    <extends>QWidget</extends>
-   <header>widgets/PortableIDWidget.hpp</header>
+   <header>widgets/planedit/PlanEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>FaceWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/FaceWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>GaitWidget</class>
-   <extends>QWidget</extends>
-   <header>puppet/GaitWidget.hpp</header>
-   <container>1</container>
+   <class>LogWidget</class>
+   <extends>QPlainTextEdit</extends>
+   <header>widgets/LogWidget.hpp</header>
   </customwidget>
   <customwidget>
    <class>PairingWizard</class>
@@ -697,33 +372,10 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PlanEditor</class>
+   <class>PortableIDWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/planedit/PlanEditor.hpp</header>
+   <header>widgets/PortableIDWidget.hpp</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ConnectionWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/ConnectionWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>MapEditor</class>
-   <extends>QWidget</extends>
-   <header>widgets/MapEditor.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>NumberEntry</class>
-   <extends>QWidget</extends>
-   <header>widgets/NumberEntry.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LogWidget</class>
-   <extends>QPlainTextEdit</extends>
-   <header>widgets/LogWidget.hpp</header>
   </customwidget>
   <customwidget>
    <class>ControlDeliveryWizard</class>

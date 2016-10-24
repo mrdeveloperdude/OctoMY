@@ -1,8 +1,38 @@
 #include "CLGLView.hpp"
 
+#ifndef USE_OPENCL
+
+CLGLView::CLGLView(QWidget *parent)
+	: QOpenGLWidget(parent)
+{
+
+}
+
+CLGLView::~CLGLView()
+{
+}
+
+//QOpenGLWidget interface
+
+void CLGLView::initializeGL()
+{
+
+}
+void CLGLView::resizeGL(int w, int h)
+{
+
+}
+void CLGLView::paintGL()
+{
+
+}
+
+
+#else
+
 #include "../libutil/utility/Utility.hpp"
 
-#include "CLGLViewRenderer.hpp"
+#include "../../libcl/widgets/CLGLViewRenderer.hpp"
 
 #include <QSurfaceFormat>
 #include <QDebug>
@@ -457,3 +487,4 @@ void CLGLView::onDisplayToggle(bool v)
 		timer.stop();
 	}
 }
+#endif

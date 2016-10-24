@@ -31,10 +31,11 @@ INCLUDEPATH +=    /usr/include/opencv
 
 
 # This is used for OpenCL
+contains(DEFINES, USE_OPENCL){
 INCLUDEPATH+="./OpenCL-ICD-Loader/inc"
 LIBS+= -L./OpenCL-ICD-Loader/build/bin
 LIBS+= -lOpenCL
-
+}
 
 
 #LIBS += -lusb

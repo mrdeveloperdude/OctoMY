@@ -53,7 +53,9 @@ public:
 private:
 
 	void startProcess(QString base);
+#ifdef USE_OPENCL
 	void initCL();
+#endif
 
 
 	// CommChannel slots

@@ -4,8 +4,10 @@
 #include "comms/Client.hpp"
 #include "comms/ClientDirectory.hpp"
 #include "comms/couriers/DirectPoseCourier.hpp"
-#include "remote/RemoteWindow.hpp"
+#include "RemoteWindow.hpp"
 #include "basic/AppContext.hpp"
+
+
 
 #include <QDebug>
 #include <QDataStream>

@@ -145,7 +145,7 @@ void DiscoveryClient::discover(){
 					ok=false;
 				}
 				else{
-					//qDebug()<<"RETURNED STATUS WAS: "<<root.value("status").toString()<<", MSG:  "<<root.value("message").toString();
+					qDebug()<<"RETURNED STATUS WAS: "<<root.value("status").toString()<<", MSG:  "<<root.value("message").toString();
 					bool rok=("ok"==root.value("status").toString());
 					if(!rok){
 						message=root.value("message").toString();
@@ -172,7 +172,7 @@ void DiscoveryClient::discover(){
 						}
 					}
 					else{
-						qWarning()<<" + Not OK";
+						qWarning()<<" + Not OK. DATA: "<<data;
 					}
 				}
 			}
