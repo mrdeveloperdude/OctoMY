@@ -173,7 +173,7 @@ QVariantMap NodeAssociate::toVariantMap()
 	OC_METHODGATE();
 	QVariantMap map;
 	map["publicAddress"]=mPublicNetworkAddress.toVariantMap();
-	map["localAddress"]==mLocalNetworkAddress.toVariantMap();
+	map["localAddress"]=mLocalNetworkAddress.toVariantMap();
 	map["lastSeenMS"]=mLastSeenMS;
 	map["birthDate"]=mBirthDate;
 	map["key"]=mKey.toVariantMap(true);

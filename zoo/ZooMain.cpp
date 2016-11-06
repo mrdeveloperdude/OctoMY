@@ -3,6 +3,7 @@
 #include "basic/LogHandler.hpp"
 #include "basic/Settings.hpp"
 #include "basic/AppContext.hpp"
+#include "zoo/ZooConstants.hpp"
 
 #include <QCoreApplication>
 
@@ -24,7 +25,7 @@ int main(int argc, char *argv[]){
 
 	QProcessEnvironment env=QProcessEnvironment::systemEnvironment();
 	const QString OCTOMY_ZOO_WEB_PORT=QStringLiteral("OCTOMY_ZOO_WEB_PORT");
-	QString port="8123";
+	QString port=QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO);
 	if(env.contains(OCTOMY_ZOO_WEB_PORT)){
 		port=env.value(OCTOMY_ZOO_WEB_PORT);
 	}

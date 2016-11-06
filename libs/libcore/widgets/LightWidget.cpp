@@ -7,48 +7,66 @@
 
 LightWidget::LightWidget(QWidget *parent,const QColor &color):
 	QWidget(parent)
-  , color(color)
-  , on(false)
+	, color(color)
+	, on(false)
 {
 	OC_METHODGATE();
 }
 
-bool LightWidget::isLightOn() const{
+bool LightWidget::isLightOn() const
+{
 	OC_METHODGATE();
 	return on;
 }
 
-void LightWidget::setLightOn(bool o){
+void LightWidget::setLightOn(bool o)
+{
 	OC_METHODGATE();
-	if (on == o){
+	if (on == o) {
 		return;
 	}
 	on = o;
 	update();
 }
 
-void LightWidget::setLightColor(QColor c){
+void LightWidget::setLightColor(QColor c)
+{
 	OC_METHODGATE();
 	color=c;
 	update();
 }
 
-void LightWidget::toggleLight(){
+void LightWidget::toggleLight()
+{
 	on=!on;
 	update();
 }
 
-void LightWidget::turnLightOff() {
+void LightWidget::turnLightOff()
+{
 	OC_METHODGATE();
 	setLightOn(false);
 }
-void LightWidget::turnLightOn() {
+void LightWidget::turnLightOn()
+{
 	OC_METHODGATE();
 	setLightOn(true);
 }
+/*
 
+int LightWidget::heightForWidth(int w) const
+{
+	return w;
+}
+bool LightWidget::hasHeightForWidth() const
+{
+	return true;
+}
 
-void LightWidget::paintEvent(QPaintEvent *){
+*/
+
+void LightWidget::paintEvent(QPaintEvent *)
+{
 	OC_METHODGATE();
 	QPainter painter(this);
 	painter.setPen(Qt::NoPen);
@@ -72,5 +90,4 @@ void LightWidget::paintEvent(QPaintEvent *){
 	int hl=b/4;
 	painter.drawEllipse(w2+a/2-hl, h2-a/2-hl,hl*2,hl*2);
 }
-
 

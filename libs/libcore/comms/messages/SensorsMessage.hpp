@@ -6,6 +6,7 @@
 #include <QVector2D>
 #include <QGeoCoordinate>
 #include <QCompassReading>
+#include <QColor>
 
 class SensorsMessage{
 	private:
@@ -21,6 +22,7 @@ class SensorsMessage{
 		qreal compassAccuracy;
 		qint32 temperature;
 		QVector2D touch;
+		QColor color;
 
 	public:
 		SensorsMessage(
@@ -34,6 +36,7 @@ class SensorsMessage{
 				, const qreal compassAccuracy=0
 				, const qint32 temperature=0
 				, const QVector2D touch=QVector2D(0,0)
+				, const QColor color=Qt::black
 				);
 
 		SensorsMessage(QDataStream &);

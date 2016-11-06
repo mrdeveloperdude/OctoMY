@@ -15,68 +15,86 @@ class QCompassReading;
 class QGyroscopeReading;
 class CommsChannel;
 class HexyTool;
+class QAction;
 
 
-namespace Ui {
-	class AgentWindow;
+namespace Ui
+{
+class AgentWindow;
 }
 
-class AgentWindow : public QWidget, public LogDestination{
-		Q_OBJECT
+class AgentWindow : public QWidget, public LogDestination
+{
+	Q_OBJECT
 
-	private:
-		Ui::AgentWindow *ui;
-		Agent *mAgent;
-		HexyTool *mHexy;
-		QMenu mMenu;
+private:
+	Ui::AgentWindow *ui;
+	Agent *mAgent;
+	HexyTool *mHexy;
+	QMenu mMenu;
 
-	public:
-		explicit AgentWindow(Agent *mAgent, QWidget *parent = 0);
-		virtual ~AgentWindow();
+	QAction *mCameraAction;
+	QAction *mPairingAction;
+	QAction *mHardwareAction;
+	QAction *mPlanAction;
+	QAction *mOnlineAction;
+	QAction *mShowOnlineButtonAction;
+	QAction *mShowFaceAction;
+	QAction *mShowLogAction;
+	QAction *mShowStatsAction;
+	QAction *mShowBirthCertificateAction;
+	QAction *mUnbirthAction;
 
-		void appendLog(const QString& text);
+public:
+	explicit AgentWindow(Agent *mAgent, QWidget *parent = 0);
+	virtual ~AgentWindow();
 
-		void updateVisibility();
+	void appendLog(const QString& text);
 
-	private:
-		void updateIdentity();
-		void prepareMenu();
-	private:
-		void notifyAndroid(QString);
-		void toastAndroid(QString);
+	void updateVisibility();
 
-	public:
+private:
+	void updateIdentity();
+	void prepareMenu();
+private:
+	void notifyAndroid(QString);
+	void toastAndroid(QString);
 
-		virtual void keyReleaseEvent(QKeyEvent *);
+public:
 
-	private slots:
+	virtual void keyReleaseEvent(QKeyEvent *);
 
-		void onStartCameraPairing();
-		void onStartPairing();
-		void onStartHardware();
-		void onStartPlanEditor();
-		void onStartShowBirthCertificate();
+private slots:
 
-	private slots:
+	void onStartCameraPairing();
+	void onStartPairing();
+	void onStartHardware();
+	void onStartPlanEditor();
+	void onStartShowBirthCertificate();
 
-		void onFaceVisibilityChanged(bool);
-		void onLogVisibilityChanged(bool);
-		void onStatsVisibilityChanged(bool);
+private slots:
+
+	void onOnlineChanged(bool);
+	void onOnlineButtonVisibilityChanged(bool);
+	void onFaceVisibilityChanged(bool);
+	void onLogVisibilityChanged(bool);
+	void onStatsVisibilityChanged(bool);
 
 
-		void onTryToggleConnectionChanged(TryToggleState);
+	void onConnectionStateChanged(TryToggleState, TryToggleState);
 
-	private slots:
-		void on_pushButtonConfirmQuit_clicked();
-		void on_pushButtonBack_clicked();
-		void on_pushButtonMenu_clicked();
-		void on_pushButtonBack_2_clicked();
-		void on_pushButtonBack_4_clicked();
-		void on_pushButtonBack_3_clicked();
-		void on_pushButtonBack_5_clicked();
+	void onColorChanged(QColor);
+
+private slots:
+	void on_pushButtonConfirmQuit_clicked();
+	void on_pushButtonBack_clicked();
+	void on_pushButtonMenu_clicked();
+	void on_pushButtonBack_2_clicked();
+	void on_pushButtonBack_4_clicked();
+	void on_pushButtonBack_3_clicked();
+	void on_pushButtonBack_5_clicked();
+	void on_pushButtonBack_6_clicked();
 };
 
 
 #endif // AGENTWINDOW_HPP
-
-

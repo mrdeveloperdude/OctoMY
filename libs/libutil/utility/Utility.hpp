@@ -19,6 +19,7 @@ class QWindow;
 class QStackedLayout;
 class QButtonGroup;
 class QTableView;
+class QHostAddress;
 
 namespace utility{
 
@@ -84,6 +85,12 @@ namespace utility{
 
 	double fsec();
 	float frand();
+
+	// Networking
+	quint16	getFreeUDPPortForAddress(QHostAddress &adr);
+	QList<QHostAddress> getAllLocalNetworkAddresses();
+	QString localAddress();
+
 
 }
 

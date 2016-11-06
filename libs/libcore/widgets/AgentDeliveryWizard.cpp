@@ -7,10 +7,14 @@
 #include "basic/Node.hpp"
 #include "random/RNG.hpp"
 
+#include "../libcore/audio/OneOffSpeech.hpp"
+#include "zoo/ZooConstants.hpp"
+
 #include <QDebug>
 #include <QRegularExpressionValidator>
 #include <QRegularExpression>
 #include <QDateTime>
+#include <QMessageBox>
 
 const quint64 AgentDeliveryWizard::MINIMUM_BIRTH_TIME=3000;
 
@@ -53,6 +57,7 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	},OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
+	ui->widgetBirthCertificate->configure(false,true);
 }
 
 
@@ -84,7 +89,7 @@ void AgentDeliveryWizard::configure(Node *n)
 		if(nullptr!=mNode) {
 			mSettings=&mNode->settings();
 			KeyStore &keystore=mNode->keyStore();
-			if(!connect(&keystore, &KeyStore::storeReady, this, &AgentDeliveryWizard::onBirthComplete, OC_CONTYPE)) {
+			if(!connect(&keystore, &KeyStore::keystoreReady, this, &AgentDeliveryWizard::onBirthComplete, OC_CONTYPE)) {
 				qWarning()<<"ERROR: Could not connect";
 			}
 			reset();
@@ -114,8 +119,8 @@ void AgentDeliveryWizard::onBirthComplete()
 				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
 			} else {
 				QString id=keystore.localKey().id();
-				qDebug()<<"XXX - All is good, ID: "<<id;
-				qDebug()<<"XXX: DATA AFTER OK LOAD WAS: "<<keystore;
+				//qDebug()<<"XXX - All is good, ID: "<<id;
+				//qDebug()<<"XXX: DATA AFTER OK LOAD WAS: "<<keystore;
 				mBirthDate=QDateTime::currentMSecsSinceEpoch();
 				QVariantMap map;
 				map["key"]=keystore.localKey().toVariantMap(true);
@@ -132,10 +137,15 @@ void AgentDeliveryWizard::onBirthComplete()
 				mNode->peers().setParticipant(mMyData);
 				mNode->peers().save();
 				ui->widgetBirthCertificate->setPortableID(mID);
+				ui->widgetNetworkSettings->setPort(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_AGENT);
 				ui->stackedWidget->setCurrentWidget(ui->pageDone);
+				//"+(mID.gender().toLower()==QStringLiteral("male")?QStringLiteral("Mr. "):(mID.gender().toLower()==QStringLiteral("female")?QStringLiteral("Mrs. "):QStringLiteral("")))+
+				//QString text="Hello, my name is "+mID.name()+". I am an octomy agent. What is your bidding master?";
+				QString text="My name is "+mID.name()+". I am an octomy agent. What is your bidding master?";
+				new OneOffSpeech(mID,text);
 			}
 		} else {
-			qDebug()<<"XXX - Birth almost complete...";
+			//qDebug()<<"XXX - Birth almost complete...";
 		}
 	} else {
 		qWarning()<<"ERROR: No node";
@@ -151,7 +161,22 @@ void AgentDeliveryWizard::on_pushButtonDone_clicked()
 
 void AgentDeliveryWizard::on_pushButtonPairNow_clicked()
 {
-	emit done(true);
+	bool cont=true;
+	if(!ui->widgetNetworkSettings->verify()) {
+		if (QMessageBox::Yes != QMessageBox::question(this, "Warning", "Selected port '" +QString::number(ui->widgetNetworkSettings->port())+ "' is not available. Are you sure you want to continue?", QMessageBox::Yes|QMessageBox::No)) {
+			cont=false;
+		}
+	}
+	if(cont) {
+		QSharedPointer<NodeAssociate> me=mNode->nodeIdentity();
+		if(nullptr!=me) {
+			NetworkAddress &local=me->localAddress();
+			NetworkAddress cur=ui->widgetNetworkSettings->address();
+			local.setIP(cur.ip());
+			local.setPort(ui->widgetNetworkSettings->address().port());
+		}
+		emit done(true);
+	}
 }
 
 void AgentDeliveryWizard::on_pushButtonRandomName_clicked()
@@ -180,4 +205,9 @@ void AgentDeliveryWizard::on_pushButtonOnward_clicked()
 void AgentDeliveryWizard::on_pushButtonRandomGender_clicked()
 {
 	ui->comboBoxGender->setCurrentIndex((rand()%(ui->comboBoxGender->count()-1))+1);
+}
+
+void AgentDeliveryWizard::on_pushButtonDoneCertificate_clicked()
+{
+	ui->stackedWidget->setCurrentWidget(ui->pageDone);
 }

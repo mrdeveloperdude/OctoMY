@@ -8,6 +8,7 @@ PortableIDWidget::PortableIDWidget(QWidget *parent)
 	, ui(new Ui::PortableIDWidget)
 {
 	ui->setupUi(this);
+	configure(true,false);
 }
 
 PortableIDWidget::~PortableIDWidget()
@@ -15,7 +16,17 @@ PortableIDWidget::~PortableIDWidget()
 	delete ui;
 }
 
-void PortableIDWidget::setPortableID(PortableID id){
+void PortableIDWidget::configure(bool showCertificateFirst, bool userCanChange)
+{
+	ui->pushButtonToggleView->setVisible(userCanChange);
+	ui->stackedWidget->setCurrentWidget(showCertificateFirst?ui->pageCertificate:ui->pageNameplate);
+}
+
+
+
+void PortableIDWidget::setPortableID(PortableID id)
+{
+	qDebug()<<"portable id widget was updated with "<<id;
 	mID=id;
 	const DiscoveryType type=mID.type();
 	const bool isAgent=TYPE_AGENT==type;
@@ -39,21 +50,30 @@ void PortableIDWidget::setPortableID(PortableID id){
 	ui->widgetIdenticon->setPortableID(id);
 	ui->widgetQR->setQRData(mID.id());
 	const quint64 ts=mID.birthDate();
-	if(ts>0){
+	if(ts>0) {
 		ui->labelBirthdate->setVisible(true);
 		ui->labelBirthdateCaption->setVisible(true);
 		ui->labelBirthdate->setText(QDateTime::fromMSecsSinceEpoch(ts).toString("yyyy.MM.dd hh:mm:ss.zzz"));
 		ui->labelBirthdateCaption->setText(isAgent?"Birth date": "Create date");
-	}
-	else{
+	} else {
 		ui->labelBirthdate->setVisible(false);
 		ui->labelBirthdateCaption->setVisible(false);
 	}
+
+	ui->widgetBadgeIdenticon->setPortableID(id);
+	ui->labelBadgeName->setText(mID.name());
+	ui->labelBadgeName->setToolTip(mID.toPortableString());
 
 	//ui->widgetIdenticon->setMinimumHeight(100);	ui->widgetQR->setMinimumHeight(100);
 	update();
 }
 
-PortableID PortableIDWidget::getPortableID(){
+PortableID PortableIDWidget::getPortableID()
+{
+	return mID;
+}
 
+void PortableIDWidget::on_pushButtonToggleView_toggled(bool checked)
+{
+	ui->stackedWidget->setCurrentWidget(checked?ui->pageCertificate:ui->pageNameplate);
 }

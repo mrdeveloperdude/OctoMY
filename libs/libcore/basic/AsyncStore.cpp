@@ -13,6 +13,7 @@ AsyncStore::AsyncStore(QString filename, QObject *parent)
 	, mInProgress(false)
 	, mFilename(filename)
 {
+	setObjectName("AsyncStore");
 	//qDebug()<<"AsyncStore() file="<<mFilename;
 }
 

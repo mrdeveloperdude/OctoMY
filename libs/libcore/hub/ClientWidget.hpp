@@ -13,6 +13,7 @@
 #include <QSharedPointer>
 
 class WaitingSpinnerWidget;
+class SensorsCourier;
 
 namespace Ui
 {
@@ -27,10 +28,13 @@ private:
 	Ui::ClientWidget *ui;
 	QTimer updateTimer;
 	QSharedPointer<Node> mController;
+	QSharedPointer<NodeAssociate> mNodeAssoc;
 	WaitingSpinnerWidget *mSpinner;
+	SensorsCourier *mSensorsCourier;
+
 
 public:
-	explicit ClientWidget(QWidget *parent = 0, QSharedPointer<Node> controller=QSharedPointer<Node>(nullptr));
+	explicit ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeAssociate> nodeAssoc, QWidget *parent=nullptr);
 	~ClientWidget();
 
 private:
@@ -38,8 +42,13 @@ private:
 
 	// Spinner
 	void prepareSpinner();
+	void setSpinnerActive(bool active);
 
 	void init();
+
+	CommsChannel *comms();
+
+	void courierRegistration(bool reg);
 
 public:
 
@@ -49,14 +58,21 @@ public:
 public slots:
 	void onSummaryTimer();
 	void appendLog(const QString& text);
+	void appendSpeechHistory(const QString& text);
+
+
 
 
 	// Internal UI slots
 private slots:
 
-	void onTryToggleConnectionChanged(TryToggleState);
+	void onConnectionStateChanged(const TryToggleState, const TryToggleState);
 	void on_pushButtonSay_clicked();
 
+	void on_checkBoxShowEyes_toggled(bool checked);
+	void on_checkBoxShowStats_toggled(bool checked);
+	void on_checkBoxShowLog_toggled(bool checked);
+	void on_checkBoxShowOnlineButton_toggled(bool checked);
 };
 
 #endif // CLIENTWINDOW_HPP

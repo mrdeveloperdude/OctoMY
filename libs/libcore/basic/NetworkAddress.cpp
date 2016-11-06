@@ -101,7 +101,7 @@ QString NetworkAddress::toString() const
 	return mIP.toString()+":"+QString::number(mPort);
 }
 
-bool NetworkAddress::isValid(bool allowLoopback, bool allowMulticast)
+bool NetworkAddress::isValid(bool allowLoopback, bool allowMulticast) const
 {
 	OC_METHODGATE();
 	return ( (((quint16)0) != mPort) && (!mIP.isNull()) && (allowLoopback || !mIP.isLoopback()) && (allowMulticast || !mIP.isMulticast()));

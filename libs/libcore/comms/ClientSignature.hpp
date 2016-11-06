@@ -11,7 +11,7 @@ class Client;
 
 /**
 
-  ClientSignature is a minimal remote identification that is used solely by
+  ClientSignature is a minimal identification for clients that is used solely by
   CommsChannel.
 
   The signature contains an ID and the public network address used in
@@ -26,26 +26,33 @@ class Client;
 
  */
 
-class ClientSignature{
+class ClientSignature
+{
 
-	private:
+private:
 
-		quint64 mShortHandID;
-		NetworkAddress mAddress;
+	quint64 mShortHandID;
+	NetworkAddress mAddress;
 
-	public:
-		explicit ClientSignature();
-		ClientSignature(const ClientSignature &other);
-		explicit ClientSignature(const quint64 &shortHandID, const NetworkAddress &address);
-		explicit ClientSignature(const QString &fullID, const NetworkAddress &address);
+public:
+	explicit ClientSignature();
+	ClientSignature(const ClientSignature &other);
+	explicit ClientSignature(const quint64 &shortHandID, const NetworkAddress &address);
+	explicit ClientSignature(const QString &fullID, const NetworkAddress &address);
+	explicit ClientSignature(const QString &fullID);
 
-		const QString toString() const;
+	const QString toString() const;
 
-		quint64 shortHandID() const;
-		NetworkAddress address() const;
+	quint64 shortHandID() const;
+	NetworkAddress address() const;
 
-		void setAddress(const NetworkAddress &address);
-		void setShortHandID(const quint64 &shortHandID);
+	void setAddress(const NetworkAddress &address);
+	void setShortHandID(const quint64 &shortHandID);
+	void setFullID(const QString &fullID);
+
+	bool isValid() const;
+
+
 
 
 };

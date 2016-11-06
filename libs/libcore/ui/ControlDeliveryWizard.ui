@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>314</width>
-    <height>949</height>
+    <width>415</width>
+    <height>931</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -113,7 +113,7 @@
       </layout>
      </widget>
      <widget class="QWidget" name="pageDone">
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QLabel" name="labelBodyDone">
          <property name="sizePolicy">
@@ -135,6 +135,16 @@
        </item>
        <item>
         <widget class="PortableIDWidget" name="widgetBirthCertificate" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="NetworkSettingsWidget" name="widgetNetworkSettings" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -165,20 +175,11 @@
        <item>
         <widget class="QPushButton" name="pushButtonPairNow">
          <property name="text">
-          <string>Pair now</string>
+          <string>Onward</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButtonDone">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Skip pairing</string>
+         <property name="icon">
+          <iconset resource="../resources/icons.qrc">
+           <normaloff>:/icons/pair.svg</normaloff>:/icons/pair.svg</iconset>
          </property>
         </widget>
        </item>
@@ -200,8 +201,15 @@
    <extends>QLabel</extends>
    <header>widgets/ImageLabel2.hpp</header>
   </customwidget>
+  <customwidget>
+   <class>NetworkSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/NetworkSettingsWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <resources>
+  <include location="../resources/icons.qrc"/>
   <include location="../resources/images.qrc"/>
  </resources>
  <connections/>

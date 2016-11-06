@@ -8,12 +8,12 @@
 #include "zoo/ZooClient.hpp"
 #include "camera/CameraList.hpp"
 #include "sensory/SensorInput.hpp"
-#include "comms/messages/SensorsMessage.hpp"
+#include "comms/couriers/SensorsCourier.hpp"
 #include "../libutil/utility/Utility.hpp"
 #include "../libutil/utility/ScopedTimer.hpp"
 #include "basic/StyleManager.hpp"
 #include "AppContext.hpp"
-
+#include "zoo/ZooConstants.hpp"
 
 #include <QCommandLineParser>
 #include <QAccelerometerReading>
@@ -21,8 +21,6 @@
 #include <QGeoPositionInfo>
 #include <QStandardPaths>
 #include <QDir>
-
-ClientSignature sig;
 
 Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject *parent)
 	: QObject (parent)
@@ -32,61 +30,61 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	, mDiscovery (new DiscoveryClient(*this))
 	, mRole (role)
 	, mType (type)
-	, mComms (new CommsChannel(sig, nullptr, (QObject *)this))
+	, mComms (new CommsChannel(mKeystore.localKey().id(), nullptr, (QObject *)this))
 	, mZooClient (new ZooClient(this))
 	, mSensors (new SensorInput(this))
-	//, hubPort (0)
+	, mSensorsCourier(new SensorsCourier(this))
+	  //, hubPort (0)
 	, mCameras (new CameraList(this))
 	, mLastStatusSend (0)
-	, mSensorMessage (new SensorsMessage)
-	, mServerURL("http://10.0.0.86:8123/api") //katana wlan iface)
+//	, mSensorMessage (new SensorsMessage)
+	  //, mServerURL("http://zoo.octomy.org/api")
+	, mServerURL("http://"+utility::localAddress()+":"+QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api")
 {
 	//ScopedTimer nodeBootTimer(mContext->base()+"-boot");
 	setObjectName(mContext->base());
 
-	if(!connect(&mKeystore, &KeyStore::storeReady, this, &Node::onKeystoreReady)){
-		qWarning()<<"ERROR: Could not connect "<<mKeystore.objectName();
-	}
-	else{
-		//qDebug()<<"CONNECTED NODE TO KEYSTORE";
-	}
+	init();
+}
 
+Node::~Node()
+{
+	unHookSensorSignals(*this);
+	unHookCommsSignals(*this);
+}
+
+void Node::init()
+{
+
+	mKeystore.hookSignals(*this);
 	// Only Agents are "born"
-	mKeystore.bootstrap(ROLE_AGENT==role);
+	mKeystore.bootstrap(ROLE_AGENT==mRole);
 
 	mPeers.bootstrap(true, false);
 
-	StyleManager *style=new StyleManager(QColor(TYPE_AGENT==type?"#e83636":TYPE_REMOTE==type?"#36bee8":"#36e843"));
-	if(nullptr!=style){
+	StyleManager *style=new StyleManager(QColor(TYPE_AGENT==mType?"#e83636":TYPE_REMOTE==mType?"#36bee8":"#36e843"));
+	if(nullptr!=style) {
 		style->apply();
 	}
 
-	if(!QDir().mkpath(mContext->baseDir())){
+	if(!QDir().mkpath(mContext->baseDir())) {
 		qWarning()<<"ERROR: Could not create basedir for node";
 	}
 
+	mComms->registerCourier(*mSensorsCourier);
+
 	hookSensorSignals(*this);
+	hookSensorSignals(*mSensorsCourier);
+
 	hookCommsSignals(*this);
 
-	//QByteArray OCID=UniquePlatformFingerprint::getInstance().platform().getHEX().toUtf8();
-
-
-	if(nullptr!=mZooClient){
+	if(nullptr!=mZooClient) {
 		mZooClient->setURL(mServerURL);
 	}
 
-	if(nullptr!=mDiscovery){
+	if(nullptr!=mDiscovery) {
 		mDiscovery->setURL(mServerURL);
 	}
-
-}
-
-Node::~Node(){
-	unHookSensorSignals(*this);
-	unHookCommsSignals(*this);
-	delete mSensorMessage;
-	mSensorMessage=nullptr;
-
 }
 
 const QCommandLineParser &Node::options() const
@@ -127,27 +125,31 @@ DiscoveryType Node::type()
 
 QString Node::name()
 {
-	QSharedPointer<NodeAssociate>  me=localNodeAssociate();
+	QSharedPointer<NodeAssociate>  me=nodeIdentity();
 	QString name;
-	if(nullptr!=me){
+	if(nullptr!=me) {
 		name=me->name();
 	}
-	if(""!=name.trimmed()){
-		switch(mType){
-			case(TYPE_AGENT):{
-					name="Agent ";
-				}break;
-			case(TYPE_HUB):{
-					name="Hub ";
-				}break;
-			case(TYPE_REMOTE):{
-					name="Remote ";
-				}break;
-			case(TYPE_ZOO):{
-					name="Zoo ";
-				}break;
-			default:
-				name="Unknown ";
+	if(""!=name.trimmed()) {
+		switch(mType) {
+		case(TYPE_AGENT): {
+			name="Agent ";
+		}
+		break;
+		case(TYPE_HUB): {
+			name="Hub ";
+		}
+		break;
+		case(TYPE_REMOTE): {
+			name="Remote ";
+		}
+		break;
+		case(TYPE_ZOO): {
+			name="Zoo ";
+		}
+		break;
+		default:
+			name="Unknown ";
 		};
 		name+=me->id().mid(0,8);
 	}
@@ -169,7 +171,7 @@ SensorInput *Node::sensorInput()
 	return mSensors;
 }
 
-QSharedPointer<NodeAssociate> Node::localNodeAssociate()
+QSharedPointer<NodeAssociate> Node::nodeIdentity()
 {
 	QSharedPointer<NodeAssociate> me=mPeers.getParticipant(mKeystore.localKey().id());
 	return me;
@@ -186,9 +188,57 @@ QWidget *Node::showWindow()
 }
 
 
+
+void Node::start(const NetworkAddress &localAddress)
+{
+	if(nullptr!=mComms) {
+		qDebug()<<"comms.start  "<<localAddress.toString();
+		mComms->start(localAddress);
+	} else {
+		qWarning()<<"ERROR: No comms";
+	}
+}
+
+void Node::stop()
+{
+	if(nullptr!=mComms) {
+		qDebug()<<"comms.stop "<<mComms->localSignature().address();
+		mComms->stop();
+	} else {
+		qWarning()<<"ERROR: No comms";
+	}
+}
+
+////////////////////////////////
+
+
+void Node::hookColorSignals(QObject &ob)
+{
+	if(nullptr!=mSensorsCourier) {
+		if(!connect(&ob,SIGNAL(colorChanged(QColor)),mSensorsCourier,SLOT(onColorUpdated(QColor)),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
+		}
+	}
+}
+
+
+void Node::unHookColorSignals(QObject &ob)
+{
+	if(nullptr!=mSensorsCourier) {
+		if(!disconnect(&ob,SIGNAL(colorChanged(QColor)),mSensorsCourier,SLOT(onColorUpdated(QColor)))) {
+			qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
+		}
+	}
+}
+
+
+
+////////////////////////////////
+
+
 void Node::hookSensorSignals(QObject &o)
 {
-	if(nullptr!=mSensors){
+	if(nullptr!=mSensors) {
 		mSensors->hookSignals(o);
 	}
 }
@@ -196,7 +246,7 @@ void Node::hookSensorSignals(QObject &o)
 
 void Node::unHookSensorSignals(QObject &o)
 {
-	if(nullptr!=mSensors){
+	if(nullptr!=mSensors) {
 		mSensors->unHookSignals(o);
 	}
 }
@@ -205,7 +255,7 @@ void Node::unHookSensorSignals(QObject &o)
 
 void Node::hookCommsSignals(QObject &o)
 {
-	if(nullptr!=mComms){
+	if(nullptr!=mComms) {
 		mComms->hookSignals(o);
 	}
 }
@@ -213,12 +263,10 @@ void Node::hookCommsSignals(QObject &o)
 
 void Node::unHookCommsSignals(QObject &o)
 {
-	if(nullptr!=mComms){
+	if(nullptr!=mComms) {
 		mComms->unHookSignals(o);
 	}
 }
-
-
 
 
 void Node::hookPeerSignals(QObject &o)
@@ -234,31 +282,22 @@ void Node::unHookPeerSignals(QObject &o)
 
 
 
-void Node::updateDiscoveryClient(){
+void Node::updateDiscoveryClient()
+{
 	delete mDiscovery;
 	mDiscovery=new DiscoveryClient(*this);
 	mDiscovery->setURL(mServerURL);
 }
 
 
-void Node::sendStatus(){
-	const qint64 now=QDateTime::currentMSecsSinceEpoch();
-	const qint64 interval=now-mLastStatusSend;
-	if(interval>100){
-		QByteArray datagram;
-		QDataStream ds(&datagram,QIODevice::WriteOnly);
-		ds<<mSensorMessage;
-		//TODO:Convert to use courier instead
-		//		comms->sendPackage(datagram,QHostAddress(hubAddress),hubPort);
-		mLastStatusSend=now;
-	}
-}
-
 //////////////////////////////////////////////////
 // Key Store slots
 
 void Node::onKeystoreReady(bool ok)
 {
+	if(ok && nullptr!= mComms) {
+		mComms->setID(mKeystore.localKey().id());
+	}
 	//qDebug()<<"Key Store READY="<<mKeystore.isReady()<<", ERROR="<<mKeystore.hasError();
 }
 
@@ -267,22 +306,19 @@ void Node::onKeystoreReady(bool ok)
 // CommsChannel slots
 
 
-void Node::onError(QString e){
+void Node::onError(QString e)
+{
 	qDebug()<<"Comms error: "<<e;
 }
 
-void Node::onClientAdded(Client *c){
+void Node::onClientAdded(Client *c)
+{
 	qDebug()<<"Client added: "<<c->toString();
 }
 
-void Node::onConnectionStatusChanged(bool s){
-	qDebug() <<"New connection status: "<<s;
-	if(s){
-
-	}
-	else{
-
-	}
+void Node::onConnectionStatusChanged(bool s)
+{
+	qDebug() <<"New connection status: "<<(s?"ONLINE":"OFFLINE");
 }
 
 
@@ -290,32 +326,19 @@ void Node::onConnectionStatusChanged(bool s){
 //////////////////////////////////////////////////
 // Internal sensor slots
 
-void Node::onPositionUpdated(const QGeoPositionInfo &info){
-	if(nullptr!=mSensorMessage){
-		mSensorMessage->gps=info.coordinate();
-		sendStatus();
-	}
+void Node::onPositionUpdated(const QGeoPositionInfo &info)
+{
 }
 
 
-void Node::onCompassUpdated(QCompassReading *r){
-	if(nullptr!=r && nullptr!=mSensorMessage){
-		mSensorMessage->compassAzimuth=r->azimuth();
-		mSensorMessage->compassAccuracy=r->calibrationLevel();
-		sendStatus();
-	}
+void Node::onCompassUpdated(QCompassReading *r)
+{
 }
 
-void Node::onAccelerometerUpdated(QAccelerometerReading *r){
-	if(nullptr!=r && nullptr!=mSensorMessage){
-		mSensorMessage->accellerometer=QVector3D(r->x(), r->y(), r->z());
-		sendStatus();
-	}
+void Node::onAccelerometerUpdated(QAccelerometerReading *r)
+{
 }
 
-void Node::onGyroscopeUpdated(QGyroscopeReading *r){
-	if(nullptr!=r && nullptr!=mSensorMessage){
-		mSensorMessage->gyroscope=QVector3D(r->x(), r->y(), r->z());
-		sendStatus();
-	}
+void Node::onGyroscopeUpdated(QGyroscopeReading *r)
+{
 }

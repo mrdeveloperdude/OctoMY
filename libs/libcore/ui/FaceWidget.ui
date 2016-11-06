@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>859</width>
+    <height>577</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,6 +56,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QPushButton" name="pushButtonNewColor">
+     <property name="text">
+      <string>New Color</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="LogWidget" name="logScroll">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
@@ -65,9 +72,48 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QWidget" name="widgetConnect" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="TryToggle" name="tryToggleConnect" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>10</width>
+          <height>10</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>LogWidget</class>
+   <extends>QPlainTextEdit</extends>
+   <header>widgets/LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>TryToggle</class>
+   <extends>QWidget</extends>
+   <header>widgets/TryToggle.hpp</header>
+   <container>1</container>
+  </customwidget>
   <customwidget>
    <class>EyesWidget</class>
    <extends>QWidget</extends>
@@ -79,11 +125,6 @@
    <extends>QWidget</extends>
    <header>widgets/RealtimeValuesWidget.hpp</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LogWidget</class>
-   <extends>QPlainTextEdit</extends>
-   <header>widgets/LogWidget.hpp</header>
   </customwidget>
  </customwidgets>
  <resources/>

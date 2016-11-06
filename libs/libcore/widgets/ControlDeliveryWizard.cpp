@@ -88,14 +88,14 @@ void ControlDeliveryWizard::onBirthComplete(){
 			mSpinner->stop();
 			if(keystore.hasError()){
 				qWarning()<<"XXX - ERROR: Birthdefects detected!";
-				qDebug()<<"XXX: DATA AFTER AFILED LOAD WAS: "<<keystore;
+				qDebug()<<"XXX: DATA AFTER FAILED LOAD WAS: "<<keystore;
 				//Go back to try again
 				ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);
 			}
 			else{
 				QString id=keystore.localKey().id();
-				qDebug()<<"XXX - All is good, ID: "<<id;
-				qDebug()<<"XXX: DATA AFTER OK LOAD WAS: "<<keystore;
+				//qDebug()<<"XXX - All is good, ID: "<<id;
+				//qDebug()<<"XXX: DATA AFTER OK LOAD WAS: "<<keystore;
 				mBirthDate=QDateTime::currentMSecsSinceEpoch();
 				QVariantMap map;
 				map["key"]=keystore.localKey().toVariantMap(true);
@@ -111,7 +111,7 @@ void ControlDeliveryWizard::onBirthComplete(){
 			}
 		}
 		else{
-			qDebug()<<"XXX - Birth almost complete...";
+			//Debug()<<"XXX - Birth almost complete...";
 		}
 	}
 	else{

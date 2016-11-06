@@ -60,6 +60,8 @@ class Client{
 		const QString getListText() const;
 		//quint64 getHash() const;
 
+		const quint64 lastActiveTime() const;
+
 		quint64 getShortHandID() const;
 
 

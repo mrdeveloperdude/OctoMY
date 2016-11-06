@@ -2,6 +2,7 @@
 
 #include "../../libs/libutil/utility/Standard.hpp"
 #include "../../libs/libcore/comms/messages/MessageType.hpp"
+
 #include "random/RNG.hpp"
 
 #include <QSignalSpy>
@@ -77,7 +78,7 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 	, myPort(myPort)
 	, basePort(basePort)
 	, portRange(portRange)
-	, cc (sig)
+	, cc ("")
 	, testCount(testCount)
 	, rng(RNG::sourceFactory("mt"))
 {

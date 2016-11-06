@@ -246,10 +246,10 @@ void ZooServer::serveIdenticon(qhttp::server::QHttpRequest* req, qhttp::server::
 	res->end(bytes);
 }
 
-const QRegularExpression reOCID("^[0-9A-F]{40}$"); // trimmed 40-digit upper-case hex string
-const QRegularExpression rePunchToken("^[0-9]{5}$"); // trimmed 5-digit integer decimal string
-const QRegularExpression rePinPSK("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
-const QRegularExpression reGeoPSK("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
+static const QRegularExpression reOCID("^[0-9A-F]{40}$"); // trimmed 40-digit upper-case hex string
+static const QRegularExpression rePunchToken("^[0-9]{5}$"); // trimmed 5-digit integer decimal string
+static const QRegularExpression rePinPSK("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
+static const QRegularExpression reGeoPSK("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
 
 
 void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
@@ -257,8 +257,6 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 	//qDebug()<<"API ENPOINT REACHED WITH NEW CONNECTION";
 	QByteArray data=req->collectedData();
 	//qDebug()<<"DATA RECEIVED: "<<data;
-
-
 
 	QJsonParseError error;
 	QJsonDocument jdoc= QJsonDocument::fromJson(data, &error);
@@ -274,7 +272,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 	}
 	QVariantMap root = jdoc.toVariant().toMap();
 	if ( root.isEmpty()  || !root.contains("action") ) {
-		const static char KMessage[] = "Invalid JSon format!";
+		const static char KMessage[] = "Invalid json format";
 		res->addHeader("connection", "close");
 		res->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
 		res->addHeaderValue("content-length", strlen(KMessage));
@@ -394,7 +392,7 @@ void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp
 	*/
 	//qDebug()<<"FULL MAP IS: "<<root;
 	QSharedPointer<NodeAssociate> part(new NodeAssociate(root));
-	qDebug()<<"GOT ROOT"<<part->toString();
+	qDebug()<<"GOT PARTICIPANT "<<part->name()<<"(type="<<DiscoveryTypeToString(part->type())<<", gender="<<part->gender()<<", id="<<part->id()<<")";
 	QString publicAddress="";
 	quint16 publicPort=0;
 	QTcpServer *tc=tcpServer();

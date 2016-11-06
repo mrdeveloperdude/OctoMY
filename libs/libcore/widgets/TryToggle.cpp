@@ -41,7 +41,7 @@ void TryToggle::updateText(){
 }
 
 void TryToggle::setState(const TryToggleState s){
-	qDebug()<<"SET STATE: "<<s;
+	//qDebug()<<"SET STATE: "<<s;
 	if(s!=mState){
 		//qDebug()<<" + DIFFERENT FROM LAST: "<<state;
 		if(TRYING==s){

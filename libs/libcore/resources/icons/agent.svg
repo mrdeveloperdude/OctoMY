@@ -99,8 +99,7 @@
   <metadata
      id="metadata6151">
     <rdf:RDF>
-      <cc:Work
-         rdf:about="">
+      <cc:Work>
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />

@@ -24,31 +24,17 @@ Remote::Remote(NodeLauncher<Remote> &launcher, QObject *parent)
 {
 }
 
-Remote::~Remote(){
-}
-
-void Remote::start(const NetworkAddress &localAddress, const NetworkAddress &partnerAddress){
-	mPartnerAddress=partnerAddress;
-	if(nullptr!=mComms){
-		mComms->registerCourier(*poseCourier);
-		QSharedPointer<Client> c=mComms->getClients()->getByAddress(partnerAddress,true);
-		if(nullptr!=c){
-			poseCourier->setDestination(c->signature);
-			qDebug()<<"comms.start remote "<<localAddress.toString()<< " -> partner "<<partnerAddress.toString();
-			mComms->start(localAddress);
-		}
-		else{
-			qWarning()<<"ERROR: could not get client for remote";
-		}
-	}
+Remote::~Remote()
+{
 }
 
 
-QWidget *Remote::showWindow(){
-	if(nullptr==window){
+QWidget *Remote::showWindow()
+{
+	if(nullptr==window) {
 		window=new RemoteWindow(this, nullptr);
 	}
-	if(nullptr!=window){
+	if(nullptr!=window) {
 		window->show();
 	}
 	return window;
@@ -56,16 +42,10 @@ QWidget *Remote::showWindow(){
 
 ///////////////////////////////////////////
 
-void Remote::onDirectPoseChanged(Pose p){
-	if(0!=poseCourier){
+void Remote::onDirectPoseChanged(Pose p)
+{
+	if(0!=poseCourier) {
 		poseCourier->setPose(p);
 	}
 }
 
-
-void Remote::onTouchUpdated(QVector2D v){
-	if(nullptr!=mSensorMessage){
-		mSensorMessage->touch=v;
-		sendStatus();
-	}
-}

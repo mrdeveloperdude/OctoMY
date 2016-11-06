@@ -2,9 +2,11 @@
 #define PORTABLEID_HPP
 
 #include "discovery/DiscoveryRole.hpp"
+#include "../libutil/utility/Standard.hpp"
 
 #include <QString>
 #include <QVariantMap>
+#include <QDebug>
 
 
 /**
@@ -20,37 +22,48 @@
 class PortableID
 {
 
-	private:
-		QString mName;
-		QString mGender;
-		QString mID;
-		quint64 mBirthDate;
-		DiscoveryType mType;
+private:
+	QString mName;
+	QString mGender;
+	QString mID;
+	quint64 mBirthDate;
+	DiscoveryType mType;
 
-	public:
-		explicit PortableID();
-		explicit PortableID(QVariantMap &data);
-		virtual ~PortableID();
+public:
+	explicit PortableID();
+	explicit PortableID(QVariantMap &data);
+	virtual ~PortableID();
 
 
-	public:
+public:
 
-		void setName(QString name);
-		void setGender(QString gender);
-		void setID(QString id);
-		void setBirthDate(quint64 birthDate);
-		void setType(DiscoveryType type);
+	void setName(QString name);
+	void setGender(QString gender);
+	void setID(QString id);
+	void setBirthDate(quint64 birthDate);
+	void setType(DiscoveryType type);
 
-		QString name() const;
-		QString gender() const;
-		QString id() const;
-		quint64 birthDate() const;
-		DiscoveryType type() const;
+	QString name() const;
+	QString gender() const;
+	QString id() const;
+	quint64 birthDate() const;
+	DiscoveryType type() const;
 
-	public:
+public:
 
-		bool fromPortableString(QString);
-		QString toPortableString();
+	bool fromPortableString(QString);
+	QString toPortableString();
+
+
 };
+
+
+
+inline const QDebug &operator<<(QDebug &d, PortableID &ass)
+{
+	OC_FUNCTIONGATE();
+	d.nospace() << "PortableID("<<ass.toPortableString()<<")";
+	return d.maybeSpace();
+}
 
 #endif // PORTABLEID_HPP

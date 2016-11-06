@@ -30,7 +30,8 @@ Client::Client(ClientSignature signature, LogDestination *log)
 
 }
 
-void Client::countSend(qint64 written){
+void Client::countSend(qint64 written)
+{
 	const qint64 now=QDateTime::currentMSecsSinceEpoch();
 	if(lastSendTime<=0) {
 		lastSendTime=now-1;
@@ -43,11 +44,11 @@ void Client::countSend(qint64 written){
 		qDebug()<<"CLIENT "<< signature.toString() <<" timed out";
 		connected=false;
 	}
-	if(connected){
+	if(connected) {
 		reliabilitySystem.update(deltaTime);
 		flowControl.update( deltaTime, reliabilitySystem.roundTripTime() * 1000.0f );
 	}
-	if(connected!=lastConnected){
+	if(connected!=lastConnected) {
 		lastConnected=connected;
 		flowControl.reset();
 		appendLog("CLIENT: New flow state: " +QString(connected?"CONNECTED":"DISCONNECTED")+ " for "+signature.toString());
@@ -55,19 +56,22 @@ void Client::countSend(qint64 written){
 	reliabilitySystem.packetSent(written);
 }
 
-void Client::receive(){
+void Client::receive()
+{
 	lastReceiveTime=QDateTime::currentMSecsSinceEpoch();
 	connected=true;
 	timeoutAccumulator = 0.0f;
 }
 
-void Client::appendLog(QString msg){
-	if(0!=log){
+void Client::appendLog(QString msg)
+{
+	if(0!=log) {
 		log->appendLog(msg);
 	}
 }
 
-bool Client::idle(){
+bool Client::idle()
+{
 	const float sendRate = flowControl.sendRate();
 	if( deltaTime > (1.0f / sendRate) ) {
 		appendLog("SENDING IDLE PACKET "+QString::number(idlePacketsSent));
@@ -79,7 +83,8 @@ bool Client::idle(){
 }
 
 
-QString Client::getSummary(QString sep) const {
+QString Client::getSummary(QString sep) const
+{
 	QString out;
 	QTextStream ts(&out);
 	ts << "ID: "<< signature.shortHandID();
@@ -99,7 +104,8 @@ QString Client::toString() const
 }
 
 
-const QString Client::getListText() const{
+const QString Client::getListText() const
+{
 	QString name=getSummary(" - ");
 	return name;
 }
@@ -110,13 +116,18 @@ quint64 Client::getHash() const{
 }
 */
 
+const quint64 Client::lastActiveTime() const
+{
+	// Sending does not count, because we may be sending to deaf ears
+	//return qMax(lastSendTime, lastReceiveTime);
+	return lastReceiveTime;
+}
+
 quint64 Client::getShortHandID() const
 {
 	return signature.shortHandID();
 }
 ////////////////////////////
-
-
 
 
 

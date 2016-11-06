@@ -152,7 +152,7 @@ namespace qpolarssl {
 				int             generateRSAKeyPair(const size_t bits){
 					int ret=0;
 					itype   = mbedtls_pk_get_type(context());
-					qDebug()<<"BEFORE WE START... LETS CHECK SOMETHING: "<<itype;
+					//qDebug()<<"BEFORE WE START... LETS CHECK SOMETHING: "<<itype;
 					reset();
 					if((ret=mbedtls_pk_setup(context(), mbedtls_pk_info_from_type(MBEDTLS_PK_RSA)))!=0){
 						qWarning("ERROR: could not setup pk -0x%X", -ret);

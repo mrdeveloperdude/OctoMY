@@ -55,6 +55,10 @@ class PairingWizard : public QWidget
 		void on_pushButtonCameraPair_clicked();
 		void on_pushButtonSaveEdits_clicked();
 
+		void on_pushButtonRemove_clicked();
+
+		void on_pushButtonRefresh_clicked();
+
 	signals:
 		void done();
 };

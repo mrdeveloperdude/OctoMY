@@ -4,25 +4,31 @@
 #include "security/PortableID.hpp"
 #include <QWidget>
 
-namespace Ui {
-	class PortableIDWidget;
+namespace Ui
+{
+class PortableIDWidget;
 }
 
 class PortableIDWidget : public QWidget
 {
-		Q_OBJECT
-	private:
-		Ui::PortableIDWidget *ui;
-		PortableID mID;
+	Q_OBJECT
+private:
+	Ui::PortableIDWidget *ui;
+	PortableID mID;
 
-	public:
-		explicit PortableIDWidget(QWidget *parent = 0);
-		virtual ~PortableIDWidget();
 
-	public:
+public:
+	explicit PortableIDWidget(QWidget *parent = 0);
+	virtual ~PortableIDWidget();
 
-		void setPortableID(PortableID id);
-		PortableID getPortableID();
+public:
+
+	void configure(bool showCertificateFirst=true, bool userCanChange=true);
+	void setPortableID(PortableID id);
+	PortableID getPortableID();
+
+private slots:
+	void on_pushButtonToggleView_toggled(bool checked);
 };
 
 #endif // PORTABLEIDWIDGET_HPP

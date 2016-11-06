@@ -7,7 +7,7 @@
 #include <QMouseEvent>
 
 
-Eye::Eye(QVector2D center, qreal slant)
+Eye::Eye(QVector2D center, qreal slant, QColor irisColor)
 	: center(center)
 	, dirty(true)
 	, slant(slant)
@@ -16,9 +16,14 @@ Eye::Eye(QVector2D center, qreal slant)
 
 	, lidBrush("brown")
 	, scaleraBrush("white")
-	, irisBrush("#2d8ac9")
-	, pupilBrush("#0d1e37")
+	, irisBrush(irisColor)
+	, pupilBrush("#BB000000")
 	, specularBrush("#88ffffff")
+{
+
+}
+
+Eye::~Eye()
 {
 
 }
@@ -27,13 +32,15 @@ Eye::Eye(QVector2D center, qreal slant)
 x = X cos(a) - Y sin(a)
 y = Y cos(a) + X sin(a)
 		*/
-void generateElipsis(QVector2D &out,qreal rx,qreal ry,qreal ang){
+void generateElipsis(QVector2D &out,qreal rx,qreal ry,qreal ang)
+{
 	QVector2D p(cos(ang)*rx,sin(ang)*ry);
 	out=p;
 }
 
-void Eye::update(){
-	if(!dirty){
+void Eye::update()
+{
+	if(!dirty) {
 		return;
 	}
 	dirty=false;
@@ -54,7 +61,7 @@ void Eye::update(){
 	QVector2D lowerMaskCenter(lowerLidSteer.x()*lowerMaskRadius,cos(lowerLidSteer.x())*lowerMaskRadius+ry-r*lowerMaskOverlap);
 	qreal upperMaskOverlap=overlap+upperLidSteer.y();
 	QVector2D upperMaskCenter(upperLidSteer.x()*upperMaskRadius,cos(upperLidSteer.x())*-upperMaskRadius-ry+r*upperMaskOverlap);
-	for(qreal i=0;i<M_PI*2;i+=(M_PI/40.0)){
+	for(qreal i=0; i<M_PI*2; i+=(M_PI/40.0)) {
 		QVector2D lm=lowerMaskCenter+QVector2D(cos(i)*lowerMaskRadius,sin(i)*lowerMaskRadius);
 		QVector2D um=upperMaskCenter+QVector2D(cos(i)*upperMaskRadius,sin(i)*upperMaskRadius);
 
@@ -78,30 +85,39 @@ void Eye::update(){
 	}
 }
 
-void Eye::setBlink(qreal bl){
-	if(bl!=blink){
+void Eye::setBlink(qreal bl)
+{
+	if(bl!=blink) {
 		dirty=true;
 	}
 	blink=bl;
 }
 
-void Eye::setExpression(QVector2D ul, QVector2D ll, QVector2D sq){
+void Eye::setExpression(QVector2D ul, QVector2D ll, QVector2D sq)
+{
 	upperLidSteer=ul+center;
 	lowerLidSteer=ll+center;
 	squintSteer=sq;
 	dirty=true;
 }
 
-void Eye::setSteer(QVector2D ey){
+void Eye::setColor(QColor irisColor)
+{
+	irisBrush=QBrush(irisColor);
+}
+
+void Eye::setSteer(QVector2D ey)
+{
 	ey+=center;
-	if(ey!=eyeSteer){
+	if(ey!=eyeSteer) {
 		dirty=true;
 	}
 	eyeSteer=ey;
 }
 
 
-void Eye::paint(QPainter &painter){
+void Eye::paint(QPainter &painter)
+{
 	//painter.setBrush(lidBrush);
 	//painter.drawPolygon(lowerMask);
 	//painter.drawPolygon(upperMask);
@@ -138,7 +154,7 @@ EyesWidget::EyesWidget(QWidget *parent)
 	, bgBrush("black")
 	, eyeSteer(0,0)
 {
-	if(!connect(&timer,SIGNAL(timeout()),this,SLOT(onUpdateTimer()))){
+	if(!connect(&timer,SIGNAL(timeout()),this,SLOT(onUpdateTimer()))) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
@@ -150,7 +166,16 @@ EyesWidget::EyesWidget(QWidget *parent)
 }
 
 
-void EyesWidget::paintEvent(QPaintEvent *){
+
+void EyesWidget::setColor(QColor irisColor)
+{
+	leftEye.setColor(irisColor);
+	rightEye.setColor(irisColor);
+}
+
+
+void EyesWidget::paintEvent(QPaintEvent *)
+{
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	//const quint64 sinceStart=now-startTime;
 	const quint64 sinceLastTime=now-lastTime;
@@ -159,13 +184,12 @@ void EyesWidget::paintEvent(QPaintEvent *){
 	cycle=fmod(cycle,cycleTime);
 	qreal lastBlink=blink;
 	const qreal blinkTime=0.2;
-	if(cycle<blinkTime){
+	if(cycle<blinkTime) {
 		blink=cycle/blinkTime;
-	}
-	else{
+	} else {
 		blink=0.0;
 	}
-	if(blink!=lastBlink){
+	if(blink!=lastBlink) {
 		leftEye.setBlink(blink);
 		rightEye.setBlink(blink);
 	}
@@ -193,54 +217,56 @@ void EyesWidget::paintEvent(QPaintEvent *){
 }
 
 
-void EyesWidget::onUpdateTimer(){
+void EyesWidget::onUpdateTimer()
+{
 	update();
 }
 
 
 
-void EyesWidget::hideEvent(QHideEvent *){
+void EyesWidget::hideEvent(QHideEvent *)
+{
 	timer.stop();
 	setMouseTracking(false);
 
 }
 
-void EyesWidget::showEvent(QShowEvent *){
+void EyesWidget::showEvent(QShowEvent *)
+{
 	timer.start(1000/60);
 	setMouseTracking(true);
 }
 
 
-void EyesWidget::mousePressEvent(QMouseEvent *e){
+void EyesWidget::mousePressEvent(QMouseEvent *e)
+{
 	QVector2D p=QVector2D(e->pos());
 	QSize sz=size();
 	QVector2D s=QVector2D(sz.width(),sz.height());
 	lastPress=(p-(s/2))/s;
 }
 
-void EyesWidget::mouseMoveEvent(QMouseEvent *e){
+void EyesWidget::mouseMoveEvent(QMouseEvent *e)
+{
 	QVector2D p=QVector2D(e->pos());
 	QSize sz=size();
 	QVector2D s=QVector2D(sz.width(),sz.height());
 	QVector2D m=(p-(s/2))/s;//+lastPress;
 	Qt::MouseButtons but=e->buttons();
-	if(but & Qt::MiddleButton){
+	if(but & Qt::MiddleButton) {
 		squintSteer=m;
-	}
-	else if(but & Qt::LeftButton){
+	} else if(but & Qt::LeftButton) {
 		lowerLidSteer=m;
-	}
-	else if(but & Qt::RightButton){
+	} else if(but & Qt::RightButton) {
 		upperLidSteer=m;
 	}
 	eyeSteer=m*0.1;
 
 
 	//	qDebug()<<"BUT: "<<but<<" squint "<< squint;
-	if(lastPress.x()>0){
+	if(lastPress.x()>0) {
 		leftEye.setExpression(lowerLidSteer,upperLidSteer,squintSteer);
-	}
-	else{
+	} else {
 		rightEye.setExpression(lowerLidSteer,upperLidSteer,squintSteer);
 	}
 	leftEye.setSteer(eyeSteer);
@@ -249,7 +275,8 @@ void EyesWidget::mouseMoveEvent(QMouseEvent *e){
 
 
 
-void EyesWidget::leaveEvent(QEvent *){
+void EyesWidget::leaveEvent(QEvent *)
+{
 	eyeSteer=QVector2D(0,0);
 	leftEye.setSteer(eyeSteer);
 	rightEye.setSteer(eyeSteer);

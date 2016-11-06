@@ -7,33 +7,55 @@
 #include "basic/Settings.hpp"
 
 #include "widgets/WaitingSpinnerWidget.hpp"
+#include "audio/OneOffSpeech.hpp"
+
+#include "security/PortableID.hpp"
+
+#include "comms/CommsChannel.hpp"
+#include "comms/couriers/SensorsCourier.hpp"
 
 #include <QScrollBar>
 
 
-ClientWidget::ClientWidget(QWidget *parent, QSharedPointer<Node> node) :
-	QWidget(parent)
+ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeAssociate> nodeAssoc, QWidget *parent)
+	: QWidget(parent)
 	, ui(new Ui::ClientWidget)
-	, mController(node)
+	, mController(controller)
+	, mNodeAssoc(nodeAssoc)
 	, mSpinner(nullptr)
+	, mSensorsCourier(new SensorsCourier(this))
 {
 	ui->setupUi(this);
+	ui->tryToggleListen->setText("Connect","Connecting","Connected");
+	ui->widgetBirthCertificate->configure(false,true);
+	if(nullptr!=mNodeAssoc) {
+		ui->widgetBirthCertificate->setPortableID(mNodeAssoc->toPortableID());
+	} else {
+		qWarning()<<"ERROR: no client";
+	}
 	updateTimer.setInterval(100);
 	if(!connect(&updateTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()),OC_CONTYPE)) {
 		qDebug()<<"could not connect";
 	}
 	updateTimer.start();
+	ui->logScrollHistory->setDirection(true);
+	ui->widgetFace->setDisabled(true);
 
+	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState, TryToggleState)),this,SLOT(onConnectionStateChanged(TryToggleState, TryToggleState)),OC_CONTYPE)) {
+		qWarning()<<"ERROR: could not connect";
+	}
+
+	mSensorsCourier->setDestination(mNodeAssoc->toClientSignature());
+
+	installEventFilter(this);
 	init();
-
 }
 
 ClientWidget::~ClientWidget()
 {
+	OC_METHODGATE();
 	delete ui;
 }
-
-
 
 void ClientWidget::prepareSpinner()
 {
@@ -51,8 +73,50 @@ void ClientWidget::prepareSpinner()
 }
 
 
+void ClientWidget::setSpinnerActive(bool active)
+{
+	OC_METHODGATE();
+	if(nullptr!=mSpinner) {
+		mSpinner->setStarted( active);
+	}
+}
+
+CommsChannel *ClientWidget::comms()
+{
+	OC_METHODGATE();
+	if(nullptr!=mController) {
+		return mController->comms();
+	}
+	return nullptr;
+}
+
+
+void ClientWidget::courierRegistration(bool reg)
+{
+	CommsChannel *cc=comms();
+	if(nullptr!=cc) {
+		if(reg) {
+			qDebug()<<"REGISTERING SENSORS COURIER FOR " <<mNodeAssoc->id();
+			cc->registerCourier(*mSensorsCourier);
+		} else {
+			qDebug()<<"UN-REGISTERING SENSORS COURIER FOR " <<mNodeAssoc->id();
+			cc->unregisterCourier(*mSensorsCourier);
+		}
+		// Adaptively start commschannel when there are couriers registered
+		const int ct=cc->courierCount();
+		if(ct>0) {
+			if(nullptr != mNodeAssoc) {
+				cc->start(mNodeAssoc->localAddress());
+			}
+		} else {
+			cc->stop();
+		}
+	}
+}
+
 void ClientWidget::init()
 {
+	OC_METHODGATE();
 	ui->stackedWidgetControl->setUpdatesEnabled(false);
 	prepareSpinner();
 	if(nullptr!=mController) {
@@ -75,14 +139,15 @@ void ClientWidget::init()
 			auto t=keyEvent->type();
 			if(t==QEvent::KeyPress || t==QEvent::KeyRelease) {
 				keyEvent->accept();
-				if (nullptr!=keyEvent && keyEvent->key() == Qt::Key_Return && keyEvent->modifiers() == Qt::ControlModifier) {
-					// Ctrl + return pressed
-					if (t == QEvent::KeyRelease) {
-						ui->pushButtonSay->click();
+				if (nullptr!=keyEvent && keyEvent->key() == Qt::Key_Return) {
+					if(keyEvent->modifiers() != Qt::ControlModifier) {
+						// Return without modifier pressed
+						if (t == QEvent::KeyRelease) {
+							ui->pushButtonSay->click();
+							// This event has been handled
+							return true;
+						}
 					}
-
-					// This event has been handled
-					return true;
 				}
 			}
 			return false;
@@ -104,17 +169,16 @@ void ClientWidget::updateControlLevel(int level)
 {
 	qDebug()<<"CONTROL LEVEL IS "<<level;
 	ui->stackedWidgetControl->setCurrentIndex(level);
-	if(nullptr!=mSpinner) {
-		const bool startSpinner=  OFF != ui->widgetConnection->connectState() ;
-		mSpinner->setStarted( startSpinner );
-	}
+	//Enable spinner when any level is selected except connect and we are not conneted
+	//setSpinnerActive(level!=0 && ON != ui->tryToggleListen->state());
 }
 
 
 bool ClientWidget::eventFilter(QObject *object, QEvent *event)
 {
+	/*
 	//qDebug()<<"EVENT: "<<object<<": "<<event;
-	if ((this==object) && (event->type() == QEvent::MouseMove || event->type() == QEvent::MouseButtonPress )) {
+	if ((u==object) && (event->type() == QEvent::MouseMove || event->type() == QEvent::MouseButtonPress )) {
 		QMouseEvent *r= static_cast<QMouseEvent *>(event);
 		ui->labelTouch->setText("TOUCH: <"+QString::number(r->globalX())+", "+QString::number(r->globalY())+">");
 		QPointF p=r->localPos();
@@ -122,6 +186,7 @@ bool ClientWidget::eventFilter(QObject *object, QEvent *event)
 		//mRemote->onTouchUpdated(QVector2D(p.x()/(qreal)s.width(), p.y()/(qreal)s.height()));
 	}
 	//object == ui->widgetBackground && (
+	*/
 	return false;
 }
 
@@ -139,54 +204,114 @@ void ClientWidget::onSummaryTimer()
 void ClientWidget::appendLog(const QString& text)
 {
 	OC_METHODGATE();
-	ui->logScroll->appendPlainText(text);
-	QScrollBar *vsb=ui->logScroll->verticalScrollBar();
-	if(nullptr!=vsb) {
-		vsb->setValue(vsb->maximum());
-	}
+	ui->logScroll->appendLog(text);
 }
 
-
-
+void ClientWidget::appendSpeechHistory(const QString& text)
+{
+	OC_METHODGATE();
+	ui->logScrollHistory->appendLog(text.trimmed());
+}
 
 
 
 ///////////////////////////////////////// // Internal UI slots
 
-void ClientWidget::onTryToggleConnectionChanged(TryToggleState s)
+void ClientWidget::onConnectionStateChanged(const TryToggleState last, const TryToggleState current)
 {
 	OC_METHODGATE();
-	appendLog("TRYSTATE CHANGED TO "+ToggleStateToSTring(s));
-	/*
-	bool ce=false;
-	QWidget *page=ui->pageConnect;
-	switch(s){
-		case(TRYING):{
-				remote->start(ui->widgetConnection->getLocalAddress(),ui->widgetConnection->getLocalPort(), ui->widgetConnection->getTargetAddress(), ui->widgetConnection->getTargetPort());
-				ui->labelLocal->setText("LOCAL:"+ui->widgetConnection->getLocalAddress().toString()+":"+QString::number(ui->widgetConnection->getLocalPort()));
-				ui->labelHub->setText("HUB: "+ui->widgetConnection->getTargetAddress().toString()+ ":"+ QString::number(ui->widgetConnection->getTargetPort()));
-			}break;
-		case(ON):{
-				page=ui->pageStatus;
-				installEventFilter(this);
-			}break;
-		default:
-		case(OFF):{
-				removeEventFilter(this);
-				ce=true;
-			}break;
+	//appendLog("TRYSTATE CHANGED TO "+ToggleStateToSTring(s));
+	switch(current) {
+	case(TRYING): {
+		courierRegistration(true);
 	}
-	ui->widgetConnection->setEnabled(ce);
-	ui->stackedWidgetScreen->setCurrentWidget(page);
-	*/
+	break;
+	case(ON): {
+
+	}
+	break;
+	default:
+	case(OFF): {
+		courierRegistration(false);
+	}
+	break;
+	}
 }
 
 
-
+//#include "random/RNG.hpp" RNG *rng=RNG::sourceFactory("mt");
 
 void ClientWidget::on_pushButtonSay_clicked()
 {
-	QString text=ui->plainTextEditSpeechText->toPlainText();
-	appendLog("SAID: "+text);
-	ui->plainTextEditSpeechText->clear();
+	QString text=ui->plainTextEditSpeechText->toPlainText().trimmed();
+	if(""!=text) {
+		appendLog("SAID: "+text);
+		appendSpeechHistory(text);
+
+		ui->plainTextEditSpeechText->clear();
+		PortableID id;
+		//	=mController->localNodeAssociate()->toPortableID();
+		QCryptographicHash ch(OCTOMY_KEY_HASH);
+		QByteArray ba;
+		union {
+			quint8 c8[8];
+			quint64 i64;
+		} a;
+		a.i64=QDateTime::currentMSecsSinceEpoch();
+		for(int i=0; i<8; ++i) {
+			ba[i]=a.c8[i];
+		}
+		ch.addData(ba);
+		id.setID(ch.result().toHex().toUpper());
+		new OneOffSpeech(id, text);
+	}
+}
+
+void ClientWidget::on_checkBoxShowEyes_toggled(bool checked)
+{
+	// TODO: Find better storage for these values than settings
+	if(nullptr!=mController) {
+		Settings&s=mController->settings();
+		s.setCustomSettingBool("octomy.face",checked);
+		s.setCustomSettingBool("octomy.online.show",checked);
+		ui->widgetFace->updateVisibility();
+	} else {
+		qWarning()<<"ERROR: No controller";
+	}
+}
+
+void ClientWidget::on_checkBoxShowStats_toggled(bool checked)
+{
+	// TODO: Find better storage for these values than settings
+	if(nullptr!=mController) {
+		Settings&s=mController->settings();
+		s.setCustomSettingBool("octomy.debug.stats",checked);
+		ui->widgetFace->updateVisibility();
+	} else {
+		qWarning()<<"ERROR: No controller";
+	}
+}
+
+void ClientWidget::on_checkBoxShowLog_toggled(bool checked)
+{
+	// TODO: Find better storage for these values than settings
+	if(nullptr!=mController) {
+		Settings&s=mController->settings();
+		s.setCustomSettingBool("octomy.debug.log",checked);
+		ui->widgetFace->updateVisibility();
+	} else {
+		qWarning()<<"ERROR: No controller";
+	}
+}
+
+void ClientWidget::on_checkBoxShowOnlineButton_toggled(bool checked)
+{
+	// TODO: Find better storage for these values than settings
+	if(nullptr!=mController) {
+		Settings&s=mController->settings();
+		s.setCustomSettingBool("octomy.online.show",checked);
+		ui->widgetFace->updateVisibility();
+	} else {
+		qWarning()<<"ERROR: No controller";
+	}
 }

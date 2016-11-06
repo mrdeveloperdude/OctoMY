@@ -22,6 +22,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QSvgRenderer>
+#include <QMessageBox>
 
 // QDesktopServices::openUrl(QUrl("https://www.youtube.com/watch?v=mTiqZm-Ea70", QUrl::TolerantMode));
 
@@ -36,6 +37,7 @@ PairingWizard::PairingWizard(QWidget *parent)
 
 {
 	ui->setupUi(this);
+	ui->widgetMyCertificate->configure(false,true);
 	mTemplate=ui->labelBodyPair->text();
 	ui->labelBodyPair->setText("<h1>Please wait...<h1>");
 
@@ -47,7 +49,7 @@ PairingWizard::PairingWizard(QWidget *parent)
 	for (QList<QPushButton*>::iterator it = onwardButtons.begin(), e=onwardButtons.end(); it != e; ++it) {
 		QPushButton*onward=(*it);
 		//qDebug()<<" + ONWARD: "<<onward->objectName();
-		connect(onward, &QPushButton::clicked,this,[=](bool b){
+		connect(onward, &QPushButton::clicked,this,[=](bool b) {
 			// Skip pages that are not relevant to the selection made in "basic" page
 			int next = (ui->stackedWidget->currentIndex() + 1) % ui->stackedWidget->count();
 			ui->stackedWidget->setCurrentIndex(next);
@@ -65,62 +67,60 @@ PairingWizard::~PairingWizard()
 void PairingWizard::configure(Node *n)
 {
 	mNode=n;
-	if(nullptr!=mNode){
+	if(nullptr!=mNode) {
 		DiscoveryClient *discovery=mNode->discoveryClient();
 		DiscoveryType type=mNode->type();
-		QSharedPointer<NodeAssociate>  ass=mNode->localNodeAssociate();
-		if(nullptr!=ass){
+		QSharedPointer<NodeAssociate>  ass=mNode->nodeIdentity();
+		if(nullptr!=ass) {
 			PortableID pid=ass->toPortableID();
+			qDebug()<<"CONFIGURE PAIRING WIZ FOR "<<pid.toPortableString();
 			ui->widgetMyCertificate->setPortableID(pid);
-			if(nullptr==ui->listViewNodes->model()){
+			if(nullptr==ui->listViewNodes->model()) {
 
 				mList=new PairingListModel(mNode->peers(),type,*this);
 				ui->listViewNodes->setModel(mList);
 
-				if(nullptr==mDelegate){
+				if(nullptr==mDelegate) {
 					mDelegate=new PairingEditButtonDelegate(*this);
 				}
 				ui->listViewNodes->setItemDelegate(mDelegate);
-				//qDebug()<<"SET TABLE MODEL";
 			}
-			if(!connect(discovery, &DiscoveryClient::nodeDiscovered, [=](QString partID)
-			{
-
-
-						//qDebug()<<"PAIRING WIZARD partID: "<<partID;
-						ui->listViewNodes->update();
-		}
-						))
-			{
+			if(!connect(discovery, &DiscoveryClient::nodeDiscovered, [=](QString partID) {
+			qDebug()<<"PAIRING WIZARD partID: "<<partID;
+				ui->listViewNodes->update();
+			}
+					   )) {
 				qWarning()<<"ERROR: Could not connect";
 			}
 
+			switch(type) {
+			default:
+			case(TYPE_ZOO):
+			case(TYPE_UNKNOWN):
+			case(TYPE_AGENT): {
+				ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Agent").replace(QRegularExpression("\\[DEST\\]"), "Control"));
+				ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageAgent);
 
-
-			switch(type){
-				default:
-				case(TYPE_ZOO):
-				case(TYPE_UNKNOWN):
-				case(TYPE_AGENT):{
-						ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Agent").replace(QRegularExpression("\\[DEST\\]"), "Control"));
-						ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageAgent);
-
-					}break;
-				case(TYPE_REMOTE):{
-						ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Remote").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
-						ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
-
-					}break;
-				case(TYPE_HUB):{
-						ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Hub").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
-						ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
-					}break;
 			}
-		}
-		else{
+			break;
+			case(TYPE_REMOTE): {
+				ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Remote").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
+				ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
+
+			}
+			break;
+			case(TYPE_HUB): {
+				ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Hub").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
+				ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
+			}
+			break;
+			}
+		} else {
 			qWarning()<<"ERROR: No local ass";
 		}
 
+	} else {
+		qWarning()<<"ERROR: No node";
 	}
 }
 
@@ -135,57 +135,59 @@ void PairingWizard::startEdit(int row)
 {
 	qDebug()<<"STARTING EDIT FOR "<<row;
 	QModelIndex index=mList->index(row,0);
-	if(index.isValid()){
+	if(index.isValid()) {
 		setUpdatesEnabled(false);
 		QVariantMap map=index.data(Qt::DisplayRole).toMap();
 		qDebug()<<"DATA FOR "<<row<<" DURING EDIT IS: "<<map;
-		if(nullptr!=mNode){
+		if(nullptr!=mNode) {
 			NodeAssociateStore &peerStore=mNode->peers();
 			mCurrentlyEditing=map["key"].toMap()["id"].toString();
 			qDebug()<<"CURRENTLY EDITING ID "<<mCurrentlyEditing;
 			QSharedPointer<NodeAssociate> peer=peerStore.getParticipant(mCurrentlyEditing);
-			if(nullptr!=peer){
+			if(nullptr!=peer) {
 				const QStringList trusts=peer->trusts();
 				const DiscoveryType type=peer->type();
 				const bool take=trusts.contains("take-control");
 				const bool give=trusts.contains("give-control");
 				const bool block=trusts.contains("block");
 				int index=0;
-				if(block){
+				if(block) {
 					index=2;
-				}
-				else{
-					switch(type){
-						default:
-						case(TYPE_ZOO):
-						case(TYPE_UNKNOWN):
-						case(TYPE_AGENT):{
-								if(give){
-									index=1;
-								}
-							}break;
-						case(TYPE_REMOTE):{
-								if(take){
-									index=1;
-								}
-							}break;
-						case(TYPE_HUB):{
-								if(give || take){
-									index=1;
-								}
-							}break;
+				} else {
+					switch(type) {
+					default:
+					case(TYPE_ZOO):
+					case(TYPE_UNKNOWN):
+					case(TYPE_AGENT): {
+						if(give) {
+							index=1;
+						}
+					}
+					break;
+					case(TYPE_REMOTE): {
+						if(take) {
+							index=1;
+						}
+					}
+					break;
+					case(TYPE_HUB): {
+						if(give || take) {
+							index=1;
+						}
+					}
+					break;
 					}
 				}
 				ui->comboBoxTrust->setCurrentIndex(index);
 				qDebug()<<"EDITING STARTS WITH trusts: "<<peer->trusts();
 				qDebug()<<"EDITING STARTS WITH name: "<<peer->name();
+				ui->widgetParticipantCertificate->configure(false,true);
 				ui->widgetParticipantCertificate->setPortableID(peer->toPortableID());
 			}
 		}
 		ui->stackedWidget->setCurrentWidget(ui->pagePeerDetail);
 		setUpdatesEnabled(true);
-	}
-	else{
+	} else {
 		qWarning()<<"ERROR: Index was invalid for row "<<row;
 	}
 }
@@ -197,9 +199,9 @@ Node *PairingWizard::getNode()
 
 void PairingWizard::showEvent(QShowEvent *)
 {
-	if(nullptr!=mNode){
+	if(nullptr!=mNode) {
 		DiscoveryClient *client=mNode->discoveryClient();
-		if(nullptr!=client){
+		if(nullptr!=client) {
 			client->start();
 		}
 	}
@@ -207,9 +209,9 @@ void PairingWizard::showEvent(QShowEvent *)
 
 void PairingWizard::hideEvent(QHideEvent *)
 {
-	if(nullptr!=mNode){
+	if(nullptr!=mNode) {
 		DiscoveryClient *client=mNode->discoveryClient();
-		if(nullptr!=client){
+		if(nullptr!=client) {
 			client->stop();
 		}
 	}
@@ -217,9 +219,9 @@ void PairingWizard::hideEvent(QHideEvent *)
 
 void PairingWizard::on_pushButtonMaybeOnward_clicked()
 {
-	if(nullptr!=mNode){
+	if(nullptr!=mNode) {
 		NodeAssociateStore &store=mNode->peers();
-		if(store.getParticipants().size()>0){
+		if(store.getParticipants().size()>0) {
 			emit done();
 			return;
 		}
@@ -247,45 +249,65 @@ void PairingWizard::on_pushButtonCameraPair_clicked()
 void PairingWizard::on_pushButtonSaveEdits_clicked()
 {
 	qDebug()<<"SAVING AFTER EDIT OF "<<mCurrentlyEditing;
-	if(nullptr!=mNode){
+	if(nullptr!=mNode) {
 		NodeAssociateStore &peers=mNode->peers();
 		QSharedPointer<NodeAssociate> peer=peers.getParticipant(mCurrentlyEditing);
-		if(nullptr!=peer){
+		if(nullptr!=peer) {
 			DiscoveryType type=peer->type();
 			const int index=ui->comboBoxTrust->currentIndex();
 			peer->removeTrust("take-control");
 			peer->removeTrust("give-control");
 			peer->removeTrust("block");
-			if(2==index){
+			if(2==index) {
 				peer->addTrust("block");
-			}
-			else if(1==index){
-				switch(type){
-					default:
-					case(TYPE_ZOO):
-					case(TYPE_UNKNOWN):
-					case(TYPE_AGENT):{
-							peer->addTrust("give-control");
-						}break;
-					case(TYPE_REMOTE):{
-							peer->addTrust("take-control");
-						}break;
-					case(TYPE_HUB):{
-							peer->addTrust("take-control");
-							peer->addTrust("give-control");
-						}break;
+			} else if(1==index) {
+				switch(type) {
+				default:
+				case(TYPE_ZOO):
+				case(TYPE_UNKNOWN):
+				case(TYPE_AGENT): {
+					peer->addTrust("give-control");
+				}
+				break;
+				case(TYPE_REMOTE): {
+					peer->addTrust("take-control");
+				}
+				break;
+				case(TYPE_HUB): {
+					peer->addTrust("take-control");
+					peer->addTrust("give-control");
+				}
+				break;
 				}
 			}
 			qDebug()<<"EDITING ENDS WITH trusts: "<<peer->trusts();
 			peers.save();
-		}
-		else{
+		} else {
 			qWarning()<<"ERROR: No peer while saving trust edits";
 		}
+		peers.save();
+		//ui->listViewNodes->update();
 		ui->stackedWidget->setCurrentWidget(ui->pagePairWithPeers);
-	}
-	else{
+	} else {
 		qWarning()<<"ERROR: No node while saving trust edits";
 	}
 	mCurrentlyEditing="";
+}
+
+void PairingWizard::on_pushButtonRemove_clicked()
+{
+	if (QMessageBox::Yes == QMessageBox::question(this, "Warning", "Are you sure you want to permanently DELETE this peer?", QMessageBox::Yes|QMessageBox::No)) {
+
+		if(nullptr!=mNode) {
+			NodeAssociateStore &peers=mNode->peers();
+			peers.removeParticipant(mCurrentlyEditing);
+			peers.save();
+		}
+		ui->stackedWidget->setCurrentWidget(ui->pagePairWithPeers);
+	}
+}
+
+void PairingWizard::on_pushButtonRefresh_clicked()
+{
+	qDebug()<<mList->status();
 }

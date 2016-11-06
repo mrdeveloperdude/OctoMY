@@ -35,6 +35,8 @@ class ClientDirectory: public QObject{
 		QSharedPointer<Client> getByAddress(const NetworkAddress &address, const bool addIfMissing=false);
 		QSharedPointer<Client> getBySignature(const ClientSignature &sig, const bool addIfMissing=false);
 
+		QSet<QSharedPointer<Client> > getByActiveTime(quint64 lastActiveTime);
+
 		int count();
 
 	signals:

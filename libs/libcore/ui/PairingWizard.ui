@@ -137,6 +137,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="pushButtonRefresh">
+         <property name="text">
+          <string>Refresh</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pushButtonMaybeOnward">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -213,6 +220,17 @@
               <normaloff>:/icons/block.svg</normaloff>:/icons/block.svg</iconset>
             </property>
            </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonRemove">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="../resources/icons.qrc">
+             <normaloff>:/icons/trash.svg</normaloff>:/icons/trash.svg</iconset>
+           </property>
           </widget>
          </item>
         </layout>

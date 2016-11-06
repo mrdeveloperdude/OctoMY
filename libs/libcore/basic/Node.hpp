@@ -27,88 +27,98 @@ class QAccelerometerReading;
 class QGyroscopeReading;
 class Client;
 class AppContext;
+class SensorsCourier;
 
 class Node : public QObject
 {
-		Q_OBJECT
-	protected:
+	Q_OBJECT
+protected:
 
-		AppContext *mContext;
-		KeyStore mKeystore;
-		NodeAssociateStore mPeers;
+	AppContext *mContext;
+	KeyStore mKeystore;
+	NodeAssociateStore mPeers;
 
-		DiscoveryClient *mDiscovery;
-		DiscoveryRole mRole;
-		DiscoveryType mType;
-		CommsChannel *mComms;
-		ZooClient *mZooClient;
-		SensorInput *mSensors;
+	DiscoveryClient *mDiscovery;
+	DiscoveryRole mRole;
+	DiscoveryType mType;
+	CommsChannel *mComms;
+	ZooClient *mZooClient;
+	SensorInput *mSensors;
 
-		NetworkAddress mPartnerAddress;
-		CameraList *mCameras;
+	SensorsCourier *mSensorsCourier;
 
-		qint64 mLastStatusSend;
-		SensorsMessage *mSensorMessage;
+	//NetworkAddress mPartnerAddress;
+	CameraList *mCameras;
 
-		QUrl mServerURL;
+	qint64 mLastStatusSend;
+//	SensorsMessage *mSensorMessage;
 
-
-	public:
-		explicit Node(AppContext *context, DiscoveryRole mRole, DiscoveryType mType, QObject *parent = nullptr);
-		virtual ~Node();
-
-	public:
-
-		void updateDiscoveryClient();
-		void sendStatus();
-
-		void hookSensorSignals(QObject &o);
-		void unHookSensorSignals(QObject &o);
-
-		void hookCommsSignals(QObject &o);
-		void unHookCommsSignals(QObject &o);
-
-		void hookPeerSignals(QObject &o);
-		void unHookPeerSignals(QObject &o);
-
-		const QCommandLineParser &options() const;
-		Settings &settings();
-		KeyStore  &keyStore();
-		NodeAssociateStore &peers();
-		DiscoveryClient *discoveryClient();
-		DiscoveryRole role();
-		DiscoveryType type();
-		QString name();
-		CommsChannel *comms();
-		ZooClient *zooClient();
-		SensorInput *sensorInput();
-
-		QSharedPointer<NodeAssociate> localNodeAssociate();
-
-		CameraList *cameras();
-
-		virtual QWidget *showWindow();
-
-	signals:
+	QUrl mServerURL;
 
 
-		// KeyStore slots
-	private slots:
-		void onKeystoreReady(bool);
+public:
+	explicit Node(AppContext *context, DiscoveryRole mRole, DiscoveryType mType, QObject *parent = nullptr);
+	virtual ~Node();
 
-		// CommsChannel slots
-	private slots:
-		void onError(QString);
-		void onClientAdded(Client *);
-		void onConnectionStatusChanged(bool);
+public:
+
+	void init();
+
+	void updateDiscoveryClient();
+
+	void hookColorSignals(QObject &o);
+	void unHookColorSignals(QObject &o);
+
+	void hookSensorSignals(QObject &o);
+	void unHookSensorSignals(QObject &o);
+
+	void hookCommsSignals(QObject &o);
+	void unHookCommsSignals(QObject &o);
+
+	void hookPeerSignals(QObject &o);
+	void unHookPeerSignals(QObject &o);
+
+	const QCommandLineParser &options() const;
+	Settings &settings();
+	KeyStore  &keyStore();
+	NodeAssociateStore &peers();
+	DiscoveryClient *discoveryClient();
+	DiscoveryRole role();
+	DiscoveryType type();
+	QString name();
+	CommsChannel *comms();
+	ZooClient *zooClient();
+	SensorInput *sensorInput();
+
+	QSharedPointer<NodeAssociate> nodeIdentity();
+
+	CameraList *cameras();
+
+	virtual QWidget *showWindow();
+
+	void start(const NetworkAddress &localAddress);
+	void stop();
+
+signals:
 
 
-		// SensorInput slots
-	private slots:
-		void onPositionUpdated(const QGeoPositionInfo &info);
-		void onCompassUpdated(QCompassReading *);
-		void onAccelerometerUpdated(QAccelerometerReading *);
-		void onGyroscopeUpdated(QGyroscopeReading *r);
+	// KeyStore slots
+private slots:
+	void onKeystoreReady(bool);
+
+	// CommsChannel slots
+private slots:
+	void onError(QString);
+	void onClientAdded(Client *);
+	void onConnectionStatusChanged(bool);
+
+
+	// SensorInput slots
+private slots:
+	void onPositionUpdated(const QGeoPositionInfo &info);
+	void onCompassUpdated(QCompassReading *);
+	void onAccelerometerUpdated(QAccelerometerReading *);
+	void onGyroscopeUpdated(QGyroscopeReading *r);
 
 };
 

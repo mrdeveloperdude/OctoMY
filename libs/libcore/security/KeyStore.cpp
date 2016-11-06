@@ -16,7 +16,13 @@
 KeyStore::KeyStore(QString fn, QObject *parent)
 	: AsyncStore(fn, parent)
 {
-	//qDebug()<<"KeyStore() file="<<fn;
+	setObjectName("KeyStore");
+//qDebug()<<"KeyStore() file="<<fn;
+	if(!connect( this, SIGNAL(storeReady(bool)), SIGNAL(keystoreReady(bool)), OC_CONTYPE)) {
+		qWarning()<<"Could not connect "<<objectName();
+	} else {
+		//qDebug()<<"FORWARDING storeReady -> keystoreReady";
+	}
 }
 
 
@@ -30,7 +36,7 @@ void KeyStore::bootstrapWorkerImpl()
 {
 	//qDebug()<<"KeyStore() bootstrapWorkerImpl() file="<<mFilename;
 	QFile f(mFilename);
-	if(!f.exists()){
+	if(!f.exists()) {
 		qDebug()<<"KEYSTORE: no keystore file found, generating local keypair and saving";
 		mLocalKey=Key(OCTOMY_KEY_BITS);
 		save();
@@ -42,36 +48,33 @@ void KeyStore::bootstrapWorkerImpl()
 void KeyStore::load()
 {
 	//qDebug()<<"KeyStore() load="<<mFilename;
-	if(!QFile(mFilename).exists()){
+	if(!QFile(mFilename).exists()) {
 		//qDebug() << "File did not exist"<<mFilename;
 		//Silently ignore missing file
 		//mError=true;
-	}
-	else{
+	} else {
 		//qDebug()<<"KEYSTORE: Loading from file: " << *this;
 		QJsonParseError jsonError;
 		QByteArray raw=utility::fileToByteArray(mFilename);
 		QJsonDocument doc = QJsonDocument::fromJson(raw, &jsonError);
-		if (QJsonParseError::NoError != jsonError.error){
+		if (QJsonParseError::NoError != jsonError.error) {
 			qWarning() << "ERROR: Parsing json data: "<<jsonError.errorString()<< " for data "<<raw<<" from file "<<mFilename;
 			mError=true;
-		}
-		else{
+		} else {
 			//qDebug()<<"PARSING JSON: "<<doc.toJson();
 			QVariantMap map = doc.object().toVariantMap();
 			mLocalKey=Key(map["localKey"].toMap(),false);
-			if(!mLocalKey.isValid(false)){
+			if(!mLocalKey.isValid(false)) {
 				qWarning()<<"ERROR: local key was not valid";
 				mError=true;
-			}
-			else{
+			} else {
 
 				QVariantList remotes=map["remoteKeys"].toList();
 				mPeers.clear();
-				for(QVariantList::iterator b=remotes.begin(), e=remotes.end(); b!=e; ++b){
+				for(QVariantList::iterator b=remotes.begin(), e=remotes.end(); b!=e; ++b) {
 					QVariantMap remote=(*b).toMap();
 					Key peerKey(remote,true);
-					if(!peerKey.isValid(true)){
+					if(!peerKey.isValid(true)) {
 						qWarning()<<"ERROR: peerk key was not valid";
 						mError=true;
 						break;
@@ -95,7 +98,7 @@ void KeyStore::save()
 	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();
 	map["localKey"]=mLocalKey.toVariantMap(false);
 	QVariantList remotes;
-	for(QMap<QString, Key >::iterator b=mPeers.begin(), e=mPeers.end(); b!=e; ++b){
+	for(QMap<QString, Key >::iterator b=mPeers.begin(), e=mPeers.end(); b!=e; ++b) {
 		QVariantMap remote;
 		remote["id"]=b.key();
 		remote["key"]=b.value().toVariantMap(true);
@@ -113,29 +116,45 @@ void KeyStore::clear()
 {
 	//qDebug()<<"KeyStore() clear="<<mFilename;
 	QFile file(mFilename);
-	if(file.exists()){
-		if(file.remove()){
+	if(file.exists()) {
+		if(file.remove()) {
 			//qDebug()<<"KEYSTORE: Cleared: "<<*this;
 			mLocalKey=Key();
 			mPeers.clear();
 			mReady=false;
 			mError=false;
-		}
-		else{
+		} else {
 			qWarning()<<"ERROR: Could not clear "<<*this;
 		}
-	}
-	else{
+	} else {
 		//qDebug()<<"KEYSTORE: Could not clear missing file: "<< *this;
 	}
 
 }
 
 
+void KeyStore::hookSignals(QObject &ob)
+{
+	if(!connect(this, SIGNAL(keystoreReady(bool)), &ob, SLOT(onKeystoreReady(bool)),OC_CONTYPE)) {
+		qWarning()<<"Could not connect "<<ob.objectName();
+	} else {
+		//qDebug()<<"HOOKING keystoreReady";
+	}
+}
+
+void KeyStore::unhookSignals(QObject &ob)
+{
+	if(!disconnect(this, SIGNAL(keystoreReady(bool)), &ob, SLOT(onKeystoreReady(bool)))) {
+		qWarning()<<"Could not disconnect "<<ob.objectName();
+	} else {
+		//qDebug()<<"UN-HOOKING keystoreReady";
+	}
+}
+
 
 QByteArray KeyStore::sign(const QByteArray &source)
 {
-	if(!mReady){
+	if(!mReady) {
 		return QByteArray();
 	}
 	return mLocalKey.sign(source);
@@ -144,7 +163,7 @@ QByteArray KeyStore::sign(const QByteArray &source)
 
 bool KeyStore::verify(const QByteArray &message, const QByteArray &signature)
 {
-	if(!mReady){
+	if(!mReady) {
 		return false;
 	}
 	return mLocalKey.verify(message, signature);
@@ -153,11 +172,11 @@ bool KeyStore::verify(const QByteArray &message, const QByteArray &signature)
 
 bool KeyStore::verify(const QString &fingerprint, const QByteArray &message, const QByteArray &signature)
 {
-	if(!mReady){
+	if(!mReady) {
 		return false;
 	}
 	QMap<QString, Key >::iterator f=mPeers.find(fingerprint);
-	if(mPeers.end()==f){
+	if(mPeers.end()==f) {
 		return false;
 	}
 	Key remote=f.value();
@@ -167,7 +186,7 @@ bool KeyStore::verify(const QString &fingerprint, const QByteArray &message, con
 
 bool KeyStore::hasPubKeyForFingerprint(const QString &fingerprint)
 {
-	if(!mReady){
+	if(!mReady) {
 		return false;
 	}
 	return (mPeers.end()==mPeers.find(fingerprint));
@@ -175,7 +194,7 @@ bool KeyStore::hasPubKeyForFingerprint(const QString &fingerprint)
 
 void KeyStore::setPubKeyForFingerprint(const QString &pubkeyPEM)
 {
-	if(!mReady){
+	if(!mReady) {
 		return;
 	}
 	Key peer(pubkeyPEM, true);

@@ -8,6 +8,7 @@
 #include "hw/BluetoothList.hpp"
 #include "basic/Settings.hpp"
 #include "security/PortableID.hpp"
+#include "audio/OneOffSpeech.hpp"
 
 #include <QDebug>
 #include <QMessageBox>
@@ -16,8 +17,9 @@
 #include <QAndroidJniObject>
 #endif
 
-void AgentWindow::updateIdentity(){
-	if(nullptr!=mAgent){
+void AgentWindow::updateIdentity()
+{
+	if(nullptr!=mAgent) {
 		mAgent->updateDiscoveryClient();
 		//Set our custom identicon as window icon
 		PortableID pid;
@@ -38,13 +40,24 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::AgentWindow)
 	, mAgent(agent)
-	, mHexy(0)
+	, mHexy(nullptr)
+	, mCameraAction(new QAction(tr("Camera"), this))
+	, mPairingAction(new QAction(tr("Pair"), this))
+	, mHardwareAction(new QAction(tr("Configure HW"), this))
+	, mPlanAction(new QAction(tr("Plan"), this))
+	, mOnlineAction(new QAction(tr("Online"), this))
+	, mShowOnlineButtonAction(new QAction(tr("Online Button"), this))
+	, mShowFaceAction(new QAction(tr("Show Face"), this))
+	, mShowLogAction(new QAction(tr("Show Log"), this))
+	, mShowStatsAction(new QAction(tr("Show Stats"), this))
+	, mShowBirthCertificateAction(new QAction(tr("Show Birth Certificate"), this))
+	, mUnbirthAction(new QAction(tr("Unbirth!"), this))
 {
 	ui->setupUi(this);
 
 	updateIdentity();
 
-	if(nullptr!=mAgent){
+	if(nullptr!=mAgent) {
 		//Settings &s=agent->settings();
 		//Select correct starting page
 		QWidget *startPage=ui->pageRunning;
@@ -60,16 +73,17 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 			ui->stackedWidget->setCurrentWidget(startPage);
 		} );
 
-		updateVisibility();
+		mAgent->hookColorSignals(*ui->widgetFace);
 
-		if(!connect(ui->widgetConnection,SIGNAL(connectStateChanged(TryToggleState)),this,SLOT(onTryToggleConnectionChanged(TryToggleState)),OC_CONTYPE)){
-			qWarning()<<"ERROR: could not connect";
-		}
+		updateVisibility();
+		ui->widgetFace->hookSignals(*this);
 
 		ui->widgetPlanEditor->configure("agent.plan");
 
 		prepareMenu();
 
+		//QString text="Hello, my name is "+mAgent->name()+". I am an octomy agent. What is your bidding master?";
+		//QString text="Hello, my name is Bodhi. I am an octomy agent. What is your bidding master? 00 0 01010 010 010 010 010101 ";		PortableID id=mAgent->localNodeAssociate()->toPortableID();		new OneOffSpeech(id, text);
 	}
 
 #ifdef Q_OS_ANDROID
@@ -77,80 +91,119 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 #endif
 }
 
-AgentWindow::~AgentWindow(){
+AgentWindow::~AgentWindow()
+{
 	delete ui;
 }
 
-void AgentWindow::prepareMenu(){
+void AgentWindow::prepareMenu()
+{
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 
-	QAction *cameraAction = new QAction(tr("Camera"), this);
-	cameraAction->setStatusTip(tr("Do the camera dance"));
-	cameraAction->setIcon(QIcon(":/icons/eye.svg"));
-	connect(cameraAction, &QAction::triggered, this, &AgentWindow::onStartCameraPairing);
-	mMenu.addAction(cameraAction);
+	// Camera
+	//////////////////
 
-	QAction *pairingAction = new QAction(tr("Pair"), this);
-	pairingAction->setStatusTip(tr("Do the pairing dance"));
-	pairingAction->setIcon(QIcon(":/icons/pair.svg"));
-	connect(pairingAction, &QAction::triggered, this, &AgentWindow::onStartPairing);
-	mMenu.addAction(pairingAction);
 
-	QAction *hardwareAction = new QAction(tr("Configure HW"), this);
-	hardwareAction->setStatusTip(tr("Connect to the body of the robot"));
-	hardwareAction->setIcon(QIcon(":/icons/actuator_control.svg"));
-	connect(hardwareAction, &QAction::triggered, this, &AgentWindow::onStartHardware);
-	mMenu.addAction(hardwareAction);
+	mCameraAction->setStatusTip(tr("Do the camera dance"));
+	mCameraAction->setIcon(QIcon(":/icons/eye.svg"));
+	connect(mCameraAction, &QAction::triggered, this, &AgentWindow::onStartCameraPairing);
+	mMenu.addAction(mCameraAction);
 
-	QAction *planAction = new QAction(tr("Plan"), this);
-	planAction->setStatusTip(tr("Do the planning dance"));
-	planAction->setIcon(QIcon(":/icons/mandate.svg"));
-	connect(planAction, &QAction::triggered, this, &AgentWindow::onStartPlanEditor);
-	mMenu.addAction(planAction);
+	// Pairing wizard
+	//////////////////
 
-	QAction *faceAction = new QAction(tr("Show Face"), this);
-	faceAction->setStatusTip(tr("Show face in main screen"));
-	faceAction->setCheckable(true);
+	mPairingAction->setStatusTip(tr("Do the pairing dance"));
+	mPairingAction->setIcon(QIcon(":/icons/pair.svg"));
+	connect(mPairingAction, &QAction::triggered, this, &AgentWindow::onStartPairing);
+	mMenu.addAction(mPairingAction);
 
-	if(nullptr!=s){
-		faceAction->setChecked(s->getCustomSettingBool("octomy.face"));
+	// Hardware wizard
+	//////////////////
+
+	mHardwareAction->setStatusTip(tr("Connect to the body of the robot"));
+	mHardwareAction->setIcon(QIcon(":/icons/actuator_control.svg"));
+	connect(mHardwareAction, &QAction::triggered, this, &AgentWindow::onStartHardware);
+	mMenu.addAction(mHardwareAction);
+
+	// Plan editor
+	//////////////////
+	mPlanAction->setStatusTip(tr("Do the planning dance"));
+	mPlanAction->setIcon(QIcon(":/icons/mandate.svg"));
+	connect(mPlanAction, &QAction::triggered, this, &AgentWindow::onStartPlanEditor);
+	mMenu.addAction(mPlanAction);
+
+
+	// Online status
+	//////////////////
+	mOnlineAction->setStatusTip(tr("Toggle availability of Agent"));
+	mOnlineAction->setCheckable(true);
+
+	if(nullptr!=s) {
+		mOnlineAction->setChecked(s->getCustomSettingBool("octomy.online"));
 	}
-	connect(faceAction, &QAction::triggered, this, &AgentWindow::onFaceVisibilityChanged);
-	mMenu.addAction(faceAction);
+	connect(mOnlineAction, &QAction::triggered, this, &AgentWindow::onOnlineChanged);
+	mMenu.addAction(mOnlineAction);
 
-	QAction *logAction = new QAction(tr("Show Log"), this);
-	logAction->setStatusTip(tr("Show log in main screen"));
-	logAction->setCheckable(true);
-	if(nullptr!=s){
-		logAction->setChecked(s->getCustomSettingBool("octomy.debug.log"));
+	// Online button
+	//////////////////
+	mShowOnlineButtonAction->setStatusTip(tr("Show connect button in main screen"));
+	mShowOnlineButtonAction->setCheckable(true);
+
+	if(nullptr!=s) {
+		mShowOnlineButtonAction->setChecked(s->getCustomSettingBool("octomy.online.show"));
 	}
-	connect(logAction, &QAction::triggered, this, &AgentWindow::onLogVisibilityChanged);
-	mMenu.addAction(logAction);
+	connect(mShowOnlineButtonAction, &QAction::triggered, this, &AgentWindow::onOnlineButtonVisibilityChanged);
+	mMenu.addAction(mShowOnlineButtonAction);
 
+	// Show Face
+	//////////////////
 
-	QAction *statsAction = new QAction(tr("Show Stats"), this);
-	statsAction->setStatusTip(tr("Show stats in main screen"));
-	statsAction->setCheckable(true);
-	if(nullptr!=s){
-		statsAction->setChecked(s->getCustomSettingBool("octomy.debug.stats"));
+	mShowFaceAction->setStatusTip(tr("Show face in main screen"));
+	mShowFaceAction->setCheckable(true);
+
+	if(nullptr!=s) {
+		mShowFaceAction->setChecked(s->getCustomSettingBool("octomy.face"));
 	}
-	connect(statsAction, &QAction::triggered, this, &AgentWindow::onStatsVisibilityChanged);
-	mMenu.addAction(statsAction);
+	connect(mShowFaceAction, &QAction::triggered, this, &AgentWindow::onFaceVisibilityChanged);
+	mMenu.addAction(mShowFaceAction);
 
-	QAction *certAction = new QAction(tr("Show Birth Certificate"), this);
-	certAction->setStatusTip(tr("Show the birth certificate of this agent"));
-	certAction->setIcon(QIcon(":/icons/certificate.svg"));
-	connect(certAction, &QAction::triggered, this, &AgentWindow::onStartShowBirthCertificate);
-	mMenu.addAction(certAction);
+	// Show Log scroll
+	//////////////////
+	mShowLogAction->setStatusTip(tr("Show log in main screen"));
+	mShowLogAction->setCheckable(true);
+	if(nullptr!=s) {
+		mShowLogAction->setChecked(s->getCustomSettingBool("octomy.debug.log"));
+	}
+	connect(mShowLogAction, &QAction::triggered, this, &AgentWindow::onLogVisibilityChanged);
+	mMenu.addAction(mShowLogAction);
 
+	// Show Stats
+	//////////////////
+	mShowStatsAction->setStatusTip(tr("Show stats in main screen"));
+	mShowStatsAction->setCheckable(true);
+	if(nullptr!=s) {
+		mShowStatsAction->setChecked(s->getCustomSettingBool("octomy.debug.stats"));
+	}
+	connect(mShowStatsAction, &QAction::triggered, this, &AgentWindow::onStatsVisibilityChanged);
+	mMenu.addAction(mShowStatsAction);
 
-	QAction *unbornAction = new QAction(tr("Unbirth!"), this);
-	unbornAction->setStatusTip(tr("Delete the identity of this agent to restart birth"));
-	unbornAction->setIcon(QIcon(":/icons/kill.svg"));
-	connect(unbornAction, &QAction::triggered, this, [=](){
-		if(nullptr!=mAgent){
+	// Show birth certificate
+	///////////////////////////
+	mShowBirthCertificateAction->setStatusTip(tr("Show the birth certificate of this agent"));
+	mShowBirthCertificateAction->setIcon(QIcon(":/icons/certificate.svg"));
+	connect(mShowBirthCertificateAction, &QAction::triggered, this, &AgentWindow::onStartShowBirthCertificate);
+	mMenu.addAction(mShowBirthCertificateAction);
+
+	// Unbirth
+	//////////////////
+	mUnbirthAction->setStatusTip(tr("Delete the identity of this agent to restart birth"));
+	mUnbirthAction->setIcon(QIcon(":/icons/kill.svg"));
+	connect(mUnbirthAction, &QAction::triggered, this, [=]() {
+		if(nullptr!=mAgent) {
 			QMessageBox::StandardButton reply = QMessageBox::question(this, "Unbirth", "Are you sure you want to DELETE the personality of this robot forever?", QMessageBox::No|QMessageBox::Yes);
 			if (QMessageBox::Yes==reply) {
+				mAgent->peers().removeParticipant(mAgent->nodeIdentity()->id());
+				mAgent->peers().save();
 				mAgent->keyStore().clear();
 				updateIdentity();
 				ui->widgetDelivery->reset();
@@ -159,72 +212,113 @@ void AgentWindow::prepareMenu(){
 			}
 		}
 	});
-	mMenu.addAction(unbornAction);
+	mMenu.addAction(mUnbirthAction);
 }
 
 
 
-void AgentWindow::updateVisibility(){
+void AgentWindow::updateVisibility()
+{
 	ui->widgetFace->updateVisibility();
 }
 
 
 
-void AgentWindow::onTryToggleConnectionChanged(TryToggleState s){
-	appendLog("TRYSTATE CHANGED TO "+ToggleStateToSTring(s));
-	switch(s){
-		case(TRYING):{
-				mAgent->start(NetworkAddress(ui->widgetConnection->getLocalAddress(),ui->widgetConnection->getLocalPort()), NetworkAddress(ui->widgetConnection->getTargetAddress(), ui->widgetConnection->getTargetPort()));
-				//				ui->labelLocal->setText("LOCAL:"+ui->widgetConnection->getLocalAddress().toString()+":"+QString::number(ui->widgetConnection->getLocalPort()));
-				//			ui->labelHub->setText("HUB: "+ui->widgetConnection->getTargetAddress().toString()+ ":"+ QString::number(ui->widgetConnection->getTargetPort()));
-			}break;
-		case(ON):{
+void AgentWindow::onConnectionStateChanged(const TryToggleState last, const TryToggleState current)
+{
+	appendLog("TRYSTATE CHANGED FROM " +ToggleStateToSTring(last) +" TO "+ToggleStateToSTring(current));
+	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
+	const bool on=OFF!=current;
+	if(nullptr!=s) {
+		s->setCustomSettingBool("octomy.online",on);
+	}
+	updateVisibility();
+	mOnlineAction->setChecked(on);
+	switch(current) {
+	case(TRYING): {
+		mAgent->start(mAgent->nodeIdentity()->localAddress());
+		//				ui->labelLocal->setText("LOCAL:"+ui->widgetConnection->getLocalAddress().toString()+":"+QString::number(ui->widgetConnection->getLocalPort()));
+		//			ui->labelHub->setText("HUB: "+ui->widgetConnection->getTargetAddress().toString()+ ":"+ QString::number(ui->widgetConnection->getTargetPort()));
+	}
+	break;
+	case(ON): {
 
-			}break;
-		default:
-		case(OFF):{
-			}break;
+	} break;
+	default:
+	case(OFF): {
+		mAgent->stop();
+	}
+	break;
 	}
 }
 
-void AgentWindow::onFaceVisibilityChanged(bool on){
+void AgentWindow::onColorChanged(QColor c)
+{
+//	mAgent->onC
+}
+
+void AgentWindow::onOnlineChanged(bool on)
+{
+	qDebug()<<(on?"ONLINE":"OFFLINE");
+	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
+	if(nullptr!=s) {
+		s->setCustomSettingBool("octomy.online",on);
+	}
+	ui->widgetFace->setConnectionState(on?TryToggleState::TRYING:TryToggleState::OFF );
+}
+
+
+void AgentWindow::onOnlineButtonVisibilityChanged(bool on)
+{
+	qDebug()<<"ONLINE BUTTON IS NOW: "<<on;
+	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
+	if(nullptr!=s) {
+		s->setCustomSettingBool("octomy.online.show",on);
+	}
+	updateVisibility();
+}
+
+void AgentWindow::onFaceVisibilityChanged(bool on)
+{
 	qDebug()<<"FACE VIS IS NOW: "<<on;
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
-	if(nullptr!=s){
+	if(nullptr!=s) {
 		s->setCustomSettingBool("octomy.face",on);
 	}
 	updateVisibility();
 }
 
 
-void AgentWindow::onLogVisibilityChanged(bool on){
+void AgentWindow::onLogVisibilityChanged(bool on)
+{
 	qDebug()<<"LOG VIS IS NOW: "<<on;
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
-	if(nullptr!=s){
+	if(nullptr!=s) {
 		s->setCustomSettingBool("octomy.debug.log",on);
 	}
 	updateVisibility();
 }
 
-void AgentWindow::onStatsVisibilityChanged(bool on){
+void AgentWindow::onStatsVisibilityChanged(bool on)
+{
 	qDebug()<<"STATS VIS IS NOW: "<<on;
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
-	if(nullptr!=s){
+	if(nullptr!=s) {
 		s->setCustomSettingBool("octomy.debug.stats",on);
 	}
 	updateVisibility();
 }
 
 
-void AgentWindow::onStartShowBirthCertificate(){
+void AgentWindow::onStartShowBirthCertificate()
+{
 	PortableID pid;
-	if(nullptr!=mAgent){
+	if(nullptr!=mAgent) {
 		QString id=mAgent->keyStore().localKey().id();
 		QSharedPointer<NodeAssociate> myAss=mAgent->peers().getParticipant(id);
-		if(nullptr!=myAss){
+		if(nullptr!=myAss) {
 			pid=myAss->toPortableID();
-		}
-		else{
+		} else {
 			qWarning()<<"ERROR: No ass";
 		}
 
@@ -260,33 +354,33 @@ void AgentWindow::onStartPlanEditor()
 }
 
 
-void AgentWindow::appendLog(const QString& text){
+void AgentWindow::appendLog(const QString& text)
+{
 	ui->widgetFace->appendLog(text);
 }
 
 
 
 
-void AgentWindow::keyReleaseEvent(QKeyEvent *e){
-	if(Qt::Key_Back==e->key()){
-		if(ui->pageConnect==ui->stackedWidget->currentWidget()){
+void AgentWindow::keyReleaseEvent(QKeyEvent *e)
+{
+	if(Qt::Key_Back==e->key()) {
+		/*
+		if(ui->pageConnect==ui->stackedWidget->currentWidget()) {
 			appendLog("EXITING APP ON BACK BUTTON");
 			ui->stackedWidget->setCurrentWidget(ui->pageConfirmQuit);
-		}
-		else if(ui->pageRunning==ui->stackedWidget->currentWidget()){
+		} else if(ui->pageRunning==ui->stackedWidget->currentWidget()) {
 			appendLog("GOING TO CONNECTION SCREEN ON BACK BUTTON");
 			ui->stackedWidget->setCurrentWidget(ui->pageConnect);
-		}
-		else if(ui->pageConfirmQuit==ui->stackedWidget->currentWidget()){
+		} else if(ui->pageConfirmQuit==ui->stackedWidget->currentWidget()) {
 			appendLog("GOING TO CONNECTION SCREEN ON BACK BUTTON");
 			ui->stackedWidget->setCurrentWidget(ui->pageConnect);
-		}
-		else{
+		} else {
 			appendLog("ERROR ON BACK BUTTON");
 		}
+		*/
 		e->accept();
-	}
-	else{
+	} else {
 		appendLog("UNKNOWN BUTTON: "+QString::number(e->key()));
 	}
 }
@@ -294,33 +388,36 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e){
 
 
 
-void AgentWindow::notifyAndroid(QString s){
+void AgentWindow::notifyAndroid(QString s)
+{
 	(void)s;
 	//TODO: This crashes with some jni exception stuff. Figure out why
 #ifdef Q_OS_ANDROID
 	qDebug()<<"QT: Android NOTIF: "<<s;
 	QAndroidJniObject::callStaticMethod<void>("org/octomy/Agent/Agent",
-											  "notify",
-											  "(Ljava/lang/String;)V",
-											  QAndroidJniObject::fromString(s).object<jstring>());
+			"notify",
+			"(Ljava/lang/String;)V",
+			QAndroidJniObject::fromString(s).object<jstring>());
 #endif
 }
 
 
-void AgentWindow::toastAndroid(QString s){
+void AgentWindow::toastAndroid(QString s)
+{
 	(void)s;
 	//TODO: This crashes with some jni exception stuff. Figure out why
 #ifdef Q_OS_ANDROID
 	qDebug()<<"QT: Android TOAST: "<<s;
 	QAndroidJniObject::callStaticMethod<void>("org/octomy/Agent/Agent",
-											  "toast",
-											  "(Ljava/lang/String;)V",
-											  QAndroidJniObject::fromString(s).object<jstring>());
+			"toast",
+			"(Ljava/lang/String;)V",
+			QAndroidJniObject::fromString(s).object<jstring>());
 #endif
 }
 
 
-void AgentWindow::on_pushButtonBack_clicked(){
+void AgentWindow::on_pushButtonBack_clicked()
+{
 	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 }
 
@@ -333,7 +430,8 @@ void AgentWindow::on_pushButtonMenu_clicked()
 
 
 
-void AgentWindow::on_pushButtonConfirmQuit_clicked(){
+void AgentWindow::on_pushButtonConfirmQuit_clicked()
+{
 	exit(0);
 }
 
@@ -353,6 +451,11 @@ void AgentWindow::on_pushButtonBack_3_clicked()
 }
 
 void AgentWindow::on_pushButtonBack_5_clicked()
+{
+	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+}
+
+void AgentWindow::on_pushButtonBack_6_clicked()
 {
 	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 }

@@ -54,19 +54,21 @@ private:
 	void updateControlLevel();
 	void updateActiveAgent();
 
-	void updateIdentity();
+	int updateAgentsList();
 	void addAgentToList(QSharedPointer<NodeAssociate> peer);
 
-	// Menu stuff
+	void hookSensorSignals();
 
+	// One time initialization of differnt parts
+
+	void prepareDelivery();
+	void prepareDiscovery();
+	void preparePairing();
+	void prepareAgentList();
+	void prepareControlLevelList();
 	void prepareMenu();
 
-	// Map stuff
-
-	void prepareMap();
-	void homeMap();
-
-
+	void goToStartPage();
 
 	void appendLog(const QString &str);
 
@@ -82,13 +84,21 @@ private slots:
 	void onStartPlanEditor();
 	void onStartShowBirthCertificate();
 
+	// Delivery wizard slots
+
+public slots:
+	void onDeliveryDone(bool pairNow);
+
+	// Keystore slots
+public slots:
+	void onKeystoreReady(bool);
+
 	// Peer Store slots
 public slots:
 	void onPeerAdded(QString id);
 	void onPeerRemoved(QString id);
 	void onPeersChanged();
-	void onStoreReady(bool);
-
+	void onPeerStoreReady(bool);
 
 	// CommsChannel slots
 public slots:
@@ -115,6 +125,7 @@ private slots:
 
 
 
+	void on_pushButtonStartPairing_clicked();
 };
 
 #endif // REMOTEWINDOW_HPP

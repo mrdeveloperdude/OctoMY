@@ -4,16 +4,16 @@
 
 
 
-void ClientDirectory::insert(QSharedPointer<Client> c){
+void ClientDirectory::insert(QSharedPointer<Client> c)
+{
 	quint64 id=c->signature.shortHandID();
 	QString address=c->signature.address().toString();
-	if(nullptr!=c && !byID.contains(id) && !byHost.contains(address)){
+	if(nullptr!=c && !byID.contains(id) && !byHost.contains(address)) {
 		byID.insert(id, c);
 		byHost.insert(address, c);
 		all.insert(c);
 		emit clientAdded(c);
-	}
-	else{
+	} else {
 		qWarning()<<"ERROR: could not insert client: "<<c;
 	}
 }
@@ -24,10 +24,11 @@ QSharedPointer<Client> getBest(const ClientSignature sig, const bool addIfMissin
 QSharedPointer<Client> getBest(const quint32 platform, const quint32 executable, const QHostAddress host,const  quint16 port, const bool addIfMissing=false);
 
 
-QSharedPointer<Client> ClientDirectory::getByID(const quint64 id, const bool addIfMissing){
+QSharedPointer<Client> ClientDirectory::getByID(const quint64 id, const bool addIfMissing)
+{
 	QMap<quint64, QSharedPointer<Client> >::const_iterator it=byID.find(id);
-	if(byID.end()==it){
-		if(addIfMissing){
+	if(byID.end()==it) {
+		if(addIfMissing) {
 			QSharedPointer<Client> c(new Client(ClientSignature(id, NetworkAddress())));
 			insert(c);
 			return c;
@@ -41,10 +42,11 @@ QSharedPointer<Client> ClientDirectory::getByID(const quint64 id, const bool add
 
 
 
-QSharedPointer<Client> ClientDirectory::getByAddress(const NetworkAddress &address, const bool addIfMissing){
+QSharedPointer<Client> ClientDirectory::getByAddress(const NetworkAddress &address, const bool addIfMissing)
+{
 	QMap<QString, QSharedPointer<Client> >::const_iterator it=byHost.find(address.toString());
-	if(byHost.end()==it){
-		if(addIfMissing){
+	if(byHost.end()==it) {
+		if(addIfMissing) {
 			QSharedPointer<Client> c(new Client(ClientSignature("", address)));
 			insert(c);
 			return c;
@@ -55,21 +57,33 @@ QSharedPointer<Client> ClientDirectory::getByAddress(const NetworkAddress &addre
 }
 
 
-QSharedPointer<Client> ClientDirectory::getBySignature(const ClientSignature &signature, const bool addIfMissing){
+QSharedPointer<Client> ClientDirectory::getBySignature(const ClientSignature &signature, const bool addIfMissing)
+{
 	QSharedPointer<Client> c=getByAddress(signature.address(), false);
-	if(nullptr==c){
+	if(nullptr==c) {
 		c=getByID(signature.shortHandID(), false);
 	}
-	if(nullptr==c && addIfMissing){
+	if(nullptr==c && addIfMissing) {
 		c=QSharedPointer<Client>(new Client(signature));
 		insert(c);
 	}
 	return c;
 }
 
-
-
-int ClientDirectory::count(){
-	return all.size();
+QSet<QSharedPointer<Client> > ClientDirectory::getByActiveTime(quint64 lastActiveTime)
+{
+	QSet<QSharedPointer<Client> > ret;
+	for(QSharedPointer<Client> client:all) {
+		if(nullptr!=client) {
+			if(client->lastActiveTime()>=lastActiveTime) {
+				ret << client;
+			}
+		}
+	}
+	return ret;
 }
 
+int ClientDirectory::count()
+{
+	return all.size();
+}

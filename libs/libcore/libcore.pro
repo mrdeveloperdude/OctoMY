@@ -172,7 +172,14 @@ SOURCES +=\
 	zoo/ZooConstants.cpp \
 	zoo/ZooServer.cpp \
 	hub/ClientWidget.cpp \
-	hub/IContextProvider.cpp
+	hub/IContextProvider.cpp \
+    widgets/NetworkSettingsWidget.cpp \
+    audio/AudioStream.cpp \
+    audio/OneOffSpeech.cpp \
+    audio/Reverb.cpp \
+    audio/Compressor.cpp \
+    audio/CreepyVoice.cpp \
+    audio/Tremolo.cpp
 
 
 HEADERS  += \
@@ -349,7 +356,15 @@ HEADERS  += \
 	zoo/ZooConstants.hpp \
 	zoo/ZooServer.hpp \
 	hub/ClientWidget.hpp \
-	hub/IContextProvider.hpp
+	hub/IContextProvider.hpp \
+    widgets/NetworkSettingsWidget.hpp \
+    audio/AudioStream.hpp \
+    audio/IAudioSource.hpp \
+    audio/OneOffSpeech.hpp \
+    audio/Reverb.hpp \
+    audio/Compressor.hpp \
+    audio/CreepyVoice.hpp \
+    audio/Tremolo.hpp
 
 
 
@@ -382,7 +397,8 @@ FORMS    += \
 	ui/ConnectionManager.ui \
 	ui/HUDWidget.ui \
 	ui/HardwareWizard.ui \
-	ui/ClientWidget.ui
+	ui/ClientWidget.ui \
+    widgets/NetworkSettingsWidget.ui
 
 
 RESOURCES += \

@@ -80,5 +80,8 @@
         <file>icons/connection_medium.svg</file>
         <file>icons/connection_high.svg</file>
         <file>icons/connection_full.svg</file>
+        <file>icons/no.svg</file>
+        <file>icons/yes.svg</file>
+        <file>icons/trash.svg</file>
     </qresource>
 </RCC>

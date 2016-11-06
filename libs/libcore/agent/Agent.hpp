@@ -18,20 +18,19 @@ class ZooClient;
 class DiscoveryClient;
 class AgentWindow;
 
-class Agent : public Node{
-		Q_OBJECT
-	public:
-		AgentWindow *window;
-	public:
-		explicit Agent(NodeLauncher<Agent> &launcher, QObject *parent = nullptr);
-		virtual ~Agent();
+class Agent : public Node
+{
+	Q_OBJECT
+public:
+	AgentWindow *window;
+public:
+	explicit Agent(NodeLauncher<Agent> &launcher, QObject *parent = nullptr);
+	virtual ~Agent();
 
-		void start(const NetworkAddress &localAddress, const NetworkAddress &partnerAddress);
+	virtual QWidget *showWindow();
 
-		virtual QWidget *showWindow();
-
-	public slots:
-		void onConnectionStatusChanged(TryToggleState);
+public slots:
+	void onConnectionStatusChanged(TryToggleState);
 
 
 };

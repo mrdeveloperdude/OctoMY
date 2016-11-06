@@ -28,6 +28,7 @@ TEST_PROJECTS+= \
 	testNodeAssociate \
 	testNodeAssociateStore \
 	testPortableID \
+	testESpeak\
 
 
 STRESS_PROJECTS+= \

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>696</width>
-    <height>571</height>
+    <height>666</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -48,7 +48,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="pageRunning">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -186,10 +186,98 @@
           <widget class="QWidget" name="pageControl">
            <layout class="QGridLayout" name="gridLayout">
             <item row="0" column="0">
-             <widget class="QLabel" name="labelClientWidgetPlaceholder">
-              <property name="text">
-               <string>Placeholder for clientwidgets added runtime</string>
-              </property>
+             <widget class="QWidget" name="widgetClientPlaceholder" native="true">
+              <layout class="QGridLayout" name="gridLayout_6">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <item row="1" column="2" rowspan="2">
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <item>
+                  <widget class="QLabel" name="label">
+                   <property name="text">
+                    <string>To control an Agent, please pair with it first. </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButtonStartPairing">
+                   <property name="text">
+                    <string>Start pairing</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../resources/icons.qrc">
+                     <normaloff>:/icons/pair.svg</normaloff>:/icons/pair.svg</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="2" column="3">
+                <spacer name="horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>137</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="0" column="2">
+                <spacer name="verticalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>19</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="2" column="0">
+                <spacer name="horizontalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>137</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="3" column="2">
+                <spacer name="verticalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
              </widget>
             </item>
            </layout>
@@ -355,26 +443,26 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>LogWidget</class>
+   <extends>QPlainTextEdit</extends>
+   <header>widgets/LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>PortableIDWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/PortableIDWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>PlanEditor</class>
    <extends>QWidget</extends>
    <header>widgets/planedit/PlanEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>LogWidget</class>
-   <extends>QPlainTextEdit</extends>
-   <header>widgets/LogWidget.hpp</header>
-  </customwidget>
-  <customwidget>
    <class>PairingWizard</class>
    <extends>QWidget</extends>
    <header>widgets/PairingWizard.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>PortableIDWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/PortableIDWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

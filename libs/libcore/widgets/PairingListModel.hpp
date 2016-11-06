@@ -11,25 +11,31 @@ class NodeAssociateStore;
 
 class PairingListModel: public QAbstractListModel
 {
-	private:
-		NodeAssociateStore &store;
-		DiscoveryType typeFilter;
-		PairingWizard &pwiz;
+	//Q_OBJECT
+private:
+	NodeAssociateStore &mStore;
+	DiscoveryType mTypeFilter;
+	PairingWizard &mPwiz;
 
 
-	private:
-		bool filter(DiscoveryType &t) const;
+private:
+	bool filter(DiscoveryType &t) const;
 
-	public:
-		explicit PairingListModel(NodeAssociateStore &store, DiscoveryType typeFilter, PairingWizard &pwiz);
-		virtual ~PairingListModel();
+public:
+	explicit PairingListModel(NodeAssociateStore &mStore, DiscoveryType mTypeFilter, PairingWizard &mPwiz);
+	virtual ~PairingListModel();
 
-	public:
-		int rowCount(const QModelIndex &) const;
-		int columnCount(const QModelIndex &) const;
-		QVariant data(const QModelIndex &index, int role) const;
-		QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+public:
+	int rowCount(const QModelIndex &) const;
+	int columnCount(const QModelIndex &) const;
+	QVariant data(const QModelIndex &index, int role) const;
+	QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
+	QString status();
+
+public slots:
+
+	void onPeersChanged();
 };
 
 #endif // PAIRINGLISTMODEL_HPP

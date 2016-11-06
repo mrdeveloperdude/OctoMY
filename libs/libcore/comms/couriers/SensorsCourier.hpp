@@ -1,5 +1,6 @@
 #ifndef SENSORSCOURIER_HPP
 #define SENSORSCOURIER_HPP
+
 #include "Courier.hpp"
 #include "comms/messages/SensorsMessage.hpp"
 
@@ -14,10 +15,10 @@ class QGyroscopeReading;
 class SensorsCourier : public Courier{
 		Q_OBJECT
 	private:
-		CourierMandate man;
-		SensorsMessage msg;
+		CourierMandate mMandate;
+		SensorsMessage mMessage;
 	public:
-		explicit SensorsCourier(QObject *parent = nullptr);
+		SensorsCourier(QObject *parent = nullptr);
 
 	public:
 		//Let the CommChannel know what we want
@@ -32,6 +33,7 @@ class SensorsCourier : public Courier{
 		void onCompassUpdated(QCompassReading *);
 		void onAccelerometerUpdated(QAccelerometerReading *);
 		void onGyroscopeUpdated(QGyroscopeReading *);
+		void onColorUpdated(QColor c);
 
 };
 

@@ -13,52 +13,55 @@
 
 class WaitingSpinnerWidget;
 
-namespace Ui {
-	class AgentDeliveryWizard;
+namespace Ui
+{
+class AgentDeliveryWizard;
 }
 
 class Settings;
 class Node;
 class AgentDeliveryWizard : public QWidget
 {
-		Q_OBJECT
+	Q_OBJECT
 
-	protected:
-		Ui::AgentDeliveryWizard *ui;
-		QTimer mBirthTimer;
-		WaitingSpinnerWidget *mSpinner;
-		AgentNameGenerator mNameGenerator;
-		Settings *mSettings;
-		Node *mNode;
-		PortableID mID;
-		QSharedPointer<NodeAssociate> mMyData;
-		quint64 mBirthDate;
+protected:
+	Ui::AgentDeliveryWizard *ui;
+	QTimer mBirthTimer;
+	WaitingSpinnerWidget *mSpinner;
+	AgentNameGenerator mNameGenerator;
+	Settings *mSettings;
+	Node *mNode;
+	PortableID mID;
+	QSharedPointer<NodeAssociate> mMyData;
+	quint64 mBirthDate;
 
-	public:
+public:
 
-		static const quint64 MINIMUM_BIRTH_TIME;
+	static const quint64 MINIMUM_BIRTH_TIME;
 
-	public:
-		explicit AgentDeliveryWizard(QWidget *parent = 0);
-		~AgentDeliveryWizard();
+public:
+	explicit AgentDeliveryWizard(QWidget *parent = 0);
+	~AgentDeliveryWizard();
 
-	public:
-		void reset();
+public:
+	void reset();
 
-		void configure(Node *mNode);
+	void configure(Node *mNode);
 
-	signals:
-		void done(bool);
+signals:
+	void done(bool);
 
-	private slots:
-		void onBirthComplete();
+private slots:
+	void onBirthComplete();
 
-	private slots:
-		void on_pushButtonDone_clicked();
-		void on_pushButtonPairNow_clicked();
-		void on_pushButtonRandomName_clicked();
-		void on_pushButtonOnward_clicked();
-		void on_pushButtonRandomGender_clicked();
+private slots:
+	void on_pushButtonDone_clicked();
+	void on_pushButtonPairNow_clicked();
+	void on_pushButtonRandomName_clicked();
+	void on_pushButtonOnward_clicked();
+	void on_pushButtonRandomGender_clicked();
+	void on_pushButtonDoneCertificate_clicked();
+
 };
 
 #endif // AGENTDELIVERYWIZARD_HPP

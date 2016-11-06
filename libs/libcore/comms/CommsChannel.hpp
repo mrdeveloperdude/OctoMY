@@ -72,90 +72,112 @@ Notes:
    discriminate from where inbound traffic arrives. All packets are treated
    equal as all packes contain identification of the source.
 
+2. Communication between remote and agent is initiated when user presses the "connect"
+   buttons in the respective user interfaces.
+
+3.  At that point agent will attemt to contact all trusted remotes at their last
+   known address untill one or more answer are received. From then on, all
+   connections that did not result in valid responses will be closed, and only
+   retried periodically.
+
+4. All Agent initiadet communication will  be broadcast to all active remotes in
+   paralellesin. Remote initiated transfers will remain private.
+
 */
+class CommsChannel : public QObject
+{
+	Q_OBJECT
+private:
+	static const quint64 CONNECTION_TIMEOUT=1000*5;//5 sec connection timeout
+	QUdpSocket mUDPSocket;
+	QTimer mSendingTimer;
+	//Clients as identifued by their fingerprints
+	ClientDirectory *mClients;
+	LogDestination *mLog;
+	//All registered couriers
+	QList<Courier *> mCouriers;
+	QMap<quint32, Courier *> mCouriersByID;
+	ClientSignature mLocalSignature;
+	quint64 mLastRX;
+	quint64 mLastTX;
+	quint64 mLastRXST;
+	quint64 mLastTXST;
+	quint64 mTxCount;
+	quint64 mRxCount;
+	bool mConnected;
 
-class CommsChannel : public QObject{
-		Q_OBJECT
-	private:
-		static const quint64 CONNECTION_TIMEOUT=1000*5;//5 sec connection timeout
-		QUdpSocket udpSocket;
-		QTimer sendingTimer;
-		//Clients as identifued by their fingerprints
-		ClientDirectory *clients;
-		LogDestination *mw;
-		//All registered couriers
-		QList<Courier *> couriers;
-		QMap<quint32, Courier *> couriersByID;
-		//const quint32 localClientPlatform;		const quint32 localClientExecutable;
-		ClientSignature localSignature;
-		quint64 lastRX;
-		quint64 lastTX;
-		quint64 lastRXST;
-		quint64 lastTXST;
-		quint64 sendCount;
-		quint64 recCount;
-		bool connected;
+	//Receive counter used in debug messages to make sense of the order of things
+	static quint32 totalRecCount;
 
-		//Receive ciounter used in debug messages to make sense of the order of things
-		static quint32 totalRecCount;
+public:
 
-	public:
+	explicit CommsChannel(const QString &id, LogDestination *mLog=nullptr, QObject *parent=nullptr);
 
-		explicit CommsChannel(const ClientSignature &sig, LogDestination *mw=nullptr, QObject *parent=nullptr);
+public:
 
-	public:
+	ClientDirectory *getClients();
 
-		ClientDirectory *getClients();
+	void start(NetworkAddress localAddress);
+	void stop();
 
-		void start(NetworkAddress address);
-		void stop();
+	ClientSignature localSignature();
 
-		void setLogOutput(LogDestination *mw);
+	void setLogOutput(LogDestination *log);
 
-		QString getSummary();
+	QString getSummary();
+
+	void setID(const QString &id);
+
+	void hookSignals(QObject &ob);
+	void unHookSignals(QObject &ob);
+
+	void registerCourier(Courier &);
+	void unregisterCourier(Courier &);
+	int courierCount();
 
 
-
-		void hookSignals(QObject &ob);
-		void unHookSignals(QObject &ob);
-
-		void registerCourier(Courier &);
-		void unregisterCourier(Courier &);
-
-		inline Courier *getCourierByID(quint32 id){
-			if(couriersByID.contains(id)){
-				return couriersByID[id];
-			}
-			return nullptr;
+	inline Courier *getCourierByID(quint32 id)
+	{
+		if(mCouriersByID.contains(id)) {
+			return mCouriersByID[id];
 		}
+		return nullptr;
+	}
 
-		bool isConnected(){return connected;}
+	bool isStarted()
+	{
+		return mSendingTimer.isActive();
+	}
+	bool isConnected()
+	{
+		return mConnected;
+	}
 
-		qint64 sendRawData(QByteArray datagram,ClientSignature sig);
+	qint64 sendRawData(QByteArray datagram,ClientSignature sig);
 
 
-	private:
+private:
 
-		void appendLog(QString);
+	void appendLog(QString);
 
-		void sendData(const quint64 &now, QSharedPointer<Client> localClient, Courier *courier, const ClientSignature *sig=nullptr);
+	void sendData(const quint64 &now, QSharedPointer<Client> localClient, Courier *courier, const ClientSignature *sig=nullptr);
 
-		// CommsChannel signals
-	signals:
-		//		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
-		void error(QString message);
-		void clientAdded(Client *c);
-		void connectionStatusChanged(bool c);
+	// CommsChannel signals
+signals:
+	//		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
+	void error(QString message);
+	void clientAdded(Client *c);
+	void connectionStatusChanged(bool c);
 
-	private slots:
+private slots:
 
-		void receivePacketRaw(QByteArray ba,QHostAddress host, quint16 port);
-		void onSendingTimer();
+	void receivePacketRaw(QByteArray ba,QHostAddress host, quint16 port);
+	void onSendingTimer();
 
-	public slots:
+public slots:
 
-		void onReadyRead();
-		void onUdpError(QAbstractSocket::SocketError);
+	void onReadyRead();
+	void onUdpError(QAbstractSocket::SocketError);
 };
 
 #endif // COMMSCHANNEL_HPP
