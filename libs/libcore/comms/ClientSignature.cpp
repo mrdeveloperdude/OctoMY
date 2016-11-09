@@ -23,6 +23,7 @@ ClientSignature::ClientSignature(const quint64 &shortHandID, const NetworkAddres
 
 ClientSignature::ClientSignature(const QString &fullID, const NetworkAddress &address)
 	: mShortHandID(fullID.mid(0,16).toULongLong(nullptr,16))
+	, mFullID(fullID)
 	, mAddress(address)
 {
 }
@@ -46,6 +47,12 @@ quint64 ClientSignature::shortHandID() const
 	return mShortHandID;
 }
 
+QString ClientSignature::fullID() const
+{
+	return mFullID;
+}
+
+
 NetworkAddress ClientSignature::address() const
 {
 	return mAddress;
@@ -68,6 +75,7 @@ void ClientSignature::setShortHandID(const quint64 &id)
 void ClientSignature::setFullID(const QString &fullID)
 {
 	mShortHandID=(fullID.mid(0,16).toULongLong(nullptr,16));
+	mFullID=fullID;
 }
 
 

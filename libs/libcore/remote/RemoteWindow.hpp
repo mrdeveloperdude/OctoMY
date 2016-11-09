@@ -26,6 +26,15 @@ namespace Ui
 class RemoteWindow;
 }
 
+/*!
+ * \brief The RemoteWindow class is the UI part of Remote. In it's current incarnation
+ * it is required, but the long term goal is for remote to be able to run in
+ * head-less mode, and in that mode the UI part will not be used.
+ *
+ * This is useful for when your remote is acting as a script host or in other
+ * similar situations where the UI may not be needed.
+ */
+
 class RemoteWindow : public QWidget, public IContextProvider
 {
 	Q_OBJECT

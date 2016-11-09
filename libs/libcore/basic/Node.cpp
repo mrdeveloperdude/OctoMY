@@ -39,7 +39,8 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	, mLastStatusSend (0)
 //	, mSensorMessage (new SensorsMessage)
 	  //, mServerURL("http://zoo.octomy.org/api")
-	, mServerURL("http://"+utility::localAddress()+":"+QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api")
+//	, mServerURL("http://"+utility::localAddress()+":"+QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api")
+	, mServerURL("http://10.0.0.86:"+QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //Local address HQ
 {
 	//ScopedTimer nodeBootTimer(mContext->base()+"-boot");
 	setObjectName(mContext->base());

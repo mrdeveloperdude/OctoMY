@@ -45,7 +45,7 @@ CommsChannel::CommsChannel(const QString &id, LogDestination *log, QObject *pare
 }
 
 
-ClientDirectory *CommsChannel::getClients()
+ClientDirectory *CommsChannel::clients()
 {
 	return mClients;
 }
@@ -158,8 +158,9 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 		*ds >> packet_ack_bits;
 		totalAvailable-=sizeof(unsigned int);
 		qDebug()<<totalRecCount<<"Data received from client '"<<remoteSignature.toString()<<"' with seq="<<packet_sequence<<" ack="<<packet_ack<<" bits="<<packet_ack_bits<<" and bodysize="<<totalAvailable;
-		remoteClient->reliabilitySystem.packetReceived( packet_sequence, size-header );
-		remoteClient->reliabilitySystem.processAck( packet_ack, packet_ack_bits );
+		ReliabilitySystem &rs=remoteClient->reliabilitySystem();
+		rs.packetReceived( packet_sequence, size-header );
+		rs.processAck( packet_ack, packet_ack_bits );
 		remoteClient->receive();
 		quint16 parts=0;
 		const qint32 minAvailableForPart  = ( sizeof(quint32) + sizeof(quint16) );
@@ -272,11 +273,12 @@ void CommsChannel::sendData(const quint64 &now, QSharedPointer<Client> localClie
 	ds << mLocalSignature.shortHandID();
 	bytesUsed += sizeof(quint64);
 	// Write reliability data
-	ds << localClient->reliabilitySystem.localSequence();
+	ReliabilitySystem &rs=localClient->reliabilitySystem();
+	ds << rs.localSequence();
 	bytesUsed += sizeof(unsigned int);
-	ds << localClient->reliabilitySystem.remoteSequence();
+	ds << rs.remoteSequence();
 	bytesUsed += sizeof(unsigned int);
-	ds << localClient->reliabilitySystem.generateAckBits();
+	ds << rs.generateAckBits();
 	bytesUsed += sizeof(unsigned int);
 	//qDebug()<<"SEND GLOBAL HEADER SIZE: "<<bytesUsed;
 	// Send using courier.

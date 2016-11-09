@@ -1,0 +1,10 @@
+#ifndef TRYTOGGLESTATE_HPP
+#define TRYTOGGLESTATE_HPP
+
+
+enum TryToggleState {
+	OFF,TRYING,ON
+};
+
+
+#endif // TRYTOGGLESTATE_HPP

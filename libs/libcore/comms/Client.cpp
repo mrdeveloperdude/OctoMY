@@ -16,16 +16,16 @@
 //  , hash(generateHash(host,port))
 
 Client::Client(ClientSignature signature, LogDestination *log)
-	: signature(signature)
-	, log(log)
-	, lastSendTime(0)
-	, lastReceiveTime(lastSendTime)
-	, connected(false)
-	, lastConnected(false)
-	, timeoutAccumulator(0.0f)
-	, deltaTime(0.0f)
-	, idleAccumulator(0.0)
-	, idlePacketsSent(0)
+	: mSignature(signature)
+	, mLog(log)
+	, mLastSendTime(0)
+	, mLastReceiveTime(mLastSendTime)
+	, mConnected(false)
+	, mLastConnected(false)
+	, mTimeoutAccumulator(0.0f)
+	, mDeltaTime(0.0f)
+	, mIdleAccumulator(0.0)
+	, mIdlePacketsSent(0)
 {
 
 }
@@ -33,65 +33,65 @@ Client::Client(ClientSignature signature, LogDestination *log)
 void Client::countSend(qint64 written)
 {
 	const qint64 now=QDateTime::currentMSecsSinceEpoch();
-	if(lastSendTime<=0) {
-		lastSendTime=now-1;
+	if(mLastSendTime<=0) {
+		mLastSendTime=now-1;
 	}
-	const qint64 delta=now-lastSendTime;
-	lastSendTime=now;
-	deltaTime=delta/1000.0f;
-	timeoutAccumulator += deltaTime;
-	if ( timeoutAccumulator > TIMEOUT_TRESHOLD ) {
-		qDebug()<<"CLIENT "<< signature.toString() <<" timed out";
-		connected=false;
+	const qint64 delta=now-mLastSendTime;
+	mLastSendTime=now;
+	mDeltaTime=delta/1000.0f;
+	mTimeoutAccumulator += mDeltaTime;
+	if ( mTimeoutAccumulator > TIMEOUT_TRESHOLD ) {
+		qDebug()<<"CLIENT "<< mSignature.toString() <<" timed out";
+		mConnected=false;
 	}
-	if(connected) {
-		reliabilitySystem.update(deltaTime);
-		flowControl.update( deltaTime, reliabilitySystem.roundTripTime() * 1000.0f );
+	if(mConnected) {
+		mReliabilitySystem.update(mDeltaTime);
+		mRlowControl.update( mDeltaTime, mReliabilitySystem.roundTripTime() * 1000.0f );
 	}
-	if(connected!=lastConnected) {
-		lastConnected=connected;
-		flowControl.reset();
-		appendLog("CLIENT: New flow state: " +QString(connected?"CONNECTED":"DISCONNECTED")+ " for "+signature.toString());
+	if(mConnected!=mLastConnected) {
+		mLastConnected=mConnected;
+		mRlowControl.reset();
+		appendLog("CLIENT: New flow state: " +QString(mConnected?"CONNECTED":"DISCONNECTED")+ " for "+mSignature.toString());
 	}
-	reliabilitySystem.packetSent(written);
+	mReliabilitySystem.packetSent(written);
 }
 
 void Client::receive()
 {
-	lastReceiveTime=QDateTime::currentMSecsSinceEpoch();
-	connected=true;
-	timeoutAccumulator = 0.0f;
+	mLastReceiveTime=QDateTime::currentMSecsSinceEpoch();
+	mConnected=true;
+	mTimeoutAccumulator = 0.0f;
 }
 
 void Client::appendLog(QString msg)
 {
-	if(0!=log) {
-		log->appendLog(msg);
+	if(0!=mLog) {
+		mLog->appendLog(msg);
 	}
 }
 
 bool Client::idle()
 {
-	const float sendRate = flowControl.sendRate();
-	if( deltaTime > (1.0f / sendRate) ) {
-		appendLog("SENDING IDLE PACKET "+QString::number(idlePacketsSent));
-		idleAccumulator=0.0f;
-		idlePacketsSent++;
-		return connected;
+	const float sendRate = mRlowControl.sendRate();
+	if( mDeltaTime > (1.0f / sendRate) ) {
+		appendLog("SENDING IDLE PACKET "+QString::number(mIdlePacketsSent));
+		mIdleAccumulator=0.0f;
+		mIdlePacketsSent++;
+		return mConnected;
 	}
 	return false;
 }
 
 
-QString Client::getSummary(QString sep) const
+QString Client::summary(QString sep) const
 {
 	QString out;
 	QTextStream ts(&out);
-	ts << "ID: "<< signature.shortHandID();
-	ts << ", NET: "<<signature.address().toString();
-	ts << ", DELTA: "<<deltaTime<<sep;
-	ts << ", TOA: "<<timeoutAccumulator<<sep;
-	ts << flowControl.getSummary(sep);
+	ts << "ID: "<< mSignature.shortHandID();
+	ts << ", NET: "<<mSignature.address().toString();
+	ts << ", DELTA: "<<mDeltaTime<<sep;
+	ts << ", TOA: "<<mTimeoutAccumulator<<sep;
+	ts << mRlowControl.getSummary(sep);
 	return out;
 }
 
@@ -99,14 +99,14 @@ QString Client::toString() const
 {
 	QString out;
 	QTextStream ts(&out);
-	ts << "sig="<< signature.toString()<<", delta: "<<deltaTime<<", TOA: "<<timeoutAccumulator;
+	ts << "sig="<< mSignature.toString()<<", delta: "<<mDeltaTime<<", TOA: "<<mTimeoutAccumulator;
 	return out;
 }
 
 
-const QString Client::getListText() const
+const QString Client::listText() const
 {
-	QString name=getSummary(" - ");
+	QString name=summary(" - ");
 	return name;
 }
 
@@ -115,19 +115,17 @@ quint64 Client::getHash() const{
 	return (quint64)signature.executable| ((quint64)signature.platform <<32);
 }
 */
-
-const quint64 Client::lastActiveTime() const
+quint64 Client::lastActiveTime() const
 {
 	// Sending does not count, because we may be sending to deaf ears
 	//return qMax(lastSendTime, lastReceiveTime);
-	return lastReceiveTime;
+	return mLastReceiveTime;
 }
 
 quint64 Client::getShortHandID() const
 {
-	return signature.shortHandID();
+	return mSignature.shortHandID();
 }
 ////////////////////////////
-
 
 

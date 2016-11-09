@@ -6,8 +6,9 @@
 
 void ClientDirectory::insert(QSharedPointer<Client> c)
 {
-	quint64 id=c->signature.shortHandID();
-	QString address=c->signature.address().toString();
+	ClientSignature &sig=c->signature();
+	quint64 id=sig.shortHandID();
+	QString address=sig.address().toString();
 	if(nullptr!=c && !byID.contains(id) && !byHost.contains(address)) {
 		byID.insert(id, c);
 		byHost.insert(address, c);

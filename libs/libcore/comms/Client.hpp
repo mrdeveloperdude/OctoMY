@@ -31,45 +31,111 @@ class LogDestination;
  *
  */
 
-class Client{
-	public:
-		ClientSignature signature;
-		LogDestination *log;
-		ReliabilitySystem reliabilitySystem;
-		FlowControl flowControl;
-		qint64 lastSendTime;
-		qint64 lastReceiveTime;
-		bool connected;
-		bool lastConnected;
-		float timeoutAccumulator;
-		float deltaTime;
-		float idleAccumulator;
-		quint32 idlePacketsSent;
+class Client
+{
+private:
+	ClientSignature mSignature;
+	LogDestination *mLog;
+	ReliabilitySystem mReliabilitySystem;
+	FlowControl mRlowControl;
+	qint64 mLastSendTime;
+	qint64 mLastReceiveTime;
+	bool mConnected;
+	bool mLastConnected;
+	float mTimeoutAccumulator;
+	float mDeltaTime;
+	float mIdleAccumulator;
+	quint32 mIdlePacketsSent;
 
 
-	public:
+public:
 
-		//Client(QHostAddress host, quint16 port, LogDestination *log=0);
-		Client(ClientSignature signature, LogDestination *log=0);
-		void countSend(qint64 written);
-		void receive();
-		bool idle();
-		void appendLog(QString);
-		QString getSummary(QString sep="\n") const ;
-		QString toString() const ;
-		const QString getListText() const;
-		//quint64 getHash() const;
-
-		const quint64 lastActiveTime() const;
-
-		quint64 getShortHandID() const;
+	//Client(QHostAddress host, quint16 port, LogDestination *log=0);
+	Client(ClientSignature signature, LogDestination *log=nullptr);
 
 
+public:
 
-		//void onStatusMessage(SensorsMessage sm);
+
+	inline ClientSignature &signature()
+	{
+		return mSignature;
+	}
+
+	inline LogDestination *log()
+	{
+		return mLog;
+	}
+	inline ReliabilitySystem &reliabilitySystem()
+	{
+		return mReliabilitySystem;
+	}
+
+	inline FlowControl flowControl()
+	{
+		return mRlowControl;
+	}
+	inline qint64 lastSendTime()
+	{
+		return mLastSendTime;
+	}
+
+	inline qint64 lastRecieveTime()
+	{
+		return mLastReceiveTime;
+	}
+
+	inline bool connected()
+	{
+		return mConnected;
+	}
+
+	inline bool lastConnected()
+	{
+		return mLastConnected;
+	}
+
+	inline float timeoutAccumulator()
+	{
+		return mTimeoutAccumulator;
+	}
+	inline float deltaTime()
+	{
+		return mDeltaTime;
+	}
+
+	inline float idleAccumulator()
+	{
+		return mIdleAccumulator;
+	}
+	inline quint32 idlePacksSent()
+	{
+		return mIdlePacketsSent;
+	}
+
+
+
+public:
+
+
+	void countSend(qint64 written);
+	void receive();
+	bool idle();
+	void appendLog(QString);
+	QString summary(QString sep="\n") const ;
+	QString toString() const ;
+	const QString listText() const;
+	//quint64 getHash() const;
+
+	quint64 lastActiveTime() const;
+
+	quint64 getShortHandID() const;
+
+
+
+	//void onStatusMessage(SensorsMessage sm);
 };
 
 
 
 #endif // CLIENT_HPP
-

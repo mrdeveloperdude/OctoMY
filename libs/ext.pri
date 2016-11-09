@@ -2,10 +2,6 @@
 
 # TOP_PWD and TOP_BUILD are defined in .qmake.config in project root
 
-
-#USE THIS IF YOU DEPEND ON SYSTEM LIBS (AS OPPOSED TO LOCAL BUILDS FROM SOURCE)
-#LIBS += -lnfc -lnodave -lcrypto++ -lqrencode -lespeak -lusb
-
 # EXAMPLE NON-OS EXTERNAL DEPENDENCY
 contains(DEFINES, EXTERNAL_LIB_QRENCODE){
 EXT = $$TOP_PWD/ext
@@ -31,7 +27,7 @@ INCLUDEPATH +=    /usr/include/opencv
 
 
 # This is used for OpenCL
-contains(DEFINES, USE_OPENCL){
+contains(DEFINES, EXTERNAL_LIB_OPENCL){
 INCLUDEPATH+="./OpenCL-ICD-Loader/inc"
 LIBS+= -L./OpenCL-ICD-Loader/build/bin
 LIBS+= -lOpenCL
@@ -39,10 +35,4 @@ LIBS+= -lOpenCL
 
 
 #LIBS += -lusb
-
-HEADERS += \
-	$$PWD/libcore/basic/GenericKeyEventHandler.hpp
-
-SOURCES += \
-	$$PWD/libcore/basic/GenericKeyEventHandler.cpp
 

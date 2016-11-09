@@ -1,18 +1,18 @@
 #ifndef TRYTOGGLE_HPP
 #define TRYTOGGLE_HPP
 
+#include "TryToggleState.hpp"
+
 #include <QWidget>
 
 #include <QTimer>
 #include <QDebug>
 
+
 namespace Ui {
 	class TryToggle;
 }
 
-enum TryToggleState{
-	OFF,TRYING,ON
-};
 
 QString ToggleStateToSTring(TryToggleState s);
 

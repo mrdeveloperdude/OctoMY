@@ -58,16 +58,12 @@ public:
 public slots:
 	void onSummaryTimer();
 	void appendLog(const QString& text);
-	void appendSpeechHistory(const QString& text);
-
-
-
 
 	// Internal UI slots
 private slots:
 
 	void onConnectionStateChanged(const TryToggleState, const TryToggleState);
-	void on_pushButtonSay_clicked();
+
 
 	void on_checkBoxShowEyes_toggled(bool checked);
 	void on_checkBoxShowStats_toggled(bool checked);

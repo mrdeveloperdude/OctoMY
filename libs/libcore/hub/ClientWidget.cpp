@@ -38,7 +38,6 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 		qDebug()<<"could not connect";
 	}
 	updateTimer.start();
-	ui->logScrollHistory->setDirection(true);
 	ui->widgetFace->setDisabled(true);
 
 	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState, TryToggleState)),this,SLOT(onConnectionStateChanged(TryToggleState, TryToggleState)),OC_CONTYPE)) {
@@ -127,31 +126,8 @@ void ClientWidget::init()
 		ui->labelCompass->setText("WAITING FOR COMPASS");
 		ui->labelGyroscope->setText("WAITING FOR GYRO");
 		ui->labelAccelerometer->setText("WAITING FOR ACCELEROMETER");
-
-		ui->numericEntryServoTest->configure(&s,500,2500,200,1500," µs","Test remote servo control via network", "servo-position-1");
-		if(!connect(ui->numericEntryServoTest,SIGNAL(valueChanged(int)),this,SLOT(onServoPositionChanged(int)))) {
-			qWarning()<<"ERROR: could not connect";
-		}
 		ui->labelTouch->setText("WAITING FOR TOUCH");
-
-		GenericKeyEventHandler *gkh=new GenericKeyEventHandler(ui->plainTextEditSpeechText);
-		gkh->setEventProcessor([=](QObject *o, QKeyEvent *keyEvent) {
-			auto t=keyEvent->type();
-			if(t==QEvent::KeyPress || t==QEvent::KeyRelease) {
-				keyEvent->accept();
-				if (nullptr!=keyEvent && keyEvent->key() == Qt::Key_Return) {
-					if(keyEvent->modifiers() != Qt::ControlModifier) {
-						// Return without modifier pressed
-						if (t == QEvent::KeyRelease) {
-							ui->pushButtonSay->click();
-							// This event has been handled
-							return true;
-						}
-					}
-				}
-			}
-			return false;
-		});
+		ui->widgetActuatorControl->configure(10);
 	} else {
 		ui->labelLocal->setText("N/A");
 		ui->labelHub->setText("N/A");
@@ -207,11 +183,6 @@ void ClientWidget::appendLog(const QString& text)
 	ui->logScroll->appendLog(text);
 }
 
-void ClientWidget::appendSpeechHistory(const QString& text)
-{
-	OC_METHODGATE();
-	ui->logScrollHistory->appendLog(text.trimmed());
-}
 
 
 
@@ -239,33 +210,6 @@ void ClientWidget::onConnectionStateChanged(const TryToggleState last, const Try
 }
 
 
-//#include "random/RNG.hpp" RNG *rng=RNG::sourceFactory("mt");
-
-void ClientWidget::on_pushButtonSay_clicked()
-{
-	QString text=ui->plainTextEditSpeechText->toPlainText().trimmed();
-	if(""!=text) {
-		appendLog("SAID: "+text);
-		appendSpeechHistory(text);
-
-		ui->plainTextEditSpeechText->clear();
-		PortableID id;
-		//	=mController->localNodeAssociate()->toPortableID();
-		QCryptographicHash ch(OCTOMY_KEY_HASH);
-		QByteArray ba;
-		union {
-			quint8 c8[8];
-			quint64 i64;
-		} a;
-		a.i64=QDateTime::currentMSecsSinceEpoch();
-		for(int i=0; i<8; ++i) {
-			ba[i]=a.c8[i];
-		}
-		ch.addData(ba);
-		id.setID(ch.result().toHex().toUpper());
-		new OneOffSpeech(id, text);
-	}
-}
 
 void ClientWidget::on_checkBoxShowEyes_toggled(bool checked)
 {

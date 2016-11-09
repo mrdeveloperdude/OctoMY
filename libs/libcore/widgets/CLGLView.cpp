@@ -1,6 +1,6 @@
 #include "CLGLView.hpp"
 
-#ifndef USE_OPENCL
+#ifndef EXTERNAL_LIB_OPENCL
 
 CLGLView::CLGLView(QWidget *parent)
 	: QOpenGLWidget(parent)

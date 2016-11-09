@@ -17,10 +17,12 @@
 
 class Node;
 
-namespace qhttp{
-	namespace client{
-		class QHttpClient;
-	}
+namespace qhttp
+{
+namespace client
+{
+class QHttpClient;
+}
 }
 
 
@@ -77,38 +79,38 @@ namespace qhttp{
 
 class DiscoveryClient: public QObject
 {
-		Q_OBJECT
-	private:
-		QTimer timer;
-		quint64 lastZooPair;
-		QUrl  m_serverURL;
-		qhttp::client::QHttpClient     *m_client;
-		Node &node;
-		Key &key;
+	Q_OBJECT
+private:
+	QTimer mTimer;
+	quint64 mLastZooPair;
+	QUrl  mServerURL;
+	qhttp::client::QHttpClient     *mClient;
+	Node &mNode;
+	Key &mKey;
 
-	private:
-		void registerPossibleParticipant(QVariantMap map);
+private:
+	void registerPossibleParticipant(QVariantMap map);
 
-	public:
-		DiscoveryClient(Node &node);
+public:
+	DiscoveryClient(Node &node);
 
-	public:
+public:
 
-		void setURL(const QUrl&);
-		void start();
-		void stop();
+	void setURL(const QUrl&);
+	void start();
+	void stop();
 
-		void discover();
+	void discover();
 
-		Node &getNode();
+	Node &getNode();
 
-	private slots:
+private slots:
 
-		void onTimer();
+	void onTimer();
 
-	signals:
+signals:
 
-		void nodeDiscovered(QString id);
+	void nodeDiscovered(QString id);
 };
 
 #endif // DISCOVERYCLIENT_HPP

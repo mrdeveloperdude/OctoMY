@@ -29,17 +29,17 @@
 
 DiscoveryClient::DiscoveryClient(Node &node)
 	: QObject(&node)
-	, lastZooPair(0)
-	, m_client(new qhttp::client::QHttpClient(this))
-	, node(node)
-	, key(node.keyStore().localKey())
+	, mLastZooPair(0)
+	, mClient(new qhttp::client::QHttpClient(this))
+	, mNode(mNode)
+	, mKey(mNode.keyStore().localKey())
 	  //, ourPubKey(node.getKeyStore().getLocalPublicKey())
 	  //, ourID(utility::toHash(ourPubKey))
 	  //, zeroID(utility::toHash(""))
 {
-	timer.setInterval(500);
-	timer.setTimerType(Qt::VeryCoarseTimer);
-	if(!connect(&timer,SIGNAL(timeout()),this,SLOT(onTimer()),OC_CONTYPE)) {
+	mTimer.setInterval(500);
+	mTimer.setTimerType(Qt::VeryCoarseTimer);
+	if(!connect(&mTimer,SIGNAL(timeout()),this,SLOT(onTimer()),OC_CONTYPE)) {
 		qDebug()<<"ERROR: Could not connect";
 	}
 }
@@ -49,17 +49,17 @@ DiscoveryClient::DiscoveryClient(Node &node)
 void DiscoveryClient::start()
 {
 	qDebug()<<"DISCOVERY CLIENT STARTED";
-	if(!timer.isActive()) {
+	if(!mTimer.isActive()) {
 		onTimer();
 	}
-	timer.start();
+	mTimer.start();
 
 }
 
 void DiscoveryClient::stop()
 {
 	qDebug()<<"DISCOVERY CLIENT STOPPED";
-	timer.stop();
+	mTimer.stop();
 }
 
 
@@ -68,8 +68,8 @@ void DiscoveryClient::stop()
 void DiscoveryClient::setURL(const QUrl& serverURL)
 {
 	//TODO: Investigate why this gets called twice
-	m_serverURL  = serverURL;
-	qDebug()<<"Setting new URL: "<<m_serverURL;
+	mServerURL  = serverURL;
+	qDebug()<<"Setting new URL: "<<mServerURL;
 }
 
 
@@ -90,9 +90,9 @@ void DiscoveryClient::discover()
 
 		QVariantMap cmd;
 		cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
-		cmd["key"] = node.keyStore().localKey().toVariantMap(true);
+		cmd["key"] = mNode.keyStore().localKey().toVariantMap(true);
 		cmd["manualPin"] ="12345";
-		QSharedPointer<NodeAssociate> me=node.nodeIdentity();
+		QSharedPointer<NodeAssociate> me=mNode.nodeIdentity();
 		if(nullptr!=me) {
 			QVariantMap map=me->toVariantMap();
 			merge(cmd, map);
@@ -184,8 +184,8 @@ void DiscoveryClient::discover()
 		});
 		//qDebug()<<"Getting node by OCID:"<<OCID << " RES DONE";
 	};
-	qDebug()<<"DISCOVERY CLIENT OUTREACH TO "<<m_serverURL;
-	m_client->request(qhttp::EHTTP_POST, m_serverURL, reqHandler, resHandler);
+	qDebug()<<"DISCOVERY CLIENT OUTREACH TO "<<mServerURL;
+	mClient->request(qhttp::EHTTP_POST, mServerURL, reqHandler, resHandler);
 
 
 }
@@ -197,13 +197,13 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map)
 	//qDebug()<<"REG";
 	Key key(map["key"].toMap(),true);
 	const QString partID=key.id();
-	const QString ourID=node.keyStore().localKey().id();
+	const QString ourID=mNode.keyStore().localKey().id();
 	if(partID==zeroID) {
 		qWarning()<<"ERROR: Skipping new participant with zero ID: "<<partID;
 	} else if(partID==ourID) {
 		//qDebug()<<" + Skipping new participant with our ID: "<<partID;
 	} else {
-		NodeAssociateStore &peers=node.peers();
+		NodeAssociateStore &peers=mNode.peers();
 		QSharedPointer<NodeAssociate> part;
 		if(peers.hasParticipant(partID)) {
 			qDebug()<<" + Updating participant with ID: "<<partID;
@@ -219,7 +219,7 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map)
 					if(nullptr!=courier) {
 						peers.setParticipant(part);
 						courier->setDestination(part->toClientSignature());
-						node.comms()->registerCourier(*courier);
+						mNode.comms()->registerCourier(*courier);
 						qDebug()<<" + Adding new participant with ID: "<<partID;
 						emit nodeDiscovered(partID);
 					} else {
@@ -237,7 +237,7 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map)
 
 Node &DiscoveryClient::getNode()
 {
-	return node;
+	return mNode;
 }
 
 
@@ -247,9 +247,9 @@ void DiscoveryClient::onTimer()
 {
 	//qDebug()<<"PING";
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
-	if(now>ZOO_PAIR_INTERVAL+lastZooPair) {
+	if(now>ZOO_PAIR_INTERVAL+mLastZooPair) {
 		//qDebug()<<"ZOO PAIR TIME!";
-		lastZooPair=now;
+		mLastZooPair=now;
 		//		discover();
 		//TODO: node.getComms()->unregisterCourier(courier); <-- remove old unused and timed out couriers
 	}

@@ -91,7 +91,9 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 			qDebug()<<"could not connect";
 		}
 
-#ifdef USE_OPENCL
+		ui->widgetActuatorControl->configure(5);
+
+#ifdef EXTERNAL_LIB_OPENCL
 		initCL();
 #endif
 
@@ -250,7 +252,7 @@ void HubWindow::onError(QString msg)
 void HubWindow::onClientAdded(Client *c)
 {
 	if(0!=c) {
-		appendLog("CLIENT ADDED: "+c->getSummary());
+		appendLog("CLIENT ADDED: "+c->summary());
 		ui->widgetIncommingNodes->update();
 	}
 }
@@ -295,7 +297,7 @@ void HubWindow::startProcess(QString base)
 }
 
 
-#ifdef USE_OPENCL
+#ifdef EXTERNAL_LIB_OPENCL
 void HubWindow::initCL()
 {
 	qDebug()<<"INIT CL ----- ";

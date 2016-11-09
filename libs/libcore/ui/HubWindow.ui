@@ -510,7 +510,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidgetDevelopment">
            <property name="currentIndex">
-            <number>7</number>
+            <number>9</number>
            </property>
            <widget class="QWidget" name="tabGait">
             <attribute name="title">
@@ -640,7 +640,7 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="tab">
+           <widget class="QWidget" name="tabIdenticon">
             <attribute name="title">
              <string>Identicon</string>
             </attribute>
@@ -810,6 +810,26 @@
              </item>
             </layout>
            </widget>
+           <widget class="QWidget" name="tabCreepyVoice">
+            <attribute name="title">
+             <string>CreepyVoice</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_11">
+             <item>
+              <widget class="SpeechControlWidget" name="widgetSpeechControl" native="true"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabActuators">
+            <attribute name="title">
+             <string>Actuators</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <item row="0" column="0">
+              <widget class="ActuatorControlWidget" name="widgetActuatorControl" native="true"/>
+             </item>
+            </layout>
+           </widget>
           </widget>
          </item>
         </layout>
@@ -831,15 +851,21 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
+   <class>LogWidget</class>
+   <extends>QPlainTextEdit</extends>
+   <header>widgets/LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>TryToggle</class>
+   <extends>QWidget</extends>
+   <header>widgets/TryToggle.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>PlanEditor</class>
    <extends>QWidget</extends>
    <header>widgets/planedit/PlanEditor.hpp</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LogWidget</class>
-   <extends>QPlainTextEdit</extends>
-   <header>widgets/LogWidget.hpp</header>
   </customwidget>
   <customwidget>
    <class>PairingWizard</class>
@@ -875,12 +901,6 @@
    <class>Camera</class>
    <extends>QWidget</extends>
    <header>camera/Camera.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>TryToggle</class>
-   <extends>QWidget</extends>
-   <header>widgets/TryToggle.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -933,6 +953,18 @@
    <class>CLGLView</class>
    <extends>QOpenGLWidget</extends>
    <header>widgets/CLGLView.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>SpeechControlWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/SpeechControlWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ActuatorControlWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/ActuatorControlWidget.hpp</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

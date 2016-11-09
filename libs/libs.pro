@@ -30,11 +30,11 @@ libqfi.subdir=			libqfi
 libcore.depends=libutil
 
 
-contains(DEFINES, USE_OPENCL){
+contains(DEFINES, EXTERNAL_LIB_OPENCL){
 SUBDIRS += \
-	libcl \
+	libclt \
 
-libcl.subdir=			libcl
+libclt.subdir=			libclt
 }
 
 

@@ -62,9 +62,9 @@ android{
 	QT += androidextras
 	#NOTE: Each individual project will look for her own android config (making it possible for each tier to have separate adaptations
 	ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
-	contains(DEFINES, USE_OPENCL){
+	contains(DEFINES, EXTERNAL_LIB_OPENCL){
 		warning("OpenCL support was enabled but is not supported in Android, so disabling it for now")
-		DEFINES -= USE_OPENCL
+		DEFINES -= EXTERNAL_LIB_OPENCL
 	}
 }
 
@@ -125,11 +125,11 @@ contains(CONFIG, c++11){
 
 # Automatic support for ccache
 
-CCACHE_EXISTS=$$system("which ccache >/dev/null 2>&1; echo $?")
-equals(CCACHE_EXISTS, "0"){
-QMAKE_CXX="ccache $$QMAKE_CXX"
+#CCACHE_EXISTS=$$system("which ccache >/dev/null 2>&1; echo $?")
+#equals(CCACHE_EXISTS, "0"){
+#QMAKE_CXX="ccache $$QMAKE_CXX"
 # message("GOT CCACHE")
-}
+#}
 
 
 # message("QMAKE_CXX: $$QMAKE_CXX, CCACHE_EXISTS: $$CCACHE_EXISTS")
@@ -183,9 +183,9 @@ QMAKE_CXXFLAGS += -fstack-protector-all -fstrict-overflow -fstack-usage
 QMAKE_CFLAGS += -Wno-unused-parameter -Wno-sometimes-uninitialized
 
 # Remove GCC-only stuff if other compilers are used. PS: contains() is used to avoid problems when ccache is used
-!contains(QMAKE_CXX, g++){
-	QMAKE_CXXFLAGS -= -fstack-usage -Wno-format-contains-nul
-}
+#!contains(QMAKE_CXX, g++){
+#	QMAKE_CXXFLAGS -= -fstack-usage -Wno-format-contains-nul
+#}
 
 # Do not optimize by default
 QMAKE_CXXFLAGS -= -O

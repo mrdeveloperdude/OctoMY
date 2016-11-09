@@ -173,13 +173,19 @@ SOURCES +=\
 	zoo/ZooServer.cpp \
 	hub/ClientWidget.cpp \
 	hub/IContextProvider.cpp \
-    widgets/NetworkSettingsWidget.cpp \
-    audio/AudioStream.cpp \
-    audio/OneOffSpeech.cpp \
-    audio/Reverb.cpp \
-    audio/Compressor.cpp \
-    audio/CreepyVoice.cpp \
-    audio/Tremolo.cpp
+	widgets/NetworkSettingsWidget.cpp \
+	audio/AudioStream.cpp \
+	audio/OneOffSpeech.cpp \
+	audio/Reverb.cpp \
+	audio/Compressor.cpp \
+	audio/CreepyVoice.cpp \
+	audio/Tremolo.cpp \
+	conscious/Consciousness.cpp \
+	widgets/SpeechControlWidget.cpp \
+	widgets/ActuatorControlWidget.cpp \
+	widgets/TryToggleState.cpp \
+	comms/messages/AgentState.cpp \
+	basic/GenericKeyEventHandler.cpp \
 
 
 HEADERS  += \
@@ -357,15 +363,20 @@ HEADERS  += \
 	zoo/ZooServer.hpp \
 	hub/ClientWidget.hpp \
 	hub/IContextProvider.hpp \
-    widgets/NetworkSettingsWidget.hpp \
-    audio/AudioStream.hpp \
-    audio/IAudioSource.hpp \
-    audio/OneOffSpeech.hpp \
-    audio/Reverb.hpp \
-    audio/Compressor.hpp \
-    audio/CreepyVoice.hpp \
-    audio/Tremolo.hpp
-
+	widgets/NetworkSettingsWidget.hpp \
+	audio/AudioStream.hpp \
+	audio/IAudioSource.hpp \
+	audio/OneOffSpeech.hpp \
+	audio/Reverb.hpp \
+	audio/Compressor.hpp \
+	audio/CreepyVoice.hpp \
+	audio/Tremolo.hpp \
+	conscious/Consciousness.hpp \
+	widgets/SpeechControlWidget.hpp \
+	widgets/ActuatorControlWidget.hpp \
+	widgets/TryToggleState.hpp \
+	comms/messages/AgentState.hpp \
+	basic/GenericKeyEventHandler.hpp \
 
 
 FORMS    += \
@@ -398,7 +409,9 @@ FORMS    += \
 	ui/HUDWidget.ui \
 	ui/HardwareWizard.ui \
 	ui/ClientWidget.ui \
-    widgets/NetworkSettingsWidget.ui
+	widgets/NetworkSettingsWidget.ui \
+	widgets/SpeechControlWidget.ui \
+	widgets/ActuatorControlWidget.ui
 
 
 RESOURCES += \
@@ -428,7 +441,7 @@ SOURCES += \
 }
 
 
-contains(DEFINES, USE_OPENCL){
+contains(DEFINES, EXTERNAL_LIB_OPENCL){
 HEADERS += \
 	hub/HelloGLCLViewRenderer.hpp \
 	hub/HelloCLWorkerFactory.hpp \

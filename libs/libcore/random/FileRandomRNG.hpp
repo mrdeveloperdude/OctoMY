@@ -11,27 +11,27 @@ NOTE: This is not meant to be used directly, but rather as a subclass for /dev/x
 
 class FileRandomRNG : public RNG
 {
-	private:
-		QFile file;
-		bool ok;
+private:
+	QFile file;
+	bool ok;
 
-	public:
-		FileRandomRNG(QString name, QString filename);
+public:
+	FileRandomRNG(QString name, QString filename);
 
-	public:
+public:
 
-		//Return true if this source is dependant on any pseudo rng
-		inline bool hasPseudo();
+	//Return true if this source is dependant on any pseudo rng
+	virtual inline bool hasPseudo() Q_DECL_OVERRIDE {
+		return false;
+	}
 
-		//Generates a random number on [0,0xffffffff]-interval
-		//This is the main generator function that all the others are based on
-		quint32 generateInt32(void);
+	//Generates a random number on [0,0xffffffff]-interval
+	//This is the main generator function that all the others are based on
+	quint32 generateInt32(void);
 
 
-		// Does nothing, this source has no seed
-		void init(quint32 s){
-
-		}
+	// Does nothing, this source has no seed
+	virtual void init(quint32 s) Q_DECL_OVERRIDE;
 
 };
 

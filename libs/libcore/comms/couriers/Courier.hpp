@@ -59,6 +59,8 @@ class Courier : public QObject{
 		void setDestination(const ClientSignature);
 		const ClientSignature &destination() const;
 
+		// Courier interface
+	public:
 		//Let the CommChannel know what we want
 		virtual CourierMandate mandate();
 

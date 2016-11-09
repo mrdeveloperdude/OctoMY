@@ -1,7 +1,7 @@
 #ifndef CLINCLUDE_HPP
 #define CLINCLUDE_HPP
 
-#ifdef USE_OPENCL
+#ifdef EXTERNAL_LIB_OPENCL
 #undef __CL_ENABLE_EXCEPTIONS
 #include <CL/cl.hpp>
 #endif

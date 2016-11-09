@@ -53,7 +53,7 @@ public:
 private:
 
 	void startProcess(QString base);
-#ifdef USE_OPENCL
+#ifdef EXTERNAL_LIB_OPENCL
 	void initCL();
 #endif
 

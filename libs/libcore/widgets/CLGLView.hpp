@@ -3,7 +3,7 @@
 
 #include <QtGlobal>
 
-#ifndef USE_OPENCL
+#ifndef EXTERNAL_LIB_OPENCL
 
 #include <QOpenGLWidget>
 

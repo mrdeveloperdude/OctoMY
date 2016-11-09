@@ -10,7 +10,8 @@ DiscoveryCourier::DiscoveryCourier(QSharedPointer<NodeAssociate> ass, QObject *p
 	qDebug()<<"CREATED DiscoveryCourier with PART="<<mAss->toString();
 }
 
-DiscoveryCourier::~DiscoveryCourier(){
+DiscoveryCourier::~DiscoveryCourier()
+{
 	qDebug()<<"DELETED DiscoveryCourier with PART="<<mAss->toString();
 }
 
@@ -23,6 +24,7 @@ CourierMandate DiscoveryCourier::mandate()
 
 //Hide adrresses by XORing them with a "random" number to counter bad
 //gateway firmware
+static const quint16 PORT_XOR=0x13e7;
 static const quint32 IP_XOR=0x13e7268a;
 static const quint64 BT_XOR=0x13e7268a13e7268a;
 
@@ -32,18 +34,22 @@ quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 {
 	qDebug()<<"Sending opportunity for "<<mName;
 	quint16 bytes=0;
-
 	NetworkAddress &nadr=mAss->publicAddress();
 	QHostAddress pubAddr=nadr.ip();
-	const quint32 ip4PubAddr=pubAddr.toIPv4Address() ^ IP_XOR;
-	ds << ip4PubAddr;
+	const quint32 ip4PubAddr=pubAddr.toIPv4Address();
+	const quint16 port= mAss->publicAddress().port();
+	const quint64 btAddr=mAss->bluetoothAddress().toUInt64();
+	const quint32 ip4PubAddrXOR=ip4PubAddr ^ IP_XOR;
+	const quint16 portXOR=port ^ PORT_XOR;
+	const quint64 btAddrXOR=btAddr ^ BT_XOR;
+	ds << ip4PubAddrXOR;
 	bytes += sizeof(quint32);
-	ds << mAss->publicAddress().port();
+	ds << portXOR;
 	bytes += sizeof(quint16);
-	ds << (mAss->bluetoothAddress().toUInt64() ^ BT_XOR);
+	ds << btAddrXOR;
 	bytes += sizeof(quint64);
-	qDebug()<<"TX "<<bytes<<"="<<pubAddr.toString()<<", bt="<<mAss->bluetoothAddress().toUInt64();
-	return 0;
+	qDebug()<<"TX "<<bytes<<" = ("<<ip4PubAddr<<":"<<port<<", bt="<<btAddr<<") = XOR("<<ip4PubAddrXOR<<":"<<portXOR<<", bt="<<btAddrXOR<<")";
+	return bytes;
 }
 
 
@@ -51,7 +57,7 @@ quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 quint16 DiscoveryCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 {
 	quint16 ps=mandate().payloadSize;
-	if(availableBytes!=ps){
+	if(availableBytes!=ps) {
 		qWarning()<<"ERROR: paayload size "<<ps<<" did not match received amount of data "<<availableBytes;
 		return 0;
 	}

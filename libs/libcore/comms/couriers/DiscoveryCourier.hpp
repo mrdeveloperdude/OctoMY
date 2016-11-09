@@ -10,35 +10,41 @@
 #include <QVariantMap>
 #include <QSharedPointer>
 
+/*!
+ * \brief The DiscoveryCourier class is used by DiscoveryClient to test direct
+ * connections and to exchange security information so that peers may trust
+ * eachoter
+ */
+
 class DiscoveryCourier : public Courier
 {
-		Q_OBJECT
+	Q_OBJECT
 
-	private:
-		QSharedPointer<NodeAssociate> mAss;
-		QVariantMap mData;
+private:
+	QSharedPointer<NodeAssociate> mAss;
+	QVariantMap mData;
 
-	public:
-		explicit DiscoveryCourier(QSharedPointer<NodeAssociate> ass, QObject *parent = nullptr);
-		virtual ~DiscoveryCourier();
+public:
+	explicit DiscoveryCourier(QSharedPointer<NodeAssociate> ass, QObject *parent = nullptr);
+	virtual ~DiscoveryCourier();
 
+// Courier interface
+public:
 
-	public:
+	//Let the CommChannel know what we want
+	CourierMandate mandate() override;
 
-		//Let the CommChannel know what we want
-		CourierMandate mandate() override;
+	//Override to act on sending opportunity.
+	//Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
+	quint16 sendingOpportunity(QDataStream &ds) override;
 
-		//Override to act on sending opportunity.
-		//Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
-		quint16 sendingOpportunity(QDataStream &ds) override;
+	//Override to act on data received
+	//Return number of bytes actually read.
+	quint16 dataReceived(QDataStream &ds, quint16 availableBytes) override;
 
-		//Override to act on data received
-		//Return number of bytes actually read.
-		quint16 dataReceived(QDataStream &ds, quint16 availableBytes) override;
+signals:
 
-	signals:
-
-		void authenticationUpdate();
+	void authenticationUpdate();
 
 };
 

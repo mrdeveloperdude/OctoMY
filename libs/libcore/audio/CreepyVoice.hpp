@@ -3,13 +3,14 @@
 
 #include "IAudioSource.hpp"
 
-#include "espeak/speak_lib.h"
-
 #include "Reverb.hpp"
 #include "Compressor.hpp"
 #include "Tremolo.hpp"
 
 
+#ifdef EXTERNAL_LIB_ESPEAK
+#include "espeak/speak_lib.h"
+#endif
 
 #include <QList>
 #include <QAudioFormat>
@@ -19,11 +20,13 @@ struct CreepyBuffer;
 class RNG;
 class PortableID;
 
+
 class CreepyVoice: public QObject, public IAudioSource
 {
 	Q_OBJECT
 private:
 	int mHZ;
+	bool mInited;
 	QList<CreepyBuffer *> mBuffersInUse;
 	QList<CreepyBuffer *> mBuffersFree;
 	int bac;
@@ -51,7 +54,9 @@ private:
 	void freeBuffer(CreepyBuffer *buf);
 	CreepyBuffer *getFreeBuffer(int numsamples);
 public:
+#ifdef EXTERNAL_LIB_ESPEAK
 	void feed(short *wav, int numsamples, espeak_EVENT *events);
+#endif
 	bool isInitialized();
 	void speak(QString word);
 	void deinit();

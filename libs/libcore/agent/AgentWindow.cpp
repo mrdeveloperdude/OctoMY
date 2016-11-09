@@ -1,6 +1,7 @@
 #include "AgentWindow.hpp"
 #include "ui_AgentWindow.h"
 
+#include "widgets/TryToggle.hpp"
 #include "Agent.hpp"
 #include "comms/CommsChannel.hpp"
 #include "../libutil/utility/Utility.hpp"
@@ -9,6 +10,8 @@
 #include "basic/Settings.hpp"
 #include "security/PortableID.hpp"
 #include "audio/OneOffSpeech.hpp"
+#include "comms/ClientDirectory.hpp"
+#include "comms/couriers/SensorsCourier.hpp"
 
 #include <QDebug>
 #include <QMessageBox>
@@ -21,6 +24,18 @@ void AgentWindow::updateIdentity()
 {
 	if(nullptr!=mAgent) {
 		mAgent->updateDiscoveryClient();
+		updateIcon();
+
+	}
+	ui->widgetFace->setAgent(mAgent);
+	ui->widgetDelivery->configure(mAgent);
+	ui->widgetPairing->configure(mAgent);
+
+}
+
+void AgentWindow::updateIcon()
+{
+	if(nullptr!=mAgent) {
 		//Set our custom identicon as window icon
 		PortableID pid;
 		pid.setID(mAgent->keyStore().localKey().id());
@@ -30,10 +45,6 @@ void AgentWindow::updateIdentity()
 		//	icon.addFile(QStringLiteral(":/icons/agent.svg"), QSize(), QIcon::Normal, QIcon::Off);
 		setWindowIcon(icon);
 	}
-	ui->widgetFace->setAgent(mAgent);
-	ui->widgetDelivery->configure(mAgent);
-	ui->widgetPairing->configure(mAgent);
-
 }
 
 AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
@@ -75,7 +86,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 
 		mAgent->hookColorSignals(*ui->widgetFace);
 
-		updateVisibility();
+		updateFaceVisibility();
 		ui->widgetFace->hookSignals(*this);
 
 		ui->widgetPlanEditor->configure("agent.plan");
@@ -217,7 +228,112 @@ void AgentWindow::prepareMenu()
 
 
 
-void AgentWindow::updateVisibility()
+
+
+CommsChannel *AgentWindow::comms()
+{
+	OC_METHODGATE();
+	if(nullptr!=mAgent) {
+		return mAgent->comms();
+	}
+	return nullptr;
+}
+
+QSet<QSharedPointer<NodeAssociate> > AgentWindow::activeControls()
+{
+	QSet<QSharedPointer<NodeAssociate> > out;
+
+	const quint64 lastActive=QDateTime::currentMSecsSinceEpoch()-(1000*60);//One minute ago. TODO: Turn into constant or setting
+
+	CommsChannel *cc=comms();
+	if(nullptr!=cc) {
+		NodeAssociateStore &peers=mAgent->peers();
+		ClientDirectory *cd=cc->clients();
+		if(nullptr!=cd) {
+			QSet<QSharedPointer<Client> > clients=cd->getByActiveTime(lastActive);
+			for(QSharedPointer<Client> client: clients) {
+				ClientSignature &sig=client->signature();
+				QString id=sig.fullID();
+				if(id.size()>0) {
+					QSharedPointer<NodeAssociate> peer=peers.getParticipant(id);
+					if(nullptr!=peer) {
+						if(DiscoveryRole::ROLE_CONTROL==peer->role()) {
+							out<<peer;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return out;
+}
+
+void AgentWindow::courierRegistration(QSharedPointer<NodeAssociate> assoc, bool reg)
+{
+	/*
+	 * //TODO: Find and squish strange new const QString * build error
+	CommsChannel *cc=comms();
+	if(nullptr!=cc) {
+		if(nullptr != assoc) {
+			const QString id=assoc->id();
+			if(reg) {
+				qDebug()<<"REGISTERING COURIERS FOR " <<id;
+				QSet< QSharedPointer<Courier> > set;
+				Courier *courier=new SensorsCourier;
+				set<< QSharedPointer<Courier>(courier);
+				mCourierSets.insert(id, set);
+				cc->registerCourier(*courier);
+			} else {
+				qDebug()<<"UN-REGISTERING COURIERS FOR " <<id;
+				if(mCourierSets.contains(id)) {
+					QSet< QSharedPointer<Courier> > set=mCourierSets.take(id);
+					for(QSharedPointer<Courier>  courier:set) {
+						if(nullptr!=courier) {
+							cc->unregisterCourier(*courier);
+						}
+					}
+				}
+			}
+		}
+		// Adaptively start commschannel when there are couriers registered
+		const int ct=cc->courierCount();
+		if(ct>0) {
+			if(nullptr != assoc) {
+				cc->start(assoc->localAddress());
+			}
+		} else {
+			cc->stop();
+		}
+	}
+	*/
+}
+
+void AgentWindow::updateCourierRegistration()
+{
+	QSet<QSharedPointer<NodeAssociate> > active=activeControls();
+	if(active!=mLastActiveControls) {
+		for(QSharedPointer<NodeAssociate> assoc:mLastActiveControls) {
+			if(!active.contains(assoc)) {
+				//Decomission it
+				courierRegistration(assoc,false);
+			}
+		}
+		for(QSharedPointer<NodeAssociate> assoc:active) {
+			if(!mLastActiveControls.contains(assoc)) {
+				//Comission it
+				courierRegistration(assoc,true);
+			}
+		}
+	}
+	mLastActiveControls.clear();
+	mLastActiveControls=active;
+}
+
+
+
+
+void AgentWindow::updateFaceVisibility()
 {
 	ui->widgetFace->updateVisibility();
 }
@@ -232,7 +348,7 @@ void AgentWindow::onConnectionStateChanged(const TryToggleState last, const TryT
 	if(nullptr!=s) {
 		s->setCustomSettingBool("octomy.online",on);
 	}
-	updateVisibility();
+	updateFaceVisibility();
 	mOnlineAction->setChecked(on);
 	switch(current) {
 	case(TRYING): {
@@ -275,7 +391,7 @@ void AgentWindow::onOnlineButtonVisibilityChanged(bool on)
 	if(nullptr!=s) {
 		s->setCustomSettingBool("octomy.online.show",on);
 	}
-	updateVisibility();
+	updateFaceVisibility();
 }
 
 void AgentWindow::onFaceVisibilityChanged(bool on)
@@ -285,7 +401,7 @@ void AgentWindow::onFaceVisibilityChanged(bool on)
 	if(nullptr!=s) {
 		s->setCustomSettingBool("octomy.face",on);
 	}
-	updateVisibility();
+	updateFaceVisibility();
 }
 
 
@@ -296,7 +412,7 @@ void AgentWindow::onLogVisibilityChanged(bool on)
 	if(nullptr!=s) {
 		s->setCustomSettingBool("octomy.debug.log",on);
 	}
-	updateVisibility();
+	updateFaceVisibility();
 }
 
 void AgentWindow::onStatsVisibilityChanged(bool on)
@@ -306,7 +422,7 @@ void AgentWindow::onStatsVisibilityChanged(bool on)
 	if(nullptr!=s) {
 		s->setCustomSettingBool("octomy.debug.stats",on);
 	}
-	updateVisibility();
+	updateFaceVisibility();
 }
 
 

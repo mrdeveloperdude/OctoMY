@@ -32,6 +32,7 @@ class ClientSignature
 private:
 
 	quint64 mShortHandID;
+	QString mFullID;
 	NetworkAddress mAddress;
 
 public:
@@ -44,6 +45,7 @@ public:
 	const QString toString() const;
 
 	quint64 shortHandID() const;
+	QString fullID() const;
 	NetworkAddress address() const;
 
 	void setAddress(const NetworkAddress &address);

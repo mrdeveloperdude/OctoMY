@@ -115,7 +115,7 @@ public:
 
 public:
 
-	ClientDirectory *getClients();
+	ClientDirectory *clients();
 
 	void start(NetworkAddress localAddress);
 	void stop();
