@@ -32,7 +32,7 @@ void CLGLView::paintGL()
 
 #include "../libutil/utility/Utility.hpp"
 
-#include "../../libcl/widgets/CLGLViewRenderer.hpp"
+#include "../../libclt/widgets/CLGLViewRenderer.hpp"
 
 #include <QSurfaceFormat>
 #include <QDebug>

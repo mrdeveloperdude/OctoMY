@@ -1,4 +1,4 @@
-TARGET =	cl
+TARGET =	clt
 TEMPLATE =	lib
 CONFIG +=	staticlib
 

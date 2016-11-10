@@ -1,7 +1,7 @@
 #ifndef HELLOCLWORKER_HPP
 #define HELLOCLWORKER_HPP
 
-#include "../libcl/opencl/CLWorker.hpp"
+#include "../libclt/opencl/CLWorker.hpp"
 
 class HelloCLWorker : public CLWorker
 {

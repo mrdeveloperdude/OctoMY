@@ -1,7 +1,7 @@
 #include "HelloGLCLViewRenderer.hpp"
 
 #include "HelloCLWorkerFactory.hpp"
-#include "../libcl/opencl/CLThreadManager.hpp"
+#include "../libclt/opencl/CLThreadManager.hpp"
 
 
 HelloGLCLViewRenderer::HelloGLCLViewRenderer()

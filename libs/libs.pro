@@ -1,4 +1,6 @@
- TEMPLATE = subdirs
+TEMPLATE = subdirs
+
+include($$TOP_PWD/common.pri)
 
 SUBDIRS += \
 	libcore \
@@ -19,7 +21,7 @@ libcore.subdir=			libcore
 libutil.subdir=			libutil
 libpki.subdir=			libpki
 libparser.subdir=		libparser
-libmap.subdir=			libmap libcore
+libmap.subdir=			libmap
 libqr.subdir=			libqr
 libzbar.subdir=			libzbar
 libqhttp.subdir=		libqhttp
@@ -31,10 +33,15 @@ libcore.depends=libutil
 
 
 contains(DEFINES, EXTERNAL_LIB_OPENCL){
+message("ADDING LIBCLT TO BUILD")
 SUBDIRS += \
 	libclt \
 
 libclt.subdir=			libclt
+
+}
+else{
+message("NO LIBCLT IN BUILD")
 }
 
 

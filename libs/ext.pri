@@ -28,9 +28,12 @@ INCLUDEPATH +=    /usr/include/opencv
 
 # This is used for OpenCL
 contains(DEFINES, EXTERNAL_LIB_OPENCL){
-INCLUDEPATH+="./OpenCL-ICD-Loader/inc"
-LIBS+= -L./OpenCL-ICD-Loader/build/bin
+#INCLUDEPATH+="./OpenCL-ICD-Loader/inc"
+#LIBS+= -L./OpenCL-ICD-Loader/build/bin
+INCLUDEPATH+="/usr/local/include/CL"
+LIBS+= -L$$TOP_PWD/libs/libclt/OpenCL-ICD-Loader/build/bin
 LIBS+= -lOpenCL
+PRE_TARGETDEPS += $$TOP_PWD/libs/libclt/OpenCL-ICD-Loader/build/bin/libOpenCL.so
 }
 
 

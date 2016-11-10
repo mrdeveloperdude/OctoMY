@@ -1,34 +1,10 @@
 #include "widgets/QRWidget.hpp"
 #include "../libutil/utility/Standard.hpp"
 
-#include "../libqr/qrencode.h"
-
+#include "../libqr/QrCode.hpp"
 
 #include <QPainter>
 #include <QDebug>
-
-/*
- *
- * //From http://stackoverflow.com/questions/21400254/how-to-draw-a-qr-code-with-qt-in-native-c-c
-#include <string>
-#include <vector>
-#include "QrCode.hpp"
-using namespace qrcodegen;
-
-// Create the QR Code object
-QrCode qr = QrCode::encodeText("Hello, world!", QrCode::Ecc::MEDIUM);
-
-// Read the black & white pixels
-for (int y = 0; y < qr.size; y++) {
-	for (int x = 0; x < qr.size; x++) {
-		int color = qr.getModule(x, y);  // 0 for white, 1 for black
-
-		// You need to modify this part
-		draw_pixel_onto_QT(x, y, color);
-	}
-}
-
-*/
 
 
 QRWidget::QRWidget(QWidget *parent)
@@ -42,8 +18,9 @@ QRWidget::QRWidget(QWidget *parent)
 }
 
 
-void QRWidget::setQRData(QString data){
-	if(this->data!=data){
+void QRWidget::setQRData(QString data)
+{
+	if(this->data!=data) {
 		dirty=true;
 		this->data=data;
 		this->setToolTip(data);
@@ -51,7 +28,8 @@ void QRWidget::setQRData(QString data){
 	}
 }
 
-void QRWidget::paintEvent(QPaintEvent *){
+void QRWidget::paintEvent(QPaintEvent *)
+{
 	OC_METHODGATE();
 	const double w=width();
 	const double h=height();
@@ -64,54 +42,30 @@ void QRWidget::paintEvent(QPaintEvent *){
 		delete m_doubleBuffer;
 		m_doubleBuffer = new QPixmap(size,size);
 		QString error="";
-		if(""==data){
+		if(""==data) {
 			m_doubleBuffer->fill(QColor("#00000000"));
-		}
-		else{
+		} else {
 			m_doubleBuffer->fill(QColor("#FFFFFF"));
 			QPainter painter;
 			painter.begin(m_doubleBuffer);
-			QRinput *qri=QRinput_new();
-			if(0!=qri){
-				const int ret=QRinput_append(qri, QR_MODE_8, data.length(), (const unsigned char *)data.toStdString().c_str());
-				if(0==ret){
-					QRcode *qr=QRcode_encodeInput(qri);
-					if(0!=qr){
-						const int s=qr->width>0?qr->width:1;
-						const double scale=size/(s+2);
-						//painter.setBrush(bg);
-						painter.setPen(Qt::NoPen);
-						//painter.drawRect(ox,oy,size,size);
-						painter.setBrush(fg);
-						for(int y=0;y<s;y++){
-							const int yy=y*s;
-							for(int x=0;x<s;x++){
-								const int xx=yy+x;
-								const unsigned char b=qr->data[xx];
-								if(b &0x01){
-									const double rx1=(x+1)*scale, ry1=(y+1)*scale;
-									QRectF r(rx1, ry1, scale, scale);
-									painter.drawRects(&r,1);
-								}
-							}
-						}
-						QRcode_free(qr);
-						qr=0;
-					}
-					else{
-						//					error="could not encode QR input: "+QString(strerror(errno));
+			qrcodegen::QrCode qr = qrcodegen::QrCode::encodeText(data.toStdString().c_str(), qrcodegen::QrCode::Ecc::LOW);
+			const int s=qr.size>0?qr.size:1;
+			const double scale=size/(s+2);
+			//painter.setBrush(bg);
+			painter.setPen(Qt::NoPen);
+			//painter.drawRect(ox,oy,size,size);
+			painter.setBrush(fg);
+			for(int y=0; y<s; y++) {
+				for(int x=0; x<s; x++) {
+					const int color = qr.getModule(x, y);  // 0 for white, 1 for black
+					if(0x0!=color) {
+						const double rx1=(x+1)*scale, ry1=(y+1)*scale;
+						QRectF r(rx1, ry1, scale, scale);
+						painter.drawRects(&r,1);
 					}
 				}
-				else{
-					//	error="could not append QR input: "+QString(strerror(errno));
-				}
-				QRinput_free(qri);
-				qri=0;
 			}
-			else{
-				//	error="could not create QR input object: "+QString(strerror(errno));
-			}
-			if(error.length()>0){
+			if(error.length()>0) {
 				QColor error("red");
 				painter.setBrush(error);
 				painter.drawRect(0,0,size,size);

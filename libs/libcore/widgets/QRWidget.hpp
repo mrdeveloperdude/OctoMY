@@ -17,12 +17,8 @@ class QRWidget : public QWidget{
 		void setQRData(QString data);
 
 	protected:
-		void paintEvent(QPaintEvent *);
+		void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
 
-
-	signals:
-
-	public slots:
 
 };
 
