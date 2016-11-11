@@ -18,9 +18,11 @@ ScopedTimer::ScopedTimer(QString name, bool doLog, bool, QString fmt)
 	, timeout(-1)
 {
 	OC_METHODGATE();
+	/*
 	if(doLog){
 		qDebug() << getIntervalCompleteString(SCOPED_TIMER_SYMBOL " START   : ",false);
 	}
+	*/
 }
 
 

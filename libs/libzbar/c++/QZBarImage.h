@@ -29,57 +29,61 @@
 #include <QImage>
 #include <zbar.h>
 
-namespace zbar {
+namespace zbar
+{
 
 
-	/* adapted from v4l2 spec */
-	#define fourcc(a, b, c, d)                      \
+/* adapted from v4l2 spec */
+#define fourcc(a, b, c, d)                      \
 		((uint32_t)(a) | ((uint32_t)(b) << 8) |     \
 		 ((uint32_t)(c) << 16) | ((uint32_t)(d) << 24))
 
 
-	/// wrap a QImage and convert into a format suitable for scanning.
+/// wrap a QImage and convert into a format suitable for scanning.
 
-	class QZBarImage
-			: public Image
+class QZBarImage
+	: public Image
+{
+public:
+
+	/// construct a zbar library image based on an existing QImage.
+
+	QZBarImage (const QImage &qimg)
+		: qimg(qimg)
 	{
-		public:
+		QImage::Format fmt = qimg.format();
+		if(fmt != QImage::Format_Grayscale8 &&
+				fmt != QImage::Format_RGB32 &&
+				fmt != QImage::Format_ARGB32 &&
+				fmt != QImage::Format_ARGB32_Premultiplied) {
+			qWarning()<<"ERROR: unsupported format";
+			throw FormatError();
+		}
 
-			/// construct a zbar library image based on an existing QImage.
+		if(QImage::Format_Grayscale8==fmt) {
+			set_size(qimg.width(), qimg.height());
+			set_format(fourcc('G','R','E','Y'));
+			set_data(qimg.bits(), qimg.byteCount());
+		} else {
+			unsigned bpl = qimg.bytesPerLine();
+			unsigned width = bpl / 4;
+			unsigned height = qimg.height();
+			set_size(width, height);
+			set_format('B' | ('G' << 8) | ('R' << 16) | ('4' << 24));
+			unsigned long datalen = qimg.byteCount();
+			set_data(qimg.bits(), datalen);
 
-			QZBarImage (const QImage &qimg)
-				: qimg(qimg)
-			{
-				QImage::Format fmt = qimg.format();
-				if(fmt != QImage::Format_Grayscale8 &&
-				   fmt != QImage::Format_RGB32 &&
-				   fmt != QImage::Format_ARGB32 &&
-				   fmt != QImage::Format_ARGB32_Premultiplied)
-					throw FormatError();
-
-				if(QImage::Format_Grayscale8==fmt){
-					set_size(qimg.width(), qimg.height());
-					set_format(fourcc('G','R','E','Y'));
-					set_data(qimg.bits(), qimg.byteCount());
-				}
-				else{
-					unsigned bpl = qimg.bytesPerLine();
-					unsigned width = bpl / 4;
-					unsigned height = qimg.height();
-					set_size(width, height);
-					set_format('B' | ('G' << 8) | ('R' << 16) | ('4' << 24));
-					unsigned long datalen = qimg.byteCount();
-					set_data(qimg.bits(), datalen);
-
-					if((width * 4 != bpl) ||
-					   (width * height * 4 > datalen))
-						throw FormatError();
-				}
+			if((width * 4 != bpl) ||
+					(width * height * 4 > datalen)) {
+				qWarning()<<"ERROR: width not supported";
+				throw FormatError();
 			}
+		}
+	}
 
-		private:
-			QImage qimg;
-	};
+private:
+	QImage qimg;
+};
 
 }
 

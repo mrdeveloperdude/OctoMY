@@ -32,6 +32,7 @@ TEST_PROJECTS+= \
 
 
 STRESS_PROJECTS+= \
+	stressQR\
 
 }
 

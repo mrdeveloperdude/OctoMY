@@ -23,6 +23,7 @@ thus make the dependence on iconv go away.
 #include <QString>
 #include <QByteArray>
 #include <QTextCodec>
+#include <QDebug>
 
 
 extern "C" typedef void *iconv_t;
@@ -53,40 +54,51 @@ extern "C" size_t iconv (iconv_t __cd, char **__restrict __inbuf, size_t *__rest
 	//every small indiscrepancy results in failure.
 	QtIconv *qt_iconv=(QtIconv *)__cd;
 	if(0==qt_iconv){
+		qWarning()<<"qt_iconv was null";
 		return 0;
 	}
 	if(0==qt_iconv->fromCodec){
+		qWarning()<<"qt_iconv->fromCodec was null";
 		return 0;
 	}
 	if(0==qt_iconv->toCodec){
+		qWarning()<<"qt_iconv->toCodec was null";
 		return 0;
 	}
 	if(0==__inbuf){
+		qWarning()<<"__inbuf was null";
 		return 0;
 	}
 	if(0==__outbuf){
+		qWarning()<<"__outbuf was null";
 		return 0;
 	}
 	char *_inbuf=__inbuf[0];
 	char *_outbuf=__outbuf[0];
 	if(0==_inbuf){
+		qWarning()<<"_inbuf was null";
 		return 0;
 	}
 	if(0==_outbuf){
+		qWarning()<<"_outbuf was null";
 		return 0;
 	}
 	if(0==__outbytesleft){
+		qWarning()<<"__outbytesleft was null";
 		return 0;
 	}
 	size_t _outbytesleft=__outbytesleft[0];
 	if(0==_outbytesleft){
+		qWarning()<<"_outbytesleft was null";
 		return 0;
 	}
 	if(0==__inbytesleft){
+		qWarning()<<"__inbytesleft was null";
 		return 0;
 	}
 	size_t _inbytesleft=__inbytesleft[0];
 	if(0==_inbytesleft){
+		qWarning()<<"_inbytesleft was null";
 		return 0;
 	}
 	QByteArray from_text(_inbuf, _inbytesleft);

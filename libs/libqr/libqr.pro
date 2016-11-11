@@ -9,10 +9,12 @@ INCLUDEPATH += ./
 HEADERS	+= \
 	BitBuffer.hpp \
 	QrCode.hpp \
-	QrSegment.hpp
+	QrSegment.hpp \
+    QRPainter.hpp
 
 SOURCES	+= \
 	BitBuffer.cpp \
 	QrCode.cpp \
-	QrSegment.cpp
+	QrSegment.cpp \
+    QRPainter.cpp
 

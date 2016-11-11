@@ -16,7 +16,8 @@ HEADERS	+= \
     utility/ArcBall.hpp \
     utility/FPSCalculator.hpp \
     utility/GLContext.hpp \
-    utility/IncludeOpenGL.hpp
+    utility/IncludeOpenGL.hpp \
+    utility/widgets/PixViewer.hpp
 
 
 SOURCES	+= \
@@ -27,4 +28,8 @@ SOURCES	+= \
 	utility/Standard.cpp \
     utility/ArcBall.cpp \
     utility/FPSCalculator.cpp \
-    utility/GLContext.cpp
+    utility/GLContext.cpp \
+    utility/widgets/PixViewer.cpp
+
+FORMS += \
+    utility/widgets/PixViewer.ui

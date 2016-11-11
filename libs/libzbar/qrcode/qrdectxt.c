@@ -23,6 +23,11 @@
 
 
 
+
+
+
+
+
 static int text_is_ascii(const unsigned char *_text,int _len){
 	int i;
 	for(i=0;i<_len;i++)if(_text[i]>=0x80)return 0;
@@ -40,6 +45,19 @@ static int text_is_latin1(const unsigned char *_text,int _len){
 }
 
 
+
+static void enc_list_mtf(iconv_t _enc_list[3],iconv_t _enc){
+   int i;
+ for(i=0;i<3;i++)if(_enc_list[i]==_enc){
+		   int j;
+		   for(j=i;j-->0;)_enc_list[j+1]=_enc_list[j];
+		   _enc_list[0]=_enc;
+		   break;
+	   }
+   }
+
+/*
+
 static void enc_list_mtf(iconv_t _enc_list[3],iconv_t _enc){
 	int i;
 	for(i=0;i<3;i++){
@@ -52,7 +70,7 @@ static void enc_list_mtf(iconv_t _enc_list[3],iconv_t _enc){
 	}
 }
 
-
+*/
 
 
 int qr_code_data_list_extract_text(const qr_code_data_list *_qrlist,

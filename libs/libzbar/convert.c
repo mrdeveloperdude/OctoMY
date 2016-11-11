@@ -108,21 +108,18 @@ const uint32_t _zbar_formats[] = {
 
 const int _zbar_num_formats = sizeof(_zbar_formats) / sizeof(uint32_t);
 
+
 /* format definitions */
 static const zbar_format_def_t format_defs[] = {
 
-	{ fourcc('R','G','B','4'), ZBAR_FMT_RGB_PACKED,
-		{ { 4, RGB_BITS(8, 8), RGB_BITS(16, 8), RGB_BITS(24, 8) } } },
-	{ fourcc('B','G','R','1'), ZBAR_FMT_RGB_PACKED,
-		{ { 1, RGB_BITS(0, 3), RGB_BITS(3, 3), RGB_BITS(6, 2) } } },
+	{ fourcc('R','G','B','4'), ZBAR_FMT_RGB_PACKED, { { 4, RGB_BITS(8, 8), RGB_BITS(16, 8), RGB_BITS(24, 8) } } },
+	{ fourcc('B','G','R','1'), ZBAR_FMT_RGB_PACKED, { { 1, RGB_BITS(0, 3), RGB_BITS(3, 3), RGB_BITS(6, 2) } } },
 	{ fourcc('4','2','2','P'), ZBAR_FMT_YUV_PLANAR, { { 1, 0, 0 /*UV*/ } } },
-	{ fourcc('Y','8','0','0'), ZBAR_FMT_GRAY, },
-	{ fourcc('Y','U','Y','2'), ZBAR_FMT_YUV_PACKED,
-		{ { 1, 0, 0, /*YUYV*/ } } },
-	{ fourcc('J','P','E','G'), ZBAR_FMT_JPEG, },
-	{ fourcc('Y','V','Y','U'), ZBAR_FMT_YUV_PACKED,
-		{ { 1, 0, 1, /*YVYU*/ } } },
-	{ fourcc('Y','8', 0 , 0 ), ZBAR_FMT_GRAY, },
+	{ fourcc('Y','8','0','0'), ZBAR_FMT_GRAY,  {{0,0,0,/*NONE*/}}  },
+	{ fourcc('Y','U','Y','2'), ZBAR_FMT_YUV_PACKED, { { 1, 0, 0, /*YUYV*/ } } },
+	{ fourcc('J','P','E','G'), ZBAR_FMT_JPEG, {{0,0,0,/*NONE*/}} },
+	{ fourcc('Y','V','Y','U'), ZBAR_FMT_YUV_PACKED, { { 1, 0, 1, /*YVYU*/ } } },
+	{ fourcc('Y','8', 0 , 0 ), ZBAR_FMT_GRAY, {{0,0,0,/*NONE*/}} },
 	{ fourcc('N','V','2','1'), ZBAR_FMT_YUV_NV,     { { 1, 1, 1 /*VU*/ } } },
 	{ fourcc('N','V','1','2'), ZBAR_FMT_YUV_NV,     { { 1, 1, 0 /*UV*/ } } },
 	{ fourcc('B','G','R','3'), ZBAR_FMT_RGB_PACKED,
@@ -132,10 +129,10 @@ static const zbar_format_def_t format_defs[] = {
 		{ { 2, RGB_BITS(10, 5), RGB_BITS(5, 5), RGB_BITS(0, 5) } } },
 	{ fourcc('R','G','B','Q'), ZBAR_FMT_RGB_PACKED,
 		{ { 2, RGB_BITS(2, 5), RGB_BITS(13, 5), RGB_BITS(8, 5) } } },
-	{ fourcc('G','R','E','Y'), ZBAR_FMT_GRAY, },
+	{ fourcc('G','R','E','Y'), ZBAR_FMT_GRAY, {{0,0,0,/*NONE*/}} },
 	{ fourcc( 3 , 0 , 0 , 0 ), ZBAR_FMT_RGB_PACKED,
 		{ { 4, RGB_BITS(16, 8), RGB_BITS(8, 8), RGB_BITS(0, 8) } } },
-	{ fourcc('Y','8',' ',' '), ZBAR_FMT_GRAY, },
+	{ fourcc('Y','8',' ',' '), ZBAR_FMT_GRAY, {{0,0,0,/*NONE*/}} },
 	{ fourcc('I','4','2','0'), ZBAR_FMT_YUV_PLANAR, { { 1, 1, 0 /*UV*/ } } },
 	{ fourcc('R','G','B','1'), ZBAR_FMT_RGB_PACKED,
 		{ { 1, RGB_BITS(5, 3), RGB_BITS(2, 3), RGB_BITS(0, 2) } } },
@@ -148,7 +145,7 @@ static const zbar_format_def_t format_defs[] = {
 	{ fourcc('B','G','R','4'), ZBAR_FMT_RGB_PACKED,
 		{ { 4, RGB_BITS(16, 8), RGB_BITS(8, 8), RGB_BITS(0, 8) } } },
 	{ fourcc('Y','U','V','9'), ZBAR_FMT_YUV_PLANAR, { { 2, 2, 0 /*UV*/ } } },
-	{ fourcc('M','J','P','G'), ZBAR_FMT_JPEG, },
+	{ fourcc('M','J','P','G'), ZBAR_FMT_JPEG, {{0,0,0,/*NONE*/}} },
 	{ fourcc('4','1','1','P'), ZBAR_FMT_YUV_PLANAR, { { 2, 0, 0 /*UV*/ } } },
 	{ fourcc('R','G','B','P'), ZBAR_FMT_RGB_PACKED,
 		{ { 2, RGB_BITS(11, 5), RGB_BITS(5, 6), RGB_BITS(0, 5) } } },
@@ -1036,7 +1033,7 @@ int _zbar_best_format (uint32_t src,
 		return(-1);
 
 	zprintf(8, "from %.4s(%08" PRIx32 ") to", (char*)&src, src);
-	unsigned min_cost = -1;
+	int min_cost = -1;
 	for(; *dsts; dsts++) {
 		const zbar_format_def_t *dstfmt = _zbar_format_lookup(*dsts);
 		if(!dstfmt)
@@ -1090,7 +1087,7 @@ int zbar_negotiate_format (zbar_video_t *vdo,
 	const uint32_t *srcs = (vdo) ? vdo->formats : y800;
 	const uint32_t *dsts = (win) ? win->formats : y800;
 
-	unsigned min_cost = -1;
+	int min_cost = -1;
 	uint32_t min_fmt = 0;
 	const uint32_t *fmt;
 	for(fmt = _zbar_formats; *fmt; fmt++) {

@@ -1,34 +1,40 @@
 #ifndef ZBARSCANNER_HPP
 #define ZBARSCANNER_HPP
 
-#include <QVideoFrame>
+#include <QStringList>
+#include <QPainterPath>
 
-namespace zbar{
-	class ImageScanner;
+class QPixmap;
+class QImage;
+class QVideoFrame;
+class PixViewer;
+namespace zbar
+{
+class ImageScanner;
 }
 
-/*
 
-namespace zbar{
-	struct zbar_image_s;
-	struct zbar_image_scanner_s;
-}
-*/
-//struct zbar_image_s;
-//struct zbar_image_scanner_s;
+struct ZScanResult {
+	QPainterPath outline;
+	QString data;
+	QString type;
+};
 
-class ZBarScanner{
-	private:
-//		zbar_image_s *zimage;
-	//	zbar_image_scanner_s *zscanner;
-		zbar::ImageScanner *sc;
-		int lw,lh;
+class ZBarScanner
+{
+private:
+	zbar::ImageScanner *sc;
+	//Debug viwer
+	PixViewer *pv;
+	bool mScaleDown;
+	bool mConvertToGrayscale;
 
+public:
+	ZBarScanner();
 
-	public:
-		ZBarScanner();
-
-		int scan(const QVideoFrame &frame);
+	QList<ZScanResult> scan(const QVideoFrame &frame);
+	QList<ZScanResult> scan(const QPixmap &frame);
+	QList<ZScanResult> scan(const QImage &image);
 };
 
 #endif // ZBARSCANNER_HPP
