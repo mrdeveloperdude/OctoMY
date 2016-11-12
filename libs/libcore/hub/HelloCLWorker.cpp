@@ -20,7 +20,7 @@ void HelloCLWorker::process()
 {
 	qWarning()<<"HELLO! processing started";
 	while(isRunning()) {
-		qWarning()<<"HELLO! processing...";
+		//qWarning()<<"HELLO! processing...";
 		QThread::msleep(1000);
 	}
 	qWarning()<<"HELLO! processing ended";

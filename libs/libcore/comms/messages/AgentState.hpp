@@ -3,7 +3,7 @@
 
 #include "puppet/Pose.hpp"
 
-#include <QGeoPositionInfo>
+#include <QGeoCoordinate>
 
 enum AgentMode {
 	OFFLINE // Robot is shut down
@@ -20,11 +20,11 @@ private:
 
 	AgentMode mMode; // The desired mode of operation for this robot
 
-	QGeoPositionInfo mTargetPosition; // The desired target position for the robot. The robot may or may not actively pursue this location depending on the mode it is in.
+	QGeoCoordinate mTargetPosition; // The desired target position for the robot in lat,long,alt. The robot may or may not actively pursue this location depending on the mode it is in.
 
-	qreal mTargetOrientation; // The desired target orientation for the robot. The robot may or may not actively pursue this orientation depending on the mode it is in.
+	qreal mTargetOrientation; // The desired target orientation for the robot in radians starting from North. The robot may or may not actively pursue this orientation depending on the mode it is in.
 
-	Pose mTargetPose; // The desired target pose for the robot. The robot may or may not actively pursue this pose depending on the mode it is in.
+	Pose mTargetPose; // The desired target pose for the robot in actuator positions. The robot may or may not actively pursue this pose depending on the mode it is in.
 
 	//TODO: Somehow encode desired speed, direction,
 

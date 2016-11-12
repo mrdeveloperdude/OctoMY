@@ -35,6 +35,7 @@
 
 #include "HelloGLCLViewRenderer.hpp"
 
+#include "../libzbar/ZBarScanner.hpp"
 
 #include <QScrollBar>
 #include <QHostInfo>
@@ -50,7 +51,8 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	QMainWindow(parent)
 	, ui(new Ui::HubWindow)
 	, hub(hub)
-	, m_gait(0)
+	, m_gait(nullptr)
+	, scanner(nullptr)
 {
 	setObjectName("HubWindow");
 	if(nullptr!=hub) {
@@ -121,6 +123,10 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 			ui->widgetGait->setGait(*m_gait);
 		}
 
+		if(!connect(ui->widgetQR, SIGNAL(qrRedraw()), this, SLOT(onQRRedraw()),OC_CONTYPE) ) {
+			qWarning()<<"ERROR: Could not connect";
+		}
+
 
 		appendLog("SETTING UP PLAN EDITOR");
 		ui->widgetPlanEditor->configure("hub.plan");
@@ -156,6 +162,41 @@ void HubWindow::onSummaryTimer()
 		ui->plainTextEditSummary->setPlainText("N/A");
 	} else {
 
+	}
+}
+
+
+void HubWindow::onQRRedraw()
+{
+	if(nullptr==scanner) {
+		scanner=new ZBarScanner();
+	}
+	const QPixmap &px=ui->widgetQR->qrPixmap();
+	if(nullptr!=scanner) {
+		QList<ZScanResult> found=scanner->scan(px);
+		int fsz=found.size();
+		qDebug()<<"fsz="<<fsz;
+		if(fsz<1) {
+			ui->labelQR->setText("ERROR: no QR code found!");
+			ui->labelQRScanner->setPixmap(QPixmap());
+		} else if(fsz>1) {
+			ui->labelQR->setText("ERROR: found more than one QR code!");
+			ui->labelQRScanner->setPixmap(QPixmap());
+		} else {
+			QString data=found[0].data;
+			if(data.size()<=0) {
+				ui->labelQR->setText("ERROR: byte segments not currently supported!");
+				ui->labelQRScanner->setPixmap(QPixmap());
+			} else {
+				ui->labelQR->setText(data);
+				QPixmap px2(px);
+				QPainter p(&px2);
+				found[0].paint(p);
+				ui->labelQRScanner->setPixmap(px2);
+			}
+		}
+	} else {
+		qWarning()<<"PX: "<<px<<" scanner: "<<scanner;
 	}
 }
 
@@ -349,6 +390,10 @@ void HubWindow::on_pushButtonTest_clicked()
 
 void HubWindow::on_lineEditQR_textChanged(const QString &text)
 {
+	// Initialize scanner
+	ui->labelQR->setText("Working...");
+	ui->labelQRScanner->setPixmap(QPixmap());
+	//Initialize generator
 	ui->widgetQR->setQRData(text);
 }
 

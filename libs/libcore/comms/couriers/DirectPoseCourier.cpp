@@ -17,7 +17,7 @@ void DirectPoseCourier::setPose(Pose &newPose){
 }
 
 CourierMandate DirectPoseCourier::mandate() {
-	return CourierMandate(Pose::MAX_SIZE,1,100,lastRX>=lastTX);
+	return CourierMandate(Pose::MAX_SIZE,1,100,lastRX>lastTX);
 }
 
 quint16 DirectPoseCourier::sendingOpportunity(QDataStream &ds){

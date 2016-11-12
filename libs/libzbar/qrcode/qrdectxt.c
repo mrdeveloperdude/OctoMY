@@ -22,21 +22,19 @@
 #include "img_scanner.h"
 
 
-
-
-
-
-
-
 static int text_is_ascii(const unsigned char *_text,int _len){
 	int i;
-	for(i=0;i<_len;i++)if(_text[i]>=0x80)return 0;
+	for(i=0;i<_len;i++){
+		if(_text[i]>=0x80){
+			return 0;
+		}
+	}
 	return 1;
 }
 
 static int text_is_latin1(const unsigned char *_text,int _len){
-	int i;
-	for(i=0;i<_len;i++){
+
+	for(int i=0;i<_len;i++){
 		/*The following line fails to compile correctly with gcc 3.4.4 on ARM with
 	   any optimizations enabled.*/
 		if(_text[i]>=0x80&&_text[i]<0xA0)return 0;

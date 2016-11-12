@@ -4,18 +4,20 @@
 #include <QtGlobal>
 
 
-class Pose{
-	public:
+class Pose
+{
+public:
 
-		const static quint64 MAX_SIZE=4;
-	public:
-		bool ok=false;
-		int pos1=0;
-		quint64 size(){
-			return 4;
-		}
+	const static quint64 MAX_SIZE=4;
+public:
+	bool ok=false;
+	int pos1=0;
+	quint64 size()
+	{
+		return 4;
+	}
 
-		QString toString();
+	QString toString();
 };
 
 

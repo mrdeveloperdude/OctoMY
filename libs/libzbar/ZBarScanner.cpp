@@ -6,10 +6,37 @@
 #include <QPixmap>
 #include <QImage>
 #include <QDebug>
+#include <QPen>
+#include <QPainter>
 
 // Depends on Qt for declaring NULL macro, so must come last
 #include "zbar.h"
 
+
+// Draw outlines with dotted red poly-lines
+void ZScanResult::paint(QPainter &p)
+{
+	QPainterPath::Element firstPoint=outline.elementAt(0);
+	const qreal dw=3;
+	QVector<qreal> dashes;
+	dashes << 2 << 4;
+	QPen pen(QColor("#ffddcc"), dw, Qt::CustomDashLine, Qt::RoundCap, Qt::RoundJoin);
+	pen.setDashPattern(dashes);
+	p.save();
+	p.setPen(pen);
+	p.setBrush(Qt::NoBrush);
+	p.setRenderHint(QPainter::Antialiasing);
+	const int r=15;
+	p.drawPath(outline);
+	p.drawEllipse(firstPoint.x-r,firstPoint.y-r,r*2,r*2);
+	pen.setColor(QColor("#445577"));
+	pen.setDashOffset(3);
+	pen.setDashPattern(dashes);
+	p.setPen(pen);
+	p.drawPath(outline);
+	p.drawEllipse(firstPoint.x-r,firstPoint.y-r,r*2,r*2);
+	p.restore();
+}
 
 ZBarScanner::ZBarScanner()
 	: sc(nullptr)
@@ -55,7 +82,7 @@ QList<ZScanResult> ZBarScanner::scan(const QImage &image)
 		sc=new zbar::ImageScanner;
 		if(nullptr!=sc) {
 //TODO: Configure scanner here.
-			_zbar_verbosity=127;
+			//_zbar_verbosity=127;
 		}
 	}
 	if(nullptr!=sc) {

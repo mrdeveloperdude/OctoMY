@@ -70,6 +70,7 @@ zbar_symbol_type_t _zbar_find_qr (zbar_decoder_t *dcode)
 	return(ZBAR_QRCODE);
 
 invalid:
+
 	dprintf(2, " [invalid]\n");
 	return(0);
 }

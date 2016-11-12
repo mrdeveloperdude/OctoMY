@@ -4,7 +4,7 @@
 #include <QStringList>
 #include <QPainterPath>
 
-class QPixmap;
+
 class QImage;
 class QVideoFrame;
 class PixViewer;
@@ -14,10 +14,17 @@ class ImageScanner;
 }
 
 
+
 struct ZScanResult {
+public:
 	QPainterPath outline;
 	QString data;
 	QString type;
+
+public:
+
+	// Draw outlines with dotted red poly-lines
+	void paint(QPainter &p);
 };
 
 class ZBarScanner
@@ -32,6 +39,7 @@ private:
 public:
 	ZBarScanner();
 
+public:
 	QList<ZScanResult> scan(const QVideoFrame &frame);
 	QList<ZScanResult> scan(const QPixmap &frame);
 	QList<ZScanResult> scan(const QImage &image);

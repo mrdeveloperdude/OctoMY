@@ -20,26 +20,39 @@
  */
 
 
+static qreal frand()
+{
+	return ((qreal)qrand())/((qreal)RAND_MAX);
+}
+
 static QString randomString(int sz)
 {
-//	return "gidtphcgnxklqczpcmmyzqgcwobwwfffiovhhvpqchihaftxqe";
+	static const QString alphabetBytes="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!\"#¤%&/()= _-.,:;^æøåÆÅØ";
+	static const QString alphabetNumeric="0123456789";
+	static const QString alphabetAlphaNumeric="ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+	QString alphabet;
+	const qreal r=frand();
 
-	//static const QString alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!\"#¤%&/()= _-.,:;^æøåÆÅØ";
-	static const QString alphabet="abcdefghijklmnopqrstuvwxyz";
-	static const int alphalen=alphabet.size();
+	//NOTE: QR differentiates between numeric, alphanumeric and "byte" data. the latter is BROKEN IN ZBAR DUE TO SOME iconv PROBLEMS.
+	//      And to make matters worse, alphanumeric only support capital letters, as soon as you put a single lower-case letter
+	//      it will automatically be encoded in a "bytes" segment, triggering the bug.
+	// TODO: Fix zbar "bytes" segment support
+	if(r>1.0/3)	{
+		alphabet=alphabetBytes;
+	} else if(r>2.0/3)	{
+		alphabet=alphabetNumeric;
+	} else {
+		alphabet=alphabetAlphaNumeric;
+	}
+	const int alphalen=alphabet.size();
 	QString out;
 	for(int i=0; i<sz; ++i) {
 		out.append(alphabet[ qrand()%alphalen ]);
 	}
 	return out;
-
 }
 
 
-static qreal frand()
-{
-	return ((qreal)qrand())/((qreal)RAND_MAX);
-}
 
 
 
@@ -116,23 +129,12 @@ void StressQR::stress()
 		if(found.size()>0) {
 			hits++;
 			qDebug()<<"Input: "<<data;
-
-			// Draw outlines found by zbar with dotted red poly-lines
-			pen.setDashPattern(dashes);
-			p.setPen(pen);
-			p.setBrush(Qt::NoBrush);
-			p.setRenderHint(QPainter::Antialiasing);
-			const int r=15;
 			for(ZScanResult res:found) {
-				p.drawPath(res.outline);
-				QPainterPath::Element firstPoint=res.outline.elementAt(0);
-				p.drawEllipse(firstPoint.x-r,firstPoint.y-r,r*2,r*2);
+				res.paint(p);
 			}
 			//Show on widget
 			pv2.setPixmap(px);
 			pv2.setWindowTitle(data);
-
-
 			qApp->processEvents();
 			//QTest::qSleep(1000);
 		}

@@ -24,8 +24,8 @@
     <normaloff>:/icons/hub.svg</normaloff>:/icons/hub.svg</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_6">
-    <item>
+   <layout class="QGridLayout" name="gridLayout_6">
+    <item row="0" column="0">
      <widget class="QSplitter" name="splitterLog">
       <property name="lineWidth">
        <number>0</number>
@@ -53,7 +53,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>5</number>
+        <number>4</number>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -312,7 +312,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidgetUtilities">
            <property name="currentIndex">
-            <number>3</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="tabKeys">
             <attribute name="title">
@@ -328,16 +328,68 @@
             <attribute name="title">
              <string>QR</string>
             </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_13">
-             <item>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="3" column="0">
+              <widget class="QRWidget" name="widgetQR" native="true"/>
+             </item>
+             <item row="1" column="0">
               <widget class="QLineEdit" name="lineEditQR">
                <property name="placeholderText">
                 <string>Enter text here to generate QR Code from it</string>
                </property>
               </widget>
              </item>
-             <item>
-              <widget class="QRWidget" name="widgetQR" native="true"/>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="font">
+                <font>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Generator</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="label_9">
+               <property name="font">
+                <font>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Scanner</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLabel" name="labelQRScanner">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>TextLabel</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLabel" name="labelQR">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>N/A</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>

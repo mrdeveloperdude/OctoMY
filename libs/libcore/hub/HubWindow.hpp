@@ -28,6 +28,8 @@ class HubWindow;
 template<typename T>
 class GaitController;
 
+class ZBarScanner;
+
 class HubWindow : public QMainWindow, public LogDestination
 {
 	Q_OBJECT
@@ -38,6 +40,7 @@ private:
 	quint64 lastTime;
 	qreal angle=0.0f;
 	GaitController<qreal> *m_gait;
+	ZBarScanner *scanner;
 
 	//QStandardItemModel simClients;
 
@@ -69,6 +72,8 @@ private slots:
 	void onLocalHostLookupComplete(QHostInfo hi);
 	void onRemoteHostLookupComplete(QHostInfo hi);
 	void onSummaryTimer();
+
+	void onQRRedraw();
 
 
 	void on_pushButtonSendData_clicked();

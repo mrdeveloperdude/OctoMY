@@ -2,9 +2,13 @@
 
 #include "../libqr/QrCode.hpp"
 
+#include <iostream>
+
 void paintQR(QPainter &painter, const QSize sz, const QString &data, QColor fg)
 {
-	qrcodegen::QrCode qr = qrcodegen::QrCode::encodeText(data.toStdString().c_str(), qrcodegen::QrCode::Ecc::LOW);
+	char *str=data.toUtf8().data();
+	std::cout<<"DATA: "<<str<<"\n";
+	qrcodegen::QrCode qr = qrcodegen::QrCode::encodeText(str, qrcodegen::QrCode::Ecc::LOW);
 	const int s=qr.size>0?qr.size:1;
 	const double w=sz.width();
 	const double h=sz.height();
