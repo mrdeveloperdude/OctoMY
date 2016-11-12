@@ -43,6 +43,10 @@ QList<ZScanResult> ZBarScanner::scan(const QPixmap &frame)
 	return scan(frame.toImage());
 }
 
+extern "C" {
+	extern int _zbar_verbosity;
+}
+
 
 QList<ZScanResult> ZBarScanner::scan(const QImage &image)
 {
@@ -51,12 +55,13 @@ QList<ZScanResult> ZBarScanner::scan(const QImage &image)
 		sc=new zbar::ImageScanner;
 		if(nullptr!=sc) {
 //TODO: Configure scanner here.
+			_zbar_verbosity=127;
 		}
 	}
 	if(nullptr!=sc) {
 		QImage imageToUse=image;
 		if(mScaleDown) {
-			imageToUse=imageToUse.scaled(QSize(400,400),Qt::KeepAspectRatio);
+			imageToUse=imageToUse.scaled(QSize(640,480),Qt::KeepAspectRatio);
 		}
 		if(mConvertToGrayscale) {
 			imageToUse=imageToUse.convertToFormat(QImage::Format_Grayscale8);

@@ -47,18 +47,11 @@ void StressQR::stress()
 {
 	qDebug()<<"Entered stress()";
 	//QPixmap loaded("/home/lennart/Downloads/qrcode.png");
-	PixViewer pv;
-	pv.show();
+	PixViewer pv1;
+	PixViewer pv2;
+	pv1.show();
+	pv2.show();
 	ZBarScanner scanner;
-	QWidget *wg=new QWidget(nullptr);
-	QGridLayout *gridLayout = new QGridLayout(wg);
-	QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-	sizePolicy.setHorizontalStretch(0);
-	sizePolicy.setVerticalStretch(0);
-	wg->setSizePolicy(sizePolicy);
-	QLabel *label=new QLabel(wg);
-	gridLayout->addWidget(label,0,0,1,1);
-	wg->show();
 	qApp->processEvents();
 	quint64 lastTime=QDateTime::currentMSecsSinceEpoch();
 	int ct=0;
@@ -93,7 +86,9 @@ void StressQR::stress()
 		qrpx.fill(bg);
 		QPainter qrp(&qrpx);
 		paintQR(qrp,qrsize,data,fg);
-		pv.setPixmap(qrpx);
+		//Show on widget
+		pv1.setPixmap(qrpx);
+		pv1.setWindowTitle(data);
 
 		// Generate scene image
 		const int w=((qrwidth+qrand()%globalSize+globalSafetyMargin)/4 )*4;//zbar only supports images of width divisable by 4
@@ -134,14 +129,14 @@ void StressQR::stress()
 				p.drawEllipse(firstPoint.x-r,firstPoint.y-r,r*2,r*2);
 			}
 			//Show on widget
-			label->setPixmap(px);
+			pv2.setPixmap(px);
+			pv2.setWindowTitle(data);
+
+
 			qApp->processEvents();
 			//QTest::qSleep(1000);
 		}
 	}
-	wg->deleteLater();
-	label->deleteLater();
-	gridLayout->deleteLater();
 	qApp->processEvents();
 }
 
