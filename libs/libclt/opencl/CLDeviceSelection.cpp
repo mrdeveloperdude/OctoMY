@@ -38,7 +38,7 @@ CLDeviceSelection::CLDeviceSelection(const QString selectString, bool allowGPU, 
 				push_back(devices[j]);
 			}
 
-			qDebug().nospace()<< " Device-"<<j <<": "<< devices[j]<<(selected?" [SEL]":" [---]");
+			qDebug().nospace()<< " |-- Device-"<<i <<"."<<j <<": "<< devices[j]<<(selected?" [SEL]":" [---]");
 			++selectIndex;
 
 		}

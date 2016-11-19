@@ -31,16 +31,19 @@ DiscoveryClient::DiscoveryClient(Node &node)
 	: QObject(&node)
 	, mLastZooPair(0)
 	, mClient(new qhttp::client::QHttpClient(this))
-	, mNode(mNode)
+	, mNode(node)
 	, mKey(mNode.keyStore().localKey())
 	  //, ourPubKey(node.getKeyStore().getLocalPublicKey())
 	  //, ourID(utility::toHash(ourPubKey))
 	  //, zeroID(utility::toHash(""))
 {
+	if(nullptr==&mNode){
+		qWarning()<<"ERROR: node was nullreference";
+	}
 	mTimer.setInterval(500);
 	mTimer.setTimerType(Qt::VeryCoarseTimer);
 	if(!connect(&mTimer,SIGNAL(timeout()),this,SLOT(onTimer()),OC_CONTYPE)) {
-		qDebug()<<"ERROR: Could not connect";
+		qWarning()<<"ERROR: Could not connect";
 	}
 }
 
@@ -53,7 +56,6 @@ void DiscoveryClient::start()
 		onTimer();
 	}
 	mTimer.start();
-
 }
 
 void DiscoveryClient::stop()
@@ -69,7 +71,7 @@ void DiscoveryClient::setURL(const QUrl& serverURL)
 {
 	//TODO: Investigate why this gets called twice
 	mServerURL  = serverURL;
-	qDebug()<<"Setting new URL: "<<mServerURL;
+	//qDebug()<<"Setting new URL: "<<mServerURL;
 }
 
 
@@ -184,7 +186,7 @@ void DiscoveryClient::discover()
 		});
 		//qDebug()<<"Getting node by OCID:"<<OCID << " RES DONE";
 	};
-	qDebug()<<"DISCOVERY CLIENT OUTREACH TO "<<mServerURL;
+	//qDebug()<<"DISCOVERY CLIENT OUTREACH TO "<<mServerURL;
 	mClient->request(qhttp::EHTTP_POST, mServerURL, reqHandler, resHandler);
 
 

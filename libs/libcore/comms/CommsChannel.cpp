@@ -513,7 +513,7 @@ void CommsChannel::registerCourier(Courier &c)
 	}
 	mCouriers.append(&c);
 	mCouriersByID[c.id()]=&c;
-	qDebug()<<"Registered courier: "<<c.id()<<c.name()<<" for a total of "<<mCouriers.size()<<" couriers";
+	//qDebug()<<"Registered courier: "<<c.id()<<c.name()<<" for a total of "<<mCouriers.size()<<" couriers";
 }
 
 void CommsChannel::unregisterCourier(Courier &c)

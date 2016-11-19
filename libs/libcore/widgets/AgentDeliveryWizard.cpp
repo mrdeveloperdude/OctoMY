@@ -23,7 +23,10 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	, ui(new Ui::AgentDeliveryWizard)
 	, mSpinner(nullptr)
 	, mSettings(nullptr)
+	, mNode(nullptr)
 	, mBirthDate(0)
+	, completeCounter(0)
+	, completeOK(false)
 {
 	ui->setupUi(this);
 	const qint32 minLetters=3;
@@ -48,7 +51,9 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	mBirthTimer.setInterval(MINIMUM_BIRTH_TIME); //Minimum birth time gives this moment some depth in case keygen should finish quickly.
 	mBirthTimer.setSingleShot(true);
 
-	if(!connect(&mBirthTimer, &QTimer::timeout, this, &AgentDeliveryWizard::onBirthComplete, OC_CONTYPE)) {
+	if(!connect(&mBirthTimer, &QTimer::timeout, this, [=]() {
+	onBirthComplete(true);
+	}, OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
@@ -86,14 +91,34 @@ void AgentDeliveryWizard::configure(Node *n)
 {
 	if(mNode!=n) {
 		mNode=n;
-		if(nullptr!=mNode) {
-			mSettings=&mNode->settings();
-			KeyStore &keystore=mNode->keyStore();
-			if(!connect(&keystore, &KeyStore::keystoreReady, this, &AgentDeliveryWizard::onBirthComplete, OC_CONTYPE)) {
-				qWarning()<<"ERROR: Could not connect";
-			}
-			reset();
+		mSettings=(nullptr!=mNode)?&mNode->settings():nullptr;
+		reset();
+	}
+	if(nullptr==mNode){
+		qWarning()<<"WARNING: agent delivery configured with null node";
+	}
+}
+
+void AgentDeliveryWizard::startBirth()
+{
+	if(nullptr!=mNode) {
+		KeyStore &keystore=mNode->keyStore();
+		if(!connect(&keystore, &KeyStore::keystoreReady, this, &AgentDeliveryWizard::onBirthComplete, OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect";
 		}
+		QString name=ui->lineEditName->text();
+		name[0]=name[0].toUpper();
+		mID.setName(name);
+		QString gender=0>ui->comboBoxGender->currentIndex()?ui->comboBoxGender->currentText():generateRandomGender();
+		mID.setGender(gender);
+		qDebug()<<"XXX - Started birth for NAME: "<<name<<", GENDER: "<<gender;
+		mSpinner->start();
+		completeCounter=0;
+		completeOK=false;
+		mBirthTimer.start();
+		keystore.clear();
+		keystore.bootstrap(false,true);
+		ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);
 	}
 }
 
@@ -104,21 +129,27 @@ AgentDeliveryWizard::~AgentDeliveryWizard()
 
 
 
-void AgentDeliveryWizard::onBirthComplete()
+void AgentDeliveryWizard::onBirthComplete(bool ok)
 {
+	QMutexLocker timeoutLock(&timeoutMutex);
 	if(nullptr!=mNode) {
-		KeyStore &keystore=mNode->keyStore();
-		if(keystore.isReady() && !mBirthTimer.isActive()) {
+		completeOK|=ok;
+		completeCounter++;
+		if(completeCounter>=2) {
+			KeyStore &keystore=mNode->keyStore();
+			if(!disconnect(&keystore, &KeyStore::keystoreReady, this, &AgentDeliveryWizard::onBirthComplete)) {
+				qWarning()<<"ERROR: Could not disconnect";
+			}
 			qDebug()<<"XXX - Birth complete!";
 			mBirthTimer.stop();
 			mSpinner->stop();
-			if(keystore.hasError()) {
+			if(!keystore.isReady() || keystore.hasError() ) {
 				qWarning()<<"XXX - ERROR: Birthdefects detected!";
 				qDebug()<<"XXX: DATA AFTER AFILED LOAD WAS: "<<keystore;
 				//Go back to try again
 				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
 			} else {
-				QString id=keystore.localKey().id();
+				//QString id=keystore.localKey().id();
 				//qDebug()<<"XXX - All is good, ID: "<<id;
 				//qDebug()<<"XXX: DATA AFTER OK LOAD WAS: "<<keystore;
 				mBirthDate=QDateTime::currentMSecsSinceEpoch();
@@ -186,20 +217,7 @@ void AgentDeliveryWizard::on_pushButtonRandomName_clicked()
 
 void AgentDeliveryWizard::on_pushButtonOnward_clicked()
 {
-	if(nullptr!=mNode) {
-		KeyStore &keystore=mNode->keyStore();
-		QString name=ui->lineEditName->text();
-		name[0]=name[0].toUpper();
-		mID.setName(name);
-		QString gender=0>ui->comboBoxGender->currentIndex()?ui->comboBoxGender->currentText():generateRandomGender();
-		mID.setGender(gender);
-		qDebug()<<"XXX - Started birth for NAME: "<<name<<", GENDER: "<<gender;
-		mSpinner->start();
-		mBirthTimer.start();
-		keystore.clear();
-		keystore.bootstrap(false,true);
-		ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);
-	}
+	startBirth();
 }
 
 void AgentDeliveryWizard::on_pushButtonRandomGender_clicked()

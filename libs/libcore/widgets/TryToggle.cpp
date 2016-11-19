@@ -3,8 +3,8 @@
 
 TryToggle::TryToggle(QWidget *parent) :
 	QWidget(parent)
-  , mState(OFF)
-  , ui(new Ui::TryToggle)
+	, mState(OFF)
+	, ui(new Ui::TryToggle)
 {
 	ui->setupUi(this);
 	mTimer.setInterval(100);
@@ -13,11 +13,13 @@ TryToggle::TryToggle(QWidget *parent) :
 	qRegisterMetaType<TryToggleState>("TryToggleState");
 }
 
-TryToggle::~TryToggle(){
+TryToggle::~TryToggle()
+{
 	delete ui;
 }
 
-void TryToggle::setText(QString t1i,QString t2i,QString t3i){
+void TryToggle::setText(QString t1i,QString t2i,QString t3i)
+{
 	mT1=t1i;
 	mT2=t2i;
 	mT3=t3i;
@@ -29,63 +31,84 @@ TryToggleState TryToggle::state()
 	return mState;
 }
 
-void TryToggle::updateText(){
+void TryToggle::updateText()
+{
 	QString t="";
-	switch(mState){
-		default:t="ERROR";  break;
-		case(OFF):t=mT1;  break;
-		case(TRYING):t=mT2;  break;
-		case(ON):t=mT3;  break;
+	switch(mState) {
+	default:
+		t="ERROR";
+		break;
+	case(OFF):
+		t=mT1;
+		break;
+	case(TRYING):
+		t=mT2;
+		break;
+	case(ON):
+		t=mT3;
+		break;
 	}
 	ui->pushButtonToggle->setText(t);
 }
 
-void TryToggle::setState(const TryToggleState s){
+void TryToggle::setState(const TryToggleState s)
+{
 	//qDebug()<<"SET STATE: "<<s;
-	if(s!=mState){
+	if(s!=mState) {
 		//qDebug()<<" + DIFFERENT FROM LAST: "<<state;
-		if(TRYING==s){
+		if(TRYING==s) {
 			mTimer.start();
-		}
-		else{
+		} else {
 			mTimer.stop();
 		}
 		ui->widgetLight->setLightOn(!(OFF==s));
 		ui->pushButtonToggle->setChecked(!(OFF==s));
+		const TryToggleState last=mState;
 		mState=s;
 		updateText();
 		//qDebug()<<"Emitting " <<state;
-		emit stateChanged(s);
+		emit stateChanged(last,s);
 	}
 }
 
-void TryToggle::animateClick(){
+void TryToggle::animateClick()
+{
 	ui->pushButtonToggle->animateClick();
 }
 
-void TryToggle::on_pushButtonToggle_toggled(bool checked){
+void TryToggle::on_pushButtonToggle_toggled(bool checked)
+{
 	//qDebug()<<"Clicked " <<checked;
-	if(checked && OFF==mState){
+	if(checked && OFF==mState) {
 		setState(TRYING);
-	}
-	else if(!checked){
+	} else if(!checked) {
 		setState(OFF);
 	}
 }
 
-void TryToggle::onTimeout(){
+void TryToggle::onTimeout()
+{
 	ui->widgetLight->toggleLight();
 }
 
 
 
-QDebug operator<<(QDebug d, const TryToggleState &s){
+QDebug operator<<(QDebug d, const TryToggleState &s)
+{
 	QString str="";
-	switch(s){
-		default:str="UNKNOWN";  break;
-		case(OFF):str="OFF";  break;
-		case(TRYING):str="TRYING";  break;
-		case(ON):str="ON";  break;
+	switch(s) {
+	default:
+		str="UNKNOWN";
+		break;
+	case(OFF):
+		str="OFF";
+		break;
+	case(TRYING):
+		str="TRYING";
+		break;
+	case(ON):
+		str="ON";
+		break;
 	}
 
 	d.nospace() << str;
@@ -93,13 +116,15 @@ QDebug operator<<(QDebug d, const TryToggleState &s){
 }
 
 
-QString ToggleStateToSTring(TryToggleState s){
+QString ToggleStateToSTring(TryToggleState s)
+{
 #define  ToggleStateToStringCASE(A) case (A):return #A
-	switch(s){
-		default:return "UNKNOWN";
-			ToggleStateToStringCASE(TRYING);
-			ToggleStateToStringCASE(OFF);
-			ToggleStateToStringCASE(ON);
+	switch(s) {
+	default:
+		return "UNKNOWN";
+		ToggleStateToStringCASE(TRYING);
+		ToggleStateToStringCASE(OFF);
+		ToggleStateToStringCASE(ON);
 	}
 #undef ToggleStateToStringCASE
 }

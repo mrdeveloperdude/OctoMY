@@ -14,7 +14,7 @@
 
 
 SensorsCourier::SensorsCourier(QObject *parent)
-	: Courier("Sensors", Courier::FIRST_USER_ID+1, parent)
+	: Courier("Sensors", Courier::FIRST_USER_ID+3, parent)
 	, mMandate(400)
 {
 

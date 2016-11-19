@@ -10,60 +10,60 @@
 
 class AsyncStore : public QObject
 {
-		Q_OBJECT
-	protected:
+	Q_OBJECT
+protected:
 
-		AtomicBoolean mReady;
-		AtomicBoolean mError;
-		AtomicBoolean mInProgress;
+	AtomicBoolean mReady;
+	AtomicBoolean mError;
+	AtomicBoolean mInProgress;
 
-		const QString mFilename;
-
-
-	public:
-		explicit AsyncStore(QString="", QObject *parent = nullptr);
+	const QString mFilename;
 
 
-	protected:
-
-		void bootstrapWorker();
-
-		virtual void bootstrapWorkerImpl()=0;
-	public:
-		virtual void load()=0;
-		virtual void save()=0;
-
-	public:
+public:
+	explicit AsyncStore(QString="", QObject *parent = nullptr);
 
 
-		// Make if needed, load if otherwise
-		void bootstrap(bool loadOnly=false, bool runInBackground=true);
+protected:
 
-		inline bool isReady()
-		{
-			return mReady;
-		}
+	void bootstrapWorker();
 
-		inline bool isInProgress()
-		{
-			return mInProgress;
-		}
+	virtual void bootstrapWorkerImpl()=0;
+public:
+	virtual void load()=0;
+	virtual void save()=0;
 
-		inline bool hasError()
-		{
-			return mError;
-		}
+public:
 
-		inline bool fileExists() const
-		{
-			return QFile(mFilename).exists();
-		}
 
-		friend class GenerateRunnable<AsyncStore>;
+	// Make if needed, load if otherwise
+	void bootstrap(bool loadOnly=false, bool runInBackground=true);
 
-	signals:
+	inline bool isReady()
+	{
+		return mReady;
+	}
 
-		void storeReady(bool ok);
+	inline bool isInProgress()
+	{
+		return mInProgress;
+	}
+
+	inline bool hasError()
+	{
+		return mError;
+	}
+
+	inline bool fileExists() const
+	{
+		return QFile(mFilename).exists();
+	}
+
+	friend class GenerateRunnable<AsyncStore>;
+
+signals:
+
+	void storeReady(bool ok);
 };
 
 #endif // ASYNCSTORE_HPP

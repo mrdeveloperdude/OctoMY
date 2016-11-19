@@ -35,6 +35,10 @@ protected:
 	QSharedPointer<NodeAssociate> mMyData;
 	quint64 mBirthDate;
 
+	QMutex timeoutMutex;
+	quint8 completeCounter;
+	bool completeOK;
+
 public:
 
 	static const quint64 MINIMUM_BIRTH_TIME;
@@ -43,16 +47,19 @@ public:
 	explicit AgentDeliveryWizard(QWidget *parent = 0);
 	~AgentDeliveryWizard();
 
+
 public:
 	void reset();
 
 	void configure(Node *mNode);
 
+	void startBirth();
+
 signals:
 	void done(bool);
 
 private slots:
-	void onBirthComplete();
+	void onBirthComplete(bool);
 
 private slots:
 	void on_pushButtonDone_clicked();

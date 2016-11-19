@@ -4,7 +4,7 @@
 #include "comms/messages/MessageType.hpp"
 
 DiscoveryCourier::DiscoveryCourier(QSharedPointer<NodeAssociate> ass, QObject *parent)
-	: Courier("Discovery", Courier::FIRST_USER_ID+2, parent)
+	: Courier("Discovery", Courier::FIRST_USER_ID+1, parent)
 	, mAss(ass)
 {
 	qDebug()<<"CREATED DiscoveryCourier with PART="<<mAss->toString();

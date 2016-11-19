@@ -14,7 +14,7 @@ class HelloCLWorkerFactory : public CLWorkerFactory
 		HelloCLWorkerFactory();
 
 	public:
-		virtual CLWorker * createInstance() Q_DECL_OVERRIDE;
+		virtual CLWorker * createInstance(CLThreadManager &man, int index) Q_DECL_OVERRIDE;
 
 };
 

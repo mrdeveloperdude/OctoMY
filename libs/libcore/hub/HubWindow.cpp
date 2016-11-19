@@ -50,21 +50,21 @@
 HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	QMainWindow(parent)
 	, ui(new Ui::HubWindow)
-	, hub(hub)
-	, m_gait(nullptr)
-	, scanner(nullptr)
+	, mHub(hub)
+	, mGait(nullptr)
+	, mScanner(nullptr)
 {
 	setObjectName("HubWindow");
-	if(nullptr!=hub) {
-		restoreGeometry(hub->settings().getCustomSettingByteArray("window.geometry"));
+	if(nullptr!=mHub) {
+		restoreGeometry(mHub->settings().getCustomSettingByteArray("window.geometry"));
 		QSplashScreen *splash=new QSplashScreen(this, QPixmap(":/images/hub_butterfly.svg"), Qt::WindowStaysOnTopHint);
 		splash->show();
-		summaryTimer.setInterval(100);
+		mSummaryTimer.setInterval(100);
 		{
-			ScopedTimer setupUITimer("hub setupUI");
+			//ScopedTimer setupUITimer("hub setupUI");
 			ui->setupUi(this);
 		}
-		ui->widgetPairing->configure(hub);
+		ui->widgetPairing->configure(mHub);
 		/*
 		QAbstractItemModel *data = new ClientModel(hub->getComms()->getClients(), this);
 		ui->widgetIncommingNodes->configure("Icons","hubwindiow-clients-list");
@@ -76,30 +76,32 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		ui->tabWidgetDevelopment->setCurrentIndex(0);
 		ui->tabWidgetUtilities->setCurrentIndex(0);
 
-		ui->widgetActiveNodes->configure(hub->settings(),"active_nodes","List");
-		ui->widgetIncommingNodes->configure(hub->settings(),"incomming_nodes","List");
+		ui->widgetActiveNodes->configure(mHub->settings(),"active_nodes","List");
+		ui->widgetIncommingNodes->configure(mHub->settings(),"incomming_nodes","List");
 
 		//Listen
-		ui->comboBoxLocalAddress->configure(&hub->settings(), "hub-listen-address","Local address");
-		ui->lineEditBindPort->configure(&hub->settings(), "","hub-listen-port","The port to listen for incomming netork traffic");
+		ui->comboBoxLocalAddress->configure(&mHub->settings(), "hub-listen-address","Local address");
+		ui->lineEditBindPort->configure(&mHub->settings(), "","hub-listen-port","The port to listen for incomming netork traffic");
 
-		ui->lineEditRemoteAddress->configure(&hub->settings(), "localhost","hub-listen_address","The address of the remote host");
-		ui->lineEditRemotePort->configure(&hub->settings(), "","hub-port","The port of the remote host");
+		ui->lineEditRemoteAddress->configure(&mHub->settings(), "localhost","hub-listen_address","The address of the remote host");
+		ui->lineEditRemotePort->configure(&mHub->settings(), "","hub-port","The port of the remote host");
 		ui->tryToggleListen->setText("Listen","Preparing...","Listening");
 		if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onListenStateChanged(TryToggleState)),OC_CONTYPE)) {
-			qDebug()<<"could not connect";
+			qWarning()<<"ERROR: Could not connect";
 		}
-		if(!connect(&summaryTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()),OC_CONTYPE)) {
-			qDebug()<<"could not connect";
+		if(!connect(&mSummaryTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect";
 		}
 
 		ui->widgetActuatorControl->configure(5);
 
 #ifdef EXTERNAL_LIB_OPENCL
-		initCL();
+		if(!connect(ui->openGLWidgetCLGLView,SIGNAL(glInitialized()),this,SLOT(onGLWidgetInitialized()),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect";
+		}
 #endif
 
-		const QCommandLineParser &opts=hub->options();
+		const QCommandLineParser &opts=mHub->options();
 		if(opts.isSet("local-port")) {
 			ui->lineEditBindPort->setText(opts.value("local-port"));
 			qDebug()<<"OVERRIDING LOCAL PORT WITH VALUE FROM CMDLINE: "<<opts.value("local-port");
@@ -111,16 +113,16 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		ui->lineEditBindPort->setValidator( new QIntValidator(0, 65535, this) );
 		ui->lineEditRemotePort->setValidator( new QIntValidator(0, 65535, this) );
 
-		hub->comms()->hookSignals(*this);
+		mHub->comms()->hookSignals(*this);
 
 		QByteArray ba("HELLO WORLD");
 		QHexEditData* hexdata = QHexEditData::fromMemory(ba);
 
 		ui->hexEditor->setData(hexdata);
 
-		m_gait=new GaitController<qreal> ();
-		if(0!=m_gait) {
-			ui->widgetGait->setGait(*m_gait);
+		mGait=new GaitController<qreal> ();
+		if(0!=mGait) {
+			ui->widgetGait->setGait(*mGait);
 		}
 
 		if(!connect(ui->widgetQR, SIGNAL(qrRedraw()), this, SLOT(onQRRedraw()),OC_CONTYPE) ) {
@@ -140,12 +142,12 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 HubWindow::~HubWindow()
 {
-	if(nullptr!=hub) {
-		hub->settings().setCustomSettingByteArray("window.geometry", saveGeometry());
-		hub->comms()->unHookSignals(*this);
+	if(nullptr!=mHub) {
+		mHub->settings().setCustomSettingByteArray("window.geometry", saveGeometry());
+		mHub->comms()->unHookSignals(*this);
 	}
 	delete ui;
-	delete m_gait;
+	delete mGait;
 }
 
 
@@ -157,7 +159,7 @@ HubWindow::~HubWindow()
 
 void HubWindow::onSummaryTimer()
 {
-	CommsChannel *comms=hub->comms();
+	CommsChannel *comms=mHub->comms();
 	if(0==comms) {
 		ui->plainTextEditSummary->setPlainText("N/A");
 	} else {
@@ -168,12 +170,12 @@ void HubWindow::onSummaryTimer()
 
 void HubWindow::onQRRedraw()
 {
-	if(nullptr==scanner) {
-		scanner=new ZBarScanner();
+	if(nullptr==mScanner) {
+		mScanner=new ZBarScanner();
 	}
 	const QPixmap &px=ui->widgetQR->qrPixmap();
-	if(nullptr!=scanner) {
-		QList<ZScanResult> found=scanner->scan(px);
+	if(nullptr!=mScanner) {
+		QList<ZScanResult> found=mScanner->scan(px);
 		int fsz=found.size();
 		qDebug()<<"fsz="<<fsz;
 		if(fsz<1) {
@@ -196,7 +198,7 @@ void HubWindow::onQRRedraw()
 			}
 		}
 	} else {
-		qWarning()<<"PX: "<<px<<" scanner: "<<scanner;
+		qWarning()<<"PX: "<<px<<" scanner: "<<mScanner;
 	}
 }
 
@@ -216,12 +218,12 @@ void HubWindow::onListenStateChanged(TryToggleState s)
 		ui->tabWidget->setCurrentIndex(0);
 	}
 	//ui->tabWidget->setEnabled(on);
-	on?summaryTimer.start():summaryTimer.stop();
+	on?mSummaryTimer.start():mSummaryTimer.stop();
 	appendLog("New listening state: "+ToggleStateToSTring(s));
 	if(TRYING==s) {
 		QHostInfo::lookupHost("localhost",this, SLOT(onLocalHostLookupComplete(QHostInfo)));
 	} else if(OFF==s) {
-		CommsChannel *comms=hub->comms();
+		CommsChannel *comms=mHub->comms();
 		if(0!=comms) {
 			comms->stop();
 		}
@@ -236,7 +238,7 @@ void HubWindow::onLocalHostLookupComplete(QHostInfo hi)
 		if(adr.isNull()) {
 			ui->logScroll->appendLog("Skipping invalid address during local host lookup: "+adr.toString());
 		} else {
-			CommsChannel *comms=hub->comms();
+			CommsChannel *comms=mHub->comms();
 			if(0!=comms) {
 				qDebug()<<"HUB comms start for " << adr.toString()<<":" << ui->lineEditBindPort->text();
 				comms->start(NetworkAddress(adr, ui->lineEditBindPort->text().toInt()));
@@ -301,12 +303,12 @@ void HubWindow::onClientAdded(Client *c)
 
 void HubWindow::on_pushButtonSendData_clicked()
 {
-	CommsChannel *comms=hub->comms();
+	CommsChannel *comms=mHub->comms();
 	if(nullptr!=comms) {
 		//QHostInfo::lookupHost(ui->lineEditRemoteAddress->text(),this, SLOT(onRemoteHostLookupComplete(QHostInfo)));
 		QByteArray ba;
 		ba="HELLO WORLD";
-		quint64 w=comms->sendRawData(ba,ClientSignature(hub->keyStore().localKey().id(),NetworkAddress(QHostAddress(ui->lineEditRemoteAddress->text()),ui->lineEditRemotePort->text().toInt())));
+		quint64 w=comms->sendRawData(ba,ClientSignature(mHub->keyStore().localKey().id(),NetworkAddress(QHostAddress(ui->lineEditRemoteAddress->text()),ui->lineEditRemotePort->text().toInt())));
 		qDebug()<<"Wrote "<<w<<" bytes raw helloworld packet";
 	} else {
 		appendLog("NOT READY TO SEND DATA");
@@ -339,18 +341,23 @@ void HubWindow::startProcess(QString base)
 
 
 #ifdef EXTERNAL_LIB_OPENCL
-void HubWindow::initCL()
+
+void HubWindow::onGLWidgetInitialized()
 {
 	qDebug()<<"INIT CL ----- ";
-	CLGLViewRenderer * rendrer=new HelloGLCLViewRenderer();
-	rendrer->initialize(ui->openGLWidgetCLGLView->glctx());
-	ui->openGLWidgetCLGLView->setRenderer(rendrer);
+	CLGLViewRenderer *rendrer=new HelloGLCLViewRenderer();
+	if(nullptr!=rendrer) {
+		rendrer->initialize(ui->openGLWidgetCLGLView->glctx());
+		ui->openGLWidgetCLGLView->setRenderer(rendrer);
 
-	if(!connect(ui->pushButtonCLGLDisplay, &QPushButton::toggled,ui->openGLWidgetCLGLView,&CLGLView::onDisplayToggle,OC_CONTYPE)) {
-		qDebug()<<"could not connect";
-	}
-	if(!connect(ui->pushButtonCLGLRender, &QPushButton::toggled,ui->openGLWidgetCLGLView,&CLGLView::onRenderToggle,OC_CONTYPE)) {
-		qDebug()<<"could not connect";
+		if(!connect(ui->pushButtonCLGLDisplay, &QPushButton::toggled,ui->openGLWidgetCLGLView,&CLGLView::onDisplayToggle,OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect";
+		}
+		if(!connect(ui->pushButtonCLGLRender, &QPushButton::toggled,ui->openGLWidgetCLGLView,&CLGLView::onRenderToggle,OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect";
+		}
+	} else {
+		qWarning()<<"ERROR: could not allocate rendrer";
 	}
 }
 

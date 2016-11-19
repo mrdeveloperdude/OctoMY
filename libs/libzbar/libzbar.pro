@@ -4,10 +4,6 @@ CONFIG +=	staticlib
 
 include($$TOP_PWD/common.pri)
 
-# Since this is in part pure C, we set the desired C standard
-
-QMAKE_CFLAGS += -std=c99
-
 INCLUDEPATH += ./
 
 HEADERS	+= \

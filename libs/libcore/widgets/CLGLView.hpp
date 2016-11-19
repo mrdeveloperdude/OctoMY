@@ -12,14 +12,14 @@ class CLGLView : public QOpenGLWidget
 	Q_OBJECT
 
 public:
-	explicit CLGLView(QWidget *parent = nullptr);
-	virtual ~CLGLView();
+	explicit CLGLView(QWidget *parent = nullptr){}
+	virtual ~CLGLView(){}
 
 	//QOpenGLWidget interface
 public:
-	void initializeGL() Q_DECL_OVERRIDE;
-	void resizeGL(int w, int h) Q_DECL_OVERRIDE;
-	void paintGL() Q_DECL_OVERRIDE;
+	void initializeGL() Q_DECL_OVERRIDE{}
+	void resizeGL(int w, int h) Q_DECL_OVERRIDE{}
+	void paintGL() Q_DECL_OVERRIDE{}
 };
 
 #else
@@ -66,7 +66,7 @@ private:
 	bool renderEnabled;
 	bool displayEnabled;
 	ArcBall arcBall;
-	CLGLViewRenderer * renderer;
+	CLGLViewRenderer * mRenderer;
 
 public:
 	explicit CLGLView(QWidget *parent = nullptr);
@@ -74,7 +74,7 @@ public:
 
 public:
 
-	void setRenderer(CLGLViewRenderer * renderer);
+	void setRenderer(CLGLViewRenderer * mRenderer);
 
 	GLContext &glctx();
 
@@ -110,6 +110,8 @@ public slots:
 signals:
 
 	void arcBallChange(QMatrix4x4 mat);
+
+	void glInitialized();
 };
 
 #endif

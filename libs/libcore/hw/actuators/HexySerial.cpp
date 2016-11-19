@@ -33,35 +33,38 @@ HexySerial::HexySerial(QObject *parent)
 	serial = new QSerialPort(this);
 	settings = new SerialSettings;
 
-	if(!connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError)))){
+	if(!connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError)))) {
 		qWarning()<<"ERROR: Could not connect";
 	}
-	if(!connect(serial, SIGNAL(readyRead()), this, SLOT(readData()))){
+	if(!connect(serial, SIGNAL(readyRead()), this, SLOT(readData()))) {
 		qWarning()<<"ERROR: Could not connect";
 	}
-	if(!connect(serial, SIGNAL(bytesWritten(qint64)), this, SLOT(dataWritten(qint64)))){
+	if(!connect(serial, SIGNAL(bytesWritten(qint64)), this, SLOT(dataWritten(qint64)))) {
 		qWarning()<<"ERROR: Could not connect";
 	}
-	if(!connect(settings,SIGNAL(settingsChanged()), this, SLOT(onSettingsChanged()))){
+	if(!connect(settings,SIGNAL(settingsChanged()), this, SLOT(onSettingsChanged()))) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 }
 
-HexySerial::~HexySerial(){
+HexySerial::~HexySerial()
+{
 	//Limp servos to avoid frying them if they are trying to reach impossible positions
 	kill();
 
 	delete settings;
 }
 
-void HexySerial::configure(){
-	if(0!=settings){
+void HexySerial::configure()
+{
+	if(0!=settings) {
 		settings->show();
 	}
 }
 
 
-void HexySerial::openSerialPort(){
+void HexySerial::openSerialPort()
+{
 	SerialSettings::Settings p = settings->settings();
 	serial->setPortName(p.name);
 	serial->setBaudRate(p.baudRate);
@@ -77,8 +80,9 @@ void HexySerial::openSerialPort(){
 	}
 }
 
-void HexySerial::closeSerialPort(){
-	if (serial->isOpen()){
+void HexySerial::closeSerialPort()
+{
+	if (serial->isOpen()) {
 		serial->close();
 		emit connectionChanged();
 	}
@@ -86,17 +90,16 @@ void HexySerial::closeSerialPort(){
 }
 
 
-void HexySerial::writeData(const QByteArray &data){
-	if(0==data.size()){
+void HexySerial::writeData(const QByteArray &data)
+{
+	if(0==data.size()) {
 		qWarning()<<"ERROR: WRITING CALLED WITH NO DATA";
-	}
-	else{
+	} else {
 		const qint64 accepted=serial->write(data);
-		if(accepted<0){
+		if(accepted<0) {
 			qWarning()<<"ERROR: write was not accepted. ERROR="<<serial->errorString();
-		}
-		else{
-			if(data.size()>accepted){
+		} else {
+			if(data.size()>accepted) {
 				qWarning()<<"ERROR: Data truncation occurred, serial port would not accept more";
 			}
 			//serial->flush();
@@ -105,24 +108,31 @@ void HexySerial::writeData(const QByteArray &data){
 	}
 }
 
-void HexySerial::readData(){
-	QByteArray data = serial->readAll();
-	qDebug()<<data;
-	//TODO:parse and handle data
+void HexySerial::readData()
+{
+	if(isConnected()) {
+		QByteArray data = serial->readAll();
+		qDebug()<<data;
+		//TODO:parse and handle data
+	} else {
+		qWarning()<<"ERROR: Trying to use serial when not connected";
+	}
 }
 
 
 
-void HexySerial::dataWritten( qint64 written){
+void HexySerial::dataWritten( qint64 written)
+{
 	qint64 left=serial->bytesToWrite();
 	//qDebug()<<"DATA WRITTEN: "<<written <<" (left:"<<left<<") ";
-	if(left<=0 && dirtyMoveFlags >0){
+	if(left<=0 && dirtyMoveFlags >0) {
 		syncMove();
 	}
 }
 
 
-void HexySerial::handleError(QSerialPort::SerialPortError error){
+void HexySerial::handleError(QSerialPort::SerialPortError error)
+{
 	/*
 	NoError,
 	DeviceNotFoundError,
@@ -139,14 +149,15 @@ void HexySerial::handleError(QSerialPort::SerialPortError error){
 	TimeoutError,
 	NotOpenError
 			*/
-			qDebug()<<"HANDLED ERROR: "<<error;
+	qDebug()<<"HANDLED ERROR: "<<error;
 	if (error == QSerialPort::ResourceError) {
 		qDebug()<<"Critical Error"<<serial->errorString();
 		closeSerialPort();
 	}
 }
 
-void HexySerial::onSettingsChanged(){
+void HexySerial::onSettingsChanged()
+{
 	{
 		QSignalBlocker(this);
 		closeSerialPort();
@@ -159,84 +170,120 @@ void HexySerial::onSettingsChanged(){
 }
 
 
-bool HexySerial::isConnected(){
+bool HexySerial::isConnected()
+{
 	return serial->isOpen();
 }
 
 ///// Reference: http://arcbotics.com/lessons/servotor32-commands/
 
 
-void HexySerial::kill(quint32 flags){
+void HexySerial::kill(quint32 flags)
+{
 	//Trivial reject: kill ALL
-	if(0xFFFFFFFF==flags){
-		writeData("K\n");
-	}
-	else{
-		QString data;
-		quint32 f=1;
-		for(quint32 i=0;i<SERVO_COUNT;++i){
-			if((flags & f)>0){
-				data += QLatin1Literal("#") +  QString::number(i) + QLatin1String("L\n");
+	if(isConnected()) {
+		if(0xFFFFFFFF==flags) {
+			writeData("K\n");
+		} else {
+			QString data;
+			quint32 f=1;
+			for(quint32 i=0; i<SERVO_COUNT; ++i) {
+				if((flags & f)>0) {
+					data += QLatin1Literal("#") +  QString::number(i) + QLatin1String("L\n");
+				} else {
+					//data+="LOL";
+				}
+				f<<=1;
 			}
-			else{
-				//data+="LOL";
-			}
-			f<<=1;
+			qDebug()<<"KILL: "<<data<<" foir "<<flags;
+			writeData(data.toLatin1());
 		}
-		qDebug()<<"KILL: "<<data<<" foir "<<flags;
-		writeData(data.toLatin1());
+	} else {
+		qWarning()<<"ERROR: Trying to use serial when not connected";
 	}
+
 }
 
 
-void HexySerial::center(){
-	writeData("C\n");
+void HexySerial::center()
+{
+	if(isConnected()) {
+		writeData("C\n");
+	} else {
+		qWarning()<<"ERROR: Trying to use serial when not connected";
+	}
+
 }
 
 
-void HexySerial::version(){
-	writeData("V\n");
+void HexySerial::version()
+{
+	if(isConnected()) {
+		writeData("V\n");
+	} else {
+		qWarning()<<"ERROR: Trying to use serial when not connected";
+	}
+
 }
 
 
-void HexySerial::debug(){
-	writeData("D\n");
+void HexySerial::debug()
+{
+	if(isConnected()) {
+		writeData("D\n");
+	} else {
+		qWarning()<<"ERROR: Trying to use serial when not connected";
+	}
+
 }
 
 
-inline qreal fclamp(qreal x, qreal a, qreal b){
+inline qreal fclamp(qreal x, qreal a, qreal b)
+{
 	return x < a ? a : (x > b ? b : x);
 }
 
 
-void HexySerial::syncMove(){
-	QString data;
-	//qDebug()<<"SYNC-MOVE: "<< QString("%1").arg( dirtyMoveFlags, 16, 2, QChar('0'));
-	for(quint32 i=0;i<SERVO_COUNT;++i){
-		if((dirtyMoveFlags & (0x1<<i))>0){
-			data += "#" +QString::number(i) + "P" + QString::number(lastPos[i]) +"\n";
+void HexySerial::syncMove()
+{
+	if(isConnected()) {
+		QString data;
+		//qDebug()<<"SYNC-MOVE: "<< QString("%1").arg( dirtyMoveFlags, 16, 2, QChar('0'));
+		for(quint32 i=0; i<SERVO_COUNT; ++i) {
+			if((dirtyMoveFlags & (0x1<<i))>0) {
+				data += "#" +QString::number(i) + "P" + QString::number(lastPos[i]) +"\n";
+			}
 		}
+		writeData(data.toLatin1());
+		dirtyMoveFlags=0;
+	} else {
+		qWarning()<<"ERROR: Trying to use serial when not connected";
 	}
-	writeData(data.toLatin1());
-	dirtyMoveFlags=0;
+
 
 }
 
 //TODO: look at binary extension introduced in 2.1 version of hexy firmware to improve performance
-void HexySerial::move(qreal pos[], quint32 flags){
-	for(quint32 i=0;i<SERVO_COUNT;++i){
-		quint32 flag=(0x1<<i);
-		if((flags & flag)>0){
-			const quint32 p=(quint32)(fclamp(pos[i],-1.0,1.0)*1000.0+1500.0);
-			//Skip unecessary communication if value did not change
-			if(lastPos[i]!=p){
-				lastPos[i]=p;
-				dirtyMoveFlags|=flag;
+void HexySerial::move(qreal pos[], quint32 flags)
+{
+	if(isConnected()) {
+		for(quint32 i=0; i<SERVO_COUNT; ++i) {
+			quint32 flag=(0x1<<i);
+			if((flags & flag)>0) {
+				const quint32 p=(quint32)(fclamp(pos[i],-1.0,1.0)*1000.0+1500.0);
+				//Skip unecessary communication if value did not change
+				if(lastPos[i]!=p) {
+					lastPos[i]=p;
+					dirtyMoveFlags|=flag;
+				}
 			}
 		}
+		//qDebug()<<"MOVE: flags="<< QString("%1").arg( flags, 16, 2, QChar('0'))<< ", dirtyMoveFlags="<<QString("%1").arg( dirtyMoveFlags, 16, 2, QChar('0'));
+		if(dirtyMoveFlags>0 && 0==serial->bytesToWrite()) {
+			syncMove();
+		}
+	} else {
+		qWarning()<<"ERROR: Trying to use serial when not connected";
 	}
-	//qDebug()<<"MOVE: flags="<< QString("%1").arg( flags, 16, 2, QChar('0'))<< ", dirtyMoveFlags="<<QString("%1").arg( dirtyMoveFlags, 16, 2, QChar('0'));
-	if(dirtyMoveFlags>0 && 0==serial->bytesToWrite()){
-		syncMove();
-	}
+
 }

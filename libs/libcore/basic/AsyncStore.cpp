@@ -20,12 +20,11 @@ AsyncStore::AsyncStore(QString filename, QObject *parent)
 void AsyncStore::bootstrapWorker()
 {
 	//qDebug()<<"AsyncStore bootstrapWorker() inProgress=" << mInProgress<<", error=" << mError<<", ready=" << mReady;
-	if(!mInProgress){
+	if(!mInProgress) {
 		mInProgress=true;
 		bootstrapWorkerImpl();
 		mInProgress=false;
-	}
-	else{
+	} else {
 		qWarning()<<"ERROR: trying to call bootstrap while already in progress, skipping";
 	}
 }
@@ -34,32 +33,28 @@ void AsyncStore::bootstrapWorker()
 void AsyncStore::bootstrap(bool loadOnly, bool runInBackground)
 {
 	//qDebug()<<"AsyncStore bootstrap() loadOnly="<<loadOnly<<", bg="<<runInBackground;
-	if(mReady){
+	if(mReady) {
 		emit storeReady(!mError);
 		return;
-	}
-	else if(mInProgress){
+	} else if(mInProgress) {
 		return;
-	}
-	else if(loadOnly){
+	} else if(loadOnly) {
 		load();
 		return;
 	}
 	// QThreadPool takes ownership and deletes runnable automatically after completion
-	else if(runInBackground){
+	else if(runInBackground) {
 		QThreadPool *tp=QThreadPool::globalInstance();
-		if(nullptr!=tp){
+		if(nullptr!=tp) {
 			const bool ret=tp->tryStart(new GenerateRunnable<AsyncStore>(*this));
-			if(ret){
+			if(ret) {
 				//qDebug()<<"ASYNCSTORE: Successfully started background thread";
 				return;
-			}
-			else{
+			} else {
 				tp->deleteLater();
 				qWarning()<<"ERROR: Could not start runnable";
 			}
-		}
-		else{
+		} else {
 			qWarning()<<"ERROR: No global threadpool available, defaulting to serial version";
 		}
 		//qDebug()<<"ASYNCSTORE: Falling back to serial bootstrap";
@@ -67,4 +62,3 @@ void AsyncStore::bootstrap(bool loadOnly, bool runInBackground)
 	// Use single threaded way
 	bootstrapWorker();
 }
-

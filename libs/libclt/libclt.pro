@@ -14,6 +14,7 @@ HEADERS	+= \
 	opencl/CLInclude.hpp \
 	widgets/CLGLViewRenderer.hpp \
 	opencl/CLWorkerFactory.hpp \
+    opencl/CLGLInteropConfig.hpp
 
 SOURCES	+= \
 	opencl/CLThreadManager.cpp \
@@ -22,6 +23,7 @@ SOURCES	+= \
 	opencl/CLUtils.cpp \
 	widgets/CLGLViewRenderer.cpp \
 	opencl/CLWorkerFactory.cpp \
+    opencl/CLGLInteropConfig.cpp
 
 
 RESOURCES += \

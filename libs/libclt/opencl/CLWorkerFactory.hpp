@@ -2,14 +2,15 @@
 #define CLWORKERFACTORY_HPP
 
 class CLWorker;
+class CLThreadManager;
 
 class CLWorkerFactory
 {
 public:
-	CLWorkerFactory();
+	explicit CLWorkerFactory();
 
 public:
-	virtual CLWorker * createInstance()=0;
+	virtual CLWorker * createInstance(CLThreadManager &man, int index)=0;
 };
 
 #endif // CLWORKERFACTORY_HPP

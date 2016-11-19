@@ -26,20 +26,17 @@ OTHER_FILES += \
 	$$FLEXSOURCES \
 	$$QLALRSOURCES \
 
+message("FROM libparser.pro")
 include($$TOP_PWD/status.pri)
-message("| FLEXSOURCES:    " $${FLEXSOURCES})
-message("| QLALRSOURCES:   " $${QLALRSOURCES})
-message("| GENERATED_HEADERS:   " $${GENERATED_HEADERS})
-message("| GENERATED_SOURCES:    " $${GENERATED_SOURCES})
 
 HEADERS += \
-    Context.hpp \
-    ParseTreeNode.hpp \
-    ParseError.hpp \
-    OctomyParseContext.hpp
+	Context.hpp \
+	ParseTreeNode.hpp \
+	ParseError.hpp \
+	OctomyParseContext.hpp
 
 SOURCES += \
-    Context.cpp \
-    ParseTreeNode.cpp \
-    ParseError.cpp \
-    OctomyParseContext.cpp
+	Context.cpp \
+	ParseTreeNode.cpp \
+	ParseError.cpp \
+	OctomyParseContext.cpp

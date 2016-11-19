@@ -1,34 +1,6 @@
 #include "CLGLView.hpp"
 
-#ifndef EXTERNAL_LIB_OPENCL
-
-CLGLView::CLGLView(QWidget *parent)
-	: QOpenGLWidget(parent)
-{
-
-}
-
-CLGLView::~CLGLView()
-{
-}
-
-//QOpenGLWidget interface
-
-void CLGLView::initializeGL()
-{
-
-}
-void CLGLView::resizeGL(int w, int h)
-{
-
-}
-void CLGLView::paintGL()
-{
-
-}
-
-
-#else
+#ifdef EXTERNAL_LIB_OPENCL
 
 #include "../libutil/utility/Utility.hpp"
 
@@ -59,6 +31,7 @@ CLGLView::CLGLView(QWidget *parent)
 	, fps("display")
 	, renderEnabled(false)
 	, displayEnabled(false)
+	, mRenderer(nullptr)
 {
 	connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
 	timer.setInterval(1000/25);
@@ -97,7 +70,10 @@ CLGLView::~CLGLView()
 
 void CLGLView::setRenderer(CLGLViewRenderer * renderer)
 {
-	this->renderer=renderer;
+	const QString oldSpec=(nullptr!=mRenderer)?mRenderer->getRendererSpec():"NONE";
+	const QString newSpec=(nullptr!=renderer)?renderer->getRendererSpec():"NONE";
+	qDebug()<<"CHANGING ACTIVE RENDERER FROM "<<oldSpec<<" --> "<<newSpec;
+	mRenderer=renderer;
 }
 
 GLContext &CLGLView::glctx()
@@ -118,6 +94,8 @@ void CLGLView::initializeGL()
 	initLogging();
 	initCanvas();
 	initCTX();
+
+	emit glInitialized();
 }
 
 void CLGLView::resizeGL(int w, int h)
@@ -127,8 +105,8 @@ void CLGLView::resizeGL(int w, int h)
 	int side = qMin(w, h);
 	glViewport((w - side) / 2, (h - side) / 2, side, side);
 
-	if(nullptr!=renderer) {
-		renderer->resize(QSize(w,h));
+	if(nullptr!=mRenderer) {
+		mRenderer->resize(QSize(w,h));
 	}
 }
 
@@ -141,13 +119,13 @@ void CLGLView::paintGL()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	if(timer.isActive()) {
 		glClearColor(utility::frand(), utility::frand(), utility::frand(), 0.5f);
-		if(nullptr!=renderer && renderer->isRunning()) {
+		if(nullptr!=mRenderer && mRenderer->isRunning()) {
 
 
-			renderer->renderFrame();
+			mRenderer->renderFrame();
 			makeCurrent();
 
-			GLuint pbo=renderer->pbo();
+			GLuint pbo=mRenderer->pbo();
 			if(0==pbo) {
 				qDebug()<<"Invalid PBO";
 			} else {
@@ -242,6 +220,56 @@ void CLGLView::initLogging()
 	logger->startLogging( QOpenGLDebugLogger::SynchronousLogging );
 }
 
+static void drawTestPattern(QImage &img, const QString &msg="")
+{
+	img.fill(Qt::green);
+	QPainter p(&img);
+	p.setPen(Qt::NoPen);
+
+
+	p.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
+
+	const qreal w=img.width();
+	const qreal h=img.height();
+	const qreal hi=qMax(w,h);
+	const qreal lo=qMin(w,h);
+
+	p.setBrush(Qt::gray);
+	p.drawEllipse(QRect((w-hi)/2,(h-hi)/2,hi,hi));
+
+	p.setBrush(Qt::red);
+	p.drawEllipse(QRect(0,0,w,h));
+	p.setBrush(Qt::blue);
+	p.drawEllipse(QRect((w-lo)/2,(h-lo)/2,lo,lo));
+
+	const QPointF center((w * 30.0) / 100.0,(h*30.0)/100.0);
+	const qreal radius=(qMin(w,h) * 10.0) / 100.0;
+	const qreal is=(M_PI * 2.0) / 100.0;
+	p.setBrush(Qt::white);
+	p.setPen(Qt::NoPen);
+	p.drawRect(QRectF(center-QPointF(radius,radius), QSizeF(radius*2,radius*2)));
+	p.setBrush(Qt::NoBrush);
+	QPen e;
+	e.setWidthF(1.0);
+	e.setColor(Qt::black);
+	p.setPen(e);
+	for(qreal i=0; i<M_PI * 2.0; i+=is) {
+		p.drawLine(center,QPointF(center+QPointF(cos(i)*radius, sin(i)*radius)));
+	}
+	if(msg.length()>0) {
+		QFont f=p.font();
+		f.setBold(true);
+		f.setPixelSize((w*30.0)/1000.0);
+		p.setFont(f);
+		QPen e;
+		e.setWidthF(1.0);
+		e.setColor(Qt::white);
+		p.setPen(e);
+		p.setBrush(Qt::black);
+		p.drawText(img.rect(),Qt::AlignCenter,msg);
+	}
+}
+
 
 
 void CLGLView::initCanvas()
@@ -330,28 +358,8 @@ void CLGLView::initCanvas()
 		canvasTexture->bind();
 
 		QImage img(QSize(width(),height()), QImage::Format_RGBA8888);
-		{
-			img.fill(Qt::green);
-			QPainter p(&img);
-			p.setPen(Qt::NoPen);
-
-
-			p.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
-
-			const qreal w=width();
-			const qreal h=height();
-			const qreal hi=qMax(w,h);
-			const qreal lo=qMin(w,h);
-
-			p.setBrush(Qt::gray);
-			p.drawEllipse(QRect((w-hi)/2,(h-hi)/2,hi,hi));
-
-			p.setBrush(Qt::red);
-			p.drawEllipse(QRect(0,0,w,h));
-			p.setBrush(Qt::blue);
-			p.drawEllipse(QRect((w-lo)/2,(h-lo)/2,lo,lo));
-		}
-		canvasTexture->setData(img.mirrored(),QOpenGLTexture::DontGenerateMipMaps);
+		drawTestPattern(img, "CLGLView dummy texture");
+		canvasTexture->setData(img,QOpenGLTexture::DontGenerateMipMaps);
 
 
 	}
@@ -416,6 +424,12 @@ void CLGLView::initCanvas()
 	glDisable(GL_CULL_FACE);
 }
 
+
+
+
+//TODO: read this https://software.intel.com/en-us/articles/opencl-and-opengl-interoperability-tutorial
+//	  about setting up cl context for GL devcie etc. using clGetGLContextInfoKHR
+
 void CLGLView::initCTX()
 {
 	makeCurrent();
@@ -471,10 +485,10 @@ void CLGLView::updateCamera()
 void CLGLView::onRenderToggle(bool v)
 {
 	renderEnabled=v;
-	if(nullptr!=renderer) {
-		renderer->setRunning(renderEnabled,false);
+	if(nullptr!=mRenderer) {
+		mRenderer->setRunning(renderEnabled,false);
 	} else {
-		qWarning()<<"NO RENDERER WHILE TOGGLIGN RENDER";
+		qWarning()<<"NO RENDERER WHILE TOGGELING RENDER";
 	}
 }
 

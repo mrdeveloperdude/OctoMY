@@ -1,33 +1,33 @@
 #include "HelloCLWorker.hpp"
 
+#include "../libclt/opencl/CLThreadManager.hpp"
+
 #include <QThread>
 
 
-HelloCLWorker::HelloCLWorker()
+HelloCLWorker::HelloCLWorker(CLThreadManager &man, int index, QObject *parent)
+	: CLWorker(man, index, parent)
 {
-
+	qDebug()<<"HELLO! CTOR started in thread " <<QThread::currentThreadId();
 }
 
 
 
 
-void HelloCLWorker::preProcess(QThread &th)
+void HelloCLWorker::preProcessImp()
 {
-	qWarning()<<"HELLO! preProcessing";
+	qWarning()<<"HELLO! pre...";
 }
 
-void HelloCLWorker::process()
+void HelloCLWorker::processImp()
 {
-	qWarning()<<"HELLO! processing started";
 	while(isRunning()) {
-		//qWarning()<<"HELLO! processing...";
+		qWarning()<<"HELLO! processing...";
 		QThread::msleep(1000);
 	}
-	qWarning()<<"HELLO! processing ended";
-	emit processFinished();
 }
 
-void HelloCLWorker::postProcess()
+void HelloCLWorker::postProcessImp()
 {
-	qWarning()<<"HELLO! postProcessing";
+	qWarning()<<"HELLO! post...";
 }

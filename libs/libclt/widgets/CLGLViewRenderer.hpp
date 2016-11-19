@@ -22,6 +22,7 @@ public:
 	virtual bool isRunning() const =0;
 	virtual void renderFrame() =0;
 	virtual GLuint pbo() =0;
+	virtual QString getRendererSpec() =0;
 
 };
 

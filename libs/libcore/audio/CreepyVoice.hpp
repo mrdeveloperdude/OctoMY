@@ -25,7 +25,7 @@ class CreepyVoice: public QObject, public IAudioSource
 {
 	Q_OBJECT
 private:
-	int mHZ;
+	int mHz;
 	bool mInited;
 	QList<CreepyBuffer *> mBuffersInUse;
 	QList<CreepyBuffer *> mBuffersFree;

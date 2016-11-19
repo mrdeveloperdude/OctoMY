@@ -146,22 +146,66 @@ void failOnCLError(cl_int code, QString msg, QString file, int line)
 
 
 
-QString CLDeviceToString(cl::Device &dev)
+QString CLDeviceToString(const cl::Device *dev)
 {
+	if(nullptr==dev) {
+		return "NULL";
+	}
+	//std::string sname=dev.getInfo<CL_DEVICE_NAME>();
+	const QString name=QString::fromLocal8Bit(dev->getInfo<CL_DEVICE_NAME>().c_str());
+	const QString profileName=QString::fromLocal8Bit(dev->getInfo<CL_DEVICE_PROFILE>().c_str());
+	//	QString::fromLocal8Bit(sname.c_str());
+	const cl_bool available= dev->getInfo<CL_DEVICE_AVAILABLE>();
+	const cl_bool compailerAvailable= dev->getInfo<CL_DEVICE_COMPILER_AVAILABLE>();
+	const cl_bool errorCorrection= dev->getInfo<CL_DEVICE_ERROR_CORRECTION_SUPPORT>();
+	const QString endianess=dev->getInfo<CL_DEVICE_ENDIAN_LITTLE>()?"L":"B";
 
-	std::string sname=dev.getInfo<CL_DEVICE_NAME>();
-	QString name=QString::fromLocal8Bit(sname.c_str());
 	return name //Device name
-		   + " ( "+OCLDeviceTypeString(dev.getInfo<CL_DEVICE_TYPE>()) +" x " //Type
-		   + QString::number(dev.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>())+" ) Memory: " // Number of cores
-		   + utility::humanReadableSize(dev.getInfo<CL_DEVICE_GLOBAL_MEM_SIZE>(), 2) + " Global, "
-		   + utility::humanReadableSize(dev.getInfo<CL_DEVICE_LOCAL_MEM_SIZE>(), 2) + (CL_GLOBAL==dev.getInfo<CL_DEVICE_LOCAL_MEM_TYPE>()?" Global, ":" Local, ")
-		   + utility::humanReadableSize(dev.getInfo<CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE>(), 2) +" Constant";
+		   + " ( "+OCLDeviceTypeString(dev->getInfo<CL_DEVICE_TYPE>()) +" x " //Type
+		   + QString::number(dev->getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>())+" ) Memory: " // Number of cores
+		   + utility::humanReadableSize(dev->getInfo<CL_DEVICE_GLOBAL_MEM_SIZE>(), 2) + " Global, "
+		   + utility::humanReadableSize(dev->getInfo<CL_DEVICE_LOCAL_MEM_SIZE>(), 2) + (CL_GLOBAL==dev->getInfo<CL_DEVICE_LOCAL_MEM_TYPE>()?" Global, ":" Local, ")
+		   + utility::humanReadableSize(dev->getInfo<CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE>(), 2) +" Constant"
+		   + "FLAGS["+(available?"A":"-")+(compailerAvailable?"C":"-")+(errorCorrection?"E":"-")+ endianess+"]"
+		   + " profile= "+profileName;
+}
+
+/*
+  dev.getInfo(CL_DEVICE_MAX_COMPUTE_UNITS, &i);
+		std::cout << "\t\tMax. Compute Units: " << i << std::endl;
+
+		size_t size;
+		dev.getInfo(CL_DEVICE_LOCAL_MEM_SIZE, &size);
+		std::cout << "\t\tLocal Memory Size: " << size/1024 << " KB" << std::endl;
+
+		dev.getInfo(CL_DEVICE_GLOBAL_MEM_SIZE, &size);
+		std::cout << "\t\tGlobal Memory Size: " << size/(1024*1024) << " MB" << std::endl;
+
+		dev.getInfo(CL_DEVICE_MAX_MEM_ALLOC_SIZE, &size);
+		std::cout << "\t\tMax Alloc Size: " << size/(1024*1024) << " MB" << std::endl;
+
+		dev.getInfo(CL_DEVICE_MAX_WORK_GROUP_SIZE, &size);
+		std::cout << "\t\tMax Work-group Size: " << size << std::endl;
+
+		std::vector<size_t> d;
+		dev.getInfo(CL_DEVICE_MAX_WORK_ITEM_SIZES, &d);
+		std::cout << "\t\tMax Work-item Dims: (";
+		for (size_t& st : d)
+		  std::cout << st << " ";
+		std::cout << "\x08)" << std::endl;
+
+
+*/
+
+QDebug &operator<<(QDebug &d, cl::Device &dev)
+{
+	QString s=CLDeviceToString(&dev);
+	d.noquote().operator<<(s);
+	return d;
 }
 
 
-
-QDebug &operator<<(QDebug &d, cl::Device &dev)
+QDebug &operator<<(QDebug &d, cl::Device *dev)
 {
 	QString s=CLDeviceToString(dev);
 	d.noquote().operator<<(s);

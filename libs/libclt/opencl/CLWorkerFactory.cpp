@@ -4,5 +4,3 @@ CLWorkerFactory::CLWorkerFactory()
 {
 
 }
-
-

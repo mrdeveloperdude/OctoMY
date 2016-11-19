@@ -13,30 +13,30 @@ HexyTool::HexyTool(QWidget *parent)
 {
 	ui->setupUi(this);
 	ui->tryToggleConnect->setText("Connect","Connecting","Connected");
-	if(!connect(serial,SIGNAL(settingsChanged()), this, SLOT(onHexySettingsChanged()))){
+	if(!connect(serial,SIGNAL(settingsChanged()), this, SLOT(onHexySettingsChanged()))) {
 		qWarning()<<"ERROR: could not connect";
 	}
 
-	if(!connect(serial,SIGNAL(connectionChanged()), this, SLOT(onHexyConenctionChanged()))){
+	if(!connect(serial,SIGNAL(connectionChanged()), this, SLOT(onHexyConenctionChanged()))) {
 		qWarning()<<"ERROR: could not connect";
 	}
-	if(!connect(ui->tryToggleConnect, SIGNAL(stateChanged(TryToggleState)), this, SLOT(onConnectChanged(TryToggleState)))){
-		qWarning()<<"ERROR: could not connect";
-	}
-
-	if(!connect(ui->widgetLimbIK, SIGNAL(IKUpadted()), this, SLOT(onLimbIKUpdated()))){
+	if(!connect(ui->tryToggleConnect, SIGNAL(stateChanged(TryToggleState)), this, SLOT(onConnectChanged(TryToggleState)))) {
 		qWarning()<<"ERROR: could not connect";
 	}
 
+	if(!connect(ui->widgetLimbIK, SIGNAL(IKUpadted()), this, SLOT(onLimbIKUpdated()))) {
+		qWarning()<<"ERROR: could not connect";
+	}
 
-	for(quint32 i=0;i<HexySerial::SERVO_COUNT;++i){
+
+	for(quint32 i=0; i<HexySerial::SERVO_COUNT; ++i) {
 		ServoInput *si=new ServoInput();
-		if(0!=si){
+		if(0!=si) {
 			si->configure(settings,i);
-			if(!connect(si,SIGNAL(servoMoved(quint32, qreal)),this,SLOT(onServoMoved(quint32, qreal)),OC_CONTYPE)){
+			if(!connect(si,SIGNAL(servoMoved(quint32, qreal)),this,SLOT(onServoMoved(quint32, qreal)),OC_CONTYPE)) {
 				qWarning()<<"ERROR: could not connect";
 			}
-			if(!connect(si,SIGNAL(servoKilled(quint32)),this,SLOT(onServoKilled(quint32)),OC_CONTYPE)){
+			if(!connect(si,SIGNAL(servoKilled(quint32)),this,SLOT(onServoKilled(quint32)),OC_CONTYPE)) {
 				qWarning()<<"ERROR: could not connect";
 			}
 			ui->scrollAreaWidgetContents->layout()->addWidget(si);
@@ -50,7 +50,7 @@ HexyTool::HexyTool(QWidget *parent)
 	killAll();
 	gaitTimer.setTimerType(Qt::PreciseTimer);
 	gaitTimer.setInterval(40);
-	if(!connect(&gaitTimer,SIGNAL(timeout()),this,SLOT(onUpdateGaitTimer()))){
+	if(!connect(&gaitTimer,SIGNAL(timeout()),this,SLOT(onUpdateGaitTimer()))) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 	gait.setDirection(0.5,0.5);
@@ -62,7 +62,7 @@ HexyTool::HexyTool(QWidget *parent)
 	hexyTimer.setTimerType(Qt::PreciseTimer);
 
 		if(!connect(&hexyTimer,SIGNAL(timeout()),this,SLOT(onHexyTimer()))){
-			qDebug()<<"could not connect";
+			qWarning()<<"ERROR: Could not connect";
 		}
 
 void HubWindow::onHexyTimer(){
@@ -91,14 +91,15 @@ void HubWindow::onHexyTimer(){
 }
 
 */
-void HexyTool::onUpdateGaitTimer(){
+void HexyTool::onUpdateGaitTimer()
+{
 	//qDebug()<<"----------------------UPDATE";
 	gait.update();
 	const qreal PI2=M_PI*-2;
-	const int map[]={7,6,5,11,10,9,15,14,13,16,17,18,20,21,22,24,25,26};
+	const int map[]= {7,6,5,11,10,9,15,14,13,16,17,18,20,21,22,24,25,26};
 	int i=0;
 	quint32 flags=0;
-	for(int leg=0;leg<6;++leg){
+	for(int leg=0; leg<6; ++leg) {
 		const quint32 coxID=map[i++];
 		const quint32 femID=map[i++];
 		const quint32 tibID=map[i++];
@@ -112,33 +113,39 @@ void HexyTool::onUpdateGaitTimer(){
 	serial->move(pos,flags);
 }
 
-HexyTool::~HexyTool(){
+HexyTool::~HexyTool()
+{
 	delete ui;
 }
 
 
-void HexyTool::onConnectChanged(TryToggleState s){
+void HexyTool::onConnectChanged(TryToggleState s)
+{
 	ui->scrollAreaServos->setEnabled(ON==s);
 	switch(s) {
-		case(OFF):{
-				killAll();
-				if(0!=serial){
-					serial->closeSerialPort();
-				}
-			}break;
-		case(TRYING):{
-				setEnabled(false);
-				serial->configure();
-			}break;
-		case(ON):{
-				killAll();
-			}break;
+	case(OFF): {
+		killAll();
+		if(0!=serial) {
+			serial->closeSerialPort();
+		}
+	}
+	break;
+	case(TRYING): {
+		setEnabled(false);
+		serial->configure();
+	}
+	break;
+	case(ON): {
+		killAll();
+	}
+	break;
 	}
 
 }
 
-void HexyTool::onLimbIKUpdated(){
-	const int map[]={7,6,5,11,10,9,15,14,13,16,17,18,20,21,22,24,25,26};
+void HexyTool::onLimbIKUpdated()
+{
+	const int map[]= {7,6,5,11,10,9,15,14,13,16,17,18,20,21,22,24,25,26};
 	quint32 i=0;
 	const quint32 coxID=map[i++];
 	const quint32 femID=map[i++];
@@ -153,7 +160,8 @@ void HexyTool::onLimbIKUpdated(){
 }
 
 
-void HexyTool::onHexySettingsChanged(){
+void HexyTool::onHexySettingsChanged()
+{
 	const bool e=serial->isConnected();
 	ui->tryToggleConnect->setState(e?ON:OFF);
 	setEnabled(true);
@@ -161,7 +169,8 @@ void HexyTool::onHexySettingsChanged(){
 
 
 
-void HexyTool::onHexyConenctionChanged(){
+void HexyTool::onHexyConenctionChanged()
+{
 	const bool e=serial->isConnected();
 	ui->tryToggleConnect->setState(e?ON:OFF);
 	setEnabled(true);
@@ -173,7 +182,7 @@ void HexyTool::onHexyConenctionChanged(){
 
 void HexyTool::onServoMoved(quint32 id, qreal val)
 {
-	if(id>= HexySerial::SERVO_COUNT){
+	if(id>= HexySerial::SERVO_COUNT) {
 		return;
 	}
 	pos[id]=(val*2.0)-1.0;
@@ -183,7 +192,7 @@ void HexyTool::onServoMoved(quint32 id, qreal val)
 
 void HexyTool::onServoKilled(quint32 id)
 {
-	if( id>= HexySerial::SERVO_COUNT){
+	if( id>= HexySerial::SERVO_COUNT) {
 		return;
 	}
 	const quint32 bit=1<<id;
@@ -192,24 +201,28 @@ void HexyTool::onServoKilled(quint32 id)
 }
 
 
-void HexyTool::configure(Settings *s){
+void HexyTool::configure(Settings *s)
+{
 	settings=s;
 	int i=0;
 	auto sis=ui->scrollAreaWidgetContents->findChildren<ServoInput *>();
-	for(ServoInput *si:sis){
+	for(ServoInput *si:sis) {
 		si->configure(settings,i++);
 	}
 }
 
-void HexyTool::killAll(){
-	qDebug()<<"KILL ALL";
-	serial->kill();
-	QList<ServoInput *> si=ui->scrollAreaWidgetContents->findChildren<ServoInput *>();
-	for(QList<ServoInput*>::iterator it=si.begin(),e=si.end();it!=e;++it){
-		ServoInput *s=*it;
-		if(0!=s){
-			QSignalBlocker sb(s);
-			s->disableServo();
+void HexyTool::killAll()
+{
+	//qDebug()<<"KILL ALL";
+	if(serial->isConnected()) {
+		serial->kill();
+		QList<ServoInput *> si=ui->scrollAreaWidgetContents->findChildren<ServoInput *>();
+		for(QList<ServoInput*>::iterator it=si.begin(),e=si.end(); it!=e; ++it) {
+			ServoInput *s=*it;
+			if(0!=s) {
+				QSignalBlocker sb(s);
+				s->disableServo();
+			}
 		}
 	}
 }
@@ -221,9 +234,9 @@ void HexyTool::on_pushButtonDisableAll_clicked()
 
 void HexyTool::on_pushButtonGait_toggled(bool checked)
 {
-	if(checked){
+	if(checked) {
 		gaitTimer.start();
-	}else{
+	} else {
 		gaitTimer.stop();
 	}
 }

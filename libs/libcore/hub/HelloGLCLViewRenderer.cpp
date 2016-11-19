@@ -1,12 +1,13 @@
 #include "HelloGLCLViewRenderer.hpp"
 
+#ifdef EXTERNAL_LIB_OPENCL
+
 #include "HelloCLWorkerFactory.hpp"
 #include "../libclt/opencl/CLThreadManager.hpp"
 
 
 HelloGLCLViewRenderer::HelloGLCLViewRenderer()
-	: mRunning(false)
-	, mPBO(0)
+	: mPBO(0)
 	, mThreadManager(nullptr)
 {
 
@@ -14,26 +15,32 @@ HelloGLCLViewRenderer::HelloGLCLViewRenderer()
 
 HelloGLCLViewRenderer::~HelloGLCLViewRenderer()
 {
-
+	delete mThreadManager;
+	mThreadManager=nullptr;
 }
 
 void HelloGLCLViewRenderer::initialize(GLContext &ctx)
 {
 	qDebug()<<"Initializing with: "<<ctx.toString();
-
+	//ctx.currentize();
 	HelloCLWorkerFactory *factory=new HelloCLWorkerFactory();
 	if(nullptr!=factory) {
-		mThreadManager=new CLThreadManager(*factory,"",true,true);
-		if(nullptr!=mThreadManager) {
-			mThreadManager->setRunning(true);
+		QSurface *surf=ctx.surface();
+		if(nullptr!=surf) {
+			CLGLInteropConfig config(true, 512, 512 );
+			mThreadManager=new CLThreadManager(*factory,config, "", false,true);
+			if(nullptr==mThreadManager) {
+				qWarning()<<"ERROR: Could not allocate CL thread manager";
+			}
 		} else {
-			qWarning()<<"ERROR: Could not allocate CL thread manager";
+			qWarning()<<"ERROR: context had no surface";
 		}
 	} else {
 		qWarning()<<"ERROR: Could not allocate CL worker factory";
 	}
-
+	//ctx.uncurrentize();
 }
+
 
 void HelloGLCLViewRenderer::resize(QSize sz)
 {
@@ -42,17 +49,26 @@ void HelloGLCLViewRenderer::resize(QSize sz)
 
 bool HelloGLCLViewRenderer::setRunning(bool running, bool block)
 {
-	Q_UNUSED(block);
-	mRunning=running;
-	qDebug()<<"Setting running to: "<<mRunning;
-	return mRunning;
+	if(nullptr!=mThreadManager) {
+		mThreadManager->setRunning(running, block);
+	} else {
+		qWarning()<<"ERROR: No CL thread manager while set running";
+	}
+	qDebug()<<"Setting running to: "<<running;
+	return running;
 }
 
 
 bool HelloGLCLViewRenderer::isRunning() const
 {
-	qDebug()<<"Returning "<<mRunning;
-	return mRunning;
+	bool ret=false;
+	if(nullptr!=mThreadManager) {
+		ret=mThreadManager->isRunning();
+	} else {
+		qWarning()<<"ERROR: No CL thread manager while checking for isRunning";
+	}
+	qDebug()<<"Returning "<<ret;
+	return ret;
 }
 void HelloGLCLViewRenderer::renderFrame()
 {
@@ -64,3 +80,11 @@ GLuint HelloGLCLViewRenderer::pbo()
 	qDebug()<<"Returning pbo: "<<mPBO;
 	return mPBO;
 }
+
+
+QString HelloGLCLViewRenderer::getRendererSpec()
+{
+	return "HelloGLCLViewRenderer";
+}
+
+#endif // EXTERNAL_LIB_OPENCL

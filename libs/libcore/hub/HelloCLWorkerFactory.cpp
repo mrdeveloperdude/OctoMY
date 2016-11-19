@@ -8,7 +8,7 @@ HelloCLWorkerFactory::HelloCLWorkerFactory()
 }
 
 
-CLWorker * HelloCLWorkerFactory::createInstance()
+CLWorker * HelloCLWorkerFactory::createInstance(CLThreadManager &man, int index)
 {
-	return new HelloCLWorker;
+	return new HelloCLWorker(man, index);
 }

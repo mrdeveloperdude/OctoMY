@@ -2,6 +2,9 @@
 #define CLTHREADMANAGER_HPP
 
 #include "CLDeviceSelection.hpp"
+
+#include "CLGLInteropConfig.hpp"
+
 #include <QObject>
 #include <QVector>
 #include <QString>
@@ -23,19 +26,25 @@ class CLThreadManager : public QObject
 private:
 	CLWorkerFactory &mFactory;
 	CLDeviceSelection mDeviceSelection;
+	CLGLInteropConfig mInteropConfig;
 	QVector<CLWorker *> mWorkers;
 	QVector<QThread *> mThreads;
+	QThread *mDesiredCurrent;
 
 
 public:
-	explicit CLThreadManager(CLWorkerFactory &factory, QString deviceSelectionString="", bool allowGPU=true, bool allowCPU=false, QObject *parent = nullptr);
+	explicit CLThreadManager(CLWorkerFactory &factory, CLGLInteropConfig config=CLGLInteropConfig(), QString deviceSelectionString="", bool allowGPU=true, bool allowCPU=false, QObject *parent = nullptr);
 
 	virtual ~CLThreadManager();
 
 public:
 
-	bool isRunning();
+	bool isRunning()  const;
 	void setRunning(bool running, bool block=false);
+
+	const cl::Device *device(int index) const;
+
+	CLGLInteropConfig interopConfig() const;
 };
 
 #endif // CLTHREADMANAGER_HPP

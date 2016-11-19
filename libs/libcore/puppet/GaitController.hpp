@@ -450,13 +450,13 @@ class GaitController{
 
 		void hookSignals(QObject &o){
 			if(!msg.connect(&msg,SIGNAL(gaitUpdated()), &o,SLOT(onGaitUpdated()))){
-				qWarning()<<"ERRO: Could not connect";
+				qWarning()<<"ERROR: Could not connect";
 			}
 		}
 
 		void unHookSignals(QObject &o){
 			if(!msg.disconnect(&msg,SIGNAL(gaitUpdated()), &o,SLOT(onGaitUpdated()))){
-				qWarning()<<"ERRO: Could not disconnect";
+				qWarning()<<"ERROR: Could not disconnect";
 			}
 		}
 
@@ -506,7 +506,7 @@ class GaitController{
 					}
 				}
 			}
-			qDebug()<<"BALANCER IS: "<<candidate<<" WITH "<<d<<" ( skipped "<<skipped<<")";
+			//qDebug()<<"BALANCER IS: "<<candidate<<" WITH "<<d<<" ( skipped "<<skipped<<")";
 			if(candidate>-1){
 				limbs[candidate]->balance=true;
 			}
@@ -567,7 +567,7 @@ class GaitController{
 			if(stridelengthTarget>1.0){
 				stridelengthTarget=1.0;
 			}
-			qDebug()<<"NEW STRIDE LENGTH: "<<stridelengthTarget;
+			//qDebug()<<"NEW STRIDE LENGTH: "<<stridelengthTarget;
 		}
 
 		void setTarget(T x, T y){
@@ -591,7 +591,7 @@ class GaitController{
 		}
 
 		void setFeedrate(T f){
-			qDebug()<<"FEEDRATE: "<<f;
+			//qDebug()<<"FEEDRATE: "<<f;
 			feedrateTarget=f;
 		}
 
@@ -600,11 +600,11 @@ class GaitController{
 			if(limb>=1 && limb<=limbCount){
 				limb--;
 				limbs[limb]->enabledPending=!limbs[limb]->enabledPending;
-				qDebug()<<"TOGGLING LIMB "<<limb;
+				//qDebug()<<"TOGGLING LIMB "<<limb;
 			}
 		}
 		void togglePause(){
-			qDebug()<<"TOGGLING PAUSE";
+			//qDebug()<<"TOGGLING PAUSE";
 			feedrateTarget=(feedrateTarget>0.1?0.0:1.0);
 		}
 
@@ -612,7 +612,7 @@ class GaitController{
 
 		void toggleSingleLimb(){
 			singleLimbMode=!singleLimbMode;
-			qDebug()<<"TOGGLING SINGLE LIMB MODE TO "<<(singleLimbMode?"ON":"OFF");
+			//qDebug()<<"TOGGLING SINGLE LIMB MODE TO "<<(singleLimbMode?"ON":"OFF");
 
 		}
 

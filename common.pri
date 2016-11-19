@@ -108,12 +108,22 @@ debug{
 
 
 # Strive towards the most modern standard of C++ language available
-
-QMAKE_CXXFLAGS -= -std=c++14
+# From https://gcc.gnu.org/onlinedocs/gcc-5.1.0/gcc/C-Dialect-Options.html#C-Dialect-Options
+QMAKE_CXXFLAGS -= -std=*
+QMAKE_CXXFLAGS -= -std=c++98
+QMAKE_CXXFLAGS -= -std=c++03
+QMAKE_CXXFLAGS -= -std=gnu++98
+QMAKE_CXXFLAGS -= -std=gnu++03
 QMAKE_CXXFLAGS -= -std=c++11
 QMAKE_CXXFLAGS -= -std=c++0x
+QMAKE_CXXFLAGS -= -std=gnu++11
+QMAKE_CXXFLAGS -= -std=gnu++0x
+QMAKE_CXXFLAGS -= -std=c++14
 QMAKE_CXXFLAGS -= -std=c++1y
-#QMAKE_CXXFLAGS -= -stdlib=libc++
+QMAKE_CXXFLAGS -= -std=gnu++14
+QMAKE_CXXFLAGS -= -std=gnu++1y
+QMAKE_CXXFLAGS -= -std=c++1z
+QMAKE_CXXFLAGS -= -std=gnu++1z
 
 contains(CONFIG, c++14){
 	QMAKE_CXXFLAGS += -std=c++14 -std=c++1y
@@ -121,6 +131,31 @@ contains(CONFIG, c++14){
 contains(CONFIG, c++11){
 	QMAKE_CXXFLAGS += -std=c++11
 }
+
+
+# Strive towards the most modern standard of pure C language available
+
+QMAKE_CFLAGS -= -std=*
+QMAKE_CFLAGS -= -std=c90
+QMAKE_CFLAGS -= -std=c89
+QMAKE_CFLAGS -= -std=iso9899:1990
+QMAKE_CFLAGS -= -std=iso9899:199409
+QMAKE_CFLAGS -= -std=c99
+QMAKE_CFLAGS -= -std=c9x
+QMAKE_CFLAGS -= -std=iso9899:1999
+QMAKE_CFLAGS -= -std=iso9899:199x
+QMAKE_CFLAGS -= -std=c11
+QMAKE_CFLAGS -= -std=c1x
+QMAKE_CFLAGS -= -std=iso9899:2011
+QMAKE_CFLAGS -= -std=gnu90
+QMAKE_CFLAGS -= -std=gnu89
+QMAKE_CFLAGS -= -std=gnu99
+QMAKE_CFLAGS -= -std=gnu9x
+QMAKE_CFLAGS -= -std=gnu11
+QMAKE_CFLAGS -= -std=gnu1x
+
+
+QMAKE_CFLAGS += -std=c11
 
 
 # Automatic support for ccache

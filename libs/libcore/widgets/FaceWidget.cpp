@@ -15,7 +15,7 @@ FaceWidget::FaceWidget(QWidget *parent) :
 {
 	ui->setupUi(this);
 	ui->tryToggleConnect->setText("Go Online", "Connecting..", "Online");
-	if(!connect(ui->tryToggleConnect,SIGNAL(stateChanged(TryToggleState)),this,SIGNAL(connectionStateChanged(TryToggleState)),OC_CONTYPE)) {
+	if(!connect(ui->tryToggleConnect,SIGNAL(stateChanged(const TryToggleState, const TryToggleState)),this,SIGNAL(connectionStateChanged(const TryToggleState, const TryToggleState)),OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 	updateEyeColor();

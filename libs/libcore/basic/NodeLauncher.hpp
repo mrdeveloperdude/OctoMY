@@ -87,6 +87,8 @@ void NodeLauncher<T>::run()
 	QCoreApplication::setOrganizationName(Settings::ORGANIZATION_NAME);
 	QCoreApplication::setOrganizationDomain(Settings::DOMAIN_NAME);
 
+	QLoggingCategory::setFilterRules("qt.network.ssl.warning=false");
+
 	qsrand(QDateTime::currentMSecsSinceEpoch());
 
 #ifndef Q_OS_ANDROID

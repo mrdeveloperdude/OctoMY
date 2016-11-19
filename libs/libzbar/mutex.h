@@ -152,8 +152,8 @@ typedef int zbar_mutex_t[0];
 
 #define _zbar_mutex_init(l) -1
 #define _zbar_mutex_destroy(l)
-#define _zbar_mutex_lock(l) 0
-#define _zbar_mutex_unlock(l) 0
+#define _zbar_mutex_lock(l) ((int)0)
+#define _zbar_mutex_unlock(l) ((int)0)
 
 #endif
 

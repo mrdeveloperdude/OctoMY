@@ -39,3 +39,15 @@ void ActuatorControlWidget::configure(quint32 num)
 	QSpacerItem *vs = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 	ui->verticalLayoutServos->addItem(vs);
 }
+
+
+
+void ActuatorControlWidget::onServoMoved(quint32 id, qreal val)
+{
+
+}
+
+void ActuatorControlWidget::onServoKilled(quint32 id)
+{
+
+}

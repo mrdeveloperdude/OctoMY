@@ -27,6 +27,12 @@ public:
 public:
 
 	void configure(quint32 num);
+
+	public slots:
+
+	void onServoMoved(quint32 id, qreal val);
+	void onServoKilled(quint32 id);
+
 };
 
 #endif // ACTUATORCONTROLWIDGET_HPP

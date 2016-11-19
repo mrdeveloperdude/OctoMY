@@ -35,18 +35,18 @@ class HubWindow : public QMainWindow, public LogDestination
 	Q_OBJECT
 private:
 	Ui::HubWindow *ui;
-	Hub *hub;
-	QTimer summaryTimer;
-	quint64 lastTime;
-	qreal angle=0.0f;
-	GaitController<qreal> *m_gait;
-	ZBarScanner *scanner;
+	Hub *mHub;
+	QTimer mSummaryTimer;
+	quint64 mLastTime;
+	qreal mAngle=0.0f;
+	GaitController<qreal> *mGait;
+	ZBarScanner *mScanner;
 
 	//QStandardItemModel simClients;
 
 
 public:
-	explicit HubWindow(Hub *hub, QWidget *parent = 0);
+	explicit HubWindow(Hub *mHub, QWidget *parent = 0);
 	virtual ~HubWindow();
 
 public:
@@ -57,9 +57,10 @@ private:
 
 	void startProcess(QString base);
 #ifdef EXTERNAL_LIB_OPENCL
-	void initCL();
-#endif
 
+private slots:
+	void onGLWidgetInitialized();
+#endif
 
 	// CommChannel slots
 private slots:
@@ -84,6 +85,7 @@ private slots:
 
 	void on_pushButtonRandomIdenticonID_clicked();
 	void on_lineEditIdenticonID_textChanged(const QString &arg1);
+
 };
 
 #endif // HUBWINDOW_HPP

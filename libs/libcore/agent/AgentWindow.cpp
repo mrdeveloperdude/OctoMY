@@ -25,7 +25,9 @@ void AgentWindow::updateIdentity()
 	if(nullptr!=mAgent) {
 		mAgent->updateDiscoveryClient();
 		updateIcon();
-
+	}
+	else{
+		qWarning()<<"WARNING: No Agent in agent window";
 	}
 	ui->widgetFace->setAgent(mAgent);
 	ui->widgetDelivery->configure(mAgent);
@@ -213,7 +215,12 @@ void AgentWindow::prepareMenu()
 		if(nullptr!=mAgent) {
 			QMessageBox::StandardButton reply = QMessageBox::question(this, "Unbirth", "Are you sure you want to DELETE the personality of this robot forever?", QMessageBox::No|QMessageBox::Yes);
 			if (QMessageBox::Yes==reply) {
-				mAgent->peers().removeParticipant(mAgent->nodeIdentity()->id());
+				QSharedPointer<NodeAssociate> assID=mAgent->nodeIdentity();
+				if(nullptr!=assID) {
+					mAgent->peers().removeParticipant(assID->id());
+				} else {
+					qWarning()<<"WARNING: there was no assID during unbirth";
+				}
 				mAgent->peers().save();
 				mAgent->keyStore().clear();
 				updateIdentity();

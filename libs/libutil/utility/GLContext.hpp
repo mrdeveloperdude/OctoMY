@@ -9,7 +9,7 @@ class QThread;
 
 class GLContext
 {
-public:
+private:
 	QOpenGLContext* glctx;
 	QSurface *surf;
 
@@ -21,6 +21,8 @@ public:
 public:
 
 	void setSurface(QSurface &surf);
+	QSurface *surface();
+	QOpenGLContext *context();
 	void currentize();
 	void uncurrentize();
 

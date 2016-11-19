@@ -33,13 +33,23 @@ void GLContext::setSurface(QSurface &surf)
 	this->surf=&surf;
 }
 
+QSurface *GLContext::surface()
+{
+	return surf;
+}
+
+QOpenGLContext *GLContext::context()
+{
+	return glctx;
+}
+
 /*
 
   From http://doc.qt.io/qt-5/qopenglcontext.html#makeCurrent
 
 Do not call this function from a different thread than the one the QOpenGLContext
 instance lives in. If you wish to use QOpenGLContext from a different thread you
-should first call make sure it's not current in the current thread, by calling
+should first make sure it's not current in the current thread, by calling
 doneCurrent() if necessary. Then call moveToThread(otherThread) before using it
 in the other thread.
  */

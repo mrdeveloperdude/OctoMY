@@ -22,6 +22,8 @@
  *------------------------------------------------------------------------*/
 
 #include "config.h"
+#include "timer.h"
+
 #include <unistd.h>
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>

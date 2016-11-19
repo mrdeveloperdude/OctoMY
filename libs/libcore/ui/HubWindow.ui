@@ -53,7 +53,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>4</number>
+        <number>5</number>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -562,7 +562,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidgetDevelopment">
            <property name="currentIndex">
-            <number>9</number>
+            <number>7</number>
            </property>
            <widget class="QWidget" name="tabGait">
             <attribute name="title">
@@ -839,6 +839,9 @@
             <layout class="QGridLayout" name="gridLayout_4">
              <item row="0" column="0">
               <widget class="QPushButton" name="pushButtonCLGLRender">
+               <property name="toolTip">
+                <string>Start the currently selected OpenCL rendering engine to produce images.</string>
+               </property>
                <property name="text">
                 <string>Render</string>
                </property>
@@ -849,6 +852,9 @@
              </item>
              <item row="0" column="1">
               <widget class="QPushButton" name="pushButtonCLGLDisplay">
+               <property name="toolTip">
+                <string>Start transferring data from OpenCL via OpenCL-OpenGL interop to display in OpenGL context</string>
+               </property>
                <property name="text">
                 <string>Display</string>
                </property>

@@ -1,12 +1,14 @@
 # Useful build debugging tool
 # Included last in all important .pro files
 # Comment in the relevant lines below to see
-# the final values given to important
-# parameters for the build
+# the values given to important parameters
+# for the build at the point of inclusion
 
-lolbob{
+USE_STATUS{
 message("")
-message("------ " $${TARGET} " " $${DEFINES} " ------")
+message("")
+message("===============================================")
+message("====== " $${TARGET} " " $${DEFINES} " ======")
 message("| Qt: " $$[QT_VERSION] " @ " $$[QT_INSTALL_PREFIX])
 message("| TOP_PWD:   " $${TOP_PWD})
 message("| TOP_BUILD: " $${TOP_BUILD})
@@ -14,20 +16,37 @@ message("| PRO_PWD:   " $${_PRO_FILE_PWD_})
 message("| PRO_BUILD: " $$shadowed($$_PRO_FILE_PWD_))
 message("| CONFIG:    " $${CONFIG})
 message("| QT:        " $${QT})
-message("| CXXFLAGS:  " $${QMAKE_CXXFLAGS})
-message("| CXX:       " $${QMAKE_CXX})
-message("| SOURCES:   " $${SOURCES})
-message("| HEADERS:   " $${HEADERS})
-message("| LIBS:      " $${LIBS})
-message("| RESOURCES: " $${RESOURCES})
-message("| DISTFILES: " $${DISTFILES})
 message("| INCLUDEPATH:    " $${INCLUDEPATH})
 message("| DEPENDPATH:     " $${DEPENDPATH})
 message("| PRE_TARGETDEPS: " $${PRE_TARGETDEPS})
 message("| QMAKE_EXTRA_COMPILERS: " $${QMAKE_EXTRA_COMPILERS})
 message("| LOCAL_OVERRIDES ENABLED: " $${LOCAL_OVERRIDES})
 message("| DEFINES: " $${DEFINES})
-message("| C++ Compiler Version: " $$system(c++ --version) )
-message("---------------------------------------------")
+message("----------- C++ compiler --------------------")
+message("| CLAGS:    " $${QMAKE_CFLAGS})
+message("| CC:       " $${QMAKE_CC})
+message("| c++ -v:   " $$system(c++ --version) )
+message("----------- C Compiler ----------------------")
+message("| CXXFLAGS: " $${QMAKE_CXXFLAGS})
+message("| CXX:      " $${QMAKE_CXX})
+message("| cc -v:    " $$system(cc --version) )
+message("----------- Source files --------------------")
+message("| " $${SOURCES})
+message("----------- Header files --------------------")
+message("| " $${HEADERS})
+message("----------- Library files -------------------")
+message("| " $${LIBS})
+message("----------- Resource files ------------------")
+message("| " $${RESOURCES})
+message("----------- Distribution files --------------")
+message("| " $${DISTFILES})
+message("----------- Parser files --------------")
+message("| FLEXSOURCES:    " $${FLEXSOURCES})
+message("| QLALRSOURCES:   " $${QLALRSOURCES})
+message("| GENERATED_HEADERS:   " $${GENERATED_HEADERS})
+message("| GENERATED_SOURCES:    " $${GENERATED_SOURCES})
+message("-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_")
+message("")
+message("")
 
 }

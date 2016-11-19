@@ -35,7 +35,7 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 	}
 	updateTimer.setInterval(100);
 	if(!connect(&updateTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()),OC_CONTYPE)) {
-		qDebug()<<"could not connect";
+		qWarning()<<"ERROR: Could not connect";
 	}
 	updateTimer.start();
 	ui->widgetFace->setDisabled(true);

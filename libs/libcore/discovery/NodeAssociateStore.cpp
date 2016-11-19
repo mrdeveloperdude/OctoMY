@@ -15,7 +15,7 @@ NodeAssociateStore::NodeAssociateStore(QString fn, QObject *parent)
 	: AsyncStore(fn, parent)
 {
 	setObjectName("NodeAssociateStore");
-	qDebug()<<"NodeAssociateStore() file="<<fn;
+	//qDebug()<<"NodeAssociateStore() file="<<fn;
 	// Forward the async storeReady signal
 	if(!connect( this, SIGNAL(storeReady(bool)), SIGNAL(peerStoreReady(bool)), OC_CONTYPE)) {
 		qWarning()<<"Could not connect "<<objectName();
@@ -35,7 +35,7 @@ NodeAssociateStore::~NodeAssociateStore()
 
 void NodeAssociateStore::bootstrapWorkerImpl()
 {
-	qDebug()<<"KeyStore() bootstrapWorkerImpl() file="<<mFilename;
+	//qDebug()<<"KeyStore() bootstrapWorkerImpl() file="<<mFilename;
 	QFile f(mFilename);
 	if(!f.exists()) {
 		qDebug()<<"NodeAssociateStore: no keystore file found, saving";
@@ -71,13 +71,13 @@ void NodeAssociateStore::load()
 			mReady=true;
 		}
 	}
-	qDebug()<<"EMITTING storeReady";
+	//qDebug()<<"EMITTING storeReady";
 	emit peerStoreReady(!mError);
 }
 
 void NodeAssociateStore::save()
 {
-	qDebug()<<"NodeAssociateStore: Saving to file: "<<mFilename;
+	//qDebug()<<"NodeAssociateStore: Saving to file: "<<mFilename;
 	QVariantMap map;
 	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();
 	QVariantList remotes;

@@ -33,7 +33,7 @@ struct CreepyBuffer {
 
 CreepyVoice::CreepyVoice(PortableID &id, QObject *parent)
 	: QObject(parent)
-	, mHZ(0)
+	, mHz(0)
 	, mInited(false)
 	, bac(0)
 	, cur(nullptr)
@@ -108,7 +108,7 @@ CreepyBuffer *CreepyVoice::getFreeBuffer(int numsamples)
 #ifdef EXTERNAL_LIB_ESPEAK
 void CreepyVoice::feed(short *wav, int numsamples, espeak_EVENT *events)
 {
-	const int numsamples2 = (numsamples * af.sampleRate()) / (mHZ == 0 ? 1 : mHZ);
+	const int numsamples2 = (numsamples * af.sampleRate()) / (mHz == 0 ? 1 : mHz);
 	CreepyBuffer *buffer=getFreeBuffer(numsamples2);
 	if(nullptr!=buffer) {
 		short * dp = buffer->mBuffer;
@@ -179,7 +179,7 @@ void CreepyVoice::init(QAudioFormat f)
 	qDebug()<<"INITIALIZING VOICE WITH SEED: "<<seed;
 
 #ifdef EXTERNAL_LIB_ESPEAK
-	mHZ = espeak_Initialize(AUDIO_OUTPUT_RETRIEVAL, 10, 0, 0);
+	mHz = espeak_Initialize(AUDIO_OUTPUT_RETRIEVAL, 10, 0, 0);
 	if(mHz >0) {
 		espeak_SetSynthCallback(synthCallback);
 		espeak_SetVoiceByName("en");

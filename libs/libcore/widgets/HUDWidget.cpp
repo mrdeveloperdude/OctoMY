@@ -13,7 +13,7 @@ HUDWidget::HUDWidget(QWidget *parent)
 	gaugeTimer.setInterval(1000/60);
 	gaugeTimer.setTimerType(Qt::PreciseTimer);
 	if(!connect(&gaugeTimer,SIGNAL(timeout()),this,SLOT(onGaugeTimer()),OC_CONTYPE)){
-		qDebug()<<"could not connect";
+		qWarning()<<"ERROR: Could not connect";
 	}
 	ui->tabWidgetAviation->setCurrentIndex(0);
 }

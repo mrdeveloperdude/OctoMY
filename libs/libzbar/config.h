@@ -35,7 +35,8 @@
 #define HAVE_GETPAGESIZE 1
 
 /* Define if you have the iconv() function and it works. */
-#define HAVE_ICONV 1
+//#define HAVE_ICONV 1
+#undef HAVE_ICONV
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -125,7 +126,7 @@
 /* #undef HAVE_X11_EXTENSIONS_XVLIB_H */
 
 /* Define as const if the declaration of iconv() needs const. */
-#define ICONV_CONST 
+#define ICONV_CONST
 
 /* Library major version */
 #define LIB_VERSION_MAJOR 0
@@ -223,4 +224,5 @@
 #ifndef X_DISPLAY_MISSING
 # define HAVE_X
 #endif
+
 

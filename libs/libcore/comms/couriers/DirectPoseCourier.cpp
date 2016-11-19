@@ -3,7 +3,7 @@
 #include <QDateTime>
 
 DirectPoseCourier::DirectPoseCourier(QObject *parent)
-	: Courier("Direct Pose", (Courier::FIRST_USER_ID+1), parent)
+	: Courier("Direct Pose", (Courier::FIRST_USER_ID+100), parent)
 	, lastRX(0)
 	, lastTX(0)
 {
