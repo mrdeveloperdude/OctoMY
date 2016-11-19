@@ -13,22 +13,22 @@ CONFIG += ordered
 contains(DEFINES, USE_BASIC_TESTS){
 
 TEST_PROJECTS+= \
-	testCommsChannel \
-	testIdenticon \
-	testParser \
-	testZooComms \
-	testHashstore \
-	testTetraGPSEncoder \
-	testRNG \
-	testKey \
-	testKeyStore \
-	testDiscovery \
-	testDeliveryWizard \
-	testNetworkAddress \
-	testNodeAssociate \
-	testNodeAssociateStore \
-	testPortableID \
-	testESpeak\
+#	testCommsChannel \
+#	testIdenticon \
+#	testParser \
+#	testZooComms \
+#	testHashstore \
+#	testTetraGPSEncoder \
+#	testRNG \
+#	testKey \
+#	testKeyStore \
+#	testDiscovery \
+#	testDeliveryWizard \
+#	testNetworkAddress \
+#	testNodeAssociate \
+#	testNodeAssociateStore \
+#	testPortableID \
+#	testESpeak\
 	testBlob\
 
 

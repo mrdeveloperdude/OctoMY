@@ -20,34 +20,51 @@ class Blob
 {
 private:
 
-	QString mName;
-	QByteArray mData;
-	quint8 mPriority;
+	const QString mName;
+	const QByteArray mData;
+	const quint32 mChunkSize;
+	const quint8 mPriority;
 
-	int mTotalIndecies;
-	int mLastAcknowlegedIndex;
-
+	const int mTotalIndecies;
+	const int mMaxInTransit;
+	int mUnsentIndex;
+	int mUnacknowlegedIndex;
+	quint64 mLastAcknowlegedTime;
+	quint64 mLastResendTime;
 	QBitArray mIsInTransit;
 	QBitArray mIsAcknowleged;
 
 public:
-	explicit Blob(QString name, QByteArray data, quint8 priority);
+	explicit Blob(const QString name, const QByteArray data, const quint32 chunkSize, const quint8 priority);
+	virtual ~Blob();
 
 public:
 
-	QString name();
-	QByteArray data(int index);
+	QString name() const ;
+	QByteArray data(int index) const ;
 	void update();
-	bool isDone();
-	bool isMyTurn();
-	qreal progress();
-	QSharedPointer<BlobChunk> nextWorkItem();
+	bool isDone() const ;
+	bool isMyTurn() const ;
+	qreal progress() const ;
+	int numInTransit() const;
+	int numAcknowleged() const;
+	int numTotal() const;
 
+	int firstUnsent() const;
+	int firstUnacknowleged() const;
 
-	bool isSent(int index);
-	bool isAcknowleged(int index);
+	BlobChunk chunk(int index);
+
+	BlobChunk nextWorkItem();
+
+	bool isSent(int index) const;
+	bool isAcknowleged(int index) const;
 	void setSent(int index);
 	void setAcknowleged(int index);
+
+
+	QBitArray isInTransit();
+	QBitArray isAcknowleged();
 
 };
 
@@ -62,19 +79,26 @@ public:
 class BlobChunk
 {
 private:
-	QSharedPointer<Blob> mBlob;
-	int mIndex; //NOTE: index is NOT in bytes, but in multiples of BlobCouruier::BLOB_CHUNK_SIZE
+	Blob *mBlob;
+	int mIndex; //NOTE: index is NOT in bytes, but in multiples of Blob::mChunkSize
+	//NOTE: index<0 means invalid chunk (similar to null chunk)
 
 public:
-	explicit BlobChunk(QSharedPointer<Blob> blob, int offset);
+	explicit BlobChunk(Blob *blob, int offset);
+	explicit BlobChunk();
 
 public:
 
-	QString id();
-	QByteArray data();
-	int index();
-	bool isSent();
-	bool isAcknowleged();
+	BlobChunk & operator= ( const BlobChunk & );
+
+public:
+
+	QString id() const;
+	QByteArray data() const;
+	int index() const;
+	bool isValid() const;
+	bool isSent() const;
+	bool isAcknowleged() const;
 	void setSent();
 	void setAcknowleged();
 

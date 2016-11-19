@@ -3,40 +3,6 @@
 #include "../libcore/comms/couriers/BlobCourier.hpp"
 
 
-/*
-
-class Blob
-{
-private:
-
-	QString mName;
-	QByteArray mData;
-	quint8 mPriority;
-
-	int mTotalIndecies;
-	int mLastAcknowlegedIndex;
-
-	QMap<quint64, QSharedPointer<BlobChunk> > mInTransit;
-
-
-
-public:
-	explicit Blob(QString name, QByteArray data, quint8 priority);
-
-public:
-
-	bool isMyTurn();
-
-
-	QSharedPointer<BlobChunk> nextWorkItem();
-
-
-};
-
-
-
-*/
-
 static int ipow(int base, int exp)
 {
 	int result = 1;
@@ -65,33 +31,78 @@ static QByteArray randomByteArray(int size)
 // YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
 void TestBlob::test()
 {
-	int numBlob=100;
+	const int numBlob=10;
+	const quint32 chunkSize=480;
 	QList<Blob *> blobs;
 	for(int i=0; i<numBlob; ++i) {
-		QByteArray aData=randomByteArray(qrand()%1000);
-		Blob *blob=new Blob("blob_"+QString::number(i), aData, qrand()%200);
+		QByteArray aData=randomByteArray(qrand()%20000);
+		Blob *blob=new Blob("blob_"+QString::number(i), aData, chunkSize, qrand()%30);
 		blobs<<blob;
 	}
 
+	int go=0;
 	while(!blobs.empty()) {
-		const quint32 index=qrand() % numBlob;
+		qDebug()<<"";
+		qDebug()<<"";
+		qDebug()<<"------------------------------------------------------";
+		int tot=0;
+		int sent=0;
+		int acked=0;
+		for(Blob *blob:blobs) {
+			const int back=blob->numAcknowleged();
+			const int bsend=blob->numInTransit();
+			const int btot=blob->numTotal();
+			acked+=back;
+			sent+=bsend;
+			tot+=btot;
+			qDebug()<<" + blob "<<blob->name()<<" total="<<btot<<",  sent="<<bsend<<",  acked="<<back<<", transit="<<blob->isInTransit()<<", ack="<<blob->isAcknowleged();
+		}
+		qDebug()<<"------------------------------------------------------";
+		qDebug()<<"blobs "<<blobs.size()<<" total="<<tot<<",  sent="<<sent<<",  acked="<<acked<<", ";
+		const quint32 index=qrand() % (blobs.count());
 		Blob *blob=blobs[index];
+		QVERIFY(nullptr!=blob);
+		qDebug()<<"GO "<<(go++)<<" HAD INDEX "<<index;
 		if(blob->isDone()) {
+			qDebug()<<"BLOB '"<<blob->name()<<"' claims to be done, removing";
 			blobs.removeAll(blob);
 			delete blob;
 			blob=nullptr;
-		} else if(blob->isMyTurn()) {
-			QSharedPointer<BlobChunk> chunk=blob->nextWorkItem();
-			QVERIFY(nullptr!=chunk);
-			if(nullptr!=chunk) {
-				QVERIFY((!chunk->isAcknowleged()));
-				QByteArray data=chunk->data();
-				qDebug()<<data.size() <<" BYTES OF DATA FOR CHUNK "<<chunk->id()<<" IS BEING "<<(chunk->isSent()?"RESENT":"SENT");
-				chunk->setSent();
+		} else {
+			QString name=blob->name();
+			if(name.isEmpty()) {
+				qWarning()<<"EMPTY NAME!";
 			}
+			BlobChunk chunk=blob->nextWorkItem();
+			qDebug()<<"CHUNK "<<chunk.id()<<" IS NEXT";
+			if(chunk.isValid()) {
+				qDebug()<<"IT IS VALID";
+				if(blob->isMyTurn()) {
+					qDebug()<<"IT HAS ITS TURN";
+					QByteArray data=chunk.data();
+					qDebug()<<data.size() <<" BYTES OF DATA IS BEING "<<(chunk.isSent()?"RESENT":"SENT");
+					chunk.setSent();
+				}
+			} else {
+				qWarning()<<"ERROR: INVALID CHUNK FOUND";
+			}
+
+			//Acknowlege sent chunks with a probability of 10%
+			const int ackChance=(qrand()%100);
+			qDebug()<<"ackChance="<<ackChance;
+			if(ackChance>20) {
+				chunk=blob->chunk(qrand()%blob->numTotal());
+				qDebug()<<"IN ACK WITH "<<chunk.id() << " SENT="<<chunk.isSent() << " ACKED="<<chunk.isAcknowleged();
+
+				if(chunk.isSent() && !chunk.isAcknowleged() ) {
+					qDebug()<<"CHUNK "<<chunk.id()<<" IS BEING ACKNOWLEGED";
+					chunk.setAcknowleged();
+				}
+			}
+
 		}
 	}
-	// Clean up (should not be necessary unless there is a premature exit as part of the test
+// Clean up (should not be necessary unless there is a premature exit as part of the test
 	for(QList<Blob *>::iterator it=blobs.begin(), e=blobs.end(); it!=e; ++it) {
 		delete *it;
 	}
