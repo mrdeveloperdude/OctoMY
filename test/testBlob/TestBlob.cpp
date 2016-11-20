@@ -1,6 +1,8 @@
 #include "TestBlob.hpp"
 
 #include "../libcore/comms/couriers/BlobCourier.hpp"
+#include "../libcore/comms/couriers/Blob.hpp"
+#include "../libcore/comms/couriers/BlobChunk.hpp"
 
 
 static int ipow(int base, int exp)
@@ -28,8 +30,8 @@ static QByteArray randomByteArray(int size)
 	return out;
 }
 
-// YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
-void TestBlob::test()
+
+void TestBlob::testBlob()
 {
 	const int numBlob=10;
 	const quint32 chunkSize=480;
@@ -110,5 +112,10 @@ void TestBlob::test()
 }
 
 
+
+void TestBlob::testBlobCourier()
+{
+
+}
 
 QTEST_MAIN(TestBlob)

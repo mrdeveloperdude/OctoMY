@@ -186,7 +186,9 @@ SOURCES +=\
 	widgets/TryToggleState.cpp \
 	comms/messages/AgentState.cpp \
 	basic/GenericKeyEventHandler.cpp \
-    comms/couriers/BlobCourier.cpp
+    comms/couriers/BlobCourier.cpp \
+    comms/couriers/Blob.cpp \
+    comms/couriers/BlobChunk.cpp
 
 
 HEADERS  += \
@@ -378,7 +380,9 @@ HEADERS  += \
 	widgets/TryToggleState.hpp \
 	comms/messages/AgentState.hpp \
 	basic/GenericKeyEventHandler.hpp \
-    comms/couriers/BlobCourier.hpp
+    comms/couriers/BlobCourier.hpp \
+    comms/couriers/Blob.hpp \
+    comms/couriers/BlobChunk.hpp
 
 
 FORMS    += \
