@@ -73,7 +73,7 @@ void PairingWizard::configure(Node *n)
 		QSharedPointer<NodeAssociate>  ass=mNode->nodeIdentity();
 		if(nullptr!=ass) {
 			PortableID pid=ass->toPortableID();
-			qDebug()<<"CONFIGURE PAIRING WIZ FOR "<<pid.toPortableString();
+			//qDebug()<<"CONFIGURE PAIRING WIZ FOR "<<pid.toPortableString();
 			ui->widgetMyCertificate->setPortableID(pid);
 			if(nullptr==ui->listViewNodes->model()) {
 
@@ -86,8 +86,8 @@ void PairingWizard::configure(Node *n)
 				ui->listViewNodes->setItemDelegate(mDelegate);
 			}
 			if(!connect(discovery, &DiscoveryClient::nodeDiscovered, [=](QString partID) {
-			qDebug()<<"PAIRING WIZARD partID: "<<partID;
-				ui->listViewNodes->update();
+			//qDebug()<<"PAIRING WIZARD partID: "<<partID;
+			ui->listViewNodes->update();
 			}
 					   )) {
 				qWarning()<<"ERROR: Could not connect";

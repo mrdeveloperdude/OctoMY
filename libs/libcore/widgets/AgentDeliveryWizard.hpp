@@ -67,7 +67,6 @@ private slots:
 	void on_pushButtonRandomName_clicked();
 	void on_pushButtonOnward_clicked();
 	void on_pushButtonRandomGender_clicked();
-	void on_pushButtonDoneCertificate_clicked();
 
 };
 

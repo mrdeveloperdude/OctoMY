@@ -72,7 +72,7 @@ void CommsChannel::stop()
 	mConnected=false;
 	mSendingTimer.stop();
 	mUDPSocket.close();
-	emit connectionStatusChanged(false);
+	emit commsConnectionStatusChanged(false);
 	qDebug()<<"----- comms unbind "<< mLocalSignature.toString();
 }
 
@@ -108,7 +108,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 	if ( size <= header ) {
 		QString es=QString::number(totalRecCount)+" ERROR: Message too short: " +QString::number(size);
 		qWarning()<<es;
-		emit error(es);
+		emit commsError(es);
 		return;
 	}
 	quint32 octomy_protocol_magic=0;
@@ -117,7 +117,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 	if(OCTOMY_PROTOCOL_MAGIC!=octomy_protocol_magic) {
 		QString es=QString::number(totalRecCount)+" ERROR: OctoMY Protocol Magic mismatch: "+QString::number(octomy_protocol_magic,16)+ " vs. "+QString::number((quint32)OCTOMY_PROTOCOL_MAGIC,16);
 		qWarning()<<es;
-		emit error(es);
+		emit commsError(es);
 		return;
 	}
 	quint32 octomy_protocol_version=0;
@@ -131,7 +131,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 	default: {
 		QString es=QString::number(totalRecCount)+"ERROR: OctoMY Protocol version unsupported: "+QString::number(octomy_protocol_version);
 		qWarning()<<es;
-		emit error(es);
+		emit commsError(es);
 		return;
 	}
 	break;
@@ -145,7 +145,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 	if(0==remoteClient) {
 		QString es=QString::number(totalRecCount)+"ERROR: Could not fetch client by id: '"+remoteSignature.toString()+"'";
 		qWarning()<<es;
-		emit error(es);
+		emit commsError(es);
 		return;
 	} else {
 		unsigned int packet_sequence = 0;
@@ -204,7 +204,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 				case(INVALID): {
 					QString es=QString::number(totalRecCount)+" "+QString::number(parts)+" ERROR: OctoMY message type invalid: "+QString::number((quint32)octomy_message_type,16);
 					qWarning()<<es;
-					emit error(es);
+					emit commsError(es);
 					return;
 				}
 				break;
@@ -228,7 +228,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 					} else {
 						QString es=QString::number(totalRecCount)+" "+QString::number(parts)+" ERROR: Courier read more than was available!";
 						qWarning()<<es;
-						emit error(es);
+						emit commsError(es);
 						return;
 					}
 					qDebug()<<"TAV:"<<totalAvailable<<" AV:"<<bytesAvailable<<" DS.ATEND:"<<ds->atEnd();
@@ -237,7 +237,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 					//emit wakeOnComms(octomy_message_type_int)
 					QString es=QString::number(totalRecCount)+" "+QString::number(parts)+" ERROR: No courier found for ID: "+QString::number(octomy_message_type_int);
 					qWarning().noquote()<<es;
-					emit error(es);
+					emit commsError(es);
 					return;
 				}
 				qDebug()<<totalRecCount<<parts<<"PART DONE";
@@ -330,14 +330,14 @@ void CommsChannel::onSendingTimer()
 	const quint64 timeSinceLastRX=now-mLastRX;
 	QSharedPointer<Client> localClient=mClients->getBySignature(mLocalSignature, true);
 	if(nullptr==localClient) {
-		emit error(QStringLiteral("Error fetching local client by id ")+mLocalSignature.toString());
+		emit commsError(QStringLiteral("Error fetching local client by id ")+mLocalSignature.toString());
 		return;
 	}
 	if(mConnected && timeSinceLastRX>CONNECTION_TIMEOUT) {
 		stop();
 	} else if(!mConnected && timeSinceLastRX<=CONNECTION_TIMEOUT) {
 		mConnected=true;
-		emit connectionStatusChanged(true);
+		emit commsConnectionStatusChanged(true);
 	}
 	mLastRX=now;
 	mTxCount++;
@@ -453,7 +453,7 @@ void CommsChannel::onReadyRead()
 
 void CommsChannel::onUdpError(QAbstractSocket::SocketError)
 {
-	emit error(mUDPSocket.errorString());
+	emit commsError(mUDPSocket.errorString());
 }
 
 
@@ -474,13 +474,13 @@ void CommsChannel::setID(const QString &id)
 void CommsChannel::hookSignals(QObject &ob)
 {
 	qRegisterMetaType<Client *>("Client *");
-	if(!connect(this,SIGNAL(error(QString)),&ob,SLOT(onError(QString)),OC_CONTYPE)) {
+	if(!connect(this,SIGNAL(commsError(QString)),&ob,SLOT(onCommsError(QString)),OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
 	}
-	if(!connect(this,SIGNAL(clientAdded(Client *)),&ob,SLOT(onClientAdded(Client *)),OC_CONTYPE)) {
+	if(!connect(this,SIGNAL(commsClientAdded(Client *)),&ob,SLOT(onCommsClientAdded(Client *)),OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
 	}
-	if(!connect(this,SIGNAL(connectionStatusChanged(bool)),&ob,SLOT(onConnectionStatusChanged(bool)),OC_CONTYPE)) {
+	if(!connect(this,SIGNAL(commsConnectionStatusChanged(bool)),&ob,SLOT(onCommsConnectionStatusChanged(bool)),OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
 	}
 }
@@ -489,13 +489,13 @@ void CommsChannel::hookSignals(QObject &ob)
 void CommsChannel::unHookSignals(QObject &ob)
 {
 	qRegisterMetaType<Client *>("Client *");
-	if(!disconnect(this,SIGNAL(error(QString)),&ob,SLOT(onError(QString)))) {
+	if(!disconnect(this,SIGNAL(commsError(QString)),&ob,SLOT(onCommsError(QString)))) {
 		qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
 	}
-	if(!disconnect(this,SIGNAL(clientAdded(Client *)),&ob,SLOT(onClientAdded(Client *)))) {
+	if(!disconnect(this,SIGNAL(commsClientAdded(Client *)),&ob,SLOT(onCommsClientAdded(Client *)))) {
 		qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
 	}
-	if(!disconnect(this,SIGNAL(connectionStatusChanged(bool)),&ob,SLOT(onConnectionStatusChanged(bool)))) {
+	if(!disconnect(this,SIGNAL(commsConnectionStatusChanged(bool)),&ob,SLOT(onCommsConnectionStatusChanged(bool)))) {
 		qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
 	}
 }

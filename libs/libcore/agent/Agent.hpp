@@ -30,7 +30,7 @@ public:
 	virtual QWidget *showWindow();
 
 public slots:
-	void onConnectionStatusChanged(TryToggleState);
+	void onCommsConnectionStatusChanged(TryToggleState);
 
 
 };

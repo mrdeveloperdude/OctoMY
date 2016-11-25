@@ -43,7 +43,7 @@ QWidget *Agent::showWindow()
 	return window;
 }
 
-void Agent::onConnectionStatusChanged(TryToggleState)
+void Agent::onCommsConnectionStatusChanged(TryToggleState)
 {
 
 }

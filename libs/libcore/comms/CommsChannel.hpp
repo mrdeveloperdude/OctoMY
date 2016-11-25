@@ -165,9 +165,9 @@ private:
 	// CommsChannel signals
 signals:
 	//		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
-	void error(QString message);
-	void clientAdded(Client *c);
-	void connectionStatusChanged(bool c);
+	void commsError(QString message);
+	void commsClientAdded(Client *c);
+	void commsConnectionStatusChanged(bool c);
 
 private slots:
 

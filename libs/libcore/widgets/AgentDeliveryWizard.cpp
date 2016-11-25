@@ -224,8 +224,3 @@ void AgentDeliveryWizard::on_pushButtonRandomGender_clicked()
 {
 	ui->comboBoxGender->setCurrentIndex((rand()%(ui->comboBoxGender->count()-1))+1);
 }
-
-void AgentDeliveryWizard::on_pushButtonDoneCertificate_clicked()
-{
-	ui->stackedWidget->setCurrentWidget(ui->pageDone);
-}

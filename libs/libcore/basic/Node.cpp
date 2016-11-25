@@ -324,17 +324,17 @@ void Node::onKeystoreReady(bool ok)
 // CommsChannel slots
 
 
-void Node::onError(QString e)
+void Node::onCommsError(QString e)
 {
 	qDebug()<<"Comms error: "<<e;
 }
 
-void Node::onClientAdded(Client *c)
+void Node::onCommsClientAdded(Client *c)
 {
 	qDebug()<<"Client added: "<<c->toString();
 }
 
-void Node::onConnectionStatusChanged(bool s)
+void Node::onCommsConnectionStatusChanged(bool s)
 {
 	qDebug() <<"New connection status: "<<(s?"ONLINE":"OFFLINE");
 }

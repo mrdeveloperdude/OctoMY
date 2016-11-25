@@ -26,7 +26,7 @@ void PortableIDWidget::configure(bool showCertificateFirst, bool userCanChange)
 
 void PortableIDWidget::setPortableID(PortableID id)
 {
-	qDebug()<<"portable id widget was updated with "<<id;
+	//qDebug()<<"portable id widget was updated with "<<id;
 	mID=id;
 	const DiscoveryType type=mID.type();
 	const bool isAgent=TYPE_AGENT==type;

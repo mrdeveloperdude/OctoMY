@@ -84,6 +84,7 @@ public:
 
 	virtual void keyReleaseEvent(QKeyEvent *) Q_DECL_OVERRIDE;
 
+	// Actions
 private slots:
 
 	void onStartCameraPairing();
@@ -92,6 +93,7 @@ private slots:
 	void onStartPlanEditor();
 	void onStartShowBirthCertificate();
 
+	// Actions
 private slots:
 
 	void onOnlineChanged(bool);
@@ -100,10 +102,11 @@ private slots:
 	void onLogVisibilityChanged(bool);
 	void onStatsVisibilityChanged(bool);
 
-
+// Face Widget
+public slots:
 	void onConnectionStateChanged(TryToggleState, TryToggleState);
-
 	void onColorChanged(QColor);
+	void onPanic();
 
 private slots:
 	void on_pushButtonConfirmQuit_clicked();

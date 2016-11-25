@@ -25,8 +25,7 @@ void AgentWindow::updateIdentity()
 	if(nullptr!=mAgent) {
 		mAgent->updateDiscoveryClient();
 		updateIcon();
-	}
-	else{
+	} else {
 		qWarning()<<"WARNING: No Agent in agent window";
 	}
 	ui->widgetFace->setAgent(mAgent);
@@ -346,6 +345,7 @@ void AgentWindow::updateFaceVisibility()
 }
 
 
+// From Face widget ///////////////////////////////////////////////////
 
 void AgentWindow::onConnectionStateChanged(const TryToggleState last, const TryToggleState current)
 {
@@ -375,10 +375,19 @@ void AgentWindow::onConnectionStateChanged(const TryToggleState last, const TryT
 	}
 }
 
+
 void AgentWindow::onColorChanged(QColor c)
 {
 //	mAgent->onC
 }
+
+void AgentWindow::onPanic()
+{
+
+}
+
+
+// From Actions ///////////////////////////////////////////////////
 
 void AgentWindow::onOnlineChanged(bool on)
 {

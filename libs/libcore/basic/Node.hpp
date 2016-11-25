@@ -117,9 +117,9 @@ private slots:
 
 	// CommsChannel slots
 private slots:
-	void onError(QString);
-	void onClientAdded(Client *);
-	void onConnectionStatusChanged(bool);
+	void onCommsError(QString);
+	void onCommsClientAdded(Client *);
+	void onCommsConnectionStatusChanged(bool);
 
 
 	// SensorInput slots

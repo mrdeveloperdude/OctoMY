@@ -11,7 +11,7 @@ HardwareWizard::HardwareWizard(QWidget *parent)
 	, mSerialDevices(new SerialDeviceListModel(this))
 {
 	ui->setupUi(this);
-	qDebug()<<"Setting model";
+	//qDebug()<<"Setting model";
 	ui->listViewSerialInterface->setModel(mSerialDevices);
 	reset();
 }
