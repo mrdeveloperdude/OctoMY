@@ -97,7 +97,7 @@ void FaceWidget::hookSignals(QObject &ob)
 	if(!connect(this,SIGNAL(colorChanged(QColor)),&ob,SLOT(onColorChanged(QColor)),OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
 	}
-	if(!connect(this,SIGNAL(panic(QColor)),&ob,SLOT(onPanic()),OC_CONTYPE)) {
+	if(!connect(this,SIGNAL(panic()),&ob,SLOT(onPanic()),OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
 	}
 }
