@@ -40,6 +40,7 @@ CourierMandate Courier::mandate(){
 //Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
 quint16 Courier::sendingOpportunity(QDataStream &ds){
 	(void)ds;
+	qWarning()<<"WARNING: Unimplemented sendingOpportunity() in "<<mName<<"("<<mID<<")";
 	return 0;
 }
 
@@ -49,5 +50,6 @@ quint16 Courier::sendingOpportunity(QDataStream &ds){
 quint16 Courier::dataReceived(QDataStream &ds, quint16 availableBytes){
 	(void)ds;
 	(void)availableBytes;
+	qWarning()<<"WARNING: Unimplemented dataReceived() in "<<mName<<"("<<mID<<")";
 	return 0;
 }
