@@ -28,6 +28,8 @@ class QGyroscopeReading;
 class Client;
 class AppContext;
 class SensorsCourier;
+class BlobCourier;
+class BlobFuture;
 
 class Node : public QObject
 {
@@ -46,6 +48,7 @@ protected:
 	SensorInput *mSensors;
 
 	SensorsCourier *mSensorsCourier;
+	BlobCourier *mBlobCourier;
 
 	//NetworkAddress mPartnerAddress;
 	CameraList *mCameras;
@@ -99,8 +102,14 @@ public:
 	void start(const NetworkAddress &localAddress);
 	void stop();
 
-signals:
+	// Blob courier
+	BlobFuture submitBlobForSending(QByteArray data, QString name);
 
+
+	// Blob courier
+signals:
+	void blobReceived(QString name);
+	void blobSendComplete(QString name);
 
 	// KeyStore slots
 private slots:

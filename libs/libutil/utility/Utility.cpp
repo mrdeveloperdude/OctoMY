@@ -483,10 +483,33 @@ bool ensureDirExistsForFile(QString fn)
 bool stringToFile(QString fn, QString data, bool append)
 {
 	QFile file(fn);
-	if(file.open(append?QFile::WriteOnly|QFile::Append:QFile::WriteOnly)) {
+	if(file.open(append?(QFile::WriteOnly|QFile::Append):(QFile::WriteOnly))) {
 		QTextStream out(&file);
 		out<<data;
 		out.flush();
+		file.flush();
+		file.close();
+		sync();
+		return true;
+	}
+	return false;
+}
+
+
+bool byteArrayToFile(QString fn, QByteArray data, bool append)
+{
+	QFile file(fn);
+	if(file.open(append?(QFile::WriteOnly|QFile::Append):(QFile::WriteOnly))) {
+		const qint64 total=data.size();
+		qint64 acc=0;
+		while(acc<total) {
+			qint64 written=file.write(data.data(),total-acc);
+			if(written<0) {
+				return false;
+			}
+			//qDebug()<<"WRITE LOOP total="<<total<<", acc="<<acc<<", written="<<written;
+			acc+=written;
+		}
 		file.flush();
 		file.close();
 		sync();

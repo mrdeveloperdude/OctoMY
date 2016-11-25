@@ -11,7 +11,7 @@ class GaitWidget : public QWidget{
 	private:
 		GaitController<qreal> *m_gait;
 	public:
-		explicit GaitWidget(QWidget *parent = 0);
+		explicit GaitWidget(QWidget *parent = nullptr);
 
 	public:
 

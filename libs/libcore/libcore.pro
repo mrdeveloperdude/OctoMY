@@ -188,7 +188,8 @@ SOURCES +=\
 	basic/GenericKeyEventHandler.cpp \
     comms/couriers/BlobCourier.cpp \
     comms/couriers/Blob.cpp \
-    comms/couriers/BlobChunk.cpp
+    comms/couriers/BlobChunk.cpp \
+    comms/couriers/BlobFuture.cpp
 
 
 HEADERS  += \
@@ -382,7 +383,8 @@ HEADERS  += \
 	basic/GenericKeyEventHandler.hpp \
     comms/couriers/BlobCourier.hpp \
     comms/couriers/Blob.hpp \
-    comms/couriers/BlobChunk.hpp
+    comms/couriers/BlobChunk.hpp \
+    comms/couriers/BlobFuture.hpp
 
 
 FORMS    += \

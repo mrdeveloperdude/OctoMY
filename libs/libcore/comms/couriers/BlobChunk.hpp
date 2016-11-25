@@ -3,33 +3,34 @@
 
 #include <QString>
 
-class Blob;
+class SendingBlob;
+class ReceivingBlob;
 
 /*!
  * \brief The BlobChunk class represents one piece of a Blob with metadata about
  * when it was attempted sent last, and wether or not it has been confirmed received.
  */
 
-class BlobChunk
+class SendingBlobChunk
 {
 private:
-	Blob *mBlob;
-	int mIndex; //NOTE: index is NOT in bytes, but in multiples of Blob::mChunkSize
+	SendingBlob *mBlob;
+	quint32 mIndex; //NOTE: index is NOT in bytes, but in multiples of Blob::mChunkSize
 	//NOTE: index<0 means invalid chunk (similar to null chunk)
 
 public:
-	explicit BlobChunk(Blob *blob, int offset);
-	explicit BlobChunk();
+	explicit SendingBlobChunk(SendingBlob *blob, quint32 offset);
+	explicit SendingBlobChunk();
 
 public:
 
-	BlobChunk & operator= ( const BlobChunk & );
+	SendingBlobChunk & operator= ( const SendingBlobChunk & );
 
 public:
 
 	QString id() const;
 	QByteArray data() const;
-	int index() const;
+	quint32 index() const;
 	bool isValid() const;
 	bool isSent() const;
 	bool isAcknowleged() const;
@@ -38,6 +39,26 @@ public:
 
 };
 
+class ReceivingBlobChunk
+{
+private:
+	ReceivingBlob *mBlob;
+	quint32 mIndex; //NOTE: index is NOT in bytes, but in multiples of Blob::mChunkSize
+	//NOTE: index<0 means invalid chunk (similar to null chunk)
+
+public:
+	explicit ReceivingBlobChunk(ReceivingBlob *blob, quint32 offset);
+	explicit ReceivingBlobChunk();
+
+public:
+
+	QString id() const;
+	quint32 index() const;
+
+	bool isValid() const;
+	bool setReceived(char *data, quint32 size);
+
+};
 
 
 #endif // BLOBCHUNK_HPP

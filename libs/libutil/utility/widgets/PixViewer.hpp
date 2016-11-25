@@ -16,7 +16,7 @@ class PixViewer : public QWidget
 private:
 	Ui::PixViewer *ui;
 public:
-	explicit PixViewer(QWidget *parent = 0);
+	explicit PixViewer(QWidget *parent = 0, QString name="PixViewer");
 	~PixViewer();
 
 public:

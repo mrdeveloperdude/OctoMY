@@ -58,7 +58,7 @@ quint16 DiscoveryCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 {
 	quint16 ps=mandate().payloadSize;
 	if(availableBytes!=ps) {
-		qWarning()<<"ERROR: paayload size "<<ps<<" did not match received amount of data "<<availableBytes;
+		qWarning()<<"ERROR: payload size "<<ps<<" did not match received amount of data "<<availableBytes;
 		return 0;
 	}
 	quint16 bytes=0;

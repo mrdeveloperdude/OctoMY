@@ -4,12 +4,13 @@
 #include <QTest>
 
 
-class TestBlob:public QObject{
-		Q_OBJECT
+class TestBlob:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void testBlob();
-		void testBlobCourier();
+private slots:
+	void testBlob();
+	void testBlobCourier();
 
 };
 

@@ -3,38 +3,36 @@
 #include "BlobChunk.hpp"
 
 
-
 #include "../libutil/utility/Utility.hpp"
 
 #include <QDateTime>
 
 
-Blob::Blob(const QString name, const QByteArray data, const quint32 chunkSize, const quint8 priority)
+Blob::Blob(const QString name, const quint16 id, const QByteArray data, const quint32 chunkSize)
 	: mName(name)
+	, mID(id)
 	, mData(data)
 	, mChunkSize(chunkSize)
-	, mPriority(priority)
 	, mTotalIndecies(  (mData.size()/mChunkSize) + ((mData.size()%mChunkSize)>0?1:0))
-	, mMaxInTransit((mTotalIndecies<=10)?(mTotalIndecies>0?1:0):(mTotalIndecies/10)) //10% and at least 1
-	, mUnsentIndex(0)
-	, mUnacknowlegedIndex(0)
-	, mLastAcknowlegedTime(0)
-	, mLastResendTime(0)
-	, mIsInTransit(mTotalIndecies)
-	, mIsAcknowleged(mTotalIndecies)
 {
-	qDebug()<<"Created blob with mName='"<<mName<<"' with mChunkSize="<<mChunkSize<<", mPriority="<<mPriority<<", mData.size="<<mData.size()<<", mTotalIndecies="<<mTotalIndecies<<", mMaxInTransit="<<mMaxInTransit<<", mIsInTransit="<<mIsInTransit.size()<<", mIsAcknowleged="<<mIsAcknowleged.size();
-
+	qDebug()<<"Created blob with name='"<<mName<<"', id="<<mID<<" dataSize="<<utility::humanReadableSize(mData.size())<<" chunkSize="<<utility::humanReadableSize(mChunkSize)<<", totalIndecies="<<mTotalIndecies;
 }
+
 
 Blob::~Blob()
 {
-	qDebug()<<"Deleted blob with mName='"<<mName<<"' with mChunkSize="<<mChunkSize<<", mPriority="<<mPriority<<", mData.size="<<mData.size()<<", mTotalIndecies="<<mTotalIndecies<<", mMaxInTransit="<<mMaxInTransit<<", mIsInTransit="<<mIsInTransit.size()<<", mIsAcknowleged="<<mIsAcknowleged.size();
 }
+
+
 
 QString Blob::name()const
 {
 	return mName;
+}
+
+quint16 Blob::id()const
+{
+	return mID;
 }
 
 QByteArray Blob::data(int index)const
@@ -44,27 +42,87 @@ QByteArray Blob::data(int index)const
 }
 
 
-void Blob::update()
+char *Blob::dataRef(int index)
 {
-
-}
-
-bool Blob::isDone()const
-{
-	return mIsAcknowleged.count(true)>=mTotalIndecies;
-}
-
-bool Blob::isMyTurn()const
-{
-	static const qreal thresh=pow(0.5,256.0);
-	qreal chance=1.0;
-	for(quint8 i=0; i<mPriority; ++i) {
-		chance*=utility::frand();
+	char *out=mData.data();
+	if(nullptr!=out) {
+		char *ret=(out+index*mChunkSize);
+		return ret;
 	}
-	return chance>thresh;
+	return nullptr;
 }
 
-qreal Blob::progress()const
+
+
+
+QByteArray Blob::data()const
+{
+	return mData;
+
+}
+
+
+quint64 Blob::dataSize()const
+{
+	return mData.size();
+}
+
+quint32 Blob::chunkSize() const
+{
+	return mChunkSize;
+}
+
+
+void Blob::setName(QString name)
+{
+	//TODO: Scrutinize name
+	mName=name;
+}
+
+int Blob::numTotal() const
+{
+	return mTotalIndecies;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+SendingBlob::SendingBlob(const QString name, const quint16 id, const quint32 chunkSize, const QByteArray data, const quint8 priority)
+	: Blob(name, id, data, chunkSize)
+	, mPriority(priority)
+	, mMaxInTransit((mTotalIndecies<=10)?(mTotalIndecies>0?1:0):(mTotalIndecies/10)) //10% and at least 1
+	, mNameSent(false)
+	, mNameAcknowleged(false)
+	, mUnsentIndex(0)
+	, mUnacknowlegedIndex(0)
+	, mLastAcknowlegedTime(0)
+	, mLastResendTime(0)
+	, mIsSent(mTotalIndecies)
+	, mIsAcknowleged(mTotalIndecies)
+{
+	qDebug()<<" This is a sending blob with additional parameters priority="<<mPriority<<", maxInTransit="<<mMaxInTransit;
+}
+
+
+
+SendingBlob::~SendingBlob()
+{
+}
+
+
+
+bool SendingBlob::isDone()const
+{
+	return (mIsAcknowleged.count(true)>=mTotalIndecies ) && mNameAcknowleged;
+}
+
+
+
+qreal SendingBlob::sendProgress()const
 {
 	if(isDone()) {
 		return 1.0;
@@ -76,31 +134,38 @@ qreal Blob::progress()const
 	return ret;
 }
 
-int Blob::numInTransit() const
+
+
+
+
+
+
+
+
+
+int SendingBlob::numSent() const
 {
-	return mIsInTransit.count(true);
+	return mIsSent.count(true);
 }
 
-int Blob::numAcknowleged() const
+int SendingBlob::numAcknowleged() const
 {
 	return mIsAcknowleged.count(true);
 }
 
 
 
-int Blob::numTotal() const
-{
-	return mTotalIndecies;
-}
 
-int Blob::firstUnsent() const
+int SendingBlob::firstUnsent() const
 {
 	int i=0;
-	for(const int sz=mIsInTransit.size(); (i<sz) && mIsInTransit.testBit(i); ++i);
+	for(const int sz=mIsSent.size(); (i<sz) && mIsSent.testBit(i); ++i);
 	return i-1;
 }
 
-int Blob::firstUnacknowleged() const
+
+
+int SendingBlob::firstUnacknowleged() const
 {
 	int i=0;
 	for(const int sz=mIsAcknowleged.size(); (i<sz) && mIsAcknowleged.testBit(i); ++i);
@@ -108,35 +173,24 @@ int Blob::firstUnacknowleged() const
 }
 
 
-BlobChunk Blob::chunk(int index)
-{
-	if(index<0) {
-		return BlobChunk();
-	}
-	if(index>=mTotalIndecies) {
-		return BlobChunk();
-	}
-	return BlobChunk(this,index);
-}
 
-BlobChunk Blob::nextWorkItem()
+SendingBlobChunk SendingBlob::findNextSendingChunk()
 {
-	const int inTransit=numInTransit();
+	const int inTransit=numSent();
 	const int acknowleged=numAcknowleged();
-	qDebug()<<"NEXT: inTransit="<<inTransit<<", acknowleged"<<acknowleged<<", mTotalIndecies"<<mTotalIndecies<<", mMaxInTransit"<<mMaxInTransit<<", mUnsentIndex"<<mUnsentIndex<<", mUnacknowlegedIndex"<<mUnacknowlegedIndex;
+	//qDebug()<<"NEXT SEND CHUNK: inTransit="<<inTransit<<", acknowleged"<<acknowleged<<", mTotalIndecies"<<mTotalIndecies<<", mMaxInTransit"<<mMaxInTransit<<", mUnsentIndex"<<mUnsentIndex<<", mUnacknowlegedIndex"<<mUnacknowlegedIndex;
 	if(acknowleged<mTotalIndecies) {
 		int nextInTransit=-1;
 		if((inTransit-acknowleged)<=mMaxInTransit) {
-			int last=mUnsentIndex;
-			mUnsentIndex++;
 			if(mUnsentIndex>=mTotalIndecies) {
 				mUnsentIndex=firstUnsent();
 			}
 			nextInTransit=mUnsentIndex;
-			qDebug()<<"SUGGESTING TO SEND "<<nextInTransit<<" last="<<last;
+			//qDebug()<<"SUGGESTING TO SEND "<<nextInTransit;
+			mUnsentIndex++;
 		} else {
 			const quint64 now=QDateTime::currentMSecsSinceEpoch();
-			const quint64 BLOB_CHUNK_TIMEOUT=100;//TTL
+			const quint64 BLOB_CHUNK_TIMEOUT=10;//TTL
 			//Time for resend?
 			qint64 diff=(now-BLOB_CHUNK_TIMEOUT)-mLastResendTime;
 			if(diff>0) {
@@ -146,34 +200,36 @@ BlobChunk Blob::nextWorkItem()
 					mUnacknowlegedIndex=firstUnacknowleged();
 				}
 				nextInTransit=mUnacknowlegedIndex;
-				qDebug()<<"SUGGESTING TO RESEND "<< nextInTransit;
+				//qDebug()<<"SUGGESTING TO RESEND "<< nextInTransit;
 			} else {
-				qDebug()<<"TIME NOT RIGHT FOR RESEND YET "<< diff;
+				//qDebug()<<"TIME NOT RIGHT FOR RESEND YET "<< diff;
 			}
 		}
 		if(nextInTransit > -1) {
-			qDebug()<<"RETURNING WITH "<<nextInTransit;
-			return BlobChunk(this, nextInTransit);
+			//qDebug()<<"RETURNING WITH "<<nextInTransit;
+			return SendingBlobChunk(this, nextInTransit);
 		}
 	}
 	// Default: Go away
-	return BlobChunk();
+	return SendingBlobChunk();
 }
 
 
+// Chunk data //////////////////////////////////////////
 
-bool Blob::isSent(int index)const
+bool SendingBlob::isSent(int index)const
 {
 	if(index<0) {
 		return false;
 	}
-	if(index>=mIsInTransit.size()) {
+	if(index>=mIsSent.size()) {
 		return false;
 	}
-	return mIsInTransit.testBit(index);
+	return mIsSent.testBit(index);
 }
 
-bool Blob::isAcknowleged(int index)const
+
+bool SendingBlob::isAcknowleged(int index)const
 {
 	if(index<0) {
 		return false;
@@ -184,21 +240,23 @@ bool Blob::isAcknowleged(int index)const
 	return mIsAcknowleged.testBit(index);
 }
 
-void Blob::setSent(int index)
+
+void SendingBlob::setSent(int index)
 {
 	if(index<0) {
 		qWarning()<<"ERROR: trying to set send for index < 0: "<<index;
 		return;
 	}
-	if(index>=mIsInTransit.size()) {
-		qWarning()<<"ERROR: trying to set send for index > size: "<<index<<" vs. "<<mIsInTransit.size();
+	if(index>=mIsSent.size()) {
+		qWarning()<<"ERROR: trying to set send for index > size: "<<index<<" vs. "<<mIsSent.size();
 		return;
 	}
-	mIsInTransit.setBit(index);
+	mIsSent.setBit(index);
 	mLastResendTime=QDateTime::currentMSecsSinceEpoch();
 }
 
-void Blob::setAcknowleged(int index)
+
+void SendingBlob::setAcknowleged(int index)
 {
 	if(index<0) {
 		qWarning()<<"ERROR: trying to set ack for index < 0: "<<index;
@@ -211,14 +269,167 @@ void Blob::setAcknowleged(int index)
 	mIsAcknowleged.setBit(index);
 }
 
-
-QBitArray Blob::isInTransit()
+QBitArray SendingBlob::isSent()
 {
-	return mIsInTransit;
+	return mIsSent;
 }
 
-QBitArray Blob::isAcknowleged()
+
+QBitArray SendingBlob::isAcknowleged()
 {
 	return mIsAcknowleged;
 }
 
+
+SendingBlobChunk SendingBlob::chunk(int index)
+{
+	if(index<0) {
+		return SendingBlobChunk();
+	}
+	if(index>=mTotalIndecies) {
+		return SendingBlobChunk();
+	}
+	return SendingBlobChunk(this,index);
+}
+
+
+
+// Name //////////////////////////////////////////
+
+
+bool SendingBlob::isNameSent()
+{
+	return mNameSent;
+
+}
+
+
+bool SendingBlob::isNameAcknowleged()
+{
+	return mNameAcknowleged;
+
+}
+
+
+void SendingBlob::setNameSent(bool v)
+{
+	mNameSent=v;
+}
+
+
+
+
+void SendingBlob::setNameAcknowleged(bool v)
+{
+	mNameAcknowleged=v;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+ReceivingBlob::ReceivingBlob(const QString name, const quint16 id, const quint32 chunkSize, const quint32 byteSize)
+	: Blob(name, id, QByteArray(byteSize, 0x00), chunkSize)
+	, mIsReceived(mTotalIndecies)
+	, mLastReceivedTime(0)
+	, mNameReceived(false)
+
+{
+	qDebug()<<"Created receiving blob with mName='"<<mName<<"' with mChunkSize="<<mChunkSize<< ", mData.size="<<mData.size()<< "("<<byteSize<<")";
+}
+
+
+
+
+ReceivingBlob::~ReceivingBlob()
+{
+}
+
+
+
+
+ReceivingBlobChunk ReceivingBlob::chunk(int index)
+{
+	if(index<0) {
+		return ReceivingBlobChunk();
+	}
+	if(index>=mTotalIndecies) {
+		return ReceivingBlobChunk();
+	}
+	return ReceivingBlobChunk(this,index);
+}
+
+
+
+bool ReceivingBlob::isDone()const
+{
+	return (mIsReceived.count(true)>=mTotalIndecies ) && mNameReceived;
+}
+
+
+
+bool ReceivingBlob::isReceived(int index)const
+{
+	if(index<0) {
+		return false;
+	}
+	if(index>=mIsReceived.size()) {
+		return false;
+	}
+	return mIsReceived.testBit(index);
+}
+
+
+
+void ReceivingBlob::setReceived(int index)
+{
+	if(index<0) {
+		qWarning()<<"ERROR: trying to set received for index < 0: "<<index;
+		return;
+	}
+	if(index>=mIsReceived.size()) {
+		qWarning()<<"ERROR: trying to set received for index > size: "<<index<<" vs. "<<mIsReceived.size();
+		return;
+	}
+	mIsReceived.setBit(index);
+	mLastReceivedTime=QDateTime::currentMSecsSinceEpoch();
+}
+
+QBitArray ReceivingBlob::isReceived() const
+{
+	return mIsReceived;
+}
+
+
+
+
+
+
+
+// Name //////////////////////////////////////////
+
+
+bool ReceivingBlob::isNameReceived()
+{
+	return mNameReceived;
+
+}
+
+
+
+
+void ReceivingBlob::setNameReceived(bool v)
+{
+	mNameReceived=v;
+}
+
+
+
+
+int ReceivingBlob::numReceived() const
+{
+	return mIsReceived.count(true);
+}

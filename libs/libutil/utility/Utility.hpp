@@ -76,6 +76,7 @@ namespace utility{
 	QByteArray fileToByteArray(QString fn);
 	bool ensureDirExistsForFile(QString fn);
 	bool stringToFile(QString fn, QString data, bool append=false);
+	bool byteArrayToFile(QString fn, QByteArray data, bool append=false);
 	bool verifyMedia(QString name);
 
 	// Time

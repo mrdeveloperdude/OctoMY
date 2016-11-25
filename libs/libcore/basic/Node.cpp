@@ -9,6 +9,7 @@
 #include "camera/CameraList.hpp"
 #include "sensory/SensorInput.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
+#include "comms/couriers/BlobCourier.hpp"
 #include "../libutil/utility/Utility.hpp"
 #include "../libutil/utility/ScopedTimer.hpp"
 #include "basic/StyleManager.hpp"
@@ -34,6 +35,7 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	, mZooClient (new ZooClient(this))
 	, mSensors (new SensorInput(this))
 	, mSensorsCourier(new SensorsCourier(this))
+	, mBlobCourier(new BlobCourier(this))
 	  //, hubPort (0)
 	, mCameras (new CameraList(this))
 	, mLastStatusSend (0)

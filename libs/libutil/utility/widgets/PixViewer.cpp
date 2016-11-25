@@ -4,11 +4,12 @@
 #include <QPixmap>
 #include <QImage>
 
-PixViewer::PixViewer(QWidget *parent) :
+PixViewer::PixViewer(QWidget *parent, QString name) :
 	QWidget(parent),
 	ui(new Ui::PixViewer)
 {
 	ui->setupUi(this);
+	setWindowTitle(name);
 }
 
 PixViewer::~PixViewer()
