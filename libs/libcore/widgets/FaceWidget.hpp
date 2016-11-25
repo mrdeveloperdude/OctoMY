@@ -50,9 +50,11 @@ signals:
 
 	void connectionStateChanged(const TryToggleState last, const TryToggleState current);
 	void colorChanged(QColor);
+	void panic();
 
 private slots:
 	void on_pushButtonNewColor_clicked();
+	void on_pushButtonPanic_clicked();
 };
 
 #endif // FACEWIDGET_HPP

@@ -212,6 +212,21 @@ void Node::stop()
 	}
 }
 
+
+
+BlobFuture Node::submitBlobForSending(QByteArray data, QString name)
+{
+	OC_METHODGATE();
+	if(nullptr!=mBlobCourier) {
+		BlobFuture future=mBlobCourier->submitSendingBlob(name,data);
+		future.connect(*this);
+		return future;
+	}
+	BlobFuture future(name);
+	future.fail("No BLobCourier");
+	return future;
+}
+
 ////////////////////////////////
 
 

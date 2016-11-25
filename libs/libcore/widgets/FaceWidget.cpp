@@ -19,6 +19,12 @@ FaceWidget::FaceWidget(QWidget *parent) :
 		qWarning()<<"ERROR: Could not connect";
 	}
 	updateEyeColor();
+
+	//Make panic button RED
+	QPalette p=ui->pushButtonPanic->palette();
+	p.setColor(QPalette::Button,"#CC4422");
+	ui->pushButtonPanic->setPalette(p);
+
 }
 
 FaceWidget::~FaceWidget()
@@ -91,6 +97,9 @@ void FaceWidget::hookSignals(QObject &ob)
 	if(!connect(this,SIGNAL(colorChanged(QColor)),&ob,SLOT(onColorChanged(QColor)),OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
 	}
+	if(!connect(this,SIGNAL(panic(QColor)),&ob,SLOT(onPanic()),OC_CONTYPE)) {
+		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
+	}
 }
 
 
@@ -101,6 +110,10 @@ void FaceWidget::unHookSignals(QObject &ob)
 	}
 
 	if(!disconnect(this,SIGNAL(colorChanged(QColor)),&ob,SLOT(onColorChanged(QColor)))) {
+		qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
+	}
+
+	if(!disconnect(this,SIGNAL(panic()),&ob,SLOT(onPanic()))) {
 		qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
 	}
 }
@@ -115,4 +128,12 @@ void FaceWidget::on_pushButtonNewColor_clicked()
 	p.setColor(QPalette::Button,col);
 	ui->pushButtonNewColor->setPalette(p);
 	emit colorChanged(col);
+}
+
+void FaceWidget::on_pushButtonPanic_clicked()
+{
+	QString str="P A N I C !";
+	qWarning()<<str;
+	appendLog(str);
+	emit panic();
 }

@@ -1,7 +1,12 @@
 #include "BlobFuture.hpp"
+#include "BlobCourier.hpp"
 
-BlobFuture::BlobFuture(QString name)
-	: mName(name)
+#include "../libutil/utility/Standard.hpp"
+#include <QObject>
+
+BlobFuture::BlobFuture(QString name="", BlobCourier *courier)
+	: mCourier(courier)
+	, mName(name)
 	, mReason("No reason")
 	, mWin(false)
 {
@@ -21,7 +26,7 @@ void BlobFuture::win()
 	mWin=true;
 }
 
-const bool BlobFuture::isWinning() const
+bool BlobFuture::isWinning() const
 {
 	return mWin;
 }
@@ -35,4 +40,17 @@ const QString BlobFuture::reason() const
 const QString BlobFuture::name() const
 {
 	return mName;
+}
+
+
+bool BlobFuture::connect(QObject &recepient)
+{
+	if(nullptr!=mCourier) {
+		if(!QObject::connect(mCourier, SIGNAL(blobReceiveComplete(QString)), &recepient, SLOT(onBlobRecevieComplete(QString)), OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect";
+			return false;
+		}
+		return true;
+	}
+	return false;
 }

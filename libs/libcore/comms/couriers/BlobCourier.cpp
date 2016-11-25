@@ -86,7 +86,7 @@ quint16 BlobCourier::findNextSendingBlobID()
 BlobFuture BlobCourier::submitSendingBlob(QString name, QByteArray data, qreal probability)
 {
 	static const quint64 MAX_BLOB_SIZE=2LL*1024*1024*1024;
-	BlobFuture future(name);
+	BlobFuture future(name, this);
 	if(name.size()<=0) {
 		future.fail("Name too long");
 	} else if(name.size()>10) {
