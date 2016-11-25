@@ -86,7 +86,7 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 	rng->init(myPort);
 	QVERIFY(myPort>=basePort);
 	QVERIFY(myPort<=basePort+portRange);
-	QVERIFY(connect(&cc,SIGNAL(error(QString)),this,SLOT(onError(QString)),OC_CONTYPE));
+	QVERIFY(connect(&cc,SIGNAL(commsError(QString)),this,SLOT(onError(QString)),OC_CONTYPE));
 	for(quint16 toPort=basePort;toPort<basePort+portRange;++toPort){
 		if(myPort==toPort){
 			continue;

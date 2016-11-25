@@ -13,7 +13,7 @@ CONFIG += ordered
 contains(DEFINES, USE_BASIC_TESTS){
 
 TEST_PROJECTS+= \
-#	testCommsChannel \
+	testCommsChannel \
 #	testIdenticon \
 #	testParser \
 #	testZooComms \
@@ -29,7 +29,7 @@ TEST_PROJECTS+= \
 #	testNodeAssociateStore \
 #	testPortableID \
 #	testESpeak\
-	testBlob\
+#	testBlob\
 
 
 STRESS_PROJECTS+= \
