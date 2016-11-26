@@ -48,7 +48,7 @@ quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 	bytes += sizeof(quint16);
 	ds << btAddrXOR;
 	bytes += sizeof(quint64);
-	qDebug()<<"TX "<<bytes<<" = ("<<ip4PubAddr<<":"<<port<<", bt="<<btAddr<<") = XOR("<<ip4PubAddrXOR<<":"<<portXOR<<", bt="<<btAddrXOR<<")";
+	qDebug()<<"TX bytes="<<bytes<<" ( ip4PubAddr="<<ip4PubAddr<<":"<<port<<", bt="<<btAddr<<") = XOR( ip4PubAddr="<<ip4PubAddrXOR<<":"<<portXOR<<", bt="<<btAddrXOR<<")";
 	return bytes;
 }
 

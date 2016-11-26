@@ -269,7 +269,7 @@ void RemoteWindow::keyReleaseEvent(QKeyEvent *e)
 		}
 		e->accept();
 	} else {
-		appendLog("UNKNOWN BUTTON: "+QString::number(e->key()));
+		//appendLog("UNKNOWN BUTTON: "+QString::number(e->key()));
 	}
 }
 

@@ -68,6 +68,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 		prepareMenu();
 		updateFaceVisibility();
 
+		updateOnlineStatus();
 		//QString text="Hello, my name is "+mAgent->name()+". I am an octomy agent. What is your bidding master?";
 		//QString text="Hello, my name is Bodhi. I am an octomy agent. What is your bidding master? 00 0 01010 010 010 010 010101 ";		PortableID id=mAgent->localNodeAssociate()->toPortableID();		new OneOffSpeech(id, text);
 	}
@@ -502,7 +503,7 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 		*/
 		e->accept();
 	} else {
-		appendLog("UNKNOWN BUTTON: "+QString::number(e->key()));
+		//appendLog("UNKNOWN BUTTON: "+QString::number(e->key()));
 	}
 }
 
@@ -522,7 +523,7 @@ void AgentWindow::updateOnlineStatus()
 			wantToBeOnline=s->getCustomSettingBool("octomy.online", false);
 		}
 		//Spell it out for debugging
-		qDebug()<<"We are currently "<<(isOnline?"ONLINE":"OFFLINE")<<" and we want to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
+		//qDebug()<<"We are currently "<<(isOnline?"ONLINE":"OFFLINE")<<" and we want to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
 		// Make necessary changes to state
 		const TryToggleState current=ui->widgetFace->connectionState();
 		TryToggleState next=current;
@@ -531,22 +532,22 @@ void AgentWindow::updateOnlineStatus()
 				next=ON;
 			} else {
 				next=TRYING;
-				qDebug()<<"Decided to start comms";
+				//qDebug()<<"Decided to start comms";
 				mAgent->start(mAgent->nodeIdentity()->localAddress());
 			}
 		} else {
 			if(isOnline ) {
-				qDebug()<<"Decided to stop comms";
+				//qDebug()<<"Decided to stop comms";
 				mAgent->stop();
 			} else {
 				next=OFF;
 			}
 		}
 		if(next!=current) {
-			qDebug()<<"Decided to change tristate button from "<<current<<" -> "<<next;
+			//qDebug()<<"Decided to change tristate button from "<<current<<" -> "<<next;
 			ui->widgetFace->setConnectionState(next,false);
 		} else {
-			qDebug()<<"No change tristate button ("<<current<<")";
+			//qDebug()<<"No change tristate button ("<<current<<")";
 		}
 		// Propagate the possibly changed state to UI
 		updateFaceVisibility();

@@ -46,7 +46,7 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 
 	ui->tryToggleListen->setText("Connect","Connecting","Connected");
 	ui->tryToggleListen->setState(OFF,false);
-	//if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState, TryToggleState)),this,SLOT(onConnectButtonStateChanged(TryToggleState, TryToggleState)),OC_CONTYPE)) {
+
 	if(!connect(ui->tryToggleListen, &TryToggle::stateChanged, this, &ClientWidget::onConnectButtonStateChanged ,OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	} else {
@@ -62,6 +62,8 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 
 	installEventFilter(this);
 	init();
+
+	updateOnlineStatus();
 }
 
 ClientWidget::~ClientWidget()
@@ -175,9 +177,9 @@ void ClientWidget::setCourierRegistration(bool reg)
 		//qDebug()<<"COMMS LEFT WITH "<<ct<<" COURIERS";
 		//qDebug()<< cc->getSummary();
 		if(ct>0) {
-			if( (nullptr != mNodeAssoc) && (!cc->isStarted()) ) {
+			if( (nullptr != mController) && (nullptr!= mController->nodeIdentity() ) && (!cc->isStarted()) ) {
 				//qDebug()<<"STARTING COMMS ";
-				cc->start(mNodeAssoc->localAddress());
+				cc->start(mController->nodeIdentity()->localAddress());
 			} else {
 				//qDebug()<<"COMMS ALREADY STARTED";
 			}

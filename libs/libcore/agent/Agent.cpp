@@ -53,15 +53,15 @@ QWidget *Agent::showWindow()
 
 void Agent::onCommsError(QString e)
 {
-	qDebug()<<"AGENT UNIMP Comms error: "<<e;
+	//qDebug()<<"AGENT UNIMP Comms error: "<<e;
 }
 
 void Agent::onCommsClientAdded(Client *c)
 {
-	qDebug()<<"AGENT UNIMP Client added: "<<c->toString();
+	//qDebug()<<"AGENT UNIMP Client added: "<<c->toString();
 }
 
 void Agent::onCommsConnectionStatusChanged(bool s)
 {
-	qDebug() <<"AGENT UNIMP New connection status: "<<(s?"ONLINE":"OFFLINE");
+	//qDebug() <<"AGENT UNIMP New connection status: "<<(s?"ONLINE":"OFFLINE");
 }
