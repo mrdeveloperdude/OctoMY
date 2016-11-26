@@ -1,6 +1,9 @@
 #include "TryToggle.hpp"
 #include "ui_TryToggle.h"
 
+#include "../libutil/utility/Standard.hpp"
+
+
 TryToggle::TryToggle(QWidget *parent) :
 	QWidget(parent)
 	, mState(OFF)
@@ -53,32 +56,48 @@ void TryToggle::updateText()
 
 void TryToggle::setState(const TryToggleState s, const bool doEmit)
 {
+	OC_METHODGATE();
+	//qDebug()<<"TRYTOGGLE TRYSTATE CHANGED TO: "<<s<<" WITH EMIT="<<doEmit<<" AND THIS="<<this;
 	//qDebug()<<"SET STATE: "<<s;
 	if(s!=mState) {
 		//qDebug()<<" + DIFFERENT FROM LAST: "<<state;
 		if(TRYING==s) {
+			//qDebug()<<"TRYTOGGLE TRYSTATE TIMER START"<<" AND THIS="<<this;
 			mTimer.start();
 		} else {
+			//qDebug()<<"TRYTOGGLE TRYSTATE TIMER STOP"<<" AND THIS="<<this;
 			mTimer.stop();
 		}
-		ui->widgetLight->setLightOn(!(OFF==s));
-		ui->pushButtonToggle->setChecked(!(OFF==s));
+		const bool notOff=(OFF!=s);
+		//qDebug()<<"TRYTOGGLE TRYSTATE NOTOFF WAS "<<notOff<<" AND THIS="<<this;
+		ui->widgetLight->setLightOn(notOff);
+		if(notOff!=ui->pushButtonToggle->isChecked()) {
+			//qDebug()<<"TRYTOGGLE TRYSTATE CHANGING BUTTON"<<" AND THIS="<<this;
+			// Prevent calling ourselves
+			const bool old=ui->pushButtonToggle->blockSignals(true);
+			ui->pushButtonToggle->setChecked(notOff);
+			ui->pushButtonToggle->blockSignals(old);
+		}
 		const TryToggleState last=mState;
 		mState=s;
 		updateText();
-		//qDebug()<<"Emitting " <<state;
-		emit stateChanged(last,s);
+		//qDebug()<<"TRYTOGGLE TRYSTATE CHANGED ACTUAL FROM "<<last<<" TO "<<mState <<" WITH EMIT="<<doEmit << " AND WITH TEXT= "<<ui->pushButtonToggle->text()<<" AND THIS="<<this;
+		if(doEmit) {
+			//qDebug()<<"Emitting " <<state;
+			emit stateChanged(last,mState);
+		}
 	}
 }
 
 void TryToggle::animateClick()
 {
+	qDebug()<<" A N I M A T E   C L I C K ";
 	ui->pushButtonToggle->animateClick();
 }
 
 void TryToggle::on_pushButtonToggle_toggled(bool checked)
 {
-	//qDebug()<<"Clicked " <<checked;
+	//qDebug()<<" X X X X  Clicked " <<checked;
 	if(checked && OFF==mState) {
 		setState(TRYING);
 	} else if(!checked) {

@@ -54,9 +54,7 @@ class ControlDeliveryWizard : public QWidget
 		void onBirthComplete();
 
 	private slots:
-		void on_pushButtonDone_clicked();
 		void on_pushButtonPairNow_clicked();
-		void on_pushButtonOnward_clicked();
 
 };
 

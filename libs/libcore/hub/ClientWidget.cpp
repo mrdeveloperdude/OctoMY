@@ -25,8 +25,11 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 	, mSpinner(nullptr)
 	, mSensorsCourier(new SensorsCourier(this))
 {
+
+	qDebug()<<"CREATING CLIENT WIDGET mController="<<(nullptr!=mController?mController->name():"NULL")<<", mNodeAssoc="<<(nullptr!=mNodeAssoc?mNodeAssoc->name():"NULL")<<", parent="<<parent;
+
 	ui->setupUi(this);
-	ui->tryToggleListen->setText("Connect","Connecting","Connected");
+
 	ui->widgetBirthCertificate->configure(false,true);
 	if(nullptr!=mNodeAssoc) {
 		ui->widgetBirthCertificate->setPortableID(mNodeAssoc->toPortableID());
@@ -34,17 +37,28 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 		qWarning()<<"ERROR: no client";
 	}
 	updateTimer.setInterval(100);
-	if(!connect(&updateTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()),OC_CONTYPE)) {
+	if(!connect(&updateTimer,SIGNAL(timeout()),this,SLOT(onUpdateTimer()),OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 	updateTimer.start();
 	ui->widgetFace->setDisabled(true);
 
-	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState, TryToggleState)),this,SLOT(onConnectionStateChanged(TryToggleState, TryToggleState)),OC_CONTYPE)) {
-		qWarning()<<"ERROR: could not connect";
+
+	ui->tryToggleListen->setText("Connect","Connecting","Connected");
+	ui->tryToggleListen->setState(OFF,false);
+	//if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState, TryToggleState)),this,SLOT(onConnectButtonStateChanged(TryToggleState, TryToggleState)),OC_CONTYPE)) {
+	if(!connect(ui->tryToggleListen, &TryToggle::stateChanged, this, &ClientWidget::onConnectButtonStateChanged ,OC_CONTYPE)) {
+		qWarning()<<"ERROR: Could not connect";
+	} else {
+		qDebug()<<"CONNECTED onConnectButtonStateChanged";
 	}
 
 	mSensorsCourier->setDestination(mNodeAssoc->toClientSignature());
+
+
+	if(nullptr!=mController) {
+		mController->hookCommsSignals(*this);
+	}
 
 	installEventFilter(this);
 	init();
@@ -80,35 +94,100 @@ void ClientWidget::setSpinnerActive(bool active)
 	}
 }
 
-CommsChannel *ClientWidget::comms()
+
+
+void ClientWidget::updateOnlineStatus()
 {
-	OC_METHODGATE();
-	if(nullptr!=mController) {
-		return mController->comms();
+	//qDebug()<<"START UPDATE ONLINE STATUS # # # # ";
+	if(nullptr!=mController && nullptr!=mNodeAssoc) {
+		// Find if we ARE online
+		bool isOnline=false;
+		if(nullptr!=mController) {
+			isOnline=mController->isCommsConnected() && courierRegistration();
+		}
+		// Find if we WANT to be online
+		bool wantToBeOnline=false;
+		Settings *s=&mController->settings();
+		if(nullptr!=s) {
+			wantToBeOnline=s->getCustomSettingBool("octomy.online."+mNodeAssoc->name(), false);
+		}
+		//Spell it out for debugging
+		//qDebug()<<"We are currently "<<(isOnline?"ONLINE":"OFFLINE")<<" and we want to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
+		// Make necessary changes to state
+		const TryToggleState currentTryState=ui->tryToggleListen->state();
+		TryToggleState nextTryState=currentTryState;
+		bool nextOnlineStatus=isOnline;
+		if(wantToBeOnline ) {
+			if(isOnline ) {
+				nextTryState=ON;
+			} else {
+				nextTryState=TRYING;
+				//qDebug()<<"Decided to go online";
+				nextOnlineStatus=true;
+			}
+		} else {
+			if(isOnline ) {
+				//qDebug()<<"Decided to go offline";
+				nextOnlineStatus=false;
+			} else {
+				nextTryState=OFF;
+			}
+		}
+		if(nextOnlineStatus!=isOnline) {
+			//qDebug()<<"Decided to change online status from "<<isOnline<<" -> "<<nextOnlineStatus;
+			setCourierRegistration(nextOnlineStatus);
+		} else {
+			//qDebug()<<"No change in online status ("<<nextOnlineStatus<<")";
+		}
+		if(nextTryState!=currentTryState) {
+			//qDebug()<<"Decided to change tristate button from "<<currentTryState<<" -> "<<nextTryState;
+			ui->tryToggleListen->setState(nextTryState,false);
+		} else {
+			//qDebug()<<"No change tristate button ("<<nextTryState<<")";
+		}
 	}
-	return nullptr;
+	//qDebug()<<"END UPDATE ONLINE STATUS # # # # ";
 }
 
 
-void ClientWidget::courierRegistration(bool reg)
+bool ClientWidget::courierRegistration()
+{
+	CommsChannel *cc=comms();
+	if(nullptr!=cc) {
+		return cc->hasCourier(*mSensorsCourier);
+	}
+	return false;
+}
+
+void ClientWidget::setCourierRegistration(bool reg)
 {
 	CommsChannel *cc=comms();
 	if(nullptr!=cc) {
 		if(reg) {
-			qDebug()<<"REGISTERING SENSORS COURIER FOR " <<mNodeAssoc->id();
+			//qDebug()<<"REGISTERING SENSORS COURIER FOR " <<mNodeAssoc->id();
 			cc->registerCourier(*mSensorsCourier);
 		} else {
-			qDebug()<<"UN-REGISTERING SENSORS COURIER FOR " <<mNodeAssoc->id();
+			//qDebug()<<"UN-REGISTERING SENSORS COURIER FOR " <<mNodeAssoc->id();
 			cc->unregisterCourier(*mSensorsCourier);
 		}
 		// Adaptively start commschannel when there are couriers registered
 		const int ct=cc->courierCount();
+		//qDebug()<<"COMMS LEFT WITH "<<ct<<" COURIERS";
+		//qDebug()<< cc->getSummary();
 		if(ct>0) {
-			if(nullptr != mNodeAssoc) {
+			if( (nullptr != mNodeAssoc) && (!cc->isStarted()) ) {
+				//qDebug()<<"STARTING COMMS ";
 				cc->start(mNodeAssoc->localAddress());
+			} else {
+				//qDebug()<<"COMMS ALREADY STARTED";
 			}
 		} else {
-			cc->stop();
+			if( cc->isStarted() ) {
+				//qDebug()<<"STOPPING COMMS ";
+				cc->stop();
+			} else {
+				//qDebug()<<"COMMS ALREADY STOPPED";
+			}
 		}
 	}
 }
@@ -119,7 +198,7 @@ void ClientWidget::init()
 	ui->stackedWidgetControl->setUpdatesEnabled(false);
 	prepareSpinner();
 	if(nullptr!=mController) {
-		Settings &s=mController->settings();
+//		Settings &s=mController->settings();
 		ui->labelLocal->setText("WAITING FOR LOCAL");
 		ui->labelHub->setText("WAITING FOR HUB");
 		ui->labelGPS->setText("WAITING FOR GPS");
@@ -140,6 +219,21 @@ void ClientWidget::init()
 	ui->stackedWidgetControl->setUpdatesEnabled(true);
 }
 
+
+CommsChannel *ClientWidget::comms()
+{
+	OC_METHODGATE();
+	if(nullptr!=mController) {
+		return mController->comms();
+	}
+	return nullptr;
+}
+
+QSharedPointer<NodeAssociate> ClientWidget::nodeAssoc() const
+{
+	OC_METHODGATE();
+	return mNodeAssoc;
+}
 
 void ClientWidget::updateControlLevel(int level)
 {
@@ -167,12 +261,33 @@ bool ClientWidget::eventFilter(QObject *object, QEvent *event)
 }
 
 
+//////////////////////////////////////////////////
+// CommsChannel slots
+
+
+void ClientWidget::onCommsError(QString e)
+{
+	qDebug()<<"ClientWidget UNIMP Comms error: "<<e;
+}
+
+void ClientWidget::onCommsClientAdded(Client *c)
+{
+	//qDebug()<<"ClientWidget UNIMP Client added: "<<c->toString();
+}
+
+void ClientWidget::onCommsConnectionStatusChanged(bool s)
+{
+	//qDebug() <<"CLIENT WIDGET New connection status: "<<(s?"ONLINE":"OFFLINE");
+	updateOnlineStatus();
+}
+
+
 ///////////////////////////////////////// // Internal slots
 
 
-void ClientWidget::onSummaryTimer()
+void ClientWidget::onUpdateTimer()
 {
-
+	//qDebug()<<"TIME for summary";
 }
 
 
@@ -188,25 +303,19 @@ void ClientWidget::appendLog(const QString& text)
 
 ///////////////////////////////////////// // Internal UI slots
 
-void ClientWidget::onConnectionStateChanged(const TryToggleState last, const TryToggleState current)
+void ClientWidget::onConnectButtonStateChanged(const TryToggleState last, const TryToggleState current)
 {
 	OC_METHODGATE();
-	//appendLog("TRYSTATE CHANGED TO "+ToggleStateToSTring(s));
-	switch(current) {
-	case(TRYING): {
-		courierRegistration(true);
+	//qDebug()<< "CONNECT BUTTON TRYSTATE CHANGED FROM " << last<< " TO " << current;
+	if(current!=last) {
+		if(nullptr!= mNodeAssoc) {
+			Settings *s=&mController->settings();
+			if(nullptr!=s) {
+				s->setCustomSettingBool("octomy.online."+mNodeAssoc->name(), OFF!=current);
+			}
+		}
 	}
-	break;
-	case(ON): {
-
-	}
-	break;
-	default:
-	case(OFF): {
-		courierRegistration(false);
-	}
-	break;
-	}
+	updateOnlineStatus();
 }
 
 

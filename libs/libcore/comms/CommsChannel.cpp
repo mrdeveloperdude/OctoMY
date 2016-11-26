@@ -313,7 +313,7 @@ void CommsChannel::sendData(const quint64 &now, QSharedPointer<Client> localClie
 	} else {
 		auto na=sig->address();
 		const qint64 written=mUDPSocket.writeDatagram(datagram, na.ip(), na.port());
-		qDebug()<<"WROTE "<<written<<" bytes to "<<sig;
+		//qDebug()<<"WROTE "<<written<<" bytes to "<<sig;
 		if(written<sz) {
 			qDebug()<<"ERROR: Only " << written << " of " <<sz<<" written to UDP SOCKET:"<<mUDPSocket.errorString()<< " for destination "<< (sig->toString());
 			return;
@@ -367,14 +367,14 @@ void CommsChannel::onSendingTimer()
 					if(overdue>0) {
 						quint64 score=(cm.priority*overdue)/cm.interval;
 						pri.insert(score,c); //TODO: make this broadcast somehow (use ClientDirectory::getByLastActive() and ClientSignature::isValid() in combination or similar).
-						qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" OVERDUE SCORE:"<<score;
+						//qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" OVERDUE SCORE:"<<score;
 					} else {
 						idle.push_back(clisig);
 						if (-overdue > mostUrgentCourier) {
 							mostUrgentCourier=-overdue;
-							qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" URGENCY:"<<mostUrgentCourier;
+							//qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" URGENCY:"<<mostUrgentCourier;
 						} else {
-							qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" MEH";
+							//qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" MEH";
 						}
 					}
 				} else {
@@ -411,26 +411,16 @@ qint64 CommsChannel::sendRawData(QByteArray datagram,ClientSignature sig)
 
 QString CommsChannel::getSummary()
 {
-	QString out="TODO";
-	/*
-	int connected=0;
-	int disconnected=0;
-	for (QMap<quint64, Client *>::iterator i = clients.begin(), e=clients.end(); i != e; ++i){
-		const Client *nl=i.value();
-		if(0!=nl){
-			if(nl->connected){
-				connected++;
-			}
-			else{
-				disconnected++;
-			}
+	QString out;
+
+	for(Courier *courier:mCouriers) {
+		if(nullptr==courier) {
+			out+=" + NULL\n";
+		} else {
+			out+=" + "+courier->name()+"\n";
 		}
+
 	}
-
-	QTextStream ts(&out);
-	ts<<connected<<" of " << (disconnected+connected) <<" connected\n";
-	*/
-
 	return out;
 }
 
@@ -504,6 +494,7 @@ void CommsChannel::unHookSignals(QObject &ob)
 
 void CommsChannel::registerCourier(Courier &c)
 {
+
 	if(mCouriers.contains(&c)) {
 		qWarning()<<"ERROR: courier was allready registered";
 		return;

@@ -45,7 +45,7 @@ qint64 SensorsMessage::size()
 			ds<<this;
 		}
 		sz=ba.size();
-		qDebug()<<"Counted bytesize of StatusMessage to be "<<sz;
+		//qDebug()<<"Counted bytesize of StatusMessage to be "<<sz;
 	}
 	return sz;
 

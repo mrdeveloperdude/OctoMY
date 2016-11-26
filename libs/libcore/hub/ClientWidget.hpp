@@ -46,24 +46,40 @@ private:
 
 	void init();
 
-	CommsChannel *comms();
+	void updateOnlineStatus();
 
-	void courierRegistration(bool reg);
+	bool courierRegistration();
+	void setCourierRegistration(bool reg);
+
+
 
 public:
+	CommsChannel *comms();
+	QSharedPointer<NodeAssociate> nodeAssoc() const;
 
 	void updateControlLevel(int level);
 
+	// CommsChannel slots
+private slots:
+	void onCommsError(QString);
+	void onCommsClientAdded(Client *);
+	void onCommsConnectionStatusChanged(bool);
+
+
+
 	// Internal slots
 public slots:
-	void onSummaryTimer();
+	void onUpdateTimer();
 	void appendLog(const QString& text);
+
+
+	// Internal custom UI slots
+private slots:
+
+	void onConnectButtonStateChanged(const TryToggleState, const TryToggleState);
 
 	// Internal UI slots
 private slots:
-
-	void onConnectionStateChanged(const TryToggleState, const TryToggleState);
-
 
 	void on_checkBoxShowEyes_toggled(bool checked);
 	void on_checkBoxShowStats_toggled(bool checked);

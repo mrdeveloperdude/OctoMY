@@ -121,25 +121,7 @@ void ControlDeliveryWizard::onBirthComplete(){
 
 
 
-void ControlDeliveryWizard::on_pushButtonDone_clicked()
-{
-	emit done(false);
-}
-
 void ControlDeliveryWizard::on_pushButtonPairNow_clicked()
 {
 	emit done(true);
-}
-
-
-void ControlDeliveryWizard::on_pushButtonOnward_clicked()
-{
-	if(nullptr!=mNode){
-		KeyStore &keystore=mNode->keyStore();
-		mSpinner->start();
-		mBirthTimer.start();
-		keystore.clear();
-		keystore.bootstrap(false,true);
-		ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);
-	}
 }

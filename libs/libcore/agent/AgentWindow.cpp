@@ -355,7 +355,7 @@ void AgentWindow::updateFaceVisibility()
 
 void AgentWindow::onConnectionStateChanged(const TryToggleState last, const TryToggleState current)
 {
-	appendLog("CONNECT BUTTON TRYSTATE CHANGED FROM " +ToggleStateToSTring(last) +" TO "+ToggleStateToSTring(current));
+	//appendLog("CONNECT BUTTON TRYSTATE CHANGED FROM " +ToggleStateToSTring(last) +" TO "+ToggleStateToSTring(current));
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 	const bool on=(OFF!=current);
 	if(nullptr!=s) {

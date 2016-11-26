@@ -135,6 +135,10 @@ public:
 	void unregisterCourier(Courier &);
 	int courierCount();
 
+	inline bool hasCourier(Courier &c)
+	{
+		return mCouriers.contains(&c);
+	}
 
 	inline Courier *getCourierByID(quint32 id)
 	{

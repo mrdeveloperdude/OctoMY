@@ -74,8 +74,6 @@ void Node::init()
 		qWarning()<<"ERROR: Could not create basedir for node";
 	}
 
-	mComms->registerCourier(*mSensorsCourier);
-
 	hookSensorSignals(*this);
 	hookSensorSignals(*mSensorsCourier);
 
@@ -342,12 +340,12 @@ void Node::onCommsError(QString e)
 
 void Node::onCommsClientAdded(Client *c)
 {
-	qDebug()<<"NODE UNIMP Client added: "<<c->toString();
+	//qDebug()<<"NODE UNIMP Client added: "<<c->toString();
 }
 
 void Node::onCommsConnectionStatusChanged(bool s)
 {
-	qDebug() <<"NODE UNIMP New connection status: "<<(s?"ONLINE":"OFFLINE");
+	//qDebug() <<"NODE UNIMP New connection status: "<<(s?"ONLINE":"OFFLINE");
 }
 
 

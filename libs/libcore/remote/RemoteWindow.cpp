@@ -20,6 +20,8 @@
 
 #include "hub/ClientWidget.hpp"
 
+#include "widgets/Identicon.hpp"
+
 
 #include <QDebug>
 #include <QAccelerometerReading>
@@ -180,7 +182,7 @@ int RemoteWindow::updateAgentsList()
 	}
 	return ct;
 }
-#include "widgets/Identicon.hpp"
+
 
 
 void RemoteWindow::addAgentToList(QSharedPointer<NodeAssociate> peer)
@@ -313,9 +315,11 @@ void RemoteWindow::updateActiveAgent()
 			if(nullptr!=cw) {
 				const ClientWidget *old=qobject_cast<ClientWidget *>(ui->stackedWidgetControl->currentWidget());
 				const int oldIndex=ui->stackedWidgetControl->currentIndex();
+				const QString oldName=(nullptr==old)?"NULL":old->nodeAssoc()->name();
 				ui->stackedWidgetControl->setCurrentWidget(cw);
 				const int newIndex=ui->stackedWidgetControl->currentIndex();
-				//qDebug()<<"SWITCHING FROM "<<old << "("<<oldIndex << ") TO "<<cw <<"("<<newIndex << ")";
+				const QString newName=(nullptr==cw)?"NULL":cw->nodeAssoc()->name();
+				qDebug()<<"SWITCHING FROM "<<old << "("<<oldIndex << ", '"<<oldName << "') TO "<<cw <<"("<<newIndex << ", '"<<newName << "')";
 				updateControlLevel();
 			}
 		}
