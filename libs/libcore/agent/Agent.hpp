@@ -29,8 +29,13 @@ public:
 
 	virtual QWidget *showWindow();
 
-public slots:
-	void onCommsConnectionStatusChanged(TryToggleState);
+
+	// CommsChannel slots
+private slots:
+	virtual void onCommsError(QString) Q_DECL_OVERRIDE;
+	virtual void onCommsClientAdded(Client *)Q_DECL_OVERRIDE;
+	virtual void onCommsConnectionStatusChanged(bool)Q_DECL_OVERRIDE;
+
 
 
 };

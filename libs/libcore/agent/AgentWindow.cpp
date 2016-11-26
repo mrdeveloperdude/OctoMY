@@ -20,34 +20,6 @@
 #include <QAndroidJniObject>
 #endif
 
-void AgentWindow::updateIdentity()
-{
-	if(nullptr!=mAgent) {
-		mAgent->updateDiscoveryClient();
-		updateIcon();
-	} else {
-		qWarning()<<"WARNING: No Agent in agent window";
-	}
-	ui->widgetFace->setAgent(mAgent);
-	ui->widgetDelivery->configure(mAgent);
-	ui->widgetPairing->configure(mAgent);
-
-}
-
-void AgentWindow::updateIcon()
-{
-	if(nullptr!=mAgent) {
-		//Set our custom identicon as window icon
-		PortableID pid;
-		pid.setID(mAgent->keyStore().localKey().id());
-		Identicon id(pid);
-		QIcon icon;//=windowIcon();
-		icon.addPixmap(id.pixmap());
-		//	icon.addFile(QStringLiteral(":/icons/agent.svg"), QSize(), QIcon::Normal, QIcon::Off);
-		setWindowIcon(icon);
-	}
-}
-
 AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::AgentWindow)
@@ -76,23 +48,25 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 		ui->widgetDelivery->reset();
 		ui->stackedWidget->setCurrentWidget(mAgent->keyStore().fileExists()?startPage:ui->pageDelivery);
 
-		connect(ui->widgetDelivery, &AgentDeliveryWizard::done, [=](bool pairNow) {
-			updateIdentity();
+		if(!QObject::connect(ui->widgetDelivery, &AgentDeliveryWizard::done, [=](bool pairNow) {
+		updateIdentity();
 			ui->stackedWidget->setCurrentWidget(pairNow?ui->pagePairing:startPage);
-		} );
+		} ) ) {
+			qWarning()<<"ERROR: Could not connect ";
+		}
 
-		connect(ui->widgetPairing, &PairingWizard::done, [=]() {
-			ui->stackedWidget->setCurrentWidget(startPage);
-		} );
+		if(!connect(ui->widgetPairing, &PairingWizard::done, [=]() {
+		ui->stackedWidget->setCurrentWidget(startPage);
+		} )) {
+			qWarning()<<"ERROR: Could not connect ";
+		}
 
+		mAgent->hookCommsSignals(*this);
 		mAgent->hookColorSignals(*ui->widgetFace);
-
-		updateFaceVisibility();
 		ui->widgetFace->hookSignals(*this);
-
 		ui->widgetPlanEditor->configure("agent.plan");
-
 		prepareMenu();
+		updateFaceVisibility();
 
 		//QString text="Hello, my name is "+mAgent->name()+". I am an octomy agent. What is your bidding master?";
 		//QString text="Hello, my name is Bodhi. I am an octomy agent. What is your bidding master? 00 0 01010 010 010 010 010101 ";		PortableID id=mAgent->localNodeAssociate()->toPortableID();		new OneOffSpeech(id, text);
@@ -107,6 +81,38 @@ AgentWindow::~AgentWindow()
 {
 	delete ui;
 }
+
+
+
+void AgentWindow::updateIdentity()
+{
+	if(nullptr!=mAgent) {
+		mAgent->updateDiscoveryClient();
+		updateIcon();
+	} else {
+		qWarning()<<"WARNING: No Agent in agent window";
+	}
+	ui->widgetFace->setAgent(mAgent);
+	ui->widgetDelivery->configure(mAgent);
+	ui->widgetPairing->configure(mAgent);
+
+}
+
+void AgentWindow::updateIcon()
+{
+	if(nullptr!=mAgent) {
+		//Set our custom identicon as window icon
+		PortableID pid;
+		pid.setID(mAgent->keyStore().localKey().id());
+		Identicon id(pid);
+		QIcon icon;//=windowIcon();
+		icon.addPixmap(id.pixmap());
+		//	icon.addFile(QStringLiteral(":/icons/agent.svg"), QSize(), QIcon::Normal, QIcon::Off);
+		setWindowIcon(icon);
+	}
+}
+
+
 
 void AgentWindow::prepareMenu()
 {
@@ -349,30 +355,13 @@ void AgentWindow::updateFaceVisibility()
 
 void AgentWindow::onConnectionStateChanged(const TryToggleState last, const TryToggleState current)
 {
-	appendLog("TRYSTATE CHANGED FROM " +ToggleStateToSTring(last) +" TO "+ToggleStateToSTring(current));
+	appendLog("CONNECT BUTTON TRYSTATE CHANGED FROM " +ToggleStateToSTring(last) +" TO "+ToggleStateToSTring(current));
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
-	const bool on=OFF!=current;
+	const bool on=(OFF!=current);
 	if(nullptr!=s) {
 		s->setCustomSettingBool("octomy.online",on);
 	}
-	updateFaceVisibility();
-	mOnlineAction->setChecked(on);
-	switch(current) {
-	case(TRYING): {
-		mAgent->start(mAgent->nodeIdentity()->localAddress());
-		//				ui->labelLocal->setText("LOCAL:"+ui->widgetConnection->getLocalAddress().toString()+":"+QString::number(ui->widgetConnection->getLocalPort()));
-		//			ui->labelHub->setText("HUB: "+ui->widgetConnection->getTargetAddress().toString()+ ":"+ QString::number(ui->widgetConnection->getTargetPort()));
-	}
-	break;
-	case(ON): {
-
-	} break;
-	default:
-	case(OFF): {
-		mAgent->stop();
-	}
-	break;
-	}
+	updateOnlineStatus();
 }
 
 
@@ -391,12 +380,12 @@ void AgentWindow::onPanic()
 
 void AgentWindow::onOnlineChanged(bool on)
 {
-	qDebug()<<(on?"ONLINE":"OFFLINE");
+	qDebug()<<"ONLINE ACTION CHANGED TO "<<(on?"ONLINE":"OFFLINE");
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 	if(nullptr!=s) {
 		s->setCustomSettingBool("octomy.online",on);
 	}
-	ui->widgetFace->setConnectionState(on?TryToggleState::TRYING:TryToggleState::OFF );
+	updateOnlineStatus();
 }
 
 
@@ -518,7 +507,55 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 }
 
 
+void AgentWindow::updateOnlineStatus()
+{
+	if(nullptr!=mAgent) {
+		// Find if we ARE online
+		bool isOnline=false;
+		if(nullptr!=mAgent) {
+			isOnline=mAgent->isCommsConnected();
+		}
+		// Find if we WANT to be online
+		bool wantToBeOnline=false;
+		Settings *s=&mAgent->settings();
+		if(nullptr!=s) {
+			wantToBeOnline=s->getCustomSettingBool("octomy.online", false);
+		}
+		//Spell it out for debugging
+		qDebug()<<"We are currently "<<(isOnline?"ONLINE":"OFFLINE")<<" and we want to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
+		// Make necessary changes to state
+		const TryToggleState current=ui->widgetFace->connectionState();
+		TryToggleState next=current;
+		if(wantToBeOnline ) {
+			if(isOnline ) {
+				next=ON;
+			} else {
+				next=TRYING;
+				qDebug()<<"Decided to start comms";
+				mAgent->start(mAgent->nodeIdentity()->localAddress());
+			}
+		} else {
+			if(isOnline ) {
+				qDebug()<<"Decided to stop comms";
+				mAgent->stop();
+			} else {
+				next=OFF;
+			}
+		}
+		if(next!=current) {
+			qDebug()<<"Decided to change tristate button from "<<current<<" -> "<<next;
+			ui->widgetFace->setConnectionState(next,false);
+		} else {
+			qDebug()<<"No change tristate button ("<<current<<")";
+		}
+		// Propagate the possibly changed state to UI
+		updateFaceVisibility();
+		mOnlineAction->setChecked(wantToBeOnline);
+	}
 
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 void AgentWindow::notifyAndroid(QString s)
 {
@@ -560,6 +597,30 @@ void AgentWindow::on_pushButtonMenu_clicked()
 }
 
 
+
+
+//////////////////////////////////////////////////
+// CommsChannel slots
+
+
+void AgentWindow::onCommsError(QString e)
+{
+	qDebug()<<"AgentWindow UNIMP Comms error: "<<e;
+}
+
+void AgentWindow::onCommsClientAdded(Client *c)
+{
+	qDebug()<<"AgentWindow UNIMP Client added: "<<c->toString();
+}
+
+void AgentWindow::onCommsConnectionStatusChanged(bool s)
+{
+	qDebug() <<"AGENT WINDOW New connection status: "<<(s?"ONLINE":"OFFLINE");
+	updateOnlineStatus();
+}
+
+//////////////////////////////////////////////////
+// UI slots
 
 
 void AgentWindow::on_pushButtonConfirmQuit_clicked()

@@ -75,6 +75,8 @@ private:
 	void courierRegistration(QSharedPointer<NodeAssociate>, bool);
 	void updateCourierRegistration();
 
+	void updateOnlineStatus();
+
 
 private:
 	void notifyAndroid(QString);
@@ -108,6 +110,13 @@ public slots:
 	void onColorChanged(QColor);
 	void onPanic();
 
+	// CommsChannel slots
+private slots:
+	void onCommsError(QString);
+	void onCommsClientAdded(Client *);
+	void onCommsConnectionStatusChanged(bool);
+
+	// UI slots
 private slots:
 	void on_pushButtonConfirmQuit_clicked();
 	void on_pushButtonBack_clicked();

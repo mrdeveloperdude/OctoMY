@@ -31,14 +31,14 @@ public:
 
 public:
 	void setText(QString, QString, QString);
-	TryToggleState state();
+	TryToggleState state() const;
 
 private:
 	void updateText();
 
 
 public slots:
-	void setState(const TryToggleState s);
+	void setState(const TryToggleState s, const bool doEmit=true);
 
 
 	void animateClick();

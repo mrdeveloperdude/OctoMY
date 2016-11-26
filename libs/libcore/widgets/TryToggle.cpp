@@ -26,7 +26,7 @@ void TryToggle::setText(QString t1i,QString t2i,QString t3i)
 	updateText();
 }
 
-TryToggleState TryToggle::state()
+TryToggleState TryToggle::state() const
 {
 	return mState;
 }
@@ -51,7 +51,7 @@ void TryToggle::updateText()
 	ui->pushButtonToggle->setText(t);
 }
 
-void TryToggle::setState(const TryToggleState s)
+void TryToggle::setState(const TryToggleState s, const bool doEmit)
 {
 	//qDebug()<<"SET STATE: "<<s;
 	if(s!=mState) {

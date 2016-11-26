@@ -101,6 +101,7 @@ public:
 
 	void start(const NetworkAddress &localAddress);
 	void stop();
+	bool isCommsConnected();
 
 	// Blob courier
 	BlobFuture submitBlobForSending(QByteArray data, QString name);
@@ -117,9 +118,9 @@ private slots:
 
 	// CommsChannel slots
 private slots:
-	void onCommsError(QString);
-	void onCommsClientAdded(Client *);
-	void onCommsConnectionStatusChanged(bool);
+	virtual void onCommsError(QString);
+	virtual void onCommsClientAdded(Client *);
+	virtual void onCommsConnectionStatusChanged(bool);
 
 
 	// SensorInput slots

@@ -38,7 +38,8 @@ public:
 	void appendLog(const QString&);
 	void setAgent(Agent *);
 
-	void setConnectionState(const TryToggleState s);
+	void setConnectionState(const TryToggleState s, const bool doEmit=true);
+	TryToggleState  connectionState() const ;
 
 
 	void hookSignals(QObject &ob);

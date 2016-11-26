@@ -213,6 +213,17 @@ void Node::stop()
 }
 
 
+bool Node::isCommsConnected()
+{
+	if(nullptr!=mComms) {
+		return mComms->isConnected();
+	} else {
+		qWarning()<<"ERROR: No comms";
+	}
+	return false;
+}
+
+
 
 BlobFuture Node::submitBlobForSending(QByteArray data, QString name)
 {
@@ -326,17 +337,17 @@ void Node::onKeystoreReady(bool ok)
 
 void Node::onCommsError(QString e)
 {
-	qDebug()<<"Comms error: "<<e;
+	qDebug()<<"NODE UNIMP Comms error: "<<e;
 }
 
 void Node::onCommsClientAdded(Client *c)
 {
-	qDebug()<<"Client added: "<<c->toString();
+	qDebug()<<"NODE UNIMP Client added: "<<c->toString();
 }
 
 void Node::onCommsConnectionStatusChanged(bool s)
 {
-	qDebug() <<"New connection status: "<<(s?"ONLINE":"OFFLINE");
+	qDebug() <<"NODE UNIMP New connection status: "<<(s?"ONLINE":"OFFLINE");
 }
 
 

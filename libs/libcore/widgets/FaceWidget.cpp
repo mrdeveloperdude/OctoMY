@@ -83,9 +83,15 @@ void FaceWidget::setAgent(Agent *a)
 }
 
 
-void FaceWidget::setConnectionState(const TryToggleState s)
+void FaceWidget::setConnectionState(const TryToggleState s, const bool doEmit)
 {
-	ui->tryToggleConnect->setState(s);
+	ui->tryToggleConnect->setState(s, doEmit);
+}
+
+
+TryToggleState FaceWidget::connectionState() const
+{
+	return ui->tryToggleConnect->state();
 }
 
 
