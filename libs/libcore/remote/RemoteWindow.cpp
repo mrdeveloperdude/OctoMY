@@ -133,20 +133,20 @@ void RemoteWindow::hookSensorSignals()
 
 void RemoteWindow::goToStartPage()
 {
-	qDebug()<<"";
-	qDebug()<<"----------------- - - - - - ------------------------- - - - - ";
+	//qDebug()<<"";
+	//qDebug()<<"----------------- - - - - - ------------------------- - - - - ";
 	if(nullptr!=mRemote) {
 		//Select correct starting page
 		if(!mRemote->keyStore().localKey().isValid(true)) {
-			qDebug()<<"STARTING WITH DELIVERY";
+			//qDebug()<<"STARTING WITH DELIVERY";
 			ui->widgetDelivery->reset();
 			ui->stackedWidgetScreen->setCurrentWidget(ui->pageDelivery);
 		} else if(mRemote->peers().getParticipantCount()<=0) {
-			qDebug()<<"STARTING WITH PAIRING";
+			//qDebug()<<"STARTING WITH PAIRING";
 			ui->widgetPairing->reset();
 			ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
 		} else {
-			qDebug()<<"STARTING WITH RUN";
+			//qDebug()<<"STARTING WITH RUN";
 			ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
 		}
 	} else {
@@ -199,7 +199,7 @@ void RemoteWindow::addAgentToList(QSharedPointer<NodeAssociate> peer)
 		icon=QIcon(identicon.pixmap());
 
 
-		qDebug()<<"INSERTING AGENT IN DROPDOWN "<<peer->toPortableID().toPortableString();
+		//qDebug()<<"INSERTING AGENT IN DROPDOWN "<<peer->toPortableID().toPortableString();
 		ui->comboBoxAgent->insertItem(0, icon, name, userData);
 		ui->comboBoxAgent->setCurrentIndex(0);
 	}
@@ -276,7 +276,7 @@ void RemoteWindow::keyReleaseEvent(QKeyEvent *e)
 void RemoteWindow::updateControlLevel()
 {
 	OC_METHODGATE();
-	qDebug()<<"SWITCHING CONTROL LEVEL TO "<<ui->comboBoxControlLevel->currentText();
+	//qDebug()<<"SWITCHING CONTROL LEVEL TO "<<ui->comboBoxControlLevel->currentText();
 	const int idx=ui->comboBoxControlLevel->currentIndex();
 	ClientWidget *clientWidget = qobject_cast<ClientWidget *>(ui->stackedWidgetControl->currentWidget());
 	if(nullptr!=clientWidget) {
@@ -293,15 +293,15 @@ void RemoteWindow::updateActiveAgent()
 		const QString agentName=ui->comboBoxAgent->currentText();
 		const QString agentID=ui->comboBoxAgent->currentData().toString();
 		QSharedPointer<NodeAssociate>  client=mRemote->peers().getParticipant(agentID);
-		qDebug()<<"SWITCHING ACTIVE AGENT TO "<<agentName<<"("<<idx<<", "<<agentID<<")";
+		//qDebug()<<"SWITCHING ACTIVE AGENT TO "<<agentName<<"("<<idx<<", "<<agentID<<")";
 		if(idx>=0) {
 			QMap<int, ClientWidget *>::const_iterator it=mClientWidgets.find(idx);
 			ClientWidget *cw=nullptr;
 			if(mClientWidgets.end()==it) {
-				qDebug()<<"CREATING CLIENT WIDGET WITH ID "<<client->toPortableID().toPortableString();
+				//qDebug()<<"CREATING CLIENT WIDGET WITH ID "<<client->toPortableID().toPortableString();
 				cw=new ClientWidget(QSharedPointer<Node>(mRemote), client, this);
 				if(nullptr!=cw) {
-					qDebug()<<"Created client widget for index "<<idx;
+					//qDebug()<<"Created client widget for index "<<idx;
 					mClientWidgets[idx]=cw;
 					ui->stackedWidgetControl->addWidget(cw);
 				} else {
@@ -315,7 +315,7 @@ void RemoteWindow::updateActiveAgent()
 				const int oldIndex=ui->stackedWidgetControl->currentIndex();
 				ui->stackedWidgetControl->setCurrentWidget(cw);
 				const int newIndex=ui->stackedWidgetControl->currentIndex();
-				qDebug()<<"SWITCHING FROM "<<old << "("<<oldIndex << ") TO "<<cw <<"("<<newIndex << ")";
+				//qDebug()<<"SWITCHING FROM "<<old << "("<<oldIndex << ") TO "<<cw <<"("<<newIndex << ")";
 				updateControlLevel();
 			}
 		}
@@ -323,10 +323,10 @@ void RemoteWindow::updateActiveAgent()
 	//Remove the placeholder
 	ui->stackedWidgetControl->removeWidget(ui->widgetClientPlaceholder);
 	int ct=ui->stackedWidgetControl->count();
-	qDebug()<<"CLIENT WIDGETS: "<<ct;
+	//qDebug()<<"CLIENT WIDGETS: "<<ct;
 	//Add the placeholder back if count <=0
 	if(ct<=0) {
-		qDebug()<<"ADDING PLACEHOLDER";
+		//qDebug()<<"ADDING PLACEHOLDER";
 		ui->stackedWidgetControl->addWidget(ui->widgetClientPlaceholder);
 	}
 }
