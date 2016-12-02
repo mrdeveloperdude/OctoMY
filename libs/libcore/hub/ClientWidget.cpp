@@ -12,7 +12,10 @@
 #include "security/PortableID.hpp"
 
 #include "comms/CommsChannel.hpp"
+
+#include "comms/couriers/AgentStateCourier.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
+#include "comms/couriers/BlobCourier.hpp"
 
 #include <QScrollBar>
 
@@ -23,7 +26,10 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 	, mController(controller)
 	, mNodeAssoc(nodeAssoc)
 	, mSpinner(nullptr)
+	, mAgentStateCourier(new AgentStateCourier(this))
 	, mSensorsCourier(new SensorsCourier(this))
+	, mBlobCourier(new BlobCourier(this))
+
 {
 
 	qDebug()<<"CREATING CLIENT WIDGET mController="<<(nullptr!=mController?mController->name():"NULL")<<", mNodeAssoc="<<(nullptr!=mNodeAssoc?mNodeAssoc->name():"NULL")<<", parent="<<parent;
@@ -53,7 +59,10 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 		qDebug()<<"CONNECTED onConnectButtonStateChanged";
 	}
 
-	mSensorsCourier->setDestination(mNodeAssoc->toClientSignature());
+	ClientSignature sig=mNodeAssoc->toClientSignature();
+	mAgentStateCourier->setDestination(sig);
+	mSensorsCourier->setDestination(sig);
+	mBlobCourier->setDestination(sig);
 
 
 	if(nullptr!=mController) {
@@ -167,10 +176,14 @@ void ClientWidget::setCourierRegistration(bool reg)
 	if(nullptr!=cc) {
 		if(reg) {
 			//qDebug()<<"REGISTERING SENSORS COURIER FOR " <<mNodeAssoc->id();
+			cc->registerCourier(*mAgentStateCourier);
 			cc->registerCourier(*mSensorsCourier);
+			cc->registerCourier(*mBlobCourier);
 		} else {
 			//qDebug()<<"UN-REGISTERING SENSORS COURIER FOR " <<mNodeAssoc->id();
+			cc->unregisterCourier(*mAgentStateCourier);
 			cc->unregisterCourier(*mSensorsCourier);
+			cc->unregisterCourier(*mBlobCourier);
 		}
 		// Adaptively start commschannel when there are couriers registered
 		const int ct=cc->courierCount();

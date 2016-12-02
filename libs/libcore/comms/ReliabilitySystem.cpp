@@ -6,13 +6,13 @@
 
 
 
-inline bool sequenceMoreRecent( unsigned int s1, unsigned int s2, unsigned int max_sequence ){
+inline bool sequenceMoreRecent( quint32 s1, quint32 s2, quint32 max_sequence ){
 	return (( s1 > s2 ) && ( s1 - s2 <= max_sequence/2 )) || (( s2 > s1 ) && ( s2 - s1 > max_sequence/2 ));
 }
 
 
 
-bool PacketQueue::exists( unsigned int sequence ){
+bool PacketQueue::exists( quint32 sequence ){
 	for ( iterator itor = begin(); itor != end(); ++itor ){
 		if ( itor->sequence == sequence ){
 			return true;
@@ -21,7 +21,7 @@ bool PacketQueue::exists( unsigned int sequence ){
 	return false;
 }
 
-void PacketQueue::insertSorted( const PacketData & p, unsigned int max_sequence ){
+void PacketQueue::insertSorted( const PacketData & p, quint32 max_sequence ){
 	if ( empty() ){
 		push_back( p );
 	}
@@ -44,7 +44,7 @@ void PacketQueue::insertSorted( const PacketData & p, unsigned int max_sequence 
 	}
 }
 #ifdef NET_UNIT_TEST
-void PacketQueue::verify_sorted( unsigned int max_sequence ){
+void PacketQueue::verify_sorted( quint32 max_sequence ){
 	PacketQueue::iterator prev = end();
 	for ( PacketQueue::iterator itor = begin(); itor != end(); itor++ ){
 		assert( itor->sequence <= max_sequence );
@@ -59,7 +59,7 @@ void PacketQueue::verify_sorted( unsigned int max_sequence ){
 
 
 
-ReliabilitySystem::ReliabilitySystem( unsigned int max_sequence ):
+ReliabilitySystem::ReliabilitySystem( quint32 max_sequence ):
 	max_sequence(max_sequence)
   , local_sequence(0)
   , remote_sequence(0)
@@ -92,7 +92,7 @@ void ReliabilitySystem::reset(){
 	rtt_maximum = 1.0f;
 }
 
-void ReliabilitySystem::packetSent( int size ) {
+void ReliabilitySystem::packetSent( qint32 size ) {
 	if ( sentQueue.exists( local_sequence ) ) {
 		qDebug()<<"local sequence "<< local_sequence <<" exists";
 		for ( PacketQueue::iterator itor = sentQueue.begin(); itor != sentQueue.end(); ++itor ){
@@ -114,7 +114,7 @@ void ReliabilitySystem::packetSent( int size ) {
 	}
 }
 
-void ReliabilitySystem::packetReceived( unsigned int sequence, int size ) {
+void ReliabilitySystem::packetReceived( quint32 sequence, qint32 size ) {
 	recv_packets++;
 	if ( receivedQueue.exists( sequence ) ){
 		return;
@@ -129,11 +129,11 @@ void ReliabilitySystem::packetReceived( unsigned int sequence, int size ) {
 	}
 }
 
-unsigned int ReliabilitySystem::generateAckBits() {
+quint32 ReliabilitySystem::generateAckBits() {
 	return generateAckBits( remote_sequence, receivedQueue, max_sequence );
 }
 
-void ReliabilitySystem::processAck( unsigned int ack, unsigned int ack_bits ) {
+void ReliabilitySystem::processAck( quint32 ack, quint32 ack_bits ) {
 	processAck( ack, ack_bits, pendingAckQueue, ackedQueue, acked, acked_packets, rtt, max_sequence );
 }
 
@@ -158,11 +158,11 @@ void validate(){
 
 // utility functions
 
-bool ReliabilitySystem::sequenceIsMoreRecent( unsigned int s1, unsigned int s2, unsigned int max_sequence ){
+bool ReliabilitySystem::sequenceIsMoreRecent( quint32 s1, quint32 s2, quint32 max_sequence ){
 	return (( s1 > s2 ) && ( s1 - s2 <= max_sequence/2 )) || (( s2 > s1 ) && ( s2 - s1 > max_sequence/2 ));
 }
 
-int ReliabilitySystem::bitIndexForSequence( unsigned int sequence, unsigned int ack, unsigned int max_sequence ){
+qint32 ReliabilitySystem::bitIndexForSequence( quint32 sequence, quint32 ack, quint32 max_sequence ){
 	//			assert( sequence != ack );
 	//			assert( !sequence_more_recent( sequence, ack, max_sequence ) );
 	if ( sequence > ack ) {
@@ -177,13 +177,13 @@ int ReliabilitySystem::bitIndexForSequence( unsigned int sequence, unsigned int 
 	}
 }
 
-unsigned int ReliabilitySystem::generateAckBits( unsigned int ack, const PacketQueue & received_queue, unsigned int max_sequence ) {
-	unsigned int ack_bits = 0;
+quint32 ReliabilitySystem::generateAckBits( quint32 ack, const PacketQueue & received_queue, quint32 max_sequence ) {
+	quint32 ack_bits = 0;
 	for ( PacketQueue::const_iterator itor = received_queue.begin(); itor != received_queue.end(); itor++ ) {
 		if ( itor->sequence == ack || sequenceIsMoreRecent( itor->sequence, ack, max_sequence ) ){
 			break;
 		}
-		int bit_index = bitIndexForSequence( itor->sequence, ack, max_sequence );
+		qint32 bit_index = bitIndexForSequence( itor->sequence, ack, max_sequence );
 		if ( bit_index <= 31 ){
 			ack_bits |= 1 << bit_index;
 		}
@@ -191,14 +191,14 @@ unsigned int ReliabilitySystem::generateAckBits( unsigned int ack, const PacketQ
 	return ack_bits;
 }
 
-void ReliabilitySystem::processAck( unsigned int ack
-									, unsigned int ack_bits
+void ReliabilitySystem::processAck( quint32 ack
+									, quint32 ack_bits
 									, PacketQueue & pending_ack_queue
 									, PacketQueue & acked_queue
-									, QVector<unsigned int> & acked
-									, unsigned int & acked_packets
+									, QVector<quint32> & acked
+									, quint32 & acked_packets
 									, float & rtt
-									, unsigned int max_sequence)
+									, quint32 max_sequence)
 {
 	if ( pending_ack_queue.empty() ){
 		return;
@@ -212,7 +212,7 @@ void ReliabilitySystem::processAck( unsigned int ack
 			wasAcked = true;
 		}
 		else if ( !sequenceIsMoreRecent( itor->sequence, ack, max_sequence ) ) {
-			int bit_index = bitIndexForSequence( itor->sequence, ack, max_sequence );
+			qint32 bit_index = bitIndexForSequence( itor->sequence, ack, max_sequence );
 			if ( bit_index <= 31 ){
 				wasAcked = ( ack_bits >> bit_index ) & 1;
 			}
@@ -235,37 +235,37 @@ void ReliabilitySystem::processAck( unsigned int ack
 
 
 
-unsigned int ReliabilitySystem::localSequence() const {
+quint32 ReliabilitySystem::localSequence() const {
 	return local_sequence;
 }
 
-unsigned int ReliabilitySystem::remoteSequence() const {
+quint32 ReliabilitySystem::remoteSequence() const {
 	return remote_sequence;
 }
 
-unsigned int ReliabilitySystem::maxSequence() const{
+quint32 ReliabilitySystem::maxSequence() const{
 	return max_sequence;
 }
 
 
-void ReliabilitySystem::acks( unsigned int ** acked, int & count ){
+void ReliabilitySystem::acks( quint32 ** acked, qint32 & count ){
 	*acked = &this->acked[0];
-	count = (int) this->acked.size();
+	count = (qint32) this->acked.size();
 }
 
-unsigned int ReliabilitySystem::sentPackets() const{
+quint32 ReliabilitySystem::sentPackets() const{
 	return sent_packets;
 }
 
-unsigned int ReliabilitySystem::receivedPackets() const{
+quint32 ReliabilitySystem::receivedPackets() const{
 	return recv_packets;
 }
 
-unsigned int ReliabilitySystem::lostPackets() const{
+quint32 ReliabilitySystem::lostPackets() const{
 	return lost_packets;
 }
 
-unsigned int ReliabilitySystem::ackedPackets() const{
+quint32 ReliabilitySystem::ackedPackets() const{
 	return acked_packets;
 }
 
@@ -281,7 +281,7 @@ float ReliabilitySystem::roundTripTime() const{
 	return rtt;
 }
 
-int ReliabilitySystem::headerSize() const{
+qint32 ReliabilitySystem::headerSize() const{
 	return 12;
 }
 
@@ -312,8 +312,8 @@ void ReliabilitySystem::updateQueues(){
 	}
 
 	if ( receivedQueue.size() ) {
-		const unsigned int latest_sequence = receivedQueue.back().sequence;
-		const unsigned int minimum_sequence = latest_sequence >= 34 ? ( latest_sequence - 34 ) : max_sequence - ( 34 - latest_sequence );
+		const quint32 latest_sequence = receivedQueue.back().sequence;
+		const quint32 minimum_sequence = latest_sequence >= 34 ? ( latest_sequence - 34 ) : max_sequence - ( 34 - latest_sequence );
 		while ( receivedQueue.size() && !sequenceIsMoreRecent( receivedQueue.front().sequence, minimum_sequence, max_sequence ) ){
 			receivedQueue.pop_front();
 		}
@@ -330,12 +330,12 @@ void ReliabilitySystem::updateQueues(){
 }
 
 void ReliabilitySystem::updateStats() {
-	int sent_bytes_per_second = 0;
+	qint32 sent_bytes_per_second = 0;
 	for ( PacketQueue::iterator itor = sentQueue.begin(); itor != sentQueue.end(); ++itor ){
 		sent_bytes_per_second += itor->size;
 	}
-	int acked_packets_per_second = 0;
-	int acked_bytes_per_second = 0;
+	qint32 acked_packets_per_second = 0;
+	qint32 acked_bytes_per_second = 0;
 	for ( PacketQueue::iterator itor = ackedQueue.begin(); itor != ackedQueue.end(); ++itor ) {
 		if ( itor->time >= rtt_maximum ) {
 			acked_packets_per_second++;

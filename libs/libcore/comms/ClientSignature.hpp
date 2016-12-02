@@ -54,10 +54,10 @@ public:
 
 	bool isValid() const;
 
-
-
-
 };
+
+
+const QDebug &operator<<(QDebug &d, const ClientSignature &sig);
 
 
 #endif // CLIENTSIGNATURE_HPP

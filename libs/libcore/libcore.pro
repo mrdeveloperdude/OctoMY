@@ -189,7 +189,10 @@ SOURCES +=\
     comms/couriers/BlobCourier.cpp \
     comms/couriers/Blob.cpp \
     comms/couriers/BlobChunk.cpp \
-    comms/couriers/BlobFuture.cpp
+    comms/couriers/BlobFuture.cpp \
+    comms/couriers/AgentStateCourier.cpp \
+    comms/messages/AgentMode.cpp \
+    comms/SyncParameter.cpp
 
 
 HEADERS  += \
@@ -384,7 +387,10 @@ HEADERS  += \
     comms/couriers/BlobCourier.hpp \
     comms/couriers/Blob.hpp \
     comms/couriers/BlobChunk.hpp \
-    comms/couriers/BlobFuture.hpp
+    comms/couriers/BlobFuture.hpp \
+    comms/couriers/AgentStateCourier.hpp \
+    comms/messages/AgentMode.hpp \
+    comms/SyncParameter.hpp
 
 
 FORMS    += \

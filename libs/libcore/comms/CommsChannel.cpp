@@ -259,7 +259,7 @@ void CommsChannel::sendData(const quint64 &now, QSharedPointer<Client> localClie
 		qWarning()<<"ERROR: no courier and no client when sending data";
 		return;
 	}
-	const qint32 availableBytes=512-(7*4);
+	const qint32 availableBytes=MAX_UDP_PAYLOAD_SIZE-(7*4);
 	QByteArray datagram;
 	QDataStream ds(&datagram,QIODevice::WriteOnly);
 	quint32 bytesUsed=0;
@@ -273,6 +273,8 @@ void CommsChannel::sendData(const quint64 &now, QSharedPointer<Client> localClie
 	ds << mLocalSignature.shortHandID();
 	bytesUsed += sizeof(quint64);
 	// Write reliability data
+	// TODO: incorporate writing logic better into reliability class
+	// TODO: convert types used in reliability system to Qt for portability piece of mind
 	ReliabilitySystem &rs=localClient->reliabilitySystem();
 	ds << rs.localSequence();
 	bytesUsed += sizeof(unsigned int);
@@ -302,7 +304,7 @@ void CommsChannel::sendData(const quint64 &now, QSharedPointer<Client> localClie
 		bytesUsed+=sizeof(quint32);
 		ds << (quint16)0;
 		bytesUsed += sizeof(quint16);
-		qDebug()<<"IDLE PACKET";
+		qDebug()<<"IDLE PACKET: "<<(nullptr==courier?"NULL":courier->name())<<", "<<(nullptr==localClient?"NULL":localClient->toString());
 	}
 	const quint32 sz=datagram.size();
 	//qDebug()<<"SEND DS SIZE: "<<sz;
@@ -351,13 +353,13 @@ void CommsChannel::onSendingTimer()
 	qint64 mostUrgentCourier=MIN_RATE;
 	QMap<quint64, Courier *> pri;
 	QList <const ClientSignature *> idle;
-	for(Courier *c:mCouriers) {
-		if(nullptr!=c) {
-			CourierMandate cm=c->mandate();
+	for(Courier *courier:mCouriers) {
+		if(nullptr!=courier) {
+			CourierMandate cm=courier->mandate();
 			if(cm.sendActive) {
-				const ClientSignature *clisig=&c->destination();
-				if(clisig->isValid()) {
-					const quint64 last = c->lastOpportunity();
+				const ClientSignature &clisig=courier->destination();
+				if(clisig.isValid()) {
+					const quint64 last = courier->lastOpportunity();
 					const qint64 interval = now - last;
 					const qint64 overdue = interval - cm.interval;
 					if((qint64)cm.interval<mostUrgentCourier) {
@@ -366,10 +368,10 @@ void CommsChannel::onSendingTimer()
 					//We are overdue
 					if(overdue>0) {
 						quint64 score=(cm.priority*overdue)/cm.interval;
-						pri.insert(score,c); //TODO: make this broadcast somehow (use ClientDirectory::getByLastActive() and ClientSignature::isValid() in combination or similar).
+						pri.insert(score,courier); //TODO: make this broadcast somehow (use ClientDirectory::getByLastActive() and ClientSignature::isValid() in combination or similar).
 						//qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" OVERDUE SCORE:"<<score;
 					} else {
-						idle.push_back(clisig);
+						idle.push_back(&clisig);
 						if (-overdue > mostUrgentCourier) {
 							mostUrgentCourier=-overdue;
 							//qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" URGENCY:"<<mostUrgentCourier;
@@ -378,7 +380,7 @@ void CommsChannel::onSendingTimer()
 						}
 					}
 				} else {
-					qWarning()<<"ERROR: clisig was invalid";
+					qWarning()<<"ERROR: clisig was invalid: "<<clisig;
 				}
 
 			}
@@ -393,8 +395,12 @@ void CommsChannel::onSendingTimer()
 		sendData(now, localClient, courier, nullptr); //Client *localClient, Courier *courier, const ClientSignature *sig1){
 		//(const quint64 now, Client *localClient, Courier *courier, const ClientSignature *sig1){
 	}
-	for(const ClientSignature *sig:idle) {
-		sendData(now, localClient, nullptr, sig);
+	const int isz=idle.size();
+	if(isz>0) {
+		qDebug()<<"Send "<<isz<<" idle packets";
+		for(const ClientSignature *sig:idle) {
+			sendData(now, localClient, nullptr, sig);
+		}
 	}
 	// Prepare for next round (this implies a stop() )
 	quint64 delay=MIN(mostUrgentCourier,MIN_RATE);

@@ -7,9 +7,9 @@
 
 
 struct PacketData{
-		unsigned int sequence;			// packet sequence number
+		quint32 sequence;			// packet sequence number
 		float time;					    // time offset since packet was sent or received (depending on context)
-		int size;						// packet size in bytes
+		qint32 size;						// packet size in bytes
 };
 
 
@@ -17,11 +17,11 @@ struct PacketData{
 class PacketQueue : public QList<PacketData>{
 	public:
 
-		bool exists( unsigned int sequence );
+		bool exists( quint32 sequence );
 
-		void insertSorted( const PacketData & p, unsigned int max_sequence );
+		void insertSorted( const PacketData & p, quint32 max_sequence );
 #ifdef NET_UNIT_TEST
-		void verify_sorted( unsigned int max_sequence );
+		void verify_sorted( quint32 max_sequence );
 #endif
 };
 
@@ -30,21 +30,21 @@ class PacketQueue : public QList<PacketData>{
 class ReliabilitySystem{
 	private:
 
-		unsigned int max_sequence;			// maximum sequence value before wrap around (used to test sequence wrap at low # values)
-		unsigned int local_sequence;		// local sequence number for most recently sent packet
-		unsigned int remote_sequence;		// remote sequence number for most recently received packet
+		quint32 max_sequence;			// maximum sequence value before wrap around (used to test sequence wrap at low # values)
+		quint32 local_sequence;		// local sequence number for most recently sent packet
+		quint32 remote_sequence;		// remote sequence number for most recently received packet
 
-		unsigned int sent_packets;			// total number of packets sent
-		unsigned int recv_packets;			// total number of packets received
-		unsigned int lost_packets;			// total number of packets lost
-		unsigned int acked_packets;			// total number of packets acked
+		quint32 sent_packets;			// total number of packets sent
+		quint32 recv_packets;			// total number of packets received
+		quint32 lost_packets;			// total number of packets lost
+		quint32 acked_packets;			// total number of packets acked
 
 		float sent_bandwidth;				// approximate sent bandwidth over the last second
 		float acked_bandwidth;				// approximate acked bandwidth over the last second
 		float rtt;							// estimated round trip time
 		float rtt_maximum;					// maximum expected round trip time (hard coded to one second for the moment)
 
-		QVector<unsigned int> acked;		// acked packets from last set of packet receives. cleared each update!
+		QVector<quint32> acked;		// acked packets from last set of packet receives. cleared each update!
 
 		PacketQueue sentQueue;				// sent packets used to calculate sent bandwidth (kept until rtt_maximum)
 		PacketQueue pendingAckQueue;		// sent packets which have not been acked yet (kept until rtt_maximum * 2 )
@@ -52,12 +52,12 @@ class ReliabilitySystem{
 		PacketQueue ackedQueue;				// acked packets (kept until rtt_maximum * 2)
 	public:
 
-		ReliabilitySystem( unsigned int max_sequence = 0xFFFFFFFF );
+		ReliabilitySystem( quint32 max_sequence = 0xFFFFFFFF );
 		void reset();
-		void packetSent( int size ) ;
-		void packetReceived( unsigned int sequence, int size ) ;
-		unsigned int generateAckBits() ;
-		void processAck( unsigned int ack, unsigned int ack_bits );
+		void packetSent( qint32 size ) ;
+		void packetReceived( quint32 sequence, qint32 size ) ;
+		quint32 generateAckBits() ;
+		void processAck( quint32 ack, quint32 ack_bits );
 		void update( float deltaTime ) ;
 
 #ifdef NET_UNIT_TEST
@@ -66,31 +66,31 @@ class ReliabilitySystem{
 
 		// utility functions
 
-		static bool sequenceIsMoreRecent( unsigned int s1, unsigned int s2, unsigned int max_sequence );
-		static int bitIndexForSequence( unsigned int sequence, unsigned int ack, unsigned int max_sequence );
-		static unsigned int generateAckBits( unsigned int ack, const PacketQueue & received_queue, unsigned int max_sequence );
-		static void processAck( unsigned int ack
-								 , unsigned int ack_bits
+		static bool sequenceIsMoreRecent( quint32 s1, quint32 s2, quint32 max_sequence );
+		static qint32 bitIndexForSequence( quint32 sequence, quint32 ack, quint32 max_sequence );
+		static quint32 generateAckBits( quint32 ack, const PacketQueue & received_queue, quint32 max_sequence );
+		static void processAck( quint32 ack
+								 , quint32 ack_bits
 								 , PacketQueue & pending_ack_queue
 								 , PacketQueue & acked_queue
-								 , QVector<unsigned int> & acks
-								 , unsigned int & acked_packets
+								 , QVector<quint32> & acks
+								 , quint32 & acked_packets
 								 , float & rtt
-								 , unsigned int max_sequence);
+								 , quint32 max_sequence);
 
 
-		unsigned int localSequence() const;
-		unsigned int remoteSequence() const ;
-		unsigned int maxSequence() const;
-		void acks( unsigned int ** acks, int & count );
-		unsigned int sentPackets() const;
-		unsigned int receivedPackets() const;
-		unsigned int lostPackets() const;
-		unsigned int ackedPackets() const;
+		quint32 localSequence() const;
+		quint32 remoteSequence() const ;
+		quint32 maxSequence() const;
+		void acks( quint32 ** acks, qint32 & count );
+		quint32 sentPackets() const;
+		quint32 receivedPackets() const;
+		quint32 lostPackets() const;
+		quint32 ackedPackets() const;
 		float sentBandwidth() const;
 		float ackedBandwidth() const;
 		float roundTripTime() const;
-		int headerSize() const;
+		qint32 headerSize() const;
 
 	protected:
 

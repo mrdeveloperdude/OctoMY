@@ -33,20 +33,29 @@ quint16 SensorsCourier::sendingOpportunity(QDataStream &ds)
 	(void)ds;
 	if(mMandate.sendActive) {
 		qDebug()<<"Spending sending opportunity for sensors data";
-		quint32 sz=mMessage.size();
-		if(sz>mMandate.payloadSize) {
+		const quint32 bytes=mMessage.bytes();
+		if(bytes>mMandate.payloadSize) {
 			qWarning()<<" + return 0 (message bigger than payload mandate size)";
 			return 0;
 		}
 		ds<<mMessage;
 		mMandate.sendActive=false;
-		return mMessage.size();
+		return bytes;
 	}
 	qWarning()<<" + return 0 (default)";
 	return 0;
 }
 
+//Act on data received
+//Return number of bytes actually read.
+quint16 SensorsCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
+{
+	(void)ds;
+	(void)availableBytes;
+}
 
+
+//////////////////////////////////////////////////////////////////////////////////
 
 void SensorsCourier::onPositionUpdated(const QGeoPositionInfo &info)
 {

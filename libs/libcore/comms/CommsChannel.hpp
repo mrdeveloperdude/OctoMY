@@ -89,6 +89,10 @@ class CommsChannel : public QObject
 	Q_OBJECT
 private:
 	static const quint64 CONNECTION_TIMEOUT=1000*5;//5 sec connection timeout
+	// NOTE: We use 512 as the maximum practical UDP size for ipv4 over the internet
+	//       See this for discussion: http://stackoverflow.com/questions/1098897/what-is-the-largest-safe-udp-packet-size-on-the-internet
+	static const qint32 MAX_UDP_PAYLOAD_SIZE=512;
+
 	QUdpSocket mUDPSocket;
 	QTimer mSendingTimer;
 	//Clients as identifued by their fingerprints

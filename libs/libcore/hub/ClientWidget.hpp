@@ -14,6 +14,8 @@
 
 class WaitingSpinnerWidget;
 class SensorsCourier;
+class AgentStateCourier;
+class BlobCourier;
 
 namespace Ui
 {
@@ -30,8 +32,9 @@ private:
 	QSharedPointer<Node> mController;
 	QSharedPointer<NodeAssociate> mNodeAssoc;
 	WaitingSpinnerWidget *mSpinner;
+	AgentStateCourier *mAgentStateCourier;
 	SensorsCourier *mSensorsCourier;
-
+	BlobCourier *mBlobCourier;
 
 public:
 	explicit ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeAssociate> nodeAssoc, QWidget *parent=nullptr);

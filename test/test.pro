@@ -12,8 +12,9 @@ CONFIG += ordered
 # NOTE: USE_BASIC_TESTS is enabled when useful in local_override.pri
 contains(DEFINES, USE_BASIC_TESTS){
 
+#
 TEST_PROJECTS+= \
-	testCommsChannel \
+#	testCommsChannel \
 #	testIdenticon \
 #	testParser \
 #	testZooComms \
@@ -28,10 +29,12 @@ TEST_PROJECTS+= \
 #	testNodeAssociate \
 #	testNodeAssociateStore \
 #	testPortableID \
-#	testESpeak\
-#	testBlob\
+#	testESpeak \
+#	testBlob \
+#	testEventSourcing \
+	testSyncParameter \
 
-
+#
 STRESS_PROJECTS+= \
 	stressQR\
 
@@ -51,3 +54,4 @@ SUBDIRS += \
 		$$STRESS_PROJECTS
 
 include($$TOP_PWD/status.pri)
+

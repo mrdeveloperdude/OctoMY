@@ -606,17 +606,17 @@ void AgentWindow::on_pushButtonMenu_clicked()
 
 void AgentWindow::onCommsError(QString e)
 {
-	qDebug()<<"AgentWindow UNIMP Comms error: "<<e;
+	//qDebug()<<"AgentWindow UNIMP Comms error: "<<e;
 }
 
 void AgentWindow::onCommsClientAdded(Client *c)
 {
-	qDebug()<<"AgentWindow UNIMP Client added: "<<c->toString();
+	//qDebug()<<"AgentWindow UNIMP Client added: "<<c->toString();
 }
 
 void AgentWindow::onCommsConnectionStatusChanged(bool s)
 {
-	qDebug() <<"AGENT WINDOW New connection status: "<<(s?"ONLINE":"OFFLINE");
+	//qDebug() <<"AGENT WINDOW New connection status: "<<(s?"ONLINE":"OFFLINE");
 	updateOnlineStatus();
 }
 

@@ -85,7 +85,7 @@ void FaceWidget::setAgent(Agent *a)
 
 void FaceWidget::setConnectionState(const TryToggleState s, const bool doEmit)
 {
-	qDebug()<<"FACE TRYSTATE CHANGED TO: "<<s<<" WITH EMIT="<<doEmit;
+	//qDebug()<<"FACE TRYSTATE CHANGED TO: "<<s<<" WITH EMIT="<<doEmit;
 	ui->tryToggleConnect->setState(s, doEmit);
 }
 

@@ -36,7 +36,7 @@ SensorsMessage::SensorsMessage(QDataStream &ds)
 }
 
 
-qint64 SensorsMessage::size()
+qint64 SensorsMessage::bytes()
 {
 	if(sz<0) {
 		QByteArray ba;

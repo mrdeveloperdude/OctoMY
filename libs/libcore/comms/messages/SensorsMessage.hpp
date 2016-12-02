@@ -41,7 +41,7 @@ class SensorsMessage{
 
 		SensorsMessage(QDataStream &);
 
-		qint64 size();
+		qint64 bytes();
 
 };
 

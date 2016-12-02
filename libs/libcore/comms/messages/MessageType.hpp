@@ -14,6 +14,7 @@ enum MessageType{
 	, STATUS
 	, DIRECT_POSE
 	, DISCOVERY_AUTH
+	, AGENT_STATE
 };
 
 
