@@ -34,6 +34,13 @@ void CourierTester::onTestDeInit()
 	qApp->processEvents();
 }
 
+void CourierTester::onTestRound()
+{
+	qDebug()<<"";
+	qDebug()<<"--------------------------- NEW ROUND ------------------ ";
+	onTestRoundImp();
+}
+
 
 void CourierTester::onToReceiving()
 {
@@ -132,6 +139,12 @@ void CourierTester::onTestDeInitImp()
 
 }
 
+
+void CourierTester::onTestRoundImp()
+{
+
+}
+
 void CourierTester::onToReceivingImp()
 {
 }
@@ -155,6 +168,7 @@ void CourierTester::test()
 		//qDebug()<<"";		qDebug()<<"######################################## LOOP FROM="<<fromStreams.size()<<" TO="<<toStreams.size();
 		// Give each party completely random chance of TX/RX to simulate some pretty bad network conditions
 		const int chance=qrand()%5;
+		onTestRound();
 		switch(chance) {
 		case(0): {
 			onFromSend();

@@ -38,6 +38,7 @@ public:
 
 	void onTestInit();
 	void onTestDeInit();
+	void onTestRound();
 	void onToReceiving();
 	void onFromReceiving();
 	void onToSend();
@@ -48,6 +49,7 @@ public:
 
 	virtual void onTestInitImp();
 	virtual void onTestDeInitImp();
+	virtual void onTestRoundImp();
 	virtual void onToReceivingImp();
 	virtual void onFromReceivingImp();
 	virtual void onToSendImp();

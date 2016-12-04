@@ -22,7 +22,7 @@ CourierMandate::CourierMandate(
 
 QString CourierMandate::toString()const
 {
-	return QString("CourierMandate(payloadSize=")+utility::humanReadableSize(payloadSize)+", priority="+QString::number(priority)+", interval="+utility::humanReadableElapsedMS(interval)+", receiveActive="+(receiveActive?"YES":"NO") +", sendActive="+(sendActive?"YES":"NO")+", )";
+	return QString("CourierMandate(payloadSize=")+utility::humanReadableSize(payloadSize)+", priority="+QString::number(priority)+", interval="+utility::humanReadableElapsedMS(interval)+", receiveActive="+(receiveActive?"YES":"NO") +", sendActive="+(sendActive?"YES":"NO")+" )";
 }
 
 

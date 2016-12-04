@@ -4,11 +4,12 @@
 #include <QTest>
 
 
-class TestAgentStateCourier:public QObject{
-		Q_OBJECT
+class TestAgentStateCourier:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void test();
+private slots:
+	void test();
 
 };
 

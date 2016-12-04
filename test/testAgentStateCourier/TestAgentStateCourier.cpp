@@ -41,7 +41,9 @@ public:
 		updateCount();
 	}
 
+	void onTestRoundImp() Q_DECL_OVERRIDE {
 
+	}
 
 	void onToReceivingImp() Q_DECL_OVERRIDE {
 		updateCount();
