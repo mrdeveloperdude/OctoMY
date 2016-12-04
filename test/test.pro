@@ -14,6 +14,7 @@ contains(DEFINES, USE_BASIC_TESTS){
 
 #
 TEST_PROJECTS+= \
+	testCommon \
 #	testCommsChannel \
 #	testIdenticon \
 #	testParser \
@@ -30,9 +31,11 @@ TEST_PROJECTS+= \
 #	testNodeAssociateStore \
 #	testPortableID \
 #	testESpeak \
-#	testBlob \
+	testBlob \
 #	testEventSourcing \
-	testSyncParameter \
+#	testSyncParameter \
+	testAgentStateCourier\
+
 
 #
 STRESS_PROJECTS+= \

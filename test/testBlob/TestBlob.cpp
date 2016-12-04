@@ -197,7 +197,7 @@ void TestBlob::testBlob()
 
 
 
-#include "CourierTester.hpp"
+#include "../testCommon/CourierTester.hpp"
 
 class CourierTesterBlob: public CourierTester
 {

@@ -1,13 +1,12 @@
 include($$TOP_PWD/test/test.pri)
 
-TARGET = test_blob
+TARGET = test_agentstatecourier
 
 HEADERS += \
-	TestBlob.hpp \
+	TestAgentStateCourier.hpp
 
 SOURCES += \
-	TestBlob.cpp \
-
+	TestAgentStateCourier.cpp
 
 include($$TOP_PWD/status.pri)
 include($$TOP_PWD/test/test_autorun.pri)

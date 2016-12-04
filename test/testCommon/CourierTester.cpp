@@ -1,6 +1,6 @@
 #include "CourierTester.hpp"
 
-#include "../libcore/comms/couriers/Courier.hpp"
+#include "../../libs/libcore/comms/couriers/Courier.hpp"
 #include <QByteArray>
 #include <QBuffer>
 #include <QDataStream>
