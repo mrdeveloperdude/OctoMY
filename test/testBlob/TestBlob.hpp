@@ -10,7 +10,7 @@ class TestBlob:public QObject
 
 private slots:
 	void testBlob();
-	void testBlobCourier();
+	void testBlobCourier2();
 
 };
 

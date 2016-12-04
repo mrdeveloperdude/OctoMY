@@ -26,7 +26,7 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 	, mController(controller)
 	, mNodeAssoc(nodeAssoc)
 	, mSpinner(nullptr)
-	, mAgentStateCourier(new AgentStateCourier(this))
+	, mAgentStateCourier(new AgentStateCourier(nullptr, this))
 	, mSensorsCourier(new SensorsCourier(this))
 	, mBlobCourier(new BlobCourier(this))
 

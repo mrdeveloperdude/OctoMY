@@ -35,11 +35,11 @@ public:
 		if(mUseFakeTime) {
 			qDebug()<<"FAKE-WAITING "<<ms<<" ms";
 			mNow+=ms;
-			mCTX.updateNow(mNow);
+			mCTX.update(mNow);
 		} else {
 			qDebug()<<"CLOCK-WAITING "<<ms<<" ms";
 			QTest::qWait(ms);
-			mCTX.updateNow();
+			mCTX.update();
 			//TODO: IS this cheating?
 			mNow=mCTX.now();
 		}
@@ -57,123 +57,127 @@ public:
 		QCOMPARE(mCTX.roundTripTime(), mRTT);
 
 		const T throttleVal=(T)0.0;
-		SyncParameter<T> throttleLocal(throttleVal, mCTX);
-		SyncParameter<T> throttleRemote(throttleVal, mCTX);
-		qDebug()<<throttleLocal.toString();
-		qDebug()<<throttleRemote.toString();
+		SyncParameter<T> *throttleLocal=mCTX.registerParameter(throttleVal);
+		SyncParameter<T> *throttleRemote=mCTX.registerParameter(throttleVal);
 
-		QCOMPARE(throttleLocal.localTimestamp(), mNow);
-		QCOMPARE(throttleLocal.remoteTimestamp(), (quint64)0);
+		QVERIFY(nullptr!=throttleLocal);
+		QVERIFY(nullptr!=throttleRemote);
 
-		QCOMPARE(throttleRemote.localTimestamp(), mNow);
-		QCOMPARE(throttleRemote.remoteTimestamp(), (quint64)0);
+		//qDebug()<<throttleLocal->toString();		qDebug()<<throttleRemote->toString();
+		qDebug()<<mCTX.toString();
 
-		QCOMPARE(throttleLocal.localValue() , throttleVal);
-		QCOMPARE(throttleLocal.remoteValue() , throttleVal);
+		QCOMPARE(throttleLocal->localTimestamp(), mNow);
+		QCOMPARE(throttleLocal->remoteTimestamp(), (quint64)0);
 
-		QCOMPARE(throttleRemote.localValue() , throttleVal);
-		QCOMPARE(throttleRemote.remoteValue() , throttleVal);
+		QCOMPARE(throttleRemote->localTimestamp(), mNow);
+		QCOMPARE(throttleRemote->remoteTimestamp(), (quint64)0);
 
-		QVERIFY(throttleLocal.isLocalConfirmed());
-		QVERIFY(throttleRemote.isLocalConfirmed());
+		QCOMPARE(throttleLocal->localValue() , throttleVal);
+		QCOMPARE(throttleLocal->remoteValue() , throttleVal);
 
-		QVERIFY(!throttleLocal.isRemoteConfirmed());
-		QVERIFY(!throttleRemote.isRemoteConfirmed());
+		QCOMPARE(throttleRemote->localValue() , throttleVal);
+		QCOMPARE(throttleRemote->remoteValue() , throttleVal);
 
-		QVERIFY(!throttleLocal.isInSync());
-		QVERIFY(!throttleRemote.isInSync());
+		QVERIFY(throttleLocal->isLocalConfirmed());
+		QVERIFY(throttleRemote->isLocalConfirmed());
+
+		QVERIFY(!throttleLocal->isRemoteConfirmed());
+		QVERIFY(!throttleRemote->isRemoteConfirmed());
+
+		QVERIFY(!throttleLocal->isInSync());
+		QVERIFY(!throttleRemote->isInSync());
 
 
 		qDebug()<<" --- First local change";
 		const T throttleValNew=(T)1337.0;
-		throttleRemote.setLocalValue(throttleValNew);
-		qDebug()<<throttleLocal.toString();
-		qDebug()<<throttleRemote.toString();
+		throttleRemote->setLocalValue(throttleValNew);
+		//qDebug()<<throttleLocal->toString(); 		qDebug()<<throttleRemote->toString();
+		qDebug()<<mCTX.toString();
 
-		QCOMPARE(throttleLocal.localTimestamp(), mNow);
-		QCOMPARE(throttleLocal.remoteTimestamp(), (quint64)0);
+		QCOMPARE(throttleLocal->localTimestamp(), mNow);
+		QCOMPARE(throttleLocal->remoteTimestamp(), (quint64)0);
 
-		QCOMPARE(throttleRemote.localTimestamp(), mNow);
-		QCOMPARE(throttleRemote.remoteTimestamp(), (quint64)0);
+		QCOMPARE(throttleRemote->localTimestamp(), mNow);
+		QCOMPARE(throttleRemote->remoteTimestamp(), (quint64)0);
 
-		QCOMPARE(throttleLocal.localValue() , throttleVal);
-		QCOMPARE(throttleLocal.remoteValue() , throttleVal);
+		QCOMPARE(throttleLocal->localValue() , throttleVal);
+		QCOMPARE(throttleLocal->remoteValue() , throttleVal);
 
-		QCOMPARE(throttleRemote.localValue() , throttleValNew);
-		QCOMPARE(throttleRemote.remoteValue() , throttleVal);
+		QCOMPARE(throttleRemote->localValue() , throttleValNew);
+		QCOMPARE(throttleRemote->remoteValue() , throttleVal);
 
-		QVERIFY(throttleLocal.isLocalConfirmed());
-		QVERIFY(throttleRemote.isLocalConfirmed());
+		QVERIFY(throttleLocal->isLocalConfirmed());
+		QVERIFY(throttleRemote->isLocalConfirmed());
 
-		QVERIFY(!throttleLocal.isRemoteConfirmed());
-		QVERIFY(!throttleRemote.isRemoteConfirmed());
+		QVERIFY(!throttleLocal->isRemoteConfirmed());
+		QVERIFY(!throttleRemote->isRemoteConfirmed());
 
-		QVERIFY(!throttleLocal.isInSync());
-		QVERIFY(!throttleRemote.isInSync());
+		QVERIFY(!throttleLocal->isInSync());
+		QVERIFY(!throttleRemote->isInSync());
 
 		qDebug()<<" --- First transfer";
 		//Pass some time
 		passTime(justRight);
 		//This right here is an oversimplification of a successfull UDP tarnsfer from remote to local
-		throttleLocal.setRemoteValue(throttleRemote.localValue());
-		qDebug()<<throttleLocal.toString();
-		qDebug()<<throttleRemote.toString();
+		throttleLocal->setRemoteValue(throttleRemote->localValue());
+		//qDebug()<<throttleLocal->toString();		qDebug()<<throttleRemote->toString();
+		qDebug()<<mCTX.toString();
 
 
-		QVERIFY(throttleLocal.remoteTimestamp() <= mNow + justRight);
+		QVERIFY(throttleLocal->remoteTimestamp() <= mNow + justRight);
 
-		QVERIFY(throttleRemote.localTimestamp() <= mNow + justRight);
-		QCOMPARE(throttleRemote.remoteTimestamp() , (quint64)0);
+		QVERIFY(throttleRemote->localTimestamp() <= mNow + justRight);
+		QCOMPARE(throttleRemote->remoteTimestamp() , (quint64)0);
 
-		QCOMPARE(throttleLocal.localValue() , throttleVal);
-		QCOMPARE(throttleLocal.remoteValue() , throttleValNew);
+		QCOMPARE(throttleLocal->localValue() , throttleVal);
+		QCOMPARE(throttleLocal->remoteValue() , throttleValNew);
 
-		QCOMPARE(throttleRemote.localValue() , throttleValNew);
-		QCOMPARE(throttleRemote.remoteValue() , throttleVal);
+		QCOMPARE(throttleRemote->localValue() , throttleValNew);
+		QCOMPARE(throttleRemote->remoteValue() , throttleVal);
 
 
-		QVERIFY(throttleLocal.isLocalConfirmed());
-		QVERIFY(throttleRemote.isLocalConfirmed());
+		QVERIFY(throttleLocal->isLocalConfirmed());
+		QVERIFY(throttleRemote->isLocalConfirmed());
 
-		QVERIFY(throttleLocal.isRemoteConfirmed());
-		QVERIFY(!throttleRemote.isRemoteConfirmed());
+		QVERIFY(throttleLocal->isRemoteConfirmed());
+		QVERIFY(!throttleRemote->isRemoteConfirmed());
 
-		QVERIFY(throttleLocal.isInSync());
-		QVERIFY(!throttleRemote.isInSync());
+		QVERIFY(throttleLocal->isInSync());
+		QVERIFY(!throttleRemote->isInSync());
 
 
 		qDebug()<<" --- First wait";
 		passTime(tooLong);
-		qDebug()<<throttleLocal.toString();
-		qDebug()<<throttleRemote.toString();
+		//qDebug()<<throttleLocal->toString(); 		qDebug()<<throttleRemote->toString();
+		qDebug()<<mCTX.toString();
 
 
-		QVERIFY(!throttleLocal.isLocalConfirmed());
-		QVERIFY(!throttleRemote.isLocalConfirmed());
+		QVERIFY(!throttleLocal->isLocalConfirmed());
+		QVERIFY(!throttleRemote->isLocalConfirmed());
 
-		QVERIFY(!throttleLocal.isRemoteConfirmed());
-		QVERIFY(!throttleRemote.isRemoteConfirmed());
+		QVERIFY(!throttleLocal->isRemoteConfirmed());
+		QVERIFY(!throttleRemote->isRemoteConfirmed());
 
-		QVERIFY(!throttleLocal.isInSync());
-		QVERIFY(!throttleRemote.isInSync());
+		QVERIFY(!throttleLocal->isInSync());
+		QVERIFY(!throttleRemote->isInSync());
 
 
 		qDebug()<<" --- Second transfer";
-		throttleLocal.setRemoteNoChange();
-		qDebug()<<throttleLocal.toString();
-		qDebug()<<throttleRemote.toString();
+		throttleLocal->setRemoteNoChange();
+		//qDebug()<<throttleLocal->toString();		qDebug()<<throttleRemote->toString();
+		qDebug()<<mCTX.toString();
 
 		qDebug()<<" --- Third transfer";
 		passTime(tooLong);
-		throttleRemote.setRemoteValue(throttleLocal.localValue());
-		qDebug()<<throttleLocal.toString();
-		qDebug()<<throttleRemote.toString();
+		throttleRemote->setRemoteValue(throttleLocal->localValue());
+		//qDebug()<<throttleLocal->toString();		qDebug()<<throttleRemote->toString();
+		qDebug()<<mCTX.toString();
 
 		qDebug()<<" --- Fourth transfer";
-		throttleLocal.setRemoteNoChange();
-		throttleRemote.setRemoteNoChange();
-		qDebug()<<throttleLocal.toString();
-		qDebug()<<throttleRemote.toString();
+		throttleLocal->setRemoteNoChange();
+		throttleRemote->setRemoteNoChange();
+		//qDebug()<<throttleLocal->toString();		qDebug()<<throttleRemote->toString();
+		qDebug()<<mCTX.toString();
 
 		//TODO: local timestamp should NOT expire like remote. find a better logic for it and align tests towards that
 	}

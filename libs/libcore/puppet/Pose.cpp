@@ -8,7 +8,8 @@
 #include <QDebug>
 
 
-QDataStream &operator>>(QDataStream &ds, Pose &p){
+QDataStream &operator>>(QDataStream &ds, Pose &p)
+{
 	/*
 	qint32 mt=INVALID;
 	ds >> mt;
@@ -24,7 +25,8 @@ QDataStream &operator>>(QDataStream &ds, Pose &p){
 	return ds;
 }
 
-QDataStream &operator<<(QDataStream &ds, const Pose &p){
+QDataStream &operator<<(QDataStream &ds, const Pose &p)
+{
 	ds << DIRECT_POSE;//TODO: should this be outside?
 	ds << p.pos1;
 	return ds;
@@ -33,7 +35,9 @@ QDataStream &operator<<(QDataStream &ds, const Pose &p){
 
 
 
-QString Pose::toString(){
+QString Pose::toString() const
+{
 	qDebug()<<"pos1="<<pos1<<"ok="<<ok;
 	return QString("Pose(ok=")+(ok?"true":"false")+", pos1="+QString::number(pos1)+")";
 }
+

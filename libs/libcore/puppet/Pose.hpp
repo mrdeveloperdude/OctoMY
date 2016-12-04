@@ -2,7 +2,7 @@
 #define POSE_HPP
 
 #include <QtGlobal>
-
+#include <QString>
 
 class Pose
 {
@@ -17,7 +17,8 @@ public:
 		return 4;
 	}
 
-	QString toString();
+	QString toString() const;
+
 };
 
 
@@ -25,6 +26,8 @@ class QDataStream;
 
 QDataStream &operator<<(QDataStream &, const Pose &);
 QDataStream &operator>>(QDataStream &, Pose &);
+
+
 
 
 #endif // POSE_HPP

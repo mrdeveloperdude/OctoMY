@@ -1,50 +1,84 @@
 #include "AgentStateCourier.hpp"
 
+#include "comms/SyncParameter.hpp"
+
 #include <QDebug>
 
+#include <QDataStream>
 
 const quint32 AgentStateCourier::AGENT_STATE_COURIER_ID=(Courier::FIRST_USER_ID + 5);
 
 // Agent side constructor
-AgentStateCourier::AgentStateCourier(QDataStream &initialization, QObject *parent)
+AgentStateCourier::AgentStateCourier(QDataStream *initialization, QObject *parent)
 	: Courier("AgentState", AGENT_STATE_COURIER_ID, parent)
-	, mAgentSide(true)
-	, mMandate(400)
-	, mMessage(initialization)
+	, mAgentSide(nullptr!=initialization)
+	, mSync(100)
 	, mLastSendTime(0)
+	, mLastChangeTime(0)
+	, mFlags(nullptr)
+	, mMode(nullptr)
+	, mTargetPosition(nullptr)
+	, mTargetOrientation(nullptr)
+	, mTargetPose(nullptr)
 {
+	initParams(initialization);
+}
+
+
+void AgentStateCourier::initParams(QDataStream *initialization)
+{
+	quint8 flags=0;
+	mFlags=mSync.registerParameter(flags);
+	if(nullptr==mFlags) {
+		qWarning()<<"ERROR: could nota allocate flags parameter";
+	}
+	AgentMode mode=OFFLINE;
+	mMode=mSync.registerParameter(mode);
+	if(nullptr==mMode) {
+		qWarning()<<"ERROR: could nota allocate agent mode parameter";
+	}
+	QGeoCoordinate targetPosition;
+	mTargetPosition=mSync.registerParameter(targetPosition);
+	if(nullptr==mTargetPosition) {
+		qWarning()<<"ERROR: could nota allocate target position parameter";
+	}
+	qreal targetOrientation=0;//Asume North at startup
+	mTargetOrientation=mSync.registerParameter(targetOrientation);
+	if(nullptr==mTargetOrientation) {
+		qWarning()<<"ERROR: could nota allocate target orientation parameter";
+	}
+	Pose targetPose;
+	mTargetPose=mSync.registerParameter(targetPose);
+	if(nullptr==mTargetPose) {
+		qWarning()<<"ERROR: could nota allocate target pose parameter";
+	}
+
+	//Read initial data into parameters
+	if(nullptr!=initialization) {
+		QDataStream &ds=*initialization;
+		mSync.operator >>(ds);
+	}
 
 }
 
-// Controller side constructor
-AgentStateCourier::AgentStateCourier(QObject *parent)
-	: Courier("AgentState", AGENT_STATE_COURIER_ID, parent)
-	, mAgentSide(false)
-	, mMandate(400)
-	, mLastSendTime(0)
-{
-
-}
+////////////////////////////////////////////////////////////////////////////////
+// Courier Interface ///////////////////////////////////////////////////////////
 
 //Let the CommChannel know what we want
 CourierMandate AgentStateCourier::mandate()
 {
-	return mMandate;
+	CourierMandate mandate(mSync.bytes() , 10, 100, true, mSync.hasPendingSyncs());
+	return mandate;
 }
 
 //Act on sending opportunity.
 //Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
 quint16 AgentStateCourier::sendingOpportunity(QDataStream &ds)
 {
-	if(mMandate.sendActive) {
+	if(mandate().sendActive) {
 		qDebug()<<"Spending sending opportunity for agent status data";
-		const quint32 bytes=mMessage.bytes();
-		if(bytes>mMandate.payloadSize) {
-			qWarning()<<" + return 0 (message bigger than payload mandate size)";
-			return 0;
-		}
-		ds<<mMessage;
-		mMandate.sendActive=false;
+		mSync.operator <<(ds);
+		const quint16 bytes=mSync.bytes();
 		return bytes;
 	}
 	qWarning()<<" + return 0 (default)";
@@ -54,21 +88,16 @@ quint16 AgentStateCourier::sendingOpportunity(QDataStream &ds)
 
 quint16 AgentStateCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 {
-	if(mMandate.receiveActive) {
+	if(mandate().receiveActive) {
 		qDebug()<<"Receiving agent status data";
-		if(availableBytes>mMandate.payloadSize) {
+		const quint16 bytes=mandate().payloadSize;
+		if(availableBytes>bytes) {
 			qWarning()<<" + return 0 (message bigger than payload mandate size)";
 			return 0;
 		}
-		ds>>mMessage;
-		return mMessage.bytes();
+		mSync.operator >>(ds);
+		return bytes;
 	}
 	qWarning()<<" + return 0 (default)";
 	return 0;
-}
-
-void AgentStateCourier::onStatusChanged()
-{
-	//mMessage;
-	mMandate.sendActive=true;
 }

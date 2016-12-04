@@ -192,7 +192,9 @@ SOURCES +=\
     comms/couriers/BlobFuture.cpp \
     comms/couriers/AgentStateCourier.cpp \
     comms/messages/AgentMode.cpp \
-    comms/SyncParameter.cpp
+    comms/SyncParameter.cpp \
+    comms/SyncContext.cpp \
+    comms/ISyncParameter.cpp
 
 
 HEADERS  += \
@@ -390,7 +392,9 @@ HEADERS  += \
     comms/couriers/BlobFuture.hpp \
     comms/couriers/AgentStateCourier.hpp \
     comms/messages/AgentMode.hpp \
-    comms/SyncParameter.hpp
+    comms/SyncParameter.hpp \
+    comms/SyncContext.hpp \
+    comms/ISyncParameter.hpp
 
 
 FORMS    += \

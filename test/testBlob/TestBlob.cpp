@@ -197,153 +197,94 @@ void TestBlob::testBlob()
 
 
 
-void TestBlob::testBlobCourier()
-{
-	PixViewer pixA(nullptr,"Original image");
-	pixA.show();
-	PixViewer pixB(nullptr,"Transport image");
-	pixB.show();
-	const int imageSize=300;
-	QImage rimgA=randomImage(imageSize, imageSize);
-	QByteArray ridA=imageToByteArray(rimgA);
-	pixA.setImage(rimgA);
-	BlobCourier *fromCourier=new BlobCourier();
-	QVERIFY(nullptr!=fromCourier);
-	BlobCourier *toCourier=new BlobCourier();
-	QVERIFY(nullptr!=toCourier);
-	CourierMandate beforeMandate=fromCourier->mandate();
-	qDebug()<<"before="<<beforeMandate;
-	const QString blobName="first_blob";
-	BlobFuture ret=fromCourier->submitSendingBlob(blobName,ridA,0.5);
-	QVERIFY(ret.isWinning());
-	QVERIFY(fromCourier->totalSendingDataSize()>0);
-	qDebug()<<"TOTAL SEND IS " << fromCourier->totalSendingDataSize();
-	// Efforts made in sendingOpportunity and dataReceived are stored here and retreived at random to simulate the delay of network
-	QList<QByteArray *> fromStreams;
-	QList<QByteArray *> toStreams;
-	bool done=false, *donep=&done;;
-	connect(toCourier, &BlobCourier::blobReceiveComplete, this, [donep](QString name) {
-		qDebug()<<"TEST DONE for "<<name;
-		*donep=true;
-	});
-	while(!done) {
-		//qDebug()<<"";		qDebug()<<"######################################## LOOP FROM="<<fromStreams.size()<<" TO="<<toStreams.size();
-		// Give each party completely random chance of TX/RX to simulate some pretty bad network conditions
-		const int chance=qrand()%5;
-		switch(chance) {
-		case(0): {
-			QByteArray *ba=new QByteArray;
-			QVERIFY(nullptr!=ba);
-			quint16 sent=0;
-			{
-				QBuffer buf(ba);
-				buf.open(QBuffer::WriteOnly);
-				QDataStream stream(&buf);
-				sent=fromCourier->sendingOpportunity(stream);
-				buf.close();
-			}
-			//qDebug()<<" from sendop "<<sent<<" bytes ("<<ba->size()<<")";
-			fromStreams<<ba;
-		}
-		break;
-		case(1): {
-			QByteArray *ba=new QByteArray;
-			QVERIFY(nullptr!=ba);
-			quint16 sent=0;
-			{
-				QBuffer buf(ba);
-				buf.open(QBuffer::WriteOnly);
-				QDataStream stream(&buf);
-				sent=toCourier->sendingOpportunity(stream);
-				buf.close();
-			}
-			//qDebug()<<" to sendop "<<sent<<" bytes ("<<ba->size()<<")";
-			toStreams<<ba;
-		}
-		break;
-		case(2): {
-			if(!fromStreams.isEmpty()) {
-				const int count=fromStreams.size();
-				const int index=qrand()%count;
-				QByteArray *ba=fromStreams.takeAt(index);
-				QVERIFY(nullptr!=ba);
-				const qint64 sz=ba->size();
-				quint16 received=0;
-				{
-					QBuffer buf(ba);
-					buf.open(QBuffer::ReadOnly);
-					QDataStream stream(&buf);
-					received=toCourier->dataReceived(stream, sz);
-					buf.close();
-				}
-				QByteArray intermediateData=toCourier->dataForReceivingBlob(blobName);
-				if(intermediateData.size()>0) {
-					//qDebug()<<" X X X X X UPDATING IMAGE";
-					QImage img(imageSize, imageSize, QImage::Format_ARGB32);
-					char *bits=(char *)img.bits();
-					int bytes=img.byteCount();
-					for(int i=0; i<bytes; ++i) {
-						bits[i]=intermediateData[i];
-					}
-					pixB.setImage(img);
-					qApp->processEvents();
-				}
-				delete ba;
-				ba=nullptr;
-				//qDebug()<<" to rec "<<received<<" bytes vs "<<sz;
-			} else {
-				//qDebug()<<"NO-OP 1";
-			}
-		}
-		break;
-		case(3): {
-			if(!toStreams.isEmpty()) {
-				const int count=toStreams.size();
-				QVERIFY(count>0);
-				const int index=qrand()%count;
-				QByteArray *ba=toStreams.takeAt(index);
-				QVERIFY(nullptr!=ba);
-				const qint64 sz=ba->size();
-				quint16 received=0;
-				{
-					QBuffer buf(ba);
-					buf.open(QBuffer::ReadOnly);
-					QDataStream stream(&buf);
-					received=fromCourier->dataReceived(stream, sz);
-					buf.close();
-				}
-				delete ba;
-				ba=nullptr;
-				//qDebug()<<" from rec "<<received<<" bytes vs "<<sz;
-			} else {
-				// qDebug()<<"NO-OP 2";
-			}
-		}
-		break;
-		default:
-		case(4):	{
-			const int chance2=(qrand()%6);
-			if(0==chance2) {
-				// qDebug()<<"from remove";
-			} else if(0==chance2) {
-				// qDebug()<<"to remove";
-			} else {
-				// qDebug()<<"NO-OP 3";
-			}
-		}
-		break;
-		}
-		//QVERIFY(false);
+#include "CourierTester.hpp"
 
-		//fromCourier->printSendingSummary("FROM");
-	//	toCourier->printSendingSummary("TO");
+class CourierTesterBlob: public CourierTester
+{
+//	Q_OBJECT;
+private:
+	PixViewer pixA;
+	PixViewer pixB;
+	int imageSize;
+	QImage rimgA;
+	QByteArray ridA;
+	const QString blobName;
+
+public:
+	explicit CourierTesterBlob()
+		: CourierTester(new BlobCourier(),new BlobCourier())
+		, pixA(nullptr,"Original image")
+		, pixB(nullptr,"Transport image")
+		, imageSize(300)
+		, blobName("first_blob")
+	{
 
 	}
-	qDebug()<<"TEST DONE, waiting for final show-off...";
-	QTest::qWait(3000);
-	pixA.close();
-	pixB.close();
-	qApp->processEvents();
+
+public:
+	void onTestInitImp() Q_DECL_OVERRIDE {
+		pixA.show();
+		pixB.show();
+		rimgA=randomImage(imageSize, imageSize);
+		ridA=imageToByteArray(rimgA);
+		pixA.setImage(rimgA);
+		CourierMandate beforeMandate=fromCourier->mandate();
+		qDebug()<<"before="<<beforeMandate;
+		BlobFuture ret=((BlobCourier *)fromCourier)->submitSendingBlob(blobName,ridA,0.5);
+		QVERIFY(ret.isWinning());
+		QVERIFY(((BlobCourier *)fromCourier)->totalSendingDataSize()>0);
+		qDebug()<<"TOTAL SEND IS " << ((BlobCourier *)fromCourier)->totalSendingDataSize();
+
+		QObject::connect(((BlobCourier *)toCourier), &BlobCourier::blobReceiveComplete, this, [this](QString name)
+		{
+			qDebug()<<"TEST DONE for "<<name;
+			done=true;
+		});
+
+	}
+
+
+	void onTestDeInitImp() Q_DECL_OVERRIDE {
+		pixA.close();
+		pixB.close();
+	}
+
+
+
+	void onToReceivingImp() Q_DECL_OVERRIDE {
+		QByteArray intermediateData=((BlobCourier *)toCourier)->dataForReceivingBlob(blobName);
+		if(intermediateData.size()>0)
+		{
+			//qDebug()<<" X X X X X UPDATING IMAGE";
+			QImage img(imageSize, imageSize, QImage::Format_ARGB32);
+			char *bits=(char *)img.bits();
+			int bytes=img.byteCount();
+			for(int i=0; i<bytes; ++i) {
+				bits[i]=intermediateData[i];
+			}
+			pixB.setImage(img);
+			qApp->processEvents();
+		}
+
+	}
+
+	void onFromReceivingImp() Q_DECL_OVERRIDE {
+	}
+
+	void onToSendImp() Q_DECL_OVERRIDE {
+	}
+
+	void onFromSendImp() Q_DECL_OVERRIDE {
+	}
+
+};
+
+
+void TestBlob::testBlobCourier2()
+{
+	CourierTesterBlob blobTest;
+	blobTest.test();
 }
+
 
 QTEST_MAIN(TestBlob)
