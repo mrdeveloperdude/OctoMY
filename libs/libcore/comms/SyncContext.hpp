@@ -21,7 +21,9 @@ private:
 	QVector<ISyncParameter *> mParams;
 	QBitArray mSyncBits;
 	QBitArray mAckBits;
-	quint16 mPayloadSize;
+	quint16 mIdealSendingPayloadSize;
+	quint16 mLastSendingPayloadSize;
+	quint16 mLastReceivingPayloadSize;
 	qint64 mAverageRoundTripTime;
 
 public:
@@ -29,6 +31,9 @@ public:
 	SyncContext(quint64 rtt, quint64 now=0);
 
 public:
+
+	//Schedule a forced sync of ALL parmeters. Will incur bandwidth, please use with caution
+	void flush(quint64 ts=0);
 	void update(quint64 ts=0);
 	quint64 roundTripTime() const;
 	void setRoundTripTime(quint64 ms);
@@ -39,16 +44,34 @@ public:
 
 	QString toString() const;
 
-	quint16 bytes() const;
+	QDebug &toDebug(QDebug &d) const;
+
+	quint16 bytesSent() const;
+	quint16 bytesSentIdeal() const;
+	quint16 bytesRead() const;
 
 	bool hasPendingSyncs() const;
 	bool hasPendingAcks() const;
 
-	QDataStream &operator<<(QDataStream &ds);
-	QDataStream &operator>>(QDataStream &ds);
+	QDataStream &send(QDataStream &ds);
+	QDataStream &receive(QDataStream &ds);
+
 
 };
 
+
+
+QDebug &operator<<(QDebug &d, const SyncContext &sc);
+
+inline QDataStream &operator<<(QDataStream &ds, SyncContext &sc)
+{
+	return sc.send(ds);
+}
+
+inline QDataStream &operator>>(QDataStream &ds, SyncContext &sc)
+{
+	return sc.receive(ds);
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,10 +82,13 @@ SyncParameter<T> * SyncContext::registerParameter(const T &val)
 	OC_METHODGATE();
 	SyncParameter<T> *param=new SyncParameter<T>(val, *this);
 	mParams.append(param);
+	qDebug()<<"BEFORE REGISTERING PARAMETER: "<<mAckBits<<mSyncBits;
 	mAckBits.resize(mAckBits.size()+1);
 	mSyncBits.resize(mSyncBits.size()+1);
 	mAckBits.setBit(mAckBits.size()-1,false);
-	mSyncBits.setBit(mSyncBits.size()-1,true);
+	mSyncBits.setBit(mSyncBits.size()-1,false);
+	qDebug()<<"AFTER REGISTERING PARAMETER: "<<mAckBits<<mSyncBits;
+	qDebug()<<"LEFT "<<*this;
 	return param;
 }
 

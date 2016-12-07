@@ -24,7 +24,7 @@ struct CourierMandate {
 
 	QString toString()const;
 
-	operator QString() const { return toString(); }
+//	operator QString() const { return toString(); }
 };
 
 

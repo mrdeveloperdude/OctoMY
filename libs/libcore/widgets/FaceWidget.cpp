@@ -22,7 +22,7 @@ FaceWidget::FaceWidget(QWidget *parent) :
 
 	//Make panic button RED
 	QPalette p=ui->pushButtonPanic->palette();
-	p.setColor(QPalette::Button,"#CC4422");
+	p.setColor(QPalette::Button,"#5b0504");
 	ui->pushButtonPanic->setPalette(p);
 
 }

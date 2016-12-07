@@ -212,7 +212,7 @@ private:
 
 public:
 	explicit CourierTesterBlob()
-		: CourierTester(new BlobCourier(),new BlobCourier())
+		: CourierTester(new BlobCourier(),new BlobCourier(), "FROM", "TO  ")
 		, pixA(nullptr,"Original image")
 		, pixB(nullptr,"Transport image")
 		, imageSize(300)
@@ -228,31 +228,34 @@ public:
 		rimgA=randomImage(imageSize, imageSize);
 		ridA=imageToByteArray(rimgA);
 		pixA.setImage(rimgA);
-		CourierMandate beforeMandate=fromCourier->mandate();
-		qDebug()<<"before="<<beforeMandate;
-		BlobFuture ret=((BlobCourier *)fromCourier)->submitSendingBlob(blobName,ridA,0.5);
+		CourierMandate beforeMandate=mFromCourier->mandate();
+		qDebug()<<"before="<<beforeMandate.toString();
+		BlobFuture ret=((BlobCourier *)mFromCourier)->submitSendingBlob(blobName,ridA,0.5);
 		QVERIFY(ret.isWinning());
-		QVERIFY(((BlobCourier *)fromCourier)->totalSendingDataSize()>0);
-		qDebug()<<"TOTAL SEND IS " << ((BlobCourier *)fromCourier)->totalSendingDataSize();
+		QVERIFY(((BlobCourier *)mFromCourier)->totalSendingDataSize()>0);
+		qDebug()<<"TOTAL SEND IS " << ((BlobCourier *)mFromCourier)->totalSendingDataSize();
 
-		QObject::connect(((BlobCourier *)toCourier), &BlobCourier::blobReceiveComplete, this, [this](QString name)
+		QObject::connect(((BlobCourier *)mToCourier), &BlobCourier::blobReceiveComplete, this, [this](QString name)
 		{
 			qDebug()<<"TEST DONE for "<<name;
-			done=true;
+			mDone=true;
 		});
 
 	}
 
 
 	void onTestDeInitImp() Q_DECL_OVERRIDE {
+		qDebug()<<"TEST DONE, waiting for final show-off...";
+		QTest::qWait(3000);
 		pixA.close();
 		pixB.close();
+		qApp->processEvents();
 	}
 
 
 
 	void onToReceivingImp() Q_DECL_OVERRIDE {
-		QByteArray intermediateData=((BlobCourier *)toCourier)->dataForReceivingBlob(blobName);
+		QByteArray intermediateData=((BlobCourier *)mToCourier)->dataForReceivingBlob(blobName);
 		if(intermediateData.size()>0)
 		{
 			//qDebug()<<" X X X X X UPDATING IMAGE";
@@ -283,7 +286,7 @@ public:
 void TestBlob::testBlobCourier2()
 {
 	CourierTesterBlob blobTest;
-	blobTest.test();
+	blobTest.testRandomSteps(100);
 }
 
 

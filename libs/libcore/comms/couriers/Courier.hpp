@@ -70,15 +70,19 @@ public:
 
 	// Courier interface
 public:
-	//Let the CommChannel know what we want
-	virtual CourierMandate mandate();
 
-	//Override to act on sending opportunity.
-	//Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
+	// Update courier state when channel has opportunity
+	virtual void update();
+
+	// Let the CommChannel know what we want
+	virtual CourierMandate mandate() const;
+
+	// Override to act on sending opportunity.
+	// Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
 	virtual quint16 sendingOpportunity(QDataStream &ds);
 
-	//Override to act on data received
-	//Return number of bytes actually read.
+	// Override to act on data received
+	// Return number of bytes actually read.
 	virtual quint16 dataReceived(QDataStream &ds, quint16 availableBytes);
 
 };

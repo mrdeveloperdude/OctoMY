@@ -16,7 +16,7 @@ void DirectPoseCourier::setPose(Pose &newPose){
 	lastRX=QDateTime::currentMSecsSinceEpoch();
 }
 
-CourierMandate DirectPoseCourier::mandate() {
+CourierMandate DirectPoseCourier::mandate() const {
 	return CourierMandate(Pose::MAX_SIZE,1,100,lastRX>lastTX);
 }
 

@@ -7,6 +7,7 @@
 #include "comms/SyncContext.hpp"
 
 #include <QObject>
+#include <QDebug>
 
 
 template <typename T>
@@ -37,7 +38,7 @@ private:
 	static const quint32 AGENT_STATE_COURIER_ID;
 	bool mAgentSide;
 	//AgentState mMessage;
-	SyncContext mSync;
+	SyncContext mParams;
 	quint64 mLastSendTime;
 	quint64 mLastChangeTime;
 
@@ -58,9 +59,22 @@ private:
 	SyncParameter<Pose> *mTargetPose; // The desired target pose for the robot in actuator positions. The robot may or may not actively pursue this pose depending on the mode it is in.
 //TODO: Somehow encode desired speed, direction and more
 
-
 public:
 	AgentStateCourier(QDataStream *initialization, QObject *parent = nullptr);
+
+
+
+	// Parameter access
+public:
+	void setFlags(quint8 flags);
+	void setMode(AgentMode mode);
+
+
+	// Logging and debugging
+public:
+	QString toString() const;
+	QDebug &toDebug(QDebug &d) const;
+
 
 
 private:
@@ -68,18 +82,26 @@ private:
 
 	// Courier interface
 public:
-	//Let the CommChannel know what we want
-	CourierMandate mandate() override;
 
-	//Override to act on sending opportunity.
-	//Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
-	quint16 sendingOpportunity(QDataStream &ds) override;
+	// Update courier state when channel has opportunity
+	void update() Q_DECL_OVERRIDE;
 
-	//Override to act on data received
-	//Return number of bytes actually read.
-	quint16 dataReceived(QDataStream &ds, quint16 availableBytes) override;
+	// Let the CommChannel know what we want
+	CourierMandate mandate() const Q_DECL_OVERRIDE;
+
+	// Override to act on sending opportunity.
+	// Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
+	quint16 sendingOpportunity(QDataStream &ds) Q_DECL_OVERRIDE;
+
+	// Override to act on data received
+	// Return number of bytes actually read.
+	quint16 dataReceived(QDataStream &ds, quint16 availableBytes) Q_DECL_OVERRIDE;
 
 
 };
+
+
+const QDebug &operator<<(QDebug &d, const AgentStateCourier &);
+
 
 #endif // AGENTSTATECOURIER_HPP

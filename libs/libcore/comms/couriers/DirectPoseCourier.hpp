@@ -16,8 +16,20 @@ public:
 
 public:
 	void setPose(Pose &);
-	CourierMandate mandate() override;
-	quint16 sendingOpportunity(QDataStream &ds) override;
+
+
+
+	// Courier interface
+public:
+
+
+	// Let the CommChannel know what we want
+	CourierMandate mandate() const Q_DECL_OVERRIDE;
+
+	// Override to act on sending opportunity.
+	// Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
+	quint16 sendingOpportunity(QDataStream &ds) Q_DECL_OVERRIDE;
+
 
 };
 

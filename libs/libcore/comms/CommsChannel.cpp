@@ -142,7 +142,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 	//TODO: Create shorthand ID from full ID string.
 	ClientSignature remoteSignature(remoteClientShorthandID, NetworkAddress(remoteHost,remotePort));
 	QSharedPointer<Client> remoteClient=mClients->getBySignature(remoteSignature,true);
-	if(0==remoteClient) {
+	if(nullptr==remoteClient) {
 		QString es=QString::number(totalRecCount)+"ERROR: Could not fetch client by id: '"+remoteSignature.toString()+"'";
 		qWarning()<<es;
 		emit commsError(es);
@@ -353,6 +353,12 @@ void CommsChannel::onSendingTimer()
 	qint64 mostUrgentCourier=MIN_RATE;
 	QMap<quint64, Courier *> pri;
 	QList <const ClientSignature *> idle;
+	// Update first
+	for(Courier *courier:mCouriers) {
+		if(nullptr!=courier) {
+			courier->update();
+		}
+	}
 	for(Courier *courier:mCouriers) {
 		if(nullptr!=courier) {
 			CourierMandate cm=courier->mandate();

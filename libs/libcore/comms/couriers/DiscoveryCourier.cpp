@@ -16,7 +16,7 @@ DiscoveryCourier::~DiscoveryCourier()
 }
 
 //Let the CommChannel know what we want
-CourierMandate DiscoveryCourier::mandate()
+CourierMandate DiscoveryCourier::mandate() const
 {
 	return CourierMandate(sizeof(quint32)+sizeof(quint16)+sizeof(quint64), 10, 1000, true, true);
 }

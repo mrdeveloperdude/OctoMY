@@ -533,7 +533,9 @@ void AgentWindow::updateOnlineStatus()
 			} else {
 				next=TRYING;
 				//qDebug()<<"Decided to start comms";
-				mAgent->start(mAgent->nodeIdentity()->localAddress());
+				QTimer::singleShot(1000,[this]() {
+					mAgent->start(mAgent->nodeIdentity()->localAddress());
+				});
 			}
 		} else {
 			if(isOnline ) {

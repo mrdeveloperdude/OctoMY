@@ -21,7 +21,7 @@ SensorsCourier::SensorsCourier(QObject *parent)
 }
 
 //Let the CommChannel know what we want
-CourierMandate SensorsCourier::mandate()
+CourierMandate SensorsCourier::mandate() const
 {
 	return mMandate;
 }
@@ -35,7 +35,7 @@ quint16 SensorsCourier::sendingOpportunity(QDataStream &ds)
 		qDebug()<<"Spending sending opportunity for sensors data";
 		const quint32 bytes=mMessage.bytes();
 		if(bytes>mMandate.payloadSize) {
-			qWarning()<<" + return 0 (message bigger than payload mandate size)";
+			qWarning()<<" + return 0 (message size "<<bytes<<" bigger than payload mandate size "<<mMandate.payloadSize<<" )";
 			return 0;
 		}
 		ds<<mMessage;

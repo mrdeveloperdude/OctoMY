@@ -27,7 +27,6 @@ QDataStream &operator>>(QDataStream &ds, Pose &p)
 
 QDataStream &operator<<(QDataStream &ds, const Pose &p)
 {
-	ds << DIRECT_POSE;//TODO: should this be outside?
 	ds << p.pos1;
 	return ds;
 }

@@ -13,6 +13,7 @@
 #include <QMutexLocker>
 #include <QFileInfo>
 #include <QCoreApplication>
+#include <QStringList>
 
 
 
@@ -48,26 +49,30 @@ static void octomyLogMessageHandler(QtMsgType type, const QMessageLogContext &ct
 		severity="I";
 		break;
 	}
-	QString out;
-	if(msg.startsWith("   Loc: [")) {
-		out=msg;
-	} else {
-		const QDateTime now=QDateTime::currentDateTimeUtc();
-		const QString line=QString::number(ctx.line);
-		const QString file=QString::fromLocal8Bit(ctx.file);
-		const QString fun=QString::fromLocal8Bit(ctx.function);
-		const QString exe=QFileInfo( QCoreApplication::applicationFilePath()).fileName();
-		out=QString("%1: [%2] %3 - @%5:%4 - %6 - %7")
-			.arg(severity,now.toString("hh:mm:ss.zzz"), exe, line,file,fun, msg);
-	}
-	if(true) {
-		std::cerr << out.toStdString() <<std::endl;
-	}
-	if(false) {
-		QFile outFile("log.txt");
-		outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-		QTextStream ts(&outFile);
-		ts << out << endl;
+	const QDateTime now=QDateTime::currentDateTimeUtc();
+	const QString line=QString::number(ctx.line);
+	const QString file=QString::fromLocal8Bit(ctx.file);
+	const QString fun=QString::fromLocal8Bit(ctx.function);
+	const QString exe=QFileInfo( QCoreApplication::applicationFilePath()).fileName();
+	QStringList list=msg.split("[\n\r]", QString::SkipEmptyParts);
+	for(QString str:list) {
+		QString out;
+		if(str.startsWith("   Loc: [")) {
+			out=str;
+		} else {
+			out=QString("%1: [%2] %3 - @%5:%4 - %6 - %7")
+				.arg(severity,now.toString("hh:mm:ss.zzz"), exe, line,file,fun, str);
+		}
+		if(true) {
+			std::cerr << out.toStdString() <<std::endl;
+		}
+		if(false) {
+			QFile outFile("log.txt");
+			outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+			QTextStream ts(&outFile);
+			ts << out << endl;
+		}
+
 	}
 
 }

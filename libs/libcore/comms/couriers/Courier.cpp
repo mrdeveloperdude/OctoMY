@@ -22,32 +22,45 @@ Courier::Courier(QString name, quint32 id, QObject *parent)
 
 }
 
-void Courier::setDestination(const ClientSignature sig){
+void Courier::setDestination(const ClientSignature sig)
+{
 	mDestination=sig;
 }
 
-const ClientSignature &Courier::destination() const{
+const ClientSignature &Courier::destination() const
+{
 	return mDestination;
 }
 
 
-//Let the CommChannel know what we want
-CourierMandate Courier::mandate(){
+// Update courier state when channel has opportunity
+void Courier::update()
+{
+	//It is perfectly fine to skip on this
+	//qWarning()<<"WARNING: Unimplemented update() in "<<mName<<"("<<mID<<")";
+}
+
+
+// Let the CommChannel know what we want
+CourierMandate Courier::mandate() const
+{
 	return CourierMandate(0);
 }
 
-//Override to act on sending opportunity.
-//Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
-quint16 Courier::sendingOpportunity(QDataStream &ds){
+// Override to act on sending opportunity.
+// Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
+quint16 Courier::sendingOpportunity(QDataStream &ds)
+{
 	(void)ds;
 	qWarning()<<"WARNING: Unimplemented sendingOpportunity() in "<<mName<<"("<<mID<<")";
 	return 0;
 }
 
 
-//Override to act on data received
-//Return number of bytes actually read.
-quint16 Courier::dataReceived(QDataStream &ds, quint16 availableBytes){
+// Override to act on data received
+// Return number of bytes actually read.
+quint16 Courier::dataReceived(QDataStream &ds, quint16 availableBytes)
+{
 	(void)ds;
 	(void)availableBytes;
 	qWarning()<<"WARNING: Unimplemented dataReceived() in "<<mName<<"("<<mID<<")";

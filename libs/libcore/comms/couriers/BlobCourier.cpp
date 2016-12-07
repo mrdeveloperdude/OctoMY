@@ -208,7 +208,7 @@ void BlobCourier::printSendingSummary(QString title)
 
 ////////////////// Courier interface
 
-CourierMandate BlobCourier::mandate()
+CourierMandate BlobCourier::mandate() const
 {
 	const bool hasUnsentBlobs=(!mSendingBlobsById.isEmpty()) || (!mReceivingBlobsById.isEmpty());
 	return CourierMandate(BLOB_CHUNK_SIZE,1,100, hasUnsentBlobs);

@@ -32,15 +32,15 @@ public:
 public:
 
 	//Let the CommChannel know what we want
-	CourierMandate mandate() override;
+	CourierMandate mandate() const Q_DECL_OVERRIDE;
 
 	//Override to act on sending opportunity.
 	//Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
-	quint16 sendingOpportunity(QDataStream &ds) override;
+	quint16 sendingOpportunity(QDataStream &ds) Q_DECL_OVERRIDE;
 
 	//Override to act on data received
 	//Return number of bytes actually read.
-	quint16 dataReceived(QDataStream &ds, quint16 availableBytes) override;
+	quint16 dataReceived(QDataStream &ds, quint16 availableBytes) Q_DECL_OVERRIDE;
 
 signals:
 
