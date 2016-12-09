@@ -534,7 +534,10 @@ void AgentWindow::updateOnlineStatus()
 				next=TRYING;
 				//qDebug()<<"Decided to start comms";
 				QTimer::singleShot(1000,[this]() {
-					mAgent->start(mAgent->nodeIdentity()->localAddress());
+					QSharedPointer<NodeAssociate> ni=mAgent->nodeIdentity();
+					if(nullptr!=ni) {
+						mAgent->start(ni->localAddress());
+					}
 				});
 			}
 		} else {

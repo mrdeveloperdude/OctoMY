@@ -52,7 +52,7 @@ signals:
 
 private slots:
 	void on_pushButtonNewColor_clicked();
-	void on_pushButtonPanic_clicked();
+	void on_pushButtonPanic_toggled(bool checked);
 };
 
 #endif // FACEWIDGET_HPP

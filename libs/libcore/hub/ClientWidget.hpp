@@ -16,6 +16,7 @@ class WaitingSpinnerWidget;
 class SensorsCourier;
 class AgentStateCourier;
 class BlobCourier;
+class ISyncParameter;
 
 namespace Ui
 {
@@ -38,7 +39,7 @@ private:
 
 public:
 	explicit ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeAssociate> nodeAssoc, QWidget *parent=nullptr);
-	~ClientWidget();
+	virtual ~ClientWidget();
 
 private:
 	bool eventFilter(QObject *object, QEvent *event);
@@ -62,6 +63,10 @@ public:
 
 	void updateControlLevel(int level);
 
+	// Agent State Courier slots
+public slots:
+	void onValueChanged(ISyncParameter *);
+
 	// CommsChannel slots
 private slots:
 	void onCommsError(QString);
@@ -82,12 +87,17 @@ private slots:
 	void onConnectButtonStateChanged(const TryToggleState, const TryToggleState);
 
 	// Internal UI slots
-private slots:
+
+
+public slots:
 
 	void on_checkBoxShowEyes_toggled(bool checked);
 	void on_checkBoxShowStats_toggled(bool checked);
 	void on_checkBoxShowLog_toggled(bool checked);
 	void on_checkBoxShowOnlineButton_toggled(bool checked);
+	void on_pushButtonPanicc_toggled(bool checked);
+
+
 };
 
 #endif // CLIENTWINDOW_HPP

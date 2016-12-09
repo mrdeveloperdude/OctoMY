@@ -304,7 +304,7 @@ void CommsChannel::sendData(const quint64 &now, QSharedPointer<Client> localClie
 		bytesUsed+=sizeof(quint32);
 		ds << (quint16)0;
 		bytesUsed += sizeof(quint16);
-		qDebug()<<"IDLE PACKET: "<<(nullptr==courier?"NULL":courier->name())<<", "<<(nullptr==localClient?"NULL":localClient->toString());
+		//qDebug()<<"IDLE PACKET: "<<(nullptr==courier?"NULL":courier->name())<<", "<<(nullptr==localClient?"NULL":localClient->toString());
 	}
 	const quint32 sz=datagram.size();
 	//qDebug()<<"SEND DS SIZE: "<<sz;
@@ -403,7 +403,7 @@ void CommsChannel::onSendingTimer()
 	}
 	const int isz=idle.size();
 	if(isz>0) {
-		qDebug()<<"Send "<<isz<<" idle packets";
+		//qDebug()<<"Send "<<isz<<" idle packets";
 		for(const ClientSignature *sig:idle) {
 			sendData(now, localClient, nullptr, sig);
 		}
@@ -504,29 +504,27 @@ void CommsChannel::unHookSignals(QObject &ob)
 
 
 
-void CommsChannel::registerCourier(Courier &c)
+void CommsChannel::setCourierRegistered(Courier &c, bool reg)
 {
-
-	if(mCouriers.contains(&c)) {
-		qWarning()<<"ERROR: courier was allready registered";
-		return;
-	} else if(mCouriers.size()>10) {
-		qWarning()<<"ERROR: too many couriers, skipping registration of new one: "<<c.id()<<c.name();
-		return;
+	if(reg) {
+		if(mCouriers.contains(&c)) {
+			qWarning()<<"ERROR: courier was allready registered";
+			return;
+		} else if(mCouriers.size()>10) {
+			qWarning()<<"ERROR: too many couriers, skipping registration of new one: "<<c.id()<<c.name();
+			return;
+		}
+		mCouriers.append(&c);
+		mCouriersByID[c.id()]=&c;
+		//qDebug()<<"Registered courier: "<<c.id()<<c.name()<<" for a total of "<<mCouriers.size()<<" couriers";
+	} else {
+		if(!mCouriers.contains(&c)) {
+			qDebug()<<"ERROR: courier was not registered";
+			return;
+		}
+		mCouriersByID.remove(c.id());
+		mCouriers.removeAll(&c);
 	}
-	mCouriers.append(&c);
-	mCouriersByID[c.id()]=&c;
-	//qDebug()<<"Registered courier: "<<c.id()<<c.name()<<" for a total of "<<mCouriers.size()<<" couriers";
-}
-
-void CommsChannel::unregisterCourier(Courier &c)
-{
-	if(!mCouriers.contains(&c)) {
-		qDebug()<<"ERROR: courier was not registered";
-		return;
-	}
-	mCouriersByID.remove(c.id());
-	mCouriers.removeAll(&c);
 }
 
 int CommsChannel::courierCount()

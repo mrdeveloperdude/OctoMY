@@ -3,7 +3,7 @@
 
 #include "sensory/SensorInput.hpp"
 #include "comms/CommsChannel.hpp"
-#include "comms/messages/SensorsMessage.hpp"
+
 #include "widgets/TryToggle.hpp"
 #include "camera/CameraList.hpp"
 
@@ -17,10 +17,36 @@
 class ZooClient;
 class DiscoveryClient;
 class AgentWindow;
+class AgentStateCourier;
+class ISyncParameter;
+class Agent;
+
+class AgentControls
+{
+private:
+
+	Agent &mAgent;
+	QHash <quint64, AgentStateCourier *> mCouriers;
+public:
+
+	explicit AgentControls(Agent &);
+	virtual	~AgentControls();
+
+public:
+	void registerClient(ClientSignature &sig);
+	void unRegisterClient(ClientSignature &sig);
+
+	void setCommsEnabled(bool);
+
+	AgentStateCourier *activeControl();
+};
+
 
 class Agent : public Node
 {
 	Q_OBJECT
+private:
+	AgentControls mControls;
 public:
 	AgentWindow *window;
 public:
@@ -29,6 +55,18 @@ public:
 
 	virtual QWidget *showWindow();
 
+	void setPanic(bool);
+
+	// NodeAssociate slots
+public slots:
+	void onPeerStoreReady(bool);
+	void onPeerAdded(QString);
+	void onPeerRemoved(QString);
+	void onPeersChanged();
+
+	//Agent State Courier slots
+public slots:
+	void onValueChanged(ISyncParameter *);
 
 	// CommsChannel slots
 private slots:

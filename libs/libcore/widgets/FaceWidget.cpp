@@ -14,16 +14,18 @@ FaceWidget::FaceWidget(QWidget *parent) :
 	ui(new Ui::FaceWidget)
 {
 	ui->setupUi(this);
+	//Make panic button RED
+	QPalette p=ui->pushButtonPanic->palette();
+	p.setColor(QPalette::Button,"#5b0504");
+	ui->pushButtonPanic->setPalette(p);
+
+
 	ui->tryToggleConnect->setText("Go Online", "Connecting..", "Online");
 	if(!connect(ui->tryToggleConnect,SIGNAL(stateChanged(const TryToggleState, const TryToggleState)),this,SIGNAL(connectionStateChanged(const TryToggleState, const TryToggleState)),OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 	updateEyeColor();
 
-	//Make panic button RED
-	QPalette p=ui->pushButtonPanic->palette();
-	p.setColor(QPalette::Button,"#5b0504");
-	ui->pushButtonPanic->setPalette(p);
 
 }
 
@@ -96,6 +98,7 @@ TryToggleState FaceWidget::connectionState() const
 }
 
 
+
 void FaceWidget::hookSignals(QObject &ob)
 {
 	if(!connect(this,SIGNAL(connectionStateChanged(TryToggleState, TryToggleState)),&ob,SLOT(onConnectionStateChanged(TryToggleState, TryToggleState)),OC_CONTYPE)) {
@@ -137,10 +140,23 @@ void FaceWidget::on_pushButtonNewColor_clicked()
 	emit colorChanged(col);
 }
 
-void FaceWidget::on_pushButtonPanic_clicked()
+void FaceWidget::on_pushButtonPanic_toggled(bool panic)
 {
-	QString str="P A N I C !";
-	qWarning()<<str;
-	appendLog(str);
-	emit panic();
+	if(panic) {
+		QString str="P A N I C !";
+		qWarning()<<str;
+		appendLog(str);
+	} else {
+		QString str="Panic averted";
+		qWarning()<<str;
+		appendLog(str);
+	}
+
+	Agent *a=agent();
+	if(nullptr!=a) {
+		a->setPanic(panic);
+	}
+
+
+
 }

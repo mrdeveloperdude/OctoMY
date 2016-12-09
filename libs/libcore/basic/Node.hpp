@@ -81,6 +81,8 @@ public:
 	void hookPeerSignals(QObject &o);
 	void unHookPeerSignals(QObject &o);
 
+	// Selectors
+public:
 	const QCommandLineParser &options() const;
 	Settings &settings();
 	KeyStore  &keyStore();
@@ -96,6 +98,9 @@ public:
 	QSharedPointer<NodeAssociate> nodeIdentity();
 
 	CameraList *cameras();
+
+	// Actions
+public:
 
 	virtual QWidget *showWindow();
 

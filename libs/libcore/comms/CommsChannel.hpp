@@ -135,8 +135,8 @@ public:
 	void hookSignals(QObject &ob);
 	void unHookSignals(QObject &ob);
 
-	void registerCourier(Courier &);
-	void unregisterCourier(Courier &);
+	void setCourierRegistered(Courier &, bool);
+
 	int courierCount();
 
 	inline bool hasCourier(Courier &c)

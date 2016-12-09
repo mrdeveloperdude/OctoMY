@@ -9,22 +9,28 @@
 
 class SyncContext;
 
+#include <QObject>
 
 
+class SyncSignaler: public QObject
+{
+	Q_OBJECT
+signals:
+	void valuesChanged(ISyncParameter *);
+};
 
 template <typename T>
 class SyncParameter: public ISyncParameter
 {
-private:
 
+private:
 	SyncContext &mCTX;
 	T mLocalValue;
 	T mRemoteValue;
 	quint64 mLocalTimestamp;
 	quint64 mRemoteTimestamp;
-
 	bool mLocalDirty;
-
+	SyncSignaler mSignaler;
 
 public:
 
@@ -41,13 +47,12 @@ public:
 	quint64 remoteTimestamp();
 	T bestValue(bool isLocal) const;
 
+public:
 
-	//Not so sure what I can use this for:
-	/*
-	bool isRemoteConfirmed() const;
-	bool isLocalConfirmed() const;
-	bool isInSync() const;
-	*/
+	void signalValueChanged();
+	void hookSignals(QObject &ob);
+	void unHookSignals(QObject &ob);
+
 
 
 	// ISyncParameter interface
@@ -68,12 +73,10 @@ public:
 };
 
 
-/*
 
 
 
 
-*/
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "SyncContext.hpp"
@@ -95,6 +98,7 @@ void SyncParameter<T>::setLocalValue(const T &val)
 	mLocalValue=val;
 	mLocalTimestamp=mCTX.now();
 	mLocalDirty=true;
+	signalValueChanged();
 }
 
 template <typename T>
@@ -109,6 +113,7 @@ void SyncParameter<T>::setRemoteValue(const T &val)
 {
 	mRemoteValue=val;
 	mRemoteTimestamp=mCTX.now();
+	signalValueChanged();
 }
 
 
@@ -155,30 +160,32 @@ T SyncParameter<T>::bestValue(bool isLocal) const
 	}
 }
 
-/*
+
 template <typename T>
-bool SyncParameter<T>::isRemoteConfirmed() const
+void SyncParameter<T>::signalValueChanged()
 {
-	const quint64 rtt=mCTX.roundTripTime();
-	const quint64 now=mCTX.now();
-	return (now < (mRemoteTimestamp + rtt) );
+	emit mSignaler.valuesChanged(this);
 }
 
 template <typename T>
-bool SyncParameter<T>::isLocalConfirmed() const
+void SyncParameter<T>::hookSignals(QObject &ob)
 {
-	const quint64 rtt=mCTX.roundTripTime();
-	const quint64 now=mCTX.now();
-	return (now < (mLocalTimestamp + rtt) );
+	if(!QObject::connect(&mSignaler,SIGNAL(valuesChanged(ISyncParameter *)),&ob,SLOT(onValueChanged(ISyncParameter *)),OC_CONTYPE)) {
+		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
+	}
 }
 
 
 template <typename T>
-bool SyncParameter<T>::isInSync() const
+void SyncParameter<T>::unHookSignals(QObject &ob)
 {
-	return (isRemoteConfirmed() && isLocalConfirmed());
+	if(!QObject::disconnect(&mSignaler,SIGNAL(valuesChanged(ISyncParameter *)),&ob,SLOT(onValueChanged(ISyncParameter *)))) {
+		qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
+	}
 }
-*/
+
+
+
 
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -40,7 +40,7 @@ void Client::countSend(qint64 written)
 	mLastSendTime=now;
 	mDeltaTime=delta/1000.0f;
 	mTimeoutAccumulator += mDeltaTime;
-	if ( mTimeoutAccumulator > TIMEOUT_TRESHOLD ) {
+	if (mConnected && ( mTimeoutAccumulator > TIMEOUT_TRESHOLD )) {
 		qDebug()<<"CLIENT "<< mSignature.toString() <<" timed out";
 		mConnected=false;
 	}

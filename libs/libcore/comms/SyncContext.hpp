@@ -82,13 +82,13 @@ SyncParameter<T> * SyncContext::registerParameter(const T &val)
 	OC_METHODGATE();
 	SyncParameter<T> *param=new SyncParameter<T>(val, *this);
 	mParams.append(param);
-	qDebug()<<"BEFORE REGISTERING PARAMETER: "<<mAckBits<<mSyncBits;
+	//qDebug()<<"BEFORE REGISTERING PARAMETER: "<<mAckBits<<mSyncBits;
 	mAckBits.resize(mAckBits.size()+1);
 	mSyncBits.resize(mSyncBits.size()+1);
 	mAckBits.setBit(mAckBits.size()-1,false);
 	mSyncBits.setBit(mSyncBits.size()-1,false);
-	qDebug()<<"AFTER REGISTERING PARAMETER: "<<mAckBits<<mSyncBits;
-	qDebug()<<"LEFT "<<*this;
+	//qDebug()<<"AFTER REGISTERING PARAMETER: "<<mAckBits<<mSyncBits;
+	//qDebug()<<"LEFT "<<*this;
 	return param;
 }
 

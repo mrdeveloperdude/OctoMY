@@ -1,14 +1,12 @@
 #include "AgentStateCourier.hpp"
 
 #include "comms/SyncParameter.hpp"
-
 #include "comms/couriers/CourierMandate.hpp"
 
+#include "../libutil/utility/Standard.hpp"
+
 #include <QDebug>
-
 #include <QDataStream>
-
-
 #include <QDateTime>
 
 
@@ -32,6 +30,17 @@ AgentStateCourier::AgentStateCourier(QDataStream *initialization, QObject *paren
 }
 
 
+
+void AgentStateCourier::setPanic(bool panic)
+{
+	quint8 flags=mFlags->bestValue(true);
+	if(panic) {
+		flags=flags | 1;
+	} else {
+		flags=flags & (~1);
+	}
+	mFlags->setLocalValue(flags);
+}
 
 void AgentStateCourier::setFlags(quint8 flags)
 {
@@ -62,13 +71,13 @@ QDebug &AgentStateCourier::toDebug(QDebug &d) const
 
 void AgentStateCourier::initParams(QDataStream *initialization)
 {
-	qDebug()<<"REGISTERING PARAMETERS with "<<(nullptr!=initialization?"DATA":"NULL");
+	//qDebug()<<"REGISTERING PARAMETERS with "<<(nullptr!=initialization?"DATA":"NULL");
 	quint8 flags=0;
 	mFlags=mParams.registerParameter(flags);
 	if(nullptr==mFlags) {
 		qWarning()<<"ERROR: could nota allocate flags parameter";
 	} else {
-		qDebug()<<"REGISTERED PARAMETER #1: "<<mParams;
+		//qDebug()<<"REGISTERED PARAMETER #1: "<<mParams;
 	}
 
 	AgentMode mode=OFFLINE;
@@ -76,30 +85,29 @@ void AgentStateCourier::initParams(QDataStream *initialization)
 	if(nullptr==mMode) {
 		qWarning()<<"ERROR: could nota allocate agent mode parameter";
 	} else {
-		qDebug()<<"REGISTERED PARAMETER #2: "<<mParams;
+		//qDebug()<<"REGISTERED PARAMETER #2: "<<mParams;
 	}
 
 	QGeoCoordinate targetPosition;
 	mTargetPosition=mParams.registerParameter(targetPosition);
 	if(nullptr==mTargetPosition) {
 		qWarning()<<"ERROR: could nota allocate target position parameter";
-	}
-	else {
-		qDebug()<<"REGISTERED PARAMETER #3: "<<mParams;
+	} else {
+		//qDebug()<<"REGISTERED PARAMETER #3: "<<mParams;
 	}
 	qreal targetOrientation=0;//Asume North at startup
 	mTargetOrientation=mParams.registerParameter(targetOrientation);
 	if(nullptr==mTargetOrientation) {
 		qWarning()<<"ERROR: could nota allocate target orientation parameter";
 	} else {
-		qDebug()<<"REGISTERED PARAMETER #4: "<<mParams;
+		//qDebug()<<"REGISTERED PARAMETER #4: "<<mParams;
 	}
 	Pose targetPose;
 	mTargetPose=mParams.registerParameter(targetPose);
 	if(nullptr==mTargetPose) {
 		qWarning()<<"ERROR: could nota allocate target pose parameter";
 	} else {
-		qDebug()<<"REGISTERED PARAMETER #5: "<<mParams;
+		//qDebug()<<"REGISTERED PARAMETER #5: "<<mParams;
 	}
 //Read initial data into parameters
 
@@ -114,6 +122,33 @@ void AgentStateCourier::initParams(QDataStream *initialization)
 	}
 
 }
+
+
+
+void AgentStateCourier::hookSignals(QObject &ob)
+{
+	if(nullptr!=mFlags) {
+		mFlags->hookSignals(ob);
+	} else {
+		qWarning()<<"ERROR: No flags while hooking signals";
+	}
+
+
+
+}
+
+
+
+void AgentStateCourier::unHookSignals(QObject &ob)
+{
+	if(nullptr!=mFlags) {
+		mFlags->unHookSignals(ob);
+	} else {
+		qWarning()<<"ERROR: No flags while unhooking signals";
+	}
+
+}
+
 
 const QDebug &operator<<(QDebug &d, const AgentStateCourier &a)
 {
@@ -144,7 +179,7 @@ quint16 AgentStateCourier::sendingOpportunity(QDataStream &ds)
 	if(mandate().sendActive) {
 		ds << mParams;
 		quint16 bytes=mParams.bytesSent();
-		qDebug()<<"Spent sending opportunity for agent status data with "<<bytes<<" bytes";
+		//qDebug()<<"Spent sending opportunity for agent status data with "<<bytes<<" bytes";
 		return  bytes;
 	} else {
 		qWarning()<<"ERROR: sendingOpportunity while sendActive=false";

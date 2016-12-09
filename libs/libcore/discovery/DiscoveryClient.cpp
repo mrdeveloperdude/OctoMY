@@ -221,7 +221,7 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map)
 					if(nullptr!=courier) {
 						peers.setParticipant(part);
 						courier->setDestination(part->toClientSignature());
-						mNode.comms()->registerCourier(*courier);
+						mNode.comms()->setCourierRegistered(*courier, true);
 						qDebug()<<" + Adding new participant with ID: "<<partID;
 						emit nodeDiscovered(partID);
 					} else {

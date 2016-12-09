@@ -88,6 +88,6 @@ bool ClientSignature::isValid() const
 
 const QDebug &operator<<(QDebug &d, const ClientSignature &sig)
 {
-	d.nospace() << "ClientSignature["<<sig.toString()<<"("<<sig.fullID()<<")]";
+	d.nospace() << "ClientSignature["<<sig.toString()<<"("<<sig.fullID()<<"), valid="<<sig.isValid()<<"]";
 	return d.maybeSpace();
 }

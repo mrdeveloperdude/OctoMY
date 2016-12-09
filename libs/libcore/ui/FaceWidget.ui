@@ -114,6 +114,9 @@
         <property name="text">
          <string>Panic</string>
         </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
      </layout>

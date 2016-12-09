@@ -178,9 +178,6 @@ void NodeAssociateStore::unHookSignals(QObject &ob)
 	} else {
 		//qDebug()<<"UN-HOOKING peerStoreReady";
 	}
-	if(!disconnect(this,SIGNAL(storeReady(bool)),&ob,SLOT(onStoreReady(bool)))) {
-		qWarning()<<"Could not disconnect "<<ob.objectName();
-	}
 	if(!disconnect(this,SIGNAL(peerAdded(QString)),&ob,SLOT(onPeerAdded(QString)))) {
 		qWarning()<<"Could not disconnect "<<ob.objectName();
 	}

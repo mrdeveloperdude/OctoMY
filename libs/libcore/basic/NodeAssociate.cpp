@@ -246,7 +246,7 @@ bool NodeAssociate::isValidForServer()
 ClientSignature NodeAssociate::toClientSignature()
 {
 	OC_METHODGATE();
-	return ClientSignature(id(), publicAddress());
+	return ClientSignature(id(), localAddress());
 }
 
 

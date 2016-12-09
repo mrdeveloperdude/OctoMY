@@ -36,6 +36,12 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 
 	ui->setupUi(this);
 
+	//Make panic button RED
+	QPalette p=ui->pushButtonPanicc->palette();
+	p.setColor(QPalette::Button,"#5b0504");
+	ui->pushButtonPanicc->setPalette(p);
+
+
 	ui->widgetBirthCertificate->configure(false,true);
 	if(nullptr!=mNodeAssoc) {
 		ui->widgetBirthCertificate->setPortableID(mNodeAssoc->toPortableID());
@@ -60,16 +66,25 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 	}
 
 	ClientSignature sig=mNodeAssoc->toClientSignature();
+	qDebug()<<"REMOTE CLIENT WIDGET DESTINATION SET TO "<<sig;
 	mAgentStateCourier->setDestination(sig);
 	mSensorsCourier->setDestination(sig);
 	mBlobCourier->setDestination(sig);
 
 
-	if(nullptr!=mController) {
-		mController->hookCommsSignals(*this);
+	if(nullptr!=mAgentStateCourier) {
+		mAgentStateCourier->hookSignals(*this);
+	} else {
+		qWarning()<<"ERROR: Could not hook agent state courier events, no courier";
 	}
 
-	installEventFilter(this);
+	if(nullptr!=mController) {
+		mController->hookCommsSignals(*this);
+	} else {
+		qWarning()<<"ERROR: Could not hook controller events, no controller";
+	}
+
+	//installEventFilter(this);
 	init();
 
 	updateOnlineStatus();
@@ -174,17 +189,11 @@ void ClientWidget::setCourierRegistration(bool reg)
 {
 	CommsChannel *cc=comms();
 	if(nullptr!=cc) {
-		if(reg) {
-			//qDebug()<<"REGISTERING SENSORS COURIER FOR " <<mNodeAssoc->id();
-			cc->registerCourier(*mAgentStateCourier);
-			cc->registerCourier(*mSensorsCourier);
-			cc->registerCourier(*mBlobCourier);
-		} else {
-			//qDebug()<<"UN-REGISTERING SENSORS COURIER FOR " <<mNodeAssoc->id();
-			cc->unregisterCourier(*mAgentStateCourier);
-			cc->unregisterCourier(*mSensorsCourier);
-			cc->unregisterCourier(*mBlobCourier);
-		}
+
+		//qDebug()<<"REGISTERING SENSORS COURIER FOR " <<mNodeAssoc->id();
+		cc->setCourierRegistered(*mAgentStateCourier, reg);
+		cc->setCourierRegistered(*mSensorsCourier, reg);
+		cc->setCourierRegistered(*mBlobCourier, reg);
 		// Adaptively start commschannel when there are couriers registered
 		const int ct=cc->courierCount();
 		//qDebug()<<"COMMS LEFT WITH "<<ct<<" COURIERS";
@@ -262,6 +271,7 @@ void ClientWidget::updateControlLevel(int level)
 bool ClientWidget::eventFilter(QObject *object, QEvent *event)
 {
 	/*
+
 	//qDebug()<<"EVENT: "<<object<<": "<<event;
 	if ((u==object) && (event->type() == QEvent::MouseMove || event->type() == QEvent::MouseButtonPress )) {
 		QMouseEvent *r= static_cast<QMouseEvent *>(event);
@@ -275,6 +285,14 @@ bool ClientWidget::eventFilter(QObject *object, QEvent *event)
 	return false;
 }
 
+
+//////////////////////////////////////////////////
+// Agent State Courier slots
+
+void ClientWidget::onValueChanged(ISyncParameter *)
+{
+	qDebug()<<"ARNE SJEIE";
+}
 
 //////////////////////////////////////////////////
 // CommsChannel slots
@@ -382,4 +400,25 @@ void ClientWidget::on_checkBoxShowOnlineButton_toggled(bool checked)
 	} else {
 		qWarning()<<"ERROR: No controller";
 	}
+}
+
+
+
+void ClientWidget::on_pushButtonPanicc_toggled(bool panic)
+{
+	if(panic) {
+		QString str="P A N I C !";
+		qWarning()<<str;
+		appendLog(str);
+	} else {
+		QString str="Panic averted";
+		qWarning()<<str;
+		appendLog(str);
+	}
+	if(nullptr!=mAgentStateCourier) {
+		mAgentStateCourier->setPanic(panic);
+	} else {
+		qWarning()<<"ERROR: no ASC when changing panic to "<<panic;
+	}
+
 }

@@ -66,6 +66,7 @@ public:
 
 	// Parameter access
 public:
+	void setPanic(bool);
 	void setFlags(quint8 flags);
 	void setMode(AgentMode mode);
 
@@ -79,6 +80,12 @@ public:
 
 private:
 	void initParams(QDataStream *initialization);
+
+public:
+	// Signal hooks
+	void hookSignals(QObject &ob);
+	void unHookSignals(QObject &ob);
+
 
 	// Courier interface
 public:

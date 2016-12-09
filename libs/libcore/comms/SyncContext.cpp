@@ -188,6 +188,7 @@ QDataStream &SyncContext::receive(QDataStream &ds)
 			ISyncParameter *param=mParams.at(i);
 			if(nullptr!=param) {
 				// Actual parameter data
+				qDebug()<<"RX PARAM #"<<i<<": "<< *param<<"("<< param->bytes()<<" bytes)";
 				ds >> *param;
 				bytes+=param->bytes();
 			} else {
@@ -237,6 +238,7 @@ QDataStream &SyncContext::send(QDataStream &ds)
 			if(nullptr!=param) {
 				if(param->hasPendingSync()) {
 					//Actual parameter data
+					//qDebug()<<"TX PARAM #"<<i<<": "<< *param<<"("<< param->bytes()<<" bytes)";
 					ds << *param;
 					bytes+=param->bytes();
 				} else {
