@@ -55,26 +55,21 @@ qint64 SensorsMessage::bytes()
 
 QDataStream &operator>>(QDataStream &ds, SensorsMessage &sm)
 {
-	qint32 mt=INVALID;
-	ds >> mt;
-	sm.ok=(STATUS==mt);
-	if(sm.ok) {
-		ds >> sm.timestamp;
-		ds >> sm.gps;
-		ds >> sm.slam;
-		ds >> sm.gyroscope;
-		ds >> sm.accellerometer;
-		ds >> sm.compassAzimuth;
-		ds >> sm.compassAccuracy;
-		ds >> sm.temperature;
-		ds >> sm.touch;
-	}
+	ds >> sm.timestamp;
+	ds >> sm.gps;
+	ds >> sm.slam;
+	ds >> sm.gyroscope;
+	ds >> sm.accellerometer;
+	ds >> sm.compassAzimuth;
+	ds >> sm.compassAccuracy;
+	ds >> sm.temperature;
+	ds >> sm.touch;
+
 	return ds;
 }
 
 QDataStream &operator<<(QDataStream &ds, const SensorsMessage &sm)
 {
-	ds << STATUS;
 	ds << sm.timestamp;
 	ds << sm.gps;
 	ds << sm.slam;
@@ -86,4 +81,3 @@ QDataStream &operator<<(QDataStream &ds, const SensorsMessage &sm)
 	ds << sm.touch;
 	return ds;
 }
-

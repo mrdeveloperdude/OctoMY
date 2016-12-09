@@ -11,12 +11,6 @@ QDebug &operator<<(QDebug &d, const MessageType &type)
 		MessageTypeOperatorStreamLeftCASE(NOOP_MSG);
 		MessageTypeOperatorStreamLeftCASE(PING);
 		MessageTypeOperatorStreamLeftCASE(PONG);
-		MessageTypeOperatorStreamLeftCASE(QUERY);
-		MessageTypeOperatorStreamLeftCASE(QUERY_RESULT);
-		MessageTypeOperatorStreamLeftCASE(COMMAND);
-		MessageTypeOperatorStreamLeftCASE(STATUS);
-		MessageTypeOperatorStreamLeftCASE(DIRECT_POSE);
-		MessageTypeOperatorStreamLeftCASE(DISCOVERY_AUTH);
 		MessageTypeOperatorStreamLeftCASE(AGENT_STATE);
 	default:
 		d.nospace() << "UNKNOWN";
@@ -36,12 +30,6 @@ QString MessageTypeToString(MessageType s)
 		MessageTypeToStringCASE(NOOP_MSG);
 		MessageTypeToStringCASE(PING);
 		MessageTypeToStringCASE(PONG);
-		MessageTypeToStringCASE(QUERY);
-		MessageTypeToStringCASE(QUERY_RESULT);
-		MessageTypeToStringCASE(COMMAND);
-		MessageTypeToStringCASE(STATUS);
-		MessageTypeToStringCASE(DIRECT_POSE);
-		MessageTypeToStringCASE(DISCOVERY_AUTH);
 		MessageTypeToStringCASE(AGENT_STATE);
 
 	}
@@ -57,12 +45,6 @@ MessageType MessageTypeFromString(QString s)
 	MessageTypeFromStringCASE(NOOP_MSG);
 	MessageTypeFromStringCASE(PING);
 	MessageTypeFromStringCASE(PONG);
-	MessageTypeFromStringCASE(QUERY);
-	MessageTypeFromStringCASE(QUERY_RESULT);
-	MessageTypeFromStringCASE(COMMAND);
-	MessageTypeFromStringCASE(STATUS);
-	MessageTypeFromStringCASE(DIRECT_POSE);
-	MessageTypeFromStringCASE(DISCOVERY_AUTH);
 	MessageTypeFromStringCASE(AGENT_STATE);
 	return INVALID;
 #undef MessageTypeFromStringCASE

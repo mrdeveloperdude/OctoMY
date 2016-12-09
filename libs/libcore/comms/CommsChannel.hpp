@@ -15,7 +15,8 @@
 #include "basic/LogDestination.hpp"
 #include "couriers/Courier.hpp"
 
-#define TIMEOUT_TRESHOLD 1
+#define TIMEOUT_TRESHOLD 3
+#define MINIMAL_PACKET_RATE 2000
 
 #define OCTOMY_PROTOCOL_MAGIC (0x0C701111)
 #define OCTOMY_PROTOCOL_VERSION_CURRENT (1)

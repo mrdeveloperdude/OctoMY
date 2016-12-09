@@ -36,7 +36,7 @@ QDataStream &operator<<(QDataStream &ds, const Pose &p)
 
 QString Pose::toString() const
 {
-	qDebug()<<"pos1="<<pos1<<"ok="<<ok;
+//	qDebug()<<"pos1="<<pos1<<"ok="<<ok;
 	return QString("Pose(ok=")+(ok?"true":"false")+", pos1="+QString::number(pos1)+")";
 }
 

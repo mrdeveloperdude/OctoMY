@@ -192,14 +192,6 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 					qDebug()<<totalRecCount<<parts<<"GOT NOOP_MSG";
 				}
 				break;
-				case(DIRECT_POSE): {
-					Pose pose;
-					*ds >> pose;
-					totalAvailable-=pose.size();
-					qDebug()<<totalRecCount<<parts<<"GOT POSE MESSAGE: "<<pose.toString();
-
-				}
-				break;
 				default:
 				case(INVALID): {
 					QString es=QString::number(totalRecCount)+" "+QString::number(parts)+" ERROR: OctoMY message type invalid: "+QString::number((quint32)octomy_message_type,16);
@@ -349,8 +341,7 @@ void CommsChannel::onSendingTimer()
 		mTxCount=0;
 	}
 	//Prepare a priority list of couriers to process for this packet
-	const qint64 MIN_RATE=1000;
-	qint64 mostUrgentCourier=MIN_RATE;
+	qint64 mostUrgentCourier=MINIMAL_PACKET_RATE;
 	QMap<quint64, Courier *> pri;
 	QList <const ClientSignature *> idle;
 	// Update first
@@ -409,7 +400,7 @@ void CommsChannel::onSendingTimer()
 		}
 	}
 	// Prepare for next round (this implies a stop() )
-	quint64 delay=MIN(mostUrgentCourier,MIN_RATE);
+	quint64 delay=qMin(mostUrgentCourier, (qint64)MINIMAL_PACKET_RATE);
 	//qDebug()<<"DELAY: "<<delay<<" ("<<mostUrgentCourier<<")";
 	mSendingTimer.start(delay);
 }

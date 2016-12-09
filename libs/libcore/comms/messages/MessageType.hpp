@@ -8,12 +8,6 @@ enum MessageType{
 	, NOOP_MSG
 	, PING
 	, PONG
-	, QUERY
-	, QUERY_RESULT
-	, COMMAND
-	, STATUS
-	, DIRECT_POSE
-	, DISCOVERY_AUTH
 	, AGENT_STATE
 };
 

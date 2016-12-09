@@ -168,7 +168,7 @@ void AgentStateCourier::update()
 // Let the CommChannel know what we want
 CourierMandate AgentStateCourier::mandate() const
 {
-	CourierMandate mandate(mParams.bytesSentIdeal() , 10, 100, true, mParams.hasPendingSyncs());
+	CourierMandate mandate(mParams.bytesSentIdeal() , 10, 2000, true, mParams.hasPendingSyncs());
 	return mandate;
 }
 

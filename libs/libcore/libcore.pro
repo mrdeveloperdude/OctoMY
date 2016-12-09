@@ -48,8 +48,6 @@ SOURCES +=\
 	comms/couriers/SensorsCourier.cpp \
 	comms/FlowControl.cpp \
 	comms/messages/MessageType.cpp \
-	comms/messages/QueryMessage.cpp \
-	comms/messages/QueryResultMessage.cpp \
 	comms/messages/SensorsMessage.cpp \
 	comms/ReliabilitySystem.cpp \
 	discovery/DiscoveryClient.cpp \
@@ -243,8 +241,6 @@ HEADERS  += \
 	comms/DeviceType.hpp \
 	comms/FlowControl.hpp \
 	comms/messages/MessageType.hpp \
-	comms/messages/QueryMessage.hpp \
-	comms/messages/QueryResultMessage.hpp \
 	comms/messages/SensorsMessage.hpp \
 	comms/QueryType.hpp \
 	comms/ReliabilitySystem.hpp \
