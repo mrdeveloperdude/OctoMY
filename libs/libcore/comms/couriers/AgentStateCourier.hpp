@@ -96,7 +96,7 @@ public:
 public:
 
 	// Update courier state when channel has opportunity
-	void update() Q_DECL_OVERRIDE;
+	void update(quint64 now) Q_DECL_OVERRIDE;
 
 	// Let the CommChannel know what we want
 	CourierMandate mandate() const Q_DECL_OVERRIDE;

@@ -293,12 +293,12 @@ void CommsChannel::sendData(const quint64 &now, QSharedPointer<Client> localClie
 		const quint32 partMessageTypeID=IDLE;
 		ds<<partMessageTypeID;
 		bytesUsed+=sizeof(partMessageTypeID);
-/* NO DATA NECESSARY
-		const quint16 noBytesSpent=(quint16)0;
-		ds << noBytesSpent;
-		bytesUsed += sizeof(noBytesSpent);
-		//qDebug()<<"IDLE PACKET: "<<(nullptr==courier?"NULL":courier->name())<<", "<<(nullptr==localClient?"NULL":localClient->toString());
-		*/
+		/* NO DATA NECESSARY
+				const quint16 noBytesSpent=(quint16)0;
+				ds << noBytesSpent;
+				bytesUsed += sizeof(noBytesSpent);
+				//qDebug()<<"IDLE PACKET: "<<(nullptr==courier?"NULL":courier->name())<<", "<<(nullptr==localClient?"NULL":localClient->toString());
+				*/
 	}
 	const quint32 sz=datagram.size();
 	//qDebug()<<"SEND DS SIZE: "<<sz;
@@ -319,6 +319,59 @@ void CommsChannel::sendData(const quint64 &now, QSharedPointer<Client> localClie
 		localClient->countSend(written);
 	}
 }
+
+
+void CommsChannel::rescheduleSending(quint64 now)
+{
+	//Prepare a priority list of couriers to process for this packet
+	mMostUrgentCourier=MINIMAL_PACKET_RATE;
+	mPri.clear();
+	mIdle.clear();
+	// Update first
+	for(Courier *courier:mCouriers) {
+		if(nullptr!=courier) {
+			courier->update(now);
+		}
+	}
+	for(Courier *courier:mCouriers) {
+		if(nullptr!=courier) {
+			CourierMandate cm=courier->mandate();
+			if(cm.sendActive) {
+				const ClientSignature &clisig=courier->destination();
+				if(clisig.isValid()) {
+					const quint64 last = courier->lastOpportunity();
+					const qint64 interval = now - last;
+					const qint64 overdue = interval - cm.interval;
+					if((qint64)cm.interval<mMostUrgentCourier) {
+						mMostUrgentCourier=cm.interval;
+					}
+					//We are overdue
+					if(overdue>0) {
+						quint64 score=(cm.priority*overdue)/cm.interval;
+						mPri.insert(score,courier); //TODO: make this broadcast somehow (use ClientDirectory::getByLastActive() and ClientSignature::isValid() in combination or similar).
+						//qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" OVERDUE SCORE:"<<score;
+					} else {
+						mIdle.push_back(&clisig);
+						if (-overdue > mMostUrgentCourier) {
+							mMostUrgentCourier=-overdue;
+							//qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" URGENCY:"<<mostUrgentCourier;
+						} else {
+							//qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" MEH";
+						}
+					}
+				} else {
+					qWarning()<<"ERROR: clisig was invalid: "<<clisig;
+				}
+
+			}
+		}
+	}
+	// Prepare for next round (this implies a stop() )
+	quint64 delay=qMin(mMostUrgentCourier, (qint64)MINIMAL_PACKET_RATE);
+	//qDebug()<<"DELAY: "<<delay<<" ("<<mostUrgentCourier<<")";
+	mSendingTimer.start(delay);
+}
+
 
 void CommsChannel::onSendingTimer()
 {
@@ -342,69 +395,22 @@ void CommsChannel::onSendingTimer()
 		mLastTXST=now;
 		mTxCount=0;
 	}
-	//Prepare a priority list of couriers to process for this packet
-	qint64 mostUrgentCourier=MINIMAL_PACKET_RATE;
-	QMap<quint64, Courier *> pri;
-	QList <const ClientSignature *> idle;
-	// Update first
-	for(Courier *courier:mCouriers) {
-		if(nullptr!=courier) {
-			courier->update();
-		}
-	}
-	for(Courier *courier:mCouriers) {
-		if(nullptr!=courier) {
-			CourierMandate cm=courier->mandate();
-			if(cm.sendActive) {
-				const ClientSignature &clisig=courier->destination();
-				if(clisig.isValid()) {
-					const quint64 last = courier->lastOpportunity();
-					const qint64 interval = now - last;
-					const qint64 overdue = interval - cm.interval;
-					if((qint64)cm.interval<mostUrgentCourier) {
-						mostUrgentCourier=cm.interval;
-					}
-					//We are overdue
-					if(overdue>0) {
-						quint64 score=(cm.priority*overdue)/cm.interval;
-						pri.insert(score,courier); //TODO: make this broadcast somehow (use ClientDirectory::getByLastActive() and ClientSignature::isValid() in combination or similar).
-						//qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" OVERDUE SCORE:"<<score;
-					} else {
-						idle.push_back(&clisig);
-						if (-overdue > mostUrgentCourier) {
-							mostUrgentCourier=-overdue;
-							//qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" URGENCY:"<<mostUrgentCourier;
-						} else {
-							//qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" MEH";
-						}
-					}
-				} else {
-					qWarning()<<"ERROR: clisig was invalid: "<<clisig;
-				}
-
-			}
-		}
-	}
+	rescheduleSending(now);
 	// Write one message per courier in pri list
 	// NOTE: several possible optimizations exist, for example grouping messages
 	//       to same node in one packet etc. We may exploit them in the future.
-
-	for (QMap<quint64, Courier *>::iterator i = pri.begin(), e=pri.end(); i != e; ++i) {
+	for (QMap<quint64, Courier *>::iterator i = mPri.begin(), e=mPri.end(); i != e; ++i) {
 		Courier *courier=i.value();
 		sendData(now, localClient, courier, nullptr); //Client *localClient, Courier *courier, const ClientSignature *sig1){
 		//(const quint64 now, Client *localClient, Courier *courier, const ClientSignature *sig1){
 	}
-	const int isz=idle.size();
+	const int isz=mIdle.size();
 	if(isz>0) {
 		//qDebug()<<"Send "<<isz<<" idle packets";
-		for(const ClientSignature *sig:idle) {
+		for(const ClientSignature *sig:mIdle) {
 			sendData(now, localClient, nullptr, sig);
 		}
 	}
-	// Prepare for next round (this implies a stop() )
-	quint64 delay=qMin(mostUrgentCourier, (qint64)MINIMAL_PACKET_RATE);
-	//qDebug()<<"DELAY: "<<delay<<" ("<<mostUrgentCourier<<")";
-	mSendingTimer.start(delay);
 }
 
 //Only for testing purposes! Real data should pass through the courier system

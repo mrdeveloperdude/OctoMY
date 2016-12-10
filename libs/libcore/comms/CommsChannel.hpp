@@ -112,6 +112,11 @@ private:
 	quint64 mRxCount;
 	bool mConnected;
 
+	QMap<quint64, Courier *> mPri;
+	QList <const ClientSignature *> mIdle;
+	qint64 mMostUrgentCourier;
+
+
 	//Receive counter used in debug messages to make sense of the order of things
 	static quint32 totalRecCount;
 
@@ -169,6 +174,7 @@ public:
 private:
 
 	void appendLog(QString);
+	void rescheduleSending(quint64 now);
 
 	void sendData(const quint64 &now, QSharedPointer<Client> localClient, Courier *courier, const ClientSignature *sig=nullptr);
 

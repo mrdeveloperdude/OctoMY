@@ -72,7 +72,7 @@ public:
 public:
 
 	// Update courier state when channel has opportunity
-	virtual void update();
+	virtual void update(quint64 now);
 
 	// Let the CommChannel know what we want
 	virtual CourierMandate mandate() const;

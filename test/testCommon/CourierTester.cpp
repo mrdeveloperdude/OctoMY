@@ -53,10 +53,11 @@ void CourierTester::onTestInit()
 	QVERIFY(nullptr!=mFromCourier);
 	QVERIFY(nullptr!=mToCourier);
 	onTestInitImp();
+	quint64 now=QDateTime::currentMSecsSinceEpoch();
 	qDebug()<<"--- INITIAL UPDATE "<<mFromName;
-	mFromCourier->update();
+	mFromCourier->update(now);
 	qDebug()<<"--- INITIAL UPDATE "<<mToName;
-	mToCourier->update();
+	mToCourier->update(now);
 	mRoundCounter=0;
 }
 
@@ -79,9 +80,10 @@ void CourierTester::onTestRoundEnd()
 {
 	qDebug()<<"--- ROUND END -----------";
 	qDebug()<<"--- UPDATE "<<mFromName;
-	mFromCourier->update();
+	quint64 now=QDateTime::currentMSecsSinceEpoch();
+	mFromCourier->update(now);
 	qDebug()<<"--- UPDATE "<<mToName;
-	mToCourier->update();
+	mToCourier->update(now);
 	qDebug()<< "CourierTester stats: mFromStreams="<<mFromStreams.size()<<", mToStreams="<<mToStreams.size()<<"";
 	onTestRoundEndImp();
 }

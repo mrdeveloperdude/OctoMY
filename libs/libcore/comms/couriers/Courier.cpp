@@ -34,7 +34,7 @@ const ClientSignature &Courier::destination() const
 
 
 // Update courier state when channel has opportunity
-void Courier::update()
+void Courier::update(quint64 now)
 {
 	//It is perfectly fine to skip on this
 	//qWarning()<<"WARNING: Unimplemented update() in "<<mName<<"("<<mID<<")";

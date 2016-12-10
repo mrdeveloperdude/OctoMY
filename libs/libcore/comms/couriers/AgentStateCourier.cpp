@@ -160,16 +160,16 @@ const QDebug &operator<<(QDebug &d, const AgentStateCourier &a)
 // Courier Interface ///////////////////////////////////////////////////////////
 
 // Update courier state when channel has opportunity
-void AgentStateCourier::update()
+void AgentStateCourier::update(quint64 now)
 {
-	mParams.update(QDateTime::currentMSecsSinceEpoch());
+	mParams.update(now);
 }
 
 
 // Let the CommChannel know what we want
 CourierMandate AgentStateCourier::mandate() const
 {
-	CourierMandate mandate(mParams.bytesSentIdeal() , 10, 2000, true, mParams.hasPendingSyncs());
+	CourierMandate mandate(mParams.bytesSentIdeal() , 10, 100, true, mParams.hasPendingSyncs());
 	return mandate;
 }
 
