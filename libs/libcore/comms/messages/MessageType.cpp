@@ -9,7 +9,6 @@ QDebug &operator<<(QDebug &d, const MessageType &type)
 	switch(type) {
 		MessageTypeOperatorStreamLeftCASE(INVALID);
 		MessageTypeOperatorStreamLeftCASE(IDLE);
-		MessageTypeOperatorStreamLeftCASE(AGENT_STATE);
 	default:
 		d.nospace() << "UNKNOWN";
 	}
@@ -26,8 +25,6 @@ QString MessageTypeToString(MessageType s)
 		return "UNKNOWN";
 		MessageTypeToStringCASE(INVALID);
 		MessageTypeToStringCASE(IDLE);
-		MessageTypeToStringCASE(AGENT_STATE);
-
 	}
 #undef MessageTypeToStringCASE
 }
@@ -39,7 +36,6 @@ MessageType MessageTypeFromString(QString s)
 #define  MessageTypeFromStringCASE(A) if(#A==s)return A
 	MessageTypeFromStringCASE(INVALID);
 	MessageTypeFromStringCASE(IDLE);
-	MessageTypeFromStringCASE(AGENT_STATE);
 	return INVALID;
 #undef MessageTypeFromStringCASE
 }

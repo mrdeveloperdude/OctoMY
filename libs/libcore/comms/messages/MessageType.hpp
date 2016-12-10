@@ -6,7 +6,6 @@
 enum MessageType{
 	 INVALID=0
 	, IDLE
-	, AGENT_STATE
 };
 
 

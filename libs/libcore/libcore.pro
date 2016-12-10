@@ -182,7 +182,6 @@ SOURCES +=\
 	widgets/SpeechControlWidget.cpp \
 	widgets/ActuatorControlWidget.cpp \
 	widgets/TryToggleState.cpp \
-	comms/messages/AgentState.cpp \
 	basic/GenericKeyEventHandler.cpp \
     comms/couriers/BlobCourier.cpp \
     comms/couriers/Blob.cpp \
@@ -380,7 +379,6 @@ HEADERS  += \
 	widgets/SpeechControlWidget.hpp \
 	widgets/ActuatorControlWidget.hpp \
 	widgets/TryToggleState.hpp \
-	comms/messages/AgentState.hpp \
 	basic/GenericKeyEventHandler.hpp \
     comms/couriers/BlobCourier.hpp \
     comms/couriers/Blob.hpp \

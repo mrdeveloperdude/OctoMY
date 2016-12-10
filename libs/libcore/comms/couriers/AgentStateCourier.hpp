@@ -2,13 +2,15 @@
 #define AGENTSTATECOURIER_HPP
 
 #include "Courier.hpp"
-#include "comms/messages/AgentState.hpp"
 
 #include "comms/SyncContext.hpp"
+#include "comms/messages/AgentMode.hpp"
+#include "puppet/Pose.hpp"
 
 #include <QObject>
 #include <QDebug>
 
+#include <QGeoCoordinate>
 
 template <typename T>
 class SyncParameter;
@@ -57,6 +59,9 @@ private:
 	SyncParameter<QGeoCoordinate> *mTargetPosition; // The desired target position for the robot in lat,long,alt. The robot may or may not actively pursue this location depending on the mode it is in.
 	SyncParameter<qreal> *mTargetOrientation; // The desired target orientation for the robot in radians starting from North. The robot may or may not actively pursue this orientation depending on the mode it is in.
 	SyncParameter<Pose> *mTargetPose; // The desired target pose for the robot in actuator positions. The robot may or may not actively pursue this pose depending on the mode it is in.
+
+
+
 //TODO: Somehow encode desired speed, direction and more
 
 public:
