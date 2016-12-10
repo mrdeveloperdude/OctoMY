@@ -101,12 +101,12 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 		mRxCount=0;
 	}
 	QSharedPointer<QDataStream> ds(new QDataStream(&datagram, QIODevice::ReadOnly));
-	const int header = 20; //magic(4) + version(4) + fingerprint(8) + messageType(4)
+	const int header = sizeof(quint32 /*magic*/) +sizeof(quint32 /*version*/) +sizeof(quint64 /*short ID*/)+sizeof(unsigned int /*sequence*/)+sizeof(unsigned int /*ack*/)+sizeof(unsigned int /*ack bits*/);//+sizeof(quint32 /*message type*/);
 	const int size=datagram.size();
 	int totalAvailable=size;
-	qDebug()<<totalRecCount<<"PACKET INITIAL SIZE: "<<size;
+	qDebug()<<totalRecCount<<"PACKET INITIAL SIZE: "<<size<<", HEADER CALCULATED SIZE: "<<header<<", THUS RAW BYES EXPECTED: "<<(size-header);
 	if ( size <= header ) {
-		QString es=QString::number(totalRecCount)+" ERROR: Message too short: " +QString::number(size);
+		QString es=QString::number(totalRecCount)+" ERROR: Message too short: " +QString::number(size)+" vs. header: "+QString::number(header);
 		qWarning()<<es;
 		emit commsError(es);
 		return;
@@ -162,39 +162,33 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 		rs.packetReceived( packet_sequence, size-header );
 		rs.processAck( packet_ack, packet_ack_bits );
 		remoteClient->receive();
-		quint16 parts=0;
-		const qint32 minAvailableForPart  = ( sizeof(quint32) + sizeof(quint16) );
-		while(totalAvailable > minAvailableForPart) {
-			parts++;
-			qDebug()<<totalRecCount<<parts<<"STARTING NEW PART WITH "<<totalAvailable<<" vs. "<<minAvailableForPart;
-			quint32 octomy_message_type_int=0;
-			*ds >> octomy_message_type_int;
+		quint16 partsCount=0;
+		const qint32 minAvailableForPart  = ( sizeof(quint32)  );
+		if(totalAvailable < minAvailableForPart) {
+			qWarning()<<"ERROR: NO PARTS DETECTED! Data size too small";
+		}
+		while(totalAvailable >= minAvailableForPart) {
+			partsCount++;
+			qDebug()<<"READING PART #"<<partsCount<<" WITH "<<totalAvailable<<" vs. "<<minAvailableForPart;
+			quint32 partMessageTypeID=0;
+			*ds >> partMessageTypeID;
 			totalAvailable-=sizeof(quint32);
-			quint16 bytesAvailable=0;
-			*ds >> bytesAvailable;
+			quint16 partBytesAvailable=0;
+			*ds >> partBytesAvailable;
 			totalAvailable-=sizeof(quint16);
-			if(octomy_message_type_int<Courier::FIRST_USER_ID) {
+			if(partMessageTypeID<Courier::FIRST_USER_ID) {
 				//Use message type enum for built in messages
-				const MessageType octomy_message_type=(MessageType)octomy_message_type_int;
-				qDebug()<<totalRecCount<<parts<<"MESSAGE TYPE WAS"<<octomy_message_type<<"("<<QString::number(octomy_message_type_int)<<")";
-				switch(octomy_message_type) {
-				case(PING): {
-					qDebug()<<totalRecCount<<parts<<"GOT PING";
-					//TODO: Record PING received time and schedule PONG message to be sent in return
-				}
-				break;
-				case(PONG): {
-					qDebug()<<totalRecCount<<parts<<"GOT PONG";
-					//TODO: Look up matching PING and broadcast positive status
-				}
-				break;
-				case(NOOP_MSG): {
-					qDebug()<<totalRecCount<<parts<<"GOT NOOP_MSG";
+				const MessageType partMessageType=(MessageType)partMessageTypeID;
+				qDebug()<<totalRecCount<<"MESSAGE TYPE WAS"<<partMessageType<<"("<<QString::number(partMessageTypeID)<<")";
+				switch(partMessageType) {
+				case(IDLE): {
+					qDebug()<<totalRecCount<<"GOT IDLE";
+					// Idle packet does not contain any data, so we are done here :)
 				}
 				break;
 				default:
 				case(INVALID): {
-					QString es=QString::number(totalRecCount)+" "+QString::number(parts)+" ERROR: OctoMY message type invalid: "+QString::number((quint32)octomy_message_type,16);
+					QString es=QString::number(totalRecCount)+" "+QString::number(partsCount)+" ERROR: OctoMY message type invalid: "+QString::number((quint32)partMessageType,16);
 					qWarning()<<es;
 					emit commsError(es);
 					return;
@@ -203,40 +197,40 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 				}
 			} else {
 				//Use courier id for extendable messages
-				Courier *c=getCourierByID(octomy_message_type_int);
+				Courier *c=getCourierByID(partMessageTypeID);
 				if(nullptr!=c) {
-					const quint16 bytesSpent=c->dataReceived(*ds, bytesAvailable);
-					const int left=bytesAvailable-bytesSpent;
-					qDebug()<<totalRecCount<<parts<<"Courier message "<<octomy_message_type_int<<" "<<c->name()<<" bavail="<<bytesAvailable<<" tbavail="<<totalAvailable<<" bspent="<<bytesSpent<<" left="<<left<<"  ";
+					const quint16 bytesSpent=c->dataReceived(*ds, partBytesAvailable);
+					const int left=partBytesAvailable-bytesSpent;
+					qDebug()<<totalRecCount<<"GOT COURIER MSG "<<partMessageTypeID<<" "<<c->name()<<" bytes avail="<<partBytesAvailable<<" tot avail="<<totalAvailable<<" bytes spent="<<bytesSpent<<" left="<<left<<"  ";
 					totalAvailable-=bytesSpent;
 					if(left>=0) {
 						if(left>0) {
-							qDebug()<<totalRecCount<<parts<<"SKIPPING "<<left<<" LEFTOVER BYTES AFTER COURIER WAS DONE";
+							qDebug()<<totalRecCount<<"SKIPPING "<<left<<" LEFTOVER BYTES AFTER COURIER WAS DONE";
 							ds->skipRawData(left);
 							totalAvailable-=left;
 						} else {
-							qDebug()<<totalRecCount<<parts<<"ALL GOOD. COURIER BEHAVED EXEMPLARY";
+							qDebug()<<totalRecCount<<"ALL GOOD. COURIER BEHAVED EXEMPLARY";
 						}
 					} else {
-						QString es=QString::number(totalRecCount)+" "+QString::number(parts)+" ERROR: Courier read more than was available!";
+						QString es=QString::number(totalRecCount)+" "+QString::number(partsCount)+" ERROR: Courier read more than was available!";
 						qWarning()<<es;
 						emit commsError(es);
 						return;
 					}
-					qDebug()<<"TAV:"<<totalAvailable<<" AV:"<<bytesAvailable<<" DS.ATEND:"<<ds->atEnd();
+					qDebug()<<"tot Available:"<<totalAvailable<<" available:"<<partBytesAvailable<<" dataStream at end:"<<ds->atEnd();
 				} else {
 					//TODO: Look at possibility of registering couriers on demand using something like this:
 					//emit wakeOnComms(octomy_message_type_int)
-					QString es=QString::number(totalRecCount)+" "+QString::number(parts)+" ERROR: No courier found for ID: "+QString::number(octomy_message_type_int);
+					QString es=QString::number(totalRecCount)+" "+QString::number(partsCount)+" ERROR: No courier found for ID: "+QString::number(partMessageTypeID);
 					qWarning().noquote()<<es;
 					emit commsError(es);
 					return;
 				}
-				qDebug()<<totalRecCount<<parts<<"PART DONE";
+				qDebug()<<totalRecCount<<partsCount<<"PART DONE";
 			}
 		}
 		if(totalAvailable > 0 ) {
-			QString es="WARNING: Not all bytes in datagram were read/used. There were "+QString::number(totalAvailable)+" bytes left after reading "+QString::number(parts)+" parts";
+			QString es="WARNING: Not all bytes in datagram were read/used. There were "+QString::number(totalAvailable)+" bytes left after reading "+QString::number(partsCount)+" parts";
 			qWarning()<<es;
 			return;
 		}
@@ -262,8 +256,9 @@ void CommsChannel::sendData(const quint64 &now, QSharedPointer<Client> localClie
 	bytesUsed += sizeof(qint32);
 	ds.setVersion(OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT); //Qt Datastream version
 	//Write client fingerprint
-	ds << mLocalSignature.shortHandID();
-	bytesUsed += sizeof(quint64);
+	const quint64 shortID=mLocalSignature.shortHandID();
+	ds << shortID;
+	bytesUsed += sizeof(shortID);
 	// Write reliability data
 	// TODO: incorporate writing logic better into reliability class
 	// TODO: convert types used in reliability system to Qt for portability piece of mind
@@ -274,16 +269,19 @@ void CommsChannel::sendData(const quint64 &now, QSharedPointer<Client> localClie
 	bytesUsed += sizeof(unsigned int);
 	ds << rs.generateAckBits();
 	bytesUsed += sizeof(unsigned int);
+	//sizeof(quint32 /*magic*/) +sizeof(quint32 /*version*/) +sizeof(quint64 /*short ID*/) +sizeof(unsigned int /*sequence*/)+sizeof(unsigned int /*ack*/)+sizeof(unsigned int /*ack bits*/)+sizeof(quint32 /*message type*/)
 	//qDebug()<<"SEND GLOBAL HEADER SIZE: "<<bytesUsed;
 	// Send using courier.
 	//NOTE: When courier reports "sendActive" that means that it wants to send,
 	//      and so even if it writes 0 bytes, there will be a section id present
 	//      in packet reserved for it with the 0 bytes following it
 	if(nullptr!=courier) {
-		ds << courier->id();
-		bytesUsed += sizeof(quint32);
-		ds << courier->mandate().payloadSize;
-		bytesUsed += sizeof(quint16);
+		const quint32 courierID=courier->id();;
+		ds << courierID;
+		bytesUsed += sizeof(courierID);
+		const quint16 payloadSize=courier->mandate().payloadSize;;
+		ds << payloadSize;
+		bytesUsed += sizeof(payloadSize);
 		//qDebug()<<"SEND LOCAL HEADER SIZE: "<<bytesUsed<<datagram.size();
 		const quint64 opportunityBytes=courier->sendingOpportunity(ds);
 		bytesUsed += opportunityBytes;
@@ -292,11 +290,15 @@ void CommsChannel::sendData(const quint64 &now, QSharedPointer<Client> localClie
 	}
 	// Send idle packet
 	else {
-		ds<<(quint32)NOOP_MSG;
-		bytesUsed+=sizeof(quint32);
-		ds << (quint16)0;
-		bytesUsed += sizeof(quint16);
+		const quint32 partMessageTypeID=IDLE;
+		ds<<partMessageTypeID;
+		bytesUsed+=sizeof(partMessageTypeID);
+/* NO DATA NECESSARY
+		const quint16 noBytesSpent=(quint16)0;
+		ds << noBytesSpent;
+		bytesUsed += sizeof(noBytesSpent);
 		//qDebug()<<"IDLE PACKET: "<<(nullptr==courier?"NULL":courier->name())<<", "<<(nullptr==localClient?"NULL":localClient->toString());
+		*/
 	}
 	const quint32 sz=datagram.size();
 	//qDebug()<<"SEND DS SIZE: "<<sz;

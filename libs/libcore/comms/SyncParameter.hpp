@@ -16,7 +16,7 @@ class SyncSignaler: public QObject
 {
 	Q_OBJECT
 signals:
-	void valuesChanged(ISyncParameter *);
+	void valuesChanged(ISyncParameter *) const;
 };
 
 template <typename T>
@@ -41,10 +41,10 @@ public:
 	void setRemoteNoChange();
 
 
-	T localValue();
-	T remoteValue();
-	quint64 localTimestamp();
-	quint64 remoteTimestamp();
+	T localValue() const;
+	T remoteValue() const;
+	quint64 localTimestamp() const;
+	quint64 remoteTimestamp() const;
 	T bestValue(bool isLocal) const;
 
 public:
@@ -126,25 +126,25 @@ void SyncParameter<T>::setRemoteNoChange()
 
 
 template <typename T>
-T SyncParameter<T>::localValue()
+T SyncParameter<T>::localValue() const
 {
 	return mLocalValue;
 }
 
 template <typename T>
-T SyncParameter<T>::remoteValue()
+T SyncParameter<T>::remoteValue() const
 {
 	return mRemoteValue;
 }
 
 template <typename T>
-quint64 SyncParameter<T>::localTimestamp()
+quint64 SyncParameter<T>::localTimestamp() const
 {
 	return mLocalTimestamp;
 }
 
 template <typename T>
-quint64 SyncParameter<T>::remoteTimestamp()
+quint64 SyncParameter<T>::remoteTimestamp() const
 {
 	return mRemoteTimestamp;
 }
@@ -218,10 +218,36 @@ static QString valueToString (const QGeoCoordinate &v)
 // Implementation of ISyncParameter interface //////////////////////////////////
 
 
+#include <QBuffer>
+class SerialSize
+{
+private:
+	QBuffer data;
+	QDataStream stream;
+public:
+	SerialSize() : stream(&data)
+	{
+		data.open(QIODevice::WriteOnly);
+	}
+
+	template <typename T>
+	quint64 operator ()(const T & t)
+	{
+		data.seek(0);
+		stream << t;
+		return data.pos();
+	}
+
+
+};
+
+
 template <typename T>
 quint16 SyncParameter<T>::bytes() const
 {
-	return sizeof(T);
+	SerialSize size;
+	quint64 s=size(localValue());
+	return (quint16)s;
 }
 
 

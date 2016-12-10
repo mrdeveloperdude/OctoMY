@@ -5,9 +5,7 @@
 
 enum MessageType{
 	 INVALID=0
-	, NOOP_MSG
-	, PING
-	, PONG
+	, IDLE
 	, AGENT_STATE
 };
 
