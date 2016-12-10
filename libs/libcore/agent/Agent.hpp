@@ -12,6 +12,7 @@
 
 
 #include <QObject>
+#include <QList>
 #include <QCommandLineParser>
 
 class ZooClient;
@@ -21,12 +22,32 @@ class AgentStateCourier;
 class ISyncParameter;
 class Agent;
 
+
+class CourierSet: public QList<Courier *>
+{
+private:
+	Agent &mAgent;
+	QDataStream mDS;
+	AgentStateCourier *mAgentStateCourier;
+	SensorsCourier *mSensorsCourier;
+	BlobCourier *mBlobCourier;
+
+public:
+	explicit CourierSet(ClientSignature &sig, Agent &agent);
+	virtual ~CourierSet();
+public:
+
+	AgentStateCourier *agentStateCourier();
+
+	void setCommsEnabled(bool enable);
+};
+
 class AgentControls
 {
 private:
 
 	Agent &mAgent;
-	QHash <quint64, AgentStateCourier *> mCouriers;
+	QHash <quint64, CourierSet *> mCouriers;
 public:
 
 	explicit AgentControls(Agent &);
@@ -38,7 +59,7 @@ public:
 
 	void setCommsEnabled(bool);
 
-	AgentStateCourier *activeControl();
+	CourierSet* activeControl();
 };
 
 

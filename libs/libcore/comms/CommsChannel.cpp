@@ -104,7 +104,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 	const int header = sizeof(quint32 /*magic*/) +sizeof(quint32 /*version*/) +sizeof(quint64 /*short ID*/)+sizeof(unsigned int /*sequence*/)+sizeof(unsigned int /*ack*/)+sizeof(unsigned int /*ack bits*/);//+sizeof(quint32 /*message type*/);
 	const int size=datagram.size();
 	int totalAvailable=size;
-	qDebug()<<totalRecCount<<"PACKET INITIAL SIZE: "<<size<<", HEADER CALCULATED SIZE: "<<header<<", THUS RAW BYES EXPECTED: "<<(size-header);
+	//qDebug()<<totalRecCount<<"PACKET INITIAL SIZE: "<<size<<", HEADER CALCULATED SIZE: "<<header<<", THUS RAW BYES EXPECTED: "<<(size-header);
 	if ( size <= header ) {
 		QString es=QString::number(totalRecCount)+" ERROR: Message too short: " +QString::number(size)+" vs. header: "+QString::number(header);
 		qWarning()<<es;
@@ -157,7 +157,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 		totalAvailable-=sizeof(unsigned int);
 		*ds >> packet_ack_bits;
 		totalAvailable-=sizeof(unsigned int);
-		qDebug()<<totalRecCount<<"Data received from client '"<<remoteSignature.toString()<<"' with seq="<<packet_sequence<<" ack="<<packet_ack<<" bits="<<packet_ack_bits<<" and bodysize="<<totalAvailable;
+		//qDebug()<<totalRecCount<<"Data received from client '"<<remoteSignature.toString()<<"' with seq="<<packet_sequence<<" ack="<<packet_ack<<" bits="<<packet_ack_bits<<" and bodysize="<<totalAvailable;
 		ReliabilitySystem &rs=remoteClient->reliabilitySystem();
 		rs.packetReceived( packet_sequence, size-header );
 		rs.processAck( packet_ack, packet_ack_bits );
@@ -169,7 +169,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 		}
 		while(totalAvailable >= minAvailableForPart) {
 			partsCount++;
-			qDebug()<<"READING PART #"<<partsCount<<" WITH "<<totalAvailable<<" vs. "<<minAvailableForPart;
+			//qDebug()<<"READING PART #"<<partsCount<<" WITH "<<totalAvailable<<" vs. "<<minAvailableForPart;
 			quint32 partMessageTypeID=0;
 			*ds >> partMessageTypeID;
 			totalAvailable-=sizeof(quint32);
@@ -179,7 +179,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 			if(partMessageTypeID<Courier::FIRST_USER_ID) {
 				//Use message type enum for built in messages
 				const MessageType partMessageType=(MessageType)partMessageTypeID;
-				qDebug()<<totalRecCount<<"MESSAGE TYPE WAS"<<partMessageType<<"("<<QString::number(partMessageTypeID)<<")";
+				//qDebug()<<totalRecCount<<"MESSAGE TYPE WAS"<<partMessageType<<"("<<QString::number(partMessageTypeID)<<")";
 				switch(partMessageType) {
 				case(IDLE): {
 					qDebug()<<totalRecCount<<"GOT IDLE";
@@ -205,11 +205,11 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 					totalAvailable-=bytesSpent;
 					if(left>=0) {
 						if(left>0) {
-							qDebug()<<totalRecCount<<"SKIPPING "<<left<<" LEFTOVER BYTES AFTER COURIER WAS DONE";
+							qWarning()<<totalRecCount<<"WARNING: SKIPPING "<<left<<" LEFTOVER BYTES AFTER COURIER WAS DONE";
 							ds->skipRawData(left);
 							totalAvailable-=left;
 						} else {
-							qDebug()<<totalRecCount<<"ALL GOOD. COURIER BEHAVED EXEMPLARY";
+							//qDebug()<<totalRecCount<<"ALL GOOD. COURIER BEHAVED EXEMPLARY";
 						}
 					} else {
 						QString es=QString::number(totalRecCount)+" "+QString::number(partsCount)+" ERROR: Courier read more than was available!";
@@ -217,7 +217,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 						emit commsError(es);
 						return;
 					}
-					qDebug()<<"tot Available:"<<totalAvailable<<" available:"<<partBytesAvailable<<" dataStream at end:"<<ds->atEnd();
+					//qDebug()<<"tot Available:"<<totalAvailable<<" available:"<<partBytesAvailable<<" dataStream at end:"<<ds->atEnd();
 				} else {
 					//TODO: Look at possibility of registering couriers on demand using something like this:
 					//emit wakeOnComms(octomy_message_type_int)
@@ -226,7 +226,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 					emit commsError(es);
 					return;
 				}
-				qDebug()<<totalRecCount<<partsCount<<"PART DONE";
+				//qDebug()<<totalRecCount<<partsCount<<"PART DONE";
 			}
 		}
 		if(totalAvailable > 0 ) {

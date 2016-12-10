@@ -16,11 +16,12 @@
 #include "couriers/Courier.hpp"
 
 #define TIMEOUT_TRESHOLD 3
-#define MINIMAL_PACKET_RATE 2000
+// It seems that 30 seconds would be a "safe" minimal UDP rate to avoid routers closing our "connection"
+#define MINIMAL_PACKET_RATE 30000
 
 #define OCTOMY_PROTOCOL_MAGIC (0x0C701111)
 #define OCTOMY_PROTOCOL_VERSION_CURRENT (1)
-#define OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT (QDataStream::Qt_5_5)
+#define OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT (QDataStream::Qt_5_7)
 
 
 

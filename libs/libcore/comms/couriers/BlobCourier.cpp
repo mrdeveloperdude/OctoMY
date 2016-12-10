@@ -211,7 +211,7 @@ void BlobCourier::printSendingSummary(QString title)
 CourierMandate BlobCourier::mandate() const
 {
 	const bool hasUnsentBlobs=(!mSendingBlobsById.isEmpty()) || (!mReceivingBlobsById.isEmpty());
-	return CourierMandate(BLOB_CHUNK_SIZE,1,100, hasUnsentBlobs);
+	return CourierMandate(BLOB_CHUNK_SIZE,1,100, true, hasUnsentBlobs);
 }
 
 quint16 BlobCourier::sendingOpportunity(QDataStream &ds)

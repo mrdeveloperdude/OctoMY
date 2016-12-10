@@ -12,6 +12,7 @@
 #include "security/PortableID.hpp"
 
 #include "comms/CommsChannel.hpp"
+#include "comms/ISyncParameter.hpp"
 
 #include "comms/couriers/AgentStateCourier.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
@@ -289,9 +290,9 @@ bool ClientWidget::eventFilter(QObject *object, QEvent *event)
 //////////////////////////////////////////////////
 // Agent State Courier slots
 
-void ClientWidget::onValueChanged(ISyncParameter *)
+void ClientWidget::onValueChanged(ISyncParameter *sp)
 {
-	qDebug()<<"ARNE SJEIE";
+	qDebug()<<"ASC: ON VALUE CHANGED: "<<sp->toString();
 }
 
 //////////////////////////////////////////////////
