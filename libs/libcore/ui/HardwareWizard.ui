@@ -58,10 +58,18 @@
           <property name="text">
            <string>Hexy by ArcBotics - Using USB OTG Cable</string>
           </property>
+          <property name="icon">
+           <iconset resource="../resources/icons.qrc">
+            <normaloff>:/icons/servotor32_otg.svg</normaloff>:/icons/servotor32_otg.svg</iconset>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>Hexy by ArcBotics - Using Bluetooth</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/icons.qrc">
+            <normaloff>:/icons/servotor32_bt.svg</normaloff>:/icons/servotor32_bt.svg</iconset>
           </property>
          </item>
         </widget>
@@ -95,6 +103,10 @@
           <property name="text">
            <string>Any Serial Port such as Real RS232, USB Serial or Bluetooth Serial.</string>
           </property>
+          <property name="icon">
+           <iconset resource="../resources/icons.qrc">
+            <normaloff>:/icons/serial.svg</normaloff>:/icons/serial.svg</iconset>
+          </property>
          </item>
         </widget>
        </item>
@@ -105,7 +117,7 @@
        <item>
         <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>Select serial interface</string>
+          <string>Select serial interface. Inserted devices should show up instantly.</string>
          </property>
         </widget>
        </item>
@@ -166,6 +178,10 @@
           <property name="text">
            <string>Hexy Servotor32 Serial 2.1</string>
           </property>
+          <property name="icon">
+           <iconset resource="../resources/icons.qrc">
+            <normaloff>:/icons/protocol.svg</normaloff>:/icons/protocol.svg</iconset>
+          </property>
          </item>
         </widget>
        </item>
@@ -217,6 +233,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

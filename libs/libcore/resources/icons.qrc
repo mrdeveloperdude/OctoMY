@@ -83,5 +83,8 @@
         <file>icons/no.svg</file>
         <file>icons/yes.svg</file>
         <file>icons/trash.svg</file>
+        <file>icons/servotor32_otg.svg</file>
+        <file>icons/servotor32_bt.svg</file>
+        <file>icons/protocol.svg</file>
     </qresource>
 </RCC>

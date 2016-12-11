@@ -23,7 +23,9 @@ HardwareWizard::~HardwareWizard()
 
 template<typename T>
 static long mod(T a, T b)
-{ return (a%b+b)%b; }
+{
+	return (a%b+b)%b;
+}
 
 void HardwareWizard::reset()
 {
@@ -36,28 +38,35 @@ void HardwareWizard::reset()
 static void selectFirstIfNoneSelected(QListView *list)
 {
 	list->setFocus();
-	if(!list->selectionModel()->hasSelection()){
+	if(!list->selectionModel()->hasSelection()) {
 		list->selectionModel()->setCurrentIndex(list->model()->index(0,0),QItemSelectionModel::Select);
 	}
 }
 
-void HardwareWizard::moveTo(int next){
-	switch(next){
-		case(0):{
-				selectFirstIfNoneSelected(ui->listWidgetTemplate);
-			}break;
-		case(1):{
-				selectFirstIfNoneSelected(ui->listWidgetInterfaceType);
-			}break;
-		case(2):{
-				selectFirstIfNoneSelected(ui->listViewSerialInterface);
-			}break;
-		case(3):{
-				selectFirstIfNoneSelected(ui->listWidgetProtocol);
-			}break;
-		case(4):{
-				//selectFirstIfNoneSelected(ui->listWidgetProtocol);
-			}break;
+void HardwareWizard::moveTo(int next)
+{
+	switch(next) {
+	case(0): {
+		selectFirstIfNoneSelected(ui->listWidgetTemplate);
+	}
+	break;
+	case(1): {
+		selectFirstIfNoneSelected(ui->listWidgetInterfaceType);
+	}
+	break;
+	case(2): {
+		selectFirstIfNoneSelected(ui->listViewSerialInterface);
+	}
+	break;
+	case(3): {
+		selectFirstIfNoneSelected(ui->listWidgetProtocol);
+	}
+	break;
+	case(4): {
+		emit done();
+		//selectFirstIfNoneSelected(ui->listWidgetProtocol);
+	}
+	break;
 	}
 
 	ui->stackedWidget->setCurrentIndex( next );

@@ -63,6 +63,14 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 			qWarning()<<"ERROR: Could not connect ";
 		}
 
+
+		if(!connect(ui->widgetHardware, &HardwareWizard::done, [=]() {
+		ui->stackedWidget->setCurrentWidget(startPage);
+		} )) {
+			qWarning()<<"ERROR: Could not connect ";
+		}
+
+
 		mAgent->setHookCommsSignals(*this, true);
 		mAgent->hookColorSignals(*ui->widgetFace);
 		ui->widgetFace->hookSignals(*this);
