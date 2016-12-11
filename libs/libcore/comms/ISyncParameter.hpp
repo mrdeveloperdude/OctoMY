@@ -25,8 +25,28 @@
  *
  */
 
+class ISyncParameter;
+
+class SyncSignaler: public QObject
+{
+	Q_OBJECT
+signals:
+	void syncParameterChanged(ISyncParameter *) const;
+};
+
+
 class ISyncParameter
 {
+
+
+private:
+	SyncSignaler mSignaler;
+
+public:
+
+	void signalValueChanged();
+	void setHookSignals(QObject &ob, bool hook);
+
 	// ISyncParameter interface
 public:
 	virtual quint16 bytes() const =0;					// The number of bytes taht this parameter will occupy in the send/receive stream
@@ -42,6 +62,7 @@ public:
 
 
 	virtual QDebug &toDebug(QDebug &d) const =0;		// Produce output to the given QDebug
+
 };
 
 QDebug &operator<<(QDebug &d, const ISyncParameter &sp);

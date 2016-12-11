@@ -53,7 +53,7 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 Node::~Node()
 {
 	unHookSensorSignals(*this);
-	unHookCommsSignals(*this);
+	setHookCommsSignals(*this,false);
 }
 
 void Node::init()
@@ -77,7 +77,7 @@ void Node::init()
 	hookSensorSignals(*this);
 	hookSensorSignals(*mSensorsCourier);
 
-	hookCommsSignals(*this);
+	setHookCommsSignals(*this,true);
 
 	if(nullptr!=mZooClient) {
 		mZooClient->setURL(mServerURL);
@@ -280,20 +280,13 @@ void Node::unHookSensorSignals(QObject &o)
 
 
 
-void Node::hookCommsSignals(QObject &o)
+void Node::setHookCommsSignals(QObject &o, bool hook)
 {
 	if(nullptr!=mComms) {
-		mComms->hookSignals(o);
+		mComms->setHookCommsSignals(o,hook);
 	}
 }
 
-
-void Node::unHookCommsSignals(QObject &o)
-{
-	if(nullptr!=mComms) {
-		mComms->unHookSignals(o);
-	}
-}
 
 
 void Node::hookPeerSignals(QObject &o)

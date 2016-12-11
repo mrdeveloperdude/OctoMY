@@ -94,9 +94,9 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 	mLastRX=QDateTime::currentMSecsSinceEpoch();
 	totalRecCount++;
 	mRxCount++;
-	qDebug()<<totalRecCount<<"--- RECEIV";
+	//qDebug()<<totalRecCount<<"--- RECEIV";
 	if(mLastRX-mLastRXST>1000) {
-		qDebug().noquote()<<"REC count="<<QString::number(mRxCount)<<"/sec";
+		//qDebug().noquote()<<"REC count="<<QString::number(mRxCount)<<"/sec";
 		mLastRXST=mLastRX;
 		mRxCount=0;
 	}
@@ -182,7 +182,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 				//qDebug()<<totalRecCount<<"MESSAGE TYPE WAS"<<partMessageType<<"("<<QString::number(partMessageTypeID)<<")";
 				switch(partMessageType) {
 				case(IDLE): {
-					qDebug()<<totalRecCount<<"GOT IDLE";
+					//qDebug()<<totalRecCount<<"GOT IDLE";
 					// Idle packet does not contain any data, so we are done here :)
 				}
 				break;
@@ -201,7 +201,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHos
 				if(nullptr!=c) {
 					const quint16 bytesSpent=c->dataReceived(*ds, partBytesAvailable);
 					const int left=partBytesAvailable-bytesSpent;
-					qDebug()<<totalRecCount<<"GOT COURIER MSG "<<partMessageTypeID<<" "<<c->name()<<" bytes avail="<<partBytesAvailable<<" tot avail="<<totalAvailable<<" bytes spent="<<bytesSpent<<" left="<<left<<"  ";
+					//qDebug()<<totalRecCount<<"GOT COURIER MSG "<<partMessageTypeID<<" "<<c->name()<<" bytes avail="<<partBytesAvailable<<" tot avail="<<totalAvailable<<" bytes spent="<<bytesSpent<<" left="<<left<<"  ";
 					totalAvailable-=bytesSpent;
 					if(left>=0) {
 						if(left>0) {
@@ -323,6 +323,7 @@ void CommsChannel::sendData(const quint64 &now, QSharedPointer<Client> localClie
 
 void CommsChannel::rescheduleSending(quint64 now)
 {
+	//qDebug()<<" ... R E S C H E D U L E ... "<<now;
 	//Prepare a priority list of couriers to process for this packet
 	mMostUrgentCourier=MINIMAL_PACKET_RATE;
 	mPri.clear();
@@ -375,7 +376,7 @@ void CommsChannel::rescheduleSending(quint64 now)
 
 void CommsChannel::onSendingTimer()
 {
-	qDebug()<<"--- SEND";
+	//qDebug()<<"--- SEND";
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	const quint64 timeSinceLastRX=now-mLastRX;
 	QSharedPointer<Client> localClient=mClients->getBySignature(mLocalSignature, true);
@@ -440,9 +441,9 @@ QString CommsChannel::getSummary()
 //Slot called when data arrives on socket
 void CommsChannel::onReadyRead()
 {
-	qDebug()<<"----- READY READ";
+	//qDebug()<<"----- READY READ";
 	while (mUDPSocket.hasPendingDatagrams()) {
-		qDebug()<<"      + UDP PACKET";
+		//qDebug()<<"      + UDP PACKET";
 		QByteArray datagram;
 		datagram.resize(mUDPSocket.pendingDatagramSize());
 		QHostAddress host;
@@ -473,64 +474,106 @@ void CommsChannel::setID(const QString &id)
 
 }
 
-void CommsChannel::hookSignals(QObject &ob)
+void CommsChannel::setHookCommsSignals(QObject &ob, bool hook)
 {
 	qRegisterMetaType<Client *>("Client *");
-	if(!connect(this,SIGNAL(commsError(QString)),&ob,SLOT(onCommsError(QString)),OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
-	}
-	if(!connect(this,SIGNAL(commsClientAdded(Client *)),&ob,SLOT(onCommsClientAdded(Client *)),OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
-	}
-	if(!connect(this,SIGNAL(commsConnectionStatusChanged(bool)),&ob,SLOT(onCommsConnectionStatusChanged(bool)),OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
+	if(hook) {
+		if(!connect(this,SIGNAL(commsError(QString)),&ob,SLOT(onCommsError(QString)),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
+		}
+		if(!connect(this,SIGNAL(commsClientAdded(Client *)),&ob,SLOT(onCommsClientAdded(Client *)),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
+		}
+		if(!connect(this,SIGNAL(commsConnectionStatusChanged(bool)),&ob,SLOT(onCommsConnectionStatusChanged(bool)),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
+		}
+	} else {
+		if(!disconnect(this,SIGNAL(commsError(QString)),&ob,SLOT(onCommsError(QString)))) {
+			qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
+		}
+		if(!disconnect(this,SIGNAL(commsClientAdded(Client *)),&ob,SLOT(onCommsClientAdded(Client *)))) {
+			qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
+		}
+		if(!disconnect(this,SIGNAL(commsConnectionStatusChanged(bool)),&ob,SLOT(onCommsConnectionStatusChanged(bool)))) {
+			qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
+		}
 	}
 }
 
 
-void CommsChannel::unHookSignals(QObject &ob)
+
+
+void CommsChannel::setHookCourierSignals(Courier &courier, bool hook)
 {
-	qRegisterMetaType<Client *>("Client *");
-	if(!disconnect(this,SIGNAL(commsError(QString)),&ob,SLOT(onCommsError(QString)))) {
-		qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
-	}
-	if(!disconnect(this,SIGNAL(commsClientAdded(Client *)),&ob,SLOT(onCommsClientAdded(Client *)))) {
-		qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
-	}
-	if(!disconnect(this,SIGNAL(commsConnectionStatusChanged(bool)),&ob,SLOT(onCommsConnectionStatusChanged(bool)))) {
-		qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
+	if(hook) {
+		if(!connect(&courier, SIGNAL(reschedule(quint64)),this,SLOT(rescheduleSending(quint64)),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect Courier::reschedule for "<<courier.name();
+		}
+
+	} else {
+		if(!disconnect(&courier, SIGNAL(reschedule(quint64)),this,SLOT(rescheduleSending(quint64)))) {
+			qWarning()<<"ERROR: Could not disconnect Courier::reschedule for "<<courier.name();
+		}
+
 	}
 }
 
 
 
-void CommsChannel::setCourierRegistered(Courier &c, bool reg)
+void CommsChannel::setCourierRegistered(Courier &courier, bool reg)
 {
 	if(reg) {
-		if(mCouriers.contains(&c)) {
+		if(mCouriers.contains(&courier)) {
 			qWarning()<<"ERROR: courier was allready registered";
 			return;
 		} else if(mCouriers.size()>10) {
-			qWarning()<<"ERROR: too many couriers, skipping registration of new one: "<<c.id()<<c.name();
+			qWarning()<<"ERROR: too many couriers, skipping registration of new one: "<<courier.id()<<courier.name();
 			return;
 		}
-		mCouriers.append(&c);
-		mCouriersByID[c.id()]=&c;
+		mCouriers.append(&courier);
+		mCouriersByID[courier.id()]=&courier;
 		//qDebug()<<"Registered courier: "<<c.id()<<c.name()<<" for a total of "<<mCouriers.size()<<" couriers";
 	} else {
-		if(!mCouriers.contains(&c)) {
+		if(!mCouriers.contains(&courier)) {
 			qDebug()<<"ERROR: courier was not registered";
 			return;
 		}
-		mCouriersByID.remove(c.id());
-		mCouriers.removeAll(&c);
+		mCouriersByID.remove(courier.id());
+		mCouriers.removeAll(&courier);
 	}
+	setHookCourierSignals(courier,reg);
 }
 
 int CommsChannel::courierCount()
 {
 	return mCouriers.count();
 }
+
+
+
+bool CommsChannel::hasCourier(Courier &c) const
+{
+	return mCouriers.contains(&c);
+}
+
+Courier *CommsChannel::getCourierByID(quint32 id) const
+{
+	if(mCouriersByID.contains(id)) {
+		return mCouriersByID[id];
+	}
+	return nullptr;
+}
+
+bool CommsChannel::isStarted() const
+{
+	return mSendingTimer.isActive();
+}
+bool CommsChannel::isConnected() const
+{
+	return mConnected;
+}
+
+
 
 #ifdef SHOW_ACKS
 // show packets that were acked this frame

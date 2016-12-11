@@ -19,7 +19,7 @@ class QGyroscopeReading;
 class CommsChannel;
 class HexyTool;
 class QAction;
-
+class ISyncParameter;
 
 namespace Ui
 {
@@ -62,6 +62,11 @@ public:
 	virtual ~AgentWindow();
 
 public:
+
+	Ui::AgentWindow * getUI()
+	{
+		return this->ui;
+	}
 
 	void appendLog(const QString& text);
 	void updateFaceVisibility();
@@ -109,6 +114,11 @@ public slots:
 	void onConnectionStateChanged(TryToggleState, TryToggleState);
 	void onColorChanged(QColor);
 	void onPanic();
+
+	//Agent State Courier slots
+public slots:
+	void onSyncParameterChanged(ISyncParameter *sp);
+
 
 	// CommsChannel slots
 private slots:

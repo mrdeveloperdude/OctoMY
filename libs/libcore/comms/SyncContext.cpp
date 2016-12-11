@@ -7,7 +7,8 @@
 
 
 SyncContext::SyncContext(quint64 rtt, quint64 now)
-	: mNow(0)
+	: QObject(nullptr)
+	, mNow(0)
 	, mRTT(rtt)
 	, mIdealSendingPayloadSize(0)
 	, mLastSendingPayloadSize(0)
@@ -31,7 +32,7 @@ void SyncContext::forceSync(quint64 ts)
 // TODO: Look at architectual changes that will improve this interface , as it might be considered a flaw
 void SyncContext::update(quint64 ts)
 {
-	qDebug()<<" UPDATE SYNC CTX";
+	//qDebug()<<" UPDATE SYNC CTX";
 	if(mAckBits.size()<1) {
 		qWarning()<<"ERROR: ack bits missing";
 		return;
@@ -166,9 +167,16 @@ QDebug &operator<<(QDebug &d, const SyncContext &sc)
 
 
 
+void SyncContext::onSyncParameterChanged(ISyncParameter *sp)
+{
+	//qDebug()<<"CTX onValueChanged"<< sp->name();
+	emit reschedule(mNow);
+}
+
+
 QDataStream &SyncContext::receive(QDataStream &ds)
 {
-	qDebug()<<" RECEIVE SYNC CTX";
+	//qDebug()<<" RECEIVE SYNC CTX";
 	int bytes=0;
 	//Current clock for estimating RTT
 	ds >> mNow;
@@ -183,7 +191,7 @@ QDataStream &SyncContext::receive(QDataStream &ds)
 			ISyncParameter *param=mParams.at(i);
 			if(nullptr!=param) {
 				// Actual parameter data
-				qDebug()<<"RX PARAM #"<<i<<": "<< *param<<"("<< param->bytes()<<" bytes)";
+				//qDebug()<<"RX PARAM #"<<i<<": "<< *param<<"("<< param->bytes()<<" bytes)";
 				ds >> *param;
 				bytes+=param->bytes();
 			} else {
@@ -196,13 +204,13 @@ QDataStream &SyncContext::receive(QDataStream &ds)
 	ds >> acks;
 	const int numAcks=acks.size();
 	bytes+=(sizeof(quint32)+((numAcks+7)/8));
-	qDebug()<<"RX ACK "<<numAcks<<acks;
+	//qDebug()<<"RX ACK "<<numAcks<<acks;
 	for(int i=0; i<numAcks; ++i) {
 		if(acks.testBit(i)) {
 			ISyncParameter *param=mParams.at(i);
 			if(nullptr!=param) {
 				// Ack
-				qDebug()<<"ACKING BIT "<<i<< "/"<<numAcks << "  FOR "<<param->name();
+				//qDebug()<<"ACKING BIT "<<i<< "/"<<numAcks << "  FOR "<<param->name();
 				param->ack();
 				//acks.setBit(i,false);
 			} else {
@@ -218,7 +226,7 @@ QDataStream &SyncContext::receive(QDataStream &ds)
 
 QDataStream &SyncContext::send(QDataStream &ds)
 {
-	qDebug()<<" SEND SYNC CTX";
+	//qDebug()<<" SEND SYNC CTX";
 	int bytes=0;
 	//Current clock for estimating RTT
 	quint64 now=0;
@@ -253,7 +261,7 @@ QDataStream &SyncContext::send(QDataStream &ds)
 	//Ack bits
 	ds << mAckBits;
 	const int numAcks=mAckBits.size();
-	qDebug()<<"TX ACK "<<numAcks<<mAckBits;
+	//qDebug()<<"TX ACK "<<numAcks<<mAckBits;
 	bytes+=(sizeof(quint32)+((numAcks+7)/8));
 	//Acks away, clear it for next round
 	for(int i=0; i<numAcks; ++i) {
@@ -261,7 +269,7 @@ QDataStream &SyncContext::send(QDataStream &ds)
 			ISyncParameter *param=mParams.at(i);
 			if(nullptr!=param) {
 				// Ack
-				qDebug()<<"SENT ACK BIT "<<i<< "/"<<numAcks << "  FOR "<<param->name();
+				//qDebug()<<"SENT ACK BIT "<<i<< "/"<<numAcks << "  FOR "<<param->name();
 				param->ackSent();
 				mAckBits.setBit(i,false);
 			} else {

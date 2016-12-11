@@ -5,6 +5,9 @@
 #include "comms/CommsChannel.hpp"
 
 
+#include "../libutil/utility/Standard.hpp"
+
+#include <QString>
 
 
 
@@ -20,6 +23,7 @@ Courier::Courier(QString name, quint32 id, QObject *parent)
 	, mLastOpportunity(0)
 {
 
+
 }
 
 void Courier::setDestination(const ClientSignature sig)
@@ -30,6 +34,42 @@ void Courier::setDestination(const ClientSignature sig)
 const ClientSignature &Courier::destination() const
 {
 	return mDestination;
+}
+
+
+void Courier::setForwardRescheduleSignal(QObject &ob, bool fwd)
+{
+	if(fwd) {
+		if(!connect(&ob,SIGNAL(reschedule(quint64)),this,SIGNAL(reschedule(quint64)),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
+		}
+	} else {
+		if(!disconnect(&ob,SIGNAL(reschedule(quint64)),this,SIGNAL(reschedule(quint64)))) {
+			qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
+		}
+	}
+}
+
+
+quint64 Courier::lastOpportunity() const
+{
+	return mLastOpportunity;
+}
+
+void  Courier::setLastOpportunity(quint64 now)
+{
+	mLastOpportunity=now;
+}
+
+
+
+quint32 Courier::id()const
+{
+	return mID;
+}
+QString Courier::name() const
+{
+	return mName;
 }
 
 

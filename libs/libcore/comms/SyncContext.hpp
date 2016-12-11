@@ -13,8 +13,9 @@ class ISyncParameter;
 template <typename T>
 class SyncParameter;
 
-class SyncContext
+class SyncContext: public QObject
 {
+	Q_OBJECT
 private:
 	quint64 mNow;
 	quint64 mRTT;
@@ -56,6 +57,13 @@ public:
 	QDataStream &send(QDataStream &ds);
 	QDataStream &receive(QDataStream &ds);
 
+public slots:
+
+	void onSyncParameterChanged(ISyncParameter *);
+
+signals:
+
+	void reschedule(quint64);
 
 };
 
@@ -76,12 +84,17 @@ inline QDataStream &operator>>(QDataStream &ds, SyncContext &sc)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "SyncParameter.hpp"
+
 template <typename T>
 SyncParameter<T> * SyncContext::registerParameter(const QString &name, const T &val)
 {
 	OC_METHODGATE();
 	SyncParameter<T> *param=new SyncParameter<T>(name, val, *this);
 	mParams.append(param);
+	ISyncParameter *iparam=param;
+	iparam->setHookSignals(*this,true);
+
 	//qDebug()<<"BEFORE REGISTERING PARAMETER: "<<mAckBits<<mSyncBits;
 	mAckBits.resize(mAckBits.size()+1);
 	mSyncBits.resize(mSyncBits.size()+1);
@@ -91,6 +104,9 @@ SyncParameter<T> * SyncContext::registerParameter(const QString &name, const T &
 	//qDebug()<<"LEFT "<<*this;
 	return param;
 }
+
+
+
 
 
 

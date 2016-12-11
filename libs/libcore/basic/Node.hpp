@@ -75,8 +75,7 @@ public:
 	void hookSensorSignals(QObject &o);
 	void unHookSensorSignals(QObject &o);
 
-	void hookCommsSignals(QObject &o);
-	void unHookCommsSignals(QObject &o);
+	void setHookCommsSignals(QObject &o, bool hook);
 
 	void hookPeerSignals(QObject &o);
 	void unHookPeerSignals(QObject &o);

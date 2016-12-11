@@ -43,48 +43,51 @@ public:
 
 public:
 
-	inline quint64 lastOpportunity()
-	{
-		return mLastOpportunity;
-	}
 
-	inline void  setLastOpportunity(quint64 now)
-	{
-		mLastOpportunity=now;
-	}
+
+	void setForwardRescheduleSignal(QObject &ob, bool fwd);
 
 	void registered(CommsChannel &comms);
 	void unRegistered(CommsChannel &comms);
 
-	inline quint32 id()const
-	{
-		return mID;
-	}
-	inline QString name()const
-	{
-		return mName;
-	}
+	quint64 lastOpportunity() const;
+
+	void  setLastOpportunity(quint64 now);
+
+	quint32 id()const;
+	QString name() const;
+
+
+
 
 	void setDestination(const ClientSignature);
 	const ClientSignature &destination() const;
 
-	// Courier interface
+signals:
+	void reschedule(quint64);
+
+// Courier interface
 public:
 
-	// Update courier state when channel has opportunity
+// Update courier state when channel has opportunity
 	virtual void update(quint64 now);
 
-	// Let the CommChannel know what we want
+
+// Let the CommChannel know what we want
 	virtual CourierMandate mandate() const;
 
-	// Override to act on sending opportunity.
-	// Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
+// Override to act on sending opportunity.
+// Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
 	virtual quint16 sendingOpportunity(QDataStream &ds);
 
-	// Override to act on data received
-	// Return number of bytes actually read.
+// Override to act on data received
+// Return number of bytes actually read.
 	virtual quint16 dataReceived(QDataStream &ds, quint16 availableBytes);
 
 };
+
+
+
+
 
 #endif // COURIER

@@ -45,6 +45,8 @@ public:
 	void hookSignals(QObject &ob);
 	void unHookSignals(QObject &ob);
 
+
+	void setPanic(bool panic);
 signals:
 	void connectionStateChanged(const TryToggleState last, const TryToggleState current);
 	void colorChanged(QColor);

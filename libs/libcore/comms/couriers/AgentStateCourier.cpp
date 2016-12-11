@@ -29,19 +29,28 @@ AgentStateCourier::AgentStateCourier(QDataStream *initialization, QObject *paren
 	initParams(initialization);
 	//mParams.forceSync(QDateTime::currentMSecsSinceEpoch());
 	mParams.update(QDateTime::currentMSecsSinceEpoch());
+
+	//setForwardRescheduleSignal(mParams, true);
+
+	if(!connect(&mParams,SIGNAL(reschedule(quint64)),this,SIGNAL(reschedule(quint64)),OC_CONTYPE)) {
+		qWarning()<<"ERROR: Could not connect "<<mParams;
+	}
+
+
 }
 
 
 
 void AgentStateCourier::setPanic(bool panic)
 {
-	quint8 flags=mFlags->bestValue(true);
+	quint8 flags=mFlags->localValue();
 	if(panic) {
 		flags=flags | 1;
 	} else {
 		flags=flags & (~1);
 	}
 	mFlags->setLocalValue(flags);
+
 }
 
 void AgentStateCourier::setFlags(quint8 flags)
@@ -56,7 +65,10 @@ void AgentStateCourier::setMode(AgentMode mode)
 	mMode->setLocalValue(mode);
 }
 
-
+bool AgentStateCourier::panic()
+{
+	return (mFlags->bestValue(true) & 0x1)>0;
+}
 
 QString AgentStateCourier::toString() const
 {
@@ -89,29 +101,29 @@ void AgentStateCourier::initParams(QDataStream *initialization)
 	} else {
 		//qDebug()<<"REGISTERED PARAMETER #2: "<<mParams;
 	}
-/*
-	QGeoCoordinate targetPosition;
-	mTargetPosition=mParams.registerParameter(targetPosition);
-	if(nullptr==mTargetPosition) {
-		qWarning()<<"ERROR: could nota allocate target position parameter";
-	} else {
-		//qDebug()<<"REGISTERED PARAMETER #3: "<<mParams;
-	}
-	qreal targetOrientation=0;//Asume North at startup
-	mTargetOrientation=mParams.registerParameter(targetOrientation);
-	if(nullptr==mTargetOrientation) {
-		qWarning()<<"ERROR: could nota allocate target orientation parameter";
-	} else {
-		//qDebug()<<"REGISTERED PARAMETER #4: "<<mParams;
-	}
-	Pose targetPose;
-	mTargetPose=mParams.registerParameter(targetPose);
-	if(nullptr==mTargetPose) {
-		qWarning()<<"ERROR: could nota allocate target pose parameter";
-	} else {
-		//qDebug()<<"REGISTERED PARAMETER #5: "<<mParams;
-	}
-	*/
+	/*
+		QGeoCoordinate targetPosition;
+		mTargetPosition=mParams.registerParameter(targetPosition);
+		if(nullptr==mTargetPosition) {
+			qWarning()<<"ERROR: could nota allocate target position parameter";
+		} else {
+			//qDebug()<<"REGISTERED PARAMETER #3: "<<mParams;
+		}
+		qreal targetOrientation=0;//Asume North at startup
+		mTargetOrientation=mParams.registerParameter(targetOrientation);
+		if(nullptr==mTargetOrientation) {
+			qWarning()<<"ERROR: could nota allocate target orientation parameter";
+		} else {
+			//qDebug()<<"REGISTERED PARAMETER #4: "<<mParams;
+		}
+		Pose targetPose;
+		mTargetPose=mParams.registerParameter(targetPose);
+		if(nullptr==mTargetPose) {
+			qWarning()<<"ERROR: could nota allocate target pose parameter";
+		} else {
+			//qDebug()<<"REGISTERED PARAMETER #5: "<<mParams;
+		}
+		*/
 //Read initial data into parameters
 
 //TODO: Fix and re-enable this. TIP: logging indicates the problem, ack and sync bit arrays are destroyed after load
@@ -127,30 +139,21 @@ void AgentStateCourier::initParams(QDataStream *initialization)
 }
 
 
-
-void AgentStateCourier::hookSignals(QObject &ob)
+void AgentStateCourier::setHookSignals(QObject &ob, bool hook)
 {
 	if(nullptr!=mFlags) {
-		mFlags->hookSignals(ob);
+		mFlags->setHookSignals(ob, hook);
 	} else {
-		qWarning()<<"ERROR: No flags while hooking signals";
+		qWarning()<<"ERROR: No flags while hooking signals "<<hook;
 	}
-
-
-
-}
-
-
-
-void AgentStateCourier::unHookSignals(QObject &ob)
-{
-	if(nullptr!=mFlags) {
-		mFlags->unHookSignals(ob);
+	if(nullptr!=mMode) {
+		mMode->setHookSignals(ob, hook);
 	} else {
-		qWarning()<<"ERROR: No flags while unhooking signals";
+		qWarning()<<"ERROR: No mode while hooking signals "<<hook;
 	}
 
 }
+
 
 
 const QDebug &operator<<(QDebug &d, const AgentStateCourier &a)
@@ -171,7 +174,7 @@ void AgentStateCourier::update(quint64 now)
 // Let the CommChannel know what we want
 CourierMandate AgentStateCourier::mandate() const
 {
-	CourierMandate mandate(mParams.bytesSentIdeal() , 10, 4000, true, mParams.hasPendingSyncs() || mParams.hasPendingAcks() );
+	CourierMandate mandate(mParams.bytesSentIdeal() , 10, 50, true, mParams.hasPendingSyncs() || mParams.hasPendingAcks() );
 	return mandate;
 }
 
@@ -196,7 +199,7 @@ quint16 AgentStateCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 	if(mandate().receiveActive) {
 		ds >> mParams;
 		quint16 bytes=mParams.bytesRead();
-		qDebug()<<"Receiving "<<bytes<<" of "<<availableBytes<<" bytes "<<(mAgentSide?"AGENT SIDE":"CONTROL SIDE");
+		//qDebug()<<"Receiving "<<bytes<<" of "<<availableBytes<<" bytes "<<(mAgentSide?"AGENT SIDE":"CONTROL SIDE");
 		return  bytes;
 	} else {
 		qWarning()<<"ERROR: dataReceived while receiveActive=false";

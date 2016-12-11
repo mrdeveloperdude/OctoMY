@@ -14,13 +14,6 @@ class SyncContext;
 #include <QObject>
 
 
-class SyncSignaler: public QObject
-{
-	Q_OBJECT
-signals:
-	void valuesChanged(ISyncParameter *) const;
-};
-
 template <typename T>
 class SyncParameter: public ISyncParameter
 {
@@ -34,7 +27,7 @@ private:
 	quint64 mRemoteTimestamp;
 	bool mNeedToSendAck;
 	bool mNeedToSendDataAndReceiveAck;
-	SyncSignaler mSignaler;
+
 
 public:
 
@@ -50,13 +43,6 @@ public:
 	quint64 localTimestamp() const;
 	quint64 remoteTimestamp() const;
 	T bestValue(bool isLocal) const;
-
-public:
-
-	void signalValueChanged();
-	void hookSignals(QObject &ob);
-	void unHookSignals(QObject &ob);
-
 
 
 	// ISyncParameter interface
@@ -77,10 +63,6 @@ public:
 
 
 };
-
-
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -170,29 +152,6 @@ T SyncParameter<T>::bestValue(bool isLocal) const
 }
 
 
-template <typename T>
-void SyncParameter<T>::signalValueChanged()
-{
-	emit mSignaler.valuesChanged(this);
-}
-
-template <typename T>
-void SyncParameter<T>::hookSignals(QObject &ob)
-{
-	if(!QObject::connect(&mSignaler,SIGNAL(valuesChanged(ISyncParameter *)),&ob,SLOT(onValueChanged(ISyncParameter *)),OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
-	}
-}
-
-
-template <typename T>
-void SyncParameter<T>::unHookSignals(QObject &ob)
-{
-	if(!QObject::disconnect(&mSignaler,SIGNAL(valuesChanged(ISyncParameter *)),&ob,SLOT(onValueChanged(ISyncParameter *)))) {
-		qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
-	}
-}
-
 
 
 
@@ -268,7 +227,7 @@ QDebug &SyncParameter<T>::toDebug(QDebug &d) const
 template <typename T>
 void SyncParameter<T>::forceSync()
 {
-	qDebug()<<" --==## %% % FORCE SYNC";
+	//qDebug()<<" --==## %% % FORCE SYNC";
 	mNeedToSendAck=true;
 	mNeedToSendDataAndReceiveAck=true;
 }

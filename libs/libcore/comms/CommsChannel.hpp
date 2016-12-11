@@ -139,42 +139,29 @@ public:
 
 	void setID(const QString &id);
 
-	void hookSignals(QObject &ob);
-	void unHookSignals(QObject &ob);
+	void setHookCommsSignals(QObject &ob, bool hook);
+	void setHookCourierSignals(Courier &courier, bool hook);
 
 	void setCourierRegistered(Courier &, bool);
 
 	int courierCount();
 
-	inline bool hasCourier(Courier &c)
-	{
-		return mCouriers.contains(&c);
-	}
+	bool hasCourier(Courier &c) const;
 
-	inline Courier *getCourierByID(quint32 id)
-	{
-		if(mCouriersByID.contains(id)) {
-			return mCouriersByID[id];
-		}
-		return nullptr;
-	}
+	Courier *getCourierByID(quint32 id) const;
 
-	bool isStarted()
-	{
-		return mSendingTimer.isActive();
-	}
-	bool isConnected()
-	{
-		return mConnected;
-	}
+	bool isStarted() const;
+	bool isConnected() const;
 
 	qint64 sendRawData(QByteArray datagram,ClientSignature sig);
 
+public slots:
+	void rescheduleSending(quint64 now);
 
 private:
 
 	void appendLog(QString);
-	void rescheduleSending(quint64 now);
+
 
 	void sendData(const quint64 &now, QSharedPointer<Client> localClient, Courier *courier, const ClientSignature *sig=nullptr);
 
@@ -195,5 +182,7 @@ public slots:
 	void onReadyRead();
 	void onUdpError(QAbstractSocket::SocketError);
 };
+
+
 
 #endif // COMMSCHANNEL_HPP

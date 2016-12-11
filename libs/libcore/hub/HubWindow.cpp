@@ -113,7 +113,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		ui->lineEditBindPort->setValidator( new QIntValidator(0, 65535, this) );
 		ui->lineEditRemotePort->setValidator( new QIntValidator(0, 65535, this) );
 
-		mHub->comms()->hookSignals(*this);
+		mHub->comms()->setHookCommsSignals(*this,true);
 
 		QByteArray ba("HELLO WORLD");
 		QHexEditData* hexdata = QHexEditData::fromMemory(ba);
@@ -144,7 +144,7 @@ HubWindow::~HubWindow()
 {
 	if(nullptr!=mHub) {
 		mHub->settings().setCustomSettingByteArray("window.geometry", saveGeometry());
-		mHub->comms()->unHookSignals(*this);
+		mHub->comms()->setHookCommsSignals(*this,false);
 	}
 	delete ui;
 	delete mGait;

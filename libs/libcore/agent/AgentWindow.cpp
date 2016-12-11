@@ -12,6 +12,8 @@
 #include "audio/OneOffSpeech.hpp"
 #include "comms/ClientDirectory.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
+#include "comms/couriers/AgentStateCourier.hpp"
+#include "comms/SyncParameter.hpp"
 
 #include <QDebug>
 #include <QMessageBox>
@@ -61,7 +63,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 			qWarning()<<"ERROR: Could not connect ";
 		}
 
-		mAgent->hookCommsSignals(*this);
+		mAgent->setHookCommsSignals(*this, true);
 		mAgent->hookColorSignals(*ui->widgetFace);
 		ui->widgetFace->hookSignals(*this);
 		ui->widgetPlanEditor->configure("agent.plan");
@@ -600,6 +602,26 @@ void AgentWindow::on_pushButtonBack_clicked()
 void AgentWindow::on_pushButtonMenu_clicked()
 {
 	mMenu.exec(mapToGlobal(ui->pushButtonMenu->pos()));
+}
+
+
+
+//////////////////////////////////////////////////
+//Agent State Courier slots
+
+void AgentWindow::onSyncParameterChanged(ISyncParameter *sp)
+{
+	qDebug()<<"AgentWindow ASC changed: "<<sp->toString();
+	const AgentControls &controls=mAgent->controls();
+	CourierSet*set=controls.activeControl();
+	if(nullptr!=set) {
+		AgentStateCourier *asc=set->agentStateCourier();
+		if(nullptr!=asc) {
+			const bool panic=asc->panic();
+			ui->widgetFace->setPanic(panic);
+			ui->widgetFace->panic();
+		}
+	}
 }
 
 

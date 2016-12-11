@@ -129,6 +129,10 @@ void FaceWidget::unHookSignals(QObject &ob)
 }
 
 
+void FaceWidget::setPanic(bool panic)
+{
+	ui->pushButtonPanic->setChecked(panic);
+}
 
 void FaceWidget::on_pushButtonNewColor_clicked()
 {

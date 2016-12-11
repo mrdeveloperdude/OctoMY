@@ -33,7 +33,7 @@ CourierSet::CourierSet(ClientSignature &sig, Agent &agent)
 
 {
 	if(nullptr!=mAgentStateCourier) {
-		mAgentStateCourier->hookSignals(mAgent);
+		mAgentStateCourier->setHookSignals(mAgent, true);
 		mAgentStateCourier->setDestination(sig);
 		append(mAgentStateCourier);
 	} else {
@@ -127,7 +127,7 @@ void AgentControls::setCommsEnabled(bool enable)
 	}
 }
 
-CourierSet *AgentControls::activeControl()
+CourierSet *AgentControls::activeControl() const
 {
 	//TODO: Manage which one is actually the ACTIVE one instead of just returning the first one
 	return mCouriers.begin().value();
@@ -191,6 +191,13 @@ void Agent::setPanic(bool panic)
 
 }
 
+
+
+const AgentControls &Agent::controls() const
+{
+	return mControls;
+}
+
 //////////////////////////////////////////////////
 //Node Associate Store slots
 void Agent::onPeerStoreReady(bool ready)
@@ -229,9 +236,10 @@ void Agent::onPeersChanged()
 //////////////////////////////////////////////////
 //Agent State Courier slots
 
-void Agent::onValueChanged(ISyncParameter *sp)
+void Agent::onSyncParameterChanged(ISyncParameter *sp)
 {
-	qDebug()<<"ASC changed: "<<sp->toString();
+	qDebug()<<"Agent ASC changed: "<<sp->toString();
+
 }
 
 

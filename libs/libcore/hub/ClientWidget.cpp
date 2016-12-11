@@ -74,13 +74,13 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 
 
 	if(nullptr!=mAgentStateCourier) {
-		mAgentStateCourier->hookSignals(*this);
+		mAgentStateCourier->setHookSignals(*this,true);
 	} else {
 		qWarning()<<"ERROR: Could not hook agent state courier events, no courier";
 	}
 
 	if(nullptr!=mController) {
-		mController->hookCommsSignals(*this);
+		mController->setHookCommsSignals(*this, true);
 	} else {
 		qWarning()<<"ERROR: Could not hook controller events, no controller";
 	}
@@ -290,9 +290,13 @@ bool ClientWidget::eventFilter(QObject *object, QEvent *event)
 //////////////////////////////////////////////////
 // Agent State Courier slots
 
-void ClientWidget::onValueChanged(ISyncParameter *sp)
+void ClientWidget::onSyncParameterChanged(ISyncParameter *sp)
 {
-	qDebug()<<"ASC: ON VALUE CHANGED: "<<sp->toString();
+	qDebug()<<"ClientWidget ASC: ON VALUE CHANGED: "<<sp->toString();
+	if(nullptr!=mAgentStateCourier) {
+		const bool panic=mAgentStateCourier->panic();
+		ui->pushButtonPanicc->setChecked(panic);
+	}
 }
 
 //////////////////////////////////////////////////

@@ -76,6 +76,9 @@ public:
 	void setMode(AgentMode mode);
 
 
+	bool panic();
+
+
 	// Logging and debugging
 public:
 	QString toString() const;
@@ -88,8 +91,7 @@ private:
 
 public:
 	// Signal hooks
-	void hookSignals(QObject &ob);
-	void unHookSignals(QObject &ob);
+	void setHookSignals(QObject &ob, bool hook);
 
 
 	// Courier interface

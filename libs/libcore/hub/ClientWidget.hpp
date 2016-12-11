@@ -65,7 +65,7 @@ public:
 
 	// Agent State Courier slots
 public slots:
-	void onValueChanged(ISyncParameter *);
+	void onSyncParameterChanged(ISyncParameter *);
 
 	// CommsChannel slots
 private slots:
