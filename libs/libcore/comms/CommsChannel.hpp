@@ -17,7 +17,7 @@
 
 #define TIMEOUT_TRESHOLD 3
 // It seems that 30 seconds would be a "safe" minimal UDP rate to avoid routers closing our "connection"
-#define MINIMAL_PACKET_RATE 30000
+#define MINIMAL_PACKET_RATE 5000
 
 #define OCTOMY_PROTOCOL_MAGIC (0x0C701111)
 #define OCTOMY_PROTOCOL_VERSION_CURRENT (1)
@@ -90,7 +90,7 @@ class CommsChannel : public QObject
 {
 	Q_OBJECT
 private:
-	static const quint64 CONNECTION_TIMEOUT=1000*5;//5 sec connection timeout
+	static const quint64 CONNECTION_TIMEOUT=MINIMAL_PACKET_RATE +1000;//1 sec  more than our UDP timeout
 	// NOTE: We use 512 as the maximum practical UDP size for ipv4 over the internet
 	//       See this for discussion: http://stackoverflow.com/questions/1098897/what-is-the-largest-safe-udp-packet-size-on-the-internet
 	static const qint32 MAX_UDP_PAYLOAD_SIZE=512;

@@ -18,10 +18,10 @@ SyncContext::SyncContext(quint64 rtt, quint64 now)
 }
 
 
-void SyncContext::flush(quint64 ts)
+void SyncContext::forceSync(quint64 ts)
 {
 	for(QVector<ISyncParameter *>::const_iterator it=mParams.begin(), e=mParams.end(); it!=e; ++it) {
-		(*it)->flush();
+		(*it)->forceSync();
 	}
 	mSyncBits.fill(false);
 	update(ts);
@@ -31,6 +31,7 @@ void SyncContext::flush(quint64 ts)
 // TODO: Look at architectual changes that will improve this interface , as it might be considered a flaw
 void SyncContext::update(quint64 ts)
 {
+	qDebug()<<" UPDATE SYNC CTX";
 	if(mAckBits.size()<1) {
 		qWarning()<<"ERROR: ack bits missing";
 		return;
@@ -44,44 +45,37 @@ void SyncContext::update(quint64 ts)
 	}
 	mNow=ts;
 	// Recalculate state
-	const quint16 oldPayloadSize=mIdealSendingPayloadSize;
+	//const quint16 oldPayloadSize=mIdealSendingPayloadSize;
 	mIdealSendingPayloadSize=0;
 	int index=0;
 	int pendingSyncsAdded=0;
 	int pendingAcksAdded=0;
 	// Add size of now
 	mIdealSendingPayloadSize+=(sizeof(mNow));
-	//Detect new parameters requesting sync/ack
+	//Clear old
+	mSyncBits.fill(false);
+	mAckBits.fill(false);
+	//Detect parameters requesting sync/ack
 	for(QVector<ISyncParameter *>::const_iterator it=mParams.begin(), e=mParams.end(); it!=e; ++it) {
-		if((*it)->hasPendingSync()) {
-			//qDebug().nospace().noquote()<<" + add sync bit "<<index;
-			mSyncBits.setBit(index, true);
-			pendingSyncsAdded++;
-		}
-		if((*it)->hasPendingAck()) {
-			//qDebug().nospace().noquote()<<" + add ack bit "<<index;
-			mAckBits.setBit(index, true);
-			pendingAcksAdded++;
+		ISyncParameter *param=(*it);
+		if(nullptr!=param) {
+			if(param->needToSendDataAndReceiveAck()) {
+				//qDebug().nospace().noquote()<<" + add sync bit "<<index;
+				mSyncBits.setBit(index, true);
+				pendingSyncsAdded++;
+				const quint16 bytes=param->bytes();
+				//qDebug().nospace().noquote()<<" + sync bytes "<<i<<" ("<<b<<")";
+				mIdealSendingPayloadSize+=bytes;
+			}
+			if(param->needToSendAck()) {
+				//qDebug().nospace().noquote()<<" + add ack bit "<<index;
+				mAckBits.setBit(index, true);
+				pendingAcksAdded++;
+			}
+		} else {
+			qWarning()<<"ERROR: (2) nullptr = param for sync bit "<<index;
 		}
 		index++;
-	}
-	//Add size for data of all active sync parameters
-	const int num=mSyncBits.size();
-	for(int i=0; i<num; ++i) {
-		if(mSyncBits.testBit(i)) {
-			ISyncParameter *param=mParams.at(i);
-			if(nullptr!=param) {
-				if(param->hasPendingSync()) {
-					const quint16 b=param->bytes();
-					//qDebug().nospace().noquote()<<" + sync bytes "<<i<<" ("<<b<<")";
-					mIdealSendingPayloadSize+=b;
-				} else {
-					qWarning()<<"ERROR: Sync bit "<<i<<" was on while parameter had no pending sync";
-				}
-			} else {
-				qWarning()<<"ERROR: nullptr = param for sync bit "<<i;
-			}
-		}
 	}
 	// Add size of ack bits
 	mIdealSendingPayloadSize+=(sizeof(quint32));
@@ -174,6 +168,7 @@ QDebug &operator<<(QDebug &d, const SyncContext &sc)
 
 QDataStream &SyncContext::receive(QDataStream &ds)
 {
+	qDebug()<<" RECEIVE SYNC CTX";
 	int bytes=0;
 	//Current clock for estimating RTT
 	ds >> mNow;
@@ -192,7 +187,7 @@ QDataStream &SyncContext::receive(QDataStream &ds)
 				ds >> *param;
 				bytes+=param->bytes();
 			} else {
-				qWarning()<<"ERROR: nullptr = param";
+				qWarning()<<"ERROR: nullptr = param during RECEIVE";
 			}
 		}
 	}
@@ -201,15 +196,17 @@ QDataStream &SyncContext::receive(QDataStream &ds)
 	ds >> acks;
 	const int numAcks=acks.size();
 	bytes+=(sizeof(quint32)+((numAcks+7)/8));
+	qDebug()<<"RX ACK "<<numAcks<<acks;
 	for(int i=0; i<numAcks; ++i) {
 		if(acks.testBit(i)) {
 			ISyncParameter *param=mParams.at(i);
 			if(nullptr!=param) {
 				// Ack
+				qDebug()<<"ACKING BIT "<<i<< "/"<<numAcks << "  FOR "<<param->name();
 				param->ack();
-				acks.setBit(i,false);
+				//acks.setBit(i,false);
 			} else {
-				qWarning()<<"ERROR: Paramter "<< i<<" was null while trying to ack";
+				qWarning()<<"ERROR: Paramter "<< i<<" was null while trying to ack during RECEIVE";
 			}
 		}
 	}
@@ -221,6 +218,7 @@ QDataStream &SyncContext::receive(QDataStream &ds)
 
 QDataStream &SyncContext::send(QDataStream &ds)
 {
+	qDebug()<<" SEND SYNC CTX";
 	int bytes=0;
 	//Current clock for estimating RTT
 	quint64 now=0;
@@ -236,23 +234,41 @@ QDataStream &SyncContext::send(QDataStream &ds)
 		if(mSyncBits.testBit(i)) {
 			ISyncParameter *param=mParams.at(i);
 			if(nullptr!=param) {
-				if(param->hasPendingSync()) {
-					//Actual parameter data
-					//qDebug()<<"TX PARAM #"<<i<<": "<< *param<<"("<< param->bytes()<<" bytes)";
-					ds << *param;
-					bytes+=param->bytes();
-				} else {
-					qWarning()<<"ERROR: Sync bit was on while parameter had no pending sync";
+				if(!param->needToSendDataAndReceiveAck()) {
+					qWarning()<<"WARNING: Sync bit "<<i<<" was on while parameter had no pending sync during SEND";
 				}
+				//Send parameters indicated by sync bits, even if they are not marked as sync, and skip the rest to match expectations set forth from last call to update()
+				ds << *param;
+				bytes+=param->bytes();
+
+				//Actual parameter data
+				//qDebug()<<"TX PARAM #"<<i<<": "<< *param<<"("<< param->bytes()<<" bytes)";
+
+
 			} else {
-				qWarning()<<"ERROR: A little bird was lying 3";
+				qWarning()<<"ERROR: No parameter for sync during SEND";
 			}
 		}
 	}
 	//Ack bits
 	ds << mAckBits;
 	const int numAcks=mAckBits.size();
+	qDebug()<<"TX ACK "<<numAcks<<mAckBits;
 	bytes+=(sizeof(quint32)+((numAcks+7)/8));
+	//Acks away, clear it for next round
+	for(int i=0; i<numAcks; ++i) {
+		if(mAckBits.testBit(i)) {
+			ISyncParameter *param=mParams.at(i);
+			if(nullptr!=param) {
+				// Ack
+				qDebug()<<"SENT ACK BIT "<<i<< "/"<<numAcks << "  FOR "<<param->name();
+				param->ackSent();
+				mAckBits.setBit(i,false);
+			} else {
+				qWarning()<<"ERROR: Paramter "<< i<<" was null while trying to send ack";
+			}
+		}
+	}
 	//Compare counted bytes with estimated bytes as a precaution
 	if(bytes!=mIdealSendingPayloadSize) {
 		qWarning()<<"ERROR: actual="<<bytes<<" vs. ideal="<<mIdealSendingPayloadSize<<" bytes sent";

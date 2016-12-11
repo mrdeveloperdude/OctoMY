@@ -375,6 +375,7 @@ void CommsChannel::rescheduleSending(quint64 now)
 
 void CommsChannel::onSendingTimer()
 {
+	qDebug()<<"--- SEND";
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	const quint64 timeSinceLastRX=now-mLastRX;
 	QSharedPointer<Client> localClient=mClients->getBySignature(mLocalSignature, true);

@@ -33,14 +33,14 @@ public:
 public:
 
 	//Schedule a forced sync of ALL parmeters. Will incur bandwidth, please use with caution
-	void flush(quint64 ts=0);
+	void forceSync(quint64 ts=0);
 	void update(quint64 ts=0);
 	quint64 roundTripTime() const;
 	void setRoundTripTime(quint64 ms);
 	quint64 now() const;
 
 	template <typename T>
-	SyncParameter<T> *registerParameter(const T &val);
+	SyncParameter<T> *registerParameter(const QString &name, const T &val);
 
 	QString toString() const;
 
@@ -77,10 +77,10 @@ inline QDataStream &operator>>(QDataStream &ds, SyncContext &sc)
 ////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-SyncParameter<T> * SyncContext::registerParameter(const T &val)
+SyncParameter<T> * SyncContext::registerParameter(const QString &name, const T &val)
 {
 	OC_METHODGATE();
-	SyncParameter<T> *param=new SyncParameter<T>(val, *this);
+	SyncParameter<T> *param=new SyncParameter<T>(name, val, *this);
 	mParams.append(param);
 	//qDebug()<<"BEFORE REGISTERING PARAMETER: "<<mAckBits<<mSyncBits;
 	mAckBits.resize(mAckBits.size()+1);

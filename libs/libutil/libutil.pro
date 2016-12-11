@@ -18,7 +18,8 @@ HEADERS	+= \
     utility/GLContext.hpp \
     utility/IncludeOpenGL.hpp \
     utility/widgets/PixViewer.hpp \
-    utility/GLErrors.hpp
+    utility/GLErrors.hpp \
+    utility/SerialSize.hpp
 
 
 SOURCES	+= \
@@ -31,7 +32,8 @@ SOURCES	+= \
     utility/FPSCalculator.cpp \
     utility/GLContext.cpp \
     utility/widgets/PixViewer.cpp \
-    utility/GLErrors.cpp
+    utility/GLErrors.cpp \
+    utility/SerialSize.cpp
 
 FORMS += \
     utility/widgets/PixViewer.ui

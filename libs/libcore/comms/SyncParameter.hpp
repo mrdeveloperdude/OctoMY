@@ -7,6 +7,8 @@
 
 #include "ISyncParameter.hpp"
 
+#include "../libutil/utility/SerialSize.hpp"
+
 class SyncContext;
 
 #include <QObject>
@@ -25,16 +27,18 @@ class SyncParameter: public ISyncParameter
 
 private:
 	SyncContext &mCTX;
+	QString mName;
 	T mLocalValue;
 	T mRemoteValue;
 	quint64 mLocalTimestamp;
 	quint64 mRemoteTimestamp;
-	bool mLocalDirty;
+	bool mNeedToSendAck;
+	bool mNeedToSendDataAndReceiveAck;
 	SyncSignaler mSignaler;
 
 public:
 
-	SyncParameter(const T &val, SyncContext &ctx);
+	SyncParameter(const QString &name, const T &val, SyncContext &ctx);
 	void setLocalValue(const T &val);
 	void setLocalNoChange();
 	void setRemoteValue(const T &val);
@@ -59,12 +63,14 @@ public:
 public:
 	quint16 bytes() const Q_DECL_OVERRIDE;
 	QString toString() const Q_DECL_OVERRIDE;
-	void flush() Q_DECL_OVERRIDE;
+	QString name() const  Q_DECL_OVERRIDE;
+	void forceSync() Q_DECL_OVERRIDE;
 	QDataStream &send(QDataStream &ds) Q_DECL_OVERRIDE;
 	QDataStream &receive(QDataStream &ds) Q_DECL_OVERRIDE;
 
-	bool hasPendingSync() const Q_DECL_OVERRIDE;
-	bool hasPendingAck() const Q_DECL_OVERRIDE;
+	bool needToSendAck() const Q_DECL_OVERRIDE;
+	bool needToSendDataAndReceiveAck() const Q_DECL_OVERRIDE;
+	void ackSent() Q_DECL_OVERRIDE;
 	void ack() Q_DECL_OVERRIDE;
 
 	QDebug &toDebug(QDebug &d) const Q_DECL_OVERRIDE;
@@ -82,13 +88,15 @@ public:
 #include "SyncContext.hpp"
 
 template <typename T>
-SyncParameter<T>::SyncParameter(const T &val, SyncContext &ctx)
+SyncParameter<T>::SyncParameter(const QString &name, const T &val, SyncContext &ctx)
 	: mCTX(ctx)
+	, mName(name)
 	, mLocalValue(val)
 	, mRemoteValue(val)
 	, mLocalTimestamp(mCTX.now())
 	, mRemoteTimestamp(0)
-	, mLocalDirty(false)
+	, mNeedToSendAck(false)
+	, mNeedToSendDataAndReceiveAck(false)
 {
 }
 
@@ -97,14 +105,14 @@ void SyncParameter<T>::setLocalValue(const T &val)
 {
 	mLocalValue=val;
 	mLocalTimestamp=mCTX.now();
-	mLocalDirty=true;
+	mNeedToSendDataAndReceiveAck=true;
 	signalValueChanged();
 }
 
 template <typename T>
 void SyncParameter<T>::setLocalNoChange()
 {
-	mLocalTimestamp=mCTX.now();
+	setLocalValue(mLocalValue);
 }
 
 
@@ -113,6 +121,7 @@ void SyncParameter<T>::setRemoteValue(const T &val)
 {
 	mRemoteValue=val;
 	mRemoteTimestamp=mCTX.now();
+	mNeedToSendAck=true;
 	signalValueChanged();
 }
 
@@ -120,7 +129,7 @@ void SyncParameter<T>::setRemoteValue(const T &val)
 template <typename T>
 void SyncParameter<T>::setRemoteNoChange()
 {
-	mRemoteTimestamp=mCTX.now();
+	setRemoteValue(mRemoteValue);
 }
 
 
@@ -218,30 +227,6 @@ static QString valueToString (const QGeoCoordinate &v)
 // Implementation of ISyncParameter interface //////////////////////////////////
 
 
-#include <QBuffer>
-class SerialSize
-{
-private:
-	QBuffer data;
-	QDataStream stream;
-public:
-	SerialSize() : stream(&data)
-	{
-		data.open(QIODevice::WriteOnly);
-	}
-
-	template <typename T>
-	quint64 operator ()(const T & t)
-	{
-		data.seek(0);
-		stream << t;
-		return data.pos();
-	}
-
-
-};
-
-
 template <typename T>
 quint16 SyncParameter<T>::bytes() const
 {
@@ -258,7 +243,14 @@ QString SyncParameter<T>::toString() const
 {
 	const QString localValueString=valueToString(mLocalValue);
 	const QString remoteValueString=valueToString(mRemoteValue);
-	return QString("SyncParameter[ localValue=")+localValueString+"("+QString::number(mLocalTimestamp)+QString("), remoteValue=")+remoteValueString+"("+QString::number(mRemoteTimestamp)+"), hasPendingSync="+(hasPendingSync()?"true":"false")+", hasPendingAck="+(hasPendingAck()?"true":"false")+"]";//, ctx(now="+QString::number(mCTX.now())+", rtt="+QString::number(mCTX.roundTripTime())+")]";
+	return QString("SyncParameter ")+mName+" [ localValue="+localValueString+" ("+QString::number(mLocalTimestamp)+QString("), remoteValue=")+remoteValueString+" ("+QString::number(mRemoteTimestamp)+"), needToSendAck="+(needToSendAck()?"true":"false")+", needToSendDataAndReceiveAck="+(needToSendDataAndReceiveAck()?"true":"false")+"]";//, ctx(now="+QString::number(mCTX.now())+", rtt="+QString::number(mCTX.roundTripTime())+")]";
+}
+
+
+template <typename T>
+QString SyncParameter<T>::name() const
+{
+	return mName;
 }
 
 
@@ -268,15 +260,17 @@ QDebug &SyncParameter<T>::toDebug(QDebug &d) const
 {
 	const QString localValueString=valueToString(mLocalValue);
 	const QString remoteValueString=valueToString(mRemoteValue);
-	d.nospace() << "SyncParameter[ localValue=" << localValueString << "(" << mLocalTimestamp << "), remoteValue=" << remoteValueString << "(" << mRemoteTimestamp << "), hasPendingSync=" << (hasPendingSync()?"true":"false")  << ", hasPendingAck=" << (hasPendingAck()?"true":"false") <<"]";//, ctx(now=" << (mCTX.now()) << ", rtt=" << mCTX.roundTripTime() << ")]";
+	d.nospace() << "SyncParameter "<< mName <<" [ localValue=" << localValueString << " (" << mLocalTimestamp << "), remoteValue=" << remoteValueString << " (" << mRemoteTimestamp << "), needToSendAck=" << (needToSendAck()?"true":"false")  << ", needToSendDataAndReceiveAck=" << (needToSendDataAndReceiveAck()?"true":"false") <<"]";//, ctx(now=" << (mCTX.now()) << ", rtt=" << mCTX.roundTripTime() << ")]";
 	return d.maybeSpace();
 }
 
 
 template <typename T>
-void SyncParameter<T>::flush()
+void SyncParameter<T>::forceSync()
 {
-	mLocalDirty=true;
+	qDebug()<<" --==## %% % FORCE SYNC";
+	mNeedToSendAck=true;
+	mNeedToSendDataAndReceiveAck=true;
 }
 
 template <typename T>
@@ -284,7 +278,6 @@ QDataStream &SyncParameter<T>::send(QDataStream &ds)
 {
 	//qDebug()<<"TX "<<valueToString(bestValue(false));
 	ds << bestValue(false);
-	//setLocalNoChange(); DONT DO THIS HERE, LET IT HAPPEN UPON RECEIVAL OF ACK
 	return ds;
 }
 
@@ -299,25 +292,35 @@ QDataStream &SyncParameter<T>::receive(QDataStream &ds)
 }
 
 template <typename T>
-bool SyncParameter<T>::hasPendingSync() const
+bool SyncParameter<T>::needToSendAck() const
 {
-	return mLocalDirty;
+	return mNeedToSendAck;
 }
 
 template <typename T>
-bool SyncParameter<T>::hasPendingAck() const
+bool SyncParameter<T>::needToSendDataAndReceiveAck() const
 {
-	return ( (mLocalTimestamp > mRemoteTimestamp) && (mLocalTimestamp < (mCTX.now() - mCTX.roundTripTime()) ));
+	return mNeedToSendDataAndReceiveAck;
 }
+
+
+template <typename T>
+void SyncParameter<T>::ackSent()
+{
+	if(!mNeedToSendAck) {
+		qWarning()<<"WARNING: sent ack when not expecting it";
+	}
+	mNeedToSendAck=false;
+}
+
 
 template <typename T>
 void SyncParameter<T>::ack()
 {
-	if(hasPendingAck()) {
-		mLocalDirty=false;
-	} else {
-		qWarning()<<"ERROR: received ack when not expecting it";
+	if(!mNeedToSendDataAndReceiveAck) {
+		qWarning()<<"WARNING: received ack when not expecting it";
 	}
+	mNeedToSendDataAndReceiveAck=false;
 }
 
 #endif // SYNCPARAMETER_HPP

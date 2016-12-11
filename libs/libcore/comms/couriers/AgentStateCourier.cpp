@@ -27,7 +27,8 @@ AgentStateCourier::AgentStateCourier(QDataStream *initialization, QObject *paren
 	, mTargetPose(nullptr)
 {
 	initParams(initialization);
-	mParams.flush(QDateTime::currentMSecsSinceEpoch());
+	//mParams.forceSync(QDateTime::currentMSecsSinceEpoch());
+	mParams.update(QDateTime::currentMSecsSinceEpoch());
 }
 
 
@@ -74,7 +75,7 @@ void AgentStateCourier::initParams(QDataStream *initialization)
 {
 	//qDebug()<<"REGISTERING PARAMETERS with "<<(nullptr!=initialization?"DATA":"NULL");
 	quint8 flags=0;
-	mFlags=mParams.registerParameter(flags);
+	mFlags=mParams.registerParameter("Flags", flags);
 	if(nullptr==mFlags) {
 		qWarning()<<"ERROR: could nota allocate flags parameter";
 	} else {
@@ -82,13 +83,13 @@ void AgentStateCourier::initParams(QDataStream *initialization)
 	}
 
 	AgentMode mode=OFFLINE;
-	mMode=mParams.registerParameter(mode);
+	mMode=mParams.registerParameter("Mode", mode);
 	if(nullptr==mMode) {
 		qWarning()<<"ERROR: could nota allocate agent mode parameter";
 	} else {
 		//qDebug()<<"REGISTERED PARAMETER #2: "<<mParams;
 	}
-
+/*
 	QGeoCoordinate targetPosition;
 	mTargetPosition=mParams.registerParameter(targetPosition);
 	if(nullptr==mTargetPosition) {
@@ -110,6 +111,7 @@ void AgentStateCourier::initParams(QDataStream *initialization)
 	} else {
 		//qDebug()<<"REGISTERED PARAMETER #5: "<<mParams;
 	}
+	*/
 //Read initial data into parameters
 
 //TODO: Fix and re-enable this. TIP: logging indicates the problem, ack and sync bit arrays are destroyed after load
@@ -169,7 +171,7 @@ void AgentStateCourier::update(quint64 now)
 // Let the CommChannel know what we want
 CourierMandate AgentStateCourier::mandate() const
 {
-	CourierMandate mandate(mParams.bytesSentIdeal() , 10, 100, true, mParams.hasPendingSyncs());
+	CourierMandate mandate(mParams.bytesSentIdeal() , 10, 4000, true, mParams.hasPendingSyncs() || mParams.hasPendingAcks() );
 	return mandate;
 }
 
@@ -194,7 +196,7 @@ quint16 AgentStateCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 	if(mandate().receiveActive) {
 		ds >> mParams;
 		quint16 bytes=mParams.bytesRead();
-		qDebug()<<"Receiving "<<bytes<<" of "<<availableBytes<<" bytes for agent status data";
+		qDebug()<<"Receiving "<<bytes<<" of "<<availableBytes<<" bytes "<<(mAgentSide?"AGENT SIDE":"CONTROL SIDE");
 		return  bytes;
 	} else {
 		qWarning()<<"ERROR: dataReceived while receiveActive=false";

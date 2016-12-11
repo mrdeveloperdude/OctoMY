@@ -1,5 +1,6 @@
 #include "SensorsCourier.hpp"
 
+#include "../libutil/utility/SerialSize.hpp"
 
 #include <QDebug>
 #include <QSensor>
@@ -16,8 +17,11 @@
 SensorsCourier::SensorsCourier(QObject *parent)
 	: Courier("Sensors", Courier::FIRST_USER_ID+3, parent)
 	, mMandate(400)
-{
 
+	  //const quint16 payloadSize , const quint8 priority=10, const quint64 interval=1000, const bool receiveActive=true, const bool sendActive=true);
+{
+	SerialSize size;
+	mMandate.payloadSize=size(mMessage);
 }
 
 //Let the CommChannel know what we want
