@@ -220,7 +220,7 @@ void ClientWidget::setCourierRegistration(bool reg)
 void ClientWidget::init()
 {
 	OC_METHODGATE();
-	ui->stackedWidgetControl->setUpdatesEnabled(false);
+//	ui->stackedWidgetControl->setUpdatesEnabled(false);
 	prepareSpinner();
 	if(nullptr!=mController) {
 //		Settings &s=mController->settings();
@@ -241,7 +241,7 @@ void ClientWidget::init()
 		ui->labelAccelerometer->setText("N/A");
 		qWarning()<<"ERROR: No context provider set!";
 	}
-	ui->stackedWidgetControl->setUpdatesEnabled(true);
+//	ui->stackedWidgetControl->setUpdatesEnabled(true);
 }
 
 

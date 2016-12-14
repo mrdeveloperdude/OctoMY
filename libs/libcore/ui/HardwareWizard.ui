@@ -29,7 +29,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="pageTemplate">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -70,6 +70,15 @@
           <property name="icon">
            <iconset resource="../resources/icons.qrc">
             <normaloff>:/icons/servotor32_bt.svg</normaloff>:/icons/servotor32_bt.svg</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Generic RC Car - Using Servotor32 + USB OTG</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/icons.qrc">
+            <normaloff>:/icons/servotor32_otg.svg</normaloff>:/icons/servotor32_otg.svg</iconset>
           </property>
          </item>
         </widget>

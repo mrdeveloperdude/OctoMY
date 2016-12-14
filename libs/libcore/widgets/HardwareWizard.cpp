@@ -5,6 +5,61 @@
 
 #include <QDebug>
 
+
+
+
+const QString HardwareTemplate::PROTOCOL_SERVOTOR32_2_1="PROTOCOL_SERVOTOR_2_1";
+const QString HardwareTemplate::INTERFACE_SERVOTOR32="INTERFACE_SERVOTOR32";
+
+
+
+HardwareTemplate::HardwareTemplate(  const QString &name, const QString &description, const QString &iconURL,const QString &interface, const QString &protocol, const quint32 poseSize)
+	: mName(name)
+	, mDescription(description)
+	, mIconURL(iconURL)
+	, mInterface(interface)
+	, mProtocol(protocol)
+	, mPoseSize(poseSize)
+
+{
+
+}
+
+
+
+QString HardwareTemplate::name() const
+{
+	return mName;
+}
+QString HardwareTemplate::description()const
+{
+	return mDescription;
+}
+
+QString HardwareTemplate::iconURL()const
+{
+	return mIconURL;
+}
+QString HardwareTemplate::interface()const
+{
+	return mInterface;
+}
+QString HardwareTemplate::protocol()const
+{
+	return mProtocol;
+}
+
+quint32 HardwareTemplate::poseSize()const
+{
+	return mPoseSize;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 HardwareWizard::HardwareWizard(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::HardwareWizard)
@@ -70,6 +125,33 @@ void HardwareWizard::moveTo(int next)
 	}
 
 	ui->stackedWidget->setCurrentIndex( next );
+}
+
+
+void HardwareWizard::save()
+{
+	switch(ui->stackedWidget->currentIndex()) {
+	//Template
+	case(0): {
+
+	}
+	break;
+	//Interface
+	case(1): {
+
+	}
+	break;
+	//Serial
+	case(2): {
+
+	}
+	break;
+	//Protocol
+	case(3): {
+	}
+	break;
+	}
+
 }
 
 void HardwareWizard::on_pushButtonOnward_clicked()

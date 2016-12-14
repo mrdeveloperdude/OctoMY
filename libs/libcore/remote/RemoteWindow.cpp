@@ -40,7 +40,7 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent)
 	, mRemote(remote)
 {
 	ui->setupUi(this);
-	ui->stackedWidgetScreen->setUpdatesEnabled(false);
+	//ui->stackedWidgetScreen->setUpdatesEnabled(false);
 	prepareDelivery();
 	prepareDiscovery();
 	preparePairing();
@@ -54,7 +54,7 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent)
 #ifdef Q_OS_ANDROID
 	showFullScreen();
 #endif
-	ui->stackedWidgetScreen->setUpdatesEnabled(true);
+	//ui->stackedWidgetScreen->setUpdatesEnabled(true);
 }
 
 RemoteWindow::~RemoteWindow()
@@ -505,20 +505,6 @@ void RemoteWindow::onGyroscopeUpdated(QGyroscopeReading *r)
 {
 	OC_METHODGATE();
 	//ui->labelGyroscope->setText("GYRO: <"+QString::number(r->x())+", "+QString::number(r->y())+", "+ QString::number(r->z())+">");
-}
-
-
-
-
-
-void RemoteWindow::onServoPositionChanged(int val)
-{
-	OC_METHODGATE();
-	if(0!=mRemote) {
-		Pose p;
-		p.pos1=val;
-		mRemote->onDirectPoseChanged(p);
-	}
 }
 
 

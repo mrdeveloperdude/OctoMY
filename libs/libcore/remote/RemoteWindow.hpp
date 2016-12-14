@@ -122,8 +122,6 @@ private slots:
 	void onAccelerometerUpdated(QAccelerometerReading *);
 	void onGyroscopeUpdated(QGyroscopeReading *r);
 
-	void onServoPositionChanged(int);
-
 	//Internal UI slots
 private slots:
 	void on_comboBoxAgent_currentIndexChanged(int index);

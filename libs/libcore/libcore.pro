@@ -43,7 +43,6 @@ SOURCES +=\
 	comms/CommsChannel.cpp \
 	comms/couriers/Courier.cpp \
 	comms/couriers/CourierMandate.cpp \
-	comms/couriers/DirectPoseCourier.cpp \
 	comms/couriers/DiscoveryCourier.cpp \
 	comms/couriers/SensorsCourier.cpp \
 	comms/FlowControl.cpp \
@@ -183,15 +182,18 @@ SOURCES +=\
 	widgets/ActuatorControlWidget.cpp \
 	widgets/TryToggleState.cpp \
 	basic/GenericKeyEventHandler.cpp \
-    comms/couriers/BlobCourier.cpp \
-    comms/couriers/Blob.cpp \
-    comms/couriers/BlobChunk.cpp \
-    comms/couriers/BlobFuture.cpp \
-    comms/couriers/AgentStateCourier.cpp \
-    comms/messages/AgentMode.cpp \
-    comms/SyncParameter.cpp \
-    comms/SyncContext.cpp \
-    comms/ISyncParameter.cpp
+	comms/couriers/BlobCourier.cpp \
+	comms/couriers/Blob.cpp \
+	comms/couriers/BlobChunk.cpp \
+	comms/couriers/BlobFuture.cpp \
+	comms/couriers/AgentStateCourier.cpp \
+	comms/messages/AgentMode.cpp \
+	comms/SyncParameter.cpp \
+	comms/SyncContext.cpp \
+	comms/ISyncParameter.cpp \
+    widgets/CarSteeringWidget.cpp \
+    camera/DCT.cpp \
+    camera/IDCT.cpp
 
 
 HEADERS  += \
@@ -232,7 +234,6 @@ HEADERS  += \
 	comms/CommsChannel.hpp \
 	comms/couriers/Courier.hpp \
 	comms/couriers/CourierMandate.hpp \
-	comms/couriers/DirectPoseCourier.hpp \
 	comms/couriers/DiscoveryCourier.hpp \
 	comms/couriers/SensorsCourier.hpp \
 	comms/DataType.hpp \
@@ -380,15 +381,18 @@ HEADERS  += \
 	widgets/ActuatorControlWidget.hpp \
 	widgets/TryToggleState.hpp \
 	basic/GenericKeyEventHandler.hpp \
-    comms/couriers/BlobCourier.hpp \
-    comms/couriers/Blob.hpp \
-    comms/couriers/BlobChunk.hpp \
-    comms/couriers/BlobFuture.hpp \
-    comms/couriers/AgentStateCourier.hpp \
-    comms/messages/AgentMode.hpp \
-    comms/SyncParameter.hpp \
-    comms/SyncContext.hpp \
-    comms/ISyncParameter.hpp
+	comms/couriers/BlobCourier.hpp \
+	comms/couriers/Blob.hpp \
+	comms/couriers/BlobChunk.hpp \
+	comms/couriers/BlobFuture.hpp \
+	comms/couriers/AgentStateCourier.hpp \
+	comms/messages/AgentMode.hpp \
+	comms/SyncParameter.hpp \
+	comms/SyncContext.hpp \
+	comms/ISyncParameter.hpp \
+    widgets/CarSteeringWidget.hpp \
+    camera/DCT.hpp \
+    camera/IDCT.hpp
 
 
 FORMS    += \
@@ -423,7 +427,8 @@ FORMS    += \
 	ui/ClientWidget.ui \
 	widgets/NetworkSettingsWidget.ui \
 	widgets/SpeechControlWidget.ui \
-	widgets/ActuatorControlWidget.ui
+	widgets/ActuatorControlWidget.ui \
+    widgets/CarSteeringWidget.ui
 
 
 RESOURCES += \

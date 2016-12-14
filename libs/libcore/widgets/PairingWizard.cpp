@@ -136,7 +136,7 @@ void PairingWizard::startEdit(int row)
 	qDebug()<<"STARTING EDIT FOR "<<row;
 	QModelIndex index=mList->index(row,0);
 	if(index.isValid()) {
-		setUpdatesEnabled(false);
+		//setUpdatesEnabled(false);
 		QVariantMap map=index.data(Qt::DisplayRole).toMap();
 		qDebug()<<"DATA FOR "<<row<<" DURING EDIT IS: "<<map;
 		if(nullptr!=mNode) {
@@ -186,7 +186,7 @@ void PairingWizard::startEdit(int row)
 			}
 		}
 		ui->stackedWidget->setCurrentWidget(ui->pagePeerDetail);
-		setUpdatesEnabled(true);
+	//	setUpdatesEnabled(true);
 	} else {
 		qWarning()<<"ERROR: Index was invalid for row "<<row;
 	}

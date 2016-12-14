@@ -34,7 +34,6 @@ class Remote : public Node
 {
 	Q_OBJECT
 private:
-	DirectPoseCourier *poseCourier;
 	RemoteWindow *window;
 
 public:
@@ -44,11 +43,6 @@ public:
 	void start(const NetworkAddress &localAddress, const NetworkAddress &partnerAddress);
 
 	virtual QWidget *showWindow();
-
-	//External commands
-public slots:
-
-	void onDirectPoseChanged(Pose);
 
 
 };

@@ -86,5 +86,17 @@
         <file>icons/servotor32_otg.svg</file>
         <file>icons/servotor32_bt.svg</file>
         <file>icons/protocol.svg</file>
+        <file>icons/wheels.svg</file>
+        <file>icons/rocket.svg</file>
+        <file>icons/wings.svg</file>
+        <file>icons/helicopter.svg</file>
+        <file>icons/quadcopter.svg</file>
+        <file>icons/biped.svg</file>
+        <file>icons/quadruped.svg</file>
+        <file>icons/hexapod.svg</file>
+        <file>icons/threads.svg</file>
+        <file>icons/marine.svg</file>
+        <file>icons/submarine.svg</file>
+        <file>icons/stationary.svg</file>
     </qresource>
 </RCC>

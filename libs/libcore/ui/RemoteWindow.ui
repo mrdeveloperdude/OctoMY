@@ -110,6 +110,15 @@
            </item>
            <item>
             <property name="text">
+             <string>Car Steering</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../resources/icons.qrc">
+              <normaloff>:/icons/wheels.svg</normaloff>:/icons/wheels.svg</iconset>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string extracomment="Control gait dynamically through real-time paramers">Gait</string>
             </property>
             <property name="icon">

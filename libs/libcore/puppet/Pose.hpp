@@ -3,21 +3,32 @@
 
 #include <QtGlobal>
 #include <QString>
+#include <QVector>
+
 
 class Pose
 {
 public:
 
-	const static quint64 MAX_SIZE=4;
+	static const quint32 MAX_SIZE;
+
+private:
+
+	QVector<qreal> mValues;
+
 public:
-	bool ok=false;
-	int pos1=0;
-	quint64 size()
-	{
-		return 4;
-	}
+
+	Pose(quint32 size);
+
+public:
+	quint64 size();
 
 	QString toString() const;
+
+
+	QDataStream &receive(QDataStream &);
+	QDataStream &send(QDataStream &) const;
+
 
 };
 

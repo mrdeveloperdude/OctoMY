@@ -74,12 +74,12 @@ public:
 public:
 	void setColor(QColor irisColor=QColor("#2d8ac9"));
 protected:
-	void paintEvent(QPaintEvent *);
-	void hideEvent(QHideEvent *);
-	void showEvent(QShowEvent *);
-	void mousePressEvent(QMouseEvent *);
-	void mouseMoveEvent(QMouseEvent *);
-	void leaveEvent(QEvent *);
+	void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
+	void hideEvent(QHideEvent *) Q_DECL_OVERRIDE;
+	void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
+	void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
+	void mouseMoveEvent(QMouseEvent *) Q_DECL_OVERRIDE;
+	void leaveEvent(QEvent *) Q_DECL_OVERRIDE;
 
 public slots:
 	void onUpdateTimer();
