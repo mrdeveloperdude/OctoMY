@@ -46,6 +46,7 @@ void CarSteeringWidget::updateState()
 		mThrottle=0.0;
 	}
 	if(mLastAngle!=mAngle || mLastThrottle != mThrottle) {
+		emit steeringChanged(mThrottle, mAngle);
 		update();
 	}
 

@@ -95,7 +95,6 @@ SOURCES +=\
 	puppet/GaitWidget.cpp \
 	puppet/LimbIKWidget.cpp \
 	puppet/Pose.cpp \
-	puppet/Puppet.cpp \
 	random/DevRandomRNG.cpp \
 	random/DevURandomRNG.cpp \
 	random/EfficientPRNG.cpp \
@@ -193,7 +192,9 @@ SOURCES +=\
 	comms/ISyncParameter.cpp \
     widgets/CarSteeringWidget.cpp \
     camera/DCT.cpp \
-    camera/IDCT.cpp
+    camera/IDCT.cpp \
+    puppet/PoseMapping.cpp \
+    puppet/AgentMobilityType.cpp
 
 
 HEADERS  += \
@@ -293,7 +294,6 @@ HEADERS  += \
 	puppet/GaitWidget.hpp \
 	puppet/LimbIKWidget.hpp \
 	puppet/Pose.hpp \
-	puppet/Puppet.hpp \
 	random/DevRandomRNG.hpp \
 	random/DevURandomRNG.hpp \
 	random/EfficientPRNG.hpp \
@@ -392,7 +392,9 @@ HEADERS  += \
 	comms/ISyncParameter.hpp \
     widgets/CarSteeringWidget.hpp \
     camera/DCT.hpp \
-    camera/IDCT.hpp
+    camera/IDCT.hpp \
+    puppet/PoseMapping.hpp \
+    puppet/AgentMobilityType.hpp
 
 
 FORMS    += \

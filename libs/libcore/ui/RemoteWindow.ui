@@ -119,15 +119,6 @@
            </item>
            <item>
             <property name="text">
-             <string extracomment="Control gait dynamically through real-time paramers">Gait</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../resources/icons.qrc">
-              <normaloff>:/icons/gait_control.svg</normaloff>:/icons/gait_control.svg</iconset>
-            </property>
-           </item>
-           <item>
-            <property name="text">
              <string extracomment="Leave robot to figure out movement on its own, and let it follow a path on the map">Path</string>
             </property>
             <property name="icon">

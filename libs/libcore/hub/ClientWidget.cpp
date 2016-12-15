@@ -11,6 +11,8 @@
 
 #include "security/PortableID.hpp"
 
+#include "../libcore/widgets/CarSteeringWidget.hpp"
+
 #include "comms/CommsChannel.hpp"
 #include "comms/ISyncParameter.hpp"
 
@@ -110,6 +112,17 @@ void ClientWidget::prepareSpinner()
 	style.setLineWidth(3);
 	mSpinner->setText("Reconnecting..");
 	mSpinner->setStyle(style);
+}
+
+void ClientWidget::prepareSteering()
+{
+	OC_METHODGATE();
+	if(!connect(ui->widgetCarSteering, &CarSteeringWidget::steeringChanged, this, &ClientWidget::onSteeringChanged ,OC_CONTYPE)) {
+		qWarning()<<"ERROR: Could not connect";
+	} else {
+		qDebug()<<"CONNECTED onSteeringChanged";
+	}
+
 }
 
 
@@ -222,6 +235,7 @@ void ClientWidget::init()
 	OC_METHODGATE();
 //	ui->stackedWidgetControl->setUpdatesEnabled(false);
 	prepareSpinner();
+	prepareSteering();
 	if(nullptr!=mController) {
 //		Settings &s=mController->settings();
 		ui->labelLocal->setText("WAITING FOR LOCAL");
@@ -354,6 +368,12 @@ void ClientWidget::onConnectButtonStateChanged(const TryToggleState last, const 
 		}
 	}
 	updateOnlineStatus();
+}
+
+void ClientWidget::onSteeringChanged(qreal throttle, qreal steeringAgnel)
+{
+	//qDebug()<<"THROT: "<<throttle<<" STEER: "<<steeringAgnel;
+
 }
 
 

@@ -48,50 +48,56 @@ ClientModel::ClientModel(ClientDirectory *clients, QObject *parent)
 
 }
 
-ClientModel::~ClientModel(){
+ClientModel::~ClientModel()
+{
 	delete tree;
 }
 
-QModelIndex ClientModel::index(int row, int column, const QModelIndex &parent) const{
+QModelIndex ClientModel::index(int row, int column, const QModelIndex &parent) const
+{
 	if (row < rc() && row >= 0 && column < cc() && column >= 0) {
 		Node *parentNode = static_cast<Node*>(parent.internalPointer());
 		Node *childNode = node(row, parentNode);
-		if (childNode){
+		if (childNode) {
 			return createIndex(row, column, childNode);
 		}
 	}
 	return QModelIndex();
 }
 
-QModelIndex ClientModel::parent(const QModelIndex &child) const{
+QModelIndex ClientModel::parent(const QModelIndex &child) const
+{
 	if (child.isValid()) {
 		Node *childNode = static_cast<Node*>(child.internalPointer());
 		Node *parentNode = parent(childNode);
-		if (parentNode){
+		if (parentNode) {
 			return createIndex(row(parentNode), 0, parentNode);
 		}
 	}
 	return QModelIndex();
 }
 
-int ClientModel::rowCount(const QModelIndex &parent) const{
+int ClientModel::rowCount(const QModelIndex &parent) const
+{
 	return (parent.isValid() && parent.column() != 0) ? 0 : rc();
 }
 
-int ClientModel::columnCount(const QModelIndex &parent) const{
+int ClientModel::columnCount(const QModelIndex &parent) const
+{
 	Q_UNUSED(parent);
 	return cc();
 }
 
-QVariant ClientModel::data(const QModelIndex &index, int role) const{
-	if (!index.isValid()){
+QVariant ClientModel::data(const QModelIndex &index, int role) const
+{
+	if (!index.isValid()) {
 		return QVariant();
 	}
-	if (role == Qt::DisplayRole){
+	if (role == Qt::DisplayRole) {
 		return QVariant("Item " + QString::number(index.row()) + ":" + QString::number(index.column()));
 	}
 	if (role == Qt::DecorationRole) {
-		if (index.column() == 0){
+		if (index.column() == 0) {
 			return iconProvider.icon(QFileIconProvider::Folder);
 		}
 		return iconProvider.icon(QFileIconProvider::File);
@@ -99,52 +105,60 @@ QVariant ClientModel::data(const QModelIndex &index, int role) const{
 	return QVariant();
 }
 
-QVariant ClientModel::headerData(int section, Qt::Orientation orientation, int role) const{
-	if (role == Qt::DisplayRole){
+QVariant ClientModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+	if (role == Qt::DisplayRole) {
 		return QString::number(section);
 	}
-	if (role == Qt::DecorationRole){
+	if (role == Qt::DecorationRole) {
 		return QVariant::fromValue(services);
 	}
 	return QAbstractItemModel::headerData(section, orientation, role);
 }
 
-bool ClientModel::hasChildren(const QModelIndex &parent) const{
-	if (parent.isValid() && parent.column() != 0){
+bool ClientModel::hasChildren(const QModelIndex &parent) const
+{
+	if (parent.isValid() && parent.column() != 0) {
 		return false;
 	}
 	return rc() > 0 && cc() > 0;
 }
 
-Qt::ItemFlags ClientModel::flags(const QModelIndex &index) const{
-	if (!index.isValid()){
+Qt::ItemFlags ClientModel::flags(const QModelIndex &index) const
+{
+	if (!index.isValid()) {
 		return 0;
 	}
 	return Qt::ItemIsDragEnabled|QAbstractItemModel::flags(index);
 }
 
-ClientModel::Node *ClientModel::node(int row, Node *parent) const{
-	if (parent && !parent->children){
+ClientModel::Node *ClientModel::node(int row, Node *parent) const
+{
+	if (parent && !parent->children) {
 		parent->children = new QVector<Node>(rc(), Node(parent));
 	}
 	QVector<Node> *v = parent ? parent->children : tree;
 	return const_cast<Node*>(&(v->at(row)));
 }
 
-ClientModel::Node *ClientModel::parent(Node *child) const{
+ClientModel::Node *ClientModel::parent(Node *child) const
+{
 	return child ? child->parent : 0;
 }
 
-int ClientModel::row(Node *node) const{
+int ClientModel::row(Node *node) const
+{
 	const Node *first = node->parent ? &(node->parent->children->at(0)) : &(tree->at(0));
 	return node - first;
 }
 
 
-int ClientModel::rc() const{
+int ClientModel::rc() const
+{
 	return clients->count();
 }
 
-int ClientModel::cc() const{
+int ClientModel::cc() const
+{
 	return 1;
 }

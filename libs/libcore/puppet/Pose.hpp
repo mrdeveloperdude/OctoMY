@@ -21,7 +21,9 @@ public:
 	Pose(quint32 size);
 
 public:
-	quint64 size();
+	quint64 size()const;
+
+	qreal value(quint32 index) const ;
 
 	QString toString() const;
 

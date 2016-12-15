@@ -14,6 +14,7 @@ class CarSteeringWidget : public QWidget
 {
 	Q_OBJECT
 private:
+	Ui::CarSteeringWidget *ui;
 
 	QTimer mUpdateTimer;
 	QVector2D mLastMousePos;
@@ -46,10 +47,10 @@ protected:
 	void leaveEvent(QEvent *) Q_DECL_OVERRIDE;
 	void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
 
+signals:
 
+	void steeringChanged(qreal throttle, qreal steeringAngle);
 
-private:
-	Ui::CarSteeringWidget *ui;
 };
 
 #endif // CARSTEERINGWIDGET_HPP

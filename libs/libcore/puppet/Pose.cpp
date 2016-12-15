@@ -19,11 +19,18 @@ Pose::Pose(quint32 size)
 }
 
 
-quint64 Pose::size()
+quint64 Pose::size()const
 {
 	return mValues.size();
 }
 
+qreal Pose::value(quint32 index) const
+{
+	if( index>=mValues.size()) {
+		return 0.0;
+	}
+	return mValues[index];
+}
 
 QDataStream &Pose::receive(QDataStream &ds)
 {

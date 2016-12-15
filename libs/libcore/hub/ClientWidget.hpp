@@ -46,6 +46,7 @@ private:
 
 	// Spinner
 	void prepareSpinner();
+	void prepareSteering();
 	void setSpinnerActive(bool active);
 
 	void init();
@@ -85,10 +86,9 @@ public slots:
 private slots:
 
 	void onConnectButtonStateChanged(const TryToggleState, const TryToggleState);
+	void onSteeringChanged(qreal throttle, qreal steeringAgnel);
 
 	// Internal UI slots
-
-
 public slots:
 
 	void on_checkBoxShowEyes_toggled(bool checked);
