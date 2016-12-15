@@ -562,7 +562,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidgetDevelopment">
            <property name="currentIndex">
-            <number>7</number>
+            <number>4</number>
            </property>
            <widget class="QWidget" name="tabGait">
             <attribute name="title">
@@ -798,7 +798,7 @@
             </attribute>
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <widget class="SerialSettings" name="widgetSerialSettings" native="true"/>
+              <widget class="SerialSettingsWidget" name="widgetSerialSettings" native="true"/>
              </item>
             </layout>
            </widget>
@@ -984,9 +984,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>SerialSettings</class>
+   <class>SerialSettingsWidget</class>
    <extends>QWidget</extends>
-   <header>hw/actuators/SerialSettings.hpp</header>
+   <header>hw/actuators/SerialSettingsWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

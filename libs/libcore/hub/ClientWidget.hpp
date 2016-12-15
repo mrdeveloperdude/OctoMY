@@ -86,7 +86,7 @@ public slots:
 private slots:
 
 	void onConnectButtonStateChanged(const TryToggleState, const TryToggleState);
-	void onSteeringChanged(qreal throttle, qreal steeringAgnel);
+	void onSteeringChanged(qreal throttle, qreal steeringAngle);
 
 	// Internal UI slots
 public slots:

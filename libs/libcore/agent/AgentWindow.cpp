@@ -39,6 +39,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	, mShowBirthCertificateAction(new QAction(tr("Show Birth Certificate"), this))
 	, mUnbirthAction(new QAction(tr("Unbirth!"), this))
 {
+	OC_METHODGATE();
 	ui->setupUi(this);
 
 	updateIdentity();
@@ -90,6 +91,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 
 AgentWindow::~AgentWindow()
 {
+	OC_METHODGATE();
 	delete ui;
 }
 
@@ -97,6 +99,7 @@ AgentWindow::~AgentWindow()
 
 void AgentWindow::updateIdentity()
 {
+	OC_METHODGATE();
 	if(nullptr!=mAgent) {
 		mAgent->updateDiscoveryClient();
 		updateIcon();
@@ -111,6 +114,7 @@ void AgentWindow::updateIdentity()
 
 void AgentWindow::updateIcon()
 {
+	OC_METHODGATE();
 	if(nullptr!=mAgent) {
 		//Set our custom identicon as window icon
 		PortableID pid;
@@ -127,6 +131,7 @@ void AgentWindow::updateIcon()
 
 void AgentWindow::prepareMenu()
 {
+	OC_METHODGATE();
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 
 	// Camera
@@ -264,6 +269,7 @@ CommsChannel *AgentWindow::comms()
 
 QSet<QSharedPointer<NodeAssociate> > AgentWindow::activeControls()
 {
+	OC_METHODGATE();
 	QSet<QSharedPointer<NodeAssociate> > out;
 
 	const quint64 lastActive=QDateTime::currentMSecsSinceEpoch()-(1000*60);//One minute ago. TODO: Turn into constant or setting
@@ -294,6 +300,7 @@ QSet<QSharedPointer<NodeAssociate> > AgentWindow::activeControls()
 
 void AgentWindow::courierRegistration(QSharedPointer<NodeAssociate> assoc, bool reg)
 {
+	OC_METHODGATE();
 	/*
 	 * //TODO: Find and squish strange new const QString * build error
 	CommsChannel *cc=comms();
@@ -334,6 +341,7 @@ void AgentWindow::courierRegistration(QSharedPointer<NodeAssociate> assoc, bool 
 
 void AgentWindow::updateCourierRegistration()
 {
+	OC_METHODGATE();
 	QSet<QSharedPointer<NodeAssociate> > active=activeControls();
 	if(active!=mLastActiveControls) {
 		for(QSharedPointer<NodeAssociate> assoc:mLastActiveControls) {
@@ -358,6 +366,7 @@ void AgentWindow::updateCourierRegistration()
 
 void AgentWindow::updateFaceVisibility()
 {
+	OC_METHODGATE();
 	ui->widgetFace->updateVisibility();
 }
 
@@ -378,11 +387,13 @@ void AgentWindow::onConnectionStateChanged(const TryToggleState last, const TryT
 
 void AgentWindow::onColorChanged(QColor c)
 {
+	OC_METHODGATE();
 //	mAgent->onC
 }
 
 void AgentWindow::onPanic()
 {
+	OC_METHODGATE();
 
 }
 
@@ -391,6 +402,7 @@ void AgentWindow::onPanic()
 
 void AgentWindow::onOnlineChanged(bool on)
 {
+	OC_METHODGATE();
 	qDebug()<<"ONLINE ACTION CHANGED TO "<<(on?"ONLINE":"OFFLINE");
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 	if(nullptr!=s) {
@@ -402,6 +414,7 @@ void AgentWindow::onOnlineChanged(bool on)
 
 void AgentWindow::onOnlineButtonVisibilityChanged(bool on)
 {
+	OC_METHODGATE();
 	qDebug()<<"ONLINE BUTTON IS NOW: "<<on;
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 	if(nullptr!=s) {
@@ -412,6 +425,7 @@ void AgentWindow::onOnlineButtonVisibilityChanged(bool on)
 
 void AgentWindow::onFaceVisibilityChanged(bool on)
 {
+	OC_METHODGATE();
 	qDebug()<<"FACE VIS IS NOW: "<<on;
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 	if(nullptr!=s) {
@@ -423,6 +437,7 @@ void AgentWindow::onFaceVisibilityChanged(bool on)
 
 void AgentWindow::onLogVisibilityChanged(bool on)
 {
+	OC_METHODGATE();
 	qDebug()<<"LOG VIS IS NOW: "<<on;
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 	if(nullptr!=s) {
@@ -433,6 +448,7 @@ void AgentWindow::onLogVisibilityChanged(bool on)
 
 void AgentWindow::onStatsVisibilityChanged(bool on)
 {
+	OC_METHODGATE();
 	qDebug()<<"STATS VIS IS NOW: "<<on;
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 	if(nullptr!=s) {
@@ -444,6 +460,7 @@ void AgentWindow::onStatsVisibilityChanged(bool on)
 
 void AgentWindow::onStartShowBirthCertificate()
 {
+	OC_METHODGATE();
 	PortableID pid;
 	if(nullptr!=mAgent) {
 		QString id=mAgent->keyStore().localKey().id();
@@ -462,11 +479,13 @@ void AgentWindow::onStartShowBirthCertificate()
 
 void AgentWindow::onStartCameraPairing()
 {
+	OC_METHODGATE();
 	ui->stackedWidget->setCurrentWidget(ui->pageCamera);
 }
 
 void AgentWindow::onStartPairing()
 {
+	OC_METHODGATE();
 	ui->widgetPairing->reset();
 	ui->stackedWidget->setCurrentWidget(ui->pagePairing);
 }
@@ -474,6 +493,7 @@ void AgentWindow::onStartPairing()
 
 void AgentWindow::onStartHardware()
 {
+	OC_METHODGATE();
 	ui->widgetHardware->reset();
 	ui->stackedWidget->setCurrentWidget(ui->pageHardware);
 }
@@ -482,12 +502,14 @@ void AgentWindow::onStartHardware()
 
 void AgentWindow::onStartPlanEditor()
 {
+	OC_METHODGATE();
 	ui->stackedWidget->setCurrentWidget(ui->pagePlan);
 }
 
 
 void AgentWindow::appendLog(const QString& text)
 {
+	OC_METHODGATE();
 	ui->widgetFace->appendLog(text);
 }
 
@@ -496,6 +518,7 @@ void AgentWindow::appendLog(const QString& text)
 
 void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 {
+	OC_METHODGATE();
 	if(Qt::Key_Back==e->key()) {
 		/*
 		if(ui->pageConnect==ui->stackedWidget->currentWidget()) {
@@ -520,6 +543,7 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 
 void AgentWindow::updateOnlineStatus()
 {
+	OC_METHODGATE();
 	if(nullptr!=mAgent) {
 		// Find if we ARE online
 		bool isOnline=false;
@@ -575,6 +599,7 @@ void AgentWindow::updateOnlineStatus()
 
 void AgentWindow::notifyAndroid(QString s)
 {
+	OC_METHODGATE();
 	(void)s;
 	//TODO: This crashes with some jni exception stuff. Figure out why
 #ifdef Q_OS_ANDROID
@@ -589,6 +614,7 @@ void AgentWindow::notifyAndroid(QString s)
 
 void AgentWindow::toastAndroid(QString s)
 {
+	OC_METHODGATE();
 	(void)s;
 	//TODO: This crashes with some jni exception stuff. Figure out why
 #ifdef Q_OS_ANDROID
@@ -603,12 +629,14 @@ void AgentWindow::toastAndroid(QString s)
 
 void AgentWindow::on_pushButtonBack_clicked()
 {
+	OC_METHODGATE();
 	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 }
 
 
 void AgentWindow::on_pushButtonMenu_clicked()
 {
+	OC_METHODGATE();
 	mMenu.exec(mapToGlobal(ui->pushButtonMenu->pos()));
 }
 
@@ -619,6 +647,7 @@ void AgentWindow::on_pushButtonMenu_clicked()
 
 void AgentWindow::onSyncParameterChanged(ISyncParameter *sp)
 {
+	OC_METHODGATE();
 	qDebug()<<"AgentWindow ASC changed: "<<sp->toString();
 	const AgentControls &controls=mAgent->controls();
 	CourierSet*set=controls.activeControl();
@@ -641,16 +670,19 @@ void AgentWindow::onSyncParameterChanged(ISyncParameter *sp)
 
 void AgentWindow::onCommsError(QString e)
 {
+	OC_METHODGATE();
 	//qDebug()<<"AgentWindow UNIMP Comms error: "<<e;
 }
 
 void AgentWindow::onCommsClientAdded(Client *c)
 {
+	OC_METHODGATE();
 	//qDebug()<<"AgentWindow UNIMP Client added: "<<c->toString();
 }
 
 void AgentWindow::onCommsConnectionStatusChanged(bool s)
 {
+	OC_METHODGATE();
 	//qDebug() <<"AGENT WINDOW New connection status: "<<(s?"ONLINE":"OFFLINE");
 	updateOnlineStatus();
 }
@@ -661,30 +693,36 @@ void AgentWindow::onCommsConnectionStatusChanged(bool s)
 
 void AgentWindow::on_pushButtonConfirmQuit_clicked()
 {
+	OC_METHODGATE();
 	exit(0);
 }
 
 void AgentWindow::on_pushButtonBack_2_clicked()
 {
+	OC_METHODGATE();
 	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 }
 
 void AgentWindow::on_pushButtonBack_4_clicked()
 {
+	OC_METHODGATE();
 	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 }
 
 void AgentWindow::on_pushButtonBack_3_clicked()
 {
+	OC_METHODGATE();
 	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 }
 
 void AgentWindow::on_pushButtonBack_5_clicked()
 {
+	OC_METHODGATE();
 	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 }
 
 void AgentWindow::on_pushButtonBack_6_clicked()
 {
+	OC_METHODGATE();
 	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
 }

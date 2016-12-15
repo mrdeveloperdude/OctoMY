@@ -29,8 +29,8 @@ public:
 
 class QDataStream;
 
-QDataStream &operator<<(QDataStream &, const Pose &);
-QDataStream &operator>>(QDataStream &, Pose &);
+QDataStream &operator<<(QDataStream &, const PoseMapping &);
+QDataStream &operator>>(QDataStream &, PoseMapping &);
 
 
 #endif // POSEMAPPING_HPP

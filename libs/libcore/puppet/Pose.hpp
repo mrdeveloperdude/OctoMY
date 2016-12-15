@@ -18,12 +18,13 @@ private:
 
 public:
 
-	Pose(quint32 size);
+	Pose(quint32 size=0);
 
 public:
-	quint64 size()const;
+	quint64 size() const;
 
 	qreal value(quint32 index) const ;
+	void setValue(quint32 index, qreal value);
 
 	QString toString() const;
 

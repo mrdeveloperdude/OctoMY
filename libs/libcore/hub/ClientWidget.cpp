@@ -34,7 +34,7 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 	, mBlobCourier(new BlobCourier(this))
 
 {
-
+	OC_METHODGATE();
 	qDebug()<<"CREATING CLIENT WIDGET mController="<<(nullptr!=mController?mController->name():"NULL")<<", mNodeAssoc="<<(nullptr!=mNodeAssoc?mNodeAssoc->name():"NULL")<<", parent="<<parent;
 
 	ui->setupUi(this);
@@ -138,6 +138,7 @@ void ClientWidget::setSpinnerActive(bool active)
 
 void ClientWidget::updateOnlineStatus()
 {
+	OC_METHODGATE();
 	//qDebug()<<"START UPDATE ONLINE STATUS # # # # ";
 	if(nullptr!=mController && nullptr!=mNodeAssoc) {
 		// Find if we ARE online
@@ -192,6 +193,7 @@ void ClientWidget::updateOnlineStatus()
 
 bool ClientWidget::courierRegistration()
 {
+	OC_METHODGATE();
 	CommsChannel *cc=comms();
 	if(nullptr!=cc) {
 		return cc->hasCourier(*mSensorsCourier);
@@ -201,6 +203,7 @@ bool ClientWidget::courierRegistration()
 
 void ClientWidget::setCourierRegistration(bool reg)
 {
+	OC_METHODGATE();
 	CommsChannel *cc=comms();
 	if(nullptr!=cc) {
 
@@ -285,6 +288,7 @@ void ClientWidget::updateControlLevel(int level)
 
 bool ClientWidget::eventFilter(QObject *object, QEvent *event)
 {
+	OC_METHODGATE();
 	/*
 
 	//qDebug()<<"EVENT: "<<object<<": "<<event;
@@ -306,6 +310,7 @@ bool ClientWidget::eventFilter(QObject *object, QEvent *event)
 
 void ClientWidget::onSyncParameterChanged(ISyncParameter *sp)
 {
+	OC_METHODGATE();
 	qDebug()<<"ClientWidget ASC: ON VALUE CHANGED: "<<sp->toString();
 	if(nullptr!=mAgentStateCourier) {
 		const bool panic=mAgentStateCourier->panic();
@@ -319,16 +324,19 @@ void ClientWidget::onSyncParameterChanged(ISyncParameter *sp)
 
 void ClientWidget::onCommsError(QString e)
 {
+	OC_METHODGATE();
 	qDebug()<<"ClientWidget UNIMP Comms error: "<<e;
 }
 
 void ClientWidget::onCommsClientAdded(Client *c)
 {
+	OC_METHODGATE();
 	//qDebug()<<"ClientWidget UNIMP Client added: "<<c->toString();
 }
 
 void ClientWidget::onCommsConnectionStatusChanged(bool s)
 {
+	OC_METHODGATE();
 	//qDebug() <<"CLIENT WIDGET New connection status: "<<(s?"ONLINE":"OFFLINE");
 	updateOnlineStatus();
 }
@@ -339,6 +347,7 @@ void ClientWidget::onCommsConnectionStatusChanged(bool s)
 
 void ClientWidget::onUpdateTimer()
 {
+	OC_METHODGATE();
 	//qDebug()<<"TIME for summary";
 }
 
@@ -370,16 +379,23 @@ void ClientWidget::onConnectButtonStateChanged(const TryToggleState last, const 
 	updateOnlineStatus();
 }
 
-void ClientWidget::onSteeringChanged(qreal throttle, qreal steeringAgnel)
+void ClientWidget::onSteeringChanged(qreal throttle, qreal steeringAngle)
 {
-	//qDebug()<<"THROT: "<<throttle<<" STEER: "<<steeringAgnel;
-
+	OC_METHODGATE();
+	//qDebug()<<"THROT: "<<throttle<<" STEER: "<<steeringAngle;
+	if(nullptr!=mAgentStateCourier) {
+		mAgentStateCourier->setPoseValue(0,throttle);
+		mAgentStateCourier->setPoseValue(1,steeringAngle);
+	} else {
+		qWarning()<<"ERROR: no ASC when changing THROT: "<<throttle<<" STEER: "<<steeringAngle;
+	}
 }
 
 
 
 void ClientWidget::on_checkBoxShowEyes_toggled(bool checked)
 {
+	OC_METHODGATE();
 	// TODO: Find better storage for these values than settings
 	if(nullptr!=mController) {
 		Settings&s=mController->settings();
@@ -393,6 +409,7 @@ void ClientWidget::on_checkBoxShowEyes_toggled(bool checked)
 
 void ClientWidget::on_checkBoxShowStats_toggled(bool checked)
 {
+	OC_METHODGATE();
 	// TODO: Find better storage for these values than settings
 	if(nullptr!=mController) {
 		Settings&s=mController->settings();
@@ -405,6 +422,7 @@ void ClientWidget::on_checkBoxShowStats_toggled(bool checked)
 
 void ClientWidget::on_checkBoxShowLog_toggled(bool checked)
 {
+	OC_METHODGATE();
 	// TODO: Find better storage for these values than settings
 	if(nullptr!=mController) {
 		Settings&s=mController->settings();
@@ -417,6 +435,7 @@ void ClientWidget::on_checkBoxShowLog_toggled(bool checked)
 
 void ClientWidget::on_checkBoxShowOnlineButton_toggled(bool checked)
 {
+	OC_METHODGATE();
 	// TODO: Find better storage for these values than settings
 	if(nullptr!=mController) {
 		Settings&s=mController->settings();
@@ -431,6 +450,7 @@ void ClientWidget::on_checkBoxShowOnlineButton_toggled(bool checked)
 
 void ClientWidget::on_pushButtonPanicc_toggled(bool panic)
 {
+	OC_METHODGATE();
 	if(panic) {
 		QString str="P A N I C !";
 		qWarning()<<str;

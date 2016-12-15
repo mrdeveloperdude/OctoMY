@@ -80,14 +80,14 @@ QDataStream &PoseMapping::send(QDataStream &ds) const
 
 
 
-QDataStream &operator>>(QDataStream &ds, Pose &p)
+QDataStream &operator>>(QDataStream &ds, PoseMapping &p)
 {
 	p.receive(ds);
 	return ds;
 }
 
 
-QDataStream &operator<<(QDataStream &ds, const Pose &p)
+QDataStream &operator<<(QDataStream &ds, const PoseMapping &p)
 {
 	p.send(ds);
 	return ds;

@@ -82,7 +82,6 @@ SOURCES +=\
 	hw/actuators/HexySerial.cpp \
 	hw/actuators/HexyTool.cpp \
 	hw/actuators/SerialList.cpp \
-	hw/actuators/SerialSettings.cpp \
 	hw/actuators/ServoInput.cpp \
 	hw/BluetoothList.cpp \
 	models/ClientModel.cpp \
@@ -194,7 +193,9 @@ SOURCES +=\
     camera/DCT.cpp \
     camera/IDCT.cpp \
     puppet/PoseMapping.cpp \
-    puppet/AgentMobilityType.cpp
+    puppet/AgentMobilityType.cpp \
+    hw/actuators/SerialSettingsWidget.cpp \
+    hw/actuators/SerialSettings.cpp
 
 
 HEADERS  += \
@@ -281,7 +282,6 @@ HEADERS  += \
 	hw/actuators/HexySerial.hpp \
 	hw/actuators/HexyTool.hpp \
 	hw/actuators/SerialList.hpp \
-	hw/actuators/SerialSettings.hpp \
 	hw/actuators/ServoInput.hpp \
 	hw/BluetoothList.hpp \
 	models/ClientModel.hpp \
@@ -394,7 +394,9 @@ HEADERS  += \
     camera/DCT.hpp \
     camera/IDCT.hpp \
     puppet/PoseMapping.hpp \
-    puppet/AgentMobilityType.hpp
+    puppet/AgentMobilityType.hpp \
+    hw/actuators/SerialSettingsWidget.hpp \
+    hw/actuators/SerialSettings.hpp
 
 
 FORMS    += \
@@ -408,7 +410,6 @@ FORMS    += \
 	ui/NumberEntry.ui \
 	ui/RemoteWindow.ui \
 	ui/ResponsiveTest.ui \
-	ui/SerialSettings.ui \
 	ui/StatsWindow.ui \
 	ui/TryToggle.ui \
 	ui/ServoInput.ui \
@@ -430,7 +431,8 @@ FORMS    += \
 	widgets/NetworkSettingsWidget.ui \
 	widgets/SpeechControlWidget.ui \
 	widgets/ActuatorControlWidget.ui \
-    widgets/CarSteeringWidget.ui
+    widgets/CarSteeringWidget.ui \
+    ui/SerialSettingsWidget.ui
 
 
 RESOURCES += \

@@ -37,6 +37,10 @@ public:
 	void setRemoteValue(const T &val);
 	void setRemoteNoChange();
 
+	void markLocalValueAsUpdated();
+	void markRemoteValueAsUpdated();
+	T &localValueRef();
+	T &remoteValueRef();
 
 	T localValue() const;
 	T remoteValue() const;
@@ -86,15 +90,13 @@ template <typename T>
 void SyncParameter<T>::setLocalValue(const T &val)
 {
 	mLocalValue=val;
-	mLocalTimestamp=mCTX.now();
-	mNeedToSendDataAndReceiveAck=true;
-	signalValueChanged();
+	markLocalValueAsUpdated();
 }
 
 template <typename T>
 void SyncParameter<T>::setLocalNoChange()
 {
-	setLocalValue(mLocalValue);
+	markLocalValueAsUpdated();
 }
 
 
@@ -102,18 +104,33 @@ template <typename T>
 void SyncParameter<T>::setRemoteValue(const T &val)
 {
 	mRemoteValue=val;
-	mRemoteTimestamp=mCTX.now();
-	mNeedToSendAck=true;
-	signalValueChanged();
+	markRemoteValueAsUpdated();
 }
 
 
 template <typename T>
 void SyncParameter<T>::setRemoteNoChange()
 {
-	setRemoteValue(mRemoteValue);
+	markRemoteValueAsUpdated();
 }
 
+
+template <typename T>
+void SyncParameter<T>::markLocalValueAsUpdated()
+{
+	mLocalTimestamp=mCTX.now();
+	mNeedToSendDataAndReceiveAck=true;
+	signalValueChanged();
+}
+
+
+template <typename T>
+void SyncParameter<T>::markRemoteValueAsUpdated()
+{
+	mRemoteTimestamp=mCTX.now();
+	mNeedToSendAck=true;
+	signalValueChanged();
+}
 
 
 template <typename T>
@@ -124,6 +141,19 @@ T SyncParameter<T>::localValue() const
 
 template <typename T>
 T SyncParameter<T>::remoteValue() const
+{
+	return mRemoteValue;
+}
+
+
+template <typename T>
+T &SyncParameter<T>::localValueRef()
+{
+	return mLocalValue;
+}
+
+template <typename T>
+T &SyncParameter<T>::remoteValueRef()
 {
 	return mRemoteValue;
 }
@@ -190,7 +220,8 @@ template <typename T>
 quint16 SyncParameter<T>::bytes() const
 {
 	SerialSize size;
-	quint64 s=size(localValue());
+	T t=localValue();
+	quint64 s=size(t);
 	return (quint16)s;
 }
 

@@ -1,6 +1,7 @@
 #include "HexySerial.hpp"
 
-#include "SerialSettings.hpp"
+#include "SerialSettingsWidget.hpp"
+#include "../libutil/utility/Standard.hpp"
 
 
 #include <QDebug>
@@ -31,18 +32,18 @@ HexySerial::HexySerial(QObject *parent)
 	, dirtyMoveFlags(0xFFFFFFFF)
 {
 	serial = new QSerialPort(this);
-	settings = new SerialSettings;
+	settings = new SerialSettingsWidget;
 
-	if(!connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError)))) {
+	if(!connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError)), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
-	if(!connect(serial, SIGNAL(readyRead()), this, SLOT(readData()))) {
+	if(!connect(serial, SIGNAL(readyRead()), this, SLOT(readData()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
-	if(!connect(serial, SIGNAL(bytesWritten(qint64)), this, SLOT(dataWritten(qint64)))) {
+	if(!connect(serial, SIGNAL(bytesWritten(qint64)), this, SLOT(dataWritten(qint64)), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
-	if(!connect(settings,SIGNAL(settingsChanged()), this, SLOT(onSettingsChanged()))) {
+	if(!connect(settings,SIGNAL(settingsChanged()), this, SLOT(onSettingsChanged()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 }
@@ -65,7 +66,7 @@ void HexySerial::configure()
 
 void HexySerial::openSerialPort()
 {
-	SerialSettings::Settings p = settings->settings();
+	SerialSettings p = settings->settings();
 	serial->setPortName(p.name);
 	serial->setBaudRate(p.baudRate);
 	serial->setDataBits(p.dataBits);

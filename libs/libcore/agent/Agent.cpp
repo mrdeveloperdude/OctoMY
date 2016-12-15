@@ -32,6 +32,7 @@ CourierSet::CourierSet(ClientSignature &sig, Agent &agent)
 	, mBlobCourier(new BlobCourier(nullptr))
 
 {
+	OC_METHODGATE();
 	if(nullptr!=mAgentStateCourier) {
 		mAgentStateCourier->setHookSignals(mAgent, true);
 		mAgentStateCourier->setDestination(sig);
@@ -55,6 +56,7 @@ CourierSet::CourierSet(ClientSignature &sig, Agent &agent)
 
 CourierSet::~CourierSet()
 {
+	OC_METHODGATE();
 	for(Courier *courier: *this) {
 		courier->deleteLater();
 	}
@@ -63,12 +65,14 @@ CourierSet::~CourierSet()
 
 AgentStateCourier *CourierSet::agentStateCourier()
 {
+	OC_METHODGATE();
 	return mAgentStateCourier;
 }
 
 
 void CourierSet::setCommsEnabled(bool enable)
 {
+	OC_METHODGATE();
 	CommsChannel *cc=mAgent.comms();
 	if(nullptr!=cc) {
 		for(Courier *courier:*this) {
@@ -90,16 +94,18 @@ void CourierSet::setCommsEnabled(bool enable)
 AgentControls::AgentControls(Agent &agent)
 	: mAgent(agent)
 {
+	OC_METHODGATE();
 }
 
 AgentControls::~AgentControls()
 {
-
+	OC_METHODGATE();
 }
 
 
 void AgentControls::registerClient(ClientSignature &sig)
 {
+	OC_METHODGATE();
 	quint64 shid=sig.shortHandID();
 	if(!mCouriers.contains(shid) ) {
 		CourierSet *set=new CourierSet (sig,mAgent);
@@ -111,6 +117,7 @@ void AgentControls::registerClient(ClientSignature &sig)
 
 void AgentControls::unRegisterClient(ClientSignature &sig)
 {
+	OC_METHODGATE();
 	quint64 shid=sig.shortHandID();
 	if(mCouriers.contains(shid) ) {
 		mCouriers.remove(shid);
@@ -121,7 +128,7 @@ void AgentControls::unRegisterClient(ClientSignature &sig)
 
 void AgentControls::setCommsEnabled(bool enable)
 {
-
+	OC_METHODGATE();
 	for(CourierSet *set:mCouriers) {
 		set->setCommsEnabled(enable);
 	}
@@ -129,6 +136,7 @@ void AgentControls::setCommsEnabled(bool enable)
 
 CourierSet *AgentControls::activeControl() const
 {
+	OC_METHODGATE();
 	//TODO: Manage which one is actually the ACTIVE one instead of just returning the first one
 	return mCouriers.begin().value();
 }
@@ -146,7 +154,7 @@ Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 	, mControls(*this)
 	, window(nullptr)
 {
-
+	OC_METHODGATE();
 	mPeers.hookSignals(*this);
 	if(mPeers.isReady()) {
 		onPeerStoreReady(true);
@@ -155,7 +163,7 @@ Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 
 Agent::~Agent()
 {
-
+	OC_METHODGATE();
 }
 
 
@@ -163,6 +171,7 @@ Agent::~Agent()
 
 QWidget *Agent::showWindow()
 {
+	OC_METHODGATE();
 	if(nullptr==window) {
 		window=new AgentWindow(this, nullptr);
 	}
@@ -176,6 +185,7 @@ QWidget *Agent::showWindow()
 
 void Agent::setPanic(bool panic)
 {
+	OC_METHODGATE();
 	CourierSet *set=mControls.activeControl();
 
 	if(nullptr!=set) {
@@ -195,6 +205,7 @@ void Agent::setPanic(bool panic)
 
 const AgentControls &Agent::controls() const
 {
+	OC_METHODGATE();
 	return mControls;
 }
 
@@ -202,6 +213,7 @@ const AgentControls &Agent::controls() const
 //Node Associate Store slots
 void Agent::onPeerStoreReady(bool ready)
 {
+	OC_METHODGATE();
 	qDebug()<<"AGENT found peer store "<< (ready?"READY":"UNREADY");
 	QMap<QString, QSharedPointer<NodeAssociate> > &peers=mPeers.getParticipants();
 	for(QSharedPointer<NodeAssociate> peer:peers) {
@@ -218,17 +230,17 @@ void Agent::onPeerStoreReady(bool ready)
 
 void Agent::onPeerAdded(QString)
 {
-
+	OC_METHODGATE();
 }
 
 void Agent::onPeerRemoved(QString)
 {
-
+	OC_METHODGATE();
 }
 
 void Agent::onPeersChanged()
 {
-
+	OC_METHODGATE();
 }
 
 
@@ -238,8 +250,18 @@ void Agent::onPeersChanged()
 
 void Agent::onSyncParameterChanged(ISyncParameter *sp)
 {
-	qDebug()<<"Agent ASC changed: "<<sp->toString();
-
+	OC_METHODGATE();
+	//qDebug()<<"Agent ASC changed: "<<sp->toString();
+	if(nullptr!=sp){
+		if("TargetPose"==sp->name()){
+			SyncParameter<Pose> *targetPoseParameter=(SyncParameter<Pose> *)sp;
+			Pose targetPose=targetPoseParameter->bestValue(true);
+			qDebug()<<"TARGET POSE: "<<targetPose.toString();
+		}
+	}
+	else{
+		qWarning()<<"ERROR: sp was nullptr";
+	}
 }
 
 
@@ -249,15 +271,18 @@ void Agent::onSyncParameterChanged(ISyncParameter *sp)
 
 void Agent::onCommsError(QString e)
 {
+	OC_METHODGATE();
 	//qDebug()<<"AGENT UNIMP Comms error: "<<e;
 }
 
 void Agent::onCommsClientAdded(Client *c)
 {
+	OC_METHODGATE();
 	//qDebug()<<"AGENT UNIMP Client added: "<<c->toString();
 }
 
 void Agent::onCommsConnectionStatusChanged(bool s)
 {
+	OC_METHODGATE();
 	//qDebug() <<"AGENT UNIMP New connection status: "<<(s?"ONLINE":"OFFLINE");
 }

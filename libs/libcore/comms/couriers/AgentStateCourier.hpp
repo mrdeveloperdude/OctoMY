@@ -74,6 +74,7 @@ public:
 	void setPanic(bool);
 	void setFlags(quint8 flags);
 	void setMode(AgentMode mode);
+	void setPoseValue(quint32 index, qreal value);
 
 
 	bool panic();
