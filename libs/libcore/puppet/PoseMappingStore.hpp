@@ -2,11 +2,12 @@
 #define POSEMAPPINGSTORE_HPP
 
 #include "basic/AsyncStore.hpp"
-#include "puppet/PoseMapping.hpp"
+
 
 #include <QObject>
 #include <QSharedPointer>
 
+class PoseMapping;
 /*
 
   PoseMappingStore is used to persist the pose mapping for agent.
@@ -24,7 +25,7 @@ private:
 
 	QSharedPointer<PoseMapping> mPoseMapping;
 public:
-	explicit PoseMappingStore(QObject *parent = nullptr);
+	explicit PoseMappingStore(QString filename="", QObject *parent = nullptr);
 	virtual ~PoseMappingStore();
 
 public:

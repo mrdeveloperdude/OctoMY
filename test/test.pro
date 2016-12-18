@@ -37,7 +37,8 @@ TEST_PROJECTS+= \
 #	testSyncParameter \
 #	testAgentStateCourier \
 #	testCarSteeringWidget \
-	testPoseMappingWidget \
+#	testPoseMappingWidget \
+	testPoseMappingStore \
 
 
 

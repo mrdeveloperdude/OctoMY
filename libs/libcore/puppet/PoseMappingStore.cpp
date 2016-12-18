@@ -1,12 +1,14 @@
 #include "PoseMappingStore.hpp"
 
+#include "puppet/PoseMapping.hpp"
 #include "../libutil/utility/Standard.hpp"
 #include "../libutil/utility/Utility.hpp"
+
 #include <QJsonParseError>
 #include <QByteArray>
 
-PoseMappingStore::PoseMappingStore(QObject *parent)
-	: AsyncStore("PoseMapping", parent)
+PoseMappingStore::PoseMappingStore(QString filename, QObject *parent)
+	: AsyncStore(filename, parent)
 	, mPoseMapping(new PoseMapping(0))
 {
 	setObjectName("PoseMappingStore");
