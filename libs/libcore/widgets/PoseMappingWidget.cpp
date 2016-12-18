@@ -119,5 +119,6 @@ void PoseMappingWidget::makeConnection()
 		fromButton=nullptr;
 		toButton=nullptr;
 		update();
+		ui->widgetPoses->update();
 	}
 }

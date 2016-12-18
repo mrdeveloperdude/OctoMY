@@ -46,6 +46,7 @@
 #include <QProcess>
 
 
+#include "widgets/HardwareTemplate.hpp"
 
 HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	QMainWindow(parent)
@@ -94,6 +95,8 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		}
 
 		ui->widgetActuatorControl->configure(5);
+		PoseMapping *pm=new PoseMapping(5);
+		ui->widgetPoseMapping->configure(*pm);
 
 #ifdef EXTERNAL_LIB_OPENCL
 		if(!connect(ui->openGLWidgetCLGLView,SIGNAL(glInitialized()),this,SLOT(onGLWidgetInitialized()),OC_CONTYPE)) {

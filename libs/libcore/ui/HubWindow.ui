@@ -24,8 +24,8 @@
     <normaloff>:/icons/hub.svg</normaloff>:/icons/hub.svg</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_6">
-    <item row="0" column="0">
+   <layout class="QVBoxLayout" name="verticalLayout_6">
+    <item>
      <widget class="QSplitter" name="splitterLog">
       <property name="lineWidth">
        <number>0</number>
@@ -562,7 +562,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidgetDevelopment">
            <property name="currentIndex">
-            <number>4</number>
+            <number>9</number>
            </property>
            <widget class="QWidget" name="tabGait">
             <attribute name="title">
@@ -883,8 +883,14 @@
              <string>Actuators</string>
             </attribute>
             <layout class="QGridLayout" name="gridLayout_5">
-             <item row="0" column="0">
-              <widget class="ActuatorControlWidget" name="widgetActuatorControl" native="true"/>
+             <item row="2" column="0">
+              <widget class="QSplitter" name="splitter_3">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <widget class="ActuatorControlWidget" name="widgetActuatorControl" native="true"/>
+               <widget class="PoseMappingWidget" name="widgetPoseMapping" native="true"/>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -908,6 +914,12 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
+  <customwidget>
+   <class>PoseMappingWidget</class>
+   <extends>QWidget</extends>
+   <header>../../libs/libcore/widgets/PoseMappingWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
   <customwidget>
    <class>LogWidget</class>
    <extends>QPlainTextEdit</extends>
