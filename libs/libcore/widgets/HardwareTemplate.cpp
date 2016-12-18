@@ -77,7 +77,7 @@ QVector<HardwareTemplate *> HardwareTemplate::templates()
 			int index=0;
 			for(int leg=0; leg<6; ++leg) {
 				for(int limb=0; limb<3; ++limb) {
-					pmHexapod.setName(index, QString("Leg%1_Limb%2").arg(leg).arg(limb));
+					pmHexapod.setName(index, QString("Leg %1-%2").arg(leg).arg(limb));
 					index++;
 				}
 			}

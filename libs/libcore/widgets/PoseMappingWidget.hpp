@@ -37,7 +37,7 @@ public:
 	PoseMapping *mapping();
 private:
 
-	void addButtonPair(QVBoxLayout *hLayout, QString from,QString to, QButtonGroup *butGroupFrom, QButtonGroup *butGroupTo);
+	void addButtonPair(quint32 index, QVBoxLayout *hLayout, QString from,QString to, QButtonGroup *butGroupFrom, QButtonGroup *butGroupTo);
 
 	void makeConnection();
 

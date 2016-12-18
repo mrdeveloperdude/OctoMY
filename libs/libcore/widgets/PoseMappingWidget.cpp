@@ -10,6 +10,7 @@
 #include <QSpacerItem>
 #include <QDebug>
 #include <QButtonGroup>
+#include <QInputDialog>
 
 PoseMappingWidget::PoseMappingWidget(QWidget *parent)
 	: QWidget(parent)
@@ -71,7 +72,7 @@ void PoseMappingWidget::configure(PoseMapping &mapping)
 		ui->spinBoxActuatorCount->setValue(sz);
 		for(quint32 i=0; i<sz; ++i) {
 			//addButtonPair(hLayout, "Anna","Jeanette", butGroupFrom, butGroupTo);
-			addButtonPair(hLayout, mMapping->name(i), QString("Servo_%1").arg(i), butGroupFrom, butGroupTo);
+			addButtonPair(i,hLayout, mMapping->name(i), QString("Servo_%1").arg(i), butGroupFrom, butGroupTo);
 		}
 	} else {
 		ui->spinBoxActuatorCount->setValue(0);
@@ -88,25 +89,48 @@ PoseMapping *PoseMappingWidget::mapping()
 	return mMapping;
 }
 
-void PoseMappingWidget::addButtonPair(QVBoxLayout *hLayout, QString from,QString to, QButtonGroup *butGroupFrom, QButtonGroup *butGroupTo)
+void PoseMappingWidget::addButtonPair(quint32 index, QVBoxLayout *hLayout, QString from,QString to, QButtonGroup *butGroupFrom, QButtonGroup *butGroupTo)
 {
 	OC_METHODGATE();
-	QHBoxLayout *horizontalLayoutButtons1 = new QHBoxLayout();
+	QHBoxLayout *horizontalLayoutButtons = new QHBoxLayout();
+	QPushButton*pushButtonRename = new QPushButton(ui->widgetPoses);
+	pushButtonRename->setObjectName("pushButtonRename");
+	pushButtonRename->setText("Rename");
+	horizontalLayoutButtons->addWidget(pushButtonRename);
+
+
 	QPushButton*pushButtonFrom = new QPushButton(ui->widgetPoses);
 	pushButtonFrom->setObjectName("pushButtonFrom");
 	pushButtonFrom->setText(from);
 	pushButtonFrom->setCheckable(true);
 	butGroupFrom->addButton(pushButtonFrom);
-	horizontalLayoutButtons1->addWidget(pushButtonFrom);
+	horizontalLayoutButtons->addWidget(pushButtonFrom);
 	QSpacerItem*horizontalSpacerButtons1 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-	horizontalLayoutButtons1->addItem(horizontalSpacerButtons1);
+	horizontalLayoutButtons->addItem(horizontalSpacerButtons1);
 	QPushButton *pushButtonTo = new QPushButton(ui->widgetPoses);
 	pushButtonTo->setObjectName("pushButtonTo");
 	pushButtonTo->setText(to);
 	pushButtonTo->setCheckable(true);
 	butGroupTo->addButton(pushButtonTo);
-	horizontalLayoutButtons1->addWidget(pushButtonTo);
-	hLayout->addLayout(horizontalLayoutButtons1);
+	horizontalLayoutButtons->addWidget(pushButtonTo);
+	hLayout->addLayout(horizontalLayoutButtons);
+
+	if(!connect(pushButtonRename,  static_cast<void(QPushButton::*)(bool)>(&QPushButton::clicked), this, [=](bool) {
+	bool ok=false;
+	QString oldName=mMapping->name(index);
+		QString name= QInputDialog::getText(this, tr("Rename"), tr("Please enter new name:"), QLineEdit::Normal,oldName, &ok);
+		if (ok && !name.isEmpty()) {
+			qDebug()<<"RENAME SUCCESSFULL: "<<name;
+			mMapping->setName(index,name);
+			if(nullptr!=pushButtonFrom) {
+				pushButtonFrom->setText(name);
+			}
+		}
+
+	}, OC_CONTYPE)) {
+		qWarning()<<"ERROR: Could not connect";
+	}
+
 }
 
 
