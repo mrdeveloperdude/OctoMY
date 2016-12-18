@@ -35,7 +35,7 @@ class HexyTool : public QWidget
 		void killAll();
 	private slots:
 		void onUpdateGaitTimer();
-		void onConnectChanged(TryToggleState);
+		void onConnectChanged(const TryToggleState, const TryToggleState);
 		void onLimbIKUpdated();
 		void onHexySettingsChanged();
 		void onHexyConenctionChanged();

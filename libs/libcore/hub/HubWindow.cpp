@@ -87,7 +87,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		ui->lineEditRemoteAddress->configure(&mHub->settings(), "localhost","hub-listen_address","The address of the remote host");
 		ui->lineEditRemotePort->configure(&mHub->settings(), "","hub-port","The port of the remote host");
 		ui->tryToggleListen->setText("Listen","Preparing...","Listening");
-		if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onListenStateChanged(TryToggleState)),OC_CONTYPE)) {
+		if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(const TryToggleState, const TryToggleState)),this,SLOT(onListenStateChanged(const TryToggleState, const TryToggleState)),OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
 		if(!connect(&mSummaryTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()),OC_CONTYPE)) {
@@ -211,21 +211,21 @@ void HubWindow::appendLog(const QString& text)
 	ui->logScroll->appendLog(text);
 }
 
-void HubWindow::onListenStateChanged(TryToggleState s)
+void HubWindow::onListenStateChanged(const TryToggleState last, const TryToggleState current)
 {
-	ui->lineEditBindPort->setEnabled(OFF==s);
-	ui->comboBoxLocalAddress->setEnabled(OFF==s);
-	ui->pushButtonSendData->setEnabled(ON==s);
-	const bool on=ON==s;
+	ui->lineEditBindPort->setEnabled(OFF==current);
+	ui->comboBoxLocalAddress->setEnabled(OFF==current);
+	ui->pushButtonSendData->setEnabled(ON==current);
+	const bool on=(ON==current);
 	if(!on) {
 		ui->tabWidget->setCurrentIndex(0);
 	}
 	//ui->tabWidget->setEnabled(on);
 	on?mSummaryTimer.start():mSummaryTimer.stop();
-	appendLog("New listening state: "+ToggleStateToSTring(s));
-	if(TRYING==s) {
+	appendLog("New listening state: "+ToggleStateToSTring(current));
+	if(TRYING==current) {
 		QHostInfo::lookupHost("localhost",this, SLOT(onLocalHostLookupComplete(QHostInfo)));
-	} else if(OFF==s) {
+	} else if(OFF==current) {
 		CommsChannel *comms=mHub->comms();
 		if(0!=comms) {
 			comms->stop();
@@ -281,26 +281,6 @@ void HubWindow::onRemoteHostLookupComplete(QHostInfo hi)
 		}
 	}
 	ui->logScroll->appendLog("No valid addresses found during remote host lookup, aborting send");
-}
-
-
-void HubWindow::onError(QString msg)
-{
-	if("Unable to send a message"==msg) {
-
-	} else {
-		appendLog("GOT ERROR: "+msg);
-	}
-}
-
-
-
-void HubWindow::onClientAdded(Client *c)
-{
-	if(0!=c) {
-		appendLog("CLIENT ADDED: "+c->summary());
-		ui->widgetIncommingNodes->update();
-	}
 }
 
 
@@ -384,8 +364,30 @@ void HubWindow::on_tabWidget_currentChanged(int)
 
 }
 
+// CommsChannel slots
+///////////////////////////////////////////
 
-void HubWindow::onConnectionStatusChanged(bool s)
+void HubWindow::onCommsError(QString msg)
+{
+	if("Unable to send a message"==msg) {
+
+	} else {
+		appendLog("GOT ERROR: "+msg);
+	}
+}
+
+
+
+void HubWindow::onCommsClientAdded(Client *c)
+{
+	if(0!=c) {
+		appendLog("CLIENT ADDED: "+c->summary());
+		ui->widgetIncommingNodes->update();
+	}
+}
+
+
+void HubWindow::onCommsConnectionStatusChanged(bool s)
 {
 	qDebug()<<"connection state changed: "<<s;
 }

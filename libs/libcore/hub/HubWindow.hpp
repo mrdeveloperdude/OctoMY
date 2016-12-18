@@ -62,14 +62,18 @@ private slots:
 	void onGLWidgetInitialized();
 #endif
 
-	// CommChannel slots
-private slots:
-	void onError(QString msg);
-	void onClientAdded(Client *c);
-	void onConnectionStatusChanged(bool);
+
+	// CommsChannel slots
+public slots:
+	//		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
+	void onCommsError(QString message);
+	void onCommsClientAdded(Client *c);
+	void onCommsConnectionStatusChanged(bool c);
+
+
 
 private slots:
-	void onListenStateChanged(TryToggleState);
+	void onListenStateChanged(const TryToggleState last, const TryToggleState current);
 	void onLocalHostLookupComplete(QHostInfo hi);
 	void onRemoteHostLookupComplete(QHostInfo hi);
 	void onSummaryTimer();

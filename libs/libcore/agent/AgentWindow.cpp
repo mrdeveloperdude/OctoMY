@@ -46,6 +46,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 
 	if(nullptr!=mAgent) {
 		//Settings &s=agent->settings();
+		ui->widgetHardware->configure(poseMapping());
 		//Select correct starting page
 		QWidget *startPage=ui->pageRunning;
 		ui->widgetDelivery->reset();

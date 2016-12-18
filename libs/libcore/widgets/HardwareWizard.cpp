@@ -34,6 +34,12 @@ static long mod(T a, T b)
 	return (a%b+b)%b;
 }
 
+
+void HardwareWizard::configure(QSharedPointer<PoseMapping> mapping)
+{
+	mPoseMapping=mapping;
+}
+
 void HardwareWizard::reset()
 {
 	//We skip the template screen for now, because frankly it is not useful until this menu starts overflowing with alternatives.
@@ -60,7 +66,6 @@ void HardwareWizard::moveTo(int next)
 	break;
 	// Interface
 	case(1): {
-
 		selectFirstIfNoneSelected(ui->listWidgetInterfaceType);
 	}
 	break;
@@ -74,21 +79,15 @@ void HardwareWizard::moveTo(int next)
 		selectFirstIfNoneSelected(ui->listWidgetProtocol);
 	}
 	break;
-
-
 	// Serial settings
 	case(4): {
 
 	}
 	break;
-
-
-	// Pose
+	// Pose Mapping
 	case(5): {
-		//ui->widgetPoseMapping
 	}
 	break;
-
 	case(6): {
 		emit done();
 		//selectFirstIfNoneSelected(ui->listWidgetProtocol);
@@ -103,7 +102,7 @@ void HardwareWizard::save()
 {
 	const int cur=ui->stackedWidget->currentIndex();
 	switch(cur) {
-	//Template
+	// Template
 	case(0): {
 		const int curTemplate=ui->listViewTemplate->currentIndex().row();
 		qDebug()<<"Found template: "<<curTemplate;
@@ -116,29 +115,43 @@ void HardwareWizard::save()
 		loadFromTemplate();
 	}
 	break;
-	//Interface
+	// Interface
 	case(1): {
 
 	}
 	break;
-	//Serial
+	// Serial device
 	case(2): {
 
 	}
 	break;
-	//Protocol
+	// Protocol
 	case(3): {
 	}
 	break;
+	// Serial settings
+	case(4): {
+
+	}
+	break;
+	// Pose Mapping
+	case(5): {
+		// Save happens implicitly via PoseMappingStore upon destructor
+	}
+	break;
+
 	}
 }
 
 void HardwareWizard::loadFromTemplate()
 {
-	qWarning()<<"TODO: Implement this";
 	if(nullptr!=mSelectedTempalte) {
-		mPoseMapping=mSelectedTempalte->poseMapping();
-		ui->widgetPoseMapping->configure(mPoseMapping);
+		if(!mPoseMapping.isNull()) {
+			mPoseMapping->set(mSelectedTempalte->poseMapping());
+			ui->widgetPoseMapping->configure(*mPoseMapping);
+		} else {
+			qWarning()<<"ERROR: No pose mapping. did you forget to configure HardwareWizard?";
+		}
 	}
 
 }

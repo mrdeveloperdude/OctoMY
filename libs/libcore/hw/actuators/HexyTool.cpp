@@ -20,7 +20,7 @@ HexyTool::HexyTool(QWidget *parent)
 	if(!connect(serial,SIGNAL(connectionChanged()), this, SLOT(onHexyConenctionChanged()))) {
 		qWarning()<<"ERROR: could not connect";
 	}
-	if(!connect(ui->tryToggleConnect, SIGNAL(stateChanged(TryToggleState)), this, SLOT(onConnectChanged(TryToggleState)))) {
+	if(!connect(ui->tryToggleConnect, SIGNAL(stateChanged(const TryToggleState, const TryToggleState)), this, SLOT(onConnectChanged(const TryToggleState, const TryToggleState)))) {
 		qWarning()<<"ERROR: could not connect";
 	}
 
@@ -119,10 +119,10 @@ HexyTool::~HexyTool()
 }
 
 
-void HexyTool::onConnectChanged(TryToggleState s)
+void HexyTool::onConnectChanged(const TryToggleState last, const TryToggleState current)
 {
-	ui->scrollAreaServos->setEnabled(ON==s);
-	switch(s) {
+	ui->scrollAreaServos->setEnabled(ON==current);
+	switch(current) {
 	case(OFF): {
 		killAll();
 		if(0!=serial) {

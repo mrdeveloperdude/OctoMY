@@ -188,6 +188,13 @@ void PoseMapping::fromMap( QVariantList map)
 	}
 }
 
+
+void PoseMapping::set(const PoseMapping &other)
+{
+	mMapping=other.mMapping;
+	mNames=other.mNames;
+}
+
 QDataStream &operator>>(QDataStream &ds, PoseMapping &p)
 {
 	p.receive(ds);

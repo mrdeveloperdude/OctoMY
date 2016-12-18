@@ -3,6 +3,7 @@
 
 #include "puppet/PoseMapping.hpp"
 #include <QWidget>
+#include <QSharedPointer>
 
 class HardwareTemplate;
 class HardwareTemplateModel;
@@ -26,7 +27,7 @@ private:
 	HardwareTemplateModel *mHardwareTemplateModel;
 
 	HardwareTemplate *mSelectedTempalte;
-	PoseMapping mPoseMapping;
+	QSharedPointer<PoseMapping> mPoseMapping;
 
 public:
 	explicit HardwareWizard(QWidget *parent = 0);
@@ -39,6 +40,7 @@ private:
 
 public:
 
+	void configure(QSharedPointer<PoseMapping>);
 	void reset();
 
 signals:

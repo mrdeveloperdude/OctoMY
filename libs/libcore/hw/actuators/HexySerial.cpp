@@ -28,6 +28,7 @@ bool endstop_b;
 
 HexySerial::HexySerial(QObject *parent)
 	: QObject(parent)
+	, settings(nullptr)
 	, lastPos{0}
 	, dirtyMoveFlags(0xFFFFFFFF)
 {
@@ -58,7 +59,8 @@ HexySerial::~HexySerial()
 
 void HexySerial::configure()
 {
-	if(0!=settings) {
+	if(nullptr!=settings) {
+		qDebug()<<"SETTINGS SHOW";
 		settings->show();
 	}
 }
@@ -116,7 +118,7 @@ void HexySerial::readData()
 		qDebug()<<data;
 		//TODO:parse and handle data
 	} else {
-		qWarning()<<"ERROR: Trying to use serial when not connected";
+		qWarning()<<"ERROR: Trying to read data from serial when not connected";
 	}
 }
 
@@ -200,7 +202,7 @@ void HexySerial::kill(quint32 flags)
 			writeData(data.toLatin1());
 		}
 	} else {
-		qWarning()<<"ERROR: Trying to use serial when not connected";
+		qWarning()<<"ERROR: Trying to kill servo via serial when not connected";
 	}
 
 }
@@ -211,7 +213,7 @@ void HexySerial::center()
 	if(isConnected()) {
 		writeData("C\n");
 	} else {
-		qWarning()<<"ERROR: Trying to use serial when not connected";
+		qWarning()<<"ERROR: Trying to center servo using serial when not connected";
 	}
 
 }
@@ -222,7 +224,7 @@ void HexySerial::version()
 	if(isConnected()) {
 		writeData("V\n");
 	} else {
-		qWarning()<<"ERROR: Trying to use serial when not connected";
+		qWarning()<<"ERROR: Trying to get version via serial when not connected";
 	}
 
 }
@@ -233,7 +235,7 @@ void HexySerial::debug()
 	if(isConnected()) {
 		writeData("D\n");
 	} else {
-		qWarning()<<"ERROR: Trying to use serial when not connected";
+		qWarning()<<"ERROR: Trying to debug with serial when not connected";
 	}
 
 }
@@ -258,7 +260,7 @@ void HexySerial::syncMove()
 		writeData(data.toLatin1());
 		dirtyMoveFlags=0;
 	} else {
-		qWarning()<<"ERROR: Trying to use serial when not connected";
+		qWarning()<<"ERROR: Trying to syncMove with serial when not connected";
 	}
 
 
@@ -284,7 +286,7 @@ void HexySerial::move(qreal pos[], quint32 flags)
 			syncMove();
 		}
 	} else {
-		qWarning()<<"ERROR: Trying to use serial when not connected";
+		qWarning()<<"ERROR: Trying to move servo with serial when not connected";
 	}
 
 }

@@ -34,6 +34,9 @@ public:
 	QVariantList toMap() const;
 	void fromMap( QVariantList );
 
+	//Copy data from other instance
+	void set(const PoseMapping &other);
+
 };
 
 
