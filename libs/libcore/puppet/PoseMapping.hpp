@@ -13,7 +13,7 @@ private:
 	QVector<QString> mNames;
 
 public:
-	explicit PoseMapping(quint32 size);
+	explicit PoseMapping(quint32 size=0);
 	virtual  ~PoseMapping();
 
 public:
@@ -24,6 +24,8 @@ public:
 	QString name(quint32 from) const;
 	quint32 size() const;
 	QString toString() const;
+
+	void resize(quint32 );
 
 	QDataStream &receive(QDataStream &);
 	QDataStream &send(QDataStream &) const;

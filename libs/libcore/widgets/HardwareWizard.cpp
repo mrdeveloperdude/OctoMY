@@ -53,23 +53,43 @@ static void selectFirstIfNoneSelected(QListView *list)
 void HardwareWizard::moveTo(int next)
 {
 	switch(next) {
+	//Template
 	case(0): {
 		selectFirstIfNoneSelected(ui->listViewTemplate);
 	}
 	break;
+	// Interface
 	case(1): {
+
 		selectFirstIfNoneSelected(ui->listWidgetInterfaceType);
 	}
 	break;
+	// Serial device
 	case(2): {
 		selectFirstIfNoneSelected(ui->listViewSerialInterface);
 	}
 	break;
+	// Protocol
 	case(3): {
 		selectFirstIfNoneSelected(ui->listWidgetProtocol);
 	}
 	break;
+
+
+	// Serial settings
 	case(4): {
+
+	}
+	break;
+
+
+	// Pose
+	case(5): {
+		//ui->widgetPoseMapping
+	}
+	break;
+
+	case(6): {
 		emit done();
 		//selectFirstIfNoneSelected(ui->listWidgetProtocol);
 	}
@@ -116,6 +136,11 @@ void HardwareWizard::save()
 void HardwareWizard::loadFromTemplate()
 {
 	qWarning()<<"TODO: Implement this";
+	if(nullptr!=mSelectedTempalte) {
+		mPoseMapping=mSelectedTempalte->poseMapping();
+		ui->widgetPoseMapping->configure(mPoseMapping);
+	}
+
 }
 
 void HardwareWizard::on_pushButtonOnward_clicked()

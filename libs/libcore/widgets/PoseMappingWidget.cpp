@@ -22,6 +22,9 @@ PoseMappingWidget::PoseMappingWidget(QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
+	if(!connect(ui->spinBoxActuatorCount, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &PoseMappingWidget::onSpinValueChanged, OC_CONTYPE)) {
+		qWarning()<<"ERROR: Could not connect";
+	}
 }
 
 PoseMappingWidget::~PoseMappingWidget()
@@ -65,10 +68,13 @@ void PoseMappingWidget::configure(PoseMapping &mapping)
 
 	if(nullptr!=mMapping) {
 		const quint32 sz=mMapping->size();
+		ui->spinBoxActuatorCount->setValue(sz);
 		for(quint32 i=0; i<sz; ++i) {
 			//addButtonPair(hLayout, "Anna","Jeanette", butGroupFrom, butGroupTo);
 			addButtonPair(hLayout, mMapping->name(i), QString("Servo_%1").arg(i), butGroupFrom, butGroupTo);
 		}
+	} else {
+		ui->spinBoxActuatorCount->setValue(0);
 	}
 	QSpacerItem *verticalSpacer = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
 	hLayout->addItem(verticalSpacer);
@@ -120,5 +126,15 @@ void PoseMappingWidget::makeConnection()
 		toButton=nullptr;
 		update();
 		ui->widgetPoses->update();
+	}
+}
+
+
+void PoseMappingWidget::onSpinValueChanged(int size)
+{
+	if(nullptr!=mMapping) {
+		qDebug()<<"RESIZING TO: "<<size;
+		mMapping->resize(size);
+		configure(*mMapping);
 	}
 }

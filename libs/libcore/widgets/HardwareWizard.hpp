@@ -1,10 +1,12 @@
 #ifndef HARDWAREWIZARD_HPP
 #define HARDWAREWIZARD_HPP
 
+#include "puppet/PoseMapping.hpp"
 #include <QWidget>
 
 class HardwareTemplate;
 class HardwareTemplateModel;
+
 
 namespace Ui
 {
@@ -24,6 +26,7 @@ private:
 	HardwareTemplateModel *mHardwareTemplateModel;
 
 	HardwareTemplate *mSelectedTempalte;
+	PoseMapping mPoseMapping;
 
 public:
 	explicit HardwareWizard(QWidget *parent = 0);

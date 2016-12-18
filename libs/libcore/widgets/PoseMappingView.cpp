@@ -75,8 +75,8 @@ void PoseMappingView::paintEvent(QPaintEvent *)
 				painter.setPen(pen);
 
 				//qDebug()<<"GOT MAP FROM "<<i<<" TO " <<m;
-				QPushButton *fromButton=(i<=fromButtons.size())?fromButtons.at(i):nullptr;
-				QPushButton *toButton=(m<=toButtons.size())?toButtons.at(m):nullptr;
+				QPushButton *fromButton=(i<fromButtons.size())?fromButtons.at(i):nullptr;
+				QPushButton *toButton=(m<toButtons.size())?toButtons.at(m):nullptr;
 				if((nullptr!=fromButton) &&(nullptr!=toButton) ) {
 					QRect fromRect=fromButton->geometry();
 					QRect toRect=toButton->geometry();

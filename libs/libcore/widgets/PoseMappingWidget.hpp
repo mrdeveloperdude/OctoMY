@@ -41,6 +41,9 @@ private:
 
 	void makeConnection();
 
+	private slots:
+
+	void onSpinValueChanged(int);
 };
 
 #endif // POSEMAPPINGWIDGET_HPP

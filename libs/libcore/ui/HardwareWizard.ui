@@ -29,7 +29,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="pageTemplate">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -180,6 +180,27 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="pagePoseMapping">
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Select and map actuators</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="PoseMappingWidget" name="widgetPoseMapping" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
@@ -215,6 +236,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PoseMappingWidget</class>
+   <extends>QWidget</extends>
+   <header>../../libs/libcore/widgets/PoseMappingWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../resources/icons.qrc"/>
  </resources>

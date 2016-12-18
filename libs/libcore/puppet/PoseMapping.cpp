@@ -3,6 +3,7 @@
 #include  "Pose.hpp"
 
 #include <QDataStream>
+#include <QDebug>
 
 PoseMapping::PoseMapping(quint32 size)
 	: mMapping(size)
@@ -27,10 +28,10 @@ void PoseMapping::setMapping(quint32 from, quint32 to, bool swap)
 	if(l<=from) {
 		return;
 	}
-	if(swap){
+	if(swap) {
 		quint32 oldFrom=0;
-		for(quint32 oldTo:mMapping){
-			if(to==oldTo){
+		for(quint32 oldTo:mMapping) {
+			if(to==oldTo) {
 				break;
 			}
 			oldFrom++;
@@ -95,6 +96,33 @@ QString PoseMapping::toString() const
 	return out;
 }
 
+
+void PoseMapping::resize(quint32 nusz)
+{
+	quint32 sz=mMapping.size();
+	if(sz==nusz) {
+		qDebug()<<"SAME SIZE SKIPPING: "<<sz;
+		return;
+	}
+	if(nusz<sz) {
+		qDebug()<<"SMALLER SIZE FIXING: "<<sz;
+		for(quint32 i=0; i<sz; ++i) {
+			if(mMapping[i]>=nusz){
+				mMapping[i]=nusz-1;
+			}
+		}
+	}
+	mMapping.resize(nusz);
+	mNames.resize(nusz);
+	if(nusz>sz) {
+		qDebug()<<"BIGGER SIZE GENERATING: "<<nusz;
+		for(quint32 i=sz; i<nusz; ++i) {
+			mMapping[i]=i;
+			mNames[i]="";
+		}
+	}
+
+}
 
 
 QDataStream &PoseMapping::receive(QDataStream &ds)
