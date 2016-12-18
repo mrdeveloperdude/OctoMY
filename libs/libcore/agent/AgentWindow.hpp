@@ -6,6 +6,9 @@
 #include "basic/LogDestination.hpp"
 
 #include "basic/NodeAssociate.hpp"
+
+#include "puppet/PoseMapping.hpp"
+
 #include <QWidget>
 #include <QGeoPositionInfo>
 #include <QMenu>
@@ -81,6 +84,9 @@ private:
 	void updateCourierRegistration();
 
 	void updateOnlineStatus();
+
+	QSharedPointer<PoseMapping> poseMapping();
+
 
 
 private:

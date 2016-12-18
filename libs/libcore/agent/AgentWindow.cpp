@@ -595,6 +595,16 @@ void AgentWindow::updateOnlineStatus()
 
 }
 
+
+QSharedPointer<PoseMapping> AgentWindow::poseMapping()
+{
+	if(nullptr!=mAgent) {
+		return mAgent->poseMapping();
+	}
+	return QSharedPointer<PoseMapping>(nullptr);
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 
 void AgentWindow::notifyAndroid(QString s)
