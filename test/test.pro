@@ -31,11 +31,14 @@ TEST_PROJECTS+= \
 #	testNodeAssociateStore \
 #	testPortableID \
 #	testESpeak \
+#	testCreepyVoice \
 #	testBlob \
 #	testEventSourcing \
 #	testSyncParameter \
-#	testAgentStateCourier\
-	testCarSteeringWidget\
+#	testAgentStateCourier \
+	testCarSteeringWidget \
+	testPoseMappingWidget \
+
 
 
 #

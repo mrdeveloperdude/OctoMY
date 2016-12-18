@@ -146,7 +146,6 @@ SOURCES +=\
 	widgets/MultiView.cpp \
 	widgets/NumberEntry.cpp \
 	widgets/PairingEditButtonDelegate.cpp \
-	widgets/PairingListModel.cpp \
 	widgets/PairingWizard.cpp \
 	widgets/PKIManager.cpp \
 	widgets/planedit/CodeEditor.cpp \
@@ -155,7 +154,6 @@ SOURCES +=\
 	widgets/PortableIDWidget.cpp \
 	widgets/QRWidget.cpp \
 	widgets/RealtimeValuesWidget.cpp \
-	widgets/SerialDeviceListModel.cpp \
 	widgets/SvgWidget.cpp \
 	widgets/TextEntry.cpp \
 	widgets/TryToggle.cpp \
@@ -195,7 +193,13 @@ SOURCES +=\
     puppet/PoseMapping.cpp \
     puppet/AgentMobilityType.cpp \
     hw/actuators/SerialSettingsWidget.cpp \
-    hw/actuators/SerialSettings.cpp
+    hw/actuators/SerialSettings.cpp \
+    widgets/HardwareTemplate.cpp \
+    models/HardwareTemplateModel.cpp \
+    models/PairingListModel.cpp \
+    models/SerialDeviceListModel.cpp \
+    widgets/PoseMappingWidget.cpp \
+    widgets/PoseMappingView.cpp
 
 
 HEADERS  += \
@@ -346,7 +350,6 @@ HEADERS  += \
 	widgets/MultiView.hpp \
 	widgets/NumberEntry.hpp \
 	widgets/PairingEditButtonDelegate.hpp \
-	widgets/PairingListModel.hpp \
 	widgets/PairingWizard.hpp \
 	widgets/PKIManager.hpp \
 	widgets/planedit/CodeEditor.hpp \
@@ -355,7 +358,6 @@ HEADERS  += \
 	widgets/PortableIDWidget.hpp \
 	widgets/QRWidget.hpp \
 	widgets/RealtimeValuesWidget.hpp \
-	widgets/SerialDeviceListModel.hpp \
 	widgets/SvgWidget.hpp \
 	widgets/TextEntry.hpp \
 	widgets/TryToggle.hpp \
@@ -396,7 +398,13 @@ HEADERS  += \
     puppet/PoseMapping.hpp \
     puppet/AgentMobilityType.hpp \
     hw/actuators/SerialSettingsWidget.hpp \
-    hw/actuators/SerialSettings.hpp
+    hw/actuators/SerialSettings.hpp \
+    widgets/HardwareTemplate.hpp \
+    models/HardwareTemplateModel.hpp \
+    models/PairingListModel.hpp \
+    models/SerialDeviceListModel.hpp \
+    widgets/PoseMappingWidget.hpp \
+    widgets/PoseMappingView.hpp
 
 
 FORMS    += \
@@ -432,7 +440,8 @@ FORMS    += \
 	widgets/SpeechControlWidget.ui \
 	widgets/ActuatorControlWidget.ui \
     widgets/CarSteeringWidget.ui \
-    ui/SerialSettingsWidget.ui
+    ui/SerialSettingsWidget.ui \
+    widgets/PoseMappingWidget.ui
 
 
 RESOURCES += \

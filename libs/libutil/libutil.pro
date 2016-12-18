@@ -19,7 +19,8 @@ HEADERS	+= \
     utility/IncludeOpenGL.hpp \
     utility/widgets/PixViewer.hpp \
     utility/GLErrors.hpp \
-    utility/SerialSize.hpp
+    utility/SerialSize.hpp \
+    utility/BufferHoneyPot.hpp
 
 
 SOURCES	+= \
@@ -33,7 +34,8 @@ SOURCES	+= \
     utility/GLContext.cpp \
     utility/widgets/PixViewer.cpp \
     utility/GLErrors.cpp \
-    utility/SerialSize.cpp
+    utility/SerialSize.cpp \
+    utility/BufferHoneyPot.cpp
 
 FORMS += \
     utility/widgets/PixViewer.ui

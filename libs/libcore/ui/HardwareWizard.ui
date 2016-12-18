@@ -41,7 +41,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QListWidget" name="listWidgetTemplate">
+        <widget class="QListView" name="listViewTemplate">
          <property name="alternatingRowColors">
           <bool>true</bool>
          </property>
@@ -54,33 +54,6 @@
            <height>32</height>
           </size>
          </property>
-         <item>
-          <property name="text">
-           <string>Hexy by ArcBotics - Using USB OTG Cable</string>
-          </property>
-          <property name="icon">
-           <iconset resource="../resources/icons.qrc">
-            <normaloff>:/icons/servotor32_otg.svg</normaloff>:/icons/servotor32_otg.svg</iconset>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Hexy by ArcBotics - Using Bluetooth</string>
-          </property>
-          <property name="icon">
-           <iconset resource="../resources/icons.qrc">
-            <normaloff>:/icons/servotor32_bt.svg</normaloff>:/icons/servotor32_bt.svg</iconset>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Generic RC Car - Using Servotor32 + USB OTG</string>
-          </property>
-          <property name="icon">
-           <iconset resource="../resources/icons.qrc">
-            <normaloff>:/icons/servotor32_otg.svg</normaloff>:/icons/servotor32_otg.svg</iconset>
-          </property>
-         </item>
         </widget>
        </item>
       </layout>

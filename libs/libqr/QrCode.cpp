@@ -1,9 +1,9 @@
-/* 
+/*
  * QR Code generator library (C++)
- * 
+ *
  * Copyright (c) 2016 Project Nayuki
  * https://www.nayuki.io/page/qr-code-generator-library
- * 
+ *
  * (MIT License)
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -27,6 +27,7 @@
 #include <cmath>
 #include <cstddef>
 #include <sstream>
+
 #include "BitBuffer.hpp"
 #include "QrCode.hpp"
 
@@ -59,7 +60,7 @@ qrcodegen::QrCode qrcodegen::QrCode::encodeSegments(const std::vector<QrSegment>
 		int minVersion, int maxVersion, int mask, bool boostEcl) {
 	if (!(1 <= minVersion && minVersion <= maxVersion && maxVersion <= 40) || mask < -1 || mask > 7)
 		throw "Invalid value";
-	
+
 	// Find the minimal version number to use
 	int version, dataUsedBits;
 	for (version = minVersion; ; version++) {
@@ -72,7 +73,7 @@ qrcodegen::QrCode qrcodegen::QrCode::encodeSegments(const std::vector<QrSegment>
 	}
 	if (dataUsedBits == -1)
 		throw "Assertion error";
-	
+
 	// Increase the error correction level while the data still fits in the current version number
 	const Ecc *newEcl = &ecl;
 	if (boostEcl) {
@@ -80,7 +81,7 @@ qrcodegen::QrCode qrcodegen::QrCode::encodeSegments(const std::vector<QrSegment>
 		if (dataUsedBits <= getNumDataCodewords(version, Ecc::QUARTILE) * 8)  newEcl = &Ecc::QUARTILE;
 		if (dataUsedBits <= getNumDataCodewords(version, Ecc::HIGH    ) * 8)  newEcl = &Ecc::HIGH    ;
 	}
-	
+
 	// Create the data bit string by concatenating all segments
 	int dataCapacityBits = getNumDataCodewords(version, *newEcl) * 8;
 	BitBuffer bb;
@@ -90,17 +91,17 @@ qrcodegen::QrCode qrcodegen::QrCode::encodeSegments(const std::vector<QrSegment>
 		bb.appendBits(seg.numChars, seg.mode.numCharCountBits(version));
 		bb.appendData(seg);
 	}
-	
+
 	// Add terminator and pad up to a byte if applicable
 	bb.appendBits(0, std::min(4, dataCapacityBits - bb.getBitLength()));
 	bb.appendBits(0, (8 - bb.getBitLength() % 8) % 8);
-	
+
 	// Pad with alternate bytes until data capacity is reached
 	for (uint8_t padByte = 0xEC; bb.getBitLength() < dataCapacityBits; padByte ^= 0xEC ^ 0x11)
 		bb.appendBits(padByte, 8);
 	if (bb.getBitLength() % 8 != 0)
 		throw "Assertion error";
-	
+
 	// Create the QR Code symbol
 	return QrCode(version, *newEcl, bb.getBytes(), mask);
 }
@@ -111,17 +112,17 @@ qrcodegen::QrCode::QrCode(int ver, const Ecc &ecl, const std::vector<uint8_t> &d
 		version(ver),
 		size(1 <= ver && ver <= 40 ? ver * 4 + 17 : -1),  // Avoid signed overflow undefined behavior
 		errorCorrectionLevel(ecl) {
-	
+
 	// Check arguments
 	if (ver < 1 || ver > 40 || mask < -1 || mask > 7)
 		throw "Value out of range";
-	
+
 	std::vector<bool> row(size);
 	for (int i = 0; i < size; i++) {
 		modules.push_back(row);
 		isFunction.push_back(row);
 	}
-	
+
 	// Draw function patterns, draw all codewords, do masking
 	drawFunctionPatterns();
 	const std::vector<uint8_t> allCodewords(appendErrorCorrection(dataCodewords));
@@ -135,15 +136,15 @@ qrcodegen::QrCode::QrCode(const QrCode &qr, int mask) :
 		version(qr.version),
 		size(qr.size),
 		errorCorrectionLevel(qr.errorCorrectionLevel) {
-	
+
 	// Check arguments
 	if (mask < -1 || mask > 7)
 		throw "Mask value out of range";
-	
+
 	// Handle grid fields
 	modules = qr.modules;
 	isFunction = qr.isFunction;
-	
+
 	// Handle masking
 	applyMask(qr.mask);  // Undo old mask
 	this->mask = handleConstructorMasking(mask);
@@ -197,12 +198,12 @@ void qrcodegen::QrCode::drawFunctionPatterns() {
 		setFunctionModule(6, i, i % 2 == 0);
 		setFunctionModule(i, 6, i % 2 == 0);
 	}
-	
+
 	// Draw 3 finder patterns (all corners except bottom right; overwrites some timing modules)
 	drawFinderPattern(3, 3);
 	drawFinderPattern(size - 4, 3);
 	drawFinderPattern(3, size - 4);
-	
+
 	// Draw the numerous alignment patterns
 	const std::vector<int> alignPatPos(getAlignmentPatternPositions(version));
 	int numAlign = alignPatPos.size();
@@ -214,7 +215,7 @@ void qrcodegen::QrCode::drawFunctionPatterns() {
 				drawAlignmentPattern(alignPatPos.at(i), alignPatPos.at(j));
 		}
 	}
-	
+
 	// Draw configuration data
 	drawFormatBits(0);  // Dummy mask value; overwritten later in the constructor
 	drawVersion();
@@ -231,7 +232,7 @@ void qrcodegen::QrCode::drawFormatBits(int mask) {
 	data ^= 0x5412;  // uint15
 	if (data >> 15 != 0)
 		throw "Assertion error";
-	
+
 	// Draw first copy
 	for (int i = 0; i <= 5; i++)
 		setFunctionModule(8, i, ((data >> i) & 1) != 0);
@@ -240,7 +241,7 @@ void qrcodegen::QrCode::drawFormatBits(int mask) {
 	setFunctionModule(7, 8, ((data >> 8) & 1) != 0);
 	for (int i = 9; i < 15; i++)
 		setFunctionModule(14 - i, 8, ((data >> i) & 1) != 0);
-	
+
 	// Draw second copy
 	for (int i = 0; i <= 7; i++)
 		setFunctionModule(size - 1 - i, 8, ((data >> i) & 1) != 0);
@@ -253,7 +254,7 @@ void qrcodegen::QrCode::drawFormatBits(int mask) {
 void qrcodegen::QrCode::drawVersion() {
 	if (version < 7)
 		return;
-	
+
 	// Calculate error correction code and pack bits
 	int rem = version;  // version is uint6, in the range [7, 40]
 	for (int i = 0; i < 12; i++)
@@ -261,7 +262,7 @@ void qrcodegen::QrCode::drawVersion() {
 	int data = version << 12 | rem;  // uint18
 	if (data >> 18 != 0)
 		throw "Assertion error";
-	
+
 	// Draw two copies
 	for (int i = 0; i < 18; i++) {
 		bool bit = ((data >> i) & 1) != 0;
@@ -301,7 +302,7 @@ void qrcodegen::QrCode::setFunctionModule(int x, int y, bool isBlack) {
 std::vector<uint8_t> qrcodegen::QrCode::appendErrorCorrection(const std::vector<uint8_t> &data) const {
 	if (data.size() != static_cast<unsigned int>(getNumDataCodewords(version, errorCorrectionLevel)))
 		throw "Invalid argument";
-	
+
 	// Calculate parameter numbers
 	int numBlocks = NUM_ERROR_CORRECTION_BLOCKS[errorCorrectionLevel.ordinal][version];
 	int totalEcc = NUM_ERROR_CORRECTION_CODEWORDS[errorCorrectionLevel.ordinal][version];
@@ -310,7 +311,7 @@ std::vector<uint8_t> qrcodegen::QrCode::appendErrorCorrection(const std::vector<
 	int blockEccLen = totalEcc / numBlocks;
 	int numShortBlocks = numBlocks - getNumRawDataModules(version) / 8 % numBlocks;
 	int shortBlockLen = getNumRawDataModules(version) / 8 / numBlocks;
-	
+
 	// Split data into blocks and append ECC to each block
 	std::vector<std::vector<uint8_t>> blocks;
 	const ReedSolomonGenerator rs(blockEccLen);
@@ -324,7 +325,7 @@ std::vector<uint8_t> qrcodegen::QrCode::appendErrorCorrection(const std::vector<
 		dat.insert(dat.end(), ecc.begin(), ecc.end());
 		blocks.push_back(dat);
 	}
-	
+
 	// Interleave (not concatenate) the bytes from every block into a single sequence
 	std::vector<uint8_t> result;
 	for (int i = 0; static_cast<unsigned int>(i) < blocks.at(0).size(); i++) {
@@ -343,7 +344,7 @@ std::vector<uint8_t> qrcodegen::QrCode::appendErrorCorrection(const std::vector<
 void qrcodegen::QrCode::drawCodewords(const std::vector<uint8_t> &data) {
 	if (data.size() != static_cast<unsigned int>(getNumRawDataModules(version) / 8))
 		throw "Invalid argument";
-	
+
 	size_t i = 0;  // Bit index into the data
 	// Do the funny zigzag scan
 	for (int right = size - 1; right >= 1; right -= 2) {  // Index of right column in each column pair
@@ -390,6 +391,9 @@ void qrcodegen::QrCode::applyMask(int mask) {
 	}
 }
 
+#ifndef INT32_MAX
+#define 	INT32_MAX   0x7fffffffL
+#endif
 
 int qrcodegen::QrCode::handleConstructorMasking(int mask) {
 	if (mask == -1) {  // Automatically choose best mask
@@ -415,7 +419,7 @@ int qrcodegen::QrCode::handleConstructorMasking(int mask) {
 
 int qrcodegen::QrCode::getPenaltyScore() const {
 	int result = 0;
-	
+
 	// Adjacent modules in row having same color
 	for (int y = 0; y < size; y++) {
 		bool colorX = modules.at(y).at(0);
@@ -448,18 +452,18 @@ int qrcodegen::QrCode::getPenaltyScore() const {
 			}
 		}
 	}
-	
+
 	// 2*2 blocks of modules having same color
 	for (int y = 0; y < size - 1; y++) {
 		for (int x = 0; x < size - 1; x++) {
 			bool  color = modules.at(y).at(x);
 			if (  color == modules.at(y).at(x + 1) &&
-			      color == modules.at(y + 1).at(x) &&
-			      color == modules.at(y + 1).at(x + 1))
+				  color == modules.at(y + 1).at(x) &&
+				  color == modules.at(y + 1).at(x + 1))
 				result += PENALTY_N2;
 		}
 	}
-	
+
 	// Finder-like pattern in rows
 	for (int y = 0; y < size; y++) {
 		for (int x = 0, bits = 0; x < size; x++) {
@@ -476,7 +480,7 @@ int qrcodegen::QrCode::getPenaltyScore() const {
 				result += PENALTY_N3;
 		}
 	}
-	
+
 	// Balance of black and white modules
 	int black = 0;
 	for (int y = 0; y < size; y++) {
@@ -505,7 +509,7 @@ std::vector<int> qrcodegen::QrCode::getAlignmentPatternPositions(int ver) {
 			step = (ver * 4 + numAlign * 2 + 1) / (2 * numAlign - 2) * 2;  // ceil((size - 13) / (2*numAlign - 2)) * 2
 		else  // C-C-C-Combo breaker!
 			step = 26;
-		
+
 		std::vector<int> result;
 		int size = ver * 4 + 17;
 		for (int i = 0, pos = size - 7; i < numAlign - 1; i++, pos -= step)
@@ -568,11 +572,11 @@ qrcodegen::QrCode::ReedSolomonGenerator::ReedSolomonGenerator(int degree) :
 		coefficients() {
 	if (degree < 1 || degree > 255)
 		throw "Degree out of range";
-	
+
 	// Start with the monomial x^0
 	coefficients.resize(degree);
 	coefficients.at(degree - 1) = 1;
-	
+
 	// Compute the product polynomial (x - r^0) * (x - r^1) * (x - r^2) * ... * (x - r^{degree-1}),
 	// drop the highest term, and store the rest of the coefficients in order of descending powers.
 	// Note that r = 0x02, which is a generator element of this field GF(2^8/0x11D).

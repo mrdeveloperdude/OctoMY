@@ -1,177 +1,29 @@
 #include "Reverb.hpp"
 
+#include "../libutil/utility/Standard.hpp"
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stddef.h>
-#include <string.h>
+#include <cmath>
 
 
-
-/* This coefficient is used to define the maximum frequency range controlled
- * by the modulation depth.  The current value of 0.1 will allow it to swing
- * from 0.9x to 1.1x.  This value must be below 1.  At 1 it will cause the
- * sampler to stall on the downswing, and above 1 it will cause it to sample
- * backwards.
- */
-static const double MODULATION_DEPTH_COEFF = 0.1f;
-
-/* A filter is used to avoid the terrible distortion caused by changing
- * modulation time and/or depth.  To be consistent across different sample
- * rates, the coefficient must be raised to a constant divided by the sample
- * rate:  coeff^(constant / rate).
- */
-static const double MODULATION_FILTER_COEFF = 0.048f;
-static const double MODULATION_FILTER_CONST = 100000.0f;
-
-// When diffusion is above 0, an all-pass filter is used to take the edge off
-// the echo effect.  It uses the following line length (in seconds).
-static const double ECHO_ALLPASS_LENGTH = 0.0133f;
-
-// Input into the late reverb is decorrelated between four channels.  Their
-// timings are dependent on a fraction and multiplier.  See the
-// UpdateDecorrelator() routine for the calculations involved.
-static const double DECO_FRACTION = 0.15f;
-static const double DECO_MULTIPLIER = 2.0f;
-
-// All delay line lengths are specified in seconds.
-
-// The lengths of the early delay lines.
-static const double EARLY_LINE_LENGTH[4] = {
+const qreal ReverbEffect::EARLY_LINE_LENGTH[] = {
 	0.0015f, 0.0045f, 0.0135f, 0.0405f
 };
 
 // The lengths of the late all-pass delay lines.
-static const double ALLPASS_LINE_LENGTH[4] = {
+const qreal ReverbEffect::ALLPASS_LINE_LENGTH[] = {
 	0.0151f, 0.0167f, 0.0183f, 0.0200f,
 };
 
 // The lengths of the late cyclical delay lines.
-static const double LATE_LINE_LENGTH[4] = {
+const qreal ReverbEffect::LATE_LINE_LENGTH[] = {
 	0.0211f, 0.0311f, 0.0461f, 0.0680f
 };
 
-// The late cyclical delay lines have a variable length dependent on the
-// effect's density parameter (inverted for some reason) and this multiplier.
-static const double LATE_LINE_MULTIPLIER = 4.0f;
 
-
-
-inline double lerp(double val1, double val2, double mu)
+void ReverbEffect::computeAmbientGains(qreal ingain, qreal gains[OUTPUT_CHANNELS])
 {
-	return val1 + (val2-val1)*mu;
-}
-
-/* Find the next power-of-2 for non-power-of-2 numbers. */
-inline uint32_t NextPowerOf2(uint32_t value)
-{
-	if(value > 0) {
-		value--;
-		value |= value>>1;
-		value |= value>>2;
-		value |= value>>4;
-		value |= value>>8;
-		value |= value>>16;
-	}
-	return value+1;
-}
-
-inline uint32_t Truncate(double f)
-{
-	return (uint32_t)f;
-}
-
-inline double minf(double a, double b)
-{
-	return ((a > b) ? b : a);
-}
-
-inline double maxf(double a, double b)
-{
-	return ((a > b) ? a : b);
-}
-
-inline double clampf(double val, double min, double max)
-{
-	return minf(max, maxf(min, val));
-}
-
-inline uint32_t maxu(uint32_t a, uint32_t b)
-{
-	return ((a > b) ? a : b);
-}
-
-
-inline double FilterState_Process(FilterState *filter, double sample)
-{
-	double outsmp;
-
-	outsmp = filter->b[0] * sample +
-			 filter->b[1] * filter->x[0] +
-			 filter->b[2] * filter->x[1] -
-			 filter->a[1] * filter->y[0] -
-			 filter->a[2] * filter->y[1];
-	filter->x[1] = filter->x[0];
-	filter->x[0] = sample;
-	filter->y[1] = filter->y[0];
-	filter->y[0] = outsmp;
-
-	return outsmp;
-}
-
-void FilterState_clear(FilterState *filter)
-{
-	filter->x[0] = 0.0f;
-	filter->x[1] = 0.0f;
-	filter->y[0] = 0.0f;
-	filter->y[1] = 0.0f;
-}
-
-void FilterState_setParams(FilterState *filter, FilterType type, double gain, double freq_mult, double bandwidth)
-{
-	double alpha;
-	double w0;
-
-	// Limit gain to -100dB
-	gain = maxf(gain, 0.00001f);
-
-	w0 = F_2PI * freq_mult;
-
-	/* Calculate filter coefficients depending on filter type */
-	switch(type) {
-	case Filter_HighShelf:
-		alpha = sinf(w0)/2.0f*sqrtf((gain + 1.0f/gain)*(1.0f/0.75f - 1.0f) + 2.0f);
-		filter->b[0] =       gain*((gain+1.0f) + (gain-1.0f)*cosf(w0) + 2.0f*sqrtf(gain)*alpha);
-		filter->b[1] = -2.0f*gain*((gain-1.0f) + (gain+1.0f)*cosf(w0)                         );
-		filter->b[2] =       gain*((gain+1.0f) + (gain-1.0f)*cosf(w0) - 2.0f*sqrtf(gain)*alpha);
-		filter->a[0] =             (gain+1.0f) - (gain-1.0f)*cosf(w0) + 2.0f*sqrtf(gain)*alpha;
-		filter->a[1] =  2.0f*     ((gain-1.0f) - (gain+1.0f)*cosf(w0)                         );
-		filter->a[2] =             (gain+1.0f) - (gain-1.0f)*cosf(w0) - 2.0f*sqrtf(gain)*alpha;
-		break;
-	case Filter_LowShelf:
-		alpha = sinf(w0)/2.0f*sqrtf((gain + 1.0f/gain)*(1.0f/0.75f - 1.0f) + 2.0f);
-		filter->b[0] =       gain*((gain+1.0f) - (gain-1.0f)*cosf(w0) + 2.0f*sqrtf(gain)*alpha);
-		filter->b[1] =  2.0f*gain*((gain-1.0f) - (gain+1.0f)*cosf(w0)                         );
-		filter->b[2] =       gain*((gain+1.0f) - (gain-1.0f)*cosf(w0) - 2.0f*sqrtf(gain)*alpha);
-		filter->a[0] =             (gain+1.0f) + (gain-1.0f)*cosf(w0) + 2.0f*sqrtf(gain)*alpha;
-		filter->a[1] = -2.0f*     ((gain-1.0f) + (gain+1.0f)*cosf(w0)                         );
-		filter->a[2] =             (gain+1.0f) + (gain-1.0f)*cosf(w0) - 2.0f*sqrtf(gain)*alpha;
-		break;
-	}
-
-	filter->b[2] /= filter->a[0];
-	filter->b[1] /= filter->a[0];
-	filter->b[0] /= filter->a[0];
-	filter->a[2] /= filter->a[0];
-	filter->a[1] /= filter->a[0];
-	filter->a[0] /= filter->a[0];
-}
-
-void ReverbEffect::ComputeAmbientGains(double ingain, double gains[OUTPUT_CHANNELS])
-{
-	uint32_t i;
+	OC_METHODGATE();
+	quint32 i;
 
 	for(i = 0; i < OUTPUT_CHANNELS; i++) {
 		// The W coefficients are based on a mathematical average of the
@@ -183,14 +35,15 @@ void ReverbEffect::ComputeAmbientGains(double ingain, double gains[OUTPUT_CHANNE
 	}
 }
 
-void ReverbEffect::ComputeDirectionalGains(const double dir[3], double ingain, double gains[OUTPUT_CHANNELS])
+void ReverbEffect::computeDirectionalGains(const qreal dir[3], qreal ingain, qreal gains[OUTPUT_CHANNELS])
 {
-	double coeffs[MAX_AMBI_COEFFS];
-	uint32_t i, j;
+	OC_METHODGATE();
+	qreal coeffs[MAX_AMBI_COEFFS];
+	quint32 i, j;
 	/* Convert from OpenAL coords to Ambisonics. */
-	double x = -dir[2];
-	double y = -dir[0];
-	double z =  dir[1];
+	qreal x = -dir[2];
+	qreal y = -dir[0];
+	qreal z =  dir[1];
 
 	/* Zeroth-order */
 	coeffs[0] = 0.7071f; /* W = sqrt(1.0 / 2.0) */
@@ -200,7 +53,7 @@ void ReverbEffect::ComputeDirectionalGains(const double dir[3], double ingain, d
 	coeffs[3] = x; /* X = X */
 
 	for(i = 0; i < OUTPUT_CHANNELS; i++) {
-		double gain = 0.0f;
+		qreal gain = 0.0f;
 		for(j = 0; j < MAX_AMBI_COEFFS; j++) {
 			gain += ambiCoeffs[i][j]*coeffs[j];
 		}
@@ -209,69 +62,36 @@ void ReverbEffect::ComputeDirectionalGains(const double dir[3], double ingain, d
 }
 
 
-// Basic delay line input/output routines.
-static inline double DelayLineOut(DelayLine *Delay, uint32_t offset)
-{
-	return Delay->Line[offset&Delay->Mask];
-}
-
-static inline void DelayLineIn(DelayLine *Delay, uint32_t offset, double in)
-{
-	Delay->Line[offset&Delay->Mask] = in;
-}
-
-// Attenuated delay line output routine.
-static inline double AttenuatedDelayLineOut(DelayLine *Delay, uint32_t offset, double coeff)
-{
-	return coeff * Delay->Line[offset&Delay->Mask];
-}
-
-// Basic attenuated all-pass input/output routine.
-static inline double AllpassInOut(DelayLine *Delay, uint32_t outOffset, uint32_t inOffset, double in, double feedCoeff, double coeff)
-{
-	double out, feed;
-
-	out = DelayLineOut(Delay, outOffset);
-	feed = feedCoeff * in;
-	DelayLineIn(Delay, inOffset, (feedCoeff * (out - feed)) + in);
-
-	// The time-based attenuation is only applied to the delay output to
-	// keep it from affecting the feed-back path (which is already controlled
-	// by the all-pass feed coefficient).
-	return (coeff * out) - feed;
-}
-
 // Given an input sample, this function produces modulation for the late reverb.
-inline double ReverbEffect::EAXModulation(double in)
+inline qreal ReverbEffect::EAXModulation(qreal in)
 {
-	double sinus, frac;
-	uint32_t offset;
-	double out0, out1;
+	qreal sinus, frac;
+	quint32 offset;
+	qreal out0, out1;
 
 	// Calculate the sinus rythm (dependent on modulation time and the
 	// sampling rate).  The center of the sinus is moved to reduce the delay
 	// of the effect when the time or depth are low.
-	sinus = 1.0f - cosf(F_2PI * this->Mod.Index / this->Mod.Range);
+	sinus = 1.0f - cosf(F_2PI * mModulator.mIndex / mModulator.mRange);
 
 	// The depth determines the range over which to read the input samples
 	// from, so it must be filtered to reduce the distortion caused by even
 	// small parameter changes.
-	this->Mod.Filter = lerp(this->Mod.Filter, this->Mod.Depth,
-							this->Mod.Coeff);
+	mModulator.mFilter = lerp(mModulator.mFilter, mModulator.mDepth, mModulator.mCoeff);
 
 	// Calculate the read offset and fraction between it and the next sample.
-	frac   = (1.0f + (this->Mod.Filter * sinus));
+	frac   = (1.0f + (mModulator.mFilter * sinus));
 	offset = Truncate(frac);
 	frac  -= offset;
 
 	// Get the two samples crossed by the offset, and feed the delay line
 	// with the next input sample.
-	out0 = DelayLineOut(&this->Mod.Delay, this->Offset - offset);
-	out1 = DelayLineOut(&this->Mod.Delay, this->Offset - offset - 1);
-	DelayLineIn(&this->Mod.Delay, this->Offset, in);
+	out0 = mModulator.mDelay.delayLineOut(mOffset - offset);
+	out1 = mModulator.mDelay.delayLineOut(mOffset - offset - 1);
+	mModulator.mDelay.delayLineIn(mOffset, in);
 
 	// Step the modulation index forward, keeping it bound to its range.
-	this->Mod.Index = (this->Mod.Index + 1) % this->Mod.Range;
+	mModulator.mIndex = (mModulator.mIndex + 1) % mModulator.mRange;
 
 	// The output is obtained by linearly interpolating the two samples that
 	// were acquired above.
@@ -279,21 +99,20 @@ inline double ReverbEffect::EAXModulation(double in)
 }
 
 // Delay line output routine for early reflections.
-inline double ReverbEffect::EarlyDelayLineOut(uint32_t index)
+inline qreal ReverbEffect::earlyDelayLineOut(quint32 index)
 {
-	return AttenuatedDelayLineOut(&this->Early.Delay[index], this->Offset - this->Early.Offset[index], this->Early.Coeff[index]);
+	return mEarly.mDelay[index].attenuatedDelayLineOut(mOffset - mEarly.mOffset[index], mEarly.mCoeff[index]);
 }
 
 // Given an input sample, this function produces four-channel output for the  early reflections.
-inline void ReverbEffect::EarlyReflection(double in, double *out)
+inline void ReverbEffect::earlyReflection(qreal in, qreal *out)
 {
-	double d[4], v, f[4];
+	qreal d[4], v, f[4];
 
 	// Obtain the decayed results of each early delay line.
-	d[0] = this->EarlyDelayLineOut(0);
-	d[1] = this->EarlyDelayLineOut(1);
-	d[2] = this->EarlyDelayLineOut(2);
-	d[3] = this->EarlyDelayLineOut(3);
+	for(int i=0; i<4; ++i) {
+		d[i] = earlyDelayLineOut(i);
+	}
 
 	/* The following uses a lossless scattering junction from waveguide
 	 * theory.  It actually amounts to a householder mixing matrix, which
@@ -311,49 +130,47 @@ inline void ReverbEffect::EarlyReflection(double in, double *out)
 	v += in;
 
 	// Calculate the feed values for the delay lines.
-	f[0] = v - d[0];
-	f[1] = v - d[1];
-	f[2] = v - d[2];
-	f[3] = v - d[3];
+	for(int i=0; i<4; ++i) {
+		f[i] = v - d[i];
+	}
 
 	// Re-feed the delay lines.
-	DelayLineIn(&this->Early.Delay[0], this->Offset, f[0]);
-	DelayLineIn(&this->Early.Delay[1], this->Offset, f[1]);
-	DelayLineIn(&this->Early.Delay[2], this->Offset, f[2]);
-	DelayLineIn(&this->Early.Delay[3], this->Offset, f[3]);
+	for(int i=0; i<4; ++i) {
+		mEarly.mDelay[i].delayLineIn( mOffset, f[i]);
+	}
+
 
 	// Output the results of the junction for all four channels.
-	out[0] = this->Early.Gain * f[0];
-	out[1] = this->Early.Gain * f[1];
-	out[2] = this->Early.Gain * f[2];
-	out[3] = this->Early.Gain * f[3];
+	for(int i=0; i<4; ++i) {
+		out[i] = mEarly.mGain * f[i];
+	}
 }
 
 
 // All-pass input/output routine for late reverb.
-inline double ReverbEffect::LateAllPassInOut(uint32_t index, double in)
+inline qreal ReverbEffect::lateAllPassInOut(quint32 index, qreal in)
 {
-	return AllpassInOut(&this->Late.ApDelay[index], this->Offset - this->Late.ApOffset[index], this->Offset, in, this->Late.ApFeedCoeff, this->Late.ApCoeff[index]);
+	return mLate.mApDelay[index].allpassInOut(mOffset - mLate.mApOffset[index], mOffset, in, mLate.mApFeedCoeff, mLate.mApCoeff[index]);
 }
 
 // Delay line output routine for late reverb.
-inline double ReverbEffect::LateDelayLineOut(uint32_t index)
+inline qreal ReverbEffect::lateDelayLineOut(quint32 index)
 {
-	return AttenuatedDelayLineOut(&this->Late.Delay[index], this->Offset - this->Late.Offset[index], this->Late.Coeff[index]);
+	return mLate.mDelay[index].attenuatedDelayLineOut(mOffset - mLate.mOffset[index], mLate.mCoeff[index]);
 }
 
 // Low-pass filter input/output routine for late reverb.
-inline double ReverbEffect::LateLowPassInOut(uint32_t index, double in)
+inline qreal ReverbEffect::lateLowPassInOut(quint32 index, qreal in)
 {
-	in = lerp(in, this->Late.LpSample[index], this->Late.LpCoeff[index]);
-	this->Late.LpSample[index] = in;
+	in = lerp(in, mLate.mLpSample[index], mLate.mLpCoeff[index]);
+	mLate.mLpSample[index] = in;
 	return in;
 }
 
 // Given four decorrelated input samples, this function produces four-channel output for the late reverb.
-inline void ReverbEffect::LateReverb(const double *in, double *out)
+inline void ReverbEffect::lateReverb(const qreal *in, qreal *out)
 {
-	double d[4], f[4];
+	qreal d[4], f[4];
 
 	// Obtain the decayed results of the cyclical delay lines, and add the
 	// corresponding input channels.  Then pass the results through the
@@ -361,18 +178,18 @@ inline void ReverbEffect::LateReverb(const double *in, double *out)
 
 	// This is where the feed-back cycles from line 0 to 1 to 3 to 2 and back
 	// to 0.
-	d[0] = this->LateLowPassInOut(2, in[2] + this->LateDelayLineOut(2));
-	d[1] = this->LateLowPassInOut(0, in[0] + this->LateDelayLineOut(0));
-	d[2] = this->LateLowPassInOut(3, in[3] + this->LateDelayLineOut(3));
-	d[3] = this->LateLowPassInOut(1, in[1] + this->LateDelayLineOut(1));
+	d[0] = lateLowPassInOut(2, in[2] + lateDelayLineOut(2));
+	d[1] = lateLowPassInOut(0, in[0] + lateDelayLineOut(0));
+	d[2] = lateLowPassInOut(3, in[3] + lateDelayLineOut(3));
+	d[3] = lateLowPassInOut(1, in[1] + lateDelayLineOut(1));
 
 	// To help increase diffusion, run each line through an all-pass filter.
 	// When there is no diffusion, the shortest all-pass filter will feed the
 	// shortest delay line.
-	d[0] = this->LateAllPassInOut(0, d[0]);
-	d[1] = this->LateAllPassInOut(1, d[1]);
-	d[2] = this->LateAllPassInOut(2, d[2]);
-	d[3] = this->LateAllPassInOut(3, d[3]);
+	for(int i=0; i<4; ++i) {
+		d[i] = lateAllPassInOut(i, d[i]);
+	}
+
 
 	/* Late reverb is done with a modified feed-back delay network (FDN)
 	 * topology.  Four input lines are each fed through their own all-pass
@@ -401,114 +218,110 @@ inline void ReverbEffect::LateReverb(const double *in, double *out)
 	 * the cyclical delay line coefficients.  Thus only the y coefficient is
 	 * applied when mixing, and is modified to be:  y / x.
 	 */
-	f[0] = d[0] + (this->Late.MixCoeff * (         d[1] + -d[2] + d[3]));
-	f[1] = d[1] + (this->Late.MixCoeff * (-d[0]         +  d[2] + d[3]));
-	f[2] = d[2] + (this->Late.MixCoeff * ( d[0] + -d[1]         + d[3]));
-	f[3] = d[3] + (this->Late.MixCoeff * (-d[0] + -d[1] + -d[2]       ));
+	f[0] = d[0] + (mLate.mMixCoeff * (         d[1] + -d[2] + d[3]));
+	f[1] = d[1] + (mLate.mMixCoeff * (-d[0]         +  d[2] + d[3]));
+	f[2] = d[2] + (mLate.mMixCoeff * ( d[0] + -d[1]         + d[3]));
+	f[3] = d[3] + (mLate.mMixCoeff * (-d[0] + -d[1] + -d[2]       ));
 
 	// Output the results of the matrix for all four channels, attenuated by
 	// the late reverb gain (which is attenuated by the 'x' mix coefficient).
-	out[0] = this->Late.Gain * f[0];
-	out[1] = this->Late.Gain * f[1];
-	out[2] = this->Late.Gain * f[2];
-	out[3] = this->Late.Gain * f[3];
+	for(int i=0; i<4; ++i) {
+		out[i] = mLate.mGain * f[i];
+	}
 
 	// Re-feed the cyclical delay lines.
-	DelayLineIn(&this->Late.Delay[0], this->Offset, f[0]);
-	DelayLineIn(&this->Late.Delay[1], this->Offset, f[1]);
-	DelayLineIn(&this->Late.Delay[2], this->Offset, f[2]);
-	DelayLineIn(&this->Late.Delay[3], this->Offset, f[3]);
+	for(int i=0; i<4; ++i) {
+		mLate.mDelay[i].delayLineIn(mOffset, f[i]);
+	}
+
 }
 
 // Given an input sample, this function mixes echo into the four-channel late
 // reverb.
-inline void ReverbEffect::EAXEcho(double in, double *late)
+inline void ReverbEffect::EAXEcho(qreal in, qreal *late)
 {
-	double out, feed;
+	qreal out, feed;
 
 	// Get the latest attenuated echo sample for output.
-	feed = AttenuatedDelayLineOut(&this->Echo.Delay,
-								  this->Offset - this->Echo.Offset,
-								  this->Echo.Coeff);
+	feed = mEcho.mDelay.attenuatedDelayLineOut( mOffset - mEcho.mOffset, mEcho.mCoeff);
 
 	// Mix the output into the late reverb channels.
-	out = this->Echo.MixCoeff[0] * feed;
-	late[0] = (this->Echo.MixCoeff[1] * late[0]) + out;
-	late[1] = (this->Echo.MixCoeff[1] * late[1]) + out;
-	late[2] = (this->Echo.MixCoeff[1] * late[2]) + out;
-	late[3] = (this->Echo.MixCoeff[1] * late[3]) + out;
+	out = mEcho.mMixCoeff[0] * feed;
+	late[0] = (mEcho.mMixCoeff[1] * late[0]) + out;
+	late[1] = (mEcho.mMixCoeff[1] * late[1]) + out;
+	late[2] = (mEcho.mMixCoeff[1] * late[2]) + out;
+	late[3] = (mEcho.mMixCoeff[1] * late[3]) + out;
 
 	// Mix the energy-attenuated input with the output and pass it through
 	// the echo low-pass filter.
-	feed += this->Echo.DensityGain * in;
-	feed = lerp(feed, this->Echo.LpSample, this->Echo.LpCoeff);
-	this->Echo.LpSample = feed;
+	feed += mEcho.mDensityGain * in;
+	feed = lerp(feed, mEcho.mLpSample, mEcho.mLpCoeff);
+	mEcho.mLpSample = feed;
 
 	// Then the echo all-pass filter.
-	feed = AllpassInOut(&this->Echo.ApDelay,
-						this->Offset - this->Echo.ApOffset,
-						this->Offset, feed, this->Echo.ApFeedCoeff,
-						this->Echo.ApCoeff);
+	feed = mEcho.mApDelay.allpassInOut(mOffset - mEcho.mApOffset, mOffset, feed, mEcho.mApFeedCoeff, mEcho.mApCoeff);
 
 	// Feed the delay with the mixed and filtered sample.
-	DelayLineIn(&this->Echo.Delay, this->Offset, feed);
+	mEcho.mDelay.delayLineIn(mOffset, feed);
 }
 
 
 // Perform the EAX reverb pass on a given input sample, resulting in four-channel output.
-inline void ReverbEffect::EAXVerbPass(double in, double *early, double *late)
+inline void ReverbEffect::EAXVerbPass(qreal in, qreal *early, qreal *late)
 {
-	double feed, taps[4];
+	OC_METHODGATE();
+	qreal feed, taps[4];
 
 	// Low-pass filter the incoming sample.
-	in = FilterState_Process(&this->LpFilter, in);
-	in = FilterState_Process(&this->HpFilter, in);
+	in = mLpFilter.process(in);
+	in = mHpFilter.process(in);
 
 	// Perform any modulation on the input.
-	in = this->EAXModulation(in);
+	in = EAXModulation(in);
 
 	// Feed the initial delay line.
-	DelayLineIn(&this->Delay, this->Offset, in);
+	mDelay.delayLineIn(mOffset, in);
 
 	// Calculate the early reflection from the first delay tap.
-	in = DelayLineOut(&this->Delay, this->Offset - this->DelayTap[0]);
-	this->EarlyReflection(in, early);
+	in = mDelay.delayLineOut(mOffset - mDelayTap[0]);
+	earlyReflection(in, early);
 
 	// Feed the decorrelator from the energy-attenuated output of the second
 	// delay tap.
-	in = DelayLineOut(&this->Delay, this->Offset - this->DelayTap[1]);
-	feed = in * this->Late.DensityGain;
-	DelayLineIn(&this->Decorrelator, this->Offset, feed);
+	in = mDelay.delayLineOut(mOffset - mDelayTap[1]);
+	feed = in * mLate.mDensityGain;
+	mDecorrelator.delayLineIn(mOffset, feed);
 
 	// Calculate the late reverb from the decorrelator taps.
 	taps[0] = feed;
-	taps[1] = DelayLineOut(&this->Decorrelator, this->Offset - this->DecoTap[0]);
-	taps[2] = DelayLineOut(&this->Decorrelator, this->Offset - this->DecoTap[1]);
-	taps[3] = DelayLineOut(&this->Decorrelator, this->Offset - this->DecoTap[2]);
-	this->LateReverb(taps, late);
+	taps[1] = mDecorrelator.delayLineOut(mOffset - mDecoTap[0]);
+	taps[2] = mDecorrelator.delayLineOut(mOffset - mDecoTap[1]);
+	taps[3] = mDecorrelator.delayLineOut(mOffset - mDecoTap[2]);
+	lateReverb(taps, late);
 
 	// Calculate and mix in any echo.
-	this->EAXEcho(in, late);
+	EAXEcho(in, late);
 
 	// Step all delays forward one sample.
-	this->Offset++;
+	mOffset++;
 }
 
-void ReverbEffect::Process(uint32_t SamplesToDo, const double *SamplesIn, double *SamplesOut)
+void ReverbEffect::Process(quint32 SamplesToDo, const qreal *SamplesIn, qreal *SamplesOut)
 {
-	double (*early)[4] = this->EarlySamples;
-	double (*late)[4] = this->ReverbSamples;
-	uint32_t index, c;
+	OC_METHODGATE();
+	qreal (*early)[4] = earlySamples;
+	qreal (*late)[4] = reverbSamples;
+	quint32 index, c;
 
-	/* Process reverb for these samples. */
+	// Process reverb for these samples.
 	for(index = 0; index < SamplesToDo; index++) {
-		this->EAXVerbPass(SamplesIn[index], early[index], late[index]);
+		EAXVerbPass(SamplesIn[index], early[index], late[index]);
 	}
 
 	for(c = 0; c < OUTPUT_CHANNELS ; c++) {
-		double earlyGain, lateGain;
+		qreal earlyGain, lateGain;
 
-		earlyGain = this->Early.PanGain[c];
+		earlyGain = mEarly.mPanGain[c];
 		if(fabsf(earlyGain) > GAIN_SILENCE_THRESHOLD) {
 			for(index = 0; index < SamplesToDo; index++) {
 				SamplesOut[index * OUTPUT_CHANNELS + c] = earlyGain*early[index][c&3];
@@ -516,7 +329,7 @@ void ReverbEffect::Process(uint32_t SamplesToDo, const double *SamplesIn, double
 		}
 
 
-		lateGain = this->Late.PanGain[c];
+		lateGain = mLate.mPanGain[c];
 		if(fabsf(lateGain) > GAIN_SILENCE_THRESHOLD) {
 			for(index = 0; index < SamplesToDo; index++) {
 				SamplesOut[index * OUTPUT_CHANNELS + c] = lateGain*late[index][c&3];
@@ -526,31 +339,31 @@ void ReverbEffect::Process(uint32_t SamplesToDo, const double *SamplesIn, double
 }
 
 // Given the allocated sample buffer, this function updates each delay line offset.
-static inline void RealizeLineOffset(double *sampleBuffer, DelayLine *Delay)
+static inline void RealizeLineOffset(qreal *sampleBuffer, DelayLine *Delay)
 {
-	Delay->Line = &sampleBuffer[(ptrdiff_t)Delay->Line];
+	Delay->mLine = &sampleBuffer[(ptrdiff_t)Delay->mLine];
 }
 
 // Calculate the length of a delay line and store its mask and offset.
-static uint32_t CalcLineLength(double length, ptrdiff_t offset, uint32_t frequency, DelayLine *Delay)
+static quint32 CalcLineLength(qreal length, ptrdiff_t offset, quint32 frequency, DelayLine *Delay)
 {
-	uint32_t samples;
+	quint32 samples;
 
 	// All line lengths are powers of 2, calculated from their lengths, with
 	// an additional sample in case of rounding errors.
 	samples = NextPowerOf2(Truncate(length * frequency) + 1);
 	// All lines share a single sample buffer.
-	Delay->Mask = samples - 1;
-	Delay->Line = (double*)offset;
+	Delay->mMask = samples - 1;
+	Delay->mLine = (qreal*)offset;
 	// Return the sample count for accumulation.
 	return samples;
 }
 
 // Calculates the delay line metrics and allocates the shared sample buffer for all lines given the sample rate (frequency).
-void ReverbEffect::AllocLines(uint32_t frequency)
+void ReverbEffect::allocLines(quint32 frequency)
 {
-	uint32_t totalSamples, index;
-	double length;
+	quint32 totalSamples, index;
+	qreal length;
 
 	// All delay line lengths are calculated to accomodate the full range of lengths given their respective paramters.
 	totalSamples = 0;
@@ -560,74 +373,74 @@ void ReverbEffect::AllocLines(uint32_t frequency)
 	 * swing.  An additional sample is added to keep it stable when there is no modulation.
 	 */
 	length = (EAXREVERB_MAX_MODULATION_TIME*MODULATION_DEPTH_COEFF/2.0f) + (1.0f / frequency);
-	totalSamples += CalcLineLength(length, totalSamples, frequency, &this->Mod.Delay);
+	totalSamples += CalcLineLength(length, totalSamples, frequency, &mModulator.mDelay);
 
 	// The initial delay is the sum of the reflections and late reverb delays.
 	length = EAXREVERB_MAX_REFLECTIONS_DELAY + EAXREVERB_MAX_LATE_REVERB_DELAY;
-	totalSamples += CalcLineLength(length, totalSamples, frequency, &this->Delay);
+	totalSamples += CalcLineLength(length, totalSamples, frequency, &mDelay);
 
 	// The early reflection lines.
 	for(index = 0; index < 4; index++) {
-		totalSamples += CalcLineLength(EARLY_LINE_LENGTH[index], totalSamples, frequency, &this->Early.Delay[index]);
+		totalSamples += CalcLineLength(EARLY_LINE_LENGTH[index], totalSamples, frequency, &mEarly.mDelay[index]);
 	}
 
 	// The decorrelator line is calculated from the lowest reverb density (a
 	// parameter value of 1).
 	length = (DECO_FRACTION * DECO_MULTIPLIER * DECO_MULTIPLIER) * LATE_LINE_LENGTH[0] * (1.0f + LATE_LINE_MULTIPLIER);
-	totalSamples += CalcLineLength(length, totalSamples, frequency, &this->Decorrelator);
+	totalSamples += CalcLineLength(length, totalSamples, frequency, &mDecorrelator);
 
 	// The late all-pass lines.
 	for(index = 0; index < 4; index++) {
-		totalSamples += CalcLineLength(ALLPASS_LINE_LENGTH[index], totalSamples, frequency, &this->Late.ApDelay[index]);
+		totalSamples += CalcLineLength(ReverbEffect::ALLPASS_LINE_LENGTH[index], totalSamples, frequency, &mLate.mApDelay[index]);
 	}
 
 	// The late delay lines are calculated from the lowest reverb density.
 	for(index = 0; index < 4; index++) {
 		length = LATE_LINE_LENGTH[index] * (1.0f + LATE_LINE_MULTIPLIER);
-		totalSamples += CalcLineLength(length, totalSamples, frequency, &this->Late.Delay[index]);
+		totalSamples += CalcLineLength(length, totalSamples, frequency, &mLate.mDelay[index]);
 	}
 
 	// The echo all-pass and delay lines.
-	totalSamples += CalcLineLength(ECHO_ALLPASS_LENGTH, totalSamples, frequency, &this->Echo.ApDelay);
-	totalSamples += CalcLineLength(EAXREVERB_MAX_ECHO_TIME, totalSamples, frequency, &this->Echo.Delay);
+	totalSamples += CalcLineLength(ECHO_ALLPASS_LENGTH, totalSamples, frequency, &mEcho.mApDelay);
+	totalSamples += CalcLineLength(EAXREVERB_MAX_ECHO_TIME, totalSamples, frequency, &mEcho.mDelay);
 
-	double* newBuf = new double[totalSamples];
-	this->SampleBuffer = newBuf;
-	this->TotalSamples = totalSamples;
+	qreal* newBuf = new qreal[totalSamples];
+	mSampleBuffer = newBuf;
+	mTotalSamples = totalSamples;
 
 	// Update all delays to reflect the new sample buffer.
-	RealizeLineOffset(this->SampleBuffer, &this->Delay);
-	RealizeLineOffset(this->SampleBuffer, &this->Decorrelator);
+	RealizeLineOffset(mSampleBuffer, &mDelay);
+	RealizeLineOffset(mSampleBuffer, &mDecorrelator);
 	for(index = 0; index < 4; index++) {
-		RealizeLineOffset(this->SampleBuffer, &this->Early.Delay[index]);
-		RealizeLineOffset(this->SampleBuffer, &this->Late.ApDelay[index]);
-		RealizeLineOffset(this->SampleBuffer, &this->Late.Delay[index]);
+		RealizeLineOffset(mSampleBuffer, &mEarly.mDelay[index]);
+		RealizeLineOffset(mSampleBuffer, &mLate.mApDelay[index]);
+		RealizeLineOffset(mSampleBuffer, &mLate.mDelay[index]);
 	}
-	RealizeLineOffset(this->SampleBuffer, &this->Mod.Delay);
-	RealizeLineOffset(this->SampleBuffer, &this->Echo.ApDelay);
-	RealizeLineOffset(this->SampleBuffer, &this->Echo.Delay);
+	RealizeLineOffset(mSampleBuffer, &mModulator.mDelay);
+	RealizeLineOffset(mSampleBuffer, &mEcho.mApDelay);
+	RealizeLineOffset(mSampleBuffer, &mEcho.mDelay);
 
 	// Clear the sample buffer.
-	for(index = 0; index < this->TotalSamples; index++) {
-		this->SampleBuffer[index] = 0.0f;
+	for(index = 0; index < mTotalSamples; index++) {
+		mSampleBuffer[index] = 0.0f;
 	}
 }
 
 // Calculate a decay coefficient given the length of each cycle and the time until the decay reaches -60 dB.
-static inline double CalcDecayCoeff(double length, double decayTime)
+static inline qreal CalcDecayCoeff(qreal length, qreal decayTime)
 {
 	return powf(0.001f/*-60 dB*/, length/decayTime);
 }
 
 // Calculate a decay length from a coefficient and the time until the decay reaches -60 dB.
-static inline double CalcDecayLength(double coeff, double decayTime)
+static inline qreal CalcDecayLength(qreal coeff, qreal decayTime)
 {
 	return log10f(coeff) * decayTime / log10f(0.001f)/*-60 dB*/;
 }
 
 // Calculate an attenuation to be applied to the input of any echo models to
 // compensate for modal density and decay time.
-static inline double CalcDensityGain(double a)
+static inline qreal CalcDensityGain(qreal a)
 {
 	/* The energy of a signal can be obtained by finding the area under the
 	 * squared signal.  This takes the form of Sum(x_n^2), where x is the
@@ -646,9 +459,9 @@ static inline double CalcDensityGain(double a)
 }
 
 // Calculate the mixing matrix coefficients given a diffusion factor.
-static inline void CalcMatrixCoeffs(double diffusion, double *x, double *y)
+static inline void CalcMatrixCoeffs(qreal diffusion, qreal *x, qreal *y)
 {
-	double n, t;
+	qreal n, t;
 
 	// The matrix is of order 4, so n is sqrt (4 - 1).
 	n = sqrtf(3.0f);
@@ -661,9 +474,9 @@ static inline void CalcMatrixCoeffs(double diffusion, double *x, double *y)
 }
 
 // Calculate the limited HF ratio for use with the late reverb low-pass filters.
-static double CalcLimitedHfRatio(double hfRatio, double airAbsorptionGainHF, double decayTime)
+static qreal CalcLimitedHfRatio(qreal hfRatio, qreal airAbsorptionGainHF, qreal decayTime)
 {
-	double limitRatio;
+	qreal limitRatio;
 
 	/* Find the attenuation due to air absorption in dB (converting delay
 	 * time to meters using the speed of sound).  Then reversing the decay
@@ -678,9 +491,9 @@ static double CalcLimitedHfRatio(double hfRatio, double airAbsorptionGainHF, dou
 }
 
 // Calculate the coefficient for a HF (and eventually LF) decay damping filter.
-static inline double CalcDampingCoeff(double hfRatio, double length, double decayTime, double decayCoeff, double cw)
+static inline qreal CalcDampingCoeff(qreal hfRatio, qreal length, qreal decayTime, qreal decayCoeff, qreal cw)
 {
-	double coeff, g;
+	qreal coeff, g;
 
 	// Eventually this should boost the high frequencies when the ratio
 	// exceeds 1.
@@ -710,9 +523,9 @@ static inline double CalcDampingCoeff(double hfRatio, double length, double deca
 // Update the EAX modulation index, range, and depth.
 // Keep in mind that this kind of vibrato is additive and not multiplicative as one may expect.
 // The downswing will sound stronger than the upswing.
-void ReverbEffect::UpdateModulator(double modTime, double modDepth, uint32_t frequency)
+void ReverbEffect::updateModulator(qreal modTime, qreal modDepth, quint32 frequency)
 {
-	uint32_t range;
+	quint32 range;
 
 	/* Modulation is calculated in two parts.
 	 *
@@ -723,8 +536,8 @@ void ReverbEffect::UpdateModulator(double modTime, double modDepth, uint32_t fre
 	 * to the new range (to keep the sinus consistent).
 	 */
 	range = maxu(Truncate(modTime*frequency), 1);
-	this->Mod.Index = (uint32_t)(this->Mod.Index * (uint64_t)range / this->Mod.Range);
-	this->Mod.Range = range;
+	mModulator.mIndex = (quint32)(mModulator.mIndex * (uint64_t)range / mModulator.mRange);
+	mModulator.mRange = range;
 
 	/* The modulation depth effects the amount of frequency change over the
 	 * range of the sinus.  It needs to be scaled by the modulation time so
@@ -734,40 +547,40 @@ void ReverbEffect::UpdateModulator(double modTime, double modDepth, uint32_t fre
 	 * in time (half of it is spent decreasing the frequency, half is spent
 	 * increasing it).
 	 */
-	this->Mod.Depth = modDepth * MODULATION_DEPTH_COEFF * modTime / 2.0f /
-					  2.0f * frequency;
+	mModulator.mDepth = modDepth * MODULATION_DEPTH_COEFF * modTime / 2.0f /
+						2.0f * frequency;
 }
 
 // Update the offsets for the initial effect delay line.
-void ReverbEffect::UpdateDelayLine(double earlyDelay, double lateDelay, uint32_t frequency)
+void ReverbEffect::updateDelayLine(qreal earlyDelay, qreal lateDelay, quint32 frequency)
 {
 	// Calculate the initial delay taps.
-	this->DelayTap[0] = Truncate(earlyDelay * frequency);
-	this->DelayTap[1] = Truncate((earlyDelay + lateDelay) * frequency);
+	mDelayTap[0] = Truncate(earlyDelay * frequency);
+	mDelayTap[1] = Truncate((earlyDelay + lateDelay) * frequency);
 }
 
 // Update the early reflections gain and line coefficients.
-void ReverbEffect::UpdateEarlyLines(double reverbGain, double earlyGain, double lateDelay)
+void ReverbEffect::updateEarlyLines(qreal reverbGain, qreal earlyGain, qreal lateDelay)
 {
-	uint32_t index;
+	quint32 index;
 
 	// Calculate the early reflections gain (from the master effect gain, and
 	// reflections gain parameters) with a constant attenuation of 0.5.
-	this->Early.Gain = 0.5f * reverbGain * earlyGain;
+	mEarly.mGain = 0.5f * reverbGain * earlyGain;
 
 	// Calculate the gain (coefficient) for each early delay line using the
 	// late delay time.  This expands the early reflections to the start of
 	// the late reverb.
 	for(index = 0; index < 4; index++)
-		this->Early.Coeff[index] = CalcDecayCoeff(EARLY_LINE_LENGTH[index],
-								   lateDelay);
+		mEarly.mCoeff[index] = CalcDecayCoeff(EARLY_LINE_LENGTH[index],
+											  lateDelay);
 }
 
 // Update the offsets for the decorrelator line.
-void ReverbEffect::UpdateDecorrelator(double density, uint32_t frequency)
+void ReverbEffect::updateDecorrelator(qreal density, quint32 frequency)
 {
-	uint32_t index;
-	double length;
+	quint32 index;
+	qreal length;
 
 	/* The late reverb inputs are decorrelated to smooth the reverb tail and
 	 * reduce harsh echos.  The first tap occurs immediately, while the
@@ -777,24 +590,24 @@ void ReverbEffect::UpdateDecorrelator(double density, uint32_t frequency)
 	 * offset[index] = (FRACTION (MULTIPLIER^index)) smallest_delay
 	 */
 	for(index = 0; index < 3; index++) {
-		length = (DECO_FRACTION * powf(DECO_MULTIPLIER, (double)index)) *
+		length = (DECO_FRACTION * powf(DECO_MULTIPLIER, (qreal)index)) *
 				 LATE_LINE_LENGTH[0] * (1.0f + (density * LATE_LINE_MULTIPLIER));
-		this->DecoTap[index] = Truncate(length * frequency);
+		mDecoTap[index] = Truncate(length * frequency);
 	}
 }
 
 // Update the late reverb gains, line lengths, and line coefficients.
-void ReverbEffect::UpdateLateLines(double reverbGain, double lateGain, double xMix, double density, double decayTime, double diffusion, double hfRatio, double cw, uint32_t frequency)
+void ReverbEffect::updateLateLines(qreal reverbGain, qreal lateGain, qreal xMix, qreal density, qreal decayTime, qreal diffusion, qreal hfRatio, qreal cw, quint32 frequency)
 {
-	double length;
-	uint32_t index;
+	qreal length;
+	quint32 index;
 
 	/* Calculate the late reverb gain (from the master effect gain, and late
 	 * reverb gain parameters).  Since the output is tapped prior to the
 	 * application of the next delay line coefficients, this gain needs to be
 	 * attenuated by the 'x' mixing matrix coefficient as well.
 	 */
-	this->Late.Gain = reverbGain * lateGain * xMix;
+	mLate.mGain = reverbGain * lateGain * xMix;
 
 	/* To compensate for changes in modal density and decay time of the late
 	 * reverb signal, the input is attenuated based on the maximal energy of
@@ -807,86 +620,82 @@ void ReverbEffect::UpdateLateLines(double reverbGain, double lateGain, double xM
 	length = (LATE_LINE_LENGTH[0] + LATE_LINE_LENGTH[1] +
 			  LATE_LINE_LENGTH[2] + LATE_LINE_LENGTH[3]) / 4.0f;
 	length *= 1.0f + (density * LATE_LINE_MULTIPLIER);
-	this->Late.DensityGain = CalcDensityGain(CalcDecayCoeff(length,
-							 decayTime));
+	mLate.mDensityGain = CalcDensityGain(CalcDecayCoeff(length, decayTime));
 
 	// Calculate the all-pass feed-back and feed-forward coefficient.
-	this->Late.ApFeedCoeff = 0.5f * powf(diffusion, 2.0f);
+	mLate.mApFeedCoeff = 0.5f * powf(diffusion, 2.0f);
 
 	for(index = 0; index < 4; index++) {
 		// Calculate the gain (coefficient) for each all-pass line.
-		this->Late.ApCoeff[index] = CalcDecayCoeff(ALLPASS_LINE_LENGTH[index],
-									decayTime);
+		mLate.mApCoeff[index] = CalcDecayCoeff(ALLPASS_LINE_LENGTH[index], decayTime);
 
 		// Calculate the length (in seconds) of each cyclical delay line.
-		length = LATE_LINE_LENGTH[index] * (1.0f + (density *
-											LATE_LINE_MULTIPLIER));
+		length = LATE_LINE_LENGTH[index] * (1.0f + (density * LATE_LINE_MULTIPLIER));
 
 		// Calculate the delay offset for each cyclical delay line.
-		this->Late.Offset[index] = Truncate(length * frequency);
+		mLate.mOffset[index] = Truncate(length * frequency);
 
 		// Calculate the gain (coefficient) for each cyclical line.
-		this->Late.Coeff[index] = CalcDecayCoeff(length, decayTime);
+		mLate.mCoeff[index] = CalcDecayCoeff(length, decayTime);
 
 		// Calculate the damping coefficient for each low-pass filter.
-		this->Late.LpCoeff[index] =
+		mLate.mLpCoeff[index] =
 			CalcDampingCoeff(hfRatio, length, decayTime,
-							 this->Late.Coeff[index], cw);
+							 mLate.mCoeff[index], cw);
 
 		// Attenuate the cyclical line coefficients by the mixing coefficient
 		// (x).
-		this->Late.Coeff[index] *= xMix;
+		mLate.mCoeff[index] *= xMix;
 	}
 }
 
 // Update the echo gain, line offset, line coefficients, and mixing coefficients.
-void ReverbEffect::UpdateEchoLine(double reverbGain, double lateGain, double echoTime, double decayTime, double diffusion, double echoDepth, double hfRatio, double cw, uint32_t frequency)
+void ReverbEffect::updateEchoLine(qreal reverbGain, qreal lateGain, qreal echoTime, qreal decayTime, qreal diffusion, qreal echoDepth, qreal hfRatio, qreal cw, quint32 frequency)
 {
 	// Update the offset and coefficient for the echo delay line.
-	this->Echo.Offset = Truncate(echoTime * frequency);
+	mEcho.mOffset = Truncate(echoTime * frequency);
 
 	// Calculate the decay coefficient for the echo line.
-	this->Echo.Coeff = CalcDecayCoeff(echoTime, decayTime);
+	mEcho.mCoeff = CalcDecayCoeff(echoTime, decayTime);
 
 	// Calculate the energy-based attenuation coefficient for the echo delay
 	// line.
-	this->Echo.DensityGain = CalcDensityGain(this->Echo.Coeff);
+	mEcho.mDensityGain = CalcDensityGain(mEcho.mCoeff);
 
 	// Calculate the echo all-pass feed coefficient.
-	this->Echo.ApFeedCoeff = 0.5f * powf(diffusion, 2.0f);
+	mEcho.mApFeedCoeff = 0.5f * powf(diffusion, 2.0f);
 
 	// Calculate the echo all-pass attenuation coefficient.
-	this->Echo.ApCoeff = CalcDecayCoeff(ECHO_ALLPASS_LENGTH, decayTime);
+	mEcho.mApCoeff = CalcDecayCoeff(ECHO_ALLPASS_LENGTH, decayTime);
 
 	// Calculate the damping coefficient for each low-pass filter.
-	this->Echo.LpCoeff = CalcDampingCoeff(hfRatio, echoTime, decayTime,
-										  this->Echo.Coeff, cw);
+	mEcho.mLpCoeff = CalcDampingCoeff(hfRatio, echoTime, decayTime, mEcho.mCoeff, cw);
 
 	/* Calculate the echo mixing coefficients.  The first is applied to the
 	 * echo itself.  The second is used to attenuate the late reverb when
 	 * echo depth is high and diffusion is low, so the echo is slightly
 	 * stronger than the decorrelated echos in the reverb tail.
 	 */
-	this->Echo.MixCoeff[0] = reverbGain * lateGain * echoDepth;
-	this->Echo.MixCoeff[1] = 1.0f - (echoDepth * 0.5f * (1.0f - diffusion));
+	mEcho.mMixCoeff[0] = reverbGain * lateGain * echoDepth;
+	mEcho.mMixCoeff[1] = 1.0f - (echoDepth * 0.5f * (1.0f - diffusion));
 }
 
 // Update the early and late 3D panning gains.
-void ReverbEffect::Update3DPanning(const double *ReflectionsPan, const double *LateReverbPan, double Gain)
+void ReverbEffect::update3DPanning(const qreal *ReflectionsPan, const qreal *LateReverbPan, qreal Gain)
 {
-	double earlyPan[3] = { ReflectionsPan[0], ReflectionsPan[1], -ReflectionsPan[2] };
-	double latePan[3] = { LateReverbPan[0], LateReverbPan[1], -LateReverbPan[2] };
-	double AmbientGains[OUTPUT_CHANNELS];
-	double DirGains[OUTPUT_CHANNELS];
-	double length, invlen;
-	uint32_t i;
+	qreal earlyPan[3] = { ReflectionsPan[0], ReflectionsPan[1], -ReflectionsPan[2] };
+	qreal latePan[3] = { LateReverbPan[0], LateReverbPan[1], -LateReverbPan[2] };
+	qreal AmbientGains[OUTPUT_CHANNELS];
+	qreal DirGains[OUTPUT_CHANNELS];
+	qreal length, invlen;
+	quint32 i;
 
-	ComputeAmbientGains(1.4142f, AmbientGains);
+	computeAmbientGains(1.4142f, AmbientGains);
 
 	length = earlyPan[0]*earlyPan[0] + earlyPan[1]*earlyPan[1] + earlyPan[2]*earlyPan[2];
 	if(!(length > FLT_EPSILON)) {
 		for(i = 0; i < OUTPUT_CHANNELS; i++) {
-			this->Early.PanGain[i] = AmbientGains[i] * Gain;
+			mEarly.mPanGain[i] = AmbientGains[i] * Gain;
 		}
 	} else {
 		invlen = 1.0f / sqrtf(length);
@@ -895,16 +704,16 @@ void ReverbEffect::Update3DPanning(const double *ReflectionsPan, const double *L
 		earlyPan[2] *= invlen;
 
 		length = minf(length, 1.0f);
-		ComputeDirectionalGains(earlyPan, 1.4142f, DirGains);
+		computeDirectionalGains(earlyPan, 1.4142f, DirGains);
 		for(i = 0; i < OUTPUT_CHANNELS; i++) {
-			this->Early.PanGain[i] = lerp(AmbientGains[i], DirGains[i], length) * Gain;
+			mEarly.mPanGain[i] = lerp(AmbientGains[i], DirGains[i], length) * Gain;
 		}
 	}
 
 	length = latePan[0]*latePan[0] + latePan[1]*latePan[1] + latePan[2]*latePan[2];
 	if(!(length > FLT_EPSILON)) {
 		for(i = 0; i < OUTPUT_CHANNELS; i++) {
-			this->Late.PanGain[i] = AmbientGains[i] * Gain;
+			mLate.mPanGain[i] = AmbientGains[i] * Gain;
 		}
 	} else {
 		invlen = 1.0f / sqrtf(length);
@@ -913,9 +722,9 @@ void ReverbEffect::Update3DPanning(const double *ReflectionsPan, const double *L
 		latePan[2] *= invlen;
 
 		length = minf(length, 1.0f);
-		ComputeDirectionalGains(latePan, 1.4142f, DirGains);
+		computeDirectionalGains(latePan, 1.4142f, DirGains);
 		for(i = 0; i < OUTPUT_CHANNELS; i++) {
-			this->Late.PanGain[i] = lerp(AmbientGains[i], DirGains[i], length) * Gain;
+			mLate.mPanGain[i] = lerp(AmbientGains[i], DirGains[i], length) * Gain;
 		}
 	}
 }
@@ -923,66 +732,61 @@ void ReverbEffect::Update3DPanning(const double *ReflectionsPan, const double *L
 
 void ReverbEffect::Update(int frequency)
 {
-	double lfscale, hfscale, hfRatio;
-	double cw, x, y;
+	qreal lfscale, hfscale, hfRatio;
+	qreal cw, x, y;
 
 	// Calculate the master low-pass filter (from the master effect HF gain).
-	hfscale = this->settings.HFReference / frequency;
-	FilterState_setParams(&this->LpFilter, Filter_HighShelf, this->settings.GainHF, hfscale, 0.0f);
+	hfscale = settings.HFReference / frequency;
+	mLpFilter.setParams(Filter_HighShelf, settings.GainHF, hfscale, 0.0f);
 
-	lfscale = this->settings.LFReference / frequency;
-	FilterState_setParams(&this->HpFilter, Filter_LowShelf, this->settings.GainLF, lfscale, 0.0f);
+	lfscale = settings.LFReference / frequency;
+	mHpFilter.setParams(Filter_LowShelf, settings.GainLF, lfscale, 0.0f);
 
 	// Update the modulator line.
-	this->UpdateModulator(this->settings.ModulationTime, this->settings.ModulationDepth, frequency);
+	updateModulator(settings.ModulationTime, settings.ModulationDepth, frequency);
 
 	// Update the initial effect delay.
-	this->UpdateDelayLine(this->settings.ReflectionsDelay, this->settings.LateReverbDelay, frequency);
+	updateDelayLine(settings.ReflectionsDelay, settings.LateReverbDelay, frequency);
 
 	// Update the early lines.
-	this->UpdateEarlyLines(this->settings.Gain, this->settings.ReflectionsGain, this->settings.LateReverbDelay);
+	updateEarlyLines(settings.Gain, settings.ReflectionsGain, settings.LateReverbDelay);
 
 	// Update the decorrelator.
-	this->UpdateDecorrelator(this->settings.Density, frequency);
+	updateDecorrelator(settings.Density, frequency);
 
 	// Get the mixing matrix coefficients (x and y).
-	CalcMatrixCoeffs(this->settings.Diffusion, &x, &y);
+	CalcMatrixCoeffs(settings.Diffusion, &x, &y);
 	// Then divide x into y to simplify the matrix calculation.
-	this->Late.MixCoeff = y / x;
+	mLate.mMixCoeff = y / x;
 
 	// If the HF limit parameter is flagged, calculate an appropriate limit
 	// based on the air absorption parameter.
-	hfRatio = this->settings.DecayHFRatio;
+	hfRatio = settings.DecayHFRatio;
 
-	if(this->settings.DecayHFLimit && this->settings.AirAbsorptionGainHF < 1.0f) {
-		hfRatio = CalcLimitedHfRatio(hfRatio, this->settings.AirAbsorptionGainHF, this->settings.DecayTime);
+	if(settings.DecayHFLimit && settings.AirAbsorptionGainHF < 1.0f) {
+		hfRatio = CalcLimitedHfRatio(hfRatio, settings.AirAbsorptionGainHF, settings.DecayTime);
 	}
 
 	cw = cosf(F_2PI * hfscale);
 	// Update the late lines.
-	this->UpdateLateLines(this->settings.Gain, this->settings.LateReverbGain, x, this->settings.Density, this->settings.DecayTime, this->settings.Diffusion, hfRatio, cw, frequency);
+	updateLateLines(settings.Gain, settings.LateReverbGain, x, settings.Density, settings.DecayTime, settings.Diffusion, hfRatio, cw, frequency);
 
 	// Update the echo line.
-	this->UpdateEchoLine(this->settings.Gain, this->settings.LateReverbGain, this->settings.EchoTime, this->settings.DecayTime, this->settings.Diffusion, this->settings.EchoDepth, hfRatio, cw, frequency);
+	updateEchoLine(settings.Gain, settings.LateReverbGain, settings.EchoTime, settings.DecayTime, settings.Diffusion, settings.EchoDepth, hfRatio, cw, frequency);
 
 	// Update early and late 3D panning.
-	this->Update3DPanning(this->settings.ReflectionsPan, this->settings.LateReverbPan, ReverbBoost);
+	update3DPanning(settings.ReflectionsPan, settings.LateReverbPan, ReverbBoost);
 }
 
 
-double eaxDbToAmp(double eaxDb)
+static qreal eaxDbToAmp(qreal eaxDb)
 {
-	double dB = eaxDb / 2000.0f;
+	qreal dB = eaxDb / 2000.0f;
 	return pow(10.0f, dB);
 }
 
 
-void ReverbEffect::LoadPreset(int environment, double environmentSize, double environmentDiffusion, int room, int roomHF, int roomLF,
-							  double decayTime, double decayHFRatio, double decayLFRatio,
-							  int reflections, double reflectionsDelay, double reflectionsPanX, double reflectionsPanY, double reflectionsPanZ,
-							  int reverb, double reverbDelay, double reverbPanX, double reverbPanY, double reverbPanZ,
-							  double echoTime, double echoDepth, double modulationTime, double modulationDepth, double airAbsorptionHF,
-							  double hfReference, double lfReference, double roomRolloffFactor, int flags)
+void ReverbEffect::LoadPreset(int environment, qreal environmentSize, qreal environmentDiffusion, int room, int roomHF, int roomLF, qreal decayTime, qreal decayHFRatio, qreal decayLFRatio, int reflections, qreal reflectionsDelay, qreal reflectionsPanX, qreal reflectionsPanY, qreal reflectionsPanZ, int reverb, qreal reverbDelay, qreal reverbPanX, qreal reverbPanY, qreal reverbPanZ, qreal echoTime, qreal echoDepth, qreal modulationTime, qreal modulationDepth, qreal airAbsorptionHF, qreal hfReference, qreal lfReference, qreal roomRolloffFactor, int flags)
 {
 	ReverbSettings set;
 	set.Density = 1.0f; // todo, currently default
@@ -1019,16 +823,21 @@ void ReverbEffect::LoadPreset(int environment, double environmentSize, double en
 
 void ReverbEffect::LoadPreset(ReverbSettings set)
 {
-	this->settings=set;
-	this->settings.correct();
+	settings=set;
+	settings.correct();
 }
 
 ReverbEffect::ReverbEffect()
+	: mSampleBuffer(nullptr)
+	, mTotalSamples(0)
+	, mDelayTap{0, 0}
+	, mDecoTap{0,0,0}
+	, mOffset(0)
 {
 
 }
 
-void ReverbEffect::init(uint32_t frequency)
+void ReverbEffect::init(quint32 frequency)
 {
 	ambiCoeffs[0][0] = 0.7071f;
 	ambiCoeffs[0][1] = 0.5f;
@@ -1040,137 +849,135 @@ void ReverbEffect::init(uint32_t frequency)
 	ambiCoeffs[2][2] = 0.0f;
 	ambiCoeffs[3][3] = 0.0f;
 
-	uint32_t index=0;
+	quint32 index=0;
 
-	this->TotalSamples = 0;
-	this->SampleBuffer = NULL;
+	mTotalSamples = 0;
+	mSampleBuffer = NULL;
 
-	FilterState_clear(&this->LpFilter);
-	FilterState_clear(&this->HpFilter);
+	mLpFilter.clear();
+	mHpFilter.clear();
 
-	this->Mod.Delay.Mask = 0;
-	this->Mod.Delay.Line = NULL;
-	this->Mod.Index = 0;
-	this->Mod.Range = 1;
-	this->Mod.Depth = 0.0f;
-	this->Mod.Coeff = 0.0f;
-	this->Mod.Filter = 0.0f;
+	mModulator.mDelay.mMask = 0;
+	mModulator.mDelay.mLine = NULL;
+	mModulator.mIndex = 0;
+	mModulator.mRange = 1;
+	mModulator.mDepth = 0.0f;
+	mModulator.mCoeff = 0.0f;
+	mModulator.mFilter = 0.0f;
 
-	this->Delay.Mask = 0;
-	this->Delay.Line = NULL;
-	this->DelayTap[0] = 0;
-	this->DelayTap[1] = 0;
+	mDelay.mMask = 0;
+	mDelay.mLine = NULL;
+	mDelayTap[0] = 0;
+	mDelayTap[1] = 0;
 
-	this->Early.Gain = 0.0f;
+	mEarly.mGain = 0.0f;
 	for(index = 0; index < 4; index++) {
-		this->Early.Coeff[index] = 0.0f;
-		this->Early.Delay[index].Mask = 0;
-		this->Early.Delay[index].Line = NULL;
-		this->Early.Offset[index] = 0;
+		mEarly.mCoeff[index] = 0.0f;
+		mEarly.mDelay[index].mMask = 0;
+		mEarly.mDelay[index].mLine = NULL;
+		mEarly.mOffset[index] = 0;
 	}
 
-	this->Decorrelator.Mask = 0;
-	this->Decorrelator.Line = NULL;
-	this->DecoTap[0] = 0;
-	this->DecoTap[1] = 0;
-	this->DecoTap[2] = 0;
+	mDecorrelator.mMask = 0;
+	mDecorrelator.mLine = NULL;
+	mDecoTap[0] = 0;
+	mDecoTap[1] = 0;
+	mDecoTap[2] = 0;
 
-	this->Late.Gain = 0.0f;
-	this->Late.DensityGain = 0.0f;
-	this->Late.ApFeedCoeff = 0.0f;
-	this->Late.MixCoeff = 0.0f;
+	mLate.mGain = 0.0f;
+	mLate.mDensityGain = 0.0f;
+	mLate.mApFeedCoeff = 0.0f;
+	mLate.mMixCoeff = 0.0f;
 	for(index = 0; index < 4; index++) {
-		this->Late.ApCoeff[index] = 0.0f;
-		this->Late.ApDelay[index].Mask = 0;
-		this->Late.ApDelay[index].Line = NULL;
-		this->Late.ApOffset[index] = 0;
+		mLate.mApCoeff[index] = 0.0f;
+		mLate.mApDelay[index].mMask = 0;
+		mLate.mApDelay[index].mLine = NULL;
+		mLate.mApOffset[index] = 0;
 
-		this->Late.Coeff[index] = 0.0f;
-		this->Late.Delay[index].Mask = 0;
-		this->Late.Delay[index].Line = NULL;
-		this->Late.Offset[index] = 0;
+		mLate.mCoeff[index] = 0.0f;
+		mLate.mDelay[index].mMask = 0;
+		mLate.mDelay[index].mLine = NULL;
+		mLate.mOffset[index] = 0;
 
-		this->Late.LpCoeff[index] = 0.0f;
-		this->Late.LpSample[index] = 0.0f;
+		mLate.mLpCoeff[index] = 0.0f;
+		mLate.mLpSample[index] = 0.0f;
 	}
 
 	for(index = 0; index < OUTPUT_CHANNELS; index++) {
-		this->Early.PanGain[index] = 0.0f;
-		this->Late.PanGain[index] = 0.0f;
+		mEarly.mPanGain[index] = 0.0f;
+		mLate.mPanGain[index] = 0.0f;
 	}
 
-	this->Echo.DensityGain = 0.0f;
-	this->Echo.Delay.Mask = 0;
-	this->Echo.Delay.Line = NULL;
-	this->Echo.ApDelay.Mask = 0;
-	this->Echo.ApDelay.Line = NULL;
-	this->Echo.Coeff = 0.0f;
-	this->Echo.ApFeedCoeff = 0.0f;
-	this->Echo.ApCoeff = 0.0f;
-	this->Echo.Offset = 0;
-	this->Echo.ApOffset = 0;
-	this->Echo.LpCoeff = 0.0f;
-	this->Echo.LpSample = 0.0f;
-	this->Echo.MixCoeff[0] = 0.0f;
-	this->Echo.MixCoeff[1] = 0.0f;
+	mEcho.mDensityGain = 0.0f;
+	mEcho.mDelay.mMask = 0;
+	mEcho.mDelay.mLine = NULL;
+	mEcho.mApDelay.mMask = 0;
+	mEcho.mApDelay.mLine = NULL;
+	mEcho.mCoeff = 0.0f;
+	mEcho.mApFeedCoeff = 0.0f;
+	mEcho.mApCoeff = 0.0f;
+	mEcho.mOffset = 0;
+	mEcho.mApOffset = 0;
+	mEcho.mLpCoeff = 0.0f;
+	mEcho.mLpSample = 0.0f;
+	mEcho.mMixCoeff[0] = 0.0f;
+	mEcho.mMixCoeff[1] = 0.0f;
 
-	this->Offset = 0;
+	mOffset = 0;
 
-	this->settings.Density   = EAXREVERB_DEFAULT_DENSITY;
-	this->settings.Diffusion = EAXREVERB_DEFAULT_DIFFUSION;
-	this->settings.Gain   = EAXREVERB_DEFAULT_GAIN;
-	this->settings.GainHF = EAXREVERB_DEFAULT_GAINHF;
-	this->settings.GainLF = EAXREVERB_DEFAULT_GAINLF;
-	this->settings.DecayTime    = EAXREVERB_DEFAULT_DECAY_TIME;
-	this->settings.DecayHFRatio = EAXREVERB_DEFAULT_DECAY_HFRATIO;
-	this->settings.DecayLFRatio = EAXREVERB_DEFAULT_DECAY_LFRATIO;
-	this->settings.ReflectionsGain   = EAXREVERB_DEFAULT_REFLECTIONS_GAIN;
-	this->settings.ReflectionsDelay  = EAXREVERB_DEFAULT_REFLECTIONS_DELAY;
-	this->settings.ReflectionsPan[0] = EAXREVERB_DEFAULT_REFLECTIONS_PAN_XYZ;
-	this->settings.ReflectionsPan[1] = EAXREVERB_DEFAULT_REFLECTIONS_PAN_XYZ;
-	this->settings.ReflectionsPan[2] = EAXREVERB_DEFAULT_REFLECTIONS_PAN_XYZ;
-	this->settings.LateReverbGain   = EAXREVERB_DEFAULT_LATE_REVERB_GAIN;
-	this->settings.LateReverbDelay  = EAXREVERB_DEFAULT_LATE_REVERB_DELAY;
-	this->settings.LateReverbPan[0] = EAXREVERB_DEFAULT_LATE_REVERB_PAN_XYZ;
-	this->settings.LateReverbPan[1] = EAXREVERB_DEFAULT_LATE_REVERB_PAN_XYZ;
-	this->settings.LateReverbPan[2] = EAXREVERB_DEFAULT_LATE_REVERB_PAN_XYZ;
-	this->settings.EchoTime  = EAXREVERB_DEFAULT_ECHO_TIME;
-	this->settings.EchoDepth = EAXREVERB_DEFAULT_ECHO_DEPTH;
-	this->settings.ModulationTime  = EAXREVERB_DEFAULT_MODULATION_TIME;
-	this->settings.ModulationDepth = EAXREVERB_DEFAULT_MODULATION_DEPTH;
-	this->settings.AirAbsorptionGainHF = EAXREVERB_DEFAULT_AIR_ABSORPTION_GAINHF;
-	this->settings.HFReference = EAXREVERB_DEFAULT_HFREFERENCE;
-	this->settings.LFReference = EAXREVERB_DEFAULT_LFREFERENCE;
-	this->settings.RoomRolloffFactor = EAXREVERB_DEFAULT_ROOM_ROLLOFF_FACTOR;
-	this->settings.DecayHFLimit = EAXREVERB_DEFAULT_DECAY_HFLIMIT;
+	settings.Density   = EAXREVERB_DEFAULT_DENSITY;
+	settings.Diffusion = EAXREVERB_DEFAULT_DIFFUSION;
+	settings.Gain   = EAXREVERB_DEFAULT_GAIN;
+	settings.GainHF = EAXREVERB_DEFAULT_GAINHF;
+	settings.GainLF = EAXREVERB_DEFAULT_GAINLF;
+	settings.DecayTime    = EAXREVERB_DEFAULT_DECAY_TIME;
+	settings.DecayHFRatio = EAXREVERB_DEFAULT_DECAY_HFRATIO;
+	settings.DecayLFRatio = EAXREVERB_DEFAULT_DECAY_LFRATIO;
+	settings.ReflectionsGain   = EAXREVERB_DEFAULT_REFLECTIONS_GAIN;
+	settings.ReflectionsDelay  = EAXREVERB_DEFAULT_REFLECTIONS_DELAY;
+	settings.ReflectionsPan[0] = EAXREVERB_DEFAULT_REFLECTIONS_PAN_XYZ;
+	settings.ReflectionsPan[1] = EAXREVERB_DEFAULT_REFLECTIONS_PAN_XYZ;
+	settings.ReflectionsPan[2] = EAXREVERB_DEFAULT_REFLECTIONS_PAN_XYZ;
+	settings.LateReverbGain   = EAXREVERB_DEFAULT_LATE_REVERB_GAIN;
+	settings.LateReverbDelay  = EAXREVERB_DEFAULT_LATE_REVERB_DELAY;
+	settings.LateReverbPan[0] = EAXREVERB_DEFAULT_LATE_REVERB_PAN_XYZ;
+	settings.LateReverbPan[1] = EAXREVERB_DEFAULT_LATE_REVERB_PAN_XYZ;
+	settings.LateReverbPan[2] = EAXREVERB_DEFAULT_LATE_REVERB_PAN_XYZ;
+	settings.EchoTime  = EAXREVERB_DEFAULT_ECHO_TIME;
+	settings.EchoDepth = EAXREVERB_DEFAULT_ECHO_DEPTH;
+	settings.ModulationTime  = EAXREVERB_DEFAULT_MODULATION_TIME;
+	settings.ModulationDepth = EAXREVERB_DEFAULT_MODULATION_DEPTH;
+	settings.AirAbsorptionGainHF = EAXREVERB_DEFAULT_AIR_ABSORPTION_GAINHF;
+	settings.HFReference = EAXREVERB_DEFAULT_HFREFERENCE;
+	settings.LFReference = EAXREVERB_DEFAULT_LFREFERENCE;
+	settings.RoomRolloffFactor = EAXREVERB_DEFAULT_ROOM_ROLLOFF_FACTOR;
+	settings.DecayHFLimit = EAXREVERB_DEFAULT_DECAY_HFLIMIT;
 
 	// Allocate the delay lines.
-	AllocLines(frequency);
+	allocLines(frequency);
 
 	// Calculate the modulation filter coefficient.  Notice that the exponent
 	// is calculated given the current sample rate.  This ensures that the
 	// resulting filter response over time is consistent across all sample
 	// rates.
-	this->Mod.Coeff = powf(MODULATION_FILTER_COEFF,
-						   MODULATION_FILTER_CONST / frequency);
+	mModulator.mCoeff = powf(MODULATION_FILTER_COEFF,
+							 MODULATION_FILTER_CONST / frequency);
 
 	// The early reflection and late all-pass filter line lengths are static,
 	// so their offsets only need to be calculated once.
 	for(index = 0; index < 4; index++) {
-		this->Early.Offset[index] = Truncate(EARLY_LINE_LENGTH[index] *
-											 frequency);
-		this->Late.ApOffset[index] = Truncate(ALLPASS_LINE_LENGTH[index] *
-											  frequency);
+		mEarly.mOffset[index] = Truncate(EARLY_LINE_LENGTH[index] * frequency);
+		mLate.mApOffset[index] = Truncate(ALLPASS_LINE_LENGTH[index] * frequency);
 	}
 
 	// The echo all-pass filter line length is static, so its offset only
 	// needs to be calculated once.
-	this->Echo.ApOffset = Truncate(ECHO_ALLPASS_LENGTH * frequency);
+	mEcho.mApOffset = Truncate(ECHO_ALLPASS_LENGTH * frequency);
 
 }
 
 ReverbEffect::~ReverbEffect()
 {
-	delete[] this->SampleBuffer;
-	this->SampleBuffer = NULL;
+	delete[] mSampleBuffer;
+	mSampleBuffer = NULL;
 }

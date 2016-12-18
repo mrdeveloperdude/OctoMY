@@ -9,7 +9,7 @@
 #include "security/PortableID.hpp"
 #include "../libutil/utility/Standard.hpp"
 
-#include "PairingListModel.hpp"
+#include "models/PairingListModel.hpp"
 #include "PairingEditButtonDelegate.hpp"
 
 #include <QDebug>

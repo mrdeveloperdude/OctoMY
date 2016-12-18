@@ -44,6 +44,7 @@ CreepyVoice::CreepyVoice(PortableID &id, QObject *parent)
 	, rng(RNG::sourceFactory("mt"))
 
 {
+	OC_METHODGATE();
 }
 
 CreepyVoice::~CreepyVoice()
@@ -170,6 +171,7 @@ static int synthCallback(short *wav, int numsamples, espeak_EVENT *events)
 
 void CreepyVoice::init(QAudioFormat f)
 {
+	OC_METHODGATE();
 	if (isInitialized()) {
 		return;
 	}
@@ -262,6 +264,7 @@ void CreepyVoice::init(QAudioFormat f)
 
 void CreepyVoice::generate(qint64 num, double *out)
 {
+	OC_METHODGATE();
 	if(nullptr!=out) {
 		for(qint64 i=0; i<num; ++i) {
 			if(nullptr==cur) {

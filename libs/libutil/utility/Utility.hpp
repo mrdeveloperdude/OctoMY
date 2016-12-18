@@ -41,6 +41,7 @@ namespace utility{
 	void toggleButtonGroup(QButtonGroup* group,bool on,bool clearOnOff=true);
 	void toggleButtonVisible(QButtonGroup* group,bool visible);
 	QString getSelectedButtonName(QButtonGroup* group,QString def="");
+	qint32 getSelectedButtonIndex(QButtonGroup* group,qint32 def);
 	void toggleButtonSelection(QAbstractButton* button, bool on, bool clearOnOff=true);
 	void fitContent(QTableView &tv);
 	void placeInScreen(QWidget &w,QPointF gravity=QPointF(0.5,0.5), int pref=-1);

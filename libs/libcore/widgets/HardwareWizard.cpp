@@ -1,73 +1,24 @@
 #include "HardwareWizard.hpp"
 #include "ui_HardwareWizard.h"
 
-#include "SerialDeviceListModel.hpp"
+#include "HardwareTemplate.hpp"
+#include "models/SerialDeviceListModel.hpp"
+#include "models/HardwareTemplateModel.hpp"
 
 #include <QDebug>
 
 
-
-
-const QString HardwareTemplate::PROTOCOL_SERVOTOR32_2_1="PROTOCOL_SERVOTOR_2_1";
-const QString HardwareTemplate::INTERFACE_SERVOTOR32="INTERFACE_SERVOTOR32";
-
-
-
-HardwareTemplate::HardwareTemplate(  const QString &name, const QString &description, const QString &iconURL,const QString &interface, const QString &protocol, const quint32 poseSize)
-	: mName(name)
-	, mDescription(description)
-	, mIconURL(iconURL)
-	, mInterface(interface)
-	, mProtocol(protocol)
-	, mPoseSize(poseSize)
-
-{
-
-}
-
-
-
-QString HardwareTemplate::name() const
-{
-	return mName;
-}
-QString HardwareTemplate::description()const
-{
-	return mDescription;
-}
-
-QString HardwareTemplate::iconURL()const
-{
-	return mIconURL;
-}
-QString HardwareTemplate::interface()const
-{
-	return mInterface;
-}
-QString HardwareTemplate::protocol()const
-{
-	return mProtocol;
-}
-
-quint32 HardwareTemplate::poseSize()const
-{
-	return mPoseSize;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
 HardwareWizard::HardwareWizard(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::HardwareWizard)
-	, mSerialDevices(new SerialDeviceListModel(this))
+	, mSerialDevicesModel(new SerialDeviceListModel(this))
+	, mHardwareTemplateModel(new HardwareTemplateModel(this))
+	, mSelectedTempalte(nullptr)
 {
 	ui->setupUi(this);
 	//qDebug()<<"Setting model";
-	ui->listViewSerialInterface->setModel(mSerialDevices);
+	ui->listViewSerialInterface->setModel(mSerialDevicesModel);
+	ui->listViewTemplate->setModel(mHardwareTemplateModel);
 	reset();
 }
 
@@ -75,6 +26,7 @@ HardwareWizard::~HardwareWizard()
 {
 	delete ui;
 }
+
 
 template<typename T>
 static long mod(T a, T b)
@@ -86,7 +38,7 @@ void HardwareWizard::reset()
 {
 	//We skip the template screen for now, because frankly it is not useful until this menu starts overflowing with alternatives.
 	//moveTo(0);
-	moveTo(1);
+	moveTo(0);
 }
 
 
@@ -102,7 +54,7 @@ void HardwareWizard::moveTo(int next)
 {
 	switch(next) {
 	case(0): {
-		selectFirstIfNoneSelected(ui->listWidgetTemplate);
+		selectFirstIfNoneSelected(ui->listViewTemplate);
 	}
 	break;
 	case(1): {
@@ -123,17 +75,25 @@ void HardwareWizard::moveTo(int next)
 	}
 	break;
 	}
-
 	ui->stackedWidget->setCurrentIndex( next );
 }
 
 
 void HardwareWizard::save()
 {
-	switch(ui->stackedWidget->currentIndex()) {
+	const int cur=ui->stackedWidget->currentIndex();
+	switch(cur) {
 	//Template
 	case(0): {
-
+		const int curTemplate=ui->listViewTemplate->currentIndex().row();
+		qDebug()<<"Found template: "<<curTemplate;
+		QVector<HardwareTemplate *> templates=HardwareTemplate::templates();
+		if(curTemplate<0 || curTemplate>=templates.size()) {
+			qWarning()<<"ERROR: Could not find selected template";
+			return;
+		}
+		mSelectedTempalte=templates[curTemplate];
+		loadFromTemplate();
 	}
 	break;
 	//Interface
@@ -151,12 +111,18 @@ void HardwareWizard::save()
 	}
 	break;
 	}
+}
 
+void HardwareWizard::loadFromTemplate()
+{
+	qWarning()<<"TODO: Implement this";
 }
 
 void HardwareWizard::on_pushButtonOnward_clicked()
 {
-	const int next=mod(ui->stackedWidget->currentIndex()+1, ui->stackedWidget->count());
+	save();
+	const int cur=ui->stackedWidget->currentIndex();
+	const int next=mod(cur+1, ui->stackedWidget->count());
 	moveTo(next);
 }
 

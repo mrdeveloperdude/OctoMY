@@ -684,6 +684,29 @@ QString getSelectedButtonName(QButtonGroup* group,QString def)
 
 
 
+qint32 getSelectedButtonIndex(QButtonGroup* group,qint32 def)
+{
+	if(0==group) {
+		return def;
+	}
+	QAbstractButton *but=group->checkedButton();
+	if(0==but) {
+		return def;
+	}
+	qint32 index=0;
+	QList<QAbstractButton*> buts=group->buttons();
+	for(QList<QAbstractButton*>::iterator it=buts.begin(),end=buts.end(); it!=end; ++it) {
+		QAbstractButton *b=*it;
+		if(b==but) {
+			return index;
+		}
+		index++;
+	}
+	return def;
+}
+
+
+
 void fitContent(QTableView &tv)
 {
 	for (int i = 0, c=tv.horizontalHeader()->count(); i < c; ++i) {
