@@ -3,6 +3,7 @@
 
 #include <QVector>
 #include <QString>
+#include <QVariantList>
 
 class Pose;
 
@@ -30,6 +31,8 @@ public:
 	QDataStream &receive(QDataStream &);
 	QDataStream &send(QDataStream &) const;
 
+	QVariantList toMap() const;
+	void fromMap( QVariantList );
 
 };
 

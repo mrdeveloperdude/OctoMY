@@ -18,13 +18,13 @@ class AtomicBoolean{
 			set(v);
 		}
 
-		bool set(bool v)
+		const bool set(bool v)
 		{
 			QMutexLocker ml(&mMutex);
 			return mBool=v;
 		}
 
-		bool get()
+		const bool get()
 		{
 			QMutexLocker ml(&mMutex);
 			return mBool;

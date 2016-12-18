@@ -89,7 +89,7 @@ QString PoseMapping::toString() const
 	quint32 index=0;
 	for(quint32 val:mMapping) {
 		QString name=mNames[index];
-		out+=QString::number(index)+"="+QString::number(val)+(name.isEmpty()?("("+name+")"):"")+", ";
+		out+=QString::number(index)+"="+QString::number(val)+(!name.isEmpty()?("("+name+")"):"")+", ";
 		index++;
 	}
 	out+=" )";
@@ -107,7 +107,7 @@ void PoseMapping::resize(quint32 nusz)
 	if(nusz<sz) {
 		qDebug()<<"SMALLER SIZE FIXING: "<<sz;
 		for(quint32 i=0; i<sz; ++i) {
-			if(mMapping[i]>=nusz){
+			if(mMapping[i]>=nusz) {
 				mMapping[i]=nusz-1;
 			}
 		}
@@ -140,7 +140,53 @@ QDataStream &PoseMapping::send(QDataStream &ds) const
 	return ds;
 }
 
+#include <QVariantMap>
 
+QVariantList PoseMapping::toMap() const
+{
+	QVariantList list;
+	quint32 from=0;
+	for(quint32 to:mMapping) {
+		QString name=mNames[from];
+		QVariantMap entry;
+		entry["name"]=name;
+		entry["to"]=to;
+		list<<entry;
+		from++;
+	}
+	return list;
+}
+void PoseMapping::fromMap( QVariantList map)
+{
+	QVector<quint32> tos;
+	QVector<QString> names;
+	quint32 ct=0;
+	for(QVariant ventry:map) {
+		if (ventry.canConvert<QVariantMap>()) {
+			QVariantMap entry=ventry.value<QVariantMap>();
+			QString name="";
+			quint32 to=0;
+			if(entry.contains("name")) {
+				name=entry["name"].toString();
+			}
+			if(entry.contains("to")) {
+				to=entry["to"].toUInt();
+			}
+			tos<<to;
+			names<<name;
+			ct++;
+		}
+	}
+	mMapping.resize(ct);
+	mNames.resize(ct);
+	quint32 from=0;
+	for(quint32 to:tos) {
+		QString name=names[from];
+		mMapping[from]=qMin(to,ct-1);
+		mNames[from]=name;
+		from++;
+	}
+}
 
 QDataStream &operator>>(QDataStream &ds, PoseMapping &p)
 {

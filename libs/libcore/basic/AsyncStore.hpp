@@ -39,25 +39,10 @@ public:
 	// Make if needed, load if otherwise
 	void bootstrap(bool loadOnly=false, bool runInBackground=true);
 
-	inline bool isReady()
-	{
-		return mReady;
-	}
-
-	inline bool isInProgress()
-	{
-		return mInProgress;
-	}
-
-	inline bool hasError()
-	{
-		return mError;
-	}
-
-	inline bool fileExists() const
-	{
-		return QFile(mFilename).exists();
-	}
+	bool isReady();
+	bool isInProgress();
+	bool hasError();
+	bool fileExists() const;
 
 	friend class GenerateRunnable<AsyncStore>;
 

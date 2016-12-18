@@ -39,7 +39,8 @@ class TestPoseMappingWidget:public QObject
 	Q_OBJECT
 
 private slots:
-	void test();
+		void testBasics();
+	void testWidget();
 
 };
 

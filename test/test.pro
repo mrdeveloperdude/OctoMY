@@ -28,7 +28,7 @@ TEST_PROJECTS+= \
 #	testDeliveryWizard \
 #	testNetworkAddress \
 #	testNodeAssociate \
-#	testNodeAssociateStore \
+	testNodeAssociateStore \
 #	testPortableID \
 #	testESpeak \
 #	testCreepyVoice \
@@ -36,7 +36,7 @@ TEST_PROJECTS+= \
 #	testEventSourcing \
 #	testSyncParameter \
 #	testAgentStateCourier \
-	testCarSteeringWidget \
+#	testCarSteeringWidget \
 	testPoseMappingWidget \
 
 

@@ -203,6 +203,7 @@ void TestNodeAssociateStore::test(){
 		QVERIFY(store->hasParticipant(id));
 		QVERIFY(!store->hasParticipant(badId));
 
+		// Implicitly saves data
 		delete store;
 		store=nullptr;
 	}
@@ -243,6 +244,7 @@ void TestNodeAssociateStore::test(){
 		QVERIFY(!ass6->isValidForClient(false));
 		QVERIFY(!ass6->isValidForServer());
 
+		// Implicitly saves data
 		delete store2;
 		store2=nullptr;
 	}

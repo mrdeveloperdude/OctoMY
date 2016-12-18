@@ -199,7 +199,8 @@ SOURCES +=\
     models/PairingListModel.cpp \
     models/SerialDeviceListModel.cpp \
     widgets/PoseMappingWidget.cpp \
-    widgets/PoseMappingView.cpp
+    widgets/PoseMappingView.cpp \
+    puppet/PoseMappingStore.cpp
 
 
 HEADERS  += \
@@ -404,7 +405,8 @@ HEADERS  += \
     models/PairingListModel.hpp \
     models/SerialDeviceListModel.hpp \
     widgets/PoseMappingWidget.hpp \
-    widgets/PoseMappingView.hpp
+    widgets/PoseMappingView.hpp \
+    puppet/PoseMappingStore.hpp
 
 
 FORMS    += \

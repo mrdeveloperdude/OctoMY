@@ -62,3 +62,24 @@ void AsyncStore::bootstrap(bool loadOnly, bool runInBackground)
 	// Use single threaded way
 	bootstrapWorker();
 }
+
+
+bool AsyncStore::isReady()
+{
+	return mReady.get();
+}
+
+bool AsyncStore::isInProgress()
+{
+	return mInProgress;
+}
+
+bool AsyncStore::hasError()
+{
+	return mError;
+}
+
+bool AsyncStore::fileExists() const
+{
+	return QFile(mFilename).exists();
+}
