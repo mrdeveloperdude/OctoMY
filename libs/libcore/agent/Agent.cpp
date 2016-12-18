@@ -30,7 +30,6 @@ CourierSet::CourierSet(ClientSignature &sig, Agent &agent)
 	, mAgentStateCourier(new AgentStateCourier(&mDS,nullptr))
 	, mSensorsCourier(new SensorsCourier(nullptr))
 	, mBlobCourier(new BlobCourier(nullptr))
-
 {
 	OC_METHODGATE();
 	if(nullptr!=mAgentStateCourier) {
@@ -152,6 +151,7 @@ CourierSet *AgentControls::activeControl() const
 Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "agent", parent), ROLE_AGENT, TYPE_AGENT, parent)
 	, mControls(*this)
+	, mPoseMappingStore(mContext->baseDir() + "/pose_mapping.json")
 	, window(nullptr)
 {
 	OC_METHODGATE();
@@ -159,6 +159,8 @@ Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 	if(mPeers.isReady()) {
 		onPeerStoreReady(true);
 	}
+	mPoseMappingStore.bootstrap(true, false);
+	mPoseMapping=mPoseMappingStore.poseMapping();
 }
 
 Agent::~Agent()
@@ -209,6 +211,11 @@ const AgentControls &Agent::controls() const
 	return mControls;
 }
 
+QSharedPointer<PoseMapping> Agent::poseMapping()
+{
+	return mPoseMapping;
+}
+
 //////////////////////////////////////////////////
 //Node Associate Store slots
 void Agent::onPeerStoreReady(bool ready)
@@ -252,14 +259,13 @@ void Agent::onSyncParameterChanged(ISyncParameter *sp)
 {
 	OC_METHODGATE();
 	//qDebug()<<"Agent ASC changed: "<<sp->toString();
-	if(nullptr!=sp){
-		if("TargetPose"==sp->name()){
+	if(nullptr!=sp) {
+		if("TargetPose"==sp->name()) {
 			SyncParameter<Pose> *targetPoseParameter=(SyncParameter<Pose> *)sp;
 			Pose targetPose=targetPoseParameter->bestValue(true);
 			qDebug()<<"TARGET POSE: "<<targetPose.toString();
 		}
-	}
-	else{
+	} else {
 		qWarning()<<"ERROR: sp was nullptr";
 	}
 }

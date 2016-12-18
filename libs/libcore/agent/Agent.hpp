@@ -10,6 +10,8 @@
 #include "basic/Node.hpp"
 #include "basic/NodeLauncher.hpp"
 
+#include "puppet/PoseMappingStore.hpp"
+
 
 #include <QObject>
 #include <QList>
@@ -85,6 +87,8 @@ class Agent : public Node
 	Q_OBJECT
 private:
 	AgentControls mControls;
+	PoseMappingStore mPoseMappingStore;
+	QSharedPointer<PoseMapping> mPoseMapping;
 public:
 	AgentWindow *window;
 public:
@@ -97,6 +101,8 @@ public:
 
 
 	const AgentControls &controls() const ;
+
+	QSharedPointer<PoseMapping> poseMapping();
 
 	// NodeAssociate slots
 public slots:
