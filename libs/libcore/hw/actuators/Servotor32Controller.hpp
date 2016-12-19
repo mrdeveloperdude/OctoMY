@@ -6,28 +6,21 @@
 #include <QTimer>
 
 #include <QSerialPort>
+#include <QBitArray>
+#include <QVector>
 
-class QBitArray;
 class SerialSettingsWidget;
 
 // Documentation for serial commands are here: http://arcbotics.com/lessons/servotor32-commands/
 
-class Servotor32Controller : public IServoController
+class Servotor32Controller: public IServoController
 {
-public:
-	Servotor32Controller();
-
-
-public:
-	const static quint32 SERVO_COUNT=32;
+	Q_OBJECT
 private:
-
-	SerialSettingsWidget *settings;
-	QSerialPort *serial;
-	QByteArray inBuf;
-	quint32 lastPos[SERVO_COUNT];
-	quint32 dirtyMoveFlags;
-	QTimer sendTimer;
+	SerialSettingsWidget *mSerialSettings;
+	QSerialPort *mSerialInterface;
+	QVector<qreal> mAccumulatedPosition;
+	QBitArray mDirtyMoveFlags;
 
 public:
 	explicit Servotor32Controller(QObject *parent = nullptr);
@@ -39,11 +32,9 @@ public:
 	void closeSerialPort();
 	bool isConnected();
 
-private slots:
+private:
 	void syncMove();
 	void writeData(const QByteArray &data);
-
-
 
 	// Serial IO slots
 private slots:
@@ -57,10 +48,12 @@ private slots:
 public:
 
 	void kill(QBitArray &flags) Q_DECL_OVERRIDE;
-	void centerAll() Q_DECL_OVERRIDE;
-	void version() Q_DECL_OVERRIDE;
-	void debug() Q_DECL_OVERRIDE;
 	void move(Pose &pose) Q_DECL_OVERRIDE;
+	void killAll() Q_DECL_OVERRIDE;
+	void centerAll() Q_DECL_OVERRIDE;
+	void fetchVersionData() Q_DECL_OVERRIDE;
+	void fetchDebugData() Q_DECL_OVERRIDE;
+
 
 signals:
 	void settingsChanged();

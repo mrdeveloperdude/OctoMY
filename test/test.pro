@@ -28,7 +28,7 @@ TEST_PROJECTS+= \
 #	testDeliveryWizard \
 #	testNetworkAddress \
 #	testNodeAssociate \
-	testNodeAssociateStore \
+#	testNodeAssociateStore \
 #	testPortableID \
 #	testESpeak \
 #	testCreepyVoice \
@@ -38,7 +38,8 @@ TEST_PROJECTS+= \
 #	testAgentStateCourier \
 #	testCarSteeringWidget \
 #	testPoseMappingWidget \
-	testPoseMappingStore \
+#	testPoseMappingStore \
+	testServotor32Controller \
 
 
 

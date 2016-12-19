@@ -14,22 +14,21 @@
 
 Servotor32Controller::Servotor32Controller(QObject *parent)
 	: IServoController("Servotor32", parent)
-	, settings(new SerialSettingsWidget)
-	, serial(new QSerialPort(this))
-	, lastPos{0}
-	, dirtyMoveFlags(0xFFFFFFFF)
+	, mSerialSettings(new SerialSettingsWidget)
+	, mSerialInterface(new QSerialPort(this))
 {
 
-	if(!connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onSerialHandleError(QSerialPort::SerialPortError)), OC_CONTYPE)) {
+	qRegisterMetaType<QSerialPort::SerialPortError>();
+	if(!connect(mSerialInterface, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onSerialHandleError(QSerialPort::SerialPortError)), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
-	if(!connect(serial, SIGNAL(readyRead()), this, SLOT(onSerialReadData()), OC_CONTYPE)) {
+	if(!connect(mSerialInterface, SIGNAL(readyRead()), this, SLOT(onSerialReadData()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
-	if(!connect(serial, SIGNAL(bytesWritten(qint64)), this, SLOT(onSerialDataWritten(qint64)), OC_CONTYPE)) {
+	if(!connect(mSerialInterface, SIGNAL(bytesWritten(qint64)), this, SLOT(onSerialDataWritten(qint64)), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
-	if(!connect(settings,SIGNAL(settingsChanged()), this, SLOT(onSettingsChanged()), OC_CONTYPE)) {
+	if(!connect(mSerialSettings,SIGNAL(settingsChanged()), this, SLOT(onSettingsChanged()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 }
@@ -38,39 +37,39 @@ Servotor32Controller::~Servotor32Controller()
 {
 	//ASIMOV: Limp all servos before closing shop to avoid frying them if they are trying to reach impossible positions
 	killAll();
-	delete settings;
+	delete mSerialSettings;
 }
 
 void Servotor32Controller::configure()
 {
-	if(nullptr!=settings) {
+	if(nullptr!=mSerialSettings) {
 		qDebug()<<"SETTINGS SHOW";
-		settings->show();
+		mSerialSettings->show();
 	}
 }
 
 
 void Servotor32Controller::openSerialPort()
 {
-	SerialSettings p = settings->settings();
-	serial->setPortName(p.name);
-	serial->setBaudRate(p.baudRate);
-	serial->setDataBits(p.dataBits);
-	serial->setParity(p.parity);
-	serial->setStopBits(p.stopBits);
-	serial->setFlowControl(p.flowControl);
-	if (serial->open(QIODevice::ReadWrite)) {
+	SerialSettings p = mSerialSettings->settings();
+	mSerialInterface->setPortName(p.name);
+	mSerialInterface->setBaudRate(p.baudRate);
+	mSerialInterface->setDataBits(p.dataBits);
+	mSerialInterface->setParity(p.parity);
+	mSerialInterface->setStopBits(p.stopBits);
+	mSerialInterface->setFlowControl(p.flowControl);
+	if (mSerialInterface->open(QIODevice::ReadWrite)) {
 		qDebug()<<tr("Connected to %1 : %2, %3, %4, %5, %6").arg(p.name).arg(p.stringBaudRate).arg(p.stringDataBits).arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl);
 		emit connectionChanged();
 	} else {
-		qDebug()<<"ERROR OPENING: "<<serial->errorString();
+		qDebug()<<"ERROR OPENING: "<<mSerialInterface->errorString();
 	}
 }
 
 void Servotor32Controller::closeSerialPort()
 {
-	if (serial->isOpen()) {
-		serial->close();
+	if (mSerialInterface->isOpen()) {
+		mSerialInterface->close();
 		emit connectionChanged();
 	}
 	qDebug()<<"Disconnected";
@@ -79,22 +78,25 @@ void Servotor32Controller::closeSerialPort()
 
 bool Servotor32Controller::isConnected()
 {
-	return serial->isOpen();
+	return mSerialInterface->isOpen();
 }
 
 
+// NOTE: This will carry out the actual writing when serial signals there is an opportunity.
+//	     The data for move is accumulated and consolidated by one or more move() commands.
 void Servotor32Controller::syncMove()
 {
 	if(isConnected()) {
 		QString data;
 		//qDebug()<<"SYNC-MOVE: "<< QString("%1").arg( dirtyMoveFlags, 16, 2, QChar('0'));
-		for(quint32 i=0; i<SERVO_COUNT; ++i) {
-			if((dirtyMoveFlags & (0x1<<i))>0) {
-				data += "#" +QString::number(i) + "P" + QString::number(lastPos[i]) +"\n";
+		const quint32 sz=mAccumulatedPosition.size();
+		for(quint32 i=0; i<sz; ++i) {
+			if(mDirtyMoveFlags.testBit(i)) {
+				data += "#" +QString::number(i) + "P" + QString::number(mAccumulatedPosition[i]) +"\n";
 			}
 		}
 		writeData(data.toLatin1());
-		dirtyMoveFlags=0;
+		mDirtyMoveFlags.fill(false);
 	} else {
 		qWarning()<<"ERROR: Trying to syncMove with serial when not connected";
 	}
@@ -106,9 +108,9 @@ void Servotor32Controller::writeData(const QByteArray &data)
 	if(0==data.size()) {
 		qWarning()<<"ERROR: WRITING CALLED WITH NO DATA";
 	} else {
-		const qint64 accepted=serial->write(data);
+		const qint64 accepted=mSerialInterface->write(data);
 		if(accepted<0) {
-			qWarning()<<"ERROR: write was not accepted. ERROR="<<serial->errorString();
+			qWarning()<<"ERROR: write was not accepted. ERROR="<<mSerialInterface->errorString();
 		} else {
 			if(data.size()>accepted) {
 				qWarning()<<"ERROR: Data truncation occurred, serial port would not accept more";
@@ -128,7 +130,7 @@ void Servotor32Controller::writeData(const QByteArray &data)
 void Servotor32Controller::onSerialReadData()
 {
 	if(isConnected()) {
-		QByteArray data = serial->readAll();
+		QByteArray data = mSerialInterface->readAll();
 		qDebug()<<data;
 		//TODO:parse and handle data
 	} else {
@@ -140,9 +142,9 @@ void Servotor32Controller::onSerialReadData()
 
 void Servotor32Controller::onSerialDataWritten( qint64 written)
 {
-	qint64 left=serial->bytesToWrite();
+	qint64 left=mSerialInterface->bytesToWrite();
 	//qDebug()<<"DATA WRITTEN: "<<written <<" (left:"<<left<<") ";
-	if(left<=0 && dirtyMoveFlags >0) {
+	if(left<=0 && mDirtyMoveFlags.count(true)) {
 		syncMove();
 	}
 }
@@ -168,7 +170,7 @@ void Servotor32Controller::onSerialHandleError(QSerialPort::SerialPortError erro
 			*/
 	qDebug()<<"HANDLED ERROR: "<<error;
 	if (error == QSerialPort::ResourceError) {
-		qDebug()<<"Critical Error"<<serial->errorString();
+		qDebug()<<"Critical Error"<<mSerialInterface->errorString();
 		closeSerialPort();
 	}
 }
@@ -179,7 +181,7 @@ void Servotor32Controller::onSettingsChanged()
 		QSignalBlocker(this);
 		closeSerialPort();
 		openSerialPort();
-		settings->hide();
+		mSerialSettings->hide();
 		//version();
 		writeData("\n");
 	}
@@ -191,13 +193,14 @@ void Servotor32Controller::onSettingsChanged()
 // IServoController interface
 //////////////////////////////////////////////
 
+
 void Servotor32Controller::kill(QBitArray &flags)
 {
 	//Trivial reject: kill ALL
 	if(isConnected()) {
 		const quint32 sz=flags.size();
 		if((quint32)flags.count(true)==sz) {
-			writeData("K\n");
+			killAll();
 		} else {
 			QString data;
 			for(quint32 i=0; i<sz; ++i) {
@@ -209,9 +212,48 @@ void Servotor32Controller::kill(QBitArray &flags)
 			writeData(data.toLatin1());
 		}
 	} else {
-		qWarning()<<"ERROR: Trying to kill servo via serial when not connected";
+		qWarning()<<"ERROR: Trying to kill subset of servos via serial when not connected";
 	}
 }
+
+// NOTE: This will simply collect the latest data. The actual writing is done in syncMove when serial signals there is an opportunity.
+// TODO: look at binary extension introduced in 2.1 version of hexy firmware to improve performance
+void Servotor32Controller::move(Pose &pose)
+{
+	//qreal pos[1]= {0.0};	quint32 flags;
+	if(isConnected()) {
+		const quint32 sz=pose.size();
+		if(mAccumulatedPosition.size()<sz) {
+			mAccumulatedPosition.resize(sz);
+			mDirtyMoveFlags.resize(sz);
+		}
+		for(quint32 i=0; i<sz; ++i) {
+			const quint32 p=(quint32)(qBound(-1.0, pose.value(i), 1.0)*1000.0+1500.0);
+			//Skip unecessary communication if value did not change
+			if(mAccumulatedPosition[i]!=p) {
+				mAccumulatedPosition[i]=p;
+				mDirtyMoveFlags.setBit(i);
+			}
+		}
+		//qDebug()<<"MOVE: flags="<< QString("%1").arg( flags, 16, 2, QChar('0'))<< ", dirtyMoveFlags="<<QString("%1").arg( dirtyMoveFlags, 16, 2, QChar('0'));
+		if(mDirtyMoveFlags.count(true)>0 && 0==mSerialInterface->bytesToWrite()) {
+			syncMove();
+		}
+	} else {
+		qWarning()<<"ERROR: Trying to move servo with serial when not connected";
+	}
+}
+
+
+void Servotor32Controller::killAll()
+{
+	if(isConnected()) {
+		writeData("K\n");
+	} else {
+		qWarning()<<"ERROR: Trying to kill all servos via serial when not connected";
+	}
+}
+
 
 
 void Servotor32Controller::centerAll()
@@ -221,11 +263,9 @@ void Servotor32Controller::centerAll()
 	} else {
 		qWarning()<<"ERROR: Trying to center servos using serial when not connected";
 	}
-
 }
 
-
-void Servotor32Controller::version()
+void Servotor32Controller::fetchVersionData()
 {
 	if(isConnected()) {
 		writeData("V\n");
@@ -236,39 +276,12 @@ void Servotor32Controller::version()
 }
 
 
-void Servotor32Controller::debug()
+void Servotor32Controller::fetchDebugData()
 {
 	if(isConnected()) {
 		writeData("D\n");
 	} else {
 		qWarning()<<"ERROR: Trying to debug with serial when not connected";
-	}
-
-}
-
-//TODO: look at binary extension introduced in 2.1 version of hexy firmware to improve performance
-void Servotor32Controller::move(Pose &pose)
-{
-	qreal pos[1]= {0.0};
-	quint32 flags;
-	if(isConnected()) {
-		for(quint32 i=0; i<SERVO_COUNT; ++i) {
-			quint32 flag=(0x1<<i);
-			if((flags & flag)>0) {
-				const quint32 p=(quint32)(qBound(-1.0, pos[i], 1.0)*1000.0+1500.0);
-				//Skip unecessary communication if value did not change
-				if(lastPos[i]!=p) {
-					lastPos[i]=p;
-					dirtyMoveFlags|=flag;
-				}
-			}
-		}
-		//qDebug()<<"MOVE: flags="<< QString("%1").arg( flags, 16, 2, QChar('0'))<< ", dirtyMoveFlags="<<QString("%1").arg( dirtyMoveFlags, 16, 2, QChar('0'));
-		if(dirtyMoveFlags>0 && 0==serial->bytesToWrite()) {
-			syncMove();
-		}
-	} else {
-		qWarning()<<"ERROR: Trying to move servo with serial when not connected";
 	}
 
 }

@@ -26,3 +26,19 @@ IServoController::IServoController(QString name, QObject *parent)
 {
 
 }
+
+IServoController::~IServoController()
+{
+
+}
+
+
+void IServoController::killAll()
+{
+
+}
+
+void IServoController::centerAll()
+{
+
+}

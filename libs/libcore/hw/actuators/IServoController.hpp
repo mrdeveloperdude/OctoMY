@@ -21,7 +21,8 @@ private:
 	QString mName;
 
 public:
-	IServoController(QString name, QObject *parent=nullptr);
+	explicit IServoController(QString name, QObject *parent=nullptr);
+	virtual ~IServoController();
 
 public:
 
@@ -31,18 +32,19 @@ public:
 	bool isDebug();
 	void setDebug(bool);
 
-
-
 	// IServoController interface
+
 public:
 
-	virtual void killAll();
 
-	virtual void kill(QBitArray &flags);
+	virtual void kill(QBitArray &flags)=0;
+	virtual void move(Pose &pose)=0;
+	// NOTE: Why do we bother to spell out all these? Because the underlying hardware may optimize the communication for them (or not).
+	virtual void killAll();
 	virtual void centerAll();
-	virtual void version();
-	virtual void debug();
-	virtual void move(Pose &pose);
+	virtual void fetchVersionData()=0;
+	virtual void fetchDebugData()=0;
+
 
 };
 
