@@ -200,7 +200,9 @@ SOURCES +=\
     models/SerialDeviceListModel.cpp \
     widgets/PoseMappingWidget.cpp \
     widgets/PoseMappingView.cpp \
-    puppet/PoseMappingStore.cpp
+    puppet/PoseMappingStore.cpp \
+    hw/actuators/IServoController.cpp \
+    hw/actuators/Servotor32Controller.cpp
 
 
 HEADERS  += \
@@ -406,7 +408,9 @@ HEADERS  += \
     models/SerialDeviceListModel.hpp \
     widgets/PoseMappingWidget.hpp \
     widgets/PoseMappingView.hpp \
-    puppet/PoseMappingStore.hpp
+    puppet/PoseMappingStore.hpp \
+    hw/actuators/IServoController.hpp \
+    hw/actuators/Servotor32Controller.hpp
 
 
 FORMS    += \

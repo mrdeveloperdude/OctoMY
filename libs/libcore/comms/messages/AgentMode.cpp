@@ -43,7 +43,7 @@ AgentMode AgentModeFromString(QString s)
 	AgentModeFromStringCASE(COMPLETE_AUTONOMY);
 	AgentModeFromStringCASE(AUTO_PILOT);
 	AgentModeFromStringCASE(MANUAL_PILOT);
-	//Default to OFFLINE in case of error (as a asimov safety measure)
+	// ASIMOV: Default to OFFLINE in case of error
 	return OFFLINE;
 #undef AgentModeFromStringCASE
 }

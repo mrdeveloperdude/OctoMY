@@ -46,7 +46,7 @@ private:
 
 	// Parameters
 	SyncParameter<quint8> *mFlags; // The boolean flags part of the state. The following are the values:
-	// BIT-0 EmergencyShutdown: When true this robot is completely shut down. It can be triggered automatically when faults are found (to uphold Asimov's first law) or manually either by remote or local.
+	// BIT-0 EmergencyShutdown: ASIMOV: When true this robot is completely shut down. It can be triggered automatically when faults are found (to uphold Asimov's first law) or manually either by remote or local.
 	// BIT-1 CameraEnabled: When true this robot will keep camera running and broadcast frames via BlobCourier. Enabled by remote.
 	// BIT-2 Reserved for future use
 	// BIT-3 Reserved for future use
