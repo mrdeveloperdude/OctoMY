@@ -59,7 +59,7 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 	ui->widgetFace->setDisabled(true);
 
 
-	ui->tryToggleListen->setText("Connect","Connecting","Connected");
+	ui->tryToggleListen->configure("Connect","Connecting","Connected", "#e1be4e");
 	ui->tryToggleListen->setState(OFF,false);
 
 	if(!connect(ui->tryToggleListen, &TryToggle::stateChanged, this, &ClientWidget::onConnectButtonStateChanged ,OC_CONTYPE)) {

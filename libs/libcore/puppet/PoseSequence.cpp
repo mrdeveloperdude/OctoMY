@@ -4,3 +4,9 @@ PoseSequence::PoseSequence()
 {
 
 }
+
+
+PoseSequence::~PoseSequence()
+{
+
+}

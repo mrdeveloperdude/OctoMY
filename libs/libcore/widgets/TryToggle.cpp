@@ -21,17 +21,27 @@ TryToggle::~TryToggle()
 	delete ui;
 }
 
-void TryToggle::setText(QString t1i,QString t2i,QString t3i)
+void TryToggle::configure(const QString &t1i, const QString &t2i, const QString &t3i, const QColor &color)
 {
 	mT1=t1i;
 	mT2=t2i;
 	mT3=t3i;
+	if(color.isValid()) {
+		setColor(color);
+	}
 	updateText();
 }
 
 TryToggleState TryToggle::state() const
 {
 	return mState;
+}
+
+void TryToggle::setColor(const QColor &color)
+{
+	QPalette p=ui->pushButtonToggle->palette();
+	p.setColor(QPalette::Button, color);
+	ui->pushButtonToggle->setPalette(p);
 }
 
 void TryToggle::updateText()

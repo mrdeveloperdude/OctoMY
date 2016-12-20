@@ -30,7 +30,6 @@ public:
 	void configure();
 	void openSerialPort();
 	void closeSerialPort();
-	bool isConnected();
 
 private:
 	void syncMove();
@@ -46,6 +45,9 @@ private slots:
 
 	// IServoController interface
 public:
+
+	void setConnected(bool) Q_DECL_OVERRIDE;
+	bool isConnected() Q_DECL_OVERRIDE;
 
 	void kill(QBitArray &flags) Q_DECL_OVERRIDE;
 	void move(Pose &pose) Q_DECL_OVERRIDE;

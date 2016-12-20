@@ -202,7 +202,8 @@ SOURCES +=\
     widgets/PoseMappingView.cpp \
     puppet/PoseMappingStore.cpp \
     hw/actuators/IServoController.cpp \
-    hw/actuators/Servotor32Controller.cpp
+    hw/actuators/Servotor32Controller.cpp \
+    puppet/PoseSequence.cpp
 
 
 HEADERS  += \
@@ -410,7 +411,8 @@ HEADERS  += \
     widgets/PoseMappingView.hpp \
     puppet/PoseMappingStore.hpp \
     hw/actuators/IServoController.hpp \
-    hw/actuators/Servotor32Controller.hpp
+    hw/actuators/Servotor32Controller.hpp \
+    puppet/PoseSequence.hpp
 
 
 FORMS    += \

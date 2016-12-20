@@ -12,7 +12,7 @@ HexyTool::HexyTool(QWidget *parent)
 	, settings(nullptr)
 {
 	ui->setupUi(this);
-	ui->tryToggleConnect->setText("Connect","Connecting","Connected");
+	ui->tryToggleConnect->configure("Connect","Connecting","Connected", "#e1be4e");
 	if(!connect(serial,SIGNAL(settingsChanged()), this, SLOT(onHexySettingsChanged()))) {
 		qWarning()<<"ERROR: could not connect";
 	}

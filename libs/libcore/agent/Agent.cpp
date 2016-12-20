@@ -15,6 +15,8 @@
 #include "zoo/ZooClient.hpp"
 #include "basic/AppContext.hpp"
 
+#include "hw/actuators/Servotor32Controller.hpp"
+
 
 #include <QDebug>
 #include <QDataStream>
@@ -152,9 +154,13 @@ Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "agent", parent), ROLE_AGENT, TYPE_AGENT, parent)
 	, mControls(*this)
 	, mPoseMappingStore(mContext->baseDir() + "/pose_mapping.json")
-	, window(nullptr)
+	, mServoController(new Servotor32Controller(this))
+	, mWindow(nullptr)
 {
 	OC_METHODGATE();
+	if(nullptr!=mServoController) {
+		mServoController->setConnected(true);
+	}
 	mPeers.hookSignals(*this);
 	if(mPeers.isReady()) {
 		onPeerStoreReady(true);
@@ -166,6 +172,9 @@ Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 Agent::~Agent()
 {
 	OC_METHODGATE();
+	if(nullptr!=mServoController) {
+		mServoController->setConnected(false);
+	}
 }
 
 
@@ -174,13 +183,13 @@ Agent::~Agent()
 QWidget *Agent::showWindow()
 {
 	OC_METHODGATE();
-	if(nullptr==window) {
-		window=new AgentWindow(this, nullptr);
+	if(nullptr==mWindow) {
+		mWindow=new AgentWindow(this, nullptr);
 	}
-	if(nullptr!=window) {
-		window->show();
+	if(nullptr!=mWindow) {
+		mWindow->show();
 	}
-	return window;
+	return mWindow;
 }
 
 
@@ -264,6 +273,9 @@ void Agent::onSyncParameterChanged(ISyncParameter *sp)
 			SyncParameter<Pose> *targetPoseParameter=(SyncParameter<Pose> *)sp;
 			Pose targetPose=targetPoseParameter->bestValue(true);
 			qDebug()<<"TARGET POSE: "<<targetPose.toString();
+			if(nullptr!=mServoController) {
+				mServoController->move(targetPose);
+			}
 		}
 	} else {
 		qWarning()<<"ERROR: sp was nullptr";

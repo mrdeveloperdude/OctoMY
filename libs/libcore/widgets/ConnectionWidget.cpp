@@ -8,7 +8,7 @@ ConnectionWidget::ConnectionWidget(QWidget *parent)
 	, ui(new Ui::ConnectionWidget)
 {
 	ui->setupUi(this);
-	ui->tryToggleListen->setText("Connect","Connecting...","Connected");
+	ui->tryToggleListen->configure("Connect","Connecting...","Connected");
 	setEditsEnabled(false);
 	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onConnectStateChanged(TryToggleState)),OC_CONTYPE)){
 		qWarning()<<"ERROR: could not connect";

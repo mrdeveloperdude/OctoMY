@@ -76,11 +76,6 @@ void Servotor32Controller::closeSerialPort()
 }
 
 
-bool Servotor32Controller::isConnected()
-{
-	return mSerialInterface->isOpen();
-}
-
 
 // NOTE: This will carry out the actual writing when serial signals there is an opportunity.
 //	     The data for move is accumulated and consolidated by one or more move() commands.
@@ -192,6 +187,23 @@ void Servotor32Controller::onSettingsChanged()
 
 // IServoController interface
 //////////////////////////////////////////////
+
+
+void Servotor32Controller::setConnected(bool open)
+{
+	if(open){
+		openSerialPort();
+		fetchVersionData();
+	}
+	else{
+		closeSerialPort();
+	}
+}
+
+bool Servotor32Controller::isConnected()
+{
+	return mSerialInterface->isOpen();
+}
 
 
 void Servotor32Controller::kill(QBitArray &flags)

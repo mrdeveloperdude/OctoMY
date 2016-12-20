@@ -32,13 +32,34 @@ IServoController::~IServoController()
 
 }
 
+QString IServoController::controllerName()
+{
+	return mName;
+}
+
+QString IServoController::controllerVersion()
+{
+	return "Unknown version";
+}
+
+bool IServoController::isDebug()
+{
+	return false; //TODO: Implement
+}
+
+void IServoController::setDebug(bool)
+{
+//TODO: Implement
+}
+
+
 
 void IServoController::killAll()
 {
-
+//TODO: Implement
 }
 
 void IServoController::centerAll()
 {
-
+//TODO: Implement
 }

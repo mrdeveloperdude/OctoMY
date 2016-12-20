@@ -26,6 +26,8 @@ public:
 	qreal value(quint32 index) const ;
 	void setValue(quint32 index, qreal value);
 
+	void mix(const Pose &other,qreal alpha);
+
 	QString toString() const;
 
 

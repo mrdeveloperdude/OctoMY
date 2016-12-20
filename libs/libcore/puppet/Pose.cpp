@@ -44,6 +44,16 @@ void Pose::setValue(quint32 index, qreal value)
 	mValues[index]=value;
 }
 
+void Pose::mix(const Pose &other,qreal alpha)
+{
+	OC_METHODGATE();
+	const quint64 sz=qMin(mValues.size(), other.mValues.size());
+	const qreal ialpha=1.0-alpha;
+	for(quint64  i=0; i<sz; ++i) {
+		mValues[i]=mValues[i]*ialpha+other.mValues[i]*alpha;
+	}
+}
+
 QDataStream &Pose::receive(QDataStream &ds)
 {
 	OC_METHODGATE();

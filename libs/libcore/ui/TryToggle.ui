@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>159</width>
-    <height>39</height>
+    <height>40</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -63,10 +63,22 @@
    <item>
     <widget class="QPushButton" name="pushButtonToggle">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
      </property>
      <property name="text">
       <string>On</string>

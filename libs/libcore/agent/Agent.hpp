@@ -11,6 +11,7 @@
 #include "basic/NodeLauncher.hpp"
 
 #include "puppet/PoseMappingStore.hpp"
+#include "hw/actuators/IServoController.hpp"
 
 
 #include <QObject>
@@ -89,8 +90,9 @@ private:
 	AgentControls mControls;
 	PoseMappingStore mPoseMappingStore;
 	QSharedPointer<PoseMapping> mPoseMapping;
-public:
-	AgentWindow *window;
+	IServoController *mServoController;
+	AgentWindow *mWindow;
+
 public:
 	explicit Agent(NodeLauncher<Agent> &launcher, QObject *parent = nullptr);
 	virtual ~Agent();

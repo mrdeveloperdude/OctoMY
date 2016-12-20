@@ -30,8 +30,9 @@ public:
 	~TryToggle();
 
 public:
-	void setText(QString, QString, QString);
+	void configure(const QString &, const QString &, const QString &, const QColor &color=QColor());
 	TryToggleState state() const;
+	void setColor(const QColor &color);
 
 private:
 	void updateText();

@@ -20,7 +20,7 @@ FaceWidget::FaceWidget(QWidget *parent) :
 	ui->pushButtonPanic->setPalette(p);
 
 
-	ui->tryToggleConnect->setText("Go Online", "Connecting..", "Online");
+	ui->tryToggleConnect->configure("Go Online", "Connecting..", "Online", "#e1be4e");
 	if(!connect(ui->tryToggleConnect,SIGNAL(stateChanged(const TryToggleState, const TryToggleState)),this,SIGNAL(connectionStateChanged(const TryToggleState, const TryToggleState)),OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}

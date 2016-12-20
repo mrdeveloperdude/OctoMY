@@ -86,7 +86,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 		ui->lineEditRemoteAddress->configure(&mHub->settings(), "localhost","hub-listen_address","The address of the remote host");
 		ui->lineEditRemotePort->configure(&mHub->settings(), "","hub-port","The port of the remote host");
-		ui->tryToggleListen->setText("Listen","Preparing...","Listening");
+		ui->tryToggleListen->configure("Listen","Preparing...","Listening");
 		if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(const TryToggleState, const TryToggleState)),this,SLOT(onListenStateChanged(const TryToggleState, const TryToggleState)),OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
