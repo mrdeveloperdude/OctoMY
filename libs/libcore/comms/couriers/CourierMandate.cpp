@@ -5,13 +5,13 @@
 CourierMandate::CourierMandate(
 	const quint16 payloadSize
 	, const quint8 priority
-	, const quint64 interval
+	, const quint64 nextSend
 	, const bool receiveActive
 	, const bool sendActive
 )
 	:  payloadSize(payloadSize)
 	, priority(priority)
-	, interval(interval)
+	, nextSend(nextSend)
 	, receiveActive(receiveActive)
 	, sendActive(sendActive)
 {
@@ -22,7 +22,7 @@ CourierMandate::CourierMandate(
 
 QString CourierMandate::toString()const
 {
-	return QString("CourierMandate(size=")+utility::humanReadableSize(payloadSize)+", pri="+QString::number(priority)+", ival="+utility::humanReadableElapsedMS(interval)+", rx="+(receiveActive?"YES":"NO") +", tx="+(sendActive?"YES":"NO")+" )";
+	return QString("CourierMandate(size=")+utility::humanReadableSize(payloadSize)+", pri="+QString::number(priority)+", nxt="+utility::humanReadableElapsedMS(nextSend)+", rx="+(receiveActive?"YES":"NO") +", tx="+(sendActive?"YES":"NO")+" )";
 }
 
 

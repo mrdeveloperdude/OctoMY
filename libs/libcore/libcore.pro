@@ -203,7 +203,8 @@ SOURCES +=\
     puppet/PoseMappingStore.cpp \
     hw/actuators/IServoController.cpp \
     hw/actuators/Servotor32Controller.cpp \
-    puppet/PoseSequence.cpp
+    puppet/PoseSequence.cpp \
+    widgets/PanicButton.cpp
 
 
 HEADERS  += \
@@ -412,7 +413,8 @@ HEADERS  += \
     puppet/PoseMappingStore.hpp \
     hw/actuators/IServoController.hpp \
     hw/actuators/Servotor32Controller.hpp \
-    puppet/PoseSequence.hpp
+    puppet/PoseSequence.hpp \
+    widgets/PanicButton.hpp
 
 
 FORMS    += \
@@ -449,7 +451,8 @@ FORMS    += \
 	widgets/ActuatorControlWidget.ui \
     widgets/CarSteeringWidget.ui \
     ui/SerialSettingsWidget.ui \
-    widgets/PoseMappingWidget.ui
+    widgets/PoseMappingWidget.ui \
+    widgets/PanicButton.ui
 
 
 RESOURCES += \

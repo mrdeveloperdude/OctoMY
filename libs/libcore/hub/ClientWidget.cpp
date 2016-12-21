@@ -39,12 +39,6 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 
 	ui->setupUi(this);
 
-	//Make panic button RED
-	QPalette p=ui->pushButtonPanicc->palette();
-	p.setColor(QPalette::Button,"#5b0504");
-	ui->pushButtonPanicc->setPalette(p);
-
-
 	ui->widgetBirthCertificate->configure(false,true);
 	if(nullptr!=mNodeAssoc) {
 		ui->widgetBirthCertificate->setPortableID(mNodeAssoc->toPortableID());
@@ -314,7 +308,7 @@ void ClientWidget::onSyncParameterChanged(ISyncParameter *sp)
 	qDebug()<<"ClientWidget ASC: ON VALUE CHANGED: "<<sp->toString();
 	if(nullptr!=mAgentStateCourier) {
 		const bool panic=mAgentStateCourier->panic();
-		ui->pushButtonPanicc->setChecked(panic);
+		ui->widgetPanic->setChecked(panic);
 	}
 }
 
@@ -448,7 +442,7 @@ void ClientWidget::on_checkBoxShowOnlineButton_toggled(bool checked)
 
 
 
-void ClientWidget::on_pushButtonPanicc_toggled(bool panic)
+void ClientWidget::on_widgetPanic_toggled(bool panic)
 {
 	OC_METHODGATE();
 	if(panic) {

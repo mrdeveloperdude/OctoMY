@@ -23,6 +23,7 @@ class DiscoveryCourier : public Courier
 private:
 	QSharedPointer<NodeAssociate> mAss;
 	QVariantMap mData;
+	quint64 mLastSend;
 
 public:
 	explicit DiscoveryCourier(QSharedPointer<NodeAssociate> ass, QObject *parent = nullptr);

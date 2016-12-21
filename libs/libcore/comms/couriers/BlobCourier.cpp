@@ -6,6 +6,7 @@
 
 #include <QtGlobal>
 #include <QDebug>
+#include <QDateTime>
 
 
 const quint16 BlobCourier::BLOB_CHUNK_SIZE=400;
@@ -44,6 +45,7 @@ BlobCourier::BlobCourier(QObject *parent)
 	: Courier("Blob",(Courier::FIRST_USER_ID+4), parent)
 	, mTotalSendingBlobDataSize(0)
 	, mTotalReceivingBlobDataSize(0)
+	, mLastSend(0)
 {
 
 }
@@ -108,8 +110,7 @@ BlobFuture BlobCourier::submitSendingBlob(QString name, QByteArray data, qreal p
 				SendingBlob *blob=new SendingBlob(name, id, BLOB_CHUNK_SIZE, data, qBound(0.1,probability,0.9));
 				if(nullptr==blob) {
 					future.fail("Could not allocate blob");
-				}
-				else {
+				} else {
 					mSendingBlobsById.insert(id,blob);
 					mSendingBlobsByName.insert(name,blob);
 					mTotalSendingBlobDataSize=newTotalBlobSize;
@@ -211,7 +212,7 @@ void BlobCourier::printSendingSummary(QString title)
 CourierMandate BlobCourier::mandate() const
 {
 	const bool hasUnsentBlobs=(!mSendingBlobsById.isEmpty()) || (!mReceivingBlobsById.isEmpty());
-	return CourierMandate(BLOB_CHUNK_SIZE,1,100, true, hasUnsentBlobs);
+	return CourierMandate(BLOB_CHUNK_SIZE, 1, mLastSend + 100, true, hasUnsentBlobs);
 }
 
 quint16 BlobCourier::sendingOpportunity(QDataStream &ds)
@@ -327,6 +328,7 @@ quint16 BlobCourier::sendingOpportunity(QDataStream &ds)
 
 	}
 
+	mLastSend=QDateTime::currentMSecsSinceEpoch();
 	//Return number of bytes sent
 	return bytes;
 }

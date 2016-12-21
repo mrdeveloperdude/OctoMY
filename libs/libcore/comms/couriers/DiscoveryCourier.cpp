@@ -6,6 +6,7 @@
 DiscoveryCourier::DiscoveryCourier(QSharedPointer<NodeAssociate> ass, QObject *parent)
 	: Courier("Discovery", Courier::FIRST_USER_ID+1, parent)
 	, mAss(ass)
+	, mLastSend(0)
 {
 	qDebug()<<"CREATED DiscoveryCourier with PART="<<mAss->toString();
 }
@@ -18,7 +19,7 @@ DiscoveryCourier::~DiscoveryCourier()
 //Let the CommChannel know what we want
 CourierMandate DiscoveryCourier::mandate() const
 {
-	return CourierMandate(sizeof(quint32)+sizeof(quint16)+sizeof(quint64), 10, 1000, true, true);
+	return CourierMandate(sizeof(quint32)+sizeof(quint16)+sizeof(quint64), 10, mLastSend+1000, true, true);
 }
 
 
@@ -48,6 +49,7 @@ quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 	bytes += sizeof(quint16);
 	ds << btAddrXOR;
 	bytes += sizeof(quint64);
+	mLastSend=QDateTime::currentMSecsSinceEpoch();
 	qDebug()<<"TX bytes="<<bytes<<" ( ip4PubAddr="<<ip4PubAddr<<":"<<port<<", bt="<<btAddr<<") = XOR( ip4PubAddr="<<ip4PubAddrXOR<<":"<<portXOR<<", bt="<<btAddrXOR<<")";
 	return bytes;
 }

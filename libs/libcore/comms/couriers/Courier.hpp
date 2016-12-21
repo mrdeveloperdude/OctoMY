@@ -57,11 +57,11 @@ public:
 	quint32 id()const;
 	QString name() const;
 
-
-
-
 	void setDestination(const ClientSignature);
 	const ClientSignature &destination() const;
+
+	CommsChannel *comms() const;
+	bool isRegistered() const;
 
 signals:
 	void reschedule(quint64);

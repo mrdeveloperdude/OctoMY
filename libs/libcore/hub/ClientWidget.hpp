@@ -95,7 +95,7 @@ public slots:
 	void on_checkBoxShowStats_toggled(bool checked);
 	void on_checkBoxShowLog_toggled(bool checked);
 	void on_checkBoxShowOnlineButton_toggled(bool checked);
-	void on_pushButtonPanicc_toggled(bool checked);
+	void on_widgetPanic_toggled(bool checked);
 
 
 };

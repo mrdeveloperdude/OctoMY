@@ -346,25 +346,18 @@ void CommsChannel::rescheduleSending(quint64 now)
 			if(cm.sendActive) {
 				const ClientSignature &clisig=courier->destination();
 				if(clisig.isValid()) {
-					const quint64 last = courier->lastOpportunity();
-					const qint64 interval = now - last;
-					const qint64 overdue = interval - cm.interval;
-					if((qint64)cm.interval<mMostUrgentCourier) {
-						mMostUrgentCourier=cm.interval;
+					//const quint64 last = courier->lastOpportunity();
+					const qint64 timeLeft = now - cm.nextSend;
+					if((qint64)cm.nextSend < mMostUrgentCourier) {
+						mMostUrgentCourier=cm.nextSend;
 					}
 					//We are overdue
-					if(overdue>0) {
-						quint64 score=(cm.priority*overdue)/cm.interval;
-						mPri.insert(score,courier); //TODO: make this broadcast somehow (use ClientDirectory::getByLastActive() and ClientSignature::isValid() in combination or similar).
+					if(timeLeft < 0) {
+						quint64 score=(cm.priority * -timeLeft );
+						mPri.insert(score, courier); //TODO: make this broadcast somehow (use ClientDirectory::getByLastActive() and ClientSignature::isValid() in combination or similar).
 						//qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" OVERDUE SCORE:"<<score;
 					} else {
 						mIdle.push_back(&clisig);
-						if (-overdue > mMostUrgentCourier) {
-							mMostUrgentCourier=-overdue;
-							//qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" URGENCY:"<<mostUrgentCourier;
-						} else {
-							//qDebug()<<c->name()<<c->id()<<"PRICALC: "<<last<<interval<<overdue<<" MEH";
-						}
 					}
 				} else {
 					qWarning()<<"ERROR: clisig was invalid: "<<clisig;

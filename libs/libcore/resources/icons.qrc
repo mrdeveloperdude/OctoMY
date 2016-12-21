@@ -98,5 +98,7 @@
         <file>icons/marine.svg</file>
         <file>icons/submarine.svg</file>
         <file>icons/stationary.svg</file>
+        <file>icons/panic2.svg</file>
+        <file>icons/panic.svg</file>
     </qresource>
 </RCC>

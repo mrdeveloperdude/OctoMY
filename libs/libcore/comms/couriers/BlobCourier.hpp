@@ -101,6 +101,7 @@ public:
 
 	// Acks
 	QVector<Ack *> mPendingAcks;
+	quint64 mLastSend;
 
 public:
 	explicit BlobCourier(QObject *parent=nullptr);

@@ -16,6 +16,7 @@ Servotor32Controller::Servotor32Controller(QObject *parent)
 	: IServoController("Servotor32", parent)
 	, mSerialSettings(new SerialSettingsWidget)
 	, mSerialInterface(new QSerialPort(this))
+	, mReads(0)
 {
 
 	qRegisterMetaType<QSerialPort::SerialPortError>();
@@ -126,7 +127,23 @@ void Servotor32Controller::onSerialReadData()
 {
 	if(isConnected()) {
 		QByteArray data = mSerialInterface->readAll();
-		qDebug()<<data;
+		mInputBuffer.append(data);
+		static const QString sep("\n\r");
+		static const quint32 sepSz=sep.size();
+		const int lio=mInputBuffer.indexOf(sep);
+		mReads++;
+		// Output non-empty lines
+		if(lio > 0) {
+			QByteArray part=mInputBuffer.left(lio);
+			mInputBuffer=mInputBuffer.mid(lio+sepSz);
+			qDebug()<<QString::fromLatin1(part)<< " (over "<<mReads<<" reads)";
+			mReads=0;
+		}
+		// Simply skip empty lines
+		else if(0 == lio) {
+			qDebug()<<"SKIPPING EMPTY SERIAL IO READ";
+			mInputBuffer=mInputBuffer.mid(sepSz);
+		}
 		//TODO:parse and handle data
 	} else {
 		qWarning()<<"ERROR: Trying to read data from serial when not connected";
@@ -191,11 +208,10 @@ void Servotor32Controller::onSettingsChanged()
 
 void Servotor32Controller::setConnected(bool open)
 {
-	if(open){
+	if(open) {
 		openSerialPort();
 		fetchVersionData();
-	}
-	else{
+	} else {
 		closeSerialPort();
 	}
 }

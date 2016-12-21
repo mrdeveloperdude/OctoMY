@@ -35,7 +35,7 @@ TEST_PROJECTS+= \
 #	testBlob \
 #	testEventSourcing \
 #	testSyncParameter \
-#	testAgentStateCourier \
+	testAgentStateCourier \
 #	testCarSteeringWidget \
 #	testPoseMappingWidget \
 #	testPoseMappingStore \

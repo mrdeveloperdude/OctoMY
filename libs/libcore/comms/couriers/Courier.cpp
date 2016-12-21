@@ -36,6 +36,16 @@ const ClientSignature &Courier::destination() const
 	return mDestination;
 }
 
+CommsChannel *Courier::comms() const
+{
+	return mComms;
+}
+
+bool Courier::isRegistered() const
+{
+	return nullptr!=mComms;
+}
+
 
 void Courier::setForwardRescheduleSignal(QObject &ob, bool fwd)
 {

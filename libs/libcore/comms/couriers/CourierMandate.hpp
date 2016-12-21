@@ -18,15 +18,15 @@
  */
 
 struct CourierMandate {
-	// Defaults reflect the common need; payload size must be specified, priority is casual, interval is 1 Hz and active is presumed to be yes by default
-	CourierMandate(const quint16 payloadSize , const quint8 priority=10, const quint64 interval=1000, const bool receiveActive=true, const bool sendActive=true);
+	// Defaults reflect the common need; payload size must be specified, priority is casual, nextSend  "tomorrow" and active is presumed to be yes by default
+	CourierMandate(const quint16 payloadSize , const quint8 priority=10, const quint64 nextSend=1000, const bool receiveActive=true, const bool sendActive=true);
 	// Number of bytes of desired payload from 0 to 400
 	quint16 payloadSize;
 	// Priority of this courier from 0 to 255 where lower number means lower
 	// priority and couriers with the same priority are treated equal
 	quint8 priority;
-	// Desired interval of sendings in milliseconds
-	quint64 interval;
+	// Desired time of next sending in milliseconds
+	quint64 nextSend;
 	// Are we currently active for receiving data?
 	bool receiveActive;
 	// Are we currently active for sending data?

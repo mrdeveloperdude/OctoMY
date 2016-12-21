@@ -20,11 +20,6 @@ FaceWidget::FaceWidget(QWidget *parent) :
 	ui(new Ui::FaceWidget)
 {
 	ui->setupUi(this);
-	//Make panic button RED
-	QPalette p=ui->pushButtonPanic->palette();
-	p.setColor(QPalette::Button,"#5b0504");
-	ui->pushButtonPanic->setPalette(p);
-
 
 	ui->tryToggleConnect->configure("Go Online", "Connecting..", "Online", "#e1be4e");
 	if(!connect(ui->tryToggleConnect,SIGNAL(stateChanged(const TryToggleState, const TryToggleState)),this,SIGNAL(connectionStateChanged(const TryToggleState, const TryToggleState)),OC_CONTYPE)) {

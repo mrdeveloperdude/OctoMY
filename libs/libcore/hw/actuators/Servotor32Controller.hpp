@@ -21,6 +21,8 @@ private:
 	QSerialPort *mSerialInterface;
 	QVector<qreal> mAccumulatedPosition;
 	QBitArray mDirtyMoveFlags;
+	QByteArray mInputBuffer;
+	quint32 mReads;
 
 public:
 	explicit Servotor32Controller(QObject *parent = nullptr);
