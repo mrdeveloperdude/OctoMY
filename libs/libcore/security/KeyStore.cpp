@@ -190,15 +190,15 @@ bool KeyStore::verify(const QString &fingerprint, const QByteArray &message, con
 }
 
 
-bool KeyStore::hasPubKeyForFingerprint(const QString &fingerprint)
+bool KeyStore::hasPubKeyForID(const QString &id)
 {
 	if(!mReady) {
 		return false;
 	}
-	return (mPeers.end()==mPeers.find(fingerprint));
+	return (mPeers.end()==mPeers.find(id));
 }
 
-void KeyStore::setPubKeyForFingerprint(const QString &pubkeyPEM)
+void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
 {
 	if(!mReady) {
 		return;
@@ -207,7 +207,13 @@ void KeyStore::setPubKeyForFingerprint(const QString &pubkeyPEM)
 	mPeers[peer.id()]=peer;
 }
 
-
+Key KeyStore::pubKeyForID(const QString &id)
+{
+	if(!mReady) {
+		return Key();
+	}
+	mPeers[id];
+}
 
 const QDebug &operator<<(QDebug &d, KeyStore &ks)
 {

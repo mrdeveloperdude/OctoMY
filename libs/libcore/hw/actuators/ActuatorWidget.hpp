@@ -1,36 +1,39 @@
-#ifndef SERVOINPUT_HPP
-#define SERVOINPUT_HPP
+#ifndef ACTUATORWIDGET_HPP
+#define ACTUATORWIDGET_HPP
 
 #include <QWidget>
 
 namespace Ui {
-	class ServoInput;
+	class ActuatorWidget;
 }
 
 class Settings;
 
 const int INITIAL_SERVO_TRIM=150;
 
-class ServoInput: public QWidget
+class ActuatorWidget: public QWidget
 {
 		Q_OBJECT
 	private:
-		Ui::ServoInput *ui;
+		Ui::ActuatorWidget *ui;
 		static quint32 s_sid;
-		quint32 m_id;
-		int m_low_trim;
-		int m_high_trim;
+		quint32 mID;
+		int mLowTrim;
+		int mHighTrim;
 		Settings *settings;
+		quint32 mTabIndex;
 
 	public:
-		explicit ServoInput(QWidget *parent = 0);
-		virtual ~ServoInput();
+		explicit ActuatorWidget(QWidget *parent = 0);
+		virtual ~ActuatorWidget();
 
 	public:
 
 		void configure(Settings *settings, quint32 id, int low_trim=INITIAL_SERVO_TRIM, int high_trim=INITIAL_SERVO_TRIM);
 
 		void reconfigureTrim();
+
+		void updateTabsVisibility();
 
 		void disableServo();
 	signals:
@@ -43,10 +46,13 @@ class ServoInput: public QWidget
 	private slots:
 		void on_pushButtonCenter_clicked();
 
-		void on_pushButton_toggled(bool checked);
+		void on_pushButtonConfigure_toggled(bool checked);
 		void on_spinBoxLowTrim_valueChanged(int arg1);
 		void on_spinBoxHighTrim_valueChanged(int arg1);
+		void on_tabWidget_currentChanged(int index);
+		void on_comboBoxActuatorType_currentIndexChanged(int index);
+		void on_pushButtonResetGearRatio_clicked();
 };
 
-#endif // SERVOINPUT_HPP
+#endif // ACTUATORWIDGET_HPP
 

@@ -106,7 +106,7 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
+        <item row="3" column="0">
          <widget class="PanicButton" name="pushButtonPanic" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -122,6 +122,9 @@
            <string>Color</string>
           </property>
          </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="PoseView" name="widgetPose" native="true"/>
         </item>
        </layout>
       </widget>
@@ -158,6 +161,12 @@
    <class>PanicButton</class>
    <extends>QWidget</extends>
    <header>widgets/PanicButton.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PoseView</class>
+   <extends>QWidget</extends>
+   <header>widgets/PoseView.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

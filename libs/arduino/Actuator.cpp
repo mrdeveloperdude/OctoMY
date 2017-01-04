@@ -1,6 +1,1 @@
-#include "ServoState.hpp"
-
-ServoState::ServoState()
-{
-
-}
+#include "Actuator.hpp"

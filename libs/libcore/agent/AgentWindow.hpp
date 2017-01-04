@@ -129,7 +129,7 @@ public slots:
 	// CommsChannel slots
 private slots:
 	void onCommsError(QString);
-	void onCommsClientAdded(Client *);
+	void onCommsClientAdded(CommsSession *);
 	void onCommsConnectionStatusChanged(bool);
 
 	// UI slots

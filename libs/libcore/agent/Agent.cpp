@@ -3,8 +3,8 @@
 
 #include "../libutil/utility/Standard.hpp"
 
-#include "comms/Client.hpp"
-#include "comms/ClientDirectory.hpp"
+#include "comms/CommsSession.hpp"
+#include "comms/CommsSessionDirectory.hpp"
 #include "comms/couriers/Courier.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
@@ -27,7 +27,7 @@
 
 
 
-CourierSet::CourierSet(ClientSignature &sig, Agent &agent)
+CourierSet::CourierSet(CommsSignature &sig, Agent &agent)
 	: mAgent(agent)
 	, mAgentStateCourier(new AgentStateCourier(&mDS,nullptr))
 	, mSensorsCourier(new SensorsCourier(nullptr))
@@ -104,7 +104,7 @@ AgentControls::~AgentControls()
 }
 
 
-void AgentControls::registerClient(ClientSignature &sig)
+void AgentControls::registerClient(CommsSignature &sig)
 {
 	OC_METHODGATE();
 	quint64 shid=sig.shortHandID();
@@ -116,7 +116,7 @@ void AgentControls::registerClient(ClientSignature &sig)
 	}
 }
 
-void AgentControls::unRegisterClient(ClientSignature &sig)
+void AgentControls::unRegisterClient(CommsSignature &sig)
 {
 	OC_METHODGATE();
 	quint64 shid=sig.shortHandID();
@@ -153,7 +153,7 @@ CourierSet *AgentControls::activeControl() const
 Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "agent", parent), ROLE_AGENT, TYPE_AGENT, parent)
 	, mControls(*this)
-	, mPoseMappingStore(mContext->baseDir() + "/pose_mapping.json")
+	, mAgentConfigStore(mContext->baseDir() + "/pose_mapping.json")
 	, mServoController(new Servotor32Controller(this))
 	, mWindow(nullptr)
 {
@@ -165,8 +165,7 @@ Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 	if(mPeers.isReady()) {
 		onPeerStoreReady(true);
 	}
-	mPoseMappingStore.bootstrap(true, false);
-	mPoseMapping=mPoseMappingStore.poseMapping();
+	mAgentConfigStore.bootstrap(true, false);
 }
 
 Agent::~Agent()
@@ -222,7 +221,7 @@ const AgentControls &Agent::controls() const
 
 QSharedPointer<PoseMapping> Agent::poseMapping()
 {
-	return mPoseMapping;
+	return mAgentConfigStore.agentConfig()->poseMapping();
 }
 
 //////////////////////////////////////////////////
@@ -233,7 +232,7 @@ void Agent::onPeerStoreReady(bool ready)
 	qDebug()<<"AGENT found peer store "<< (ready?"READY":"UNREADY");
 	QMap<QString, QSharedPointer<NodeAssociate> > &peers=mPeers.getParticipants();
 	for(QSharedPointer<NodeAssociate> peer:peers) {
-		ClientSignature sig=peer->toClientSignature();
+		CommsSignature sig=peer->toClientSignature();
 		if(sig.isValid() && ROLE_CONTROL==peer->role()) {
 			qDebug()<<"Adding "<<sig.toString()<<"("<<peer->toString()<<") to agent control's list";
 			mControls.registerClient(sig);
@@ -293,7 +292,7 @@ void Agent::onCommsError(QString e)
 	//qDebug()<<"AGENT UNIMP Comms error: "<<e;
 }
 
-void Agent::onCommsClientAdded(Client *c)
+void Agent::onCommsClientAdded(CommsSession *c)
 {
 	OC_METHODGATE();
 	//qDebug()<<"AGENT UNIMP Client added: "<<c->toString();

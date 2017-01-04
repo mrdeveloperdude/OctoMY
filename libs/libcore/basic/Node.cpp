@@ -7,7 +7,7 @@
 #include "Node.hpp"
 
 #include "comms/CommsChannel.hpp"
-#include "comms/Client.hpp"
+#include "comms/CommsSession.hpp"
 
 #include "discovery/DiscoveryClient.hpp"
 
@@ -37,7 +37,7 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	, mDiscovery (new DiscoveryClient(*this))
 	, mRole (role)
 	, mType (type)
-	, mComms (new CommsChannel(mKeystore.localKey().id(), nullptr, (QObject *)this))
+	, mComms (new CommsChannel(mKeystore.localKey().id(), mKeystore, (QObject *)this))
 	, mZooClient (new ZooClient(this))
 	, mSensors (new SensorInput(this))
 	, mSensorsCourier(new SensorsCourier(this))
@@ -337,7 +337,7 @@ void Node::onCommsError(QString e)
 	qDebug()<<"NODE UNIMP Comms error: "<<e;
 }
 
-void Node::onCommsClientAdded(Client *c)
+void Node::onCommsClientAdded(CommsSession *c)
 {
 	//qDebug()<<"NODE UNIMP Client added: "<<c->toString();
 }

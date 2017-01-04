@@ -1,8 +1,8 @@
-#ifndef CLIENTDIRECTORY_HPP
-#define CLIENTDIRECTORY_HPP
+#ifndef COMMSSESSIONDIRECTORY_HPP
+#define COMMSSESSIONDIRECTORY_HPP
 
 #include "basic/NetworkAddress.hpp"
-#include "comms/ClientSignature.hpp"
+#include "comms/CommsSignature.hpp"
 
 #include <QObject>
 #include <QMap>
@@ -10,40 +10,48 @@
 #include <QSharedPointer>
 
 
-class Client;
+class CommsSession;
+class KeyStore;
 
 /**
-  * \brief ClientDirectory holds all clients beknownst to CommChannel.
-  * \note This is NOT the same as NodeAssociate, as it is not meant as an addressbook
-  * but rather as the working memory during opperation (for lack of better words)
-  *
+  * \brief CommsSessionDirectory holds all session beknownst to CommChannel, both
+  * un-initialized, active and terminated.
   */
 
-class ClientDirectory: public QObject{
-		Q_OBJECT
-	private:
-		QMap<quint64, QSharedPointer<Client> > byID;
-		QMap<QString, QSharedPointer<Client> > byHost;
-		QSet<QSharedPointer<Client> > all;
-	public:
+class CommsSessionDirectory: public QObject
+{
+	Q_OBJECT
+private:
+	KeyStore &mKeyStore;
+	QMap<quint64, QSharedPointer<CommsSession> > mByShortID;
+	QMap<QString, QSharedPointer<CommsSession> > mByFullID;
+	QMap<QString, QSharedPointer<CommsSession> > mByHost;
+	QSet<QSharedPointer<CommsSession> > mAll;
+public:
 
-		explicit ClientDirectory():QObject(0){}
-	public:
+	explicit CommsSessionDirectory(KeyStore &keyStore);
+	virtual ~CommsSessionDirectory();
+public:
 
-		void insert(QSharedPointer<Client> c);
-		QSharedPointer<Client> getByID(const quint64 id, const bool addIfMissing=false);
-		QSharedPointer<Client> getByAddress(const NetworkAddress &address, const bool addIfMissing=false);
-		QSharedPointer<Client> getBySignature(const ClientSignature &sig, const bool addIfMissing=false);
+	void insert(QSharedPointer<CommsSession> c);
+	QSharedPointer<CommsSession> getByShortID(const quint64 id);
+	QSharedPointer<CommsSession> getByFullID(const QString &id, const bool addIfMissing=false);
+	//QSharedPointer<CommsSession> getByAddress(const NetworkAddress &address, const bool addIfMissing=false);
+	QSharedPointer<CommsSession> getBySignature(const CommsSignature &sig, const bool addIfMissing=false);
 
-		QSet<QSharedPointer<Client> > getByActiveTime(quint64 lastActiveTime);
+	QSet<QSharedPointer<CommsSession> > getByActiveTime(quint64 lastActiveTime);
 
-		int count();
+	int count();
 
-	signals:
-		void clientAdded(QSharedPointer<Client> );
+	// Remove expired sessions to conserve resources.
+	// May be called from a timer or on event
+	quint32 prune();
+
+signals:
+	void clientAdded(QSharedPointer<CommsSession> );
 
 
 };
 
 
-#endif // CLIENTDIRECTORY_HPP
+#endif // COMMSSESSIONDIRECTORY_HPP

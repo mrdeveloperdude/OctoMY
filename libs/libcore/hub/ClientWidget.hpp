@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QTimer>
 
-#include "comms/Client.hpp"
+#include "comms/CommsSession.hpp"
 
 #include "widgets/TryToggle.hpp"
 #include "basic/Node.hpp"
@@ -33,6 +33,8 @@ private:
 	QSharedPointer<Node> mController;
 	QSharedPointer<NodeAssociate> mNodeAssoc;
 	WaitingSpinnerWidget *mSpinner;
+
+	// TODO: Look at possibility of reusing the CourierSet class in Agent.cpp
 	AgentStateCourier *mAgentStateCourier;
 	SensorsCourier *mSensorsCourier;
 	BlobCourier *mBlobCourier;
@@ -71,7 +73,7 @@ public slots:
 	// CommsChannel slots
 private slots:
 	void onCommsError(QString);
-	void onCommsClientAdded(Client *);
+	void onCommsClientAdded(CommsSession *);
 	void onCommsConnectionStatusChanged(bool);
 
 

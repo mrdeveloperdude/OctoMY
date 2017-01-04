@@ -57,6 +57,7 @@ public:
 	void centerAll() Q_DECL_OVERRIDE;
 	void fetchVersionData() Q_DECL_OVERRIDE;
 	void fetchDebugData() Q_DECL_OVERRIDE;
+	quint32 maximumServosSupported() Q_DECL_OVERRIDE;
 
 
 signals:

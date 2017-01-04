@@ -14,6 +14,7 @@
 
 
 class Agent;
+class ISyncParameter;
 
 namespace Ui
 {
@@ -61,6 +62,10 @@ signals:
 private slots:
 	void on_pushButtonNewColor_clicked();
 	void on_pushButtonPanic_toggled(bool checked);
+
+public slots:
+
+	void onSyncParameterChanged(ISyncParameter *);
 };
 
 #endif // FACEWIDGET_HPP

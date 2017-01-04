@@ -1,19 +1,19 @@
-#include "ClientSignature.hpp"
+#include "CommsSignature.hpp"
 
-ClientSignature::ClientSignature()
+CommsSignature::CommsSignature()
 {
 
 }
 
 
-ClientSignature::ClientSignature(const ClientSignature &other)
+CommsSignature::CommsSignature(const CommsSignature &other)
 	: mShortHandID(other.mShortHandID)
 	, mAddress(other.mAddress)
 {
 
 }
 
-ClientSignature::ClientSignature(const quint64 &shortHandID, const NetworkAddress &address)
+CommsSignature::CommsSignature(const quint64 &shortHandID, const NetworkAddress &address)
 	: mShortHandID(shortHandID)
 	, mAddress(address)
 {
@@ -21,7 +21,7 @@ ClientSignature::ClientSignature(const quint64 &shortHandID, const NetworkAddres
 
 
 
-ClientSignature::ClientSignature(const QString &fullID, const NetworkAddress &address)
+CommsSignature::CommsSignature(const QString &fullID, const NetworkAddress &address)
 	: mShortHandID(fullID.mid(0,16).toULongLong(nullptr,16))
 	, mFullID(fullID)
 	, mAddress(address)
@@ -30,63 +30,63 @@ ClientSignature::ClientSignature(const QString &fullID, const NetworkAddress &ad
 
 
 
-ClientSignature::ClientSignature(const QString &fullID)
+CommsSignature::CommsSignature(const QString &fullID)
 	: mShortHandID(fullID.mid(0,16).toULongLong(nullptr,16))
 {
 }
 
 
-const QString ClientSignature::toString() const
+const QString CommsSignature::toString() const
 {
 	return QString::number(mShortHandID,16)+"-"+mAddress.toString();
 }
 
 
-quint64 ClientSignature::shortHandID() const
+quint64 CommsSignature::shortHandID() const
 {
 	return mShortHandID;
 }
 
-QString ClientSignature::fullID() const
+QString CommsSignature::fullID() const
 {
 	return mFullID;
 }
 
 
-NetworkAddress ClientSignature::address() const
+NetworkAddress CommsSignature::address() const
 {
 	return mAddress;
 }
 
 
-void ClientSignature::setAddress(const NetworkAddress &address)
+void CommsSignature::setAddress(const NetworkAddress &address)
 {
 	mAddress=address;
 }
 
 
-void ClientSignature::setShortHandID(const quint64 &id)
+void CommsSignature::setShortHandID(const quint64 &id)
 {
 	mShortHandID=id;
 }
 
 
 
-void ClientSignature::setFullID(const QString &fullID)
+void CommsSignature::setFullID(const QString &fullID)
 {
 	mShortHandID=(fullID.mid(0,16).toULongLong(nullptr,16));
 	mFullID=fullID;
 }
 
 
-bool ClientSignature::isValid() const
+bool CommsSignature::isValid() const
 {
 	return mAddress.isValid(true,false);
 }
 
 
 
-const QDebug &operator<<(QDebug &d, const ClientSignature &sig)
+const QDebug &operator<<(QDebug &d, const CommsSignature &sig)
 {
 	d.nospace() << "ClientSignature["<<sig.toString()<<"("<<sig.fullID()<<"), valid="<<sig.isValid()<<"]";
 	return d.maybeSpace();

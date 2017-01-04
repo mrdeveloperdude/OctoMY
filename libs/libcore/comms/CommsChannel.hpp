@@ -20,8 +20,8 @@
 
 #include "basic/LogDestination.hpp"
 #include "couriers/Courier.hpp"
+#include "CommsSessionDirectory.hpp"
 
-#define TIMEOUT_TRESHOLD 3
 // It seems that 30 seconds would be a "safe" minimal UDP rate to avoid routers closing our "connection"
 #define MINIMAL_PACKET_RATE 5000
 
@@ -32,9 +32,10 @@
 
 
 class HubWindow;
-class Client;
-class ClientDirectory;
-class ClientSignature;
+class CommsSession;
+class CommsSessionDirectory;
+class CommsSignature;
+class KeyStore;
 
 /*
 Architecture:
@@ -103,13 +104,13 @@ private:
 
 	QUdpSocket mUDPSocket;
 	QTimer mSendingTimer;
+	KeyStore &mKeystore;
 	//Clients as identifued by their fingerprints
-	ClientDirectory *mClients;
-	LogDestination *mLog;
+	CommsSessionDirectory mSessions;
 	//All registered couriers
 	QList<Courier *> mCouriers;
 	QMap<quint32, Courier *> mCouriersByID;
-	ClientSignature mLocalSignature;
+	CommsSignature mLocalSignature;
 	quint64 mLastRX;
 	quint64 mLastTX;
 	quint64 mLastRXST;
@@ -119,63 +120,51 @@ private:
 	bool mConnected;
 
 	QMap<quint64, Courier *> mPri;
-	QList <const ClientSignature *> mIdle;
+	QList <const CommsSignature *> mIdle;
 	qint64 mMostUrgentCourier;
 
 
 	//Receive counter used in debug messages to make sense of the order of things
-	static quint32 totalRecCount;
+	static quint32 sTotalRecCount;
 
 public:
 
-	explicit CommsChannel(const QString &id, LogDestination *mLog=nullptr, QObject *parent=nullptr);
+	explicit CommsChannel(const QString &id, KeyStore &keystore, QObject *parent=nullptr);
 
 public:
 
-	ClientDirectory *clients();
-
+	CommsSessionDirectory &sessions();
 	void start(NetworkAddress localAddress);
 	void stop();
-
-	ClientSignature localSignature();
-
-	void setLogOutput(LogDestination *log);
-
+	CommsSignature localSignature();
 	QString getSummary();
-
 	void setID(const QString &id);
-
 	void setHookCommsSignals(QObject &ob, bool hook);
 	void setHookCourierSignals(Courier &courier, bool hook);
-
 	void setCourierRegistered(Courier &, bool);
-
 	int courierCount();
-
 	bool hasCourier(Courier &c) const;
-
 	Courier *getCourierByID(quint32 id) const;
-
 	bool isStarted() const;
 	bool isConnected() const;
 
-	qint64 sendRawData(QByteArray datagram,ClientSignature sig);
+	qint64 sendRawData(QByteArray datagram,CommsSignature sig);
 
 public slots:
-	void rescheduleSending(quint64 now);
+	quint64 rescheduleSending(quint64 now);
 
 private:
 
 	void appendLog(QString);
 
 
-	void sendData(const quint64 &now, QSharedPointer<Client> localClient, Courier *courier, const ClientSignature *sig=nullptr);
+	void sendData(const quint64 &now, QSharedPointer<CommsSession> localClient, Courier *courier, const CommsSignature *sig=nullptr);
 
 	// CommsChannel signals
 signals:
 	//		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
 	void commsError(QString message);
-	void commsClientAdded(Client *c);
+	void commsClientAdded(CommsSession *c);
 	void commsConnectionStatusChanged(bool c);
 
 private slots:

@@ -12,7 +12,7 @@
 #include "basic/NetworkAddress.hpp"
 
 #include <QBluetoothAddress>
-#include "comms/ClientSignature.hpp"
+#include "comms/CommsSignature.hpp"
 #include "security/PortableID.hpp"
 
 #include <QByteArray>
@@ -74,7 +74,7 @@ class NodeAssociate{
 		bool isValidForServer();
 
 
-		ClientSignature toClientSignature();
+		CommsSignature toClientSignature();
 
 		PortableID toPortableID();
 

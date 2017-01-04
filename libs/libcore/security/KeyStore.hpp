@@ -86,10 +86,13 @@ public:
 	bool verify(const QString &fingerprint, const QByteArray &message, const QByteArray &signature);
 
 	// Check if we have pub-key for tier identified by give fingerprint ID
-	bool hasPubKeyForFingerprint(const QString &fingerprint);
+	bool hasPubKeyForID(const QString &id);
 
 	// Set pub-key for tier identified by give fingerprint ID to given UTF8 encoded string containing pubkey PEM format
-	void setPubKeyForFingerprint(const QString &pubkeyPEM);
+	void setPubKeyForID(const QString &pubkeyPEM);
+
+	// return pub-key for tier identified by give fingerprint ID
+	Key pubKeyForID(const QString &id);
 
 	friend const QDebug &operator<<(QDebug &d, KeyStore &ks);
 

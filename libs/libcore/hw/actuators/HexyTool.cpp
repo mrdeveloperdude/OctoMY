@@ -1,7 +1,7 @@
 #include "HexyTool.hpp"
 #include "ui_HexyTool.h"
 #include "../libutil/utility/Standard.hpp"
-#include "hw/actuators/ServoInput.hpp"
+#include "hw/actuators/ActuatorWidget.hpp"
 
 #include <QSpacerItem>
 
@@ -30,7 +30,7 @@ HexyTool::HexyTool(QWidget *parent)
 
 
 	for(quint32 i=0; i<HexySerial::SERVO_COUNT; ++i) {
-		ServoInput *si=new ServoInput();
+		ActuatorWidget *si=new ActuatorWidget();
 		if(0!=si) {
 			si->configure(settings,i);
 			if(!connect(si,SIGNAL(servoMoved(quint32, qreal)),this,SLOT(onServoMoved(quint32, qreal)),OC_CONTYPE)) {
@@ -205,8 +205,8 @@ void HexyTool::configure(Settings *s)
 {
 	settings=s;
 	int i=0;
-	auto sis=ui->scrollAreaWidgetContents->findChildren<ServoInput *>();
-	for(ServoInput *si:sis) {
+	auto sis=ui->scrollAreaWidgetContents->findChildren<ActuatorWidget *>();
+	for(ActuatorWidget *si:sis) {
 		si->configure(settings,i++);
 	}
 }
@@ -216,9 +216,9 @@ void HexyTool::killAll()
 	//qDebug()<<"KILL ALL";
 	if(serial->isConnected()) {
 		serial->kill();
-		QList<ServoInput *> si=ui->scrollAreaWidgetContents->findChildren<ServoInput *>();
-		for(QList<ServoInput*>::iterator it=si.begin(),e=si.end(); it!=e; ++it) {
-			ServoInput *s=*it;
+		QList<ActuatorWidget *> si=ui->scrollAreaWidgetContents->findChildren<ActuatorWidget *>();
+		for(QList<ActuatorWidget*>::iterator it=si.begin(),e=si.end(); it!=e; ++it) {
+			ActuatorWidget *s=*it;
 			if(0!=s) {
 				QSignalBlocker sb(s);
 				s->disableServo();

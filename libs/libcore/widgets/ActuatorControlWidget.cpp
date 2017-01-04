@@ -2,7 +2,7 @@
 #include "ui_ActuatorControlWidget.h"
 
 #include "../libutil/utility/Standard.hpp"
-#include "hw/actuators/ServoInput.hpp"
+#include "hw/actuators/ActuatorWidget.hpp"
 #include "basic/Settings.hpp"
 
 ActuatorControlWidget::ActuatorControlWidget(QWidget *parent)
@@ -23,8 +23,8 @@ ActuatorControlWidget::~ActuatorControlWidget()
 void ActuatorControlWidget::configure(quint32 num)
 {
 	for(quint32 i=0; i<num; ++i) {
-		ServoInput *si=new ServoInput();
-		if(0!=si) {
+		ActuatorWidget *si=new ActuatorWidget();
+		if(nullptr!=si) {
 			si->configure(settings,i);
 			if(!connect(si,SIGNAL(servoMoved(quint32, qreal)),this,SLOT(onServoMoved(quint32, qreal)),OC_CONTYPE)) {
 				qWarning()<<"ERROR: could not connect";

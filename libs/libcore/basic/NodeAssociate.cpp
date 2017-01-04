@@ -249,10 +249,10 @@ bool NodeAssociate::isValidForServer()
 }
 
 
-ClientSignature NodeAssociate::toClientSignature()
+CommsSignature NodeAssociate::toClientSignature()
 {
 	OC_METHODGATE();
-	return ClientSignature(id(), localAddress());
+	return CommsSignature(id(), localAddress());
 }
 
 

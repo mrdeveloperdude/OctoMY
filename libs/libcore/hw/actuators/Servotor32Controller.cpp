@@ -313,3 +313,12 @@ void Servotor32Controller::fetchDebugData()
 	}
 
 }
+
+
+
+
+
+quint32 Servotor32Controller::maximumServosSupported()
+{
+	return 32;
+}

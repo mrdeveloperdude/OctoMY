@@ -4,7 +4,7 @@
 
 #include "../libutil/utility/Standard.hpp"
 
-#include "comms/Client.hpp"
+#include "comms/CommsSession.hpp"
 #include "comms/messages/MessageType.hpp"
 #include "hub/Hub.hpp"
 #include "ClientWidget.hpp"
@@ -291,7 +291,7 @@ void HubWindow::on_pushButtonSendData_clicked()
 		//QHostInfo::lookupHost(ui->lineEditRemoteAddress->text(),this, SLOT(onRemoteHostLookupComplete(QHostInfo)));
 		QByteArray ba;
 		ba="HELLO WORLD";
-		quint64 w=comms->sendRawData(ba,ClientSignature(mHub->keyStore().localKey().id(),NetworkAddress(QHostAddress(ui->lineEditRemoteAddress->text()),ui->lineEditRemotePort->text().toInt())));
+		quint64 w=comms->sendRawData(ba,CommsSignature(mHub->keyStore().localKey().id(),NetworkAddress(QHostAddress(ui->lineEditRemoteAddress->text()),ui->lineEditRemotePort->text().toInt())));
 		qDebug()<<"Wrote "<<w<<" bytes raw helloworld packet";
 	} else {
 		appendLog("NOT READY TO SEND DATA");
@@ -378,7 +378,7 @@ void HubWindow::onCommsError(QString msg)
 
 
 
-void HubWindow::onCommsClientAdded(Client *c)
+void HubWindow::onCommsClientAdded(CommsSession *c)
 {
 	if(0!=c) {
 		appendLog("CLIENT ADDED: "+c->summary());

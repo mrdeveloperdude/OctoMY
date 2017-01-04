@@ -10,7 +10,7 @@
 #include "basic/Settings.hpp"
 #include "security/PortableID.hpp"
 #include "audio/OneOffSpeech.hpp"
-#include "comms/ClientDirectory.hpp"
+#include "comms/CommsSessionDirectory.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"
 #include "comms/SyncParameter.hpp"
@@ -278,18 +278,16 @@ QSet<QSharedPointer<NodeAssociate> > AgentWindow::activeControls()
 	CommsChannel *cc=comms();
 	if(nullptr!=cc) {
 		NodeAssociateStore &peers=mAgent->peers();
-		ClientDirectory *cd=cc->clients();
-		if(nullptr!=cd) {
-			QSet<QSharedPointer<Client> > clients=cd->getByActiveTime(lastActive);
-			for(QSharedPointer<Client> client: clients) {
-				ClientSignature &sig=client->signature();
-				QString id=sig.fullID();
-				if(id.size()>0) {
-					QSharedPointer<NodeAssociate> peer=peers.getParticipant(id);
-					if(nullptr!=peer) {
-						if(DiscoveryRole::ROLE_CONTROL==peer->role()) {
-							out<<peer;
-						}
+		CommsSessionDirectory &sessionDirectory=cc->sessions();
+		QSet<QSharedPointer<CommsSession> > sessions=sessionDirectory.getByActiveTime(lastActive);
+		for(QSharedPointer<CommsSession> client: sessions) {
+			CommsSignature &sig=client->signature();
+			QString id=sig.fullID();
+			if(id.size()>0) {
+				QSharedPointer<NodeAssociate> peer=peers.getParticipant(id);
+				if(nullptr!=peer) {
+					if(DiscoveryRole::ROLE_CONTROL==peer->role()) {
+						out<<peer;
 					}
 				}
 			}
@@ -685,7 +683,7 @@ void AgentWindow::onCommsError(QString e)
 	//qDebug()<<"AgentWindow UNIMP Comms error: "<<e;
 }
 
-void AgentWindow::onCommsClientAdded(Client *c)
+void AgentWindow::onCommsClientAdded(CommsSession *c)
 {
 	OC_METHODGATE();
 	//qDebug()<<"AgentWindow UNIMP Client added: "<<c->toString();

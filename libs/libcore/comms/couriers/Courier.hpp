@@ -1,7 +1,7 @@
 #ifndef COURIER
 #define COURIER
 
-#include "comms/Client.hpp"
+#include "comms/CommsSession.hpp"
 
 
 
@@ -24,7 +24,7 @@ class Courier : public QObject
 	Q_OBJECT
 protected:
 	//Destination
-	ClientSignature mDestination;
+	CommsSignature mDestination;
 	//Channel
 	CommsChannel *mComms;
 	//Identification
@@ -57,8 +57,8 @@ public:
 	quint32 id()const;
 	QString name() const;
 
-	void setDestination(const ClientSignature);
-	const ClientSignature &destination() const;
+	void setDestination(const CommsSignature);
+	const CommsSignature &destination() const;
 
 	CommsChannel *comms() const;
 	bool isRegistered() const;

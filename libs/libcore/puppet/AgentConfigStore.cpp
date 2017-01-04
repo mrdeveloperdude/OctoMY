@@ -1,4 +1,4 @@
-#include "PoseMappingStore.hpp"
+#include "AgentConfigStore.hpp"
 
 #include "puppet/PoseMapping.hpp"
 #include "../libutil/utility/Standard.hpp"
@@ -7,11 +7,11 @@
 #include <QJsonParseError>
 #include <QByteArray>
 
-PoseMappingStore::PoseMappingStore(QString filename, QObject *parent)
+AgentConfigStore::AgentConfigStore(QString filename, QObject *parent)
 	: AsyncStore(filename, parent)
-	, mPoseMapping(new PoseMapping(0))
+	, mAgentConfig(new AgentConfig())
 {
-	setObjectName("PoseMappingStore");
+	setObjectName("AgentConfigStore");
 	//qDebug()<<"PoseMappingStore() file="<<fn;
 	// Forward the async storeReady signal
 	if(!connect( this, SIGNAL(storeReady(bool)), SIGNAL(poseMappingStoreReady(bool)), OC_CONTYPE)) {
@@ -21,27 +21,27 @@ PoseMappingStore::PoseMappingStore(QString filename, QObject *parent)
 	}
 }
 
-PoseMappingStore::~PoseMappingStore()
+AgentConfigStore::~AgentConfigStore()
 {
 	save();
 }
 
 
-QSharedPointer<PoseMapping> PoseMappingStore::poseMapping()
+QSharedPointer<AgentConfig> AgentConfigStore::agentConfig()
 {
-	return mPoseMapping;
+	return mAgentConfig;
 }
 
 
-void PoseMappingStore::setPoseMapping(QSharedPointer<PoseMapping> mapping)
+void AgentConfigStore::setAgentConfig(QSharedPointer<AgentConfig> config)
 {
-	mPoseMapping=mapping;
+	mAgentConfig=config;
 }
 
 // AsyncStore interface
 ////////////////////////////
 
-void PoseMappingStore::bootstrapWorkerImpl()
+void AgentConfigStore::bootstrapWorkerImpl()
 {
 	//qDebug()<<"PoseMappingStore() bootstrapWorkerImpl() file="<<mFilename;
 	QFile f(mFilename);
@@ -53,7 +53,7 @@ void PoseMappingStore::bootstrapWorkerImpl()
 }
 
 
-void PoseMappingStore::load()
+void AgentConfigStore::load()
 {
 	//qDebug()<<"NodeAssociateStore: Loading from file "<<mFilename;
 	QJsonParseError jsonError;
@@ -70,11 +70,10 @@ void PoseMappingStore::load()
 		} else {
 			//qDebug()<<"PARSED JSON: "<<doc.toJson();
 			QVariantMap map = doc.object().toVariantMap();
-			QVariantList list=map["poseMapping"].toList();
-			if(mPoseMapping.isNull()) {
-				mPoseMapping=QSharedPointer<PoseMapping>(new PoseMapping(list.size()));
+			QVariantMap agentConfigMap=map["agentConfig"].toMap();
+			if(mAgentConfig.isNull()) {
+				mAgentConfig=QSharedPointer<AgentConfig>(new AgentConfig(agentConfigMap));
 			}
-			mPoseMapping->fromMap(list);
 			mReady=true;
 		}
 	}
@@ -82,13 +81,13 @@ void PoseMappingStore::load()
 	emit poseMappingStoreReady(!mError);
 }
 
-void PoseMappingStore::save()
+void AgentConfigStore::save()
 {
 	//qDebug()<<"NodeAssociateStore: Saving to file: "<<mFilename;
 	QVariantMap map;
 	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();
-	if(!mPoseMapping.isNull()) {
-		map["poseMapping"]=mPoseMapping->toMap();
+	if(!mAgentConfig.isNull()) {
+		map["agentConfig"]=mAgentConfig->toMap();
 	}
 	QJsonDocument doc=QJsonDocument::fromVariant(map);
 	utility::stringToFile(mFilename,doc.toJson());

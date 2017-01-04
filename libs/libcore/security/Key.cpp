@@ -41,14 +41,13 @@ KeyPrivate::KeyPrivate(quint32 bits)
 	//	qDebug()<<"KeyPrivate::KeyPrivate(quint32 bits):"<<bits<<" for " <<mKID<<"/"<<mKCT;
 	ScopedTimer timer("Key Generation");
 	mPKI.generateKeyPair(bits);
-	if(mPKI.isValid()){
+	if(mPKI.isValid()) {
 		mKey=mPKI.getPEMKey();
 		mPubKey=mPKI.getPEMPubkey();
 		mID=hash(mPubKey);
 		mValidPrivate=true;
 		mValidPublic=true;
-	}
-	else{
+	} else {
 		qWarning()<<"ERROR: keywas not valid after generation";
 	}
 }
@@ -60,28 +59,26 @@ void KeyPrivate::parse(bool publicOnly)
 	mValidPrivate=false;
 	mValidPublic=false;
 	mID="";
-	if(publicOnly){
+	if(publicOnly) {
 		QByteArray raw=mPubKey.toUtf8();
-		if(0!=mPKI.parsePublicKey(raw)){
+		if(0!=mPKI.parsePublicKey(raw)) {
 			qWarning()<<"ERROR: Could not parse pubkey: "<<raw;
 			return;
 		}
 		mValidPublic=true;
-	}
-	else{
+	} else {
 		QByteArray raw=mKey.toUtf8();
-		if(""!=raw){
-			if(0!=mPKI.parseKey(raw)){
+		if(""!=raw) {
+			if(0!=mPKI.parseKey(raw)) {
 				qWarning()<<"ERROR: Could not parse key: "<<raw;
 				return;
 			}
 			mPubKey=mPKI.getPEMPubkey();
-			if(mPubKey.isEmpty()){
+			if(mPubKey.isEmpty()) {
 				qWarning()<<"ERROR: Could not get pubkey from key: "<<raw;
 				return;
 			}
-		}
-		else {
+		} else {
 			qWarning()<<"ERROR: Private key text was empty";
 			return;
 		}
@@ -98,7 +95,8 @@ KeyPrivate::KeyPrivate()
 	//	qDebug()<<"KeyPrivate::KeyPrivate()" <<" for " <<mKID<<"/"<<mKCT;
 }
 
-KeyPrivate::~KeyPrivate(){
+KeyPrivate::~KeyPrivate()
+{
 	OC_METHODGATE();
 	//	qDebug()<<"KeyPrivate::~KeyPrivate()" <<" for " <<mKID<<"/"<<mKCT;
 }
@@ -121,19 +119,16 @@ Key::Key(const Key &other)
 	: d_ptr(new KeyPrivate(
 				(!other.d_func()->mKey.isEmpty())
 				?
-					(other.d_func()->mKey)
-				  :
-					(other.d_func()->mPubKey),
+				(other.d_func()->mKey)
+				:
+				(other.d_func()->mPubKey),
 				other.d_func()->mKey.isEmpty()
-				)
 			)
+		   )
 {
 	OC_METHODGATE();
 	//	qDebug()<<"Key::Key(constKey &other)"<<other.d_func()->mKey<<other.d_func()->mPubKey;
 }
-
-
-
 
 Key::Key( QVariantMap map, bool isPublic )
 	: d_ptr(new KeyPrivate(map, isPublic))
@@ -168,37 +163,41 @@ Key::Key(KeyPrivate &dd)
 }
 
 
-Key::Key(Key && other) : Key() {
+Key::Key(Key && other) : Key()
+{
 	OC_METHODGATE();
 	swap(*this, other);
 	//	qDebug()<<"Key::Key(Key && other) : Key()";
 }
 
-Key & Key::operator=(Key other) {
+Key & Key::operator=(Key other)
+{
 	OC_METHODGATE();
 	swap(*this, other);
 	//	qDebug()<<"Key & Key::operator=(Key other)";
 	return *this;
 }
 
-bool Key::operator==(Key &other){
+bool Key::operator==(Key &other)
+{
 	OC_METHODGATE();
 	//	qDebug()<<"bool Key::operator==(Key &other)";
 	return ( (other.d_func() == this->d_func() ) || (other.key() == key() ) );
 }
 
 
-bool Key::operator!=(Key &other){
+bool Key::operator!=(Key &other)
+{
 	OC_METHODGATE();
 	//	qDebug()<<"bool Key::operator!=(Key &other)";
 	return !operator==(other);
 }
 
-void swap(Key& first, Key& second) /* nothrow */ {
+void swap(Key& first, Key& second) /* nothrow */
+{
 	OC_FUNCTIONGATE();
 	using std::swap;
 	//	qDebug()<<"void swap(Key& first, Key& second) /* nothrow */";
 	swap(first.d_ptr, second.d_ptr);
 }
-
 

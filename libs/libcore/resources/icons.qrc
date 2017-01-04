@@ -100,5 +100,20 @@
         <file>icons/stationary.svg</file>
         <file>icons/panic2.svg</file>
         <file>icons/panic.svg</file>
+        <file>icons/stepper_motor.svg</file>
+        <file>icons/dc_motor.svg</file>
+        <file>icons/rc_servo.svg</file>
+        <file>icons/relay.svg</file>
+        <file>icons/octa_word.svg</file>
+        <file>icons/quadruple_float.svg</file>
+        <file>icons/extended_double_float.svg</file>
+        <file>icons/double_float.svg</file>
+        <file>icons/float.svg</file>
+        <file>icons/quad_word.svg</file>
+        <file>icons/double_word.svg</file>
+        <file>icons/word.svg</file>
+        <file>icons/byte.svg</file>
+        <file>icons/nibble.svg</file>
+        <file>icons/bit.svg</file>
     </qresource>
 </RCC>

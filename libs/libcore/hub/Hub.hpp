@@ -18,7 +18,7 @@
 */
 
 
-class Client;
+class CommsSession;
 class HubWindow;
 
 class Hub: public Node{

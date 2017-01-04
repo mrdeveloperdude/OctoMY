@@ -4,7 +4,7 @@
 # the values given to important parameters
 # for the build at the point of inclusion
 
-USE_STATUS{
+contains(DEFINES, USE_STATUS){
 message("")
 message("")
 message("===============================================")

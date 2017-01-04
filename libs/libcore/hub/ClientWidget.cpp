@@ -62,7 +62,7 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 		qDebug()<<"CONNECTED onConnectButtonStateChanged";
 	}
 
-	ClientSignature sig=mNodeAssoc->toClientSignature();
+	CommsSignature sig=mNodeAssoc->toClientSignature();
 	qDebug()<<"REMOTE CLIENT WIDGET DESTINATION SET TO "<<sig;
 	mAgentStateCourier->setDestination(sig);
 	mSensorsCourier->setDestination(sig);
@@ -308,7 +308,7 @@ void ClientWidget::onSyncParameterChanged(ISyncParameter *sp)
 	qDebug()<<"ClientWidget ASC: ON VALUE CHANGED: "<<sp->toString();
 	if(nullptr!=mAgentStateCourier) {
 		const bool panic=mAgentStateCourier->panic();
-		ui->widgetPanic->setChecked(panic);
+		ui->widgetPanic->setPanic(panic);
 	}
 }
 
@@ -322,7 +322,7 @@ void ClientWidget::onCommsError(QString e)
 	qDebug()<<"ClientWidget UNIMP Comms error: "<<e;
 }
 
-void ClientWidget::onCommsClientAdded(Client *c)
+void ClientWidget::onCommsClientAdded(CommsSession *c)
 {
 	OC_METHODGATE();
 	//qDebug()<<"ClientWidget UNIMP Client added: "<<c->toString();

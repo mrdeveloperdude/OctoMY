@@ -41,7 +41,13 @@ PanicButton::~PanicButton()
 
 
 
-void PanicButton::setChecked(bool checked)
+void PanicButton::setPanic(bool checked)
 {
 	ui->pushButtonPanic->setChecked(checked);
+}
+
+
+bool PanicButton::panic() const
+{
+	return ui->pushButtonPanic->isChecked();
 }

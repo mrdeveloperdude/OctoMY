@@ -3,23 +3,29 @@
 
 #include <QString>
 
-class FlowControl{
-	public:
-		enum Mode{
-			Good,
-			Bad
-		};
-		Mode mode;
-		float penalty_time;
-		float good_conditions_time;
-		float penalty_reduction_accumulator;
-	public:
-		FlowControl();
-		void reset();
-		void update( float deltaTime, float rtt );
-		float sendRate() const ;
+class FlowControl
+{
+public:
+	enum Mode {
+		Good,
+		Bad
+	};
+private:
 
-		QString getSummary(QString sep="\n")const ;
+	Mode mMode;
+	quint64 mPenaltyTime;
+	quint64 mGoodConditionsTime;
+	quint64 mPenaltyReductionAccumulator;
+public:
+	explicit FlowControl();
+	virtual ~FlowControl();
+
+public:
+	void reset();
+	void update( quint64 deltaTime, quint64 rtt );
+	quint64 sendRate() const ;
+
+	QString toString(QString sep="\n")const ;
 
 };
 

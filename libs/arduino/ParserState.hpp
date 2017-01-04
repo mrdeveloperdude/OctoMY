@@ -1,11 +1,16 @@
 #ifndef PARSERSTATE_HPP
 #define PARSERSTATE_HPP
 
-
-class ParserState
-{
-	public:
-		ParserState();
+enum ParserState {
+	OCTOMY_SYNC=0 //We decided on our own to sync
+	, OCTOMY_AWAITING_COMMAND // We were told to sync
+	, OCTOMY_SET_SERVO_COUNT // The number of servos has changed
+	, OCTOMY_SET_SERVO_CONFIG // The configuration of one or more servos has changed
+	, OCTOMY_SET_SERVO_POSITION // The positions of one or more servos has changed
+	, OCTOMY_SET_SERVO_LIMP // The limp status of servos has changed
+	, OCTOMY_UNKNOWN // Unknown command. Will translate to implicity sync
+	, OCTOMY_COUNT
 };
+
 
 #endif // PARSERSTATE_HPP

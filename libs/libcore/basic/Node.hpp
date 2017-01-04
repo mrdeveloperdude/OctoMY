@@ -1,4 +1,4 @@
-/* This file is distributed under the license as specified in the LICENSE file
+ /* This file is distributed under the license as specified in the LICENSE file
  * that accompanied it. If there was no LICENSE file accompanying this source,
  * it is not to be modified, redistributed or used without prior written
  * permission from original author and owner "Lennart Rolland".
@@ -31,7 +31,7 @@ class QGeoPositionInfo;
 class QCompassReading;
 class QAccelerometerReading;
 class QGyroscopeReading;
-class Client;
+class CommsSession;
 class AppContext;
 class SensorsCourier;
 class BlobCourier;
@@ -90,7 +90,7 @@ public:
 public:
 	const QCommandLineParser &options() const;
 	Settings &settings();
-	KeyStore  &keyStore();
+	KeyStore &keyStore();
 	NodeAssociateStore &peers();
 	DiscoveryClient *discoveryClient();
 	DiscoveryRole role();
@@ -129,7 +129,7 @@ private slots:
 	// CommsChannel slots
 private slots:
 	virtual void onCommsError(QString);
-	virtual void onCommsClientAdded(Client *);
+	virtual void onCommsClientAdded(CommsSession *);
 	virtual void onCommsConnectionStatusChanged(bool);
 
 

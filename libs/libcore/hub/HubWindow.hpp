@@ -67,7 +67,7 @@ private slots:
 public slots:
 	//		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
 	void onCommsError(QString message);
-	void onCommsClientAdded(Client *c);
+	void onCommsClientAdded(CommsSession *c);
 	void onCommsConnectionStatusChanged(bool c);
 
 

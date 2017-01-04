@@ -9,8 +9,8 @@
 #include <QVector>
 #include <QMap>
 
-class Client;
-class ClientDirectory;
+class CommsSession;
+class CommsSessionDirectory;
 
 /*!
  * \brief The ClientModel class is a QAbstractItemModel implementation for displaying clients in the UI
@@ -33,7 +33,7 @@ private:
 
 private:
 
-	ClientDirectory *clients;
+	CommsSessionDirectory *clients;
 
 	QIcon services;
 	QVector<Node> *tree;
@@ -51,7 +51,7 @@ private:
 
 
 public:
-	explicit ClientModel(ClientDirectory *, QObject *parent = nullptr);
+	explicit ClientModel(CommsSessionDirectory *, QObject *parent = nullptr);
 	virtual ~ClientModel();
 
 public:

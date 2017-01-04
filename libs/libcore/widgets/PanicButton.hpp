@@ -21,7 +21,8 @@ private:
 
 public:
 
-	void setChecked(bool);
+	void setPanic(bool);
+	bool panic() const;
 
 signals:
 	void pressed();

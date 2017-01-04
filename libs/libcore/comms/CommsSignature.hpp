@@ -1,12 +1,12 @@
-#ifndef CLIENTSIGNATURE_HPP
-#define CLIENTSIGNATURE_HPP
+#ifndef COMMSSIGNATURE_HPP
+#define COMMSSIGNATURE_HPP
 
 
 #include <QHostAddress>
 
 #include "basic/NetworkAddress.hpp"
 
-class Client;
+class CommsSession;
 
 
 /**
@@ -26,7 +26,7 @@ class Client;
 
  */
 
-class ClientSignature
+class CommsSignature
 {
 
 private:
@@ -36,11 +36,11 @@ private:
 	NetworkAddress mAddress;
 
 public:
-	explicit ClientSignature();
-	ClientSignature(const ClientSignature &other);
-	explicit ClientSignature(const quint64 &shortHandID, const NetworkAddress &address);
-	explicit ClientSignature(const QString &fullID, const NetworkAddress &address);
-	explicit ClientSignature(const QString &fullID);
+	explicit CommsSignature();
+	CommsSignature(const CommsSignature &other);
+	explicit CommsSignature(const quint64 &shortHandID, const NetworkAddress &address);
+	explicit CommsSignature(const QString &fullID, const NetworkAddress &address);
+	explicit CommsSignature(const QString &fullID);
 
 	const QString toString() const;
 
@@ -57,7 +57,7 @@ public:
 };
 
 
-const QDebug &operator<<(QDebug &d, const ClientSignature &sig);
+const QDebug &operator<<(QDebug &d, const CommsSignature &sig);
 
 
-#endif // CLIENTSIGNATURE_HPP
+#endif // COMMSSIGNATURE_HPP

@@ -1,8 +1,8 @@
 #include "Remote.hpp"
 
 #include "../libutil/utility/Standard.hpp"
-#include "comms/Client.hpp"
-#include "comms/ClientDirectory.hpp"
+#include "comms/CommsSession.hpp"
+#include "comms/CommsSessionDirectory.hpp"
 #include "RemoteWindow.hpp"
 #include "basic/AppContext.hpp"
 

@@ -12,6 +12,8 @@
 
 #include "widgets/Identicon.hpp"
 
+#include "comms/couriers/AgentStateCourier.hpp"
+
 #include <QScrollBar>
 
 
@@ -25,6 +27,7 @@ FaceWidget::FaceWidget(QWidget *parent) :
 	if(!connect(ui->tryToggleConnect,SIGNAL(stateChanged(const TryToggleState, const TryToggleState)),this,SIGNAL(connectionStateChanged(const TryToggleState, const TryToggleState)),OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
+
 	updateEyeColor();
 
 
@@ -82,6 +85,17 @@ void FaceWidget::appendLog(const QString& text)
 void FaceWidget::setAgent(Agent *a)
 {
 	ui->widgetRealtimeValues->setAgent(a);
+
+	if(nullptr!=a) {
+		const AgentControls &ctl=a->controls();
+		CourierSet*set=ctl.activeControl();
+		if(nullptr!=set) {
+			AgentStateCourier * asc=set->agentStateCourier();
+			if(nullptr!=asc) {
+				asc->setHookSignals(*this,true);
+			}
+		}
+	}
 	updateEyeColor();
 }
 
@@ -132,7 +146,7 @@ void FaceWidget::unHookSignals(QObject &ob)
 
 void FaceWidget::setPanic(bool panic)
 {
-	ui->pushButtonPanic->setChecked(panic);
+	ui->pushButtonPanic->setPanic(panic);
 }
 
 void FaceWidget::on_pushButtonNewColor_clicked()
@@ -162,6 +176,24 @@ void FaceWidget::on_pushButtonPanic_toggled(bool panic)
 		a->setPanic(panic);
 	}
 
+}
 
 
+
+void FaceWidget::onSyncParameterChanged(ISyncParameter *sp)
+{
+	OC_METHODGATE();
+	//qDebug()<<"Agent ASC changed: "<<sp->toString();
+//TODO: THIS IS ALL WRONG
+	/*
+	SyncParameter<Pose> *targetPoseParameter=qobject_cast< SyncParameter<Pose> >(sp);
+	if(nullptr!=targetPoseParameter) {
+		Pose targetPose=targetPoseParameter->bestValue(true);
+		//qDebug()<<"TARGET POSE: "<<targetPose.toString();
+		ui->widgetPose->poseChanged(targetPose);
+		qDebug()<<"ARNOLD!";
+	} else {
+		qWarning()<<"ERROR: sp was nullptr";
+	}
+*/
 }

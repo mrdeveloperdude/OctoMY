@@ -7,7 +7,6 @@ include($$TOP_PWD/common.pri)
 
 SOURCES +=\
 	3d/Logo3DWidget.cpp \
-	3d/PoseView.cpp \
 	3d/scene/GeometryEngine.cpp \
 	3d/scene/Limb.cpp \
 	3d/scene/QtLogo3D.cpp \
@@ -37,9 +36,6 @@ SOURCES +=\
 	camera/CameraList.cpp \
 	camera/CameraSettings.cpp \
 	camera/PoorMansProbe.cpp \
-	comms/Client.cpp \
-	comms/ClientDirectory.cpp \
-	comms/ClientSignature.cpp \
 	comms/CommsChannel.cpp \
 	comms/couriers/Courier.cpp \
 	comms/couriers/CourierMandate.cpp \
@@ -82,7 +78,6 @@ SOURCES +=\
 	hw/actuators/HexySerial.cpp \
 	hw/actuators/HexyTool.cpp \
 	hw/actuators/SerialList.cpp \
-	hw/actuators/ServoInput.cpp \
 	hw/BluetoothList.cpp \
 	models/ClientModel.cpp \
 	plan/parser/PlanHighlighter.cpp \
@@ -200,16 +195,23 @@ SOURCES +=\
     models/SerialDeviceListModel.cpp \
     widgets/PoseMappingWidget.cpp \
     widgets/PoseMappingView.cpp \
-    puppet/PoseMappingStore.cpp \
     hw/actuators/IServoController.cpp \
     hw/actuators/Servotor32Controller.cpp \
     puppet/PoseSequence.cpp \
-    widgets/PanicButton.cpp
+    widgets/PanicButton.cpp \
+    widgets/PoseView.cpp \
+    comms/CommsSessionDirectory.cpp \
+    comms/CommsSession.cpp \
+    comms/CommsSignature.cpp \
+    hw/actuators/ArduMYController.cpp \
+    hw/actuators/ActuatorWidget.cpp \
+    widgets/ArduinoPinSelector.cpp \
+    puppet/AgentConfigStore.cpp \
+    puppet/AgentConfig.cpp
 
 
 HEADERS  += \
 	3d/Logo3DWidget.hpp \
-	3d/PoseView.hpp \
 	3d/scene/GeometryEngine.hpp \
 	3d/scene/Limb.hpp \
 	3d/scene/QtLogo3D.hpp \
@@ -239,9 +241,6 @@ HEADERS  += \
 	camera/CameraList.hpp \
 	camera/CameraSettings.hpp \
 	camera/PoorMansProbe.hpp \
-	comms/ClientDirectory.hpp \
-	comms/Client.hpp \
-	comms/ClientSignature.hpp \
 	comms/CommsChannel.hpp \
 	comms/couriers/Courier.hpp \
 	comms/couriers/CourierMandate.hpp \
@@ -291,7 +290,6 @@ HEADERS  += \
 	hw/actuators/HexySerial.hpp \
 	hw/actuators/HexyTool.hpp \
 	hw/actuators/SerialList.hpp \
-	hw/actuators/ServoInput.hpp \
 	hw/BluetoothList.hpp \
 	models/ClientModel.hpp \
 	plan/parser/PlanHighlighter.hpp \
@@ -410,11 +408,19 @@ HEADERS  += \
     models/SerialDeviceListModel.hpp \
     widgets/PoseMappingWidget.hpp \
     widgets/PoseMappingView.hpp \
-    puppet/PoseMappingStore.hpp \
     hw/actuators/IServoController.hpp \
     hw/actuators/Servotor32Controller.hpp \
     puppet/PoseSequence.hpp \
-    widgets/PanicButton.hpp
+    widgets/PanicButton.hpp \
+    widgets/PoseView.hpp \
+    comms/CommsSessionDirectory.hpp \
+    comms/CommsSession.hpp \
+    comms/CommsSignature.hpp \
+    hw/actuators/ArduMYController.hpp \
+    hw/actuators/ActuatorWidget.hpp \
+    widgets/ArduinoPinSelector.hpp \
+    puppet/AgentConfigStore.hpp \
+    puppet/AgentConfig.hpp
 
 
 FORMS    += \
@@ -430,7 +436,6 @@ FORMS    += \
 	ui/ResponsiveTest.ui \
 	ui/StatsWindow.ui \
 	ui/TryToggle.ui \
-	ui/ServoInput.ui \
 	ui/PlanEditor.ui \
 	ui/CameraPairingWidget.ui \
 	ui/MapEditor.ui \
@@ -452,7 +457,8 @@ FORMS    += \
     widgets/CarSteeringWidget.ui \
     ui/SerialSettingsWidget.ui \
     widgets/PoseMappingWidget.ui \
-    widgets/PanicButton.ui
+    widgets/PanicButton.ui \
+    ui/ActuatorWidget.ui
 
 
 RESOURCES += \

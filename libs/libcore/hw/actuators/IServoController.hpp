@@ -36,9 +36,9 @@ public:
 
 public:
 
-
 	virtual void setConnected(bool)=0;
 	virtual bool isConnected()=0;
+	virtual void setServosCount(quint32 ct);
 	virtual void kill(QBitArray &flags)=0;
 	virtual void move(Pose &pose)=0;
 	// NOTE: Why do we bother to spell out all these? Because the underlying hardware may optimize the communication for them (or not).
@@ -46,6 +46,7 @@ public:
 	virtual void centerAll();
 	virtual void fetchVersionData()=0;
 	virtual void fetchDebugData()=0;
+	virtual quint32 maximumServosSupported()=0;
 
 
 };

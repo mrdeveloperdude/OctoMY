@@ -15,7 +15,7 @@ contains(DEFINES, USE_BASIC_TESTS){
 #
 TEST_PROJECTS+= \
 	testCommon \
-#	testCommsChannel \
+	testCommsChannel \
 #	testIdenticon \
 #	testParser \
 #	testZooComms \

@@ -3,82 +3,93 @@
 #include <QTextStream>
 
 FlowControl::FlowControl():
-	mode(Bad)
-  , penalty_time(4.0f)
-  , good_conditions_time(0.0f)
-  , penalty_reduction_accumulator(0.0f)
+	mMode(Bad)
+	, mPenaltyTime(4000)
+	, mGoodConditionsTime(0)
+	, mPenaltyReductionAccumulator(0)
 {
 	//qDebug()<<"Flow control initialized\n";
 }
 
-void FlowControl::reset()	{
-	mode = Bad;
-	penalty_time = 4.0f;
-	good_conditions_time = 0.0f;
-	penalty_reduction_accumulator = 0.0f;
+
+FlowControl::~FlowControl()
+{
+
 }
 
-void FlowControl::update( float deltaTime, float rtt )	{
-	const float RTT_Threshold = 250.0f;
 
-	if ( Good==mode  ) {
-		if ( rtt > RTT_Threshold ) {
-			qDebug()<<"*** dropping to bad mode ***\n";
-			mode = Bad;
-			if ( good_conditions_time < 10.0f && penalty_time < 60.0f )				{
-				penalty_time *= 2.0f;
-				if ( penalty_time > 60.0f ){
-					penalty_time = 60.0f;
+void FlowControl::reset()
+{
+	mMode = Bad;
+	mPenaltyTime = 4000;
+	mGoodConditionsTime = 0;
+	mPenaltyReductionAccumulator = 0;
+}
+
+void FlowControl::update( quint64 deltaTime, quint64 rtt )
+{
+	static const quint64 RTTThreshold = 250;
+	switch(mMode) {
+	case(Good): {
+		if ( rtt > RTTThreshold ) {
+			qDebug()<<"*** Comms Channel Flow Control: Dropping to bad mode ***\n";
+			mMode = Bad;
+			if ( mGoodConditionsTime < 10000 && mPenaltyTime < 60000 ) {
+				mPenaltyTime *= 2;
+				if ( mPenaltyTime > 60000) {
+					mPenaltyTime = 60000;
 				}
-				qDebug()<<"penalty time increased to "<<penalty_time;
+				qDebug()<<"penalty time increased to "<<mPenaltyTime;
 			}
-			good_conditions_time = 0.0f;
-			penalty_reduction_accumulator = 0.0f;
+			mGoodConditionsTime = 0;
+			mPenaltyReductionAccumulator = 0;
 			return;
 		}
+		mGoodConditionsTime += deltaTime;
+		mPenaltyReductionAccumulator += deltaTime;
 
-		good_conditions_time += deltaTime;
-		penalty_reduction_accumulator += deltaTime;
-
-		if ( penalty_reduction_accumulator > 10.0f && penalty_time > 1.0f ){
-			penalty_time /= 2.0f;
-			if ( penalty_time < 1.0f ){
-				penalty_time = 1.0f;
+		if ( mPenaltyReductionAccumulator > 10000 && mPenaltyTime > 1000 ) {
+			mPenaltyTime /= 2;
+			if ( mPenaltyTime < 1000 ) {
+				mPenaltyTime = 1000;
 			}
-			qDebug()<<"penalty time reduced to "<< penalty_time ;
-			penalty_reduction_accumulator = 0.0f;
+			qDebug()<<"penalty time reduced to "<< mPenaltyTime ;
+			mPenaltyReductionAccumulator = 0;
 		}
 	}
-
-	if ( Bad==mode  )		{
-		if ( rtt <= RTT_Threshold ){
-			good_conditions_time += deltaTime;
+	break;
+	default:
+	case(Bad): {
+		if ( rtt <= RTTThreshold ) {
+			mGoodConditionsTime += deltaTime;
+		} else {
+			mGoodConditionsTime = 0;
 		}
-		else{
-			good_conditions_time = 0.0f;
-		}
-
-		if ( good_conditions_time > penalty_time ){
-			qDebug()<< "*** upgrading to good mode ***\n";
-			good_conditions_time = 0.0f;
-			penalty_reduction_accumulator = 0.0f;
-			mode = Good;
+		if ( mGoodConditionsTime > mPenaltyTime ) {
+			qDebug()<< "*** Comms Channel Flow Control: upgrading to good mode ***\n";
+			mGoodConditionsTime = 0;
+			mPenaltyReductionAccumulator = 0;
+			mMode = Good;
 			return;
 		}
 	}
+	break;
+	}
 }
 
-float FlowControl::sendRate()const {
-	return mode == Good ? 30.0f : 10.0f;
+quint64 FlowControl::sendRate()const
+{
+	return mMode == Good ? 30 : 10;
 }
 
-QString FlowControl::getSummary(QString sep) const {
+QString FlowControl::toString(QString sep) const
+{
 	QString out;
 	QTextStream ts(&out);
 	ts << "sendRate: "<<sendRate()<<sep;
-	ts << "mode: "<<(Good==mode?"GOOD":"BAD")<<sep;
-	ts << "penaltyTime: "<<penalty_time<<sep;
-	ts << "goodTime: "<<good_conditions_time<<sep;
-	ts << "penaltyRed: "<<penalty_reduction_accumulator<<sep;
+	ts << "mode: "<<(Good==mMode?"GOOD":"BAD")<<sep;
+	ts << "penaltyTime: "<<mPenaltyTime<<sep;
+	ts << "goodTime: "<<mGoodConditionsTime<<sep;
+	ts << "penaltyRed: "<<mPenaltyReductionAccumulator<<sep;
 	return out;
 }

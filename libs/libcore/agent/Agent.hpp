@@ -10,7 +10,7 @@
 #include "basic/Node.hpp"
 #include "basic/NodeLauncher.hpp"
 
-#include "puppet/PoseMappingStore.hpp"
+#include "puppet/AgentConfigStore.hpp"
 #include "hw/actuators/IServoController.hpp"
 
 
@@ -36,7 +36,7 @@ private:
 	BlobCourier *mBlobCourier;
 
 public:
-	explicit CourierSet(ClientSignature &sig, Agent &agent);
+	explicit CourierSet(CommsSignature &sig, Agent &agent);
 	virtual ~CourierSet();
 public:
 
@@ -66,8 +66,8 @@ public:
 	virtual	~AgentControls();
 
 public:
-	void registerClient(ClientSignature &sig);
-	void unRegisterClient(ClientSignature &sig);
+	void registerClient(CommsSignature &sig);
+	void unRegisterClient(CommsSignature &sig);
 
 	void setCommsEnabled(bool);
 
@@ -88,8 +88,7 @@ class Agent : public Node
 	Q_OBJECT
 private:
 	AgentControls mControls;
-	PoseMappingStore mPoseMappingStore;
-	QSharedPointer<PoseMapping> mPoseMapping;
+	AgentConfigStore mAgentConfigStore;
 	IServoController *mServoController;
 	AgentWindow *mWindow;
 
@@ -120,7 +119,7 @@ public slots:
 	// CommsChannel slots
 private slots:
 	virtual void onCommsError(QString) Q_DECL_OVERRIDE;
-	virtual void onCommsClientAdded(Client *)Q_DECL_OVERRIDE;
+	virtual void onCommsClientAdded(CommsSession *)Q_DECL_OVERRIDE;
 	virtual void onCommsConnectionStatusChanged(bool)Q_DECL_OVERRIDE;
 
 

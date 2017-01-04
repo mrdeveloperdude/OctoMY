@@ -45,6 +45,21 @@ message("NO LIBCLT IN BUILD")
 }
 
 
+
+
+contains(DEFINES, ARDUINO_ARCH_AVR){
+message("ADDING ARDUINO TO BUILD")
+SUBDIRS += \
+	arduino \
+
+arduino.subdir=			arduino
+
+}
+else{
+message("NO ARDUINO IN BUILD")
+}
+
+
 include($$TOP_PWD/common.pri)
 
 

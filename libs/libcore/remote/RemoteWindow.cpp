@@ -3,7 +3,7 @@
 #include "Remote.hpp"
 #include "comms/CommsChannel.hpp"
 #include "../libutil/utility/Utility.hpp"
-#include "comms/Client.hpp"
+#include "comms/CommsSession.hpp"
 #include "widgets/ControlDeliveryWizard.hpp"
 
 
@@ -465,7 +465,7 @@ void RemoteWindow::onError(QString e)
 	qDebug()<<"REMOTEW comms: error "<<e;
 }
 
-void RemoteWindow::onClientAdded(Client *c)
+void RemoteWindow::onClientAdded(CommsSession *c)
 {
 
 	qDebug()<<"REMOTEW comms: client added "<<(0==c?"null":QString::number(c->getShortHandID(),16));

@@ -221,7 +221,7 @@ void AgentStateCourier::update(quint64 now)
 CourierMandate AgentStateCourier::mandate() const
 {
 	OC_METHODGATE();
-	CourierMandate mandate(mParams.bytesSentIdeal() , 10, mLastSendTime + 50, true, mParams.hasPendingSyncs() || mParams.hasPendingAcks() );
+	CourierMandate mandate(mParams.bytesSentIdeal() , 10, mLastSendTime + 50, true, (mParams.hasPendingSyncs() || mParams.hasPendingAcks()) );
 	return mandate;
 }
 
@@ -233,7 +233,7 @@ quint16 AgentStateCourier::sendingOpportunity(QDataStream &ds)
 	if(mandate().sendActive) {
 		ds << mParams;
 		quint16 bytes=mParams.bytesSent();
-		//qDebug()<<"Spent sending opportunity for agent status data with "<<bytes<<" bytes";
+		qDebug()<<"Spent sending opportunity for agent status data with "<<bytes<<" bytes";
 		mLastSendTime=QDateTime::currentMSecsSinceEpoch();
 		return  bytes;
 	} else {

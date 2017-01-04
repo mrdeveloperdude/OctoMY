@@ -8,79 +8,83 @@
 #include <QHostAddress>
 
 class CommsTester;
-class TestCourier:public Courier{
-		Q_OBJECT
+class TestCourier:public Courier
+{
+	Q_OBJECT
 
-	public:
+public:
 
-		CommsTester *ct;
-		quint16 soFar;
+	CommsTester *mCt;
+	quint16 mSoFar;
 
-		const QByteArray datagram;
-		const qint32 maxSends;
-		const qint32 maxRecs;
-		qint32 sendCount;
-		qint32 recCount;
-		CourierMandate man;
+	const QByteArray mDatagram;
+	const qint32 mMaxSends;
+	const qint32 mMaxRecs;
+	qint32 mSendCount;
+	qint32 mRecCount;
+	CourierMandate mMandate;
 
-	public:
-		explicit TestCourier(ClientSignature dest, CommsTester *parent = nullptr, const qint32 maxSends=1 , const qint32 maxRecs=1 );
-		virtual ~TestCourier();
+public:
+	explicit TestCourier(CommsSignature dest, CommsTester *parent = nullptr, const qint32 mMaxSends=1 , const qint32 mMaxRecs=1 );
+	virtual ~TestCourier();
 
-	public:
+public:
 
-		//Let the CommChannel know what we want
-		virtual CourierMandate mandate();
+	//Let the CommChannel know what we want
+	CourierMandate mandate() const Q_DECL_OVERRIDE;
 
-		//Override to act on sending opportunity.
-		//Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
-		quint16 sendingOpportunity(QDataStream &ds) override;
+	//Override to act on sending opportunity.
+	//Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
+	quint16 sendingOpportunity(QDataStream &ds)	Q_DECL_OVERRIDE;
 
-		//Override to act on data received
-		//Return number of bytes actually read.
-		quint16 dataReceived(QDataStream &ds, quint16 availableBytes) override;
+	//Override to act on data received
+	//Return number of bytes actually read.
+	quint16 dataReceived(QDataStream &ds, quint16 availableBytes) Q_DECL_OVERRIDE;
 
 };
 
 
 
 class RNG;
-class CommsTester:public QObject{
-		Q_OBJECT
+class CommsTester:public QObject
+{
+	Q_OBJECT
 
-	public:
-		QString name;
-		QHostAddress myAddress;
-		quint16 myPort;
+public:
+	QString mName;
+	QHostAddress mMyAddress;
+	quint16 mMyPort;
 
 
-		quint16 basePort;
-		quint16 portRange;
+	quint16 mBasePort;
+	quint16 mPortRange;
 //		ClientSignature sig;
-		CommsChannel cc;
-		quint16 testCount;
+	KeyStore &mKeyStore;
+	CommsChannel mCc;
+	quint16 mTestCount;
 
-		RNG *rng;
+	RNG *mRng;
 
 
-	public:
-		explicit CommsTester(QString name, QHostAddress myAddress, quint16 myPort, quint16 basePort, quint16 portRange, quint16 testCount, QObject *parent=nullptr);
-		virtual ~CommsTester(){}
-		QString toString();
+public:
+	explicit CommsTester(QString name, QHostAddress myAddress, quint16 myPort, quint16 basePort, quint16 portRange, quint16 testCount, KeyStore &keyStore, QObject *parent=nullptr);
+	virtual ~CommsTester() {}
+	QString toString();
 
-	public slots:
-		void startSendTest();
-		void onError(QString);
-		void onReadyRead();
-	signals:
-		void finished();
+public slots:
+	void startSendTest();
+	void onError(QString);
+	void onReadyRead();
+signals:
+	void finished();
 
 };
 
-class TestCommsChannel:public QObject{
-		Q_OBJECT
-	private slots:
-		void test();
+class TestCommsChannel:public QObject
+{
+	Q_OBJECT
+private slots:
+	void test();
 
 };
 

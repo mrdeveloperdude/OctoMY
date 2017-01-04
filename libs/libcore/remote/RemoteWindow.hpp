@@ -17,7 +17,7 @@ class QAccelerometerReading;
 class QCompassReading;
 class QGyroscopeReading;
 class CommsChannel;
-class Client;
+class CommsSession;
 class ClientWidget;
 
 
@@ -112,7 +112,7 @@ public slots:
 	// CommsChannel slots
 public slots:
 	void onError(QString);
-	void onClientAdded(Client *);
+	void onClientAdded(CommsSession *);
 	void onConnectionStatusChanged(bool);
 
 	// Internal Sensor slots
