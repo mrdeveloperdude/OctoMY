@@ -15,7 +15,7 @@ contains(DEFINES, USE_BASIC_TESTS){
 #
 TEST_PROJECTS+= \
 	testCommon \
-	testCommsChannel \
+#	testCommsChannel \
 #	testIdenticon \
 #	testParser \
 #	testZooComms \
@@ -35,11 +35,12 @@ TEST_PROJECTS+= \
 #	testBlob \
 #	testEventSourcing \
 #	testSyncParameter \
-	testAgentStateCourier \
+#	testAgentStateCourier \
 #	testCarSteeringWidget \
 #	testPoseMappingWidget \
 #	testPoseMappingStore \
-	testServotor32Controller \
+#	testServotor32Controller \
+	testArduMY \
 
 
 

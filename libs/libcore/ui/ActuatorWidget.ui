@@ -265,7 +265,7 @@
              </property>
              <item>
               <property name="text">
-               <string>1 - bit (bool)</string>
+               <string>1 bit bool</string>
               </property>
               <property name="icon">
                <iconset resource="../resources/icons.qrc">
@@ -274,7 +274,7 @@
              </item>
              <item>
               <property name="text">
-               <string>8 - bit (byte)</string>
+               <string>8 bit char</string>
               </property>
               <property name="icon">
                <iconset resource="../resources/icons.qrc">
@@ -283,7 +283,7 @@
              </item>
              <item>
               <property name="text">
-               <string>16 - bit (word)</string>
+               <string>16 bit short</string>
               </property>
               <property name="icon">
                <iconset resource="../resources/icons.qrc">
@@ -292,7 +292,7 @@
              </item>
              <item>
               <property name="text">
-               <string>32 -  bit (double word)</string>
+               <string>32 bit int</string>
               </property>
               <property name="icon">
                <iconset resource="../resources/icons.qrc">
@@ -301,7 +301,7 @@
              </item>
              <item>
               <property name="text">
-               <string>64 - bit (quad word)</string>
+               <string>64 bit int</string>
               </property>
               <property name="icon">
                <iconset resource="../resources/icons.qrc">
@@ -310,7 +310,7 @@
              </item>
              <item>
               <property name="text">
-               <string>32 - bit float (single)</string>
+               <string>float</string>
               </property>
               <property name="icon">
                <iconset resource="../resources/icons.qrc">
@@ -319,20 +319,11 @@
              </item>
              <item>
               <property name="text">
-               <string>64 - bit float (double)</string>
+               <string>double float</string>
               </property>
               <property name="icon">
                <iconset resource="../resources/icons.qrc">
                 <normaloff>:/icons/double_float.svg</normaloff>:/icons/double_float.svg</iconset>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>128 - bit float (quadruple)</string>
-              </property>
-              <property name="icon">
-               <iconset resource="../resources/icons.qrc">
-                <normaloff>:/icons/quadruple_float.svg</normaloff>:/icons/quadruple_float.svg</iconset>
               </property>
              </item>
             </widget>

@@ -246,13 +246,9 @@ HEADERS  += \
 	comms/couriers/CourierMandate.hpp \
 	comms/couriers/DiscoveryCourier.hpp \
 	comms/couriers/SensorsCourier.hpp \
-	comms/DataType.hpp \
-	comms/DeviceStatusType.hpp \
-	comms/DeviceType.hpp \
 	comms/FlowControl.hpp \
 	comms/messages/MessageType.hpp \
 	comms/messages/SensorsMessage.hpp \
-	comms/QueryType.hpp \
 	comms/ReliabilitySystem.hpp \
 	discovery/DiscoveryClient.hpp \
 	discovery/DiscoveryRole.hpp \

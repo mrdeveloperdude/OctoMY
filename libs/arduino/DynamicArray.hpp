@@ -1,7 +1,7 @@
 #ifndef DYNAMICARRAY_HPP
 #define DYNAMICARRAY_HPP
 
-#include <Arduino.h>
+#include "ArduMY.hpp"
 
 
 template<class T>

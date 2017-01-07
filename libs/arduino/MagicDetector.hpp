@@ -1,13 +1,15 @@
 #ifndef MAGICDETECTOR_HPP
 #define MAGICDETECTOR_HPP
 
-struct MagicDetector {
-	unsigned char idx;
-	const unsigned char *magic;
-	const unsigned char sz;
-	MagicDetector(const unsigned char *magic, const unsigned char sz);
+#include "ArduMY.hpp"
 
-	bool detect(const unsigned char in);
+struct MagicDetector {
+	uint8_t idx;
+	const uint8_t *magic;
+	const uint8_t sz;
+	MagicDetector(const uint8_t *magic, const uint8_t sz);
+
+	bool detect(const uint8_t in);
 	void reset();
 };
 

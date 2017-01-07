@@ -5,7 +5,7 @@
 #include "Actuator.hpp"
 #include "ParserState.hpp"
 #include "MagicDetector.hpp"
-#include "SetServoPositionsState.hpp"
+#include "SetServoPositionsParser.hpp"
 #include "ServoConfigParser.hpp"
 
 /*
@@ -38,19 +38,19 @@ struct CommandParser {
 
 	DynamicArray<Actuator> actuators;
 	ParserState currentCommand;
-	const unsigned char magic[4];
+	const uint8_t magic[4];
 	MagicDetector magicDetector;
 	ServoConfigParser servoConfigParser;
-	SetServoPositionsState servoPosParser;
+	SetServoPositionsParser servoPosParser;
 	bool dirtyServos;
 
 	explicit CommandParser();
 
 	// If bad command is detected, go into "wait for sync" before we try parsing a command again,
 	// and if not, reset states for parsing the command at hand
-	ParserState prepareCommand(const char inChar);
+	ParserState prepareCommand(const int8_t inChar);
 
-	void parse(const char inChar);
+	void parse(const int8_t inChar);
 };
 
 #endif // COMMANDPARSER_HPP

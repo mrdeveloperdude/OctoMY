@@ -1,7 +1,7 @@
 #include "MagicDetector.hpp"
 
 
-MagicDetector::MagicDetector(const unsigned char *magic, const unsigned char sz)
+MagicDetector::MagicDetector(const uint8_t *magic, const uint8_t sz)
 	: idx(0)
 	, magic(magic)
 	, sz(sz)
@@ -9,9 +9,9 @@ MagicDetector::MagicDetector(const unsigned char *magic, const unsigned char sz)
 
 }
 
-bool MagicDetector::detect(const unsigned char in)
+bool MagicDetector::detect(const uint8_t in)
 {
-	const unsigned char my=(magic[idx])&0xFF;
+	const uint8_t my=(magic[idx])&0xFF;
 	if(my==in) {
 		idx++;
 		if(sz == idx) {

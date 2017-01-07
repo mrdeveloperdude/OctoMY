@@ -20,65 +20,6 @@ void ServoConfigParser::reset()
 }
 
 
-/*
- * uint16_t flags;
-
-	ACTUATOR_FLAG_SELECTOR(isLinear,				setLinear,				0 ) // Linear as opposed to rotary means that the actuator acts in a straigt motion similar to a hydraulic cylinder instead of a rotary motion similar to an RC servo
-	ACTUATOR_FLAG_SELECTOR(isContinuous,			setContinuous,			1 ) // Continuous as opposed to ranged means that the actuator continues running without any stop point, as a motor instead of a servo
-	//ACTUATOR_FLAG_SELECTOR(isStepped,				setStepped,				2 ) // Stepped as opposed to smooth means that actuator is one of many pre-set steps. The number of steps is defined by valueRange
-	ACTUATOR_FLAG_SELECTOR(hasGearRatio,			setGearRatio,			3 ) // Gear ratio means that the motor shaft may turn more than one turn per output shaft turn.
-	ACTUATOR_FLAG_SELECTOR(hasPositionFeedback,		setPositionFeedback,	4 ) // Position feedback means that the actuator reports its's position from an sensor such as potensiometer to an analogue input pin
-	ACTUATOR_FLAG_SELECTOR(hasTachometer,			setTachometer,			5 ) // Tachometer means that the actuator reports it's speed from a sensor such as a hall effect sensor to an digital input pin
-	ACTUATOR_FLAG_SELECTOR(hasIncrementalEncoder,	setIncrementalEncoder,	6 ) // Incremental encoder means the actuatorreports it's  position from an encoder via 2 digital pins. NOTE: The encoding algorithm should take gear-ratio into account
-	ACTUATOR_FLAG_SELECTOR(hasAbsoluteEncoder,		setAbsoluteEncoder,		7 ) // Absolute encoder means the actuatorreports it's  position from an encoder via X digital pins, where X usually is in the 2-16 range. NOTE: The encoding algorithm should take gear-ratio into account
-	ACTUATOR_FLAG_SELECTOR(hasLimitSwitchStart,		setLimitSwitchStart,	8 ) // Limit switch start means the actuator has a limit switch telling the softare when it has reached the beginning of its range. This can be used as a security measure as well as a means for automatical reference calibration. The limit state is reported via a digital input pin
-	ACTUATOR_FLAG_SELECTOR(hasLimitSwitchEnd,		setLimitSwitchEnd,		9 ) // Limit switch end means the actuator has a limit switch telling the softare when it has reached the end of its range. This can be used as a security measure as well as a means for automatical reference calibration. The limit state is reported via a digital input pin
-	ACTUATOR_FLAG_SELECTOR(hasRCServoInterface,		setRCServoInterface,	10) // This actuator has an RC style interface, where the position is controlled via PWM with duty cycle between 1000 and 2000 microseconds.
-	ACTUATOR_FLAG_SELECTOR(isDirty,					setDirty,				11) // The configuration has changed and must be updated at opportunity
-
-	// The data type that represents the value and range for this actuator
-	ActuatorRepresentation representation;
-
-	// The name of this actuator in null terminated ascii / latin-1
-	char nickName[20];
-
-	//The gear ratio.
-	uint8_t gearRatioNumerator, gearRatioDenominator;
-
-	// The hardware analogue in pin number for position feedback
-	// TODO: Decide how to calibrate and use the value returned by this pin
-	uint8_t positionFeedbackPin;
-
-	// The hardware digital in pin for tachometer
-	// TODO: Decide how to calibrate and use the value returned by this pin
-	uint8_t tachometerPin;
-
-	// The hardware digital in pins (A & B) for incremental encoder
-	uint8_t incrementalEncoderPinA;
-	uint8_t incrementalEncoderPinB;
-	// The number of iterations of stable input must pass before a change in value is accepted
-	uint8_t incrementalencoderDebounceCount;
-
-	// The hardware digital in pins (start & end) for limit switches
-	uint8_t limitSwitchPinStart;
-	uint8_t limitSwitchPinEnd;
-	uint8_t limitSwitchDebounceCount;
-
-	// The number of windings in the stepmotor
-	uint8_t stepMotorPhaseCount;
-	// The number of steps to a rotation. NOTE: This is BEFORE any gear ratio is included in the calculation
-	uint16_t stepMotorStepsPerRotation;
-
-	// The hardware digital in pin for sending PWM to RC servo
-	uint8_t rcServoPin;
-
-	// The start + range trim for actuator
-	ActuatorValue rangeStart;
-	ActuatorValue rangeSpan;
-
-*/
-
-
 ActuatorConfig &ServoConfigParser::currentConfig()
 {
 	return commandParser.actuators[actuatorIndex].config;
@@ -184,25 +125,30 @@ void ServoConfigParser::nextStep()
 	}
 	break;
 	case(STEP_STEPS_PER_ROTATION): {
-
 		if(RC_SERVO==act.type) {
 			step=RC_SERVO_PIN;
 		} else {
-			step=END_OF_PARSE;
+			step=RANGE_START;
 		}
 	}
 	break;
 	case(RC_SERVO_PIN): {
+		step=RANGE_START;
+	}
+	break;
+	case(RANGE_START): {
+		step=RANGE_SPAN;
+	}
+	break;
+	case(RANGE_SPAN): {
 		step=END_OF_PARSE;
 	}
 	break;
-
 	case(END_OF_PARSE): {
-		//Do nothing. Maybe this is an indication of error, and should be reported?
+		// Do nothing. Maybe this is an indication of error, and should be reported?
 	}
 	break;
 	}
-
 	byteIndex=0;
 }
 
@@ -215,21 +161,33 @@ bool ServoConfigParser::parse(const uint8_t in)
 	}
 	break;
 	case(FLAGS): {
+		converter.uint8[byteIndex]=in;
+		byteIndex++;
 		if(byteIndex==2) {
-			currentConfig().flags=converter.uint16;
+			currentConfig().flags=converter.uint16[0];
 			nextStep();
-		} else {
-			converter.uint8[byteIndex]=in;
-			byteIndex++;
 		}
 	}
 	break;
+	case(TYPE): {
+		converter.uint8[byteIndex]=in;
+		byteIndex++;
+		if(byteIndex==2) {
+			currentConfig().type=(ActuatorType)converter.uint16[0];
+			nextStep();
+		}
+	}
+	break;
+	case(REPRESENTATION): {
+		currentConfig().representation=(ActuatorRepresentation)in;
+		nextStep();
+	}
+	break;
 	case(NICK): {
+		currentConfig().nickName[byteIndex]=(char)in;
+		byteIndex++;
 		if(byteIndex==20) {
 			nextStep();
-		} else {
-			currentConfig().nickName[byteIndex]=(char)in;
-			byteIndex++;
 		}
 	}
 	break;
@@ -302,12 +260,11 @@ bool ServoConfigParser::parse(const uint8_t in)
 	break;
 
 	case(STEP_STEPS_PER_ROTATION): {
+		converter.uint8[byteIndex]=in;
+		byteIndex++;
 		if(byteIndex==2) {
-			currentConfig().stepMotorStepsPerRotation=converter.uint16;
+			currentConfig().stepMotorStepsPerRotation=converter.uint16[0];
 			nextStep();
-		} else {
-			converter.uint8[byteIndex]=in;
-			byteIndex++;
 		}
 	}
 	break;
@@ -318,7 +275,136 @@ bool ServoConfigParser::parse(const uint8_t in)
 	}
 	break;
 
-
+	case(RANGE_START): {
+		switch(currentConfig().representation) {
+		case(ActuatorRepresentation::BIT): {
+			currentConfig().rangeStart.bit=((in&1)>0);// Send bit as byte ignoring all but the first bit
+			nextStep();
+		}
+		break;
+		case(ActuatorRepresentation::BYTE): {
+			currentConfig().rangeStart.byte=in;
+			nextStep();
+		}
+		break;
+		case(ActuatorRepresentation::WORD): {
+			converter.uint8[byteIndex]=in;
+			byteIndex++;
+			if(byteIndex==2) {
+				currentConfig().rangeStart.word=converter.uint16[0];
+				nextStep();
+			}
+		}
+		break;
+		case(ActuatorRepresentation::DOUBLE_WORD): {
+			converter.uint8[byteIndex]=in;
+			byteIndex++;
+			if(byteIndex==4) {
+				currentConfig().rangeStart.doubleWord=converter.uint32[0];
+				nextStep();
+			}
+		}
+		break;
+		case(ActuatorRepresentation::QUAD_WORD): {
+			converter.uint8[byteIndex]=in;
+			byteIndex++;
+			if(byteIndex==8) {
+				currentConfig().rangeStart.quadWord=converter.uint64;
+				nextStep();
+			}
+		}
+		break;
+		case(ActuatorRepresentation::SINGLE_FLOAT): {
+			converter.uint8[byteIndex]=in;
+			byteIndex++;
+			if(byteIndex==4) {
+				currentConfig().rangeStart.singlePrecision=converter.float32[0];
+				nextStep();
+			}
+		}
+		break;
+		case(ActuatorRepresentation::DOUBLE_FLOAT): {
+			converter.uint8[byteIndex]=in;
+			byteIndex++;
+			if(byteIndex==8) {
+				currentConfig().rangeStart.doublePrecision=converter.float64;
+				nextStep();
+			}
+		}
+		break;
+		default:
+		case(ActuatorRepresentation::REPRESENTATION_COUNT): {
+			// TODO: Handle this as an error somehow
+		}
+		break;
+		}
+	}
+	break;
+	case(RANGE_SPAN): {
+		switch(currentConfig().representation) {
+		case(ActuatorRepresentation::BIT): {
+			currentConfig().rangeSpan.bit=((in&1)>0);// Send bit as byte ignoring all but the first bit
+			nextStep();
+		}
+		break;
+		case(ActuatorRepresentation::BYTE): {
+			currentConfig().rangeSpan.byte=in;
+			nextStep();
+		}
+		break;
+		case(ActuatorRepresentation::WORD): {
+			converter.uint8[byteIndex]=in;
+			byteIndex++;
+			if(byteIndex==2) {
+				currentConfig().rangeSpan.word=converter.uint16[0];
+				nextStep();
+			}
+		}
+		break;
+		case(ActuatorRepresentation::DOUBLE_WORD): {
+			converter.uint8[byteIndex]=in;
+			byteIndex++;
+			if(byteIndex==4) {
+				currentConfig().rangeSpan.doubleWord=converter.uint32[0];
+				nextStep();
+			}
+		}
+		break;
+		case(ActuatorRepresentation::QUAD_WORD): {
+			converter.uint8[byteIndex]=in;
+			byteIndex++;
+			if(byteIndex==8) {
+				currentConfig().rangeSpan.quadWord=converter.uint64;
+				nextStep();
+			}
+		}
+		break;
+		case(ActuatorRepresentation::SINGLE_FLOAT): {
+			converter.uint8[byteIndex]=in;
+			byteIndex++;
+			if(byteIndex==4) {
+				currentConfig().rangeSpan.singlePrecision=converter.float32[0];
+				nextStep();
+			}
+		}
+		break;
+		case(ActuatorRepresentation::DOUBLE_FLOAT): {
+			converter.uint8[byteIndex]=in;
+			byteIndex++;
+			if(byteIndex==8) {
+				currentConfig().rangeSpan.doublePrecision=converter.float64;
+				nextStep();
+			}
+		}
+		break;
+		default:
+		case(ActuatorRepresentation::REPRESENTATION_COUNT): {
+			// TODO: Handle this as an error somehow
+		}
+		break;
+		}
+	}
+	break;
 	}
 
 	return (END_OF_PARSE==step);

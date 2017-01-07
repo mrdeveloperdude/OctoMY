@@ -24,10 +24,11 @@ enum ActuatorRepresentation: uint8_t {
 	, QUAD_WORD
 	, SINGLE_FLOAT
 	, DOUBLE_FLOAT
+	, REPRESENTATION_COUNT
 };
 
 enum ActuatorType: uint8_t {
-	RC_SERVO,DC_MOTOR,STEP_MOTOR,RELAY
+	DC_MOTOR, STEP_MOTOR, RC_SERVO, RELAY, TYPE_COUNT
 };
 
 // This may waste a little memory, but I think the flexibliity and convenience it adds makes it worth it
@@ -46,7 +47,7 @@ union ActuatorValue {
 };
 
 #define ACTUATOR_FLAG_SELECTOR(NAME_GET, NAME_SET, BIT)  \
-	inline bool NAME_GET() { return ( flags & (1<<(BIT)) ) > 0; } \
+	inline bool NAME_GET() const { return ( flags & (1<<(BIT)) ) > 0; } \
 	inline void NAME_SET(bool val) { if(val) { flags=flags|(1<<(BIT)); } else { flags=flags&(~(1<<(BIT))); } }
 
 
@@ -58,16 +59,14 @@ struct ActuatorConfig {
 
 	ACTUATOR_FLAG_SELECTOR(isLinear,				setLinear,				0 ) // Linear as opposed to rotary means that the actuator acts in a straigt motion similar to a hydraulic cylinder instead of a rotary motion similar to an RC servo
 	ACTUATOR_FLAG_SELECTOR(isContinuous,			setContinuous,			1 ) // Continuous as opposed to ranged means that the actuator continues running without any stop point, as a motor instead of a servo
-	//ACTUATOR_FLAG_SELECTOR(isStepped,				setStepped,				2 ) // Stepped as opposed to smooth means that actuator is one of many pre-set steps. The number of steps is defined by valueRange
-	ACTUATOR_FLAG_SELECTOR(hasGearRatio,			setGearRatio,			3 ) // Gear ratio means that the motor shaft may turn more than one turn per output shaft turn.
-	ACTUATOR_FLAG_SELECTOR(hasPositionFeedback,		setPositionFeedback,	4 ) // Position feedback means that the actuator reports its's position from an sensor such as potensiometer to an analogue input pin
-	ACTUATOR_FLAG_SELECTOR(hasTachometer,			setTachometer,			5 ) // Tachometer means that the actuator reports it's speed from a sensor such as a hall effect sensor to an digital input pin
-	ACTUATOR_FLAG_SELECTOR(hasIncrementalEncoder,	setIncrementalEncoder,	6 ) // Incremental encoder means the actuatorreports it's  position from an encoder via 2 digital pins. NOTE: The encoding algorithm should take gear-ratio into account
-	ACTUATOR_FLAG_SELECTOR(hasAbsoluteEncoder,		setAbsoluteEncoder,		7 ) // Absolute encoder means the actuatorreports it's  position from an encoder via X digital pins, where X usually is in the 2-16 range. NOTE: The encoding algorithm should take gear-ratio into account
-	ACTUATOR_FLAG_SELECTOR(hasLimitSwitchStart,		setLimitSwitchStart,	8 ) // Limit switch start means the actuator has a limit switch telling the softare when it has reached the beginning of its range. This can be used as a security measure as well as a means for automatical reference calibration. The limit state is reported via a digital input pin
-	ACTUATOR_FLAG_SELECTOR(hasLimitSwitchEnd,		setLimitSwitchEnd,		9 ) // Limit switch end means the actuator has a limit switch telling the softare when it has reached the end of its range. This can be used as a security measure as well as a means for automatical reference calibration. The limit state is reported via a digital input pin
-	ACTUATOR_FLAG_SELECTOR(hasRCServoInterface,		setRCServoInterface,	10) // This actuator has an RC style interface, where the position is controlled via PWM with duty cycle between 1000 and 2000 microseconds.
-	ACTUATOR_FLAG_SELECTOR(isDirty,					setDirty,				11) // The configuration has changed and must be updated at opportunity
+	ACTUATOR_FLAG_SELECTOR(hasGearRatio,			setGearRatio,			2 ) // Gear ratio means that the motor shaft may turn more than one turn per output shaft turn.
+	ACTUATOR_FLAG_SELECTOR(hasPositionFeedback,		setPositionFeedback,	3 ) // Position feedback means that the actuator reports its's position from an sensor such as potensiometer to an analogue input pin
+	ACTUATOR_FLAG_SELECTOR(hasTachometer,			setTachometer,			4 ) // Tachometer means that the actuator reports it's speed from a sensor such as a hall effect sensor to an digital input pin
+	ACTUATOR_FLAG_SELECTOR(hasIncrementalEncoder,	setIncrementalEncoder,	5 ) // Incremental encoder means the actuatorreports it's  position from an encoder via 2 digital pins. NOTE: The encoding algorithm should take gear-ratio into account
+	ACTUATOR_FLAG_SELECTOR(hasAbsoluteEncoder,		setAbsoluteEncoder,		6 ) // Absolute encoder means the actuatorreports it's  position from an encoder via X digital pins, where X usually is in the 2-16 range. NOTE: The encoding algorithm should take gear-ratio into account
+	ACTUATOR_FLAG_SELECTOR(hasLimitSwitchStart,		setLimitSwitchStart,	7 ) // Limit switch start means the actuator has a limit switch telling the softare when it has reached the beginning of its range. This can be used as a security measure as well as a means for automatical reference calibration. The limit state is reported via a digital input pin
+	ACTUATOR_FLAG_SELECTOR(hasLimitSwitchEnd,		setLimitSwitchEnd,		8 ) // Limit switch end means the actuator has a limit switch telling the softare when it has reached the end of its range. This can be used as a security measure as well as a means for automatical reference calibration. The limit state is reported via a digital input pin
+	ACTUATOR_FLAG_SELECTOR(isDirty,					setDirty,				9 ) // The configuration has changed and must be updated at opportunity
 
 	// The actuator type
 	ActuatorType type;

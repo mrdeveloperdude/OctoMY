@@ -8,6 +8,8 @@
 #include <Arduino.h>
 #else
 #include <inttypes.h>
+#include <cstring>
+using namespace std;
 #endif
 
 
