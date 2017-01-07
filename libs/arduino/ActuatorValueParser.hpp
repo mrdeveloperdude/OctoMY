@@ -10,7 +10,7 @@ struct CommandParser;
 Temporary storage during parsing of "servo positions" command
 
  */
-struct SetServoPositionsParser {
+struct ActuatorValueParser {
 
 	CommandParser &commandParser;
 	unsigned char servoMaxCount;
@@ -22,7 +22,7 @@ struct SetServoPositionsParser {
 	unsigned char enableBits[32];
 	Converter converter;
 
-	SetServoPositionsParser(CommandParser &commandParser);
+	ActuatorValueParser(CommandParser &commandParser);
 	void reset();
 	bool parse(const unsigned char in);
 

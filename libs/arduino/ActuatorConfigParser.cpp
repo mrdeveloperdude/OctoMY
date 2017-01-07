@@ -1,9 +1,9 @@
-#include "ServoConfigParser.hpp"
+#include "ActuatorConfigParser.hpp"
 
 #include "CommandParser.hpp"
 
 
-ServoConfigParser::ServoConfigParser(CommandParser &commandParser)
+ActuatorConfigParser::ActuatorConfigParser(CommandParser &commandParser)
 	: commandParser(commandParser)
 	, step(ACTUATOR_INDEX)
 	, byteIndex(0)
@@ -12,7 +12,7 @@ ServoConfigParser::ServoConfigParser(CommandParser &commandParser)
 	reset();
 }
 
-void ServoConfigParser::reset()
+void ActuatorConfigParser::reset()
 {
 	step=ACTUATOR_INDEX;
 	byteIndex=0;
@@ -20,13 +20,13 @@ void ServoConfigParser::reset()
 }
 
 
-ActuatorConfig &ServoConfigParser::currentConfig()
+ActuatorConfig &ActuatorConfigParser::currentConfig()
 {
 	return commandParser.actuators[actuatorIndex].config;
 }
 
 // Look at flags and go from the current step to the next enabled one
-void ServoConfigParser::nextStep()
+void ActuatorConfigParser::nextStep()
 {
 	ActuatorConfig &act=currentConfig();
 	switch(step) {
@@ -152,7 +152,7 @@ void ServoConfigParser::nextStep()
 	byteIndex=0;
 }
 
-bool ServoConfigParser::parse(const uint8_t in)
+bool ActuatorConfigParser::parse(const uint8_t in)
 {
 	switch(step) {
 	case(ACTUATOR_INDEX): {

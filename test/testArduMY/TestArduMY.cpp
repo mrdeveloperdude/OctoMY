@@ -210,11 +210,11 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 
 	// Send flags
-	QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::FLAGS);
+	QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::FLAGS);
 	cv.uint16[0]=c.flags;
 	commandParser.parse(cv.uint8[0]);
 	QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-	QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::FLAGS);
+	QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::FLAGS);
 	commandParser.parse(cv.uint8[1]);
 	QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 	QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
@@ -222,12 +222,12 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	//qDebug()<<(uint16_t)commandParser.servoConfigParser.step<< (uint16_t)ServoConfigParser::TYPE;
 
 	// Send type
-	QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::TYPE);
+	QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::TYPE);
 
 	cv.uint16[0]=(uint16_t)c.type;
 	commandParser.parse(cv.uint8[0]);
 	QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-	QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::TYPE);
+	QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::TYPE);
 	commandParser.parse(cv.uint8[1]);
 	QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 	QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
@@ -235,19 +235,19 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	//qDebug()<<(uint16_t)commandParser.servoConfigParser.step<< (uint16_t)ServoConfigParser::REPRESENTATION;
 
 	// Send representation
-	QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::REPRESENTATION);
+	QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::REPRESENTATION);
 	commandParser.parse((uint8_t)c.representation);
 	QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 	QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 	QCOMPARE(commandParser.servoConfigParser.currentConfig().representation, c.representation);
 
 	// Send nick
-	QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::NICK);
+	QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::NICK);
 	const int nickSize=sizeof(c.nickName)/sizeof(int8_t);
 	int i=0;
 	//qDebug()<<"NICK SIZE: "<<nickSize;
 	for(i=0; i<nickSize; ++i) {
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::NICK);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::NICK);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) i);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		commandParser.parse((uint8_t)c.nickName[i]);
@@ -260,14 +260,14 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 
 	if(c.hasGearRatio()) {
 		// Send gear ratio numerator
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::GEAR_NUMERATOR);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::GEAR_NUMERATOR);
 		commandParser.parse(c.gearRatioNumerator);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.currentConfig().gearRatioNumerator, c.gearRatioNumerator);
 
 		// Send gear ratio denominator
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::GEAR_DENOMINATOR);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::GEAR_DENOMINATOR);
 		commandParser.parse(c.gearRatioDenominator);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
@@ -276,7 +276,7 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 
 	if(c.hasPositionFeedback()) {
 		// Send position feedback pin
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::POSITION_FEEDBACK);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::POSITION_FEEDBACK);
 		commandParser.parse(c.positionFeedbackPin);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
@@ -286,7 +286,7 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	if(c.hasTachometer()) {
 		// Send tachometer pin
 		//qDebug()<<(uint16_t)commandParser.servoConfigParser.step<< (uint16_t)ServoConfigParser::TACHOMETER;
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::TACHOMETER);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::TACHOMETER);
 		commandParser.parse(c.tachometerPin);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
@@ -296,21 +296,21 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 
 	if(c.hasIncrementalEncoder()) {
 		// Send encoder pin A
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::ENCODER_PIN_A);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::ENCODER_PIN_A);
 		commandParser.parse(c.incrementalEncoderPinA);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.currentConfig().incrementalEncoderPinA, c.incrementalEncoderPinA);
 
 		// Send encoder pin B
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::ENCODER_PIN_B);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::ENCODER_PIN_B);
 		commandParser.parse(c.incrementalEncoderPinB);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.currentConfig().incrementalEncoderPinB, c.incrementalEncoderPinB);
 
 		// Send encoder debounce amount
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::ENCODER_DEBOUNCE);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::ENCODER_DEBOUNCE);
 		commandParser.parse(c.incrementalencoderDebounceCount);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
@@ -319,7 +319,7 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 
 	if(c.hasLimitSwitchStart()) {
 		// Send limit switch start pin
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::LIMIT_SWITCH_PIN_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::LIMIT_SWITCH_PIN_START);
 		commandParser.parse(c.limitSwitchPinStart);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
@@ -328,7 +328,7 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 
 	if(c.hasLimitSwitchEnd()) {
 		// Send limit switch end pin
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::LIMIT_SWITCH_PIN_END);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::LIMIT_SWITCH_PIN_END);
 		commandParser.parse(c.limitSwitchPinEnd);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
@@ -337,7 +337,7 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 
 	if(c.hasLimitSwitchStart() || c.hasLimitSwitchEnd()) {
 		// Send limit switch debounce count
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::LIMIT_SWITCH_DEBOUNCE);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::LIMIT_SWITCH_DEBOUNCE);
 		commandParser.parse(c.limitSwitchDebounceCount);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
@@ -349,18 +349,18 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	} break;
 	case(ActuatorType::STEP_MOTOR): {
 		// Send step motor phase count
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::STEP_PHASE_COUNT);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::STEP_PHASE_COUNT);
 		commandParser.parse(c.stepMotorPhaseCount);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.currentConfig().stepMotorPhaseCount, c.stepMotorPhaseCount);
 
 		// Send step motor steps per rotation
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::STEP_STEPS_PER_ROTATION);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::STEP_STEPS_PER_ROTATION);
 		cv.uint16[0]=c.stepMotorStepsPerRotation;
 		commandParser.parse(cv.uint8[0]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::STEP_STEPS_PER_ROTATION);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::STEP_STEPS_PER_ROTATION);
 		commandParser.parse(cv.uint8[1]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
@@ -369,7 +369,7 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	break;
 	case(ActuatorType::RC_SERVO): {
 		// Send RC servo pwm pin
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RC_SERVO_PIN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RC_SERVO_PIN);
 		commandParser.parse(c.rcServoPin);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
@@ -391,7 +391,7 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	// Send range start
 	switch(commandParser.servoConfigParser.currentConfig().representation) {
 	case(ActuatorRepresentation::BIT): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_START);
 		commandParser.parse(c.rangeStart.bit?(uint8_t)1:(uint8_t)0);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
@@ -399,7 +399,7 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	}
 	break;
 	case(ActuatorRepresentation::BYTE): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_START);
 		commandParser.parse(c.rangeStart.byte);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
@@ -407,11 +407,11 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	}
 	break;
 	case(ActuatorRepresentation::WORD): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_START);
 		cv.uint16[0]=c.rangeStart.word;
 		commandParser.parse(cv.uint8[0]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[1]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
@@ -419,17 +419,17 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	}
 	break;
 	case(ActuatorRepresentation::DOUBLE_WORD): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_START);
 		cv.uint32[0]=c.rangeStart.doubleWord;
 		commandParser.parse(cv.uint8[0]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[1]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[2]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[3]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
@@ -437,29 +437,29 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	}
 	break;
 	case(ActuatorRepresentation::QUAD_WORD): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_START);
 		cv.uint64=c.rangeStart.quadWord;
 		commandParser.parse(cv.uint8[0]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[1]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[2]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[3]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 4);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[4]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 5);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[5]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 6);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[6]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 7);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[7]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
@@ -467,17 +467,17 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	}
 	break;
 	case(ActuatorRepresentation::SINGLE_FLOAT): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_START);
 		cv.float32[0]=c.rangeStart.singlePrecision;
 		commandParser.parse(cv.uint8[0]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[1]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[2]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[3]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
@@ -485,29 +485,29 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	}
 	break;
 	case(ActuatorRepresentation::DOUBLE_FLOAT): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_START);
 		cv.float64=c.rangeStart.doublePrecision;
 		commandParser.parse(cv.uint8[0]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[1]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[2]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[3]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 4);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[4]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 5);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[5]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 6);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[6]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 7);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_START);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
 		commandParser.parse(cv.uint8[7]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
@@ -525,7 +525,7 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	// Send range span
 	switch(commandParser.servoConfigParser.currentConfig().representation) {
 	case(ActuatorRepresentation::BIT): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(c.rangeSpan.bit?(uint8_t)1:(uint8_t)0);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
@@ -533,7 +533,7 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	}
 	break;
 	case(ActuatorRepresentation::BYTE): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(c.rangeSpan.byte);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
@@ -541,11 +541,11 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	}
 	break;
 	case(ActuatorRepresentation::WORD): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_SPAN);
 		cv.uint16[0]=c.rangeSpan.word;
 		commandParser.parse(cv.uint8[0]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[1]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
@@ -553,17 +553,17 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	}
 	break;
 	case(ActuatorRepresentation::DOUBLE_WORD): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_SPAN);
 		cv.uint32[0]=c.rangeSpan.doubleWord;
 		commandParser.parse(cv.uint8[0]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[1]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[2]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[3]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
@@ -571,29 +571,29 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	}
 	break;
 	case(ActuatorRepresentation::QUAD_WORD): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_SPAN);
 		cv.uint64=c.rangeSpan.quadWord;
 		commandParser.parse(cv.uint8[0]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[1]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[2]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[3]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 4);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[4]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 5);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[5]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 6);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[6]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 7);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[7]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
@@ -601,17 +601,17 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	}
 	break;
 	case(ActuatorRepresentation::SINGLE_FLOAT): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_SPAN);
 		cv.float32[0]=c.rangeSpan.singlePrecision;
 		commandParser.parse(cv.uint8[0]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[1]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[2]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[3]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
@@ -619,29 +619,29 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	}
 	break;
 	case(ActuatorRepresentation::DOUBLE_FLOAT): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_SPAN);
 		cv.float64=c.rangeSpan.doublePrecision;
 		commandParser.parse(cv.uint8[0]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[1]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[2]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[3]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 4);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[4]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 5);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[5]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 6);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[6]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 7);
-		QCOMPARE(commandParser.servoConfigParser.step, ServoConfigParser::RANGE_SPAN);
+		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
 		commandParser.parse(cv.uint8[7]);
 		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
 		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);

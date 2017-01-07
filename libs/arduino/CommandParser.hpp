@@ -5,8 +5,8 @@
 #include "Actuator.hpp"
 #include "ParserState.hpp"
 #include "MagicDetector.hpp"
-#include "SetServoPositionsParser.hpp"
-#include "ServoConfigParser.hpp"
+#include "ActuatorValueParser.hpp"
+#include "ActuatorConfigParser.hpp"
 
 /*
 
@@ -40,8 +40,8 @@ struct CommandParser {
 	ParserState currentCommand;
 	const uint8_t magic[4];
 	MagicDetector magicDetector;
-	ServoConfigParser servoConfigParser;
-	SetServoPositionsParser servoPosParser;
+	ActuatorConfigParser servoConfigParser;
+	ActuatorValueParser servoPosParser;
 	bool dirtyServos;
 
 	explicit CommandParser();

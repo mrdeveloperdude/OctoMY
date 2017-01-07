@@ -14,7 +14,7 @@ Temporary storage during parsing of "servo positions" command
 
  */
 
-struct ServoConfigParser {
+struct ActuatorConfigParser {
 
 	enum ServoConfigParseStep: uint8_t {
 
@@ -30,7 +30,7 @@ struct ServoConfigParser {
 	CommandParser &commandParser;
 	Converter converter;
 
-	ServoConfigParser(CommandParser &commandParser);
+	ActuatorConfigParser(CommandParser &commandParser);
 
 	ActuatorConfig &currentConfig();
 

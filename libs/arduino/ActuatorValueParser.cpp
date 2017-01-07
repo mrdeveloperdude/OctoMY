@@ -1,15 +1,15 @@
-#include "SetServoPositionsParser.hpp"
+#include "ActuatorValueParser.hpp"
 
 #include "CommandParser.hpp"
 
 
-SetServoPositionsParser::SetServoPositionsParser(CommandParser &commandParser)
+ActuatorValueParser::ActuatorValueParser(CommandParser &commandParser)
 	: commandParser(commandParser)
 {
 	reset();
 }
 
-void SetServoPositionsParser::reset()
+void ActuatorValueParser::reset()
 {
 	servoMaxCount=(unsigned char)commandParser.actuators.size();
 	servoPositionsCount=0;
@@ -19,7 +19,7 @@ void SetServoPositionsParser::reset()
 	enableByteIndex=0;
 }
 
-bool SetServoPositionsParser::parse(const unsigned char in)
+bool ActuatorValueParser::parse(const unsigned char in)
 {
 	// We are collecting enable-bits still
 	if(enableByteIndex<enableByteCount) {
@@ -57,7 +57,7 @@ bool SetServoPositionsParser::parse(const unsigned char in)
 
 
 // Look at enabled bits and return the actual servo index by skipping disabled servos
-unsigned char SetServoPositionsParser::enabledServoByIndex(unsigned char in)
+unsigned char ActuatorValueParser::enabledServoByIndex(unsigned char in)
 {
 	unsigned char out=0;
 	unsigned char servosCounted=0;
