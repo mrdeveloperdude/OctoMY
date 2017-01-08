@@ -7,8 +7,10 @@ HEADERS += \
 	../../libs/arduino/MagicDetector.hpp \
 	../../libs/arduino/CommandParser.hpp \
 	../../libs/arduino/Actuator.hpp \
-    ../../libs/arduino/ActuatorConfigParser.hpp \
-    ../../libs/arduino/ActuatorValueParser.hpp
+	../../libs/arduino/ActuatorConfigSerializerBase.hpp \
+	../../libs/arduino/ActuatorConfigSerializer.hpp \
+	../../libs/arduino/ActuatorConfigParser.hpp \
+	../../libs/arduino/ActuatorValueParser.hpp
 
 
 SOURCES += \
@@ -16,8 +18,10 @@ SOURCES += \
 	../../libs/arduino/MagicDetector.cpp \
 	../../libs/arduino/CommandParser.cpp \
 	../../libs/arduino/Actuator.cpp \
-    ../../libs/arduino/ActuatorConfigParser.cpp \
-    ../../libs/arduino/ActuatorValueParser.cpp
+	../../libs/arduino/ActuatorConfigSerializerBase.cpp \
+	../../libs/arduino/ActuatorConfigSerializer.cpp \
+	../../libs/arduino/ActuatorConfigParser.cpp \
+	../../libs/arduino/ActuatorValueParser.cpp
 
 include($$TOP_PWD/status.pri)
 include($$TOP_PWD/test/test_autorun.pri)

@@ -1,7 +1,13 @@
 #include "TestArduMY.hpp"
 #include "utility/Utility.hpp"
 
+#include "../arduino/ActuatorConfigParser.hpp"
+#include "../arduino/ActuatorConfigSerializer.hpp"
+
+#include "../arduino/MagicDetector.hpp"
+
 #include <QDebug>
+
 
 void TestArduMY::testMagicDetector()
 {
@@ -29,7 +35,7 @@ void TestArduMY::testMagicDetector()
 
 }
 
-const bool TestArduMY::percentChance(quint8 pct) const
+static bool percentChance(quint8 pct)
 {
 	return (pct>=(qrand()%100));
 }
@@ -83,7 +89,7 @@ ActuatorConfig TestArduMY::randomConfig() const
 	c.type=(ActuatorType)(qrand() % ((quint8)ActuatorType::TYPE_COUNT));
 
 	// Set random representation
-	c.representation=(ActuatorRepresentation)(qrand() % ((quint8)ActuatorRepresentation::REPRESENTATION_COUNT));
+	c.representation=(ActuatorValueRepresentation)(qrand() % ((quint8)ActuatorValueRepresentation::REPRESENTATION_COUNT));
 
 	// Set random name
 	const quint8 nameSize=(qrand()%20);
@@ -122,29 +128,29 @@ ActuatorConfig TestArduMY::randomConfig() const
 
 	// Set random range
 	switch(c.representation) {
-	case(ActuatorRepresentation::BIT): {
+	case(ActuatorValueRepresentation::BIT): {
 		c.rangeStart.byte=0;
 		c.rangeSpan.byte=0;
 		c.rangeStart.bit=false;
 		c.rangeSpan.bit=true;
 	}
 	break;
-	case(ActuatorRepresentation::BYTE): {
+	case(ActuatorValueRepresentation::BYTE): {
 		c.rangeStart.byte=qrand()%qrand()%(0xFF);
 		c.rangeSpan.byte=qrand()%((0xFF)-c.rangeStart.byte);
 	}
 	break;
-	case(ActuatorRepresentation::WORD): {
+	case(ActuatorValueRepresentation::WORD): {
 		c.rangeStart.word=qrand()%qrand()%(0xFFFF);
 		c.rangeSpan.word=qrand()%((0xFFFF)-c.rangeStart.word);
 	}
 	break;
-	case(ActuatorRepresentation::DOUBLE_WORD): {
+	case(ActuatorValueRepresentation::DOUBLE_WORD): {
 		c.rangeStart.doubleWord=qrand()%qrand()%(0xFFFFFFFF);
 		c.rangeSpan.doubleWord=qrand()%((0xFFFFFFFF)-c.rangeStart.doubleWord);
 	}
 	break;
-	case(ActuatorRepresentation::QUAD_WORD): {
+	case(ActuatorValueRepresentation::QUAD_WORD): {
 		// Naive attempt at making 64bit random numbers using qrand()
 		uint64_t r1=((uint64_t)(qrand()%(0xFFFFFFFF)))<<32 | ((uint64_t)(qrand()%(0xFFFFFFFF)));
 		uint64_t r2=((uint64_t)(qrand()%(0xFFFFFFFF)))<<32 | ((uint64_t)(qrand()%(0xFFFFFFFF)));
@@ -153,7 +159,7 @@ ActuatorConfig TestArduMY::randomConfig() const
 		c.rangeSpan.quadWord=r3%((0xFFFFFFFFFFFFFFFF)-c.rangeStart.quadWord);
 	}
 	break;
-	case(ActuatorRepresentation::SINGLE_FLOAT): {
+	case(ActuatorValueRepresentation::SINGLE_FLOAT): {
 		float r1=frand();
 		float r2=frand();
 		float r3=frand();
@@ -161,7 +167,7 @@ ActuatorConfig TestArduMY::randomConfig() const
 		c.rangeSpan.singlePrecision=r3-c.rangeStart.singlePrecision;
 	}
 	break;
-	case(ActuatorRepresentation::DOUBLE_FLOAT): {
+	case(ActuatorValueRepresentation::DOUBLE_FLOAT): {
 		double r1=dfrand();
 		double r2=dfrand();
 		double r3=dfrand();
@@ -170,7 +176,7 @@ ActuatorConfig TestArduMY::randomConfig() const
 	}
 	break;
 	default:
-	case(ActuatorRepresentation::REPRESENTATION_COUNT): {
+	case(ActuatorValueRepresentation::REPRESENTATION_COUNT): {
 		qWarning()<<"bad representation";
 	}
 	break;
@@ -183,197 +189,159 @@ ActuatorConfig TestArduMY::randomConfig() const
 
 
 
-void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
+void TestArduMY::singleActuatorConfigParserRun(ActuatorConfig &c) const
 {
-	CommandParser commandParser;
+	ActuatorConfigParser parser;
+	parser.setConfig(c);
 	Converter cv;
 
-	// Conduct sync
-	for(uint8_t i=0; i<4; ++i) {
-		QCOMPARE(commandParser.currentCommand, OCTOMY_SYNC);
-		QCOMPARE(commandParser.magicDetector.idx, i);
-		commandParser.parse(commandParser.magic[i]);
-	}
-
-	// Verify that sync completed correctly
-	QCOMPARE(commandParser.currentCommand, OCTOMY_AWAITING_COMMAND);
-
-	// Start the actuator config command
-	ParserState parserState=OCTOMY_SET_ACTUATOR_CONFIG;
-	commandParser.parse((uint8_t)parserState);
-	QCOMPARE(commandParser.currentCommand, parserState);
-
-	// Send actuator index
-	static const uint8_t actuatorIndex=12;
-	commandParser.parse(actuatorIndex);
-	QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-	QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-
 	// Send flags
-	QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::FLAGS);
+	QCOMPARE(parser.step, ActuatorConfigParserStep::FLAGS);
 	cv.uint16[0]=c.flags;
-	commandParser.parse(cv.uint8[0]);
-	QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-	QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::FLAGS);
-	commandParser.parse(cv.uint8[1]);
-	QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-	QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-	QCOMPARE(commandParser.servoConfigParser.currentConfig().flags, c.flags);
-	//qDebug()<<(uint16_t)commandParser.servoConfigParser.step<< (uint16_t)ServoConfigParser::TYPE;
+	parser.parse(cv.uint8[0]);
+	QCOMPARE(parser.byteIndex, (uint16_t) 1);
+	QCOMPARE(parser.step, ActuatorConfigParserStep::FLAGS);
+	parser.parse(cv.uint8[1]);
+	QCOMPARE(parser.byteIndex, (uint16_t) 0);
+	QCOMPARE(parser.config->flags, c.flags);
+	//qDebug()<<(uint16_t)parser.step<< (uint16_t)ServoConfigParser::TYPE;
 
 	// Send type
-	QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::TYPE);
-
+	QCOMPARE(parser.step,  ActuatorConfigParserStep::TYPE);
 	cv.uint16[0]=(uint16_t)c.type;
-	commandParser.parse(cv.uint8[0]);
-	QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-	QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::TYPE);
-	commandParser.parse(cv.uint8[1]);
-	QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-	QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-	QCOMPARE(commandParser.servoConfigParser.currentConfig().type, c.type);
-	//qDebug()<<(uint16_t)commandParser.servoConfigParser.step<< (uint16_t)ServoConfigParser::REPRESENTATION;
+	parser.parse(cv.uint8[0]);
+	QCOMPARE(parser.byteIndex, (uint16_t) 1);
+	QCOMPARE(parser.step, ActuatorConfigParserStep::TYPE);
+	parser.parse(cv.uint8[1]);
+	QCOMPARE(parser.byteIndex, (uint16_t) 0);
+	QCOMPARE(parser.config->type, c.type);
+	//qDebug()<<(uint16_t)parser.step<< (uint16_t)ServoConfigParser::REPRESENTATION;
 
 	// Send representation
-	QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::REPRESENTATION);
-	commandParser.parse((uint8_t)c.representation);
-	QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-	QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-	QCOMPARE(commandParser.servoConfigParser.currentConfig().representation, c.representation);
+	QCOMPARE(parser.step,  ActuatorConfigParserStep::REPRESENTATION);
+	parser.parse((uint8_t)c.representation);
+	QCOMPARE(parser.byteIndex, (uint16_t) 0);
+	QCOMPARE(parser.config->representation, c.representation);
 
 	// Send nick
-	QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::NICK);
+	QCOMPARE(parser.step, ActuatorConfigParserStep::NICK);
 	const int nickSize=sizeof(c.nickName)/sizeof(int8_t);
 	int i=0;
 	//qDebug()<<"NICK SIZE: "<<nickSize;
 	for(i=0; i<nickSize; ++i) {
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::NICK);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) i);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		commandParser.parse((uint8_t)c.nickName[i]);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::NICK);
+		QCOMPARE(parser.byteIndex, (uint16_t) i);
+		parser.parse((uint8_t)c.nickName[i]);
 	}
-	QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-	QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
+	QCOMPARE(parser.byteIndex, (uint16_t) 0);
+
 	for(i=0; i<nickSize; ++i) {
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().nickName[i], c.nickName[i]);
+		QCOMPARE(parser.config->nickName[i], c.nickName[i]);
 	}
 
 	if(c.hasGearRatio()) {
 		// Send gear ratio numerator
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::GEAR_NUMERATOR);
-		commandParser.parse(c.gearRatioNumerator);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().gearRatioNumerator, c.gearRatioNumerator);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::GEAR_NUMERATOR);
+		parser.parse(c.gearRatioNumerator);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->gearRatioNumerator, c.gearRatioNumerator);
 
 		// Send gear ratio denominator
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::GEAR_DENOMINATOR);
-		commandParser.parse(c.gearRatioDenominator);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().gearRatioDenominator, c.gearRatioDenominator);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::GEAR_DENOMINATOR);
+		parser.parse(c.gearRatioDenominator);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->gearRatioDenominator, c.gearRatioDenominator);
 	}
 
 	if(c.hasPositionFeedback()) {
 		// Send position feedback pin
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::POSITION_FEEDBACK);
-		commandParser.parse(c.positionFeedbackPin);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().positionFeedbackPin, c.positionFeedbackPin);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::POSITION_FEEDBACK);
+		parser.parse(c.positionFeedbackPin);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->positionFeedbackPin, c.positionFeedbackPin);
 	}
 
 	if(c.hasTachometer()) {
 		// Send tachometer pin
-		//qDebug()<<(uint16_t)commandParser.servoConfigParser.step<< (uint16_t)ServoConfigParser::TACHOMETER;
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::TACHOMETER);
-		commandParser.parse(c.tachometerPin);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().tachometerPin, c.tachometerPin);
+		//qDebug()<<(uint16_t)parser.step<< (uint16_t)ServoConfigParser::TACHOMETER;
+		QCOMPARE(parser.step, ActuatorConfigParserStep::TACHOMETER);
+		parser.parse(c.tachometerPin);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->tachometerPin, c.tachometerPin);
 	}
 
 
 	if(c.hasIncrementalEncoder()) {
 		// Send encoder pin A
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::ENCODER_PIN_A);
-		commandParser.parse(c.incrementalEncoderPinA);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().incrementalEncoderPinA, c.incrementalEncoderPinA);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::ENCODER_PIN_A);
+		parser.parse(c.incrementalEncoderPinA);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->incrementalEncoderPinA, c.incrementalEncoderPinA);
 
 		// Send encoder pin B
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::ENCODER_PIN_B);
-		commandParser.parse(c.incrementalEncoderPinB);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().incrementalEncoderPinB, c.incrementalEncoderPinB);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::ENCODER_PIN_B);
+		parser.parse(c.incrementalEncoderPinB);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->incrementalEncoderPinB, c.incrementalEncoderPinB);
 
 		// Send encoder debounce amount
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::ENCODER_DEBOUNCE);
-		commandParser.parse(c.incrementalencoderDebounceCount);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().incrementalencoderDebounceCount, c.incrementalencoderDebounceCount);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::ENCODER_DEBOUNCE);
+		parser.parse(c.incrementalencoderDebounceCount);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->incrementalencoderDebounceCount, c.incrementalencoderDebounceCount);
 	}
 
 	if(c.hasLimitSwitchStart()) {
 		// Send limit switch start pin
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::LIMIT_SWITCH_PIN_START);
-		commandParser.parse(c.limitSwitchPinStart);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().limitSwitchPinStart, c.limitSwitchPinStart);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::LIMIT_SWITCH_PIN_START);
+		parser.parse(c.limitSwitchPinStart);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->limitSwitchPinStart, c.limitSwitchPinStart);
 	}
 
 	if(c.hasLimitSwitchEnd()) {
 		// Send limit switch end pin
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::LIMIT_SWITCH_PIN_END);
-		commandParser.parse(c.limitSwitchPinEnd);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().limitSwitchPinEnd, c.limitSwitchPinEnd);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::LIMIT_SWITCH_PIN_END);
+		parser.parse(c.limitSwitchPinEnd);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->limitSwitchPinEnd, c.limitSwitchPinEnd);
 	}
 
 	if(c.hasLimitSwitchStart() || c.hasLimitSwitchEnd()) {
 		// Send limit switch debounce count
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::LIMIT_SWITCH_DEBOUNCE);
-		commandParser.parse(c.limitSwitchDebounceCount);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().limitSwitchDebounceCount, c.limitSwitchDebounceCount);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::LIMIT_SWITCH_DEBOUNCE);
+		parser.parse(c.limitSwitchDebounceCount);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->limitSwitchDebounceCount, c.limitSwitchDebounceCount);
 	}
 
-	switch(commandParser.servoConfigParser.currentConfig().type) {
+	switch(parser.config->type) {
 	case(ActuatorType::DC_MOTOR): {
 	} break;
 	case(ActuatorType::STEP_MOTOR): {
 		// Send step motor phase count
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::STEP_PHASE_COUNT);
-		commandParser.parse(c.stepMotorPhaseCount);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().stepMotorPhaseCount, c.stepMotorPhaseCount);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::STEP_PHASE_COUNT);
+		parser.parse(c.stepMotorPhaseCount);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->stepMotorPhaseCount, c.stepMotorPhaseCount);
 
 		// Send step motor steps per rotation
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::STEP_STEPS_PER_ROTATION);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::STEP_STEPS_PER_ROTATION);
 		cv.uint16[0]=c.stepMotorStepsPerRotation;
-		commandParser.parse(cv.uint8[0]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::STEP_STEPS_PER_ROTATION);
-		commandParser.parse(cv.uint8[1]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().stepMotorStepsPerRotation, c.stepMotorStepsPerRotation);
+		parser.parse(cv.uint8[0]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 1);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::STEP_STEPS_PER_ROTATION);
+		parser.parse(cv.uint8[1]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->stepMotorStepsPerRotation, c.stepMotorStepsPerRotation);
 	}
 	break;
 	case(ActuatorType::RC_SERVO): {
 		// Send RC servo pwm pin
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RC_SERVO_PIN);
-		commandParser.parse(c.rcServoPin);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rcServoPin, c.rcServoPin);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RC_SERVO_PIN);
+		parser.parse(c.rcServoPin);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rcServoPin, c.rcServoPin);
 	}
 	break;
 	case(ActuatorType::RELAY): {
@@ -385,137 +353,129 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 	break;
 	}
 
-//ACTUATOR_INDEX, FLAGS, TYPE, REPRESENTATION, NICK, GEAR_NUMERATOR, GEAR_DENOMINATOR, POSITION_FEEDBACK, TACHOMETER, ENCODER_PIN_A, ENCODER_PIN_B, ENCODER_DEBOUNCE, LIMIT_SWITCH_PIN_START, LIMIT_SWITCH_PIN_END, LIMIT_SWITCH_DEBOUNCE, STEP_PHASE_COUNT, STEP_STEPS_PER_ROTATION, RC_SERVO_PIN, RANGE_START, RANGE_SPAN, END_OF_PARSE
 
-//qDebug()<<"STEP "<< commandParser.servoConfigParser.step << ServoConfigParser::RANGE_START;
+	//qDebug()<<"STEP "<< parser.step << ServoConfigParser::RANGE_START;
 	// Send range start
-	switch(commandParser.servoConfigParser.currentConfig().representation) {
-	case(ActuatorRepresentation::BIT): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_START);
-		commandParser.parse(c.rangeStart.bit?(uint8_t)1:(uint8_t)0);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rangeStart.bit, c.rangeStart.bit);
+	switch(parser.config->representation) {
+	case(ActuatorValueRepresentation::BIT): {
+		QCOMPARE(parser.step,  ActuatorConfigParserStep::RANGE_START);
+		parser.parse(c.rangeStart.bit?(uint8_t)1:(uint8_t)0);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rangeStart.bit, c.rangeStart.bit);
 	}
 	break;
-	case(ActuatorRepresentation::BYTE): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_START);
-		commandParser.parse(c.rangeStart.byte);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rangeStart.byte, c.rangeStart.byte);
+	case(ActuatorValueRepresentation::BYTE): {
+		QCOMPARE(parser.step,  ActuatorConfigParserStep::RANGE_START);
+		parser.parse(c.rangeStart.byte);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rangeStart.byte, c.rangeStart.byte);
 	}
 	break;
-	case(ActuatorRepresentation::WORD): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_START);
+	case(ActuatorValueRepresentation::WORD): {
+		QCOMPARE(parser.step,  ActuatorConfigParserStep::RANGE_START);
 		cv.uint16[0]=c.rangeStart.word;
-		commandParser.parse(cv.uint8[0]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[1]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rangeStart.word, c.rangeStart.word);
+		parser.parse(cv.uint8[0]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 1);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[1]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rangeStart.word, c.rangeStart.word);
 	}
 	break;
-	case(ActuatorRepresentation::DOUBLE_WORD): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_START);
+	case(ActuatorValueRepresentation::DOUBLE_WORD): {
+		QCOMPARE(parser.step,  ActuatorConfigParserStep::RANGE_START);
 		cv.uint32[0]=c.rangeStart.doubleWord;
-		commandParser.parse(cv.uint8[0]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[1]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[2]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[3]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rangeStart.doubleWord, c.rangeStart.doubleWord);
+		parser.parse(cv.uint8[0]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 1);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[1]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 2);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[2]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 3);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[3]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rangeStart.doubleWord, c.rangeStart.doubleWord);
 	}
 	break;
-	case(ActuatorRepresentation::QUAD_WORD): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_START);
+	case(ActuatorValueRepresentation::QUAD_WORD): {
+		QCOMPARE(parser.step,  ActuatorConfigParserStep::RANGE_START);
 		cv.uint64=c.rangeStart.quadWord;
-		commandParser.parse(cv.uint8[0]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[1]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[2]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[3]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 4);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[4]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 5);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[5]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 6);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[6]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 7);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[7]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rangeStart.quadWord, c.rangeStart.quadWord);
+		parser.parse(cv.uint8[0]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 1);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[1]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 2);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[2]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 3);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[3]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 4);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[4]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 5);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[5]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 6);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[6]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 7);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[7]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rangeStart.quadWord, c.rangeStart.quadWord);
 	}
 	break;
-	case(ActuatorRepresentation::SINGLE_FLOAT): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_START);
+	case(ActuatorValueRepresentation::SINGLE_FLOAT): {
+		QCOMPARE(parser.step,  ActuatorConfigParserStep::RANGE_START);
 		cv.float32[0]=c.rangeStart.singlePrecision;
-		commandParser.parse(cv.uint8[0]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[1]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[2]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[3]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rangeStart.singlePrecision, c.rangeStart.singlePrecision);
+		parser.parse(cv.uint8[0]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 1);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[1]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 2);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[2]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 3);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[3]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rangeStart.singlePrecision, c.rangeStart.singlePrecision);
 	}
 	break;
-	case(ActuatorRepresentation::DOUBLE_FLOAT): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_START);
+	case(ActuatorValueRepresentation::DOUBLE_FLOAT): {
+		QCOMPARE(parser.step,  ActuatorConfigParserStep::RANGE_START);
 		cv.float64=c.rangeStart.doublePrecision;
-		commandParser.parse(cv.uint8[0]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[1]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[2]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[3]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 4);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[4]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 5);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[5]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 6);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[6]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 7);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_START);
-		commandParser.parse(cv.uint8[7]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rangeStart.doublePrecision, c.rangeStart.doublePrecision);
+		parser.parse(cv.uint8[0]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 1);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[1]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 2);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[2]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 3);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[3]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 4);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[4]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 5);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[5]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 6);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[6]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 7);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_START);
+		parser.parse(cv.uint8[7]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rangeStart.doublePrecision, c.rangeStart.doublePrecision);
 	}
 	break;
 	default:
-	case(ActuatorRepresentation::REPRESENTATION_COUNT): {
+	case(ActuatorValueRepresentation::REPRESENTATION_COUNT): {
 		QFAIL("bad representation for range start");
 	}
 	break;
@@ -523,133 +483,126 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 
 
 	// Send range span
-	switch(commandParser.servoConfigParser.currentConfig().representation) {
-	case(ActuatorRepresentation::BIT): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(c.rangeSpan.bit?(uint8_t)1:(uint8_t)0);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rangeSpan.bit, c.rangeSpan.bit);
+	switch(parser.config->representation) {
+	case(ActuatorValueRepresentation::BIT): {
+		QCOMPARE(parser.step,  ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(c.rangeSpan.bit?(uint8_t)1:(uint8_t)0);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rangeSpan.bit, c.rangeSpan.bit);
 	}
 	break;
-	case(ActuatorRepresentation::BYTE): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(c.rangeSpan.byte);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rangeSpan.byte, c.rangeSpan.byte);
+	case(ActuatorValueRepresentation::BYTE): {
+		QCOMPARE(parser.step,  ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(c.rangeSpan.byte);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rangeSpan.byte, c.rangeSpan.byte);
 	}
 	break;
-	case(ActuatorRepresentation::WORD): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_SPAN);
+	case(ActuatorValueRepresentation::WORD): {
+		QCOMPARE(parser.step,  ActuatorConfigParserStep::RANGE_SPAN);
 		cv.uint16[0]=c.rangeSpan.word;
-		commandParser.parse(cv.uint8[0]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[1]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rangeSpan.word, c.rangeSpan.word);
+		parser.parse(cv.uint8[0]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 1);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[1]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rangeSpan.word, c.rangeSpan.word);
 	}
 	break;
-	case(ActuatorRepresentation::DOUBLE_WORD): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_SPAN);
+	case(ActuatorValueRepresentation::DOUBLE_WORD): {
+		QCOMPARE(parser.step,  ActuatorConfigParserStep::RANGE_SPAN);
 		cv.uint32[0]=c.rangeSpan.doubleWord;
-		commandParser.parse(cv.uint8[0]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[1]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[2]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[3]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rangeSpan.doubleWord, c.rangeSpan.doubleWord);
+		parser.parse(cv.uint8[0]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 1);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[1]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 2);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[2]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 3);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[3]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rangeSpan.doubleWord, c.rangeSpan.doubleWord);
 	}
 	break;
-	case(ActuatorRepresentation::QUAD_WORD): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_SPAN);
+	case(ActuatorValueRepresentation::QUAD_WORD): {
+		QCOMPARE(parser.step,  ActuatorConfigParserStep::RANGE_SPAN);
 		cv.uint64=c.rangeSpan.quadWord;
-		commandParser.parse(cv.uint8[0]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[1]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[2]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[3]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 4);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[4]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 5);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[5]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 6);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[6]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 7);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[7]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rangeSpan.quadWord, c.rangeSpan.quadWord);
+		parser.parse(cv.uint8[0]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 1);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[1]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 2);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[2]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 3);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[3]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 4);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[4]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 5);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[5]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 6);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[6]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 7);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[7]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rangeSpan.quadWord, c.rangeSpan.quadWord);
 	}
 	break;
-	case(ActuatorRepresentation::SINGLE_FLOAT): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_SPAN);
+	case(ActuatorValueRepresentation::SINGLE_FLOAT): {
+		QCOMPARE(parser.step,  ActuatorConfigParserStep::RANGE_SPAN);
 		cv.float32[0]=c.rangeSpan.singlePrecision;
-		commandParser.parse(cv.uint8[0]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[1]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[2]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[3]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rangeSpan.singlePrecision, c.rangeSpan.singlePrecision);
+		parser.parse(cv.uint8[0]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 1);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[1]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 2);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[2]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 3);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[3]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rangeSpan.singlePrecision, c.rangeSpan.singlePrecision);
 	}
 	break;
-	case(ActuatorRepresentation::DOUBLE_FLOAT): {
-		QCOMPARE(commandParser.servoConfigParser.step,  ActuatorConfigParser::RANGE_SPAN);
+	case(ActuatorValueRepresentation::DOUBLE_FLOAT): {
+		QCOMPARE(parser.step,  ActuatorConfigParserStep::RANGE_SPAN);
 		cv.float64=c.rangeSpan.doublePrecision;
-		commandParser.parse(cv.uint8[0]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 1);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[1]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 2);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[2]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 3);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[3]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 4);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[4]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 5);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[5]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 6);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[6]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 7);
-		QCOMPARE(commandParser.servoConfigParser.step, ActuatorConfigParser::RANGE_SPAN);
-		commandParser.parse(cv.uint8[7]);
-		QCOMPARE(commandParser.servoConfigParser.byteIndex, (uint16_t) 0);
-		QCOMPARE(commandParser.servoConfigParser.actuatorIndex, actuatorIndex);
-		QCOMPARE(commandParser.servoConfigParser.currentConfig().rangeSpan.doublePrecision, c.rangeSpan.doublePrecision);
+		parser.parse(cv.uint8[0]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 1);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[1]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 2);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[2]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 3);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[3]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 4);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[4]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 5);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[5]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 6);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[6]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 7);
+		QCOMPARE(parser.step, ActuatorConfigParserStep::RANGE_SPAN);
+		parser.parse(cv.uint8[7]);
+		QCOMPARE(parser.byteIndex, (uint16_t) 0);
+		QCOMPARE(parser.config->rangeSpan.doublePrecision, c.rangeSpan.doublePrecision);
 	}
 	break;
 	default:
-	case(ActuatorRepresentation::REPRESENTATION_COUNT): {
+	case(ActuatorValueRepresentation::REPRESENTATION_COUNT): {
 		QFAIL("bad representation for range span");
 	}
 	break;
@@ -657,22 +610,142 @@ void TestArduMY::singleServoConfigRun(const ActuatorConfig &c) const
 
 }
 
-void TestArduMY::testServoConfigParser()
+void TestArduMY::singleActuatorConfigSerializerRun(ActuatorConfig &c) const
 {
-	// Generate 1000 random configurations and feed them through a parser to verify the parser works as it should.
+	/*
+	c.clear();
+	c.flags=0xFFFF;
+	c.type=ActuatorType::DC_MOTOR;
+
+	c.gearRatioDenominator=20;
+	c.gearRatioNumerator=21;
+	c.incrementalencoderDebounceCount=22;
+	c.incrementalEncoderPinA=23;
+	c.incrementalEncoderPinB=24;
+	c.limitSwitchDebounceCount=25;
+	c.limitSwitchPinStart=26;
+	c.limitSwitchPinEnd=27;
+	c.positionFeedbackPin=28;
+	//c.stepMotorPhaseCount=29;	c.stepMotorStepsPerRotation=30;
+	*/
+	ActuatorConfigSerializer serializer;
+	serializer.setConfig(c);
+	ActuatorConfigParser parser;
+	ActuatorConfig to;
+	to.clear();
+	parser.setConfig(to);
+
+	while(serializer.hasMoreData()) {
+		uint8_t byte=serializer.nextByte();
+		parser.parse(byte);
+	}
+
+	QCOMPARE(c.flags, to.flags);
+	QCOMPARE(c.type, to.type);
+	QCOMPARE(c.representation, to.representation);
+	//qDebug()<<"NICK FROM "<<QString::fromLocal8Bit((char *)c.nickName, 20)<<" TO "<<QString::fromLocal8Bit((char *)to.nickName, 20);
+	for(int i=0; i<20; ++i) {
+		QCOMPARE(c.nickName[i], to.nickName[i]);
+	}
+	if(c.hasGearRatio()) {
+		QCOMPARE(c.gearRatioNumerator, to.gearRatioNumerator);
+		QCOMPARE(c.gearRatioDenominator, to.gearRatioDenominator);
+	}
+	if(c.hasPositionFeedback()) {
+		QCOMPARE(c.positionFeedbackPin, to.positionFeedbackPin);
+	}
+	if(c.hasTachometer()) {
+		QCOMPARE(c.tachometerPin, to.tachometerPin);
+	}
+	if(c.hasIncrementalEncoder()) {
+		QCOMPARE(c.incrementalEncoderPinA, to.incrementalEncoderPinA);
+		QCOMPARE(c.incrementalEncoderPinB, to.incrementalEncoderPinB);
+		QCOMPARE(c.incrementalencoderDebounceCount, to.incrementalencoderDebounceCount);
+	}
+	if(c.hasLimitSwitchStart()) {
+		QCOMPARE(c.limitSwitchPinStart, to.limitSwitchPinStart);
+	}
+	if(c.hasLimitSwitchEnd()) {
+		QCOMPARE(c.limitSwitchPinEnd, to.limitSwitchPinEnd);
+	}
+	if(c.hasLimitSwitchStart() || c.hasLimitSwitchEnd()) {
+		QCOMPARE(c.limitSwitchDebounceCount, to.limitSwitchDebounceCount);
+	}
+	if(STEP_MOTOR==c.type) {
+		QCOMPARE(c.stepMotorPhaseCount, to.stepMotorPhaseCount);
+		QCOMPARE(c.stepMotorStepsPerRotation, to.stepMotorStepsPerRotation);
+
+	} else if(RC_SERVO==c.type) {
+		QCOMPARE(c.rcServoPin, to.rcServoPin);
+	}
+	QCOMPARE(c.rangeStart.quadWord, to.rangeStart.quadWord);
+	QCOMPARE(c.rangeSpan.quadWord, to.rangeSpan.quadWord);
+
+	// Finally check that our findings match the result from the official "equals" overload
+
+	QVERIFY(c == to);
+}
+
+void TestArduMY::testActuatorConfigParser()
+{
+	// Generate random configurations and feed them through a parser to verify that it works as it should.
 	for(int j=0; j<100; ++j) {
-		qDebug()<<"Round "<<j<<" / 100";
+		qDebug()<<"Parser Round "<<j<<" / 100";
 		for(int i=0; i<1000; ++i) {
 			ActuatorConfig c=randomConfig();
-			singleServoConfigRun(c);
+			singleActuatorConfigParserRun(c);
 		}
 	}
 
 }
 
-void TestArduMY::testServoPositionParser()
+
+void TestArduMY::testActuatorConfigSerializer()
 {
-	//SetServoPositionsParser servoPosParser;
+	// Generate random configurations and feed them through a serializer to verify that it works as it should.
+	for(int j=0; j<100; ++j) {
+		qDebug()<<"Serializer Round "<<j<<" / 100";
+		for(int i=0; i<1000; ++i) {
+			ActuatorConfig c=randomConfig();
+			singleActuatorConfigSerializerRun(c);
+		}
+	}
+}
+
+void TestArduMY::testActuatorValueParser()
+{
+	// ActuatorValueParser parser;
+}
+
+
+
+void TestArduMY::testCommandParser()
+{
+
+	/*
+	// Conduct sync
+	for(uint8_t i=0; i<4; ++i) {
+		QCOMPARE(commandParser.currentCommand, OCTOMY_SYNC);
+		QCOMPARE(commandParser.magicDetector.idx, i);
+		parser.parse(commandParser.magic[i]);
+	}
+
+	// Verify that sync completed correctly
+	QCOMPARE(commandParser.currentCommand, OCTOMY_AWAITING_COMMAND);
+
+	// Start the actuator config command
+	ParserState parserState=OCTOMY_SET_ACTUATOR_CONFIG;
+	parser.parse((uint8_t)parserState);
+	QCOMPARE(commandParser.currentCommand, parserState);
+
+	// Send actuator index
+	static const uint8_t actuatorIndex=12;
+	parser.parse(actuatorIndex);
+
+	QCOMPARE(parser.byteIndex, (uint16_t) 0);
+
+	*/
+
 }
 
 

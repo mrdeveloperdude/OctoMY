@@ -5,7 +5,7 @@ CommandParser::CommandParser()
 	, currentCommand(OCTOMY_SYNC)
 	, magic{0x0C,0x70,0xFF,0x00}
 	, magicDetector(magic,(uint8_t)4)
-	, servoConfigParser(*this)
+	, servoConfigParser()
 	, servoPosParser(*this)
 	, dirtyServos(true)
 {
@@ -76,6 +76,7 @@ void CommandParser::parse(const int8_t in)
 
 	// Command: set servo config
 	case(OCTOMY_SET_ACTUATOR_CONFIG): {
+		//TODO: Hnadle actuator index whic hwas previously parsed together with config data
 		if(servoConfigParser.parse(in)) {
 			dirtyServos=true;
 			currentCommand=OCTOMY_AWAITING_COMMAND;
