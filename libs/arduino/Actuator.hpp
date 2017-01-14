@@ -247,76 +247,11 @@ struct ActuatorConfig {
 
 		}
 
-
-		switch(representation) {
-		case(ActuatorValueRepresentation::BIT): {
-			if(rangeStart.bit != other.rangeStart.bit) {
-				return false;
-			}
-			if(rangeSpan.bit != other.rangeSpan.bit) {
-				return false;
-			}
+		if(!rangeStart.isEqual(other.rangeStart,representation)) {
+			return false;
 		}
-		break;
-		case(ActuatorValueRepresentation::BYTE): {
-			if(rangeStart.byte != other.rangeStart.byte) {
-				return false;
-			}
-			if(rangeSpan.byte != other.rangeSpan.byte) {
-				return false;
-			}
-		}
-		break;
-		case(ActuatorValueRepresentation::WORD): {
-			if(rangeStart.word != other.rangeStart.word) {
-				return false;
-			}
-			if(rangeSpan.word != other.rangeSpan.word) {
-				return false;
-			}
-		}
-		break;
-		case(ActuatorValueRepresentation::DOUBLE_WORD): {
-			if(rangeStart.doubleWord != other.rangeStart.doubleWord) {
-				return false;
-			}
-			if(rangeSpan.doubleWord != other.rangeSpan.doubleWord) {
-				return false;
-			}
-		}
-		break;
-		case(ActuatorValueRepresentation::QUAD_WORD): {
-			if(rangeStart.quadWord != other.rangeStart.quadWord) {
-				return false;
-			}
-			if(rangeSpan.quadWord != other.rangeSpan.quadWord) {
-				return false;
-			}
-		}
-		break;
-		case(ActuatorValueRepresentation::SINGLE_FLOAT): {
-			if(rangeStart.singlePrecision != other.rangeStart.singlePrecision) {
-				return false;
-			}
-			if(rangeSpan.singlePrecision != other.rangeSpan.singlePrecision) {
-				return false;
-			}
-		}
-		break;
-		case(ActuatorValueRepresentation::DOUBLE_FLOAT): {
-			if(rangeStart.doublePrecision != other.rangeStart.doublePrecision) {
-				return false;
-			}
-			if(rangeSpan.doublePrecision != other.rangeSpan.doublePrecision) {
-				return false;
-			}
-		}
-		break;
-		default:
-		case(ActuatorValueRepresentation::REPRESENTATION_COUNT): {
-			//Ignore, as this is not an error at comparison time
-		}
-		break;
+		if(!rangeSpan.isEqual(other.rangeSpan,representation)) {
+			return false;
 		}
 
 		// By not failig until now we win!
@@ -331,19 +266,51 @@ bool operator!= (const ActuatorConfig &a, const ActuatorConfig &b);
 
 struct ActuatorState {
 
-
 	unsigned int flags;
 
 	ACTUATOR_FLAG_SELECTOR(isLimp,					setLimp,				0 )
 	ACTUATOR_FLAG_SELECTOR(isDirty,					setDirty,				1 )
 
 	ActuatorValue value;
+
+	bool isEqual(const ActuatorState &other, ActuatorValueRepresentation representation=ActuatorValueRepresentation::REPRESENTATION_COUNT) const
+	{
+
+		// Mask to remove ephemeral parts of flags (currently only isDirty)
+		const uint16_t temp=(1<<1);
+		const uint16_t mask=(~temp);
+		if( (flags & mask) != (other.flags & mask)) {
+			return false;
+		}
+
+		if(!value.isEqual(other.value,representation)) {
+			return false;
+		}
+
+		// By not failig until now we win!
+		return true;
+	}
 };
+
+
+bool operator== (const ActuatorState &a, const ActuatorState &b);
+bool operator!= (const ActuatorState &a, const ActuatorState &b);
+
 
 struct Actuator {
 	ActuatorConfig config;
 	ActuatorState state;
+
+	bool isEqual(const Actuator &other) const
+	{
+		return config.isEqual(other.config) && state.isEqual(other.state, config.representation);
+	}
+
 };
+
+
+bool operator== (const Actuator &a, const Actuator &b);
+bool operator!= (const Actuator &a, const Actuator &b);
 
 
 #undef ACTUATOR_FLAG_SELECTOR

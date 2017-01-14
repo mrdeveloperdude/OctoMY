@@ -26,10 +26,11 @@ public:
 
 	DynamicArray& operator = (const DynamicArray &a);
 	T& operator [] (unsigned int index);
+	const T& operator [] (unsigned int index) const;
 
 public:
 
-	unsigned int size();
+	unsigned int size() const;
 	void setSize(unsigned int newsize);
 	void clear();
 	T* data();
@@ -80,7 +81,7 @@ DynamicArray<T>& DynamicArray<T>::operator = (const DynamicArray &a)
 }
 
 template <class T>
-unsigned int DynamicArray<T>::size()
+unsigned int DynamicArray<T>::size() const
 {
 	return mSize;
 }
@@ -122,6 +123,12 @@ T* DynamicArray<T>::data()
 
 template <class T>
 T& DynamicArray<T>::operator [] (unsigned int index)
+{
+	return mData[index];
+}
+
+template <class T>
+const T& DynamicArray<T>::operator [] (unsigned int index) const
 {
 	return mData[index];
 }

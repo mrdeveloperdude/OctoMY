@@ -33,6 +33,7 @@ private:
 	void singleActuatorConfigSerializerRun(ActuatorConfig &c) const ;
 	void singleActuatorConfigEqualsRun(const ActuatorConfig &a) const;
 	void singleActuatorSetParserRun(ActuatorSet &set) const;
+	void singleActuatorSetSerializerRun(ActuatorSet &set) const;
 
 	void testActuatorFuzzConfigSerializer();
 	void testActuatorFuzzConfigParser();
@@ -40,16 +41,32 @@ private:
 	void testActuatorFuzzValueParser();
 
 
-private slots:
+
 
 	void testMagicDetector();
-	void testActuatorRandomConfigSerializer();
 	void testActuatorRandomConfigParser();
+	void testActuatorRandomConfigSerializer();
 	void testActuatorRandomConfigEquals();
 	void testActuatorRandomValueParser();
+
 	void testRepresentationBoundary();
 	void testCommandParser();
 
+
+private slots:
+
+
+	void testActuatorRandomValueSerializer();
+	/*
+	void testMagicDetector();
+	void testActuatorRandomConfigParser();
+	void testActuatorRandomConfigSerializer();
+	void testActuatorRandomConfigEquals();
+	void testActuatorRandomValueParser();
+	void testActuatorRandomValueSerializer();
+	void testRepresentationBoundary();
+	void testCommandParser();
+	*/
 };
 
 

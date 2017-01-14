@@ -1,6 +1,8 @@
 #include "ActuatorConfigSerializer.hpp"
 
-#include  <QDebug>
+#include "ArduMY.hpp"
+
+
 ActuatorConfigSerializer::ActuatorConfigSerializer()
 	: ActuatorConfigSerializerBase()
 {

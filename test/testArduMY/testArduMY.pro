@@ -7,6 +7,7 @@ HEADERS += \
 	../../libs/arduino/MagicDetector.hpp \
 	../../libs/arduino/CommandParser.hpp \
 	../../libs/arduino/Actuator.hpp \
+	../../libs/arduino/ActuatorSet.hpp \
 	../../libs/arduino/ActuatorConfigSerializerBase.hpp \
 	../../libs/arduino/ActuatorConfigSerializer.hpp \
 	../../libs/arduino/ActuatorConfigParser.hpp \
@@ -20,6 +21,7 @@ SOURCES += \
 	../../libs/arduino/MagicDetector.cpp \
 	../../libs/arduino/CommandParser.cpp \
 	../../libs/arduino/Actuator.cpp \
+	../../libs/arduino/ActuatorSet.cpp \
 	../../libs/arduino/ActuatorConfigSerializerBase.cpp \
 	../../libs/arduino/ActuatorConfigSerializer.cpp \
 	../../libs/arduino/ActuatorConfigParser.cpp \

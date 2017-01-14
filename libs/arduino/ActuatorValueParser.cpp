@@ -5,23 +5,8 @@
 
 ActuatorValueParser::ActuatorValueParser()
 	: ActuatorValueSerializerBase()
-	, currentActuatorIndex(0)
-	, currentBatchRepresentation(ActuatorValueRepresentation::BIT)
-	, enabledActuatorCount(0)
-	, enableBits{0x00}
 {
 
-}
-
-void ActuatorValueParser::reset()
-{
-	ActuatorValueSerializerBase::reset();
-	currentActuatorIndex = 0;
-	currentBatchRepresentation = ActuatorValueRepresentation::BIT;
-	enabledActuatorCount = 0;
-	for( size_t i = 0; i < sizeof(enableBits); ++i ) {
-		enableBits[i] = 0x00;
-	}
 }
 
 /*
@@ -49,77 +34,6 @@ bool ActuatorValueParser::isDone() const
 	return (currentBatchRepresentation>=REPRESENTATION_COUNT);
 }
 
-
-Actuator *ActuatorValueParser::currentActuator() const
-{
-	Actuator *a=nullptr;
-	if( nullptr != set ) {
-		a = &(*set)[currentActuatorIndex];
-	}
-	return a;
-}
-
-
-
-bool ActuatorValueParser::currentActuatorIsEnabled() const
-{
-	if(nullptr == set) {
-		return false;
-	}
-	if( currentActuatorIndex >= (int16_t)set->size() ) {
-		return false;
-	}
-	const uint8_t byte = currentActuatorIndex / 8;
-	const uint8_t bit =  currentActuatorIndex % 8;
-	const uint8_t mask = ( 1 << bit );
-	const uint8_t value = ( mask & enableBits[byte] );
-	return ( 0 != value );
-}
-
-
-bool ActuatorValueParser::currentActuatorIsOfRepresentation(ActuatorValueRepresentation rep) const
-{
-	if(nullptr==set) {
-		return false;
-	}
-	if(currentActuatorIndex >= (int16_t)set->size()) {
-		return false;
-	}
-	const ActuatorValueRepresentation currentActuatorRep = (*set)[currentActuatorIndex].config.representation;
-	return ( currentActuatorRep == rep );
-}
-
-
-void ActuatorValueParser::nextBatch()
-{
-	switch(currentBatchRepresentation) {
-	case(BIT):
-		currentBatchRepresentation=BYTE;
-		break;
-	case(BYTE):
-		currentBatchRepresentation=WORD;
-		break;
-	case(WORD):
-		currentBatchRepresentation=DOUBLE_WORD;
-		break;
-	case(DOUBLE_WORD):
-		currentBatchRepresentation=QUAD_WORD;
-		break;
-	case(QUAD_WORD):
-		currentBatchRepresentation=SINGLE_FLOAT;
-		break;
-	case(SINGLE_FLOAT):
-		currentBatchRepresentation=DOUBLE_FLOAT;
-		break;
-	case(DOUBLE_FLOAT):
-		currentBatchRepresentation=REPRESENTATION_COUNT;
-		break;
-	//Do nothing at end or error
-	case(REPRESENTATION_COUNT):
-	default:
-		break;
-	}
-}
 
 
 // Traverse enabled actuators by batch

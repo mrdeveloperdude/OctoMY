@@ -1148,6 +1148,40 @@ void TestArduMY::singleActuatorSetParserRun(ActuatorSet &inSet) const
 }
 
 
+
+
+
+void TestArduMY::singleActuatorSetSerializerRun(ActuatorSet &inSet) const
+{
+	ActuatorValueSerializer serializer;
+	serializer.setSet(inSet);
+	ActuatorSet outSet;
+
+	const auto inSize=inSet.size();
+	// The out set must match in size as this would be carried out by the set size command
+	outSet.setSize(inSize);
+	// We also copy the representations of the sets as that would have been carried out in a series of set config commands
+	for(size_t i =0; i<inSize; ++i) {
+		outSet[i].config.representation=inSet[i].config.representation;
+	}
+	//Converter cv;
+
+	ActuatorValueParser parser;
+	parser.setSet(outSet);
+
+	while(serializer.hasMoreData()) {
+		uint8_t byte=serializer.nextByte();
+		parser.parse(byte);
+	}
+
+
+	QCOMPARE(inSet,outSet);
+
+}
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 
 void TestArduMY::testMagicDetector()
@@ -1205,18 +1239,6 @@ void TestArduMY::testMagicDetector()
 }
 
 
-void TestArduMY::testActuatorRandomConfigSerializer()
-{
-	// Generate random configurations and feed them through a serializer to verify that it works as it should.
-	for(int j=0; j<100; ++j) {
-		qDebug()<<"Random Config Serializer Round "<<j<<" / 100";
-		for(int i=0; i<LOOPS; ++i) {
-			ActuatorConfig c=randomConfig();
-			singleActuatorConfigSerializerRun(c);
-		}
-	}
-}
-
 
 void TestArduMY::testActuatorRandomConfigParser()
 {
@@ -1226,6 +1248,19 @@ void TestArduMY::testActuatorRandomConfigParser()
 		for(int i=0; i<LOOPS; ++i) {
 			ActuatorConfig c=randomConfig();
 			singleActuatorConfigParserRun(c);
+		}
+	}
+}
+
+
+void TestArduMY::testActuatorRandomConfigSerializer()
+{
+	// Generate random configurations and feed them through a serializer to verify that it works as it should.
+	for(int j=0; j<100; ++j) {
+		qDebug()<<"Random Config Serializer Round "<<j<<" / 100";
+		for(int i=0; i<LOOPS; ++i) {
+			ActuatorConfig c=randomConfig();
+			singleActuatorConfigSerializerRun(c);
 		}
 	}
 }
@@ -1252,13 +1287,28 @@ void TestArduMY::testActuatorRandomValueParser()
 		for(int i=0; i<LOOPS; ++i) {
 			ActuatorSet set=randomActuatorSet();
 			// Communication is impossible when set size is 0, so we skip those
-			if(set.size()>0){
+			if(set.size()>0) {
 				singleActuatorSetParserRun(set);
 			}
 		}
 	}
 }
 
+
+void TestArduMY::testActuatorRandomValueSerializer()
+{
+	// Generate random configurations and random values to match, then feed them through a serializer to verify that it works as it should
+	for(int j=0; j<100; ++j) {
+		qDebug()<<"Random Values Serializer Round "<<j<<" / 100";
+		for(int i=0; i<LOOPS; ++i) {
+			ActuatorSet set=randomActuatorSet();
+			// Communication is impossible when set size is 0, so we skip those
+			if(set.size()>0) {
+				singleActuatorSetSerializerRun(set);
+			}
+		}
+	}
+}
 
 void TestArduMY::testActuatorFuzzConfigSerializer()
 {
