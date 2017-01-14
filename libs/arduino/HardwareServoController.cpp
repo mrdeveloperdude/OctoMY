@@ -17,7 +17,7 @@ void HardwareServoController::update(CommandParser &parser)
 		for(unsigned int i=0; i<parserServoCount; ++i) {
 			servos[i].attach(parser.actuators[i].config.rcServoPin);
 		}
-	} else if(parser.dirtyServos) {
+	} else if(parser.dirtyActuatorValues) {
 		// Disengage only dirty servos
 		for(unsigned int i=0; i<hwServoCount; ++i) {
 			if(parser.actuators[i].config.isDirty()) {
@@ -31,6 +31,6 @@ void HardwareServoController::update(CommandParser &parser)
 				servos[i].attach(parser.actuators[i].config.rcServoPin);
 			}
 		}
-		parser.dirtyServos=false;
+		parser.dirtyActuatorValues=false;
 	}
 }

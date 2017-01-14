@@ -4,36 +4,16 @@
 #include "../arduino/ActuatorConfigParser.hpp"
 #include "../arduino/ActuatorConfigSerializer.hpp"
 
+
+#include "../arduino/ActuatorValueParser.hpp"
+#include "../arduino/ActuatorValueSerializer.hpp"
+
 #include "../arduino/MagicDetector.hpp"
 
 #include <QDebug>
+#include <QtGlobal>
 
-
-void TestArduMY::testMagicDetector()
-{
-	static const uint8_t magic[]= {0xFF, 0x4E, 0x23, 0x7C, 0xAB};
-	MagicDetector magicDetector(magic,5);
-
-	static const uint8_t positiveTestSequence[]= {0xFF, 0x4E, 0xDF, 0x23, 0x7C, 0x1B, 0xFD, 0x4E, 0xDF, 0x7C, 0xAB, 0x23, 0xFF, 0x4E, 0xD4, 0x23, 0xFF, 0x4E, 0x23, 0x7C, 0xAB, 0x7D, 0xAB};
-	uint32_t ct=0;
-	for(uint8_t in: positiveTestSequence) {
-		if(magicDetector.detect(in)) {
-			QCOMPARE(ct, (uint32_t)20);
-			break;
-		}
-		ct++;
-	}
-	static const uint8_t negativeTestSequence[]= {0xFF, 0x4E, 0xDF, 0x23, 0x7C, 0x1B, 0xFD, 0x4E, 0xDF, 0x7C, 0xAB, 0x23, 0xFF, 0x4E, 0xD4, 0x23, 0xFF, 0x43, 0x23, 0x7C, 0xAB, 0x7D, 0xAB};
-	ct=0;
-	for(uint8_t in: negativeTestSequence) {
-		if(magicDetector.detect(in)) {
-			break;
-		}
-		ct++;
-	}
-	QCOMPARE(ct, (uint32_t)23);
-
-}
+#define LOOPS (10)
 
 static bool percentChance(quint8 pct)
 {
@@ -55,20 +35,61 @@ static QString randomString(int sz)
 
 static float frand()
 {
-	float v=qrand();
-	v/=RAND_MAX;
-	float v2=qrand()-qrand();
-	v*=v2;
+	float v=0.0/0.0;
+	while(qIsNaN(v)) {
+		v=qrand();
+		v/=RAND_MAX;
+		float v2=qrand()-qrand();
+		v*=v2;
+	}
 	return v;
 }
 
 static double dfrand()
 {
-	double v=qrand();
-	v/=RAND_MAX;
-	double v2=qrand()-qrand();
-	v*=v2;
+	double v=0.0/0.0;
+	while(qIsNaN(v)) {
+		v=qrand();
+		v/=RAND_MAX;
+		double v2=qrand()-qrand();
+		v*=v2;
+	}
 	return v;
+}
+
+
+static void randomValue(ActuatorValue &v, ActuatorValueRepresentation rep)
+{
+	v.quadWord=0x0;
+	switch(rep) {
+	case(BIT):
+		v.bit=percentChance(50);
+		break;
+	case(BYTE):
+		v.byte=qrand()%0xFF;
+		break;
+	case(WORD):
+		v.doubleWord=qrand()%0xFFFF;
+		break;
+	case(DOUBLE_WORD):
+		v.doubleWord=qrand()%0xFFFFFFFF;
+		break;
+	default:// Just make sure its random m-kay?
+	case(REPRESENTATION_COUNT):
+	case(QUAD_WORD): {
+		uint64_t qw=(qrand()%0xFFFFFFFF);
+		qw<<=32;
+		qw|=(qrand()%0xFFFFFFFF);
+		v.quadWord=qw;
+	}
+	break;
+	case(SINGLE_FLOAT):
+		v.singlePrecision=frand();
+		break;
+	case(DOUBLE_FLOAT):
+		v.doublePrecision=dfrand();
+		break;
+	}
 }
 
 ActuatorConfig TestArduMY::randomConfig() const
@@ -89,7 +110,12 @@ ActuatorConfig TestArduMY::randomConfig() const
 	c.type=(ActuatorType)(qrand() % ((quint8)ActuatorType::TYPE_COUNT));
 
 	// Set random representation
+
 	c.representation=(ActuatorValueRepresentation)(qrand() % ((quint8)ActuatorValueRepresentation::REPRESENTATION_COUNT));
+
+	//do {		c.representation=(ActuatorValueRepresentation)(qrand() % ((quint8)ActuatorValueRepresentation::REPRESENTATION_COUNT)) ;	} while (ActuatorValueRepresentation::BIT==c.representation);
+
+	//c.representation=ActuatorValueRepresentation::WORD;// All the same for laughs
 
 	// Set random name
 	const quint8 nameSize=(qrand()%20);
@@ -187,7 +213,99 @@ ActuatorConfig TestArduMY::randomConfig() const
 }
 
 
+ActuatorState TestArduMY::randomState(const ActuatorConfig &c) const
+{
+	ActuatorState s;
+	s.flags=0x00;
+	s.setDirty(percentChance(50));
+	s.setLimp(percentChance(50));
+	randomValue(s.value, c.representation);
+	return s;
+}
 
+
+Actuator TestArduMY::randomActuator() const
+{
+	Actuator a;
+	a.config=randomConfig();
+	a.state=randomState(a.config);
+	return a;
+}
+
+
+
+
+
+ActuatorSet TestArduMY::randomActuatorSet()
+{
+	ActuatorSet set;
+	const auto setSize=qrand()%0xFF;
+	set.setSize(setSize);
+	for(auto i=0; i<setSize; ++i) {
+		set[i]=randomActuator();
+	}
+	return set;
+}
+
+
+
+
+template <typename T>
+union Fuzzer {
+	T object;
+	uint8_t bytes[sizeof(T)];
+	explicit Fuzzer() {
+		for(size_t i=0; i<sizeof(bytes); ++i)	{
+			bytes[i]=qrand();
+		}
+	}
+
+};
+
+ActuatorConfig TestArduMY::fuzzConfig() const
+{
+	Fuzzer<ActuatorConfig> fuzzer;
+	// Return resulting fuzzed config
+	return fuzzer.object;
+}
+
+
+
+ActuatorState TestArduMY::fuzzState() const
+{
+	Fuzzer<ActuatorState> fuzzer;
+	// Return resulting fuzzed state
+	return fuzzer.object;
+}
+
+
+
+
+Actuator TestArduMY::fuzzActuator() const
+{
+	Fuzzer<Actuator> fuzzer;
+	// Return resulting fuzzed actuator
+	return fuzzer.object;
+}
+
+
+
+ActuatorSet TestArduMY::fuzzActuatorSet()
+{
+	ActuatorSet set;
+	const auto setSize=qrand()%0xFF;
+	set.setSize(setSize);
+	for(auto i=0; i<setSize; ++i) {
+		set[i]=fuzzActuator();
+	}
+	return set;
+}
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 
 void TestArduMY::singleActuatorConfigParserRun(ActuatorConfig &c) const
 {
@@ -607,8 +725,10 @@ void TestArduMY::singleActuatorConfigParserRun(ActuatorConfig &c) const
 	}
 	break;
 	}
-
 }
+
+
+
 
 void TestArduMY::singleActuatorConfigSerializerRun(ActuatorConfig &c) const
 {
@@ -686,37 +806,641 @@ void TestArduMY::singleActuatorConfigSerializerRun(ActuatorConfig &c) const
 	QVERIFY(c == to);
 }
 
-void TestArduMY::testActuatorConfigParser()
+
+
+
+void TestArduMY::singleActuatorConfigEqualsRun(const ActuatorConfig &a) const
 {
-	// Generate random configurations and feed them through a parser to verify that it works as it should.
-	for(int j=0; j<100; ++j) {
-		qDebug()<<"Parser Round "<<j<<" / 100";
-		for(int i=0; i<1000; ++i) {
-			ActuatorConfig c=randomConfig();
-			singleActuatorConfigParserRun(c);
+	QCOMPARE(a,a);
+	QVERIFY(a.isEqual(a));
+	QVERIFY(a==a);
+	for(int i=0; i<8; ++i) {
+		ActuatorConfig b=a;
+		QCOMPARE(a,b);
+		QVERIFY(a.isEqual(b));
+		QVERIFY(b.isEqual(a));
+		QVERIFY(a==b);
+
+		switch(i) {
+		case(0): {
+			b.setAbsoluteEncoder(!a.hasAbsoluteEncoder());
 		}
+		break;
+		case(1): {
+			b.setContinuous(!a.isContinuous());
+		}
+		break;
+		case(2): {
+			//b.setDirty(!a.isDirty());
+			b.setGearRatio(!a.hasGearRatio());
+		}
+		break;
+		case(3): {
+			b.setIncrementalEncoder(!a.hasIncrementalEncoder());
+		}
+		break;
+		case(4): {
+			b.setLimitSwitchEnd(!a.hasLimitSwitchEnd());
+		}
+		break;
+		case(5): {
+			b.setLimitSwitchStart(!a.hasLimitSwitchStart());
+		}
+		break;
+		case(6): {
+			b.setLinear(!a.isLinear());
+		}
+		break;
+		case(7): {
+			b.setPositionFeedback(!a.hasPositionFeedback());
+		}
+		break;
+		case(8): {
+			b.setTachometer(!a.hasTachometer());
+		}
+		break;
+			//TODO: Add cases to exercise the rest of equals code (not just for flags).
+		}
+		QVERIFY(!a.isEqual(b));
+		QVERIFY(!b.isEqual(a));
+		QVERIFY(a!=b);
 	}
 
 }
 
+static QString byteToStr(uint8_t byte)
+{
+	return QString("%1").arg(byte, 8, 2, QLatin1Char('0'))+" ( 0x"+QString("%1").arg(byte, 2, 16, QLatin1Char('0'))+","+ QString("%1").arg(byte, 3, 10, QLatin1Char(' '))+ " )";
+}
 
-void TestArduMY::testActuatorConfigSerializer()
+void TestArduMY::singleActuatorSetParserRun(ActuatorSet &inSet) const
+{
+	//qDebug()<<"-------------------";
+	ActuatorSet outSet;
+	const auto inSize=inSet.size();
+	//The out set must match in size as this would be carried out by the set size command
+	outSet.setSize(inSize);
+	//We also copy the representations of the sets as that would have been carried out in a series of set config commands
+	for(size_t i =0; i<inSize; ++i) {
+		outSet[i].config.representation=inSet[i].config.representation;
+	}
+	Converter cv;
+	ActuatorValueParser parser;
+
+	// Check that it was default-initialized properly
+	QCOMPARE(parser.set, (ActuatorSet *)nullptr);
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::END_OF_OP);
+	QCOMPARE(parser.byteIndex, (uint16_t)0);
+	QCOMPARE(parser.enabledActuatorCount, (uint8_t)0);
+
+	parser.setSet(outSet);
+
+	// Check that the actuator set was received properly
+	QCOMPARE(parser.set, &outSet);
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ENABLED_ACTUATOR_BITS);
+	QCOMPARE(parser.byteIndex, (uint16_t)0);
+	QCOMPARE(parser.enabledActuatorCount, (uint8_t)0);
+
+	// Reset enable bits to all off
+	const size_t enableBitsSize=sizeof(parser.enableBits);
+	uint8_t enableBits[enableBitsSize]= {0};
+	for(size_t i=0; i<enableBitsSize; ++i) {
+		enableBits[i]=0x0;
+	}
+	// Feed in random enable bit sequence while counting on-bits
+	uint8_t enabledCount=0;
+	const uint8_t enableBitsActualSize = ( inSize + 7 ) / 8;
+	for( size_t i = 0; i < enableBitsActualSize ; ++i ) {
+		const uint8_t bits = ( qrand() % 0xFF );
+		for( size_t j = 0 ; j < 8 ; ++j ) {
+			// Make sure to not enable bits outside the number of actuators in the set!
+			if( ( i * 8 + j ) >= inSize ) {
+				break;
+			}
+			const uint8_t mask = ( 1 << j );
+			const uint8_t value = ( mask & bits );
+			if( 0 != value ) {
+				enableBits[i] |= value;
+				enabledCount++;
+			}
+		}
+		//qDebug()<<"RANDOM BITS: " << byteToStr(bits) << " ACTUALLY WRITTEN: " << byteToStr(enableBits[i]);
+	}
+	//qDebug()<<"ACTUATOR COUNT: " << inSize << " ENABLE BITS BYTE COUNT: " << enableBitsActualSize << " ENABLED COUNT: " << enabledCount;
+	// Parse enable bits
+	for(size_t i=0; i<enableBitsActualSize; ++i) {
+		QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ENABLED_ACTUATOR_BITS);
+		QCOMPARE(parser.byteIndex, (uint16_t)i);
+		parser.parse(enableBits[i]);
+	}
+	// Check that enabled bits were transferred correctly
+	for(size_t i=0; i<enableBitsSize; ++i) {
+		if(parser.enableBits[i]!=enableBits[i] ) {
+			qDebug()<<"ENABLE-BIT MISMATCH DETECTED FOR BYTE "<< QString("%1").arg(i+1, 2, 10, QLatin1Char(' '))<<"/"<<enableBitsSize<<"  PARSER: "<<byteToStr(parser.enableBits[i])<<" vs. ORIGINAL: "<<byteToStr(enableBits[i]);
+		}
+		QCOMPARE(parser.enableBits[i], enableBits[i]);
+	}
+	// Check that parse step was advanced properly
+	if(ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES != parser.step) {
+		/*
+				for(size_t i=0; i<enableBitsSize; ++i) {
+					if(parser.enableBits[i]!=enableBits[i] ) {
+						qDebug()<<"ENABLE-BIT MISMATCH DETECTED FOR BYTE "<< QString("%1").arg(i+1, 2, 10, QLatin1Char(' '))<<"/"<<enableBitsSize<<"  PARSER: "<<byteToStr(parser.enableBits[i])<<" vs. ORIGINAL: "<<byteToStr(enableBits[i]);
+					}
+					*/
+		qDebug()<<"BOB";
+	}
+	QCOMPARE(parser.byteIndex, (uint16_t)0);
+	QCOMPARE(parser.enabledActuatorCount, (uint8_t)enabledCount);
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+
+
+	// Send values and check that they were sucessfully transferred per batch
+	QString acc;
+	uint8_t bitCount=0;
+	uint8_t bits=0x00;
+
+	///// BIT ACTUATOR VALUES
+	////////////////////////////
+	// Bit actuator values are accumulated into bytes before sending
+	for(size_t i=0; i<inSize; ++i) {
+		const uint8_t byte=(i / 8);
+		const uint8_t bit= (i % 8);
+		const uint8_t mask=( 1 << bit );
+		if( 0 != ( enableBits[byte] & mask ) ) {
+			Actuator &a=inSet[i];
+			if(ActuatorValueRepresentation::BIT==a.config.representation) {
+				if(a.state.value.bit) {
+					bits |= ( 1 << bitCount );
+				}
+				bitCount++;
+				if( bitCount >= 8 ) {
+					acc += byteToStr(bits)+" ";
+					QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)a.config.representation);
+					parser.parse(bits);
+					bitCount=0;
+					bits=0x00;
+				}
+			}
+		}
+	}
+	// Send any remaining bits we have
+	if(bitCount>0) {
+		//acc+=" REST: "+byteToStr(bits);
+		QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ActuatorValueRepresentation::BIT);
+		parser.parse(bits);
+		bitCount=0;
+		bits=0;
+	}
+
+	//qDebug()<<"ACCUMULATED BIT VALUES SENT:       "<<acc;
+
+	for(size_t i=0; i<inSize; ++i) {
+		const uint8_t byte=(i / 8);
+		const uint8_t bit= (i % 8);
+		const uint8_t mask=( 1 << bit );
+		if( 0 != ( enableBits[byte] & mask ) ) {
+			Actuator &a=inSet[i];
+			if(ActuatorValueRepresentation::BIT == a.config.representation) {
+				//qDebug()<<"SENT BIT VALUE FOR "<<byte<<"."<<bit<<": " << a.state.value.bit;
+				Actuator &b=outSet[i];
+				QCOMPARE(a.config.representation, b.config.representation);
+				QCOMPARE(a.state.value.bit, b.state.value.bit);
+			}
+		}
+	}
+
+	///// BYTE ACTUATOR VALUES
+	////////////////////////////
+	for(size_t i=0; i<inSize; ++i) {
+		const uint8_t byte=(i / 8);
+		const uint8_t bit= (i % 8);
+		const uint8_t mask=( 1 << bit );
+		if( 0 != ( enableBits[byte] & mask ) ) {
+			Actuator &a=inSet[i];
+			if(ActuatorValueRepresentation::BYTE==a.config.representation) {
+				//qDebug().noquote().nospace()<<"SENDING BYTE VALUE FOR "<<byte<<"."<<bit<<" (" << QString("%1").arg(i,2,10,QChar(' '))<< "/" << QString("%1").arg(inSize,2,10,QChar(' '))<< "): "<<a.state.value.byte;
+				QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)a.config.representation);
+				QCOMPARE(parser.currentActuatorIndex, (int16_t )i);
+				Actuator &b=outSet[i];
+				QCOMPARE((uint8_t)b.config.representation, (uint8_t)a.config.representation);
+				parser.parse(a.state.value.byte);
+				QCOMPARE(a.config.representation, b.config.representation);
+				QCOMPARE(a.state.value.byte, b.state.value.byte);
+			}
+		}
+	}
+
+	///// WORD ACTUATOR VALUES
+	////////////////////////////
+	for(size_t i=0; i<inSize; ++i) {
+		const uint8_t byte=(i / 8);
+		const uint8_t bit= (i % 8);
+		const uint8_t mask=( 1 << bit );
+		if( 0 != ( enableBits[byte] & mask ) ) {
+			Actuator &a=inSet[i];
+			if(ActuatorValueRepresentation::WORD==a.config.representation) {
+				//qDebug()<<"SENDING WORD VALUE FOR "<<byte<<"."<<bit<<": "<<a.state.value.word;
+				cv.int64=0x00;
+				cv.uint16[0]=a.state.value.word;
+				for(int j=0; j<2; ++j) {
+					QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)a.config.representation);
+					parser.parse(cv.uint8[j]);
+				}
+				Actuator &b=outSet[i];
+				QCOMPARE(a.config.representation, b.config.representation);
+				QCOMPARE(a.state.value.word, b.state.value.word);
+			}
+		}
+	}
+
+	///// DWORD ACTUATOR VALUES
+	////////////////////////////
+	for(size_t i=0; i<inSize; ++i) {
+		const uint8_t byte=(i / 8);
+		const uint8_t bit= (i % 8);
+		const uint8_t mask=( 1 << bit );
+		if( 0 != ( enableBits[byte] & mask ) ) {
+			Actuator &a=inSet[i];
+			if(ActuatorValueRepresentation::DOUBLE_WORD==a.config.representation) {
+				//qDebug()<<"SENDING DWORD VALUE FOR "<<byte<<"."<<bit<<": "<<a.state.value.doubleWord;
+				cv.int64=0x00;
+				cv.uint32[0]=a.state.value.doubleWord;
+				for(int j=0; j<4; ++j) {
+					QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)a.config.representation);
+					parser.parse(cv.uint8[j]);
+				}
+				Actuator &b=outSet[i];
+				QCOMPARE(a.config.representation, b.config.representation);
+				QCOMPARE(a.state.value.doubleWord, b.state.value.doubleWord);
+			}
+		}
+	}
+
+	///// QWORD ACTUATOR VALUES
+	////////////////////////////
+	for(size_t i=0; i<inSize; ++i) {
+		const uint8_t byte=(i / 8);
+		const uint8_t bit= (i % 8);
+		const uint8_t mask=( 1 << bit );
+		if( 0 != ( enableBits[byte] & mask ) ) {
+			Actuator &a=inSet[i];
+			if(ActuatorValueRepresentation::QUAD_WORD==a.config.representation) {
+				//qDebug()<<"SENDING QWORD VALUE FOR "<<byte<<"."<<bit<<": "<<a.state.value.quadWord;
+				cv.int64=0x00;
+				cv.uint64=a.state.value.quadWord;
+				for(int j=0; j<8; ++j) {
+					QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)a.config.representation);
+					parser.parse(cv.uint8[j]);
+				}
+				Actuator &b=outSet[i];
+				QCOMPARE(a.config.representation, b.config.representation);
+				QCOMPARE(a.state.value.quadWord, b.state.value.quadWord);
+			}
+		}
+	}
+
+	///// SINGLE ACTUATOR VALUES
+	////////////////////////////
+	for(size_t i=0; i<inSize; ++i) {
+		const uint8_t byte=(i / 8);
+		const uint8_t bit= (i % 8);
+		const uint8_t mask=( 1 << bit );
+		if( 0 != ( enableBits[byte] & mask ) ) {
+			Actuator &a=inSet[i];
+			if(ActuatorValueRepresentation::SINGLE_FLOAT==a.config.representation) {
+				//qDebug()<<"SENDING FLOAT VALUE FOR "<<byte<<"."<<bit<<": "<<a.state.value.singlePrecision;
+				cv.int64=0x00;
+				cv.float32[0]=a.state.value.singlePrecision;
+				for(int j=0; j<4; ++j) {
+					QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)a.config.representation);
+					parser.parse(cv.uint8[j]);
+				}
+				Actuator &b=outSet[i];
+				QCOMPARE(a.config.representation, b.config.representation);
+				QCOMPARE(a.state.value.singlePrecision, b.state.value.singlePrecision);
+			}
+		}
+	}
+
+	///// DOUBLE ACTUATOR VALUES
+	////////////////////////////
+	for(size_t i=0; i<inSize; ++i) {
+		const uint8_t byte=(i / 8);
+		const uint8_t bit= (i % 8);
+		const uint8_t mask=( 1 << bit );
+		if( 0 != ( enableBits[byte] & mask ) ) {
+			Actuator &a=inSet[i];
+			if(ActuatorValueRepresentation::DOUBLE_FLOAT==a.config.representation) {
+				//qDebug()<<"SENDING DOUBLE VALUE FOR "<<byte<<"."<<bit<<": "<<a.state.value.doublePrecision;
+				cv.int64=0x00;
+				cv.float64=a.state.value.doublePrecision;
+				for(int j=0; j<8; ++j) {
+					QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)a.config.representation);
+					parser.parse(cv.uint8[j]);
+				}
+				Actuator &b=outSet[i];
+				QCOMPARE(a.config.representation, b.config.representation);
+				QCOMPARE(a.state.value.doublePrecision, b.state.value.doublePrecision);
+			}
+		}
+	}
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+void TestArduMY::testMagicDetector()
+{
+	for(int k=0; k<100; ++k) {
+		qDebug()<<"Magic Detector Round "<<k<<" / 100";
+		const size_t magicSize=1+(qrand()%100);
+		uint8_t magic[magicSize];
+		MagicDetector magicDetector(magic,magicSize);
+		for(int i=0; i<LOOPS; ++i) {
+			// Generate random sequence
+			const size_t testSequenceSize=magicSize+1+(qrand()%1000);
+			uint8_t testSequence[testSequenceSize];
+			for(size_t j=0; j<testSequenceSize; ++j) {
+				uint8_t byte=qrand()%0xFF;
+				// Ensure that the sequence does not contain magic by coincidence
+				if(byte==magic[magicSize-1]) {
+					byte^=1;
+				}
+				testSequence[j]=byte;
+			}
+			// Perform negative test
+			{
+				magicDetector.reset();
+				uint32_t ct=0;
+				for(size_t j=0; j<testSequenceSize; ++j) {
+					const uint8_t in=testSequence[j];
+					if(magicDetector.detect(in)) {
+						break;
+					}
+					ct++;
+				}
+				QCOMPARE((uint32_t)ct, (uint32_t)(testSequenceSize));
+			}
+			// Insert the magic sequence
+			const size_t insertPoint=qrand()%(testSequenceSize - magicSize);
+			for(size_t l=0; l<magicSize; ++l) {
+				testSequence[insertPoint + l]=magic[l];
+			}
+			// Perform positive test
+			{
+				magicDetector.reset();
+				uint32_t ct=0;
+				for(size_t j=0; j<testSequenceSize; ++j) {
+					const uint8_t in=testSequence[j];
+					ct++;
+					if(magicDetector.detect(in)) {
+						QCOMPARE(ct, (uint32_t)(insertPoint+magicSize));
+						break;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+void TestArduMY::testActuatorRandomConfigSerializer()
 {
 	// Generate random configurations and feed them through a serializer to verify that it works as it should.
 	for(int j=0; j<100; ++j) {
-		qDebug()<<"Serializer Round "<<j<<" / 100";
-		for(int i=0; i<1000; ++i) {
+		qDebug()<<"Random Config Serializer Round "<<j<<" / 100";
+		for(int i=0; i<LOOPS; ++i) {
 			ActuatorConfig c=randomConfig();
 			singleActuatorConfigSerializerRun(c);
 		}
 	}
 }
 
-void TestArduMY::testActuatorValueParser()
+
+void TestArduMY::testActuatorRandomConfigParser()
 {
-	// ActuatorValueParser parser;
+	// Generate random configurations and feed them through a parser to verify that it works as it should.
+	for(int j=0; j<100; ++j) {
+		qDebug()<<"Random Config Parser Round "<<j<<" / 100";
+		for(int i=0; i<LOOPS; ++i) {
+			ActuatorConfig c=randomConfig();
+			singleActuatorConfigParserRun(c);
+		}
+	}
 }
 
+
+void TestArduMY::testActuatorRandomConfigEquals()
+{
+	// Generate random configurations and feed them through an equality check to verify the equality comparison code
+	for(int j=0; j<100; ++j) {
+		qDebug()<<"Random Config Equals Round "<<j<<" / 100";
+		for(int i=0; i<LOOPS; ++i) {
+			const ActuatorConfig a=randomConfig();
+			singleActuatorConfigEqualsRun(a);
+		}
+	}
+}
+
+
+void TestArduMY::testActuatorRandomValueParser()
+{
+	// Generate random configurations and random values to match, then feed them through a parser to verify that the parsing works as it should
+	for(int j=0; j<100; ++j) {
+		qDebug()<<"Random Values Parser Round "<<j<<" / 100";
+		for(int i=0; i<LOOPS; ++i) {
+			ActuatorSet set=randomActuatorSet();
+			// Communication is impossible when set size is 0, so we skip those
+			if(set.size()>0){
+				singleActuatorSetParserRun(set);
+			}
+		}
+	}
+}
+
+
+void TestArduMY::testActuatorFuzzConfigSerializer()
+{
+	// Generate fuzz configurations and feed them through a serializer to verify that it works as it should.
+	for(int j=0; j<100; ++j) {
+		qDebug()<<"Fuzzed Config Serializer Round "<<j<<" / 100";
+		for(int i=0; i<LOOPS; ++i) {
+			ActuatorConfig c=fuzzConfig();
+			singleActuatorConfigSerializerRun(c);
+		}
+	}
+}
+
+
+void TestArduMY::testActuatorFuzzConfigParser()
+{
+	// Generate fuzz configurations and feed them through a parser to verify that it works as it should.
+	for(int j=0; j<100; ++j) {
+		qDebug()<<"Fuzzed Config Parser Round "<<j<<" / 100";
+		for(int i=0; i<LOOPS; ++i) {
+			ActuatorConfig c=fuzzConfig();
+			singleActuatorConfigParserRun(c);
+		}
+	}
+}
+
+
+void TestArduMY::testActuatorFuzzConfigEquals()
+{
+	// Generate fuzz configurations and feed them through an equality check to verify the equality comparison code
+	for(int j=0; j<100; ++j) {
+		qDebug()<<"Fuzzed Config Equals Round "<<j<<" / 100";
+		for(int i=0; i<LOOPS; ++i) {
+			const ActuatorConfig a=fuzzConfig();
+			singleActuatorConfigEqualsRun(a);
+		}
+	}
+}
+
+void TestArduMY::testActuatorFuzzValueParser()
+{
+	// Generate fuzz configurations and fuzz values to match, then feed them through a parser to verify that the parsing works as it should
+	for(int j=0; j<100; ++j) {
+		qDebug()<<"Fuzzed Values Parser Round "<<j<<" / 100";
+		for(int i=0; i<LOOPS; ++i) {
+			ActuatorSet set=fuzzActuatorSet();
+			singleActuatorSetParserRun(set);
+		}
+	}
+}
+
+
+void TestArduMY::testRepresentationBoundary()
+{
+	ActuatorSet inSet;
+	ActuatorSet outSet;
+	inSet.setSize(4);
+	outSet.setSize(4);
+	inSet[0].config.representation=ActuatorValueRepresentation::BYTE;
+	inSet[0].state.value.byte=111;
+	inSet[1].config.representation=ActuatorValueRepresentation::BYTE;
+	inSet[1].state.value.byte=222;
+	inSet[2].config.representation=ActuatorValueRepresentation::WORD;
+	inSet[2].state.value.word=33333;
+	inSet[3].config.representation=ActuatorValueRepresentation::WORD;
+	inSet[3].state.value.word=44444;
+	for(size_t i =0; i<4; ++i) {
+		outSet[i].config.representation=inSet[i].config.representation;
+		outSet[i].state.value.quadWord=0;
+	}
+	ActuatorValueParser parser;
+
+	QCOMPARE(parser.set, (ActuatorSet *)nullptr);
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::END_OF_OP);
+	QCOMPARE(parser.byteIndex, (uint16_t)0);
+	QCOMPARE(parser.enabledActuatorCount, (uint8_t)0);
+
+	parser.setSet(outSet);
+
+	// Check that the actuator set was received properly
+	QCOMPARE(parser.set, &outSet);
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ENABLED_ACTUATOR_BITS);
+	QCOMPARE(parser.byteIndex, (uint16_t)0);
+	for(int i=0; i<32; ++i) {
+		QCOMPARE(parser.enableBits[i], (uint8_t)0x00);
+	}
+	QCOMPARE(parser.enabledActuatorCount, (uint8_t)0);
+	QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ActuatorValueRepresentation::BIT);
+	QCOMPARE((int16_t)parser.currentActuatorIndex, (int16_t)0);
+
+	//All enabled
+	const uint8_t enabled=1|2|4|8;
+	parser.parse(enabled);
+
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+	QCOMPARE(parser.byteIndex, (uint16_t)0);
+	QCOMPARE(parser.enabledActuatorCount, (uint8_t)4);
+	QCOMPARE(parser.enableBits[0], enabled);
+	for(int i=1; i<32; ++i) {
+		QCOMPARE(parser.enableBits[i], (uint8_t)0x00);
+	}
+
+	QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ActuatorValueRepresentation::BYTE);
+	QCOMPARE((int16_t)parser.currentActuatorIndex, (int16_t)0);
+
+	parser.parse(inSet[0].state.value.byte);
+
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+	QCOMPARE(parser.byteIndex, (uint16_t)0);
+	QCOMPARE(parser.enabledActuatorCount, (uint8_t)4);
+	QCOMPARE(parser.enableBits[0], enabled);
+	for(int i=1; i<32; ++i) {
+		QCOMPARE(parser.enableBits[i], (uint8_t)0x00);
+	}
+	QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ActuatorValueRepresentation::BYTE);
+	QCOMPARE((int16_t)parser.currentActuatorIndex, (int16_t)1);
+
+	parser.parse(inSet[1].state.value.byte);
+
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+	QCOMPARE(parser.byteIndex, (uint16_t)0);
+	QCOMPARE(parser.enabledActuatorCount, (uint8_t)4);
+	QCOMPARE(parser.enableBits[0], enabled);
+	for(int i=1; i<32; ++i) {
+		QCOMPARE(parser.enableBits[i], (uint8_t)0x00);
+	}
+	QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ActuatorValueRepresentation::WORD);
+	QCOMPARE((int16_t)parser.currentActuatorIndex, (int16_t)2);
+
+
+	Converter cv;
+	cv.int16[0]=inSet[2].state.value.word;
+	parser.parse(cv.int8[0]);
+
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+	QCOMPARE(parser.byteIndex, (uint16_t)1);
+	QCOMPARE(parser.enabledActuatorCount, (uint8_t)4);
+	QCOMPARE(parser.enableBits[0], enabled);
+	for(int i=1; i<32; ++i) {
+		QCOMPARE(parser.enableBits[i], (uint8_t)0x00);
+	}
+	QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ActuatorValueRepresentation::WORD);
+	QCOMPARE((int16_t)parser.currentActuatorIndex, (int16_t)2);
+
+	parser.parse(cv.int8[1]);
+
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+	QCOMPARE(parser.byteIndex, (uint16_t)0);
+	QCOMPARE(parser.enabledActuatorCount, (uint8_t)4);
+	QCOMPARE(parser.enableBits[0], enabled);
+	for(int i=1; i<32; ++i) {
+		QCOMPARE(parser.enableBits[i], (uint8_t)0x00);
+	}
+	QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ActuatorValueRepresentation::WORD);
+	QCOMPARE((int16_t)parser.currentActuatorIndex, (int16_t)3);
+
+	cv.int16[0]=inSet[3].state.value.word;
+	parser.parse(cv.int8[0]);
+
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+	QCOMPARE(parser.byteIndex, (uint16_t)1);
+	QCOMPARE(parser.enabledActuatorCount, (uint8_t)4);
+	QCOMPARE(parser.enableBits[0], enabled);
+	for(int i=1; i<32; ++i) {
+		QCOMPARE(parser.enableBits[i], (uint8_t)0x00);
+	}
+	QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ActuatorValueRepresentation::WORD);
+	QCOMPARE((int16_t)parser.currentActuatorIndex, (int16_t)3);
+
+	parser.parse(cv.int8[1]);
+
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+	QCOMPARE(parser.byteIndex, (uint16_t)0);
+	QCOMPARE(parser.enabledActuatorCount, (uint8_t)4);
+	QCOMPARE(parser.enableBits[0], enabled);
+	for(int i=1; i<32; ++i) {
+		QCOMPARE(parser.enableBits[i], (uint8_t)0x00);
+	}
+	QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ActuatorValueRepresentation::REPRESENTATION_COUNT);
+	QCOMPARE((int16_t)parser.currentActuatorIndex, (int16_t)0);
+
+}
 
 
 void TestArduMY::testCommandParser()

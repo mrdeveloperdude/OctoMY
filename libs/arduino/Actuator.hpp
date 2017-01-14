@@ -181,8 +181,9 @@ struct ActuatorConfig {
 	bool isEqual(const ActuatorConfig &other) const
 	{
 		// Mask to remove ephemeral parts of flags (currently only isDirty)
-		const uint16_t mask=flags&(~(1<<9));
-		if( (flags & mask) != (other.flags&mask)) {
+		const uint16_t temp=(1<<9);
+		const uint16_t mask=(~temp);
+		if( (flags & mask) != (other.flags & mask)) {
 			return false;
 		}
 		if(type!=other.type) {
@@ -325,6 +326,7 @@ struct ActuatorConfig {
 };
 
 bool operator== (const ActuatorConfig &a, const ActuatorConfig &b);
+bool operator!= (const ActuatorConfig &a, const ActuatorConfig &b);
 
 
 struct ActuatorState {

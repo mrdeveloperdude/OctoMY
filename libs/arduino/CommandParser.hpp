@@ -1,12 +1,11 @@
 #ifndef COMMANDPARSER_HPP
 #define COMMANDPARSER_HPP
 
-#include "DynamicArray.hpp"
-#include "Actuator.hpp"
 #include "ParserState.hpp"
 #include "MagicDetector.hpp"
 #include "ActuatorValueParser.hpp"
 #include "ActuatorConfigParser.hpp"
+#include "ActuatorSet.hpp"
 
 /*
 
@@ -36,13 +35,16 @@
 
 struct CommandParser {
 
-	DynamicArray<Actuator> actuators;
+	ActuatorSet actuators;
 	ParserState currentCommand;
 	const uint8_t magic[4];
 	MagicDetector magicDetector;
-	ActuatorConfigParser servoConfigParser;
-	ActuatorValueParser servoPosParser;
-	bool dirtyServos;
+	ActuatorConfigParser actuatorConfigParser;
+	int16_t actuatorConfigIndex;
+	ActuatorValueParser actuatorValuesParser;
+
+	bool dirtyActuatorValues;
+	bool dirtyActuatorConfigs;
 
 	explicit CommandParser();
 

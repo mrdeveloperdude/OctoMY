@@ -88,6 +88,7 @@ unsigned int DynamicArray<T>::size()
 template <class T>
 void DynamicArray<T>::setSize(unsigned int newsize)
 {
+	const unsigned int oldSize=mSize;
 	mSize = newsize;
 	if ((mSize > mActualSize) || (mSize < mActualSize/2)) {
 		mActualSize = mSize;
@@ -95,11 +96,15 @@ void DynamicArray<T>::setSize(unsigned int newsize)
 			mActualSize=mGrowStep;
 		}
 		T *tmp= new T[mActualSize];
-		memcpy(mData, tmp, sizeof(T)*mSize);
-		delete [] mData;
+		if(nullptr!=mData) {
+			memcpy(mData, tmp, sizeof(T)*oldSize);
+			delete [] mData;
+			mData=nullptr;
+		}
 		mData=tmp;
 		tmp=nullptr;
 	}
+
 	// TODO: handle undefined values in cases where T is a fundamentaltype
 }
 

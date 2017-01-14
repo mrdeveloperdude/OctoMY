@@ -1,33 +1,38 @@
 #ifndef SETSERVOPOSITIONSSTATE_HPP
 #define SETSERVOPOSITIONSSTATE_HPP
 
-#include "Converter.hpp"
 
-struct CommandParser;
+#include "ActuatorValueSerializerBase.hpp"
 
-/*
 
-Temporary storage during parsing of "servo positions" command
+struct ActuatorValueParser: public ActuatorValueSerializerBase {
+public:
+	int16_t currentActuatorIndex;
+	ActuatorValueRepresentation currentBatchRepresentation;
+	static const uint16_t actuatorMaxCount=256;
+	uint8_t enabledActuatorCount;
+	uint8_t enableBits[32];
 
- */
-struct ActuatorValueParser {
+public:
+	ActuatorValueParser();
 
-	CommandParser &commandParser;
-	unsigned char servoMaxCount;
-	unsigned char servoPositionsCount;
-	unsigned char servoPositionIndex;
-	unsigned char servoPositionByteIndex;
-	unsigned char enableByteCount;
-	unsigned char enableByteIndex;
-	unsigned char enableBits[32];
-	Converter converter;
+public:
+	bool isDone() const;
+	Actuator *currentActuator() const;
+	bool currentActuatorIsEnabled() const;
+	bool currentActuatorIsOfRepresentation(ActuatorValueRepresentation) const;
 
-	ActuatorValueParser(CommandParser &commandParser);
-	void reset();
-	bool parse(const unsigned char in);
+
+public:
+
+	void nextBatch();
+	void nextActuator();
+	void reset() override;
+	bool parse(const uint8_t in);
+
 
 	// Look at enabled bits and return the actual servo index by skipping disabled servos
-	unsigned char enabledServoByIndex(unsigned char in);
+//	uint8_t enabledServoByIndex(uint8_t in);
 };
 
 

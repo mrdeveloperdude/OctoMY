@@ -6,10 +6,14 @@
 
 #ifdef ARDUINO_ARCH_AVR
 #include <Arduino.h>
+#define Q_ASSERT(A)
 #else
 #include <inttypes.h>
 #include <cstring>
+#include <iostream>
 using namespace std;
+#include <QtGlobal>
+
 #endif
 
 
