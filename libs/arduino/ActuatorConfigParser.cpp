@@ -11,6 +11,7 @@ ActuatorConfigParser::ActuatorConfigParser()
 
 bool ActuatorConfigParser::parse(const uint8_t in)
 {
+	Q_CHECK_PTR(config);
 	switch(step) {
 	case(FLAGS): {
 		converter.uint8[byteIndex]=in;

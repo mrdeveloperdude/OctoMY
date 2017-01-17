@@ -1,7 +1,9 @@
 #include "CommandParser.hpp"
 
+#include "ParserState.hpp"
+
 CommandParser::CommandParser()
-	: currentCommand(OCTOMY_SYNC)
+	: currentCommand(ParserState::OCTOMY_SYNC)
 	, magic{0x0C,0x70,0xFF,0x00}
 	, magicDetector(magic,(uint8_t)4)
 	, actuatorConfigParser()
@@ -10,12 +12,12 @@ CommandParser::CommandParser()
 	, dirtyActuatorValues(true)
 	, dirtyActuatorConfigs(true)
 {
-
+	actuatorValuesParser.setSet(actuators);
 }
 
 // If bad command is detected, go into wait for sync before we try parsing command again,
 // and if not, reset states for parsing the command at hand
-ParserState CommandParser::prepareCommand(const int8_t in)
+ParserState CommandParser::prepareCommand(const uint8_t in)
 {
 	ParserState command=(ParserState)in;
 	switch(command) {
@@ -23,10 +25,15 @@ ParserState CommandParser::prepareCommand(const int8_t in)
 	// No state to be reset for these commands
 	case(OCTOMY_SYNC):
 	case(OCTOMY_SET_ACTUATOR_COUNT):
-	case(OCTOMY_SET_ACTUATOR_CONFIG):
 	case(OCTOMY_SET_ACTUATOR_LIMP):
 		break;
-	// Reset needed
+	// Reset needed for config
+	case(OCTOMY_SET_ACTUATOR_CONFIG): {
+		actuatorConfigParser.reset();
+	}
+	break;
+
+	// Reset needed for values
 	case(OCTOMY_SET_ACTUATOR_VALUES): {
 		actuatorValuesParser.reset();
 	}
@@ -47,7 +54,7 @@ ParserState CommandParser::prepareCommand(const int8_t in)
 
 
 
-void CommandParser::parse(const int8_t in)
+void CommandParser::parse(const uint8_t in)
 {
 	switch(currentCommand) {
 	// Our logic says we need a sync
@@ -79,6 +86,11 @@ void CommandParser::parse(const int8_t in)
 	case(OCTOMY_SET_ACTUATOR_CONFIG): {
 		if(actuatorConfigIndex < 0) {
 			actuatorConfigIndex=in;
+			if((uint16_t)actuatorConfigIndex>=actuators.size()) {
+				//TODO: Handle error somehow. Maybe ask for sync?
+			}
+			Actuator &a=actuators[actuatorConfigIndex];
+			actuatorConfigParser.setConfig(a.config);
 		} else if(actuatorConfigParser.parse(in)) {
 			dirtyActuatorConfigs=true;
 			actuatorConfigIndex=-1;

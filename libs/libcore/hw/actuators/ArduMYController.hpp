@@ -4,7 +4,7 @@
 #include "IServoController.hpp"
 
 
-#include "../arduino/Actuator.hpp"
+#include "../arduino/CommandParser.hpp"
 
 #include <QObject>
 #include <QSerialPort>

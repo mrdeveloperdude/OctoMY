@@ -7,6 +7,10 @@ HEADERS += \
 	../../libs/arduino/MagicDetector.hpp \
 	../../libs/arduino/CommandParser.hpp \
 	../../libs/arduino/Actuator.hpp \
+	../../libs/arduino/ActuatorConfig.hpp \
+	../../libs/arduino/ActuatorState.hpp \
+	../../libs/arduino/ActuatorValue.hpp \
+	../../libs/arduino/ActuatorValueRepresentation.hpp \
 	../../libs/arduino/ActuatorSet.hpp \
 	../../libs/arduino/ActuatorConfigSerializerBase.hpp \
 	../../libs/arduino/ActuatorConfigSerializer.hpp \
@@ -14,6 +18,12 @@ HEADERS += \
 	../../libs/arduino/ActuatorValueSerializerBase.hpp \
 	../../libs/arduino/ActuatorValueSerializer.hpp \
 	../../libs/arduino/ActuatorValueParser.hpp \
+	testActuatorConfigEquals.inc.hpp \
+	testActuatorValueParser.inc.hpp \
+	testActuatorConfigParser.inc.hpp \
+	testActuatorConfigSerializer.inc.hpp \
+	testActuatorValueSerializer.inc.hpp \
+	testActuatorValueEquals.inc.hpp
 
 
 SOURCES += \
@@ -21,6 +31,10 @@ SOURCES += \
 	../../libs/arduino/MagicDetector.cpp \
 	../../libs/arduino/CommandParser.cpp \
 	../../libs/arduino/Actuator.cpp \
+	../../libs/arduino/ActuatorConfig.cpp \
+	../../libs/arduino/ActuatorState.cpp \
+	../../libs/arduino/ActuatorValue.cpp \
+	../../libs/arduino/ActuatorValueRepresentation.cpp \
 	../../libs/arduino/ActuatorSet.cpp \
 	../../libs/arduino/ActuatorConfigSerializerBase.cpp \
 	../../libs/arduino/ActuatorConfigSerializer.cpp \

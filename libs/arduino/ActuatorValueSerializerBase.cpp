@@ -129,6 +129,7 @@ void ActuatorValueSerializerBase::nextBatch()
 		break;
 	case(DOUBLE_FLOAT):
 		currentBatchRepresentation=REPRESENTATION_COUNT;
+		nextParseStep();
 		break;
 	//Do nothing at end or error
 	case(REPRESENTATION_COUNT):

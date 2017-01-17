@@ -10,14 +10,14 @@ class DynamicArray
 
 private:
 	T *mData;
-	unsigned int mSize;
-	unsigned int mActualSize;
+	uint32_t mSize;
+	uint32_t mActualSize;
 
-	static const int mGrowStep = 4;
-	static const int mGrowMultiplier = 2;
+	static const uint32_t mGrowStep = 4;
+	static const uint32_t mGrowMultiplier = 2;
 
 public:
-	explicit DynamicArray(unsigned int initialSize=0);
+	explicit DynamicArray(uint32_t initialSize=0);
 	DynamicArray(const DynamicArray &a);
 	virtual ~DynamicArray();
 
@@ -25,13 +25,13 @@ public:
 public:
 
 	DynamicArray& operator = (const DynamicArray &a);
-	T& operator [] (unsigned int index);
-	const T& operator [] (unsigned int index) const;
+	T& operator [] (uint32_t index);
+	const T& operator [] (uint32_t index) const;
 
 public:
 
-	unsigned int size() const;
-	void setSize(unsigned int newsize);
+	uint32_t size() const;
+	void setSize(uint32_t newsize);
 	void clear();
 	T* data();
 
@@ -42,9 +42,9 @@ public:
 
 
 template <class T>
-DynamicArray<T>::DynamicArray(unsigned int initialSize)
+DynamicArray<T>::DynamicArray(uint32_t initialSize)
 	: mData(nullptr)
-	, mSize(0)
+	, mSize(initialSize-1) // NOTE: don't set to initialSize here to avoid the trivial reject in setSize()
 	, mActualSize(mGrowStep)
 {
 	setSize(initialSize);
@@ -81,15 +81,19 @@ DynamicArray<T>& DynamicArray<T>::operator = (const DynamicArray &a)
 }
 
 template <class T>
-unsigned int DynamicArray<T>::size() const
+uint32_t DynamicArray<T>::size() const
 {
 	return mSize;
 }
 
 template <class T>
-void DynamicArray<T>::setSize(unsigned int newsize)
+void DynamicArray<T>::setSize(uint32_t newsize)
 {
-	const unsigned int oldSize=mSize;
+	// Trivial reject
+	if(newsize==mSize){
+		return;
+	}
+	const uint32_t oldSize=mSize;
 	mSize = newsize;
 	if ((mSize > mActualSize) || (mSize < mActualSize/2)) {
 		mActualSize = mSize;
@@ -106,7 +110,7 @@ void DynamicArray<T>::setSize(unsigned int newsize)
 		tmp=nullptr;
 	}
 
-	// TODO: handle undefined values in cases where T is a fundamentaltype
+	// TODO: handle undefined values in cases where T is a fundamental type
 }
 
 template <class T>
@@ -122,13 +126,13 @@ T* DynamicArray<T>::data()
 }
 
 template <class T>
-T& DynamicArray<T>::operator [] (unsigned int index)
+T& DynamicArray<T>::operator [] (uint32_t index)
 {
 	return mData[index];
 }
 
 template <class T>
-const T& DynamicArray<T>::operator [] (unsigned int index) const
+const T& DynamicArray<T>::operator [] (uint32_t index) const
 {
 	return mData[index];
 }

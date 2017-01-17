@@ -13,6 +13,9 @@ public:
 	ActuatorValueSerializer();
 
 public:
+
+	void nextActuator();
+
 	// Return true if there is more data remaining to be read
 	bool hasMoreData() const;
 

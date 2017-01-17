@@ -29,7 +29,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="pageTemplate">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -163,6 +163,15 @@
           <property name="icon">
            <iconset resource="../resources/icons.qrc">
             <normaloff>:/icons/protocol.svg</normaloff>:/icons/protocol.svg</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ArduMY™ Serial</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/icons.qrc">
+            <normaloff>:/icons/ardumy.svg</normaloff>:/icons/ardumy.svg</iconset>
           </property>
          </item>
         </widget>

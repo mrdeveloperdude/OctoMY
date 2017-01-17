@@ -11,6 +11,17 @@ ActuatorValueSerializer::ActuatorValueSerializer()
 
 }
 
+void ActuatorValueSerializer::nextActuator()
+{
+	if(nullptr==set) {
+		return;
+	}
+	currentActuatorIndex++;
+	if(currentActuatorIndex>=set->size()) {
+		nextBatch();
+	}
+}
+
 
 // Return true if there is more data remaining
 bool ActuatorValueSerializer::hasMoreData() const
@@ -31,12 +42,16 @@ uint8_t ActuatorValueSerializer::nextByte()
 			Actuator &a=(*set)[actuatorIndex];
 			const uint8_t bit = ( 1 << i );
 			if(a.state.isDirty()) {
+				enabledActuatorCount++;
 				ret |= bit;
 			}
 			actuatorIndex++;
 			if(actuatorIndex>=setSize) {
 				actuatorIndex=0;
 				nextParseStep();
+				if(enabledActuatorCount<=0) { // No enable bits means no values will be transferred, means we end the show here.
+					nextParseStep();
+				}
 				break;
 			}
 		}
@@ -44,97 +59,152 @@ uint8_t ActuatorValueSerializer::nextByte()
 	break;
 	case(ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES): {
 		// Serialize actuator values in batches, each batch per one representation type
-		switch(currentBatchRepresentation) {
-		case(ActuatorValueRepresentation::BIT): {
+
+		if(ActuatorValueRepresentation::BIT == currentBatchRepresentation) {
 			// Bit actuator values are accumulated into bytes before sending
 			uint8_t bitCount=0;
-			for(; actuatorIndex<setSize; ++actuatorIndex) {
-				Actuator &a=(*set)[actuatorIndex];
-				if(currentBatchRepresentation == a.config.representation) {
-					if(a.state.isDirty()) {
-						if(a.state.value.bit) {
-							ret |= ( 1 << bitCount );
-						}
-						bitCount++;
-						if( bitCount >= 8 ) {
-							break;
-						}
+			Actuator &a=(*set)[actuatorIndex];
+			if(currentBatchRepresentation == a.config.representation) {
+				if(a.state.isDirty()) {
+					if(a.state.value.bit) {
+						ret |= ( 1 << bitCount );
+					}
+					bitCount++;
+					if( bitCount >= 8 ) {
+						nextActuator();
 					}
 				}
 			}
-			if(actuatorIndex>=setSize) {
-				nextBatch();
-				actuatorIndex=0;
+		}
+
+
+		if(ActuatorValueRepresentation::BYTE == currentBatchRepresentation) {
+			while(ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES==step) {
+				Actuator &a=(*set)[actuatorIndex];
+				nextActuator();
+				if(currentBatchRepresentation == a.config.representation) {
+					if(a.state.isDirty()) {
+						ret=a.state.value.byte;
+						break;
+					}
+				}
 			}
 		}
-		break;
-		/*
-		case(ActuatorValueRepresentation::BYTE): {
-		ret=config->rangeSpan.byte;
-		nextParseStep();
-		}
-		break;
-		case(ActuatorValueRepresentation::WORD): {
-		converter.uint16[0]=config->rangeSpan.word;
-		ret=converter.uint8[byteIndex];
-		byteIndex++;
-		if(2==byteIndex) {
-		nextParseStep();
-		}
-		}
-		break;
-		case(ActuatorValueRepresentation::DOUBLE_WORD): {
-		converter.uint32[0]=config->rangeSpan.doubleWord;
-		ret=converter.uint8[byteIndex];
-		byteIndex++;
-		if(4==byteIndex) {
-		nextParseStep();
-		}
-		}
-		break;
-		case(ActuatorValueRepresentation::QUAD_WORD): {
-		converter.uint64=config->rangeSpan.quadWord;
-		ret=converter.uint8[byteIndex];
-		byteIndex++;
-		if(8==byteIndex) {
-		nextParseStep();
-		}
-		}
-		break;
-		case(ActuatorValueRepresentation::SINGLE_FLOAT): {
-		converter.float32[0]=config->rangeSpan.singlePrecision;
-		ret=converter.uint8[byteIndex];
-		byteIndex++;
-		if(4==byteIndex) {
-		nextParseStep();
-		}
-		}
-		break;
-		case(ActuatorValueRepresentation::DOUBLE_FLOAT): {
-		converter.float64=config->rangeSpan.doublePrecision;
-		ret=converter.uint8[byteIndex];
-		byteIndex++;
-		if(8==byteIndex) {
-		nextParseStep();
-		}
-		}
-		break;
-		*/
-		default:
-		case(ActuatorValueRepresentation::REPRESENTATION_COUNT): {
-			//TODO: Handle this as an error somwhow
-		}
-		break;
+
+		if(ActuatorValueRepresentation::WORD == currentBatchRepresentation) {
+			Actuator &a=(*set)[actuatorIndex];
+			if(currentBatchRepresentation == a.config.representation) {
+				if(a.state.isDirty()) {
+					converter.uint16[0]=a.state.value.word;
+					ret=converter.uint8[byteIndex];
+					byteIndex++;
+					if(2==byteIndex) {
+						actuatorIndex++;
+					}
+					break;
+				} else {
+					actuatorIndex++;
+				}
+			} else {
+				actuatorIndex++;
+			}
 		}
 
 
-		actuatorIndex++;
+		if(ActuatorValueRepresentation::DOUBLE_WORD == currentBatchRepresentation) {
+
+			for(; actuatorIndex<setSize;) {
+				Actuator &a=(*set)[actuatorIndex];
+				if(currentBatchRepresentation == a.config.representation) {
+					if(a.state.isDirty()) {
+						converter.uint32[0]=a.state.value.doubleWord;
+						ret=converter.uint8[byteIndex];
+						byteIndex++;
+						if(4==byteIndex) {
+							actuatorIndex++;
+						}
+						break;
+					} else {
+						actuatorIndex++;
+					}
+				} else {
+					actuatorIndex++;
+				}
+			}
+		}
+
+		if(ActuatorValueRepresentation::QUAD_WORD == currentBatchRepresentation) {
+			for(; actuatorIndex<setSize;) {
+				Actuator &a=(*set)[actuatorIndex];
+				if(currentBatchRepresentation == a.config.representation) {
+					if(a.state.isDirty()) {
+						converter.uint64=a.state.value.quadWord;
+						ret=converter.uint8[byteIndex];
+						byteIndex++;
+						if(8==byteIndex) {
+							actuatorIndex++;
+						}
+						break;
+					} else {
+						actuatorIndex++;
+					}
+				} else {
+					actuatorIndex++;
+				}
+			}
+		}
+
+		if(ActuatorValueRepresentation::SINGLE_FLOAT == currentBatchRepresentation) {
+			for(; actuatorIndex<setSize;) {
+				Actuator &a=(*set)[actuatorIndex];
+				if(currentBatchRepresentation == a.config.representation) {
+					if(a.state.isDirty()) {
+						converter.float32[0]=a.state.value.singlePrecision;
+						ret=converter.uint8[byteIndex];
+						byteIndex++;
+						if(4==byteIndex) {
+							actuatorIndex++;
+						}
+						break;
+					} else {
+						actuatorIndex++;
+					}
+				} else {
+					actuatorIndex++;
+				}
+			}
+		}
+
+		if(ActuatorValueRepresentation::DOUBLE_FLOAT == currentBatchRepresentation) {
+
+			for(; actuatorIndex<setSize;) {
+				Actuator &a=(*set)[actuatorIndex];
+				if(currentBatchRepresentation == a.config.representation) {
+					if(a.state.isDirty()) {
+						converter.float64=a.state.value.doublePrecision;
+						ret=converter.uint8[byteIndex];
+						byteIndex++;
+						if(8==byteIndex) {
+							actuatorIndex++;
+						}
+						break;
+					} else {
+						actuatorIndex++;
+					}
+				} else {
+					actuatorIndex++;
+				}
+			}
+		}
+
 		if(actuatorIndex>=setSize) {
-			actuatorIndex=0;
-			nextParseStep();
-			break;
-		}
 
+			nextBatch();
+			actuatorIndex=0;
+			if(ActuatorValueRepresentation::REPRESENTATION_COUNT == currentBatchRepresentation) {
+				nextParseStep();
+			}
+		}
 
 	}
 	break;

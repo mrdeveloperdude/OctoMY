@@ -1,6 +1,8 @@
 #ifndef ACTUATORVALUEREPRESENTATION_HPP
 #define ACTUATORVALUEREPRESENTATION_HPP
 
+#include "ArduMY.hpp"
+
 enum ActuatorValueRepresentation: uint8_t {
 	BIT
 	, BYTE

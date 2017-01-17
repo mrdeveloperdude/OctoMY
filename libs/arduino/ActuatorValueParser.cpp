@@ -87,7 +87,7 @@ bool ActuatorValueParser::parse(const uint8_t in)
 			currentBatchRepresentation=ActuatorValueRepresentation::BIT;
 			nextParseStep();
 			currentActuatorIndex=-1;
-			nextActuator();
+			nextActuator(); // NOTE: Will call next batch and eventuall next parse step if no actuators are found
 		}
 	}
 	break;
@@ -183,6 +183,7 @@ bool ActuatorValueParser::parse(const uint8_t in)
 					actuator->state.value.doublePrecision=converter.float64;
 				}
 				nextActuator();
+				nextParseStep();
 			}
 		}
 		break;

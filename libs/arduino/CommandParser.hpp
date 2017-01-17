@@ -34,7 +34,6 @@
 */
 
 struct CommandParser {
-
 	ActuatorSet actuators;
 	ParserState currentCommand;
 	const uint8_t magic[4];
@@ -50,9 +49,9 @@ struct CommandParser {
 
 	// If bad command is detected, go into "wait for sync" before we try parsing a command again,
 	// and if not, reset states for parsing the command at hand
-	ParserState prepareCommand(const int8_t inChar);
+	ParserState prepareCommand(const uint8_t inChar);
 
-	void parse(const int8_t inChar);
+	void parse(const uint8_t inChar);
 };
 
 #endif // COMMANDPARSER_HPP

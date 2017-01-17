@@ -4,13 +4,24 @@
 #include "Actuator.hpp"
 #include "DynamicArray.hpp"
 
+#include "ActuatorFlags.hpp"
 
 #include "ArduMY.hpp"
+
 
 class ActuatorSet: public DynamicArray<Actuator>
 {
 public:
-	ActuatorSet(unsigned int initialSize=0)
+
+	uint32_t flags;
+
+	ACTUATOR_FLAG_SELECTOR(isSyncDue,					setSyncDue,					0 )
+	ACTUATOR_FLAG_SELECTOR(isCountDirty,				setCountDirty,				1 )
+	ACTUATOR_FLAG_SELECTOR(isConfigDirty,				setConfigDirty,				2 )
+	ACTUATOR_FLAG_SELECTOR(isValuesDirty,				setValuesDirty,				3 )
+
+public:
+	ActuatorSet(uint32_t initialSize=0)
 		: DynamicArray<Actuator>(initialSize)
 	{
 		//cout<< "ActuatorSet CTOR\n";
@@ -28,8 +39,8 @@ public:
 			return false;
 		}
 
-		const unsigned int sz=size();
-		for(unsigned int i=0; i<sz; ++i) {
+		const uint32_t sz=size();
+		for(uint32_t i=0; i<sz; ++i) {
 			const Actuator &a=operator [](i);
 			const Actuator &b=other[i];
 			if(!a.isEqual(b)) {

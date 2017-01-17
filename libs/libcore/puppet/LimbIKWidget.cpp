@@ -38,9 +38,12 @@ struct IKLimb{
 			IK();
 			//QPointF origo(w2,h2);
 			QPen base(QBrush(Qt::NoBrush),0.02);
+			base.setCapStyle(Qt::RoundCap);
+			base.setJoinStyle(Qt::RoundJoin);
 
 			QPen white(base);
 			white.setWidth(0.04);
+
 			white.setColor(QColor(m_lift?"white":"gray"));
 
 			QPen green(base);

@@ -1,7 +1,9 @@
 #ifndef PARSERSTATE_HPP
 #define PARSERSTATE_HPP
 
-enum ParserState {
+#include "ArduMY.hpp"
+
+enum ParserState: uint8_t {
 	OCTOMY_SYNC=0 //We decided on our own to sync
 	, OCTOMY_AWAITING_COMMAND // We were told to sync
 	, OCTOMY_SET_ACTUATOR_COUNT // The number of servos has changed
