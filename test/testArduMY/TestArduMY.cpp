@@ -20,6 +20,7 @@
 
 #define LOOPS (10)
 
+#define VERBOSE_TEST (false)
 
 #define DO_LOOPS_START(NAME, LOOPS) \
 const int step=(LOOPS/100);\
@@ -28,7 +29,7 @@ for(int lc=0; lc<LOOPS; ++lc) { \
 	counter++; \
 	if(counter>step) { \
 		counter=0; \
-		qDebug()<<NAME<<((lc*100)/LOOPS)<<" / 100"; \
+		if(VERBOSE_TEST){qDebug()<<NAME<<((lc*100)/LOOPS)<<" / 100";} \
 	}
 
 #define DO_LOOPS_END \
@@ -77,6 +78,14 @@ static double dfrand()
 }
 
 
+
+static QString byteToStr(uint8_t byte)
+{
+	return QString("%1").arg(byte, 8, 2, QLatin1Char('0'))+" ( 0x"+QString("%1").arg(byte, 2, 16, QLatin1Char('0'))+","+ QString("%1").arg(byte, 3, 10, QLatin1Char(' '))+ " )";
+}
+
+
+
 static QString valueToString(const ActuatorValue &v, const ActuatorValueRepresentation &rep)
 {
 	QString ret;
@@ -110,6 +119,13 @@ static QString valueToString(const ActuatorValue &v, const ActuatorValueRepresen
 	}
 	return ret;
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
 static void randomValue(ActuatorValue &v, ActuatorValueRepresentation rep)
 {
@@ -360,20 +376,6 @@ ActuatorSet TestArduMY::fuzzActuatorSet()
 
 
 
-
-
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-static QString byteToStr(uint8_t byte)
-{
-	return QString("%1").arg(byte, 8, 2, QLatin1Char('0'))+" ( 0x"+QString("%1").arg(byte, 2, 16, QLatin1Char('0'))+","+ QString("%1").arg(byte, 3, 10, QLatin1Char(' '))+ " )";
-}
-
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 
 void TestArduMY::testMagicDetector()
@@ -426,6 +428,63 @@ void TestArduMY::testMagicDetector()
 				}
 			}
 		}
+	}
+	DO_LOOPS_END
+}
+
+void TestArduMY::testActuatorValue()
+{
+	DO_LOOPS_START("ActuatorValue", LOOPS)
+	for(int i=0; i<(int)ActuatorValueRepresentation::REPRESENTATION_COUNT; ++i) {
+		ActuatorValueRepresentation rep=(ActuatorValueRepresentation)i;
+		ActuatorValue a;
+		QCOMPARE(a.bit,false);
+		QCOMPARE(a.byte,(typeof(a.byte))0x00);
+		QCOMPARE(a.word,(typeof(a.word))0x00);
+		QCOMPARE(a.doubleWord,(typeof(a.doubleWord))0x00);
+		QCOMPARE(a.singlePrecision,(typeof(a.singlePrecision))0.0f);
+		QCOMPARE(a.doublePrecision,(typeof(a.doublePrecision))0.0f);
+		randomValue(a,rep);
+		ActuatorValue b;
+		QCOMPARE(b.bit,false);
+		QCOMPARE(b.byte,(typeof(b.byte))0x00);
+		QCOMPARE(b.word,(typeof(b.word))0x00);
+		QCOMPARE(b.doubleWord,(typeof(b.doubleWord))0x00);
+		QCOMPARE(b.singlePrecision,(typeof(b.singlePrecision))0.0f);
+		QCOMPARE(b.doublePrecision,(typeof(b.doublePrecision))0.0f);
+		a=b;
+		QVERIFY(a.isEqual(b,rep));
+		QCOMPARE(a,b);
+	}
+	DO_LOOPS_END
+}
+
+
+void TestArduMY::testValueConverter()
+{
+	DO_LOOPS_START("Converter", LOOPS)
+	for(int i=0; i<(int)ActuatorValueRepresentation::REPRESENTATION_COUNT; ++i) {
+		ActuatorValueRepresentation rep=(ActuatorValueRepresentation)i;
+		/*
+		Converter a;
+		QCOMPARE(a.bit,false);
+		QCOMPARE(a.byte,(typeof(a.byte))0x00);
+		QCOMPARE(a.word,(typeof(a.word))0x00);
+		QCOMPARE(a.doubleWord,(typeof(a.doubleWord))0x00);
+		QCOMPARE(a.singlePrecision,(typeof(a.singlePrecision))0.0f);
+		QCOMPARE(a.doublePrecision,(typeof(a.doublePrecision))0.0f);
+		randomValue(a,rep);
+		ActuatorValue b;
+		QCOMPARE(b.bit,false);
+		QCOMPARE(b.byte,(typeof(b.byte))0x00);
+		QCOMPARE(b.word,(typeof(b.word))0x00);
+		QCOMPARE(b.doubleWord,(typeof(b.doubleWord))0x00);
+		QCOMPARE(b.singlePrecision,(typeof(b.singlePrecision))0.0f);
+		QCOMPARE(b.doublePrecision,(typeof(b.doublePrecision))0.0f);
+		a=b;
+		QVERIFY(a.isEqual(b,rep));
+		QCOMPARE(a,b);
+		*/
 	}
 	DO_LOOPS_END
 }
@@ -823,10 +882,6 @@ void TestArduMY::testCommandSerializer()
 }
 
 QTEST_MAIN(TestArduMY)
-
-
-
-
 
 
 

@@ -40,6 +40,8 @@ private:
 private slots:
 
 	void testMagicDetector();
+	void testActuatorValue();
+	void testValueConverter();
 	void testActuatorRandomConfigParser();
 	void testActuatorRandomConfigSerializer();
 	void testActuatorRandomConfigEquals();

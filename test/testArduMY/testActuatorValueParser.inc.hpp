@@ -25,16 +25,16 @@ void testActuatorValueParserInclude(ActuatorSet &inSet)
 
 	ActuatorSet outSet;
 	const auto inSize=inSet.size();
-//The out set must match in size as this would be carried out by the set size command
+	// The out set must match in size as this would be carried out by the set size command
 	outSet.setSize(inSize);
-//We also copy the representations of the sets as that would have been carried out in a series of set config commands
+	// We also copy the representations of the sets as that would have been carried out in a series of set config commands
 	for(size_t i =0; i<inSize; ++i) {
 		outSet[i].config.representation=inSet[i].config.representation;
 	}
 	Converter cv;
 	ActuatorValueParser parser;
 
-// Check that it was default-initialized properly
+	// Check that it was default-initialized properly
 	QCOMPARE(parser.set, (ActuatorSet *)nullptr);
 	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::END_OF_OP);
 	QCOMPARE(parser.byteIndex, (uint16_t)0);
@@ -42,19 +42,19 @@ void testActuatorValueParserInclude(ActuatorSet &inSet)
 
 	parser.setSet(outSet);
 
-// Check that the actuator set was received properly
+	// Check that the actuator set was received properly
 	QCOMPARE(parser.set, &outSet);
 	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ENABLED_ACTUATOR_BITS);
 	QCOMPARE(parser.byteIndex, (uint16_t)0);
 	QCOMPARE(parser.enabledActuatorCount, (uint8_t)0);
 
-// Reset enable bits to all off
+	// Reset enable bits to all off
 	const size_t enableBitsSize=sizeof(parser.enableBits);
 	uint8_t enableBits[enableBitsSize]= {0};
 	for(size_t i=0; i<enableBitsSize; ++i) {
 		enableBits[i]=0x0;
 	}
-// Feed in random enable bit sequence while counting on-bits
+	// Feed in random enable bit sequence while counting on-bits
 	uint8_t enabledCount=0;
 	const uint8_t enableBitsActualSize = ( inSize + 7 ) / 8;
 	for( size_t i = 0; i < enableBitsActualSize ; ++i ) {
@@ -71,23 +71,23 @@ void testActuatorValueParserInclude(ActuatorSet &inSet)
 				enabledCount++;
 			}
 		}
-		//qDebug()<<"RANDOM BITS: " << byteToStr(bits) << " ACTUALLY WRITTEN: " << byteToStr(enableBits[i]);
+		// qDebug()<<"RANDOM BITS: " << byteToStr(bits) << " ACTUALLY WRITTEN: " << byteToStr(enableBits[i]);
 	}
-//qDebug()<<"ACTUATOR COUNT: " << inSize << " ENABLE BITS BYTE COUNT: " << enableBitsActualSize << " ENABLED COUNT: " << enabledCount;
-// Parse enable bits
+	// qDebug()<<"ACTUATOR COUNT: " << inSize << " ENABLE BITS BYTE COUNT: " << enableBitsActualSize << " ENABLED COUNT: " << enabledCount;
+	// Parse enable bits
 	for(size_t i=0; i<enableBitsActualSize; ++i) {
 		QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ENABLED_ACTUATOR_BITS);
 		QCOMPARE(parser.byteIndex, (uint16_t)i);
 		parser.parse(enableBits[i]);
 	}
-// Check that enabled bits were transferred correctly
+	// Check that enabled bits were transferred correctly
 	for(size_t i=0; i<enableBitsSize; ++i) {
 		if(parser.enableBits[i]!=enableBits[i] ) {
 			qDebug()<<"ENABLE-BIT MISMATCH DETECTED FOR BYTE "<< QString("%1").arg(i+1, 2, 10, QLatin1Char(' '))<<"/"<<enableBitsSize<<"  PARSER: "<<byteToStr(parser.enableBits[i])<<" vs. ORIGINAL: "<<byteToStr(enableBits[i]);
 		}
 		QCOMPARE(parser.enableBits[i], enableBits[i]);
 	}
-// Check that parse step was advanced properly
+	// Check that parse step was advanced properly
 	if(ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES != parser.step) {
 		/*
 				for(size_t i=0; i<enableBitsSize; ++i) {
@@ -102,14 +102,14 @@ void testActuatorValueParserInclude(ActuatorSet &inSet)
 	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
 
 
-// Send values and check that they were sucessfully transferred per batch
+	// Send values and check that they were sucessfully transferred per batch
 	QString acc;
 	uint8_t bitCount=0;
 	uint8_t bits=0x00;
 
-///// BIT ACTUATOR VALUES
-////////////////////////////
-// Bit actuator values are accumulated into bytes before sending
+	///// BIT ACTUATOR VALUES
+	////////////////////////////
+	// Bit actuator values are accumulated into bytes before sending
 	for(size_t i=0; i<inSize; ++i) {
 		const uint8_t byte=(i / 8);
 		const uint8_t bit= (i % 8);
@@ -131,7 +131,7 @@ void testActuatorValueParserInclude(ActuatorSet &inSet)
 			}
 		}
 	}
-// Send any remaining bits we have
+	// Send any remaining bits we have
 	if(bitCount>0) {
 		//acc+=" REST: "+byteToStr(bits);
 		QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ActuatorValueRepresentation::BIT);
@@ -140,7 +140,7 @@ void testActuatorValueParserInclude(ActuatorSet &inSet)
 		bits=0;
 	}
 
-//qDebug()<<"ACCUMULATED BIT VALUES SENT:       "<<acc;
+	//qDebug()<<"ACCUMULATED BIT VALUES SENT:       "<<acc;
 
 	for(size_t i=0; i<inSize; ++i) {
 		const uint8_t byte=(i / 8);
@@ -157,8 +157,8 @@ void testActuatorValueParserInclude(ActuatorSet &inSet)
 		}
 	}
 
-///// BYTE ACTUATOR VALUES
-////////////////////////////
+	///// BYTE ACTUATOR VALUES
+	////////////////////////////
 	for(size_t i=0; i<inSize; ++i) {
 		const uint8_t byte=(i / 8);
 		const uint8_t bit= (i % 8);
@@ -201,8 +201,8 @@ void testActuatorValueParserInclude(ActuatorSet &inSet)
 		}
 	}
 
-///// DWORD ACTUATOR VALUES
-////////////////////////////
+	///// DWORD ACTUATOR VALUES
+	////////////////////////////
 	for(size_t i=0; i<inSize; ++i) {
 		const uint8_t byte=(i / 8);
 		const uint8_t bit= (i % 8);
@@ -224,8 +224,8 @@ void testActuatorValueParserInclude(ActuatorSet &inSet)
 		}
 	}
 
-///// QWORD ACTUATOR VALUES
-////////////////////////////
+	///// QWORD ACTUATOR VALUES
+	////////////////////////////
 	for(size_t i=0; i<inSize; ++i) {
 		const uint8_t byte=(i / 8);
 		const uint8_t bit= (i % 8);
@@ -247,8 +247,8 @@ void testActuatorValueParserInclude(ActuatorSet &inSet)
 		}
 	}
 
-///// SINGLE ACTUATOR VALUES
-////////////////////////////
+	///// SINGLE ACTUATOR VALUES
+	////////////////////////////
 	for(size_t i=0; i<inSize; ++i) {
 		const uint8_t byte=(i / 8);
 		const uint8_t bit= (i % 8);
@@ -270,8 +270,8 @@ void testActuatorValueParserInclude(ActuatorSet &inSet)
 		}
 	}
 
-///// DOUBLE ACTUATOR VALUES
-////////////////////////////
+	///// DOUBLE ACTUATOR VALUES
+	////////////////////////////
 	for(size_t i=0; i<inSize; ++i) {
 		const uint8_t byte=(i / 8);
 		const uint8_t bit= (i % 8);
@@ -282,6 +282,7 @@ void testActuatorValueParserInclude(ActuatorSet &inSet)
 				//qDebug()<<"SENDING DOUBLE VALUE FOR "<<byte<<"."<<bit<<": "<<a.state.value.doublePrecision;
 				cv.int64=0x00;
 				cv.float64=a.state.value.doublePrecision;
+				//QCOMPARE(sizeof(a.state.value.doublePrecision), (size_t)8);
 				for(int j=0; j<8; ++j) {
 					QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)a.config.representation);
 					parser.parse(cv.uint8[j]);

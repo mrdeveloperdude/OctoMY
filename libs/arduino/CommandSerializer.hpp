@@ -23,10 +23,10 @@ public:
 
 
 	bool isReadyForNewCommand();
-	void sendSync();
-	void sendActuatorConfigCount();
-	void sendActuatorConfig(uint8_t index);
-	void sendActuatorValues();
+	void startSync();
+	void startActuatorCount();
+	void startActuatorConfig(uint8_t index);
+	void startActuatorValues();
 
 public:
 

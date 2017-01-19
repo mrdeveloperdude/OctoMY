@@ -43,7 +43,7 @@ void testActuatorValueSerializerInclude(ActuatorSet &inSet)
 		uint8_t byte=serializer.nextByte();
 		parser.parse(byte);
 		if(loopCounter++ > 1000000) {
-			qWarning()<<"ERROR: LOOP NEVER ENDED";
+			QFAIL("ERROR: LOOP NEVER ENDED");
 			break;
 		}
 	}

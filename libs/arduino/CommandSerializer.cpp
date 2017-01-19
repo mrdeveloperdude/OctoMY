@@ -17,7 +17,7 @@ bool CommandSerializer::isReadyForNewCommand()
 	return (OCTOMY_AWAITING_COMMAND==currentCommand);
 }
 
-void CommandSerializer::sendSync()
+void CommandSerializer::startSync()
 {
 	// Don't interrupt current session
 	if(isReadyForNewCommand()) {
@@ -27,7 +27,7 @@ void CommandSerializer::sendSync()
 	currentCommand=OCTOMY_SYNC;
 }
 
-void CommandSerializer::sendActuatorConfigCount()
+void CommandSerializer::startActuatorCount()
 {
 	// Don't interrupt current session
 	if(isReadyForNewCommand()) {
@@ -38,18 +38,19 @@ void CommandSerializer::sendActuatorConfigCount()
 }
 
 
-void CommandSerializer::sendActuatorConfig(uint8_t index)
+void CommandSerializer::startActuatorConfig(uint8_t index)
 {
 	// Don't interrupt current session
 	if(isReadyForNewCommand()) {
 		return;
 	}
+	actuatorConfigIndex=index;
 	byteIndex=0;
 	currentCommand=OCTOMY_SET_ACTUATOR_CONFIG;
 }
 
 
-void CommandSerializer::sendActuatorValues()
+void CommandSerializer::startActuatorValues()
 {
 	// Don't interrupt current session
 	if(isReadyForNewCommand()) {
@@ -65,6 +66,18 @@ bool CommandSerializer::hasMoreData() const
 {
 	if(currentCommand==OCTOMY_AWAITING_COMMAND) {
 		// 1. Sync due
+		if(actuators.isSyncDue()){
+			startSync();
+		}
+		else if(actuators.isCountDirty()){
+			startActuatorCount();
+		}
+		else if(actuators.isConfigDirty()){
+			startActuatorConfig(0);
+		}
+		else if(actuators.isValuesDirty()){
+			startActuatorValues();
+		}
 		// 2. Actuator count changed
 		// 3. Actuator config(s) changed
 		// 4. Actuator value(s) changed
