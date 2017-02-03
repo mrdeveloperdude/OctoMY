@@ -3,20 +3,20 @@
 
 #include "ParserState.hpp"
 #include "MagicDetector.hpp"
-#include "ActuatorValueSerializer.hpp"
-#include "ActuatorConfigSerializer.hpp"
-#include "ActuatorSet.hpp"
+#include "ArduMYActuatorValueSerializer.hpp"
+#include "ArduMYActuatorConfigSerializer.hpp"
+#include "ArduMYActuatorSet.hpp"
 
 class CommandSerializer
 {
 public:
-	ActuatorSet &actuators;
+	ArduMYActuatorSet &actuators;
 	ParserState currentCommand;
 	const uint8_t magic[4];
 	uint8_t byteIndex;
-	ActuatorConfigSerializer actuatorConfigSerializer;
+	ArduMYActuatorConfigSerializer actuatorConfigSerializer;
 	int16_t actuatorConfigIndex;
-	ActuatorValueSerializer actuatorValuesSerializer;
+	ArduMYActuatorValueSerializer actuatorValuesSerializer;
 
 public:
 	CommandSerializer();

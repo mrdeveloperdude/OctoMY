@@ -1,7 +1,7 @@
 #ifndef SERVOTOR32CONTROLLER_HPP
 #define SERVOTOR32CONTROLLER_HPP
 
-#include "IServoController.hpp"
+#include "IActuatorController.hpp"
 
 #include <QTimer>
 
@@ -13,7 +13,7 @@ class SerialSettingsWidget;
 
 // Documentation for serial commands are here: http://arcbotics.com/lessons/servotor32-commands/
 
-class Servotor32Controller: public IServoController
+class Servotor32Controller: public IActuatorController
 {
 	Q_OBJECT
 private:
@@ -37,6 +37,10 @@ private:
 	void syncMove();
 	void writeData(const QByteArray &data);
 
+private:
+
+	void debug();
+
 	// Serial IO slots
 private slots:
 	void onSerialReadData();
@@ -45,19 +49,29 @@ private slots:
 	void onSettingsChanged();
 
 
-	// IServoController interface
+	// IActuatorController interface
 public:
 
 	void setConnected(bool) Q_DECL_OVERRIDE;
 	bool isConnected() Q_DECL_OVERRIDE;
 
-	void kill(QBitArray &flags) Q_DECL_OVERRIDE;
+	void limp(QBitArray &flags) Q_DECL_OVERRIDE;
 	void move(Pose &pose) Q_DECL_OVERRIDE;
-	void killAll() Q_DECL_OVERRIDE;
+	void move(quint8 index, qreal value) Q_DECL_OVERRIDE;
+	void limpAll() Q_DECL_OVERRIDE;
 	void centerAll() Q_DECL_OVERRIDE;
-	void fetchVersionData() Q_DECL_OVERRIDE;
-	void fetchDebugData() Q_DECL_OVERRIDE;
-	quint32 maximumServosSupported() Q_DECL_OVERRIDE;
+	QString version() Q_DECL_OVERRIDE;
+	quint8 maxActuatorsSupported() Q_DECL_OVERRIDE;
+
+	quint8 actuatorCount() Q_DECL_OVERRIDE;
+	QString actuatorName(quint8) Q_DECL_OVERRIDE;
+	qreal actuatorValue(quint8) Q_DECL_OVERRIDE;
+	qreal actuatorDefault(quint8) Q_DECL_OVERRIDE;
+
+	QWidget *configurationWidget() Q_DECL_OVERRIDE;
+
+	QVariantMap confiruation() Q_DECL_OVERRIDE;
+	void setConfiguration(QVariantMap &configuration) Q_DECL_OVERRIDE;
 
 
 signals:
@@ -66,11 +80,6 @@ signals:
 	void readyToWrite();
 
 };
-
-
-
-
-
 
 
 #endif // SERVOTOR32CONTROLLER_HPP

@@ -26,25 +26,25 @@ QString HardwareTemplate::name() const
 {
 	return mName;
 }
-QString HardwareTemplate::description()const
+QString HardwareTemplate::description() const
 {
 	return mDescription;
 }
 
-QString HardwareTemplate::iconURL()const
+QString HardwareTemplate::iconURL() const
 {
 	return mIconURL;
 }
-QString HardwareTemplate::interface()const
+QString HardwareTemplate::interface() const
 {
 	return mInterface;
 }
-QString HardwareTemplate::protocol()const
+QString HardwareTemplate::protocol() const
 {
 	return mProtocol;
 }
 
-quint32 HardwareTemplate::poseSize()const
+quint32 HardwareTemplate::poseSize() const
 {
 	return mPoseMapping.size();
 }
@@ -69,7 +69,7 @@ QVector<HardwareTemplate *> HardwareTemplate::templates()
 			pmCar.setName(0,"Throttle");
 			pmCar.setName(1,"Steering");
 
-			HardwareTemplate *htCar=new HardwareTemplate("RC Car","General purpose RC CAr with throttle and steering as only two inputs", ":/icons/wheels.svg", "/dev/ttyACM0","servotor32 2.1", pmCar);
+			HardwareTemplate *htCar=new HardwareTemplate("RC Car","General purpose RC Car with throttle and steering as only two inputs", ":/icons/wheels.svg", "/dev/ttyACM0","servotor32 2.1", pmCar);
 			mTemplates<<htCar;
 		}
 		{

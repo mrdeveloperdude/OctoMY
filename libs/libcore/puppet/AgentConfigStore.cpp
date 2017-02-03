@@ -27,7 +27,7 @@ AgentConfigStore::~AgentConfigStore()
 }
 
 
-QSharedPointer<AgentConfig> AgentConfigStore::agentConfig()
+QSharedPointer<AgentConfig> AgentConfigStore::agentConfig() const
 {
 	return mAgentConfig;
 }

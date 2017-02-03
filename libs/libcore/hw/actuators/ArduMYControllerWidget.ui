@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ArduMYControllerWidget</class>
+ <widget class="QWidget" name="ArduMYControllerWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1118</width>
+    <height>577</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QTabWidget" name="tabWidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1118</width>
+     <height>577</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>2</number>
+   </property>
+   <widget class="QWidget" name="tabGeneral">
+    <attribute name="title">
+     <string>General</string>
+    </attribute>
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0" colspan="5">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>&lt;h1&gt;ArduMY™ Controller version 1.0&lt;/h1&gt;
+&lt;p&gt;This is the native Arduino© based controller for OctoMY™&lt;/p&gt;
+&lt;p&gt;You will find full documentation for it &lt;a href=&quot;http://www.octomy.org/documentation/development/architectual-overview/ardumy&quot; &gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Quick guide&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;Get a &lt;a href=&quot;http://www.octomy.org/documentation/development/architectual-overview/ardumy&quot; &gt;compatible&lt;/a&gt; Arduino© board.&lt;/li&gt;
+&lt;li&gt;Go &lt;a href=&quot;http://www.octomy.org/documentation/development/architectual-overview/ardumy&quot; &gt;download&lt;/a&gt;, compile and upload latest version of ArduMY™ on your board .&lt;/li&gt;
+&lt;li&gt;Connect your board to this Agent via USB/Serial cable or pair with Bluetooth.&lt;/li&gt;
+&lt;li&gt;Go the Serial tab and configure serial parameters. NOTE: The green serial status light on general tab should light up when it is working.&lt;/li&gt;
+&lt;li&gt;Go the Actuators tab and configure the actuatuators you will be using for your robot. Remember to give them meaningful names.&lt;/li&gt;
+&lt;li&gt;You are now ready to start using this agent!&lt;/li&gt;
+&lt;/ol&gt;</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="LightWidget" name="widgetSerialStatus" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="LightWidget" name="widgetActuatorStatus" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>292</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="3" column="2">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Board:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="3">
+      <widget class="QLabel" name="labelBoardType">
+       <property name="text">
+        <string>N/A</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="4">
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>292</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="4" column="2">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Version:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="3">
+      <widget class="QLabel" name="labelBoardVersion">
+       <property name="text">
+        <string>N/A</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0" colspan="5">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>211</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="2" column="2" colspan="2">
+      <widget class="QPushButton" name="pushButtonConfigureActuators">
+       <property name="text">
+        <string>Configure Actuators</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2" colspan="2">
+      <widget class="QPushButton" name="pushButtonConfigureSerial">
+       <property name="text">
+        <string>Configure Serial</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+    <zorder>labelBoardType</zorder>
+    <zorder>label_4</zorder>
+    <zorder>labelBoardVersion</zorder>
+    <zorder>verticalSpacer</zorder>
+    <zorder>horizontalSpacer</zorder>
+    <zorder>horizontalSpacer_2</zorder>
+    <zorder>label</zorder>
+    <zorder>label_2</zorder>
+    <zorder>widgetSerialStatus</zorder>
+    <zorder>pushButtonConfigureSerial</zorder>
+    <zorder>pushButtonConfigureActuators</zorder>
+    <zorder>widgetActuatorStatus</zorder>
+   </widget>
+   <widget class="QWidget" name="tabSerial">
+    <attribute name="title">
+     <string>Serial</string>
+    </attribute>
+    <layout class="QGridLayout" name="gridLayout_5">
+     <item row="0" column="0">
+      <widget class="SerialSettingsWidget" name="widgetSerialSettings" native="true"/>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="tabActuators">
+    <attribute name="title">
+     <string>Actuators</string>
+    </attribute>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="1" column="0">
+      <widget class="ActuatorControlWidget" name="widgetActuatorControl" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Actuator Count</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spinBoxActuatorCount"/>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>LightWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/LightWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ActuatorControlWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/ActuatorControlWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SerialSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">hw/actuators/SerialSettingsWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

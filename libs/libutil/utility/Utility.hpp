@@ -30,6 +30,7 @@ QLayout *createStraigtLayout(QWidget *w);
 QStackedLayout *createStackedLayout(QWidget *w);
 void makeFiller(QWidget *w);
 void addIconToLayout(QString name,QLayout &l,int w=-1,int h=-1);
+void clearWidget(QWidget *par);
 void clearLayout(QLayout* layout, bool deleteWidgets = true);
 bool checkWidgetInsideLayout(const QWidget* _someWidget);
 bool widgetIsInLayout(const QLayout* layout, const QWidget* _someWidget );

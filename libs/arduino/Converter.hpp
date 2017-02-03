@@ -13,6 +13,12 @@ union Converter {
 	uint64_t uint64;
 	float float32[2];
 	double float64;
+
+
+	Converter():
+		uint8{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } {
+
+	}
 };
 
 

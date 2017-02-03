@@ -2,7 +2,17 @@
 #define DYNAMICARRAY_HPP
 
 #include "ArduMY.hpp"
+/*
 
+This is meant to be a dead simple, MCU friendly dynamic array.
+
+It's main traits are:
+ 1. Works correctly and as epxected
+ 2. As greedy on memory as possible
+
+ There are no bytes wasted and performance is not cared for at all.
+
+*/
 
 template<class T>
 class DynamicArray
@@ -11,10 +21,7 @@ class DynamicArray
 private:
 	T *mData;
 	uint32_t mSize;
-	uint32_t mActualSize;
 
-	static const uint32_t mGrowStep = 4;
-	static const uint32_t mGrowMultiplier = 2;
 
 public:
 	explicit DynamicArray(uint32_t initialSize=0);
@@ -44,8 +51,7 @@ public:
 template <class T>
 DynamicArray<T>::DynamicArray(uint32_t initialSize)
 	: mData(nullptr)
-	, mSize(initialSize-1) // NOTE: don't set to initialSize here to avoid the trivial reject in setSize()
-	, mActualSize(mGrowStep)
+	, mSize(initialSize)
 {
 	setSize(initialSize);
 }
@@ -61,11 +67,10 @@ DynamicArray<T>::~DynamicArray()
 
 template <class T>
 DynamicArray<T>::DynamicArray(const DynamicArray &a)
+	: DynamicArray(0)// Invoke default constructor
 {
-	mData = new T[a.mActualSize];
-	memcpy(mData, a.mData, sizeof(T)*a.mActualSize);
-	mActualSize = a.mActualSize;
-	mSize = a.mSize;
+	// Invoke operator=
+	*this=a;
 }
 
 
@@ -76,7 +81,10 @@ DynamicArray<T>& DynamicArray<T>::operator = (const DynamicArray &a)
 		return *this;
 	}
 	setSize(a.mSize);
-	memcpy(mData, a.mData, sizeof(T)*a.mSize);
+	//memcpy(mData, a.mData, sizeof(T)*a.mSize);
+	for(uint32_t i=0; i<a.mSize; ++i) {
+		mData[i]=a.mData[i];
+	}
 	return *this;
 }
 
@@ -89,28 +97,28 @@ uint32_t DynamicArray<T>::size() const
 template <class T>
 void DynamicArray<T>::setSize(uint32_t newsize)
 {
-	// Trivial reject
-	if(newsize==mSize){
-		return;
-	}
-	const uint32_t oldSize=mSize;
-	mSize = newsize;
-	if ((mSize > mActualSize) || (mSize < mActualSize/2)) {
-		mActualSize = mSize;
-		if(mActualSize<mGrowStep) {
-			mActualSize=mGrowStep;
-		}
-		T *tmp= new T[mActualSize];
+	if ((newsize != mSize) || (0==mSize) ) {
+		const uint32_t oldSize=mSize;
+		const uint32_t copySize=((oldSize < newsize) ? oldSize : newsize);
+		T *tmp= new T[newsize];
+		uint32_t i=0;
 		if(nullptr!=mData) {
-			memcpy(mData, tmp, sizeof(T)*oldSize);
+			//qDebug()<<"Copied: "<<(copySize);
+			for(; i<copySize; ++i) {
+				tmp[i]=mData[i];
+			}
 			delete [] mData;
 			mData=nullptr;
 		}
-		mData=tmp;
-		tmp=nullptr;
+		//qDebug()<<"Initialized: "<<(newsize-i);
+		for(; i<newsize; ++i) {
+			T &t=tmp[i];
+			t=T(); //Value-initialize (set to 0) all items beyond the copy point.
+		}
+		mSize = newsize;
+		mData = tmp;
+		tmp = nullptr;
 	}
-
-	// TODO: handle undefined values in cases where T is a fundamental type
 }
 
 template <class T>
@@ -138,3 +146,37 @@ const T& DynamicArray<T>::operator [] (uint32_t index) const
 }
 
 #endif // DYNAMICARRAY_HPP
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

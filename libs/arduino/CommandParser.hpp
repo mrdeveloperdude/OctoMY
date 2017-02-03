@@ -3,9 +3,9 @@
 
 #include "ParserState.hpp"
 #include "MagicDetector.hpp"
-#include "ActuatorValueParser.hpp"
-#include "ActuatorConfigParser.hpp"
-#include "ActuatorSet.hpp"
+#include "ArduMYActuatorValueParser.hpp"
+#include "ArduMYActuatorConfigParser.hpp"
+#include "ArduMYActuatorSet.hpp"
 
 /*
 
@@ -34,13 +34,13 @@
 */
 
 struct CommandParser {
-	ActuatorSet actuators;
+	ArduMYActuatorSet actuators;
 	ParserState currentCommand;
 	const uint8_t magic[4];
 	MagicDetector magicDetector;
-	ActuatorConfigParser actuatorConfigParser;
+	ArduMYActuatorConfigParser actuatorConfigParser;
 	int16_t actuatorConfigIndex;
-	ActuatorValueParser actuatorValuesParser;
+	ArduMYActuatorValueParser actuatorValuesParser;
 
 	bool dirtyActuatorValues;
 	bool dirtyActuatorConfigs;

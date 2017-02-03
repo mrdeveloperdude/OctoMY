@@ -218,6 +218,11 @@ const AgentControls &Agent::controls() const
 	OC_METHODGATE();
 	return mControls;
 }
+AgentConfigStore &Agent::configurationStore()
+{
+	OC_METHODGATE();
+	return mAgentConfigStore;
+}
 
 QSharedPointer<PoseMapping> Agent::poseMapping()
 {

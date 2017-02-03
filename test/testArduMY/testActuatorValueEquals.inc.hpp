@@ -1,23 +1,8 @@
 #ifndef TEST_INCLUDED
 
+#include "test.inc.hpp"
 
-#include "../arduino/ActuatorConfigParser.hpp"
-#include "../arduino/ActuatorConfigSerializer.hpp"
-
-
-#include "../arduino/ActuatorValueParser.hpp"
-#include "../arduino/ActuatorValueSerializer.hpp"
-
-#include "../arduino/MagicDetector.hpp"
-
-
-#include "../arduino/CommandParser.hpp"
-
-#include "../arduino/ParserState.hpp"
-
-#include <QTest>
-
-void testActuatorValueEqualsInclude(ActuatorSet &a)
+void testActuatorValueEqualsInclude(ArduMYActuatorSet &a)
 {
 #endif
 
@@ -25,11 +10,11 @@ void testActuatorValueEqualsInclude(ActuatorSet &a)
 	QVERIFY(a.isEqual(a));
 	QVERIFY(a==a);
 	const auto setSize=a.size();
-	for(int i=0; i<setSize; ++i) {
+	for(size_t i=0; i<setSize; ++i) {
 
 
 		for(int j=0; j<8; ++j) {
-			ActuatorSet b=a;
+			ArduMYActuatorSet b=a;
 			QCOMPARE(a,b);
 			QVERIFY(a.isEqual(b));
 			QVERIFY(b.isEqual(a));

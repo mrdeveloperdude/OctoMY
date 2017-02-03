@@ -16,16 +16,15 @@ SerialSettingsWidget::SerialSettingsWidget(QWidget *parent)
 {
 	ui->setupUi(this);
 
-	intValidator = new QIntValidator(0, 4000000, this);
+	mIntValidator = new QIntValidator(0, 4000000, this);
 
 	ui->baudRateBox->setInsertPolicy(QComboBox::NoInsert);
 
-	connect(ui->applyButton, SIGNAL(clicked()), this, SLOT(apply()));
 	connect(ui->serialPortInfoListBox, SIGNAL(currentIndexChanged(int)), this, SLOT(showPortInfo(int)));
 	connect(ui->baudRateBox, SIGNAL(currentIndexChanged(int)), this, SLOT(checkCustomBaudRatePolicy(int)));
 	connect(ui->serialPortInfoListBox, SIGNAL(currentIndexChanged(int)), this, SLOT(checkCustomDevicePathPolicy(int)));
 
-	if(!connect(&sl,SIGNAL(serialDevicesChanged()),this,SLOT(onSerialDevicesChanged()))) {
+	if(!connect(&mSerialList,SIGNAL(serialDevicesChanged()),this,SLOT(onSerialDevicesChanged()))) {
 		qWarning()<<"ERROR: could not connect";
 	}
 
@@ -40,9 +39,16 @@ SerialSettingsWidget::~SerialSettingsWidget()
 	delete ui;
 }
 
+
+void SerialSettingsWidget::configure(bool showApplyButton, SerialSettings defaults)
+{
+	ui->pushButtonApply->setVisible(showApplyButton);
+	mDefaultSettings=defaults;
+}
+
 SerialSettings SerialSettingsWidget::settings() const
 {
-	return currentSettings;
+	return mCurrentSettings;
 }
 
 void SerialSettingsWidget::showPortInfo(int idx)
@@ -52,12 +58,12 @@ void SerialSettingsWidget::showPortInfo(int idx)
 	}
 
 	QStringList list = ui->serialPortInfoListBox->itemData(idx).toStringList();
-	ui->descriptionLabel->setText(tr("Description: %1").arg(list.count() > 1 ? list.at(1) : tr(blankString)));
-	ui->manufacturerLabel->setText(tr("Manufacturer: %1").arg(list.count() > 2 ? list.at(2) : tr(blankString)));
-	ui->serialNumberLabel->setText(tr("Serial number: %1").arg(list.count() > 3 ? list.at(3) : tr(blankString)));
-	ui->locationLabel->setText(tr("Location: %1").arg(list.count() > 4 ? list.at(4) : tr(blankString)));
-	ui->vidLabel->setText(tr("Vendor Identifier: %1").arg(list.count() > 5 ? list.at(5) : tr(blankString)));
-	ui->pidLabel->setText(tr("Product Identifier: %1").arg(list.count() > 6 ? list.at(6) : tr(blankString)));
+	ui->descriptionLabel->setText(tr("%1").arg(list.count() > 1 ? list.at(1) : tr(blankString)));
+	ui->manufacturerLabel->setText(tr("%1").arg(list.count() > 2 ? list.at(2) : tr(blankString)));
+	ui->serialNumberLabel->setText(tr("%1").arg(list.count() > 3 ? list.at(3) : tr(blankString)));
+	ui->locationLabel->setText(tr("%1").arg(list.count() > 4 ? list.at(4) : tr(blankString)));
+	ui->vidLabel->setText(tr("%1").arg(list.count() > 5 ? list.at(5) : tr(blankString)));
+	ui->pidLabel->setText(tr("%1").arg(list.count() > 6 ? list.at(6) : tr(blankString)));
 }
 
 void SerialSettingsWidget::apply()
@@ -73,7 +79,7 @@ void SerialSettingsWidget::checkCustomBaudRatePolicy(int idx)
 	if (isCustomBaudRate) {
 		ui->baudRateBox->clearEditText();
 		QLineEdit *edit = ui->baudRateBox->lineEdit();
-		edit->setValidator(intValidator);
+		edit->setValidator(mIntValidator);
 	}
 }
 
@@ -149,31 +155,53 @@ void SerialSettingsWidget::fillPortsInfo()
 
 void SerialSettingsWidget::updateSettings()
 {
-	currentSettings.name = ui->serialPortInfoListBox->currentText();
+	mCurrentSettings.name = ui->serialPortInfoListBox->currentText();
 
 	if (ui->baudRateBox->currentIndex() == 4) {
-		currentSettings.baudRate = ui->baudRateBox->currentText().toInt();
+		mCurrentSettings.baudRate = ui->baudRateBox->currentText().toInt();
 	} else {
-		currentSettings.baudRate = static_cast<QSerialPort::BaudRate>( ui->baudRateBox->itemData(ui->baudRateBox->currentIndex()).toInt());
+		mCurrentSettings.baudRate = static_cast<QSerialPort::BaudRate>( ui->baudRateBox->itemData(ui->baudRateBox->currentIndex()).toInt());
 	}
-	currentSettings.stringBaudRate = QString::number(currentSettings.baudRate);
+	mCurrentSettings.stringBaudRate = QString::number(mCurrentSettings.baudRate);
 
-	currentSettings.dataBits = static_cast<QSerialPort::DataBits>( ui->dataBitsBox->itemData(ui->dataBitsBox->currentIndex()).toInt());
-	currentSettings.stringDataBits = ui->dataBitsBox->currentText();
+	mCurrentSettings.dataBits = static_cast<QSerialPort::DataBits>( ui->dataBitsBox->itemData(ui->dataBitsBox->currentIndex()).toInt());
+	mCurrentSettings.stringDataBits = ui->dataBitsBox->currentText();
 
-	currentSettings.parity = static_cast<QSerialPort::Parity>( ui->parityBox->itemData(ui->parityBox->currentIndex()).toInt());
-	currentSettings.stringParity = ui->parityBox->currentText();
+	mCurrentSettings.parity = static_cast<QSerialPort::Parity>( ui->parityBox->itemData(ui->parityBox->currentIndex()).toInt());
+	mCurrentSettings.stringParity = ui->parityBox->currentText();
 
-	currentSettings.stopBits = static_cast<QSerialPort::StopBits>( ui->stopBitsBox->itemData(ui->stopBitsBox->currentIndex()).toInt());
-	currentSettings.stringStopBits = ui->stopBitsBox->currentText();
+	mCurrentSettings.stopBits = static_cast<QSerialPort::StopBits>( ui->stopBitsBox->itemData(ui->stopBitsBox->currentIndex()).toInt());
+	mCurrentSettings.stringStopBits = ui->stopBitsBox->currentText();
 
-	currentSettings.flowControl = static_cast<QSerialPort::FlowControl>( ui->flowControlBox->itemData(ui->flowControlBox->currentIndex()).toInt());
-	currentSettings.stringFlowControl = ui->flowControlBox->currentText();
+	mCurrentSettings.flowControl = static_cast<QSerialPort::FlowControl>( ui->flowControlBox->itemData(ui->flowControlBox->currentIndex()).toInt());
+	mCurrentSettings.stringFlowControl = ui->flowControlBox->currentText();
 
 }
 
 
+
+void SerialSettingsWidget::setSettings(SerialSettings &settings)
+{
+	ui->serialPortInfoListBox->setCurrentText(settings.name);
+	ui->baudRateBox->setCurrentText(QString::number(settings.baudRate));
+	ui->dataBitsBox->setCurrentIndex(settings.dataBits-5);
+	ui->parityBox->setCurrentIndex(settings.parity);
+	ui->stopBitsBox->setCurrentIndex(settings.stopBits-1);
+	ui->flowControlBox->setCurrentIndex(settings.flowControl);
+	updateSettings();
+}
+
 void SerialSettingsWidget::onSerialDevicesChanged()
 {
 	fillPortsInfo();
+}
+
+void SerialSettingsWidget::on_pushButtonApply_clicked()
+{
+	apply();
+}
+
+void SerialSettingsWidget::on_pushButtonSelectDefaults_clicked()
+{
+	setSettings(mDefaultSettings);
 }

@@ -5,7 +5,6 @@
 #include "AgentConfig.hpp"
 
 
-
 #include <QObject>
 #include <QSharedPointer>
 
@@ -32,7 +31,7 @@ public:
 	virtual ~AgentConfigStore();
 
 public:
-	QSharedPointer<AgentConfig> agentConfig();
+	QSharedPointer<AgentConfig> agentConfig() const;
 	void setAgentConfig(QSharedPointer<AgentConfig> config);
 
 	// AsyncStore interface

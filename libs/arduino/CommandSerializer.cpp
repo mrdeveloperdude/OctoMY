@@ -127,7 +127,7 @@ uint8_t CommandSerializer::nextByte()
 			if((uint16_t)actuatorConfigIndex>=actuators.size()) {
 				//TODO: Handle error somehow. Maybe ask for sync?
 			}
-			Actuator &a=actuators[actuatorConfigIndex];
+			ArduMYActuator &a=actuators[actuatorConfigIndex];
 			actuatorConfigParser.setConfig(a.config);
 		} else if(actuatorConfigParser.parse(in)) {
 			dirtyActuatorConfigs=true;

@@ -6,10 +6,10 @@
 
 #include <QTest>
 
-class ActuatorConfig;
-class ActuatorState;
-class Actuator;
-class ActuatorSet;
+class ArduMYActuatorConfig;
+class ArduMYActuatorState;
+class ArduMYActuator;
+class ArduMYActuatorSet;
 
 
 class TestArduMY:public QObject
@@ -17,17 +17,18 @@ class TestArduMY:public QObject
 	Q_OBJECT
 private:
 
-	ActuatorConfig randomConfig() const ;
-	ActuatorConfig fuzzConfig() const ;
+	ArduMYActuatorConfig randomConfig() const ;
+	ArduMYActuatorConfig fuzzConfig() const ;
 
-	ActuatorState randomState(const ActuatorConfig &c) const ;
-	ActuatorState fuzzState() const ;
+	ArduMYActuatorState randomState(const ArduMYActuatorConfig &c) const ;
+	ArduMYActuatorState fuzzState() const ;
 
-	Actuator randomActuator() const ;
-	Actuator fuzzActuator() const ;
+	ArduMYActuator randomActuator() const ;
+	ArduMYActuator fuzzActuator() const ;
 
-	ActuatorSet randomActuatorSet();
-	ActuatorSet fuzzActuatorSet();
+	ArduMYActuatorSet randomActuatorSet();
+	ArduMYActuatorSet fuzzActuatorSet();
+	ArduMYActuatorSet fixedActuatorSet();
 
 
 	void testActuatorFuzzConfigSerializer();
@@ -37,22 +38,24 @@ private:
 	void testActuatorFuzzValueSerializer();
 	void testActuatorFuzzValueEquals();
 
-private slots:
 
 	void testMagicDetector();
+	void testDynamicArrayFundamental();
+	void testDynamicArrayPOD();
 	void testActuatorValue();
 	void testValueConverter();
 	void testActuatorRandomConfigParser();
 	void testActuatorRandomConfigSerializer();
 	void testActuatorRandomConfigEquals();
 	void testActuatorRandomValueParser();
-
 	void testActuatorRandomValueEquals();
 	void testRepresentationBoundary();
-	void testActuatorRandomValueSerializer();
-
 	void testCommandParser();
 	void testCommandSerializer();
+private slots:
+
+
+	void testActuatorRandomValueSerializer();
 };
 
 

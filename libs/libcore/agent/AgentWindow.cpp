@@ -46,11 +46,20 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 
 	if(nullptr!=mAgent) {
 		//Settings &s=agent->settings();
-		ui->widgetHardware->configure(poseMapping());
+		ui->widgetHardware->configure(mAgent->configurationStore());
 		//Select correct starting page
 		QWidget *startPage=ui->pageRunning;
 		ui->widgetDelivery->reset();
-		ui->stackedWidget->setCurrentWidget(mAgent->keyStore().fileExists()?startPage:ui->pageDelivery);
+		const bool isDelivered=mAgent->keyStore().fileExists();
+		const bool isPaired=(mAgent->peers().getParticipantCount()>0);
+		auto ac=mAgent->configurationStore().agentConfig();
+		const bool isHardwareConfigured=nullptr!=ac && ""!=ac->controllerName();
+		ui->stackedWidget->setCurrentWidget(isDelivered?startPage:ui->pageDelivery);
+		ui->stackedWidgetFaceOrConfig->setCurrentWidget((isPaired && isHardwareConfigured)?ui->pageFace : ui->pageConfig);
+		ui->widgetHardwareStatus->setLightOn(isHardwareConfigured);
+		ui->pushButtonConfigureHardware->setEnabled(!isHardwareConfigured);
+		ui->widgetPairStatus->setLightOn(isPaired);
+		ui->pushButtonPairWithControls->setEnabled(!isPaired);
 
 		if(!QObject::connect(ui->widgetDelivery, &AgentDeliveryWizard::done, [=](bool pairNow) {
 		updateIdentity();
@@ -734,4 +743,20 @@ void AgentWindow::on_pushButtonBack_6_clicked()
 {
 	OC_METHODGATE();
 	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+}
+
+void AgentWindow::on_pushButtonSkipConfig_clicked()
+{
+	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+	ui->stackedWidgetFaceOrConfig->setCurrentWidget(ui->pageFace);
+}
+
+void AgentWindow::on_pushButtonPairWithControls_clicked()
+{
+	onStartPairing();
+}
+
+void AgentWindow::on_pushButtonConfigureHardware_clicked()
+{
+	onStartHardware();
 }

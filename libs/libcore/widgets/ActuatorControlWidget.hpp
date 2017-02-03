@@ -28,7 +28,7 @@ public:
 
 	void configure(quint32 num);
 
-	public slots:
+public slots:
 
 	void onServoMoved(quint32 id, qreal val);
 	void onServoKilled(quint32 id);

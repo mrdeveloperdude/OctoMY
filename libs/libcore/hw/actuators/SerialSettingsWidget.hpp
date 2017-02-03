@@ -25,31 +25,39 @@ class SerialSettingsWidget : public QWidget
 
 private:
 	Ui::SerialSettingsWidget *ui;
-	SerialSettings currentSettings;
-	QIntValidator *intValidator;
-	QList<QSerialPortInfo> availablePorts;
-	SerialList sl;
+	SerialSettings mDefaultSettings;
+	SerialSettings mCurrentSettings;
+	QIntValidator *mIntValidator;
+	QList<QSerialPortInfo> mAvailablePorts;
+	SerialList mSerialList;
 
 public:
 
 	explicit SerialSettingsWidget(QWidget *parent = 0);
 	~SerialSettingsWidget();
 
+	void configure(bool showApplyButton=true, SerialSettings defaults=SerialSettings());
 	SerialSettings settings() const;
+	void setSettings(SerialSettings &settings);
 
 public Q_SLOTS:
 
 
-private slots:
+public slots:
 	void onSerialDevicesChanged();
 	void showPortInfo(int idx);
 	void apply();
 	void checkCustomBaudRatePolicy(int idx);
 	void checkCustomDevicePathPolicy(int idx);
 
+	void on_pushButtonApply_clicked();
+
 signals:
 
 	void settingsChanged();
+
+public slots:
+	void on_pushButtonSelectDefaults_clicked();
 
 private:
 	void fillPortsParameters();
@@ -60,6 +68,3 @@ private:
 };
 
 #endif // SERIALSETTINGSDIALOG_H
-
-
-

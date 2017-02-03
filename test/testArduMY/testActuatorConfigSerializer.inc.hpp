@@ -1,23 +1,8 @@
 #ifndef TEST_INCLUDED
 
+#include "test.inc.hpp"
 
-#include "../arduino/ActuatorConfigParser.hpp"
-#include "../arduino/ActuatorConfigSerializer.hpp"
-
-
-#include "../arduino/ActuatorValueParser.hpp"
-#include "../arduino/ActuatorValueSerializer.hpp"
-
-#include "../arduino/MagicDetector.hpp"
-
-
-#include "../arduino/CommandParser.hpp"
-
-#include "../arduino/ParserState.hpp"
-
-#include <QTest>
-
-void testActuatorConfigSerializerInclude(ActuatorSet &inSet)
+void testActuatorConfigSerializerInclude(ArduMYActuatorSet &inSet)
 {
 #endif
 
@@ -38,10 +23,10 @@ void testActuatorConfigSerializerInclude(ActuatorSet &inSet)
 	c.positionFeedbackPin=28;
 	//c.stepMotorPhaseCount=29;	c.stepMotorStepsPerRotation=30;
 	*/
-	ActuatorConfigSerializer serializer;
+	ArduMYActuatorConfigSerializer serializer;
 	serializer.setConfig(c);
-	ActuatorConfigParser parser;
-	ActuatorConfig to;
+	ArduMYActuatorConfigParser parser;
+	ArduMYActuatorConfig to;
 	to.clear();
 	parser.setConfig(to);
 

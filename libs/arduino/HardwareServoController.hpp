@@ -3,10 +3,9 @@
 
 #include "DynamicArray.hpp"
 
-#include <Arduino.h>
-#include <Servo.h>
+#include "ArduMY.hpp"
 
-struct CommandParser;
+#include <stdio.h>
 
 
 struct HardwareServoController {
@@ -14,8 +13,6 @@ struct HardwareServoController {
 
 	void update(CommandParser &parser);
 };
-
-
 
 
 

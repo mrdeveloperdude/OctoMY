@@ -299,6 +299,16 @@ void addIconToLayout(QString name,QLayout &l,int w,int h)
 }
 
 
+void clearWidget(QWidget *par)
+{
+	foreach (QWidget * w, par->findChildren<QWidget*>()) {
+		if (! w->windowFlags() & Qt::Window) {
+			delete w;
+			w=nullptr;
+		}
+	}
+}
+
 void clearLayout(QLayout* layout, bool deleteWidgets)
 {
 	while (QLayoutItem* item = layout->takeAt(0)) {

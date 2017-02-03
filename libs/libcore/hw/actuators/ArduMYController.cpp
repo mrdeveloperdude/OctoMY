@@ -3,15 +3,16 @@
 #include "SerialSettingsWidget.hpp"
 #include "../arduino/ParserState.hpp"
 #include "../libutil/utility/Standard.hpp"
+#include "ArduMYControllerWidget.hpp"
 
 #include <QBuffer>
 #include <QDebug>
 
 ArduMYController::ArduMYController(QObject *parent)
-	: IServoController("ArduMY", parent)
-	, mSerialSettings(new SerialSettingsWidget)
+	: IActuatorController("ArduMY", parent)
 	, mSerialInterface(new QSerialPort(this))
 	, mSyncDirty(true)
+	, mWidget(nullptr)
 {
 
 	qRegisterMetaType<QSerialPort::SerialPortError>();
@@ -24,10 +25,6 @@ ArduMYController::ArduMYController(QObject *parent)
 	if(!connect(mSerialInterface, SIGNAL(bytesWritten(qint64)), this, SLOT(onSerialDataWritten(qint64)), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
-	if(!connect(mSerialSettings,SIGNAL(settingsChanged()), this, SLOT(onSettingsChanged()), OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect";
-	}
-
 	mSyncTimer.setTimerType(Qt::VeryCoarseTimer);
 	mSyncTimer.setInterval(1000);
 
@@ -42,36 +39,30 @@ ArduMYController::ArduMYController(QObject *parent)
 ArduMYController::~ArduMYController()
 {
 	//ASIMOV: Limp all servos before closing shop to avoid frying them if they are trying to reach impossible positions
-	killAll();
-	delete mSerialSettings;
+	limpAll();
 }
 
 
-void ArduMYController::configure()
+void ArduMYController::setSerialConfig(SerialSettings settings)
 {
-	if(nullptr!=mSerialSettings) {
-		qDebug()<<"SETTINGS SHOW";
-		mSerialSettings->show();
-	}
+	mSerialSettings=settings;
 }
-
-
 
 void ArduMYController::openSerialPort()
 {
-	SerialSettings p = mSerialSettings->settings();
-	mSerialInterface->setPortName(p.name);
-	mSerialInterface->setBaudRate(p.baudRate);
-	mSerialInterface->setDataBits(p.dataBits);
-	mSerialInterface->setParity(p.parity);
-	mSerialInterface->setStopBits(p.stopBits);
-	mSerialInterface->setFlowControl(p.flowControl);
+	mSerialInterface->setPortName(mSerialSettings.name);
+	mSerialInterface->setBaudRate(mSerialSettings.baudRate);
+	mSerialInterface->setDataBits(mSerialSettings.dataBits);
+	mSerialInterface->setParity(mSerialSettings.parity);
+	mSerialInterface->setStopBits(mSerialSettings.stopBits);
+	mSerialInterface->setFlowControl(mSerialSettings.flowControl);
+	qDebug()<<tr("Trying to connect to %1 : %2, %3, %4, %5, %6").arg(mSerialSettings.name).arg(mSerialSettings.stringBaudRate).arg(mSerialSettings.stringDataBits).arg(mSerialSettings.stringParity).arg(mSerialSettings.stringStopBits).arg(mSerialSettings.stringFlowControl);
 	if (mSerialInterface->open(QIODevice::ReadWrite)) {
-		qDebug()<<tr("Connected to %1 : %2, %3, %4, %5, %6").arg(p.name).arg(p.stringBaudRate).arg(p.stringDataBits).arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl);
 		emit connectionChanged();
+		qDebug()<<"CONNECTION SUCCESSFULL";
 		mSyncTimer.start();
 	} else {
-		qDebug()<<"ERROR OPENING: "<<mSerialInterface->errorString();
+		qWarning()<<"ERROR OPENING: "<<mSerialInterface->errorString();
 	}
 }
 
@@ -130,7 +121,7 @@ void ArduMYController::syncData()
 			//qDebug()<<"SYNC-MOVE: "<< QString("%1").arg( dirtyMoveFlags, 16, 2, QChar('0'));
 			mDirtyMoveFlags.fill(false);
 		}
-*/
+		*/
 	} else {
 		qWarning()<<"ERROR: Trying to syncMove with serial when not connected";
 	}
@@ -167,7 +158,7 @@ void ArduMYController::setConnected(bool open)
 {
 	if(open) {
 		openSerialPort();
-		fetchVersionData();
+		qDebug()<<"Opened ArduMY controller version "<<version();
 	} else {
 		closeSerialPort();
 	}
@@ -179,13 +170,13 @@ bool ArduMYController::isConnected()
 }
 
 
-void ArduMYController::setServosCount(quint32 ct)
+void ArduMYController::setServosCount(quint8 ct)
 {
-	const quint32 max=maximumServosSupported();
+	const quint8 max=maxActuatorsSupported();
 	if(ct>max) {
 		qWarning()<<"ERROR: Tried to set "<<ct<< " servos which is more than the maximum of " <<max;
 	} else {
-		const quint32 old=mActuators.size();
+		const quint8 old=mActuators.size();
 		if(ct!=old) {
 			mActuators.resize(ct);
 			if(ct>old) {
@@ -197,11 +188,11 @@ void ArduMYController::setServosCount(quint32 ct)
 }
 
 
-void ArduMYController::kill(QBitArray &flags)
+void ArduMYController::limp(QBitArray &flags)
 {
 	if(isConnected()) {
 		quint32 i=0;
-		for(Actuator &actuator:mActuators) {
+		for(ArduMYActuator &actuator:mActuators) {
 			const bool k=flags.testBit(i);
 			if(k!=actuator.state.isLimp()) {
 				mKillDirty=true;
@@ -210,7 +201,7 @@ void ArduMYController::kill(QBitArray &flags)
 			i++;
 		}
 	} else {
-		qWarning()<<"ERROR: Trying to kill subset of servos via serial when not connected";
+		qWarning()<<"ERROR: Trying to limp subset of servos via serial when not connected";
 	}
 }
 
@@ -246,29 +237,139 @@ void ArduMYController::move(Pose &pose)
 }
 
 
-void ArduMYController::fetchVersionData()
+
+void ArduMYController::move(quint8 i, qreal value)
 {
-	if(isConnected()) {
-		writeData("V\n");
-	} else {
-		qWarning()<<"ERROR: Trying to get version via serial when not connected";
+	/*
+	const quint32 p=(quint32)(qBound(-1.0, value, 1.0)*1000.0+1500.0);
+	//Skip unecessary communication if value did not change
+	if(mAccumulatedPosition[i]!=p) {
+		mAccumulatedPosition[i]=p;
+		if(0==mSerialInterface->bytesToWrite()) {
+			syncMove();
+		}
 	}
-
+	*/
 }
 
 
-void ArduMYController::fetchDebugData()
+QString ArduMYController::version()
 {
-	if(isConnected()) {
-		writeData("D\n");
-	} else {
-		qWarning()<<"ERROR: Trying to debug with serial when not connected";
+	return "TODO: IMPLEMENT ME";
+}
+
+
+
+quint8 ArduMYController::maxActuatorsSupported()
+{
+	return 0xFF;
+}
+
+
+quint8 ArduMYController::actuatorCount()
+{
+	return mActuators.size();
+}
+
+QString ArduMYController::actuatorName(quint8)
+{
+	return "IMPLEMENT ME";
+}
+
+qreal ArduMYController::actuatorValue(quint8 index)
+{
+	if(index>=mActuators.size()) {
+		return 0.0f;
 	}
-
+	return mActuators[index].state.value.toFloat(mActuators[index].config.representation);
 }
 
 
-quint32 ArduMYController::maximumServosSupported()
+qreal ArduMYController::actuatorDefault(quint8)
 {
-	return 256;
+	return 0.0f;
 }
+
+
+QWidget *ArduMYController::configurationWidget()
+{
+	if(nullptr==mWidget) {
+		mWidget=new ArduMYControllerWidget(nullptr);
+		if(nullptr!=mWidget) {
+			mWidget->configure(this);
+		}
+	}
+	return mWidget;
+}
+
+
+
+
+
+
+QVariantMap ArduMYController::confiruation()
+{
+	QVariantMap map;
+	return map;
+
+}
+
+void ArduMYController::setConfiguration(QVariantMap &configuration)
+{
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

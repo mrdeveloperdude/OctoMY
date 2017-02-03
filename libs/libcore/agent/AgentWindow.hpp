@@ -142,6 +142,9 @@ private slots:
 	void on_pushButtonBack_3_clicked();
 	void on_pushButtonBack_5_clicked();
 	void on_pushButtonBack_6_clicked();
+	void on_pushButtonSkipConfig_clicked();
+	void on_pushButtonPairWithControls_clicked();
+	void on_pushButtonConfigureHardware_clicked();
 };
 
 

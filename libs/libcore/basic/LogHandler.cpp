@@ -57,6 +57,10 @@ static void octomyLogMessageHandler(QtMsgType type, const QMessageLogContext &ct
 	QStringList list=msg.split("[\n\r]", QString::SkipEmptyParts);
 	for(QString str:list) {
 		QString out;
+		if(str=="link  hasn't been detected!"){
+			//
+			//out="LOLBOB";
+		}
 		if(str.startsWith("   Loc: [")) {
 			out=str;
 		} else {

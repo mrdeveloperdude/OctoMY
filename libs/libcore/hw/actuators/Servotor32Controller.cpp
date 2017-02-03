@@ -13,7 +13,7 @@
 
 
 Servotor32Controller::Servotor32Controller(QObject *parent)
-	: IServoController("Servotor32", parent)
+	: IActuatorController("Servotor32", parent)
 	, mSerialSettings(new SerialSettingsWidget)
 	, mSerialInterface(new QSerialPort(this))
 	, mReads(0)
@@ -37,7 +37,7 @@ Servotor32Controller::Servotor32Controller(QObject *parent)
 Servotor32Controller::~Servotor32Controller()
 {
 	//ASIMOV: Limp all servos before closing shop to avoid frying them if they are trying to reach impossible positions
-	killAll();
+	limpAll();
 	delete mSerialSettings;
 }
 
@@ -210,7 +210,7 @@ void Servotor32Controller::setConnected(bool open)
 {
 	if(open) {
 		openSerialPort();
-		fetchVersionData();
+		qDebug()<<"OPENED servotor32 version "<<version();
 	} else {
 		closeSerialPort();
 	}
@@ -222,13 +222,13 @@ bool Servotor32Controller::isConnected()
 }
 
 
-void Servotor32Controller::kill(QBitArray &flags)
+void Servotor32Controller::limp(QBitArray &flags)
 {
 	//Trivial reject: kill ALL
 	if(isConnected()) {
 		const quint32 sz=flags.size();
 		if((quint32)flags.count(true)==sz) {
-			killAll();
+			limpAll();
 		} else {
 			QString data;
 			for(quint32 i=0; i<sz; ++i) {
@@ -240,7 +240,7 @@ void Servotor32Controller::kill(QBitArray &flags)
 			writeData(data.toLatin1());
 		}
 	} else {
-		qWarning()<<"ERROR: Trying to kill subset of servos via serial when not connected";
+		qWarning()<<"ERROR: Trying to limp subset of servos via serial when not connected";
 	}
 }
 
@@ -272,8 +272,19 @@ void Servotor32Controller::move(Pose &pose)
 	}
 }
 
+void Servotor32Controller::move(quint8 i, qreal value)
+{
+	const quint32 p=(quint32)(qBound(-1.0, value, 1.0)*1000.0+1500.0);
+	//Skip unecessary communication if value did not change
+	if(mAccumulatedPosition[i]!=p) {
+		mAccumulatedPosition[i]=p;
+		if(0==mSerialInterface->bytesToWrite()) {
+			syncMove();
+		}
+	}
+}
 
-void Servotor32Controller::killAll()
+void Servotor32Controller::limpAll()
 {
 	if(isConnected()) {
 		writeData("K\n");
@@ -293,18 +304,18 @@ void Servotor32Controller::centerAll()
 	}
 }
 
-void Servotor32Controller::fetchVersionData()
+QString Servotor32Controller::version()
 {
 	if(isConnected()) {
 		writeData("V\n");
 	} else {
 		qWarning()<<"ERROR: Trying to get version via serial when not connected";
 	}
-
+	return "TODO: FIX ME";
 }
 
 
-void Servotor32Controller::fetchDebugData()
+void Servotor32Controller::debug()
 {
 	if(isConnected()) {
 		writeData("D\n");
@@ -318,7 +329,64 @@ void Servotor32Controller::fetchDebugData()
 
 
 
-quint32 Servotor32Controller::maximumServosSupported()
+quint8 Servotor32Controller::maxActuatorsSupported()
 {
 	return 32;
+}
+
+
+
+quint8 Servotor32Controller::actuatorCount()
+{
+	return mAccumulatedPosition.size();
+}
+
+
+QString Servotor32Controller::actuatorName(quint8)
+{
+	//TODO: Implement
+	return "IMPLEMENT ME!";
+}
+
+qreal Servotor32Controller::actuatorValue(quint8 index)
+{
+	if(index>=mAccumulatedPosition.size()) {
+		return 0.0f;
+	}
+	return mAccumulatedPosition[index];
+}
+
+
+
+
+qreal Servotor32Controller::actuatorDefault(quint8 )
+{
+	//There is no concept of default value so we simply say center
+	return 0.5f;
+}
+
+
+
+
+QWidget *Servotor32Controller::configurationWidget()
+{
+	return nullptr;
+}
+
+
+
+
+
+
+
+QVariantMap Servotor32Controller::confiruation()
+{
+	QVariantMap map;
+	return map;
+
+}
+
+void Servotor32Controller::setConfiguration(QVariantMap &configuration)
+{
+
 }

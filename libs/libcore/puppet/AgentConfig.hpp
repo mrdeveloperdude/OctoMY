@@ -1,7 +1,7 @@
 #ifndef AGENTCONFIG_HPP
 #define AGENTCONFIG_HPP
 
-#include "../arduino/Actuator.hpp"
+#include "../arduino/ArduMYActuator.hpp"
 
 #include "PoseMapping.hpp"
 
@@ -11,9 +11,10 @@
 class AgentConfig
 {
 private:
+	QString mControllerName;
+	QVariantMap mControllerConfig;
 	QSharedPointer<PoseMapping> mPoseMapping;
 
-	QVector<Actuator> mActuators;
 
 public:
 	AgentConfig();
@@ -24,6 +25,17 @@ public:
 
 	void fromMap(const QVariantMap &map);
 	QVariantMap toMap();
+
+public:
+
+
+	QString controllerName();
+	void setControllerName(const QString &);
+
+	QVariantMap controllerConfig();
+	void setControllerConfig(const QVariantMap &);
+
+
 
 	QSharedPointer<PoseMapping> poseMapping();
 	void setPoseMapping(QSharedPointer<PoseMapping> mapping);

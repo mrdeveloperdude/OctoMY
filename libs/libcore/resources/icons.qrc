@@ -116,5 +116,8 @@
         <file>icons/nibble.svg</file>
         <file>icons/bit.svg</file>
         <file>icons/ardumy.svg</file>
+        <file>icons/hexy_logo.svg</file>
+        <file>icons/arcbotics_logo.svg</file>
+        <file>icons/unknown.svg</file>
     </qresource>
 </RCC>

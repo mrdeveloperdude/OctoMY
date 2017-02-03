@@ -1,5 +1,5 @@
-#ifndef CLIENTMODEL_HPP
-#define CLIENTMODEL_HPP
+#ifndef HARDWARETEMPLATEMODEL_HPP
+#define HARDWARETEMPLATEMODEL_HPP
 
 
 
@@ -31,4 +31,4 @@ signals:
 	void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
 };
 
-#endif // CLIENTMODEL_HPP
+#endif // HARDWARETEMPLATEMODEL_HPP

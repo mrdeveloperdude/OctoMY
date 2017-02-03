@@ -190,12 +190,10 @@ SOURCES +=\
     hw/actuators/SerialSettingsWidget.cpp \
     hw/actuators/SerialSettings.cpp \
     widgets/HardwareTemplate.cpp \
-    models/HardwareTemplateModel.cpp \
     models/PairingListModel.cpp \
     models/SerialDeviceListModel.cpp \
     widgets/PoseMappingWidget.cpp \
     widgets/PoseMappingView.cpp \
-    hw/actuators/IServoController.cpp \
     hw/actuators/Servotor32Controller.cpp \
     puppet/PoseSequence.cpp \
     widgets/PanicButton.cpp \
@@ -207,7 +205,11 @@ SOURCES +=\
     hw/actuators/ActuatorWidget.cpp \
     widgets/ArduinoPinSelector.cpp \
     puppet/AgentConfigStore.cpp \
-    puppet/AgentConfig.cpp
+    puppet/AgentConfig.cpp \
+    hw/actuators/IActuatorController.cpp \
+    hw/actuators/ActuatorControllerFactory.cpp \
+    hw/actuators/ArduMYControllerWidget.cpp \
+    models/HardwareTemplateModel.cpp
 
 
 HEADERS  += \
@@ -399,12 +401,10 @@ HEADERS  += \
     hw/actuators/SerialSettingsWidget.hpp \
     hw/actuators/SerialSettings.hpp \
     widgets/HardwareTemplate.hpp \
-    models/HardwareTemplateModel.hpp \
     models/PairingListModel.hpp \
     models/SerialDeviceListModel.hpp \
     widgets/PoseMappingWidget.hpp \
     widgets/PoseMappingView.hpp \
-    hw/actuators/IServoController.hpp \
     hw/actuators/Servotor32Controller.hpp \
     puppet/PoseSequence.hpp \
     widgets/PanicButton.hpp \
@@ -416,7 +416,11 @@ HEADERS  += \
     hw/actuators/ActuatorWidget.hpp \
     widgets/ArduinoPinSelector.hpp \
     puppet/AgentConfigStore.hpp \
-    puppet/AgentConfig.hpp
+    puppet/AgentConfig.hpp \
+    hw/actuators/IActuatorController.hpp \
+    hw/actuators/ActuatorControllerFactory.hpp \
+    hw/actuators/ArduMYControllerWidget.hpp \
+    models/HardwareTemplateModel.hpp
 
 
 FORMS    += \
@@ -454,7 +458,8 @@ FORMS    += \
     ui/SerialSettingsWidget.ui \
     widgets/PoseMappingWidget.ui \
     widgets/PanicButton.ui \
-    ui/ActuatorWidget.ui
+    ui/ActuatorWidget.ui \
+    hw/actuators/ArduMYControllerWidget.ui
 
 
 RESOURCES += \

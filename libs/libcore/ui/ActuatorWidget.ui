@@ -177,7 +177,7 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>5</number>
          </property>
          <widget class="QWidget" name="tabType">
           <property name="sizePolicy">
@@ -841,9 +841,9 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="tabTachiometer">
+         <widget class="QWidget" name="tabTachometer">
           <attribute name="title">
-           <string>Tachiometer</string>
+           <string>Tachometer</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_11">
            <item row="0" column="2">

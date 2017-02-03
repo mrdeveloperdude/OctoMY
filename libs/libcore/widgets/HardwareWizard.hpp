@@ -2,12 +2,15 @@
 #define HARDWAREWIZARD_HPP
 
 #include "puppet/PoseMapping.hpp"
+#include "hw/actuators/ActuatorControllerFactory.hpp"
+#include "puppet/AgentConfigStore.hpp"
+
 #include <QWidget>
 #include <QSharedPointer>
 
 class HardwareTemplate;
 class HardwareTemplateModel;
-
+class IActuatorController;
 
 namespace Ui
 {
@@ -25,22 +28,25 @@ private:
 	Ui::HardwareWizard *ui;
 	SerialDeviceListModel *mSerialDevicesModel;
 	HardwareTemplateModel *mHardwareTemplateModel;
+	ActuatorControllerFactory mControllerFactory;
+	IActuatorController *mController;
 
 	HardwareTemplate *mSelectedTempalte;
-	QSharedPointer<PoseMapping> mPoseMapping;
+	AgentConfigStore *mConfigStore;
 
 public:
 	explicit HardwareWizard(QWidget *parent = 0);
 	virtual ~HardwareWizard();
 
 private:
+	QString selectedControllerName();
 	void moveTo(int next);
 	void save();
 	void loadFromTemplate();
 
 public:
 
-	void configure(QSharedPointer<PoseMapping>);
+	void configure(AgentConfigStore &configStore);
 	void reset();
 
 signals:
