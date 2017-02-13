@@ -32,7 +32,7 @@ Representations with no values are simply skipped
 
 
 
-
+#ifndef ARDUINO_ARCH_AVR
 static QString valueToString(const ArduMYActuatorValue &v, const ArduMYActuatorValueRepresentation &rep)
 {
 	QString ret;
@@ -67,6 +67,7 @@ static QString valueToString(const ArduMYActuatorValue &v, const ArduMYActuatorV
 	return ret;
 }
 
+#endif
 
 
 bool ArduMYActuatorValueParser::parse(const uint8_t in)

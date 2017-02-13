@@ -20,6 +20,8 @@
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/BlobCourier.hpp"
 
+#include "agent/AgentConstants.hpp"
+
 #include <QScrollBar>
 
 
@@ -53,7 +55,7 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 	ui->widgetFace->setDisabled(true);
 
 
-	ui->tryToggleListen->configure("Connect","Connecting","Connected", "#e1be4e");
+	ui->tryToggleListen->configure("Connect","Connecting","Connected", AgentConstants::AGENT_CONNECT_BUTTON_COLOR);
 	ui->tryToggleListen->setState(OFF,false);
 
 	if(!connect(ui->tryToggleListen, &TryToggle::stateChanged, this, &ClientWidget::onConnectButtonStateChanged ,OC_CONTYPE)) {
@@ -242,7 +244,7 @@ void ClientWidget::init()
 		ui->labelGyroscope->setText("WAITING FOR GYRO");
 		ui->labelAccelerometer->setText("WAITING FOR ACCELEROMETER");
 		ui->labelTouch->setText("WAITING FOR TOUCH");
-		ui->widgetActuatorControl->configure(10);
+		//ui->widgetActuatorControl->configure(10);
 	} else {
 		ui->labelLocal->setText("N/A");
 		ui->labelHub->setText("N/A");

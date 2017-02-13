@@ -29,7 +29,7 @@
 
 CourierSet::CourierSet(CommsSignature &sig, Agent &agent)
 	: mAgent(agent)
-	, mAgentStateCourier(new AgentStateCourier(&mDS,nullptr))
+	, mAgentStateCourier(new AgentStateCourier(&mDatastream,nullptr))
 	, mSensorsCourier(new SensorsCourier(nullptr))
 	, mBlobCourier(new BlobCourier(nullptr))
 {
@@ -139,7 +139,12 @@ CourierSet *AgentControls::activeControl() const
 {
 	OC_METHODGATE();
 	//TODO: Manage which one is actually the ACTIVE one instead of just returning the first one
-	return mCouriers.begin().value();
+	auto b=mCouriers.begin();
+	auto e=mCouriers.end();
+	if(b==e){
+		return nullptr;
+	}
+	return b.value();
 }
 
 
@@ -153,7 +158,7 @@ CourierSet *AgentControls::activeControl() const
 Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "agent", parent), ROLE_AGENT, TYPE_AGENT, parent)
 	, mControls(*this)
-	, mAgentConfigStore(mContext->baseDir() + "/pose_mapping.json")
+	, mAgentConfigStore(mContext->baseDir() + "/agent_config.json")
 	, mServoController(new Servotor32Controller(this))
 	, mWindow(nullptr)
 {

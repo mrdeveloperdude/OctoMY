@@ -14,6 +14,18 @@
    <string>Form</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QSlider" name="horizontalSlider">
      <property name="sizePolicy">
@@ -29,7 +41,7 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>Select what the shortest pause in milliseconds will be between different valve openings during communication with PLC.</string>
+      <string/>
      </property>
      <property name="minimum">
       <number>50</number>

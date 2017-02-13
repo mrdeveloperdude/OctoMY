@@ -7,8 +7,9 @@
 
 
 
-namespace Ui {
-	class PairingWizard;
+namespace Ui
+{
+class PairingWizard;
 }
 
 class Node;
@@ -19,48 +20,51 @@ class PairingEditButtonDelegate;
 
 class PairingWizard : public QWidget
 {
-		Q_OBJECT
+	Q_OBJECT
 
-	private:
-		Ui::PairingWizard *ui;
-		Node *mNode;
-		PairingListModel *mList;
-		PairingEditButtonDelegate *mDelegate;
-		QString mTemplate;
-		QString mCurrentlyEditing;
+private:
+	Ui::PairingWizard *ui;
+	Node *mNode;
+	PairingListModel *mList;
+	PairingEditButtonDelegate *mDelegate;
+	QString mTemplate;
+	QString mCurrentlyEditing;
 
-	public:
-		explicit PairingWizard(QWidget *parent = 0);
-		virtual ~PairingWizard();
-	public:
+public:
+	explicit PairingWizard(QWidget *parent = 0);
+	virtual ~PairingWizard();
+public:
 
-		void configure(Node *mNode);
+	void configure(Node *mNode);
 
-	public:
-		void reset();
+private:
 
-		void startEdit(int row);
+	void updateNetworkSettings();
+public:
+	void reset();
 
-		Node *getNode();
+	void startEdit(int row);
 
-	protected:
+	Node *getNode();
 
-		virtual void showEvent(QShowEvent *);
-		virtual void hideEvent(QHideEvent *);
+protected:
 
-	private slots:
-		void on_pushButtonMaybeOnward_clicked();
-		void on_pushButtonTryAgain_clicked();
-		void on_pushButtonDone_clicked();
-		void on_pushButtonCameraPair_clicked();
-		void on_pushButtonSaveEdits_clicked();
+	virtual void showEvent(QShowEvent *);
+	virtual void hideEvent(QHideEvent *);
 
-		void on_pushButtonRemove_clicked();
+private slots:
+	void on_pushButtonMaybeOnward_clicked();
+	void on_pushButtonTryAgain_clicked();
+	void on_pushButtonDone_clicked();
+	void on_pushButtonCameraPair_clicked();
+	void on_pushButtonSaveEdits_clicked();
 
-		void on_pushButtonRefresh_clicked();
+	void on_pushButtonRemove_clicked();
 
-	signals:
-		void done();
+	void on_pushButtonRefresh_clicked();
+
+signals:
+	void done();
 };
 
 #endif // PAIRINGWIZARD_HPP

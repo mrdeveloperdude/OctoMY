@@ -1,6 +1,8 @@
 #ifndef ARDUMYACTUATORTYPE_HPP
 #define ARDUMYACTUATORTYPE_HPP
 
+#include "ArduMY.hpp"
+
 enum ArduMYActuatorType: uint8_t {
 	DC_MOTOR, STEP_MOTOR, RC_SERVO, RELAY, TYPE_COUNT
 };

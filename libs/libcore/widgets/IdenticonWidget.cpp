@@ -15,23 +15,26 @@ IdenticonWidget::IdenticonWidget(QWidget *parent)
 {
 }
 
-void IdenticonWidget::regenerateIdenticon(){
+void IdenticonWidget::regenerateIdenticon()
+{
 	QDomDocument doc=identicon.domDocument();
 	//TODO: This is a gaping hole if someone tried to set the SVG and did not expect us to delete it (not recommended way to use this class but still)
-	if(0!=svg){
-		delete svg;
-		svg=0;
+	if(nullptr!=mSVG) {
+		delete mSVG;
+		mSVG=nullptr;
 	}
-	svg=new QSvgRenderer (doc.toByteArray());
+	mSVG=new QSvgRenderer (doc.toByteArray());
 	update();
 }
 
-void IdenticonWidget::setPortableID(PortableID &id){
+void IdenticonWidget::setPortableID(PortableID &id)
+{
 	identicon.setPortableID(id);
 	regenerateIdenticon();
 }
 
 
-void IdenticonWidget::mouseDoubleClickEvent(QMouseEvent *){
+void IdenticonWidget::mouseDoubleClickEvent(QMouseEvent *)
+{
 	emit doubleClicked();
 }

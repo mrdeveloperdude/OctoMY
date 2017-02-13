@@ -888,7 +888,7 @@
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
                </property>
-               <widget class="ActuatorControlWidget" name="widgetActuatorControl" native="true"/>
+               <widget class="ActuatorManagerWidget" name="widgetActuatorControl" native="true"/>
                <widget class="PoseMappingWidget" name="widgetPoseMapping" native="true"/>
               </widget>
              </item>
@@ -921,6 +921,18 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ActuatorManagerWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/ActuatorManagerWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SerialSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">hw/actuators/SerialSettingsWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>LogWidget</class>
    <extends>QPlainTextEdit</extends>
    <header>widgets/LogWidget.hpp</header>
@@ -929,6 +941,18 @@
    <class>TryToggle</class>
    <extends>QWidget</extends>
    <header>widgets/TryToggle.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MapEditor</class>
+   <extends>QWidget</extends>
+   <header>widgets/MapEditor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SpeechControlWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/SpeechControlWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -947,12 +971,6 @@
    <class>GaitWidget</class>
    <extends>QWidget</extends>
    <header>puppet/GaitWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>MapEditor</class>
-   <extends>QWidget</extends>
-   <header>widgets/MapEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -996,12 +1014,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>SerialSettingsWidget</class>
-   <extends>QWidget</extends>
-   <header>hw/actuators/SerialSettingsWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>HexyTool</class>
    <extends>QWidget</extends>
    <header>hw/actuators/HexyTool.hpp</header>
@@ -1023,18 +1035,6 @@
    <class>CLGLView</class>
    <extends>QOpenGLWidget</extends>
    <header>widgets/CLGLView.hpp</header>
-  </customwidget>
-  <customwidget>
-   <class>SpeechControlWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/SpeechControlWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ActuatorControlWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/ActuatorControlWidget.hpp</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

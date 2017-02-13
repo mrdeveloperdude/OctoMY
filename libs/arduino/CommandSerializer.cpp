@@ -1,7 +1,9 @@
 #include "CommandSerializer.hpp"
 
-CommandSerializer::CommandSerializer()
-	: currentCommand(ParserState::OCTOMY_SYNC)
+
+CommandSerializer::CommandSerializer(ArduMYActuatorSet &actuators)
+	: actuators(actuators)
+	, currentCommand(ParserState::OCTOMY_SYNC)
 	, magic{0x0C,0x70,0xFF,0x00}
 	, byteIndex(0)
 	, actuatorConfigSerializer()
@@ -62,20 +64,17 @@ void CommandSerializer::startActuatorValues()
 
 
 // Return true if there is more data remaining to be read
-bool CommandSerializer::hasMoreData() const
+bool CommandSerializer::hasMoreData()
 {
 	if(currentCommand==OCTOMY_AWAITING_COMMAND) {
 		// 1. Sync due
-		if(actuators.isSyncDue()){
+		if(actuators.isSyncDue()) {
 			startSync();
-		}
-		else if(actuators.isCountDirty()){
+		} else if(actuators.isCountDirty()) {
 			startActuatorCount();
-		}
-		else if(actuators.isConfigDirty()){
+		} else if(actuators.isConfigDirty()) {
 			startActuatorConfig(0);
-		}
-		else if(actuators.isValuesDirty()){
+		} else if(actuators.isValuesDirty()) {
 			startActuatorValues();
 		}
 		// 2. Actuator count changed
@@ -109,47 +108,24 @@ uint8_t CommandSerializer::nextByte()
 	break;
 	// Awaiting command
 	case(OCTOMY_AWAITING_COMMAND): {
-		currentCommand=prepareCommand(in);
 	}
 	break;
 	// Command: set actuator count
 	case(OCTOMY_SET_ACTUATOR_COUNT): {
-		actuators.setSize(in);
-		dirtyActuatorValues=true;
-		currentCommand=OCTOMY_AWAITING_COMMAND;
 	}
 	break;
 
 	// Command: set actuator config
 	case(OCTOMY_SET_ACTUATOR_CONFIG): {
-		if(actuatorConfigIndex < 0) {
-			actuatorConfigIndex=in;
-			if((uint16_t)actuatorConfigIndex>=actuators.size()) {
-				//TODO: Handle error somehow. Maybe ask for sync?
-			}
-			ArduMYActuator &a=actuators[actuatorConfigIndex];
-			actuatorConfigParser.setConfig(a.config);
-		} else if(actuatorConfigParser.parse(in)) {
-			dirtyActuatorConfigs=true;
-			actuatorConfigIndex=-1;
-			currentCommand=OCTOMY_AWAITING_COMMAND;
-		}
 	}
 	break;
 	// Command: set actuator values
 	case(OCTOMY_SET_ACTUATOR_VALUES): {
-		if(actuatorValuesParser.parse(in)) {
-			dirtyActuatorValues=true;
-			currentCommand=OCTOMY_AWAITING_COMMAND;
-		}
 	}
 	break;
 	case(OCTOMY_SET_ACTUATOR_LIMP): {
-		dirtyActuatorValues=true;
 	}
 	break;
-
-
 	}
 	return ret;
 }

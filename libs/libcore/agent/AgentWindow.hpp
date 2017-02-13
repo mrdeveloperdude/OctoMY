@@ -60,6 +60,8 @@ private:
 	QAction *mShowBirthCertificateAction;
 	QAction *mUnbirthAction;
 
+	bool mWasEverUndelivered;
+
 public:
 	explicit AgentWindow(Agent *mAgent, QWidget *parent = 0);
 	virtual ~AgentWindow();
@@ -75,6 +77,9 @@ public:
 	void updateFaceVisibility();
 
 private:
+
+	void gotoNextConfigPage();
+
 	void updateIcon();
 	void updateIdentity();
 	void prepareMenu();
@@ -100,6 +105,7 @@ public:
 	// Actions
 private slots:
 
+	void onStartDelivery();
 	void onStartCameraPairing();
 	void onStartPairing();
 	void onStartHardware();
@@ -145,6 +151,7 @@ private slots:
 	void on_pushButtonSkipConfig_clicked();
 	void on_pushButtonPairWithControls_clicked();
 	void on_pushButtonConfigureHardware_clicked();
+	void on_pushButtonDeliver_clicked();
 };
 
 

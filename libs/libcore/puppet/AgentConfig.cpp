@@ -30,17 +30,12 @@ QVariantMap AgentConfig::toMap()
 {
 	QVariantMap map;
 	map["controllerName"]=mControllerName;
-
-
 	map["controllerConfig"]=mControllerConfig;
 	QVariantList list=map["poseMapping"].toList();
 	if(mPoseMapping.isNull()) {
 		mPoseMapping=QSharedPointer<PoseMapping>(new PoseMapping(list.size()));
 	}
 	mPoseMapping->fromMap(list);
-
-
-
 	// TODO: Implement
 	return map;
 }

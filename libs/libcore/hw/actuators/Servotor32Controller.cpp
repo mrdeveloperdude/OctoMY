@@ -289,7 +289,7 @@ void Servotor32Controller::limpAll()
 	if(isConnected()) {
 		writeData("K\n");
 	} else {
-		qWarning()<<"ERROR: Trying to kill all servos via serial when not connected";
+		qWarning()<<"ERROR: Trying to limp all actuators via serial when not connected";
 	}
 }
 
@@ -300,7 +300,7 @@ void Servotor32Controller::centerAll()
 	if(isConnected()) {
 		writeData("C\n");
 	} else {
-		qWarning()<<"ERROR: Trying to center servos using serial when not connected";
+		qWarning()<<"ERROR: Trying to center actuators using serial when not connected";
 	}
 }
 

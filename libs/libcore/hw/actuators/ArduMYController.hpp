@@ -3,7 +3,9 @@
 
 #include "IActuatorController.hpp"
 
-#include "../arduino/CommandParser.hpp"
+#include "../arduino/CommandSerializer.hpp"
+#include "../arduino/ArduMYActuatorSet.hpp"
+
 #include "SerialSettings.hpp"
 
 #include <QObject>
@@ -24,7 +26,10 @@ private:
 
 	SerialSettings mSerialSettings;
 	QSerialPort *mSerialInterface;
-	QVector<ArduMYActuator> mActuators;
+	ArduMYActuatorSet mActuators;
+
+	CommandSerializer mCommandSerializer;
+
 	bool mKillDirty;
 	bool mCountDirty;
 	bool mSyncDirty;
@@ -45,21 +50,28 @@ private:
 	void syncData();
 	void writeData(const QByteArray &data);
 
-	/*
+
 	// Serial IO slots
-	private slots:
+private slots:
 	void onSerialReadData();
 	void onSerialDataWritten(qint64);
 	void onSerialHandleError(QSerialPort::SerialPortError error);
 	void onSerialSettingsChanged();
-	*/
+
 
 	// Arduino spesifics.
 	// TODO: Decide how to expose this outside this class. Should it become part of the IServoController interface somehow? What other options exists?
 public:
 	void configurePin(quint8 servoIndex, unsigned char pin);
 
+	ArduMYActuator *addActuator();
+
 	void setServosCount(quint8);
+
+	ArduMYActuatorSet &actuators()
+	{
+		return mActuators;
+	}
 
 
 	// IActuatorController interface

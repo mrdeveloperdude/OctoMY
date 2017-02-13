@@ -1,6 +1,6 @@
 #include "CommandParser.hpp"
-
 #include "ParserState.hpp"
+
 
 CommandParser::CommandParser()
 	: currentCommand(ParserState::OCTOMY_SYNC)
@@ -11,6 +11,7 @@ CommandParser::CommandParser()
 	, actuatorValuesParser()
 	, dirtyActuatorValues(true)
 	, dirtyActuatorConfigs(true)
+	, sendStatusPending(false)
 {
 	actuatorValuesParser.setSet(actuators);
 }
@@ -41,6 +42,7 @@ ParserState CommandParser::prepareCommand(const uint8_t in)
 
 	//All the reasons for abandoning this command and going for a sync instead
 	case(OCTOMY_AWAITING_COMMAND):
+	case(OCTOMY_GET_STATUS):
 	case(OCTOMY_UNKNOWN):
 	case(OCTOMY_COUNT):
 	default: {
@@ -53,6 +55,10 @@ ParserState CommandParser::prepareCommand(const uint8_t in)
 }
 
 
+void CommandParser::setup()
+{
+
+}
 
 void CommandParser::parse(const uint8_t in)
 {
@@ -72,6 +78,12 @@ void CommandParser::parse(const uint8_t in)
 	// Awaiting command
 	case(OCTOMY_AWAITING_COMMAND): {
 		currentCommand=prepareCommand(in);
+	}
+	break;
+	// Status wanted
+	case(OCTOMY_GET_STATUS): {
+		sendStatusPending=true;
+		currentCommand=OCTOMY_AWAITING_COMMAND;
 	}
 	break;
 	// Command: set actuator count

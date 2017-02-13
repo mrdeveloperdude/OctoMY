@@ -13,17 +13,21 @@
 #include "widgets/Identicon.hpp"
 
 #include "comms/couriers/AgentStateCourier.hpp"
+#include "../libutil/utility/Utility.hpp"
 
+#include "agent/AgentConstants.hpp"
 #include <QScrollBar>
 
 
-FaceWidget::FaceWidget(QWidget *parent) :
-	QWidget(parent),
-	ui(new Ui::FaceWidget)
+
+FaceWidget::FaceWidget(QWidget *parent)
+	: QWidget(parent)
+	, ui(new Ui::FaceWidget)
+	, mAgent(nullptr)
 {
 	ui->setupUi(this);
 
-	ui->tryToggleConnect->configure("Go Online", "Connecting..", "Online", "#e1be4e");
+	ui->tryToggleConnect->configure("Go Online", "Connecting..", "Online", AgentConstants::AGENT_CONNECT_BUTTON_COLOR);
 	if(!connect(ui->tryToggleConnect,SIGNAL(stateChanged(const TryToggleState, const TryToggleState)),this,SIGNAL(connectionStateChanged(const TryToggleState, const TryToggleState)),OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
@@ -41,20 +45,19 @@ FaceWidget::~FaceWidget()
 
 Agent *FaceWidget::agent()
 {
-	return ui->widgetRealtimeValues->getAgent();
+	return mAgent;
 }
 
 
 void FaceWidget::updateEyeColor()
 {
-	Agent *ag=agent();
-	if(nullptr!=ag) {
-		QSharedPointer<NodeAssociate> ass=ag->nodeIdentity();
+	if(nullptr!=mAgent) {
+		QSharedPointer<NodeAssociate> ass=mAgent->nodeIdentity();
 		if(nullptr!=ass) {
 			const QString id=ass->id();
 			if(id!=lastID) {
 				lastID=id;
-				PortableID pid=ag->nodeIdentity()->toPortableID();
+				PortableID pid=mAgent->nodeIdentity()->toPortableID();
 				Identicon identicon;
 				identicon.setPortableID(pid);
 				ui->widgetEyes->setColor(identicon.bodyColorHigh());
@@ -65,13 +68,12 @@ void FaceWidget::updateEyeColor()
 
 void FaceWidget::updateVisibility()
 {
-	Agent *ag=agent();
-	if(nullptr!=ag) {
-		Settings &s=ag->settings();
-		ui->widgetEyes->setVisible(s.getCustomSettingBool("octomy.face"));
-		ui->logScroll->setVisible(s.getCustomSettingBool("octomy.debug.log"));
-		ui->widgetRealtimeValues->setVisible(s.getCustomSettingBool("octomy.debug.stats"));
-		ui->widgetConnect->setVisible(s.getCustomSettingBool("octomy.online.show"));
+	if(nullptr!=mAgent) {
+		Settings &s=mAgent->settings();
+		ui->widgetEyes->setVisible(s.getCustomSettingBool(AgentConstants::AGENT_FACE_EYES_SHOW,true));
+		ui->logScroll->setVisible(s.getCustomSettingBool(AgentConstants::AGENT_FACE_LOG_SHOW,true));
+		ui->widgetRealtimeValues->setVisible(s.getCustomSettingBool(AgentConstants::AGENT_FACE_STATS_SHOW,true));
+		ui->widgetConnect->setVisible(s.getCustomSettingBool(AgentConstants::AGENT_FACE_ONLINE_BUTTON_SHOW,true));
 	}
 }
 
@@ -82,18 +84,39 @@ void FaceWidget::appendLog(const QString& text)
 }
 
 
+
 void FaceWidget::setAgent(Agent *a)
 {
-	ui->widgetRealtimeValues->setAgent(a);
+	mAgent=a;
+	ui->widgetRealtimeValues->setAgent(mAgent);
 
-	if(nullptr!=a) {
-		const AgentControls &ctl=a->controls();
+	if(nullptr!=mAgent) {
+		const AgentControls &ctl=mAgent->controls();
 		CourierSet*set=ctl.activeControl();
 		if(nullptr!=set) {
 			AgentStateCourier * asc=set->agentStateCourier();
 			if(nullptr!=asc) {
 				asc->setHookSignals(*this,true);
 			}
+
+		}
+		Settings &s=mAgent->settings();
+		if(s.hasCustomSetting(AgentConstants::AGENT_FACE_SPLITTER_MIDDLE_STATE)) {
+			//qDebug()<<"FOUND SETTING FOR "<<AgentConstants::AGENT_FACE_SPLITTER_MIDDLE_STATE;
+			ui->splitterMiddle->restoreState(s.getCustomSettingByteArray(AgentConstants::AGENT_FACE_SPLITTER_MIDDLE_STATE));
+		} else {
+			//qDebug()<<"DEFAULT SETTING FOR "<<AgentConstants::AGENT_FACE_SPLITTER_MIDDLE_STATE;
+			utility::moveSplitter(*ui->splitterMiddle,0.75f);
+		}
+		if(s.hasCustomSetting(AgentConstants::AGENT_FACE_SPLITTER_TOP_STATE)) {
+			ui->splitterTop->restoreState(s.getCustomSettingByteArray(AgentConstants::AGENT_FACE_SPLITTER_TOP_STATE));
+		} else {
+			utility::moveSplitter(*ui->splitterTop,0.8f);
+		}
+		if(s.hasCustomSetting(AgentConstants::AGENT_FACE_SPLITTER_BOTTOM_STATE)) {
+			ui->splitterBottom->restoreState(s.getCustomSettingByteArray(AgentConstants::AGENT_FACE_SPLITTER_BOTTOM_STATE));
+		} else {
+			utility::moveSplitter(*ui->splitterBottom,0.5f);
 		}
 	}
 	updateEyeColor();
@@ -171,9 +194,8 @@ void FaceWidget::on_pushButtonPanic_toggled(bool panic)
 		appendLog(str);
 	}
 
-	Agent *a=agent();
-	if(nullptr!=a) {
-		a->setPanic(panic);
+	if(nullptr!=mAgent) {
+		mAgent->setPanic(panic);
 	}
 
 }
@@ -195,5 +217,30 @@ void FaceWidget::onSyncParameterChanged(ISyncParameter *sp)
 	} else {
 		qWarning()<<"ERROR: sp was nullptr";
 	}
-*/
+	*/
+}
+
+void FaceWidget::on_splitterTop_splitterMoved(int, int)
+{
+	if(nullptr!=mAgent) {
+		Settings &s=mAgent->settings();
+		s.setCustomSettingByteArray(AgentConstants::AGENT_FACE_SPLITTER_TOP_STATE, ui->splitterTop->saveState());
+	}
+}
+
+
+void FaceWidget::on_splitterBottom_splitterMoved(int pos, int index)
+{
+	if(nullptr!=mAgent) {
+		Settings &s=mAgent->settings();
+		s.setCustomSettingByteArray(AgentConstants::AGENT_FACE_SPLITTER_BOTTOM_STATE, ui->splitterBottom->saveState());
+	}
+}
+
+void FaceWidget::on_splitterMiddle_splitterMoved(int pos, int index)
+{
+	if(nullptr!=mAgent) {
+		Settings &s=mAgent->settings();
+		s.setCustomSettingByteArray(AgentConstants::AGENT_FACE_SPLITTER_MIDDLE_STATE, ui->splitterMiddle->saveState());
+	}
 }

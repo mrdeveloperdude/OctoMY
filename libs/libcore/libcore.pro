@@ -11,14 +11,22 @@ SOURCES +=\
 	3d/scene/Limb.cpp \
 	3d/scene/QtLogo3D.cpp \
 	3d/scene/Simulation.cpp \
+	agent/AgentConstants.cpp \
 	agent/Agent.cpp \
 	agent/AgentWindow.cpp \
+	audio/AudioStream.cpp \
+	audio/Compressor.cpp \
+	audio/CreepyVoice.cpp \
+	audio/OneOffSpeech.cpp \
+	audio/Reverb.cpp \
+	audio/Tremolo.cpp \
 	basic/AgentNameGenerator.cpp \
 	basic/AppContext.cpp \
 	basic/AsyncStore.cpp \
 	basic/AtomicBoolean.cpp \
 	basic/Fingerprint.cpp \
 	basic/GenerateRunnable.cpp \
+	basic/GenericKeyEventHandler.cpp \
 	basic/Iconv.cpp \
 	basic/LogDestination.cpp \
 	basic/LogHandler.cpp \
@@ -35,16 +43,31 @@ SOURCES +=\
 	camera/Camera.cpp \
 	camera/CameraList.cpp \
 	camera/CameraSettings.cpp \
+	camera/DCT.cpp \
+	camera/IDCT.cpp \
 	camera/PoorMansProbe.cpp \
 	comms/CommsChannel.cpp \
+	comms/CommsSession.cpp \
+	comms/CommsSessionDirectory.cpp \
+	comms/CommsSignature.cpp \
+	comms/couriers/AgentStateCourier.cpp \
+	comms/couriers/BlobChunk.cpp \
+	comms/couriers/BlobCourier.cpp \
+	comms/couriers/Blob.cpp \
+	comms/couriers/BlobFuture.cpp \
 	comms/couriers/Courier.cpp \
 	comms/couriers/CourierMandate.cpp \
 	comms/couriers/DiscoveryCourier.cpp \
 	comms/couriers/SensorsCourier.cpp \
 	comms/FlowControl.cpp \
+	comms/ISyncParameter.cpp \
+	comms/messages/AgentMode.cpp \
 	comms/messages/MessageType.cpp \
 	comms/messages/SensorsMessage.cpp \
 	comms/ReliabilitySystem.cpp \
+	comms/SyncContext.cpp \
+	comms/SyncParameter.cpp \
+	conscious/Consciousness.cpp \
 	discovery/DiscoveryClient.cpp \
 	discovery/DiscoveryRole.cpp \
 	discovery/DiscoveryServer.cpp \
@@ -72,23 +95,45 @@ SOURCES +=\
 	gear/liegroup.inl \
 	gear/liegroup_rmatrix3_ext.inl \
 	gear/rmatrix3j.cpp \
+	hub/ClientWidget.cpp \
 	hub/Hub.cpp \
 	hub/HubWindow.cpp \
+	hub/IContextProvider.cpp \
+	hw/actuators/ActuatorControllerFactory.cpp \
+	hw/actuators/ArduMYActuatorWidget.cpp \
+	hw/actuators/ArduMYController.cpp \
+	hw/actuators/ArduMYControllerWidget.cpp \
 	hw/actuators/HexyLeg.cpp \
 	hw/actuators/HexySerial.cpp \
 	hw/actuators/HexyTool.cpp \
+	hw/actuators/IActuatorController.cpp \
+	hw/actuators/Locus.cpp \
 	hw/actuators/SerialList.cpp \
+	hw/actuators/SerialSettings.cpp \
+	hw/actuators/SerialSettingsWidget.cpp \
+	hw/actuators/Servotor32Controller.cpp \
+	hw/actuators/WheeledLocus.cpp \
+	hw/actuators/WheeledLocusWidget.cpp \
 	hw/BluetoothList.cpp \
 	models/ClientModel.cpp \
+	models/HardwareTemplateModel.cpp \
+	models/PairingListModel.cpp \
+	models/SerialDeviceListModel.cpp \
 	plan/parser/PlanHighlighter.cpp \
 	plot/NetworkStats.cpp \
 	plot/qcustomplot.cpp \
 	plot/StatsWindow.cpp \
+	puppet/AgentConfig.cpp \
+	puppet/AgentConfigStore.cpp \
+	puppet/AgentMobilityType.cpp \
 	puppet/EyesWidget.cpp \
 	puppet/GaitController.cpp \
 	puppet/GaitWidget.cpp \
 	puppet/LimbIKWidget.cpp \
+	puppet/NameMapping.cpp \
 	puppet/Pose.cpp \
+	puppet/PoseMapping.cpp \
+	puppet/PoseSequence.cpp \
 	random/DevRandomRNG.cpp \
 	random/DevURandomRNG.cpp \
 	random/EfficientPRNG.cpp \
@@ -109,8 +154,12 @@ SOURCES +=\
 	storage/HashstoreRecord.cpp \
 	storage/HashstoreRecordState.cpp \
 	web/Mustache.cpp \
+	widgets/ActuatorManagerWidget.cpp \
+	widgets/ActuatorSelector.cpp \
 	widgets/AgentDeliveryWizard.cpp \
 	widgets/CameraPairingWidget.cpp \
+	widgets/CarSteeringWidget.cpp \
+	widgets/CLGLView.cpp \
 	widgets/CompasWidget.cpp \
 	widgets/ConnectionManager.cpp \
 	widgets/ConnectionWidget.cpp \
@@ -118,6 +167,7 @@ SOURCES +=\
 	widgets/EnumEntry.cpp \
 	widgets/FaceWidget.cpp \
 	widgets/FlowLayout.cpp \
+	widgets/HardwareTemplate.cpp \
 	widgets/HardwareWizard.cpp \
 	widgets/hexedit/QHexEditComments.cpp \
 	widgets/hexedit/QHexEdit.cpp \
@@ -135,81 +185,47 @@ SOURCES +=\
 	widgets/ImageLabel.cpp \
 	widgets/LightWidget.cpp \
 	widgets/LocalAddressEntry.cpp \
+	widgets/LocusManagerWidget.cpp \
 	widgets/Logo.cpp \
 	widgets/LogWidget.cpp \
 	widgets/MapEditor.cpp \
 	widgets/MultiView.cpp \
+	widgets/NameMappingView.cpp \
+	widgets/NameMappingWidget.cpp \
+	widgets/NetworkSettingsWidget.cpp \
 	widgets/NumberEntry.cpp \
 	widgets/PairingEditButtonDelegate.cpp \
 	widgets/PairingWizard.cpp \
+	widgets/PanicButton.cpp \
 	widgets/PKIManager.cpp \
 	widgets/planedit/CodeEditor.cpp \
 	widgets/planedit/LineNumberArea.cpp \
 	widgets/planedit/PlanEditor.cpp \
 	widgets/PortableIDWidget.cpp \
+	widgets/PoseMappingView.cpp \
+	widgets/PoseMappingWidget.cpp \
+	widgets/PoseView.cpp \
 	widgets/QRWidget.cpp \
 	widgets/RealtimeValuesWidget.cpp \
+	widgets/SpeechControlWidget.cpp \
 	widgets/SvgWidget.cpp \
+	widgets/TestWidget.cpp \
 	widgets/TextEntry.cpp \
 	widgets/TryToggle.cpp \
+	widgets/TryToggleState.cpp \
 	widgets/WaitingSpinnerWidget.cpp \
-	widgets/CLGLView.cpp \
 	zoo/PunchRegistry.cpp \
 	zoo/WebRequest.cpp \
 	zoo/ZooClient.cpp \
 	zoo/ZooConstants.cpp \
 	zoo/ZooServer.cpp \
-	hub/ClientWidget.cpp \
-	hub/IContextProvider.cpp \
-	widgets/NetworkSettingsWidget.cpp \
-	audio/AudioStream.cpp \
-	audio/OneOffSpeech.cpp \
-	audio/Reverb.cpp \
-	audio/Compressor.cpp \
-	audio/CreepyVoice.cpp \
-	audio/Tremolo.cpp \
-	conscious/Consciousness.cpp \
-	widgets/SpeechControlWidget.cpp \
-	widgets/ActuatorControlWidget.cpp \
-	widgets/TryToggleState.cpp \
-	basic/GenericKeyEventHandler.cpp \
-	comms/couriers/BlobCourier.cpp \
-	comms/couriers/Blob.cpp \
-	comms/couriers/BlobChunk.cpp \
-	comms/couriers/BlobFuture.cpp \
-	comms/couriers/AgentStateCourier.cpp \
-	comms/messages/AgentMode.cpp \
-	comms/SyncParameter.cpp \
-	comms/SyncContext.cpp \
-	comms/ISyncParameter.cpp \
-    widgets/CarSteeringWidget.cpp \
-    camera/DCT.cpp \
-    camera/IDCT.cpp \
-    puppet/PoseMapping.cpp \
-    puppet/AgentMobilityType.cpp \
-    hw/actuators/SerialSettingsWidget.cpp \
-    hw/actuators/SerialSettings.cpp \
-    widgets/HardwareTemplate.cpp \
-    models/PairingListModel.cpp \
-    models/SerialDeviceListModel.cpp \
-    widgets/PoseMappingWidget.cpp \
-    widgets/PoseMappingView.cpp \
-    hw/actuators/Servotor32Controller.cpp \
-    puppet/PoseSequence.cpp \
-    widgets/PanicButton.cpp \
-    widgets/PoseView.cpp \
-    comms/CommsSessionDirectory.cpp \
-    comms/CommsSession.cpp \
-    comms/CommsSignature.cpp \
-    hw/actuators/ArduMYController.cpp \
-    hw/actuators/ActuatorWidget.cpp \
+    widgets/ArduinoPinMap.cpp \
+    widgets/ArduinoPinCombobox.cpp \
     widgets/ArduinoPinSelector.cpp \
-    puppet/AgentConfigStore.cpp \
-    puppet/AgentConfig.cpp \
-    hw/actuators/IActuatorController.cpp \
-    hw/actuators/ActuatorControllerFactory.cpp \
-    hw/actuators/ArduMYControllerWidget.cpp \
-    models/HardwareTemplateModel.cpp
+    widgets/ArduinoPinFacilitator.cpp \
+    widgets/ArduinoPinFilter.cpp \
+    widgets/ArduinoPin.cpp
+
 
 
 HEADERS  += \
@@ -218,14 +234,23 @@ HEADERS  += \
 	3d/scene/Limb.hpp \
 	3d/scene/QtLogo3D.hpp \
 	3d/scene/Simulation.hpp \
+	agent/AgentConstants.hpp \
 	agent/Agent.hpp \
 	agent/AgentWindow.hpp \
+	audio/AudioStream.hpp \
+	audio/Compressor.hpp \
+	audio/CreepyVoice.hpp \
+	audio/IAudioSource.hpp \
+	audio/OneOffSpeech.hpp \
+	audio/Reverb.hpp \
+	audio/Tremolo.hpp \
 	basic/AgentNameGenerator.hpp \
 	basic/AppContext.hpp \
 	basic/AsyncStore.hpp \
 	basic/AtomicBoolean.hpp \
 	basic/Fingerprint.hpp \
 	basic/GenerateRunnable.hpp \
+	basic/GenericKeyEventHandler.hpp \
 	basic/Iconv.hpp \
 	basic/LogDestination.hpp \
 	basic/LogHandler.hpp \
@@ -242,16 +267,31 @@ HEADERS  += \
 	camera/Camera.hpp \
 	camera/CameraList.hpp \
 	camera/CameraSettings.hpp \
+	camera/DCT.hpp \
+	camera/IDCT.hpp \
 	camera/PoorMansProbe.hpp \
 	comms/CommsChannel.hpp \
+	comms/CommsSessionDirectory.hpp \
+	comms/CommsSession.hpp \
+	comms/CommsSignature.hpp \
+	comms/couriers/AgentStateCourier.hpp \
+	comms/couriers/BlobChunk.hpp \
+	comms/couriers/BlobCourier.hpp \
+	comms/couriers/BlobFuture.hpp \
+	comms/couriers/Blob.hpp \
 	comms/couriers/Courier.hpp \
 	comms/couriers/CourierMandate.hpp \
 	comms/couriers/DiscoveryCourier.hpp \
 	comms/couriers/SensorsCourier.hpp \
 	comms/FlowControl.hpp \
+	comms/ISyncParameter.hpp \
+	comms/messages/AgentMode.hpp \
 	comms/messages/MessageType.hpp \
 	comms/messages/SensorsMessage.hpp \
 	comms/ReliabilitySystem.hpp \
+	comms/SyncContext.hpp \
+	comms/SyncParameter.hpp \
+	conscious/Consciousness.hpp \
 	discovery/DiscoveryClient.hpp \
 	discovery/DiscoveryRole.hpp \
 	discovery/DiscoveryServer.hpp \
@@ -282,23 +322,45 @@ HEADERS  += \
 	gear/liegroup.h \
 	gear/liegroup_rmatrix3_ext.h \
 	gear/rmatrix3j.h \
+	hub/ClientWidget.hpp \
 	hub/Hub.hpp \
 	hub/HubWindow.hpp \
+	hub/IContextProvider.hpp \
+	hw/actuators/ActuatorControllerFactory.hpp \
+	hw/actuators/ArduMYActuatorWidget.hpp \
+	hw/actuators/ArduMYController.hpp \
+	hw/actuators/ArduMYControllerWidget.hpp \
 	hw/actuators/HexyLeg.hpp \
 	hw/actuators/HexySerial.hpp \
 	hw/actuators/HexyTool.hpp \
+	hw/actuators/IActuatorController.hpp \
+	hw/actuators/Locus.hpp \
 	hw/actuators/SerialList.hpp \
+	hw/actuators/SerialSettings.hpp \
+	hw/actuators/SerialSettingsWidget.hpp \
+	hw/actuators/Servotor32Controller.hpp \
+	hw/actuators/WheeledLocus.hpp \
+	hw/actuators/WheeledLocusWidget.hpp \
 	hw/BluetoothList.hpp \
 	models/ClientModel.hpp \
+	models/HardwareTemplateModel.hpp \
+	models/PairingListModel.hpp \
+	models/SerialDeviceListModel.hpp \
 	plan/parser/PlanHighlighter.hpp \
 	plot/NetworkStats.hpp \
 	plot/qcustomplot.hpp \
 	plot/StatsWindow.hpp \
+	puppet/AgentConfig.hpp \
+	puppet/AgentConfigStore.hpp \
+	puppet/AgentMobilityType.hpp \
 	puppet/EyesWidget.hpp \
 	puppet/GaitController.hpp \
 	puppet/GaitWidget.hpp \
 	puppet/LimbIKWidget.hpp \
+	puppet/NameMapping.hpp \
 	puppet/Pose.hpp \
+	puppet/PoseMapping.hpp \
+	puppet/PoseSequence.hpp \
 	random/DevRandomRNG.hpp \
 	random/DevURandomRNG.hpp \
 	random/EfficientPRNG.hpp \
@@ -319,8 +381,12 @@ HEADERS  += \
 	storage/HashstoreRecord.hpp \
 	storage/HashstoreRecordState.hpp \
 	web/Mustache.hpp \
+	widgets/ActuatorManagerWidget.hpp \
+	widgets/ActuatorSelector.hpp \
 	widgets/AgentDeliveryWizard.hpp \
 	widgets/CameraPairingWidget.hpp \
+	widgets/CarSteeringWidget.hpp \
+	widgets/CLGLView.hpp \
 	widgets/CompasWidget.hpp \
 	widgets/ConnectionManager.hpp \
 	widgets/ConnectionWidget.hpp \
@@ -328,6 +394,7 @@ HEADERS  += \
 	widgets/EnumEntry.hpp \
 	widgets/FaceWidget.hpp \
 	widgets/FlowLayout.hpp \
+	widgets/HardwareTemplate.hpp \
 	widgets/HardwareWizard.hpp \
 	widgets/hexedit/QHexEditComments.hpp \
 	widgets/hexedit/QHexEditDataDevice.hpp \
@@ -345,130 +412,102 @@ HEADERS  += \
 	widgets/ImageLabel.hpp \
 	widgets/LightWidget.hpp \
 	widgets/LocalAddressEntry.hpp \
+	widgets/LocusManagerWidget.hpp \
 	widgets/Logo.hpp \
 	widgets/LogWidget.hpp \
 	widgets/MapEditor.hpp \
 	widgets/MultiView.hpp \
+	widgets/NameMappingView.hpp \
+	widgets/NameMappingWidget.hpp \
+	widgets/NetworkSettingsWidget.hpp \
 	widgets/NumberEntry.hpp \
 	widgets/PairingEditButtonDelegate.hpp \
 	widgets/PairingWizard.hpp \
+	widgets/PanicButton.hpp \
 	widgets/PKIManager.hpp \
 	widgets/planedit/CodeEditor.hpp \
 	widgets/planedit/LineNumberArea.hpp \
 	widgets/planedit/PlanEditor.hpp \
 	widgets/PortableIDWidget.hpp \
+	widgets/PoseMappingView.hpp \
+	widgets/PoseMappingWidget.hpp \
+	widgets/PoseView.hpp \
 	widgets/QRWidget.hpp \
 	widgets/RealtimeValuesWidget.hpp \
+	widgets/SpeechControlWidget.hpp \
 	widgets/SvgWidget.hpp \
+	widgets/TestWidget.hpp \
 	widgets/TextEntry.hpp \
 	widgets/TryToggle.hpp \
+	widgets/TryToggleState.hpp \
 	widgets/WaitingSpinnerWidget.hpp \
-	widgets/CLGLView.hpp \
 	zoo/PunchRegistry.hpp \
 	zoo/WebRequest.hpp \
 	zoo/ZooClient.hpp \
 	zoo/ZooConstants.hpp \
 	zoo/ZooServer.hpp \
-	hub/ClientWidget.hpp \
-	hub/IContextProvider.hpp \
-	widgets/NetworkSettingsWidget.hpp \
-	audio/AudioStream.hpp \
-	audio/IAudioSource.hpp \
-	audio/OneOffSpeech.hpp \
-	audio/Reverb.hpp \
-	audio/Compressor.hpp \
-	audio/CreepyVoice.hpp \
-	audio/Tremolo.hpp \
-	conscious/Consciousness.hpp \
-	widgets/SpeechControlWidget.hpp \
-	widgets/ActuatorControlWidget.hpp \
-	widgets/TryToggleState.hpp \
-	basic/GenericKeyEventHandler.hpp \
-	comms/couriers/BlobCourier.hpp \
-	comms/couriers/Blob.hpp \
-	comms/couriers/BlobChunk.hpp \
-	comms/couriers/BlobFuture.hpp \
-	comms/couriers/AgentStateCourier.hpp \
-	comms/messages/AgentMode.hpp \
-	comms/SyncParameter.hpp \
-	comms/SyncContext.hpp \
-	comms/ISyncParameter.hpp \
-    widgets/CarSteeringWidget.hpp \
-    camera/DCT.hpp \
-    camera/IDCT.hpp \
-    puppet/PoseMapping.hpp \
-    puppet/AgentMobilityType.hpp \
-    hw/actuators/SerialSettingsWidget.hpp \
-    hw/actuators/SerialSettings.hpp \
-    widgets/HardwareTemplate.hpp \
-    models/PairingListModel.hpp \
-    models/SerialDeviceListModel.hpp \
-    widgets/PoseMappingWidget.hpp \
-    widgets/PoseMappingView.hpp \
-    hw/actuators/Servotor32Controller.hpp \
-    puppet/PoseSequence.hpp \
-    widgets/PanicButton.hpp \
-    widgets/PoseView.hpp \
-    comms/CommsSessionDirectory.hpp \
-    comms/CommsSession.hpp \
-    comms/CommsSignature.hpp \
-    hw/actuators/ArduMYController.hpp \
-    hw/actuators/ActuatorWidget.hpp \
+    widgets/ArduinoPinMap.hpp \
+    widgets/ArduinoPinCombobox.hpp \
     widgets/ArduinoPinSelector.hpp \
-    puppet/AgentConfigStore.hpp \
-    puppet/AgentConfig.hpp \
-    hw/actuators/IActuatorController.hpp \
-    hw/actuators/ActuatorControllerFactory.hpp \
-    hw/actuators/ArduMYControllerWidget.hpp \
-    models/HardwareTemplateModel.hpp
+    widgets/ArduinoPinFacilitator.hpp \
+    widgets/ArduinoPinFilter.hpp \
+    widgets/ArduinoPin.hpp
+
 
 
 FORMS    += \
+	ui/ActuatorManagerWidget.ui \
+	ui/ActuatorWidget.ui \
+	ui/AgentDeliveryWizard.ui \
 	ui/AgentWindow.ui \
+	ui/ArduMYControllerWidget.ui \
+	ui/CameraPairingWidget.ui \
 	ui/CameraSettings.ui \
 	ui/Camera.ui \
+	ui/CarSteeringWidget.ui \
+	ui/ClientWidget.ui \
+	ui/ConnectionManager.ui \
 	ui/ConnectionWidget.ui \
-	ui/HexyTool.ui \
-	ui/HubWindow.ui \
-	ui/MultiView.ui \
-	ui/NumberEntry.ui \
-	ui/RemoteWindow.ui \
-	ui/ResponsiveTest.ui \
-	ui/StatsWindow.ui \
-	ui/TryToggle.ui \
-	ui/PlanEditor.ui \
-	ui/CameraPairingWidget.ui \
-	ui/MapEditor.ui \
-	ui/RealtimeValuesWidget.ui \
-	ui/PairingWizard.ui \
-	ui/AgentDeliveryWizard.ui \
 	ui/ControlDeliveryWizard.ui \
 	ui/FaceWidget.ui \
-	ui/LogWidget.ui \
-	ui/PKIManager.ui \
-	ui/PortableIDWidget.ui \
-	ui/ConnectionManager.ui \
-	ui/HUDWidget.ui \
 	ui/HardwareWizard.ui \
-	ui/ClientWidget.ui \
-	widgets/NetworkSettingsWidget.ui \
-	widgets/SpeechControlWidget.ui \
-	widgets/ActuatorControlWidget.ui \
-    widgets/CarSteeringWidget.ui \
-    ui/SerialSettingsWidget.ui \
-    widgets/PoseMappingWidget.ui \
-    widgets/PanicButton.ui \
-    ui/ActuatorWidget.ui \
-    hw/actuators/ArduMYControllerWidget.ui
+	ui/HexyTool.ui \
+	ui/HubWindow.ui \
+	ui/HUDWidget.ui \
+	ui/LocusManagerWidget.ui \
+	ui/LogWidget.ui \
+	ui/MapEditor.ui \
+	ui/MultiView.ui \
+	ui/NameMappingWidget.ui \
+	ui/NetworkSettingsWidget.ui \
+	ui/NumberEntry.ui \
+	ui/PairingWizard.ui \
+	ui/PanicButton.ui \
+	ui/PKIManager.ui \
+	ui/PlanEditor.ui \
+	ui/PortableIDWidget.ui \
+	ui/PoseMappingWidget.ui \
+	ui/RealtimeValuesWidget.ui \
+	ui/RemoteWindow.ui \
+	ui/ResponsiveTest.ui \
+	ui/SerialSettingsWidget.ui \
+	ui/SpeechControlWidget.ui \
+	ui/StatsWindow.ui \
+	ui/TryToggle.ui \
+	ui/WheeledLocusWidget.ui \
+	widgets/TestWidget.ui \
+    widgets/ArduinoPinSelector.ui
+
 
 
 RESOURCES += \
-	resources/icons.qrc \
-	resources/fonts.qrc \
-	resources/style.qrc \
 	resources/3d.qrc \
 	resources/data.qrc \
-	resources/images.qrc
+	resources/fonts.qrc \
+	resources/icons.qrc \
+	resources/images.qrc \
+	resources/style.qrc \
+
 
 
 
@@ -501,6 +540,48 @@ SOURCES += \
 	hub/HelloCLWorker.cpp \
 
 }
+
+
+
+ARDUMY_TOP= ../../libs/arduino
+ARDUMY_HEADERS += \
+	$$ARDUMY_TOP/ArduMYActuatorConfig.hpp \
+	$$ARDUMY_TOP/ArduMYActuatorConfigParser.hpp \
+	$$ARDUMY_TOP/ArduMYActuatorConfigSerializerBase.hpp \
+	$$ARDUMY_TOP/ArduMYActuatorConfigSerializer.hpp \
+	$$ARDUMY_TOP/ArduMYActuator.hpp \
+	$$ARDUMY_TOP/ArduMYActuatorSet.hpp \
+	$$ARDUMY_TOP/ArduMYActuatorState.hpp \
+	$$ARDUMY_TOP/ArduMYActuatorValue.hpp \
+	$$ARDUMY_TOP/ArduMYActuatorValueParser.hpp \
+	$$ARDUMY_TOP/ArduMYActuatorValueRepresentation.hpp \
+	$$ARDUMY_TOP/ArduMYActuatorValueSerializerBase.hpp \
+	$$ARDUMY_TOP/ArduMYActuatorValueSerializer.hpp \
+	$$ARDUMY_TOP/CommandParser.hpp \
+	$$ARDUMY_TOP/CommandSerializer.hpp \
+	$$ARDUMY_TOP/MagicDetector.hpp \
+
+
+
+ARDUMY_SOURCES += \
+	$$ARDUMY_TOP/ArduMYActuatorConfig.cpp \
+	$$ARDUMY_TOP/ArduMYActuatorConfigParser.cpp \
+	$$ARDUMY_TOP/ArduMYActuatorConfigSerializerBase.cpp \
+	$$ARDUMY_TOP/ArduMYActuatorConfigSerializer.cpp \
+	$$ARDUMY_TOP/ArduMYActuator.cpp \
+	$$ARDUMY_TOP/ArduMYActuatorSet.cpp \
+	$$ARDUMY_TOP/ArduMYActuatorState.cpp \
+	$$ARDUMY_TOP/ArduMYActuatorValue.cpp \
+	$$ARDUMY_TOP/ArduMYActuatorValueParser.cpp \
+	$$ARDUMY_TOP/ArduMYActuatorValueRepresentation.cpp \
+	$$ARDUMY_TOP/ArduMYActuatorValueSerializerBase.cpp \
+	$$ARDUMY_TOP/ArduMYActuatorValueSerializer.cpp \
+	$$ARDUMY_TOP/CommandParser.cpp \
+	$$ARDUMY_TOP/CommandSerializer.cpp \
+	$$ARDUMY_TOP/MagicDetector.cpp \
+
+HEADERS += $$ARDUMY_HEADERS
+SOURCES += $$ARDUMY_SOURCES
 
 message("FROM lib.pro:")
 include($$TOP_PWD/status.pri)

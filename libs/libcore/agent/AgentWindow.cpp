@@ -22,6 +22,47 @@
 #include <QAndroidJniObject>
 #endif
 
+
+
+#include "puppet/NameMapping.hpp"
+#include "widgets/NameMappingWidget.hpp"
+
+void fubar()
+{
+	QStringList from;
+	QStringList to;
+	from<<"Left Front Knee";
+	from<<"Right Front Knee";
+	from<<"Left Back Knee";
+	from<<"Right Back Knee";
+	/*
+	from<<"Left Front Hip";
+	from<<"Right Front Hip";
+	from<<"Left Back Hip";
+	from<<"Right Back Hip";
+	*/
+	to<<"Arne";
+	to<<"Trude";
+	to<<"Bjarne";
+	to<<"Fridjof";
+	to<<"Ferdinand";
+	to<<"Nancy";
+	to<<"Otto";
+	to<<"Gustavo";
+	NameMapping *mapping=new NameMapping();
+	/*
+		(*mapping)["Left Back Knee"]="Arne";
+		(*mapping)["Left Back Hip"]="Bjarne";
+		(*mapping)["Left Front Hip"]="Fridjof";
+		(*mapping)["Right Back Knee"]="Fridjof";
+		*/
+	NameMappingWidget *nm=new NameMappingWidget();
+	nm->configure(*mapping,from,to);
+	nm->show();
+
+}
+
+
 AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::AgentWindow)
@@ -31,13 +72,14 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	, mPairingAction(new QAction(tr("Pair"), this))
 	, mHardwareAction(new QAction(tr("Configure HW"), this))
 	, mPlanAction(new QAction(tr("Plan"), this))
-	, mOnlineAction(new QAction(tr("Online"), this))
-	, mShowOnlineButtonAction(new QAction(tr("Online Button"), this))
+	, mOnlineAction(new QAction(tr("Go Online"), this))
+	, mShowOnlineButtonAction(new QAction(tr("Show Online Button"), this))
 	, mShowFaceAction(new QAction(tr("Show Face"), this))
 	, mShowLogAction(new QAction(tr("Show Log"), this))
 	, mShowStatsAction(new QAction(tr("Show Stats"), this))
 	, mShowBirthCertificateAction(new QAction(tr("Show Birth Certificate"), this))
 	, mUnbirthAction(new QAction(tr("Unbirth!"), this))
+	, mWasEverUndelivered(false)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
@@ -48,35 +90,27 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 		//Settings &s=agent->settings();
 		ui->widgetHardware->configure(mAgent->configurationStore());
 		//Select correct starting page
-		QWidget *startPage=ui->pageRunning;
 		ui->widgetDelivery->reset();
-		const bool isDelivered=mAgent->keyStore().fileExists();
-		const bool isPaired=(mAgent->peers().getParticipantCount()>0);
-		auto ac=mAgent->configurationStore().agentConfig();
-		const bool isHardwareConfigured=nullptr!=ac && ""!=ac->controllerName();
-		ui->stackedWidget->setCurrentWidget(isDelivered?startPage:ui->pageDelivery);
-		ui->stackedWidgetFaceOrConfig->setCurrentWidget((isPaired && isHardwareConfigured)?ui->pageFace : ui->pageConfig);
-		ui->widgetHardwareStatus->setLightOn(isHardwareConfigured);
-		ui->pushButtonConfigureHardware->setEnabled(!isHardwareConfigured);
-		ui->widgetPairStatus->setLightOn(isPaired);
-		ui->pushButtonPairWithControls->setEnabled(!isPaired);
+		mWasEverUndelivered=!mAgent->keyStore().fileExists();
+		ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
+		gotoNextConfigPage();
 
-		if(!QObject::connect(ui->widgetDelivery, &AgentDeliveryWizard::done, [=](bool pairNow) {
+		if(!QObject::connect(ui->widgetDelivery, &AgentDeliveryWizard::done, [=]() {
 		updateIdentity();
-			ui->stackedWidget->setCurrentWidget(pairNow?ui->pagePairing:startPage);
+			gotoNextConfigPage();
 		} ) ) {
 			qWarning()<<"ERROR: Could not connect ";
 		}
 
 		if(!connect(ui->widgetPairing, &PairingWizard::done, [=]() {
-		ui->stackedWidget->setCurrentWidget(startPage);
+		gotoNextConfigPage();
 		} )) {
 			qWarning()<<"ERROR: Could not connect ";
 		}
 
 
 		if(!connect(ui->widgetHardware, &HardwareWizard::done, [=]() {
-		ui->stackedWidget->setCurrentWidget(startPage);
+		gotoNextConfigPage();
 		} )) {
 			qWarning()<<"ERROR: Could not connect ";
 		}
@@ -90,6 +124,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 		updateFaceVisibility();
 
 		updateOnlineStatus();
+		//	fubar();
 		//QString text="Hello, my name is "+mAgent->name()+". I am an octomy agent. What is your bidding master?";
 		//QString text="Hello, my name is Bodhi. I am an octomy agent. What is your bidding master? 00 0 01010 010 010 010 010101 ";		PortableID id=mAgent->localNodeAssociate()->toPortableID();		new OneOffSpeech(id, text);
 	}
@@ -105,7 +140,45 @@ AgentWindow::~AgentWindow()
 	delete ui;
 }
 
+void AgentWindow::gotoNextConfigPage()
+{
+	// Find next config screen to show
+	QWidget *cur=ui->stackedWidget->currentWidget();
+	const bool isDelivered=mAgent->keyStore().fileExists();
+	auto ac=mAgent->configurationStore().agentConfig();
+	const QString ctl=ac->controllerName();
+	const bool isHardwareConfigured=(nullptr!=ac) && (""!=ctl) || (ui->pageHardware==cur);
+	auto pct=mAgent->peers().getParticipantCount();
+	const bool isPaired=(pct>1) || (ui->pagePairing==cur);
 
+	qDebug()<<"NEXT CONFIG SCREEN: isDelivered"<<isDelivered<<", isPaired"<<isPaired<<", isHardwareConfigured"<<isHardwareConfigured<<" (ctlname="<<ctl<<", pct="<<pct<<")";
+	if(isDelivered) {
+		cur=ui->pageHardware;
+
+	}
+
+	// Only ask the first time
+	if(!mWasEverUndelivered) {
+		cur=ui->pageRunning;
+	} else {
+		if(isHardwareConfigured) {
+			cur=ui->pagePairing;
+		}
+		if(isPaired) {
+			cur=ui->pageRunning;
+		}
+	}
+	ui->stackedWidget->setCurrentWidget(cur);
+
+	// In case user skips through the whole thing, remind her
+	ui->stackedWidgetFaceOrConfig->setCurrentWidget((mWasEverUndelivered || (isPaired && isHardwareConfigured))?ui->pageFace : ui->pageConfig);
+	ui->widgetDeliveryStatus->setLightOn(isDelivered);
+	ui->pushButtonDeliver->setEnabled(!isDelivered);
+	ui->widgetHardwareStatus->setLightOn(isHardwareConfigured);
+	ui->pushButtonConfigureHardware->setEnabled(!isHardwareConfigured);
+	ui->widgetPairStatus->setLightOn(isPaired);
+	ui->pushButtonPairWithControls->setEnabled(!isPaired);
+}
 
 void AgentWindow::updateIdentity()
 {
@@ -138,6 +211,7 @@ void AgentWindow::updateIcon()
 }
 
 
+#include "agent/AgentConstants.hpp"
 
 void AgentWindow::prepareMenu()
 {
@@ -194,7 +268,7 @@ void AgentWindow::prepareMenu()
 	mShowOnlineButtonAction->setCheckable(true);
 
 	if(nullptr!=s) {
-		mShowOnlineButtonAction->setChecked(s->getCustomSettingBool("octomy.online.show"));
+		mShowOnlineButtonAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS));
 	}
 	connect(mShowOnlineButtonAction, &QAction::triggered, this, &AgentWindow::onOnlineButtonVisibilityChanged);
 	mMenu.addAction(mShowOnlineButtonAction);
@@ -206,7 +280,7 @@ void AgentWindow::prepareMenu()
 	mShowFaceAction->setCheckable(true);
 
 	if(nullptr!=s) {
-		mShowFaceAction->setChecked(s->getCustomSettingBool("octomy.face"));
+		mShowFaceAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_FACE_EYES_SHOW));
 	}
 	connect(mShowFaceAction, &QAction::triggered, this, &AgentWindow::onFaceVisibilityChanged);
 	mMenu.addAction(mShowFaceAction);
@@ -216,7 +290,7 @@ void AgentWindow::prepareMenu()
 	mShowLogAction->setStatusTip(tr("Show log in main screen"));
 	mShowLogAction->setCheckable(true);
 	if(nullptr!=s) {
-		mShowLogAction->setChecked(s->getCustomSettingBool("octomy.debug.log"));
+		mShowLogAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_FACE_LOG_SHOW));
 	}
 	connect(mShowLogAction, &QAction::triggered, this, &AgentWindow::onLogVisibilityChanged);
 	mMenu.addAction(mShowLogAction);
@@ -226,7 +300,7 @@ void AgentWindow::prepareMenu()
 	mShowStatsAction->setStatusTip(tr("Show stats in main screen"));
 	mShowStatsAction->setCheckable(true);
 	if(nullptr!=s) {
-		mShowStatsAction->setChecked(s->getCustomSettingBool("octomy.debug.stats"));
+		mShowStatsAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_FACE_STATS_SHOW));
 	}
 	connect(mShowStatsAction, &QAction::triggered, this, &AgentWindow::onStatsVisibilityChanged);
 	mMenu.addAction(mShowStatsAction);
@@ -246,6 +320,7 @@ void AgentWindow::prepareMenu()
 		if(nullptr!=mAgent) {
 			QMessageBox::StandardButton reply = QMessageBox::question(this, "Unbirth", "Are you sure you want to DELETE the personality of this robot forever?", QMessageBox::No|QMessageBox::Yes);
 			if (QMessageBox::Yes==reply) {
+				mWasEverUndelivered=true;
 				QSharedPointer<NodeAssociate> assID=mAgent->nodeIdentity();
 				if(nullptr!=assID) {
 					mAgent->peers().removeParticipant(assID->id());
@@ -414,7 +489,7 @@ void AgentWindow::onOnlineChanged(bool on)
 	qDebug()<<"ONLINE ACTION CHANGED TO "<<(on?"ONLINE":"OFFLINE");
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 	if(nullptr!=s) {
-		s->setCustomSettingBool("octomy.online",on);
+		s->setCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS,on);
 	}
 	updateOnlineStatus();
 }
@@ -426,7 +501,7 @@ void AgentWindow::onOnlineButtonVisibilityChanged(bool on)
 	qDebug()<<"ONLINE BUTTON IS NOW: "<<on;
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 	if(nullptr!=s) {
-		s->setCustomSettingBool("octomy.online.show",on);
+		s->setCustomSettingBool(AgentConstants::AGENT_FACE_ONLINE_BUTTON_SHOW,on);
 	}
 	updateFaceVisibility();
 }
@@ -437,7 +512,7 @@ void AgentWindow::onFaceVisibilityChanged(bool on)
 	qDebug()<<"FACE VIS IS NOW: "<<on;
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 	if(nullptr!=s) {
-		s->setCustomSettingBool("octomy.face",on);
+		s->setCustomSettingBool(AgentConstants::AGENT_FACE_EYES_SHOW,on);
 	}
 	updateFaceVisibility();
 }
@@ -449,7 +524,7 @@ void AgentWindow::onLogVisibilityChanged(bool on)
 	qDebug()<<"LOG VIS IS NOW: "<<on;
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 	if(nullptr!=s) {
-		s->setCustomSettingBool("octomy.debug.log",on);
+		s->setCustomSettingBool(AgentConstants::AGENT_FACE_LOG_SHOW,on);
 	}
 	updateFaceVisibility();
 }
@@ -460,10 +535,11 @@ void AgentWindow::onStatsVisibilityChanged(bool on)
 	qDebug()<<"STATS VIS IS NOW: "<<on;
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 	if(nullptr!=s) {
-		s->setCustomSettingBool("octomy.debug.stats",on);
+		s->setCustomSettingBool(AgentConstants::AGENT_FACE_STATS_SHOW,on);
 	}
 	updateFaceVisibility();
 }
+
 
 
 void AgentWindow::onStartShowBirthCertificate()
@@ -484,6 +560,14 @@ void AgentWindow::onStartShowBirthCertificate()
 	ui->stackedWidget->setCurrentWidget(ui->pageBirthCertificate);
 }
 
+
+
+void AgentWindow::onStartDelivery()
+{
+	OC_METHODGATE();
+	ui->widgetDelivery->reset();
+	ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
+}
 
 void AgentWindow::onStartCameraPairing()
 {
@@ -562,7 +646,7 @@ void AgentWindow::updateOnlineStatus()
 		bool wantToBeOnline=false;
 		Settings *s=&mAgent->settings();
 		if(nullptr!=s) {
-			wantToBeOnline=s->getCustomSettingBool("octomy.online", false);
+			wantToBeOnline=s->getCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS, false);
 		}
 		//Spell it out for debugging
 		//qDebug()<<"We are currently "<<(isOnline?"ONLINE":"OFFLINE")<<" and we want to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
@@ -759,4 +843,9 @@ void AgentWindow::on_pushButtonPairWithControls_clicked()
 void AgentWindow::on_pushButtonConfigureHardware_clicked()
 {
 	onStartHardware();
+}
+
+void AgentWindow::on_pushButtonDeliver_clicked()
+{
+	onStartDelivery();
 }

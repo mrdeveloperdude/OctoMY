@@ -7,15 +7,15 @@ class QRWidget : public QWidget
 {
 	Q_OBJECT
 private:
-	QString data;
-	QPixmap m_doubleBuffer;
-	QColor fg;
-	QColor bg;
-	bool dirty;
+	QString mData;
+	QPixmap mDoubleBuffer;
+	QColor mFG;
+	QColor mBG;
+	bool mDirty;
 
 public:
 	explicit QRWidget(QWidget *parent = 0);
-	void setQRData(QString data);
+	void setQRData(QString mData);
 
 public:
 

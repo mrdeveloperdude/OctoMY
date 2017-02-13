@@ -40,6 +40,7 @@ struct StepMotorActuator {
 	float stepsPerRevolution;
 	float speed;
 	uint32_t lastStepTime;
+	uint32_t startTime;
 	bool isRunning;
 
 
@@ -52,6 +53,8 @@ struct StepMotorActuator {
 		, pins( pins )
 		, stepsPerRevolution( stepsPerRevolution )
 		, speed( speed )
+		, lastStepTime(0)
+		, startTime(0)
 		, isRunning(false)
 	{
 		stepper.setSpeed(0.0);
@@ -64,6 +67,7 @@ struct StepMotorActuator {
 	{
 		isRunning = true;
 		stepper.enableOutputs();
+		startTime=now;
 	}
 
 
@@ -74,7 +78,7 @@ struct StepMotorActuator {
 
 	void update(uint32_t now)
 	{
-		uint32_t a = now - startTime;
+		//uint32_t a = now - startTime;
 		//Serial.println(a);
 		float val=0.0f;
 		if (val > 0.0001f) {

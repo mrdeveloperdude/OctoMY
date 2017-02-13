@@ -109,7 +109,7 @@ void Eye::setColor(QColor irisColor)
 void Eye::setSteer(QVector2D ey)
 {
 	ey+=center;
-	if(ey!=eyeSteer) {
+	if(!qFuzzyCompare(ey, eyeSteer)) {
 		dirty=true;
 	}
 	eyeSteer=ey;
@@ -219,6 +219,17 @@ void EyesWidget::paintEvent(QPaintEvent *)
 
 void EyesWidget::onUpdateTimer()
 {
+	const qreal alpha=0.8, beta=1.0f-alpha;
+	eyeSteerSmooth=(eyeSteerSmooth*alpha)+(eyeSteer*beta);
+	QVector2D dif=(eyeSteerSmooth-eyeSteer);
+	if(dif.length()<0.001) {
+		eyeSteerSmooth=eyeSteer;
+	}
+
+	//qDebug()<<"SMOOTH STEER: "<<eyeSteer<<", "<<eyeSteerSmooth<<", "<<dif.length();
+	leftEye.setSteer(eyeSteerSmooth);
+	rightEye.setSteer(eyeSteerSmooth);
+
 	update();
 }
 
@@ -269,8 +280,6 @@ void EyesWidget::mouseMoveEvent(QMouseEvent *e)
 	} else {
 		rightEye.setExpression(lowerLidSteer,upperLidSteer,squintSteer);
 	}
-	leftEye.setSteer(eyeSteer);
-	rightEye.setSteer(eyeSteer);
 }
 
 
@@ -278,6 +287,4 @@ void EyesWidget::mouseMoveEvent(QMouseEvent *e)
 void EyesWidget::leaveEvent(QEvent *)
 {
 	eyeSteer=QVector2D(0,0);
-	leftEye.setSteer(eyeSteer);
-	rightEye.setSteer(eyeSteer);
 }

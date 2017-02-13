@@ -11,6 +11,7 @@
 ArduMYController::ArduMYController(QObject *parent)
 	: IActuatorController("ArduMY", parent)
 	, mSerialInterface(new QSerialPort(this))
+	, mCommandSerializer(mActuators)
 	, mSyncDirty(true)
 	, mWidget(nullptr)
 {
@@ -25,6 +26,12 @@ ArduMYController::ArduMYController(QObject *parent)
 	if(!connect(mSerialInterface, SIGNAL(bytesWritten(qint64)), this, SLOT(onSerialDataWritten(qint64)), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
+	/*
+	if(!connect(&mSerialSettings,SIGNAL(settingsChanged()), this, SLOT(onSerialSettingsChanged()), OC_CONTYPE)) {
+		qWarning()<<"ERROR: Could not connect";
+	}
+	*/
+
 	mSyncTimer.setTimerType(Qt::VeryCoarseTimer);
 	mSyncTimer.setInterval(1000);
 
@@ -147,7 +154,42 @@ void ArduMYController::writeData(const QByteArray &data)
 }
 
 
+// Serial IO slots
+//////////////////////////////////////////////
 
+void ArduMYController::onSerialReadData()
+{
+	qDebug()<<"ARDUINO SERIAL READ";
+}
+
+void ArduMYController::onSerialDataWritten(qint64 b)
+{
+	const qint64 left=mSerialInterface->bytesToWrite();
+	qDebug()<<"ARDUINO SERIAL WRITE "<<b<<", left="<<left;
+	if(left<=0 && mCommandSerializer.hasMoreData()) {
+		syncData();
+	}
+}
+
+void ArduMYController::onSerialHandleError(QSerialPort::SerialPortError error)
+{
+	qDebug()<<"ARDUINO SERIAL ERROR "<<error<<": "<<mSerialInterface->errorString();
+	if (error == QSerialPort::ResourceError) {
+		qDebug()<<"Critical Error "<<mSerialInterface->errorString();
+		closeSerialPort();
+	}
+
+}
+
+void ArduMYController::onSerialSettingsChanged()
+{
+	{
+		QSignalBlocker(this);
+		closeSerialPort();
+		openSerialPort();
+	}
+	emit settingsChanged();
+}
 
 
 // IServoController interface
@@ -170,15 +212,30 @@ bool ArduMYController::isConnected()
 }
 
 
+ArduMYActuator *ArduMYController::addActuator()
+{
+	ArduMYActuator *ret=nullptr;
+	const quint8 max=maxActuatorsSupported();
+	const auto ct=mActuators.size();
+	if(ct==max) {
+		qWarning()<<"ERROR: Tried to add actuator beyond the maximum count of " <<max;
+	} else {
+		mActuators.setSize(ct+1);
+		mCountDirty=true;
+	}
+	ret=&mActuators[ct];
+	return ret;
+}
+
 void ArduMYController::setServosCount(quint8 ct)
 {
 	const quint8 max=maxActuatorsSupported();
 	if(ct>max) {
-		qWarning()<<"ERROR: Tried to set "<<ct<< " servos which is more than the maximum of " <<max;
+		qWarning()<<"ERROR: Tried to set "<<ct<< " actuators which is more than the maximum of " <<max;
 	} else {
 		const quint8 old=mActuators.size();
 		if(ct!=old) {
-			mActuators.resize(ct);
+			mActuators.setSize(ct);
 			if(ct>old) {
 				//TODO: Initialize new ones?
 			}
@@ -191,17 +248,17 @@ void ArduMYController::setServosCount(quint8 ct)
 void ArduMYController::limp(QBitArray &flags)
 {
 	if(isConnected()) {
-		quint32 i=0;
-		for(ArduMYActuator &actuator:mActuators) {
+		//for(ArduMYActuator &actuator:mActuators) {
+		for(uint32_t e=mActuators.size(),i=0; i<e; ++i) {
+			ArduMYActuator &actuator=mActuators[i];
 			const bool k=flags.testBit(i);
 			if(k!=actuator.state.isLimp()) {
 				mKillDirty=true;
 				actuator.state.setLimp(k);
 			}
-			i++;
 		}
 	} else {
-		qWarning()<<"ERROR: Trying to limp subset of servos via serial when not connected";
+		qWarning()<<"ERROR: Trying to limp subset of actuators via serial when not connected";
 	}
 }
 
@@ -232,7 +289,7 @@ void ArduMYController::move(Pose &pose)
 		}
 		*/
 	} else {
-		qWarning()<<"ERROR: Trying to move servo with serial when not connected";
+		qWarning()<<"ERROR: Trying to move actuators with serial when not connected";
 	}
 }
 
@@ -318,12 +375,6 @@ void ArduMYController::setConfiguration(QVariantMap &configuration)
 {
 
 }
-
-
-
-
-
-
 
 
 

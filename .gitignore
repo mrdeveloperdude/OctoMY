@@ -45,4 +45,8 @@ local_overrides.pri
 
 /*/android/gradle*
 
+/libs/arduino/build*
+
 libzeroconf*
+
+*~

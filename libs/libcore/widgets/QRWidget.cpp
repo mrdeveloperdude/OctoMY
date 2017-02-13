@@ -9,19 +9,19 @@
 
 QRWidget::QRWidget(QWidget *parent)
 	: QWidget(parent)
-	, data("")
-	, fg("black")
-	, bg("white")
-	, dirty(true)
+	, mData("")
+	, mFG("black")
+	, mBG("white")
+	, mDirty(true)
 {
 }
 
 
 void QRWidget::setQRData(QString data)
 {
-	if(this->data!=data) {
-		dirty=true;
-		this->data=data;
+	if(this->mData!=data) {
+		mDirty=true;
+		this->mData=data;
 		this->setToolTip(data);
 		update();
 	}
@@ -38,29 +38,29 @@ void QRWidget::paintEvent(QPaintEvent *)
 	const int ox=floor((w-sz)/2);
 	const int oy=floor((h-sz)/2);
 	//check for resize change / dirty
-	const int dbw=m_doubleBuffer.width();
-	const int dbh=m_doubleBuffer.height();
-	if (  dirty || (qAbs(dbw-sz)>threshold) || (qAbs(dbh-sz)>threshold) ) {
-		dirty=false;
-		m_doubleBuffer=QPixmap(sz,sz);
-		if(""==data) {
-			m_doubleBuffer.fill(Qt::black);
+	const int dbw=mDoubleBuffer.width();
+	const int dbh=mDoubleBuffer.height();
+	if (  mDirty || (qAbs(dbw-sz)>threshold) || (qAbs(dbh-sz)>threshold) ) {
+		mDirty=false;
+		mDoubleBuffer=QPixmap(sz,sz);
+		if(""==mData) {
+			mDoubleBuffer.fill(Qt::black);
 		} else {
-			m_doubleBuffer.fill(Qt::white);
-			QPainter painter(&m_doubleBuffer);
-			paintQR(painter, size(), data);
+			mDoubleBuffer.fill(Qt::white);
+			QPainter painter(&mDoubleBuffer);
+			paintQR(painter, size(), mData);
 			emit qrRedraw();
 		}
 	}
 
 	QPainter oPainter;
 	oPainter.begin( this );
-	oPainter.drawPixmap( QRect(ox,oy  ,sz,sz), m_doubleBuffer, m_doubleBuffer.rect() );
+	oPainter.drawPixmap( QRect(ox,oy  ,sz,sz), mDoubleBuffer, mDoubleBuffer.rect() );
 	oPainter.end();
 }
 
 
 const QPixmap &QRWidget::qrPixmap()
 {
-	return m_doubleBuffer;
+	return mDoubleBuffer;
 }

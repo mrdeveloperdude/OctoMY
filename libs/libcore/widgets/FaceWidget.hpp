@@ -28,6 +28,7 @@ private:
 	Ui::FaceWidget *ui;
 
 	QString lastID;
+	Agent *mAgent;
 
 public:
 	explicit FaceWidget(QWidget *parent = 0);
@@ -63,7 +64,13 @@ private slots:
 	void on_pushButtonNewColor_clicked();
 	void on_pushButtonPanic_toggled(bool checked);
 
-public slots:
+	void on_splitterTop_splitterMoved(int pos, int index);
+
+	void on_splitterBottom_splitterMoved(int pos, int index);
+
+	void on_splitterMiddle_splitterMoved(int pos, int index);
+
+	public slots:
 
 	void onSyncParameterChanged(ISyncParameter *);
 };

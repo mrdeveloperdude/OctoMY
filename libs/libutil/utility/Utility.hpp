@@ -11,6 +11,7 @@
 #include <QAbstractButton>
 #include <QtNetwork>
 
+
 class QLayout;
 class QWidget;
 class QString;
@@ -20,6 +21,7 @@ class QStackedLayout;
 class QButtonGroup;
 class QTableView;
 class QHostAddress;
+class QSplitter;
 
 namespace utility
 {
@@ -51,6 +53,7 @@ int getNonPrimaryScreen();
 void sendFakeKeyEvent(QWidget *target, Qt::Key k, QString ks);
 void populateComboboxWithLocalAdresses(QComboBox &cb);
 QImage tint(QImage src, QColor color, qreal strength=1.0);
+qreal moveSplitter(QSplitter &splitter, qreal pos);
 template <typename T>
 void pack(T *stacked);
 
@@ -107,7 +110,7 @@ QString localAddress();
 template <typename T>
 void pack(T *stacked)
 {
-	const bool old=stacked->updatesEnabled();
+	stacked->updatesEnabled();
 	stacked->setUpdatesEnabled(false);
 	for(int i=0; i<stacked->count(); i++) {
 		stacked->widget(i)->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);

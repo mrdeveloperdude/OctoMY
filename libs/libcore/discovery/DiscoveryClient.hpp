@@ -97,6 +97,8 @@ public:
 public:
 
 	void setURL(const QUrl&);
+
+	bool isStarted();
 	void start();
 	void stop();
 

@@ -19,7 +19,7 @@ public:
 	ArduMYActuatorValueSerializer actuatorValuesSerializer;
 
 public:
-	CommandSerializer();
+	CommandSerializer(ArduMYActuatorSet &actuators);
 
 
 	bool isReadyForNewCommand();
@@ -31,7 +31,7 @@ public:
 public:
 
 	// Return true if there is more data remaining to be read
-	bool hasMoreData() const;
+	bool hasMoreData();
 
 	// Get the next byte of serial data. NOTE: only valid when hasMoreData() returns true, if not will return 0x00
 	uint8_t nextByte();

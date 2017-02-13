@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>396</width>
-    <height>529</height>
+    <height>535</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,7 +32,7 @@
    <item row="0" column="0">
     <widget class="QStackedWidget" name="stackedWidgetControl">
      <property name="currentIndex">
-      <number>2</number>
+      <number>7</number>
      </property>
      <widget class="QWidget" name="pageConnection">
       <property name="sizePolicy">
@@ -42,12 +42,24 @@
        </sizepolicy>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="PortableIDWidget" name="widgetBirthCertificate" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
+           <verstretch>100</verstretch>
           </sizepolicy>
          </property>
         </widget>
@@ -55,15 +67,15 @@
        <item>
         <widget class="TryToggle" name="tryToggleListen" native="true">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="minimumSize">
           <size>
-           <width>10</width>
-           <height>10</height>
+           <width>32</width>
+           <height>32</height>
           </size>
          </property>
         </widget>
@@ -75,6 +87,12 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -104,7 +122,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="ActuatorControlWidget" name="widgetActuatorControl" native="true"/>
+        <widget class="ActuatorManagerWidget" name="widgetActuatorControl" native="true"/>
        </item>
       </layout>
      </widget>
@@ -116,9 +134,33 @@
        </sizepolicy>
       </property>
       <layout class="QGridLayout" name="gridLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item row="0" column="0">
         <widget class="QWidget" name="widgetPoseEditor" native="true">
          <layout class="QVBoxLayout" name="verticalLayout_5">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QPushButton" name="pushButton">
             <property name="sizePolicy">
@@ -231,6 +273,18 @@
        </sizepolicy>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QLabel" name="labelLocal">
          <property name="sizePolicy">
@@ -528,6 +582,18 @@
        </sizepolicy>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="SpeechControlWidget" name="widgetSpeechControl" native="true"/>
        </item>
@@ -539,20 +605,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>LogWidget</class>
-   <extends>QPlainTextEdit</extends>
-   <header>widgets/LogWidget.hpp</header>
-  </customwidget>
-  <customwidget>
-   <class>TryToggle</class>
+   <class>ActuatorManagerWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/TryToggle.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>MapEditor</class>
-   <extends>QWidget</extends>
-   <header>widgets/MapEditor.hpp</header>
+   <header location="global">widgets/ActuatorManagerWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -568,27 +623,38 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>SpeechControlWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/SpeechControlWidget.hpp</header>
-   <container>1</container>
+   <class>LogWidget</class>
+   <extends>QPlainTextEdit</extends>
+   <header>widgets/LogWidget.hpp</header>
   </customwidget>
   <customwidget>
-   <class>ActuatorControlWidget</class>
+   <class>TryToggle</class>
    <extends>QWidget</extends>
-   <header>widgets/ActuatorControlWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>CarSteeringWidget</class>
-   <extends>QWidget</extends>
-   <header>../libcore/widgets/CarSteeringWidget.hpp</header>
+   <header>widgets/TryToggle.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PanicButton</class>
    <extends>QWidget</extends>
    <header>widgets/PanicButton.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MapEditor</class>
+   <extends>QWidget</extends>
+   <header>widgets/MapEditor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SpeechControlWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/SpeechControlWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CarSteeringWidget</class>
+   <extends>QWidget</extends>
+   <header>../libcore/widgets/CarSteeringWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

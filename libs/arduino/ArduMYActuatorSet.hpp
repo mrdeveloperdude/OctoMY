@@ -1,12 +1,13 @@
 #ifndef ACTUATORSET_HPP
 #define ACTUATORSET_HPP
 
+#include "ArduMY.hpp"
+
+
 #include "ArduMYActuator.hpp"
 #include "DynamicArray.hpp"
 
 #include "ArduMYActuatorFlags.hpp"
-
-#include "ArduMY.hpp"
 
 
 class ArduMYActuatorSet: public DynamicArray<ArduMYActuator>
@@ -18,7 +19,7 @@ public:
 	// NOTE: There is currently no inhrent mechanism to set the dirty flags. It must be carried out by the same process that makes the respective changes
 
 	ARDUMY_ACTUATOR_FLAG_SELECTOR(isSyncDue,					setSyncDue,					0 )
-	ARDUMY_ACTUATOR_FLAG_SELECTOR(isCountDirty,				setCountDirty,				1 )
+	ARDUMY_ACTUATOR_FLAG_SELECTOR(isCountDirty,					setCountDirty,				1 )
 	ARDUMY_ACTUATOR_FLAG_SELECTOR(isConfigDirty,				setConfigDirty,				2 )
 	ARDUMY_ACTUATOR_FLAG_SELECTOR(isValuesDirty,				setValuesDirty,				3 )
 

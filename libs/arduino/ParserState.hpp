@@ -6,6 +6,7 @@
 enum ParserState: uint8_t {
 	OCTOMY_SYNC=0 //We decided on our own to sync
 	, OCTOMY_AWAITING_COMMAND // We were told to sync
+	, OCTOMY_GET_STATUS // Client wants our status data
 	, OCTOMY_SET_ACTUATOR_COUNT // The number of servos has changed
 	, OCTOMY_SET_ACTUATOR_CONFIG // The configuration of one or more servos has changed
 	, OCTOMY_SET_ACTUATOR_VALUES // The positions of one or more servos has changed

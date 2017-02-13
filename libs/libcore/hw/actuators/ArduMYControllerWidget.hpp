@@ -29,7 +29,7 @@ private slots:
 	void on_pushButtonConfigureSerial_clicked();
 	void on_pushButtonConfigureActuators_clicked();
 
-	void on_spinBoxActuatorCount_valueChanged(int arg1);
+	void on_comboBoxAddActuator_currentIndexChanged(int index);
 };
 
 #endif // ARDUMYCONTROLLERWIDGET_HPP

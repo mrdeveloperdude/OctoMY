@@ -168,7 +168,6 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 				mNode->peers().setParticipant(mMyData);
 				mNode->peers().save();
 				ui->widgetBirthCertificate->setPortableID(mID);
-				ui->widgetNetworkSettings->setPort(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_AGENT);
 				ui->stackedWidget->setCurrentWidget(ui->pageDone);
 				//"+(mID.gender().toLower()==QStringLiteral("male")?QStringLiteral("Mr. "):(mID.gender().toLower()==QStringLiteral("female")?QStringLiteral("Mrs. "):QStringLiteral("")))+
 				//QString text="Hello, my name is "+mID.name()+". I am an octomy agent. What is your bidding master?";
@@ -184,30 +183,9 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 }
 
 
-
-void AgentDeliveryWizard::on_pushButtonDone_clicked()
-{
-	emit done(false);
-}
-
 void AgentDeliveryWizard::on_pushButtonPairNow_clicked()
 {
-	bool cont=true;
-	if(!ui->widgetNetworkSettings->verify()) {
-		if (QMessageBox::Yes != QMessageBox::question(this, "Warning", "Selected port '" +QString::number(ui->widgetNetworkSettings->port())+ "' is not available. Are you sure you want to continue?", QMessageBox::Yes|QMessageBox::No)) {
-			cont=false;
-		}
-	}
-	if(cont) {
-		QSharedPointer<NodeAssociate> me=mNode->nodeIdentity();
-		if(nullptr!=me) {
-			NetworkAddress &local=me->localAddress();
-			NetworkAddress cur=ui->widgetNetworkSettings->address();
-			local.setIP(cur.ip());
-			local.setPort(ui->widgetNetworkSettings->address().port());
-		}
-		emit done(true);
-	}
+	emit done(true);
 }
 
 void AgentDeliveryWizard::on_pushButtonRandomName_clicked()

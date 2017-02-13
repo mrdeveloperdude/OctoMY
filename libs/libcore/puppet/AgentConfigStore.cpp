@@ -72,7 +72,10 @@ void AgentConfigStore::load()
 			QVariantMap map = doc.object().toVariantMap();
 			QVariantMap agentConfigMap=map["agentConfig"].toMap();
 			if(mAgentConfig.isNull()) {
-				mAgentConfig=QSharedPointer<AgentConfig>(new AgentConfig(agentConfigMap));
+				mAgentConfig=QSharedPointer<AgentConfig>(new AgentConfig());
+			}
+			if(!mAgentConfig.isNull()) {
+				mAgentConfig->fromMap(agentConfigMap);
 			}
 			mReady=true;
 		}
@@ -83,7 +86,7 @@ void AgentConfigStore::load()
 
 void AgentConfigStore::save()
 {
-	//qDebug()<<"NodeAssociateStore: Saving to file: "<<mFilename;
+	qDebug()<<"AgentConfigStore: Saving to file: "<<mFilename;
 	QVariantMap map;
 	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();
 	if(!mAgentConfig.isNull()) {

@@ -30,7 +30,7 @@ class CourierSet: public QList<Courier *>
 {
 private:
 	Agent &mAgent;
-	QDataStream mDS;
+	QDataStream mDatastream;
 	AgentStateCourier *mAgentStateCourier;
 	SensorsCourier *mSensorsCourier;
 	BlobCourier *mBlobCourier;

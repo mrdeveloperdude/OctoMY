@@ -94,6 +94,7 @@ uint32_t DynamicArray<T>::size() const
 	return mSize;
 }
 
+
 template <class T>
 void DynamicArray<T>::setSize(uint32_t newsize)
 {

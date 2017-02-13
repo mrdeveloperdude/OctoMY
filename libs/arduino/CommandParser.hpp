@@ -44,6 +44,7 @@ struct CommandParser {
 
 	bool dirtyActuatorValues;
 	bool dirtyActuatorConfigs;
+	bool sendStatusPending;
 
 	explicit CommandParser();
 
@@ -51,6 +52,7 @@ struct CommandParser {
 	// and if not, reset states for parsing the command at hand
 	ParserState prepareCommand(const uint8_t inChar);
 
+	void setup();
 	void parse(const uint8_t inChar);
 };
 

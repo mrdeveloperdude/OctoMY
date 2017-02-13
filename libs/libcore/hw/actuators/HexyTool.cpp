@@ -1,8 +1,8 @@
 #include "HexyTool.hpp"
 #include "ui_HexyTool.h"
 #include "../libutil/utility/Standard.hpp"
-#include "hw/actuators/ActuatorWidget.hpp"
-
+#include "hw/actuators/ArduMYActuatorWidget.hpp"
+#include "agent/AgentConstants.hpp"
 #include <QSpacerItem>
 
 HexyTool::HexyTool(QWidget *parent)
@@ -12,7 +12,7 @@ HexyTool::HexyTool(QWidget *parent)
 	, settings(nullptr)
 {
 	ui->setupUi(this);
-	ui->tryToggleConnect->configure("Connect","Connecting","Connected", "#e1be4e");
+	ui->tryToggleConnect->configure("Connect","Connecting","Connected", AgentConstants::AGENT_CONNECT_BUTTON_COLOR);
 	if(!connect(serial,SIGNAL(settingsChanged()), this, SLOT(onHexySettingsChanged()))) {
 		qWarning()<<"ERROR: could not connect";
 	}
@@ -28,20 +28,6 @@ HexyTool::HexyTool(QWidget *parent)
 		qWarning()<<"ERROR: could not connect";
 	}
 
-
-	for(quint32 i=0; i<HexySerial::SERVO_COUNT; ++i) {
-		ActuatorWidget *si=new ActuatorWidget();
-		if(0!=si) {
-			si->configure(settings,i);
-			if(!connect(si,SIGNAL(servoMoved(quint32, qreal)),this,SLOT(onServoMoved(quint32, qreal)),OC_CONTYPE)) {
-				qWarning()<<"ERROR: could not connect";
-			}
-			if(!connect(si,SIGNAL(servoKilled(quint32)),this,SLOT(onServoKilled(quint32)),OC_CONTYPE)) {
-				qWarning()<<"ERROR: could not connect";
-			}
-			ui->scrollAreaWidgetContents->layout()->addWidget(si);
-		}
-	}
 
 	QSpacerItem *vs = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 	ui->verticalLayoutServos->addItem(vs);
@@ -205,9 +191,9 @@ void HexyTool::configure(Settings *s)
 {
 	settings=s;
 	int i=0;
-	auto sis=ui->scrollAreaWidgetContents->findChildren<ActuatorWidget *>();
-	for(ActuatorWidget *si:sis) {
-		si->configure(settings,i++);
+	auto sis=ui->scrollAreaWidgetContents->findChildren<ArduMYActuatorWidget *>();
+	for(ArduMYActuatorWidget *si:sis) {
+//		si->configure(settings,i++);
 	}
 }
 
@@ -216,9 +202,9 @@ void HexyTool::killAll()
 	//qDebug()<<"KILL ALL";
 	if(serial->isConnected()) {
 		serial->kill();
-		QList<ActuatorWidget *> si=ui->scrollAreaWidgetContents->findChildren<ActuatorWidget *>();
-		for(QList<ActuatorWidget*>::iterator it=si.begin(),e=si.end(); it!=e; ++it) {
-			ActuatorWidget *s=*it;
+		QList<ArduMYActuatorWidget *> si=ui->scrollAreaWidgetContents->findChildren<ArduMYActuatorWidget *>();
+		for(QList<ArduMYActuatorWidget*>::iterator it=si.begin(),e=si.end(); it!=e; ++it) {
+			ArduMYActuatorWidget *s=*it;
 			if(0!=s) {
 				QSignalBlocker sb(s);
 				s->disableServo();

@@ -1,8 +1,7 @@
 #ifndef SWITCHINPUT_HPP
 #define SWITCHINPUT_HPP
 
-
-
+#include "ArduMY.hpp"
 
 
 struct SwitchInput {

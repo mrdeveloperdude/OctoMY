@@ -94,7 +94,8 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 			qWarning()<<"ERROR: Could not connect";
 		}
 
-		ui->widgetActuatorControl->configure(5);
+		//TODO: WOW we need to update this
+//		ui->widgetActuatorControl->configure(5);
 		PoseMapping *pm=new PoseMapping(5);
 		ui->widgetPoseMapping->configure(*pm);
 

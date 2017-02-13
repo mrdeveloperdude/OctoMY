@@ -64,6 +64,7 @@ private:
 	QVector2D upperLidSteer;
 	QVector2D lowerLidSteer;
 	QVector2D eyeSteer;
+	QVector2D eyeSteerSmooth;
 	QVector2D squintSteer;
 
 	QVector2D lastPress;

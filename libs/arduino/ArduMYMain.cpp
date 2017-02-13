@@ -1,9 +1,19 @@
-#include "HardwareServoController.hpp"
+#include "ArduMYMain.hpp"
 
 #include "CommandParser.hpp"
 
-void HardwareServoController::update(CommandParser &parser)
+void ArduMYMain::setup()
 {
+
+}
+
+void ArduMYMain::update(uint32_t unow)
+{
+	if(parser.sendStatusPending) {
+		BoardInfo bi;
+		Serial.println("HERE IS YOUR FUCKING STATUS SCHWINHUND");
+		parser.sendStatusPending=false;
+	}
 	auto hwServoCount=servos.size();
 	auto parserServoCount=parser.actuators.size();
 	if(hwServoCount!=parserServoCount) {
@@ -34,3 +44,4 @@ void HardwareServoController::update(CommandParser &parser)
 		parser.dirtyActuatorValues=false;
 	}
 }
+

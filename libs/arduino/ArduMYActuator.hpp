@@ -36,6 +36,9 @@ struct ArduMYActuator {
 		return config.isEqual(other.config) && state.isEqual(other.state, config.representation);
 	}
 
+	float valueFloat(){
+		return state.value.toFloat(config.representation);
+	}
 };
 
 

@@ -23,6 +23,7 @@ HardwareWizard::HardwareWizard(QWidget *parent)
 	//qDebug()<<"Setting model";
 	ui->listViewSerialInterface->setModel(mSerialDevicesModel);
 	ui->listViewTemplate->setModel(mHardwareTemplateModel);
+	ui->widgetLociManager->configure(0);
 	reset();
 }
 
@@ -96,7 +97,6 @@ void HardwareWizard::moveTo(int next)
 		if(nullptr!=ctl) {
 			qDebug()<<"CREATING CONTROLLER OK";
 			if(nullptr!=mController) {
-
 				qDebug()<<"DELETING OLD CONTROLLER";
 				delete mController;
 			}
@@ -123,8 +123,7 @@ void HardwareWizard::moveTo(int next)
 			ui->scrollAreaControllerConfiguration->setWidget(nullptr);
 			if(nullptr!=configurationWidget) {
 				ui->scrollAreaControllerConfiguration->setWidget(configurationWidget);
-			}
-			else{
+			} else {
 				ui->scrollAreaControllerConfiguration->setWidget(ui->scrollAreaWidgetContents);
 			}
 			ui->scrollAreaControllerConfiguration->update();
@@ -133,6 +132,8 @@ void HardwareWizard::moveTo(int next)
 	break;
 	// Interface
 	case(2): {
+		// NOTE: We end here because the rest of the pages are work in progress
+		emit done();
 		selectFirstIfNoneSelected(ui->listViewSerialInterface);
 	}
 	break;
@@ -169,80 +170,52 @@ void HardwareWizard::moveTo(int next)
 
 void HardwareWizard::save()
 {
-	/*
-		const int curTemplate=ui->listViewTemplate->currentIndex().row();
-		qDebug()<<"Found template: "<<curTemplate;
-		QVector<HardwareTemplate *> templates=HardwareTemplate::templates();
-		if(curTemplate<0 || curTemplate>=templates.size()) {
-			qWarning()<<"ERROR: Could not find selected template";
-			return;
-		}
-		mSelectedTempalte=templates[curTemplate];
-		loadFromTemplate();
-	*/
-	const int cur=ui->stackedWidget->currentIndex();
-	switch(cur) {
-	// Controller
-	case(0): {
-		if(nullptr!=mConfigStore) {
-			QSharedPointer<AgentConfig> config=mConfigStore->agentConfig();
-			if(!config.isNull()) {
+	if(nullptr!=mConfigStore) {
+		QSharedPointer<AgentConfig> config=mConfigStore->agentConfig();
+		if(!config.isNull()) {
+
+			/*
+				const int curTemplate=ui->listViewTemplate->currentIndex().row();
+				qDebug()<<"Found template: "<<curTemplate;
+				QVector<HardwareTemplate *> templates=HardwareTemplate::templates();
+				if(curTemplate<0 || curTemplate>=templates.size()) {
+					qWarning()<<"ERROR: Could not find selected template";
+					return;
+				}
+				mSelectedTempalte=templates[curTemplate];
+				loadFromTemplate();
+			*/
+			const QWidget *cur=ui->stackedWidget->currentWidget();
+			qDebug()<<" S A V E calledf with cur= "<<cur;
+
+			// Controller
+			if(cur==ui->pageController) {
 				QString controllerName=selectedControllerName();
 				qDebug()<< "Saving controller name '"<<controllerName<<"' in Agent Cnofig Store";
 				config->setControllerName(controllerName);
-			} else {
-				qWarning()<<"ERROR: Could not find config while saving controller name in hardware wizard";
 			}
-		} else {
-			qWarning()<<"ERROR: Could not find config store while saving controller name in hardware wizard";
-		}
-	}
-	break;
-	// Controller Configuration
-	case(1): {
-		if(nullptr!=mController) {
-			if(nullptr!=mConfigStore) {
-				QSharedPointer<AgentConfig> config=mConfigStore->agentConfig();
-				if(!config.isNull()) {
+
+			// Controller Configuration
+			else if (cur == ui->pageControllerConfiguration) {
+				if(nullptr!=mController) {
+
 					qDebug()<< "Saving controller data";
 					config->setControllerConfig(mController->confiruation());
+
 				} else {
-					qWarning()<<"ERROR: Could not find config while saving controller config in hardware wizard";
+					qWarning()<<"ERROR: Could not find controller while saving controller config in hardware wizard";
 				}
 			} else {
-				qWarning()<<"ERROR: Could not find config store while saving controller config in hardware wizard";
+				qDebug()<<" S A V E calledf with unknwon cur";
 			}
+
 		} else {
-			qWarning()<<"ERROR: Could not find controller while saving controller config in hardware wizard";
+			qWarning()<<"ERROR: Could not find config while saving";
 		}
+	} else {
+		qWarning()<<"ERROR: Could not find config store while saving";
 	}
-	break;
-	// Interface
-	case(2): {
 
-	}
-	break;
-	// Serial device
-	case(3): {
-
-	}
-	break;
-	// Protocol
-	case(4): {
-	}
-	break;
-	// Serial settings
-	case(5): {
-
-	}
-	break;
-	// Pose Mapping
-	case(6): {
-		// Save happens implicitly via AgentConfigStore upon destructor
-	}
-	break;
-
-	}
 }
 
 void HardwareWizard::loadFromTemplate()
@@ -273,4 +246,35 @@ void HardwareWizard::on_pushButtonBack_clicked()
 {
 	const int next=mod(ui->stackedWidget->currentIndex()-1, ui->stackedWidget->count());
 	moveTo(next);
+}
+
+void HardwareWizard::on_listWidgetController_doubleClicked(const QModelIndex &index)
+{
+	on_pushButtonOnward_clicked();
+}
+
+void HardwareWizard::on_comboBoxAddLocus_currentIndexChanged(int index)
+{
+	switch(index) {
+	default:
+	case(0): {
+		return;
+	}
+	break;
+	case(1): {
+		auto v=ui->widgetLociManager->children().size()+1;
+
+		//auto v=ui->spinBoxActuatorCount->value()+1;
+//		ui->spinBoxActuatorCount->setValue(v);
+		ui->widgetLociManager->configure(v);
+
+	}
+	break;
+	case(2): {
+	} break;
+
+	case(3): {
+	} break;
+	}
+	ui->comboBoxAddLocus->setCurrentIndex(0);
 }

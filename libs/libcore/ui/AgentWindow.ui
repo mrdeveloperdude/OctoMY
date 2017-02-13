@@ -39,7 +39,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="pageDelivery">
       <layout class="QGridLayout" name="gridLayout_5">
@@ -246,8 +246,8 @@
             </widget>
             <widget class="QWidget" name="pageConfig">
              <layout class="QGridLayout" name="gridLayout_8">
-              <item row="2" column="1">
-               <widget class="LightWidget" name="widgetPairStatus" native="true">
+              <item row="1" column="1">
+               <widget class="LightWidget" name="widgetDeliveryStatus" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                   <horstretch>0</horstretch>
@@ -262,7 +262,7 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="0">
+              <item row="2" column="0">
                <spacer name="horizontalSpacer_8">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -275,65 +275,7 @@
                 </property>
                </spacer>
               </item>
-              <item row="2" column="2">
-               <widget class="QPushButton" name="pushButtonPairWithControls">
-                <property name="text">
-                 <string>Pair with Controls</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2">
-               <widget class="QPushButton" name="pushButtonConfigureHardware">
-                <property name="text">
-                 <string>Configure Hardware</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0" colspan="4">
-               <widget class="QLabel" name="label">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>&lt;h1&gt;Almost there...&lt;/h1&gt;
-&lt;p&gt;Please review the remaining configuration below:&lt;/p&gt;
-</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="2">
-               <spacer name="verticalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="1" column="3">
-               <spacer name="horizontalSpacer_9">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="1" column="1">
+              <item row="2" column="1">
                <widget class="LightWidget" name="widgetHardwareStatus" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -349,17 +291,112 @@
                 </property>
                </widget>
               </item>
+              <item row="2" column="2">
+               <widget class="QPushButton" name="pushButtonConfigureHardware">
+                <property name="toolTip">
+                 <string>Configure controller, actuators and loci of this Agent.</string>
+                </property>
+                <property name="text">
+                 <string>Configure Hardware</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <spacer name="horizontalSpacer_9">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="3" column="1">
+               <widget class="LightWidget" name="widgetPairStatus" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>30</width>
+                  <height>30</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QPushButton" name="pushButtonPairWithControls">
+                <property name="toolTip">
+                 <string>Connect this Agent with controls.</string>
+                </property>
+                <property name="text">
+                 <string>Pair with Controls</string>
+                </property>
+               </widget>
+              </item>
               <item row="4" column="2">
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="2">
                <widget class="QPushButton" name="pushButtonSkipConfig">
+                <property name="toolTip">
+                 <string>Skip any remaining configuration for now. You can start configuration from the main menu, or from this screen next time Agent launches.</string>
+                </property>
                 <property name="text">
                  <string>Skip</string>
                 </property>
                </widget>
               </item>
-              <item row="3" column="2">
-               <widget class="QLabel" name="label_2">
+              <item row="6" column="2">
+               <spacer name="verticalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="pushButtonDeliver">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="toolTip">
+                 <string>Generate an ID and set a name for this Agent.</string>
+                </property>
                 <property name="text">
-                 <string/>
+                 <string>Deliver</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0" colspan="4">
+               <widget class="QLabel" name="label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&lt;h1&gt;Some configuration remains!&lt;/h1&gt;
+</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -1023,6 +1060,12 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>LightWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/LightWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>PortableIDWidget</class>
    <extends>QWidget</extends>
    <header>widgets/PortableIDWidget.hpp</header>
@@ -1074,12 +1117,6 @@
    <class>HardwareWizard</class>
    <extends>QWidget</extends>
    <header>widgets/HardwareWizard.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LightWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/LightWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

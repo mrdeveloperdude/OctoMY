@@ -119,5 +119,9 @@
         <file>icons/hexy_logo.svg</file>
         <file>icons/arcbotics_logo.svg</file>
         <file>icons/unknown.svg</file>
+        <file>icons/analog_input.svg</file>
+        <file>icons/digital_output.svg</file>
+        <file>icons/digital_input.svg</file>
+        <file>icons/pwm.svg</file>
     </qresource>
 </RCC>

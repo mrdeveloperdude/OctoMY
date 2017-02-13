@@ -9,30 +9,30 @@
 
 class PortableI;
 
-class IdenticonWidget : public SvgWidget{
-		Q_OBJECT
+class IdenticonWidget : public SvgWidget
+{
+	Q_OBJECT
 
-	private:
-		Identicon identicon;
+private:
+	Identicon identicon;
 
-	public:
-		explicit IdenticonWidget(QWidget *parent = 0);
+public:
+	explicit IdenticonWidget(QWidget *parent = 0);
 
-	protected:
-		void regenerateIdenticon();
+protected:
+	void regenerateIdenticon();
 
-	public:
-		void setPortableID(PortableID &id);
+public:
+	void setPortableID(PortableID &id);
 
-	signals:
-		void doubleClicked();
+signals:
+	void doubleClicked();
 
-	protected:
-		void mouseDoubleClickEvent(QMouseEvent *);
+protected:
+	void mouseDoubleClickEvent(QMouseEvent *);
 
 };
 
 #endif // IDENTICONWIDGET_HPP
-
 
 

@@ -47,7 +47,9 @@ DiscoveryClient::DiscoveryClient(Node &node)
 	}
 }
 
-
+bool DiscoveryClient::isStarted(){
+	return mTimer.isActive();
+}
 
 void DiscoveryClient::start()
 {

@@ -59,6 +59,12 @@ private slots:
 	void on_pushButtonBack_clicked();
 
 
+	void on_listWidgetController_doubleClicked(const QModelIndex &index);
+	void on_comboBoxAddLocus_currentIndexChanged(int index);
 };
 
 #endif // HARDWAREWIZARD_HPP
+
+
+
+

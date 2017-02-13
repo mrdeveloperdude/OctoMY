@@ -26,6 +26,8 @@
 
 // QDesktopServices::openUrl(QUrl("https://www.youtube.com/watch?v=mTiqZm-Ea70", QUrl::TolerantMode));
 
+#include "zoo/ZooConstants.hpp"
+
 
 
 PairingWizard::PairingWizard(QWidget *parent)
@@ -58,6 +60,37 @@ PairingWizard::PairingWizard(QWidget *parent)
 }
 
 
+void PairingWizard::updateNetworkSettings()
+{
+	if(nullptr!=mNode) {
+		DiscoveryClient *client=mNode->discoveryClient();
+		if(nullptr!=client) {
+			const bool visible=this->isVisible();
+			const bool valid=ui->widgetNetworkSettings->verify(false);
+			if(valid) {
+				QSharedPointer<NodeAssociate> me=mNode->nodeIdentity();
+				if(nullptr!=me) {
+					NetworkAddress &local=me->localAddress();
+					NetworkAddress cur=ui->widgetNetworkSettings->address();
+					local.setIP(cur.ip());
+					local.setPort(ui->widgetNetworkSettings->address().port());
+				}
+			}
+			if(visible && valid) {
+				if(!client->isStarted()) {
+					client->start();
+				}
+				ui->progressBarSearching->setVisible(true);
+			} else {
+				if(client->isStarted()) {
+					client->stop();
+				}
+				ui->progressBarSearching->setVisible(false);
+			}
+		}
+	}
+}
+
 PairingWizard::~PairingWizard()
 {
 	delete ui;
@@ -68,6 +101,8 @@ void PairingWizard::configure(Node *n)
 {
 	mNode=n;
 	if(nullptr!=mNode) {
+
+
 		DiscoveryClient *discovery=mNode->discoveryClient();
 		DiscoveryType type=mNode->type();
 		QSharedPointer<NodeAssociate>  ass=mNode->nodeIdentity();
@@ -93,28 +128,41 @@ void PairingWizard::configure(Node *n)
 				qWarning()<<"ERROR: Could not connect";
 			}
 
+
+			quint16 defaultPort=0;
 			switch(type) {
-			default:
 			case(TYPE_ZOO):
+			default:
 			case(TYPE_UNKNOWN):
 			case(TYPE_AGENT): {
 				ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Agent").replace(QRegularExpression("\\[DEST\\]"), "Control"));
 				ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageAgent);
-
+				defaultPort=ZooConstants::OCTOMY_UDP_DEFAULT_PORT_AGENT;
 			}
 			break;
 			case(TYPE_REMOTE): {
 				ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Remote").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
 				ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
-
+				defaultPort=ZooConstants::OCTOMY_UDP_DEFAULT_PORT_REMOTE;
 			}
 			break;
 			case(TYPE_HUB): {
 				ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Hub").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
 				ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
+				defaultPort=ZooConstants::OCTOMY_UDP_DEFAULT_PORT_HUB;
 			}
 			break;
 			}
+
+
+			ui->widgetNetworkSettings->setPort(defaultPort);
+			connect(ui->widgetNetworkSettings, &NetworkSettingsWidget::validityChanged, this, [=](bool ok) {
+				updateNetworkSettings();
+			},OC_CONTYPE);
+			ui->widgetNetworkSettings->verify();
+
+
+
 		} else {
 			qWarning()<<"ERROR: No local ass";
 		}
@@ -186,7 +234,7 @@ void PairingWizard::startEdit(int row)
 			}
 		}
 		ui->stackedWidget->setCurrentWidget(ui->pagePeerDetail);
-	//	setUpdatesEnabled(true);
+		//	setUpdatesEnabled(true);
 	} else {
 		qWarning()<<"ERROR: Index was invalid for row "<<row;
 	}
@@ -199,22 +247,13 @@ Node *PairingWizard::getNode()
 
 void PairingWizard::showEvent(QShowEvent *)
 {
-	if(nullptr!=mNode) {
-		DiscoveryClient *client=mNode->discoveryClient();
-		if(nullptr!=client) {
-			client->start();
-		}
-	}
+	updateNetworkSettings();
+
 }
 
 void PairingWizard::hideEvent(QHideEvent *)
 {
-	if(nullptr!=mNode) {
-		DiscoveryClient *client=mNode->discoveryClient();
-		if(nullptr!=client) {
-			client->stop();
-		}
-	}
+	updateNetworkSettings();
 }
 
 void PairingWizard::on_pushButtonMaybeOnward_clicked()

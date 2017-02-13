@@ -28,7 +28,6 @@ NetworkSettingsWidget::NetworkSettingsWidget(QWidget *parent)
 		qWarning()<<"ERROR: Could not connect";
 	}
 	updateTextView();
-	ui->pushButtonEditable->setChecked(false);
 	ui->stackedWidget->setCurrentWidget(ui->pageView);
 }
 
@@ -57,23 +56,31 @@ quint16 NetworkSettingsWidget::port()
 	return ui->lineEditLocalPort->text().toInt();
 }
 
-bool NetworkSettingsWidget::verify()
+bool NetworkSettingsWidget::verify(bool sendSignal)
 {
 	QUdpSocket udp;
-	quint16 port=quint16(ui->lineEditLocalPort->text().toInt());
-	bool ok=udp.bind(QHostAddress(ui->comboBoxLocalAddress->currentText()), port);
-	if(0==port) {
-		port=udp.localPort();
+	QString txt=ui->lineEditLocalPort->text();
+	if(txt.isEmpty()) {
+		return false;
+	} else {
+		quint16 port=quint16(txt.toInt());
+		bool ok=udp.bind(QHostAddress(ui->comboBoxLocalAddress->currentText()), port);
+		if(0==port) {
+			port=udp.localPort();
+		}
+		ui->lineEditLocalPort->setText(QString::number(port));
+		ui->widgetStatus->setLightOn(true);
+		ui->widgetStatus->setLightColor(ok?Qt::green:Qt::red);
+		if(sendSignal) {
+			emit validityChanged(ok);
+		}
+		return ok;
 	}
-	ui->lineEditLocalPort->setText(QString::number(port));
-	ui->widgetStatus->setLightOn(true);
-	ui->widgetStatus->setLightColor(ok?Qt::green:Qt::red);
-	return ok;
 }
 
 void NetworkSettingsWidget::updateTextView()
 {
-	ui->labelAddress->setText(ui->comboBoxLocalAddress->currentText()+" : "+ui->lineEditLocalPort->text());
+	ui->pushButtonEdit->setText(ui->comboBoxLocalAddress->currentText()+" : "+ui->lineEditLocalPort->text());
 }
 
 void NetworkSettingsWidget::onPortEditChanged()
@@ -95,7 +102,12 @@ void NetworkSettingsWidget::onLocalAddressChanged(int index)
 	updateTextView();
 }
 
-void NetworkSettingsWidget::on_pushButtonEditable_toggled(bool checked)
+void NetworkSettingsWidget::on_pushButtonEdit_clicked()
 {
-	ui->stackedWidget->setCurrentWidget(checked?ui->pageEdit:ui->pageView);
+	ui->stackedWidget->setCurrentWidget(ui->pageEdit);
+}
+
+void NetworkSettingsWidget::on_pushButtonSave_clicked()
+{
+	ui->stackedWidget->setCurrentWidget(ui->pageView);
 }

@@ -159,9 +159,9 @@ FROM DATA:  QMap(("birthDate", QVariant(qulonglong, 1471476138556))
 					 ?":/icons/block.svg"
 					:":/icons/ignore.svg"
 					  );
-		drawSVG(painter, onlineSymbol , icX,border,buttonSize,buttonSize);
+		drawSVG(painter, onlineSymbol , icX,r.top()+border,buttonSize,buttonSize);
 		icX+=buttonSize+border*2;
-		drawSVG(painter, trustSymbol, icX,border,buttonSize,buttonSize);
+		drawSVG(painter, trustSymbol, icX,r.top()+border,buttonSize,buttonSize);
 		icX+=buttonSize+border*2;
 		//drawSVG(painter, , icX,border,buttonSize,buttonSize);
 		//icX+=buttonSize+border*2;
