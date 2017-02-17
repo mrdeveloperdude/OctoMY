@@ -17,6 +17,7 @@ ArduinoPinSelector::ArduinoPinSelector(QWidget *parent)
 	QStringList pins=mPinMap.pinStringList();
 	//for(QString str:pins) {		qDebug()<<"PIN: "<<str;	}
 	ui->comboBoxPin->addItems(pins);
+	adjustSize();
 
 }
 

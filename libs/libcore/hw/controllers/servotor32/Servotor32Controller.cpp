@@ -1,8 +1,7 @@
 #include "Servotor32Controller.hpp"
 
-
-
-#include "SerialSettingsWidget.hpp"
+#include "hw/serial/SerialSettings.hpp"
+#include "hw/controllers/servotor32/Servotor32ControllerWidget.hpp"
 #include "../libutil/utility/Standard.hpp"
 
 
@@ -10,13 +9,14 @@
 #include <QtGlobal>
 #include <QStringBuilder>
 #include <QBitArray>
+#include <QSerialPort>
 
 
 Servotor32Controller::Servotor32Controller(QObject *parent)
 	: IActuatorController("Servotor32", parent)
-	, mSerialSettings(new SerialSettingsWidget)
 	, mSerialInterface(new QSerialPort(this))
 	, mReads(0)
+	, mWidget(nullptr)
 {
 
 	qRegisterMetaType<QSerialPort::SerialPortError>();
@@ -29,30 +29,32 @@ Servotor32Controller::Servotor32Controller(QObject *parent)
 	if(!connect(mSerialInterface, SIGNAL(bytesWritten(qint64)), this, SLOT(onSerialDataWritten(qint64)), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
-	if(!connect(mSerialSettings,SIGNAL(settingsChanged()), this, SLOT(onSettingsChanged()), OC_CONTYPE)) {
+	/*
+	if(!connect(&mSerialSettings,SIGNAL(settingsChanged()), this, SLOT(onSerialSettingsChanged()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
+	*/
 }
 
 Servotor32Controller::~Servotor32Controller()
 {
 	//ASIMOV: Limp all servos before closing shop to avoid frying them if they are trying to reach impossible positions
 	limpAll();
-	delete mSerialSettings;
 }
 
-void Servotor32Controller::configure()
+void Servotor32Controller::configure(SerialSettings &serialSettings)
 {
-	if(nullptr!=mSerialSettings) {
-		qDebug()<<"SETTINGS SHOW";
-		mSerialSettings->show();
-	}
+	qDebug()<<"Servotor32Controller configured with new serial settings: "<< serialSettingsToString (serialSettings);
+	closeSerialPort();
+	mSerialSettings=serialSettings;
+	openSerialPort();
+	writeData("\n");
 }
 
 
 void Servotor32Controller::openSerialPort()
 {
-	SerialSettings p = mSerialSettings->settings();
+	SerialSettings p;
 	mSerialInterface->setPortName(p.name);
 	mSerialInterface->setBaudRate(p.baudRate);
 	mSerialInterface->setDataBits(p.dataBits);
@@ -187,19 +189,17 @@ void Servotor32Controller::onSerialHandleError(QSerialPort::SerialPortError erro
 	}
 }
 
-void Servotor32Controller::onSettingsChanged()
+
+
+void Servotor32Controller::onSerialSettingsChanged()
 {
 	{
 		QSignalBlocker(this);
 		closeSerialPort();
 		openSerialPort();
-		mSerialSettings->hide();
-		//version();
-		writeData("\n");
 	}
 	emit settingsChanged();
 }
-
 
 
 // IServoController interface
@@ -370,7 +370,13 @@ qreal Servotor32Controller::actuatorDefault(quint8 )
 
 QWidget *Servotor32Controller::configurationWidget()
 {
-	return nullptr;
+	if(nullptr==mWidget) {
+		mWidget=new Servotor32ControllerWidget(nullptr);
+		if(nullptr!=mWidget) {
+			mWidget->configure(this);
+		}
+	}
+	return mWidget;
 }
 
 
@@ -379,7 +385,7 @@ QWidget *Servotor32Controller::configurationWidget()
 
 
 
-QVariantMap Servotor32Controller::confiruation()
+QVariantMap Servotor32Controller::configuration()
 {
 	QVariantMap map;
 	return map;

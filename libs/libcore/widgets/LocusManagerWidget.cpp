@@ -3,7 +3,7 @@
 
 
 #include "../libutil/utility/Standard.hpp"
-#include "hw/actuators/WheeledLocusWidget.hpp"
+#include "locus/WheeledLocusWidget.hpp"
 
 
 #include <QSpacerItem>

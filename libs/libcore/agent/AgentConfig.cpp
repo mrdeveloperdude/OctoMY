@@ -1,5 +1,4 @@
 #include "AgentConfig.hpp"
-#include "PoseMapping.hpp"
 
 #include <QSharedPointer>
 

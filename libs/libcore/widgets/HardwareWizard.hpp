@@ -2,8 +2,8 @@
 #define HARDWAREWIZARD_HPP
 
 #include "puppet/PoseMapping.hpp"
-#include "hw/actuators/ActuatorControllerFactory.hpp"
-#include "puppet/AgentConfigStore.hpp"
+#include "hw/controllers/ActuatorControllerFactory.hpp"
+#include "agent/AgentConfigStore.hpp"
 
 #include <QWidget>
 #include <QSharedPointer>
@@ -11,11 +11,36 @@
 class HardwareTemplate;
 class HardwareTemplateModel;
 class IActuatorController;
+class Agent;
 
 namespace Ui
 {
 class HardwareWizard;
 }
+
+
+
+struct ControllerStanza {
+	QString nickName;
+	QString fullName;
+	QString iconURL;
+
+	ControllerStanza(
+		QString nickName
+		, QString fullName
+		, QString iconURL
+	)
+		: nickName (nickName)
+		, fullName (fullName)
+		, iconURL (iconURL)
+	{
+
+	}
+};
+
+struct ControllerStanzaList: public QList<ControllerStanza> {
+
+};
 
 
 class SerialDeviceListModel;
@@ -28,17 +53,24 @@ private:
 	Ui::HardwareWizard *ui;
 	SerialDeviceListModel *mSerialDevicesModel;
 	HardwareTemplateModel *mHardwareTemplateModel;
+	HardwareTemplate *mSelectedTempalte;
+
+	/*
 	ActuatorControllerFactory mControllerFactory;
 	IActuatorController *mController;
-
-	HardwareTemplate *mSelectedTempalte;
 	AgentConfigStore *mConfigStore;
+	*/
+	Agent *mAgent;
+	ControllerStanzaList controllerStanzas;
 
 public:
 	explicit HardwareWizard(QWidget *parent = 0);
 	virtual ~HardwareWizard();
 
 private:
+
+	void initControllerList();
+	int controllerIndexByName(QString name);
 	QString selectedControllerName();
 	void moveTo(int next);
 	void save();
@@ -46,7 +78,7 @@ private:
 
 public:
 
-	void configure(AgentConfigStore &configStore);
+	void configure(Agent *agent);
 	void reset();
 
 signals:
@@ -64,7 +96,4 @@ private slots:
 };
 
 #endif // HARDWAREWIZARD_HPP
-
-
-
 

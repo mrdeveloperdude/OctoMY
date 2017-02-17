@@ -1,8 +1,8 @@
-#ifndef HEXYTOOL_HPP
-#define HEXYTOOL_HPP
+#ifndef SERVOTOR32CONTROLLERWIDGET_HPP
+#define SERVOTOR32CONTROLLERWIDGET_HPP
 
 #include "widgets/TryToggle.hpp"
-#include "hw/actuators/HexySerial.hpp"
+#include "HexySerial.hpp"
 #include "puppet/GaitController.hpp"
 #include <QWidget>
 
@@ -11,28 +11,33 @@ namespace Ui {
 	class HexyTool;
 }
 
-class Settings;
+class Servotor32Controller;
 
-class HexyTool : public QWidget
+
+
+
+class Servotor32ControllerWidget : public QWidget
 {
 		Q_OBJECT
 	private:
 		Ui::HexyTool *ui;
-		HexySerial *serial;
 		qreal pos[HexySerial::SERVO_COUNT]={0.0};
 		GaitController<qreal> gait;
 		QTimer gaitTimer;
-		Settings *settings;
+		Servotor32Controller *mController;
 
 	public:
-		explicit HexyTool(QWidget *parent = 0);
-		~HexyTool();
+		explicit Servotor32ControllerWidget(QWidget *parent = 0);
+		~Servotor32ControllerWidget();
 
 	public:
 
-		void configure(Settings *settings);
+		void configure(Servotor32Controller *);
 
-		void killAll();
+	private:
+
+		void setUILock(bool);
+
 	private slots:
 		void onUpdateGaitTimer();
 		void onConnectChanged(const TryToggleState, const TryToggleState);
@@ -51,4 +56,4 @@ class HexyTool : public QWidget
 
 };
 
-#endif // HEXYTOOL_HPP
+#endif // SERVOTOR32CONTROLLERWIDGET_HPP

@@ -1,5 +1,5 @@
 #include "ArduMYActuatorWidget.hpp"
-#include "ui_ActuatorWidget.h"
+#include "ui_ArduMYActuatorWidget.h"
 
 #include "../libutil/utility/Utility.hpp"
 
@@ -17,7 +17,7 @@ static QString ACTUATOR_UNNAMED="Unnamed";
 
 ArduMYActuatorWidget::ArduMYActuatorWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::ActuatorWidget)
+	, ui(new Ui::ArduMYActuatorWidget)
 	, mID(s_sid++)
 	, mLowTrim(INITIAL_SERVO_TRIM)
 	, mHighTrim(INITIAL_SERVO_TRIM)
@@ -31,7 +31,7 @@ ArduMYActuatorWidget::ArduMYActuatorWidget(QWidget *parent)
 		qWarning()<<"ERROR: Could not connect";
 	}
 
-	if(!connect(ui->checkBoxEnabled,SIGNAL(clicked(bool)), this,SLOT(onServoKilled()))) {
+	if(!connect(ui->checkBoxEnabled,SIGNAL(clicked(bool)), this,SLOT(onServoLimped()))) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
@@ -117,6 +117,41 @@ void ArduMYActuatorWidget::configure(ArduMYActuator *actuator)
 		break;
 		}
 		ui->comboBoxActuatorType->setCurrentIndex(typeIndex);
+		quint32 representationIndex=0;
+		switch(mActuator->config.representation) {
+		case(BIT): {
+			representationIndex=0;
+		}
+		break;
+		case(BYTE): {
+			representationIndex=1;
+		}
+		break;
+		default:
+		case(REPRESENTATION_COUNT):
+		case(WORD): {
+			representationIndex=2;
+		}
+		break;
+		case(DOUBLE_WORD): {
+			representationIndex=3;
+		}
+		break;
+		case(QUAD_WORD): {
+			representationIndex=4;
+		}
+		break;
+		case(SINGLE_FLOAT): {
+			representationIndex=5;
+		}
+		break;
+		case(DOUBLE_FLOAT): {
+			representationIndex=6;
+		}
+		break;
+		}
+		qDebug()<<"REP INDEX: "<<representationIndex;
+		ui->comboBoxActuatorRepresentation->setCurrentIndex(representationIndex);
 		updateTabsVisibility();
 		reconfigureTrim();
 		ui->labelID->setText(QString("%1").arg(mID, 2, 10, QChar('0')));
@@ -183,21 +218,57 @@ void ArduMYActuatorWidget::on_pushButtonCenter_clicked()
 
 void ArduMYActuatorWidget::onServoMoved()
 {
-	qreal val=ui->numberEntryServoPosition->value();
+	const qreal raw=ui->numberEntryServoPosition->value();
+	qreal val=raw;
 	const qreal min=ui->numberEntryServoPosition->minimum();
 	const qreal max=ui->numberEntryServoPosition->maximum();
+	const qreal mid=(max+min)/2.0f;
 	val-=min;
 	val/=(max-min);
 	ui->checkBoxEnabled->setChecked(true);
+
+
+	if(nullptr!=mActuator) {
+
+		switch(mActuator->config.representation) {
+		case(BIT): {
+			mActuator->state.value.bit=val>mid;
+		}
+		break;
+		case(BYTE): {
+			mActuator->state.value.byte=0xFF*val;
+		}
+		break;
+		case(WORD): {
+			mActuator->state.value.word=0xFFFF*val;
+		}
+		break;
+		case(DOUBLE_WORD): {
+			mActuator->state.value.doubleWord=0xFFFFFFFF*val;
+		}
+		break;
+		case(QUAD_WORD): {
+			mActuator->state.value.quadWord=0xFFFFFFFFFFFFFFFF*val;
+		}
+		break;
+		default:// Fall back to single precision float for now
+		case(SINGLE_FLOAT): {
+			mActuator->state.value.singlePrecision=val;
+		}
+		break;
+		case(DOUBLE_FLOAT): {
+			mActuator->state.value.doublePrecision=val;
+		}
+		break;
+		}
+	}
 	emit servoMoved(mID, val);
-	//pos[0]=(val*2.0)-1.0;
-	//hexy->move(pos,0b00000000000000000000000000000001);
 }
 
-void ArduMYActuatorWidget::onServoKilled()
+void ArduMYActuatorWidget::onServoLimped()
 {
 	if(!ui->checkBoxEnabled->isChecked()) {
-		emit servoKilled(mID);
+		emit servoLimped(mID);
 	}
 }
 
@@ -249,12 +320,14 @@ void ArduMYActuatorWidget::on_pushButtonName_clicked()
 	if (ok && !name.isEmpty()) {
 		name=name.replace(QRegularExpression("[^a-zA-Z0-9_]*"),"").trimmed();
 		//(Qt::ImhDigitsOnly|Qt::ImhUppercaseOnly|Qt::ImhLowercaseOnly)
-		auto sz=sizeof(ArduMYActuatorConfig::nickName);
-		name=name.left(sz-1);
+		const quint32 maxSz=sizeof(ArduMYActuatorConfig::nickName)-1;// NOTE: -1 means we make space for the null-terminator character
+		const quint32 nSz=name.size();
+		const auto sz=qMin(maxSz, nSz);
 		if(nullptr!=mActuator) {
 			for(size_t i=0; i<sz; ++i) {
 				mActuator->config.nickName[i]=name.at(i).toLatin1();
 			}
+			// Postfix the null-terminator
 			mActuator->config.nickName[sz]='\0';
 		}
 		if(name.isEmpty()) {
@@ -262,4 +335,17 @@ void ArduMYActuatorWidget::on_pushButtonName_clicked()
 		}
 		ui->pushButtonName->setText(name);
 	}
+}
+
+void ArduMYActuatorWidget::on_comboBoxActuatorRepresentation_currentIndexChanged(int index)
+{
+	if(nullptr!=mActuator) {
+		if(index<0) {
+			index=(int)REPRESENTATION_COUNT;
+		} else if(index>(int)REPRESENTATION_COUNT) {
+			index=(int)REPRESENTATION_COUNT;
+		}
+		mActuator->config.representation=(ArduMYActuatorValueRepresentation)index;
+	}
+
 }

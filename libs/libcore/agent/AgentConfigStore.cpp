@@ -14,7 +14,7 @@ AgentConfigStore::AgentConfigStore(QString filename, QObject *parent)
 	setObjectName("AgentConfigStore");
 	//qDebug()<<"PoseMappingStore() file="<<fn;
 	// Forward the async storeReady signal
-	if(!connect( this, SIGNAL(storeReady(bool)), SIGNAL(poseMappingStoreReady(bool)), OC_CONTYPE)) {
+	if(!connect( this, SIGNAL(storeReady(bool)), SIGNAL(agentConfigStoreReady(bool)), OC_CONTYPE)) {
 		qWarning()<<"Could not connect "<<objectName();
 	} else {
 		//qDebug()<<"FORWARDING storeReady -> peerStoreReady";
@@ -81,7 +81,7 @@ void AgentConfigStore::load()
 		}
 	}
 	//qDebug()<<"EMITTING storeReady";
-	emit poseMappingStoreReady(!mError);
+	emit agentConfigStoreReady(!mError);
 }
 
 void AgentConfigStore::save()

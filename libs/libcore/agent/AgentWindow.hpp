@@ -20,7 +20,7 @@ class QAccelerometerReading;
 class QCompassReading;
 class QGyroscopeReading;
 class CommsChannel;
-class HexyTool;
+class Servotor32ControllerWidget;
 class QAction;
 class ISyncParameter;
 
@@ -43,7 +43,7 @@ class AgentWindow : public QWidget, public LogDestination
 private:
 	Ui::AgentWindow *ui;
 	Agent *mAgent;
-	HexyTool *mHexy;
+	Servotor32ControllerWidget *mHexy;
 	QMenu mMenu;
 	QSet<QSharedPointer<NodeAssociate> > mLastActiveControls;
 	QMap<const QString, QSet< QSharedPointer<Courier> > > mCourierSets;

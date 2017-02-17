@@ -8,7 +8,7 @@
 class ArduMYActuator;
 namespace Ui
 {
-class ActuatorWidget;
+class ArduMYActuatorWidget;
 }
 
 class Settings;
@@ -19,7 +19,7 @@ class ArduMYActuatorWidget: public QWidget
 {
 	Q_OBJECT
 private:
-	Ui::ActuatorWidget *ui;
+	Ui::ArduMYActuatorWidget *ui;
 	static quint32 s_sid;
 	quint32 mID;
 	int mLowTrim;
@@ -41,11 +41,11 @@ public:
 	void disableServo();
 signals:
 	void servoMoved(quint32 id, qreal val);
-	void servoKilled(quint32 id);
+	void servoLimped(quint32 id);
 
 private slots:
 	void onServoMoved();
-	void onServoKilled();
+	void onServoLimped();
 private slots:
 	void on_pushButtonCenter_clicked();
 
@@ -56,6 +56,7 @@ private slots:
 	void on_comboBoxActuatorType_currentIndexChanged(int index);
 	void on_pushButtonResetGearRatio_clicked();
 	void on_pushButtonName_clicked();
+	void on_comboBoxActuatorRepresentation_currentIndexChanged(int index);
 };
 
 #endif // ARDUMYACTUATORWIDGET_HPP

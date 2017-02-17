@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ActuatorWidget</class>
- <widget class="QWidget" name="ActuatorWidget">
+ <class>ArduMYActuatorWidget</class>
+ <widget class="QWidget" name="ArduMYActuatorWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -130,7 +130,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabType">
       <property name="sizePolicy">

@@ -4,9 +4,16 @@
 #include "HardwareTemplate.hpp"
 #include "models/SerialDeviceListModel.hpp"
 #include "models/HardwareTemplateModel.hpp"
-#include "hw/actuators/IActuatorController.hpp"
+#include "hw/controllers/IActuatorController.hpp"
 #include "../libutil/utility/Utility.hpp"
+#include "agent/Agent.hpp"
+
 #include <QDebug>
+
+
+
+
+
 
 
 HardwareWizard::HardwareWizard(QWidget *parent)
@@ -14,12 +21,18 @@ HardwareWizard::HardwareWizard(QWidget *parent)
 	, ui(new Ui::HardwareWizard)
 	, mSerialDevicesModel(new SerialDeviceListModel(this))
 	, mHardwareTemplateModel(new HardwareTemplateModel(this))
-	, mController(nullptr)
 	, mSelectedTempalte(nullptr)
-	, mConfigStore(nullptr)
+	, mAgent(nullptr)
+	  /*
+	  , mController(nullptr)
+	  , mConfigStore(nullptr)
+	  */
 
 {
 	ui->setupUi(this);
+
+	initControllerList();
+
 	//qDebug()<<"Setting model";
 	ui->listViewSerialInterface->setModel(mSerialDevicesModel);
 	ui->listViewTemplate->setModel(mHardwareTemplateModel);
@@ -40,15 +53,25 @@ static long mod(T a, T b)
 }
 
 
-void HardwareWizard::configure(AgentConfigStore &configStore)
+void HardwareWizard::configure(Agent *agent)
 {
-	mConfigStore=&configStore;
+	mAgent=agent;
+	reset();
 }
 
 void HardwareWizard::reset()
 {
-	//We skip the template screen for now, because frankly it is not useful until this menu starts overflowing with alternatives.
-	//moveTo(0);
+	IActuatorController *ctl=nullptr;
+	if(nullptr!=mAgent) {
+		AgentConfigStore &mConfigStore=mAgent->configurationStore();
+		QSharedPointer<AgentConfig> config=mConfigStore.agentConfig();
+		if(!config.isNull()) {
+			QString name=config->controllerName();
+			int ctlIndex=controllerIndexByName(name);
+			ui->listWidgetController->setCurrentRow(ctlIndex);
+		}
+	}
+
 	moveTo(0);
 }
 
@@ -61,24 +84,45 @@ static void selectFirstIfNoneSelected(QListView *list)
 	}
 }
 
+void HardwareWizard::initControllerList()
+{
+	controllerStanzas.clear();
+	ui->listWidgetController->clear();
+	controllerStanzas << ControllerStanza("none", "None", ":/icons/unknown.svg");
+	controllerStanzas << ControllerStanza("ardumy", "ArduMY™ native OctoMY™ <--> Arduino© binding", ":/icons/ardumy.svg");
+	controllerStanzas << ControllerStanza("servotor32", "ArcBotics Servotor32 v2.1", ":/icons/arcbotics_logo.svg");
+
+	for(auto stanza:controllerStanzas) {
+		QIcon icon;
+		icon.addFile(stanza.iconURL, QSize(), QIcon::Normal, QIcon::Off);
+		QListWidgetItem *temp = new QListWidgetItem(ui->listWidgetController);
+		temp->setIcon(icon);
+		temp->setText(stanza.fullName);
+		temp->setToolTip(stanza.nickName);
+	}
+}
+
+
+int HardwareWizard::controllerIndexByName(QString name)
+{
+	int index=0;
+	for(auto stanza:controllerStanzas) {
+		if(stanza.nickName==name) {
+			return index;
+		}
+		index++;
+	}
+	return 0;
+}
 
 QString HardwareWizard::selectedControllerName()
 {
-	const quint32 index=ui->listWidgetController->currentIndex().row();
-	QString controllerName;
-	switch (index) {
-	case(0): {
-		controllerName="servotor32";
+	const int index=ui->listWidgetController->currentIndex().row();
+	if(index>=0 && index< controllerStanzas.size()) {
+		ControllerStanza stanza=controllerStanzas[index];
+		return stanza.nickName;
 	}
-	break;
-	case(1): {
-		controllerName="ardumy";
-	}
-	break;
-	default:
-		break;
-	}
-	return controllerName;
+	return "none";
 }
 
 void HardwareWizard::moveTo(int next)
@@ -91,22 +135,14 @@ void HardwareWizard::moveTo(int next)
 	break;
 	// Controller config
 	case(1): {
-		QString controllerName=selectedControllerName();
-		qDebug()<<"CREATING '"<<controllerName<<"' CONTROLLER";
-		IActuatorController *ctl=mControllerFactory.controllerFactory(controllerName);
-		if(nullptr!=ctl) {
-			qDebug()<<"CREATING CONTROLLER OK";
-			if(nullptr!=mController) {
-				qDebug()<<"DELETING OLD CONTROLLER";
-				delete mController;
-			}
-			mController=ctl;
-			ctl=nullptr;
-			//selectFirstIfNoneSelected(ui->listWidgetInterfaceType);
+		IActuatorController *ctl=nullptr;
+		if(nullptr!=mAgent) {
+			mAgent->reloadController();
+			ctl=mAgent->actuatorController();
 		}
 		QWidget *configurationWidget=nullptr;
-		if(nullptr!=mController) {
-			QWidget *temp=mController->configurationWidget();
+		if(nullptr!=ctl) {
+			QWidget *temp=ctl->configurationWidget();
 			if(nullptr!=temp) {
 				qDebug()<<"Configuration UI found";
 				configurationWidget=temp;
@@ -170,8 +206,10 @@ void HardwareWizard::moveTo(int next)
 
 void HardwareWizard::save()
 {
-	if(nullptr!=mConfigStore) {
-		QSharedPointer<AgentConfig> config=mConfigStore->agentConfig();
+	IActuatorController *ctl=nullptr;
+	if(nullptr!=mAgent) {
+		AgentConfigStore &mConfigStore=mAgent->configurationStore();
+		QSharedPointer<AgentConfig> config=mConfigStore.agentConfig();
 		if(!config.isNull()) {
 
 			/*
@@ -186,22 +224,21 @@ void HardwareWizard::save()
 				loadFromTemplate();
 			*/
 			const QWidget *cur=ui->stackedWidget->currentWidget();
-			qDebug()<<" S A V E calledf with cur= "<<cur;
+			qDebug()<<" S A V E called with cur= "<<cur;
 
 			// Controller
 			if(cur==ui->pageController) {
 				QString controllerName=selectedControllerName();
-				qDebug()<< "Saving controller name '"<<controllerName<<"' in Agent Cnofig Store";
+				qDebug()<< "Saving controller name '"<<controllerName<<"' in Agent Config Store";
 				config->setControllerName(controllerName);
 			}
 
 			// Controller Configuration
 			else if (cur == ui->pageControllerConfiguration) {
-				if(nullptr!=mController) {
-
+				ctl=mAgent->actuatorController();
+				if(nullptr!=ctl) {
 					qDebug()<< "Saving controller data";
-					config->setControllerConfig(mController->confiruation());
-
+					config->setControllerConfig(ctl->configuration());
 				} else {
 					qWarning()<<"ERROR: Could not find controller while saving controller config in hardware wizard";
 				}
@@ -213,9 +250,8 @@ void HardwareWizard::save()
 			qWarning()<<"ERROR: Could not find config while saving";
 		}
 	} else {
-		qWarning()<<"ERROR: Could not find config store while saving";
+		qWarning()<<"ERROR: No Agent while saving";
 	}
-
 }
 
 void HardwareWizard::loadFromTemplate()

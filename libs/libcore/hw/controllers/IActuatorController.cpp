@@ -60,7 +60,7 @@ QWidget *IActuatorController::configurationWidget()
 
 
 
-QVariantMap IActuatorController::confiruation()
+QVariantMap IActuatorController::configuration()
 {
 	QVariantMap map;
 	return map;

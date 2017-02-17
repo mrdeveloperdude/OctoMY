@@ -1,12 +1,12 @@
 #ifndef ARDUMYCONTROLLER_HPP
 #define ARDUMYCONTROLLER_HPP
 
-#include "IActuatorController.hpp"
+#include "hw/controllers/IActuatorController.hpp"
 
 #include "../arduino/CommandSerializer.hpp"
 #include "../arduino/ArduMYActuatorSet.hpp"
 
-#include "SerialSettings.hpp"
+#include "hw/serial/SerialSettings.hpp"
 
 #include <QObject>
 #include <QSerialPort>
@@ -94,7 +94,7 @@ public:
 
 	QWidget *configurationWidget() Q_DECL_OVERRIDE;
 
-	QVariantMap confiruation() Q_DECL_OVERRIDE;
+	QVariantMap configuration() Q_DECL_OVERRIDE;
 	void setConfiguration(QVariantMap &configuration) Q_DECL_OVERRIDE;
 
 

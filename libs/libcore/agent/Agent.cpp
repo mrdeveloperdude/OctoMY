@@ -14,9 +14,7 @@
 #include "discovery/DiscoveryClient.hpp"
 #include "zoo/ZooClient.hpp"
 #include "basic/AppContext.hpp"
-
-#include "hw/actuators/Servotor32Controller.hpp"
-
+#include "hw/controllers/ActuatorControllerFactory.hpp"
 
 #include <QDebug>
 #include <QDataStream>
@@ -141,7 +139,7 @@ CourierSet *AgentControls::activeControl() const
 	//TODO: Manage which one is actually the ACTIVE one instead of just returning the first one
 	auto b=mCouriers.begin();
 	auto e=mCouriers.end();
-	if(b==e){
+	if(b==e) {
 		return nullptr;
 	}
 	return b.value();
@@ -159,13 +157,10 @@ Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "agent", parent), ROLE_AGENT, TYPE_AGENT, parent)
 	, mControls(*this)
 	, mAgentConfigStore(mContext->baseDir() + "/agent_config.json")
-	, mServoController(new Servotor32Controller(this))
+	, mActuatorController(nullptr)
 	, mWindow(nullptr)
 {
 	OC_METHODGATE();
-	if(nullptr!=mServoController) {
-		mServoController->setConnected(true);
-	}
 	mPeers.hookSignals(*this);
 	if(mPeers.isReady()) {
 		onPeerStoreReady(true);
@@ -176,8 +171,8 @@ Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 Agent::~Agent()
 {
 	OC_METHODGATE();
-	if(nullptr!=mServoController) {
-		mServoController->setConnected(false);
+	if(nullptr!=mActuatorController) {
+		mActuatorController->setConnected(false);
 	}
 }
 
@@ -234,8 +229,57 @@ QSharedPointer<PoseMapping> Agent::poseMapping()
 	return mAgentConfigStore.agentConfig()->poseMapping();
 }
 
+IActuatorController *Agent::actuatorController()
+{
+	return mActuatorController;
+}
+
+void Agent::reloadController()
+{
+	// Unload old controller
+	if(nullptr!=mActuatorController) {
+		qDebug()<<"Unloading old controller";
+		mActuatorController->setConnected(false);
+		mActuatorController->deleteLater();
+		mActuatorController=nullptr;
+	}
+	QSharedPointer<AgentConfig> configp=mAgentConfigStore.agentConfig();
+	if(!configp.isNull()) {
+		AgentConfig &config=*configp;
+		QString controllerName=config.controllerName().trimmed();
+		if(!controllerName.isEmpty()) {
+			qDebug()<<"Attempting to generate controller of type "<<controllerName;
+			ActuatorControllerFactory factory;
+			mActuatorController=factory.controllerFactory(controllerName);
+			if(nullptr!=mActuatorController) {
+				qDebug()<<"Controller created, configuring";
+				QVariantMap parameters=config.controllerConfig();
+				mActuatorController->setConfiguration(parameters);
+				mActuatorController->setConnected(true);
+			}
+		} else {
+			qDebug()<<"No controller named in agent config";
+		}
+	} else {
+		qDebug()<<"No agent config";
+	}
+}
+
 //////////////////////////////////////////////////
-//Node Associate Store slots
+// Agent Config Store slots
+
+
+
+void Agent::onAgentConfigStoreReady(bool ok)
+{
+	qDebug()<<"Agent config store ready";
+	reloadController();
+}
+
+
+
+//////////////////////////////////////////////////
+// Node Associate Store slots
 void Agent::onPeerStoreReady(bool ready)
 {
 	OC_METHODGATE();
@@ -271,7 +315,7 @@ void Agent::onPeersChanged()
 
 
 //////////////////////////////////////////////////
-//Agent State Courier slots
+// Agent State Courier slots
 
 void Agent::onSyncParameterChanged(ISyncParameter *sp)
 {
@@ -282,8 +326,8 @@ void Agent::onSyncParameterChanged(ISyncParameter *sp)
 			SyncParameter<Pose> *targetPoseParameter=(SyncParameter<Pose> *)sp;
 			Pose targetPose=targetPoseParameter->bestValue(true);
 			qDebug()<<"TARGET POSE: "<<targetPose.toString();
-			if(nullptr!=mServoController) {
-				mServoController->move(targetPose);
+			if(nullptr!=mActuatorController) {
+				mActuatorController->move(targetPose);
 			}
 		}
 	} else {

@@ -1,15 +1,22 @@
 #ifndef SERVOTOR32CONTROLLER_HPP
 #define SERVOTOR32CONTROLLER_HPP
 
-#include "IActuatorController.hpp"
+#include "hw/controllers/IActuatorController.hpp"
+#include "hw/serial/SerialSettings.hpp"
 
 #include <QTimer>
 
-#include <QSerialPort>
+
 #include <QBitArray>
 #include <QVector>
 
-class SerialSettingsWidget;
+
+struct Servotor32ActuatorStanza {
+int klol;
+};
+
+class SerialSettings;
+class Servotor32ControllerWidget;
 
 // Documentation for serial commands are here: http://arcbotics.com/lessons/servotor32-commands/
 
@@ -17,19 +24,22 @@ class Servotor32Controller: public IActuatorController
 {
 	Q_OBJECT
 private:
-	SerialSettingsWidget *mSerialSettings;
-	QSerialPort *mSerialInterface;
 	QVector<qreal> mAccumulatedPosition;
 	QBitArray mDirtyMoveFlags;
 	QByteArray mInputBuffer;
 	quint32 mReads;
+
+	Servotor32ControllerWidget *mWidget;
+	SerialSettings mSerialSettings;
+	QSerialPort *mSerialInterface;
+	QList<Servotor32ActuatorStanza> mActuatorStanzas;
 
 public:
 	explicit Servotor32Controller(QObject *parent = nullptr);
 	virtual ~Servotor32Controller();
 
 public:
-	void configure();
+	void configure(SerialSettings &serialSettings);
 	void openSerialPort();
 	void closeSerialPort();
 
@@ -46,7 +56,7 @@ private slots:
 	void onSerialReadData();
 	void onSerialDataWritten(qint64);
 	void onSerialHandleError(QSerialPort::SerialPortError error);
-	void onSettingsChanged();
+	void onSerialSettingsChanged();
 
 
 	// IActuatorController interface
@@ -70,7 +80,7 @@ public:
 
 	QWidget *configurationWidget() Q_DECL_OVERRIDE;
 
-	QVariantMap confiruation() Q_DECL_OVERRIDE;
+	QVariantMap configuration() Q_DECL_OVERRIDE;
 	void setConfiguration(QVariantMap &configuration) Q_DECL_OVERRIDE;
 
 

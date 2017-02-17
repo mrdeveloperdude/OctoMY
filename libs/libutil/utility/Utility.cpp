@@ -915,16 +915,14 @@ QImage tint(QImage src, QColor color, qreal strength)
 
 qreal moveSplitter(QSplitter &splitter, qreal pos)
 {
-	qDebug()<<"MOVING SPLITTER: "<<&splitter << " TO "<<pos;
+	//qDebug()<<"MOVING SPLITTER: "<<&splitter << " TO "<<pos;
 	QList<int> sz = splitter.sizes();
 	qreal tot=sz[0]+sz[1];
 	if(tot<=0.0){
 		tot=1000.0f;
 	}
 	const qreal oldPos=(sz[0]+1.0f)/(tot+1.0f);
-	qDebug()<<" + SZ: "<<sz;
-	qDebug()<<" + TOT: "<<tot;
-	qDebug()<<" + OLDPOS: "<<oldPos;
+	//qDebug()<<" + SZ: "<<sz;	qDebug()<<" + TOT: "<<tot;	qDebug()<<" + OLDPOS: "<<oldPos;
 	sz[0]=pos*tot;
 	sz[1]=tot-sz[0];
 	splitter.setSizes(sz);

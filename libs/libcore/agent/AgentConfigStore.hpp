@@ -43,7 +43,7 @@ public:
 
 signals:
 
-	void poseMappingStoreReady(bool);
+	void agentConfigStoreReady(bool);
 };
 
 #endif // AGENTCONFIGSTORE_HPP

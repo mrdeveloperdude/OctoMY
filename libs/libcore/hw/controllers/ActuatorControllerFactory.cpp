@@ -1,8 +1,9 @@
 #include "ActuatorControllerFactory.hpp"
 
 #include "IActuatorController.hpp"
-#include "Servotor32Controller.hpp"
-#include "ArduMYController.hpp"
+
+#include "hw/controllers/ardumy/ArduMYController.hpp"
+#include "hw/controllers/servotor32/Servotor32Controller.hpp"
 
 ActuatorControllerFactory::ActuatorControllerFactory()
 {

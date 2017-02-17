@@ -5,8 +5,6 @@
 #include "Agent.hpp"
 #include "comms/CommsChannel.hpp"
 #include "../libutil/utility/Utility.hpp"
-#include "hw/actuators/HexyTool.hpp"
-#include "hw/BluetoothList.hpp"
 #include "basic/Settings.hpp"
 #include "security/PortableID.hpp"
 #include "audio/OneOffSpeech.hpp"
@@ -88,7 +86,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 
 	if(nullptr!=mAgent) {
 		//Settings &s=agent->settings();
-		ui->widgetHardware->configure(mAgent->configurationStore());
+		ui->widgetHardware->configure(mAgent);
 		//Select correct starting page
 		ui->widgetDelivery->reset();
 		mWasEverUndelivered=!mAgent->keyStore().fileExists();

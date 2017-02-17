@@ -99,22 +99,6 @@ SOURCES +=\
 	hub/Hub.cpp \
 	hub/HubWindow.cpp \
 	hub/IContextProvider.cpp \
-	hw/actuators/ActuatorControllerFactory.cpp \
-	hw/actuators/ArduMYActuatorWidget.cpp \
-	hw/actuators/ArduMYController.cpp \
-	hw/actuators/ArduMYControllerWidget.cpp \
-	hw/actuators/HexyLeg.cpp \
-	hw/actuators/HexySerial.cpp \
-	hw/actuators/HexyTool.cpp \
-	hw/actuators/IActuatorController.cpp \
-	hw/actuators/Locus.cpp \
-	hw/actuators/SerialList.cpp \
-	hw/actuators/SerialSettings.cpp \
-	hw/actuators/SerialSettingsWidget.cpp \
-	hw/actuators/Servotor32Controller.cpp \
-	hw/actuators/WheeledLocus.cpp \
-	hw/actuators/WheeledLocusWidget.cpp \
-	hw/BluetoothList.cpp \
 	models/ClientModel.cpp \
 	models/HardwareTemplateModel.cpp \
 	models/PairingListModel.cpp \
@@ -123,9 +107,6 @@ SOURCES +=\
 	plot/NetworkStats.cpp \
 	plot/qcustomplot.cpp \
 	plot/StatsWindow.cpp \
-	puppet/AgentConfig.cpp \
-	puppet/AgentConfigStore.cpp \
-	puppet/AgentMobilityType.cpp \
 	puppet/EyesWidget.cpp \
 	puppet/GaitController.cpp \
 	puppet/GaitWidget.cpp \
@@ -224,7 +205,27 @@ SOURCES +=\
     widgets/ArduinoPinSelector.cpp \
     widgets/ArduinoPinFacilitator.cpp \
     widgets/ArduinoPinFilter.cpp \
-    widgets/ArduinoPin.cpp
+    widgets/ArduinoPin.cpp \
+    hw/controllers/ardumy/ArduMYActuatorWidget.cpp \
+    hw/controllers/ardumy/ArduMYController.cpp \
+    hw/controllers/ardumy/ArduMYControllerWidget.cpp \
+    hw/controllers/servotor32/HexyLeg.cpp \
+    hw/controllers/servotor32/HexySerial.cpp \
+    locus/Locus.cpp \
+    hw/serial/SerialList.cpp \
+    hw/serial/SerialSettings.cpp \
+    hw/serial/SerialSettingsWidget.cpp \
+    hw/controllers/servotor32/Servotor32Controller.cpp \
+    locus/WheeledLocus.cpp \
+    locus/WheeledLocusWidget.cpp \
+    hw/controllers/ActuatorControllerFactory.cpp \
+    hw/controllers/IActuatorController.cpp \
+    hw/bluetooth/BluetoothList.cpp \
+    agent/AgentConfig.cpp \
+    agent/AgentConfigStore.cpp \
+    agent/AgentMobilityType.cpp \
+    hw/controllers/servotor32/Servotor32ActuatorWidget.cpp \
+    hw/controllers/servotor32/Servotor32ControllerWidget.cpp
 
 
 
@@ -326,22 +327,6 @@ HEADERS  += \
 	hub/Hub.hpp \
 	hub/HubWindow.hpp \
 	hub/IContextProvider.hpp \
-	hw/actuators/ActuatorControllerFactory.hpp \
-	hw/actuators/ArduMYActuatorWidget.hpp \
-	hw/actuators/ArduMYController.hpp \
-	hw/actuators/ArduMYControllerWidget.hpp \
-	hw/actuators/HexyLeg.hpp \
-	hw/actuators/HexySerial.hpp \
-	hw/actuators/HexyTool.hpp \
-	hw/actuators/IActuatorController.hpp \
-	hw/actuators/Locus.hpp \
-	hw/actuators/SerialList.hpp \
-	hw/actuators/SerialSettings.hpp \
-	hw/actuators/SerialSettingsWidget.hpp \
-	hw/actuators/Servotor32Controller.hpp \
-	hw/actuators/WheeledLocus.hpp \
-	hw/actuators/WheeledLocusWidget.hpp \
-	hw/BluetoothList.hpp \
 	models/ClientModel.hpp \
 	models/HardwareTemplateModel.hpp \
 	models/PairingListModel.hpp \
@@ -350,9 +335,6 @@ HEADERS  += \
 	plot/NetworkStats.hpp \
 	plot/qcustomplot.hpp \
 	plot/StatsWindow.hpp \
-	puppet/AgentConfig.hpp \
-	puppet/AgentConfigStore.hpp \
-	puppet/AgentMobilityType.hpp \
 	puppet/EyesWidget.hpp \
 	puppet/GaitController.hpp \
 	puppet/GaitWidget.hpp \
@@ -451,13 +433,32 @@ HEADERS  += \
     widgets/ArduinoPinSelector.hpp \
     widgets/ArduinoPinFacilitator.hpp \
     widgets/ArduinoPinFilter.hpp \
-    widgets/ArduinoPin.hpp
+    widgets/ArduinoPin.hpp \
+    hw/controllers/ActuatorControllerFactory.hpp \
+    hw/controllers/ardumy/ArduMYControllerWidget.hpp \
+    hw/controllers/ardumy/ArduMYController.hpp \
+    hw/controllers/servotor32/HexyLeg.hpp \
+    hw/controllers/servotor32/HexySerial.hpp \
+    locus/Locus.hpp \
+    hw/serial/SerialList.hpp \
+    hw/serial/SerialSettings.hpp \
+    hw/serial/SerialSettingsWidget.hpp \
+    hw/controllers/servotor32/Servotor32Controller.hpp \
+    locus/WheeledLocus.hpp \
+    locus/WheeledLocusWidget.hpp \
+    hw/controllers/IActuatorController.hpp \
+    hw/controllers/ardumy/ArduMYActuatorWidget.hpp \
+    hw/bluetooth/BluetoothList.hpp \
+    agent/AgentConfig.hpp \
+    agent/AgentConfigStore.hpp \
+    agent/AgentMobilityType.hpp \
+    hw/controllers/servotor32/Servotor32ActuatorWidget.hpp \
+    hw/controllers/servotor32/Servotor32ControllerWidget.hpp
 
 
 
 FORMS    += \
 	ui/ActuatorManagerWidget.ui \
-	ui/ActuatorWidget.ui \
 	ui/AgentDeliveryWizard.ui \
 	ui/AgentWindow.ui \
 	ui/ArduMYControllerWidget.ui \
@@ -471,7 +472,6 @@ FORMS    += \
 	ui/ControlDeliveryWizard.ui \
 	ui/FaceWidget.ui \
 	ui/HardwareWizard.ui \
-	ui/HexyTool.ui \
 	ui/HubWindow.ui \
 	ui/HUDWidget.ui \
 	ui/LocusManagerWidget.ui \
@@ -496,7 +496,10 @@ FORMS    += \
 	ui/TryToggle.ui \
 	ui/WheeledLocusWidget.ui \
 	widgets/TestWidget.ui \
-    widgets/ArduinoPinSelector.ui
+    widgets/ArduinoPinSelector.ui \
+    ui/ArduMYActuatorWidget.ui \
+    ui/Servotor32ActuatorWidget.ui \
+    ui/Servotor32ControllerWidget.ui
 
 
 

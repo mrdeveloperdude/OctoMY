@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QSerialPort>
+#include <QVariantMap>
 
 struct SerialSettings {
 	QString name="Default";
@@ -35,7 +36,28 @@ struct SerialSettings {
 	{
 
 	}
+
+
+	QVariantMap toMap()
+	{
+		QVariantMap map;
+		map["name"]=name;
+		map["baudRate"]=baudRate;
+		map["dataBits"]=dataBits;
+		map["parity"]=parity;
+		map["stopBits"]=stopBits;
+		map["flowControl"]=flowControl;
+		map["localEchoEnabled"]=localEchoEnabled;
+		bool localEchoEnabled=false;
+		return map;
+	}
+
+
+
 };
 
+
+
+QString serialSettingsToString (const SerialSettings &set);
 
 #endif // SERIALSETTINGS_HPP

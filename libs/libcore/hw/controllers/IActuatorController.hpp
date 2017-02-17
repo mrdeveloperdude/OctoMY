@@ -81,7 +81,7 @@ public:
 
 	virtual QWidget *configurationWidget();
 
-	virtual QVariantMap confiruation();
+	virtual QVariantMap configuration();
 	virtual void setConfiguration(QVariantMap &configuration);
 
 

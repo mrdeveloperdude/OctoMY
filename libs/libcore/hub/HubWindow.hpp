@@ -7,8 +7,6 @@
 
 #include "basic/LogDestination.hpp"
 #include "hub/Hub.hpp"
-#include "hw/actuators/HexySerial.hpp"
-
 
 #include <QMainWindow>
 #include <QHostInfo>

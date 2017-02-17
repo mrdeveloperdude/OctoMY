@@ -24,7 +24,9 @@ public:
 
 public:
 	void configure(ArduMYController *controller);
+public slots:
 
+	void onSerialSettingsChanged();
 private slots:
 	void on_pushButtonConfigureSerial_clicked();
 	void on_pushButtonConfigureActuators_clicked();

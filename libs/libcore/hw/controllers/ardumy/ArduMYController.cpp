@@ -1,6 +1,6 @@
 #include "ArduMYController.hpp"
 
-#include "SerialSettingsWidget.hpp"
+#include "hw/serial/SerialSettingsWidget.hpp"
 #include "../arduino/ParserState.hpp"
 #include "../libutil/utility/Standard.hpp"
 #include "ArduMYControllerWidget.hpp"
@@ -362,44 +362,235 @@ QWidget *ArduMYController::configurationWidget()
 
 
 
+QString ArduMYActuatorTypeToString(ArduMYActuatorType s)
+{
+#define  ArduMYActuatorTypeToStringCASE(A) case (A):return #A
+	switch(s) {
+	default:
+		return "UNKNOWN";
+		ArduMYActuatorTypeToStringCASE(DC_MOTOR);
+		ArduMYActuatorTypeToStringCASE(STEP_MOTOR);
+		ArduMYActuatorTypeToStringCASE(RC_SERVO);
+		ArduMYActuatorTypeToStringCASE(RELAY);
+		ArduMYActuatorTypeToStringCASE(TYPE_COUNT);
+
+	}
+#undef ArduMYActuatorTypeToStringCASE
+}
 
 
-QVariantMap ArduMYController::confiruation()
+
+ArduMYActuatorType ArduMYActuatorTypeFromString(QString s)
+{
+	if("DC_MOTOR"==s) {
+		return DC_MOTOR;
+	}
+	if("STEP_MOTOR"==s) {
+		return STEP_MOTOR;
+	}
+	if("RC_SERVO"==s) {
+		return RC_SERVO;
+	}
+	if("RELAY"==s) {
+		return RELAY;
+	}
+	return TYPE_COUNT;
+}
+
+
+
+QString ArduMYActuatorValueRepresentationToString(ArduMYActuatorValueRepresentation s)
+{
+#define  ArduMYActuatorTypeToStringCASE(A) case (A):return #A
+	switch(s) {
+	default:
+		return "UNKNOWN";
+		ArduMYActuatorTypeToStringCASE(BIT);
+		ArduMYActuatorTypeToStringCASE(BYTE);
+		ArduMYActuatorTypeToStringCASE(WORD);
+		ArduMYActuatorTypeToStringCASE(DOUBLE_WORD);
+		ArduMYActuatorTypeToStringCASE(QUAD_WORD);
+		ArduMYActuatorTypeToStringCASE(SINGLE_FLOAT);
+		ArduMYActuatorTypeToStringCASE(DOUBLE_FLOAT);
+		ArduMYActuatorTypeToStringCASE(REPRESENTATION_COUNT);
+
+	}
+#undef ArduMYActuatorTypeToStringCASE
+}
+
+
+
+ArduMYActuatorValueRepresentation ArduMYActuatorValueRepresentationFromString(QString s)
+{
+	if("BIT"==s) {
+		return BIT;
+	}
+	if("BYTE"==s) {
+		return BYTE;
+	}
+	if("WORD"==s) {
+		return WORD;
+	}
+	if("DOUBLE_WORD"==s) {
+		return DOUBLE_WORD;
+	}
+	if("QUAD_WORD"==s) {
+		return QUAD_WORD;
+	}
+	if("SINGLE_FLOAT"==s) {
+		return SINGLE_FLOAT;
+	}
+	if("DOUBLE_FLOAT"==s) {
+		return DOUBLE_FLOAT;
+	}
+	if("REPRESENTATION_COUNT"==s) {
+		return REPRESENTATION_COUNT;
+	}
+	return REPRESENTATION_COUNT;
+}
+
+
+QVariant ArduMYActuatorValueToVariant(ArduMYActuatorValue val, ArduMYActuatorValueRepresentation representation)
+{
+	switch(representation) {
+	case(ArduMYActuatorValueRepresentation::BIT): {
+		return QVariant((bool)val.bit);
+	}
+	break;
+	case(ArduMYActuatorValueRepresentation::BYTE): {
+		return QVariant((quint8)val.byte);
+	}
+	break;
+	case(ArduMYActuatorValueRepresentation::WORD): {
+		return QVariant((quint16)val.word);
+	}
+	break;
+	case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
+		return QVariant((quint32)val.doubleWord);
+	}
+	break;
+	//Default to strictest possible equality when representation is unknown
+	default:
+	case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT):
+	case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
+		return QVariant((quint64)val.quadWord);
+	}
+	break;
+	case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
+		return QVariant((float)val.singlePrecision);
+	}
+	break;
+	case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
+		return QVariant((double)val.doublePrecision);
+	}
+	break;
+	}
+	return QVariant();
+}
+
+
+QVariantMap ArduMYController::configuration()
 {
 	QVariantMap map;
+	map["version"]="ArduMY™ v0.1b";
+	{
+		QVariantList actuatorList;
+		const uint32_t act=mActuators.size();
+		for(uint32_t aix=0; aix<act; ++aix) {
+			ArduMYActuatorValueRepresentation representation;
+			ArduMYActuator &actuator=mActuators[aix];
+			QVariantMap actuatorMap;
+			actuatorMap["index"]=aix;
+			{
+
+				QVariantMap configMap;
+				ArduMYActuatorConfig &config=actuator.config;
+				representation=config.representation;
+				configMap["flags"]=config.flags;
+				/*
+				  ARDUMY_ACTUATOR_FLAG_SELECTOR(isLinear,				setLinear,				0 ) // Linear as opposed to rotary means that the actuator acts in a straigt motion similar to a hydraulic cylinder instead of a rotary motion similar to an RC servo
+				  ARDUMY_ACTUATOR_FLAG_SELECTOR(isContinuous,			setContinuous,			1 ) // Continuous as opposed to ranged means that the actuator continues running without any stop point, as a motor instead of a servo
+				  ARDUMY_ACTUATOR_FLAG_SELECTOR(hasGearRatio,			setGearRatio,			2 ) // Gear ratio means that the motor shaft may turn more than one turn per output shaft turn.
+				  ARDUMY_ACTUATOR_FLAG_SELECTOR(hasPositionFeedback,		setPositionFeedback,	3 ) // Position feedback means that the actuator reports its's position from an sensor such as potensiometer to an analogue input pin
+				  ARDUMY_ACTUATOR_FLAG_SELECTOR(hasTachometer,			setTachometer,			4 ) // Tachometer means that the actuator reports it's speed from a sensor such as a hall effect sensor to an digital input pin
+				  ARDUMY_ACTUATOR_FLAG_SELECTOR(hasIncrementalEncoder,	setIncrementalEncoder,	5 ) // Incremental encoder means the actuator reports it's  position from an encoder via 2 digital pins. NOTE: The encoding algorithm should take gear-ratio into account
+				  ARDUMY_ACTUATOR_FLAG_SELECTOR(hasAbsoluteEncoder,		setAbsoluteEncoder,		6 ) // NOTE: NOT IMPLEMENTED! Absolute encoder means the actuator reports it's  position from an encoder via X digital pins, where X usually is in the 2-16 range. NOTE: The encoding algorithm should take gear-ratio into account
+				  ARDUMY_ACTUATOR_FLAG_SELECTOR(hasLimitSwitchStart,		setLimitSwitchStart,	7 ) // Limit switch start means the actuator has a limit switch telling the softare when it has reached the beginning of its range. This can be used as a security measure as well as a means for automatical reference calibration. The limit state is reported via a digital input pin
+				  ARDUMY_ACTUATOR_FLAG_SELECTOR(hasLimitSwitchEnd,		setLimitSwitchEnd,		8 ) // Limit switch end means the actuator has a limit switch telling the softare when it has reached the end of its range. This can be used as a security measure as well as a means for automatical reference calibration. The limit state is reported via a digital input pin
+				  ARDUMY_ACTUATOR_FLAG_SELECTOR(isDirty,					setDirty,				9 ) // Dirty means the configuration has changed and must be updated at opportunity. NOTE: This bit should be ignored when data is serialized, as it representes ephemeral state. TODO: Look at storing this outside of this class
+					*/
+
+				configMap["type"]=ArduMYActuatorTypeToString(config.type);
+				configMap["representation"]=ArduMYActuatorValueRepresentationToString(representation);
+
+				configMap["nickName"]=QString::fromLatin1((char *)config.nickName);// TODO: Look out for problems with non-or-incorrectly-null-terminated strings
+				//QString("%1").arg(mID, 2, 10, QChar('0'));
+				configMap["gearRatioNumerator"]=config.gearRatioNumerator;
+				configMap["gearRatioDenominator"]=config.gearRatioDenominator;
+				configMap["positionFeedbackPin"]=config.positionFeedbackPin;
+				configMap["tachometerPin"]=config.tachometerPin;
+				configMap["incrementalEncoderPinA"]=config.incrementalEncoderPinA;
+				configMap["incrementalEncoderPinB"]=config.incrementalEncoderPinB;
+				configMap["incrementalencoderDebounceCount"]=config.incrementalencoderDebounceCount;
+				configMap["limitSwitchPinStart"]=config.limitSwitchPinStart;
+				configMap["limitSwitchPinEnd"]=config.limitSwitchPinEnd;
+				configMap["limitSwitchDebounceCount"]=config.limitSwitchDebounceCount;
+				configMap["incrementalencoderDebounceCount"]=config.incrementalencoderDebounceCount;
+				configMap["stepMotorPhaseCount"]=config.stepMotorPhaseCount;
+				configMap["stepMotorStepsPerRotation"]=config.stepMotorStepsPerRotation;
+				configMap["rcServoPin"]=config.rcServoPin;
+				configMap["rcServoPin"]=config.rcServoPin;
+				configMap["rangeStart"]=ArduMYActuatorValueToVariant(config.rangeStart, config.representation);
+				configMap["rangeSpan"]=ArduMYActuatorValueToVariant(config.rangeSpan, config.representation);
+				actuatorMap["config"]=configMap;
+			}
+			{
+				QVariantMap stateMap;
+				ArduMYActuatorState &state=actuator.state;
+				stateMap["flags"]=state.flags;
+				/*
+				ARDUMY_ACTUATOR_FLAG_SELECTOR(isLimp,					setLimp,				0 )
+				ARDUMY_ACTUATOR_FLAG_SELECTOR(isDirty,					setDirty,				1 )
+				*/
+				stateMap["value"]=ArduMYActuatorValueToVariant(state.value, representation);
+				actuatorMap["state"]=stateMap;
+			}
+			actuatorList<<actuatorMap;
+		}
+		map["actuators"]=actuatorList;
+	}
+	{
+		map["serial"]=mSerialSettings.toMap();
+	}
+
 	return map;
 
 }
 
 void ArduMYController::setConfiguration(QVariantMap &configuration)
 {
-
+	qDebug()<<"Loading ArduMY configuration version '"<<configuration["version"]<<"'";
+	if(configuration.contains("actuators")) {
+		QVariantList actuatorList=configuration["actuators"].toList();
+		const uint32_t asz=actuatorList.size();
+		if(mActuators.size()!=asz) {
+			mActuators.setSize(asz);
+			for(uint32_t i=0; i<asz; ++i) {
+				QVariantMap actuatorMap=actuatorList[i].toMap();
+				ArduMYActuatorConfig &config=mActuators[i].config;
+				config.type=ArduMYActuatorTypeFromString(actuatorMap["type"].toString());
+				config.representation=ArduMYActuatorValueRepresentationFromString(actuatorMap["representation"].toString());
+				ArduMYActuatorState &state=mActuators[i].state;
+			}
+		}
+	} else {
+		qDebug()<<"No actuators found in configuration while loading";
+	}
+	// Update UI with any changes
+	if(nullptr!=mWidget) {
+		mWidget->configure(this);
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

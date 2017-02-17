@@ -2,7 +2,7 @@
 #include "ui_ActuatorManagerWidget.h"
 
 #include "../libutil/utility/Standard.hpp"
-#include "hw/actuators/ArduMYActuatorWidget.hpp"
+#include "hw/controllers/ardumy/ArduMYActuatorWidget.hpp"
 #include "../../libs/arduino/ArduMYActuatorSet.hpp"
 
 

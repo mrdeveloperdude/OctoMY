@@ -19,7 +19,7 @@
 
 #include "widgets/hexedit/QHexEdit.hpp"
 #include "widgets/hexedit/QHexEditData.hpp"
-#include "hw/actuators/HexyTool.hpp"
+#include "hw/controllers/servotor32/Servotor32ControllerWidget.hpp"
 
 #include "../libpki/qpolarsslpki.hpp"
 #include "../libpki/qpolarsslhash.hpp"

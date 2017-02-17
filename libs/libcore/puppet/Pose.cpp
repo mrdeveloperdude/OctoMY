@@ -50,6 +50,23 @@ void Pose::setValue(quint32 index, qreal value)
 	mValues[index]=value;
 }
 
+
+
+void Pose::setValues(QVector<qreal> values)
+{
+	quint32 sz=qMin(values.size(), mValues.size());
+	for(quint32 i=0; i<sz; ++i) {
+		mValues[i]=values[i];
+	}
+}
+void Pose::setValues(qreal *values, int n)
+{
+	quint32 sz=qMin(n, mValues.size());
+	for(quint32 i=0; i<sz; ++i) {
+		mValues[i]=values[i];
+	}
+}
+
 void Pose::mix(const Pose &other,qreal alpha)
 {
 	OC_METHODGATE();

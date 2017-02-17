@@ -18,20 +18,13 @@ ArduMYControllerWidget::ArduMYControllerWidget(QWidget *parent)
 	ui->setupUi(this);
 	SerialSettings defaults;
 	ui->widgetSerialSettings->configure(true, defaults);
-	if(!connect(ui->widgetSerialSettings, &SerialSettingsWidget::settingsChanged, [=]() {
-	if(nullptr!= mController) {
-			mController->setConnected(false);
-			mController->setSerialConfig(ui->widgetSerialSettings->settings());
-			mController->setConnected(true);
-		}
-		ui->tabWidget->setCurrentWidget(ui->tabGeneral);
-	})) {
+	if(!connect(ui->widgetSerialSettings, &SerialSettingsWidget::settingsChanged, this, &ArduMYControllerWidget::onSerialSettingsChanged, OC_CONTYPE) ) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 	ui->widgetActuatorManager->configure(nullptr);
-	ui->tabWidget->setCurrentIndex(0);
+	ui->tabWidget->setCurrentWidget(ui->tabGeneral);
 
-	/*
+	/* TODO: Implement the full Arduino pin mappnig utopia thingy with filters, pins, detecting used pins, suggesting free pins etc.
 	ArduinoPinFacilitator apf;
 
 	ui->widgetPinThing_1->configure(ArduinoPinFilter(PIN_DIGITAL_INPUT, &apf));
@@ -56,7 +49,21 @@ void ArduMYControllerWidget::configure(ArduMYController *controller)
 	mController=controller;
 }
 
+
+void ArduMYControllerWidget::onSerialSettingsChanged()
+{
+	if(nullptr!= mController) {
+		mController->setConnected(false);
+		mController->setSerialConfig(ui->widgetSerialSettings->settings());
+		mController->setConnected(true);
+	}
+	ui->tabWidget->setCurrentWidget(ui->tabGeneral);
+}
+
+
+//////////////////////////////////////
 void ArduMYControllerWidget::on_pushButtonConfigureSerial_clicked()
+
 {
 	ui->tabWidget->setCurrentWidget(ui->tabSerial);
 }
@@ -76,6 +83,8 @@ void ArduMYControllerWidget::on_comboBoxAddActuator_currentIndexChanged(int inde
 	const auto idx=ui->comboBoxAddActuator->currentIndex();
 	auto ct=mController->actuatorCount();
 	ArduMYActuatorType type=ArduMYActuatorType::TYPE_COUNT;
+	ArduMYActuatorValueRepresentation representation =ArduMYActuatorValueRepresentation::WORD;
+
 	switch(idx) {
 
 	case(0): {
@@ -97,6 +106,7 @@ void ArduMYControllerWidget::on_comboBoxAddActuator_currentIndexChanged(int inde
 	break;
 	case(4): {
 		type=RELAY;
+		representation=BIT;
 	}
 	break;
 	default:
@@ -107,6 +117,7 @@ void ArduMYControllerWidget::on_comboBoxAddActuator_currentIndexChanged(int inde
 		ArduMYActuator *actuator=mController->addActuator();
 		if(nullptr!=actuator) {
 			actuator->config.type=type;
+			actuator->config.representation=representation;
 		}
 
 	}

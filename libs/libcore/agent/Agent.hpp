@@ -10,8 +10,8 @@
 #include "basic/Node.hpp"
 #include "basic/NodeLauncher.hpp"
 
-#include "puppet/AgentConfigStore.hpp"
-#include "hw/actuators/IActuatorController.hpp"
+#include "agent/AgentConfigStore.hpp"
+#include "hw/controllers/IActuatorController.hpp"
 
 
 #include <QObject>
@@ -89,7 +89,7 @@ class Agent : public Node
 private:
 	AgentControls mControls;
 	AgentConfigStore mAgentConfigStore;
-	IActuatorController *mServoController;
+	IActuatorController *mActuatorController;
 	AgentWindow *mWindow;
 
 public:
@@ -106,6 +106,13 @@ public:
 	AgentConfigStore &configurationStore();
 
 	QSharedPointer<PoseMapping> poseMapping();
+
+	IActuatorController *actuatorController();
+	void reloadController();
+
+	// Agent Config Store slots
+public slots:
+	void onAgentConfigStoreReady(bool);
 
 	// NodeAssociate slots
 public slots:

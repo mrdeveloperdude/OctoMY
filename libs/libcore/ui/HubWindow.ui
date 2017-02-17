@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>769</width>
-    <height>726</height>
+    <width>1721</width>
+    <height>1160</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -53,7 +53,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>5</number>
+        <number>4</number>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -312,7 +312,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidgetUtilities">
            <property name="currentIndex">
-            <number>1</number>
+            <number>2</number>
            </property>
            <widget class="QWidget" name="tabKeys">
             <attribute name="title">
@@ -393,13 +393,13 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="tabHexy">
+           <widget class="QWidget" name="tabServotor32">
             <attribute name="title">
-             <string>Hexy</string>
+             <string>Servotor32</string>
             </attribute>
             <layout class="QVBoxLayout" name="verticalLayout_15">
              <item>
-              <widget class="HexyTool" name="widgetHexyTool" native="true">
+              <widget class="Servotor32ControllerWidget" name="widgetHexyTool" native="true">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                  <horstretch>0</horstretch>
@@ -917,7 +917,19 @@
   <customwidget>
    <class>PoseMappingWidget</class>
    <extends>QWidget</extends>
-   <header>../../libs/libcore/widgets/PoseMappingWidget.hpp</header>
+   <header location="global">widgets/PoseMappingWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TryToggle</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/TryToggle.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GaitWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">puppet/GaitWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -929,112 +941,100 @@
   <customwidget>
    <class>SerialSettingsWidget</class>
    <extends>QWidget</extends>
-   <header location="global">hw/actuators/SerialSettingsWidget.hpp</header>
+   <header location="global">hw/serial/SerialSettingsWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>LogWidget</class>
    <extends>QPlainTextEdit</extends>
-   <header>widgets/LogWidget.hpp</header>
-  </customwidget>
-  <customwidget>
-   <class>TryToggle</class>
-   <extends>QWidget</extends>
-   <header>widgets/TryToggle.hpp</header>
-   <container>1</container>
+   <header location="global">widgets/LogWidget.hpp</header>
   </customwidget>
   <customwidget>
    <class>MapEditor</class>
    <extends>QWidget</extends>
-   <header>widgets/MapEditor.hpp</header>
+   <header location="global">widgets/MapEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>SpeechControlWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/SpeechControlWidget.hpp</header>
+   <header location="global">widgets/SpeechControlWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PlanEditor</class>
    <extends>QWidget</extends>
-   <header>widgets/planedit/PlanEditor.hpp</header>
+   <header location="global">widgets/planedit/PlanEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PairingWizard</class>
    <extends>QWidget</extends>
-   <header>widgets/PairingWizard.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>GaitWidget</class>
-   <extends>QWidget</extends>
-   <header>puppet/GaitWidget.hpp</header>
+   <header location="global">widgets/PairingWizard.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>IdenticonWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/IdenticonWidget.hpp</header>
+   <header location="global">widgets/IdenticonWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QRWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/QRWidget.hpp</header>
+   <header location="global">widgets/QRWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>Camera</class>
    <extends>QWidget</extends>
-   <header>camera/Camera.hpp</header>
+   <header location="global">camera/Camera.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>TextEntry</class>
    <extends>QLineEdit</extends>
-   <header>widgets/TextEntry.hpp</header>
+   <header location="global">widgets/TextEntry.hpp</header>
   </customwidget>
   <customwidget>
    <class>LocalAddressEntry</class>
    <extends>QComboBox</extends>
-   <header>widgets/LocalAddressEntry.hpp</header>
+   <header location="global">widgets/LocalAddressEntry.hpp</header>
   </customwidget>
   <customwidget>
    <class>MultiView</class>
    <extends>QWidget</extends>
-   <header>widgets/MultiView.hpp</header>
+   <header location="global">widgets/MultiView.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QHexEdit</class>
    <extends>QFrame</extends>
-   <header>widgets/hexedit/QHexEdit.hpp</header>
+   <header location="global">widgets/hexedit/QHexEdit.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>HexyTool</class>
+   <class>Servotor32ControllerWidget</class>
    <extends>QWidget</extends>
-   <header>hw/actuators/HexyTool.hpp</header>
+   <header location="global">hw/controllers/servotor32/Servotor32ControllerWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>HUDWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/HUDWidget.hpp</header>
+   <header location="global">widgets/HUDWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PKIManager</class>
    <extends>QWidget</extends>
-   <header>widgets/PKIManager.hpp</header>
+   <header location="global">widgets/PKIManager.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>CLGLView</class>
    <extends>QOpenGLWidget</extends>
-   <header>widgets/CLGLView.hpp</header>
+   <header location="global">widgets/CLGLView.hpp</header>
   </customwidget>
  </customwidgets>
  <resources>
