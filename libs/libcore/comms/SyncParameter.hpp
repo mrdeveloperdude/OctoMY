@@ -202,12 +202,12 @@ QString valueToString (const T v)
 }
 
 
-static QString valueToString (const Pose &v)
+static QString ardumyActuatorValueToString (const Pose &v)
 {
 	return v.toString();
 }
 
-static QString valueToString (const QGeoCoordinate &v)
+static QString ardumyActuatorValueToString (const QGeoCoordinate &v)
 {
 	return v.toString();
 }
@@ -231,8 +231,8 @@ quint16 SyncParameter<T>::bytes() const
 template <typename T>
 QString SyncParameter<T>::toString() const
 {
-	const QString localValueString=valueToString(mLocalValue);
-	const QString remoteValueString=valueToString(mRemoteValue);
+	const QString localValueString=ardumyActuatorValueToString(mLocalValue);
+	const QString remoteValueString=ardumyActuatorValueToString(mRemoteValue);
 	return QString("SyncParameter ")+mName+" [ localValue="+localValueString+" ("+QString::number(mLocalTimestamp)+QString("), remoteValue=")+remoteValueString+" ("+QString::number(mRemoteTimestamp)+"), needToSendAck="+(needToSendAck()?"true":"false")+", needToSendDataAndReceiveAck="+(needToSendDataAndReceiveAck()?"true":"false")+"]";//, ctx(now="+QString::number(mCTX.now())+", rtt="+QString::number(mCTX.roundTripTime())+")]";
 }
 
@@ -248,8 +248,8 @@ QString SyncParameter<T>::name() const
 template <typename T>
 QDebug &SyncParameter<T>::toDebug(QDebug &d) const
 {
-	const QString localValueString=valueToString(mLocalValue);
-	const QString remoteValueString=valueToString(mRemoteValue);
+	const QString localValueString=ardumyActuatorValueToString(mLocalValue);
+	const QString remoteValueString=ardumyActuatorValueToString(mRemoteValue);
 	d.nospace() << "SyncParameter "<< mName <<" [ localValue=" << localValueString << " (" << mLocalTimestamp << "), remoteValue=" << remoteValueString << " (" << mRemoteTimestamp << "), needToSendAck=" << (needToSendAck()?"true":"false")  << ", needToSendDataAndReceiveAck=" << (needToSendDataAndReceiveAck()?"true":"false") <<"]";//, ctx(now=" << (mCTX.now()) << ", rtt=" << mCTX.roundTripTime() << ")]";
 	return d.maybeSpace();
 }

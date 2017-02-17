@@ -54,8 +54,10 @@ private:
 	void testCommandSerializer();
 private slots:
 
+	void testToFromString();
 
 	void testActuatorRandomValueSerializer();
+
 };
 
 

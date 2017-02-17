@@ -3,6 +3,8 @@
 #include "../libutil/utility/Standard.hpp"
 #include "ArduMYController.hpp"
 #include "widgets/NameMappingWidget.hpp"
+#include "agent/AgentConstants.hpp"
+
 
 #include "widgets/ArduinoPinFilter.hpp"
 
@@ -18,9 +20,18 @@ ArduMYControllerWidget::ArduMYControllerWidget(QWidget *parent)
 	ui->setupUi(this);
 	SerialSettings defaults;
 	ui->widgetSerialSettings->configure(true, defaults);
+
+	ui->tryToggleConnect->configure("Connect","Connecting","Connected", AgentConstants::AGENT_CONNECT_BUTTON_COLOR);
+
 	if(!connect(ui->widgetSerialSettings, &SerialSettingsWidget::settingsChanged, this, &ArduMYControllerWidget::onSerialSettingsChanged, OC_CONTYPE) ) {
 		qWarning()<<"ERROR: Could not connect";
 	}
+
+
+	if(!connect(ui->tryToggleConnect, SIGNAL(stateChanged(const TryToggleState, const TryToggleState)), this, SLOT(onTryConnectChanged(const TryToggleState, const TryToggleState))),OC_CONTYPE) {
+		qWarning()<<"ERROR: could not connect";
+	}
+
 	ui->widgetActuatorManager->configure(nullptr);
 	ui->tabWidget->setCurrentWidget(ui->tabGeneral);
 
@@ -46,19 +57,87 @@ ArduMYControllerWidget::~ArduMYControllerWidget()
 
 void ArduMYControllerWidget::configure(ArduMYController *controller)
 {
+	if(nullptr!=mController ) {
+		mController->setConnected(false);
+		if(!disconnect(mController, SIGNAL(connectionChanged()), this, SLOT(onConnectionChanged())) ) {
+			qWarning()<<"ERROR: could not disconnect";
+		}
+	}
 	mController=controller;
+	if(nullptr!=mController ) {
+		if(!connect(mController, SIGNAL(connectionChanged()), this, SLOT(onConnectionChanged()),OC_CONTYPE) ) {
+			qWarning()<<"ERROR: could not connect";
+		}
+		onSerialSettingsChanged();
+		reconnectActuatorWidgets();
+	}
+}
+
+
+void ArduMYControllerWidget::setUILock(bool lock)
+{
+	const bool enabled=!lock;
+	ui->tabWidget->setEnabled(enabled);
+}
+
+
+void ArduMYControllerWidget::reconnectActuatorWidgets()
+{
+	ui->widgetActuatorManager->configure(mController);
 }
 
 
 void ArduMYControllerWidget::onSerialSettingsChanged()
 {
 	if(nullptr!= mController) {
-		mController->setConnected(false);
+		const bool wasConnected=mController->isConnected();
+		if(wasConnected) {
+			mController->setConnected(false);
+		}
 		mController->setSerialConfig(ui->widgetSerialSettings->settings());
-		mController->setConnected(true);
+		if(wasConnected) {
+			mController->setConnected(true);
+		}
 	}
 	ui->tabWidget->setCurrentWidget(ui->tabGeneral);
 }
+
+
+void ArduMYControllerWidget::onTryConnectChanged(const TryToggleState last, const TryToggleState current)
+{
+	switch(current) {
+	case(OFF): {
+		mController->limpAll();
+		if(nullptr!=mController) {
+			mController->setConnected(false);
+		}
+		setUILock(false);
+	}
+	break;
+	case(TRYING): {
+		setUILock(true);
+		mController->setConnected(true);
+	}
+	break;
+	case(ON): {
+		mController->limpAll();
+		setUILock(false);
+	}
+	break;
+	}
+
+}
+
+
+void ArduMYControllerWidget::onConnectionChanged()
+{
+	if(nullptr!=mController) {
+		qDebug()<<"CONNECTION WAS :"<<mController->isConnected();
+		ui->tryToggleConnect->setState(mController->isConnected()?ON:OFF, true);
+	}
+}
+
+
 
 
 //////////////////////////////////////
@@ -113,7 +192,6 @@ void ArduMYControllerWidget::on_comboBoxAddActuator_currentIndexChanged(int inde
 		break;
 	}
 	if(TYPE_COUNT!=type) {
-
 		ArduMYActuator *actuator=mController->addActuator();
 		if(nullptr!=actuator) {
 			actuator->config.type=type;
@@ -121,12 +199,15 @@ void ArduMYControllerWidget::on_comboBoxAddActuator_currentIndexChanged(int inde
 		}
 
 	}
-
-	auto nct=mController->actuatorCount();
-	if(nct!=ct) {
-		ui->widgetActuatorManager->configure(&mController->actuators());
-	}
-	// Prepare widget for next use
+	// Prepare add-widget combobox widget for next use
 	ui->comboBoxAddActuator->setCurrentIndex(0);
+}
 
+void ArduMYControllerWidget::on_pushButtonSync_clicked()
+{
+	if(nullptr!=mController) {
+		qDebug()<<"ARDUMY SET SYNC DUE";
+		ArduMYActuatorSet &set=mController->actuators();
+		set.setSyncDue(true);
+	}
 }

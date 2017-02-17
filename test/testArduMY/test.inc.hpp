@@ -2,12 +2,12 @@
 #define TEST_INC_HPP
 
 
-#include "../arduino/ActuatorConfigParser.hpp"
-#include "../arduino/ActuatorConfigSerializer.hpp"
+#include "../arduino/ArduMYActuatorConfigParser.hpp"
+#include "../arduino/ArduMYActuatorConfigSerializer.hpp"
 
 
 #include "../arduino/ArduMYActuatorValueParser.hpp"
-#include "../arduino/ActuatorValueSerializer.hpp"
+#include "../arduino/ArduMYActuatorValueSerializer.hpp"
 
 #include "../arduino/MagicDetector.hpp"
 
@@ -18,13 +18,8 @@
 
 #include <QTest>
 
+#include "../libcore/hw/controllers/ardumy/ArdumyTypeConversions.hpp"
 
-QString valueToString(const ActuatorValue &v, const ArduMYActuatorValueRepresentation &rep);
-QString actuatorValueRepresentationToString(const ArduMYActuatorValueRepresentation &rep);
-QString actuatorConfigToString(const ActuatorConfig &c);
-QString actuatorStateToString(const ActuatorState &s, const ArduMYActuatorValueRepresentation &rep);
-QString actuatorToString(const Actuator &a);
-QString actuatorSetToString(const ActuatorSet &set);
 void logLines(const QString ret);
 
 

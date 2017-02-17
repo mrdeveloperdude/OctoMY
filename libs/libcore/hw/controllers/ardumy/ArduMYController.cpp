@@ -4,6 +4,7 @@
 #include "../arduino/ParserState.hpp"
 #include "../libutil/utility/Standard.hpp"
 #include "ArduMYControllerWidget.hpp"
+#include "ArdumyTypeConversions.hpp"
 
 #include <QBuffer>
 #include <QDebug>
@@ -17,6 +18,9 @@ ArduMYController::ArduMYController(QObject *parent)
 {
 
 	qRegisterMetaType<QSerialPort::SerialPortError>();
+	if(!connect(mSerialInterface, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onSerialHandleError(QSerialPort::SerialPortError)), OC_CONTYPE)) {
+		qWarning()<<"ERROR: Could not connect";
+	}
 	if(!connect(mSerialInterface, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onSerialHandleError(QSerialPort::SerialPortError)), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
@@ -52,25 +56,30 @@ ArduMYController::~ArduMYController()
 
 void ArduMYController::setSerialConfig(SerialSettings settings)
 {
+	qDebug()<<"SERIAL SETTINGS SET FOR ARDUMY: "<<serialSettingsToString(settings);
 	mSerialSettings=settings;
 }
 
 void ArduMYController::openSerialPort()
 {
+	if(mSerialInterface->isOpen()) {
+		qWarning()<<"ERROR OPENING ARDUMY: ALREADY OPEN";
+		return;
+	}
 	mSerialInterface->setPortName(mSerialSettings.name);
 	mSerialInterface->setBaudRate(mSerialSettings.baudRate);
 	mSerialInterface->setDataBits(mSerialSettings.dataBits);
 	mSerialInterface->setParity(mSerialSettings.parity);
 	mSerialInterface->setStopBits(mSerialSettings.stopBits);
 	mSerialInterface->setFlowControl(mSerialSettings.flowControl);
-	qDebug()<<tr("Trying to connect to %1 : %2, %3, %4, %5, %6").arg(mSerialSettings.name).arg(mSerialSettings.stringBaudRate).arg(mSerialSettings.stringDataBits).arg(mSerialSettings.stringParity).arg(mSerialSettings.stringStopBits).arg(mSerialSettings.stringFlowControl);
+	qDebug()<<tr("Trying to connect to ardumy with %1 : %2, %3, %4, %5, %6").arg(mSerialSettings.name).arg(mSerialSettings.stringBaudRate).arg(mSerialSettings.stringDataBits).arg(mSerialSettings.stringParity).arg(mSerialSettings.stringStopBits).arg(mSerialSettings.stringFlowControl);
 	if (mSerialInterface->open(QIODevice::ReadWrite)) {
-		emit connectionChanged();
-		qDebug()<<"CONNECTION SUCCESSFULL";
+		qDebug()<<"ARDUMY CONNECT SUCCESSFULL";
 		mSyncTimer.start();
 	} else {
 		qWarning()<<"ERROR OPENING: "<<mSerialInterface->errorString();
 	}
+	emit connectionChanged();
 }
 
 void ArduMYController::closeSerialPort()
@@ -79,8 +88,8 @@ void ArduMYController::closeSerialPort()
 	if (mSerialInterface->isOpen()) {
 		mSerialInterface->close();
 		emit connectionChanged();
+		qDebug()<<"ARDUMY DISCONNECT SUCCESSFULL";
 	}
-	qDebug()<<"Disconnected";
 }
 
 
@@ -90,45 +99,17 @@ void ArduMYController::closeSerialPort()
 void ArduMYController::syncData()
 {
 	if(isConnected()) {
-		// Sync needed
-		if(mSyncDirty) {
-			qDebug()<<"SYNC DIRTY ";
-			mSyncDirty=false;
+		QByteArray ba;
+		while(mCommandSerializer.hasMoreData() ) {
+			uint8_t byte=mCommandSerializer.nextByte();
+			ba.append(byte);
 		}
-		// Count dirty
-		if(mCountDirty) {
-			qDebug()<<"COUNT DIRTY ";
-			mCountDirty=false;
+		int sz=ba.size();
+		if(sz>0) {
+			writeData(ba);
+			qDebug()<<"ARDUMY SERIAL WROTE "<<sz<<" bytes to serial";
 		}
-		/*
-		// Config dirty
-		if(mDirtyConfigFlags.count(true)>0) {
-			qDebug()<<"CONFIG DIRTY ";
-			mDirtyConfigFlags.fill(false);
-		}
-		// Kill dirty
-		if(mKillDirty) {
-			qDebug()<<"KILL DIRTY ";
-			mKillDirty=false;
-		}
-		// Move dirty
-		if(mDirtyMoveFlags.count(true)>0) {
-			qDebug()<<"MOVE DIRTY ";
-			const quint32 sz=mAccumulatedPosition.size();
-			QBuffer buf;
-			QDataStream stream(&buf);
-			stream << mDirtyMoveFlags;
-			const quint32 sz2=buf.data().size();
-			qDebug()<<"BITS: "<<sz<<" BYTES: "<<sz2;
-			for(quint32 i=0; i<sz; ++i) {
-				if(mDirtyMoveFlags.testBit(i)) {
-					//data += "#" +QString::number(i) + "P" + QString::number(mAccumulatedPosition[i]) +"\n";
-				}
-			}
-			//qDebug()<<"SYNC-MOVE: "<< QString("%1").arg( dirtyMoveFlags, 16, 2, QChar('0'));
-			mDirtyMoveFlags.fill(false);
-		}
-		*/
+
 	} else {
 		qWarning()<<"ERROR: Trying to syncMove with serial when not connected";
 	}
@@ -153,19 +134,43 @@ void ArduMYController::writeData(const QByteArray &data)
 	}
 }
 
+// Actuator Widget slots
+//////////////////////////////////////////////
+
+
+
+void ArduMYController::onActuatorWidgetMoved(quint32 id, qreal val)
+{
+	//qDebug()<<"ARDUMY ACTUATOR WIDGET MOVE"<<id<<" TO "<<val;
+	move(id,val);
+}
+
+void ArduMYController::onActuatorWidgetLimped(quint32 id, bool l)
+{
+	qDebug()<<"ARDUMY ACTUATOR WIDGET LIMP "<<id<<" TO "<<l;
+	limp(id,l);
+}
+
+void ArduMYController::onActuatorWidgetDeleted(quint32 id)
+{
+	qDebug()<<"ARDUMY ACTUATOR WIDGET DELETE"<<id;
+	deleteActuator(id);
+}
+
+
 
 // Serial IO slots
 //////////////////////////////////////////////
 
 void ArduMYController::onSerialReadData()
 {
-	qDebug()<<"ARDUINO SERIAL READ";
+	qDebug()<<"ARDUMY SERIAL READ";
 }
 
 void ArduMYController::onSerialDataWritten(qint64 b)
 {
 	const qint64 left=mSerialInterface->bytesToWrite();
-	qDebug()<<"ARDUINO SERIAL WRITE "<<b<<", left="<<left;
+	qDebug()<<"ARDUMY SERIAL WRITE "<<b<<", left="<<left;
 	if(left<=0 && mCommandSerializer.hasMoreData()) {
 		syncData();
 	}
@@ -173,7 +178,9 @@ void ArduMYController::onSerialDataWritten(qint64 b)
 
 void ArduMYController::onSerialHandleError(QSerialPort::SerialPortError error)
 {
-	qDebug()<<"ARDUINO SERIAL ERROR "<<error<<": "<<mSerialInterface->errorString();
+	if (error != QSerialPort::NoError) {
+		qDebug()<<"ARDUMY SERIAL ERROR "<<error<<": "<<mSerialInterface->errorString();
+	}
 	if (error == QSerialPort::ResourceError) {
 		qDebug()<<"Critical Error "<<mSerialInterface->errorString();
 		closeSerialPort();
@@ -222,12 +229,21 @@ ArduMYActuator *ArduMYController::addActuator()
 	} else {
 		mActuators.setSize(ct+1);
 		mCountDirty=true;
+		emit actuatorConfigurationChanged();
 	}
 	ret=&mActuators[ct];
 	return ret;
 }
 
-void ArduMYController::setServosCount(quint8 ct)
+void ArduMYController::deleteActuator(quint32 id)
+{
+	qDebug()<<"SIZE BEFORE DELETE: "<<mActuators.size();
+	mActuators.remove(id);
+	qDebug()<<"SIZE AFTER DELETE: "<<mActuators.size();
+	emit actuatorConfigurationChanged();
+}
+
+void ArduMYController::setActuatorCount(quint8 ct)
 {
 	const quint8 max=maxActuatorsSupported();
 	if(ct>max) {
@@ -262,6 +278,21 @@ void ArduMYController::limp(QBitArray &flags)
 	}
 }
 
+void ArduMYController::limp(quint8 index, bool limp)
+{
+	if(isConnected()) {
+		if(index>mActuators.size()) {
+			return;
+		}
+		ArduMYActuator &actuator=mActuators[index];
+		if(limp!=actuator.state.isLimp()) {
+			mKillDirty=true;
+			actuator.state.setLimp(limp);
+		}
+	} else {
+		qWarning()<<"ERROR: Trying to limp single atuator via serial when not connected";
+	}
+}
 
 // NOTE: This will simply collect the latest data. The actual writing is done in syncMove when serial signals there is an opportunity.
 // TODO: look at binary extension introduced in 2.1 version of hexy firmware to improve performance
@@ -361,134 +392,6 @@ QWidget *ArduMYController::configurationWidget()
 
 
 
-
-QString ArduMYActuatorTypeToString(ArduMYActuatorType s)
-{
-#define  ArduMYActuatorTypeToStringCASE(A) case (A):return #A
-	switch(s) {
-	default:
-		return "UNKNOWN";
-		ArduMYActuatorTypeToStringCASE(DC_MOTOR);
-		ArduMYActuatorTypeToStringCASE(STEP_MOTOR);
-		ArduMYActuatorTypeToStringCASE(RC_SERVO);
-		ArduMYActuatorTypeToStringCASE(RELAY);
-		ArduMYActuatorTypeToStringCASE(TYPE_COUNT);
-
-	}
-#undef ArduMYActuatorTypeToStringCASE
-}
-
-
-
-ArduMYActuatorType ArduMYActuatorTypeFromString(QString s)
-{
-	if("DC_MOTOR"==s) {
-		return DC_MOTOR;
-	}
-	if("STEP_MOTOR"==s) {
-		return STEP_MOTOR;
-	}
-	if("RC_SERVO"==s) {
-		return RC_SERVO;
-	}
-	if("RELAY"==s) {
-		return RELAY;
-	}
-	return TYPE_COUNT;
-}
-
-
-
-QString ArduMYActuatorValueRepresentationToString(ArduMYActuatorValueRepresentation s)
-{
-#define  ArduMYActuatorTypeToStringCASE(A) case (A):return #A
-	switch(s) {
-	default:
-		return "UNKNOWN";
-		ArduMYActuatorTypeToStringCASE(BIT);
-		ArduMYActuatorTypeToStringCASE(BYTE);
-		ArduMYActuatorTypeToStringCASE(WORD);
-		ArduMYActuatorTypeToStringCASE(DOUBLE_WORD);
-		ArduMYActuatorTypeToStringCASE(QUAD_WORD);
-		ArduMYActuatorTypeToStringCASE(SINGLE_FLOAT);
-		ArduMYActuatorTypeToStringCASE(DOUBLE_FLOAT);
-		ArduMYActuatorTypeToStringCASE(REPRESENTATION_COUNT);
-
-	}
-#undef ArduMYActuatorTypeToStringCASE
-}
-
-
-
-ArduMYActuatorValueRepresentation ArduMYActuatorValueRepresentationFromString(QString s)
-{
-	if("BIT"==s) {
-		return BIT;
-	}
-	if("BYTE"==s) {
-		return BYTE;
-	}
-	if("WORD"==s) {
-		return WORD;
-	}
-	if("DOUBLE_WORD"==s) {
-		return DOUBLE_WORD;
-	}
-	if("QUAD_WORD"==s) {
-		return QUAD_WORD;
-	}
-	if("SINGLE_FLOAT"==s) {
-		return SINGLE_FLOAT;
-	}
-	if("DOUBLE_FLOAT"==s) {
-		return DOUBLE_FLOAT;
-	}
-	if("REPRESENTATION_COUNT"==s) {
-		return REPRESENTATION_COUNT;
-	}
-	return REPRESENTATION_COUNT;
-}
-
-
-QVariant ArduMYActuatorValueToVariant(ArduMYActuatorValue val, ArduMYActuatorValueRepresentation representation)
-{
-	switch(representation) {
-	case(ArduMYActuatorValueRepresentation::BIT): {
-		return QVariant((bool)val.bit);
-	}
-	break;
-	case(ArduMYActuatorValueRepresentation::BYTE): {
-		return QVariant((quint8)val.byte);
-	}
-	break;
-	case(ArduMYActuatorValueRepresentation::WORD): {
-		return QVariant((quint16)val.word);
-	}
-	break;
-	case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
-		return QVariant((quint32)val.doubleWord);
-	}
-	break;
-	//Default to strictest possible equality when representation is unknown
-	default:
-	case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT):
-	case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
-		return QVariant((quint64)val.quadWord);
-	}
-	break;
-	case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
-		return QVariant((float)val.singlePrecision);
-	}
-	break;
-	case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
-		return QVariant((double)val.doublePrecision);
-	}
-	break;
-	}
-	return QVariant();
-}
-
-
 QVariantMap ArduMYController::configuration()
 {
 	QVariantMap map;
@@ -520,10 +423,10 @@ QVariantMap ArduMYController::configuration()
 				  ARDUMY_ACTUATOR_FLAG_SELECTOR(isDirty,					setDirty,				9 ) // Dirty means the configuration has changed and must be updated at opportunity. NOTE: This bit should be ignored when data is serialized, as it representes ephemeral state. TODO: Look at storing this outside of this class
 					*/
 
-				configMap["type"]=ArduMYActuatorTypeToString(config.type);
-				configMap["representation"]=ArduMYActuatorValueRepresentationToString(representation);
+				configMap["type"]=ardumyActuatorTypeToString(config.type);
+				configMap["representation"]=ardumyActuatorValueRepresentationToString(representation);
 
-				configMap["nickName"]=QString::fromLatin1((char *)config.nickName);// TODO: Look out for problems with non-or-incorrectly-null-terminated strings
+				configMap["nickName"]=ardumyActuatorNameToString(config);
 				//QString("%1").arg(mID, 2, 10, QChar('0'));
 				configMap["gearRatioNumerator"]=config.gearRatioNumerator;
 				configMap["gearRatioDenominator"]=config.gearRatioDenominator;
@@ -540,8 +443,8 @@ QVariantMap ArduMYController::configuration()
 				configMap["stepMotorStepsPerRotation"]=config.stepMotorStepsPerRotation;
 				configMap["rcServoPin"]=config.rcServoPin;
 				configMap["rcServoPin"]=config.rcServoPin;
-				configMap["rangeStart"]=ArduMYActuatorValueToVariant(config.rangeStart, config.representation);
-				configMap["rangeSpan"]=ArduMYActuatorValueToVariant(config.rangeSpan, config.representation);
+				configMap["rangeStart"]=ardumyActuatorValueToVariant(config.rangeStart, config.representation);
+				configMap["rangeSpan"]=ardumyActuatorValueToVariant(config.rangeSpan, config.representation);
 				actuatorMap["config"]=configMap;
 			}
 			{
@@ -552,7 +455,7 @@ QVariantMap ArduMYController::configuration()
 				ARDUMY_ACTUATOR_FLAG_SELECTOR(isLimp,					setLimp,				0 )
 				ARDUMY_ACTUATOR_FLAG_SELECTOR(isDirty,					setDirty,				1 )
 				*/
-				stateMap["value"]=ArduMYActuatorValueToVariant(state.value, representation);
+				stateMap["value"]=ardumyActuatorValueToVariant(state.value, representation);
 				actuatorMap["state"]=stateMap;
 			}
 			actuatorList<<actuatorMap;
@@ -575,12 +478,30 @@ void ArduMYController::setConfiguration(QVariantMap &configuration)
 		const uint32_t asz=actuatorList.size();
 		if(mActuators.size()!=asz) {
 			mActuators.setSize(asz);
-			for(uint32_t i=0; i<asz; ++i) {
-				QVariantMap actuatorMap=actuatorList[i].toMap();
+		}
+		for(uint32_t i=0; i<asz; ++i) {
+			qDebug()<<" "<<i<<" actuator config: ";
+			QVariantMap actuatorMap=actuatorList[i].toMap();
+			qDebug()<<"actuatorMap: "<<actuatorMap;
+			ArduMYActuatorValueRepresentation representation=REPRESENTATION_COUNT;
+			{
 				ArduMYActuatorConfig &config=mActuators[i].config;
-				config.type=ArduMYActuatorTypeFromString(actuatorMap["type"].toString());
-				config.representation=ArduMYActuatorValueRepresentationFromString(actuatorMap["representation"].toString());
+				QVariantMap actuatorConfigMap=actuatorMap["config"].toMap();
+				config.type=ardumyActuatorTypeFromString(actuatorConfigMap["type"].toString());
+				QString nickStr=actuatorConfigMap["nickName"].toString();
+				ardumyActuatorNameFromString(config, nickStr);
+				representation=config.representation=ardumyActuatorValueRepresentationFromString(actuatorConfigMap["representation"].toString());
+				qDebug()<<"    + config.name: "<< ardumyActuatorNameToString(config);
+				qDebug()<<"    + config.type: "<< ardumyActuatorTypeToString(config.type);
+				qDebug()<<"    + config.representation: "<< ardumyActuatorValueRepresentationToString(config.representation);
+			}
+			{
 				ArduMYActuatorState &state=mActuators[i].state;
+				QVariantMap actuatorStateMap=actuatorMap["state"].toMap();
+				state.flags=actuatorStateMap["flags"].toLongLong();
+				ardumyActuatorValueFromVariant(state.value, actuatorStateMap["value"], representation);
+				qDebug()<<"    + state: "<< ardumyActuatorStateToString(state, representation);
+				qDebug()<<"    + value.toFloat(): "<< state.value.toFloat(representation);
 			}
 		}
 	} else {
@@ -591,23 +512,6 @@ void ArduMYController::setConfiguration(QVariantMap &configuration)
 		mWidget->configure(this);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

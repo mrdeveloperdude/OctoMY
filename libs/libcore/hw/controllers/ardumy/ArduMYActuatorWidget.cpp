@@ -8,17 +8,16 @@
 
 #include <QDebug>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <QRegularExpression>
 
-
-quint32 ArduMYActuatorWidget::s_sid=0;
 
 static QString ACTUATOR_UNNAMED="Unnamed";
 
 ArduMYActuatorWidget::ArduMYActuatorWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::ArduMYActuatorWidget)
-	, mID(s_sid++)
+	, mID(0)
 	, mLowTrim(INITIAL_SERVO_TRIM)
 	, mHighTrim(INITIAL_SERVO_TRIM)
 	, mTabIndex(0)
@@ -27,11 +26,11 @@ ArduMYActuatorWidget::ArduMYActuatorWidget(QWidget *parent)
 {
 	ui->setupUi(this);
 	mTabIndex=(ui->tabWidget->count()-4);
-	if(!connect(ui->numberEntryServoPosition,SIGNAL(valueChanged(int)),this,SLOT(onServoMoved()))) {
+	if(!connect(ui->numberEntryServoPosition,SIGNAL(valueChanged(int)),this,SLOT(onActuatorMoved()))) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
-	if(!connect(ui->checkBoxEnabled,SIGNAL(clicked(bool)), this,SLOT(onServoLimped()))) {
+	if(!connect(ui->checkBoxEnabled,SIGNAL(clicked()), this,SLOT(onActuatorLimped()))) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
@@ -89,11 +88,13 @@ void ArduMYActuatorWidget::reset()
 }
 
 
-void ArduMYActuatorWidget::configure(ArduMYActuator *actuator)
+void ArduMYActuatorWidget::configure(ArduMYActuator *actuator, quint32 id)
 {
 	mActuator=actuator;
+	mID=id;
 	if(mActuator) {
-		ui->numberEntryServoPosition->setValue(mActuator->valueFloat()*(ui->numberEntryServoPosition->maximum()-ui->numberEntryServoPosition->minimum())+ui->numberEntryServoPosition->minimum());
+		const int val=mActuator->valueFloat()*(ui->numberEntryServoPosition->maximum()-ui->numberEntryServoPosition->minimum())+ui->numberEntryServoPosition->minimum();
+		ui->numberEntryServoPosition->setValue(val);
 		quint32 typeIndex=0;
 		switch(mActuator->config.type) {
 		case(TYPE_COUNT):
@@ -150,7 +151,7 @@ void ArduMYActuatorWidget::configure(ArduMYActuator *actuator)
 		}
 		break;
 		}
-		qDebug()<<"REP INDEX: "<<representationIndex;
+		qDebug()<<"CONFIGURING WIDGET WITH INDEX: "<<id<<" WITH REP="<<representationIndex<<", TYPE="<<typeIndex<<" AND VALUE "<<val;
 		ui->comboBoxActuatorRepresentation->setCurrentIndex(representationIndex);
 		updateTabsVisibility();
 		reconfigureTrim();
@@ -161,6 +162,7 @@ void ArduMYActuatorWidget::configure(ArduMYActuator *actuator)
 		}
 		ui->pushButtonName->setText(name);
 	} else {
+		qDebug()<<"CONFIGURING WIDGET WITH INDEX: "<<id<<" RESET";
 		reset();
 	}
 }
@@ -216,7 +218,7 @@ void ArduMYActuatorWidget::on_pushButtonCenter_clicked()
 }
 
 
-void ArduMYActuatorWidget::onServoMoved()
+void ArduMYActuatorWidget::onActuatorMoved()
 {
 	const qreal raw=ui->numberEntryServoPosition->value();
 	qreal val=raw;
@@ -262,14 +264,12 @@ void ArduMYActuatorWidget::onServoMoved()
 		break;
 		}
 	}
-	emit servoMoved(mID, val);
+	emit actuatorMoved(mID, val);
 }
 
-void ArduMYActuatorWidget::onServoLimped()
+void ArduMYActuatorWidget::onActuatorLimped()
 {
-	if(!ui->checkBoxEnabled->isChecked()) {
-		emit servoLimped(mID);
-	}
+	emit actuatorLimped(mID, !ui->checkBoxEnabled->isChecked());
 }
 
 
@@ -286,7 +286,7 @@ void ArduMYActuatorWidget::on_spinBoxLowTrim_valueChanged(int val)
 {
 	mLowTrim=val;
 	reconfigureTrim();
-	onServoMoved();
+	onActuatorMoved();
 }
 
 
@@ -294,7 +294,7 @@ void ArduMYActuatorWidget::on_spinBoxHighTrim_valueChanged(int val)
 {
 	mHighTrim=val;
 	reconfigureTrim();
-	onServoMoved();
+	onActuatorMoved();
 }
 
 void ArduMYActuatorWidget::on_tabWidget_currentChanged(int index)
@@ -318,7 +318,7 @@ void ArduMYActuatorWidget::on_pushButtonName_clicked()
 	bool ok=false;
 	QString name = QInputDialog::getText(this, tr("QInputDialog::getText()"), tr("User name:"), QLineEdit::Normal, ui->pushButtonName->text(), &ok);
 	if (ok && !name.isEmpty()) {
-		name=name.replace(QRegularExpression("[^a-zA-Z0-9_]*"),"").trimmed();
+		name=name.replace(QRegularExpression("[^a-zA-Z0-9]*"),"_").trimmed();
 		//(Qt::ImhDigitsOnly|Qt::ImhUppercaseOnly|Qt::ImhLowercaseOnly)
 		const quint32 maxSz=sizeof(ArduMYActuatorConfig::nickName)-1;// NOTE: -1 means we make space for the null-terminator character
 		const quint32 nSz=name.size();
@@ -348,4 +348,11 @@ void ArduMYActuatorWidget::on_comboBoxActuatorRepresentation_currentIndexChanged
 		mActuator->config.representation=(ArduMYActuatorValueRepresentation)index;
 	}
 
+}
+
+void ArduMYActuatorWidget::on_pushButtonDelete_clicked()
+{
+	if(QMessageBox::Yes == QMessageBox::question(this, "Delete Actuator", "Are you sure you want to permanently delete this actuator?", QMessageBox::Yes|QMessageBox::Cancel)) {
+		emit actuatorDeleted(mID);
+	}
 }

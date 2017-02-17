@@ -225,7 +225,8 @@ SOURCES +=\
     agent/AgentConfigStore.cpp \
     agent/AgentMobilityType.cpp \
     hw/controllers/servotor32/Servotor32ActuatorWidget.cpp \
-    hw/controllers/servotor32/Servotor32ControllerWidget.cpp
+    hw/controllers/servotor32/Servotor32ControllerWidget.cpp \
+    hw/controllers/ardumy/ArdumyTypeConversions.cpp
 
 
 
@@ -453,7 +454,8 @@ HEADERS  += \
     agent/AgentConfigStore.hpp \
     agent/AgentMobilityType.hpp \
     hw/controllers/servotor32/Servotor32ActuatorWidget.hpp \
-    hw/controllers/servotor32/Servotor32ControllerWidget.hpp
+    hw/controllers/servotor32/Servotor32ControllerWidget.hpp \
+    hw/controllers/ardumy/ArdumyTypeConversions.hpp
 
 
 

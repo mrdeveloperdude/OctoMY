@@ -98,18 +98,18 @@ union ArduMYActuatorValue {
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::WORD): {
-			ret=((qreal)byte)/0xFFFF;
+			ret=((qreal)word)/0xFFFF;
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
-			ret=((qreal)byte)/0xFFFFFFFF;
+			ret=((qreal)doubleWord)/0xFFFFFFFF;
 		}
 		break;
 		//Default to strictest possible equality when representation is unknown
 		default:
 		case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT):
 		case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
-			ret=((qreal)byte)/0xFFFFFFFFFFFFFFFF;
+			ret=((qreal)quadWord)/0xFFFFFFFFFFFFFFFF;
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {

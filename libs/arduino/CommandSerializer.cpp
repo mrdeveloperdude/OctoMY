@@ -70,16 +70,19 @@ bool CommandSerializer::hasMoreData()
 		// 1. Sync due
 		if(actuators.isSyncDue()) {
 			startSync();
-		} else if(actuators.isCountDirty()) {
-			startActuatorCount();
-		} else if(actuators.isConfigDirty()) {
-			startActuatorConfig(0);
-		} else if(actuators.isValuesDirty()) {
-			startActuatorValues();
 		}
 		// 2. Actuator count changed
+		else if(actuators.isCountDirty()) {
+			startActuatorCount();
+		}
 		// 3. Actuator config(s) changed
+		else if(actuators.isConfigDirty()) {
+			startActuatorConfig(0);
+		}
 		// 4. Actuator value(s) changed
+		else if(actuators.isValuesDirty()) {
+			startActuatorValues();
+		}
 	}
 	return (currentCommand!=OCTOMY_AWAITING_COMMAND);
 }

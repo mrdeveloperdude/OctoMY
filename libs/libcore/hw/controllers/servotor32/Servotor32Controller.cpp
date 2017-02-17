@@ -38,7 +38,7 @@ Servotor32Controller::Servotor32Controller(QObject *parent)
 
 Servotor32Controller::~Servotor32Controller()
 {
-	//ASIMOV: Limp all servos before closing shop to avoid frying them if they are trying to reach impossible positions
+	//ASIMOV: Limp all actuators before closing shop to avoid frying them if they are trying to reach impossible positions
 	limpAll();
 }
 
@@ -182,7 +182,10 @@ void Servotor32Controller::onSerialHandleError(QSerialPort::SerialPortError erro
 	TimeoutError,
 	NotOpenError
 			*/
-	qDebug()<<"HANDLED ERROR: "<<error;
+
+	if (error != QSerialPort::NoError) {
+		qDebug()<<"SERVOTOR32 SERIAL ERROR "<<error<<": "<<mSerialInterface->errorString();
+	}
 	if (error == QSerialPort::ResourceError) {
 		qDebug()<<"Critical Error"<<mSerialInterface->errorString();
 		closeSerialPort();
@@ -202,7 +205,7 @@ void Servotor32Controller::onSerialSettingsChanged()
 }
 
 
-// IServoController interface
+// IActuatorController interface
 //////////////////////////////////////////////
 
 
@@ -224,7 +227,7 @@ bool Servotor32Controller::isConnected()
 
 void Servotor32Controller::limp(QBitArray &flags)
 {
-	//Trivial reject: kill ALL
+	//Trivial reject: limp ALL
 	if(isConnected()) {
 		const quint32 sz=flags.size();
 		if((quint32)flags.count(true)==sz) {
@@ -234,15 +237,40 @@ void Servotor32Controller::limp(QBitArray &flags)
 			for(quint32 i=0; i<sz; ++i) {
 				if(flags.testBit(i)) {
 					data += QLatin1Literal("#") +  QString::number(i) + QLatin1String("L\n");
+				} else {
+					data += QLatin1Literal("#") +  QString::number(i) + QLatin1String("P") + QString::number(mAccumulatedPosition[i]) + QLatin1String("\n");
 				}
 			}
-			qDebug()<<"KILL: "<<data<<" foir "<<flags;
+			qDebug()<<"LIMP: "<<data<<" for "<<flags;
 			writeData(data.toLatin1());
 		}
 	} else {
-		qWarning()<<"ERROR: Trying to limp subset of servos via serial when not connected";
+		qWarning()<<"ERROR: Trying to limp subset of actuators via serial when not connected";
 	}
 }
+
+
+
+void Servotor32Controller::limp(quint8 index, bool limp)
+{
+	if(isConnected()) {
+		if(index>actuatorCount()) {
+			return;
+		}
+		QString data;
+		if(limp) {
+			data += QLatin1Literal("#") +  QString::number(index) + QLatin1String("L\n");
+		} else {
+			data += QLatin1Literal("#") +  QString::number(index) + QLatin1String("P") + QString::number(mAccumulatedPosition[index]) + QLatin1String("\n");
+		}
+		qDebug()<<"LIMP SINGLE: "<<data;
+		writeData(data.toLatin1());
+	} else {
+		qWarning()<<"ERROR: Trying to limp single atuator via serial when not connected";
+	}
+}
+
+
 
 // NOTE: This will simply collect the latest data. The actual writing is done in syncMove when serial signals there is an opportunity.
 // TODO: look at binary extension introduced in 2.1 version of hexy firmware to improve performance
@@ -268,7 +296,7 @@ void Servotor32Controller::move(Pose &pose)
 			syncMove();
 		}
 	} else {
-		qWarning()<<"ERROR: Trying to move servo with serial when not connected";
+		qWarning()<<"ERROR: Trying to move actuators with serial when not connected";
 	}
 }
 

@@ -51,6 +51,13 @@ private:
 	void writeData(const QByteArray &data);
 
 
+	// Actuator Widget slots
+public slots:
+	void onActuatorWidgetMoved(quint32 id, qreal val);
+	void onActuatorWidgetLimped(quint32 id, bool limp);
+	void onActuatorWidgetDeleted(quint32 id);
+
+
 	// Serial IO slots
 private slots:
 	void onSerialReadData();
@@ -66,7 +73,9 @@ public:
 
 	ArduMYActuator *addActuator();
 
-	void setServosCount(quint8);
+	void deleteActuator(quint32 id);
+
+	void setActuatorCount(quint8);
 
 	ArduMYActuatorSet &actuators()
 	{
@@ -82,6 +91,7 @@ public:
 
 
 	void limp(QBitArray &flags) Q_DECL_OVERRIDE;
+	void limp(quint8 index, bool limp) Q_DECL_OVERRIDE;
 	void move(Pose &pose) Q_DECL_OVERRIDE;
 	void move(quint8 index, qreal value) Q_DECL_OVERRIDE;
 	QString version() Q_DECL_OVERRIDE;

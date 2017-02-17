@@ -66,6 +66,7 @@ public:
 	bool isConnected() Q_DECL_OVERRIDE;
 
 	void limp(QBitArray &flags) Q_DECL_OVERRIDE;
+	void limp(quint8 index, bool limp) Q_DECL_OVERRIDE;
 	void move(Pose &pose) Q_DECL_OVERRIDE;
 	void move(quint8 index, qreal value) Q_DECL_OVERRIDE;
 	void limpAll() Q_DECL_OVERRIDE;

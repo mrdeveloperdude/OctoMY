@@ -39,6 +39,7 @@ public:
 
 	uint32_t size() const;
 	void setSize(uint32_t newsize);
+	void remove(uint32_t id);
 	void clear();
 	T* data();
 
@@ -123,6 +124,42 @@ void DynamicArray<T>::setSize(uint32_t newsize)
 }
 
 template <class T>
+void DynamicArray<T>::remove(uint32_t id)
+{
+	if(id>=mSize) {
+		return;
+	}
+	if(mSize<=0) {
+		return;
+	}
+	const uint32_t newsize=mSize-1;
+	const uint32_t copySize=newsize;
+	T *tmp= new T[newsize];
+	uint32_t i=0;
+	if(nullptr!=mData) {
+		//qDebug()<<"Copied: "<<(copySize);
+		for(; i<id; ++i) {
+			tmp[i]=mData[i];
+		}
+		for(; i<newsize; ++i) {
+			tmp[i]=mData[i+1];
+		}
+		delete [] mData;
+		mData=nullptr;
+	}
+	//qDebug()<<"Initialized: "<<(newsize-i);
+	else {
+		for(; i<newsize; ++i) {
+			T &t=tmp[i];
+			t=T(); //Value-initialize (set to 0) all items beyond the copy point.
+		}
+	}
+	mSize = newsize;
+	mData = tmp;
+	tmp = nullptr;
+}
+
+template <class T>
 void DynamicArray<T>::clear()
 {
 	setSize(0);
@@ -147,13 +184,6 @@ const T& DynamicArray<T>::operator [] (uint32_t index) const
 }
 
 #endif // DYNAMICARRAY_HPP
-
-
-
-
-
-
-
 
 
 

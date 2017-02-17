@@ -15,6 +15,9 @@
 
 #include "../arduino/ParserState.hpp"
 
+#include "../libcore/hw/controllers/ardumy/ArdumyTypeConversions.hpp"
+
+
 #include <QDebug>
 #include <QtGlobal>
 
@@ -86,146 +89,6 @@ static QString byteToStr(uint8_t byte)
 
 
 
-
-QString actuatorValueRepresentationToString(const ArduMYActuatorValueRepresentation &rep)
-{
-	QString ret;
-	switch(rep) {
-	case(BIT):
-		ret=QString("BIT ");
-		break;
-	case(BYTE):
-		ret="BYTE";
-		break;
-	case(WORD):
-		ret="WORD";
-		break;
-	case(DOUBLE_WORD):
-		ret="DWRD";
-		break;
-	default:
-	case(REPRESENTATION_COUNT):
-		ret="ERR!";
-		break;
-	case(QUAD_WORD): {
-		ret="QWRD";
-	}
-	break;
-	case(SINGLE_FLOAT):
-		ret="FLOT";
-		break;
-	case(DOUBLE_FLOAT):
-		ret="DOUB";
-		break;
-	}
-	return ret;
-}
-
-QString valueToString(const ArduMYActuatorValue &v, const ArduMYActuatorValueRepresentation &rep)
-{
-	QString ret=actuatorValueRepresentationToString(rep)+" ( ";
-	switch(rep) {
-	case(BIT):
-		ret+=(v.bit?"TRUE":"FALSE");
-		break;
-	case(BYTE):
-		ret+=QString::number(v.byte);
-		break;
-	case(WORD):
-		ret+=QString::number(v.word);
-		break;
-	case(DOUBLE_WORD):
-		ret+=QString::number(v.doubleWord);
-		break;
-	default:
-	case(REPRESENTATION_COUNT):
-		ret+="OUT_OF_RANGE!";
-		break;
-	case(QUAD_WORD): {
-		ret+=QString::number(v.quadWord);
-	}
-	break;
-	case(SINGLE_FLOAT):
-		ret+=QString::number(v.singlePrecision);
-		break;
-	case(DOUBLE_FLOAT):
-		ret+=QString::number(v.doublePrecision);
-		break;
-	}
-	return ret+" )";
-}
-
-
-QString actuatorConfigFlagsToString(const ArduMYActuatorConfig &c)
-{
-	QStringList list;
-	list<< (c.isDirty()?              QStringLiteral("dirty"): QStringLiteral("-----"));
-	list<< (c.isContinuous()?         QStringLiteral("contn"): QStringLiteral("-----"));
-	list<< (c.isLinear()?             QStringLiteral("liner"): QStringLiteral("-----"));
-	list<< (c.hasGearRatio()?         QStringLiteral("gearr"): QStringLiteral("-----"));
-	list<< (c.hasAbsoluteEncoder()?   QStringLiteral("abenc"): QStringLiteral("-----"));
-	list<< (c.hasIncrementalEncoder()?QStringLiteral("inenc"): QStringLiteral("-----"));
-	list<< (c.hasPositionFeedback()?  QStringLiteral("posfb"): QStringLiteral("-----"));
-	list<< (c.hasTachometer()?        QStringLiteral("tacho"): QStringLiteral("-----"));
-	list<< (c.hasLimitSwitchStart()?  QStringLiteral("start"): QStringLiteral("-----"));
-	list<< (c.hasLimitSwitchEnd()?    QStringLiteral("endli"): QStringLiteral("-----"));
-
-	return list.join(", ");
-}
-
-QString actuatorConfigToString(const ArduMYActuatorConfig &c)
-{
-	QString ret;
-	ret+=(
-			 //QString(" flags=%1").arg(c.flags,8,2,QChar('0'))
-			 actuatorConfigFlagsToString(c)
-			 +QStringLiteral("; rep=")
-			 +actuatorValueRepresentationToString(c.representation)
-		 );
-	return ret;
-}
-
-
-QString actuatorStateFlagsToString(const ArduMYActuatorState &s)
-{
-	QStringList list;
-	list<< (s.isDirty()?              QStringLiteral("dirty"): QStringLiteral("-----"));
-	list<< (s.isLimp()?               QStringLiteral("limpp"): QStringLiteral("-----"));
-	return list.join(", ");
-}
-
-
-QString actuatorStateToString(const ArduMYActuatorState &s, const ArduMYActuatorValueRepresentation &rep)
-{
-	QString ret;
-	ret+=(
-			 //QString(" flags=%1").arg(s.flags,8,2,QChar('0'))
-			 actuatorStateFlagsToString(s)
-			 +QStringLiteral("; value=")+valueToString(s.value,rep)
-		 );
-	return ret;
-}
-
-
-QString actuatorToString(const ArduMYActuator &a)
-{
-	QString ret;
-	ret+=QStringLiteral("config{")+actuatorConfigToString(a.config)+QStringLiteral("}, state{")+actuatorStateToString(a.state, a.config.representation)+QStringLiteral("}");
-	return ret;
-}
-
-
-QString actuatorSetToString(const ArduMYActuatorSet &set)
-{
-	QString ret;
-	ret+=(QString("ActuatorSet with size ")+QString::number(set.size())+QStringLiteral(":\n"));
-	const auto size=set.size();
-	for(size_t i=0; i<size; ++i) {
-		const ArduMYActuator &a=set[i];
-		ret+=QStringLiteral(" + ") + actuatorToString(a)+QStringLiteral("\n");
-	}
-	return ret;
-}
 
 void logLines(const QString ret)
 {
@@ -542,6 +405,67 @@ ArduMYActuatorSet TestArduMY::fuzzActuatorSet()
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
+
+
+void TestArduMY::testToFromString()
+{
+	QCOMPARE(QString("BIT"), ardumyActuatorValueRepresentationToString(BIT) );
+	QCOMPARE(QString("BYTE"), ardumyActuatorValueRepresentationToString(BYTE) );
+	QCOMPARE(QString("WORD"), ardumyActuatorValueRepresentationToString(WORD) );
+	QCOMPARE(QString("DOUBLE_WORD"), ardumyActuatorValueRepresentationToString(DOUBLE_WORD) );
+	QCOMPARE(QString("QUAD_WORD"), ardumyActuatorValueRepresentationToString(QUAD_WORD) );
+	QCOMPARE(QString("SINGLE_FLOAT"), ardumyActuatorValueRepresentationToString(SINGLE_FLOAT) );
+	QCOMPARE(QString("DOUBLE_FLOAT"), ardumyActuatorValueRepresentationToString(DOUBLE_FLOAT) );
+	QCOMPARE(QString("REPRESENTATION_COUNT"), ardumyActuatorValueRepresentationToString(REPRESENTATION_COUNT) );
+	QCOMPARE(QString("UNKNOWN"), ardumyActuatorValueRepresentationToString((ArduMYActuatorValueRepresentation)(REPRESENTATION_COUNT+1)) );
+	QCOMPARE(QString("UNKNOWN"), ardumyActuatorValueRepresentationToString((ArduMYActuatorValueRepresentation)(BIT-1)) );
+
+	QCOMPARE(BIT, ardumyActuatorValueRepresentationFromString("BIT") );
+	QCOMPARE(BYTE, ardumyActuatorValueRepresentationFromString("BYTE") );
+	QCOMPARE(WORD, ardumyActuatorValueRepresentationFromString("WORD") );
+	QCOMPARE(DOUBLE_WORD, ardumyActuatorValueRepresentationFromString("DOUBLE_WORD") );
+	QCOMPARE(QUAD_WORD, ardumyActuatorValueRepresentationFromString("QUAD_WORD") );
+	QCOMPARE(SINGLE_FLOAT, ardumyActuatorValueRepresentationFromString("SINGLE_FLOAT") );
+	QCOMPARE(DOUBLE_FLOAT, ardumyActuatorValueRepresentationFromString("DOUBLE_FLOAT") );
+	QCOMPARE(REPRESENTATION_COUNT, ardumyActuatorValueRepresentationFromString("REPRESENTATION_COUNT") );
+	QCOMPARE(REPRESENTATION_COUNT, ardumyActuatorValueRepresentationFromString("UNKNOWN") );
+	QCOMPARE(REPRESENTATION_COUNT, ardumyActuatorValueRepresentationFromString("LOLBOB") );
+	QCOMPARE(REPRESENTATION_COUNT, ardumyActuatorValueRepresentationFromString("BLÆÆÆ") );
+
+	QCOMPARE(QString("DC_MOTOR"), ardumyActuatorTypeToString(DC_MOTOR) );
+	QCOMPARE(QString("STEP_MOTOR"), ardumyActuatorTypeToString(STEP_MOTOR) );
+	QCOMPARE(QString("RC_SERVO"), ardumyActuatorTypeToString(RC_SERVO) );
+	QCOMPARE(QString("RELAY"), ardumyActuatorTypeToString(RELAY) );
+	QCOMPARE(QString("TYPE_COUNT"), ardumyActuatorTypeToString(TYPE_COUNT) );
+	QCOMPARE(QString("UNKNOWN"), ardumyActuatorTypeToString((ArduMYActuatorType)(TYPE_COUNT+1)) );
+	QCOMPARE(QString("UNKNOWN"), ardumyActuatorTypeToString((ArduMYActuatorType)(DC_MOTOR-1)) );
+
+	QCOMPARE(DC_MOTOR, ardumyActuatorTypeFromString("DC_MOTOR") );
+	QCOMPARE(STEP_MOTOR, ardumyActuatorTypeFromString("STEP_MOTOR") );
+	QCOMPARE(RC_SERVO, ardumyActuatorTypeFromString("RC_SERVO") );
+	QCOMPARE(RELAY, ardumyActuatorTypeFromString("RELAY") );
+	QCOMPARE(TYPE_COUNT, ardumyActuatorTypeFromString("TYPE_COUNT") );
+	QCOMPARE(TYPE_COUNT, ardumyActuatorTypeFromString("UNKNOWN") );
+	QCOMPARE(TYPE_COUNT, ardumyActuatorTypeFromString("LOLBOB") );
+	QCOMPARE(TYPE_COUNT, ardumyActuatorTypeFromString("BLÆÆ") );
+
+
+
+
+/* TODO: Add similar tests for these
+	QVariant ardumyActuatorValueToVariant(const ArduMYActuatorValue &v, const ArduMYActuatorValueRepresentation &rep=DEFAULT_REPRESENTATION);
+	QString ardumyActuatorValueToString(const ArduMYActuatorValue &v, const ArduMYActuatorValueRepresentation &rep=DEFAULT_REPRESENTATION);
+	QString ardumyActuatorConfigFlagsToString(const ArduMYActuatorConfig &c);
+	QString ardumyActuatorConfigToString(const ArduMYActuatorConfig &c);
+	QString ardumyActuatorStateFlagsToString(const ArduMYActuatorState &s);
+	QString ardumyActuatorStateToString(const ArduMYActuatorState &s, const ArduMYActuatorValueRepresentation &rep=DEFAULT_REPRESENTATION);
+	QString ardumyActuatorToString(const ArduMYActuator &a);
+	QString ardumyActuatorSetToString(const ArduMYActuatorSet &set);
+	*/
+
+
+}
 
 void TestArduMY::testMagicDetector()
 {
@@ -1174,7 +1098,7 @@ void TestArduMY::testCommandParser()
 				const bool dirty=percentChance(i*11);
 				a.state.setDirty(dirty);
 				randomValue(a.state.value, a.config.representation);
-				qDebug()<<" ACTUATOR "<<actuatorIndex<<"/"<<set.size()<<" was set to "<<(dirty?"DIRTY":"CLEAN")<<" with value "<<valueToString(a.state.value,a.config.representation);
+				qDebug()<<" ACTUATOR "<<actuatorIndex<<"/"<<set.size()<<" was set to "<<(dirty?"DIRTY":"CLEAN")<<" with value "<<ardumyActuatorValueToString(a.state.value,a.config.representation);
 			}
 			ArduMYActuatorValueSerializer serializer;
 			serializer.setSet(set);

@@ -253,8 +253,8 @@ void Agent::reloadController()
 			mActuatorController=factory.controllerFactory(controllerName);
 			if(nullptr!=mActuatorController) {
 				qDebug()<<"Controller created, configuring";
-				QVariantMap parameters=config.controllerConfig();
-				mActuatorController->setConfiguration(parameters);
+				QVariantMap controllerConfig=config.controllerConfig();
+				mActuatorController->setConfiguration(controllerConfig);
 				mActuatorController->setConnected(true);
 			}
 		} else {

@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QList>
 
-class ArduMYActuatorSet;
+class ArduMYController;
 class QSpacerItem;
 namespace Ui
 {
@@ -17,7 +17,7 @@ class ActuatorManagerWidget : public QWidget
 private:
 	Ui::ActuatorManagerWidget *ui;
 	QList<QWidget *> mWidgets;
-	ArduMYActuatorSet *mActuators;
+	ArduMYController *mController;
 
 public:
 	explicit ActuatorManagerWidget(QWidget *parent = 0);
@@ -29,13 +29,11 @@ private:
 	void updateWidgetCount(quint32 num);
 public:
 
-	void configure(ArduMYActuatorSet *);
+	void configure(ArduMYController *);
 
 public slots:
 
-	void onServoMoved(quint32 id, qreal val);
-	void onServoLimped(quint32 id);
-
+	void controllerSettingsChanged();
 };
 
 #endif // ACTUATORMANAGERWIDGET_HPP

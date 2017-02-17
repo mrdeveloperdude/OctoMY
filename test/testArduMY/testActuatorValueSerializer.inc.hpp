@@ -8,7 +8,7 @@ void testActuatorValueSerializerInclude(ArduMYActuatorSet &inSet)
 #endif
 
 	qDebug()<<"BEFORE A--------";
-	logLines(actuatorSetToString(inSet));
+	logLines(ardumyActuatorSetToString(inSet));
 	ArduMYActuatorValueSerializer serializer;
 	serializer.setSet(inSet);
 	ArduMYActuatorSet outSet;
@@ -115,7 +115,7 @@ void testActuatorValueSerializerInclude(ArduMYActuatorSet &inSet)
 	for(size_t i =0; i<inSize; ++i) {
 		const ArduMYActuator &a=inSet[i];
 		const ArduMYActuator &b=outSet[i];
-		qDebug()<<"For actuator "<<(i+1)<<"/"<< inSize<<"SERIALIZER: "<<valueToString(a.state.value, a.config.representation)<<", PARSER: "<<valueToString(b.state.value, b.config.representation);
+		qDebug()<<"For actuator "<<(i+1)<<"/"<< inSize<<"SERIALIZER: "<<ardumyActuatorValueToString(a.state.value, a.config.representation)<<", PARSER: "<<ardumyActuatorValueToString(b.state.value, b.config.representation);
 		// Only the dirty ones were copied!
 		if(a.state.isDirty()) {
 			if(a.state.value != b.state.value) {

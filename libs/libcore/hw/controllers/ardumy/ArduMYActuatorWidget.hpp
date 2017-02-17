@@ -20,7 +20,6 @@ class ArduMYActuatorWidget: public QWidget
 	Q_OBJECT
 private:
 	Ui::ArduMYActuatorWidget *ui;
-	static quint32 s_sid;
 	quint32 mID;
 	int mLowTrim;
 	int mHighTrim;
@@ -37,15 +36,16 @@ private:
 	void reset();
 
 public:
-	void configure(ArduMYActuator *);
+	void configure(ArduMYActuator *, quint32 id);
 	void disableServo();
 signals:
-	void servoMoved(quint32 id, qreal val);
-	void servoLimped(quint32 id);
+	void actuatorMoved(quint32 id, qreal val);
+	void actuatorLimped(quint32 id, bool l);
+	void actuatorDeleted(quint32 id);
 
 private slots:
-	void onServoMoved();
-	void onServoLimped();
+	void onActuatorMoved();
+	void onActuatorLimped();
 private slots:
 	void on_pushButtonCenter_clicked();
 
@@ -57,6 +57,7 @@ private slots:
 	void on_pushButtonResetGearRatio_clicked();
 	void on_pushButtonName_clicked();
 	void on_comboBoxActuatorRepresentation_currentIndexChanged(int index);
+	void on_pushButtonDelete_clicked();
 };
 
 #endif // ARDUMYACTUATORWIDGET_HPP

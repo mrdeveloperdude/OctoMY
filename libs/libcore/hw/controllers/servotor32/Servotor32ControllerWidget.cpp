@@ -70,7 +70,6 @@ Servotor32ControllerWidget::~Servotor32ControllerWidget()
 	delete ui;
 }
 
-
 void Servotor32ControllerWidget::onConnectChanged(const TryToggleState last, const TryToggleState current)
 {
 	ui->scrollAreaServos->setEnabled(ON==current);
