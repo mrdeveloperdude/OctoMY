@@ -3,7 +3,7 @@
 
 
 #include "CLUtils.hpp"
-
+#include "../libutil/utility/IncludeOpenGL.hpp"
 
 #include "../libutil/utility/Utility.hpp"
 
@@ -139,7 +139,7 @@ void failOnCLError(cl_int code, QString msg, QString file, int line)
 		return;
 	}
 	QString error=OCLErrorString(code);
-	qWarning()<<"CL ERROR: "<<error<<"("<<code<<") for "<<msg<<" @"<<file<<":"<<line;
+	qWarning()<<"CL: ERROR: "<<error<<"("<<code<<") for "<<msg<<" @"<<file<<":"<<line;
 	exit(1);
 }
 
@@ -210,4 +210,27 @@ QDebug &operator<<(QDebug &d, cl::Device *dev)
 	QString s=CLDeviceToString(dev);
 	d.noquote().operator<<(s);
 	return d;
+}
+
+
+
+
+QSurfaceFormat properOctomyDefaultFormat()
+{
+	QSurfaceFormat format=QSurfaceFormat::defaultFormat();
+	qDebug().noquote().nospace()<<"OCTOMY_QT_OGL_VERSION: "<< OCTOMY_QT_OGL_VERSION_MAJOR << "." << OCTOMY_QT_OGL_VERSION_MINOR << " vs. ORIG: "<<format.version().first<<"."<<format.version().second;
+	qDebug().noquote().nospace()<<"OCTOMY_QT_OGL_PROFILE: "<< OCTOMY_QT_OGL_PROFILE_STR << " vs. ORIG: "<<format.profile();
+	qDebug().noquote().nospace()<<"OCTOMY_QT_OGL_DEPTH_BUFFER: "<< OCTOMY_QT_OGL_DEPTH_BUFFER<< " vs. ORIG: "<<format.depthBufferSize();
+	qDebug().noquote().nospace()<<"OCTOMY_QT_OGL_STENSIL_BUFFER: "<< OCTOMY_QT_OGL_STENSIL_BUFFER<< " vs. ORIG: "<<format.stencilBufferSize();
+	qDebug().noquote().nospace()<<"OCTOMY_QT_OGL_SWAP_INTERVAL: "<< OCTOMY_QT_OGL_SWAP_INTERVAL<< " vs. ORIG: "<<format.swapInterval();
+	format.setVersion( OCTOMY_QT_OGL_VERSION_MAJOR, OCTOMY_QT_OGL_VERSION_MINOR );
+	format.setProfile( QSurfaceFormat::OCTOMY_QT_OGL_SURFACE_PROFILE );
+	format.setRenderableType( QSurfaceFormat::OpenGL);
+	format.setOption(QSurfaceFormat::DebugContext);
+	format.setDepthBufferSize(OCTOMY_QT_OGL_DEPTH_BUFFER);
+	format.setStencilBufferSize(OCTOMY_QT_OGL_STENSIL_BUFFER);
+	// TODO: Look at making this part of includeGL stuff
+	format.setSwapBehavior(QSurfaceFormat::TripleBuffer);
+	format.setSwapInterval(OCTOMY_QT_OGL_SWAP_INTERVAL);
+	return format;
 }

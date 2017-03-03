@@ -3,6 +3,9 @@
 
 #include "ArduMY.hpp"
 
+/**
+ * @brief The MagicDetector struct is a mechanism to help detect  a "magic" sequence in a stream of bytes
+ */
 struct MagicDetector {
 	uint8_t idx;
 	const uint8_t *magic;

@@ -10,22 +10,22 @@
 #include <QSignalSpy>
 
 
-TestCourier::TestCourier(CommsSignature dest, CommsTester *parent, const qint32 maxSends , const qint32 maxRecs)
+TestCourier::TestCourier(CommsSignature dest, QByteArray datagram, const qint32 maxSends , const qint32 maxRecs, CommsTester *parent)
 	: Courier("Test", Courier::FIRST_USER_ID+313, parent)
 	, mCt(parent)
 	, mSoFar(0)
-	, mDatagram("LOREM IPSUM DOLOR SIT AMET")
+	, mDatagram(datagram)
 	, mMaxSends(maxSends)
 	, mMaxRecs(maxRecs)
 	, mSendCount(0)
 	, mRecCount(0)
 
 	, mMandate(mDatagram.size()+4 // payloadSize
-		  ,10 // priority
-		  ,0 // nextSend. We set nextSend to 0. Basically this meaens "always overdue, send at every opportunity"
-		  ,true // receiveActive
-		  ,true // sendActive
-		 )
+			   ,10 // priority
+			   ,0 // nextSend. We set nextSend to 0. Basically this meaens "always overdue, send at every opportunity"
+			   ,true // receiveActive
+			   ,true // sendActive
+			  )
 
 {
 	setDestination(dest);
@@ -38,43 +38,44 @@ TestCourier::~TestCourier()
 
 
 
-//Let the CommChannel know what we want
+// Let the CommChannel know what we want
 CourierMandate TestCourier::mandate() const
 {
-
 	return mMandate;
 }
 
-//Override to act on sending opportunity.
-//Return number of bytes sent ( >0 ) if you took advantage of the opportunity
+// Override to act on sending opportunity.
+// Return number of bytes sent ( >0 ) if you took advantage of the opportunity
 quint16 TestCourier::sendingOpportunity(QDataStream &ds )
 {
 	mSendCount++;
-	if(mSendCount>=mMaxSends) {
+	const qint16 sendsLeft=mMaxSends-mSendCount;
+	const bool done=(sendsLeft<=0);
+	if(done) {
 		qDebug()<<"MAX SENDS ("<<mMaxSends<<") RECEIVED FOR "<<destination().toString()<<" STOPPING";
 		mMandate.sendActive=false;
 	}
 	ds << mDatagram;
-	const quint16 left=mCt->mTestCount-mSoFar-1;
-	const bool done=(left<=0);
-	qDebug()<<"SENDING OPPORTUNITY: "<<destination().toString()<< mMandate.payloadSize<<(done?"DONE":QString("LEFT: %1/%2").arg(left).arg(mCt->mTestCount));
-	if(done) {
+	qDebug()<<"SENDING OPPORTUNITY @ "<<destination().toString()<< " bytes:" <<mMandate.payloadSize<<", "<<(done?"DONE":QString("SENDS LEFT: %1").arg(sendsLeft));
+	if(nullptr!=mCt && done) {
 		qDebug()<<"EMIT FINISHED --==##==--";
 		emit mCt->finished();
 	}
-	mSoFar++;
 	return mMandate.payloadSize;
 }
 
-//Override to act on data received
-//Return number of bytes actually read.
+// Override to act on data received
+// Return number of bytes actually read.
 quint16 TestCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 {
 	mRecCount++;
-	if(mRecCount>=mMaxRecs) {
+	const qint16 recLeft=mMaxRecs-mRecCount;
+	const bool done=(recLeft<=0);
+	if(done) {
 		qDebug()<<"MAX RECS ("<<mMaxRecs<<") RECEIVED FOR "<<destination().toString()<<" STOPPING";
 		mMandate.receiveActive=false;
 	}
+
 	QByteArray in;
 	ds>>in;
 	qDebug()<<"DATA BYTES RECEIVED="<<availableBytes<<" ("<<in<<")";
@@ -113,7 +114,7 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 			qDebug() << mMyAddress << ":" << mMyPort << " --> " << toPort;
 			QString myID="1234";
 			CommsSignature sig(myID, NetworkAddress(mMyAddress, toPort));
-			TestCourier *tc=new TestCourier(sig, this, mTestCount, mTestCount);
+			TestCourier *tc=new TestCourier(sig, "This is my humble payload", mTestCount, mTestCount, this);
 			QVERIFY(nullptr!=tc);
 			mCc.setCourierRegistered(*tc, true);
 		} else {
@@ -158,6 +159,119 @@ QString CommsTester::toString()
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+CommsSignalLogger::CommsSignalLogger(QString name, QObject *parent)
+	: QObject(parent)
+	, mName(name)
+{
+
+}
+CommsSignalLogger::~CommsSignalLogger()
+{
+
+}
+
+
+void CommsSignalLogger::onCommsError(QString message)
+{
+	qDebug()<<mName<<": onCommsError("<<message<<")";
+}
+
+void CommsSignalLogger::onCommsClientAdded(CommsSession *c)
+{
+	qDebug()<<mName<<": onCommsClientAdded("<<c<<")";
+}
+
+void CommsSignalLogger::onCommsConnectionStatusChanged(bool c)
+{
+	qDebug()<<mName<<": onCommsConnectionStatusChanged("<<c<<")";
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+/*
+Basic test that sets up two CommsChannels ( A & B ) and have them sending data via couriers to eachother.
+
+Since the CommsChannel architecture is a bit involved, having a basic test is useful both for
+learning/remembering the intricacies and for debugging and testing basic features.
+*/
+
+void TestCommsChannel::testSingle()
+{
+	qRegisterMetaType<QHostAddress>("QHostAddress");
+	qRegisterMetaType<QByteArray>("QByteArray");
+	const QHostAddress local("127.0.0.1");
+	const quint16 basePort=54345;
+	const qint32 maxSends=10;
+	const qint32 maxRecs=10;
+	const quint64 now=QDateTime::currentMSecsSinceEpoch();
+
+	qDebug()<<"####################################### INITIALIZING ID FOR PARTY A";
+	QString keyFileA="keyFileA.json";
+	KeyStore keyStoreA(keyFileA);
+	keyStoreA.bootstrap(false,false);
+	QString idA=keyStoreA.localPortableID().id();
+	qDebug()<<"Keystore A :"<<idA;
+	NetworkAddress addrA(local, basePort + 0);
+	CommsSignature commSigA(idA, addrA);
+
+	qDebug()<<"####################################### INITIALIZING ID FOR PARTY B";
+	QString keyFileB="keyFileB.json";
+	KeyStore keyStoreB(keyFileB);
+	keyStoreB.bootstrap(false,false);
+	QString idB=keyStoreB.localPortableID().id();
+	qDebug()<<"Keystore B :"<<idB;
+	NetworkAddress addrB(local, basePort + 1);
+	CommsSignature commSigB(idB, addrB);
+
+
+	qDebug()<<"####################################### INITIALIZING COMMS FOR PARTY A";
+	CommsChannel chanA(idA, keyStoreA);
+	CommsSignalLogger sigLogA("LOG-A");
+	chanA.setHookCommsSignals(sigLogA, true);
+	TestCourier courA1(commSigB, "This is datagram A1 123", maxSends, maxRecs);
+	chanA.setCourierRegistered(courA1, true);
+	//TestCourier courA2(commSigB, "This is datagram A2 uvw xyz", maxSends, maxRecs); chanA.setCourierRegistered(courA2, true);
+
+	qDebug()<<"####################################### INITIALIZING COMMS FOR PARTY B";
+	CommsChannel chanB(idB, keyStoreB);
+	CommsSignalLogger sigLogB("LOG-B");
+	chanA.setHookCommsSignals(sigLogB, true);
+	TestCourier courB1(commSigA, "This is datagram B1 æøåä", maxSends, maxRecs);
+	chanB.setCourierRegistered(courB1, true);
+	//TestCourier courB2(commSigA, "This is datagram B2 Q", maxSends, maxRecs); chanB.setCourierRegistered(courB2, true);
+
+	qDebug()<<"####################################### STARTING A";
+	chanA.rescheduleSending(now);
+	chanA.start(addrA);
+
+	qDebug()<<"####################################### STARTING B";
+	chanB.rescheduleSending(now);
+	chanB.start(addrB);
+
+
+	qDebug()<<"####################################### WAITING";
+
+
+	{
+		const quint64 start=QDateTime::currentMSecsSinceEpoch();
+		quint64 now=start;
+		while(now<start+10000) {
+			now=QDateTime::currentMSecsSinceEpoch();
+			QCoreApplication::processEvents();
+		}
+	}
+
+	qDebug()<<"####################################### DELETING";
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 
 /*
 Sets up X commchannels and have them sending data
@@ -169,7 +283,7 @@ when used in real world scenario.
 TODO: add simulated unreliability factors such as dropped/corrupted/delayed packets
 */
 // http://doc.qt.io/qt-5/qtest.html
-void TestCommsChannel::test()
+void TestCommsChannel::testMultiple()
 {
 	qRegisterMetaType<QHostAddress>("QHostAddress");
 	qRegisterMetaType<QByteArray>("QByteArray");

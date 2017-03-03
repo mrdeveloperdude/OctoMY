@@ -23,7 +23,7 @@
 
 #define LOOPS (100)
 
-#define VERBOSE_TEST (false)
+#define VERBOSE_TEST (true)
 
 #define DO_LOOPS_START(NAME, LOOPS) \
 const int step=(LOOPS/100);\
@@ -32,7 +32,7 @@ for(int lc=0; lc<LOOPS; ++lc) { \
 	counter++; \
 	if(counter>step) { \
 		counter=0; \
-		if(VERBOSE_TEST){qDebug().noquote().nospace()<<NAME<<": "<<((lc*100)/LOOPS)<<" / 100          ";} \
+		if(VERBOSE_TEST){qDebug()<<"";qDebug().noquote().nospace()<<" .oOo. .oOo. .oOo. "<<NAME<<": "<<((lc*100)/LOOPS)<<" / 100          ";} \
 	}
 
 #define DO_LOOPS_END \
@@ -162,10 +162,10 @@ ArduMYActuatorConfig TestArduMY::randomConfig() const
 	c.representation=(ArduMYActuatorValueRepresentation)(qrand() % ((quint8)ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT));
 
 	// All but BIT is ok
-	//do {		c.representation=(ActuatorValueRepresentation)(qrand() % ((quint8)ActuatorValueRepresentation::REPRESENTATION_COUNT)) ;	} while (ActuatorValueRepresentation::BIT==c.representation);
+	do {		c.representation=(ArduMYActuatorValueRepresentation)(qrand() % ((quint8)ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT)) ;	} while (ArduMYActuatorValueRepresentation::BIT==c.representation);
 
-	// All the same
-	c.representation=ArduMYActuatorValueRepresentation::BYTE;
+	// All BIT
+	//c.representation=ArduMYActuatorValueRepresentation::BIT;
 
 	// Set random name
 	const quint8 nameSize=(qrand()%20);
@@ -288,7 +288,7 @@ ArduMYActuatorSet TestArduMY::randomActuatorSet()
 {
 	ArduMYActuatorSet set;
 	//qsrand(2);
-	const auto setSize=qrand()%10;
+	const auto setSize=qrand()%28;
 	set.setSize(setSize);
 	if((uint32_t)set.size() != (uint32_t)setSize) {
 		qWarning()<<"ERROR: set size was incorrect";
@@ -956,7 +956,7 @@ void TestArduMY::testRepresentationBoundary()
 	ArduMYActuatorValueParser parser;
 
 	QCOMPARE(parser.set, (ArduMYActuatorSet *)nullptr);
-	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::END_OF_OP);
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::END_OF_OP);
 	QCOMPARE(parser.byteIndex, (uint16_t)0);
 	QCOMPARE(parser.enabledActuatorCount, (uint8_t)0);
 
@@ -964,7 +964,7 @@ void TestArduMY::testRepresentationBoundary()
 
 	// Check that the actuator set was received properly
 	QCOMPARE(parser.set, &outSet);
-	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ENABLED_ACTUATOR_BITS);
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::ENABLED_ACTUATOR_BITS);
 	QCOMPARE(parser.byteIndex, (uint16_t)0);
 	for(int i=0; i<32; ++i) {
 		QCOMPARE(parser.enableBits[i], (uint8_t)0x00);
@@ -981,7 +981,7 @@ void TestArduMY::testRepresentationBoundary()
 
 		QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ArduMYActuatorValueRepresentation::BYTE);
 		QCOMPARE((int16_t)parser.currentActuatorIndex, (int16_t)v);
-		QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+		QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
 		parser.parse(inSet[v].state.value.byte);
 		QCOMPARE(parser.byteIndex, (uint16_t) 0);
 		QCOMPARE(parser.enabledActuatorCount, (uint8_t)4);
@@ -995,7 +995,7 @@ void TestArduMY::testRepresentationBoundary()
 		for(uint8_t b=0; b<2; ++b) {
 			QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ArduMYActuatorValueRepresentation::WORD);
 			QCOMPARE((int16_t)parser.currentActuatorIndex, (int16_t)(2+v));
-			QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+			QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
 			Converter cv;
 			cv.uint64=0;
 			cv.uint16[0]=inSet[2+v].state.value.word;

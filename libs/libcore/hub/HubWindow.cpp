@@ -329,9 +329,9 @@ void HubWindow::startProcess(QString base)
 void HubWindow::onGLWidgetInitialized()
 {
 	qDebug()<<"INIT CL ----- ";
-	CLGLViewRenderer *rendrer=new HelloGLCLViewRenderer();
+	HelloGLCLViewRenderer *rendrer=new HelloGLCLViewRenderer();
 	if(nullptr!=rendrer) {
-		rendrer->initialize(ui->openGLWidgetCLGLView->glctx());
+		rendrer->initialize(ui->openGLWidgetCLGLView->sharingGLContext());
 		ui->openGLWidgetCLGLView->setRenderer(rendrer);
 
 		if(!connect(ui->pushButtonCLGLDisplay, &QPushButton::toggled,ui->openGLWidgetCLGLView,&CLGLView::onDisplayToggle,OC_CONTYPE)) {

@@ -26,7 +26,7 @@ CLGLView::CLGLView(QWidget *parent)
 	, canvasTexture(nullptr)
 	, canvasProgram(nullptr)
 	, canvasVAO(nullptr)
-	, mGLCTX(nullptr, nullptr)
+	, mSharingGLContext(nullptr, nullptr)
 //	, engineGLContext(nullptr)
 	, fps("display")
 	, renderEnabled(false)
@@ -73,24 +73,38 @@ void CLGLView::setRenderer(CLGLViewRenderer * renderer)
 	const QString oldSpec=(nullptr!=mRenderer)?mRenderer->getRendererSpec():"NONE";
 	const QString newSpec=(nullptr!=renderer)?renderer->getRendererSpec():"NONE";
 	qDebug()<<"CHANGING ACTIVE RENDERER FROM "<<oldSpec<<" --> "<<newSpec;
+	if(mRenderer!=renderer && nullptr!=renderer) {
+		renderer->resize(mLastResize);
+		renderer->setRendering(renderEnabled,false);
+	}
 	mRenderer=renderer;
 }
 
-GLContext &CLGLView::glctx()
+GLContext &CLGLView::sharingGLContext()
 {
-	return mGLCTX;
+	return mSharingGLContext;
 }
 
 void CLGLView::initializeGL()
 {
 	qDebug()<<"%%%% INIT GL";
 	makeCurrent();
-	initializeOpenGLFunctions();
-	QOpenGLContext *ctx=context();
-	qDebug()<<"CTX: "<<ctx<<" is "<<(ctx->isValid()?"VALID":"INVALID");
-	if(!ctx->isValid()) {
-		exit(1);
+	QOpenGLContext *ctx = QOpenGLContext::currentContext();
+	qDebug()<<"USING GL CONTEXT "<<ctx;
+	if (nullptr==ctx) {
+		qWarning("Attempted CL-GL interop without a current OpenGL context");
+		return;
 	}
+	if (!ctx->isValid()) {
+		qWarning("Attempted CL-GL interop without a valid GL context");
+		return;
+	}
+	if (nullptr==ctx->surface()) {
+		qWarning("Attempted CL-GL interop without a context surface");
+		return;
+	}
+	initializeOpenGLFunctions();
+
 	initLogging();
 	initCanvas();
 	initCTX();
@@ -100,13 +114,14 @@ void CLGLView::initializeGL()
 
 void CLGLView::resizeGL(int w, int h)
 {
-	qDebug()<<"%%%% RESIZE GL";
+	mLastResize=QSize(w,h);
+	qDebug()<<"%%%% RESIZE GL "<<mLastResize;
 	makeCurrent();
 	int side = qMin(w, h);
 	glViewport((w - side) / 2, (h - side) / 2, side, side);
 
 	if(nullptr!=mRenderer) {
-		mRenderer->resize(QSize(w,h));
+		mRenderer->resize(mLastResize);
 	}
 }
 
@@ -119,7 +134,7 @@ void CLGLView::paintGL()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	if(timer.isActive()) {
 		glClearColor(utility::frand(), utility::frand(), utility::frand(), 0.5f);
-		if(nullptr!=mRenderer && mRenderer->isRunning()) {
+		if(nullptr!=mRenderer && mRenderer->isRendering()) {
 
 
 			mRenderer->renderFrame();
@@ -335,7 +350,7 @@ void CLGLView::initCanvas()
 		//vbo->setUsagePattern(QOpenGLBuffer::StaticDraw);
 
 		canvasVBO->allocate(vertData.constData(), vertData.count() * sizeof(GLfloat));
-		qDebug()<<"CREATED VBO WITH ID "<<canvasVBO->bufferId()<< " AND SIZE "<<w<<"x"<<h;
+		qDebug().noquote().nospace()<<"CREATED VBO WITH ID "<<canvasVBO->bufferId()<< " AND SIZE "<<w<<"x"<<h;
 	}
 
 	qDebug()<<"%%%% INIT CANVAS TEXTURE";
@@ -435,14 +450,14 @@ void CLGLView::initCTX()
 	makeCurrent();
 	QOpenGLContext *ctx=context();
 
-	QOpenGLContext *mglctx = new QOpenGLContext();
+	QOpenGLContext *tempCTX = new QOpenGLContext();
 
-	mglctx->setFormat(ctx->format());
-	mglctx->setShareContext(ctx);
-	mglctx->create();
+	tempCTX->setFormat(ctx->format());
+	tempCTX->setShareContext(ctx);
+	tempCTX->create();
 
-	qDebug()<<"MCTX: "<<mglctx<<" is "<<(mglctx->isValid()?"VALID":"INVALID");
-	if(!mglctx->isValid()) {
+	qDebug()<<"MCTX: "<<tempCTX<<" is "<<(tempCTX->isValid()?"VALID":"INVALID");
+	if(!tempCTX->isValid()) {
 		exit(1);
 	}
 
@@ -455,20 +470,17 @@ void CLGLView::initCTX()
 		qWarning()<<"ERROR preparing offscreen surface for engine context";
 		exit(1);
 	}
-	QSurface *surf=
-		osurf;
+	QSurface *osurfp=osurf;
 	//ctx->surface();
-	if(nullptr==surf) {
+	if(nullptr==osurfp) {
 		qWarning()<<"ERROR getting surface for engine context";
 		exit(1);
-	} else {
-
 	}
 	doneCurrent();
-	GLContext tglctx(mglctx, surf);
-	mGLCTX=tglctx;
+	//GLContext tempSharingGLContext(tempCTX, osurfp);	mSharingGLContext=tempSharingGLContext;
+	mSharingGLContext=GLContext(tempCTX, osurfp);
 
-	//glctx.currentize();	glctx.uncurrentize();
+	mSharingGLContext.currentize();	mSharingGLContext.uncurrentize();
 
 }
 
@@ -486,7 +498,7 @@ void CLGLView::onRenderToggle(bool v)
 {
 	renderEnabled=v;
 	if(nullptr!=mRenderer) {
-		mRenderer->setRunning(renderEnabled,false);
+		mRenderer->setRendering(renderEnabled,false);
 	} else {
 		qWarning()<<"NO RENDERER WHILE TOGGELING RENDER";
 	}

@@ -6,7 +6,12 @@
 
 class CLThreadManager;
 
-
+/**
+ * @brief The HelloCLWorker class is a basic example implementation of CLWorker.
+  *
+ * It works together with HelloGLCLViewRenderer and HelloCLWorkerFactory
+ *
+ */
 class HelloCLWorker : public CLWorker
 {
 private:
@@ -17,9 +22,9 @@ public:
 	// CLWorker interface
 	//////////////////////////////////////////
 public slots:
-	virtual void preProcessImp();
-	virtual void processImp();
-	virtual void postProcessImp();
+	void preProcessImp() Q_DECL_OVERRIDE;
+	void processImp() Q_DECL_OVERRIDE;
+	void postProcessImp() Q_DECL_OVERRIDE;
 };
 
 #endif // HELLOCLWORKER_HPP

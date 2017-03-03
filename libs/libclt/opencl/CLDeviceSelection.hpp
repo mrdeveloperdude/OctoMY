@@ -6,6 +6,11 @@
 #include <QString>
 #include <QVector>
 
+/**
+ * @brief The CLDeviceSelection class is a basic means to tell CLThread Manager
+ * on which OpenCL devices we wish to run.
+ */
+
 class CLDeviceSelection: public QVector<cl::Device>
 {
 

@@ -10,11 +10,12 @@ class QThread;
 class GLContext
 {
 private:
-	QOpenGLContext* glctx;
-	QSurface *surf;
+	QOpenGLContext* mGLCtx;
+	QSurface *mSurface;
 
 public:
-	explicit GLContext(QOpenGLContext* glctx=nullptr, QSurface *surf=nullptr);
+	GLContext(QOpenGLContext* ctx=nullptr, QSurface *surf=nullptr);
+	GLContext(const GLContext &other);
 	GLContext(GLContext &other);
 	virtual ~GLContext();
 
@@ -29,6 +30,11 @@ public:
 	void moveToThread(QThread &th);
 
 	QString toString();
+
+	QString operator()()
+	{
+		return toString();
+	}
 };
 
 

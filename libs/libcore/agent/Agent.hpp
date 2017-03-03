@@ -13,6 +13,7 @@
 #include "agent/AgentConfigStore.hpp"
 #include "hw/controllers/IActuatorController.hpp"
 
+#include "AgentControls.hpp"
 
 #include <QObject>
 #include <QList>
@@ -26,26 +27,7 @@ class ISyncParameter;
 class Agent;
 
 
-class CourierSet: public QList<Courier *>
-{
-private:
-	Agent &mAgent;
-	QDataStream mDatastream;
-	AgentStateCourier *mAgentStateCourier;
-	SensorsCourier *mSensorsCourier;
-	BlobCourier *mBlobCourier;
-
-public:
-	explicit CourierSet(CommsSignature &sig, Agent &agent);
-	virtual ~CourierSet();
-public:
-
-	AgentStateCourier *agentStateCourier();
-
-	void setCommsEnabled(bool enable);
-};
-
-
+class CourierSet;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,26 +35,6 @@ public:
 
 
 
-
-class AgentControls
-{
-private:
-
-	Agent &mAgent;
-	QHash <quint64, CourierSet *> mCouriers;
-public:
-
-	explicit AgentControls(Agent &);
-	virtual	~AgentControls();
-
-public:
-	void registerClient(CommsSignature &sig);
-	void unRegisterClient(CommsSignature &sig);
-
-	void setCommsEnabled(bool);
-
-	CourierSet* activeControl() const;
-};
 
 
 

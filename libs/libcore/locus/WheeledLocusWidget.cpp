@@ -6,9 +6,10 @@
 
 
 
-WheeledLocusWidget::WheeledLocusWidget(QWidget *parent) :
-	QWidget(parent),
-	ui(new Ui::WheeledLocusWidget)
+WheeledLocusWidget::WheeledLocusWidget(QWidget *parent)
+	: LocusWidget(parent)
+	, ui(new Ui::WheeledLocusWidget)
+	, mWheeledLocus(nullptr)
 {
 	ui->setupUi(this);
 }
@@ -29,4 +30,15 @@ void WheeledLocusWidget::on_pushButtonName_clicked()
 		ui->pushButtonName->setText(text);
 	}
 
+}
+
+void WheeledLocusWidget::on_pushButtonDelete_clicked()
+{
+	emit locusDeleted();
+}
+
+
+void WheeledLocusWidget::configure(WheeledLocus *wheeledLocus)
+{
+	mWheeledLocus=wheeledLocus;
 }

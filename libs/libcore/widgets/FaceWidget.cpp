@@ -16,6 +16,13 @@
 #include "../libutil/utility/Utility.hpp"
 
 #include "agent/AgentConstants.hpp"
+
+#include "agent/AgentControls.hpp"
+
+
+#include "agent/CourierSet.hpp"
+
+
 #include <QScrollBar>
 
 

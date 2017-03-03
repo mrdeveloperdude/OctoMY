@@ -525,7 +525,7 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 
 void CommsChannel::onSendingTimer()
 {
-	//qDebug()<<"--- SEND";
+	qDebug()<<"--- SEND";
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	const quint64 timeSinceLastRX=now-mLastRX;
 	QSharedPointer<CommsSession> localClient=mSessions.getBySignature(mLocalSignature, true);
@@ -534,6 +534,7 @@ void CommsChannel::onSendingTimer()
 		return;
 	}
 	if(mConnected && timeSinceLastRX>CONNECTION_TIMEOUT) {
+		qDebug()<<"Connection timed out, stopping";
 		stop();
 	} else if(!mConnected && timeSinceLastRX<=CONNECTION_TIMEOUT) {
 		mConnected=true;

@@ -13,7 +13,7 @@ struct ArduMYActuatorValueSerializerBase {
 
 public:
 	ArduMYActuatorSet *set;
-	ActuatorValuesParserStep step;
+	ArduMYActuatorValuesParserStep step;
 	uint16_t byteIndex;
 
 	int16_t currentActuatorIndex;

@@ -2,22 +2,38 @@
 #define CLGLINTEROPCONFIG_HPP
 
 #include "../libutil/utility/IncludeOpenGL.hpp"
+#include "../libutil/utility/GLContext.hpp"
 
+#include <QSize>
+
+/**
+ * @brief The CLGLInteropConfig class answers the simple questions
+ * "will we in the context of this CLThreadManager instance do any
+ * interop between OpenGL and OpenCL?"
+ * In the case that the answer is "Yes", it also carries the size of the canvas
+ * in which CL & GL will interchange data, as well as the GLContext object
+ * used during sharing.
+ *
+ */
 class CLGLInteropConfig
 {
 private:
-	bool mDoGLInterop;
-	GLuint mWidth;
-	GLuint mHeight;
-public:
-	explicit CLGLInteropConfig(bool doGLInterop=false, GLuint width=0, GLuint height=0);
-	explicit CLGLInteropConfig(bool doGLInterop, QSize size);
+	GLContext *mSharingContext;
+	QSize mSize;
 
 public:
+	CLGLInteropConfig(GLContext *sc=nullptr, QSize sz=QSize());
+	CLGLInteropConfig(CLGLInteropConfig &other);
+	CLGLInteropConfig(const CLGLInteropConfig &other);
 
+	virtual ~CLGLInteropConfig();
+
+public:
 	bool doGLInterop() const;
 	GLuint width() const;
 	GLuint height() const;
+	QSize size() const;
+	GLContext *sharingContext() const;
 };
 
 #endif // CLGLINTEROPCONFIG_HPP

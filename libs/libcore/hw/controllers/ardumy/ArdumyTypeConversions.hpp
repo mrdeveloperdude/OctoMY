@@ -9,6 +9,9 @@
 #include "../arduino/ArduMYActuator.hpp"
 #include "../arduino/ArduMYActuatorSet.hpp"
 
+#include "../arduino/ArduMYActuatorConfigParserStep.hpp"
+#include "../arduino/ArduMYActuatorValuesParserStep.hpp"
+
 #include <QString>
 #include <QVariant>
 
@@ -26,6 +29,19 @@ QString ardumyActuatorValueToString(ArduMYActuatorValue val, ArduMYActuatorValue
 QString ardumyActuatorStateToString(ArduMYActuatorState &state, ArduMYActuatorValueRepresentation representation=REPRESENTATION_COUNT);
 QString ardumyActuatorConfigToString(ArduMYActuatorConfig &config);
 */
+
+
+
+
+extern const ArduMYActuatorValuesParserStep DEFAULT_VALUE_PARSER_STEP;
+
+QString ardumyActuatorValueParserStepToString(const ArduMYActuatorValuesParserStep &s);
+ArduMYActuatorValuesParserStep ardumyActuatorValueParserStepFromString(const QString &s);
+
+extern const ArduMYActuatorConfigParserStep DEFAULT_CONFIG_PARSER_STEP;
+
+QString ardumyActuatorConfigParserStepToString(const ArduMYActuatorConfigParserStep &s);
+ArduMYActuatorConfigParserStep ardumyActuatorConfigParserStepFromString(const QString &s);
 
 
 extern const ArduMYActuatorValueRepresentation DEFAULT_REPRESENTATION;

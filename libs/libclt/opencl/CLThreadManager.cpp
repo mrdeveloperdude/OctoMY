@@ -84,12 +84,14 @@ bool CLThreadManager::isRunning() const
 	return false;
 }
 
-
 void CLThreadManager::setRunning(bool running, bool block)
 {
 	const size_t sz=mDeviceSelection.size();
 	const bool isAlreadyuRunning=isRunning();
 	qDebug()<<(running?"STARTING ":"STOPPING ")<<sz<<" CL Thread(s)------------------------";
+	if(running && block) {
+		qWarning()<<"PLEASE NOTE THAT BLOCK WILL NOT WORK FOR RUNNING, ONLY FOR STOPPING";
+	}
 	if(running!=isAlreadyuRunning) {
 		QThread *currentThread=QThread::currentThread();
 		qDebug()<<"CURTHREAD1: "<<currentThread->currentThreadId();
@@ -116,6 +118,7 @@ void CLThreadManager::setRunning(bool running, bool block)
 				if(wthread1->currentThreadId()!=thread->currentThreadId()) {
 					qWarning()<<"FIRST MOVE FAILED!";
 				}
+
 			}
 			for (size_t i = 0; i < sz; ++i) {
 				CLWorker *worker=mWorkers[i];
@@ -131,6 +134,7 @@ void CLThreadManager::setRunning(bool running, bool block)
 				worker->setRunning(true);
 				thread->start();
 			}
+
 		} else {
 			for (size_t i = 0; i < sz; ++i) {
 				mWorkers[i]->setRunning(false);
@@ -145,9 +149,9 @@ void CLThreadManager::setRunning(bool running, bool block)
 							qWarning()<<"ERROR: Thread was null";
 							continue;
 						}
-						qDebug()<<"JOIN start "<<i;
+						qDebug()<<"JOIN start for thread "<<i;
 						thread->wait();
-						qDebug()<<"JOIN done "<<i;
+						qDebug()<<"JOIN done for thread "<<i;
 					}
 				}
 			}
@@ -166,6 +170,24 @@ const cl::Device *CLThreadManager::device(int index) const
 	return &mDeviceSelection.at(index);
 }
 
+CLWorker *CLThreadManager::renderWorker()
+{
+	//Trivial reject, we won't be rendering so no render worker
+	if(!mInteropConfig.doGLInterop()) {
+		return nullptr;
+	}
+	if(mWorkers.size()<=0) {
+		return nullptr;
+	}
+	CLWorker *worker=mWorkers.at(0);
+	if(nullptr==worker) {
+		qWarning()<<"ERROR: worker was unexpected null";
+	} else if(!worker->isGLInteropWorker()) {
+		qWarning()<<"ERROR: worker was not render worker as expected";
+		return nullptr;
+	}
+	return worker;
+}
 
 CLGLInteropConfig CLThreadManager::interopConfig()  const
 {

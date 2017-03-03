@@ -5,6 +5,8 @@
 
 #include "CLGLInteropConfig.hpp"
 
+#include "../libutil/utility/GLContext.hpp"
+
 #include <QObject>
 #include <QVector>
 #include <QString>
@@ -15,10 +17,10 @@ class CLWorkerFactory;
 
 /*!
  * \brief The CLThreadManager class is designed to start one thread per OpenCL
- * device matching the query passed as arbuemtns to the constructor.
+ * device matching the query passed as arguements to the constructor.
  *
  * Worker classes are created one per thread to carry out the OpenCL processing
- * and their running status and lifecycle is maintained.
+ * while their running status and lifecycle is maintained.
  */
 class CLThreadManager : public QObject
 {
@@ -39,11 +41,20 @@ public:
 
 public:
 
+	// Return wether or not this worker manager is in a runnign state
 	bool isRunning()  const;
+	// Set this worker manager to a running or stopped state.
+	// When settign to a stopped state, you may specify block to have this call
+	// wait for completion before returning
 	void setRunning(bool running, bool block=false);
-
+	// Return the CL device designated for the worker by index.
+	// Will return nullptr if the index is out of range
 	const cl::Device *device(int index) const;
+	// Return the designated rendering worker when doing Gl-CL interop
+	// Will return nullptr wheninterop is not enabled, or when no workers are available
+	CLWorker *renderWorker();
 
+	// Return the interop configuration currently in effect
 	CLGLInteropConfig interopConfig() const;
 };
 

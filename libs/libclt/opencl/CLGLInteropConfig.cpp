@@ -1,29 +1,55 @@
 #include "CLGLInteropConfig.hpp"
 
-CLGLInteropConfig::CLGLInteropConfig(bool doGLInterop, GLuint width, GLuint height)
-	: mDoGLInterop(doGLInterop)
-	, mWidth(width)
-	, mHeight(height)
+
+CLGLInteropConfig::CLGLInteropConfig(GLContext *sc, QSize sz)
+	: mSharingContext(sc)
+	, mSize(sz)
 {
 
 }
 
-
-CLGLInteropConfig::CLGLInteropConfig(bool doGLInterop, QSize size)
-	: CLGLInteropConfig(doGLInterop, size.width(), size.height())
+CLGLInteropConfig::CLGLInteropConfig(CLGLInteropConfig &other)
+	: mSharingContext(other.mSharingContext)
+	, mSize(other.mSize)
 {
 
 }
+
+CLGLInteropConfig::CLGLInteropConfig(const CLGLInteropConfig &other)
+	: mSharingContext(other.mSharingContext)
+	, mSize(other.mSize)
+{
+
+}
+
+CLGLInteropConfig::~CLGLInteropConfig()
+{
+
+}
+
 
 bool CLGLInteropConfig::doGLInterop() const
 {
-	return mDoGLInterop;
+	return (nullptr!=mSharingContext);
 }
+
 GLuint CLGLInteropConfig::width() const
 {
-	return mWidth;
+	return mSize.width();
 }
+
 GLuint CLGLInteropConfig::height() const
 {
-	return mHeight;
+	return mSize.height();
+}
+
+
+QSize CLGLInteropConfig::size() const
+{
+	return mSize;
+}
+
+GLContext *CLGLInteropConfig::sharingContext() const
+{
+	return mSharingContext;
 }

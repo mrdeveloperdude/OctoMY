@@ -103,6 +103,28 @@ void HardwareWizard::initControllerList()
 }
 
 
+
+void HardwareWizard::initLocusList()
+{
+	mLocusStanzas.clear();
+	mLocusStanzas << LocusStanza("none", "None", ":/icons/unknown.svg");
+	mLocusStanzas << LocusStanza("wheeled", "Wheeled Locus", ":/icons/wheels.svg");
+	mLocusStanzas << LocusStanza("tracked", "Tracked Locus", ":/icons/threads.svg");
+	mLocusStanzas << LocusStanza("legged", "Legged locus", ":/icons/hexapod.svg");
+
+	for(auto stanza:mLocusStanzas) {
+		QIcon icon;
+		icon.addFile(stanza.iconURL, QSize(), QIcon::Normal, QIcon::Off);
+		/*
+		QListWidgetItem *temp = new QListWidgetItem(ui->comboBoxAddLocus);
+		temp->setIcon(icon);
+		temp->setText(stanza.fullName);
+		temp->setToolTip(stanza.nickName);
+		*/
+	}
+}
+
+
 int HardwareWizard::controllerIndexByName(QString name)
 {
 	int index=0;
@@ -166,8 +188,14 @@ void HardwareWizard::moveTo(int next)
 		}
 	}
 	break;
-	// Interface
+	// Loci management
 	case(2): {
+
+	}
+	break;
+
+	// Interface
+	case(3): {
 		// NOTE: We end here because the rest of the pages are work in progress
 		emit done();
 		selectFirstIfNoneSelected(ui->listViewSerialInterface);
@@ -175,25 +203,25 @@ void HardwareWizard::moveTo(int next)
 	break;
 
 	// Serial device
-	case(3): {
+	case(4): {
 		selectFirstIfNoneSelected(ui->listViewSerialInterface);
 	}
 	break;
 	// Template
-	case(4): {
+	case(5): {
 		selectFirstIfNoneSelected(ui->listViewTemplate);
 	}
 	break;
 	// Serial settings
-	case(5): {
+	case(6): {
 
 	}
 	break;
 	// Pose Mapping
-	case(6): {
+	case(7): {
 	}
 	break;
-	case(7): {
+	case(8): {
 
 		emit done();
 		//selectFirstIfNoneSelected(ui->listWidgetProtocol);
@@ -297,20 +325,24 @@ void HardwareWizard::on_comboBoxAddLocus_currentIndexChanged(int index)
 		return;
 	}
 	break;
+	// Wheeled
 	case(1): {
-		auto v=ui->widgetLociManager->children().size()+1;
-
-		//auto v=ui->spinBoxActuatorCount->value()+1;
-//		ui->spinBoxActuatorCount->setValue(v);
-		ui->widgetLociManager->configure(v);
-
+		mLocusController.addLocus();
+		ui->widgetLociManager->configure(&mLocusController);
 	}
 	break;
+	// Tracked
 	case(2): {
-	} break;
-
+		mLocusController.addLocus();
+		ui->widgetLociManager->configure(&mLocusController);
+	}
+	break;
+	// Legged
 	case(3): {
-	} break;
+		mLocusController.addLocus();
+		ui->widgetLociManager->configure(&mLocusController);
+	}
+	break;
 	}
 	ui->comboBoxAddLocus->setCurrentIndex(0);
 }

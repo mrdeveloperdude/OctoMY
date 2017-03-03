@@ -46,9 +46,8 @@ class CLGLViewRenderer;
  * the content of a PBO shared with OpenCL running in a separate thread.
  *
  * This sounds kind of complex, but for proper GL-CL interop in Qt this is
- * the best way to do it. For more backround, please look at \l { http://stackoverflow.com/questions/39542187/what-is-the-correct-way-to-get-opencl-to-play-nice-with-opengl-in-qt5 } { this page }.
- *
- *
+ * the best way to do it. For more backround, please have a look at
+ * \l { http://stackoverflow.com/questions/39542187/what-is-the-correct-way-to-get-opencl-to-play-nice-with-opengl-in-qt5 } { this page }.
  */
 class CLGLView : public QOpenGLWidget, protected OCTOMY_QT_OGL_FUNCTIONS_CLASS
 {
@@ -60,13 +59,14 @@ private:
 	QOpenGLShaderProgram *canvasProgram;
 	QOpenGLVertexArrayObject *canvasVAO;
 	QMatrix4x4 canvasMatrix;
-	GLContext mGLCTX;
+	GLContext mSharingGLContext;
 	FPSCalculator fps;
 	QTimer timer;
 	bool renderEnabled;
 	bool displayEnabled;
 	ArcBall arcBall;
 	CLGLViewRenderer * mRenderer;
+	QSize mLastResize;
 
 public:
 	explicit CLGLView(QWidget *parent = nullptr);
@@ -76,7 +76,7 @@ public:
 
 	void setRenderer(CLGLViewRenderer * mRenderer);
 
-	GLContext &glctx();
+	GLContext &sharingGLContext();
 
 	//QOpenGLWidget interface
 public:

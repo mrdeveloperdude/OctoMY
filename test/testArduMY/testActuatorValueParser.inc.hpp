@@ -19,7 +19,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 
 	// Check that it was default-initialized properly
 	QCOMPARE(parser.set, (ArduMYActuatorSet *)nullptr);
-	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::END_OF_OP);
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::END_OF_OP);
 	QCOMPARE(parser.byteIndex, (uint16_t)0);
 	QCOMPARE(parser.enabledActuatorCount, (uint8_t)0);
 
@@ -27,7 +27,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 
 	// Check that the actuator set was received properly
 	QCOMPARE(parser.set, &outSet);
-	QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ENABLED_ACTUATOR_BITS);
+	QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::ENABLED_ACTUATOR_BITS);
 	QCOMPARE(parser.byteIndex, (uint16_t)0);
 	QCOMPARE(parser.enabledActuatorCount, (uint8_t)0);
 
@@ -59,7 +59,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 	//qDebug()<<"SERIALIZER ACTUATOR COUNT: " << inSize << " ENABLE BITS BYTE COUNT: " << enableBitsActualSize << " ENABLED COUNT: " << enabledCount;
 	// Parse enable bits
 	for(size_t i=0; i<enableBitsActualSize; ++i) {
-		QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ENABLED_ACTUATOR_BITS);
+		QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::ENABLED_ACTUATOR_BITS);
 		QCOMPARE(parser.byteIndex, (uint16_t)i);
 		parser.parse(enableBits[i]);
 	}
@@ -71,7 +71,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 		QCOMPARE(parser.enableBits[i], enableBits[i]);
 	}
 	// Check that parse step was advanced properly
-	if(ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES != parser.step) {
+	if(ArduMYActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES != parser.step) {
 		for(size_t i=0; i<enableBitsSize; ++i) {
 			if(parser.enableBits[i]!=enableBits[i] ) {
 				qDebug()<<"ENABLE-BIT MISMATCH DETECTED FOR BYTE "<< QString("%1").arg(i+1, 2, 10, QLatin1Char(' '))<<"/"<<enableBitsSize<<"  PARSER: "<<byteToStr(parser.enableBits[i])<<" vs. ORIGINAL: "<<byteToStr(enableBits[i]);
@@ -81,9 +81,9 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 	QCOMPARE(parser.byteIndex, (uint16_t)0);
 	QCOMPARE(parser.enabledActuatorCount, (uint8_t)enabledCount);
 	if(enabledCount>0) {
-		QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+		QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
 	} else {
-		QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::END_OF_OP);
+		QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::END_OF_OP);
 	}
 
 
@@ -184,7 +184,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 					QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)a.config.representation);
 					QCOMPARE(parser.enabledActuatorCount, (uint8_t)enabledCount);
 					QCOMPARE((uint8_t)parser.byteIndex, (uint8_t)j);
-					QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+					QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
 					parser.parse(cv.uint8[j]);
 				}
 				ArduMYActuator &b=outSet[i];
@@ -210,7 +210,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 					QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)a.config.representation);
 					QCOMPARE(parser.enabledActuatorCount, (uint8_t)enabledCount);
 					QCOMPARE((uint8_t)parser.byteIndex, (uint8_t)j);
-					QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+					QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
 					parser.parse(cv.uint8[j]);
 				}
 				ArduMYActuator &b=outSet[i];
@@ -236,7 +236,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 					QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)a.config.representation);
 					QCOMPARE(parser.enabledActuatorCount, (uint8_t)enabledCount);
 					QCOMPARE((uint8_t)parser.byteIndex, (uint8_t)j);
-					QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+					QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
 					parser.parse(cv.uint8[j]);
 				}
 				ArduMYActuator &b=outSet[i];
@@ -262,7 +262,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 					QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)a.config.representation);
 					QCOMPARE(parser.enabledActuatorCount, (uint8_t)enabledCount);
 					QCOMPARE((uint8_t)parser.byteIndex, (uint8_t)j);
-					QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+					QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
 					parser.parse(cv.uint8[j]);
 				}
 				ArduMYActuator &b=outSet[i];
@@ -293,7 +293,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 					QCOMPARE(parser.enabledActuatorCount, (uint8_t)enabledCount);
 					QCOMPARE((uint8_t)parser.byteIndex, (uint8_t)j);
 					//qDebug()<<" + ByteIndex/J:"<<parser.byteIndex<<", J="<<j;
-					QCOMPARE((uint8_t)parser.step, (uint8_t)ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
+					QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
 					parser.parse(cv.uint8[j]);
 				}
 

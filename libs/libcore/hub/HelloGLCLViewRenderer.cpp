@@ -27,7 +27,7 @@ void HelloGLCLViewRenderer::initialize(GLContext &ctx)
 	if(nullptr!=factory) {
 		QSurface *surf=ctx.surface();
 		if(nullptr!=surf) {
-			CLGLInteropConfig config(true, 512, 512 );
+			CLGLInteropConfig config(&ctx, QSize(512, 512) );
 			mThreadManager=new CLThreadManager(*factory,config, "", false,true);
 			if(nullptr==mThreadManager) {
 				qWarning()<<"ERROR: Could not allocate CL thread manager";
@@ -47,7 +47,7 @@ void HelloGLCLViewRenderer::resize(QSize sz)
 	qDebug()<<"Resizing to: "<<sz;
 }
 
-bool HelloGLCLViewRenderer::setRunning(bool running, bool block)
+bool HelloGLCLViewRenderer::setRendering(bool running, bool block)
 {
 	if(nullptr!=mThreadManager) {
 		mThreadManager->setRunning(running, block);
@@ -59,7 +59,7 @@ bool HelloGLCLViewRenderer::setRunning(bool running, bool block)
 }
 
 
-bool HelloGLCLViewRenderer::isRunning() const
+bool HelloGLCLViewRenderer::isRendering() const
 {
 	bool ret=false;
 	if(nullptr!=mThreadManager) {

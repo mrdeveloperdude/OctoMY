@@ -16,23 +16,25 @@
 
    + Remote -> ClientWidget
 
-  CommsChannel
+  CommsChannel - A mode of communication over UDP, utilizing Couriers to transfer different kinds of data
 
-  CommsClient
+  CommsSessionDirectory - The list of sessions in use with convenience  functions
 
-  CommsClientDirectory
-
-  CommsClientSignature
+  CommsSignature - A special purpose identification mapping between full ID and short hand 64bit integer ID used only by CommsChannel and friends.
 
   CommsSession - rogue - handshake(exchange full ID and 64bit nonceID, agree on security protocols and bandwidth limits)
 
-  NodeAssociate
+  NodeAssociate - Address book entry for one node. Stored in NodeAssociateStore. Meant to be persistent between invocations.
 
-  ReliabilitySystem
+  NodeAssociateStore - Place to keep NodeAssociates
 
-  FlowControl
+  ReliabilitySystem - Separate system to maintain reliability in the communications. Enabled when needed.
 
-  Courier
+  FlowControl - Separate system to maintain flow control (apply throttling to avoid stalls) in the communications. Enabled when needed.
+
+  Courier - A class responsible for a certain part of communications over CommsChannel
+
+  CourierSet - A collection of couriers to be handled as one.
 
 	A packet is defined as initial when it contains a session ID of 0
 	A packet is defined as broken when it does not adhere to the protocol by displaying a lack/excess of data or data in the wrong format
@@ -88,7 +90,7 @@
 	relibability and encryption of CommsChannel are invoked only when needed.
 
 	When the amount of data needed for intrinsic features is extensive, separate
-	"intrinsic packets" will be sent, while other lesse in size intrinsic data
+	"intrinsic packets" will be sent, while other lesser-in-size intrinsic data
 	such as counters will instead accompany each packet. Protocol dictates when
 	such dedicated packets will be needed or not, and changes in this part of the
 	protocol should not affect the higher level courier interface.

@@ -7,6 +7,27 @@
 #include <QTest>
 #include <QHostAddress>
 
+
+
+class CommsSignalLogger: public QObject
+{
+	Q_OBJECT
+
+private:
+	QString mName;
+public:
+	explicit CommsSignalLogger(QString name, QObject *parent=nullptr);
+	virtual ~CommsSignalLogger();
+
+public slots:
+	void onCommsError(QString message);
+	void onCommsClientAdded(CommsSession *c);
+	void onCommsConnectionStatusChanged(bool c);
+
+};
+
+
+
 class CommsTester;
 class TestCourier:public Courier
 {
@@ -25,7 +46,7 @@ public:
 	CourierMandate mMandate;
 
 public:
-	explicit TestCourier(CommsSignature dest, CommsTester *parent = nullptr, const qint32 mMaxSends=1 , const qint32 mMaxRecs=1 );
+	explicit TestCourier(CommsSignature dest, QByteArray datagram, const qint32 mMaxSends=1 , const qint32 mMaxRecs=1 , CommsTester *parent = nullptr);
 	virtual ~TestCourier();
 
 public:
@@ -83,8 +104,13 @@ signals:
 class TestCommsChannel:public QObject
 {
 	Q_OBJECT
+
+
+	void testMultiple();
 private slots:
-	void test();
+	void testSingle();
+
+
 
 };
 

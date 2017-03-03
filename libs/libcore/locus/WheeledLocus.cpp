@@ -13,8 +13,6 @@ WheeledLocus::WheeledLocus()
 }
 
 
-
-
 QWidget *WheeledLocus::configurationWidget()
 {
 	if(nullptr==mConfigWidget) {

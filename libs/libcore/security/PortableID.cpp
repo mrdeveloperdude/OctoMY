@@ -1,4 +1,6 @@
 #include "PortableID.hpp"
+#include "../libutil/utility/Utility.hpp"
+
 
 #include <QStringList>
 #include <QDateTime>
@@ -12,7 +14,7 @@ PortableID::PortableID()
 
 }
 
-#include "../libutil/utility/Utility.hpp"
+
 PortableID::PortableID(QVariantMap &data)
 	: mName(data["name"].toString())
 	, mGender(data["gender"].toString())
@@ -30,50 +32,60 @@ PortableID::~PortableID()
 
 
 
-void PortableID::setName(QString name){
+void PortableID::setName(QString name)
+{
 	mName=name;
 }
 
-void PortableID::setGender(QString gender){
+void PortableID::setGender(QString gender)
+{
 	mGender=gender;
 }
 
-void PortableID::setID(QString id){
+void PortableID::setID(QString id)
+{
 	mID=id;
 }
 
 
-void PortableID::setBirthDate(quint64 birthDate){
+void PortableID::setBirthDate(quint64 birthDate)
+{
 	mBirthDate=birthDate;
 }
 
 
-void PortableID::setType(DiscoveryType type){
+void PortableID::setType(DiscoveryType type)
+{
 	mType=type;
 }
 
 
 
 
-QString PortableID::name() const{
+QString PortableID::name() const
+{
 	return mName;
 }
-QString PortableID::gender() const{
+QString PortableID::gender() const
+{
 	return mGender;
 }
-QString PortableID::id() const{
+QString PortableID::id() const
+{
 	return mID;
 }
 
 
-quint64 PortableID::birthDate() const{
+quint64 PortableID::birthDate() const
+{
 	return mBirthDate;
 }
 
 
-bool PortableID::fromPortableString(QString s){
+bool PortableID::fromPortableString(QString s)
+{
 	QStringList parts = s.split(QRegExp ("(\\.)"));
-	if(parts.size()!=4){
+	if(parts.size()!=4) {
 		return false;
 	}
 	mName=parts.at(0).trimmed();
@@ -83,12 +95,14 @@ bool PortableID::fromPortableString(QString s){
 	return true;
 }
 
-QString PortableID::toPortableString(){
+QString PortableID::toPortableString()
+{
 	return mName + "." +mGender + "." +mID+ "." +QString::number(mBirthDate);
 }
 
 
 
-DiscoveryType PortableID::type() const{
+DiscoveryType PortableID::type() const
+{
 	return mType;
 }

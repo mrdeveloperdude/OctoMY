@@ -3,7 +3,7 @@
 
 #include "ArduMY.hpp"
 
-enum ActuatorValuesParserStep: uint8_t {
+enum ArduMYActuatorValuesParserStep: uint8_t {
 
 	ENABLED_ACTUATOR_BITS, ACTUATOR_VALUE_BATCHES, END_OF_OP
 

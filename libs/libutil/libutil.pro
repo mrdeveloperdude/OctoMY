@@ -20,7 +20,9 @@ HEADERS	+= \
     utility/widgets/PixViewer.hpp \
     utility/GLErrors.hpp \
     utility/SerialSize.hpp \
-    utility/BufferHoneyPot.hpp
+    utility/BufferHoneyPot.hpp \
+    utility/CrashHelp.hpp \
+    utility/IncludeOpenGLIntegration.hpp
 
 
 SOURCES	+= \
@@ -35,7 +37,8 @@ SOURCES	+= \
     utility/widgets/PixViewer.cpp \
     utility/GLErrors.cpp \
     utility/SerialSize.cpp \
-    utility/BufferHoneyPot.cpp
+    utility/BufferHoneyPot.cpp \
+    utility/CrashHelp.cpp
 
 FORMS += \
     utility/widgets/PixViewer.ui

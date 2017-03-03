@@ -15,10 +15,68 @@
    viewBox="0 0 144.99999 45.054947"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r"
-   sodipodi:docname="octomy_logo.svg">
+   inkscape:version="0.92.1 unknown"
+   sodipodi:docname="octomy_logo.svg"
+   inkscape:export-filename="/home/lennart/Desktop/Projects/OctoMY/design/octomy_logo.png"
+   inkscape:export-xdpi="620.69"
+   inkscape:export-ydpi="620.69">
   <defs
-     id="defs4" />
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#agent_background_gradient"
+       id="linearGradient4570"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(7202.2318,-5192.3569)"
+       x1="-882.67346"
+       y1="601.99481"
+       x2="-882.633"
+       y2="622.62109" />
+    <linearGradient
+       id="agent_background_gradient"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1"
+         id="agent_background_color_stop1"
+         offset="0" />
+      <stop
+         style="stop-color:#eeeeee;stop-opacity:1"
+         id="agent_background_color_stop2"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#agent_body_gradient"
+       id="linearGradient8551"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.40828472,0,0,0.40828472,2503.5226,-5218.4993)"
+       x1="9324.3848"
+       y1="1541.4006"
+       x2="9324.3848"
+       y2="1585.0201" />
+    <linearGradient
+       inkscape:collect="always"
+       id="agent_body_gradient">
+      <stop
+         style="stop-color:#eb4e4e;stop-opacity:1"
+         offset="0"
+         id="agent_body_color_stop1" />
+      <stop
+         style="stop-color:#dd1919;stop-opacity:1"
+         offset="1"
+         id="agent_body_color_stop2" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#agent_background_gradient"
+       id="linearGradient4685"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(7202.2318,-5192.3569)"
+       x1="-882.67346"
+       y1="601.99481"
+       x2="-882.633"
+       y2="622.62109" />
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -26,9 +84,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.959798"
-     inkscape:cx="35.040138"
-     inkscape:cy="79.476126"
+     inkscape:zoom="11.2"
+     inkscape:cx="67.93457"
+     inkscape:cy="-17.655604"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -36,8 +94,8 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1879"
-     inkscape:window-height="1056"
+     inkscape:window-width="3799"
+     inkscape:window-height="2136"
      inkscape:window-x="41"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -59,183 +117,112 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(2324.254,456.82737)">
-    <rect
-       style="opacity:1;fill:#095000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:100;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="rect4329"
-       width="264.65997"
-       height="194.45436"
-       x="-958.93396"
-       y="436.24899"
-       rx="37.142899"
-       ry="37.142899" />
     <g
-       id="g4368"
-       transform="matrix(0.27852127,0,0,0.27852127,-596.37721,465.92124)">
-      <rect
-         ry="19.200296"
-         rx="19.697962"
-         y="-480.13135"
-         x="-854.63568"
-         height="644.27405"
-         width="56.063416"
-         id="rect4335"
-         style="opacity:1;fill:#095000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:100;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
-      <rect
-         style="opacity:1;fill:#095000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:100;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-         id="rect4337"
-         width="123.74365"
-         height="37.375664"
-         x="-888.47583"
-         y="-492.25317"
-         rx="19.697962"
-         ry="18.687832" />
-    </g>
-    <g
-       id="g4462"
-       transform="translate(1.0101431,871.42857)">
+       id="g8509"
+       transform="matrix(0.35293318,0,0,0.35293318,-4493.5823,1075.1916)">
       <g
-         transform="translate(146.97719,-2.9492188e-6)"
-         id="g4401">
-        <circle
-           r="46.719555"
-           cy="-366.7417"
-           cx="-901.10272"
-           id="circle4403"
-           style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:100;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
-        <rect
-           ry="11.082811"
-           rx="11.681869"
-           y="-377.82449"
-           x="-937.79578"
-           height="22.165623"
-           width="73.386124"
-           id="rect4405"
-           style="opacity:1;fill:#095000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:100;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
-        <circle
-           style="opacity:1;fill:#095000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:100;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-           id="circle4409"
-           cx="-366.7417"
-           cy="900.59766"
-           r="16.414978"
-           transform="matrix(0,1,-1,0,0,0)" />
+         id="g8511"
+         transform="translate(-2675.8079,36.815514)">
+        <path
+           id="path8513"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:medium;line-height:125%;font-family:'Century Gothic Std';-inkscape-font-specification:'Century Gothic Std Bold';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 9206.7566,-4344.6299 v 1.9756 h 3.5397 v 9.2745 h 2.4422 v -9.2745 h 3.5121 v -1.9756 z m 20.6068,0 -3.073,7.2165 -2.936,-7.2165 h -3.5672 v 11.2501 h 2.3598 v -9.2745 l 3.5673,9.2745 h 1.1797 l 3.6768,-9.2745 v 9.2745 h 2.3599 v -11.2501 z"
+           inkscape:connector-curvature="0"
+           inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
+           inkscape:export-xdpi="47.93"
+           inkscape:export-ydpi="47.93" />
+        <text
+           id="text8515"
+           y="-4283.7876"
+           x="8962.5771"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:83.23141479px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           xml:space="preserve"><tspan
+             y="-4283.7876"
+             x="8962.5771"
+             id="tspan8517"
+             sodipodi:role="line">OctoMY</tspan></text>
       </g>
       <g
-         transform="matrix(0,1,-1,0,-1267.8444,534.36102)"
-         id="g4397">
-        <circle
-           style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:100;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-           id="path4374"
-           cx="-901.10272"
-           cy="-366.7417"
-           r="46.719555" />
-        <rect
-           style="opacity:1;fill:#095000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:100;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-           id="rect4337-0"
-           width="73.386124"
-           height="22.165623"
-           x="-937.79578"
-           y="-377.82449"
-           rx="11.681869"
-           ry="11.082811" />
-        <circle
-           r="16.414978"
-           cy="-366.7417"
-           cx="-901.10272"
-           id="circle4407"
-           style="opacity:1;fill:#095000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:100;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+         transform="matrix(2.44799,0,0,2.44799,-9253.7767,6935.4061)"
+         id="g8519">
+        <path
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:6.12427092;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 6298.2826,-4557.5905 3.0667,-1.7706 3.5503,-2.0498"
+           id="path8521"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="ccc" />
+        <path
+           sodipodi:nodetypes="ccc"
+           inkscape:connector-curvature="0"
+           id="path8523"
+           d="m 6340.798,-4557.3914 -3.0667,-1.7706 -3.5503,-2.0497"
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:6.12427092;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+        <path
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:6.12427092;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 6344.1441,-4569.6492 h -3.5412 -4.0995"
+           id="path8525"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="ccc" />
+        <path
+           sodipodi:nodetypes="ccc"
+           inkscape:connector-curvature="0"
+           id="path8527"
+           d="m 6295.0514,-4569.8791 h 3.5412 4.0995"
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:6.12427092;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+        <path
+           sodipodi:nodetypes="ccc"
+           inkscape:connector-curvature="0"
+           id="path8529"
+           d="m 6340.9129,-4602.9927 -3.0667,1.7706 -3.5503,2.0498"
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:6.12427092;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+        <path
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:6.12427092;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 6298.3975,-4603.1918 3.0667,1.7706 3.5503,2.0498"
+           id="path8531"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="ccc" />
+        <path
+           id="path8533"
+           style="opacity:1;fill:url(#linearGradient4685);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:12.81254005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           d="m 6327.6678,-4590.804 a 8.0940233,8.0940233 0 0 0 -8.0939,-8.094 8.0940233,8.0940233 0 0 0 -8.0941,8.094 8.0940233,8.0940233 0 0 0 8.0941,8.094 8.0940233,8.0940233 0 0 0 8.0939,-8.094 z m 0,20.9262 a 8.0940233,8.0940233 0 0 0 -8.0939,-8.094 8.0940233,8.0940233 0 0 0 -8.0941,8.094 8.0940233,8.0940233 0 0 0 8.0941,8.094 8.0940233,8.0940233 0 0 0 8.0939,-8.094 z"
+           inkscape:connector-curvature="0" />
+        <path
+           inkscape:connector-curvature="0"
+           d="m 6313.6179,-4591.7067 a 0.87575203,0.87575203 0 0 0 -0.901,0.8754 c 0,3.7678 3.0732,6.841 6.841,6.841 3.7679,0 6.8419,-3.0732 6.8419,-6.841 a 0.87575,0.87575 0 1 0 -1.7515,0 c 0,2.8214 -2.2689,5.0903 -5.0904,5.0903 -2.8214,0 -5.0895,-2.2689 -5.0895,-5.0903 a 0.87575203,0.87575203 0 0 0 -0.8505,-0.8754 z m 8.0383,-5.027 a 0.87570762,0.87570762 0 0 0 -0.8625,0.8881 v 5.0039 a 0.87570762,0.87570762 0 1 0 1.7507,0 v -5.0039 a 0.87570762,0.87570762 0 0 0 -0.8882,-0.8881 z m -4.2213,0 a 0.87570762,0.87570762 0 0 0 -0.8626,0.8881 v 5.0039 a 0.87575203,0.87575203 0 0 0 1.7515,0 v -5.0039 a 0.87570762,0.87570762 0 0 0 -0.8889,-0.8881 z"
+           style="fill:#000000;fill-opacity:1"
+           id="path8535" />
+        <path
+           sodipodi:nodetypes="ssccsssccssssssssssss"
+           inkscape:connector-curvature="0"
+           id="path8537"
+           d="m 6319.5587,-4603.7485 c -7.1704,0 -13.0395,5.8692 -13.0395,13.0396 0,3.5829 1.4692,6.8357 3.8314,9.1972 0.5097,0.5786 0.4601,1.9722 0.033,2.3965 -2.3824,2.3651 -3.8645,5.635 -3.8645,9.236 0,7.1704 5.8692,13.0396 13.0396,13.0396 7.1704,0 13.0388,-5.8692 13.0388,-13.0396 0,-3.6208 -1.4995,-6.9061 -3.9052,-9.2739 -0.5584,-0.5416 -0.4141,-1.8666 0.015,-2.2945 2.3971,-2.3671 3.89,-5.6477 3.89,-9.2613 0,-7.1704 -5.8684,-13.0396 -13.0388,-13.0396 z m 0,5.2311 c 4.3433,0 7.8077,3.4652 7.8077,7.8085 0,4.3433 -3.4644,7.8077 -7.8077,7.8077 -4.3432,0 -7.8084,-3.4644 -7.8084,-7.8077 0,-4.3433 3.4652,-7.8085 7.8084,-7.8085 z m 0,20.8305 c 4.3433,0 7.8077,3.4644 7.8077,7.8077 0,4.3433 -3.4644,7.8084 -7.8077,7.8084 -4.3432,0 -7.8084,-3.4651 -7.8084,-7.8084 0,-4.3433 3.4652,-7.8077 7.8084,-7.8077 z"
+           style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:url(#linearGradient8551);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:12.81254005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path8539"
+           style="opacity:1;fill:url(#linearGradient4570);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:12.81254005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           d="m 6327.6678,-4569.8778 a 8.0940233,8.0940233 0 0 0 -8.0939,-8.094 8.0940233,8.0940233 0 0 0 -8.0941,8.094 8.0940233,8.0940233 0 0 0 8.0941,8.094 8.0940233,8.0940233 0 0 0 8.0939,-8.094 z m 0,-20.9262 a 8.0940233,8.0940233 0 0 0 -8.0939,-8.094 8.0940233,8.0940233 0 0 0 -8.0941,8.094 8.0940233,8.0940233 0 0 0 8.0941,8.094 8.0940233,8.0940233 0 0 0 8.0939,-8.094 z" />
+        <path
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:6.12427092;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 6344.144,-4590.7042 h -3.8203 l -3.8204,1e-4"
+           id="path8541"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="ccc" />
+        <path
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:6.12427092;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 6302.6921,-4590.7042 h -3.8203 l -3.8204,1e-4"
+           id="path8543"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="ccc" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path8545"
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.70119631;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 6321.6088,-4595.6889 v 4.8606 m -4.1006,-4.8606 v 4.8606 m -3.7448,0.01 a 5.7949879,5.7949879 0 0 0 5.795,5.7949 5.7949879,5.7949879 0 0 0 5.7949,-5.795">
+          <title
+             id="title8547">pathSmile</title>
+        </path>
       </g>
     </g>
-    <g
-       inkscape:export-ydpi="620.69"
-       inkscape:export-xdpi="620.69"
-       inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
-       id="g4598"
-       transform="matrix(0.12869243,0,0,-0.12869243,-2076.9447,-509.39726)">
-      <path
-         inkscape:connector-curvature="0"
-         d="m -1878.3347,-747.98378 62.4527,62.45282 m 146.9729,-62.45282 -62.4527,62.45282 m 17.5127,42.25996 88.3135,0 m -296.1726,0 88.3059,0"
-         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:30;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="path4725" />
-      <circle
-         style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#e83636;stroke-width:30;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-         id="circle4591"
-         cx="-1773.6219"
-         cy="-643.271"
-         r="59.778477" />
-    </g>
-    <use
-       inkscape:export-ydpi="620.69"
-       inkscape:export-xdpi="620.69"
-       inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
-       height="100%"
-       width="100%"
-       transform="matrix(1,0,0,-1,0,-868.59979)"
-       id="use4614"
-       xlink:href="#g4598"
-       y="0"
-       x="0" />
-    <text
-       inkscape:export-ydpi="620.69"
-       inkscape:export-xdpi="620.69"
-       inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
-       sodipodi:linespacing="125%"
-       id="text4787"
-       y="-417.91797"
-       x="-2283.9172"
-       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:24.33653641px;line-height:125%;font-family:'Century Gothic Std';-inkscape-font-specification:'Century Gothic Std, Medium';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       xml:space="preserve"><tspan
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Century Gothic Std';-inkscape-font-specification:'Century Gothic Std Bold';text-align:start;text-anchor:start"
-         y="-417.91797"
-         x="-2283.9172"
-         id="tspan4789"
-         sodipodi:role="line">OctoMY</tspan></text>
-    <path
-       inkscape:export-ydpi="620.69"
-       inkscape:export-xdpi="620.69"
-       inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
-       inkscape:connector-curvature="0"
-       d="m -2186.5383,-435.39159 0,0.59531 1.0666,0 0,2.79467 0.7359,0 0,-2.79467 1.0583,0 0,-0.59531 -2.8608,0 z m 6.2094,0 -0.926,2.17455 -0.8847,-2.17455 -1.0749,0 0,3.38998 0.7111,0 0,-2.79467 1.0749,2.79467 0.3555,0 1.1079,-2.79467 0,2.79467 0.7111,0 0,-3.38998 -1.0749,0 z"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:medium;line-height:125%;font-family:'Century Gothic Std';-inkscape-font-specification:'Century Gothic Std Bold';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       id="path4808" />
-    <path
-       inkscape:export-ydpi="620.69"
-       inkscape:export-xdpi="620.69"
-       inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
-       id="path4819"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:medium;line-height:125%;font-family:'Century Gothic Std';-inkscape-font-specification:'Century Gothic Std Bold';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m -2290.9257,-456.77352 0,0.38814 0.6954,0 0,1.82211 0.4798,0 0,-1.82211 0.69,0 0,-0.38814 -1.8652,0 z m 4.0485,0 -0.6038,1.41779 -0.5768,-1.41779 -0.7008,0 0,2.21025 0.4636,0 0,-1.82211 0.7008,1.82211 0.2318,0 0.7224,-1.82211 0,1.82211 0.4636,0 0,-2.21025 -0.7008,0 z"
-       inkscape:connector-curvature="0" />
-    <path
-       transform="scale(1,-1)"
-       id="circle4591-1-8"
-       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.28692424;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       sodipodi:type="arc"
-       sodipodi:cx="-2305.1965"
-       sodipodi:cy="442.05624"
-       sodipodi:rx="4.3838034"
-       sodipodi:ry="4.3838034"
-       sodipodi:start="3.1415927"
-       sodipodi:end="0"
-       sodipodi:open="true"
-       d="m -2309.5803,442.05624 a 4.3838034,4.3838034 0 0 1 4.3838,-4.3838 4.3838034,4.3838034 0 0 1 4.3838,4.3838"
-       inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
-       inkscape:export-xdpi="620.69"
-       inkscape:export-ydpi="620.69" />
-    <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.28692424;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m -2306.7474,-445.74115 0,3.67693"
-       id="path4692"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
-       inkscape:export-xdpi="620.69"
-       inkscape:export-ydpi="620.69" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path4702"
-       d="m -2303.6454,-445.74115 0,3.67693"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.28692424;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:export-filename="/home/lennart/Desktop/octomy_logo_full.png"
-       inkscape:export-xdpi="620.69"
-       inkscape:export-ydpi="620.69" />
   </g>
 </svg>

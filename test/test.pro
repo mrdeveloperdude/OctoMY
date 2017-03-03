@@ -15,38 +15,39 @@ contains(DEFINES, USE_BASIC_TESTS){
 #
 TEST_PROJECTS+= \
 	testCommon \
+#	testAgentStateCourier \
+	testArduMY \
+#	testBlob \
+#	testCarSteeringWidget \
 #	testCommsChannel \
-#	testIdenticon \
-#	testParser \
-#	testZooComms \
+#	testCreepyVoice \
+#	testDeliveryWizard \
+#	testDiscovery \
+#	testESpeak \
+#	testEventSourcing \
 #	testHashstore \
-#	testTetraGPSEncoder \
-#	testRNG \
+#	testIdenticon \
 #	testKey \
 #	testKeyStore \
-#	testDiscovery \
-#	testDeliveryWizard \
 #	testNetworkAddress \
 #	testNodeAssociate \
 #	testNodeAssociateStore \
+#	testOpenCL \
+#	testParser \
 #	testPortableID \
-#	testESpeak \
-#	testCreepyVoice \
-#	testBlob \
-#	testEventSourcing \
-#	testSyncParameter \
-#	testAgentStateCourier \
-#	testCarSteeringWidget \
-#	testPoseMappingWidget \
 #	testPoseMappingStore \
+#	testPoseMappingWidget \
+#	testRNG \
 #	testServotor32Controller \
-	testArduMY \
+#	testSyncParameter \
+#	testTetraGPSEncoder \
+#	testZooComms \
 
 
 
-#
+
 STRESS_PROJECTS+= \
-	stressQR\
+	stressQR \
 
 }
 

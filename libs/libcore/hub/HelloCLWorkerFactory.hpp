@@ -5,16 +5,18 @@
 
 #include <QtGlobal>
 /*!
- * \brief The HelloCLWorkerFactory class creates instances of CLWorker on demand
- * from CLThreadManager.
+ * \brief The HelloCLWorkerFactory class is an example implementation of CLWorkerFactory
+ * It will create instances of HelloCLWorker on demand from CLThreadManager.
+ *
+ * It works together with HelloGLCLViewRenderer and HelloCLWorker
  */
 class HelloCLWorkerFactory : public CLWorkerFactory
 {
-	public:
-		HelloCLWorkerFactory();
+public:
+	HelloCLWorkerFactory();
 
-	public:
-		virtual CLWorker * createInstance(CLThreadManager &man, int index) Q_DECL_OVERRIDE;
+public:
+	virtual CLWorker * createInstance(CLThreadManager &man, int index) Q_DECL_OVERRIDE;
 
 };
 

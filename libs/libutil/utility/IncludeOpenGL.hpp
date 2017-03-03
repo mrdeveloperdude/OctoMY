@@ -8,6 +8,10 @@
 #define OCTOMY_QT_OGL_VERSION_MAJOR 4
 #define OCTOMY_QT_OGL_VERSION_MINOR 0
 #define OCTOMY_QT_OGL_PROFILE Core
+#define OCTOMY_QT_OGL_DEPTH_BUFFER 24
+#define OCTOMY_QT_OGL_STENSIL_BUFFER 0
+#define OCTOMY_QT_OGL_SWAP_INTERVAL 1
+
 
 
 //Necessary hack. See this: http://stackoverflow.com/questions/1489932/how-to-concatenate-twice-with-the-c-preprocessor-and-expand-a-macro-as-in-arg
@@ -22,6 +26,11 @@
 #define COMBINE2(A,B) A##B
 #define TEMP_PROFILE(A,B) COMBINE2(A, B)
 #define OCTOMY_QT_OGL_SURFACE_PROFILE TEMP_PROFILE(OCTOMY_QT_OGL_PROFILE, Profile)
+
+#define OCTOMY_QT_OGL_PROFILE_A(arg)      #arg
+#define OCTOMY_QT_OGL_PROFILE_B(name) OCTOMY_QT_OGL_PROFILE_A(name)
+#define OCTOMY_QT_OGL_PROFILE_STR OCTOMY_QT_OGL_PROFILE_B(OCTOMY_QT_OGL_PROFILE)
+
 
 #include <QOpenGLWidget>
 

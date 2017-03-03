@@ -31,45 +31,6 @@ Representations with no values are simply skipped
 */
 
 
-
-#ifndef ARDUINO_ARCH_AVR
-static QString ardumyActuatorValueToString(const ArduMYActuatorValue &v, const ArduMYActuatorValueRepresentation &rep)
-{
-	QString ret;
-	switch(rep) {
-	case(BIT):
-		ret=QString("BIT(")+ (v.bit?"TRUE":"FALSE")+")";
-		break;
-	case(BYTE):
-		ret="BYTE("+ QString::number(v.byte)+")";
-		break;
-	case(WORD):
-		ret="WORD("+ QString::number(v.word)+")";
-		break;
-	case(DOUBLE_WORD):
-		ret="DWORD("+ QString::number(v.doubleWord)+")";
-		break;
-	default:// Just make sure its random m-kay?
-	case(REPRESENTATION_COUNT):
-		ret="OUT_OF_RANGE!";
-		break;
-	case(QUAD_WORD): {
-		ret="QWORD("+ QString::number(v.quadWord)+")";
-	}
-	break;
-	case(SINGLE_FLOAT):
-		ret="FLOAT("+ QString::number(v.singlePrecision)+")";
-		break;
-	case(DOUBLE_FLOAT):
-		ret="DOUBLE("+ QString::number(v.doublePrecision)+")";
-		break;
-	}
-	return ret;
-}
-
-#endif
-
-
 bool ArduMYActuatorValueParser::parse(const uint8_t in)
 {
 	//TODO: Implement a way to explicitly guarantee that set size does not change between calls to parse

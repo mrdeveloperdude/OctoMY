@@ -84,6 +84,110 @@ QString ArduMYActuatorConfigToString(ArduMYActuatorConfig &config)
 
 
 
+/////////////////////////////////////////////
+
+
+
+const ArduMYActuatorValuesParserStep DEFAULT_VALUE_PARSER_STEP=END_OF_OP;
+
+
+
+QString ardumyActuatorValueParserStepToString(const ArduMYActuatorValuesParserStep &s)
+{
+#define  ardumyArduMYActuatorValueParserStepToStringCASE(A) case (A):return #A
+	switch(s) {
+	default:
+		return "UNKNOWN";
+		ardumyArduMYActuatorValueParserStepToStringCASE(ENABLED_ACTUATOR_BITS);
+		ardumyArduMYActuatorValueParserStepToStringCASE(ACTUATOR_VALUE_BATCHES);
+		ardumyArduMYActuatorValueParserStepToStringCASE(END_OF_OP);
+	}
+#undef ardumyArduMYActuatorValueParserStepToStringCASE
+}
+
+
+ArduMYActuatorValuesParserStep ardumyActuatorValueParserStepFromString(const QString &s)
+{
+#define  ardumyArduMYActuatorValueParserStepFromStringCASE(A)   if(#A==s) { return A; }
+	ardumyArduMYActuatorValueParserStepFromStringCASE(ENABLED_ACTUATOR_BITS);
+	ardumyArduMYActuatorValueParserStepFromStringCASE(ACTUATOR_VALUE_BATCHES);
+	ardumyArduMYActuatorValueParserStepFromStringCASE(END_OF_OP);
+#undef ardumyArduMYActuatorValueParserStepFromStringCASE
+	return DEFAULT_VALUE_PARSER_STEP;
+}
+
+
+
+
+
+/////////////////////////////////////////////
+
+
+
+const ArduMYActuatorConfigParserStep DEFAULT_CONFIG_PARSER_STEP=END_OF_OPERATION;
+
+
+
+QString ardumyActuatorConfigParserStepToString(const ArduMYActuatorConfigParserStep &s)
+{
+#define  ardumyArduMYActuatorConfigParserStepToStringCASE(A) case (A):return #A
+	switch(s) {
+	default:
+		return "UNKNOWN";
+		ardumyArduMYActuatorConfigParserStepToStringCASE(FLAGS);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(TYPE);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(REPRESENTATION);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(NICK);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(GEAR_NUMERATOR);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(GEAR_DENOMINATOR);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(POSITION_FEEDBACK);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(TACHOMETER);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(ENCODER_PIN_A);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(ENCODER_PIN_B);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(ENCODER_DEBOUNCE);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(LIMIT_SWITCH_PIN_START);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(LIMIT_SWITCH_PIN_END);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(LIMIT_SWITCH_DEBOUNCE);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(STEP_PHASE_COUNT);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(STEP_STEPS_PER_ROTATION);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(RC_SERVO_PIN);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(RANGE_START);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(RANGE_SPAN);
+		ardumyArduMYActuatorConfigParserStepToStringCASE(END_OF_OPERATION);
+	}
+#undef ardumyArduMYActuatorConfigParserStepToStringCASE
+}
+
+
+ArduMYActuatorConfigParserStep ardumyActuatorConfigParserStepFromString(const QString &s)
+{
+#define  ardumyArduMYActuatorConfigParserStepFromStringCASE(A)   if(#A==s) { return A; }
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(FLAGS);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(TYPE);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(REPRESENTATION);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(NICK);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(GEAR_NUMERATOR);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(GEAR_DENOMINATOR);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(POSITION_FEEDBACK);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(TACHOMETER);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(ENCODER_PIN_A);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(ENCODER_PIN_B);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(ENCODER_DEBOUNCE);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(LIMIT_SWITCH_PIN_START);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(LIMIT_SWITCH_PIN_END);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(LIMIT_SWITCH_DEBOUNCE);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(STEP_PHASE_COUNT);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(STEP_STEPS_PER_ROTATION);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(RC_SERVO_PIN);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(RANGE_START);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(RANGE_SPAN);
+	ardumyArduMYActuatorConfigParserStepFromStringCASE(END_OF_OPERATION);
+#undef ardumyArduMYActuatorConfigParserStepFromStringCASE
+	return DEFAULT_CONFIG_PARSER_STEP;
+}
+
+
+
 
 /////////////////////////////////////////////
 
@@ -264,8 +368,10 @@ QString ardumyActuatorValueToString(const ArduMYActuatorValue &v, const ArduMYAc
 	case(DOUBLE_WORD):
 		ret+=QString::number(v.doubleWord);
 		break;
-	default:
 	case(REPRESENTATION_COUNT):
+		ret+="REPRESENTATION_COUNT";
+		break;
+	default:
 		ret+="OUT_OF_RANGE!";
 		break;
 	case(QUAD_WORD): {

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QList>
 
+class LocusController;
 namespace Ui
 {
 class LocusManagerWidget;
@@ -15,19 +16,24 @@ class LocusManagerWidget : public QWidget
 private:
 	Ui::LocusManagerWidget *ui;
 	QList<QWidget *> mWidgets;
+	LocusController *mController;
 
 public:
 	explicit LocusManagerWidget(QWidget *parent = 0);
 	~LocusManagerWidget();
 
+
+private:
+	void addWidget(QWidget &w);
+	void removeWidget(QWidget &w);
 public:
 
-	void configure(quint32 num);
+	void configure(LocusController *);
 
 public slots:
 
-	void onServoMoved(quint32 id, qreal val);
-	void onServoLimped(quint32 id);
+	void locusManagerChanged();
+
 
 };
 

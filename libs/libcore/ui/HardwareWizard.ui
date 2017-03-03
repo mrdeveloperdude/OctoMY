@@ -29,7 +29,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="pageController">
       <layout class="QGridLayout" name="gridLayout">
@@ -113,8 +113,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>460</width>
-            <height>373</height>
+            <width>176</width>
+            <height>28</height>
            </rect>
           </property>
           <property name="sizePolicy">
@@ -486,7 +486,7 @@
   <customwidget>
    <class>PoseMappingWidget</class>
    <extends>QWidget</extends>
-   <header>../../libs/libcore/widgets/PoseMappingWidget.hpp</header>
+   <header location="global">widgets/PoseMappingWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

@@ -26,7 +26,7 @@ class Key;
  *  * reliability state
  *  * flow control state
  *
- * The Client class thus represents a communication partner that could, would,
+ * The CommsSession class thus represents a communication partner that could, would,
  * will, does and did communicate with us through a CommsChannel.
  * \note not related to NodeAssociate, as this is tightly integrated with CommsChannel
  *

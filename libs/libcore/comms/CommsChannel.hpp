@@ -79,7 +79,7 @@ Notes:
 
 1. CommChannel binds to a local address and port, but does not really
    discriminate from where inbound traffic arrives. All packets are treated
-   equal as all packes contain identification of the source.
+   equal as all packes inherently contain an identification of the source.
 
 2. Communication between remote and agent is initiated when user presses the "connect"
    buttons in the respective user interfaces.
@@ -89,8 +89,8 @@ Notes:
    connections that did not result in valid responses will be closed, and only
    retried periodically.
 
-4. All Agent initiadet communication will  be broadcast to all active remotes in
-   paralellesin. Remote initiated transfers will remain private.
+4. All Agent initiated communication will be broadcast to all active remotes in
+   paralell. Remote initiated transfers will remain private.
 
 */
 class CommsChannel : public QObject

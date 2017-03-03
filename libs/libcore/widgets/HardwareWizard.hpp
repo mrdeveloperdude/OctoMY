@@ -4,6 +4,8 @@
 #include "puppet/PoseMapping.hpp"
 #include "hw/controllers/ActuatorControllerFactory.hpp"
 #include "agent/AgentConfigStore.hpp"
+#include "locus/LocusController.hpp"
+
 
 #include <QWidget>
 #include <QSharedPointer>
@@ -43,6 +45,29 @@ struct ControllerStanzaList: public QList<ControllerStanza> {
 };
 
 
+struct LocusStanza {
+	QString nickName;
+	QString fullName;
+	QString iconURL;
+
+	LocusStanza(
+		QString nickName
+		, QString fullName
+		, QString iconURL
+	)
+		: nickName (nickName)
+		, fullName (fullName)
+		, iconURL (iconURL)
+	{
+
+	}
+};
+
+struct LocusStanzaList: public QList<LocusStanza> {
+
+};
+
+
 class SerialDeviceListModel;
 class HardwareWizard : public QWidget
 {
@@ -62,6 +87,9 @@ private:
 	*/
 	Agent *mAgent;
 	ControllerStanzaList controllerStanzas;
+	LocusStanzaList mLocusStanzas;
+
+	LocusController mLocusController;
 
 public:
 	explicit HardwareWizard(QWidget *parent = 0);
@@ -70,6 +98,7 @@ public:
 private:
 
 	void initControllerList();
+	void initLocusList();
 	int controllerIndexByName(QString name);
 	QString selectedControllerName();
 	void moveTo(int next);
@@ -96,4 +125,3 @@ private slots:
 };
 
 #endif // HARDWAREWIZARD_HPP
-

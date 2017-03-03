@@ -1,8 +1,11 @@
 #ifndef CLUTILS_HPP
 #define	CLUTILS_HPP
 
-#include <QString>
 #include "opencl/CLInclude.hpp"
+
+#include <QString>
+#include <QSurfaceFormat>
+
 
 extern QString OCLLocalMemoryTypeString(cl_device_local_mem_type type);
 extern QString OCLDeviceTypeString(cl_device_type type);
@@ -15,5 +18,7 @@ extern QString CLDeviceToString(const cl::Device *dev);
 
 extern QDebug &operator<<(QDebug &d, cl::Device &dev);
 extern QDebug &operator<<(QDebug &d, cl::Device *dev);
+
+extern QSurfaceFormat properOctomyDefaultFormat();
 
 #endif //CLUTILS_HPP

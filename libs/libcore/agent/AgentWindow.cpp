@@ -13,6 +13,8 @@
 #include "comms/couriers/AgentStateCourier.hpp"
 #include "comms/SyncParameter.hpp"
 
+#include "agent/CourierSet.hpp"
+
 #include <QDebug>
 #include <QMessageBox>
 

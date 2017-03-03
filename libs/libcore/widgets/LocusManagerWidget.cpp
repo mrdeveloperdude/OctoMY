@@ -4,14 +4,18 @@
 
 #include "../libutil/utility/Standard.hpp"
 #include "locus/WheeledLocusWidget.hpp"
+#include "locus/Locus.hpp"
+
+#include "locus/LocusController.hpp"
 
 
 #include <QSpacerItem>
 
 
-LocusManagerWidget::LocusManagerWidget(QWidget *parent) :
-	QWidget(parent),
-	ui(new Ui::LocusManagerWidget)
+LocusManagerWidget::LocusManagerWidget(QWidget *parent)
+	: QWidget(parent)
+	, ui(new Ui::LocusManagerWidget)
+	, mController(nullptr)
 {
 	ui->setupUi(this);
 }
@@ -22,67 +26,87 @@ LocusManagerWidget::~LocusManagerWidget()
 }
 
 
-
-
-void LocusManagerWidget::configure(quint32 num)
+void LocusManagerWidget::addWidget(QWidget &w)
 {
-	quint32 count=mWidgets.count();
-	qDebug()<<"---- COUNT: "<<count<<" NUM: "<<num;
-	// Trivial reject, no change
-	if(num==count) {
-		return;
-	} else {
-		if(num>count) {
-			quint32 end=num;
-			num-=count;
+	qDebug()<<"--- ADDING WIDGET TO LOCUS MANAGER";
+	QWidget *si=&w;
+	if(!mWidgets.contains(si)) {
+		mWidgets.push_back(si);
+		ui->widgetCompressedContent->layout()->addWidget(si);
+		si->setParent(ui->widgetCompressedContent);
+		QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+		si->setMinimumSize(0,0);
+		si->setSizePolicy(sizePolicy);
+		si->updateGeometry();
+		si->adjustSize();
 
-			for(quint32 i=0; i<num; ++i) {
-				qDebug()<<"ADDING ITeMN "<<i<<" of "<<num<<" to get to "<<end;
-				WheeledLocusWidget *si=new WheeledLocusWidget();
-				if(nullptr!=si) {
-//					si->configure(config);
-					/*
-					if(!connect(si,SIGNAL(servoMoved(quint32, qreal)),this,SLOT(onServoMoved(quint32, qreal)),OC_CONTYPE)) {
-						qWarning()<<"ERROR: could not connect";
-					}
-					if(!connect(si,SIGNAL(servoKilled(quint32)),this,SLOT(onServoLimped(quint32)),OC_CONTYPE)) {
-						qWarning()<<"ERROR: could not connect";
-					}
-					*/
-					mWidgets.push_back(si);
-					ui->widgetCompressedContent->layout()->addWidget(si);
-					si->setParent(ui->widgetCompressedContent);
-					QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-					si->setMinimumSize(0,0);
-					si->setSizePolicy(sizePolicy);
-					si->updateGeometry();
-					si->adjustSize();
+		if(!connect(si,SIGNAL(locusDeleted(quint32)),mController,SLOT(onLocusWidgetDeleted(quint32)),OC_CONTYPE)) {
+			qWarning()<<"ERROR: could not connect";
+		}
+	}
+}
 
-				}
-			}
-		} else {
-			for(quint32 i=count; i>num; --i) {
-				qDebug()<<"REMOVING ITeMN "<<i<<" of "<<count<<" to get to "<<num;
-				QWidget *w=mWidgets.takeFirst();
-				ui->widgetCompressedContent->layout()->removeWidget(w);
-				w->setParent(nullptr);
-				w->deleteLater();
+void LocusManagerWidget::removeWidget(QWidget &w)
+{
+	qDebug()<<"--- REMOVING WIDGET FROM LOCUS MANAGER";
+	if(mWidgets.contains(&w)) {
+		mWidgets.removeAll(&w);
+		ui->widgetCompressedContent->layout()->removeWidget(&w);
+		QWidget *si=&w;
+		if (nullptr != si)  {
+			if(!disconnect(si,SIGNAL(locusDeleted(quint32)),mController,SLOT(onLocusWidgetDeleted(quint32)))) {
+				qWarning()<<"ERROR: could not disconnect";
 			}
 		}
-		ui->widgetCompressedContent->updateGeometry();
-		ui->widgetCompressedContent->adjustSize();
+		w.setParent(nullptr);
+	}
+}
 
+void LocusManagerWidget::configure(LocusController *controller)
+{
+
+	if(nullptr!=mController) {
+		if(!disconnect(mController,SIGNAL(locusConfigurationChanged()),this,SLOT(locusManagerChanged()))) {
+			qWarning()<<"ERROR: could not disconnect";
+		}
+		/*
+		LocusSet &loci=mController->loci();
+		quint32 num=loci.size();
+		for(quint32 i=0; i<num; ++i) {
+			Locus *locus=loci[i];
+			if(nullptr!=locus) {
+				QWidget *si=locus->configurationWidget();
+				if(nullptr!=si) {
+					removeWidget(*si);
+				}
+			}
+		}
+		*/
+		mWidgets.clear();
+	}
+	mController=controller;
+	if(nullptr!=mController) {
+		if(!connect(mController,SIGNAL(locusConfigurationChanged()),this,SLOT(locusManagerChanged()),OC_CONTYPE)) {
+			qWarning()<<"ERROR: could not connect";
+		}
+		LocusSet &loci=mController->loci();
+		quint32 num=loci.size();
+		for(quint32 i=0; i<num; ++i) {
+			Locus *locus=loci[i];
+			if(nullptr!=locus) {
+				QWidget *si=locus->configurationWidget();
+				if(nullptr!=si) {
+					addWidget(*si);
+				}
+			}
+		}
 	}
 }
 
 
 
-void LocusManagerWidget::onServoMoved(quint32 id, qreal val)
+void LocusManagerWidget::locusManagerChanged()
 {
-
-}
-
-void LocusManagerWidget::onServoLimped(quint32 id)
-{
-
+	// Reload config the best we can
+	configure(mController);
 }

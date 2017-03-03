@@ -226,7 +226,14 @@ SOURCES +=\
     agent/AgentMobilityType.cpp \
     hw/controllers/servotor32/Servotor32ActuatorWidget.cpp \
     hw/controllers/servotor32/Servotor32ControllerWidget.cpp \
-    hw/controllers/ardumy/ArdumyTypeConversions.cpp
+    hw/controllers/ardumy/ArdumyTypeConversions.cpp \
+    locus/LocusController.cpp \
+    locus/LocusSet.cpp \
+    locus/LocusWidget.cpp \
+    locus/LeggedLocusWidget.cpp \
+    locus/LeggedLocus.cpp \
+    agent/CourierSet.cpp \
+    agent/AgentControls.cpp
 
 
 
@@ -455,7 +462,14 @@ HEADERS  += \
     agent/AgentMobilityType.hpp \
     hw/controllers/servotor32/Servotor32ActuatorWidget.hpp \
     hw/controllers/servotor32/Servotor32ControllerWidget.hpp \
-    hw/controllers/ardumy/ArdumyTypeConversions.hpp
+    hw/controllers/ardumy/ArdumyTypeConversions.hpp \
+    locus/LocusController.hpp \
+    locus/LocusSet.hpp \
+    locus/LocusWidget.hpp \
+    locus/LeggedLocusWidget.hpp \
+    locus/LeggedLocus.hpp \
+    agent/CourierSet.hpp \
+    agent/AgentControls.hpp
 
 
 
@@ -501,7 +515,8 @@ FORMS    += \
     widgets/ArduinoPinSelector.ui \
     ui/ArduMYActuatorWidget.ui \
     ui/Servotor32ActuatorWidget.ui \
-    ui/Servotor32ControllerWidget.ui
+    ui/Servotor32ControllerWidget.ui \
+    locus/LeggedLocusWidget.ui
 
 
 

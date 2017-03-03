@@ -16,6 +16,8 @@
 #include "basic/AppContext.hpp"
 #include "hw/controllers/ActuatorControllerFactory.hpp"
 
+#include "CourierSet.hpp"
+
 #include <QDebug>
 #include <QDataStream>
 #include <QSharedPointer>
@@ -25,127 +27,9 @@
 
 
 
-CourierSet::CourierSet(CommsSignature &sig, Agent &agent)
-	: mAgent(agent)
-	, mAgentStateCourier(new AgentStateCourier(&mDatastream,nullptr))
-	, mSensorsCourier(new SensorsCourier(nullptr))
-	, mBlobCourier(new BlobCourier(nullptr))
-{
-	OC_METHODGATE();
-	if(nullptr!=mAgentStateCourier) {
-		mAgentStateCourier->setHookSignals(mAgent, true);
-		mAgentStateCourier->setDestination(sig);
-		append(mAgentStateCourier);
-	} else {
-		qWarning()<<"ERROR: Could not allocate AgentStateCourier";
-	}
-	if(nullptr!=mSensorsCourier) {
-		mSensorsCourier->setDestination(sig);
-		append(mSensorsCourier);
-	} else {
-		qWarning()<<"ERROR: Could not allocate SensorsCourier";
-	}
-	if(nullptr!=mBlobCourier) {
-		mBlobCourier->setDestination(sig);
-		append(mBlobCourier);
-	} else {
-		qWarning()<<"ERROR: Could not allocate BlobCourier";
-	}
-}
-
-CourierSet::~CourierSet()
-{
-	OC_METHODGATE();
-	for(Courier *courier: *this) {
-		courier->deleteLater();
-	}
-	clear();
-}
-
-AgentStateCourier *CourierSet::agentStateCourier()
-{
-	OC_METHODGATE();
-	return mAgentStateCourier;
-}
-
-
-void CourierSet::setCommsEnabled(bool enable)
-{
-	OC_METHODGATE();
-	CommsChannel *cc=mAgent.comms();
-	if(nullptr!=cc) {
-		for(Courier *courier:*this) {
-			cc->setCourierRegistered(*courier, enable);
-		}
-
-	} else {
-		qWarning()<<"ERROR: Could not register AgentSateCourier, no comms channel";
-	}
-}
-
-
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
-
-
-AgentControls::AgentControls(Agent &agent)
-	: mAgent(agent)
-{
-	OC_METHODGATE();
-}
-
-AgentControls::~AgentControls()
-{
-	OC_METHODGATE();
-}
-
-
-void AgentControls::registerClient(CommsSignature &sig)
-{
-	OC_METHODGATE();
-	quint64 shid=sig.shortHandID();
-	if(!mCouriers.contains(shid) ) {
-		CourierSet *set=new CourierSet (sig,mAgent);
-		mCouriers.insert(shid, set);
-	} else {
-		qWarning()<<"ERROR: Trying to register same client twice: "<<sig;
-	}
-}
-
-void AgentControls::unRegisterClient(CommsSignature &sig)
-{
-	OC_METHODGATE();
-	quint64 shid=sig.shortHandID();
-	if(mCouriers.contains(shid) ) {
-		mCouriers.remove(shid);
-	} else {
-		qWarning()<<"ERROR: Trying to un-register nonexistant client: "<<sig;
-	}
-}
-
-void AgentControls::setCommsEnabled(bool enable)
-{
-	OC_METHODGATE();
-	for(CourierSet *set:mCouriers) {
-		set->setCommsEnabled(enable);
-	}
-}
-
-CourierSet *AgentControls::activeControl() const
-{
-	OC_METHODGATE();
-	//TODO: Manage which one is actually the ACTIVE one instead of just returning the first one
-	auto b=mCouriers.begin();
-	auto e=mCouriers.end();
-	if(b==e) {
-		return nullptr;
-	}
-	return b.value();
-}
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
