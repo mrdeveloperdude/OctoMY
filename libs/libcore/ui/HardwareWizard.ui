@@ -217,6 +217,15 @@
            </item>
            <item>
             <property name="text">
+             <string>Legged Motion</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../resources/icons.qrc">
+              <normaloff>:/icons/hexapod.svg</normaloff>:/icons/hexapod.svg</iconset>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string extracomment="Add support for a robot that moves by multiple rotors like a quad copter">Hovering Motion</string>
             </property>
             <property name="icon">

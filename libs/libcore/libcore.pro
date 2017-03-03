@@ -233,7 +233,12 @@ SOURCES +=\
     locus/LeggedLocusWidget.cpp \
     locus/LeggedLocus.cpp \
     agent/CourierSet.cpp \
-    agent/AgentControls.cpp
+    agent/AgentControls.cpp \
+    locus/LocusFactory.cpp \
+    locus/HoveringLocus.cpp \
+    locus/HoveringLocusWidget.cpp \
+    locus/TrackedLocus.cpp \
+    locus/TrackedLocusWidget.cpp
 
 
 
@@ -469,7 +474,12 @@ HEADERS  += \
     locus/LeggedLocusWidget.hpp \
     locus/LeggedLocus.hpp \
     agent/CourierSet.hpp \
-    agent/AgentControls.hpp
+    agent/AgentControls.hpp \
+    locus/LocusFactory.hpp \
+    locus/HoveringLocus.hpp \
+    locus/HoveringLocusWidget.hpp \
+    locus/TrackedLocus.hpp \
+    locus/TrackedLocusWidget.hpp
 
 
 
@@ -516,7 +526,9 @@ FORMS    += \
     ui/ArduMYActuatorWidget.ui \
     ui/Servotor32ActuatorWidget.ui \
     ui/Servotor32ControllerWidget.ui \
-    locus/LeggedLocusWidget.ui
+    locus/LeggedLocusWidget.ui \
+    locus/HoveringLocusWidget.ui \
+    locus/TrackedLocusWidget.ui
 
 
 

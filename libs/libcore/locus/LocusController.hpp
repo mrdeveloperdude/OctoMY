@@ -3,6 +3,7 @@
 
 #include "LocusSet.hpp"
 #include "WheeledLocus.hpp"
+#include "LocusFactory.hpp"
 
 #include <QObject>
 
@@ -11,6 +12,7 @@ class LocusController: public QObject
 	Q_OBJECT
 private:
 	LocusSet mLoci;
+	LocusFactory mFactory;
 public:
 	LocusController(QObject *parent=nullptr)
 		: QObject(parent)
@@ -18,10 +20,12 @@ public:
 
 	}
 
-	Locus *addLocus()
+	Locus *addLocus(QString type)
 	{
-		Locus *l=new WheeledLocus();
-		mLoci.push_back(l);
+		Locus *l=mFactory.locusFactory(type);
+		if(nullptr!=l) {
+			mLoci.push_back(l);
+		}
 		return l;
 	}
 

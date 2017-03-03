@@ -327,22 +327,25 @@ void HardwareWizard::on_comboBoxAddLocus_currentIndexChanged(int index)
 	break;
 	// Wheeled
 	case(1): {
-		mLocusController.addLocus();
-		ui->widgetLociManager->configure(&mLocusController);
+		mLocusController.addLocus("wheeled");
 	}
 	break;
 	// Tracked
 	case(2): {
-		mLocusController.addLocus();
-		ui->widgetLociManager->configure(&mLocusController);
+		mLocusController.addLocus("tracked");
 	}
 	break;
 	// Legged
 	case(3): {
-		mLocusController.addLocus();
-		ui->widgetLociManager->configure(&mLocusController);
+		mLocusController.addLocus("legged");
+	}
+	break;
+	// Hovering
+	case(4): {
+		mLocusController.addLocus("hovering");
 	}
 	break;
 	}
+	ui->widgetLociManager->configure(&mLocusController);
 	ui->comboBoxAddLocus->setCurrentIndex(0);
 }
