@@ -461,6 +461,7 @@ QString ardumyActuatorSetToString(const ArduMYActuatorSet &set)
 }
 
 
+
 QString ardumyActuatorNameToString(const ArduMYActuatorConfig &c)
 {
 	QString name;
@@ -468,27 +469,26 @@ QString ardumyActuatorNameToString(const ArduMYActuatorConfig &c)
 	const qint8 maxCharacters=arraySize-1;
 	int i=0;
 	for(i=0; i<maxCharacters; ++i) {
-		name[i]=c.nickName[i];
-	}
-	// Fill rest of string with \0
-	for(; i<arraySize; ++i) {
-		name[i]='\0';
+		auto ch=c.nickName[i];
+		if('\0'==ch){
+			break;
+		}
+		name[i]=ch;
 	}
 	return name;
 }
 
-void ardumyActuatorNameFromString(ArduMYActuatorConfig &c ,const QString &string)
+void ardumyActuatorNameFromString(ArduMYActuatorConfig &config ,const QString &name)
 {
-	const qint8 arraySize=sizeof(c.nickName)/sizeof(int8_t);
-	const qint8 strSize=string.size();
-	const qint8 maxCharacters=qMin((qint8)(arraySize-1),strSize);
-	auto name_cstr=string.toStdString().c_str();
-	int i=0;
-	for(i=0; i<maxCharacters; ++i) {
-		c.nickName[i]=name_cstr[i];
+	const quint32 maxSz=(sizeof(ArduMYActuatorConfig::nickName)/sizeof(int8_t))-1;// NOTE: -1 means we make space for the null-terminator character
+	const quint32 nSz=name.size();
+	const auto sz=qMin(maxSz, nSz);
+	size_t i=0;
+	for(; i<sz; ++i) {
+		config.nickName[i]=name.at(i).toLatin1();
 	}
-	// Fill rest of string with \0
-	for(; i<arraySize; ++i) {
-		c.nickName[i]='\0';
+	// Pad/Postfix the null-terminator
+	for(; i<maxSz; ++i) {
+		config.nickName[i]='\0';
 	}
 }

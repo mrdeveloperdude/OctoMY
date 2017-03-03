@@ -2,7 +2,6 @@
 #define LOCUSCONTROLLER_HPP
 
 #include "LocusSet.hpp"
-#include "WheeledLocus.hpp"
 #include "LocusFactory.hpp"
 
 #include <QObject>
@@ -14,28 +13,16 @@ private:
 	LocusSet mLoci;
 	LocusFactory mFactory;
 public:
-	LocusController(QObject *parent=nullptr)
-		: QObject(parent)
-	{
+	LocusController(QObject *parent=nullptr);
+public:
 
-	}
-
-	Locus *addLocus(QString type)
-	{
-		Locus *l=mFactory.locusFactory(type);
-		if(nullptr!=l) {
-			mLoci.push_back(l);
-		}
-		return l;
-	}
-
-	LocusSet &loci()
-	{
-		return mLoci;
-	}
+	Locus *addLocus(QString type);
+	LocusSet &loci();
 signals:
 
 	void locusConfigurationChanged();
+public slots:
+	void onLocusWidgetDeleted(quint32);
 
 };
 

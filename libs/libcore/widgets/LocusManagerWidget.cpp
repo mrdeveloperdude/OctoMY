@@ -110,3 +110,5 @@ void LocusManagerWidget::locusManagerChanged()
 	// Reload config the best we can
 	configure(mController);
 }
+
+

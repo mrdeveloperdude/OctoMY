@@ -6,6 +6,8 @@
 #include <QWidget>
 
 class ArduMYActuator;
+class ArduMYActuatorConfig;
+
 namespace Ui
 {
 class ArduMYActuatorWidget;
@@ -59,5 +61,6 @@ private slots:
 	void on_comboBoxActuatorRepresentation_currentIndexChanged(int index);
 	void on_pushButtonDelete_clicked();
 };
+
 
 #endif // ARDUMYACTUATORWIDGET_HPP

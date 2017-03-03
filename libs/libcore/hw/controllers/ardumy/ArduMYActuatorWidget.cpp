@@ -4,6 +4,7 @@
 #include "../libutil/utility/Utility.hpp"
 
 #include "../arduino/ArduMYActuator.hpp"
+#include "../libcore/hw/controllers/ardumy/ArdumyTypeConversions.hpp"
 
 
 #include <QDebug>
@@ -318,17 +319,13 @@ void ArduMYActuatorWidget::on_pushButtonName_clicked()
 	bool ok=false;
 	QString name = QInputDialog::getText(this, tr("QInputDialog::getText()"), tr("User name:"), QLineEdit::Normal, ui->pushButtonName->text(), &ok);
 	if (ok && !name.isEmpty()) {
-		name=name.replace(QRegularExpression("[^a-zA-Z0-9]*"),"_").trimmed();
+		// Reduce any sized whitespace to single space
+		name=name.replace(QRegularExpression("\\s+")," ");
+		// Reduce all unsupported charecters to nothing
+		name=name.replace(QRegularExpression("[^a-zA-Z0-9 ]*"),"").trimmed();
 		//(Qt::ImhDigitsOnly|Qt::ImhUppercaseOnly|Qt::ImhLowercaseOnly)
-		const quint32 maxSz=sizeof(ArduMYActuatorConfig::nickName)-1;// NOTE: -1 means we make space for the null-terminator character
-		const quint32 nSz=name.size();
-		const auto sz=qMin(maxSz, nSz);
 		if(nullptr!=mActuator) {
-			for(size_t i=0; i<sz; ++i) {
-				mActuator->config.nickName[i]=name.at(i).toLatin1();
-			}
-			// Postfix the null-terminator
-			mActuator->config.nickName[sz]='\0';
+			ardumyActuatorNameFromString(mActuator->config, name);
 		}
 		if(name.isEmpty()) {
 			name=ACTUATOR_UNNAMED;
@@ -356,3 +353,5 @@ void ArduMYActuatorWidget::on_pushButtonDelete_clicked()
 		emit actuatorDeleted(mID);
 	}
 }
+
+

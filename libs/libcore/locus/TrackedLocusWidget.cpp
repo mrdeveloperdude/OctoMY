@@ -2,7 +2,7 @@
 #include "ui_TrackedLocusWidget.h"
 
 TrackedLocusWidget::TrackedLocusWidget(QWidget *parent) :
-	QWidget(parent),
+	LocusWidget(parent),
 	ui(new Ui::TrackedLocusWidget)
 {
 	ui->setupUi(this);

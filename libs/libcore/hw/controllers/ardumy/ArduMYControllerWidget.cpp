@@ -196,6 +196,7 @@ void ArduMYControllerWidget::on_comboBoxAddActuator_currentIndexChanged(int inde
 		if(nullptr!=actuator) {
 			actuator->config.type=type;
 			actuator->config.representation=representation;
+			actuator->config.nickName;
 		}
 
 	}

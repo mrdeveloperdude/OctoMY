@@ -1,5 +1,6 @@
 #ifndef TRACKEDLOCUSWIDGET_HPP
 #define TRACKEDLOCUSWIDGET_HPP
+#include "LocusWidget.hpp"
 
 #include <QWidget>
 
@@ -8,7 +9,7 @@ namespace Ui
 class TrackedLocusWidget;
 }
 
-class TrackedLocusWidget : public QWidget
+class TrackedLocusWidget : public LocusWidget
 {
 	Q_OBJECT
 

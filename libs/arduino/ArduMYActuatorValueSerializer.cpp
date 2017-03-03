@@ -2,7 +2,8 @@
 
 
 #include "ArduMY.hpp"
-#include "../libcore/hw/controllers/ardumy/ArdumyTypeConversions.hpp"
+
+//#include "../libcore/hw/controllers/ardumy/ArdumyTypeConversions.hpp"
 
 ArduMYActuatorValueSerializer::ArduMYActuatorValueSerializer()
 	: ArduMYActuatorValueSerializerBase()
@@ -100,12 +101,12 @@ uint8_t ArduMYActuatorValueSerializer::nextByte()
 										if(a2.state.value.bit) {
 											ret |= ( 1 << bitCount );
 										}
-										qDebug()<<"Serialized BIT value of "<<(a.state.value.bit)<<" at bit "<<bitCount<<" of byte "<<byteIndex<<" for actuator "<<currentActuatorIndex;
+										//qDebug()<<"Serialized BIT value of "<<(a.state.value.bit)<<" at bit "<<bitCount<<" of byte "<<byteIndex<<" for actuator "<<currentActuatorIndex;
 										//qDebug()<<"Serialized ACTUATOR: "<< ardumyActuatorToString(a2);
 										//"value of "<<ardumyActuatorValueToString(a.state.value,a.config.representation)<<" at bit "<<bitCount<<" of byte "<<byteIndex<<" for actuator "<<currentActuatorIndex;
 										bitCount++;
 									} else {
-										qDebug()<<"NOT DIRTY: "<<currentActuatorIndex;
+										//qDebug()<<"NOT DIRTY: "<<currentActuatorIndex;
 									}
 								}
 								nextActuator();

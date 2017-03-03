@@ -35,6 +35,8 @@ public slots:
 	void locusManagerChanged();
 
 
+
+
 };
 
 #endif // LOCUSMANAGERWIDGET_HPP

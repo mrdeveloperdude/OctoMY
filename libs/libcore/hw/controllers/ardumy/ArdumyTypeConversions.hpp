@@ -1,6 +1,10 @@
 #ifndef ARDUMYTYPECONVERSIONS_HPP
 #define ARDUMYTYPECONVERSIONS_HPP
 
+#ifdef ARDUINO_ARCH_AVR
+#error "WE ARE TRYING TO COMPILE ArdumyTypeConversions on AVR!"
+#endif
+
 #include "../arduino/ArduMYActuatorType.hpp"
 #include "../arduino/ArduMYActuatorValueRepresentation.hpp"
 #include "../arduino/ArduMYActuatorValue.hpp"

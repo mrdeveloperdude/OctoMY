@@ -1,22 +1,25 @@
 #ifndef HOVERINGLOCUSWIDGET_HPP
 #define HOVERINGLOCUSWIDGET_HPP
 
+#include "LocusWidget.hpp"
+
 #include <QWidget>
 
-namespace Ui {
-	class HoveringLocusWidget;
-	}
-
-class HoveringLocusWidget : public QWidget
+namespace Ui
 {
-		Q_OBJECT
+class HoveringLocusWidget;
+}
 
-	public:
-		explicit HoveringLocusWidget(QWidget *parent = 0);
-		~HoveringLocusWidget();
+class HoveringLocusWidget : public LocusWidget
+{
+	Q_OBJECT
 
-	private:
-		Ui::HoveringLocusWidget *ui;
+public:
+	explicit HoveringLocusWidget(QWidget *parent = 0);
+	~HoveringLocusWidget();
+
+private:
+	Ui::HoveringLocusWidget *ui;
 };
 
 #endif // HOVERINGLOCUSWIDGET_HPP
