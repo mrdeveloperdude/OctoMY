@@ -81,20 +81,29 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
-     <widget class="QWidget" name="tabGeneral">
+     <widget class="QWidget" name="tabStatus">
       <attribute name="title">
-       <string>General</string>
+       <string>Status</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0" colspan="5">
-        <widget class="QLabel" name="label">
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0" colspan="4">
+        <widget class="QLabel" name="labelIntroduction">
          <property name="text">
           <string>&lt;h1&gt;ArduMY™ Controller version 1.0&lt;/h1&gt;
 &lt;p&gt;This is the native Arduino© based controller for OctoMY™&lt;/p&gt;
-&lt;p&gt;You will find full documentation for it &lt;a href=&quot;http://www.octomy.org/documentation/development/architectual-overview/ardumy&quot; &gt;here&lt;/a&gt;&lt;/p&gt;
-&lt;h2&gt;Quick guide&lt;/h2&gt;
+&lt;p&gt;You will find full documentation for it &lt;a href=&quot;http://www.octomy.org/documentation/development/architectual-overview/ardumy&quot; &gt;here&lt;/a&gt;&lt;/p&gt;</string>
+         </property>
+         <property name="openExternalLinks">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="4">
+        <widget class="QLabel" name="labelQuickGuide">
+         <property name="text">
+          <string>&lt;h2&gt;Quick guide&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;Get a &lt;a href=&quot;http://www.octomy.org/documentation/development/architectual-overview/ardumy&quot; &gt;compatible&lt;/a&gt; Arduino© board.&lt;/li&gt;
 &lt;li&gt;Go &lt;a href=&quot;http://www.octomy.org/documentation/development/architectual-overview/ardumy&quot; &gt;download&lt;/a&gt;, compile and upload latest version of ArduMY™ on your board .&lt;/li&gt;
@@ -109,35 +118,13 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="LightWidget" name="widgetSerialStatus" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+       <item row="2" column="1" colspan="2">
+        <widget class="QPushButton" name="pushButtonShowQuickGuide">
+         <property name="text">
+          <string>Show Quick Guide</string>
          </property>
-         <property name="minimumSize">
-          <size>
-           <width>30</width>
-           <height>30</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="LightWidget" name="widgetActuatorStatus" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>30</width>
-           <height>30</height>
-          </size>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -154,7 +141,7 @@
          </property>
         </spacer>
        </item>
-       <item row="3" column="2">
+       <item row="3" column="1">
         <widget class="QLabel" name="label_2">
          <property name="text">
           <string>Board:</string>
@@ -164,14 +151,14 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="3">
+       <item row="3" column="2">
         <widget class="QLabel" name="labelBoardType">
          <property name="text">
           <string>N/A</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="4">
+       <item row="3" column="3">
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -184,7 +171,7 @@
          </property>
         </spacer>
        </item>
-       <item row="4" column="2">
+       <item row="4" column="1">
         <widget class="QLabel" name="label_4">
          <property name="text">
           <string>Version:</string>
@@ -194,14 +181,14 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="3">
+       <item row="4" column="2">
         <widget class="QLabel" name="labelBoardVersion">
          <property name="text">
           <string>N/A</string>
          </property>
         </widget>
        </item>
-       <item row="5" column="0" colspan="5">
+       <item row="5" column="0" colspan="4">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -214,20 +201,6 @@
          </property>
         </spacer>
        </item>
-       <item row="2" column="2" colspan="2">
-        <widget class="QPushButton" name="pushButtonConfigureActuators">
-         <property name="text">
-          <string>Configure Actuators</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2" colspan="2">
-        <widget class="QPushButton" name="pushButtonConfigureSerial">
-         <property name="text">
-          <string>Configure Serial</string>
-         </property>
-        </widget>
-       </item>
       </layout>
       <zorder>labelBoardType</zorder>
       <zorder>label_4</zorder>
@@ -235,12 +208,10 @@
       <zorder>verticalSpacer</zorder>
       <zorder>horizontalSpacer</zorder>
       <zorder>horizontalSpacer_2</zorder>
-      <zorder>label</zorder>
+      <zorder>labelIntroduction</zorder>
       <zorder>label_2</zorder>
-      <zorder>widgetSerialStatus</zorder>
-      <zorder>pushButtonConfigureSerial</zorder>
-      <zorder>pushButtonConfigureActuators</zorder>
-      <zorder>widgetActuatorStatus</zorder>
+      <zorder>pushButtonShowQuickGuide</zorder>
+      <zorder>labelQuickGuide</zorder>
      </widget>
      <widget class="QWidget" name="tabSerial">
       <attribute name="title">
@@ -505,12 +476,6 @@
    <class>SerialSettingsWidget</class>
    <extends>QWidget</extends>
    <header location="global">hw/serial/SerialSettingsWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LightWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/LightWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

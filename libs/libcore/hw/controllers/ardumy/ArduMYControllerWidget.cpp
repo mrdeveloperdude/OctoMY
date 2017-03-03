@@ -33,7 +33,7 @@ ArduMYControllerWidget::ArduMYControllerWidget(QWidget *parent)
 	}
 
 	ui->widgetActuatorManager->configure(nullptr);
-	ui->tabWidget->setCurrentWidget(ui->tabGeneral);
+	ui->tabWidget->setCurrentWidget(ui->tabStatus);
 
 	/* TODO: Implement the full Arduino pin mappnig utopia thingy with filters, pins, detecting used pins, suggesting free pins etc.
 	ArduinoPinFacilitator apf;
@@ -47,6 +47,7 @@ ArduMYControllerWidget::ArduMYControllerWidget(QWidget *parent)
 	ui->widgetPinThing_6->configure(ArduinoPinFilter(PIN_DIGITAL_OUTPUT, &apf));
 	*/
 
+	showQuickGuide(false);
 
 }
 
@@ -99,7 +100,7 @@ void ArduMYControllerWidget::onSerialSettingsChanged()
 			mController->setConnected(true);
 		}
 	}
-	ui->tabWidget->setCurrentWidget(ui->tabGeneral);
+	ui->tabWidget->setCurrentWidget(ui->tabStatus);
 }
 
 
@@ -211,4 +212,15 @@ void ArduMYControllerWidget::on_pushButtonSync_clicked()
 		ArduMYActuatorSet &set=mController->actuators();
 		set.setSyncDue(true);
 	}
+}
+
+void ArduMYControllerWidget::on_pushButtonShowQuickGuide_toggled(bool checked)
+{
+	showQuickGuide(checked);
+}
+
+
+void ArduMYControllerWidget::showQuickGuide(bool show){
+	ui->labelQuickGuide->setVisible(show);
+	ui->pushButtonShowQuickGuide->setText(show?"Hide Quick Guide":"Show Quick Guide");
 }

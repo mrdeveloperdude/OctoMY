@@ -32,6 +32,7 @@ SerialSettingsWidget::SerialSettingsWidget(QWidget *parent)
 	fillPortsInfo();
 
 	updateSettings();
+	showAdvanced(false);
 }
 
 SerialSettingsWidget::~SerialSettingsWidget()
@@ -204,4 +205,38 @@ void SerialSettingsWidget::on_pushButtonApply_clicked()
 void SerialSettingsWidget::on_pushButtonSelectDefaults_clicked()
 {
 	setSettings(mDefaultSettings);
+}
+
+void SerialSettingsWidget::on_pushButtonAdvanced_toggled(bool checked)
+{
+	showAdvanced(checked);
+}
+
+
+
+void SerialSettingsWidget::showAdvanced(bool show)
+{
+	ui->baudRateBox->setVisible(show);
+	ui->baudRateLabel->setVisible(show);
+	ui->dataBitsBox->setVisible(show);
+	ui->dataBitsLabel->setVisible(show);
+	ui->descriptionLabel->setVisible(show);
+	ui->flowControlBox->setVisible(show);
+	ui->flowControlLabel->setVisible(show);
+	ui->labelTagDescription->setVisible(show);
+	ui->labelTagProductID->setVisible(show);
+	ui->labelTagSerialNumber->setVisible(show);
+	ui->labelTagVendorID->setVisible(show);
+	ui->parityBox->setVisible(show);
+	ui->parityLabel->setVisible(show);
+	ui->pidLabel->setVisible(show);
+	ui->serialNumberLabel->setVisible(show);
+	ui->stopBitsBox->setVisible(show);
+	ui->stopBitsLabel->setVisible(show);
+	ui->vidLabel->setVisible(show);
+	if(show) {
+		ui->pushButtonAdvanced->setText("Hide Advanced");
+	} else {
+		ui->pushButtonAdvanced->setText("Show Advanced");
+	}
 }

@@ -33,6 +33,8 @@ private:
 
 	void reconnectActuatorWidgets();
 
+	void showQuickGuide(bool show);
+
 public slots:
 
 	void onSerialSettingsChanged();
@@ -45,6 +47,9 @@ private slots:
 
 	void on_comboBoxAddActuator_currentIndexChanged(int index);
 	void on_pushButtonSync_clicked();
+
+
+	void on_pushButtonShowQuickGuide_toggled(bool checked);
 };
 
 #endif // ARDUMYCONTROLLERWIDGET_HPP

@@ -164,7 +164,9 @@ void ArduMYController::onActuatorWidgetDeleted(quint32 id)
 
 void ArduMYController::onSerialReadData()
 {
-	qDebug()<<"ARDUMY SERIAL READ";
+	QByteArray data=mSerialInterface->readAll();
+	qDebug()<<"ARDUMY SERIAL READ "<<data.size()<<" bytes:";
+	qDebug()<<data;
 }
 
 void ArduMYController::onSerialDataWritten(qint64 b)
@@ -512,7 +514,6 @@ void ArduMYController::setConfiguration(QVariantMap &configuration)
 		mWidget->configure(this);
 	}
 }
-
 
 
 

@@ -59,10 +59,15 @@ signals:
 public slots:
 	void on_pushButtonSelectDefaults_clicked();
 
+private slots:
+	void on_pushButtonAdvanced_toggled(bool checked);
+
 private:
 	void fillPortsParameters();
 	void fillPortsInfo();
 	void updateSettings();
+
+	void showAdvanced(bool checked);
 
 
 };
