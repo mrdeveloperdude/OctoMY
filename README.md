@@ -5,7 +5,7 @@
 What is OctoMY™?
 ----------------
 
-OctoMY™ is the open-source, easy-to-use, state-of-the-art software that runs on your next <hobby | consumer | workplace> robot.
+OctoMY™ is the open-source, easy-to-use, state-of-the-art software that runs on your next &lt;hobby &#124; consumer &#124; workplace&gt; robot.
 
 [read more...](http://www.octomy.org/about)
 
