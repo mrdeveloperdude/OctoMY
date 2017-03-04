@@ -8,7 +8,7 @@
 ArduMYCommandParser parser;
 ArduMYMain hwServos(parser);
 
-const char compile_date[] = __DATE__ " " __TIME__;
+const char compile_date[] = __DATE__  __TIME__;
 
 
 void setup()
@@ -17,7 +17,6 @@ void setup()
 	while (!Serial);
 	parser.setup();
 	hwServos.setup();
-	Serial.print("Compiled@");
 	Serial.println(compile_date);
 	Serial.println("READY");
 }
@@ -33,12 +32,15 @@ void loop()
 		parser.parse(in);
 		auto nuCom=parser.currentCommand;
 		if(oldCom!=nuCom) {
-			Serial.print("COMMAND CHANGED FROM ");
+			Serial.print("CMD ");
 			Serial.print(oldCom);
-			Serial.print(" TO ");
-			Serial.println(nuCom);
+			Serial.print(" -> ");
+			if(OCTOMY_SYNC==nuCom) {
+				Serial.println("OUT OF SYNC!");
+			} else {
+				Serial.println(nuCom);
+			}
 		}
 	}
 	hwServos.update(unow);
 }
-

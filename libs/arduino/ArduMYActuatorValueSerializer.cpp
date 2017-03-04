@@ -47,6 +47,7 @@ uint8_t ArduMYActuatorValueSerializer::nextByte()
 	uint8_t ret=0x00;
 	//TODO: Implement a way to explicitly guarantee that set size does not change between calls to nextByte
 	const uint8_t setSize = ( ( nullptr != set ) ? set->size() : 0 );
+	const ArduMYActuatorValuesParserStep lastStep=step;
 	switch(step) {
 	case(ArduMYActuatorValuesParserStep::ENABLED_ACTUATOR_BITS): {
 		// Serialize enable-bits
@@ -202,157 +203,10 @@ uint8_t ArduMYActuatorValueSerializer::nextByte()
 	}
 
 byte_ready:
+	// Detect completion:
+	if( (lastStep!= step) && (END_OF_OP == step) && (nullptr!=set) ) {
+		// At this point we are no longer dirty, pop the Champagne!
+		set->setValueDirty(false);
+	}
 	return ret;
 }
-
-
-
-
-
-
-
-/*
-if(ActuatorValueRepresentation::BIT == currentBatchRepresentation) {
-// Bit actuator values are accumulated into bytes before sending
-uint8_t bitCount=0;
-Actuator &a=(*set)[currentActuatorIndex];
-if(currentBatchRepresentation == a.config.representation) {
-if(a.state.isDirty()) {
-	if(a.state.value.bit) {
-		ret |= ( 1 << bitCount );
-	}
-	bitCount++;
-	if( bitCount >= 8 ) {
-		nextActuator();
-	}
-}
-}
-}
-
-
-if(ActuatorValueRepresentation::BYTE == currentBatchRepresentation) {
-while(ActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES==step) {
-Actuator &a=(*set)[currentActuatorIndex];
-nextActuator();
-if(currentBatchRepresentation == a.config.representation) {
-	if(a.state.isDirty()) {
-		ret=a.state.value.byte;
-		break;
-	}
-}
-}
-}
-
-if(ActuatorValueRepresentation::WORD == currentBatchRepresentation) {
-Actuator &a=(*set)[currentActuatorIndex];
-if(currentBatchRepresentation == a.config.representation) {
-if(a.state.isDirty()) {
-	converter.uint16[0]=a.state.value.word;
-	ret=converter.uint8[byteIndex];
-	byteIndex++;
-	if(2==byteIndex) {
-		currentActuatorIndex++;
-	}
-	break;
-} else {
-	currentActuatorIndex++;
-}
-} else {
-currentActuatorIndex++;
-}
-}
-
-
-if(ActuatorValueRepresentation::DOUBLE_WORD == currentBatchRepresentation) {
-
-for(; currentActuatorIndex<setSize;) {
-Actuator &a=(*set)[currentActuatorIndex];
-if(currentBatchRepresentation == a.config.representation) {
-	if(a.state.isDirty()) {
-		converter.uint32[0]=a.state.value.doubleWord;
-		ret=converter.uint8[byteIndex];
-		byteIndex++;
-		if(4==byteIndex) {
-			currentActuatorIndex++;
-		}
-		break;
-	} else {
-		currentActuatorIndex++;
-	}
-} else {
-	currentActuatorIndex++;
-}
-}
-}
-
-if(ActuatorValueRepresentation::QUAD_WORD == currentBatchRepresentation) {
-for(; currentActuatorIndex<setSize;) {
-Actuator &a=(*set)[currentActuatorIndex];
-if(currentBatchRepresentation == a.config.representation) {
-	if(a.state.isDirty()) {
-		converter.uint64=a.state.value.quadWord;
-		ret=converter.uint8[byteIndex];
-		byteIndex++;
-		if(8==byteIndex) {
-			currentActuatorIndex++;
-		}
-		break;
-	} else {
-		currentActuatorIndex++;
-	}
-} else {
-	currentActuatorIndex++;
-}
-}
-}
-
-if(ActuatorValueRepresentation::SINGLE_FLOAT == currentBatchRepresentation) {
-for(; currentActuatorIndex<setSize;) {
-Actuator &a=(*set)[currentActuatorIndex];
-if(currentBatchRepresentation == a.config.representation) {
-	if(a.state.isDirty()) {
-		converter.float32[0]=a.state.value.singlePrecision;
-		ret=converter.uint8[byteIndex];
-		byteIndex++;
-		if(4==byteIndex) {
-			currentActuatorIndex++;
-		}
-		break;
-	} else {
-		currentActuatorIndex++;
-	}
-} else {
-	currentActuatorIndex++;
-}
-}
-}
-
-if(ActuatorValueRepresentation::DOUBLE_FLOAT == currentBatchRepresentation) {
-
-for(; currentActuatorIndex<setSize;) {
-Actuator &a=(*set)[currentActuatorIndex];
-if(currentBatchRepresentation == a.config.representation) {
-	if(a.state.isDirty()) {
-		converter.float64=a.state.value.doublePrecision;
-		ret=converter.uint8[byteIndex];
-		byteIndex++;
-		if(8==byteIndex) {
-			currentActuatorIndex++;
-		}
-		break;
-	} else {
-		currentActuatorIndex++;
-	}
-} else {
-	currentActuatorIndex++;
-}
-}
-}
-
-if(currentActuatorIndex>=setSize) {
-
-nextBatch();
-currentActuatorIndex=0;
-//if(ActuatorValueRepresentation::REPRESENTATION_COUNT == currentBatchRepresentation) {				nextParseStep();			}
-}
-*/

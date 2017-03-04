@@ -21,8 +21,7 @@ HEADERS += \
 SOURCES += \
 	ZooMain.cpp
 
-
+contains(DEFINES, USE_STATUS){
 message("FROM zoo.pro:")
 include($$TOP_PWD/status.pri)
-
-
+}

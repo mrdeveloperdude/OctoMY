@@ -36,7 +36,9 @@ DISTFILES += \
 
 }
 
+contains(DEFINES, USE_STATUS){
 message("FROM hub.pro:" $$ANDROID_PACKAGE_SOURCE_DIR)
 include($$TOP_PWD/status.pri)
+}
 
 

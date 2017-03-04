@@ -136,6 +136,8 @@ void ArduMYActuatorConfigSerializerBase::nextStep()
 	break;
 	case(RANGE_SPAN): {
 		step=END_OF_OPERATION;
+		// At this point we are no longer dirty, pop the Champagne!
+		config->setDirty(false);
 	}
 	break;
 	case(END_OF_OPERATION): {

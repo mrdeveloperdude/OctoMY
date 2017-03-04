@@ -6,11 +6,12 @@ ArduMYCommandSerializer::ArduMYCommandSerializer(ArduMYActuatorSet &actuators)
 	, currentCommand(ArduMYParserState::OCTOMY_SYNC)
 	, magic{0x0C,0x70,0xFF,0x00}
 	, byteIndex(0)
+	, mSentCommandByte(false)
 	, actuatorConfigSerializer()
 	, actuatorConfigIndex(-1)
 	, actuatorValuesSerializer()
 {
-
+	actuatorValuesSerializer.setSet(actuators);
 }
 
 
@@ -23,10 +24,12 @@ void ArduMYCommandSerializer::startSync()
 {
 	qDebug()<<"ARDUMY COMMAND SERIALIZER START SYNC";
 	// Don't interrupt current session
-	if(isReadyForNewCommand()) {
+	if(!isReadyForNewCommand()) {
+		qDebug()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
 		return;
 	}
 	byteIndex=0;
+	mSentCommandByte=false;
 	currentCommand=OCTOMY_SYNC;
 }
 
@@ -34,10 +37,12 @@ void ArduMYCommandSerializer::startActuatorCount()
 {
 	qDebug()<<"ARDUMY COMMAND SERIALIZER COUNT";
 	// Don't interrupt current session
-	if(isReadyForNewCommand()) {
+	if(!isReadyForNewCommand()) {
+		qDebug()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
 		return;
 	}
 	byteIndex=0;
+	mSentCommandByte=false;
 	currentCommand=OCTOMY_SET_ACTUATOR_COUNT;
 }
 
@@ -46,12 +51,15 @@ void ArduMYCommandSerializer::startActuatorConfig(uint8_t index)
 {
 	qDebug()<<"ARDUMY COMMAND SERIALIZER ACTUATOR CONFIG FOR INDEX "<<index;
 	// Don't interrupt current session
-	if(isReadyForNewCommand()) {
+	if(!isReadyForNewCommand()) {
+		qDebug()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
 		return;
 	}
 	actuatorConfigIndex=index;
-	byteIndex=0;
+	actuatorConfigSerializer.setConfig(actuators[index].config);
 	actuatorConfigSerializer.reset();
+	byteIndex=0;
+	mSentCommandByte=false;
 	currentCommand=OCTOMY_SET_ACTUATOR_CONFIG;
 }
 
@@ -60,11 +68,13 @@ void ArduMYCommandSerializer::startActuatorValues()
 {
 	qDebug()<<"ARDUMY COMMAND SERIALIZER ACTUATOR VALUES";
 	// Don't interrupt current session
-	if(isReadyForNewCommand()) {
+	if(!isReadyForNewCommand()) {
+		qDebug()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
 		return;
 	}
-	byteIndex=0;
 	actuatorValuesSerializer.reset();
+	byteIndex=0;
+	mSentCommandByte=false;
 	currentCommand=OCTOMY_SET_ACTUATOR_VALUES;
 }
 
@@ -96,14 +106,13 @@ bool ArduMYCommandSerializer::hasMoreData()
 				}
 			}
 			if(!any) {
-				actuators.setConfigDirty(false);
-				return hasMoreData();
+				qWarning()<<"ERROR: actuator marked dirty but no dirty actuators found!";
+				return false;
 			}
 		}
 		// 4. Actuator value(s) changed
 		else if(actuators.isValuesDirty()) {
 			startActuatorValues();
-			actuators.setValuesDirty(false);
 		}
 	}
 	return (currentCommand!=OCTOMY_AWAITING_COMMAND);
@@ -114,67 +123,77 @@ uint8_t ArduMYCommandSerializer::nextByte()
 {
 	// TODO: Implement a way to make sure that command does not change mid-serialization
 	uint8_t ret=0x00;
-	switch(currentCommand) {
-	// Rectify unknwon states to mean "awaiting command"
-	default:
-	case(OCTOMY_UNKNOWN):
-		currentCommand=OCTOMY_AWAITING_COMMAND;
-		byteIndex=0;
-		// TODO: This is just defensive programming, flag this as an error somwhow
-		break;
-	case(OCTOMY_SYNC): {
-		ret=magic[byteIndex];
-		byteIndex++;
-		if(byteIndex>=sizeof(magic)) {
+	if(!mSentCommandByte) {
+		ret=static_cast<uint8_t>(currentCommand);
+		qWarning()<<"SENDING COMMAND BYTE "<<ret;
+		mSentCommandByte=true;
+	} else {
+		switch(currentCommand) {
+		// Rectify unknwon states to mean "awaiting command"
+		default:
+		case(OCTOMY_UNKNOWN):
+			currentCommand=OCTOMY_AWAITING_COMMAND;
 			byteIndex=0;
+			// TODO: This is just defensive programming, flag this as an error somewhow
+			qWarning()<<"ERROR: Unknown command";
+			break;
+		case(OCTOMY_SYNC): {
+			ret=magic[byteIndex];
+			byteIndex++;
+			if(byteIndex>=sizeof(magic)) {
+				byteIndex=0;
+				currentCommand=OCTOMY_AWAITING_COMMAND;
+			}
+		}
+		break;
+		// Awaiting command
+		case(OCTOMY_AWAITING_COMMAND): {
+			// NOTE: We should not be called when this is the command, so putting up a warning in this case
+			qWarning()<<"ERROR: nextByte called while awaiting command";
+		}
+		break;
+		// Command: set actuator count
+		case(OCTOMY_SET_ACTUATOR_COUNT): {
+			uint32_t sz=actuators.size();
+			if(sz>0xFF) {
+				//NOTE: This is DEFENSIVE/ERROR RECOVERY, it should never happen
+				qWarning()<<"ERROR: actuator count is beyond limit, truncating";
+				sz=0xFF;
+			}
+			ret=(uint8_t)sz;
 			currentCommand=OCTOMY_AWAITING_COMMAND;
 		}
-	}
-	break;
-	// Awaiting command
-	case(OCTOMY_AWAITING_COMMAND): {
-		// NOTE: We should not be called when this is the command, so might consider putting up a warning in this case
-	}
-	break;
-	// Command: set actuator count
-	case(OCTOMY_SET_ACTUATOR_COUNT): {
-		uint32_t sz=actuators.size();
-		if(sz>0xFF) {
-			//NOTE: This is DEFENSIVE/ERROR RECOVERY, it should never happen
-			sz=0xFF;
-		}
-		ret=(uint8_t)sz;
-		currentCommand=OCTOMY_AWAITING_COMMAND;
-	}
-	break;
+		break;
 
-	// Command: set actuator config
-	case(OCTOMY_SET_ACTUATOR_CONFIG): {
-		if(actuatorConfigSerializer.hasMoreData()) {
-			ret=actuatorConfigSerializer.nextByte();
-		} else {
-			// ERROR! This should never happen
+		// Command: set actuator config
+		case(OCTOMY_SET_ACTUATOR_CONFIG): {
+			if(actuatorConfigSerializer.hasMoreData()) {
+				ret=actuatorConfigSerializer.nextByte();
+			} else {
+				qWarning()<<"ERROR: no more data for dirty actuator config";
+			}
+			if(!actuatorConfigSerializer.hasMoreData()) {
+
+				currentCommand=OCTOMY_AWAITING_COMMAND;
+			}
 		}
-		if(!actuatorConfigSerializer.hasMoreData()) {
-			currentCommand=OCTOMY_AWAITING_COMMAND;
+		break;
+		// Command: set actuator values
+		case(OCTOMY_SET_ACTUATOR_VALUES): {
+			if(actuatorValuesSerializer.hasMoreData()) {
+				ret=actuatorValuesSerializer.nextByte();
+			} else {
+				qWarning()<<"ERROR: no more data for dirty actuator values";
+			}
+			if(!actuatorValuesSerializer.hasMoreData()) {
+				currentCommand=OCTOMY_AWAITING_COMMAND;
+			}
 		}
-	}
-	break;
-	// Command: set actuator values
-	case(OCTOMY_SET_ACTUATOR_VALUES): {
-		if(actuatorValuesSerializer.hasMoreData()) {
-			ret=actuatorValuesSerializer.nextByte();
-		} else {
-			// ERROR! This should never happen
+		break;
+		case(OCTOMY_SET_ACTUATOR_LIMP): {
 		}
-		if(!actuatorValuesSerializer.hasMoreData()) {
-			currentCommand=OCTOMY_AWAITING_COMMAND;
+		break;
 		}
-	}
-	break;
-	case(OCTOMY_SET_ACTUATOR_LIMP): {
-	}
-	break;
 	}
 	return ret;
 }

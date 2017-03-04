@@ -6,7 +6,7 @@
 #include <QWidget>
 
 class ArduMYController;
-
+class SerialSettings;
 
 namespace Ui
 {
@@ -26,6 +26,8 @@ public:
 
 public:
 	void configure(ArduMYController *controller);
+
+	void setSerialSettings(SerialSettings &s);
 
 private:
 

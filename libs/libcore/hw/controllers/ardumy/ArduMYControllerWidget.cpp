@@ -4,7 +4,7 @@
 #include "ArduMYController.hpp"
 #include "widgets/NameMappingWidget.hpp"
 #include "agent/AgentConstants.hpp"
-
+#include "../libcore/hw/serial/SerialSettings.hpp"
 
 #include "widgets/ArduinoPinFilter.hpp"
 
@@ -74,9 +74,17 @@ void ArduMYControllerWidget::configure(ArduMYController *controller)
 		if(!connect(mController, SIGNAL(connectionChanged()), this, SLOT(onConnectionChanged()),OC_CONTYPE) ) {
 			qWarning()<<"ERROR: could not connect";
 		}
+		setSerialSettings(mController->serialSettings());
 		onSerialSettingsChanged();
 		reconnectActuatorWidgets();
 	}
+}
+
+
+void ArduMYControllerWidget::setSerialSettings(SerialSettings &s)
+{
+	qDebug()<<"ARDUMY CONTROLLER WIDGET PASSES SERIAL SETTINGS ON TO SERTIAL WSETTINGS WIDGET: "<<serialSettingsToString(s);
+	ui->widgetSerialSettings->setSettings(s);
 }
 
 

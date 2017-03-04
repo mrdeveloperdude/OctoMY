@@ -38,6 +38,7 @@ public:
 
 public:
 	QVariantMap toMap();
+	void fromMap(const QVariantMap &map);
 
 	void setIntBaudRate(int ib);
 	int intBaudRate() const;

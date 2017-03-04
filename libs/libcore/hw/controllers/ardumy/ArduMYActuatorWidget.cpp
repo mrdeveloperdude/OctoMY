@@ -262,7 +262,7 @@ void ArduMYActuatorWidget::onActuatorMoved()
 		}
 		break;
 		}
-		qDebug()<<"MOVED TO "<<val;
+		//qDebug()<<"MOVED TO "<<val;
 		mActuator->state.setDirty(true);
 	}
 	emit actuatorMoved(mID, val);

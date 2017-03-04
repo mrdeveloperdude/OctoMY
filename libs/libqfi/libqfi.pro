@@ -63,6 +63,7 @@ RESOURCES += \
 	resources/qfi.qrc \
 
 
+contains(DEFINES, USE_STATUS){
 message("FROM libqfi.pro:")
 include($$TOP_PWD/status.pri)
-
+}

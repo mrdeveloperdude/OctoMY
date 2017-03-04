@@ -32,5 +32,7 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 }
 
 
+contains(DEFINES, USE_STATUS){
 message("FROM remote.pro:")
 include($$TOP_PWD/status.pri)
+}

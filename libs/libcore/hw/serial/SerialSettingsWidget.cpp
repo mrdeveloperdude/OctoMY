@@ -186,6 +186,7 @@ void SerialSettingsWidget::updateSettings()
 
 void SerialSettingsWidget::setSettings(SerialSettings &settings)
 {
+	qDebug()<< "SERIAL SETTINGS WIDGET RECEIVED SETTINGS: "<<serialSettingsToString(settings);
 	ui->serialPortInfoListBox->setCurrentText(settings.name);
 	ui->baudRateBox->setCurrentText(QString::number(settings.baudRate));
 	ui->dataBitsBox->setCurrentIndex(settings.dataBits-5);

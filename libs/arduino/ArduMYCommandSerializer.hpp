@@ -14,6 +14,7 @@ public:
 	ArduMYParserState currentCommand;
 	const uint8_t magic[4];
 	uint8_t byteIndex;
+	bool mSentCommandByte;
 	ArduMYActuatorConfigSerializer actuatorConfigSerializer;
 	int16_t actuatorConfigIndex;
 	ArduMYActuatorValueSerializer actuatorValuesSerializer;

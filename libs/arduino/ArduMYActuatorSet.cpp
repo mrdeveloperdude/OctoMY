@@ -12,3 +12,5 @@ bool operator!= (const ArduMYActuatorSet &a, const ArduMYActuatorSet &b)
 {
 	return !a.isEqual(b);
 }
+
+

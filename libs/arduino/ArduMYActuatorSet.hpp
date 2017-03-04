@@ -20,8 +20,6 @@ public:
 
 	ARDUMY_ACTUATOR_FLAG_SELECTOR(isSyncDue,					setSyncDue,					0 )
 	ARDUMY_ACTUATOR_FLAG_SELECTOR(isCountDirty,					setCountDirty,				1 )
-	ARDUMY_ACTUATOR_FLAG_SELECTOR(isConfigDirty,				setConfigDirty,				2 )
-	ARDUMY_ACTUATOR_FLAG_SELECTOR(isValuesDirty,				setValuesDirty,				3 )
 
 	//NOTE: It is expected that when the number of actuators decrease, the remaining actuators will retain their previous configuration.
 	//NOTE: It is expected that when the number of actuators increase, the new actuators will be reset to default configuration.
@@ -56,6 +54,51 @@ public:
 		}
 		// By not failing until now we win!
 		return true;
+	}
+
+
+
+	bool isConfigDirty()
+	{
+		const uint32_t sz=size();
+		for(uint32_t i=0; i<sz; ++i) {
+			const ArduMYActuator &a=operator [](i);
+			if(a.config.isDirty()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool isValuesDirty()
+	{
+		const uint32_t sz=size();
+		for(uint32_t i=0; i<sz; ++i) {
+			const ArduMYActuator &a=operator [](i);
+			if(a.state.isDirty()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void setValueDirty(bool v)
+	{
+		const uint32_t sz=size();
+		for(uint32_t i=0; i<sz; ++i) {
+			ArduMYActuator &a=operator [](i);
+			a.state.setDirty(false);
+		}
+	}
+
+
+	void setConfigDirty(bool v)
+	{
+		const uint32_t sz=size();
+		for(uint32_t i=0; i<sz; ++i) {
+			ArduMYActuator &a=operator [](i);
+			a.config.setDirty(false);
+		}
 	}
 
 };

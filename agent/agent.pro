@@ -29,5 +29,7 @@ DISTFILES += \
 
 }
 
+contains(DEFINES, USE_STATUS){
 message("FROM agent.pro: " $$ANDROID_PACKAGE_SOURCE_DIR)
 include($$TOP_PWD/status.pri)
+}

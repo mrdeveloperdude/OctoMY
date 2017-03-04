@@ -42,7 +42,9 @@ public:
 	virtual ~ArduMYController();
 
 public:
+
 	void setSerialConfig(SerialSettings);
+	SerialSettings &serialSettings();
 	void openSerialPort();
 	void closeSerialPort();
 

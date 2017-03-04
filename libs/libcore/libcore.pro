@@ -615,6 +615,7 @@ ARDUMY_SOURCES += \
 HEADERS += $$ARDUMY_HEADERS
 SOURCES += $$ARDUMY_SOURCES
 
+contains(DEFINES, USE_STATUS){
 message("FROM lib.pro:")
 include($$TOP_PWD/status.pri)
-
+}

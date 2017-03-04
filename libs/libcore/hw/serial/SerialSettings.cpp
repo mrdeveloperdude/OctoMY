@@ -29,6 +29,17 @@ QVariantMap SerialSettings::toMap()
 	return map;
 }
 
+void SerialSettings::fromMap(const QVariantMap &map)
+{
+	name=map["name"].toString();
+	baudRate=static_cast<QSerialPort::BaudRate> (map["baudRate"].toInt());
+	dataBits=static_cast<QSerialPort::DataBits> (map["dataBits"].toInt());
+	parity=static_cast<QSerialPort::Parity> (map["parity"].toInt());
+	stopBits=static_cast<QSerialPort::StopBits> (map["stopBits"].toInt());
+	flowControl=static_cast<QSerialPort::FlowControl> (map["flowControl"].toInt());
+	localEchoEnabled=map["localEchoEnabled"].toBool();
+}
+
 
 void SerialSettings::setIntBaudRate(int ib)
 {
@@ -90,11 +101,11 @@ QString serialSettingsToString (const SerialSettings &set)
 {
 	QString out;
 	out+="SerialSettings{name="+set.name;
-	out+=", baudRate="+set.baudRate;
-	out+=", dataBits="+set.dataBits;
-	out+=", parity="+set.parity;
-	out+=", stopBits="+set.stopBits;
-	out+=", flowControl="+set.flowControl;
+	out+=", baudRate="+set.stringBaudRate();
+	out+=", dataBits="+set.stringDataBits();
+	out+=", parity="+set.stringParity();
+	out+=", stopBits="+set.stringStopBits();
+	out+=", flowControl="+set.stringFlowControl();
 	out+="}";
 	return out;
 }

@@ -63,6 +63,14 @@ void ArduMYController::setSerialConfig(SerialSettings settings)
 	mSerialSettings=settings;
 }
 
+
+SerialSettings &ArduMYController::serialSettings()
+{
+	return mSerialSettings;
+}
+
+
+
 void ArduMYController::openSerialPort()
 {
 	if(mSerialInterface->isOpen()) {
@@ -108,7 +116,9 @@ void ArduMYController::onSendingTimer()
 void ArduMYController::syncData()
 {
 	if(isConnected()) {
-		qDebug()<<"----- ARDUMY SERIALIZER STATUS: "<< ardumyCommandSerializerToString(mCommandSerializer);
+		if(OCTOMY_AWAITING_COMMAND!=mCommandSerializer.currentCommand) {
+			qDebug()<<"----- ARDUMY SERIALIZER STATUS: "<< ardumyCommandSerializerToString(mCommandSerializer);
+		}
 		QByteArray ba;
 		while(mCommandSerializer.hasMoreData()) {
 			uint8_t byte=mCommandSerializer.nextByte();
@@ -119,7 +129,7 @@ void ArduMYController::syncData()
 			writeData(ba);
 			qDebug()<<"ARDUMY SERIAL WROTE "<<sz<<" bytes to serial";
 		} else {
-			qDebug()<<"ARDUMY SERIAL WROTE NO DATA";
+			//qDebug()<<"ARDUMY SERIAL WROTE NO DATA";
 		}
 
 	} else {
@@ -443,10 +453,10 @@ QVariantMap ArduMYController::configuration()
 				  ARDUMY_ACTUATOR_FLAG_SELECTOR(isDirty,					setDirty,				9 ) // Dirty means the configuration has changed and must be updated at opportunity. NOTE: This bit should be ignored when data is serialized, as it representes ephemeral state. TODO: Look at storing this outside of this class
 					*/
 
+				configMap["nickName"]=ardumyActuatorNameToString(config);
 				configMap["type"]=ardumyActuatorTypeToString(config.type);
 				configMap["representation"]=ardumyActuatorValueRepresentationToString(representation);
 
-				configMap["nickName"]=ardumyActuatorNameToString(config);
 				//QString("%1").arg(mID, 2, 10, QChar('0'));
 				configMap["gearRatioNumerator"]=config.gearRatioNumerator;
 				configMap["gearRatioDenominator"]=config.gearRatioDenominator;
@@ -527,9 +537,14 @@ void ArduMYController::setConfiguration(QVariantMap &configuration)
 	} else {
 		qDebug()<<"No actuators found in configuration while loading";
 	}
+	if(configuration.contains("serial")) {
+		mSerialSettings.fromMap(configuration["serial"].toMap());
+		qDebug()<<"Loaded serial settings: "<<serialSettingsToString(mSerialSettings);
+	} else {
+		qDebug()<<"No serial found in configuration while loading";
+	}
 	// Update UI with any changes
 	if(nullptr!=mWidget) {
 		mWidget->configure(this);
 	}
 }
-

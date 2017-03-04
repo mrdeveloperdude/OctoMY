@@ -26,8 +26,7 @@ OTHER_FILES += \
 	$$FLEXSOURCES \
 	$$QLALRSOURCES \
 
-message("FROM libparser.pro")
-include($$TOP_PWD/status.pri)
+
 
 HEADERS += \
 	Context.hpp \
@@ -40,3 +39,8 @@ SOURCES += \
 	ParseTreeNode.cpp \
 	ParseError.cpp \
 	OctomyParseContext.cpp
+
+contains(DEFINES, USE_STATUS){
+message("FROM libparser.pro")
+include($$TOP_PWD/status.pri)
+}
