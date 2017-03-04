@@ -23,7 +23,7 @@ OctoMY™ Is fast, stable and ultimately flexible.
 Where can I download?
 ---------------------
 
-Install directly from google play (NOT YET), from binaries on this page or from source via github
+Install directly from google play (NOT YET), from binaries on main project page or from source via github
 
 [read more...](http://www.octomy.org/code)
 
