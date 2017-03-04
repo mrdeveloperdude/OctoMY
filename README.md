@@ -30,7 +30,7 @@ Install directly from google play (NOT YET), from binaries on main project page 
 Where can I get help &amp; documentation?
 -----------------------------------------
 
-Documentation is available on this site. Help is available through these channels.
+Documentation is available on main project site. Help is available there as well.
 
 [read more...](http://www.octomy.org/documentation)
 
