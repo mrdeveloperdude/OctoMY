@@ -62,7 +62,7 @@ void Servotor32Controller::openSerialPort()
 	mSerialInterface->setStopBits(p.stopBits);
 	mSerialInterface->setFlowControl(p.flowControl);
 	if (mSerialInterface->open(QIODevice::ReadWrite)) {
-		qDebug()<<tr("Connected to %1 : %2, %3, %4, %5, %6").arg(p.name).arg(p.stringBaudRate).arg(p.stringDataBits).arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl);
+		qDebug()<<tr("Connected to %1 : %2, %3, %4, %5, %6").arg(p.name).arg(p.stringBaudRate()).arg(p.stringDataBits()).arg(p.stringParity()).arg(p.stringStopBits()).arg(p.stringFlowControl());
 		emit connectionChanged();
 	} else {
 		qDebug()<<"ERROR OPENING: "<<mSerialInterface->errorString();

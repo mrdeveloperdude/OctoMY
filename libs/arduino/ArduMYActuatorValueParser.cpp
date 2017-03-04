@@ -1,6 +1,6 @@
 #include "ArduMYActuatorValueParser.hpp"
 
-#include "CommandParser.hpp"
+#include "ArduMYCommandParser.hpp"
 
 #include "ArduMY.hpp"
 

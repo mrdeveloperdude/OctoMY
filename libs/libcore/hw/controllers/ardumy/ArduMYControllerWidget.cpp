@@ -18,8 +18,13 @@ ArduMYControllerWidget::ArduMYControllerWidget(QWidget *parent)
 	, mController(nullptr)
 {
 	ui->setupUi(this);
+
+	// NOTE: Default ArduMY serial settings
 	SerialSettings defaults;
-	ui->widgetSerialSettings->configure(true, defaults);
+	defaults.setIntBaudRate(115200);
+	defaults.dataBits=QSerialPort::Data8;
+
+	ui->widgetSerialSettings->configure(false, defaults);
 
 	ui->tryToggleConnect->configure("Connect","Connecting","Connected", AgentConstants::AGENT_CONNECT_BUTTON_COLOR);
 
@@ -100,7 +105,6 @@ void ArduMYControllerWidget::onSerialSettingsChanged()
 			mController->setConnected(true);
 		}
 	}
-	ui->tabWidget->setCurrentWidget(ui->tabStatus);
 }
 
 
@@ -137,7 +141,6 @@ void ArduMYControllerWidget::onConnectionChanged()
 		ui->tryToggleConnect->setState(mController->isConnected()?ON:OFF, true);
 	}
 }
-
 
 
 
@@ -220,7 +223,8 @@ void ArduMYControllerWidget::on_pushButtonShowQuickGuide_toggled(bool checked)
 }
 
 
-void ArduMYControllerWidget::showQuickGuide(bool show){
+void ArduMYControllerWidget::showQuickGuide(bool show)
+{
 	ui->labelQuickGuide->setVisible(show);
 	ui->pushButtonShowQuickGuide->setText(show?"Hide Quick Guide":"Show Quick Guide");
 }

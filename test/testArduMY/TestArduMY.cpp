@@ -11,11 +11,11 @@
 #include "../arduino/MagicDetector.hpp"
 
 
-#include "../arduino/CommandParser.hpp"
+#include "../arduino/ArduMYCommandParser.hpp"
 
-#include "../arduino/ParserState.hpp"
+#include "../arduino/ArduMYParserState.hpp"
 
-#include "../libcore/hw/controllers/ardumy/ArdumyTypeConversions.hpp"
+#include "../libcore/hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 
 #include <QDebug>
@@ -1017,7 +1017,7 @@ void TestArduMY::testRepresentationBoundary()
 
 void TestArduMY::testCommandParser()
 {
-	CommandParser parser;
+	ArduMYCommandParser parser;
 	return;
 
 	QCOMPARE((uint8_t)parser.currentCommand, (uint8_t) OCTOMY_SYNC);
@@ -1037,7 +1037,7 @@ void TestArduMY::testCommandParser()
 	QCOMPARE((int16_t)parser.actuatorConfigIndex, (int16_t) -1);
 	QCOMPARE((int16_t)parser.actuators.size(), (int16_t) 0);
 
-	ParserState parserState=ParserState::OCTOMY_AWAITING_COMMAND;
+	ArduMYParserState parserState=ArduMYParserState::OCTOMY_AWAITING_COMMAND;
 	for(int i=0; i<10; ++i) {
 		ArduMYActuatorSet set=randomActuatorSet();
 

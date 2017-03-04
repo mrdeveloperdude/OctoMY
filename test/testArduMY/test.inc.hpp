@@ -12,13 +12,13 @@
 #include "../arduino/MagicDetector.hpp"
 
 
-#include "../arduino/CommandParser.hpp"
+#include "../arduino/ArduMYCommandParser.hpp"
 
-#include "../arduino/ParserState.hpp"
+#include "../arduino/ArduMYParserState.hpp"
 
 #include <QTest>
 
-#include "../libcore/hw/controllers/ardumy/ArdumyTypeConversions.hpp"
+#include "../libcore/hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 void logLines(const QString ret);
 

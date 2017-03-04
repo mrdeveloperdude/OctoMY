@@ -1,18 +1,24 @@
 #include "ArduMYController.hpp"
 
 #include "hw/serial/SerialSettingsWidget.hpp"
-#include "../arduino/ParserState.hpp"
+#include "../arduino/ArduMYParserState.hpp"
 #include "../libutil/utility/Standard.hpp"
 #include "ArduMYControllerWidget.hpp"
-#include "ArdumyTypeConversions.hpp"
+#include "ArduMYTypeConversions.hpp"
 
 #include <QBuffer>
 #include <QDebug>
+
+
+ArduMYControllerWidget *mWidget;
+
 
 ArduMYController::ArduMYController(QObject *parent)
 	: IActuatorController("ArduMY", parent)
 	, mSerialInterface(new QSerialPort(this))
 	, mCommandSerializer(mActuators)
+	, mLimpDirty(true)
+	, mCountDirty(true)
 	, mSyncDirty(true)
 	, mWidget(nullptr)
 {
@@ -39,10 +45,7 @@ ArduMYController::ArduMYController(QObject *parent)
 	mSyncTimer.setTimerType(Qt::VeryCoarseTimer);
 	mSyncTimer.setInterval(1000);
 
-	if(!connect(&mSyncTimer,&QTimer::timeout, this, [=]() {
-	mSyncDirty=true;
-	syncData();
-	}, OC_CONTYPE)) {
+	if(!connect(&mSyncTimer,&QTimer::timeout, this, &ArduMYController::onSendingTimer, OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 }
@@ -72,7 +75,7 @@ void ArduMYController::openSerialPort()
 	mSerialInterface->setParity(mSerialSettings.parity);
 	mSerialInterface->setStopBits(mSerialSettings.stopBits);
 	mSerialInterface->setFlowControl(mSerialSettings.flowControl);
-	qDebug()<<tr("Trying to connect to ardumy with %1 : %2, %3, %4, %5, %6").arg(mSerialSettings.name).arg(mSerialSettings.stringBaudRate).arg(mSerialSettings.stringDataBits).arg(mSerialSettings.stringParity).arg(mSerialSettings.stringStopBits).arg(mSerialSettings.stringFlowControl);
+	qDebug()<<tr("Trying to connect to ardumy with %1 : %2, %3, %4, %5, %6").arg(mSerialSettings.name).arg(mSerialSettings.stringBaudRate()).arg(mSerialSettings.stringDataBits()).arg(mSerialSettings.stringParity()).arg(mSerialSettings.stringStopBits()).arg(mSerialSettings.stringFlowControl());
 	if (mSerialInterface->open(QIODevice::ReadWrite)) {
 		qDebug()<<"ARDUMY CONNECT SUCCESSFULL";
 		mSyncTimer.start();
@@ -93,14 +96,21 @@ void ArduMYController::closeSerialPort()
 }
 
 
+void ArduMYController::onSendingTimer()
+{
+	//qDebug()<<"ON SENDING TIMER";
+	syncData();
+}
 
-// NOTE: This will carry out the actual writing when serial signals there is an opportunity.
+
+// NOTE: This will carry out the actual writing when sending timer signals there is an opportunity.
 //	     The data for move is accumulated and consolidated by one or more move() commands.
 void ArduMYController::syncData()
 {
 	if(isConnected()) {
+		qDebug()<<"----- ARDUMY SERIALIZER STATUS: "<< ardumyCommandSerializerToString(mCommandSerializer);
 		QByteArray ba;
-		while(mCommandSerializer.hasMoreData() ) {
+		while(mCommandSerializer.hasMoreData()) {
 			uint8_t byte=mCommandSerializer.nextByte();
 			ba.append(byte);
 		}
@@ -108,6 +118,8 @@ void ArduMYController::syncData()
 		if(sz>0) {
 			writeData(ba);
 			qDebug()<<"ARDUMY SERIAL WROTE "<<sz<<" bytes to serial";
+		} else {
+			qDebug()<<"ARDUMY SERIAL WROTE NO DATA";
 		}
 
 	} else {
@@ -262,6 +274,11 @@ void ArduMYController::setActuatorCount(quint8 ct)
 	}
 }
 
+ArduMYActuatorSet &ArduMYController::actuators()
+{
+	return mActuators;
+}
+
 
 void ArduMYController::limp(QBitArray &flags)
 {
@@ -271,7 +288,7 @@ void ArduMYController::limp(QBitArray &flags)
 			ArduMYActuator &actuator=mActuators[i];
 			const bool k=flags.testBit(i);
 			if(k!=actuator.state.isLimp()) {
-				mKillDirty=true;
+				mLimpDirty=true;
 				actuator.state.setLimp(k);
 			}
 		}
@@ -288,7 +305,7 @@ void ArduMYController::limp(quint8 index, bool limp)
 		}
 		ArduMYActuator &actuator=mActuators[index];
 		if(limp!=actuator.state.isLimp()) {
-			mKillDirty=true;
+			mLimpDirty=true;
 			actuator.state.setLimp(limp);
 		}
 	} else {
@@ -330,6 +347,7 @@ void ArduMYController::move(Pose &pose)
 
 void ArduMYController::move(quint8 i, qreal value)
 {
+	//qDebug()<<"ARDUMY MOVE: "<<i<<value;
 	/*
 	const quint32 p=(quint32)(qBound(-1.0, value, 1.0)*1000.0+1500.0);
 	//Skip unecessary communication if value did not change
@@ -345,7 +363,7 @@ void ArduMYController::move(quint8 i, qreal value)
 
 QString ArduMYController::version()
 {
-	return "TODO: IMPLEMENT ME";
+	return "VERSION: IMPLEMENT ME";
 }
 
 
@@ -514,9 +532,4 @@ void ArduMYController::setConfiguration(QVariantMap &configuration)
 		mWidget->configure(this);
 	}
 }
-
-
-
-
-
 

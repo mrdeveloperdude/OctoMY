@@ -5,53 +5,47 @@
 #include <QSerialPort>
 #include <QVariantMap>
 
+
+QString baudRateToString( const QSerialPort::BaudRate baudRate);
+QSerialPort::BaudRate baudRateFromString(QString string);
+
+QString dataBitsToString( const QSerialPort::DataBits dataBits);
+QSerialPort::DataBits dataBitsFromString(QString string);
+
+QString parityToString( const QSerialPort::Parity parity);
+QSerialPort::Parity parityFromString(QString string);
+
+QString stopBitsToString( const QSerialPort::StopBits);
+QSerialPort::StopBits stopBitsFromString(QString string);
+
+QString flowControlToString( const QSerialPort::FlowControl);
+QSerialPort::FlowControl flowControlFromString(QString string);
+
+
+
+
 struct SerialSettings {
 	QString name="Default";
-	qint32 baudRate=9600;
-	QString stringBaudRate="9600";
+	QSerialPort::BaudRate baudRate=QSerialPort::Baud9600;
 	QSerialPort::DataBits dataBits=QSerialPort::Data8;
-	QString stringDataBits="8";
 	QSerialPort::Parity parity=QSerialPort::NoParity;
-	QString stringParity="None";
 	QSerialPort::StopBits stopBits=QSerialPort::OneStop;
-	QString stringStopBits="1";
 	QSerialPort::FlowControl flowControl=QSerialPort::NoFlowControl;
-	QString stringFlowControl="None";
 	bool localEchoEnabled=false;
 
+public:
+	SerialSettings(QString name="Default", QSerialPort::BaudRate baudRate=QSerialPort::Baud9600, QSerialPort::DataBits dataBits=QSerialPort::Data8, QSerialPort::Parity parity=QSerialPort::NoParity, QSerialPort::StopBits stopBits=QSerialPort::OneStop, QSerialPort::FlowControl flowControl=QSerialPort::NoFlowControl, bool localEchoEnabled=false);
 
-	SerialSettings(QString name="Default", qint32 baudRate=9600, QString stringBaudRate="9600", QSerialPort::DataBits dataBits=QSerialPort::Data7, QString stringDataBits="7", QSerialPort::Parity parity=QSerialPort::NoParity, QString stringParity="None", QSerialPort::StopBits stopBits=QSerialPort::OneStop, QString stringStopBits="1", QSerialPort::FlowControl flowControl=QSerialPort::NoFlowControl, QString stringFlowControl="None", bool localEchoEnabled=false)
-		: name(name)
-		, baudRate(baudRate)
-		, stringBaudRate(stringBaudRate)
-		, dataBits(dataBits)
-		, stringDataBits(stringDataBits)
-		, parity(parity)
-		, stringParity(stringParity)
-		, stopBits(stopBits)
-		, stringStopBits(stringStopBits)
-		, flowControl(flowControl)
-		, stringFlowControl(stringFlowControl)
-		, localEchoEnabled(localEchoEnabled)
-	{
+public:
+	QVariantMap toMap();
 
-	}
-
-
-	QVariantMap toMap()
-	{
-		QVariantMap map;
-		map["name"]=name;
-		map["baudRate"]=baudRate;
-		map["dataBits"]=dataBits;
-		map["parity"]=parity;
-		map["stopBits"]=stopBits;
-		map["flowControl"]=flowControl;
-		map["localEchoEnabled"]=localEchoEnabled;
-		bool localEchoEnabled=false;
-		return map;
-	}
-
+	void setIntBaudRate(int ib);
+	int intBaudRate() const;
+	QString stringBaudRate() const;
+	QString stringDataBits()const;
+	QString stringParity()const;
+	QString stringStopBits()const;
+	QString stringFlowControl()const;
 
 
 };

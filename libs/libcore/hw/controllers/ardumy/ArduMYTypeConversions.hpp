@@ -1,5 +1,14 @@
 #ifndef ARDUMYTYPECONVERSIONS_HPP
 #define ARDUMYTYPECONVERSIONS_HPP
+/** This file contains a bunch of handy to-from string/variant routines for the
+ * ArduMY types.
+ *
+ * Usually in regular Qt code, this kind of routines are simply integrated in each
+ * type, but since ArduMY is made to be independent from Qt, we need to maintain
+ * these conversions separately, hence this file.
+ *
+  */
+
 
 #ifdef ARDUINO_ARCH_AVR
 #error "WE ARE TRYING TO COMPILE ArdumyTypeConversions on AVR!"
@@ -8,13 +17,17 @@
 #include "../arduino/ArduMYActuatorType.hpp"
 #include "../arduino/ArduMYActuatorValueRepresentation.hpp"
 #include "../arduino/ArduMYActuatorValue.hpp"
-#include "../arduino/ArduMYActuatorState.hpp"
-#include "../arduino/ArduMYActuatorConfig.hpp"
-#include "../arduino/ArduMYActuator.hpp"
-#include "../arduino/ArduMYActuatorSet.hpp"
-
 #include "../arduino/ArduMYActuatorConfigParserStep.hpp"
 #include "../arduino/ArduMYActuatorValuesParserStep.hpp"
+#include "../arduino/ArduMYParserState.hpp"
+
+class ArduMYActuatorState;
+class ArduMYActuatorConfig;
+class ArduMYActuator;
+class ArduMYActuatorSet;
+class ArduMYCommandSerializer;
+class ArduMYCommandParser;
+
 
 #include <QString>
 #include <QVariant>
@@ -36,28 +49,34 @@ QString ardumyActuatorConfigToString(ArduMYActuatorConfig &config);
 
 
 
+extern const ArduMYActuatorValueRepresentation DEFAULT_REPRESENTATION;
 
 extern const ArduMYActuatorValuesParserStep DEFAULT_VALUE_PARSER_STEP;
-
 QString ardumyActuatorValueParserStepToString(const ArduMYActuatorValuesParserStep &s);
 ArduMYActuatorValuesParserStep ardumyActuatorValueParserStepFromString(const QString &s);
 
 extern const ArduMYActuatorConfigParserStep DEFAULT_CONFIG_PARSER_STEP;
-
 QString ardumyActuatorConfigParserStepToString(const ArduMYActuatorConfigParserStep &s);
 ArduMYActuatorConfigParserStep ardumyActuatorConfigParserStepFromString(const QString &s);
 
-
-extern const ArduMYActuatorValueRepresentation DEFAULT_REPRESENTATION;
-
+extern const ArduMYActuatorType DEFAULT_ACTUATOR_TYPE;
 QString ardumyActuatorTypeToString(const ArduMYActuatorType &s);
 ArduMYActuatorType ardumyActuatorTypeFromString(const QString &s);
+
+extern const ArduMYActuatorValue DEFAULT_ACTUATOR_VALUE;
 void ardumyActuatorValueFromVariant(ArduMYActuatorValue &val, const QVariant &variant, const ArduMYActuatorValueRepresentation &representation=DEFAULT_REPRESENTATION);
 QVariant ardumyActuatorValueToVariant(const ArduMYActuatorValue &v, const ArduMYActuatorValueRepresentation &rep=DEFAULT_REPRESENTATION);
-ArduMYActuatorValueRepresentation ardumyActuatorValueRepresentationFromString(const QString &s);
 
+ArduMYActuatorValueRepresentation ardumyActuatorValueRepresentationFromString(const QString &s);
 QString ardumyActuatorValueRepresentationToString(const ArduMYActuatorValueRepresentation &rep=DEFAULT_REPRESENTATION);
+
 QString ardumyActuatorValueToString(const ArduMYActuatorValue &v, const ArduMYActuatorValueRepresentation &rep=DEFAULT_REPRESENTATION);
+
+extern const ArduMYParserState DEFAULT_PARSER_STATE;
+QString ardumyParserStateToString(const ArduMYParserState &ps);
+ArduMYParserState ardumyParserStateFromString(const QString &s);
+
+
 QString ardumyActuatorConfigFlagsToString(const ArduMYActuatorConfig &c);
 QString ardumyActuatorConfigToString(const ArduMYActuatorConfig &c);
 QString ardumyActuatorStateFlagsToString(const ArduMYActuatorState &s);
@@ -67,5 +86,9 @@ QString ardumyActuatorSetToString(const ArduMYActuatorSet &set);
 
 QString ardumyActuatorNameToString(const ArduMYActuatorConfig &c);
 void ardumyActuatorNameFromString(ArduMYActuatorConfig &c ,const QString &string);
+
+QString ardumyCommandSerializerToString(const ArduMYCommandSerializer &cs);
+QString ardumyCommandParserToString(const ArduMYCommandParser &cp);
+
 
 #endif // ARDUMYTYPECONVERSIONS_HPP

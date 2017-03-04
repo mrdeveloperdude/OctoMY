@@ -1,17 +1,17 @@
-#ifndef COMMANDSERIALIZER_HPP
-#define COMMANDSERIALIZER_HPP
+#ifndef ARDUMYCOMMANDSERIALIZER_HPP
+#define ARDUMYCOMMANDSERIALIZER_HPP
 
-#include "ParserState.hpp"
+#include "ArduMYParserState.hpp"
 #include "MagicDetector.hpp"
 #include "ArduMYActuatorValueSerializer.hpp"
 #include "ArduMYActuatorConfigSerializer.hpp"
 #include "ArduMYActuatorSet.hpp"
 
-class CommandSerializer
+class ArduMYCommandSerializer
 {
 public:
 	ArduMYActuatorSet &actuators;
-	ParserState currentCommand;
+	ArduMYParserState currentCommand;
 	const uint8_t magic[4];
 	uint8_t byteIndex;
 	ArduMYActuatorConfigSerializer actuatorConfigSerializer;
@@ -19,9 +19,9 @@ public:
 	ArduMYActuatorValueSerializer actuatorValuesSerializer;
 
 public:
-	CommandSerializer(ArduMYActuatorSet &actuators);
+	ArduMYCommandSerializer(ArduMYActuatorSet &actuators);
 
-
+public:
 	bool isReadyForNewCommand();
 	void startSync();
 	void startActuatorCount();
@@ -29,7 +29,6 @@ public:
 	void startActuatorValues();
 
 public:
-
 	// Return true if there is more data remaining to be read
 	bool hasMoreData();
 
@@ -37,4 +36,4 @@ public:
 	uint8_t nextByte();
 };
 
-#endif // COMMANDSERIALIZER_HPP
+#endif // ARDUMYCOMMANDSERIALIZER_HPP

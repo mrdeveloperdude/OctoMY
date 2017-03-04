@@ -3,7 +3,7 @@
 
 #include "ArduMY.hpp"
 #include "DynamicArray.hpp"
-#include "CommandParser.hpp"
+#include "ArduMYCommandParser.hpp"
 
 #include "BoardInfo.hpp"
 
@@ -13,9 +13,9 @@ struct ArduMYMain {
 
 	DynamicArray<Servo> servos;
 
-	CommandParser &parser;
+	ArduMYCommandParser &parser;
 
-	ArduMYMain(CommandParser &parser)
+	ArduMYMain(ArduMYCommandParser &parser)
 		: parser(parser)
 	{
 

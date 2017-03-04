@@ -1,7 +1,7 @@
-#ifndef COMMANDPARSER_HPP
-#define COMMANDPARSER_HPP
+#ifndef ARDUMYCOMMANDPARSER_HPP
+#define ARDUMYCOMMANDPARSER_HPP
 
-#include "ParserState.hpp"
+#include "ArduMYParserState.hpp"
 #include "MagicDetector.hpp"
 #include "ArduMYActuatorValueParser.hpp"
 #include "ArduMYActuatorConfigParser.hpp"
@@ -33,9 +33,9 @@
 
 */
 
-struct CommandParser {
+struct ArduMYCommandParser {
 	ArduMYActuatorSet actuators;
-	ParserState currentCommand;
+	ArduMYParserState currentCommand;
 	const uint8_t magic[4];
 	MagicDetector magicDetector;
 	ArduMYActuatorConfigParser actuatorConfigParser;
@@ -46,14 +46,14 @@ struct CommandParser {
 	bool dirtyActuatorConfigs;
 	bool sendStatusPending;
 
-	explicit CommandParser();
+	explicit ArduMYCommandParser();
 
 	// If bad command is detected, go into "wait for sync" before we try parsing a command again,
 	// and if not, reset states for parsing the command at hand
-	ParserState prepareCommand(const uint8_t inChar);
+	ArduMYParserState prepareCommand(const uint8_t inChar);
 
 	void setup();
 	void parse(const uint8_t inChar);
 };
 
-#endif // COMMANDPARSER_HPP
+#endif // ARDUMYCOMMANDPARSER_HPP

@@ -1,9 +1,9 @@
-#include "CommandParser.hpp"
-#include "ParserState.hpp"
+#include "ArduMYCommandParser.hpp"
+#include "ArduMYParserState.hpp"
 
 
-CommandParser::CommandParser()
-	: currentCommand(ParserState::OCTOMY_SYNC)
+ArduMYCommandParser::ArduMYCommandParser()
+	: currentCommand(ArduMYParserState::OCTOMY_SYNC)
 	, magic{0x0C,0x70,0xFF,0x00}
 	, magicDetector(magic,(uint8_t)4)
 	, actuatorConfigParser()
@@ -18,9 +18,9 @@ CommandParser::CommandParser()
 
 // If bad command is detected, go into wait for sync before we try parsing command again,
 // and if not, reset states for parsing the command at hand
-ParserState CommandParser::prepareCommand(const uint8_t in)
+ArduMYParserState ArduMYCommandParser::prepareCommand(const uint8_t in)
 {
-	ParserState command=(ParserState)in;
+	ArduMYParserState command=(ArduMYParserState)in;
 	switch(command) {
 
 	// No state to be reset for these commands
@@ -55,12 +55,12 @@ ParserState CommandParser::prepareCommand(const uint8_t in)
 }
 
 
-void CommandParser::setup()
+void ArduMYCommandParser::setup()
 {
 
 }
 
-void CommandParser::parse(const uint8_t in)
+void ArduMYCommandParser::parse(const uint8_t in)
 {
 	switch(currentCommand) {
 	// Our logic says we need a sync

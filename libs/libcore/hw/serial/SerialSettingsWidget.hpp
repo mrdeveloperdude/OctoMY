@@ -30,15 +30,20 @@ private:
 	QIntValidator *mIntValidator;
 	QList<QSerialPortInfo> mAvailablePorts;
 	SerialList mSerialList;
+	bool mManualSaveMode;
 
 public:
 
 	explicit SerialSettingsWidget(QWidget *parent = 0);
 	~SerialSettingsWidget();
 
-	void configure(bool showApplyButton=true, SerialSettings defaults=SerialSettings());
+	void configure(bool manualSaveMode=true, SerialSettings defaults=SerialSettings());
 	SerialSettings settings() const;
 	void setSettings(SerialSettings &settings);
+
+private:
+	// If in auto save mode, triggers save. If not does nothing
+	void registerChange();
 
 public Q_SLOTS:
 
@@ -61,6 +66,13 @@ public slots:
 
 private slots:
 	void on_pushButtonAdvanced_toggled(bool checked);
+	void on_serialPortInfoListBox_currentIndexChanged(int index);
+	void on_baudRateBox_currentIndexChanged(int index);
+	void on_dataBitsBox_currentIndexChanged(int index);
+	void on_parityBox_currentIndexChanged(int index);
+	void on_stopBitsBox_currentIndexChanged(int index);
+	void on_flowControlBox_currentIndexChanged(int index);
+	void on_serialPortInfoListBox_editTextChanged(const QString &arg1);
 
 private:
 	void fillPortsParameters();

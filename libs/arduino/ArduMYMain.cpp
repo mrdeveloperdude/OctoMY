@@ -1,6 +1,6 @@
 #include "ArduMYMain.hpp"
 
-#include "CommandParser.hpp"
+#include "ArduMYCommandParser.hpp"
 
 void ArduMYMain::setup()
 {

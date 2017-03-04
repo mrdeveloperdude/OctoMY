@@ -59,7 +59,7 @@ void HexySerial::openSerialPort()
 	serial->setStopBits(p.stopBits);
 	serial->setFlowControl(p.flowControl);
 	if (serial->open(QIODevice::ReadWrite)) {
-		qDebug()<<tr("Connected to %1 : %2, %3, %4, %5, %6").arg(p.name).arg(p.stringBaudRate).arg(p.stringDataBits).arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl);
+		qDebug()<<tr("Connected to %1 : %2, %3, %4, %5, %6").arg(p.name).arg(p.stringBaudRate()).arg(p.stringDataBits()).arg(p.stringParity()).arg(p.stringStopBits()).arg(p.stringFlowControl());
 		emit connectionChanged();
 	} else {
 		qDebug()<<"ERROR OPENING: "<<serial->errorString();

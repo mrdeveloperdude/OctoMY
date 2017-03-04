@@ -1,6 +1,6 @@
 #include "ArduMYActuatorConfigParser.hpp"
 
-#include "CommandParser.hpp"
+#include "ArduMYCommandParser.hpp"
 
 
 ArduMYActuatorConfigParser::ArduMYActuatorConfigParser()

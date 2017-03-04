@@ -18,13 +18,10 @@ SOURCES += \
 	ArduMYActuatorValueSerializer.cpp \
 	ArduMYActuatorValuesParserStep.cpp \
 	ArduMYBuzzerActuator.cpp \
-	CommandParser.cpp \
-	CommandSerializer.cpp \
 	Converter.cpp \
 	DynamicArray.cpp \
 	MagicDetector.cpp \
 	main.cpp \
-	ParserState.cpp \
 	RCServoActuator.cpp \
 	RGBLED.cpp \
 	SetServoPositionsParser.cpp \
@@ -52,12 +49,9 @@ HEADERS += \
 	ArduMYActuatorValuesParserStep.hpp \
 	ArduMYBuzzerActuator.hpp \
 	ArduMY.hpp \
-	CommandParser.hpp \
-	CommandSerializer.hpp \
 	Converter.hpp \
 	DynamicArray.hpp \
 	MagicDetector.hpp \
-	ParserState.hpp \
 	RCServoActuator.hpp \
 	RGBLED.hpp \
 	SetServoPositionsParser.hpp \
@@ -104,15 +98,21 @@ DEFINES -= USE_STATUS
 }
 
 SOURCES += \
-    ArduMY.cpp \
-    BoardInfo.cpp \
-    ArduMYMain.cpp \
-    ArduMYActuatorEnableBits.cpp
+	ArduMY.cpp \
+	BoardInfo.cpp \
+	ArduMYMain.cpp \
+	ArduMYActuatorEnableBits.cpp \
+	ArduMYCommandSerializer.cpp \
+	ArduMYCommandParser.cpp \
+    ArduMYParserState.cpp
 
 HEADERS += \
-    BoardInfo.hpp \
-    ArduMYMain.hpp \
-    ArduMYActuatorEnableBits.hpp
+	BoardInfo.hpp \
+	ArduMYMain.hpp \
+	ArduMYActuatorEnableBits.hpp \
+	ArduMYCommandSerializer.hpp \
+	ArduMYCommandParser.hpp \
+    ArduMYParserState.hpp
 
 
 

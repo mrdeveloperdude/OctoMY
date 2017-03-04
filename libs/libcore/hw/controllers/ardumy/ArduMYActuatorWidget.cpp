@@ -4,7 +4,7 @@
 #include "../libutil/utility/Utility.hpp"
 
 #include "../arduino/ArduMYActuator.hpp"
-#include "../libcore/hw/controllers/ardumy/ArdumyTypeConversions.hpp"
+#include "../libcore/hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 
 #include <QDebug>
@@ -27,7 +27,7 @@ ArduMYActuatorWidget::ArduMYActuatorWidget(QWidget *parent)
 {
 	ui->setupUi(this);
 	mTabIndex=(ui->tabWidget->count()-4);
-	if(!connect(ui->numberEntryServoPosition,SIGNAL(valueChanged(int)),this,SLOT(onActuatorMoved()))) {
+	if(!connect(ui->numberEntryActuatorPosition,SIGNAL(valueChanged(int)),this,SLOT(onActuatorMoved()))) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
@@ -67,7 +67,7 @@ void ArduMYActuatorWidget::reset()
 	ui->checkBoxTachometer->setChecked(false);
 	ui->checkBoxTachometer_2->setChecked(false);
 	ui->checkBox->setChecked(false);
-	ui->numberEntryServoPosition->setValue(50);
+	ui->numberEntryActuatorPosition->setValue(50);
 	ui->comboBoxActuatorRepresentation->setCurrentIndex(0);
 	ui->comboBoxActuatorType->setCurrentIndex(0);
 	ui->comboBoxLimitSwitchEndPin->setCurrentIndex(0);
@@ -94,8 +94,8 @@ void ArduMYActuatorWidget::configure(ArduMYActuator *actuator, quint32 id)
 	mActuator=actuator;
 	mID=id;
 	if(mActuator) {
-		const int val=mActuator->valueFloat()*(ui->numberEntryServoPosition->maximum()-ui->numberEntryServoPosition->minimum())+ui->numberEntryServoPosition->minimum();
-		ui->numberEntryServoPosition->setValue(val);
+		const int val=mActuator->valueFloat()*(ui->numberEntryActuatorPosition->maximum()-ui->numberEntryActuatorPosition->minimum())+ui->numberEntryActuatorPosition->minimum();
+		ui->numberEntryActuatorPosition->setValue(val);
 		quint32 typeIndex=0;
 		switch(mActuator->config.type) {
 		case(TYPE_COUNT):
@@ -215,22 +215,20 @@ void ArduMYActuatorWidget::disableServo()
 
 void ArduMYActuatorWidget::on_pushButtonCenter_clicked()
 {
-	ui->numberEntryServoPosition->setValue((ui->numberEntryServoPosition->minimum()+ui->numberEntryServoPosition->maximum())/2);
+	ui->numberEntryActuatorPosition->setValue((ui->numberEntryActuatorPosition->minimum()+ui->numberEntryActuatorPosition->maximum())/2);
 }
 
 
 void ArduMYActuatorWidget::onActuatorMoved()
 {
-	const qreal raw=ui->numberEntryServoPosition->value();
+	const qreal raw=ui->numberEntryActuatorPosition->value();
 	qreal val=raw;
-	const qreal min=ui->numberEntryServoPosition->minimum();
-	const qreal max=ui->numberEntryServoPosition->maximum();
+	const qreal min=ui->numberEntryActuatorPosition->minimum();
+	const qreal max=ui->numberEntryActuatorPosition->maximum();
 	const qreal mid=(max+min)/2.0f;
 	val-=min;
 	val/=(max-min);
 	ui->checkBoxEnabled->setChecked(true);
-
-
 	if(nullptr!=mActuator) {
 
 		switch(mActuator->config.representation) {
@@ -264,6 +262,8 @@ void ArduMYActuatorWidget::onActuatorMoved()
 		}
 		break;
 		}
+		qDebug()<<"MOVED TO "<<val;
+		mActuator->state.setDirty(true);
 	}
 	emit actuatorMoved(mID, val);
 }

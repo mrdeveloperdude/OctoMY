@@ -15,7 +15,8 @@ HEADERS += \
 	../../libs/arduino/ArduMYActuatorValueRepresentation.hpp \
 	../../libs/arduino/ArduMYActuatorValueSerializerBase.hpp \
 	../../libs/arduino/ArduMYActuatorValueSerializer.hpp \
-	../../libs/arduino/CommandParser.hpp \
+	../../libs/arduino/ArduMYCommandParser.hpp \
+	../../libs/arduino/ArduMYCommandSerializer.hpp \
 	../../libs/arduino/MagicDetector.hpp \
 	testActuatorConfigEquals.inc.hpp \
 	testActuatorConfigParser.inc.hpp \
@@ -41,7 +42,8 @@ SOURCES += \
 	../../libs/arduino/ArduMYActuatorValueRepresentation.cpp \
 	../../libs/arduino/ArduMYActuatorValueSerializerBase.cpp \
 	../../libs/arduino/ArduMYActuatorValueSerializer.cpp \
-	../../libs/arduino/CommandParser.cpp \
+	../../libs/arduino/ArduMYCommandParser.cpp \
+	../../libs/arduino/ArduMYCommandSerializer.cpp \
 	../../libs/arduino/MagicDetector.cpp \
 	TestArduMY.cpp \
 

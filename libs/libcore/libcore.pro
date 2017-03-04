@@ -200,45 +200,45 @@ SOURCES +=\
 	zoo/ZooClient.cpp \
 	zoo/ZooConstants.cpp \
 	zoo/ZooServer.cpp \
-    widgets/ArduinoPinMap.cpp \
-    widgets/ArduinoPinCombobox.cpp \
-    widgets/ArduinoPinSelector.cpp \
-    widgets/ArduinoPinFacilitator.cpp \
-    widgets/ArduinoPinFilter.cpp \
-    widgets/ArduinoPin.cpp \
-    hw/controllers/ardumy/ArduMYActuatorWidget.cpp \
-    hw/controllers/ardumy/ArduMYController.cpp \
-    hw/controllers/ardumy/ArduMYControllerWidget.cpp \
-    hw/controllers/servotor32/HexyLeg.cpp \
-    hw/controllers/servotor32/HexySerial.cpp \
-    locus/Locus.cpp \
-    hw/serial/SerialList.cpp \
-    hw/serial/SerialSettings.cpp \
-    hw/serial/SerialSettingsWidget.cpp \
-    hw/controllers/servotor32/Servotor32Controller.cpp \
-    locus/WheeledLocus.cpp \
-    locus/WheeledLocusWidget.cpp \
-    hw/controllers/ActuatorControllerFactory.cpp \
-    hw/controllers/IActuatorController.cpp \
-    hw/bluetooth/BluetoothList.cpp \
-    agent/AgentConfig.cpp \
-    agent/AgentConfigStore.cpp \
-    agent/AgentMobilityType.cpp \
-    hw/controllers/servotor32/Servotor32ActuatorWidget.cpp \
-    hw/controllers/servotor32/Servotor32ControllerWidget.cpp \
-    hw/controllers/ardumy/ArdumyTypeConversions.cpp \
-    locus/LocusController.cpp \
-    locus/LocusSet.cpp \
-    locus/LocusWidget.cpp \
-    locus/LeggedLocusWidget.cpp \
-    locus/LeggedLocus.cpp \
-    agent/CourierSet.cpp \
-    agent/AgentControls.cpp \
-    locus/LocusFactory.cpp \
-    locus/HoveringLocus.cpp \
-    locus/HoveringLocusWidget.cpp \
-    locus/TrackedLocus.cpp \
-    locus/TrackedLocusWidget.cpp
+	widgets/ArduinoPinMap.cpp \
+	widgets/ArduinoPinCombobox.cpp \
+	widgets/ArduinoPinSelector.cpp \
+	widgets/ArduinoPinFacilitator.cpp \
+	widgets/ArduinoPinFilter.cpp \
+	widgets/ArduinoPin.cpp \
+	hw/controllers/ardumy/ArduMYActuatorWidget.cpp \
+	hw/controllers/ardumy/ArduMYController.cpp \
+	hw/controllers/ardumy/ArduMYControllerWidget.cpp \
+	hw/controllers/servotor32/HexyLeg.cpp \
+	hw/controllers/servotor32/HexySerial.cpp \
+	locus/Locus.cpp \
+	hw/serial/SerialList.cpp \
+	hw/serial/SerialSettings.cpp \
+	hw/serial/SerialSettingsWidget.cpp \
+	hw/controllers/servotor32/Servotor32Controller.cpp \
+	locus/WheeledLocus.cpp \
+	locus/WheeledLocusWidget.cpp \
+	hw/controllers/ActuatorControllerFactory.cpp \
+	hw/controllers/IActuatorController.cpp \
+	hw/bluetooth/BluetoothList.cpp \
+	agent/AgentConfig.cpp \
+	agent/AgentConfigStore.cpp \
+	agent/AgentMobilityType.cpp \
+	hw/controllers/servotor32/Servotor32ActuatorWidget.cpp \
+	hw/controllers/servotor32/Servotor32ControllerWidget.cpp \
+	locus/LocusController.cpp \
+	locus/LocusSet.cpp \
+	locus/LocusWidget.cpp \
+	locus/LeggedLocusWidget.cpp \
+	locus/LeggedLocus.cpp \
+	agent/CourierSet.cpp \
+	agent/AgentControls.cpp \
+	locus/LocusFactory.cpp \
+	locus/HoveringLocus.cpp \
+	locus/HoveringLocusWidget.cpp \
+	locus/TrackedLocus.cpp \
+	locus/TrackedLocusWidget.cpp \
+	hw/controllers/ardumy/ArduMYTypeConversions.cpp
 
 
 
@@ -441,45 +441,45 @@ HEADERS  += \
 	zoo/ZooClient.hpp \
 	zoo/ZooConstants.hpp \
 	zoo/ZooServer.hpp \
-    widgets/ArduinoPinMap.hpp \
-    widgets/ArduinoPinCombobox.hpp \
-    widgets/ArduinoPinSelector.hpp \
-    widgets/ArduinoPinFacilitator.hpp \
-    widgets/ArduinoPinFilter.hpp \
-    widgets/ArduinoPin.hpp \
-    hw/controllers/ActuatorControllerFactory.hpp \
-    hw/controllers/ardumy/ArduMYControllerWidget.hpp \
-    hw/controllers/ardumy/ArduMYController.hpp \
-    hw/controllers/servotor32/HexyLeg.hpp \
-    hw/controllers/servotor32/HexySerial.hpp \
-    locus/Locus.hpp \
-    hw/serial/SerialList.hpp \
-    hw/serial/SerialSettings.hpp \
-    hw/serial/SerialSettingsWidget.hpp \
-    hw/controllers/servotor32/Servotor32Controller.hpp \
-    locus/WheeledLocus.hpp \
-    locus/WheeledLocusWidget.hpp \
-    hw/controllers/IActuatorController.hpp \
-    hw/controllers/ardumy/ArduMYActuatorWidget.hpp \
-    hw/bluetooth/BluetoothList.hpp \
-    agent/AgentConfig.hpp \
-    agent/AgentConfigStore.hpp \
-    agent/AgentMobilityType.hpp \
-    hw/controllers/servotor32/Servotor32ActuatorWidget.hpp \
-    hw/controllers/servotor32/Servotor32ControllerWidget.hpp \
-    hw/controllers/ardumy/ArdumyTypeConversions.hpp \
-    locus/LocusController.hpp \
-    locus/LocusSet.hpp \
-    locus/LocusWidget.hpp \
-    locus/LeggedLocusWidget.hpp \
-    locus/LeggedLocus.hpp \
-    agent/CourierSet.hpp \
-    agent/AgentControls.hpp \
-    locus/LocusFactory.hpp \
-    locus/HoveringLocus.hpp \
-    locus/HoveringLocusWidget.hpp \
-    locus/TrackedLocus.hpp \
-    locus/TrackedLocusWidget.hpp
+	widgets/ArduinoPinMap.hpp \
+	widgets/ArduinoPinCombobox.hpp \
+	widgets/ArduinoPinSelector.hpp \
+	widgets/ArduinoPinFacilitator.hpp \
+	widgets/ArduinoPinFilter.hpp \
+	widgets/ArduinoPin.hpp \
+	hw/controllers/ActuatorControllerFactory.hpp \
+	hw/controllers/ardumy/ArduMYControllerWidget.hpp \
+	hw/controllers/ardumy/ArduMYController.hpp \
+	hw/controllers/servotor32/HexyLeg.hpp \
+	hw/controllers/servotor32/HexySerial.hpp \
+	locus/Locus.hpp \
+	hw/serial/SerialList.hpp \
+	hw/serial/SerialSettings.hpp \
+	hw/serial/SerialSettingsWidget.hpp \
+	hw/controllers/servotor32/Servotor32Controller.hpp \
+	locus/WheeledLocus.hpp \
+	locus/WheeledLocusWidget.hpp \
+	hw/controllers/IActuatorController.hpp \
+	hw/controllers/ardumy/ArduMYActuatorWidget.hpp \
+	hw/bluetooth/BluetoothList.hpp \
+	agent/AgentConfig.hpp \
+	agent/AgentConfigStore.hpp \
+	agent/AgentMobilityType.hpp \
+	hw/controllers/servotor32/Servotor32ActuatorWidget.hpp \
+	hw/controllers/servotor32/Servotor32ControllerWidget.hpp \
+	locus/LocusController.hpp \
+	locus/LocusSet.hpp \
+	locus/LocusWidget.hpp \
+	locus/LeggedLocusWidget.hpp \
+	locus/LeggedLocus.hpp \
+	agent/CourierSet.hpp \
+	agent/AgentControls.hpp \
+	locus/LocusFactory.hpp \
+	locus/HoveringLocus.hpp \
+	locus/HoveringLocusWidget.hpp \
+	locus/TrackedLocus.hpp \
+	locus/TrackedLocusWidget.hpp \
+	hw/controllers/ardumy/ArduMYTypeConversions.hpp
 
 
 
@@ -522,13 +522,13 @@ FORMS    += \
 	ui/TryToggle.ui \
 	ui/WheeledLocusWidget.ui \
 	widgets/TestWidget.ui \
-    widgets/ArduinoPinSelector.ui \
-    ui/ArduMYActuatorWidget.ui \
-    ui/Servotor32ActuatorWidget.ui \
-    ui/Servotor32ControllerWidget.ui \
-    locus/LeggedLocusWidget.ui \
-    locus/HoveringLocusWidget.ui \
-    locus/TrackedLocusWidget.ui
+	widgets/ArduinoPinSelector.ui \
+	ui/ArduMYActuatorWidget.ui \
+	ui/Servotor32ActuatorWidget.ui \
+	ui/Servotor32ControllerWidget.ui \
+	locus/LeggedLocusWidget.ui \
+	locus/HoveringLocusWidget.ui \
+	locus/TrackedLocusWidget.ui
 
 
 
@@ -589,8 +589,8 @@ ARDUMY_HEADERS += \
 	$$ARDUMY_TOP/ArduMYActuatorValueRepresentation.hpp \
 	$$ARDUMY_TOP/ArduMYActuatorValueSerializerBase.hpp \
 	$$ARDUMY_TOP/ArduMYActuatorValueSerializer.hpp \
-	$$ARDUMY_TOP/CommandParser.hpp \
-	$$ARDUMY_TOP/CommandSerializer.hpp \
+	$$ARDUMY_TOP/ArduMYCommandParser.hpp \
+	$$ARDUMY_TOP/ArduMYCommandSerializer.hpp \
 	$$ARDUMY_TOP/MagicDetector.hpp \
 
 
@@ -608,8 +608,8 @@ ARDUMY_SOURCES += \
 	$$ARDUMY_TOP/ArduMYActuatorValueRepresentation.cpp \
 	$$ARDUMY_TOP/ArduMYActuatorValueSerializerBase.cpp \
 	$$ARDUMY_TOP/ArduMYActuatorValueSerializer.cpp \
-	$$ARDUMY_TOP/CommandParser.cpp \
-	$$ARDUMY_TOP/CommandSerializer.cpp \
+	$$ARDUMY_TOP/ArduMYCommandParser.cpp \
+	$$ARDUMY_TOP/ArduMYCommandSerializer.cpp \
 	$$ARDUMY_TOP/MagicDetector.cpp \
 
 HEADERS += $$ARDUMY_HEADERS

@@ -3,7 +3,7 @@
 
 #include "hw/controllers/IActuatorController.hpp"
 
-#include "../arduino/CommandSerializer.hpp"
+#include "../arduino/ArduMYCommandSerializer.hpp"
 #include "../arduino/ArduMYActuatorSet.hpp"
 
 #include "hw/serial/SerialSettings.hpp"
@@ -28,9 +28,9 @@ private:
 	QSerialPort *mSerialInterface;
 	ArduMYActuatorSet mActuators;
 
-	CommandSerializer mCommandSerializer;
+	ArduMYCommandSerializer mCommandSerializer;
 
-	bool mKillDirty;
+	bool mLimpDirty;
 	bool mCountDirty;
 	bool mSyncDirty;
 	QTimer mSyncTimer;
@@ -50,6 +50,8 @@ private:
 	void syncData();
 	void writeData(const QByteArray &data);
 
+private slots:
+	void onSendingTimer();
 
 	// Actuator Widget slots
 public slots:
@@ -77,10 +79,7 @@ public:
 
 	void setActuatorCount(quint8);
 
-	ArduMYActuatorSet &actuators()
-	{
-		return mActuators;
-	}
+	ArduMYActuatorSet &actuators();
 
 
 	// IActuatorController interface

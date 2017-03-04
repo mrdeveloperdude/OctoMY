@@ -1,4 +1,14 @@
-#include "ArdumyTypeConversions.hpp"
+#include "ArduMYTypeConversions.hpp"
+
+#include "../arduino/ArduMYActuatorState.hpp"
+#include "../arduino/ArduMYActuatorConfig.hpp"
+#include "../arduino/ArduMYActuator.hpp"
+
+#include "../arduino/ArduMYActuatorSet.hpp"
+#include "../arduino/ArduMYCommandSerializer.hpp"
+#include "../arduino/ArduMYCommandParser.hpp"
+
+
 /*
 
 
@@ -81,6 +91,8 @@ QString ArduMYActuatorConfigToString(ArduMYActuatorConfig &config)
 
 
 */
+
+const ArduMYActuatorValueRepresentation DEFAULT_REPRESENTATION=REPRESENTATION_COUNT;
 
 
 
@@ -191,10 +203,7 @@ ArduMYActuatorConfigParserStep ardumyActuatorConfigParserStepFromString(const QS
 
 /////////////////////////////////////////////
 
-
-
-const ArduMYActuatorValueRepresentation DEFAULT_REPRESENTATION=REPRESENTATION_COUNT;
-
+const ArduMYActuatorType DEFAULT_ACTUATOR_TYPE=TYPE_COUNT;
 
 
 QString ardumyActuatorTypeToString(const ArduMYActuatorType &s)
@@ -215,21 +224,64 @@ QString ardumyActuatorTypeToString(const ArduMYActuatorType &s)
 
 ArduMYActuatorType ardumyActuatorTypeFromString(const QString &s)
 {
-	if("DC_MOTOR"==s) {
-		return DC_MOTOR;
-	}
-	if("STEP_MOTOR"==s) {
-		return STEP_MOTOR;
-	}
-	if("RC_SERVO"==s) {
-		return RC_SERVO;
-	}
-	if("RELAY"==s) {
-		return RELAY;
-	}
-	return TYPE_COUNT;
+#define  ardumyArduMYActuatorTypeFromStringCASE(A)   if(#A==s) { return A; }
+	ardumyArduMYActuatorTypeFromStringCASE(DC_MOTOR);
+	ardumyArduMYActuatorTypeFromStringCASE(STEP_MOTOR);
+	ardumyArduMYActuatorTypeFromStringCASE(RC_SERVO);
+	ardumyArduMYActuatorTypeFromStringCASE(RELAY);
+#undef ardumyArduMYActuatorTypeFromStringCASE
+	return DEFAULT_ACTUATOR_TYPE;
 }
 
+/////////////////////////////////////////////
+
+
+const ArduMYParserState DEFAULT_PARSER_STATE=OCTOMY_COUNT;
+
+
+QString ardumyParserStateToString(const ArduMYParserState &s)
+{
+#define  ardumyParserStateToStringCASE(A) case (A):return #A
+	switch(s) {
+	default:
+		return "UNKNOWN";
+		ardumyParserStateToStringCASE(OCTOMY_SYNC);
+		ardumyParserStateToStringCASE(OCTOMY_AWAITING_COMMAND);
+		ardumyParserStateToStringCASE(OCTOMY_GET_STATUS);
+		ardumyParserStateToStringCASE(OCTOMY_SET_ACTUATOR_COUNT);
+		ardumyParserStateToStringCASE(OCTOMY_SET_ACTUATOR_CONFIG);
+		ardumyParserStateToStringCASE(OCTOMY_SET_ACTUATOR_VALUES);
+		ardumyParserStateToStringCASE(OCTOMY_SET_ACTUATOR_LIMP);
+		ardumyParserStateToStringCASE(OCTOMY_UNKNOWN);
+		ardumyParserStateToStringCASE(OCTOMY_COUNT);
+	}
+#undef ardumyParserStateToStringCASE
+}
+
+
+ArduMYParserState ardumyParserStateFromString(const QString &s)
+{
+#define  ardumyParserStateFromStringCASE(A)   if(#A==s) { return A; }
+	ardumyParserStateFromStringCASE(OCTOMY_SYNC);
+	ardumyParserStateFromStringCASE(OCTOMY_AWAITING_COMMAND);
+	ardumyParserStateFromStringCASE(OCTOMY_GET_STATUS);
+	ardumyParserStateFromStringCASE(OCTOMY_SET_ACTUATOR_COUNT);
+	ardumyParserStateFromStringCASE(OCTOMY_SET_ACTUATOR_CONFIG);
+	ardumyParserStateFromStringCASE(OCTOMY_SET_ACTUATOR_VALUES);
+	ardumyParserStateFromStringCASE(OCTOMY_SET_ACTUATOR_LIMP);
+	ardumyParserStateFromStringCASE(OCTOMY_UNKNOWN);
+	ardumyParserStateFromStringCASE(OCTOMY_COUNT);
+#undef ardumyParserStateFromStringCASE
+	return DEFAULT_PARSER_STATE;
+}
+
+/////////////////////////////////////////////
+
+
+
+QString ardumyParserStateToString(const ArduMYParserState &ps);
+
+/////////////////////////////////////////////
 
 void ardumyActuatorValueFromVariant(ArduMYActuatorValue &val, const QVariant &variant, const ArduMYActuatorValueRepresentation &representation)
 {
@@ -470,7 +522,7 @@ QString ardumyActuatorNameToString(const ArduMYActuatorConfig &c)
 	int i=0;
 	for(i=0; i<maxCharacters; ++i) {
 		auto ch=c.nickName[i];
-		if('\0'==ch){
+		if('\0'==ch) {
 			break;
 		}
 		name[i]=ch;
@@ -491,4 +543,26 @@ void ardumyActuatorNameFromString(ArduMYActuatorConfig &config ,const QString &n
 	for(; i<maxSz; ++i) {
 		config.nickName[i]='\0';
 	}
+}
+/*
+ArduMYActuatorSet &actuators;
+ArduMYParserState currentCommand;
+const uint8_t magic[4];
+uint8_t byteIndex;
+ArduMYActuatorConfigSerializer actuatorConfigSerializer;
+int16_t actuatorConfigIndex;
+ArduMYActuatorValueSerializer actuatorValuesSerializer;
+*/
+
+QString ardumyCommandSerializerToString(const ArduMYCommandSerializer &cs)
+{
+	QString out="CommandSerializer{ actuators="+QString::number(cs.actuators.size())+", currentCommand="+ardumyParserStateToString(cs.currentCommand)+", actuators="+QString::number(cs.actuators.size())+", }";
+	return out;
+}
+
+QString ardumyCommandParserToString(const ArduMYCommandParser &cp)
+{
+	QString out="CommandParser{ actuators="+QString::number(cp.actuators.size())+", }";
+	return out;
+
 }

@@ -1,9 +1,9 @@
-#ifndef PARSERSTATE_HPP
-#define PARSERSTATE_HPP
+#ifndef ARDUMYPARSERSTATE_HPP
+#define ARDUMYPARSERSTATE_HPP
 
 #include "ArduMY.hpp"
 
-enum ParserState: uint8_t {
+enum ArduMYParserState: uint8_t {
 	OCTOMY_SYNC=0 //We decided on our own to sync
 	, OCTOMY_AWAITING_COMMAND // We were told to sync
 	, OCTOMY_GET_STATUS // Client wants our status data
@@ -16,4 +16,4 @@ enum ParserState: uint8_t {
 };
 
 
-#endif // PARSERSTATE_HPP
+#endif // ARDUMYPARSERSTATE_HPP
