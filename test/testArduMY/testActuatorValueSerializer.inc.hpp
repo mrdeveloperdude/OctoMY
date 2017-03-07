@@ -13,8 +13,8 @@ void testActuatorValueSerializerInclude(ArduMYActuatorSet &inSet)
 {
 #endif
 
-	qDebug()<<"BEFORE A--------";
-	logLines(ardumyActuatorSetToString(inSet));
+	//qDebug()<<"BEFORE A--------";
+	//logLines(ardumyActuatorSetToString(inSet));
 	ArduMYActuatorValueSerializer serializer;
 	serializer.setSet(inSet);
 	ArduMYActuatorSet outSet;
@@ -67,11 +67,11 @@ void testActuatorValueSerializerInclude(ArduMYActuatorSet &inSet)
 
 	}
 
-
+/*
 	qDebug()<<"";
 	qDebug()<<"------ enabled actuators: "<<enanbledActuatorCount<<", enableBytes: "<<enableBytes<<" parser.enabledActuatorCount"<<parser.enabledActuatorCount<<" serializer.enabledActuatorCount"<<serializer.enabledActuatorCount;
 	qDebug()<<"";
-
+*/
 	QCOMPARE(parser.enabledActuatorCount, serializer.enabledActuatorCount);
 
 	QCOMPARE(parser.byteIndex, (uint16_t)0);
@@ -80,7 +80,7 @@ void testActuatorValueSerializerInclude(ArduMYActuatorSet &inSet)
 
 	int ix=0;
 	if(enanbledActuatorCount>0) {
-		qDebug()<<"enanbledActuatorCount="<<enanbledActuatorCount<<", serializer.step="<<ardumyActuatorValueParserStepToString(serializer.step)<<", parser.step="<<ardumyActuatorValueParserStepToString(parser.step);
+		//qDebug()<<"enanbledActuatorCount="<<enanbledActuatorCount<<", serializer.step="<<ardumyActuatorValueParserStepToString(serializer.step)<<", parser.step="<<ardumyActuatorValueParserStepToString(parser.step);
 		QCOMPARE((uint8_t)serializer.step, (uint8_t)ArduMYActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
 		QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
 
@@ -124,23 +124,25 @@ void testActuatorValueSerializerInclude(ArduMYActuatorSet &inSet)
 	QCOMPARE(inSet.size(), outSet.size());
 	QCOMPARE(inSet.size(), inSize);
 
+	/*
 	for(uint8_t byte:baOut) {
 		qDebug()<<"ALL BYTES: "<<byte<<"(" << QString::number(byte,2)<<")";
 	}
+	*/
 
 	for(size_t i =0; i<inSize; ++i) {
 		const ArduMYActuator &a=inSet[i];
 		const ArduMYActuator &b=outSet[i];
 		// Only the dirty ones were copied!
 		if(a.state.isDirty()) {
-			qDebug()<<"For actuator "<<(i+1)<<"/"<< inSize<<"SERIALIZER(A): "<<ardumyActuatorValueToString(a.state.value, a.config.representation)<<", PARSER(B): "<<ardumyActuatorValueToString(b.state.value, b.config.representation);
+			//qDebug()<<"For actuator "<<(i+1)<<"/"<< inSize<<"SERIALIZER(A): "<<ardumyActuatorValueToString(a.state.value, a.config.representation)<<", PARSER(B): "<<ardumyActuatorValueToString(b.state.value, b.config.representation);
 			if(ArduMYActuatorValueRepresentation::BIT!=a.config.representation || true) {
 				if(a.state.value != b.state.value) {
 					Converter cva;
 					Converter cvb;
 					cva.uint64=a.state.value.quadWord;
 					cvb.uint64=b.state.value.quadWord;
-					qDebug()<<"Actuator value is DIFFERENT! ";
+					qWarning()<<"ERROR: Actuator value is DIFFERENT! ";
 					for(int j=0; j<8; ++j) {
 						//qDebug()<<" + BYTE-CMP"<<cva.uint8[j]<< " vs. "<<cvb.uint8[j];
 					}

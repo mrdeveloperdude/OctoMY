@@ -30,7 +30,7 @@ private:
 	ArduMYActuatorSet fuzzActuatorSet();
 	ArduMYActuatorSet fixedActuatorSet();
 
-
+// TODO: Fuzzing isn't really practical before the fuzz data is a little less brutal.
 	void testActuatorFuzzConfigSerializer();
 	void testActuatorFuzzConfigParser();
 	void testActuatorFuzzConfigEquals();
@@ -39,24 +39,23 @@ private:
 	void testActuatorFuzzValueEquals();
 
 
-	void testMagicDetector();
-	void testDynamicArrayFundamental();
-	void testDynamicArrayPOD();
-	void testActuatorValue();
-	void testValueConverter();
-	void testActuatorRandomConfigParser();
-	void testActuatorRandomConfigSerializer();
-	void testActuatorRandomConfigEquals();
-	void testActuatorRandomValueParser();
-	void testActuatorRandomValueEquals();
-	void testRepresentationBoundary();
-	void testCommandParser();
-	void testCommandSerializer();
 private slots:
 
-	void testToFromString();
-
+	void testActuatorRandomConfigEquals();
+	void testActuatorRandomConfigParser();
+	void testActuatorRandomConfigSerializer();
+	void testActuatorRandomValueEquals();
+	void testActuatorRandomValueParser();
 	void testActuatorRandomValueSerializer();
+	void testActuatorValue();
+	void testCommandParser();
+	void testCommandSerializer();
+	void testDynamicArrayFundamental();
+	void testDynamicArrayPOD();
+	void testMagicDetector();
+	void testRepresentationBoundary();
+	void testToFromString();
+	void testValueConverter();
 
 };
 

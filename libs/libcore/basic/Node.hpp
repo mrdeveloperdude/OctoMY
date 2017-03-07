@@ -109,8 +109,8 @@ public:
 
 	virtual QWidget *showWindow();
 
-	void start(const NetworkAddress &localAddress);
-	void stop();
+	void startComms(const NetworkAddress &localAddress);
+	void stopComms();
 	bool isCommsConnected();
 
 	// Blob courier

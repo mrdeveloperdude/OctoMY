@@ -196,7 +196,7 @@ QWidget *Node::showWindow()
 
 
 
-void Node::start(const NetworkAddress &localAddress)
+void Node::startComms(const NetworkAddress &localAddress)
 {
 	if(nullptr!=mComms) {
 		qDebug()<<"comms.start  "<<localAddress.toString();
@@ -206,7 +206,7 @@ void Node::start(const NetworkAddress &localAddress)
 	}
 }
 
-void Node::stop()
+void Node::stopComms()
 {
 	if(nullptr!=mComms) {
 		qDebug()<<"comms.stop "<<mComms->localSignature().address();

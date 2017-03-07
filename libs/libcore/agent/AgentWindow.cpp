@@ -662,14 +662,14 @@ void AgentWindow::updateOnlineStatus()
 				QTimer::singleShot(1000,[this]() {
 					QSharedPointer<NodeAssociate> ni=mAgent->nodeIdentity();
 					if(nullptr!=ni) {
-						mAgent->start(ni->localAddress());
+						mAgent->startComms(ni->localAddress());
 					}
 				});
 			}
 		} else {
 			if(isOnline ) {
 				//qDebug()<<"Decided to stop comms";
-				mAgent->stop();
+				mAgent->stopComms();
 			} else {
 				next=OFF;
 			}

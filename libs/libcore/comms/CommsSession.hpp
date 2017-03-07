@@ -28,7 +28,8 @@ class Key;
  *
  * The CommsSession class thus represents a communication partner that could, would,
  * will, does and did communicate with us through a CommsChannel.
- * \note not related to NodeAssociate, as this is tightly integrated with CommsChannel
+ * \note compared to NodeAssociate, a session is more tightly integrated with CommsChannel
+ * and less persistent.
  *
  */
 
@@ -96,6 +97,10 @@ public:
 	const QString listText() const;
 	quint64 lastActiveTime() const;
 	quint64 getShortHandID() const;
+
+	QVariantMap toVariantMap();
+	void fromVariantMap(const QVariantMap map);
+
 
 };
 

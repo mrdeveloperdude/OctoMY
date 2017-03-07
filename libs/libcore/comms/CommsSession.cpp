@@ -16,30 +16,30 @@
 
    + Remote -> ClientWidget
 
-  CommsChannel - A mode of communication over UDP, utilizing Couriers to transfer different kinds of data
+	CommsChannel - A mode of communication over UDP, utilizing Couriers to transfer different kinds of data
 
-  CommsSessionDirectory - The list of sessions in use with convenience  functions
+	CommsSession - rogue - handshake(exchange full ID and 64bit nonceID, agree on security protocols and bandwidth limits)
 
-  CommsSignature - A special purpose identification mapping between full ID and short hand 64bit integer ID used only by CommsChannel and friends.
+	CommsSessionDirectory - The list of sessions in use by the CommsChannel
 
-  CommsSession - rogue - handshake(exchange full ID and 64bit nonceID, agree on security protocols and bandwidth limits)
+	CommsSignature - A special purpose identification mapping between full ID and short hand 64bit integer ID used only by CommsChannel and friends.
 
-  NodeAssociate - Address book entry for one node. Stored in NodeAssociateStore. Meant to be persistent between invocations.
+	NodeAssociate - Address book entry for one node. Stored in NodeAssociateStore. Meant to be persistent between invocations.
 
-  NodeAssociateStore - Place to keep NodeAssociates
+	NodeAssociateStore - Place to keep NodeAssociates
 
-  ReliabilitySystem - Separate system to maintain reliability in the communications. Enabled when needed.
+	ReliabilitySystem - Separate system to maintain reliability in the communications. Enabled when needed.
 
-  FlowControl - Separate system to maintain flow control (apply throttling to avoid stalls) in the communications. Enabled when needed.
+	FlowControl - Separate system to maintain flow control (apply throttling and idling to avoid constipation and stalls) in the communications. Enabled when needed.
 
-  Courier - A class responsible for a certain part of communications over CommsChannel
+	Courier - A class responsible for a certain part of communications over CommsChannel
 
-  CourierSet - A collection of couriers to be handled as one.
+	CourierSet - A collection of couriers to be handled as one.
 
-	A packet is defined as initial when it contains a session ID of 0
-	A packet is defined as broken when it does not adhere to the protocol by displaying a lack/excess of data or data in the wrong format
-	A packet is defined as whole when it is not broken
-	A packet is defined as hacked when it is whole according to comms protocol but broken according to tamper protocol
+	 + A packet is defined as initial when it contains a session ID of 0
+	 + A packet is defined as broken when it does not adhere to the protocol by displaying a lack/excess of data or data in the wrong format
+	 + A packet is defined as whole when it is not broken
+	 + A packet is defined as hacked when it is whole according to comms protocol but broken according to tamper protocol
 
 	Comms protocol is the language of OctoMY™ in network communication.
 	Tamper protocol is an extra layer of protection beside comms protocol to detect attempts to tamper with communications. It has validation checks that are not necessary by the comms protocol, but add tells to the authenticity of the data (would the real implementation send data in this way)?
@@ -308,3 +308,23 @@ quint64 CommsSession::getShortHandID() const
 	return mSignature.shortHandID();
 }
 ////////////////////////////
+
+
+
+QVariantMap CommsSession::toVariantMap()
+{
+	OC_METHODGATE();
+	QVariantMap map;
+	map["lastSendTime"]=mLastSendTime;
+	map["lastReceiveTime"]=mLastReceiveTime;
+	return map;
+}
+
+
+
+void CommsSession::fromVariantMap(const QVariantMap map)
+{
+	OC_METHODGATE();
+	mLastSendTime=( map["lastSendTime"].toInt());
+	mLastReceiveTime=( map["lastReceiveTime"].toInt());
+}

@@ -21,7 +21,7 @@
 #include <QDebug>
 #include <QtGlobal>
 
-#define LOOPS (100)
+#define LOOPS (1000)
 
 #define VERBOSE_TEST (true)
 

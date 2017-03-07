@@ -92,7 +92,21 @@ Notes:
 4. All Agent initiated communication will be broadcast to all active remotes in
    paralell. Remote initiated transfers will remain private.
 
+
+Session management strategy:
+
+ + Uppon the start of application, all entries in NodeAssociateStore are added to CommsSessionDirectory with their stored state. This ensures that session will persist.
+ + Comms channel may be in "normal" or "honeymoon" mode where honeymoon mode is typically enabled in a period just after communications are enabled, or at users disgresion.
+ + Comms channel in "honeymoon" mode will ping all nodes that are not active continuously at a short (seconds) interval until the honeymoon wears off.
+ + Comms channel in "normal" mode will ping all nodes that are not active at an exponentially decaying frequency as a function of how long since their last recorded ping response.
+ + Any node that replies to a ping are immideately upgraded to "active"
+ + Any active node has a handshake started, and communication is maintained with them until completion or until the connection times out
+ + If communication with an active node is explicitly completed, it will not receive pings, even during honeymoon, for a specified grace period
+ + If communication with an active node simply times out it will instead continue to parttake in the pinging as normal.
+ + The node that was last active is always treated as if it is no older than 1 hour, and will in inactive periods thus be pinged as often.
+
 */
+
 class CommsChannel : public QObject
 {
 	Q_OBJECT
@@ -118,6 +132,8 @@ private:
 	quint64 mTxCount;
 	quint64 mRxCount;
 	bool mConnected;
+	// When honeymoon mode is enabled, all inactive associates are pinged continuously in an effort to start new connections
+	bool mHoneyMoon;
 
 	QMap<quint64, Courier *> mPri;
 	QList <const CommsSignature *> mIdle;

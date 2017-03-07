@@ -5,6 +5,7 @@
  */
 
 #include "basic/NodeAssociate.hpp"
+#include "../libutil/utility/Utility.hpp"
 
 #include <QRegularExpression>
 
@@ -57,7 +58,7 @@ bool NodeAssociate::update(const QVariantMap map, bool trustedSource){
 		mLastSeenMS=( QDateTime::currentMSecsSinceEpoch() );
 		mPublicNetworkAddress=NetworkAddress( map["publicAddress"].toMap() );
 		mLocalNetworkAddress=NetworkAddress( map["localAddress"].toMap() );
-
+		//TODO: Figure out why we dont just ust fromVariantMap here!
 		//fromVariantMap(map);
 		return true;
 	}
@@ -210,7 +211,7 @@ void NodeAssociate::fromVariantMap(const QVariantMap map)
 	mTrusts=map["trusts"].toStringList();
 }
 
-#include "../libutil/utility/Utility.hpp"
+
 
 QString NodeAssociate::toString()
 {
