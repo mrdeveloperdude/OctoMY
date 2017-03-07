@@ -8,7 +8,7 @@ compiler:
 install:
   - sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-  - sudo add-apt-repository --yes ppa:beineri/opt-qt5x-xenial
+  - sudo add-apt-repository --yes ppa:beineri/opt-qt58-xenial
   - sudo apt-get update
   - sudo apt-get install -qq g++-6 qt58-meta-full
   - sudo ls
