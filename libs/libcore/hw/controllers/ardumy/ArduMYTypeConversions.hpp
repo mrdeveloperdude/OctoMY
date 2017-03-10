@@ -90,5 +90,9 @@ void ardumyActuatorNameFromString(ArduMYActuatorConfig &c ,const QString &string
 QString ardumyCommandSerializerToString(const ArduMYCommandSerializer &cs);
 QString ardumyCommandParserToString(const ArduMYCommandParser &cp);
 
+void diffArdumyActuatorState(const ArduMYActuatorState &a, const ArduMYActuatorState &b, const ArduMYActuatorValueRepresentation &rep);
+void diffArdumyActuatorConfig(const ArduMYActuatorConfig &a, const ArduMYActuatorConfig &b);
+void diffArdumyActuator(const ArduMYActuator &a, const ArduMYActuator &b);
+void diffArdumyActuatorSet(const ArduMYActuatorSet &setA, const ArduMYActuatorSet &setB);
 
 #endif // ARDUMYTYPECONVERSIONS_HPP

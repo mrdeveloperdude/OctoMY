@@ -7,6 +7,7 @@ ArduMYCommandSerializer::ArduMYCommandSerializer(ArduMYActuatorSet &actuators)
 	, magic{0x0C,0x70,0xFF,0x00}
 	, byteIndex(0)
 	, mSentCommandByte(false)
+	, mSentConfigIndex(false)
 	, actuatorConfigSerializer()
 	, actuatorConfigIndex(-1)
 	, actuatorValuesSerializer()
@@ -22,7 +23,7 @@ bool ArduMYCommandSerializer::isReadyForNewCommand()
 
 void ArduMYCommandSerializer::startSync()
 {
-	qDebug()<<"ARDUMY COMMAND SERIALIZER START SYNC";
+	qDebug()<<"ARDUMY COMMAND SERIALIZER: START SYNC";
 	// Don't interrupt current session
 	if(!isReadyForNewCommand()) {
 		qDebug()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
@@ -35,7 +36,7 @@ void ArduMYCommandSerializer::startSync()
 
 void ArduMYCommandSerializer::startActuatorCount()
 {
-	qDebug()<<"ARDUMY COMMAND SERIALIZER COUNT";
+	qDebug()<<"ARDUMY COMMAND SERIALIZER: START COUNT";
 	// Don't interrupt current session
 	if(!isReadyForNewCommand()) {
 		qDebug()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
@@ -49,7 +50,7 @@ void ArduMYCommandSerializer::startActuatorCount()
 
 void ArduMYCommandSerializer::startActuatorConfig(uint8_t index)
 {
-	qDebug()<<"ARDUMY COMMAND SERIALIZER ACTUATOR CONFIG FOR INDEX "<<index;
+	qDebug()<<"ARDUMY COMMAND SERIALIZER: START ACTUATOR CONFIG FOR INDEX "<<index;
 	// Don't interrupt current session
 	if(!isReadyForNewCommand()) {
 		qDebug()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
@@ -60,13 +61,14 @@ void ArduMYCommandSerializer::startActuatorConfig(uint8_t index)
 	actuatorConfigSerializer.reset();
 	byteIndex=0;
 	mSentCommandByte=false;
+	mSentConfigIndex=false;
 	currentCommand=OCTOMY_SET_ACTUATOR_CONFIG;
 }
 
 
 void ArduMYCommandSerializer::startActuatorValues()
 {
-	qDebug()<<"ARDUMY COMMAND SERIALIZER ACTUATOR VALUES";
+	qDebug()<<"ARDUMY COMMAND SERIALIZER: START ACTUATOR VALUES";
 	// Don't interrupt current session
 	if(!isReadyForNewCommand()) {
 		qDebug()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
@@ -167,14 +169,21 @@ uint8_t ArduMYCommandSerializer::nextByte()
 
 		// Command: set actuator config
 		case(OCTOMY_SET_ACTUATOR_CONFIG): {
-			if(actuatorConfigSerializer.hasMoreData()) {
-				ret=actuatorConfigSerializer.nextByte();
+			if(!mSentConfigIndex) {
+				ret=static_cast<uint8_t>(actuatorConfigIndex);
+				qWarning()<<"SENDING CONFIG INDEX BYTE "<<ret;
+				mSentConfigIndex=true;
 			} else {
-				qWarning()<<"ERROR: no more data for dirty actuator config";
-			}
-			if(!actuatorConfigSerializer.hasMoreData()) {
 
-				currentCommand=OCTOMY_AWAITING_COMMAND;
+				if(actuatorConfigSerializer.hasMoreData()) {
+					ret=actuatorConfigSerializer.nextByte();
+				} else {
+					qWarning()<<"ERROR: no more data for dirty actuator config";
+				}
+				if(!actuatorConfigSerializer.hasMoreData()) {
+					currentCommand=OCTOMY_AWAITING_COMMAND;
+					ret=nextByte();
+				}
 			}
 		}
 		break;
@@ -187,6 +196,7 @@ uint8_t ArduMYCommandSerializer::nextByte()
 			}
 			if(!actuatorValuesSerializer.hasMoreData()) {
 				currentCommand=OCTOMY_AWAITING_COMMAND;
+				ret=nextByte();
 			}
 		}
 		break;
@@ -195,5 +205,6 @@ uint8_t ArduMYCommandSerializer::nextByte()
 		break;
 		}
 	}
+	qDebug()<<"SERIALIZED BYTE: "<<ret;
 	return ret;
 }

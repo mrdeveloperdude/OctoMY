@@ -27,12 +27,12 @@ struct ArduMYActuatorState {
 		const uint16_t temp=(1<<1);
 		const uint16_t mask=(~temp);
 		if( (flags & mask) != (other.flags & mask)) {
-			qDebug()<<" FLAGS DIFFER:";
+			//qDebug()<<" FLAGS DIFFER:";
 			return false;
 		}
 
 		if(!value.isEqual(other.value,representation)) {
-			qDebug()<<" VALUE DIFFER";
+			//qDebug()<<" VALUE DIFFER";
 			return false;
 		}
 

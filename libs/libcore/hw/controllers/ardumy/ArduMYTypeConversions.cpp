@@ -466,6 +466,8 @@ QString ardumyActuatorConfigToString(const ArduMYActuatorConfig &c)
 			 ardumyActuatorConfigFlagsToString(c)
 			 +QStringLiteral("; rep=")
 			 +ardumyActuatorValueRepresentationToString(c.representation)
+			 +QStringLiteral("; nick=")
+			 +ardumyActuatorNameToString(c)
 		 );
 	return ret;
 }
@@ -565,4 +567,138 @@ QString ardumyCommandParserToString(const ArduMYCommandParser &cp)
 	QString out="CommandParser{ actuators="+QString::number(cp.actuators.size())+", }";
 	return out;
 
+}
+
+void diffArdumyActuatorState(const ArduMYActuatorState &a, const ArduMYActuatorState &b, const ArduMYActuatorValueRepresentation &rep)
+{
+	// Mask to remove ephemeral parts of flags (currently only isDirty)
+	const uint16_t temp=(1<<1);
+	const uint16_t mask=(~temp);
+
+
+	const uint16_t maskedFlags=(a.flags & mask);
+	const uint16_t otherMaskedFlags=(b.flags & mask);
+
+	if( maskedFlags != otherMaskedFlags) {
+		qDebug()<<"A state flags "<<ardumyActuatorStateFlagsToString(a) <<" are different than B state flags "<<ardumyActuatorStateFlagsToString(b);
+	}
+	if(!a.value.isEqual(b.value,rep)) {
+		qDebug()<<"A value "<<ardumyActuatorValueToString(a.value,rep) <<" are different than B value "<<ardumyActuatorValueToString(b.value,rep);
+	}
+}
+
+void diffArdumyActuatorConfig(const ArduMYActuatorConfig &a, const ArduMYActuatorConfig &b)
+{
+
+	// Mask to remove ephemeral parts of flags (currently only isDirty)
+	const uint16_t temp=(1<<9);
+	const uint16_t mask=(~temp);
+
+	const uint16_t maskedFlags=(a.flags & mask);
+	const uint16_t otherMaskedFlags=(b.flags & mask);
+
+	if( maskedFlags != otherMaskedFlags) {
+		qDebug()<<"A flags "<<ardumyActuatorConfigFlagsToString(a) <<" are different than B flags "<<ardumyActuatorConfigFlagsToString(b);
+	}
+	if(a.type!=b.type) {
+		qDebug()<<"A type "<<ardumyActuatorTypeToString(a.type) <<" is different than B type "<<ardumyActuatorTypeToString(b.type);
+	}
+	if(a.representation !=b.representation) {
+		qDebug()<<"A type "<<ardumyActuatorValueRepresentationToString(a.representation) <<" is different than B representation "<<ardumyActuatorValueRepresentationToString(b.representation);
+	}
+	// TODO: factorize to find "different but same" like 2:2, 3:3 etc.
+	if(a.hasGearRatio()&& b.hasGearRatio() && (a.gearRatioNumerator != b.gearRatioNumerator) ) {
+		qDebug()<<"A gear ratio numerator "<<a.gearRatioNumerator <<" is different than B gear ratio numerator "<<b.gearRatioNumerator;
+	}
+	if(a.hasGearRatio()&& b.hasGearRatio() && (a.gearRatioDenominator!= b.gearRatioDenominator) ) {
+		qDebug()<<"A gear ratio denominator "<<a.gearRatioDenominator <<" is different than B gear ratio denominator "<<b.gearRatioDenominator;
+	}
+	if(a.hasPositionFeedback() && b.hasPositionFeedback() && (a.positionFeedbackPin != b.positionFeedbackPin)) {
+		qDebug()<<"A positionFeedbackPin "<<a.positionFeedbackPin <<" is different than B positionFeedbackPin "<<b.positionFeedbackPin;
+	}
+	if(a.hasTachometer() && b.hasTachometer() && (a.tachometerPin != b.tachometerPin)) {
+		qDebug()<<"A tachometerPin "<<a.tachometerPin <<" is different than B tachometerPin "<<b.tachometerPin;
+	}
+	if(a.hasIncrementalEncoder() && b.hasIncrementalEncoder() && (a.incrementalEncoderPinA != b.incrementalEncoderPinA)) {
+		qDebug()<<"A incrementalEncoderPinA "<<a.incrementalEncoderPinA <<" is different than B incrementalEncoderPinA "<<b.incrementalEncoderPinA;
+	}
+	if(a.hasIncrementalEncoder() && b.hasIncrementalEncoder() && (a.incrementalEncoderPinB != b.incrementalEncoderPinB)) {
+		qDebug()<<"A incrementalEncoderPinB "<<a.incrementalEncoderPinB <<" is different than B incrementalEncoderPinB "<<b.incrementalEncoderPinB;
+	}
+	if(a.hasIncrementalEncoder() && b.hasIncrementalEncoder() && (a.incrementalencoderDebounceCount != b.incrementalencoderDebounceCount)) {
+		qDebug()<<"A incrementalencoderDebounceCount "<<a.incrementalencoderDebounceCount <<" is different than B incrementalencoderDebounceCount "<<b.incrementalencoderDebounceCount;
+	}
+	if(a.hasLimitSwitchStart() && b.hasLimitSwitchStart() && (a.limitSwitchPinStart != b.limitSwitchPinStart)) {
+		qDebug()<<"A limitSwitchPinStart "<<a.limitSwitchPinStart <<" is different than B limitSwitchPinStart "<<b.limitSwitchPinStart;
+	}
+	if(a.hasLimitSwitchEnd() && b.hasLimitSwitchEnd() && (a.limitSwitchPinEnd != b.limitSwitchPinEnd)) {
+		qDebug()<<"A limitSwitchPinEnd "<<a.limitSwitchPinEnd <<" is different than B limitSwitchPinEnd "<<b.limitSwitchPinEnd;
+	}
+	if((a.hasLimitSwitchStart() || a.hasLimitSwitchEnd()) && (b.hasLimitSwitchStart() || b.hasLimitSwitchEnd())  && (a.limitSwitchDebounceCount != b.limitSwitchDebounceCount)) {
+		qDebug()<<"A limitSwitchDebounceCount "<<a.limitSwitchDebounceCount <<" is different than B limitSwitchDebounceCount "<<b.limitSwitchDebounceCount;
+	}
+
+	if(a.type == b.type) {
+		switch(a.type) {
+
+		case(STEP_MOTOR): {
+			if(a.stepMotorPhaseCount!= b.stepMotorPhaseCount) {
+				qDebug()<<"A stepMotorPhaseCount "<<a.stepMotorPhaseCount <<" is different than B stepMotorPhaseCount "<<b.stepMotorPhaseCount;
+			}
+			if(a.stepMotorStepsPerRotation!= b.stepMotorStepsPerRotation) {
+				qDebug()<<"A stepMotorStepsPerRotation "<<a.stepMotorStepsPerRotation <<" is different than B stepMotorStepsPerRotation "<<b.stepMotorStepsPerRotation;
+			}
+		}
+		break;
+
+		case(RC_SERVO): {
+			if(a.rcServoPin!= b.rcServoPin) {
+				qDebug()<<"A rcServoPin "<<a.rcServoPin <<" is different than B rcServoPin "<<b.rcServoPin;
+			}
+		}
+		break;
+		case(DC_MOTOR):
+		case(RELAY):
+		case(TYPE_COUNT):
+		default:
+			break;
+
+		}
+	}
+
+	if(a.representation ==b.representation) {
+		if(!a.rangeStart.isEqual(b.rangeStart,a.representation)) {
+			qDebug()<<"A rangeStart "<<	ardumyActuatorValueToString(a.rangeStart, a.representation)<<" is different than B rangeStart "<<ardumyActuatorValueToString(b.rangeStart, a.representation);
+		}
+		if(!a.rangeSpan.isEqual(b.rangeSpan,a.representation)) {
+			qDebug()<<"A rangeSpan "<<	ardumyActuatorValueToString(a.rangeSpan, a.representation)<<" is different than B rangeSpan "<<ardumyActuatorValueToString(b.rangeSpan, a.representation);
+		}
+	}
+}
+
+void diffArdumyActuator(const ArduMYActuator &a, const ArduMYActuator &b)
+{
+	if(!a.config.isEqual(b.config)) {
+		diffArdumyActuatorConfig(a.config, b.config);
+	}
+	if(a.config.representation == b.config.representation && (!a.state.isEqual(b.state, a.config.representation) )) {
+		diffArdumyActuatorState(a.state, b.state, a.config.representation);
+	}
+}
+
+void diffArdumyActuatorSet(const ArduMYActuatorSet &setA, const ArduMYActuatorSet &setB)
+{
+	if(setA.size()!=setB.size()) {
+		qDebug()<<"SET SIZE DIFFERS: "<<setA.size()<<" vs. "<<setB.size();
+	}
+
+	const uint32_t sz=qMin(setA.size(), setB.size());
+	for(uint32_t i=0; i<sz; ++i) {
+		const ArduMYActuator &a=setA[i];
+		const ArduMYActuator &b=setB[i];
+		if(!a.isEqual(b)) {
+			qDebug()<<"ACTUATOR @ INDEX "<<i<< " DIFFERS: ";
+			diffArdumyActuator(a,b);
+		}
+	}
 }

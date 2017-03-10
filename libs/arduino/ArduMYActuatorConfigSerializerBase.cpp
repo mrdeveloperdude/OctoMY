@@ -22,11 +22,13 @@ void ArduMYActuatorConfigSerializerBase::reset()
 	byteIndex=0;
 }
 
+#include "../libcore/hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 
 // Look at flags & type and go from the current step to the next enabled one
 void ArduMYActuatorConfigSerializerBase::nextStep()
 {
+	auto oldStep=step;
 	switch(step) {
 	case(FLAGS): {
 		step=TYPE;
@@ -136,14 +138,17 @@ void ArduMYActuatorConfigSerializerBase::nextStep()
 	break;
 	case(RANGE_SPAN): {
 		step=END_OF_OPERATION;
+		qDebug()<<"---- CONFIG CHAMPAGNE POPPED!";
 		// At this point we are no longer dirty, pop the Champagne!
 		config->setDirty(false);
 	}
 	break;
 	case(END_OF_OPERATION): {
 		// Do nothing. Maybe this is an indication of error, and should be reported?
+		qWarning()<<"WARNING: NEXT STEP TRIED AFTER WE REACHED END OF OPERATION!";
 	}
 	break;
 	}
+	qDebug()<<"NEXT STEP "<<oldStep<< " ( " << ardumyActuatorConfigParserStepToString(oldStep)<< " )  -->  "<<step<< " ( " << ardumyActuatorConfigParserStepToString(step)<< " )";
 	byteIndex=0;
 }

@@ -12,6 +12,7 @@
 
 
 #include "../arduino/ArduMYCommandParser.hpp"
+#include "../arduino/ArduMYCommandSerializer.hpp"
 
 #include "../arduino/ArduMYParserState.hpp"
 
@@ -162,7 +163,9 @@ ArduMYActuatorConfig TestArduMY::randomConfig() const
 	c.representation=(ArduMYActuatorValueRepresentation)(qrand() % ((quint8)ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT));
 
 	// All but BIT is ok
-	do {		c.representation=(ArduMYActuatorValueRepresentation)(qrand() % ((quint8)ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT)) ;	} while (ArduMYActuatorValueRepresentation::BIT==c.representation);
+	do {
+		c.representation=(ArduMYActuatorValueRepresentation)(qrand() % ((quint8)ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT)) ;
+	} while (ArduMYActuatorValueRepresentation::BIT==c.representation);
 
 	// All BIT
 	//c.representation=ArduMYActuatorValueRepresentation::BIT;
@@ -453,16 +456,16 @@ void TestArduMY::testToFromString()
 
 
 
-/* TODO: Add similar tests for these
-	QVariant ardumyActuatorValueToVariant(const ArduMYActuatorValue &v, const ArduMYActuatorValueRepresentation &rep=DEFAULT_REPRESENTATION);
-	QString ardumyActuatorValueToString(const ArduMYActuatorValue &v, const ArduMYActuatorValueRepresentation &rep=DEFAULT_REPRESENTATION);
-	QString ardumyActuatorConfigFlagsToString(const ArduMYActuatorConfig &c);
-	QString ardumyActuatorConfigToString(const ArduMYActuatorConfig &c);
-	QString ardumyActuatorStateFlagsToString(const ArduMYActuatorState &s);
-	QString ardumyActuatorStateToString(const ArduMYActuatorState &s, const ArduMYActuatorValueRepresentation &rep=DEFAULT_REPRESENTATION);
-	QString ardumyActuatorToString(const ArduMYActuator &a);
-	QString ardumyActuatorSetToString(const ArduMYActuatorSet &set);
-	*/
+	/* TODO: Add similar tests for these
+		QVariant ardumyActuatorValueToVariant(const ArduMYActuatorValue &v, const ArduMYActuatorValueRepresentation &rep=DEFAULT_REPRESENTATION);
+		QString ardumyActuatorValueToString(const ArduMYActuatorValue &v, const ArduMYActuatorValueRepresentation &rep=DEFAULT_REPRESENTATION);
+		QString ardumyActuatorConfigFlagsToString(const ArduMYActuatorConfig &c);
+		QString ardumyActuatorConfigToString(const ArduMYActuatorConfig &c);
+		QString ardumyActuatorStateFlagsToString(const ArduMYActuatorState &s);
+		QString ardumyActuatorStateToString(const ArduMYActuatorState &s, const ArduMYActuatorValueRepresentation &rep=DEFAULT_REPRESENTATION);
+		QString ardumyActuatorToString(const ArduMYActuator &a);
+		QString ardumyActuatorSetToString(const ArduMYActuatorSet &set);
+		*/
 
 
 }
@@ -1018,7 +1021,6 @@ void TestArduMY::testRepresentationBoundary()
 void TestArduMY::testCommandParser()
 {
 	ArduMYCommandParser parser;
-	return;
 
 	QCOMPARE((uint8_t)parser.currentCommand, (uint8_t) OCTOMY_SYNC);
 	QCOMPARE((int16_t)parser.actuatorConfigIndex, (int16_t) -1);
@@ -1128,9 +1130,125 @@ void TestArduMY::testCommandParser()
 
 
 
-void TestArduMY::testCommandSerializer()
+void TestArduMY::testCommandSerializerSimple()
 {
+	ArduMYActuatorSet actuatorsFrom;
+
+	actuatorsFrom.setSize(3);
+
+
+	//qDebug()<<"FROM CONFIG FLAGS (0) FOR INDEX 0"<<actuatorsFrom[0].config.flags;
+
+	actuatorsFrom[0].config.type=RC_SERVO;
+	actuatorsFrom[0].config.representation=WORD;
+	ardumyActuatorNameFromString(actuatorsFrom[0].config,"Trololoo 1");
+	actuatorsFrom[0].state.value.word=123;
+
+	actuatorsFrom[1].config.type=DC_MOTOR;
+	actuatorsFrom[1].config.representation=QUAD_WORD;
+	ardumyActuatorNameFromString(actuatorsFrom[1].config,"Dum dum bum 2");
+	actuatorsFrom[1].state.value.quadWord=567890123;
+
+
+	actuatorsFrom[2].config.type=RELAY;
+	actuatorsFrom[2].config.representation=BIT;
+	ardumyActuatorNameFromString(actuatorsFrom[2].config,"la la la 3");
+	actuatorsFrom[2].state.value.bit=true;
+
+
+	actuatorsFrom.setCountDirty(true);
+	actuatorsFrom.setConfigDirty(true);
+	//qDebug()<<"FROM CONFIG FLAGS (1) FOR INDEX 0"<<actuatorsFrom[0].config.flags;
+	actuatorsFrom.setValueDirty(true);
+	//qDebug()<<"FROM CONFIG FLAGS (2) FOR INDEX 0"<<actuatorsFrom[0].config.flags;
+
+
+	ArduMYCommandSerializer serializer(actuatorsFrom);
+	ArduMYCommandParser parser;
+	ArduMYActuatorSet &actuatorsTo=parser.actuators;
+	//qDebug()<<"BEFORE FROM: -----------";	logLines(ardumyActuatorSetToString(actuatorsFrom));	qDebug()<<"BEFORE TO: -------------";	logLines(ardumyActuatorSetToString(actuatorsTo));
+	//QCOMPARE(actuatorsFrom,actuatorsTo);
+
+	while(serializer.hasMoreData()) {
+		//qDebug()<<"";		qDebug()<<"##########################################################";
+		//	qDebug()<<"FROM CONFIG FLAGS (3.1) FOR INDEX 0:"<<actuatorsFrom[0].config.flags;
+///		qDebug()<<"TO   CONFIG FLAGS (3.1) FOR INDEX 0:"<<actuatorsTo[0].config.flags;
+		uint8_t byte=serializer.nextByte();
+		//	qDebug()<<"FROM CONFIG FLAGS (3.1) FOR INDEX 0:"<<actuatorsFrom[0].config.flags;
+		//	qDebug()<<"TO   CONFIG FLAGS (3.1) FOR INDEX 0:"<<actuatorsTo[0].config.flags;
+		//qDebug()<<"SERIALIZER PRODUCED BYTE: "<<byte;
+		parser.parse(byte);
+		if(parser.currentCommand>=OCTOMY_SET_ACTUATOR_CONFIG) {
+			logLines(ardumyActuatorSetToString(actuatorsTo));
+		}
+	}
+
+	//qDebug()<<"FROM CONFIG FLAGS (4) FOR INDEX 0:"<<actuatorsFrom[0].config.flags;
+//	qDebug()<<"TO   CONFIG FLAGS (4) FOR INDEX 0:"<<actuatorsTo[0].config.flags;
+
+
+
+	//qDebug()<<"AFTER FROM: -----------";	logLines(ardumyActuatorSetToString(actuatorsFrom));
+	//qDebug()<<"AFTER TO: -------------";	logLines(ardumyActuatorSetToString(actuatorsTo));
+
+
+	QCOMPARE(actuatorsFrom,actuatorsTo);
+}
+
+
+
+void TestArduMY::testCommandSerializerFull()
+{
+	ArduMYActuatorSet actuatorsFrom;
+
+	ArduMYCommandSerializer serializer(actuatorsFrom);
+	ArduMYCommandParser parser;
+	ArduMYActuatorSet &actuatorsTo=parser.actuators;
+
+	DO_LOOPS_START("ActuatorCommandSerializer Full", LOOPS)
+
+	qDebug()<<"";
+	qDebug()<<"##########################################################";
+
+	const quint8 newCount=qrand()%0xFF;
+	if(actuatorsFrom.size()!=newCount) {
+		actuatorsFrom.setCountDirty(true);
+	}
+	actuatorsFrom.setSize(newCount);
+
+	const quint8 numUpdate=qrand()%newCount;
+	for(quint8 i=0; i<numUpdate; ++i) {
+		const quint8 indexUpdate=qrand()%newCount;
+		ArduMYActuator &ac=actuatorsFrom[indexUpdate];
+		// Sometimes randomize config
+		if((qrand()%100)>50) {
+			ArduMYActuatorConfig nac=randomConfig();
+			ac.config=nac;
+			ac.config.setDirty(true);
+		}
+		// Always randomize value
+		randomValue(ac.state.value,ac.config.representation);
+		ac.state.setDirty(true);
+	}
+
+	while(serializer.hasMoreData()) {
+		uint8_t byte=serializer.nextByte();
+		parser.parse(byte);
+	}
+	qDebug()<<"";
+	qDebug()<<"============================================================= DIFF START";
+	diffArdumyActuatorSet(actuatorsFrom,actuatorsTo);
+	qDebug()<<"============================================================= DIFF END";
+	qDebug()<<"";
+
+
+	QCOMPARE(actuatorsFrom,actuatorsTo);
+
+	DO_LOOPS_END
 
 }
 
 QTEST_MAIN(TestArduMY)
+
+
+

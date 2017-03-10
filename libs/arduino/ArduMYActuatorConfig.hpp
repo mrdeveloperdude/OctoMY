@@ -166,7 +166,11 @@ struct ArduMYActuatorConfig {
 		// Mask to remove ephemeral parts of flags (currently only isDirty)
 		const uint16_t temp=(1<<9);
 		const uint16_t mask=(~temp);
-		if( (flags & mask) != (other.flags & mask)) {
+
+		const uint16_t maskedFlags=(flags & mask);
+		const uint16_t otherMaskedFlags=(other.flags & mask);
+
+		if( maskedFlags != otherMaskedFlags) {
 			return false;
 		}
 		if(type!=other.type) {

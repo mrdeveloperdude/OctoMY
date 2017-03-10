@@ -40,6 +40,7 @@ public:
 
 	bool isEqual(const ArduMYActuatorSet &other) const
 	{
+		// We ignore flags because none fo the flags matter in this comparison (they are all ephemeral)
 		if(size()!=other.size()) {
 			return false;
 		}
@@ -87,7 +88,7 @@ public:
 		const uint32_t sz=size();
 		for(uint32_t i=0; i<sz; ++i) {
 			ArduMYActuator &a=operator [](i);
-			a.state.setDirty(false);
+			a.state.setDirty(v);
 		}
 	}
 
@@ -97,7 +98,7 @@ public:
 		const uint32_t sz=size();
 		for(uint32_t i=0; i<sz; ++i) {
 			ArduMYActuator &a=operator [](i);
-			a.config.setDirty(false);
+			a.config.setDirty(v);
 		}
 	}
 

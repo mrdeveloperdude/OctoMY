@@ -39,8 +39,6 @@ private:
 	void testActuatorFuzzValueEquals();
 
 
-private slots:
-
 	void testActuatorRandomConfigEquals();
 	void testActuatorRandomConfigParser();
 	void testActuatorRandomConfigSerializer();
@@ -48,14 +46,21 @@ private slots:
 	void testActuatorRandomValueParser();
 	void testActuatorRandomValueSerializer();
 	void testActuatorValue();
-	void testCommandParser();
-	void testCommandSerializer();
 	void testDynamicArrayFundamental();
 	void testDynamicArrayPOD();
 	void testMagicDetector();
 	void testRepresentationBoundary();
 	void testToFromString();
 	void testValueConverter();
+
+	void testCommandParser();
+
+	void testCommandSerializerSimple();
+private slots:
+
+
+void testCommandSerializerFull();
+
 
 };
 

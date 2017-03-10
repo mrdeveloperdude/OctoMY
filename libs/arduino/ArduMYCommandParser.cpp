@@ -60,11 +60,15 @@ void ArduMYCommandParser::setup()
 
 }
 
+#include "../libcore/hw/controllers/ardumy/ArduMYTypeConversions.hpp"
+
 void ArduMYCommandParser::parse(const uint8_t in)
 {
+	qDebug()<<"PARSED BYTE: "<<in;
 	switch(currentCommand) {
 	// Our logic says we need a sync
 	case(OCTOMY_SYNC):
+			qDebug()<<"GOT SYNC BYTE: "<<in;
 	// Some error in command parsing or otherwize says we need a sync
 	case(OCTOMY_UNKNOWN):
 	default: {
@@ -72,22 +76,28 @@ void ArduMYCommandParser::parse(const uint8_t in)
 			currentCommand=OCTOMY_AWAITING_COMMAND;
 		} else {
 			// This is where all the bad bytes are skipped
+			qDebug()<<"SKIPPING BAD BYTE: "<<in;
 		}
 	}
 	break;
 	// Awaiting command
 	case(OCTOMY_AWAITING_COMMAND): {
+		qDebug()<<"GOT NEW COMMAND BYTE: "<<in;
+		auto oldCommand=currentCommand;
 		currentCommand=prepareCommand(in);
+		qDebug()<<"GOT NEW COMMAND "<<ardumyParserStateToString(oldCommand)<<" ( "<<oldCommand<<" ) -> "<<ardumyParserStateToString(currentCommand)<<" ( "<<currentCommand<<" )";
 	}
 	break;
 	// Status wanted
 	case(OCTOMY_GET_STATUS): {
+		qDebug()<<"STATUS PENDING SET";
 		sendStatusPending=true;
 		currentCommand=OCTOMY_AWAITING_COMMAND;
 	}
 	break;
 	// Command: set actuator count
 	case(OCTOMY_SET_ACTUATOR_COUNT): {
+		qDebug()<<"ACTUATOR COUNT SET: "<<in;
 		actuators.setSize(in);
 		dirtyActuatorValues=true;
 		currentCommand=OCTOMY_AWAITING_COMMAND;
@@ -97,13 +107,17 @@ void ArduMYCommandParser::parse(const uint8_t in)
 	// Command: set actuator config
 	case(OCTOMY_SET_ACTUATOR_CONFIG): {
 		if(actuatorConfigIndex < 0) {
+			qDebug()<<"ACTUATOR CONFIG INDEX SET: "<<in;
 			actuatorConfigIndex=in;
 			if((uint16_t)actuatorConfigIndex>=actuators.size()) {
-				//TODO: Handle error somehow. Maybe ask for sync?
+				qWarning()<<"ERROR: INDEX IS BEYOND ACTUAL ACTUATOR COUNT";
+				currentCommand=OCTOMY_SYNC;
+				break;
 			}
 			ArduMYActuator &a=actuators[actuatorConfigIndex];
 			actuatorConfigParser.setConfig(a.config);
 		} else if(actuatorConfigParser.parse(in)) {
+			qDebug()<<"ACTUATOR CONFIG PARSE FOR INDEX "<<QString::number(actuatorConfigIndex)<<" COMPLETE";
 			dirtyActuatorConfigs=true;
 			actuatorConfigIndex=-1;
 			currentCommand=OCTOMY_AWAITING_COMMAND;
