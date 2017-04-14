@@ -3,21 +3,18 @@
 # Inspiration from https://jonasw.de/blog/2015/07/22/develop/cplusplus14-on-travis-with-cmake/
 # Inspiration from http://apt.llvm.org/
 
+language: cpp
+compiler: clang
+os:
+  - linux
+#  - osx
+dist: trusty
 env:
   global:
     - QT_VERSION_MAJOR=5
     # xenial still not out in 2017 !1!!?
     - TRAVIS_DIST_NAME=trusty
     - CLANG_VERSION=4.0
-
-language: cpp
-compiler: clang
-dist: $TRAVIS_DIST_NAME
-
-os:
-  - linux
-#  - osx
-env:
   matrix:
 #    - QT_VERSION_MINOR=6 QT_VERSION_REVISION=2
     - QT_VERSION_MINOR=8 QT_VERSION_REVISION=0
@@ -54,11 +51,11 @@ install:
 
 before_script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-      export QT_ENV_SCRIPT=/opt/qt{QT_VERSION_MAJOR}${QT_VERSION_MINOR}/bin/qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}-env.sh;
-      echo "QT_ENV_SCRIPT=${QT_ENV_SCRIPT}";
-      cat ${QT_ENV_SCRIPT};
-      source ${QT_ENV_SCRIPT};
-    fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export QT_ENV_SCRIPT="/opt/qt{QT_VERSION_MAJOR}${QT_VERSION_MINOR}/bin/qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}-env.sh";
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then echo "QT_ENV_SCRIPT=${QT_ENV_SCRIPT}";
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cat ${QT_ENV_SCRIPT};
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then source ${QT_ENV_SCRIPT};
+
 
 script:
   - OCOMY_BUILD_ROOT=~/build
