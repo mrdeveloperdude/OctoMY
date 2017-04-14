@@ -65,11 +65,11 @@ before_script:
 
 
 script:
-  - OCOMY_BUILD_ROOT=~/build
+  - OCOMY_BUILD_ROOT=build
   - mkdir -p ${OCOMY_BUILD_ROOT}
   - cd ${OCOMY_BUILD_ROOT}
   - touch ../local_overrides.pri
-  - echo "CURRENT OS:           $TRAVIS_OS_NAME"
+  - echo "CURRENT OS:           ${TRAVIS_OS_NAME}"
   - echo "CURRENT DIR:          $(pwd)"
   - echo "CURRENT C++ PATH:     $(which cpp)"
   - echo "CURRENT C++ VERSION:  $(cpp --version)"
