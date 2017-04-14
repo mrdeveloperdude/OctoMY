@@ -1,6 +1,7 @@
 # Inspiration from http://stackoverflow.com/questions/29721240/ci-for-qt-app-build-with-different-qt-versions
 # Inspiration from http://stackoverflow.com/questions/22111549/travis-ci-with-clang-3-4-and-c11
 # Inspiration from https://jonasw.de/blog/2015/07/22/develop/cplusplus14-on-travis-with-cmake/
+# Inspiration from http://apt.llvm.org/
 
 env:
   - QT_VERSION_MAJOR=5
@@ -57,11 +58,11 @@ matrix:
 addons:
   apt:
     sources:
-      - llvm-toolchain-precise
+      - llvm-toolchain-${TRAVIS_DIST_NAME}-4.0
       - ubuntu-toolchain-r-test
-      - beineri/opt-qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}-$TRAVIS_DIST_NAME
+      - beineri/opt-qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}-${TRAVIS_DIST_NAME}
     packages:
-      - clang-3.8
+      - clang-4.0
       - g++-5
       - gcc-5
       - qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}-meta-full
