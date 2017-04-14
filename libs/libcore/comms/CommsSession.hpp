@@ -27,7 +27,7 @@ class Key;
  *  * flow control state
  *
  * The CommsSession class thus represents a communication partner that could, would,
- * will, does and did communicate with us through a CommsChannel.
+ * will, does or did communicate with us through a CommsChannel.
  * \note compared to NodeAssociate, a session is more tightly integrated with CommsChannel
  * and less persistent.
  *

@@ -57,8 +57,9 @@
 
 	At this point session is established
 
+	NOTE: For every step in this protocol, if A is waiting for data from B that does not arrive, it will attempt to resend it's last message on a regular interval until it does (or some error condition or other state change occurs).
 
-	Comms have two parts, the intrinsic part and the courier part.
+	Comms have two "layers", the intrinsic layer and the courier layer.
 	The courier part is reserved for the application layer that wish to conduct communication using comms channel.
 	The intrinsic part is reserved for internal affairs of commschannel.
 	Intrinsic and courier parts of commschannel should not depend directly on one another and their respective implementation should not be mixed.
@@ -79,12 +80,10 @@
 		 + Generation of security primitives such as nonces
 		 + Encryption and decryption of protocol text
 	 + Reliability management
-		 + Maintaining of continued UDP connection over unreliable network components such as consumer grade routers by the dispatch of necessary communication with STUN services, or sending of antler packets.
+		 + Maintaining of continued UDP connection over unreliable network components such as consumer grade routers and wireles radios with poor coverage by the dispatch of necessary communication with STUN services, or sending of antler packets.
 		 + Detection and removal of duplicate and corrupt packets
-		 + Reordering of ordered packet sequences
 		 + Detection and re-sending of missing packets
-
-
+		 + Reordering of ordered packet sequences
 
 	Please note that the the expensive and complex intrinsic features such as
 	relibability and encryption of CommsChannel are invoked only when needed.

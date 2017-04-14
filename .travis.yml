@@ -1,44 +1,118 @@
-sudo: required
-dist: xenial
-language: c++
-compiler:
-  - gcc
-  - clang
+# Inspiration from http://stackoverflow.com/questions/29721240/ci-for-qt-app-build-with-different-qt-versions
+# Inspiration from http://stackoverflow.com/questions/22111549/travis-ci-with-clang-3-4-and-c11
+# Inspiration from https://jonasw.de/blog/2015/07/22/develop/cplusplus14-on-travis-with-cmake/
 
+language: cpp
+compiler: clang
+dist: trusty # xenial still not out in 2017 !1!!?
+env:
+	- QT_VERSION_MAJOR=5
+
+# Specify each OS/Qt5 version combination precisely
+matrix:
+	include:
+	########### LINUX BUILDS ############## 
+	#######################################
+	- os: linux
+		env:
+		- QT_VERSION_MINOR=6
+		- QT_VERSION_REVISION=2
+	#######################################
+	- os: linux
+		env:
+		- QT_VERSION_MINOR=8
+		- QT_VERSION_REVISION=0
+	#######################################
+	- os: linux
+		env:
+		- QT_VERSION_MINOR=9
+		- QT_VERSION_REVISION=0
+	########### OSX BUILDS ################ 
+	#######################################
+	- os: osx
+		env:
+		- QT_VERSION_MINOR=6
+		- QT_VERSION_REVISION=2
+	#######################################
+	- os: osx
+		env:
+		- QT_VERSION_MINOR=7
+		- QT_VERSION_REVISION=1
+	#######################################
+	- os: osx
+		env:
+		- QT_VERSION_MINOR=8
+		- QT_VERSION_REVISION=0
+	#######################################
+	- os: osx
+		env:
+		- QT_VERSION_MINOR=9
+		- QT_VERSION_REVISION=0
+
+# Nifty way to avoid sudo to speed up things a little
+addons:
+	apt:
+		sources:
+			- llvm-toolchain-precise
+			- ubuntu-toolchain-r-test
+			- beineri/opt-qt58-xenial
+		packages:
+			- clang-3.8
+			- g++-5
+			- gcc-5
+			- qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}-meta-full
+   
+before_install:
+	-	if [ "$TRAVIS_OS_NAME" = "osx" ]; then 
+			brew update;
+		fi
+         
 install:
-  - sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551
-  - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-  - sudo add-apt-repository --yes ppa:beineri/opt-qt58-xenial
-  - sudo apt-get install g++ qt58-meta-full
-  - sudo ls
-  - sudo pwd
+	- if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
+	- if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
+#  - if [ "$CXX" == "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50; fi
+#  - if [ "$CXX" == "clang++" ]; then cwd=$(pwd); fi
 #  - sudo chmod +x scripts/prep.sh  - sudo scripts/prep.sh
-
+	-	if [ "$QT_BASE" = "55" ]; then
+			if [ "$TRAVIS_OS_NAME" = "osx" ]; then 
+				brew install qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR};
+				brew link --force qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR};
+			fi
+		fi
 
 before_script:
-  - QT_ENV_SCRIPT=$(find /opt -name 'qt*-env.sh')
-  - source $QT_ENV_SCRIPT
+	- QT_ENV_SCRIPT=/opt/qt{QT_VERSION_MAJOR}${QT_VERSION_MINOR}/bin/qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}-env.sh
+	- source $QT_ENV_SCRIPT
 
 script:
-  - mkdir build
-  - cd build
-  - sudo touch ../local_overrides.pri
-  - qmake -project
-  - qmake ../OctoMY.pro
-  - make -j 9 -l
+	- OCOMY_BUILD_ROOT=~/build
+	- mkdir -p ${OCOMY_BUILD_ROOT}
+	- cd ${OCOMY_BUILD_ROOT}
+	- touch ../local_overrides.pri
+	- echo "CURRENT OS:           $TRAVIS_OS_NAME"
+	- echo "CURRENT DIR:          $(pwd)"
+	- echo "CURRENT C++ PATH:     $(which cpp)"
+	- echo "CURRENT C++ VERSION:  $(cpp --version)"
+	- echo "CURRENT QMAKE PATH:   $(which qmake)"
+	- echo "CURRENT QMAKE VERION: $(qmake -v)"
+	- qmake -project
+	- qmake ../OctoMY.pro
+	- make -j 2 -l
 
 
 notifications:
-  email:
-    recipients:
-      - lennartrolland@gmail.com
-    on_success: change
-    on_failure: always
-  irc:
-    channels:
-      - "irc.freenode.net:8001#octomy"
-    on_success: change
-    on_failure: always
-    template:
-      - "%{repository} (%{commit}) : %{message} %{foo} "
-      - "Build details: %{build_url}"
+	email:
+		recipients:
+			- lennartrolland@gmail.com
+		on_success: change
+		on_failure: always
+	irc:
+		channels:
+			- "irc.freenode.net:8001#octomy"
+		on_success: change
+		on_failure: always
+		template:
+			- "%{repository} (%{commit}) : %{message} %{foo} "
+			- "Build details: %{build_url}"
+
+

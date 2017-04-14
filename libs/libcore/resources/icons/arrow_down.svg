@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="228.97804mm"
-   height="134.33235mm"
-   viewBox="0 0 811.33952 475.98077"
+   width="60.000015"
+   height="60.000015"
+   viewBox="0 0 60.000015 60.000015"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r"
+   inkscape:version="0.92.1 unknown"
    sodipodi:docname="arrow_down.svg">
   <defs
      id="defs4" />
@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.49497475"
-     inkscape:cx="866.7802"
-     inkscape:cy="-266.63641"
+     inkscape:zoom="7.919596"
+     inkscape:cx="63.273447"
+     inkscape:cy="-11.768361"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -35,11 +35,12 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1879"
-     inkscape:window-height="1056"
+     inkscape:window-width="3799"
+     inkscape:window-height="2136"
      inkscape:window-x="41"
      inkscape:window-y="24"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     units="px" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -56,12 +57,19 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(825.20171,645.85545)">
-    <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:100;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m -789.84637,-610.50011 370,370 370.714287,-368.92857"
-       id="path4200"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccc" />
+     transform="translate(825.20172,2089.875)">
+    <g
+       inkscape:transform-center-y="8.1346786"
+       inkscape:transform-center-x="-533.39954"
+       transform="matrix(0,-0.06668631,-0.06668631,0,-823.5796,-2089.0252)"
+       id="g4505"
+       inkscape:label="Layer 1">
+      <path
+         sodipodi:nodetypes="ccc"
+         inkscape:connector-curvature="0"
+         id="path4503"
+         d="m -234.48923,-795.85725 -370,370 368.92857,370.714284"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:100;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
   </g>
 </svg>

@@ -2,6 +2,7 @@ TARGET =	clt
 TEMPLATE =	lib
 CONFIG +=	staticlib
 
+QT         += core core-private gui gui-private
 INCLUDEPATH += ./
 
 HEADERS	+= \

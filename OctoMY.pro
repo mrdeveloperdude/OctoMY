@@ -14,7 +14,7 @@ SUBDIRS += \
 
 # NOTE: USE_TESTS is enabled when useful in local_override.pri
 contains(DEFINES, USE_TESTS){
-	# Warn tghe user that there is potential problems in build config for tests
+	# Warn the user that there is potential problems in build config for tests
 	contains(DEFINES, USE_BASIC_TESTS | USE_WEB_TESTS){
 		message(TEST PROJECT WAS ADDED TO OCTOMY BUILD)
 	}

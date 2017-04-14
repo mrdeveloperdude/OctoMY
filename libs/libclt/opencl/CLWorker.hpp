@@ -78,6 +78,7 @@ protected:
 
 	void setInitPBO(const bool init);
 	void setInitCLContext(const bool init);
+	void setInitCLContextOld(const bool init);
 
 	void setInit(const bool init);
 

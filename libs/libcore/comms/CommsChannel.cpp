@@ -90,18 +90,24 @@ CommsSignature CommsChannel::localSignature()
 	return mLocalSignature;
 }
 
-void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHost , quint16 remotePort )
+void CommsChannel::countReceived()
 {
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	mLastRX=now;
 	sTotalRecCount++;
 	mRxCount++;
 	//qDebug()<<totalRecCount<<"--- RECEIV";
-	if(mLastRX-mLastRXST>1000) {
-		//qDebug().noquote()<<"REC count="<<QString::number(mRxCount)<<"/sec"; TODO, not correct, since more than one sec may have passed
+	auto timeSinceLast=mLastRX-mLastRXST;
+	if(timeSinceLast>1000) {
+		qDebug().noquote()<<"Packet Receive Count="<<QString::number(mRxCount/(timeSinceLast/1000))<<"/sec";
 		mLastRXST=mLastRX;
 		mRxCount=0;
 	}
+}
+
+void CommsChannel::receivePacketRaw( QByteArray datagram, QHostAddress remoteHost , quint16 remotePort )
+{
+	countReceived();
 	QSharedPointer<QDataStream> stream(new QDataStream(&datagram, QIODevice::ReadOnly));
 	quint32 octomyProtocolMagic=0;
 	quint8 octomyProtocolFlags=0;

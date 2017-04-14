@@ -147,6 +147,10 @@ public:
 
 	explicit CommsChannel(const QString &id, KeyStore &keystore, QObject *parent=nullptr);
 
+	private:
+
+	void countReceived();
+
 public:
 
 	CommsSessionDirectory &sessions();

@@ -33,6 +33,15 @@ static QPoint map(QPoint X, QRect input, QRect output)
 	return res;
 }
 
+
+
+static void clBuildCallback(cl_program program, void *user_data)
+{
+	qDebug()<<"clBuildCallback: "<<program;
+	//fprintf(stderr, "OpenCL Error (via pfn_notify): %s\n", errinfo);
+}
+
+
 class TestCLWorker: public CLWorker
 {
 private:
@@ -73,9 +82,13 @@ public:
 //		  " -g" <<
 		  "\n -D PARAM_SCREEN_WIDTH=" << size.width() <<
 		  "\n -D PARAM_SCREEN_HEIGHT=" << size.height() <<
+
+//		  "\n -cl-nv-opt-level 0"
+	//	  "\n -cl-nv-verbose"
+
 		  "";
 
-		auto parts=kernelParams.split("\n");
+		auto parts=kernelParams.split("\n", QString::SkipEmptyParts);
 		qDebug()<<"Defined CL parametes: ";
 		for(auto it:parts) {
 			qDebug().noquote()<<" + "<<it;
@@ -90,9 +103,6 @@ public:
 		} else {
 			qWarning()<<"ERROR: CTX or DEV was null";
 		}
-
-
-
 	}
 
 	void loadCLProgram()
@@ -107,10 +117,15 @@ public:
 				qDebug().nospace().noquote()<<"TCLW cl source "<<sourceLine.replace(QRegExp("[\t]"),"   ");
 			}
 			auto sourceStd=sourceCode.toStdString();
-			source=cl::Program::Sources (1, std::make_pair(sourceStd.c_str(), sourceCode.length() + 1));
+			cl::Program::Sources  source;
+			source.push_back({sourceStd.c_str(),sourceStd.length()});
+			//(1, std::make_pair(sourceStd.c_str(), sourceCode.length() + 1));
 			// Make program of the source code in the context
 			qDebug()<<"TCLW cl program";
-			program = cl::Program(*clContext(), source);
+			cl::Context *ctx=clContext();
+			QVERIFY ( nullptr != ctx);
+			cl::Program program(*ctx, source);
+
 			// Build program for these specific devices
 			qDebug()<<"TCLW cl build";
 			VECTOR_CLASS<cl::Device> buildDevices;
@@ -120,43 +135,60 @@ public:
 			auto kParamsStd=kernelParams.replace("\n","").toStdString();
 			std::cout << "Kernel parameters: "<<kParamsStd<<std::endl;
 			std::cout << "Program source: \n"<<sourceStd<<std::endl;
-			if(CL_SUCCESS!=program.build(buildDevices, kParamsStd.c_str()) ) {
 
-				std::cout << "Build Status: " << program.getBuildInfo<CL_PROGRAM_BUILD_STATUS>(buildDevices[0]) << std::endl;
-				std::cout << "Build Options:\t" << program.getBuildInfo<CL_PROGRAM_BUILD_OPTIONS>(buildDevices[0]) << std::endl;
-				std::cout << "Build Log:\t " << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(buildDevices[0]) << std::endl;
-
+			auto code=program.build(buildDevices, kParamsStd.c_str() /*, &clBuildCallback */) ;
+			if(CL_SUCCESS!=code) {
+				QString error=OCLErrorString(code);
+				qWarning()<<"ERROR: Build failed with "<<error<<" ( "<<code<<" ). More error data follows:";
+				int i=0;
 				for(cl::Device buildDev:buildDevices) {
-					auto buildStatus=program.getBuildInfo<CL_PROGRAM_BUILD_STATUS>(buildDev);
+
+					qDebug()<<" + REPORTING STATUS FOR BUILD DEVICE "<<i<< " ---------";
+					i++;
+					const cl_build_status buildStatus=program.getBuildInfo<CL_PROGRAM_BUILD_STATUS>(buildDev);
+					const cl_program_binary_type buildBinaryType=program.getBuildInfo<CL_PROGRAM_BINARY_TYPE>(buildDev);
+					const cl::STRING_CLASS buildLog=program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(buildDev);
+					const cl::STRING_CLASS buildOptions=program.getBuildInfo<CL_PROGRAM_BUILD_OPTIONS>(buildDev);
+					std::cout << " + Build Status: " << buildStatus << std::endl;
+					std::cout << " + Build Binary Type: " << buildBinaryType << std::endl;
+					std::cout << " + Build Options:\t" << buildOptions << std::endl;
+					std::cout << " + Build Log:\t " << buildLog << std::endl;
+
+
+
+
+//					auto buildStatus=program.getBuildInfo<CL_PROGRAM_BUILD_STATUS>(buildDev);
 					switch(buildStatus) {
 					// The build status returned if no build has been performed on the specified program object for device.
 					case(CL_BUILD_NONE): {
-						qDebug()<<"TCLW cl build for device "<<buildDev<<" NOT DONE";
+						qDebug()<<" + TCLW cl build for device "<<buildDev<<" NOT DONE";
 					}
 					break;
 					// The build status returned if the last call to clBuildProgram on the specified program object for device generated an error.
 					case(CL_BUILD_ERROR): {
 						auto strError = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(buildDev);
-						qWarning()<<"TCLW cl kernel ERROR: compilation failed with:\n" << QString::fromStdString(strError);
+						qWarning()<<" + TCLW cl kernel ERROR: compilation failed with:\n" << QString::fromStdString(strError);
 						exit(1);
 					}
 					break;
 					// The build status returned if the last call to clBuildProgram on the specified program object for device was successful.
 					case(CL_BUILD_SUCCESS) : {
-						qDebug()<<"TCLW cl build for device "<<buildDev<<" OK";
+						qDebug()<<" + TCLW cl build for device "<<buildDev<<" OK";
 					}
 					break;
 					//  The build status returned if the last call to clBuildProgram on the specified program object for device has not finished.
 					case(CL_BUILD_IN_PROGRESS): {
-						qDebug()<<"TCLW cl build for device "<<buildDev<<" IN PROGRESS";
+						qDebug()<<" + TCLW cl build for device "<<buildDev<<" IN PROGRESS";
 					}
 					break;
 					default: {
-						qDebug()<<"TCLW cl build for device "<<buildDev << " status unhandled: "<<buildStatus;
+						qDebug()<<" + TCLW cl build for device "<<buildDev << " status unhandled: "<<buildStatus;
 						exit(1);
 					}
 					}
 				}
+			} else {
+				qDebug()<<"Build succeeded!";
 			}
 			// Make kernel
 			qDebug()<<"TCLW cl kernel";
@@ -516,5 +548,3 @@ int main(int argc, char *argv[])
 	QTEST_SET_MAIN_SOURCE_PATH
 	return QTest::qExec(&tc, argc, argv);
 }
-
-

@@ -6,6 +6,7 @@
 #include "../libclt/opencl/CLUtils.hpp"
 
 #include <QThread>
+#include <qpa/qplatformnativeinterface.h>
 
 #include "../libutil/utility/IncludeOpenGLIntegration.hpp"
 
@@ -51,20 +52,24 @@ void CLWorker::setInitPBO(const bool init)
 								GLsizeiptr sz=width * height * sizeof(GLubyte) * 4;
 								glBufferData(GL_ARRAY_BUFFER, sz, nullptr, GL_STREAM_DRAW);
 								if(!GLSPEWERROR) {
-									qDebug()<<"CLWORKER! Prepared CL buffer data ("<<width<<"x"<<height <<") x 4 = "<<utility::humanReadableSize(sz,2);
-									mPboBuff = new cl::BufferGL(*mCtx, CL_MEM_WRITE_ONLY, mPbo);
-									if(!GLSPEWERROR) {
-										qDebug()<<"CLWORKER! Created CL buffer ("<<width<<"x"<<height <<") ";
+									qDebug().noquote().nospace()<<"CLWORKER! Prepared CL buffer data ("<<width<<"x"<<height <<") x 4 = "<<utility::humanReadableSize(sz,2);
+									if(nullptr!=mCtx) {
+										mPboBuff = new cl::BufferGL(*mCtx, CL_MEM_WRITE_ONLY, mPbo);
+										if(!GLSPEWERROR) {
+											qDebug().noquote().nospace()<<"CLWORKER! Created CL buffer ("<<width<<"x"<<height <<") ";
+										} else {
+											qWarning()<<"ERROR: Failed to create CL buffer for PBO";
+										}
+										glBindBuffer(GL_ARRAY_BUFFER, 0);
+										if(!GLSPEWERROR) {
+										} else {
+											qWarning()<<"ERROR: Failed to un-bind PBO";
+										}
 									} else {
-										qWarning()<<"ERROR: Failed to create CL buffer for PBO";
-									}
-									glBindBuffer(GL_ARRAY_BUFFER, 0);
-									if(!GLSPEWERROR) {
-									} else {
-										qWarning()<<"ERROR: Failed to un-bind PBO";
+										qWarning()<<"ERROR: ctx == null";
 									}
 								} else {
-									qWarning()<<"ERROR: Failed to prepare CL buffer data ("<<width<<"x"<<height <<") x 4 = "<<utility::humanReadableSize(sz,2);
+									qWarning().noquote().nospace()<<"ERROR: Failed to prepare CL buffer data ("<<width<<"x"<<height <<") x 4 = "<<utility::humanReadableSize(sz,2);
 								}
 							} else {
 								qWarning()<<"ERROR: Failed to bind PBO";
@@ -96,6 +101,26 @@ static void CL_CALLBACK clCallback( const char *a, const void *b, ::size_t c, vo
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void CLWorker::setInitCLContext(const bool init)
 {
 	qDebug().nospace()<<"CLWORKER! "<<(init?"INITIALIZING":"DE-INITIALIZING")<<" CL CONTEXT FOR INDEX "<<mIndex;
@@ -109,34 +134,164 @@ void CLWorker::setInitCLContext(const bool init)
 			if (isGLInteropWorker()) {
 				GLContext *rctx=sharingGLContext();
 				if (nullptr!=rctx) {
-					qDebug()<<"CLWORKER! ADDING SHARING CTX TO CL PROPERTIES: "<<rctx->toString();
 					rctx->currentize();
+					qDebug()<<"CLWORKER! ADDING SHARING CTX TO CL PROPERTIES: "<<rctx->toString();
+
 					initializeOpenGLFunctions();
+
+					auto ctx=rctx->context();
+/*
+#################################################
+					#################################################
+					#################################################
+					#################################################
+					#################################################
+					#################################################
+					#################################################
+					#################################################
+BIG IDEA: put all openCL and context code in one bigg "utility" object that gets called from everywhere. Allows for testing code easier (whithout running up a whol bunch of unrelated stuff)
+*/
+
+					const cl_platform_id platformID=platform();
+
+					cl_context_properties contextProps[] = { CL_CONTEXT_PLATFORM, (cl_context_properties) platformID,
+															 CL_GL_CONTEXT_KHR, 0,
+															 0, 0,
+															 0
+														   };
+					QPlatformNativeInterface *nativeIf = qGuiApp->platformNativeInterface();
+					void *dpy = nativeIf->nativeResourceForIntegration(QByteArrayLiteral("egldisplay")); // EGLDisplay
+					if (nullptr!=dpy) {
+						void *nativeContext = nativeIf->nativeResourceForContext("eglcontext", ctx);
+						if (!nativeContext) {
+							qWarning("ERROR: Failed to get the underlying EGL context from the current QOpenGLContext");
+						} else {
+							qDebug()<<"! ! ! GOT NATIVE EGL CONTEXT";
+						}
+						contextProps[3] = (cl_context_properties) nativeContext;
+						contextProps[4] = CL_EGL_DISPLAY_KHR;
+						contextProps[5] = (cl_context_properties) dpy;
+					} else {
+						dpy = nativeIf->nativeResourceForIntegration(QByteArrayLiteral("display")); // Display *
+						void *nativeContext = nativeIf->nativeResourceForContext("glxcontext", ctx);
+						if (!nativeContext) {
+							qWarning("ERROR: Failed to get the underlying GLX context from the current QOpenGLContext");
+						} else {
+							qDebug()<<"! ! ! GOT NATIVE GLX CONTEXT";
+						}
+						contextProps[3] = (cl_context_properties) nativeContext;
+						contextProps[4] = CL_GLX_DISPLAY_KHR;
+						contextProps[5] = (cl_context_properties) dpy;
+					}
+
+					/*
 					//Build context dynamically based on returned values for GLX context and display.
 					cl_context_properties cps[7]= {0};
 					const GLXContext glxCtx=glXGetCurrentContext();
 					const Display* glxDisp=glXGetCurrentDisplay();
-					const auto plat=platform();
+					const cl_platform_id platformID=platform();
 					// Build properties list
 					int i=0;
 					if(0!=glxCtx) {
 						qDebug()<<"CLWORKER! Added property: GLX enabled";
 						cps[i++]=CL_GL_CONTEXT_KHR;
-						cps[i++]= (intptr_t)glxCtx;
+						cps[i++]= (cl_context_properties)(glxCtx);
 					} else {
 						qDebug()<<"CLWORKER! Added property: GLX disabled";
 					}
 					if(0!=glxDisp) {
 						qDebug()<<"CLWORKER! Added property: GLX Display enabled";
 						cps[i++]=CL_GLX_DISPLAY_KHR;
-						cps[i++]= (intptr_t)glxDisp;
+						cps[i++]= (cl_context_properties)(glxDisp);
 					} else {
 						qDebug()<<"CLWORKER! Added property: GLX Display disabled";
 					}
-					if(0!=plat) {
-						qDebug()<<"CLWORKER! Added property: Platform enabled";
+					if(0!=platformID) {
+						qDebug()<<"CLWORKER! Added property: Platform enabled with ID "<<platformID;
 						cps[i++]=CL_CONTEXT_PLATFORM;
-						cps[i++]=(cl_context_properties)plat;
+						cps[i++]=(cl_context_properties)(platformID);
+					} else {
+						qDebug()<<"CLWORKER! Added property: Platform disabled";
+					}
+					//Terminate with 0
+					cps[i++]=0;
+					qDebug()<<"CLWORKER! Put a total of "<<i <<" properties in the CL context";
+					*/
+					properties=contextProps;
+
+					qDebug()<<"CLWORKER! Creating the CL Context";
+					mCtx = new cl::Context(devices, properties, &clCallback);
+					if(nullptr==mCtx) {
+						qWarning()<<"CLWORKER! ERROR: Could not create CL context";
+					}
+				}
+			} else {
+				qWarning()<<"CLWORKER! ERROR: no sharing GL context";
+			}
+		} else {
+			qWarning()<<"CLWORKER! ERROR: no CL device";
+		}
+	} else {
+		if(nullptr!=mCtx) {
+			delete mCtx;
+			mCtx=nullptr;
+		} else {
+			qWarning()<<"CLWORKER! ERROR: no CL context";
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+void CLWorker::setInitCLContextOld(const bool init)
+{
+	qDebug().nospace()<<"CLWORKER! "<<(init?"INITIALIZING":"DE-INITIALIZING")<<" CL CONTEXT FOR INDEX "<<mIndex;
+	if(init) {
+		if(nullptr!=mDev) {
+			VECTOR_CLASS<cl::Device> devices;
+			devices.push_back(*mDev);
+			cl::Platform platform = (cl::Platform)mDev->getInfo<CL_DEVICE_PLATFORM>();
+			cl_context_properties * properties=nullptr;
+			// Extra properties are adde when doing OpenCL/OpenGL interoperability
+			if (isGLInteropWorker()) {
+				GLContext *rctx=sharingGLContext();
+				if (nullptr!=rctx) {
+					rctx->currentize();
+					qDebug()<<"CLWORKER! ADDING SHARING CTX TO CL PROPERTIES: "<<rctx->toString();
+
+					initializeOpenGLFunctions();
+					//Build context dynamically based on returned values for GLX context and display.
+					cl_context_properties cps[7]= {0};
+					const GLXContext glxCtx=glXGetCurrentContext();
+					const Display* glxDisp=glXGetCurrentDisplay();
+					const cl_platform_id platformID=platform();
+					// Build properties list
+					int i=0;
+					if(0!=glxCtx) {
+						qDebug()<<"CLWORKER! Added property: GLX enabled";
+						cps[i++]=CL_GL_CONTEXT_KHR;
+						cps[i++]= (cl_context_properties)(glxCtx);
+					} else {
+						qDebug()<<"CLWORKER! Added property: GLX disabled";
+					}
+					if(0!=glxDisp) {
+						qDebug()<<"CLWORKER! Added property: GLX Display enabled";
+						cps[i++]=CL_GLX_DISPLAY_KHR;
+						cps[i++]= (cl_context_properties)(glxDisp);
+					} else {
+						qDebug()<<"CLWORKER! Added property: GLX Display disabled";
+					}
+					if(0!=platformID) {
+						qDebug()<<"CLWORKER! Added property: Platform enabled with ID "<<platformID;
+						cps[i++]=CL_CONTEXT_PLATFORM;
+						cps[i++]=(cl_context_properties)(platformID);
 					} else {
 						qDebug()<<"CLWORKER! Added property: Platform disabled";
 					}

@@ -4,22 +4,37 @@
 
 #include <QDebug>
 
-CLDeviceSelection::CLDeviceSelection(const QString selectString, bool allowGPU, bool allowCPU)
+CLDeviceSelection::CLDeviceSelection(const QString selectString, bool allowGPU, bool allowCPU, bool mustSupportGLInterop)
 {
-	VECTOR_CLASS<cl::Platform> platforms;
-	CL_DETECT_ERROR(cl::Platform::get(&platforms));
+	// Get all platforms available to us on this system
+	VECTOR_CLASS<cl::Platform> allPlatforms;
+	CL_DETECT_ERROR(cl::Platform::get(&allPlatforms));
 	int selectIndex = 0;
 	qDebug().nospace().noquote()<<"Making OpenCL device selection with selectstring='"<< selectString<< "', allowGPU="<<allowGPU<<", allowCPU="<<allowCPU<<"";
-	for (size_t i = 0; i < platforms.size(); ++i) {
-		qDebug().nospace().noquote()<<"Platform-" << i << ": " << QString::fromLocal8Bit(platforms[i].getInfo<CL_PLATFORM_VENDOR>().c_str());
+	for (size_t i = 0; i < allPlatforms.size(); ++i) {
+		qDebug().nospace().noquote()<<"Platform-" << i << ": " << QString::fromLocal8Bit(allPlatforms[i].getInfo<CL_PLATFORM_VENDOR>().c_str());
 
 		// Get the list of devices available on the platform
 		VECTOR_CLASS<cl::Device> devices;
-		platforms[i].getDevices(CL_DEVICE_TYPE_ALL, &devices);
+		allPlatforms[i].getDevices(CL_DEVICE_TYPE_ALL, &devices);
 
 		for (size_t j = 0; j < devices.size(); ++j) {
 			bool selected = false;
-			auto type=devices[j].getInfo<CL_DEVICE_TYPE>();
+			const cl_device_type type=devices[j].getInfo<CL_DEVICE_TYPE>();
+
+			if(mustSupportGLInterop) {
+				const cl::STRING_CLASS extStd=devices[j].getInfo<CL_DEVICE_EXTENSIONS>();
+				const QString extensions=QString::fromStdString(extStd);
+				qDebug()<<"EXTENSIONS: "<<extensions;
+				if(extensions.contains("cl_khr_gl_sharing")) {
+					qDebug()<<" INTEROP SUPPORTED!!!!!!!";
+				}
+			}
+
+
+
+
+
 			if ((allowGPU && (type == CL_DEVICE_TYPE_GPU)) || (allowCPU && (type == CL_DEVICE_TYPE_CPU))) {
 				if (selectString.length() == 0) {
 					selected = true;
@@ -54,5 +69,3 @@ CLDeviceSelection::~CLDeviceSelection()
 {
 
 }
-
-

@@ -19,7 +19,7 @@ TEST_PROJECTS+= \
 	testArduMY \
 #	testBlob \
 #	testCarSteeringWidget \
-#	testCommsChannel \
+	testCommsChannel \
 #	testCreepyVoice \
 #	testDeliveryWizard \
 #	testDiscovery \

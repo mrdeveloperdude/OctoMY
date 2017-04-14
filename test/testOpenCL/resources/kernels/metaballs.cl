@@ -1,12 +1,12 @@
-#pragma OPENCL EXTENSION cl_amd_printf : enable
-#pragma OPENCL EXTENSION cl_intel_printf : enable
+//#pragma OPENCL EXTENSION cl_amd_printf : enable
+//#pragma OPENCL EXTENSION cl_intel_printf : enable
 
 kernel void metaballs(global const int2 *sources, int num, float charge, float limit, int apply, __global uint *pbo){
 
-/*
+
 	int x=get_global_id(0);
 	int y=get_global_id(1);
-	int gid= x+w*PARAM_SCREEN_WIDTH;
+	int gid= x+y*PARAM_SCREEN_WIDTH;
 	float sum=0.0f;
 	int i=0;
 	for(i=0;i<num;i++){
@@ -23,7 +23,7 @@ kernel void metaballs(global const int2 *sources, int num, float charge, float l
 	uint b = sum*256.0;
 	uint a=0;
 	pbo[gid] = r | (g << 8) | (b << 16)| (a << 24);
-	*/
+
 
 }
 

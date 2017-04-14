@@ -15,7 +15,7 @@ class CLDeviceSelection: public QVector<cl::Device>
 {
 
 public:
-	explicit CLDeviceSelection(const QString selectString="", bool allowGPU=true, bool allowCPU=false);
+	explicit CLDeviceSelection(const QString selectString="", bool allowGPU=true, bool allowCPU=false, bool mustSupportGLInterop=true);
 	virtual  ~CLDeviceSelection();
 
 };
