@@ -4,7 +4,7 @@
 # Inspiration from http://apt.llvm.org/
 
 language: cpp
-compiler: clang
+compiler: gcc
 os:
   - linux
 #  - osx
@@ -24,12 +24,17 @@ env:
 addons:
   apt:
     sources:
-      - llvm-toolchain-trusty-4.0
       - ubuntu-toolchain-r-test
     packages:
-      - clang-4.0
       - g++-5
       - gcc-5
+
+addons:
+  apt:
+    sources:
+      - llvm-toolchain-trusty-4.0
+    packages:
+      - clang-4.0
 
 addons:
   apt:
@@ -50,7 +55,7 @@ install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
   - if [ "$CXX" = "clang++" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
 #  - if [ "$CXX" == "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50; fi
-#  - if [ "$CXX" == "clang++" ]; then cwd=$(pwd); fi
+  - if [ "$CXX" == "clang++" ]; then cwd=$(pwd); fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then 
       brew install qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR};
       brew link --force qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR};
