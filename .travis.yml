@@ -4,7 +4,7 @@
 # Inspiration from http://apt.llvm.org/
 
 env:
-  global:
+  matrix:
     - QT_VERSION_MAJOR=5
     # xenial still not out in 2017 !1!!?
     - TRAVIS_DIST_NAME=trusty
@@ -13,6 +13,7 @@ env:
 language: cpp
 compiler: clang
 dist: $TRAVIS_DIST_NAME
+
 
 # Specify each OS/Qt5 version combination precisely
 matrix:
@@ -75,7 +76,7 @@ before_install:
          
 install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
-  - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
+  - if [ "$CXX" = "clang++" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
 #  - if [ "$CXX" == "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50; fi
 #  - if [ "$CXX" == "clang++" ]; then cwd=$(pwd); fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then 
