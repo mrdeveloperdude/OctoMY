@@ -2,11 +2,15 @@
 # Inspiration from http://stackoverflow.com/questions/22111549/travis-ci-with-clang-3-4-and-c11
 # Inspiration from https://jonasw.de/blog/2015/07/22/develop/cplusplus14-on-travis-with-cmake/
 
-language: cpp
-compiler: clang
-dist: trusty # xenial still not out in 2017 !1!!?
 env:
   - QT_VERSION_MAJOR=5
+  # xenial still not out in 2017 !1!!?
+  - TRAVIS_DIST_NAME=trusty
+  
+
+language: cpp
+compiler: clang
+dist: $TRAVIS_DIST_NAME
 
 # Specify each OS/Qt5 version combination precisely
 matrix:
@@ -55,7 +59,7 @@ addons:
     sources:
       - llvm-toolchain-precise
       - ubuntu-toolchain-r-test
-      - beineri/opt-qt58-xenial
+      - beineri/opt-qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}-$TRAVIS_DIST_NAME
     packages:
       - clang-3.8
       - g++-5
@@ -73,11 +77,9 @@ install:
 #  - if [ "$CXX" == "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50; fi
 #  - if [ "$CXX" == "clang++" ]; then cwd=$(pwd); fi
 #  - sudo chmod +x scripts/prep.sh  - sudo scripts/prep.sh
-  - if [ "$QT_BASE" = "55" ]; then
-      if [ "$TRAVIS_OS_NAME" = "osx" ]; then 
-        brew install qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR};
-        brew link --force qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR};
-      fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then 
+      brew install qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR};
+      brew link --force qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR};
     fi
 
 before_script:
