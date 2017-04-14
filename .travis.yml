@@ -69,13 +69,11 @@ script:
   - mkdir -p ${OCOMY_BUILD_ROOT}
   - cd ${OCOMY_BUILD_ROOT}
   - touch ../local_overrides.pri
-  - echo "CURRENT OS:           ${TRAVIS_OS_NAME}"
-  - echo "CURRENT DIR:          $(pwd)"
-  - echo "CURRENT C++ PATH:     $(which cpp)"
-  - echo "CURRENT C++ VERSION:  $(cpp --version)"
-  - echo "CURRENT QMAKE PATH:   $(which qmake)"
-  - echo "CURRENT QMAKE VERION: $(qmake -v)"
-  - qmake -project
+  - pwd
+  - which c++
+  - c++ --version
+  - which qmake
+  - qmake -v
   - qmake ../OctoMY.pro
   - make -j 2 -l
 
