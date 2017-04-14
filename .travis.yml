@@ -58,7 +58,7 @@ install:
 #  - sudo chmod +x scripts/prep.sh  - sudo scripts/prep.sh
 
 before_script:
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export QT_ENV_SCRIPT="/opt/qt{QT_VERSION_MAJOR}${QT_VERSION_MINOR}/bin/qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}-env.sh"; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export QT_ENV_SCRIPT="/opt/qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}/bin/qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}-env.sh"; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then echo "QT_ENV_SCRIPT=${QT_ENV_SCRIPT}"; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cat ${QT_ENV_SCRIPT}; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then source ${QT_ENV_SCRIPT}; fi
