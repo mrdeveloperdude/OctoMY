@@ -17,41 +17,41 @@ matrix:
   include:
   ########### LINUX BUILDS ############## 
   #######################################
-  - os: linux
-    env:
-    - QT_VERSION_MINOR=6
-    - QT_VERSION_REVISION=2
+#  - os: linux
+#    env:
+#    - QT_VERSION_MINOR=6
+#    - QT_VERSION_REVISION=2
   #######################################
   - os: linux
     env:
     - QT_VERSION_MINOR=8
     - QT_VERSION_REVISION=0
   #######################################
-  - os: linux
-    env:
-    - QT_VERSION_MINOR=9
-    - QT_VERSION_REVISION=0
+#  - os: linux
+#    env:
+#    - QT_VERSION_MINOR=9
+#    - QT_VERSION_REVISION=0
   ########### OSX BUILDS ################ 
   #######################################
-  - os: osx
-    env:
-    - QT_VERSION_MINOR=6
-    - QT_VERSION_REVISION=2
+#  - os: osx
+#    env:
+#    - QT_VERSION_MINOR=6
+#    - QT_VERSION_REVISION=2
   #######################################
-  - os: osx
-    env:
-    - QT_VERSION_MINOR=7
-    - QT_VERSION_REVISION=1
+#  - os: osx
+#    env:
+#    - QT_VERSION_MINOR=7
+#    - QT_VERSION_REVISION=1
   #######################################
-  - os: osx
-    env:
-    - QT_VERSION_MINOR=8
-    - QT_VERSION_REVISION=0
+#  - os: osx
+#    env:
+#    - QT_VERSION_MINOR=8
+#    - QT_VERSION_REVISION=0
   #######################################
-  - os: osx
-    env:
-    - QT_VERSION_MINOR=9
-    - QT_VERSION_REVISION=0
+#  - os: osx
+#    env:
+#   - QT_VERSION_MINOR=9
+#   - QT_VERSION_REVISION=0
 
 # Nifty way to avoid sudo to speed up things a little
 addons:
