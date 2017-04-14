@@ -88,7 +88,11 @@ env:
   - QT_ENV_SCRIPT=/opt/qt{QT_VERSION_MAJOR}${QT_VERSION_MINOR}/bin/qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}-env.sh
 
 before_script:
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then source ${QT_ENV_SCRIPT}
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+      echo "QT_ENV_SCRIPT=${QT_ENV_SCRIPT}"
+      cat ${QT_ENV_SCRIPT}
+      source ${QT_ENV_SCRIPT}
+    fi
 
 script:
   - OCOMY_BUILD_ROOT=~/build
