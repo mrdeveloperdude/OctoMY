@@ -24,14 +24,14 @@ env:
 addons:
   apt:
     sources:
-      - llvm-toolchain-${TRAVIS_DIST_NAME}-${CLANG_VERSION}
+      - llvm-toolchain-trusty-4.0
       - ubuntu-toolchain-r-test
-      - beineri/opt-qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}-${TRAVIS_DIST_NAME}
+      - beineri/opt-qt58-trusty
     packages:
-      - clang-${CLANG_VERSION}
+      - clang-4.0
       - g++-5
       - gcc-5
-      - qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}-meta-full
+      - qt58-meta-full
    
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then 
