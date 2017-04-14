@@ -4,11 +4,11 @@
 # Inspiration from http://apt.llvm.org/
 
 env:
-  - QT_VERSION_MAJOR=5
-  # xenial still not out in 2017 !1!!?
-  - TRAVIS_DIST_NAME=trusty
-  - CLANG_VERSION=4.0
-  
+  global:
+    - QT_VERSION_MAJOR=5
+    # xenial still not out in 2017 !1!!?
+    - TRAVIS_DIST_NAME=trusty
+    - CLANG_VERSION=4.0
 
 language: cpp
 compiler: clang
