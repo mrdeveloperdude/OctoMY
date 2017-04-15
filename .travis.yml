@@ -30,9 +30,12 @@ addons:
 #      - sourceline: 'deb http://ppa.launchpad.net/beineri/opt-qt58-trusty/ubuntu trusty main'
       - key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0x10C56D0DE9977759'
     packages:
+###################################### GCC
       - g++-6
       - gcc-6
+###################################### Clang
       - clang-4.0
+###################################### Qt5
 #      - qt58-meta-full # THIS WORKS BUT IS SLOW SO WE OPTIMIZE BY REMOVING WHAT WE DONT NEED
       - qt583d
       - qt58base
@@ -62,7 +65,36 @@ addons:
 #      - qt58websockets
       - qt58x11extras
 #      - qt58xmlpatterns
-
+###################################### Dependencies
+#-lGL -lpthread -lpulse-mainloop-glib -lpulse -lglib-2.0 
+      - build-essential"
+	# XCB/X11 support
+      - libx11-xcb-dev
+      # OpenGL - GLX
+      - libglu1-mesa-dev
+      - libxrender-dev
+      # Audio
+      - libasound2-dev
+      - libpulse-dev
+	 # G-Streamer support
+      - libgstreamer0.10-dev
+      - libgstreamer-plugins-base0.10-dev
+      - libgstreamer-plugins-bad0.10-dev
+      - libgstreamer0.10-dev
+	# XKB fixes for Qt5.4x
+      - libxkbfile1
+      - x11-xkb-utils
+      - xkb-data
+      - libxkbfile-dev
+	# SQLite 3 support
+      - libsqlite-dev
+      - libsqlite3-dev
+	# SSL/TLS Support
+      - libssl-dev
+      - gnutls-dev
+      - libgnutls-dev
+#	DEPS+=" libgnutls-openssl-dev" # Not available on debian
+      - libsslcommon2-dev"
     
 
 before_install:
