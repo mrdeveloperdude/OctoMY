@@ -2,6 +2,8 @@
 
 
 #include <QDebug>
+#include <qmath.h>
+
 
 Tremolo::Tremolo()
 	: freq(20.0)

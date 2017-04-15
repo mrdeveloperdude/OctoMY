@@ -27,7 +27,7 @@ addons:
       - ubuntu-toolchain-r-test
       - llvm-toolchain-trusty-4.0
       - sourceline: 'ppa:beineri/opt-qt58-trusty'
-      - sourceline: 'deb http://ppa.launchpad.net/beineri/opt-qt58-trusty/ubuntu trusty main'
+#      - sourceline: 'deb http://ppa.launchpad.net/beineri/opt-qt58-trusty/ubuntu trusty main'
       - key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0x10C56D0DE9977759'
     packages:
       - g++-5
