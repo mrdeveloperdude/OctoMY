@@ -68,7 +68,7 @@ addons:
 ###################################### Dependencies
 #-lGL -lpthread -lpulse-mainloop-glib -lpulse -lglib-2.0 
       - build-essential"
-	# XCB/X11 support
+      # XCB/X11 support
       - libx11-xcb-dev
       # OpenGL - GLX
       - libglu1-mesa-dev
@@ -76,24 +76,24 @@ addons:
       # Audio
       - libasound2-dev
       - libpulse-dev
-	 # G-Streamer support
+      # G-Streamer support
       - libgstreamer0.10-dev
       - libgstreamer-plugins-base0.10-dev
       - libgstreamer-plugins-bad0.10-dev
       - libgstreamer0.10-dev
-	# XKB fixes for Qt5.4x
+      # XKB fixes for Qt5.4x
       - libxkbfile1
       - x11-xkb-utils
       - xkb-data
       - libxkbfile-dev
-	# SQLite 3 support
+      # SQLite 3 support
       - libsqlite-dev
       - libsqlite3-dev
-	# SSL/TLS Support
+      # SSL/TLS Support
       - libssl-dev
       - gnutls-dev
       - libgnutls-dev
-#	DEPS+=" libgnutls-openssl-dev" # Not available on debian
+      # DEPS+=" libgnutls-openssl-dev" # Not available on debian
       - libsslcommon2-dev"
     
 
