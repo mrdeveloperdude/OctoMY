@@ -30,8 +30,8 @@ addons:
 #      - sourceline: 'deb http://ppa.launchpad.net/beineri/opt-qt58-trusty/ubuntu trusty main'
       - key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0x10C56D0DE9977759'
     packages:
-      - g++-5
-      - gcc-5
+      - g++-6
+      - gcc-6
       - clang-4.0
 #      - qt58-meta-full # THIS WORKS BUT IS SLOW SO WE OPTIMIZE BY REMOVING WHAT WE DONT NEED
       - qt583d
@@ -71,7 +71,7 @@ before_install:
     fi
   - if test -n "$BUILD_CC"; then export CC="$BUILD_CC"; fi
   - if test -n "$BUILD_CXX"; then export CXX="$BUILD_CXX"; fi
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-6" CC="gcc-6"; fi
   - if [ "$CXX" = "clang++" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
 #  - if [ "$CXX" == "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50; fi
          
@@ -98,14 +98,13 @@ script:
   - pwd
   - which c++
   - which g++
-  - which g++5
   - which clang++
   - c++ --version
   - which ${CXX}
   - ${CXX} --version
   - which qmake
   - qmake -v
-  - qmake QMAKE_CXX=g++-5 QMAKE_CC=gcc-5 ../OctoMY.pro
+  - qmake QMAKE_CXX=g++-6 QMAKE_CC=gcc-6 ../OctoMY.pro
   - make -j 2 -l
 
 
