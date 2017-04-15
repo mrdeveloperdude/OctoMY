@@ -43,18 +43,48 @@ addons:
       - sourceline: 'deb http://ppa.launchpad.net/beineri/opt-qt58-trusty/ubuntu trusty main'
       - key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0x10C56D0DE9977759'
     packages:
-      - qt58-meta-full
+#      - qt58-meta-full # THIS WORKS BUT IS SLOW SO WE OPTIMIZE BY REMOVING WHAT WE DONT NEED
+      - qt583d
+      - qt58base
+# qt58canvas3d
+      - qt58connectivity
+#      - qt58declarative
+#      - qt58doc
+      - qt58gamepad
+      - qt58graphicaleffects
+      - qt58imageformats
+      - qt58location
+      - qt58multimedia
+#      - qt58qbs
+#      - qt58quickcontrols
+#      - qt58quickcontrols2
+      - qt58script
+#      - qt58scxml
+      - qt58sensors
+      - qt58serialbus
+      - qt58serialport
+#      - qt58speech
+      - qt58svg
+      - qt58tools
+      - qt58translations
+#      - qt58webchannel
+#      - qt58webengine
+#      - qt58websockets
+      - qt58x11extras
+#      - qt58xmlpatterns
     
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then 
       brew update;
     fi
-         
-install:
+  - if test -n "$BUILD_CC"; then export CC="$BUILD_CC"; fi
+  - if test -n "$BUILD_CXX"; then export CXX="$BUILD_CXX"; fi
   - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
   - if [ "$CXX" = "clang++" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
 #  - if [ "$CXX" == "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50; fi
+         
+install:
   - if [ "$CXX" == "clang++" ]; then cwd=$(pwd); fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then 
       brew install qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR};
@@ -76,10 +106,16 @@ script:
   - touch ../local_overrides.pri
   - pwd
   - which c++
+  - which g++
+  - which g++5
+  - which clang++
+  - cat $(which c++)
   - c++ --version
+  - which ${CXX}
+  - ${CXX} --version
   - which qmake
   - qmake -v
-  - qmake ../OctoMY.pro
+  - qmake QMAKE_CXX=g++-5 QMAKE_CC=gcc-5 ../OctoMY.pro
   - make -j 2 -l
 
 
