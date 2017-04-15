@@ -6,6 +6,8 @@
 #include <QDebug>
 #include <QPainter>
 
+#include <qmath.h>
+
 template <typename T>
 class GaitController;
 

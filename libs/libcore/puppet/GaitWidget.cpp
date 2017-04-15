@@ -1,8 +1,8 @@
 #include "GaitWidget.hpp"
 
 #include <QPainter>
-
 #include <QMouseEvent>
+
 GaitWidget::GaitWidget(QWidget *parent)
 	: QWidget(parent)
 	, m_gait(0)
