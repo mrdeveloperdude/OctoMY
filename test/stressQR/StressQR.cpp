@@ -9,6 +9,8 @@
 #include <QGridLayout>
 #include <QLabel>
 
+#include <qmath.h>
+
 /*!
  * \brief StressQR::stress will generate random data encoded into
  * randomly sized QR images, transformed randomly into a scene image

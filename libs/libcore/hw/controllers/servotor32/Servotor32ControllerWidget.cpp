@@ -7,6 +7,8 @@
 #include "agent/AgentConstants.hpp"
 #include <QSpacerItem>
 
+#include <qmath.h>
+
 Servotor32ControllerWidget::Servotor32ControllerWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::HexyTool)
