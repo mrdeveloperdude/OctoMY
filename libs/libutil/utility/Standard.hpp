@@ -13,6 +13,7 @@
 
 #include <QDebug>
 #include <QString>
+#include <qmath.h>
 
 #ifdef USE_FEATURE_BUFFER_HONEYPOT
 #define BUFFER_HONEYPOT BufferHoneyPot bhp_(true)
