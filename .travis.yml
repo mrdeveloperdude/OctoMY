@@ -91,7 +91,7 @@ addons:
       - libsqlite3-dev
       # SSL/TLS Support
       - libssl-dev
-      - gnutls-dev
+#      - gnutls-dev
       - libgnutls-dev
       # DEPS+=" libgnutls-openssl-dev" # Not available on debian
       - libsslcommon2-dev
