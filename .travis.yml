@@ -104,7 +104,7 @@ script:
   - ${CXX} --version
   - which qmake
   - qmake -v
-  - qmake QMAKE_CXX=g++-6 QMAKE_CC=gcc-6 ../OctoMY.pro
+  - qmake QMAKE_CXX=g++-6 QMAKE_CC=gcc-6 QMAKE_LINK=g++-6 ../OctoMY.pro
   - make -j 2 -l
 
 
