@@ -7,6 +7,8 @@
 #include <QTimer>
 #include <QMouseEvent>
 
+#include <qmath.h>
+
 CarSteeringWidget::CarSteeringWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::CarSteeringWidget)

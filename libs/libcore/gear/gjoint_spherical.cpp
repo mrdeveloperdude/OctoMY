@@ -3,13 +3,13 @@
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met: 
+// modification, are permitted provided that the following conditions are met:
 //
 // 1. Redistributions of source code must retain the above copyright notice, this
-//    list of conditions and the following disclaimer. 
+//    list of conditions and the following disclaimer.
 // 2. Redistributions in binary form must reproduce the above copyright notice,
 //    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution. 
+//    and/or other materials provided with the distribution.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -31,6 +31,8 @@
 #include "rmatrix3j.h"
 #include "liegroup_rmatrix3_ext.h"
 
+#include <qmath.h>
+
 static const gReal PI = (gReal)3.14159265358979;
 
 
@@ -51,9 +53,9 @@ GJointSpherical::GJointSpherical()
 	allocate_memory(3);
 }
 
-void GJointSpherical::setFixedCoordinateChart(CoordinateChartForSphericalJoint cc_) 
-{ 
-	coord_chart = cc_; 
+void GJointSpherical::setFixedCoordinateChart(CoordinateChartForSphericalJoint cc_)
+{
+	coord_chart = cc_;
 	b_fixed_coord_chart = true;
 }
 
@@ -73,62 +75,62 @@ void GJointSpherical::update_short()
 
 		case EULER_ZYX:
 
-			T = SE3(c0*c1, 
-				s0*c1, 
-				-s1, 
-				c0*s1*s2 - s0*c2, 
-				s0*s1*s2 + c0*c2, 
-				c1*s2, 
-				c0*s1*c2 + s0*s2, 
-				s0*s1*c2 - c0*s2, 
-				c1*c2, 
+			T = SE3(c0*c1,
+				s0*c1,
+				-s1,
+				c0*s1*s2 - s0*c2,
+				s0*s1*s2 + c0*c2,
+				c1*s2,
+				c0*s1*c2 + s0*s2,
+				s0*s1*c2 - c0*s2,
+				c1*c2,
 				0.0, 0.0, 0.0);
 
 			inv_T = SE3(~T.GetRotation());
 
 			// S = [   -s1,    0,   1
 			//       s2*c1,   c2,   0
-			//       c1*c2,  -s2,   0 
+			//       c1*c2,  -s2,   0
 			//           0,    0,   0
 			//           0,    0,   0
 			//           0,    0,   0 ];
 			S.SetZero();
-			S[0] = -s1; S[1] = s2*c1; S[2] = c1*c2; 
-			S[7] = c2; S[8] = -s2; 
+			S[0] = -s1; S[1] = s2*c1; S[2] = c1*c2;
+			S[7] = c2; S[8] = -s2;
 			S[12] = 1.0;
 
 			break;
 
 		case EULER_ZYZ:
 
-			T = SE3(c0*c1*c2 - s0*s2, 
-				s0*c1*c2 + c0*s2, 
-				-s1*c2,	
-				-c0*c1*s2 - s0*c2, 
-				c0*c2 - s0*c1*s2, 
-				s1*s2, 
-				c0*s1, 
-				s0*s1, 
-				c1, 
+			T = SE3(c0*c1*c2 - s0*s2,
+				s0*c1*c2 + c0*s2,
+				-s1*c2,
+				-c0*c1*s2 - s0*c2,
+				c0*c2 - s0*c1*s2,
+				s1*s2,
+				c0*s1,
+				s0*s1,
+				c1,
 				0, 0, 0);
 
 			inv_T = SE3(~T.GetRotation());
 
 			// S = [-s1*c2,   s2,   0
 			//       s1*s2,   c2,   0
-			//          c1,    0,   1 
+			//          c1,    0,   1
 			//           0,    0,   0
 			//           0,    0,   0
 			//           0,    0,   0 ];
 			S.SetZero();
-			S[0] = -s1*c2; S[1] = s1*s2; S[2] = c1; 
-			S[6] = s2; S[7] = c2; 
+			S[0] = -s1*c2; S[1] = s1*s2; S[2] = c1;
+			S[6] = s2; S[7] = c2;
 			S[14] = 1.0;
 
 			break;
 
 		case EULER_XYZ:
-			
+
 			T = SE3(c1*c2,
 				c2*s0*s1 + c0*s2,
 				-(c0*c2*s1) + s0*s2,
@@ -141,7 +143,7 @@ void GJointSpherical::update_short()
 				0.0, 0.0, 0.0);
 
 			inv_T = SE3(~T.GetRotation());
-			
+
 			// S = [    c1*c2, s2,  0
 			//       -(c1*s2), c2,  0
 			//             s1,  0,  1
@@ -149,10 +151,10 @@ void GJointSpherical::update_short()
 			//              0,  0,  0
 			//              0,  0,  0 ];
 			S.SetZero();
-			S[0] = c1*c2; S[1] = -(c1*s2); S[2] = s1; 
-			S[6] = s2; S[7] = c2; 
+			S[0] = c1*c2; S[1] = -(c1*s2); S[2] = s1;
+			S[6] = s2; S[7] = c2;
 			S[14] = 1;
-			
+
 			break;
 
 		case EULER_ZXY:
@@ -169,7 +171,7 @@ void GJointSpherical::update_short()
 				0.0, 0.0, 0.0);
 
 			inv_T = SE3(~T.GetRotation());
-			
+
 			// S = [ -(c1*s2), c2,  0
 			//             s1,  0,  1
 			//          c1*c2, s2,  0
@@ -177,10 +179,10 @@ void GJointSpherical::update_short()
 			//              0,  0,  0
 			//              0,  0,  0 ];
 			S.SetZero();
-			S[0] = -(c1*s2); S[1] = s1; S[2] = c1*c2; 
+			S[0] = -(c1*s2); S[1] = s1; S[2] = c1*c2;
 			S[6] = c2; S[8] = s2;
 			S[13] = 1;
-			
+
 			break;
 
 		default:
@@ -209,106 +211,106 @@ void GJointSpherical::update()
 	switch ( coord_chart ) {
 
 		case EULER_ZYX:
-			
-			T = SE3(c0*c1, 
-				s0*c1, 
-				-s1, 
-				c0*s1*s2 - s0*c2, 
-				s0*s1*s2 + c0*c2, 
-				c1*s2, 
-				c0*s1*c2 + s0*s2, 
-				s0*s1*c2 - c0*s2, 
-				c1*c2, 
+
+			T = SE3(c0*c1,
+				s0*c1,
+				-s1,
+				c0*s1*s2 - s0*c2,
+				s0*s1*s2 + c0*c2,
+				c1*s2,
+				c0*s1*c2 + s0*s2,
+				s0*s1*c2 - c0*s2,
+				c1*c2,
 				0.0, 0.0, 0.0);
 
 			inv_T = SE3(~T.GetRotation());
-			
+
 			Sdq = se3(-s1*dq0 + dq2,
 				s2*c1*dq0 + c2*dq1,
 				c1*c2*dq0 - s2*dq1,
 				0.0, 0.0, 0.0);
-			
+
 			dSdq = se3(-c1*dq1*dq0,
 				(c2*c1*dq2 - s2*s1*dq1)*dq0 - s2*dq2*dq1,
 				(-s1*c2*dq1 - c1*s2*dq2)*dq0 - c2*dq2*dq1,
 				0, 0, 0);
-			
+
 			Sddq = se3(-s1*ddq0 + ddq2,
 				s2*c1*ddq0 + c2*ddq1,
 				c1*c2*ddq0 - s2*ddq1,
 				0, 0, 0);
-			
+
 			DSdqDt = Sddq + dSdq;
-			
+
 			// S = [   -s1,    0,   1
 			//       s2*c1,   c2,   0
-			//       c1*c2,  -s2,   0 
+			//       c1*c2,  -s2,   0
 			//           0,    0,   0
 			//           0,    0,   0
 			//           0,    0,   0 ];
 			S.SetZero();
-			S[0] = -s1; S[1] = s2*c1; S[2] = c1*c2; 
-			S[7] = c2; S[8] = -s2; 
+			S[0] = -s1; S[1] = s2*c1; S[2] = c1*c2;
+			S[7] = c2; S[8] = -s2;
 			S[12] = 1.0;
-			
+
 			// dS = [               -c1*dq1,        0,   0
 			//          c2*c1*dq2-s2*s1*dq1,  -s2*dq2,   0
-			//         -s1*c2*dq1-c1*s2*dq2,  -c2*dq2,   0 
+			//         -s1*c2*dq1-c1*s2*dq2,  -c2*dq2,   0
 			//                            0,        0,   0
 			//                            0,        0,   0
 			//                            0,        0,   0 ];
 			dS.SetZero();
-			dS[0] = -c1*dq1; dS[1] = c2*c1*dq2 - s2*s1*dq1;	dS[2] = -s1*c2*dq1 - c1*s2*dq2;	
+			dS[0] = -c1*dq1; dS[1] = c2*c1*dq2 - s2*s1*dq1;	dS[2] = -s1*c2*dq1 - c1*s2*dq2;
 			dS[7] = -s2*dq2; dS[8] = -c2*dq2;
 
 			break;
 
 		case EULER_ZYZ:
 
-			T = SE3(c0*c1*c2 - s0*s2, 
-				s0*c1*c2 + c0*s2, 
-				-s1*c2,	
-				-c0*c1*s2 - s0*c2, 
-				c0*c2 - s0*c1*s2, 
-				s1*s2, 
-				c0*s1, 
-				s0*s1, 
-				c1, 
+			T = SE3(c0*c1*c2 - s0*s2,
+				s0*c1*c2 + c0*s2,
+				-s1*c2,
+				-c0*c1*s2 - s0*c2,
+				c0*c2 - s0*c1*s2,
+				s1*s2,
+				c0*s1,
+				s0*s1,
+				c1,
 				0, 0, 0);
-			
+
 			inv_T = SE3(~T.GetRotation());
 
 			Sdq = se3(-s1*c2*dq0 + s2*dq1,
 				s1*s2*dq0 + c2*dq1,
 				c1*dq0 + dq2,
 				0, 0, 0);
-			
+
 			dSdq = se3((-c1*c2*dq1 + s1*s2*dq2)*dq0 + c2*dq2*dq1,
 				(c1*s2*dq1 + s1*c2*dq2)*dq0 - s2*dq2*dq1,
 				-s1*dq1*dq0,
 				0, 0, 0);
-			
+
 			Sddq = se3(-s1*c2*ddq0 + s2*ddq1,
 				s1*s2*ddq0 + c2*ddq1,
 				c1*ddq0 + ddq2,
 				0, 0, 0);
-			
+
 			DSdqDt = Sddq + dSdq;
-			
+
 			// S = [-s1*c2,   s2,   0
 			//       s1*s2,   c2,   0
-			//          c1,    0,   1 
+			//          c1,    0,   1
 			//           0,    0,   0
 			//           0,    0,   0
 			//           0,    0,   0 ];
 			S.SetZero();
-			S[0] = -s1*c2; S[1] = s1*s2; S[2] = c1; 
-			S[6] = s2; S[7] = c2; 
+			S[0] = -s1*c2; S[1] = s1*s2; S[2] = c1;
+			S[6] = s2; S[7] = c2;
 			S[14] = 1.0;
-			
+
 			// dS = [-c1*c2*dq1+s1*s2*dq2,   c2*dq2,   0
 			//          c1*s2*dq1+s1*c2*dq2,  -s2*dq2,   0
-			//                      -s1*dq1,        0,   0 
+			//                      -s1*dq1,        0,   0
 			//                            0,        0,   0
 			//                            0,        0,   0
 			//                            0,        0,   0 ];
@@ -319,7 +321,7 @@ void GJointSpherical::update()
 			break;
 
 		case EULER_XYZ:
-			
+
 			T = SE3(c1*c2,
 				c2*s0*s1 + c0*s2,
 				-(c0*c2*s1) + s0*s2,
@@ -332,22 +334,22 @@ void GJointSpherical::update()
 				0.0, 0.0, 0.0);
 
 			inv_T = SE3(~T.GetRotation());
-			
+
 			Sdq = se3(dq0*c1*c2 + dq1*s2,
 				dq1*c2 - dq0*c1*s2,
 				dq2 + dq0*s1,
 				0.0, 0.0, 0.0);
-			
+
 			dSdq = se3(dq1*dq2*c2 - dq0*(dq1*c2*s1 + dq2*c1*s2),
 				-(dq1*dq2*s2) + dq0*(-(dq2*c1*c2) + dq1*s1*s2),
 				dq0*dq1*c1,
 				0, 0, 0);
-			
+
 			Sddq = se3(ddq0*c1*c2 + ddq1*s2,
 				ddq1*c2 - ddq0*c1*s2,
 				ddq2 + ddq0*s1,
 				0, 0, 0);
-			
+
 			DSdqDt = Sddq + dSdq;
 
 			// S = [    c1*c2, s2,  0
@@ -357,10 +359,10 @@ void GJointSpherical::update()
 			//              0,  0,  0
 			//              0,  0,  0 ];
 			S.SetZero();
-			S[0] = c1*c2; S[1] = -(c1*s2); S[2] = s1; 
-			S[6] = s2; S[7] = c2; 
+			S[0] = c1*c2; S[1] = -(c1*s2); S[2] = s1;
+			S[6] = s2; S[7] = c2;
 			S[14] = 1;
-			
+
 			// dS = [  -(dq1*c2*s1) - dq2*c1*s2,    dq2*c2,  0
 			//         -(dq2*c1*c2) + dq1*s1*s2, -(dq2*s2),  0
 			//                           dq1*c1,         0,  0
@@ -387,22 +389,22 @@ void GJointSpherical::update()
 				0.0, 0.0, 0.0);
 
 			inv_T = SE3(~T.GetRotation());
-			
+
 			Sdq = se3(dq1*c2 - dq0*c1*s2,
 				dq2 + dq0*s1,
 				dq0*c1*c2 + dq1*s2,
 				0.0, 0.0, 0.0);
-			
+
 			dSdq = se3(-(dq1*dq2*s2) + dq0*(-(dq2*c1*c2) + dq1*s1*s2),
 				dq0*dq1*c1,
 				dq1*dq2*c2 - dq0*(dq1*c2*s1 + dq2*c1*s2),
 				0, 0, 0);
-			
+
 			Sddq = se3(ddq1*c2 - ddq0*c1*s2,
 				ddq2 + ddq0*s1,
 				ddq0*c1*c2 + ddq1*s2,
 				0, 0, 0);
-			
+
 			DSdqDt = Sddq + dSdq;
 
 			// S = [ -(c1*s2), c2,  0
@@ -412,10 +414,10 @@ void GJointSpherical::update()
 			//              0,  0,  0
 			//              0,  0,  0 ];
 			S.SetZero();
-			S[0] = -(c1*s2); S[1] = s1; S[2] = c1*c2; 
+			S[0] = -(c1*s2); S[1] = s1; S[2] = c1*c2;
 			S[6] = c2; S[8] = s2;
 			S[13] = 1;
-			
+
 			// dS = [  -(dq2*c1*c2) + dq1*s1*s2, -(dq2*s2),  0
 			//                           dq1*c1,         0,  0
 			//         -(dq1*c2*s1) - dq2*c1*s2,    dq2*c2,  0
@@ -449,7 +451,7 @@ RMatrix GJointSpherical::get_DSDq(GCoordinate *pCoordinate_)
 	int idx;
 	gReal c1, c2, s1, s2;
 	RMatrix DSDq;
-	
+
 	if ( pCoordinate_ == &coordinates[0] ) {
 		idx = 0;
 	} else if ( pCoordinate_ == &coordinates[1] ) {
@@ -481,7 +483,7 @@ RMatrix GJointSpherical::get_DSDq(GCoordinate *pCoordinate_)
 					//               0, 0, 0
 					//               0, 0, 0
 					//               0, 0, 0 ];
-					DSDq[0] = -c1;		
+					DSDq[0] = -c1;
 					DSDq[1] = -s2*s1;
 					DSDq[2] = -s1*c2;
 					break;
@@ -497,7 +499,7 @@ RMatrix GJointSpherical::get_DSDq(GCoordinate *pCoordinate_)
 					//               0,   0, 0
 					//               0,   0, 0
 					//               0,   0, 0 ];
-					DSDq[1] = c2*c1;		
+					DSDq[1] = c2*c1;
 					DSDq[2] = -c1*s2;
 					DSDq[7] = -s2;
 					DSDq[8] = -c2;
@@ -700,7 +702,7 @@ RMatrix GJointSpherical::get_DdSDq(GCoordinate *pCoordinate_)
 					//                              0,       0, 0
 					//                              0,       0, 0
 					//                              0,       0, 0 ];
-					DdSDq[1] = -s2*c1*dq2-c2*s1*dq1;	
+					DdSDq[1] = -s2*c1*dq2-c2*s1*dq1;
 					DdSDq[2] = s1*s2*dq1-c1*c2*dq2;
 					DdSDq[7] = -c2*dq2;
 					DdSDq[8] = s2*dq2;
@@ -882,7 +884,7 @@ void GJointSpherical::_validateCoordinateChart()
 		s[i] = sin(q[i]);
 		c[i] = cos(q[i]);
 	}
-	// set 0 <= q <= 2*PI for convenience 
+	// set 0 <= q <= 2*PI for convenience
 	for (i=0; i<3; i++)
 	{
 		q[i] = (gReal)fmod(q[i], (gReal)2.0*PI);

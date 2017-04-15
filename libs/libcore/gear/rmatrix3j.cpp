@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //
 //		title		:	rmatrix3.cpp
-//						
+//
 //		version		:	v2.89
 //		author		:	Jinwook Kim (zinook@plaza.snu.ac.kr)
 //		last update	:	2001.7.23
@@ -26,6 +26,8 @@
 #include <math.h>
 #include "rmatrix3j.h"
 
+#include <qmath.h>
+
 #ifdef _MSC_VER
 #include <windows.h>
 static LARGE_INTEGER _tstart, _tend, _tfreq;
@@ -34,17 +36,17 @@ static LARGE_INTEGER _tstart, _tend, _tfreq;
 static clock_t _start;
 #endif
 
-void tic() 
-{ 
+void tic()
+{
 #ifdef _MSC_VER
 	::QueryPerformanceCounter(&_tstart);
 #else
-	_start = clock(); 
+	_start = clock();
 #endif
 }
 
-gReal toc() 
-{ 
+gReal toc()
+{
 #ifdef _MSC_VER
 	::QueryPerformanceCounter(&_tend);
 	::QueryPerformanceFrequency(&_tfreq);
@@ -80,7 +82,7 @@ RMatrix Rand(int r, int c)
 	int n = r * c;
 	gReal *_r = re.element;
 	while ( n-- ) *(_r++) = drand(1.0);
-	return re;		
+	return re;
 }
 
 RMatrix Eye(int r, int c )
@@ -89,14 +91,14 @@ RMatrix Eye(int r, int c )
 	int n = r * c;
 	gReal *_r = re.element;
 	while ( n-- ) *(_r++) = 0.0;
-	
+
 	c = _MIN(r++,c);
 	_r = re.element;
 	while ( c-- )
 	{
 		*_r = 1.0;
 		_r += r;
-	}		
+	}
 	return re;
 }
 
@@ -114,10 +116,10 @@ int idamax(int n, gReal *dx)
 {
 	gReal dmax;
 	int i, idamax = 0;
-      
+
 	if ( n < 1 ) return 0;
 	if ( n == 1 ) return 1;
-	
+
 	dmax = fabs(dx[0]);
 	for ( i = 1; i < n; i++ )
 	{
@@ -169,7 +171,7 @@ void _dgefa(gReal *x, int lda, int n, int *jpvt, int &info)
 					}
 					for ( i = 1+k; i < n; i++ ) xj[i] += t * xk[i];
 				}
-	        }
+			}
 		}
 	} else k = 0;
 
@@ -183,7 +185,7 @@ void _dgesl(gReal *x, int lda, int n, int *jpvt, gReal *b, int job)
 	gReal t, *xk = x;
 	int k, l;
 
-	if ( job == 0 ) 
+	if ( job == 0 )
 	{
 		// job = 0 , solve  a * x = b
 		// first solve  l*y = b
@@ -199,7 +201,7 @@ void _dgesl(gReal *x, int lda, int n, int *jpvt, gReal *b, int job)
 					b[k] = t;
 				}
 				for ( l = k+1; l < n; l++ ) b[l] += t * xk[l];
-				xk += lda;				
+				xk += lda;
 			}
 		}
 		// now solve  u*x = y
@@ -208,7 +210,7 @@ void _dgesl(gReal *x, int lda, int n, int *jpvt, gReal *b, int job)
 			b[k] /= xk[k];
 			t = -b[k];
 			for ( l = 0; l < k; l++ ) b[l] += t * xk[l];
-			xk -= lda;			
+			xk -= lda;
 		}
 		return;
 	}
@@ -223,12 +225,12 @@ void _dgesl(gReal *x, int lda, int n, int *jpvt, gReal *b, int job)
 		xk += lda;
 	}
 	// now solve trans(l)*x = y
-  	if ( n >= 2 )
+	if ( n >= 2 )
 	{
 		xk--;
 		for ( k = n-1; k >= 0; k-- )
 		{
-			t = 0.0;			
+			t = 0.0;
 			for ( l = 1; l < n-k; l++ ) t += xk[l] * b[k+l];
 			b[k] += t;
 
@@ -253,7 +255,7 @@ void _fullpivoting(gReal *x, int r, int c, int k, int *ipvt, int *jpvt)
 {
 	int i, j, imax, jmax, itmp;
 	gReal _max, dtmp, *xk = x + k + k * r, *xj;
-	
+
 	_max = fabs(*xk);
 	imax = jmax = k;
 
@@ -266,28 +268,28 @@ void _fullpivoting(gReal *x, int r, int c, int k, int *ipvt, int *jpvt)
 		}
 		xk += k;
 	}
-		
+
 	// row swapping
 	if ( imax != k )
 	{
 		itmp = ipvt[imax];	ipvt[imax] = ipvt[k]; 	ipvt[k] = itmp;
-		for ( i = k, xk = x + k * r; i < c; i++, xk += r ) 
-		{ 
-			dtmp = xk[imax];	
+		for ( i = k, xk = x + k * r; i < c; i++, xk += r )
+		{
+			dtmp = xk[imax];
 			xk[imax] = xk[k];
-			xk[k] = dtmp;			
+			xk[k] = dtmp;
 		}
 	}
-	
+
 	// column swapping
-	if ( jmax != k ) 
+	if ( jmax != k )
 	{
 		itmp = jpvt[jmax];	jpvt[jmax] = jpvt[k];	jpvt[k] = itmp;
-		for ( i = 0, xk = x + k * r, xj = x + jmax * r; i < r; i++, xk++, xj++ ) 
-		{	
+		for ( i = 0, xk = x + k * r, xj = x + jmax * r; i < r; i++, xk++, xj++ )
+		{
 			dtmp = *xj;
 			*xj = *xk;
-			*xk = dtmp;			
+			*xk = dtmp;
 		}
 	}
 }
@@ -350,7 +352,7 @@ int _dpofa(gReal *a, int n)
 		// exit
 		if ( s <= 0.0 ) return info;
 		a[j+j*n] = sqrt(s);
-	}	
+	}
 	return 0;
 }
 
@@ -371,7 +373,7 @@ void _dposl(gReal *a, int n, gReal *b)
 	{
 		b[k] /= a[k+k*n];
 		t = -b[k];
-		for ( i = 0; i < k; i++ ) b[i] += t * a[i+k*n];		
+		for ( i = 0; i < k; i++ ) b[i] += t * a[i+k*n];
 	}
 	return;
 }
@@ -399,7 +401,7 @@ RMatrix Conv(const RMatrix &u, const RMatrix &v)
 
 bool SolveAxEqualB(const RMatrix &A, RMatrix &x, const RMatrix &B)
 {
-	if ( A.row * A.col == 1 ) 
+	if ( A.row * A.col == 1 )
 	{
 		if ( A[0] == 0.0 ) return false;
 		x = B / A[0];
@@ -417,16 +419,16 @@ bool SolveAxEqualB(const RMatrix &A, RMatrix &x, const RMatrix &B)
 	int info, i;
 	static IMatrix _ipvt_SlvAxB;
 	static RMatrix _A_SlvAxB;
-	
+
 	_A_SlvAxB = A;
 	x = B;
 
 	if ( _ipvt_SlvAxB.row < _A_SlvAxB.row ) _ipvt_SlvAxB.ReNew(_A_SlvAxB.row, 1);
-	
+
 	_dgefa(_A_SlvAxB.element, _A_SlvAxB.row, _A_SlvAxB.col, _ipvt_SlvAxB.element, info);
 	if ( info != 0 ) return false;
 	for ( i = 0; i < x.col; i++ ) _dgesl(_A_SlvAxB.element, _A_SlvAxB.row, _A_SlvAxB.col, _ipvt_SlvAxB.element, x.element+x.row*i, 0);
-	
+
 	return true;
 }
 
@@ -443,20 +445,20 @@ bool SolveAtxEqualB(const RMatrix &A, RMatrix &x, const RMatrix &B)
 	if ( A.row != A.col )
 		return SolveAxEqualB(~A, x, B);
 		// return QRSolveAtxEqualB(A, x, B);
-	
+
 	int info, i;
 	static IMatrix _ipvt_SlvAxB;
 	static RMatrix _A_SlvAxB;
-	
+
 	_A_SlvAxB = A;
 	x = B;
 
 	if ( _ipvt_SlvAxB.row < _A_SlvAxB.row ) _ipvt_SlvAxB.ReNew(_A_SlvAxB.row, 1);
-	
+
 	_dgefa(_A_SlvAxB.element, _A_SlvAxB.row, _A_SlvAxB.col, _ipvt_SlvAxB.element, info);
 	if ( info != 0 ) return false;
 	for ( i = 0; i < x.col; i++ ) _dgesl(_A_SlvAxB.element, _A_SlvAxB.row, _A_SlvAxB.col, _ipvt_SlvAxB.element, x.element+x.row*i, 1);
-	
+
 	return true;
 }
 
@@ -464,12 +466,12 @@ gReal Det(RMatrix A)
 {
 	int info, i;
 	static IMatrix _ipvt_Det;
-	
+
 	if ( _ipvt_Det.row < A.row ) _ipvt_Det.ReNew(A.row, 1);
 	gReal re = 1.0;
 
 	_dgefa(A.element, A.row, A.col, _ipvt_Det.element, info);
-	
+
 	for ( i = 0; i < A.row; i++ )
 	{
 		if ( i != _ipvt_Det.element[i] ) re = -re;
@@ -511,7 +513,7 @@ RMatrix Roots(const RMatrix& cof)
 	int i = 0;
 	while ( 1 )
 		if ( cof.element[i] != 0.0 || ++i >= n ) break;
-	
+
 	if ( i == 0 ) return Eig(Companion(cof));
 	if ( i == n ) return RMatrix();
 	RMatrix cof2(n-i,1);
@@ -526,7 +528,7 @@ void _change(gReal *v, const int i, const int j, int *idx = NULL)
 	tmp = v[i];
 	v[i] = v[j];
 	v[j] = tmp;
-	if ( idx != NULL ) 
+	if ( idx != NULL )
 	{
 		itmp = idx[i];
 		idx[i] = idx[j];
@@ -536,7 +538,7 @@ void _change(gReal *v, const int i, const int j, int *idx = NULL)
 
 void _qsort(gReal *v, const int n, const int left, const int right, int *idx = NULL)
 {
-	int i, last; 
+	int i, last;
 	if ( left >= right ) return;
 	_change(v, left, (left+right)/2, idx );
 	last = left;
@@ -574,7 +576,7 @@ int GaussElimination(RMatrix &A, IMatrix &row_pivot, IMatrix &column_pivot, gRea
 //----------------------------------------------------------------------
 //
 //		title		:	EISPACK C Version
-//						
+//
 //		version		:	v1.5
 //		author		:	Jinwook Kim (zinook@plaza.snu.ac.kr)
 //		last update	:	2001.7.23
@@ -669,7 +671,7 @@ L110: ;
 		goto L20;
 L120: ;
 	}
-    goto L140;
+	goto L140;
 L130: ;
 	k++;
 L140: ;
@@ -687,7 +689,7 @@ L150: ;
 L170: ;
 	  }
 	for( i = k; i <= l; i++ ) scale[i] = 1.0;
-	
+
 L190: ;
 	noconv = 0;
 	for ( i = k; i <= l; i++ )
@@ -738,7 +740,7 @@ void _balbak(int nm, int n, int low, int igh, gReal* scale, int m, gReal* z)
 	int i, j, k, ii;
 	gReal s;
 	if ( m == 0 ) return;
-	if ( igh != low ) 
+	if ( igh != low )
 	{
 		for ( i = low; i <= igh; i++ )
 		{
@@ -779,7 +781,7 @@ void _elmhes(int nm, int n, int low, int igh, gReal* a, int* inf)
 		{
 			if ( fabs(a[jm1+mm1*nm]) <= fabs(x) ) goto L100;
 			x = a[jm1+mm1*nm];
-            im1 = jm1;
+			im1 = jm1;
 L100: ;
 		}
 		inf[m] = im1+1;
@@ -798,7 +800,7 @@ L100: ;
 		}
 L130: ;
 		if ( x == 0.0 ) goto L180;
-		
+
 		for ( im1 = m+1; im1 <= igh; im1++ )
 		{
 			y = a[im1+mm1*nm];
@@ -830,7 +832,7 @@ void _eltran(int nm, int n, int low, int igh, gReal* a, int* inf, gReal* z)
 	{
 		m = igh - mm;
 		for ( i = m+1; i <= igh; i++ ) z[i+m*nm] = a[i+(m-1)*nm];
-		i = inf[m]-1; 
+		i = inf[m]-1;
 		if ( i != m )
 		{
 			for ( j = m; j <= igh; j++ )
@@ -860,7 +862,7 @@ void _hqr(int nm, int n, int low, int igh, gReal* h, gReal* wr, gReal* wi, int& 
 		wr[i] = h[i+i*nm];
 		wi[i] = 0.0;
 L50: ;
-	}	
+	}
 	en = igh;
 	t = 0.0;
 	itn = 30*n;
@@ -868,7 +870,7 @@ L60: ;
 	if ( en < low ) goto L1001;
 	its = 0;
 	na = en-1;
-	enm2 = en-2;	
+	enm2 = en-2;
 L70: ;
 	for ( ll = low+1; ll <= en+1; ll++ )
 	{
@@ -890,7 +892,7 @@ L100: ;
 	if ( its != 10 && its != 20 ) goto L130;
 	t += x;
 	for ( i = low; i <= en; i++ ) h[i+i*nm] -= x;
-	
+
 	s = fabs(h[en+na*nm]) + fabs(h[na+(enm2)*nm]);
 	x = (gReal)0.75 * s;
 	y = x;
@@ -898,7 +900,7 @@ L100: ;
 L130: ;
 	its++;
 	itn--;
-	
+
 	for ( mm = l; mm <= enm2; mm++ )
 	{
 		m = enm2 + l - mm;
@@ -964,26 +966,26 @@ L190: ;
 		j = _MIN(en, k+3);
 		for ( i = l; i <= j; i++ )
 		{
-            p = x * h[i+k*nm] + y * h[i+(k+1)*nm];
-            h[i+k*nm] -= p;
-            h[i+(k+1)*nm] -= p * q;
+			p = x * h[i+k*nm] + y * h[i+(k+1)*nm];
+			h[i+k*nm] -= p;
+			h[i+(k+1)*nm] -= p * q;
 		}
 		goto L255;
 L225: ;
-	 	for ( j = k; j <= en; j++ )
+		for ( j = k; j <= en; j++ )
 		{
-            p = h[k+j*nm] + q * h[k+1+j*nm] + r * h[k+2+j*nm];
-            h[k+j*nm] -= p * x;
-            h[k+1+j*nm] -= p * y;
-            h[k+2+j*nm] -= p * zz;
+			p = h[k+j*nm] + q * h[k+1+j*nm] + r * h[k+2+j*nm];
+			h[k+j*nm] -= p * x;
+			h[k+1+j*nm] -= p * y;
+			h[k+2+j*nm] -= p * zz;
 		}
 		j = _MIN(en,k+3);
 		for ( i = l; i <= j; i++ )
 		{
-            p = x * h[i+k*nm] + y * h[i+(k+1)*nm] + zz * h[i+(k+2)*nm];
-            h[i+k*nm] -= p;
-            h[i+(k+1)*nm] -= p * q;
-            h[i+(k+2)*nm] -= p * r;
+			p = x * h[i+k*nm] + y * h[i+(k+1)*nm] + zz * h[i+(k+2)*nm];
+			h[i+k*nm] -= p;
+			h[i+(k+1)*nm] -= p * q;
+			h[i+(k+2)*nm] -= p * r;
 		}
 L255: ;
 L260: ;
@@ -1046,7 +1048,7 @@ void _hqr2(int nm, int n, int low, int igh, gReal* h, gReal* wr, gReal* wi, gRea
 	for ( i = 0; i < n; i++ )
 	{
 		for ( j = k; j <= n-1; j++ ) norm += fabs(h[i+j*nm]);
-		
+
 		k = i;
 		if ( i >= low && i <= igh ) goto L50;
 		wr[i] = h[i+i*nm];
@@ -1082,7 +1084,7 @@ L100: ;
 	if ( its != 10 && its != 20 ) goto L130;
 	t += x;
 	for (  i = low; i <= en; i++ ) h[i+i*nm] -= x;
-	
+
 	s = fabs(h[en+na*nm]) + fabs(h[na+(enm2-1)*nm]);
 	x = (gReal)0.75 * s;
 	y = x;
@@ -1266,17 +1268,17 @@ L600: ;
 			i = en - ii ;
 			w = h[i+i*nm] - p;
 			r = 0.0;
-            for ( j = m; j <= en; j++ ) r += h[i+j*nm] * h[j+en*nm];
-			
+			for ( j = m; j <= en; j++ ) r += h[i+j*nm] * h[j+en*nm];
+
 			if ( wi[i] >= 0.0 ) goto L630;
-            zz = w;
-            s = r;
-            goto L700;
-L630: ;   
+			zz = w;
+			s = r;
+			goto L700;
+L630: ;
 			m = i;
-            if ( wi[i] != 0.0 ) goto L640;
-            t = w;
-            if ( t != 0.0 ) goto L635;
+			if ( wi[i] != 0.0 ) goto L640;
+			t = w;
+			if ( t != 0.0 ) goto L635;
 			tst1 = norm;
 			t = tst1;
 L632: ;
@@ -1285,25 +1287,25 @@ L632: ;
 			if ( tst2 > tst1 ) goto L632;
 L635: ;
 			h[i+en*nm] = -r / t;
-            goto L680;
+			goto L680;
 L640: ;
 			x = h[i+(i+1)*nm];
-            y = h[i+1+i*nm];
-            q = (wr[i] - p) * (wr[i] - p) + wi[i] * wi[i];
-            t = (x * s - zz * r) / q;
-            h[i+en*nm] = t;
-            if ( fabs(x) <= fabs(zz) ) goto L650;
-            h[i+1+en*nm] = (-r - w * t) / x;
-            goto L680;
+			y = h[i+1+i*nm];
+			q = (wr[i] - p) * (wr[i] - p) + wi[i] * wi[i];
+			t = (x * s - zz * r) / q;
+			h[i+en*nm] = t;
+			if ( fabs(x) <= fabs(zz) ) goto L650;
+			h[i+1+en*nm] = (-r - w * t) / x;
+			goto L680;
 L650: ;
 			h[i+1+en*nm] = (-s - y * t) / zz;
 L680: ;
 			t = fabs(h[i+en*nm]);
-            if ( t == 0.0 ) goto L700;
-            tst1 = t;
-            tst2 = tst1 + (gReal)1.0/tst1;
-            if ( tst2 > tst1 ) goto L700;
-            for ( j = i; j <= en; j++ ) h[j+en*nm] /= t;			
+			if ( t == 0.0 ) goto L700;
+			tst1 = t;
+			tst2 = tst1 + (gReal)1.0/tst1;
+			if ( tst2 > tst1 ) goto L700;
+			for ( j = i; j <= en; j++ ) h[j+en*nm] /= t;
 L700: ;
 		}
 		goto L800;
@@ -1331,22 +1333,22 @@ L730: ;
 				ra += h[i+j*nm] * h[j+na*nm];
 				sa += h[i+j*nm] * h[j+en*nm];
 			}
-            if ( wi[i] >= 0.0 ) goto L770;
-            zz = w;
-            r = ra;
-            s = sa;
-            goto L795;
+			if ( wi[i] >= 0.0 ) goto L770;
+			zz = w;
+			r = ra;
+			s = sa;
+			goto L795;
 L770: ;
 			m = i;
-            if ( wi[i] != 0.0 ) goto L780;
+			if ( wi[i] != 0.0 ) goto L780;
 			_cdiv( -ra, -sa, w, q, h[i+na*nm], h[i+en*nm]);
-            goto L790;
+			goto L790;
 L780: ;
 			x = h[i+(i+1)*nm];
-            y = h[i+1+i*nm];
-            vr = (wr[i] - p) * (wr[i] - p) + wi[i] * wi[i] - q * q;
-            vi = (wr[i] - p) * (gReal)2.0 * q;
-            if ( vr != 0.0 || vi != 0.0 ) goto L784;
+			y = h[i+1+i*nm];
+			vr = (wr[i] - p) * (wr[i] - p) + wi[i] * wi[i] - q * q;
+			vi = (wr[i] - p) * (gReal)2.0 * q;
+			if ( vr != 0.0 || vi != 0.0 ) goto L784;
 			tst1 = norm * (fabs(w) + fabs(q) + fabs(x) + fabs(y) + fabs(zz));
 			vr = tst1;
 L783: ;
@@ -1390,7 +1392,7 @@ L840: ;
 		{
 			zz = 0.0;
 			for ( k = low; k <= m; k++ ) zz += z[i+k*nm] * h[k+j*nm];
-			
+
 			z[i+j*nm] = zz;
 		}
 	}
@@ -1432,7 +1434,7 @@ void _rg(int nm, int n, gReal* a, gReal* wr, gReal* wi, int matz, gReal* z, int*
 RMatrix Eig(RMatrix m)
 {
 	if ( m.row != m.col ) std::cerr << "RMatrix Eig : not sqare" << std::endl;
-	
+
 	int i, ierr, matz = 0, n = m.row;
 	static IMatrix _iv1_Eig;
 	static RMatrix _fv1_Eig;
@@ -1440,20 +1442,20 @@ RMatrix Eig(RMatrix m)
 	if ( _iv1_Eig.row < n ) _iv1_Eig.ReNew(n,1);
 	if ( _fv1_Eig.row < n ) _fv1_Eig.ReNew(n,1);
 	RMatrix re(n,2);
-	
+
 	_rg(n, n, m.element, re.element, (re.element+n), matz, 0, _iv1_Eig.element, _fv1_Eig.element, ierr);
-	
+
 	gReal sum = 0.0;
 	for ( i = 0; i < n; i++ ) sum += re.element[i+n] * re.element[i+n];
 	if ( sum < _EPS ) re.col = 1;
-	
+
 	return re;
 }
 
 void Eig(RMatrix &re, RMatrix &m)
 {
 	if ( m.row != m.col ) std::cerr << "RMatrix Eig : not sqare" << std::endl;
-	
+
 	int ierr, matz = 0, n = m.row;
 	static IMatrix _iv1_Eig;
 	static RMatrix _fv1_Eig;
@@ -1461,7 +1463,7 @@ void Eig(RMatrix &re, RMatrix &m)
 	if ( _iv1_Eig.row < n ) _iv1_Eig.ReNew(n,1);
 	if ( _fv1_Eig.row < n ) _fv1_Eig.ReNew(n,1);
 	re.ReNew(n,2);
-	
+
 	_rg(n, n, m.element, re.element, (re.element+n), matz, 0, _iv1_Eig.element, _fv1_Eig.element, ierr);
 }
 
@@ -1473,12 +1475,12 @@ void Eig(RMatrix m, RMatrix &v, RMatrix &d)
 	static RMatrix _fv1_Eig;
 
 	if ( n != m.col ) std::cerr << "RMatrix Eig : not sqare";
-	
+
 	if ( _iv1_Eig.row < n ) _iv1_Eig.ReNew(n,1);
 	if ( _fv1_Eig.row < n ) _fv1_Eig.ReNew(n,1);
-	
+
 	int ierr, matz = 1;
-	
+
 	if ( v.row*v.col != n*n )
 	{
 		delete [] v.element;
@@ -1495,7 +1497,7 @@ void Eig(RMatrix m, RMatrix &v, RMatrix &d)
 	d.col = 2;
 
 	_rg(n, n, m.element, d.element, d.element+n, matz, v.element, _iv1_Eig.element, _fv1_Eig.element, ierr);
-	
+
 //	gReal sum = 0.0;
 //	for ( i = 0; i < n; i++ ) sum += d.element[i+n] * d.element[i+n];
 //	if ( sum < _EPS ) d.col = 1;
@@ -1518,17 +1520,17 @@ void _svdcmp(int m, int n, gReal *a, gReal *w, gReal *v, int matu, int matv, gRe
 	gReal anorm, c, f, g, h, s, scale, x, y, z;
 	//gReal *rv1 = new gReal [n];
 	g = scale = anorm = 0.0; // Householder reduction to bidiagonal form
-	for ( i = 0; i < n; i++ ) 
+	for ( i = 0; i < n; i++ )
 	{
 		l = i+1;
 		rv1[i] = scale * g;
 		g = s = scale = 0.0;
-		if ( i < m ) 
+		if ( i < m )
 		{
 			for ( k = i; k < m; k++ ) scale += fabs(a[k+m*i]);
-			if ( scale ) 
+			if ( scale )
 			{
-				for ( k = i; k < m; k++ ) 
+				for ( k = i; k < m; k++ )
 				{
 					a[k+m*i] /= scale;
 					s += a[k+m*i] * a[k+m*i];
@@ -1537,7 +1539,7 @@ void _svdcmp(int m, int n, gReal *a, gReal *w, gReal *v, int matu, int matv, gRe
 				g = -dsign(sqrt(s), f);
 				h = f * g - s;
 				a[i+m*i] = f - g;
-				for ( j = l; j < n; j++ ) 
+				for ( j = l; j < n; j++ )
 				{
 					for ( s = 0.0, k = i; k < m; k++ ) s += a[k+m*i] * a[k+m*j];
 					f = s / h;
@@ -1551,9 +1553,9 @@ void _svdcmp(int m, int n, gReal *a, gReal *w, gReal *v, int matu, int matv, gRe
 		if ( i < m && i != n-1 )
 		{
 			for ( k = l; k < n; k++ ) scale += fabs(a[i+m*k]);
-			if ( scale ) 
+			if ( scale )
 			{
-				for ( k = l; k < n; k++ ) 
+				for ( k = l; k < n; k++ )
 				{
 					a[i+m*k] /= scale;
 					s += a[i+m*k] * a[i+m*k];
@@ -1561,9 +1563,9 @@ void _svdcmp(int m, int n, gReal *a, gReal *w, gReal *v, int matu, int matv, gRe
 				f = a[i+m*l];
 				g = -dsign(sqrt(s), f);
 				h = f * g - s;
-				a[i+m*l] = f - g; 
+				a[i+m*l] = f - g;
 				for ( k = l; k < n; k++ ) rv1[k] = a[i+m*k] / h;
-				for ( j = l; j < m; j++ ) 
+				for ( j = l; j < m; j++ )
 				{
 					for ( s = 0.0, k = l; k < n; k++ ) s += a[j+m*k] * a[i+m*k];
 					for ( k = l ; k < n; k++ ) a[j+m*k] += s * rv1[k];
@@ -1573,17 +1575,17 @@ void _svdcmp(int m, int n, gReal *a, gReal *w, gReal *v, int matu, int matv, gRe
 		}
 		anorm = _MAX(anorm, (fabs(w[i]) + fabs(rv1[i])));
 	}
-	if ( matv ) 
+	if ( matv )
 	{
 		for ( i = n-1 ; i >= 0; i-- ) // Accumulation of right-system transformations
 		{
-			if ( i < n ) 
+			if ( i < n )
 			{
 				if ( g )
 				{
 					for ( j = l; j < n; j++ ) // gReal devision to avoid possible underflow
 						v[j+n*i] = (a[i+m*j] / a[i+m*l]) / g;
-					for ( j = l; j < n; j++ ) 
+					for ( j = l; j < n; j++ )
 					{
 						for ( s = 0.0, k = l; k < n; k++ ) s += a[i+m*k] * v[k+n*j];
 						for ( k = l; k < n; k++ ) v[k+n*j] += s * v[k+n*i];
@@ -1606,7 +1608,7 @@ void _svdcmp(int m, int n, gReal *a, gReal *w, gReal *v, int matu, int matv, gRe
 			if ( g )
 			{
 				g = (gReal)1.0 / g;
-				for ( j = l; j < n; j++ ) 
+				for ( j = l; j < n; j++ )
 				{
 					for ( s = 0.0, k = l; k < m; k++ ) s += a[k+m*i] * a[k+m*j];
 					f = (s / a[i+m*i]) * g;
@@ -1636,7 +1638,7 @@ void _svdcmp(int m, int n, gReal *a, gReal *w, gReal *v, int matu, int matv, gRe
 			{
 				c = 0.0;
 				s = 1.0;
-				for ( i = l; i <= k; i++) 
+				for ( i = l; i <= k; i++)
 				{
 					f = s * rv1[i];
 					rv1[i] = c * rv1[i];
@@ -1647,9 +1649,9 @@ void _svdcmp(int m, int n, gReal *a, gReal *w, gReal *v, int matu, int matv, gRe
 					h = (gReal)1.0 / h;
 					c = g * h;
 					s = -f * h;
-					if ( matu ) 
+					if ( matu )
 					{
-						for(j = 0; j < m; j++) 
+						for(j = 0; j < m; j++)
 						{
 							y = a[j+m*nm];
 							z = a[j+m*i];
@@ -1694,7 +1696,7 @@ void _svdcmp(int m, int n, gReal *a, gReal *w, gReal *v, int matu, int matv, gRe
 				g = g * c - x * s;
 				h = y * s;
 				y *= c;
-				if ( matv ) 
+				if ( matv )
 				{
 					for ( jj = 0; jj < n; jj++ )
 					{
@@ -1706,7 +1708,7 @@ void _svdcmp(int m, int n, gReal *a, gReal *w, gReal *v, int matu, int matv, gRe
 				}
 				z = _pythag(f, h);
 				w[j] = z; // Rotation can be arbitary if z = 0
-				if(z) 
+				if(z)
 				{
 					z = (gReal)1.0 / z;
 					c = f * z;
@@ -1714,9 +1716,9 @@ void _svdcmp(int m, int n, gReal *a, gReal *w, gReal *v, int matu, int matv, gRe
 				}
 				f = c * g + s * y;
 				x = c * y - s * g;
-				if ( matu ) 
+				if ( matu )
 				{
-					for(jj = 0; jj < m; jj++) 
+					for(jj = 0; jj < m; jj++)
 					{
 						y = a[jj+m*j];
 						z = a[jj+m*i];
@@ -1736,7 +1738,7 @@ void _svdcmp(int m, int n, gReal *a, gReal *w, gReal *v, int matu, int matv, gRe
 RMatrix SVD(const RMatrix &m)
 {
 	static RMatrix _rv_SVD, _U_SVD;
-	
+
 	// debugged by junggon, 8/28/2007
 	//if ( m.row < m.col )
 	//{
@@ -1754,11 +1756,11 @@ RMatrix SVD(const RMatrix &m)
 	//		}
 	//	}
 	//} else _U_SVD = m;
-	
+
 	_U_SVD = m;
 
 	RMatrix S(_U_SVD.col, 1);
-	
+
 	if ( _rv_SVD.row < _U_SVD.col ) _rv_SVD.ReNew(_U_SVD.col, 1);
 	_svdcmp(_U_SVD.row, _U_SVD.col, _U_SVD.element, S.element, NULL, 0, 0, _rv_SVD.element);
 
@@ -1770,14 +1772,14 @@ void SVD(const RMatrix &M, RMatrix &U, RMatrix &S, RMatrix &V)
 	static RMatrix _rv_SVD, _U_SVD;
 
 	// debugged by junggon, 8/28/2007
-	//if ( M.row > M.col ) U = ~M;		
+	//if ( M.row > M.col ) U = ~M;
 	//else U = M;
 
 	U = M;
 
 	if ( M.col > _rv_SVD.row ) _rv_SVD.ReNew(M.col,1);
 	S.ReNew(M.col,1);
-	V.ReNew(M.col, M.col); 
+	V.ReNew(M.col, M.col);
 	_svdcmp(M.row, M.col, U.element, S.element, V.element, 1, 1, _rv_SVD.element);
 }
 
@@ -1785,7 +1787,7 @@ RMatrix SVD33(const RMatrix &M)
 {
 #ifndef RMATRIX3_DO_NOT_CHECK_SIZE
 		if ( M.row != 3 || M.col != 3 ) std::cerr << "size is not compatible" << std::endl;
-#endif	
+#endif
 	gReal S[3];
 	SVD33(M.element, S);
 	return RMatrix(3,1,S);
@@ -1798,7 +1800,7 @@ void SVD33(gReal *M, gReal *S)
 
 	// if M=0, return [0;0;0]
 	if ( fabs(M[0])<eps && fabs(M[1])<eps && fabs(M[2])<eps && fabs(M[3])<eps && fabs(M[4])<eps && fabs(M[5])<eps && fabs(M[6])<eps && fabs(M[7])<eps && fabs(M[8])<eps ) {
-		S[0] = 0.; S[1] = 0.; S[2] = 0.; 
+		S[0] = 0.; S[1] = 0.; S[2] = 0.;
 	}
 
 	// A = ~M*M
@@ -1847,14 +1849,14 @@ void SVD33(gReal *M, gReal *S)
 	S[2] = sqrt(fabs(E[2]));
 
 	// sort S in descending order
-	if ( S[0] < S[1] ) { 
-		tmp = S[0]; S[0] = S[1]; S[1] = tmp; 
+	if ( S[0] < S[1] ) {
+		tmp = S[0]; S[0] = S[1]; S[1] = tmp;
 	}
-	if ( S[0] < S[2] ) { 
-		tmp = S[0]; S[0] = S[2]; S[2] = tmp; 
+	if ( S[0] < S[2] ) {
+		tmp = S[0]; S[0] = S[2]; S[2] = tmp;
 	}
-	if ( S[1] < S[2] ) { 
-		tmp = S[1]; S[1] = S[2]; S[2] = tmp; 
+	if ( S[1] < S[2] ) {
+		tmp = S[1]; S[1] = S[2]; S[2] = tmp;
 	}
 }
 
@@ -1862,7 +1864,7 @@ void SVD33(const RMatrix &M, RMatrix &U, RMatrix &S, RMatrix &V, gReal tol)
 {
 #ifndef RMATRIX3_DO_NOT_CHECK_SIZE
 		if ( M.row != 3 || M.col != 3 ) std::cerr << "size is not compatible" << std::endl;
-#endif	
+#endif
 	S.ReNew(3,1); U.ReNew(3,3); V.ReNew(3,3);
 	SVD33(M.element, U.element, S.element, V.element, tol);
 }
@@ -1932,14 +1934,14 @@ void SVD33(gReal *M, gReal *U, gReal *S, gReal *V, gReal tol)
 	E[2] = fabs(E[2]);
 
 	// sort E in descending order
-	if ( E[0] < E[1] ) { 
-		tmp = E[0]; E[0] = E[1]; E[1] = tmp; 
+	if ( E[0] < E[1] ) {
+		tmp = E[0]; E[0] = E[1]; E[1] = tmp;
 	}
-	if ( E[0] < E[2] ) { 
-		tmp = E[0]; E[0] = E[2]; E[2] = tmp; 
+	if ( E[0] < E[2] ) {
+		tmp = E[0]; E[0] = E[2]; E[2] = tmp;
 	}
-	if ( E[1] < E[2] ) { 
-		tmp = E[1]; E[1] = E[2]; E[2] = tmp; 
+	if ( E[1] < E[2] ) {
+		tmp = E[1]; E[1] = E[2]; E[2] = tmp;
 	}
 
 	// S(3,1) = the singular values of M
@@ -1968,7 +1970,7 @@ void SVD33(gReal *M, gReal *U, gReal *S, gReal *V, gReal tol)
 			if ( tmp == 0. ) {
 				V[0] = 1.; V[1] = 0.; V[2] = 0.;
 			} else {
-				V[0] /= tmp; V[1] /= tmp; V[2] /= tmp; 
+				V[0] /= tmp; V[1] /= tmp; V[2] /= tmp;
 			}
 			// tmpVec = a unit axis vector
 			idx = ( fabs(V[0])>fabs(V[1]) ? ( fabs(V[1])>fabs(V[2]) ? 2 : 1 ) : ( fabs(V[0])>fabs(V[2]) ? 2 : 0 ) );
@@ -1979,7 +1981,7 @@ void SVD33(gReal *M, gReal *U, gReal *S, gReal *V, gReal tol)
 			V[5] = tmpVec[1]*V[0] - tmpVec[0]*V[1];
 			// normalize it
 			tmp = sqrt(V[3]*V[3] + V[4]*V[4] + V[5]*V[5]);
-			V[3] /= tmp; V[4] /= tmp; V[5] /= tmp; 
+			V[3] /= tmp; V[4] /= tmp; V[5] /= tmp;
 			// the 3rd eigenvector = cross product of the 1st and 2nd
 			V[6] = V[1]*V[5] - V[2]*V[4];
 			V[7] = V[2]*V[3] - V[0]*V[5];
@@ -1995,7 +1997,7 @@ void SVD33(gReal *M, gReal *U, gReal *S, gReal *V, gReal tol)
 			if ( tmp == 0. ) {
 				V[0] = 1.; V[1] = 0.; V[2] = 0.;
 			} else {
-				V[0] /= tmp; V[1] /= tmp; V[2] /= tmp; 
+				V[0] /= tmp; V[1] /= tmp; V[2] /= tmp;
 			}
 			// the 2nd eigenvector
 			V[3] = A[3]*A[7]-A[6]*(A[4]-E[1]);
@@ -2013,9 +2015,9 @@ void SVD33(gReal *M, gReal *U, gReal *S, gReal *V, gReal tol)
 				V[5] = tmpVec[1]*V[0] - tmpVec[0]*V[1];
 				// normalize it
 				tmp = sqrt(V[3]*V[3] + V[4]*V[4] + V[5]*V[5]);
-				V[3] /= tmp; V[4] /= tmp; V[5] /= tmp; 
+				V[3] /= tmp; V[4] /= tmp; V[5] /= tmp;
 			} else {
-				V[3] /= tmp; V[4] /= tmp; V[5] /= tmp; 
+				V[3] /= tmp; V[4] /= tmp; V[5] /= tmp;
 			}
 			// the 3rd eigenvector = cross product of the 1st and 2nd
 			V[6] = V[1]*V[5] - V[2]*V[4];
@@ -2032,7 +2034,7 @@ void SVD33(gReal *M, gReal *U, gReal *S, gReal *V, gReal tol)
 			if ( tmp == 0. ) {
 				V[0] = 1.; V[1] = 0.; V[2] = 0.;
 			} else {
-				V[0] /= tmp; V[1] /= tmp; V[2] /= tmp; 
+				V[0] /= tmp; V[1] /= tmp; V[2] /= tmp;
 			}
 			// the 2nd eigenvector
 			V[3] = A[3]*A[7]-A[6]*(A[4]-E[1]);
@@ -2050,9 +2052,9 @@ void SVD33(gReal *M, gReal *U, gReal *S, gReal *V, gReal tol)
 				V[5] = tmpVec[1]*V[0] - tmpVec[0]*V[1];
 				// normalize it
 				tmp = sqrt(V[3]*V[3] + V[4]*V[4] + V[5]*V[5]);
-				V[3] /= tmp; V[4] /= tmp; V[5] /= tmp; 
+				V[3] /= tmp; V[4] /= tmp; V[5] /= tmp;
 			} else {
-				V[3] /= tmp; V[4] /= tmp; V[5] /= tmp; 
+				V[3] /= tmp; V[4] /= tmp; V[5] /= tmp;
 			}
 			// the 3rd eigenvector = cross product of the 1st and 2nd
 			V[6] = V[1]*V[5] - V[2]*V[4];
@@ -2076,7 +2078,7 @@ void SVD33(gReal *M, gReal *U, gReal *S, gReal *V, gReal tol)
 			U[2] = (M[2]*V[0] + M[5]*V[1] + M[8]*V[2]) * pinvS[0];
 			// normalize it
 			tmp = sqrt(U[0]*U[0] + U[1]*U[1] + U[2]*U[2]);
-			U[0] /= tmp; U[1] /= tmp; U[2] /= tmp; 
+			U[0] /= tmp; U[1] /= tmp; U[2] /= tmp;
 			// 2nd column of U = a unit vector which is perpendicular to the 1st column vector
 			idx = ( fabs(U[0])>fabs(U[1]) ? ( fabs(U[1])>fabs(U[2]) ? 2 : 1 ) : ( fabs(U[0])>fabs(U[2]) ? 2 : 0 ) );
 			tmpVec[0] = 0.; tmpVec[1] = 0.; tmpVec[2] = 0.; tmpVec[idx] = 1.;
@@ -2085,7 +2087,7 @@ void SVD33(gReal *M, gReal *U, gReal *S, gReal *V, gReal tol)
 			U[5] = tmpVec[1]*U[0] - tmpVec[0]*U[1];
 			// normalize it
 			tmp = sqrt(U[3]*U[3] + U[4]*U[4] + U[5]*U[5]);
-			U[3] /= tmp; U[4] /= tmp; U[5] /= tmp; 
+			U[3] /= tmp; U[4] /= tmp; U[5] /= tmp;
 			// 3rd column of U = cross product of the 1st and 2nd columns
 			U[6] = U[1]*U[5] - U[2]*U[4];
 			U[7] = U[2]*U[3] - U[0]*U[5];
@@ -2099,14 +2101,14 @@ void SVD33(gReal *M, gReal *U, gReal *S, gReal *V, gReal tol)
 			U[2] = (M[2]*V[0] + M[5]*V[1] + M[8]*V[2]) * pinvS[0];
 			// normalize it
 			tmp = sqrt(U[0]*U[0] + U[1]*U[1] + U[2]*U[2]);
-			U[0] /= tmp; U[1] /= tmp; U[2] /= tmp; 
+			U[0] /= tmp; U[1] /= tmp; U[2] /= tmp;
 			// 2nd column of U = M*(2nd column of V)*pinvS[1]
 			U[3] = (M[0]*V[3] + M[3]*V[4] + M[6]*V[5]) * pinvS[1];
 			U[4] = (M[1]*V[3] + M[4]*V[4] + M[7]*V[5]) * pinvS[1];
 			U[5] = (M[2]*V[3] + M[5]*V[4] + M[8]*V[5]) * pinvS[1];
 			// normalize it
 			tmp = sqrt(U[3]*U[3] + U[4]*U[4] + U[5]*U[5]);
-			U[3] /= tmp; U[4] /= tmp; U[5] /= tmp; 
+			U[3] /= tmp; U[4] /= tmp; U[5] /= tmp;
 			// 3rd column of U = cross product of the 1st and 2nd columns
 			U[6] = U[1]*U[5] - U[2]*U[4];
 			U[7] = U[2]*U[3] - U[0]*U[5];
@@ -2120,14 +2122,14 @@ void SVD33(gReal *M, gReal *U, gReal *S, gReal *V, gReal tol)
 			U[2] = (M[2]*V[0] + M[5]*V[1] + M[8]*V[2]) * pinvS[0];
 			// normalize it
 			tmp = sqrt(U[0]*U[0] + U[1]*U[1] + U[2]*U[2]);
-			U[0] /= tmp; U[1] /= tmp; U[2] /= tmp; 
+			U[0] /= tmp; U[1] /= tmp; U[2] /= tmp;
 			// 2nd column of U = M*(2nd column of V)*pinvS[1]
 			U[3] = (M[0]*V[3] + M[3]*V[4] + M[6]*V[5]) * pinvS[1];
 			U[4] = (M[1]*V[3] + M[4]*V[4] + M[7]*V[5]) * pinvS[1];
 			U[5] = (M[2]*V[3] + M[5]*V[4] + M[8]*V[5]) * pinvS[1];
 			// normalize it
 			tmp = sqrt(U[3]*U[3] + U[4]*U[4] + U[5]*U[5]);
-			U[3] /= tmp; U[4] /= tmp; U[5] /= tmp; 
+			U[3] /= tmp; U[4] /= tmp; U[5] /= tmp;
 			// 3rd column of U = cross product of the 1st and 2nd columns
 			U[6] = U[1]*U[5] - U[2]*U[4];
 			U[7] = U[2]*U[3] - U[0]*U[5];
@@ -2240,7 +2242,7 @@ int Rank(const RMatrix &m) { return Rank(m, (gReal)1E-9); }
 //----------------------------------------------------------------------
 //
 //		title		:	LINPACK C Version
-//						
+//
 //		version		:	v1.5
 //		author		:	Jinwook Kim (zinook@plaza.snu.ac.kr)
 //		last update	:	2001.7.23
@@ -2248,7 +2250,7 @@ int Rank(const RMatrix &m) { return Rank(m, (gReal)1E-9); }
 //----------------------------------------------------------------------
 
 void _dqrdc(gReal *x, int ldx, int n, int p, gReal *qraux, int *jpvt, gReal *work, int job)
-/*	
+/*
 	dqrdc uses householder transformations to compute the qr factorization of an n by p matrix x.  column pivoting
 	based on the 2-norms of the reduced columns may be performed at the users option.
 
@@ -2280,7 +2282,7 @@ void _dqrdc(gReal *x, int ldx, int n, int p, gReal *qraux, int *jpvt, gReal *wor
 			can be recovered.  note that if pivoting has been requested, the decomposition is not that
 			of the original matrix x but that of x with its columns permuted as described by jpvt.
 	qraux	gReal precision(p). qraux contains further information required to recover the orthogonal part of the decomposition.
-	jpvt	jpvt(k) contains the index of the column of the original matrix that has been interchanged into the k-th column, 
+	jpvt	jpvt(k) contains the index of the column of the original matrix that has been interchanged into the k-th column,
 			if pivoting was requested.
 */
 {
@@ -2300,7 +2302,7 @@ void _dqrdc(gReal *x, int ldx, int n, int p, gReal *qraux, int *jpvt, gReal *wor
 				if ( j != pl ) for ( k = 0; k < n; k++ ) { tmp = x[k+pl*ldx]; x[k+pl*ldx] = x[k+j*ldx]; x[k+j*ldx] = tmp; }
 				jpvt[j] = jpvt[pl];
 				jpvt[pl++] = j+1;
-			} 
+			}
 		}
 		pu = p-1;
 		for ( j = p-1; j >= 0; j-- )
@@ -2324,7 +2326,7 @@ void _dqrdc(gReal *x, int ldx, int n, int p, gReal *qraux, int *jpvt, gReal *wor
 	{
 		for ( j = pl; j <= pu; j++ )
 		{
-			tmp = 0.0; 
+			tmp = 0.0;
 			for ( k = 0; k < n; k++ ) tmp += x[k+j*ldx]*x[k+j*ldx];
 			qraux[j] = sqrt(tmp);
 			work[j] = qraux[j];
@@ -2339,7 +2341,7 @@ void _dqrdc(gReal *x, int ldx, int n, int p, gReal *qraux, int *jpvt, gReal *wor
 			// locate the column of largest norm and bring it into the pivot position.
 			maxnrm = 0.0;
 			maxj = l;
-            for ( j = l; j <= pu; j++ )
+			for ( j = l; j <= pu; j++ )
 			{
 				if ( qraux[j] > maxnrm )
 				{
@@ -2347,7 +2349,7 @@ void _dqrdc(gReal *x, int ldx, int n, int p, gReal *qraux, int *jpvt, gReal *wor
 					maxj = j;
 				}
 			}
-            if ( maxj != l )
+			if ( maxj != l )
 			{
 				for ( k = 0; k < n; k++ ) { tmp = x[k+l*ldx]; x[k+l*ldx] = x[k+maxj*ldx]; x[k+maxj*ldx] = tmp; }
 				qraux[maxj] = qraux[l];
@@ -2361,10 +2363,10 @@ void _dqrdc(gReal *x, int ldx, int n, int p, gReal *qraux, int *jpvt, gReal *wor
 		if ( l != n-1 )
 		{
 			// compute the householder transformation for column (l+1).
-			tmp = 0.0; 
+			tmp = 0.0;
 			for ( k = 0; k < n-l; k++ ) tmp += x[l+k+l*ldx]*x[l+k+l*ldx];
 			nrmxl = sqrt(tmp);
-            if ( nrmxl != 0.0 )
+			if ( nrmxl != 0.0 )
 			{
 				if ( x[l+l*ldx] != 0.0 ) nrmxl = dsign(nrmxl,x[l+l*ldx]);
 				for ( k = 0; k < n-l; k++ ) x[l+k+l*ldx] *= (gReal)1.0/nrmxl;
@@ -2375,7 +2377,7 @@ void _dqrdc(gReal *x, int ldx, int n, int p, gReal *qraux, int *jpvt, gReal *wor
 				{
 					for ( j = l+1; j < p; j++ )
 					{
-						tmp = 0.0; 
+						tmp = 0.0;
 						for ( k = 0; k < n-l; k++ ) tmp += x[l+k+l*ldx]*x[l+k+j*ldx];
 						t = -tmp/x[l+l*ldx];
 						for ( k = 0; k < n-l; k++ ) x[l+k+j*ldx] += t*x[l+k+l*ldx];
@@ -2407,7 +2409,7 @@ void _dqrdc(gReal *x, int ldx, int n, int p, gReal *qraux, int *jpvt, gReal *wor
 void _dqrsl(gReal *x, int ldx, int n, int k, gReal *qraux, const gReal *y, gReal *qy, gReal *qty, gReal *b, gReal *rsd, gReal *xb, int job, int &info)
 /*
 	dqrsl applies the output of dqrdc to compute coordinate transformations, projections, and least squares solutions.
-	for k .le. _MIN(n,p), let xk be the matrix 
+	for k .le. _MIN(n,p), let xk be the matrix
 
 		xk = (x(jpvt(1)),x(jpvt(2)), ... ,x(jpvt(k)))
 
@@ -2438,7 +2440,7 @@ void _dqrsl(gReal *x, int ldx, int n, int k, gReal *qraux, const gReal *y, gReal
 			note that a request to compute b, rsd, or xb automatically triggers the computation of qty, for
 			which an array must be provided in the calling sequence.
 
-     on return
+	 on return
 
 	qy		gReal precision(n). qy conntains q*y, if its computation has been requested.
 	qty		gReal precision(n). qty contains trans(q)*y, if its computation has been requested.  here trans(q) is the
@@ -2448,14 +2450,14 @@ void _dqrsl(gReal *x, int ldx, int n, int k, gReal *qraux, const gReal *y, gReal
 
 	if its computation has been requested.  (note that if pivoting was requested in dqrdc, the j-th
 	component of b will be associated with column jpvt(j) of the original matrix x that was input into dqrdc.)
-	
+
 	rsd    gReal precision(n). rsd contains the least squares residual y - xk*b, if its computation has been requested.  rsd is
 	also the orthogonal projection of y onto the orthogonal complement of the column space of xk.
-	
+
 	xb     gReal precision(n). xb contains the least squares approximation xk*b, if its computation has been requested.  xb is also
 	the orthogonal projection of y onto the column space of x.
-	
-	info   integer. info is zero unless the computation of b has been requested and r is exactly singular.  
+
+	info   integer. info is zero unless the computation of b has been requested and r is exactly singular.
 	in this case, info is the index of the first zero diagonal element of r and b is left unaltered.
 
 	the parameters qy, qty, b, rsd, and xb are not referenced if their computation is not requested and in this case
@@ -2499,7 +2501,7 @@ void _dqrsl(gReal *x, int ldx, int n, int k, gReal *qraux, const gReal *y, gReal
 		if ( cxb ) xb[0] = y[0];
 		if ( cb )
 		{
-			if ( x[0] != 0.0 ) 
+			if ( x[0] != 0.0 )
 			{
 				b[0] = y[0] / x[0];
 				for ( j = 1; j < k; j++) b[j] = 0.0;
@@ -2523,7 +2525,7 @@ void _dqrsl(gReal *x, int ldx, int n, int k, gReal *qraux, const gReal *y, gReal
 			{
 				temp = x[j+j*ldx];
 				x[j+j*ldx] = qraux[j];
-				t = 0.0; 
+				t = 0.0;
 				for ( l = 0; l < n-j; l++ ) t += x[j+l+j*ldx]*qy[j+l];
 				t /= -x[j+j*ldx];
 				for ( l = 0; l < n-j; l++ ) qy[j+l] += t*x[j+l+j*ldx];
@@ -2540,7 +2542,7 @@ void _dqrsl(gReal *x, int ldx, int n, int k, gReal *qraux, const gReal *y, gReal
 			{
 				temp = x[j+j*ldx];
 				x[j+j*ldx] = qraux[j];
-				t = 0.0; 
+				t = 0.0;
 				for ( l = 0; l < n-j; l++ ) t += x[j+l+j*ldx]*qty[j+l];
 				t /= -x[j+j*ldx];
 				for ( l = 0; l < n-j; l++ ) qty[j+l] += t*x[j+l+j*ldx];
@@ -2554,7 +2556,7 @@ void _dqrsl(gReal *x, int ldx, int n, int k, gReal *qraux, const gReal *y, gReal
 	if ( cr && k < n) for ( l = 0; l < n-k; l++ ) rsd[l] = qty[l];
 	if ( cxb && k < n )
 		for ( i = k; i < n; i++ ) xb[i] = 0.0;
-	
+
 	if ( cr )
 		for ( i = 0; i < k; i++ ) rsd[i] = 0.0;
 
@@ -2571,7 +2573,7 @@ void _dqrsl(gReal *x, int ldx, int n, int k, gReal *qraux, const gReal *y, gReal
 					info = j+1;
 					//break;
 				} else b[j] /= x[j+j*ldx];
-				
+
 				if ( j != 0 )
 				{
 					t = -b[j];
@@ -2591,14 +2593,14 @@ void _dqrsl(gReal *x, int ldx, int n, int k, gReal *qraux, const gReal *y, gReal
 				x[j+j*ldx] = qraux[j];
 				if ( cr )
 				{
-					t = 0.0; 
+					t = 0.0;
 					for ( l = 0; l < n-j; l++ ) t += x[j+l+j*ldx]*rsd[j+l];
 					t /= -x[j+j*ldx];
 					for ( l = 0; l < n-j; l++ ) rsd[j+l] += t*x[j+l+j*ldx];
 				}
 				if ( cxb )
 				{
-					t = 0.0; 
+					t = 0.0;
 					for ( l = 0; l < n-j; l++ ) t += x[j+l+j*ldx]*xb[j+l];
 					t /= -x[j+j*ldx];
 					for ( l = 0; l < n-j; l++ ) xb[j+l] += t*x[j+l+j*ldx];
@@ -2621,24 +2623,24 @@ bool QRSolveAxEqualB(const RMatrix &A, RMatrix &x, const RMatrix &B)
 	for ( i = 0; i < A.row * A.col; i++ ) _A_QR.element[i] = A.element[i];
 
 	int n = _A_QR.row, p = _A_QR.col, info;
-	
+
 	x.ReNew(p, B.col);
 
 	if ( _qraux_QR.row < p ) _qraux_QR.ReNew(p);
 	if ( _qty_QR.row < n ) _qty_QR.ReNew(n);
 	if ( _work_QR.row < _MAX(p,n) ) _work_QR.ReNew(_MAX(p,n));
 	if ( _jpvt_QR.row < p ) _jpvt_QR.ReNew(p);
-	
+
 	for ( i = 0; i < p; i++ ) _jpvt_QR.element[i] = 0;
 
 	_dqrdc(_A_QR.element, n, n, p, _qraux_QR.element, _jpvt_QR.element, _work_QR.element, 1);
-	
-	for ( j = 0; j < B.col; j++ ) 
+
+	for ( j = 0; j < B.col; j++ )
 	{
 		_dqrsl(_A_QR.element, n, n, p, _qraux_QR.element, B.element+j*B.row, NULL, _qty_QR.element, _work_QR.element, NULL, NULL, 100, info);
 		for ( i = 0; i < p; i++ ) x.element[_jpvt_QR.element[i]-1+j*x.row] = _work_QR.element[i];
 	}
-	
+
 	return true;
 }
 
@@ -2655,7 +2657,7 @@ bool QRSolveAtxEqualB(const RMatrix &At, RMatrix &x, const RMatrix &B)
 		at = At.element + i;
 		for ( j = 0; j < _A_QR.row; j++, at += At.row )	*(a++) = *at;
 	}
-	
+
 	int n = _A_QR.row, p = _A_QR.col, info;
 	x.ReNew(p, B.col);
 
@@ -2663,17 +2665,17 @@ bool QRSolveAtxEqualB(const RMatrix &At, RMatrix &x, const RMatrix &B)
 	if ( _qty_QR.row < n ) _qty_QR.ReNew(n);
 	if ( _work_QR.row < _MAX(p,n) ) _work_QR.ReNew(_MAX(p,n));
 	if ( _jpvt_QR.row < p ) _jpvt_QR.ReNew(p);
-	
+
 	for ( i = 0; i < p; i++ ) _jpvt_QR.element[i] = 0;
 
 	_dqrdc(_A_QR.element, n, n, p, _qraux_QR.element, _jpvt_QR.element, _work_QR.element, 1);
-	
-	for ( j = 0; j < B.col; j++ ) 
+
+	for ( j = 0; j < B.col; j++ )
 	{
 		_dqrsl(_A_QR.element, n, n, p, _qraux_QR.element, B.element+j*B.row, NULL, _qty_QR.element, _work_QR.element, NULL, NULL, 100, info);
 		for ( i = 0; i < p; i++ ) x.element[_jpvt_QR.element[i]-1+j*x.row] = _work_QR.element[i];
 	}
-	
+
 	return true;
 }
 
@@ -2688,7 +2690,7 @@ RMatrix Nullspace(const RMatrix &A, gReal eps)
 	for (i=0, cnt=0; i<s.row; i++) { if ( s.element[i] * imx <= eps ) cnt++; }
 	N.SetZero(V.row, cnt);
 	for (i=0, cnt=0; i<s.row; i++) { if ( s.element[i] * imx <= eps ) N.Push(0,cnt++,V.Sub(0,V.row-1,i,i)); }
-	return N;	
+	return N;
 }
 
 RMatrix pInv(const RMatrix &A, gReal eps)
@@ -2701,7 +2703,7 @@ RMatrix pInv(const RMatrix &A, gReal eps)
 	is.SetZero(A.col,1);
 	for (int i=0; i<s.row; i++) { if ( s.element[i] * imx > eps ) is.element[i] = (gReal)1. / s.element[i]; }
 	MultAbCt(re, V, is, U);	// re = V*Diag(is)*~U
-	return re;	
+	return re;
 }
 
 RMatrix pInv(const RMatrix &A, RMatrix &N, gReal eps)
@@ -2717,7 +2719,7 @@ RMatrix pInv(const RMatrix &A, RMatrix &N, gReal eps)
 	N.SetZero(V.row, cnt);
 	for (i=0, cnt=0; i<s.row; i++) { if ( s.element[i] * imx <= eps ) N.Push(0,cnt++,V.Sub(0,V.row-1,i,i)); }
 	MultAbCt(re, V, is, U);	// re = V*Diag(is)*~U
-	return re;	
+	return re;
 }
 
 RMatrix srInv(const RMatrix &A, gReal alpha)
@@ -2731,7 +2733,7 @@ RMatrix srInv(const RMatrix &A, gReal alpha)
 	is.SetZero(A.col,1);
 	for (int i=0; i<s.row; i++) { is.element[i] = s.element[i] / (s.element[i] * s.element[i] + alpha); }
 	MultAbCt(re, V, is, U);	// re = V*Diag(is)*~U
-	return re;	
+	return re;
 }
 
 RMatrix srInv(const RMatrix &A, RMatrix &N, gReal alpha, gReal eps)
@@ -2749,7 +2751,7 @@ RMatrix srInv(const RMatrix &A, RMatrix &N, gReal alpha, gReal eps)
 	N.SetZero(V.row, cnt);
 	for (i=0, cnt=0; i<s.row; i++) { if ( s.element[i] * imx <= eps ) N.Push(0,cnt++,V.Sub(0,V.row-1,i,i)); }
 	MultAbCt(re, V, is, U);	// re = V*Diag(is)*~U
-	return re;	
+	return re;
 }
 
 RMatrix srInv2(const RMatrix &A, gReal alpha)
@@ -2758,7 +2760,7 @@ RMatrix srInv2(const RMatrix &A, gReal alpha)
 		return ~A * Inv( A * ~A + alpha*Eye(A.row) );
 	} else {
 		return Inv( ~A * A + alpha*Eye(A.col) ) * ~A;
-	} 
+	}
 }
 
 int solve_Ax_b_pInv(RMatrix &x, const RMatrix &A, const RMatrix &b, gReal eps)
@@ -2902,8 +2904,8 @@ void solve_Ax_b_srInv2(RMatrix &x, const RMatrix &A, const RMatrix &b, gReal alp
 	RMatrix U, V, is;
 	SVD(A, U, s, V);
 	is.SetZero(s.row,1);
-	for (int i=0; i<s.row; i++) { 
-		is.element[i] = (s.element[i]*s.element[i])/(s.element[i]*s.element[i]*s.element[i] + alpha); 
+	for (int i=0; i<s.row; i++) {
+		is.element[i] = (s.element[i]*s.element[i])/(s.element[i]*s.element[i]*s.element[i] + alpha);
 	}
 	MultAbCt(x, V, is, ~b*U);	// x = V*Diag(is)*~U*b
 }

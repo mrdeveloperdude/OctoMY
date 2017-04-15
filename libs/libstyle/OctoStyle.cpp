@@ -52,6 +52,9 @@
 
 #include <cstdio>
 
+#include <qmath.h>
+
+
 #define BEGIN_STYLE_PIXMAPCACHE(a) \
 	QRect rect = option->rect; \
 	QPixmap internalPixmapCache; \

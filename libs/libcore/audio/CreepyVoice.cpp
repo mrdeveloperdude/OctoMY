@@ -9,6 +9,7 @@
 
 #include <QDebug>
 
+#include <qmath.h>
 
 struct CreepyBuffer {
 	int mSize;

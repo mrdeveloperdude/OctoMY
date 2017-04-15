@@ -6,6 +6,7 @@
 #include <QPainter>
 #include <QDebug>
 
+#include <qmath.h>
 
 QRWidget::QRWidget(QWidget *parent)
 	: QWidget(parent)

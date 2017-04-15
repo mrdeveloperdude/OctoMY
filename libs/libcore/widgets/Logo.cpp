@@ -2,6 +2,8 @@
 
 #include <QtMath>
 
+#include <qmath.h>
+
 Logo::Logo()
 	: m_count(0)
 {

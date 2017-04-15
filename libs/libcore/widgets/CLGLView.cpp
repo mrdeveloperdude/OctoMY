@@ -1,5 +1,7 @@
 #include "CLGLView.hpp"
 
+#include <qmath.h>
+
 #ifdef EXTERNAL_LIB_OPENCL
 
 #include "../libutil/utility/Utility.hpp"

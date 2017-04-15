@@ -6,7 +6,7 @@
 
 #include <limits>
 
-
+#include <qmath.h>
 
 Q_DECL_CONSTEXPR static inline bool qFuzzyIsNull(TGPSReal d) Q_REQUIRED_RESULT Q_DECL_UNUSED;
 Q_DECL_CONSTEXPR static inline bool qFuzzyIsNull(TGPSReal d)

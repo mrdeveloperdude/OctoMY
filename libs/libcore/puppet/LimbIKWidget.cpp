@@ -4,6 +4,8 @@
 #include <QPainter>
 #include <QPointF>
 
+#include <qmath.h>
+
 class LimbIKWidget;
 
 struct IKLimb{

@@ -3,13 +3,13 @@
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met: 
+// modification, are permitted provided that the following conditions are met:
 //
 // 1. Redistributions of source code must retain the above copyright notice, this
-//    list of conditions and the following disclaimer. 
+//    list of conditions and the following disclaimer.
 // 2. Redistributions in binary form must reproduce the above copyright notice,
 //    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution. 
+//    and/or other materials provided with the distribution.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -30,6 +30,7 @@
 #include "liegroup.h"
 #include "rmatrix3j.h"
 
+#include <qmath.h>
 
 
 //=============================================================
@@ -64,7 +65,7 @@ void GJointUniversalXY::update_short()
 	if ( bReversed ) {
 		T = SE3(c1, 0, s1, s0*s1, c0, -s0*c1, -c0*s1, s0, c0*c1, 0, 0, 0);
 		inv_T = SE3(~T.GetRotation());
-		S[0] = -1; S[7] = -c0; S[8] = -s0;		
+		S[0] = -1; S[7] = -c0; S[8] = -s0;
 
 	} else {
 		T = SE3(c1, s0*s1, -c0*s1, 0, c0, s0, s1, -s0*c1, c0*c1, 0, 0, 0);
@@ -100,7 +101,7 @@ void GJointUniversalXY::update()
 		Sddq = se3(c1*ddq0, ddq1, s1*ddq0, 0, 0, 0);
 		DSdqDt = Sddq + dSdq;
 		S[0] = c1; S[2] =  s1; S[7] = 1;
-		dS[0] = -s1*dq1; dS[2] = c1*dq1; 
+		dS[0] = -s1*dq1; dS[2] = c1*dq1;
 	}
 }
 

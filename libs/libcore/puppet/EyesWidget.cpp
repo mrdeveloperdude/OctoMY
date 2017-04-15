@@ -6,6 +6,7 @@
 #include <QVector2D>
 #include <QMouseEvent>
 
+#include <qmath.h>
 
 Eye::Eye(QVector2D center, qreal slant, QColor irisColor)
 	: center(center)

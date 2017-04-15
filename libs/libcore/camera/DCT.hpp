@@ -2,7 +2,7 @@
 #define DCT_HPP
 
 // https://unix4lyfe.org/dct-1d/
-#include <cmath>
+#include <qmath.h>
 
 void aan_dct(const double i[], double o[]) {
 #if 1
