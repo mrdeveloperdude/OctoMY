@@ -22,15 +22,27 @@ public:
 
 	// GLCLViewRenderer Interface
 public:
-	virtual void resize(QSize sz) Q_DECL_OVERRIDE;
-	virtual bool setRendering(bool running, bool block=false) Q_DECL_OVERRIDE;
+	void resize(QSize) Q_DECL_OVERRIDE{
+
+	}
+	bool setRendering(bool running, bool block=false) Q_DECL_OVERRIDE{
+
+	}
 	virtual bool isRendering() const  Q_DECL_OVERRIDE
 	{
 		return false;
 	}
-	virtual void renderFrame()  Q_DECL_OVERRIDE;
-	virtual GLuint pbo() Q_DECL_OVERRIDE;
-	virtual QString getRendererSpec() Q_DECL_OVERRIDE;
+	void renderFrame()  Q_DECL_OVERRIDE
+	{
+
+	}
+	GLuint pbo() Q_DECL_OVERRIDE
+	{
+		return 0;
+	}
+	QString getRendererSpec() Q_DECL_OVERRIDE{
+		return "NOT_IMPLEMENTED";
+	}
 };
 
 
