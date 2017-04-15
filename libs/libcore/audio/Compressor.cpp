@@ -1,5 +1,7 @@
 #include "Compressor.hpp"
 
+#include <qmath.h>
+
 Compressor::Compressor(
 	double  threshold
 	, double  slope
