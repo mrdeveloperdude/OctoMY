@@ -67,7 +67,7 @@ addons:
 #      - qt58xmlpatterns
 ###################################### Dependencies
 #-lGL -lpthread -lpulse-mainloop-glib -lpulse -lglib-2.0 
-      - build-essential"
+      - build-essential
       # XCB/X11 support
       - libx11-xcb-dev
       # OpenGL - GLX
@@ -94,7 +94,7 @@ addons:
       - gnutls-dev
       - libgnutls-dev
       # DEPS+=" libgnutls-openssl-dev" # Not available on debian
-      - libsslcommon2-dev"
+      - libsslcommon2-dev
     
 
 before_install:
