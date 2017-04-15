@@ -8,7 +8,7 @@
 
 
 namespace Ui {
-	class HexyTool;
+	class Servotor32ControllerWidget;
 }
 
 class Servotor32Controller;
@@ -20,7 +20,7 @@ class Servotor32ControllerWidget : public QWidget
 {
 		Q_OBJECT
 	private:
-		Ui::HexyTool *ui;
+		Ui::Servotor32ControllerWidget *ui;
 		qreal pos[HexySerial::SERVO_COUNT]={0.0};
 		GaitController<qreal> gait;
 		QTimer gaitTimer;

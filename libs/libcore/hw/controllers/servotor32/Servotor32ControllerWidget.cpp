@@ -1,6 +1,6 @@
 #include "Servotor32ControllerWidget.hpp"
 #include "Servotor32Controller.hpp"
-#include "ui_HexyTool.h"
+#include "ui_Servotor32ControllerWidget.h"
 #include "../libutil/utility/Standard.hpp"
 #include "../libutil/utility/Utility.hpp"
 #include "Servotor32ActuatorWidget.hpp"
@@ -11,7 +11,7 @@
 
 Servotor32ControllerWidget::Servotor32ControllerWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::HexyTool)
+	, ui(new Ui::Servotor32ControllerWidget)
 	, mController(nullptr)
 {
 	ui->setupUi(this);
