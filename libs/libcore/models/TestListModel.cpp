@@ -1,5 +1,7 @@
 #include "TestListModel.hpp"
 
+// TODO: This turned out to not be very useful. Remove it if it still is the case when you read this after 2017!
+
 TestListModel::TestListModel(QObject *parent)
 	: QAbstractListModel(parent)
 {
