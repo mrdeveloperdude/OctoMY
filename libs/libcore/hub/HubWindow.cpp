@@ -3,39 +3,33 @@
 #include "ui_HubWindow.h"
 
 #include "../libutil/utility/Standard.hpp"
-
 #include "comms/CommsSession.hpp"
 #include "comms/messages/MessageType.hpp"
 #include "hub/Hub.hpp"
 #include "ClientWidget.hpp"
 #include "../libutil/utility/Utility.hpp"
 #include "models/ClientModel.hpp"
-
 #include "remote/Remote.hpp"
 #include "remote/RemoteWindow.hpp"
-
 #include "agent/Agent.hpp"
 #include "agent/AgentWindow.hpp"
-
 #include "widgets/hexedit/QHexEdit.hpp"
 #include "widgets/hexedit/QHexEditData.hpp"
 #include "hw/controllers/servotor32/Servotor32ControllerWidget.hpp"
-
 #include "../libpki/qpolarsslpki.hpp"
 #include "../libpki/qpolarsslhash.hpp"
-
 #include "puppet/GaitController.hpp"
-
 #include "../libutil/utility/ScopedTimer.hpp"
-
 #include "comms/CommsChannel.hpp"
 #include "zoo/ZooClient.hpp"
-
 #include "security/Key.hpp"
-
 #include "HelloGLCLViewRenderer.hpp"
-
 #include "../libzbar/ZBarScanner.hpp"
+#include "widgets/HardwareTemplate.hpp"
+#include "trigger/TriggerSet.hpp"
+#include "trigger/Action.hpp"
+#include "trigger/Condition.hpp"
+#include "models/TriggerListModel.hpp"
 
 #include <QScrollBar>
 #include <QHostInfo>
@@ -45,8 +39,6 @@
 #include <QTextStream>
 #include <QProcess>
 
-
-#include "widgets/HardwareTemplate.hpp"
 
 HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	QMainWindow(parent)
@@ -92,6 +84,33 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		}
 		if(!connect(&mSummaryTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()),OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
+		}
+
+		{
+			TriggerSet *ts=new TriggerSet;
+			Trigger *t1=new Trigger("Trigger #1");
+			Trigger *t2=new Trigger("Trigger #2");
+			Trigger *t3=new Trigger("Trigger #3");
+			t1->addCondition(*new Condition("Condition #1", "Formula #1"));
+			t1->addCondition(*new Condition("Condition #2", "Formula #2"));
+			t1->addAction(*new Action("Action #1"));
+			t1->addAction(*new Action("Action #2"));
+
+			t2->addCondition(*new Condition("Condition #3", "Formula #3"));
+			t2->addAction(*new Action("Action #3"));
+
+			t3->addCondition(*new Condition("Condition #4", "Formula #4"));
+			t3->addAction(*new Action("Action #4"));
+
+			*ts<<t1<<t2<<t3;
+
+			for(int i=0; i<10; ++i) {
+				Trigger *t=new Trigger("Trigger #5");
+				t->addCondition(*new Condition("Condition #5", "Formula #5"));
+				t->addAction(*new Action("Action #5"));
+				*ts<<t;
+			}
+			ui->widgetTriggerManager->configure(*ts);
 		}
 
 		//TODO: WOW we need to update this
