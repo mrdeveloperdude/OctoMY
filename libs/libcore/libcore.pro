@@ -239,14 +239,14 @@ SOURCES +=\
 	locus/TrackedLocus.cpp \
 	locus/TrackedLocusWidget.cpp \
 	hw/controllers/ardumy/ArduMYTypeConversions.cpp \
-    models/TriggerListModel.cpp \
-    models/TestListModel.cpp \
-    widgets/TriggerManagerWidget.cpp \
-    trigger/Trigger.cpp \
-    trigger/Action.cpp \
-    trigger/Condition.cpp \
-    trigger/TriggerSet.cpp \
-    widgets/TriggerWidget.cpp
+	models/TriggerListModel.cpp \
+	models/TestListModel.cpp \
+	widgets/TriggerManagerWidget.cpp \
+	trigger/Trigger.cpp \
+	trigger/Action.cpp \
+	trigger/Condition.cpp \
+	trigger/TriggerSet.cpp \
+	widgets/TriggerWidget.cpp
 
 
 
@@ -488,14 +488,14 @@ HEADERS  += \
 	locus/TrackedLocus.hpp \
 	locus/TrackedLocusWidget.hpp \
 	hw/controllers/ardumy/ArduMYTypeConversions.hpp \
-    models/TriggerListModel.hpp \
-    models/TestListModel.hpp \
-    widgets/TriggerManagerWidget.hpp \
-    trigger/Trigger.hpp \
-    trigger/Action.hpp \
-    trigger/Condition.hpp \
-    trigger/TriggerSet.hpp \
-    widgets/TriggerWidget.hpp
+	models/TriggerListModel.hpp \
+	models/TestListModel.hpp \
+	widgets/TriggerManagerWidget.hpp \
+	trigger/Trigger.hpp \
+	trigger/Action.hpp \
+	trigger/Condition.hpp \
+	trigger/TriggerSet.hpp \
+	widgets/TriggerWidget.hpp
 
 
 
@@ -545,8 +545,8 @@ FORMS    += \
 	locus/LeggedLocusWidget.ui \
 	locus/HoveringLocusWidget.ui \
 	locus/TrackedLocusWidget.ui \
-    widgets/TriggerManagerWidget.ui \
-    widgets/TriggerWidget.ui
+	widgets/TriggerManagerWidget.ui \
+	widgets/TriggerWidget.ui
 
 
 
