@@ -5,9 +5,12 @@
 #include "comms/CommsSignature.hpp"
 
 #include <QObject>
-#include <QMap>
+#include <QHash>
 #include <QSet>
 #include <QSharedPointer>
+
+
+
 
 
 class CommsSession;
@@ -23,9 +26,9 @@ class CommsSessionDirectory: public QObject
 	Q_OBJECT
 private:
 	KeyStore &mKeyStore;
-	QMap<quint64, QSharedPointer<CommsSession> > mByShortID;
-	QMap<QString, QSharedPointer<CommsSession> > mByFullID;
-	QMap<QString, QSharedPointer<CommsSession> > mByHost;
+	QHash<quint64, QSharedPointer<CommsSession> > mBySessionID;
+	QHash<QString, QSharedPointer<CommsSession> > mByFullID;
+	QHash<QString, QSharedPointer<CommsSession> > mByHost;
 	QSet<QSharedPointer<CommsSession> > mAll;
 public:
 
@@ -34,10 +37,10 @@ public:
 public:
 
 	void insert(QSharedPointer<CommsSession> c);
-	QSharedPointer<CommsSession> getByShortID(const quint64 id);
-	QSharedPointer<CommsSession> getByFullID(const QString &id, const bool addIfMissing=false);
+	QSharedPointer<CommsSession> getBySessionID(const quint64 id);
+	QSharedPointer<CommsSession> getByFullID(const QString &id);
 	//QSharedPointer<CommsSession> getByAddress(const NetworkAddress &address, const bool addIfMissing=false);
-	QSharedPointer<CommsSession> getBySignature(const CommsSignature &sig, const bool addIfMissing=false);
+//	QSharedPointer<CommsSession> getBySignature(const CommsSignature &sig, const bool addIfMissing=false);
 
 	QSet<QSharedPointer<CommsSession> > getByActiveTime(quint64 lastActiveTime);
 

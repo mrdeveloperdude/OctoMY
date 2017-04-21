@@ -74,7 +74,7 @@ class NodeAssociate{
 		bool isValidForServer();
 
 
-		CommsSignature toClientSignature();
+//		CommsSignature toClientSignature();
 
 		PortableID toPortableID();
 

@@ -10,7 +10,7 @@
 #include <QSignalSpy>
 
 
-TestCourier::TestCourier(CommsSignature dest, QByteArray datagram, const qint32 maxSends , const qint32 maxRecs, CommsTester *parent)
+TestCourier::TestCourier(QString  dest, QByteArray datagram, const qint32 maxSends , const qint32 maxRecs, CommsTester *parent)
 	: Courier("Test", Courier::FIRST_USER_ID+313, parent)
 	, mCt(parent)
 	, mSoFar(0)
@@ -52,11 +52,11 @@ quint16 TestCourier::sendingOpportunity(QDataStream &ds )
 	const qint16 sendsLeft=mMaxSends-mSendCount;
 	const bool done=(sendsLeft<=0);
 	if(done) {
-		qDebug()<<"MAX SENDS ("<<mMaxSends<<") RECEIVED FOR "<<destination().toString()<<" STOPPING";
+		qDebug()<<"MAX SENDS ("<<mMaxSends<<") RECEIVED FOR "<<destination()<<" STOPPING";
 		mMandate.sendActive=false;
 	}
 	ds << mDatagram;
-	qDebug()<<"SENDING OPPORTUNITY @ "<<destination().toString()<< " bytes:" <<mMandate.payloadSize<<", "<<(done?"DONE":QString("SENDS LEFT: %1").arg(sendsLeft));
+	qDebug()<<"SENDING OPPORTUNITY @ "<<destination()<< " bytes:" <<mMandate.payloadSize<<", "<<(done?"DONE":QString("SENDS LEFT: %1").arg(sendsLeft));
 	if(nullptr!=mCt && done) {
 		qDebug()<<"EMIT FINISHED --==##==--";
 		emit mCt->finished();
@@ -72,7 +72,7 @@ quint16 TestCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 	const qint16 recLeft=mMaxRecs-mRecCount;
 	const bool done=(recLeft<=0);
 	if(done) {
-		qDebug()<<"MAX RECS ("<<mMaxRecs<<") RECEIVED FOR "<<destination().toString()<<" STOPPING";
+		qDebug()<<"MAX RECS ("<<mMaxRecs<<") RECEIVED FOR "<<destination()<<" STOPPING";
 		mMandate.receiveActive=false;
 	}
 
@@ -113,8 +113,8 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 		if(mRng->generateReal2()>0.7 || true) {
 			qDebug() << mMyAddress << ":" << mMyPort << " --> " << toPort;
 			QString myID="1234";
-			CommsSignature sig(myID, NetworkAddress(mMyAddress, toPort));
-			TestCourier *tc=new TestCourier(sig, "This is my humble payload", mTestCount, mTestCount, this);
+			//CommsSignature sig(myID, NetworkAddress(mMyAddress, toPort));
+			TestCourier *tc=new TestCourier(myID, "This is my humble payload", mTestCount, mTestCount, this);
 			QVERIFY(nullptr!=tc);
 			mCc.setCourierRegistered(*tc, true);
 		} else {
@@ -214,7 +214,7 @@ void TestCommsChannel::testSingle()
 	QString idA=keyStoreA.localPortableID().id();
 	qDebug()<<"Keystore A :"<<idA;
 	NetworkAddress addrA(local, basePort + 0);
-	CommsSignature commSigA(idA, addrA);
+	//CommsSignature commSigA(idA, addrA);
 
 	qDebug()<<"####################################### INITIALIZING ID FOR PARTY B";
 	QString keyFileB="keyFileB.json";
@@ -223,14 +223,14 @@ void TestCommsChannel::testSingle()
 	QString idB=keyStoreB.localPortableID().id();
 	qDebug()<<"Keystore B :"<<idB;
 	NetworkAddress addrB(local, basePort + 1);
-	CommsSignature commSigB(idB, addrB);
+	//CommsSignature commSigB(idB, addrB);
 
 
 	qDebug()<<"####################################### INITIALIZING COMMS FOR PARTY A";
 	CommsChannel chanA(idA, keyStoreA);
 	CommsSignalLogger sigLogA("LOG-A");
 	chanA.setHookCommsSignals(sigLogA, true);
-	TestCourier courA1(commSigB, "This is datagram A1 123", maxSends, maxRecs);
+	TestCourier courA1(idB, "This is datagram A1 123", maxSends, maxRecs);
 	chanA.setCourierRegistered(courA1, true);
 	//TestCourier courA2(commSigB, "This is datagram A2 uvw xyz", maxSends, maxRecs); chanA.setCourierRegistered(courA2, true);
 
@@ -238,7 +238,7 @@ void TestCommsChannel::testSingle()
 	CommsChannel chanB(idB, keyStoreB);
 	CommsSignalLogger sigLogB("LOG-B");
 	chanA.setHookCommsSignals(sigLogB, true);
-	TestCourier courB1(commSigA, "This is datagram B1 æøåä", maxSends, maxRecs);
+	TestCourier courB1(idA, "This is datagram B1 æøåä", maxSends, maxRecs);
 	chanB.setCourierRegistered(courB1, true);
 	//TestCourier courB2(commSigA, "This is datagram B2 Q", maxSends, maxRecs); chanB.setCourierRegistered(courB2, true);
 

@@ -1,5 +1,6 @@
 #include "CommsSignature.hpp"
 
+/*
 CommsSignature::CommsSignature()
 {
 
@@ -91,3 +92,4 @@ const QDebug &operator<<(QDebug &d, const CommsSignature &sig)
 	d.nospace() << "ClientSignature["<<sig.toString()<<"("<<sig.fullID()<<"), valid="<<sig.isValid()<<"]";
 	return d.maybeSpace();
 }
+*/

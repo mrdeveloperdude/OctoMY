@@ -249,13 +249,13 @@ bool NodeAssociate::isValidForServer()
 	return (!mPins.isEmpty()) && isValidForClient(true) ;
 }
 
-
+/*
 CommsSignature NodeAssociate::toClientSignature()
 {
 	OC_METHODGATE();
 	return CommsSignature(id(), localAddress());
 }
-
+*/
 
 
 

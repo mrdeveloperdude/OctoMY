@@ -18,26 +18,24 @@ AgentControls::~AgentControls()
 }
 
 
-void AgentControls::registerClient(CommsSignature &sig)
+void AgentControls::registerClient(QString fullID)
 {
 	OC_METHODGATE();
-	quint64 shid=sig.shortHandID();
-	if(!mCouriers.contains(shid) ) {
-		CourierSet *set=new CourierSet (sig,mAgent);
-		mCouriers.insert(shid, set);
+	if(!mCouriers.contains(fullID) ) {
+		CourierSet *set=new CourierSet (fullID, mAgent);
+		mCouriers.insert(fullID, set);
 	} else {
-		qWarning()<<"ERROR: Trying to register same client twice: "<<sig;
+		qWarning()<<"ERROR: Trying to register same client twice: "<<fullID;
 	}
 }
 
-void AgentControls::unRegisterClient(CommsSignature &sig)
+void AgentControls::unRegisterClient(QString fullID)
 {
 	OC_METHODGATE();
-	quint64 shid=sig.shortHandID();
-	if(mCouriers.contains(shid) ) {
-		mCouriers.remove(shid);
+	if(mCouriers.contains(fullID) ) {
+		mCouriers.remove(fullID);
 	} else {
-		qWarning()<<"ERROR: Trying to un-register nonexistant client: "<<sig;
+		qWarning()<<"ERROR: Trying to un-register nonexistant client: "<<fullID;
 	}
 }
 

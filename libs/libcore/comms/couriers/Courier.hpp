@@ -24,7 +24,7 @@ class Courier : public QObject
 	Q_OBJECT
 protected:
 	//Destination
-	CommsSignature mDestination;
+	QString mDestination;
 	//Channel
 	CommsChannel *mComms;
 	//Identification
@@ -57,8 +57,8 @@ public:
 	quint32 id()const;
 	QString name() const;
 
-	void setDestination(const CommsSignature);
-	const CommsSignature &destination() const;
+	void setDestination(const QString );
+	const QString  &destination() const;
 
 	CommsChannel *comms() const;
 	bool isRegistered() const;

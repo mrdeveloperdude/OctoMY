@@ -25,7 +25,7 @@ private:
 	BlobCourier *mBlobCourier;
 
 public:
-	explicit CourierSet(CommsSignature &sig, Agent &agent);
+	explicit CourierSet(QString &fullID, Agent &agent);
 	virtual ~CourierSet();
 public:
 

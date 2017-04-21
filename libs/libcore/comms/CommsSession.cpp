@@ -64,6 +64,23 @@
 	The intrinsic part is reserved for internal affairs of commschannel.
 	Intrinsic and courier parts of commschannel should not depend directly on one another and their respective implementation should not be mixed.
 
+	NOTE: We have some conflicting requirements for the protocol:
+
+	 1. The protocol should be as stateless as possible for robustness
+	 2. The protocol should be as low-bandwidth as possible
+
+	 Where is the conflict? For every mode/state you add, you save bytes going over the wire (because the other side will "remember" the state),
+	 while for every mode/state you store, you will add an opportunity for failure resulting from missing state-carrying packets.
+
+	 In other words, sendiong all state in every packet means that no state is ever dropped, but adds up to lots of data.
+
+	 To alleviate this conflict, we do the following:
+
+	 1. Make the protocoll statefull to save bandwidth, while
+	 2. Adding a mechanism to verify the state so that mismatch can be detected and state can be re-sent
+
+	 We call this mechanism "sync", and every packet may request sync.
+
 	Intrinsic parts of comms include the following:
 
 	 + Session management
@@ -105,8 +122,8 @@
 //  , port(port)
 //  , hash(generateHash(host,port))
 
-CommsSession::CommsSession(CommsSignature signature, Key &key)
-	: mSignature(signature)
+CommsSession::CommsSession(QString fullID, Key &key)
+	: mFullID(fullID)
 	, mKey(key)
 	, mLastSendTime(0)
 	, mLastReceiveTime(mLastSendTime)
@@ -132,11 +149,12 @@ CommsSession::~CommsSession()
 
 }
 
-
+/*
 CommsSignature &CommsSession::signature()
 {
 	return mSignature;
 }
+*/
 
 ReliabilitySystem &CommsSession::reliabilitySystem()
 {
@@ -204,6 +222,21 @@ bool CommsSession::established()
 }
 
 
+quint64 CommsSession::sessionID() const
+{
+	return mSessionID;
+}
+QString CommsSession::fullID() const
+{
+return mFullID;
+}
+
+NetworkAddress CommsSession::address() const
+{
+	return mAddress;
+}
+
+
 void CommsSession::setExpired()
 {
 	mExpired=true;
@@ -228,11 +261,11 @@ void CommsSession::countSend(qint64 written)
 	mDisconnectTimeoutAccumulator += mDeltaTime;
 	mExpireTimeoutAccumulator+=(qint64)qMax((qint64)0, delta);
 	if (mConnected && ( mDisconnectTimeoutAccumulator > mDisconnectTimeout )) {
-		qDebug()<<"SESSION "<< mSignature.toString() <<" disconnected";
+		qDebug()<<"SESSION "<< signatureToString() <<" disconnected";
 		mConnected=false;
 	}
 	if (!mExpired && ( mExpireTimeoutAccumulator > mExpireTimeout )) {
-		qDebug()<<"SESSION "<< mSignature.toString() <<" expired";
+		qDebug()<<"SESSION "<< signatureToString() <<" expired";
 		mExpired=true;
 	}
 	if(mConnected) {
@@ -242,7 +275,7 @@ void CommsSession::countSend(qint64 written)
 	if(mConnected!=mLastConnected) {
 		mLastConnected=mConnected;
 		mFlowControl.reset();
-		qDebug()<<"SESSION: New flow state: " <<(mConnected?"CONNECTED":"DISCONNECTED")<< " for "<<mSignature.toString();
+		qDebug()<<"SESSION: New flow state: " <<(mConnected?"CONNECTED":"DISCONNECTED")<< " for "<<signatureToString();
 	}
 	mReliabilitySystem.packetSent(written);
 }
@@ -268,12 +301,19 @@ bool CommsSession::idle()
 }
 
 
+
+
+const QString CommsSession::signatureToString() const
+{
+	return QString::number(mSessionID,16)+"-"+mAddress.toString();
+}
+
 QString CommsSession::summary(QString sep) const
 {
 	QString out;
 	QTextStream ts(&out);
-	ts << "ID: "<< mSignature.shortHandID();
-	ts << ", NET: "<<mSignature.address().toString();
+	ts << "ID: "<< signatureToString();
+	ts << ", NET: "<<mAddress.toString();
 	ts << ", DELTA: "<<mDeltaTime<<sep;
 	ts << ", TOA: "<<mDisconnectTimeoutAccumulator<<sep;
 	ts << mFlowControl.toString(sep);
@@ -284,7 +324,7 @@ QString CommsSession::toString() const
 {
 	QString out;
 	QTextStream ts(&out);
-	ts << "sig="<< mSignature.toString()<<", delta: "<<mDeltaTime<<", TOA: "<<mDisconnectTimeoutAccumulator;
+	ts << "sig="<< signatureToString()<<", delta: "<<mDeltaTime<<", TOA: "<<mDisconnectTimeoutAccumulator;
 	return out;
 }
 
@@ -302,10 +342,6 @@ quint64 CommsSession::lastActiveTime() const
 	return mLastReceiveTime;
 }
 
-quint64 CommsSession::getShortHandID() const
-{
-	return mSignature.shortHandID();
-}
 ////////////////////////////
 
 

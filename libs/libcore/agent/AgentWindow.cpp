@@ -27,41 +27,6 @@
 #include "puppet/NameMapping.hpp"
 #include "widgets/NameMappingWidget.hpp"
 
-void fubar()
-{
-	QStringList from;
-	QStringList to;
-	from<<"Left Front Knee";
-	from<<"Right Front Knee";
-	from<<"Left Back Knee";
-	from<<"Right Back Knee";
-	/*
-	from<<"Left Front Hip";
-	from<<"Right Front Hip";
-	from<<"Left Back Hip";
-	from<<"Right Back Hip";
-	*/
-	to<<"Arne";
-	to<<"Trude";
-	to<<"Bjarne";
-	to<<"Fridjof";
-	to<<"Ferdinand";
-	to<<"Nancy";
-	to<<"Otto";
-	to<<"Gustavo";
-	NameMapping *mapping=new NameMapping();
-	/*
-		(*mapping)["Left Back Knee"]="Arne";
-		(*mapping)["Left Back Hip"]="Bjarne";
-		(*mapping)["Left Front Hip"]="Fridjof";
-		(*mapping)["Right Back Knee"]="Fridjof";
-		*/
-	NameMappingWidget *nm=new NameMappingWidget();
-	nm->configure(*mapping,from,to);
-	nm->show();
-
-}
-
 
 AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	: QWidget(parent)
@@ -364,9 +329,8 @@ QSet<QSharedPointer<NodeAssociate> > AgentWindow::activeControls()
 		NodeAssociateStore &peers=mAgent->peers();
 		CommsSessionDirectory &sessionDirectory=cc->sessions();
 		QSet<QSharedPointer<CommsSession> > sessions=sessionDirectory.getByActiveTime(lastActive);
-		for(QSharedPointer<CommsSession> client: sessions) {
-			CommsSignature &sig=client->signature();
-			QString id=sig.fullID();
+		for(QSharedPointer<CommsSession> session: sessions) {
+			QString id=session->key().id();
 			if(id.size()>0) {
 				QSharedPointer<NodeAssociate> peer=peers.getParticipant(id);
 				if(nullptr!=peer) {

@@ -1,7 +1,7 @@
 #ifndef COMMSSIGNATURE_HPP
 #define COMMSSIGNATURE_HPP
 
-
+/*
 #include <QHostAddress>
 
 #include "basic/NetworkAddress.hpp"
@@ -9,7 +9,7 @@
 class CommsSession;
 
 
-/**
+**
 
   ClientSignature is a minimal identification for clients that is used solely by
   CommsChannel.
@@ -24,7 +24,7 @@ class CommsSession;
   This is accomplished by converting the first 16 HEX digits of the full ID
   string into one 64 bit unsigned int.
 
- */
+ *
 
 class CommsSignature
 {
@@ -58,6 +58,6 @@ public:
 
 
 const QDebug &operator<<(QDebug &d, const CommsSignature &sig);
-
+*/
 
 #endif // COMMSSIGNATURE_HPP

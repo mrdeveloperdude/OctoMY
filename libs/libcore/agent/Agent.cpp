@@ -170,10 +170,10 @@ void Agent::onPeerStoreReady(bool ready)
 	qDebug()<<"AGENT found peer store "<< (ready?"READY":"UNREADY");
 	QMap<QString, QSharedPointer<NodeAssociate> > &peers=mPeers.getParticipants();
 	for(QSharedPointer<NodeAssociate> peer:peers) {
-		CommsSignature sig=peer->toClientSignature();
+		NetworkAddress sig=peer->localAddress();
 		if(sig.isValid() && ROLE_CONTROL==peer->role()) {
 			qDebug()<<"Adding "<<sig.toString()<<"("<<peer->toString()<<") to agent control's list";
-			mControls.registerClient(sig);
+			mControls.registerClient(peer->id());
 		}
 	}
 	mControls.setCommsEnabled(true);

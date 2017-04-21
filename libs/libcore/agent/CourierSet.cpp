@@ -5,7 +5,7 @@
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/BlobCourier.hpp"
 
-CourierSet::CourierSet(CommsSignature &sig, Agent &agent)
+CourierSet::CourierSet(QString &fullID, Agent &agent)
 	: mAgent(agent)
 	, mAgentStateCourier(new AgentStateCourier(&mDatastream,nullptr))
 	, mSensorsCourier(new SensorsCourier(nullptr))
@@ -14,19 +14,19 @@ CourierSet::CourierSet(CommsSignature &sig, Agent &agent)
 	OC_METHODGATE();
 	if(nullptr!=mAgentStateCourier) {
 		mAgentStateCourier->setHookSignals(mAgent, true);
-		mAgentStateCourier->setDestination(sig);
+		mAgentStateCourier->setDestination(fullID);
 		append(mAgentStateCourier);
 	} else {
 		qWarning()<<"ERROR: Could not allocate AgentStateCourier";
 	}
 	if(nullptr!=mSensorsCourier) {
-		mSensorsCourier->setDestination(sig);
+		mSensorsCourier->setDestination(fullID);
 		append(mSensorsCourier);
 	} else {
 		qWarning()<<"ERROR: Could not allocate SensorsCourier";
 	}
 	if(nullptr!=mBlobCourier) {
-		mBlobCourier->setDestination(sig);
+		mBlobCourier->setDestination(fullID);
 		append(mBlobCourier);
 	} else {
 		qWarning()<<"ERROR: Could not allocate BlobCourier";

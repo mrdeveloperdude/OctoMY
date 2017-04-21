@@ -3,7 +3,7 @@
 
 class Agent;
 class CourierSet;
-class CommsSignature;
+
 
 #include <QHash>
 
@@ -12,15 +12,15 @@ class AgentControls
 private:
 
 	Agent &mAgent;
-	QHash <quint64, CourierSet *> mCouriers;
+	QHash <QString , CourierSet *> mCouriers;
 public:
 
 	explicit AgentControls(Agent &);
 	virtual	~AgentControls();
 
 public:
-	void registerClient(CommsSignature &sig);
-	void unRegisterClient(CommsSignature &sig);
+	void registerClient(QString fullID);
+	void unRegisterClient(QString fullID);
 
 	void setCommsEnabled(bool);
 

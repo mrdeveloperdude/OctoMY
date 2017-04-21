@@ -306,16 +306,8 @@ void HubWindow::onRemoteHostLookupComplete(QHostInfo hi)
 
 void HubWindow::on_pushButtonSendData_clicked()
 {
-	CommsChannel *comms=mHub->comms();
-	if(nullptr!=comms) {
-		//QHostInfo::lookupHost(ui->lineEditRemoteAddress->text(),this, SLOT(onRemoteHostLookupComplete(QHostInfo)));
-		QByteArray ba;
-		ba="HELLO WORLD";
-		quint64 w=comms->sendRawData(ba,CommsSignature(mHub->keyStore().localKey().id(),NetworkAddress(QHostAddress(ui->lineEditRemoteAddress->text()),ui->lineEditRemotePort->text().toInt())));
-		qDebug()<<"Wrote "<<w<<" bytes raw helloworld packet";
-	} else {
-		appendLog("NOT READY TO SEND DATA");
-	}
+	//TODO: Implement or remove
+
 }
 
 

@@ -209,7 +209,7 @@ void Node::startComms(const NetworkAddress &localAddress)
 void Node::stopComms()
 {
 	if(nullptr!=mComms) {
-		qDebug()<<"comms.stop "<<mComms->localSignature().address();
+		qDebug()<<"comms.stop "<<mComms->localID();
 		mComms->stop();
 	} else {
 		qWarning()<<"ERROR: No comms";

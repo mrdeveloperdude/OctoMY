@@ -23,6 +23,7 @@ class CommsChannel;
 class Servotor32ControllerWidget;
 class QAction;
 class ISyncParameter;
+class CommsSession;
 
 namespace Ui
 {

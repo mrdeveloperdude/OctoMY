@@ -26,12 +26,12 @@ Courier::Courier(QString name, quint32 id, QObject *parent)
 
 }
 
-void Courier::setDestination(const CommsSignature sig)
+void Courier::setDestination(const QString sig)
 {
 	mDestination=sig;
 }
 
-const CommsSignature &Courier::destination() const
+const QString  &Courier::destination() const
 {
 	return mDestination;
 }

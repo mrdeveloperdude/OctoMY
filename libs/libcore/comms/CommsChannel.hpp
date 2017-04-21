@@ -34,7 +34,6 @@
 class HubWindow;
 class CommsSession;
 class CommsSessionDirectory;
-class CommsSignature;
 class KeyStore;
 
 /*
@@ -124,7 +123,10 @@ private:
 	//All registered couriers
 	QList<Courier *> mCouriers;
 	QMap<quint32, Courier *> mCouriersByID;
-	CommsSignature mLocalSignature;
+	QString mLocalID;
+	quint64 mLocalSessionID;
+	NetworkAddress mLocalAddress;
+	//CommsSignature mLocalSignature;
 	quint64 mLastRX;
 	quint64 mLastTX;
 	quint64 mLastRXST;
@@ -136,7 +138,7 @@ private:
 	bool mHoneyMoon;
 
 	QMap<quint64, Courier *> mPri;
-	QList <const CommsSignature *> mIdle;
+	QList <const QString *> mIdle;
 	qint64 mMostUrgentCourier;
 
 
@@ -156,7 +158,11 @@ public:
 	CommsSessionDirectory &sessions();
 	void start(NetworkAddress localAddress);
 	void stop();
-	CommsSignature localSignature();
+	//CommsSignature localSignature();
+
+	NetworkAddress localAddress();
+	QString localID();
+
 	QString getSummary();
 	void setID(const QString &id);
 	void setHookCommsSignals(QObject &ob, bool hook);
@@ -168,7 +174,7 @@ public:
 	bool isStarted() const;
 	bool isConnected() const;
 
-	qint64 sendRawData(QByteArray datagram,CommsSignature sig);
+	qint64 sendRawData(QByteArray datagram, NetworkAddress address);
 
 public slots:
 	quint64 rescheduleSending(quint64 now);
@@ -176,9 +182,7 @@ public slots:
 private:
 
 	void appendLog(QString);
-
-
-	void sendData(const quint64 &now, QSharedPointer<CommsSession> localClient, Courier *courier, const CommsSignature *sig=nullptr);
+	void sendData(const quint64 &now, QSharedPointer<CommsSession> localClient, Courier *courier);
 
 	// CommsChannel signals
 signals:

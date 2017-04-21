@@ -64,11 +64,11 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 		qDebug()<<"CONNECTED onConnectButtonStateChanged";
 	}
 
-	CommsSignature sig=mNodeAssoc->toClientSignature();
-	qDebug()<<"REMOTE CLIENT WIDGET DESTINATION SET TO "<<sig;
-	mAgentStateCourier->setDestination(sig);
-	mSensorsCourier->setDestination(sig);
-	mBlobCourier->setDestination(sig);
+	const QString fullID=mNodeAssoc->id();
+	qDebug()<<"REMOTE CLIENT WIDGET DESTINATION SET TO "<<fullID;
+	mAgentStateCourier->setDestination(fullID);
+	mSensorsCourier->setDestination(fullID);
+	mBlobCourier->setDestination(fullID);
 
 
 	if(nullptr!=mAgentStateCourier) {

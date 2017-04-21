@@ -22,12 +22,12 @@ CommsSessionDirectory::~CommsSessionDirectory()
 
 void CommsSessionDirectory::insert(QSharedPointer<CommsSession> c)
 {
-	CommsSignature &sig=c->signature();
-	quint64 id=sig.shortHandID();
-	QString fullID=sig.fullID();
-	QString address=sig.address().toString();
-	if(nullptr!=c && !mByShortID.contains(id) && !mByHost.contains(address)) {
-		mByShortID.insert(id, c);
+	//CommsSignature &sig=c->signature();
+	quint64 id=c->sessionID();
+	QString fullID=c->fullID();
+	QString address=c->address().toString();
+	if(nullptr!=c && !mBySessionID.contains(id) && !mByHost.contains(address)) {
+		mBySessionID.insert(id, c);
 		mByFullID.insert(fullID, c);
 		mByHost.insert(address, c);
 		mAll.insert(c);
@@ -38,28 +38,20 @@ void CommsSessionDirectory::insert(QSharedPointer<CommsSession> c)
 }
 
 
-QSharedPointer<CommsSession> CommsSessionDirectory::getByShortID(const quint64 id)
+QSharedPointer<CommsSession> CommsSessionDirectory::getBySessionID(const quint64 sessionID)
 {
-	QMap<quint64, QSharedPointer<CommsSession> >::const_iterator it=mByShortID.find(id);
-	if(mByShortID.end()==it) {
+	QHash<quint64, QSharedPointer<CommsSession> >::const_iterator it=mBySessionID.find(sessionID);
+	if(mBySessionID.end()==it) {
 		return QSharedPointer<CommsSession>(nullptr);
 	}
 	return it.value();
 }
 
 
-QSharedPointer<CommsSession> CommsSessionDirectory::getByFullID(const QString &id, const bool addIfMissing)
+QSharedPointer<CommsSession> CommsSessionDirectory::getByFullID(const QString &id)
 {
-	QMap<QString, QSharedPointer<CommsSession> >::const_iterator it=mByFullID.find(id);
+	QHash<QString, QSharedPointer<CommsSession> >::const_iterator it=mByFullID.find(id);
 	if(mByFullID.end()==it) {
-		if(addIfMissing && mKeyStore.hasPubKeyForID(id)) {
-			Key key=mKeyStore.pubKeyForID(id);
-			if(key.isValid(true)) {
-				QSharedPointer<CommsSession> c(new CommsSession(CommsSignature(id, NetworkAddress()), key));
-				insert(c);
-				return c;
-			}
-		}
 		return QSharedPointer<CommsSession>(nullptr);
 	}
 	return it.value();
@@ -68,7 +60,7 @@ QSharedPointer<CommsSession> CommsSessionDirectory::getByFullID(const QString &i
 
 QSharedPointer<CommsSession> CommsSessionDirectory::getByAddress(const NetworkAddress &address, const bool addIfMissing)
 {
-	QMap<QString, QSharedPointer<CommsSession> >::const_iterator it=mByHost.find(address.toString());
+	QHash<QString, QSharedPointer<CommsSession> >::const_iterator it=mByHost.find(address.toString());
 	if(mByHost.end()==it) {
 		if(addIfMissing) {
 			QSharedPointer<CommsSession> c(new CommsSession(CommsSignature("", address)));
@@ -82,6 +74,7 @@ QSharedPointer<CommsSession> CommsSessionDirectory::getByAddress(const NetworkAd
 
 */
 
+/*
 QSharedPointer<CommsSession> CommsSessionDirectory::getBySignature(const CommsSignature &signature, const bool addIfMissing)
 {
 	QSharedPointer<CommsSession> c=QSharedPointer<CommsSession>(nullptr);
@@ -91,20 +84,20 @@ QSharedPointer<CommsSession> CommsSessionDirectory::getBySignature(const CommsSi
 //		c=getByAddress(signature.address(), false);
 	}
 	if(nullptr==c) {
-		c=getByShortID(signature.shortHandID());
+		c=getBySessionID(signature.sessionID());
 	}
 	if(nullptr==c) {
 		c=getByFullID(signature.fullID());
 	}
-	/*
+	*
 	if(nullptr==c && addIfMissing) {
 		c=QSharedPointer<CommsSession>(new CommsSession(signature));
 		insert(c);
 	}
-	*/
+	*
 	return c;
 }
-
+*/
 QSet<QSharedPointer<CommsSession> > CommsSessionDirectory::getByActiveTime(quint64 lastActiveTime)
 {
 	QSet<QSharedPointer<CommsSession> > ret;
