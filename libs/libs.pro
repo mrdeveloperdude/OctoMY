@@ -13,6 +13,7 @@ SUBDIRS += \
 	libqhttp \
 	liboctostyle \
 	libqfi \
+	librng \
 
 
 
@@ -27,9 +28,10 @@ libzbar.subdir=			libzbar
 libqhttp.subdir=		libqhttp
 liboctostyle.subdir=	libstyle
 libqfi.subdir=			libqfi
+librng.subdir=			librng
 
 
-libcore.depends=libutil
+libcore.depends=libutil librng
 
 
 contains(DEFINES, EXTERNAL_LIB_OPENCL){

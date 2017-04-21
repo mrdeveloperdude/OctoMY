@@ -3,7 +3,7 @@
 
 #include "../libutil/utility/Utility.hpp"
 
-#include "random/RNG.hpp"
+#include "../librng/RNG.hpp"
 
 #include "security/PortableID.hpp"
 

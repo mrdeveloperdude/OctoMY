@@ -1,6 +1,6 @@
 #include "AgentNameGenerator.hpp"
 
-#include "random/RNG.hpp"
+#include "../librng/RNG.hpp"
 
 const char* AgentNameGenerator::namePrefix[] = {
 	""

@@ -115,15 +115,6 @@ SOURCES +=\
 	puppet/Pose.cpp \
 	puppet/PoseMapping.cpp \
 	puppet/PoseSequence.cpp \
-	random/DevRandomRNG.cpp \
-	random/DevURandomRNG.cpp \
-	random/EfficientPRNG.cpp \
-	random/FileRandomRNG.cpp \
-	random/MersennePRNG.cpp \
-	random/ParkMillerPRNG.cpp \
-	random/RNG.cpp \
-	random/SystemPRNG.cpp \
-	random/TausPRNG.cpp \
 	remote/Remote.cpp \
 	remote/RemoteWindow.cpp \
 	security/Key.cpp \
@@ -246,7 +237,7 @@ SOURCES +=\
 	trigger/Action.cpp \
 	trigger/Condition.cpp \
 	trigger/TriggerSet.cpp \
-	widgets/TriggerWidget.cpp
+	widgets/TriggerWidget.cpp \
 
 
 
@@ -364,15 +355,6 @@ HEADERS  += \
 	puppet/Pose.hpp \
 	puppet/PoseMapping.hpp \
 	puppet/PoseSequence.hpp \
-	random/DevRandomRNG.hpp \
-	random/DevURandomRNG.hpp \
-	random/EfficientPRNG.hpp \
-	random/FileRandomRNG.hpp \
-	random/MersennePRNG.hpp \
-	random/ParkMillerPRNG.hpp \
-	random/RNG.hpp \
-	random/SystemPRNG.hpp \
-	random/TausPRNG.hpp \
 	remote/Remote.hpp \
 	remote/RemoteWindow.hpp \
 	security/Key.hpp \
@@ -495,7 +477,7 @@ HEADERS  += \
 	trigger/Action.hpp \
 	trigger/Condition.hpp \
 	trigger/TriggerSet.hpp \
-	widgets/TriggerWidget.hpp
+	widgets/TriggerWidget.hpp \
 
 
 

@@ -5,7 +5,7 @@
 #include "../libutil/utility/Standard.hpp"
 #include "widgets/WaitingSpinnerWidget.hpp"
 #include "basic/Node.hpp"
-#include "random/RNG.hpp"
+#include "../librng/RNG.hpp"
 
 #include <QDebug>
 #include <QRegularExpressionValidator>

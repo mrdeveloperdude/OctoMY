@@ -53,7 +53,7 @@ void SpeechControlWidget::appendSpeechHistory(const QString& text)
 	ui->logScrollHistory->appendLog(text.trimmed());
 }
 
-//#include "random/RNG.hpp" RNG *rng=RNG::sourceFactory("mt");
+//#include "../librng/RNG.hpp" RNG *rng=RNG::sourceFactory("mt");
 
 void SpeechControlWidget::on_pushButtonSay_clicked()
 {

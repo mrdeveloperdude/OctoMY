@@ -1,7 +1,7 @@
 #ifndef REVERB_HPP
 #define REVERB_HPP
 
-#include "random/RNG.hpp"
+#include "../librng/RNG.hpp"
 #include <QtGlobal>
 #include <stdint.h>
 

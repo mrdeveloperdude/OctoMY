@@ -3,7 +3,7 @@
 #include "../../libs/libutil/utility/Standard.hpp"
 #include "../../libs/libcore/comms/messages/MessageType.hpp"
 
-#include "random/RNG.hpp"
+#include "../librng/RNG.hpp"
 
 #include "security/KeyStore.hpp"
 
