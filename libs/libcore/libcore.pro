@@ -6,11 +6,6 @@ QT +=		serialport
 include($$TOP_PWD/common.pri)
 
 SOURCES +=\
-	3d/Logo3DWidget.cpp \
-	3d/scene/GeometryEngine.cpp \
-	3d/scene/Limb.cpp \
-	3d/scene/QtLogo3D.cpp \
-	3d/scene/Simulation.cpp \
 	agent/AgentConstants.cpp \
 	agent/Agent.cpp \
 	agent/AgentWindow.cpp \
@@ -242,11 +237,6 @@ SOURCES +=\
 
 
 HEADERS  += \
-	3d/Logo3DWidget.hpp \
-	3d/scene/GeometryEngine.hpp \
-	3d/scene/Limb.hpp \
-	3d/scene/QtLogo3D.hpp \
-	3d/scene/Simulation.hpp \
 	agent/AgentConstants.hpp \
 	agent/Agent.hpp \
 	agent/AgentWindow.hpp \
@@ -550,12 +540,8 @@ OTHER_FILES += \
 #http://stackoverflow.com/questions/35074830/show-qt3d-stuff-inside-qwidget-in-qt5
 contains(DEFINES, USE_QT3D){
 HEADERS += \
-	3d/qt3d/Qt3DWindow.hpp \
-	3d/qt3d/SceneModifier.hpp \
 
 SOURCES += \
-	3d/qt3d/Qt3DWindow.cpp \
-	3d/qt3d/SceneModifier.cpp \
 
 }
 
