@@ -24,8 +24,8 @@
 
 
 
-#include "puppet/NameMapping.hpp"
-#include "widgets/NameMappingWidget.hpp"
+#include "../libpuppet/pose/NameMapping.hpp"
+#include "../libpuppet/widgets/NameMappingWidget.hpp"
 
 
 AgentWindow::AgentWindow(Agent *agent, QWidget *parent)

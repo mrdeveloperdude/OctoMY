@@ -15,7 +15,7 @@
 
 #include "security/KeyStore.hpp"
 
-#include "puppet/Pose.hpp"
+#include "../libpuppet/pose/Pose.hpp"
 
 
 #include <QDataStream>

@@ -3,7 +3,7 @@
 
 #include "widgets/TryToggle.hpp"
 #include "HexySerial.hpp"
-#include "puppet/GaitController.hpp"
+#include "../libpuppet/gait/GaitController.hpp"
 #include <QWidget>
 
 

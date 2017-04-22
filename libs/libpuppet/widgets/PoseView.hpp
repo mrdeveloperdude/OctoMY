@@ -1,7 +1,7 @@
 #ifndef POSEVIEW_HPP
 #define POSEVIEW_HPP
 
-#include "puppet/Pose.hpp"
+#include "pose/Pose.hpp"
 
 #include <QWidget>
 

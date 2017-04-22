@@ -1068,55 +1068,55 @@
   <customwidget>
    <class>PortableIDWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/PortableIDWidget.hpp</header>
+   <header location="global">widgets/PortableIDWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>GaitWidget</class>
    <extends>QWidget</extends>
-   <header>puppet/GaitWidget.hpp</header>
+   <header location="global">../libpuppet/gait/GaitWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>FaceWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/FaceWidget.hpp</header>
+   <header location="global">widgets/FaceWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PlanEditor</class>
    <extends>QWidget</extends>
-   <header>widgets/planedit/PlanEditor.hpp</header>
+   <header location="global">widgets/planedit/PlanEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PairingWizard</class>
    <extends>QWidget</extends>
-   <header>widgets/PairingWizard.hpp</header>
+   <header location="global">widgets/PairingWizard.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>IdenticonWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/IdenticonWidget.hpp</header>
+   <header location="global">widgets/IdenticonWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>Camera</class>
    <extends>QWidget</extends>
-   <header>camera/Camera.hpp</header>
+   <header location="global">camera/Camera.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>AgentDeliveryWizard</class>
    <extends>QWidget</extends>
-   <header>widgets/AgentDeliveryWizard.hpp</header>
+   <header location="global">widgets/AgentDeliveryWizard.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>HardwareWizard</class>
    <extends>QWidget</extends>
-   <header>widgets/HardwareWizard.hpp</header>
+   <header location="global">widgets/HardwareWizard.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

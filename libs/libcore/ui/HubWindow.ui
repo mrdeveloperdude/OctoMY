@@ -945,21 +945,45 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
+   <class>GaitWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">../libpuppet/gait/GaitWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PlanEditor</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/planedit/PlanEditor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PairingWizard</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/PairingWizard.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>IdenticonWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/IdenticonWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Camera</class>
+   <extends>QWidget</extends>
+   <header location="global">camera/Camera.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>PoseMappingWidget</class>
    <extends>QWidget</extends>
-   <header location="global">widgets/PoseMappingWidget.hpp</header>
+   <header location="global">../libpuppet/widgets/PoseMappingWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>TryToggle</class>
    <extends>QWidget</extends>
    <header location="global">widgets/TryToggle.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>GaitWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">puppet/GaitWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -992,33 +1016,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PlanEditor</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/planedit/PlanEditor.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>PairingWizard</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/PairingWizard.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>IdenticonWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/IdenticonWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>QRWidget</class>
    <extends>QWidget</extends>
    <header location="global">widgets/QRWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>Camera</class>
-   <extends>QWidget</extends>
-   <header location="global">camera/Camera.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

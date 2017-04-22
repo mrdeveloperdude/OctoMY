@@ -6,7 +6,7 @@
 
 #include "Pose.hpp"
 
-#include "comms/messages/MessageType.hpp"
+#include "../libcore/comms/messages/MessageType.hpp"
 
 #include "../libutil/utility/Standard.hpp"
 

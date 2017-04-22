@@ -57,7 +57,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabActuators">
       <attribute name="title">
@@ -768,7 +768,7 @@
   <customwidget>
    <class>GaitWidget</class>
    <extends>QWidget</extends>
-   <header location="global">puppet/GaitWidget.hpp</header>
+   <header location="global">../libpuppet/gait/GaitWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

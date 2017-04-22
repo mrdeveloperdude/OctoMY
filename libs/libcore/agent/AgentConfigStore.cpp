@@ -1,6 +1,6 @@
 #include "AgentConfigStore.hpp"
 
-#include "puppet/PoseMapping.hpp"
+#include "../libpuppet/pose/PoseMapping.hpp"
 #include "../libutil/utility/Standard.hpp"
 #include "../libutil/utility/Utility.hpp"
 

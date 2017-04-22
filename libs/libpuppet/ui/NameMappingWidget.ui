@@ -50,7 +50,7 @@
   <customwidget>
    <class>NameMappingView</class>
    <extends>QWidget</extends>
-   <header>../../libs/libcore/widgets/NameMappingView.hpp</header>
+   <header>../../libs/libpuppet/widgets/NameMappingView.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -2,16 +2,20 @@
 #define SYNCPARAMETER_HPP
 
 #include "../libutil/utility/Standard.hpp"
-
-#include <QtGlobal>
-
 #include "ISyncParameter.hpp"
-
 #include "../libutil/utility/SerialSize.hpp"
+#include "../libpuppet/pose/Pose.hpp"
+
+
+#include <QObject>
+#include <QGeoCoordinate>
+
+
+
+
 
 class SyncContext;
 
-#include <QObject>
 
 
 template <typename T>
@@ -190,10 +194,6 @@ T SyncParameter<T>::bestValue(bool isLocal) const
 /// helper to convert different types to string. Defaults to QString::number()
 /// specialized for each type this does not work for
 
-#include "../libcore/puppet/Pose.hpp"
-
-
-#include <QGeoCoordinate>
 
 template<typename T>
 QString valueToString (const T v)

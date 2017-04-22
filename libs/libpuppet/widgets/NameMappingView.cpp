@@ -3,7 +3,7 @@
 #include "../libutil/utility/Standard.hpp"
 
 #include "NameMappingWidget.hpp"
-#include "puppet/PoseMapping.hpp"
+#include "pose/PoseMapping.hpp"
 
 #include <QPen>
 #include <QPainter>

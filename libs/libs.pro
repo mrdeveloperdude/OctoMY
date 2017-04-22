@@ -16,6 +16,7 @@ SUBDIRS += \
 	librng \
 	libaudio \
 	libdynamics \
+	libpuppet \
 
 
 
@@ -33,9 +34,10 @@ libqfi.subdir=			libqfi
 librng.subdir=			librng
 libaudio.subdir=		libaudio
 libdynamics.subdir=		libdynamics
+libpuppet.subdir=		libpuppet
 
 
-libcore.depends= libutil librng libweb
+libcore.depends= libutil librng libweb libpuppet
 libaudio.depends= librng
 
 

@@ -1,7 +1,7 @@
 #ifndef HARDWAREWIZARD_HPP
 #define HARDWAREWIZARD_HPP
 
-#include "puppet/PoseMapping.hpp"
+#include "../libpuppet/pose/PoseMapping.hpp"
 #include "hw/controllers/ActuatorControllerFactory.hpp"
 #include "agent/AgentConfigStore.hpp"
 #include "locus/LocusController.hpp"

@@ -74,14 +74,6 @@ SOURCES +=\
 	plot/NetworkStats.cpp \
 	plot/qcustomplot.cpp \
 	plot/StatsWindow.cpp \
-	puppet/EyesWidget.cpp \
-	puppet/GaitController.cpp \
-	puppet/GaitWidget.cpp \
-	puppet/LimbIKWidget.cpp \
-	puppet/NameMapping.cpp \
-	puppet/Pose.cpp \
-	puppet/PoseMapping.cpp \
-	puppet/PoseSequence.cpp \
 	remote/Remote.cpp \
 	remote/RemoteWindow.cpp \
 	security/Key.cpp \
@@ -128,8 +120,6 @@ SOURCES +=\
 	widgets/LogWidget.cpp \
 	widgets/MapEditor.cpp \
 	widgets/MultiView.cpp \
-	widgets/NameMappingView.cpp \
-	widgets/NameMappingWidget.cpp \
 	widgets/NetworkSettingsWidget.cpp \
 	widgets/NumberEntry.cpp \
 	widgets/PairingEditButtonDelegate.cpp \
@@ -140,9 +130,6 @@ SOURCES +=\
 	widgets/planedit/LineNumberArea.cpp \
 	widgets/planedit/PlanEditor.cpp \
 	widgets/PortableIDWidget.cpp \
-	widgets/PoseMappingView.cpp \
-	widgets/PoseMappingWidget.cpp \
-	widgets/PoseView.cpp \
 	widgets/QRWidget.cpp \
 	widgets/RealtimeValuesWidget.cpp \
 	widgets/SpeechControlWidget.cpp \
@@ -276,14 +263,6 @@ HEADERS  += \
 	plot/NetworkStats.hpp \
 	plot/qcustomplot.hpp \
 	plot/StatsWindow.hpp \
-	puppet/EyesWidget.hpp \
-	puppet/GaitController.hpp \
-	puppet/GaitWidget.hpp \
-	puppet/LimbIKWidget.hpp \
-	puppet/NameMapping.hpp \
-	puppet/Pose.hpp \
-	puppet/PoseMapping.hpp \
-	puppet/PoseSequence.hpp \
 	remote/Remote.hpp \
 	remote/RemoteWindow.hpp \
 	security/Key.hpp \
@@ -330,8 +309,6 @@ HEADERS  += \
 	widgets/LogWidget.hpp \
 	widgets/MapEditor.hpp \
 	widgets/MultiView.hpp \
-	widgets/NameMappingView.hpp \
-	widgets/NameMappingWidget.hpp \
 	widgets/NetworkSettingsWidget.hpp \
 	widgets/NumberEntry.hpp \
 	widgets/PairingEditButtonDelegate.hpp \
@@ -342,9 +319,6 @@ HEADERS  += \
 	widgets/planedit/LineNumberArea.hpp \
 	widgets/planedit/PlanEditor.hpp \
 	widgets/PortableIDWidget.hpp \
-	widgets/PoseMappingView.hpp \
-	widgets/PoseMappingWidget.hpp \
-	widgets/PoseView.hpp \
 	widgets/QRWidget.hpp \
 	widgets/RealtimeValuesWidget.hpp \
 	widgets/SpeechControlWidget.hpp \
@@ -410,9 +384,13 @@ HEADERS  += \
 
 
 FORMS    += \
+	locus/HoveringLocusWidget.ui \
+	locus/LeggedLocusWidget.ui \
+	locus/TrackedLocusWidget.ui \
 	ui/ActuatorManagerWidget.ui \
 	ui/AgentDeliveryWizard.ui \
 	ui/AgentWindow.ui \
+	ui/ArduMYActuatorWidget.ui \
 	ui/ArduMYControllerWidget.ui \
 	ui/CameraPairingWidget.ui \
 	ui/CameraSettings.ui \
@@ -430,7 +408,6 @@ FORMS    += \
 	ui/LogWidget.ui \
 	ui/MapEditor.ui \
 	ui/MultiView.ui \
-	ui/NameMappingWidget.ui \
 	ui/NetworkSettingsWidget.ui \
 	ui/NumberEntry.ui \
 	ui/PairingWizard.ui \
@@ -438,26 +415,20 @@ FORMS    += \
 	ui/PKIManager.ui \
 	ui/PlanEditor.ui \
 	ui/PortableIDWidget.ui \
-	ui/PoseMappingWidget.ui \
 	ui/RealtimeValuesWidget.ui \
 	ui/RemoteWindow.ui \
 	ui/ResponsiveTest.ui \
 	ui/SerialSettingsWidget.ui \
+	ui/Servotor32ActuatorWidget.ui \
+	ui/Servotor32ControllerWidget.ui \
 	ui/SpeechControlWidget.ui \
 	ui/StatsWindow.ui \
 	ui/TryToggle.ui \
 	ui/WheeledLocusWidget.ui \
-	widgets/TestWidget.ui \
 	widgets/ArduinoPinSelector.ui \
-	ui/ArduMYActuatorWidget.ui \
-	ui/Servotor32ActuatorWidget.ui \
-	ui/Servotor32ControllerWidget.ui \
-	locus/LeggedLocusWidget.ui \
-	locus/HoveringLocusWidget.ui \
-	locus/TrackedLocusWidget.ui \
+	widgets/TestWidget.ui \
 	widgets/TriggerManagerWidget.ui \
 	widgets/TriggerWidget.ui \
-
 
 
 RESOURCES += \

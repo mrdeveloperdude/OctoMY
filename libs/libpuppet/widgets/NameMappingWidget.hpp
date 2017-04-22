@@ -1,7 +1,7 @@
 #ifndef NAMEMAPPINGWIDGET_HPP
 #define NAMEMAPPINGWIDGET_HPP
 
-#include "puppet/NameMapping.hpp"
+#include "../pose/NameMapping.hpp"
 
 #include <QWidget>
 #include <QMap>

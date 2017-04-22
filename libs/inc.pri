@@ -118,4 +118,14 @@ PRE_TARGETDEPS +=	$$DYNAMICS_OUT_DIR/libdynamics.a
 
 
 
+
+PUPPET_IN_DIR =	$$TOP_PWD/libs/libpuppet
+PUPPET_OUT_DIR =	$$TOP_BUILD/libs/libpuppet
+LIBS +=				-L$$PUPPET_OUT_DIR -lpuppet
+INCLUDEPATH +=		$$PUPPET_IN_DIR
+DEPENDPATH +=		$$PUPPET_IN_DIR
+PRE_TARGETDEPS +=	$$PUPPET_OUT_DIR/libpuppet.a
+
+
+
 #message("FROM inc.pri:") include($$TOP_PWD/status.pri)

@@ -88,7 +88,7 @@
   <customwidget>
    <class>PoseMappingView</class>
    <extends>QWidget</extends>
-   <header>../../libs/libcore/widgets/PoseMappingView.hpp</header>
+   <header location="global">../libpuppet/widgets/PoseMappingView.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

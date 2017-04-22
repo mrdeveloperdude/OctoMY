@@ -18,7 +18,7 @@
 #include "hw/controllers/servotor32/Servotor32ControllerWidget.hpp"
 #include "../libpki/qpolarsslpki.hpp"
 #include "../libpki/qpolarsslhash.hpp"
-#include "puppet/GaitController.hpp"
+#include "../libpuppet/gait/GaitController.hpp"
 #include "../libutil/utility/ScopedTimer.hpp"
 #include "comms/CommsChannel.hpp"
 #include "zoo/ZooClient.hpp"

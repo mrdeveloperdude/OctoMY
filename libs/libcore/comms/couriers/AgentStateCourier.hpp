@@ -11,7 +11,7 @@
 
 #include "comms/SyncContext.hpp"
 #include "comms/messages/AgentMode.hpp"
-#include "puppet/Pose.hpp"
+#include "../libpuppet/pose/Pose.hpp"
 
 #include <QObject>
 #include <QDebug>

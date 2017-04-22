@@ -2,7 +2,7 @@
 #include "ui_NameMappingWidget.h"
 
 #include "../libutil/utility/Utility.hpp"
-#include "puppet/PoseMapping.hpp"
+#include "pose/PoseMapping.hpp"
 #include "widgets/PoseMappingView.hpp"
 
 #include <QPushButton>

@@ -2,7 +2,7 @@
 #define HARDWARETEMPLATE_HPP
 
 
-#include "puppet/PoseMapping.hpp"
+#include "../libpuppet/pose/PoseMapping.hpp"
 
 class HardwareTemplate
 {

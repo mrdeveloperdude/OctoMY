@@ -29,7 +29,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>7</number>
      </property>
      <widget class="QWidget" name="pageController">
       <layout class="QGridLayout" name="gridLayout">
@@ -495,7 +495,7 @@
   <customwidget>
    <class>PoseMappingWidget</class>
    <extends>QWidget</extends>
-   <header location="global">widgets/PoseMappingWidget.hpp</header>
+   <header location="global">../libpuppet/widgets/PoseMappingWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

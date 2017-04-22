@@ -498,27 +498,27 @@ ajustments here.&lt;/li&gt;
  </widget>
  <customwidgets>
   <customwidget>
+   <class>GaitWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">../libpuppet/gait/GaitWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>TryToggle</class>
    <extends>QWidget</extends>
    <header location="global">widgets/TryToggle.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>GaitWidget</class>
+   <class>SerialSettingsWidget</class>
    <extends>QWidget</extends>
-   <header location="global">puppet/GaitWidget.hpp</header>
+   <header location="global">hw/serial/SerialSettingsWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>LimbIKWidget</class>
    <extends>QWidget</extends>
-   <header location="global">puppet/LimbIKWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SerialSettingsWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">hw/serial/SerialSettingsWidget.hpp</header>
+   <header location="global">../libpuppet/gait/LimbIKWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

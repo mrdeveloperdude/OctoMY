@@ -5,7 +5,7 @@
 #include "comms/CommsChannel.hpp"
 #include "comms/messages/SensorsMessage.hpp"
 
-#include "puppet/Pose.hpp"
+#include "../libpuppet/pose/Pose.hpp"
 
 #include "basic/Node.hpp"
 #include "basic/NetworkAddress.hpp"
