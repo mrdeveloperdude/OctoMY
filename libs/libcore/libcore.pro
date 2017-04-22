@@ -120,7 +120,6 @@ SOURCES +=\
 	storage/Hashstore.cpp \
 	storage/HashstoreRecord.cpp \
 	storage/HashstoreRecordState.cpp \
-	web/Mustache.cpp \
 	widgets/ActuatorManagerWidget.cpp \
 	widgets/ActuatorSelector.cpp \
 	widgets/AgentDeliveryWizard.cpp \
@@ -355,7 +354,6 @@ HEADERS  += \
 	storage/Hashstore.hpp \
 	storage/HashstoreRecord.hpp \
 	storage/HashstoreRecordState.hpp \
-	web/Mustache.hpp \
 	widgets/ActuatorManagerWidget.hpp \
 	widgets/ActuatorSelector.hpp \
 	widgets/AgentDeliveryWizard.hpp \

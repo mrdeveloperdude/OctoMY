@@ -10,7 +10,7 @@ SUBDIRS += \
 	libmap \
 	libqr \
 	libzbar \
-	libqhttp \
+	libweb \
 	liboctostyle \
 	libqfi \
 	librng \
@@ -25,13 +25,13 @@ libparser.subdir=		libparser
 libmap.subdir=			libmap
 libqr.subdir=			libqr
 libzbar.subdir=			libzbar
-libqhttp.subdir=		libqhttp
+libweb.subdir=		    libweb
 liboctostyle.subdir=	libstyle
 libqfi.subdir=			libqfi
 librng.subdir=			librng
 
 
-libcore.depends=libutil librng
+libcore.depends=libutil librng libweb
 
 
 contains(DEFINES, EXTERNAL_LIB_OPENCL){

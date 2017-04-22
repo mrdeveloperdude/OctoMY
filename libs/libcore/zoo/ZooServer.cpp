@@ -1,11 +1,11 @@
 #include "ZooServer.hpp"
 
-#include "../libqhttp/qhttpserver.hpp"
-#include "../libqhttp/qhttpserverrequest.hpp"
-#include "../libqhttp/qhttpserverresponse.hpp"
-#include "../libqhttp/qhttpserverconnection.hpp"
+#include "../libweb/qhttp/qhttpserver.hpp"
+#include "../libweb/qhttp/qhttpserverrequest.hpp"
+#include "../libweb/qhttp/qhttpserverresponse.hpp"
+#include "../libweb/qhttp/qhttpserverconnection.hpp"
 #include "widgets/IdenticonWidget.hpp"
-#include "web/Mustache.hpp"
+#include "../libweb/template/Mustache.hpp"
 
 #include "basic/NodeAssociate.hpp"
 #include "../libutil/utility/ScopedTimer.hpp"

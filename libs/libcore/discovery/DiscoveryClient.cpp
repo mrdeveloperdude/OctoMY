@@ -1,31 +1,28 @@
 #include "DiscoveryClient.hpp"
 
 #include "../libutil/utility/Standard.hpp"
-
+#include "../libutil/utility/Utility.hpp"
 #include "basic/NodeAssociate.hpp"
-
 #include "zoo/ZooClient.hpp"
 #include "zoo/ZooConstants.hpp"
-
 #include "security/KeyStore.hpp"
-
-
 #include "comms/couriers/DiscoveryCourier.hpp"
-
 #include "basic/Node.hpp"
-#include "../libutil/utility/Utility.hpp"
-
-#include <functional>
-#include "../libqhttp/qhttpclient.hpp"
-#include "../libqhttp/qhttpclientrequest.hpp"
-#include "../libqhttp/qhttpclientresponse.hpp"
-
 #include "comms/CommsChannel.hpp"
+
+
+#include "../libweb/qhttp/qhttpclient.hpp"
+#include "../libweb/qhttp/qhttpclientrequest.hpp"
+#include "../libweb/qhttp/qhttpclientresponse.hpp"
+
+
 
 
 #include <QDebug>
 #include <QDateTime>
 #include <QJsonDocument>
+
+#include <functional>
 
 DiscoveryClient::DiscoveryClient(Node &node)
 	: QObject(&node)

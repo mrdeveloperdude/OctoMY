@@ -1,7 +1,7 @@
 #ifndef ZOOSERVER_HPP
 #define ZOOSERVER_HPP
 
-#include "../libqhttp/qhttpserver.hpp"
+#include "../libweb/qhttp/qhttpserver.hpp"
 #include "widgets/Identicon.hpp"
 
 #include "../storage/Hashstore.hpp"

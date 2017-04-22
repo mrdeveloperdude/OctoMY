@@ -2,9 +2,9 @@
 
 #include "../libutil/utility/Standard.hpp"
 
-#include "../libqhttp/qhttpclient.hpp"
-#include "../libqhttp/qhttpclientrequest.hpp"
-#include "../libqhttp/qhttpclientresponse.hpp"
+#include "../libweb/qhttp/qhttpclient.hpp"
+#include "../libweb/qhttp/qhttpclientrequest.hpp"
+#include "../libweb/qhttp/qhttpclientresponse.hpp"
 //#include "ZooServer.hpp"
 
 #include "basic/UniquePlatformFingerprint.hpp"

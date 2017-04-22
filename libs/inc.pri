@@ -51,12 +51,12 @@ DEPENDPATH +=		$$ZBAR_IN_DIR
 PRE_TARGETDEPS +=	$$ZBAR_OUT_DIR/libzbar.a
 
 
-QHTTP_IN_DIR =		$$TOP_PWD/libs/libqhttp
-QHTTP_OUT_DIR =		$$TOP_BUILD/libs/libqhttp
-LIBS +=				-L$$QHTTP_OUT_DIR -lqhttp
-INCLUDEPATH +=		$$QHTTP_IN_DIR
-DEPENDPATH +=		$$QHTTP_IN_DIR
-PRE_TARGETDEPS +=	$$QHTTP_OUT_DIR/libqhttp.a
+WEB_IN_DIR =		$$TOP_PWD/libs/libweb
+WEB_OUT_DIR =		$$TOP_BUILD/libs/libweb
+LIBS +=				-L$$WEB_OUT_DIR -lweb
+INCLUDEPATH +=		$$WEB_IN_DIR
+DEPENDPATH +=		$$WEB_IN_DIR
+PRE_TARGETDEPS +=	$$WEB_OUT_DIR/libweb.a
 
 
 STYLE_IN_DIR =		$$TOP_PWD/libs/libstyle
