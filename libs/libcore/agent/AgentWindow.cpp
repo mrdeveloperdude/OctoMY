@@ -7,7 +7,7 @@
 #include "../libutil/utility/Utility.hpp"
 #include "basic/Settings.hpp"
 #include "security/PortableID.hpp"
-#include "audio/OneOffSpeech.hpp"
+#include "../libaudio/OneOffSpeech.hpp"
 #include "comms/CommsSessionDirectory.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"

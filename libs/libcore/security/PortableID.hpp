@@ -1,7 +1,7 @@
 #ifndef PORTABLEID_HPP
 #define PORTABLEID_HPP
 
-#include "discovery/DiscoveryRole.hpp"
+#include "../libcore/discovery/DiscoveryRole.hpp"
 #include "../libutil/utility/Standard.hpp"
 
 #include <QString>

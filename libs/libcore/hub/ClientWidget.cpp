@@ -7,7 +7,7 @@
 #include "basic/Settings.hpp"
 
 #include "widgets/WaitingSpinnerWidget.hpp"
-#include "audio/OneOffSpeech.hpp"
+#include "../libaudio/OneOffSpeech.hpp"
 
 #include "security/PortableID.hpp"
 

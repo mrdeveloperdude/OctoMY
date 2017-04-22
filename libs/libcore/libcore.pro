@@ -9,12 +9,6 @@ SOURCES +=\
 	agent/AgentConstants.cpp \
 	agent/Agent.cpp \
 	agent/AgentWindow.cpp \
-	audio/AudioStream.cpp \
-	audio/Compressor.cpp \
-	audio/CreepyVoice.cpp \
-	audio/OneOffSpeech.cpp \
-	audio/Reverb.cpp \
-	audio/Tremolo.cpp \
 	basic/AgentNameGenerator.cpp \
 	basic/AppContext.cpp \
 	basic/AsyncStore.cpp \
@@ -239,13 +233,6 @@ HEADERS  += \
 	agent/AgentConstants.hpp \
 	agent/Agent.hpp \
 	agent/AgentWindow.hpp \
-	audio/AudioStream.hpp \
-	audio/Compressor.hpp \
-	audio/CreepyVoice.hpp \
-	audio/IAudioSource.hpp \
-	audio/OneOffSpeech.hpp \
-	audio/Reverb.hpp \
-	audio/Tremolo.hpp \
 	basic/AgentNameGenerator.hpp \
 	basic/AppContext.hpp \
 	basic/AsyncStore.hpp \

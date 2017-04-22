@@ -7,7 +7,7 @@
 #include "basic/Node.hpp"
 #include "../librng/RNG.hpp"
 
-#include "../libcore/audio/OneOffSpeech.hpp"
+#include "../libaudio/OneOffSpeech.hpp"
 #include "zoo/ZooConstants.hpp"
 
 #include <QDebug>

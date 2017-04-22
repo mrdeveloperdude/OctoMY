@@ -5,7 +5,7 @@
 
 #include "../librng/RNG.hpp"
 
-#include "security/PortableID.hpp"
+#include "../libcore/security/PortableID.hpp"
 
 #include <QDebug>
 

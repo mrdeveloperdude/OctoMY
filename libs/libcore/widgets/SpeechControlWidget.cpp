@@ -5,7 +5,7 @@
 
 #include "security/PortableID.hpp"
 #include "security/SecurityConstants.hpp"
-#include "audio/OneOffSpeech.hpp"
+#include "../libaudio/OneOffSpeech.hpp"
 #include "basic/GenericKeyEventHandler.hpp"
 
 

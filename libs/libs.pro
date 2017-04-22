@@ -14,6 +14,7 @@ SUBDIRS += \
 	liboctostyle \
 	libqfi \
 	librng \
+	libaudio \
 
 
 
@@ -29,6 +30,7 @@ libweb.subdir=		    libweb
 liboctostyle.subdir=	libstyle
 libqfi.subdir=			libqfi
 librng.subdir=			librng
+libaudio.subdir=		libaudio
 
 
 libcore.depends=libutil librng libweb

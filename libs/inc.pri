@@ -99,4 +99,12 @@ INCLUDEPATH +=		$$RNG_IN_DIR
 DEPENDPATH +=		$$RNG_IN_DIR
 PRE_TARGETDEPS +=	$$RNG_OUT_DIR/librng.a
 
+
+AUDIO_IN_DIR =		$$TOP_PWD/libs/libaudio
+AUDIO_OUT_DIR =		$$TOP_BUILD/libs/libaudio
+LIBS +=				-L$$AUDIO_OUT_DIR -laudio
+INCLUDEPATH +=		$$AUDIO_IN_DIR
+DEPENDPATH +=		$$AUDIO_IN_DIR
+PRE_TARGETDEPS +=	$$AUDIO_OUT_DIR/libaudio.a
+
 #message("FROM inc.pri:") include($$TOP_PWD/status.pri)
