@@ -62,28 +62,6 @@ SOURCES +=\
 	discovery/DiscoveryServer.cpp \
 	discovery/DiscoveryServerSession.cpp \
 	discovery/NodeAssociateStore.cpp \
-	gear/gbody.cpp \
-	gear/gconstraint.cpp \
-	gear/gconstraint_jointloop.cpp \
-	gear/gelement.cpp \
-	gear/gjoint_composite.cpp \
-	gear/gjoint.cpp \
-	gear/gjoint_fixed.cpp \
-	gear/gjoint_free.cpp \
-	gear/gjoint_planar.cpp \
-	gear/gjoint_prismatic.cpp \
-	gear/gjoint_revolute.cpp \
-	gear/gjoint_spherical.cpp \
-	gear/gjoint_translational.cpp \
-	gear/gjoint_universal.cpp \
-	gear/gspringdamper.cpp \
-	gear/gsystem_constrained.cpp \
-	gear/gsystem.cpp \
-	gear/gsystem_ik.cpp \
-	gear/liegroup.cpp \
-	gear/liegroup.inl \
-	gear/liegroup_rmatrix3_ext.inl \
-	gear/rmatrix3j.cpp \
 	hub/ClientWidget.cpp \
 	hub/Hub.cpp \
 	hub/HubWindow.cpp \
@@ -286,31 +264,6 @@ HEADERS  += \
 	discovery/DiscoveryServer.hpp \
 	discovery/DiscoveryServerSession.hpp \
 	discovery/NodeAssociateStore.hpp \
-	gear/gbody.h \
-	gear/gconstraint.h \
-	gear/gconstraint_jointloop.h \
-	gear/gcoordinate.h \
-	gear/gear.h \
-	gear/gelement.h \
-	gear/gforce.h \
-	gear/gjoint_composite.h \
-	gear/gjoint_fixed.h \
-	gear/gjoint_free.h \
-	gear/gjoint.h \
-	gear/gjoint_planar.h \
-	gear/gjoint_prismatic.h \
-	gear/gjoint_revolute.h \
-	gear/gjoint_spherical.h \
-	gear/gjoint_translational.h \
-	gear/gjoint_universal.h \
-	gear/greal.h \
-	gear/gspringdamper.h \
-	gear/gsystem_constrained.h \
-	gear/gsystem.h \
-	gear/gsystem_ik.h \
-	gear/liegroup.h \
-	gear/liegroup_rmatrix3_ext.h \
-	gear/rmatrix3j.h \
 	hub/ClientWidget.hpp \
 	hub/Hub.hpp \
 	hub/HubWindow.hpp \
@@ -503,7 +456,7 @@ FORMS    += \
 	locus/HoveringLocusWidget.ui \
 	locus/TrackedLocusWidget.ui \
 	widgets/TriggerManagerWidget.ui \
-	widgets/TriggerWidget.ui
+	widgets/TriggerWidget.ui \
 
 
 
@@ -587,6 +540,6 @@ HEADERS += $$ARDUMY_HEADERS
 SOURCES += $$ARDUMY_SOURCES
 
 contains(DEFINES, USE_STATUS){
-message("FROM lib.pro:")
+message("FROM libcorepro:")
 include($$TOP_PWD/status.pri)
 }

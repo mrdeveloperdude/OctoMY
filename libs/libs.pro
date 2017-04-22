@@ -15,6 +15,7 @@ SUBDIRS += \
 	libqfi \
 	librng \
 	libaudio \
+	libdynamics \
 
 
 
@@ -31,9 +32,11 @@ liboctostyle.subdir=	libstyle
 libqfi.subdir=			libqfi
 librng.subdir=			librng
 libaudio.subdir=		libaudio
+libdynamics.subdir=		libdynamics
 
 
-libcore.depends=libutil librng libweb
+libcore.depends= libutil librng libweb
+libaudio.depends= librng
 
 
 contains(DEFINES, EXTERNAL_LIB_OPENCL){
