@@ -60,7 +60,7 @@ void ArduMYCommandParser::setup()
 
 }
 
-#include "../libcore/hw/controllers/ardumy/ArduMYTypeConversions.hpp"
+#include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 void ArduMYCommandParser::parse(const uint8_t in)
 {

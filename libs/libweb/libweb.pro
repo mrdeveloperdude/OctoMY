@@ -3,16 +3,12 @@ TEMPLATE =	lib
 CONFIG +=	staticlib
 
 include($$TOP_PWD/common.pri)
+include($$TOP_PWD/lib.pri)
+
+include(files.pri)
 
 
-include(qhttp/qhttp.pri)
-INCLUDEPATH += ./qhttp
-
-INCLUDEPATH += ./template
-
-SOURCES  += \
-	template/Mustache.cpp \
-
-
-HEADERS  += \
-	template/Mustache.hpp \
+contains(DEFINES, USE_STATUS){
+message("FROM libweb.pro:")
+include($$TOP_PWD/status.pri)
+}

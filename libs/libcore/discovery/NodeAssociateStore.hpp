@@ -1,10 +1,10 @@
 #ifndef NODEASSOCIATESTORE_HPP
 #define NODEASSOCIATESTORE_HPP
 
-#include "basic/AtomicBoolean.hpp"
-#include "basic/GenerateRunnable.hpp"
-#include "basic/NodeAssociate.hpp"
-#include "basic/AsyncStore.hpp"
+#include "../basic/AtomicBoolean.hpp"
+#include "../basic/GenerateRunnable.hpp"
+#include "../basic/NodeAssociate.hpp"
+#include "../basic/AsyncStore.hpp"
 
 #include <QObject>
 

@@ -66,7 +66,7 @@ DISTFILES += \
 
 ARDUINO_PATH=/home/lennart/ArduMY/arduino-1.8.0
 
-INCLUDEPATH = $${ARDUINO_PATH}/hardware/arduino/avr/cores/arduino \
+INCLUDEPATH += $${ARDUINO_PATH}/hardware/arduino/avr/cores/arduino \
 #$${ARDUINO_PATH}/libraries/Bridge/src \
 #$${ARDUINO_PATH}/libraries/Esplora/src \
 #$${ARDUINO_PATH}/libraries/Ethernet/src \
@@ -93,6 +93,7 @@ $${ARDUINO_PATH}/hardware/arduino/avr/libraries/Wire \
 
 DEFINES += USE_STATUS
 include($$TOP_PWD/common.pri)
+include($$TOP_PWD/lib.pri)
 DEFINES -= USE_STATUS
 
 }
@@ -104,7 +105,7 @@ SOURCES += \
 	ArduMYActuatorEnableBits.cpp \
 	ArduMYCommandSerializer.cpp \
 	ArduMYCommandParser.cpp \
-    ArduMYParserState.cpp
+	ArduMYParserState.cpp
 
 HEADERS += \
 	BoardInfo.hpp \
@@ -112,7 +113,7 @@ HEADERS += \
 	ArduMYActuatorEnableBits.hpp \
 	ArduMYCommandSerializer.hpp \
 	ArduMYCommandParser.hpp \
-    ArduMYParserState.hpp
+	ArduMYParserState.hpp
 
 
 

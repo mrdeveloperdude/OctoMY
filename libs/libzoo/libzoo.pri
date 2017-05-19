@@ -1,0 +1,7 @@
+
+ZOO_IN_DIR =		$$TOP_PWD/libs/libzoo
+ZOO_OUT_DIR =		$$TOP_BUILD/libs/libzoo
+LIBS +=				-L$$ZOO_OUT_DIR -lzoo
+INCLUDEPATH +=		$$ZOO_IN_DIR
+DEPENDPATH +=		$$ZOO_IN_DIR
+PRE_TARGETDEPS +=	$$ZOO_OUT_DIR/libzoo.a

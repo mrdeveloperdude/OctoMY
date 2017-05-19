@@ -1,0 +1,7 @@
+
+REMOTE_IN_DIR =		$$TOP_PWD/libs/libremote
+REMOTE_OUT_DIR =	$$TOP_BUILD/libs/libremote
+LIBS +=				-L$$REMOTE_OUT_DIR -lremote
+INCLUDEPATH +=		$$REMOTE_IN_DIR
+DEPENDPATH +=		$$REMOTE_IN_DIR
+PRE_TARGETDEPS +=	$$REMOTE_OUT_DIR/libremote.a

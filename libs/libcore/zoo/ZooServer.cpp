@@ -15,7 +15,7 @@
 
 #include "ZooConstants.hpp"
 
-#include "basic/AppContext.hpp"
+#include "node/AppContext.hpp"
 
 #include <QtNetwork/QHostAddress>
 #include <QJsonDocument>

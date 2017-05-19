@@ -8,4 +8,7 @@ HEADERS += \
 SOURCES += \
 	StressQR.cpp
 
+contains(DEFINES, USE_STATUS){
+message("FROM stressQR.pro:")
 include($$TOP_PWD/status.pri)
+}

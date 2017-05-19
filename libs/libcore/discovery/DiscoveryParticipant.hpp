@@ -1,6 +1,6 @@
 #ifndef DISCOVERYPARTICIPANT_HPP
 #define DISCOVERYPARTICIPANT_HPP
-
+/*
 #include "DiscoveryRole.hpp"
 #include "comms/ClientSignature.hpp"
 #include "basic/NodeAssociate.hpp"
@@ -10,7 +10,7 @@
 #include <QBluetoothAddress>
 #include <QDateTime>
 #include <QSharedPointer>
-
+*/
 
 /*
  QSharedPointer<NodeAssociate> is an ephemeral representation of the data kept during

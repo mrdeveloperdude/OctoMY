@@ -1,11 +1,18 @@
 TEMPLATE = app
 TARGET = agent
 
-# AGENT TIER REPRESENTS THE ROBOT ITSELF: ANY CODE HERE IS INTENDED RUN ONBOARD THE ROBOT
+
+# AGENT REPRESENTS THE ROBOT ITSELF: ANY CODE LINKED INTO THIS EXECUTABLE IS INTENDED RUN ONBOARD THE ROBOT
 
 include($$TOP_PWD/common.pri)
-include($$TOP_PWD/libs/inc.pri)
-include($$TOP_PWD/libs/ext.pri)
+include($$TOP_PWD/app.pri)
+#QT         += core core-private gui gui-private
+
+#agent.depends+= libagent
+
+include($$TOP_PWD/libs/all_libs.pri)
+
+#include($$TOP_PWD/libs/libagent/libagent.pri)
 
 HEADERS += \
 	AgentMain.hpp \

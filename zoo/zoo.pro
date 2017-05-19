@@ -1,17 +1,21 @@
 TEMPLATE = app
 TARGET = zoo
 
-# ZOO TIER REPRESENTS THE WEB COMUNITY. YES, IT IS A WEBAPP MADE IN QT!
+# ZOO REPRESENTS THE WEB COMUNITY. YES, IT IS A WEBAPP MADE IN QT!
 # YOU DONT NEED THIS BUT IF YOU WANT TO START YOUR OWN ZOO YOU CAN
 
 # Start with common for project...
 include($$TOP_PWD/common.pri)
+include($$TOP_PWD/app.pri)
+#include($$TOP_PWD/libs/all_libs.pri)
+#QT         += core core-private gui gui-private
+INCLUDEPATH += ./
+
 
 # ... but ZOO is a server app, so better start acting like one!
 CONFIG += console
 
-include($$TOP_PWD/libs/inc.pri)
-include($$TOP_PWD/libs/ext.pri)
+
 
 
 

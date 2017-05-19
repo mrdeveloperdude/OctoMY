@@ -1,7 +1,7 @@
 
 #include "WebRequest.hpp"
 #include "basic/Settings.hpp"
-#include "basic/NetworkOptimizer.hpp"
+#include "comms/NetworkOptimizer.hpp"
 
 #include <QDateTime>
 #include <QEventLoop>

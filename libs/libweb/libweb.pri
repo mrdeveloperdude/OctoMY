@@ -1,0 +1,7 @@
+
+WEB_IN_DIR =		$$TOP_PWD/libs/libweb
+WEB_OUT_DIR =		$$TOP_BUILD/libs/libweb
+LIBS +=				-L$$WEB_OUT_DIR -lweb
+INCLUDEPATH +=		$$WEB_IN_DIR
+DEPENDPATH +=		$$WEB_IN_DIR
+PRE_TARGETDEPS +=	$$WEB_OUT_DIR/libweb.a

@@ -31,27 +31,28 @@ Settings::Settings(QString group, QString appName, QString appVersion, QObject *
 	OC_METHODGATE();
 	QCoreApplication::setOrganizationName(Settings::ORGANIZATION_NAME);
 	QCoreApplication::setOrganizationDomain(Settings::DOMAIN_NAME);
-	if(""!=appVersion){
+	if(""!=appVersion) {
 		QCoreApplication::setApplicationVersion(appVersion);
 	}
-	if(""!=appName){
+	if(""!=appName) {
 		QCoreApplication::setApplicationName(appName);
 	}
-	if(""!=mGroup){
+	if(""!=mGroup) {
 		mSettings->beginGroup(mGroup);
 	}
 	syncTimer.setTimerType(Qt::VeryCoarseTimer);
-	if(!connect(&syncTimer, SIGNAL(timeout()), this, SLOT(delayedSync()), OC_CONTYPE)){
+	if(!connect(&syncTimer, SIGNAL(timeout()), this, SLOT(delayedSync()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect settings sync timer";
 	}
 	//qDebug()<<"CREATING Settings: "<<group<<appName<<appVersion;
 }
 
 
-Settings::~Settings(){
+Settings::~Settings()
+{
 	OC_METHODGATE();
 	//qDebug()<<"DELETING Settings: "<<group<<appName<<appVersion;
-	if(""!=mGroup){
+	if(""!=mGroup) {
 		mSettings->endGroup();
 	}
 	delete mSettings;
@@ -62,7 +63,8 @@ Settings::~Settings(){
 
 
 
-void Settings::resetConfiguration(){
+void Settings::resetConfiguration()
+{
 	OC_METHODGATE();
 	if(nullptr!=mSettings)	{
 		mSettings->clear();
@@ -70,15 +72,15 @@ void Settings::resetConfiguration(){
 }
 
 
-void Settings::sync(){
+void Settings::sync()
+{
 	OC_METHODGATE();
 	if(nullptr!=mSettings)	{
 		const qint64 now=QDateTime::currentMSecsSinceEpoch();
 		const qint64 timeSinceLastSync=now-mLastSync;
-		if(timeSinceLastSync>MAX_SYNC_INTERVAL){
+		if(timeSinceLastSync>MAX_SYNC_INTERVAL) {
 			delayedSync();
-		}
-		else{
+		} else {
 			syncTimer.start(MAX_SYNC_INTERVAL-timeSinceLastSync);
 		}
 	}
@@ -87,7 +89,8 @@ void Settings::sync(){
 
 
 
-void Settings::delayedSync(){
+void Settings::delayedSync()
+{
 	OC_METHODGATE();
 	syncTimer.stop();
 	if(nullptr!=mSettings)	{
@@ -103,24 +106,25 @@ void Settings::delayedSync(){
 
 
 
-QByteArray Settings::getCustomSettingByteArray(const QString &sub, QByteArray def){
+QByteArray Settings::getCustomSettingByteArray(const QString &sub, QByteArray def)
+{
 	OC_METHODGATE();
-	if(0==mSettings){
+	if(0==mSettings) {
 		return def;
 	}
 	return mSettings->value(KEY_CUSTOM_SETTING_BASE+sub, def).toByteArray();
 }
 
-void Settings::setCustomSettingByteArray(const QString &sub, QByteArray val){
+void Settings::setCustomSettingByteArray(const QString &sub, QByteArray val)
+{
 	OC_METHODGATE();
-	if(nullptr!=mSettings){
+	if(nullptr!=mSettings) {
 		QString s=(KEY_CUSTOM_SETTING_BASE+sub).trimmed();
-		if(""!=s){
+		if(""!=s) {
 			mSettings->setValue(s,val);
 			//		qDebug()<<(KEY_CUSTOM_SETTING_BASE+sub)<<"="<<val;
 			sync();
-		}
-		else{
+		} else {
 			qWarning()<<"ERROR: Key was empty";
 		}
 	}
@@ -129,24 +133,25 @@ void Settings::setCustomSettingByteArray(const QString &sub, QByteArray val){
 
 
 
-QString Settings::getCustomSetting(const QString &sub, QString def){
+QString Settings::getCustomSetting(const QString &sub, QString def)
+{
 	OC_METHODGATE();
-	if(0==mSettings){
+	if(0==mSettings) {
 		return def;
 	}
 	return mSettings->value(KEY_CUSTOM_SETTING_BASE+sub, def).toString();
 }
 
-void Settings::setCustomSetting(const QString &sub, QString val){
+void Settings::setCustomSetting(const QString &sub, QString val)
+{
 	OC_METHODGATE();
-	if(nullptr!=mSettings){
+	if(nullptr!=mSettings) {
 		QString s=(KEY_CUSTOM_SETTING_BASE+sub).trimmed();
-		if(""!=s){
+		if(""!=s) {
 			mSettings->setValue(s,val);
 			//		qDebug()<<(KEY_CUSTOM_SETTING_BASE+sub)<<"="<<val;
 			sync();
-		}
-		else{
+		} else {
 			qWarning()<<"ERROR: Key was empty";
 		}
 
@@ -154,17 +159,19 @@ void Settings::setCustomSetting(const QString &sub, QString val){
 }
 
 
-qint64  Settings::getCustomSettingLong(const QString &sub, qint64 def){
+qint64  Settings::getCustomSettingLong(const QString &sub, qint64 def)
+{
 	OC_METHODGATE();
-	if(nullptr==mSettings){
+	if(nullptr==mSettings) {
 		return def;
 	}
 	return mSettings->value(KEY_CUSTOM_SETTING_BASE+sub, def).toLongLong();
 }
 
-void Settings::setCustomSettingLong(const QString &sub,qint64  val){
+void Settings::setCustomSettingLong(const QString &sub,qint64  val)
+{
 	OC_METHODGATE();
-	if(nullptr!=mSettings){
+	if(nullptr!=mSettings) {
 		mSettings->setValue(KEY_CUSTOM_SETTING_BASE+sub,val);
 		//		qDebug()<<(KEY_CUSTOM_SETTING_BASE+sub)<<"="<<val;
 		sync();
@@ -175,27 +182,30 @@ void Settings::setCustomSettingLong(const QString &sub,qint64  val){
 ///
 
 
-bool Settings::getCustomSettingBool(const QString &sub,bool def){
+bool Settings::getCustomSettingBool(const QString &sub,bool def)
+{
 	OC_METHODGATE();
-	if(nullptr==mSettings){
+	if(nullptr==mSettings) {
 		return def;
 	}
 	return mSettings->value(KEY_CUSTOM_SETTING_BASE+sub, def).toBool();
 
 }
 
-void Settings::setCustomSettingBool(const QString &sub,bool val){
+void Settings::setCustomSettingBool(const QString &sub,bool val)
+{
 	OC_METHODGATE();
-	if(nullptr!=mSettings){
+	if(nullptr!=mSettings) {
 		mSettings->setValue(KEY_CUSTOM_SETTING_BASE+sub,val);
 		//		qDebug()<<(KEY_CUSTOM_SETTING_BASE+sub)<<"="<<val;
 		sync();
 	}
 }
 
-bool Settings::hasCustomSetting(const QString &sub){
+bool Settings::hasCustomSetting(const QString &sub)
+{
 	OC_METHODGATE();
-	if(nullptr==mSettings){
+	if(nullptr==mSettings) {
 		return false;
 	}
 	const QString bad="THIS_SETTING_WILL_NEVER_OCCUR_NATURALLY";

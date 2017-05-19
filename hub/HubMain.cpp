@@ -1,6 +1,6 @@
 #include "HubMain.hpp"
 
-#include "hub/Hub.hpp"
+#include "../libs/libhub/Hub.hpp"
 
 
 int main(int argc, char *argv[]){

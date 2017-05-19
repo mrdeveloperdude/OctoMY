@@ -2,7 +2,7 @@
 #define IDENTICONWIDGET_HPP
 
 #include "widgets/SvgWidget.hpp"
-#include "Identicon.hpp"
+#include "widgets/Identicon.hpp"
 
 
 #include <QDomDocument>

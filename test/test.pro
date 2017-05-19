@@ -14,12 +14,12 @@ contains(DEFINES, USE_BASIC_TESTS){
 
 #
 TEST_PROJECTS+= \
-	testCommon \
+#	testCommon \
 #	testAgentStateCourier \
-	testArduMY \
+#	testArduMY \
 #	testBlob \
 #	testCarSteeringWidget \
-	testCommsChannel \
+#	testCommsChannel \
 #	testCreepyVoice \
 #	testDeliveryWizard \
 #	testDiscovery \
@@ -47,7 +47,7 @@ TEST_PROJECTS+= \
 
 
 STRESS_PROJECTS+= \
-	stressQR \
+#	stressQR \
 
 }
 
@@ -64,5 +64,5 @@ SUBDIRS += \
 SUBDIRS += \
 		$$STRESS_PROJECTS
 
-include($$TOP_PWD/status.pri)
+#include($$TOP_PWD/status.pri)
 

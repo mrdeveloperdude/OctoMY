@@ -3,10 +3,10 @@ TEMPLATE =	lib
 CONFIG +=	staticlib
 
 include($$TOP_PWD/common.pri)
-
+include($$TOP_PWD/lib.pri)
+QT += widgets
 INCLUDEPATH += ./
 
-QT += widgets
 
 HEADERS	+= \
 	OctoStyle.hpp \
@@ -24,3 +24,8 @@ DISTFILES += \
 	OctoStyle.json
 
 
+
+contains(DEFINES, USE_STATUS){
+message("FROM libstyle.pro:")
+include($$TOP_PWD/status.pri)
+}

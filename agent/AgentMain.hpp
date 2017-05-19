@@ -1,7 +1,7 @@
 #ifndef AGENTMAIN_HPP
 #define AGENTMAIN_HPP
 
-#include "basic/NodeLauncher.hpp"
+#include "node/NodeLauncher.hpp"
 
 int main(int argc, char *argv[]);
 

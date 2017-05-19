@@ -3,7 +3,7 @@
 
 
 #include "widgets/TryToggle.hpp"
-#include "basic/NetworkAddress.hpp"
+#include "comms/NetworkAddress.hpp"
 
 #include <QWidget>
 #include <QHostAddress>

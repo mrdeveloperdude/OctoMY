@@ -1,0 +1,7 @@
+
+HUB_IN_DIR =		$$TOP_PWD/libs/libhub
+HUB_OUT_DIR =		$$TOP_BUILD/libs/libhub
+LIBS +=				-L$$HUB_OUT_DIR -lhub
+INCLUDEPATH +=		$$HUB_IN_DIR
+DEPENDPATH +=		$$HUB_IN_DIR
+PRE_TARGETDEPS +=	$$HUB_OUT_DIR/libhub.a

@@ -4,7 +4,7 @@
 #include "ArduMYController.hpp"
 #include "../libpuppet/widgets/NameMappingWidget.hpp"
 #include "agent/AgentConstants.hpp"
-#include "../libcore/hw/serial/SerialSettings.hpp"
+#include "hw/serial/SerialSettings.hpp"
 
 #include "widgets/ArduinoPinFilter.hpp"
 

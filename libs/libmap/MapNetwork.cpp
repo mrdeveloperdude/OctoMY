@@ -23,7 +23,7 @@
 *
 */
 
-#include "../libcore/basic/NetworkOptimizer.hpp"
+#include "comms/NetworkOptimizer.hpp"
 
 #include "MapNetwork.hpp"
 #include <QNetworkRequest>

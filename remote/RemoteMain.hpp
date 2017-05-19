@@ -1,7 +1,7 @@
 #ifndef REMOTEMAIN_HPP
 #define REMOTEMAIN_HPP
 
-#include "basic/NodeLauncher.hpp"
+#include "../libs/libcore/node/NodeLauncher.hpp"
 
 int main(int argc, char *argv[]);
 

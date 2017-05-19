@@ -4,7 +4,7 @@
 # the values given to important parameters
 # for the build at the point of inclusion
 
-contains(DEFINES, USE_STATUS){
+#contains(DEFINES, USE_STATUS){
 message("")
 message("")
 message("===============================================")
@@ -19,6 +19,7 @@ message("| QT:        " $${QT})
 message("| INCLUDEPATH:    " $${INCLUDEPATH})
 message("| DEPENDPATH:     " $${DEPENDPATH})
 message("| PRE_TARGETDEPS: " $${PRE_TARGETDEPS})
+message("| TARGETDEPS: " $${TARGETDEPS})
 message("| QMAKE_EXTRA_COMPILERS: " $${QMAKE_EXTRA_COMPILERS})
 message("| LOCAL_OVERRIDES ENABLED: " $${LOCAL_OVERRIDES})
 message("| DEFINES: " $${DEFINES})
@@ -34,6 +35,8 @@ message("----------- Source files --------------------")
 message("| " $${SOURCES})
 message("----------- Header files --------------------")
 message("| " $${HEADERS})
+message("----------- Forms files --------------------")
+message("| " $${FORMS})
 message("----------- Library files -------------------")
 message("| " $${LIBS})
 message("----------- Resource files ------------------")
@@ -49,4 +52,5 @@ message("-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_")
 message("")
 message("")
 
-}
+#}
+

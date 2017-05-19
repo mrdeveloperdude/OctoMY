@@ -6,6 +6,7 @@
 #include "models/HardwareTemplateModel.hpp"
 #include "hw/controllers/IActuatorController.hpp"
 #include "../libutil/utility/Utility.hpp"
+//#include "agent/AgentConfigStore.hpp"
 #include "agent/Agent.hpp"
 
 #include <QDebug>

@@ -22,7 +22,7 @@ void ArduMYActuatorConfigSerializerBase::reset()
 	byteIndex=0;
 }
 
-#include "../libcore/hw/controllers/ardumy/ArduMYTypeConversions.hpp"
+#include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 
 // Look at flags & type and go from the current step to the next enabled one

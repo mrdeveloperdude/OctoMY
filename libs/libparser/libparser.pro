@@ -1,7 +1,11 @@
 TARGET =	parser
 TEMPLATE =	lib
 CONFIG +=	staticlib
+
 include($$TOP_PWD/common.pri)
+include($$TOP_PWD/lib.pri)
+#QT         += core core-private gui gui-private
+INCLUDEPATH += $$TOP_PWD/libs/libparser/
 
 # Include the qmake_extra_compilers for flex and qlalr
 
@@ -26,21 +30,20 @@ OTHER_FILES += \
 	$$FLEXSOURCES \
 	$$QLALRSOURCES \
 
-
-
 HEADERS += \
 	Context.hpp \
 	ParseTreeNode.hpp \
 	ParseError.hpp \
-	OctomyParseContext.hpp
+	OctomyParseContext.hpp \
 
 SOURCES += \
 	Context.cpp \
 	ParseTreeNode.cpp \
 	ParseError.cpp \
-	OctomyParseContext.cpp
+	OctomyParseContext.cpp \
 
 contains(DEFINES, USE_STATUS){
 message("FROM libparser.pro")
 include($$TOP_PWD/status.pri)
 }
+

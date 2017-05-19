@@ -1,0 +1,7 @@
+
+RNG_IN_DIR =		$$TOP_PWD/libs/librng
+RNG_OUT_DIR =		$$TOP_BUILD/libs/librng
+LIBS +=				-L$$RNG_OUT_DIR -lrng
+INCLUDEPATH +=		$$RNG_IN_DIR
+DEPENDPATH +=		$$RNG_IN_DIR
+PRE_TARGETDEPS +=	$$RNG_OUT_DIR/librng.a

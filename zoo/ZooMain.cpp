@@ -1,9 +1,9 @@
 #include "ZooMain.hpp"
-#include "zoo/ZooServer.hpp"
-#include "basic/LogHandler.hpp"
-#include "basic/Settings.hpp"
-#include "basic/AppContext.hpp"
-#include "zoo/ZooConstants.hpp"
+#include "../libs/libcore/zoo/ZooServer.hpp"
+#include "../libs/libcore/basic/LogHandler.hpp"
+#include "../libs/libcore/basic/Settings.hpp"
+#include "../libs/libcore/node/AppContext.hpp"
+#include "../libs/libcore/zoo/ZooConstants.hpp"
 
 #include <QCoreApplication>
 

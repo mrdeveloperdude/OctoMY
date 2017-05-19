@@ -376,12 +376,12 @@ class PlanNode: public Node
 
   Notes for octomy plan
 
-  spec may contain any node with subnodes, it does not need to start on tier
+  spec may contain any node with subnodes, it does not need to start on node
   level. They are stored in the parse context and used as bases for other
-  nodes or actual parts of real tiers in a plan.
+  nodes or actual parts of real nodes in a plan.
 
   nodes have checksums calculated for them so that they can be compared, and
-  tier nodes may have their checksums compared during effectuation of new plans
+  nodes may have their checksums compared during effectuation of new plans
   to verify that the plan's integrity is intact.
 
   nodes may be compared using a diff tool to find out exactly where they differ

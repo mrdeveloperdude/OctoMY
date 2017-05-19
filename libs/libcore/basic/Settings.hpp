@@ -6,54 +6,55 @@
 #include <QTimer>
 #include <QByteArray>
 
-class Settings:QObject{
-		Q_OBJECT
-	private:
-		QString mGroup;
-		QSettings *mSettings;
-		qint64 mLastSync;
-		QTimer syncTimer;
+class Settings: public QObject
+{
+	Q_OBJECT
+private:
+	QString mGroup;
+	QSettings *mSettings;
+	qint64 mLastSync;
+	QTimer syncTimer;
 
-	public:
-		static const qint64 MAX_SYNC_INTERVAL;
+public:
+	static const qint64 MAX_SYNC_INTERVAL;
 
-		static const QString ORGANIZATION_NAME;
-		static const QString DOMAIN_NAME;
-		static const QString BRAND_NAME;
-		static const QString APPLICATION_NAME_BASE;
-		static const QString APPLICATION_VERSION;
-		static const QString USERAGENT;
+	static const QString ORGANIZATION_NAME;
+	static const QString DOMAIN_NAME;
+	static const QString BRAND_NAME;
+	static const QString APPLICATION_NAME_BASE;
+	static const QString APPLICATION_VERSION;
+	static const QString USERAGENT;
 
-		static const QString KEY_CUSTOM_SETTING_BASE;
+	static const QString KEY_CUSTOM_SETTING_BASE;
 
-	public:
-		explicit Settings(QString mGroup="", QString appName="", QString appVersion="", QObject *parent=nullptr);
-		virtual ~Settings();
+public:
+	explicit Settings(QString mGroup="", QString appName="", QString appVersion="", QObject *parent=nullptr);
+	virtual ~Settings();
 
-	public:
+public:
 
-		QByteArray getCustomSettingByteArray(const QString &sub, QByteArray def=QByteArray());
-		void setCustomSettingByteArray(const QString &sub, QByteArray val);
-
-
-		QString getCustomSetting(const QString &sub,QString def="");
-		void setCustomSetting(const QString &sub,QString val);
-		bool getCustomSettingBool(const QString &sub,bool def=false);
-		qint64  getCustomSettingLong(const QString &sub, qint64 def=0);
-		void setCustomSettingLong(const QString &sub,qint64  val);
-		void setCustomSettingBool(const QString &sub,bool val);
-		bool hasCustomSetting(const QString &sub);
+	QByteArray getCustomSettingByteArray(const QString &sub, QByteArray def=QByteArray());
+	void setCustomSettingByteArray(const QString &sub, QByteArray val);
 
 
+	QString getCustomSetting(const QString &sub,QString def="");
+	void setCustomSetting(const QString &sub,QString val);
+	bool getCustomSettingBool(const QString &sub,bool def=false);
+	qint64  getCustomSettingLong(const QString &sub, qint64 def=0);
+	void setCustomSettingLong(const QString &sub,qint64  val);
+	void setCustomSettingBool(const QString &sub,bool val);
+	bool hasCustomSetting(const QString &sub);
 
-	public:
 
-		void resetConfiguration();
 
-		void sync();
+public:
 
-	private slots:
-		void delayedSync();
+	void resetConfiguration();
+
+	void sync();
+
+private slots:
+	void delayedSync();
 
 };
 

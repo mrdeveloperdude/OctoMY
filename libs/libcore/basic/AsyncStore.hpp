@@ -7,8 +7,7 @@
 #ifndef ASYNCSTORE_HPP
 #define ASYNCSTORE_HPP
 
-#include "basic/AtomicBoolean.hpp"
-
+#include "AtomicBoolean.hpp"
 #include "GenerateRunnable.hpp"
 
 #include <QObject>

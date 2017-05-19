@@ -45,8 +45,12 @@ local_overrides.pri
 
 /*/android/gradle*
 
-/libs/arduino/build*
+/libs/build/*
+/libs/*/build*
 
 libzeroconf*
 
 *~
+
+libs/libclt/OpenCL-ICD-Loader/*
+

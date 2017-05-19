@@ -3,7 +3,7 @@
 
 #include "../libpuppet/pose/PoseMapping.hpp"
 #include "hw/controllers/ActuatorControllerFactory.hpp"
-#include "agent/AgentConfigStore.hpp"
+
 #include "locus/LocusController.hpp"
 
 
@@ -13,6 +13,7 @@
 class HardwareTemplate;
 class HardwareTemplateModel;
 class IActuatorController;
+class AgentConfigStore;
 class Agent;
 
 namespace Ui

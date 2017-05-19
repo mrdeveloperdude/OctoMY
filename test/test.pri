@@ -1,6 +1,5 @@
 include($$TOP_PWD/common.pri)
-include($$TOP_PWD/libs/inc.pri)
-include($$TOP_PWD/libs/ext.pri)
+include($$TOP_PWD/libs/all_libs.pri)
 
 CONFIG += testcase
 QT += testlib

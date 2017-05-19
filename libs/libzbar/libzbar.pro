@@ -3,7 +3,8 @@ TEMPLATE =	lib
 CONFIG +=	staticlib
 
 include($$TOP_PWD/common.pri)
-
+include($$TOP_PWD/lib.pri)
+#QT += widgets
 INCLUDEPATH += ./
 
 HEADERS	+= \
@@ -88,3 +89,8 @@ SOURCES	+= \
 
 # There is no support for iconv in Android, so we bring our own as QtIconv.?pp
 
+
+contains(DEFINES, USE_STATUS){
+message("FROM libzbar.pro:")
+include($$TOP_PWD/status.pri)
+}

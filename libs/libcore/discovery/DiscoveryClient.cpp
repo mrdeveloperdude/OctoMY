@@ -7,7 +7,7 @@
 #include "zoo/ZooConstants.hpp"
 #include "security/KeyStore.hpp"
 #include "comms/couriers/DiscoveryCourier.hpp"
-#include "basic/Node.hpp"
+#include "node/Node.hpp"
 #include "comms/CommsChannel.hpp"
 
 
@@ -15,7 +15,7 @@
 #include "../libweb/qhttp/qhttpclientrequest.hpp"
 #include "../libweb/qhttp/qhttpclientresponse.hpp"
 
-
+#include "security/SecurityConstants.hpp"
 
 
 #include <QDebug>

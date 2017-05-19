@@ -1,17 +1,16 @@
 #ifndef ZOOSERVER_HPP
 #define ZOOSERVER_HPP
 
-#include "../libweb/qhttp/qhttpserver.hpp"
+#include "qhttp/qhttpserver.hpp"
 #include "widgets/Identicon.hpp"
 
-#include "../storage/Hashstore.hpp"
+#include "storage/Hashstore.hpp"
 #include "discovery/DiscoveryServer.hpp"
 
 #include "basic/Settings.hpp"
 #include "security/KeyStore.hpp"
+#include "zoo/PunchRegistry.hpp"
 
-
-#include "PunchRegistry.hpp"
 #include <QString>
 #include <QTimer>
 

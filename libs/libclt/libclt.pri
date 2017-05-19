@@ -1,0 +1,7 @@
+
+CLT_IN_DIR =		$$TOP_PWD/libs/libclt
+CLT_OUT_DIR =		$$TOP_BUILD/libs/libclt
+LIBS +=				-L$$CLT_OUT_DIR -lclt
+INCLUDEPATH +=		$$CLT_IN_DIR
+DEPENDPATH +=		$$CLT_IN_DIR
+PRE_TARGETDEPS +=	$$CLT_OUT_DIR/libclt.a

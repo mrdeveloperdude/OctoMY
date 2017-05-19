@@ -4,7 +4,7 @@
 #include "basic/Settings.hpp"
 #include "../libutil/utility/Standard.hpp"
 #include "widgets/WaitingSpinnerWidget.hpp"
-#include "basic/Node.hpp"
+#include "node/Node.hpp"
 #include "../librng/RNG.hpp"
 
 #include <QDebug>

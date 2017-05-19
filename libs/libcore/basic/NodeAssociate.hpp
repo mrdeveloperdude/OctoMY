@@ -7,18 +7,24 @@
 #ifndef NODEASSOCIATE_HPP
 #define NODEASSOCIATE_HPP
 
-#include "security/Key.hpp"
+
 #include "discovery/DiscoveryRole.hpp"
-#include "basic/NetworkAddress.hpp"
+#include "comms/NetworkAddress.hpp"
+#include "comms/CommsSignature.hpp"
+
+#include "security/Key.hpp"
+
+#include "security/PortableID.hpp"
+
 
 #include <QBluetoothAddress>
-#include "comms/CommsSignature.hpp"
-#include "security/PortableID.hpp"
 
 #include <QByteArray>
 #include <QVariantMap>
 #include <QDateTime>
 
+
+class PortableID;
 
 /*
 

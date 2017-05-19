@@ -1,7 +1,7 @@
 #include "PKIManager.hpp"
 #include "ui_PKIManager.h"
 
-#include "../libpki/qpolarsslpki.hpp"
+#include "qpolarssl/qpolarsslpki.hpp"
 
 #include <QDebug>
 

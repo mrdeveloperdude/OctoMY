@@ -1,0 +1,1078 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HubWindow</class>
+ <widget class="QMainWindow" name="HubWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1721</width>
+    <height>1160</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>OctoMY™ - Hub</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>:/icons/hub.svg</normaloff>:/icons/hub.svg</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout_6">
+    <item>
+     <widget class="QSplitter" name="splitterLog">
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="opaqueResize">
+       <bool>false</bool>
+      </property>
+      <property name="handleWidth">
+       <number>8</number>
+      </property>
+      <property name="childrenCollapsible">
+       <bool>true</bool>
+      </property>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="tabPosition">
+        <enum>QTabWidget::West</enum>
+       </property>
+       <property name="tabShape">
+        <enum>QTabWidget::Rounded</enum>
+       </property>
+       <property name="currentIndex">
+        <number>3</number>
+       </property>
+       <property name="documentMode">
+        <bool>false</bool>
+       </property>
+       <property name="tabsClosable">
+        <bool>false</bool>
+       </property>
+       <property name="movable">
+        <bool>false</bool>
+       </property>
+       <property name="tabBarAutoHide">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="tabPairing">
+        <attribute name="title">
+         <string>Pairing</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>337</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="PairingWizard" name="widgetPairing" native="true"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>337</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabIncomming">
+        <property name="toolTip">
+         <string>Look for incomming / unauthenticated remotes and agents</string>
+        </property>
+        <attribute name="icon">
+         <iconset>
+          <normaloff>:/icons/agent.svg</normaloff>:/icons/agent.svg</iconset>
+        </attribute>
+        <attribute name="title">
+         <string>Nodes</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item row="0" column="2">
+          <widget class="QSplitter" name="splitter">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <widget class="QWidget" name="layoutWidget">
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="1" column="0">
+              <widget class="MultiView" name="widgetIncommingNodes" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="MultiView" name="widgetActiveNodes" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0" colspan="2">
+              <layout class="QHBoxLayout" name="horizontalLayout_5">
+               <item>
+                <widget class="QComboBox" name="comboBoxAddLocal">
+                 <item>
+                  <property name="text">
+                   <string>Add:</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Remote</string>
+                  </property>
+                  <property name="icon">
+                   <iconset>
+                    <normaloff>:/icons/remote.svg</normaloff>:/icons/remote.svg</iconset>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Agent</string>
+                  </property>
+                  <property name="icon">
+                   <iconset>
+                    <normaloff>:/icons/agent.svg</normaloff>:/icons/agent.svg</iconset>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="layoutWidget2">
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <widget class="QPlainTextEdit" name="plainTextEditSummary">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="autoFillBackground">
+                <bool>false</bool>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::NoFrame</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Plain</enum>
+               </property>
+               <property name="lineWidth">
+                <number>0</number>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="backgroundVisible">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButtonShowStats">
+               <property name="text">
+                <string>Stats</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabMap">
+        <property name="toolTip">
+         <string>View agents and remotes in map</string>
+        </property>
+        <attribute name="icon">
+         <iconset>
+          <normaloff>:/icons/map.svg</normaloff>:/icons/map.svg</iconset>
+        </attribute>
+        <attribute name="title">
+         <string>Map</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="MapEditor" name="widgetMapEditor" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabPlan">
+        <attribute name="icon">
+         <iconset>
+          <normaloff>:/icons/mandate.svg</normaloff>:/icons/mandate.svg</iconset>
+        </attribute>
+        <attribute name="title">
+         <string>Plan</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_19">
+         <item>
+          <widget class="QSplitter" name="splitter_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <widget class="PlanEditor" name="widgetPlanEditor" native="true"/>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabUtilities">
+        <attribute name="title">
+         <string>Utilities</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_18">
+         <item>
+          <widget class="QTabWidget" name="tabWidgetUtilities">
+           <property name="currentIndex">
+            <number>2</number>
+           </property>
+           <widget class="QWidget" name="tabKeys">
+            <attribute name="title">
+             <string>Keys</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="PKIManager" name="widgetPKIManager" native="true"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabQR">
+            <attribute name="title">
+             <string>QR</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="3" column="0">
+              <widget class="QRWidget" name="widgetQR" native="true"/>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLineEdit" name="lineEditQR">
+               <property name="placeholderText">
+                <string>Enter text here to generate QR Code from it</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="font">
+                <font>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Generator</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="label_9">
+               <property name="font">
+                <font>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Scanner</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLabel" name="labelQRScanner">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>TextLabel</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLabel" name="labelQR">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>N/A</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabServotor32">
+            <attribute name="title">
+             <string>Servotor32</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_15">
+             <item>
+              <widget class="Servotor32ControllerWidget" name="widgetHexyTool" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabNetworkUtils">
+            <attribute name="title">
+             <string>Network</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_16">
+             <item>
+              <widget class="QGroupBox" name="groupBoxTest">
+               <property name="title">
+                <string>Test</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_14">
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_2">
+                  <item>
+                   <widget class="TextEntry" name="lineEditRemoteAddress">
+                    <property name="placeholderText">
+                     <string>test address</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label">
+                    <property name="text">
+                     <string>:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="TextEntry" name="lineEditRemotePort">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="maxLength">
+                     <number>6</number>
+                    </property>
+                    <property name="placeholderText">
+                     <string>test port</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_3">
+                  <item>
+                   <widget class="QLabel" name="label_2">
+                    <property name="text">
+                     <string>Packet count:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSlider" name="horizontalSliderSendCount">
+                    <property name="minimum">
+                     <number>1</number>
+                    </property>
+                    <property name="maximum">
+                     <number>100</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="tickPosition">
+                     <enum>QSlider::TicksBelow</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QHexEdit" name="hexEditor">
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_4">
+                  <item>
+                   <widget class="QLabel" name="label_3">
+                    <property name="text">
+                     <string>size:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSlider" name="horizontalSliderSendSize">
+                    <property name="minimum">
+                     <number>1</number>
+                    </property>
+                    <property name="maximum">
+                     <number>100</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="tickPosition">
+                     <enum>QSlider::TicksBelow</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButtonSendData">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="toolTip">
+                   <string>Send some test data to address and port selected</string>
+                  </property>
+                  <property name="text">
+                   <string>Send Data</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacer_4">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabDevelopment">
+        <attribute name="title">
+         <string>Development</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_17">
+         <item>
+          <widget class="QTabWidget" name="tabWidgetDevelopment">
+           <property name="currentIndex">
+            <number>6</number>
+           </property>
+           <widget class="QWidget" name="tabTriggers">
+            <attribute name="title">
+             <string>Triggers</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_6">
+             <item row="0" column="0">
+              <widget class="TriggerManagerWidget" name="widgetTriggerManager" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <spacer name="horizontalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabGait">
+            <attribute name="title">
+             <string>Gait</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_10">
+             <item>
+              <widget class="GaitWidget" name="widgetGait" native="true"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabNetwork">
+            <attribute name="title">
+             <string>Network</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <item>
+              <widget class="QGroupBox" name="groupBoxConnect">
+               <property name="title">
+                <string>Connect</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_4">
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout">
+                  <item>
+                   <widget class="QPushButton" name="pushButtonTest">
+                    <property name="text">
+                     <string>TEST</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="LocalAddressEntry" name="comboBoxLocalAddress">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_4">
+                    <property name="text">
+                     <string>:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="TextEntry" name="lineEditBindPort">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="toolTip">
+                     <string>Select on which port this hub should listen for incomming connections by remotes and agents</string>
+                    </property>
+                    <property name="maxLength">
+                     <number>6</number>
+                    </property>
+                    <property name="placeholderText">
+                     <string>Listen port</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="TryToggle" name="tryToggleListen" native="true">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>10</width>
+                      <height>10</height>
+                     </size>
+                    </property>
+                    <property name="toolTip">
+                     <string>Click to toggle server listening</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_2">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>112</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabHUD">
+            <attribute name="title">
+             <string>HUD</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <widget class="HUDWidget" name="widgetHUD" native="true"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabIdenticon">
+            <attribute name="title">
+             <string>Identicon</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_8">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_8">
+               <item>
+                <widget class="QLabel" name="labelIdenticonID">
+                 <property name="text">
+                  <string>ID:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="lineEditIdenticonID"/>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButtonRandomIdenticonID">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset>
+                   <normaloff>:/icons/roll_dice.svg</normaloff>:/icons/roll_dice.svg</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_9">
+               <item>
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>Agent</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>Remote</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>Hub</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <widget class="IdenticonWidget" name="widgetIdenticonAgent" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="IdenticonWidget" name="widgetIdenticonRemote" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="IdenticonWidget" name="widgetIdenticonHub" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabSerial">
+            <attribute name="title">
+             <string>Serial</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="SerialSettingsWidget" name="widgetSerialSettings" native="true"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabCamera">
+            <attribute name="title">
+             <string>Camera</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_7">
+             <item>
+              <widget class="Camera" name="widgetCamera" native="true"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabZoo">
+            <attribute name="title">
+             <string>Zoo</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_12">
+             <item>
+              <spacer name="verticalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>102</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabCL">
+            <attribute name="title">
+             <string>OpenCL</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="0" column="0">
+              <widget class="QPushButton" name="pushButtonCLGLRender">
+               <property name="toolTip">
+                <string>Start the currently selected OpenCL rendering engine to produce images.</string>
+               </property>
+               <property name="text">
+                <string>Render</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pushButtonCLGLDisplay">
+               <property name="toolTip">
+                <string>Start transferring data from OpenCL via OpenCL-OpenGL interop to display in OpenGL context</string>
+               </property>
+               <property name="text">
+                <string>Display</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" colspan="2">
+              <widget class="CLGLView" name="openGLWidgetCLGLView"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabCreepyVoice">
+            <attribute name="title">
+             <string>CreepyVoice</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_11">
+             <item>
+              <widget class="SpeechControlWidget" name="widgetSpeechControl" native="true"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabActuators">
+            <attribute name="title">
+             <string>Actuators</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <item row="2" column="0">
+              <widget class="QSplitter" name="splitter_3">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <widget class="ActuatorManagerWidget" name="widgetActuatorControl" native="true"/>
+               <widget class="PoseMappingWidget" name="widgetPoseMapping" native="true"/>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="LogWidget" name="logScroll">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>GaitWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">../libpuppet/gait/GaitWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PlanEditor</class>
+   <extends>QWidget</extends>
+   <header location="global">../libplan/widgets/planedit/PlanEditor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PairingWizard</class>
+   <extends>QWidget</extends>
+   <header location="global">../libcore/widgets/PairingWizard.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>IdenticonWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">../libcore/widgets/IdenticonWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Camera</class>
+   <extends>QWidget</extends>
+   <header location="global">../libcore/camera/Camera.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PoseMappingWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">../libpuppet/widgets/PoseMappingWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TryToggle</class>
+   <extends>QWidget</extends>
+   <header location="global">../libcore/widgets/TryToggle.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ActuatorManagerWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">../libcore/widgets/ActuatorManagerWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SerialSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">../libcore/hw/serial/SerialSettingsWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LogWidget</class>
+   <extends>QPlainTextEdit</extends>
+   <header location="global">../libcore/widgets/LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>MapEditor</class>
+   <extends>QWidget</extends>
+   <header location="global">../libcore/widgets/MapEditor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SpeechControlWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">../libcore/widgets/SpeechControlWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QRWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">../libcore/widgets/QRWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TextEntry</class>
+   <extends>QLineEdit</extends>
+   <header location="global">../libcore/widgets/TextEntry.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>LocalAddressEntry</class>
+   <extends>QComboBox</extends>
+   <header location="global">../libcore/widgets/LocalAddressEntry.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>MultiView</class>
+   <extends>QWidget</extends>
+   <header location="global">../libcore/widgets/MultiView.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QHexEdit</class>
+   <extends>QFrame</extends>
+   <header location="global">../libcore/widgets/hexedit/QHexEdit.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Servotor32ControllerWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">../libcore/hw/controllers/servotor32/Servotor32ControllerWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>HUDWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">../libcore/widgets/HUDWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PKIManager</class>
+   <extends>QWidget</extends>
+   <header location="global">../libcore/widgets/PKIManager.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CLGLView</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">../libcore/widgets/CLGLView.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>TriggerManagerWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">../libcore/widgets/TriggerManagerWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

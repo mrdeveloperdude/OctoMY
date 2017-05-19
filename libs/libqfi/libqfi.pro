@@ -3,6 +3,10 @@ TEMPLATE =	lib
 CONFIG +=	staticlib
 
 include($$TOP_PWD/common.pri)
+include($$TOP_PWD/lib.pri)
+QT         += gui
+INCLUDEPATH += ./
+
 
 INCLUDEPATH += ./
 

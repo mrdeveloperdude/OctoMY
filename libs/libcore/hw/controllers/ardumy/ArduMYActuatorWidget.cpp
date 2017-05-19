@@ -4,7 +4,7 @@
 #include "../libutil/utility/Utility.hpp"
 
 #include "../arduino/ArduMYActuator.hpp"
-#include "../libcore/hw/controllers/ardumy/ArduMYTypeConversions.hpp"
+#include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 
 #include <QDebug>

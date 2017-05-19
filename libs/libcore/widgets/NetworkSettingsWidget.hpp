@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "../libcore/basic/NetworkAddress.hpp"
+#include "comms/NetworkAddress.hpp"
 
 namespace Ui
 {

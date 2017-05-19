@@ -1,3 +1,4 @@
+/*
 #include "QSharedPointer<NodeAssociate>.hpp"
 #include <QDateTime>
 
@@ -5,7 +6,7 @@
 #include <QDebug>
 #include <QCryptographicHash>
 #include <QByteArray>
-
+*/
 /*
 
 

@@ -2,40 +2,46 @@
 DEFINES  += QHTTP_MEMORY_LOG=0
 win32:DEFINES += QHTTP_EXPORT
 
-QHTTP_BASE=qhttp
+I=$$TOP_PWD/libs/libweb/qhttp
+L=$$TOP_PWD/libs/libweb/qhttp
+
+
+INCLUDEPATH += $$I
+INCLUDEPATH += $$I/private
+
 
 SOURCES  += \
-	$$QHTTP_BASE/http_parser.c \
-	$$QHTTP_BASE/qhttpabstracts.cpp \
-	$$QHTTP_BASE/qhttpclient.cpp \
-	$$QHTTP_BASE/qhttpclientrequest.cpp \
-	$$QHTTP_BASE/qhttpclientresponse.cpp \
-	$$QHTTP_BASE/qhttpserverconnection.cpp \
-	$$QHTTP_BASE/qhttpserver.cpp \
-	$$QHTTP_BASE/qhttpserverrequest.cpp \
-	$$QHTTP_BASE/qhttpserverresponse.cpp \
+	$$L/http_parser.c \
+	$$L/qhttpabstracts.cpp \
+	$$L/qhttpclient.cpp \
+	$$L/qhttpclientrequest.cpp \
+	$$L/qhttpclientresponse.cpp \
+	$$L/qhttpserverconnection.cpp \
+	$$L/qhttpserver.cpp \
+	$$L/qhttpserverrequest.cpp \
+	$$L/qhttpserverresponse.cpp \
 
 
 
 HEADERS  += \
-	$$QHTTP_BASE/http_parser.h \
-	$$QHTTP_BASE/private/qhttpbase.hpp \
-	$$QHTTP_BASE/private/qhttpclient_private.hpp \
-	$$QHTTP_BASE/private/qhttpclientrequest_private.hpp \
-	$$QHTTP_BASE/private/qhttpclientresponse_private.hpp \
-	$$QHTTP_BASE/private/qhttpserverconnection_private.hpp \
-	$$QHTTP_BASE/private/qhttpserver_private.hpp \
-	$$QHTTP_BASE/private/qhttpserverrequest_private.hpp \
-	$$QHTTP_BASE/private/qhttpserverresponse_private.hpp \
-	$$QHTTP_BASE/qhttpabstracts.hpp \
-	$$QHTTP_BASE/qhttpclient.hpp \
-	$$QHTTP_BASE/qhttpclientrequest.hpp \
-	$$QHTTP_BASE/qhttpclientresponse.hpp \
-	$$QHTTP_BASE/qhttpfwd.hpp \
-	$$QHTTP_BASE/qhttpserverconnection.hpp \
-	$$QHTTP_BASE/qhttpserver.hpp \
-	$$QHTTP_BASE/qhttpserverrequest.hpp \
-	$$QHTTP_BASE/qhttpserverresponse.hpp \
+	$$I/http_parser.h \
+	$$I/private/qhttpbase.hpp \
+	$$I/private/qhttpclient_private.hpp \
+	$$I/private/qhttpclientrequest_private.hpp \
+	$$I/private/qhttpclientresponse_private.hpp \
+	$$I/private/qhttpserverconnection_private.hpp \
+	$$I/private/qhttpserver_private.hpp \
+	$$I/private/qhttpserverrequest_private.hpp \
+	$$I/private/qhttpserverresponse_private.hpp \
+	$$I/qhttpabstracts.hpp \
+	$$I/qhttpclient.hpp \
+	$$I/qhttpclientrequest.hpp \
+	$$I/qhttpclientresponse.hpp \
+	$$I/qhttpfwd.hpp \
+	$$I/qhttpserverconnection.hpp \
+	$$I/qhttpserver.hpp \
+	$$I/qhttpserverrequest.hpp \
+	$$I/qhttpserverresponse.hpp \
 
 
 

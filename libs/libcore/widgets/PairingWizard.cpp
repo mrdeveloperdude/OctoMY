@@ -3,7 +3,7 @@
 
 
 #include "basic/Settings.hpp"
-#include "basic/Node.hpp"
+#include "node/Node.hpp"
 #include "widgets/Identicon.hpp"
 #include "basic/NodeAssociate.hpp"
 #include "security/PortableID.hpp"

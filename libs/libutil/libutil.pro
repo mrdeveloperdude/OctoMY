@@ -3,8 +3,10 @@ TEMPLATE =	lib
 CONFIG +=	staticlib
 
 include($$TOP_PWD/common.pri)
-
+include($$TOP_PWD/lib.pri)
+#QT += widgets
 INCLUDEPATH += ./
+
 
 HEADERS	+= \
 	utility/BaseTranscode.hpp \
@@ -13,16 +15,16 @@ HEADERS	+= \
 	utility/Status.hpp \
 	utility/Utility.hpp \
 	utility/Standard.hpp \
-    utility/ArcBall.hpp \
-    utility/FPSCalculator.hpp \
-    utility/GLContext.hpp \
-    utility/IncludeOpenGL.hpp \
-    utility/widgets/PixViewer.hpp \
-    utility/GLErrors.hpp \
-    utility/SerialSize.hpp \
-    utility/BufferHoneyPot.hpp \
-    utility/CrashHelp.hpp \
-    utility/IncludeOpenGLIntegration.hpp
+	utility/ArcBall.hpp \
+	utility/FPSCalculator.hpp \
+	utility/GLContext.hpp \
+	utility/IncludeOpenGL.hpp \
+	utility/widgets/PixViewer.hpp \
+	utility/GLErrors.hpp \
+	utility/SerialSize.hpp \
+	utility/BufferHoneyPot.hpp \
+	utility/CrashHelp.hpp \
+	utility/IncludeOpenGLIntegration.hpp
 
 
 SOURCES	+= \
@@ -31,14 +33,20 @@ SOURCES	+= \
 	utility/Status.cpp \
 	utility/Utility.cpp \
 	utility/Standard.cpp \
-    utility/ArcBall.cpp \
-    utility/FPSCalculator.cpp \
-    utility/GLContext.cpp \
-    utility/widgets/PixViewer.cpp \
-    utility/GLErrors.cpp \
-    utility/SerialSize.cpp \
-    utility/BufferHoneyPot.cpp \
-    utility/CrashHelp.cpp
+	utility/ArcBall.cpp \
+	utility/FPSCalculator.cpp \
+	utility/GLContext.cpp \
+	utility/widgets/PixViewer.cpp \
+	utility/GLErrors.cpp \
+	utility/SerialSize.cpp \
+	utility/BufferHoneyPot.cpp \
+	utility/CrashHelp.cpp
 
 FORMS += \
-    utility/widgets/PixViewer.ui
+	utility/widgets/PixViewer.ui
+
+
+contains(DEFINES, USE_STATUS){
+message("FROM libutil.pro:")
+include($$TOP_PWD/status.pri)
+}

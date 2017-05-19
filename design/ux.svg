@@ -175,28 +175,6 @@
        y1="-1413.723"
        x2="7324.1416"
        y2="-1424.9033" />
-    <clipPath
-       clipPathUnits="userSpaceOnUse"
-       id="clipPath23416">
-      <rect
-         transform="rotate(90)"
-         y="-1081.2241"
-         x="136.19466"
-         height="599.44025"
-         width="1065.6715"
-         id="rect23418"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#6fb5ff;fill-opacity:0.59748427;fill-rule:evenodd;stroke:none;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
-    </clipPath>
-    <clipPath
-       id="MapClipRectangle"
-       clipPathUnits="userSpaceOnUse">
-      <rect
-         id="rect14270"
-         height="1213"
-         width="1891"
-         y="0"
-         x="0" />
-    </clipPath>
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient6383"
@@ -898,54 +876,6 @@
          id="agent_body_color_stop2" />
     </linearGradient>
     <linearGradient
-       inkscape:collect="always"
-       xlink:href="#agent_background_gradient"
-       id="linearGradient7663-0"
-       gradientUnits="userSpaceOnUse"
-       x1="-882.67346"
-       y1="601.99481"
-       x2="-882.633"
-       y2="622.62109" />
-    <linearGradient
-       y2="1585.0201"
-       x2="9324.3848"
-       y1="1541.4006"
-       x1="9324.3848"
-       gradientTransform="matrix(0.40828472,0,0,0.40828472,-4698.7092,-26.142402)"
-       gradientUnits="userSpaceOnUse"
-       id="linearGradient11650-7"
-       xlink:href="#agent_body_gradient"
-       inkscape:collect="always" />
-    <linearGradient
-       gradientTransform="matrix(1.5445369,0,0,1.5445369,480.64537,-328.30255)"
-       y2="633.1051"
-       x2="-889.40582"
-       y1="616.9444"
-       x1="-889.40582"
-       gradientUnits="userSpaceOnUse"
-       id="linearGradient4273-0"
-       xlink:href="#remote_background_color"
-       inkscape:collect="always" />
-    <linearGradient
-       gradientUnits="userSpaceOnUse"
-       y2="633.1051"
-       x2="-889.40582"
-       y1="616.9444"
-       x1="-889.40582"
-       id="linearGradient4173-8"
-       xlink:href="#remote_background_color"
-       inkscape:collect="always" />
-    <linearGradient
-       gradientTransform="matrix(0.44410303,0,0,0.44410303,-5127.9883,-153.69921)"
-       gradientUnits="userSpaceOnUse"
-       y2="1734.4271"
-       x2="9571.3262"
-       y1="1772.2883"
-       x1="9571.3262"
-       id="linearGradient11338-8"
-       xlink:href="#remote_body_color"
-       inkscape:collect="always" />
-    <linearGradient
        id="hub_background_gradient"
        inkscape:collect="always">
       <stop
@@ -980,38 +910,11 @@
        x2="7324.1416"
        y2="-1424.9033" />
     <clipPath
-       id="clipPath8644"
-       clipPathUnits="userSpaceOnUse">
-      <path
-         inkscape:connector-curvature="0"
-         id="path8646-3"
-         d="m -189.48752,-3488.6876 -178.18555,178.1856 220.46094,220.459 178.183589,-178.1836 -70.330079,-70.3321 -96.33203,96.3321 -57.7539,-57.7539 96.332028,-96.3321 z"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#8b8d46;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:24.47636795;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
-    </clipPath>
-    <clipPath
        id="clipPath8644-8"
        clipPathUnits="userSpaceOnUse">
       <path
          inkscape:connector-curvature="0"
          id="path8646-3-0"
-         d="m -189.48752,-3488.6876 -178.18555,178.1856 220.46094,220.459 178.183589,-178.1836 -70.330079,-70.3321 -96.33203,96.3321 -57.7539,-57.7539 96.332028,-96.3321 z"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#8b8d46;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:24.47636795;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
-    </clipPath>
-    <clipPath
-       id="clipPath8958"
-       clipPathUnits="userSpaceOnUse">
-      <path
-         inkscape:connector-curvature="0"
-         id="path8956"
-         d="m -189.48752,-3488.6876 -178.18555,178.1856 220.46094,220.459 178.183589,-178.1836 -70.330079,-70.3321 -96.33203,96.3321 -57.7539,-57.7539 96.332028,-96.3321 z"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#8b8d46;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:24.47636795;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
-    </clipPath>
-    <clipPath
-       id="clipPath8962"
-       clipPathUnits="userSpaceOnUse">
-      <path
-         inkscape:connector-curvature="0"
-         id="path8960"
          d="m -189.48752,-3488.6876 -178.18555,178.1856 220.46094,220.459 178.183589,-178.1836 -70.330079,-70.3321 -96.33203,96.3321 -57.7539,-57.7539 96.332028,-96.3321 z"
          style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#8b8d46;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:24.47636795;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
     </clipPath>
@@ -1215,16 +1118,6 @@
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient6383"
-       id="linearGradient23531-3"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-958.07296,4367.3656)"
-       x1="7324.1416"
-       y1="-1413.723"
-       x2="7324.1416"
-       y2="-1424.9033" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient6383"
        id="linearGradient8185"
        gradientUnits="userSpaceOnUse"
        gradientTransform="translate(-958.07296,4367.3656)"
@@ -1272,33 +1165,6 @@
        y1="-1413.723"
        x2="7324.1416"
        y2="-1424.9033" />
-    <clipPath
-       id="clipPath8644-8-9"
-       clipPathUnits="userSpaceOnUse">
-      <path
-         inkscape:connector-curvature="0"
-         id="path8646-3-0-1"
-         d="m -189.48752,-3488.6876 -178.18555,178.1856 220.46094,220.459 178.183589,-178.1836 -70.330079,-70.3321 -96.33203,96.3321 -57.7539,-57.7539 96.332028,-96.3321 z"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#8b8d46;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:24.47636795;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
-    </clipPath>
-    <clipPath
-       id="clipPath8311"
-       clipPathUnits="userSpaceOnUse">
-      <path
-         inkscape:connector-curvature="0"
-         id="path8309"
-         d="m -189.48752,-3488.6876 -178.18555,178.1856 220.46094,220.459 178.183589,-178.1836 -70.330079,-70.3321 -96.33203,96.3321 -57.7539,-57.7539 96.332028,-96.3321 z"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#8b8d46;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:24.47636795;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
-    </clipPath>
-    <clipPath
-       id="clipPath8354"
-       clipPathUnits="userSpaceOnUse">
-      <path
-         inkscape:connector-curvature="0"
-         id="path8352"
-         d="m -189.48752,-3488.6876 -178.18555,178.1856 220.46094,220.459 178.183589,-178.1836 -70.330079,-70.3321 -96.33203,96.3321 -57.7539,-57.7539 96.332028,-96.3321 z"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#8b8d46;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:24.47636795;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
-    </clipPath>
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient6383"
@@ -1309,15 +1175,6 @@
        y1="-1413.723"
        x2="7324.1416"
        y2="-1424.9033" />
-    <clipPath
-       id="clipPath8644-8-93"
-       clipPathUnits="userSpaceOnUse">
-      <path
-         inkscape:connector-curvature="0"
-         id="path8646-3-0-7"
-         d="m -189.48752,-3488.6876 -178.18555,178.1856 220.46094,220.459 178.183589,-178.1836 -70.330079,-70.3321 -96.33203,96.3321 -57.7539,-57.7539 96.332028,-96.3321 z"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#8b8d46;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:24.47636795;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
-    </clipPath>
     <clipPath
        id="clipPath8644-8-93-7"
        clipPathUnits="userSpaceOnUse">
@@ -1435,9 +1292,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.6560036"
-     inkscape:cx="2399.7845"
-     inkscape:cy="217.60756"
+     inkscape:zoom="0.93903908"
+     inkscape:cx="2339.6782"
+     inkscape:cy="1359.6648"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
