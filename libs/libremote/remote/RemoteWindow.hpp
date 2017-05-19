@@ -2,7 +2,7 @@
 #define REMOTEWINDOW_HPP
 
 #include "widgets/TryToggle.hpp"
-#include "../libhub/IContextProvider.hpp"
+#include "node/IContextProvider.hpp"
 #include "basic/NodeAssociate.hpp"
 
 #include <QWidget>

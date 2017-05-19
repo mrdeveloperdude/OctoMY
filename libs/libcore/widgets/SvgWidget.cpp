@@ -3,7 +3,7 @@
 #include <QPainter>
 #include <QDebug>
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 SvgWidget::SvgWidget(QWidget *parent)
 	: QWidget(parent)

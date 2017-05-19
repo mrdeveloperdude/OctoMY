@@ -1,7 +1,7 @@
 #include "ClientWidget.hpp"
 #include "ui_ClientWidget.h"
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 #include "basic/GenericKeyEventHandler.hpp"
 #include "basic/Settings.hpp"

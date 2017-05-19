@@ -7,7 +7,7 @@
 #include "CommsChannel.hpp"
 #include "CommsSessionDirectory.hpp"
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 #include "comms/CommsSession.hpp"
 #include "messages/MessageType.hpp"
 

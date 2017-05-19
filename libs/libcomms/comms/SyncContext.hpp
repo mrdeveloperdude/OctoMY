@@ -1,7 +1,7 @@
 #ifndef SYNCCONTEXT_HPP
 #define SYNCCONTEXT_HPP
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 #include <QVector>
 #include <QBitArray>

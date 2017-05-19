@@ -1,7 +1,7 @@
 #include "Servotor32ControllerWidget.hpp"
 #include "Servotor32Controller.hpp"
 #include "ui_Servotor32ControllerWidget.h"
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 #include "../libutil/utility/Utility.hpp"
 #include "Servotor32ActuatorWidget.hpp"
 #include "agent/AgentConstants.hpp"

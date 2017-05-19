@@ -13,19 +13,18 @@ for(i, includes) {
 
 #include($$TOP_PWD/libs/libnode/libnode.pri)
 
-
-#QT         += core core-private gui gui-private
-INCLUDEPATH += $$TOP_PWD/libs/libhub/
+I=hub
+L=hub
 
 SOURCES +=\
-	Hub.cpp \
-	HubWindow.cpp \
-	IContextProvider.cpp \
+	$$L/Hub.cpp \
+	$$L/HubWindow.cpp \
+	$$L/IContextProvider.cpp \
 
 HEADERS  += \
-	Hub.hpp \
-	HubWindow.hpp \
-	IContextProvider.hpp \
+	$$I/Hub.hpp \
+	$$I/HubWindow.hpp \
+	$$I/IContextProvider.hpp \
 
 
 FORMS	+= \

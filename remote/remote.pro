@@ -5,12 +5,7 @@ TARGET = remote
 
 include($$TOP_PWD/common.pri)
 include($$TOP_PWD/app.pri)
-#QT         += core core-private gui gui-private
-INCLUDEPATH += ./
-
 include($$TOP_PWD/libs/all_libs.pri)
-include($$TOP_PWD/libs/libremote/libremote.pri)
-
 
 HEADERS += \
 	RemoteMain.hpp

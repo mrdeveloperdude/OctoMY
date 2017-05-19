@@ -2,7 +2,7 @@
 
 #include "ui_HubWindow.h"
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 #include "comms/CommsSession.hpp"
 #include "comms/messages/MessageType.hpp"
 #include "Hub.hpp"

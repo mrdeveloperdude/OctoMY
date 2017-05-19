@@ -1,6 +1,6 @@
 #include "basic/Settings.hpp"
 #include <QCoreApplication>
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 #include "basic/UniquePlatformFingerprint.hpp"
 
 #include <QDateTime>

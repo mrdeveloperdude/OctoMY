@@ -2,7 +2,7 @@
 
 #include "hw/serial/SerialSettingsWidget.hpp"
 #include "../arduino/ArduMYParserState.hpp"
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 #include "ArduMYControllerWidget.hpp"
 #include "ArduMYTypeConversions.hpp"
 

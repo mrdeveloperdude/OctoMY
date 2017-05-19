@@ -1,6 +1,6 @@
 #include "ISyncParameter.hpp"
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 QDebug &operator<<(QDebug &d, const ISyncParameter &sp)
 {

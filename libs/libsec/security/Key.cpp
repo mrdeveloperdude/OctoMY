@@ -2,7 +2,7 @@
 
 #include "KeyPrivate.hpp"
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 #include "SecurityConstantsPrivate.hpp"
 
 Key::Key() Q_DECL_NOTHROW

@@ -2,7 +2,7 @@
 
 #include "Trigger.hpp"
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 TriggerSet::TriggerSet()
 //: QList<Courier *>()

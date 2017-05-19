@@ -1,7 +1,7 @@
 #include "AgentConfigStore.hpp"
 
 #include "../libpuppet/pose/PoseMapping.hpp"
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 #include "../libutil/utility/Utility.hpp"
 
 #include <QJsonParseError>

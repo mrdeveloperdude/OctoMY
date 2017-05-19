@@ -7,7 +7,7 @@
 #include "widgets/Identicon.hpp"
 #include "basic/NodeAssociate.hpp"
 #include "security/PortableID.hpp"
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 #include "models/PairingListModel.hpp"
 #include "PairingEditButtonDelegate.hpp"

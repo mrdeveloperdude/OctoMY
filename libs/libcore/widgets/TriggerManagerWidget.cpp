@@ -1,7 +1,7 @@
 #include "TriggerManagerWidget.hpp"
 #include "ui_TriggerManagerWidget.h"
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 #include "locus/WheeledLocusWidget.hpp"
 #include "locus/Locus.hpp"

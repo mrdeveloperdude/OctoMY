@@ -3,7 +3,7 @@
 #define WEBREQUEST_HPP
 
 #include "../libutil/utility/Utility.hpp"
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 #include <QDebug>
 #include <QObject>

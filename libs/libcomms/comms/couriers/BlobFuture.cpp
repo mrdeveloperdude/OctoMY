@@ -1,7 +1,7 @@
 #include "BlobFuture.hpp"
 #include "BlobCourier.hpp"
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 #include <QObject>
 
 BlobFuture::BlobFuture(QString name="", BlobCourier *courier)

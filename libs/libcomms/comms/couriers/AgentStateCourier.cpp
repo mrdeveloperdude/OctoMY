@@ -9,7 +9,7 @@
 #include "comms/SyncParameter.hpp"
 #include "comms/couriers/CourierMandate.hpp"
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 #include <QDebug>
 #include <QDataStream>

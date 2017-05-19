@@ -47,10 +47,10 @@ local_overrides.pri
 
 /libs/build/*
 /libs/*/build*
+/libs/libclt/OpenCL-ICD-Loader*
 
 libzeroconf*
 
 *~
 
-libs/libclt/OpenCL-ICD-Loader/*
 

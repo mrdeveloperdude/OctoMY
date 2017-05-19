@@ -2,7 +2,7 @@
 
 #include "hw/serial/SerialSettings.hpp"
 #include "hw/controllers/servotor32/Servotor32ControllerWidget.hpp"
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 
 #include <QDebug>

@@ -1,7 +1,7 @@
 #include "HexySerial.hpp"
 
 #include "hw/serial/SerialSettingsWidget.hpp"
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 
 #include <QDebug>

@@ -1,7 +1,7 @@
 #ifndef SYNCPARAMETER_HPP
 #define SYNCPARAMETER_HPP
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 #include "ISyncParameter.hpp"
 #include "../libutil/utility/SerialSize.hpp"
 #include "../libpuppet/pose/Pose.hpp"

@@ -1,7 +1,7 @@
 #include "PanicButton.hpp"
 #include "ui_PanicButton.h"
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 PanicButton::PanicButton(QWidget *parent) :
 	QWidget(parent),

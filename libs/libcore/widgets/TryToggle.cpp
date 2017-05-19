@@ -1,7 +1,7 @@
 #include "TryToggle.hpp"
 #include "ui_TryToggle.h"
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 
 TryToggle::TryToggle(QWidget *parent) :

@@ -1,6 +1,6 @@
 #include "NameMappingView.hpp"
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 #include "NameMappingWidget.hpp"
 #include "pose/PoseMapping.hpp"

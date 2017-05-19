@@ -1,7 +1,7 @@
 #include "ConnectionWidget.hpp"
 #include "ui_ConnectionWidget.h"
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 ConnectionWidget::ConnectionWidget(QWidget *parent)
 	: QWidget(parent)

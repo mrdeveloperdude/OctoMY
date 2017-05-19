@@ -1,7 +1,7 @@
 #include "ArduinoPinSelector.hpp"
 #include "ui_ArduinoPinSelector.h"
 
-#include "../libutil/utility/Standard.hpp"
+#include "utility/Standard.hpp"
 
 #include "ArduinoPinFacilitator.hpp"
 
