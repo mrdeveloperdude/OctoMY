@@ -1,5 +1,6 @@
 # ![OctoMY™ Logo](design/octomy_logo.png) OctoMY™ N-limbed madness!
-# ![OctoMY™ Build status](https://travis-ci.org/mrdeveloperdude/OctoMY.svg?branch=master)
+# [![OctoMY™ Build status](https://travis-ci.org/mrdeveloperdude/OctoMY.svg?branch=master)](https://travis-ci.org/mrdeveloperdude/OctoMY)
+
 [Go to official project-page](http://www.octomy.org)
 
 What is OctoMY™?
