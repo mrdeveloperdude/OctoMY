@@ -11,7 +11,6 @@
 #ifndef QMBEDTLS_HASH_PRIV_HPP
 #define QMBEDTLS_HASH_PRIV_HPP
 
-#include "mbedtls/mbedtls_config.h"
 #include "mbedtls/md.h"
 
 #include <QByteArray>
