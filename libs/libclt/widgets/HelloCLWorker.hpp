@@ -1,7 +1,7 @@
 #ifndef HELLOCLWORKER_HPP
 #define HELLOCLWORKER_HPP
 
-#include "../libclt/opencl/CLWorker.hpp"
+#include "opencl/CLWorker.hpp"
 
 
 class CLThreadManager;

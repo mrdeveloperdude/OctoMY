@@ -4,10 +4,10 @@
 #include "widgets/TryToggle.hpp"
 #include "Agent.hpp"
 #include "comms/CommsChannel.hpp"
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 #include "basic/Settings.hpp"
 #include "security/PortableID.hpp"
-#include "../libaudio/OneOffSpeech.hpp"
+#include "OneOffSpeech.hpp"
 #include "comms/CommsSessionDirectory.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"
@@ -24,8 +24,8 @@
 
 
 
-#include "../libpuppet/pose/NameMapping.hpp"
-#include "../libpuppet/widgets/NameMappingWidget.hpp"
+#include "pose/NameMapping.hpp"
+#include "widgets/NameMappingWidget.hpp"
 
 
 AgentWindow::AgentWindow(Agent *agent, QWidget *parent)

@@ -5,7 +5,7 @@
  */
 
 #include "basic/NodeAssociate.hpp"
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 
 #include <QRegularExpression>
 

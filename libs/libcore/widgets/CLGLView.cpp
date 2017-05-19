@@ -4,7 +4,7 @@
 
 #ifdef EXTERNAL_LIB_OPENCL
 
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 
 #include "../../libclt/widgets/CLGLViewRenderer.hpp"
 

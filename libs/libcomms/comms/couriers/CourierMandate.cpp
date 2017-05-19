@@ -1,6 +1,6 @@
 #include "CourierMandate.hpp"
 
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 
 CourierMandate::CourierMandate(
 	const quint16 payloadSize

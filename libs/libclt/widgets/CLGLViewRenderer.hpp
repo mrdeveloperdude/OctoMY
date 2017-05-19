@@ -1,8 +1,8 @@
 #ifndef CLGLVIEWRENDERER_HPP
 #define CLGLVIEWRENDERER_HPP
 
-#include "../libutil/utility/IncludeOpenGL.hpp"
-#include "../libutil/utility/GLContext.hpp"
+#include "utility/IncludeOpenGL.hpp"
+#include "utility/GLContext.hpp"
 
 
 /**

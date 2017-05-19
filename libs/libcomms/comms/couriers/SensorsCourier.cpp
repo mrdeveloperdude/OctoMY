@@ -1,6 +1,6 @@
 #include "SensorsCourier.hpp"
 
-#include "../libutil/utility/SerialSize.hpp"
+#include "utility/SerialSize.hpp"
 
 #include <QDebug>
 #include <QSensor>

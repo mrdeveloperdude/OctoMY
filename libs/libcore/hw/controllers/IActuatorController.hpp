@@ -1,7 +1,7 @@
 #ifndef IACTUATORCONTROLLER_HPP
 #define IACTUATORCONTROLLER_HPP
 
-#include "../libpuppet/pose/Pose.hpp"
+#include "pose/Pose.hpp"
 #include "widgets/TryToggleState.hpp"
 
 

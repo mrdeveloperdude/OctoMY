@@ -1,14 +1,14 @@
 #include "CLWorker.hpp"
 #include "CLThreadManager.hpp"
 
-#include "../libutil/utility/GLErrors.hpp"
-#include "../libutil/utility/Utility.hpp"
-#include "../libclt/opencl/CLUtils.hpp"
+#include "utility/GLErrors.hpp"
+#include "utility/Utility.hpp"
+#include "opencl/CLUtils.hpp"
 
 #include <QThread>
 #include <qpa/qplatformnativeinterface.h>
 
-#include "../libutil/utility/IncludeOpenGLIntegration.hpp"
+#include "utility/IncludeOpenGLIntegration.hpp"
 
 CLWorker::CLWorker(CLThreadManager &man, int index, QObject *parent)
 	: QObject(parent)

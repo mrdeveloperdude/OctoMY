@@ -5,7 +5,7 @@
 #include "models/SerialDeviceListModel.hpp"
 #include "models/HardwareTemplateModel.hpp"
 #include "hw/controllers/IActuatorController.hpp"
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 //#include "agent/AgentConfigStore.hpp"
 #include "agent/Agent.hpp"
 

@@ -5,7 +5,7 @@
 
 #include "CLGLInteropConfig.hpp"
 
-#include "../libutil/utility/GLContext.hpp"
+#include "utility/GLContext.hpp"
 
 #include <QObject>
 #include <QVector>

@@ -1,7 +1,7 @@
 #include "KeyPrivate.hpp"
 
 #include "utility/Standard.hpp"
-#include "../libutil/utility/ScopedTimer.hpp"
+#include "utility/ScopedTimer.hpp"
 #include "SecurityConstants.hpp"
 
 #include <QCryptographicHash>

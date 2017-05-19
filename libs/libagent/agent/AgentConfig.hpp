@@ -3,7 +3,7 @@
 
 #include "../arduino/ArduMYActuator.hpp"
 
-#include "../libpuppet/pose/PoseMapping.hpp"
+#include "pose/PoseMapping.hpp"
 
 #include <QVector>
 #include <QSharedPointer>

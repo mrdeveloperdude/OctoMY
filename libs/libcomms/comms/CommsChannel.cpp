@@ -13,7 +13,7 @@
 
 #include "security/KeyStore.hpp"
 
-#include "../libpuppet/pose/Pose.hpp"
+#include "pose/Pose.hpp"
 
 
 #include <QDataStream>

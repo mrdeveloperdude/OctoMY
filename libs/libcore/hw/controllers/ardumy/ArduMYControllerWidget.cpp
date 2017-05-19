@@ -2,7 +2,7 @@
 #include "ui_ArduMYControllerWidget.h"
 #include "utility/Standard.hpp"
 #include "ArduMYController.hpp"
-#include "../libpuppet/widgets/NameMappingWidget.hpp"
+#include "widgets/NameMappingWidget.hpp"
 #include "agent/AgentConstants.hpp"
 #include "hw/serial/SerialSettings.hpp"
 

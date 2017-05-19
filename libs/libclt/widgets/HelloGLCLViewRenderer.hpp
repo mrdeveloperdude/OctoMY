@@ -1,8 +1,8 @@
 #ifndef HELLOGLCLVIEWRENDERER_HPP
 #define HELLOGLCLVIEWRENDERER_HPP
 
-#include "../libclt/widgets/CLGLViewRenderer.hpp"
-#include "../libutil/utility/IncludeOpenGL.hpp"
+#include "CLGLViewRenderer.hpp"
+#include "utility/IncludeOpenGL.hpp"
 
 
 #include <QtGlobal>

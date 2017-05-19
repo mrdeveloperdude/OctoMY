@@ -1,7 +1,7 @@
 #ifndef HELLOCLWORKERFACTORY_HPP
 #define HELLOCLWORKERFACTORY_HPP
 
-#include "../libclt/opencl/CLWorkerFactory.hpp"
+#include "opencl/CLWorkerFactory.hpp"
 
 #include <QtGlobal>
 /*!

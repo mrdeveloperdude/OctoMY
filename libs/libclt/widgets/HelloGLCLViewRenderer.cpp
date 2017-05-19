@@ -3,7 +3,7 @@
 #ifdef EXTERNAL_LIB_OPENCL
 
 #include "HelloCLWorkerFactory.hpp"
-#include "../libclt/opencl/CLThreadManager.hpp"
+#include "opencl/CLThreadManager.hpp"
 
 
 HelloGLCLViewRenderer::HelloGLCLViewRenderer()

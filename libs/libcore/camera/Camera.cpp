@@ -3,9 +3,9 @@
 #include "CameraSettings.hpp"
 
 #include "PoorMansProbe.hpp"
-#include "../libzbar/ZBarScanner.hpp"
+#include "ZBarScanner.hpp"
 
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 
 #include <QMediaService>
 #include <QMediaRecorder>

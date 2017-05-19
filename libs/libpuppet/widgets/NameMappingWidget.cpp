@@ -1,7 +1,7 @@
 #include "NameMappingWidget.hpp"
 #include "ui_NameMappingWidget.h"
 
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 #include "pose/PoseMapping.hpp"
 #include "widgets/PoseMappingView.hpp"
 

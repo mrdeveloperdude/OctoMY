@@ -8,11 +8,11 @@ include($$TOP_PWD/libs/libparser/libparser.pri)
 include($$TOP_PWD/libs/libqpolarssl/libqpolarssl.pri)
 include($$TOP_PWD/libs/libzbar/libzbar.pri)
 
-includes = node agent remote hub zoo plan map qr web style qfi rng audio dynamics puppet sec core util comms ardumy
-
 contains(DEFINES, EXTERNAL_LIB_OPENCL){
-	includes += clt
+	include($$TOP_PWD/libs/libclt/libclt.pri)
 }
+
+includes = node agent remote hub zoo plan map qr web style qfi rng audio dynamics puppet sec core util comms ardumy
 
 for(i, includes) {
 	INCLUDEE=$$i

@@ -6,6 +6,7 @@ include($$TOP_PWD/common.pri)
 include($$TOP_PWD/lib.pri)
 #QT += widgets
 INCLUDEPATH += ./
+INCLUDEPATH += ../libutil
 
 HEADERS	+= \
 	c++/Decoder.h \

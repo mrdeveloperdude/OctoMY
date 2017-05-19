@@ -7,7 +7,7 @@
 
 #include "basic/NodeAssociate.hpp"
 
-#include "../libpuppet/pose/PoseMapping.hpp"
+#include "pose/PoseMapping.hpp"
 
 #include <QWidget>
 #include <QGeoPositionInfo>

@@ -2,7 +2,7 @@
 #include "ui_RemoteWindow.h"
 #include "Remote.hpp"
 #include "comms/CommsChannel.hpp"
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 #include "comms/CommsSession.hpp"
 #include "widgets/ControlDeliveryWizard.hpp"
 

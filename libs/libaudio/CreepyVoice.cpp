@@ -1,7 +1,7 @@
 #include "CreepyVoice.hpp"
 
 
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 
 #include "../librng/RNG.hpp"
 

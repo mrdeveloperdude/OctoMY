@@ -1,7 +1,7 @@
 #include "NetworkSettingsWidget.hpp"
 #include "ui_NetworkSettingsWidget.h"
 
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 
 #include <QComboBox>
 

@@ -24,10 +24,10 @@ public:
 
 #else
 
-#include "../libutil/utility/IncludeOpenGL.hpp"
-#include "../libutil/utility/FPSCalculator.hpp"
-#include "../libutil/utility/ArcBall.hpp"
-#include "../libutil/utility/GLContext.hpp"
+#include "utility/IncludeOpenGL.hpp"
+#include "utility/FPSCalculator.hpp"
+#include "utility/ArcBall.hpp"
+#include "utility/GLContext.hpp"
 
 
 

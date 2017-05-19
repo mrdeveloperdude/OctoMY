@@ -49,6 +49,18 @@ SUBDIRS += \
 #	$$LIB_BASE/libardumy \
 #	$$LIB_BASE/libcomms \
 #	$$LIB_BASE/libnode \
+
+
+contains(DEFINES, EXTERNAL_LIB_OPENCL){
+
+SUBDIRS += \
+	$$LIB_BASE/libclt \
+
+
+}
+
+# The executables
+SUBDIRS += \
 	agent \
 	remote \
 	hub \

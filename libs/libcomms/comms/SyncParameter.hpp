@@ -3,8 +3,8 @@
 
 #include "utility/Standard.hpp"
 #include "ISyncParameter.hpp"
-#include "../libutil/utility/SerialSize.hpp"
-#include "../libpuppet/pose/Pose.hpp"
+#include "utility/SerialSize.hpp"
+#include "pose/Pose.hpp"
 
 
 #include <QObject>

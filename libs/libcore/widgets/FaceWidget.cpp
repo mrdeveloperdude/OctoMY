@@ -10,7 +10,7 @@
 #include "agent/Agent.hpp"
 #include "widgets/Identicon.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 #include "agent/AgentConstants.hpp"
 #include "agent/AgentControls.hpp"
 #include "agent/CourierSet.hpp"

@@ -1,6 +1,6 @@
 #include "ZBarScanner.hpp"
 
-#include "../libutil/utility/widgets/PixViewer.hpp"
+#include "utility/widgets/PixViewer.hpp"
 
 #include <QVideoFrame>
 #include <QPixmap>

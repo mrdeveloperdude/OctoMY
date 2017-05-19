@@ -2,7 +2,7 @@
 #include "Servotor32Controller.hpp"
 #include "ui_Servotor32ControllerWidget.h"
 #include "utility/Standard.hpp"
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 #include "Servotor32ActuatorWidget.hpp"
 #include "agent/AgentConstants.hpp"
 #include <QSpacerItem>

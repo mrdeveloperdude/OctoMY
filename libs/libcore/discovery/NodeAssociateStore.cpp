@@ -1,6 +1,6 @@
 #include "NodeAssociateStore.hpp"
 
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 
 #include <QFile>
 #include <QThreadPool>

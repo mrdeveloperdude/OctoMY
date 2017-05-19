@@ -1,7 +1,7 @@
 #include "SerialList.hpp"
 
 
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 
 #include <QList>
 #include <QMediaService>

@@ -3,9 +3,9 @@
 
 
 #include "CLUtils.hpp"
-#include "../libutil/utility/IncludeOpenGL.hpp"
+#include "utility/IncludeOpenGL.hpp"
 
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 
 #include <QMap>
 #include <QString>

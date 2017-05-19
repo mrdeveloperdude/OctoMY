@@ -6,7 +6,7 @@
 
 //#include "qpolarssl/qpolarsslpki.hpp"
 #include "KeyStore.hpp"
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 
 #include "SecurityConstants.hpp"
 

@@ -1,7 +1,7 @@
 #include "CameraPairingWidget.hpp"
 #include "ui_CameraPairingWidget.h"
 
-#include "../libzbar/ZBarScanner.hpp"
+#include "ZBarScanner.hpp"
 #include "camera/PoorMansProbe.hpp"
 #include "security/KeyStore.hpp"
 

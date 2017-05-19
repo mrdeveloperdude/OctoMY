@@ -1,7 +1,7 @@
 #include "ArduMYActuatorWidget.hpp"
 #include "ui_ArduMYActuatorWidget.h"
 
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 
 #include "../arduino/ArduMYActuator.hpp"
 #include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"

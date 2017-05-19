@@ -3,7 +3,7 @@
 #include "BlobChunk.hpp"
 
 
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 
 #include <QDateTime>
 

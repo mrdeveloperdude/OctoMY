@@ -1,7 +1,7 @@
 #include "DiscoveryClient.hpp"
 
 #include "utility/Standard.hpp"
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 #include "basic/NodeAssociate.hpp"
 #include "zoo/ZooClient.hpp"
 #include "zoo/ZooConstants.hpp"
