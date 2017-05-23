@@ -1,7 +1,7 @@
 #ifndef TESTCOMMSCHANNEL_HPP
 #define TESTCOMMSCHANNEL_HPP
 
-#include "../../libs/libcore/comms/CommsChannel.hpp"
+#include "comms/CommsChannel.hpp"
 
 
 #include <QTest>

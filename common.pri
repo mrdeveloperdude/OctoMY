@@ -1,7 +1,7 @@
 include( standard.pri )
 include( optimize_small.pri )
 include( warnings.pri )
-#include( ccache.pri )
+include( ccache.pri )
 
 QMAKE_TARGET_COMPANY =		"OctoMY™"
 QMAKE_TARGET_COPYRIGHT =	"Copyright © 2012-2017 Lennart Rolland <lennartrolland@gmail.com>"

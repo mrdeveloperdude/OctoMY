@@ -1,7 +1,7 @@
 #include "CourierTester.hpp"
 
-#include "../libcore/comms/couriers/Courier.hpp"
-#include "../libutil/utility/Utility.hpp"
+#include "comms/couriers/Courier.hpp"
+#include "utility/Utility.hpp"
 
 #include <QByteArray>
 #include <QBuffer>

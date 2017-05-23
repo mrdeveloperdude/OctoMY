@@ -1,9 +1,9 @@
 #include "TestCommsChannel.hpp"
 
-#include "../../libs/libutil/utility/Standard.hpp"
-#include "../../libs/libcore/comms/messages/MessageType.hpp"
+#include "utility/Standard.hpp"
+#include "comms/messages/MessageType.hpp"
 
-#include "../librng/RNG.hpp"
+#include "RNG.hpp"
 
 #include "security/KeyStore.hpp"
 

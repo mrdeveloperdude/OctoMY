@@ -14,12 +14,12 @@ contains(DEFINES, USE_BASIC_TESTS){
 
 #
 TEST_PROJECTS+= \
-#	testCommon \
+	testCommon \
 #	testAgentStateCourier \
 #	testArduMY \
 #	testBlob \
 #	testCarSteeringWidget \
-#	testCommsChannel \
+	testCommsChannel \
 #	testCreepyVoice \
 #	testDeliveryWizard \
 #	testDiscovery \

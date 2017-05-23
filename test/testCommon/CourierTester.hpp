@@ -1,7 +1,7 @@
 #ifndef COURIERTESTER_HPP
 #define COURIERTESTER_HPP
 
-#include "../libutil/utility/Utility.hpp"
+#include "utility/Utility.hpp"
 #include <QObject>
 #include <QList>
 
