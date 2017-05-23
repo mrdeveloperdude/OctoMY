@@ -149,7 +149,7 @@ public:
 
 	explicit CommsChannel(const QString &id, KeyStore &keystore, QObject *parent=nullptr);
 
-	private:
+private:
 
 	void countReceived();
 

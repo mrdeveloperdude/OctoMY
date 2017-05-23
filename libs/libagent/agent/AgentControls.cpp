@@ -1,6 +1,6 @@
 #include "AgentControls.hpp"
 
-#include "CourierSet.hpp"
+#include "AgentCourierSet.hpp"
 
 #include "Agent.hpp"
 
@@ -21,7 +21,7 @@ void AgentControls::registerClient(QString fullID)
 {
 	OC_METHODGATE();
 	if(!mCouriers.contains(fullID) ) {
-		CourierSet *set=new CourierSet (fullID, mAgent);
+		AgentCourierSet *set=new AgentCourierSet (fullID, mAgent);
 		mCouriers.insert(fullID, set);
 	} else {
 		qWarning()<<"ERROR: Trying to register same client twice: "<<fullID;
@@ -46,7 +46,7 @@ void AgentControls::setCommsEnabled(bool enable)
 	}
 }
 
-CourierSet *AgentControls::activeControl() const
+AgentCourierSet *AgentControls::activeControl() const
 {
 	OC_METHODGATE();
 	//TODO: Manage which one is actually the ACTIVE one instead of just returning the first one

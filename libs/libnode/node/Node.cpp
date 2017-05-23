@@ -248,8 +248,8 @@ BlobFuture Node::submitBlobForSending(QByteArray data, QString name)
 void Node::hookColorSignals(QObject &ob)
 {
 	if(nullptr!=mSensorsCourier) {
-		if(!connect(&ob,SIGNAL(colorChanged(QColor)),mSensorsCourier,SLOT(onColorUpdated(QColor)),OC_CONTYPE)) {
-			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
+		if(!connect(&ob, SIGNAL(colorChanged(QColor)), mSensorsCourier, SLOT(onColorUpdated(QColor)), OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect " << ob.objectName();
 		}
 	}
 }
@@ -258,8 +258,8 @@ void Node::hookColorSignals(QObject &ob)
 void Node::unHookColorSignals(QObject &ob)
 {
 	if(nullptr!=mSensorsCourier) {
-		if(!disconnect(&ob,SIGNAL(colorChanged(QColor)),mSensorsCourier,SLOT(onColorUpdated(QColor)))) {
-			qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
+		if(!disconnect(&ob, SIGNAL(colorChanged(QColor)), mSensorsCourier, SLOT(onColorUpdated(QColor)))) {
+			qWarning()<<"ERROR: Could not disconnect " << ob.objectName();
 		}
 	}
 }

@@ -2,7 +2,7 @@
 #define AGENTCONTROLS_HPP
 
 class Agent;
-class CourierSet;
+class AgentCourierSet;
 
 
 #include <QHash>
@@ -12,7 +12,7 @@ class AgentControls
 private:
 
 	Agent &mAgent;
-	QHash <QString , CourierSet *> mCouriers;
+	QHash <QString , AgentCourierSet *> mCouriers;
 public:
 
 	explicit AgentControls(Agent &);
@@ -24,7 +24,7 @@ public:
 
 	void setCommsEnabled(bool);
 
-	CourierSet* activeControl() const;
+	AgentCourierSet* activeControl() const;
 };
 
 #endif // AGENTCONTROLS_HPP

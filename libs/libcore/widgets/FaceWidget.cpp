@@ -13,7 +13,7 @@
 #include "utility/Utility.hpp"
 #include "agent/AgentConstants.hpp"
 #include "agent/AgentControls.hpp"
-#include "agent/CourierSet.hpp"
+#include "agent/AgentCourierSet.hpp"
 
 
 #include <QScrollBar>
@@ -28,7 +28,7 @@ FaceWidget::FaceWidget(QWidget *parent)
 	ui->setupUi(this);
 
 	ui->tryToggleConnect->configure("Go Online", "Connecting..", "Online", AgentConstants::AGENT_CONNECT_BUTTON_COLOR);
-	if(!connect(ui->tryToggleConnect,SIGNAL(stateChanged(const TryToggleState, const TryToggleState)),this,SIGNAL(connectionStateChanged(const TryToggleState, const TryToggleState)),OC_CONTYPE)) {
+	if(!connect(ui->tryToggleConnect,SIGNAL(stateChanged(const TryToggleState, const TryToggleState)), this, SIGNAL(connectionStateChanged(const TryToggleState, const TryToggleState)), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
@@ -70,10 +70,10 @@ void FaceWidget::updateVisibility()
 {
 	if(nullptr!=mAgent) {
 		Settings &s=mAgent->settings();
-		ui->widgetEyes->setVisible(s.getCustomSettingBool(AgentConstants::AGENT_FACE_EYES_SHOW,true));
-		ui->logScroll->setVisible(s.getCustomSettingBool(AgentConstants::AGENT_FACE_LOG_SHOW,true));
-		ui->widgetRealtimeValues->setVisible(s.getCustomSettingBool(AgentConstants::AGENT_FACE_STATS_SHOW,true));
-		ui->widgetConnect->setVisible(s.getCustomSettingBool(AgentConstants::AGENT_FACE_ONLINE_BUTTON_SHOW,true));
+		ui->widgetEyes->setVisible(s.getCustomSettingBool(AgentConstants::AGENT_FACE_EYES_SHOW, true));
+		ui->logScroll->setVisible(s.getCustomSettingBool(AgentConstants::AGENT_FACE_LOG_SHOW, true));
+		ui->widgetRealtimeValues->setVisible(s.getCustomSettingBool(AgentConstants::AGENT_FACE_STATS_SHOW, true));
+		ui->widgetConnect->setVisible(s.getCustomSettingBool(AgentConstants::AGENT_FACE_ONLINE_BUTTON_SHOW, true));
 	}
 }
 
@@ -92,7 +92,7 @@ void FaceWidget::setAgent(Agent *a)
 
 	if(nullptr!=mAgent) {
 		const AgentControls &ctl=mAgent->controls();
-		CourierSet*set=ctl.activeControl();
+		AgentCourierSet *set = ctl.activeControl();
 		if(nullptr!=set) {
 			AgentStateCourier * asc=set->agentStateCourier();
 			if(nullptr!=asc) {

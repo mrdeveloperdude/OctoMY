@@ -16,7 +16,7 @@
 #include "node/AppContext.hpp"
 #include "hw/controllers/ActuatorControllerFactory.hpp"
 
-#include "CourierSet.hpp"
+#include "AgentCourierSet.hpp"
 
 #include <QDebug>
 #include <QDataStream>
@@ -80,7 +80,7 @@ QWidget *Agent::showWindow()
 void Agent::setPanic(bool panic)
 {
 	OC_METHODGATE();
-	CourierSet *set=mControls.activeControl();
+	AgentCourierSet *set=mControls.activeControl();
 
 	if(nullptr!=set) {
 		AgentStateCourier *asc=set->agentStateCourier();

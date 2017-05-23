@@ -1,36 +1,13 @@
 #include "CourierSet.hpp"
-#include "Agent.hpp"
-#include "comms/CommsSignature.hpp"
-#include "comms/couriers/AgentStateCourier.hpp"
-#include "comms/couriers/SensorsCourier.hpp"
-#include "comms/couriers/BlobCourier.hpp"
 
-CourierSet::CourierSet(QString &fullID, Agent &agent)
-	: mAgent(agent)
-	, mAgentStateCourier(new AgentStateCourier(&mDatastream,nullptr))
-	, mSensorsCourier(new SensorsCourier(nullptr))
-	, mBlobCourier(new BlobCourier(nullptr))
+#include "utility/Standard.hpp"
+
+#include "comms/couriers/Courier.hpp"
+
+CourierSet::CourierSet()
+
 {
 	OC_METHODGATE();
-	if(nullptr!=mAgentStateCourier) {
-		mAgentStateCourier->setHookSignals(mAgent, true);
-		mAgentStateCourier->setDestination(fullID);
-		append(mAgentStateCourier);
-	} else {
-		qWarning()<<"ERROR: Could not allocate AgentStateCourier";
-	}
-	if(nullptr!=mSensorsCourier) {
-		mSensorsCourier->setDestination(fullID);
-		append(mSensorsCourier);
-	} else {
-		qWarning()<<"ERROR: Could not allocate SensorsCourier";
-	}
-	if(nullptr!=mBlobCourier) {
-		mBlobCourier->setDestination(fullID);
-		append(mBlobCourier);
-	} else {
-		qWarning()<<"ERROR: Could not allocate BlobCourier";
-	}
 }
 
 CourierSet::~CourierSet()
@@ -42,16 +19,11 @@ CourierSet::~CourierSet()
 	clear();
 }
 
-AgentStateCourier *CourierSet::agentStateCourier()
-{
-	OC_METHODGATE();
-	return mAgentStateCourier;
-}
-
 
 void CourierSet::setCommsEnabled(bool enable)
 {
 	OC_METHODGATE();
+	/*
 	CommsChannel *cc=mAgent.comms();
 	if(nullptr!=cc) {
 		for(Courier *courier:*this) {
@@ -61,4 +33,5 @@ void CourierSet::setCommsEnabled(bool enable)
 	} else {
 		qWarning()<<"ERROR: Could not register AgentSateCourier, no comms channel";
 	}
+	*/
 }

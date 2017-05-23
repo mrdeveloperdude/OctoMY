@@ -12,7 +12,7 @@
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"
 #include "comms/SyncParameter.hpp"
-#include "CourierSet.hpp"
+#include "AgentCourierSet.hpp"
 #include "AgentConstants.hpp"
 
 #include <QDebug>
@@ -716,7 +716,7 @@ void AgentWindow::onSyncParameterChanged(ISyncParameter *sp)
 	OC_METHODGATE();
 	qDebug()<<"AgentWindow ASC changed: "<<sp->toString();
 	const AgentControls &controls=mAgent->controls();
-	CourierSet*set=controls.activeControl();
+	AgentCourierSet *set = controls.activeControl();
 	if(nullptr!=set) {
 		AgentStateCourier *asc=set->agentStateCourier();
 		if(nullptr!=asc) {
