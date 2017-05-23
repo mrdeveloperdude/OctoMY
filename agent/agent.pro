@@ -5,7 +5,7 @@ TARGET = agent
 
 include($$TOP_PWD/common.pri)
 include($$TOP_PWD/app.pri)
-include($$TOP_PWD/libs/all_libs.pri)
+include($$TOP_PWD/libs/libs_inc.pri)
 
 HEADERS += \
 	AgentMain.hpp \

@@ -1,6 +1,7 @@
 include( standard.pri )
 include( optimize_small.pri )
 include( warnings.pri )
+#include( ccache.pri )
 
 QMAKE_TARGET_COMPANY =		"OctoMY™"
 QMAKE_TARGET_COPYRIGHT =	"Copyright © 2012-2017 Lennart Rolland <lennartrolland@gmail.com>"
@@ -91,17 +92,9 @@ debug{
 
 
 
-# Automatic support for ccache
-
-#CCACHE_EXISTS=$$system("which ccache >/dev/null 2>&1; echo $?")
-#equals(CCACHE_EXISTS, "0"){
-#QMAKE_CXX="ccache $$QMAKE_CXX"
-# message("GOT CCACHE")
-#}
-
-
-# message("QMAKE_CXX: $$QMAKE_CXX, CCACHE_EXISTS: $$CCACHE_EXISTS")
-
 # Add verbose logging to linker (enable for debugging)
 
 #QMAKE_CXXFLAGS += -Wl,--verbose
+
+DISTFILES += \
+	$$PWD/ccache.pri

@@ -9,7 +9,7 @@ TARGET = zoo
 # Start with common for project...
 include($$TOP_PWD/common.pri)
 include($$TOP_PWD/app.pri)
-include($$TOP_PWD/libs/all_libs.pri)
+include($$TOP_PWD/libs/libs_inc.pri)
 
 # ... but ZOO is a server app, so better start acting like one!
 CONFIG += console

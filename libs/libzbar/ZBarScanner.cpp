@@ -1,6 +1,6 @@
 #include "ZBarScanner.hpp"
 
-#include "utility/widgets/PixViewer.hpp"
+//#include "utility/widgets/PixViewer.hpp"
 
 #include <QVideoFrame>
 #include <QPixmap>
@@ -40,14 +40,14 @@ void ZScanResult::paint(QPainter &p)
 
 ZBarScanner::ZBarScanner()
 	: sc(nullptr)
-	, pv(nullptr)
+	//, pv(nullptr)
 	, mScaleDown(false)
 	, mConvertToGrayscale(true)
 {
 	//pv=new PixViewer();
-	if(nullptr!=pv) {
-		pv->setWindowTitle("zbar grayscale");
-	}
+	//if(nullptr!=pv) {
+	//	pv->setWindowTitle("zbar grayscale");
+	//}
 }
 
 
@@ -93,10 +93,10 @@ QList<ZScanResult> ZBarScanner::scan(const QImage &image)
 		if(mConvertToGrayscale) {
 			imageToUse=imageToUse.convertToFormat(QImage::Format_Grayscale8);
 		}
-		if(nullptr!=pv) {
-			pv->setImage(imageToUse);
-			pv->show();
-		}
+	//	if(nullptr!=pv) {
+	//		pv->setImage(imageToUse);
+	//		pv->show();
+	//	}
 		zbar::QZBarImage im(imageToUse);
 		int found=sc->scan(im);
 		if(found>0) {

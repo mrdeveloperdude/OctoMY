@@ -4,6 +4,7 @@
 # Inspiration from http://apt.llvm.org/
 
 language: cpp
+cache: ccache
 compiler: gcc
 os:
   - linux

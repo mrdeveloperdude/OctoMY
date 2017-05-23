@@ -7,8 +7,6 @@ include($$TOP_PWD/lib.pri)
 #QT         += core core-private gui gui-private
 INCLUDEPATH += $$TOP_PWD/libs/libparser/
 
-# Include the qmake_extra_compilers for flex and qlalr
-
 # Link to flex library
 LIBS += -lfl
 
@@ -22,7 +20,7 @@ FLEXSOURCES = octomy.l
 #       Please see extra comments inside file for more details.
 QLALRSOURCES = octomy.g
 
-
+# Include the qmake_extra_compilers for flex and qlalr
 include(flex.pri)
 include(qlalr.pri)
 

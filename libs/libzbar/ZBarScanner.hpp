@@ -7,7 +7,7 @@
 
 class QImage;
 class QVideoFrame;
-class PixViewer;
+//class PixViewer;
 namespace zbar
 {
 class ImageScanner;
@@ -32,7 +32,7 @@ class ZBarScanner
 private:
 	zbar::ImageScanner *sc;
 	//Debug viwer
-	PixViewer *pv;
+//	PixViewer *pv;
 	bool mScaleDown;
 	bool mConvertToGrayscale;
 
