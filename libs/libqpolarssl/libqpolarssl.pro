@@ -2,8 +2,8 @@ TARGET =	qpolarssl
 TEMPLATE =	lib
 CONFIG +=	staticlib
 
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib.pri)
+include($$TOP_PWD/pri/common.pri)
+include($$TOP_PWD/pri/lib.pri)
 
 L=qpolarssl
 I=qpolarssl
@@ -33,5 +33,5 @@ include(mbedtls/files.pri)
 
 contains(DEFINES, USE_STATUS){
 message("FROM libqpolarssl.pro")
-include($$TOP_PWD/status.pri)
+include($$TOP_PWD/pri/status.pri)
 }

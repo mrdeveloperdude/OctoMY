@@ -3,8 +3,8 @@ TARGET = remote
 
 # REMOTE REPRESENTS THE DEVICE USED TO CONTROL THE ROBOT SUCH AS A HANHELD REMOTE CONTROL OR PHONE WITH REMOTE CONTROL APP
 
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/app.pri)
+include($$TOP_PWD/pri/common.pri)
+include($$TOP_PWD/pri/app.pri)
 include($$TOP_PWD/libs/libs_inc.pri)
 
 HEADERS += \
@@ -34,5 +34,5 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 contains(DEFINES, USE_STATUS){
 message("FROM remote.pro:")
-include($$TOP_PWD/status.pri)
+include($$TOP_PWD/pri/status.pri)
 }

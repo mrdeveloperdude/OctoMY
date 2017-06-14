@@ -22,4 +22,4 @@ INCLUDEPATH= $$unique(INCLUDEPATH)
 
 #message("----------- libs_inc incpath -------------------")
 #message("| " $${INCLUDEPATH})
-#include($$TOP_PWD/status.pri)
+#include($$TOP_PWD/pri/status.pri)

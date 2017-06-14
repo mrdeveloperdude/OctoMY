@@ -7,7 +7,7 @@ TARGET = zoo
 # IS STRONGLY FROWNED UPPON BY THE COMUNITY. BE NICE!
 
 # Start with common for project...
-include($$TOP_PWD/common.pri)
+include($$TOP_PWD/pri/common.pri)
 include($$TOP_PWD/app.pri)
 include($$TOP_PWD/libs/libs_inc.pri)
 
@@ -23,5 +23,5 @@ SOURCES += \
 
 contains(DEFINES, USE_STATUS){
 message("FROM zoo.pro:")
-include($$TOP_PWD/status.pri)
+include($$TOP_PWD/pri/status.pri)
 }

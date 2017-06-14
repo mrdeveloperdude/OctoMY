@@ -1,4 +1,4 @@
-include($$TOP_PWD/common.pri)
+include($$TOP_PWD/pri/common.pri)
 include($$TOP_PWD/libs/libs_inc.pri)
 
 CONFIG += testcase

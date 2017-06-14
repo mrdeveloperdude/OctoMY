@@ -2,8 +2,8 @@ TARGET =	zbar
 TEMPLATE =	lib
 CONFIG +=	staticlib
 
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib.pri)
+include($$TOP_PWD/pri/common.pri)
+include($$TOP_PWD/pri/lib.pri)
 #QT += widgets
 INCLUDEPATH += ./
 INCLUDEPATH += ../libutil
@@ -93,5 +93,5 @@ SOURCES	+= \
 
 contains(DEFINES, USE_STATUS){
 message("FROM libzbar.pro:")
-include($$TOP_PWD/status.pri)
+include($$TOP_PWD/pri/status.pri)
 }

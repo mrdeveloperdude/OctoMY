@@ -64,5 +64,5 @@ SUBDIRS += \
 SUBDIRS += \
 		$$STRESS_PROJECTS
 
-#include($$TOP_PWD/status.pri)
+#include($$TOP_PWD/pri/status.pri)
 

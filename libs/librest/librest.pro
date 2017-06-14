@@ -2,8 +2,8 @@ TARGET =	rest
 TEMPLATE =	lib
 CONFIG +=	staticlib
 
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib.pri)
+include($$TOP_PWD/pri/common.pri)
+include($$TOP_PWD/pri/lib.pri)
 include($$TOP_PWD/libs/libs_list.pri)
 
 # Link objects directly
@@ -11,7 +11,7 @@ DEFINES -= USE_SEPARATE_LIB
 
 for(A, AUTOLINKS) {
 	INCLUDEE=$$A
-	include($$TOP_PWD/libincluder.pri)
+	include($$TOP_PWD/pri/libincluder.pri)
 }
 
 for(A, AUTOLIBS) {

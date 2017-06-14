@@ -12,8 +12,8 @@ TARGET = hub
 #QT         += core core-private gui gui-private
 INCLUDEPATH += ./
 
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/app.pri)
+include($$TOP_PWD/pri/common.pri)
+include($$TOP_PWD/pri/app.pri)
 include($$TOP_PWD/libs/libs_inc.pri)
 
 
@@ -41,6 +41,6 @@ DISTFILES += \
 
 contains(DEFINES, USE_STATUS){
 message("FROM hub.pro:" $$ANDROID_PACKAGE_SOURCE_DIR)
-include($$TOP_PWD/status.pri)
+include($$TOP_PWD/pri/status.pri)
 }
 
