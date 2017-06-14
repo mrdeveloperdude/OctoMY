@@ -93,6 +93,8 @@ class NodeFactory
 public:
 	Node *	getNodeForParse(ParseTreeNode &node, OctomyParseContext &plan)
 	{
+		Q_UNUSED(node);
+		Q_UNUSED(plan);
 		return nullptr;
 // TODO: implement
 	}

@@ -2,24 +2,24 @@ TARGET =	rest
 TEMPLATE =	lib
 CONFIG +=	staticlib
 
-include($$TOP_PWD/pri/common.pri)
-include($$TOP_PWD/pri/lib.pri)
-include($$TOP_PWD/libs/libs_list.pri)
+include($$PRIS/common.pri)
+include($$PRIS/lib.pri)
+include($$SRCS/libs/libs_list.pri)
 
 # Link objects directly
 DEFINES -= USE_SEPARATE_LIB
 
 for(A, AUTOLINKS) {
 	INCLUDEE=$$A
-	include($$TOP_PWD/pri/libincluder.pri)
+	include($$PRIS/libincluder.pri)
 }
 
 for(A, AUTOLIBS) {
-	INCLUDEPATH +=$$clean_path($$TOP_PWD/libs/lib$$A)
+	INCLUDEPATH +=$$clean_path($$SRCS/libs/lib$$A)
 }
 
-# HACK: This is needed because some of the source files int libparse are generated
-INCLUDEPATH += $$clean_path($$TOP_BUILD/libs/libparser/)
+# HACK: This is needed because some of the source files in libparse are generated during build
+INCLUDEPATH += $$clean_path($$BUILD_SRCS/libs/libparser/)
 
 
 SOURCES_CLEAN=

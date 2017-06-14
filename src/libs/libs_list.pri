@@ -29,12 +29,3 @@ AUTOLINKS += \
 	util \
 	comms \
 	ardumy \
-
-HEADERS += \
-    $$PWD/libnode/node/RemoteCourierSet.hpp \
-    $$PWD/libcomms/comms/CommsSessionIDType.hpp \
-    $$PWD/libcomms/comms/HandshakeState.hpp
-
-SOURCES += \
-    $$PWD/libnode/node/RemoteCourierSet.cpp \
-    $$PWD/libcomms/comms/HandshakeState.cpp

@@ -1,4 +1,4 @@
-include($$TOP_PWD/test/test.pri)
+include($$TESTS/test.pri)
 
 TARGET = test_nodeassociate
 
@@ -8,6 +8,6 @@ HEADERS += \
 SOURCES += \
 	TestNodeAssociate.cpp
 
-include($$TOP_PWD/pri/status.pri)
-include($$TOP_PWD/test/test_autorun.pri)
+include($$PRIS/status.pri)
+include($$TESTS/test_autorun.pri)
 

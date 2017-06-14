@@ -1,7 +1,7 @@
 
-II=$$TOP_PWD/libs/libqpolarssl/mbedtls/include
+II=$$SRCS/libs/libqpolarssl/mbedtls/include
 I=$$II/mbedtls
-L=$$TOP_PWD/libs/libqpolarssl/mbedtls/library
+L=$$SRCS/libs/libqpolarssl/mbedtls/library
 
 INCLUDEPATH += $$II/
 

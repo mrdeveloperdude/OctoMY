@@ -7,9 +7,9 @@ TARGET = zoo
 # IS STRONGLY FROWNED UPPON BY THE COMUNITY. BE NICE!
 
 # Start with common for project...
-include($$TOP_PWD/pri/common.pri)
+include($$PRIS/common.pri)
 include($$TOP_PWD/app.pri)
-include($$TOP_PWD/libs/libs_inc.pri)
+include($$SRCS/libs/libs_inc.pri)
 
 # ... but ZOO is a server app, so better start acting like one!
 CONFIG += console
@@ -23,5 +23,5 @@ SOURCES += \
 
 contains(DEFINES, USE_STATUS){
 message("FROM zoo.pro:")
-include($$TOP_PWD/pri/status.pri)
+include($$PRIS/status.pri)
 }

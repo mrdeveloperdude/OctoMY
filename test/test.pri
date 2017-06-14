@@ -1,5 +1,5 @@
-include($$TOP_PWD/pri/common.pri)
-include($$TOP_PWD/libs/libs_inc.pri)
+include($$PRIS/common.pri)
+include($$SRCS/libs/libs_inc.pri)
 
 CONFIG += testcase
 QT += testlib
@@ -8,7 +8,7 @@ DISTFILES += \
 	$$PWD/test_autorun.pri
 
 
-TESTCOMMON_IN_DIR =		$$TOP_PWD/test/testCommon
+TESTCOMMON_IN_DIR =		$$TESTS/testCommon
 TESTCOMMON_OUT_DIR =	$$TOP_BUILD/test/testCommon
 LIBS +=					-L$$TESTCOMMON_OUT_DIR -ltest_common
 INCLUDEPATH +=			$$TESTCOMMON_IN_DIR

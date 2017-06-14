@@ -2,8 +2,8 @@
 DEFINES  += QHTTP_MEMORY_LOG=0
 win32:DEFINES += QHTTP_EXPORT
 
-I=$$TOP_PWD/libs/libweb/qhttp
-L=$$TOP_PWD/libs/libweb/qhttp
+I=$$SRCS/libs/libweb/qhttp
+L=$$SRCS/libs/libweb/qhttp
 
 
 INCLUDEPATH += $$I

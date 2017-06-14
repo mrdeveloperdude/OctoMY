@@ -3,9 +3,9 @@ TARGET = agent
 
 # AGENT REPRESENTS THE ROBOT ITSELF: ANY CODE LINKED INTO THIS EXECUTABLE IS INTENDED RUN ONBOARD THE ROBOT
 
-include($$TOP_PWD/pri/common.pri)
-include($$TOP_PWD/pri/app.pri)
-include($$TOP_PWD/libs/libs_inc.pri)
+include($$PRIS/common.pri)
+include($$PRIS/app.pri)
+include($$SRCS/libs/libs_inc.pri)
 
 HEADERS += \
 	AgentMain.hpp \
@@ -31,5 +31,5 @@ DISTFILES += \
 
 contains(DEFINES, USE_STATUS){
 message("FROM agent.pro: " $$ANDROID_PACKAGE_SOURCE_DIR)
-include($$TOP_PWD/pri/status.pri)
+include($$PRIS/status.pri)
 }

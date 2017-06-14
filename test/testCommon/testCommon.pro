@@ -1,7 +1,7 @@
-#include($$TOP_PWD/test/test.pri) # DONT DO THIS; IT RECURSES!
-include($$TOP_PWD/pri/common.pri)
-include($$TOP_PWD/pri/lib.pri)
-include($$TOP_PWD/libs/libs_inc.pri)
+#include($$TESTS/test.pri) # DONT DO THIS; IT RECURSES!
+include($$PRIS/common.pri)
+include($$PRIS/lib.pri)
+include($$SRCS/libs/libs_inc.pri)
 
 # This is not a test alone, but rather a collection of useful test code that can be reused among tests
 TEMPLATE = lib
@@ -18,5 +18,5 @@ SOURCES += \
 	TestCommon.cpp \
 	CourierTester.cpp \
 
-#include($$TOP_PWD/pri/status.pri)
+#include($$PRIS/status.pri)
 

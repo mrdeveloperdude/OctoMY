@@ -98,6 +98,3 @@ debug{
 # Add verbose logging to linker (enable for debugging)
 
 #QMAKE_CXXFLAGS += -Wl,--verbose
-
-DISTFILES += \
-	$$PWD/ccache.pri

@@ -1,16 +1,16 @@
 
 lo=$$lower($$INCLUDEE)
 
-INCLUDEPATH +=		$$clean_path($$TOP_PWD/libs/lib$${lo})
+INCLUDEPATH +=		$$clean_path($$SRCS/libs/lib$${lo})
 
 contains(DEFINES, USE_SEPARATE_LIB){
 	#message("== LNK: $$lo")
-	LIBS +=				$$TOP_BUILD/libs/lib$${lo} -l$${lo}
-	DEPENDPATH +=		$$TOP_PWD/libs/lib$${lo}
-	PRE_TARGETDEPS +=	$$TOP_BUILD/libs/lib$${lo}/lib$${lo}.a
+	LIBS +=				$$BUILD_SRCS/libs/lib$${lo} -l$${lo}
+	DEPENDPATH +=		$$SRCS/libs/lib$${lo}
+	PRE_TARGETDEPS +=	$$BUILD_SRCS/libs/lib$${lo}/lib$${lo}.a
 }
 else{
-	files_folder=$$TOP_PWD/libs/lib$${lo}
+	files_folder=$$SRCS/libs/lib$${lo}
 	files_file=$$files_folder/files.pri
 	exists($$files_file){
 		#message("== INC: $$lo[files]")

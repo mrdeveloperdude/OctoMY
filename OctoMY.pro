@@ -17,15 +17,17 @@ message("")
 message("New OctoMY™ qmake run started...")
 message("________________________________")
 
-include(common.pri)
+include($$PRIS/common.pri)
+
+SRC_BASE=src
 
 # The executables
 SUBDIRS += \
-	libs \
-	agent \
-	remote \
-	hub \
-	zoo \
+	$${SRC_BASE}/libs \
+	$${SRC_BASE}/agent \
+	$${SRC_BASE}/remote \
+	$${SRC_BASE}/hub \
+	$${SRC_BASE}/zoo \
 
 
 
@@ -58,21 +60,21 @@ RESOURCES += \
 
 
 # Dependency stuff adapted from https://vilimpoc.org/blog/2014/02/21/qmake-subdirs-project-automatic-dependencies/
-libs.subdir=		libs
-hub.subdir=			hub
-agent.subdir=		agent
-remote.subdir=		remote
-zoo.subdir=			zoo
+libs.subdir=		$${SRC_BASE}/libs
+hub.subdir=			$${SRC_BASE}/hub
+agent.subdir=		$${SRC_BASE}/agent
+remote.subdir=		$${SRC_BASE}/remote
+zoo.subdir=			$${SRC_BASE}/zoo
 test.subdir=		test
 doc.subdir=			doc
 
 
-hub.depends=		libs
-agent.depends=		libs
-remote.depends=		libs
-zoo.depends=		libs
-test.depends=		libs
-doc.depends=		libs hub remote agent test
+hub.depends=		$${SRC_BASE}/libs
+agent.depends=		$${SRC_BASE}/libs
+remote.depends=		$${SRC_BASE}/libs
+zoo.depends=		$${SRC_BASE}/libs
+test.depends=		$${SRC_BASE}/libs
+doc.depends=		$${SRC_BASE}/libs $${SRC_BASE}/hub $${SRC_BASE}/remote $${SRC_BASE}/agent test
 
 
 

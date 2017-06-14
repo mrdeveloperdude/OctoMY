@@ -9,7 +9,7 @@ CONFIG +=	ordered
 # 2b. while the remaining libs are simply compiled into one big library called librest wich is also linked to the project in the end
 
 
-include($$TOP_PWD/pri/common.pri)
+include($$PRIS/common.pri)
 include(libs_list.pri)
 
 # Link separate libs
@@ -18,7 +18,7 @@ DEFINES += USE_SEPARATE_LIB
 for(A, AUTOLIBS) {
 	SUBDIRS += lib$$A
 	INCLUDEE=$$A
-	include($$TOP_PWD/pri/libincluder.pri)
+	include($$PRIS/libincluder.pri)
 	libsrest.depends=		lib$$A
 }
 
@@ -31,7 +31,7 @@ DEFINES -= USE_SEPARATE_LIB
 
 for(A, AUTOLINKS) {
 	INCLUDEE=$$A
-	include($$TOP_PWD/pri/libincluder.pri)
+	include($$PRIS/libincluder.pri)
 }
 
 INCLUDEPATH= $$unique(INCLUDEPATH)

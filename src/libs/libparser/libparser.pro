@@ -2,10 +2,10 @@ TARGET =	parser
 TEMPLATE =	lib
 CONFIG +=	staticlib
 
-include($$TOP_PWD/pri/common.pri)
-include($$TOP_PWD/pri/lib.pri)
+include($$PRIS/common.pri)
+include($$PRIS/lib.pri)
 #QT         += core core-private gui gui-private
-INCLUDEPATH += $$TOP_PWD/libs/libparser/
+INCLUDEPATH += $$SRCS/libs/libparser/
 
 # Link to flex library
 LIBS += -lfl
@@ -42,6 +42,6 @@ SOURCES += \
 
 contains(DEFINES, USE_STATUS){
 message("FROM libparser.pro")
-include($$TOP_PWD/pri/status.pri)
+include($$PRIS/status.pri)
 }
 

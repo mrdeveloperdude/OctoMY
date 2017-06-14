@@ -1,8 +1,8 @@
 
 include(qhttp/qhttp.pri)
 
-I=$$TOP_PWD/libs/libweb/template
-L=$$TOP_PWD/libs/libweb/template
+I=$$SRCS/libs/libweb/template
+L=$$SRCS/libs/libweb/template
 
 
 INCLUDEPATH += $$I

@@ -36,18 +36,18 @@ Makefile*
 local_overrides.pri
 
 /build
-/mxe
-/scripts
+/integration/mxe
+/integration/scripts
 *.txt
 
 /design/footage*
-/docker
+/integration/docker
 
 /*/android/gradle*
 
-/libs/build/*
-/libs/*/build*
-/libs/libclt/OpenCL-ICD-Loader*
+/src/libs/build/*
+/src/libs/*/build*
+/src/libs/libclt/OpenCL-ICD-Loader*
 
 libzeroconf*
 

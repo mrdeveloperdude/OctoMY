@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
-include($$TOP_PWD/test/test.pri)
+include($$TESTS/test.pri)
 TARGET = test_all
 CONFIG += ordered
 
@@ -64,5 +64,5 @@ SUBDIRS += \
 SUBDIRS += \
 		$$STRESS_PROJECTS
 
-#include($$TOP_PWD/pri/status.pri)
+#include($$PRIS/status.pri)
 
