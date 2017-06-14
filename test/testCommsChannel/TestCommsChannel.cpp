@@ -6,12 +6,14 @@
 #include "RNG.hpp"
 
 #include "security/KeyStore.hpp"
+#include "basic/NodeAssociate.hpp"
+#include "discovery/NodeAssociateStore.hpp"
 
 #include <QSignalSpy>
+#include <QFileInfo>
 
-
-TestCourier::TestCourier(QString  dest, QByteArray datagram, const qint32 maxSends , const qint32 maxRecs, CommsTester *parent)
-	: Courier("Test", Courier::FIRST_USER_ID+313, parent)
+TestCourier::TestCourier(QString  dest, QByteArray datagram, CommsChannel &comms, const qint32 maxSends , const qint32 maxRecs, CommsTester *parent)
+	: Courier("Test", Courier::FIRST_USER_ID+313, comms, parent)
 	, mCt(parent)
 	, mSoFar(0)
 	, mDatagram(datagram)
@@ -82,6 +84,16 @@ quint16 TestCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 	return in.size()+4;
 }
 
+void TestCourier::writeSummary()
+{
+
+	qDebug()<<"";
+	qDebug()<<" Summary for    "<<name();
+	qDebug()<<"  + SoFar:      "<<mSoFar;
+	qDebug()<<"  + mSendCount: "<<mSendCount<<"/"<<mMaxSends;
+	qDebug()<<"  + mRecCount:  "<<mRecCount<<"/"<<mMaxRecs;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -97,7 +109,7 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 	, mBasePort(basePort)
 	, mPortRange(portRange)
 	, mKeyStore(keyStore)
-	, mCc ("", mKeyStore)
+	, mCc(mKeyStore)
 	, mTestCount(testCount)
 	, mRng(RNG::sourceFactory("mt"))
 {
@@ -114,7 +126,7 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 			qDebug() << mMyAddress << ":" << mMyPort << " --> " << toPort;
 			QString myID="1234";
 			//CommsSignature sig(myID, NetworkAddress(mMyAddress, toPort));
-			TestCourier *tc=new TestCourier(myID, "This is my humble payload", mTestCount, mTestCount, this);
+			TestCourier *tc=new TestCourier(myID, "This is my humble payload", mCc, mTestCount, mTestCount, this);
 			QVERIFY(nullptr!=tc);
 			mCc.setCourierRegistered(*tc, true);
 		} else {
@@ -207,53 +219,144 @@ void TestCommsChannel::testSingle()
 	const qint32 maxRecs=10;
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 
+	qDebug()<<"";
+	qDebug()<<"####################################### PARAMETER SUMMARY";
+	qDebug()<<"  + localhost: "<<local;
+	qDebug()<<"  + basePort:  "<<basePort;
+	qDebug()<<"  + maxSends:  "<<maxSends;
+	qDebug()<<"  + maxRecs:   "<<maxRecs;
+	qDebug()<<"  + now:       "<<now;
+
+	qDebug()<<"";
 	qDebug()<<"####################################### INITIALIZING ID FOR PARTY A";
-	QString keyFileA="keyFileA.json";
-	KeyStore keyStoreA(keyFileA);
+	QString keyStoreFilenameA="keyFileA.json";
+	QFile keyStoreFileA(keyStoreFilenameA);
+	if(keyStoreFileA.exists()){
+		QVERIFY(keyStoreFileA.remove());
+	}
+	QVERIFY(!keyStoreFileA.exists());
+
+	KeyStore keyStoreA(keyStoreFilenameA);
 	keyStoreA.bootstrap(false,false);
-	QString idA=keyStoreA.localPortableID().id();
-	qDebug()<<"Keystore A :"<<idA;
+	Key &keyA=keyStoreA.localKey();
+	qDebug() << keyA.toString();
+	QVERIFY(keyA.isValid(true));
+	QVERIFY(keyA.hasPrivate(true));
+	QVERIFY(keyA.hasPublic(true));
+
+	QString idA=keyA.id();
+	qDebug()<<"Keystore A :"<<idA<<QFileInfo(keyStoreA.filename()).absoluteFilePath();
 	NetworkAddress addrA(local, basePort + 0);
-	//CommsSignature commSigA(idA, addrA);
+	QString peersFilenameA="peersFileA.json";
+	QFile peersFileA(peersFilenameA);
+	if(peersFileA.exists()){
+		QVERIFY(peersFileA.remove());
+	}
+	QVERIFY(!peersFileA.exists());
+	NodeAssociateStore peersA(peersFilenameA);
+	peersA.bootstrap(false,false);
+	QVariantMap peerMapA;
+	QString nameA="PARTY A";
+	peerMapA["publicAddress"]=addrA.toVariantMap();
+	peerMapA["localAddress"]=addrA.toVariantMap();
+	peerMapA["lastSeenMS"]=0;
+	peerMapA["birthDate"]=0;
+	peerMapA["key"]=keyA.toVariantMap(true);
+	peerMapA["role"]=DiscoveryRoleToString(ROLE_AGENT);
+	peerMapA["type"]=DiscoveryTypeToString(TYPE_AGENT);
+	peerMapA["name"]=nameA;
+	peerMapA["gender"]="Male";
+	peerMapA["trusts"]=QStringList();
+	QSharedPointer<NodeAssociate> partA(new NodeAssociate(peerMapA));
 
+	qDebug()<<"";
 	qDebug()<<"####################################### INITIALIZING ID FOR PARTY B";
-	QString keyFileB="keyFileB.json";
-	KeyStore keyStoreB(keyFileB);
+	QString keyStoreFilenameB="keyFileB.json";
+	QFile keyStoreFileB(keyStoreFilenameB);
+	if(keyStoreFileB.exists()){
+		QVERIFY(keyStoreFileB.remove());
+	}
+	QVERIFY(!keyStoreFileB.exists());
+	KeyStore keyStoreB(keyStoreFilenameB);
 	keyStoreB.bootstrap(false,false);
-	QString idB=keyStoreB.localPortableID().id();
-	qDebug()<<"Keystore B :"<<idB;
+	Key &keyB=keyStoreB.localKey();
+	qDebug() << keyB.toString();
+	QVERIFY(keyB.isValid(true));
+	QVERIFY(keyB.hasPrivate(true));
+	QVERIFY(keyB.hasPublic(true));
+
+	QString idB=keyB.id();
+	qDebug()<<"Keystore B :"<<idB<<QFileInfo(keyStoreB.filename()).absoluteFilePath();
 	NetworkAddress addrB(local, basePort + 1);
-	//CommsSignature commSigB(idB, addrB);
+	QString peersFilenameB="peersFileB.json";
+	QFile peersFileB(peersFilenameB);
+	if(peersFileB.exists()){
+		QVERIFY(peersFileB.remove());
+	}
+	QVERIFY(!peersFileB.exists());
+
+	NodeAssociateStore peersB(peersFilenameB);
+	peersB.bootstrap(false,false);
+	QVariantMap peerMapB;
+	QString nameB="PARTY B";
+	QVariantMap addrBMap=addrB.toVariantMap();
+	QCOMPARE(addrBMap.size(), 2);
+	peerMapB["publicAddress"]=addrBMap;
+	peerMapB["localAddress"]=addrBMap;
+	peerMapB["lastSeenMS"]=0;
+	peerMapB["birthDate"]=0;
+	peerMapB["key"]=keyB.toVariantMap(true);
+	peerMapB["role"]=DiscoveryRoleToString(ROLE_CONTROL);
+	peerMapB["type"]=DiscoveryTypeToString(TYPE_REMOTE);
+	peerMapB["name"]=nameB;
+	peerMapB["gender"]="Female";
+	peerMapB["trusts"]=QStringList();
+	QSharedPointer<NodeAssociate> partB(new NodeAssociate(peerMapB));
 
 
+	qDebug()<<"";
+	qDebug()<<"####################################### BIND PARTY A to B";
+	partA->addTrust(idB);
+	peersA.setParticipant(partB);
+	keyStoreA.setPubKeyForID(keyB.pubKey());
+
+
+	qDebug()<<"";
+	qDebug()<<"####################################### BIND PARTY B to A";
+	partB->addTrust(idA);
+	peersB.setParticipant(partA);
+	keyStoreB.setPubKeyForID(keyA.pubKey());
+
+
+	qDebug()<<"";
 	qDebug()<<"####################################### INITIALIZING COMMS FOR PARTY A";
-	CommsChannel chanA(idA, keyStoreA);
+	CommsChannel chanA(keyStoreA, peersA);
 	CommsSignalLogger sigLogA("LOG-A");
 	chanA.setHookCommsSignals(sigLogA, true);
-	TestCourier courA1(idB, "This is datagram A1 123", maxSends, maxRecs);
-	chanA.setCourierRegistered(courA1, true);
+	TestCourier courA1(idB, "This is datagram A1 123", chanA, maxSends, maxRecs);
+	//chanA.setCourierRegistered(courA1, true);
 	//TestCourier courA2(commSigB, "This is datagram A2 uvw xyz", maxSends, maxRecs); chanA.setCourierRegistered(courA2, true);
+	qDebug()<<"SUMMARY: "<<chanA.getSummary();
 
+	qDebug()<<"";
 	qDebug()<<"####################################### INITIALIZING COMMS FOR PARTY B";
-	CommsChannel chanB(idB, keyStoreB);
+	CommsChannel chanB(keyStoreB, peersB);
 	CommsSignalLogger sigLogB("LOG-B");
 	chanA.setHookCommsSignals(sigLogB, true);
-	TestCourier courB1(idA, "This is datagram B1 æøåä", maxSends, maxRecs);
+	TestCourier courB1(idA, "This is datagram B1 æøåä", chanB, maxSends, maxRecs);
 	chanB.setCourierRegistered(courB1, true);
 	//TestCourier courB2(commSigA, "This is datagram B2 Q", maxSends, maxRecs); chanB.setCourierRegistered(courB2, true);
+	qDebug()<<"SUMMARY: "<<chanB.getSummary();
 
-	qDebug()<<"####################################### STARTING A";
+	qDebug()<<"";
+	qDebug()<<"#######################################";
+	qDebug()<<"####################################### STARTING 1st time with no sessions";
 	chanA.rescheduleSending(now);
 	chanA.start(addrA);
-
-	qDebug()<<"####################################### STARTING B";
 	chanB.rescheduleSending(now);
 	chanB.start(addrB);
-
-
-	qDebug()<<"####################################### WAITING";
-
-
+	qDebug()<<"";
+	qDebug()<<"####################################### WAITING 1st time with no sessions";
 	{
 		const quint64 start=QDateTime::currentMSecsSinceEpoch();
 		quint64 now=start;
@@ -263,6 +366,61 @@ void TestCommsChannel::testSingle()
 		}
 	}
 
+	qDebug()<<"";
+	qDebug()<<"####################################### SUMMARIES 1st time with no sessions";
+	courA1.writeSummary();
+	courB1.writeSummary();
+
+	qDebug()<<"";
+	qDebug()<<"####################################### STOP 1st time with no sessions";
+	chanA.stop();
+	chanB.stop();
+
+	CommsSessionDirectory & sessDirA=chanA.sessions();
+	CommsSessionDirectory & sessDirB=chanB.sessions();
+
+	QSharedPointer<CommsSession> sessA=QSharedPointer<CommsSession> (new CommsSession(keyStoreA.localKey()));
+	QSharedPointer<CommsSession> sessB=QSharedPointer<CommsSession> (new CommsSession(keyStoreB.localKey()));
+
+	sessA->setLocalSessionID(sessDirA.generateUnusedSessionID());
+	sessB->setLocalSessionID(sessDirB.generateUnusedSessionID());
+
+	sessDirA.insert(sessB);
+	sessDirB.insert(sessA);
+
+	qDebug()<<"";
+	qDebug()<<"####################################### SESSION SUMMARIES";
+	qDebug()<<"SUM A: "<<sessDirA.summary();
+	qDebug()<<"SUM B: "<<sessDirB.summary();
+
+
+	qDebug()<<"";
+	qDebug()<<"#######################################";
+	qDebug()<<"#######################################";
+	qDebug()<<"#######################################";
+	qDebug()<<"####################################### STARTING 2nd time with sessions";
+	chanA.rescheduleSending(now);
+	chanA.start(addrA);
+	chanB.rescheduleSending(now);
+	chanB.start(addrB);
+	qDebug()<<"";
+	qDebug()<<"####################################### WAITING 2nd time with sessions";
+	{
+		const quint64 start=QDateTime::currentMSecsSinceEpoch();
+		quint64 now=start;
+		while(now<start+10000) {
+			now=QDateTime::currentMSecsSinceEpoch();
+			QCoreApplication::processEvents();
+		}
+	}
+
+	qDebug()<<"";
+	qDebug()<<"####################################### SUMMARIES 2nd time with sessions";
+	courA1.writeSummary();
+	courB1.writeSummary();
+
+
+	qDebug()<<"";
 	qDebug()<<"####################################### DELETING";
 
 }
@@ -307,7 +465,7 @@ void TestCommsChannel::testMultiple()
 		qDebug()<<" + STARTING CourierTester "<<senders[i]->toString();
 		QVERIFY(QMetaObject::invokeMethod(senders[i], "startSendTest",  Qt::QueuedConnection));
 	}
-	qDebug()<<"####################################### WAITING";
+	qDebug()<<"####################################### RUNNING";
 	for(quint16 i=0; i<portRange; ++i) {
 		qApp->processEvents();
 		qDebug()<<" + WAITING FOR CourierTester "<<senders[i]->toString();

@@ -40,7 +40,9 @@ for(F, HEADERS) {
 
 # Refine and normalize the file lists to save bandwidth amd strain on the eyes
 SOURCES= $$unique(SOURCES_CLEAN)
+
 HEADERS= $$unique(HEADERS_CLEAN)
+
 #FORMS= $$unique(FORMS_CLEAN)
 INCLUDEPATH= $$unique(INCLUDEPATH)
 

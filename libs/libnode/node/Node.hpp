@@ -1,8 +1,8 @@
- /* This file is distributed under the license as specified in the LICENSE file
- * that accompanied it. If there was no LICENSE file accompanying this source,
- * it is not to be modified, redistributed or used without prior written
- * permission from original author and owner "Lennart Rolland".
- */
+/* This file is distributed under the license as specified in the LICENSE file
+* that accompanied it. If there was no LICENSE file accompanying this source,
+* it is not to be modified, redistributed or used without prior written
+* permission from original author and owner "Lennart Rolland".
+*/
 
 #ifndef NODE_HPP
 #define NODE_HPP

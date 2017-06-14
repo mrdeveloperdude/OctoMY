@@ -1,7 +1,7 @@
 #ifndef COURIER
 #define COURIER
 
-#include "../CommsSession.hpp"
+#include "comms/CommsSession.hpp"
 
 
 
@@ -22,14 +22,16 @@ class CommsChannel;
 class Courier : public QObject
 {
 	Q_OBJECT
-protected:
+private:
 	//Destination
 	QString mDestination;
 	//Channel
-	CommsChannel *mComms;
+	CommsChannel &mComms;
 	//Identification
 	QString mName;
 	quint32 mID;
+	quint32 mSer;
+	static quint32 mCt;
 	//Last oportunity time
 	quint64 mLastOpportunity;
 
@@ -38,30 +40,25 @@ public:
 	static const quint32 FIRST_USER_ID;
 
 public:
-	explicit Courier(QString mName, quint32 mID, QObject *parent=0);
+	explicit Courier(QString name, quint32 id, CommsChannel &comms, QObject *parent=0);
 
 
 public:
 
-
-
-	void setForwardRescheduleSignal(QObject &ob, bool fwd);
-
-	void registered(CommsChannel &comms);
-	void unRegistered(CommsChannel &comms);
-
-	quint64 lastOpportunity() const;
-
-	void  setLastOpportunity(quint64 now);
-
-	quint32 id()const;
-	QString name() const;
-
 	void setDestination(const QString );
 	const QString  &destination() const;
 
-	CommsChannel *comms() const;
-	bool isRegistered() const;
+public:
+
+
+	CommsChannel &comms() const;
+	void setForwardRescheduleSignal(QObject &ob, bool fwd);
+	quint64 lastOpportunity() const;
+	void  setLastOpportunity(quint64 now);
+	quint32 id() const;
+	QString name() const;
+	quint32 ser() const;
+	QString toString() const;
 
 signals:
 	void reschedule(quint64);

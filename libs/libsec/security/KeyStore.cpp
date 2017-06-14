@@ -70,19 +70,24 @@ void KeyStore::load()
 		} else {
 			//qDebug()<<"PARSING JSON: "<<doc.toJson();
 			QVariantMap map = doc.object().toVariantMap();
-			mLocalKey=Key(map["localKey"].toMap(),false);
+			QVariantMap localMap=map["localKey"].toMap();
+			qDebug()<<"LOCAL MAP: "<<localMap;
+			mLocalKey=Key(localMap,false);
 			if(!mLocalKey.isValid(false)) {
 				qWarning()<<"ERROR: local key was not valid";
 				mError=true;
 			} else {
-
 				QVariantList remotes=map["remoteKeys"].toList();
 				mPeers.clear();
 				for(QVariantList::iterator b=remotes.begin(), e=remotes.end(); b!=e; ++b) {
 					QVariantMap remote=(*b).toMap();
+
+
+					qDebug()<<"Loading key from: "<<remote;
+
 					Key peerKey(remote,true);
 					if(!peerKey.isValid(true)) {
-						qWarning()<<"ERROR: peerk key was not valid";
+						qWarning()<<"ERROR: peer key was not valid";
 						mError=true;
 						break;
 					}
@@ -107,8 +112,11 @@ void KeyStore::save()
 	QVariantList remotes;
 	for(QMap<QString, Key >::iterator b=mPeers.begin(), e=mPeers.end(); b!=e; ++b) {
 		QVariantMap remote;
-		remote["id"]=b.key();
-		remote["key"]=b.value().toVariantMap(true);
+		QString key=b.key();
+		QVariantMap val=b.value().toVariantMap(true);
+		qDebug()<<"SAVING REMOTE KEYPAIR "<<key<<"="<<val;
+		remote["id"]=key;
+		remote["key"]=val;
 		remotes.push_back(remote);
 	}
 	map["remoteKeys"]=remotes;
@@ -205,7 +213,7 @@ void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
 		return;
 	}
 	Key peer(pubkeyPEM, true);
-	mPeers[peer.id()]=peer;
+	mPeers.insert(peer.id(), peer);
 }
 
 Key KeyStore::pubKeyForID(const QString &id)
@@ -213,7 +221,7 @@ Key KeyStore::pubKeyForID(const QString &id)
 	if(!mReady) {
 		return Key();
 	}
-	mPeers[id];
+	return mPeers[id];
 }
 
 const QDebug &operator<<(QDebug &d, KeyStore &ks)

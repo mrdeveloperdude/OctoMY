@@ -20,8 +20,8 @@
 const quint32 AgentStateCourier::AGENT_STATE_COURIER_ID=(Courier::FIRST_USER_ID + 5);
 
 // Agent side constructor
-AgentStateCourier::AgentStateCourier(QDataStream *initialization, QObject *parent)
-	: Courier("AgentState", AGENT_STATE_COURIER_ID, parent)
+AgentStateCourier::AgentStateCourier(QDataStream *initialization, CommsChannel &comms, QObject *parent)
+	: Courier("AgentState", AGENT_STATE_COURIER_ID, comms, parent)
 	, mAgentSide(nullptr!=initialization)
 	, mParams(100)
 	, mLastSendTime(0)

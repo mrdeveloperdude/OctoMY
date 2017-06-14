@@ -8,6 +8,8 @@
 
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsSession.hpp"
+#include"comms/couriers/SensorsCourier.hpp"
+#include"comms/couriers/blob/BlobCourier.hpp"
 
 #include "discovery/DiscoveryClient.hpp"
 
@@ -15,7 +17,7 @@
 #include "camera/CameraList.hpp"
 #include "sensory/SensorInput.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
-#include "comms/couriers/BlobCourier.hpp"
+#include "comms/couriers/blob/BlobCourier.hpp"
 #include "utility/Utility.hpp"
 #include "utility/ScopedTimer.hpp"
 #include "basic/StyleManager.hpp"
@@ -37,15 +39,13 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	, mDiscovery (new DiscoveryClient(*this))
 	, mRole (role)
 	, mType (type)
-	, mComms (new CommsChannel(mKeystore.localKey().id(), mKeystore, (QObject *)this))
+	, mComms (new CommsChannel(mKeystore, mPeers, (QObject *)this))
 	, mZooClient (new ZooClient(this))
 	, mSensors (new SensorInput(this))
-	, mSensorsCourier(new SensorsCourier(this))
-	, mBlobCourier(new BlobCourier(this))
-	  //, hubPort (0)
+	, mSensorsCourier(new SensorsCourier(*mComms, this))
+	, mBlobCourier(new BlobCourier(*mComms, this))
 	, mCameras (new CameraList(this))
 	, mLastStatusSend (0)
-//	, mSensorMessage (new SensorsMessage)
 	  //, mServerURL("http://zoo.octomy.org/api")
 //	, mServerURL("http://"+utility::localAddress()+":"+QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api")
 	, mServerURL("http://10.0.0.86:"+QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //Local address HQ
@@ -321,9 +321,6 @@ void Node::updateDiscoveryClient()
 
 void Node::onKeystoreReady(bool ok)
 {
-	if(ok && nullptr!= mComms) {
-		mComms->setID(mKeystore.localKey().id());
-	}
 	//qDebug()<<"Key Store READY="<<mKeystore.isReady()<<", ERROR="<<mKeystore.hasError();
 }
 

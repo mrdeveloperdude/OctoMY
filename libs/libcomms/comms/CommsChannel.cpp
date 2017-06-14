@@ -8,6 +8,7 @@
 #include "CommsSessionDirectory.hpp"
 
 #include "utility/Standard.hpp"
+#include "utility/Utility.hpp"
 #include "comms/CommsSession.hpp"
 #include "messages/MessageType.hpp"
 
@@ -15,28 +16,33 @@
 
 #include "pose/Pose.hpp"
 
+#include "discovery/NodeAssociateStore.hpp"
+
 
 #include <QDataStream>
 #include <QDateTime>
 
-quint32 CommsChannel::sTotalRecCount=0;
+#define FIRST_STATE_ID ((SESSION_ID_TYPE)MULTIMAGIC_LAST)
 
-// Special purpose Session ID  that signals from remote end that they want to start a new session
-#define NEW_SESSION_ID (0)
+const quint64 CommsChannel::CONNECTION_TIMEOUT = MINIMAL_PACKET_RATE + 1000;//1 sec  more than our UDP timeout
+// NOTE: We use 512 as the maximum practical UDP size for ipv4 over the internet
+//       See this for discussion: http://stackoverflow.com/questions/1098897/what-is-the-largest-safe-udp-packet-size-on-the-internet
+const qint32 CommsChannel::MAX_UDP_PAYLOAD_SIZE = 512;
 
-CommsChannel::CommsChannel(const QString &id, KeyStore &keystore, QObject *parent)
+
+quint32 CommsChannel::sTotalRecCount = 0;
+quint32 CommsChannel::sTotalTxCount = 0;
+
+CommsChannel::CommsChannel(KeyStore &keystore, NodeAssociateStore &peers, QObject *parent)
 	: QObject(parent)
 	, mKeystore(keystore)
+	, mPeers(peers)
 	, mSessions(mKeystore)
-	, mLocalID(id)
 	, mLocalSessionID(0)
-	  //, mLocalSignature(id)
-	, mLastRX(0)
-	, mLastTX(0)
-	, mLastRXST(0)
-	, mLastTXST(0)
-	, mTxCount(0)
-	, mRxCount(0)
+	, mRXRate("CC RX")
+	, mTXRate("CC TX")
+	, mTXOpportunityRate("CC TX OP")
+	, mTXScheduleRate("CC TX SCHED")
 	, mConnected(false)
 {
 	setObjectName("CommsChannel");
@@ -54,6 +60,15 @@ CommsChannel::CommsChannel(const QString &id, KeyStore &keystore, QObject *paren
 	}
 }
 
+CommsChannel::CommsChannel(KeyStore &keystore, QObject *parent)
+	: QObject(parent)
+	, mKeystore(keystore)
+	, mPeers(*((NodeAssociateStore *) nullptr ))
+	, mSessions(mKeystore)
+{
+	//TODO: Remove once nobody refers to it any more
+	qWarning()<<"ERROR: PLEASE USE THE OTHER CONSTRUCTOR AS THIS IS UNSUPPORTEDF!";
+}
 
 CommsSessionDirectory &CommsChannel::sessions()
 {
@@ -66,9 +81,8 @@ void CommsChannel::start(NetworkAddress localAddress)
 		stop();
 	}
 	mLocalAddress=localAddress;
-	//mLocalSignature.setAddress(localAddress);
 	bool b = mUDPSocket.bind(mLocalAddress.ip(), mLocalAddress.port());
-	qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< mLocalID<< (b?" succeeded": " failed");
+	qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< localID()<< " with interval "<<utility::humanReadableElapsedMS(mSendingTimer.interval()) <<(b?" succeeded": " failed");
 	if(b) {
 		mSendingTimer.start();
 	} else {
@@ -84,31 +98,147 @@ void CommsChannel::stop()
 	mSendingTimer.stop();
 	mUDPSocket.close();
 	emit commsConnectionStatusChanged(false);
-	qDebug()<<"----- comms unbind "<< mLocalAddress.toString() << mLocalID;
+	qDebug()<<"----- comms unbind "<< mLocalAddress.toString() << localID();
 }
 
-
-/*
-CommsSignature CommsChannel::localSignature()
+bool CommsChannel::isStarted() const
 {
-	return mLocalSignature;
+	return mSendingTimer.isActive();
 }
-*/
-
-void CommsChannel::countReceived()
+bool CommsChannel::isConnected() const
 {
-	const quint64 now=QDateTime::currentMSecsSinceEpoch();
-	mLastRX=now;
-	sTotalRecCount++;
-	mRxCount++;
-	//qDebug()<<totalRecCount<<"--- RECEIV";
-	auto timeSinceLast=mLastRX-mLastRXST;
-	if(timeSinceLast>1000) {
-		qDebug().noquote()<<"Packet Receive Count="<<QString::number(mRxCount/(timeSinceLast/1000))<<"/sec";
-		mLastRXST=mLastRX;
-		mRxCount=0;
+	return mConnected;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+struct PacketSendState {
+public:
+	QSharedPointer<CommsSession> session;
+	QByteArray datagram;
+	QSharedPointer<QDataStream> stream;
+	int bytesUsed;
+	QSharedPointer<QDataStream> encStream;
+	int encBytesUsed;
+	QByteArray octomyProtocolEncryptedMessage;
+
+
+
+	static const int OCTOMY_SENDER_ID_SIZE=20;
+
+public:
+	PacketSendState()
+		: session(nullptr)
+		, stream(new QDataStream(&this->datagram, QIODevice::WriteOnly))
+		, bytesUsed(0)
+		, encStream(new QDataStream(&this->octomyProtocolEncryptedMessage, QIODevice::WriteOnly))
+		, encBytesUsed(0)
+	{
+
 	}
-}
+
+	void setSession( QSharedPointer<CommsSession> session)
+	{
+		this->session=session;
+	}
+
+
+	void writeMagic()
+	{
+		*stream << (quint32)OCTOMY_PROTOCOL_MAGIC;//Protocol MAGIC identifier
+		bytesUsed += sizeof(quint32);
+	}
+
+	// Write a header with protocol "magic number" and a version
+	void writeProtocolVersion()
+	{
+		*stream << (qint32)OCTOMY_PROTOCOL_VERSION_CURRENT;//Protocol version
+		bytesUsed += sizeof(qint32);
+		stream->setVersion(OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT); //Qt Datastream version
+	}
+
+	void writeSessionID(SESSION_ID_TYPE sessionID)
+	{
+		*stream << sessionID;
+		bytesUsed += sizeof(sessionID);
+	}
+
+	void writeCourierID(quint32 courierID)
+	{
+		*stream << courierID;
+		bytesUsed += sizeof(courierID);
+	}
+
+	void writePayloadSize(quint16 payloadSize)
+	{
+		*stream << payloadSize;
+		bytesUsed += sizeof(payloadSize);
+	}
+
+
+	void writeReliabilityData(ReliabilitySystem &rs)
+	{
+#ifdef USE_RELIBABILITY_SYSTEM
+		// Write reliability data
+		// TODO: incorporate writing logic better into reliability class
+		// TODO: convert types used in reliability system to Qt for portability piece of mind
+		ReliabilitySystem &rs=localClient->reliabilitySystem();
+		*stream << rs.localSequence();
+		bytesUsed += sizeof(unsigned int);
+		*stream << rs.remoteSequence();
+		bytesUsed += sizeof(unsigned int);
+		*stream << rs.generateAckBits();
+		bytesUsed += sizeof(unsigned int);
+#endif
+		//sizeof(quint32 /*magic*/) +sizeof(quint32 /*version*/) +sizeof(quint64 /*short ID*/) +sizeof(unsigned int /*sequence*/)+sizeof(unsigned int /*ack*/)+sizeof(unsigned int /*ack bits*/)+sizeof(quint32 /*message type*/)
+		//qDebug()<<"SEND GLOBAL HEADER SIZE: "<<bytesUsed;
+		// Send using courier.
+		//NOTE: When courier reports "sendActive" that means that it wants to send,
+		//      and so even if it writes 0 bytes, there will be a section id present
+		//      in packet reserved for it with the 0 bytes following it
+
+	}
+
+
+	/////////////////////////////////////////// ENCRYPTED BEYOND THIS LINE
+
+	static const int OCTOMY_ENCRYPTED_MESSAGE_SIZE=20;
+
+	// Write Pub-key encrypted message body
+	void writeProtocolEncryptedMessage()
+	{
+		auto size=octomyProtocolEncryptedMessage.size();
+		*stream << octomyProtocolEncryptedMessage;
+		bytesUsed-=size;
+	}
+
+	// Write full ID of sender
+	void writeEncSenderID(QString senderID)
+	{
+		const auto raw=QByteArray::fromHex(senderID.toUtf8());
+		const auto size=raw.size();
+		*encStream << raw;
+		encBytesUsed+=size;
+	}
+
+	// Write nonce
+	void writeEncNonce(quint32 nonce)
+	{
+		*encStream << nonce;
+		encBytesUsed+=sizeof(nonce);
+	}
+
+	// Write desired remote session ID
+	void writeEncSessionID(SESSION_ID_TYPE sessionID)
+	{
+		*encStream << sessionID;
+		encBytesUsed+=sizeof(sessionID);
+	}
+
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
 
 struct PacketReadState {
 
@@ -118,23 +248,36 @@ public:
 	quint16 remotePort;
 	QSharedPointer<QDataStream> stream;
 
-	quint64 remoteSessionID;
+	SESSION_ID_TYPE multimagic;
 	const int size;
 	int totalAvailable;
 
 	quint32 octomyProtocolMagic;
-	quint8 octomyProtocolFlags;
+	//quint8 octomyProtocolFlags;
 	quint32 octomyProtocolVersion;
 
 	QByteArray octomyProtocolEncryptedMessage;
 	int octomyProtocolEncryptedMessageSize;
 
-
-
-
 	quint32 partMessageTypeID;
 	quint16 partBytesAvailable;
 
+
+
+	QSharedPointer<QDataStream> encStream;
+	int encTotalAvailable;
+
+
+	QByteArray octomyProtocolSenderIDRaw;
+	int octomyProtocolSenderIDRawSize;
+	QString octomyProtocolSenderID;
+
+	quint32 octomyProtocolRemoteNonce;
+	quint32 octomyProtocolReturnNonce;
+
+	SESSION_ID_TYPE octomyProtocolDesiredRemoteSessionID;
+
+	static const int OCTOMY_SENDER_ID_SIZE=20;
 
 public:
 	PacketReadState(QByteArray datagram, QHostAddress remoteHost , quint16 remotePort)
@@ -142,25 +285,31 @@ public:
 		, remoteHost(remoteHost)
 		, remotePort(remotePort)
 		, stream(new QDataStream(&this->datagram, QIODevice::ReadOnly))
-		, remoteSessionID(NEW_SESSION_ID)
+		, multimagic(0)
 		, size(datagram.size())
 		, totalAvailable(size)
 		, octomyProtocolMagic(0)
-		, octomyProtocolFlags(0)
+		  //, octomyProtocolFlags(0)
 		, octomyProtocolVersion(0)
 		, octomyProtocolEncryptedMessageSize(0)
 		, partMessageTypeID(0)
 		, partBytesAvailable(0)
+		, encStream()
+		, encTotalAvailable(0)
+		, octomyProtocolSenderIDRawSize(0)
+		, octomyProtocolRemoteNonce(0)
+		, octomyProtocolReturnNonce(0)
+		, octomyProtocolDesiredRemoteSessionID(0)
 	{
 
 	}
 
-	// Read session ID
-	void readSessionID()
-	{
 
-		*stream >> remoteSessionID;
-		totalAvailable-=sizeof(remoteSessionID);
+	// Read multimagic
+	void readMultimagic()
+	{
+		*stream >> multimagic;
+		totalAvailable-=sizeof(multimagic);
 	}
 
 	// Read protocol MAGIC
@@ -168,16 +317,16 @@ public:
 	{
 		*stream >> octomyProtocolMagic;
 		totalAvailable-=sizeof(octomyProtocolMagic);
-
 	}
 
+	/*
 	// Read protocol FLAGS
 	void readProtocolFlags()
 	{
 		*stream >> octomyProtocolFlags;
 		totalAvailable-=sizeof(octomyProtocolFlags);
-
 	}
+	*/
 
 	// Read protocol VERSION
 	void readProtocolVersion()
@@ -185,6 +334,24 @@ public:
 		*stream >> octomyProtocolVersion;
 		totalAvailable-=sizeof(octomyProtocolVersion);
 	}
+
+
+
+	void readPartMessageTypeID()
+	{
+		partMessageTypeID=0;
+		*stream >> partMessageTypeID;
+		totalAvailable-=sizeof(partMessageTypeID);
+	}
+
+	void readPartBytesAvailable()
+	{
+		partBytesAvailable=0;
+		*stream >> partBytesAvailable;
+		totalAvailable-=sizeof(partBytesAvailable);
+	}
+
+	/////////////////////////////////////////// ENCRYPTED BEYOND THIS LINE
 
 	static const int OCTOMY_ENCRYPTED_MESSAGE_SIZE=20;
 
@@ -194,574 +361,730 @@ public:
 		*stream >> octomyProtocolEncryptedMessage;
 		octomyProtocolEncryptedMessageSize=octomyProtocolEncryptedMessage.size();
 		totalAvailable-=octomyProtocolEncryptedMessageSize;
+
+		if(octomyProtocolEncryptedMessageSize>0) {
+			encStream=QSharedPointer<QDataStream> (new QDataStream(&this->octomyProtocolEncryptedMessage, QIODevice::ReadOnly));
+			encTotalAvailable=octomyProtocolEncryptedMessageSize;
+		}
+
 	}
 
-	void readPartMessageTypeID()
+
+	// Extract full ID of sender
+	void readEncSenderID()
 	{
-		partMessageTypeID=0;
-		*stream >> partMessageTypeID;
-		totalAvailable-=sizeof(quint32);
+		*encStream >> octomyProtocolSenderIDRaw;
+		octomyProtocolSenderIDRawSize=octomyProtocolSenderIDRaw.size();
+		encTotalAvailable-=octomyProtocolSenderIDRawSize;
+		octomyProtocolSenderID=octomyProtocolSenderIDRaw.toHex();
 	}
 
-	void readPartBytesAvailable()
+
+	// Extract remote nonce
+	void readEncRemoteNonce()
 	{
-		partBytesAvailable=0;
-		*stream >> partBytesAvailable;
-		totalAvailable-=sizeof(quint16);
+		octomyProtocolRemoteNonce=0;
+		*encStream >> octomyProtocolRemoteNonce;
+		encTotalAvailable-=sizeof(octomyProtocolRemoteNonce);
+	}
+
+
+	// Extract return nonce
+	void readEncReturnNonce()
+	{
+		octomyProtocolReturnNonce=0;
+		*encStream >> octomyProtocolReturnNonce;
+		encTotalAvailable-=sizeof(octomyProtocolReturnNonce);
+	}
+
+
+	// Extract desired remote session ID
+	void readEncDesiredRemoteSessionID()
+	{
+		octomyProtocolDesiredRemoteSessionID=0;
+		*encStream >> octomyProtocolDesiredRemoteSessionID;
+		encTotalAvailable-=sizeof(octomyProtocolDesiredRemoteSessionID);
 	}
 
 };
 
 
 
-
-/*
-	 + A packet is defined as initial when it contains a session ID of 0
-	 + A packet is defined as broken when it does not adhere to the protocol by displaying a lack/excess of data or data in the wrong format
-	 + A packet is defined as whole when it is not broken
-	 + A packet is defined as hacked when it is whole according to comms protocol but broken according to tamper protocol
-
-	Comms protocol is the language of OctoMY™ in network communication.
-	Tamper protocol is an extra layer of protection beside comms protocol to detect attempts to tamper with communications. It has validation checks that are not necessary by the comms protocol, but add tells to the authenticity of the data (would the real implementation send data in this way)?
-
-	A valid handshake to start a new session looks like this (similar in concept to the 3-way TCP handshake):
-
-	1. A sends SYN to B:
-		Hi B. Here is my FULL-ID + NONCE ENCODED WITH YOUR PUBKEY.
-
-	2. B answers SYN-ACK to A:
-		Hi A. HERE IS MY FULL-ID + SAME NONCE + NEW NONCE ENCODED WITH YOUR PUBKEY back atch'a.
-
-	3. A answers ACK to B:
-		Hi again B. FULL-ID + NONCES WELL RECEIVED.
-
-	At this point session is established
-
-	NOTE: For every step in this protocol, if A is waiting for data from B that does not arrive, it will attempt to resend it's last message on a regular interval until it does (or some error condition or other state change occurs).
-
-	Comms have two "layers", the intrinsic layer and the courier layer.
-	The courier part is reserved for the application layer that wish to conduct communication using comms channel.
-	The intrinsic part is reserved for internal affairs of commschannel.
-	Intrinsic and courier parts of commschannel should not depend directly on one another and their respective implementation should not be mixed.
-
-	Intrinsic parts of comms include the following:
-
-	 + Session management
-		 + Session initiation/handshake
-		 + Exchange of transmission control data
-		 + Session tear-down
-	 + Bandwidth management
-		 + Detection of available bandwidth
-		 + Throttling to avoid excessive bandwidth use
-		 + Continuous monitoring and ajustment of protocol parameters optimize flow of packets (including the priority and timing of couriers)
-	 + Encryption management
-		 + Signing and sign verification of un-encrypted protocol text based on client RSA keypairs
-		 + Generation and exchange of encryption keys based on client RSA keypairs
-		 + Generation of security primitives such as nonces
-		 + Encryption and decryption of protocol text
-	 + Reliability management
-		 + Maintaining of continued UDP connection over unreliable network components such as consumer grade routers and wireles radios with poor coverage by the dispatch of necessary communication with STUN services, or sending of antler packets.
-		 + Detection and removal of duplicate and corrupt packets
-		 + Detection and re-sending of missing packets
-		 + Reordering of ordered packet sequences
-
-	Please note that the the expensive and complex intrinsic features such as
-	relibability and encryption of CommsChannel are invoked only when needed.
-
-	When the amount of data needed for intrinsic features is extensive, separate
-	"intrinsic packets" will be sent, while other lesser-in-size intrinsic data
-	such as counters will instead accompany each packet. Protocol dictates when
-	such dedicated packets will be needed or not, and changes in this part of the
-	protocol should not affect the higher level courier interface.
-*/
-
-/* Flags:
-	+ Bit 1	"SYN"
-	+ Bit 2 "ACK"
-	+ Bit 3
-	+ Bit 4 "Reserved for future use"
-	+ Bit 5 "Reserved for future use"
-	+ Bit 6 "Reserved for future use"
-	+ Bit 7 "Reserved for future use"
-	+ Bit 8 "Reserved for future use"
-*/
-
-
-const quint32 OCTOMY_PROTOCOL_FLAG_ACK=(1<<0);
-const quint32 OCTOMY_PROTOCOL_FLAG_SYN=(1<<1);
-
-// Main packet reception
-void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHostS , quint16 remotePortS )
+bool CommsChannel::recieveEncryptedBody(PacketReadState &state)
 {
-	countReceived();
-	PacketReadState *state=new PacketReadState(datagramS, remoteHostS,remotePortS);
-	if(nullptr==state) {
-		QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol could not create state";
+	// Read Pub-key encrypted message body
+	state.readProtocolEncryptedMessage();
+	if(state.octomyProtocolEncryptedMessageSize != state.OCTOMY_ENCRYPTED_MESSAGE_SIZE) { // Encrypted message should be OCTOMY_ENCRYPTED_MESSAGE_SIZE bytes, no more, no less
+		QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Less encrypted message size mismatch: "+QString::number(state.octomyProtocolEncryptedMessageSize)+ " vs. "+QString::number(state.OCTOMY_ENCRYPTED_MESSAGE_SIZE);
+		qWarning()<<es;
+		emit commsError(es);
+		return false;
+	}
+
+	// Decrypt message body using local private-key
+	Key &localKey=mKeystore.localKey();
+	QByteArray octomyProtocolDecryptedMessage=localKey.decrypt(state.octomyProtocolEncryptedMessage);
+	const int octomyProtocolDecryptedMessageSize=octomyProtocolDecryptedMessage.size();
+	if(0 == octomyProtocolDecryptedMessageSize) { // Size of decrypted message should be non-zero
+		QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Less nonce decryption failed";
+		qWarning()<<es;
+		emit commsError(es);
+		return false;
+	}
+	return true;
+}
+
+bool CommsChannel::recieveMagicAndVersion(PacketReadState &state)
+{
+	state.readProtocolMagic();
+	if(OCTOMY_PROTOCOL_MAGIC!=state.octomyProtocolMagic) {
+		QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Magic mismatch: "+QString::number(state.octomyProtocolMagic,16)+ " vs. "+QString::number((quint32)OCTOMY_PROTOCOL_MAGIC,16);
+		qWarning()<<es;
+		emit commsError(es); //TODO: Handle this by making a few retries before requiering user to aprove further retries (to avoid endless hammering)
+		return false;
+	}
+
+	state.readProtocolVersion();
+	switch(state.octomyProtocolVersion) {
+	case(OCTOMY_PROTOCOL_VERSION_CURRENT): {
+		state.stream->setVersion(OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT);
+	}
+	break;
+	// TODO: Look at good ways to stay backward compatible (long term goal, right now this is not feasible due to the frequent changes to the protocol)
+	default: {
+		QString es=QString::number(sTotalRecCount)+"ERROR: OctoMY Protocol version unsupported: "+QString::number(state.octomyProtocolVersion);
+		qWarning()<<es;
+		emit commsError(es);
+		return false;
+	}
+	break;
+	}
+	return true;
+}
+
+
+
+void CommsChannel::recieveIdle(PacketReadState &state)
+{
+	qDebug()<<"RECEIVED IDLE PACKET";
+}
+
+// 1. A sends SYN to B: Hi B. Here is my ( FULL-ID + NONCE + A's DESIRED SESSION-ID ) ENCODED WITH YOUR PUBKEY.
+void CommsChannel::recieveSyn(PacketReadState &state)
+{
+	qDebug()<<"RECEIVED SYN PACKET";
+
+
+	// Did handshake complete already?
+	//if(session->established()) {
+	// TODO: Handle this case:
+	/*
+					When an initial packet is received after session was already established the following logic applies:
+						+ If packet timestamp was before session-established-and-confirmed timestamp, it is ignored
+						+ The packet is logged and the stream is examined for packets indicating the original session is still in effect.
+						+ If there were no sign of the initial session after a timeout of X seconds, the session is torn down, and the last of the session initial packet is answered to start a new hand shake
+						+ If one or more packets indicating that the session is still going, the initial packet and it's recepient is flagged as hacked and the packet is ignored. This will trigger a warning to the user in UI, and rules may be set up in plan to automatically shut down communication uppon such an event.
+						+ No matter if bandwidth management is in effect or not, valid initial packets should be processed at a rate at most once per 3 seconds.
+		*/
+	//} else {
+	//}
+
+	if(recieveMagicAndVersion(state)) {
+		state.readProtocolEncryptedMessage();
+		if(state.octomyProtocolEncryptedMessageSize <= 0) {
+			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol encrypted message size <= 0";
+			qWarning()<<es;
+			emit commsError(es);
+			return;
+		}
+		state.readEncSenderID();
+		// TODO meta overhead bytes for bytearray from stream
+		if(state.octomyProtocolSenderIDRawSize != state.OCTOMY_SENDER_ID_SIZE) { // Full ID should be OCTOMY_FULL_ID_SIZE bytes, no more, no less
+			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Less Sender ID size mismatch: "+QString::number(state.octomyProtocolSenderIDRawSize)+ " vs. "+QString::number(state.OCTOMY_SENDER_ID_SIZE);
+			qWarning()<<es;
+			emit commsError(es);
+			return;
+		}
+		qDebug()<< "SESSION-LESS PACKET RX FROM "<< state.octomyProtocolSenderID;
+		state.readEncRemoteNonce();
+		qDebug()<< "SYN REMOTE NONCE WAS: "<< state.octomyProtocolRemoteNonce;
+
+
+		state.readEncDesiredRemoteSessionID();
+		if(state.octomyProtocolDesiredRemoteSessionID < FIRST_STATE_ID ) {
+			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol desired remote session ID not valid: "+QString::number(state.octomyProtocolDesiredRemoteSessionID);
+			qWarning()<<es;
+			emit commsError(es);
+			return;
+		}
+
+		auto session=lookUpSession(state.octomyProtocolSenderID,state.octomyProtocolDesiredRemoteSessionID);
+		if(nullptr!=session) {
+			qDebug()<<"SESSION: "<<session->address().toString()<<QStringLiteral(", ")<<session->key().id();
+		}
+	}
+}
+
+QSharedPointer<CommsSession> CommsChannel::lookUpSession(QString id, SESSION_ID_TYPE desiredRemoteSessionID)
+{
+	// Look for existing sessions tied to this ID
+	QSharedPointer<CommsSession> session=mSessions.getByFullID(id);
+	if(nullptr==session) {
+		if(mKeystore.hasPubKeyForID(id)) {
+			Key key=mKeystore.pubKeyForID(id);
+			if(key.isValid(true)) {
+				SESSION_ID_TYPE localSessionID=mSessions.generateUnusedSessionID();
+				if(localSessionID < FIRST_STATE_ID ) {
+					QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol local session ID not valid: "+QString::number(localSessionID);
+					qWarning()<<es;
+					emit commsError(es);
+				} else {
+					QSharedPointer<NodeAssociate> participant=mPeers.getParticipant(id);
+					if(nullptr==participant) {
+						QString es=QString::number(sTotalRecCount)+" ERROR: no participant found for ID "+id;
+						qWarning()<<es;
+						emit commsError(es);
+					} else {
+						session=QSharedPointer<CommsSession>(new CommsSession(key));
+						session->setRemoteSessionID(desiredRemoteSessionID);
+						session->setLocalSessionID(localSessionID);
+						session->setAddress(participant->publicAddress());
+						mSessions.insert(session);
+						qDebug()<< "NEW SESSION CREATED FOR ID "<<id<< " with remote sessionID "<<QString::number(desiredRemoteSessionID);
+					}
+				}
+			} else {
+				QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Could not create session for sender	with ID "+id+", key was invalid";
+				qWarning()<<es;
+				emit commsError(es);
+			}
+		} else {
+			//Unknown sender
+			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Less sender unknown";
+			qWarning()<<es;
+			emit commsError(es);
+		}
+	}
+	return session;
+}
+
+// 2. B answers SYN-ACK to A: Hi A. Here is my ( FULL-ID + NEW NONCE + RETURN NONCE + B's DESIRED SESSION-ID ) ENCODED WITH YOUR PUBKEY back atch'a.
+void CommsChannel::recieveSynAck(PacketReadState &state)
+{
+	qDebug()<<"RECEIVED SYN-ACK PACKET";
+
+
+	if(recieveMagicAndVersion(state)) {
+		// Extract remote nonce
+		state.readEncRemoteNonce();
+		qDebug()<< "SYN-ACK REMOTE NONCE WAS: "<< state.octomyProtocolRemoteNonce;
+
+		// Extract return nonce
+		state.readEncReturnNonce();
+		qDebug()<< "SYN-ACK RETURN NONCE WAS: "<< state.octomyProtocolReturnNonce;
+
+
+		// Extract desired remote session ID
+		state.readEncDesiredRemoteSessionID();
+		if(state.octomyProtocolDesiredRemoteSessionID < FIRST_STATE_ID ) {
+			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol desired remote session ID not valid: "+QString::number(state.octomyProtocolDesiredRemoteSessionID);
+			qWarning()<<es;
+			emit commsError(es);
+			return;
+		}
+
+	}
+}
+
+
+// 3. A answers ACK to B: Hi again B. Here is my ( FULL-ID + RETURN NONCES ) ENCODED WITH YOUR PUBKEY back atch'a.
+void CommsChannel::recieveAck(PacketReadState &state)
+{
+	qDebug()<<"RECEIVED ACK PACKET";
+
+	if(recieveMagicAndVersion(state)) {
+		// Extract return nonce
+		state.readEncReturnNonce();
+		//TODO: Verify that the return nonce was OK
+		//if(state.octomyProtocolReturnNonce !=  bla bla)
+		qDebug()<< "ACK RETURN NONCE WAS: "<< state.octomyProtocolReturnNonce;
+	}
+
+}
+
+
+
+
+
+
+void CommsChannel::recieveData(PacketReadState &state)
+{
+
+	SESSION_ID_TYPE sessionID = (SESSION_ID_TYPE)state.multimagic;
+	if(sessionID < FIRST_STATE_ID) {
+		QString es=QString::number(sTotalRecCount)+" ERROR: invalid multimagic specified";
 		qWarning()<<es;
 		emit commsError(es);
 		return;
 	}
-	state->readSessionID();
-	QSharedPointer<CommsSession> session;
-	// Sender claims this packet is an initial packet for the establishment of a session
-	if(NEW_SESSION_ID==state->remoteSessionID) {
+	auto session=mSessions.getBySessionID(sessionID);
+	if(nullptr==session) {
+		//Unknown sender
+		QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Full sender unknown for session-ID: '"+QString::number(sessionID)+"'";
+		qWarning()<<es;
+		emit commsError(es);
+		return;
+	}
 
-		// All sync packets are high on robustness, which means magic + version + encrypted body is sent with all of them
+	qDebug()<<"SESSIONFULL CORRESPONDANT: "<<session->address().toString()<<", "<<session->key().id()<< QStringLiteral(" sid:")<< (sessionID);
 
-		state->readProtocolMagic();
-		if(OCTOMY_PROTOCOL_MAGIC!=state->octomyProtocolMagic) {
-			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Magic mismatch: "+QString::number(state->octomyProtocolMagic,16)+ " vs. "+QString::number((quint32)OCTOMY_PROTOCOL_MAGIC,16);
-			qWarning()<<es;
-			emit commsError(es); //TODO: Handle this by making a few retries before requiering user to aprove further retries (to avoid endless hammering)
-			return;
-		}
-
-		state->readProtocolVersion();
-		switch(state->octomyProtocolVersion) {
-		case(OCTOMY_PROTOCOL_VERSION_CURRENT): {
-			state->stream->setVersion(OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT);
-		}
-		break;
-		// TODO: Look at good ways to stay backward compatible (long term goal, right now this is not feasible due to the frequent changes to the protocol)
-		default: {
-			QString es=QString::number(sTotalRecCount)+"ERROR: OctoMY Protocol version unsupported: "+QString::number(state->octomyProtocolVersion);
-			qWarning()<<es;
-			emit commsError(es);
-			return;
-		}
-		break;
-		}
-
-		// First data of sync packet is flags, which dictate what the rest of the data will be
-		state->readProtocolFlags();
-
-
-		// Read Pub-key encrypted message body
-		state->readProtocolEncryptedMessage();
-		if(state->octomyProtocolEncryptedMessageSize != state->OCTOMY_ENCRYPTED_MESSAGE_SIZE) { // Encrypted message should be OCTOMY_ENCRYPTED_MESSAGE_SIZE bytes, no more, no less
-			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Less encrypted message size mismatch: "+QString::number(state->octomyProtocolEncryptedMessageSize)+ " vs. "+QString::number(state->OCTOMY_ENCRYPTED_MESSAGE_SIZE);
-			qWarning()<<es;
-			emit commsError(es);
-			return;
-		}
-
-		// Decrypt message body using local private-key
-		Key &localKey=mKeystore.localKey();
-		QByteArray octomyProtocolDecryptedMessage=localKey.decrypt(state->octomyProtocolEncryptedMessage);
-		const int octomyProtocolDecryptedMessageSize=octomyProtocolDecryptedMessage.size();
-		if(0 == octomyProtocolDecryptedMessageSize) { // Size of decrypted message should be non-zero
-			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Less nonce decryption failed";
-			qWarning()<<es;
-			emit commsError(es);
-			return;
-		}
-
-		QDataStream decryptedStream(&octomyProtocolDecryptedMessage, QIODevice::ReadOnly);
-
-		// Extract full ID of sender
-		static const int OCTOMY_SENDER_ID_SIZE=20;
-		QByteArray octomyProtocolSenderIDRaw;   //octomyProtocolDecryptedMessage.mid(offset, OCTOMY_SENDER_ID_SIZE);
-		decryptedStream >> octomyProtocolSenderIDRaw;
-		const int octomyProtocolSenderIDRawSize=octomyProtocolSenderIDRaw.size();
-		if(octomyProtocolSenderIDRawSize != OCTOMY_SENDER_ID_SIZE) { // Full ID should be OCTOMY_FULL_ID_SIZE bytes, no more, no less
-			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Less Sender ID size mismatch: "+QString::number(octomyProtocolSenderIDRawSize)+ " vs. "+QString::number(OCTOMY_SENDER_ID_SIZE);
-			qWarning()<<es;
-			emit commsError(es);
-			return;
-		}
-		const QString octomyProtocolSenderID=octomyProtocolSenderIDRaw.toHex();
-		qDebug()<< "SESSION-LESS PACKET RX FROM "<< octomyProtocolSenderID;
-
-		// Look for existing sessions tied to this ID
-		session=mSessions.getByFullID(octomyProtocolSenderID);
-		if(nullptr==session) {
-			if(mKeystore.hasPubKeyForID(octomyProtocolSenderID)) {
-				Key key=mKeystore.pubKeyForID(octomyProtocolSenderID);
-				if(key.isValid(true)) {
-					session=QSharedPointer<CommsSession>(new CommsSession(octomyProtocolSenderID, key));
-					mSessions.insert(session);
-					qDebug()<< "NEW SESSION CREATED FOR ID "<<octomyProtocolSenderID;
-				} else {
-					QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Could not create session for sender  with ID "+octomyProtocolSenderID;
+	/*
+				static const int expectedHeaderSize = sizeof(state.octomyProtocolMagic)+sizeof(state.octomyProtocolFlags)+sizeof(state.octomyProtocolVersion)+sizeof(state.remoteSessionID)
+	#ifdef USE_RELIBABILITY_SYSTEM
+													  +sizeof(packet_sequence)+sizeof(packet_ack)+sizeof(packet_ack_bits)
+	#endif
+													  ;//+sizeof(quint32 );
+	//qDebug()<<totalRecCount<<"PACKET INITIAL SIZE: "<<size<<", HEADER CALCULATED SIZE: "<<header<<", THUS RAW BYES EXPECTED: "<<(size-header);
+				if ( size <= expectedHeaderSize  ) {
+					QString es=QString::number(sTotalRecCount)+" ERROR: Message too short: " +QString::number(size)+" vs. header: "+QString::number(expectedHeaderSize );
 					qWarning()<<es;
 					emit commsError(es);
 					return;
 				}
-			} else {
-				//Unknown sender
-				QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Less sender unknown";
+	*/
+
+	session->receive();
+	quint16 partsCount=0;
+	const qint32 minAvailableForPart  = ( sizeof(quint32)  );
+	if(state.totalAvailable < minAvailableForPart) {
+		qWarning()<<"ERROR: NO PARTS DETECTED! Data size too small";
+	}
+	while(state.totalAvailable >= minAvailableForPart) {
+		partsCount++;
+		//qDebug()<<"READING PART #"<<partsCount<<" WITH "<<totalAvailable<<" vs. "<<minAvailableForPart;
+		state.readPartMessageTypeID();
+		state.readPartBytesAvailable();
+		// Is this an internal part?
+		if(state.partMessageTypeID < Courier::FIRST_USER_ID) {
+			//Use message type enum for built in messages
+			const MessageType partMessageType=(MessageType)state.partMessageTypeID;
+			//qDebug()<<totalRecCount<<"MESSAGE TYPE WAS"<<partMessageType<<"("<<QString::number(partMessageTypeID)<<")";
+			switch(partMessageType) {
+			case(IDLE): {
+				qDebug()<<sTotalRecCount<<"GOT IDLE";
+				// Idle packet does not contain any data, so we are done here :)
+			}
+			break;
+			default:
+			case(INVALID): {
+				QString es=QString::number(sTotalRecCount)+" "+QString::number(partsCount)+" ERROR: OctoMY message type invalid: "+QString::number((quint32)partMessageType,16);
 				qWarning()<<es;
 				emit commsError(es);
 				return;
 			}
+			break;
+			}
 		} else {
-			qDebug()<<"SESSIONLESS CORRESPONDANT: "<<session->address().toString()<<QStringLiteral(", ")<<session->key().id();
-		}
-		// Did handshake complete already?
-		if(session->established()) {
-			// TODO: Handle this case:
-			/*
-							When an initial packet is received after session was already established the following logic applies:
-								+ If packet timestamp was before session-established-and-confirmed timestamp, it is ignored
-								+ The packet is logged and the stream is examined for packets indicating the original session is still in effect.
-								+ If there were no sign of the initial session after a timeout of X seconds, the session is torn down, and the last of the session initial packet is answered to start a new hand shake
-								+ If one or more packets indicating that the session is still going, the initial packet and it's recepient is flagged as hacked and the packet is ignored. This will trigger a warning to the user in UI, and rules may be set up in plan to automatically shut down communication uppon such an event.
-								+ No matter if bandwidth management is in effect or not, valid initial packets should be processed at a rate at most once per 3 seconds.
-				*/
-		} else {
-			switch(state->octomyProtocolFlags & (OCTOMY_PROTOCOL_FLAG_ACK | OCTOMY_PROTOCOL_FLAG_SYN)) {
-			//1. A sends SYN to B: Hi B. Here is my ( FULL-ID + NONCE + A's DESIRED SESSION-ID ) ENCODED WITH YOUR PUBKEY.
-			case(OCTOMY_PROTOCOL_FLAG_SYN): {
-
-				// Extract remote nonce
-				quint32 octomyProtocolRemoteNonce=0;
-				decryptedStream >> octomyProtocolRemoteNonce;
-
-				// Extract desired remote session ID
-				quint16 octomyProtocolDesiredRemoteSessionID=0;
-				decryptedStream >> octomyProtocolDesiredRemoteSessionID;
-
-			}
-			break;
-			// 2. B answers SYN-ACK to A: Hi A. Here is my ( FULL-ID + NEW NONCE + RETURN NONCE + B's DESIRED SESSION-ID ) ENCODED WITH YOUR PUBKEY back atch'a.
-			case(OCTOMY_PROTOCOL_FLAG_ACK | OCTOMY_PROTOCOL_FLAG_SYN): {
-
-				// Extract remote nonce
-				quint32 octomyProtocolRemoteNonce=0;
-				decryptedStream >> octomyProtocolRemoteNonce;
-
-				// Extract return nonce
-				quint32 octomyProtocolReturnNonce=0;
-				decryptedStream >> octomyProtocolReturnNonce;
-
-				// Extract desired remote session ID
-				quint16 octomyProtocolDesiredRemoteSessionID=0;
-				decryptedStream >> octomyProtocolDesiredRemoteSessionID;
-
-			}
-			break;
-			// 3. A answers ACK to B: Hi again B. Here is my ( FULL-ID + RETURN NONCES ) ENCODED WITH YOUR PUBKEY back atch'a.
-			case(OCTOMY_PROTOCOL_FLAG_ACK): {
-				// Extract return nonce
-				quint32 octomyProtocolReturnNonce=0;
-				decryptedStream >> octomyProtocolReturnNonce;
-
-			}
-			break;
-			default:
-			case(0): {
-
-			} break;
-			}
-
-			//const bool ack = (0!=(state->octomyProtocolFlags & OCTOMY_PROTOCOL_FLAG_ACK));		const bool syn = (0!=(state->octomyProtocolFlags & OCTOMY_PROTOCOL_FLAG_SYN));
-
-		}
-
-	}
-	// Sender claims this packet is for a previously established session
-	else {
-		session=mSessions.getBySessionID(state->remoteSessionID);
-		if(nullptr==session) {
-			//Unknown sender
-			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Full sender unknown for session-ID: "+state->remoteSessionID;
-			qWarning()<<es;
-			emit commsError(es);
-			return;
-		}
-
-		qDebug()<<"SESSIONFULL CORRESPONDANT: "<<session->address().toString()<<", "<<session->key().id()<< QStringLiteral(" sid:")<< (state->remoteSessionID);
-
-		/*
-					static const int expectedHeaderSize = sizeof(state->octomyProtocolMagic)+sizeof(state->octomyProtocolFlags)+sizeof(state->octomyProtocolVersion)+sizeof(state->remoteSessionID)
-		#ifdef USE_RELIBABILITY_SYSTEM
-														  +sizeof(packet_sequence)+sizeof(packet_ack)+sizeof(packet_ack_bits)
-		#endif
-														  ;//+sizeof(quint32 );
-		//qDebug()<<totalRecCount<<"PACKET INITIAL SIZE: "<<size<<", HEADER CALCULATED SIZE: "<<header<<", THUS RAW BYES EXPECTED: "<<(size-header);
-					if ( size <= expectedHeaderSize  ) {
-						QString es=QString::number(sTotalRecCount)+" ERROR: Message too short: " +QString::number(size)+" vs. header: "+QString::number(expectedHeaderSize );
-						qWarning()<<es;
-						emit commsError(es);
-						return;
+			//Use courier id for extendable messages
+			Courier *courier=getCourierByID(state.partMessageTypeID);
+			if(nullptr!=courier) {
+				const quint16 bytesSpent=courier->dataReceived(*state.stream, state.partBytesAvailable);
+				const int left=state.partBytesAvailable-bytesSpent;
+				//qDebug()<<totalRecCount<<"GOT COURIER MSG "<<partMessageTypeID<<" "<<c->name()<<" bytes avail="<<partBytesAvailable<<" tot avail="<<totalAvailable<<" bytes spent="<<bytesSpent<<" left="<<left<<"  ";
+				state.totalAvailable-=bytesSpent;
+				if(left>=0) {
+					if(left>0) {
+						qWarning()<<sTotalRecCount<<"WARNING: SKIPPING "<<left<<" LEFTOVER BYTES AFTER COURIER WAS DONE";
+						state.stream->skipRawData(left);
+						state.totalAvailable-=left;
+					} else {
+						//qDebug()<<totalRecCount<<"ALL GOOD. COURIER BEHAVED EXEMPLARY";
 					}
-		*/
-
-		if(nullptr==session) {
-			QString es=QString::number(sTotalRecCount)+"ERROR: Could not fetch client by id: '"+state->remoteSessionID+"'";
-			qWarning()<<es;
-			emit commsError(es);
-			return;
-		}
-
-		session->receive();
-		quint16 partsCount=0;
-		const qint32 minAvailableForPart  = ( sizeof(quint32)  );
-		if(state->totalAvailable < minAvailableForPart) {
-			qWarning()<<"ERROR: NO PARTS DETECTED! Data size too small";
-		}
-		while(state->totalAvailable >= minAvailableForPart) {
-			partsCount++;
-			//qDebug()<<"READING PART #"<<partsCount<<" WITH "<<totalAvailable<<" vs. "<<minAvailableForPart;
-			state->readPartMessageTypeID();
-			state->readPartBytesAvailable();
-			// Is this an internal part?
-			if(state->partMessageTypeID < Courier::FIRST_USER_ID) {
-				//Use message type enum for built in messages
-				const MessageType partMessageType=(MessageType)state->partMessageTypeID;
-				//qDebug()<<totalRecCount<<"MESSAGE TYPE WAS"<<partMessageType<<"("<<QString::number(partMessageTypeID)<<")";
-				switch(partMessageType) {
-				case(IDLE): {
-					qDebug()<<sTotalRecCount<<"GOT IDLE";
-					// Idle packet does not contain any data, so we are done here :)
-				}
-				break;
-				default:
-				case(INVALID): {
-					QString es=QString::number(sTotalRecCount)+" "+QString::number(partsCount)+" ERROR: OctoMY message type invalid: "+QString::number((quint32)partMessageType,16);
+				} else {
+					QString es=QString::number(sTotalRecCount)+" "+QString::number(partsCount)+" ERROR: Courier read more than was available!";
 					qWarning()<<es;
 					emit commsError(es);
 					return;
 				}
-				break;
-				}
+				//qDebug()<<"tot Available:"<<totalAvailable<<" available:"<<partBytesAvailable<<" dataStream at end:"<<ds->atEnd();
 			} else {
-				//Use courier id for extendable messages
-				Courier *courier=getCourierByID(state->partMessageTypeID);
-				if(nullptr!=courier) {
-					const quint16 bytesSpent=courier->dataReceived(*state->stream, state->partBytesAvailable);
-					const int left=state->partBytesAvailable-bytesSpent;
-					//qDebug()<<totalRecCount<<"GOT COURIER MSG "<<partMessageTypeID<<" "<<c->name()<<" bytes avail="<<partBytesAvailable<<" tot avail="<<totalAvailable<<" bytes spent="<<bytesSpent<<" left="<<left<<"  ";
-					state->totalAvailable-=bytesSpent;
-					if(left>=0) {
-						if(left>0) {
-							qWarning()<<sTotalRecCount<<"WARNING: SKIPPING "<<left<<" LEFTOVER BYTES AFTER COURIER WAS DONE";
-							state->stream->skipRawData(left);
-							state->totalAvailable-=left;
-						} else {
-							//qDebug()<<totalRecCount<<"ALL GOOD. COURIER BEHAVED EXEMPLARY";
-						}
-					} else {
-						QString es=QString::number(sTotalRecCount)+" "+QString::number(partsCount)+" ERROR: Courier read more than was available!";
-						qWarning()<<es;
-						emit commsError(es);
-						return;
-					}
-					//qDebug()<<"tot Available:"<<totalAvailable<<" available:"<<partBytesAvailable<<" dataStream at end:"<<ds->atEnd();
-				} else {
-					//TODO: Look at possibility of registering couriers on demand using something like this:
-					//emit wakeOnComms(octomy_message_type_int)
-					QString es=QString::number(sTotalRecCount)+" "+QString::number(partsCount)+" ERROR: No courier found for ID: "+QString::number(state->partMessageTypeID);
-					qWarning().noquote()<<es;
-					emit commsError(es);
-					return;
-				}
-				//qDebug()<<totalRecCount<<partsCount<<"PART DONE";
+				//TODO: Look at possibility of registering couriers on demand using something like this:
+				//emit wakeOnComms(octomy_message_type_int)
+				QString es=QString::number(sTotalRecCount)+" "+QString::number(partsCount)+" ERROR: No courier found for ID: "+QString::number(state.partMessageTypeID);
+				qWarning().noquote()<<es;
+				emit commsError(es);
+				return;
 			}
+			//qDebug()<<totalRecCount<<partsCount<<"PART DONE";
 		}
-		if(state->totalAvailable > 0 ) {
-			QString es="WARNING: Not all bytes in datagram were read/used. There were "+QString::number(state->totalAvailable)+" bytes left after reading "+QString::number(partsCount)+" parts";
-			qWarning()<<es;
-			return;
-		}
-
 	}
-}
-
-
-void CommsChannel::sendData(const quint64 &now, QSharedPointer<CommsSession> session, Courier *courier)
-{
-	QString toID=(nullptr!=courier)?(courier->destination()):session->fullID();
-	if(toID.isEmpty()) {
-		qWarning()<<"ERROR: invalid ID when sending data";
+	if(state.totalAvailable > 0 ) {
+		QString es="WARNING: Not all bytes in datagram were read/used. There were "+QString::number(state.totalAvailable)+" bytes left after reading "+QString::number(partsCount)+" parts";
+		qWarning()<<es;
 		return;
 	}
-	const qint32 availableBytes=MAX_UDP_PAYLOAD_SIZE-(7*4);
-	QByteArray datagram;
-	QDataStream ds(&datagram,QIODevice::WriteOnly);
-	quint32 bytesUsed=0;
-	// Write a header with protocol "magic number" and a version
-	ds << (quint32)OCTOMY_PROTOCOL_MAGIC;//Protocol MAGIC identifier
-	bytesUsed += sizeof(quint32);
-	ds << (qint32)OCTOMY_PROTOCOL_VERSION_CURRENT;//Protocol version
-	bytesUsed += sizeof(qint32);
-	ds.setVersion(OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT); //Qt Datastream version
-	//Write client fingerprint
+}
 
 
 
+// Main packet reception
+void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHostS , quint16 remotePortS )
+{
+	mRXRate.countPacket(datagramS.count());
+	//countReceived();
+	PacketReadState state(datagramS, remoteHostS,remotePortS);
 
-	quint64 sessionID=session->sessionID();
+	QSharedPointer<CommsSession> session;
+	state.readMultimagic();
+	switch((Multimagic)state.multimagic) {
+	case(MULTIMAGIC_IDLE): {
+		// We are keeping the UDP connection alive with idle packet
+		recieveIdle(state);
+	}
+	break;
+	case(MULTIMAGIC_SYN): {
+		// We received SYN
+		if(recieveEncryptedBody(state)) {
+			recieveSyn(state);
+		}
+	}
+	break;
+	case(MULTIMAGIC_SYNACK): {
+		// We received SYN-ACK
+		if(recieveEncryptedBody(state)) {
+			recieveSynAck(state);
+		}
+	}
+	break;
+	case(MULTIMAGIC_ACK): {
+		// We received SYN
+		if(recieveEncryptedBody(state)) {
+			recieveAck(state);
+		}
+	}
+	break;
 
-	ds << sessionID;
-	bytesUsed += sizeof(sessionID);
+	// No special purpose packet type was specified
+	default: {
+		recieveData(state);
+	}
+	break;
+	}
+
+}
+
+
+
+void CommsChannel::doSend( PacketSendState &state)
+{
+	// Send data in stream
+	const quint32 sz=state.datagram.size();
+	if(nullptr==state.session) {
+		qWarning()<<"ERROR: session was null";
+		return;
+	}
+	const NetworkAddress na=state.session->address();
+	if(!na.isValid(false,false)) {
+		qWarning()<<"ERROR: invalid address: "	<<na;
+		return;
+	}
+	if(state.datagram.size()<=0) {
+		qWarning()<<"ERROR: datagram is <= 0 bytes ("<<state.datagram.size() <<")";
+		return;
+	}
+
+	const qint64 written=mUDPSocket.writeDatagram(state.datagram, na.ip(), na.port());
+	//qDebug()<<"WROTE "<<written<<" bytes to "<<sig;
+	if(written<0) {
+		qDebug()<<"ERROR: in write for UDP SOCKET:"<<mUDPSocket.errorString()<< " for destination "<< mLocalAddress.toString()<<localID();
+		return;
+	} else if(written<sz) {
+		qDebug()<<"ERROR: Only " << written << " of " <<sz<<" bytes of idle packet written to UDP SOCKET:"<<mUDPSocket.errorString()<< " for destination "<< mLocalAddress.toString()<<localID();
+		return;
+	} else {
+		qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET";
+	}
+	if (nullptr!=state.session) {
+		state.session->countSend(written);
+	}
+	mTXRate.countPacket(written);
+	sTotalTxCount++;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void CommsChannel::sendIdle(const quint64 &now, QSharedPointer<CommsSession> session)
+{
+	if(nullptr==session) {
+		qWarning()<<"ERROR: session was null";
+		return;
+	}
+	PacketSendState state;
+
+	auto sessionID=session->remoteSessionID();
+	// TODO: What tha hall
+	state.writeSessionID(sessionID);
+
+	doSend(state);
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+void CommsChannel::sendSyn(PacketSendState &state)
+{
+	// 1. Send Alice's magic & version
+	state.writeMagic();
+	state.writeProtocolVersion();
+
+	// 2. Send encrypted package of...
+
+	// 2a. Alice's full sender ID
+	auto senderID=localID();
+	state.writeEncSenderID(senderID);
+	//TODO: We should create new session here and make sure there is no cross talk
+	// 2b. Alice's first nonce
+	// 2c. Alice's desired session ID
+
+	state.writeProtocolEncryptedMessage();
+
+	doSend(state);
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+void CommsChannel::sendSynAck(PacketSendState &state)
+{
+	// 1. Send Bob's magic & version
+	state.writeMagic();
+	state.writeProtocolVersion();
+
+	// 2. Send encrypted package of...
+
+	// 2a. Bob's first nonce
+	// 2b. Alice's first return nonce
+	// 2c. Bob's desired session ID
+
+	doSend(state);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void CommsChannel::sendAck(PacketSendState &state)
+{
+	// 1. Send Alice's magic & version
+	state.writeMagic();
+	state.writeProtocolVersion();
+
+	// 2. Send encrypted package of...
+	// 2a. Bob's first return nonce
+
+	doSend(state);
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+void CommsChannel::sendData(const quint64 &now, Courier &courier)
+{
+	QString toID=courier.destination();
+	if(toID.isEmpty()) {
+		qWarning()<<"ERROR: Invalid courier destination when sending data";
+		return;
+	}
+
+	QSharedPointer<CommsSession> session=lookUpSession(toID,0);
+	if(nullptr==session) {
+		qWarning()<<"ERROR: No session found for courier with destination "<<toID;
+		return;
+	}
+
+	PacketSendState state;
+
+	state.setSession(session);
+
+	if(session->established()) {
+		// Ladies, the bar is open!
+
+	} else {
+		HandshakeStep step=session->nextStep();
+		switch(step) {
+		default:
+		case(VIRGIN): {
+			qWarning()<<"ERROR: Unknown session step "<<QString::number(step);
+		}
+		break;
+		case(SYN_OK): {
+			sendSyn(state);
+		}
+		break;
+		case(SYN_ACK_OK): {
+			sendSynAck(state);
+		}
+		break;
+		case(ACK_OK): {
+			sendAck(state);
+		}
+		break;
+
+		}
+	}
+
+
+	const qint32 availableBytes = MAX_UDP_PAYLOAD_SIZE - ( 7 * 4 );
+
+
+	state.writeMagic();
+	state.writeProtocolVersion();
+
+	auto sessionID=session->remoteSessionID();
+	state.writeSessionID(sessionID);
 
 #ifdef USE_RELIBABILITY_SYSTEM
-	// Write reliability data
-	// TODO: incorporate writing logic better into reliability class
-	// TODO: convert types used in reliability system to Qt for portability piece of mind
 	ReliabilitySystem &rs=localClient->reliabilitySystem();
-	ds << rs.localSequence();
-	bytesUsed += sizeof(unsigned int);
-	ds << rs.remoteSequence();
-	bytesUsed += sizeof(unsigned int);
-	ds << rs.generateAckBits();
-	bytesUsed += sizeof(unsigned int);
+	state.writeReliabilityData(rs);
 #endif
-	//sizeof(quint32 /*magic*/) +sizeof(quint32 /*version*/) +sizeof(quint64 /*short ID*/) +sizeof(unsigned int /*sequence*/)+sizeof(unsigned int /*ack*/)+sizeof(unsigned int /*ack bits*/)+sizeof(quint32 /*message type*/)
-	//qDebug()<<"SEND GLOBAL HEADER SIZE: "<<bytesUsed;
-	// Send using courier.
-	//NOTE: When courier reports "sendActive" that means that it wants to send,
-	//      and so even if it writes 0 bytes, there will be a section id present
-	//      in packet reserved for it with the 0 bytes following it
-	if(nullptr!=courier) {
-		const quint32 courierID=courier->id();;
-		ds << courierID;
-		bytesUsed += sizeof(courierID);
-		const quint16 payloadSize=courier->mandate().payloadSize;;
-		ds << payloadSize;
-		bytesUsed += sizeof(payloadSize);
-		//qDebug()<<"SEND LOCAL HEADER SIZE: "<<bytesUsed<<datagram.size();
-		const quint64 opportunityBytes=courier->sendingOpportunity(ds);
-		bytesUsed += opportunityBytes;
-		//qDebug()<<"SEND FULL SIZE: "<<bytesUsed<<datagram.size()<<opportunityBytes;
-		courier->setLastOpportunity(now);
-	}
-	// Send idle packet
-	else {
-		const quint32 partMessageTypeID=IDLE;
-		ds<<partMessageTypeID;
-		bytesUsed+=sizeof(partMessageTypeID);
-		/* NO DATA NECESSARY
-				const quint16 noBytesSpent=(quint16)0;
-				ds << noBytesSpent;
-				bytesUsed += sizeof(noBytesSpent);
-				//qDebug()<<"IDLE PACKET: "<<(nullptr==courier?"NULL":courier->name())<<", "<<(nullptr==localClient?"NULL":localClient->toString());
-				*/
-	}
-	const quint32 sz=datagram.size();
-	//qDebug()<<"SEND DS SIZE: "<<sz;
-	if(sz>512) {
-		qWarning()<<"ERROR: UDP packet size exceeded 512 bytes, dropping write";
-	} else if( (availableBytes-bytesUsed) <= 0) {
-		qWarning()<<"ERROR: courier trying to send too much data: "<<QString::number(bytesUsed)<<" , dropping write";
+
+	const quint32 courierID=courier.id();
+	state.writeCourierID(courierID);
+
+	const quint16 payloadSize=courier.mandate().payloadSize;
+	state.writePayloadSize(payloadSize);
+
+	//qDebug()<<"SEND LOCAL HEADER SIZE: "<<bytesUsed<<datagram.size();
+	const quint64 opportunityBytes=courier.sendingOpportunity(*state.stream);
+	state.bytesUsed += opportunityBytes;
+	//qDebug()<<"SEND FULL SIZE: "<<bytesUsed<<datagram.size()<<opportunityBytes;
+	courier.setLastOpportunity(now);
+
+	const quint32 sz=state.datagram.size();
+	if(sz>MAX_UDP_PAYLOAD_SIZE) {
+		qWarning()<<"ERROR: UDP packet size exceeded " <<( MAX_UDP_PAYLOAD_SIZE)<<" bytes which is implemented as practical fragment-free UDP payload size, dropping write";
+	} else if( (availableBytes - state.bytesUsed) <= 0) {
+		qWarning()<<"ERROR: courier trying to send too much data: "<<QString::number(state.bytesUsed)<<" , dropping write";
 	} else {
-		auto na=mLocalAddress;
-		const qint64 written=mUDPSocket.writeDatagram(datagram, na.ip(), na.port());
-		//qDebug()<<"WROTE "<<written<<" bytes to "<<sig;
-		if(written<sz) {
-			qDebug()<<"ERROR: Only " << written << " of " <<sz<<" written to UDP SOCKET:"<<mUDPSocket.errorString()<< " for destination "<< mLocalAddress.toString()<<mLocalID;
-			return;
-		} else {
-			qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET";
-		}
-		session->countSend(written);
+		doSend(state);
 	}
 }
+
+
 
 
 quint64 CommsChannel::rescheduleSending(quint64 now)
 {
-	qDebug()<<" ... R E S C H E D U L E ... "<<now;
-	//Prepare a priority list of couriers to process for this packet
+	mTXScheduleRate.countPacket(0);
+	//qDebug()<<" ... R E S C H E D U L E ... "<<now;
 	mMostUrgentCourier=MINIMAL_PACKET_RATE;
-	mPri.clear();
-	mIdle.clear();
+	mSchedule.clear();
 	// Update first
 	for(Courier *courier:mCouriers) {
 		if(nullptr!=courier) {
 			courier->update(now);
 		}
 	}
+	// Re-schedule couriers (strive to adhere to the mandates set fourth by each courier)
 	for(Courier *courier:mCouriers) {
 		if(nullptr!=courier) {
 			CourierMandate cm=courier->mandate();
 			//qDebug()<<"MANDATE FOR "<<courier->name()<<" IS "<<cm.toString();
 			if(cm.sendActive) {
-				const QString &courierDestination=courier->destination();
-				//const quint64 last = courier->lastOpportunity();
+				//const QString &courierDestination=courier->destination();
 				const qint64 timeLeft = cm.nextSend - now;
+				// Update most-urgent time
 				if(timeLeft < mMostUrgentCourier) {
-					const quint64 lastUrgen=mMostUrgentCourier;
-					mMostUrgentCourier=timeLeft;
-					qDebug()<<courier->name()<<courier->id()<<" WITH TIME LEFT " << timeLeft<< " BUMPED URGENT FROM "<<lastUrgen<<" TO "<<mMostUrgentCourier;
+					const quint64 lastUrgent=mMostUrgentCourier;
+					mMostUrgentCourier=qMax(timeLeft, 0LL);
+					qDebug()<<courier->name()<<courier->id()<<courier->ser()<<" WITH TIME LEFT " << timeLeft<< " BUMPED URGENT FROM "<<lastUrgent<<" -> "<<mMostUrgentCourier;
 				}
-				//We are (over)due, send a packet!
+				// Actual sending is due, schedule a packet to associate of client
 				if(timeLeft < 0) {
 					const quint64 score=(cm.priority * -timeLeft );
-					mPri.insert(score, courier); //TODO: make this broadcast somehow (use ClientDirectory::getByLastActive() and ClientSignature::isValid() in combination or similar).
-					qDebug()<<courier->name()<<courier->id()<<" SCHEDULED FOR SEND WITH TIMELEFT "<<timeLeft<<" AND SCORE "<<score;
-				} else if(now-courier->lastOpportunity() > MINIMAL_PACKET_RATE) {
-					mIdle.push_back(&courierDestination);
-					qDebug()<<courier->name()<<courier->id()<<" SCHEDULED FOR IDLE";
+					mSchedule.insert(score, courier); //TODO: make this broadcast somehow (use ClientDirectory::getByLastActive() and ClientSignature::isValid() in combination or similar).
+					qDebug()<<courier->name()<<courier->id()<<courier->ser()<<" SCHEDULED WITH TIMELEFT "<<timeLeft<<" AND SCORE "<<score;
 				}
-
-
+				/*
+				// Courier has been dormant past idle time, schedule an idle packet to courier
+				else if(now-courier->lastOpportunity() > MINIMAL_PACKET_RATE) {
+					mIdle.insert(&courierDestination);
+					qDebug()<<courier->name()<<courier->id()<<courier->ser()<<" SCHEDULED FOR IDLE";
+				}
+				*/
 			}
 		}
 	}
-	// Prepare for next round (this implies a stop() )
+	// Prepare for next sending opportunity
 	const quint64 delay=qBound((qint64) 0, mMostUrgentCourier, (qint64)MINIMAL_PACKET_RATE);
 	qDebug()<<"NEW SCHEDULE DELAY: "<<delay<<" ("<<mMostUrgentCourier<<")";
-	mSendingTimer.start(delay);
+	mSendingTimer.setInterval(delay);
 	return delay;
 }
 
+void CommsChannel::detectConnectionChanges(const quint64 now)
+{
+	const quint64 timeSinceLastRX=now-mRXRate.mLast;
+
+	if(mConnected && (timeSinceLastRX > CONNECTION_TIMEOUT) ) {
+		qDebug()<<"Connection timed out, stopping";
+		stop();
+	} else if(!mConnected && (timeSinceLastRX <= CONNECTION_TIMEOUT) ) {
+		mConnected=true;
+		qDebug()<<"Connection completed";
+		emit commsConnectionStatusChanged(true);
+	}
+}
+
+
+
+//////////////////////////////////////////////////
+// Send & receive slots
 
 void CommsChannel::onSendingTimer()
 {
 	qDebug()<<"--- SEND";
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
-	const quint64 timeSinceLastRX=now-mLastRX;
+	detectConnectionChanges(now);
+	mTXOpportunityRate.countPacket(0);
 
-	if(mConnected && timeSinceLastRX>CONNECTION_TIMEOUT) {
-		qDebug()<<"Connection timed out, stopping";
-		stop();
-	} else if(!mConnected && timeSinceLastRX<=CONNECTION_TIMEOUT) {
-		mConnected=true;
-		emit commsConnectionStatusChanged(true);
+	qDebug()<<"SCHEDULE: "<<mSchedule.size();
+	for (QMap<quint64, Courier *>::iterator i = mSchedule.begin(); i != mSchedule.end(); ) {
+		Courier *courier=i.value();
+		qDebug() << " + " << i.key() << " = " << ((nullptr==courier)?"NULL":courier->toString());
+		++i;
 	}
-	mLastRX=now;
-	mTxCount++;
-	if(now-mLastTXST>1000) {
-		qDebug()<<"SEND OPPORUNITY count="<<QString::number(mTxCount)<<"/sec";
-		mLastTXST=now;
-		mTxCount=0;
-	}
-	// Write one message per courier in pri list
-	// NOTE: several possible optimizations exist, for example grouping messages
-	//       to same node in one packet etc. We may exploit them in the future.
-	for (QMap<quint64, Courier *>::iterator i = mPri.begin(), e=mPri.end(); i != e; ++i) {
+	// Send data according to schedule
+	for (QMap<quint64, Courier *>::iterator i = mSchedule.begin(); i != mSchedule.end(); ) {
 		Courier *courier=i.value();
 		if(nullptr!=courier) {
-			QString id=courier->destination();
-			QSharedPointer<CommsSession> session=mSessions.getByFullID(id);
-			if(nullptr==session) {
-				qWarning()<<"ERROR: No session found for courier "<<courier->name()<<" with destination "<<id;
-				return;
-			}
-			sendData(now, session, courier);
+			sendData(now, *courier);
+		} else {
+			qWarning()<<"WARNING: scheduled courier was null";
 		}
+		++i;
 	}
-	const int isz=mIdle.size();
+	// Send idle packets to sessions that need it
+	auto idle=mSessions.getByIdleTime(MINIMAL_PACKET_RATE);
+	const int isz=idle.size();
 	if(isz>0) {
-		qDebug()<<"Send "<<isz<<" idle packets";
-		for(const QString *id:mIdle) {
-			if(nullptr!=id) {
-				QSharedPointer<CommsSession> session=mSessions.getByFullID(*id);
-				if(nullptr==session) {
-					qWarning()<<"ERROR: No session found for idle with destination "<<*id;
-					return;
-				}
-				sendData(now, session, nullptr);
+		qDebug()<<"Sending idle packets to "<<isz<<" sessions in need";
+		for(QSharedPointer<CommsSession> session:idle) {
+			if(nullptr!=session) {
+				sendIdle(now, session);
+			} else {
+				qWarning()<<"ERROR: session was null when sending idle packet";
 			}
 		}
+	} else {
+		qDebug()<<"No sessions in need of idle packets this time";
 	}
 	rescheduleSending(now);
 }
 
-//Only for testing purposes! Real data should pass through the courier system
-//and be dispatched by logic in sending timer
+// NOTE: This is only for testing purposes! Real data should pass through the courier system
+// and be dispatched by logic in sending timer
 qint64 CommsChannel::sendRawData(QByteArray datagram, NetworkAddress address)
 {
 	return mUDPSocket.writeDatagram(datagram, address.ip(), address.port());
@@ -774,7 +1097,7 @@ NetworkAddress CommsChannel::localAddress()
 
 QString CommsChannel::localID()
 {
-	return mLocalID;
+	return mKeystore.localKey().id();
 }
 
 QString CommsChannel::getSummary()
@@ -820,12 +1143,13 @@ void CommsChannel::appendLog(QString msg)
 	qDebug()<<"COMMS_CHANNEL_LOG: "<<msg;
 }
 
-
+/*
 void CommsChannel::setID(const QString &id)
 {
 	mLocalID=id;
 
 }
+*/
 
 void CommsChannel::setHookCommsSignals(QObject &ob, bool hook)
 {
@@ -875,6 +1199,7 @@ void CommsChannel::setHookCourierSignals(Courier &courier, bool hook)
 
 void CommsChannel::setCourierRegistered(Courier &courier, bool reg)
 {
+	Q_ASSERT(this==&courier.comms());
 	if(reg) {
 		if(mCouriers.contains(&courier)) {
 			qWarning()<<"ERROR: courier was allready registered";
@@ -917,14 +1242,6 @@ Courier *CommsChannel::getCourierByID(quint32 id) const
 	return nullptr;
 }
 
-bool CommsChannel::isStarted() const
-{
-	return mSendingTimer.isActive();
-}
-bool CommsChannel::isConnected() const
-{
-	return mConnected;
-}
 
 
 

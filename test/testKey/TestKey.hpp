@@ -4,11 +4,15 @@
 #include <QTest>
 
 
-class TestKey:public QObject{
-		Q_OBJECT
+class TestKey:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void test();
+private slots:
+	void testBasicIntegrity();
+
+
+	void testSignature();
 
 };
 

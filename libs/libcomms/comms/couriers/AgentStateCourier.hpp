@@ -71,7 +71,7 @@ private:
 //TODO: Somehow encode desired speed, direction and more
 
 public:
-	AgentStateCourier(QDataStream *initialization, QObject *parent = nullptr);
+	AgentStateCourier(QDataStream *initialization, CommsChannel &comms, QObject *parent = nullptr);
 
 
 

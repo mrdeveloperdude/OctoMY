@@ -20,7 +20,7 @@
    <string>OctoMY™ - Hub</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="../../libcore/resources/icons.qrc">
     <normaloff>:/icons/hub.svg</normaloff>:/icons/hub.svg</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -53,7 +53,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>3</number>
+        <number>5</number>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -108,7 +108,7 @@
          <string>Look for incomming / unauthenticated remotes and agents</string>
         </property>
         <attribute name="icon">
-         <iconset>
+         <iconset resource="../../libcore/resources/icons.qrc">
           <normaloff>:/icons/agent.svg</normaloff>:/icons/agent.svg</iconset>
         </attribute>
         <attribute name="title">
@@ -171,7 +171,7 @@
                    <string>Remote</string>
                   </property>
                   <property name="icon">
-                   <iconset>
+                   <iconset resource="../../libcore/resources/icons.qrc">
                     <normaloff>:/icons/remote.svg</normaloff>:/icons/remote.svg</iconset>
                   </property>
                  </item>
@@ -180,7 +180,7 @@
                    <string>Agent</string>
                   </property>
                   <property name="icon">
-                   <iconset>
+                   <iconset resource="../../libcore/resources/icons.qrc">
                     <normaloff>:/icons/agent.svg</normaloff>:/icons/agent.svg</iconset>
                   </property>
                  </item>
@@ -251,7 +251,7 @@
          <string>View agents and remotes in map</string>
         </property>
         <attribute name="icon">
-         <iconset>
+         <iconset resource="../../libcore/resources/icons.qrc">
           <normaloff>:/icons/map.svg</normaloff>:/icons/map.svg</iconset>
         </attribute>
         <attribute name="title">
@@ -287,7 +287,7 @@
        </widget>
        <widget class="QWidget" name="tabPlan">
         <attribute name="icon">
-         <iconset>
+         <iconset resource="../../libcore/resources/icons.qrc">
           <normaloff>:/icons/mandate.svg</normaloff>:/icons/mandate.svg</iconset>
         </attribute>
         <attribute name="title">
@@ -562,7 +562,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidgetDevelopment">
            <property name="currentIndex">
-            <number>6</number>
+            <number>11</number>
            </property>
            <widget class="QWidget" name="tabTriggers">
             <attribute name="title">
@@ -745,7 +745,7 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset>
+                  <iconset resource="../../libcore/resources/icons.qrc">
                    <normaloff>:/icons/roll_dice.svg</normaloff>:/icons/roll_dice.svg</iconset>
                  </property>
                 </widget>
@@ -924,6 +924,16 @@
              </item>
             </layout>
            </widget>
+           <widget class="QWidget" name="tabTest">
+            <attribute name="title">
+             <string>Test</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_13">
+             <item>
+              <widget class="QListWidget" name="listWidgetRichTest"/>
+             </item>
+            </layout>
+           </widget>
           </widget>
          </item>
         </layout>
@@ -1073,6 +1083,10 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../../libcore/resources/icons.qrc"/>
+  <include location="../../libcore/resources/icons.qrc"/>
+  <include location="../../libcore/resources/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -3,8 +3,8 @@
 #include "basic/NodeAssociate.hpp"
 #include "comms/messages/MessageType.hpp"
 
-DiscoveryCourier::DiscoveryCourier(QSharedPointer<NodeAssociate> ass, QObject *parent)
-	: Courier("Discovery", Courier::FIRST_USER_ID+1, parent)
+DiscoveryCourier::DiscoveryCourier(QSharedPointer<NodeAssociate> ass, CommsChannel &comms, QObject *parent)
+	: Courier("Discovery", Courier::FIRST_USER_ID+1, comms, parent)
 	, mAss(ass)
 	, mLastSend(0)
 {
@@ -33,7 +33,7 @@ static const quint64 BT_XOR=0x13e7268a13e7268a;
 //Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
 quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 {
-	qDebug()<<"Sending opportunity for "<<mName;
+	qDebug()<<"Sending opportunity for "<<name();
 	quint16 bytes=0;
 	NetworkAddress &nadr=mAss->publicAddress();
 	QHostAddress pubAddr=nadr.ip();

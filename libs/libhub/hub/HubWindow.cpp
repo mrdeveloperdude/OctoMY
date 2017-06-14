@@ -151,6 +151,8 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		}
 
 
+
+
 		appendLog("SETTING UP PLAN EDITOR");
 		ui->widgetPlanEditor->configure("hub.plan");
 

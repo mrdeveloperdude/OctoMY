@@ -18,7 +18,7 @@ class SensorsCourier : public Courier{
 		CourierMandate mMandate;
 		SensorsMessage mMessage;
 	public:
-		SensorsCourier(QObject *parent = nullptr);
+		SensorsCourier(CommsChannel &comms, QObject *parent = nullptr);
 
 		// Courier interface
 	public:

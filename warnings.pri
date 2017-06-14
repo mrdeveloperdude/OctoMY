@@ -11,6 +11,8 @@ QMAKE_CXXFLAGS += -Wcast-qual  -Wdisabled-optimization
 QMAKE_CXXFLAGS += -Wstrict-overflow=5
 #QMAKE_CXXFLAGS += -Wundef # Warn about referenced but undefined preprocessor defines
 
+# Mark no return in function returning non-void an ERROR
+QMAKE_CXXFLAGS += -Werror=return-type
 
 #Only relevant in GPP
 g++ {

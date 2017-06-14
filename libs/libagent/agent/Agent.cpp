@@ -8,7 +8,7 @@
 #include "comms/couriers/Courier.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
-#include "comms/couriers/BlobCourier.hpp"
+#include "comms/couriers/blob/BlobCourier.hpp"
 #include "comms/SyncParameter.hpp"
 
 #include "discovery/DiscoveryClient.hpp"

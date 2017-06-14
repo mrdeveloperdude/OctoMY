@@ -9,16 +9,19 @@
 int KeyPrivate::mKCT=0;
 
 KeyPrivate::KeyPrivate( QVariantMap map, bool isPublic )
+	: KeyPrivate(isPublic?(map.contains("publicKey")?map["publicKey"].toString():""): (map.contains("privateKey")?map["privateKey"].toString():""), isPublic)
+/*
 	: mKey(isPublic?"":map.contains("privateKey")?map["privateKey"].toString():"")
 	, mPubKey(map.contains("publicKey")?map["publicKey"].toString():"")
 	, mKID(mKCT++)
 	, mValidPrivate(false)
 	, mValidPublic(false)
+	*/
 {
 	OC_METHODGATE();
 
 	//qDebug()<<"KeyPrivate::KeyPrivate( QVariantMap key, bool isPublic ): map="<<map<<", mKey="<<mKey<<", mPubKey="<<mPubKey<<", isPublic="<<isPublic <<" for " <<mKID<<"/"<<mKCT;
-	parse(isPublic);
+	//parse(isPublic);
 }
 
 KeyPrivate::KeyPrivate( QString key, bool isPublic )
@@ -60,6 +63,7 @@ void KeyPrivate::parse(bool publicOnly)
 	//ScopedTimer timer("Key Parsing");
 	mValidPrivate=false;
 	mValidPublic=false;
+
 	mID="";
 	if(publicOnly) {
 		QByteArray raw=mPubKey.toUtf8();

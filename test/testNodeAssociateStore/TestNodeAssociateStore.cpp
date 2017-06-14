@@ -82,6 +82,7 @@ void TestNodeAssociateStore::test(){
 	assMap["trusts"]=trusts;
 
 	QSharedPointer<NodeAssociate> ass(new NodeAssociate(assMap));
+	QVERIFY(nullptr!=ass);
 
 	QCOMPARE(ass->id(),id);
 	QCOMPARE(ass->type(),type);
@@ -101,9 +102,6 @@ void TestNodeAssociateStore::test(){
 	QVERIFY(!ass->isValidForClient(false));
 	QVERIFY(!ass->isValidForServer());
 
-	ClientSignature sig=ass->toClientSignature();
-
-	qDebug()<<"SIG: "<<sig.toString();
 
 	const QStringList &pins=ass->pins();
 	QCOMPARE(pins.size(),0);
@@ -127,21 +125,51 @@ void TestNodeAssociateStore::test(){
 	//void addTrust(QString trust);
 	//////////////////////////////////
 
+	QString ta1="trust-added-one";
+	QVERIFY(!ass->hasTrust(ta1));
+	QVERIFY(ass->hasTrust(trusts[0]));
+	QVERIFY(ass->hasTrust(trusts[1]));
+	ass->addTrust(ta1);
+	QVERIFY(ass->hasTrust(ta1));
+	QVERIFY(ass->hasTrust(trusts[0]));
+	QVERIFY(ass->hasTrust(trusts[1]));
+	ass->removeTrust(ta1);
+	QVERIFY(!ass->hasTrust(ta1));
+	QVERIFY(ass->hasTrust(trusts[0]));
+	QVERIFY(ass->hasTrust(trusts[1]));
 
 	QVariantMap map=ass->toVariantMap();
 	qDebug()<<"MAP: "<<map;
 
-	//void fromVariantMap(const QVariantMap map);
-	//////////////////////////////////////////////////
-
-	//QString toString();
-	//////////////////////
+	QSharedPointer<NodeAssociate> ass1b(new NodeAssociate());
+	QVERIFY(nullptr!=ass1b);
 
 	//bool operator==(const NodeAssociate &o) const;
 	////////////////////////////////////////////////////
 
+
+	QVERIFY(!(*ass1b == *ass));
+
 	//bool operator!=(const NodeAssociate &o) const;
 	////////////////////////////////////////////////////
+
+	QVERIFY(*ass1b != *ass);
+
+	//void fromVariantMap(const QVariantMap map);
+	//////////////////////////////////////////////////
+
+	ass1b->fromVariantMap(map);
+
+
+	//QString toString();
+	//////////////////////
+
+	qDebug()<<ass->toString();
+	qDebug()<<ass1b->toString();
+
+	QVERIFY(*ass1b == *ass);
+
+	QVERIFY(!(*ass1b != *ass));
 
 	//NetworkAddress &publicAddress();
 	////////////////////////////////////////////////////
@@ -159,6 +187,8 @@ void TestNodeAssociateStore::test(){
 	if(file.exists()){
 		file.remove();
 	}
+
+	QVERIFY(!file.exists());
 
 	//Create an empty store and add data to it before saving
 	{
@@ -252,7 +282,7 @@ void TestNodeAssociateStore::test(){
 	if(file.exists()){
 		file.remove();
 	}
-
+	QVERIFY(!file.exists());
 
 }
 

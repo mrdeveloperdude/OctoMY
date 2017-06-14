@@ -8,6 +8,7 @@
 
 #include "widgets/TryToggle.hpp"
 #include "node/Node.hpp"
+#include "node/RemoteCourierSet.hpp"
 
 
 #include <QSharedPointer>
@@ -23,6 +24,10 @@ namespace Ui
 class ClientWidget;
 }
 
+/**
+ * @brief The ClientWidget class is the UI for one single Agent as seen on the remote
+ */
+
 class ClientWidget : public QWidget
 {
 	Q_OBJECT
@@ -34,10 +39,8 @@ private:
 	QSharedPointer<NodeAssociate> mNodeAssoc;
 	WaitingSpinnerWidget *mSpinner;
 
-	// TODO: Look at possibility of reusing the CourierSet class in Agent.cpp
-	AgentStateCourier *mAgentStateCourier;
-	SensorsCourier *mSensorsCourier;
-	BlobCourier *mBlobCourier;
+
+	RemoteCourierSet mCouriers;
 
 public:
 	explicit ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeAssociate> nodeAssoc, QWidget *parent=nullptr);

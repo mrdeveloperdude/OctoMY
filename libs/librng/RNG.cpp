@@ -99,11 +99,11 @@ RNG * RNG::sourceFactory(RNGMerit m) {
 		case (SCALABLE):
 			return new ParkMillerPRNG();
 		case (SECURE):
-			return new DevRandomRNG();
+			return new DevURandomRNG();
 		case (SYSTEM):
 			return new SystemPRNG();
 		case (ACCURATE):
-			return new DevRandomRNG();
+			return new DevURandomRNG();
 		default:
 		case (GENERAL):
 			return new ParkMillerPRNG();

@@ -46,7 +46,7 @@ public:
 	CourierMandate mMandate;
 
 public:
-	explicit TestCourier(QString dest, QByteArray datagram, const qint32 mMaxSends=1 , const qint32 mMaxRecs=1 , CommsTester *parent = nullptr);
+	explicit TestCourier(QString dest, QByteArray datagram, CommsChannel &comms, const qint32 mMaxSends=1, const qint32 mMaxRecs=1, CommsTester *parent = nullptr);
 	virtual ~TestCourier();
 
 public:
@@ -62,6 +62,7 @@ public:
 	//Return number of bytes actually read.
 	quint16 dataReceived(QDataStream &ds, quint16 availableBytes) Q_DECL_OVERRIDE;
 
+	void writeSummary();
 };
 
 

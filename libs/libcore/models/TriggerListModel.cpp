@@ -51,6 +51,7 @@ bool TriggerListModel::insertRows(int row, int count, const QModelIndex &parent)
 		mTriggers<<new Trigger();
 	}
 	endInsertRows();
+	return false;
 }
 
 bool TriggerListModel::removeRows(int row, int count, const QModelIndex &parent)
@@ -58,4 +59,5 @@ bool TriggerListModel::removeRows(int row, int count, const QModelIndex &parent)
 	beginRemoveRows(parent, row, row + count - 1);
 	// FIXME: Implement me!
 	endRemoveRows();
+	return false;
 }

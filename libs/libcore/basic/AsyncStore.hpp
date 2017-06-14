@@ -44,10 +44,12 @@ public:
 	// Make if needed, load if otherwise
 	void bootstrap(bool loadOnly=false, bool runInBackground=true);
 
-	bool isReady();
-	bool isInProgress();
-	bool hasError();
+	bool isReady(); // const not possible beacuse of atomics
+	bool isInProgress(); // const not possible beacuse of atomics
+	bool hasError(); // const not possible beacuse of atomics
 	bool fileExists() const;
+
+	QString filename() const;
 
 	friend class GenerateRunnable<AsyncStore>;
 

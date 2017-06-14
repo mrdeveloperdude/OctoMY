@@ -18,7 +18,7 @@
 
 #include "comms/couriers/AgentStateCourier.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
-#include "comms/couriers/BlobCourier.hpp"
+#include "comms/couriers/blob/BlobCourier.hpp"
 
 #include "agent/AgentConstants.hpp"
 
@@ -31,9 +31,10 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 	, mController(controller)
 	, mNodeAssoc(nodeAssoc)
 	, mSpinner(nullptr)
-	, mAgentStateCourier(new AgentStateCourier(nullptr, this))
-	, mSensorsCourier(new SensorsCourier(this))
-	, mBlobCourier(new BlobCourier(this))
+//	, mAgentStateCourier(new AgentStateCourier(nullptr, this))
+//	, mSensorsCourier(new SensorsCourier(this))
+//	, mBlobCourier(new BlobCourier(this))
+	, mCouriers(mNodeAssoc->id(), *this)
 
 {
 	OC_METHODGATE();
@@ -64,18 +65,18 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 		qDebug()<<"CONNECTED onConnectButtonStateChanged";
 	}
 
-	const QString fullID=mNodeAssoc->id();
-	qDebug()<<"REMOTE CLIENT WIDGET DESTINATION SET TO "<<fullID;
-	mAgentStateCourier->setDestination(fullID);
-	mSensorsCourier->setDestination(fullID);
-	mBlobCourier->setDestination(fullID);
+//	const QString fullID=mNodeAssoc->id();
+//	qDebug()<<"REMOTE CLIENT WIDGET DESTINATION SET TO "<<fullID;
+//	mAgentStateCourier->setDestination(fullID);
+//	mSensorsCourier->setDestination(fullID);
+//	mBlobCourier->setDestination(fullID);
 
 
-	if(nullptr!=mAgentStateCourier) {
-		mAgentStateCourier->setHookSignals(*this,true);
-	} else {
-		qWarning()<<"ERROR: Could not hook agent state courier events, no courier";
-	}
+//	if(nullptr!=mAgentStateCourier) {
+//		mAgentStateCourier->setHookSignals(*this,true);
+//	} else {
+//		qWarning()<<"ERROR: Could not hook agent state courier events, no courier";
+//	}
 
 	if(nullptr!=mController) {
 		mController->setHookCommsSignals(*this, true);
@@ -190,11 +191,7 @@ void ClientWidget::updateOnlineStatus()
 bool ClientWidget::courierRegistration()
 {
 	OC_METHODGATE();
-	CommsChannel *cc=comms();
-	if(nullptr!=cc) {
-		return cc->hasCourier(*mSensorsCourier);
-	}
-	return false;
+	return mCouriers.commsEnabled();
 }
 
 void ClientWidget::setCourierRegistration(bool reg)
@@ -202,11 +199,11 @@ void ClientWidget::setCourierRegistration(bool reg)
 	OC_METHODGATE();
 	CommsChannel *cc=comms();
 	if(nullptr!=cc) {
-
 		//qDebug()<<"REGISTERING SENSORS COURIER FOR " <<mNodeAssoc->id();
-		cc->setCourierRegistered(*mAgentStateCourier, reg);
-		cc->setCourierRegistered(*mSensorsCourier, reg);
-		cc->setCourierRegistered(*mBlobCourier, reg);
+		//cc->setCourierRegistered(*mAgentStateCourier, reg);
+		//cc->setCourierRegistered(*mSensorsCourier, reg);
+		//cc->setCourierRegistered(*mBlobCourier, reg);
+		mCouriers.setCommsEnabled(reg);
 		// Adaptively start commschannel when there are couriers registered
 		const int ct=cc->courierCount();
 		//qDebug()<<"COMMS LEFT WITH "<<ct<<" COURIERS";
@@ -308,8 +305,9 @@ void ClientWidget::onSyncParameterChanged(ISyncParameter *sp)
 {
 	OC_METHODGATE();
 	qDebug()<<"ClientWidget ASC: ON VALUE CHANGED: "<<sp->toString();
-	if(nullptr!=mAgentStateCourier) {
-		const bool panic=mAgentStateCourier->panic();
+	AgentStateCourier *asc=mCouriers.agentStateCourier();
+	if(nullptr!=asc) {
+		const bool panic=asc->panic();
 		ui->widgetPanic->setPanic(panic);
 	}
 }
@@ -379,9 +377,10 @@ void ClientWidget::onSteeringChanged(qreal throttle, qreal steeringAngle)
 {
 	OC_METHODGATE();
 	//qDebug()<<"THROT: "<<throttle<<" STEER: "<<steeringAngle;
-	if(nullptr!=mAgentStateCourier) {
-		mAgentStateCourier->setPoseValue(0,throttle);
-		mAgentStateCourier->setPoseValue(1,steeringAngle);
+	AgentStateCourier *asc=mCouriers.agentStateCourier();
+	if(nullptr!=asc) {
+		asc->setPoseValue(0,throttle);
+		asc->setPoseValue(1,steeringAngle);
 	} else {
 		qWarning()<<"ERROR: no ASC when changing THROT: "<<throttle<<" STEER: "<<steeringAngle;
 	}
@@ -456,8 +455,9 @@ void ClientWidget::on_widgetPanic_toggled(bool panic)
 		qWarning()<<str;
 		appendLog(str);
 	}
-	if(nullptr!=mAgentStateCourier) {
-		mAgentStateCourier->setPanic(panic);
+	AgentStateCourier *asc=mCouriers.agentStateCourier();
+	if(nullptr!=asc) {
+		asc->setPanic(panic);
 	} else {
 		qWarning()<<"ERROR: no ASC when changing panic to "<<panic;
 	}

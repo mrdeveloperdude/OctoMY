@@ -50,7 +50,7 @@ NetworkAddress::~NetworkAddress()
 
 
 //static quint64 gipct=0;
-QHostAddress NetworkAddress::ip()
+QHostAddress NetworkAddress::ip() const
 {
 	OC_METHODGATE();
 	/*
@@ -67,7 +67,7 @@ QHostAddress NetworkAddress::ip()
 	return mIP;
 }
 
-quint16 NetworkAddress::port()
+quint16 NetworkAddress::port() const
 {
 	OC_METHODGATE();
 	return mPort;
@@ -86,7 +86,7 @@ void NetworkAddress::setIP(QHostAddress ip)
 	mIP=ip;
 }
 
-QVariantMap NetworkAddress::toVariantMap()
+QVariantMap NetworkAddress::toVariantMap() const
 {
 	OC_METHODGATE();
 	QVariantMap map;

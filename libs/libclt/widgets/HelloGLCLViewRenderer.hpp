@@ -26,7 +26,7 @@ public:
 
 	}
 	bool setRendering(bool running, bool block=false) Q_DECL_OVERRIDE{
-
+		return false;
 	}
 	virtual bool isRendering() const  Q_DECL_OVERRIDE
 	{

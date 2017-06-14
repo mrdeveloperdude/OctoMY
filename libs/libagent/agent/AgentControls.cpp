@@ -41,7 +41,7 @@ void AgentControls::unRegisterClient(QString fullID)
 void AgentControls::setCommsEnabled(bool enable)
 {
 	OC_METHODGATE();
-	for(CourierSet *set:mCouriers) {
+	for(AgentCourierSet *set:mCouriers) {
 		set->setCommsEnabled(enable);
 	}
 }

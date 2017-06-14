@@ -20,11 +20,11 @@ class NetworkAddress{
 		virtual ~NetworkAddress();
 
 	public:
-		QHostAddress ip();
-		quint16 port();
+		QHostAddress ip() const;
+		quint16 port() const;
 		void setPort(quint16 port);
 		void setIP(QHostAddress ip);
-		QVariantMap toVariantMap();
+		QVariantMap toVariantMap() const;
 		QString toString() const;
 		bool isValid(bool allowLoopback=true, bool allowMulticast=false) const;
 		bool operator==(const NetworkAddress &o) const;

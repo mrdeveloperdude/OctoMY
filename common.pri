@@ -7,6 +7,9 @@ QMAKE_TARGET_COMPANY =		"OctoMY™"
 QMAKE_TARGET_COPYRIGHT =	"Copyright © 2012-2017 Lennart Rolland <lennartrolland@gmail.com>"
 QMAKE_TARGET_DESCRIPTION =	"N-Limbed madness™"
 
+# Set maximum compression level for resources
+QMAKE_RESOURCE_FLAGS += -compress 9
+
 
 # RUN TESTS ON RELEASE BUILD
 # NOTE: RUN_WEB_TESTS SHOULD BE ON WHEN THE BUILDING MACHINE IS CONNECTED TO INTERNET

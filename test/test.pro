@@ -28,10 +28,10 @@ TEST_PROJECTS+= \
 #	testHashstore \
 #	testIdenticon \
 #	testKey \
-#	testKeyStore \
+	testKeyStore \
 #	testNetworkAddress \
-#	testNodeAssociate \
-#	testNodeAssociateStore \
+	testNodeAssociate \
+	testNodeAssociateStore \
 #	testOpenCL \
 #	testParser \
 #	testPortableID \

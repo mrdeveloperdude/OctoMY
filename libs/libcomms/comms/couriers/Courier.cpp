@@ -15,11 +15,15 @@
 
 const quint32 Courier::FIRST_USER_ID=1024;
 
+quint32 Courier::mCt=0;
 
-Courier::Courier(QString name, quint32 id, QObject *parent)
+
+Courier::Courier(QString name, quint32 id, CommsChannel &cc, QObject *parent)
 	: QObject(parent)
+	, mComms(cc)
 	, mName(name)
 	, mID(id)
+	, mSer(mCt++)
 	, mLastOpportunity(0)
 {
 
@@ -36,14 +40,10 @@ const QString  &Courier::destination() const
 	return mDestination;
 }
 
-CommsChannel *Courier::comms() const
+
+CommsChannel &Courier::comms() const
 {
 	return mComms;
-}
-
-bool Courier::isRegistered() const
-{
-	return nullptr!=mComms;
 }
 
 
@@ -59,6 +59,7 @@ void Courier::setForwardRescheduleSignal(QObject &ob, bool fwd)
 		}
 	}
 }
+
 
 
 quint64 Courier::lastOpportunity() const
@@ -82,6 +83,18 @@ QString Courier::name() const
 	return mName;
 }
 
+
+quint32 Courier::ser()const
+{
+	return mSer;
+}
+
+
+QString Courier::toString() const
+{
+	QString out="Courier{name="+mName+", id="+mID+", ser="+QString::number(mSer)+"}";
+	return out;
+}
 
 // Update courier state when channel has opportunity
 void Courier::update(quint64 now)

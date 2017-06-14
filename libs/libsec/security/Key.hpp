@@ -71,6 +71,10 @@ public:
 	QString toString();
 	bool isValid(bool onlyPublic);
 
+
+	bool hasPublic(bool thatIsValid=false);
+	bool hasPrivate(bool thatIsValid=false);
+
 	// Sign message with our private key
 	QByteArray sign(const QByteArray &source);
 

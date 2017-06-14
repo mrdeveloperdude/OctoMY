@@ -34,7 +34,7 @@ DiscoveryClient::DiscoveryClient(Node &node)
 	  //, ourID(utility::toHash(ourPubKey))
 	  //, zeroID(utility::toHash(""))
 {
-	if(nullptr==&mNode){
+	if(nullptr==&mNode) {
 		qWarning()<<"ERROR: node was nullreference";
 	}
 	mTimer.setInterval(500);
@@ -44,7 +44,8 @@ DiscoveryClient::DiscoveryClient(Node &node)
 	}
 }
 
-bool DiscoveryClient::isStarted(){
+bool DiscoveryClient::isStarted()
+{
 	return mTimer.isActive();
 }
 
@@ -216,15 +217,20 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map)
 			part=QSharedPointer<NodeAssociate>(new NodeAssociate(map));
 			if(nullptr!=part) {
 				if(part->isValidForClient()) {
-					DiscoveryCourier *courier=new DiscoveryCourier(part);
-					if(nullptr!=courier) {
-						peers.setParticipant(part);
-						courier->setDestination(part->id());
-						mNode.comms()->setCourierRegistered(*courier, true);
-						qDebug()<<" + Adding new participant with ID: "<<partID;
-						emit nodeDiscovered(partID);
+					CommsChannel *comms=mNode.comms();
+					if(nullptr!=comms) {
+						DiscoveryCourier *courier=new DiscoveryCourier(part, *comms);
+						if(nullptr!=courier) {
+							peers.setParticipant(part);
+							courier->setDestination(part->id());
+							comms->setCourierRegistered(*courier, true);
+							qDebug()<<" + Adding new participant with ID: "<<partID;
+							emit nodeDiscovered(partID);
+						} else {
+							qWarning()<<"ERROR: Could not create courier for part with ID "<<partID;
+						}
 					} else {
-						qWarning()<<"ERROR: Could not create courier for part with ID "<<partID;
+						qWarning()<<"ERROR: Node had no comms";
 					}
 				} else {
 					qDebug()<<" + Deleting invalid new participant:"<<partID;

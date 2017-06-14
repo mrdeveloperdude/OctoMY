@@ -26,7 +26,7 @@ private:
 	quint64 mLastSend;
 
 public:
-	explicit DiscoveryCourier(QSharedPointer<NodeAssociate> ass, QObject *parent = nullptr);
+	explicit DiscoveryCourier(QSharedPointer<NodeAssociate> ass, CommsChannel &comms, QObject *parent = nullptr);
 	virtual ~DiscoveryCourier();
 
 // Courier interface

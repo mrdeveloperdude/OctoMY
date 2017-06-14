@@ -14,8 +14,8 @@
 #include <QGyroscopeReading>
 
 
-SensorsCourier::SensorsCourier(QObject *parent)
-	: Courier("Sensors", Courier::FIRST_USER_ID+3, parent)
+SensorsCourier::SensorsCourier(CommsChannel &comms, QObject *parent)
+	: Courier("Sensors", Courier::FIRST_USER_ID+3, comms, parent)
 	, mMandate(400)
 
 	  //const quint16 payloadSize , const quint8 priority=10, const quint64 interval=1000, const bool receiveActive=true, const bool sendActive=true);
@@ -56,6 +56,8 @@ quint16 SensorsCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 {
 	(void)ds;
 	(void)availableBytes;
+	// TODO: Implement
+	return 0;
 }
 
 

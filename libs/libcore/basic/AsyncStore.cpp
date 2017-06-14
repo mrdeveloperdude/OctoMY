@@ -38,7 +38,7 @@ void AsyncStore::bootstrapWorker()
 
 void AsyncStore::bootstrap(bool loadOnly, bool runInBackground)
 {
-	//qDebug()<<"AsyncStore bootstrap() loadOnly="<<loadOnly<<", bg="<<runInBackground;
+	qDebug()<<"AsyncStore bootstrap() loadOnly="<<loadOnly<<", bg="<<runInBackground;
 	if(mReady) {
 		emit storeReady(!mError);
 		return;
@@ -54,33 +54,36 @@ void AsyncStore::bootstrap(bool loadOnly, bool runInBackground)
 		if(nullptr!=tp) {
 			const bool ret=tp->tryStart(new GenerateRunnable<AsyncStore>(*this));
 			if(ret) {
-				//qDebug()<<"ASYNCSTORE: Successfully started background thread";
+				qDebug()<<"ASYNCSTORE: Successfully started background thread";
 				return;
 			} else {
 				tp->deleteLater();
 				qWarning()<<"ERROR: Could not start runnable";
+				return;
 			}
 		} else {
 			qWarning()<<"ERROR: No global threadpool available, defaulting to serial version";
+			return;
 		}
-		//qDebug()<<"ASYNCSTORE: Falling back to serial bootstrap";
+		qWarning()<<"ERROR: Should not be here, falling back to serial bootstrap";
+		return;
 	}
 	// Use single threaded way
 	bootstrapWorker();
 }
 
 
-bool AsyncStore::isReady()
+bool AsyncStore::isReady() // const not possible beacuse of atomics
 {
 	return mReady.get();
 }
 
-bool AsyncStore::isInProgress()
+bool AsyncStore::isInProgress() // const not possible beacuse of atomics
 {
 	return mInProgress;
 }
 
-bool AsyncStore::hasError()
+bool AsyncStore::hasError() // const not possible beacuse of atomics
 {
 	return mError;
 }
@@ -88,4 +91,10 @@ bool AsyncStore::hasError()
 bool AsyncStore::fileExists() const
 {
 	return QFile(mFilename).exists();
+}
+
+
+QString AsyncStore::filename() const
+{
+	return mFilename;
 }

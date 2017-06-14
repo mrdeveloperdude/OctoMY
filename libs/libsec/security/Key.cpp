@@ -180,8 +180,39 @@ bool Key::isValid(bool onlyPublic)
 	OC_METHODGATE();
 	Q_D(Key);
 	OC_ASSERT(nullptr!=d);
-	return ( onlyPublic ? (d->mValidPublic) : (d->mValidPublic&&d->mValidPrivate) );
+	return ( onlyPublic ? (d->mValidPublic) : (d->mValidPublic && d->mValidPrivate) );
 }
+
+
+bool Key::hasPrivate(bool thatIsValid){
+	OC_METHODGATE();
+	Q_D(Key);
+	OC_ASSERT(nullptr!=d);
+	if(d->mKey.isEmpty())
+	{
+		return false;
+	}
+	if(thatIsValid){
+		return d->mValidPrivate;
+	}
+	return true;
+}
+
+
+bool Key::hasPublic(bool thatIsValid){
+	OC_METHODGATE();
+	Q_D(Key);
+	OC_ASSERT(nullptr!=d);
+	if(d->mPubKey.isEmpty())
+	{
+		return false;
+	}
+	if(thatIsValid){
+		return d->mValidPublic;
+	}
+	return true;
+}
+
 
 // Sign message with our private key
 QByteArray Key::sign(const QByteArray &source)

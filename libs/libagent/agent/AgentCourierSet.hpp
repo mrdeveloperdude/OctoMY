@@ -1,7 +1,7 @@
 #ifndef AGENTCOURIERSET_HPP
 #define AGENTCOURIERSET_HPP
 
-#include "CourierSet.hpp"
+#include "comms/couriers/CourierSet.hpp"
 
 #include <QDataStream>
 

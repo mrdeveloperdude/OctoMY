@@ -468,7 +468,7 @@ void RemoteWindow::onError(QString e)
 void RemoteWindow::onClientAdded(CommsSession *c)
 {
 
-	qDebug()<<"REMOTEW comms: client added "<<(0==c?"null":QString::number(c->sessionID(),16));
+	qDebug()<<"REMOTEW comms: client added "<<(0==c?"null":QString::number(c->localSessionID(),16));
 }
 
 void RemoteWindow::onConnectionStatusChanged(bool c)

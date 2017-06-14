@@ -994,11 +994,11 @@ QString toSoundex(QString in)
 			}
 			lastChar=ch;
 		}
-		if(out.size()<4) {
-			out+=QString("0").repeated(4-out.size());
-		}
-		return out;
 	}
+	if(out.size()<4) {
+		out+=QString("0").repeated(4-out.size());
+	}
+	return out;
 }
 
 

@@ -109,9 +109,6 @@ void TestNodeAssociate::test(){
 	QVERIFY(!ass->isValidForClient(false));
 	QVERIFY(!ass->isValidForServer());
 
-	ClientSignature sig=ass->toClientSignature();
-
-	qDebug()<<"SIG: "<<sig.toString();
 
 	const QStringList &pins=ass->pins();
 	QCOMPARE(pins.size(),0);

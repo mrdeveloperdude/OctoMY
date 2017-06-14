@@ -10,6 +10,7 @@ TestListModel::TestListModel(QObject *parent)
 QVariant TestListModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	// FIXME: Implement me!
+	return QVariant();
 }
 
 bool TestListModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
@@ -30,6 +31,7 @@ int TestListModel::rowCount(const QModelIndex &parent) const
 		return 0;
 
 	// FIXME: Implement me!
+	return 0;
 }
 
 QVariant TestListModel::data(const QModelIndex &index, int role) const
@@ -64,6 +66,7 @@ bool TestListModel::insertRows(int row, int count, const QModelIndex &parent)
 	beginInsertRows(parent, row, row + count - 1);
 	// FIXME: Implement me!
 	endInsertRows();
+	return false;
 }
 
 bool TestListModel::removeRows(int row, int count, const QModelIndex &parent)
@@ -71,4 +74,5 @@ bool TestListModel::removeRows(int row, int count, const QModelIndex &parent)
 	beginRemoveRows(parent, row, row + count - 1);
 	// FIXME: Implement me!
 	endRemoveRows();
+	return false;
 }
