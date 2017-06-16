@@ -1,4 +1,4 @@
-include($$TOP_PWD/test/stress.pri)
+include($$TESTS/stress.pri)
 
 TARGET = stress_template
 
@@ -8,4 +8,6 @@ HEADERS += \
 SOURCES += \
 	StressTemplate.cpp
 
-include($$TOP_PWD/status.pri)
+include($$PRIS/status.pri)
+include($$TESTS/test_autorun.pri)
+

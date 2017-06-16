@@ -20,6 +20,7 @@ TEST_PROJECTS+= \
 #	testBlob \
 #	testCarSteeringWidget \
 	testCommsChannel \
+	testCommsSession \
 #	testCreepyVoice \
 #	testDeliveryWizard \
 #	testDiscovery \
