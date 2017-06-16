@@ -12,8 +12,8 @@
 #include <QSignalSpy>
 #include <QFileInfo>
 
-TestCourier::TestCourier(QString  dest, QByteArray datagram, CommsChannel &comms, const qint32 maxSends , const qint32 maxRecs, CommsTester *parent)
-	: Courier("Test", Courier::FIRST_USER_ID+313, comms, parent)
+TestCourier::TestCourier(QString name, QString  dest, QByteArray datagram, CommsChannel &comms, const qint32 maxSends , const qint32 maxRecs, CommsTester *parent)
+	: Courier(name, Courier::FIRST_USER_ID+313, comms, parent)
 	, mCt(parent)
 	, mSoFar(0)
 	, mDatagram(datagram)
@@ -126,7 +126,7 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 			qDebug() << mMyAddress << ":" << mMyPort << " --> " << toPort;
 			QString myID="1234";
 			//CommsSignature sig(myID, NetworkAddress(mMyAddress, toPort));
-			TestCourier *tc=new TestCourier(myID, "This is my humble payload", mCc, mTestCount, mTestCount, this);
+			TestCourier *tc=new TestCourier(mName+"Courier", myID, "This is my humble payload", mCc, mTestCount, mTestCount, this);
 			QVERIFY(nullptr!=tc);
 			mCc.setCourierRegistered(*tc, true);
 		} else {
@@ -217,6 +217,9 @@ void TestCommsChannel::testSingle()
 	const quint16 basePort=54345;
 	const qint32 maxSends=10;
 	const qint32 maxRecs=10;
+	const qint16 keyBits=128;
+	const QCryptographicHash::Algorithm hashAlgo=QCryptographicHash::Md5;
+	const KeySecurityPolicy policy(keyBits, hashAlgo);
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 
 	qDebug()<<"";
@@ -225,6 +228,8 @@ void TestCommsChannel::testSingle()
 	qDebug()<<"  + basePort:  "<<basePort;
 	qDebug()<<"  + maxSends:  "<<maxSends;
 	qDebug()<<"  + maxRecs:   "<<maxRecs;
+	qDebug()<<"  + keyBits:   "<<keyBits;
+	qDebug()<<"  + hashAlgo:  "<<hashAlgo;
 	qDebug()<<"  + now:       "<<now;
 
 	qDebug()<<"";
@@ -236,7 +241,7 @@ void TestCommsChannel::testSingle()
 	}
 	QVERIFY(!keyStoreFileA.exists());
 
-	KeyStore keyStoreA(keyStoreFilenameA);
+	KeyStore keyStoreA(keyStoreFilenameA, policy);
 	keyStoreA.bootstrap(false,false);
 	Key &keyA=keyStoreA.localKey();
 	qDebug() << keyA.toString();
@@ -277,7 +282,7 @@ void TestCommsChannel::testSingle()
 		QVERIFY(keyStoreFileB.remove());
 	}
 	QVERIFY(!keyStoreFileB.exists());
-	KeyStore keyStoreB(keyStoreFilenameB);
+	KeyStore keyStoreB(keyStoreFilenameB, policy);
 	keyStoreB.bootstrap(false,false);
 	Key &keyB=keyStoreB.localKey();
 	qDebug() << keyB.toString();
@@ -334,9 +339,9 @@ void TestCommsChannel::testSingle()
 	CommsChannel chanA(keyStoreA, peersA);
 	CommsSignalLogger sigLogA("LOG-A");
 	chanA.setHookCommsSignals(sigLogA, true);
-	TestCourier courA1(idB, "This is datagram A1 123", chanA, maxSends, maxRecs);
-	//chanA.setCourierRegistered(courA1, true);
-	//TestCourier courA2(commSigB, "This is datagram A2 uvw xyz", maxSends, maxRecs); chanA.setCourierRegistered(courA2, true);
+	TestCourier courA1("Courier A1",idB, "This is datagram A1 123", chanA, maxSends, maxRecs);
+	chanA.setCourierRegistered(courA1, true);
+	//TestCourier courA2("Courier A2", commSigB, "This is datagram A2 uvw xyz", maxSends, maxRecs); chanA.setCourierRegistered(courA2, true);
 	qDebug()<<"SUMMARY: "<<chanA.getSummary();
 
 	qDebug()<<"";
@@ -344,9 +349,9 @@ void TestCommsChannel::testSingle()
 	CommsChannel chanB(keyStoreB, peersB);
 	CommsSignalLogger sigLogB("LOG-B");
 	chanA.setHookCommsSignals(sigLogB, true);
-	TestCourier courB1(idA, "This is datagram B1 æøåä", chanB, maxSends, maxRecs);
+	TestCourier courB1("Courier B1", idA, "This is datagram B1 æøåä", chanB, maxSends, maxRecs);
 	chanB.setCourierRegistered(courB1, true);
-	//TestCourier courB2(commSigA, "This is datagram B2 Q", maxSends, maxRecs); chanB.setCourierRegistered(courB2, true);
+	//TestCourier courB2("Courier B2", commSigA, "This is datagram B2 Q", maxSends, maxRecs); chanB.setCourierRegistered(courB2, true);
 	qDebug()<<"SUMMARY: "<<chanB.getSummary();
 
 	qDebug()<<"";

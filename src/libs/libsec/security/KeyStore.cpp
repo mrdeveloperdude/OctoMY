@@ -8,8 +8,6 @@
 #include "KeyStore.hpp"
 #include "utility/Utility.hpp"
 
-#include "SecurityConstants.hpp"
-
 #include <QJsonObject>
 #include <QJsonParseError>
 #include <QFile>
@@ -20,8 +18,9 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-KeyStore::KeyStore(QString fn, QObject *parent)
+KeyStore::KeyStore(QString fn, KeySecurityPolicy policy, QObject *parent)
 	: AsyncStore(fn, parent)
+	, mPolicy(policy)
 {
 	setObjectName("KeyStore");
 //qDebug()<<"KeyStore() file="<<fn;
@@ -45,7 +44,7 @@ void KeyStore::bootstrapWorkerImpl()
 	QFile f(mFilename);
 	if(!f.exists()) {
 		qDebug()<<"KEYSTORE: no keystore file found, generating local keypair and saving";
-		mLocalKey=Key(OCTOMY_KEY_BITS);
+		mLocalKey=Key(mPolicy.bits());
 		save();
 	}
 	load();

@@ -46,7 +46,7 @@ public:
 	CourierMandate mMandate;
 
 public:
-	explicit TestCourier(QString dest, QByteArray datagram, CommsChannel &comms, const qint32 mMaxSends=1, const qint32 mMaxRecs=1, CommsTester *parent = nullptr);
+	explicit TestCourier(QString name, QString dest, QByteArray datagram, CommsChannel &comms, const qint32 mMaxSends=1, const qint32 mMaxRecs=1, CommsTester *parent = nullptr);
 	virtual ~TestCourier();
 
 public:

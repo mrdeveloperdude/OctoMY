@@ -415,7 +415,7 @@ bool CommsChannel::recieveEncryptedBody(PacketReadState &state)
 	// Read Pub-key encrypted message body
 	state.readProtocolEncryptedMessage();
 	if(state.octomyProtocolEncryptedMessageSize != state.OCTOMY_ENCRYPTED_MESSAGE_SIZE) { // Encrypted message should be OCTOMY_ENCRYPTED_MESSAGE_SIZE bytes, no more, no less
-		QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Less encrypted message size mismatch: "+QString::number(state.octomyProtocolEncryptedMessageSize)+ " vs. "+QString::number(state.OCTOMY_ENCRYPTED_MESSAGE_SIZE);
+		QString es="ERROR: OctoMY Protocol Session-Less encrypted message size mismatch: "+QString::number(state.octomyProtocolEncryptedMessageSize)+ " vs. "+QString::number(state.OCTOMY_ENCRYPTED_MESSAGE_SIZE);
 		qWarning()<<es;
 		emit commsError(es);
 		return false;
@@ -426,7 +426,7 @@ bool CommsChannel::recieveEncryptedBody(PacketReadState &state)
 	QByteArray octomyProtocolDecryptedMessage=localKey.decrypt(state.octomyProtocolEncryptedMessage);
 	const int octomyProtocolDecryptedMessageSize=octomyProtocolDecryptedMessage.size();
 	if(0 == octomyProtocolDecryptedMessageSize) { // Size of decrypted message should be non-zero
-		QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Less nonce decryption failed";
+		QString es="ERROR: OctoMY Protocol Session-Less nonce decryption failed";
 		qWarning()<<es;
 		emit commsError(es);
 		return false;
@@ -438,7 +438,7 @@ bool CommsChannel::recieveMagicAndVersion(PacketReadState &state)
 {
 	state.readProtocolMagic();
 	if(OCTOMY_PROTOCOL_MAGIC!=state.octomyProtocolMagic) {
-		QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Magic mismatch: "+QString::number(state.octomyProtocolMagic,16)+ " vs. "+QString::number((quint32)OCTOMY_PROTOCOL_MAGIC,16);
+		QString es="ERROR: OctoMY Protocol Magic mismatch: "+QString::number(state.octomyProtocolMagic,16)+ " vs. "+QString::number((quint32)OCTOMY_PROTOCOL_MAGIC,16);
 		qWarning()<<es;
 		emit commsError(es); //TODO: Handle this by making a few retries before requiering user to aprove further retries (to avoid endless hammering)
 		return false;
@@ -492,7 +492,7 @@ void CommsChannel::recieveSyn(PacketReadState &state)
 	if(recieveMagicAndVersion(state)) {
 		state.readProtocolEncryptedMessage();
 		if(state.octomyProtocolEncryptedMessageSize <= 0) {
-			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol encrypted message size <= 0";
+			QString es="ERROR: OctoMY Protocol encrypted message size <= 0";
 			qWarning()<<es;
 			emit commsError(es);
 			return;
@@ -500,7 +500,7 @@ void CommsChannel::recieveSyn(PacketReadState &state)
 		state.readEncSenderID();
 		// TODO meta overhead bytes for bytearray from stream
 		if(state.octomyProtocolSenderIDRawSize != state.OCTOMY_SENDER_ID_SIZE) { // Full ID should be OCTOMY_FULL_ID_SIZE bytes, no more, no less
-			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Less Sender ID size mismatch: "+QString::number(state.octomyProtocolSenderIDRawSize)+ " vs. "+QString::number(state.OCTOMY_SENDER_ID_SIZE);
+			QString es="ERROR: OctoMY Protocol Session-Less Sender ID size mismatch: "+QString::number(state.octomyProtocolSenderIDRawSize)+ " vs. "+QString::number(state.OCTOMY_SENDER_ID_SIZE);
 			qWarning()<<es;
 			emit commsError(es);
 			return;
@@ -512,7 +512,7 @@ void CommsChannel::recieveSyn(PacketReadState &state)
 
 		state.readEncDesiredRemoteSessionID();
 		if(state.octomyProtocolDesiredRemoteSessionID < FIRST_STATE_ID ) {
-			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol desired remote session ID not valid: "+QString::number(state.octomyProtocolDesiredRemoteSessionID);
+			QString es="ERROR: OctoMY Protocol desired remote session ID not valid: "+QString::number(state.octomyProtocolDesiredRemoteSessionID);
 			qWarning()<<es;
 			emit commsError(es);
 			return;
@@ -542,7 +542,7 @@ QSharedPointer<CommsSession> CommsChannel::lookUpSession(QString id, SESSION_ID_
 				} else {
 					QSharedPointer<NodeAssociate> participant=mPeers.getParticipant(id);
 					if(nullptr==participant) {
-						QString es=QString::number(sTotalRecCount)+" ERROR: no participant found for ID "+id;
+						QString es="ERROR: no participant found for ID "+id;
 						qWarning()<<es;
 						emit commsError(es);
 					} else {
@@ -551,7 +551,7 @@ QSharedPointer<CommsSession> CommsChannel::lookUpSession(QString id, SESSION_ID_
 						session->setLocalSessionID(localSessionID);
 						session->setAddress(participant->publicAddress());
 						mSessions.insert(session);
-						qDebug()<< "NEW SESSION CREATED FOR ID "<<id<< " with remote sessionID "<<QString::number(desiredRemoteSessionID);
+						qDebug()<< "NEW SESSION CREATED FOR ID "<<id<< " with desired remote sessionID "<<QString::number(desiredRemoteSessionID) <<" and local sessionID "<<QString::number(localSessionID);
 					}
 				}
 			} else {
@@ -587,7 +587,7 @@ void CommsChannel::recieveSynAck(PacketReadState &state)
 		// Extract desired remote session ID
 		state.readEncDesiredRemoteSessionID();
 		if(state.octomyProtocolDesiredRemoteSessionID < FIRST_STATE_ID ) {
-			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol desired remote session ID not valid: "+QString::number(state.octomyProtocolDesiredRemoteSessionID);
+			QString es="ERROR: OctoMY Protocol desired remote session ID not valid: "+QString::number(state.octomyProtocolDesiredRemoteSessionID);
 			qWarning()<<es;
 			emit commsError(es);
 			return;
@@ -622,7 +622,7 @@ void CommsChannel::recieveData(PacketReadState &state)
 
 	SESSION_ID_TYPE sessionID = (SESSION_ID_TYPE)state.multimagic;
 	if(sessionID < FIRST_STATE_ID) {
-		QString es=QString::number(sTotalRecCount)+" ERROR: invalid multimagic specified";
+		QString es="ERROR: invalid multimagic specified";
 		qWarning()<<es;
 		emit commsError(es);
 		return;
@@ -630,7 +630,7 @@ void CommsChannel::recieveData(PacketReadState &state)
 	auto session=mSessions.getBySessionID(sessionID);
 	if(nullptr==session) {
 		//Unknown sender
-		QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Full sender unknown for session-ID: '"+QString::number(sessionID)+"'";
+		QString es="ERROR: OctoMY Protocol Session-Full sender unknown for session-ID: '"+QString::number(sessionID)+QStringLiteral("'. All available are: ")+mSessions.summary();
 		qWarning()<<es;
 		emit commsError(es);
 		return;
@@ -646,7 +646,7 @@ void CommsChannel::recieveData(PacketReadState &state)
 													  ;//+sizeof(quint32 );
 	//qDebug()<<totalRecCount<<"PACKET INITIAL SIZE: "<<size<<", HEADER CALCULATED SIZE: "<<header<<", THUS RAW BYES EXPECTED: "<<(size-header);
 				if ( size <= expectedHeaderSize  ) {
-					QString es=QString::number(sTotalRecCount)+" ERROR: Message too short: " +QString::number(size)+" vs. header: "+QString::number(expectedHeaderSize );
+					QString es="ERROR: Message too short: " +QString::number(size)+" vs. header: "+QString::number(expectedHeaderSize );
 					qWarning()<<es;
 					emit commsError(es);
 					return;
@@ -677,7 +677,7 @@ void CommsChannel::recieveData(PacketReadState &state)
 			break;
 			default:
 			case(INVALID): {
-				QString es=QString::number(sTotalRecCount)+" "+QString::number(partsCount)+" ERROR: OctoMY message type invalid: "+QString::number((quint32)partMessageType,16);
+				QString es=""+QString::number(partsCount)+" ERROR: OctoMY message type invalid: "+QString::number((quint32)partMessageType,16);
 				qWarning()<<es;
 				emit commsError(es);
 				return;
@@ -701,7 +701,7 @@ void CommsChannel::recieveData(PacketReadState &state)
 						//qDebug()<<totalRecCount<<"ALL GOOD. COURIER BEHAVED EXEMPLARY";
 					}
 				} else {
-					QString es=QString::number(sTotalRecCount)+" "+QString::number(partsCount)+" ERROR: Courier read more than was available!";
+					QString es=""+QString::number(partsCount)+" ERROR: Courier read more than was available!";
 					qWarning()<<es;
 					emit commsError(es);
 					return;
@@ -710,7 +710,7 @@ void CommsChannel::recieveData(PacketReadState &state)
 			} else {
 				//TODO: Look at possibility of registering couriers on demand using something like this:
 				//emit wakeOnComms(octomy_message_type_int)
-				QString es=QString::number(sTotalRecCount)+" "+QString::number(partsCount)+" ERROR: No courier found for ID: "+QString::number(state.partMessageTypeID);
+				QString es=""+QString::number(partsCount)+" ERROR: No courier found for ID: "+QString::number(state.partMessageTypeID);
 				qWarning().noquote()<<es;
 				emit commsError(es);
 				return;
@@ -780,11 +780,11 @@ void CommsChannel::doSend( PacketSendState &state)
 	// Send data in stream
 	const quint32 sz=state.datagram.size();
 	if(nullptr==state.session) {
-		qWarning()<<"ERROR: session was null";
+		qWarning()<<"ERROR: session was null in doSend";
 		return;
 	}
 	const NetworkAddress na=state.session->address();
-	if(!na.isValid(false,false)) {
+	if(!na.isValid(true,false)) {
 		qWarning()<<"ERROR: invalid address: "	<<na;
 		return;
 	}
@@ -813,6 +813,8 @@ void CommsChannel::doSend( PacketSendState &state)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+
+
 void CommsChannel::sendIdle(const quint64 &now, QSharedPointer<CommsSession> session)
 {
 	if(nullptr==session) {
@@ -820,6 +822,9 @@ void CommsChannel::sendIdle(const quint64 &now, QSharedPointer<CommsSession> ses
 		return;
 	}
 	PacketSendState state;
+
+
+	state.setSession(session);
 
 	auto sessionID=session->remoteSessionID();
 	// TODO: What tha hall

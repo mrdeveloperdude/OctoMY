@@ -12,7 +12,7 @@
 #include "PortableID.hpp"
 #include "basic/GenerateRunnable.hpp"
 #include "basic/AsyncStore.hpp"
-
+#include "KeySecurityPolicy.hpp"
 
 #include <QByteArray>
 #include <QCryptographicHash>
@@ -33,10 +33,12 @@ private:
 	Key mLocalKey;
 	QMap<QString, Key > mPeers;
 
+	KeySecurityPolicy mPolicy;
+
 	friend class GenerateRunnable<KeyStore>;
 
 public:
-	explicit KeyStore(QString="", QObject *parent=nullptr);
+	explicit KeyStore(QString="", KeySecurityPolicy policy=KeySecurityPolicy(), QObject *parent=nullptr);
 	virtual ~KeyStore();
 
 

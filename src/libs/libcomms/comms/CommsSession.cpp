@@ -33,6 +33,9 @@ CommsSession::CommsSession(Key &key)
 	, mExpired(false)
 {
 
+	if(nullptr == &key){
+		qWarning()<<"ERROR: key was nullptr";
+	}
 }
 
 
