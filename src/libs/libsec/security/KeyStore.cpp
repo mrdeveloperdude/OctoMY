@@ -204,7 +204,7 @@ bool KeyStore::hasPubKeyForID(const QString &id)
 	if(!mReady) {
 		return false;
 	}
-	return (mPeers.end()==mPeers.find(id));
+	return (mPeers.end()!=mPeers.find(id));
 }
 
 void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
@@ -226,7 +226,13 @@ Key KeyStore::pubKeyForID(const QString &id)
 
 const QDebug &operator<<(QDebug &d, KeyStore &ks)
 {
-	d.nospace() <<"fn="<<ks.mFilename<<", fexists="<<ks.fileExists()<<", ready="<<(const bool)ks.mReady<<", inProgress="<<(const bool)ks.mInProgress<<", error="<<(const bool)ks.mError;
+	d.nospace() <<"KeyStore{ fn="<<ks.mFilename<<", fexists="<<ks.fileExists()<<", ready="<<(const bool)ks.mReady<<", inProgress="<<(const bool)ks.mInProgress<<", error="<<(const bool)ks.mError<<", peers:[";
+	for(QMap<QString, Key >::iterator b=ks.mPeers.begin(), e=ks.mPeers.end(); b!=e; ++b) {
+		QString key=b.key();
+		//b.value();
+		d.nospace()<<" + " <<key;
+	}
+	d.nospace() <<"]}";
 	return d.maybeSpace();
 }
 

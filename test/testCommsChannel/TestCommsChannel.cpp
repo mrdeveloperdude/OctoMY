@@ -318,6 +318,7 @@ void TestCommsChannel::testSingle()
 	qDebug()<<"####################################### BIND PARTY A to B";
 	partA->addTrust(idB);
 	peersA.setParticipant(partB);
+	qDebug()<<"IDB="<<idB;
 	keyStoreA.setPubKeyForID(keyB.pubKey());
 
 
@@ -376,6 +377,8 @@ void TestCommsChannel::testSingle()
 	chanA.stop();
 	chanB.stop();
 
+
+	/*
 	CommsSessionDirectory & sessDirA=chanA.sessions();
 	CommsSessionDirectory & sessDirB=chanB.sessions();
 
@@ -419,7 +422,7 @@ void TestCommsChannel::testSingle()
 	courA1.writeSummary();
 	courB1.writeSummary();
 
-
+*/
 	qDebug()<<"";
 	qDebug()<<"####################################### DELETING";
 

@@ -530,12 +530,13 @@ QSharedPointer<CommsSession> CommsChannel::lookUpSession(QString id, SESSION_ID_
 	// Look for existing sessions tied to this ID
 	QSharedPointer<CommsSession> session=mSessions.getByFullID(id);
 	if(nullptr==session) {
+		qDebug()<<"No session found for ID "<<id<<", generating one...";
 		if(mKeystore.hasPubKeyForID(id)) {
 			Key key=mKeystore.pubKeyForID(id);
 			if(key.isValid(true)) {
 				SESSION_ID_TYPE localSessionID=mSessions.generateUnusedSessionID();
 				if(localSessionID < FIRST_STATE_ID ) {
-					QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol local session ID not valid: "+QString::number(localSessionID);
+					QString es="ERROR: OctoMY Protocol local session ID not valid: "+QString::number(localSessionID);
 					qWarning()<<es;
 					emit commsError(es);
 				} else {
@@ -554,14 +555,13 @@ QSharedPointer<CommsSession> CommsChannel::lookUpSession(QString id, SESSION_ID_
 					}
 				}
 			} else {
-				QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Could not create session for sender	with ID "+id+", key was invalid";
+				QString es="ERROR: OctoMY Protocol Could not create session for sender	with ID "+id+", key was invalid";
 				qWarning()<<es;
 				emit commsError(es);
 			}
 		} else {
-			//Unknown sender
-			QString es=QString::number(sTotalRecCount)+" ERROR: OctoMY Protocol Session-Less sender unknown";
-			qWarning()<<es;
+			QString es=QStringLiteral("ERROR: OctoMY Protocol Session-Less sender '")+id+QStringLiteral("' unknown. Keystore ready=")+QString(mKeystore.isReady()?"YES":"NO");
+			qWarning().noquote()<<es;
 			emit commsError(es);
 		}
 	}
@@ -734,7 +734,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHo
 	//countReceived();
 	PacketReadState state(datagramS, remoteHostS,remotePortS);
 
-	QSharedPointer<CommsSession> session;
+	//QSharedPointer<CommsSession> session;
 	state.readMultimagic();
 	switch((Multimagic)state.multimagic) {
 	case(MULTIMAGIC_IDLE): {
