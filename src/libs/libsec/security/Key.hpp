@@ -43,8 +43,8 @@ public:
 	Key(Key && other);
 
 	Key & operator=(Key other);
-	bool operator==(Key &other);
-	bool operator!=(Key &other);
+	bool operator==(const Key &other) const;
+	bool operator!=(const Key &other) const;
 
 	friend void swap(Key& first, Key& second) /* nothrow */;
 
@@ -55,20 +55,20 @@ public:
 	// Actual usable methods
 public:
 
-	QString key();
+	QString key() const;
 
-	QString pubKey();
+	QString pubKey() const;
 
 	QString id() const;
 
 
-	int kid();
+	int kid() const;
 
-	int kct();
+	int kct() const;
 
-	QVariantMap toVariantMap(bool onlyPublic);
+	QVariantMap toVariantMap(bool onlyPublic) const;
 
-	QString toString();
+	QString toString() const;
 	bool isValid(bool onlyPublic);
 
 
@@ -91,12 +91,16 @@ public:
 	// NOTE: This method is expensive, and is only intended for the purpose of processing small amounts of data. If you need to process larger amounts of data, consider using in conjunction with faster symetric encryption (pass the keys to use using RSA encryption and the text using symetric encryption)
 	QByteArray decrypt(const QByteArray& data);
 
+
+	bool isEqual(Key &other) const;
 };
 
 
+/*
+bool operator== (const Key &a, const Key &b);
+bool operator!= (const Key &a, const Key &b);
 
-
-
+*/
 
 
 #endif // KEY_HPP

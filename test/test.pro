@@ -27,7 +27,7 @@ TEST_PROJECTS+= \
 #	testEventSourcing \
 #	testHashstore \
 #	testIdenticon \
-#	testKey \
+	testKey \
 	testKeyStore \
 #	testNetworkAddress \
 	testNodeAssociate \

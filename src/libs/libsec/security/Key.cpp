@@ -83,7 +83,7 @@ Key & Key::operator=(Key other)
 	return *this;
 }
 
-bool Key::operator==(Key &other)
+bool Key::operator==(const Key &other) const
 {
 	OC_METHODGATE();
 	//	qDebug()<<"bool Key::operator==(Key &other)";
@@ -91,7 +91,7 @@ bool Key::operator==(Key &other)
 }
 
 
-bool Key::operator!=(Key &other)
+bool Key::operator!=(const Key &other) const
 {
 	OC_METHODGATE();
 	//	qDebug()<<"bool Key::operator!=(Key &other)";
@@ -119,17 +119,17 @@ QString Key::hash(QString input)
 // Actual usable methods
 
 
-QString Key::key()
+QString Key::key() const
 {
 	OC_METHODGATE();
-	Q_D(Key);
+	const Q_D(Key);
 	return d->mKey;
 }
 
-QString Key::pubKey()
+QString Key::pubKey() const
 {
 	OC_METHODGATE();
-	Q_D(Key);
+	const Q_D(Key);
 	return d->mPubKey;
 }
 
@@ -141,21 +141,21 @@ QString Key::id() const
 }
 
 
-int Key::kid()
+int Key::kid() const
 {
 	OC_METHODGATE();
-	Q_D(Key);
+	const Q_D(Key);
 	return d->mKID;
 }
 
-int Key::kct()
+int Key::kct() const
 {
 	OC_METHODGATE();
-	Q_D(Key);
+	const Q_D(Key);
 	return d->mKCT;
 }
 
-QVariantMap Key::toVariantMap(bool onlyPublic)
+QVariantMap Key::toVariantMap(bool onlyPublic) const
 {
 	OC_METHODGATE();
 	QVariantMap map;
@@ -167,10 +167,10 @@ QVariantMap Key::toVariantMap(bool onlyPublic)
 	return map;
 }
 
-QString Key::toString()
+QString Key::toString() const
 {
 	OC_METHODGATE();
-	Q_D(Key);
+	const Q_D(Key);
 	OC_ASSERT(nullptr!=d);
 	return "Key: "+id()+" priv="+(key().isEmpty()?"UNSET":"SET")+ (d->mValidPrivate?"(VALID)":"(INVALID)") +" pub="+(pubKey().isEmpty()?"UNSET":"SET")+ (d->mValidPublic?"(VALID)":"(INVALID)");
 }
@@ -253,3 +253,18 @@ QByteArray Key::decrypt(const QByteArray& data)
 	OC_ASSERT(nullptr!=d);
 	return d->mPKI.decrypt(data);
 }
+
+
+/*
+
+bool operator== (const Key &a, const Key &b)
+{
+	return a.operator ==(b);
+}
+
+
+bool operator!= (const Key &a, const Key &b)
+{
+	return !a.operator !=(b);
+}
+*/

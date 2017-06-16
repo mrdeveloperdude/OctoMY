@@ -4,11 +4,13 @@
 #include <QTest>
 
 
-class TestKeyStore:public QObject{
-		Q_OBJECT
+class TestKeyStore:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void test();
+private slots:
+	void testInit();
+	void testInsertRemove();
 
 };
 
