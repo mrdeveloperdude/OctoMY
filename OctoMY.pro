@@ -19,15 +19,14 @@ message("________________________________")
 
 include($$PRIS/common.pri)
 
-SRC_BASE=src
 
 # The executables
 SUBDIRS += \
-	$${SRC_BASE}/libs \
-	$${SRC_BASE}/agent \
-	$${SRC_BASE}/remote \
-	$${SRC_BASE}/hub \
-	$${SRC_BASE}/zoo \
+	$${SRCS}/libs \
+	$${SRCS}/agent \
+	$${SRCS}/remote \
+	$${SRCS}/hub \
+	$${SRCS}/zoo \
 
 
 
@@ -55,26 +54,26 @@ contains(DEFINES, USE_DOCS){
 
 
 RESOURCES += \
-	libs/libcore/resources/icons.qrc
+	$${SRCS}/libs/libcore/resources/icons.qrc
 
 
 
 # Dependency stuff adapted from https://vilimpoc.org/blog/2014/02/21/qmake-subdirs-project-automatic-dependencies/
-libs.subdir=		$${SRC_BASE}/libs
-hub.subdir=			$${SRC_BASE}/hub
-agent.subdir=		$${SRC_BASE}/agent
-remote.subdir=		$${SRC_BASE}/remote
-zoo.subdir=			$${SRC_BASE}/zoo
-test.subdir=		test
-doc.subdir=			doc
+libs.subdir=		$${SRCS}/libs
+hub.subdir=			$${SRCS}/hub
+agent.subdir=		$${SRCS}/agent
+remote.subdir=		$${SRCS}/remote
+zoo.subdir=			$${SRCS}/zoo
+test.subdir=		$${TESTS}
+doc.subdir=			$${DOCS}
 
 
-hub.depends=		$${SRC_BASE}/libs
-agent.depends=		$${SRC_BASE}/libs
-remote.depends=		$${SRC_BASE}/libs
-zoo.depends=		$${SRC_BASE}/libs
-test.depends=		$${SRC_BASE}/libs
-doc.depends=		$${SRC_BASE}/libs $${SRC_BASE}/hub $${SRC_BASE}/remote $${SRC_BASE}/agent test
+hub.depends=		$${SRCS}/libs
+agent.depends=		$${SRCS}/libs
+remote.depends=		$${SRCS}/libs
+zoo.depends=		$${SRCS}/libs
+test.depends=		$${SRCS}/libs
+doc.depends=		$${SRCS}/libs $${SRCS}/hub $${SRCS}/remote $${SRCS}/agent $${TESTS}
 
 
 
