@@ -14,7 +14,7 @@ PRE_TARGETDEPS += $$SRCS/libs/libclt/OpenCL-ICD-Loader/build/bin/libOpenCL.so
 
 }
 else{
-error("NO CLT")
+	message("NO CLT")
 }
 
 
