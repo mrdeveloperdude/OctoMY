@@ -11,9 +11,9 @@
 #include "comms/CommsChannel.hpp"
 
 
-#include "../libweb/qhttp/qhttpclient.hpp"
-#include "../libweb/qhttp/qhttpclientrequest.hpp"
-#include "../libweb/qhttp/qhttpclientresponse.hpp"
+#include "qhttp/qhttpclient.hpp"
+#include "qhttp/qhttpclientrequest.hpp"
+#include "qhttp/qhttpclientresponse.hpp"
 
 #include "security/SecurityConstants.hpp"
 

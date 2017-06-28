@@ -2,7 +2,7 @@
 
 #include "ui_TestWindow.h"
 
-#include "../../libs/libcore/puppet/PoseMapping.hpp"
+#include "pose/PoseMapping.hpp"
 
 #include <QPixmap>
 #include <QImage>

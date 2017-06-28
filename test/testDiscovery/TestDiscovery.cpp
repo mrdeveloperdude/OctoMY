@@ -4,8 +4,8 @@
 #include "zoo/ZooClient.hpp"
 #include "discovery/DiscoveryClient.hpp"
 #include "discovery/DiscoveryRole.hpp"
-#include "basic/Node.hpp"
-#include "basic/AppContext.hpp"
+#include "node/Node.hpp"
+#include "node/AppContext.hpp"
 
 #include <QSignalSpy>
 

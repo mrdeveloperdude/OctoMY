@@ -34,7 +34,7 @@
   <customwidget>
    <class>PoseMappingWidget</class>
    <extends>QWidget</extends>
-   <header>../../libs/libcore/widgets/PoseMappingWidget.hpp</header>
+   <header>widgets/PoseMappingWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

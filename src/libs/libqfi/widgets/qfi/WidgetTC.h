@@ -52,7 +52,7 @@
 
 #include <QWidget>
 
-#include "../libqfi/widgets/qfi/qfi_TC.h"
+#include "widgets/qfi/qfi_TC.h"
 
 #include "LayoutSquare.h"
 

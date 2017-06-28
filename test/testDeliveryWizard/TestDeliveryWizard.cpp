@@ -1,9 +1,9 @@
 #include "TestDeliveryWizard.hpp"
 
-#include "basic/Node.hpp"
-#include "widgets/AgentDeliveryWizard.hpp"
+#include "node/Node.hpp"
+#include "node/AppContext.hpp"
 
-#include "basic/AppContext.hpp"
+#include "widgets/AgentDeliveryWizard.hpp"
 
 #include <QProcessEnvironment>
 #include <QCommandLineParser>

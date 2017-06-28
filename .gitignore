@@ -46,6 +46,7 @@ local_overrides.pri
 /*/android/gradle*
 
 /src/libs/build/*
+/src/libs/junk/*
 /src/libs/*/build*
 /src/libs/libclt/OpenCL-ICD-Loader*
 

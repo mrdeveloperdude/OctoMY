@@ -11,8 +11,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "qhttpbase.hpp"
-#include "qhttpserverrequest.hpp"
-#include "qhttpserverconnection.hpp"
+#include "../qhttpserverrequest.hpp"
+#include "../qhttpserverconnection.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
@@ -21,26 +21,26 @@ namespace server {
 class QHttpRequestPrivate : public HttpReader<HttpRequestBase>
 {
 protected:
-    Q_DECLARE_PUBLIC(QHttpRequest)
-    QHttpRequest* const     q_ptr;
+	Q_DECLARE_PUBLIC(QHttpRequest)
+	QHttpRequest* const     q_ptr;
 
 public:
-    explicit    QHttpRequestPrivate(QHttpConnection* conn, QHttpRequest* q) : q_ptr(q), iconnection(conn) {
-        QHTTP_LINE_DEEPLOG
-    }
+	explicit    QHttpRequestPrivate(QHttpConnection* conn, QHttpRequest* q) : q_ptr(q), iconnection(conn) {
+		QHTTP_LINE_DEEPLOG
+	}
 
-    virtual    ~QHttpRequestPrivate() {
-        QHTTP_LINE_DEEPLOG
-    }
+	virtual    ~QHttpRequestPrivate() {
+		QHTTP_LINE_DEEPLOG
+	}
 
-    void        initialize() {
-    }
+	void        initialize() {
+	}
 
 public:
-    QString     iremoteAddress;
-    quint16     iremotePort = 0;
+	QString     iremoteAddress;
+	quint16     iremotePort = 0;
 
-    QHttpConnection* const  iconnection = nullptr;
+	QHttpConnection* const  iconnection = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -2,9 +2,9 @@
 
 #include "utility/Standard.hpp"
 
-#include "../libweb/qhttp/qhttpclient.hpp"
-#include "../libweb/qhttp/qhttpclientrequest.hpp"
-#include "../libweb/qhttp/qhttpclientresponse.hpp"
+#include "qhttp/qhttpclient.hpp"
+#include "qhttp/qhttpclientrequest.hpp"
+#include "qhttp/qhttpclientresponse.hpp"
 //#include "ZooServer.hpp"
 
 #include "basic/UniquePlatformFingerprint.hpp"

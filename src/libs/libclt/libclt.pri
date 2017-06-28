@@ -1,7 +1,0 @@
-
-CLT_IN_DIR =		$$SRCS/libs/libclt
-CLT_OUT_DIR =		$$BUILD_SRCS/libs/libclt
-LIBS +=				-L$$CLT_OUT_DIR -lclt
-INCLUDEPATH +=		$$CLT_IN_DIR
-DEPENDPATH +=		$$CLT_IN_DIR
-PRE_TARGETDEPS +=	$$CLT_OUT_DIR/libclt.a

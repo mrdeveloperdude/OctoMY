@@ -1,7 +1,0 @@
-
-GLT_IN_DIR =		$$SRCS/libs/libglt
-GLT_OUT_DIR =		$$BUILD_SRCS/libs/libglt
-LIBS +=			-L$$GLT_OUT_DIR -lglt
-INCLUDEPATH +=		$$GLT_IN_DIR
-DEPENDPATH +=		$$GLT_IN_DIR
-PRE_TARGETDEPS +=	$$GLT_OUT_DIR/libglt.a

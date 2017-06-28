@@ -7,28 +7,6 @@
 #include "octomy_parser.hpp"
 #include "OctomyParseContext.hpp"
 
-
-
-/*
-#include "utility/Utility.hpp"
-
-#include "../libplan/octomy_parser.hpp"
-#include "../libplan/OctomyParseContext.hpp"
-
-#include "CodeEditor.hpp"
-
-#include <QDebug>
-#include <QPainter>
-#include <QTimer>
-
-#include <QCompleter>
-#include <QScrollBar>
-#include <QAbstractItemModel>
-#include <QStringListModel>
-#include <QTextDocumentFragment>
-
-*/
-
 PlanEditor::PlanEditor(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::PlanEditor)

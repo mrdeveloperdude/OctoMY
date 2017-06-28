@@ -10,8 +10,8 @@
 #define QHTTPCLIENT_REQUEST_PRIVATE_HPP
 ///////////////////////////////////////////////////////////////////////////////
 #include "qhttpbase.hpp"
-#include "qhttpclient.hpp"
-#include "qhttpclientrequest.hpp"
+#include "../qhttpclient.hpp"
+#include "../qhttpclientrequest.hpp"
 
 #include <QTcpSocket>
 
@@ -21,32 +21,32 @@ namespace client {
 ///////////////////////////////////////////////////////////////////////////////
 class QHttpRequestPrivate : public HttpWriter<HttpRequestBase, QHttpRequestPrivate>
 {
-    Q_DECLARE_PUBLIC(QHttpRequest)
+	Q_DECLARE_PUBLIC(QHttpRequest)
 
 public:
-    explicit    QHttpRequestPrivate(QHttpClient* cli, QHttpRequest* q) : q_ptr(q), iclient(cli) {
-        QHTTP_LINE_DEEPLOG
-    }
+	explicit    QHttpRequestPrivate(QHttpClient* cli, QHttpRequest* q) : q_ptr(q), iclient(cli) {
+		QHTTP_LINE_DEEPLOG
+	}
 
-    virtual    ~QHttpRequestPrivate() {
-        QHTTP_LINE_DEEPLOG
-    }
+	virtual    ~QHttpRequestPrivate() {
+		QHTTP_LINE_DEEPLOG
+	}
 
-    void        initialize() {
-        iversion    = "1.1";
+	void        initialize() {
+		iversion    = "1.1";
 
-        isocket.ibackendType  = iclient->backendType();
-        isocket.itcpSocket    = iclient->tcpSocket();
-        isocket.ilocalSocket  = iclient->localSocket();
-    }
+		isocket.ibackendType  = iclient->backendType();
+		isocket.itcpSocket    = iclient->tcpSocket();
+		isocket.ilocalSocket  = iclient->localSocket();
+	}
 
-    QByteArray  makeTitle();
+	QByteArray  makeTitle();
 
-    void        prepareHeadersToWrite();
+	void        prepareHeadersToWrite();
 
 protected:
-    QHttpRequest* const  q_ptr;
-    QHttpClient* const   iclient;
+	QHttpRequest* const  q_ptr;
+	QHttpClient* const   iclient;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

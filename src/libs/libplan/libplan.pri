@@ -1,7 +1,0 @@
-
-PARSER_IN_DIR =		$$TOP_PWD/libs/libparser
-PARSER_OUT_DIR =	$$TOP_BUILD/libs/libparser
-LIBS +=				-L$$PARSER_OUT_DIR -lparser
-INCLUDEPATH +=		$$PARSER_IN_DIR
-DEPENDPATH +=		$$PARSER_IN_DIR
-PRE_TARGETDEPS +=	$$PARSER_OUT_DIR/libparser.a

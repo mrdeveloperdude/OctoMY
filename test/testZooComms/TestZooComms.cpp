@@ -1,7 +1,7 @@
 #include "TestZooComms.hpp"
 #include "zoo/ZooServer.hpp"
 #include "zoo/ZooClient.hpp"
-#include "basic/AppContext.hpp"
+#include "node/AppContext.hpp"
 
 #include <QSignalSpy>
 

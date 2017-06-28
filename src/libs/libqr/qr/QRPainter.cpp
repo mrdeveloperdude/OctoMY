@@ -1,6 +1,6 @@
 #include "QRPainter.hpp"
 
-#include "../libqr/QrCode.hpp"
+#include "QrCode.hpp"
 
 void paintQR(QPainter &painter, const QSize sz, const QString &data, QColor fg)
 {

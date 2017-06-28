@@ -1,7 +1,0 @@
-
-MAP_IN_DIR =		$$TOP_PWD/libs/libmap
-MAP_OUT_DIR =		$$TOP_BUILD/libs/libmap
-LIBS +=				-L$$MAP_OUT_DIR -lmap
-INCLUDEPATH +=		$$MAP_IN_DIR
-DEPENDPATH +=		$$MAP_IN_DIR
-PRE_TARGETDEPS +=	$$MAP_OUT_DIR/libmap.a

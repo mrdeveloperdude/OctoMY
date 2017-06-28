@@ -5,6 +5,12 @@ AUTOLIBS += \
 	parser \
 	zbar \
 	qpolarssl \
+	mbedtls \
+	qfi \
+
+
+# The libraries in this list will be built into one big library called librest
+AUTOLINKS += \
 	clt \
 	glt \
 	node \
@@ -17,7 +23,6 @@ AUTOLIBS += \
 	qr \
 	web \
 	style \
-	qfi \
 	rng \
 	audio \
 	dynamics \
@@ -27,6 +32,3 @@ AUTOLIBS += \
 	ardumy \
 	core \
 	util \
-
-# The libraries in this list will be built into one big library called librest
-AUTOLINKS += \

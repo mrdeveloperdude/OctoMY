@@ -36,7 +36,6 @@ TEST_PROJECTS+= \
 	testOpenCL \
 	testParser \
 	testPortableID \
-	testPoseMappingStore \
 	testPoseMappingWidget \
 	testRNG \
 	testServotor32Controller \

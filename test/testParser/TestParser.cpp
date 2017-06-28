@@ -1,6 +1,6 @@
 #include "TestParser.hpp"
 
-#include "../../libs/libparser/octomy_parser.hpp"
+#include "octomy_parser.hpp"
 
 // YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
 void TestParser::test(){

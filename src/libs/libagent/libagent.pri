@@ -1,7 +1,0 @@
-
-AGENT_IN_DIR =		$$TOP_PWD/libs/libagent
-AGENT_OUT_DIR =		$$TOP_BUILD/libs/libagent
-LIBS +=				-L$$AGENT_OUT_DIR -lagent
-INCLUDEPATH +=		$$AGENT_IN_DIR
-DEPENDPATH +=		$$AGENT_IN_DIR
-PRE_TARGETDEPS +=	$$AGENT_OUT_DIR/libagent.a

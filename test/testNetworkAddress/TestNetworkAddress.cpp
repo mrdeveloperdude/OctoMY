@@ -1,7 +1,7 @@
 #include "TestNetworkAddress.hpp"
 
 
-#include "basic/NetworkAddress.hpp"
+#include "comms/NetworkAddress.hpp"
 
 #include <QVariantMap>
 

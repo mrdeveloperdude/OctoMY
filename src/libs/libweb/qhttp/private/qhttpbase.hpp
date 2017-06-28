@@ -9,7 +9,7 @@
 #ifndef QHTTPBASE_HPP
 #define QHTTPBASE_HPP
 
-#include "qhttpfwd.hpp"
+#include "../qhttpfwd.hpp"
 
 #include <QTcpSocket>
 #include <QLocalSocket>
@@ -17,7 +17,7 @@
 #include <QUrl>
 #include <QBasicTimer>
 
-#include "http_parser.h"
+#include "../http_parser.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {

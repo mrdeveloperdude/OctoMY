@@ -1,7 +1,0 @@
-
-NODE_IN_DIR =		$$TOP_PWD/libs/libnode
-NODE_OUT_DIR =		$$TOP_BUILD/libs/libnode
-LIBS +=				-L$$NODE_OUT_DIR -lnode
-INCLUDEPATH +=		$$NODE_IN_DIR
-DEPENDPATH +=		$$NODE_IN_DIR
-PRE_TARGETDEPS +=	$$NODE_OUT_DIR/libnode.a

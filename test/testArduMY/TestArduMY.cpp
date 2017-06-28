@@ -16,7 +16,7 @@
 
 #include "../arduino/ArduMYParserState.hpp"
 
-#include "../libcore/hw/controllers/ardumy/ArduMYTypeConversions.hpp"
+#include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 
 #include <QDebug>

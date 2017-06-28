@@ -1,8 +1,0 @@
-
-STYLE_IN_DIR =		$$TOP_PWD/libs/libstyle
-STYLE_OUT_DIR =		$$TOP_BUILD/libs/libstyle
-LIBS +=				-L$$STYLE_OUT_DIR -lstyle
-INCLUDEPATH +=		$$STYLE_IN_DIR
-DEPENDPATH +=		$$STYLE_IN_DIR
-PRE_TARGETDEPS +=	$$STYLE_OUT_DIR/libstyle.a
-

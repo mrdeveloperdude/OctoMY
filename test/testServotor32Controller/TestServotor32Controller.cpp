@@ -1,6 +1,6 @@
 #include "TestServotor32Controller.hpp"
 
-#include "hw/actuators/Servotor32Controller.hpp"
+#include "hw/controllers/servotor32/Servotor32Controller.hpp"
 
 
 void TestServotor32Controller::test()
@@ -8,7 +8,8 @@ void TestServotor32Controller::test()
 	Servotor32Controller ctl;
 	qApp->processEvents();
 	QVERIFY(!ctl.isConnected());
-	ctl.configure();
+	SerialSettings sset;
+	ctl.configure(sset);
 	qApp->processEvents();
 	QTest::qWait(2000);
 	//QVERIFY(!ctl.isConnected());	ctl.openSerialPort();

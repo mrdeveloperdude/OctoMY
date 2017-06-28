@@ -1,7 +1,0 @@
-
-ZBAR_IN_DIR =		$$TOP_PWD/libs/libzbar
-ZBAR_OUT_DIR =		$$TOP_BUILD/libs/libzbar
-LIBS +=				-L$$ZBAR_OUT_DIR -lzbar
-INCLUDEPATH +=		$$ZBAR_IN_DIR
-DEPENDPATH +=		$$ZBAR_IN_DIR
-PRE_TARGETDEPS +=	$$ZBAR_OUT_DIR/libzbar.a

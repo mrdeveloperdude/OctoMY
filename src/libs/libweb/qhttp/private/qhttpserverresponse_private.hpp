@@ -10,9 +10,9 @@
 #define QHTTPSERVER_RESPONSE_PRIVATE_HPP
 ///////////////////////////////////////////////////////////////////////////////
 #include "qhttpbase.hpp"
-#include "qhttpserverresponse.hpp"
-#include "qhttpserver.hpp"
-#include "qhttpserverconnection.hpp"
+#include "../qhttpserverresponse.hpp"
+#include "../qhttpserver.hpp"
+#include "../qhttpserverconnection.hpp"
 
 #include <QDateTime>
 #include <QLocale>
@@ -24,34 +24,34 @@ namespace server {
 ///////////////////////////////////////////////////////////////////////////////
 class QHttpResponsePrivate : public HttpWriter<HttpResponseBase, QHttpResponsePrivate>
 {
-    Q_DECLARE_PUBLIC(QHttpResponse)
+	Q_DECLARE_PUBLIC(QHttpResponse)
 
 public:
-    explicit    QHttpResponsePrivate(QHttpConnection* conn, QHttpResponse* q)
-        : q_ptr(q), iconnection(conn) {
-        QHTTP_LINE_DEEPLOG
-    }
+	explicit    QHttpResponsePrivate(QHttpConnection* conn, QHttpResponse* q)
+		: q_ptr(q), iconnection(conn) {
+		QHTTP_LINE_DEEPLOG
+	}
 
-    virtual    ~QHttpResponsePrivate() {
-        QHTTP_LINE_DEEPLOG
-    }
+	virtual    ~QHttpResponsePrivate() {
+		QHTTP_LINE_DEEPLOG
+	}
 
-    void        initialize() {
-        isocket.ibackendType = iconnection->backendType();
-        isocket.ilocalSocket = iconnection->localSocket();
-        isocket.itcpSocket   = iconnection->tcpSocket();
+	void        initialize() {
+		isocket.ibackendType = iconnection->backendType();
+		isocket.ilocalSocket = iconnection->localSocket();
+		isocket.itcpSocket   = iconnection->tcpSocket();
 
-        QObject::connect(iconnection,  &QHttpConnection::disconnected,
-                         q_func(),     &QHttpResponse::deleteLater);
-    }
+		QObject::connect(iconnection,  &QHttpConnection::disconnected,
+						 q_func(),     &QHttpResponse::deleteLater);
+	}
 
-    QByteArray  makeTitle();
+	QByteArray  makeTitle();
 
-    void        prepareHeadersToWrite();
+	void        prepareHeadersToWrite();
 
 protected:
-    QHttpResponse* const    q_ptr;
-    QHttpConnection* const  iconnection;
+	QHttpResponse* const    q_ptr;
+	QHttpConnection* const  iconnection;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

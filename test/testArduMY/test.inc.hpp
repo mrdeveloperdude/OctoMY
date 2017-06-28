@@ -18,7 +18,7 @@
 
 #include <QTest>
 
-#include "../libcore/hw/controllers/ardumy/ArduMYTypeConversions.hpp"
+#include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 void logLines(const QString ret);
 

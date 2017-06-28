@@ -2,6 +2,7 @@
 #define BLOBCOURIER_HPP
 
 #include "comms/couriers/Courier.hpp"
+#include "comms/CommsChannel.hpp"
 #include "BlobFuture.hpp"
 
 #include <QHash>

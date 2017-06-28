@@ -1,7 +1,7 @@
 #include "TestESpeak.hpp"
 
-#include "../libcore/audio/CreepyVoice.hpp"
-#include "../libcore/audio/AudioStream.hpp"
+#include "audio/CreepyVoice.hpp"
+#include "audio/AudioStream.hpp"
 #include "security/PortableID.hpp"
 
 // YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html

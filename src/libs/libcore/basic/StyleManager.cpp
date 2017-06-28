@@ -1,7 +1,7 @@
 #include "basic/StyleManager.hpp"
 #include "utility/Standard.hpp"
 #include "utility/Utility.hpp"
-#include "../libstyle/OctoStyle.hpp"
+#include "OctoStyle.hpp"
 
 #include <QProxyStyle>
 #include <QFontDatabase>

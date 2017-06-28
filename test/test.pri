@@ -1,5 +1,5 @@
 include($$PRIS/common.pri)
-include($$SRCS/libs/libs_inc.pri)
+include($$PRIS/lib_headers.pri)
 
 CONFIG += testcase
 QT += testlib

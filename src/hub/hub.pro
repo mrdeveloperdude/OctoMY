@@ -13,7 +13,7 @@ INCLUDEPATH += ./
 
 include($$PRIS/common.pri)
 include($$PRIS/app.pri)
-include($$SRCS/libs/libs_inc.pri)
+include($$PRIS/lib_headers.pri)
 
 
 HEADERS += \

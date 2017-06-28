@@ -1,7 +1,0 @@
-
-QPOLARSSL_IN_DIR =	$$TOP_PWD/libs/libqpolarssl
-QPOLARSSL_OUT_DIR =	$$TOP_BUILD/libs/libqpolarssl
-LIBS +=				-L$$QPOLARSSL_OUT_DIR -lqpolarssl
-INCLUDEPATH +=		$$QPOLARSSL_IN_DIR
-DEPENDPATH +=		$$QPOLARSSL_IN_DIR
-PRE_TARGETDEPS +=	$$QPOLARSSL_OUT_DIR/libqpolarssl.a

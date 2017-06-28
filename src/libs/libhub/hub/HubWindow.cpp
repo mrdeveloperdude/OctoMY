@@ -21,7 +21,7 @@
 #include "comms/CommsChannel.hpp"
 #include "zoo/ZooClient.hpp"
 #include "security/Key.hpp"
-#include "../libclt/widgets/HelloGLCLViewRenderer.hpp"
+#include "widgets/HelloGLCLViewRenderer.hpp"
 #include "zbar/ZBarScanner.hpp"
 #include "widgets/HardwareTemplate.hpp"
 #include "trigger/TriggerSet.hpp"

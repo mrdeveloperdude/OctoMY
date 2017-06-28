@@ -1,7 +1,0 @@
-
-ARDUMY_IN_DIR =		$$TOP_PWD/libs/libardumy
-ARDUMY_OUT_DIR =	$$TOP_BUILD/libs/libardumy
-LIBS +=			-L$$ARDUMY_OUT_DIR -lardumy
-INCLUDEPATH +=		$$ARDUMY_IN_DIR
-DEPENDPATH +=		$$ARDUMY_IN_DIR
-PRE_TARGETDEPS +=	$$ARDUMY_OUT_DIR/libardumy.a

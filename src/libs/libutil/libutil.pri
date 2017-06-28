@@ -1,7 +1,0 @@
-
-UTIL_IN_DIR =		$$TOP_PWD/libs/libutil
-UTIL_OUT_DIR =		$$TOP_BUILD/libs/libutil
-LIBS +=				-L$$UTIL_OUT_DIR -lutil
-INCLUDEPATH +=		$$UTIL_IN_DIR
-DEPENDPATH +=		$$UTIL_IN_DIR
-PRE_TARGETDEPS +=	$$UTIL_OUT_DIR/libutil.a

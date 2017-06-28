@@ -1,8 +1,9 @@
 #include "TestBlob.hpp"
 
-#include "comms/couriers/BlobCourier.hpp"
-#include "comms/couriers/Blob.hpp"
-#include "comms/couriers/BlobChunk.hpp"
+#include "comms/couriers/blob/BlobCourier.hpp"
+#include "comms/couriers/blob/Blob.hpp"
+#include "comms/couriers/blob/BlobChunk.hpp"
+#include "security/KeyStore.hpp"
 
 #include "comms/couriers/CourierMandate.hpp"
 
@@ -211,8 +212,8 @@ private:
 	const QString blobName;
 
 public:
-	explicit CourierTesterBlob()
-		: CourierTester(new BlobCourier(),new BlobCourier(), "FROM", "TO  ")
+	explicit CourierTesterBlob(CommsChannel &comms)
+		: CourierTester(new BlobCourier(comms),new BlobCourier(comms), "FROM", "TO  ")
 		, pixA(nullptr,"Original image")
 		, pixB(nullptr,"Transport image")
 		, imageSize(300)
@@ -285,7 +286,9 @@ public:
 
 void TestBlob::testBlobCourier2()
 {
-	CourierTesterBlob blobTest;
+	KeyStore keystore;
+	CommsChannel comms(keystore);
+	CourierTesterBlob blobTest(comms);
 	blobTest.testRandomSteps(100);
 }
 

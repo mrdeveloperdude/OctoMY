@@ -1,7 +1,0 @@
-
-COMMS_IN_DIR =		$$TOP_PWD/libs/libcomms
-COMMS_OUT_DIR =		$$TOP_BUILD/libs/libcomms
-LIBS +=			-L$$COMMS_OUT_DIR -lcomms
-INCLUDEPATH +=		$$COMMS_IN_DIR
-DEPENDPATH +=		$$COMMS_IN_DIR
-PRE_TARGETDEPS +=	$$COMMS_OUT_DIR/libcomms.a

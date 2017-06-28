@@ -34,7 +34,7 @@
   <customwidget>
    <class>CarSteeringWidget</class>
    <extends>QWidget</extends>
-   <header>../../libs/libcore/widgets/CarSteeringWidget.hpp</header>
+   <header>widgets/CarSteeringWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
