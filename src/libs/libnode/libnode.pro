@@ -2,20 +2,20 @@ TARGET =	node
 TEMPLATE =	lib
 CONFIG +=	staticlib
 
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib.pri)
+include($$PRIS/common.pri)
+include($$PRIS/lib.pri)
 
-includes = core
+# NEEDED FOR OpenCL
+QT         += core-private gui-private
+
+includes = core util rng comms sec zbar puppet audio glt clt agent map qpolarssl qr web zbar
 
 for(i, includes) {
 	INCLUDEE=$$i
-	include($$TOP_PWD/libincluder.pri)
+	include($$PRIS/libincluder.pri)
 }
 
-
-#QT         += core core-private gui gui-private
 INCLUDEPATH += ./
-
 
 SOURCES +=\
 	node/AppContext.cpp \
@@ -32,5 +32,5 @@ HEADERS  += \
 
 contains(DEFINES, USE_STATUS){
 message("FROM libnode.pro:")
-include($$TOP_PWD/status.pri)
+include($$PRIS/status.pri)
 }

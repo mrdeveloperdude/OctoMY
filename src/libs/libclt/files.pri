@@ -1,35 +1,34 @@
-
+CLT_TOP= $$SRCS/libs/libclt
 
 HEADERS	+= \
-	opencl/CLThreadManager.hpp \
-	opencl/CLDeviceSelection.hpp \
-	opencl/CLWorker.hpp \
-	opencl/CLUtils.hpp \
-	opencl/CLInclude.hpp \
-	widgets/CLGLViewRenderer.hpp \
-	opencl/CLWorkerFactory.hpp \
-	opencl/CLGLInteropConfig.hpp \
-	widgets/HelloGLCLViewRenderer.hpp \
-	widgets/HelloCLWorkerFactory.hpp \
-	widgets/HelloCLWorker.hpp \
+	$$CLT_TOP/opencl/CLThreadManager.hpp \
+	$$CLT_TOP/opencl/CLDeviceSelection.hpp \
+	$$CLT_TOP/opencl/CLWorker.hpp \
+	$$CLT_TOP/opencl/CLUtils.hpp \
+	$$CLT_TOP/opencl/CLInclude.hpp \
+	$$CLT_TOP/widgets/CLGLViewRenderer.hpp \
+	$$CLT_TOP/opencl/CLWorkerFactory.hpp \
+	$$CLT_TOP/opencl/CLGLInteropConfig.hpp \
+	$$CLT_TOP/widgets/HelloGLCLViewRenderer.hpp \
+	$$CLT_TOP/widgets/HelloCLWorkerFactory.hpp \
+	$$CLT_TOP/widgets/HelloCLWorker.hpp \
 
 
 SOURCES	+= \
-	opencl/CLThreadManager.cpp \
-	opencl/CLDeviceSelection.cpp \
-	opencl/CLWorker.cpp \
-	opencl/CLUtils.cpp \
-	widgets/CLGLViewRenderer.cpp \
-	opencl/CLWorkerFactory.cpp \
-	opencl/CLGLInteropConfig.cpp \
-	widgets/HelloGLCLViewRenderer.cpp \
-	widgets/HelloCLWorkerFactory.cpp \
-	widgets/HelloCLWorker.cpp \
-
+	$$CLT_TOP/opencl/CLThreadManager.cpp \
+	$$CLT_TOP/opencl/CLDeviceSelection.cpp \
+	$$CLT_TOP/opencl/CLWorker.cpp \
+	$$CLT_TOP/opencl/CLUtils.cpp \
+	$$CLT_TOP/widgets/CLGLViewRenderer.cpp \
+	$$CLT_TOP/opencl/CLWorkerFactory.cpp \
+	$$CLT_TOP/opencl/CLGLInteropConfig.cpp \
+	$$CLT_TOP/widgets/HelloGLCLViewRenderer.cpp \
+	$$CLT_TOP/widgets/HelloCLWorkerFactory.cpp \
+	$$CLT_TOP/widgets/HelloCLWorker.cpp \
 
 
 RESOURCES += \
-	resources/gl_shaders.qrc \
+	$$CLT_TOP/resources/gl_shaders.qrc \
 
 
 

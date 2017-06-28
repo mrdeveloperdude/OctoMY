@@ -5,7 +5,7 @@
 
 #include "security/PortableID.hpp"
 #include "security/SecurityConstants.hpp"
-#include "OneOffSpeech.hpp"
+#include "audio/OneOffSpeech.hpp"
 #include "basic/GenericKeyEventHandler.hpp"
 
 
@@ -53,7 +53,7 @@ void SpeechControlWidget::appendSpeechHistory(const QString& text)
 	ui->logScrollHistory->appendLog(text.trimmed());
 }
 
-//#include "../librng/RNG.hpp" RNG *rng=RNG::sourceFactory("mt");
+//#include "rng/RNG.hpp" RNG *rng=RNG::sourceFactory("mt");
 
 void SpeechControlWidget::on_pushButtonSay_clicked()
 {

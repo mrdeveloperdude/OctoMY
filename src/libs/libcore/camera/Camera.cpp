@@ -3,7 +3,7 @@
 #include "CameraSettings.hpp"
 
 #include "PoorMansProbe.hpp"
-#include "ZBarScanner.hpp"
+#include "zbar/ZBarScanner.hpp"
 
 #include "utility/Utility.hpp"
 

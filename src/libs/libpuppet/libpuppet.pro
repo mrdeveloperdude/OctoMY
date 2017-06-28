@@ -2,21 +2,16 @@ TARGET =	puppet
 TEMPLATE =	lib
 CONFIG +=	staticlib
 
-#QT         += core core-private gui gui-private
-INCLUDEPATH += $$TOP_PWD/libs/libpuppet/
+include($$PRIS/common.pri)
+include($$PRIS/lib.pri)
 
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib.pri)
+INCLUDEPATH += ./
 
 includes= comms
 for(i, includes) {
 	INCLUDEE=$$i
-	include($$TOP_PWD/libincluder.pri)
+	include($$PRIS/libincluder.pri)
 }
-
-
-#include($$TOP_PWD/libs/libcomms/libcomms.pri)
-
 
 SOURCES +=\
 	expression/EyesWidget.cpp \
@@ -56,10 +51,7 @@ FORMS += \
 	ui/PoseMappingWidget.ui \
 
 
-
-
-
 contains(DEFINES, USE_STATUS){
 message("FROM libpuppet.pro:")
-include($$TOP_PWD/status.pri)
+include($$PRIS/status.pri)
 }

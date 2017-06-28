@@ -9,7 +9,6 @@ TARGET = hub
 # COORDINATION BETWEEN THEM
 
 
-#QT         += core core-private gui gui-private
 INCLUDEPATH += ./
 
 include($$PRIS/common.pri)

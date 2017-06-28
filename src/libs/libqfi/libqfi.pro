@@ -2,14 +2,10 @@ TARGET =	qfi
 TEMPLATE =	lib
 CONFIG +=	staticlib
 
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib.pri)
-QT         += gui
-INCLUDEPATH += ./
-
+include($$PRIS/common.pri)
+include($$PRIS/lib.pri)
 
 INCLUDEPATH += ./
-
 
 SOURCES  += \
 	widgets/qfi/LayoutSquare.cpp \
@@ -69,5 +65,5 @@ RESOURCES += \
 
 contains(DEFINES, USE_STATUS){
 message("FROM libqfi.pro:")
-include($$TOP_PWD/status.pri)
+include($$PRIS/status.pri)
 }

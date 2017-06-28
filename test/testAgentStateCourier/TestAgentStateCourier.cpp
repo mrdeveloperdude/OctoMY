@@ -1,7 +1,13 @@
 #include "TestAgentStateCourier.hpp"
 
-#include "../libcore/comms/couriers/AgentStateCourier.hpp"
+#include "comms/couriers/AgentStateCourier.hpp"
+#include "comms/CommsChannel.hpp"
+
+#include "security/KeyStore.hpp"
+
+
 #include "../testCommon/CourierTester.hpp"
+
 
 #include <QDebug>
 
@@ -13,9 +19,10 @@ private:
 	AgentStateCourier *mFromAgentStateCourier;
 	AgentStateCourier *mToAgentStateCourier;
 
+
 public:
-	explicit AgentStateCourierTester(QDataStream &stream)
-		: CourierTester(new AgentStateCourier(&stream),new AgentStateCourier(nullptr), "AGENT ", "REMOTE")
+	explicit AgentStateCourierTester(QDataStream &stream, CommsChannel &comms)
+		: CourierTester(new AgentStateCourier(&stream, comms), new AgentStateCourier(nullptr, comms), "AGENT ", "REMOTE")
 		, ctr(0)
 		, mFromAgentStateCourier((AgentStateCourier *)mFromCourier)
 		, mToAgentStateCourier((AgentStateCourier *)mToCourier)
@@ -97,7 +104,9 @@ public:
 void TestAgentStateCourier::test()
 {
 	QDataStream stream;
-	AgentStateCourierTester agetnStateTest(stream);
+	KeyStore keystore;
+	CommsChannel comms(keystore);
+	AgentStateCourierTester agetnStateTest(stream, comms);
 	// Start
 	agetnStateTest.onTestInit();
 	agetnStateTest.testStep(0);

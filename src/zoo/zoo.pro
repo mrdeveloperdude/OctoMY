@@ -8,7 +8,7 @@ TARGET = zoo
 
 # Start with common for project...
 include($$PRIS/common.pri)
-include($$TOP_PWD/app.pri)
+include($$PRIS/app.pri)
 include($$SRCS/libs/libs_inc.pri)
 
 # ... but ZOO is a server app, so better start acting like one!

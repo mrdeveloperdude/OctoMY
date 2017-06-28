@@ -28,6 +28,7 @@ protected:
 	int mKID;
 	bool mValidPrivate;
 	bool mValidPublic;
+	bool mInitialized;
 
 public:
 	static QString hash(QString input);

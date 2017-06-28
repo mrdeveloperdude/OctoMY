@@ -2,12 +2,10 @@ TARGET =	ardumy
 TEMPLATE =	lib
 CONFIG +=	staticlib
 
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib.pri)
+include($$PRIS/common.pri)
+include($$PRIS/lib.pri)
+
 INCLUDEPATH += ./
-
-
-
 
 ARDUMY_TOP= ../../libs/arduino
 ARDUMY_HEADERS += \
@@ -52,5 +50,5 @@ SOURCES += $$ARDUMY_SOURCES
 
 contains(DEFINES, USE_STATUS){
 message("FROM libardumy.pro:")
-include($$TOP_PWD/status.pri)
+include($$PRIS/status.pri)
 }

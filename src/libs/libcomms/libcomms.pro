@@ -2,24 +2,18 @@ TARGET =	comms
 TEMPLATE =	lib
 CONFIG +=	staticlib
 
-#QT         += core core-private gui gui-private
-INCLUDEPATH += $$TOP_PWD/libs/libcomms/
-
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib.pri)
+include($$PRIS/common.pri)
+include($$PRIS/lib.pri)
 includes= sec core puppet
 for(i, includes) {
 	INCLUDEE=$$i
-	include($$TOP_PWD/libincluder.pri)
+	include($$PRIS/libincluder.pri)
 }
 
-#include($$TOP_PWD/libs/libsec/libsec.pri)
-#include($$TOP_PWD/libs/libcore/libcore.pri)
-#include($$TOP_PWD/libs/libpuppet/libpuppet.pri)
+INCLUDEPATH += $$SRCS/libs/libcomms/
 
 L=comms
 I=comms
-
 
 SOURCES += \
 	$$L/CommsChannel.cpp \
@@ -74,6 +68,6 @@ HEADERS += \
 
 contains(DEFINES, USE_STATUS){
 message("FROM libcomms.pro")
-include($$TOP_PWD/status.pri)
+include($$PRIS/status.pri)
 }
 

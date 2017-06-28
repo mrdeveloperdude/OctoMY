@@ -1,12 +1,12 @@
 #include "MapEditor.hpp"
 #include "ui_MapEditor.h"
 
-#include "../libmap/MapControl.hpp"
-#include "../libmap/OSMMapAdapter.hpp"
-#include "../libmap/OpenAerialMapAdapter.hpp"
-#include "../libmap/MapLayer.hpp"
-#include "../libmap/GoogleMapAdapter.hpp"
-#include "../libmap/LineString.hpp"
+#include "map/MapControl.hpp"
+#include "map/OSMMapAdapter.hpp"
+#include "map/OpenAerialMapAdapter.hpp"
+#include "map/MapLayer.hpp"
+#include "map/GoogleMapAdapter.hpp"
+#include "map/LineString.hpp"
 
 
 

@@ -1,4 +1,4 @@
-include($$TOP_PWD/test/test.pri)
+include($$TESTS/test.pri)
 
 TARGET = test_discovery
 
@@ -8,4 +8,4 @@ HEADERS += \
 SOURCES += \
 	TestDiscovery.cpp
 
-include($$TOP_PWD/status.pri)
+include($$PRIS/status.pri)

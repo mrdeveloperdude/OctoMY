@@ -1,6 +1,6 @@
 
-CLT_IN_DIR =		$$TOP_PWD/libs/libclt
-CLT_OUT_DIR =		$$TOP_BUILD/libs/libclt
+CLT_IN_DIR =		$$SRCS/libs/libclt
+CLT_OUT_DIR =		$$BUILD_SRCS/libs/libclt
 LIBS +=				-L$$CLT_OUT_DIR -lclt
 INCLUDEPATH +=		$$CLT_IN_DIR
 DEPENDPATH +=		$$CLT_IN_DIR

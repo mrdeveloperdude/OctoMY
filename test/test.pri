@@ -4,10 +4,6 @@ include($$SRCS/libs/libs_inc.pri)
 CONFIG += testcase
 QT += testlib
 
-DISTFILES += \
-	$$PWD/test_autorun.pri
-
-
 TESTCOMMON_IN_DIR =		$$TESTS/testCommon
 TESTCOMMON_OUT_DIR =	$$TOP_BUILD/test/testCommon
 LIBS +=					-L$$TESTCOMMON_OUT_DIR -ltest_common

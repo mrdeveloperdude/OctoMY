@@ -68,6 +68,9 @@ private:
 	HandshakeState mHandshakeState;
 
 
+	bool mInitialized;
+
+
 #ifdef USE_RELIBABILITY_SYSTEM
 	quint32 packet_sequence=0;
 	quint32 packet_ack=0;

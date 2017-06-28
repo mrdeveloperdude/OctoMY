@@ -1,23 +1,25 @@
-include($$TOP_PWD/test/test.pri)
+include($$TESTS/test.pri)
 
 TARGET = test_ardumy
 
+ARDUMY_BASE=$$SRCS/libs/arduino
+
 HEADERS += \
-	../../libs/arduino/ArduMYActuatorConfig.hpp \
-	../../libs/arduino/ArduMYActuatorConfigParser.hpp \
-	../../libs/arduino/ArduMYActuatorConfigSerializerBase.hpp \
-	../../libs/arduino/ArduMYActuatorConfigSerializer.hpp \
-	../../libs/arduino/ArduMYActuator.hpp \
-	../../libs/arduino/ArduMYActuatorSet.hpp \
-	../../libs/arduino/ArduMYActuatorState.hpp \
-	../../libs/arduino/ArduMYActuatorValue.hpp \
-	../../libs/arduino/ArduMYActuatorValueParser.hpp \
-	../../libs/arduino/ArduMYActuatorValueRepresentation.hpp \
-	../../libs/arduino/ArduMYActuatorValueSerializerBase.hpp \
-	../../libs/arduino/ArduMYActuatorValueSerializer.hpp \
-	../../libs/arduino/ArduMYCommandParser.hpp \
-	../../libs/arduino/ArduMYCommandSerializer.hpp \
-	../../libs/arduino/MagicDetector.hpp \
+	$$ARDUMY_BASE/ArduMYActuatorConfig.hpp \
+	$$ARDUMY_BASE/ArduMYActuatorConfigParser.hpp \
+	$$ARDUMY_BASE/ArduMYActuatorConfigSerializerBase.hpp \
+	$$ARDUMY_BASE/ArduMYActuatorConfigSerializer.hpp \
+	$$ARDUMY_BASE/ArduMYActuator.hpp \
+	$$ARDUMY_BASE/ArduMYActuatorSet.hpp \
+	$$ARDUMY_BASE/ArduMYActuatorState.hpp \
+	$$ARDUMY_BASE/ArduMYActuatorValue.hpp \
+	$$ARDUMY_BASE/ArduMYActuatorValueParser.hpp \
+	$$ARDUMY_BASE/ArduMYActuatorValueRepresentation.hpp \
+	$$ARDUMY_BASE/ArduMYActuatorValueSerializerBase.hpp \
+	$$ARDUMY_BASE/ArduMYActuatorValueSerializer.hpp \
+	$$ARDUMY_BASE/ArduMYCommandParser.hpp \
+	$$ARDUMY_BASE/ArduMYCommandSerializer.hpp \
+	$$ARDUMY_BASE/MagicDetector.hpp \
 	testActuatorConfigEquals.inc.hpp \
 	testActuatorConfigParser.inc.hpp \
 	testActuatorConfigSerializer.inc.hpp \
@@ -30,22 +32,22 @@ HEADERS += \
 
 
 SOURCES += \
-	../../libs/arduino/ArduMYActuatorConfig.cpp \
-	../../libs/arduino/ArduMYActuatorConfigParser.cpp \
-	../../libs/arduino/ArduMYActuatorConfigSerializerBase.cpp \
-	../../libs/arduino/ArduMYActuatorConfigSerializer.cpp \
-	../../libs/arduino/ArduMYActuator.cpp \
-	../../libs/arduino/ArduMYActuatorSet.cpp \
-	../../libs/arduino/ArduMYActuatorState.cpp \
-	../../libs/arduino/ArduMYActuatorValue.cpp \
-	../../libs/arduino/ArduMYActuatorValueParser.cpp \
-	../../libs/arduino/ArduMYActuatorValueRepresentation.cpp \
-	../../libs/arduino/ArduMYActuatorValueSerializerBase.cpp \
-	../../libs/arduino/ArduMYActuatorValueSerializer.cpp \
-	../../libs/arduino/ArduMYCommandParser.cpp \
-	../../libs/arduino/ArduMYCommandSerializer.cpp \
-	../../libs/arduino/MagicDetector.cpp \
+	$$ARDUMY_BASE/ArduMYActuatorConfig.cpp \
+	$$ARDUMY_BASE/ArduMYActuatorConfigParser.cpp \
+	$$ARDUMY_BASE/ArduMYActuatorConfigSerializerBase.cpp \
+	$$ARDUMY_BASE/ArduMYActuatorConfigSerializer.cpp \
+	$$ARDUMY_BASE/ArduMYActuator.cpp \
+	$$ARDUMY_BASE/ArduMYActuatorSet.cpp \
+	$$ARDUMY_BASE/ArduMYActuatorState.cpp \
+	$$ARDUMY_BASE/ArduMYActuatorValue.cpp \
+	$$ARDUMY_BASE/ArduMYActuatorValueParser.cpp \
+	$$ARDUMY_BASE/ArduMYActuatorValueRepresentation.cpp \
+	$$ARDUMY_BASE/ArduMYActuatorValueSerializerBase.cpp \
+	$$ARDUMY_BASE/ArduMYActuatorValueSerializer.cpp \
+	$$ARDUMY_BASE/ArduMYCommandParser.cpp \
+	$$ARDUMY_BASE/ArduMYCommandSerializer.cpp \
+	$$ARDUMY_BASE/MagicDetector.cpp \
 	TestArduMY.cpp \
 
-include($$TOP_PWD/status.pri)
-include($$TOP_PWD/test/test_autorun.pri)
+include($$PRIS/status.pri)
+include($$TESTS/test_autorun.pri)

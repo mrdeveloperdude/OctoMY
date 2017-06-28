@@ -24,16 +24,19 @@ KeyPrivate::KeyPrivate( QVariantMap map, bool isPublic )
 	//parse(isPublic);
 }
 
+
 KeyPrivate::KeyPrivate( QString key, bool isPublic )
 	: mKey(isPublic?"":key)
 	, mPubKey(isPublic?key:"")
 	, mKID(mKCT++)
 	, mValidPrivate(false)
 	, mValidPublic(false)
+	, mInitialized(false)
 {
 	OC_METHODGATE();
 	//	qDebug()<<"KeyPrivate::KeyPrivate( QString key, bool isPublic ):"<<key<<isPublic <<" for " <<mKID<<"/"<<mKCT;
 	parse(isPublic);
+	mInitialized=true;
 }
 
 
@@ -41,6 +44,7 @@ KeyPrivate::KeyPrivate(quint32 bits)
 	: mKID(mKCT++)
 	, mValidPrivate(false)
 	, mValidPublic(false)
+	, mInitialized(false)
 {
 	OC_METHODGATE();
 	//	qDebug()<<"KeyPrivate::KeyPrivate(quint32 bits):"<<bits<<" for " <<mKID<<"/"<<mKCT;
@@ -55,6 +59,7 @@ KeyPrivate::KeyPrivate(quint32 bits)
 	} else {
 		qWarning()<<"ERROR: keywas not valid after generation";
 	}
+	mInitialized=true;
 }
 
 

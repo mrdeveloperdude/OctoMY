@@ -2,12 +2,11 @@ TARGET =	plan
 TEMPLATE =	lib
 CONFIG +=	staticlib
 
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib.pri)
-include($$TOP_PWD/libs/libparser/libparser.pri)
-#QT         += core core-private gui gui-private
-INCLUDEPATH += $$TOP_PWD/libs/libplan/
+include($$PRIS/common.pri)
+include($$PRIS/lib.pri)
+include($$SRCS/libs/libparser/libparser.pri)
 
+INCLUDEPATH += $$SRCS/libs/libplan/
 
 SOURCES += \
 	plan/PlanHighlighter.cpp \
@@ -27,5 +26,5 @@ FORMS += \
 
 contains(DEFINES, USE_STATUS){
 message("FROM libplan.pro")
-include($$TOP_PWD/status.pri)
+include($$PRIS/status.pri)
 }

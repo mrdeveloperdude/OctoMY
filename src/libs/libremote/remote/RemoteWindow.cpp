@@ -8,11 +8,11 @@
 
 
 
-#include "../libmap/MapControl.hpp"
-#include "../libmap/OSMMapAdapter.hpp"
-#include "../libmap/OpenAerialMapAdapter.hpp"
-#include "../libmap/MapLayer.hpp"
-#include "../libmap/LineString.hpp"
+#include "map/MapControl.hpp"
+#include "map/OSMMapAdapter.hpp"
+#include "map/OpenAerialMapAdapter.hpp"
+#include "map/MapLayer.hpp"
+#include "map/LineString.hpp"
 
 #include "discovery/DiscoveryClient.hpp"
 

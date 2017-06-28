@@ -6,7 +6,7 @@
 
 #include "utility/Utility.hpp"
 
-#include "../../libclt/widgets/CLGLViewRenderer.hpp"
+#include "widgets/CLGLViewRenderer.hpp"
 
 #include <QSurfaceFormat>
 #include <QDebug>
@@ -515,4 +515,5 @@ void CLGLView::onDisplayToggle(bool v)
 		timer.stop();
 	}
 }
-#endif
+
+#endif // EXTERNAL_LIB_OPENCL

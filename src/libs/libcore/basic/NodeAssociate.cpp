@@ -68,7 +68,7 @@ bool NodeAssociate::update(const QVariantMap map, bool trustedSource){
 
 
 
-QString NodeAssociate::id() const
+QString NodeAssociate::id() //NOTE no const please
 {
 	OC_METHODGATE();
 	return mKey.id();

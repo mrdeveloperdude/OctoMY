@@ -3,14 +3,18 @@ TEMPLATE =	lib
 CONFIG +=	staticlib
 QT +=		serialport
 
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib.pri)
-#include($$TOP_PWD/libs/libsec/libsec.pri)
-#include($$TOP_PWD/libs/libagent/libagent.pri)
-#include($$TOP_PWD/libs/libcomms/libcomms.pri)
+include($$PRIS/common.pri)
+include($$PRIS/lib.pri)
 
-#QT         += core core-private gui gui-private
-INCLUDEPATH += $$TOP_PWD/libs/libcore/
+
+includes = util rng comms puppet
+
+for(i, includes) {
+	INCLUDEE=$$i
+	include($$PRIS/libincluder.pri)
+}
+
+INCLUDEPATH += ./
 
 
 SOURCES +=\
@@ -343,6 +347,6 @@ RESOURCES += \
 
 contains(DEFINES, USE_STATUS){
 message("FROM libcore.pro:")
-include($$TOP_PWD/status.pri)
+include($$PRIS/status.pri)
 }
 

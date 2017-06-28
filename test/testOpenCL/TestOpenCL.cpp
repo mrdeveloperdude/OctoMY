@@ -1,13 +1,13 @@
 #include "TestOpenCL.hpp"
 
-#include "../libclt/opencl/CLThreadManager.hpp"
-#include "../libclt/opencl/CLWorkerFactory.hpp"
-#include "../libclt/opencl/CLWorker.hpp"
-#include "../libclt/opencl/CLGLInteropConfig.hpp"
-#include "../libclt/widgets/CLGLViewRenderer.hpp"
-#include "../libcore/widgets/CLGLView.hpp"
+#include "opencl/CLThreadManager.hpp"
+#include "opencl/CLWorkerFactory.hpp"
+#include "opencl/CLWorker.hpp"
+#include "opencl/CLGLInteropConfig.hpp"
+#include "widgets/CLGLViewRenderer.hpp"
+#include "widgets/CLGLView.hpp"
 
-#include "../libclt/opencl/CLUtils.hpp"
+#include "opencl/CLUtils.hpp"
 
 #include <QWidget>
 #include <QVBoxLayout>

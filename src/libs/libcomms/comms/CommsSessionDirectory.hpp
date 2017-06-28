@@ -3,7 +3,7 @@
 
 #include "NetworkAddress.hpp"
 #include "CommsSessionIDType.hpp"
-#include "RNG.hpp"
+#include "rng/RNG.hpp"
 
 #include <QObject>
 #include <QHash>

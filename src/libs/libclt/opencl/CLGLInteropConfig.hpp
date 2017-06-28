@@ -1,8 +1,8 @@
 #ifndef CLGLINTEROPCONFIG_HPP
 #define CLGLINTEROPCONFIG_HPP
 
-#include "utility/IncludeOpenGL.hpp"
-#include "utility/GLContext.hpp"
+#include "glt/IncludeOpenGL.hpp"
+#include "glt/GLContext.hpp"
 
 #include <QSize>
 

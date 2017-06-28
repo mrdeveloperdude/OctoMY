@@ -1,4 +1,3 @@
-
 include(qhttp/qhttp.pri)
 
 I=$$SRCS/libs/libweb/template

@@ -1,13 +1,13 @@
 #include "TestBlob.hpp"
 
-#include "../libcore/comms/couriers/BlobCourier.hpp"
-#include "../libcore/comms/couriers/Blob.hpp"
-#include "../libcore/comms/couriers/BlobChunk.hpp"
+#include "comms/couriers/BlobCourier.hpp"
+#include "comms/couriers/Blob.hpp"
+#include "comms/couriers/BlobChunk.hpp"
 
-#include "../libcore/comms/couriers/CourierMandate.hpp"
+#include "comms/couriers/CourierMandate.hpp"
 
-#include "../libutil/utility/widgets/PixViewer.hpp"
-#include "../libutil/utility/Utility.hpp"
+#include "utility/widgets/PixViewer.hpp"
+#include "utility/Utility.hpp"
 
 #include <QImage>
 #include <QPainter>

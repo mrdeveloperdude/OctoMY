@@ -69,7 +69,7 @@ class NodeAssociate{
 		bool update(const QVariantMap map, bool trustedSource=false);
 
 	public:
-		QString id() const;
+		QString id();//NOTE no const please;
 		QString name() const;
 		QString gender() const;
 		Key key();

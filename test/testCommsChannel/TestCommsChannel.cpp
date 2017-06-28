@@ -3,7 +3,7 @@
 #include "utility/Standard.hpp"
 #include "comms/messages/MessageType.hpp"
 
-#include "RNG.hpp"
+#include "rng/RNG.hpp"
 
 #include "security/KeyStore.hpp"
 #include "basic/NodeAssociate.hpp"

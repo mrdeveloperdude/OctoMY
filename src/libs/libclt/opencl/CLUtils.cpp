@@ -3,7 +3,7 @@
 
 
 #include "CLUtils.hpp"
-#include "utility/IncludeOpenGL.hpp"
+#include "glt/IncludeOpenGL.hpp"
 
 #include "utility/Utility.hpp"
 

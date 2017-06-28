@@ -58,7 +58,7 @@ private:
 
 private slots:
 	void onGLWidgetInitialized();
-#endif
+#endif // EXTERNAL_LIB_OPENCL
 
 
 	// CommsChannel slots

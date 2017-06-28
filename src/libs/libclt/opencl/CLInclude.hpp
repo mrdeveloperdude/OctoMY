@@ -4,6 +4,6 @@
 #ifdef EXTERNAL_LIB_OPENCL
 #undef __CL_ENABLE_EXCEPTIONS
 #include <CL/cl.hpp>
-#endif
+#endif // EXTERNAL_LIB_OPENCL
 
 #endif //CLINCLUDE_HPP

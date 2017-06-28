@@ -8,7 +8,7 @@
 
 
 #include "basic/StyleManager.hpp"
-#include "utility/IncludeOpenGL.hpp"
+#include "glt/IncludeOpenGL.hpp"
 #include "basic/Settings.hpp"
 #include "security/KeyStore.hpp"
 

@@ -5,9 +5,9 @@
 #include "utility/Standard.hpp"
 #include "widgets/WaitingSpinnerWidget.hpp"
 #include "node/Node.hpp"
-#include "../librng/RNG.hpp"
+#include "rng/RNG.hpp"
 
-#include "OneOffSpeech.hpp"
+#include "audio/OneOffSpeech.hpp"
 #include "zoo/ZooConstants.hpp"
 
 #include <QDebug>

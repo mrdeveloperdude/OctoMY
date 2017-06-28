@@ -547,11 +547,19 @@ QSharedPointer<CommsSession> CommsChannel::lookUpSession(QString id, SESSION_ID_
 						emit commsError(es);
 					} else {
 						session=QSharedPointer<CommsSession>(new CommsSession(key));
-						session->setRemoteSessionID(desiredRemoteSessionID);
-						session->setLocalSessionID(localSessionID);
-						session->setAddress(participant->publicAddress());
-						mSessions.insert(session);
-						qDebug()<< "NEW SESSION CREATED FOR ID "<<id<< " with desired remote sessionID "<<QString::number(desiredRemoteSessionID) <<" and local sessionID "<<QString::number(localSessionID);
+						OC_ASSERT(nullptr!=session);
+						if(nullptr!=session) {
+							session->setRemoteSessionID(desiredRemoteSessionID);
+							session->setLocalSessionID(localSessionID);
+							session->setAddress(participant->publicAddress());
+							mSessions.insert(session);
+							qDebug()<< "NEW SESSION CREATED FOR ID "<<id<< " with desired remote sessionID "<<QString::number(desiredRemoteSessionID) <<" and local sessionID "<<QString::number(localSessionID);
+						} else {
+							QString es="ERROR: OctoMY Protocol Could not create session for sender	with ID "+id+", could not allocate";
+							qWarning()<<es;
+							emit commsError(es);
+						}
+
 					}
 				}
 			} else {

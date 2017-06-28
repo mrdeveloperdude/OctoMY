@@ -4,89 +4,97 @@ CONFIG +=	staticlib
 
 include($$PRIS/common.pri)
 include($$PRIS/lib.pri)
-#QT += widgets
+
 INCLUDEPATH += ./
-INCLUDEPATH += ../libutil
+# CHEEKY HACK YO *<8o)
+includes = util
+
+for(i, includes) {
+	INCLUDEE=$$i
+	include($$PRIS/libincluder.pri)
+}
+
+
+TOP_ZBAR=zbar
 
 HEADERS	+= \
-	c++/Decoder.h \
-	c++/Exception.h \
-	c++/Image.hpp \
-	c++/ImageScanner.h \
-	config.h \
-	c++/Processor.h \
-	c++/QZBarImage.h \
-	c++/Scanner.h \
-	c++/Symbol.h \
-	c++/Video.h \
-	c++/Window.h \
-	debug.h \
-	decoder/code128.h \
-	decoder/code39.h \
-	decoder/ean.h \
-	decoder.h \
-	decoder/i25.h \
-	decoder/qr_finder.h \
-	error.h \
-	event.h \
-	image.h \
-	img_scanner.h \
-	mutex.h \
-	processor.h \
-	processor/posix.h \
-	qrcode/bch15_5.h \
-	qrcode/binarize.h \
-	qrcode.h \
-	qrcode/isaac.h \
-	qrcode/qrdec.h \
-	qrcode/rs.h \
-	qrcode/util.h \
-	QtIconv.h \
-	refcnt.h \
-	svg.h \
-	symbol.h \
-	thread.h \
-	timer.h \
-	video.h \
-	window.h \
-	zbar.h \
-	ZBarScanner.hpp \
+	$$TOP_ZBAR/c++/Decoder.h \
+	$$TOP_ZBAR/c++/Exception.h \
+	$$TOP_ZBAR/c++/Image.hpp \
+	$$TOP_ZBAR/c++/ImageScanner.h \
+	$$TOP_ZBAR/config.h \
+	$$TOP_ZBAR/c++/Processor.h \
+	$$TOP_ZBAR/c++/QZBarImage.h \
+	$$TOP_ZBAR/c++/Scanner.h \
+	$$TOP_ZBAR/c++/Symbol.h \
+	$$TOP_ZBAR/c++/Video.h \
+	$$TOP_ZBAR/c++/Window.h \
+	$$TOP_ZBAR/debug.h \
+	$$TOP_ZBAR/decoder/code128.h \
+	$$TOP_ZBAR/decoder/code39.h \
+	$$TOP_ZBAR/decoder/ean.h \
+	$$TOP_ZBAR/decoder.h \
+	$$TOP_ZBAR/decoder/i25.h \
+	$$TOP_ZBAR/decoder/qr_finder.h \
+	$$TOP_ZBAR/zbar_error.h \
+	$$TOP_ZBAR/event.h \
+	$$TOP_ZBAR/image.h \
+	$$TOP_ZBAR/img_scanner.h \
+	$$TOP_ZBAR/mutex.h \
+	$$TOP_ZBAR/processor.h \
+	$$TOP_ZBAR/processor/posix.h \
+	$$TOP_ZBAR/qrcode/bch15_5.h \
+	$$TOP_ZBAR/qrcode/binarize.h \
+	$$TOP_ZBAR/qrcode.h \
+	$$TOP_ZBAR/qrcode/isaac.h \
+	$$TOP_ZBAR/qrcode/qrdec.h \
+	$$TOP_ZBAR/qrcode/rs.h \
+	$$TOP_ZBAR/qrcode/util.h \
+	$$TOP_ZBAR/QtIconv.h \
+	$$TOP_ZBAR/refcnt.h \
+	$$TOP_ZBAR/svg.h \
+	$$TOP_ZBAR/symbol.h \
+	$$TOP_ZBAR/thread.h \
+	$$TOP_ZBAR/timer.h \
+	$$TOP_ZBAR/video.h \
+	$$TOP_ZBAR/window.h \
+	$$TOP_ZBAR/zbar.h \
+	$$TOP_ZBAR/ZBarScanner.hpp \
 
 
 
 SOURCES	+= \
-	config.c \
-	convert.c \
-	decoder.c \
-	decoder/code128.c \
-	decoder/code39.c \
-	decoder/ean.c \
-	decoder/i25.c \
-	decoder/qr_finder.c \
-	error.c \
-	img_scanner.c \
-	processor.c \
-	processor/posix.c \
-	processor/processor_null.c \
-	qrcode/bch15_5.c \
-	qrcode/binarize.c \
-	qrcode/isaac.c \
-	qrcode/qrdec.c \
-	qrcode/qrdectxt.c \
-	qrcode/rs.c \
-	qrcode/util.c \
-	QtIconv.cpp \
-	refcnt.c \
-	scanner.c \
-	svg.c \
-	symbol.c \
-	video.c \
-	video/video_null.c \
-	window.c \
-	window/window_null.c \
-	ZBarScanner.cpp \
-	zimage.c \
-
+	$$TOP_ZBAR/config.c \
+	$$TOP_ZBAR/convert.c \
+	$$TOP_ZBAR/decoder.c \
+	$$TOP_ZBAR/decoder/code128.c \
+	$$TOP_ZBAR/decoder/code39.c \
+	$$TOP_ZBAR/decoder/ean.c \
+	$$TOP_ZBAR/decoder/i25.c \
+	$$TOP_ZBAR/decoder/qr_finder.c \
+	$$TOP_ZBAR/zbar_error.c \
+	$$TOP_ZBAR/img_scanner.c \
+	$$TOP_ZBAR/processor.c \
+	$$TOP_ZBAR/processor/posix.c \
+	$$TOP_ZBAR/processor/processor_null.c \
+	$$TOP_ZBAR/qrcode/bch15_5.c \
+	$$TOP_ZBAR/qrcode/binarize.c \
+	$$TOP_ZBAR/qrcode/isaac.c \
+	$$TOP_ZBAR/qrcode/qrdec.c \
+	$$TOP_ZBAR/qrcode/qrdectxt.c \
+	$$TOP_ZBAR/qrcode/rs.c \
+	$$TOP_ZBAR/qrcode/util.c \
+	$$TOP_ZBAR/QtIconv.cpp \
+	$$TOP_ZBAR/refcnt.c \
+	$$TOP_ZBAR/scanner.c \
+	$$TOP_ZBAR/svg.c \
+	$$TOP_ZBAR/symbol.c \
+	$$TOP_ZBAR/video.c \
+	$$TOP_ZBAR/video/video_null.c \
+	$$TOP_ZBAR/window.c \
+	$$TOP_ZBAR/window/window_null.c \
+	$$TOP_ZBAR/zimage.c \
+	$$TOP_ZBAR/ZBarScanner.cpp \
 
 # There is no support for iconv in Android, so we bring our own as QtIconv.?pp
 

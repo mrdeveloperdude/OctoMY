@@ -1,7 +1,7 @@
 #include "widgets/QRWidget.hpp"
 #include "utility/Standard.hpp"
 
-#include "../libqr/QRPainter.hpp"
+#include "qr/QRPainter.hpp"
 
 #include <QPainter>
 #include <QDebug>

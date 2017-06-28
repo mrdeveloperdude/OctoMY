@@ -15,34 +15,34 @@ contains(DEFINES, USE_BASIC_TESTS){
 #
 TEST_PROJECTS+= \
 	testCommon \
-#	testAgentStateCourier \
-#	testArduMY \
-#	testBlob \
-#	testCarSteeringWidget \
+	testAgentStateCourier \
+	testArduMY \
+	testBlob \
+	testCarSteeringWidget \
 	testCommsChannel \
 	testCommsSession \
-#	testCreepyVoice \
-#	testDeliveryWizard \
-#	testDiscovery \
-#	testESpeak \
-#	testEventSourcing \
-#	testHashstore \
-#	testIdenticon \
+	testCreepyVoice \
+	testDeliveryWizard \
+	testDiscovery \
+	testESpeak \
+	testEventSourcing \
+	testHashstore \
+	testIdenticon \
 	testKey \
 	testKeyStore \
-#	testNetworkAddress \
+	testNetworkAddress \
 	testNodeAssociate \
 	testNodeAssociateStore \
-#	testOpenCL \
-#	testParser \
-#	testPortableID \
-#	testPoseMappingStore \
-#	testPoseMappingWidget \
-#	testRNG \
-#	testServotor32Controller \
-#	testSyncParameter \
-#	testTetraGPSEncoder \
-#	testZooComms \
+	testOpenCL \
+	testParser \
+	testPortableID \
+	testPoseMappingStore \
+	testPoseMappingWidget \
+	testRNG \
+	testServotor32Controller \
+	testSyncParameter \
+	testTetraGPSEncoder \
+	testZooComms \
 
 
 

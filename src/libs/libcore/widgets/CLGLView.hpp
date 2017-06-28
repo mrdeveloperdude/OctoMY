@@ -24,10 +24,10 @@ public:
 
 #else
 
-#include "utility/IncludeOpenGL.hpp"
+#include "glt/IncludeOpenGL.hpp"
 #include "utility/FPSCalculator.hpp"
 #include "utility/ArcBall.hpp"
-#include "utility/GLContext.hpp"
+#include "glt/GLContext.hpp"
 
 
 
@@ -114,6 +114,6 @@ signals:
 	void glInitialized();
 };
 
-#endif
+#endif // EXTERNAL_LIB_OPENCL
 
 #endif // CLGLVIEW_HPP

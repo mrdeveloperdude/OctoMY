@@ -1,8 +1,8 @@
 #ifndef CLGLVIEWRENDERER_HPP
 #define CLGLVIEWRENDERER_HPP
 
-#include "utility/IncludeOpenGL.hpp"
-#include "utility/GLContext.hpp"
+#include "glt/IncludeOpenGL.hpp"
+#include "glt/GLContext.hpp"
 
 
 /**

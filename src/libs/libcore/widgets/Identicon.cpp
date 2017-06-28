@@ -1,6 +1,6 @@
 #include "Identicon.hpp"
 #include "basic/UniquePlatformFingerprint.hpp"
-#include "../librng/RNG.hpp"
+#include "rng/RNG.hpp"
 
 #include <QtSvg/QSvgRenderer>
 #include <QtGui/QPainter>

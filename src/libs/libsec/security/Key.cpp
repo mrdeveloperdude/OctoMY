@@ -23,9 +23,16 @@ Key::Key(const Key &other)
 				other.d_func()->mKey.isEmpty()
 			)
 		   )
+	, mInitialized(false)
 {
 	OC_METHODGATE();
 	//	qDebug()<<"Key::Key(constKey &other)"<<other.d_func()->mKey<<other.d_func()->mPubKey;
+	mInitialized=true;
+	Q_D(Key);
+	if(nullptr==d){
+		qWarning()<<"ERROR: Key::d was nullptr in Key::Key(const Key &other)";
+	}
+	OC_ASSERT(nullptr!=d);
 }
 
 
@@ -37,9 +44,16 @@ Key::~Key()
 
 Key::Key( QVariantMap map, bool isPublic )
 	: d_ptr(new KeyPrivate(map, isPublic))
+	, mInitialized(false)
 {
 	OC_METHODGATE();
 	//	qDebug()<<"Key::Key( QVariantMap map, bool isPublic )"<< map<<isPublic;
+	mInitialized=true;
+	Q_D(Key);
+	if(nullptr==d){
+		qWarning()<<"ERROR: Key::d was nullptr in Key::Key( QVariantMap map, bool isPublic )";
+	}
+	OC_ASSERT(nullptr!=d);
 }
 
 
@@ -48,23 +62,43 @@ Key::Key( QString key, bool isPublic )
 {
 	OC_METHODGATE();
 	//	qDebug()<<"Key::Key( QString key, bool isPublic):"<<key<<isPublic;
+	mInitialized=true;
+	Q_D(Key);
+	if(nullptr==d){
+		qWarning()<<"ERROR: Key::d was nullptr in Key::Key( QString key, bool isPublic )";
+	}
+	OC_ASSERT(nullptr!=d);
 }
 
 
 
 Key::Key( quint32 bits )
 	: d_ptr(new KeyPrivate(bits))
+	, mInitialized(false)
 {
 	OC_METHODGATE();
 	//	qDebug()<<"Key::Key( quint32 bits ):"<<bits;
+	mInitialized=true;
+	Q_D(Key);
+	if(nullptr==d){
+		qWarning()<<"ERROR: Key::d was nullptr in Key::Key( quint32 bits )";
+	}
+	OC_ASSERT(nullptr!=d);
 }
 
 
 Key::Key(KeyPrivate &dd)
 	: d_ptr(&dd)
+	, mInitialized(false)
 {
 	OC_METHODGATE();
 	//	qDebug()<<"Key::Key(KeyPrivate &dd)";
+	mInitialized=true;
+	Q_D(Key);
+	if(nullptr==d){
+		qWarning()<<"ERROR: Key::d was nullptr in Key::Key(KeyPrivate &dd)";
+	}
+	OC_ASSERT(nullptr!=d);
 }
 
 
@@ -73,6 +107,11 @@ Key::Key(Key && other) : Key()
 	OC_METHODGATE();
 	swap(*this, other);
 	//	qDebug()<<"Key::Key(Key && other) : Key()";
+	Q_D(Key);
+	if(nullptr==d){
+		qWarning()<<"ERROR: Key::d was nullptr in Key::Key(Key && other) : Key()";
+	}
+	OC_ASSERT(nullptr!=d);
 }
 
 Key & Key::operator=(Key other)
@@ -130,13 +169,24 @@ QString Key::pubKey() const
 {
 	OC_METHODGATE();
 	const Q_D(Key);
+	OC_ASSERT(nullptr!=d);
 	return d->mPubKey;
 }
 
-QString Key::id() const
+QString Key::id()//NOTE no const please
 {
 	OC_METHODGATE();
-	const Q_D(Key);
+	Q_D(Key);
+	if(!mInitialized){
+		qWarning()<<"ERROR: !mInitialized in id()";
+	}
+	if(nullptr==d){
+		qWarning()<<"ERROR: Key::d was nullptr in id()";
+	}
+	OC_ASSERT(nullptr!=d);
+	if(!d->mInitialized){
+		qWarning()<<"ERROR: !d->mInitialized in id()";
+	}
 	return d->mID;
 }
 
@@ -155,7 +205,7 @@ int Key::kct() const
 	return d->mKCT;
 }
 
-QVariantMap Key::toVariantMap(bool onlyPublic) const
+QVariantMap Key::toVariantMap(bool onlyPublic)
 {
 	OC_METHODGATE();
 	QVariantMap map;
@@ -167,7 +217,7 @@ QVariantMap Key::toVariantMap(bool onlyPublic) const
 	return map;
 }
 
-QString Key::toString() const
+QString Key::toString()
 {
 	OC_METHODGATE();
 	const Q_D(Key);

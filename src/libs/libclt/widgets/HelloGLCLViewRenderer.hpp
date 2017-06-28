@@ -2,7 +2,7 @@
 #define HELLOGLCLVIEWRENDERER_HPP
 
 #include "CLGLViewRenderer.hpp"
-#include "utility/IncludeOpenGL.hpp"
+#include "glt/IncludeOpenGL.hpp"
 
 
 #include <QtGlobal>
@@ -83,6 +83,6 @@ public:
 
 };
 
-#endif
+#endif // EXTERNAL_LIB_OPENCL
 
 #endif // HELLOGLCLVIEWRENDERER_HPP

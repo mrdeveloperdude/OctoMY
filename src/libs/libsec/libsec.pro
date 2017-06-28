@@ -2,17 +2,15 @@ TARGET =	sec
 TEMPLATE =	lib
 CONFIG +=	staticlib
 
-#QT         += core core-private gui gui-private
-INCLUDEPATH += $$TOP_PWD/libs/libsec/
 
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib.pri)
-#include($$TOP_PWD/libs/libmbedtls/libmbedtls.pri)
-#include($$TOP_PWD/libs/libqpolarssl/libqpolarssl.pri)
+
+include($$PRIS/common.pri)
+include($$PRIS/lib.pri)
+
+INCLUDEPATH += $$SRCS/libs/libsec/
 
 L=security
 I=security
-
 
 SOURCES += \
 	$$L/Key.cpp \
@@ -32,9 +30,8 @@ HEADERS += \
 
 win32:LIBS += -ladvapi32
 
-
 contains(DEFINES, USE_STATUS){
 message("FROM libsec.pro")
-include($$TOP_PWD/status.pri)
+include($$PRIS/status.pri)
 }
 

@@ -1,9 +1,9 @@
 #ifndef CLWORKER_HPP
 #define CLWORKER_HPP
 
-#include "utility/IncludeOpenGL.hpp"
+#include "glt/IncludeOpenGL.hpp"
 #include "opencl/CLInclude.hpp"
-#include "utility/GLContext.hpp"
+#include "glt/GLContext.hpp"
 
 
 #include <QObject>

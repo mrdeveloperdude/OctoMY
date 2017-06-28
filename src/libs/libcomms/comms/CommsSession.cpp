@@ -31,11 +31,13 @@ CommsSession::CommsSession(Key &key)
 	, mConnected(false)
 	, mLastConnected(false)
 	, mExpired(false)
+	, mInitialized(false)
 {
 
 	if(nullptr == &key){
 		qWarning()<<"ERROR: key was nullptr";
 	}
+	mInitialized=true;
 }
 
 
@@ -135,7 +137,14 @@ quint16 CommsSession::remoteSessionID() const
 
 QString CommsSession::fullID() const
 {
-	return mKey.id();
+	if(!mInitialized){
+		qWarning()<<"ERROR: !mInitialized in fullID()";
+	}
+	if(nullptr==&mKey){
+		qWarning()<<"ERROR: mKey was nullptr in fullID()";
+	}
+	QString id=mKey.id();
+	return id;
 }
 
 NetworkAddress CommsSession::address() const

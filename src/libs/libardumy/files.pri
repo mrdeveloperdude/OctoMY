@@ -1,5 +1,5 @@
 
-ARDUMY_TOP= $$SRCS/libs/arduino
+ARDUMY_TOP= ../../libs/arduino
 ARDUMY_HEADERS += \
 	$$ARDUMY_TOP/ArduMYActuatorConfig.hpp \
 	$$ARDUMY_TOP/ArduMYActuatorConfigParser.hpp \

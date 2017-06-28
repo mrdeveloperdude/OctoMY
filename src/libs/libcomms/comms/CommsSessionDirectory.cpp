@@ -41,10 +41,12 @@ void CommsSessionDirectory::insert(QSharedPointer<CommsSession> c)
 
 void CommsSessionDirectory::remove(QSharedPointer<CommsSession> c)
 {
-	mByAddress.remove(c->address().toString());
-	mByFullID.remove(c->fullID());
-	mBySessionID.remove(c->localSessionID());
-	mAll.remove(c);
+	if(nullptr!=c) {
+		mByAddress.remove(c->address().toString());
+		mByFullID.remove(c->fullID());
+		mBySessionID.remove(c->localSessionID());
+		mAll.remove(c);
+	}
 }
 
 
@@ -70,7 +72,7 @@ QSharedPointer<CommsSession> CommsSessionDirectory::getByFullID(const QString &i
 QSharedPointer<CommsSession> CommsSessionDirectory::getByAddress(const NetworkAddress &address) const
 {
 	// Never accept bad address
-	if(!address.isValid(false,false)){
+	if(!address.isValid(false,false)) {
 		return QSharedPointer<CommsSession>(nullptr);
 	}
 	QHash<QString, QSharedPointer<CommsSession> >::const_iterator it=mByAddress.find(address.toString());

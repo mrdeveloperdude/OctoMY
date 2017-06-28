@@ -4,7 +4,7 @@ CONFIG +=	staticlib
 
 include($$PRIS/common.pri)
 include($$PRIS/lib.pri)
-#QT         += core core-private gui gui-private
+
 INCLUDEPATH += $$SRCS/libs/libparser/
 
 # Link to flex library

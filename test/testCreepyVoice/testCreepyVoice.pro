@@ -1,4 +1,4 @@
-include($$TOP_PWD/test/test.pri)
+include($$TESTS/test.pri)
 
 TARGET = test_creepyvoice
 
@@ -8,6 +8,6 @@ HEADERS += \
 SOURCES += \
 	TestCreepyVoice.cpp
 
-include($$TOP_PWD/status.pri)
-include($$TOP_PWD/test/test_autorun.pri)
+include($$PRIS/status.pri)
+include($$TESTS/test_autorun.pri)
 

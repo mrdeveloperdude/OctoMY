@@ -1,7 +1,7 @@
 #ifndef TESTOPENCL_HPP
 #define TESTOPENCL_HPP
 
-#include "../libutil/utility/CrashHelp.hpp"
+#include "utility/CrashHelp.hpp"
 #include <QTest>
 
 

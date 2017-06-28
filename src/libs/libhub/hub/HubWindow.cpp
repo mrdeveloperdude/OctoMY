@@ -22,7 +22,7 @@
 #include "zoo/ZooClient.hpp"
 #include "security/Key.hpp"
 #include "../libclt/widgets/HelloGLCLViewRenderer.hpp"
-#include "ZBarScanner.hpp"
+#include "zbar/ZBarScanner.hpp"
 #include "widgets/HardwareTemplate.hpp"
 #include "trigger/TriggerSet.hpp"
 #include "trigger/Action.hpp"
@@ -120,7 +120,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		if(!connect(ui->openGLWidgetCLGLView,SIGNAL(glInitialized()),this,SLOT(onGLWidgetInitialized()),OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
-#endif
+#endif // EXTERNAL_LIB_OPENCL
 
 		const QCommandLineParser &opts=mHub->options();
 		if(opts.isSet("local-port")) {
@@ -356,7 +356,7 @@ void HubWindow::onGLWidgetInitialized()
 	}
 }
 
-#endif
+#endif // EXTERNAL_LIB_OPENCL
 
 void HubWindow::on_comboBoxAddLocal_currentIndexChanged(const QString &arg1)
 {

@@ -2,24 +2,26 @@ TARGET =	qr
 TEMPLATE =	lib
 CONFIG +=	staticlib
 
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib.pri)
-#QT         += core core-private gui gui-private
+include($$PRIS/common.pri)
+include($$PRIS/lib.pri)
+
 INCLUDEPATH += ./
 
+TOP_QR=qr/
+
 HEADERS	+= \
-	BitBuffer.hpp \
-	QrCode.hpp \
-	QrSegment.hpp \
-	QRPainter.hpp
+	$$TOP_QR/BitBuffer.hpp \
+	$$TOP_QR/QrCode.hpp \
+	$$TOP_QR/QrSegment.hpp \
+	$$TOP_QR/QRPainter.hpp \
 
 SOURCES	+= \
-	BitBuffer.cpp \
-	QrCode.cpp \
-	QrSegment.cpp \
-	QRPainter.cpp
+	$$TOP_QR/BitBuffer.cpp \
+	$$TOP_QR/QrCode.cpp \
+	$$TOP_QR/QrSegment.cpp \
+	$$TOP_QR/QRPainter.cpp \
 
 contains(DEFINES, USE_STATUS){
-message("FROM libqfi.pro:")
-include($$TOP_PWD/status.pri)
+message("FROM libqr.pro:")
+include($$PRIS/status.pri)
 }

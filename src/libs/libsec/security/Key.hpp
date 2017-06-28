@@ -21,6 +21,9 @@ class Key
 {
 
 public:
+
+	bool mInitialized;
+public:
 	explicit Key() Q_DECL_NOTHROW;
 
 
@@ -59,16 +62,16 @@ public:
 
 	QString pubKey() const;
 
-	QString id() const;
+	QString id(); //NOTE no const please
 
 
 	int kid() const;
 
 	int kct() const;
 
-	QVariantMap toVariantMap(bool onlyPublic) const;
+	QVariantMap toVariantMap(bool onlyPublic);
 
-	QString toString() const;
+	QString toString();
 	bool isValid(bool onlyPublic);
 
 

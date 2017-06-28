@@ -7,7 +7,7 @@
 #include "utility/Utility.hpp"
 #include "basic/Settings.hpp"
 #include "security/PortableID.hpp"
-#include "OneOffSpeech.hpp"
+#include "audio/OneOffSpeech.hpp"
 #include "comms/CommsSessionDirectory.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"

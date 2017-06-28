@@ -2,7 +2,7 @@
 
 
 
-#include "../libcore/comms/SyncParameter.hpp"
+#include "comms/SyncParameter.hpp"
 
 
 

@@ -40,5 +40,4 @@ INCLUDEPATH= $$unique(INCLUDEPATH)
 #message("| " $${INCLUDEPATH})
 
 
-libs.subdir=		librest
-libs.depends=		rest
+#libs.subdir=		librest libs.depends=		rest

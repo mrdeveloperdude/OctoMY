@@ -1,0 +1,7 @@
+
+MBEDTLS_IN_DIR =	$$SRCS/libs/libmbedtls
+MBEDTLS_OUT_DIR =	$$BUILD_SRCS/libs/libmbedtls
+LIBS +=			-L$$MBEDTLS_OUT_DIR -lmbedtls
+INCLUDEPATH +=		$$MBEDTLS_IN_DIR/include
+DEPENDPATH +=		$$MBEDTLS_IN_DIR
+PRE_TARGETDEPS +=	$$MBEDTLS_OUT_DIR/libmbedtls.a

@@ -2,79 +2,80 @@ TARGET = map
 TEMPLATE = lib
 CONFIG +=	staticlib
 
-include($$TOP_PWD/common.pri)
-include($$TOP_PWD/lib.pri)
-include($$TOP_PWD/libs/libcomms/libcomms.pri)
+include($$PRIS/common.pri)
+include($$PRIS/lib.pri)
+include($$SRCS/libs/libcomms/libcomms.pri)
 
-INCLUDEPATH += $$TOP_PWD/libs/libmap/
+INCLUDEPATH += $$SRCS/libs/libmap/
 
 
 QT += network
 QT += gui
 QT += widgets
 
+MAP_TOP=$$SRCS/libs/libmap/map
 
 HEADERS +=	\
-	GoogleMapAdapter.hpp \
-	GPSPosition.hpp \
-	ImageManager.hpp \
-	ImagePoint.hpp \
-	InvisiblePoint.hpp \
-	Layer.hpp \
-	LayerManager.hpp \
-	WMSMapAdapter.hpp \
-	TileMapAdapter.hpp \
-	qMapControlGlobal.hpp \
-	Point.h \
-	OSMMapAdapter.hpp \
-	OpenAerialMapAdapter.hpp \
-	MapNetwork.hpp \
-	MapLayer.hpp \
-	MapControl.hpp \
-	MapAdapter.hpp \
-	LineString.hpp \
-	GoogleAPIMapAdapter.hpp \
-	GeometryLayer.hpp \
-	Geometry.hpp \
-	FixedImageOverlay.hpp \
-	EmptyMapAdapter.hpp \
-	Curve.hpp \
-	Circlepoint.hpp \
-	BingAPIMapAdapter.hpp \
-	ArrowPoint.hpp
+	$$MAP_TOP/GoogleMapAdapter.hpp \
+	$$MAP_TOP/GPSPosition.hpp \
+	$$MAP_TOP/ImageManager.hpp \
+	$$MAP_TOP/ImagePoint.hpp \
+	$$MAP_TOP/InvisiblePoint.hpp \
+	$$MAP_TOP/Layer.hpp \
+	$$MAP_TOP/LayerManager.hpp \
+	$$MAP_TOP/WMSMapAdapter.hpp \
+	$$MAP_TOP/TileMapAdapter.hpp \
+	$$MAP_TOP/qMapControlGlobal.hpp \
+	$$MAP_TOP/Point.hpp \
+	$$MAP_TOP/OSMMapAdapter.hpp \
+	$$MAP_TOP/OpenAerialMapAdapter.hpp \
+	$$MAP_TOP/MapNetwork.hpp \
+	$$MAP_TOP/MapLayer.hpp \
+	$$MAP_TOP/MapControl.hpp \
+	$$MAP_TOP/MapAdapter.hpp \
+	$$MAP_TOP/LineString.hpp \
+	$$MAP_TOP/GoogleAPIMapAdapter.hpp \
+	$$MAP_TOP/GeometryLayer.hpp \
+	$$MAP_TOP/Geometry.hpp \
+	$$MAP_TOP/FixedImageOverlay.hpp \
+	$$MAP_TOP/EmptyMapAdapter.hpp \
+	$$MAP_TOP/Curve.hpp \
+	$$MAP_TOP/Circlepoint.hpp \
+	$$MAP_TOP/BingAPIMapAdapter.hpp \
+	$$MAP_TOP/ArrowPoint.hpp \
 
 
 SOURCES += \
-	ArrowPoint.cpp \
-	BingAPIMapAdapter.cpp \
-	CirclePoint.cpp \
-	Curve.cpp \
-	EmptyMapAdapter.cpp \
+	$$MAP_TOP/ArrowPoint.cpp \
+	$$MAP_TOP/BingAPIMapAdapter.cpp \
+	$$MAP_TOP/CirclePoint.cpp \
+	$$MAP_TOP/Curve.cpp \
+	$$MAP_TOP/EmptyMapAdapter.cpp \
 	FixedImageOverlay.cpp \
-	Geometry.cpp \
-	GeometryLayer.cpp \
-	GoogleAPIMapAdapter.cpp \
-	GoogleMapAdapter.cpp \
-	GPSPosition.cpp \
-	ImageManager.cpp \
-	ImagePoint.cpp \
-	InvisiblePoint.cpp \
-	Layer.cpp \
-	LayerManager.cpp \
-	LineString.cpp \
-	MapAdapter.cpp \
-	MapControl.cpp \
-	MapLayer.cpp \
-	MapNetwork.cpp \
-	OpenAerialMapAdapter.cpp \
-	OSMMapAdapter.cpp \
-	Point.cpp \
-	TileMapAdapter.cpp \
-	WMSMapAdapter.cpp
+	$$MAP_TOP/Geometry.cpp \
+	$$MAP_TOP/GeometryLayer.cpp \
+	$$MAP_TOP/GoogleAPIMapAdapter.cpp \
+	$$MAP_TOP/GoogleMapAdapter.cpp \
+	$$MAP_TOP/GPSPosition.cpp \
+	$$MAP_TOP/ImageManager.cpp \
+	$$MAP_TOP/ImagePoint.cpp \
+	$$MAP_TOP/InvisiblePoint.cpp \
+	$$MAP_TOP/Layer.cpp \
+	$$MAP_TOP/LayerManager.cpp \
+	$$MAP_TOP/LineString.cpp \
+	$$MAP_TOP/MapAdapter.cpp \
+	$$MAP_TOP/MapControl.cpp \
+	$$MAP_TOP/MapLayer.cpp \
+	$$MAP_TOP/MapNetwork.cpp \
+	$$MAP_TOP/OpenAerialMapAdapter.cpp \
+	$$MAP_TOP/OSMMapAdapter.cpp \
+	$$MAP_TOP/Point.cpp \
+	$$MAP_TOP/TileMapAdapter.cpp \
+	$$MAP_TOP/WMSMapAdapter.cpp \
 
 
 
 contains(DEFINES, USE_STATUS){
 message("FROM libmap.pro")
-include($$TOP_PWD/status.pri)
+include($$PRIS/status.pri)
 }
