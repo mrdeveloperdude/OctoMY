@@ -1,3 +1,6 @@
+
+contains(DEFINES, EXTERNAL_LIB_OPENCL){
+
 CLT_TOP= $$SRCS/libs/libclt
 
 HEADERS	+= \
@@ -30,5 +33,4 @@ SOURCES	+= \
 RESOURCES += \
 	$$CLT_TOP/resources/gl_shaders.qrc \
 
-
-
+}

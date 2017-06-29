@@ -33,7 +33,6 @@ TEST_PROJECTS+= \
 	testNetworkAddress \
 	testNodeAssociate \
 	testNodeAssociateStore \
-	testOpenCL \
 	testParser \
 	testPortableID \
 	testPoseMappingWidget \
@@ -55,6 +54,14 @@ STRESS_PROJECTS+= \
 contains(DEFINES, USE_WEB_TESTS){
 TEST_PROJECTS+= \
 # TODO: Add the tests here that require web-connection to work here
+}
+
+
+# NOTE: EXTERNAL_LIB_OPENCL is enabled when useful in local_override.pri
+contains(DEFINES, EXTERNAL_LIB_OPENCL){
+TEST_PROJECTS+= \
+	testOpenCL \
+
 }
 
 

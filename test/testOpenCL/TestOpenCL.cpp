@@ -1,5 +1,7 @@
 #include "TestOpenCL.hpp"
 
+#ifdef EXTERNAL_LIB_OPENCL
+
 #include "opencl/CLThreadManager.hpp"
 #include "opencl/CLWorkerFactory.hpp"
 #include "opencl/CLWorker.hpp"
@@ -84,7 +86,7 @@ public:
 		  "\n -D PARAM_SCREEN_HEIGHT=" << size.height() <<
 
 //		  "\n -cl-nv-opt-level 0"
-	//	  "\n -cl-nv-verbose"
+		  //	  "\n -cl-nv-verbose"
 
 		  "";
 
@@ -548,3 +550,35 @@ int main(int argc, char *argv[])
 	QTEST_SET_MAIN_SOURCE_PATH
 	return QTest::qExec(&tc, argc, argv);
 }
+
+#else
+
+
+void TestOpenCL::testCLGLView()
+{
+	qWarning()<<"CL DISABLED IN THIS BUILD";
+}
+
+void TestOpenCL::testWithoutGLInterop()
+{
+	qWarning()<<"CL DISABLED IN THIS BUILD";
+}
+
+
+void TestOpenCL::initTestCase()
+{
+	qWarning()<<"CL DISABLED IN THIS BUILD";
+}
+
+
+void TestOpenCL::testWithGLInterop()
+{
+	qWarning()<<"CL DISABLED IN THIS BUILD";
+}
+
+void TestOpenCL::cleanupTestCase()
+{
+	qWarning()<<"CL DISABLED IN THIS BUILD";
+}
+
+#endif

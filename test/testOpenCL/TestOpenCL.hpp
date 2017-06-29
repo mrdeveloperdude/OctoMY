@@ -13,7 +13,7 @@ private:
 	CrashHelp mCrashHelper;
 //	QSurfaceFormat testFormat;
 
-void testCLGLView();
+	void testCLGLView();
 	void testWithoutGLInterop();
 
 private slots:
