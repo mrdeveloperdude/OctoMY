@@ -38,6 +38,17 @@ QMAKE_CXXFLAGS += -fno-omit-frame-pointer
 QMAKE_CXXFLAGS += -fstack-protector-all -fstrict-overflow -fstack-usage
 #QMAKE_CXXFLAGS +=-fsanitize=address
 
+########## Here are some warnings disabled to reduce logging:
+
+
+# Stop whining about missing include dirs. It IS useful, but in our current system we add too many and there is no easy way to mend that.
+QMAKE_CXXFLAGS += -Wno-missing-include-dirs
+
+# NOTE: Only for pure C, since that are external dependencies only (which we don't want to change and so the warnings become nuicanses)
+QMAKE_CFLAGS += -Wno-parentheses
+QMAKE_CFLAGS += -Wno-int-conversion
+QMAKE_CFLAGS += -Wno-unused-value
+
 #    Enable AddressSanitizer, a fast memory error detector. Memory access instructions will be instrumented to detect out-of-bounds and use-after-free bugs. See http://code.google.com/p/address-sanitizer/ for more details. The run-time behavior can be influenced using the ASAN_OPTIONS environment variable; see https://code.google.com/p/address-sanitizer/wiki/Flags#Run-time_flags for a list of supported options.
 #QMAKE_CXXFLAGS +=-fsanitize=kernel-address
 #    Enable AddressSanitizer for Linux kernel. See http://code.google.com/p/address-sanitizer/wiki/AddressSanitizerForKernel for more details.

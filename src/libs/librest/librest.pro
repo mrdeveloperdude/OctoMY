@@ -39,28 +39,28 @@ for(LIBBASE, AUTOLINKS) {
 		error(" * * * " $$LIBNAME "WAS IN BOTH AUTOLIBS & AUTOLINKS AT THE SAME TIME (rest)")
 	}
 	else{
-		message("-----------------------------------------------------------------")
-		message("AUTOLINK for '" $$LIBNAME "'" )
+		#message("-----------------------------------------------------------------")
+		#message("AUTOLINK for '" $$LIBNAME "'" )
 
 		ipath= $$clean_path($$SRCS/libs/$${LIBNAME})
 		bipath=$$clean_path($$BUILD_SRCS/libs/$${LIBNAME})
 
 		config_file=$$ipath/config.pri
 		exists($$config_file){
-			message("== CONF: "$$config_file)
+			#message("== CONF: "$$config_file)
 			include($$config_file)
 			OTHER_FILES += $$config_file
 		}
 		files_file=$$ipath/files.pri
 		exists($$files_file){
-			message("== FILES: "$$files_file)
+			#message("== FILES: "$$files_file)
 			include($$files_file)
 			OTHER_FILES += $$files_file
 		}
 		else{
 			#message("== INC: $$lo)")
 			# NOTE: 'true' means recursive:
-			message("== AUTOFILES")
+			#message("== AUTOFILES")
 			SOURCES   += $$files($$ipath/*.cpp, true)
 			SOURCES   += $$files($$ipath/*.c, true)
 			HEADERS   += $$files($$ipath/*.hpp, true)

@@ -18,5 +18,4 @@ SOURCES += \
 	TestCommon.cpp \
 	CourierTester.cpp \
 
-#include($$PRIS/status.pri)
 

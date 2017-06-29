@@ -8,6 +8,4 @@ HEADERS += \
 SOURCES += \
 	TestCommsChannel.cpp
 
-include($$PRIS/status.pri)
-#include($$TESTS/test_autorun.pri)
-
+include($$TESTS/test_autorun.pri)

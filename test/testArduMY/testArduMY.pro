@@ -49,5 +49,4 @@ SOURCES += \
 	$$ARDUMY_BASE/MagicDetector.cpp \
 	TestArduMY.cpp \
 
-include($$PRIS/status.pri)
 include($$TESTS/test_autorun.pri)

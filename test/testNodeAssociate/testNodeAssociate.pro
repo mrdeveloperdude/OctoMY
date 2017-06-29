@@ -8,6 +8,5 @@ HEADERS += \
 SOURCES += \
 	TestNodeAssociate.cpp
 
-include($$PRIS/status.pri)
 include($$TESTS/test_autorun.pri)
 

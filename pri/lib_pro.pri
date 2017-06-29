@@ -11,8 +11,8 @@ contains(AUTOLIBS, $$LIBBASE ){
 		error(" * * * " $$LIBNAME "WAS IN BOTH AUTOLIBS & AUTOLINKS AT THE SAME TIME (pro)")
 	}
 	else{
-		message("-----------------------------------------------------------------")
-		message("AUTOLIB  for '" $$LIBNAME "'" )
+		#message("-----------------------------------------------------------------")
+		#message("AUTOLIB  for '" $$LIBNAME "'" )
 
 		TARGET=$$LIBBASE
 		CONFIG +=	staticlib
