@@ -10,13 +10,13 @@ int KeyPrivate::mKCT=0;
 
 KeyPrivate::KeyPrivate( QVariantMap map, bool isPublic )
 	: KeyPrivate(isPublic?(map.contains("publicKey")?map["publicKey"].toString():""): (map.contains("privateKey")?map["privateKey"].toString():""), isPublic)
-/*
-	: mKey(isPublic?"":map.contains("privateKey")?map["privateKey"].toString():"")
-	, mPubKey(map.contains("publicKey")?map["publicKey"].toString():"")
-	, mKID(mKCT++)
-	, mValidPrivate(false)
-	, mValidPublic(false)
-	*/
+	  /*
+		: mKey(isPublic?"":map.contains("privateKey")?map["privateKey"].toString():"")
+		, mPubKey(map.contains("publicKey")?map["publicKey"].toString():"")
+		, mKID(mKCT++)
+		, mValidPrivate(false)
+		, mValidPublic(false)
+		*/
 {
 	OC_METHODGATE();
 
@@ -36,7 +36,6 @@ KeyPrivate::KeyPrivate( QString key, bool isPublic )
 	OC_METHODGATE();
 	//	qDebug()<<"KeyPrivate::KeyPrivate( QString key, bool isPublic ):"<<key<<isPublic <<" for " <<mKID<<"/"<<mKCT;
 	parse(isPublic);
-	mInitialized=true;
 }
 
 
@@ -49,6 +48,52 @@ KeyPrivate::KeyPrivate(quint32 bits)
 	OC_METHODGATE();
 	//	qDebug()<<"KeyPrivate::KeyPrivate(quint32 bits):"<<bits<<" for " <<mKID<<"/"<<mKCT;
 	ScopedTimer timer("Key Generation");
+	generate(bits);
+}
+
+
+void KeyPrivate::parse(bool publicOnly)
+{
+	//ScopedTimer timer("Key Parsing");
+	mValidPrivate=false;
+	mValidPublic=false;
+	mID="";
+	if(publicOnly) {
+		QByteArray raw=mPubKey.toUtf8();
+		if(0==mPKI.parsePublicKey(raw)) {
+			mValidPublic=true;
+		} else {
+			qWarning()<<"ERROR: Could not parse pubkey: "<<raw;
+		}
+	} else {
+		QByteArray raw=mKey.toUtf8();
+		if(!raw.isEmpty()) {
+			if(0==mPKI.parseKey(raw)) {
+				mPubKey=mPKI.getPEMPubkey();
+				if(!mPubKey.isEmpty()) {
+					mValidPrivate=true;
+					mValidPublic=true;
+				} else {
+					qWarning()<<"ERROR: Could not get pubkey from key: "<<raw;
+				}
+			} else {
+				qWarning()<<"ERROR: Could not parse key: "<<raw;
+			}
+		} else {
+			qWarning()<<"ERROR: Private key text was empty";
+		}
+	}
+	if(mPKI.isValid()) {
+		mID=hash(mPubKey);
+	} else {
+		qWarning()<<"ERROR: key was not valid after parsing";
+	}
+	mInitialized=true;
+}
+
+
+void KeyPrivate::generate(quint32 bits)
+{
 	mPKI.generateKeyPair(bits);
 	if(mPKI.isValid()) {
 		mKey=mPKI.getPEMKey();
@@ -62,45 +107,11 @@ KeyPrivate::KeyPrivate(quint32 bits)
 	mInitialized=true;
 }
 
-
-void KeyPrivate::parse(bool publicOnly)
-{
-	//ScopedTimer timer("Key Parsing");
-	mValidPrivate=false;
-	mValidPublic=false;
-
-	mID="";
-	if(publicOnly) {
-		QByteArray raw=mPubKey.toUtf8();
-		if(0!=mPKI.parsePublicKey(raw)) {
-			qWarning()<<"ERROR: Could not parse pubkey: "<<raw;
-			return;
-		}
-		mValidPublic=true;
-	} else {
-		QByteArray raw=mKey.toUtf8();
-		if(""!=raw) {
-			if(0!=mPKI.parseKey(raw)) {
-				qWarning()<<"ERROR: Could not parse key: "<<raw;
-				return;
-			}
-			mPubKey=mPKI.getPEMPubkey();
-			if(mPubKey.isEmpty()) {
-				qWarning()<<"ERROR: Could not get pubkey from key: "<<raw;
-				return;
-			}
-		} else {
-			qWarning()<<"ERROR: Private key text was empty";
-			return;
-		}
-		mValidPrivate=true;
-		mValidPublic=true;
-	}
-	mID=hash(mPubKey);
-}
-
 KeyPrivate::KeyPrivate()
 	: mKID(mKCT++)
+	, mValidPrivate(false)
+	, mValidPublic(false)
+	, mInitialized(false)
 {
 	OC_METHODGATE();
 	//	qDebug()<<"KeyPrivate::KeyPrivate()" <<" for " <<mKID<<"/"<<mKCT;

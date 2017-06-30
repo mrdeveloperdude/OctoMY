@@ -139,9 +139,11 @@ QString CommsSession::fullID() const
 {
 	if(!mInitialized){
 		qWarning()<<"ERROR: !mInitialized in fullID()";
+		return "";
 	}
 	if(nullptr==&mKey){
 		qWarning()<<"ERROR: mKey was nullptr in fullID()";
+		return "";
 	}
 	QString id=mKey.id();
 	return id;
@@ -251,7 +253,7 @@ QString CommsSession::toString() const
 {
 	QString out;
 	QTextStream ts(&out);
-	ts << "sig="<< signatureToString()<<", delta: "<<mDeltaTime<<", TOA: "<<mDisconnectTimeoutAccumulator;
+	ts << "sig="<< QString::number(mLocalSessionID,16)<<"-"<<mAddress.toString()<<"("<<fullID()<<")"<<", delta: "<<mDeltaTime<<", TOA: "<<mDisconnectTimeoutAccumulator;
 	return out;
 }
 
@@ -264,9 +266,9 @@ const QString CommsSession::listText() const
 
 quint64 CommsSession::lastActiveTime() const
 {
-	// Sending does not count, because we may be sending to deaf ears
-	//return qMax(lastSendTime, lastReceiveTime);
-	return mLastReceiveTime;
+	// TODO: See if sending should count, since we may be sending to deaf ears
+	return qMax(mLastSendTime, mLastReceiveTime);
+	//return mLastReceiveTime;
 }
 
 ////////////////////////////

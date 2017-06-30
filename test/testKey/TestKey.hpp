@@ -14,6 +14,8 @@ private slots:
 
 	void testSignature();
 
+	void testEncryption();
+
 };
 
 

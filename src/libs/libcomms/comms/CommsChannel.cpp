@@ -63,7 +63,7 @@ CommsChannel::CommsChannel(KeyStore &keystore, NodeAssociateStore &peers, QObjec
 CommsChannel::CommsChannel(KeyStore &keystore, QObject *parent)
 	: QObject(parent)
 	, mKeystore(keystore)
-	, mPeers(*((NodeAssociateStore *) nullptr ))
+	, mPeers(*((NodeAssociateStore *) nullptr ))//HACK
 	, mSessions(mKeystore)
 {
 	//TODO: Remove once nobody refers to it any more
@@ -103,8 +103,9 @@ void CommsChannel::stop()
 
 bool CommsChannel::isStarted() const
 {
-	return mSendingTimer.isActive();
+	return (mSendingTimer.isActive() && (mUDPSocket.state()==QAbstractSocket::BoundState));
 }
+
 bool CommsChannel::isConnected() const
 {
 	return mConnected;
@@ -120,6 +121,7 @@ public:
 	int bytesUsed;
 	QSharedPointer<QDataStream> encStream;
 	int encBytesUsed;
+	QByteArray octomyProtocolUnencryptedMessage;
 	QByteArray octomyProtocolEncryptedMessage;
 
 
@@ -131,7 +133,7 @@ public:
 		: session(nullptr)
 		, stream(new QDataStream(&this->datagram, QIODevice::WriteOnly))
 		, bytesUsed(0)
-		, encStream(new QDataStream(&this->octomyProtocolEncryptedMessage, QIODevice::WriteOnly))
+		, encStream(new QDataStream(&this->octomyProtocolUnencryptedMessage, QIODevice::WriteOnly))
 		, encBytesUsed(0)
 	{
 
@@ -142,19 +144,32 @@ public:
 		this->session=session;
 	}
 
+	void writeMultimagic(Multimagic multimagic)
+	{
+		const SESSION_ID_TYPE multimagicInt=(SESSION_ID_TYPE)multimagic;
+		writeMultimagic(multimagicInt);
+	}
+
+	void writeMultimagic(SESSION_ID_TYPE multimagic)
+	{
+		*stream << multimagic;
+		bytesUsed += sizeof(multimagic);
+	}
 
 	void writeMagic()
 	{
-		*stream << (quint32)OCTOMY_PROTOCOL_MAGIC;//Protocol MAGIC identifier
-		bytesUsed += sizeof(quint32);
+		const quint32 magic=(quint32)OCTOMY_PROTOCOL_MAGIC;//Protocol MAGIC identifier
+		*stream << magic;
+		bytesUsed += sizeof(magic);
 	}
 
 	// Write a header with protocol "magic number" and a version
 	void writeProtocolVersion()
 	{
-		*stream << (qint32)OCTOMY_PROTOCOL_VERSION_CURRENT;//Protocol version
-		bytesUsed += sizeof(qint32);
-		stream->setVersion(OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT); //Qt Datastream version
+		const quint32 version=(qint32)OCTOMY_PROTOCOL_VERSION_CURRENT;//Protocol version
+		*stream << version;
+		bytesUsed += sizeof(version);
+		stream->setVersion(version); //Qt Datastream version
 	}
 
 	void writeSessionID(SESSION_ID_TYPE sessionID)
@@ -204,10 +219,29 @@ public:
 
 	static const int OCTOMY_ENCRYPTED_MESSAGE_SIZE=20;
 
+	void encrypt(){
+		if(nullptr==session){
+			qWarning()<<"ERROR: No session while encrypting";
+			return;
+		}
+		Key &k=session->key();
+		if(!k.isValid(true)){
+			qWarning()<<"ERROR: Invalid key while encrypting";
+			return;
+		}
+		if(octomyProtocolUnencryptedMessage.size()<1){
+			qWarning()<<"ERROR: Source text is empty while encrypting";
+			return;
+		}
+		octomyProtocolEncryptedMessage=k.encrypt(octomyProtocolUnencryptedMessage);
+	}
+
+
 	// Write Pub-key encrypted message body
 	void writeProtocolEncryptedMessage()
 	{
 		auto size=octomyProtocolEncryptedMessage.size();
+		qWarning()<<"TX CIPHERTEXT WAS: "<<octomyProtocolEncryptedMessage;
 		*stream << octomyProtocolEncryptedMessage;
 		bytesUsed-=size;
 	}
@@ -236,7 +270,6 @@ public:
 	}
 
 };
-
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -353,7 +386,7 @@ public:
 
 	/////////////////////////////////////////// ENCRYPTED BEYOND THIS LINE
 
-	static const int OCTOMY_ENCRYPTED_MESSAGE_SIZE=20;
+	static const int OCTOMY_ENCRYPTED_MESSAGE_SIZE=36;
 
 	// Read Pub-key encrypted message body
 	void readProtocolEncryptedMessage()
@@ -423,11 +456,18 @@ bool CommsChannel::recieveEncryptedBody(PacketReadState &state)
 
 	// Decrypt message body using local private-key
 	Key &localKey=mKeystore.localKey();
+	if(!localKey.isValid(false)){
+		QString es="ERROR: Local key not valid for decryption";
+		qWarning()<<es;
+		emit commsError(es);
+		return false;
+	}
 	QByteArray octomyProtocolDecryptedMessage=localKey.decrypt(state.octomyProtocolEncryptedMessage);
 	const int octomyProtocolDecryptedMessageSize=octomyProtocolDecryptedMessage.size();
 	if(0 == octomyProtocolDecryptedMessageSize) { // Size of decrypted message should be non-zero
-		QString es="ERROR: OctoMY Protocol Session-Less nonce decryption failed";
+		QString es="ERROR: OctoMY Protocol Session-Less nonce decryption failed with local key with ID: " + localKey.id();
 		qWarning()<<es;
+		qWarning()<<"RX CIPHERTEXT WAS: "<<state.octomyProtocolEncryptedMessage;
 		emit commsError(es);
 		return false;
 	}
@@ -735,15 +775,18 @@ void CommsChannel::recieveData(PacketReadState &state)
 
 
 
+
+
 // Main packet reception
 void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHostS , quint16 remotePortS )
 {
-	mRXRate.countPacket(datagramS.count());
+	mRXRate.countPacket(datagramS.size());
 	//countReceived();
 	PacketReadState state(datagramS, remoteHostS,remotePortS);
 
 	//QSharedPointer<CommsSession> session;
 	state.readMultimagic();
+	qDebug()<<"RX Multimagic: "<<state.multimagic;
 	switch((Multimagic)state.multimagic) {
 	case(MULTIMAGIC_IDLE): {
 		// We are keeping the UDP connection alive with idle packet
@@ -825,18 +868,26 @@ void CommsChannel::doSend( PacketSendState &state)
 
 void CommsChannel::sendIdle(const quint64 &now, QSharedPointer<CommsSession> session)
 {
+	// TODO: See if all this session stuff is necessary
+	/*
 	if(nullptr==session) {
 		qWarning()<<"ERROR: session was null";
 		return;
 	}
+	*/
 	PacketSendState state;
 
-
+	state.writeMultimagic(MULTIMAGIC_IDLE);
+	/*
 	state.setSession(session);
 
 	auto sessionID=session->remoteSessionID();
 	// TODO: What tha hall
 	state.writeSessionID(sessionID);
+*/
+	state.encrypt();
+	state.writeProtocolEncryptedMessage();
+
 
 	doSend(state);
 }
@@ -848,8 +899,7 @@ void CommsChannel::sendIdle(const quint64 &now, QSharedPointer<CommsSession> ses
 void CommsChannel::sendSyn(PacketSendState &state)
 {
 	// 1. Send Alice's magic & version
-	state.writeMagic();
-	state.writeProtocolVersion();
+	state.writeMultimagic(MULTIMAGIC_SYN);
 
 	// 2. Send encrypted package of...
 
@@ -860,6 +910,7 @@ void CommsChannel::sendSyn(PacketSendState &state)
 	// 2b. Alice's first nonce
 	// 2c. Alice's desired session ID
 
+	state.encrypt();
 	state.writeProtocolEncryptedMessage();
 
 	doSend(state);
@@ -872,14 +923,16 @@ void CommsChannel::sendSyn(PacketSendState &state)
 void CommsChannel::sendSynAck(PacketSendState &state)
 {
 	// 1. Send Bob's magic & version
-	state.writeMagic();
-	state.writeProtocolVersion();
+	state.writeMultimagic(MULTIMAGIC_SYNACK);
 
 	// 2. Send encrypted package of...
 
 	// 2a. Bob's first nonce
 	// 2b. Alice's first return nonce
 	// 2c. Bob's desired session ID
+
+	state.encrypt();
+	state.writeProtocolEncryptedMessage();
 
 	doSend(state);
 }
@@ -889,11 +942,13 @@ void CommsChannel::sendSynAck(PacketSendState &state)
 void CommsChannel::sendAck(PacketSendState &state)
 {
 	// 1. Send Alice's magic & version
-	state.writeMagic();
-	state.writeProtocolVersion();
+	state.writeMultimagic(MULTIMAGIC_ACK);
 
 	// 2. Send encrypted package of...
 	// 2a. Bob's first return nonce
+
+	state.encrypt();
+	state.writeProtocolEncryptedMessage();
 
 	doSend(state);
 }
@@ -1139,8 +1194,13 @@ void CommsChannel::onReadyRead()
 		datagram.resize(mUDPSocket.pendingDatagramSize());
 		QHostAddress host;
 		quint16 port=0;
-		mUDPSocket.readDatagram(datagram.data(), datagram.size(), &host, &port);
-		receivePacketRaw(datagram,host,port);
+		qint64 ret=mUDPSocket.readDatagram(datagram.data(), datagram.size(), &host, &port);
+		if(ret>=0){
+			receivePacketRaw(datagram,host,port);
+		}
+		else{
+			qWarning()<<"ERROR: error reading pending datagram";
+		}
 	}
 }
 

@@ -364,9 +364,10 @@ void TestCommsChannel::testSingle()
 	qDebug()<<"";
 	qDebug()<<"####################################### WAITING 1st time with no sessions";
 	{
-		const quint64 start=QDateTime::currentMSecsSinceEpoch();
-		quint64 now=start;
-		while(now<start+10000) {
+		quint64 now=QDateTime::currentMSecsSinceEpoch();
+		const quint64 end=now+10000;
+		while(now<end) {
+			//qDebug()<<" * * * Tick Tock.....................";
 			now=QDateTime::currentMSecsSinceEpoch();
 			QCoreApplication::processEvents();
 		}

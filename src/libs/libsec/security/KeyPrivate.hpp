@@ -36,6 +36,7 @@ public:
 private:
 
 	void parse(bool isPublic);
+	void generate(quint32 bits);
 public:
 
 

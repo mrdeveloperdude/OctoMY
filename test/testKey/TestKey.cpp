@@ -47,18 +47,6 @@ void TestKey::testBasicIntegrity()
 	// ############################# #############################
 	// ############################# bool isValid(bool onlyPublic);
 
-	// ############################# #############################
-	// ############################# QByteArray sign(const QByteArray &source);
-
-	// ############################# #############################
-	// ############################# bool verify(const QByteArray &message, const QByteArray &signature);
-
-	// ############################# #############################
-	// ############################# QByteArray encrypt(const QByteArray& data);
-
-	// ############################# #############################
-	// ############################# QByteArray decrypt(const QByteArray& data);
-
 
 	// ############################# #############################
 	// ############################# explicit Key(quint32 bits);
@@ -269,6 +257,10 @@ void TestKey::testSignature()
 	Key k6(1024);
 	qDebug()<<"K6:"<<k6.kid()<< " of " <<k6.kct()<< " VAR: "<<k6.toVariantMap(false);
 
+	// ############################# #############################
+	// ############################# QByteArray sign(const QByteArray &source);
+
+
 	QByteArray orig=QString("THIS IS THE ORIGINAL TEXT").toUtf8();
 	QByteArray signature = k1.sign(orig);
 	qDebug()<<"ORIG: "<<orig;
@@ -296,6 +288,10 @@ void TestKey::testSignature()
 	}
 	QVERIFY((siglen > 64) );
 
+	// ############################# #############################
+	// ############################# bool verify(const QByteArray &message, const QByteArray &signature);
+
+
 	ret = pkiPublic.verify(sourceData, signature2, OCTOMY_KEY_HASH_POLAR);
 
 
@@ -313,6 +309,56 @@ void TestKey::testSignature()
 	QVERIFY(k1.verify(orig, signature));
 	QVERIFY(!k6.verify(orig, signature));
 }
+
+
+
+
+void TestKey::testEncryption()
+{
+	Key k1(1024);
+	{
+		const QByteArray orig=QString("THIS IS THE ORIGINAL TEXT").toUtf8();
+
+		// ############################# #############################
+		// ############################# QByteArray encrypt(const QByteArray& data);
+		const QByteArray encrypted = k1.encrypt(orig);
+
+		// ############################# #############################
+		// ############################# QByteArray decrypt(const QByteArray& data);
+		const QByteArray decrypted= k1.decrypt(encrypted);
+
+		qDebug()<<"ORIG: "<<orig;
+		qDebug()<<"ENCR: "<<encrypted;
+		qDebug()<<"DECR: "<<decrypted;
+
+		QCOMPARE(orig,decrypted);
+	}
+
+	{
+		// Separate the pubkey into it's own instance
+		Key k2(k1.pubKey(), true);
+
+		const QByteArray orig=QString("THIS IS THE ORIGINAL TEXT VERSION 2 IT IS A BIT LONGER JUST FOR FUN").toUtf8();
+		const QByteArray encrypted = k2.encrypt(orig);
+		const QByteArray decrypted= k1.decrypt(encrypted);
+
+		qDebug()<<"ORIG2: "<<orig;
+		qDebug()<<"ENCR2: "<<encrypted;
+		qDebug()<<"DECR2: "<<decrypted;
+
+		QCOMPARE(orig,decrypted);
+	}
+
+}
+
+
+
+
+
+
+
+
+
 
 
 QTEST_MAIN(TestKey)
