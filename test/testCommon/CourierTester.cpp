@@ -265,7 +265,11 @@ void CourierTester::onFromCorrupt()
 void CourierTester::putTitle(int chance)
 {
 	qDebug()<<"";
-	qDebug().noquote()<<"---------------------- ROUND "<<mRoundCounter<<": " << mChanceNames[chance]<< " ------------------ ";
+	if(mChanceNames.size()<=chance || chance<0) {
+		qDebug().noquote()<<"---------------------- ROUND ERROR: NUMBER UNKNOWN: "<<chance;
+	} else {
+		qDebug().noquote()<<"---------------------- ROUND "<<mRoundCounter<<": " << mChanceNames[chance]<< " ------------------ ";
+	}
 
 
 
