@@ -11,12 +11,12 @@ int KeyPrivate::mKCT=0;
 KeyPrivate::KeyPrivate( QVariantMap map, bool isPublic )
 	: KeyPrivate(isPublic?(map.contains("publicKey")?map["publicKey"].toString():""): (map.contains("privateKey")?map["privateKey"].toString():""), isPublic)
 	  /*
-		: mKey(isPublic?"":map.contains("privateKey")?map["privateKey"].toString():"")
-		, mPubKey(map.contains("publicKey")?map["publicKey"].toString():"")
-		, mKID(mKCT++)
-		, mValidPrivate(false)
-		, mValidPublic(false)
-		*/
+	  : mKey(isPublic?"":map.contains("privateKey")?map["privateKey"].toString():"")
+	  , mPubKey(map.contains("publicKey")?map["publicKey"].toString():"")
+	  , mKID(mKCT++)
+	  , mValidPrivate(false)
+	  , mValidPublic(false)
+	  */
 {
 	OC_METHODGATE();
 
@@ -105,6 +105,46 @@ void KeyPrivate::generate(quint32 bits)
 		qWarning()<<"ERROR: keywas not valid after generation";
 	}
 	mInitialized=true;
+}
+
+
+
+
+QString KeyPrivate::describe()
+{
+	OC_METHODGATE();
+	QString pkiName=QString(mPKI.name());
+	bool pkiValid=           mPKI.isValid();
+	size_t    pkiSizeBits=      mPKI.keySizeBits();
+	size_t         pkiSizeBytes= mPKI.keySizeBytes();
+//	bool            pkiCanXXX=mPKI.canDo(TPki type);
+//	TPki            pkiType=mPKI.type();
+
+	QString ret="";
+	ret+= "          mKey="+mKey;
+	ret+="\n      mPubKey="+mPubKey;
+	ret+="\n          mID="+mID;
+	ret+="\n         mKCT="+QString::number(mKCT);
+	ret+="\n         mKID="+QString::number(mKID);
+	ret+="\nmValidPrivate="+QString(mValidPrivate?"true ":"false");
+	ret+="\n mValidPublic="+QString(mValidPublic?"true ":"false");
+	ret+="\n mInitialized="+QString(mInitialized?"true ":"false");
+	ret+="\n     pkiName="+pkiName;
+	ret+="\n    pkiValid="+QString(pkiValid?"true ":"false");
+	ret+="\n pkiSizeBits="+QString::number(pkiSizeBits);
+	ret+="\npkiSizeBytes="+QString::number(pkiSizeBytes);
+
+
+
+
+	QStringList list=ret.split("\n",QString::SkipEmptyParts);
+	for(QString str:list) {
+		qDebug()<<str;
+	}
+	//qpolarssl::Pki mPKI;
+
+
+	return ret;
 }
 
 KeyPrivate::KeyPrivate()

@@ -65,6 +65,9 @@ public:
 	QString id(); //NOTE no const please
 
 
+	QString describe();
+
+
 	int kid() const;
 
 	int kct() const;

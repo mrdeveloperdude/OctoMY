@@ -195,6 +195,12 @@ QString Key::id()//NOTE no const please
 	}
 }
 
+QString Key::describe()
+{
+	OC_METHODGATE();
+	Q_D(Key);
+	return d->describe();
+}
 
 int Key::kid() const
 {

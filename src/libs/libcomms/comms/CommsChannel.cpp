@@ -24,6 +24,8 @@
 
 #define FIRST_STATE_ID ((SESSION_ID_TYPE)MULTIMAGIC_LAST)
 
+//#define DO_CC_ENC
+
 const quint64 CommsChannel::CONNECTION_TIMEOUT = MINIMAL_PACKET_RATE + 1000;//1 sec  more than our UDP timeout
 // NOTE: We use 512 as the maximum practical UDP size for ipv4 over the internet
 //       See this for discussion: http://stackoverflow.com/questions/1098897/what-is-the-largest-safe-udp-packet-size-on-the-internet
@@ -219,21 +221,26 @@ public:
 
 	static const int OCTOMY_ENCRYPTED_MESSAGE_SIZE=20;
 
-	void encrypt(){
-		if(nullptr==session){
+	void encrypt()
+	{
+		if(nullptr==session) {
 			qWarning()<<"ERROR: No session while encrypting";
 			return;
 		}
 		Key &k=session->key();
-		if(!k.isValid(true)){
+		if(!k.isValid(true)) {
 			qWarning()<<"ERROR: Invalid key while encrypting";
 			return;
 		}
-		if(octomyProtocolUnencryptedMessage.size()<1){
+		if(octomyProtocolUnencryptedMessage.size()<1) {
 			qWarning()<<"ERROR: Source text is empty while encrypting";
 			return;
 		}
+#ifdef DO_CC_ENC
 		octomyProtocolEncryptedMessage=k.encrypt(octomyProtocolUnencryptedMessage);
+#else
+		octomyProtocolEncryptedMessage=octomyProtocolUnencryptedMessage;
+#endif
 	}
 
 
@@ -290,7 +297,9 @@ public:
 	quint32 octomyProtocolVersion;
 
 	QByteArray octomyProtocolEncryptedMessage;
+	QByteArray octomyProtocolDecryptedMessage;
 	int octomyProtocolEncryptedMessageSize;
+	int octomyProtocolDecryptedMessageSize;
 
 	quint32 partMessageTypeID;
 	quint16 partBytesAvailable;
@@ -310,7 +319,7 @@ public:
 
 	SESSION_ID_TYPE octomyProtocolDesiredRemoteSessionID;
 
-	static const int OCTOMY_SENDER_ID_SIZE=20;
+	static const int OCTOMY_SENDER_ID_SIZE=32;
 
 public:
 	PacketReadState(QByteArray datagram, QHostAddress remoteHost , quint16 remotePort)
@@ -325,6 +334,7 @@ public:
 		  //, octomyProtocolFlags(0)
 		, octomyProtocolVersion(0)
 		, octomyProtocolEncryptedMessageSize(0)
+		, octomyProtocolDecryptedMessageSize(0)
 		, partMessageTypeID(0)
 		, partBytesAvailable(0)
 		, encStream()
@@ -388,28 +398,51 @@ public:
 
 	static const int OCTOMY_ENCRYPTED_MESSAGE_SIZE=36;
 
+
+	void decrypt(Key &k)
+	{
+
+		if(k.isValid(true)) {
+			if(octomyProtocolEncryptedMessageSize>0) {
+#ifdef DO_CC_ENC
+				octomyProtocolDecryptedMessage=k.decrypt(octomyProtocolEncryptedMessage);
+#else
+				octomyProtocolDecryptedMessage=octomyProtocolEncryptedMessage;
+#endif
+				octomyProtocolDecryptedMessageSize=octomyProtocolDecryptedMessage.size();
+				if(octomyProtocolDecryptedMessageSize>0) {
+					encStream=QSharedPointer<QDataStream> (new QDataStream(&this->octomyProtocolDecryptedMessage, QIODevice::ReadOnly));
+					encTotalAvailable=octomyProtocolEncryptedMessageSize;
+				} else {
+					qWarning()<<"ERROR: Source text is empty while decrypting";
+				}
+			} else {
+				qWarning()<<"ERROR: Cipher text is empty while decrypting";
+			}
+		} else {
+			qWarning()<<"ERROR: Invalid key while decrypting";
+		}
+
+
+	}
+
 	// Read Pub-key encrypted message body
 	void readProtocolEncryptedMessage()
 	{
 		*stream >> octomyProtocolEncryptedMessage;
 		octomyProtocolEncryptedMessageSize=octomyProtocolEncryptedMessage.size();
 		totalAvailable-=octomyProtocolEncryptedMessageSize;
-
-		if(octomyProtocolEncryptedMessageSize>0) {
-			encStream=QSharedPointer<QDataStream> (new QDataStream(&this->octomyProtocolEncryptedMessage, QIODevice::ReadOnly));
-			encTotalAvailable=octomyProtocolEncryptedMessageSize;
-		}
-
 	}
 
 
 	// Extract full ID of sender
 	void readEncSenderID()
 	{
+		octomyProtocolSenderIDRaw.clear();
 		*encStream >> octomyProtocolSenderIDRaw;
 		octomyProtocolSenderIDRawSize=octomyProtocolSenderIDRaw.size();
 		encTotalAvailable-=octomyProtocolSenderIDRawSize;
-		octomyProtocolSenderID=octomyProtocolSenderIDRaw.toHex();
+		octomyProtocolSenderID=octomyProtocolSenderIDRaw.toHex().toUpper();
 	}
 
 
@@ -442,11 +475,11 @@ public:
 };
 
 
-
 bool CommsChannel::recieveEncryptedBody(PacketReadState &state)
 {
 	// Read Pub-key encrypted message body
 	state.readProtocolEncryptedMessage();
+	state.decrypt(mKeystore.localKey());
 	if(state.octomyProtocolEncryptedMessageSize != state.OCTOMY_ENCRYPTED_MESSAGE_SIZE) { // Encrypted message should be OCTOMY_ENCRYPTED_MESSAGE_SIZE bytes, no more, no less
 		QString es="ERROR: OctoMY Protocol Session-Less encrypted message size mismatch: "+QString::number(state.octomyProtocolEncryptedMessageSize)+ " vs. "+QString::number(state.OCTOMY_ENCRYPTED_MESSAGE_SIZE);
 		qWarning()<<es;
@@ -456,18 +489,19 @@ bool CommsChannel::recieveEncryptedBody(PacketReadState &state)
 
 	// Decrypt message body using local private-key
 	Key &localKey=mKeystore.localKey();
-	if(!localKey.isValid(false)){
+	if(!localKey.isValid(false)) {
 		QString es="ERROR: Local key not valid for decryption";
 		qWarning()<<es;
 		emit commsError(es);
 		return false;
 	}
-	QByteArray octomyProtocolDecryptedMessage=localKey.decrypt(state.octomyProtocolEncryptedMessage);
-	const int octomyProtocolDecryptedMessageSize=octomyProtocolDecryptedMessage.size();
-	if(0 == octomyProtocolDecryptedMessageSize) { // Size of decrypted message should be non-zero
+	state.decrypt(localKey);
+	//const int octomyProtocolDecryptedMessageSize=
+
+	if(0 == state.octomyProtocolDecryptedMessageSize) { // Size of decrypted message should be non-zero
 		QString es="ERROR: OctoMY Protocol Session-Less nonce decryption failed with local key with ID: " + localKey.id();
 		qWarning()<<es;
-		qWarning()<<"RX CIPHERTEXT WAS: "<<state.octomyProtocolEncryptedMessage;
+		qWarning()<<"RX CIPHERTEXT WAS: "<<state.octomyProtocolDecryptedMessage;
 		emit commsError(es);
 		return false;
 	}
@@ -509,60 +543,58 @@ void CommsChannel::recieveIdle(PacketReadState &state)
 	qDebug()<<"RECEIVED IDLE PACKET";
 }
 
+
+
+// Did handshake complete already?
+//if(session->established()) {
+// TODO: Handle this case:
+/*
+				When an initial packet is received after session was already established the following logic applies:
+					+ If packet timestamp was before session-established-and-confirmed timestamp, it is ignored
+					+ The packet is logged and the stream is examined for packets indicating the original session is still in effect.
+					+ If there were no sign of the initial session after a timeout of X seconds, the session is torn down, and the last of the session initial packet is answered to start a new hand shake
+					+ If one or more packets indicating that the session is still going, the initial packet and it's recepient is flagged as hacked and the packet is ignored. This will trigger a warning to the user in UI, and rules may be set up in plan to automatically shut down communication uppon such an event.
+					+ No matter if bandwidth management is in effect or not, valid initial packets should be processed at a rate at most once per 3 seconds.
+	*/
+//} else {
+//}
+
+
 // 1. A sends SYN to B: Hi B. Here is my ( FULL-ID + NONCE + A's DESIRED SESSION-ID ) ENCODED WITH YOUR PUBKEY.
 void CommsChannel::recieveSyn(PacketReadState &state)
 {
 	qDebug()<<"RECEIVED SYN PACKET";
 
-
-	// Did handshake complete already?
-	//if(session->established()) {
-	// TODO: Handle this case:
-	/*
-					When an initial packet is received after session was already established the following logic applies:
-						+ If packet timestamp was before session-established-and-confirmed timestamp, it is ignored
-						+ The packet is logged and the stream is examined for packets indicating the original session is still in effect.
-						+ If there were no sign of the initial session after a timeout of X seconds, the session is torn down, and the last of the session initial packet is answered to start a new hand shake
-						+ If one or more packets indicating that the session is still going, the initial packet and it's recepient is flagged as hacked and the packet is ignored. This will trigger a warning to the user in UI, and rules may be set up in plan to automatically shut down communication uppon such an event.
-						+ No matter if bandwidth management is in effect or not, valid initial packets should be processed at a rate at most once per 3 seconds.
-		*/
-	//} else {
-	//}
-
-	if(recieveMagicAndVersion(state)) {
-		state.readProtocolEncryptedMessage();
-		if(state.octomyProtocolEncryptedMessageSize <= 0) {
-			QString es="ERROR: OctoMY Protocol encrypted message size <= 0";
-			qWarning()<<es;
-			emit commsError(es);
-			return;
-		}
-		state.readEncSenderID();
-		// TODO meta overhead bytes for bytearray from stream
-		if(state.octomyProtocolSenderIDRawSize != state.OCTOMY_SENDER_ID_SIZE) { // Full ID should be OCTOMY_FULL_ID_SIZE bytes, no more, no less
-			QString es="ERROR: OctoMY Protocol Session-Less Sender ID size mismatch: "+QString::number(state.octomyProtocolSenderIDRawSize)+ " vs. "+QString::number(state.OCTOMY_SENDER_ID_SIZE);
-			qWarning()<<es;
-			emit commsError(es);
-			return;
-		}
-		qDebug()<< "SESSION-LESS PACKET RX FROM "<< state.octomyProtocolSenderID;
-		state.readEncRemoteNonce();
-		qDebug()<< "SYN REMOTE NONCE WAS: "<< state.octomyProtocolRemoteNonce;
-
-
-		state.readEncDesiredRemoteSessionID();
-		if(state.octomyProtocolDesiredRemoteSessionID < FIRST_STATE_ID ) {
-			QString es="ERROR: OctoMY Protocol desired remote session ID not valid: "+QString::number(state.octomyProtocolDesiredRemoteSessionID);
-			qWarning()<<es;
-			emit commsError(es);
-			return;
-		}
-
-		auto session=lookUpSession(state.octomyProtocolSenderID,state.octomyProtocolDesiredRemoteSessionID);
-		if(nullptr!=session) {
-			qDebug()<<"SESSION: "<<session->address().toString()<<QStringLiteral(", ")<<session->key().id();
-		}
+	// 2a. Alice's full sender ID
+	state.readEncSenderID();
+	qDebug()<< "SESSION-LESS PACKET RX FROM "<< state.octomyProtocolSenderID;
+	// TODO meta overhead bytes for bytearray from stream
+	if(state.octomyProtocolSenderIDRawSize != state.OCTOMY_SENDER_ID_SIZE) { // Full ID should be OCTOMY_FULL_ID_SIZE bytes, no more, no less
+		QString es="ERROR: OctoMY Protocol Session-Less Sender ID size mismatch: "+QString::number(state.octomyProtocolSenderIDRawSize)+ " vs. "+QString::number(state.OCTOMY_SENDER_ID_SIZE);
+		qWarning()<<es;
+		emit commsError(es);
+		return;
 	}
+
+	// 2b. Alice's first nonce
+	state.readEncRemoteNonce();
+	qDebug()<< "SYN REMOTE NONCE WAS: "<< state.octomyProtocolRemoteNonce;
+
+
+	// 2c. Alice's desired session ID
+	state.readEncDesiredRemoteSessionID();
+	if(state.octomyProtocolDesiredRemoteSessionID < FIRST_STATE_ID ) {
+		QString es="ERROR: OctoMY Protocol desired remote session ID not valid for SYN: "+QString::number(state.octomyProtocolDesiredRemoteSessionID);
+		qWarning()<<es;
+		emit commsError(es);
+		return;
+	}
+
+	auto session=lookUpSession(state.octomyProtocolSenderID,state.octomyProtocolDesiredRemoteSessionID);
+	if(nullptr!=session) {
+		qDebug()<<"SESSION: "<<session->address().toString()<<QStringLiteral(", ")<<session->key().id();
+	}
+
 }
 
 QSharedPointer<CommsSession> CommsChannel::lookUpSession(QString id, SESSION_ID_TYPE desiredRemoteSessionID)
@@ -635,7 +667,7 @@ void CommsChannel::recieveSynAck(PacketReadState &state)
 		// Extract desired remote session ID
 		state.readEncDesiredRemoteSessionID();
 		if(state.octomyProtocolDesiredRemoteSessionID < FIRST_STATE_ID ) {
-			QString es="ERROR: OctoMY Protocol desired remote session ID not valid: "+QString::number(state.octomyProtocolDesiredRemoteSessionID);
+			QString es="ERROR: OctoMY Protocol desired remote session ID not valid for SYNACK: "+QString::number(state.octomyProtocolDesiredRemoteSessionID);
 			qWarning()<<es;
 			emit commsError(es);
 			return;
@@ -884,7 +916,7 @@ void CommsChannel::sendIdle(const quint64 &now, QSharedPointer<CommsSession> ses
 	auto sessionID=session->remoteSessionID();
 	// TODO: What tha hall
 	state.writeSessionID(sessionID);
-*/
+	*/
 	state.encrypt();
 	state.writeProtocolEncryptedMessage();
 
@@ -908,7 +940,9 @@ void CommsChannel::sendSyn(PacketSendState &state)
 	state.writeEncSenderID(senderID);
 	//TODO: We should create new session here and make sure there is no cross talk
 	// 2b. Alice's first nonce
+	state.writeEncNonce(1337);
 	// 2c. Alice's desired session ID
+	state.writeEncNonce(7331);
 
 	state.encrypt();
 	state.writeProtocolEncryptedMessage();
@@ -1195,10 +1229,9 @@ void CommsChannel::onReadyRead()
 		QHostAddress host;
 		quint16 port=0;
 		qint64 ret=mUDPSocket.readDatagram(datagram.data(), datagram.size(), &host, &port);
-		if(ret>=0){
+		if(ret>=0) {
 			receivePacketRaw(datagram,host,port);
-		}
-		else{
+		} else {
 			qWarning()<<"ERROR: error reading pending datagram";
 		}
 	}

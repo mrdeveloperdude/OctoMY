@@ -1,5 +1,7 @@
 #include "TestKey.hpp"
 
+#include "../testCommon/TestCommon.hpp"
+
 #include "security/Key.hpp"
 #include "security/SecurityConstants.hpp"
 #include "security/SecurityConstantsPrivate.hpp"
@@ -302,10 +304,6 @@ void TestKey::testSignature()
 	}
 
 	QVERIFY(ret==0);
-
-
-
-
 	QVERIFY(k1.verify(orig, signature));
 	QVERIFY(!k6.verify(orig, signature));
 }
@@ -315,48 +313,76 @@ void TestKey::testSignature()
 
 void TestKey::testEncryption()
 {
-	Key k1(1024);
+	// ############################# #############################
+	// ############################# QByteArray encrypt(const QByteArray& data);
+
+	// ############################# #############################
+	// ############################# QByteArray decrypt(const QByteArray& data);
+
+	//for(int j=7; j<13; ++j)
+	const int j=8;
 	{
-		const QByteArray orig=QString("THIS IS THE ORIGINAL TEXT").toUtf8();
-
-		// ############################# #############################
-		// ############################# QByteArray encrypt(const QByteArray& data);
-		const QByteArray encrypted = k1.encrypt(orig);
-
-		// ############################# #############################
-		// ############################# QByteArray decrypt(const QByteArray& data);
-		const QByteArray decrypted= k1.decrypt(encrypted);
-
-		qDebug()<<"ORIG: "<<orig;
-		qDebug()<<"ENCR: "<<encrypted;
-		qDebug()<<"DECR: "<<decrypted;
-
-		QCOMPARE(orig,decrypted);
-	}
-
-	{
+		const int bitsize=1<<j;
+		Key k1(bitsize);
+		QVERIFY(k1.isValid(true));
+		QVERIFY(k1.isValid(false));
+		qDebug()<<"";
+		qDebug()<<"__________________________________";
+		qDebug()<<"---- K1 DESCRIPTION: -------------";
+		k1.describe();
+		/*
+				k1.
+				NONE,
+				RSA,
+				ECKEY,
+				ECKEY_DH,
+				ECDSA,
+				RSA_ALT,
+				RSASSA_PSS
+		*/
 		// Separate the pubkey into it's own instance
 		Key k2(k1.pubKey(), true);
+		QVERIFY(k2.isValid(true));
+		QVERIFY(!k2.isValid(false));
+		qDebug()<<"";
+		qDebug()<<"__________________________________";
+		qDebug()<<"---- K2 DESCRIPTION: -------------";
+		k2.describe();
+		//for(int i=0; i<16; ++i)
+		for(int i=0; i<30; ++i) {
+			//const int datasize=1<<i;
+			const int datasize=i+1;
 
-		const QByteArray orig=QString("THIS IS THE ORIGINAL TEXT VERSION 2 IT IS A BIT LONGER JUST FOR FUN").toUtf8();
-		const QByteArray encrypted = k2.encrypt(orig);
-		const QByteArray decrypted= k1.decrypt(encrypted);
+			{
+				qDebug()<<"";
+				qDebug()<<"";
+				qDebug()<<"####################################################################";
+				qDebug()<<"----- BITSIZE: "<<bitsize<<", DATASIZE: "<<datasize;
+				QByteArray orig1=randomByteArray(datasize);
 
-		qDebug()<<"ORIG2: "<<orig;
-		qDebug()<<"ENCR2: "<<encrypted;
-		qDebug()<<"DECR2: "<<decrypted;
+				const QByteArray encrypted1= k1.encrypt(orig1);
+				const QByteArray decrypted1= k1.decrypt(encrypted1);
 
-		QCOMPARE(orig,decrypted);
+				qDebug()<<"ORIG1: "<<orig1;
+				qDebug()<<"ENCR1: "<<encrypted1;
+				qDebug()<<"DECR1: "<<decrypted1;
+
+				//QCOMPARE(orig1,decrypted1);
+			}
+			{
+				QByteArray orig2=randomByteArray(datasize);
+				const QByteArray encrypted2 = k2.encrypt(orig2);
+				const QByteArray decrypted2= k1.decrypt(encrypted2);
+
+				qDebug()<<"ORIG2: "<<orig2;
+				qDebug()<<"ENCR2: "<<encrypted2;
+				qDebug()<<"DECR2: "<<decrypted2;
+
+				//QCOMPARE(orig2,decrypted2);
+			}
+		}
 	}
-
 }
-
-
-
-
-
-
-
 
 
 
