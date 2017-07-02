@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>images/birth.jpeg</file>
         <file>images/hub_butterfly.svg</file>
+        <file>images/ardumy_badge.svg</file>
     </qresource>
 </RCC>

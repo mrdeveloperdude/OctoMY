@@ -91,9 +91,18 @@
        <item row="0" column="0" colspan="4">
         <widget class="QLabel" name="labelIntroduction">
          <property name="text">
-          <string>&lt;h1&gt;ArduMY™ Controller version 1.0&lt;/h1&gt;
+          <string>&lt;table width=&quot;100%&quot;&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;h1&gt;ArduMY™ Controller version 1.0&lt;/h1&gt;
 &lt;p&gt;This is the native Arduino© based controller for OctoMY™&lt;/p&gt;
-&lt;p&gt;You will find full documentation for it &lt;a href=&quot;http://www.octomy.org/documentation/development/architectual-overview/ardumy&quot; &gt;here&lt;/a&gt;&lt;/p&gt;</string>
+&lt;p&gt;You will find full documentation for it &lt;a href=&quot;http://www.octomy.org/documentation/development/architectual-overview/ardumy&quot; &gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td&gt;
+&lt;img src=&quot;qrc:/images/ardumy_badge.svg&quot; alt=&quot;ArduMY™ Badge&quot; style=&quot;float:right; display:block;&quot;/&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;</string>
          </property>
          <property name="openExternalLinks">
           <bool>true</bool>
@@ -486,6 +495,7 @@
   </customwidget>
  </customwidgets>
  <resources>
+  <include location="../resources/icons.qrc"/>
   <include location="../resources/icons.qrc"/>
  </resources>
  <connections/>
