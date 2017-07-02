@@ -31,7 +31,7 @@ contains(AUTOLIBS, $$LIBBASE ){
 			INCLUDEPATH += $$ipath
 			INCLUDEPATH += $$bipath
 		}
-		message("INCPATH PRO FOR " $$LIBBASE " WAS: " $$INCLUDEPATH)
+		#message("INCPATH PRO FOR " $$LIBBASE " WAS: " $$INCLUDEPATH)
 		#includes = node
 
 		#for(i, includes) {

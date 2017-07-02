@@ -1,6 +1,6 @@
 contains(DEFINES, EXTERNAL_LIB_OPENCL){
 
-warning ("CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  ")
+#warning ("CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  CLT  ")
 
 QT         += core-private gui-private
 
@@ -14,7 +14,7 @@ PRE_TARGETDEPS += $$SRCS/libs/libclt/OpenCL-ICD-Loader/build/bin/libOpenCL.so
 
 }
 else{
-	message("NO CLT")
+	#message("NO CLT")
 }
 
 
