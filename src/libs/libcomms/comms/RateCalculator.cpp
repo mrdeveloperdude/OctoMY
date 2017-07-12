@@ -29,7 +29,7 @@ void RateCalculator::countPacket(quint32 bytes)
 		qreal byteRate=mBytesLog;
 		byteRate/=(qreal)timeSinceLast;
 		byteRate/=(qreal)1000.0;
-		qDebug().noquote() << mName << "Rate " << QString::number(packetRate) << " packets/sec, " << utility::humanReadableSize(packetRate) << "/sec, ";
+	//	qDebug().noquote() << mName << "Rate " << QString::number(packetRate) << " packets/sec, " << utility::humanReadableSize(packetRate) << "/sec, ";
 		mLastLog=mLast;
 		mCountLog=0;
 		mBytesLog=0;

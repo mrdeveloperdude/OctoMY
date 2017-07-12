@@ -166,7 +166,12 @@ void AgentWindow::updateIcon()
 	if(nullptr!=mAgent) {
 		//Set our custom identicon as window icon
 		PortableID pid;
-		pid.setID(mAgent->keyStore().localKey().id());
+		auto key=mAgent->keyStore().localKey();
+		if(nullptr!=key) {
+			pid.setID(key->id());
+		} else {
+			qWarning()<<"NO KEY!";
+		}
 		Identicon id(pid);
 		QIcon icon;//=windowIcon();
 		icon.addPixmap(id.pixmap());
@@ -330,14 +335,19 @@ QSet<QSharedPointer<NodeAssociate> > AgentWindow::activeControls()
 		CommsSessionDirectory &sessionDirectory=cc->sessions();
 		QSet<QSharedPointer<CommsSession> > sessions=sessionDirectory.getByActiveTime(lastActive);
 		for(QSharedPointer<CommsSession> session: sessions) {
-			QString id=session->key().id();
-			if(id.size()>0) {
-				QSharedPointer<NodeAssociate> peer=peers.getParticipant(id);
-				if(nullptr!=peer) {
-					if(DiscoveryRole::ROLE_CONTROL==peer->role()) {
-						out<<peer;
+			auto key=session->key();
+			if(nullptr!=key) {
+				QString id=key->id();
+				if(id.size()>0) {
+					QSharedPointer<NodeAssociate> peer=peers.getParticipant(id);
+					if(nullptr!=peer) {
+						if(DiscoveryRole::ROLE_CONTROL==peer->role()) {
+							out<<peer;
+						}
 					}
 				}
+			} else {
+				qWarning()<<"ERROR: No key";
 			}
 		}
 	}
@@ -511,14 +521,18 @@ void AgentWindow::onStartShowBirthCertificate()
 	OC_METHODGATE();
 	PortableID pid;
 	if(nullptr!=mAgent) {
-		QString id=mAgent->keyStore().localKey().id();
-		QSharedPointer<NodeAssociate> myAss=mAgent->peers().getParticipant(id);
-		if(nullptr!=myAss) {
-			pid=myAss->toPortableID();
+		auto key=mAgent->keyStore().localKey();
+		if(nullptr!=key) {
+			QString id=key->id();
+			QSharedPointer<NodeAssociate> myAss=mAgent->peers().getParticipant(id);
+			if(nullptr!=myAss) {
+				pid=myAss->toPortableID();
+			} else {
+				qWarning()<<"ERROR: No ass";
+			}
 		} else {
-			qWarning()<<"ERROR: No ass";
+			qWarning()<<"ERROR: No key";
 		}
-
 	}
 	ui->widgetBirthCertificate->setPortableID(pid);
 	ui->stackedWidget->setCurrentWidget(ui->pageBirthCertificate);

@@ -86,7 +86,7 @@ private:
 	QUrl  mServerURL;
 	qhttp::client::QHttpClient     *mClient;
 	Node &mNode;
-	Key &mKey;
+	QSharedPointer<Key> mKey;
 
 private:
 	void registerPossibleParticipant(QVariantMap map);

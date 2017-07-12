@@ -40,7 +40,7 @@ class CommsSession
 private:
 	//CommsSignature mSignature;
 
-	Key &mKey;
+	QSharedPointer<Key> mKey;
 	SESSION_ID_TYPE mLocalSessionID; // What the local side of this session has decided is the ID for itself
 	SESSION_ID_TYPE mRemoteSessionID; // What the remote side of this session has decided is the ID for itself
 	NetworkAddress mAddress;
@@ -92,12 +92,17 @@ private:
 #endif
 
 
+	//NONCES
+
+	SESSION_NONCE_TYPE mOurSynNonce;
+	SESSION_NONCE_TYPE mOurAckNonce;
+	SESSION_NONCE_TYPE mTheirLastNonce;
 
 
 public:
 
 	//Client(QHostAddress host, quint16 port, LogDestination *log=0);
-	explicit CommsSession(Key &key);
+	explicit CommsSession(QSharedPointer<Key> key);
 	virtual ~CommsSession();
 
 	// Selectors
@@ -112,13 +117,13 @@ public:
 	float deltaTime() const;
 	float idleAccumulator() const;
 	quint32 idlePacksSent() const;
-	Key &key() const;
+	QSharedPointer<Key> key() const;
 
 	bool connected() const;
 	bool lastConnected() const;
 	bool handshakeStarted() const;
+	HandshakeState &handshakeState();
 	bool established() const;
-	HandshakeStep nextStep() const;
 	bool expired() const;
 
 	// CommsSignature replacements:
@@ -131,6 +136,16 @@ public:
 
 	void setLocalSessionID(SESSION_ID_TYPE );
 	void setRemoteSessionID(SESSION_ID_TYPE );
+
+
+	// nonce management
+public:
+	SESSION_NONCE_TYPE createOurSynNonce();
+	SESSION_NONCE_TYPE createOurAckNonce();
+	SESSION_NONCE_TYPE ourSynNonce() const;
+	SESSION_NONCE_TYPE ourAckNonce() const;
+	void setTheirLastNonce(SESSION_NONCE_TYPE);
+	SESSION_NONCE_TYPE theirLastNonce() const;
 
 public:
 

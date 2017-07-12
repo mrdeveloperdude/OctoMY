@@ -10,18 +10,9 @@ int KeyPrivate::mKCT=0;
 
 KeyPrivate::KeyPrivate( QVariantMap map, bool isPublic )
 	: KeyPrivate(isPublic?(map.contains("publicKey")?map["publicKey"].toString():""): (map.contains("privateKey")?map["privateKey"].toString():""), isPublic)
-	  /*
-	  : mKey(isPublic?"":map.contains("privateKey")?map["privateKey"].toString():"")
-	  , mPubKey(map.contains("publicKey")?map["publicKey"].toString():"")
-	  , mKID(mKCT++)
-	  , mValidPrivate(false)
-	  , mValidPublic(false)
-	  */
 {
 	OC_METHODGATE();
-
-	//qDebug()<<"KeyPrivate::KeyPrivate( QVariantMap key, bool isPublic ): map="<<map<<", mKey="<<mKey<<", mPubKey="<<mPubKey<<", isPublic="<<isPublic <<" for " <<mKID<<"/"<<mKCT;
-	//parse(isPublic);
+	qDebug()<<"KeyPrivate::KeyPrivate( QVariantMap key, bool isPublic ): map="<<map<<", mKey="<<mKey<<", mPubKey="<<mPubKey<<", isPublic="<<isPublic <<" for " <<mKID<<"/"<<mKCT;
 }
 
 
@@ -34,7 +25,10 @@ KeyPrivate::KeyPrivate( QString key, bool isPublic )
 	, mInitialized(false)
 {
 	OC_METHODGATE();
-	//	qDebug()<<"KeyPrivate::KeyPrivate( QString key, bool isPublic ):"<<key<<isPublic <<" for " <<mKID<<"/"<<mKCT;
+	qDebug()<<"KeyPrivate::KeyPrivate( QString key, bool isPublic ):"<<key<<isPublic <<" for " <<mKID<<"/"<<mKCT;
+	qDebug()<<"isPublic="<<isPublic;
+	qDebug()<<"mKey="<<mKey;
+	qDebug()<<"mPubKey="<<mPubKey;
 	parse(isPublic);
 }
 
@@ -52,6 +46,47 @@ KeyPrivate::KeyPrivate(quint32 bits)
 }
 
 
+
+
+KeyPrivate::KeyPrivate()
+	: mKID(mKCT++)
+	, mValidPrivate(false)
+	, mValidPublic(false)
+	, mInitialized(false)
+{
+	OC_METHODGATE();
+	//	qDebug()<<"KeyPrivate::KeyPrivate()" <<" for " <<mKID<<"/"<<mKCT;
+}
+
+
+KeyPrivate::~KeyPrivate()
+{
+	OC_METHODGATE();
+	if(!mInitialized) {
+		qWarning()<<"ERROR: dtor called before initialized in KeyPrivate";
+	}
+	mKey.clear();
+	mPubKey.clear();
+	mID.clear();
+	mPKI.reset();
+	mKID=-1;
+	mValidPrivate=false;
+	mValidPublic=false;
+	mInitialized=false;
+	//	qDebug()<<"KeyPrivate::~KeyPrivate()" <<" for " <<mKID<<"/"<<mKCT;
+}
+
+
+
+QString KeyPrivate::hash(QString input)
+{
+	OC_FUNCTIONGATE();
+	QCryptographicHash ch(OCTOMY_KEY_HASH);
+	ch.addData(input.toUtf8());
+	return ch.result().toHex().toUpper();
+}
+
+
 void KeyPrivate::parse(bool publicOnly)
 {
 	//ScopedTimer timer("Key Parsing");
@@ -60,9 +95,11 @@ void KeyPrivate::parse(bool publicOnly)
 	mID="";
 	if(publicOnly) {
 		QByteArray raw=mPubKey.toUtf8();
-		if(0==mPKI.parsePublicKey(raw)) {
+		int ret=mPKI.parsePublicKey(raw);
+		if(0==ret) {
 			mValidPublic=true;
 		} else {
+			qDebug()<<"ERROR: "<<ret<<"="<<qPolarDescribeError(ret);
 			qWarning()<<"ERROR: Could not parse pubkey: "<<raw;
 		}
 	} else {
@@ -145,29 +182,4 @@ QString KeyPrivate::describe()
 
 
 	return ret;
-}
-
-KeyPrivate::KeyPrivate()
-	: mKID(mKCT++)
-	, mValidPrivate(false)
-	, mValidPublic(false)
-	, mInitialized(false)
-{
-	OC_METHODGATE();
-	//	qDebug()<<"KeyPrivate::KeyPrivate()" <<" for " <<mKID<<"/"<<mKCT;
-}
-
-KeyPrivate::~KeyPrivate()
-{
-	OC_METHODGATE();
-	//	qDebug()<<"KeyPrivate::~KeyPrivate()" <<" for " <<mKID<<"/"<<mKCT;
-}
-
-
-QString KeyPrivate::hash(QString input)
-{
-	OC_FUNCTIONGATE();
-	QCryptographicHash ch(OCTOMY_KEY_HASH);
-	ch.addData(input.toUtf8());
-	return ch.result().toHex().toUpper();
 }

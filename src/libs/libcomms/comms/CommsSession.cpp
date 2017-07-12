@@ -6,19 +6,17 @@
 #include "utility/Standard.hpp"
 
 
-
-
-
 #include <QDateTime>
-
 
 
 ///////////////////////////////////////////////////////////////////////////
 
 
-CommsSession::CommsSession(Key &key)
+
+CommsSession::CommsSession(QSharedPointer<Key> key)
 	: mKey(key)
-	, mLocalSessionID(0) // 0 means no valid session id selected yet
+	, mLocalSessionID(INVALID_SESSION_ID) // INVALID_SESSION_ID means no valid session id selected yet
+	, mRemoteSessionID(INVALID_SESSION_ID) // INVALID_SESSION_ID means we did not receive a valid session id yet
 	, mLastSendTime(0)
 	, mLastReceiveTime(mLastSendTime)
 	, mDisconnectTimeoutAccumulator(0.0f)
@@ -32,11 +30,17 @@ CommsSession::CommsSession(Key &key)
 	, mLastConnected(false)
 	, mExpired(false)
 	, mInitialized(false)
+	, mOurSynNonce(0)
+	, mOurAckNonce(0)
+	, mTheirLastNonce(0)
 {
 
-	if(nullptr == &key){
+	if(nullptr == key) {
 		qWarning()<<"ERROR: key was nullptr";
 	}
+	// SECURITY: Prevent accidental usage of un-initialized nonce values
+	createOurSynNonce();
+	createOurAckNonce();
 	mInitialized=true;
 }
 
@@ -87,7 +91,7 @@ quint32 CommsSession::idlePacksSent() const
 	return mIdlePacketsSent;
 }
 
-Key &CommsSession::key() const
+QSharedPointer<Key> CommsSession::key() const
 {
 	return mKey;
 }
@@ -107,15 +111,17 @@ bool CommsSession::handshakeStarted() const
 	return !mHandshakeState.isVirgin();
 }
 
+HandshakeState &CommsSession::handshakeState()
+{
+	return mHandshakeState;
+}
 
 bool CommsSession::established() const
 {
 	return mHandshakeState.isDone();
 }
 
-HandshakeStep CommsSession::nextStep() const{
-	return mHandshakeState.nextStep();
-}
+
 
 bool CommsSession::expired() const
 {
@@ -123,13 +129,13 @@ bool CommsSession::expired() const
 }
 
 
-quint16 CommsSession::localSessionID() const
+SESSION_ID_TYPE CommsSession::localSessionID() const
 {
 	return mLocalSessionID;
 }
 
 
-quint16 CommsSession::remoteSessionID() const
+SESSION_ID_TYPE CommsSession::remoteSessionID() const
 {
 	return mRemoteSessionID;
 }
@@ -137,15 +143,15 @@ quint16 CommsSession::remoteSessionID() const
 
 QString CommsSession::fullID() const
 {
-	if(!mInitialized){
+	if(!mInitialized) {
 		qWarning()<<"ERROR: !mInitialized in fullID()";
 		return "";
 	}
-	if(nullptr==&mKey){
+	if(nullptr==mKey) {
 		qWarning()<<"ERROR: mKey was nullptr in fullID()";
 		return "";
 	}
-	QString id=mKey.id();
+	QString id=mKey->id();
 	return id;
 }
 
@@ -164,6 +170,41 @@ void CommsSession::setRemoteSessionID(SESSION_ID_TYPE s)
 {
 	mRemoteSessionID=s;
 }
+
+
+
+SESSION_NONCE_TYPE CommsSession::createOurSynNonce()
+{
+	mOurSynNonce=((qrand()>>(1<<sizeof(int)))|qrand());
+	return mOurSynNonce;
+}
+
+SESSION_NONCE_TYPE CommsSession::createOurAckNonce()
+{
+	mOurAckNonce=((qrand()>>(1<<sizeof(int)))|qrand());
+	return mOurAckNonce;
+}
+
+SESSION_NONCE_TYPE CommsSession::ourSynNonce() const
+{
+	return mOurSynNonce;
+}
+
+SESSION_NONCE_TYPE CommsSession::ourAckNonce() const
+{
+	return mOurAckNonce;
+}
+
+void CommsSession::setTheirLastNonce(SESSION_NONCE_TYPE theirNonce)
+{
+	mTheirLastNonce=theirNonce;
+}
+
+SESSION_NONCE_TYPE CommsSession::theirLastNonce() const
+{
+	return mTheirLastNonce;
+}
+
 
 
 void CommsSession::setAddress(const NetworkAddress &address)

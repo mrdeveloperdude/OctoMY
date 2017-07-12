@@ -98,3 +98,4 @@ QString AsyncStore::filename() const
 {
 	return mFilename;
 }
+

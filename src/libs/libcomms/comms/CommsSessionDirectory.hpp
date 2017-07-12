@@ -49,7 +49,12 @@ public:
 	QSet<QSharedPointer<CommsSession> > getByActiveTime(quint64 lastActiveTime) const;
 	QSet<QSharedPointer<CommsSession> > getByIdleTime(quint64 lastActiveTime) const;
 
+
+	bool fullIDExists(const QString &id) const;
+
 	int count();
+	bool hasHandshakers();
+	int countHandshakers();
 
 	// Remove expired sessions to conserve resources.
 	// May be called from a timer or on event

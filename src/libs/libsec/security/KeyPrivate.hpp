@@ -30,6 +30,23 @@ protected:
 	bool mValidPublic;
 	bool mInitialized;
 
+	// Implicit sharing stuff
+	//int mRefCount;
+
+public:
+
+	// Parse public or private key in PEM format
+	explicit KeyPrivate(QVariantMap map, bool isPublic);
+	// Parse public or private key in PEM format
+	explicit KeyPrivate(QString key, bool isPublic);
+	// Generate key-pair of given bit length
+	explicit KeyPrivate(quint32 bits);
+	//Empty key
+	explicit KeyPrivate();
+
+	virtual ~KeyPrivate();
+
+
 public:
 	static QString hash(QString input);
 
@@ -41,20 +58,6 @@ private:
 
 
 	QString describe();
-public:
-
-
-
-	// Parse public or private key in PEM format
-	explicit KeyPrivate(QVariantMap key, bool isPublic);
-	// Parse public or private key in PEM format
-	explicit KeyPrivate(QString key, bool isPublic);
-	// Generate key-pair of given bit length
-	explicit KeyPrivate(quint32 bits);
-	//Empty key
-	explicit KeyPrivate();
-
-	virtual ~KeyPrivate();
 
 	// Friendships
 public:

@@ -2,7 +2,7 @@
 #define KEY_HPP
 
 #include <QByteArray>
-#include <QScopedPointer>
+//#include <QScopedPointer>
 #include <QString>
 #include <QCryptographicHash>
 #include <QDebug>
@@ -20,30 +20,27 @@ class KeyPrivate;
 class Key
 {
 
-public:
-
-	bool mInitialized;
-public:
-	explicit Key() Q_DECL_NOTHROW;
-
-
-	virtual ~Key();
-
-
 	// All that pimpl swagger
 private:
-	QScopedPointer<KeyPrivate>  d_ptr;
 	Q_DECLARE_PRIVATE(Key)
+	QScopedPointer<KeyPrivate>  d_ptr;
 public:
+	bool mInitialized;
 
 
+public:
+	explicit Key() Q_DECL_NOTHROW;
 	explicit Key(QVariantMap map, bool isPublic);
 	explicit Key(QString key, bool isPublic);
 	explicit Key(quint32 bits);
-	explicit Key(KeyPrivate &dd);
-
+	//explicit Key(KeyPrivate &dd);
 	Key(const Key & other);
 	Key(Key && other);
+
+	virtual ~Key();
+
+public:
+
 
 	Key & operator=(Key other);
 	bool operator==(const Key &other) const;
@@ -51,8 +48,11 @@ public:
 
 	friend void swap(Key& first, Key& second) /* nothrow */;
 
+
 public:
 	static QString hash(QString input);
+
+	KeyPrivate* d_func_dbg();
 
 
 	// Actual usable methods
@@ -99,6 +99,11 @@ public:
 
 
 	bool isEqual(Key &other) const;
+
+
+
+	//void detach();
+
 };
 
 

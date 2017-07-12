@@ -9,13 +9,10 @@ class TestKey:public QObject
 	Q_OBJECT
 
 private slots:
+	void testAllocation();
 	void testBasicIntegrity();
-
-
 	void testSignature();
-
 	void testEncryption();
-
 };
 
 

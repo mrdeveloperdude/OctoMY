@@ -143,7 +143,7 @@ quint32 ReceivingBlobChunk::index()const
 
 bool ReceivingBlobChunk::isValid()const
 {
-	return (nullptr!=mBlob) && (mIndex>=0);
+	return (nullptr!=mBlob) ;
 }
 
 

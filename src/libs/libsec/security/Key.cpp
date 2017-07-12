@@ -5,13 +5,85 @@
 #include "utility/Standard.hpp"
 #include "SecurityConstantsPrivate.hpp"
 
+
 Key::Key() Q_DECL_NOTHROW
 :
 d_ptr(new KeyPrivate())
+, mInitialized(false)
 {
 	OC_METHODGATE();
 	//qDebug()<<"inline explicit Key() Q_DECL_NOTHROW";
+	Q_D(Key);
+	if(nullptr==d) {
+		qWarning()<<"ERROR: Key::d was nullptr in Key::Key( QVariantMap map, bool isPublic )";
+	}
+	OC_ASSERT(nullptr!=d);
+	// NOTE: This is NOT initialized since this is default ctor with no data to go on
 }
+
+
+
+Key::Key( QVariantMap map, bool isPublic )
+	: d_ptr(new KeyPrivate(map, isPublic))
+	, mInitialized(false)
+{
+	OC_METHODGATE();
+	//	qDebug()<<"Key::Key( QVariantMap map, bool isPublic )"<< map<<isPublic;
+	Q_D(Key);
+	if(nullptr==d) {
+		qWarning()<<"ERROR: Key::d was nullptr in Key::Key( QVariantMap map, bool isPublic )";
+	}
+	OC_ASSERT(nullptr!=d);
+	mInitialized=true;
+}
+
+
+Key::Key( QString key, bool isPublic )
+	: d_ptr(new KeyPrivate(key, isPublic))
+{
+	OC_METHODGATE();
+	//	qDebug()<<"Key::Key( QString key, bool isPublic):"<<key<<isPublic;
+	Q_D(Key);
+	if(nullptr==d) {
+		qWarning()<<"ERROR: Key::d was nullptr in Key::Key( QString key, bool isPublic )";
+	}
+	OC_ASSERT(nullptr!=d);
+	mInitialized=true;
+}
+
+
+
+Key::Key( quint32 bits )
+	: d_ptr(new KeyPrivate(bits))
+	, mInitialized(false)
+{
+	OC_METHODGATE();
+	//	qDebug()<<"Key::Key( quint32 bits ):"<<bits;
+	Q_D(Key);
+	if(nullptr==d) {
+		qWarning()<<"ERROR: Key::d was nullptr in Key::Key( quint32 bits )";
+	}
+	OC_ASSERT(nullptr!=d);
+	mInitialized=true;
+}
+
+/*
+Key::Key(KeyPrivate &dd)
+	: d_ptr(&dd)
+	, mInitialized(false)
+{
+	OC_METHODGATE();
+	//	qDebug()<<"Key::Key(KeyPrivate &dd)";
+	Q_D(Key);
+	if(nullptr==d) {
+		qWarning()<<"ERROR: Key::d was nullptr in Key::Key(KeyPrivate &dd)";
+	}
+	OC_ASSERT(nullptr!=d);
+	mInitialized=true;
+}
+*/
+
+
 
 Key::Key(const Key &other)
 	: d_ptr(new KeyPrivate(
@@ -27,81 +99,16 @@ Key::Key(const Key &other)
 {
 	OC_METHODGATE();
 	//	qDebug()<<"Key::Key(constKey &other)"<<other.d_func()->mKey<<other.d_func()->mPubKey;
-	mInitialized=true;
 	Q_D(Key);
 	if(nullptr==d) {
 		qWarning()<<"ERROR: Key::d was nullptr in Key::Key(const Key &other)";
 	}
 	OC_ASSERT(nullptr!=d);
-}
-
-
-Key::~Key()
-{
-	OC_METHODGATE();
-	//qDebug()<<"virtual ~Key()";
-}
-
-Key::Key( QVariantMap map, bool isPublic )
-	: d_ptr(new KeyPrivate(map, isPublic))
-	, mInitialized(false)
-{
-	OC_METHODGATE();
-	//	qDebug()<<"Key::Key( QVariantMap map, bool isPublic )"<< map<<isPublic;
 	mInitialized=true;
-	Q_D(Key);
-	if(nullptr==d) {
-		qWarning()<<"ERROR: Key::d was nullptr in Key::Key( QVariantMap map, bool isPublic )";
-	}
-	OC_ASSERT(nullptr!=d);
 }
 
 
-Key::Key( QString key, bool isPublic )
-	: d_ptr(new KeyPrivate(key, isPublic))
-{
-	OC_METHODGATE();
-	//	qDebug()<<"Key::Key( QString key, bool isPublic):"<<key<<isPublic;
-	mInitialized=true;
-	Q_D(Key);
-	if(nullptr==d) {
-		qWarning()<<"ERROR: Key::d was nullptr in Key::Key( QString key, bool isPublic )";
-	}
-	OC_ASSERT(nullptr!=d);
-}
-
-
-
-Key::Key( quint32 bits )
-	: d_ptr(new KeyPrivate(bits))
-	, mInitialized(false)
-{
-	OC_METHODGATE();
-	//	qDebug()<<"Key::Key( quint32 bits ):"<<bits;
-	mInitialized=true;
-	Q_D(Key);
-	if(nullptr==d) {
-		qWarning()<<"ERROR: Key::d was nullptr in Key::Key( quint32 bits )";
-	}
-	OC_ASSERT(nullptr!=d);
-}
-
-
-Key::Key(KeyPrivate &dd)
-	: d_ptr(&dd)
-	, mInitialized(false)
-{
-	OC_METHODGATE();
-	//	qDebug()<<"Key::Key(KeyPrivate &dd)";
-	mInitialized=true;
-	Q_D(Key);
-	if(nullptr==d) {
-		qWarning()<<"ERROR: Key::d was nullptr in Key::Key(KeyPrivate &dd)";
-	}
-	OC_ASSERT(nullptr!=d);
-}
-
-
+// NOTE: Used by swap()
 Key::Key(Key && other) : Key()
 {
 	OC_METHODGATE();
@@ -114,11 +121,30 @@ Key::Key(Key && other) : Key()
 	OC_ASSERT(nullptr!=d);
 }
 
+Key::~Key()
+{
+	OC_METHODGATE();
+	if(!mInitialized) {
+		qWarning()<<"ERROR: dtor called before init=true";
+	}
+
+	Q_D(Key);
+	if(nullptr==d) {
+		qWarning()<<"ERROR: Key::d was nullptr in Key::~Key()";
+	}
+	OC_ASSERT(nullptr!=d);
+	//qDebug()<<"virtual ~Key()";
+}
+
 Key & Key::operator=(Key other)
 {
 	OC_METHODGATE();
+	Q_D(Key);
+	if(nullptr==d) {
+		qWarning()<<"ERROR: Key::d was nullptr in Key & Key::operator=(Key other)";
+	}
+	OC_ASSERT(nullptr!=d);
 	swap(*this, other);
-	//	qDebug()<<"Key & Key::operator=(Key other)";
 	return *this;
 }
 
@@ -137,14 +163,14 @@ bool Key::operator!=(const Key &other) const
 	return !operator==(other);
 }
 
-void swap(Key& first, Key& second) /* nothrow */
+
+void swap(Key& first, Key& second) //nothrow
 {
 	OC_FUNCTIONGATE();
+	//	qDebug()<<"void swap(Key& first, Key& second) //nothrow ";
 	using std::swap;
-	//	qDebug()<<"void swap(Key& first, Key& second) /* nothrow */";
 	swap(first.d_ptr, second.d_ptr);
 }
-
 
 
 
@@ -152,6 +178,12 @@ void swap(Key& first, Key& second) /* nothrow */
 QString Key::hash(QString input)
 {
 	return KeyPrivate::hash(input);
+}
+
+
+KeyPrivate* Key::d_func_dbg()
+{
+	return reinterpret_cast<KeyPrivate *>(qGetPtrHelper(d_ptr));
 }
 
 
@@ -327,5 +359,24 @@ bool operator== (const Key &a, const Key &b)
 bool operator!= (const Key &a, const Key &b)
 {
 	return !a.operator !=(b);
+}
+*/
+
+
+
+/*
+
+void Key::detach()
+{
+	Q_D(Key);
+	if(nullptr==d) {
+		qWarning()<<"ERROR: Key::d was nullptr in void Key::detach()";
+	}
+	OC_ASSERT(nullptr!=d);
+		if ( d->mRefCount > 1 ) {
+		d->mRefCount--;
+		d = new KeyPrivate( *d );
+		d->mRefCount = 1;
+	}
 }
 */

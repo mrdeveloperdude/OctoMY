@@ -63,6 +63,9 @@ public:
 
 	virtual QDebug &toDebug(QDebug &d) const =0;		// Produce output to the given QDebug
 
+
+
+
 };
 
 QDebug &operator<<(QDebug &d, const ISyncParameter &sp);
@@ -71,5 +74,6 @@ QDebug &operator<<(QDebug &d, const ISyncParameter &sp);
 QDataStream &operator<<(QDataStream &ds, ISyncParameter &sp);
 
 QDataStream &operator>>(QDataStream &ds, ISyncParameter &sp);
+
 
 #endif // ISYNCPARAMETER_HPP

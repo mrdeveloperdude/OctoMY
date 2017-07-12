@@ -6,8 +6,8 @@
 void TestCommsSession::test()
 {
 
-	Key key(128);
-
+	QSharedPointer<Key> key(new Key(128));
+	QVERIFY(nullptr!=key);
 
 	{
 		/////////////////////////////////////////////////
@@ -75,7 +75,7 @@ void TestCommsSession::test()
 	/////////////////////////////////////////////////
 	// Key &key() const;
 	{
-		Key &k2=sess.key();
+		QSharedPointer<Key> k2=sess.key();
 		QCOMPARE(key,k2);
 	}
 
@@ -160,7 +160,7 @@ void TestCommsSession::test()
 	// QString fullID() const;
 	{
 		QString fid=sess.fullID();
-		QVERIFY(fid==key.id());
+		QVERIFY(fid==key->id());
 	}
 
 

@@ -243,13 +243,15 @@ void TestCommsChannel::testSingle()
 
 	KeyStore keyStoreA(keyStoreFilenameA, policy);
 	keyStoreA.bootstrap(false,false);
-	Key &keyA=keyStoreA.localKey();
-	qDebug() << keyA.toString();
-	QVERIFY(keyA.isValid(true));
-	QVERIFY(keyA.hasPrivate(true));
-	QVERIFY(keyA.hasPublic(true));
 
-	QString idA=keyA.id();
+	auto keyA=keyStoreA.localKey();
+	QVERIFY(nullptr!=keyA);
+	qDebug() << keyA->toString();
+	QVERIFY(keyA->isValid(true));
+	QVERIFY(keyA->hasPrivate(true));
+	QVERIFY(keyA->hasPublic(true));
+
+	QString idA=keyA->id();
 	qDebug()<<"Keystore A :"<<idA<<QFileInfo(keyStoreA.filename()).absoluteFilePath();
 	NetworkAddress addrA(local, basePort + 0);
 	QString peersFilenameA="peersFileA.json";
@@ -266,7 +268,7 @@ void TestCommsChannel::testSingle()
 	peerMapA["localAddress"]=addrA.toVariantMap();
 	peerMapA["lastSeenMS"]=0;
 	peerMapA["birthDate"]=0;
-	peerMapA["key"]=keyA.toVariantMap(true);
+	peerMapA["key"]=keyA->toVariantMap(true);
 	peerMapA["role"]=DiscoveryRoleToString(ROLE_AGENT);
 	peerMapA["type"]=DiscoveryTypeToString(TYPE_AGENT);
 	peerMapA["name"]=nameA;
@@ -284,13 +286,14 @@ void TestCommsChannel::testSingle()
 	QVERIFY(!keyStoreFileB.exists());
 	KeyStore keyStoreB(keyStoreFilenameB, policy);
 	keyStoreB.bootstrap(false,false);
-	Key &keyB=keyStoreB.localKey();
-	qDebug() << keyB.toString();
-	QVERIFY(keyB.isValid(true));
-	QVERIFY(keyB.hasPrivate(true));
-	QVERIFY(keyB.hasPublic(true));
+	auto keyB=keyStoreB.localKey();
+	QVERIFY(nullptr!=keyB);
+	qDebug() << keyB->toString();
+	QVERIFY(keyB->isValid(true));
+	QVERIFY(keyB->hasPrivate(true));
+	QVERIFY(keyB->hasPublic(true));
 
-	QString idB=keyB.id();
+	QString idB=keyB->id();
 	qDebug()<<"Keystore B :"<<idB<<QFileInfo(keyStoreB.filename()).absoluteFilePath();
 	NetworkAddress addrB(local, basePort + 1);
 	QString peersFilenameB="peersFileB.json";
@@ -310,7 +313,7 @@ void TestCommsChannel::testSingle()
 	peerMapB["localAddress"]=addrBMap;
 	peerMapB["lastSeenMS"]=0;
 	peerMapB["birthDate"]=0;
-	peerMapB["key"]=keyB.toVariantMap(true);
+	peerMapB["key"]=keyB->toVariantMap(true);
 	peerMapB["role"]=DiscoveryRoleToString(ROLE_CONTROL);
 	peerMapB["type"]=DiscoveryTypeToString(TYPE_REMOTE);
 	peerMapB["name"]=nameB;
@@ -324,14 +327,14 @@ void TestCommsChannel::testSingle()
 	partA->addTrust(idB);
 	peersA.setParticipant(partB);
 	qDebug()<<"IDB="<<idB;
-	keyStoreA.setPubKeyForID(keyB.pubKey());
+	keyStoreA.setPubKeyForID(keyB->pubKey());
 
 
 	qDebug()<<"";
 	qDebug()<<"####################################### BIND PARTY B to A";
 	partB->addTrust(idA);
 	peersB.setParticipant(partA);
-	keyStoreB.setPubKeyForID(keyA.pubKey());
+	keyStoreB.setPubKeyForID(keyA->pubKey());
 
 
 	qDebug()<<"";
@@ -359,13 +362,13 @@ void TestCommsChannel::testSingle()
 	qDebug()<<"####################################### STARTING 1st time with no sessions";
 	chanA.rescheduleSending(now);
 	chanA.start(addrA);
-	chanB.rescheduleSending(now);
+	chanB.rescheduleSending(now+5000);
 	chanB.start(addrB);
 	qDebug()<<"";
 	qDebug()<<"####################################### WAITING 1st time with no sessions";
 	{
 		quint64 now=QDateTime::currentMSecsSinceEpoch();
-		const quint64 end=now+10000;
+		const quint64 end=now+15000;
 		while(now<end) {
 			//qDebug()<<" * * * Tick Tock.....................";
 			now=QDateTime::currentMSecsSinceEpoch();

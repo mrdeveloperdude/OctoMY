@@ -98,6 +98,11 @@ QSet<QSharedPointer<CommsSession> > CommsSessionDirectory::getByActiveTime(quint
 }
 
 
+bool CommsSessionDirectory::fullIDExists(const QString &id) const
+{
+	QHash<QString, QSharedPointer<CommsSession> >::const_iterator it=mByFullID.find(id);
+	return (mByFullID.end()!=it);
+}
 
 QSet<QSharedPointer<CommsSession> > CommsSessionDirectory::getByIdleTime(quint64 lastActiveTime) const
 {
@@ -115,6 +120,32 @@ QSet<QSharedPointer<CommsSession> > CommsSessionDirectory::getByIdleTime(quint64
 int CommsSessionDirectory::count()
 {
 	return mAll.size();
+}
+
+int CommsSessionDirectory::countHandshakers()
+{
+	int ct=0;
+	for(QSharedPointer<CommsSession> client:mAll) {
+		if(nullptr!=client) {
+			if((!client->established()) && (!client->expired())) {
+				ct++;
+			}
+		}
+	}
+	return ct;
+}
+
+
+bool CommsSessionDirectory::hasHandshakers()
+{
+	for(QSharedPointer<CommsSession> client:mAll) {
+		if(nullptr!=client) {
+			if((!client->established()) && (!client->expired())) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 
@@ -143,6 +174,7 @@ SESSION_ID_TYPE CommsSessionDirectory::generateUnusedSessionID()
 	auto const m=1<<(sizeof(mUnusedIndex)*8-1);
 	auto const m10=m/10;
 	for(SESSION_ID_TYPE i=1; i<m; ++i) {
+		// NOTE: Starting at 1 ensures that we never get INVALID_SESSION_ID by accident
 		const SESSION_ID_TYPE  inc = 1 + (mRng->generateInt32() % m10);
 		mUnusedIndex = (mUnusedIndex + inc)% m;
 		if(0!= mUnusedIndex && (mBySessionID.end() == mBySessionID.find(mUnusedIndex))) {
@@ -150,8 +182,8 @@ SESSION_ID_TYPE CommsSessionDirectory::generateUnusedSessionID()
 			return mUnusedIndex;
 		}
 	}
-	// 0 means "no unused sessions found"
-	return 0;
+	// INVALID_SESSION_ID means "no unused sessions found"
+	return INVALID_SESSION_ID;
 }
 
 

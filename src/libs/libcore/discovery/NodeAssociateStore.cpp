@@ -86,7 +86,9 @@ void NodeAssociateStore::save()
 	}
 	map["peers"]=remotes;
 	QJsonDocument doc=QJsonDocument::fromVariant(map);
-	utility::stringToFile(mFilename,doc.toJson());
+	QString str=doc.toJson();
+
+	utility::stringToFile(mFilename,str);
 }
 
 

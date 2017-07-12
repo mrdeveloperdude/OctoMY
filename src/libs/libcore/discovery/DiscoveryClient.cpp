@@ -90,42 +90,48 @@ void DiscoveryClient::discover()
 
 	qhttp::client::TRequstHandler reqHandler= [this](qhttp::client::QHttpRequest* req) {
 
-		QVariantMap cmd;
-		cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
-		cmd["key"] = mNode.keyStore().localKey().toVariantMap(true);
-		cmd["manualPin"] ="12345";
-		QSharedPointer<NodeAssociate> me=mNode.nodeIdentity();
-		if(nullptr!=me) {
-			QVariantMap map=me->toVariantMap();
-			merge(cmd, map);
+		auto key=mNode.keyStore().localKey();
+		if(nullptr!=key) {
+			QVariantMap cmd;
+			cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
+			cmd["key"] = key->toVariantMap(true);
+			cmd["manualPin"] ="12345";
+			QSharedPointer<NodeAssociate> me=mNode.nodeIdentity();
+			if(nullptr!=me) {
+				QVariantMap map=me->toVariantMap();
+				merge(cmd, map);
 
-			/*
-							cmd["localAddress"] = "10.0.0.3";
-							cmd["localPort"] = 12345;
-							cmd["publicPort"] = 54321;
-							cmd["name"] = node.name();
-							cmd["gender"] = node
-							cmd["role"] = DiscoveryRoleToString(node.role());
-							cmd["type"] = DiscoveryTypeToString(node.type());
-									*/
+				/*
+								cmd["localAddress"] = "10.0.0.3";
+								cmd["localPort"] = 12345;
+								cmd["publicPort"] = 54321;
+								cmd["name"] = node.name();
+								cmd["gender"] = node
+								cmd["role"] = DiscoveryRoleToString(node.role());
+								cmd["type"] = DiscoveryTypeToString(node.type());
+										*/
+			} else {
+
+				qWarning()<<"ERROR: no me";
+			}
+
+			//qDebug()<<"SENDING VAR: "<<cmd;
+			QJsonDocument jdoc=QJsonDocument::fromVariant(cmd);
+			//qDebug()<<"SENDING JDOC: "<<jdoc;
+			QByteArray body  = jdoc.toJson(QJsonDocument::Indented);
+			//qDebug()<<"SENDING RAW JSON: "<<body;
+			req->addHeader("user-agent",			ZooConstants::OCTOMY_USER_AGENT);
+			req->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
+			req->addHeader("accept",				"application/json");
+			req->addHeader("content-type",			"application/json");
+			req->addHeader("connection",			"keep-alive");
+			req->addHeaderValue("content-length", 	body.length());
+			req->end(body);
+			//qDebug()<<"Getting node by OCID:"<<OCID << " REQ END";
 		} else {
 
-			qWarning()<<"ERROR: no me";
+			qWarning()<<"ERROR: no key";
 		}
-
-		//qDebug()<<"SENDING VAR: "<<cmd;
-		QJsonDocument jdoc=QJsonDocument::fromVariant(cmd);
-		//qDebug()<<"SENDING JDOC: "<<jdoc;
-		QByteArray body  = jdoc.toJson(QJsonDocument::Indented);
-		//qDebug()<<"SENDING RAW JSON: "<<body;
-		req->addHeader("user-agent",			ZooConstants::OCTOMY_USER_AGENT);
-		req->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
-		req->addHeader("accept",				"application/json");
-		req->addHeader("content-type",			"application/json");
-		req->addHeader("connection",			"keep-alive");
-		req->addHeaderValue("content-length", 	body.length());
-		req->end(body);
-		//qDebug()<<"Getting node by OCID:"<<OCID << " REQ END";
 	};
 
 	qhttp::client::TResponseHandler resHandler=	[this](qhttp::client::QHttpResponse* res) {
@@ -197,48 +203,61 @@ static const QString zeroID=utility::toHash("", OCTOMY_KEY_HASH);
 void DiscoveryClient::registerPossibleParticipant(QVariantMap map)
 {
 	//qDebug()<<"REG";
-	Key key(map["key"].toMap(),true);
-	const QString partID=key.id();
-	const QString ourID=mNode.keyStore().localKey().id();
-	if(partID==zeroID) {
-		qWarning()<<"ERROR: Skipping new participant with zero ID: "<<partID;
-	} else if(partID==ourID) {
-		//qDebug()<<" + Skipping new participant with our ID: "<<partID;
-	} else {
-		NodeAssociateStore &peers=mNode.peers();
-		QSharedPointer<NodeAssociate> part;
-		if(peers.hasParticipant(partID)) {
-			qDebug()<<" + Updating participant with ID: "<<partID;
-			part=peers.getParticipant(partID);
-			part->update(map, false);
-			emit peers.peersChanged();
-			emit nodeDiscovered(partID);
-		} else {
-			part=QSharedPointer<NodeAssociate>(new NodeAssociate(map));
-			if(nullptr!=part) {
-				if(part->isValidForClient()) {
-					CommsChannel *comms=mNode.comms();
-					if(nullptr!=comms) {
-						DiscoveryCourier *courier=new DiscoveryCourier(part, *comms);
-						if(nullptr!=courier) {
-							peers.setParticipant(part);
-							courier->setDestination(part->id());
-							comms->setCourierRegistered(*courier, true);
-							qDebug()<<" + Adding new participant with ID: "<<partID;
-							emit nodeDiscovered(partID);
+	QSharedPointer<Key> key=QSharedPointer<Key>(new Key(map["key"].toMap(),true));
+	if(nullptr!=key) {
+		KeyStore  &keyStore=mNode.keyStore();
+		auto ourKey=keyStore.localKey();
+		if(nullptr!=ourKey) {
+			const QString partID=key->id();
+			const QString ourID=ourKey->id();
+			if(partID==zeroID) {
+				qWarning()<<"ERROR: Skipping new participant with zero ID: "<<partID;
+			} else if(partID==ourID) {
+				//qDebug()<<" + Skipping new participant with our ID: "<<partID;
+			} else {
+				NodeAssociateStore &peers=mNode.peers();
+				QSharedPointer<NodeAssociate> part;
+				if(peers.hasParticipant(partID)) {
+					qDebug()<<" + Updating participant with ID: "<<partID;
+					part=peers.getParticipant(partID);
+					part->update(map, false);
+					emit peers.peersChanged();
+					emit nodeDiscovered(partID);
+				} else {
+					part=QSharedPointer<NodeAssociate>(new NodeAssociate(map));
+					if(nullptr!=part) {
+						if(part->isValidForClient()) {
+							CommsChannel *comms=mNode.comms();
+							if(nullptr!=comms) {
+								DiscoveryCourier *courier=new DiscoveryCourier(part, *comms);
+								if(nullptr!=courier) {
+									peers.setParticipant(part);
+									courier->setDestination(part->id());
+									comms->setCourierRegistered(*courier, true);
+									qDebug()<<" + Adding new participant with ID: "<<partID;
+									emit nodeDiscovered(partID);
+								} else {
+									qWarning()<<"ERROR: Could not create courier for part with ID "<<partID;
+								}
+							} else {
+								qWarning()<<"ERROR: Node had no comms";
+							}
 						} else {
-							qWarning()<<"ERROR: Could not create courier for part with ID "<<partID;
+							qDebug()<<" + Deleting invalid new participant:"<<partID;
 						}
 					} else {
-						qWarning()<<"ERROR: Node had no comms";
+						qWarning()<<"ERROR: Could not allocate participant: "<<partID;
 					}
-				} else {
-					qDebug()<<" + Deleting invalid new participant:"<<partID;
 				}
-			} else {
-				qWarning()<<"ERROR: Could not allocate participant: "<<partID;
+				// Update the key while we are at it...
+				//TODO: Check for security implications
+				keyStore.setPubKeyForID(map["key"].toMap()["publicKey"].toString());
 			}
+		} else {
+			qWarning()<<"ERROR: no ourKey";
 		}
+	} else {
+		qWarning()<<"ERROR: no key";
 	}
 }
 

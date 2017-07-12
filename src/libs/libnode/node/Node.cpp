@@ -180,7 +180,8 @@ SensorInput *Node::sensorInput()
 
 QSharedPointer<NodeAssociate> Node::nodeIdentity()
 {
-	QSharedPointer<NodeAssociate> me=mPeers.getParticipant(mKeystore.localKey().id());
+	auto key=mKeystore.localKey();
+	QSharedPointer<NodeAssociate> me=(nullptr!=key)?mPeers.getParticipant(key->id()):nullptr;
 	return me;
 }
 
@@ -331,7 +332,7 @@ void Node::onKeystoreReady(bool ok)
 
 void Node::onCommsError(QString e)
 {
-	qDebug()<<"NODE UNIMP Comms error: "<<e;
+	//qDebug()<<"NODE UNIMP Comms error: "<<e;
 }
 
 void Node::onCommsClientAdded(CommsSession *c)

@@ -324,7 +324,6 @@ void PairingWizard::on_pushButtonSaveEdits_clicked()
 		} else {
 			qWarning()<<"ERROR: No peer while saving trust edits";
 		}
-		peers.save();
 		//ui->listViewNodes->update();
 		ui->stackedWidget->setCurrentWidget(ui->pagePairWithPeers);
 	} else {

@@ -30,8 +30,8 @@ class KeyStore: public AsyncStore
 	Q_OBJECT
 private:
 
-	Key mLocalKey;
-	QMap<QString, Key > mPeers;
+	QSharedPointer<Key> mLocalKey;
+	QMap<QString, QSharedPointer<Key> > mPeers;
 
 	KeySecurityPolicy mPolicy;
 
@@ -58,7 +58,7 @@ public:
 
 	void unhookSignals(QObject &ob);
 
-	inline Key &localKey()
+	inline QSharedPointer<Key> localKey()
 	{
 		return mLocalKey;
 	}
@@ -68,11 +68,17 @@ public:
 		PortableID pid;
 		//pid.setName("Arne");
 		//pid.setGender("Male");
-		pid.setID(mLocalKey.id());
+		if(nullptr!=mLocalKey){
+			pid.setID(mLocalKey->id());
+		}
 		pid.setBirthDate(QFileInfo(mFilename).created().toMSecsSinceEpoch());
 		//pid.setType(DiscoveryType type);
 		return pid;
 	}
+
+
+	void dump();
+
 
 	// Sign message with our private key
 	QByteArray sign(const QByteArray &source);
@@ -90,7 +96,7 @@ public:
 	void setPubKeyForID(const QString &pubkeyPEM);
 
 	// return pub-key for node identified by give fingerprint ID
-	Key pubKeyForID(const QString &id);
+	QSharedPointer<Key> pubKeyForID(const QString &id);
 
 	friend const QDebug &operator<<(QDebug &d, KeyStore &ks);
 

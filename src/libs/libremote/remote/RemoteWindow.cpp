@@ -139,17 +139,22 @@ void RemoteWindow::goToStartPage()
 	//qDebug()<<"----------------- - - - - - ------------------------- - - - - ";
 	if(nullptr!=mRemote) {
 		//Select correct starting page
-		if(!mRemote->keyStore().localKey().isValid(true)) {
-			//qDebug()<<"STARTING WITH DELIVERY";
-			ui->widgetDelivery->reset();
-			ui->stackedWidgetScreen->setCurrentWidget(ui->pageDelivery);
-		} else if(mRemote->peers().getParticipantCount()<=0) {
-			//qDebug()<<"STARTING WITH PAIRING";
-			ui->widgetPairing->reset();
-			ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
+		auto key=mRemote->keyStore().localKey();
+		if(nullptr!=key) {
+			if(!key->isValid(true)) {
+				//qDebug()<<"STARTING WITH DELIVERY";
+				ui->widgetDelivery->reset();
+				ui->stackedWidgetScreen->setCurrentWidget(ui->pageDelivery);
+			} else if(mRemote->peers().getParticipantCount()<=0) {
+				//qDebug()<<"STARTING WITH PAIRING";
+				ui->widgetPairing->reset();
+				ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
+			} else {
+				//qDebug()<<"STARTING WITH RUN";
+				ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
+			}
 		} else {
-			//qDebug()<<"STARTING WITH RUN";
-			ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
+			qWarning()<<"ERROR: no key";
 		}
 	} else {
 		qWarning()<<"ERROR: no remote";
@@ -377,7 +382,12 @@ void RemoteWindow::onStartShowBirthCertificate()
 	if(nullptr!=s) {
 		id.fromPortableString(s->getCustomSetting("octomy.portable.id",""));
 	}
-	id.setID(mRemote->keyStore().localKey().id());
+	auto key=mRemote->keyStore().localKey();
+	if(nullptr!=key) {
+		id.setID(key->id());
+	} else {
+		qWarning()<<"ERROR: No key";
+	}
 	id.setType(TYPE_REMOTE);
 	ui->widgetBirthCertificate->setPortableID(id);
 	ui->stackedWidgetScreen->setCurrentWidget(ui->pageMyID);

@@ -60,8 +60,6 @@ void TestKeyStore::testInit()
 			}
 		}
 	}
-
-
 }
 
 void TestKeyStore::testInsertRemove()
@@ -133,8 +131,9 @@ void TestKeyStore::testInsertRemove()
 	keystore.setPubKeyForID(pubKeyPEM);
 	QVERIFY(keystore.isReady());
 	QVERIFY(keystore.hasPubKeyForID(id));
-	Key k2=keystore.pubKeyForID(id);
-	QCOMPARE(k2, key);
+	auto k2=keystore.pubKeyForID(id);
+	QVERIFY(nullptr!=k2);
+	QCOMPARE(*k2, key);
 
 
 

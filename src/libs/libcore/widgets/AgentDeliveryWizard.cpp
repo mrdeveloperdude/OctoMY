@@ -94,7 +94,7 @@ void AgentDeliveryWizard::configure(Node *n)
 		mSettings=(nullptr!=mNode)?&mNode->settings():nullptr;
 		reset();
 	}
-	if(nullptr==mNode){
+	if(nullptr==mNode) {
 		qWarning()<<"WARNING: agent delivery configured with null node";
 	}
 }
@@ -154,25 +154,30 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 				//qDebug()<<"XXX: DATA AFTER OK LOAD WAS: "<<keystore;
 				mBirthDate=QDateTime::currentMSecsSinceEpoch();
 				QVariantMap map;
-				map["key"]=keystore.localKey().toVariantMap(true);
-				map["name"]=ui->lineEditName->text();
-				if(0==ui->comboBoxGender->currentIndex()) {
-					ui->comboBoxGender->setCurrentText(generateRandomGender());
+				auto key=keystore.localKey();
+				if(nullptr!=key) {
+					map["key"]=key->toVariantMap(true);
+					map["name"]=ui->lineEditName->text();
+					if(0==ui->comboBoxGender->currentIndex()) {
+						ui->comboBoxGender->setCurrentText(generateRandomGender());
+					}
+					map["gender"]=ui->comboBoxGender->currentText();
+					map["type"]=DiscoveryTypeToString(TYPE_AGENT);
+					map["role"]=DiscoveryRoleToString(ROLE_AGENT);
+					map["birthDate"]=mBirthDate;
+					mMyData= QSharedPointer<NodeAssociate> (new NodeAssociate(map));
+					mID=mMyData->toPortableID();
+					mNode->peers().setParticipant(mMyData);
+					mNode->peers().save();
+					ui->widgetBirthCertificate->setPortableID(mID);
+					ui->stackedWidget->setCurrentWidget(ui->pageDone);
+					//"+(mID.gender().toLower()==QStringLiteral("male")?QStringLiteral("Mr. "):(mID.gender().toLower()==QStringLiteral("female")?QStringLiteral("Mrs. "):QStringLiteral("")))+
+					//QString text="Hello, my name is "+mID.name()+". I am an octomy agent. What is your bidding master?";
+					QString text="My name is "+mID.name()+". I am an octomy agent. What is your bidding master?";
+					new OneOffSpeech(mID,text);
+				} else {
+					qWarning()<<"ERROR: No key";
 				}
-				map["gender"]=ui->comboBoxGender->currentText();
-				map["type"]=DiscoveryTypeToString(TYPE_AGENT);
-				map["role"]=DiscoveryRoleToString(ROLE_AGENT);
-				map["birthDate"]=mBirthDate;
-				mMyData= QSharedPointer<NodeAssociate> (new NodeAssociate(map));
-				mID=mMyData->toPortableID();
-				mNode->peers().setParticipant(mMyData);
-				mNode->peers().save();
-				ui->widgetBirthCertificate->setPortableID(mID);
-				ui->stackedWidget->setCurrentWidget(ui->pageDone);
-				//"+(mID.gender().toLower()==QStringLiteral("male")?QStringLiteral("Mr. "):(mID.gender().toLower()==QStringLiteral("female")?QStringLiteral("Mrs. "):QStringLiteral("")))+
-				//QString text="Hello, my name is "+mID.name()+". I am an octomy agent. What is your bidding master?";
-				QString text="My name is "+mID.name()+". I am an octomy agent. What is your bidding master?";
-				new OneOffSpeech(mID,text);
 			}
 		} else {
 			//qDebug()<<"XXX - Birth almost complete...";

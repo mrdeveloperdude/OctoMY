@@ -25,7 +25,8 @@
 #include "CommsSessionDirectory.hpp"
 
 // It seems that 30 seconds would be a "safe" minimal UDP rate to avoid routers closing our "connection"
-#define MINIMAL_PACKET_RATE 5000
+#define MAXIMAL_PACKET_RATE (1000)
+#define MINIMAL_PACKET_RATE (5000)
 
 #define OCTOMY_PROTOCOL_MAGIC (0x0C701111)
 //#define OCTOMY_PROTOCOL_MAGIC_IDLE (OCTOMY_PROTOCOL_MAGIC+1)
@@ -300,15 +301,10 @@ Flags:
 	256 - 64000 - valid session ID
 
 
-
-
-
 */
 
 
-
-
-enum Multimagic {
+enum Multimagic:SESSION_ID_TYPE {
 	MULTIMAGIC_IDLE=0
 	, MULTIMAGIC_SYN
 	, MULTIMAGIC_SYNACK
@@ -316,6 +312,11 @@ enum Multimagic {
 	, MULTIMAGIC_LAST
 
 };
+
+QString MultimagicToString(SESSION_ID_TYPE m);
+
+QString MultimagicToString(Multimagic m);
+
 
 #include "RateCalculator.hpp"
 
@@ -356,9 +357,8 @@ private:
 	bool mHoneyMoon;
 
 	QMap<quint64, Courier *> mSchedule; // Couriers with priority at next sending oportunity as calculated by rescheduleSending()
-	qint64 mMostUrgentCourier; // The number of milliseconds until next sending opportunity as calculated by rescheduleSending()
-
-
+	QSet<QString> mPendingHandshakes;
+	qint64 mMostUrgentSendingTime; // The number of milliseconds until next sending opportunity as calculated by rescheduleSending()
 
 public:
 
@@ -368,7 +368,9 @@ public:
 private:
 
 	void detectConnectionChanges(const quint64 now);
-	QSharedPointer<CommsSession>  lookUpSession(QString id, SESSION_ID_TYPE desiredRemoteSessionID);
+	QSharedPointer<CommsSession>  createSession(QString id, bool initiator);
+	QSharedPointer<CommsSession>  lookUpSession(QString id);
+
 
 public:
 
@@ -394,17 +396,15 @@ public:
 
 private:
 
-
 	void appendLog(QString);
-
-
 	void doSend( PacketSendState &state);
-
-	void sendIdle(const quint64 &now, QSharedPointer<CommsSession> session);
+	void sendHandshake(const quint64 &now, const QString handShakeID);
 	void sendSyn(PacketSendState &state);
 	void sendSynAck(PacketSendState &state);
 	void sendAck(PacketSendState &state);
-	void sendData(const quint64 &now, Courier &courier);
+
+	void sendIdle(const quint64 &now, QSharedPointer<CommsSession> session);
+	void sendCourierData(const quint64 &now, Courier &courier);
 
 	// CommsChannel signals
 signals:

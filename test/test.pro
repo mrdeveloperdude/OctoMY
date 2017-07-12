@@ -17,7 +17,7 @@ TEST_PROJECTS+= \
 	testCommon \
 #	testAgentStateCourier \
 #	testArduMY \
-	testBlob \
+#	testBlob \
 #	testCarSteeringWidget \
 	testCommsChannel \
 #	testCommsSession \
@@ -28,7 +28,7 @@ TEST_PROJECTS+= \
 #	testEventSourcing \
 #	testHashstore \
 #	testIdenticon \
-	testKey \
+#	testKey \
 #	testKeyStore \
 #	testNetworkAddress \
 #	testNodeAssociate \

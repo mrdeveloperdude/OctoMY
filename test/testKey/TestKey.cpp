@@ -10,7 +10,50 @@
 
 
 #include <QByteArray>
-// YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
+
+
+class ContainerClass
+{
+private:
+	//CommsSignature mSignature;
+
+	Key &mKey;
+
+
+	public:
+
+		//Client(QHostAddress host, quint16 port, LogDestination *log=0);
+		explicit ContainerClass(Key &key);
+		virtual ~ContainerClass();
+
+
+};
+
+ContainerClass::ContainerClass(Key &key)
+	: mKey(key)
+{
+
+	if(nullptr == &key){
+		qWarning()<<"ERROR: key was nullptr";
+	}
+}
+
+ContainerClass::~ContainerClass()
+{
+
+}
+
+
+
+
+void TestKey::testAllocation()
+{
+	QSharedPointer<ContainerClass> cc(nullptr);
+	Key key;
+	cc=QSharedPointer<ContainerClass>(new ContainerClass(key));
+
+}
+
 void TestKey::testBasicIntegrity()
 {
 
@@ -54,8 +97,8 @@ void TestKey::testBasicIntegrity()
 	// ############################# explicit Key(quint32 bits);
 	Key k1(1024);
 
-	QCOMPARE(k1.kid(), 0);
-	QCOMPARE(k1.kct(), 1);
+	QCOMPARE(k1.kid(), 1);
+	QCOMPARE(k1.kct(), 2);
 
 
 	// ############################# #############################
@@ -66,10 +109,10 @@ void TestKey::testBasicIntegrity()
 	// ############################# explicit Key(QString key, bool isPublic);
 	Key k2(k1);
 
-	QCOMPARE(k1.kid(), 0);
-	QCOMPARE(k1.kct(), 2);
-	QCOMPARE(k2.kid(), 1);
-	QCOMPARE(k2.kct(), 2);
+	QCOMPARE(k1.kid(), 1);
+	QCOMPARE(k1.kct(), 3);
+	QCOMPARE(k2.kid(), 2);
+	QCOMPARE(k2.kct(), 3);
 
 
 	qDebug()<<"K2:"<<k2.id();

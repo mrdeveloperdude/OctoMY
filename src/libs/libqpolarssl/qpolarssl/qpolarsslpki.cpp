@@ -118,3 +118,11 @@ Pki::decrypt(const QByteArray& hash) {
 ///////////////////////////////////////////////////////////////////////////////
 } // namespace qpolarssl
 ///////////////////////////////////////////////////////////////////////////////
+
+QString qPolarDescribeError(int ec)
+{
+	size_t 	buflen =1024;
+	char buffer[buflen +1];
+	mbedtls_strerror(ec,buffer,buflen);
+	return QString(buffer);
+}
