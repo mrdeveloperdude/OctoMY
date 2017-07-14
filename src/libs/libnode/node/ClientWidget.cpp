@@ -132,7 +132,10 @@ void ClientWidget::setSpinnerActive(bool active)
 }
 
 
-
+// NOTE: This has a sister method in AgentWindow.cpp around line 625
+//       Please remember that while they are similar they are very different!
+//       While the other one is a "One agent, one remote" deal
+//       this is a "one remote, many agents" deal.
 void ClientWidget::updateOnlineStatus()
 {
 	OC_METHODGATE();
@@ -150,7 +153,7 @@ void ClientWidget::updateOnlineStatus()
 			wantToBeOnline=s->getCustomSettingBool("octomy.online."+mNodeAssoc->name(), false);
 		}
 		//Spell it out for debugging
-		//qDebug()<<"We are currently "<<(isOnline?"ONLINE":"OFFLINE")<<" and we want to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
+		qDebug()<<mNodeAssoc->name()<<" is currently "<<(isOnline?"ONLINE":"OFFLINE")<<" and wants to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
 		// Make necessary changes to state
 		const TryToggleState currentTryState=ui->tryToggleListen->state();
 		TryToggleState nextTryState=currentTryState;
@@ -174,6 +177,16 @@ void ClientWidget::updateOnlineStatus()
 		if(nextOnlineStatus!=isOnline) {
 			//qDebug()<<"Decided to change online status from "<<isOnline<<" -> "<<nextOnlineStatus;
 			setCourierRegistration(nextOnlineStatus);
+			if(nextOnlineStatus) {
+				QTimer::singleShot(1000,[this]() {
+					QSharedPointer<NodeAssociate> ni=mController->nodeIdentity();
+					if(nullptr!=ni) {
+						mController->startComms(ni->localAddress());
+					}
+				});
+			} else {
+				mController->stopComms();
+			}
 		} else {
 			//qDebug()<<"No change in online status ("<<nextOnlineStatus<<")";
 		}
@@ -358,16 +371,18 @@ void ClientWidget::appendLog(const QString& text)
 
 ///////////////////////////////////////// // Internal UI slots
 
+
 void ClientWidget::onConnectButtonStateChanged(const TryToggleState last, const TryToggleState current)
 {
 	OC_METHODGATE();
-	//qDebug()<< "CONNECT BUTTON TRYSTATE CHANGED FROM " << last<< " TO " << current;
+	//qDebug()<< "CONNECT BUTTON TRYSTATE CHANGED FROM " << ToggleStateToSTring(last)<< " TO " << ToggleStateToSTring(current);
 	if(current!=last) {
 		if(nullptr!= mNodeAssoc) {
-			Settings *s=&mController->settings();
-			if(nullptr!=s) {
-				s->setCustomSettingBool("octomy.online."+mNodeAssoc->name(), OFF!=current);
-			}
+			Settings &s=mController->settings();
+			const bool on=(OFF!=current);
+			s.setCustomSettingBool("octomy.online."+mNodeAssoc->name(), on);
+		} else {
+			qWarning()<<"ERROR: No node assoc";
 		}
 	}
 	updateOnlineStatus();

@@ -14,7 +14,7 @@
    <string>OctoMY™ - Agent</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="../../libcore/resources/icons.qrc">
     <normaloff>:/icons/agent.svg</normaloff>:/icons/agent.svg</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
@@ -39,7 +39,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="pageDelivery">
       <layout class="QGridLayout" name="gridLayout_5">
@@ -73,7 +73,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="../../libcore/resources/icons.qrc">
              <normaloff>:/icons/arrow_left.svg</normaloff>:/icons/arrow_left.svg</iconset>
            </property>
           </widget>
@@ -115,7 +115,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="../../libcore/resources/icons.qrc">
              <normaloff>:/icons/arrow_left.svg</normaloff>:/icons/arrow_left.svg</iconset>
            </property>
           </widget>
@@ -209,7 +209,7 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset>
+                  <iconset resource="../../libcore/resources/icons.qrc">
                    <normaloff>:/icons/menu.svg</normaloff>:/icons/menu.svg</iconset>
                  </property>
                 </widget>
@@ -222,7 +222,7 @@
           <item>
            <widget class="QStackedWidget" name="stackedWidgetFaceOrConfig">
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="pageFace">
              <layout class="QGridLayout" name="gridLayout_7">
@@ -452,7 +452,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="../../libcore/resources/icons.qrc">
              <normaloff>:/icons/arrow_left.svg</normaloff>:/icons/arrow_left.svg</iconset>
            </property>
           </widget>
@@ -494,7 +494,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="../../libcore/resources/icons.qrc">
              <normaloff>:/icons/arrow_left.svg</normaloff>:/icons/arrow_left.svg</iconset>
            </property>
           </widget>
@@ -1016,7 +1016,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
+          <iconset resource="../../libcore/resources/icons.qrc">
            <normaloff>:/icons/arrow_left.svg</normaloff>:/icons/arrow_left.svg</iconset>
          </property>
         </widget>
@@ -1031,7 +1031,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
+          <iconset resource="../../libcore/resources/icons.qrc">
            <normaloff>:/icons/arrow_left.svg</normaloff>:/icons/arrow_left.svg</iconset>
          </property>
         </widget>
@@ -1060,21 +1060,33 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>GaitWidget</class>
+   <class>PortableIDWidget</class>
    <extends>QWidget</extends>
-   <header location="global">../libpuppet/gait/GaitWidget.hpp</header>
+   <header>widgets/PortableIDWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PlanEditor</class>
    <extends>QWidget</extends>
-   <header location="global">../libplan/widgets/planedit/PlanEditor.hpp</header>
+   <header>widgets/planedit/PlanEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PairingWizard</class>
    <extends>QWidget</extends>
-   <header location="global">../libcore/widgets/PairingWizard.hpp</header>
+   <header>widgets/PairingWizard.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FaceWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/FaceWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GaitWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">../libpuppet/gait/GaitWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -1096,18 +1108,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PortableIDWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">../libcore/widgets/PortableIDWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>FaceWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">../libcore/widgets/FaceWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>AgentDeliveryWizard</class>
    <extends>QWidget</extends>
    <header location="global">../libcore/widgets/AgentDeliveryWizard.hpp</header>
@@ -1120,6 +1120,9 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../../libcore/resources/icons.qrc"/>
+  <include location="../../libcore/resources/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

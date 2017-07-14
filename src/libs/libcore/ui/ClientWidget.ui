@@ -32,7 +32,7 @@
    <item row="0" column="0">
     <widget class="QStackedWidget" name="stackedWidgetControl">
      <property name="currentIndex">
-      <number>7</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="pageConnection">
       <property name="sizePolicy">
@@ -605,21 +605,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ActuatorManagerWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/ActuatorManagerWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>PortableIDWidget</class>
    <extends>QWidget</extends>
    <header>widgets/PortableIDWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>FaceWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/FaceWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -631,6 +619,18 @@
    <class>TryToggle</class>
    <extends>QWidget</extends>
    <header>widgets/TryToggle.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ActuatorManagerWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/ActuatorManagerWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FaceWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/FaceWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

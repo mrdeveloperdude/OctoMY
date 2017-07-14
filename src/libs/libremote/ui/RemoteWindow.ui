@@ -20,7 +20,7 @@
    <string>OctoMY™ - Remote</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../resources/icons.qrc">
+   <iconset resource="../../libcore/resources/icons.qrc">
     <normaloff>:/icons/remote.svg</normaloff>:/icons/remote.svg</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout_4">
@@ -48,7 +48,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>5</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="pageRunning">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -73,7 +73,7 @@
              <string>Manage Connections</string>
             </property>
             <property name="icon">
-             <iconset resource="../resources/icons.qrc">
+             <iconset resource="../../libcore/resources/icons.qrc">
               <normaloff>:/icons/pair.svg</normaloff>:/icons/pair.svg</iconset>
             </property>
            </item>
@@ -98,7 +98,7 @@
              <string>Connection</string>
             </property>
             <property name="icon">
-             <iconset resource="../resources/icons.qrc">
+             <iconset resource="../../libcore/resources/icons.qrc">
               <normaloff>:/icons/network.svg</normaloff>:/icons/network.svg</iconset>
             </property>
            </item>
@@ -107,7 +107,7 @@
              <string extracomment="Control individual servos">Actuator</string>
             </property>
             <property name="icon">
-             <iconset resource="../resources/icons.qrc">
+             <iconset resource="../../libcore/resources/icons.qrc">
               <normaloff>:/icons/actuator_control.svg</normaloff>:/icons/actuator_control.svg</iconset>
             </property>
            </item>
@@ -116,7 +116,7 @@
              <string extracomment="Control pose through playback of animations">Pose</string>
             </property>
             <property name="icon">
-             <iconset resource="../resources/icons.qrc">
+             <iconset resource="../../libcore/resources/icons.qrc">
               <normaloff>:/icons/pose_control.svg</normaloff>:/icons/pose_control.svg</iconset>
             </property>
            </item>
@@ -125,7 +125,7 @@
              <string>Car Steering</string>
             </property>
             <property name="icon">
-             <iconset resource="../resources/icons.qrc">
+             <iconset resource="../../libcore/resources/icons.qrc">
               <normaloff>:/icons/wheels.svg</normaloff>:/icons/wheels.svg</iconset>
             </property>
            </item>
@@ -134,7 +134,7 @@
              <string extracomment="Leave robot to figure out movement on its own, and let it follow a path on the map">Path</string>
             </property>
             <property name="icon">
-             <iconset resource="../resources/icons.qrc">
+             <iconset resource="../../libcore/resources/icons.qrc">
               <normaloff>:/icons/path_control.svg</normaloff>:/icons/path_control.svg</iconset>
             </property>
            </item>
@@ -143,7 +143,7 @@
              <string>Stats</string>
             </property>
             <property name="icon">
-             <iconset resource="../resources/icons.qrc">
+             <iconset resource="../../libcore/resources/icons.qrc">
               <normaloff>:/icons/stats.svg</normaloff>:/icons/stats.svg</iconset>
             </property>
            </item>
@@ -152,7 +152,7 @@
              <string>Expression</string>
             </property>
             <property name="icon">
-             <iconset resource="../resources/icons.qrc">
+             <iconset resource="../../libcore/resources/icons.qrc">
               <normaloff>:/icons/mask.svg</normaloff>:/icons/mask.svg</iconset>
             </property>
            </item>
@@ -161,7 +161,7 @@
              <string>Speech</string>
             </property>
             <property name="icon">
-             <iconset resource="../resources/icons.qrc">
+             <iconset resource="../../libcore/resources/icons.qrc">
               <normaloff>:/icons/speech.svg</normaloff>:/icons/speech.svg</iconset>
             </property>
            </item>
@@ -185,7 +185,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
+            <iconset resource="../../libcore/resources/icons.qrc">
              <normaloff>:/icons/menu.svg</normaloff>:/icons/menu.svg</iconset>
            </property>
           </widget>
@@ -248,7 +248,7 @@
                     <string>Start pairing</string>
                    </property>
                    <property name="icon">
-                    <iconset resource="../resources/icons.qrc">
+                    <iconset resource="../../libcore/resources/icons.qrc">
                      <normaloff>:/icons/pair.svg</normaloff>:/icons/pair.svg</iconset>
                    </property>
                   </widget>
@@ -396,7 +396,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
+            <iconset resource="../../libcore/resources/icons.qrc">
              <normaloff>:/icons/arrow_left.svg</normaloff>:/icons/arrow_left.svg</iconset>
            </property>
           </widget>
@@ -428,7 +428,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
+            <iconset resource="../../libcore/resources/icons.qrc">
              <normaloff>:/icons/arrow_left.svg</normaloff>:/icons/arrow_left.svg</iconset>
            </property>
           </widget>
@@ -503,7 +503,8 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../resources/icons.qrc"/>
+  <include location="../../libcore/resources/icons.qrc"/>
+  <include location="../../libcore/resources/icons.qrc"/>
  </resources>
  <connections/>
 </ui>

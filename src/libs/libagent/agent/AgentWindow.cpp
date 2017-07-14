@@ -227,7 +227,7 @@ void AgentWindow::prepareMenu()
 	mOnlineAction->setCheckable(true);
 
 	if(nullptr!=s) {
-		mOnlineAction->setChecked(s->getCustomSettingBool("octomy.online"));
+		mOnlineAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS, false));
 	}
 	connect(mOnlineAction, &QAction::triggered, this, &AgentWindow::onOnlineChanged);
 	mMenu.addAction(mOnlineAction);
@@ -432,14 +432,20 @@ void AgentWindow::updateFaceVisibility()
 
 void AgentWindow::onConnectionStateChanged(const TryToggleState last, const TryToggleState current)
 {
-	//appendLog("CONNECT BUTTON TRYSTATE CHANGED FROM " +ToggleStateToSTring(last) +" TO "+ToggleStateToSTring(current));
-	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
-	const bool on=(OFF!=current);
-	if(nullptr!=s) {
-		s->setCustomSettingBool("octomy.online",on);
+	OC_METHODGATE();
+	appendLog("CONNECT BUTTON TRYSTATE CHANGED FROM " +ToggleStateToSTring(last) +" TO "+ToggleStateToSTring(current));
+	if(current!=last) {
+		if(nullptr!=mAgent) {
+			Settings &s=mAgent->settings();
+			const bool on=(OFF!=current);
+			s.setCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS, on);
+		} else {
+			qWarning()<<"ERROR: No agent";
+		}
 	}
 	updateOnlineStatus();
 }
+
 
 
 void AgentWindow::onColorChanged(QColor c)
@@ -464,6 +470,8 @@ void AgentWindow::onOnlineChanged(bool on)
 	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 	if(nullptr!=s) {
 		s->setCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS,on);
+	} else {
+		qWarning()<<"ERROR: No settings";
 	}
 	updateOnlineStatus();
 }
@@ -611,6 +619,7 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 }
 
 
+// NOTE: This has a sister method in ClientWindow.cpp around line 135
 void AgentWindow::updateOnlineStatus()
 {
 	OC_METHODGATE();
@@ -624,33 +633,46 @@ void AgentWindow::updateOnlineStatus()
 		bool wantToBeOnline=false;
 		Settings *s=&mAgent->settings();
 		if(nullptr!=s) {
-			wantToBeOnline=s->getCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS, false);
+			wantToBeOnline=s->getCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS, wantToBeOnline);
+		} else {
+			qWarning()<<"ERROR: No settings for agent";
 		}
 		//Spell it out for debugging
-		//qDebug()<<"We are currently "<<(isOnline?"ONLINE":"OFFLINE")<<" and we want to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
+		qDebug()<<"We are currently "<<(isOnline?"ONLINE":"OFFLINE")<<" and we want to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
 		// Make necessary changes to state
 		const TryToggleState current=ui->widgetFace->connectionState();
 		TryToggleState next=current;
+		bool nextOnlineStatus=isOnline;
 		if(wantToBeOnline ) {
 			if(isOnline ) {
 				next=ON;
 			} else {
 				next=TRYING;
-				//qDebug()<<"Decided to start comms";
+				//qDebug()<<"Decided to go online";
+				nextOnlineStatus=true;
+			}
+		} else {
+			if(isOnline ) {
+				//qDebug()<<"Decided to go offline";
+				nextOnlineStatus=false;
+			} else {
+				next=OFF;
+			}
+		}
+		if(nextOnlineStatus!=isOnline) {
+			//qDebug()<<"Decided to change online status from "<<isOnline<<" -> "<<nextOnlineStatus;
+			if(nextOnlineStatus) {
 				QTimer::singleShot(1000,[this]() {
 					QSharedPointer<NodeAssociate> ni=mAgent->nodeIdentity();
 					if(nullptr!=ni) {
 						mAgent->startComms(ni->localAddress());
 					}
 				});
+			} else {
+				mAgent->stopComms();
 			}
 		} else {
-			if(isOnline ) {
-				//qDebug()<<"Decided to stop comms";
-				mAgent->stopComms();
-			} else {
-				next=OFF;
-			}
+			//qDebug()<<"No change in online status ("<<nextOnlineStatus<<")";
 		}
 		if(next!=current) {
 			//qDebug()<<"Decided to change tristate button from "<<current<<" -> "<<next;
