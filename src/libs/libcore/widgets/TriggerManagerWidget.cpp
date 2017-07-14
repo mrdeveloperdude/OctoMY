@@ -3,10 +3,10 @@
 
 #include "utility/Standard.hpp"
 
-#include "locus/WheeledLocusWidget.hpp"
-#include "locus/Locus.hpp"
+#include "mtlobe/WheeledMtlobeWidget.hpp"
+#include "mtlobe/Mtlobe.hpp"
 
-#include "locus/LocusController.hpp"
+#include "mtlobe/MtlobeController.hpp"
 
 #include "trigger/TriggerSet.hpp"
 #include "widgets/TriggerWidget.hpp"

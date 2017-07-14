@@ -48,6 +48,7 @@ QMAKE_CXXFLAGS += -Wno-missing-include-dirs
 QMAKE_CFLAGS += -Wno-parentheses
 QMAKE_CFLAGS += -Wno-int-conversion
 QMAKE_CFLAGS += -Wno-unused-value
+QMAKE_CFLAGS += -Wno-sign-compare
 
 #    Enable AddressSanitizer, a fast memory error detector. Memory access instructions will be instrumented to detect out-of-bounds and use-after-free bugs. See http://code.google.com/p/address-sanitizer/ for more details. The run-time behavior can be influenced using the ASAN_OPTIONS environment variable; see https://code.google.com/p/address-sanitizer/wiki/Flags#Run-time_flags for a list of supported options.
 #QMAKE_CXXFLAGS +=-fsanitize=kernel-address

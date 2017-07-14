@@ -105,19 +105,19 @@ void HardwareWizard::initControllerList()
 
 
 
-void HardwareWizard::initLocusList()
+void HardwareWizard::initMtlobeList()
 {
-	mLocusStanzas.clear();
-	mLocusStanzas << LocusStanza("none", "None", ":/icons/unknown.svg");
-	mLocusStanzas << LocusStanza("wheeled", "Wheeled Locus", ":/icons/wheels.svg");
-	mLocusStanzas << LocusStanza("tracked", "Tracked Locus", ":/icons/threads.svg");
-	mLocusStanzas << LocusStanza("legged", "Legged locus", ":/icons/hexapod.svg");
+	mMtlobeStanzas.clear();
+	mMtlobeStanzas << MtlobeStanza("none", "None", ":/icons/unknown.svg");
+	mMtlobeStanzas << MtlobeStanza("wheeled", "Wheeled motion", ":/icons/wheels.svg");
+	mMtlobeStanzas << MtlobeStanza("tracked", "Tracked motion", ":/icons/threads.svg");
+	mMtlobeStanzas << MtlobeStanza("legged", "Legged motion", ":/icons/hexapod.svg");
 
-	for(auto stanza:mLocusStanzas) {
+	for(auto stanza:mMtlobeStanzas) {
 		QIcon icon;
 		icon.addFile(stanza.iconURL, QSize(), QIcon::Normal, QIcon::Off);
 		/*
-		QListWidgetItem *temp = new QListWidgetItem(ui->comboBoxAddLocus);
+		QListWidgetItem *temp = new QListWidgetItem(ui->comboBoxAddMtlobe);
 		temp->setIcon(icon);
 		temp->setText(stanza.fullName);
 		temp->setToolTip(stanza.nickName);
@@ -318,7 +318,7 @@ void HardwareWizard::on_listWidgetController_doubleClicked(const QModelIndex &in
 	on_pushButtonOnward_clicked();
 }
 
-void HardwareWizard::on_comboBoxAddLocus_currentIndexChanged(int index)
+void HardwareWizard::on_comboBoxAddMtlobe_currentIndexChanged(int index)
 {
 	switch(index) {
 	default:
@@ -328,25 +328,25 @@ void HardwareWizard::on_comboBoxAddLocus_currentIndexChanged(int index)
 	break;
 	// Wheeled
 	case(1): {
-		mLocusController.addLocus("wheeled");
+		mMtlobeController.addLobe("wheeled");
 	}
 	break;
 	// Tracked
 	case(2): {
-		mLocusController.addLocus("tracked");
+		mMtlobeController.addLobe("tracked");
 	}
 	break;
 	// Legged
 	case(3): {
-		mLocusController.addLocus("legged");
+		mMtlobeController.addLobe("legged");
 	}
 	break;
 	// Hovering
 	case(4): {
-		mLocusController.addLocus("hovering");
+		mMtlobeController.addLobe("hovering");
 	}
 	break;
 	}
-	ui->widgetLociManager->configure(&mLocusController);
-	ui->comboBoxAddLocus->setCurrentIndex(0);
+	ui->widgetLociManager->configure(&mMtlobeController);
+	ui->comboBoxAddMtlobe->setCurrentIndex(0);
 }

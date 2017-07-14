@@ -4,7 +4,7 @@
 #include "pose/PoseMapping.hpp"
 #include "hw/controllers/ActuatorControllerFactory.hpp"
 
-#include "locus/LocusController.hpp"
+#include "mtlobe/MtlobeController.hpp"
 
 
 #include <QWidget>
@@ -46,12 +46,12 @@ struct ControllerStanzaList: public QList<ControllerStanza> {
 };
 
 
-struct LocusStanza {
+struct MtlobeStanza {
 	QString nickName;
 	QString fullName;
 	QString iconURL;
 
-	LocusStanza(
+	MtlobeStanza(
 		QString nickName
 		, QString fullName
 		, QString iconURL
@@ -64,7 +64,7 @@ struct LocusStanza {
 	}
 };
 
-struct LocusStanzaList: public QList<LocusStanza> {
+struct MtlobeStanzaList: public QList<MtlobeStanza> {
 
 };
 
@@ -88,9 +88,9 @@ private:
 	*/
 	Agent *mAgent;
 	ControllerStanzaList controllerStanzas;
-	LocusStanzaList mLocusStanzas;
+	MtlobeStanzaList mMtlobeStanzas;
 
-	LocusController mLocusController;
+	MtlobeController mMtlobeController;
 
 public:
 	explicit HardwareWizard(QWidget *parent = 0);
@@ -99,7 +99,7 @@ public:
 private:
 
 	void initControllerList();
-	void initLocusList();
+	void initMtlobeList();
 	int controllerIndexByName(QString name);
 	QString selectedControllerName();
 	void moveTo(int next);
@@ -122,7 +122,7 @@ private slots:
 
 
 	void on_listWidgetController_doubleClicked(const QModelIndex &index);
-	void on_comboBoxAddLocus_currentIndexChanged(int index);
+	void on_comboBoxAddMtlobe_currentIndexChanged(int index);
 };
 
 #endif // HARDWAREWIZARD_HPP

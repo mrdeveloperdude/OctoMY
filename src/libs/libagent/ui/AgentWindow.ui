@@ -39,7 +39,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="pageDelivery">
       <layout class="QGridLayout" name="gridLayout_5">
@@ -1062,25 +1062,25 @@
   <customwidget>
    <class>PortableIDWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/PortableIDWidget.hpp</header>
+   <header location="global">widgets/PortableIDWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PlanEditor</class>
    <extends>QWidget</extends>
-   <header>widgets/planedit/PlanEditor.hpp</header>
+   <header location="global">widgets/planedit/PlanEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PairingWizard</class>
    <extends>QWidget</extends>
-   <header>widgets/PairingWizard.hpp</header>
+   <header location="global">widgets/PairingWizard.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>FaceWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/FaceWidget.hpp</header>
+   <header location="global">widgets/FaceWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
