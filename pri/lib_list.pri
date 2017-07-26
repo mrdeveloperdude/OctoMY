@@ -23,6 +23,7 @@ AUTOLINKS += \
 	qr \
 	web \
 	style \
+	vid \
 	rng \
 	audio \
 	dynamics \

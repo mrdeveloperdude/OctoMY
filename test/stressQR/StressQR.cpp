@@ -1,9 +1,9 @@
 #include "StressQR.hpp"
 
-#include "../libqr/QRPainter.hpp"
-#include "../libzbar/ZBarScanner.hpp"
-#include "../libutil/utility/widgets/PixViewer.hpp"
-#include "../libutil/utility/ScopedTimer.hpp"
+#include "qr/QRPainter.hpp"
+#include "zbar/ZBarScanner.hpp"
+#include "utility/widgets/PixViewer.hpp"
+#include "utility/ScopedTimer.hpp"
 
 #include <QWidget>
 #include <QGridLayout>

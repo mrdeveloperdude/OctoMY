@@ -17,10 +17,11 @@ include($$PRIS/lib_headers.pri)
 
 
 HEADERS += \
-	HubMain.hpp
+	HubMain.hpp \
 
 SOURCES += \
-	HubMain.cpp
+	HubMain.cpp \
+
 
 android {
 
