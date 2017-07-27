@@ -1,4 +1,6 @@
 
+if(!android){
+
 # Link to flex library
 LIBS += -lfl
 
@@ -20,3 +22,4 @@ OTHER_FILES += \
 	$$FLEXSOURCES \
 	$$QLALRSOURCES \
 
+}

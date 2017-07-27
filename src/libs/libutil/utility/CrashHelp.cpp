@@ -1,6 +1,10 @@
 #include "CrashHelp.hpp"
 
-#if defined(__GNUC__) && !defined(__CYGWIN__)
+#include <qsystemdetection.h>
+#include <QDebug>
+
+//TODO: Look at https://stackoverflow.com/questions/8115192/android-ndk-getting-the-backtrace to have this working on more platforms
+#if defined(__GNUC__) && !defined(__CYGWIN__) && !defined(Q_OS_ANDROID)
 
 #include <execinfo.h>
 #include <stdio.h>
@@ -70,11 +74,15 @@ CrashHelp::~CrashHelp()
 void CrashHelp::setEnabled(bool enabled)
 {
 
-#if defined(__GNUC__) && !defined(__CYGWIN__)
+#if defined(__GNUC__) && !defined(__CYGWIN__) && !defined(Q_OS_ANDROID)
+
 	std::set_terminate(enabled?terminationHandler:nullptr);
 	qDebug().nospace().noquote()<<"CRASH HELP WAS "<<(enabled?"INSTALLED":"UN-INSTALLED");
+
 #else
 	qDebug().nospace().noquote()<<"CRASH HELP WAS NOT "<<(enabled?"INSTALLED":"UN-INSTALLED");
+
+
 #endif
 
 
