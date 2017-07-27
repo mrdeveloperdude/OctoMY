@@ -217,6 +217,15 @@ void Node::stopComms()
 	}
 }
 
+bool Node::isCommsStarted()
+{
+	if(nullptr!=mComms) {
+		return mComms->isStarted();
+	} else {
+		qWarning()<<"ERROR: No comms";
+	}
+	return false;
+}
 
 bool Node::isCommsConnected()
 {
@@ -227,7 +236,6 @@ bool Node::isCommsConnected()
 	}
 	return false;
 }
-
 
 
 BlobFuture Node::submitBlobForSending(QByteArray data, QString name)

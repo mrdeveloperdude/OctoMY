@@ -12,7 +12,7 @@ KeyPrivate::KeyPrivate( QVariantMap map, bool isPublic )
 	: KeyPrivate(isPublic?(map.contains("publicKey")?map["publicKey"].toString():""): (map.contains("privateKey")?map["privateKey"].toString():""), isPublic)
 {
 	OC_METHODGATE();
-	qDebug()<<"KeyPrivate::KeyPrivate( QVariantMap key, bool isPublic ): map="<<map<<", mKey="<<mKey<<", mPubKey="<<mPubKey<<", isPublic="<<isPublic <<" for " <<mKID<<"/"<<mKCT;
+	//qDebug()<<"KeyPrivate::KeyPrivate( QVariantMap key, bool isPublic ): map="<<map<<", mKey="<<mKey<<", mPubKey="<<mPubKey<<", isPublic="<<isPublic <<" for " <<mKID<<"/"<<mKCT;
 }
 
 
@@ -25,10 +25,10 @@ KeyPrivate::KeyPrivate( QString key, bool isPublic )
 	, mInitialized(false)
 {
 	OC_METHODGATE();
-	qDebug()<<"KeyPrivate::KeyPrivate( QString key, bool isPublic ):"<<key<<isPublic <<" for " <<mKID<<"/"<<mKCT;
-	qDebug()<<"isPublic="<<isPublic;
-	qDebug()<<"mKey="<<mKey;
-	qDebug()<<"mPubKey="<<mPubKey;
+	//qDebug()<<"KeyPrivate::KeyPrivate( QString key, bool isPublic ):"<<key<<isPublic <<" for " <<mKID<<"/"<<mKCT;
+	//qDebug()<<"isPublic="<<isPublic;
+	//qDebug()<<"mKey="<<mKey;
+	//qDebug()<<"mPubKey="<<mPubKey;
 	parse(isPublic);
 }
 

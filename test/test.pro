@@ -41,7 +41,7 @@ TEST_PROJECTS+= \
 #	testSyncParameter \
 #	testTetraGPSEncoder \
 #	testZooComms \
-	testStreamCodec \
+#	testStreamCodec \
 
 
 

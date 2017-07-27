@@ -61,8 +61,6 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeA
 
 	if(!connect(ui->tryToggleListen, &TryToggle::stateChanged, this, &ClientWidget::onConnectButtonStateChanged ,OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
-	} else {
-		qDebug()<<"CONNECTED onConnectButtonStateChanged";
 	}
 
 //	const QString fullID=mNodeAssoc->id();
@@ -116,10 +114,7 @@ void ClientWidget::prepareSteering()
 	OC_METHODGATE();
 	if(!connect(ui->widgetCarSteering, &CarSteeringWidget::steeringChanged, this, &ClientWidget::onSteeringChanged ,OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
-	} else {
-		qDebug()<<"CONNECTED onSteeringChanged";
 	}
-
 }
 
 
@@ -141,10 +136,10 @@ void ClientWidget::updateOnlineStatus()
 	OC_METHODGATE();
 	//qDebug()<<"START UPDATE ONLINE STATUS # # # # ";
 	if(nullptr!=mController && nullptr!=mNodeAssoc) {
-		// Find if we ARE online
-		bool isOnline=false;
+		// Find if we ARE trying to get online
+		bool isTryingToGoOnline=false;
 		if(nullptr!=mController) {
-			isOnline=mController->isCommsConnected() && courierRegistration();
+			isTryingToGoOnline=mController->isCommsStarted() && courierRegistration();
 		}
 		// Find if we WANT to be online
 		bool wantToBeOnline=false;
@@ -153,13 +148,13 @@ void ClientWidget::updateOnlineStatus()
 			wantToBeOnline=s->getCustomSettingBool("octomy.online."+mNodeAssoc->name(), false);
 		}
 		//Spell it out for debugging
-		qDebug()<<mNodeAssoc->name()<<" is currently "<<(isOnline?"ONLINE":"OFFLINE")<<" and wants to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
+		qDebug()<<mNodeAssoc->name()<<" is currently trying to be "<<(isTryingToGoOnline?"ONLINE":"OFFLINE")<<" and wants to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
 		// Make necessary changes to state
 		const TryToggleState currentTryState=ui->tryToggleListen->state();
 		TryToggleState nextTryState=currentTryState;
-		bool nextOnlineStatus=isOnline;
+		bool nextOnlineStatus=isTryingToGoOnline;
 		if(wantToBeOnline ) {
-			if(isOnline ) {
+			if(isTryingToGoOnline ) {
 				nextTryState=ON;
 			} else {
 				nextTryState=TRYING;
@@ -167,16 +162,18 @@ void ClientWidget::updateOnlineStatus()
 				nextOnlineStatus=true;
 			}
 		} else {
-			if(isOnline ) {
+			if(isTryingToGoOnline ) {
 				//qDebug()<<"Decided to go offline";
 				nextOnlineStatus=false;
 			} else {
 				nextTryState=OFF;
 			}
 		}
-		if(nextOnlineStatus!=isOnline) {
+		if(nextOnlineStatus!=isTryingToGoOnline) {
 			//qDebug()<<"Decided to change online status from "<<isOnline<<" -> "<<nextOnlineStatus;
 			setCourierRegistration(nextOnlineStatus);
+			/*
+			 * NOTE: DONT DO THIS AS IT IS DONE BY THE setCourierRegistration() line above
 			if(nextOnlineStatus) {
 				QTimer::singleShot(1000,[this]() {
 					QSharedPointer<NodeAssociate> ni=mController->nodeIdentity();
@@ -187,6 +184,7 @@ void ClientWidget::updateOnlineStatus()
 			} else {
 				mController->stopComms();
 			}
+			*/
 		} else {
 			//qDebug()<<"No change in online status ("<<nextOnlineStatus<<")";
 		}

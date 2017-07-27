@@ -95,6 +95,17 @@ Notes:
 4. All Agent initiated communication will be broadcast to all active remotes in
    paralell. Remote initiated transfers will remain private.
 
+Multiplexing in the remote:
+
+The agent lives the easy life. The decision to be connected is simply an on-off switch.
+The remote on the other hand has to juggle between connections for any agents that it will control.
+
+How is this managed?
+
+In remote, there exist one "ClientWidget" instance per agent that is communicating.
+That instance is responsible for adding and removing the apropriate couriers dynamically as needed.
+The commschannel itself will simply look at the currently attached couriers and work with those.
+
 
 Session management strategy:
 
@@ -192,7 +203,7 @@ Flags:
 
 	CommsSessionDirectory - The list of sessions in use by the CommsChannel
 
-	CommsSignature - [DEPRECATED, use full key->id() string instead] A special purpose identification mapping between full ID and short hand 64bit integer ID used only by CommsChannel and friends.
+	CommsSignature - [DEPRECATED, use full key->id() string instead] This used to be a special purpose identification mapping between full ID and short hand 64bit integer ID used only by CommsChannel and friends. It has sort of been replaced by session-ids.
 
 	NodeAssociate - Address book entry for one node. Stored in NodeAssociateStore. Meant to be persistent between invocations.
 

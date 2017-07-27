@@ -111,6 +111,7 @@ public:
 
 	void startComms(const NetworkAddress &localAddress);
 	void stopComms();
+	bool isCommsStarted();
 	bool isCommsConnected();
 
 	// Blob courier
