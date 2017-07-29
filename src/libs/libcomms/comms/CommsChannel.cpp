@@ -821,6 +821,7 @@ void CommsChannel::recieveSynAck(PacketReadState &state)
 		return;
 	}
 
+	/*
 	//Verify that we are receiving the mode that is expected by the session
 	const auto expectedStep=session->handshakeState().nextStep();
 	const auto receivedStep=SYN_ACK_OK;
@@ -830,6 +831,7 @@ void CommsChannel::recieveSynAck(PacketReadState &state)
 		emit commsError(es);
 		return;
 	}
+	*/
 
 	// RETURN NONCE
 	state.readEncReturnNonce();
@@ -906,6 +908,7 @@ void CommsChannel::recieveAck(PacketReadState &state)
 		return;
 	}
 
+	/*
 	//Verify that we are receiving the mode that is expected by the session
 	const auto expectedStep=session->handshakeState().nextStep();
 	const auto receivedStep=ACK_OK;
@@ -915,6 +918,7 @@ void CommsChannel::recieveAck(PacketReadState &state)
 		emit commsError(es);
 		return;
 	}
+	*/
 
 	// RETURN NONCE
 	state.readEncReturnNonce();
@@ -1153,15 +1157,20 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 		state.setRemoteID(handShakeID);
 		state.session=session;
 		HandshakeStep step=session->handshakeState().step();
-		HandshakeStep nextStep=session->handshakeState().nextStep();
-		qDebug()<<"STEP BUMB FROM "<<handshakeStepToString(step)<<" --> "<<handshakeStepToString(nextStep);
-		switch(nextStep) {
+		//HandshakeStep nextStep=session->handshakeState().nextStep();
+		qDebug()<<"STEP "<<handshakeStepToString(step);
+		switch(step) {
 		default:
+				//////////////////// / / / / / //TODO need work on handshake step management
+				///
+				///
+				///
+				///
+				///     DO IT SOON!
+				///
+				///
+				/// ///////////////////////////////////////////////////////////
 		case(VIRGIN): {
-			qWarning()<<"ERROR: Unknown session step "<<QString::number(nextStep);
-		}
-		break;
-		case(SYN_OK): {
 			//Verify that we are the initator in this session
 			if(!session->handshakeState().isInitiator()) {
 				QString es="ERROR: OctoMY Protocol sending syn for session not initiated by us";
@@ -1172,7 +1181,7 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 			sendSyn(state);
 		}
 		break;
-		case(SYN_ACK_OK): {
+		case(SYN_OK): {
 			//Verify that we are not initator in this session
 			if(session->handshakeState().isInitiator()) {
 				QString es="ERROR: OctoMY Protocol sending syn-ack for session initiated by us";
@@ -1183,7 +1192,7 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 			sendSynAck(state);
 		}
 		break;
-		case(ACK_OK): {
+		case(SYN_ACK_OK): {
 			//Verify that we are the initator in this session
 			if(!session->handshakeState().isInitiator()) {
 				QString es="ERROR: OctoMY Protocol sending ack for session not initiated by us";
@@ -1192,6 +1201,10 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 				return;
 			}
 			sendAck(state);
+		}
+		break;
+		case(ACK_OK): {
+
 		}
 		break;
 		}

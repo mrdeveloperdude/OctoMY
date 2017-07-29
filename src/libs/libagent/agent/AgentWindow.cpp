@@ -112,7 +112,7 @@ void AgentWindow::gotoNextConfigPage()
 	const bool isDelivered=mAgent->keyStore().fileExists();
 	auto ac=mAgent->configurationStore().agentConfig();
 	const QString ctl=ac->controllerName();
-	const bool isHardwareConfigured=(nullptr!=ac) && (""!=ctl) || (ui->pageHardware==cur);
+	const bool isHardwareConfigured=((nullptr!=ac) && (""!=ctl)) || (ui->pageHardware==cur);
 	auto pct=mAgent->peers().getParticipantCount();
 	const bool isPaired=(pct>1) || (ui->pagePairing==cur);
 
@@ -355,11 +355,9 @@ QSet<QSharedPointer<NodeAssociate> > AgentWindow::activeControls()
 	return out;
 }
 
-void AgentWindow::courierRegistration(QSharedPointer<NodeAssociate> assoc, bool reg)
+void AgentWindow::setCourierRegistration(QSharedPointer<NodeAssociate> assoc, bool reg)
 {
 	OC_METHODGATE();
-	/*
-	 * //TODO: Find and squish strange new const QString * build error
 	CommsChannel *cc=comms();
 	if(nullptr!=cc) {
 		if(nullptr != assoc) {
@@ -367,17 +365,21 @@ void AgentWindow::courierRegistration(QSharedPointer<NodeAssociate> assoc, bool 
 			if(reg) {
 				qDebug()<<"REGISTERING COURIERS FOR " <<id;
 				QSet< QSharedPointer<Courier> > set;
-				Courier *courier=new SensorsCourier;
+				Courier *courier=new SensorsCourier(*cc);
 				set<< QSharedPointer<Courier>(courier);
+				//QMap<const QString, QSet< QSharedPointer<Courier> > > mCourierSets;
 				mCourierSets.insert(id, set);
-				cc->registerCourier(*courier);
+
+				cc->setCourierRegistered(*courier, true);
+
 			} else {
 				qDebug()<<"UN-REGISTERING COURIERS FOR " <<id;
 				if(mCourierSets.contains(id)) {
 					QSet< QSharedPointer<Courier> > set=mCourierSets.take(id);
 					for(QSharedPointer<Courier>  courier:set) {
 						if(nullptr!=courier) {
-							cc->unregisterCourier(*courier);
+
+							cc->setCourierRegistered(*courier, false);
 						}
 					}
 				}
@@ -393,7 +395,7 @@ void AgentWindow::courierRegistration(QSharedPointer<NodeAssociate> assoc, bool 
 			cc->stop();
 		}
 	}
-	*/
+
 }
 
 void AgentWindow::updateCourierRegistration()
@@ -404,13 +406,13 @@ void AgentWindow::updateCourierRegistration()
 		for(QSharedPointer<NodeAssociate> assoc:mLastActiveControls) {
 			if(!active.contains(assoc)) {
 				//Decomission it
-				courierRegistration(assoc,false);
+				setCourierRegistration(assoc,false);
 			}
 		}
 		for(QSharedPointer<NodeAssociate> assoc:active) {
 			if(!mLastActiveControls.contains(assoc)) {
 				//Comission it
-				courierRegistration(assoc,true);
+				setCourierRegistration(assoc,true);
 			}
 		}
 	}
@@ -620,14 +622,16 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 
 
 // NOTE: This has a sister method in ClientWindow.cpp around line 135
+//       Please see the comments there as they are also relevant here
+//       (about for example in what really important way these two methods differ).
 void AgentWindow::updateOnlineStatus()
 {
 	OC_METHODGATE();
 	if(nullptr!=mAgent) {
 		// Find if we ARE online
-		bool isOnline=false;
+		bool isTryingToGoOnline=false;
 		if(nullptr!=mAgent) {
-			isOnline=mAgent->isCommsConnected();
+			isTryingToGoOnline=mAgent->isCommsStarted();
 		}
 		// Find if we WANT to be online
 		bool wantToBeOnline=false;
@@ -638,13 +642,13 @@ void AgentWindow::updateOnlineStatus()
 			qWarning()<<"ERROR: No settings for agent";
 		}
 		//Spell it out for debugging
-		qDebug()<<"We are currently "<<(isOnline?"ONLINE":"OFFLINE")<<" and we want to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
+		qDebug()<<"We are currently trying to be "<<(isTryingToGoOnline?"ONLINE":"OFFLINE")<<" and we wants to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
 		// Make necessary changes to state
 		const TryToggleState current=ui->widgetFace->connectionState();
 		TryToggleState next=current;
-		bool nextOnlineStatus=isOnline;
+		bool nextOnlineStatus=isTryingToGoOnline;
 		if(wantToBeOnline ) {
-			if(isOnline ) {
+			if(isTryingToGoOnline ) {
 				next=ON;
 			} else {
 				next=TRYING;
@@ -652,15 +656,22 @@ void AgentWindow::updateOnlineStatus()
 				nextOnlineStatus=true;
 			}
 		} else {
-			if(isOnline ) {
+			if(isTryingToGoOnline ) {
 				//qDebug()<<"Decided to go offline";
 				nextOnlineStatus=false;
 			} else {
 				next=OFF;
 			}
 		}
-		if(nextOnlineStatus!=isOnline) {
+		if(nextOnlineStatus!=isTryingToGoOnline) {
 			//qDebug()<<"Decided to change online status from "<<isOnline<<" -> "<<nextOnlineStatus;
+
+			QSet<QSharedPointer<NodeAssociate> > active=activeControls();
+			for(auto assoc:active) {
+				setCourierRegistration(assoc , nextOnlineStatus); //QSharedPointer<NodeAssociate> assoc, bool reg
+			}
+			/*
+			 * NOTE: DONT DO THIS AS IT IS DONE BY THE setCourierRegistration() line above
 			if(nextOnlineStatus) {
 				QTimer::singleShot(1000,[this]() {
 					QSharedPointer<NodeAssociate> ni=mAgent->nodeIdentity();
@@ -671,6 +682,7 @@ void AgentWindow::updateOnlineStatus()
 			} else {
 				mAgent->stopComms();
 			}
+			*/
 		} else {
 			//qDebug()<<"No change in online status ("<<nextOnlineStatus<<")";
 		}

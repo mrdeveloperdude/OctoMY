@@ -23,7 +23,7 @@ public:
 	bool isVirgin() const;
 	bool isInitiator() const;
 	bool isDone() const;
-	HandshakeStep nextStep() const;
+	//HandshakeStep nextStep() const;
 	HandshakeStep step() const;
 	//void bump();
 	void setSynOK();

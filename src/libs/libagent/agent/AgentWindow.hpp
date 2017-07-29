@@ -47,7 +47,7 @@ private:
 	Servotor32ControllerWidget *mHexy;
 	QMenu mMenu;
 	QSet<QSharedPointer<NodeAssociate> > mLastActiveControls;
-	QMap<const QString, QSet< QSharedPointer<Courier> > > mCourierSets;
+	QMap<QString, QSet< QSharedPointer<Courier> > > mCourierSets;
 
 	QAction *mCameraAction;
 	QAction *mPairingAction;
@@ -86,7 +86,7 @@ private:
 	void prepareMenu();
 	CommsChannel *comms();
 	QSet<QSharedPointer<NodeAssociate> > activeControls();
-	void courierRegistration(QSharedPointer<NodeAssociate>, bool);
+	void setCourierRegistration(QSharedPointer<NodeAssociate>, bool);
 	void updateCourierRegistration();
 
 	void updateOnlineStatus();

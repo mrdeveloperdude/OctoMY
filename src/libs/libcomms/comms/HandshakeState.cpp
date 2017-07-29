@@ -20,6 +20,7 @@ bool HandshakeState::isDone() const
 	return ((quint8)mStep) >= ((quint8) ACK_OK);
 }
 
+/*
 HandshakeStep HandshakeState::nextStep() const
 {
 	switch(mStep) {
@@ -39,6 +40,7 @@ HandshakeStep HandshakeState::nextStep() const
 		return IDLE_HANDSHAKE;
 	}
 }
+*/
 
 HandshakeStep HandshakeState::step() const
 {
