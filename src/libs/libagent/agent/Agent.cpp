@@ -77,6 +77,106 @@ QWidget *Agent::showWindow()
 
 
 
+QSet<QSharedPointer<NodeAssociate> > Agent::activeControls()
+{
+	OC_METHODGATE();
+	QSet<QSharedPointer<NodeAssociate> > out;
+
+	const quint64 lastActive=QDateTime::currentMSecsSinceEpoch()-(1000*60);//One minute ago. TODO: Turn into constant or setting
+
+	CommsChannel *cc=comms();
+	if(nullptr!=cc) {
+		NodeAssociateStore &p=peers();
+		CommsSessionDirectory &sessionDirectory=cc->sessions();
+		QSet<QSharedPointer<CommsSession> > sessions=sessionDirectory.getByActiveTime(lastActive);
+		for(QSharedPointer<CommsSession> session: sessions) {
+			auto key=session->key();
+			if(nullptr!=key) {
+				QString id=key->id();
+				if(id.size()>0) {
+					QSharedPointer<NodeAssociate> peer=p.getParticipant(id);
+					if(nullptr!=peer) {
+						if(DiscoveryRole::ROLE_CONTROL==peer->role()) {
+							out<<peer;
+						}
+					}
+				}
+			} else {
+				qWarning()<<"ERROR: No key";
+			}
+		}
+	}
+
+	return out;
+}
+
+void Agent::setCourierRegistration(QSharedPointer<NodeAssociate> assoc, bool reg)
+{
+	OC_METHODGATE();
+	CommsChannel *cc=comms();
+	if(nullptr!=cc) {
+		if(nullptr != assoc) {
+			const QString id=assoc->id();
+			if(reg) {
+				qDebug()<<"REGISTERING COURIERS FOR " <<id;
+				QSet< QSharedPointer<Courier> > set;
+				Courier *courier=new SensorsCourier(*cc);
+				set<< QSharedPointer<Courier>(courier);
+				//QMap<const QString, QSet< QSharedPointer<Courier> > > mCourierSets;
+				mCourierSets.insert(id, set);
+
+				cc->setCourierRegistered(*courier, true);
+
+			} else {
+				qDebug()<<"UN-REGISTERING COURIERS FOR " <<id;
+				if(mCourierSets.contains(id)) {
+					QSet< QSharedPointer<Courier> > set=mCourierSets.take(id);
+					for(QSharedPointer<Courier>  courier:set) {
+						if(nullptr!=courier) {
+
+							cc->setCourierRegistered(*courier, false);
+						}
+					}
+				}
+			}
+		}
+		// Adaptively start commschannel when there are couriers registered
+		const int ct=cc->courierCount();
+		if(ct>0) {
+			if(nullptr != assoc) {
+				cc->start(assoc->localAddress());
+			}
+		} else {
+			cc->stop();
+		}
+	}
+
+}
+
+void Agent::updateCourierRegistration()
+{
+	OC_METHODGATE();
+	QSet<QSharedPointer<NodeAssociate> > active=activeControls();
+	if(active!=mLastActiveControls) {
+		for(QSharedPointer<NodeAssociate> assoc:mLastActiveControls) {
+			if(!active.contains(assoc)) {
+				//Decomission it
+				setCourierRegistration(assoc,false);
+			}
+		}
+		for(QSharedPointer<NodeAssociate> assoc:active) {
+			if(!mLastActiveControls.contains(assoc)) {
+				//Comission it
+				setCourierRegistration(assoc,true);
+			}
+		}
+	}
+	mLastActiveControls.clear();
+	mLastActiveControls=active;
+}
+
+
+
 void Agent::setPanic(bool panic)
 {
 	OC_METHODGATE();

@@ -52,6 +52,11 @@ private:
 	AgentControls mControls;
 	AgentConfigStore mAgentConfigStore;
 	IActuatorController *mActuatorController;
+
+	QMap<QString, QSet< QSharedPointer<Courier> > > mCourierSets;
+	QSet<QSharedPointer<NodeAssociate> > mLastActiveControls;
+
+
 	AgentWindow *mWindow;
 
 public:
@@ -59,6 +64,19 @@ public:
 	virtual ~Agent();
 
 	virtual QWidget *showWindow();
+
+	// Moved from AgentWindow*
+public:
+
+	QSet<QSharedPointer<NodeAssociate> > activeControls();
+	void setCourierRegistration(QSharedPointer<NodeAssociate>, bool);
+
+	void updateCourierRegistration();
+
+
+public:
+
+
 
 	void setPanic(bool);
 
