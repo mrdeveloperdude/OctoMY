@@ -21,6 +21,9 @@
 #include "FlowControl.hpp"
 
 #include "../../libcore/basic/LogDestination.hpp"
+
+#include "security/Key.hpp"
+
 #include "couriers/Courier.hpp"
 #include "CommsSessionDirectory.hpp"
 
@@ -67,7 +70,7 @@ class NodeAssociateStore;
 class CommsChannel : public QObject
 {
 	Q_OBJECT
-private:
+protected:
 	static const quint64 CONNECTION_TIMEOUT;
 	static const qint32 MAX_UDP_PAYLOAD_SIZE;
 
@@ -75,7 +78,7 @@ private:
 	static quint32 sTotalRecCount;
 	static quint32 sTotalTxCount;
 
-private:
+protected:
 
 	QUdpSocket mUDPSocket; // The socket used by this cc to communicate with the other side
 	QTimer mSendingTimer;  // The timer used to schedule when packets are sent to the other side
@@ -105,7 +108,7 @@ public:
 	explicit CommsChannel(KeyStore &keystore, NodeAssociateStore &peers, QObject *parent=nullptr);
 	explicit CommsChannel(KeyStore &keystore, QObject *parent=nullptr);
 
-private:
+protected:
 
 	void detectConnectionChanges(const quint64 now);
 	QSharedPointer<CommsSession>  createSession(QString id, bool initiator);
@@ -134,7 +137,7 @@ public:
 
 	qint64 sendRawData(QByteArray datagram, NetworkAddress address);
 
-private:
+protected:
 
 	void appendLog(QString);
 	void doSend( PacketSendState &state);
@@ -159,7 +162,7 @@ public slots:
 	quint64 rescheduleSending(quint64 now);
 
 
-private:
+protected:
 
 	bool recieveEncryptedBody(PacketReadState &state);
 	bool recieveMagicAndVersion(PacketReadState &state);
@@ -171,7 +174,7 @@ private:
 	void recieveData(PacketReadState &state);
 
 // Send & receive slots
-private slots:
+protected slots:
 
 	void receivePacketRaw(QByteArray ba,QHostAddress host, quint16 port);
 	void onSendingTimer();

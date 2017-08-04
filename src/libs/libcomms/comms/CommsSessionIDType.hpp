@@ -1,6 +1,8 @@
 #ifndef COMMSSESSIONIDTYPE_HPP
 #define COMMSSESSIONIDTYPE_HPP
 
+#include <QtGlobal>
+
 typedef quint16 SESSION_ID_TYPE;
 
 typedef quint32 SESSION_NONCE_TYPE;
