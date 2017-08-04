@@ -38,6 +38,11 @@ public:
 	}
 
 
+	void testSendHandshake(const quint64 &now, const QString handShakeID)
+	{
+		sendHandshake(now, handShakeID);
+	}
+
 
 
 };
@@ -197,8 +202,15 @@ void TestCommsChannel::testHandshake()
 	qDebug()<<"";
 	qDebug()<<"#######################################";
 	qDebug()<<"####################################### STARTING 1st time with no sessions";
-	chanA.rescheduleSending(now);
-	chanB.rescheduleSending(now+100);
+
+	quint64 time=now;
+	chanA.rescheduleSending(time++);
+	chanB.rescheduleSending(time++);
+
+	chanA.testSendHandshake(time, idB);
+	time++;
+
+//	chanB.rece
 
 
 //	PacketSendState state;
@@ -206,6 +218,19 @@ void TestCommsChannel::testHandshake()
 	//state.session=session;
 
 	//chanA.testSendSyn(state);
+
+
+	qDebug()<<"";
+	qDebug()<<"####################################### WAITING 1st time with no sessions";
+	{
+		quint64 now=QDateTime::currentMSecsSinceEpoch();
+		const quint64 end=now+15000;
+		while(now<end) {
+			//qDebug()<<" * * * Tick Tock.....................";
+			now=QDateTime::currentMSecsSinceEpoch();
+			QCoreApplication::processEvents();
+		}
+	}
 
 
 
@@ -218,4 +243,3 @@ void TestCommsChannel::testHandshake()
 	qDebug()<<"";
 	qDebug()<<"####################################### DELETING";
 }
-
