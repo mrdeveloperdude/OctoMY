@@ -74,6 +74,7 @@ qint64 parseDate(QString str,QString fmt="yyyy-MM-ddThh:mm:ss");
 QString toHash(QString input, QCryptographicHash::Algorithm algo=QCryptographicHash::Sha1, bool upperCase=true);
 QString nameToNormalForm(QString name);
 QString networkErrorToString( QNetworkReply::NetworkError ne);
+QString socketErrorToString( QAbstractSocket::SocketError se);
 QString padstring(int level, QString base=" ");
 QString toSoundex(QString in);
 int levenshtein_distance(const QString &s1, const QString  &s2);

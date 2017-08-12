@@ -7,6 +7,8 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
+#include "comms/CommsCarrierUDP.hpp"
+
 #include "discovery/DiscoveryRole.hpp"
 #include "discovery/NodeAssociateStore.hpp"
 
@@ -17,6 +19,7 @@
 #include <QHostAddress>
 #include <QUrl>
 
+class CommsCarrier;
 class CommsChannel;
 class ZooClient;
 class DiscoveryClient;
@@ -49,6 +52,7 @@ protected:
 	DiscoveryClient *mDiscovery;
 	DiscoveryRole mRole;
 	DiscoveryType mType;
+	CommsCarrierUDP mCarrier;
 	CommsChannel *mComms;
 	ZooClient *mZooClient;
 	SensorInput *mSensors;

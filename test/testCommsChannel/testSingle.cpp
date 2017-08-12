@@ -1,4 +1,4 @@
-#include "TestCommsChannel.hpp"
+ #include "TestCommsChannel.hpp"
 
 #include "TestCourier.hpp"
 
@@ -139,7 +139,8 @@ void TestCommsChannel::testSingle()
 
 	qDebug()<<"";
 	qDebug()<<"####################################### INITIALIZING COMMS FOR PARTY A";
-	CommsChannel chanA(keyStoreA, peersA);
+	CommsCarrierUDP carrierA;
+	CommsChannel chanA(carrierA,keyStoreA, peersA);
 	CommsSignalLogger sigLogA("LOG-A");
 	chanA.setHookCommsSignals(sigLogA, true);
 	TestCourier courA1("Courier A1",idB, "This is datagram A1 123", chanA, maxSends, maxRecs);
@@ -149,7 +150,8 @@ void TestCommsChannel::testSingle()
 
 	qDebug()<<"";
 	qDebug()<<"####################################### INITIALIZING COMMS FOR PARTY B";
-	CommsChannel chanB(keyStoreB, peersB);
+	CommsCarrierUDP carrierB;
+	CommsChannel chanB(carrierB, keyStoreB, peersB);
 	CommsSignalLogger sigLogB("LOG-B");
 	chanA.setHookCommsSignals(sigLogB, true);
 	TestCourier courB1("Courier B1", idA, "This is datagram B1 æøåä", chanB, maxSends, maxRecs);

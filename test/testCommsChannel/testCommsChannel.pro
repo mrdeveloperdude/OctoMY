@@ -3,18 +3,23 @@ include($$TESTS/test.pri)
 TARGET = test_commschannel
 
 HEADERS += \
+	CommsSignalLogger.hpp \
+	CommsTester.hpp \
 	TestCommsChannel.hpp \
-    CommsSignalLogger.hpp \
-    CommsTester.hpp \
-    TestCourier.hpp
+	TestCourier.hpp \
+    MockCommsCarrierLog.hpp \
+    MockCommsCarrier.hpp
 
 SOURCES += \
+	CommsSignalLogger.cpp \
+	CommsTester.cpp \
+	testCarrier.cpp \
 	TestCommsChannel.cpp \
-    testMultiple.cpp \
-    testSingle.cpp \
-    testHandshake.cpp \
-    CommsSignalLogger.cpp \
-    CommsTester.cpp \
-    TestCourier.cpp
+	TestCourier.cpp \
+	testHandshake.cpp \
+	testMultiple.cpp \
+	testSingle.cpp \
+    MockCommsCarrierLog.cpp \
+    MockCommsCarrier.cpp
 
 include($$TESTS/test_autorun.pri)

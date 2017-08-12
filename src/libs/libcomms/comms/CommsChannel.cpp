@@ -5,6 +5,9 @@
  */
 
 #include "CommsChannel.hpp"
+
+#include "CommsCarrier.hpp"
+
 #include "CommsSessionDirectory.hpp"
 
 #include "utility/Standard.hpp"
@@ -21,79 +24,45 @@
 #include "PacketSendState.hpp"
 #include "PacketReadState.hpp"
 
+
 #include <QDataStream>
 #include <QDateTime>
 
 #define FIRST_STATE_ID ((SESSION_ID_TYPE)MULTIMAGIC_LAST)
 
-QString MultimagicToString(Multimagic m)
-{
-#define MULTIMAGIC_TO_STRING_CASE(a) case(a): return(#a)
-	switch(m) {
-		MULTIMAGIC_TO_STRING_CASE(MULTIMAGIC_IDLE);
-		MULTIMAGIC_TO_STRING_CASE(MULTIMAGIC_SYN);
-		MULTIMAGIC_TO_STRING_CASE(MULTIMAGIC_SYNACK);
-		MULTIMAGIC_TO_STRING_CASE(MULTIMAGIC_ACK);
-		MULTIMAGIC_TO_STRING_CASE(MULTIMAGIC_LAST);
-	default:
-		return "MULTIMAGIC_"+QString::number((SESSION_ID_TYPE)m);
-
-	}
-#undef MULTIMAGIC_TO_STRING_CASE
-}
-
-QString MultimagicToString(SESSION_ID_TYPE m)
-{
-	return MultimagicToString((Multimagic)m);
-}
-
 
 //#define DO_CC_ENC
 
-const quint64 CommsChannel::CONNECTION_TIMEOUT = MINIMAL_PACKET_RATE + 1000;//1 sec  more than our UDP timeout
-// NOTE: We use 512 as the maximum practical UDP size for ipv4 over the internet
-//       See this for discussion: http://stackoverflow.com/questions/1098897/what-is-the-largest-safe-udp-packet-size-on-the-internet
-const qint32 CommsChannel::MAX_UDP_PAYLOAD_SIZE = 512;
-
-
-quint32 CommsChannel::sTotalRecCount = 0;
-quint32 CommsChannel::sTotalTxCount = 0;
-
-CommsChannel::CommsChannel(KeyStore &keystore, NodeAssociateStore &peers, QObject *parent)
+CommsChannel::CommsChannel(CommsCarrier &carrier, KeyStore &keystore, NodeAssociateStore &peers, QObject *parent)
 	: QObject(parent)
+	, mCarrier(carrier)
 	, mKeystore(keystore)
 	, mPeers(peers)
 	, mSessions(mKeystore)
 	, mLocalSessionID(0)
-	, mRXRate("CC RX")
-	, mTXRate("CC TX")
-	, mTXOpportunityRate("CC TX OP")
 	, mTXScheduleRate("CC TX SCHED")
-	, mConnected(false)
+//	, mConnected(false)
 {
 	setObjectName("CommsChannel");
-	if(!connect(&mUDPSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()), OC_CONTYPE)) {
-		qWarning()<<"Could not connect UDP readyRead";
-	}
-	qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
-	if(!connect(&mUDPSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onUdpError(QAbstractSocket::SocketError)), OC_CONTYPE)) {
-		qWarning()<<"Could not connect UDP error";
-	}
-	mSendingTimer.setSingleShot(false);
-	mSendingTimer.setTimerType(Qt::PreciseTimer);
-	if(!connect(&mSendingTimer, SIGNAL(timeout()), this, SLOT(onSendingTimer()), OC_CONTYPE)) {
-		qWarning()<<"Could not connect sending timer";
-	}
+	mCarrier.setHookCarrierSignals(*this, true);
 }
 
-CommsChannel::CommsChannel(KeyStore &keystore, QObject *parent)
+/*
+//TODO: Remove once nobody refers to it any more
+CommsChannel::CommsChannel(CommsCarrier &carrier, KeyStore &keystore, QObject *parent)
 	: QObject(parent)
+	, mCarrier(carrier)
 	, mKeystore(keystore)
 	, mPeers(*((NodeAssociateStore *) nullptr ))//HACK
 	, mSessions(mKeystore)
 {
-	//TODO: Remove once nobody refers to it any more
 	qWarning()<<"ERROR: PLEASE USE THE OTHER CONSTRUCTOR AS THIS IS UNSUPPORTEDF!";
+}
+*/
+
+CommsChannel::~CommsChannel()
+{
+	mCarrier.setHookCarrierSignals(*this, false);
 }
 
 CommsSessionDirectory &CommsChannel::sessions()
@@ -103,38 +72,24 @@ CommsSessionDirectory &CommsChannel::sessions()
 
 void CommsChannel::start(NetworkAddress localAddress)
 {
-	if(isStarted()) {
-		stop();
-	}
-	mLocalAddress=localAddress;
-	bool b = mUDPSocket.bind(mLocalAddress.ip(), mLocalAddress.port());
-	qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< localID()<< " with interval "<<utility::humanReadableElapsedMS(mSendingTimer.interval()) <<(b?" succeeded": " failed");
-	if(b) {
-		mSendingTimer.start();
-	} else {
-		stop();
-	}
+	mCarrier.start(localAddress);
 }
 
 
 
 void CommsChannel::stop()
 {
-	mConnected=false;
-	mSendingTimer.stop();
-	mUDPSocket.close();
-	emit commsConnectionStatusChanged(false);
-	qDebug()<<"----- comms unbind "<< mLocalAddress.toString() << localID();
+	mCarrier.stop();
 }
 
 bool CommsChannel::isStarted() const
 {
-	return (mSendingTimer.isActive() && (mUDPSocket.state()==QAbstractSocket::BoundState));
+	return mCarrier.isStarted();
 }
 
 bool CommsChannel::isConnected() const
 {
-	return mConnected;
+	return mCarrier.isConnected();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -200,7 +155,7 @@ bool CommsChannel::recieveMagicAndVersion(PacketReadState &state)
 	break;
 	// TODO: Look at good ways to stay backward compatible (long term goal, right now this is not feasible due to the frequent changes to the protocol)
 	default: {
-		QString es=QString::number(sTotalRecCount)+"ERROR: OctoMY Protocol version unsupported: "+QString::number(state.octomyProtocolVersion);
+		QString es="ERROR: OctoMY Protocol version unsupported: "+QString::number(state.octomyProtocolVersion);
 		qWarning()<<es;
 		emit commsError(es);
 		return false;
@@ -210,21 +165,6 @@ bool CommsChannel::recieveMagicAndVersion(PacketReadState &state)
 	return true;
 }
 
-
-
-void CommsChannel::detectConnectionChanges(const quint64 now)
-{
-	const quint64 timeSinceLastRX=now-mRXRate.mLast;
-
-	if(mConnected && (timeSinceLastRX > CONNECTION_TIMEOUT) ) {
-		qDebug()<<"Connection timed out, stopping";
-		stop();
-	} else if(!mConnected && (timeSinceLastRX <= CONNECTION_TIMEOUT) ) {
-		mConnected=true;
-		qDebug()<<"Connection completed";
-		emit commsConnectionStatusChanged(true);
-	}
-}
 
 
 
@@ -623,13 +563,13 @@ void CommsChannel::recieveData(PacketReadState &state)
 			//qDebug()<<totalRecCount<<"MESSAGE TYPE WAS"<<partMessageType<<"("<<QString::number(partMessageTypeID)<<")";
 			switch(partMessageType) {
 			case(IDLE): {
-				qDebug()<<sTotalRecCount<<"GOT IDLE";
+				qDebug()<<"GOT IDLE";
 				// Idle packet does not contain any data, so we are done here :)
 			}
 			break;
 			default:
 			case(INVALID): {
-				QString es=""+QString::number(partsCount)+" ERROR: OctoMY message type invalid: "+QString::number((quint32)partMessageType,16);
+				QString es=" ERROR: OctoMY message type invalid: "+QString::number((quint32)partMessageType,16);
 				qWarning()<<es;
 				emit commsError(es);
 				return;
@@ -646,7 +586,7 @@ void CommsChannel::recieveData(PacketReadState &state)
 				state.totalAvailable-=bytesSpent;
 				if(left>=0) {
 					if(left>0) {
-						qWarning()<<sTotalRecCount<<"WARNING: SKIPPING "<<left<<" LEFTOVER BYTES AFTER COURIER WAS DONE";
+						qWarning()<<"WARNING: SKIPPING "<<left<<" LEFTOVER BYTES AFTER COURIER WAS DONE";
 						state.stream->skipRawData(left);
 						state.totalAvailable-=left;
 					} else {
@@ -686,8 +626,6 @@ void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHo
 {
 	qDebug()<<"";
 	qDebug()<<"--- RECEIVE to "<< localID()<< " ---";
-	mRXRate.countPacket(datagramS.size());
-	//countReceived();
 	PacketReadState state(datagramS, remoteHostS,remotePortS);
 
 	//QSharedPointer<CommsSession> session;
@@ -750,13 +688,15 @@ void CommsChannel::doSend( PacketSendState &state)
 		return;
 	}
 
-	const qint64 written=mUDPSocket.writeDatagram(state.datagram, na.ip(), na.port());
+	//errorString()
+
+	const qint64 written=mCarrier.writeData(state.datagram, na);
 	//qDebug()<<"WROTE "<<written<<" bytes to "<<na.ip()<<":"<<na.port();
 	if(written<0) {
-		qDebug()<<"ERROR: in write for UDP SOCKET:"<<mUDPSocket.errorString()<< " for destination "<< mLocalAddress.toString()<<localID();
+		qDebug()<<"ERROR: in write for UDP SOCKET:"<<mCarrier.errorString()<< " for destination "<< localAddress().toString()<<localID();
 		return;
 	} else if(written<sz) {
-		qDebug()<<"ERROR: Only " << written << " of " <<sz<<" bytes of idle packet written to UDP SOCKET:"<<mUDPSocket.errorString()<< " for destination "<< mLocalAddress.toString()<<localID();
+		qDebug()<<"ERROR: Only " << written << " of " <<sz<<" bytes of idle packet written to UDP SOCKET:"<<mCarrier.errorString()<< " for destination "<< localAddress().toString()<<localID();
 		return;
 	} else {
 		qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET";
@@ -764,8 +704,6 @@ void CommsChannel::doSend( PacketSendState &state)
 	if (nullptr!=state.session) {
 		state.session->countSend(written);
 	}
-	mTXRate.countPacket(written);
-	sTotalTxCount++;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -794,15 +732,15 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 		qDebug()<<"STEP "<<handshakeStepToString(step);
 		switch(step) {
 		default:
-				//////////////////// / / / / / //TODO need work on handshake step management
-				///
-				///
-				///
-				///
-				///     DO IT SOON!
-				///
-				///
-				/// ///////////////////////////////////////////////////////////
+		//////////////////// / / / / / //TODO need work on handshake step management
+		///
+		///
+		///
+		///
+		///     DO IT SOON!
+		///
+		///
+		/// ///////////////////////////////////////////////////////////
 		case(VIRGIN): {
 			//Verify that we are the initator in this session
 			if(!session->handshakeState().isInitiator()) {
@@ -1054,6 +992,8 @@ void CommsChannel::sendCourierData(const quint64 &now, Courier &courier)
 quint64 CommsChannel::rescheduleSending(quint64 now)
 {
 	mTXScheduleRate.countPacket(0);
+	const auto MINIMAL_PACKET_RATE=mCarrier.minimalPacketInterval();
+	const auto MAXIMAL_PACKET_RATE=mCarrier.maximalPacketInterval();
 	//qDebug()<<" ... R E S C H E D U L E ... "<<now;
 	mMostUrgentSendingTime=MINIMAL_PACKET_RATE;
 	mSchedule.clear();
@@ -1107,29 +1047,90 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 	}
 	// Ensure we get immediate sending opportunities for sessions that are in handshake
 	if(mSessions.hasHandshakers()) {
-		mMostUrgentSendingTime=qMin(mMostUrgentSendingTime,0LL);
+		mMostUrgentSendingTime=qMin(mMostUrgentSendingTime, 0LL);
 	}
 	// Prepare for next sending opportunity
-
-	const quint64 delay=qBound((qint64)MAXIMAL_PACKET_RATE, mMostUrgentSendingTime, (qint64)MINIMAL_PACKET_RATE);
-	qDebug()<<"NEW SCHEDULE DELAY: "<<delay<<" ("<<mMostUrgentSendingTime<<")";
-	mSendingTimer.setInterval(delay);
-	return delay;
+	const quint64 actualInterval = mCarrier.setDesiredOpportunityInterval(mMostUrgentSendingTime);
+	return actualInterval;
 }
-
 
 
 
 //////////////////////////////////////////////////
 // Send & receive slots
 
-void CommsChannel::onSendingTimer()
+
+
+// NOTE: This is only for testing purposes! Real data should pass through the courier system
+// and be dispatched by logic in sending timer
+qint64 CommsChannel::sendRawData(QByteArray datagram, NetworkAddress address)
+{
+	return mCarrier.writeData(datagram, address);
+}
+
+NetworkAddress CommsChannel::localAddress()
+{
+	return mCarrier.address();
+}
+
+QString CommsChannel::localID()
+{
+	auto key=mKeystore.localKey();
+	if(nullptr==key) {
+		return "";
+	}
+	return key->id();
+}
+
+QString CommsChannel::getSummary()
+{
+	QString out;
+
+	for(Courier *courier:mCouriers) {
+		if(nullptr==courier) {
+			out+=" + NULL\n";
+		} else {
+			out+=" + "+courier->name()+"\n";
+		}
+	}
+	return out;
+}
+
+
+//Slot called when data arrives on socket
+void CommsChannel::onCarrierReadyRead()
+{
+	qDebug()<<"----- READY READ for "<<localID();
+	while (mCarrier.hasPendingData()) {
+		qDebug()<<"      + UDP PACKET";
+		QByteArray datagram;
+		datagram.resize(mCarrier.pendingDataSize());
+		QHostAddress host;
+		quint16 port=0;
+		qint64 ret=mCarrier.readData(datagram.data(), datagram.size(), &host, &port);
+		if(ret>=0) {
+			receivePacketRaw(datagram,host,port);
+		} else {
+			qWarning()<<"ERROR: error reading pending datagram";
+		}
+	}
+}
+
+
+void CommsChannel::onCarrierError(QString error)
+{
+	qDebug()<<"Carrier error in CC:"<<error;
+	emit commsError(error);
+}
+
+
+void CommsChannel::onCarrierSendingOpportunity(const quint64 now)
 {
 	qDebug()<<"";
 	qDebug()<<"--- SEND from "<< localID()<< " ---";
-	const quint64 now=QDateTime::currentMSecsSinceEpoch();
-	detectConnectionChanges(now);
-	mTXOpportunityRate.countPacket(0);
+//	const quint64 now=QDateTime::currentMSecsSinceEpoch();
+//	detectConnectionChanges(now);
+//	mTXOpportunityRate.countPacket(0);
 	// First look at handshakes
 	qDebug()<<"HANDSHAKES: "<<mPendingHandshakes.size();
 	for(QSet<QString> ::const_iterator i=mPendingHandshakes.begin(); i!= mPendingHandshakes.end(); ) {
@@ -1159,7 +1160,7 @@ void CommsChannel::onSendingTimer()
 		++i;
 	}
 	// Finally send idle packets to sessions that need it
-	auto idle=mSessions.getByIdleTime(MINIMAL_PACKET_RATE);
+	auto idle=mSessions.getByIdleTime(mCarrier.minimalPacketInterval());
 	const int isz=idle.size();
 	qDebug()<<"IDLES: "<< isz;
 	if(isz>0) {
@@ -1174,66 +1175,9 @@ void CommsChannel::onSendingTimer()
 	rescheduleSending(now);
 }
 
-// NOTE: This is only for testing purposes! Real data should pass through the courier system
-// and be dispatched by logic in sending timer
-qint64 CommsChannel::sendRawData(QByteArray datagram, NetworkAddress address)
+void CommsChannel::onCarrierConnectionStatusChanged(const bool connected)
 {
-	return mUDPSocket.writeDatagram(datagram, address.ip(), address.port());
-}
-
-NetworkAddress CommsChannel::localAddress()
-{
-	return mLocalAddress;
-}
-
-QString CommsChannel::localID()
-{
-	auto key=mKeystore.localKey();
-	if(nullptr==key) {
-		return "";
-	}
-	return key->id();
-}
-
-QString CommsChannel::getSummary()
-{
-	QString out;
-
-	for(Courier *courier:mCouriers) {
-		if(nullptr==courier) {
-			out+=" + NULL\n";
-		} else {
-			out+=" + "+courier->name()+"\n";
-		}
-
-	}
-	return out;
-}
-
-
-//Slot called when data arrives on socket
-void CommsChannel::onReadyRead()
-{
-	qDebug()<<"----- READY READ for "<<localID();
-	while (mUDPSocket.hasPendingDatagrams()) {
-		qDebug()<<"      + UDP PACKET";
-		QByteArray datagram;
-		datagram.resize(mUDPSocket.pendingDatagramSize());
-		QHostAddress host;
-		quint16 port=0;
-		qint64 ret=mUDPSocket.readDatagram(datagram.data(), datagram.size(), &host, &port);
-		if(ret>=0) {
-			receivePacketRaw(datagram,host,port);
-		} else {
-			qWarning()<<"ERROR: error reading pending datagram";
-		}
-	}
-}
-
-
-void CommsChannel::onUdpError(QAbstractSocket::SocketError)
-{
-	emit commsError(mUDPSocket.errorString());
+	emit commsConnectionStatusChanged(connected);
 }
 
 

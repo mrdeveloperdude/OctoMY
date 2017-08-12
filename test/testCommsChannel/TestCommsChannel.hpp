@@ -2,6 +2,7 @@
 #define TESTCOMMSCHANNEL_HPP
 
 #include "comms/CommsChannel.hpp"
+#include "comms/CommsCarrierUDP.hpp"
 
 #include "CommsSignalLogger.hpp"
 
@@ -29,10 +30,11 @@ class TestCommsChannel:public QObject
 
 	void testSingle();
 	void testMultiple();
+	void testHandshake();
 private slots:
 
-	void testHandshake();
 
+	void testCarrier();
 
 
 };

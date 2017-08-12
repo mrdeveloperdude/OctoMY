@@ -879,6 +879,45 @@ QString networkErrorToString( QNetworkReply::NetworkError ne)
 
 
 
+QString socketErrorToString( QAbstractSocket::SocketError se)
+{
+	OC_FUNCTIONGATE();
+#define SOCKET_ERROR_TO_STRING_STANSA(a)  case(QAbstractSocket::a): return #a + QStringLiteral("(") +QString::number(QAbstractSocket::a) + QStringLiteral(")")
+	switch(se) {
+		SOCKET_ERROR_TO_STRING_STANSA(ConnectionRefusedError);
+		SOCKET_ERROR_TO_STRING_STANSA(RemoteHostClosedError);
+		SOCKET_ERROR_TO_STRING_STANSA(HostNotFoundError);
+		SOCKET_ERROR_TO_STRING_STANSA(SocketAccessError);
+		SOCKET_ERROR_TO_STRING_STANSA(SocketResourceError);
+		SOCKET_ERROR_TO_STRING_STANSA(SocketTimeoutError);
+		SOCKET_ERROR_TO_STRING_STANSA(DatagramTooLargeError);
+		SOCKET_ERROR_TO_STRING_STANSA(NetworkError);
+		SOCKET_ERROR_TO_STRING_STANSA(AddressInUseError);
+		SOCKET_ERROR_TO_STRING_STANSA(SocketAddressNotAvailableError);
+		SOCKET_ERROR_TO_STRING_STANSA(UnsupportedSocketOperationError);
+		SOCKET_ERROR_TO_STRING_STANSA(UnfinishedSocketOperationError);
+		SOCKET_ERROR_TO_STRING_STANSA(ProxyAuthenticationRequiredError);
+		SOCKET_ERROR_TO_STRING_STANSA(SslHandshakeFailedError);
+		SOCKET_ERROR_TO_STRING_STANSA(ProxyConnectionRefusedError);
+		SOCKET_ERROR_TO_STRING_STANSA(ProxyConnectionClosedError);
+		SOCKET_ERROR_TO_STRING_STANSA(ProxyConnectionTimeoutError);
+		SOCKET_ERROR_TO_STRING_STANSA(ProxyNotFoundError);
+		SOCKET_ERROR_TO_STRING_STANSA(ProxyProtocolError);
+		SOCKET_ERROR_TO_STRING_STANSA(OperationError);
+		SOCKET_ERROR_TO_STRING_STANSA(SslInternalError);
+		SOCKET_ERROR_TO_STRING_STANSA(SslInvalidUserDataError);
+		SOCKET_ERROR_TO_STRING_STANSA(TemporaryError);
+		SOCKET_ERROR_TO_STRING_STANSA(UnknownSocketError);
+	}
+#undef SOCKET_ERROR_TO_STRING_STANSA
+	return "UNKNOWN("+QString::number(se)+")";
+}
+
+
+
+
+
+
 QString padstring(int level, QString base)
 {
 	QString out="";

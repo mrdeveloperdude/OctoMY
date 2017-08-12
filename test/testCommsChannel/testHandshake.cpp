@@ -7,18 +7,11 @@
 class CommsChannelTest: public CommsChannel
 {
 public:
-	explicit CommsChannelTest(KeyStore &keystore, NodeAssociateStore &peers, QObject *parent=nullptr)
-		: CommsChannel(keystore, peers, parent)
+	explicit CommsChannelTest(CommsCarrier &carrier, KeyStore &keystore, NodeAssociateStore &peers, QObject *parent=nullptr)
+		: CommsChannel(carrier, keystore, peers, parent)
 	{
 
 	}
-
-	explicit CommsChannelTest(KeyStore &keystore, QObject *parent=nullptr)
-		: CommsChannel(keystore, parent)
-	{
-
-	}
-
 
 
 	void testSendSyn(PacketSendState &state)
@@ -181,7 +174,8 @@ void TestCommsChannel::testHandshake()
 
 	qDebug()<<"";
 	qDebug()<<"####################################### INITIALIZING COMMS FOR PARTY A";
-	CommsChannelTest chanA(keyStoreA, peersA);
+	CommsCarrierUDP carrierA;
+	CommsChannelTest chanA(carrierA, keyStoreA, peersA);
 	CommsSignalLogger sigLogA("LOG-A");
 	chanA.setHookCommsSignals(sigLogA, true);
 	TestCourier courA1("Courier A1",idB, "This is datagram A1 123", chanA, maxSends, maxRecs);
@@ -191,7 +185,8 @@ void TestCommsChannel::testHandshake()
 
 	qDebug()<<"";
 	qDebug()<<"####################################### INITIALIZING COMMS FOR PARTY B";
-	CommsChannelTest chanB(keyStoreB, peersB);
+	CommsCarrierUDP carrierB;
+	CommsChannelTest chanB(carrierB, keyStoreB, peersB);
 	CommsSignalLogger sigLogB("LOG-B");
 	chanA.setHookCommsSignals(sigLogB, true);
 	TestCourier courB1("Courier B1", idA, "This is datagram B1 æøåä", chanB, maxSends, maxRecs);

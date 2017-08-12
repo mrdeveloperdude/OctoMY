@@ -21,14 +21,37 @@ void TestCommsChannel::testMultiple()
 	const quint16 portRange=2;
 	const quint16 testCount=2;
 	QList<CommsTester *> senders;
+	CommsCarrierUDP carrier;
 	KeyStore keyStore;
 	qDebug()<<"####################################### INITIALIZING";
 	for(quint16 i=0; i<portRange; ++i) {
 		const quint16 tport=basePort+i;
-		CommsTester *cc=new CommsTester("instance_"+QString::number(tport), local, tport, basePort, portRange, testCount, keyStore);
+		QString peersFilenameB;
+		Key keyB;
+		NodeAssociateStore peersB(peersFilenameB);
+		peersB.bootstrap(false,false);
+		QVariantMap peerMapB;
+		QString nameB="PARTY B";
+		/*
+		QVariantMap addrBMap=local.toVariantMap();
+		QCOMPARE(addrBMap.size(), 2);
+		peerMapB["publicAddress"]=addrBMap;
+		peerMapB["localAddress"]=addrBMap;
+		peerMapB["lastSeenMS"]=0;
+		peerMapB["birthDate"]=0;
+		peerMapB["key"]=keyB->toVariantMap(true);
+		peerMapB["role"]=DiscoveryRoleToString(ROLE_CONTROL);
+		peerMapB["type"]=DiscoveryTypeToString(TYPE_REMOTE);
+		peerMapB["name"]=nameB;
+		peerMapB["gender"]="Female";
+		peerMapB["trusts"]=QStringList();
+		QSharedPointer<NodeAssociate> partB(new NodeAssociate(peerMapB));
+		CommsTester *cc=new CommsTester("instance_"+QString::number(tport), local, tport, basePort, portRange, testCount, keyStore, peersB, carrier);
+
 		QVERIFY(nullptr!=cc);
 		qDebug()<<" + INIT CourierTester "<<cc->toString();
 		senders.push_back(cc);
+		*/
 	}
 	qDebug()<<"####################################### STARTING";
 	for(quint16 i=0; i<portRange; ++i) {
@@ -60,4 +83,3 @@ void TestCommsChannel::testMultiple()
 	}
 	senders.clear();
 }
-

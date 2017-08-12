@@ -3,6 +3,7 @@
 
 #include "security/KeyStore.hpp"
 #include "comms/CommsChannel.hpp"
+#include "comms/CommsCarrierUDP.hpp"
 
 #include <QObject>
 #include <QHostAddress>
@@ -23,8 +24,9 @@ public:
 
 	quint16 mBasePort;
 	quint16 mPortRange;
-//		ClientSignature sig;
+	CommsCarrierUDP mCarrier;
 	KeyStore &mKeyStore;
+	NodeAssociateStore &mPeers;
 	CommsChannel mCc;
 	quint16 mTestCount;
 
@@ -32,7 +34,7 @@ public:
 
 
 public:
-	explicit CommsTester(QString name, QHostAddress myAddress, quint16 myPort, quint16 basePort, quint16 portRange, quint16 testCount, KeyStore &keyStore, QObject *parent=nullptr);
+	explicit CommsTester(QString name, QHostAddress myAddress, quint16 myPort, quint16 basePort, quint16 portRange, quint16 testCount, KeyStore &keyStore, NodeAssociateStore &peers, QObject *parent=nullptr);
 	virtual ~CommsTester() {}
 	QString toString();
 

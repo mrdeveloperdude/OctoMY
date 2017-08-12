@@ -6,6 +6,7 @@
 
 #include "Node.hpp"
 
+
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsSession.hpp"
 #include"comms/couriers/SensorsCourier.hpp"
@@ -39,7 +40,8 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	, mDiscovery (new DiscoveryClient(*this))
 	, mRole (role)
 	, mType (type)
-	, mComms (new CommsChannel(mKeystore, mPeers, (QObject *)this))
+	, mCarrier()
+	, mComms (new CommsChannel(mCarrier, mKeystore, mPeers, (QObject *)this))
 	, mZooClient (new ZooClient(this))
 	, mSensors (new SensorInput(this))
 	, mSensorsCourier(new SensorsCourier(*mComms, this))

@@ -27,9 +27,12 @@
 #include "couriers/Courier.hpp"
 #include "CommsSessionDirectory.hpp"
 
-// It seems that 30 seconds would be a "safe" minimal UDP rate to avoid routers closing our "connection"
-#define MAXIMAL_PACKET_RATE (1000)
-#define MINIMAL_PACKET_RATE (5000)
+
+#include "CommsCarrier.hpp"
+
+#include "Multimagic.hpp"
+
+#include "RateCalculator.hpp"
 
 #define OCTOMY_PROTOCOL_MAGIC (0x0C701111)
 //#define OCTOMY_PROTOCOL_MAGIC_IDLE (OCTOMY_PROTOCOL_MAGIC+1)
@@ -47,21 +50,7 @@ class KeyStore;
  * Documentation moved here: https://sites.google.com/site/octomyproject/documentation/development/architectual-overview/communications
 */
 
-enum Multimagic:SESSION_ID_TYPE {
-	MULTIMAGIC_IDLE=0
-	, MULTIMAGIC_SYN
-	, MULTIMAGIC_SYNACK
-	, MULTIMAGIC_ACK
-	, MULTIMAGIC_LAST
 
-};
-
-QString MultimagicToString(SESSION_ID_TYPE m);
-
-QString MultimagicToString(Multimagic m);
-
-
-#include "RateCalculator.hpp"
 
 class PacketReadState;
 class PacketSendState;
@@ -70,32 +59,23 @@ class NodeAssociateStore;
 class CommsChannel : public QObject
 {
 	Q_OBJECT
-protected:
-	static const quint64 CONNECTION_TIMEOUT;
-	static const qint32 MAX_UDP_PAYLOAD_SIZE;
-
-	//Receive counter used in debug messages to make sense of the order of things
-	static quint32 sTotalRecCount;
-	static quint32 sTotalTxCount;
 
 protected:
 
-	QUdpSocket mUDPSocket; // The socket used by this cc to communicate with the other side
-	QTimer mSendingTimer;  // The timer used to schedule when packets are sent to the other side
+	CommsCarrier &mCarrier; // The carrier such as udp or bluetooth used by this cc to communicate with the other side
+
+//	QTimer mSendingTimer;  // The timer used to schedule when packets are sent to the other side
 	KeyStore &mKeystore;   // The keystore which is used for encryption (the local key pair is used, as looked up with mLocalID)
 	NodeAssociateStore &mPeers; // The store wich is used to find network addresses to use when creating new sessions
 	CommsSessionDirectory mSessions; // The directory of sessions for this cc
 	QList<Courier *> mCouriers; // The couriers that are in use by this cc. Only active couriers are in this list for performance reasons.
 	QMap<quint32, Courier *> mCouriersByID; // Map for quickly finding a particular courier by it's unique ID
 	quint64 mLocalSessionID;
-	NetworkAddress mLocalAddress;
+//	NetworkAddress mLocalAddress;
 
-	RateCalculator mRXRate;
-	RateCalculator mTXRate;
-	RateCalculator mTXOpportunityRate;
 	RateCalculator mTXScheduleRate;
 
-	bool mConnected;
+//	bool mConnected;
 	// When honeymoon mode is enabled, all inactive associates are pinged continuously in an effort to start new connections
 	bool mHoneyMoon;
 
@@ -105,12 +85,14 @@ protected:
 
 public:
 
-	explicit CommsChannel(KeyStore &keystore, NodeAssociateStore &peers, QObject *parent=nullptr);
-	explicit CommsChannel(KeyStore &keystore, QObject *parent=nullptr);
+	explicit CommsChannel(CommsCarrier &carrier, KeyStore &keystore, NodeAssociateStore &peers, QObject *parent=nullptr);
+	//TODO: Remove once nobody refers to it any more
+	//explicit CommsChannel(CommsCarrier &carrier, KeyStore &keystore, QObject *parent=nullptr);
+	virtual ~CommsChannel();
 
 protected:
 
-	void detectConnectionChanges(const quint64 now);
+	//void detectConnectionChanges(const quint64 now);
 	QSharedPointer<CommsSession>  createSession(QString id, bool initiator);
 	QSharedPointer<CommsSession>  lookUpSession(QString id);
 
@@ -154,7 +136,7 @@ signals:
 	//		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
 	void commsError(QString message);
 	void commsClientAdded(CommsSession *c);
-	void commsConnectionStatusChanged(bool c);
+	void commsConnectionStatusChanged(const bool c);
 
 public slots:
 	// Re-calculate the schedule for sending timer. May result in sending timer being called at a different time then what it was scheduled for when this method was called
@@ -163,7 +145,6 @@ public slots:
 
 
 protected:
-
 	bool recieveEncryptedBody(PacketReadState &state);
 	bool recieveMagicAndVersion(PacketReadState &state);
 
@@ -175,14 +156,15 @@ protected:
 
 // Send & receive slots
 protected slots:
-
 	void receivePacketRaw(QByteArray ba,QHostAddress host, quint16 port);
-	void onSendingTimer();
 
+	// Carrier slots
 public slots:
+	void onCarrierReadyRead();
+	void onCarrierError(const QString error);
+	void onCarrierSendingOpportunity(const quint64 now);
+	void onCarrierConnectionStatusChanged(const bool connected);
 
-	void onReadyRead();
-	void onUdpError(QAbstractSocket::SocketError);
 };
 
 
