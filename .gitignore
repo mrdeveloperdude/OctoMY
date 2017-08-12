@@ -55,3 +55,16 @@ libzeroconf*
 *~
 
 
+/design/*
+!/design/favicon.ico
+!/design/favicon.png
+!/design/icons.svg
+!/design/octomy_logo.png
+!/design/octomy_logo.svg
+!/design/profile_graphics/logos/octomy_logo_blog_shiny.png
+!/design/ux.svg
+
+
+src/libs/.qmake.stash
+
+/src/zoo/www/*
