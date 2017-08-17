@@ -16,9 +16,10 @@ IrisRendrerTestWidget::IrisRendrerTestWidget(QWidget *parent, QString name) :
 
 	Settings *s=new Settings("test","IrisRendrerTestWidget","1.0", this);
 	for(int row=0; row<20; ++row) {
-		QString *namep=new QString("val"+QString::number(row));
+		QString name("val"+QString::number(row));
+		QString *namep=&name;
 		QLabel *label = new QLabel(ui->widget);
-		label->setText(*namep);
+		label->setText(name);
 		ui->gridLayout_2->addWidget(label, row, 0, 1, 1);
 
 		QSlider *horizontalSlider = new QSlider(ui->widget);
@@ -32,14 +33,18 @@ IrisRendrerTestWidget::IrisRendrerTestWidget(QWidget *parent, QString name) :
 			const qreal max=horizontalSlider->maximum();
 			const qreal range=max-min;
 			const qreal value=((position-min)/range);
-			emit valueChanged(*namep, value);
+			emit valueChanged(row, value);
 		}
+
 			   );
 
+		horizontalSlider->setValue(s->getCustomSettingLong(*namep,0));
+/*
 		QTimer::singleShot(100, [=]() {
 			long val=s->getCustomSettingLong(*namep,0);
 			horizontalSlider->setValue(val);
 		} );
+		*/
 
 	}
 

@@ -24,19 +24,15 @@ public:
 	~IrisRendrerTestWidget();
 
 public:
-
 	void setImage(const QImage &im);
-
 	void setPixmap(const QPixmap &px);
 private slots:
 	void on_pushButtonClose_clicked();
-
 	void on_pushButtonRandom_clicked();
 
-	signals:
+signals:
 	void closeClicked();
-
-	void valueChanged(QString name, qreal value);
+	void valueChanged(quint32 id, qreal value);
 };
 
 #endif // IRISRENDRERTESTWIDGET_HPP

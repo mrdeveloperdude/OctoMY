@@ -41,7 +41,7 @@ void IrisRendrer::draw(QRect &rect, QPainter &painter)
 		}
 		if(nullptr==pixels) {
 			pixels = new QRgb[psz];
-		   // pixelsF = new qreal[3*psz];
+			// pixelsF = new qreal[3*psz];
 		}
 
 		qreal lo=1, hi=-1;
@@ -101,82 +101,99 @@ void IrisRendrer::draw(QRect &rect, QPainter &painter)
 
 
 
-void IrisRendrer::setParameter(QString name, qreal value)
+void IrisRendrer::setParameter(quint32 id, qreal value)
 {
-	qDebug()<<name<<"="<<value;
-	if("val0"==name) {
+	switch(id) {
+	case(0): {
 		mSimplexStreaks.setOctaves(1+(int)floor(value*20));
-	} else if("val1"==name) {
+	}
+	break;
+
+	case(1): {
 		mSimplexStreaks.setPersistence(value+0.3);
-	} else if("val2"==name) {
+	}
+	break;
+	case(2): {
 		mSimplexStreaks.setScale(value*0.1+0.2);
 	}
-
-	if("val3"==name) {
+	break;
+	case(3): {
 		mSimplexRipples.setOctaves(1+(int)floor(value*5));
-	} else if("val4"==name) {
+	}
+	break;
+	case(4): {
 		mSimplexRipples.setPersistence(value*0.1);
-	} else if("val5"==name) {
+	}
+	break;
+	case(5): {
 		mSimplexRipples.setScale(value*0.1);
 	}
-
-
-	else if("val6"==name) {
+	break;
+	case(6): {
 		ringStartRadius=1.0+value*30.0;
-	} else if("val7"==name) {
+	}
+	break;
+	case(7): {
 		pupilSize=value;
-	} else if("val8"==name) {
+	}
+	break;
+	case(8): {
 		edgeSize=value;
-	} else if("val9"==name) {
+	}
+	break;
+	case(9): {
 		ringRes=value*0.1;
-	} else if("val10"==name) {
+	}
+	break;
+	case(10): {
 		contrast=value*3.0+0.15;
-	} else if("val11"==name) {
+	}
+	break;
+	case(11): {
 		oval=value;
-	} else if("val12"==name) {
+	}
+	break;
+	case(12): {
 		colorFollow=value;
-	} else if("val13"==name) {
+	}
+	break;
+	case(13): {
 		baseX=value*1000.0;
-	} else if("val14"==name) {
+	}
+	break;
+
+	case(14): {
 		baseY=value*1000.0;
-	} else if("val15"==name) {
+	}
+	break;
+
+	case(15): {
 		c1=QColor::fromHslF(value,1.0,0.5).rgb();
-	}    else if("val16"==name) {
+	}
+	break;
+
+	case(16): {
 		c2=QColor::fromHslF(value,1.0,0.5).rgb();
-	}else if("val17"==name) {
+	}
+	break;
+
+	case(17): {
 		cutoff=value*0.23+0.02;
-	}else if("val18"==name) {
+	}
+	break;
+
+	case(18): {
 		exposure=1.0+value*0.6;
 	}
+	break;
+
+	case(19): {
+
+	} break;
+
+
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

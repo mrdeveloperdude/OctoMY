@@ -43,7 +43,7 @@ public:
 
 	void draw(QRect &rect, QPainter &paint);
 
-	void setParameter(QString name, qreal value);
+	void setParameter(quint32 id, qreal value);
 };
 
 #endif // IRISRENDRER_HPP

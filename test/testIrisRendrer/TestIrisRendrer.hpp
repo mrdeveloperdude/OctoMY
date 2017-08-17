@@ -4,11 +4,18 @@
 #include <QTest>
 
 
-class TestIrisRendrer:public QObject{
-		Q_OBJECT
+class TestIrisRendrer:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void test();
+
+
+	void testUI();
+private slots:
+
+	void testSave();
+
+
 
 };
 
