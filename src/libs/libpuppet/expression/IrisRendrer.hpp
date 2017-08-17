@@ -16,33 +16,26 @@ private:
 	Personality mPersonality;
 	Simplex<qreal> mSimplexStreaks;
 	Simplex<qreal> mSimplexRipples;
-	qreal oval=0.0;
-	qreal pupilSize=1.0;
-	qreal edgeSize=1.0;
-	qreal ringRes=1.0;
-	qreal ringStartRadius=1.0;
-	qreal contrast=1.0;
-	qreal colorFollow=1.0;
-	qreal baseX=0.0;
-	qreal baseY=0.0;
+	qreal mOval=0.0;
+	qreal mPupilSize=1.0;
+	qreal mRingRes=1.0;
+	qreal mRingStartRadius=1.0;
+	qreal mContrast=1.0;
+	qreal mColorFollow=1.0;
+	qreal mBaseX=0.0;
+	qreal mBaseY=0.0;
+	qreal mToneExposure=1.0;
+	qreal mToneCutoff=0.025;
+	QRgb mColor1=QColor("#8294aa").rgb();
+	QRgb mColor2=QColor("#752e0b").rgb();
+	QRgb* mScratchBuffer=nullptr;
 
-	qreal exposure=1.0;
-	qreal cutoff=0.025;
-
-
-	QRgb c1=QColor("#8294aa").rgb();
-	QRgb c2=QColor("#752e0b").rgb();
-
-	QRgb* pixels=nullptr;
-
-	qreal* pixelsF=nullptr;
 public:
 	IrisRendrer(Personality &p);
 
 public:
 
 	void draw(QRect &rect, QPainter &paint);
-
 	void setParameter(quint32 id, qreal value);
 };
 
