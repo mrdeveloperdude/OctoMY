@@ -1,7 +1,7 @@
 #include "PairingEditButtonDelegate.hpp"
 
 #include "PairingWizard.hpp"
-#include "Identicon.hpp"
+#include "identity/Identicon.hpp"
 #include "security/PortableID.hpp"
 
 

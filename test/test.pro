@@ -42,6 +42,7 @@ TEST_PROJECTS+= \
 #	testTetraGPSEncoder \
 #	testZooComms \
 #	testStreamCodec \
+	testIrisRendrer \
 
 
 

@@ -3,7 +3,7 @@
 #include "../widgets/PairingWizard.hpp"
 #include "basic/Settings.hpp"
 #include "node/Node.hpp"
-#include "widgets/Identicon.hpp"
+#include "identity/Identicon.hpp"
 #include "basic/NodeAssociate.hpp"
 #include "security/PortableID.hpp"
 #include "utility/Standard.hpp"

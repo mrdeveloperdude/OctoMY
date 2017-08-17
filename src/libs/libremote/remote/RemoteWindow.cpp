@@ -20,7 +20,7 @@
 
 #include "node/ClientWidget.hpp"
 
-#include "widgets/Identicon.hpp"
+#include "identity/Identicon.hpp"
 
 
 #include <QDebug>

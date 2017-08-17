@@ -9,18 +9,20 @@
 
 #include <QRegularExpression>
 
+
 NodeAssociate::NodeAssociate(const QVariantMap map, bool isPublic)
 	: mKey( map["key"].toMap(), isPublic)
 	, mName( map["name"].toString() )
 	, mGender( map["gender"].toString() )
 	, mRole( DiscoveryRoleFromString( map["role"].toString() ) )
 	, mType( DiscoveryTypeFromString( map["type"].toString() ) )
+	, mTrusts( map["trusts"].toStringList())
 	, mLastSeenMS( QDateTime::currentMSecsSinceEpoch() )
 	, mBirthDate( map["birthDate"].toULongLong())
 	, mPublicNetworkAddress( map["publicAddress"].toMap() )
 	, mLocalNetworkAddress( map["localAddress"].toMap() )
 	//	, mPins( map["pins"].toStringList())// DONT STORE PINS THEY ARE EPHEMERAL
-	, mTrusts( map["trusts"].toStringList())
+
 {
 	OC_METHODGATE();
 	//qDebug()<<"CREATE NodeAssociate(map, isPublic)"<<map<<isPublic;

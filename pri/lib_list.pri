@@ -28,6 +28,7 @@ AUTOLINKS += \
 	audio \
 	dynamics \
 	puppet \
+	id \
 	sec \
 	comms \
 	ardumy \

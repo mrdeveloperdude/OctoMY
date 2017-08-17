@@ -41,12 +41,12 @@ class NodeAssociate{
 
 		QString mName;
 		QString mGender;
-
-		// A list of the trusts assigned to this associate
-		QStringList mTrusts;
 		// The most updated trusted type and role for this associate
 		DiscoveryRole mRole;
 		DiscoveryType mType;
+		// A list of the trusts assigned to this associate
+		QStringList mTrusts;
+
 		// When was the last trusted sighting of this associate?
 		quint64 mLastSeenMS;
 

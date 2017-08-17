@@ -27,7 +27,8 @@ public:
 private slots:
 	void on_pushButtonClose_clicked();
 
-
+signals:
+	void closeClicked();
 };
 
 #endif // PIXVIEWER_HPP

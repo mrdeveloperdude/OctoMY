@@ -1092,7 +1092,7 @@
   <customwidget>
    <class>IdenticonWidget</class>
    <extends>QWidget</extends>
-   <header location="global">../libcore/widgets/IdenticonWidget.hpp</header>
+   <header location="global">../libid/widgets/IdenticonWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

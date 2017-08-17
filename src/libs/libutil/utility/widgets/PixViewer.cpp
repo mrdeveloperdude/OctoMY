@@ -31,4 +31,5 @@ void PixViewer::setPixmap(const QPixmap &px)
 void PixViewer::on_pushButtonClose_clicked()
 {
 	close();
+	emit closeClicked();
 }

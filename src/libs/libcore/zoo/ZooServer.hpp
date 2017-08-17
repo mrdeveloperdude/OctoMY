@@ -2,7 +2,7 @@
 #define ZOOSERVER_HPP
 
 #include "qhttp/qhttpserver.hpp"
-#include "widgets/Identicon.hpp"
+#include "identity/Identicon.hpp"
 
 #include "storage/Hashstore.hpp"
 #include "discovery/DiscoveryServer.hpp"

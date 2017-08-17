@@ -17,13 +17,15 @@ IdenticonWidget::IdenticonWidget(QWidget *parent)
 
 void IdenticonWidget::regenerateIdenticon()
 {
-	QDomDocument doc=identicon.domDocument();
 	//TODO: This is a gaping hole if someone tried to set the SVG and did not expect us to delete it (not recommended way to use this class but still)
 	if(nullptr!=mSVG) {
 		delete mSVG;
 		mSVG=nullptr;
 	}
+	QDomDocument doc=identicon.domDocument();
 	mSVG=new QSvgRenderer (doc.toByteArray());
+	mLastURL="";
+	mDirty=true;
 	update();
 }
 

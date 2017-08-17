@@ -11,6 +11,7 @@ class Eye
 {
 private:
 	QVector2D center;
+	bool dirty;
 	QPolygonF basicEyeShapeBg;
 	QPolygonF scaleraPolygon;
 	QPolygonF irisPolygon;
@@ -26,7 +27,6 @@ private:
 
 	QVector2D  specPos1;
 	QVector2D  specPos2;
-	bool dirty;
 	QBrush lidBrush;
 	QBrush scaleraBrush;
 	QBrush irisBrush;
@@ -47,6 +47,9 @@ public:
 	void paint(QPainter &painter);
 };
 
+class Personality;
+class PortableID;
+class Identicon;
 
 class EyesWidget : public QWidget
 {
@@ -73,7 +76,8 @@ public:
 	explicit EyesWidget(QWidget *parent = 0);
 
 public:
-	void setColor(QColor irisColor=QColor("#2d8ac9"));
+	void setPersonality(PortableID &pid, Identicon &identicon);
+
 protected:
 	void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
 	void hideEvent(QHideEvent *) Q_DECL_OVERRIDE;

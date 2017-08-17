@@ -2,6 +2,7 @@
 #define IDENTICON_HPP
 
 #include "security/PortableID.hpp"
+#include "identity/Personality.hpp"
 
 #include <QtGlobal>
 #include <QDomDocument>
@@ -14,11 +15,11 @@ class Identicon
 {
 
 private:
-	QByteArray data;
-	bool dirty;
+	QByteArray mData;
+	bool mDirty;
 	PortableID mID;
-	QDomDocument doc;
-	RNG *rng;
+	QDomDocument mDoc;
+	Personality mPersonality;
 
 	QColor mBodyColorHigh;
 	QColor mBodyColorLow;
@@ -38,6 +39,8 @@ private:
 	void erectLimb(QDomElement &o, QString limbStyle, bool top, bool left, bool mid,float p1,float p2,float p3,float p4,float p5,float p6);
 
 public:
+	PortableID &id();
+
 	//void setSvgURL(QString);
 	void setPortableID(PortableID id);
 
@@ -45,39 +48,11 @@ public:
 
 	QPixmap pixmap(qint32 w=-1,qint32 h=-1,qreal zoom=0.0);
 	QImage image(qint32 w=-1,qint32 h=-1,qreal zoom=0.0);
-
-	//QColor
-
-	QColor bodyColorHigh()
-	{
-		return mBodyColorHigh;
-	}
-
-	QColor bodyColorLow()
-	{
-		return mBodyColorLow;
-	}
-
-
-	QColor backgroundColorHigh()
-	{
-		return mBackgroundColorHigh;
-	}
-
-
-	QColor backgroundColorLow()
-	{
-		return mBackgroundColorLow;
-	}
-
-
-	QColor limbColor()
-	{
-		return mLimbColor;
-	}
-
-
-
+	QColor bodyColorHigh() const;
+	QColor bodyColorLow() const;
+	QColor backgroundColorHigh() const;
+	QColor backgroundColorLow() const;
+	QColor limbColor() const;
 
 private:
 

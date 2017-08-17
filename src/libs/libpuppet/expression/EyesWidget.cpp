@@ -1,5 +1,11 @@
 #include "EyesWidget.hpp"
 
+#include "identity/Personality.hpp"
+#include "identity/Identicon.hpp"
+#include "security/PortableID.hpp"
+
+
+
 #include <QDateTime>
 #include <QPainter>
 #include <QDebug>
@@ -14,7 +20,6 @@ Eye::Eye(QVector2D center, qreal slant, QColor irisColor)
 	, slant(slant)
 	, specPos1(-0.35,-0.12)
 	, specPos2(-0.25,+0.15)
-
 	, lidBrush("brown")
 	, scaleraBrush("white")
 	, irisBrush(irisColor)
@@ -168,8 +173,9 @@ EyesWidget::EyesWidget(QWidget *parent)
 
 
 
-void EyesWidget::setColor(QColor irisColor)
+void EyesWidget::setPersonality(PortableID &pid, Identicon &identicon)
 {
+	QColor irisColor=identicon.backgroundColorLow();//QColor("#2d8ac9");
 	leftEye.setColor(irisColor);
 	rightEye.setColor(irisColor);
 }

@@ -8,7 +8,7 @@
 #include "ui_FaceWidget.h"
 #include "basic/Settings.hpp"
 #include "agent/Agent.hpp"
-#include "widgets/Identicon.hpp"
+#include "identity/Identicon.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"
 #include "utility/Utility.hpp"
 #include "agent/AgentConstants.hpp"
@@ -57,10 +57,9 @@ void FaceWidget::updateEyeColor()
 			const QString id=ass->id();
 			if(id!=lastID) {
 				lastID=id;
-				PortableID pid=mAgent->nodeIdentity()->toPortableID();
-				Identicon identicon;
-				identicon.setPortableID(pid);
-				ui->widgetEyes->setColor(identicon.bodyColorHigh());
+				PortableID pid=ass->toPortableID();
+				Identicon identicon(pid);
+				ui->widgetEyes->setPersonality(pid, identicon);
 			}
 		}
 	}
