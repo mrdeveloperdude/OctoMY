@@ -1,9 +1,6 @@
 #include "IrisWidget.hpp"
 
 
-
-#include "security/PortableID.hpp"
-
 #include "expression/IrisRendrer.hpp"
 
 #include <QPainter>
@@ -28,6 +25,7 @@ void IrisWidget::regenerateWidget()
 
 void IrisWidget::setPortableID(PortableID &id)
 {
+	mPid=id;
 	identicon.setPortableID(id);
 	regenerateWidget();
 }
@@ -59,9 +57,10 @@ void IrisWidget::paintEvent(QPaintEvent *)
 		mDoubleBuffer=QPixmap(sz,sz);
 		mDoubleBuffer.fill(Qt::transparent);
 		QPainter painter(&mDoubleBuffer);
-		Personality p(identicon.id().id());
-		IrisRendrer ir(p);
-		QRect r(0,0,sz,sz);
+		IrisRendrer ir;
+		ir.setPortableID(mPid);
+		const int margin=(sz*100)/1000;
+		QRect r(margin,margin,sz-margin*2,sz-margin*2);
 		ir.draw(r, painter);
 	}
 	QPainter oPainter;

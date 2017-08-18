@@ -1,10 +1,12 @@
 #ifndef EYESWIDGET_HPP
 #define EYESWIDGET_HPP
 
+#include "expression/IrisRendrer.hpp"
 #include <QWidget>
 #include <QTimer>
 #include <QVector2D>
-
+#include <QSharedPointer>
+#include <QImage>
 
 
 class Eye
@@ -33,7 +35,7 @@ private:
 	QBrush pupilBrush;
 	QBrush specularBrush;
 
-
+	QSharedPointer<QImage> mIrisImage;
 
 public:
 
@@ -43,6 +45,7 @@ public:
 	void setBlink(qreal);
 	void setExpression(QVector2D, QVector2D, QVector2D);
 	void setColor(QColor irisColor=QColor("#2d8ac9"));
+	void setIrisImage(QSharedPointer<QImage>);
 	void setSteer(QVector2D);
 	void paint(QPainter &painter);
 };
@@ -71,6 +74,8 @@ private:
 	QVector2D squintSteer;
 
 	QVector2D lastPress;
+
+	IrisRendrer mIrisRendrer;
 
 public:
 	explicit EyesWidget(QWidget *parent = 0);

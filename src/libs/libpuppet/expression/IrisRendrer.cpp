@@ -8,20 +8,26 @@
 
 
 
-IrisRendrer::IrisRendrer(Personality p)
-	: mPersonality(p)
+IrisRendrer::IrisRendrer()
 {
-	setPersonality(p);
-
 }
-void IrisRendrer::setPersonality(Personality p)
+
+
+PortableID IrisRendrer::portableID()
 {
-	mPersonality=p;
+	return mPid;
+}
+void IrisRendrer::setPortableID(PortableID pid)
+{
+	mPid=pid;
+	mPersonality.setID(pid.id(), Personality::IRIS);
 	mPersonality.reset();
+	mColors.setID(pid.id());
 	for(int i=0; i<20; ++i) {
 		setParameter(i,mPersonality.rng().generateReal1());
 	}
-
+	mColor1=mColors.backgroundColorLow().rgb();
+	mColor2=mColors.bodyColorLow().rgb();
 }
 
 
@@ -33,9 +39,9 @@ static inline qreal filmic2(qreal v, qreal cutoff, qreal exposure)
 }
 
 
-int psz=0;
+
 // TODO: figure out an elegant way to pass around identicon colors
-void IrisRendrer::draw(QRect &rect, QPainter &painter)
+void IrisRendrer::draw(QRect &rect, QPainter &painter, quint32 eyeIndex)
 {
 	const int w=rect.width();
 	const int h=rect.height();
@@ -45,6 +51,12 @@ void IrisRendrer::draw(QRect &rect, QPainter &painter)
 	const qreal sz2=sz*0.5;
 	const qreal blurEdge=0.05;
 
+	{
+		QPainter::CompositionMode cm=painter.compositionMode();
+		painter.setCompositionMode(QPainter::CompositionMode_Source);
+		painter.fillRect(QRect(0,0,w,h), Qt::transparent);
+		painter.setCompositionMode(cm);
+	}
 	{
 		if(psz!=w*h) {
 			psz=w*h;
@@ -59,6 +71,8 @@ void IrisRendrer::draw(QRect &rect, QPainter &painter)
 		const qreal c2r=(qreal)qRed(mColor2)/255.0;
 		const qreal c2g=(qreal)qGreen(mColor2)/255.0;
 		const qreal c2b=(qreal)qBlue(mColor2)/255.0;
+		const qreal indexX=eyeIndex*1000.0+mBaseX;
+		const qreal indexY=eyeIndex*1000.0+mBaseY;
 		QImage scratchImage((uchar*)mScratchBuffer, w,h, QImage::Format_ARGB32);
 		for (int y = 0; y < h; ++y) {
 			for (int x = 0; x < w; ++x) {
@@ -80,8 +94,8 @@ void IrisRendrer::draw(QRect &rect, QPainter &painter)
 				dy/=d;
 				qreal fade=1.0-cos((df-blurEdge)*M_PI*2.0*(1+blurEdge));
 				qreal al=qBound(0.0,fade*10.0,1.0);
-				qreal ad=mSimplexRipples.sample(1337.0+d*mRingRes*2.0,mBaseX,mBaseY)*0.1+a;
-				qreal s=qMax(0.0,mSimplexStreaks.sample(mBaseX+cos(ad)*(mRingStartRadius+df),mBaseY+sin(ad)*(mRingStartRadius+df), 0)*fade);
+				qreal ad=mSimplexRipples.sample(1337.0+d*mRingRes*2.0,indexX,indexY)*0.1+a;
+				qreal s=qMax(0.0,mSimplexStreaks.sample(indexX+cos(ad)*(mRingStartRadius+df),indexY+sin(ad)*(mRingStartRadius+df), 0)*fade);
 				auto cv=df+s*mColorFollow;
 				auto const cvi=1.0-cv;
 				auto rr=filmic2((((c1r*cv+c2r*cvi)*s)*mContrast),mToneCutoff,mToneExposure);
@@ -91,15 +105,16 @@ void IrisRendrer::draw(QRect &rect, QPainter &painter)
 				int g=qBound(0,(int)(gg*255.0),255);
 				int b=qBound(0,(int)(bb*255.0),255);
 				mScratchBuffer[y * h + x] = qRgba(r,g,b,(int)(al*255.0));
-
 			}
 		}
 		painter.drawImage(0, 0, scratchImage);
-		const int swatchSize=50;
-		painter.setBrush(QColor::fromRgb(mColor1));
-		painter.drawRect(QRect(0,0,swatchSize,swatchSize));
-		painter.setBrush(QColor::fromRgb(mColor2));
-		painter.drawRect(QRect(swatchSize,0,swatchSize,swatchSize));
+		if(mDebugMode) {
+			const int swatchSize=50;
+			painter.setBrush(QColor::fromRgb(mColor1));
+			painter.drawRect(QRect(0,0,swatchSize,swatchSize));
+			painter.setBrush(QColor::fromRgb(mColor2));
+			painter.drawRect(QRect(swatchSize,0,swatchSize,swatchSize));
+		}
 		//image.save("/tmp/iris.png");
 	}
 }
@@ -199,13 +214,6 @@ void IrisRendrer::setParameter(quint32 id, qreal value)
 
 	}
 }
-
-
-
-
-
-
-
 
 
 

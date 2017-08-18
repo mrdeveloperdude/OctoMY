@@ -23,8 +23,7 @@ void TestIrisRendrer::testUI()
 	QImage im(sz,fmt);
 	QPainter p(&im);
 	//p.begin(&im)
-	Personality pe;
-	IrisRendrer ir(pe);
+	IrisRendrer ir;
 	QRect r(QPoint(0,0), sz);
 	ir.draw(r,p);
 	IrisRendrerTestWidget pv;
@@ -63,8 +62,7 @@ void TestIrisRendrer::testSave()
 	const QSize sz(512,512);
 	QImage im(sz,fmt);
 	QPainter p(&im);
-	Personality pe;
-	IrisRendrer ir(pe);
+	IrisRendrer ir;
 	QRect r(QPoint(0,0), sz);
 	for(int i=0;i<500;++i){
 		for(int p=0;p<20;++p){

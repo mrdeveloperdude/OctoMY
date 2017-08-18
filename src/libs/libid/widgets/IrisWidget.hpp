@@ -4,13 +4,12 @@
 
 #include "expression/IrisRendrer.hpp"
 #include "identity/Identicon.hpp"
-
+#include "security/PortableID.hpp"
 
 #include <QDomDocument>
 #include <QWidget>
 #include <QPixmap>
 
-class PortableID;
 
 class IrisWidget: public QWidget
 {
@@ -20,6 +19,7 @@ private:
 	Identicon identicon;
 	QPixmap mDoubleBuffer;
 	bool mDirty;
+	PortableID mPid;
 
 public:
 	explicit IrisWidget(QWidget *parent = 0);

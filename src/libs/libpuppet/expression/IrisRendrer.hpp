@@ -2,6 +2,8 @@
 #define IRISRENDRER_HPP
 
 #include "identity/Personality.hpp"
+#include "identity/PersonalityColors.hpp"
+#include "security/PortableID.hpp"
 
 #include "Simplex.hpp"
 
@@ -14,6 +16,7 @@ class IrisRendrer
 {
 private:
 	Personality mPersonality;
+	PersonalityColors mColors;
 	Simplex<qreal> mSimplexStreaks;
 	Simplex<qreal> mSimplexRipples;
 	qreal mOval=0.0;
@@ -29,15 +32,21 @@ private:
 	QRgb mColor1=QColor("#8294aa").rgb();
 	QRgb mColor2=QColor("#752e0b").rgb();
 	QRgb* mScratchBuffer=nullptr;
+	int psz=0;
+
+	PortableID mPid;
+
+	bool mDebugMode=false;
 
 public:
-	IrisRendrer(Personality p);
+	IrisRendrer();
 
 public:
 
-	void setPersonality(Personality p);
+	PortableID portableID();
+	void setPortableID(PortableID pid);
 
-	void draw(QRect &rect, QPainter &paint);
+	void draw(QRect &rect, QPainter &paint, quint32 eyeIndex=0);
 	void setParameter(quint32 id, qreal value);
 };
 

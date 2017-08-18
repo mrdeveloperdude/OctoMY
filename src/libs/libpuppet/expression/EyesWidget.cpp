@@ -9,11 +9,16 @@
 
 #include <QDateTime>
 #include <QPainter>
+#include <QRect>
+#include <QSize>
+#include <QImage>
 #include <QDebug>
 #include <QVector2D>
 #include <QMouseEvent>
+#include <QRectF>
+#include <QSizeF>
 
-#include <qmath.h>
+#include <QtMath>
 
 Eye::Eye(QVector2D center, qreal slant, QColor irisColor)
 	: center(center)
@@ -125,6 +130,11 @@ void Eye::setSteer(QVector2D ey)
 }
 
 
+void Eye::setIrisImage(QSharedPointer<QImage> irisImage)
+{
+	mIrisImage=irisImage;
+}
+
 void Eye::paint(QPainter &painter)
 {
 	//painter.setBrush(lidBrush);
@@ -134,17 +144,27 @@ void Eye::paint(QPainter &painter)
 	painter.setBrush(scaleraBrush);
 	painter.drawPolygon(scaleraPolygon);
 
+
 	painter.setBrush(irisBrush);
+	const qreal irisRadius=0.1*0.5;
+	const qreal pupilRadius=0.1*0.25;
 	//painter.drawPolygon(irisPolygon); //TODO: Use this instead
-	painter.drawEllipse((eyeSteer-center).toPointF(),0.1*0.5,0.1*0.5);
+	painter.drawEllipse((eyeSteer-center).toPointF(),irisRadius, irisRadius);
 
 	painter.setBrush(pupilBrush);
-	painter.drawEllipse((eyeSteer-center).toPointF(),0.1*0.25,0.1*0.25);
+	painter.drawEllipse((eyeSteer-center).toPointF(), pupilRadius, pupilRadius);
+
+	if(!mIrisImage.isNull()) {
+		QImage &img=*mIrisImage.data();
+		QPointF ppt((eyeSteer-center).toPointF()-QPointF(irisRadius, irisRadius));
+		QSizeF psz(irisRadius*2, irisRadius*2);
+		QRectF rect(ppt, psz);
+		painter.drawImage(rect, img);
+	}
 
 	painter.setBrush(specularBrush);
 	painter.drawEllipse((eyeSteer-center+specPos1*0.1).toPointF(),0.1*0.15,0.1*0.15);
 	painter.drawEllipse((eyeSteer-center+specPos2*0.1).toPointF(),0.1*0.08,0.1*0.08);
-
 
 }
 
@@ -180,6 +200,26 @@ void EyesWidget::setPortableID(PortableID &pid)
 	QColor irisColor=colors.backgroundColorLow();//QColor("#2d8ac9");
 	leftEye.setColor(irisColor);
 	rightEye.setColor(irisColor);
+
+	if(mIrisRendrer.portableID().id() !=pid.id()) {
+		mIrisRendrer.setPortableID(pid);
+		quint32 sz=128;
+		QRect rect(0,0, sz, sz);
+		QSize size=rect.size();
+		auto imgLeft=new QImage(size,QImage::Format_ARGB32);
+		auto imgRight=new QImage(size,QImage::Format_ARGB32);
+		{
+			QPainter painter(imgLeft);
+			mIrisRendrer.draw(rect, painter,0);
+		}
+		{
+			QPainter painter(imgRight);
+			mIrisRendrer.draw(rect, painter,1);
+		}
+		leftEye.setIrisImage(QSharedPointer<QImage>(imgLeft));
+		rightEye.setIrisImage(QSharedPointer<QImage>(imgRight));
+	}
+
 }
 
 
