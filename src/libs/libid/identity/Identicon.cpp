@@ -12,15 +12,15 @@
 Identicon::Identicon(PortableID &id)
 	: mDirty(true)
 	, mID(id)
-	, mPersonality(mID.id())
+	, mColors(mID.id())
 {
+	setPortableID(id);
 }
 
 Identicon::Identicon()
 	: mDirty(true)
-	, mPersonality(mID.id())
+	, mColors(mID.id())
 {
-
 }
 
 Identicon::~Identicon()
@@ -44,35 +44,9 @@ static void setAttrRecur(QDomElement &elem, QString tag, QString id, QString att
 }
 
 
-static QString hsla(qreal h, qreal s, qreal l, qreal a)
-{
-	return "hsla("+QString::number(h*360.0f)+", "+QString::number((int)(s*100))+"%, "+QString::number((int)(l*100))+"%, "+QString::number(a)+")";
-}
-
-
-static QColor hsl(qreal h, qreal s, qreal l)
-{
-	QColor c=QColor::fromHslF(h,s,l);
-	return c;
-}
-
-static QString hsl(QColor &c)
+static QString colorToSvgString(const QColor &c)
 {
 	return "rgb("+QString::number(c.red())+", "+QString::number(c.green())+", "+QString::number(c.blue())+")";
-}
-
-
-
-static qreal realBits(quint64 d,quint64 bits)
-{
-	//qDebug()<<"---realBits for data "<<d <<" with "<<bits <<" bits";
-	const qreal d2=(d & bits);
-	//qDebug()<<"framed: "<<d2;
-	const qreal bitsf=(qreal)bits;
-	qreal res=d2/bitsf;
-	//qDebug()<<"res: "<<res;
-	//qDebug()<<"\n";
-	return res;
 }
 
 
@@ -129,36 +103,6 @@ QImage Identicon::image(qint32 w,qint32 h,qreal zoom)
 	QPainter painter( &px );
 	svg.render( &painter );
 	return px;
-}
-
-
-
-QColor Identicon::bodyColorHigh() const
-{
-	return mBodyColorHigh;
-}
-
-QColor Identicon::bodyColorLow() const
-{
-	return mBodyColorLow;
-}
-
-
-QColor Identicon::backgroundColorHigh() const
-{
-	return mBackgroundColorHigh;
-}
-
-
-QColor Identicon::backgroundColorLow() const
-{
-	return mBackgroundColorLow;
-}
-
-
-QColor Identicon::limbColor() const
-{
-	return mLimbColor;
 }
 
 
@@ -221,9 +165,7 @@ void Identicon::regenerateIdenticon()
 						QByteArray baData = file.readAll();
 						mDoc.setContent(baData);
 						mPersonality.reset();
-						qreal p1=frand();
-						qreal p2=frand();
-						qreal p3=frand();
+						//qreal p1=frand();						qreal p2=frand();						qreal p3=frand();
 						qreal p4=frand();
 						qreal p5=frand();
 						qreal p6=frand();
@@ -233,17 +175,13 @@ void Identicon::regenerateIdenticon()
 						//qreal p10=frand();
 
 						//qDebug()<<"Identicon params: "<<mID.id()<<p1<<p2<<p3<<p4<<p5<<p6<<p7;
-						mBodyColorHigh=hsl(p1,0.75f,0.55f);
-						mBodyColorLow=hsl(p1,0.75f,0.425f);
-						mBackgroundColorHigh=hsl(p2,0.75f,0.25f);
-						mBackgroundColorLow=hsl(p2,0.75f,0.20f);
-						mLimbColor=hsl(p3,0.75f,0.55f);
 
-						const QString bodyColorHighStr=hsl(mBodyColorHigh);
-						const QString bodyColorLowStr=hsl(mBodyColorLow);
-						const QString backgroundColorHighStr=hsl(mBackgroundColorHigh);
-						const QString backgroundColorLowStr=hsl(mBackgroundColorLow);
-						const QString limbColorStr=hsl(mLimbColor);
+						const QString bodyColorHighStr=colorToSvgString(mColors.bodyColorHigh());
+						const QString bodyColorLowStr=colorToSvgString(mColors.bodyColorLow());
+						const QString backgroundColorHighStr=colorToSvgString(mColors.backgroundColorHigh());
+						const QString backgroundColorLowStr=colorToSvgString(mColors.backgroundColorLow());
+						const QString limbColorStr=colorToSvgString(mColors.limbColor());
+
 						QDomElement o=mDoc.documentElement();
 
 						DiscoveryType type=mID.type();
@@ -315,11 +253,12 @@ PortableID &Identicon::id()
 	return mID;
 }
 
-void Identicon::setPortableID(PortableID id)
+void Identicon::setPortableID(PortableID pid)
 {
-	mID=id;
-	Personality p(mID.id());
-	mPersonality=p.subPersonality("identicon");
+	mID=pid;
+	QString id=mID.id();
+	mPersonality.setID(id, Personality::IDENTICON);
+	mColors.setID(id);
 	mDirty=true;
 	regenerateIdenticon();
 }

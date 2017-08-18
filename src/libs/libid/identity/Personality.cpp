@@ -1,10 +1,15 @@
 #include "Personality.hpp"
 
 #include "security/SecurityConstants.hpp"
-
 #include "rng/RNG.hpp"
 
 #include <QCryptographicHash>
+
+
+const QString Personality::COLORS="colors";
+const QString Personality::IDENTICON="identicon";
+const QString Personality::IRIS="iris";
+
 
 Personality::Personality(QString id)
 	: mID(id)
@@ -12,6 +17,13 @@ Personality::Personality(QString id)
 {
 
 }
+
+Personality::Personality(QString id, QString key)
+	: mRNG(nullptr)
+{
+	setID(id, key);
+}
+
 
 Personality::~Personality()
 {
@@ -36,18 +48,17 @@ RNG &Personality::rng()
 
 Personality Personality::subPersonality(QString key)
 {
-	QCryptographicHash ch(OCTOMY_KEY_HASH);
-	ch.addData((mID+key).toUtf8());
-	QString nextKey=ch.result().toHex().toUpper();
-	Personality ret(nextKey);
-	return ret;
+	return Personality(mID, key);
 }
 
+void Personality::setID(QString id, QString key)
+{
+	QCryptographicHash ch(OCTOMY_KEY_HASH);
+	ch.addData((id+key).toUtf8());
+	mID=ch.result().toHex().toUpper();
+}
 
 QString Personality::id() const
 {
 	return mID;
 }
-
-
-

@@ -31,11 +31,11 @@ private:
 	QRgb* mScratchBuffer=nullptr;
 
 public:
-	IrisRendrer(Personality &p);
+	IrisRendrer(Personality p);
 
 public:
 
-	void setPersonality(Personality &p);
+	void setPersonality(Personality p);
 
 	void draw(QRect &rect, QPainter &paint);
 	void setParameter(quint32 id, qreal value);

@@ -3,6 +3,7 @@
 
 #include "security/PortableID.hpp"
 #include "identity/Personality.hpp"
+#include "identity/PersonalityColors.hpp"
 
 #include <QtGlobal>
 #include <QDomDocument>
@@ -20,12 +21,7 @@ private:
 	PortableID mID;
 	QDomDocument mDoc;
 	Personality mPersonality;
-
-	QColor mBodyColorHigh;
-	QColor mBodyColorLow;
-	QColor mBackgroundColorHigh;
-	QColor mBackgroundColorLow;
-	QColor mLimbColor;
+	PersonalityColors mColors;
 
 public:
 	explicit Identicon(PortableID &id);
@@ -48,11 +44,7 @@ public:
 
 	QPixmap pixmap(qint32 w=-1,qint32 h=-1,qreal zoom=0.0);
 	QImage image(qint32 w=-1,qint32 h=-1,qreal zoom=0.0);
-	QColor bodyColorHigh() const;
-	QColor bodyColorLow() const;
-	QColor backgroundColorHigh() const;
-	QColor backgroundColorLow() const;
-	QColor limbColor() const;
+
 
 private:
 

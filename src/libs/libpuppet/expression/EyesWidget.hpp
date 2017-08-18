@@ -76,7 +76,7 @@ public:
 	explicit EyesWidget(QWidget *parent = 0);
 
 public:
-	void setPersonality(PortableID &pid, Identicon &identicon);
+	void setPortableID(PortableID &pid);
 
 protected:
 	void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;

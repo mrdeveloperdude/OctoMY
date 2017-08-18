@@ -8,13 +8,13 @@
 
 
 
-IrisRendrer::IrisRendrer(Personality &p)
+IrisRendrer::IrisRendrer(Personality p)
 	: mPersonality(p)
 {
 	setPersonality(p);
 
 }
-void IrisRendrer::setPersonality(Personality &p)
+void IrisRendrer::setPersonality(Personality p)
 {
 	mPersonality=p;
 	mPersonality.reset();

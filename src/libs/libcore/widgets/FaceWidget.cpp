@@ -58,8 +58,7 @@ void FaceWidget::updateEyeColor()
 			if(id!=lastID) {
 				lastID=id;
 				PortableID pid=ass->toPortableID();
-				Identicon identicon(pid);
-				ui->widgetEyes->setPersonality(pid, identicon);
+				ui->widgetEyes->setPortableID(pid);
 			}
 		}
 	}

@@ -3,6 +3,8 @@
 
 #include "utility/Standard.hpp"
 
+#include <QColor>
+
 // Classification of RNG
 enum RNGMerit {
 	// For applications that just need random numbers in a hurry
@@ -101,20 +103,76 @@ public:
 
 	inline double generateGauss(void)
 	{
-#define NSUM 25
+#define RNG_GAUSS_NSUM 25
 
 		double x = 0;
 		int i;
-		for(i = 0; i < NSUM; i++) {
+		for(i = 0; i < RNG_GAUSS_NSUM; i++) {
 			x += generateReal1();
 		}
 
-		x -= NSUM / 2.0;
-		x /= sqrt(NSUM / 12.0);
-
+		x -= RNG_GAUSS_NSUM / 2.0;
+		x /= sqrt(RNG_GAUSS_NSUM / 12.0);
+#undef RNG_GAUSS_NSUM
 		return x;
 	}
+	// NOTE: These routines are vital to deterministic code down stream, so the order/number/type of random numbers generated must not change.
+	//       If you feel such a change is needed, create a new method beside this one.
+	inline QColor generateQColorRGB()
+	{
+		QRgb rgb=generateInt32();
+		return QColor(qRed(rgb), qGreen(rgb), qBlue(rgb));
+	}
 
+	// NOTE: These routines are vital to deterministic code down stream, so the order/number/type of random numbers generated must not change.
+	//       If you feel such a change is needed, create a new method beside this one.
+	inline QColor generateQColorRGBA()
+	{
+		QRgb rgba=generateInt32();
+		return QColor(qRed(rgba), qGreen(rgba), qBlue(rgba), qAlpha(rgba));
+	}
+
+	// NOTE: These routines are vital to deterministic code down stream, so the order/number/type of random numbers generated must not change.
+	//       If you feel such a change is needed, create a new method beside this one.
+	inline QRgb generateQRgb()
+	{
+		return generateInt32()&0xFFFFFF00;
+	}
+
+	// NOTE: These routines are vital to deterministic code down stream, so the order/number/type of random numbers generated must not change.
+	//       If you feel such a change is needed, create a new method beside this one.
+	inline QRgb generateQRgba()
+	{
+		return generateInt32();
+	}
+
+	// Generate a color within ranges. Defaults to fully saturated, fully opaque random hue
+	// NOTE: These routines are vital to deterministic code down stream, so the order/number/type of random numbers generated must not change.
+	//       If you feel such a change is needed, create a new method beside this one.
+	inline QColor generateRangedQColorHSLA(qreal hueLow=0.0, qreal hueHigh=1.0, qreal saturationLow=1.0, qreal saturationHigh=1.0, qreal luminanceLow=0.5, qreal luminanceHigh=0.5, qreal alphaLow=1.0, qreal alphaHigh=1.0)
+	{
+		// Clamp to legal range
+		hueLow=qBound(0.0, hueLow, 1.0);
+		saturationLow=qBound(0.0, saturationLow, 1.0);
+		luminanceLow=qBound(0.0, luminanceLow, 1.0);
+		alphaLow=qBound(0.0, alphaLow, 1.0);
+		hueHigh=qBound(0.0, hueHigh, 1.0);
+		saturationHigh=qBound(0.0, saturationHigh, 1.0);
+		luminanceHigh=qBound(0.0, luminanceHigh, 1.0);
+		alphaHigh=qBound(0.0, alphaHigh, 1.0);
+		// Make sure low < high
+		hueLow=qMin(hueHigh,hueLow);
+		saturationLow=qMin(saturationHigh,saturationLow);
+		luminanceLow=qMin(luminanceHigh,luminanceLow);
+		alphaLow=qMin(alphaHigh,alphaLow);
+		// Calculate ranges
+		const qreal hueRange=hueHigh-hueLow;
+		const qreal saturationRange=saturationHigh-saturationLow;
+		const qreal luminanceRange=luminanceHigh-luminanceLow;
+		const qreal alphaRange=alphaHigh-alphaLow;
+		// Generate and return the color
+		return QColor::fromHslF(hueLow+generateReal1()*hueRange, saturationLow+generateReal1()*saturationRange, luminanceLow+generateReal1()*luminanceRange, alphaLow+generateReal1()*alphaRange);
+	}
 
 
 	// Return true if this source is dependant on any pseudo rng

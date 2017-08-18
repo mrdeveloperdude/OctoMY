@@ -18,6 +18,7 @@ CommsCarrier::CommsCarrier(QObject *parent)
 	, mTXOpportunityRate("OP RATE")
 
 {
+	OC_METHODGATE();
 	setObjectName("ERROR: INSTANCIATED PURE VIRTUAL CLASS SOMEHOW");
 	mSendingTimer.setSingleShot(false);
 	mSendingTimer.setTimerType(Qt::PreciseTimer);
@@ -29,13 +30,14 @@ CommsCarrier::CommsCarrier(QObject *parent)
 
 CommsCarrier::~CommsCarrier()
 {
-
+	OC_METHODGATE();
 }
 
 
 
 void CommsCarrier::detectConnectionChanges(const quint64 now)
 {
+	OC_METHODGATE();
 	const quint64 timeSinceLastRX = (now - mRXRate.mLast);
 	const quint64 timeout = connectionTimeout();
 	qDebug()<<"DETECTIN' connected=" << mConnected << "timeSinceLastRX=" <<  timeSinceLastRX << " vs. timeout="<<timeout<< " now="<<now;
@@ -53,6 +55,7 @@ void CommsCarrier::detectConnectionChanges(const quint64 now)
 
 void CommsCarrier::onOpportunityTimer()
 {
+	OC_METHODGATE();
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	detectConnectionChanges(now);
 	mTXOpportunityRate.countPacket(0);
@@ -62,6 +65,7 @@ void CommsCarrier::onOpportunityTimer()
 
 quint64 CommsCarrier::connectionTimeout()
 {
+	OC_METHODGATE();
 	// 1 sec  more than our minimal packet rate
 	return minimalPacketInterval() + 1000;
 }
@@ -69,6 +73,7 @@ quint64 CommsCarrier::connectionTimeout()
 
 void CommsCarrier::setHookCarrierSignals(QObject &ob, bool hook)
 {
+	OC_METHODGATE();
 	//qRegisterMetaType<CommsSession *>("Client *");
 	if(hook) {
 		if(!connect(this,SIGNAL(carrierReadyRead()),&ob,SLOT(onCarrierReadyRead()),OC_CONTYPE)) {

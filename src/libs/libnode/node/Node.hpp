@@ -52,7 +52,7 @@ protected:
 	DiscoveryClient *mDiscovery;
 	DiscoveryRole mRole;
 	DiscoveryType mType;
-	CommsCarrierUDP mCarrier;
+	CommsCarrier *mCarrier;
 	CommsChannel *mComms;
 	ZooClient *mZooClient;
 	SensorInput *mSensors;

@@ -5,18 +5,29 @@
 
 class RNG;
 
+
+
 class Personality
 {
+public:
+	static const QString COLORS;
+	static const QString IDENTICON;
+	static const QString IRIS;
+
 private:
 	QString mID;
 	RNG *mRNG;
-public:
 
 public:
 	Personality(QString id="");
+	Personality(QString id, QString key);
+
 	virtual ~Personality();
 
+
 public:
+
+	void setID(QString id, QString key);
 	QString id() const;
 	void reset();
 	RNG &rng();

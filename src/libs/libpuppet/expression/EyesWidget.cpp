@@ -1,6 +1,7 @@
 #include "EyesWidget.hpp"
 
 #include "identity/Personality.hpp"
+#include "identity/PersonalityColors.hpp"
 #include "identity/Identicon.hpp"
 #include "security/PortableID.hpp"
 
@@ -38,11 +39,13 @@ Eye::~Eye()
 x = X cos(a) - Y sin(a)
 y = Y cos(a) + X sin(a)
 		*/
-void generateElipsis(QVector2D &out,qreal rx,qreal ry,qreal ang)
+
+/*
+static void generateElipsis(QVector2D &out,qreal rx,qreal ry,qreal ang)
 {
 	QVector2D p(cos(ang)*rx,sin(ang)*ry);
 	out=p;
-}
+}*/
 
 void Eye::update()
 {
@@ -171,11 +174,10 @@ EyesWidget::EyesWidget(QWidget *parent)
 	rightEye.setSteer(eyeSteer);
 }
 
-
-
-void EyesWidget::setPersonality(PortableID &pid, Identicon &identicon)
+void EyesWidget::setPortableID(PortableID &pid)
 {
-	QColor irisColor=identicon.backgroundColorLow();//QColor("#2d8ac9");
+	PersonalityColors colors(pid.id());
+	QColor irisColor=colors.backgroundColorLow();//QColor("#2d8ac9");
 	leftEye.setColor(irisColor);
 	rightEye.setColor(irisColor);
 }
