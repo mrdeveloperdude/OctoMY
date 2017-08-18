@@ -437,8 +437,11 @@ void HubWindow::on_lineEditIdenticonID_textChanged(const QString &arg1)
 	pid.setName("Dummy Identicon");
 	pid.setID(id);
 	pid.setType(TYPE_AGENT);
-	ui->widgetIris->setPortableID(pid);
 	ui->widgetIdenticonAgent->setPortableID(pid);
+	Identicon idi=ui->widgetIdenticonAgent->identicon();
+	ui->widgetIris->setPortableID(pid);
+	ui->widgetEyes->setPersonality(pid,idi);
+	ui->widgetQR_2->setQRData(id);
 	pid.setType(TYPE_REMOTE);
 	ui->widgetIdenticonRemote->setPortableID(pid);
 	pid.setType(TYPE_HUB);

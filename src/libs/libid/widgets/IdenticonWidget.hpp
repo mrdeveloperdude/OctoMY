@@ -14,7 +14,7 @@ class IdenticonWidget : public SvgWidget
 	Q_OBJECT
 
 private:
-	Identicon identicon;
+	Identicon mIdenticon;
 
 public:
 	explicit IdenticonWidget(QWidget *parent = 0);
@@ -25,6 +25,7 @@ protected:
 public:
 	void setPortableID(PortableID &id);
 
+	Identicon identicon();
 signals:
 	void doubleClicked();
 
@@ -34,5 +35,4 @@ protected:
 };
 
 #endif // IDENTICONWIDGET_HPP
-
 

@@ -22,7 +22,7 @@ void IdenticonWidget::regenerateIdenticon()
 		delete mSVG;
 		mSVG=nullptr;
 	}
-	QDomDocument doc=identicon.domDocument();
+	QDomDocument doc=mIdenticon.domDocument();
 	mSVG=new QSvgRenderer (doc.toByteArray());
 	mLastURL="";
 	mDirty=true;
@@ -31,10 +31,14 @@ void IdenticonWidget::regenerateIdenticon()
 
 void IdenticonWidget::setPortableID(PortableID &id)
 {
-	identicon.setPortableID(id);
+	mIdenticon.setPortableID(id);
 	regenerateIdenticon();
 }
 
+Identicon IdenticonWidget::identicon()
+{
+	return mIdenticon;
+}
 
 void IdenticonWidget::mouseDoubleClickEvent(QMouseEvent *)
 {

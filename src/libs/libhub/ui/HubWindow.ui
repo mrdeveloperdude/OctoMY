@@ -24,8 +24,8 @@
     <normaloff>:/icons/hub.svg</normaloff>:/icons/hub.svg</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_6">
-    <item>
+   <layout class="QGridLayout" name="gridLayout_8">
+    <item row="0" column="0">
      <widget class="QSplitter" name="splitterLog">
       <property name="lineWidth">
        <number>0</number>
@@ -722,9 +722,9 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="tabIdenticon">
+           <widget class="QWidget" name="tabIdentity">
             <attribute name="title">
-             <string>Identicon</string>
+             <string>Identity</string>
             </attribute>
             <layout class="QVBoxLayout" name="verticalLayout_8">
              <item>
@@ -753,52 +753,40 @@
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_9">
-               <item>
-                <widget class="QLabel" name="label_10">
-                 <property name="text">
-                  <string>Iris</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_5">
-                 <property name="text">
-                  <string>Agent</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_6">
-                 <property name="text">
-                  <string>Remote</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
+              <layout class="QGridLayout" name="gridLayout_9">
+               <property name="leftMargin">
+                <number>6</number>
+               </property>
+               <property name="topMargin">
+                <number>6</number>
+               </property>
+               <property name="rightMargin">
+                <number>6</number>
+               </property>
+               <property name="bottomMargin">
+                <number>6</number>
+               </property>
+               <item row="1" column="3">
+                <widget class="IdenticonWidget" name="widgetIdenticonHub" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="QLabel" name="label_7">
-                 <property name="text">
-                  <string>Hub</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
+               <item row="1" column="2">
+                <widget class="IdenticonWidget" name="widgetIdenticonRemote" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
                 </widget>
                </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_7">
-               <item>
+               <item row="3" column="1">
                 <widget class="IrisWidget" name="widgetIris" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -814,7 +802,27 @@
                  </property>
                 </widget>
                </item>
-               <item>
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>Remote</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>Agent</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
                 <widget class="IdenticonWidget" name="widgetIdenticonAgent" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -824,8 +832,48 @@
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="IdenticonWidget" name="widgetIdenticonRemote" native="true">
+               <item row="0" column="3">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>Hub</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>Iris</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <widget class="QLabel" name="label_11">
+                 <property name="text">
+                  <string>Eyes</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="3">
+                <widget class="QLabel" name="label_12">
+                 <property name="text">
+                  <string>QR</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="3">
+                <widget class="QRWidget" name="widgetQR_2" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -834,15 +882,8 @@
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="IdenticonWidget" name="widgetIdenticonHub" native="true">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                </widget>
+               <item row="3" column="2">
+                <widget class="EyesWidget" name="widgetEyes" native="true"/>
                </item>
               </layout>
              </item>
@@ -1112,6 +1153,12 @@
    <class>IrisWidget</class>
    <extends>QWidget</extends>
    <header location="global">widgets/IrisWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>EyesWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">expression/EyesWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
