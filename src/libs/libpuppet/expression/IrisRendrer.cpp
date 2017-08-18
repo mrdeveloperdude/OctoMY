@@ -1,16 +1,26 @@
 #include "IrisRendrer.hpp"
 
-
+#include "rng/RNG.hpp"
 
 #include <QRect>
 #include <QPainter>
 #include <QDebug>
 
 
+
 IrisRendrer::IrisRendrer(Personality &p)
 	: mPersonality(p)
 {
+	setPersonality(p);
 
+}
+void IrisRendrer::setPersonality(Personality &p)
+{
+	mPersonality=p;
+	mPersonality.reset();
+	for(int i=0; i<20; ++i) {
+		setParameter(i,mPersonality.rng().generateReal1());
+	}
 
 }
 
@@ -189,8 +199,6 @@ void IrisRendrer::setParameter(quint32 id, qreal value)
 
 	}
 }
-
-
 
 
 

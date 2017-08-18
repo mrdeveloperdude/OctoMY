@@ -35,6 +35,8 @@ public:
 
 public:
 
+	void setPersonality(Personality &p);
+
 	void draw(QRect &rect, QPainter &paint);
 	void setParameter(quint32 id, qreal value);
 };
