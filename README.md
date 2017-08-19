@@ -18,6 +18,9 @@ What features does OctoMY™ have?
 --------------------------------
 
 OctoMY™ Is fast, stable and ultimately flexible.
+ * Control your robots from any device, mobile or not.
+ * Drive them yourself, create plans for their behavior or let them roam autonomously.
+ * Let your robots map their surroundings and recognize landmarks, objects and people.
  * It maintains your privacy.
  * It has a friendly user interface for beginners while not getting in the way of the experts.
  * It is distributed by nature and allows for many complex configurations like flocking.
