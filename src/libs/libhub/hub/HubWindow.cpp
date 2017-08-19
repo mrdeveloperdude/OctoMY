@@ -45,6 +45,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	, mGait(nullptr)
 	, mScanner(nullptr)
 {
+	OC_METHODGATE();
 	setObjectName("HubWindow");
 	if(nullptr!=mHub) {
 		restoreGeometry(mHub->settings().getCustomSettingByteArray("window.geometry"));
@@ -160,11 +161,13 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		appendLog("READY");
 		QTimer::singleShot(1500,splash,SLOT(deleteLater()));
 		splash=nullptr;
+		updateIdentityWidgets();
 	}
 }
 
 HubWindow::~HubWindow()
 {
+	OC_METHODGATE();
 	if(nullptr!=mHub) {
 		mHub->settings().setCustomSettingByteArray("window.geometry", saveGeometry());
 		mHub->comms()->setHookCommsSignals(*this,false);
@@ -182,6 +185,7 @@ HubWindow::~HubWindow()
 
 void HubWindow::onSummaryTimer()
 {
+	OC_METHODGATE();
 	CommsChannel *comms=mHub->comms();
 	if(0==comms) {
 		ui->plainTextEditSummary->setPlainText("N/A");
@@ -193,6 +197,7 @@ void HubWindow::onSummaryTimer()
 
 void HubWindow::onQRRedraw()
 {
+	OC_METHODGATE();
 	if(nullptr==mScanner) {
 		mScanner=new ZBarScanner();
 	}
@@ -233,6 +238,7 @@ void HubWindow::appendLog(const QString& text)
 
 void HubWindow::onListenStateChanged(const TryToggleState last, const TryToggleState current)
 {
+	OC_METHODGATE();
 	ui->lineEditBindPort->setEnabled(OFF==current);
 	ui->comboBoxLocalAddress->setEnabled(OFF==current);
 	ui->pushButtonSendData->setEnabled(ON==current);
@@ -257,6 +263,7 @@ void HubWindow::onListenStateChanged(const TryToggleState last, const TryToggleS
 
 void HubWindow::onLocalHostLookupComplete(QHostInfo hi)
 {
+	OC_METHODGATE();
 	for(QHostAddress adr:hi.addresses()) {
 		if(adr.isNull()) {
 			ui->logScroll->appendLog("Skipping invalid address during local host lookup: "+adr.toString());
@@ -277,6 +284,7 @@ void HubWindow::onLocalHostLookupComplete(QHostInfo hi)
 
 void HubWindow::onRemoteHostLookupComplete(QHostInfo hi)
 {
+	OC_METHODGATE();
 	qDebug()<<"## onRemoteHostLookupComplete";
 	for(QHostAddress adr:hi.addresses()) {
 		if(adr.isNull()) {
@@ -316,6 +324,7 @@ void HubWindow::on_pushButtonSendData_clicked()
 
 void HubWindow::startProcess(QString base)
 {
+	OC_METHODGATE();
 	const QString program = QFileInfo(QCoreApplication::applicationFilePath()).absolutePath()+"/../"+base+"/"+base;
 	qDebug()<<"Starting process: "<<program;
 	QStringList arguments;
@@ -360,6 +369,7 @@ void HubWindow::onGLWidgetInitialized()
 
 void HubWindow::on_comboBoxAddLocal_currentIndexChanged(const QString &arg1)
 {
+	OC_METHODGATE();
 	if("Remote"==arg1) {
 		//TODO: synthesize arguments object that points to parent hub
 		startProcess("remote");
@@ -381,6 +391,7 @@ void HubWindow::on_tabWidget_currentChanged(int)
 
 void HubWindow::onCommsError(QString msg)
 {
+	OC_METHODGATE();
 	if("Unable to send a message"==msg) {
 
 	} else {
@@ -392,6 +403,7 @@ void HubWindow::onCommsError(QString msg)
 
 void HubWindow::onCommsClientAdded(CommsSession *c)
 {
+	OC_METHODGATE();
 	if(0!=c) {
 		appendLog("CLIENT ADDED: "+c->summary());
 		ui->widgetIncommingNodes->update();
@@ -401,12 +413,14 @@ void HubWindow::onCommsClientAdded(CommsSession *c)
 
 void HubWindow::onCommsConnectionStatusChanged(bool s)
 {
+	OC_METHODGATE();
 	qDebug()<<"connection state changed: "<<s;
 }
 
 
 void HubWindow::on_pushButtonTest_clicked()
 {
+	OC_METHODGATE();
 	qDebug()<<"TEST BUTTON PRESSED";
 }
 
@@ -414,6 +428,7 @@ void HubWindow::on_pushButtonTest_clicked()
 
 void HubWindow::on_lineEditQR_textChanged(const QString &text)
 {
+	OC_METHODGATE();
 	// Initialize scanner
 	ui->labelQR->setText("Working...");
 	ui->labelQRScanner->setPixmap(QPixmap());
@@ -429,7 +444,8 @@ void HubWindow::on_pushButtonRandomIdenticonID_clicked()
 	ui->lineEditIdenticonID->setText(id);
 }
 
-void HubWindow::on_lineEditIdenticonID_textChanged(const QString &arg1)
+
+void HubWindow::updateIdentityWidgets()
 {
 	OC_METHODGATE();
 	QString id=ui->lineEditIdenticonID->text();
@@ -445,4 +461,145 @@ void HubWindow::on_lineEditIdenticonID_textChanged(const QString &arg1)
 	ui->widgetIdenticonRemote->setPortableID(pid);
 	pid.setType(TYPE_HUB);
 	ui->widgetIdenticonHub->setPortableID(pid);
+}
+
+void HubWindow::on_lineEditIdenticonID_textChanged(const QString &)
+{
+	OC_METHODGATE();
+	updateIdentityWidgets();
+}
+
+
+void HubWindow::on_horizontalSliderIrisIndex_valueChanged(int value)
+{
+	ui->widgetIris->setIrixIndex(value);
+}
+
+
+
+static const QDir topDir("/");
+static QDir lastDir = topDir;
+
+static QString saveIdenticonWidget(IdenticonWidget *iw, QString base="identicon")
+{
+	QFileDialog fd;
+	QStringList filters;
+	QString filePath="";
+	if(topDir == lastDir) {
+		lastDir=QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+	}
+	fd.setDirectory(lastDir);
+	filters << "PNG (*.png)";
+	filters << "SVG (*.svg)";
+	fd.setNameFilters(filters);
+	fd.selectFile(base);
+	fd.setFileMode(QFileDialog::AnyFile);
+	fd.setAcceptMode(QFileDialog::AcceptSave);
+	if (fd.exec()) {
+		lastDir=fd.directory();
+		QStringList  fileNames = fd.selectedFiles();
+		if(fileNames.size()>0) {
+			QString fileName=fileNames.first();
+			QFileInfo fileInfo(fileName);
+
+			if(fileInfo.fileName().endsWith(".svg")) {
+				QByteArray xml=iw->svgXML();
+				filePath=fileInfo.absoluteFilePath();
+				QFile file(filePath);
+				file.open(QIODevice::WriteOnly);
+				file.write(xml);
+				file.close();
+			} else if(fileInfo.fileName().endsWith(".png")) {
+				Identicon identicon=iw->identicon();
+				const quint32 sz=1024;
+				QImage image=identicon.image(sz, sz);
+				filePath=fileInfo.absoluteFilePath();
+				image.save(filePath);
+			}
+		}
+	}
+	return filePath;
+}
+
+static QString saveIrisWidget(IrisWidget *iw, quint32 irisIndex=0, QString base="iris")
+{
+	QFileDialog fd;
+	QStringList filters;
+	QString filePath="";
+	if(topDir == lastDir) {
+		lastDir=QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+	}
+	fd.setDirectory(lastDir);
+	filters << "PNG (*.png)";
+	fd.setNameFilters(filters);
+	fd.selectFile(base);
+	fd.setFileMode(QFileDialog::AnyFile);
+	fd.setAcceptMode(QFileDialog::AcceptSave);
+	if (fd.exec()) {
+		lastDir=fd.directory();
+		QStringList  fileNames = fd.selectedFiles();
+		if(fileNames.size()>0) {
+			QString fileName=fileNames.first();
+			QFileInfo fileInfo(fileName);
+			if(fileInfo.fileName().endsWith(".png")) {
+				PortableID pid=iw->portableID();
+				const quint32 sz=1024;
+				QImage irisImage(sz,sz, QImage::Format_ARGB32);
+				irisImage.fill(Qt::transparent);
+				QPainter painter(&irisImage);
+				IrisRendrer ir;
+				ir.setPortableID(pid);
+				QRect r(0,0,sz,sz);
+				ir.draw(r, painter, irisIndex);
+				filePath=fileInfo.absoluteFilePath();
+				irisImage.save(filePath);
+			}
+		}
+	}
+	return filePath;
+}
+
+void HubWindow::on_pushButtonSaveIdenticonAgent_clicked()
+{
+	const QString filePath=saveIdenticonWidget(ui->widgetIdenticonAgent, "agent_"+ui->widgetIdenticonAgent->identicon().id().id()+".svg");
+	if(!filePath.isEmpty()) {
+		ui->logScroll->appendPlainText("Saved "+filePath);
+	} else {
+		ui->logScroll->appendPlainText("Agent identicon save aborted");
+	}
+}
+
+
+
+void HubWindow::on_pushButtonSaveIdenticonRemote_clicked()
+{
+	const QString filePath=saveIdenticonWidget(ui->widgetIdenticonRemote, "remote_"+ui->widgetIdenticonRemote->identicon().id().id()+".svg");
+	if(!filePath.isEmpty()) {
+		ui->logScroll->appendPlainText("Saved "+filePath);
+	} else {
+		ui->logScroll->appendPlainText("Remote identicon save aborted");
+	}
+}
+
+void HubWindow::on_pushButtonSaveIdenticonHub_clicked()
+{
+	const QString filePath=saveIdenticonWidget(ui->widgetIdenticonHub, "hub_"+ui->widgetIdenticonHub->identicon().id().id()+".svg");
+	if(!filePath.isEmpty()) {
+		ui->logScroll->appendPlainText("Saved "+filePath);
+	} else {
+		ui->logScroll->appendPlainText("Hub identicon save aborted");
+	}
+}
+
+
+
+void HubWindow::on_pushButtonSaveIdenticonIris_clicked()
+{
+	const quint32 irisIndex = ui->horizontalSliderIrisIndex->value();
+	const QString filePath=saveIrisWidget(ui->widgetIris, irisIndex, "iris_"+QString::number(irisIndex)+"_"+ui->widgetIris->portableID().id()+".png");
+	if(!filePath.isEmpty()) {
+		ui->logScroll->appendPlainText("Saved "+filePath);
+	} else {
+		ui->logScroll->appendPlainText("Iris image save aborted");
+	}
 }

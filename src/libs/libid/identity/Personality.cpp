@@ -24,11 +24,23 @@ Personality::Personality(QString id, QString key)
 	setID(id, key);
 }
 
+Personality::Personality( const Personality& other )
+	: mID(other.mID)
+	  // We don't copy this to avoid all sorts of nasty problems (it is regenerated anyways...)
+	, mRNG(nullptr)
+{
+
+}
+
+
 
 Personality::~Personality()
 {
 	delete mRNG;
+	mRNG=nullptr;
 }
+
+
 
 void Personality::reset()
 {

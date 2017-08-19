@@ -164,67 +164,70 @@ void Identicon::regenerateIdenticon()
 					if(ret) {
 						QByteArray baData = file.readAll();
 						mDoc.setContent(baData);
-						mPersonality.reset();
-						//qreal p1=frand();						qreal p2=frand();						qreal p3=frand();
-						qreal p4=frand();
-						qreal p5=frand();
-						qreal p6=frand();
-						qreal p7=frand();
-						qreal p8=frand();
-						qreal p9=frand();
-						//qreal p10=frand();
+						// When ID is not set, default is original colors of the file (should be official OctoMY colors)
+						if(""!=mID.id()) {
+							mPersonality.reset();
+							//qreal p1=frand();						qreal p2=frand();						qreal p3=frand();
+							qreal p4=frand();
+							qreal p5=frand();
+							qreal p6=frand();
+							qreal p7=frand();
+							qreal p8=frand();
+							qreal p9=frand();
+							//qreal p10=frand();
 
-						//qDebug()<<"Identicon params: "<<mID.id()<<p1<<p2<<p3<<p4<<p5<<p6<<p7;
+							//qDebug()<<"Identicon params: "<<mID.id()<<p1<<p2<<p3<<p4<<p5<<p6<<p7;
 
-						const QString bodyColorHighStr=colorToSvgString(mColors.bodyColorHigh());
-						const QString bodyColorLowStr=colorToSvgString(mColors.bodyColorLow());
-						const QString backgroundColorHighStr=colorToSvgString(mColors.backgroundColorHigh());
-						const QString backgroundColorLowStr=colorToSvgString(mColors.backgroundColorLow());
-						const QString limbColorStr=colorToSvgString(mColors.limbColor());
+							const QString bodyColorHighStr=colorToSvgString(mColors.bodyColorHigh());
+							const QString bodyColorLowStr=colorToSvgString(mColors.bodyColorLow());
+							const QString backgroundColorHighStr=colorToSvgString(mColors.backgroundColorHigh());
+							const QString backgroundColorLowStr=colorToSvgString(mColors.backgroundColorLow());
+							const QString limbColorStr=colorToSvgString(mColors.limbColor());
 
-						QDomElement o=mDoc.documentElement();
+							QDomElement o=mDoc.documentElement();
 
-						DiscoveryType type=mID.type();
+							DiscoveryType type=mID.type();
 
-						if(TYPE_AGENT==type) {
-							setAttrRecur(o, "stop", "agent_body_color_stop1", "style", "stop-color:"+bodyColorHighStr+";stop-opacity:1");
-							setAttrRecur(o, "stop", "agent_body_color_stop2", "style", "stop-color:"+bodyColorLowStr+";stop-opacity:1");
-							setAttrRecur(o, "stop", "agent_background_color_stop1", "style", "stop-color:"+backgroundColorHighStr+";stop-opacity:1");
-							setAttrRecur(o, "stop", "agent_background_color_stop2", "style", "stop-color:"+backgroundColorLowStr+";stop-opacity:1");
-							setAttrRecur(o, "path", "agent_face", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:1.70119631;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
+							if(TYPE_AGENT==type) {
+								setAttrRecur(o, "stop", "agent_body_color_stop1", "style", "stop-color:"+bodyColorHighStr+";stop-opacity:1");
+								setAttrRecur(o, "stop", "agent_body_color_stop2", "style", "stop-color:"+bodyColorLowStr+";stop-opacity:1");
+								setAttrRecur(o, "stop", "agent_background_color_stop1", "style", "stop-color:"+backgroundColorHighStr+";stop-opacity:1");
+								setAttrRecur(o, "stop", "agent_background_color_stop2", "style", "stop-color:"+backgroundColorLowStr+";stop-opacity:1");
+								setAttrRecur(o, "path", "agent_face", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:1.70119631;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
 
-							const QString limbStyle="fill:none;stroke:"+limbColorStr+";stroke-width:6.12427092;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1";
+								const QString limbStyle="fill:none;stroke:"+limbColorStr+";stroke-width:6.12427092;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1";
 
-							erectLimb(o,limbStyle, false, false,false,p4,p5,p6,p7,p8,p9);
-							erectLimb(o,limbStyle, true,false,false,p4,p5,p6,p7,p8,p9);
-							erectLimb(o,limbStyle, false,true,false,p4,p5,p6,p7,p8,p9);
-							erectLimb(o,limbStyle, true,true,false,p4,p5,p6,p7,p8,p9);
-							erectLimb(o,limbStyle, false,false,true,p4,p5,p6,p7,p8,p9);
-							erectLimb(o,limbStyle, true,false,true,p4,p5,p6,p7,p8,p9);
-							erectLimb(o,limbStyle, false,true,true,p4,p5,p6,p7,p8,p9);
-							erectLimb(o,limbStyle, true,true,true,p4,p5,p6,p7,p8,p9);
-						} else if(TYPE_REMOTE==type) {
-							setAttrRecur(o, "stop", "remote_body_color_stop1", "style", "stop-color:"+bodyColorHighStr+";stop-opacity:1");
-							setAttrRecur(o, "stop", "remote_body_color_stop2", "style", "stop-color:"+bodyColorLowStr+";stop-opacity:1");
-							setAttrRecur(o, "stop", "remote_background_color_stop1", "style", "stop-color:"+backgroundColorHighStr+";stop-opacity:1");
-							setAttrRecur(o, "stop", "remote_background_color_stop2", "style", "stop-color:"+backgroundColorLowStr+";stop-opacity:1");
-							setAttrRecur(o, "path", "remote_face", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:1.70119631;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
+								erectLimb(o,limbStyle, false, false,false,p4,p5,p6,p7,p8,p9);
+								erectLimb(o,limbStyle, true,false,false,p4,p5,p6,p7,p8,p9);
+								erectLimb(o,limbStyle, false,true,false,p4,p5,p6,p7,p8,p9);
+								erectLimb(o,limbStyle, true,true,false,p4,p5,p6,p7,p8,p9);
+								erectLimb(o,limbStyle, false,false,true,p4,p5,p6,p7,p8,p9);
+								erectLimb(o,limbStyle, true,false,true,p4,p5,p6,p7,p8,p9);
+								erectLimb(o,limbStyle, false,true,true,p4,p5,p6,p7,p8,p9);
+								erectLimb(o,limbStyle, true,true,true,p4,p5,p6,p7,p8,p9);
+							} else if(TYPE_REMOTE==type) {
+								setAttrRecur(o, "stop", "remote_body_color_stop1", "style", "stop-color:"+bodyColorHighStr+";stop-opacity:1");
+								setAttrRecur(o, "stop", "remote_body_color_stop2", "style", "stop-color:"+bodyColorLowStr+";stop-opacity:1");
+								setAttrRecur(o, "stop", "remote_background_color_stop1", "style", "stop-color:"+backgroundColorHighStr+";stop-opacity:1");
+								setAttrRecur(o, "stop", "remote_background_color_stop2", "style", "stop-color:"+backgroundColorLowStr+";stop-opacity:1");
+								setAttrRecur(o, "path", "remote_face", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:1.70119631;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
 
-							setAttrRecur(o, "circle", "remote_outer_ring", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:" + QString::number(0.25+p4*3)+ ";stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
-							setAttrRecur(o, "circle", "remote_middle_ring", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:" + QString::number(0.20+p5*3.5)+ ";stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
-							setAttrRecur(o, "circle", "remote_inner_ring", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:" + QString::number(0.25+p6*3)+ ";stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
+								setAttrRecur(o, "circle", "remote_outer_ring", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:" + QString::number(0.25+p4*3)+ ";stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
+								setAttrRecur(o, "circle", "remote_middle_ring", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:" + QString::number(0.20+p5*3.5)+ ";stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
+								setAttrRecur(o, "circle", "remote_inner_ring", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:" + QString::number(0.25+p6*3)+ ";stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
 
-							setAttrRecur(o, "circle", "remote_middle_ring", "r", QString::number(11+ p7*6.0));
+								setAttrRecur(o, "circle", "remote_middle_ring", "r", QString::number(11+ p7*6.0));
 
-							setAttrRecur(o, "circle", "remote_ball", "style", "stroke:none; fill:"+limbColorStr+";");
-						} else if(TYPE_HUB==type) {
-							setAttrRecur(o, "stop", "hub_body_color_stop1", "style", "stop-color:"+bodyColorHighStr+";stop-opacity:1");
-							setAttrRecur(o, "stop", "hub_body_color_stop2", "style", "stop-color:"+bodyColorLowStr+";stop-opacity:1");
-							setAttrRecur(o, "stop", "hub_background_color_stop1", "style", "stop-color:"+backgroundColorHighStr+";stop-opacity:1");
-							setAttrRecur(o, "stop", "hub_background_color_stop2", "style", "stop-color:"+backgroundColorLowStr+";stop-opacity:1");
-							setAttrRecur(o, "path", "hub_face", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:1.70119631;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
-							setAttrRecur(o, "path", "hub_brain", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:1.70119631;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
-							setAttrRecur(o, "path", "hub_brain", "transform", "rotate("+QString::number(p4*360.0)+", -860.79895, 612.97186)");
+								setAttrRecur(o, "circle", "remote_ball", "style", "stroke:none; fill:"+limbColorStr+";");
+							} else if(TYPE_HUB==type) {
+								setAttrRecur(o, "stop", "hub_body_color_stop1", "style", "stop-color:"+bodyColorHighStr+";stop-opacity:1");
+								setAttrRecur(o, "stop", "hub_body_color_stop2", "style", "stop-color:"+bodyColorLowStr+";stop-opacity:1");
+								setAttrRecur(o, "stop", "hub_background_color_stop1", "style", "stop-color:"+backgroundColorHighStr+";stop-opacity:1");
+								setAttrRecur(o, "stop", "hub_background_color_stop2", "style", "stop-color:"+backgroundColorLowStr+";stop-opacity:1");
+								setAttrRecur(o, "path", "hub_face", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:1.70119631;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
+								setAttrRecur(o, "path", "hub_brain", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:1.70119631;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
+								setAttrRecur(o, "path", "hub_brain", "transform", "rotate("+QString::number(p4*360.0)+", -860.79895, 612.97186)");
+							}
 						}
 						mDirty=false;
 					} else {

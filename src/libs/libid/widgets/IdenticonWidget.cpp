@@ -13,6 +13,8 @@
 IdenticonWidget::IdenticonWidget(QWidget *parent)
 	: SvgWidget(parent)
 {
+	PortableID pid;
+	setPortableID(pid);
 }
 
 void IdenticonWidget::regenerateIdenticon()
@@ -43,4 +45,13 @@ Identicon IdenticonWidget::identicon()
 void IdenticonWidget::mouseDoubleClickEvent(QMouseEvent *)
 {
 	emit doubleClicked();
+}
+
+
+QDomDocument IdenticonWidget::svgDOM(){
+	return mIdenticon.domDocument();
+}
+
+QByteArray IdenticonWidget::svgXML(){
+	return mIdenticon.domDocument().toByteArray();
 }

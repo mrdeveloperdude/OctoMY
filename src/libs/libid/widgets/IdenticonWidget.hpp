@@ -25,6 +25,10 @@ protected:
 public:
 	void setPortableID(PortableID &id);
 
+	QDomDocument svgDOM();
+
+	QByteArray svgXML();
+
 	Identicon identicon();
 signals:
 	void doubleClicked();

@@ -20,6 +20,7 @@ private:
 	QPixmap mDoubleBuffer;
 	bool mDirty;
 	PortableID mPid;
+	quint32 mIndex;
 
 public:
 	explicit IrisWidget(QWidget *parent = 0);
@@ -28,7 +29,10 @@ protected:
 	void regenerateWidget();
 
 public:
+	void setIrixIndex(quint32 index);
 	void setPortableID(PortableID &id);
+
+	PortableID portableID();
 
 signals:
 	void doubleClicked();

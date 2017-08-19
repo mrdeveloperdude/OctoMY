@@ -20,10 +20,10 @@ QRWidget::QRWidget(QWidget *parent)
 
 void QRWidget::setQRData(QString data)
 {
-	if(this->mData!=data) {
+	if(mData!=data) {
 		mDirty=true;
-		this->mData=data;
-		this->setToolTip(data);
+		mData=data;
+		setToolTip(data);
 		update();
 	}
 }
@@ -31,6 +31,10 @@ void QRWidget::setQRData(QString data)
 void QRWidget::paintEvent(QPaintEvent *)
 {
 	OC_METHODGATE();
+	// If data is not set we simply don't draw the QR code
+	if(""==mData) {
+		return;
+	}
 	const int threshold=10;
 	const int w=width();
 	const int h=height();

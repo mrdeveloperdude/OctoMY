@@ -53,6 +53,8 @@ public:
 
 private:
 
+	void updateIdentityWidgets();
+
 	void startProcess(QString base);
 #ifdef EXTERNAL_LIB_OPENCL
 
@@ -88,6 +90,11 @@ private slots:
 	void on_pushButtonRandomIdenticonID_clicked();
 	void on_lineEditIdenticonID_textChanged(const QString &arg1);
 
+	void on_pushButtonSaveIdenticonAgent_clicked();
+	void on_horizontalSliderIrisIndex_valueChanged(int value);
+	void on_pushButtonSaveIdenticonIris_clicked();
+	void on_pushButtonSaveIdenticonRemote_clicked();
+	void on_pushButtonSaveIdenticonHub_clicked();
 };
 
 #endif // HUBWINDOW_HPP

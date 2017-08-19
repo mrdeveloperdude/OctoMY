@@ -14,6 +14,7 @@
 IrisWidget::IrisWidget(QWidget *parent)
 	: QWidget(parent)
 	, mDirty(true)
+	, mIndex(0)
 {
 }
 
@@ -23,11 +24,22 @@ void IrisWidget::regenerateWidget()
 	update();
 }
 
+void IrisWidget::setIrixIndex(quint32 index)
+{
+	mIndex=index;
+	regenerateWidget();
+}
+
 void IrisWidget::setPortableID(PortableID &id)
 {
 	mPid=id;
 	identicon.setPortableID(id);
 	regenerateWidget();
+}
+
+PortableID IrisWidget::portableID()
+{
+	return mPid;
 }
 
 
@@ -42,29 +54,34 @@ void IrisWidget::mouseDoubleClickEvent(QMouseEvent *)
 void IrisWidget::paintEvent(QPaintEvent *)
 {
 	OC_METHODGATE();
+	// If id is not set, we simply don't draw anything
+	if("" == mPid.id()){
+		return;
+	}
 	const int threshold=10;
 	const int w=width();
 	const int h=height();
 	const double aspect=(((double)w)/((double)h));
 	const int sz=(aspect>1.0)?h:w;
-	const int ox=floor((w-sz)/2);
-	const int oy=floor((h-sz)/2);
+	const int margin=(sz*150)/1000;
+	const int szm=sz-margin*2;
+	const int ox=floor((w-szm)/2);
+	const int oy=floor((h-szm)/2);
 	//check for resize change / dirty
 	const int dbw=mDoubleBuffer.width();
 	const int dbh=mDoubleBuffer.height();
-	if (  mDirty || (qAbs(dbw-sz)>threshold) || (qAbs(dbh-sz)>threshold) ) {
+	if (  mDirty || (qAbs(dbw-szm)>threshold) || (qAbs(dbh-szm)>threshold) ) {
 		mDirty=false;
-		mDoubleBuffer=QPixmap(sz,sz);
+		mDoubleBuffer=QPixmap(szm,szm);
 		mDoubleBuffer.fill(Qt::transparent);
 		QPainter painter(&mDoubleBuffer);
 		IrisRendrer ir;
 		ir.setPortableID(mPid);
-		const int margin=(sz*100)/1000;
-		QRect r(margin,margin,sz-margin*2,sz-margin*2);
-		ir.draw(r, painter);
+		QRect r(0,0,szm,szm);
+		ir.draw(r, painter, mIndex);
 	}
 	QPainter oPainter;
 	oPainter.begin( this );
-	oPainter.drawPixmap( QRect(ox, oy, sz, sz), mDoubleBuffer, mDoubleBuffer.rect() );
+	oPainter.drawPixmap( QRect(ox, oy, szm, szm), mDoubleBuffer, mDoubleBuffer.rect() );
 	oPainter.end();
 }

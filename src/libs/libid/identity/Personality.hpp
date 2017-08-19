@@ -22,6 +22,9 @@ public:
 	Personality(QString id="");
 	Personality(QString id, QString key);
 
+
+	Personality( const Personality& other );
+
 	virtual ~Personality();
 
 
