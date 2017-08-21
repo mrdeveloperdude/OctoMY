@@ -20,6 +20,7 @@ SOURCES += \
 	testMultiple.cpp \
 	testSingle.cpp \
     MockCommsCarrierLog.cpp \
-    MockCommsCarrier.cpp
+    MockCommsCarrier.cpp \
+    testCommsMock.cpp
 
 include($$TESTS/test_autorun.pri)

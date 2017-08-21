@@ -146,6 +146,9 @@ void StyleManager::applyStyle(QApplication &app){
 	palette.setColor(QPalette::Disabled, QPalette::Text, Qt::darkGray);
 	palette.setColor(QPalette::Disabled, QPalette::ButtonText, Qt::darkGray);
 
+	palette.setColor(QPalette::Link, QColor(42, 130, 218));
+
+
 	app.setPalette(palette);
 
 

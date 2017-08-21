@@ -4,6 +4,7 @@
 #include "comms/CommsCarrierUDP.hpp"
 
 #include "MockCommsCarrierLog.hpp"
+#include "MockCommsCarrier.hpp"
 
 #include <QTest>
 
@@ -22,7 +23,7 @@ static void testSleep(quint64 ms)
 void TestCommsChannel::testCarrier()
 {
 	CommsCarrierUDP coca;
-	MockCommsCarrierLog moca;
+	MockCommsCarrier moca;
 	coca.setHookCarrierSignals(moca, true);
 
 	NetworkAddress address(QHostAddress::LocalHost, 8123);

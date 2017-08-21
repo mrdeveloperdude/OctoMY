@@ -31,10 +31,13 @@ class TestCommsChannel:public QObject
 	void testSingle();
 	void testMultiple();
 	void testHandshake();
+	void testCarrier();
 private slots:
 
 
-	void testCarrier();
+
+
+	void testCommsMock();
 
 
 };
