@@ -10,9 +10,10 @@ PersonalityColors::PersonalityColors(QString id)
 void PersonalityColors::setID(QString id)
 {
 	mPersonality=Personality(id, Personality::COLORS);
-	mP1=(mPersonality.rng().generateReal1());
-	mP2=(mPersonality.rng().generateReal1());
-	mP3=(mPersonality.rng().generateReal1());
+	auto rng=mPersonality.rng();
+	mP1=(rng.generateReal1());
+	mP2=(rng.generateReal1());
+	mP3=(rng.generateReal1());
 	mBodyColorHigh=(QColor::fromHslF(mP1,0.75f,0.55f));
 	mBodyColorLow=(QColor::fromHslF(mP1,0.75f,0.425f));
 	mBackgroundColorHigh=(QColor::fromHslF(mP2,0.75f,0.25f));
