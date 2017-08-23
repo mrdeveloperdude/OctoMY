@@ -104,6 +104,15 @@ QString localAddress();
 
 
 
+// Random
+QByteArray randomByteArray(int size);
+QImage randomImage(int w=512, int h=512 );
+QByteArray imageToByteArray(QImage &image );
+QByteArray randomImageByteArray(int w=512, int h=512 );
+QByteArray randomJPEGByteArray(int w=512, int h=512, int q=85 );
+
+
+
 
 ///////////////////////////////////////////
 
