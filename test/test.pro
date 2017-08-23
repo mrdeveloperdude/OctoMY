@@ -43,6 +43,7 @@ TEST_PROJECTS+= \
 #	testZooComms \
 #	testStreamCodec \
 	testIrisRendrer \
+	testEyesWidget \
 
 
 
