@@ -52,23 +52,21 @@ void EyesWidget::updateIris()
 	QRect rectLeft(0,0, sLeft, sLeft);
 	QSize sizeLeft=rectLeft.size();
 	if(sizeLeft.width() > 0 && sizeLeft.height() > 0 ) {
-		qDebug()<<"SIZE JUMP LEFT: "<<sizeLeft;
 		QImage img(sizeLeft, QImage::Format_ARGB32);
 		QPainter painter(&img);
 		mIrisRendrer.draw(rectLeft, painter, 0);
-		//painter.fillRect(rectLeft, Qt::blue);
 		leftEye.setIrisImage(img);
 	}
 
 	const qreal sRight=rightEye.irisRadius()*width()*2.0;
 	QRect rectRight(0,0, sRight, sRight);
 	QSize sizeRight=rectRight.size();
-	QImage imgRight(sizeRight,QImage::Format_ARGB32);
-	{
-		QPainter painter(&imgRight);
+	if(sizeRight.width() > 0 && sizeRight.height() > 0 ) {
+		QImage img(sizeRight,QImage::Format_ARGB32);
+		QPainter painter(&img);
 		mIrisRendrer.draw(rectRight, painter, 1);
+		rightEye.setIrisImage(img);
 	}
-	rightEye.setIrisImage(imgRight);
 
 	update();
 }
