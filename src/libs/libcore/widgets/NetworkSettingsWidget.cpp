@@ -34,6 +34,7 @@ NetworkSettingsWidget::NetworkSettingsWidget(QWidget *parent)
 NetworkSettingsWidget::~NetworkSettingsWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

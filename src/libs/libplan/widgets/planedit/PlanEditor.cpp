@@ -32,7 +32,9 @@ PlanEditor::PlanEditor(QWidget *parent)
 PlanEditor::~PlanEditor(){
 	save();
 	delete ui;
+	ui=nullptr;
 	delete highlighter;
+	highlighter=nullptr;
 }
 
 

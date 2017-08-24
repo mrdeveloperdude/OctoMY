@@ -85,7 +85,7 @@ RMatrix Rand(int r, int c)
 	return re;
 }
 
-RMatrix Eye(int r, int c )
+RMatrix EyeRendrer(int r, int c )
 {
 	RMatrix re(r,c);
 	int n = r * c;
@@ -102,14 +102,14 @@ RMatrix Eye(int r, int c )
 	return re;
 }
 
-RMatrix Eye(int r)
+RMatrix EyeRendrer(int r)
 {
-	return Eye(r,r);
+	return EyeRendrer(r,r);
 }
 
 RMatrix Inv(const RMatrix &m)
 {
-	return m % Eye(m.row, m.row);
+	return m % EyeRendrer(m.row, m.row);
 }
 
 int idamax(int n, gReal *dx)
@@ -2685,7 +2685,7 @@ RMatrix Nullspace(const RMatrix &A, gReal eps)
 	RMatrix N, U, s, V;
 	SVD(A, U, s, V);
 	gReal mx = MaxVec(s);
-	if ( mx < 1E-20 ) return Eye(A.ColSize());
+	if ( mx < 1E-20 ) return EyeRendrer(A.ColSize());
 	gReal imx = (gReal)1.0 / mx;
 	for (i=0, cnt=0; i<s.row; i++) { if ( s.element[i] * imx <= eps ) cnt++; }
 	N.SetZero(V.row, cnt);
@@ -2712,7 +2712,7 @@ RMatrix pInv(const RMatrix &A, RMatrix &N, gReal eps)
 	RMatrix re, U, s, V, is;
 	SVD(A, U, s, V);
 	gReal mx = MaxVec(s);
-	if ( mx < 1E-20 ) { N = Eye(A.ColSize()); return Zeros(A.ColSize(),A.RowSize()); }
+	if ( mx < 1E-20 ) { N = EyeRendrer(A.ColSize()); return Zeros(A.ColSize(),A.RowSize()); }
 	gReal imx = (gReal)1.0 / mx;
 	is.SetZero(A.col,1);
 	for (i=0, cnt=0; i<s.row; i++) { if ( s.element[i] * imx > eps ) { is.element[i] = (gReal)1./s.element[i]; } else cnt++; }
@@ -2744,7 +2744,7 @@ RMatrix srInv(const RMatrix &A, RMatrix &N, gReal alpha, gReal eps)
 	RMatrix re, U, s, V, is;
 	SVD(A, U, s, V);
 	gReal mx = MaxVec(s);
-	if ( mx < 1E-20 ) { N = Eye(A.ColSize()); return Zeros(A.ColSize(),A.RowSize()); }
+	if ( mx < 1E-20 ) { N = EyeRendrer(A.ColSize()); return Zeros(A.ColSize(),A.RowSize()); }
 	gReal imx = (gReal)1.0 / mx;
 	is.SetZero(A.col,1);
 	for (i=0, cnt=0; i<s.row; i++) { is.element[i] = s.element[i]/(s.element[i]*s.element[i] + alpha); if ( s.element[i] * imx <= eps ) cnt++; }
@@ -2757,9 +2757,9 @@ RMatrix srInv(const RMatrix &A, RMatrix &N, gReal alpha, gReal eps)
 RMatrix srInv2(const RMatrix &A, gReal alpha)
 {
 	if ( A.row <= A.col ) {
-		return ~A * Inv( A * ~A + alpha*Eye(A.row) );
+		return ~A * Inv( A * ~A + alpha*EyeRendrer(A.row) );
 	} else {
-		return Inv( ~A * A + alpha*Eye(A.col) ) * ~A;
+		return Inv( ~A * A + alpha*EyeRendrer(A.col) ) * ~A;
 	}
 }
 
@@ -2785,7 +2785,7 @@ int solve_Ax_b_pInv(RMatrix &x, const RMatrix &A, const RMatrix &b, RMatrix &N, 
 	RMatrix U, s, V, is;
 	SVD(A, U, s, V);
 	gReal mx = MaxVec(s);
-	if ( mx < 1E-20 ) { N = Eye(A.ColSize()); x = Zeros(A.ColSize(),1); return 0; }
+	if ( mx < 1E-20 ) { N = EyeRendrer(A.ColSize()); x = Zeros(A.ColSize(),1); return 0; }
 	gReal imx = (gReal)1.0 / mx;
 	is.SetZero(s.row,1);
 	for (i=0, cnt=0; i<s.row; i++) { if ( s.element[i] * imx > eps ) { is.element[i] = 1/s.element[i]; rank++; } else cnt++; }
@@ -2816,7 +2816,7 @@ void solve_Ax_b_srInv(RMatrix &x, const RMatrix &A, const RMatrix &b, RMatrix &N
 	RMatrix U, s, V, is;
 	SVD(A, U, s, V);
 	gReal mx = MaxVec(s);
-	if ( mx < 1E-20 ) { N = Eye(A.ColSize()); x = Zeros(A.ColSize(),1); return; }
+	if ( mx < 1E-20 ) { N = EyeRendrer(A.ColSize()); x = Zeros(A.ColSize(),1); return; }
 	gReal imx = (gReal)1.0 / mx;
 	is.SetZero(s.row,1);
 	for (i=0, cnt=0; i<s.row; i++) { is.element[i] = s.element[i]/(s.element[i]*s.element[i] + alpha); if ( s.element[i] * imx <= eps ) cnt++; }
@@ -2850,7 +2850,7 @@ int solve_Ax_b_pInvW(RMatrix &x, const RMatrix &A, const RMatrix &b, const RMatr
 	MultAb(A_, A, iw); // A_ = A * Diag(iw);
 	SVD(A_, U, s, V);
 	gReal mx = MaxVec(s);
-	if ( mx < 1E-20 ) { Nw = Eye(A.ColSize()); x = Zeros(A.ColSize(),1); return 0; }
+	if ( mx < 1E-20 ) { Nw = EyeRendrer(A.ColSize()); x = Zeros(A.ColSize(),1); return 0; }
 	gReal imx = (gReal)1.0 / mx;
 	is.SetZero(s.row,1);
 	for (i=0, cnt=0; i<s.row; i++) { if ( s.element[i] * imx > eps ) { is.element[i] = 1/s.element[i]; rank++; } else cnt++; }
@@ -2887,7 +2887,7 @@ void solve_Ax_b_srInvW(RMatrix &x, const RMatrix &A, const RMatrix &b, const RMa
 	MultAb(A_, A, iw); // A_ = A * Diag(iw);
 	SVD(A_, U, s, V);
 	gReal mx = MaxVec(s);
-	if ( mx < 1E-20 ) { Nw = Eye(A.ColSize()); x = Zeros(A.ColSize(),1); return; }
+	if ( mx < 1E-20 ) { Nw = EyeRendrer(A.ColSize()); x = Zeros(A.ColSize(),1); return; }
 	gReal imx = (gReal)1.0 / mx;
 	is.SetZero(s.row,1);
 	for (i=0, cnt=0; i<s.row; i++) { is.element[i] = s.element[i]/(s.element[i]*s.element[i] + alpha); if ( s.element[i] * imx <= eps ) cnt++; }

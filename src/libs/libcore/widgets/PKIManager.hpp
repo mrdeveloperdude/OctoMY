@@ -12,7 +12,7 @@ class PKIManager : public QWidget
 		Q_OBJECT
 
 	public:
-		explicit PKIManager(QWidget *parent = 0);
+		explicit PKIManager(QWidget *parent = nullptr);
 		~PKIManager();
 
 	private:

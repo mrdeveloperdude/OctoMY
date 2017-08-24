@@ -25,6 +25,7 @@ TriggerManagerWidget::TriggerManagerWidget(QWidget *parent)
 TriggerManagerWidget::~TriggerManagerWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

@@ -119,6 +119,6 @@ extern "C" int iconv_close (iconv_t __cd)
 {
 	QtIconv *qt_iconv=(QtIconv *)__cd;
 	delete qt_iconv;
-	qt_iconv=0;
+	qt_iconv=nullptr;
 	return 0;
 }

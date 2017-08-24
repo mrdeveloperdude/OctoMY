@@ -60,6 +60,7 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent)
 RemoteWindow::~RemoteWindow()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

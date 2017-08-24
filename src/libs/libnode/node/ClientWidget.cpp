@@ -92,6 +92,7 @@ ClientWidget::~ClientWidget()
 {
 	OC_METHODGATE();
 	delete ui;
+	ui=nullptr;
 }
 
 void ClientWidget::prepareSpinner()

@@ -64,38 +64,42 @@ void Servotor32ControllerWidget::onUpdateGaitTimer()
 	}
 	Pose pose;
 	pose.setValues(pos, sizeof(pos)/sizeof(qreal));
-	mController->move(pose);
+	if(nullptr!=mController) {
+		mController->move(pose);
+	}
 }
 
 Servotor32ControllerWidget::~Servotor32ControllerWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 void Servotor32ControllerWidget::onConnectChanged(const TryToggleState last, const TryToggleState current)
 {
-	ui->scrollAreaServos->setEnabled(ON==current);
-	switch(current) {
-	case(OFF): {
-		mController->limpAll();
-		if(nullptr!=mController) {
-			mController->setConnected(false);
+	if(nullptr!=mController) {
+		ui->scrollAreaServos->setEnabled(ON==current);
+		switch(current) {
+		case(OFF): {
+			mController->limpAll();
+			if(nullptr!=mController) {
+				mController->setConnected(false);
+			}
+			setUILock(false);
 		}
-		setUILock(false);
+		break;
+		case(TRYING): {
+			setUILock(true);
+			mController->setConnected(true);
+		}
+		break;
+		case(ON): {
+			mController->limpAll();
+			setUILock(false);
+		}
+		break;
+		}
 	}
-	break;
-	case(TRYING): {
-		setUILock(true);
-		mController->setConnected(true);
-	}
-	break;
-	case(ON): {
-		mController->limpAll();
-		setUILock(false);
-	}
-	break;
-	}
-
 }
 
 void Servotor32ControllerWidget::onLimbIKUpdated()
@@ -119,18 +123,22 @@ void Servotor32ControllerWidget::onLimbIKUpdated()
 
 void Servotor32ControllerWidget::onHexySettingsChanged()
 {
-	const bool e=mController->isConnected();
-	ui->tryToggleConnect->setState(e?ON:OFF);
-	setUILock(false);
+	if(nullptr!=mController) {
+		const bool e=mController->isConnected();
+		ui->tryToggleConnect->setState(e?ON:OFF);
+		setUILock(false);
+	}
 }
 
 
 
 void Servotor32ControllerWidget::onHexyConenctionChanged()
 {
-	const bool e=mController->isConnected();
-	ui->tryToggleConnect->setState(e?ON:OFF);
-	setUILock(false);
+	if(nullptr!=mController) {
+		const bool e=mController->isConnected();
+		ui->tryToggleConnect->setState(e?ON:OFF);
+		setUILock(false);
+	}
 }
 
 

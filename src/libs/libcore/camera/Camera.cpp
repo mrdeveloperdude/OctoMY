@@ -44,19 +44,19 @@ Camera::Camera(QWidget *parent)
 Camera::~Camera()
 {
 	delete videoProbe;
-	videoProbe=0;
+	videoProbe=nullptr;
 	delete poorVideoProbe;
-	poorVideoProbe=0;
+	poorVideoProbe=nullptr;
 	delete zbar;
-	zbar=0;
+	zbar=nullptr;
 	delete videoDevicesGroup;
-	videoDevicesGroup=0;
+	videoDevicesGroup=nullptr;
 	delete mediaRecorder;
-	mediaRecorder=0;
+	mediaRecorder=nullptr;
 	delete imageCapture;
-	imageCapture=0;
+	imageCapture=nullptr;
 	delete camera;
-	camera=0;
+	camera=nullptr;
 }
 
 
@@ -65,11 +65,11 @@ void Camera::setCamera(const QCameraInfo &ci)
 	//Free old camera
 	{
 		delete camera;
-		camera=0;
+		camera=nullptr;
 		delete mediaRecorder;
-		mediaRecorder=0;
+		mediaRecorder=nullptr;
 		delete imageCapture;
-		imageCapture=0;
+		imageCapture=nullptr;
 	}
 	if(ci.isNull()){
 		ui->stackedWidgetScreens->setCurrentWidget(ui->pageCameraList);

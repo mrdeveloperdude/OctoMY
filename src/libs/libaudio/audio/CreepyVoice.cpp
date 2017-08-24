@@ -25,6 +25,7 @@ struct CreepyBuffer {
 	~CreepyBuffer()
 	{
 		delete[] mBuffer;
+		mBuffer=nullptr;
 		mSize=0;
 	}
 
@@ -53,10 +54,12 @@ CreepyVoice::~CreepyVoice()
 	cur=nullptr;
 	for(CreepyBuffer *buffer:mBuffersFree) {
 		delete buffer;
+		buffer=nullptr;
 	}
 	mBuffersFree.clear();
 	for(CreepyBuffer *buffer:mBuffersInUse) {
 		delete buffer;
+		buffer==nullptr;
 	}
 	mBuffersInUse.clear();
 }

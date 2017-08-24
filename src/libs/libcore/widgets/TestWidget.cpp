@@ -11,4 +11,5 @@ TestWidget::TestWidget(QWidget *parent) :
 TestWidget::~TestWidget()
 {
 	delete ui;
+	ui=nullptr;
 }

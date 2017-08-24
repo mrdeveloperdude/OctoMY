@@ -943,8 +943,8 @@ gReal prand(gReal range = 1.0);	// generates positive random value in [0, range]
 RMatrix Zeros(int r, int c);
 RMatrix Ones(int r, int c);
 RMatrix Rand(int r, int c);
-RMatrix Eye(int r, int c );
-RMatrix Eye(int r);
+RMatrix EyeRendrer(int r, int c );
+RMatrix EyeRendrer(int r);
 RMatrix Inv(const RMatrix &m);
 
 RMatrix Conv(const RMatrix &u, const RMatrix &v);

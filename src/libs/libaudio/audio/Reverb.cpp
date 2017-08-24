@@ -979,5 +979,5 @@ void ReverbEffect::init(quint32 frequency)
 ReverbEffect::~ReverbEffect()
 {
 	delete[] mSampleBuffer;
-	mSampleBuffer = NULL;
+	mSampleBuffer =nullptr;
 }

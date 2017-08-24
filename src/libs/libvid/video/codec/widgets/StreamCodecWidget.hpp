@@ -19,7 +19,7 @@ private:
 
 
 public:
-	explicit StreamCodecWidget(QWidget *parent = 0);
+	explicit StreamCodecWidget(QWidget *parent = nullptr);
 	~StreamCodecWidget();
 
 

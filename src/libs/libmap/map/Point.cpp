@@ -26,347 +26,347 @@
 #include "Point.hpp"
 namespace qmapcontrol
 {
-    Point::Point()
-    {}
-    Point::Point(const Point& point)
-            :Geometry(point.name()), X(point.longitude()), Y(point.latitude())
-    {
-        visible = point.isVisible();
-        mywidget = 0;
-        mypixmap = QPixmap();
-        mypen = point.mypen;
-        homelevel = -1;
-        minsize = QSize(-1,-1);
-        maxsize = QSize(-1,-1);
-    }
+	Point::Point()
+	{}
+	Point::Point(const Point& point)
+			:Geometry(point.name()), X(point.longitude()), Y(point.latitude())
+	{
+		visible = point.isVisible();
+		mywidget = 0;
+		mypixmap = QPixmap();
+		mypen = point.mypen;
+		homelevel = -1;
+		minsize = QSize(-1,-1);
+		maxsize = QSize(-1,-1);
+	}
 
-    Point::Point(qreal x, qreal y, QString name, enum Alignment alignment)
-            : Geometry(name), X(x), Y(y), myalignment(alignment)
-    {
-        GeometryType = "Point";
-        mywidget = 0;
-        mypixmap = QPixmap();
-        visible = true;
-        homelevel = -1;
-        minsize = QSize(-1,-1);
-        maxsize = QSize(-1,-1);
-    }
+	Point::Point(qreal x, qreal y, QString name, enum Alignment alignment)
+			: Geometry(name), X(x), Y(y), myalignment(alignment)
+	{
+		GeometryType = "Point";
+		mywidget = 0;
+		mypixmap = QPixmap();
+		visible = true;
+		homelevel = -1;
+		minsize = QSize(-1,-1);
+		maxsize = QSize(-1,-1);
+	}
 
-    Point::Point(qreal x, qreal y, QWidget* widget, QString name, enum Alignment alignment)
-            : Geometry(name), X(x), Y(y), mywidget(widget), myalignment(alignment)
-    {
-        // Point(x, y, name, alignment);
-        GeometryType = "Point";
-        mypixmap = QPixmap();
-        visible = true;
-        size = widget->size();
-        homelevel = -1;
-        minsize = QSize(-1,-1);
-        maxsize = QSize(-1,-1);
+	Point::Point(qreal x, qreal y, QWidget* widget, QString name, enum Alignment alignment)
+			: Geometry(name), X(x), Y(y), mywidget(widget), myalignment(alignment)
+	{
+		// Point(x, y, name, alignment);
+		GeometryType = "Point";
+		mypixmap = QPixmap();
+		visible = true;
+		size = widget->size();
+		homelevel = -1;
+		minsize = QSize(-1,-1);
+		maxsize = QSize(-1,-1);
 
-        if(mywidget!=0)
-        {
-            mywidget->show();
-        }
-    }
-    Point::Point(qreal x, qreal y, QPixmap pixmap, QString name, enum Alignment alignment)
-            : Geometry(name), X(x), Y(y), mypixmap(pixmap), myalignment(alignment)
-    {
-        GeometryType = "Point";
-        mywidget = 0;
-        visible = true;
-        size = pixmap.size();
-        homelevel = -1;
-        minsize = QSize(-1,-1);
-        maxsize = QSize(-1,-1);
-    }
-    /*
-        Point& Point::operator=(const Point& rhs)
-        {
-        if (this == &rhs)
-        return *this;
-        else
-        {
-        X = rhs.X;
-        Y = rhs.Y;
-        size = rhs.size;
+		if(mywidget!=0)
+		{
+			mywidget->show();
+		}
+	}
+	Point::Point(qreal x, qreal y, QPixmap pixmap, QString name, enum Alignment alignment)
+			: Geometry(name), X(x), Y(y), mypixmap(pixmap), myalignment(alignment)
+	{
+		GeometryType = "Point";
+		mywidget = 0;
+		visible = true;
+		size = pixmap.size();
+		homelevel = -1;
+		minsize = QSize(-1,-1);
+		maxsize = QSize(-1,-1);
+	}
+	/*
+		Point& Point::operator=(const Point& rhs)
+		{
+		if (this == &rhs)
+		return *this;
+		else
+		{
+		X = rhs.X;
+		Y = rhs.Y;
+		size = rhs.size;
 
-        mywidget = rhs.mywidget;
-        mypixmap = rhs.mypixmap;
-        alignment = rhs.alignment;
-        homelevel = rhs.homelevel;
-        minsize = rhs.minsize;
-        maxsize = rhs.maxsize;
+		mywidget = rhs.mywidget;
+		mypixmap = rhs.mypixmap;
+		alignment = rhs.alignment;
+		homelevel = rhs.homelevel;
+		minsize = rhs.minsize;
+		maxsize = rhs.maxsize;
 }
 }
 */
-    Point::~Point()
-    {
-        if(mywidget!=0)
-        {
-            delete mywidget;
-            mywidget = 0;
-        }
-    }
+	Point::~Point()
+	{
+		if(nullptr!=mywidget)
+		{
+			delete mywidget;
+			mywidget = nullptr;
+		}
+	}
 
-    void Point::setPixmap( QPixmap qPixmap )
-    {
-        mypixmap = qPixmap;
-        size = mypixmap.size();
+	void Point::setPixmap( QPixmap qPixmap )
+	{
+		mypixmap = qPixmap;
+		size = mypixmap.size();
 
-        //forces redraw
-        emit(updateRequest(QRectF(X, Y, size.width(), size.height())));
-        emit(positionChanged(this));
-    }
+		//forces redraw
+		emit(updateRequest(QRectF(X, Y, size.width(), size.height())));
+		emit(positionChanged(this));
+	}
 
-    void Point::setVisible(bool visible)
-    {
-        this->visible = visible;
-        if (mywidget !=0)
-        {
-            mywidget->setVisible(visible);
-        }
-    }
+	void Point::setVisible(bool visible)
+	{
+		this->visible = visible;
+		if (mywidget !=0)
+		{
+			mywidget->setVisible(visible);
+		}
+	}
 
-    QRectF Point::boundingBox()
-    {
-        qreal minlon=180;
-        qreal maxlon=-180;
-        qreal minlat=90;
-        qreal maxlat=-90;
+	QRectF Point::boundingBox()
+	{
+		qreal minlon=180;
+		qreal maxlon=-180;
+		qreal minlat=90;
+		qreal maxlat=-90;
 
-        if (longitude() < minlon) minlon = longitude();
-        if (longitude() > maxlon) maxlon = longitude();
-        if (latitude() < minlat) minlat = latitude();
-        if (latitude() > maxlat) maxlat = latitude();
+		if (longitude() < minlon) minlon = longitude();
+		if (longitude() > maxlon) maxlon = longitude();
+		if (latitude() < minlat) minlat = latitude();
+		if (latitude() > maxlat) maxlat = latitude();
 
-        QPointF min = QPointF(minlon, minlat);
-        QPointF max = QPointF(maxlon, maxlat);
-        QPointF dist = max - min;
-        QSizeF si = QSizeF(dist.x(), dist.y());
+		QPointF min = QPointF(minlon, minlat);
+		QPointF max = QPointF(maxlon, maxlat);
+		QPointF dist = max - min;
+		QSizeF si = QSizeF(dist.x(), dist.y());
 
-        return QRectF(min, si);
-    }
+		return QRectF(min, si);
+	}
 
-    qreal Point::longitude() const
-    {
-        return X;
-    }
-    qreal Point::latitude() const
-    {
-        return Y;
-    }
-    QPointF Point::coordinate() const
-    {
-        return QPointF(X, Y);
-    }
+	qreal Point::longitude() const
+	{
+		return X;
+	}
+	qreal Point::latitude() const
+	{
+		return Y;
+	}
+	QPointF Point::coordinate() const
+	{
+		return QPointF(X, Y);
+	}
 
-    void Point::draw(QPainter* painter, const MapAdapter* mapadapter, const QRect &viewport, const QPoint offset)
-    {
-        if (!visible)
-            return;
+	void Point::draw(QPainter* painter, const MapAdapter* mapadapter, const QRect &viewport, const QPoint offset)
+	{
+		if (!visible)
+			return;
 
-        if (homelevel > 0)
-        {
+		if (homelevel > 0)
+		{
 
-            int currentzoom = mapadapter->maxZoom() < mapadapter->minZoom() ? mapadapter->minZoom() - mapadapter->currentZoom() : mapadapter->currentZoom();
+			int currentzoom = mapadapter->maxZoom() < mapadapter->minZoom() ? mapadapter->minZoom() - mapadapter->currentZoom() : mapadapter->currentZoom();
 
-            // int currentzoom = mapadapter->getZoom();
-            int diffzoom = homelevel-currentzoom;
-            int viewheight = size.height();
-            int viewwidth = size.width();
-            viewheight = int(viewheight / pow(2.0, diffzoom));
-            viewwidth = int(viewwidth / pow(2.0, diffzoom));
+			// int currentzoom = mapadapter->getZoom();
+			int diffzoom = homelevel-currentzoom;
+			int viewheight = size.height();
+			int viewwidth = size.width();
+			viewheight = int(viewheight / pow(2.0, diffzoom));
+			viewwidth = int(viewwidth / pow(2.0, diffzoom));
 
-            if (minsize.height()!= -1 && viewheight < minsize.height())
-                viewheight = minsize.height();
-            else if (maxsize.height() != -1 && viewheight > maxsize.height())
-                viewheight = maxsize.height();
-
-
-            if (minsize.width()!= -1 && viewwidth < minsize.width())
-                viewwidth = minsize.width();
-            else if (maxsize.width() != -1 && viewwidth > maxsize.width())
-                viewwidth = maxsize.width();
-
-            displaysize = QSize(viewwidth, viewheight);
-        }
-        else
-        {
-            displaysize = size;
-        }
+			if (minsize.height()!= -1 && viewheight < minsize.height())
+				viewheight = minsize.height();
+			else if (maxsize.height() != -1 && viewheight > maxsize.height())
+				viewheight = maxsize.height();
 
 
-        if (mypixmap.size().width() > 0)
-        {
-            const QPointF c = QPointF(X, Y);
-            QPoint point = mapadapter->coordinateToDisplay(c);
+			if (minsize.width()!= -1 && viewwidth < minsize.width())
+				viewwidth = minsize.width();
+			else if (maxsize.width() != -1 && viewwidth > maxsize.width())
+				viewwidth = maxsize.width();
 
-            if (viewport.contains(point))
-            {
-                QPoint alignedtopleft = alignedPoint(point);
-                painter->drawPixmap(alignedtopleft.x(), alignedtopleft.y(), displaysize.width(), displaysize.height(), mypixmap);
-            }
+			displaysize = QSize(viewwidth, viewheight);
+		}
+		else
+		{
+			displaysize = size;
+		}
 
-        }
-        else if (mywidget!=0)
-        {
-            drawWidget(mapadapter, offset);
-        }
 
-    }
+		if (mypixmap.size().width() > 0)
+		{
+			const QPointF c = QPointF(X, Y);
+			QPoint point = mapadapter->coordinateToDisplay(c);
 
-    void Point::drawWidget(const MapAdapter* mapadapter, const QPoint offset)
-    {
-        const QPointF c = QPointF(X, Y);
-        QPoint point = mapadapter->coordinateToDisplay(c);
-        point -= offset;
+			if (viewport.contains(point))
+			{
+				QPoint alignedtopleft = alignedPoint(point);
+				painter->drawPixmap(alignedtopleft.x(), alignedtopleft.y(), displaysize.width(), displaysize.height(), mypixmap);
+			}
 
-        QPoint alignedtopleft = alignedPoint(point);
+		}
+		else if (mywidget!=0)
+		{
+			drawWidget(mapadapter, offset);
+		}
 
-        if (mywidget!=0)
-        {
-            mywidget->setGeometry(alignedtopleft.x(), alignedtopleft.y(), displaysize.width(), displaysize.height());
-        }
-    }
+	}
 
-    QPoint Point::alignedPoint(const QPoint point) const
-    {
-        QPoint alignedtopleft;
-        if (myalignment == Middle)
-        {
-            alignedtopleft.setX(point.x()-displaysize.width()/2);
-            alignedtopleft.setY(point.y()-displaysize.height()/2);
-        }
-        else if (myalignment == TopLeft)
-        {
-            alignedtopleft.setX(point.x());
-            alignedtopleft.setY(point.y());
-        }
-        else if (myalignment == TopRight)
-        {
-            alignedtopleft.setX(point.x()-displaysize.width());
-            alignedtopleft.setY(point.y());
-        }
-        else if (myalignment == BottomLeft)
-        {
-            alignedtopleft.setX(point.x());
-            alignedtopleft.setY(point.y()-displaysize.height());
-        }
-        else if (myalignment == BottomRight)
-        {
-            alignedtopleft.setX(point.x()-displaysize.width());
-            alignedtopleft.setY(point.y()-displaysize.height());
-        }
-        else if (myalignment == BottomMiddle)
-        {
-            alignedtopleft.setX(point.x()-displaysize.width()/2);
-            alignedtopleft.setY(point.y()-displaysize.height());
-        }
-        else if (myalignment == TopMiddle)
-        {
-            alignedtopleft.setX(point.x()-displaysize.width()/2);
-            alignedtopleft.setY(point.y());
-        }
-        return alignedtopleft;
-    }
+	void Point::drawWidget(const MapAdapter* mapadapter, const QPoint offset)
+	{
+		const QPointF c = QPointF(X, Y);
+		QPoint point = mapadapter->coordinateToDisplay(c);
+		point -= offset;
 
-    bool Point::Touches(Point* click, const MapAdapter* mapadapter)
-    {
-        if (this->isVisible() == false)
-            return false;
+		QPoint alignedtopleft = alignedPoint(point);
 
-        if ( !click || !mapadapter )
-            return false;
+		if (mywidget!=0)
+		{
+			mywidget->setGeometry(alignedtopleft.x(), alignedtopleft.y(), displaysize.width(), displaysize.height());
+		}
+	}
 
-        if (points().size() < 1)
-        {
-            return false;
-        }
+	QPoint Point::alignedPoint(const QPoint point) const
+	{
+		QPoint alignedtopleft;
+		if (myalignment == Middle)
+		{
+			alignedtopleft.setX(point.x()-displaysize.width()/2);
+			alignedtopleft.setY(point.y()-displaysize.height()/2);
+		}
+		else if (myalignment == TopLeft)
+		{
+			alignedtopleft.setX(point.x());
+			alignedtopleft.setY(point.y());
+		}
+		else if (myalignment == TopRight)
+		{
+			alignedtopleft.setX(point.x()-displaysize.width());
+			alignedtopleft.setY(point.y());
+		}
+		else if (myalignment == BottomLeft)
+		{
+			alignedtopleft.setX(point.x());
+			alignedtopleft.setY(point.y()-displaysize.height());
+		}
+		else if (myalignment == BottomRight)
+		{
+			alignedtopleft.setX(point.x()-displaysize.width());
+			alignedtopleft.setY(point.y()-displaysize.height());
+		}
+		else if (myalignment == BottomMiddle)
+		{
+			alignedtopleft.setX(point.x()-displaysize.width()/2);
+			alignedtopleft.setY(point.y()-displaysize.height());
+		}
+		else if (myalignment == TopMiddle)
+		{
+			alignedtopleft.setX(point.x()-displaysize.width()/2);
+			alignedtopleft.setY(point.y());
+		}
+		return alignedtopleft;
+	}
 
-        QPointF clickPt = mapadapter->coordinateToDisplay(click->coordinate());
-        qreal halfwidth = 2; // use 2 pixels by default
-        if (mypixmap.width() > 0)
-        {
-            halfwidth = static_cast<qreal> (mypixmap.width()) / static_cast<qreal> (2);
-        }
+	bool Point::Touches(Point* click, const MapAdapter* mapadapter)
+	{
+		if (this->isVisible() == false)
+			return false;
 
-        QPointF pt1 = mapadapter->coordinateToDisplay(coordinate());
-        qreal pt1x1 = pt1.x() - halfwidth;
-        qreal pt1x2 = pt1.x() + halfwidth;
-        qreal pt1y1 = pt1.y() - halfwidth;
-        qreal pt1y2 = pt1.y() + halfwidth;
+		if ( !click || !mapadapter )
+			return false;
 
-        QPointF pt2 = mapadapter->coordinateToDisplay(coordinate());
-        qreal pt2x1 = pt2.x() - halfwidth;
-        qreal pt2x2 = pt2.x() + halfwidth;
-        qreal pt2y1 = pt2.y() - halfwidth;
-        qreal pt2y2 = pt2.y() + halfwidth;
+		if (points().size() < 1)
+		{
+			return false;
+		}
 
-        // build lazy bounding box
-        qreal upperLeftX = qMin(pt1x1, qMin(pt1x2, qMin(pt2x1, pt2x2)));
-        qreal upperLeftY = qMin(pt1y1, qMin(pt1y2, qMin(pt2y1, pt2y2)));
-        qreal lowerRightX = qMax(pt1x1, qMax(pt1x2, qMax(pt2x1, pt2x2)));
-        qreal lowerRightY = qMax(pt1y1, qMax(pt1y2, qMax(pt2y1, pt2y2)));
-        QRectF bounds(QPointF(upperLeftX, upperLeftY), QPointF(lowerRightX,
-               lowerRightY));
+		QPointF clickPt = mapadapter->coordinateToDisplay(click->coordinate());
+		qreal halfwidth = 2; // use 2 pixels by default
+		if (mypixmap.width() > 0)
+		{
+			halfwidth = static_cast<qreal> (mypixmap.width()) / static_cast<qreal> (2);
+		}
 
-        if ( bounds.contains(clickPt) )
-        {
-            emit(geometryClicked(this, QPoint(0, 0)));
-            return true;
-        }
+		QPointF pt1 = mapadapter->coordinateToDisplay(coordinate());
+		qreal pt1x1 = pt1.x() - halfwidth;
+		qreal pt1x2 = pt1.x() + halfwidth;
+		qreal pt1y1 = pt1.y() - halfwidth;
+		qreal pt1y2 = pt1.y() + halfwidth;
 
-        return false;
-    }
+		QPointF pt2 = mapadapter->coordinateToDisplay(coordinate());
+		qreal pt2x1 = pt2.x() - halfwidth;
+		qreal pt2x2 = pt2.x() + halfwidth;
+		qreal pt2y1 = pt2.y() - halfwidth;
+		qreal pt2y2 = pt2.y() + halfwidth;
 
-    void Point::setCoordinate(QPointF point)
-    {
-        if ( X == point.x() &&
-             Y == point.y() )        
-        {
-            //no change, prevent unessessary update/redraw
-            return;
-        }
+		// build lazy bounding box
+		qreal upperLeftX = qMin(pt1x1, qMin(pt1x2, qMin(pt2x1, pt2x2)));
+		qreal upperLeftY = qMin(pt1y1, qMin(pt1y2, qMin(pt2y1, pt2y2)));
+		qreal lowerRightX = qMax(pt1x1, qMax(pt1x2, qMax(pt2x1, pt2x2)));
+		qreal lowerRightY = qMax(pt1y1, qMax(pt1y2, qMax(pt2y1, pt2y2)));
+		QRectF bounds(QPointF(upperLeftX, upperLeftY), QPointF(lowerRightX,
+			   lowerRightY));
 
-        X = point.x();
-        Y = point.y();
-        
-        emit(updateRequest(QRectF(X, Y, size.width(), size.height())));
-        emit(positionChanged(this));
-    }
-    QList<Point*> Point::points()
-    {
-        //TODO: assigning temp?!
-        QList<Point*> points;
-        points.append(this);
-        return points;
-    }
+		if ( bounds.contains(clickPt) )
+		{
+			emit(geometryClicked(this, QPoint(0, 0)));
+			return true;
+		}
 
-    QWidget* Point::widget()
-    {
-        return mywidget;
-    }
+		return false;
+	}
 
-    QPixmap Point::pixmap()
-    {
-        return mypixmap;
-    }
+	void Point::setCoordinate(QPointF point)
+	{
+		if ( X == point.x() &&
+			 Y == point.y() )
+		{
+			//no change, prevent unessessary update/redraw
+			return;
+		}
 
-    void Point::setBaselevel(int zoomlevel)
-    {
-        homelevel = zoomlevel;
-    }
-    void Point::setMinsize(QSize minsize)
-    {
-        this->minsize = minsize;
-    }
-    void Point::setMaxsize(QSize maxsize)
-    {
-        this->maxsize = maxsize;
-    }
-    Point::Alignment Point::alignment() const
-    {
-        return myalignment;
-    }
+		X = point.x();
+		Y = point.y();
+
+		emit(updateRequest(QRectF(X, Y, size.width(), size.height())));
+		emit(positionChanged(this));
+	}
+	QList<Point*> Point::points()
+	{
+		//TODO: assigning temp?!
+		QList<Point*> points;
+		points.append(this);
+		return points;
+	}
+
+	QWidget* Point::widget()
+	{
+		return mywidget;
+	}
+
+	QPixmap Point::pixmap()
+	{
+		return mypixmap;
+	}
+
+	void Point::setBaselevel(int zoomlevel)
+	{
+		homelevel = zoomlevel;
+	}
+	void Point::setMinsize(QSize minsize)
+	{
+		this->minsize = minsize;
+	}
+	void Point::setMaxsize(QSize maxsize)
+	{
+		this->maxsize = maxsize;
+	}
+	Point::Alignment Point::alignment() const
+	{
+		return myalignment;
+	}
 }

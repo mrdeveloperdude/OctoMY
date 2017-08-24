@@ -33,6 +33,7 @@ Servotor32ActuatorWidget::Servotor32ActuatorWidget(QWidget *parent)
 Servotor32ActuatorWidget::~Servotor32ActuatorWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

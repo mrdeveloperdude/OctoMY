@@ -39,6 +39,9 @@ SerialSettingsWidget::SerialSettingsWidget(QWidget *parent)
 SerialSettingsWidget::~SerialSettingsWidget()
 {
 	delete ui;
+	ui=nullptr;
+	delete mIntValidator;
+	mIntValidator=nullptr;
 }
 
 

@@ -24,6 +24,7 @@ ArduinoPinSelector::ArduinoPinSelector(QWidget *parent)
 ArduinoPinSelector::~ArduinoPinSelector()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

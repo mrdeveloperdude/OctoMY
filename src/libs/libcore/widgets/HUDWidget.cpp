@@ -21,9 +21,8 @@ HUDWidget::HUDWidget(QWidget *parent)
 HUDWidget::~HUDWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
-
-
 
 
 void HUDWidget::showEvent(QShowEvent *){

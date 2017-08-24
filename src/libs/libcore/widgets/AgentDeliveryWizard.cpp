@@ -82,6 +82,7 @@ static QString generateRandomGender()
 		alternatives<<"Male"<<"Female"<<"Genderless";
 		gender=alternatives[rng->generateInt32()%alternatives.size()];
 		delete rng;
+		rng=nullptr;
 	}
 	return gender;
 }
@@ -125,6 +126,9 @@ void AgentDeliveryWizard::startBirth()
 AgentDeliveryWizard::~AgentDeliveryWizard()
 {
 	delete ui;
+	ui=nullptr;
+	delete mSpinner;
+	mSpinner=nullptr;
 }
 
 

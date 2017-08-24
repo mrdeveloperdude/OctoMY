@@ -173,7 +173,11 @@ HubWindow::~HubWindow()
 		mHub->comms()->setHookCommsSignals(*this,false);
 	}
 	delete ui;
+	ui=nullptr;
 	delete mGait;
+	mGait=nullptr;
+	delete mScanner;
+	mScanner=nullptr;
 }
 
 

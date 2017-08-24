@@ -7,8 +7,11 @@
 class TestEyesWidget:public QObject{
 		Q_OBJECT
 
+
 	private slots:
-		void test();
+		void testWidget();
+		void testRendrer();
+
 
 };
 

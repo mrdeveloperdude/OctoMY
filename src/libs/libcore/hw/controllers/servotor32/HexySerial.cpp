@@ -38,6 +38,9 @@ HexySerial::~HexySerial()
 	kill();
 
 	delete settings;
+	settings=nullptr;
+	delete serial;
+	serial=nullptr;
 }
 
 void HexySerial::configure()

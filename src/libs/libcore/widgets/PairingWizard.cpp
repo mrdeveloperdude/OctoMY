@@ -94,6 +94,7 @@ void PairingWizard::updateNetworkSettings()
 PairingWizard::~PairingWizard()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

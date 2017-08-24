@@ -125,6 +125,7 @@ CameraSettings::CameraSettings(QMediaRecorder *mediaRecorder, QCameraImageCaptur
 CameraSettings::~CameraSettings()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 void CameraSettings::changeEvent(QEvent *e)

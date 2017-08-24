@@ -15,6 +15,7 @@ StreamCodecWidget::StreamCodecWidget(QWidget *parent) :
 StreamCodecWidget::~StreamCodecWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

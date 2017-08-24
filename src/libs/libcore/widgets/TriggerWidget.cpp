@@ -45,6 +45,7 @@ void TriggerWidget::configure(Trigger *trigger)
 TriggerWidget::~TriggerWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 void TriggerWidget::on_checkBoxEnabled_toggled(bool checked)

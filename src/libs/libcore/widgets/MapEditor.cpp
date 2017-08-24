@@ -35,6 +35,7 @@ MapEditor::MapEditor(QWidget *parent)
 MapEditor::~MapEditor()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

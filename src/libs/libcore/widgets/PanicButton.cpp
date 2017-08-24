@@ -37,6 +37,7 @@ PanicButton::PanicButton(QWidget *parent) :
 PanicButton::~PanicButton()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

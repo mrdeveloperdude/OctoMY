@@ -38,6 +38,7 @@
 #include <QWindow>
 #include <QSplitter>
 #include <QImageWriter>
+#include <QColor>
 
 
 #include <algorithm>
@@ -322,6 +323,7 @@ void clearLayout(QLayout* layout, bool deleteWidgets)
 			clearLayout(childLayout, deleteWidgets);
 		}
 		delete item;
+		item=nullptr;
 	}
 }
 
@@ -447,7 +449,7 @@ void showQuitButton()
 	quitButton->show();
 	if(!QObject::connect(quitButton, SIGNAL(clicked()),quitButton,SLOT(quit()),OC_CONTYPE)) {
 		delete quitButton;
-		quitButton=0;
+		quitButton=nullptr;
 		qWarning()<<"ERROR: Could not connect";
 
 	}
@@ -1068,6 +1070,7 @@ int levenshtein_distance(const QString &s1, const QString  &s2)
 	}
 	auto result = column[s1len];
 	delete[] column;
+	column = nullptr;
 	return result;
 }
 
@@ -1164,6 +1167,10 @@ QByteArray randomByteArray(int size)
 	return out;
 }
 
+QRgb randomColor( )
+{
+	return QColor::fromHslF(frand(), frand(), frand(), frand() ).rgba();
+}
 
 QImage randomImage(int w, int h)
 {

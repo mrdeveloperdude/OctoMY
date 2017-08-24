@@ -19,6 +19,7 @@ TryToggle::TryToggle(QWidget *parent) :
 TryToggle::~TryToggle()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 void TryToggle::configure(const QString &t1i, const QString &t2i, const QString &t3i, const QColor &color)

@@ -387,7 +387,7 @@ namespace qmapcontrol
 
 	void MapControl::resizeEvent(QResizeEvent *e){
 		delete m_doubleBuffer;
-		m_doubleBuffer=0;
+		m_doubleBuffer=nullptr;
 		QSize sz=e->size();
 		//sz-=QSize(1,1);
 		resize(sz);

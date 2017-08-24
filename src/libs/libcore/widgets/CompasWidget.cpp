@@ -11,49 +11,65 @@ CompasWidget::CompasWidget(QWidget *parent)
 	, m_xRot(0)
 	, m_yRot(0)
 	, m_zRot(0)
-	, m_program(0)
-	//
-	, m_offscreenSurface(0)
-	, m_program2(0)
-	, m_fbo2(0)
-	, m_vbo2(0)
-	, m_vao2(0)
+	, m_program(nullptr)
+	  //
+	, m_offscreenSurface(nullptr)
+	, m_program2(nullptr)
+	, m_fbo2(nullptr)
+	, m_vbo2(nullptr)
+	, m_vao2(nullptr)
 	, m_matrixLoc(0)
 {
 	m_core = QCoreApplication::arguments().contains(QStringLiteral("--coreprofile"));
 	// --transparent causes the clear color to be transparent. Therefore, on systems that
 	// support it, the widget will become transparent apart from the logo.
 	m_transparent = QCoreApplication::arguments().contains(QStringLiteral("--transparent"));
-	if (m_transparent){
+	if (m_transparent) {
 		setAttribute(Qt::WA_TranslucentBackground);
 	}
 
 
 }
 
-CompasWidget::~CompasWidget(){
+CompasWidget::~CompasWidget()
+{
 	cleanup();
+	delete m_offscreenSurface;
+	m_offscreenSurface=(nullptr);
+	delete m_program;
+	m_program=(nullptr);
+	delete m_program2;
+	m_program2=(nullptr);
 	delete m_fbo2;
-	m_fbo2 = 0;
-
+	m_fbo2=(nullptr);
+	delete m_vbo2;
+	m_vbo2=(nullptr);
+	delete m_vao2;
+	m_vao2=(nullptr);
 }
 
-QSize CompasWidget::minimumSizeHint() const{
+QSize CompasWidget::minimumSizeHint() const
+{
 	return QSize(50, 50);
 }
 
-QSize CompasWidget::sizeHint() const{
+QSize CompasWidget::sizeHint() const
+{
 	return QSize(400, 400);
 }
 
-static void qNormalizeAngle(int &angle){
-	while (angle < 0)
+static void qNormalizeAngle(int &angle)
+{
+	while (angle < 0) {
 		angle += 360 * 16;
-	while (angle > 360 * 16)
+	}
+	while (angle > 360 * 16) {
 		angle -= 360 * 16;
+	}
 }
 
-void CompasWidget::setXRotation(int angle){
+void CompasWidget::setXRotation(int angle)
+{
 	qNormalizeAngle(angle);
 	if (angle != m_xRot) {
 		m_xRot = angle;
@@ -62,7 +78,8 @@ void CompasWidget::setXRotation(int angle){
 	}
 }
 
-void CompasWidget::setYRotation(int angle){
+void CompasWidget::setYRotation(int angle)
+{
 	qNormalizeAngle(angle);
 	if (angle != m_yRot) {
 		m_yRot = angle;
@@ -71,7 +88,8 @@ void CompasWidget::setYRotation(int angle){
 	}
 }
 
-void CompasWidget::setZRotation(int angle){
+void CompasWidget::setZRotation(int angle)
+{
 	qNormalizeAngle(angle);
 	if (angle != m_zRot) {
 		m_zRot = angle;
@@ -80,7 +98,8 @@ void CompasWidget::setZRotation(int angle){
 	}
 }
 
-void CompasWidget::cleanup(){
+void CompasWidget::cleanup()
+{
 	makeCurrent();
 	m_logoVbo.destroy();
 	delete m_program;
@@ -89,78 +108,79 @@ void CompasWidget::cleanup(){
 }
 
 static const char *vertexShaderSourceCore =
-		"#version 150\n"
-		"in vec4 vertex;\n"
-		"in vec3 normal;\n"
-		"out vec3 vert;\n"
-		"out vec3 vertNormal;\n"
-		"uniform mat4 projMatrix;\n"
-		"uniform mat4 mvMatrix;\n"
-		"uniform mat3 normalMatrix;\n"
-		"void main() {\n"
-		"   vert = vertex.xyz;\n"
-		"   vertNormal = normalMatrix * normal;\n"
-		"   gl_Position = projMatrix * mvMatrix * vertex;\n"
-		"}\n";
+	"#version 150\n"
+	"in vec4 vertex;\n"
+	"in vec3 normal;\n"
+	"out vec3 vert;\n"
+	"out vec3 vertNormal;\n"
+	"uniform mat4 projMatrix;\n"
+	"uniform mat4 mvMatrix;\n"
+	"uniform mat3 normalMatrix;\n"
+	"void main() {\n"
+	"   vert = vertex.xyz;\n"
+	"   vertNormal = normalMatrix * normal;\n"
+	"   gl_Position = projMatrix * mvMatrix * vertex;\n"
+	"}\n";
 
 static const char *fragmentShaderSourceCore =
-		"#version 150\n"
-		"in highp vec3 vert;\n"
-		"in highp vec3 vertNormal;\n"
-		"out highp vec4 fragColor;\n"
-		"uniform highp vec3 lightPos;\n"
-		"void main() {\n"
-		"   highp vec3 L = normalize(lightPos - vert);\n"
-		"   highp float NL = max(dot(normalize(vertNormal), L), 0.0);\n"
-		"   highp vec3 color = vec3(0.39, 1.0, 0.0);\n"
-		"   highp vec3 col = clamp(color * 0.2 + color * 0.8 * NL, 0.0, 1.0);\n"
-		"   fragColor = vec4(col, 1.0);\n"
-		"}\n";
+	"#version 150\n"
+	"in highp vec3 vert;\n"
+	"in highp vec3 vertNormal;\n"
+	"out highp vec4 fragColor;\n"
+	"uniform highp vec3 lightPos;\n"
+	"void main() {\n"
+	"   highp vec3 L = normalize(lightPos - vert);\n"
+	"   highp float NL = max(dot(normalize(vertNormal), L), 0.0);\n"
+	"   highp vec3 color = vec3(0.39, 1.0, 0.0);\n"
+	"   highp vec3 col = clamp(color * 0.2 + color * 0.8 * NL, 0.0, 1.0);\n"
+	"   fragColor = vec4(col, 1.0);\n"
+	"}\n";
 
 static const char *vertexShaderSource =
-		"attribute vec4 vertex;\n"
-		"attribute vec3 normal;\n"
-		"varying vec3 vert;\n"
-		"varying vec3 vertNormal;\n"
-		"uniform mat4 projMatrix;\n"
-		"uniform mat4 mvMatrix;\n"
-		"uniform mat3 normalMatrix;\n"
-		"void main() {\n"
-		"   vert = vertex.xyz;\n"
-		"   vertNormal = normalMatrix * normal;\n"
-		"   gl_Position = projMatrix * mvMatrix * vertex;\n"
-		"}\n";
+	"attribute vec4 vertex;\n"
+	"attribute vec3 normal;\n"
+	"varying vec3 vert;\n"
+	"varying vec3 vertNormal;\n"
+	"uniform mat4 projMatrix;\n"
+	"uniform mat4 mvMatrix;\n"
+	"uniform mat3 normalMatrix;\n"
+	"void main() {\n"
+	"   vert = vertex.xyz;\n"
+	"   vertNormal = normalMatrix * normal;\n"
+	"   gl_Position = projMatrix * mvMatrix * vertex;\n"
+	"}\n";
 
 static const char *fragmentShaderSource =
-		"varying highp vec3 vert;\n"
-		"varying highp vec3 vertNormal;\n"
-		"uniform highp vec3 lightPos;\n"
-		"void main() {\n"
-		"   highp vec3 L = normalize(lightPos - vert);\n"
-		"   highp float NL = max(dot(normalize(vertNormal), L), 0.0);\n"
-		"   highp vec3 color = vec3(0.39, 1.0, 0.0);\n"
-		"   highp vec3 col = clamp(color * 0.2 + color * 0.8 * NL, 0.0, 1.0);\n"
-		"   gl_FragColor = vec4(col, 1.0);\n"
-		"}\n";
+	"varying highp vec3 vert;\n"
+	"varying highp vec3 vertNormal;\n"
+	"uniform highp vec3 lightPos;\n"
+	"void main() {\n"
+	"   highp vec3 L = normalize(lightPos - vert);\n"
+	"   highp float NL = max(dot(normalize(vertNormal), L), 0.0);\n"
+	"   highp vec3 color = vec3(0.39, 1.0, 0.0);\n"
+	"   highp vec3 col = clamp(color * 0.2 + color * 0.8 * NL, 0.0, 1.0);\n"
+	"   gl_FragColor = vec4(col, 1.0);\n"
+	"}\n";
 
 
 static const char *vertexShaderVideoStreamSource =
-		"attribute highp vec4 vertex;\n"
-		"attribute lowp vec2 coord;\n"
-		"varying lowp vec2 v_coord;\n"
-		"uniform highp mat4 matrix;\n"
-		"void main() {\n"
-		"   v_coord = coord;\n"
-		"   gl_Position = matrix * vertex;\n"
-		"}\n";
+	"attribute highp vec4 vertex;\n"
+	"attribute lowp vec2 coord;\n"
+	"varying lowp vec2 v_coord;\n"
+	"uniform highp mat4 matrix;\n"
+	"void main() {\n"
+	"   v_coord = coord;\n"
+	"   gl_Position = matrix * vertex;\n"
+	"}\n";
 static const char *fragmentShaderVideoStreamSource =
-		"varying lowp vec2 v_coord;\n"
-		"uniform sampler2D sampler;\n"
-		"void main() {\n"
-		"   gl_FragColor = vec4(texture2D(sampler, v_coord).rgb, 1.0);\n"
-		"}\n";
+	"varying lowp vec2 v_coord;\n"
+	"uniform sampler2D sampler;\n"
+	"void main() {\n"
+	"   gl_FragColor = vec4(texture2D(sampler, v_coord).rgb, 1.0);\n"
+	"}\n";
 
-void CompasWidget::initializeGL(){
+void CompasWidget::initializeGL()
+{
 	// In this example the widget's corresponding top-level window can change
 	// several times during the widget's lifetime. Whenever this happens, the
 	// QOpenGLWidget's associated context is destroyed and a new one is created.
@@ -272,14 +292,15 @@ void CompasWidget::initializeGL(){
 	m_vbo2->write(sizeof(GLfloat) * vertexCount * 3, texCoords, sizeof(GLfloat) * vertexCount * 2);
 	m_vbo2->release();
 
-	if (m_vao2->isCreated()){
+	if (m_vao2->isCreated()) {
 		setupVertexAttribs2();
 	}
 	m_vao2->release();
 }
 
 
-void CompasWidget::setupVertexAttribs(){
+void CompasWidget::setupVertexAttribs()
+{
 	m_logoVbo.bind();
 	QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
 	f->glEnableVertexAttribArray(0);
@@ -290,7 +311,8 @@ void CompasWidget::setupVertexAttribs(){
 }
 
 
-void CompasWidget::setupVertexAttribs2(){
+void CompasWidget::setupVertexAttribs2()
+{
 	m_vbo2->bind();
 	m_program2->enableAttributeArray(0);
 	m_program2->enableAttributeArray(1);
@@ -301,7 +323,8 @@ void CompasWidget::setupVertexAttribs2(){
 }
 
 
-void CompasWidget::paintGL(){
+void CompasWidget::paintGL()
+{
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -323,7 +346,7 @@ void CompasWidget::paintGL(){
 	glDrawArrays(GL_TRIANGLES, 0, m_logo.vertexCount());
 
 	m_program->release();
-*/
+	*/
 
 	QOpenGLFunctions *f = context()->functions();
 	const bool newFrameReady=true;
@@ -335,7 +358,7 @@ void CompasWidget::paintGL(){
 		m_program2->bind();
 		QOpenGLVertexArrayObject::Binder vaoBinder(m_vao2);
 		// If VAOs are not supported, set the vertex attributes every time.
-		if (!m_vao2->isCreated()){
+		if (!m_vao2->isCreated()) {
 			setupVertexAttribs2();
 		}
 
@@ -358,16 +381,19 @@ void CompasWidget::paintGL(){
 
 }
 
-void CompasWidget::resizeGL(int w, int h){
+void CompasWidget::resizeGL(int w, int h)
+{
 	m_proj.setToIdentity();
 	m_proj.perspective(45.0f, GLfloat(w) / h, 0.01f, 100.0f);
 }
 
-void CompasWidget::mousePressEvent(QMouseEvent *event){
+void CompasWidget::mousePressEvent(QMouseEvent *event)
+{
 	m_lastPos = event->pos();
 }
 
-void CompasWidget::mouseMoveEvent(QMouseEvent *event){
+void CompasWidget::mouseMoveEvent(QMouseEvent *event)
+{
 	int dx = event->x() - m_lastPos.x();
 	int dy = event->y() - m_lastPos.y();
 

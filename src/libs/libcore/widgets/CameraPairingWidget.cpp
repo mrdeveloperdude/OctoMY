@@ -41,11 +41,11 @@ CameraPairingWidget::CameraPairingWidget(QWidget *parent)
 	, ui(new Ui::CameraPairingWidget)
 	, badgeDisableTime(0)
 	, scanDisableTime(0)
-	, camera(0)
-	, videoProbe(0)
-	, poorVideoProbe(0)
-	, zbar(0)
-	, viewfinder(0)
+	, mCamera(nullptr)
+	, mVideoProbe(nullptr)
+	, mPoorVideoProbe(nullptr)
+	, mZbar(nullptr)
+	, mViewfinder(nullptr)
 
 {
 	ui->setupUi(this);
@@ -68,6 +68,18 @@ CameraPairingWidget::CameraPairingWidget(QWidget *parent)
 CameraPairingWidget::~CameraPairingWidget()
 {
 	delete ui;
+	ui=nullptr;
+
+	delete mCamera;
+	mCamera=(nullptr);
+	delete mVideoProbe;
+	mVideoProbe=(nullptr);
+	delete mPoorVideoProbe;
+	mPoorVideoProbe=(nullptr);
+	delete mZbar;
+	mZbar=(nullptr);
+	delete mViewfinder;
+	mViewfinder=(nullptr);
 }
 
 
@@ -122,11 +134,11 @@ qDebug()<<"Keystore ready: "<<ok;
 
 void CameraPairingWidget::detectBarcodes(const QVideoFrame &frame)
 {
-	if(0==zbar){
-		zbar=new ZBarScanner;
+	if(nullptr==mZbar){
+		mZbar=new ZBarScanner;
 	}
-	if(0!=zbar){
-		zbar->scan(frame);
+	if(nullptr!=mZbar){
+		mZbar->scan(frame);
 	}
 }
 
@@ -153,10 +165,10 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 		QCameraInfo ci=getBestCamera();
 		qDebug()<<"TRYING TO START CAMERA "<<ci;
 		if(!ci.isNull()){
-			camera = new QCamera(ci);
-			if(0!=camera){
+			mCamera = new QCamera(ci);
+			if(0!=mCamera){
 
-				if(!connect(camera,SIGNAL(statusChanged(QCamera::Status)),this,SLOT(cameraStatusUpdated(QCamera::Status)))){
+				if(!connect(mCamera,SIGNAL(statusChanged(QCamera::Status)),this,SLOT(cameraStatusUpdated(QCamera::Status)))){
 					qWarning()<<"ERROR: Could not connect";
 				}
 
@@ -164,7 +176,7 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 				viewfinderSettings.setResolution(640, 480);
 				viewfinderSettings.setMinimumFrameRate(0.0);
 				viewfinderSettings.setMaximumFrameRate(30.0);
-				camera->setViewfinderSettings(viewfinderSettings);
+				mCamera->setViewfinderSettings(viewfinderSettings);
 				/*
 			if(0==viewfinder){
 				viewfinder=new QVideoWidget();
@@ -173,7 +185,7 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 				gridLayout->addWidget(viewfinder, 0, 0);
 			}
 			*/
-				camera->setViewfinder(ui->widgetCameraViewfinder);
+				mCamera->setViewfinder(ui->widgetCameraViewfinder);
 
 
 				//TODO: Handles iOS
@@ -212,7 +224,7 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 			*/
 #endif
 				//Invoke later to make sure ui update does not lagg
-				QTimer::singleShot(0, camera, SLOT(start()));
+				QTimer::singleShot(0, mCamera, SLOT(start()));
 			}
 			scanDisableTime=TIMEOUT+QDateTime::currentMSecsSinceEpoch();
 			onCountDownTimeout();
@@ -222,8 +234,8 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 		}
 	}
 	else{
-		delete camera;
-		camera=0;
+		delete mCamera;
+		mCamera=nullptr;
 		ui->pushButtonScanner->setText("Start Scanner");
 		scanDisableTime=0;
 	}

@@ -51,6 +51,7 @@ NameMappingWidget::~NameMappingWidget()
 {
 	OC_METHODGATE();
 	delete ui;
+	ui=nullptr;
 }
 /*
 void bubba()

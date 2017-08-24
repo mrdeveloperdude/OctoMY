@@ -218,6 +218,7 @@ namespace qpolarssl {
 						qDebug()<<"ERROR: "<<ret<<"="<<QString(buffer);
 					}
 					delete [] pembuf;
+					pembuf=nullptr;
 					return ba;
 				}
 
@@ -240,6 +241,7 @@ namespace qpolarssl {
 						qDebug()<<"ERROR: "<<ret<<"="<<QString(buffer);
 					}
 					delete [] pembuf;
+					pembuf=nullptr;
 					return ba;
 				}
 

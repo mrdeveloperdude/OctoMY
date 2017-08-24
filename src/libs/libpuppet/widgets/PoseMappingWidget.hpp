@@ -27,7 +27,7 @@ private:
 	QAbstractButton *toButton;
 
 public:
-	explicit PoseMappingWidget(QWidget *parent = 0);
+	explicit PoseMappingWidget(QWidget *parent = nullptr);
 	virtual ~PoseMappingWidget();
 
 public:

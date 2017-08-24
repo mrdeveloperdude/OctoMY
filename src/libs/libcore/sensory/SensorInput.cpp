@@ -27,7 +27,7 @@ SensorInput::SensorInput(QObject *parent):
 	if(0!=a){
 		if(!a->connectToBackend()){
 			delete a;
-			a=0;
+			a=nullptr;
 		}
 		else{
 			accelerometer=a;
@@ -44,7 +44,7 @@ SensorInput::SensorInput(QObject *parent):
 	if(0!=c){
 		if(!c->connectToBackend()){
 			delete c;
-			c=0;
+			c=nullptr;
 		}
 		else{
 			compass=c;
@@ -61,7 +61,7 @@ SensorInput::SensorInput(QObject *parent):
 	if(0!=g){
 		if(!g->connectToBackend()){
 			delete g;
-			g=0;
+			g=nullptr;
 		}
 		else{
 			gyroscope=g;

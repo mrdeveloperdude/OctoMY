@@ -70,6 +70,7 @@ Agent *RealtimeValuesWidget::getAgent(){
 RealtimeValuesWidget::~RealtimeValuesWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

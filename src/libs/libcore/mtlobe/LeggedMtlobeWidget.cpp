@@ -11,6 +11,7 @@ LeggedMtlobeWidget::LeggedMtlobeWidget(QWidget *parent)
 LeggedMtlobeWidget::~LeggedMtlobeWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 void LeggedMtlobeWidget::on_pushButtonDelete_clicked()

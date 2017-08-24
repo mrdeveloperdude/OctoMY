@@ -11,4 +11,5 @@ TrackedMtlobeWidget::TrackedMtlobeWidget(QWidget *parent) :
 TrackedMtlobeWidget::~TrackedMtlobeWidget()
 {
 	delete ui;
+	ui=nullptr;
 }

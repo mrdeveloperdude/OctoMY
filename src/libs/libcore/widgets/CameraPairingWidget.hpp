@@ -34,12 +34,12 @@ class CameraPairingWidget : public QWidget
 		static const qint64 TIMEOUT;
 
 
-		QCamera *camera;
-		QVideoProbe *videoProbe;
-		PoorMansProbe *poorVideoProbe;
-		ZBarScanner *zbar;
+		QCamera *mCamera;
+		QVideoProbe *mVideoProbe;
+		PoorMansProbe *mPoorVideoProbe;
+		ZBarScanner *mZbar;
 
-		QVideoWidget *viewfinder;
+		QVideoWidget *mViewfinder;
 
 
 

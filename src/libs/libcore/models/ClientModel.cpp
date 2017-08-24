@@ -51,6 +51,7 @@ ClientModel::ClientModel(CommsSessionDirectory *clients, QObject *parent)
 ClientModel::~ClientModel()
 {
 	delete tree;
+	tree=nullptr;
 }
 
 QModelIndex ClientModel::index(int row, int column, const QModelIndex &parent) const

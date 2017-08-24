@@ -103,6 +103,7 @@ AgentWindow::~AgentWindow()
 {
 	OC_METHODGATE();
 	delete ui;
+	ui=nullptr;
 }
 
 void AgentWindow::gotoNextConfigPage()

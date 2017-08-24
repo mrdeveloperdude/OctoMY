@@ -72,8 +72,9 @@ void ParseTreeNode::clear()
 		}
 	}
 	for(QVector<ParseTreeNode *>::iterator i=m_children.begin(), e=m_children.end();i!=e;++i){
-		if(0!=*i){
+		if(nullptr!=*i){
 			delete *i;
+			*i=nullptr;
 		}
 	}
 	m_children.clear();

@@ -14,6 +14,7 @@ PortableIDWidget::PortableIDWidget(QWidget *parent)
 PortableIDWidget::~PortableIDWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 void PortableIDWidget::configure(bool showCertificateFirst, bool userCanChange)

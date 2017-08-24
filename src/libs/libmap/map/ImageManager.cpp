@@ -62,7 +62,7 @@ namespace qmapcontrol
 	ImageManager::~ImageManager()
 	{
 		delete net;
-		net = 0;
+		net = nullptr;
 	}
 
 	QPixmap ImageManager::getImage(const QString& host, const QString& url)

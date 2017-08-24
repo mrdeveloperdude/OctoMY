@@ -73,10 +73,12 @@ LayoutSquare::LayoutSquare( int spacing ) :
 
 LayoutSquare::~LayoutSquare()
 {
-	if ( m_item ) delete m_item; m_item = 0;
-
-	if ( m_rectLast ) delete m_rectLast; m_rectLast = 0;
-	if ( m_geometry ) delete m_geometry; m_geometry = 0;
+	delete m_item;
+	m_item = nullptr;
+	delete m_rectLast;
+	m_rectLast = nullptr;
+	delete m_geometry;
+	m_geometry = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

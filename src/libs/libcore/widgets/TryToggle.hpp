@@ -26,7 +26,7 @@ private:
 	QString mT1,mT2,mT3;
 
 public:
-	explicit TryToggle(QWidget *parent = 0);
+	explicit TryToggle(QWidget *parent = nullptr);
 	~TryToggle();
 
 public:

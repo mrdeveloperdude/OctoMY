@@ -9,6 +9,21 @@
 
 
 IrisRendrer::IrisRendrer()
+	: mOval(0.0)
+	, mPupilSize(1.0)
+	, mRingRes(1.0)
+	, mRingStartRadius(1.0)
+	, mContrast(1.0)
+	, mColorFollow(1.0)
+	, mBaseX(0.0)
+	, mBaseY(0.0)
+	, mToneExposure(1.0)
+	, mToneCutoff(0.025)
+	, mColor1(QColor("#8294aa").rgb())
+	, mColor2(QColor("#752e0b").rgb())
+	, mScratchBuffer(nullptr)
+	, psz(0)
+	, mDebugMode(false)
 {
 }
 
@@ -40,6 +55,8 @@ static inline qreal filmic2(qreal v, qreal cutoff, qreal exposure)
 
 
 
+
+
 // TODO: figure out an elegant way to pass around identicon colors
 void IrisRendrer::draw(QRect &rect, QPainter &painter, quint32 eyeIndex)
 {
@@ -58,22 +75,26 @@ void IrisRendrer::draw(QRect &rect, QPainter &painter, quint32 eyeIndex)
 		painter.setCompositionMode(cm);
 	}
 	{
-		if(psz!=w*h) {
-			psz=w*h;
+		const int npsz=w*h;
+		if(psz!=npsz) {
+			psz=npsz;
 			delete[] mScratchBuffer;
+			mScratchBuffer=nullptr;
 		}
 		if(nullptr==mScratchBuffer) {
 			mScratchBuffer = new QRgb[psz];
-		}
+		}//
 		const qreal c1r=(qreal)qRed(mColor1)/255.0;
 		const qreal c1g=(qreal)qGreen(mColor1)/255.0;
 		const qreal c1b=(qreal)qBlue(mColor1)/255.0;
 		const qreal c2r=(qreal)qRed(mColor2)/255.0;
 		const qreal c2g=(qreal)qGreen(mColor2)/255.0;
 		const qreal c2b=(qreal)qBlue(mColor2)/255.0;
-		const qreal indexX=eyeIndex*1000.0+mBaseX;
-		const qreal indexY=eyeIndex*1000.0+mBaseY;
+		const qreal indexX=eyeIndex*1337.0+mBaseX;
+		const qreal indexY=eyeIndex*1337.0+mBaseY;
 		QImage scratchImage((uchar*)mScratchBuffer, w,h, QImage::Format_ARGB32);
+		const unsigned int inColor=qRgba(21,17,13, 0);
+		const unsigned int outColor=qRgba(217,209,225,0);
 		for (int y = 0; y < h; ++y) {
 			for (int x = 0; x < w; ++x) {
 				qreal dx=(x-w2);
@@ -81,29 +102,29 @@ void IrisRendrer::draw(QRect &rect, QPainter &painter, quint32 eyeIndex)
 				qreal d=dx*dx+dy*dy;
 				const qreal df=d/(sz2*sz2);
 				if(df<0.1-blurEdge) {
-					mScratchBuffer[y * h + x] = qRgba(21,17,13, 0);
+					mScratchBuffer[y * h + x] = inColor;
 					continue;
 				}
 				if(df>1.0) {
-					mScratchBuffer[y * h + x] = qRgba(217,209,225,0);
+					mScratchBuffer[y * h + x] = outColor;
 					continue;
 				}
 				d=0==d?0.01:sqrt(d);
-				auto a = atan2(dy, dx);
+				const qreal a = atan2(dy, dx);
 				dx/=d;
 				dy/=d;
-				qreal fade=1.0-cos((df-blurEdge)*M_PI*2.0*(1+blurEdge));
-				qreal al=qBound(0.0,fade*10.0,1.0);
-				qreal ad=mSimplexRipples.sample(1337.0+d*mRingRes*2.0,indexX,indexY)*0.1+a;
-				qreal s=qMax(0.0,mSimplexStreaks.sample(indexX+cos(ad)*(mRingStartRadius+df),indexY+sin(ad)*(mRingStartRadius+df), 0)*fade);
-				auto cv=df+s*mColorFollow;
-				auto const cvi=1.0-cv;
-				auto rr=filmic2((((c1r*cv+c2r*cvi)*s)*mContrast),mToneCutoff,mToneExposure);
-				auto gg=filmic2((((c1g*cv+c2g*cvi)*s)*mContrast),mToneCutoff,mToneExposure);
-				auto bb= filmic2((((c1b*cv+c2b*cvi)*s)*mContrast),mToneCutoff,mToneExposure);
-				int r=qBound(0,(int)(rr*255.0),255);
-				int g=qBound(0,(int)(gg*255.0),255);
-				int b=qBound(0,(int)(bb*255.0),255);
+				const qreal fade=1.0-cos((df-blurEdge)*M_PI*2.0*(1+blurEdge));
+				const qreal al=qBound(0.0,fade*10.0,1.0);
+				const qreal ad=mSimplexRipples.sample(1337.0+d*mRingRes*2.0,indexX,indexY)*0.1+a;
+				const qreal s=qMax(0.0,mSimplexStreaks.sample(indexX+cos(ad)*(mRingStartRadius+df),indexY+sin(ad)*(mRingStartRadius+df), 0)*fade);
+				const qreal cv=df+s*mColorFollow;
+				const qreal cvi=1.0-cv;
+				const qreal rr=filmic2((((c1r*cv+c2r*cvi)*s)*mContrast),mToneCutoff,mToneExposure);
+				const qreal gg=filmic2((((c1g*cv+c2g*cvi)*s)*mContrast),mToneCutoff,mToneExposure);
+				const qreal bb= filmic2((((c1b*cv+c2b*cvi)*s)*mContrast),mToneCutoff,mToneExposure);
+				const int r=qBound(0,(int)(rr*255.0),255);
+				const int g=qBound(0,(int)(gg*255.0),255);
+				const int b=qBound(0,(int)(bb*255.0),255);
 				mScratchBuffer[y * h + x] = qRgba(r,g,b,(int)(al*255.0));
 			}
 		}
@@ -118,8 +139,6 @@ void IrisRendrer::draw(QRect &rect, QPainter &painter, quint32 eyeIndex)
 		//image.save("/tmp/iris.png");
 	}
 }
-
-
 
 void IrisRendrer::setParameter(quint32 id, qreal value)
 {
@@ -214,7 +233,6 @@ void IrisRendrer::setParameter(quint32 id, qreal value)
 
 	}
 }
-
 
 
 

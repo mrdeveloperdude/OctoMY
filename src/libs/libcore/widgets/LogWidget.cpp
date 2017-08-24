@@ -15,6 +15,7 @@ LogWidget::LogWidget(QWidget *parent)
 LogWidget::~LogWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

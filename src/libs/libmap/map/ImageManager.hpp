@@ -49,7 +49,7 @@ namespace qmapcontrol
 		Q_OBJECT
 
 	public:
-		ImageManager(QObject* parent = 0);
+		ImageManager(QObject* parent = nullptr);
 		virtual ~ImageManager();
 
 		//! returns a QPixmap of the asked image

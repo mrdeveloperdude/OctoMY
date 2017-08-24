@@ -15,6 +15,7 @@ PixViewer::PixViewer(QWidget *parent, QString name) :
 PixViewer::~PixViewer()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 void PixViewer::setImage(const QImage &im)

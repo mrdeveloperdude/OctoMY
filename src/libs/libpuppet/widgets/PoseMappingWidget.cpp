@@ -32,6 +32,7 @@ PoseMappingWidget::~PoseMappingWidget()
 {
 	OC_METHODGATE();
 	delete ui;
+	ui=nullptr;
 }
 
 

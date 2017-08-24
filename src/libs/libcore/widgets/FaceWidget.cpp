@@ -40,6 +40,7 @@ FaceWidget::FaceWidget(QWidget *parent)
 FaceWidget::~FaceWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

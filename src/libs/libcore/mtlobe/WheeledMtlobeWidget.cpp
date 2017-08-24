@@ -17,6 +17,7 @@ WheeledMtlobeWidget::WheeledMtlobeWidget(QWidget *parent)
 WheeledMtlobeWidget::~WheeledMtlobeWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

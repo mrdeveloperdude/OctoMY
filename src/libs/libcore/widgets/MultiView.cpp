@@ -51,6 +51,7 @@ void MultiView::setModel(QAbstractItemModel *data){
 		QItemSelectionModel *oldSel = list->selectionModel();
 		list->setModel(data);
 		delete oldSel;
+		oldSel=nullptr;
 		if(nullptr!=selections){
 			list->setSelectionModel(selections);
 		}
@@ -79,6 +80,7 @@ void MultiView::setModel(QAbstractItemModel *data){
 
 MultiView::~MultiView(){
 	delete ui;
+	ui=nullptr;
 }
 
 

@@ -17,7 +17,7 @@ class ParseTreeNode{
 
 
 	public:
-		ParseTreeNode(QString name="", ParseTreeNode *parent=0);
+		ParseTreeNode(QString name="", ParseTreeNode *parent=nullptr);
 	public:
 
 		QString name();

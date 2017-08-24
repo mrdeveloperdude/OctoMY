@@ -239,6 +239,7 @@ public:
 
 		// Now we can delete the buffer from the CPU side
 		delete[] sourcePoints;
+		sourcePoints=nullptr;
 		// Set arguments to kernel
 		unsigned int argIndex = 0;
 		CL_DETECT_ERROR(kernel.setArg(argIndex++, bufferSources));

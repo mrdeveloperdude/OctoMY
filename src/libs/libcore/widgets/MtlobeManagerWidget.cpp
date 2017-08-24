@@ -23,6 +23,7 @@ MtlobeManagerWidget::MtlobeManagerWidget(QWidget *parent)
 MtlobeManagerWidget::~MtlobeManagerWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

@@ -50,6 +50,7 @@ ArduMYActuatorWidget::ArduMYActuatorWidget(QWidget *parent)
 ArduMYActuatorWidget::~ArduMYActuatorWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 void ArduMYActuatorWidget::reset()

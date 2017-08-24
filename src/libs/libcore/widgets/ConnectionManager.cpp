@@ -11,6 +11,7 @@ ConnectionManager::ConnectionManager(QWidget *parent) :
 ConnectionManager::~ConnectionManager()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 void ConnectionManager::on_pushButtonBack_clicked()

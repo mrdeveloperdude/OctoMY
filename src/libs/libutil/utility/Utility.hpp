@@ -106,6 +106,7 @@ QString localAddress();
 
 // Random
 QByteArray randomByteArray(int size);
+QRgb randomColor( );
 QImage randomImage(int w=512, int h=512 );
 QByteArray imageToByteArray(QImage &image );
 QByteArray randomImageByteArray(int w=512, int h=512 );

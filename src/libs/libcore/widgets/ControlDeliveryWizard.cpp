@@ -78,6 +78,9 @@ void ControlDeliveryWizard::configure(Node *n)
 ControlDeliveryWizard::~ControlDeliveryWizard()
 {
 	delete ui;
+	ui=nullptr;
+	delete mSpinner;
+	mSpinner=nullptr;
 }
 
 

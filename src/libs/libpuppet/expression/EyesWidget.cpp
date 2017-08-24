@@ -20,154 +20,6 @@
 
 #include <QtMath>
 
-Eye::Eye(QVector2D center, qreal slant, QColor irisColor)
-	: center(center)
-	, dirty(true)
-	, slant(slant)
-	, specPos1(-0.35,-0.12)
-	, specPos2(-0.25,+0.15)
-	, lidBrush("brown")
-	, scaleraBrush("white")
-	, irisBrush(irisColor)
-	, pupilBrush("#BB000000")
-	, specularBrush("#88ffffff")
-{
-
-}
-
-Eye::~Eye()
-{
-
-}
-
-/*
-x = X cos(a) - Y sin(a)
-y = Y cos(a) + X sin(a)
-		*/
-
-/*
-static void generateElipsis(QVector2D &out,qreal rx,qreal ry,qreal ang)
-{
-	QVector2D p(cos(ang)*rx,sin(ang)*ry);
-	out=p;
-}*/
-
-void Eye::update()
-{
-	if(!dirty) {
-		return;
-	}
-	dirty=false;
-	scaleraPolygon.clear();
-	lowerMask.clear();
-	upperMask.clear();
-	qreal iblink=1.0-blink;
-	qreal overlap=0.3;
-	qreal r=0.1;
-	qreal rx=(r+0.5*r*squintSteer.x());
-	qreal ry=(r+0.5*r*squintSteer.y())*iblink;
-	qreal rIrisX=rx*0.4;
-	qreal rIrisY=ry*0.4;
-	qreal bend=3.0;
-	qreal lowerMaskRadius=0.8/(pow(bend,(fabs(lowerLidSteer.y())+1))-(bend-1.0));
-	qreal upperMaskRadius=0.8/(pow(bend,(fabs(upperLidSteer.y())+1))-(bend-1.0));
-	qreal lowerMaskOverlap=overlap-lowerLidSteer.y();
-	QVector2D lowerMaskCenter(lowerLidSteer.x()*lowerMaskRadius,cos(lowerLidSteer.x())*lowerMaskRadius+ry-r*lowerMaskOverlap);
-	qreal upperMaskOverlap=overlap+upperLidSteer.y();
-	QVector2D upperMaskCenter(upperLidSteer.x()*upperMaskRadius,cos(upperLidSteer.x())*-upperMaskRadius-ry+r*upperMaskOverlap);
-	for(qreal i=0; i<M_PI*2; i+=(M_PI/40.0)) {
-		QVector2D lm=lowerMaskCenter+QVector2D(cos(i)*lowerMaskRadius,sin(i)*lowerMaskRadius);
-		QVector2D um=upperMaskCenter+QVector2D(cos(i)*upperMaskRadius,sin(i)*upperMaskRadius);
-
-		{
-			QVector2D po(cos(i)*rx,sin(i)*ry);
-			QVector2D p(po.x() * cos(slant) - po.y() * sin(slant), po.y() * cos(slant) + po.x() * sin(slant) );
-
-			//generateElipsis(p,rx,ry,i);
-			QVector2D lt=p-lowerMaskCenter;
-			QVector2D ut=p-upperMaskCenter;
-			scaleraPolygon << (lt.length()<lowerMaskRadius?(lt.normalized()*lowerMaskRadius)+lowerMaskCenter:(ut.length()<upperMaskRadius?(ut.normalized()*upperMaskRadius)+upperMaskCenter:p)).toPointF();
-			lowerMask<< lm.toPointF();
-			upperMask<< um.toPointF();
-		}
-		{
-			QVector2D p(cos(i)*rIrisX,sin(i)*rIrisY);
-			QVector2D lt=p-lowerMaskCenter;
-			QVector2D ut=p-upperMaskCenter;
-			pupilPolygon << (lt.length()<lowerMaskRadius?(lt.normalized()*lowerMaskRadius)+lowerMaskCenter:(ut.length()<upperMaskRadius?(ut.normalized()*upperMaskRadius)+upperMaskCenter:p)).toPointF();
-		}
-	}
-}
-
-void Eye::setBlink(qreal bl)
-{
-	if(bl!=blink) {
-		dirty=true;
-	}
-	blink=bl;
-}
-
-void Eye::setExpression(QVector2D ul, QVector2D ll, QVector2D sq)
-{
-	upperLidSteer=ul+center;
-	lowerLidSteer=ll+center;
-	squintSteer=sq;
-	dirty=true;
-}
-
-void Eye::setColor(QColor irisColor)
-{
-	irisBrush=QBrush(irisColor);
-}
-
-void Eye::setSteer(QVector2D ey)
-{
-	ey+=center;
-	if(!qFuzzyCompare(ey, eyeSteer)) {
-		dirty=true;
-	}
-	eyeSteer=ey;
-}
-
-
-void Eye::setIrisImage(QSharedPointer<QImage> irisImage)
-{
-	mIrisImage=irisImage;
-}
-
-void Eye::paint(QPainter &painter)
-{
-	//painter.setBrush(lidBrush);
-	//painter.drawPolygon(lowerMask);
-	//painter.drawPolygon(upperMask);
-
-	painter.setBrush(scaleraBrush);
-	painter.drawPolygon(scaleraPolygon);
-
-
-	painter.setBrush(irisBrush);
-	const qreal irisRadius=0.1*0.5;
-	const qreal pupilRadius=0.1*0.25;
-	//painter.drawPolygon(irisPolygon); //TODO: Use this instead
-	painter.drawEllipse((eyeSteer-center).toPointF(),irisRadius, irisRadius);
-
-	painter.setBrush(pupilBrush);
-	painter.drawEllipse((eyeSteer-center).toPointF(), pupilRadius, pupilRadius);
-
-	if(!mIrisImage.isNull()) {
-		QImage &img=*mIrisImage.data();
-		QPointF ppt((eyeSteer-center).toPointF()-QPointF(irisRadius, irisRadius));
-		QSizeF psz(irisRadius*2, irisRadius*2);
-		QRectF rect(ppt, psz);
-		painter.drawImage(rect, img);
-	}
-
-	painter.setBrush(specularBrush);
-	painter.drawEllipse((eyeSteer-center+specPos1*0.1).toPointF(),0.1*0.15,0.1*0.15);
-	painter.drawEllipse((eyeSteer-center+specPos2*0.1).toPointF(),0.1*0.08,0.1*0.08);
-
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -183,16 +35,44 @@ EyesWidget::EyesWidget(QWidget *parent)
 	, bgBrush("black")
 	, eyeSteer(0,0)
 {
-	if(!connect(&timer,SIGNAL(timeout()),this,SLOT(onUpdateTimer()))) {
+	if(!connect(&timer,SIGNAL(timeout()),this,SLOT(onUpdateTimer())), OC_CONTYPE) {
 		qWarning()<<"ERROR: Could not connect";
 	}
-
 	//	qDebug()<<"BUT: "<<but<<" squint "<< squint;
 	leftEye.setExpression(lowerLidSteer,upperLidSteer,squintSteer);
 	rightEye.setExpression(lowerLidSteer,upperLidSteer,squintSteer);
 	leftEye.setSteer(eyeSteer);
 	rightEye.setSteer(eyeSteer);
 }
+
+
+void EyesWidget::updateIris()
+{
+	const qreal sLeft=leftEye.irisRadius()*width()*2.0;
+	QRect rectLeft(0,0, sLeft, sLeft);
+	QSize sizeLeft=rectLeft.size();
+	if(sizeLeft.width() > 0 && sizeLeft.height() > 0 ) {
+		qDebug()<<"SIZE JUMP LEFT: "<<sizeLeft;
+		QImage img(sizeLeft, QImage::Format_ARGB32);
+		QPainter painter(&img);
+		mIrisRendrer.draw(rectLeft, painter, 0);
+		//painter.fillRect(rectLeft, Qt::blue);
+		leftEye.setIrisImage(img);
+	}
+
+	const qreal sRight=rightEye.irisRadius()*width()*2.0;
+	QRect rectRight(0,0, sRight, sRight);
+	QSize sizeRight=rectRight.size();
+	QImage imgRight(sizeRight,QImage::Format_ARGB32);
+	{
+		QPainter painter(&imgRight);
+		mIrisRendrer.draw(rectRight, painter, 1);
+	}
+	rightEye.setIrisImage(imgRight);
+
+	update();
+}
+
 
 void EyesWidget::setPortableID(PortableID &pid)
 {
@@ -203,23 +83,8 @@ void EyesWidget::setPortableID(PortableID &pid)
 
 	if(mIrisRendrer.portableID().id() !=pid.id()) {
 		mIrisRendrer.setPortableID(pid);
-		quint32 sz=128;
-		QRect rect(0,0, sz, sz);
-		QSize size=rect.size();
-		auto imgLeft=new QImage(size,QImage::Format_ARGB32);
-		auto imgRight=new QImage(size,QImage::Format_ARGB32);
-		{
-			QPainter painter(imgLeft);
-			mIrisRendrer.draw(rect, painter,0);
-		}
-		{
-			QPainter painter(imgRight);
-			mIrisRendrer.draw(rect, painter,1);
-		}
-		leftEye.setIrisImage(QSharedPointer<QImage>(imgLeft));
-		rightEye.setIrisImage(QSharedPointer<QImage>(imgRight));
+		updateIris();
 	}
-
 }
 
 
@@ -269,17 +134,20 @@ void EyesWidget::paintEvent(QPaintEvent *)
 void EyesWidget::onUpdateTimer()
 {
 	const qreal alpha=0.8, beta=1.0f-alpha;
+	const QVector2D lastEyeSteerSmooth=eyeSteerSmooth;
 	eyeSteerSmooth=(eyeSteerSmooth*alpha)+(eyeSteer*beta);
 	QVector2D dif=(eyeSteerSmooth-eyeSteer);
 	if(dif.length()<0.001) {
 		eyeSteerSmooth=eyeSteer;
 	}
 
-	//qDebug()<<"SMOOTH STEER: "<<eyeSteer<<", "<<eyeSteerSmooth<<", "<<dif.length();
-	leftEye.setSteer(eyeSteerSmooth);
-	rightEye.setSteer(eyeSteerSmooth);
+	if(lastEyeSteerSmooth!=eyeSteerSmooth) {
+		//qDebug()<<"SMOOTH STEER: "<<eyeSteer<<", "<<eyeSteerSmooth<<", "<<dif.length();
+		leftEye.setSteer(eyeSteerSmooth);
+		rightEye.setSteer(eyeSteerSmooth);
 
-	update();
+		update();
+	}
 }
 
 
@@ -336,4 +204,11 @@ void EyesWidget::mouseMoveEvent(QMouseEvent *e)
 void EyesWidget::leaveEvent(QEvent *)
 {
 	eyeSteer=QVector2D(0,0);
+}
+
+
+void EyesWidget::resizeEvent(QResizeEvent *)
+{
+	// TODO: Limit frequency in a smart way
+	updateIris();
 }

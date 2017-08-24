@@ -60,10 +60,12 @@ CLThreadManager::~CLThreadManager()
 	setRunning(false,true);
 	for(QThread *thread:mThreads) {
 		delete thread;
+		thread=nullptr;
 	}
 	mThreads.clear();
 	for(CLWorker *worker:mWorkers) {
 		delete worker;
+		worker=nullptr;
 	}
 	mWorkers.clear();
 }

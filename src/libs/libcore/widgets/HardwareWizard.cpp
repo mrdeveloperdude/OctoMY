@@ -44,6 +44,7 @@ HardwareWizard::HardwareWizard(QWidget *parent)
 HardwareWizard::~HardwareWizard()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

@@ -13,4 +13,5 @@ HoveringMtlobeWidget::HoveringMtlobeWidget(QWidget *parent) :
 HoveringMtlobeWidget::~HoveringMtlobeWidget()
 {
 	delete ui;
+	ui=nullptr;
 }

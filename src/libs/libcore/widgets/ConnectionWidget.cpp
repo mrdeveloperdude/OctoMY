@@ -21,6 +21,7 @@ ConnectionWidget::~ConnectionWidget()
 		qWarning()<<"ERROR: could not disconnect";
 	}
 	delete ui;
+	ui=nullptr;
 }
 
 

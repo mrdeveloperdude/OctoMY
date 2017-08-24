@@ -59,6 +59,7 @@ ArduMYControllerWidget::ArduMYControllerWidget(QWidget *parent)
 ArduMYControllerWidget::~ArduMYControllerWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 void ArduMYControllerWidget::configure(ArduMYController *controller)

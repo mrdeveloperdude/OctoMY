@@ -47,7 +47,7 @@ class CompasWidget : public QOpenGLWidget, protected QOpenGLFunctions{
 		int m_matrixLoc;
 
 	public:
-		CompasWidget(QWidget *parent = 0);
+		CompasWidget(QWidget *parent = nullptr);
 		~CompasWidget();
 
 		QSize minimumSizeHint() const Q_DECL_OVERRIDE;

@@ -81,6 +81,7 @@ int NumberEntry::maximum(){
 NumberEntry::~NumberEntry(){
 	OC_METHODGATE();
 	delete ui;
+	ui=nullptr;
 }
 
 void NumberEntry::reloadData(){

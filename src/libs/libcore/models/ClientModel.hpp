@@ -26,6 +26,7 @@ private:
 		~Node()
 		{
 			delete children;
+			children=nullptr;
 		}
 		Node *parent;
 		QVector<Node> *children;

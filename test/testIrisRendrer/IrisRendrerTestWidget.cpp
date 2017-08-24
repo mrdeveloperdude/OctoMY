@@ -53,6 +53,7 @@ IrisRendrerTestWidget::IrisRendrerTestWidget(QWidget *parent, QString name) :
 IrisRendrerTestWidget::~IrisRendrerTestWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 void IrisRendrerTestWidget::setImage(const QImage &im)

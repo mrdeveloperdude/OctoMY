@@ -20,6 +20,7 @@ ActuatorManagerWidget::ActuatorManagerWidget(QWidget *parent)
 ActuatorManagerWidget::~ActuatorManagerWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 void ActuatorManagerWidget::updateWidgetCount(quint32 num)

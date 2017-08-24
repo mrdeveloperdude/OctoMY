@@ -10,8 +10,10 @@ QHexEditData::QHexEditData(QIODevice *iodevice, QObject *parent): QObject(parent
 
 QHexEditData::~QHexEditData()
 {
-	foreach(ModifiedItem* mi, this->_modlist)
+	foreach(ModifiedItem* mi, this->_modlist){
 		delete mi;
+		mi=nullptr;
+	}
 
 	this->_modlist.clear();
 

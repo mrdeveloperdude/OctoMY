@@ -32,6 +32,7 @@ CarSteeringWidget::CarSteeringWidget(QWidget *parent)
 CarSteeringWidget::~CarSteeringWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

@@ -324,6 +324,7 @@ quint16 BlobCourier::sendingOpportunity(QDataStream &ds)
 		ds<<*ack;
 		bytes+=ack->bytes();
 		delete ack;
+		ack=nullptr;
 		//qDebug()<<"BLOB TX  + ack="<<*ack;
 
 	}

@@ -157,8 +157,8 @@ void CourierTester::onToReceiving()
 				buf.close();
 			}
 			onToReceivingImp();
-			delete ba;
 			qDebug()<<mToName<<" RECEIVED  "<<received<<" bytes vs "<<sz << " via buffer "<<ba;
+			delete ba;
 			ba=nullptr;
 		} else {
 			qDebug()<<"NO DATA TO RECEIVE FOR " << mToName<< ", SKIPPING";
@@ -216,9 +216,9 @@ void CourierTester::onFromReceiving()
 				received=mFromCourier->dataReceived(stream, sz);
 				buf.close();
 			}
-			delete ba;
 			onFromReceivingImp();
 			qDebug()<<mFromName<<" RECEIVED "<<received<<" bytes vs "<<sz << " via buffer "<<ba;
+			delete ba;
 			ba=nullptr;
 		} else {
 			qDebug()<<"NO DATA TO RECEIVE FOR " << mFromName<< ", SKIPPING";

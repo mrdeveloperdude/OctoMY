@@ -43,6 +43,7 @@ SpeechControlWidget::SpeechControlWidget(QWidget *parent) :
 SpeechControlWidget::~SpeechControlWidget()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

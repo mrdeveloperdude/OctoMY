@@ -1,5 +1,6 @@
 #include "Personality.hpp"
 
+#include "utility/Standard.hpp"
 #include "security/SecurityConstants.hpp"
 #include "rng/RNG.hpp"
 
@@ -12,30 +13,33 @@ const QString Personality::IRIS="iris";
 
 
 Personality::Personality(QString id)
-	: mID(id)
-	, mRNG(nullptr)
+	: mRNG(nullptr)
 {
-
+	OC_METHODGATE();
+	setID(id, "");
 }
 
 Personality::Personality(QString id, QString key)
 	: mRNG(nullptr)
 {
+	OC_METHODGATE();
 	setID(id, key);
 }
 
 Personality::Personality( const Personality& other )
-	: mID(other.mID)
 	  // We don't copy this to avoid all sorts of nasty problems (it is regenerated anyways...)
-	, mRNG(nullptr)
+	: mRNG(nullptr)
 {
-
+	OC_METHODGATE();
+	setID(other.mID, "");
 }
 
 
 
 Personality::~Personality()
 {
+	OC_METHODGATE();
+	mID="";
 	delete mRNG;
 	mRNG=nullptr;
 }
@@ -44,6 +48,7 @@ Personality::~Personality()
 
 void Personality::reset()
 {
+	OC_METHODGATE();
 	if(nullptr!=mRNG) {
 		mRNG->init(mID.toUtf8());
 	}
@@ -51,6 +56,7 @@ void Personality::reset()
 
 RNG &Personality::rng()
 {
+	OC_METHODGATE();
 	if(nullptr==mRNG) {
 		mRNG=RNG::sourceFactory("mt");
 		reset();
@@ -60,17 +66,24 @@ RNG &Personality::rng()
 
 Personality Personality::subPersonality(QString key)
 {
+	OC_METHODGATE();
 	return Personality(mID, key);
 }
 
 void Personality::setID(QString id, QString key)
 {
-	QCryptographicHash ch(OCTOMY_KEY_HASH);
-	ch.addData((id+key).toUtf8());
-	mID=ch.result().toHex().toUpper();
+	OC_METHODGATE();
+	if(key.isEmpty()) {
+		mID=id;
+	} else {
+		QCryptographicHash ch(OCTOMY_KEY_HASH);
+		ch.addData((id+key).toUtf8());
+		mID=ch.result().toHex().toUpper();
+	}
 }
 
 QString Personality::id() const
 {
+	OC_METHODGATE();
 	return mID;
 }

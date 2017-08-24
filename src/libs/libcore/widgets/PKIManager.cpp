@@ -15,6 +15,7 @@ PKIManager::PKIManager(QWidget *parent) :
 PKIManager::~PKIManager()
 {
 	delete ui;
+	ui=nullptr;
 }
 
 

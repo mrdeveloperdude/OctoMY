@@ -77,6 +77,7 @@
 		if (doPixmapCache) { \
 			p->end(); \
 			delete p; \
+			p = nullptr; \
 			internalPixmapCache = QPixmap::fromImage(imageCache); \
 			painter->drawPixmap(option->rect.topLeft(), internalPixmapCache); \
 			QPixmapCache::insert(unique, internalPixmapCache); \
@@ -604,6 +605,7 @@ OctoStyle::OctoStyle()
 OctoStyle::~OctoStyle()
 {
 	delete d;
+	//d=nullptr;
 }
 
 static void printPalette(const QPalette& pal)

@@ -36,7 +36,7 @@ private:
 
 
 public:
-	explicit NameMappingWidget(QWidget *parent = 0);
+	explicit NameMappingWidget(QWidget *parent = nullptr);
 	virtual ~NameMappingWidget();
 
 public:
