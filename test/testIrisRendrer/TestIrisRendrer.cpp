@@ -64,8 +64,8 @@ void TestIrisRendrer::testSave()
 	QPainter p(&im);
 	IrisRendrer ir;
 	QRect r(QPoint(0,0), sz);
-	for(int i=0;i<500;++i){
-		for(int p=0;p<20;++p){
+	for(int i=0; i<500; ++i) {
+		for(int p=0; p<20; ++p) {
 			ir.setParameter(p,(qreal)(qrand()%1000)/1000.0);
 		}
 
@@ -76,5 +76,27 @@ void TestIrisRendrer::testSave()
 
 
 }
+
+
+
+void TestIrisRendrer::testHuge()
+{
+	qsrand(QDateTime::currentMSecsSinceEpoch());
+	const QImage::Format fmt=QImage::Format_ARGB32;
+	int s=2160;
+	const QSize sz(s,s);
+	QImage im(sz,fmt);
+	QPainter p(&im);
+	IrisRendrer ir;
+	QRect r(QPoint(0,0), sz);
+	PortableID pid;
+	pid.setID("44729B7E0E1ACF15A8E121E9A6A38B328E900B40663163258E44BA26C5A748D9");
+	ir.setPortableID(pid);
+	ir.draw(r,p);
+	im.save("/tmp/iris_huge.png");
+
+}
+
+
 
 QTEST_MAIN(TestIrisRendrer)

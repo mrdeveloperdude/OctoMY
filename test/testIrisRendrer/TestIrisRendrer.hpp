@@ -8,12 +8,13 @@ class TestIrisRendrer:public QObject
 {
 	Q_OBJECT
 
-
-
 	void testUI();
+	void testSave();
+
 private slots:
 
-	void testSave();
+
+	void testHuge();
 
 
 
