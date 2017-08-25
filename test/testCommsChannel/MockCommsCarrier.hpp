@@ -6,23 +6,51 @@
 
 #include <QObject>
 #include <QUdpSocket>
+#include <QString>
+#include <QByteArray>
+#include <QHash>
+#include <QPair>
 
 class MockCommsCarrier: public CommsCarrier
 {
 	Q_OBJECT
 private:
-	QByteArray mMockData;
+	QHash<QString, QList<QByteArray> > mMockWriteData;
+	QList< QPair<QString, QByteArray> > mMockReadData;
+	bool mHasPendingData;
+	qint64 mWriteBatchSize;
+	bool mIsStarted;
+	bool mStartFail;
+	QString mLastError;
+	quint64 mMinimalPacketInterval;
+	quint64	mMaximalPacketInterval;
+	NetworkAddress mOurAddress;
+
 public:
 	explicit MockCommsCarrier(QObject *parent=nullptr);
 	virtual ~MockCommsCarrier();
 
-	// Mock interface
+	////////////////////////// Mock interface
 public:
 
-	void writeMock(QByteArray data);
-	QByteArray readMock();
+	void mockWriteMock(QByteArray data, const NetworkAddress &address, bool sendReadyReadSignal=true);
+	QByteArray mockReadMock(const NetworkAddress &address);
+	void mockSetHasPendingData(bool hasPendingData);
+	void mockSetWriteBatchSize(qint64 writeBatchSize=-1);
+	void mockSetStartFail(bool startFail=true);
+	void mockSetMinimalPacketInterval(quint64 size);
+	void mockSetMaximalPacketIntervalImp(quint64 size);
+	void mockSetAddress(NetworkAddress addr);
 
-	// CommsCarrier internal interface methods
+	void mockTriggerReadyRead();
+	void mockTriggerErrorSignal(QString error);
+	void mockTriggerSendingOpportunity(quint64 now);
+	void mockTriggerConnectionStatusChanged(bool connected);
+
+
+
+
+	//////////////////////////  CommsCarrier internal interface methods
 protected:
 
 	bool startImp(NetworkAddress address) Q_DECL_OVERRIDE;
@@ -44,6 +72,17 @@ protected:
 	quint64 minimalPacketIntervalImp() Q_DECL_OVERRIDE ;
 	quint64	maximalPacketIntervalImp() Q_DECL_OVERRIDE ;
 
+
+	// FOR REFERENCE, CommsCarrier interface signals:
+	/*
+	signals:
+
+	// Send this signal when there is new data ready for reading
+	void carrierReadyRead();
+	void carrierError(QString string);
+	void carrierSendingOpportunity(quint64 now);
+	void carrierConnectionStatusChanged(bool connected);
+	*/
 };
 
 

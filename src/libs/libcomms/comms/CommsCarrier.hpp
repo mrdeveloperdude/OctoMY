@@ -20,7 +20,7 @@ private:
 	static quint64 sTotalTxCount;
 
 
-		bool mConnected;
+	bool mConnected;
 
 protected:
 	QTimer mSendingTimer;  // The timer used to schedule when packets are sent to the other side
