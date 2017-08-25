@@ -26,6 +26,7 @@ class NetworkAddress{
 		void setIP(QHostAddress ip);
 		QVariantMap toVariantMap() const;
 		QString toString() const;
+		void fromString(QString, bool allowOnlyAddress=true);
 		bool isValid(bool allowLoopback=true, bool allowMulticast=false) const;
 		bool operator==(const NetworkAddress &o) const;
 		bool operator!=(const NetworkAddress &o) const;

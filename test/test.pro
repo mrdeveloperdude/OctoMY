@@ -30,7 +30,7 @@ TEST_PROJECTS+= \
 #	testIdenticon \
 #	testKey \
 #	testKeyStore \
-#	testNetworkAddress \
+	testNetworkAddress \
 #	testNodeAssociate \
 #	testNodeAssociateStore \
 #	testParser \

@@ -101,6 +101,27 @@ QString NetworkAddress::toString() const
 	return mIP.toString()+":"+QString::number(mPort);
 }
 
+
+void NetworkAddress::fromString(QString str, bool allowOnlyAddress)
+{
+	OC_METHODGATE();
+	QStringList list = str.split(":");
+	const auto sz=list.size();
+
+	if(sz<1 || sz>2 || ( !allowOnlyAddress && sz < 2 ) ) {
+		// Indicate error if number of parts is out of range
+		mIP=QHostAddress();
+		mPort=0;
+	} else {
+		// Always take address
+		mIP=QHostAddress(list[0]);
+		// Take port if it is there
+		if(2==sz) {
+			mPort=list[1].toInt();
+		}
+	}
+}
+
 bool NetworkAddress::isValid(bool allowLoopback, bool allowMulticast) const
 {
 	OC_METHODGATE();
@@ -123,7 +144,8 @@ bool NetworkAddress::operator!=(const NetworkAddress &o) const
 
 
 
-const QDebug &operator<<(QDebug &d, const NetworkAddress &na){
+const QDebug &operator<<(QDebug &d, const NetworkAddress &na)
+{
 	d.nospace() << na.toString();
 	return d.maybeSpace();
 }

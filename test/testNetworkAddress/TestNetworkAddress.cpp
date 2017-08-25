@@ -6,6 +6,9 @@
 #include <QVariantMap>
 
 
+#include <QTest>
+
+
 #define scrutinize(na, expectedValid, expectedAddress, expectedPort) \
 	QVERIFY( nullptr != (na) ); \
 	qDebug()<< "----" <<(#na)<<(na)->toString(); \
@@ -52,7 +55,8 @@ void TestNetworkAddress::initTestCase()
 }
 
 // YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
-void TestNetworkAddress::testInitial(){
+void TestNetworkAddress::testInitial()
+{
 	QVERIFY(expectedEmptyAddress.isNull());
 	QCOMPARE(expectedEmptyPort, (quint16)0);
 	QVERIFY(!expectedValidAddress.isNull());
@@ -261,6 +265,39 @@ void TestNetworkAddress::testIsValid()
 	QVERIFY(!naHeap->isValid(true,false));
 
 	delete naHeap;
+
+}
+
+
+void TestNetworkAddress::testToFromString()
+{
+	qDebug()<<"TO FROM STRING!";
+	const QString validAddressString="127.0.0.1";
+	const QHostAddress validAddress(validAddressString);
+	const quint16 validPort=8128;
+	const QString validPortString=QString::number(validPort);
+	const QString full=validAddressString+":"+validPortString;
+	const QString onlyAddress=validAddressString+":0";
+	const QString onlyPort=":"+validPortString;
+	const QString unInitialized(":0");
+
+	NetworkAddress na;
+	QString unInitializedCheck=na.toString();
+
+
+	QCOMPARE(unInitialized, unInitializedCheck);
+
+	na.fromString(full);
+	QString fullCheck=na.toString();
+	QCOMPARE(full, fullCheck);
+
+	na.fromString(onlyAddress);
+	QString onlyAddressCheck=na.toString();
+	QCOMPARE(onlyAddress, onlyAddressCheck);
+
+	na.fromString(onlyPort);
+	QString onlyPortCheck=na.toString();
+	QCOMPARE(onlyPort, onlyPortCheck);
 
 }
 

@@ -30,6 +30,7 @@ class TestNetworkAddress:public QObject{
 		void testAssignment1();
 		void testAssignment2();
 		void testIsValid();
+		void testToFromString();
 
 };
 
