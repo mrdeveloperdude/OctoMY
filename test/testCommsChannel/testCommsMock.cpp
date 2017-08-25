@@ -72,65 +72,6 @@ void TestCommsChannel::testCommsMock()
 	peerMapA["trusts"]=QStringList();
 	QSharedPointer<NodeAssociate> partA(new NodeAssociate(peerMapA));
 
-	qDebug()<<"";
-	qDebug()<<"####################################### INITIALIZING ID FOR PARTY B";
-	QString keyStoreFilenameB="keyFileB.json";
-	QFile keyStoreFileB(keyStoreFilenameB);
-	if(keyStoreFileB.exists()) {
-		QVERIFY(keyStoreFileB.remove());
-	}
-	QVERIFY(!keyStoreFileB.exists());
-	KeyStore keyStoreB(keyStoreFilenameB, policy);
-	keyStoreB.bootstrap(false,false);
-	auto keyB=keyStoreB.localKey();
-	QVERIFY(nullptr!=keyB);
-	qDebug() << keyB->toString();
-	QVERIFY(keyB->isValid(true));
-	QVERIFY(keyB->hasPrivate(true));
-	QVERIFY(keyB->hasPublic(true));
-
-	QString idB=keyB->id();
-	qDebug()<<"Keystore B :"<<idB<<QFileInfo(keyStoreB.filename()).absoluteFilePath();
-	NetworkAddress addrB(local, basePort + 1);
-	QString peersFilenameB="peersFileB.json";
-	QFile peersFileB(peersFilenameB);
-	if(peersFileB.exists()) {
-		QVERIFY(peersFileB.remove());
-	}
-	QVERIFY(!peersFileB.exists());
-
-	NodeAssociateStore peersB(peersFilenameB);
-	peersB.bootstrap(false,false);
-	QVariantMap peerMapB;
-	QString nameB="PARTY B";
-	QVariantMap addrBMap=addrB.toVariantMap();
-	QCOMPARE(addrBMap.size(), 2);
-	peerMapB["publicAddress"]=addrBMap;
-	peerMapB["localAddress"]=addrBMap;
-	peerMapB["lastSeenMS"]=0;
-	peerMapB["birthDate"]=0;
-	peerMapB["key"]=keyB->toVariantMap(true);
-	peerMapB["role"]=DiscoveryRoleToString(ROLE_CONTROL);
-	peerMapB["type"]=DiscoveryTypeToString(TYPE_REMOTE);
-	peerMapB["name"]=nameB;
-	peerMapB["gender"]="Female";
-	peerMapB["trusts"]=QStringList();
-	QSharedPointer<NodeAssociate> partB(new NodeAssociate(peerMapB));
-
-
-	qDebug()<<"";
-	qDebug()<<"####################################### BIND PARTY A to B";
-	partA->addTrust(idB);
-	peersA.setParticipant(partB);
-	qDebug()<<"IDB="<<idB;
-	keyStoreA.setPubKeyForID(keyB->pubKey());
-
-
-	qDebug()<<"";
-	qDebug()<<"####################################### BIND PARTY B to A";
-	partB->addTrust(idA);
-	peersB.setParticipant(partA);
-	keyStoreB.setPubKeyForID(keyA->pubKey());
 
 
 	qDebug()<<"";
@@ -144,16 +85,7 @@ void TestCommsChannel::testCommsMock()
 	//TestCourier courA2("Courier A2", commSigB, "This is datagram A2 uvw xyz", maxSends, maxRecs); chanA.setCourierRegistered(courA2, true);
 	qDebug()<<"SUMMARY: "<<chanA.getSummary();
 
-	qDebug()<<"";
-	qDebug()<<"####################################### INITIALIZING COMMS FOR PARTY B";
-	MockCommsCarrier carrierB;
-	CommsChannel chanB(carrierB, keyStoreB, peersB);
-	CommsSignalLogger sigLogB("LOG-B");
-	chanA.setHookCommsSignals(sigLogB, true);
-	TestCourier courB1("Courier B1", idA, "This is datagram B1 æøåä", chanB, maxSends, maxRecs);
-	chanB.setCourierRegistered(courB1, true);
-	//TestCourier courB2("Courier B2", commSigA, "This is datagram B2 Q", maxSends, maxRecs); chanB.setCourierRegistered(courB2, true);
-	qDebug()<<"SUMMARY: "<<chanB.getSummary();
+
 
 	qDebug()<<"";
 	qDebug()<<"#######################################";
@@ -163,6 +95,9 @@ void TestCommsChannel::testCommsMock()
 
 	NetworkAddress na(QHostAddress("127.0.0.1"), 8123);
 	chanB.start(na);
+
+	chanB.
+
 
 
 	qDebug()<<"";
