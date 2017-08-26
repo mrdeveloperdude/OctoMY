@@ -42,6 +42,7 @@ public:
 	void mockSetMinimalPacketInterval(quint64 size);
 	void mockSetMaximalPacketIntervalImp(quint64 size);
 	void mockSetAddress(NetworkAddress addr);
+	void mockSetOverrideSendingtimer(bool override);
 
 	void mockStartSendingTimer();
 	void mockStopSendingTimer();

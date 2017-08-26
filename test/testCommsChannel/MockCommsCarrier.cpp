@@ -83,6 +83,11 @@ void MockCommsCarrier::mockSetAddress(NetworkAddress addr)
 	mOurAddress=addr;
 }
 
+void MockCommsCarrier::mockSetOverrideSendingtimer(bool override)
+{
+	qDebug()<<"Mock-Setting override sending timer from "<<mOverrideStartStop<<" to "<<override;
+	mOverrideStartStop=override;
+}
 
 void MockCommsCarrier::mockStartSendingTimer()
 {

@@ -147,6 +147,7 @@ void TestCommsChannel::testCommsMock()
 	quint64 time=QDateTime::currentMSecsSinceEpoch();
 
 	NetworkAddress na(QHostAddress("127.0.0.1"), 8123);
+	carrierA.mockSetOverrideSendingtimer(true);
 	chanA.start(na);
 	QTest::waitForEvents();
 	qDebug()<<"";
