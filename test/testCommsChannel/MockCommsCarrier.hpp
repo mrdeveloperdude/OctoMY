@@ -25,6 +25,7 @@ private:
 	quint64 mMinimalPacketInterval;
 	quint64	mMaximalPacketInterval;
 	NetworkAddress mOurAddress;
+	bool mOverrideStartStop;
 
 public:
 	explicit MockCommsCarrier(QObject *parent=nullptr);
@@ -42,12 +43,21 @@ public:
 	void mockSetMaximalPacketIntervalImp(quint64 size);
 	void mockSetAddress(NetworkAddress addr);
 
+	void mockStartSendingTimer();
+	void mockStopSendingTimer();
+
 	void mockTriggerReadyRead();
 	void mockTriggerErrorSignal(QString error);
 	void mockTriggerSendingOpportunity(quint64 now);
 	void mockTriggerConnectionStatusChanged(bool connected);
 
 
+	// CommsCarrier overrides to take countrol over sending opportunity timer
+public slots:
+
+
+	bool start(NetworkAddress address) Q_DECL_OVERRIDE;
+	void stop() Q_DECL_OVERRIDE;
 
 
 	//////////////////////////  CommsCarrier internal interface methods

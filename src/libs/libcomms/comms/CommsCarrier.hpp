@@ -50,8 +50,8 @@ public slots:
 	quint64 connectionTimeout();
 
 	void setHookCarrierSignals(QObject &ob, bool hook);
-	bool start(NetworkAddress address);
-	void stop();
+	virtual bool start(NetworkAddress address);
+	virtual void stop();
 
 	bool isStarted() const;
 	bool isConnected() const;

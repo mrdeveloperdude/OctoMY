@@ -73,6 +73,59 @@ void TestCommsChannel::testCommsMock()
 	QSharedPointer<NodeAssociate> partA(new NodeAssociate(peerMapA));
 
 
+	qDebug()<<"";
+	qDebug()<<"####################################### INITIALIZING ID FOR PARTY B";
+	QString keyStoreFilenameB="keyFileB.json";
+	QFile keyStoreFileB(keyStoreFilenameB);
+	if(keyStoreFileB.exists()) {
+		QVERIFY(keyStoreFileB.remove());
+	}
+	QVERIFY(!keyStoreFileB.exists());
+	KeyStore keyStoreB(keyStoreFilenameB, policy);
+	keyStoreB.bootstrap(false,false);
+	auto keyB=keyStoreB.localKey();
+	QVERIFY(nullptr!=keyB);
+	qDebug() << keyB->toString();
+	QVERIFY(keyB->isValid(true));
+	QVERIFY(keyB->hasPrivate(true));
+	QVERIFY(keyB->hasPublic(true));
+
+	QString idB=keyB->id();
+	qDebug()<<"Keystore B :"<<idB<<QFileInfo(keyStoreB.filename()).absoluteFilePath();
+	NetworkAddress addrB(local, basePort + 1);
+	QString peersFilenameB="peersFileB.json";
+	QFile peersFileB(peersFilenameB);
+	if(peersFileB.exists()) {
+		QVERIFY(peersFileB.remove());
+	}
+	QVERIFY(!peersFileB.exists());
+
+	NodeAssociateStore peersB(peersFilenameB);
+	peersB.bootstrap(false,false);
+	QVariantMap peerMapB;
+	QString nameB="PARTY B";
+	QVariantMap addrBMap=addrB.toVariantMap();
+	QCOMPARE(addrBMap.size(), 2);
+	peerMapB["publicAddress"]=addrBMap;
+	peerMapB["localAddress"]=addrBMap;
+	peerMapB["lastSeenMS"]=0;
+	peerMapB["birthDate"]=0;
+	peerMapB["key"]=keyB->toVariantMap(true);
+	peerMapB["role"]=DiscoveryRoleToString(ROLE_CONTROL);
+	peerMapB["type"]=DiscoveryTypeToString(TYPE_REMOTE);
+	peerMapB["name"]=nameB;
+	peerMapB["gender"]="Female";
+	peerMapB["trusts"]=QStringList();
+	QSharedPointer<NodeAssociate> partB(new NodeAssociate(peerMapB));
+
+
+	qDebug()<<"";
+	qDebug()<<"####################################### BIND PARTY A to B";
+	partA->addTrust(idB);
+	peersA.setParticipant(partB);
+	qDebug()<<"IDB="<<idB;
+	keyStoreA.setPubKeyForID(keyB->pubKey());
+
 
 	qDebug()<<"";
 	qDebug()<<"####################################### INITIALIZING COMMS FOR PARTY A";
@@ -94,9 +147,21 @@ void TestCommsChannel::testCommsMock()
 	quint64 time=QDateTime::currentMSecsSinceEpoch();
 
 	NetworkAddress na(QHostAddress("127.0.0.1"), 8123);
-	chanB.start(na);
+	chanA.start(na);
+	QTest::waitForEvents();
+	qDebug()<<"";
+	qDebug()<<"####################################### Send garbled package from unknown address";
+	NetworkAddress unknownAddress;
+	unknownAddress.fromString("1.2.3.4:5434");
+	carrierA.mockWriteMock(QString("This is a test").toUtf8(), unknownAddress);
+	QTest::waitForEvents();
+	qDebug()<<"";
+	qDebug()<<"####################################### Send garbled package from known address";
 
-	chanB.
+	carrierA.mockWriteMock(QString("This is a test").toUtf8(), addrB);
+	QTest::waitForEvents();
+	carrierA.mockTriggerConnectionStatusChanged(false);
+	QTest::waitForEvents();
 
 
 
@@ -115,13 +180,10 @@ void TestCommsChannel::testCommsMock()
 	qDebug()<<"";
 	qDebug()<<"####################################### SUMMARIES 1st time with no sessions";
 	courA1.writeSummary();
-	courB1.writeSummary();
 
 	qDebug()<<"";
 	qDebug()<<"####################################### STOP 1st time with no sessions";
 	chanA.stop();
-	chanB.stop();
-
 
 	qDebug()<<"";
 	qDebug()<<"####################################### DELETING";

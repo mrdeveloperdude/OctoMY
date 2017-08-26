@@ -12,6 +12,7 @@ MockCommsCarrier::MockCommsCarrier(QObject *parent)
 	, mStartFail(false)
 	, mMinimalPacketInterval(100) // Shortest pause between sending opportunities is 100 ms (Throttling)
 	, mMaximalPacketInterval(5000) // Longest pause between sending opportunities is 5000 ms (keepalive)
+	, mOverrideStartStop(false)
 {
 
 }
@@ -83,6 +84,19 @@ void MockCommsCarrier::mockSetAddress(NetworkAddress addr)
 }
 
 
+void MockCommsCarrier::mockStartSendingTimer()
+{
+	qDebug()<<"Mock-StartSendingTimer";
+	mSendingTimer.start();
+}
+
+void MockCommsCarrier::mockStopSendingTimer()
+{
+	qDebug()<<"Mock-StopSendingTimer";
+	mSendingTimer.stop();
+}
+
+
 void MockCommsCarrier::mockTriggerReadyRead()
 {
 	qDebug()<<"Mock-Triggering ready read signal";
@@ -109,6 +123,30 @@ void MockCommsCarrier::mockTriggerConnectionStatusChanged(bool connected)
 	qDebug()<<"Mock-Triggering connection status changed signal with new status='"<<connected<<"'";
 	emit carrierConnectionStatusChanged(connected);
 }
+
+////////////////////////// CommsCarrier overrides to take countrol over sending opportunity timer
+
+
+
+bool MockCommsCarrier::start(NetworkAddress address)
+{
+	if(mOverrideStartStop) {
+		return isStarted();
+	} else {
+		return CommsCarrier::start(address);
+	}
+}
+
+void MockCommsCarrier::stop()
+{
+	if(mOverrideStartStop) {
+		return;
+	} else {
+		CommsCarrier::stop();
+	}
+}
+
+
 
 
 //////////////////////////  CommsCarrier internal interface methods
