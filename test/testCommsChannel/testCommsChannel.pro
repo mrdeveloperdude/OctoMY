@@ -16,7 +16,6 @@ SOURCES += \
 	testCarrier.cpp \
 	TestCommsChannel.cpp \
 	TestCourier.cpp \
-	testHandshake.cpp \
 	testMultiple.cpp \
 	testSingle.cpp \
     MockCommsCarrierLog.cpp \

@@ -27,20 +27,22 @@ class TestCommsChannel:public QObject
 {
 	Q_OBJECT
 
+public:
 
-	void testSingle();
+	//ok
 	void testMultiple();
-	void testHandshake();
+
 	void testCarrier();
-private slots:
-
-
-
 
 	void testCommsMock();
+private slots:
 
+	void testSingle();
 
 };
 
+
+void heading(QString msg, QString ch="_");
+QSharedPointer<NodeAssociate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, DiscoveryRole role, DiscoveryType type );
 
 #endif // TESTCOMMSCHANNEL_HPP

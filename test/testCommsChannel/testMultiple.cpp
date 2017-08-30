@@ -6,7 +6,7 @@
 Sets up X commchannels and have them sending data
 via courier to a random but deterministically selected subset of X.
 
-Result should stress the UDP system in a way that lays bare any shortcomings
+Result should stress the system in a way that lays bare any shortcomings
 when used in real world scenario.
 
 TODO: add simulated unreliability factors such as dropped/corrupted/delayed packets

@@ -149,7 +149,7 @@ void ClientWidget::updateOnlineStatus()
 			wantToBeOnline=s->getCustomSettingBool("octomy.online."+mNodeAssoc->name(), false);
 		}
 		//Spell it out for debugging
-		qDebug()<<mNodeAssoc->name()<<" is currently trying to be "<<(isTryingToGoOnline?"ONLINE":"OFFLINE")<<" and wants to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
+		qDebug()<<mNodeAssoc->name()<<" is currently trying to be "<<(isTryingToGoOnline?"ONLINE":"OFFLINE")<<" and wants to try for "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
 		// Make necessary changes to state
 		const TryToggleState currentTryState=ui->tryToggleListen->state();
 		TryToggleState nextTryState=currentTryState;

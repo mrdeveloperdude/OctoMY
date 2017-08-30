@@ -80,8 +80,8 @@ void TestCourier::writeSummary()
 {
 
 	qDebug()<<"";
-	qDebug()<<" Summary for    "<<name();
-	qDebug()<<"  + SoFar:      "<<mSoFar;
-	qDebug()<<"  + mSendCount: "<<mSendCount<<"/"<<mMaxSends;
-	qDebug()<<"  + mRecCount:  "<<mRecCount<<"/"<<mMaxRecs;
+	qDebug()<<" Test Courier Summary for "<<name();
+	qDebug()<<"  + SoFar:                "<<mSoFar;
+	qDebug()<<"  + mSendCount:           "<<mSendCount<<"/"<<mMaxSends;
+	qDebug()<<"  + mRecCount:            "<<mRecCount<<"/"<<mMaxRecs;
 }

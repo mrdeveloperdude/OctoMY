@@ -22,8 +22,8 @@ void TestCommsChannel::testSingle()
 	const KeySecurityPolicy policy(keyBits, hashAlgo);
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 
-	qDebug()<<"";
-	qDebug()<<"####################################### PARAMETER SUMMARY";
+
+	heading("PARAMETER SUMMARY");
 	qDebug()<<"  + localhost: "<<local;
 	qDebug()<<"  + basePort:  "<<basePort;
 	qDebug()<<"  + maxSends:  "<<maxSends;
@@ -32,8 +32,7 @@ void TestCommsChannel::testSingle()
 	qDebug()<<"  + hashAlgo:  "<<hashAlgo;
 	qDebug()<<"  + now:       "<<now;
 
-	qDebug()<<"";
-	qDebug()<<"####################################### INITIALIZING ID FOR PARTY A";
+	heading("INITIALIZING ID FOR PARTY A");/////////////////////////////////////////////
 	QString keyStoreFilenameA="keyFileA.json";
 	QFile keyStoreFileA(keyStoreFilenameA);
 	if(keyStoreFileA.exists()) {
@@ -62,22 +61,10 @@ void TestCommsChannel::testSingle()
 	QVERIFY(!peersFileA.exists());
 	NodeAssociateStore peersA(peersFilenameA);
 	peersA.bootstrap(false,false);
-	QVariantMap peerMapA;
 	QString nameA="PARTY A";
-	peerMapA["publicAddress"]=addrA.toVariantMap();
-	peerMapA["localAddress"]=addrA.toVariantMap();
-	peerMapA["lastSeenMS"]=0;
-	peerMapA["birthDate"]=0;
-	peerMapA["key"]=keyA->toVariantMap(true);
-	peerMapA["role"]=DiscoveryRoleToString(ROLE_AGENT);
-	peerMapA["type"]=DiscoveryTypeToString(TYPE_AGENT);
-	peerMapA["name"]=nameA;
-	peerMapA["gender"]="Male";
-	peerMapA["trusts"]=QStringList();
-	QSharedPointer<NodeAssociate> partA(new NodeAssociate(peerMapA));
+	QSharedPointer<NodeAssociate> partA=generatePart(nameA, keyA, addrA, ROLE_AGENT, TYPE_AGENT);
 
-	qDebug()<<"";
-	qDebug()<<"####################################### INITIALIZING ID FOR PARTY B";
+	heading("INITIALIZING ID FOR PARTY B");////////////////////////////////////////////////
 	QString keyStoreFilenameB="keyFileB.json";
 	QFile keyStoreFileB(keyStoreFilenameB);
 	if(keyStoreFileB.exists()) {
@@ -105,40 +92,26 @@ void TestCommsChannel::testSingle()
 
 	NodeAssociateStore peersB(peersFilenameB);
 	peersB.bootstrap(false,false);
-	QVariantMap peerMapB;
 	QString nameB="PARTY B";
 	QVariantMap addrBMap=addrB.toVariantMap();
 	QCOMPARE(addrBMap.size(), 2);
-	peerMapB["publicAddress"]=addrBMap;
-	peerMapB["localAddress"]=addrBMap;
-	peerMapB["lastSeenMS"]=0;
-	peerMapB["birthDate"]=0;
-	peerMapB["key"]=keyB->toVariantMap(true);
-	peerMapB["role"]=DiscoveryRoleToString(ROLE_CONTROL);
-	peerMapB["type"]=DiscoveryTypeToString(TYPE_REMOTE);
-	peerMapB["name"]=nameB;
-	peerMapB["gender"]="Female";
-	peerMapB["trusts"]=QStringList();
-	QSharedPointer<NodeAssociate> partB(new NodeAssociate(peerMapB));
+	QSharedPointer<NodeAssociate> partB=generatePart(nameB, keyB, addrB, ROLE_CONTROL, TYPE_REMOTE);
 
 
-	qDebug()<<"";
-	qDebug()<<"####################################### BIND PARTY A to B";
+	heading("BIND PARTY A to B");////////////////////////////////////////////////
 	partA->addTrust(idB);
 	peersA.setParticipant(partB);
 	qDebug()<<"IDB="<<idB;
 	keyStoreA.setPubKeyForID(keyB->pubKey());
 
 
-	qDebug()<<"";
-	qDebug()<<"####################################### BIND PARTY B to A";
+	heading("BIND PARTY B to A");/////////////////////////////////////////////////
 	partB->addTrust(idA);
 	peersB.setParticipant(partA);
 	keyStoreB.setPubKeyForID(keyA->pubKey());
 
 
-	qDebug()<<"";
-	qDebug()<<"####################################### INITIALIZING COMMS FOR PARTY A";
+	heading("INITIALIZING COMMS FOR PARTY A");///////////////////////////////////
 	CommsCarrierUDP carrierA;
 	CommsChannel chanA(carrierA,keyStoreA, peersA);
 	CommsSignalLogger sigLogA("LOG-A");
@@ -148,8 +121,7 @@ void TestCommsChannel::testSingle()
 	//TestCourier courA2("Courier A2", commSigB, "This is datagram A2 uvw xyz", maxSends, maxRecs); chanA.setCourierRegistered(courA2, true);
 	qDebug()<<"SUMMARY: "<<chanA.getSummary();
 
-	qDebug()<<"";
-	qDebug()<<"####################################### INITIALIZING COMMS FOR PARTY B";
+	heading("INITIALIZING COMMS FOR PARTY B");//////////////////////////////////
 	CommsCarrierUDP carrierB;
 	CommsChannel chanB(carrierB, keyStoreB, peersB);
 	CommsSignalLogger sigLogB("LOG-B");
@@ -159,15 +131,13 @@ void TestCommsChannel::testSingle()
 	//TestCourier courB2("Courier B2", commSigA, "This is datagram B2 Q", maxSends, maxRecs); chanB.setCourierRegistered(courB2, true);
 	qDebug()<<"SUMMARY: "<<chanB.getSummary();
 
-	qDebug()<<"";
-	qDebug()<<"#######################################";
-	qDebug()<<"####################################### STARTING 1st time with no sessions";
+	heading("STARTING 1st time with no sessions","#");//////////////////////////////////
 	chanA.rescheduleSending(now);
 	chanA.start(addrA);
 	chanB.rescheduleSending(now+1000);
 	chanB.start(addrB);
-	qDebug()<<"";
-	qDebug()<<"####################################### WAITING 1st time with no sessions";
+
+	heading("WAITING 1st time with no sessions");///////////////////////////////
 	{
 		quint64 now=QDateTime::currentMSecsSinceEpoch();
 		const quint64 end=now+15000;
@@ -178,13 +148,11 @@ void TestCommsChannel::testSingle()
 		}
 	}
 
-	qDebug()<<"";
-	qDebug()<<"####################################### SUMMARIES 1st time with no sessions";
+	heading("SUMMARIES 1st time with no sessions");//////////////////////////////
 	courA1.writeSummary();
 	courB1.writeSummary();
 
-	qDebug()<<"";
-	qDebug()<<"####################################### STOP 1st time with no sessions";
+	heading("STOP 1st time with no sessions");///////////////////////////////////
 	chanA.stop();
 	chanB.stop();
 
@@ -202,17 +170,12 @@ void TestCommsChannel::testSingle()
 	sessDirA.insert(sessB);
 	sessDirB.insert(sessA);
 
-	qDebug()<<"";
-	qDebug()<<"####################################### SESSION SUMMARIES";
+	heading("SESSION SUMMARIES");/////////////////////////////////////////////////////
 	qDebug()<<"SUM A: "<<sessDirA.summary();
 	qDebug()<<"SUM B: "<<sessDirB.summary();
 
 
-	qDebug()<<"";
-	qDebug()<<"#######################################";
-	qDebug()<<"#######################################";
-	qDebug()<<"#######################################";
-	qDebug()<<"####################################### STARTING 2nd time with sessions";
+	heading("STARTING 2nd time with sessions","#");///////////////////////////////////////////
 	chanA.rescheduleSending(now);
 	chanA.start(addrA);
 	chanB.rescheduleSending(now);
@@ -228,14 +191,12 @@ void TestCommsChannel::testSingle()
 		}
 	}
 
-	qDebug()<<"";
-	qDebug()<<"####################################### SUMMARIES 2nd time with sessions";
+	heading("SUMMARIES 2nd time with sessions");////////////////////////////////////////////
 	courA1.writeSummary();
 	courB1.writeSummary();
 
 	*/
-	qDebug()<<"";
-	qDebug()<<"####################################### DELETING";
+	heading("DELETING");///////////////////////////////////////////////////////////
 
 }
 
