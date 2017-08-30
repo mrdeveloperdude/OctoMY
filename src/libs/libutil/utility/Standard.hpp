@@ -21,8 +21,9 @@
 #define BUFFER_HONEYPOT
 #endif
 
+#define OC_LOWEST_POSSIBLE_ADDRESS (0xd0000)
 
-#define OC_METHODGATE()  { if(((const long long unsigned int)this)<0xd00000){ qWarning()<<"ERROR: this < 0xd00000, which likely means nullptr access"; } } BUFFER_HONEYPOT
+#define OC_METHODGATE()  { if(((const long long unsigned int)this)<OC_LOWEST_POSSIBLE_ADDRESS){ qWarning()<<"ERROR: this < "<<OC_LOWEST_POSSIBLE_ADDRESS<<", which likely means nullptr access"; } } BUFFER_HONEYPOT
 #define OC_FUNCTIONGATE()  { } BUFFER_HONEYPOT
 
 #define OC_TIMEOUTWARN(to) ScopedTimer(Q_FUNC_INFO,(qint64)to);
