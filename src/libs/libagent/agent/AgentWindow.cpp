@@ -546,7 +546,7 @@ void AgentWindow::updateOnlineStatus()
 			qWarning()<<"ERROR: No settings for agent";
 		}
 		//Spell it out for debugging
-		qDebug()<<"We are currently trying to be "<<(isTryingToGoOnline?"ONLINE":"OFFLINE")<<" and we wants to be "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
+		qDebug()<<"We are currently trying to be "<<(isTryingToGoOnline?"ONLINE":"OFFLINE")<<" and we now want to try for "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
 		// Make necessary changes to state
 		const TryToggleState current=ui->widgetFace->connectionState();
 		TryToggleState next=current;
