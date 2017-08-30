@@ -341,7 +341,7 @@ void CommsChannel::recieveSyn(PacketReadState &state)
 	session->setRemoteSessionID(state.octomyProtocolDesiredRemoteSessionID);
 
 	session->handshakeState().setSynOK();
-	qDebug()<< "SYN RX handshake state is now :"<< handshakeStepToString(session->handshakeState().step());
+	qDebug()<< "SYN RX handshake state is now :"<< session->handshakeState().toString();
 }
 
 
@@ -441,7 +441,7 @@ void CommsChannel::recieveSynAck(PacketReadState &state)
 	session->setRemoteSessionID(state.octomyProtocolDesiredRemoteSessionID);
 
 	session->handshakeState().setSynAckOK();
-	qDebug()<< "SYN-ACK RX handshake state is now :"<< handshakeStepToString(session->handshakeState().step());
+	qDebug()<< "SYN-ACK RX handshake state is now :"<< session->handshakeState().toString();
 }
 
 /*
@@ -506,7 +506,7 @@ void CommsChannel::recieveAck(PacketReadState &state)
 		return;
 	}
 	session->handshakeState().setAckOK();
-	qDebug()<< "ACK RX handshake state is now :"<< handshakeStepToString(session->handshakeState().step());
+	qDebug()<< "ACK RX handshake state is now :"<< session->handshakeState().toString();
 }
 
 
@@ -668,12 +668,9 @@ void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHo
 
 }
 
-
-
-void CommsChannel::doSend( PacketSendState &state)
+void CommsChannel::doSendWithSession(PacketSendState &state)
 {
 	// Send data in stream
-	const quint32 sz=state.datagram.size();
 	if(nullptr==state.session) {
 		qWarning()<<"ERROR: session was null in doSend";
 		return;
@@ -683,34 +680,29 @@ void CommsChannel::doSend( PacketSendState &state)
 		qWarning()<<"ERROR: invalid address: "	<<na;
 		return;
 	}
-	if(state.datagram.size()<=0) {
+	const quint32 sz=state.datagram.size();
+	if(sz<=0) {
 		qWarning()<<"ERROR: datagram is <= 0 bytes ("<<state.datagram.size() <<")";
 		return;
 	}
-
-	//errorString()
-
 	const qint64 written=mCarrier.writeData(state.datagram, na);
 	//qDebug()<<"WROTE "<<written<<" bytes to "<<na.ip()<<":"<<na.port();
 	if(written<0) {
-		qDebug()<<"ERROR: in write for UDP SOCKET:"<<mCarrier.errorString()<< " for destination "<< localAddress().toString()<<localID();
+		qDebug()<<"ERROR: in write for UDP SOCKET:"<<mCarrier.errorString()<< " for destination "<< na.toString()<<localID();
 		return;
 	} else if(written<sz) {
-		qDebug()<<"ERROR: Only " << written << " of " <<sz<<" bytes of idle packet written to UDP SOCKET:"<<mCarrier.errorString()<< " for destination "<< localAddress().toString()<<localID();
+		qDebug()<<"ERROR: Only " << written << " of " <<sz<<" bytes of idle packet written to UDP SOCKET:"<<mCarrier.errorString()<< " for destination "<< na.toString()<<localID();
 		return;
-	} else {
-		qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET";
 	}
-	if (nullptr!=state.session) {
-		state.session->countSend(written);
-	}
+	qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET";
+	state.session->countSend(written);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 
 // Process existing sessions that are in handshake mode
-// and create NEW sessions for  id's that have not yet been enrolled
+// AND create new sessions for IDs that have not yet been enrolled
 void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 {
 	QSharedPointer<CommsSession> session=mSessions.getByFullID(handShakeID);
@@ -727,23 +719,15 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 		PacketSendState state;
 		state.setRemoteID(handShakeID);
 		state.session=session;
-		HandshakeStep step=session->handshakeState().step();
-		//HandshakeStep nextStep=session->handshakeState().nextStep();
-		qDebug()<<"STEP "<<handshakeStepToString(step);
+		const HandshakeState &handshakeState=session->handshakeState();
+		const HandshakeStep step=handshakeState.step();
+		const bool isInitiator=handshakeState.isInitiator();
+		qDebug()<<"CURRENT HANDSHAKE STATE: "<<handshakeState.toString();
 		switch(step) {
 		default:
-		//////////////////// / / / / / //TODO need work on handshake step management
-		///
-		///
-		///
-		///
-		///     DO IT SOON!
-		///
-		///
-		/// ///////////////////////////////////////////////////////////
 		case(VIRGIN): {
 			//Verify that we are the initator in this session
-			if(!session->handshakeState().isInitiator()) {
+			if(!isInitiator) {
 				QString es="ERROR: OctoMY Protocol sending syn for session not initiated by us";
 				qWarning()<<es;
 				emit commsError(es);
@@ -754,7 +738,7 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 		break;
 		case(SYN_OK): {
 			//Verify that we are not initator in this session
-			if(session->handshakeState().isInitiator()) {
+			if(isInitiator) {
 				QString es="ERROR: OctoMY Protocol sending syn-ack for session initiated by us";
 				qWarning()<<es;
 				emit commsError(es);
@@ -765,7 +749,7 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 		break;
 		case(SYN_ACK_OK): {
 			//Verify that we are the initator in this session
-			if(!session->handshakeState().isInitiator()) {
+			if(!isInitiator) {
 				QString es="ERROR: OctoMY Protocol sending ack for session not initiated by us";
 				qWarning()<<es;
 				emit commsError(es);
@@ -817,10 +801,10 @@ void CommsChannel::sendSyn(PacketSendState &state)
 	state.writeEncNonce(synNonce);
 	state.encrypt();
 	state.writeProtocolEncryptedMessage();
-	doSend(state);
+	doSendWithSession(state);
 
 	state.session->handshakeState().setSynOK();
-	qDebug()<< "SYN TX handshake state is now :"<< handshakeStepToString(state.session->handshakeState().step());
+	qDebug()<< "SYN TX handshake state is now :"<< state.session->handshakeState().toString();
 }
 
 
@@ -854,9 +838,9 @@ void CommsChannel::sendSynAck(PacketSendState &state)
 	state.writeEncNonce(ackNonce);
 	state.encrypt();
 	state.writeProtocolEncryptedMessage();
-	doSend(state);
+	doSendWithSession(state);
 	state.session->handshakeState().setSynAckOK();
-	qDebug()<< "SYN-ACK TX handshake state is now :"<< handshakeStepToString(state.session->handshakeState().step());
+	qDebug()<< "SYN-ACK TX handshake state is now :"<< state.session->handshakeState().toString();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -881,9 +865,9 @@ void CommsChannel::sendAck(PacketSendState &state)
 	state.writeEncNonce(theirNonce);
 	state.encrypt();
 	state.writeProtocolEncryptedMessage();
-	doSend(state);
+	doSendWithSession(state);
 	state.session->handshakeState().setAckOK();
-	qDebug()<< "ACK TX handshake state is now :"<< handshakeStepToString(state.session->handshakeState().step());
+	qDebug()<< "ACK TX handshake state is now :"<< state.session->handshakeState().toString();
 }
 
 
@@ -893,28 +877,16 @@ void CommsChannel::sendAck(PacketSendState &state)
 
 void CommsChannel::sendIdle(const quint64 &now, QSharedPointer<CommsSession> session)
 {
-	// TODO: See if all this session stuff is necessary
-	/*
+	// NOTE: Session is needed because session holds the destination address
 	if(nullptr==session) {
 		qWarning()<<"ERROR: session was null";
 		return;
 	}
-	*/
 	PacketSendState state;
-
 	state.writeMultimagic(MULTIMAGIC_IDLE);
-	/*
 	state.setSession(session);
-
-	auto sessionID=session->remoteSessionID();
-	// TODO: What tha hall
-	state.writeSessionID(sessionID);
-	*/
-	state.encrypt();
-	state.writeProtocolEncryptedMessage();
-
-
-	doSend(state);
+	// NOTE: No need to get more fancy with the state, as the multimagic is the onlyrequired payload.
+	doSendWithSession(state);
 }
 
 
@@ -1037,7 +1009,9 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 						}
 						*/
 					} else {
-						mPendingHandshakes << id;
+						if(session->handshakeState().isSending()) {
+							mPendingHandshakes << id;
+						}
 					}
 				} else {
 					mPendingHandshakes << id;
@@ -1141,7 +1115,7 @@ void CommsChannel::onCarrierSendingOpportunity(const quint64 now)
 		++i;
 	}
 	// Next look at courier schedule
-	qDebug()<<"SCHEDULE: "<<mSchedule.size();
+	qDebug()<<"SCHEDULED: "<<mSchedule.size();
 	for (QMap<quint64, Courier *>::iterator i = mSchedule.begin(); i != mSchedule.end(); ) {
 		Courier *courier=i.value();
 		qDebug() << " + " << i.key() << " = " << ((nullptr==courier)?"NULL":courier->toString());
@@ -1160,11 +1134,13 @@ void CommsChannel::onCarrierSendingOpportunity(const quint64 now)
 		++i;
 	}
 	// Finally send idle packets to sessions that need it
-	auto idle=mSessions.getByIdleTime(mCarrier.minimalPacketInterval());
-	const int isz=idle.size();
-	qDebug()<<"IDLES: "<< isz;
+	auto rate=mCarrier.minimalPacketInterval();
+	auto lastActive= now-rate;
+	auto idles=mSessions.getByIdleTime(lastActive);
+	const int isz=idles.size();
+	qDebug()<<"IDLES: "<< isz<<" (rate= "<<QString::number(rate)<<")";
 	if(isz>0) {
-		for(QSharedPointer<CommsSession> session:idle) {
+		for(QSharedPointer<CommsSession> session:idles) {
 			if(nullptr!=session) {
 				sendIdle(now, session);
 			} else {

@@ -11,13 +11,30 @@ bool HandshakeState::isVirgin() const
 {
 	return VIRGIN==mStep;
 }
+
 bool HandshakeState::isInitiator() const
 {
 	return mInitiator;
 }
+
 bool HandshakeState::isDone() const
 {
 	return ((quint8)mStep) >= ((quint8) ACK_OK);
+}
+
+bool HandshakeState::isSending() const
+{
+	switch(mStep) {
+	case(VIRGIN):
+	case(SYN_ACK_OK):
+		return mInitiator;
+	case(SYN_OK):
+	case(ACK_OK):
+		return !mInitiator;
+	case(IDLE_HANDSHAKE):
+	default:
+		return false;
+	}
 }
 
 /*
@@ -71,6 +88,13 @@ void HandshakeState::setInitiator(bool i)
 {
 	mInitiator=i;
 }
+
+
+QString HandshakeState::toString() const
+{
+	return handshakeStepToString(mStep)+":"+(mInitiator?"INITIATOR":"ADHERENT") ;
+}
+
 
 
 QString handshakeStepToString(HandshakeStep step)

@@ -2,8 +2,39 @@
 
 #include "MockCommsCarrier.hpp"
 
+#include "comms/PacketSendState.hpp"
 
 #include "TestCourier.hpp"
+
+static void heading(QString msg, QString ch="_"){
+	auto sz=msg.size();
+	auto full=80-4;
+	auto half=(full-sz)/2;
+	auto second=full-sz-half;
+	QTest::waitForEvents();
+	qDebug()<<"";
+	qDebug()<<"";
+	qDebug().nospace().noquote()<<QString(ch).repeated(half)<< " # "<<msg << " # "<<QString(ch).repeated(second);
+	qDebug()<<"";
+}
+
+
+
+static QSharedPointer<NodeAssociate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, DiscoveryRole role, DiscoveryType type ){
+	QVariantMap peerMap;
+	peerMap["publicAddress"]=addr.toVariantMap();
+	peerMap["localAddress"]=addr.toVariantMap();
+	peerMap["lastSeenMS"]=0;
+	peerMap["birthDate"]=0;
+	peerMap["key"]=key->toVariantMap(true);
+	peerMap["role"]=DiscoveryRoleToString(role);
+	peerMap["type"]=DiscoveryTypeToString(type);
+	peerMap["name"]=name;
+	peerMap["gender"]="Male";
+	peerMap["trusts"]=QStringList();
+	QSharedPointer<NodeAssociate> part(new NodeAssociate(peerMap));
+	return part;
+}
 
 void TestCommsChannel::testCommsMock()
 {
@@ -18,8 +49,7 @@ void TestCommsChannel::testCommsMock()
 	const KeySecurityPolicy policy(keyBits, hashAlgo);
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 
-	qDebug()<<"";
-	qDebug()<<"####################################### PARAMETER SUMMARY";
+	heading("PARAMETER SUMMARY");
 	qDebug()<<"  + localhost: "<<local;
 	qDebug()<<"  + basePort:  "<<basePort;
 	qDebug()<<"  + maxSends:  "<<maxSends;
@@ -28,67 +58,40 @@ void TestCommsChannel::testCommsMock()
 	qDebug()<<"  + hashAlgo:  "<<hashAlgo;
 	qDebug()<<"  + now:       "<<now;
 
-	qDebug()<<"";
-	qDebug()<<"####################################### INITIALIZING ID FOR PARTY A";
+	heading("INITIALIZING ID FOR PARTY A");/////////////////////////////////////////////////////
 	QString keyStoreFilenameA="keyFileA.json";
 	QFile keyStoreFileA(keyStoreFilenameA);
 	if(keyStoreFileA.exists()) {
-		QVERIFY(keyStoreFileA.remove());
+		keyStoreFileA.remove();
 	}
-	QVERIFY(!keyStoreFileA.exists());
-
 	KeyStore keyStoreA(keyStoreFilenameA, policy);
 	keyStoreA.bootstrap(false,false);
-
 	auto keyA=keyStoreA.localKey();
-	QVERIFY(nullptr!=keyA);
-	qDebug() << keyA->toString();
-	QVERIFY(keyA->isValid(true));
-	QVERIFY(keyA->hasPrivate(true));
-	QVERIFY(keyA->hasPublic(true));
-
+	//qDebug() << keyA->toString();
 	QString idA=keyA->id();
 	qDebug()<<"Keystore A :"<<idA<<QFileInfo(keyStoreA.filename()).absoluteFilePath();
 	NetworkAddress addrA(local, basePort + 0);
 	QString peersFilenameA="peersFileA.json";
 	QFile peersFileA(peersFilenameA);
 	if(peersFileA.exists()) {
-		QVERIFY(peersFileA.remove());
+		peersFileA.remove();
 	}
-	QVERIFY(!peersFileA.exists());
 	NodeAssociateStore peersA(peersFilenameA);
 	peersA.bootstrap(false,false);
 	QVariantMap peerMapA;
 	QString nameA="PARTY A";
-	peerMapA["publicAddress"]=addrA.toVariantMap();
-	peerMapA["localAddress"]=addrA.toVariantMap();
-	peerMapA["lastSeenMS"]=0;
-	peerMapA["birthDate"]=0;
-	peerMapA["key"]=keyA->toVariantMap(true);
-	peerMapA["role"]=DiscoveryRoleToString(ROLE_AGENT);
-	peerMapA["type"]=DiscoveryTypeToString(TYPE_AGENT);
-	peerMapA["name"]=nameA;
-	peerMapA["gender"]="Male";
-	peerMapA["trusts"]=QStringList();
-	QSharedPointer<NodeAssociate> partA(new NodeAssociate(peerMapA));
+	QSharedPointer<NodeAssociate> partA=generatePart(nameA, keyA, addrA, ROLE_AGENT, TYPE_AGENT);
 
-
-	qDebug()<<"";
-	qDebug()<<"####################################### INITIALIZING ID FOR PARTY B";
+	heading("INITIALIZING ID FOR PARTY B");/////////////////////////////////////////////////////
 	QString keyStoreFilenameB="keyFileB.json";
 	QFile keyStoreFileB(keyStoreFilenameB);
 	if(keyStoreFileB.exists()) {
 		QVERIFY(keyStoreFileB.remove());
 	}
-	QVERIFY(!keyStoreFileB.exists());
 	KeyStore keyStoreB(keyStoreFilenameB, policy);
 	keyStoreB.bootstrap(false,false);
 	auto keyB=keyStoreB.localKey();
-	QVERIFY(nullptr!=keyB);
-	qDebug() << keyB->toString();
-	QVERIFY(keyB->isValid(true));
-	QVERIFY(keyB->hasPrivate(true));
-	QVERIFY(keyB->hasPublic(true));
+	//qDebug() << keyB->toString();
 
 	QString idB=keyB->id();
 	qDebug()<<"Keystore B :"<<idB<<QFileInfo(keyStoreB.filename()).absoluteFilePath();
@@ -96,39 +99,23 @@ void TestCommsChannel::testCommsMock()
 	QString peersFilenameB="peersFileB.json";
 	QFile peersFileB(peersFilenameB);
 	if(peersFileB.exists()) {
-		QVERIFY(peersFileB.remove());
+		peersFileB.remove();
 	}
-	QVERIFY(!peersFileB.exists());
 
 	NodeAssociateStore peersB(peersFilenameB);
 	peersB.bootstrap(false,false);
 	QVariantMap peerMapB;
 	QString nameB="PARTY B";
 	QVariantMap addrBMap=addrB.toVariantMap();
-	QCOMPARE(addrBMap.size(), 2);
-	peerMapB["publicAddress"]=addrBMap;
-	peerMapB["localAddress"]=addrBMap;
-	peerMapB["lastSeenMS"]=0;
-	peerMapB["birthDate"]=0;
-	peerMapB["key"]=keyB->toVariantMap(true);
-	peerMapB["role"]=DiscoveryRoleToString(ROLE_CONTROL);
-	peerMapB["type"]=DiscoveryTypeToString(TYPE_REMOTE);
-	peerMapB["name"]=nameB;
-	peerMapB["gender"]="Female";
-	peerMapB["trusts"]=QStringList();
-	QSharedPointer<NodeAssociate> partB(new NodeAssociate(peerMapB));
+	QSharedPointer<NodeAssociate> partB=generatePart(nameB, keyB, addrB, ROLE_CONTROL, TYPE_REMOTE);
 
-
-	qDebug()<<"";
-	qDebug()<<"####################################### BIND PARTY A to B";
+	heading("BIND PARTY A to B");/////////////////////////////////////////////////////
 	partA->addTrust(idB);
 	peersA.setParticipant(partB);
 	qDebug()<<"IDB="<<idB;
 	keyStoreA.setPubKeyForID(keyB->pubKey());
 
-
-	qDebug()<<"";
-	qDebug()<<"####################################### INITIALIZING COMMS FOR PARTY A";
+	heading("INITIALIZING COMMS FOR PARTY A");/////////////////////////////////////////////////////
 	MockCommsCarrier carrierA;
 	CommsChannel chanA(carrierA,keyStoreA, peersA);
 	CommsSignalLogger sigLogA("LOG-A");
@@ -138,56 +125,104 @@ void TestCommsChannel::testCommsMock()
 	//TestCourier courA2("Courier A2", commSigB, "This is datagram A2 uvw xyz", maxSends, maxRecs); chanA.setCourierRegistered(courA2, true);
 	qDebug()<<"SUMMARY: "<<chanA.getSummary();
 
-
-
-	qDebug()<<"";
-	qDebug()<<"#######################################";
-	qDebug()<<"####################################### STARTING 1st time with no sessions";
-
+	heading("Preparing lots of test data");/////////////////////////////////////////////////////
 	quint64 time=QDateTime::currentMSecsSinceEpoch();
-
+	const quint64 stepMS=1000;
 	NetworkAddress na(QHostAddress("127.0.0.1"), 8123);
 	carrierA.mockSetOverrideSendingtimer(true);
 	chanA.start(na);
-	QTest::waitForEvents();
-	qDebug()<<"";
-	qDebug()<<"####################################### Send garbled package from unknown address";
+	CommsSessionDirectory & sessDirA=chanA.sessions();
+	QSharedPointer<CommsSession> sessA=QSharedPointer<CommsSession> (new CommsSession(keyStoreA.localKey()));
+	auto sessAID=sessDirA.generateUnusedSessionID();
+	sessA->setLocalSessionID(sessAID);
+	sessA->setAddress(na);
+	sessDirA.insert(sessA);
 	NetworkAddress unknownAddress;
 	unknownAddress.fromString("1.2.3.4:5434");
-	carrierA.mockWriteMock(QString("This is a test").toUtf8(), unknownAddress);
-	QTest::waitForEvents();
-	qDebug()<<"";
-	qDebug()<<"####################################### Send garbled package from known address";
-
-	carrierA.mockWriteMock(QString("This is a test").toUtf8(), addrB);
-	QTest::waitForEvents();
-	carrierA.mockTriggerConnectionStatusChanged(false);
-	QTest::waitForEvents();
-
-
-
-	qDebug()<<"";
-	qDebug()<<"####################################### WAITING 1st time with no sessions";
+	QByteArray garbledPacket=QString("This is garbled").toUtf8();
+	const SESSION_ID_TYPE localSessionID=1337;
+	const SESSION_NONCE_TYPE synNonce=1111;
+	QByteArray idlePacket;
 	{
-		quint64 now=QDateTime::currentMSecsSinceEpoch();
-		const quint64 end=now+15000;
-		while(now<end) {
-			//qDebug()<<" * * * Tick Tock.....................";
-			now=QDateTime::currentMSecsSinceEpoch();
-			QCoreApplication::processEvents();
-		}
+		PacketSendState state;
+		state.writeMultimagic(MULTIMAGIC_IDLE);
+		idlePacket=state.datagram;
 	}
 
-	qDebug()<<"";
-	qDebug()<<"####################################### SUMMARIES 1st time with no sessions";
+	QByteArray handshakeSynPacket;
+	{
+		PacketSendState state;
+		state.setSession(sessA);
+		state.writeMultimagic(MULTIMAGIC_SYN);
+
+		// FULL-ID
+		state.writeEncSenderID(idB);
+		// DESIRED SESSION-ID
+		state.writeEncSessionID(localSessionID);
+		// NONCE
+		state.writeEncNonce(synNonce);
+		state.encrypt();
+		state.writeProtocolEncryptedMessage();
+
+		handshakeSynPacket=state.datagram;
+		qDebug()<<"SYN packet size is: "<<handshakeSynPacket.size();
+	}
+
+	QByteArray handshakeSynAclPacket;
+	{
+		PacketSendState state;
+		state.writeMultimagic(MULTIMAGIC_SYNACK);
+		handshakeSynAclPacket=state.datagram;
+	}
+
+	QByteArray handshakeAckPacket;
+	{
+		PacketSendState state;
+		state.writeMultimagic(MULTIMAGIC_ACK);
+		handshakeAckPacket=state.datagram;
+	}
+
+	heading("RUNNING THE ACTUAL TESTS", "#");/////////////////////////////////////////////////////
+
+
+	heading("Send garbled packet from unknown address");/////////////////////////////////////////////////////
+	carrierA.mockWriteMock(garbledPacket, unknownAddress);
+
+
+	heading("Send idle packet from unknown address");/////////////////////////////////////////////////////
+	carrierA.mockWriteMock(idlePacket, unknownAddress);
+
+
+	heading("Send garbled packet from known address");/////////////////////////////////////////////////////
+
+	carrierA.mockWriteMock(garbledPacket, addrB);
+
+
+	heading("Send idle packet from known address");/////////////////////////////////////////////////////
+
+	carrierA.mockWriteMock(idlePacket, addrB);
+
+	heading("Send handshake-syn packet from known address");/////////////////////////////////////////////////////
+	carrierA.mockWriteMock(handshakeSynPacket, addrB);
+
+
+	for(int i=0;i<4;++i){
+		heading("Looking for return ACK "+QString::number(i));/////////////////////////////////////////////////////
+		carrierA.mockTriggerSendingOpportunity(time+=stepMS);
+	}
+
+
+	heading("SUMMARIES 1st time with no sessions");/////////////////////////////////////////////////////
 	courA1.writeSummary();
 
-	qDebug()<<"";
-	qDebug()<<"####################################### STOP 1st time with no sessions";
+	heading("STOP 1st time with no sessions");/////////////////////////////////////////////////////
 	chanA.stop();
 
-	qDebug()<<"";
-	qDebug()<<"####################################### DELETING";
-
+	heading("DELETING");
+	QTest::waitForEvents();
 
 }
+
+
+
+

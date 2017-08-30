@@ -28,14 +28,20 @@ void CommsSessionDirectory::insert(QSharedPointer<CommsSession> c)
 	SESSION_ID_TYPE id=c->localSessionID();
 	QString fullID=c->fullID();
 	QString address=c->address().toString();
-	if(nullptr!=c && !mBySessionID.contains(id) && !mByAddress.contains(address)) {
+	if(nullptr==c) {
+		qWarning()<<"ERROR: Trying to insert nullptr session";
+	} else if(!c->address().isValid()) {
+		qWarning()<<"ERROR: Trying to insert session with invalid address";
+	} else if (mBySessionID.contains(id)) {
+		qWarning()<<"ERROR: Trying to insert session with id "<<id<<" a second time";
+	} else if(mByAddress.contains(address)) {
+		qWarning()<<"ERROR: Trying to insert session with address "<<address<<" a second time";
+	} else {
 		mBySessionID.insert(id, c);
 		mByFullID.insert(fullID, c);
 		mByAddress.insert(address, c);
 		mAll.insert(c);
 		emit clientAdded(c);
-	} else {
-		qWarning()<<"ERROR: could not insert client: "<<c;
 	}
 }
 
@@ -46,6 +52,8 @@ void CommsSessionDirectory::remove(QSharedPointer<CommsSession> c)
 		mByFullID.remove(c->fullID());
 		mBySessionID.remove(c->localSessionID());
 		mAll.remove(c);
+	} else {
+		qWarning()<<"ERROR: Trying to remove nullptr session";
 	}
 }
 

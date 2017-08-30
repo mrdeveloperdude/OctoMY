@@ -4,6 +4,8 @@
 
 #include "security/Key.hpp"
 
+#include "Multimagic.hpp"
+
 const int PacketReadState::OCTOMY_SENDER_ID_SIZE=32;
 const int PacketReadState::OCTOMY_ENCRYPTED_MESSAGE_SIZE=36;
 
@@ -33,6 +35,17 @@ PacketReadState::PacketReadState(QByteArray datagram, QHostAddress remoteHost , 
 
 }
 
+
+QString PacketReadState::toString()
+{
+	QString out;
+	{
+		QTextStream ts(&out);
+		ts << "remoteHost="<<remoteHost.toString()<<":"<<QString::number(remotePort);
+		ts << ", multimagic="<<MultimagicToString(multimagic);
+	}
+	return out;
+}
 
 // Read multimagic
 void PacketReadState::readMultimagic()

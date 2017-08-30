@@ -122,7 +122,7 @@ public:
 protected:
 
 	void appendLog(QString);
-	void doSend( PacketSendState &state);
+	void doSendWithSession( PacketSendState &state);
 	void sendHandshake(const quint64 &now, const QString handShakeID);
 	void sendSyn(PacketSendState &state);
 	void sendSynAck(PacketSendState &state);

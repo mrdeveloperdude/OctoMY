@@ -23,6 +23,7 @@ public:
 	bool isVirgin() const;
 	bool isInitiator() const;
 	bool isDone() const;
+	bool isSending() const;
 	//HandshakeStep nextStep() const;
 	HandshakeStep step() const;
 	//void bump();
@@ -30,6 +31,9 @@ public:
 	void setSynAckOK();
 	void setAckOK();
 	void setInitiator(bool i);
+
+
+	QString toString() const;
 
 };
 

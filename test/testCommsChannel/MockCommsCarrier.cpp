@@ -1,5 +1,7 @@
 #include "MockCommsCarrier.hpp"
 
+#include "comms/PacketSendState.hpp"
+
 #include <QHostAddress>
 
 #include <QtGlobal>
@@ -119,7 +121,7 @@ void MockCommsCarrier::mockTriggerErrorSignal(QString error)
 
 void MockCommsCarrier::mockTriggerSendingOpportunity(quint64 now)
 {
-	qDebug()<<"Mock-Triggering sending opportunity signal with now='"<<now<<"'";
+	qDebug().noquote().nospace()<<"Mock-Triggering sending opportunity signal with now='"<<now<<"'";
 	emit carrierSendingOpportunity(now);
 }
 
@@ -164,7 +166,7 @@ bool MockCommsCarrier::startImp(NetworkAddress address)
 		mOurAddress=address;
 		mIsStarted=true;
 	}
-	qDebug() << "start() called for address "<< address<< " with mock-fail=" << mStartFail << " and isStarted " << oldIsStarted << " --> " << mIsStarted;
+	qDebug() << "start() called for address "<< address.toString() << " with mock-fail=" << mStartFail << " and isStarted " << oldIsStarted << " --> " << mIsStarted;
 	return mIsStarted;
 }
 
@@ -191,7 +193,7 @@ qint64 MockCommsCarrier::writeDataImp(const QByteArray &datagram, const NetworkA
 		QString key=address.toString();
 		mMockWriteData[key].append(datagram);
 	}
-	qDebug() << "write() called. wrote "<<written << " of "<< sz <<"bytes to address="<<address.toString()<<" (batch size="<<mWriteBatchSize<<")";
+	qDebug() << "write() called. wrote "<<written << " of "<< sz <<"bytes to address="<<address.toString()<<" (mock batch size=" << ( (mWriteBatchSize<0)?"no batch":QString::number(mWriteBatchSize)) << ")";
 	return written;
 }
 
@@ -214,11 +216,12 @@ qint64 MockCommsCarrier::readDataImp(char *data, qint64 maxlen, QHostAddress *ho
 	QByteArray keep=all.right(sz-bytesRead);
 	if(keep.size()>0) {
 		pair.second=keep;
+		qDebug()<<"PREPENDING REST";
 		mMockReadData.prepend(pair);
 	}
 	// Send the requested number of bytes
 	if(nullptr!=all && bytesRead > 0) {
-		memcpy(send.data(), data, bytesRead);
+		memcpy(data, send.constData(), bytesRead);
 	}
 	// Send the host
 	if(nullptr!=host) {

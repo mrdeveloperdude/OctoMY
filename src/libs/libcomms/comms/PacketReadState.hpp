@@ -58,6 +58,11 @@ public:
 	PacketReadState(QByteArray datagram, QHostAddress remoteHost , quint16 remotePort);
 
 
+public:
+	QString toString();
+
+public:
+
 	// Read multimagic
 	void readMultimagic();
 
@@ -98,6 +103,9 @@ public:
 
 	// Extract desired remote session ID
 	void readEncDesiredRemoteSessionID();
+
+
+
 
 };
 
