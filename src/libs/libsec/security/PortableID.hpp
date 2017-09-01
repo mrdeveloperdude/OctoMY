@@ -1,13 +1,13 @@
 #ifndef PORTABLEID_HPP
 #define PORTABLEID_HPP
 
-#include "../../libcore/discovery/DiscoveryRole.hpp"
-#include "../../libutil/utility/Standard.hpp"
+#include "discovery/DiscoveryRole.hpp"
+#include "utility/Standard.hpp"
 
 #include <QString>
 #include <QVariantMap>
 #include <QDebug>
-
+#include <QRegularExpression>
 
 /**
  * @brief The PortableID class provides a mechanism to generate a portable
@@ -28,6 +28,11 @@ private:
 	QString mID;
 	quint64 mBirthDate;
 	DiscoveryType mType;
+
+	static const QString SEP;
+	static const QString SEP_RE;
+	static const QRegularExpression sepRE;
+	static const QString dateFMT;
 
 public:
 	explicit PortableID();

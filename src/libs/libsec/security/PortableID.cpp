@@ -7,6 +7,12 @@
 
 
 
+const QString PortableID::SEP(".");
+const QString PortableID::SEP_RE(QRegularExpression::escape(SEP));
+const QRegularExpression PortableID::sepRE("("+SEP_RE+")");
+const QString PortableID::dateFMT("yyyy-MM-dd_hh:mm:ss:zzz");
+
+
 PortableID::PortableID()
 	: mBirthDate(0)
 	, mType(DiscoveryType::TYPE_UNKNOWN)
@@ -19,7 +25,7 @@ PortableID::PortableID(QVariantMap &data)
 	: mName(data["name"].toString())
 	, mGender(data["gender"].toString())
 	, mID(data["key"].toMap()["id"].toString())
-	, mBirthDate(QDateTime::fromString(data["createDate"].toString()).toMSecsSinceEpoch())
+	, mBirthDate(QDateTime::fromString(data["createDate"].toString(), dateFMT).toMSecsSinceEpoch())
 	, mType(DiscoveryTypeFromString(data["type"].toString()))
 {
 
@@ -84,20 +90,24 @@ quint64 PortableID::birthDate() const
 
 bool PortableID::fromPortableString(QString s)
 {
-	QStringList parts = s.split(QRegExp ("(\\.)"));
-	if(parts.size()!=4) {
+	QStringList parts = s.split(sepRE);
+	if(parts.size()!=5) {
 		return false;
 	}
 	mName=parts.at(0).trimmed();
 	mGender=parts.at(1).trimmed();
 	mID=parts.at(2).trimmed();
-	mBirthDate=parts.at(3).trimmed().toInt();
+	mBirthDate=QDateTime::fromString(parts.at(3).trimmed(), dateFMT).toMSecsSinceEpoch();
+	mType=DiscoveryTypeFromString(parts.at(4).trimmed());
+	//qDebug()<<"from "<<s<<" gave birth="<<mBirthDate;
 	return true;
 }
 
 QString PortableID::toPortableString()
 {
-	return mName + "." +mGender + "." +mID+ "." +QString::number(mBirthDate);
+	QString dateString=QDateTime::fromMSecsSinceEpoch(mBirthDate).toString(dateFMT);
+	//qDebug()<<"birth="<<mBirthDate<<" to str="<<dateString;
+	return mName + SEP + mGender + SEP + mID + SEP + dateString + SEP + DiscoveryTypeToString(mType);
 }
 
 
