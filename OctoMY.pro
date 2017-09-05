@@ -29,21 +29,16 @@ SUBDIRS += \
 	$${SRCS}/zoo \
 
 
+# NOTE: USE_TESTS_* is enabled when useful in local_override.pri
+if( contains(DEFINES, USE_TESTS_BASIC) | contains(DEFINES, USE_TESTS_WEB) | contains(DEFINES, USE_TESTS_STRESS) | contains(DEFINES, USE_TESTS_SELECTED)  ){
 
-# NOTE: USE_TESTS is enabled when useful in local_override.pri
-contains(DEFINES, USE_TESTS){
-	# Warn the user that there is potential problems in build config for tests
-	if( contains(DEFINES, USE_TESTS_BASIC) | contains(DEFINES, USE_TESTS_WEB)  ){
-		message(TEST PROJECT WAS ADDED TO OCTOMY BUILD)
-	}
-	else{
-		error(USE_TESTS defined without USE_TESTS_BASIC or USE_TESTS_WEB)
-	}
+	message(ONE OR MORE TEST PROJECTS WERE ADDED TO OCTOMY BUILD)
 
 	SUBDIRS += \
 		test \
 
 }
+
 
 
 contains(DEFINES, USE_DOCS){
