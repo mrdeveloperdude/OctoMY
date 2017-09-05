@@ -4,6 +4,8 @@
 
 #include <QDebug>
 
+#include <QtMath>
+
 EyeRendrer::EyeRendrer(QVector2D center, qreal slant, QColor irisColor)
 	: mCenter(center)
 	, mDirty(true)
@@ -28,14 +30,14 @@ EyeRendrer::~EyeRendrer()
 }
 
 /*
-x = X cos(a) - Y sin(a)
-y = Y cos(a) + X sin(a)
+x = X qCos(a) - Y sin(a)
+y = Y qCos(a) + X sin(a)
 		*/
 
 /*
 static void generateElipsis(QVector2D &out,qreal rx,qreal ry,qreal ang)
 {
-	QVector2D p(cos(ang)*rx,sin(ang)*ry);
+	QVector2D p(qCos(ang)*rx,sin(ang)*ry);
 	out=p;
 }*/
 
@@ -56,19 +58,19 @@ void EyeRendrer::update()
 	qreal rIrisX=rx*0.4;
 	qreal rIrisY=ry*0.4;
 	qreal bend=3.0;
-	qreal lowerMaskRadius=0.8/(pow(bend,(fabs(mLowerLidSteer.y())+1))-(bend-1.0));
-	qreal upperMaskRadius=0.8/(pow(bend,(fabs(mUpperLidSteer.y())+1))-(bend-1.0));
+	qreal lowerMaskRadius=0.8/(pow(bend,(qFabs(mLowerLidSteer.y())+1))-(bend-1.0));
+	qreal upperMaskRadius=0.8/(pow(bend,(qFabs(mUpperLidSteer.y())+1))-(bend-1.0));
 	qreal lowerMaskOverlap=overlap-mLowerLidSteer.y();
-	QVector2D lowerMaskCenter(mLowerLidSteer.x()*lowerMaskRadius,cos(mLowerLidSteer.x())*lowerMaskRadius+ry-r*lowerMaskOverlap);
+	QVector2D lowerMaskCenter(mLowerLidSteer.x()*lowerMaskRadius, qCos(mLowerLidSteer.x())*lowerMaskRadius+ry-r*lowerMaskOverlap);
 	qreal upperMaskOverlap=overlap+mUpperLidSteer.y();
-	QVector2D upperMaskCenter(mUpperLidSteer.x()*upperMaskRadius,cos(mUpperLidSteer.x())*-upperMaskRadius-ry+r*upperMaskOverlap);
+	QVector2D upperMaskCenter(mUpperLidSteer.x()*upperMaskRadius, qCos(mUpperLidSteer.x())*-upperMaskRadius-ry+r*upperMaskOverlap);
 	for(qreal i=0; i<M_PI*2; i+=(M_PI/40.0)) {
-		QVector2D lm=lowerMaskCenter+QVector2D(cos(i)*lowerMaskRadius,sin(i)*lowerMaskRadius);
-		QVector2D um=upperMaskCenter+QVector2D(cos(i)*upperMaskRadius,sin(i)*upperMaskRadius);
+		QVector2D lm=lowerMaskCenter+QVector2D(qCos(i)*lowerMaskRadius,qSin(i)*lowerMaskRadius);
+		QVector2D um=upperMaskCenter+QVector2D(qCos(i)*upperMaskRadius,qSin(i)*upperMaskRadius);
 
 		{
-			QVector2D po(cos(i)*rx,sin(i)*ry);
-			QVector2D p(po.x() * cos(mSlant) - po.y() * sin(mSlant), po.y() * cos(mSlant) + po.x() * sin(mSlant) );
+			QVector2D po(qCos(i)*rx, qSin(i)*ry);
+			QVector2D p(po.x() * qCos(mSlant) - po.y() * qSin(mSlant), po.y() * qCos(mSlant) + po.x() * qSin(mSlant) );
 
 			//generateElipsis(p,rx,ry,i);
 			QVector2D lt=p-lowerMaskCenter;
@@ -78,7 +80,7 @@ void EyeRendrer::update()
 			mUpperMask<< um.toPointF();
 		}
 		{
-			QVector2D p(cos(i)*rIrisX,sin(i)*rIrisY);
+			QVector2D p(qCos(i)*rIrisX, qSin(i)*rIrisY);
 			QVector2D lt=p-lowerMaskCenter;
 			QVector2D ut=p-upperMaskCenter;
 			mPupilPolygon << (lt.length()<lowerMaskRadius?(lt.normalized()*lowerMaskRadius)+lowerMaskCenter:(ut.length()<upperMaskRadius?(ut.normalized()*upperMaskRadius)+upperMaskCenter:p)).toPointF();
