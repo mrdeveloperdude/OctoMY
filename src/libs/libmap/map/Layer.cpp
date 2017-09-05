@@ -24,6 +24,8 @@
 */
 
 #include "Layer.hpp"
+
+
 namespace qmapcontrol
 {
 	Layer::Layer()
@@ -187,7 +189,7 @@ namespace qmapcontrol
 				// check for collision
 				QPointF c = mapAdapter->displayToCoordinate(QPoint(evnt->x()-screenmiddle.x()+mapmiddle_px.x(),
 																   evnt->y()-screenmiddle.y()+mapmiddle_px.y()));
-				Point* tmppoint = new Point(c.x(), c.y());
+				Point* tmppoint = OC_NEW Point(c.x(), c.y());
 				for(QList<Geometry*>::const_iterator iter = geometries.begin(); iter != geometries.end(); ++iter)
 				{
 					Geometry *geo = *iter;

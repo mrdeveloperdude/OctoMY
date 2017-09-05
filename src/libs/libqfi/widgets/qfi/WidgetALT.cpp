@@ -53,12 +53,13 @@
 
 #include "WidgetALT.h"
 #include "ui_WidgetALT.h"
+#include "utility/Standard.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
 WidgetALT::WidgetALT( QWidget *parent ) :
 	QWidget( parent ),
-	m_ui( new Ui::WidgetALT ),
+	m_ui( OC_NEW Ui::WidgetALT ),
 	m_alt ( 0 ),
 	m_layoutSq ( 0 )
 {
@@ -83,7 +84,7 @@ WidgetALT::~WidgetALT()
 
 void WidgetALT::setupUi()
 {
-	m_layoutSq = new LayoutSquare( this );
+	m_layoutSq = OC_NEW LayoutSquare( this );
 
 	m_layoutSq->setContentsMargins( 0, 0, 0, 0 );
 	m_layoutSq->addWidget( m_ui->graphicsALT );

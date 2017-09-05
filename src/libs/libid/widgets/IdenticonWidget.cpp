@@ -25,7 +25,7 @@ void IdenticonWidget::regenerateIdenticon()
 		mSVG=nullptr;
 	}
 	QDomDocument doc=mIdenticon.domDocument();
-	mSVG=new QSvgRenderer (doc.toByteArray());
+	mSVG=OC_NEW QSvgRenderer (doc.toByteArray());
 	mLastURL="";
 	mDirty=true;
 	update();

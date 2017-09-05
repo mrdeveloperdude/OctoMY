@@ -172,7 +172,7 @@ void CourierTester::onToReceiving()
 void CourierTester::onToSend()
 {
 	if(  mProfile.betrayMandateSendActive() || mToCourier->mandate().sendActive  )  {
-		QByteArray *ba=new QByteArray;
+		QByteArray *ba=OC_NEW QByteArray;
 		QVERIFY(nullptr!=ba);
 		quint16 sent=0;
 		{
@@ -231,7 +231,7 @@ void CourierTester::onFromReceiving()
 void CourierTester::onFromSend()
 {
 	if( mProfile.betrayMandateSendActive() || mFromCourier->mandate().sendActive ) {
-		QByteArray *ba=new QByteArray;
+		QByteArray *ba=OC_NEW QByteArray;
 		QVERIFY(nullptr!=ba);
 		quint16 sent=0;
 		{

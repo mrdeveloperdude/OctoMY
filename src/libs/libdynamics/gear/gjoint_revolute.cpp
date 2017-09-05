@@ -29,7 +29,7 @@
 #include "liegroup.h"
 #include "rmatrix3j.h"
 
-#include <qmath.h>
+#include <QtMath>
 
 //=============================================================
 //                 GJointRevolute

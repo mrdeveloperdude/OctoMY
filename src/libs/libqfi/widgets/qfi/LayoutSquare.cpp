@@ -53,6 +53,8 @@
 
 #include "LayoutSquare.h"
 
+#include "utility/Standard.hpp"
+
 ////////////////////////////////////////////////////////////////////////////////
 
 LayoutSquare::LayoutSquare( QWidget *parent, int spacing ) :
@@ -92,7 +94,7 @@ void LayoutSquare::addItem( QLayoutItem *item )
 
 void LayoutSquare::addWidget( QWidget *widget )
 {
-	if ( !hasItem() ) replaceItem( new QWidgetItem( widget ) );
+	if ( !hasItem() ) replaceItem( OC_NEW QWidgetItem( widget ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -182,7 +184,7 @@ void LayoutSquare::setGeometry( const QRect &rect )
 
 	QRect *tempRect = m_geometry;
 
-	m_geometry = new QRect( centerPoint, properSize );
+	m_geometry = OC_NEW QRect( centerPoint, properSize );
 
 	delete tempRect;
 
@@ -284,8 +286,8 @@ void LayoutSquare::init( int spacing )
 {
 	m_item = 0;
 
-	m_rectLast = new QRect( 0, 0, 0, 0 );
-	m_geometry = new QRect( 0, 0, 0, 0 );
+	m_rectLast = OC_NEW QRect( 0, 0, 0, 0 );
+	m_geometry = OC_NEW QRect( 0, 0, 0, 0 );
 
 	setSpacing( spacing );
 }
@@ -296,7 +298,7 @@ void LayoutSquare::setRectLast( const QRect &rect )
 {
 	QRect *tempRect = m_rectLast;
 
-	m_rectLast = new QRect( rect.topLeft(), rect.size() );
+	m_rectLast = OC_NEW QRect( rect.topLeft(), rect.size() );
 
 	delete tempRect;
 }

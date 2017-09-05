@@ -7,7 +7,7 @@
 
 TestWindow::TestWindow(QWidget *parent, QString name) :
 	QWidget(parent),
-	ui(new Ui::TestWindow)
+	ui(OC_NEW Ui::TestWindow)
 {
 	ui->setupUi(this);
 	setWindowTitle(name);

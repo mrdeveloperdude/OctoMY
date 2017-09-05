@@ -15,7 +15,7 @@ ArduMYControllerWidget *mWidget;
 
 ArduMYController::ArduMYController(QObject *parent)
 	: IActuatorController("ArduMY", parent)
-	, mSerialInterface(new QSerialPort(this))
+	, mSerialInterface(OC_NEW QSerialPort(this))
 	, mCommandSerializer(mActuators)
 	, mLimpDirty(true)
 	, mCountDirty(true)
@@ -412,7 +412,7 @@ qreal ArduMYController::actuatorDefault(quint8)
 QWidget *ArduMYController::configurationWidget()
 {
 	if(nullptr==mWidget) {
-		mWidget=new ArduMYControllerWidget(nullptr);
+		mWidget=OC_NEW ArduMYControllerWidget(nullptr);
 		if(nullptr!=mWidget) {
 			mWidget->configure(this);
 		}

@@ -45,8 +45,8 @@ void TestCommsChannel::testMultiple()
 		peerMapB["name"]=nameB;
 		peerMapB["gender"]="Female";
 		peerMapB["trusts"]=QStringList();
-		QSharedPointer<NodeAssociate> partB(new NodeAssociate(peerMapB));
-		CommsTester *cc=new CommsTester("instance_"+QString::number(tport), local, tport, basePort, portRange, testCount, keyStore, peersB, carrier);
+		QSharedPointer<NodeAssociate> partB(OC_NEW NodeAssociate(peerMapB));
+		CommsTester *cc=OC_NEW CommsTester("instance_"+QString::number(tport), local, tport, basePort, portRange, testCount, keyStore, peersB, carrier);
 
 		QVERIFY(nullptr!=cc);
 		qDebug()<<" + INIT CourierTester "<<cc->toString();

@@ -62,7 +62,7 @@ void RNG::init(QVector<quint32> key)
 {
 	const size_t sz=key.size();
 	//qDebug()<<"VECTOR: "<<key<<", SZ: "<<sz;
-	quint32 *init_key=new quint32[sz];
+	quint32 *init_key=OC_NEW quint32[sz];
 	for(size_t i=0; i<sz; ++i) {
 		init_key[i]=key[i];
 	}
@@ -81,21 +81,21 @@ void RNG::init(QVector<quint32> key)
 // Return an instance of a RNG that best matches the given merit
 RNG * RNG::sourceFactory(RNGMerit m)
 {
-	// Create and return a new RNG that matches the requested merit
+	// Create and return a OC_NEW RNG that matches the requested merit
 	switch (m) {
 	case (EFFICIENT):
-		return new EfficientPRNG();
+		return OC_NEW EfficientPRNG();
 	case (SCALABLE):
-		return new ParkMillerPRNG();
+		return OC_NEW ParkMillerPRNG();
 	case (SECURE):
-		return new DevURandomRNG();
+		return OC_NEW DevURandomRNG();
 	case (SYSTEM):
-		return new SystemPRNG();
+		return OC_NEW SystemPRNG();
 	case (ACCURATE):
-		return new DevURandomRNG();
+		return OC_NEW DevURandomRNG();
 	default:
 	case (GENERAL):
-		return new ParkMillerPRNG();
+		return OC_NEW ParkMillerPRNG();
 	}
 	return nullptr;
 }
@@ -107,22 +107,22 @@ RNG * RNG::sourceFactory(QString name)
 	// Create and return a new RNG that matches the requested name
 	const QString normalized=name.trimmed().toLower();
 	if(normalized.startsWith("mers") || normalized.startsWith("mt")) {
-		return new MersennePRNG();
+		return OC_NEW MersennePRNG();
 	}
 	if(normalized.startsWith("parkm") || normalized.startsWith("pm")) {
-		return new ParkMillerPRNG();
+		return OC_NEW ParkMillerPRNG();
 	}
 	if(normalized.startsWith("devu") || normalized.startsWith("uran")) {
-		return new DevURandomRNG();
+		return OC_NEW DevURandomRNG();
 	}
 	if(normalized.startsWith("dev") || normalized.startsWith("ran")) {
-		return new DevRandomRNG();
+		return OC_NEW DevRandomRNG();
 	}
 	if(normalized.startsWith("sys")) {
-		return new SystemPRNG();
+		return OC_NEW SystemPRNG();
 	}
 	if(normalized.startsWith("fast") || normalized.startsWith("nois") || normalized.startsWith("effic")) {
-		return new EfficientPRNG();
+		return OC_NEW EfficientPRNG();
 	}
 	return nullptr;
 }

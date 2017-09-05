@@ -11,7 +11,7 @@
 
 ActuatorManagerWidget::ActuatorManagerWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::ActuatorManagerWidget)
+	, ui(OC_NEW Ui::ActuatorManagerWidget)
 	, mController(nullptr)
 {
 	ui->setupUi(this);
@@ -36,7 +36,7 @@ void ActuatorManagerWidget::updateWidgetCount(quint32 num)
 			num-=count;
 			for(quint32 i=0; i<num; ++i) {
 				qDebug()<<"ADDING ARDUMY ACTUATOR "<<(i+1)<<" of "<<num<<" to get to "<<end;
-				ArduMYActuatorWidget *si=new ArduMYActuatorWidget();
+				ArduMYActuatorWidget *si=OC_NEW ArduMYActuatorWidget();
 				if(nullptr!=si) {
 					mWidgets.push_back(si);
 					ui->widgetCompressedContent->layout()->addWidget(si);

@@ -40,6 +40,7 @@
 
 #include "WMSMapAdapter.hpp"
 #include "TileMapAdapter.hpp"
+#include "utility/Standard.hpp"
 
 namespace qmapcontrol
 {

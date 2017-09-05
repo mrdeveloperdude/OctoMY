@@ -20,7 +20,7 @@
 
 ZooClient::ZooClient(QObject *parent)
 	: QObject(parent)
-	, m_client( new qhttp::client::QHttpClient)
+	, m_client( OC_NEW qhttp::client::QHttpClient)
 {
 }
 

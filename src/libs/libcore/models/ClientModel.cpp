@@ -14,7 +14,7 @@ QIcon ic(QPixmap::fromImage(tint(QImage(":/icons/octomy_logo_bare.svg"),nl->conn
 Client *c=(Client *)item->data().value<void *>();
 if(0!=c){
 	appendLog("OPENING CLINET "+c->getListText());
-	ClientWindow *cw=new ClientWindow(c,0);
+	ClientWindow *cw=OC_NEW ClientWindow(c,0);
 	cw->show();
 }
 else{
@@ -43,7 +43,7 @@ ClientModel::ClientModel(CommsSessionDirectory *clients, QObject *parent)
 	: QAbstractItemModel(parent)
 	, clients(clients)
 	, services(QPixmap(":/images/services.png"))
-	, tree(new QVector<Node>(0, Node(0)))
+	, tree(OC_NEW QVector<Node>(0, Node(0)))
 {
 
 }
@@ -136,7 +136,7 @@ Qt::ItemFlags ClientModel::flags(const QModelIndex &index) const
 ClientModel::Node *ClientModel::node(int row, Node *parent) const
 {
 	if (parent && !parent->children) {
-		parent->children = new QVector<Node>(rc(), Node(parent));
+		parent->children = OC_NEW QVector<Node>(rc(), Node(parent));
 	}
 	QVector<Node> *v = parent ? parent->children : tree;
 	return const_cast<Node*>(&(v->at(row)));

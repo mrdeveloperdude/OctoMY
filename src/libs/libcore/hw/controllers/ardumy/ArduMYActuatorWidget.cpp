@@ -17,7 +17,7 @@ static QString ACTUATOR_UNNAMED="Unnamed";
 
 ArduMYActuatorWidget::ArduMYActuatorWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::ArduMYActuatorWidget)
+	, ui(OC_NEW Ui::ArduMYActuatorWidget)
 	, mID(0)
 	, mLowTrim(INITIAL_SERVO_TRIM)
 	, mHighTrim(INITIAL_SERVO_TRIM)

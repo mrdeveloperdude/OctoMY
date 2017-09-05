@@ -1,5 +1,7 @@
 #include "NetworkOptimizer.hpp"
 
+#include "utility/Standard.hpp"
+
 #include <QStandardPaths>
 #include <QDir>
 #include <QHostInfo>
@@ -17,7 +19,7 @@ QNetworkAccessManager *NetworkOptimizer::nam=nullptr;
 
 QNetworkAccessManager &NetworkOptimizer::instance(QString host){
 	if(0==nam){
-		nam=new QNetworkAccessManager();
+		nam=OC_NEW QNetworkAccessManager();
 	}
 	if(0!=nam){
 		//Make HTTP cache dir
@@ -30,7 +32,7 @@ QNetworkAccessManager &NetworkOptimizer::instance(QString host){
 				}
 			}
 			if (dir.exists()){
-				QNetworkDiskCache *cache=new QNetworkDiskCache;
+				QNetworkDiskCache *cache=OC_NEW QNetworkDiskCache;
 				cache->setCacheDirectory(cacheDir);
 				nam->setCache(cache);
 			}
@@ -44,7 +46,7 @@ QNetworkAccessManager &NetworkOptimizer::instance(QString host){
 		//Heat up DNS
 		QHostInfo::lookupHost(host, 0, 0);
 		//Set up cookie jar
-		nam->setCookieJar(new QNetworkCookieJar);
+		nam->setCookieJar(OC_NEW QNetworkCookieJar);
 		//Heat up HTTP (6 sockets of each type)
 		for(int i=0;i<6;++i){
 			nam->connectToHost(host, 80);

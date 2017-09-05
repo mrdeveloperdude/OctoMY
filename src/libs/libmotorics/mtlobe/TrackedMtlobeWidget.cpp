@@ -3,7 +3,7 @@
 
 TrackedMtlobeWidget::TrackedMtlobeWidget(QWidget *parent) :
 	MtlobeWidget(parent),
-	ui(new Ui::TrackedMtlobeWidget)
+	ui(OC_NEW Ui::TrackedMtlobeWidget)
 {
 	ui->setupUi(this);
 }

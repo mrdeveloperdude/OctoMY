@@ -228,7 +228,7 @@ public:
 		// Create a memory buffer on the GPU
 		cl::Buffer bufferSources = cl::Buffer(clctx, CL_MEM_READ_ONLY, num * sizeof(cl_int2));
 		// Create a memory buffer on the CPU
-		cl_int2 *sourcePoints = new cl_int2[num];
+		cl_int2 *sourcePoints = OC_NEW cl_int2[num];
 		// Fill the buffer with the coordinates of the source points
 		for (int i = 0; i < num; i++) {
 			sourcePoints[i].s[0] = sources.at(i).x();
@@ -305,7 +305,7 @@ class TestCLWorkerFactory: public CLWorkerFactory
 {
 	CLWorker * createInstance(CLThreadManager &man, int index) Q_DECL_OVERRIDE{
 		qDebug()<<"TCLWF CREATED WORKER WITH INDEX "<<index;
-		TestCLWorker *tw=new TestCLWorker(man, index);
+		TestCLWorker *tw=OC_NEW TestCLWorker(man, index);
 		return tw;
 	}
 };
@@ -465,9 +465,9 @@ void TestOpenCL::testWithGLInterop()
 	QWidget w, *wp=&w;
 	w.resize(512,512);
 	w.setWindowTitle("TestOpenCL::testWithGLInterop()");
-	QVBoxLayout *verticalLayout = new QVBoxLayout(&w);
+	QVBoxLayout *verticalLayout = OC_NEW QVBoxLayout(&w);
 	verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-	QPushButton *pushButtonClose = new QPushButton(&w);
+	QPushButton *pushButtonClose = OC_NEW QPushButton(&w);
 	pushButtonClose->setObjectName(QStringLiteral("pushButtonClose"));
 	pushButtonClose->setText("CLOSE");
 	verticalLayout->addWidget(pushButtonClose);

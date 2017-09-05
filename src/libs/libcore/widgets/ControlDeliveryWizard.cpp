@@ -16,7 +16,7 @@ const quint64 ControlDeliveryWizard::MINIMUM_BIRTH_TIME=3000;
 
 ControlDeliveryWizard::ControlDeliveryWizard(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::ControlDeliveryWizard)
+	, ui(OC_NEW Ui::ControlDeliveryWizard)
 	, mSpinner(nullptr)
 	, mSettings(nullptr)
 	, mBirthDate(0)
@@ -28,7 +28,7 @@ ControlDeliveryWizard::ControlDeliveryWizard(QWidget *parent)
 		qWarning()<<"ERROR: Name validator regex was invalid: "<<re.errorString();
 	}
 	{
-		mSpinner=new WaitingSpinnerWidget(ui->labelBirthImage, true, false);
+		mSpinner=OC_NEW WaitingSpinnerWidget(ui->labelBirthImage, true, false);
 		SpinnerStyle style;
 		style.setColor(QColor("white"));
 		style.setRelatveSize(true);
@@ -110,7 +110,7 @@ void ControlDeliveryWizard::onBirthComplete()
 					map["type"]=DiscoveryTypeToString(TYPE_REMOTE);
 					map["role"]=DiscoveryRoleToString(ROLE_CONTROL);
 					map["birthDate"]=mBirthDate;
-					mMyData= QSharedPointer<NodeAssociate> (new NodeAssociate(map));
+					mMyData= QSharedPointer<NodeAssociate> (OC_NEW NodeAssociate(map));
 					mID=mMyData->toPortableID();
 					mNode->peers().setParticipant(mMyData);
 					mNode->peers().save();

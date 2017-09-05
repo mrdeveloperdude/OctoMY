@@ -6,9 +6,9 @@ const int PacketSendState::OCTOMY_ENCRYPTED_MESSAGE_SIZE=20;
 
 PacketSendState::PacketSendState()
 	: session(nullptr)
-	, stream(new QDataStream(&this->datagram, QIODevice::WriteOnly))
+	, stream(OC_NEW QDataStream(&this->datagram, QIODevice::WriteOnly))
 	, bytesUsed(0)
-	, encStream(new QDataStream(&this->octomyProtocolUnencryptedMessage, QIODevice::WriteOnly))
+	, encStream(OC_NEW QDataStream(&this->octomyProtocolUnencryptedMessage, QIODevice::WriteOnly))
 	, encBytesUsed(0)
 {
 

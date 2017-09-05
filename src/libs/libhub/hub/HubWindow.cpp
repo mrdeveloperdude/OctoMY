@@ -41,7 +41,7 @@
 
 HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	QMainWindow(parent)
-	, ui(new Ui::HubWindow)
+	, ui(OC_NEW Ui::HubWindow)
 	, mHub(hub)
 	, mGait(nullptr)
 	, mScanner(nullptr)
@@ -50,7 +50,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 	setObjectName("HubWindow");
 	if(nullptr!=mHub) {
 		restoreGeometry(mHub->settings().getCustomSettingByteArray("window.geometry"));
-		QSplashScreen *splash=new QSplashScreen(this, QPixmap(":/images/hub_butterfly.svg"), Qt::WindowStaysOnTopHint);
+		QSplashScreen *splash=OC_NEW QSplashScreen(this, QPixmap(":/images/hub_butterfly.svg"), Qt::WindowStaysOnTopHint);
 		splash->show();
 		mSummaryTimer.setInterval(100);
 		{
@@ -59,7 +59,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		}
 		ui->widgetPairing->configure(mHub);
 		/*
-		QAbstractItemModel *data = new ClientModel(hub->getComms()->getClients(), this);
+		QAbstractItemModel *data = OC_NEW ClientModel(hub->getComms()->getClients(), this);
 		ui->widgetIncommingNodes->configure("Icons","hubwindiow-clients-list");
 		ui->widgetIncommingNodes->setModel(data);
 		*/
@@ -87,27 +87,27 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		}
 
 		{
-			TriggerSet *ts=new TriggerSet;
-			Trigger *t1=new Trigger("Trigger #1");
-			Trigger *t2=new Trigger("Trigger #2");
-			Trigger *t3=new Trigger("Trigger #3");
-			t1->addCondition(*new Condition("Condition #1", "Formula #1"));
-			t1->addCondition(*new Condition("Condition #2", "Formula #2"));
-			t1->addAction(*new Action("Action #1"));
-			t1->addAction(*new Action("Action #2"));
+			TriggerSet *ts=OC_NEW TriggerSet;
+			Trigger *t1=OC_NEW Trigger("Trigger #1");
+			Trigger *t2=OC_NEW Trigger("Trigger #2");
+			Trigger *t3=OC_NEW Trigger("Trigger #3");
+			t1->addCondition(*OC_NEW Condition("Condition #1", "Formula #1"));
+			t1->addCondition(*OC_NEW Condition("Condition #2", "Formula #2"));
+			t1->addAction(*OC_NEW Action("Action #1"));
+			t1->addAction(*OC_NEW Action("Action #2"));
 
-			t2->addCondition(*new Condition("Condition #3", "Formula #3"));
-			t2->addAction(*new Action("Action #3"));
+			t2->addCondition(*OC_NEW Condition("Condition #3", "Formula #3"));
+			t2->addAction(*OC_NEW Action("Action #3"));
 
-			t3->addCondition(*new Condition("Condition #4", "Formula #4"));
-			t3->addAction(*new Action("Action #4"));
+			t3->addCondition(*OC_NEW Condition("Condition #4", "Formula #4"));
+			t3->addAction(*OC_NEW Action("Action #4"));
 
 			*ts<<t1<<t2<<t3;
 
 			for(int i=0; i<10; ++i) {
-				Trigger *t=new Trigger("Trigger #5");
-				t->addCondition(*new Condition("Condition #5", "Formula #5"));
-				t->addAction(*new Action("Action #5"));
+				Trigger *t=OC_NEW Trigger("Trigger #5");
+				t->addCondition(*OC_NEW Condition("Condition #5", "Formula #5"));
+				t->addAction(*OC_NEW Action("Action #5"));
 				*ts<<t;
 			}
 			ui->widgetTriggerManager->configure(*ts);
@@ -115,7 +115,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 		//TODO: WOW we need to update this
 //		ui->widgetActuatorControl->configure(5);
-		PoseMapping *pm=new PoseMapping(5);
+		PoseMapping *pm=OC_NEW PoseMapping(5);
 		ui->widgetPoseMapping->configure(*pm);
 
 #ifdef EXTERNAL_LIB_OPENCL
@@ -133,8 +133,8 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 			ui->lineEditRemotePort->setText(opts.value("remote-port"));
 			qDebug()<<"OVERRIDING REMOTE PORT WITH VALUE FROM CMDLINE: "<<opts.value("remote-port");
 		}
-		ui->lineEditBindPort->setValidator( new QIntValidator(0, 65535, this) );
-		ui->lineEditRemotePort->setValidator( new QIntValidator(0, 65535, this) );
+		ui->lineEditBindPort->setValidator( OC_NEW QIntValidator(0, 65535, this) );
+		ui->lineEditRemotePort->setValidator( OC_NEW QIntValidator(0, 65535, this) );
 
 		mHub->comms()->setHookCommsSignals(*this,true);
 
@@ -143,7 +143,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 		ui->hexEditor->setData(hexdata);
 
-		mGait=new GaitController<qreal> ();
+		mGait=OC_NEW GaitController<qreal> ();
 		if(0!=mGait) {
 			ui->widgetGait->setGait(*mGait);
 		}
@@ -204,7 +204,7 @@ void HubWindow::onQRRedraw()
 {
 	OC_METHODGATE();
 	if(nullptr==mScanner) {
-		mScanner=new ZBarScanner();
+		mScanner=OC_NEW ZBarScanner();
 	}
 	const QPixmap &px=ui->widgetQR->qrPixmap();
 	if(nullptr!=mScanner) {
@@ -334,7 +334,7 @@ void HubWindow::startProcess(QString base)
 	qDebug()<<"Starting process: "<<program;
 	QStringList arguments;
 	//arguments << "-style" << "fusion";
-	QProcess *proc = new QProcess(this);
+	QProcess *proc = OC_NEW QProcess(this);
 	proc->setProcessChannelMode(QProcess::ForwardedChannels);
 	proc->start(program, arguments);
 	//TODO: make async
@@ -354,7 +354,7 @@ void HubWindow::startProcess(QString base)
 void HubWindow::onGLWidgetInitialized()
 {
 	qDebug()<<"INIT CL ----- ";
-	HelloGLCLViewRenderer *rendrer=new HelloGLCLViewRenderer();
+	HelloGLCLViewRenderer *rendrer=OC_NEW HelloGLCLViewRenderer();
 	if(nullptr!=rendrer) {
 		rendrer->initialize(ui->openGLWidgetCLGLView->sharingGLContext());
 		ui->openGLWidgetCLGLView->setRenderer(rendrer);

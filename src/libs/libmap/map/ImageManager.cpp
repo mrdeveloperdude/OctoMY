@@ -25,6 +25,8 @@
 
 #include "ImageManager.hpp"
 #include "MapNetwork.hpp"
+
+
 #include <QCryptographicHash>
 #include <QPainter>
 #include <QDateTime>
@@ -39,8 +41,8 @@ namespace qmapcontrol
 		: QObject(parent)
 		, emptyPixmap(QPixmap(1,1))
 		, loadingPixmap(QPixmap(256,256))
-		, net(new MapNetwork(this))
-		, diskCache( new QNetworkDiskCache(this))
+		, net(OC_NEW MapNetwork(this))
+		, diskCache( OC_NEW QNetworkDiskCache(this))
 
 	{
 		emptyPixmap.fill(Qt::transparent);

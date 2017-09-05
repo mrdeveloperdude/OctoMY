@@ -41,6 +41,8 @@
 #include "CameraSettings.hpp"
 #include "ui_CameraSettings.h"
 
+#include "utility/Standard.hpp"
+
 #include <QComboBox>
 #include <QDebug>
 #include <QCameraImageCapture>
@@ -50,7 +52,7 @@
 
 CameraSettings::CameraSettings(QMediaRecorder *mediaRecorder, QCameraImageCapture *imagecapture, QWidget *parent)
 	: QDialog(parent)
-	, ui(new Ui::VideoSettingsUi)
+	, ui(OC_NEW Ui::VideoSettingsUi)
 	, mediaRecorder(mediaRecorder)
 	, imagecapture(imagecapture)
 {

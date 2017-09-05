@@ -51,12 +51,13 @@
 
 #include "WidgetNAV.h"
 #include "ui_WidgetNAV.h"
+#include "utility/Standard.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
 WidgetNAV::WidgetNAV( QWidget *parent ) :
 	QWidget( parent ),
-	m_ui( new Ui::WidgetNAV ),
+	m_ui( OC_NEW Ui::WidgetNAV ),
 	m_nav ( 0 ),
 	m_layoutSq ( 0 )
 {
@@ -81,7 +82,7 @@ WidgetNAV::~WidgetNAV()
 
 void WidgetNAV::setupUi()
 {
-	m_layoutSq = new LayoutSquare( this );
+	m_layoutSq = OC_NEW LayoutSquare( this );
 
 	m_layoutSq->setContentsMargins( 0, 0, 0, 0 );
 	m_layoutSq->addWidget( m_ui->frameNAV );

@@ -121,7 +121,7 @@ void NodeLauncher<T>::run()
 	opts.process(arguments);
 	headless=opts.isSet(headlessOption);
 
-	app=(headless?(new QCoreApplication(argc, argv)):(new QApplication(argc, argv)));
+	app=(headless?(OC_NEW QCoreApplication(argc, argv)):(OC_NEW QApplication(argc, argv)));
 	//qDebug()<<(headless?"HEADLESS":"GUI ENABLED");
 
 	if(nullptr!=app) {
@@ -157,7 +157,7 @@ void NodeLauncher<T>::run()
 template <typename T>
 void NodeLauncher<T>::start()
 {
-	node=new T(*this, nullptr);
+	node=OC_NEW T(*this, nullptr);
 	if(!headless && nullptr!=node) {
 		window=node->showWindow();
 	}

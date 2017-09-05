@@ -15,12 +15,12 @@
 
 SpeechControlWidget::SpeechControlWidget(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::SpeechControlWidget)
+	ui(OC_NEW Ui::SpeechControlWidget)
 {
 	ui->setupUi(this);
 	ui->logScrollHistory->setDirection(true);
 
-	GenericKeyEventHandler *gkh=new GenericKeyEventHandler(ui->plainTextEditSpeechText);
+	GenericKeyEventHandler *gkh=OC_NEW GenericKeyEventHandler(ui->plainTextEditSpeechText);
 	gkh->setEventProcessor([=](QObject *o, QKeyEvent *keyEvent) {
 		auto t=keyEvent->type();
 		if(t==QEvent::KeyPress || t==QEvent::KeyRelease) {
@@ -78,6 +78,6 @@ void SpeechControlWidget::on_pushButtonSay_clicked()
 		}
 		ch.addData(ba);
 		id.setID(ch.result().toHex().toUpper());
-		new OneOffSpeech(id, text);
+		OC_NEW OneOffSpeech(id, text);
 	}
 }

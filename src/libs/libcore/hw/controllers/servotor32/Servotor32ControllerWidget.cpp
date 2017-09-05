@@ -7,11 +7,11 @@
 #include "agent/AgentConstants.hpp"
 #include <QSpacerItem>
 
-#include <qmath.h>
+#include <QtMath>
 
 Servotor32ControllerWidget::Servotor32ControllerWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::Servotor32ControllerWidget)
+	, ui(OC_NEW Ui::Servotor32ControllerWidget)
 	, mController(nullptr)
 {
 	ui->setupUi(this);
@@ -26,7 +26,7 @@ Servotor32ControllerWidget::Servotor32ControllerWidget(QWidget *parent)
 	}
 
 
-	QSpacerItem *vs = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+	QSpacerItem *vs = OC_NEW QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 	ui->verticalLayoutServos->addItem(vs);
 	ui->scrollAreaServos->setEnabled(false);
 	ui->widgetGait->setGait(gait);

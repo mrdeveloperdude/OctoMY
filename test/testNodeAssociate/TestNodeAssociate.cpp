@@ -79,7 +79,7 @@ void TestNodeAssociate::test(){
 	assMap["localAddress"]=localAddrMap;
 	assMap["trusts"]=trusts;
 
-	QSharedPointer<NodeAssociate> ass(new NodeAssociate(assMap));
+	QSharedPointer<NodeAssociate> ass(OC_NEW NodeAssociate(assMap));
 
 	QCOMPARE(ass->id(),id);
 	QCOMPARE(ass->type(),type);

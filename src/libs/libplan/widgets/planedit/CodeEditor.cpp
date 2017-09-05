@@ -20,7 +20,7 @@
 
 CodeEditor::CodeEditor(QWidget *parent)
 	: QPlainTextEdit(parent)
-	, lineNumberArea(new LineNumberArea(this))
+	, lineNumberArea(OC_NEW LineNumberArea(this))
 	, m_completer(0)
 {
 
@@ -38,7 +38,7 @@ CodeEditor::CodeEditor(QWidget *parent)
 	//setAcceptRichText(false);
 	horizontalScrollBar()->hide();
 
-	QCompleter *c=new QCompleter(this);
+	QCompleter *c=OC_NEW QCompleter(this);
 	c->setModel(modelFromFile(":/data/completion_wordlist.txt"));
 	c->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
 	c->setCaseSensitivity(Qt::CaseInsensitive);
@@ -53,7 +53,7 @@ CodeEditor::CodeEditor(QWidget *parent)
 QAbstractItemModel *CodeEditor::modelFromFile(const QString& fileName){
 	QFile file(fileName);
 	if (!file.open(QFile::ReadOnly)){
-		return new QStringListModel(m_completer);
+		return OC_NEW QStringListModel(m_completer);
 	}
 
 #ifndef QT_NO_CURSOR
@@ -71,7 +71,7 @@ QAbstractItemModel *CodeEditor::modelFromFile(const QString& fileName){
 #ifndef QT_NO_CURSOR
 	QApplication::restoreOverrideCursor();
 #endif
-	return new QStringListModel(words, m_completer);
+	return OC_NEW QStringListModel(words, m_completer);
 }
 
 int CodeEditor::lineNumberAreaWidth(){

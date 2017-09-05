@@ -19,9 +19,9 @@
 
 HardwareWizard::HardwareWizard(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::HardwareWizard)
-	, mSerialDevicesModel(new SerialDeviceListModel(this))
-	, mHardwareTemplateModel(new HardwareTemplateModel(this))
+	, ui(OC_NEW Ui::HardwareWizard)
+	, mSerialDevicesModel(OC_NEW SerialDeviceListModel(this))
+	, mHardwareTemplateModel(OC_NEW HardwareTemplateModel(this))
 	, mSelectedTempalte(nullptr)
 	, mAgent(nullptr)
 	  /*
@@ -97,7 +97,7 @@ void HardwareWizard::initControllerList()
 	for(auto stanza:controllerStanzas) {
 		QIcon icon;
 		icon.addFile(stanza.iconURL, QSize(), QIcon::Normal, QIcon::Off);
-		QListWidgetItem *temp = new QListWidgetItem(ui->listWidgetController);
+		QListWidgetItem *temp = OC_NEW QListWidgetItem(ui->listWidgetController);
 		temp->setIcon(icon);
 		temp->setText(stanza.fullName);
 		temp->setToolTip(stanza.nickName);
@@ -118,7 +118,7 @@ void HardwareWizard::initMtlobeList()
 		QIcon icon;
 		icon.addFile(stanza.iconURL, QSize(), QIcon::Normal, QIcon::Off);
 		/*
-		QListWidgetItem *temp = new QListWidgetItem(ui->comboBoxAddMtlobe);
+		QListWidgetItem *temp = OC_NEW QListWidgetItem(ui->comboBoxAddMtlobe);
 		temp->setIcon(icon);
 		temp->setText(stanza.fullName);
 		temp->setToolTip(stanza.nickName);

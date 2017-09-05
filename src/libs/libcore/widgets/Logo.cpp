@@ -2,7 +2,7 @@
 
 #include <QtMath>
 
-#include <qmath.h>
+#include <QtMath>
 
 Logo::Logo()
 	: m_count(0)

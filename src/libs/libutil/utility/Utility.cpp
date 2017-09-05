@@ -177,7 +177,7 @@ QLayout *createStraigtLayout(QWidget *w)
 	if( 0!=w) {
 		l=w->layout();
 		if(0==l ) {
-			l=new QGridLayout(w);
+			l=OC_NEW QGridLayout(w);
 			w->setLayout(l);
 		}
 		if(0!=l) {
@@ -194,7 +194,7 @@ QStackedLayout *createStackedLayout(QWidget *w)
 {
 	QStackedLayout *l=0;
 	if( 0!=w) {
-		l=new QStackedLayout(w);
+		l=OC_NEW QStackedLayout(w);
 		w->setLayout(l);
 		if(0!=l) {
 			makeFiller(w);
@@ -293,7 +293,7 @@ void addIconToLayout(QString name,QLayout &l,int w,int h)
 		QPixmap pm(name);
 		QIcon ic(pm);
 		QPixmap pm2 = ic.pixmap(w>0?w:100,h>0?h:100);
-		QLabel *lb=new QLabel();
+		QLabel *lb=OC_NEW QLabel();
 		lb->setPixmap(pm2);
 		lb->setAlignment(Qt::AlignCenter);
 		l.addWidget(lb);
@@ -433,7 +433,7 @@ void showToolTip(QWidget *widget,QString str)
 void showQuitButton()
 {
 	qDebug()<<"NEW BUTTON";
-	QPushButton *quitButton=new QPushButton("Q U I T");
+	QPushButton *quitButton=OC_NEW QPushButton("Q U I T");
 	qDebug()<<"RECT";
 	QRect rect (0,0,100,100);
 	quitButton->setGeometry(rect);
@@ -550,8 +550,8 @@ qint64 parseDate(QString str,QString fmt)  //2013-08-14T20:26:01.7526+02:00
 void sendFakeKeyEvent(QWidget *target, Qt::Key k, QString ks)
 {
 	if(0!=target) {
-		QKeyEvent * press=new QKeyEvent(QKeyEvent::KeyPress, (int )k,Qt::NoModifier,ks);
-		QKeyEvent * release=new QKeyEvent(QKeyEvent::KeyRelease, (int )k,Qt::NoModifier,ks);
+		QKeyEvent * press=OC_NEW QKeyEvent(QKeyEvent::KeyPress, (int )k,Qt::NoModifier,ks);
+		QKeyEvent * release=OC_NEW QKeyEvent(QKeyEvent::KeyRelease, (int )k,Qt::NoModifier,ks);
 		target->setFocus();
 		//DELETE 2014-09-27
 		QCoreApplication::postEvent ( target, press) ;
@@ -819,7 +819,7 @@ QString nameToNormalForm(QString name)
 /*
 void syncronizeEvents(){
 	qint64 beginSync=QDateTime::currentMSecsSinceEpoch();
-	QEventLoop *loop=new QEventLoop (0);
+	QEventLoop *loop=OC_NEW QEventLoop (0);
 	if(0!=loop){
 		if(!connect(rep, SIGNAL(finished()), &loop, SLOT(quit()))){
 			qWarning()<<"ERROR: Could not connect";
@@ -1051,7 +1051,7 @@ int levenshtein_distance(const QString &s1, const QString  &s2)
 
 	auto column_start = (decltype(s1len))1;
 
-	auto column = new decltype(s1len)[s1len + 1];
+	auto column = OC_NEW decltype(s1len)[s1len + 1];
 	std::iota(column + column_start, column + s1len + 1, column_start);
 
 	for (auto x = column_start; x <= s2len; x++) {

@@ -212,19 +212,19 @@ public:
 		quint8 cc=0;
 		ds >> cc;
 		if(0!=(1&&cc)) {
-			a1=new PixelNode(this);
+			a1=OC_NEW PixelNode(this);
 			ds>>*a1;
 		}
 		if(0!=(2&&cc)) {
-			a2=new PixelNode(this);
+			a2=OC_NEW PixelNode(this);
 			ds>>*a2;
 		}
 		if(0!=(4&&cc)) {
-			b1=new PixelNode(this);
+			b1=OC_NEW PixelNode(this);
 			ds>>*b1;
 		}
 		if(0!=(8&&cc)) {
-			b2=new PixelNode(this);
+			b2=OC_NEW PixelNode(this);
 			ds>>*b2;
 		}
 		return ds;
@@ -294,10 +294,10 @@ private:
 			++level;
 			const quint32 nx=x|(1<<level);
 			const quint32 ny=y|(1<<level);
-			PixelNode &a1=generateWorker(*(new PixelNode(node)), x ,y , level);
-			PixelNode &a2=generateWorker(*(new PixelNode(node)), nx,y , level);
-			PixelNode &b1=generateWorker(*(new PixelNode(node)), x ,ny, level);
-			PixelNode &b2=generateWorker(*(new PixelNode(node)), nx,ny, level);
+			PixelNode &a1=generateWorker(*(OC_NEW PixelNode(node)), x ,y , level);
+			PixelNode &a2=generateWorker(*(OC_NEW PixelNode(node)), nx,y , level);
+			PixelNode &b1=generateWorker(*(OC_NEW PixelNode(node)), x ,ny, level);
+			PixelNode &b2=generateWorker(*(OC_NEW PixelNode(node)), nx,ny, level);
 			node.set(a1, a2, b1, b2);
 			return node;
 		}

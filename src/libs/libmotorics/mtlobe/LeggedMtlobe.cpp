@@ -15,7 +15,7 @@ LeggedMtlobe::LeggedMtlobe()
 QWidget *LeggedMtlobe::configurationWidget()
 {
 	if(nullptr==mConfigWidget) {
-		mConfigWidget=new LeggedMtlobeWidget();
+		mConfigWidget=OC_NEW LeggedMtlobeWidget();
 	}
 	return mConfigWidget;
 }

@@ -27,13 +27,13 @@
 
 ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeAssociate> nodeAssoc, QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::ClientWidget)
+	, ui(OC_NEW Ui::ClientWidget)
 	, mController(controller)
 	, mNodeAssoc(nodeAssoc)
 	, mSpinner(nullptr)
-//	, mAgentStateCourier(new AgentStateCourier(nullptr, this))
-//	, mSensorsCourier(new SensorsCourier(this))
-//	, mBlobCourier(new BlobCourier(this))
+//	, mAgentStateCourier(OC_NEW AgentStateCourier(nullptr, this))
+//	, mSensorsCourier(OC_NEW SensorsCourier(this))
+//	, mBlobCourier(OC_NEW BlobCourier(this))
 	, mCouriers(mNodeAssoc->id(), *this)
 
 {
@@ -98,7 +98,7 @@ ClientWidget::~ClientWidget()
 void ClientWidget::prepareSpinner()
 {
 	OC_METHODGATE();
-	mSpinner=new WaitingSpinnerWidget(ui->stackedWidgetControl, true, true);
+	mSpinner=OC_NEW WaitingSpinnerWidget(ui->stackedWidgetControl, true, true);
 	SpinnerStyle style;
 	style.setColor(QColor("white"));
 	style.setRelatveSize(true);

@@ -8,7 +8,7 @@
 
 ArduinoPinSelector::ArduinoPinSelector(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::ArduinoPinSelector)
+	, ui(OC_NEW Ui::ArduinoPinSelector)
 	, mAPF(nullptr)
 	, mPinMap( ArduinoPinMap::pinMapFactory("mega2560") )
 {

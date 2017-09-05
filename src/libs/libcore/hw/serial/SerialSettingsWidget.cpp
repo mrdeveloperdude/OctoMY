@@ -2,6 +2,8 @@
 
 #include "ui_SerialSettingsWidget.h"
 
+#include "utility/Standard.hpp"
+
 #include <QtSerialPort/QSerialPortInfo>
 #include <QIntValidator>
 #include <QLineEdit>
@@ -12,12 +14,12 @@ static const char blankString[] = QT_TRANSLATE_NOOP("SettingsDialog", "N/A");
 
 SerialSettingsWidget::SerialSettingsWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::SerialSettingsWidget)
+	, ui(OC_NEW Ui::SerialSettingsWidget)
 	, mManualSaveMode(false)
 {
 	ui->setupUi(this);
 
-	mIntValidator = new QIntValidator(0, 4000000, this);
+	mIntValidator = OC_NEW QIntValidator(0, 4000000, this);
 
 	ui->baudRateBox->setInsertPolicy(QComboBox::NoInsert);
 

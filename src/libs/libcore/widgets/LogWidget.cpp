@@ -1,11 +1,13 @@
 #include "LogWidget.hpp"
 #include "ui_LogWidget.h"
 
+#include "utility/Standard.hpp"
+
 #include <QScrollBar>
 
 LogWidget::LogWidget(QWidget *parent)
 	: QPlainTextEdit(parent)
-	, ui(new Ui::LogWidget)
+	, ui(OC_NEW Ui::LogWidget)
 	, mScrollDirDown(false)
 {
 	ui->setupUi(this);

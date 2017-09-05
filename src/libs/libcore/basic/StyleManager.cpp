@@ -113,10 +113,10 @@ void StyleManager::applyStyle(QApplication &app){
 	}
 	*/
 
-	//app.setStyle(new OctoStyle);
+	//app.setStyle(OC_NEW OctoStyle);
 
 	//app.setStyle(QStyleFactory::create("fusion"));
-	app.setStyle(new OctoMYProxyStyle("fusion"));
+	app.setStyle(OC_NEW OctoMYProxyStyle("fusion"));
 
 	//Set dark theme with main colors adjusted to match complementary hue of tinge
 	QPalette palette;

@@ -37,16 +37,16 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	, mContext(context)
 	, mKeystore (mContext->baseDir() + "/keystore.json")
 	, mPeers (mContext->baseDir() + "/peers.json")
-	, mDiscovery (new DiscoveryClient(*this))
+	, mDiscovery (OC_NEW DiscoveryClient(*this))
 	, mRole (role)
 	, mType (type)
-	, mCarrier(new CommsCarrierUDP( (QObject *)this) )
-	, mComms (new CommsChannel(*mCarrier, mKeystore, mPeers, (QObject *)this))
-	, mZooClient (new ZooClient(this))
-	, mSensors (new SensorInput(this))
-	, mSensorsCourier(new SensorsCourier(*mComms, this))
-	, mBlobCourier(new BlobCourier(*mComms, this))
-	, mCameras (new CameraList(this))
+	, mCarrier(OC_NEW CommsCarrierUDP( (QObject *)this) )
+	, mComms (OC_NEW CommsChannel(*mCarrier, mKeystore, mPeers, (QObject *)this))
+	, mZooClient (OC_NEW ZooClient(this))
+	, mSensors (OC_NEW SensorInput(this))
+	, mSensorsCourier(OC_NEW SensorsCourier(*mComms, this))
+	, mBlobCourier(OC_NEW BlobCourier(*mComms, this))
+	, mCameras (OC_NEW CameraList(this))
 	, mLastStatusSend (0)
 	  //, mServerURL("http://zoo.octomy.org/api")
 //	, mServerURL("http://"+utility::localAddress()+":"+QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api")
@@ -73,7 +73,7 @@ void Node::init()
 
 	mPeers.bootstrap(true, false);
 
-	StyleManager *style=new StyleManager(QColor(TYPE_AGENT==mType?"#e83636":TYPE_REMOTE==mType?"#36bee8":"#36e843"));
+	StyleManager *style=OC_NEW StyleManager(QColor(TYPE_AGENT==mType?"#e83636":TYPE_REMOTE==mType?"#36bee8":"#36e843"));
 	if(nullptr!=style) {
 		style->apply();
 	}
@@ -322,7 +322,7 @@ void Node::unHookPeerSignals(QObject &o)
 void Node::updateDiscoveryClient()
 {
 	delete mDiscovery;
-	mDiscovery=new DiscoveryClient(*this);
+	mDiscovery=OC_NEW DiscoveryClient(*this);
 	mDiscovery->setURL(mServerURL);
 }
 

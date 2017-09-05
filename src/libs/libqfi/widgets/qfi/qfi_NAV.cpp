@@ -62,7 +62,9 @@
 
 #include "qfi_NAV.h"
 
-#include <qmath.h>
+#include "utility/Standard.hpp"
+
+#include <QtMath>
 ////////////////////////////////////////////////////////////////////////////////
 
 qfi_NAV::qfi_NAV( QWidget *parent ) :
@@ -168,7 +170,7 @@ qfi_NAV::qfi_NAV( QWidget *parent ) :
 
 	reset();
 
-	m_scene = new QGraphicsScene( this );
+	m_scene = OC_NEW QGraphicsScene( this );
 	setScene( m_scene );
 
 	m_scene->clear();
@@ -305,60 +307,60 @@ void qfi_NAV::init()
 	m_scaleX = (float)width()  / (float)m_originalWidth;
 	m_scaleY = (float)height() / (float)m_originalHeight;
 
-	m_itemBack = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_back.svg" );
+	m_itemBack = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_back.svg" );
 	m_itemBack->setCacheMode( QGraphicsItem::NoCache );
 	m_itemBack->setZValue( m_backZ );
 	m_itemBack->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_scene->addItem( m_itemBack );
 
-	m_itemMask = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_mask.svg" );
+	m_itemMask = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_mask.svg" );
 	m_itemMask->setCacheMode( QGraphicsItem::NoCache );
 	m_itemMask->setZValue( m_maskZ );
 	m_itemMask->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_scene->addItem( m_itemMask );
 
-	m_itemMark = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_mark.svg" );
+	m_itemMark = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_mark.svg" );
 	m_itemMark->setCacheMode( QGraphicsItem::NoCache );
 	m_itemMark->setZValue( m_markZ );
 	m_itemMark->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_scene->addItem( m_itemMark );
 
-	m_itemBrgArrow = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_brg_arrow.svg" );
+	m_itemBrgArrow = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_brg_arrow.svg" );
 	m_itemBrgArrow->setCacheMode( QGraphicsItem::NoCache );
 	m_itemBrgArrow->setZValue( m_brgArrowZ );
 	m_itemBrgArrow->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_itemBrgArrow->setTransformOriginPoint( m_originalNavCtr );
 	m_scene->addItem( m_itemBrgArrow );
 
-	m_itemCrsArrow = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_crs_arrow.svg" );
+	m_itemCrsArrow = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_crs_arrow.svg" );
 	m_itemCrsArrow->setCacheMode( QGraphicsItem::NoCache );
 	m_itemCrsArrow->setZValue( m_crsArrowZ );
 	m_itemCrsArrow->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_itemCrsArrow->setTransformOriginPoint( m_originalNavCtr );
 	m_scene->addItem( m_itemCrsArrow );
 
-	m_itemDevBar = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_dev_bar.svg" );
+	m_itemDevBar = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_dev_bar.svg" );
 	m_itemDevBar->setCacheMode( QGraphicsItem::NoCache );
 	m_itemDevBar->setZValue( m_devBarZ );
 	m_itemDevBar->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_itemDevBar->setTransformOriginPoint( m_originalNavCtr );
 	m_scene->addItem( m_itemDevBar );
 
-	m_itemDevScale = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_dev_scale.svg" );
+	m_itemDevScale = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_dev_scale.svg" );
 	m_itemDevScale->setCacheMode( QGraphicsItem::NoCache );
 	m_itemDevScale->setZValue( m_devScaleZ );
 	m_itemDevScale->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_itemDevScale->setTransformOriginPoint( m_originalNavCtr );
 	m_scene->addItem( m_itemDevScale );
 
-	m_itemHdgBug = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_hdg_bug.svg" );
+	m_itemHdgBug = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_hdg_bug.svg" );
 	m_itemHdgBug->setCacheMode( QGraphicsItem::NoCache );
 	m_itemHdgBug->setZValue( m_hdgBugZ );
 	m_itemHdgBug->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_itemHdgBug->setTransformOriginPoint( m_originalNavCtr );
 	m_scene->addItem( m_itemHdgBug );
 
-	m_itemHdgScale = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_hdg_scale.svg" );
+	m_itemHdgScale = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/nav/nav_hdg_scale.svg" );
 	m_itemHdgScale->setCacheMode( QGraphicsItem::NoCache );
 	m_itemHdgScale->setZValue( m_hdgScaleZ );
 	m_itemHdgScale->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
@@ -367,7 +369,7 @@ void qfi_NAV::init()
 
 	m_itemCrsText = 0;
 
-	m_itemCrsText = new QGraphicsTextItem( QString( "CRS 999" ) );
+	m_itemCrsText = OC_NEW QGraphicsTextItem( QString( "CRS 999" ) );
 	m_itemCrsText->setCacheMode( QGraphicsItem::NoCache );
 	m_itemCrsText->setZValue( m_crsTextZ );
 	m_itemCrsText->setDefaultTextColor( m_crsTextColor );
@@ -377,7 +379,7 @@ void qfi_NAV::init()
 						   m_scaleY * ( m_originalCrsTextCtr.y() - m_itemCrsText->boundingRect().height() / 2.0f ) );
 	m_scene->addItem( m_itemCrsText );
 
-	m_itemHdgText = new QGraphicsTextItem( QString( "HDG 999" ) );
+	m_itemHdgText = OC_NEW QGraphicsTextItem( QString( "HDG 999" ) );
 	m_itemHdgText->setCacheMode( QGraphicsItem::NoCache );
 	m_itemHdgText->setZValue( m_hdgTextZ );
 	m_itemHdgText->setDefaultTextColor( m_hdgTextColor );
@@ -387,7 +389,7 @@ void qfi_NAV::init()
 						   m_scaleY * ( m_originalHdgTextCtr.y() - m_itemHdgText->boundingRect().height() / 2.0f ) );
 	m_scene->addItem( m_itemHdgText );
 
-	m_itemDmeText = new QGraphicsTextItem( QString( "99.9 NM" ) );
+	m_itemDmeText = OC_NEW QGraphicsTextItem( QString( "99.9 NM" ) );
 	m_itemDmeText->setCacheMode( QGraphicsItem::NoCache );
 	m_itemDmeText->setZValue( m_dmeTextZ );
 	m_itemDmeText->setDefaultTextColor( m_dmeTextColor );

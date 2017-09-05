@@ -2,7 +2,7 @@
 #include <QtMath>
 #include <QVector3D>
 
-#include <qmath.h>
+#include <QtMath>
 ArcBall::ArcBall()
 	: dn(false)
 	, zoomLevel(1.0)

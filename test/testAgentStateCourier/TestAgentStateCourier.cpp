@@ -22,7 +22,7 @@ private:
 
 public:
 	explicit AgentStateCourierTester(QDataStream &stream, CommsChannel &comms)
-		: CourierTester(new AgentStateCourier(&stream, comms), new AgentStateCourier(nullptr, comms), "AGENT ", "REMOTE")
+		: CourierTester(OC_NEW AgentStateCourier(&stream, comms), OC_NEW AgentStateCourier(nullptr, comms), "AGENT ", "REMOTE")
 		, ctr(0)
 		, mFromAgentStateCourier((AgentStateCourier *)mFromCourier)
 		, mToAgentStateCourier((AgentStateCourier *)mToCourier)

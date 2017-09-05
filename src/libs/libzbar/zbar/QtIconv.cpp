@@ -18,7 +18,7 @@ thus make the dependence on iconv go away.
 */
 
 
-
+#include "utility/Standard.hpp"
 
 #include <QString>
 #include <QByteArray>
@@ -44,7 +44,7 @@ struct QtIconv{
 
 extern "C" iconv_t iconv_open (const char *__tocode, const char *__fromcode)
 {
-	QtIconv *qt_iconv=new QtIconv(__tocode, __fromcode);
+	QtIconv *qt_iconv=OC_NEW QtIconv(__tocode, __fromcode);
 	return (iconv_t)qt_iconv;
 }
 

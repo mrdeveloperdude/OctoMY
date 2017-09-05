@@ -16,6 +16,7 @@
  */
 
 #include "OctoStyle.hpp"
+#include "utility/Standard.hpp"
 
 #include <QStylePlugin>
 
@@ -28,7 +29,7 @@ class OctoStylePlugin : public QStylePlugin
 
 		QStyle *create(const QString &key) {
 			if (key.toLower() == QLatin1String("octo")) {
-				return new OctoStyle;
+				return OC_NEW OctoStyle;
 			}
 			return 0;
 		}

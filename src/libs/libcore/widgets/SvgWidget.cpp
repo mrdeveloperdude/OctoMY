@@ -89,7 +89,7 @@ void SvgWidget::setSvg(QSvgRenderer &svg)
 void SvgWidget::setSvgURL(QString url)
 {
 	//qDebug()<<"Setting SVG by URL:"<<url;
-	mSVG=new QSvgRenderer(url);
+	mSVG=OC_NEW QSvgRenderer(url);
 	mLastURL=url;
 	mDirty=true;
 }

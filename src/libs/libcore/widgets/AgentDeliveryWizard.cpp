@@ -20,7 +20,7 @@ const quint64 AgentDeliveryWizard::MINIMUM_BIRTH_TIME=3000;
 
 AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::AgentDeliveryWizard)
+	, ui(OC_NEW Ui::AgentDeliveryWizard)
 	, mSpinner(nullptr)
 	, mSettings(nullptr)
 	, mNode(nullptr)
@@ -36,9 +36,9 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	}
 	//Regex rules from http://stackoverflow.com/questions/38001256/handling-accented-letters-in-qregularexpressions-in-qt5/38001274#38001274
 	//             and http://www.regular-expressions.info/unicode.html
-	ui->lineEditName->setValidator(new QRegularExpressionValidator(re, this));
+	ui->lineEditName->setValidator(OC_NEW QRegularExpressionValidator(re, this));
 	{
-		mSpinner=new WaitingSpinnerWidget(ui->labelBirthImage, true, false);
+		mSpinner=OC_NEW WaitingSpinnerWidget(ui->labelBirthImage, true, false);
 		SpinnerStyle style;
 		style.setColor(QColor("white"));
 		style.setRelatveSize(true);
@@ -169,7 +169,7 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 					map["type"]=DiscoveryTypeToString(TYPE_AGENT);
 					map["role"]=DiscoveryRoleToString(ROLE_AGENT);
 					map["birthDate"]=mBirthDate;
-					mMyData= QSharedPointer<NodeAssociate> (new NodeAssociate(map));
+					mMyData= QSharedPointer<NodeAssociate> (OC_NEW NodeAssociate(map));
 					mID=mMyData->toPortableID();
 					mNode->peers().setParticipant(mMyData);
 					mNode->peers().save();
@@ -178,7 +178,7 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 					//"+(mID.gender().toLower()==QStringLiteral("male")?QStringLiteral("Mr. "):(mID.gender().toLower()==QStringLiteral("female")?QStringLiteral("Mrs. "):QStringLiteral("")))+
 					//QString text="Hello, my name is "+mID.name()+". I am an octomy agent. What is your bidding master?";
 					QString text="My name is "+mID.name()+". I am an octomy agent. What is your bidding master?";
-					new OneOffSpeech(mID,text);
+					OC_NEW OneOffSpeech(mID,text);
 				} else {
 					qWarning()<<"ERROR: No key";
 				}

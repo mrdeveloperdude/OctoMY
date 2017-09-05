@@ -34,7 +34,7 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<NodeAssociate> 
 		if(""!=pin){
 			if(nullptr==ses){
 				//qDebug()<<"Creating new session";
-				ses=new DiscoveryServerSession();
+				ses=OC_NEW DiscoveryServerSession();
 				if(!ses->set(part)){
 					qWarning()<<"ERROR: Newly created session will be terminated as participant was not welcome";
 					delete ses;

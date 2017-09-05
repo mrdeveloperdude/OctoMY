@@ -404,7 +404,7 @@ void ReverbEffect::allocLines(quint32 frequency)
 	totalSamples += CalcLineLength(ECHO_ALLPASS_LENGTH, totalSamples, frequency, &mEcho.mApDelay);
 	totalSamples += CalcLineLength(EAXREVERB_MAX_ECHO_TIME, totalSamples, frequency, &mEcho.mDelay);
 
-	qreal* newBuf = new qreal[totalSamples];
+	qreal* newBuf = OC_NEW qreal[totalSamples];
 	mSampleBuffer = newBuf;
 	mTotalSamples = totalSamples;
 

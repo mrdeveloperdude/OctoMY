@@ -161,8 +161,8 @@ void TestCommsChannel::testSingle()
 	CommsSessionDirectory & sessDirA=chanA.sessions();
 	CommsSessionDirectory & sessDirB=chanB.sessions();
 
-	QSharedPointer<CommsSession> sessA=QSharedPointer<CommsSession> (new CommsSession(keyStoreA.localKey()));
-	QSharedPointer<CommsSession> sessB=QSharedPointer<CommsSession> (new CommsSession(keyStoreB.localKey()));
+	QSharedPointer<CommsSession> sessA=QSharedPointer<CommsSession> (OC_NEW CommsSession(keyStoreA.localKey()));
+	QSharedPointer<CommsSession> sessB=QSharedPointer<CommsSession> (OC_NEW CommsSession(keyStoreB.localKey()));
 
 	sessA->setLocalSessionID(sessDirA.generateUnusedSessionID());
 	sessB->setLocalSessionID(sessDirB.generateUnusedSessionID());

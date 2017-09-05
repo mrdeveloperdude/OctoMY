@@ -53,12 +53,13 @@
 
 #include "WidgetADI.h"
 #include "ui_WidgetADI.h"
+#include "utility/Standard.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
 WidgetADI::WidgetADI( QWidget *parent ) :
 	QWidget( parent ),
-	m_ui( new Ui::WidgetADI ),
+	m_ui( OC_NEW Ui::WidgetADI ),
 	m_adi ( 0 ),
 	m_layoutSq ( 0 )
 {
@@ -83,7 +84,7 @@ WidgetADI::~WidgetADI()
 
 void WidgetADI::setupUi()
 {
-	m_layoutSq = new LayoutSquare( this );
+	m_layoutSq = OC_NEW LayoutSquare( this );
 
 	m_layoutSq->setContentsMargins( 0, 0, 0, 0 );
 	m_layoutSq->addWidget( m_ui->graphicsADI );

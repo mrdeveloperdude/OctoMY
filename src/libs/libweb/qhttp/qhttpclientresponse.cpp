@@ -5,59 +5,59 @@ namespace qhttp {
 namespace client {
 ///////////////////////////////////////////////////////////////////////////////
 QHttpResponse::QHttpResponse(QHttpClient *cli)
-    : QHttpAbstractInput(cli), d_ptr(new QHttpResponsePrivate(cli, this)) {
-    d_ptr->initialize();
-    QHTTP_LINE_LOG
+	: QHttpAbstractInput(cli), d_ptr(new QHttpResponsePrivate(cli, this)) {
+	d_ptr->initialize();
+	QHTTP_LINE_LOG
 }
 
 QHttpResponse::QHttpResponse(QHttpResponsePrivate &dd, QHttpClient *cli)
-    : QHttpAbstractInput(cli), d_ptr(&dd) {
-    d_ptr->initialize();
-    QHTTP_LINE_LOG
+	: QHttpAbstractInput(cli), d_ptr(&dd) {
+	d_ptr->initialize();
+	QHTTP_LINE_LOG
 }
 
 QHttpResponse::~QHttpResponse() {
-    QHTTP_LINE_LOG
+	QHTTP_LINE_LOG
 }
 
 TStatusCode
 QHttpResponse::status() const {
-    return d_func()->istatus;
+	return d_func()->istatus;
 }
 
 const QString&
 QHttpResponse::statusString() const {
-    return d_func()->icustomStatusMessage;
+	return d_func()->icustomStatusMessage;
 }
 
 const QString&
 QHttpResponse::httpVersion() const {
-    return d_func()->iversion;
+	return d_func()->iversion;
 }
 
 const THeaderHash&
 QHttpResponse::headers() const {
-    return d_func()->iheaders;
+	return d_func()->iheaders;
 }
 
 bool
 QHttpResponse::isSuccessful() const {
-    return d_func()->isuccessful;
+	return d_func()->isuccessful;
 }
 
 void
 QHttpResponse::collectData(int atMost) {
-    d_func()->collectData(atMost);
+	d_func()->collectData(atMost);
 }
 
 const QByteArray&
 QHttpResponse::collectedData() const {
-    return d_func()->icollectedData;
+	return d_func()->icollectedData;
 }
 
 QHttpClient*
 QHttpResponse::connection() const {
-    return d_func()->iclient;
+	return d_func()->iclient;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1,4 +1,8 @@
 #include "basic/UniquePlatformFingerprint.hpp"
+
+#include "utility/Standard.hpp"
+
+
 #include <QNetworkInterface>
 #include <QList>
 #include <QHostAddress>
@@ -13,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 UniquePlatformFingerprint::UniquePlatformFingerprint(){
-	//	QNetworkInterface *inter=new QNetworkInterface();
+	//	QNetworkInterface *inter=OC_NEW QNetworkInterface();
 	QList<QNetworkInterface> interfaceList=QNetworkInterface::allInterfaces();
 	for(QList<QNetworkInterface>::iterator it=interfaceList.begin(),eit=interfaceList.end();it!=eit;++it){
 		QNetworkInterface iface=(*it);
@@ -42,7 +46,7 @@ UniquePlatformFingerprint *UniquePlatformFingerprint::instance=0;
 //TODO: REPLACE SINGLETON
 UniquePlatformFingerprint & UniquePlatformFingerprint::getInstance(){
 	if(0==instance){
-		instance=new UniquePlatformFingerprint();
+		instance=OC_NEW UniquePlatformFingerprint();
 	}
 	return *instance;
 }

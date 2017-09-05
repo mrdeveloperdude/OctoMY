@@ -1,8 +1,23 @@
 #include "CLGLView.hpp"
 
-#include <qmath.h>
+#include <QtMath>
 
-#ifdef EXTERNAL_LIB_OPENCL
+#ifndef EXTERNAL_LIB_OPENCL
+
+
+
+CLGLView::CLGLView(QWidget *parent)
+	: QOpenGLWidget(parent)
+{
+}
+
+
+
+CLGLView::~CLGLView()
+{
+}
+
+#else
 
 #include "utility/Utility.hpp"
 
@@ -73,7 +88,7 @@ CLGLView::~CLGLView()
 void CLGLView::setRenderer(CLGLViewRenderer * renderer)
 {
 	const QString oldSpec=(nullptr!=mRenderer)?mRenderer->getRendererSpec():"NONE";
-	const QString newSpec=(nullptr!=renderer)?renderer->getRendererSpec():"NONE";
+	const QString OC_NEWSpec=(nullptr!=renderer)?renderer->getRendererSpec():"NONE";
 	qDebug()<<"CHANGING ACTIVE RENDERER FROM "<<oldSpec<<" --> "<<newSpec;
 	if(mRenderer!=renderer && nullptr!=renderer) {
 		renderer->resize(mLastResize);
@@ -228,7 +243,7 @@ void CLGLView::initLogging()
 	qDebug()<<"%%%% INIT LOG";
 	QOpenGLContext *ctx=context();
 	makeCurrent();
-	logger = new QOpenGLDebugLogger(ctx);
+	logger = OC_NEW QOpenGLDebugLogger(ctx);
 	logger->initialize();
 	connect(logger, &QOpenGLDebugLogger::messageLogged, [=](const QOpenGLDebugMessage &msg) {
 		qWarning().noquote().nospace()<<" ## OGL-MSG: "<<msg.message();
@@ -303,7 +318,7 @@ void CLGLView::initCanvas()
 
 	if(nullptr==canvasVBO) {
 		makeCurrent();
-		canvasVBO=new QOpenGLBuffer;
+		canvasVBO=OC_NEW QOpenGLBuffer;
 		if(!canvasVBO->create()) {
 			qWarning()<<"ERROR Creating VBO";
 			exit(1);
@@ -358,7 +373,7 @@ void CLGLView::initCanvas()
 	qDebug()<<"%%%% INIT CANVAS TEXTURE";
 	if(nullptr==canvasTexture) {
 		makeCurrent();
-		canvasTexture=new QOpenGLTexture(QOpenGLTexture::TargetRectangle);
+		canvasTexture=OC_NEW QOpenGLTexture(QOpenGLTexture::TargetRectangle);
 
 		canvasTexture->setFormat( QOpenGLTexture::RGBA8U);
 		canvasTexture->setMinMagFilters(QOpenGLTexture::Nearest, QOpenGLTexture::Nearest);
@@ -385,7 +400,7 @@ void CLGLView::initCanvas()
 	Q_INIT_RESOURCE(gl_shaders);
 	makeCurrent();
 	if(nullptr==canvasProgram) {
-		canvasProgram = new QOpenGLShaderProgram;
+		canvasProgram = OC_NEW QOpenGLShaderProgram;
 		if(!canvasProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl_shaders/basic.vert")) {
 			qWarning()<<"ERROR: Could not add vertex shader from source: "<<canvasProgram->log();
 			exit(1);
@@ -411,7 +426,7 @@ void CLGLView::initCanvas()
 	if(nullptr==canvasVAO) {
 		makeCurrent();
 
-		canvasVAO=new QOpenGLVertexArrayObject;
+		canvasVAO=OC_NEW QOpenGLVertexArrayObject;
 		canvasVAO->create();
 		canvasVAO->bind();
 
@@ -453,7 +468,7 @@ void CLGLView::initCTX()
 	makeCurrent();
 	QOpenGLContext *ctx=context();
 
-	QOpenGLContext *tempCTX = new QOpenGLContext();
+	QOpenGLContext *tempCTX = OC_NEW QOpenGLContext();
 
 	tempCTX->setFormat(ctx->format());
 	tempCTX->setShareContext(ctx);
@@ -466,7 +481,7 @@ void CLGLView::initCTX()
 	}
 
 	makeCurrent();
-	QOffscreenSurface *osurf=new QOffscreenSurface(nullptr);
+	QOffscreenSurface *osurf=OC_NEW QOffscreenSurface(nullptr);
 	if(nullptr!=osurf) {
 		osurf->setFormat(ctx->surface()->format());
 		osurf->create();

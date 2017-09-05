@@ -1,4 +1,5 @@
 #include "AgentConfig.hpp"
+#include "utility/Standard.hpp"
 
 #include <QSharedPointer>
 
@@ -20,7 +21,7 @@ void AgentConfig::fromMap(const QVariantMap &map)
 	mControllerConfig=map["controllerConfig"].toMap();
 	QVariantList list=map["poseMapping"].toList();
 	if(mPoseMapping.isNull()) {
-		mPoseMapping=QSharedPointer<PoseMapping>(new PoseMapping(list.size()));
+		mPoseMapping=QSharedPointer<PoseMapping>(OC_NEW PoseMapping(list.size()));
 	}
 	mPoseMapping->fromMap(list);
 }
@@ -32,7 +33,7 @@ QVariantMap AgentConfig::toMap()
 	map["controllerConfig"]=mControllerConfig;
 	QVariantList list=map["poseMapping"].toList();
 	if(mPoseMapping.isNull()) {
-		mPoseMapping=QSharedPointer<PoseMapping>(new PoseMapping(list.size()));
+		mPoseMapping=QSharedPointer<PoseMapping>(OC_NEW PoseMapping(list.size()));
 	}
 	mPoseMapping->fromMap(list);
 	// TODO: Implement

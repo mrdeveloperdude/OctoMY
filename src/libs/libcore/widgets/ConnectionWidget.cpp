@@ -5,7 +5,7 @@
 
 ConnectionWidget::ConnectionWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::ConnectionWidget)
+	, ui(OC_NEW Ui::ConnectionWidget)
 {
 	ui->setupUi(this);
 	ui->tryToggleListen->configure("Connect","Connecting...","Connected");

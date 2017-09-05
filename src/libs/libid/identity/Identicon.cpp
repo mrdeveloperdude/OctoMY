@@ -7,7 +7,7 @@
 #include <QDebug>
 #include <QFile>
 
-#include <qmath.h>
+#include <QtMath>
 
 Identicon::Identicon(PortableID &id)
 	: mDirty(true)

@@ -1,6 +1,7 @@
 #ifndef PUNCHREGISTRY_HPP
 #define PUNCHREGISTRY_HPP
 
+#include "utility/Standard.hpp"
 
 #include <QDateTime>
 #include <QMap>
@@ -116,7 +117,7 @@ class PunchRegistry: public QMap<QString, UDPPunch *>{
 	public:
 		bool update(QString punchToken, QString public_address, quint16 public_port, QString local_address, quint16 local_port){
 			if(contains(punchToken)){
-				UDPPunch *punch=new UDPPunch(punchToken);
+				UDPPunch *punch=OC_NEW UDPPunch(punchToken);
 				if(nullptr!=punch){
 					punch->set(PunchPartner(public_address, public_port, local_address, local_port));
 				}

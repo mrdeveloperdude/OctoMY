@@ -18,9 +18,9 @@ RemoteCourierSet::RemoteCourierSet(QString fullID, ClientWidget &cw)
 
 	CommsChannel *cc=cw.comms();
 	if(nullptr!=cc) {
-		mAgentStateCourier=(new AgentStateCourier(nullptr , *cc, &cw));
-		mSensorsCourier=(new SensorsCourier(*cc, &cw));
-		mBlobCourier=(new BlobCourier(*cc, &cw));
+		mAgentStateCourier=(OC_NEW AgentStateCourier(nullptr , *cc, &cw));
+		mSensorsCourier=(OC_NEW SensorsCourier(*cc, &cw));
+		mBlobCourier=(OC_NEW BlobCourier(*cc, &cw));
 	} else {
 		qWarning()<<"ERROR: ClientWidget did not have commschannel";
 	}

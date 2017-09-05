@@ -17,7 +17,7 @@
 
 
 Remote::Remote(NodeLauncher<Remote> &launcher, QObject *parent)
-	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "remote", parent), ROLE_CONTROL, TYPE_REMOTE, parent)
+	: Node(OC_NEW AppContext(launcher.getOptions(), launcher.getEnvironment(), "remote", parent), ROLE_CONTROL, TYPE_REMOTE, parent)
 	, window(nullptr)
 {
 }
@@ -30,7 +30,7 @@ Remote::~Remote()
 QWidget *Remote::showWindow()
 {
 	if(nullptr==window) {
-		window=new RemoteWindow(this, nullptr);
+		window=OC_NEW RemoteWindow(this, nullptr);
 	}
 	if(nullptr!=window) {
 		window->show();

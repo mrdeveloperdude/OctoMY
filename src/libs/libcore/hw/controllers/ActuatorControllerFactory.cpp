@@ -16,9 +16,9 @@ IActuatorController *ActuatorControllerFactory::controllerFactory(QString type)
 	IActuatorController *ret=nullptr;
 	type=type.trimmed().toLower();
 	if("servotor32"==type) {
-		ret=new Servotor32Controller();
+		ret=OC_NEW Servotor32Controller();
 	} else if("ardumy"==type) {
-		ret=new ArduMYController();
+		ret=OC_NEW ArduMYController();
 	}
 	return ret;
 }

@@ -188,7 +188,7 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 						qWarning()<<es;
 						emit commsError(es);
 					} else {
-						session=QSharedPointer<CommsSession>(new CommsSession(key));
+						session=QSharedPointer<CommsSession>(OC_NEW CommsSession(key));
 						OC_ASSERT(nullptr!=session);
 						if(nullptr!=session) {
 							//session->setRemoteSessionID(desiredRemoteSessionID);

@@ -1,9 +1,11 @@
 #include "ConnectionManager.hpp"
 #include "ui_ConnectionManager.h"
 
+#include "utility/Standard.hpp"
+
 ConnectionManager::ConnectionManager(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::ConnectionManager)
+	ui(OC_NEW Ui::ConnectionManager)
 {
 	ui->setupUi(this);
 }

@@ -20,13 +20,13 @@ Mtlobe *MtlobeFactory::mtlobeFactory(QString type)
 	Mtlobe *ret=nullptr;
 	type=type.trimmed().toLower();
 	if("wheeled"==type) {
-		ret=new WheeledMtlobe();
+		ret=OC_NEW WheeledMtlobe();
 	} else if("tracked"==type) {
-		ret=new TrackedMtlobe();
+		ret=OC_NEW TrackedMtlobe();
 	} else if("legged"==type) {
-		ret=new LeggedMtlobe();
+		ret=OC_NEW LeggedMtlobe();
 	} else if("hovering"==type) {
-		ret=new HoveringMtlobe();
+		ret=OC_NEW HoveringMtlobe();
 	}
 	return ret;
 }

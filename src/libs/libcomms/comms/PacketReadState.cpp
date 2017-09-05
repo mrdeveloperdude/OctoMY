@@ -3,6 +3,7 @@
 #include <QDataStream>
 
 #include "security/Key.hpp"
+#include "utility/Standard.hpp"
 
 #include "Multimagic.hpp"
 
@@ -14,7 +15,7 @@ PacketReadState::PacketReadState(QByteArray datagram, QHostAddress remoteHost , 
 	: datagram(datagram)
 	, remoteHost(remoteHost)
 	, remotePort(remotePort)
-	, stream(new QDataStream(&this->datagram, QIODevice::ReadOnly))
+	, stream(OC_NEW QDataStream(&this->datagram, QIODevice::ReadOnly))
 	, multimagic(0)
 	, size(datagram.size())
 	, totalAvailable(size)
@@ -109,7 +110,7 @@ void PacketReadState::decrypt(Key &k)
 #endif
 			octomyProtocolDecryptedMessageSize=octomyProtocolDecryptedMessage.size();
 			if(octomyProtocolDecryptedMessageSize>0) {
-				encStream=QSharedPointer<QDataStream> (new QDataStream(&this->octomyProtocolDecryptedMessage, QIODevice::ReadOnly));
+				encStream=QSharedPointer<QDataStream> (OC_NEW QDataStream(&this->octomyProtocolDecryptedMessage, QIODevice::ReadOnly));
 				encTotalAvailable=octomyProtocolEncryptedMessageSize;
 			} else {
 				qWarning()<<"ERROR: Source text is empty while decrypting";

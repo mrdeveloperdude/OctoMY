@@ -81,7 +81,7 @@ void TestNodeAssociateStore::test(){
 	assMap["localAddress"]=localAddrMap;
 	assMap["trusts"]=trusts;
 
-	QSharedPointer<NodeAssociate> ass(new NodeAssociate(assMap));
+	QSharedPointer<NodeAssociate> ass(OC_NEW NodeAssociate(assMap));
 	QVERIFY(nullptr!=ass);
 
 	QCOMPARE(ass->id(),id);
@@ -141,7 +141,7 @@ void TestNodeAssociateStore::test(){
 	QVariantMap map=ass->toVariantMap();
 	qDebug()<<"MAP: "<<map;
 
-	QSharedPointer<NodeAssociate> ass1b(new NodeAssociate());
+	QSharedPointer<NodeAssociate> ass1b(OC_NEW NodeAssociate());
 	QVERIFY(nullptr!=ass1b);
 
 	//bool operator==(const NodeAssociate &o) const;
@@ -192,7 +192,7 @@ void TestNodeAssociateStore::test(){
 
 	//Create an empty store and add data to it before saving
 	{
-		NodeAssociateStore *store=new NodeAssociateStore(filename);
+		NodeAssociateStore *store=OC_NEW NodeAssociateStore(filename);
 		QVERIFY(nullptr!=store);
 		store->bootstrap(false, false); // Leave async test to TestKeyStore and TestAsyncStore
 
@@ -240,7 +240,7 @@ void TestNodeAssociateStore::test(){
 
 	//Create a new store, this time expect the file to exist from last step (load only)
 	{
-		NodeAssociateStore *store2=new NodeAssociateStore(filename);
+		NodeAssociateStore *store2=OC_NEW NodeAssociateStore(filename);
 		QVERIFY(nullptr!=store2);
 		store2->bootstrap(true, false); // Leave async test to TestKeyStore and TestAsyncStore
 

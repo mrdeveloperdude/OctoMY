@@ -1,9 +1,11 @@
 #include "QHexEditDataDevice.hpp"
 
+#include "utility/Standard.hpp"
+
 QHexEditDataDevice::QHexEditDataDevice(QHexEditData *hexeditdata): QIODevice(hexeditdata), _hexeditdata(hexeditdata)
 {
-	this->_reader = new QHexEditDataReader(hexeditdata, this);
-	this->_writer = new QHexEditDataWriter(hexeditdata, this);
+	this->_reader = OC_NEW QHexEditDataReader(hexeditdata, this);
+	this->_writer = OC_NEW QHexEditDataWriter(hexeditdata, this);
 }
 
 qint64 QHexEditDataDevice::size() const

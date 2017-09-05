@@ -79,8 +79,8 @@ namespace qmapcontrol
 
 	void MapControl::__init()
 	{
-		m_layermanager = new LayerManager(this, size);
-		m_imagemanager = new ImageManager(this);
+		m_layermanager = OC_NEW LayerManager(this, size);
+		m_imagemanager = OC_NEW ImageManager(this);
 		screen_middle = QPoint(size.width()/2, size.height()/2);
 
 		mousepressed = false;
@@ -206,13 +206,13 @@ namespace qmapcontrol
 
 		if ( m_doubleBuffer == 0 )
 		{
-			m_doubleBuffer =  new QPixmap(width(), height());
+			m_doubleBuffer =  OC_NEW QPixmap(width(), height());
 		}
 		//check for resize change
 		else if ( m_doubleBuffer->width() != width() || m_doubleBuffer->height() != height() )
 		{
 			delete m_doubleBuffer;
-			m_doubleBuffer = new QPixmap(width(), height());
+			m_doubleBuffer = OC_NEW QPixmap(width(), height());
 		}
 
 		QPainter dbPainter;

@@ -53,12 +53,13 @@
 
 #include "WidgetSix.h"
 #include "ui_WidgetSix.h"
+#include "utility/Standard.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
 WidgetSix::WidgetSix( QWidget *parent ) :
 	QWidget ( parent ),
-	m_ui ( new Ui::WidgetSix ),
+	m_ui ( OC_NEW Ui::WidgetSix ),
 
 	m_widgetADI ( 0 ),
 	m_widgetALT ( 0 ),

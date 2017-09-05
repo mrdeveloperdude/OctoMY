@@ -50,7 +50,7 @@ void TestKey::testAllocation()
 {
 	QSharedPointer<ContainerClass> cc(nullptr);
 	Key key;
-	cc=QSharedPointer<ContainerClass>(new ContainerClass(key));
+	cc=QSharedPointer<ContainerClass>(OC_NEW ContainerClass(key));
 
 }
 

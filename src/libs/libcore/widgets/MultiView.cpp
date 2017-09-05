@@ -9,7 +9,7 @@
 
 MultiView::MultiView(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::MultiView)
+	ui(OC_NEW Ui::MultiView)
 {
 	ui->setupUi(this);
 	QListView *list = ui->listView;
@@ -45,7 +45,7 @@ MultiView::MultiView(QWidget *parent) :
 }
 
 void MultiView::setModel(QAbstractItemModel *data){
-	QItemSelectionModel *selections = 0==data?0:new QItemSelectionModel(data);
+	QItemSelectionModel *selections = 0==data?0:OC_NEW QItemSelectionModel(data);
 	QListView *list = ui->listView;
 	if(nullptr!=list){
 		QItemSelectionModel *oldSel = list->selectionModel();

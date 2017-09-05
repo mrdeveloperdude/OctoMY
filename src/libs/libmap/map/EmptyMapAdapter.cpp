@@ -25,7 +25,7 @@
 
 #include "EmptyMapAdapter.hpp"
 
-#include <qmath.h>
+#include <QtMath>
 namespace qmapcontrol
 {
 	EmptyMapAdapter::EmptyMapAdapter(int tileSize, int minZoom, int maxZoom)

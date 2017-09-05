@@ -18,9 +18,9 @@ AgentCourierSet::AgentCourierSet(QString &fullID, Agent &agent)
 
 	CommsChannel *cc=agent.comms();
 	if(nullptr!=cc) {
-		mAgentStateCourier=(new AgentStateCourier(nullptr , *cc, &agent));
-		mSensorsCourier=(new SensorsCourier(*cc, &agent));
-		mBlobCourier=(new BlobCourier(*cc, &agent));
+		mAgentStateCourier=(OC_NEW AgentStateCourier(nullptr , *cc, &agent));
+		mSensorsCourier=(OC_NEW SensorsCourier(*cc, &agent));
+		mBlobCourier=(OC_NEW BlobCourier(*cc, &agent));
 	} else {
 		qWarning()<<"ERROR: ClientWidget did not have commschannel";
 	}

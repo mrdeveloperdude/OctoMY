@@ -9,7 +9,7 @@
 
 NetworkSettingsWidget::NetworkSettingsWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::NetworkSettingsWidget)
+	, ui(OC_NEW Ui::NetworkSettingsWidget)
 {
 	ui->setupUi(this);
 	QList<QHostAddress> localAddresses=utility::getAllLocalNetworkAddresses();

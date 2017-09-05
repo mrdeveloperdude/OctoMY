@@ -58,8 +58,9 @@
 #include <math.h>
 
 #include "qfi_ADI.h"
+#include "utility/Standard.hpp"
 
-#include <qmath.h>
+#include <QtMath>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -99,7 +100,7 @@ qfi_ADI::qfi_ADI( QWidget *parent ) :
 {
 	reset();
 
-	m_scene = new QGraphicsScene( this );
+	m_scene = OC_NEW QGraphicsScene( this );
 	setScene( m_scene );
 
 	m_scene->clear();
@@ -198,28 +199,28 @@ void qfi_ADI::init()
 
 	reset();
 
-	m_itemBack = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/adi/adi_back.svg" );
+	m_itemBack = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/adi/adi_back.svg" );
 	m_itemBack->setCacheMode( QGraphicsItem::NoCache );
 	m_itemBack->setZValue( m_backZ );
 	m_itemBack->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_itemBack->setTransformOriginPoint( m_originalAdiCtr );
 	m_scene->addItem( m_itemBack );
 
-	m_itemFace = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/adi/adi_face.svg" );
+	m_itemFace = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/adi/adi_face.svg" );
 	m_itemFace->setCacheMode( QGraphicsItem::NoCache );
 	m_itemFace->setZValue( m_faceZ );
 	m_itemFace->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_itemFace->setTransformOriginPoint( m_originalAdiCtr );
 	m_scene->addItem( m_itemFace );
 
-	m_itemRing = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/adi/adi_ring.svg" );
+	m_itemRing = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/adi/adi_ring.svg" );
 	m_itemRing->setCacheMode( QGraphicsItem::NoCache );
 	m_itemRing->setZValue( m_ringZ );
 	m_itemRing->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_itemRing->setTransformOriginPoint( m_originalAdiCtr );
 	m_scene->addItem( m_itemRing );
 
-	m_itemCase = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/adi/adi_case.svg" );
+	m_itemCase = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/adi/adi_case.svg" );
 	m_itemCase->setCacheMode( QGraphicsItem::NoCache );
 	m_itemCase->setZValue( m_caseZ );
 	m_itemCase->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );

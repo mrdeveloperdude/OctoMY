@@ -82,7 +82,7 @@ void IrisRendrer::draw(QRect &rect, QPainter &painter, quint32 eyeIndex)
 			mScratchBuffer=nullptr;
 		}
 		if(nullptr==mScratchBuffer) {
-			mScratchBuffer = new QRgb[psz];
+			mScratchBuffer = OC_NEW QRgb[psz];
 		}//
 		const qreal c1r=(qreal)qRed(mColor1)/255.0;
 		const qreal c1g=(qreal)qGreen(mColor1)/255.0;

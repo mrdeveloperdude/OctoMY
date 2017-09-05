@@ -5,9 +5,11 @@
 #include "trigger/Condition.hpp"
 #include "trigger/Action.hpp"
 
+#include "utility/Standard.hpp"
+
 TriggerWidget::TriggerWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::TriggerWidget)
+	, ui(OC_NEW Ui::TriggerWidget)
 	, mTrigger(nullptr)
 {
 	ui->setupUi(this);

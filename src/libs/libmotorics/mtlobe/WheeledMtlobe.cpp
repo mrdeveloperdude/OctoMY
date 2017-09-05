@@ -16,7 +16,7 @@ WheeledMtlobe::WheeledMtlobe()
 QWidget *WheeledMtlobe::configurationWidget()
 {
 	if(nullptr==mConfigWidget) {
-		mConfigWidget=new WheeledMtlobeWidget();
+		mConfigWidget=OC_NEW WheeledMtlobeWidget();
 	}
 	return mConfigWidget;
 }

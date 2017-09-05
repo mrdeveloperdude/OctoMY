@@ -66,7 +66,7 @@ void TestNetworkAddress::testInitial()
 
 void TestNetworkAddress::testWithoutConstructorArguments()
 {
-	NetworkAddress *naHeap=new NetworkAddress();
+	NetworkAddress *naHeap=OC_NEW NetworkAddress();
 	scrutinize(naHeap, false, expectedEmptyAddress, expectedEmptyPort);
 	NetworkAddress naStack;
 	scrutinize(&naStack, false, expectedEmptyAddress, expectedEmptyPort);
@@ -83,7 +83,7 @@ void TestNetworkAddress::testWithoutConstructorArguments()
 void TestNetworkAddress::testEmptyMapConstructorArguments()
 {
 	QVariantMap emptyMap;
-	NetworkAddress *naHeap=new NetworkAddress(emptyMap);
+	NetworkAddress *naHeap=OC_NEW NetworkAddress(emptyMap);
 	scrutinize(naHeap, false, expectedEmptyAddress, expectedEmptyPort);
 	NetworkAddress naStack(emptyMap);
 	scrutinize(&naStack, false, expectedEmptyAddress, expectedEmptyPort);
@@ -102,7 +102,7 @@ void TestNetworkAddress::testInvalidMapConstructorArguments()
 	QVariantMap invalidMap;
 	invalidMap["ip"]="invalidIP";
 	invalidMap["port"]="invalidPort";
-	NetworkAddress *naHeap=new NetworkAddress(invalidMap);
+	NetworkAddress *naHeap=OC_NEW NetworkAddress(invalidMap);
 	scrutinize(naHeap, false, expectedEmptyAddress, expectedEmptyPort);
 	NetworkAddress naStack(invalidMap);
 	scrutinize(&naStack, false, expectedEmptyAddress, expectedEmptyPort);
@@ -122,7 +122,7 @@ void TestNetworkAddress::testValidMapConstructorArguments()
 	validMap["ip"]=expectedValidAddress.toString();
 	qDebug()<<validMap["ip"].toString();
 	validMap["port"]=QString::number(expectedValidPort);
-	NetworkAddress *naHeap=new NetworkAddress(validMap);
+	NetworkAddress *naHeap=OC_NEW NetworkAddress(validMap);
 	scrutinize(naHeap, true, expectedValidAddress, expectedValidPort);
 	NetworkAddress naStack(validMap);
 	scrutinize(&naStack, true, expectedValidAddress, expectedValidPort);
@@ -140,7 +140,7 @@ void TestNetworkAddress::testEmptyDirectConstructorArguments()
 {
 	QHostAddress emptyAddress;
 	quint16 invalidPort=0;
-	NetworkAddress *naHeap=new NetworkAddress(emptyAddress, invalidPort);
+	NetworkAddress *naHeap=OC_NEW NetworkAddress(emptyAddress, invalidPort);
 	scrutinize(naHeap, false, expectedEmptyAddress, expectedEmptyPort);
 	NetworkAddress naStack(emptyAddress, invalidPort);
 	scrutinize(&naStack, false, expectedEmptyAddress, expectedEmptyPort);
@@ -158,7 +158,7 @@ void TestNetworkAddress::testInvalidDirectConstructorArguments()
 {
 	QHostAddress invalidAddress("invalidIP");
 	quint16 invalidPort=0;
-	NetworkAddress *naHeap=new NetworkAddress(invalidAddress, invalidPort);
+	NetworkAddress *naHeap=OC_NEW NetworkAddress(invalidAddress, invalidPort);
 	scrutinize(naHeap, false, expectedEmptyAddress, expectedEmptyPort);
 	NetworkAddress naStack(invalidAddress, invalidPort);
 	scrutinize(&naStack, false, expectedEmptyAddress, expectedEmptyPort);
@@ -175,7 +175,7 @@ void TestNetworkAddress::testValidDirectConstructorArguments()
 {
 	quint16 validPort=8128;
 	QHostAddress validAddress("127.0.0.1");
-	NetworkAddress *naHeap=new NetworkAddress(validAddress, validPort);
+	NetworkAddress *naHeap=OC_NEW NetworkAddress(validAddress, validPort);
 	scrutinize(naHeap, true, expectedValidAddress, expectedValidPort);
 	NetworkAddress naStack(validAddress, validPort);
 	scrutinize(&naStack, true, expectedValidAddress, expectedValidPort);
@@ -193,7 +193,7 @@ void TestNetworkAddress::testAssignment1()
 {
 	QHostAddress invalidAddress("invalidIP");
 	quint16 invalidPort=0;
-	NetworkAddress *naHeap=new NetworkAddress(invalidAddress, invalidPort);
+	NetworkAddress *naHeap=OC_NEW NetworkAddress(invalidAddress, invalidPort);
 	scrutinize(naHeap, false, expectedEmptyAddress, expectedEmptyPort);
 
 	quint16 validPort=8128;
@@ -228,7 +228,7 @@ void TestNetworkAddress::testAssignment2()
 
 	quint16 validPort=8128;
 	QHostAddress validAddress("127.0.0.1");
-	NetworkAddress *naHeap=new NetworkAddress(validAddress, validPort);
+	NetworkAddress *naHeap=OC_NEW NetworkAddress(validAddress, validPort);
 	scrutinize(naHeap, true, expectedValidAddress, expectedValidPort);
 
 	naStack=*naHeap;
@@ -252,7 +252,7 @@ void TestNetworkAddress::testIsValid()
 {
 	quint16 validPort=8128;
 	QHostAddress validLoopbackAddress("127.0.0.1");
-	NetworkAddress *naHeap=new NetworkAddress(validLoopbackAddress, validPort);
+	NetworkAddress *naHeap=OC_NEW NetworkAddress(validLoopbackAddress, validPort);
 	scrutinize(naHeap, true, expectedValidAddress, expectedValidPort);
 
 	QVERIFY(naHeap->isValid(true,true));

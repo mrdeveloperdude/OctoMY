@@ -1,5 +1,7 @@
 #include "OctomyParseContext.hpp"
 
+#include "utility/Standard.hpp"
+
 OctomyParseContext::OctomyParseContext()
 	: m_plan(0)
 	, m_ok(true)
@@ -160,21 +162,21 @@ public:
 				if(0!=subnode) {
 					const QString name=node.name();
 					if ("member"==name) {
-						MemberNode *member=new MemberNode(*subnode, m_plan, name);
+						MemberNode *member=OC_NEW MemberNode(*subnode, m_plan, name);
 						if(0!=member) {
 							registerSubMember(member);
 						} else {
 							fail("Could not allocate submemeber");
 						}
 					} else if ("camera"==name || "serial"==name || "bluetooth"==name || "nfc"==name ) {
-						DescriptorNode *desc=new DescriptorNode(*subnode, m_plan, name);
+						DescriptorNode *desc=OC_NEW DescriptorNode(*subnode, m_plan, name);
 						if(0!=desc) {
 							m_descriptors[name]=desc;
 						} else {
 							fail("Could not allocate descriptor");
 						}
 					} else if ("controller"==name) {
-						DescriptorNode *controller=new ControllerNode(*subnode, m_plan);
+						DescriptorNode *controller=OC_NEW ControllerNode(*subnode, m_plan);
 						if(0!=controller) {
 							m_descriptors[name]=controller;
 						} else {
@@ -250,7 +252,7 @@ public:
 						if(0!=m_puppet) {
 							fail("Trying to add second puppet to "+m_id);
 						} else {
-							m_puppet=new PuppetNode(*subnode, m_plan);
+							m_puppet=OC_NEW PuppetNode(*subnode, m_plan);
 							if(0==m_puppet) {
 								fail("Could not allocate puppet");
 							}
@@ -328,14 +330,14 @@ public:
 				if(0!=subnode) {
 					const QString name=subnode->name();
 					if("agent"==name) {
-						AgentNode *agent=new AgentNode(*subnode,m_plan);
+						AgentNode *agent=OC_NEW AgentNode(*subnode,m_plan);
 						if(0!=agent) {
 
 						} else {
 							fail("Could not allocate agent");
 						}
 					} else if ("remote"==name) {
-						RemoteNode *remote=new RemoteNode(*subnode,m_plan);
+						RemoteNode *remote=OC_NEW RemoteNode(*subnode,m_plan);
 						if(0!=remote) {
 
 						} else {
@@ -343,7 +345,7 @@ public:
 						}
 
 					} else if ("hub"==name) {
-						HubNode *hub=new HubNode(*subnode,m_plan);
+						HubNode *hub=OC_NEW HubNode(*subnode,m_plan);
 						if(0!=hub) {
 
 						} else {
@@ -390,7 +392,7 @@ bool OctomyParseContext::fromParseTrees(QVector<ParseTreeNode *> trees)
 			if("plan"==name) {
 				if(0==planTree) {
 					planTree=node;
-					m_plan=new PlanNode(*node,*this);
+					m_plan=OC_NEW PlanNode(*node,*this);
 					if(0!=m_plan) {
 						if(!m_plan->isOK()) {
 							fail("Could not parse plan");
@@ -405,7 +407,7 @@ bool OctomyParseContext::fromParseTrees(QVector<ParseTreeNode *> trees)
 				if(0!=planTree) {
 					fail("Found spec occurance after plan");
 				} else {
-					SpecNode *spec=new SpecNode(*node, *this);
+					SpecNode *spec=OC_NEW SpecNode(*node, *this);
 					if(0!=spec) {
 						if(!spec->isOK()) {
 							fail("Could not parse spec");

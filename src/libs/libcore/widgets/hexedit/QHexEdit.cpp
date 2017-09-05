@@ -1,10 +1,12 @@
 #include "QHexEdit.hpp"
 
+#include "utility/Standard.hpp"
+
 QHexEdit::QHexEdit(QWidget *parent): QFrame(parent)
 {
-	this->_vscrollbar = new QScrollBar(Qt::Vertical);
-	this->_scrollarea = new QScrollArea();
-	this->_hexedit_p = new QHexEditPrivate(this->_scrollarea, this->_vscrollbar);
+	this->_vscrollbar = OC_NEW QScrollBar(Qt::Vertical);
+	this->_scrollarea = OC_NEW QScrollArea();
+	this->_hexedit_p = OC_NEW QHexEditPrivate(this->_scrollarea, this->_vscrollbar);
 
 	/* Forward QHexEditPrivate's Signals */
 	connect(this->_hexedit_p, SIGNAL(visibleLinesChanged()), this, SIGNAL(visibleLinesChanged()));
@@ -20,7 +22,7 @@ QHexEdit::QHexEdit(QWidget *parent): QFrame(parent)
 
 	this->setFocusPolicy(Qt::NoFocus);
 
-	this->_hlayout = new QHBoxLayout();
+	this->_hlayout = OC_NEW QHBoxLayout();
 	this->_hlayout->setSpacing(0);
 	this->_hlayout->setMargin(0);
 	this->_hlayout->addWidget(this->_scrollarea);

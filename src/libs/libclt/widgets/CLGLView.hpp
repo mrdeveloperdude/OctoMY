@@ -3,7 +3,25 @@
 
 #include <QtGlobal>
 
+#include <QWidget>
+
 #ifndef EXTERNAL_LIB_OPENCL
+
+#include "glt/IncludeOpenGL.hpp"
+#include "glt/GLContext.hpp"
+
+// Flat out dummy for the times when OpenCL is not available.
+// Hopefully this will result in an empty/black widget in place of
+// whatever goodies was supposed to be there.
+class CLGLView : public QOpenGLWidget
+{
+	Q_OBJECT
+
+public:
+	explicit CLGLView(QWidget *parent = nullptr);
+	virtual ~CLGLView();
+
+};
 
 #else
 

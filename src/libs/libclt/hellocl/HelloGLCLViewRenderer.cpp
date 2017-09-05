@@ -23,12 +23,12 @@ void HelloGLCLViewRenderer::initialize(GLContext &ctx)
 {
 	qDebug()<<"Initializing with: "<<ctx.toString();
 	//ctx.currentize();
-	HelloCLWorkerFactory *factory=new HelloCLWorkerFactory();
+	HelloCLWorkerFactory *factory=OC_NEW HelloCLWorkerFactory();
 	if(nullptr!=factory) {
 		QSurface *surf=ctx.surface();
 		if(nullptr!=surf) {
 			CLGLInteropConfig config(&ctx, QSize(512, 512) );
-			mThreadManager=new CLThreadManager(*factory,config, "", false,true);
+			mThreadManager=OC_NEW CLThreadManager(*factory,config, "", false,true);
 			if(nullptr==mThreadManager) {
 				qWarning()<<"ERROR: Could not allocate CL thread manager";
 			}

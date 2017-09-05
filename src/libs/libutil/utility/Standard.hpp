@@ -13,7 +13,8 @@
 
 #include <QDebug>
 #include <QString>
-#include <qmath.h>
+#include <QtMath>
+#include <new>
 
 #ifdef USE_FEATURE_BUFFER_HONEYPOT
 #define BUFFER_HONEYPOT BufferHoneyPot bhp_(true)
@@ -30,11 +31,11 @@
 
 #define OC_ASSERT(a) { const bool c=(a); if(!c){ qWarning()<< "OC_ASSERT FAILED: " #a; } }
 
-
 #define OC_CONTYPE (Qt::ConnectionType) (Qt::QueuedConnection | Qt::UniqueConnection)
 
 #define OC_COLLECT_AT_MOST (1024*100)
 
+#define OC_NEW new(std::nothrow)
 
 #define WEB_TIMEOUT (4000)
 

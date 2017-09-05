@@ -9,7 +9,7 @@
 
 AgentConfigStore::AgentConfigStore(QString filename, QObject *parent)
 	: AsyncStore(filename, parent)
-	, mAgentConfig(new AgentConfig())
+	, mAgentConfig(OC_NEW AgentConfig())
 {
 	setObjectName("AgentConfigStore");
 	//qDebug()<<"PoseMappingStore() file="<<fn;
@@ -72,7 +72,7 @@ void AgentConfigStore::load()
 			QVariantMap map = doc.object().toVariantMap();
 			QVariantMap agentConfigMap=map["agentConfig"].toMap();
 			if(mAgentConfig.isNull()) {
-				mAgentConfig=QSharedPointer<AgentConfig>(new AgentConfig());
+				mAgentConfig=QSharedPointer<AgentConfig>(OC_NEW AgentConfig());
 			}
 			if(!mAgentConfig.isNull()) {
 				mAgentConfig->fromMap(agentConfigMap);

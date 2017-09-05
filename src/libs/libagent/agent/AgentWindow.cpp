@@ -30,20 +30,20 @@
 
 AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::AgentWindow)
+	, ui(OC_NEW Ui::AgentWindow)
 	, mAgent(agent)
 	, mHexy(nullptr)
-	, mCameraAction(new QAction(tr("Camera"), this))
-	, mPairingAction(new QAction(tr("Pair"), this))
-	, mHardwareAction(new QAction(tr("Configure HW"), this))
-	, mPlanAction(new QAction(tr("Plan"), this))
-	, mOnlineAction(new QAction(tr("Go Online"), this))
-	, mShowOnlineButtonAction(new QAction(tr("Show Online Button"), this))
-	, mShowFaceAction(new QAction(tr("Show Face"), this))
-	, mShowLogAction(new QAction(tr("Show Log"), this))
-	, mShowStatsAction(new QAction(tr("Show Stats"), this))
-	, mShowBirthCertificateAction(new QAction(tr("Show Birth Certificate"), this))
-	, mUnbirthAction(new QAction(tr("Unbirth!"), this))
+	, mCameraAction(OC_NEW QAction(tr("Camera"), this))
+	, mPairingAction(OC_NEW QAction(tr("Pair"), this))
+	, mHardwareAction(OC_NEW QAction(tr("Configure HW"), this))
+	, mPlanAction(OC_NEW QAction(tr("Plan"), this))
+	, mOnlineAction(OC_NEW QAction(tr("Go Online"), this))
+	, mShowOnlineButtonAction(OC_NEW QAction(tr("Show Online Button"), this))
+	, mShowFaceAction(OC_NEW QAction(tr("Show Face"), this))
+	, mShowLogAction(OC_NEW QAction(tr("Show Log"), this))
+	, mShowStatsAction(OC_NEW QAction(tr("Show Stats"), this))
+	, mShowBirthCertificateAction(OC_NEW QAction(tr("Show Birth Certificate"), this))
+	, mUnbirthAction(OC_NEW QAction(tr("Unbirth!"), this))
 	, mWasEverUndelivered(false)
 {
 	OC_METHODGATE();
@@ -91,7 +91,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 		updateOnlineStatus();
 		//	fubar();
 		//QString text="Hello, my name is "+mAgent->name()+". I am an octomy agent. What is your bidding master?";
-		//QString text="Hello, my name is Bodhi. I am an octomy agent. What is your bidding master? 00 0 01010 010 010 010 010101 ";		PortableID id=mAgent->localNodeAssociate()->toPortableID();		new OneOffSpeech(id, text);
+		//QString text="Hello, my name is Bodhi. I am an octomy agent. What is your bidding master? 00 0 01010 010 010 010 010101 ";		PortableID id=mAgent->localNodeAssociate()->toPortableID();		OC_NEW OneOffSpeech(id, text);
 	}
 
 #ifdef Q_OS_ANDROID

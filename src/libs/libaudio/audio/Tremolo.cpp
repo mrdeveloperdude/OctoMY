@@ -1,8 +1,8 @@
 #include "Tremolo.hpp"
-
+#include "utility/Standard.hpp"
 
 #include <QDebug>
-#include <qmath.h>
+#include <QtMath>
 
 
 Tremolo::Tremolo()
@@ -38,7 +38,7 @@ void Tremolo::set(double freq,double amp)
 	delete[] buf;
 	buf=nullptr;
 	if(size>0) {
-		buf=new double[size];
+		buf=OC_NEW double[size];
 		for(int i=0; i<size; ++i) {
 			buf[i]=0.0;
 		}

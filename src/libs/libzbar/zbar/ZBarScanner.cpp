@@ -1,6 +1,7 @@
 #include "ZBarScanner.hpp"
 
 //#include "utility/widgets/PixViewer.hpp"
+#include "utility/Standard.hpp"
 
 #include <QVideoFrame>
 #include <QPixmap>
@@ -44,7 +45,7 @@ ZBarScanner::ZBarScanner()
 	, mScaleDown(false)
 	, mConvertToGrayscale(true)
 {
-	//pv=new PixViewer();
+	//pv=OC_NEW PixViewer();
 	//if(nullptr!=pv) {
 	//	pv->setWindowTitle("zbar grayscale");
 	//}
@@ -79,7 +80,7 @@ QList<ZScanResult> ZBarScanner::scan(const QImage &image)
 {
 	QList<ZScanResult> out;
 	if(nullptr==sc) {
-		sc=new zbar::ImageScanner;
+		sc=OC_NEW zbar::ImageScanner;
 		if(nullptr!=sc) {
 //TODO: Configure scanner here.
 			//_zbar_verbosity=127;

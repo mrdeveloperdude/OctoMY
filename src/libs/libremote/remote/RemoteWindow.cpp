@@ -36,7 +36,7 @@
 
 RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::RemoteWindow)
+	, ui(OC_NEW Ui::RemoteWindow)
 	, mRemote(remote)
 {
 	ui->setupUi(this);
@@ -307,7 +307,7 @@ void RemoteWindow::updateActiveAgent()
 			ClientWidget *cw=nullptr;
 			if(mClientWidgets.end()==it) {
 				//qDebug()<<"CREATING CLIENT WIDGET WITH ID "<<client->toPortableID().toPortableString();
-				cw=new ClientWidget(QSharedPointer<Node>(mRemote), client, this);
+				cw=OC_NEW ClientWidget(QSharedPointer<Node>(mRemote), client, this);
 				if(nullptr!=cw) {
 					//qDebug()<<"Created client widget for index "<<idx;
 					mClientWidgets[idx]=cw;
@@ -344,13 +344,13 @@ void RemoteWindow::updateActiveAgent()
 void RemoteWindow::prepareMenu()
 {
 	OC_METHODGATE();
-	QAction *pairingAction = new QAction(tr("Pair"), this);
+	QAction *pairingAction = OC_NEW QAction(tr("Pair"), this);
 	pairingAction->setStatusTip(tr("Do the pairing dance"));
 	pairingAction->setIcon(QIcon(":/icons/pair.svg"));
 	connect(pairingAction, &QAction::triggered, this, &RemoteWindow::onStartPairing);
 	mMenu.addAction(pairingAction);
 
-	QAction *certAction = new QAction(tr("Show My ID"), this);
+	QAction *certAction = OC_NEW QAction(tr("Show My ID"), this);
 	certAction->setStatusTip(tr("Show the identification of this remote"));
 	certAction->setIcon(QIcon(":/icons/certificate.svg"));
 	connect(certAction, &QAction::triggered, this, &RemoteWindow::onStartShowBirthCertificate);
@@ -485,7 +485,7 @@ void RemoteWindow::onClientAdded(CommsSession *c)
 void RemoteWindow::onConnectionStatusChanged(bool c)
 {
 	OC_METHODGATE();
-	qDebug()<<"REMOTEW comms: new connection status: "<<c;
+	qDebug()<<"REMOTEW comms: OC_NEW connection status: "<<c;
 	//ui->widgetConnection->setConnectState(c?ON:OFF);
 }
 

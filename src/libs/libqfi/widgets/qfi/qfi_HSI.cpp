@@ -58,6 +58,7 @@
 #include <math.h>
 
 #include "qfi_HSI.h"
+#include "utility/Standard.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -85,7 +86,7 @@ qfi_HSI::qfi_HSI( QWidget *parent ) :
 {
 	reset();
 
-	m_scene = new QGraphicsScene( this );
+	m_scene = OC_NEW QGraphicsScene( this );
 	setScene( m_scene );
 
 	m_scene->clear();
@@ -169,14 +170,14 @@ void qfi_HSI::init()
 
 	reset();
 
-	m_itemFace = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/hsi/hsi_face.svg" );
+	m_itemFace = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/hsi/hsi_face.svg" );
 	m_itemFace->setCacheMode( QGraphicsItem::NoCache );
 	m_itemFace->setZValue( m_faceZ );
 	m_itemFace->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_itemFace->setTransformOriginPoint( m_originalHsiCtr );
 	m_scene->addItem( m_itemFace );
 
-	m_itemCase = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/hsi/hsi_case.svg" );
+	m_itemCase = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/hsi/hsi_case.svg" );
 	m_itemCase->setCacheMode( QGraphicsItem::NoCache );
 	m_itemCase->setZValue( m_caseZ );
 	m_itemCase->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );

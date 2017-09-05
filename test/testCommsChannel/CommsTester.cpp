@@ -30,7 +30,7 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 			qDebug() << mMyAddress << ":" << mMyPort << " --> " << toPort;
 			QString myID="1234";
 			//CommsSignature sig(myID, NetworkAddress(mMyAddress, toPort));
-			TestCourier *tc=new TestCourier(mName+"Courier", myID, "This is my humble payload", mCc, mTestCount, mTestCount, this);
+			TestCourier *tc=OC_NEW TestCourier(mName+"Courier", myID, "This is my humble payload", mCc, mTestCount, mTestCount, this);
 			QVERIFY(nullptr!=tc);
 			mCc.setCourierRegistered(*tc, true);
 		} else {

@@ -14,7 +14,7 @@
 
 PoseMappingWidget::PoseMappingWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::PoseMappingWidget)
+	, ui(OC_NEW Ui::PoseMappingWidget)
 	, mMapping(nullptr)
 	, butGroupFrom(nullptr)
 	, butGroupTo(nullptr)
@@ -42,10 +42,10 @@ void PoseMappingWidget::configure(PoseMapping &mapping)
 	mMapping=&mapping;
 	ui->verticalLayout_2->removeWidget(ui->widgetPoses);
 	ui->widgetPoses->deleteLater();
-	ui->widgetPoses = new PoseMappingView(ui->scrollAreaWidgetContents);
+	ui->widgetPoses = OC_NEW PoseMappingView(ui->scrollAreaWidgetContents);
 	ui->widgetPoses->setObjectName(QStringLiteral("widgetPoses"));
-	butGroupFrom=new QButtonGroup(ui->widgetPoses);
-	butGroupTo=new QButtonGroup(ui->widgetPoses);
+	butGroupFrom=OC_NEW QButtonGroup(ui->widgetPoses);
+	butGroupTo=OC_NEW QButtonGroup(ui->widgetPoses);
 
 	fromButton=nullptr;
 	toButton=nullptr;
@@ -66,7 +66,7 @@ void PoseMappingWidget::configure(PoseMapping &mapping)
 	sizePolicy.setVerticalStretch(0);
 	sizePolicy.setHeightForWidth(ui->widgetPoses->sizePolicy().hasHeightForWidth());
 	ui->widgetPoses->setSizePolicy(sizePolicy);
-	QVBoxLayout *hLayout = new QVBoxLayout(ui->widgetPoses);
+	QVBoxLayout *hLayout = OC_NEW QVBoxLayout(ui->widgetPoses);
 
 	if(nullptr!=mMapping) {
 		const quint32 sz=mMapping->size();
@@ -78,7 +78,7 @@ void PoseMappingWidget::configure(PoseMapping &mapping)
 	} else {
 		ui->spinBoxActuatorCount->setValue(0);
 	}
-	QSpacerItem *verticalSpacer = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
+	QSpacerItem *verticalSpacer = OC_NEW QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
 	hLayout->addItem(verticalSpacer);
 	ui->verticalLayout_2->addWidget(ui->widgetPoses);
 	ui->widgetPoses->configure(*this);
@@ -93,22 +93,22 @@ PoseMapping *PoseMappingWidget::mapping()
 void PoseMappingWidget::addButtonPair(quint32 index, QVBoxLayout *hLayout, QString from,QString to, QButtonGroup *butGroupFrom, QButtonGroup *butGroupTo)
 {
 	OC_METHODGATE();
-	QHBoxLayout *horizontalLayoutButtons = new QHBoxLayout();
-	QPushButton*pushButtonRename = new QPushButton(ui->widgetPoses);
+	QHBoxLayout *horizontalLayoutButtons = OC_NEW QHBoxLayout();
+	QPushButton*pushButtonRename = OC_NEW QPushButton(ui->widgetPoses);
 	pushButtonRename->setObjectName("pushButtonRename");
 	pushButtonRename->setText("Rename");
 	horizontalLayoutButtons->addWidget(pushButtonRename);
 
 
-	QPushButton*pushButtonFrom = new QPushButton(ui->widgetPoses);
+	QPushButton*pushButtonFrom = OC_NEW QPushButton(ui->widgetPoses);
 	pushButtonFrom->setObjectName("pushButtonFrom");
 	pushButtonFrom->setText(from);
 	pushButtonFrom->setCheckable(true);
 	butGroupFrom->addButton(pushButtonFrom);
 	horizontalLayoutButtons->addWidget(pushButtonFrom);
-	QSpacerItem*horizontalSpacerButtons1 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+	QSpacerItem*horizontalSpacerButtons1 = OC_NEW QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 	horizontalLayoutButtons->addItem(horizontalSpacerButtons1);
-	QPushButton *pushButtonTo = new QPushButton(ui->widgetPoses);
+	QPushButton *pushButtonTo = OC_NEW QPushButton(ui->widgetPoses);
 	pushButtonTo->setObjectName("pushButtonTo");
 	pushButtonTo->setText(to);
 	pushButtonTo->setCheckable(true);

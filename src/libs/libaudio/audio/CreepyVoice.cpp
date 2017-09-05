@@ -9,7 +9,7 @@
 
 #include <QDebug>
 
-#include <qmath.h>
+#include <QtMath>
 
 struct CreepyBuffer {
 	int mSize;
@@ -17,7 +17,7 @@ struct CreepyBuffer {
 
 	CreepyBuffer(int size)
 		: mSize(size)
-		, mBuffer(new short[mSize])
+		, mBuffer(OC_NEW short[mSize])
 	{
 
 	}
@@ -102,7 +102,7 @@ CreepyBuffer *CreepyVoice::getFreeBuffer(int numsamples)
 		i++;
 	}
 	if(nullptr==ret) {
-		ret=new CreepyBuffer(numsamples);
+		ret=OC_NEW CreepyBuffer(numsamples);
 	}
 	if(nullptr!=ret) {
 		mBuffersInUse.append(ret);

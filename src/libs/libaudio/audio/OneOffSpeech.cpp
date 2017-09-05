@@ -9,8 +9,8 @@
 
 OneOffSpeech::OneOffSpeech(PortableID &id, QString words, QObject *parent)
 	: QObject(parent)
-	, esw(new CreepyVoice(id,this))
-	, as(new AudioStream(*esw,this))
+	, esw(OC_NEW CreepyVoice(id,this))
+	, as(OC_NEW AudioStream(*esw,this))
 {
 	if(!connect(esw,&CreepyVoice::periodComplete, this, &OneOffSpeech::onPeriodComplete, OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";

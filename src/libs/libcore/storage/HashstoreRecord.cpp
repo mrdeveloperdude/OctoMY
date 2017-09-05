@@ -2,6 +2,10 @@
 
 #include "Hashstore.hpp"
 
+
+#include "utility/Standard.hpp"
+
+
 #include <QDebug>
 
 #include <QRegularExpression>
@@ -10,14 +14,14 @@
 
 
 HashstoreRecord::HashstoreRecord(const HashstoreRecord &other)
-	: d_ptr(new HashstoreRecordPrivate(other.d_func()->m_storage,other.d_func()->m_key))
+	: d_ptr(OC_NEW HashstoreRecordPrivate(other.d_func()->m_storage,other.d_func()->m_key))
 {
 
 }
 
 
 HashstoreRecord::HashstoreRecord(Hashstore &storage, const QString key)
-	: d_ptr(new HashstoreRecordPrivate(storage, key))
+	: d_ptr(OC_NEW HashstoreRecordPrivate(storage, key))
 {
 }
 

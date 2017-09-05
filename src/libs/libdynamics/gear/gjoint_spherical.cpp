@@ -31,7 +31,7 @@
 #include "rmatrix3j.h"
 #include "liegroup_rmatrix3_ext.h"
 
-#include <qmath.h>
+#include <QtMath>
 
 static const gReal PI = (gReal)3.14159265358979;
 

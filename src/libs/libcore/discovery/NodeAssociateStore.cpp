@@ -65,7 +65,7 @@ void NodeAssociateStore::load()
 			QVariantMap map = doc.object().toVariantMap();
 			QVariantList peers=map["peers"].toList();
 			for(QVariantList::iterator b=peers.begin(), e=peers.end(); b!=e; ++b) {
-				QSharedPointer<NodeAssociate> peer=QSharedPointer<NodeAssociate>(new NodeAssociate((*b).toMap()));
+				QSharedPointer<NodeAssociate> peer=QSharedPointer<NodeAssociate>(OC_NEW NodeAssociate((*b).toMap()));
 				setParticipant(peer);
 			}
 			mReady=true;

@@ -6,7 +6,7 @@
 void TestCommsSession::test()
 {
 
-	QSharedPointer<Key> key(new Key(128));
+	QSharedPointer<Key> key(OC_NEW Key(128));
 	QVERIFY(nullptr!=key);
 
 	{

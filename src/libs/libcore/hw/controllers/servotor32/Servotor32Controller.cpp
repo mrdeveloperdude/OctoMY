@@ -14,7 +14,7 @@
 
 Servotor32Controller::Servotor32Controller(QObject *parent)
 	: IActuatorController("Servotor32", parent)
-	, mSerialInterface(new QSerialPort(this))
+	, mSerialInterface(OC_NEW QSerialPort(this))
 	, mReads(0)
 	, mWidget(nullptr)
 {
@@ -399,7 +399,7 @@ qreal Servotor32Controller::actuatorDefault(quint8 )
 QWidget *Servotor32Controller::configurationWidget()
 {
 	if(nullptr==mWidget) {
-		mWidget=new Servotor32ControllerWidget(nullptr);
+		mWidget=OC_NEW Servotor32ControllerWidget(nullptr);
 		if(nullptr!=mWidget) {
 			mWidget->configure(this);
 		}

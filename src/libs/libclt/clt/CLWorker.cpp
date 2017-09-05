@@ -56,7 +56,7 @@ void CLWorker::setInitPBO(const bool init)
 								if(!GLSPEWERROR) {
 									qDebug().noquote().nospace()<<"CLWORKER! Prepared CL buffer data ("<<width<<"x"<<height <<") x 4 = "<<utility::humanReadableSize(sz,2);
 									if(nullptr!=mCtx) {
-										mPboBuff = new cl::BufferGL(*mCtx, CL_MEM_WRITE_ONLY, mPbo);
+										mPboBuff = OC_NEW cl::BufferGL(*mCtx, CL_MEM_WRITE_ONLY, mPbo);
 										if(!GLSPEWERROR) {
 											qDebug().noquote().nospace()<<"CLWORKER! Created CL buffer ("<<width<<"x"<<height <<") ";
 										} else {
@@ -124,7 +124,7 @@ void CLWorker::setInitCLContext(const bool init)
 							qDebug()<<"CLWORKER! Creating the CL Context";
 							VECTOR_CLASS<cl::Device> devices;
 							devices.push_back(*mDev);
-							mCtx = new cl::Context(devices, properties, &clCallback);
+							mCtx = OC_NEW cl::Context(devices, properties, &clCallback);
 							if(nullptr==mCtx) {
 								qWarning()<<"CLWORKER! ERROR: Could not create CL context";
 							}

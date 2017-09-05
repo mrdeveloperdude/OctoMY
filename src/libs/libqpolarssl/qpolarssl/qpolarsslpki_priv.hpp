@@ -228,7 +228,7 @@ namespace qpolarssl {
 				QByteArray getPEMPubkey(){
 					size_t pemsize=20000;
 					QByteArray ba;
-					unsigned char *pembuf=new unsigned char [pemsize];
+					unsigned char *pembuf=new  unsigned char [pemsize];
 					memset(pembuf,0x0,pemsize);
 					int ret=0;
 					if((ret=mbedtls_pk_write_pubkey_pem( &ictx, pembuf, pemsize ))==0){

@@ -5,7 +5,7 @@
 
 PanicButton::PanicButton(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::PanicButton)
+	ui(OC_NEW Ui::PanicButton)
 {
 	ui->setupUi(this);
 

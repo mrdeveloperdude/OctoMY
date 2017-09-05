@@ -8,7 +8,7 @@
 
 WheeledMtlobeWidget::WheeledMtlobeWidget(QWidget *parent)
 	: MtlobeWidget(parent)
-	, ui(new Ui::WheeledMtlobeWidget)
+	, ui(OC_NEW Ui::WheeledMtlobeWidget)
 	, mWheeledMtlobe(nullptr)
 {
 	ui->setupUi(this);

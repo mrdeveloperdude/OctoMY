@@ -9,7 +9,7 @@
 
 PlanEditor::PlanEditor(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::PlanEditor)
+	, ui(OC_NEW Ui::PlanEditor)
 	, highlighter(0)
 {
 	ui->setupUi(this);
@@ -21,7 +21,7 @@ PlanEditor::PlanEditor(QWidget *parent)
 	}
 
 
-	highlighter = new PlanHighlighter(ui->plainTextEditPlan->document());
+	highlighter = OC_NEW PlanHighlighter(ui->plainTextEditPlan->document());
 	ui->plainTextEditPlan->setFocus();
 	saveTimer.setSingleShot(true);
 	saveTimer.setTimerType(Qt::PreciseTimer);

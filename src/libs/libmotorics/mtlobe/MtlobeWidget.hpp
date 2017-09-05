@@ -1,7 +1,11 @@
 #ifndef MTLOBEWIDGET_HPP
 #define MTLOBEWIDGET_HPP
 
+#include "utility/Standard.hpp"
+
 #include <QWidget>
+
+
 
 class MtlobeWidget : public QWidget
 {

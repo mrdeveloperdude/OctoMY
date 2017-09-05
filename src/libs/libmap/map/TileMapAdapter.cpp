@@ -24,7 +24,7 @@
 */
 
 #include "TileMapAdapter.hpp"
-#include <qmath.h>
+#include <QtMath>
 namespace qmapcontrol
 {
 	TileMapAdapter::TileMapAdapter(const QString& host, const QString& serverPath, int tilesize, int minZoom, int maxZoom)

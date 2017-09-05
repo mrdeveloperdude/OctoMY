@@ -9,7 +9,7 @@
 #include <QGridLayout>
 #include <QLabel>
 
-#include <qmath.h>
+#include <QtMath>
 
 /*!
  * \brief StressQR::stress will generate random data encoded into

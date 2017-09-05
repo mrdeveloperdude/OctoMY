@@ -391,7 +391,7 @@ void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp
 	quint16 publicPort=root["publicPort"].toInt();
 	*/
 	//qDebug()<<"FULL MAP IS: "<<root;
-	QSharedPointer<NodeAssociate> part(new NodeAssociate(root));
+	QSharedPointer<NodeAssociate> part(OC_NEW NodeAssociate(root));
 	qDebug()<<"GOT PARTICIPANT "<<part->name()<<"(type="<<DiscoveryTypeToString(part->type())<<", gender="<<part->gender()<<", id="<<part->id()<<")";
 	QString publicAddress="";
 	quint16 publicPort=0;

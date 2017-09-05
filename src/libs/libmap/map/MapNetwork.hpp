@@ -37,6 +37,7 @@
 #include <QPixmap>
 #include <QMutex>
 #include "ImageManager.hpp"
+#include "utility/Standard.hpp"
 
 /**
 		@author Kai Winter <kaiwinter@gmx.de>

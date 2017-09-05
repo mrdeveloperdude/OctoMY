@@ -42,7 +42,7 @@ namespace qmapcontrol
         //! constructor
         /*!
          * Sample of a correct initialization of a MapAdapter:<br/>
-         * MapAdapter* mapadapter = new WMSMapAdapter("www2.demis.nl", "/wms/wms.asp?wms=WorldMap[...]&BBOX=%1,%2,%3,%4&WIDTH=%5&HEIGHT=%5&TRANSPARENT=TRUE", 256);<br/>
+         * MapAdapter* mapadapter = OC_NEW WMSMapAdapter("www2.demis.nl", "/wms/wms.asp?wms=WorldMap[...]&BBOX=%1,%2,%3,%4&WIDTH=%5&HEIGHT=%5&TRANSPARENT=TRUE", 256);<br/>
          * The placeholders %1, %2, %3, %4 creates the bounding box, %5 is for the tilesize
          * The minZoom is 0 (means the whole world is visible). The maxZoom is 17 (means it is zoomed in to the max)
          * @param host The servers URL

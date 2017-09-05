@@ -14,7 +14,7 @@
 
 MtlobeManagerWidget::MtlobeManagerWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::MtlobeManagerWidget)
+	, ui(OC_NEW Ui::MtlobeManagerWidget)
 	, mController(nullptr)
 {
 	ui->setupUi(this);

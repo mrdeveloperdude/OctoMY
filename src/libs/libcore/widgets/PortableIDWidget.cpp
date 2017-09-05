@@ -5,7 +5,7 @@
 
 PortableIDWidget::PortableIDWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::PortableIDWidget)
+	, ui(OC_NEW Ui::PortableIDWidget)
 {
 	ui->setupUi(this);
 	configure(true,false);

@@ -53,12 +53,13 @@
 
 #include "WidgetHSI.h"
 #include "ui_WidgetHSI.h"
+#include "utility/Standard.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
 WidgetHSI::WidgetHSI( QWidget *parent ) :
 	QWidget( parent ),
-	m_ui( new Ui::WidgetHSI ),
+	m_ui( OC_NEW Ui::WidgetHSI ),
 	m_hsi ( 0 ),
 	m_layoutSq ( 0 )
 {
@@ -83,7 +84,7 @@ WidgetHSI::~WidgetHSI()
 
 void WidgetHSI::setupUi()
 {
-	m_layoutSq = new LayoutSquare( this );
+	m_layoutSq = OC_NEW LayoutSquare( this );
 
 	m_layoutSq->setContentsMargins( 0, 0, 0, 0 );
 	m_layoutSq->addWidget( m_ui->graphicsHSI );

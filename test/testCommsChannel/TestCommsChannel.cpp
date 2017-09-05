@@ -33,6 +33,6 @@ QSharedPointer<NodeAssociate> generatePart(QString name, QSharedPointer<Key> key
 	peerMap["name"]=name;
 	peerMap["gender"]="Male";
 	peerMap["trusts"]=QStringList();
-	QSharedPointer<NodeAssociate> part(new NodeAssociate(peerMap));
+	QSharedPointer<NodeAssociate> part(OC_NEW NodeAssociate(peerMap));
 	return part;
 }

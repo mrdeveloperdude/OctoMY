@@ -22,7 +22,7 @@ CLTool::CLTool()
 cl_context_properties *CLTool::generateProperties( const cl_platform_id platformID, QOpenGLContext *ctx )
 {
 
-	cl_context_properties *contextProps = new cl_context_properties[8]{ CL_CONTEXT_PLATFORM, (cl_context_properties) platformID,
+	cl_context_properties *contextProps = OC_NEW cl_context_properties[8]{ CL_CONTEXT_PLATFORM, (cl_context_properties) platformID,
 				   CL_GL_CONTEXT_KHR, 0,
 				   0, 0,
 				   0

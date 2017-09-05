@@ -6,7 +6,7 @@
 
 
 Hub::Hub(NodeLauncher<Hub> &launcher, QObject *parent)
-	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "hub", parent), ROLE_CONTROL, TYPE_HUB, parent)
+	: Node(OC_NEW AppContext(launcher.getOptions(), launcher.getEnvironment(), "hub", parent), ROLE_CONTROL, TYPE_HUB, parent)
 	, window(nullptr)
 {
 }
@@ -18,7 +18,7 @@ Hub::~Hub(){
 
 QWidget *Hub::showWindow(){
 	if(nullptr==window){
-		window=new HubWindow(this, nullptr);
+		window=OC_NEW HubWindow(this, nullptr);
 	}
 	if(nullptr!=window){
 		window->show();

@@ -25,7 +25,7 @@ const QString Settings::KEY_CUSTOM_SETTING_BASE="";  // SET TO EMPTY STRING TO A
 Settings::Settings(QString group, QString appName, QString appVersion, QObject *parent)
 	: QObject(parent)
 	, mGroup(group.trimmed())
-	, mSettings(new QSettings)
+	, mSettings(OC_NEW QSettings)
 	, mLastSync(0)
 {
 	OC_METHODGATE();

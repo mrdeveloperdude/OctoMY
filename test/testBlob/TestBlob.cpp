@@ -27,7 +27,7 @@ void TestBlob::testBlob()
 	for(int i=0; i<numBlob; ++i) {
 		//QByteArray aData=randomByteArray(qrand()%200000);
 		QByteArray aData=utility::randomJPEGByteArray(512,512,90);
-		SendingBlob *blob=new SendingBlob("blob_"+QString::number(i), i+1, chunkSize, aData, qrand()%30);
+		SendingBlob *blob=OC_NEW SendingBlob("blob_"+QString::number(i), i+1, chunkSize, aData, qrand()%30);
 		sendingBlobs<<blob;
 	}
 
@@ -128,7 +128,7 @@ private:
 
 public:
 	explicit CourierTesterBlob(CommsChannel &comms)
-		: CourierTester(new BlobCourier(comms),new BlobCourier(comms), "FROM", "TO  ")
+		: CourierTester(OC_NEW BlobCourier(comms),OC_NEW BlobCourier(comms), "FROM", "TO  ")
 		, pixA(nullptr,"Original image")
 		, pixB(nullptr,"Transport image")
 		, imageSize(300)

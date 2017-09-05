@@ -22,7 +22,7 @@ Q_DECLARE_METATYPE(QCameraInfo)
 
 Camera::Camera(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::Camera)
+	, ui(OC_NEW Ui::Camera)
 	, camera(0)
 	, imageCapture(0)
 	, mediaRecorder(0)
@@ -77,7 +77,7 @@ void Camera::setCamera(const QCameraInfo &ci)
 	}
 	else{
 		{
-			camera = new QCamera(ci);
+			camera = OC_NEW QCamera(ci);
 			if(0!=camera){
 				cameraInfo=ci;
 				qDebug()<<"Using camera: "<<cameraInfo;
@@ -98,7 +98,7 @@ void Camera::setCamera(const QCameraInfo &ci)
 				ui->stackedWidgetScreens->setCurrentWidget(ui->pageViewfinder);
 
 				if(camera->isCaptureModeSupported(QCamera::CaptureVideo)){
-					mediaRecorder = new QMediaRecorder(camera);
+					mediaRecorder = OC_NEW QMediaRecorder(camera);
 					if(0!=mediaRecorder){
 						//mediaRecorder->setOutputLocation(QUrl::fromLocalFile("/tmp/video.mp4"));
 						//audio codecs
@@ -157,7 +157,7 @@ void Camera::setCamera(const QCameraInfo &ci)
 					}
 				}
 				if(camera->isCaptureModeSupported(QCamera::CaptureStillImage)){
-					imageCapture = new QCameraImageCapture(camera);
+					imageCapture = OC_NEW QCameraImageCapture(camera);
 
 					if(0!=imageCapture){
 						//image codecs
@@ -199,7 +199,7 @@ void Camera::setCamera(const QCameraInfo &ci)
 					videoProbe->deleteLater();
 					videoProbe=0;
 				}
-				videoProbe = new QVideoProbe(this);
+				videoProbe = OC_NEW QVideoProbe(this);
 				if (videoProbe->setSource(camera)) {
 					// Probing succeeded, videoProbe->isValid() should be true.
 					if(!connect(videoProbe, SIGNAL(videoFrameProbed(QVideoFrame)), this, SLOT(detectBarcodes(QVideoFrame)))){
@@ -214,7 +214,7 @@ void Camera::setCamera(const QCameraInfo &ci)
 					poorVideoProbe->deleteLater();
 					poorVideoProbe=0;
 				}
-				poorVideoProbe=new PoorMansProbe(this);
+				poorVideoProbe=OC_NEW PoorMansProbe(this);
 				if (poorVideoProbe->setSource(camera)) {
 					// Probing succeeded, videoProbe->isValid() should be true.
 					if(!connect(poorVideoProbe, SIGNAL(videoFrameProbed(QVideoFrame)), this, SLOT(detectBarcodes(QVideoFrame)))){
@@ -533,7 +533,7 @@ void Camera::detectBarcodes(const QVideoFrame &frame)
 {
 	//qDebug()<<"GOT FRAME "<<frame;
 	if(0==zbar){
-		zbar=new ZBarScanner;
+		zbar=OC_NEW ZBarScanner;
 	}
 	if(0!=zbar){
 		zbar->scan(frame);
@@ -550,7 +550,7 @@ void Camera::onCameraDevicesChanged()
 	QIcon ic(":/icons/eye.svg") ;
 	ui->listWidgetCameras->clear();
 	foreach (const QCameraInfo &ci, cams) {
-		QListWidgetItem *item = new QListWidgetItem(ui->listWidgetCameras);
+		QListWidgetItem *item = OC_NEW QListWidgetItem(ui->listWidgetCameras);
 		item->setText( ci.description() );
 		item->setToolTip( ci.deviceName());
 		item->setIcon(ic);

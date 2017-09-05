@@ -15,8 +15,8 @@ HexySerial::HexySerial(QObject *parent)
 	, lastPos{0}
 	, dirtyMoveFlags(0xFFFFFFFF)
 {
-	serial = new QSerialPort(this);
-	settings = new SerialSettingsWidget;
+	serial = OC_NEW QSerialPort(this);
+	settings = OC_NEW SerialSettingsWidget;
 
 	if(!connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError)), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";

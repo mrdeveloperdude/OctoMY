@@ -90,7 +90,7 @@ template <typename T>
 SyncParameter<T> * SyncContext::registerParameter(const QString &name, const T &val)
 {
 	OC_METHODGATE();
-	SyncParameter<T> *param=new SyncParameter<T>(name, val, *this);
+	SyncParameter<T> *param=OC_NEW SyncParameter<T>(name, val, *this);
 	mParams.append(param);
 	ISyncParameter *iparam=param;
 	iparam->setHookSignals(*this,true);

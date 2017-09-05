@@ -14,7 +14,7 @@
 
 ArduMYControllerWidget::ArduMYControllerWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::ArduMYControllerWidget)
+	, ui(OC_NEW Ui::ArduMYControllerWidget)
 	, mController(nullptr)
 {
 	ui->setupUi(this);

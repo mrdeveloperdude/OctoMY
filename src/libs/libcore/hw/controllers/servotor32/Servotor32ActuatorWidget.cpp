@@ -1,6 +1,7 @@
 #include "Servotor32ActuatorWidget.hpp"
 #include "ui_Servotor32ActuatorWidget.h"
 
+#include "utility/Standard.hpp"
 
 #include <QDebug>
 
@@ -8,7 +9,7 @@ quint32 Servotor32ActuatorWidget::s_sid=0;
 
 Servotor32ActuatorWidget::Servotor32ActuatorWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::Servotor32ActuatorWidget)
+	, ui(OC_NEW Ui::Servotor32ActuatorWidget)
 	, m_id(s_sid++)
 	, m_low_trim(INITIAL_SERVO_TRIM)
 	, m_high_trim(INITIAL_SERVO_TRIM)

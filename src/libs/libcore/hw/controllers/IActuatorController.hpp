@@ -4,6 +4,7 @@
 #include "pose/Pose.hpp"
 #include "widgets/TryToggleState.hpp"
 
+#include "utility/Standard.hpp"
 
 #include <QObject>
 #include <QVariantMap>

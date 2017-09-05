@@ -1,5 +1,6 @@
 #include "CompasWidget.hpp"
 
+#include "utility/Standard.hpp"
 
 #include <QMouseEvent>
 #include <QOpenGLShaderProgram>
@@ -193,7 +194,7 @@ void CompasWidget::initializeGL()
 	initializeOpenGLFunctions();
 	glClearColor(0, 0, 0, m_transparent ? 0 : 1);
 
-	m_program = new QOpenGLShaderProgram;
+	m_program = OC_NEW QOpenGLShaderProgram;
 	m_program->addShaderFromSourceCode(QOpenGLShader::Vertex, m_core ? vertexShaderSourceCore : vertexShaderSource);
 	m_program->addShaderFromSourceCode(QOpenGLShader::Fragment, m_core ? fragmentShaderSourceCore : fragmentShaderSource);
 	m_program->bindAttributeLocation("vertex", 0);
@@ -233,11 +234,11 @@ void CompasWidget::initializeGL()
 
 
 	QSize sz=size();
-	m_fbo2 = new QOpenGLFramebufferObject(sz, QOpenGLFramebufferObject::CombinedDepthStencil);
+	m_fbo2 = OC_NEW QOpenGLFramebufferObject(sz, QOpenGLFramebufferObject::CombinedDepthStencil);
 
 
 
-	m_program2 = new QOpenGLShaderProgram;
+	m_program2 = OC_NEW QOpenGLShaderProgram;
 	m_program2->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderVideoStreamSource);
 	m_program2->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderVideoStreamSource);
 	m_program2->bindAttributeLocation("vertex", 0);
@@ -245,11 +246,11 @@ void CompasWidget::initializeGL()
 	m_program2->link();
 	m_matrixLoc = m_program->uniformLocation("matrix");
 
-	m_vao2 = new QOpenGLVertexArrayObject;
+	m_vao2 = OC_NEW QOpenGLVertexArrayObject;
 	m_vao2->create();
 	m_vao2->bind();
 
-	m_vbo2 = new QOpenGLBuffer;
+	m_vbo2 = OC_NEW QOpenGLBuffer;
 	m_vbo2->create();
 	m_vbo2->bind();
 
@@ -349,8 +350,8 @@ void CompasWidget::paintGL()
 	*/
 
 	QOpenGLFunctions *f = context()->functions();
-	const bool newFrameReady=true;
-	if (newFrameReady) {//new frame ready
+	const bool OC_NEWFrameReady=true;
+	if (OC_NEWFrameReady) {//new frame ready
 		f->glFrontFace(GL_CW); // because our cube's vertex data is such
 
 		f->glBindTexture(GL_TEXTURE_2D, m_fbo2->texture());

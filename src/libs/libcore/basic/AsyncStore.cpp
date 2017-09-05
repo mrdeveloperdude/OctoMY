@@ -5,9 +5,9 @@
  */
 
 #include "AsyncStore.hpp"
-
-
 #include "GenerateRunnable.hpp"
+
+#include "utility/Standard.hpp"
 
 #include <QThreadPool>
 #include <QDebug>
@@ -52,7 +52,7 @@ void AsyncStore::bootstrap(bool loadOnly, bool runInBackground)
 	else if(runInBackground) {
 		QThreadPool *tp=QThreadPool::globalInstance();
 		if(nullptr!=tp) {
-			const bool ret=tp->tryStart(new GenerateRunnable<AsyncStore>(*this));
+			const bool ret=tp->tryStart(OC_NEW GenerateRunnable<AsyncStore>(*this));
 			if(ret) {
 				qDebug()<<"ASYNCSTORE: Successfully started background thread";
 				return;

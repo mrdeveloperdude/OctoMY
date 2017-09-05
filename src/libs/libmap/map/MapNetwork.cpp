@@ -39,13 +39,13 @@ namespace qmapcontrol
 {
 	MapNetwork::MapNetwork(ImageManager* parent)
 		: parent(parent)
-		, http(new QNetworkAccessManager)
+		, http(OC_NEW QNetworkAccessManager)
 		, loaded(0)
 		, networkActive( false )
 		, cacheEnabled(false)
 	{
 		connect(http, SIGNAL(finished(QNetworkReply *)), this, SLOT(requestFinished(QNetworkReply *)));
-		http->setCookieJar(new QNetworkCookieJar(http));
+		http->setCookieJar(OC_NEW QNetworkCookieJar(http));
 
 	}
 

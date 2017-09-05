@@ -5,7 +5,7 @@
 
 NumberEntry::NumberEntry(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::NumberEntry)
+	, ui(OC_NEW Ui::NumberEntry)
 	, settings(nullptr)
 {
 	OC_METHODGATE();

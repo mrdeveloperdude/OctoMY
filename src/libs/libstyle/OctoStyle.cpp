@@ -17,6 +17,8 @@
 
 #include "OctoStylePrivate.hpp"
 
+#include "utility/Standard.hpp"
+
 #include <QtCore/qmath.h>
 #include <QtCore/QStringBuilder>
 
@@ -52,7 +54,7 @@
 
 #include <cstdio>
 
-#include <qmath.h>
+#include <QtMath>
 
 
 #define BEGIN_STYLE_PIXMAPCACHE(a) \
@@ -70,7 +72,7 @@
 			rect.setRect(0, 0, option->rect.width(), option->rect.height()); \
 			imageCache = QImage(option->rect.size(), QImage::Format_ARGB32_Premultiplied); \
 			imageCache.fill(0); \
-			p = new QPainter(&imageCache); \
+			p = OC_NEW QPainter(&imageCache); \
 		}
 
 #define END_STYLE_PIXMAPCACHE \
@@ -536,7 +538,7 @@ static void qt_fusion_draw_mdibutton(QPainter *painter, const QStyleOptionTitleB
 
 OctoStyle::OctoStyle()
 	: QCommonStyle(),
-	  d(new OctoStylePrivate(this))
+	  d(OC_NEW OctoStylePrivate(this))
 {
 	setObjectName(QLatin1String("OctoStyle"));
 
@@ -1687,7 +1689,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 					if (OctoProgressStyleAnimation *animation = qobject_cast<OctoProgressStyleAnimation*>(d->animation(widget))) {
 						step = animation->animationStep() % 22;
 					} else {
-						d->startAnimation(new OctoProgressStyleAnimation(d->animationFps(), const_cast<QWidget*>(widget)));
+						d->startAnimation(OC_NEW OctoProgressStyleAnimation(d->animationFps(), const_cast<QWidget*>(widget)));
 					}
 #endif
 					for (int x = progressBar.left() - rect.height(); x < rect.right() ; x += 22)

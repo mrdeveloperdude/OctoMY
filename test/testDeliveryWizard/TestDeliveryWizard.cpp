@@ -44,7 +44,7 @@ void TestDeliveryWizard::test(){
 	QCommandLineParser opts;
 	opts.setApplicationDescription("Test DeliveryWizard");
 	opts.addHelpOption();
-	AppContext *agentContext=new AppContext(opts, env, "testDeliveryWizard", this);
+	AppContext *agentContext=OC_NEW AppContext(opts, env, "testDeliveryWizard", this);
 	QVERIFY(nullptr!=agentContext);
 
 	Q_INIT_RESOURCE(icons);
@@ -52,9 +52,9 @@ void TestDeliveryWizard::test(){
 	Q_INIT_RESOURCE(qfi);
 	Q_INIT_RESOURCE(3d);
 
-	Node *testAgent=new Node(agentContext, DiscoveryRole::ROLE_AGENT, DiscoveryType::TYPE_AGENT, this);
+	Node *testAgent=OC_NEW Node(agentContext, DiscoveryRole::ROLE_AGENT, DiscoveryType::TYPE_AGENT, this);
 	QVERIFY(nullptr!=testAgent);
-	AgentDeliveryWizardTest *delWiz=new AgentDeliveryWizardTest();
+	AgentDeliveryWizardTest *delWiz=OC_NEW AgentDeliveryWizardTest();
 	QVERIFY(nullptr!=delWiz);
 	delWiz->configure(testAgent);
 	delWiz->show();

@@ -53,12 +53,13 @@
 
 #include "WidgetTC.h"
 #include "ui_WidgetTC.h"
+#include "utility/Standard.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
 WidgetTC::WidgetTC( QWidget *parent ) :
 	QWidget( parent ),
-	m_ui( new Ui::WidgetTC ),
+	m_ui( OC_NEW Ui::WidgetTC ),
 	m_tc ( 0 ),
 	m_layoutSq ( 0 )
 {
@@ -83,7 +84,7 @@ WidgetTC::~WidgetTC()
 
 void WidgetTC::setupUi()
 {
-	m_layoutSq = new LayoutSquare( this );
+	m_layoutSq = OC_NEW LayoutSquare( this );
 
 	m_layoutSq->setContentsMargins( 0, 0, 0, 0 );
 	m_layoutSq->addWidget( m_ui->graphicsTC );

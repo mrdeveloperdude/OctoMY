@@ -15,7 +15,7 @@
 
 NameMappingWidget::NameMappingWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::NameMappingWidget)
+	, ui(OC_NEW Ui::NameMappingWidget)
 	, mMapping(nullptr)
 	, mButGroupFrom(nullptr)
 	, mButGroupTo(nullptr)
@@ -30,8 +30,8 @@ NameMappingWidget::NameMappingWidget(QWidget *parent)
 	mHumble.setVerticalStretch(0);
 	mHumble.setRetainSizeWhenHidden(true);
 
-	mButGroupFrom=new QButtonGroup(ui->widgetNames);
-	mButGroupTo=new QButtonGroup(ui->widgetNames);
+	mButGroupFrom=OC_NEW QButtonGroup(ui->widgetNames);
+	mButGroupTo=OC_NEW QButtonGroup(ui->widgetNames);
 
 	connect(mButGroupFrom, static_cast<void(QButtonGroup::*)(QAbstractButton *, bool)>(&QButtonGroup::buttonToggled),
 	[=](QAbstractButton *button, bool) {
@@ -58,24 +58,24 @@ void bubba()
 {
 
 
-	scrollArea = new QScrollArea(NameMappingWidget);
+	scrollArea = OC_NEW QScrollArea(NameMappingWidget);
 	scrollArea->setObjectName(QStringLiteral("scrollArea"));
 	scrollArea->setWidgetResizable(true);
-	scrollAreaWidgetContents = new QWidget();
+	scrollAreaWidgetContents = OC_NEW QWidget();
 	scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
 	scrollAreaWidgetContents->setGeometry(QRect(0, 0, 380, 280));
-	verticalLayout_2 = new QVBoxLayout(scrollAreaWidgetContents);
+	verticalLayout_2 = OC_NEW QVBoxLayout(scrollAreaWidgetContents);
 	verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
-	widgetNames = new NameMappingView(scrollAreaWidgetContents);
+	widgetNames = OC_NEW NameMappingView(scrollAreaWidgetContents);
 	widgetNames->setObjectName(QStringLiteral("widgetNames"));
 	QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 	sizePolicy.setHorizontalStretch(0);
 	sizePolicy.setVerticalStretch(0);
 	sizePolicy.setHeightForWidth(widgetNames->sizePolicy().hasHeightForWidth());
 	widgetNames->setSizePolicy(sizePolicy);
-	gridLayout = new QGridLayout(widgetNames);
+	gridLayout = OC_NEW QGridLayout(widgetNames);
 	gridLayout->setObjectName(QStringLiteral("gridLayout"));
-	label_2 = new QLabel(widgetNames);
+	label_2 = OC_NEW QLabel(widgetNames);
 	label_2->setObjectName(QStringLiteral("label_2"));
 	label_2->setAlignment(Qt::AlignCenter);
 
@@ -92,18 +92,18 @@ void bubba()
 
 
 
-	horizontalLayoutRow1 = new QHBoxLayout();
+	horizontalLayoutRow1 = OC_NEW QHBoxLayout();
 	horizontalLayoutRow1->setObjectName(QStringLiteral("horizontalLayoutRow1"));
-	pushButtonFrom1 = new QPushButton(scrollAreaWidgetContents);
+	pushButtonFrom1 = OC_NEW QPushButton(scrollAreaWidgetContents);
 	pushButtonFrom1->setObjectName(QStringLiteral("pushButtonFrom1"));
 
 	horizontalLayoutRow1->addWidget(pushButtonFrom1);
 
-	horizontalSpacer1 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+	horizontalSpacer1 = OC_NEW QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
 	horizontalLayoutRow1->addItem(horizontalSpacer1);
 
-	pushButtonTo1 = new QPushButton(scrollAreaWidgetContents);
+	pushButtonTo1 = OC_NEW QPushButton(scrollAreaWidgetContents);
 	pushButtonTo1->setObjectName(QStringLiteral("pushButtonTo1"));
 
 	horizontalLayoutRow1->addWidget(pushButtonTo1);
@@ -111,18 +111,18 @@ void bubba()
 
 	verticalLayoutScrollArea->addLayout(horizontalLayoutRow1);
 
-	horizontalLayoutRow2 = new QHBoxLayout();
+	horizontalLayoutRow2 = OC_NEW QHBoxLayout();
 	horizontalLayoutRow2->setObjectName(QStringLiteral("horizontalLayoutRow2"));
-	pushButtonFrom2 = new QPushButton(scrollAreaWidgetContents);
+	pushButtonFrom2 = OC_NEW QPushButton(scrollAreaWidgetContents);
 	pushButtonFrom2->setObjectName(QStringLiteral("pushButtonFrom2"));
 
 	horizontalLayoutRow2->addWidget(pushButtonFrom2);
 
-	horizontalSpacer2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+	horizontalSpacer2 = OC_NEW QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
 	horizontalLayoutRow2->addItem(horizontalSpacer2);
 
-	pushButtonTo2 = new QPushButton(scrollAreaWidgetContents);
+	pushButtonTo2 = OC_NEW QPushButton(scrollAreaWidgetContents);
 	pushButtonTo2->setObjectName(QStringLiteral("pushButtonTo2"));
 
 	horizontalLayoutRow2->addWidget(pushButtonTo2);
@@ -130,7 +130,7 @@ void bubba()
 
 	verticalLayoutScrollArea->addLayout(horizontalLayoutRow2);
 
-	verticalSpacerBottom = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+	verticalSpacerBottom = OC_NEW QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
 	verticalLayoutScrollArea->addItem(verticalSpacerBottom);
 
@@ -154,7 +154,7 @@ void NameMappingWidget::configure(NameMapping &mapping, QStringList fromList,QSt
 
 	ui->verticalLayoutScrollAreaContent->removeWidget(ui->widgetNames);
 	ui->widgetNames->deleteLater();
-	ui->widgetNames = new NameMappingView(ui->scrollAreaWidgetContents);
+	ui->widgetNames = OC_NEW NameMappingView(ui->scrollAreaWidgetContents);
 	ui->widgetNames->setObjectName(QStringLiteral("widgetNames"));
 
 	{
@@ -166,13 +166,13 @@ void NameMappingWidget::configure(NameMapping &mapping, QStringList fromList,QSt
 		ui->widgetNames->setSizePolicy(sizePolicy);
 	}
 
-	mButGroupFrom=new QButtonGroup(ui->widgetNames);
-	mButGroupTo=new QButtonGroup(ui->widgetNames);
+	mButGroupFrom=OC_NEW QButtonGroup(ui->widgetNames);
+	mButGroupTo=OC_NEW QButtonGroup(ui->widgetNames);
 
 	//mButGroupFrom->setParent(ui->widgetNames);	mButGroupTo->setParent(ui->widgetNames);
 
 
-	QVBoxLayout *hLayout = new QVBoxLayout();
+	QVBoxLayout *hLayout = OC_NEW QVBoxLayout();
 
 
 	const quint32 fromSZ=mFromList.size();
@@ -192,9 +192,9 @@ void NameMappingWidget::configure(NameMapping &mapping, QStringList fromList,QSt
 
 	for(quint32 i=0; i<sz; ++i) {
 		qDebug()<<"---- ROW: "<<i<<"/"<<sz;
-		QHBoxLayout *row = new QHBoxLayout();
+		QHBoxLayout *row = OC_NEW QHBoxLayout();
 		{
-			QLabel *lab=new QLabel();
+			QLabel *lab=OC_NEW QLabel();
 			lab->setText(QString("#%1/%2").arg(i).arg(sz));
 			lab->setSizePolicy(mHumble);
 			lab->setMinimumSize(0,0);
@@ -204,7 +204,7 @@ void NameMappingWidget::configure(NameMapping &mapping, QStringList fromList,QSt
 		}
 
 		{
-			QPushButton *but = new QPushButton();
+			QPushButton *but = OC_NEW QPushButton();
 			but->setObjectName(QString("pushButtonFrom_%1").arg(i));
 			but->setCheckable(true);
 			but->setMinimumSize(0,0);
@@ -214,12 +214,12 @@ void NameMappingWidget::configure(NameMapping &mapping, QStringList fromList,QSt
 			row->addWidget(but);
 		}
 		{
-			QSpacerItem *spacer= new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+			QSpacerItem *spacer= OC_NEW QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 			row->addItem(spacer);
 
 		}
 		{
-			QPushButton *but= new QPushButton();
+			QPushButton *but= OC_NEW QPushButton();
 			but->setObjectName(QString("pushButtonTo_%1").arg(i));
 			but->setCheckable(true);
 			but->setMinimumSize(0,0);
@@ -277,7 +277,7 @@ void NameMappingWidget::configure(NameMapping &mapping, QStringList fromList,QSt
 		addToButton("",toIndex);
 	}
 
-	QSpacerItem *verticalSpacer = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
+	QSpacerItem *verticalSpacer = OC_NEW QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
 	hLayout->addItem(verticalSpacer);
 	hLayout->setParent(ui->widgetNames);
 	ui->verticalLayoutScrollAreaContent->addWidget(ui->widgetNames);

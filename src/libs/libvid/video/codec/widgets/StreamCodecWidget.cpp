@@ -1,13 +1,15 @@
 #include "StreamCodecWidget.hpp"
 #include "ui_StreamCodecWidget.h"
 
+#include "utility/Standard.hpp"
+
 #include <QImage>
 #include <QPixmap>
 
 
 StreamCodecWidget::StreamCodecWidget(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::StreamCodecWidget)
+	ui(OC_NEW Ui::StreamCodecWidget)
 {
 	ui->setupUi(this);
 }

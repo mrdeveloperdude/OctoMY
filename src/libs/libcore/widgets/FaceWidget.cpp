@@ -22,7 +22,7 @@
 
 FaceWidget::FaceWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::FaceWidget)
+	, ui(OC_NEW Ui::FaceWidget)
 	, mAgent(nullptr)
 {
 	ui->setupUi(this);

@@ -113,7 +113,7 @@ void TestCommsChannel::testCommsMock()
 	carrierA.mockSetOverrideSendingtimer(true);
 	chanA.start(na);
 	CommsSessionDirectory & sessDirA=chanA.sessions();
-	QSharedPointer<CommsSession> sessA=QSharedPointer<CommsSession> (new CommsSession(keyStoreA.localKey()));
+	QSharedPointer<CommsSession> sessA=QSharedPointer<CommsSession> (OC_NEW CommsSession(keyStoreA.localKey()));
 	auto sessAID=sessDirA.generateUnusedSessionID();
 	sessA->setLocalSessionID(sessAID);
 	sessA->setAddress(na);

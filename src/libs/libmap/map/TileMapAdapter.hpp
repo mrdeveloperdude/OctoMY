@@ -43,7 +43,7 @@ namespace qmapcontrol
         //! constructor
         /*!
          * Sample of a correct initialization of a MapAdapter:<br/>
-         * TileMapAdapter* ta = new TileMapAdapter("192.168.8.1", "/img/img_cache.php/%1/%2/%3.png", 256, 0,17);<br/>
+         * TileMapAdapter* ta = OC_NEW TileMapAdapter("192.168.8.1", "/img/img_cache.php/%1/%2/%3.png", 256, 0,17);<br/>
          * The placeholders %1, %2, %3 stands for x, y, z<br/>
          * The minZoom is 0 (means the whole world is visible). The maxZoom is 17 (means it is zoomed in to the max)
          * @param host The servers URL

@@ -27,7 +27,7 @@
 DiscoveryClient::DiscoveryClient(Node &node)
 	: QObject(&node)
 	, mLastZooPair(0)
-	, mClient(new qhttp::client::QHttpClient(this))
+	, mClient(OC_NEW qhttp::client::QHttpClient(this))
 	, mNode(node)
 	, mKey(mNode.keyStore().localKey())
 	  //, ourPubKey(node.getKeyStore().getLocalPublicKey())
@@ -203,7 +203,7 @@ static const QString zeroID=utility::toHash("", OCTOMY_KEY_HASH);
 void DiscoveryClient::registerPossibleParticipant(QVariantMap map)
 {
 	//qDebug()<<"REG";
-	QSharedPointer<Key> key=QSharedPointer<Key>(new Key(map["key"].toMap(),true));
+	QSharedPointer<Key> key=QSharedPointer<Key>(OC_NEW Key(map["key"].toMap(),true));
 	if(nullptr!=key) {
 		KeyStore  &keyStore=mNode.keyStore();
 		auto ourKey=keyStore.localKey();
@@ -224,12 +224,12 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map)
 					emit peers.peersChanged();
 					emit nodeDiscovered(partID);
 				} else {
-					part=QSharedPointer<NodeAssociate>(new NodeAssociate(map));
+					part=QSharedPointer<NodeAssociate>(OC_NEW NodeAssociate(map));
 					if(nullptr!=part) {
 						if(part->isValidForClient()) {
 							CommsChannel *comms=mNode.comms();
 							if(nullptr!=comms) {
-								DiscoveryCourier *courier=new DiscoveryCourier(part, *comms);
+								DiscoveryCourier *courier=OC_NEW DiscoveryCourier(part, *comms);
 								if(nullptr!=courier) {
 									peers.setParticipant(part);
 									courier->setDestination(part->id());

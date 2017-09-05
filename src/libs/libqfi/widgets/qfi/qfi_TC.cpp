@@ -58,6 +58,7 @@
 #include <math.h>
 
 #include "qfi_TC.h"
+#include "utility/Standard.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -95,7 +96,7 @@ qfi_TC::qfi_TC( QWidget *parent ) :
 {
 	reset();
 
-	m_scene = new QGraphicsScene( this );
+	m_scene = OC_NEW QGraphicsScene( this );
 	setScene( m_scene );
 
 	m_scene->clear();
@@ -189,39 +190,39 @@ void qfi_TC::init()
 
 	reset();
 
-	m_itemBack = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_back.svg" );
+	m_itemBack = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_back.svg" );
 	m_itemBack->setCacheMode( QGraphicsItem::NoCache );
 	m_itemBack->setZValue( m_backZ );
 	m_itemBack->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_scene->addItem( m_itemBack );
 
-	m_itemBall = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_ball.svg" );
+	m_itemBall = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_ball.svg" );
 	m_itemBall->setCacheMode( QGraphicsItem::NoCache );
 	m_itemBall->setZValue( m_ballZ );
 	m_itemBall->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_itemBall->setTransformOriginPoint( m_originalBallCtr );
 	m_scene->addItem( m_itemBall );
 
-	m_itemFace_1 = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_face_1.svg" );
+	m_itemFace_1 = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_face_1.svg" );
 	m_itemFace_1->setCacheMode( QGraphicsItem::NoCache );
 	m_itemFace_1->setZValue( m_face1Z );
 	m_itemFace_1->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_scene->addItem( m_itemFace_1 );
 
-	m_itemFace_2 = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_face_2.svg" );
+	m_itemFace_2 = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_face_2.svg" );
 	m_itemFace_2->setCacheMode( QGraphicsItem::NoCache );
 	m_itemFace_2->setZValue( m_face2Z );
 	m_itemFace_2->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_scene->addItem( m_itemFace_2 );
 
-	m_itemMark = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_mark.svg" );
+	m_itemMark = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_mark.svg" );
 	m_itemMark->setCacheMode( QGraphicsItem::NoCache );
 	m_itemMark->setZValue( m_markZ );
 	m_itemMark->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );
 	m_itemMark->setTransformOriginPoint( m_originalMarkCtr );
 	m_scene->addItem( m_itemMark );
 
-	m_itemCase = new QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_case.svg" );
+	m_itemCase = OC_NEW QGraphicsSvgItem( ":/qfi/"+m_theme+"/tc/tc_case.svg" );
 	m_itemCase->setCacheMode( QGraphicsItem::NoCache );
 	m_itemCase->setZValue( m_caseZ );
 	m_itemCase->setTransform( QTransform::fromScale( m_scaleX, m_scaleY ), true );

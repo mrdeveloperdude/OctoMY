@@ -16,7 +16,7 @@
 
 TriggerManagerWidget::TriggerManagerWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::TriggerManagerWidget)
+	, ui(OC_NEW Ui::TriggerManagerWidget)
 	, mTriggers(nullptr)
 {
 	ui->setupUi(this);
@@ -40,7 +40,7 @@ void TriggerManagerWidget::configure(TriggerSet &set)
 	}
 	for(Trigger *trigger:*mTriggers) {
 		if(nullptr!=trigger) {
-			TriggerWidget *widget=new TriggerWidget(nullptr);
+			TriggerWidget *widget=OC_NEW TriggerWidget(nullptr);
 			if(nullptr!=widget) {
 				widget->configure(trigger);
 				addWidget(*widget);

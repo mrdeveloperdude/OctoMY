@@ -1,12 +1,14 @@
 #ifndef GAITCONTROLLER_HPP
 #define GAITCONTROLLER_HPP
 
+#include "utility/Standard.hpp"
+
 #include <QtGlobal>
 #include <QDateTime>
 #include <QDebug>
 #include <QPainter>
 
-#include <qmath.h>
+#include <QtMath>
 
 template <typename T>
 class GaitController;
@@ -340,7 +342,7 @@ public:
 		for(int i=0; i<limbCount; ++i) {
 			T bx=sin(a)*s*0.7;
 			T by=cos(a)*s;
-			limbs[i]=new GaitLimb<T>(*this,i,bx,by,a<M_PI?M_PI/2:(M_PI*3/2));
+			limbs[i]=OC_NEW GaitLimb<T>(*this,i,bx,by,a<M_PI?M_PI/2:(M_PI*3/2));
 			a+=((M_PI*2.0)/(qreal)limbCount);
 		}
 	}

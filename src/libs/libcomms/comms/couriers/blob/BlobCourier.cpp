@@ -107,7 +107,7 @@ BlobFuture BlobCourier::submitSendingBlob(QString name, QByteArray data, qreal p
 			if(newTotalBlobSize>=MAX_BLOB_SIZE) {
 				future.fail("Too much data in transit");
 			} else {
-				SendingBlob *blob=new SendingBlob(name, id, BLOB_CHUNK_SIZE, data, qBound(0.1,probability,0.9));
+				SendingBlob *blob=OC_NEW SendingBlob(name, id, BLOB_CHUNK_SIZE, data, qBound(0.1,probability,0.9));
 				if(nullptr==blob) {
 					future.fail("Could not allocate blob");
 				} else {
@@ -378,12 +378,12 @@ quint16 BlobCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 
 			// Register new blob with newly received name and size
 			if(!mReceivingBlobsByName.contains(name)) {
-				blob=new ReceivingBlob(name, blobId, BLOB_CHUNK_SIZE, blobSize );
+				blob=OC_NEW ReceivingBlob(name, blobId, BLOB_CHUNK_SIZE, blobSize );
 				mReceivingBlobsByName.insert(name, blob);
 				mReceivingBlobsById.insert(blobId, blob);
 				//qDebug()<<"BLOB RX new rx blob registered: "<<name<<"="<<blobId;
 				// Append pending ack for received name
-				Ack *ack=new Ack(blobId);
+				Ack *ack=OC_NEW Ack(blobId);
 				if(nullptr!=ack) {
 					//qDebug()<<"BLOB RX appending pending ack for name";
 					mPendingAcks.append(ack);
@@ -442,7 +442,7 @@ quint16 BlobCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 					// Mark Chunk as read
 					chunk.setReceived(chunkBytesIn, chunkSize);
 					// Append pending ack for this chunk
-					Ack *ack=new Ack(blobId, chunkId);
+					Ack *ack=OC_NEW Ack(blobId, chunkId);
 					if(nullptr!=ack) {
 						//qDebug()<<"BLOB RX appending pending ack for chunk";
 						mPendingAcks.append(ack);

@@ -5,7 +5,7 @@
 
 HoveringMtlobeWidget::HoveringMtlobeWidget(QWidget *parent) :
 	MtlobeWidget(parent),
-	ui(new Ui::HoveringMtlobeWidget)
+	ui(OC_NEW Ui::HoveringMtlobeWidget)
 {
 	ui->setupUi(this);
 }

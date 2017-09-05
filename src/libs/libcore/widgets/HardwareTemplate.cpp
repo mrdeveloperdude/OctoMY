@@ -1,6 +1,6 @@
 #include "HardwareTemplate.hpp"
 
-
+#include "utility/Standard.hpp"
 
 QVector<HardwareTemplate *> HardwareTemplate::mTemplates;
 
@@ -69,7 +69,7 @@ QVector<HardwareTemplate *> HardwareTemplate::templates()
 			pmCar.setName(0,"Throttle");
 			pmCar.setName(1,"Steering");
 
-			HardwareTemplate *htCar=new HardwareTemplate("RC Car","General purpose RC Car with throttle and steering as only two inputs", ":/icons/wheels.svg", "/dev/ttyACM0","servotor32 2.1", pmCar);
+			HardwareTemplate *htCar=OC_NEW HardwareTemplate("RC Car","General purpose RC Car with throttle and steering as only two inputs", ":/icons/wheels.svg", "/dev/ttyACM0","servotor32 2.1", pmCar);
 			mTemplates<<htCar;
 		}
 		{
@@ -81,7 +81,7 @@ QVector<HardwareTemplate *> HardwareTemplate::templates()
 					index++;
 				}
 			}
-			HardwareTemplate *htHexapod=new HardwareTemplate("Hexapod","General purpose hexapod (legged robot with 6 legs) each leg with 3 servos totalling 18 inputs. Enumerated in leg first, limb second, clockwize, outward starting at leg directly to the right of 'head'.", ":/icons/hexapod.svg", "/dev/ttyACM0","servotor32 2.1", pmHexapod);
+			HardwareTemplate *htHexapod=OC_NEW HardwareTemplate("Hexapod","General purpose hexapod (legged robot with 6 legs) each leg with 3 servos totalling 18 inputs. Enumerated in leg first, limb second, clockwize, outward starting at leg directly to the right of 'head'.", ":/icons/hexapod.svg", "/dev/ttyACM0","servotor32 2.1", pmHexapod);
 			mTemplates<<htHexapod;
 		}
 	}

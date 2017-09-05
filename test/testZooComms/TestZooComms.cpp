@@ -19,10 +19,10 @@ void TestZooComms::test(){
 	opts.setApplicationDescription("Robust real-time communication and control software for robots");
 	opts.addHelpOption();
 
-	ZooServer server(new AppContext(opts, env, "zoo"), nullptr);
+	ZooServer server(OC_NEW AppContext(opts, env, "zoo"), nullptr);
 	server.start(port);
 
-	ZooClient *client=new ZooClient(this);
+	ZooClient *client=OC_NEW ZooClient(this);
 
 
 	QSignalSpy spyPut(client, SIGNAL(putNodeDone()));

@@ -1,11 +1,13 @@
 #include "QHexEditData.hpp"
 
+#include "utility/Standard.hpp"
+
 const qint64 QHexEditData::BUFFER_SIZE = 8192;
 
 QHexEditData::QHexEditData(QIODevice *iodevice, QObject *parent): QObject(parent), _iodevice(iodevice), _length(iodevice->size()), _devicelength(iodevice->size()), _lastpos(-1), _lastaction(QHexEditData::None)
 {
 	qRegisterMetaType<QHexEditData::ActionType>("QHexEditData::ActionType");
-	this->_modlist.append(new ModifiedItem(0, iodevice->size(), false));
+	this->_modlist.append(OC_NEW ModifiedItem(0, iodevice->size(), false));
 }
 
 QHexEditData::~QHexEditData()
@@ -77,13 +79,13 @@ QHexEditData *QHexEditData::fromDevice(QIODevice *iodevice)
 	if(!iodevice->isOpen())
 		iodevice->open(QFile::ReadWrite);
 
-	return new QHexEditData(iodevice);
+	return OC_NEW QHexEditData(iodevice);
 }
 
 QHexEditData *QHexEditData::fromFile(QString filename)
 {
 	QFileInfo fi(filename);
-	QFile* f = new QFile(filename);
+	QFile* f = OC_NEW QFile(filename);
 
 	if(fi.isWritable())
 		f->open(QFile::ReadWrite);
@@ -95,7 +97,7 @@ QHexEditData *QHexEditData::fromFile(QString filename)
 
 QHexEditData *QHexEditData::fromMemory(const QByteArray &ba)
 {
-	QBuffer* b = new QBuffer();
+	QBuffer* b = OC_NEW QBuffer();
 	b->setData(ba);
 	b->open(QFile::ReadOnly);
 
@@ -132,20 +134,20 @@ QHexEditData::InsertCommand* QHexEditData::internalInsert(qint64 pos, const QByt
 	if(!modoffset)
 	{
 		optimize = (act == QHexEditData::Insert) && this->canOptimize(act, pos);
-		newml.append(new ModifiedItem(buffoffset, ba.length()));
+		newml.append(OC_NEW ModifiedItem(buffoffset, ba.length()));
 	}
 	else
 	{
 		oldml.append(mi);
-		newml.append(new ModifiedItem(mi->pos(), modoffset, mi->modified()));
-		newml.append(new ModifiedItem(buffoffset, ba.length()));
-		newml.append(new ModifiedItem(mi->pos() + modoffset, mi->length() - modoffset, mi->modified()));
+		newml.append(OC_NEW ModifiedItem(mi->pos(), modoffset, mi->modified()));
+		newml.append(OC_NEW ModifiedItem(buffoffset, ba.length()));
+		newml.append(OC_NEW ModifiedItem(mi->pos() + modoffset, mi->length() - modoffset, mi->modified()));
 	}
 
 
 	this->_length += ba.length();
 	emit dataChanged(pos, ba.length(), act);
-	return new InsertCommand(i, pos, oldml, newml, this, optimize);
+	return OC_NEW InsertCommand(i, pos, oldml, newml, this, optimize);
 }
 
 QHexEditData::RemoveCommand* QHexEditData::internalRemove(qint64 pos, qint64 len, QHexEditData::ActionType act)
@@ -165,10 +167,10 @@ QHexEditData::RemoveCommand* QHexEditData::internalRemove(qint64 pos, qint64 len
 
 	if(remoffset)
 	{
-		newitems.append(new ModifiedItem(mi->pos(), remoffset, mi->modified()));
+		newitems.append(OC_NEW ModifiedItem(mi->pos(), remoffset, mi->modified()));
 
 		if((remoffset + remlength) < mi->length())
-			newitems.append(new ModifiedItem(mi->pos() + remoffset + remlength, mi->length() - remoffset - remlength, mi->modified()));
+			newitems.append(OC_NEW ModifiedItem(mi->pos() + remoffset + remlength, mi->length() - remoffset - remlength, mi->modified()));
 
 		remlength -= qMin(remlength, mi->length() - remoffset);
 		olditems.append(mi);
@@ -180,7 +182,7 @@ QHexEditData::RemoveCommand* QHexEditData::internalRemove(qint64 pos, qint64 len
 		mi = this->_modlist[i];
 
 		if(remlength < mi->length())
-			newitems.append(new ModifiedItem(mi->pos() + remlength, mi->length() - remlength, mi->modified()));
+			newitems.append(OC_NEW ModifiedItem(mi->pos() + remlength, mi->length() - remlength, mi->modified()));
 
 		remlength -= qMin(remlength, mi->length());
 		olditems.append(mi);
@@ -189,7 +191,7 @@ QHexEditData::RemoveCommand* QHexEditData::internalRemove(qint64 pos, qint64 len
 
 	this->_length -= len;
 	emit dataChanged(pos, len, act);
-	return new RemoveCommand(i - olditems.length(), pos, olditems, newitems, this);
+	return OC_NEW RemoveCommand(i - olditems.length(), pos, olditems, newitems, this);
 }
 
 bool QHexEditData::canOptimize(QHexEditData::ActionType at, qint64 pos)

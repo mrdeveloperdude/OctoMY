@@ -23,7 +23,7 @@ SensorInput::SensorInput(QObject *parent):
 		source->startUpdates();
 	}
 
-	QAccelerometer *a=new QAccelerometer(this);
+	QAccelerometer *a=OC_NEW QAccelerometer(this);
 	if(0!=a){
 		if(!a->connectToBackend()){
 			delete a;
@@ -40,7 +40,7 @@ SensorInput::SensorInput(QObject *parent):
 		}
 	}
 
-	QCompass *c=new QCompass(this);
+	QCompass *c=OC_NEW QCompass(this);
 	if(0!=c){
 		if(!c->connectToBackend()){
 			delete c;
@@ -57,7 +57,7 @@ SensorInput::SensorInput(QObject *parent):
 		}
 	}
 
-	QGyroscope*g=new QGyroscope(this);
+	QGyroscope*g=OC_NEW QGyroscope(this);
 	if(0!=g){
 		if(!g->connectToBackend()){
 			delete g;
@@ -171,7 +171,7 @@ void SensorInput::load()
 		QList<QByteArray> sensorsForTypes=QSensor::sensorsForType(type);
 		for(QList<QByteArray> ::iterator it2=sensorsForTypes.begin(),e2=sensorsForTypes.end();it2!=e2;++it2){
 			QByteArray &identifier=*it2;
-			QSensor* sensor = new QSensor(type, this);
+			QSensor* sensor = OC_NEW QSensor(type, this);
 			sensor->setIdentifier(identifier);
 			if (!sensor->connectToBackend()) {
 				//qDebug() << "    * Skipping inactive sensor " << identifier;

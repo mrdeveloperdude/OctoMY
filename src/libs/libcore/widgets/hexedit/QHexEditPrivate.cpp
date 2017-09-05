@@ -1,5 +1,8 @@
 #include "QHexEditPrivate.hpp"
 
+#include "utility/Standard.hpp"
+
+
 QString QHexEditPrivate::UNPRINTABLE_CHAR;
 const int QHexEditPrivate::CURSOR_BLINK_INTERVAL = 500; /* 0.5 sec */
 const qint64 QHexEditPrivate::BYTES_PER_LINE = 0x10;
@@ -41,7 +44,7 @@ QHexEditPrivate::QHexEditPrivate(QScrollArea *scrollarea, QScrollBar *vscrollbar
 	this->setAddressBackColor(QColor(0xF0, 0xF0, 0xFE, 0x20));
 	this->setAlternateLineColor(QColor(0xF0, 0xF0, 0xFE, 0x20));
 
-	this->_timBlink = new QTimer();
+	this->_timBlink = OC_NEW QTimer();
 	this->_timBlink->setInterval(QHexEditPrivate::CURSOR_BLINK_INTERVAL);
 
 	connect(this->_timBlink, SIGNAL(timeout()), this, SLOT(blinkCursor()));
@@ -171,10 +174,10 @@ void QHexEditPrivate::setData(QHexEditData *hexeditdata)
 	if(hexeditdata)
 	{
 		this->_hexeditdata = hexeditdata;
-		this->_reader = new QHexEditDataReader(hexeditdata, hexeditdata);
-		this->_writer = new QHexEditDataWriter(hexeditdata, hexeditdata);
-		this->_highlighter = new QHexEditHighlighter(hexeditdata, QColor(Qt::transparent), this->palette().color(QPalette::WindowText), this);
-		this->_comments = new QHexEditComments(this);
+		this->_reader = OC_NEW QHexEditDataReader(hexeditdata, hexeditdata);
+		this->_writer = OC_NEW QHexEditDataWriter(hexeditdata, hexeditdata);
+		this->_highlighter = OC_NEW QHexEditHighlighter(hexeditdata, QColor(Qt::transparent), this->palette().color(QPalette::WindowText), this);
+		this->_comments = OC_NEW QHexEditComments(this);
 
 		connect(hexeditdata, SIGNAL(dataChanged(qint64,qint64,QHexEditData::ActionType)), SLOT(hexEditDataChanged(qint64,qint64,QHexEditData::ActionType)));
 

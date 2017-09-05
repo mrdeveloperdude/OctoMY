@@ -38,7 +38,7 @@
 
 
 Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
-	: Node(new AppContext(launcher.getOptions(), launcher.getEnvironment(), "agent", parent), ROLE_AGENT, TYPE_AGENT, parent)
+	: Node(OC_NEW AppContext(launcher.getOptions(), launcher.getEnvironment(), "agent", parent), ROLE_AGENT, TYPE_AGENT, parent)
 	, mControls(*this)
 	, mAgentConfigStore(mContext->baseDir() + "/agent_config.json")
 	, mActuatorController(nullptr)
@@ -67,7 +67,7 @@ QWidget *Agent::showWindow()
 {
 	OC_METHODGATE();
 	if(nullptr==mWindow) {
-		mWindow=new AgentWindow(this, nullptr);
+		mWindow=OC_NEW AgentWindow(this, nullptr);
 	}
 	if(nullptr!=mWindow) {
 		mWindow->show();
@@ -120,7 +120,7 @@ void Agent::setCourierRegistration(QSharedPointer<NodeAssociate> assoc, bool reg
 			if(reg) {
 				qDebug()<<"REGISTERING COURIERS FOR " <<id;
 				QSet< QSharedPointer<Courier> > set;
-				Courier *courier=new SensorsCourier(*cc);
+				Courier *courier=OC_NEW SensorsCourier(*cc);
 				set<< QSharedPointer<Courier>(courier);
 				//QMap<const QString, QSet< QSharedPointer<Courier> > > mCourierSets;
 				mCourierSets.insert(id, set);

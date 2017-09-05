@@ -1,9 +1,12 @@
 #include "TestWidget.hpp"
+
+#include "utility/Standard.hpp"
+
 #include "ui_TestWidget.h"
 
 TestWidget::TestWidget(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::TestWidget)
+	ui(OC_NEW Ui::TestWidget)
 {
 	ui->setupUi(this);
 }

@@ -10,5 +10,5 @@ HelloCLWorkerFactory::HelloCLWorkerFactory()
 
 CLWorker * HelloCLWorkerFactory::createInstance(CLThreadManager &man, int index)
 {
-	return new HelloCLWorker(man, index);
+	return OC_NEW HelloCLWorker(man, index);
 }

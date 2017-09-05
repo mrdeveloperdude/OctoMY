@@ -7,11 +7,11 @@
 #include <QTimer>
 #include <QMouseEvent>
 
-#include <qmath.h>
+#include <QtMath>
 
 CarSteeringWidget::CarSteeringWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::CarSteeringWidget)
+	, ui(OC_NEW Ui::CarSteeringWidget)
 	, mLastMouseButton(false)
 	, mWheelRadius(1.0)
 	, mLastAngle(0.0)

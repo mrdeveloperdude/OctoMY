@@ -3,7 +3,7 @@
 
 LeggedMtlobeWidget::LeggedMtlobeWidget(QWidget *parent)
 	: MtlobeWidget(parent)
-	, ui(new Ui::LeggedMtlobeWidget)
+	, ui(OC_NEW Ui::LeggedMtlobeWidget)
 {
 	ui->setupUi(this);
 }

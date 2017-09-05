@@ -1,5 +1,7 @@
 #include "AudioStream.hpp"
 
+#include "utility/Standard.hpp"
+
 #include <QtCore>
 #include <QAudioDeviceInfo>
 #include <QAudioFormat>
@@ -36,7 +38,7 @@ void AudioStream::init(){
 	channelBytes = format.sampleSize() / 8;
 	sampleBytes = format.channelCount() * channelBytes;
 	secPerSample=1.0/(double)format.sampleRate();
-	out = new QAudioOutput(format, (QObject *)this);
+	out = OC_NEW QAudioOutput(format, (QObject *)this);
 	Q_ASSERT(0!=out);
 	connect(out, SIGNAL(notify()), this, SLOT(notified()));
 	connect(out, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChanged(QAudio::State)));
@@ -59,7 +61,7 @@ qint64 AudioStream::readData(char *data, const qint64 len){
 	if(samples>bufsz){
 		bufsz=samples;
 		delete[] buf;
-		buf=new double[bufsz];
+		buf=OC_NEW double[bufsz];
 	}
 	src.generate(samples,buf);
 	convertBuffer(samples,buf,data);

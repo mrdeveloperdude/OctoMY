@@ -15,7 +15,7 @@ HoveringMtlobe::HoveringMtlobe()
 QWidget *HoveringMtlobe::configurationWidget()
 {
 	if(nullptr==mConfigWidget) {
-		mConfigWidget=new HoveringMtlobeWidget();
+		mConfigWidget=OC_NEW HoveringMtlobeWidget();
 	}
 	return mConfigWidget;
 }

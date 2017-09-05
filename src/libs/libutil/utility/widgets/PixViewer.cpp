@@ -1,12 +1,14 @@
 #include "PixViewer.hpp"
 #include "ui_PixViewer.h"
 
+#include "utility/Standard.hpp"
+
 #include <QPixmap>
 #include <QImage>
 
 PixViewer::PixViewer(QWidget *parent, QString name) :
 	QWidget(parent),
-	ui(new Ui::PixViewer)
+	ui(OC_NEW Ui::PixViewer)
 {
 	ui->setupUi(this);
 	setWindowTitle(name);

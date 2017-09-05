@@ -38,7 +38,7 @@ QCameraInfo getBestCamera(){
 
 CameraPairingWidget::CameraPairingWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::CameraPairingWidget)
+	, ui(OC_NEW Ui::CameraPairingWidget)
 	, badgeDisableTime(0)
 	, scanDisableTime(0)
 	, mCamera(nullptr)
@@ -135,7 +135,7 @@ qDebug()<<"Keystore ready: "<<ok;
 void CameraPairingWidget::detectBarcodes(const QVideoFrame &frame)
 {
 	if(nullptr==mZbar){
-		mZbar=new ZBarScanner;
+		mZbar=OC_NEW ZBarScanner;
 	}
 	if(nullptr!=mZbar){
 		mZbar->scan(frame);
@@ -165,7 +165,7 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 		QCameraInfo ci=getBestCamera();
 		qDebug()<<"TRYING TO START CAMERA "<<ci;
 		if(!ci.isNull()){
-			mCamera = new QCamera(ci);
+			mCamera = OC_NEW QCamera(ci);
 			if(0!=mCamera){
 
 				if(!connect(mCamera,SIGNAL(statusChanged(QCamera::Status)),this,SLOT(cameraStatusUpdated(QCamera::Status)))){
@@ -179,9 +179,9 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 				mCamera->setViewfinderSettings(viewfinderSettings);
 				/*
 			if(0==viewfinder){
-				viewfinder=new QVideoWidget();
+				viewfinder=OC_NEW QVideoWidget();
 				delete ui->widgetCameraViewfinder->layout();
-				QGridLayout *gridLayout = new QGridLayout(ui->widgetCameraViewfinder);
+				QGridLayout *gridLayout = OC_NEW QGridLayout(ui->widgetCameraViewfinder);
 				gridLayout->addWidget(viewfinder, 0, 0);
 			}
 			*/
@@ -194,7 +194,7 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 					videoProbe->deleteLater();
 					videoProbe=0;
 				}
-				videoProbe = new QVideoProbe(this);
+				videoProbe = OC_NEW QVideoProbe(this);
 				if (videoProbe->setSource(camera)) {
 					// Probing succeeded, videoProbe->isValid() should be true.
 					if(!connect(videoProbe, SIGNAL(videoFrameProbed(QVideoFrame)), this, SLOT(detectBarcodes(QVideoFrame)))){
@@ -211,7 +211,7 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 				poorVideoProbe->deleteLater();
 				poorVideoProbe=0;
 			}
-			poorVideoProbe=new PoorMansProbe(this);
+			poorVideoProbe=OC_NEW PoorMansProbe(this);
 			if (poorVideoProbe->setSource(camera)) {
 				// Probing succeeded, videoProbe->isValid() should be true.
 				if(!connect(poorVideoProbe, SIGNAL(videoFrameProbed(QVideoFrame)), this, SLOT(detectBarcodes(QVideoFrame)))){

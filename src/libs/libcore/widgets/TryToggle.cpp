@@ -7,7 +7,7 @@
 TryToggle::TryToggle(QWidget *parent) :
 	QWidget(parent)
 	, mState(OFF)
-	, ui(new Ui::TryToggle)
+	, ui(OC_NEW Ui::TryToggle)
 {
 	ui->setupUi(this);
 	mTimer.setInterval(100);

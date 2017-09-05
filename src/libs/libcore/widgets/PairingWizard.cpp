@@ -32,7 +32,7 @@
 
 PairingWizard::PairingWizard(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::PairingWizard)
+	, ui(OC_NEW Ui::PairingWizard)
 	, mNode(nullptr)
 	, mList(nullptr)
 	, mDelegate (nullptr)
@@ -113,11 +113,11 @@ void PairingWizard::configure(Node *n)
 			ui->widgetMyCertificate->setPortableID(pid);
 			if(nullptr==ui->listViewNodes->model()) {
 
-				mList=new PairingListModel(mNode->peers(),type,*this);
+				mList=OC_NEW PairingListModel(mNode->peers(),type,*this);
 				ui->listViewNodes->setModel(mList);
 
 				if(nullptr==mDelegate) {
-					mDelegate=new PairingEditButtonDelegate(*this);
+					mDelegate=OC_NEW PairingEditButtonDelegate(*this);
 				}
 				ui->listViewNodes->setItemDelegate(mDelegate);
 			}

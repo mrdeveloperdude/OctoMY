@@ -21,7 +21,7 @@ void AgentControls::registerClient(QString fullID)
 {
 	OC_METHODGATE();
 	if(!mCouriers.contains(fullID) ) {
-		AgentCourierSet *set=new AgentCourierSet (fullID, mAgent);
+		AgentCourierSet *set=OC_NEW AgentCourierSet (fullID, mAgent);
 		mCouriers.insert(fullID, set);
 	} else {
 		qWarning()<<"ERROR: Trying to register same client twice: "<<fullID;

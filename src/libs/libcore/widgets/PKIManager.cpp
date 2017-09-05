@@ -3,11 +3,13 @@
 
 #include "qpolarssl/qpolarsslpki.hpp"
 
+#include "utility/Standard.hpp"
+
 #include <QDebug>
 
 PKIManager::PKIManager(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::PKIManager)
+	ui(OC_NEW Ui::PKIManager)
 {
 	ui->setupUi(this);
 }

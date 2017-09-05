@@ -15,7 +15,7 @@ TrackedMtlobe::TrackedMtlobe()
 QWidget *TrackedMtlobe::configurationWidget()
 {
 	if(nullptr==mConfigWidget) {
-		mConfigWidget=new TrackedMtlobeWidget();
+		mConfigWidget=OC_NEW TrackedMtlobeWidget();
 	}
 	return mConfigWidget;
 }

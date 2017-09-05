@@ -21,9 +21,9 @@ void TestDiscovery::test(){
 	opts.setApplicationDescription("Test Discovery");
 	opts.addHelpOption();
 
-	AppContext *zooContext=new AppContext(opts, env, "testDiscoveryZoo", this);
-	AppContext *agentContext=new AppContext(opts, env, "testDiscoveryAgent", this);
-	AppContext *remoteContext=new AppContext(opts, env, "testDiscoveryRemote", this);
+	AppContext *zooContext=OC_NEW AppContext(opts, env, "testDiscoveryZoo", this);
+	AppContext *agentContext=OC_NEW AppContext(opts, env, "testDiscoveryAgent", this);
+	AppContext *remoteContext=OC_NEW AppContext(opts, env, "testDiscoveryRemote", this);
 
 	QSignalSpy *spyAgentKeyReady=nullptr;
 	QSignalSpy *spyRemoteKeyReady=nullptr;
@@ -31,7 +31,7 @@ void TestDiscovery::test(){
 	if(nullptr!=zooContext){
 		qDebug()<<"ZOO -----------------------";
 		QString port="8123";
-		ZooServer *zooServer=new ZooServer (zooContext, this);
+		ZooServer *zooServer=OC_NEW ZooServer (zooContext, this);
 		QVERIFY(nullptr!=zooServer);
 		zooServer->start(port);
 		qDebug()<<"APP DIR: "<<QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
@@ -41,11 +41,11 @@ void TestDiscovery::test(){
 
 
 		qDebug()<<"AGENT -----------------------";
-		Node *testAgent=new Node(agentContext, DiscoveryRole::ROLE_AGENT, DiscoveryType::TYPE_AGENT, this);
+		Node *testAgent=OC_NEW Node(agentContext, DiscoveryRole::ROLE_AGENT, DiscoveryType::TYPE_AGENT, this);
 		QVERIFY(nullptr!=testAgent);
 		KeyStore *agentKeystore=&testAgent->keyStore();
 		QVERIFY(nullptr!=agentKeystore);
-		spyAgentKeyReady=new QSignalSpy(agentKeystore,SIGNAL(keystoreReady(bool)));
+		spyAgentKeyReady=OC_NEW QSignalSpy(agentKeystore,SIGNAL(keystoreReady(bool)));
 		bool conret1=connect(agentKeystore, &KeyStore::storeReady, [=](bool ok){
 			qDebug()<<"AGENT KEYSTORE READY "<<ok;
 			QVERIFY(agentKeystore->isReady());
@@ -57,11 +57,11 @@ void TestDiscovery::test(){
 
 	if(nullptr!=remoteContext){
 		qDebug()<<"REMOTE -----------------------";
-		Node *testRemote=new Node(remoteContext, DiscoveryRole::ROLE_CONTROL, DiscoveryType::TYPE_REMOTE, this);
+		Node *testRemote=OC_NEW Node(remoteContext, DiscoveryRole::ROLE_CONTROL, DiscoveryType::TYPE_REMOTE, this);
 		QVERIFY(nullptr!=testRemote);
 		KeyStore *remoteKeystore=&testRemote->keyStore();
 		QVERIFY(nullptr!=remoteKeystore);
-		spyRemoteKeyReady=new QSignalSpy(remoteKeystore, SIGNAL(storeReady(bool)));
+		spyRemoteKeyReady=OC_NEW QSignalSpy(remoteKeystore, SIGNAL(storeReady(bool)));
 		bool conret2=connect(remoteKeystore, &KeyStore::storeReady, [=](){
 			qDebug()<<"REMOTE KEYSTORE READY";
 			QVERIFY(remoteKeystore->isReady());

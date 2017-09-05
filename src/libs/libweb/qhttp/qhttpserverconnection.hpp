@@ -23,61 +23,61 @@ namespace server {
  */
 class QHTTP_API QHttpConnection : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    virtual        ~QHttpConnection();
+	virtual        ~QHttpConnection();
 
-    /** set an optional timer event to close the connection. */
-    void            setTimeOut(quint32 miliSeconds);
+	/** set an optional timer event to close the connection. */
+	void            setTimeOut(quint32 miliSeconds);
 
-    /** forcefully kills (closes) a connection. */
-    void            killConnection();
+	/** forcefully kills (closes) a connection. */
+	void            killConnection();
 
-    /** optionally set a handler for connection class.
-     * @note if you set this handler, the newRequest() signal won't be emitted.
-     */
-    void            onHandler(const TServerHandler& handler);
+	/** optionally set a handler for connection class.
+	 * @note if you set this handler, the newRequest() signal won't be emitted.
+	 */
+	void            onHandler(const TServerHandler& handler);
 
-    /** returns the backend type of the connection. */
-    TBackend        backendType() const;
+	/** returns the backend type of the connection. */
+	TBackend        backendType() const;
 
-    /** returns connected socket if the backend() == ETcpSocket. */
-    QTcpSocket*     tcpSocket() const;
+	/** returns connected socket if the backend() == ETcpSocket. */
+	QTcpSocket*     tcpSocket() const;
 
-    /** returns connected socket if the backend() == ELocalSocket. */
-    QLocalSocket*   localSocket() const;
+	/** returns connected socket if the backend() == ELocalSocket. */
+	QLocalSocket*   localSocket() const;
 
-    /** creates a new QHttpConnection based on arguments. */
-    static
-    QHttpConnection* create(qintptr sokDescriptor, TBackend backendType, QObject* parent) {
-        QHttpConnection* conn = new QHttpConnection(parent);
-        conn->setSocketDescriptor(sokDescriptor, backendType);
-        return conn;
-    }
+	/** creates a new QHttpConnection based on arguments. */
+	static
+	QHttpConnection* create(qintptr sokDescriptor, TBackend backendType, QObject* parent) {
+		QHttpConnection* conn = new QHttpConnection(parent);
+		conn->setSocketDescriptor(sokDescriptor, backendType);
+		return conn;
+	}
 
 signals:
-    /** emitted when a pair of HTTP request and response are ready to interact.
-     * @param req incoming request by the client.
-     * @param res outgoing response to the client.
-     */
-    void            newRequest(QHttpRequest* req, QHttpResponse* res);
+	/** emitted when a pair of HTTP request and response are ready to interact.
+	 * @param req incoming request by the client.
+	 * @param res outgoing response to the client.
+	 */
+	void            newRequest(QHttpRequest* req, QHttpResponse* res);
 
-    /** emitted when the tcp/local socket, disconnects. */
-    void            disconnected();
+	/** emitted when the tcp/local socket, disconnects. */
+	void            disconnected();
 
 protected:
-    explicit        QHttpConnection(QObject *parent);
-    explicit        QHttpConnection(QHttpConnectionPrivate&, QObject *);
+	explicit        QHttpConnection(QObject *parent);
+	explicit        QHttpConnection(QHttpConnectionPrivate&, QObject *);
 
-    void            setSocketDescriptor(qintptr sokDescriptor, TBackend backendType);
-    void            timerEvent(QTimerEvent*) override;
+	void            setSocketDescriptor(qintptr sokDescriptor, TBackend backendType);
+	void            timerEvent(QTimerEvent*) override;
 
-    Q_DISABLE_COPY(QHttpConnection)
-    Q_DECLARE_PRIVATE(QHttpConnection)
-    QScopedPointer<QHttpConnectionPrivate>    d_ptr;
+	Q_DISABLE_COPY(QHttpConnection)
+	Q_DECLARE_PRIVATE(QHttpConnection)
+	QScopedPointer<QHttpConnectionPrivate>    d_ptr;
 
-    friend class    QHttpServer;
+	friend class    QHttpServer;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -12,7 +12,7 @@
 
 RealtimeValuesWidget::RealtimeValuesWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::RealtimeValuesWidget)
+	, ui(OC_NEW Ui::RealtimeValuesWidget)
 	, agent(nullptr)
 {
 	ui->setupUi(this);

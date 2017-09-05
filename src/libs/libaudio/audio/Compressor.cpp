@@ -1,6 +1,6 @@
 #include "Compressor.hpp"
 
-#include <qmath.h>
+#include <QtMath>
 
 Compressor::Compressor(
 	double  threshold

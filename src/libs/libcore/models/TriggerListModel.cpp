@@ -1,5 +1,7 @@
 #include "TriggerListModel.hpp"
 
+#include "utility/Standard.hpp"
+
 // TODO: This turned out to not be very useful. Remove it if it still is the case when you read this after 2017!
 
 TriggerListModel::TriggerListModel(QObject *parent)
@@ -48,7 +50,7 @@ bool TriggerListModel::insertRows(int row, int count, const QModelIndex &parent)
 {
 	beginInsertRows(parent, row, row + count - 1);
 	for(int i=0;i<count;++i){
-		mTriggers<<new Trigger();
+		mTriggers<<OC_NEW Trigger();
 	}
 	endInsertRows();
 	return false;

@@ -1,5 +1,7 @@
 #include "QHexEditDataWriter.hpp"
 
+#include "utility/Standard.hpp"
+
 QHexEditDataWriter::QHexEditDataWriter(QHexEditData *hexeditdata, QObject *parent): QObject(parent), _hexeditdata(hexeditdata)
 {
 
@@ -62,7 +64,7 @@ void QHexEditDataWriter::replace(qint64 pos, qint64 len, const QByteArray &ba)
 	if(pos > this->_hexeditdata->length() || ba.isEmpty() || !this->_hexeditdata->modifiedItem(pos))
 		return;
 
-	this->_hexeditdata->_undostack.push(new QHexEditData::ReplaceCommand(pos, len, ba, this->_hexeditdata));
+	this->_hexeditdata->_undostack.push(OC_NEW QHexEditData::ReplaceCommand(pos, len, ba, this->_hexeditdata));
 	this->_hexeditdata->recordAction(QHexEditData::Replace, pos + ba.length());
 }
 

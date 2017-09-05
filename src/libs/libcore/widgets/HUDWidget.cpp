@@ -6,7 +6,7 @@
 
 HUDWidget::HUDWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::HUDWidget)
+	, ui(OC_NEW Ui::HUDWidget)
 	, startTime(QDateTime::currentMSecsSinceEpoch())
 {
 	ui->setupUi(this);

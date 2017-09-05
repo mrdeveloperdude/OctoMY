@@ -5,7 +5,7 @@
 
 SerialDeviceListModel::SerialDeviceListModel(QObject *parent)
 	: QAbstractListModel(parent)
-	, mList(new SerialList(this))
+	, mList(OC_NEW SerialList(this))
 {
 	//qDebug()<<" ctor";
 	if(!connect(mList, &SerialList::serialDevicesChanged, this, &SerialDeviceListModel::onSerialDevicesChanged, OC_CONTYPE)){

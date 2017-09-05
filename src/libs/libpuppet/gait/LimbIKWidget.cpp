@@ -1,10 +1,13 @@
 #include "LimbIKWidget.hpp"
 
+#include "utility/Standard.hpp"
+
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPointF>
 
-#include <qmath.h>
+#include <QtMath>
+
 
 class LimbIKWidget;
 
@@ -111,7 +114,7 @@ struct IKLimb{
 
 LimbIKWidget::LimbIKWidget(QWidget *parent)
 	: QWidget(parent)
-	, limb(new IKLimb(this))
+	, limb(OC_NEW IKLimb(this))
 {
 	setMouseTracking(true);
 }

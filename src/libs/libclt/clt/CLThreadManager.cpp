@@ -19,7 +19,7 @@ CLThreadManager::CLThreadManager(CLWorkerFactory &factory, CLGLInteropConfig con
 	mThreads.reserve(sz);
 	for (size_t i = 0; i < sz; ++i) {
 		CLWorker *worker=mFactory.createInstance(*this, i);
-		QThread *thread=new QThread(this);
+		QThread *thread=OC_NEW QThread(this);
 		if(nullptr==thread) {
 			qWarning()<<"ERROR: Thread was null";
 			continue;

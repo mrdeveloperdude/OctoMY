@@ -8,7 +8,7 @@
 
 Key::Key() Q_DECL_NOTHROW
 :
-d_ptr(new KeyPrivate())
+d_ptr(OC_NEW KeyPrivate())
 , mInitialized(false)
 {
 	OC_METHODGATE();
@@ -24,7 +24,7 @@ d_ptr(new KeyPrivate())
 
 
 Key::Key( QVariantMap map, bool isPublic )
-	: d_ptr(new KeyPrivate(map, isPublic))
+	: d_ptr(OC_NEW KeyPrivate(map, isPublic))
 	, mInitialized(false)
 {
 	OC_METHODGATE();
@@ -39,7 +39,7 @@ Key::Key( QVariantMap map, bool isPublic )
 
 
 Key::Key( QString key, bool isPublic )
-	: d_ptr(new KeyPrivate(key, isPublic))
+	: d_ptr(OC_NEW KeyPrivate(key, isPublic))
 {
 	OC_METHODGATE();
 	//	qDebug()<<"Key::Key( QString key, bool isPublic):"<<key<<isPublic;
@@ -54,7 +54,7 @@ Key::Key( QString key, bool isPublic )
 
 
 Key::Key( quint32 bits )
-	: d_ptr(new KeyPrivate(bits))
+	: d_ptr(OC_NEW KeyPrivate(bits))
 	, mInitialized(false)
 {
 	OC_METHODGATE();
@@ -86,7 +86,7 @@ Key::Key(KeyPrivate &dd)
 
 
 Key::Key(const Key &other)
-	: d_ptr(new KeyPrivate(
+	: d_ptr(OC_NEW KeyPrivate(
 				(!other.d_func()->mKey.isEmpty())
 				?
 				(other.d_func()->mKey)
@@ -375,7 +375,7 @@ void Key::detach()
 	OC_ASSERT(nullptr!=d);
 		if ( d->mRefCount > 1 ) {
 		d->mRefCount--;
-		d = new KeyPrivate( *d );
+		d = OC_NEW KeyPrivate( *d );
 		d->mRefCount = 1;
 	}
 }

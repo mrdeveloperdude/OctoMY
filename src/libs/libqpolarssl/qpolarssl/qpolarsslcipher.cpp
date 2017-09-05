@@ -29,7 +29,7 @@ Cipher::supportsAesNi() {
 Cipher::Cipher(TCipher t) : d_ptr(new priv::Cipher(Conversion::toPolar(t))) {
 }
 
-Cipher::Cipher(const char* name) : d_ptr(new priv::Cipher(name)) {
+Cipher::Cipher(const char* name) : d_ptr(new  priv::Cipher(name)) {
 }
 
 Cipher::~Cipher() {

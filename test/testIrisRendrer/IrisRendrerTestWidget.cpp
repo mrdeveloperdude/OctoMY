@@ -9,20 +9,20 @@
 
 IrisRendrerTestWidget::IrisRendrerTestWidget(QWidget *parent, QString name) :
 	QWidget(parent),
-	ui(new Ui::IrisRendrerTestWidget)
+	ui(OC_NEW Ui::IrisRendrerTestWidget)
 {
 	ui->setupUi(this);
 	setWindowTitle(name);
 
-	Settings *s=new Settings("test","IrisRendrerTestWidget","1.0", this);
+	Settings *s=OC_NEW Settings("test","IrisRendrerTestWidget","1.0", this);
 	for(int row=0; row<20; ++row) {
 		QString name("val"+QString::number(row));
 		QString *namep=&name;
-		QLabel *label = new QLabel(ui->widget);
+		QLabel *label = OC_NEW QLabel(ui->widget);
 		label->setText(name);
 		ui->gridLayout_2->addWidget(label, row, 0, 1, 1);
 
-		QSlider *horizontalSlider = new QSlider(ui->widget);
+		QSlider *horizontalSlider = OC_NEW QSlider(ui->widget);
 		mSliders.append(horizontalSlider);
 		horizontalSlider->setOrientation(Qt::Horizontal);
 		ui->gridLayout_2->addWidget(horizontalSlider, row, 1, 1, 1);
