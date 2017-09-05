@@ -2,9 +2,9 @@
 #define CLWORKER_HPP
 
 #include "glt/IncludeOpenGL.hpp"
-#include "opencl/CLInclude.hpp"
+#include "clt/CLInclude.hpp"
 #include "glt/GLContext.hpp"
-
+#include "CLTool.hpp"
 
 #include <QObject>
 #include <QDebug>
@@ -54,6 +54,8 @@ private:
 	cl::Context *mCtx;
 	bool mIsInited;
 
+	CLTool mCL;
+
 
 public:
 	explicit CLWorker(CLThreadManager &man, int index, QObject *parent = nullptr);
@@ -96,9 +98,9 @@ public slots:
 	//////////////////////////////////////////
 
 public:
-	virtual void preProcessImp();
-	virtual void processImp();
-	virtual void postProcessImp();
+	virtual void preProcessImp()=0;
+	virtual void processImp()=0;
+	virtual void postProcessImp()=0;
 
 signals:
 

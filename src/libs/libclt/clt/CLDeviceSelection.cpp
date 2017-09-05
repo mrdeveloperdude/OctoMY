@@ -4,6 +4,8 @@
 
 #include <QDebug>
 
+
+
 CLDeviceSelection::CLDeviceSelection(const QString selectString, bool allowGPU, bool allowCPU, bool mustSupportGLInterop)
 {
 	// Get all platforms available to us on this system
@@ -21,34 +23,35 @@ CLDeviceSelection::CLDeviceSelection(const QString selectString, bool allowGPU, 
 		for (size_t j = 0; j < devices.size(); ++j) {
 			bool selected = false;
 			const cl_device_type type=devices[j].getInfo<CL_DEVICE_TYPE>();
-
+			bool interop_ok=false;
 			if(mustSupportGLInterop) {
 				const cl::STRING_CLASS extStd=devices[j].getInfo<CL_DEVICE_EXTENSIONS>();
 				const QString extensions=QString::fromStdString(extStd);
 				qDebug()<<"EXTENSIONS: "<<extensions;
 				if(extensions.contains("cl_khr_gl_sharing")) {
-					qDebug()<<" INTEROP SUPPORTED!!!!!!!";
+					interop_ok=true;
 				}
+			} else {
+				interop_ok=true;
 			}
 
-
-
-
-
-			if ((allowGPU && (type == CL_DEVICE_TYPE_GPU)) || (allowCPU && (type == CL_DEVICE_TYPE_CPU))) {
-				if (selectString.length() == 0) {
-					selected = true;
-				} else {
-					if (selectString.length() <= selectIndex) {
-						qWarning()<< "OpenCL select devices string (opencl.devices.select) has the wrong length";
-						exit(1);
-					}
-
-					if (selectString.at(selectIndex) == '1') {
+			if(interop_ok) {
+				if ((allowGPU && (type == CL_DEVICE_TYPE_GPU)) || (allowCPU && (type == CL_DEVICE_TYPE_CPU))) {
+					if (selectString.length() == 0) {
 						selected = true;
+					} else {
+						if (selectString.length() <= selectIndex) {
+							qWarning()<< "OpenCL select devices string (opencl.devices.select) has the wrong length";
+							exit(1);
+						}
+
+						if (selectString.at(selectIndex) == '1') {
+							selected = true;
+						}
 					}
 				}
 			}
+
 			if (selected) {
 				push_back(devices[j]);
 			}

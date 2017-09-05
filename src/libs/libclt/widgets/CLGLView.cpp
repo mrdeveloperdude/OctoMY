@@ -6,7 +6,7 @@
 
 #include "utility/Utility.hpp"
 
-#include "widgets/CLGLViewRenderer.hpp"
+#include "clt/CLGLViewRenderer.hpp"
 
 #include <QSurfaceFormat>
 #include <QDebug>
@@ -94,15 +94,15 @@ void CLGLView::initializeGL()
 	QOpenGLContext *ctx = QOpenGLContext::currentContext();
 	qDebug()<<"USING GL CONTEXT "<<ctx;
 	if (nullptr==ctx) {
-		qWarning("Attempted CL-GL interop without a current OpenGL context");
+		qWarning("ERROR: Attempted CL-GL interop without a current OpenGL context");
 		return;
 	}
 	if (!ctx->isValid()) {
-		qWarning("Attempted CL-GL interop without a valid GL context");
+		qWarning("ERROR: Attempted CL-GL interop without a valid GL context");
 		return;
 	}
 	if (nullptr==ctx->surface()) {
-		qWarning("Attempted CL-GL interop without a context surface");
+		qWarning("ERROR: Attempted CL-GL interop without a context surface");
 		return;
 	}
 	initializeOpenGLFunctions();
@@ -449,6 +449,7 @@ void CLGLView::initCanvas()
 
 void CLGLView::initCTX()
 {
+	qDebug()<<"%%%% INIT CTX";
 	makeCurrent();
 	QOpenGLContext *ctx=context();
 
@@ -460,6 +461,7 @@ void CLGLView::initCTX()
 
 	qDebug()<<"MCTX: "<<tempCTX<<" is "<<(tempCTX->isValid()?"VALID":"INVALID");
 	if(!tempCTX->isValid()) {
+		qWarning()<<"ERROR ctx not valid";
 		exit(1);
 	}
 
@@ -482,7 +484,10 @@ void CLGLView::initCTX()
 	//GLContext tempSharingGLContext(tempCTX, osurfp);	mSharingGLContext=tempSharingGLContext;
 	mSharingGLContext=GLContext(tempCTX, osurfp);
 
-	mSharingGLContext.currentize();	mSharingGLContext.uncurrentize();
+	// Have it be current briefly to let it settle.
+	// TODO: Figure out if this is necessary or at all beneficial
+	mSharingGLContext.setCurrent(true);
+	mSharingGLContext.setCurrent(false);
 
 }
 

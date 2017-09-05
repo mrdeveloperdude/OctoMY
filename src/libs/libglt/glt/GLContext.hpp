@@ -24,10 +24,10 @@ public:
 	void setSurface(QSurface &surf);
 	QSurface *surface();
 	QOpenGLContext *context();
-	void currentize();
-	void uncurrentize();
 
-	void moveToThread(QThread &th);
+	bool setCurrent(bool current);
+
+	bool moveToThread(QThread &th);
 
 	QString toString();
 

@@ -17,9 +17,9 @@ QMAKE_RESOURCE_FLAGS += -compress 9
 #  Enable tests by default for now (will be enabled autoamtically for release builds in test.pro otherize)
 #DEFINES += USE_DOCS
 #DEFINES += USE_TESTS
-#DEFINES += USE_BASIC_TESTS
+#DEFINES += USE_TESTS_BASIC
 #DEFINES += USE_QT3D
-#DEFINES += USE_WEB_TESTS
+#DEFINES += USE_TESTS_WEB
 #DEFINES += EXTERNAL_LIB_ESPEAK
 #DEFINES += EXTERNAL_LIB_OPENCV
 

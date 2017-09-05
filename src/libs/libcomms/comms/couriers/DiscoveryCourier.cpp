@@ -35,7 +35,7 @@ quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 {
 	qDebug()<<"Sending opportunity for "<<name();
 	quint16 bytes=0;
-	NetworkAddress &nadr=mAss->publicAddress();
+	NetworkAddress nadr=mAss->publicAddress();
 	QHostAddress pubAddr=nadr.ip();
 	const quint32 ip4PubAddr=pubAddr.toIPv4Address();
 	const quint16 port= mAss->publicAddress().port();

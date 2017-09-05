@@ -1,7 +1,7 @@
 #ifndef HELLOGLCLVIEWRENDERER_HPP
 #define HELLOGLCLVIEWRENDERER_HPP
 
-#include "CLGLViewRenderer.hpp"
+#include "clt/CLGLViewRenderer.hpp"
 #include "glt/IncludeOpenGL.hpp"
 
 

@@ -10,6 +10,7 @@
 #include <QRegularExpression>
 
 
+
 NodeAssociate::NodeAssociate(const QVariantMap map, bool isPublic)
 	: mKey( map["key"].toMap(), isPublic)
 	, mName( map["name"].toString() )
@@ -17,8 +18,10 @@ NodeAssociate::NodeAssociate(const QVariantMap map, bool isPublic)
 	, mRole( DiscoveryRoleFromString( map["role"].toString() ) )
 	, mType( DiscoveryTypeFromString( map["type"].toString() ) )
 	, mTrusts( map["trusts"].toStringList())
-	, mLastSeenMS( QDateTime::currentMSecsSinceEpoch() )
-	, mBirthDate( map["birthDate"].toULongLong())
+	, mLastSeenMS( map["lastSeenMS"].toDateTime().toMSecsSinceEpoch() )
+	, mLastInitiatedHandshakeMS( map["lastInitiatedHandshakeMS"].toDateTime().toMSecsSinceEpoch() )
+	, mLastAdherentHandshakeMS( map["lastAdherentHandshakeMS"].toDateTime().toMSecsSinceEpoch() )
+	, mBirthDate( map["birthDate"].toDateTime().toMSecsSinceEpoch() )
 	, mPublicNetworkAddress( map["publicAddress"].toMap() )
 	, mLocalNetworkAddress( map["localAddress"].toMap() )
 	//	, mPins( map["pins"].toStringList())// DONT STORE PINS THEY ARE EPHEMERAL
@@ -28,10 +31,15 @@ NodeAssociate::NodeAssociate(const QVariantMap map, bool isPublic)
 	//qDebug()<<"CREATE NodeAssociate(map, isPublic)"<<map<<isPublic;
 }
 
+
+
 NodeAssociate::NodeAssociate()
 	: mRole(ROLE_UNKNOWN)
 	, mType(TYPE_UNKNOWN)
 	, mLastSeenMS(0)
+	, mLastInitiatedHandshakeMS(0)
+	, mLastAdherentHandshakeMS(0)
+	, mBirthDate(0)
 {
 	OC_METHODGATE();
 	//qDebug()<<"CREATE NodeAssociate()";
@@ -57,7 +65,11 @@ bool NodeAssociate::update(const QVariantMap map, bool trustedSource){
 		mGender=( map["gender"].toString() );
 		mRole=( DiscoveryRoleFromString( map["role"].toString() ) );
 		mType=( DiscoveryTypeFromString( map["type"].toString() ) );
-		mLastSeenMS=( QDateTime::currentMSecsSinceEpoch() );
+		mLastSeenMS=(map["lastSeenMS"].toDateTime().toMSecsSinceEpoch() );
+		mLastInitiatedHandshakeMS=( map["lastInitiatedHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
+		mLastAdherentHandshakeMS=( map["lastAdherentHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
+		mBirthDate=( map["birthDate"].toDateTime().toMSecsSinceEpoch() );
+
 		mPublicNetworkAddress=NetworkAddress( map["publicAddress"].toMap() );
 		mLocalNetworkAddress=NetworkAddress( map["localAddress"].toMap() );
 		//TODO: Figure out why we dont just ust fromVariantMap here!
@@ -68,7 +80,7 @@ bool NodeAssociate::update(const QVariantMap map, bool trustedSource){
 }
 
 
-
+////////////////////////////////////////////////////////////////////////////////
 
 QString NodeAssociate::id() //NOTE no const please
 {
@@ -110,6 +122,82 @@ DiscoveryRole NodeAssociate::role() const
 }
 
 
+
+
+bool NodeAssociate::isValidForClient(bool onlyPublic)
+{
+	OC_METHODGATE();
+	return (
+				mKey.isValid(onlyPublic)
+				&& (
+					mPublicNetworkAddress.isValid()
+					|| mLocalNetworkAddress.isValid()
+					)
+				);
+}
+
+
+bool NodeAssociate::isValidForServer()
+{
+	OC_METHODGATE();
+	return (!mPins.isEmpty()) && isValidForClient(true) ;
+}
+
+
+
+NetworkAddress NodeAssociate::publicAddress() const
+{
+	OC_METHODGATE();
+	return mPublicNetworkAddress;
+}
+
+
+NetworkAddress NodeAssociate::localAddress() const
+{
+	OC_METHODGATE();
+	return mLocalNetworkAddress;
+}
+
+
+QBluetoothAddress NodeAssociate::bluetoothAddress() const
+{
+	OC_METHODGATE();
+	return mBluetoothAddress;
+}
+
+
+
+
+quint64 NodeAssociate::lastSeen() const
+{
+	return mLastSeenMS;
+}
+
+
+quint64 NodeAssociate::lastInitiatedHandshake() const
+{
+	OC_METHODGATE();
+	return mLastInitiatedHandshakeMS;
+}
+
+
+quint64 NodeAssociate::lastAdherentHandshake() const
+{
+	OC_METHODGATE();
+	return mLastAdherentHandshakeMS;
+}
+
+const QDebug &operator<<(QDebug &d, NodeAssociate &ass)
+{
+	OC_FUNCTIONGATE();
+	d.nospace() << "NodeAssociate("<<ass.toString()<<")";
+	return d.maybeSpace();
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 void NodeAssociate::clearTrust()
 {
 	OC_METHODGATE();
@@ -131,7 +219,19 @@ void NodeAssociate::removeTrust(QString trust)
 	}
 }
 
+bool NodeAssociate::hasTrust(QString trust){
+	return mTrusts.contains(trust);
+}
 
+const QStringList &NodeAssociate::trusts(){
+	OC_METHODGATE();
+	return mTrusts;
+}
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 
 const QRegularExpression rePin("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
 
@@ -156,9 +256,6 @@ void NodeAssociate::addPin(QString pin)
 }
 
 
-bool NodeAssociate::hasTrust(QString trust){
-	return mTrusts.contains(trust);
-}
 
 bool NodeAssociate::hasPin(QString pin){
 	return mPins.contains(pin);
@@ -170,9 +267,19 @@ const QStringList &NodeAssociate::pins(){
 }
 
 
-const QStringList &NodeAssociate::trusts(){
+
+////////////////////////////////////////////////////////////////////////////////
+
+PortableID NodeAssociate::toPortableID()
+{
 	OC_METHODGATE();
-	return mTrusts;
+	PortableID pid;
+	pid.setName(mName);
+	pid.setGender(mGender);
+	pid.setID(mKey.id());
+	pid.setType(mType);
+	pid.setBirthDate(mBirthDate);
+	return pid;
 }
 
 
@@ -183,8 +290,10 @@ QVariantMap NodeAssociate::toVariantMap()
 	QVariantMap map;
 	map["publicAddress"]=mPublicNetworkAddress.toVariantMap();
 	map["localAddress"]=mLocalNetworkAddress.toVariantMap();
-	map["lastSeenMS"]=mLastSeenMS;
-	map["birthDate"]=mBirthDate;
+	map["lastSeenMS"]=QDateTime::fromMSecsSinceEpoch(mLastSeenMS);
+	map["lastInitiatedHandshakeMS"]=QDateTime::fromMSecsSinceEpoch(mLastInitiatedHandshakeMS);
+	map["lastAdherentHandshakeMS"]=QDateTime::fromMSecsSinceEpoch(mLastAdherentHandshakeMS);
+	map["birthDate"]=QDateTime::fromMSecsSinceEpoch(mBirthDate);
 	map["key"]=mKey.toVariantMap(true);
 	map["role"]=DiscoveryRoleToString(mRole);
 	map["type"]=DiscoveryTypeToString(mType);
@@ -203,10 +312,12 @@ void NodeAssociate::fromVariantMap(const QVariantMap map)
 	mKey=Key( map["key"].toMap(), true);
 	mName=( map["name"].toString() );
 	mGender=( map["gender"].toString() );
-	mBirthDate= ( map["birthDate"].toULongLong());
+	mBirthDate= ( map["birthDate"].toDateTime().toMSecsSinceEpoch());
 	mRole=( DiscoveryRoleFromString( map["role"].toString() ) );
 	mType=( DiscoveryTypeFromString( map["type"].toString() ) );
-	mLastSeenMS=( QDateTime::currentMSecsSinceEpoch() );
+	mLastSeenMS=( map["lastSeenMS"].toDateTime().toMSecsSinceEpoch() );
+	mLastInitiatedHandshakeMS=( map["lastInitiatedHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
+	mLastAdherentHandshakeMS=( map["lastAdherentHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
 	mPublicNetworkAddress=NetworkAddress( map["publicAddress"].toMap() );
 	mLocalNetworkAddress=NetworkAddress( map["localAddress"].toMap() );
 	//mPins=map["pins"].toStringList(); //DONT STORE PINS THEY ARE EPHEMERAL
@@ -223,8 +334,10 @@ QString NodeAssociate::toString()
 			+", gender: "+mGender
 			+", publicAddress:"+mPublicNetworkAddress.toString()
 			+", localAddress:"+mLocalNetworkAddress.toString()
-			+", birthDate:"+utility::formattedDateFromMS( mBirthDate)
-			+", lastSeenMS:"+utility::formattedDateFromMS( mLastSeenMS)
+			+", lastSeenMS:"+utility::formattedDateFromMS(mLastSeenMS)
+			+", lastInitiatedHandshakeMS:"+utility::formattedDateFromMS(mLastInitiatedHandshakeMS)
+			+", lastAdherentHandshakeMS:"+utility::formattedDateFromMS(mLastAdherentHandshakeMS)
+			+", birthDate:"+utility::formattedDateFromMS(mBirthDate)
 			+", role:"+DiscoveryRoleToString(mRole)
 			+", type:"+DiscoveryTypeToString(mType)
 			+", pins:"+mPins.join(";");
@@ -232,47 +345,7 @@ QString NodeAssociate::toString()
 }
 
 
-bool NodeAssociate::isValidForClient(bool onlyPublic)
-{
-	OC_METHODGATE();
-	return (
-				mKey.isValid(onlyPublic)
-				&& (
-					mPublicNetworkAddress.isValid()
-					|| mLocalNetworkAddress.isValid()
-					)
-				);
-}
-
-
-bool NodeAssociate::isValidForServer()
-{
-	OC_METHODGATE();
-	return (!mPins.isEmpty()) && isValidForClient(true) ;
-}
-
-/*
-CommsSignature NodeAssociate::toClientSignature()
-{
-	OC_METHODGATE();
-	return CommsSignature(id(), localAddress());
-}
-*/
-
-
-
-PortableID NodeAssociate::toPortableID()
-{
-	OC_METHODGATE();
-	PortableID pid;
-	pid.setName(mName);
-	pid.setGender(mGender);
-	pid.setID(mKey.id());
-	pid.setType(mType);
-	pid.setBirthDate(mBirthDate);
-	return pid;
-}
-
+////////////////////////////////////////////////////////////////////////////////
 
 bool NodeAssociate::operator==(const NodeAssociate &o) const{
 	OC_METHODGATE();
@@ -288,40 +361,4 @@ bool NodeAssociate::operator!=(const NodeAssociate &o) const{
 	return (! (o == *this));
 }
 
-
-
-NetworkAddress &NodeAssociate::publicAddress()
-{
-	OC_METHODGATE();
-	return mPublicNetworkAddress;
-}
-
-
-NetworkAddress &NodeAssociate::localAddress()
-{
-	OC_METHODGATE();
-	return mLocalNetworkAddress;
-}
-
-QBluetoothAddress &NodeAssociate::bluetoothAddress()
-{
-	OC_METHODGATE();
-	return mBluetoothAddress;
-}
-
-
-
-
-quint64 NodeAssociate::lastSeen() const
-{
-	return mLastSeenMS;
-}
-
-
-const QDebug &operator<<(QDebug &d, NodeAssociate &ass)
-{
-	OC_FUNCTIONGATE();
-	d.nospace() << "NodeAssociate("<<ass.toString()<<")";
-	return d.maybeSpace();
-}
 

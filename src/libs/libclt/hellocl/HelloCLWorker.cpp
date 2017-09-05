@@ -1,6 +1,6 @@
 #include "HelloCLWorker.hpp"
 
-#include "opencl/CLThreadManager.hpp"
+#include "clt/CLThreadManager.hpp"
 
 #include <QThread>
 

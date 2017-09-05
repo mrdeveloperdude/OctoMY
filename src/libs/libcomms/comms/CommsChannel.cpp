@@ -987,7 +987,6 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 				QSharedPointer<CommsSession> session=mSessions.getByFullID(id);
 				if(nullptr!=session) {
 					if(session->established()) {
-						//const QString &courierDestination=courier->destination();
 						const qint64 timeLeft = cm.nextSend - now;
 						// Update most-urgent time
 						if(timeLeft < mMostUrgentSendingTime) {
@@ -1001,26 +1000,90 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 							mSchedule.insert(score, courier); //TODO: make this broadcast somehow (use ClientDirectory::getByLastActive() and ClientSignature::isValid() in combination or similar).
 							qDebug()<<courier->name()<<courier->id()<<courier->ser()<<" SCHEDULED WITH TIMELEFT "<<timeLeft<<" AND SCORE "<<score;
 						}
-						/*
-						// Courier has been dormant past idle time, schedule an idle packet to courier
-						else if(now-courier->lastOpportunity() > MINIMAL_PACKET_RATE) {
-							mIdle.insert(&courierDestination);
-							qDebug()<<courier->name()<<courier->id()<<courier->ser()<<" SCHEDULED FOR IDLE";
-						}
-						*/
 					} else {
 						if(session->handshakeState().isSending()) {
 							mPendingHandshakes << id;
 						}
 					}
 				} else {
-					mPendingHandshakes << id;
+					/*
+					 Detect duplicate connection pairs in sessions, and remove the one that is inferior in ID-duel
+					 Time since first ever successfull connection
+					 Time since first ever connection attempt, successfull or not
+					 Time since last successfull connection
+					 Time since last unsuccessful connection attempt
+
+*/
+					QSharedPointer<NodeAssociate> peer=mPeers.getParticipant(id);
+					if(!peer.isNull()) {
+						const quint64 timeSinceLastInitiatedHandshake=(now-peer->lastInitiatedHandshake());
+						const quint64 timeSinceLastAdherentHandshake=(now-peer->lastAdherentHandshake());
+						const quint64 timeSinceLastHandshake=qMin(timeSinceLastInitiatedHandshake, timeSinceLastAdherentHandshake);
+						/*
+						if(timeSinceLastHandshake> HANDSHAKE_GRACE_PERIOD){
+							mPendingHandshakes << id;
+						}
+
+
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+						sdløkfjsdkløfjsdkløfjsdkljf
+
+
+						*/
+					}
 				}
 			}
 		}
 	}
 	// Ensure we get immediate sending opportunities for sessions that are in handshake
-	if(mSessions.hasHandshakers()) {
+	if( (mPendingHandshakes.size()>0) || (mSessions.hasHandshakers()) ) {
 		mMostUrgentSendingTime=qMin(mMostUrgentSendingTime, 0LL);
 	}
 	// Prepare for next sending opportunity

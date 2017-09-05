@@ -7,7 +7,7 @@
 #include <QVector>
 
 /**
- * @brief The CLDeviceSelection class is a basic means to tell CLThread Manager
+ * @brief The CLDeviceSelection class is a basic means to tell CLThreadManager
  * on which OpenCL devices we wish to run.
  */
 

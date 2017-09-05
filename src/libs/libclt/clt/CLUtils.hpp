@@ -1,7 +1,7 @@
 #ifndef CLUTILS_HPP
 #define	CLUTILS_HPP
 
-#include "opencl/CLInclude.hpp"
+#include "clt/CLInclude.hpp"
 
 #include <QString>
 #include <QSurfaceFormat>

@@ -26,6 +26,7 @@ AUTOLINKS += \
 	vid \
 	rng \
 	audio \
+	motorics \
 	dynamics \
 	puppet \
 	id \

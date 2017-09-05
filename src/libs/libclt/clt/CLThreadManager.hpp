@@ -41,10 +41,10 @@ public:
 
 public:
 
-	// Return wether or not this worker manager is in a runnign state
+	// Return wether or not this worker manager is in a running state
 	bool isRunning()  const;
 	// Set this worker manager to a running or stopped state.
-	// When settign to a stopped state, you may specify block to have this call
+	// When setting to a stopped state, you may specify block to have this call
 	// wait for completion before returning
 	void setRunning(bool running, bool block=false);
 	// Return the CL device designated for the worker by index.

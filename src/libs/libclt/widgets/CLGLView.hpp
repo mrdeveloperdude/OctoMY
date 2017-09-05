@@ -5,30 +5,12 @@
 
 #ifndef EXTERNAL_LIB_OPENCL
 
-#include <QOpenGLWidget>
-
-class CLGLView : public QOpenGLWidget
-{
-	Q_OBJECT
-
-public:
-	explicit CLGLView(QWidget *parent = nullptr){}
-	virtual ~CLGLView(){}
-
-	//QOpenGLWidget interface
-public:
-	void initializeGL() Q_DECL_OVERRIDE{}
-	void resizeGL(int w, int h) Q_DECL_OVERRIDE{}
-	void paintGL() Q_DECL_OVERRIDE{}
-};
-
 #else
 
 #include "glt/IncludeOpenGL.hpp"
 #include "utility/FPSCalculator.hpp"
 #include "utility/ArcBall.hpp"
 #include "glt/GLContext.hpp"
-
 
 
 #include <QMatrix4x4>
@@ -45,7 +27,7 @@ class CLGLViewRenderer;
  * \brief The GLCLView class extends QOpenGLWidget in a way that allows display of
  * the content of a PBO shared with OpenCL running in a separate thread.
  *
- * This sounds kind of complex, but for proper GL-CL interop in Qt this is
+ * Although this is kind of complex, for proper GL-CL interop in Qt this is
  * the best way to do it. For more backround, please have a look at
  * \l { http://stackoverflow.com/questions/39542187/what-is-the-correct-way-to-get-opencl-to-play-nice-with-opengl-in-qt5 } { this page }.
  */

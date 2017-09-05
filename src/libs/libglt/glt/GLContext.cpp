@@ -61,45 +61,46 @@ doneCurrent() if necessary. Then call moveToThread(otherThread) before using it
 in the other thread.
  */
 
-void GLContext::currentize()
+
+bool GLContext::setCurrent(bool current)
 {
+	qWarning()<<"GLCTX Setting to "<<(current?"CURRENT":"UN-CURRENT");
+	bool ok=true;
 	if(nullptr==mGLCtx) {
-		qWarning()<<"GLCTX was null 1, quitting";
-		exit(1);
-	} else if(nullptr==mSurface) {
-		qWarning()<<"surf was null 1, quitting";
-		exit(1);
-	} else {
-		if(!mGLCtx->makeCurrent( mSurface )) {
-			qWarning()<<"Could not make current, quitting";
-			exit(1);
+		qWarning()<<"ERROR: QOpenGLContext was null, failing 1";
+		ok=false;
+	} else if(current) {
+		if(nullptr==mSurface) {
+			qWarning()<<"ERROR: QSurface was null, failing 1";
+			ok=false;
+		} else {
+			if(!mGLCtx->makeCurrent( mSurface )) {
+				qWarning()<<"ERROR: Could not make QOpenGLContext current, failing";
+				ok=false;
+			}
 		}
-	}
-}
-void GLContext::uncurrentize()
-{
-	if(nullptr==mGLCtx) {
-		qWarning()<<"GLCTX was null 2, quitting";
-		exit(1);
 	} else {
 		mGLCtx->doneCurrent();
 	}
+	return ok;
 }
 
 
-void GLContext::moveToThread(QThread &th)
+bool GLContext::moveToThread(QThread &th)
 {
+	bool ok=true;
 	if(nullptr==mGLCtx) {
-		qWarning()<<"GLCTX was null 3, quitting";
-		exit(1);
+		qWarning()<<"ERROR: QOpenGLContext was null, failing 2";
+		ok=false;
 	} else if(nullptr==mSurface) {
-		qWarning()<<"surf was null 2, quitting";
-		exit(1);
+		qWarning()<<"ERROR: QSurface was null, failing 2";
+		ok=false;
 	} else {
 		//surf->moveToThread(&th);
 		mGLCtx->moveToThread(&th);
 		//qDebug()<<"Moved glctx to thread";
 	}
+	return ok;
 }
 
 static QString surfaceClassToString(QSurface::SurfaceClass c)

@@ -2,14 +2,14 @@
 
 #ifdef EXTERNAL_LIB_OPENCL
 
-#include "opencl/CLThreadManager.hpp"
-#include "opencl/CLWorkerFactory.hpp"
-#include "opencl/CLWorker.hpp"
-#include "opencl/CLGLInteropConfig.hpp"
-#include "widgets/CLGLViewRenderer.hpp"
+#include "clt/CLThreadManager.hpp"
+#include "clt/CLWorkerFactory.hpp"
+#include "clt/CLWorker.hpp"
+#include "clt/CLGLInteropConfig.hpp"
+#include "clt/CLGLViewRenderer.hpp"
 #include "widgets/CLGLView.hpp"
 
-#include "opencl/CLUtils.hpp"
+#include "clt/CLUtils.hpp"
 
 #include <QWidget>
 #include <QVBoxLayout>
@@ -304,7 +304,6 @@ public:
 class TestCLWorkerFactory: public CLWorkerFactory
 {
 	CLWorker * createInstance(CLThreadManager &man, int index) Q_DECL_OVERRIDE{
-		(void)man;
 		qDebug()<<"TCLWF CREATED WORKER WITH INDEX "<<index;
 		TestCLWorker *tw=new TestCLWorker(man, index);
 		return tw;
@@ -353,11 +352,17 @@ public:
 			CLWorker *renderWorker=mThreadManager->renderWorker();
 			if(nullptr!=renderWorker) {
 				//renderWorker->set
+				//
+				//
+				//     TODO FIGURE THIS OUT
+				//
+				//
+				//
 			} else {
-				qWarning()<<"NO render worker while initializing with context";
+				qWarning()<<"ERROR: NO render worker while initializing with context";
 			}
 		} else {
-			qWarning()<<"NO thread manager while initializing with context";
+			qWarning()<<"ERROR: NO thread manager while initializing with context";
 		}
 	}
 
@@ -476,11 +481,10 @@ void TestOpenCL::testWithGLInterop()
 	qApp->processEvents();
 	glView.resize(sz);
 	qApp->processEvents();
-	TestCLGLViewRenderer vr;
-	TestCLGLViewRenderer *vrp=&vr;
-	glViewp->setRenderer(vrp);
-	qApp->processEvents();
-	w.show();
+	TestCLGLViewRenderer testCLGLViewRendrer;
+	TestCLGLViewRenderer *testCLGLViewRendrer_p=&testCLGLViewRendrer;
+
+
 	qDebug()<<"--- GUI COMPLETE ---";
 	GLContext shareingContext=glViewp->sharingGLContext();
 	qDebug()<<" SHARING CONTEXT WAS "<<shareingContext.toString();
@@ -488,9 +492,16 @@ void TestOpenCL::testWithGLInterop()
 	CLGLInteropConfig ic(&shareingContext, sz);
 	// Just do CPU for maximum portability/availability/debugability
 	CLThreadManager tm(twf, ic, "", true, false); // CLWorkerFactory &factory, CLGLInteropConfig config=CLGLInteropConfig(), QString deviceSelectionString="", bool allowGPU=true, bool allowCPU=false, QObject *parent = nullptr
-	vrp->setManager(&tm);
-	vrp->initialize(shareingContext);
-	vrp->setRendering(true);
+	testCLGLViewRendrer_p->setManager(&tm);
+
+	testCLGLViewRendrer_p->initialize(shareingContext);
+
+	glViewp->setRenderer(testCLGLViewRendrer_p);
+	qApp->processEvents();
+	w.show();
+
+
+	testCLGLViewRendrer_p->setRendering(true);
 	qDebug()<<"--- WAITING ---";
 	const quint64 start=QDateTime::currentMSecsSinceEpoch();
 	quint64 now=start;
@@ -499,7 +510,7 @@ void TestOpenCL::testWithGLInterop()
 		qApp->processEvents();
 	}
 	qDebug()<<"--- DONE ---";
-	vrp->setRendering(false, true);
+	testCLGLViewRendrer_p->setRendering(false, true);
 	qApp->processEvents();
 	qDebug()<<"--- END ---";
 }

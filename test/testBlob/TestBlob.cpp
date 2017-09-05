@@ -12,6 +12,8 @@
 #include "utility/widgets/PixViewer.hpp"
 #include "utility/Utility.hpp"
 
+#include "../testCommon/CourierTester.hpp"
+#include "comms/CommsCarrierUDP.hpp"
 
 
 
@@ -24,7 +26,7 @@ void TestBlob::testBlob()
 	QList<SendingBlob *> sendingBlobs;
 	for(int i=0; i<numBlob; ++i) {
 		//QByteArray aData=randomByteArray(qrand()%200000);
-		QByteArray aData=randomJPEGByteArray(512,512,90);
+		QByteArray aData=utility::randomJPEGByteArray(512,512,90);
 		SendingBlob *blob=new SendingBlob("blob_"+QString::number(i), i+1, chunkSize, aData, qrand()%30);
 		sendingBlobs<<blob;
 	}
@@ -112,7 +114,6 @@ void TestBlob::testBlob()
 
 
 
-#include "../testCommon/CourierTester.hpp"
 
 class CourierTesterBlob: public CourierTester
 {
@@ -140,8 +141,8 @@ public:
 	void onTestInitImp() Q_DECL_OVERRIDE {
 		pixA.show();
 		pixB.show();
-		rimgA=randomImage(imageSize, imageSize);
-		ridA=imageToByteArray(rimgA);
+		rimgA=utility::randomImage(imageSize, imageSize);
+		ridA=utility::imageToByteArray(rimgA);
 		pixA.setImage(rimgA);
 		CourierMandate beforeMandate=mFromCourier->mandate();
 		qDebug()<<"before="<<beforeMandate.toString();
@@ -202,7 +203,9 @@ void TestBlob::testBlobCourier2()
 {
 	KeyStore keystore;
 	NodeAssociateStore peers;
-	CommsChannel comms(keystore, peers);
+	//CommsCarrier &carrier, KeyStore &keystore, NodeAssociateStore &peers, QObject *parent=nullptr);
+	CommsCarrierUDP carrier;
+	CommsChannel comms(carrier, keystore, peers);
 	CourierTesterBlob blobTest(comms);
 	blobTest.testRandomSteps(100);
 }

@@ -70,7 +70,7 @@ void PairingWizard::updateNetworkSettings()
 			if(valid) {
 				QSharedPointer<NodeAssociate> me=mNode->nodeIdentity();
 				if(nullptr!=me) {
-					NetworkAddress &local=me->localAddress();
+					NetworkAddress local=me->localAddress();
 					NetworkAddress cur=ui->widgetNetworkSettings->address();
 					local.setIP(cur.ip());
 					local.setPort(ui->widgetNetworkSettings->address().port());

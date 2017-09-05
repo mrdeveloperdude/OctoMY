@@ -9,8 +9,8 @@ CONFIG += ordered
 #       enabled
 
 
-# NOTE: USE_BASIC_TESTS is enabled when useful in local_override.pri
-contains(DEFINES, USE_BASIC_TESTS){
+# NOTE: USE_TESTS_BASIC is enabled when useful in local_override.pri
+contains(DEFINES, USE_TESTS_BASIC){
 
 #
 TEST_PROJECTS+= \
@@ -19,18 +19,18 @@ TEST_PROJECTS+= \
 #	testArduMY \
 #	testBlob \
 #	testCarSteeringWidget \
-	testCommsChannel \
+#	testCommsChannel \
 #	testCommsSession \
-#	testCreepyVoice \
 #	testDeliveryWizard \
 #	testDiscovery \
-#	testESpeak \
 #	testEventSourcing \
+#	testEyesWidget \
 #	testHashstore \
 #	testIdenticon \
+#	testIrisRendrer \
 #	testKey \
 #	testKeyStore \
-	testNetworkAddress \
+#	testNetworkAddress \
 #	testNodeAssociate \
 #	testNodeAssociateStore \
 #	testParser \
@@ -38,32 +38,48 @@ TEST_PROJECTS+= \
 #	testPoseMappingWidget \
 #	testRNG \
 #	testServotor32Controller \
+#	testStreamCodec \
 #	testSyncParameter \
 #	testTetraGPSEncoder \
 #	testZooComms \
-#	testStreamCodec \
-	testIrisRendrer \
-	testEyesWidget \
 
-
-
-
-STRESS_PROJECTS+= \
-#	stressQR \
-
-}
-
-# NOTE: USE_WEB_TESTS is enabled when useful in local_override.pri
-contains(DEFINES, USE_WEB_TESTS){
-TEST_PROJECTS+= \
-# TODO: Add the tests here that require web-connection to work here
-}
 
 
 # NOTE: EXTERNAL_LIB_OPENCL is enabled when useful in local_override.pri
 contains(DEFINES, EXTERNAL_LIB_OPENCL){
 TEST_PROJECTS+= \
 	testOpenCL \
+
+}
+
+
+# NOTE: EXTERNAL_LIB_ESPEAK is enabled when useful in local_override.pri
+contains(DEFINES, EXTERNAL_LIB_ESPEAK){
+TEST_PROJECTS+= \
+	testESpeak \
+	testCreepyVoice \
+
+}
+
+STRESS_PROJECTS+= \
+#	stressQR \
+
+}
+
+}
+
+
+# NOTE: USE_TESTS_WEB is enabled when useful in local_override.pri
+contains(DEFINES, USE_TESTS_WEB){
+TEST_PROJECTS+= \
+# TODO: Add the tests here that require web-connection to work here
+}
+
+
+# NOTE: USE_TESTS_SELECTED is enabled when useful in local_override.pri
+contains(DEFINES, USE_TESTS_SELECTED){
+TEST_PROJECTS+= \
+	testCommsChannel \
 
 }
 
