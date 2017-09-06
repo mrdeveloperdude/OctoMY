@@ -266,6 +266,44 @@ void CommsChannel::recieveIdle(PacketReadState &state)
 //}
 
 
+void CommsChannel::recieveHandshake(PacketReadState &state)
+{
+	if(recieveEncryptedBody(state)) {
+		// REMOTE FULL-ID
+		state.readEncSenderID();
+		// TODO meta overhead bytes for bytearray from stream
+		if(state.octomyProtocolSenderIDRawSize != state.OCTOMY_SENDER_ID_SIZE) { // Full ID should be OCTOMY_FULL_ID_SIZE bytes, no more, no less
+			QString es="ERROR: OctoMY Protocol Session-Less Sender ID size mismatch: "+QString::number(state.octomyProtocolSenderIDRawSize)+ " vs. "+QString::number(state.OCTOMY_SENDER_ID_SIZE);
+			qWarning()<<es;
+			emit commsError(es);
+			return;
+		}
+
+
+		switch((Multimagic)state.multimagic) {
+		case(MULTIMAGIC_SYN): {
+			// We received SYN
+			recieveSyn(state);
+		}
+		break;
+		case(MULTIMAGIC_SYNACK): {
+			// We received SYN-ACK
+			recieveSynAck(state);
+		}
+		break;
+		case(MULTIMAGIC_ACK): {
+			// We received SYN
+			recieveAck(state);
+
+		}
+		break;
+		}
+	}
+	else{
+		qWarning()<<"ERROR: Could not receive encrypted body";
+	}
+}
+
 /*
 1. A sends SYN to B:
 	Hi B. Here is my
@@ -277,15 +315,7 @@ void CommsChannel::recieveIdle(PacketReadState &state)
 void CommsChannel::recieveSyn(PacketReadState &state)
 {
 	// REMOTE FULL-ID
-	state.readEncSenderID();
 	qDebug()<<"SYN RX FROM "<< state.octomyProtocolSenderID;
-	// TODO meta overhead bytes for bytearray from stream
-	if(state.octomyProtocolSenderIDRawSize != state.OCTOMY_SENDER_ID_SIZE) { // Full ID should be OCTOMY_FULL_ID_SIZE bytes, no more, no less
-		QString es="ERROR: OctoMY Protocol Session-Less Sender ID size mismatch: "+QString::number(state.octomyProtocolSenderIDRawSize)+ " vs. "+QString::number(state.OCTOMY_SENDER_ID_SIZE);
-		qWarning()<<es;
-		emit commsError(es);
-		return;
-	}
 
 	// Look up session for remote full ID
 	auto session=lookUpSession(state.octomyProtocolSenderID);
@@ -357,15 +387,7 @@ void CommsChannel::recieveSyn(PacketReadState &state)
 void CommsChannel::recieveSynAck(PacketReadState &state)
 {
 	// REMOTE FULL-ID
-	state.readEncSenderID();
 	qDebug()<<"SYN-ACK RX FROM "<< state.octomyProtocolSenderID;
-	// TODO meta overhead bytes for bytearray from stream
-	if(state.octomyProtocolSenderIDRawSize != state.OCTOMY_SENDER_ID_SIZE) { // Full ID should be OCTOMY_FULL_ID_SIZE bytes, no more, no less
-		QString es="ERROR: OctoMY Protocol Session-Less Sender ID size mismatch: "+QString::number(state.octomyProtocolSenderIDRawSize)+ " vs. "+QString::number(state.OCTOMY_SENDER_ID_SIZE);
-		qWarning()<<es;
-		emit commsError(es);
-		return;
-	}
 
 	// REMOTE DESIRED SESSION-ID
 	state.readEncDesiredRemoteSessionID();
@@ -454,15 +476,7 @@ void CommsChannel::recieveSynAck(PacketReadState &state)
 void CommsChannel::recieveAck(PacketReadState &state)
 {
 	// REMOTE FULL-ID
-	state.readEncSenderID();
 	qDebug()<<"ACK RX FROM "<< state.octomyProtocolSenderID;
-	// TODO meta overhead bytes for bytearray from stream
-	if(state.octomyProtocolSenderIDRawSize != state.OCTOMY_SENDER_ID_SIZE) { // Full ID should be OCTOMY_FULL_ID_SIZE bytes, no more, no less
-		QString es="ERROR: OctoMY Protocol Session-Less Sender ID size mismatch: "+QString::number(state.octomyProtocolSenderIDRawSize)+ " vs. "+QString::number(state.OCTOMY_SENDER_ID_SIZE);
-		qWarning()<<es;
-		emit commsError(es);
-		return;
-	}
 
 	// Look up session for remote full ID (INVALID_SESSION_ID means we don't want a new session to be created if it did not already exist, as it should already exist, since we should have created it at receiveSyn() )
 	auto session=lookUpSession(state.octomyProtocolSenderID);
@@ -637,25 +651,10 @@ void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHo
 		recieveIdle(state);
 	}
 	break;
-	case(MULTIMAGIC_SYN): {
-		// We received SYN
-		if(recieveEncryptedBody(state)) {
-			recieveSyn(state);
-		}
-	}
-	break;
-	case(MULTIMAGIC_SYNACK): {
-		// We received SYN-ACK
-		if(recieveEncryptedBody(state)) {
-			recieveSynAck(state);
-		}
-	}
-	break;
+	case(MULTIMAGIC_SYN):
+	case(MULTIMAGIC_SYNACK):
 	case(MULTIMAGIC_ACK): {
-		// We received SYN
-		if(recieveEncryptedBody(state)) {
-			recieveAck(state);
-		}
+		recieveHandshake(state);
 	}
 	break;
 
@@ -1005,15 +1004,33 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 							mPendingHandshakes << id;
 						}
 					}
+					// No previous session
 				} else {
-					/*
-					 Detect duplicate connection pairs in sessions, and remove the one that is inferior in ID-duel
-					 Time since first ever successfull connection
-					 Time since first ever connection attempt, successfull or not
-					 Time since last successfull connection
-					 Time since last unsuccessful connection attempt
 
-*/
+
+					/*
+
+					If A sends first, A becomes initiator and B becomes adherent. All is dandy
+					If B sends first, B becomes initiator and A becomes adherent. All is dandy
+					If A & B send exqactly at the same time both A & B become initiator and chaos ensues
+
+					This is resolved in the following manner:
+
+					1. Detect if both A & B are initiator
+					a. If we receive a packet indicating that the other party thinks they hold the same role as us (both initiator or both adherent)
+
+					2. Look up ID-duel and the winner gets to keep current status while the looser must change.
+
+					3. Drop the packet with a log entry and let the flow of handshake resume but now with both having correct role.
+
+
+					Detect duplicate connection pairs in sessions, and remove the one that is inferior in ID-duel
+					Time since first ever successfull connection
+					Time since first ever connection attempt, successfull or not
+					Time since last successfull connection
+					Time since last unsuccessful connection attempt
+
+					*/
 					QSharedPointer<NodeAssociate> peer=mPeers.getParticipant(id);
 					if(!peer.isNull()) {
 						const quint64 timeSinceLastInitiatedHandshake=(now-peer->lastInitiatedHandshake());

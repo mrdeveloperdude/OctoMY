@@ -75,7 +75,6 @@ contains(DEFINES, USE_TESTS_SELECTED){
 message(ADDING 'SELECTED' TESTS TO BUILD)
 TEST_PROJECTS+= \
 	testCommsChannel \
-	testIDDuel \
 
 }
 

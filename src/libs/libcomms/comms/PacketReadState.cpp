@@ -100,7 +100,6 @@ void PacketReadState::readPartBytesAvailable()
 
 void PacketReadState::decrypt(Key &k)
 {
-
 	if(k.isValid(true)) {
 		if(octomyProtocolEncryptedMessageSize>0) {
 #ifdef DO_CC_ENC
@@ -111,7 +110,11 @@ void PacketReadState::decrypt(Key &k)
 			octomyProtocolDecryptedMessageSize=octomyProtocolDecryptedMessage.size();
 			if(octomyProtocolDecryptedMessageSize>0) {
 				encStream=QSharedPointer<QDataStream> (OC_NEW QDataStream(&this->octomyProtocolDecryptedMessage, QIODevice::ReadOnly));
-				encTotalAvailable=octomyProtocolEncryptedMessageSize;
+				if(encStream.isNull()) {
+					qWarning()<<"ERROR: Could not allocate encStream";
+				} else {
+					encTotalAvailable=octomyProtocolEncryptedMessageSize;
+				}
 			} else {
 				qWarning()<<"ERROR: Source text is empty while decrypting";
 			}
@@ -128,46 +131,67 @@ void PacketReadState::decrypt(Key &k)
 // Read Pub-key encrypted message body
 void PacketReadState::readProtocolEncryptedMessage()
 {
-	*stream >> octomyProtocolEncryptedMessage;
-	qWarning()<<"RX CIPHERTEXT WAS: "<<octomyProtocolEncryptedMessage;
-	octomyProtocolEncryptedMessageSize=octomyProtocolEncryptedMessage.size();
-	totalAvailable-=octomyProtocolEncryptedMessageSize;
+	if(!encStream.isNull()) {
+		*stream >> octomyProtocolEncryptedMessage;
+		qWarning()<<"RX CIPHERTEXT WAS: "<<octomyProtocolEncryptedMessage;
+		octomyProtocolEncryptedMessageSize=octomyProtocolEncryptedMessage.size();
+		totalAvailable-=octomyProtocolEncryptedMessageSize;
+	} else {
+		qWarning()<<"ERROR: encStream was nullptr";
+	}
 }
 
 
 // Extract full ID of sender
 void PacketReadState::readEncSenderID()
 {
-	octomyProtocolSenderIDRaw.clear();
-	*encStream >> octomyProtocolSenderIDRaw;
-	octomyProtocolSenderIDRawSize=octomyProtocolSenderIDRaw.size();
-	encTotalAvailable-=octomyProtocolSenderIDRawSize;
-	octomyProtocolSenderID=octomyProtocolSenderIDRaw.toHex().toUpper();
+	if(!encStream.isNull()) {
+		octomyProtocolSenderIDRaw.clear();
+		*encStream >> octomyProtocolSenderIDRaw;
+		octomyProtocolSenderIDRawSize=octomyProtocolSenderIDRaw.size();
+		encTotalAvailable-=octomyProtocolSenderIDRawSize;
+		octomyProtocolSenderID=octomyProtocolSenderIDRaw.toHex().toUpper();
+	} else {
+		qWarning()<<"ERROR: encStream was nullptr";
+	}
 }
 
 
 // Extract remote nonce
 void PacketReadState::readEncRemoteNonce()
 {
-	octomyProtocolRemoteNonce=INVALID_NONCE;
-	*encStream >> octomyProtocolRemoteNonce;
-	encTotalAvailable-=sizeof(octomyProtocolRemoteNonce);
+	if(!encStream.isNull()) {
+		octomyProtocolRemoteNonce=INVALID_NONCE;
+		*encStream >> octomyProtocolRemoteNonce;
+		encTotalAvailable-=sizeof(octomyProtocolRemoteNonce);
+	} else {
+		qWarning()<<"ERROR: encStream was nullptr";
+	}
+
 }
 
 
 // Extract return nonce
 void PacketReadState::readEncReturnNonce()
 {
-	octomyProtocolReturnNonce=INVALID_NONCE;
-	*encStream >> octomyProtocolReturnNonce;
-	encTotalAvailable-=sizeof(octomyProtocolReturnNonce);
+	if(!encStream.isNull()) {
+		octomyProtocolReturnNonce=INVALID_NONCE;
+		*encStream >> octomyProtocolReturnNonce;
+		encTotalAvailable-=sizeof(octomyProtocolReturnNonce);
+	} else {
+		qWarning()<<"ERROR: encStream was nullptr";
+	}
 }
 
 
 // Extract desired remote session ID
 void PacketReadState::readEncDesiredRemoteSessionID()
 {
-	octomyProtocolDesiredRemoteSessionID=INVALID_SESSION_ID;
-	*encStream >> octomyProtocolDesiredRemoteSessionID;
-	encTotalAvailable-=sizeof(octomyProtocolDesiredRemoteSessionID);
+	if(!encStream.isNull()) {
+		octomyProtocolDesiredRemoteSessionID=INVALID_SESSION_ID;
+		*encStream >> octomyProtocolDesiredRemoteSessionID;
+		encTotalAvailable-=sizeof(octomyProtocolDesiredRemoteSessionID);
+	} else {
+		qWarning()<<"ERROR: encStream was nullptr";
+	}
 }

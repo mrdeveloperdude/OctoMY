@@ -34,10 +34,11 @@ public:
 
 	void testCarrier();
 
-	void testCommsMock();
+	void testSingle();
+
 private slots:
 
-	void testSingle();
+	void testCommsMock();
 
 };
 

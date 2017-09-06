@@ -144,9 +144,12 @@ protected:
 	bool recieveMagicAndVersion(PacketReadState &state);
 
 	void recieveIdle(PacketReadState &state);
+
+	void recieveHandshake(PacketReadState &state);
 	void recieveSyn(PacketReadState &state);
 	void recieveSynAck(PacketReadState &state);
 	void recieveAck(PacketReadState &state);
+
 	void recieveData(PacketReadState &state);
 
 // Send & receive slots
