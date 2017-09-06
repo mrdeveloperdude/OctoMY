@@ -11,6 +11,13 @@ IDDuel::IDDuel(QString idA, QString idB)
 }
 
 
+bool IDDuel::duel()
+{
+	return ( (mIDA.toUtf8()) > (mIDB.toUtf8()) );
+}
+
+
+
 bool IDDuel::duel(QString key)
 {
 		   QCryptographicHash hashA(QCryptographicHash::Sha1);

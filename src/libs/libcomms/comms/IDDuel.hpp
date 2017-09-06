@@ -6,12 +6,13 @@
 class IDDuel
 {
 private:
-	QString mIDA;
-	QString mIDB;
+	const QString mIDA;
+	const QString mIDB;
 public:
 	IDDuel(QString idA, QString idB);
 public:
 
+	bool duel();
 	bool duel(QString key);
 };
 
