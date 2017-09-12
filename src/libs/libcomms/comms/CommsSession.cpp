@@ -106,10 +106,6 @@ bool CommsSession::lastConnected() const
 	return mLastConnected;
 }
 
-bool CommsSession::handshakeStarted() const
-{
-	return !mHandshakeState.isVirgin();
-}
 
 HandshakeState &CommsSession::handshakeState()
 {

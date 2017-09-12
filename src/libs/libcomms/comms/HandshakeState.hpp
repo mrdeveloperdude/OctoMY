@@ -3,41 +3,35 @@
 
 #include <QDebug>
 
-
 enum HandshakeStep:quint8 {
-	VIRGIN // We are uninitialized
-	, SYN_OK // Syn was sent(for initiators)/ recieved(for receivers) OK
-	, SYN_ACK_OK // Syn-ack was recieved(for initiators)/ sent(for receivers) OK
-	, ACK_OK // Ack was sent(for initiators)/ recieved(for receivers) OK
-	, IDLE_HANDSHAKE // Connection was established so no more steps
+	SYN //START HANDSHAKE
+	, SYN_ACK //CONTINUE HANDSHAKE
+	, ACK //COMPLETE HANDSHAKE
+	, NONE // HANDSHAKE IS DONE
 };
 
 class HandshakeState
 {
 private:
-	bool mInitiator;
-	HandshakeStep mStep;
+	bool mInitiator; // As opposed to Adherent
+	quint8 mStepCounter;
 public:
-
 	HandshakeState(bool i=true);
-	bool isVirgin() const;
 	bool isInitiator() const;
 	bool isDone() const;
 	bool isSending() const;
-	//HandshakeStep nextStep() const;
-	HandshakeStep step() const;
-	//void bump();
-	void setSynOK();
-	void setSynAckOK();
-	void setAckOK();
+	bool isReceiving() const;
+	// Report what step comms channel is currently supposed to transmit
+	HandshakeStep expectedStepTX() const;
+	// Report what step comms channel is currently expecting to receive
+	HandshakeStep expectedStepRX() const;
+	// Go to next step and return true only if received step matches what is expected
+	bool handleRX(HandshakeStep step);
 	void setInitiator(bool i);
-
-
 	QString toString() const;
-
 };
 
 
-QString handshakeStepToString(HandshakeStep step);
+QString handshakeSendStepToString(HandshakeStep step);
 
 #endif // HANDSHAKESTATE_HPP

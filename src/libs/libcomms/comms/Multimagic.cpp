@@ -21,3 +21,22 @@ QString MultimagicToString(SESSION_ID_TYPE m)
 {
 	return MultimagicToString((Multimagic)m);
 }
+
+
+
+HandshakeStep multimagicToHandshakeStep(Multimagic multimagi)
+{
+	switch(multimagi) {
+	default:
+	case(MULTIMAGIC_LAST):
+	case(MULTIMAGIC_IDLE):
+		return NONE;
+	case(MULTIMAGIC_SYN):
+		return SYN;
+	case(MULTIMAGIC_SYNACK):
+		return SYN_ACK;
+	case(MULTIMAGIC_ACK):
+		return ACK;
+	}
+
+}

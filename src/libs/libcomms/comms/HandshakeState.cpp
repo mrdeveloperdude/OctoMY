@@ -2,15 +2,28 @@
 
 HandshakeState::HandshakeState(bool i)
 	: mInitiator(i)
-	, mStep(VIRGIN)
+	, mStepCounter(0)
 {
 
 }
 
-bool HandshakeState::isVirgin() const
-{
-	return VIRGIN==mStep;
-}
+
+
+/*
+
+
+
+TODO:
+	keep int step ctr and return enum for tx step & rx step
+								 TODO: Add timer to session to keep track of how long since last handshake TX/RX
+									 Use this time data when selecting delay in cc.reschedule() & al.
+
+										 NOTE: Detect step mismatch by role vs role check and resolve it with duel as is now. This avoid all the special cases in checking if a step is valid or not.
+
+
+*/
+
+
 
 bool HandshakeState::isInitiator() const
 {
@@ -19,69 +32,68 @@ bool HandshakeState::isInitiator() const
 
 bool HandshakeState::isDone() const
 {
-	return ((quint8)mStep) >= ((quint8) ACK_OK);
+	return ( (!isSending()) && (!expectedStepRX()) );
 }
 
 bool HandshakeState::isSending() const
 {
-	switch(mStep) {
-	case(VIRGIN):
-	case(SYN_ACK_OK):
-		return mInitiator;
-	case(SYN_OK):
-	case(ACK_OK):
-		return !mInitiator;
-	case(IDLE_HANDSHAKE):
-	default:
+	return (NONE!=expectedStepTX());
+}
+
+bool HandshakeState::isReceiving() const
+{
+	return (NONE!=expectedStepRX());
+}
+
+
+HandshakeStep HandshakeState::expectedStepTX() const
+{
+	if(mInitiator) {
+		switch(mStepCounter) {
+		case(0):
+			return SYN;
+		case(2):
+			return ACK;
+		}
+	} else {
+		switch(mStepCounter) {
+		case(1):
+			return SYN_ACK;
+		}
+	}
+	return NONE;
+}
+
+
+
+HandshakeStep HandshakeState::expectedStepRX() const
+{
+	if(mInitiator) {
+		switch(mStepCounter) {
+		case(1):
+			return SYN_ACK;
+		}
+	} else {
+		switch(mStepCounter) {
+		case(0):
+			return SYN;
+		case(2):
+			return ACK;
+		}
+	}
+	return NONE;
+}
+
+bool HandshakeState::handleRX(HandshakeStep step)
+{
+	if(NONE == step){
 		return false;
 	}
-}
-
-/*
-HandshakeStep HandshakeState::nextStep() const
-{
-	switch(mStep) {
-	case(VIRGIN):
-		return mInitiator?SYN_OK:SYN_ACK_OK;
-	case(SYN_OK):
-		return SYN_ACK_OK;
-	case(SYN_ACK_OK):
-		return ACK_OK;
-	case(ACK_OK):
-		return IDLE_HANDSHAKE;
-	case(IDLE_HANDSHAKE):
-		qWarning()<<"ERROR: Trying to get next step after 'IDLE_HANDSHAKE'";
-		return IDLE_HANDSHAKE;
-	default:
-		qWarning()<<"ERROR: Trying to get next step after unknown step "<<QString::number(mStep);
-		return IDLE_HANDSHAKE;
+	const bool ok = ( expectedStepRX() == step );
+	if(ok){
+		mStepCounter++;
 	}
-}
-*/
-
-HandshakeStep HandshakeState::step() const
-{
-	return mStep;
-}
-/*
-void HandshakeState::bump()
-{
-	mStep=nextStep();
-}*/
-
-void HandshakeState::setSynOK()
-{
-	mStep=SYN_OK;
-}
-
-void HandshakeState::setSynAckOK()
-{
-	mStep=SYN_ACK_OK;
-}
-
-void HandshakeState::setAckOK()
-{
-	mStep=ACK_OK;
+	return ok;
 }
 
 void HandshakeState::setInitiator(bool i)
@@ -92,22 +104,21 @@ void HandshakeState::setInitiator(bool i)
 
 QString HandshakeState::toString() const
 {
-	return handshakeStepToString(mStep)+":"+(mInitiator?"INITIATOR":"ADHERENT") ;
+	return "expectedStepTX="+handshakeSendStepToString(expectedStepTX()) +", expectedStepRX=" +handshakeSendStepToString(expectedStepRX()) +"("+QString::number(mStepCounter)+"):"+(mInitiator?"INITIATOR":"ADHERENT") ;
 }
 
 
 
-QString handshakeStepToString(HandshakeStep step)
+QString handshakeSendStepToString(HandshakeStep step)
 {
-#define HANDSHAKE_STEP_TO_STRING_CASE(a) case(a): return (#a)
+#define HANDSHAKE_SEND_STEP_TO_STRING_CASE(a) case(a): return (#a)
 	switch(step) {
-		HANDSHAKE_STEP_TO_STRING_CASE(VIRGIN);
-		HANDSHAKE_STEP_TO_STRING_CASE(SYN_OK);
-		HANDSHAKE_STEP_TO_STRING_CASE(SYN_ACK_OK);
-		HANDSHAKE_STEP_TO_STRING_CASE(ACK_OK);
-		HANDSHAKE_STEP_TO_STRING_CASE(IDLE_HANDSHAKE);
+		HANDSHAKE_SEND_STEP_TO_STRING_CASE(SYN);
+		HANDSHAKE_SEND_STEP_TO_STRING_CASE(SYN_ACK);
+		HANDSHAKE_SEND_STEP_TO_STRING_CASE(ACK);
+		HANDSHAKE_SEND_STEP_TO_STRING_CASE(NONE);
 	default:
 		return "UNKNOWN";
 	}
-#undef HANDSHAKE_STEP_TO_STRING_CASE
+#undef HANDSHAKE_SEND_STEP_TO_STRING_CASE
 }

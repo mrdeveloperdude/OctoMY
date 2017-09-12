@@ -125,20 +125,15 @@ void PacketReadState::decrypt(Key &k)
 		qWarning()<<"ERROR: Invalid key while decrypting";
 	}
 
-
 }
 
 // Read Pub-key encrypted message body
 void PacketReadState::readProtocolEncryptedMessage()
 {
-	if(!encStream.isNull()) {
-		*stream >> octomyProtocolEncryptedMessage;
-		qWarning()<<"RX CIPHERTEXT WAS: "<<octomyProtocolEncryptedMessage;
-		octomyProtocolEncryptedMessageSize=octomyProtocolEncryptedMessage.size();
-		totalAvailable-=octomyProtocolEncryptedMessageSize;
-	} else {
-		qWarning()<<"ERROR: encStream was nullptr";
-	}
+	*stream >> octomyProtocolEncryptedMessage;
+	qWarning()<<"RX CIPHERTEXT WAS: "<<octomyProtocolEncryptedMessage;
+	octomyProtocolEncryptedMessageSize=octomyProtocolEncryptedMessage.size();
+	totalAvailable-=octomyProtocolEncryptedMessageSize;
 }
 
 
@@ -152,7 +147,7 @@ void PacketReadState::readEncSenderID()
 		encTotalAvailable-=octomyProtocolSenderIDRawSize;
 		octomyProtocolSenderID=octomyProtocolSenderIDRaw.toHex().toUpper();
 	} else {
-		qWarning()<<"ERROR: encStream was nullptr";
+		qWarning()<<"ERROR: encStream was nullptr #2";
 	}
 }
 
@@ -165,7 +160,7 @@ void PacketReadState::readEncRemoteNonce()
 		*encStream >> octomyProtocolRemoteNonce;
 		encTotalAvailable-=sizeof(octomyProtocolRemoteNonce);
 	} else {
-		qWarning()<<"ERROR: encStream was nullptr";
+		qWarning()<<"ERROR: encStream was nullptr #3";
 	}
 
 }
@@ -179,7 +174,7 @@ void PacketReadState::readEncReturnNonce()
 		*encStream >> octomyProtocolReturnNonce;
 		encTotalAvailable-=sizeof(octomyProtocolReturnNonce);
 	} else {
-		qWarning()<<"ERROR: encStream was nullptr";
+		qWarning()<<"ERROR: encStream was nullptr #4";
 	}
 }
 
@@ -192,6 +187,6 @@ void PacketReadState::readEncDesiredRemoteSessionID()
 		*encStream >> octomyProtocolDesiredRemoteSessionID;
 		encTotalAvailable-=sizeof(octomyProtocolDesiredRemoteSessionID);
 	} else {
-		qWarning()<<"ERROR: encStream was nullptr";
+		qWarning()<<"ERROR: encStream was nullptr #5";
 	}
 }

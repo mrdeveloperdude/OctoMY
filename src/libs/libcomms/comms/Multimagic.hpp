@@ -2,6 +2,7 @@
 #define MULTIMAGIC_HPP
 
 #include "CommsSessionIDType.hpp"
+#include "HandshakeState.hpp"
 
 #include <QString>
 
@@ -18,5 +19,8 @@ enum Multimagic:SESSION_ID_TYPE {
 QString MultimagicToString(SESSION_ID_TYPE m);
 
 QString MultimagicToString(Multimagic m);
+
+
+HandshakeStep multimagicToHandshakeStep(Multimagic);
 
 #endif // MULTIMAGIC_HPP

@@ -24,6 +24,7 @@
 #include "PacketSendState.hpp"
 #include "PacketReadState.hpp"
 
+#include "IDDuel.hpp"
 
 #include <QDataStream>
 #include <QDateTime>
@@ -109,7 +110,8 @@ bool CommsChannel::recieveEncryptedBody(PacketReadState &state)
 		}
 		// Read Pub-key encrypted message body
 		state.readProtocolEncryptedMessage();
-		//state.decrypt(*localKey);
+		// NOTE: Even if we don't actually decrypt, we must still call this!
+		state.decrypt(*localKey);
 		/*
 		if(state.octomyProtocolEncryptedMessageSize != state.OCTOMY_ENCRYPTED_MESSAGE_SIZE) { // Encrypted message should be OCTOMY_ENCRYPTED_MESSAGE_SIZE bytes, no more, no less
 			QString es="ERROR: OctoMY Protocol Session-Less encrypted message size mismatch: "+QString::number(state.octomyProtocolEncryptedMessageSize)+ " vs. "+QString::number(state.OCTOMY_ENCRYPTED_MESSAGE_SIZE);
@@ -269,6 +271,11 @@ void CommsChannel::recieveIdle(PacketReadState &state)
 void CommsChannel::recieveHandshake(PacketReadState &state)
 {
 	if(recieveEncryptedBody(state)) {
+
+		const auto multimagic=(Multimagic)state.multimagic;
+		const bool remoteWantsToBeInitiator=( ( MULTIMAGIC_SYN == multimagic ) ||  ( MULTIMAGIC_ACK == multimagic )  );
+
+
 		// REMOTE FULL-ID
 		state.readEncSenderID();
 		// TODO meta overhead bytes for bytearray from stream
@@ -279,29 +286,81 @@ void CommsChannel::recieveHandshake(PacketReadState &state)
 			return;
 		}
 
+		// Look up session for remote full ID
+		QSharedPointer<CommsSession> session=lookUpSession(state.octomyProtocolSenderID);
 
-		switch((Multimagic)state.multimagic) {
-		case(MULTIMAGIC_SYN): {
-			// We received SYN
-			recieveSyn(state);
-		}
-		break;
-		case(MULTIMAGIC_SYNACK): {
-			// We received SYN-ACK
-			recieveSynAck(state);
-		}
-		break;
-		case(MULTIMAGIC_ACK): {
-			// We received SYN
-			recieveAck(state);
+		if(session.isNull() ) {
+			// When session is missing and unless this is SYN, we drop the packet
+			if( MULTIMAGIC_SYN != multimagic) {
+				QString es="INFO: Dropping NON-SYN packet since we don't have session";
+				qWarning()<<es;
+				emit commsError(es);
+				return;
+			}
+		} else {
+			const bool weWantToBeInitiator=session->handshakeState().isInitiator();
+
+			// We both want to be the same role
+			if(remoteWantsToBeInitiator == weWantToBeInitiator) {
+				IDDuel duel(localID(), state.octomyProtocolSenderID);
+				const bool weWin=duel.duel();
+				// We are the winners, so we simply drop the packet and wait for the remote to get it (or not)
+				if(weWin) {
+					QString es="INFO: Dropping packet due to initiation conflict on the part of the remote";
+					qWarning()<<es;
+					emit commsError(es);
+					return;
+				}
+				// We are the loosers so we simply adapt to the situation and continue as nothing happened.
+				else {
+					session->handshakeState().setInitiator(!weWantToBeInitiator);
+					QString es="INFO: Dropping packet and ajusting due to initiation conflict on our part";
+					qWarning()<<es;
+					emit commsError(es);
+					return;
+				}
+			}
+
+			const auto step=multimagicToHandshakeStep(multimagic);
+			const bool rxStepOK=(session->handshakeState().expectedStepRX() == step);
+			if(rxStepOK) {
+				bool rxOK=false;
+				switch(multimagic) {
+				case(MULTIMAGIC_SYN): {
+					// We received SYN
+					rxOK=recieveSyn(state);
+					// TODO MOVE OK CHECK DOWN SINCE WE NEED OK TO UPDATE STEP
+				}
+				break;
+				case(MULTIMAGIC_SYNACK): {
+					// We received SYN-ACK
+					rxOK=recieveSynAck(state, session);
+				}
+				break;
+				case(MULTIMAGIC_ACK): {
+					// We received SYN
+					rxOK=recieveAck(state, session);
+				}
+				break;
+				}
+				if(rxOK) {
+					session->handshakeState().handleRX(step);
+					qDebug()<< "RX handshake state update was '" << rxOK << "' and state is now:" << session->handshakeState().toString();
+				} else {
+					qDebug()<< "RX handshake failed:" << session->handshakeState().toString();
+				}
+
+			} else {
+				qDebug()<< "RX handshake expected step did not match incomming:" << session->handshakeState().toString();
+			}
 
 		}
-		break;
-		}
-	}
-	else{
+
+	} else {
 		qWarning()<<"ERROR: Could not receive encrypted body";
 	}
+
+
 }
 
 /*
@@ -312,27 +371,18 @@ void CommsChannel::recieveHandshake(PacketReadState &state)
 	  + NONCE
 	ENCODED WITH YOUR(B's) PUBKEY.
 */
-void CommsChannel::recieveSyn(PacketReadState &state)
+bool CommsChannel::recieveSyn(PacketReadState &state)
 {
 	// REMOTE FULL-ID
 	qDebug()<<"SYN RX FROM "<< state.octomyProtocolSenderID;
 
-	// Look up session for remote full ID
-	auto session=lookUpSession(state.octomyProtocolSenderID);
-	if(nullptr!=session) {
-		QString es="ERROR: OctoMY Protocol Session already existed for: " + state.octomyProtocolSenderID;
-		qWarning()<<es;
-		emit commsError(es);
-		return;
-	}
-
 	// Create session for remote full ID
-	session=createSession(state.octomyProtocolSenderID, false);
+	QSharedPointer<CommsSession> session=createSession(state.octomyProtocolSenderID, false);
 	if(nullptr==session) {
 		QString es="ERROR: OctoMY Protocol Session could not be created for: " + state.octomyProtocolSenderID;
 		qWarning()<<es;
 		emit commsError(es);
-		return;
+		return false;
 	}
 	//TODO: Remove session unless handshake bump happens to avoid endless fail loop
 	/*
@@ -352,7 +402,7 @@ void CommsChannel::recieveSyn(PacketReadState &state)
 		QString es="ERROR: OctoMY Protocol desired remote session ID not valid for SYN: "+QString::number(state.octomyProtocolDesiredRemoteSessionID);
 		qWarning()<<es;
 		emit commsError(es);
-		return;
+		return false;
 	}
 	qDebug()<< "SYN RX REMOTE DESIRED SESSION-ID WAS: "<< state.octomyProtocolDesiredRemoteSessionID;
 	// REMOTE NONCE
@@ -361,7 +411,7 @@ void CommsChannel::recieveSyn(PacketReadState &state)
 		QString es="ERROR: OctoMY Protocol remote nonce was invalid for SYN: "+QString::number(state.octomyProtocolDesiredRemoteSessionID);
 		qWarning()<<es;
 		emit commsError(es);
-		return;
+		return false;
 	}
 	qDebug()<< "SYN RX REMOTE NONCE WAS: "<< state.octomyProtocolRemoteNonce;
 
@@ -369,9 +419,7 @@ void CommsChannel::recieveSyn(PacketReadState &state)
 	session->setTheirLastNonce(state.octomyProtocolRemoteNonce);
 	// Record remote desired session id
 	session->setRemoteSessionID(state.octomyProtocolDesiredRemoteSessionID);
-
-	session->handshakeState().setSynOK();
-	qDebug()<< "SYN RX handshake state is now :"<< session->handshakeState().toString();
+	return true;
 }
 
 
@@ -384,7 +432,7 @@ void CommsChannel::recieveSyn(PacketReadState &state)
 	  + NEW NONCE
 	ENCODED WITH YOUR(A's) PUBKEY back atch'a.
 */
-void CommsChannel::recieveSynAck(PacketReadState &state)
+bool CommsChannel::recieveSynAck(PacketReadState &state, QSharedPointer<CommsSession> session)
 {
 	// REMOTE FULL-ID
 	qDebug()<<"SYN-ACK RX FROM "<< state.octomyProtocolSenderID;
@@ -395,38 +443,9 @@ void CommsChannel::recieveSynAck(PacketReadState &state)
 		QString es="ERROR: OctoMY Protocol desired remote session ID not valid for SYN-ACK: "+QString::number(state.octomyProtocolDesiredRemoteSessionID);
 		qWarning()<<es;
 		emit commsError(es);
-		return;
+		return false;
 	}
 	qDebug()<<"SYN-ACK RX REMOTE DESIRED SESSION-ID: "<<state.octomyProtocolDesiredRemoteSessionID;
-
-	// Look up session for remote full ID ( it should already exist, since we should have created it at sendSyn() )
-	auto session=lookUpSession(state.octomyProtocolSenderID);
-	if(nullptr==session) {
-		QString es="ERROR: OctoMY Protocol Session for full ID could not be looked up: " + QString::number(state.octomyProtocolDesiredRemoteSessionID)+ " for SYN-ACK: "+QString::number(state.octomyProtocolDesiredRemoteSessionID);
-		qWarning()<<es;
-		emit commsError(es);
-		return;
-	}
-
-	//Verify that we are the initator in this session
-	if(!session->handshakeState().isInitiator()) {
-		QString es="ERROR: OctoMY Protocol Received syn-ack for session not initiated by us";
-		qWarning()<<es;
-		emit commsError(es);
-		return;
-	}
-
-	/*
-	//Verify that we are receiving the mode that is expected by the session
-	const auto expectedStep=session->handshakeState().nextStep();
-	const auto receivedStep=SYN_ACK_OK;
-	if(receivedStep!=expectedStep) {
-		QString es="ERROR: OctoMY Protocol Received " +handshakeStepToString(expectedStep)+" instead of expected "+handshakeStepToString(receivedStep);
-		qWarning()<<es;
-		emit commsError(es);
-		return;
-	}
-	*/
 
 	// RETURN NONCE
 	state.readEncReturnNonce();
@@ -442,7 +461,7 @@ void CommsChannel::recieveSynAck(PacketReadState &state)
 		QString es="ERROR: OctoMY Protocol return nonce " + QString::number(state.octomyProtocolReturnNonce)+" did not match expected " +QString::number(expectedNonce)+ " for SYN-ACK";
 		qWarning()<<es;
 		emit commsError(es);
-		return;
+		return false;
 	}
 
 	// REMOTE NONCE
@@ -454,16 +473,14 @@ void CommsChannel::recieveSynAck(PacketReadState &state)
 		QString es="ERROR: OctoMY Protocol remote nonce " + QString::number(state.octomyProtocolRemoteNonce)+" was invalid";
 		qWarning()<<es;
 		emit commsError(es);
-		return;
+		return false;
 	}
 
 	// Record remote nonce
 	session->setTheirLastNonce(state.octomyProtocolRemoteNonce);
 	// Record remote desired session id
 	session->setRemoteSessionID(state.octomyProtocolDesiredRemoteSessionID);
-
-	session->handshakeState().setSynAckOK();
-	qDebug()<< "SYN-ACK RX handshake state is now :"<< session->handshakeState().toString();
+	return true;
 }
 
 /*
@@ -473,39 +490,10 @@ void CommsChannel::recieveSynAck(PacketReadState &state)
 	  + RETURN NONCE
 	WELL RECEIVED.
 */
-void CommsChannel::recieveAck(PacketReadState &state)
+bool CommsChannel::recieveAck(PacketReadState &state, QSharedPointer<CommsSession> session)
 {
 	// REMOTE FULL-ID
 	qDebug()<<"ACK RX FROM "<< state.octomyProtocolSenderID;
-
-	// Look up session for remote full ID (INVALID_SESSION_ID means we don't want a new session to be created if it did not already exist, as it should already exist, since we should have created it at receiveSyn() )
-	auto session=lookUpSession(state.octomyProtocolSenderID);
-	if(nullptr==session) {
-		QString es="ERROR: OctoMY Protocol Session for full ID could not be looked up: " + state.octomyProtocolDesiredRemoteSessionID;
-		qWarning()<<es;
-		emit commsError(es);
-		return;
-	}
-
-	//Verify that we are not initator in this session
-	if(session->handshakeState().isInitiator()) {
-		QString es="ERROR: OctoMY Protocol Received ack for session initiated by us";
-		qWarning()<<es;
-		emit commsError(es);
-		return;
-	}
-
-	/*
-	//Verify that we are receiving the mode that is expected by the session
-	const auto expectedStep=session->handshakeState().nextStep();
-	const auto receivedStep=ACK_OK;
-	if(receivedStep!=expectedStep) {
-		QString es="ERROR: OctoMY Protocol Received " +handshakeStepToString(expectedStep)+" instead of expected "+handshakeStepToString(receivedStep);
-		qWarning()<<es;
-		emit commsError(es);
-		return;
-	}
-	*/
 
 	// RETURN NONCE
 	state.readEncReturnNonce();
@@ -517,10 +505,9 @@ void CommsChannel::recieveAck(PacketReadState &state)
 		QString es="ERROR: OctoMY Protocol return nonce " + QString::number(state.octomyProtocolReturnNonce)+" did not match expected " +QString::number(expectedNonce);
 		qWarning()<<es;
 		emit commsError(es);
-		return;
+		return false;
 	}
-	session->handshakeState().setAckOK();
-	qDebug()<< "ACK RX handshake state is now :"<< session->handshakeState().toString();
+	return true;
 }
 
 
@@ -706,6 +693,7 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 {
 	QSharedPointer<CommsSession> session=mSessions.getByFullID(handShakeID);
 	if(nullptr==session) {
+		qDebug()<<"CREATING NEW SESSION FOR ID "<< handShakeID<< " IN SEND HANDSHAKE";
 		session=createSession(handShakeID, true);
 	}
 	if(nullptr!=session) {
@@ -719,12 +707,12 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 		state.setRemoteID(handShakeID);
 		state.session=session;
 		const HandshakeState &handshakeState=session->handshakeState();
-		const HandshakeStep step=handshakeState.step();
+		const HandshakeStep sendStep=handshakeState.expectedStepTX();
 		const bool isInitiator=handshakeState.isInitiator();
 		qDebug()<<"CURRENT HANDSHAKE STATE: "<<handshakeState.toString();
-		switch(step) {
+		switch(sendStep) {
 		default:
-		case(VIRGIN): {
+		case(SYN): {
 			//Verify that we are the initator in this session
 			if(!isInitiator) {
 				QString es="ERROR: OctoMY Protocol sending syn for session not initiated by us";
@@ -735,7 +723,7 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 			sendSyn(state);
 		}
 		break;
-		case(SYN_OK): {
+		case(SYN_ACK): {
 			//Verify that we are not initator in this session
 			if(isInitiator) {
 				QString es="ERROR: OctoMY Protocol sending syn-ack for session initiated by us";
@@ -746,7 +734,7 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 			sendSynAck(state);
 		}
 		break;
-		case(SYN_ACK_OK): {
+		case(ACK): {
 			//Verify that we are the initator in this session
 			if(!isInitiator) {
 				QString es="ERROR: OctoMY Protocol sending ack for session not initiated by us";
@@ -755,10 +743,6 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 				return;
 			}
 			sendAck(state);
-		}
-		break;
-		case(ACK_OK): {
-
 		}
 		break;
 		}
@@ -801,8 +785,6 @@ void CommsChannel::sendSyn(PacketSendState &state)
 	state.encrypt();
 	state.writeProtocolEncryptedMessage();
 	doSendWithSession(state);
-
-	state.session->handshakeState().setSynOK();
 	qDebug()<< "SYN TX handshake state is now :"<< state.session->handshakeState().toString();
 }
 
@@ -838,7 +820,6 @@ void CommsChannel::sendSynAck(PacketSendState &state)
 	state.encrypt();
 	state.writeProtocolEncryptedMessage();
 	doSendWithSession(state);
-	state.session->handshakeState().setSynAckOK();
 	qDebug()<< "SYN-ACK TX handshake state is now :"<< state.session->handshakeState().toString();
 }
 
@@ -865,7 +846,6 @@ void CommsChannel::sendAck(PacketSendState &state)
 	state.encrypt();
 	state.writeProtocolEncryptedMessage();
 	doSendWithSession(state);
-	state.session->handshakeState().setAckOK();
 	qDebug()<< "ACK TX handshake state is now :"<< state.session->handshakeState().toString();
 }
 

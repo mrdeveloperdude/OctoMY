@@ -121,7 +121,6 @@ public:
 
 	bool connected() const;
 	bool lastConnected() const;
-	bool handshakeStarted() const;
 	HandshakeState &handshakeState();
 	bool established() const;
 	bool expired() const;

@@ -93,13 +93,6 @@ void TestCommsSession::test()
 
 
 	/////////////////////////////////////////////////
-	// bool handshakeStarted() const;
-	{
-		bool hs=sess.handshakeStarted();
-	}
-
-
-	/////////////////////////////////////////////////
 	// bool established() const;
 	{
 		bool e=sess.established();
