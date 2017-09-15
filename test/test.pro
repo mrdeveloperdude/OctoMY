@@ -1,10 +1,8 @@
 TEMPLATE = subdirs
-include($$TESTS/test.pri)
+#include($$TESTS/test.pri)
 TARGET = test_all
 CONFIG += ordered
 
-TEST_PROJECTS+= \
-	testCommon \
 
 # NOTE: USE_TESTS_BASIC is enabled in local_override.pri on the build server as default to include all the safe-to-run automatic tests
 contains(DEFINES, USE_TESTS_BASIC){
@@ -90,11 +88,18 @@ message(ADDING 'STRESS' TESTS TO BUILD)
 
 
 SUBDIRS += \
-		$$TEST_PROJECTS
+	common \
+	$$TEST_PROJECTS
 
 SUBDIRS += \
-		$$STRESS_PROJECTS
+	$$STRESS_PROJECTS
 
+
+
+SUBDIRS=   $$unique(SUBDIRS)
+
+message("| TEST_PROJECTS:    " $${TEST_PROJECTS})
+message("| STRESS_PROJECTS:  " $${STRESS_PROJECTS})
 
 #include($$PRIS/status.pri)
 

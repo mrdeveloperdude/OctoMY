@@ -1,7 +1,5 @@
 #include "TestStreamCodec.hpp"
 
-#include "../testCommon/TestCommon.hpp"
-
 #include "video/codec/StreamCodec.hpp"
 #include "video/codec/widgets/StreamCodecWidget.hpp"
 

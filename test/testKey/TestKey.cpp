@@ -1,7 +1,5 @@
 #include "TestKey.hpp"
 
-#include "../testCommon/TestCommon.hpp"
-
 #include "security/Key.hpp"
 #include "security/SecurityConstants.hpp"
 #include "security/SecurityConstantsPrivate.hpp"
