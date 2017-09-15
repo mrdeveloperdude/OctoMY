@@ -2,7 +2,7 @@ TEMPLATE = subdirs
 #include($$TESTS/test.pri)
 TARGET = test_all
 CONFIG += ordered
-
+CONFIG += testcase
 
 TEST_PROJECTS+= \
 
@@ -102,6 +102,7 @@ SUBDIRS=   $$unique(SUBDIRS)
 
 message("| TEST_PROJECTS:    " $${TEST_PROJECTS})
 message("| STRESS_PROJECTS:  " $${STRESS_PROJECTS})
+message("| TEST_SUBDIRS:  " $${SUBDIRS})
 
 #include($$PRIS/status.pri)
 
