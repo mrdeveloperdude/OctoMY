@@ -127,8 +127,10 @@ script:
   - OCOMY_BUILD_ROOT=build
   - mkdir -p ${OCOMY_BUILD_ROOT}
   - cd ${OCOMY_BUILD_ROOT}
-  - cp ../integration/travis_ci/overrides.pri ../local_overrides.pri
   - pwd
+  - cp ../integration/travis_ci/overrides.pri ../local_overrides.pri
+  - cat ../local_overrides.pri
+  - ls -haltF
   - which c++
   - which g++
   - which clang++
