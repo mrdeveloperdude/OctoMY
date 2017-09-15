@@ -9,7 +9,7 @@
 #include "security/KeyStore.hpp"
 
 
-#include "../testCommon/CourierTester.hpp"
+#include "../common/CourierTester.hpp"
 
 
 #include <QDebug>

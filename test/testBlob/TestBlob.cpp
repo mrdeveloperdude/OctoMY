@@ -1,6 +1,5 @@
 #include "TestBlob.hpp"
-#include "../testCommon/TestCommon.hpp"
-
+#include "../common/CourierTester.hpp"
 #include "comms/couriers/blob/BlobCourier.hpp"
 #include "comms/couriers/blob/Blob.hpp"
 #include "comms/couriers/blob/BlobChunk.hpp"
@@ -12,7 +11,7 @@
 #include "utility/widgets/PixViewer.hpp"
 #include "utility/Utility.hpp"
 
-#include "../testCommon/CourierTester.hpp"
+
 #include "comms/CommsCarrierUDP.hpp"
 
 
