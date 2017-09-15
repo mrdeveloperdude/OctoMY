@@ -71,4 +71,4 @@ test.depends=		$${SRCS}/libs
 doc.depends=		$${SRCS}/libs $${SRCS}/hub $${SRCS}/remote $${SRCS}/agent $${TESTS}
 
 
-
+include($$PRIS/status.pri)
