@@ -129,7 +129,7 @@ script:
   - cd ${OCOMY_BUILD_ROOT}
   - pwd
   - cp ../integration/travis_ci/overrides.pri ../pri/local_overrides.pri
-  - cat ../local_overrides.pri
+  - cat ../pri/local_overrides.pri
   - ls -haltF
   - which c++
   - which g++
