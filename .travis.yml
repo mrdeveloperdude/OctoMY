@@ -130,7 +130,7 @@ script:
   - pwd
   - cp ../integration/travis_ci/overrides.pri ../pri/local_overrides.pri
   - cat ../pri/local_overrides.pri
-  - ls -haltF
+  - ls -haltF ../
   - which c++
   - which g++
   - which clang++
@@ -140,6 +140,7 @@ script:
   - which qmake
   - qmake -v
   - qmake QMAKE_CXX=g++-6 QMAKE_CC=gcc-6 QMAKE_LINK=g++-6 ../OctoMY.pro
+  - echo "NPROC=$(nproc)"
   - make -j$(nproc) -l
 
 
