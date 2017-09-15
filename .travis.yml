@@ -124,6 +124,7 @@ before_script:
 
 
 script:
+  - echo "------------- SHOW STATS ------------"
   - OCOMY_BUILD_ROOT=build
   - mkdir -p ${OCOMY_BUILD_ROOT}
   - cd ${OCOMY_BUILD_ROOT}
@@ -139,9 +140,13 @@ script:
   - ${CXX} --version
   - which qmake
   - qmake -v
-  - qmake QMAKE_CXX=g++-6 QMAKE_CC=gcc-6 QMAKE_LINK=g++-6 ../OctoMY.pro
   - echo "NPROC=$(nproc)"
+  - echo "--------------- QMAKE ---------------"
+  - qmake QMAKE_CXX=g++-6 QMAKE_CC=gcc-6 QMAKE_LINK=g++-6 ../OctoMY.pro
+  - echo "---------------- MAKE ---------------"
   - make -j$(nproc) -l
+  - echo "------------- RUN TESTS -------------"
+  - make check
 
 
 notifications:
