@@ -2,6 +2,8 @@
 #include "ui_IrisRendrerTestWidget.h"
 
 #include "basic/Settings.hpp"
+#include "utility/Standard.hpp"
+
 #include <QPixmap>
 #include <QImage>
 

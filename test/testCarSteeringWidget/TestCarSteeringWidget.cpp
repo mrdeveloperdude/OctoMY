@@ -2,6 +2,8 @@
 
 #include "ui_TestWindow.h"
 
+#include "utility/Standard.hpp"
+
 #include <QPixmap>
 #include <QImage>
 

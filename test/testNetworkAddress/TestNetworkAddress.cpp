@@ -2,6 +2,7 @@
 
 
 #include "comms/NetworkAddress.hpp"
+#include "utility/Standard.hpp"
 
 #include <QVariantMap>
 

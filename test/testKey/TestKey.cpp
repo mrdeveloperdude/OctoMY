@@ -8,6 +8,8 @@
 
 #include "qpolarssl/qpolarsslpki.hpp"
 
+#include "utility/Standard.hpp"
+#include "utility/Utility.hpp"
 
 #include <QByteArray>
 
@@ -401,7 +403,7 @@ void TestKey::testEncryption()
 				qDebug()<<"";
 				qDebug()<<"####################################################################";
 				qDebug()<<"----- BITSIZE: "<<bitsize<<", DATASIZE: "<<datasize;
-				QByteArray orig1=randomByteArray(datasize);
+				QByteArray orig1=utility::randomByteArray(datasize);
 
 				const QByteArray encrypted1= k1.encrypt(orig1);
 				const QByteArray decrypted1= k1.decrypt(encrypted1);
@@ -413,7 +415,7 @@ void TestKey::testEncryption()
 				//QCOMPARE(orig1,decrypted1);
 			}
 			{
-				QByteArray orig2=randomByteArray(datasize);
+				QByteArray orig2=utility::randomByteArray(datasize);
 				const QByteArray encrypted2 = k2.encrypt(orig2);
 				const QByteArray decrypted2= k1.decrypt(encrypted2);
 

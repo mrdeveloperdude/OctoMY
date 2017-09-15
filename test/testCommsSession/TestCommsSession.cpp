@@ -2,6 +2,8 @@
 
 #include "comms/CommsSession.hpp"
 #include "security/Key.hpp"
+#include "utility/Standard.hpp"
+
 
 void TestCommsSession::test()
 {
@@ -102,7 +104,7 @@ void TestCommsSession::test()
 	/////////////////////////////////////////////////
 	// HandshakeStep nextStep() const;
 	{
-		HandshakeStep ns=sess.nextStep();
+		//HandshakeStep ns=sess.nextStep();
 	}
 
 

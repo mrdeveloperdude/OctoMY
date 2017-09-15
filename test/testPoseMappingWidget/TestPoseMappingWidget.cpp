@@ -4,6 +4,8 @@
 
 #include "pose/PoseMapping.hpp"
 
+#include "utility/Standard.hpp"
+
 #include <QPixmap>
 #include <QImage>
 
