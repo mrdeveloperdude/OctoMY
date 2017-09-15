@@ -35,7 +35,7 @@ if( contains(DEFINES, USE_TESTS_BASIC) | contains(DEFINES, USE_TESTS_WEB) | cont
 	message(ONE OR MORE TEST PROJECTS WERE ADDED TO OCTOMY BUILD)
 
 	SUBDIRS += \
-		test \
+		$${TESTS} \
 
 }
 
@@ -44,7 +44,7 @@ if( contains(DEFINES, USE_TESTS_BASIC) | contains(DEFINES, USE_TESTS_WEB) | cont
 contains(DEFINES, USE_DOCS){
 	message(DOCUMENTATION PROJECT WAS ADDED TO OCTOMY BUILD)
 	SUBDIRS += \
-		doc \
+		$${DOCS}
 }
 
 

@@ -4,6 +4,8 @@ TARGET = test_all
 CONFIG += ordered
 
 
+TEST_PROJECTS+= \
+
 # NOTE: USE_TESTS_BASIC is enabled in local_override.pri on the build server as default to include all the safe-to-run automatic tests
 contains(DEFINES, USE_TESTS_BASIC){
 message(ADDING BASIC TESTS TO BUILD)
