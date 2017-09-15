@@ -128,7 +128,7 @@ script:
   - mkdir -p ${OCOMY_BUILD_ROOT}
   - cd ${OCOMY_BUILD_ROOT}
   - pwd
-  - cp ../integration/travis_ci/overrides.pri ../local_overrides.pri
+  - cp ../integration/travis_ci/overrides.pri ../pri/local_overrides.pri
   - cat ../local_overrides.pri
   - ls -haltF
   - which c++
@@ -140,7 +140,7 @@ script:
   - which qmake
   - qmake -v
   - qmake QMAKE_CXX=g++-6 QMAKE_CC=gcc-6 QMAKE_LINK=g++-6 ../OctoMY.pro
-  - make -j 2 -l
+  - make -j$(nproc) -l
 
 
 notifications:
