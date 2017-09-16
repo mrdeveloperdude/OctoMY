@@ -6,8 +6,6 @@ include($$PRIS/common.pri)
 include($$PRIS/lib_headers.pri)
 # Add the test libraries
 QT += testlib
-CONFIG += testcase
-
 CONFIG += staticlib
 
 
@@ -18,6 +16,4 @@ HEADERS+= \
 	CourierTester.hpp
 
 
-
-
-
+common.depends=		$${SRCS}/libs
