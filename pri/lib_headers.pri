@@ -19,7 +19,10 @@ for(A, AUTOLINKS) {
 	INCLUDEPATH +=$$clean_path($$SRCS/libs/lib$$A)
 }
 
+LIBS= $$unique(LIBS)
 INCLUDEPATH= $$unique(INCLUDEPATH)
+DEPENDPATH= $$unique(DEPENDPATH)
+PRE_TARGETDEPS= $$unique(PRE_TARGETDEPS)
 
 #message("----------- libs_inc incpath -------------------")
 #message("| " $${INCLUDEPATH})
