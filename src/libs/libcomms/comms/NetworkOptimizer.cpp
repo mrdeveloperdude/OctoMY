@@ -44,7 +44,7 @@ QNetworkAccessManager &NetworkOptimizer::instance(QString host){
 			qWarning()<<"WARNING: Webcache for qnam disabled";
 		}
 		//Heat up DNS
-		QHostInfo::lookupHost(host, 0, 0);
+		QHostInfo::lookupHost(host, (QObject *)nullptr, (const char *)nullptr);
 		//Set up cookie jar
 		nam->setCookieJar(OC_NEW QNetworkCookieJar);
 		//Heat up HTTP (6 sockets of each type)
