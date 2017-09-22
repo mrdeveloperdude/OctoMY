@@ -29,14 +29,15 @@ class TestCommsChannel:public QObject
 
 public:
 
-	//ok
 	void testMultiple();
 
-	void testCarrier();
-
-	void testSingle();
-
 private slots:
+
+
+
+		void testCarrier();
+
+		void testSingle();
 
 	void testCommsMock();
 

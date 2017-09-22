@@ -146,7 +146,7 @@ protected:
 	void recieveIdle(PacketReadState &state);
 
 	void recieveHandshake(PacketReadState &state);
-	bool recieveSyn(PacketReadState &state);
+	bool recieveSyn(PacketReadState &state, QSharedPointer<CommsSession> session);
 	bool recieveSynAck(PacketReadState &state, QSharedPointer<CommsSession> session);
 	bool recieveAck(PacketReadState &state, QSharedPointer<CommsSession> session);
 

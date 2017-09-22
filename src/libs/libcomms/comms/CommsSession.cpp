@@ -31,6 +31,7 @@ CommsSession::CommsSession(QSharedPointer<Key> key)
 	, mExpired(false)
 	, mInitialized(false)
 	, mOurSynNonce(0)
+	, mOurSynAckNonce(0)
 	, mOurAckNonce(0)
 	, mTheirLastNonce(0)
 {
@@ -40,6 +41,7 @@ CommsSession::CommsSession(QSharedPointer<Key> key)
 	}
 	// SECURITY: Prevent accidental usage of un-initialized nonce values
 	createOurSynNonce();
+	createOurSynAckNonce();
 	createOurAckNonce();
 	mInitialized=true;
 }
@@ -175,6 +177,13 @@ SESSION_NONCE_TYPE CommsSession::createOurSynNonce()
 	return mOurSynNonce;
 }
 
+SESSION_NONCE_TYPE CommsSession::createOurSynAckNonce()
+{
+	mOurSynAckNonce=((qrand()>>(1<<sizeof(int)))|qrand());
+	return mOurSynAckNonce;
+}
+
+
 SESSION_NONCE_TYPE CommsSession::createOurAckNonce()
 {
 	mOurAckNonce=((qrand()>>(1<<sizeof(int)))|qrand());
@@ -184,6 +193,11 @@ SESSION_NONCE_TYPE CommsSession::createOurAckNonce()
 SESSION_NONCE_TYPE CommsSession::ourSynNonce() const
 {
 	return mOurSynNonce;
+}
+
+SESSION_NONCE_TYPE CommsSession::ourSynAckNonce() const
+{
+	return mOurSynAckNonce;
 }
 
 SESSION_NONCE_TYPE CommsSession::ourAckNonce() const

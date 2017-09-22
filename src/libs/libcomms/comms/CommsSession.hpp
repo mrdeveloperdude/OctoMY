@@ -95,6 +95,7 @@ private:
 	//NONCES
 
 	SESSION_NONCE_TYPE mOurSynNonce;
+	SESSION_NONCE_TYPE mOurSynAckNonce;
 	SESSION_NONCE_TYPE mOurAckNonce;
 	SESSION_NONCE_TYPE mTheirLastNonce;
 
@@ -140,8 +141,10 @@ public:
 	// nonce management
 public:
 	SESSION_NONCE_TYPE createOurSynNonce();
+	SESSION_NONCE_TYPE createOurSynAckNonce();
 	SESSION_NONCE_TYPE createOurAckNonce();
 	SESSION_NONCE_TYPE ourSynNonce() const;
+	SESSION_NONCE_TYPE ourSynAckNonce() const;
 	SESSION_NONCE_TYPE ourAckNonce() const;
 	void setTheirLastNonce(SESSION_NONCE_TYPE);
 	SESSION_NONCE_TYPE theirLastNonce() const;

@@ -3,6 +3,7 @@
 HandshakeState::HandshakeState(bool i)
 	: mInitiator(i)
 	, mStepCounter(0)
+	, mAtLeastOneSend(false)
 {
 
 }
@@ -68,33 +69,56 @@ HandshakeStep HandshakeState::expectedStepTX() const
 
 HandshakeStep HandshakeState::expectedStepRX() const
 {
+	HandshakeStep ret=NONE;
 	if(mInitiator) {
 		switch(mStepCounter) {
 		case(1):
-			return SYN_ACK;
+			ret=SYN_ACK;
+			break;
 		}
 	} else {
 		switch(mStepCounter) {
 		case(0):
-			return SYN;
+			ret=SYN;
+			break;
+		case(1):
+			ret=mAtLeastOneSend?ACK:NONE;
+			break;
 		case(2):
-			return ACK;
+			ret=ACK;
+			break;
 		}
 	}
-	return NONE;
+	qDebug()<<"ACTUAL CT="<<mStepCounter<<", ONCE="<<mAtLeastOneSend;
+	return ret;
+}
+
+bool HandshakeState::handleTX(HandshakeStep step)
+{
+	if(NONE == step) {
+		return false;
+	}
+	const bool ok = ( expectedStepTX() == step );
+	if(ok) {
+		mAtLeastOneSend=true;
+	}
+	return ok;
 }
 
 bool HandshakeState::handleRX(HandshakeStep step)
 {
-	if(NONE == step){
+	if(NONE == step) {
 		return false;
 	}
 	const bool ok = ( expectedStepRX() == step );
-	if(ok){
+	if(ok) {
+		mAtLeastOneSend=false;
 		mStepCounter++;
 	}
 	return ok;
 }
+
+
 
 void HandshakeState::setInitiator(bool i)
 {
@@ -104,7 +128,7 @@ void HandshakeState::setInitiator(bool i)
 
 QString HandshakeState::toString() const
 {
-	return "expectedStepTX="+handshakeSendStepToString(expectedStepTX()) +", expectedStepRX=" +handshakeSendStepToString(expectedStepRX()) +"("+QString::number(mStepCounter)+"):"+(mInitiator?"INITIATOR":"ADHERENT") ;
+	return "expectedStepTX="+handshakeSendStepToString(expectedStepTX()) +", expectedStepRX=" +handshakeSendStepToString(expectedStepRX()) +"("+QString::number(mStepCounter)+"), "+(mInitiator?"INITIATOR":"ADHERENT")+", "+(mAtLeastOneSend?"ONCE":"NONE") ;
 }
 
 

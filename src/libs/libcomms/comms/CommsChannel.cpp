@@ -120,7 +120,7 @@ bool CommsChannel::recieveEncryptedBody(PacketReadState &state)
 			return false;
 		}
 		*/
-		state.decrypt(*localKey);
+
 		//const int octomyProtocolDecryptedMessageSize=
 
 		if(0 == state.octomyProtocolDecryptedMessageSize) { // Size of decrypted message should be non-zero
@@ -197,6 +197,10 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 							session->handshakeState().setInitiator(initiator);
 							session->setLocalSessionID(localSessionID);
 							session->setAddress(participant->publicAddress());
+							// Generate our syn nonce
+							const SESSION_NONCE_TYPE synNonce=session->createOurSynNonce();
+							qDebug()<<"OUR SYN TX NONCE CREATED: "<<synNonce;
+
 							mSessions.insert(session);
 							qDebug()<< "NEW SESSION CREATED FOR ID "<<id<< " with local sessionID "<<QString::number(localSessionID)<< (initiator?"INITIATED":"");
 
@@ -296,12 +300,23 @@ void CommsChannel::recieveHandshake(PacketReadState &state)
 				qWarning()<<es;
 				emit commsError(es);
 				return;
+			} else {
+				// Create session for remote full ID
+				session=createSession(state.octomyProtocolSenderID, false);
+				if(nullptr==session) {
+					QString es="ERROR: OctoMY Protocol Session could not be created for: " + state.octomyProtocolSenderID;
+					qWarning()<<es;
+					emit commsError(es);
+					return;
+				}
 			}
-		} else {
+		}
+		if(!session.isNull() ) {
 			const bool weWantToBeInitiator=session->handshakeState().isInitiator();
 
 			// We both want to be the same role
 			if(remoteWantsToBeInitiator == weWantToBeInitiator) {
+				qDebug()<<"DUEL: "<< remoteWantsToBeInitiator << " vs. "<<  weWantToBeInitiator;
 				IDDuel duel(localID(), state.octomyProtocolSenderID);
 				const bool weWin=duel.duel();
 				// We are the winners, so we simply drop the packet and wait for the remote to get it (or not)
@@ -328,7 +343,7 @@ void CommsChannel::recieveHandshake(PacketReadState &state)
 				switch(multimagic) {
 				case(MULTIMAGIC_SYN): {
 					// We received SYN
-					rxOK=recieveSyn(state);
+					rxOK=recieveSyn(state, session);
 					// TODO MOVE OK CHECK DOWN SINCE WE NEED OK TO UPDATE STEP
 				}
 				break;
@@ -351,7 +366,7 @@ void CommsChannel::recieveHandshake(PacketReadState &state)
 				}
 
 			} else {
-				qDebug()<< "RX handshake expected step did not match incomming:" << session->handshakeState().toString();
+				qDebug()<< "RX handshake expected step '"<< handshakeSendStepToString(step) << "' did not match incomming:" << session->handshakeState().toString();
 			}
 
 		}
@@ -371,19 +386,11 @@ void CommsChannel::recieveHandshake(PacketReadState &state)
 	  + NONCE
 	ENCODED WITH YOUR(B's) PUBKEY.
 */
-bool CommsChannel::recieveSyn(PacketReadState &state)
+bool CommsChannel::recieveSyn(PacketReadState &state, QSharedPointer<CommsSession> session)
 {
 	// REMOTE FULL-ID
 	qDebug()<<"SYN RX FROM "<< state.octomyProtocolSenderID;
 
-	// Create session for remote full ID
-	QSharedPointer<CommsSession> session=createSession(state.octomyProtocolSenderID, false);
-	if(nullptr==session) {
-		QString es="ERROR: OctoMY Protocol Session could not be created for: " + state.octomyProtocolSenderID;
-		qWarning()<<es;
-		emit commsError(es);
-		return false;
-	}
 	//TODO: Remove session unless handshake bump happens to avoid endless fail loop
 	/*
 	auto k=session->key();
@@ -419,6 +426,11 @@ bool CommsChannel::recieveSyn(PacketReadState &state)
 	session->setTheirLastNonce(state.octomyProtocolRemoteNonce);
 	// Record remote desired session id
 	session->setRemoteSessionID(state.octomyProtocolDesiredRemoteSessionID);
+
+	// (Re)generate our syn-ack nonce
+	const SESSION_NONCE_TYPE synAckNonce=session->createOurSynAckNonce();
+	qDebug()<<"OUR SYN-ACK TX NONCE CREATED: "<<synAckNonce;
+
 	return true;
 }
 
@@ -480,6 +492,11 @@ bool CommsChannel::recieveSynAck(PacketReadState &state, QSharedPointer<CommsSes
 	session->setTheirLastNonce(state.octomyProtocolRemoteNonce);
 	// Record remote desired session id
 	session->setRemoteSessionID(state.octomyProtocolDesiredRemoteSessionID);
+
+	// (Re)generate our ack nonce
+	const SESSION_NONCE_TYPE ackNonce=session->createOurAckNonce();
+	qDebug()<<"OUR ACK TX NONCE CREATED: "<<ackNonce;
+
 	return true;
 }
 
@@ -502,11 +519,12 @@ bool CommsChannel::recieveAck(PacketReadState &state, QSharedPointer<CommsSessio
 	// Verify return nonce
 	const SESSION_NONCE_TYPE expectedNonce=session->ourAckNonce();
 	if(state.octomyProtocolReturnNonce != expectedNonce) {
-		QString es="ERROR: OctoMY Protocol return nonce " + QString::number(state.octomyProtocolReturnNonce)+" did not match expected " +QString::number(expectedNonce);
+		QString es="ERROR: OctoMY Protocol return nonce " + QString::number(state.octomyProtocolReturnNonce)+" did not match expected " +QString::number(expectedNonce)+ " for ACK";
 		qWarning()<<es;
 		emit commsError(es);
 		return false;
 	}
+
 	return true;
 }
 
@@ -627,7 +645,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHo
 {
 	qDebug()<<"";
 	qDebug()<<"--- RECEIVE to "<< localID()<< " ---";
-	PacketReadState state(datagramS, remoteHostS,remotePortS);
+	PacketReadState state(datagramS, remoteHostS, remotePortS);
 
 	//QSharedPointer<CommsSession> session;
 	state.readMultimagic();
@@ -746,6 +764,9 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 		}
 		break;
 		}
+		session->handshakeState().handleTX(sendStep);
+		qDebug()<< "TX handshake was ok and state is now:" << session->handshakeState().toString();
+
 	} else {
 		QString es="ERROR: OctoMY Protocol session could not be created for: " + handShakeID;
 		qWarning()<<es;
@@ -779,8 +800,8 @@ void CommsChannel::sendSyn(PacketSendState &state)
 	qDebug()<<"SYN TX LOCAL SESSION ID="<< localSessionID;
 	state.writeEncSessionID(localSessionID);
 	// NONCE
-	const SESSION_NONCE_TYPE synNonce=state.session->createOurSynNonce();
-	qDebug()<<"SYN TX NONCE CREATED="<<synNonce;
+	const SESSION_NONCE_TYPE synNonce=state.session->ourSynNonce();
+	qDebug()<<"SYN TX OUR NONCE="<<synNonce;
 	state.writeEncNonce(synNonce);
 	state.encrypt();
 	state.writeProtocolEncryptedMessage();
@@ -814,9 +835,9 @@ void CommsChannel::sendSynAck(PacketSendState &state)
 	const SESSION_NONCE_TYPE theirNonce=state.session->theirLastNonce();
 	qDebug()<<"SYN-ACK TX NONCE RETURNED: "<<theirNonce;
 	state.writeEncNonce(theirNonce);
-	const SESSION_NONCE_TYPE ackNonce=state.session->createOurAckNonce();
-	qDebug()<<"SYN-ACK TX NONCE CREATED: "<<ackNonce;
-	state.writeEncNonce(ackNonce);
+	const SESSION_NONCE_TYPE synAckNonce=state.session->ourSynAckNonce();
+	qDebug()<<"SYN-ACK TX OUR NONCE : "<<synAckNonce;
+	state.writeEncNonce(synAckNonce);
 	state.encrypt();
 	state.writeProtocolEncryptedMessage();
 	doSendWithSession(state);
@@ -945,7 +966,7 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 	mTXScheduleRate.countPacket(0);
 	const auto MINIMAL_PACKET_RATE=mCarrier.minimalPacketInterval();
 	const auto MAXIMAL_PACKET_RATE=mCarrier.maximalPacketInterval();
-	//qDebug()<<" ... R E S C H E D U L E ... "<<now;
+	qDebug()<<" ... R E S C H E D U L E ... "<<now;
 	mMostUrgentSendingTime=MINIMAL_PACKET_RATE;
 	mSchedule.clear();
 	// Update first

@@ -10,10 +10,12 @@ CONFIG += staticlib
 
 
 SOURCES+= \
-	CourierTester.cpp
+	CourierTester.cpp \
+    Corruptifier.cpp
 
 HEADERS+= \
-	CourierTester.hpp
+	CourierTester.hpp \
+    Corruptifier.hpp
 
 
 common.depends=		$${SRCS}/libs

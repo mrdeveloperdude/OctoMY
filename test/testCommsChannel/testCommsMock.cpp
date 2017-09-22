@@ -3,8 +3,71 @@
 #include "MockCommsCarrier.hpp"
 
 #include "comms/PacketSendState.hpp"
+#include "comms/PacketReadState.hpp"
 
 #include "TestCourier.hpp"
+
+
+
+static QByteArray handshakeSynPacket(QSharedPointer<CommsSession> sessA, QString idB, SESSION_ID_TYPE localSessionID, SESSION_NONCE_TYPE synNonce)
+{
+	PacketSendState state;
+	state.setSession(sessA);
+	state.writeMultimagic(MULTIMAGIC_SYN);
+
+	// FULL-ID
+	state.writeEncSenderID(idB);
+	// DESIRED SESSION-ID
+	state.writeEncSessionID(localSessionID);
+	// NONCE
+	state.writeEncNonce(synNonce);
+	state.encrypt();
+	state.writeProtocolEncryptedMessage();
+
+	QByteArray handshakeSynPacket=state.datagram;
+	qDebug()<<"SYN packet size is: "<<handshakeSynPacket.size();
+	return handshakeSynPacket;
+}
+
+static QByteArray handshakeSynAckPacket(QSharedPointer<CommsSession> sessA, QString idB, SESSION_ID_TYPE localSessionID, SESSION_NONCE_TYPE synAckNonce, SESSION_NONCE_TYPE ackNonce)
+{
+	PacketSendState state;
+	state.setSession(sessA);
+	state.writeMultimagic(MULTIMAGIC_SYNACK);
+
+	// FULL-ID
+	state.writeEncSenderID(idB);
+	// DESIRED SESSION-ID
+	state.writeEncSessionID(localSessionID);
+	// RETURN NONCE
+	state.writeEncNonce(synAckNonce);
+	// NONCE
+	state.writeEncNonce(ackNonce);
+	state.encrypt();
+	state.writeProtocolEncryptedMessage();
+	QByteArray handshakeSynAckPacket=state.datagram;
+	qDebug()<<"SYN-ACK packet size is: "<<handshakeSynAckPacket.size();
+	return handshakeSynAckPacket;
+}
+
+static QByteArray handshakeAckPacket(QSharedPointer<CommsSession> sessA, QString idB, SESSION_ID_TYPE localSessionID, SESSION_NONCE_TYPE ackNonce)
+{
+	PacketSendState state;
+	state.setSession(sessA);
+	state.writeMultimagic(MULTIMAGIC_ACK);
+
+	// FULL-ID
+	state.writeEncSenderID(idB);
+	// RETURN NONCE
+	state.writeEncNonce(ackNonce);
+
+	state.encrypt();
+	state.writeProtocolEncryptedMessage();
+	QByteArray handshakeAckPacket=state.datagram;
+
+	qDebug()<<"SYN-ACK packet size is: "<<handshakeAckPacket.size();
+	return handshakeAckPacket;
+}
 
 
 
@@ -14,6 +77,7 @@ Test CommsChannel with a mock carrier
 Allowes fine-grained control over when each event occurs which in turn allows for fine grained validity checks
 
 */
+
 
 
 
@@ -123,6 +187,8 @@ void TestCommsChannel::testCommsMock()
 	QByteArray garbledPacket=QString("This is garbled").toUtf8();
 	const SESSION_ID_TYPE localSessionID=1337;
 	const SESSION_NONCE_TYPE synNonce=1111;
+	const SESSION_NONCE_TYPE synAckNonce=2222;
+	const SESSION_NONCE_TYPE ackNonce=3333;
 	QByteArray idlePacket;
 	{
 		PacketSendState state;
@@ -130,61 +196,63 @@ void TestCommsChannel::testCommsMock()
 		idlePacket=state.datagram;
 	}
 
-	QByteArray handshakeSynPacket;
-	{
-		PacketSendState state;
-		state.setSession(sessA);
-		state.writeMultimagic(MULTIMAGIC_SYN);
-
-		// FULL-ID
-		state.writeEncSenderID(idB);
-		// DESIRED SESSION-ID
-		state.writeEncSessionID(localSessionID);
-		// NONCE
-		state.writeEncNonce(synNonce);
-		state.encrypt();
-		state.writeProtocolEncryptedMessage();
-
-		handshakeSynPacket=state.datagram;
-		qDebug()<<"SYN packet size is: "<<handshakeSynPacket.size();
-	}
-
-	QByteArray handshakeSynAclPacket;
-	{
-		PacketSendState state;
-		state.writeMultimagic(MULTIMAGIC_SYNACK);
-		handshakeSynAclPacket=state.datagram;
-	}
-
-	QByteArray handshakeAckPacket;
-	{
-		PacketSendState state;
-		state.writeMultimagic(MULTIMAGIC_ACK);
-		handshakeAckPacket=state.datagram;
-	}
 
 	heading("RUNNING THE ACTUAL TESTS", "#");/////////////////////////////////////////////////////
 
 
 	heading("Send garbled packet from unknown address");/////////////////////////////////////////////////////
 	carrierA.mockWriteMock(garbledPacket, unknownAddress);
+	carrierA.mockReadMock(addrB);
 
 
 	heading("Send idle packet from unknown address");/////////////////////////////////////////////////////
 	carrierA.mockWriteMock(idlePacket, unknownAddress);
+	carrierA.mockReadMock(addrB);
 
 
 	heading("Send garbled packet from known address");/////////////////////////////////////////////////////
-
 	carrierA.mockWriteMock(garbledPacket, addrB);
+	carrierA.mockReadMock(addrB);
 
 
 	heading("Send idle packet from known address");/////////////////////////////////////////////////////
-
 	carrierA.mockWriteMock(idlePacket, addrB);
+	carrierA.mockReadMock(addrB);
 
 	heading("Send handshake-syn packet from known address");/////////////////////////////////////////////////////
-	carrierA.mockWriteMock(handshakeSynPacket, addrB);
+	carrierA.mockWriteMock(handshakeSynPacket(sessA, idB, localSessionID, synNonce), addrB);
+
+
+	SESSION_NONCE_TYPE ackReturnNonce=INVALID_NONCE;
+	for(int i=0; i<4; ++i) {
+		heading("Looking for return SYN-ACK "+QString::number(i));/////////////////////////////////////////////////////
+		carrierA.mockTriggerSendingOpportunity(time+=stepMS);
+		QByteArray data=carrierA.mockReadMock(addrB);
+		PacketReadState rstate(data, addrB.ip(), addrB.port());
+		// MULTIMAGIC
+		rstate.readMultimagic();
+		Multimagic mm=(Multimagic)rstate.multimagic;
+		qDebug()<<" MM= "<<MultimagicToString(mm);
+		if(MULTIMAGIC_SYNACK== mm) {
+
+			// REMOTE FULL-ID
+			rstate.readEncSenderID();
+
+			// REMOTE DESIRED SESSION-ID
+			rstate.readEncDesiredRemoteSessionID();
+
+			// RETURN NONCE
+			rstate.readEncReturnNonce();
+
+			ackReturnNonce=rstate.octomyProtocolReturnNonce;
+		}
+	}
+
+	heading("Send handshake-ack packet from known address");/////////////////////////////////////////////////////
+	carrierA.mockWriteMock(handshakeAckPacket(sessA, idB, localSessionID, ackReturnNonce), addrB);
+
+
+	/*TODO implement the return trip
 
 
 	for(int i=0;i<4;++i){
@@ -192,7 +260,7 @@ void TestCommsChannel::testCommsMock()
 		carrierA.mockTriggerSendingOpportunity(time+=stepMS);
 	}
 
-
+	*/
 	heading("SUMMARIES 1st time with no sessions");/////////////////////////////////////////////////////
 	courA1.writeSummary();
 
@@ -203,7 +271,6 @@ void TestCommsChannel::testCommsMock()
 	QTest::waitForEvents();
 
 }
-
 
 
 
