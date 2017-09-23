@@ -106,6 +106,7 @@ qrcodegen::QrSegment qrcodegen::QrSegment::makeAlphanumeric(const char *text)
 		char c = *text;
 		if (c < ' ' || c > 'Z') {
 			throwError("String contains unencodable characters in alphanumeric mode");
+			break;
 		}
 		accumData = accumData * 45 + ALPHANUMERIC_ENCODING_TABLE[c - ' '];
 		accumCount++;
