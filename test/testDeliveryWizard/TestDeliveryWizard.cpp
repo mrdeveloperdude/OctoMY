@@ -37,7 +37,6 @@ static void testLineEdit(QLineEdit *lineEdit, QString in, QString out, const int
 	QCOMPARE(lineEdit->text(), QString(out));
 }
 
-// YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
 // http://stackoverflow.com/questions/38421981/how-can-i-test-a-full-qt5-gui-using-qtestlib
 void TestDeliveryWizard::test(){
 	QProcessEnvironment env=QProcessEnvironment::systemEnvironment();
@@ -68,21 +67,18 @@ void TestDeliveryWizard::test(){
 	QVERIFY(nullptr!=pushButtonOnward);
 	QVERIFY(pushButtonOnward->isEnabled());
 	QVERIFY(pushButtonOnward->isVisible());
-	QVERIFY("pageDelivery"==stackedWidget->currentWidget()->objectName());
+	QCOMPARE(stackedWidget->currentWidget()->objectName(), QString("pageDelivery"));
 	QSignalSpy spyStackedWidget(stackedWidget , SIGNAL(currentChanged(int)));
+	QCOMPARE(spyStackedWidget.count(), 0);
 	//QSignalSpy spyPushButtonOnward(pushButtonOnward , SIGNAL(clicked(bool)));
 	QTest::mouseClick(pushButtonOnward, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), delay);
-	//spyPushButtonOnward.wait();
-	//QVERIFY(spyPushButtonOnward.count()>0)	;
-	//qDebug()<<"onward button pushed";
-	spyStackedWidget.wait(AgentDeliveryWizard::MINIMUM_BIRTH_TIME*3);
-	QVERIFY(spyStackedWidget.count()==1)	;
-	qDebug()<< "stacked widget swapped to" <<stackedWidget->currentWidget()->objectName();
-	QVERIFY("pageBirthInProgress"==stackedWidget->currentWidget()->objectName());
-	spyStackedWidget.wait(AgentDeliveryWizard::MINIMUM_BIRTH_TIME*3);
-	QVERIFY(spyStackedWidget.count()==2)	;
-	qDebug()<< "stacked widget swapped to" <<stackedWidget->currentWidget()->objectName();
-	QVERIFY("pageBirthDone"==stackedWidget->currentWidget()->objectName());
+	QCOMPARE(stackedWidget->currentWidget()->objectName(), QString("pageBirthInProgress"));
+	QCOMPARE(spyStackedWidget.count(), 1);
+	if(!spyStackedWidget.wait(AgentDeliveryWizard::MINIMUM_BIRTH_TIME*20)){
+		qWarning()<<"WAIT #1 FAILED";
+	}
+	QCOMPARE(spyStackedWidget.count(), 2);
+	QCOMPARE(stackedWidget->currentWidget()->objectName(), QString("pageDone"));
 	delete delWiz;
 	delWiz=nullptr;
 }
