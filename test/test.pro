@@ -81,6 +81,7 @@ message(ADDING 'SELECTED' TESTS TO BUILD)
 TEST_PROJECTS+= \
 	testCommsChannel \
 	testArduMY \
+	testBlob \
 
 }
 

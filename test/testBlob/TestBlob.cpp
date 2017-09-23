@@ -19,7 +19,7 @@
 
 void TestBlob::testBlob()
 {
-	QVERIFY(false);
+	//QVERIFY(false);
 	const int numBlob=5;
 	const quint32 chunkSize=480;
 	QList<SendingBlob *> sendingBlobs;
@@ -33,9 +33,9 @@ void TestBlob::testBlob()
 
 	int go=0;
 	while(!sendingBlobs.empty()) {
-		qDebug()<<"";
-		qDebug()<<"";
-		qDebug()<<"------------------------------------------------------";
+		//qDebug()<<"";
+		//qDebug()<<"";
+		//qDebug()<<"------------------------------------------------------";
 		int tot=0;
 		int sent=0;
 		int acked=0;
@@ -46,17 +46,17 @@ void TestBlob::testBlob()
 			acked+=back;
 			sent+=bsend;
 			tot+=btot;
-			qDebug()<<" + sending blob "<<(blob->isDone()?"DONE":"----")<<" "<<blob->name()<<(blob->isNameAcknowleged()?"[ACK]":(blob->isNameSent()?"[SEND]":"[NONE]") )<<" total="<<btot<<",  sent="<<bsend<<",  acked="<<back<<", transit="<<blob->isSent()<<", ack="<<blob->isAcknowleged();
+			//qDebug()<<" + sending blob "<<(blob->isDone()?"DONE":"----")<<" "<<blob->name()<<(blob->isNameAcknowleged()?"[ACK]":(blob->isNameSent()?"[SEND]":"[NONE]") )<<" total="<<btot<<",  sent="<<bsend<<",  acked="<<back<<", transit="<<blob->isSent()<<", ack="<<blob->isAcknowleged();
 		}
-		qDebug()<<"------------------------------------------------------";
-		qDebug()<<"blobs "<<sendingBlobs.size()<<" total="<<tot<<",  sent="<<sent<<",  acked="<<acked<<", ";
+		//qDebug()<<"------------------------------------------------------";
+		//qDebug()<<"blobs "<<sendingBlobs.size()<<" total="<<tot<<",  sent="<<sent<<",  acked="<<acked<<", ";
 		//QVERIFY(false);
 		const quint32 index=qrand() % (sendingBlobs.count());
 		SendingBlob *blob=sendingBlobs[index];
 		QVERIFY(nullptr!=blob);
-		qDebug()<<"GO "<<(go++)<<" HAD INDEX "<<index;
+		//qDebug()<<"GO "<<(go++)<<" HAD INDEX "<<index;
 		if(blob->isDone()) {
-			qDebug()<<"BLOB '"<<blob->name()<<"' claims to be done, removing";
+			//qDebug()<<"BLOB '"<<blob->name()<<"' claims to be done, removing";
 			sendingBlobs.removeAll(blob);
 			delete blob;
 			blob=nullptr;
@@ -66,22 +66,22 @@ void TestBlob::testBlob()
 				qWarning()<<"EMPTY NAME!";
 			}
 			SendingBlobChunk chunk=blob->findNextSendingChunk();
-			qDebug()<<"CHUNK "<<chunk.id()<<" IS NEXT";
+			//qDebug()<<"CHUNK "<<chunk.id()<<" IS NEXT";
 			if(chunk.isValid()) {
-				qDebug()<<"IT IS VALID";
+				//qDebug()<<"IT IS VALID";
 				if((qrand()%100) > 50) {
-					qDebug()<<"IT HAS ITS TURN";
+					//qDebug()<<"IT HAS ITS TURN";
 					QByteArray data=chunk.data();
-					qDebug()<<data.size() <<" BYTES OF DATA IS BEING "<<(chunk.isSent()?"RESENT":"SENT");
+					//qDebug()<<data.size() <<" BYTES OF DATA IS BEING "<<(chunk.isSent()?"RESENT":"SENT");
 					chunk.setSent();
 				}
 			} else {
-				qWarning()<<"ERROR: INVALID CHUNK FOUND";
+				//qWarning()<<"ERROR: INVALID CHUNK FOUND";
 			}
 
 			//Progress name send with a set % probability
 			const int nameChance=(qrand()%100);
-			qDebug()<<"nameChance="<<nameChance;
+			//qDebug()<<"nameChance="<<nameChance;
 			if(nameChance>80) {
 				if(!blob->isNameSent()) {
 					blob->setNameSent(true);
@@ -91,13 +91,13 @@ void TestBlob::testBlob()
 			}
 			//Acknowlege chunk send with a set % probability
 			const int ackChance=(qrand()%100);
-			qDebug()<<"ackChance="<<ackChance;
+			//qDebug()<<"ackChance="<<ackChance;
 			if(ackChance>60) {
 				chunk=blob->chunk(qrand()%blob->numTotal());
-				qDebug()<<"IN ACK WITH "<<chunk.id() << " SENT="<<chunk.isSent() << " ACKED="<<chunk.isAcknowleged();
+				//qDebug()<<"IN ACK WITH "<<chunk.id() << " SENT="<<chunk.isSent() << " ACKED="<<chunk.isAcknowleged();
 
 				if(chunk.isSent() && !chunk.isAcknowleged() ) {
-					qDebug()<<"CHUNK "<<chunk.id()<<" IS BEING ACKNOWLEGED";
+					//qDebug()<<"CHUNK "<<chunk.id()<<" IS BEING ACKNOWLEGED";
 					chunk.setAcknowleged();
 				}
 			}
@@ -144,15 +144,15 @@ public:
 		ridA=utility::imageToByteArray(rimgA);
 		pixA.setImage(rimgA);
 		CourierMandate beforeMandate=mFromCourier->mandate();
-		qDebug()<<"before="<<beforeMandate.toString();
+		//qDebug()<<"before="<<beforeMandate.toString();
 		BlobFuture ret=((BlobCourier *)mFromCourier)->submitSendingBlob(blobName,ridA,0.5);
 		QVERIFY(ret.isWinning());
 		QVERIFY(((BlobCourier *)mFromCourier)->totalSendingDataSize()>0);
-		qDebug()<<"TOTAL SEND IS " << ((BlobCourier *)mFromCourier)->totalSendingDataSize();
+		//qDebug()<<"TOTAL SEND IS " << ((BlobCourier *)mFromCourier)->totalSendingDataSize();
 
 		QObject::connect(((BlobCourier *)mToCourier), &BlobCourier::blobReceiveComplete, this, [this](QString name)
 		{
-			qDebug()<<"TEST DONE for "<<name;
+			//qDebug()<<"TEST DONE for "<<name;
 			mDone=true;
 		});
 
@@ -160,7 +160,7 @@ public:
 
 
 	void onTestDeInitImp() Q_DECL_OVERRIDE {
-		qDebug()<<"TEST DONE, waiting for final show-off...";
+		//qDebug()<<"TEST DONE, waiting for final show-off...";
 		QTest::qWait(3000);
 		pixA.close();
 		pixB.close();
