@@ -114,7 +114,7 @@ install:
       brew install qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR};
       brew link --force qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR};
     fi
-#  - sudo chmod +x scripts/prep.sh  - sudo scripts/prep.sh
+#  - sudo chmod +x local/prep.sh  - sudo local/prep.sh
 
 before_script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export QT_ENV_SCRIPT="/opt/qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}/bin/qt${QT_VERSION_MAJOR}${QT_VERSION_MINOR}-env.sh"; fi
