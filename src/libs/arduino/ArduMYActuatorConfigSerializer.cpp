@@ -25,7 +25,7 @@ uint8_t ArduMYActuatorConfigSerializer::nextByte()
 		// Serialize flags
 		converter.uint16[0]=config->flags;
 		ret=converter.uint8[byteIndex];
-		qDebug()<<"CONFIG SERIALIZE FLAGS @"<<byteIndex<<": "<<ret;
+		//qDebug()<<"CONFIG SERIALIZE FLAGS @"<<byteIndex<<": "<<ret;
 		byteIndex++;
 		if(2==byteIndex) {
 			nextStep();
@@ -36,7 +36,7 @@ uint8_t ArduMYActuatorConfigSerializer::nextByte()
 		// Serialize type
 		converter.uint16[0]=(uint16_t)config->type;
 		ret=converter.uint8[byteIndex];
-		qDebug()<<"CONFIG SERIALIZE TYPE @"<<byteIndex<<": "<<ret;
+		//qDebug()<<"CONFIG SERIALIZE TYPE @"<<byteIndex<<": "<<ret;
 		byteIndex++;
 		if(2==byteIndex) {
 			nextStep();
@@ -146,19 +146,19 @@ uint8_t ArduMYActuatorConfigSerializer::nextByte()
 		// Serialize range start
 		switch(config->representation) {
 		case(ArduMYActuatorValueRepresentation::BIT): {
-			qDebug()<<"RANGE START BIT BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE START BIT BYTE INDEX: "<<byteIndex;
 			ret=config->rangeStart.bit?(uint8_t)1:(uint8_t)0;
 			nextStep();
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::BYTE): {
-			qDebug()<<"RANGE START BYTE BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE START BYTE BYTE INDEX: "<<byteIndex;
 			ret=config->rangeStart.byte;
 			nextStep();
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::WORD): {
-			qDebug()<<"RANGE START WORD BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE START WORD BYTE INDEX: "<<byteIndex;
 			converter.uint16[0]=config->rangeStart.word;
 			ret=converter.uint8[byteIndex];
 			byteIndex++;
@@ -168,7 +168,7 @@ uint8_t ArduMYActuatorConfigSerializer::nextByte()
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
-			qDebug()<<"RANGE START DWORD BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE START DWORD BYTE INDEX: "<<byteIndex;
 			converter.uint32[0]=config->rangeStart.doubleWord;
 			ret=converter.uint8[byteIndex];
 			byteIndex++;
@@ -178,7 +178,7 @@ uint8_t ArduMYActuatorConfigSerializer::nextByte()
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
-			qDebug()<<"RANGE START QWORD BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE START QWORD BYTE INDEX: "<<byteIndex;
 			converter.uint64=config->rangeStart.quadWord;
 			ret=converter.uint8[byteIndex];
 			byteIndex++;
@@ -188,7 +188,7 @@ uint8_t ArduMYActuatorConfigSerializer::nextByte()
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
-			qDebug()<<"RANGE START FLOAT BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE START FLOAT BYTE INDEX: "<<byteIndex;
 			converter.float32[0]=config->rangeStart.singlePrecision;
 			ret=converter.uint8[byteIndex];
 			byteIndex++;
@@ -198,7 +198,7 @@ uint8_t ArduMYActuatorConfigSerializer::nextByte()
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
-			qDebug()<<"RANGE START DOUBLE BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE START DOUBLE BYTE INDEX: "<<byteIndex;
 			converter.float64=config->rangeStart.doublePrecision;
 			ret=converter.uint8[byteIndex];
 			byteIndex++;
@@ -209,7 +209,7 @@ uint8_t ArduMYActuatorConfigSerializer::nextByte()
 		break;
 		default:
 		case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT): {
-			qDebug()<<"RANGE START BAD BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE START BAD BYTE INDEX: "<<byteIndex;
 			//TODO: Handle this as an error somwhow
 		}
 		break;
@@ -220,19 +220,19 @@ uint8_t ArduMYActuatorConfigSerializer::nextByte()
 		// Serialize range span
 		switch(config->representation) {
 		case(ArduMYActuatorValueRepresentation::BIT): {
-			qDebug()<<"RANGE END BIT BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE END BIT BYTE INDEX: "<<byteIndex;
 			ret=config->rangeSpan.bit?(uint8_t)1:(uint8_t)0;
 			nextStep();
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::BYTE): {
-			qDebug()<<"RANGE END BYTE BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE END BYTE BYTE INDEX: "<<byteIndex;
 			ret=config->rangeSpan.byte;
 			nextStep();
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::WORD): {
-			qDebug()<<"RANGE END WORD BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE END WORD BYTE INDEX: "<<byteIndex;
 			converter.uint16[0]=config->rangeSpan.word;
 			ret=converter.uint8[byteIndex];
 			byteIndex++;
@@ -242,7 +242,7 @@ uint8_t ArduMYActuatorConfigSerializer::nextByte()
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
-			qDebug()<<"RANGE END DWORD BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE END DWORD BYTE INDEX: "<<byteIndex;
 			converter.uint32[0]=config->rangeSpan.doubleWord;
 			ret=converter.uint8[byteIndex];
 			byteIndex++;
@@ -252,7 +252,7 @@ uint8_t ArduMYActuatorConfigSerializer::nextByte()
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
-			qDebug()<<"RANGE END QWORD BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE END QWORD BYTE INDEX: "<<byteIndex;
 			converter.uint64=config->rangeSpan.quadWord;
 			ret=converter.uint8[byteIndex];
 			byteIndex++;
@@ -262,7 +262,7 @@ uint8_t ArduMYActuatorConfigSerializer::nextByte()
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
-			qDebug()<<"RANGE END FLOAT BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE END FLOAT BYTE INDEX: "<<byteIndex;
 			converter.float32[0]=config->rangeSpan.singlePrecision;
 			ret=converter.uint8[byteIndex];
 			byteIndex++;
@@ -272,7 +272,7 @@ uint8_t ArduMYActuatorConfigSerializer::nextByte()
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
-			qDebug()<<"RANGE END DOUBLE BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE END DOUBLE BYTE INDEX: "<<byteIndex;
 			converter.float64=config->rangeSpan.doublePrecision;
 			ret=converter.uint8[byteIndex];
 			byteIndex++;
@@ -283,7 +283,7 @@ uint8_t ArduMYActuatorConfigSerializer::nextByte()
 		break;
 		default:
 		case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT): {
-			qDebug()<<"RANGE END BAD BYTE INDEX: "<<byteIndex;
+			//qDebug()<<"RANGE END BAD BYTE INDEX: "<<byteIndex;
 			//TODO: Handle this as an error somwhow
 		}
 		break;

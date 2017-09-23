@@ -23,10 +23,10 @@ bool ArduMYCommandSerializer::isReadyForNewCommand()
 
 void ArduMYCommandSerializer::startSync()
 {
-	qDebug()<<"ARDUMY COMMAND SERIALIZER: START SYNC";
+	//qDebug()<<"ARDUMY COMMAND SERIALIZER: START SYNC";
 	// Don't interrupt current session
 	if(!isReadyForNewCommand()) {
-		qDebug()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
+		qWarning()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
 		return;
 	}
 	byteIndex=0;
@@ -36,10 +36,10 @@ void ArduMYCommandSerializer::startSync()
 
 void ArduMYCommandSerializer::startActuatorCount()
 {
-	qDebug()<<"ARDUMY COMMAND SERIALIZER: START COUNT";
+	//qDebug()<<"ARDUMY COMMAND SERIALIZER: START COUNT";
 	// Don't interrupt current session
 	if(!isReadyForNewCommand()) {
-		qDebug()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
+		qWarning()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
 		return;
 	}
 	byteIndex=0;
@@ -50,10 +50,10 @@ void ArduMYCommandSerializer::startActuatorCount()
 
 void ArduMYCommandSerializer::startActuatorConfig(uint8_t index)
 {
-	qDebug()<<"ARDUMY COMMAND SERIALIZER: START ACTUATOR CONFIG FOR INDEX "<<index;
+	//qDebug()<<"ARDUMY COMMAND SERIALIZER: START ACTUATOR CONFIG FOR INDEX "<<index;
 	// Don't interrupt current session
 	if(!isReadyForNewCommand()) {
-		qDebug()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
+		qWarning()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
 		return;
 	}
 	actuatorConfigIndex=index;
@@ -68,10 +68,10 @@ void ArduMYCommandSerializer::startActuatorConfig(uint8_t index)
 
 void ArduMYCommandSerializer::startActuatorValues()
 {
-	qDebug()<<"ARDUMY COMMAND SERIALIZER: START ACTUATOR VALUES";
+	//qDebug()<<"ARDUMY COMMAND SERIALIZER: START ACTUATOR VALUES";
 	// Don't interrupt current session
 	if(!isReadyForNewCommand()) {
-		qDebug()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
+		qWarning()<<"ARDUMY COMMAND SERIALIZER NOT READY!";
 		return;
 	}
 	actuatorValuesSerializer.reset();
@@ -127,7 +127,7 @@ uint8_t ArduMYCommandSerializer::nextByte()
 	uint8_t ret=0x00;
 	if(!mSentCommandByte) {
 		ret=static_cast<uint8_t>(currentCommand);
-		qWarning()<<"SENDING COMMAND BYTE "<<ret;
+		//qDebug()<<"SENDING COMMAND BYTE "<<ret;
 		mSentCommandByte=true;
 	} else {
 		switch(currentCommand) {
@@ -171,7 +171,7 @@ uint8_t ArduMYCommandSerializer::nextByte()
 		case(OCTOMY_SET_ACTUATOR_CONFIG): {
 			if(!mSentConfigIndex) {
 				ret=static_cast<uint8_t>(actuatorConfigIndex);
-				qWarning()<<"SENDING CONFIG INDEX BYTE "<<ret;
+				//qDebug()<<"SENDING CONFIG INDEX BYTE "<<ret;
 				mSentConfigIndex=true;
 			} else {
 
@@ -205,6 +205,6 @@ uint8_t ArduMYCommandSerializer::nextByte()
 		break;
 		}
 	}
-	qDebug()<<"SERIALIZED BYTE: "<<ret;
+	//qDebug()<<"SERIALIZED BYTE: "<<ret;
 	return ret;
 }

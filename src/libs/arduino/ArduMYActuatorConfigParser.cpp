@@ -20,7 +20,7 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 		byteIndex++;
 		if(byteIndex==2) {
 			config->flags=converter.uint16[0];
-			qDebug()<<"PARSING FLAG BYTE: "<<in;
+			//qDebug()<<"PARSING FLAG BYTE: "<<in;
 			nextStep();
 		}
 	}
@@ -30,13 +30,13 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 		byteIndex++;
 		if(byteIndex==2) {
 			config->type=(ArduMYActuatorType)converter.uint16[0];
-			qDebug()<<"PARSING TYPE: "<<ardumyActuatorTypeToString(config->type);
+			//qDebug()<<"PARSING TYPE: "<<ardumyActuatorTypeToString(config->type);
 			nextStep();
 		}
 	}
 	break;
 	case(REPRESENTATION): {
-		qDebug()<<"PARSING REP BYTE: "<<in;
+		//qDebug()<<"PARSING REP BYTE: "<<in;
 		config->representation=(ArduMYActuatorValueRepresentation)in;
 		nextStep();
 	}
@@ -45,7 +45,7 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 		config->nickName[byteIndex]=(char)in;
 		byteIndex++;
 		if(byteIndex==20) {
-			qDebug()<<"PARSING NICK BYTE: "<<in;
+			//qDebug()<<"PARSING NICK BYTE: "<<in;
 			nextStep();
 		}
 	}
@@ -53,20 +53,20 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 
 	case(GEAR_NUMERATOR): {
 		config->gearRatioNumerator=in;
-		qDebug()<<"PARSING GNUM BYTE: "<<in;
+		//qDebug()<<"PARSING GNUM BYTE: "<<in;
 		nextStep();
 	}
 	break;
 	case(GEAR_DENOMINATOR): {
 		config->gearRatioDenominator=in;
-		qDebug()<<"PARSING GDEN BYTE: "<<in;
+		//qDebug()<<"PARSING GDEN BYTE: "<<in;
 		nextStep();
 	}
 	break;
 
 	case(POSITION_FEEDBACK): {
 		config->positionFeedbackPin=in;
-		qDebug()<<"PARSING PFB BYTE: "<<in;
+		//qDebug()<<"PARSING PFB BYTE: "<<in;
 		nextStep();
 	}
 	break;

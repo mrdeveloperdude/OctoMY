@@ -689,7 +689,7 @@ void diffArdumyActuator(const ArduMYActuator &a, const ArduMYActuator &b)
 void diffArdumyActuatorSet(const ArduMYActuatorSet &setA, const ArduMYActuatorSet &setB)
 {
 	if(setA.size()!=setB.size()) {
-		qDebug()<<"SET SIZE DIFFERS: "<<setA.size()<<" vs. "<<setB.size();
+		qWarning()<<"SET SIZE DIFFERS: "<<setA.size()<<" vs. "<<setB.size();
 	}
 
 	const uint32_t sz=qMin(setA.size(), setB.size());
@@ -697,7 +697,7 @@ void diffArdumyActuatorSet(const ArduMYActuatorSet &setA, const ArduMYActuatorSe
 		const ArduMYActuator &a=setA[i];
 		const ArduMYActuator &b=setB[i];
 		if(!a.isEqual(b)) {
-			qDebug()<<"ACTUATOR @ INDEX "<<i<< " DIFFERS: ";
+			qWarning()<<"ACTUATOR @ INDEX "<<i<< " DIFFERS: ";
 			diffArdumyActuator(a,b);
 		}
 	}

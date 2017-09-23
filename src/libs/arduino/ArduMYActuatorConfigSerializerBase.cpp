@@ -138,7 +138,7 @@ void ArduMYActuatorConfigSerializerBase::nextStep()
 	break;
 	case(RANGE_SPAN): {
 		step=END_OF_OPERATION;
-		qDebug()<<"---- CONFIG CHAMPAGNE POPPED!";
+		//qDebug()<<"---- CONFIG CHAMPAGNE POPPED!";
 		// At this point we are no longer dirty, pop the Champagne!
 		config->setDirty(false);
 	}
@@ -149,6 +149,6 @@ void ArduMYActuatorConfigSerializerBase::nextStep()
 	}
 	break;
 	}
-	qDebug()<<"NEXT STEP "<<oldStep<< " ( " << ardumyActuatorConfigParserStepToString(oldStep)<< " )  -->  "<<step<< " ( " << ardumyActuatorConfigParserStepToString(step)<< " )";
+	//qDebug()<<"NEXT STEP "<<oldStep<< " ( " << ardumyActuatorConfigParserStepToString(oldStep)<< " )  -->  "<<step<< " ( " << ardumyActuatorConfigParserStepToString(step)<< " )";
 	byteIndex=0;
 }
