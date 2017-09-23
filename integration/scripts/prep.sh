@@ -1,4 +1,4 @@
-
+#!/bin/bash
 
 do_prep(){
 	# Dependencies:
@@ -16,7 +16,7 @@ do_prep(){
 	# Sound support
 	DEPS+=" libasound2-dev"
 	 # G-Streamer support
-if [ "USE_OLD" == "USE_OLD" ]
+if [ "USE_OLD" == "" ]
 then
         DEPS+=" libgstreamer0.10-dev"
         DEPS+=" libgstreamer-plugins-base0.10-dev"
@@ -38,10 +38,12 @@ fi
 	# SSL/TLS Support
 	DEPS+=" libssl-dev"
 	DEPS+=" gnutls-dev"
-	DEPS+=" libgnutls-dev"
+#	DEPS+=" libgnutls-dev"
 #	DEPS+=" libgnutls-openssl-dev" # Not available on debian
 	DEPS+=" libsslcommon2-dev"
-	# OpenCV support (for bottle rig)
+	# OpenCV support
+if [ "USE_OPENCV" == "" ]
+then
 	DEPS+=" libopencv-calib3d-dev"
 	DEPS+=" libopencv-contrib-dev"
 	DEPS+=" libopencv-core-dev"
@@ -55,6 +57,11 @@ fi
 	DEPS+=" libopencv-ml-dev"
 	DEPS+=" libopencv-objdetect-dev"
 	DEPS+=" libopencv-video-dev"
+fi
+	DEPS+=" flex"
+	DEPS+=" libpulse-dev"
+	DEPS+=" libpulse-mainloop-gtk0"
+
 	sudo DEBIAN_FRONTEND=noninteractive dpkg --configure -a
 	sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes --fix-missing
 	sudo DEBIAN_FRONTEND=noninteractive apt-get update -y --force-yes 
