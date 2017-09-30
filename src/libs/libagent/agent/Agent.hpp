@@ -54,7 +54,7 @@ private:
 	IActuatorController *mActuatorController;
 
 	QMap<QString, QSet< QSharedPointer<Courier> > > mCourierSets;
-	QSet<QSharedPointer<NodeAssociate> > mLastActiveControls;
+	QSet<QSharedPointer<Associate> > mLastActiveControls;
 
 
 	AgentWindow *mWindow;
@@ -68,10 +68,11 @@ public:
 	// Moved from AgentWindow*
 public:
 
-	QSet<QSharedPointer<NodeAssociate> > activeControls();
-	void setCourierRegistration(QSharedPointer<NodeAssociate>, bool);
+	QSet<QSharedPointer<Associate> > allControls();
+	QSet<QSharedPointer<Associate> > controlsWithActiveSessions(quint64 now=0);
+	void setCourierRegistration(QSharedPointer<Associate>, bool);
 
-	void updateCourierRegistration();
+	void updateCourierRegistration(quint64 now=0);
 
 
 public:

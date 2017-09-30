@@ -6,7 +6,7 @@
 
 
 
-DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<NodeAssociate> part)
+DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<Associate> part)
 {
 	quint32 participantAddCount=0;
 	quint32 sessionAddCount=0;

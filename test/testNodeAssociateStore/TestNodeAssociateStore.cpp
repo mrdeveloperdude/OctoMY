@@ -1,6 +1,6 @@
 #include "TestNodeAssociateStore.hpp"
 
-#include "discovery/NodeAssociateStore.hpp"
+#include "discovery/AddressBook.hpp"
 
 
 
@@ -81,7 +81,7 @@ void TestNodeAssociateStore::test(){
 	assMap["localAddress"]=localAddrMap;
 	assMap["trusts"]=trusts;
 
-	QSharedPointer<NodeAssociate> ass(OC_NEW NodeAssociate(assMap));
+	QSharedPointer<Associate> ass(OC_NEW Associate(assMap));
 	QVERIFY(nullptr!=ass);
 
 	QCOMPARE(ass->id(),id);
@@ -141,7 +141,7 @@ void TestNodeAssociateStore::test(){
 	QVariantMap map=ass->toVariantMap();
 	qDebug()<<"MAP: "<<map;
 
-	QSharedPointer<NodeAssociate> ass1b(OC_NEW NodeAssociate());
+	QSharedPointer<Associate> ass1b(OC_NEW Associate());
 	QVERIFY(nullptr!=ass1b);
 
 	//bool operator==(const NodeAssociate &o) const;
@@ -192,7 +192,7 @@ void TestNodeAssociateStore::test(){
 
 	//Create an empty store and add data to it before saving
 	{
-		NodeAssociateStore *store=OC_NEW NodeAssociateStore(filename);
+		AddressBook *store=OC_NEW AddressBook(filename);
 		QVERIFY(nullptr!=store);
 		store->bootstrap(false, false); // Leave async test to TestKeyStore and TestAsyncStore
 
@@ -200,38 +200,38 @@ void TestNodeAssociateStore::test(){
 		QVERIFY(!store->isInProgress());
 		QVERIFY(!store->hasError());
 
-		QVERIFY(!store->hasParticipant(id));
-		QVERIFY(!store->hasParticipant(badId));
+		QVERIFY(!store->hasAssociate(id));
+		QVERIFY(!store->hasAssociate(badId));
 
 		store->setParticipant(ass);
 
-		QVERIFY(store->hasParticipant(id));
-		QVERIFY(!store->hasParticipant(badId));
+		QVERIFY(store->hasAssociate(id));
+		QVERIFY(!store->hasAssociate(badId));
 
-		QSharedPointer<NodeAssociate> ass2=store->getParticipant(id);
+		QSharedPointer<Associate> ass2=store->associateByID(id);
 
 		QVERIFY(nullptr!=ass2);
 		QCOMPARE(ass,ass2);
 
-		QSharedPointer<NodeAssociate> ass3=store->removeParticipant(id);
+		QSharedPointer<Associate> ass3=store->removeAssociate(id);
 
 		QVERIFY(nullptr!=ass3);
 		QCOMPARE(ass,ass2);
 		QCOMPARE(ass2,ass3);
 		QCOMPARE(ass3->id(),id);
 
-		QSharedPointer<NodeAssociate> ass4=store->removeParticipant(id);
+		QSharedPointer<Associate> ass4=store->removeAssociate(id);
 
 		QVERIFY(nullptr==ass4);
 
-		QSharedPointer<NodeAssociate> ass5=store->getParticipant(id);
+		QSharedPointer<Associate> ass5=store->associateByID(id);
 
 		QVERIFY(nullptr==ass5);
 
 		store->setParticipant(ass);
 
-		QVERIFY(store->hasParticipant(id));
-		QVERIFY(!store->hasParticipant(badId));
+		QVERIFY(store->hasAssociate(id));
+		QVERIFY(!store->hasAssociate(badId));
 
 		// Implicitly saves data
 		delete store;
@@ -240,7 +240,7 @@ void TestNodeAssociateStore::test(){
 
 	//Create a new store, this time expect the file to exist from last step (load only)
 	{
-		NodeAssociateStore *store2=OC_NEW NodeAssociateStore(filename);
+		AddressBook *store2=OC_NEW AddressBook(filename);
 		QVERIFY(nullptr!=store2);
 		store2->bootstrap(true, false); // Leave async test to TestKeyStore and TestAsyncStore
 
@@ -248,10 +248,10 @@ void TestNodeAssociateStore::test(){
 		QVERIFY(!store2->isInProgress());
 		QVERIFY(!store2->hasError());
 
-		QVERIFY(store2->hasParticipant(id));
-		QVERIFY(!store2->hasParticipant(badId));
+		QVERIFY(store2->hasAssociate(id));
+		QVERIFY(!store2->hasAssociate(badId));
 
-		QSharedPointer<NodeAssociate> ass6=store2->getParticipant(id);
+		QSharedPointer<Associate> ass6=store2->associateByID(id);
 
 		QVERIFY(nullptr!=ass6);
 

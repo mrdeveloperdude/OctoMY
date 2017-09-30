@@ -2,7 +2,7 @@
 #define DISCOVERYCOURIER_HPP
 
 #include "Courier.hpp"
-#include "basic/NodeAssociate.hpp"
+#include "basic/Associate.hpp"
 
 #include <QList>
 #include <QMap>
@@ -21,12 +21,12 @@ class DiscoveryCourier : public Courier
 	Q_OBJECT
 
 private:
-	QSharedPointer<NodeAssociate> mAss;
+	QSharedPointer<Associate> mAss;
 	QVariantMap mData;
 	quint64 mLastSend;
 
 public:
-	explicit DiscoveryCourier(QSharedPointer<NodeAssociate> ass, CommsChannel &comms, QObject *parent = nullptr);
+	explicit DiscoveryCourier(QSharedPointer<Associate> ass, CommsChannel &comms, QObject *parent = nullptr);
 	virtual ~DiscoveryCourier();
 
 // Courier interface

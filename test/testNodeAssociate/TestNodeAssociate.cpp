@@ -1,6 +1,6 @@
 #include "TestNodeAssociate.hpp"
 
-#include "basic/NodeAssociate.hpp"
+#include "basic/Associate.hpp"
 
 // YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
 void TestNodeAssociate::test(){
@@ -79,7 +79,7 @@ void TestNodeAssociate::test(){
 	assMap["localAddress"]=localAddrMap;
 	assMap["trusts"]=trusts;
 
-	QSharedPointer<NodeAssociate> ass(OC_NEW NodeAssociate(assMap));
+	QSharedPointer<Associate> ass(OC_NEW Associate(assMap));
 
 	QCOMPARE(ass->id(),id);
 	QCOMPARE(ass->type(),type);

@@ -7,13 +7,13 @@
 #include <QAbstractListModel>
 
 class PairingWizard;
-class NodeAssociateStore;
+class AddressBook;
 
 class PairingListModel: public QAbstractListModel
 {
 	//Q_OBJECT
 private:
-	NodeAssociateStore &mStore;
+	AddressBook &mStore;
 	DiscoveryType mTypeFilter;
 	PairingWizard &mPwiz;
 
@@ -22,7 +22,7 @@ private:
 	bool filter(DiscoveryType &t) const;
 
 public:
-	explicit PairingListModel(NodeAssociateStore &mStore, DiscoveryType mTypeFilter, PairingWizard &mPwiz);
+	explicit PairingListModel(AddressBook &mStore, DiscoveryType mTypeFilter, PairingWizard &mPwiz);
 	virtual ~PairingListModel();
 
 public:

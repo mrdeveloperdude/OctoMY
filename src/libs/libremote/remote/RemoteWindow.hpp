@@ -3,7 +3,7 @@
 
 #include "widgets/TryToggle.hpp"
 #include "node/IContextProvider.hpp"
-#include "basic/NodeAssociate.hpp"
+#include "basic/Associate.hpp"
 
 #include <QWidget>
 #include <QSharedPointer>
@@ -64,7 +64,7 @@ private:
 	void updateActiveAgent();
 
 	int updateAgentsList();
-	void addAgentToList(QSharedPointer<NodeAssociate> peer);
+	void addAgentToList(QSharedPointer<Associate> peer);
 
 	void hookSensorSignals();
 

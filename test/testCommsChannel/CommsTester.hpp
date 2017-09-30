@@ -26,7 +26,7 @@ public:
 	quint16 mPortRange;
 	CommsCarrierUDP mCarrier;
 	KeyStore &mKeyStore;
-	NodeAssociateStore &mPeers;
+	AddressBook &mAssociates;
 	CommsChannel mCc;
 	quint16 mTestCount;
 
@@ -34,7 +34,7 @@ public:
 
 
 public:
-	explicit CommsTester(QString name, QHostAddress myAddress, quint16 myPort, quint16 basePort, quint16 portRange, quint16 testCount, KeyStore &keyStore, NodeAssociateStore &peers, QObject *parent=nullptr);
+	explicit CommsTester(QString name, QHostAddress myAddress, quint16 myPort, quint16 basePort, quint16 portRange, quint16 testCount, KeyStore &keyStore, AddressBook &peers, QObject *parent=nullptr);
 	virtual ~CommsTester() {}
 	QString toString();
 

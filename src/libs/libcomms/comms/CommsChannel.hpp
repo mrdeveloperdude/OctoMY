@@ -34,6 +34,8 @@
 
 #include "RateCalculator.hpp"
 
+#include "couriers/CourierSet.hpp"
+
 #define OCTOMY_PROTOCOL_MAGIC (0x0C701111)
 //#define OCTOMY_PROTOCOL_MAGIC_IDLE (OCTOMY_PROTOCOL_MAGIC+1)
 #define OCTOMY_PROTOCOL_VERSION_CURRENT (1)
@@ -54,7 +56,7 @@ class KeyStore;
 
 class PacketReadState;
 class PacketSendState;
-class NodeAssociateStore;
+class AddressBook;
 
 class CommsChannel : public QObject
 {
@@ -64,15 +66,15 @@ protected:
 
 	CommsCarrier &mCarrier; // The carrier such as udp or bluetooth used by this cc to communicate with the other side
 	KeyStore &mKeystore;   // The keystore which is used for encryption (the local key pair is used, as looked up with mLocalID)
-	NodeAssociateStore &mPeers; // The store wich is used to find network addresses to use when creating new sessions
+	AddressBook &mAssociates; // The store wich is used to find network addresses to use when creating new sessions
 	CommsSessionDirectory mSessions; // The directory of sessions for this cc
-	QList<Courier *> mCouriers; // The couriers that are in use by this cc. Only active couriers are in this list for performance reasons.
+	CourierSet mCouriers; // The couriers that are in use by this cc. Only active couriers are in this list for performance reasons.
 	QMap<quint32, Courier *> mCouriersByID; // Map for quickly finding a particular courier by it's unique ID
 	quint64 mLocalSessionID;
 	RateCalculator mTXScheduleRate;
 
 	// When honeymoon mode is enabled, all inactive associates are pinged continuously in an effort to start new connections
-	bool mHoneyMoon;
+	quint64 mHoneyMoonEnd;
 
 	QMap<quint64, Courier *> mSchedule; // Couriers with priority at next sending oportunity as calculated by rescheduleSending()
 	QSet<QString> mPendingHandshakes;
@@ -80,7 +82,7 @@ protected:
 
 public:
 
-	explicit CommsChannel(CommsCarrier &carrier, KeyStore &keystore, NodeAssociateStore &peers, QObject *parent=nullptr);
+	explicit CommsChannel(CommsCarrier &carrier, KeyStore &keystore, AddressBook &peers, QObject *parent=nullptr);
 	//TODO: Remove once nobody refers to it any more
 	//explicit CommsChannel(CommsCarrier &carrier, KeyStore &keystore, QObject *parent=nullptr);
 	virtual ~CommsChannel();
@@ -107,12 +109,18 @@ public:
 	//void setID(const QString &id);
 	void setHookCommsSignals(QObject &ob, bool hook);
 	void setHookCourierSignals(Courier &courier, bool hook);
+
 	void setCourierRegistered(Courier &, bool);
+	bool courierRegistration();
+	CourierSet couriers();
 	int courierCount();
 	bool hasCourier(Courier &c) const;
 	Courier *getCourierByID(quint32 id) const;
 
 	qint64 sendRawData(QByteArray datagram, NetworkAddress address);
+
+	void setHoneymoonEnd(quint64 hEndMS);
+	bool honeymoon(quint64 now=0);
 
 protected:
 

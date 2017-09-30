@@ -13,8 +13,8 @@
 #include "rng/RNG.hpp"
 
 #include "security/KeyStore.hpp"
-#include "basic/NodeAssociate.hpp"
-#include "discovery/NodeAssociateStore.hpp"
+#include "basic/Associate.hpp"
+#include "discovery/AddressBook.hpp"
 
 
 #include <QTest>
@@ -45,6 +45,6 @@ private slots:
 
 
 void heading(QString msg, QString ch="_");
-QSharedPointer<NodeAssociate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, DiscoveryRole role, DiscoveryType type );
+QSharedPointer<Associate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, DiscoveryRole role, DiscoveryType type );
 
 #endif // TESTCOMMSCHANNEL_HPP

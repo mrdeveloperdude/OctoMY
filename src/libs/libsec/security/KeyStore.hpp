@@ -31,7 +31,7 @@ class KeyStore: public AsyncStore
 private:
 
 	QSharedPointer<Key> mLocalKey;
-	QMap<QString, QSharedPointer<Key> > mPeers;
+	QMap<QString, QSharedPointer<Key> > mAssociates;
 
 	KeySecurityPolicy mPolicy;
 

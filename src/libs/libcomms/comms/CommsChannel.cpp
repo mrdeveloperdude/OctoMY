@@ -19,7 +19,7 @@
 
 #include "pose/Pose.hpp"
 
-#include "discovery/NodeAssociateStore.hpp"
+#include "discovery/AddressBook.hpp"
 
 #include "PacketSendState.hpp"
 #include "PacketReadState.hpp"
@@ -31,17 +31,17 @@
 
 #define FIRST_STATE_ID ((SESSION_ID_TYPE)MULTIMAGIC_LAST)
 
-
 //#define DO_CC_ENC
 
-CommsChannel::CommsChannel(CommsCarrier &carrier, KeyStore &keystore, NodeAssociateStore &peers, QObject *parent)
+CommsChannel::CommsChannel(CommsCarrier &carrier, KeyStore &keystore, AddressBook &peers, QObject *parent)
 	: QObject(parent)
 	, mCarrier(carrier)
 	, mKeystore(keystore)
-	, mPeers(peers)
+	, mAssociates(peers)
 	, mSessions(mKeystore)
 	, mLocalSessionID(0)
 	, mTXScheduleRate("CC TX SCHED")
+	, mHoneyMoonEnd(0)
 //	, mConnected(false)
 {
 	setObjectName("CommsChannel");
@@ -54,7 +54,7 @@ CommsChannel::CommsChannel(CommsCarrier &carrier, KeyStore &keystore, QObject *p
 	: QObject(parent)
 	, mCarrier(carrier)
 	, mKeystore(keystore)
-	, mPeers(*((NodeAssociateStore *) nullptr ))//HACK
+	, mAssociates(*((NodeAssociateStore *) nullptr ))//HACK
 	, mSessions(mKeystore)
 {
 	qWarning()<<"ERROR: PLEASE USE THE OTHER CONSTRUCTOR AS THIS IS UNSUPPORTEDF!";
@@ -184,8 +184,8 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 					qWarning()<<es;
 					emit commsError(es);
 				} else {
-					QSharedPointer<NodeAssociate> participant=mPeers.getParticipant(id);
-					if(nullptr==participant) {
+					QSharedPointer<Associate> associate=mAssociates.associateByID(id);
+					if(nullptr==associate) {
 						QString es="ERROR: no participant found for ID "+id;
 						qWarning()<<es;
 						emit commsError(es);
@@ -196,7 +196,7 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 							//session->setRemoteSessionID(desiredRemoteSessionID);
 							session->handshakeState().setInitiator(initiator);
 							session->setLocalSessionID(localSessionID);
-							session->setAddress(participant->publicAddress());
+							session->setAddress(associate->publicAddress());
 							// Generate our syn nonce
 							const SESSION_NONCE_TYPE synNonce=session->createOurSynNonce();
 							qDebug()<<"OUR SYN TX NONCE CREATED: "<<synNonce;
@@ -244,7 +244,7 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 QSharedPointer<CommsSession> CommsChannel::lookUpSession(QString id)
 {
 	// Look for existing sessions tied to this ID
-	QSharedPointer<CommsSession> session=mSessions.getByFullID(id);
+	QSharedPointer<CommsSession> session=mSessions.byFullID(id);
 	return session;
 }
 
@@ -255,21 +255,6 @@ void CommsChannel::recieveIdle(PacketReadState &state)
 	qDebug()<<"RECEIVED IDLE PACKET";
 }
 
-
-
-// Did handshake complete already?
-//if(session->established()) {
-// TODO: Handle this case:
-/*
-				When an initial packet is received after session was already established the following logic applies:
-					+ If packet timestamp was before session-established-and-confirmed timestamp, it is ignored
-					+ The packet is logged and the stream is examined for packets indicating the original session is still in effect.
-					+ If there were no sign of the initial session after a timeout of X seconds, the session is torn down, and the last of the session initial packet is answered to start a new hand shake
-					+ If one or more packets indicating that the session is still going, the initial packet and it's recepient is flagged as hacked and the packet is ignored. This will trigger a warning to the user in UI, and rules may be set up in plan to automatically shut down communication uppon such an event.
-					+ No matter if bandwidth management is in effect or not, valid initial packets should be processed at a rate at most once per 3 seconds.
-	*/
-//} else {
-//}
 
 
 void CommsChannel::recieveHandshake(PacketReadState &state)
@@ -540,7 +525,7 @@ void CommsChannel::recieveData(PacketReadState &state)
 		emit commsError(es);
 		return;
 	}
-	auto session=mSessions.getBySessionID(sessionID);
+	auto session=mSessions.bySessionID(sessionID);
 	if(nullptr==session) {
 		//Unknown sender
 		QString es="ERROR: OctoMY Protocol Session-Full sender unknown for session-ID: '"+QString::number(sessionID)+QStringLiteral("'. All available are: ")+mSessions.summary();
@@ -565,7 +550,14 @@ void CommsChannel::recieveData(PacketReadState &state)
 	*/
 
 	session->receive();
-	quint16 partsCount=0;
+	// TODO: Verify if this is the right place to set "last seen"
+	const QString id = session->fullID();
+	QSharedPointer<Associate> peer=mAssociates.associateByID(id);
+	if(!peer.isNull()) {
+		qDebug()<< "SET LAST SEEN FOR " << id;
+		peer->setLastSeen();
+	}
+	quint16 partsCount = 0;
 	const qint32 minAvailableForPart  = ( sizeof(quint32)  );
 	if(state.totalAvailable < minAvailableForPart) {
 		qWarning()<<"ERROR: NO PARTS DETECTED! Data size too small";
@@ -680,7 +672,7 @@ void CommsChannel::doSendWithSession(PacketSendState &state)
 		return;
 	}
 	const NetworkAddress na=state.session->address();
-	if(!na.isValid(true,false)) {
+	if(!na.isValid(false,false)) {
 		qWarning()<<"ERROR: invalid address: "	<<na;
 		return;
 	}
@@ -698,7 +690,7 @@ void CommsChannel::doSendWithSession(PacketSendState &state)
 		qDebug()<<"ERROR: Only " << written << " of " <<sz<<" bytes of idle packet written to UDP SOCKET:"<<mCarrier.errorString()<< " for destination "<< na.toString()<<localID();
 		return;
 	}
-	qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET";
+	qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET FOR "<<na.toString();
 	state.session->countSend(written);
 }
 
@@ -709,7 +701,7 @@ void CommsChannel::doSendWithSession(PacketSendState &state)
 // AND create new sessions for IDs that have not yet been enrolled
 void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 {
-	QSharedPointer<CommsSession> session=mSessions.getByFullID(handShakeID);
+	QSharedPointer<CommsSession> session=mSessions.byFullID(handShakeID);
 	if(nullptr==session) {
 		qDebug()<<"CREATING NEW SESSION FOR ID "<< handShakeID<< " IN SEND HANDSHAKE";
 		session=createSession(handShakeID, true);
@@ -959,8 +951,6 @@ void CommsChannel::sendCourierData(const quint64 &now, Courier &courier)
 }
 
 
-
-
 quint64 CommsChannel::rescheduleSending(quint64 now)
 {
 	mTXScheduleRate.countPacket(0);
@@ -984,7 +974,7 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 			if(cm.sendActive) {
 				// See if the node for this courier has been enrolled yet
 				const QString id=courier->destination();
-				QSharedPointer<CommsSession> session=mSessions.getByFullID(id);
+				QSharedPointer<CommsSession> session=mSessions.byFullID(id);
 				if(nullptr!=session) {
 					if(session->established()) {
 						const qint64 timeLeft = cm.nextSend - now;
@@ -1008,93 +998,22 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 					// No previous session
 				} else {
 
-
-					/*
-
-					If A sends first, A becomes initiator and B becomes adherent. All is dandy
-					If B sends first, B becomes initiator and A becomes adherent. All is dandy
-					If A & B send exqactly at the same time both A & B become initiator and chaos ensues
-
-					This is resolved in the following manner:
-
-					1. Detect if both A & B are initiator
-					a. If we receive a packet indicating that the other party thinks they hold the same role as us (both initiator or both adherent)
-
-					2. Look up ID-duel and the winner gets to keep current status while the looser must change.
-
-					3. Drop the packet with a log entry and let the flow of handshake resume but now with both having correct role.
-
-
-					Detect duplicate connection pairs in sessions, and remove the one that is inferior in ID-duel
-					Time since first ever successfull connection
-					Time since first ever connection attempt, successfull or not
-					Time since last successfull connection
-					Time since last unsuccessful connection attempt
-
-					*/
-					QSharedPointer<NodeAssociate> peer=mPeers.getParticipant(id);
+					QSharedPointer<Associate> peer=mAssociates.associateByID(id);
 					if(!peer.isNull()) {
-						const quint64 timeSinceLastInitiatedHandshake=(now-peer->lastInitiatedHandshake());
-						const quint64 timeSinceLastAdherentHandshake=(now-peer->lastAdherentHandshake());
+						const quint64 timeSinceLastInitiatedHandshake=(now - peer->lastInitiatedHandshake());
+						const quint64 timeSinceLastAdherentHandshake=(now - peer->lastAdherentHandshake());
 						const quint64 timeSinceLastHandshake=qMin(timeSinceLastInitiatedHandshake, timeSinceLastAdherentHandshake);
-						/*
-						if(timeSinceLastHandshake> HANDSHAKE_GRACE_PERIOD){
+
+						quint64 gracePeriod = 0;
+						if(honeymoon(now)) {
+							gracePeriod = 0;
+						}
+
+						if(timeSinceLastHandshake > gracePeriod) {
+							qDebug()<<"#### Initiating handshake for "<<id;
 							mPendingHandshakes << id;
 						}
 
-
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-						sdløkfjsdkløfjsdkløfjsdkljf
-
-
-						*/
 					}
 				}
 			}
@@ -1122,6 +1041,26 @@ qint64 CommsChannel::sendRawData(QByteArray datagram, NetworkAddress address)
 {
 	return mCarrier.writeData(datagram, address);
 }
+
+void CommsChannel::setHoneymoonEnd(quint64 hEndMS)
+{
+	const quint64 iv=QDateTime::currentMSecsSinceEpoch() - hEndMS;
+	if(iv>0) {
+		qDebug()<<"HONEYMOON ENABLED FOR "<<utility::humanReadableElapsedMS(iv);
+	} else {
+		qDebug()<<"HONEYMOON DISABLED";
+	}
+	mHoneyMoonEnd = hEndMS;
+}
+
+bool CommsChannel::honeymoon(quint64 now)
+{
+	if(0==now) {
+		now= QDateTime::currentMSecsSinceEpoch();
+	}
+	return mHoneyMoonEnd > now;
+}
+
 
 NetworkAddress CommsChannel::localAddress()
 {
@@ -1217,7 +1156,7 @@ void CommsChannel::onCarrierSendingOpportunity(const quint64 now)
 	// Finally send idle packets to sessions that need it
 	auto rate=mCarrier.minimalPacketInterval();
 	auto lastActive= now-rate;
-	auto idles=mSessions.getByIdleTime(lastActive);
+	auto idles=mSessions.byIdleTime(lastActive);
 	const int isz=idles.size();
 	qDebug()<<"IDLES: "<< isz<<" (rate= "<<QString::number(rate)<<")";
 	if(isz>0) {
@@ -1296,6 +1235,11 @@ void CommsChannel::setHookCourierSignals(Courier &courier, bool hook)
 }
 
 
+bool CommsChannel::courierRegistration()
+{
+	OC_METHODGATE();
+	return mCouriers.commsEnabled();
+}
 
 void CommsChannel::setCourierRegistered(Courier &courier, bool reg)
 {
@@ -1320,6 +1264,11 @@ void CommsChannel::setCourierRegistered(Courier &courier, bool reg)
 		mCouriers.removeAll(&courier);
 	}
 	setHookCourierSignals(courier,reg);
+}
+
+CourierSet CommsChannel::couriers()
+{
+	return mCouriers;
 }
 
 int CommsChannel::courierCount()

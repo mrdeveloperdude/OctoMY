@@ -1,4 +1,4 @@
-#include "NodeAssociateStore.hpp"
+#include "AddressBook.hpp"
 
 #include "utility/Utility.hpp"
 
@@ -11,13 +11,13 @@
 #include <QVariantMap>
 #include <QVariantList>
 
-NodeAssociateStore::NodeAssociateStore(QString fn, QObject *parent)
+AddressBook::AddressBook(QString fn, QObject *parent)
 	: AsyncStore(fn, parent)
 {
 	setObjectName("NodeAssociateStore");
 	//qDebug()<<"NodeAssociateStore() file="<<fn;
 	// Forward the async storeReady signal
-	if(!connect( this, SIGNAL(storeReady(bool)), SIGNAL(peerStoreReady(bool)), OC_CONTYPE)) {
+	if(!connect( this, SIGNAL(storeReady(bool)), SIGNAL(addressbookReady(bool)), OC_CONTYPE)) {
 		qWarning()<<"Could not connect "<<objectName();
 	} else {
 		//qDebug()<<"FORWARDING storeReady -> peerStoreReady";
@@ -26,14 +26,14 @@ NodeAssociateStore::NodeAssociateStore(QString fn, QObject *parent)
 
 
 
-NodeAssociateStore::~NodeAssociateStore()
+AddressBook::~AddressBook()
 {
 	save();
 }
 
 
 
-void NodeAssociateStore::bootstrapWorkerImpl()
+void AddressBook::bootstrapWorkerImpl()
 {
 	//qDebug()<<"KeyStore() bootstrapWorkerImpl() file="<<mFilename;
 	QFile f(mFilename);
@@ -45,7 +45,7 @@ void NodeAssociateStore::bootstrapWorkerImpl()
 }
 
 
-void NodeAssociateStore::load()
+void AddressBook::load()
 {
 	//qDebug()<<"NodeAssociateStore: Loading from file "<<mFilename;
 	QJsonParseError jsonError;
@@ -61,27 +61,27 @@ void NodeAssociateStore::load()
 			mError=true;
 		} else {
 			//qDebug()<<"PARSED JSON: "<<doc.toJson();
-			mPeers.clear();
+			mAssociates.clear();
 			QVariantMap map = doc.object().toVariantMap();
 			QVariantList peers=map["peers"].toList();
 			for(QVariantList::iterator b=peers.begin(), e=peers.end(); b!=e; ++b) {
-				QSharedPointer<NodeAssociate> peer=QSharedPointer<NodeAssociate>(OC_NEW NodeAssociate((*b).toMap()));
+				QSharedPointer<Associate> peer=QSharedPointer<Associate>(OC_NEW Associate((*b).toMap()));
 				setParticipant(peer);
 			}
 			mReady=true;
 		}
 	}
 	//qDebug()<<"EMITTING storeReady";
-	emit peerStoreReady(!mError);
+	emit addressbookReady(!mError);
 }
 
-void NodeAssociateStore::save()
+void AddressBook::save()
 {
 	//qDebug()<<"NodeAssociateStore: Saving to file: "<<mFilename;
 	QVariantMap map;
 	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();
 	QVariantList remotes;
-	for(QMap<QString, QSharedPointer<NodeAssociate> >::const_iterator b=mPeers.begin(), e=mPeers.end(); b!=e; ++b) {
+	for(QMap<QString, QSharedPointer<Associate> >::const_iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
 		remotes.push_back(b.value()->toVariantMap());
 	}
 	map["peers"]=remotes;
@@ -94,51 +94,51 @@ void NodeAssociateStore::save()
 
 
 
-bool NodeAssociateStore::hasParticipant(const QString &id)
+bool AddressBook::hasAssociate(const QString &id)
 {
-	return (mPeers.find(id)!=mPeers.end());
+	return (mAssociates.find(id)!=mAssociates.end());
 }
 
 
-int NodeAssociateStore::getParticipantCount() const
+int AddressBook::associateCount() const
 {
-	return mPeers.size();
+	return mAssociates.size();
 }
 
-QSharedPointer<NodeAssociate> NodeAssociateStore::getParticipant(const QString &id)
+QSharedPointer<Associate> AddressBook::associateByID(const QString &id)
 {
-	if(hasParticipant(id)) {
-		return mPeers[id];
+	if(hasAssociate(id)) {
+		return mAssociates[id];
 	}
-	QSharedPointer<NodeAssociate> ret;
+	QSharedPointer<Associate> ret;
 	return ret;
 }
 
 
-QSharedPointer<NodeAssociate> NodeAssociateStore::removeParticipant(const QString &id)
+QSharedPointer<Associate> AddressBook::removeAssociate(const QString &id)
 {
-	QSharedPointer<NodeAssociate> ret;
-	if(hasParticipant(id)) {
-		ret=mPeers[id];
-		mPeers.remove(id);
-		emit peerRemoved(id);
-		emit peersChanged();
+	QSharedPointer<Associate> ret;
+	if(hasAssociate(id)) {
+		ret=mAssociates[id];
+		mAssociates.remove(id);
+		emit associateRemoved(id);
+		emit associatesChanged();
 	}
 	return ret;
 }
 
 
 
-void NodeAssociateStore::setParticipant(QSharedPointer<NodeAssociate> participant)
+void AddressBook::setParticipant(QSharedPointer<Associate> participant)
 {
 	if(nullptr!=participant) {
 		auto id=participant->id();
 		qDebug()<<"REGISTERING PARTICIPANT WITH ID: "<<id;
-		const bool isNew=!hasParticipant(id);
-		mPeers[id]=participant;
+		const bool isNew=!hasAssociate(id);
+		mAssociates[id]=participant;
 		if(isNew) {
-			emit peerAdded(id);
-			emit peersChanged();
+			emit associateAdded(id);
+			emit associatesChanged();
 		}
 	}
 	else{
@@ -147,46 +147,46 @@ void NodeAssociateStore::setParticipant(QSharedPointer<NodeAssociate> participan
 }
 
 
-QMap<QString, QSharedPointer<NodeAssociate> > &NodeAssociateStore::getParticipants()
+QMap<QString, QSharedPointer<Associate> > &AddressBook::all()
 {
-	return mPeers;
+	return mAssociates;
 }
 
 
 // Forward the async storeReady signal
-void NodeAssociateStore::hookSignals(QObject &ob)
+void AddressBook::hookSignals(QObject &ob)
 {
-	if(!connect(this, SIGNAL(peerStoreReady(bool)), &ob, SLOT(onPeerStoreReady(bool)),OC_CONTYPE)) {
+	if(!connect(this, SIGNAL(addressbookReady(bool)), &ob, SLOT(onPeerStoreReady(bool)),OC_CONTYPE)) {
 		qWarning()<<"Could not connect "<<ob.objectName();
 	} else {
 		//qDebug()<<"HOOKING peerStoreReady";
 	}
-	if(!connect(this,SIGNAL(peerAdded(QString)),&ob,SLOT(onPeerAdded(QString)),OC_CONTYPE)) {
+	if(!connect(this,SIGNAL(associateAdded(QString)),&ob,SLOT(onPeerAdded(QString)),OC_CONTYPE)) {
 		qWarning()<<"Could not connect "<<ob.objectName();
 	}
-	if(!connect(this,SIGNAL(peerRemoved(QString)),&ob,SLOT(onPeerRemoved(QString)),OC_CONTYPE)) {
+	if(!connect(this,SIGNAL(associateRemoved(QString)),&ob,SLOT(onPeerRemoved(QString)),OC_CONTYPE)) {
 		qWarning()<<"Could not connect "<<ob.objectName();
 	}
-	if(!connect(this,SIGNAL(peersChanged()),&ob,SLOT(onPeersChanged()),OC_CONTYPE)) {
+	if(!connect(this,SIGNAL(associatesChanged()),&ob,SLOT(onPeersChanged()),OC_CONTYPE)) {
 		qWarning()<<"Could not connect "<<ob.objectName();
 	}
 }
 
 
-void NodeAssociateStore::unHookSignals(QObject &ob)
+void AddressBook::unHookSignals(QObject &ob)
 {
-	if(!disconnect(this, SIGNAL(peerStoreReady(bool)), &ob, SLOT(onPeerStoreReady(bool)))) {
+	if(!disconnect(this, SIGNAL(addressbookReady(bool)), &ob, SLOT(onPeerStoreReady(bool)))) {
 		qWarning()<<"Could not disconnect "<<ob.objectName();
 	} else {
 		//qDebug()<<"UN-HOOKING peerStoreReady";
 	}
-	if(!disconnect(this,SIGNAL(peerAdded(QString)),&ob,SLOT(onPeerAdded(QString)))) {
+	if(!disconnect(this,SIGNAL(associateAdded(QString)),&ob,SLOT(onPeerAdded(QString)))) {
 		qWarning()<<"Could not disconnect "<<ob.objectName();
 	}
-	if(!disconnect(this,SIGNAL(peerRemoved(QString)),&ob,SLOT(onPeerRemoved(QString)))) {
+	if(!disconnect(this,SIGNAL(associateRemoved(QString)),&ob,SLOT(onPeerRemoved(QString)))) {
 		qWarning()<<"Could not disconnect "<<ob.objectName();
 	}
-	if(!disconnect(this,SIGNAL(peersChanged()),&ob,SLOT(onPeersChanged()))) {
+	if(!disconnect(this,SIGNAL(associatesChanged()),&ob,SLOT(onPeersChanged()))) {
 		qWarning()<<"Could not disconnect "<<ob.objectName();
 	}
 }

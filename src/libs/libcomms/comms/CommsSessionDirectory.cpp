@@ -58,7 +58,7 @@ void CommsSessionDirectory::remove(QSharedPointer<CommsSession> c)
 }
 
 
-QSharedPointer<CommsSession> CommsSessionDirectory::getBySessionID(const SESSION_ID_TYPE sessionID) const
+QSharedPointer<CommsSession> CommsSessionDirectory::bySessionID(const SESSION_ID_TYPE sessionID) const
 {
 	QHash<SESSION_ID_TYPE, QSharedPointer<CommsSession> >::const_iterator it=mBySessionID.find(sessionID);
 	if(mBySessionID.end()==it) {
@@ -68,7 +68,7 @@ QSharedPointer<CommsSession> CommsSessionDirectory::getBySessionID(const SESSION
 }
 
 
-QSharedPointer<CommsSession> CommsSessionDirectory::getByFullID(const QString &id) const
+QSharedPointer<CommsSession> CommsSessionDirectory::byFullID(const QString &id) const
 {
 	QHash<QString, QSharedPointer<CommsSession> >::const_iterator it=mByFullID.find(id);
 	if(mByFullID.end()==it) {
@@ -77,7 +77,7 @@ QSharedPointer<CommsSession> CommsSessionDirectory::getByFullID(const QString &i
 	return it.value();
 }
 
-QSharedPointer<CommsSession> CommsSessionDirectory::getByAddress(const NetworkAddress &address) const
+QSharedPointer<CommsSession> CommsSessionDirectory::byAddress(const NetworkAddress &address) const
 {
 	// Never accept bad address
 	if(!address.isValid(false,false)) {
@@ -92,7 +92,7 @@ QSharedPointer<CommsSession> CommsSessionDirectory::getByAddress(const NetworkAd
 
 
 
-QSet<QSharedPointer<CommsSession> > CommsSessionDirectory::getByActiveTime(quint64 lastActiveTime) const
+QSet<QSharedPointer<CommsSession> > CommsSessionDirectory::byActiveTime(quint64 lastActiveTime) const
 {
 	QSet<QSharedPointer<CommsSession> > ret;
 	for(QSharedPointer<CommsSession> client:mAll) {
@@ -106,13 +106,20 @@ QSet<QSharedPointer<CommsSession> > CommsSessionDirectory::getByActiveTime(quint
 }
 
 
+QSet<QSharedPointer<CommsSession> > CommsSessionDirectory::all() const
+{
+	return mAll;
+}
+
+
+
 bool CommsSessionDirectory::fullIDExists(const QString &id) const
 {
 	QHash<QString, QSharedPointer<CommsSession> >::const_iterator it=mByFullID.find(id);
 	return (mByFullID.end()!=it);
 }
 
-QSet<QSharedPointer<CommsSession> > CommsSessionDirectory::getByIdleTime(quint64 lastActiveTime) const
+QSet<QSharedPointer<CommsSession> > CommsSessionDirectory::byIdleTime(quint64 lastActiveTime) const
 {
 	QSet<QSharedPointer<CommsSession> > ret;
 	for(QSharedPointer<CommsSession> client:mAll) {

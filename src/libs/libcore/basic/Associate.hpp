@@ -4,8 +4,8 @@
  * permission from original author and owner "Lennart Rolland".
  */
 
-#ifndef NODEASSOCIATE_HPP
-#define NODEASSOCIATE_HPP
+#ifndef ASSOCIATE_HPP
+#define ASSOCIATE_HPP
 
 
 #include "discovery/DiscoveryRole.hpp"
@@ -35,7 +35,7 @@ class PortableID;
 */
 
 
-class NodeAssociate
+class Associate
 {
 private:
 	Key mKey;
@@ -65,9 +65,9 @@ private:
 	QStringList mPins;
 
 public:
-	explicit NodeAssociate();
-	explicit NodeAssociate(const QVariantMap map, bool isPublic=true);
-	virtual ~NodeAssociate();
+	explicit Associate();
+	explicit Associate(const QVariantMap map, bool isPublic=true);
+	virtual ~Associate();
 
 
 public:
@@ -88,6 +88,9 @@ public:
 	NetworkAddress localAddress() const;
 	// TODO: Merge into NetworkAddress?
 	QBluetoothAddress bluetoothAddress()const;
+
+
+	void setLastSeen(quint64 when=0);
 	quint64 lastSeen() const;
 	quint64 lastInitiatedHandshake() const;
 	quint64 lastAdherentHandshake() const;
@@ -118,17 +121,12 @@ public:// to/from
 
 
 public: // Operators
-	bool operator==(const NodeAssociate &o) const;
-	bool operator!=(const NodeAssociate &o) const;
-
-
-
-
-
+	bool operator==(const Associate &o) const;
+	bool operator!=(const Associate &o) const;
 
 };
 
 
-const QDebug &operator<<(QDebug &d, NodeAssociate &ass);
+const QDebug &operator<<(QDebug &d, Associate &ass);
 
-#endif // NODEASSOCIATE_HPP
+#endif // ASSOCIATE_HPP

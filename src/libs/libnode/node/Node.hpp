@@ -10,7 +10,7 @@
 #include "comms/CommsCarrierUDP.hpp"
 
 #include "discovery/DiscoveryRole.hpp"
-#include "discovery/NodeAssociateStore.hpp"
+#include "discovery/AddressBook.hpp"
 
 #include "basic/Settings.hpp"
 #include "security/KeyStore.hpp"
@@ -47,7 +47,7 @@ protected:
 
 	AppContext *mContext;
 	KeyStore mKeystore;
-	NodeAssociateStore mPeers;
+	AddressBook mAssociates;
 
 	DiscoveryClient *mDiscovery;
 	DiscoveryRole mRole;
@@ -95,7 +95,7 @@ public:
 	const QCommandLineParser &options() const;
 	Settings &settings();
 	KeyStore &keyStore();
-	NodeAssociateStore &peers();
+	AddressBook &peers();
 	DiscoveryClient *discoveryClient();
 	DiscoveryRole role();
 	DiscoveryType type();
@@ -104,7 +104,7 @@ public:
 	ZooClient *zooClient();
 	SensorInput *sensorInput();
 
-	QSharedPointer<NodeAssociate> nodeIdentity();
+	QSharedPointer<Associate> nodeIdentity();
 
 	CameraList *cameras();
 

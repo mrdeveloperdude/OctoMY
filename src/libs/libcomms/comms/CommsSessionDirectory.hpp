@@ -43,11 +43,12 @@ public:
 
 	void insert(QSharedPointer<CommsSession> c);
 	void remove(QSharedPointer<CommsSession> c);
-	QSharedPointer<CommsSession> getBySessionID(const SESSION_ID_TYPE id) const;
-	QSharedPointer<CommsSession> getByFullID(const QString &id) const;
-	QSharedPointer<CommsSession> getByAddress(const NetworkAddress &address) const;
-	QSet<QSharedPointer<CommsSession> > getByActiveTime(quint64 lastActiveTime) const;
-	QSet<QSharedPointer<CommsSession> > getByIdleTime(quint64 lastActiveTime) const;
+	QSharedPointer<CommsSession> bySessionID(const SESSION_ID_TYPE id) const;
+	QSharedPointer<CommsSession> byFullID(const QString &id) const;
+	QSharedPointer<CommsSession> byAddress(const NetworkAddress &address) const;
+	QSet<QSharedPointer<CommsSession> > byActiveTime(quint64 lastActiveTime) const;
+	QSet<QSharedPointer<CommsSession> > byIdleTime(quint64 lastActiveTime) const;
+	QSet<QSharedPointer<CommsSession> > all() const;
 
 
 	bool fullIDExists(const QString &id) const;

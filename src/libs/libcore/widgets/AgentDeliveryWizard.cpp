@@ -169,7 +169,7 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 					map["type"]=DiscoveryTypeToString(TYPE_AGENT);
 					map["role"]=DiscoveryRoleToString(ROLE_AGENT);
 					map["birthDate"]=mBirthDate;
-					mMyData= QSharedPointer<NodeAssociate> (OC_NEW NodeAssociate(map));
+					mMyData= QSharedPointer<Associate> (OC_NEW Associate(map));
 					mID=mMyData->toPortableID();
 					mNode->peers().setParticipant(mMyData);
 					mNode->peers().save();

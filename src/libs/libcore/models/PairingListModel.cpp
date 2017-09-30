@@ -4,7 +4,7 @@
 #include "basic/Settings.hpp"
 #include "node/Node.hpp"
 #include "identity/Identicon.hpp"
-#include "basic/NodeAssociate.hpp"
+#include "basic/Associate.hpp"
 #include "security/PortableID.hpp"
 #include "utility/Standard.hpp"
 
@@ -27,13 +27,13 @@ bool PairingListModel::filter(DiscoveryType &t) const
 }
 
 
-PairingListModel::PairingListModel(NodeAssociateStore &store, DiscoveryType typeFilter, PairingWizard &pwiz)
+PairingListModel::PairingListModel(AddressBook &store, DiscoveryType typeFilter, PairingWizard &pwiz)
 	: QAbstractListModel(&pwiz)
 	, mStore(store)
 	, mTypeFilter(typeFilter)
 	, mPwiz(pwiz)
 {
-	if(!connect(&mStore, &NodeAssociateStore::peersChanged, this, &PairingListModel::onPeersChanged, OC_CONTYPE)) {
+	if(!connect(&mStore, &AddressBook::associatesChanged, this, &PairingListModel::onPeersChanged, OC_CONTYPE)) {
 		//if(!connect(&mStore, SIGNAL(peersChanged()), this, SLOT(onPeersChanged()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect ";
 	}
@@ -46,15 +46,15 @@ PairingListModel::~PairingListModel()
 void PairingListModel::onPeersChanged()
 {
 	qDebug()<<"FORWARDING UPDATE SIGNAL";
-	emit dataChanged(index(0,0),index(mStore.getParticipantCount(),0));
+	emit dataChanged(index(0,0),index(mStore.associateCount(),0));
 }
 
 int PairingListModel::rowCount(const QModelIndex &) const
 {
 	int ret=0;
-	QMap<QString, QSharedPointer<NodeAssociate> > participants=mStore.getParticipants();
-	for(QMap<QString, QSharedPointer<NodeAssociate> >::const_iterator it=participants.begin(), e=participants.end(); it!=e; ++it) {
-		QSharedPointer<NodeAssociate> p=it.value();
+	QMap<QString, QSharedPointer<Associate> > participants=mStore.all();
+	for(QMap<QString, QSharedPointer<Associate> >::const_iterator it=participants.begin(), e=participants.end(); it!=e; ++it) {
+		QSharedPointer<Associate> p=it.value();
 		if(nullptr!=p) {
 			DiscoveryType t=p->type();
 			if(filter(t)) {
@@ -73,13 +73,13 @@ int PairingListModel::columnCount(const QModelIndex &) const
 
 QVariant PairingListModel::data(const QModelIndex &index, int role) const
 {
-	QMap<QString, QSharedPointer<NodeAssociate> > &participants=mStore.getParticipants();
+	QMap<QString, QSharedPointer<Associate> > &participants=mStore.all();
 	int targetRow=index.row();
 	int rowCounter=0;
-	QSharedPointer<NodeAssociate> part;
+	QSharedPointer<Associate> part;
 
-	for(QMap<QString, QSharedPointer<NodeAssociate> >::const_iterator it=participants.begin(), e=participants.end(); it!=e; ++it) {
-		QSharedPointer<NodeAssociate> p=it.value();
+	for(QMap<QString, QSharedPointer<Associate> >::const_iterator it=participants.begin(), e=participants.end(); it!=e; ++it) {
+		QSharedPointer<Associate> p=it.value();
 		if(nullptr!=p) {
 			DiscoveryType t=p->type();
 			if(filter(t)) {
@@ -114,5 +114,5 @@ QVariant PairingListModel::headerData(int section, Qt::Orientation orientation, 
 
 QString PairingListModel::status()
 {
-	return "STATUS: "+QString::number(mStore.getParticipantCount())+" peers";
+	return "STATUS: "+QString::number(mStore.associateCount())+" peers";
 }

@@ -3,7 +3,7 @@
 #include "comms/couriers/blob/BlobCourier.hpp"
 #include "comms/couriers/blob/Blob.hpp"
 #include "comms/couriers/blob/BlobChunk.hpp"
-#include "discovery/NodeAssociateStore.hpp"
+#include "discovery/AddressBook.hpp"
 #include "security/KeyStore.hpp"
 
 #include "comms/couriers/CourierMandate.hpp"
@@ -201,7 +201,7 @@ public:
 void TestBlob::testBlobCourier2()
 {
 	KeyStore keystore;
-	NodeAssociateStore peers;
+	AddressBook peers;
 	//CommsCarrier &carrier, KeyStore &keystore, NodeAssociateStore &peers, QObject *parent=nullptr);
 	CommsCarrierUDP carrier;
 	CommsChannel comms(carrier, keystore, peers);

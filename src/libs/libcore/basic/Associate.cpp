@@ -4,14 +4,14 @@
  * permission from original author and owner "Lennart Rolland".
  */
 
-#include "basic/NodeAssociate.hpp"
+#include "basic/Associate.hpp"
 #include "utility/Utility.hpp"
 
 #include <QRegularExpression>
 
 
 
-NodeAssociate::NodeAssociate(const QVariantMap map, bool isPublic)
+Associate::Associate(const QVariantMap map, bool isPublic)
 	: mKey( map["key"].toMap(), isPublic)
 	, mName( map["name"].toString() )
 	, mGender( map["gender"].toString() )
@@ -33,7 +33,7 @@ NodeAssociate::NodeAssociate(const QVariantMap map, bool isPublic)
 
 
 
-NodeAssociate::NodeAssociate()
+Associate::Associate()
 	: mRole(ROLE_UNKNOWN)
 	, mType(TYPE_UNKNOWN)
 	, mLastSeenMS(0)
@@ -47,11 +47,11 @@ NodeAssociate::NodeAssociate()
 
 
 
-NodeAssociate::~NodeAssociate(){
+Associate::~Associate(){
 	//qDebug()<<"DELETING node associate with ID "<<id();
 }
 
-bool NodeAssociate::update(const QVariantMap map, bool trustedSource){
+bool Associate::update(const QVariantMap map, bool trustedSource){
 	OC_METHODGATE();
 	bool passesSecurityCheck=false;
 	if(map["key"].toMap()["publicKey"].toString()==mKey.pubKey() && map["key"].toMap()["privateKey"].toString()==mKey.key()){
@@ -82,13 +82,13 @@ bool NodeAssociate::update(const QVariantMap map, bool trustedSource){
 
 ////////////////////////////////////////////////////////////////////////////////
 
-QString NodeAssociate::id() //NOTE no const please
+QString Associate::id() //NOTE no const please
 {
 	OC_METHODGATE();
 	return mKey.id();
 }
 
-QString NodeAssociate::name() const
+QString Associate::name() const
 {
 	OC_METHODGATE();
 	return mName;
@@ -96,26 +96,26 @@ QString NodeAssociate::name() const
 
 
 
-QString NodeAssociate::gender() const
+QString Associate::gender() const
 {
 	OC_METHODGATE();
 	return mGender;
 }
 
 
-Key NodeAssociate::key()
+Key Associate::key()
 {
 	OC_METHODGATE();
 	return mKey;
 }
 
-DiscoveryType NodeAssociate::type() const
+DiscoveryType Associate::type() const
 {
 	OC_METHODGATE();
 	return mType;
 }
 
-DiscoveryRole NodeAssociate::role() const
+DiscoveryRole Associate::role() const
 {
 	OC_METHODGATE();
 	return mRole;
@@ -124,7 +124,7 @@ DiscoveryRole NodeAssociate::role() const
 
 
 
-bool NodeAssociate::isValidForClient(bool onlyPublic)
+bool Associate::isValidForClient(bool onlyPublic)
 {
 	OC_METHODGATE();
 	return (
@@ -137,7 +137,7 @@ bool NodeAssociate::isValidForClient(bool onlyPublic)
 }
 
 
-bool NodeAssociate::isValidForServer()
+bool Associate::isValidForServer()
 {
 	OC_METHODGATE();
 	return (!mPins.isEmpty()) && isValidForClient(true) ;
@@ -145,49 +145,55 @@ bool NodeAssociate::isValidForServer()
 
 
 
-NetworkAddress NodeAssociate::publicAddress() const
+NetworkAddress Associate::publicAddress() const
 {
 	OC_METHODGATE();
 	return mPublicNetworkAddress;
 }
 
 
-NetworkAddress NodeAssociate::localAddress() const
+NetworkAddress Associate::localAddress() const
 {
 	OC_METHODGATE();
 	return mLocalNetworkAddress;
 }
 
 
-QBluetoothAddress NodeAssociate::bluetoothAddress() const
+QBluetoothAddress Associate::bluetoothAddress() const
 {
 	OC_METHODGATE();
 	return mBluetoothAddress;
 }
 
 
+void Associate::setLastSeen(quint64 when)
+{
+	if(0==when){
+		when=QDateTime::currentMSecsSinceEpoch();
+	}
+	mLastSeenMS=when;
+}
 
-
-quint64 NodeAssociate::lastSeen() const
+quint64 Associate::lastSeen() const
 {
 	return mLastSeenMS;
 }
 
 
-quint64 NodeAssociate::lastInitiatedHandshake() const
+quint64 Associate::lastInitiatedHandshake() const
 {
 	OC_METHODGATE();
 	return mLastInitiatedHandshakeMS;
 }
 
 
-quint64 NodeAssociate::lastAdherentHandshake() const
+quint64 Associate::lastAdherentHandshake() const
 {
 	OC_METHODGATE();
 	return mLastAdherentHandshakeMS;
 }
 
-const QDebug &operator<<(QDebug &d, NodeAssociate &ass)
+const QDebug &operator<<(QDebug &d, Associate &ass)
 {
 	OC_FUNCTIONGATE();
 	d.nospace() << "NodeAssociate("<<ass.toString()<<")";
@@ -198,20 +204,20 @@ const QDebug &operator<<(QDebug &d, NodeAssociate &ass)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void NodeAssociate::clearTrust()
+void Associate::clearTrust()
 {
 	OC_METHODGATE();
 	mTrusts.clear();
 }
 
-void NodeAssociate::addTrust(QString trust)
+void Associate::addTrust(QString trust)
 {
 	OC_METHODGATE();
 	mTrusts.push_back(trust);
 }
 
 
-void NodeAssociate::removeTrust(QString trust)
+void Associate::removeTrust(QString trust)
 {
 	OC_METHODGATE();
 	if(mTrusts.contains(trust)){
@@ -219,11 +225,11 @@ void NodeAssociate::removeTrust(QString trust)
 	}
 }
 
-bool NodeAssociate::hasTrust(QString trust){
+bool Associate::hasTrust(QString trust){
 	return mTrusts.contains(trust);
 }
 
-const QStringList &NodeAssociate::trusts(){
+const QStringList &Associate::trusts(){
 	OC_METHODGATE();
 	return mTrusts;
 }
@@ -236,14 +242,14 @@ const QStringList &NodeAssociate::trusts(){
 const QRegularExpression rePin("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
 
 
-void NodeAssociate::clearPins()
+void Associate::clearPins()
 {
 	OC_METHODGATE();
 	mPins.clear();
 }
 
 
-void NodeAssociate::addPin(QString pin)
+void Associate::addPin(QString pin)
 {
 	OC_METHODGATE();
 	if(rePin.match(pin).hasMatch()){
@@ -257,11 +263,11 @@ void NodeAssociate::addPin(QString pin)
 
 
 
-bool NodeAssociate::hasPin(QString pin){
+bool Associate::hasPin(QString pin){
 	return mPins.contains(pin);
 }
 
-const QStringList &NodeAssociate::pins(){
+const QStringList &Associate::pins(){
 	OC_METHODGATE();
 	return mPins;
 }
@@ -270,7 +276,7 @@ const QStringList &NodeAssociate::pins(){
 
 ////////////////////////////////////////////////////////////////////////////////
 
-PortableID NodeAssociate::toPortableID()
+PortableID Associate::toPortableID()
 {
 	OC_METHODGATE();
 	PortableID pid;
@@ -284,7 +290,7 @@ PortableID NodeAssociate::toPortableID()
 
 
 
-QVariantMap NodeAssociate::toVariantMap()
+QVariantMap Associate::toVariantMap()
 {
 	OC_METHODGATE();
 	QVariantMap map;
@@ -306,7 +312,7 @@ QVariantMap NodeAssociate::toVariantMap()
 
 
 
-void NodeAssociate::fromVariantMap(const QVariantMap map)
+void Associate::fromVariantMap(const QVariantMap map)
 {
 	OC_METHODGATE();
 	mKey=Key( map["key"].toMap(), true);
@@ -326,7 +332,7 @@ void NodeAssociate::fromVariantMap(const QVariantMap map)
 
 
 
-QString NodeAssociate::toString()
+QString Associate::toString()
 {
 	OC_METHODGATE();
 	return mKey.toString()
@@ -347,7 +353,7 @@ QString NodeAssociate::toString()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool NodeAssociate::operator==(const NodeAssociate &o) const{
+bool Associate::operator==(const Associate &o) const{
 	OC_METHODGATE();
 	//TODO: Contemplate what effect adding test for key and bt address would have on this method and why they are currently missing
 	return o.mPublicNetworkAddress == mPublicNetworkAddress
@@ -356,7 +362,7 @@ bool NodeAssociate::operator==(const NodeAssociate &o) const{
 }
 
 
-bool NodeAssociate::operator!=(const NodeAssociate &o) const{
+bool Associate::operator!=(const Associate &o) const{
 	OC_METHODGATE();
 	return (! (o == *this));
 }

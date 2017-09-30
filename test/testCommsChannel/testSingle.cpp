@@ -59,10 +59,10 @@ void TestCommsChannel::testSingle()
 		QVERIFY(peersFileA.remove());
 	}
 	QVERIFY(!peersFileA.exists());
-	NodeAssociateStore peersA(peersFilenameA);
+	AddressBook peersA(peersFilenameA);
 	peersA.bootstrap(false,false);
 	QString nameA="PARTY A";
-	QSharedPointer<NodeAssociate> partA=generatePart(nameA, keyA, addrA, ROLE_AGENT, TYPE_AGENT);
+	QSharedPointer<Associate> partA=generatePart(nameA, keyA, addrA, ROLE_AGENT, TYPE_AGENT);
 
 	heading("INITIALIZING ID FOR PARTY B");////////////////////////////////////////////////
 	QString keyStoreFilenameB="keyFileB.json";
@@ -90,12 +90,12 @@ void TestCommsChannel::testSingle()
 	}
 	QVERIFY(!peersFileB.exists());
 
-	NodeAssociateStore peersB(peersFilenameB);
+	AddressBook peersB(peersFilenameB);
 	peersB.bootstrap(false,false);
 	QString nameB="PARTY B";
 	QVariantMap addrBMap=addrB.toVariantMap();
 	QCOMPARE(addrBMap.size(), 2);
-	QSharedPointer<NodeAssociate> partB=generatePart(nameB, keyB, addrB, ROLE_CONTROL, TYPE_REMOTE);
+	QSharedPointer<Associate> partB=generatePart(nameB, keyB, addrB, ROLE_CONTROL, TYPE_REMOTE);
 
 
 	heading("BIND PARTY A to B");////////////////////////////////////////////////

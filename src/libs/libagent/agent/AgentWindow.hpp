@@ -5,7 +5,7 @@
 
 #include "basic/LogDestination.hpp"
 
-#include "basic/NodeAssociate.hpp"
+#include "basic/Associate.hpp"
 
 #include "pose/PoseMapping.hpp"
 

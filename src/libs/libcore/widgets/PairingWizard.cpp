@@ -5,7 +5,7 @@
 #include "basic/Settings.hpp"
 #include "node/Node.hpp"
 #include "identity/Identicon.hpp"
-#include "basic/NodeAssociate.hpp"
+#include "basic/Associate.hpp"
 #include "security/PortableID.hpp"
 #include "utility/Standard.hpp"
 
@@ -68,7 +68,7 @@ void PairingWizard::updateNetworkSettings()
 			const bool visible=this->isVisible();
 			const bool valid=ui->widgetNetworkSettings->verify(false);
 			if(valid) {
-				QSharedPointer<NodeAssociate> me=mNode->nodeIdentity();
+				QSharedPointer<Associate> me=mNode->nodeIdentity();
 				if(nullptr!=me) {
 					NetworkAddress local=me->localAddress();
 					NetworkAddress cur=ui->widgetNetworkSettings->address();
@@ -106,7 +106,7 @@ void PairingWizard::configure(Node *n)
 
 		DiscoveryClient *discovery=mNode->discoveryClient();
 		DiscoveryType type=mNode->type();
-		QSharedPointer<NodeAssociate>  ass=mNode->nodeIdentity();
+		QSharedPointer<Associate>  ass=mNode->nodeIdentity();
 		if(nullptr!=ass) {
 			PortableID pid=ass->toPortableID();
 			//qDebug()<<"CONFIGURE PAIRING WIZ FOR "<<pid.toPortableString();
@@ -189,10 +189,10 @@ void PairingWizard::startEdit(int row)
 		QVariantMap map=index.data(Qt::DisplayRole).toMap();
 		qDebug()<<"DATA FOR "<<row<<" DURING EDIT IS: "<<map;
 		if(nullptr!=mNode) {
-			NodeAssociateStore &peerStore=mNode->peers();
+			AddressBook &peerStore=mNode->peers();
 			mCurrentlyEditing=map["key"].toMap()["id"].toString();
 			qDebug()<<"CURRENTLY EDITING ID "<<mCurrentlyEditing;
-			QSharedPointer<NodeAssociate> peer=peerStore.getParticipant(mCurrentlyEditing);
+			QSharedPointer<Associate> peer=peerStore.associateByID(mCurrentlyEditing);
 			if(nullptr!=peer) {
 				const QStringList trusts=peer->trusts();
 				const DiscoveryType type=peer->type();
@@ -260,8 +260,8 @@ void PairingWizard::hideEvent(QHideEvent *)
 void PairingWizard::on_pushButtonMaybeOnward_clicked()
 {
 	if(nullptr!=mNode) {
-		NodeAssociateStore &store=mNode->peers();
-		if(store.getParticipants().size()>0) {
+		AddressBook &store=mNode->peers();
+		if(store.all().size()>0) {
 			emit done();
 			return;
 		}
@@ -290,8 +290,8 @@ void PairingWizard::on_pushButtonSaveEdits_clicked()
 {
 	qDebug()<<"SAVING AFTER EDIT OF "<<mCurrentlyEditing;
 	if(nullptr!=mNode) {
-		NodeAssociateStore &peers=mNode->peers();
-		QSharedPointer<NodeAssociate> peer=peers.getParticipant(mCurrentlyEditing);
+		AddressBook &peers=mNode->peers();
+		QSharedPointer<Associate> peer=peers.associateByID(mCurrentlyEditing);
 		if(nullptr!=peer) {
 			DiscoveryType type=peer->type();
 			const int index=ui->comboBoxTrust->currentIndex();
@@ -338,8 +338,8 @@ void PairingWizard::on_pushButtonRemove_clicked()
 	if (QMessageBox::Yes == QMessageBox::question(this, "Warning", "Are you sure you want to permanently DELETE this peer?", QMessageBox::Yes|QMessageBox::No)) {
 
 		if(nullptr!=mNode) {
-			NodeAssociateStore &peers=mNode->peers();
-			peers.removeParticipant(mCurrentlyEditing);
+			AddressBook &peers=mNode->peers();
+			peers.removeAssociate(mCurrentlyEditing);
 			peers.save();
 		}
 		ui->stackedWidget->setCurrentWidget(ui->pagePairWithPeers);

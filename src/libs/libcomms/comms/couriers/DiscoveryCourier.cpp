@@ -1,9 +1,9 @@
 #include "DiscoveryCourier.hpp"
 
-#include "basic/NodeAssociate.hpp"
+#include "basic/Associate.hpp"
 #include "comms/messages/MessageType.hpp"
 
-DiscoveryCourier::DiscoveryCourier(QSharedPointer<NodeAssociate> ass, CommsChannel &comms, QObject *parent)
+DiscoveryCourier::DiscoveryCourier(QSharedPointer<Associate> ass, CommsChannel &comms, QObject *parent)
 	: Courier("Discovery", Courier::FIRST_USER_ID+1, comms, parent)
 	, mAss(ass)
 	, mLastSend(0)

@@ -36,14 +36,14 @@ private:
 	Ui::ClientWidget *ui;
 	QTimer updateTimer;
 	QSharedPointer<Node> mController;
-	QSharedPointer<NodeAssociate> mNodeAssoc;
+	QSharedPointer<Associate> mNodeAssoc;
 	WaitingSpinnerWidget *mSpinner;
 
 
 	RemoteCourierSet mCouriers;
 
 public:
-	explicit ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeAssociate> nodeAssoc, QWidget *parent=nullptr);
+	explicit ClientWidget(QSharedPointer<Node> controller, QSharedPointer<Associate> nodeAssoc, QWidget *parent=nullptr);
 	virtual ~ClientWidget();
 
 private:
@@ -65,7 +65,7 @@ private:
 
 public:
 	CommsChannel *comms();
-	QSharedPointer<NodeAssociate> nodeAssoc() const;
+	QSharedPointer<Associate> nodeAssoc() const;
 
 	void updateControlLevel(int level);
 

@@ -21,7 +21,7 @@ void heading(QString msg, QString ch){
 
 
 
-QSharedPointer<NodeAssociate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, DiscoveryRole role, DiscoveryType type ){
+QSharedPointer<Associate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, DiscoveryRole role, DiscoveryType type ){
 	QVariantMap peerMap;
 	peerMap["publicAddress"]=addr.toVariantMap();
 	peerMap["localAddress"]=addr.toVariantMap();
@@ -33,6 +33,6 @@ QSharedPointer<NodeAssociate> generatePart(QString name, QSharedPointer<Key> key
 	peerMap["name"]=name;
 	peerMap["gender"]="Male";
 	peerMap["trusts"]=QStringList();
-	QSharedPointer<NodeAssociate> part(OC_NEW NodeAssociate(peerMap));
+	QSharedPointer<Associate> part(OC_NEW Associate(peerMap));
 	return part;
 }

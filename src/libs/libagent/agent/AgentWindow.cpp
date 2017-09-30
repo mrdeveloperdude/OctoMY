@@ -114,7 +114,7 @@ void AgentWindow::gotoNextConfigPage()
 	auto ac=mAgent->configurationStore().agentConfig();
 	const QString ctl=ac->controllerName();
 	const bool isHardwareConfigured=((nullptr!=ac) && (""!=ctl)) || (ui->pageHardware==cur);
-	auto pct=mAgent->peers().getParticipantCount();
+	auto pct=mAgent->peers().associateCount();
 	const bool isPaired=(pct>1) || (ui->pagePairing==cur);
 
 	qDebug()<<"NEXT CONFIG SCREEN: isDelivered"<<isDelivered<<", isPaired"<<isPaired<<", isHardwareConfigured"<<isHardwareConfigured<<" (ctlname="<<ctl<<", pct="<<pct<<")";
@@ -292,9 +292,9 @@ void AgentWindow::prepareMenu()
 			QMessageBox::StandardButton reply = QMessageBox::question(this, "Unbirth", "Are you sure you want to DELETE the personality of this robot forever?", QMessageBox::No|QMessageBox::Yes);
 			if (QMessageBox::Yes==reply) {
 				mWasEverUndelivered=true;
-				QSharedPointer<NodeAssociate> assID=mAgent->nodeIdentity();
+				QSharedPointer<Associate> assID=mAgent->nodeIdentity();
 				if(nullptr!=assID) {
-					mAgent->peers().removeParticipant(assID->id());
+					mAgent->peers().removeAssociate(assID->id());
 				} else {
 					qWarning()<<"WARNING: there was no assID during unbirth";
 				}
@@ -438,7 +438,7 @@ void AgentWindow::onStartShowBirthCertificate()
 		auto key=mAgent->keyStore().localKey();
 		if(nullptr!=key) {
 			QString id=key->id();
-			QSharedPointer<NodeAssociate> myAss=mAgent->peers().getParticipant(id);
+			QSharedPointer<Associate> myAss=mAgent->peers().associateByID(id);
 			if(nullptr!=myAss) {
 				pid=myAss->toPortableID();
 			} else {
@@ -494,6 +494,7 @@ void AgentWindow::onStartPlanEditor()
 void AgentWindow::appendLog(const QString& text)
 {
 	OC_METHODGATE();
+	qDebug()<<"AGENT-LOG-APPEND: "<<text;
 	ui->widgetFace->appendLog(text);
 }
 
@@ -525,7 +526,7 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 }
 
 
-// NOTE: This has a sister method in ClientWindow.cpp around line 135
+// NOTE: This has a sister method in ClientWidget.cpp around line 135
 //       Please see the comments there as they are also relevant here
 //       (about for example in what really important way these two methods differ).
 void AgentWindow::updateOnlineStatus()
@@ -534,9 +535,7 @@ void AgentWindow::updateOnlineStatus()
 	if(nullptr!=mAgent) {
 		// Find if we ARE online
 		bool isTryingToGoOnline=false;
-		if(nullptr!=mAgent) {
-			isTryingToGoOnline=mAgent->isCommsStarted();
-		}
+		isTryingToGoOnline=mAgent->isCommsStarted() && mAgent->comms()->courierRegistration();
 		// Find if we WANT to be online
 		bool wantToBeOnline=false;
 		Settings *s=&mAgent->settings();
@@ -546,32 +545,39 @@ void AgentWindow::updateOnlineStatus()
 			qWarning()<<"ERROR: No settings for agent";
 		}
 		//Spell it out for debugging
-		qDebug()<<"We are currently trying to be "<<(isTryingToGoOnline?"ONLINE":"OFFLINE")<<" and we now want to try for "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
+		const QString localID=mAgent->nodeIdentity()->id();
+		qDebug()<<"Agent '"<<localID<<"' is currently trying to be "<<(isTryingToGoOnline?"ONLINE":"OFFLINE")<<" and we now want to try for "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
 		// Make necessary changes to state
-		const TryToggleState current=ui->widgetFace->connectionState();
-		TryToggleState next=current;
+		const TryToggleState currentTryState=ui->widgetFace->connectionState();
+		TryToggleState nextTryState=currentTryState;
 		bool nextOnlineStatus=isTryingToGoOnline;
 		if(wantToBeOnline ) {
 			if(isTryingToGoOnline ) {
-				next=ON;
+				nextTryState=ON;
 			} else {
-				next=TRYING;
-				//qDebug()<<"Decided to go online";
+				nextTryState=TRYING;
+				qDebug()<<"Decided to go online";
 				nextOnlineStatus=true;
 			}
 		} else {
 			if(isTryingToGoOnline ) {
-				//qDebug()<<"Decided to go offline";
+				qDebug()<<"Decided to go offline";
 				nextOnlineStatus=false;
 			} else {
-				next=OFF;
+				nextTryState=OFF;
 			}
 		}
 		if(nextOnlineStatus!=isTryingToGoOnline) {
-			//qDebug()<<"Decided to change online status from "<<isOnline<<" -> "<<nextOnlineStatus;
-
-			QSet<QSharedPointer<NodeAssociate> > active=mAgent->activeControls();
-			for(auto assoc:active) {
+			mAgent->comms()->setHoneymoonEnd(QDateTime::currentMSecsSinceEpoch()+(1000*60*5));//Set 5 minute honeymoon at every state change
+			QSet<QSharedPointer<Associate> > all=mAgent->allControls();
+			qDebug()<<"Decided to change online status for "<<QString::number(all.size())<< " controls:";
+			for(auto assoc:all) {
+				const QString assocID= assoc->id();
+				if(assocID == localID) {
+					qDebug()<<" + Skipping ME";
+					continue;
+				}
+				qDebug()<<" + " << assocID;
 				mAgent->setCourierRegistration(assoc , nextOnlineStatus); //QSharedPointer<NodeAssociate> assoc, bool reg
 			}
 			/*
@@ -590,15 +596,15 @@ void AgentWindow::updateOnlineStatus()
 		} else {
 			//qDebug()<<"No change in online status ("<<nextOnlineStatus<<")";
 		}
-		if(next!=current) {
+		if(nextTryState!=currentTryState) {
 			//qDebug()<<"Decided to change tristate button from "<<current<<" -> "<<next;
-			ui->widgetFace->setConnectionState(next,false);
+			ui->widgetFace->setConnectionState(nextTryState, false);
 		} else {
 			//qDebug()<<"No change tristate button ("<<current<<")";
 		}
 		// Propagate the possibly changed state to UI
 		updateFaceVisibility();
-		mOnlineAction->setChecked(wantToBeOnline);
+		//mOnlineAction->setChecked(wantToBeOnline);
 	}
 
 }

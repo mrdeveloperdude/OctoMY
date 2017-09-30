@@ -121,11 +121,11 @@ void TestCommsChannel::testCommsMock()
 	if(peersFileA.exists()) {
 		peersFileA.remove();
 	}
-	NodeAssociateStore peersA(peersFilenameA);
+	AddressBook peersA(peersFilenameA);
 	peersA.bootstrap(false,false);
 	QVariantMap peerMapA;
 	QString nameA="PARTY A";
-	QSharedPointer<NodeAssociate> partA=generatePart(nameA, keyA, addrA, ROLE_AGENT, TYPE_AGENT);
+	QSharedPointer<Associate> partA=generatePart(nameA, keyA, addrA, ROLE_AGENT, TYPE_AGENT);
 
 	heading("INITIALIZING ID FOR PARTY B");/////////////////////////////////////////////////////
 	QString keyStoreFilenameB="keyFileB.json";
@@ -147,12 +147,12 @@ void TestCommsChannel::testCommsMock()
 		peersFileB.remove();
 	}
 
-	NodeAssociateStore peersB(peersFilenameB);
+	AddressBook peersB(peersFilenameB);
 	peersB.bootstrap(false,false);
 	QVariantMap peerMapB;
 	QString nameB="PARTY B";
 	QVariantMap addrBMap=addrB.toVariantMap();
-	QSharedPointer<NodeAssociate> partB=generatePart(nameB, keyB, addrB, ROLE_CONTROL, TYPE_REMOTE);
+	QSharedPointer<Associate> partB=generatePart(nameB, keyB, addrB, ROLE_CONTROL, TYPE_REMOTE);
 
 	heading("BIND PARTY A to B");/////////////////////////////////////////////////////
 	partA->addTrust(idB);

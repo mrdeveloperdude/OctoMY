@@ -25,7 +25,7 @@
 #include <QScrollBar>
 
 
-ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<NodeAssociate> nodeAssoc, QWidget *parent)
+ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<Associate> nodeAssoc, QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::ClientWidget)
 	, mController(controller)
@@ -139,17 +139,17 @@ void ClientWidget::updateOnlineStatus()
 	if(nullptr!=mController && nullptr!=mNodeAssoc) {
 		// Find if we ARE trying to get online
 		bool isTryingToGoOnline=false;
-		if(nullptr!=mController) {
-			isTryingToGoOnline=mController->isCommsStarted() && courierRegistration();
-		}
+		isTryingToGoOnline=mController->isCommsStarted() && courierRegistration();
 		// Find if we WANT to be online
 		bool wantToBeOnline=false;
 		Settings *s=&mController->settings();
 		if(nullptr!=s) {
 			wantToBeOnline=s->getCustomSettingBool("octomy.online."+mNodeAssoc->name(), false);
+		} else {
+			qWarning()<<"ERROR: No settings for client";
 		}
 		//Spell it out for debugging
-		qDebug()<<mNodeAssoc->name()<<" is currently trying to be "<<(isTryingToGoOnline?"ONLINE":"OFFLINE")<<" and wants to try for "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
+		qDebug()<<"Client '"<<mNodeAssoc->name()<<"' is currently trying to be "<<(isTryingToGoOnline?"ONLINE":"OFFLINE")<<" and wants to try for "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
 		// Make necessary changes to state
 		const TryToggleState currentTryState=ui->tryToggleListen->state();
 		TryToggleState nextTryState=currentTryState;
@@ -171,7 +171,8 @@ void ClientWidget::updateOnlineStatus()
 			}
 		}
 		if(nextOnlineStatus!=isTryingToGoOnline) {
-			//qDebug()<<"Decided to change online status from "<<isOnline<<" -> "<<nextOnlineStatus;
+			mController->comms()->setHoneymoonEnd(QDateTime::currentMSecsSinceEpoch()+(1000*60*5));//Set 5 minute honeymoon at every state change
+			qDebug()<<"Decided to change online for "<<mNodeAssoc->name();
 			setCourierRegistration(nextOnlineStatus);
 			/*
 			 * NOTE: DONT DO THIS AS IT IS DONE BY THE setCourierRegistration() line above
@@ -191,7 +192,7 @@ void ClientWidget::updateOnlineStatus()
 		}
 		if(nextTryState!=currentTryState) {
 			//qDebug()<<"Decided to change tristate button from "<<currentTryState<<" -> "<<nextTryState;
-			ui->tryToggleListen->setState(nextTryState,false);
+			ui->tryToggleListen->setState(nextTryState, false);
 		} else {
 			//qDebug()<<"No change tristate button ("<<nextTryState<<")";
 		}
@@ -276,7 +277,7 @@ CommsChannel *ClientWidget::comms()
 	return nullptr;
 }
 
-QSharedPointer<NodeAssociate> ClientWidget::nodeAssoc() const
+QSharedPointer<Associate> ClientWidget::nodeAssoc() const
 {
 	OC_METHODGATE();
 	return mNodeAssoc;

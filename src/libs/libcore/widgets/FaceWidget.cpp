@@ -53,7 +53,7 @@ Agent *FaceWidget::agent()
 void FaceWidget::updateEyeColor()
 {
 	if(nullptr!=mAgent) {
-		QSharedPointer<NodeAssociate> ass=mAgent->nodeIdentity();
+		QSharedPointer<Associate> ass=mAgent->nodeIdentity();
 		if(nullptr!=ass) {
 			const QString id=ass->id();
 			if(id!=lastID) {

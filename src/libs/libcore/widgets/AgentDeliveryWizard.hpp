@@ -4,7 +4,7 @@
 #include "security/KeyStore.hpp"
 #include "security/PortableID.hpp"
 #include "basic/AgentNameGenerator.hpp"
-#include "basic/NodeAssociate.hpp"
+#include "basic/Associate.hpp"
 
 
 #include <QWidget>
@@ -32,7 +32,7 @@ protected:
 	Settings *mSettings;
 	Node *mNode;
 	PortableID mID;
-	QSharedPointer<NodeAssociate> mMyData;
+	QSharedPointer<Associate> mMyData;
 	quint64 mBirthDate;
 
 	QMutex timeoutMutex;

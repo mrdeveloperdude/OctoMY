@@ -96,6 +96,8 @@ addons:
       - libgnutls-dev
       # DEPS+=" libgnutls-openssl-dev" # Not available on debian
       - libsslcommon2-dev
+      # D-BUS ?
+      - libdbus-glib-1-dev
     
 
 before_install:

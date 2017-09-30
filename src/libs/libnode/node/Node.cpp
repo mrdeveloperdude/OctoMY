@@ -36,12 +36,12 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	: QObject (parent)
 	, mContext(context)
 	, mKeystore (mContext->baseDir() + "/keystore.json")
-	, mPeers (mContext->baseDir() + "/peers.json")
+	, mAssociates (mContext->baseDir() + "/peers.json")
 	, mDiscovery (OC_NEW DiscoveryClient(*this))
 	, mRole (role)
 	, mType (type)
 	, mCarrier(OC_NEW CommsCarrierUDP( (QObject *)this) )
-	, mComms (OC_NEW CommsChannel(*mCarrier, mKeystore, mPeers, (QObject *)this))
+	, mComms (OC_NEW CommsChannel(*mCarrier, mKeystore, mAssociates, (QObject *)this))
 	, mZooClient (OC_NEW ZooClient(this))
 	, mSensors (OC_NEW SensorInput(this))
 	, mSensorsCourier(OC_NEW SensorsCourier(*mComms, this))
@@ -71,7 +71,7 @@ void Node::init()
 	// Only Agents are "born"
 	mKeystore.bootstrap(ROLE_AGENT==mRole);
 
-	mPeers.bootstrap(true, false);
+	mAssociates.bootstrap(true, false);
 
 	StyleManager *style=OC_NEW StyleManager(QColor(TYPE_AGENT==mType?"#e83636":TYPE_REMOTE==mType?"#36bee8":"#36e843"));
 	if(nullptr!=style) {
@@ -111,9 +111,9 @@ KeyStore  &Node::keyStore()
 	return mKeystore;
 }
 
-NodeAssociateStore &Node::peers()
+AddressBook &Node::peers()
 {
-	return  mPeers;
+	return  mAssociates;
 }
 
 DiscoveryClient *Node::discoveryClient()
@@ -134,7 +134,7 @@ DiscoveryType Node::type()
 
 QString Node::name()
 {
-	QSharedPointer<NodeAssociate>  me=nodeIdentity();
+	QSharedPointer<Associate>  me=nodeIdentity();
 	QString name;
 	if(nullptr!=me) {
 		name=me->name();
@@ -180,10 +180,10 @@ SensorInput *Node::sensorInput()
 	return mSensors;
 }
 
-QSharedPointer<NodeAssociate> Node::nodeIdentity()
+QSharedPointer<Associate> Node::nodeIdentity()
 {
 	auto key=mKeystore.localKey();
-	QSharedPointer<NodeAssociate> me=(nullptr!=key)?mPeers.getParticipant(key->id()):nullptr;
+	QSharedPointer<Associate> me=(nullptr!=key)?mAssociates.associateByID(key->id()):nullptr;
 	return me;
 }
 
@@ -308,13 +308,13 @@ void Node::setHookCommsSignals(QObject &o, bool hook)
 
 void Node::hookPeerSignals(QObject &o)
 {
-	mPeers.hookSignals(o);
+	mAssociates.hookSignals(o);
 }
 
 
 void Node::unHookPeerSignals(QObject &o)
 {
-	mPeers.unHookSignals(o);
+	mAssociates.unHookSignals(o);
 }
 
 

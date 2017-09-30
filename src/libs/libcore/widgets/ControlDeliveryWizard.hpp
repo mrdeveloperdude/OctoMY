@@ -3,7 +3,7 @@
 
 #include "security/KeyStore.hpp"
 #include "security/PortableID.hpp"
-#include "basic/NodeAssociate.hpp"
+#include "basic/Associate.hpp"
 
 
 #include <QWidget>
@@ -29,7 +29,7 @@ class ControlDeliveryWizard : public QWidget
 		Settings *mSettings;
 		Node *mNode;
 		PortableID mID;
-		QSharedPointer<NodeAssociate> mMyData;
+		QSharedPointer<Associate> mMyData;
 		quint64 mBirthDate;
 
 	public:

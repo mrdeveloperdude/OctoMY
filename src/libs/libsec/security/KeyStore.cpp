@@ -77,7 +77,7 @@ void KeyStore::load()
 				mError=true;
 			} else {
 				QVariantList remotes=map["remoteKeys"].toList();
-				mPeers.clear();
+				mAssociates.clear();
 				for(QVariantList::iterator b=remotes.begin(), e=remotes.end(); b!=e; ++b) {
 					QVariantMap remote=(*b).toMap();
 					if(remote.contains("key")) {
@@ -89,7 +89,7 @@ void KeyStore::load()
 							mError=true;
 							break;
 						}
-						mPeers[remote["id"].toString()]=peerKey;
+						mAssociates[remote["id"].toString()]=peerKey;
 					}
 					else{
 						qWarning()<<"ERROR: key had malformed json";
@@ -116,7 +116,7 @@ void KeyStore::save()
 		map["localKey"]=mLocalKey->toVariantMap(false);
 	}
 	QVariantList remotes;
-	for(QMap<QString, QSharedPointer<Key> >::iterator b=mPeers.begin(), e=mPeers.end(); b!=e; ++b) {
+	for(QMap<QString, QSharedPointer<Key> >::iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
 		QVariantMap remote;
 		QString id=b.key();
 		auto key=b.value();
@@ -144,7 +144,7 @@ void KeyStore::clear()
 		if(file.remove()) {
 			//qDebug()<<"KEYSTORE: Cleared: "<<*this;
 			mLocalKey=nullptr;
-			mPeers.clear();
+			mAssociates.clear();
 			mReady=false;
 			mError=false;
 		} else {
@@ -186,7 +186,7 @@ void KeyStore::dump()
 	qDebug().nospace() <<" + inProgress="<<(const bool)ks.mInProgress;
 	qDebug().nospace() <<" + error="<<(const bool)ks.mError;
 	qDebug().nospace() <<" + peer-keys:";
-	for(QMap<QString, QSharedPointer<Key> >::iterator b=ks.mPeers.begin(), e=ks.mPeers.end(); b!=e; ++b) {
+	for(QMap<QString, QSharedPointer<Key> >::iterator b=ks.mAssociates.begin(), e=ks.mAssociates.end(); b!=e; ++b) {
 		QString key=b.key();
 		//b.value();
 		qDebug().nospace()<<"    x " <<key;
@@ -218,8 +218,8 @@ bool KeyStore::verify(const QString &fingerprint, const QByteArray &message, con
 	if(!mReady) {
 		return false;
 	}
-	QMap<QString, QSharedPointer<Key> >::iterator f=mPeers.find(fingerprint);
-	if(mPeers.end()==f) {
+	QMap<QString, QSharedPointer<Key> >::iterator f=mAssociates.find(fingerprint);
+	if(mAssociates.end()==f) {
 		return false;
 	}
 	QSharedPointer<Key> remote=f.value();
@@ -233,7 +233,7 @@ bool KeyStore::hasPubKeyForID(const QString &id)
 	if(!mReady) {
 		return false;
 	}
-	return (mPeers.end()!=mPeers.find(id));
+	return (mAssociates.end()!=mAssociates.find(id));
 }
 
 void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
@@ -243,7 +243,7 @@ void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
 	}
 	QSharedPointer<Key> peer(OC_NEW Key(pubkeyPEM, true));
 	OC_ASSERT(nullptr!=peer);
-	mPeers.insert(peer->id(), peer);
+	mAssociates.insert(peer->id(), peer);
 }
 
 QSharedPointer<Key> KeyStore::pubKeyForID(const QString &id)
@@ -252,13 +252,13 @@ QSharedPointer<Key> KeyStore::pubKeyForID(const QString &id)
 		qWarning()<<"WARNING: returning empty key for id="<<id<<" because keystore not ready..";
 		return nullptr;
 	}
-	return mPeers[id];
+	return mAssociates[id];
 }
 
 const QDebug &operator<<(QDebug &d, KeyStore &ks)
 {
 	d.nospace() <<"KeyStore{ fn="<<ks.mFilename<<", fexists="<<ks.fileExists()<<", ready="<<(const bool)ks.mReady<<", inProgress="<<(const bool)ks.mInProgress<<", error="<<(const bool)ks.mError<<", peer-keys:[";
-	for(QMap<QString, QSharedPointer<Key> >::iterator b=ks.mPeers.begin(), e=ks.mPeers.end(); b!=e; ++b) {
+	for(QMap<QString, QSharedPointer<Key> >::iterator b=ks.mAssociates.begin(), e=ks.mAssociates.end(); b!=e; ++b) {
 		QString key=b.key();
 		//b.value();
 		d.nospace()<<" + " <<key;

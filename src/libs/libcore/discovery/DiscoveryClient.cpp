@@ -2,7 +2,7 @@
 
 #include "utility/Standard.hpp"
 #include "utility/Utility.hpp"
-#include "basic/NodeAssociate.hpp"
+#include "basic/Associate.hpp"
 #include "zoo/ZooClient.hpp"
 #include "zoo/ZooConstants.hpp"
 #include "security/KeyStore.hpp"
@@ -96,7 +96,7 @@ void DiscoveryClient::discover()
 			cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
 			cmd["key"] = key->toVariantMap(true);
 			cmd["manualPin"] ="12345";
-			QSharedPointer<NodeAssociate> me=mNode.nodeIdentity();
+			QSharedPointer<Associate> me=mNode.nodeIdentity();
 			if(nullptr!=me) {
 				QVariantMap map=me->toVariantMap();
 				merge(cmd, map);
@@ -215,16 +215,16 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map)
 			} else if(partID==ourID) {
 				//qDebug()<<" + Skipping new participant with our ID: "<<partID;
 			} else {
-				NodeAssociateStore &peers=mNode.peers();
-				QSharedPointer<NodeAssociate> part;
-				if(peers.hasParticipant(partID)) {
+				AddressBook &peers=mNode.peers();
+				QSharedPointer<Associate> part;
+				if(peers.hasAssociate(partID)) {
 					qDebug()<<" + Updating participant with ID: "<<partID;
-					part=peers.getParticipant(partID);
+					part=peers.associateByID(partID);
 					part->update(map, false);
-					emit peers.peersChanged();
+					emit peers.associatesChanged();
 					emit nodeDiscovered(partID);
 				} else {
-					part=QSharedPointer<NodeAssociate>(OC_NEW NodeAssociate(map));
+					part=QSharedPointer<Associate>(OC_NEW Associate(map));
 					if(nullptr!=part) {
 						if(part->isValidForClient()) {
 							CommsChannel *comms=mNode.comms();

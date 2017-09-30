@@ -28,7 +28,7 @@ void TestCommsChannel::testMultiple()
 		const quint16 tport=basePort+i;
 		QString peersFilenameB;
 		Key keyB;
-		NodeAssociateStore peersB(peersFilenameB);
+		AddressBook peersB(peersFilenameB);
 		peersB.bootstrap(false,false);
 		QVariantMap peerMapB;
 		QString nameB="PARTY B";

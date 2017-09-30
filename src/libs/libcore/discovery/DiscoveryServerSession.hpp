@@ -2,7 +2,7 @@
 #define DISCOVERYSERVERSESSION_HPP
 
 
-#include "basic/NodeAssociate.hpp"
+#include "basic/Associate.hpp"
 
 #include <QDateTime>
 #include <QMap>
@@ -14,12 +14,12 @@ class DiscoveryServerSession{
 	private:
 
 
-		QMap<QString, QSharedPointer<NodeAssociate>> mParticipantsByID;
+		QMap<QString, QSharedPointer<Associate>> mParticipantsByID;
 
 	public:
 		explicit DiscoveryServerSession();
 
-		bool set(QSharedPointer<NodeAssociate> p);
+		bool set(QSharedPointer<Associate> p);
 		bool has(QString id);
 
 

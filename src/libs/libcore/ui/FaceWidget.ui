@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1132</width>
-    <height>803</height>
+    <width>256</width>
+    <height>226</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -90,23 +90,7 @@
         </sizepolicy>
        </property>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="1" column="0">
-         <widget class="TryToggle" name="tryToggleConnect" native="true">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>10</width>
-            <height>20</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
+        <item row="4" column="0">
          <widget class="PanicButton" name="pushButtonPanic" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -126,15 +110,18 @@
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QPushButton" name="pushButtonNewColor">
+         <widget class="TryToggle" name="tryToggleConnect" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
-            <width>0</width>
+            <width>10</width>
             <height>20</height>
            </size>
-          </property>
-          <property name="text">
-           <string>Color</string>
           </property>
          </widget>
         </item>
@@ -150,6 +137,19 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="pushButtonNewColor">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Color</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

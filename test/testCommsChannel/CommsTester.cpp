@@ -3,7 +3,7 @@
 #include "rng/RNG.hpp"
 #include "TestCourier.hpp"
 
-CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, quint16 basePort, quint16 portRange, quint16 testCount, KeyStore &keyStore, NodeAssociateStore &peers, QObject *parent)
+CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, quint16 basePort, quint16 portRange, quint16 testCount, KeyStore &keyStore, AddressBook &peers, QObject *parent)
 	: QObject(parent)
 	, mName(name)
 	, mMyAddress(myAddress)
@@ -12,8 +12,8 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 	, mPortRange(portRange)
 	, mCarrier()
 	, mKeyStore(keyStore)
-	, mPeers(peers)
-	, mCc(mCarrier, mKeyStore, mPeers)
+	, mAssociates(peers)
+	, mCc(mCarrier, mKeyStore, mAssociates)
 	, mTestCount(testCount)
 	, mRng(RNG::sourceFactory("mt"))
 {

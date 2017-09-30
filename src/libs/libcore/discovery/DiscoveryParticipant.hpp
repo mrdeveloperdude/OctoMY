@@ -3,7 +3,7 @@
 /*
 #include "DiscoveryRole.hpp"
 #include "comms/ClientSignature.hpp"
-#include "basic/NodeAssociate.hpp"
+#include "basic/Associate.hpp"
 
 #include <QString>
 #include <QVariantMap>

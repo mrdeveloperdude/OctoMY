@@ -125,7 +125,7 @@ void NetworkAddress::fromString(QString str, bool allowOnlyAddress)
 bool NetworkAddress::isValid(bool allowLoopback, bool allowMulticast) const
 {
 	OC_METHODGATE();
-	return ( (((quint16)0) != mPort) && (!mIP.isNull()) && (allowLoopback || !mIP.isLoopback()) && (allowMulticast || !mIP.isMulticast()));
+	return ( (((quint16)0) != mPort) && (!mIP.isNull()) &&  !( (QHostAddress::Any == mIP)  ||(QHostAddress::AnyIPv4 == mIP)  ||(QHostAddress::AnyIPv6 == mIP) ) && (allowLoopback || !mIP.isLoopback()) && (allowMulticast || !mIP.isMulticast()));
 }
 
 bool NetworkAddress::operator==(const NetworkAddress &o) const

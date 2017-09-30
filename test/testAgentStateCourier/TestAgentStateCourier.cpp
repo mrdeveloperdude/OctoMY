@@ -4,7 +4,7 @@
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsCarrierUDP.hpp"
 
-#include "discovery/NodeAssociateStore.hpp"
+#include "discovery/AddressBook.hpp"
 
 #include "security/KeyStore.hpp"
 
@@ -109,7 +109,7 @@ void TestAgentStateCourier::test()
 	QDataStream stream;
 	KeyStore keystore;
 	CommsCarrierUDP carrier;
-	NodeAssociateStore peers;
+	AddressBook peers;
 	CommsChannel comms(carrier, keystore, peers);
 	AgentStateCourierTester agetnStateTest(stream, comms);
 	// Start

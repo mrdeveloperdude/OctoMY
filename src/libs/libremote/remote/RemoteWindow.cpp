@@ -146,7 +146,7 @@ void RemoteWindow::goToStartPage()
 				//qDebug()<<"STARTING WITH DELIVERY";
 				ui->widgetDelivery->reset();
 				ui->stackedWidgetScreen->setCurrentWidget(ui->pageDelivery);
-			} else if(mRemote->peers().getParticipantCount()<=0) {
+			} else if(mRemote->peers().associateCount()<=0) {
 				//qDebug()<<"STARTING WITH PAIRING";
 				ui->widgetPairing->reset();
 				ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
@@ -169,14 +169,14 @@ int RemoteWindow::updateAgentsList()
 	int ct=0;
 	ui->comboBoxAgent->clear();
 	if(nullptr!=mRemote) {
-		QSharedPointer<NodeAssociate> local=mRemote->nodeIdentity();
+		QSharedPointer<Associate> local=mRemote->nodeIdentity();
 		if(nullptr!=local) {
 			const QString myID=local->id();
-			NodeAssociateStore &peerStore=mRemote->peers();
-			QMap<QString, QSharedPointer<NodeAssociate> > &peers=peerStore.getParticipants();
-			for(QMap<QString, QSharedPointer<NodeAssociate> >::iterator i=peers.begin(), e=peers.end(); i!=e; ++i) {
+			AddressBook &peerStore=mRemote->peers();
+			QMap<QString, QSharedPointer<Associate> > &peers=peerStore.all();
+			for(QMap<QString, QSharedPointer<Associate> >::iterator i=peers.begin(), e=peers.end(); i!=e; ++i) {
 				const QString id=i.key();
-				QSharedPointer<NodeAssociate> peer=i.value();
+				QSharedPointer<Associate> peer=i.value();
 				if(DiscoveryType::TYPE_REMOTE!=peer->type()) {
 					addAgentToList(peer);
 					ct++;
@@ -191,7 +191,7 @@ int RemoteWindow::updateAgentsList()
 
 
 
-void RemoteWindow::addAgentToList(QSharedPointer<NodeAssociate> peer)
+void RemoteWindow::addAgentToList(QSharedPointer<Associate> peer)
 {
 	if(nullptr!=peer) {
 		QString name=peer->name().trimmed();
@@ -300,7 +300,7 @@ void RemoteWindow::updateActiveAgent()
 		const int idx=ui->comboBoxAgent->currentIndex();
 		const QString agentName=ui->comboBoxAgent->currentText();
 		const QString agentID=ui->comboBoxAgent->currentData().toString();
-		QSharedPointer<NodeAssociate>  client=mRemote->peers().getParticipant(agentID);
+		QSharedPointer<Associate>  client=mRemote->peers().associateByID(agentID);
 		//qDebug()<<"SWITCHING ACTIVE AGENT TO "<<agentName<<"("<<idx<<", "<<agentID<<")";
 		if(idx>=0) {
 			QMap<int, ClientWidget *>::const_iterator it=mClientWidgets.find(idx);

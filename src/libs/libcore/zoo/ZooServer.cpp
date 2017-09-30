@@ -7,7 +7,7 @@
 #include "widgets/IdenticonWidget.hpp"
 #include "template/Mustache.hpp"
 
-#include "basic/NodeAssociate.hpp"
+#include "basic/Associate.hpp"
 #include "utility/ScopedTimer.hpp"
 
 #include "security/PortableID.hpp"
@@ -391,7 +391,7 @@ void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp
 	quint16 publicPort=root["publicPort"].toInt();
 	*/
 	//qDebug()<<"FULL MAP IS: "<<root;
-	QSharedPointer<NodeAssociate> part(OC_NEW NodeAssociate(root));
+	QSharedPointer<Associate> part(OC_NEW Associate(root));
 	qDebug()<<"GOT PARTICIPANT "<<part->name()<<"(type="<<DiscoveryTypeToString(part->type())<<", gender="<<part->gender()<<", id="<<part->id()<<")";
 	QString publicAddress="";
 	quint16 publicPort=0;

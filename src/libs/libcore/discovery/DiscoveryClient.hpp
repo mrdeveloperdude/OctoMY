@@ -3,8 +3,8 @@
 
 
 #include "DiscoveryRole.hpp"
-#include "NodeAssociateStore.hpp"
-#include "basic/NodeAssociate.hpp"
+#include "AddressBook.hpp"
+#include "basic/Associate.hpp"
 
 
 #include <QTimer>
