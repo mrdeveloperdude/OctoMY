@@ -89,7 +89,7 @@ private:
 	QSharedPointer<Key> mKey;
 
 private:
-	void registerPossibleParticipant(QVariantMap map);
+	void registerPossibleAssociate(QVariantMap map);
 
 public:
 	DiscoveryClient(Node &node);

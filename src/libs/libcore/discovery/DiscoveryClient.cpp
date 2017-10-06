@@ -164,21 +164,21 @@ void DiscoveryClient::discover()
 					ok=ok && rok;
 					if(ok) {
 						if(root.contains("peers")) {
-							//qDebug()<<"PARTICIPANTS: "<<root.value("peers");
+							//qDebug()<<"ASSOCIATES: "<<root.value("peers");
 							QVariantList partList=root.value("peers").toList();
 							if(partList.size()<=0) {
-								qWarning()<<" + Participants count was 0 in response";
-								message="ERROR: Participants count was 0 in response";
+								qWarning()<<" + Associate count was 0 in response";
+								message="ERROR: Associate count was 0 in response";
 								ok=false;
 							}
-							//qWarning()<<" + Got "<<partList.size()<<" participants";
+							//qWarning()<<" + Got "<<partList.size()<<" associates";
 							for(QVariant part:partList) {
 								QVariantMap map=part.toMap();
-								registerPossibleParticipant(map);
+								registerPossibleAssociate(map);
 							}
 						} else {
-							qWarning()<<" + No participants in response";
-							message="ERROR: No participants in response";
+							qWarning()<<" + No associates in response";
+							message="ERROR: No associates in response";
 							ok=false;
 						}
 					} else {
@@ -200,7 +200,7 @@ void DiscoveryClient::discover()
 
 static const QString zeroID=utility::toHash("", OCTOMY_KEY_HASH);
 
-void DiscoveryClient::registerPossibleParticipant(QVariantMap map)
+void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 {
 	//qDebug()<<"REG";
 	QSharedPointer<Key> key=QSharedPointer<Key>(OC_NEW Key(map["key"].toMap(),true));
@@ -231,7 +231,7 @@ void DiscoveryClient::registerPossibleParticipant(QVariantMap map)
 							if(nullptr!=comms) {
 								DiscoveryCourier *courier=OC_NEW DiscoveryCourier(part, *comms);
 								if(nullptr!=courier) {
-									peers.setParticipant(part);
+									peers.upsertAssociate(part);
 									courier->setDestination(part->id());
 									comms->setCourierRegistered(*courier, true);
 									qDebug()<<" + Adding new participant with ID: "<<partID;

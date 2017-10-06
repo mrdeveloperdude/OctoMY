@@ -89,12 +89,10 @@ public:
 	// TODO: Merge into NetworkAddress?
 	QBluetoothAddress bluetoothAddress()const;
 
-
 	void setLastSeen(quint64 when=0);
 	quint64 lastSeen() const;
 	quint64 lastInitiatedHandshake() const;
 	quint64 lastAdherentHandshake() const;
-
 
 
 public: // Pins management

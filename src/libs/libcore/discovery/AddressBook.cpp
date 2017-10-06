@@ -66,7 +66,7 @@ void AddressBook::load()
 			QVariantList peers=map["peers"].toList();
 			for(QVariantList::iterator b=peers.begin(), e=peers.end(); b!=e; ++b) {
 				QSharedPointer<Associate> peer=QSharedPointer<Associate>(OC_NEW Associate((*b).toMap()));
-				setParticipant(peer);
+				upsertAssociate(peer);
 			}
 			mReady=true;
 		}
@@ -129,20 +129,20 @@ QSharedPointer<Associate> AddressBook::removeAssociate(const QString &id)
 
 
 
-void AddressBook::setParticipant(QSharedPointer<Associate> participant)
+void AddressBook::upsertAssociate(QSharedPointer<Associate> associate)
 {
-	if(nullptr!=participant) {
-		auto id=participant->id();
-		qDebug()<<"REGISTERING PARTICIPANT WITH ID: "<<id;
+	if(nullptr!=associate) {
+		auto id=associate->id();
 		const bool isNew=!hasAssociate(id);
-		mAssociates[id]=participant;
+		qDebug()<<(isNew?"REGISTERING NEW":"UPDATING EXISTING")<< " ASSOCIATE WITH ID: "<<id;
+		mAssociates[id]=associate;
 		if(isNew) {
 			emit associateAdded(id);
 			emit associatesChanged();
 		}
 	}
 	else{
-		qWarning()<<"PARTICIPANT WAS NULL";
+		qWarning()<<"ASSOCIATE WAS NULL";
 	}
 }
 

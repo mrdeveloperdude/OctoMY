@@ -38,7 +38,7 @@ void AsyncStore::bootstrapWorker()
 
 void AsyncStore::bootstrap(bool loadOnly, bool runInBackground)
 {
-	qDebug()<<"AsyncStore bootstrap() loadOnly="<<loadOnly<<", bg="<<runInBackground;
+	//qDebug()<<"AsyncStore bootstrap() loadOnly="<<loadOnly<<", bg="<<runInBackground;
 	if(mReady) {
 		emit storeReady(!mError);
 		return;
@@ -54,7 +54,7 @@ void AsyncStore::bootstrap(bool loadOnly, bool runInBackground)
 		if(nullptr!=tp) {
 			const bool ret=tp->tryStart(OC_NEW GenerateRunnable<AsyncStore>(*this));
 			if(ret) {
-				qDebug()<<"ASYNCSTORE: Successfully started background thread";
+				//qDebug()<<"ASYNCSTORE: Successfully started background thread";
 				return;
 			} else {
 				tp->deleteLater();

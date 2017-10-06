@@ -112,7 +112,7 @@ void ControlDeliveryWizard::onBirthComplete()
 					map["birthDate"]=mBirthDate;
 					mMyData= QSharedPointer<Associate> (OC_NEW Associate(map));
 					mID=mMyData->toPortableID();
-					mNode->peers().setParticipant(mMyData);
+					mNode->peers().upsertAssociate(mMyData);
 					mNode->peers().save();
 					ui->widgetBirthCertificate->setPortableID(mID);
 					ui->stackedWidget->setCurrentWidget(ui->pageDone);

@@ -2,6 +2,7 @@
 #define PORTABLEID_HPP
 
 #include "discovery/DiscoveryRole.hpp"
+#include "discovery/DiscoveryType.hpp"
 #include "utility/Standard.hpp"
 
 #include <QString>

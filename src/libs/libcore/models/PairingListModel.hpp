@@ -2,6 +2,7 @@
 #define PAIRINGLISTMODEL_HPP
 
 #include "discovery/DiscoveryRole.hpp"
+#include "discovery/DiscoveryType.hpp"
 
 #include <QDebug>
 #include <QAbstractListModel>

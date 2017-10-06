@@ -35,22 +35,22 @@ quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 {
 	qDebug()<<"Sending opportunity for "<<name();
 	quint16 bytes=0;
-	NetworkAddress nadr=mAss->publicAddress();
-	QHostAddress pubAddr=nadr.ip();
-	const quint32 ip4PubAddr=pubAddr.toIPv4Address();
-	const quint16 port= mAss->publicAddress().port();
+	NetworkAddress nadr=mAss->localAddress();
+	QHostAddress locAddr=nadr.ip();
+	const quint32 ip4LocAddr=locAddr.toIPv4Address();
+	const quint16 port= nadr.port();
 	const quint64 btAddr=mAss->bluetoothAddress().toUInt64();
-	const quint32 ip4PubAddrXOR=ip4PubAddr ^ IP_XOR;
+	const quint32 ip4LocAddrXOR=ip4LocAddr ^ IP_XOR;
 	const quint16 portXOR=port ^ PORT_XOR;
 	const quint64 btAddrXOR=btAddr ^ BT_XOR;
-	ds << ip4PubAddrXOR;
+	ds << ip4LocAddrXOR;
 	bytes += sizeof(quint32);
 	ds << portXOR;
 	bytes += sizeof(quint16);
 	ds << btAddrXOR;
 	bytes += sizeof(quint64);
 	mLastSend=QDateTime::currentMSecsSinceEpoch();
-	qDebug()<<"TX bytes="<<bytes<<" ( ip4PubAddr="<<ip4PubAddr<<":"<<port<<", bt="<<btAddr<<") = XOR( ip4PubAddr="<<ip4PubAddrXOR<<":"<<portXOR<<", bt="<<btAddrXOR<<")";
+	qDebug()<<"TX bytes="<<bytes<<" ( ip4LocAddr="<<ip4LocAddr<<":"<<port<<", bt="<<btAddr<<") = XOR( ip4LocAddr="<<ip4LocAddrXOR<<":"<<portXOR<<", bt="<<btAddrXOR<<")";
 	return bytes;
 }
 

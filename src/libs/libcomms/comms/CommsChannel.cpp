@@ -186,7 +186,7 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 				} else {
 					QSharedPointer<Associate> associate=mAssociates.associateByID(id);
 					if(nullptr==associate) {
-						QString es="ERROR: no participant found for ID "+id;
+						QString es="ERROR: no associate found for ID "+id;
 						qWarning()<<es;
 						emit commsError(es);
 					} else {
@@ -196,7 +196,7 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 							//session->setRemoteSessionID(desiredRemoteSessionID);
 							session->handshakeState().setInitiator(initiator);
 							session->setLocalSessionID(localSessionID);
-							session->setAddress(associate->publicAddress());
+							session->setAddress(associate->localAddress());
 							// Generate our syn nonce
 							const SESSION_NONCE_TYPE synNonce=session->createOurSynNonce();
 							qDebug()<<"OUR SYN TX NONCE CREATED: "<<synNonce;

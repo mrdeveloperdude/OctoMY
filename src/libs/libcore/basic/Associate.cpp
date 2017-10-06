@@ -193,13 +193,6 @@ quint64 Associate::lastAdherentHandshake() const
 	return mLastAdherentHandshakeMS;
 }
 
-const QDebug &operator<<(QDebug &d, Associate &ass)
-{
-	OC_FUNCTIONGATE();
-	d.nospace() << "NodeAssociate("<<ass.toString()<<")";
-	return d.maybeSpace();
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -368,3 +361,11 @@ bool Associate::operator!=(const Associate &o) const{
 }
 
 
+
+
+const QDebug &operator<<(QDebug &d, Associate &ass)
+{
+	OC_FUNCTIONGATE();
+	d.nospace() << "NodeAssociate("<<ass.toString()<<")";
+	return d.maybeSpace();
+}

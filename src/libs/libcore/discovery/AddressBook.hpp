@@ -47,7 +47,7 @@ public:
 	int associateCount() const ;
 	QSharedPointer<Associate> associateByID(const QString &id);
 	QSharedPointer<Associate> removeAssociate(const QString &id);
-	void setParticipant(QSharedPointer<Associate> participant);
+	void upsertAssociate(QSharedPointer<Associate> associate);
 
 
 	QMap<QString, QSharedPointer<Associate> > &all();

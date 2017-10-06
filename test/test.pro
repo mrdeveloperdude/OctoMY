@@ -32,8 +32,9 @@ TEST_PROJECTS+= \
 	testKey \
 	testKeyStore \
 	testNetworkAddress \
-	testNodeAssociate \
-	testNodeAssociateStore \
+	testAssociate \
+	testAddressBook \
+	testAddressList \
 	testParser \
 	testPortableID \
 	testPoseMappingWidget \

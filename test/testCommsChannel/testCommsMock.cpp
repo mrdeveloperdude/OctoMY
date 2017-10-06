@@ -156,7 +156,7 @@ void TestCommsChannel::testCommsMock()
 
 	heading("BIND PARTY A to B");/////////////////////////////////////////////////////
 	partA->addTrust(idB);
-	peersA.setParticipant(partB);
+	peersA.upsertAssociate(partB);
 	qDebug()<<"IDB="<<idB;
 	keyStoreA.setPubKeyForID(keyB->pubKey());
 
