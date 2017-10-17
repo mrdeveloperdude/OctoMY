@@ -86,7 +86,7 @@ static void merge( QVariantMap  &c, QVariantMap  &b)
 
 void DiscoveryClient::discover()
 {
-	//qDebug()<<"DISCOVERY CLIENT RUN";
+	qDebug()<<"DISCOVERY CLIENT RUN "<<mServerURL;
 
 	qhttp::client::TRequstHandler reqHandler= [this](qhttp::client::QHttpRequest* req) {
 
@@ -119,7 +119,7 @@ void DiscoveryClient::discover()
 			QJsonDocument jdoc=QJsonDocument::fromVariant(cmd);
 			//qDebug()<<"SENDING JDOC: "<<jdoc;
 			QByteArray body  = jdoc.toJson(QJsonDocument::Indented);
-			//qDebug()<<"SENDING RAW JSON: "<<body;
+			qDebug()<<"SENDING RAW JSON: "<<body;
 			req->addHeader("user-agent",			ZooConstants::OCTOMY_USER_AGENT);
 			req->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
 			req->addHeader("accept",				"application/json");

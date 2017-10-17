@@ -9,8 +9,8 @@
 
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsSession.hpp"
-#include"comms/couriers/SensorsCourier.hpp"
-#include"comms/couriers/blob/BlobCourier.hpp"
+#include "comms/couriers/SensorsCourier.hpp"
+#include "comms/couriers/blob/BlobCourier.hpp"
 
 #include "discovery/DiscoveryClient.hpp"
 
@@ -25,6 +25,7 @@
 #include "AppContext.hpp"
 #include "zoo/ZooConstants.hpp"
 
+
 #include <QCommandLineParser>
 #include <QAccelerometerReading>
 #include <QGyroscopeReading>
@@ -32,11 +33,36 @@
 #include <QStandardPaths>
 #include <QDir>
 
+
+static quint16 defaultPortForNodeType(DiscoveryType type)
+{
+	quint16 defaultPort=0;
+	switch(type) {
+	case(TYPE_ZOO):
+	default:
+	case(TYPE_UNKNOWN):
+	case(TYPE_AGENT): {
+		defaultPort=ZooConstants::OCTOMY_UDP_DEFAULT_PORT_AGENT;
+	}
+	break;
+	case(TYPE_REMOTE): {
+		defaultPort=ZooConstants::OCTOMY_UDP_DEFAULT_PORT_REMOTE;
+	}
+	break;
+	case(TYPE_HUB): {
+		defaultPort=ZooConstants::OCTOMY_UDP_DEFAULT_PORT_HUB;
+	}
+	break;
+	}
+	return defaultPort;
+}
+
+
 Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject *parent)
 	: QObject (parent)
 	, mContext(context)
 	, mKeystore (mContext->baseDir() + "/keystore.json")
-	, mAssociates (mContext->baseDir() + "/peers.json")
+	, mAssociates (mContext->baseDir() + "/addressbook.json")
 	, mDiscovery (OC_NEW DiscoveryClient(*this))
 	, mRole (role)
 	, mType (type)
@@ -48,10 +74,10 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	, mBlobCourier(OC_NEW BlobCourier(*mComms, this))
 	, mCameras (OC_NEW CameraList(this))
 	, mLastStatusSend (0)
-	  //, mServerURL("http://zoo.octomy.org/api")
-//	, mServerURL("http://"+utility::localAddress()+":"+QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api")
-	, mServerURL("http://10.0.0.86:"+QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //Local address HQ
+	, mServerURL("http://zoo.octomy.org:"+QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
+	, mAddresses(defaultPortForNodeType(mType))
 {
+	OC_METHODGATE();
 	//ScopedTimer nodeBootTimer(mContext->base()+"-boot");
 	setObjectName(mContext->base());
 
@@ -60,14 +86,16 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 
 Node::~Node()
 {
-	unHookSensorSignals(*this);
-	setHookCommsSignals(*this,false);
+	OC_METHODGATE();
+	deInit();
 }
+
+
 
 void Node::init()
 {
-
-	mKeystore.hookSignals(*this);
+	OC_METHODGATE();
+	mKeystore.setHookSignals(*this, true);
 	// Only Agents are "born"
 	mKeystore.bootstrap(ROLE_AGENT==mRole);
 
@@ -94,46 +122,64 @@ void Node::init()
 	if(nullptr!=mDiscovery) {
 		mDiscovery->setURL(mServerURL);
 	}
+
 }
 
-const QCommandLineParser &Node::options() const
+
+void Node::deInit()
 {
+	unHookSensorSignals(*this);
+	setHookCommsSignals(*this,false);
+	mKeystore.setHookSignals(*this, false);
+}
+
+
+const QCommandLineParser &Node::commandLine() const
+{
+	OC_METHODGATE();
 	return mContext->options();
 }
 
 Settings &Node::settings()
 {
+	OC_METHODGATE();
 	return mContext->settings();
 }
 
 KeyStore  &Node::keyStore()
 {
+	OC_METHODGATE();
 	return mKeystore;
 }
 
 AddressBook &Node::peers()
 {
+	OC_METHODGATE();
 	return  mAssociates;
 }
 
 DiscoveryClient *Node::discoveryClient()
 {
+	OC_METHODGATE();
 	return mDiscovery;
 }
 
 DiscoveryRole Node::role()
 {
+	OC_METHODGATE();
 	return mRole;
 }
 
 
 DiscoveryType Node::type()
 {
+	OC_METHODGATE();
 	return mType;
 }
 
 QString Node::name()
 {
+	OC_METHODGATE();
 	QSharedPointer<Associate>  me=nodeIdentity();
 	QString name;
 	if(nullptr!=me) {
@@ -167,43 +213,70 @@ QString Node::name()
 
 CommsChannel *Node::comms()
 {
+	OC_METHODGATE();
 	return mComms;
 }
 
 ZooClient *Node::zooClient()
 {
+	OC_METHODGATE();
 	return mZooClient;
 }
 
 SensorInput *Node::sensorInput()
 {
+	OC_METHODGATE();
 	return mSensors;
 }
 
 QSharedPointer<Associate> Node::nodeIdentity()
 {
+	OC_METHODGATE();
 	auto key=mKeystore.localKey();
-	QSharedPointer<Associate> me=(nullptr!=key)?mAssociates.associateByID(key->id()):nullptr;
+	QSharedPointer<Associate> me=(!key.isNull())?mAssociates.associateByID(key->id()):nullptr;
 	return me;
 }
 
 CameraList *Node::cameras()
 {
+	OC_METHODGATE();
 	return mCameras;
 }
 
 QWidget *Node::showWindow()
 {
+	OC_METHODGATE();
 	return nullptr;
 }
 
 
-
-void Node::startComms(const NetworkAddress &localAddress)
+NetworkAddress Node::localAddress()
 {
+	OC_METHODGATE();
+	QSharedPointer<Associate> nid=nodeIdentity();
+	if(!nid.isNull()) {
+		return nid->addressList().bestAddress();
+	}
+	return NetworkAddress();
+}
+
+
+
+LocalAddressList &Node::localAddresses()
+{
+	OC_METHODGATE();
+	return mAddresses;
+}
+
+
+
+void Node::startComms()
+{
+	OC_METHODGATE();
+	const NetworkAddress addr=localAddress();
 	if(nullptr!=mComms) {
-		qDebug()<<"comms.start  "<<localAddress.toString();
-		mComms->start(localAddress);
+		qDebug()<<"comms.start  "<<addr.toString();
+		mComms->start(addr);
 	} else {
 		qWarning()<<"ERROR: No comms";
 	}
@@ -211,6 +284,7 @@ void Node::startComms(const NetworkAddress &localAddress)
 
 void Node::stopComms()
 {
+	OC_METHODGATE();
 	if(nullptr!=mComms) {
 		qDebug()<<"comms.stop "<<mComms->localID();
 		mComms->stop();
@@ -221,6 +295,7 @@ void Node::stopComms()
 
 bool Node::isCommsStarted()
 {
+	OC_METHODGATE();
 	if(nullptr!=mComms) {
 		return mComms->isStarted();
 	} else {
@@ -231,6 +306,7 @@ bool Node::isCommsStarted()
 
 bool Node::isCommsConnected()
 {
+	OC_METHODGATE();
 	if(nullptr!=mComms) {
 		return mComms->isConnected();
 	} else {
@@ -258,6 +334,7 @@ BlobFuture Node::submitBlobForSending(QByteArray data, QString name)
 
 void Node::hookColorSignals(QObject &ob)
 {
+	OC_METHODGATE();
 	if(nullptr!=mSensorsCourier) {
 		if(!connect(&ob, SIGNAL(colorChanged(QColor)), mSensorsCourier, SLOT(onColorUpdated(QColor)), OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect " << ob.objectName();
@@ -268,6 +345,7 @@ void Node::hookColorSignals(QObject &ob)
 
 void Node::unHookColorSignals(QObject &ob)
 {
+	OC_METHODGATE();
 	if(nullptr!=mSensorsCourier) {
 		if(!disconnect(&ob, SIGNAL(colorChanged(QColor)), mSensorsCourier, SLOT(onColorUpdated(QColor)))) {
 			qWarning()<<"ERROR: Could not disconnect " << ob.objectName();
@@ -282,6 +360,7 @@ void Node::unHookColorSignals(QObject &ob)
 
 void Node::hookSensorSignals(QObject &o)
 {
+	OC_METHODGATE();
 	if(nullptr!=mSensors) {
 		mSensors->hookSignals(o);
 	}
@@ -290,6 +369,7 @@ void Node::hookSensorSignals(QObject &o)
 
 void Node::unHookSensorSignals(QObject &o)
 {
+	OC_METHODGATE();
 	if(nullptr!=mSensors) {
 		mSensors->unHookSignals(o);
 	}
@@ -299,6 +379,7 @@ void Node::unHookSensorSignals(QObject &o)
 
 void Node::setHookCommsSignals(QObject &o, bool hook)
 {
+	OC_METHODGATE();
 	if(nullptr!=mComms) {
 		mComms->setHookCommsSignals(o,hook);
 	}
@@ -308,12 +389,14 @@ void Node::setHookCommsSignals(QObject &o, bool hook)
 
 void Node::hookPeerSignals(QObject &o)
 {
+	OC_METHODGATE();
 	mAssociates.hookSignals(o);
 }
 
 
 void Node::unHookPeerSignals(QObject &o)
 {
+	OC_METHODGATE();
 	mAssociates.unHookSignals(o);
 }
 
@@ -321,6 +404,7 @@ void Node::unHookPeerSignals(QObject &o)
 
 void Node::updateDiscoveryClient()
 {
+	OC_METHODGATE();
 	delete mDiscovery;
 	mDiscovery=OC_NEW DiscoveryClient(*this);
 	mDiscovery->setURL(mServerURL);
@@ -332,6 +416,7 @@ void Node::updateDiscoveryClient()
 
 void Node::onKeystoreReady(bool ok)
 {
+	OC_METHODGATE();
 	//qDebug()<<"Key Store READY="<<mKeystore.isReady()<<", ERROR="<<mKeystore.hasError();
 }
 
@@ -342,16 +427,19 @@ void Node::onKeystoreReady(bool ok)
 
 void Node::onCommsError(QString e)
 {
+	OC_METHODGATE();
 	//qDebug()<<"NODE UNIMP Comms error: "<<e;
 }
 
 void Node::onCommsClientAdded(CommsSession *c)
 {
+	OC_METHODGATE();
 	//qDebug()<<"NODE UNIMP Client added: "<<c->toString();
 }
 
 void Node::onCommsConnectionStatusChanged(bool s)
 {
+	OC_METHODGATE();
 	//qDebug() <<"NODE UNIMP New connection status: "<<(s?"ONLINE":"OFFLINE");
 }
 
@@ -362,17 +450,21 @@ void Node::onCommsConnectionStatusChanged(bool s)
 
 void Node::onPositionUpdated(const QGeoPositionInfo &info)
 {
+	OC_METHODGATE();
 }
 
 
 void Node::onCompassUpdated(QCompassReading *r)
 {
+	OC_METHODGATE();
 }
 
 void Node::onAccelerometerUpdated(QAccelerometerReading *r)
 {
+	OC_METHODGATE();
 }
 
 void Node::onGyroscopeUpdated(QGyroscopeReading *r)
 {
+	OC_METHODGATE();
 }

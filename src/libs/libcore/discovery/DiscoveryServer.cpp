@@ -11,7 +11,7 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<Associate> part
 	quint32 participantAddCount=0;
 	quint32 sessionAddCount=0;
 	if(nullptr==part){
-		qWarning()<<"ERROR: participant was 0";
+		qWarning()<<"ERROR: participant was nullptr";
 		return nullptr;
 	}
 	if(!part->isValidForServer()){
@@ -107,4 +107,20 @@ void DiscoveryServer::prune(quint64 deadline)
 	if(sessionPruneCount>0){
 		qDebug()<<"PRUNING "<<sessionPruneCount<<" sessions from server";
 	}
+}
+
+
+QVariantList DiscoveryServer::toVariantList()
+{
+	QVariantList out;
+	for(QMap<QString, DiscoveryServerSession *>::iterator it=registry.begin();it!=registry.end() /* not hoisted */; /* no increment */ ){
+		QString key=it.key();
+		DiscoveryServerSession *ses=it.value();
+		if(nullptr!=ses){
+			QVariantList asses=ses->toVariantMap();
+			out << asses;
+		}
+		++it;
+	}
+	return out;
 }

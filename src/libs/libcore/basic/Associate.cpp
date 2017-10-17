@@ -10,7 +10,6 @@
 #include <QRegularExpression>
 
 
-
 Associate::Associate(const QVariantMap map, bool isPublic)
 	: mKey( map["key"].toMap(), isPublic)
 	, mName( map["name"].toString() )
@@ -22,8 +21,7 @@ Associate::Associate(const QVariantMap map, bool isPublic)
 	, mLastInitiatedHandshakeMS( map["lastInitiatedHandshakeMS"].toDateTime().toMSecsSinceEpoch() )
 	, mLastAdherentHandshakeMS( map["lastAdherentHandshakeMS"].toDateTime().toMSecsSinceEpoch() )
 	, mBirthDate( map["birthDate"].toDateTime().toMSecsSinceEpoch() )
-	, mPublicNetworkAddress( map["publicAddress"].toMap() )
-	, mLocalNetworkAddress( map["localAddress"].toMap() )
+	, mAddressList( map["addressList"].toList() )
 	//	, mPins( map["pins"].toStringList())// DONT STORE PINS THEY ARE EPHEMERAL
 
 {
@@ -42,7 +40,7 @@ Associate::Associate()
 	, mBirthDate(0)
 {
 	OC_METHODGATE();
-	//qDebug()<<"CREATE NodeAssociate()";
+	//qDebug()<<"CREATE Associate()";
 }
 
 
@@ -70,8 +68,8 @@ bool Associate::update(const QVariantMap map, bool trustedSource){
 		mLastAdherentHandshakeMS=( map["lastAdherentHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
 		mBirthDate=( map["birthDate"].toDateTime().toMSecsSinceEpoch() );
 
-		mPublicNetworkAddress=NetworkAddress( map["publicAddress"].toMap() );
-		mLocalNetworkAddress=NetworkAddress( map["localAddress"].toMap() );
+		mAddressList=AddressList( map["addressList"].toList() );
+
 		//TODO: Figure out why we dont just ust fromVariantMap here!
 		//fromVariantMap(map);
 		return true;
@@ -127,37 +125,34 @@ DiscoveryRole Associate::role() const
 bool Associate::isValidForClient(bool onlyPublic)
 {
 	OC_METHODGATE();
-	return (
-				mKey.isValid(onlyPublic)
-				&& (
-					mPublicNetworkAddress.isValid()
-					|| mLocalNetworkAddress.isValid()
-					)
-				);
+	const bool keyValid=mKey.isValid(onlyPublic);
+	const bool listValid=mAddressList.isValid(false);
+	const bool out=( keyValid &&  listValid );
+	if(!out){
+		qDebug()<<"keyValid(onlyPublic="<<onlyPublic<< ")="<<keyValid<<", listValid()="<<listValid;
+	}
+	return out;
 }
 
 
 bool Associate::isValidForServer()
 {
 	OC_METHODGATE();
-	return (!mPins.isEmpty()) && isValidForClient(true) ;
+	const bool pinsEmpty=mPins.isEmpty();
+	const bool validForClient=isValidForClient(true);
+	const bool out= (!pinsEmpty) && validForClient;
+	if(!out){
+		qDebug()<<"pinsEmpty()="<<pinsEmpty<<", validForClient()="<<validForClient;
+	}
+	return out;
 }
 
 
-
-NetworkAddress Associate::publicAddress() const
+AddressList &Associate::addressList()
 {
 	OC_METHODGATE();
-	return mPublicNetworkAddress;
+	return mAddressList;
 }
-
-
-NetworkAddress Associate::localAddress() const
-{
-	OC_METHODGATE();
-	return mLocalNetworkAddress;
-}
-
 
 QBluetoothAddress Associate::bluetoothAddress() const
 {
@@ -168,6 +163,7 @@ QBluetoothAddress Associate::bluetoothAddress() const
 
 void Associate::setLastSeen(quint64 when)
 {
+	OC_METHODGATE();
 	if(0==when){
 		when=QDateTime::currentMSecsSinceEpoch();
 	}
@@ -176,6 +172,7 @@ void Associate::setLastSeen(quint64 when)
 
 quint64 Associate::lastSeen() const
 {
+	OC_METHODGATE();
 	return mLastSeenMS;
 }
 
@@ -282,13 +279,11 @@ PortableID Associate::toPortableID()
 }
 
 
-
 QVariantMap Associate::toVariantMap()
 {
 	OC_METHODGATE();
 	QVariantMap map;
-	map["publicAddress"]=mPublicNetworkAddress.toVariantMap();
-	map["localAddress"]=mLocalNetworkAddress.toVariantMap();
+	map["addressList"]=mAddressList.toVariantList();
 	map["lastSeenMS"]=QDateTime::fromMSecsSinceEpoch(mLastSeenMS);
 	map["lastInitiatedHandshakeMS"]=QDateTime::fromMSecsSinceEpoch(mLastInitiatedHandshakeMS);
 	map["lastAdherentHandshakeMS"]=QDateTime::fromMSecsSinceEpoch(mLastAdherentHandshakeMS);
@@ -317,9 +312,7 @@ void Associate::fromVariantMap(const QVariantMap map)
 	mLastSeenMS=( map["lastSeenMS"].toDateTime().toMSecsSinceEpoch() );
 	mLastInitiatedHandshakeMS=( map["lastInitiatedHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
 	mLastAdherentHandshakeMS=( map["lastAdherentHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
-	mPublicNetworkAddress=NetworkAddress( map["publicAddress"].toMap() );
-	mLocalNetworkAddress=NetworkAddress( map["localAddress"].toMap() );
-	//mPins=map["pins"].toStringList(); //DONT STORE PINS THEY ARE EPHEMERAL
+	mAddressList=AddressList( map["addressList"].toList() );
 	mTrusts=map["trusts"].toStringList();
 }
 
@@ -329,10 +322,9 @@ QString Associate::toString()
 {
 	OC_METHODGATE();
 	return mKey.toString()
-			+"name: "+mName
+			+", name: "+mName
 			+", gender: "+mGender
-			+", publicAddress:"+mPublicNetworkAddress.toString()
-			+", localAddress:"+mLocalNetworkAddress.toString()
+			+", addressList:"+mAddressList.toString()
 			+", lastSeenMS:"+utility::formattedDateFromMS(mLastSeenMS)
 			+", lastInitiatedHandshakeMS:"+utility::formattedDateFromMS(mLastInitiatedHandshakeMS)
 			+", lastAdherentHandshakeMS:"+utility::formattedDateFromMS(mLastAdherentHandshakeMS)
@@ -346,16 +338,13 @@ QString Associate::toString()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool Associate::operator==(const Associate &o) const{
+bool Associate::operator==(Associate &o){
 	OC_METHODGATE();
-	//TODO: Contemplate what effect adding test for key and bt address would have on this method and why they are currently missing
-	return o.mPublicNetworkAddress == mPublicNetworkAddress
-			&& o.mLocalNetworkAddress == mLocalNetworkAddress;
-	//Disregard lastTime on purpose
+	return mKey.id() == o.mKey.id();
 }
 
 
-bool Associate::operator!=(const Associate &o) const{
+bool Associate::operator!=(Associate &o){
 	OC_METHODGATE();
 	return (! (o == *this));
 }

@@ -16,6 +16,8 @@
 
 #include "security/PortableID.hpp"
 
+#include "basic/AddressList.hpp"
+
 
 #include <QBluetoothAddress>
 
@@ -28,9 +30,9 @@ class PortableID;
 
 /*
 
-  NodeAssociate is a means to store the address info and trust level
+  Associate is a means to store the address info and trust level
   for one of Node's friends in a manner suitable for persistence via
-  NodeAssociateStore.
+  AddressBook.
 
 */
 
@@ -57,8 +59,10 @@ private:
 
 	quint64 mBirthDate;
 
-	NetworkAddress mPublicNetworkAddress;
-	NetworkAddress mLocalNetworkAddress;
+	//NetworkAddress mPublicNetworkAddress;
+	//NetworkAddress mLocalNetworkAddress;
+
+	AddressList mAddressList;
 	QBluetoothAddress mBluetoothAddress;
 	QByteArray mNFCAddress;
 
@@ -84,8 +88,7 @@ public:
 	bool isValidForClient(bool onlyPublic=true);
 	bool isValidForServer();
 
-	NetworkAddress publicAddress() const;
-	NetworkAddress localAddress() const;
+	AddressList &addressList();
 	// TODO: Merge into NetworkAddress?
 	QBluetoothAddress bluetoothAddress()const;
 
@@ -119,8 +122,8 @@ public:// to/from
 
 
 public: // Operators
-	bool operator==(const Associate &o) const;
-	bool operator!=(const Associate &o) const;
+	bool operator==(Associate &o);
+	bool operator!=(Associate &o);
 
 };
 

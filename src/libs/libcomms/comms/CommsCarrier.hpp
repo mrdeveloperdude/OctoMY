@@ -8,6 +8,7 @@
 #include <QObject>
 #include <QTimer>
 
+class AddressList;
 class QHostAddress;
 
 class CommsCarrier: public QObject
@@ -63,7 +64,6 @@ public slots:
 	qint64 pendingDataSize();
 
 	QString errorString();
-
 
 	NetworkAddress address();
 

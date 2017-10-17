@@ -1,5 +1,7 @@
 #include "HelloCLWorkerFactory.hpp"
 
+#include "utility/Standard.hpp"
+
 #include "HelloCLWorker.hpp"
 
 HelloCLWorkerFactory::HelloCLWorkerFactory()

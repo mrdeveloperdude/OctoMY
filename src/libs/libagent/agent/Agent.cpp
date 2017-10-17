@@ -47,7 +47,7 @@ Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 	OC_METHODGATE();
 	mAssociates.hookSignals(*this);
 	if(mAssociates.isReady()) {
-		onPeerStoreReady(true);
+		onAddressBookReady(true);
 	}
 	mAgentConfigStore.bootstrap(true, false);
 }
@@ -163,10 +163,10 @@ void Agent::setCourierRegistration(QSharedPointer<Associate> assoc, bool reg)
 		const int ct = cc->courierCount();
 		if(ct > 0) {
 			if(nullptr != assoc) {
-				cc->start(assoc->localAddress());
+				startComms();
 			}
 		} else {
-			cc->stop();
+			stopComms();
 		}
 	}
 
@@ -282,19 +282,20 @@ void Agent::onAgentConfigStoreReady(bool ok)
 	reloadController();
 }
 
-
+#include "basic/AddressEntry.hpp"
+#include <QSharedPointer>
 
 //////////////////////////////////////////////////
 // Node Associate Store slots
-void Agent::onPeerStoreReady(bool ready)
+void Agent::onAddressBookReady(bool ready)
 {
 	OC_METHODGATE();
-	qDebug()<<"AGENT found peer store "<< (ready?"READY":"UNREADY");
+	qDebug()<<"AGENT found in addressbook "<< (ready?"READY":"UNREADY");
 	QMap<QString, QSharedPointer<Associate> > &associates = mAssociates.all();
 	for(QSharedPointer<Associate> associate:associates) {
-		NetworkAddress na = associate->localAddress();
-		if(na.isValid() && ROLE_CONTROL == associate->role()) {
-			qDebug()<<"Adding "<<na.toString()<<"("<<associate->toString()<<") to agent control's list";
+		QSharedPointer<AddressEntry> ae=associate->addressList().highestScore();
+		if(!ae.isNull() && ae->address.isValid() && ROLE_CONTROL == associate->role()) {
+			qDebug()<<"Adding "<<ae->address.toString()<<"("<<associate->toString()<<") to agent control's list";
 			mControls.registerClient(associate->id());
 		}
 	}
@@ -303,17 +304,17 @@ void Agent::onPeerStoreReady(bool ready)
 
 
 
-void Agent::onPeerAdded(QString)
+void Agent::onAssociateAdded(QString)
 {
 	OC_METHODGATE();
 }
 
-void Agent::onPeerRemoved(QString)
+void Agent::onAssociateRemoved(QString)
 {
 	OC_METHODGATE();
 }
 
-void Agent::onPeersChanged()
+void Agent::onAssociateChanged()
 {
 	OC_METHODGATE();
 }

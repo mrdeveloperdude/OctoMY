@@ -33,8 +33,8 @@ PairingListModel::PairingListModel(AddressBook &store, DiscoveryType typeFilter,
 	, mTypeFilter(typeFilter)
 	, mPwiz(pwiz)
 {
-	if(!connect(&mStore, &AddressBook::associatesChanged, this, &PairingListModel::onPeersChanged, OC_CONTYPE)) {
-		//if(!connect(&mStore, SIGNAL(peersChanged()), this, SLOT(onPeersChanged()), OC_CONTYPE)) {
+	if(!connect(&mStore, &AddressBook::associatesChanged, this, &PairingListModel::onAssociateChanged, OC_CONTYPE)) {
+		//if(!connect(&mStore, SIGNAL(peersChanged()), this, SLOT(onAssociateChanged()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect ";
 	}
 }
@@ -43,7 +43,7 @@ PairingListModel::~PairingListModel()
 {
 }
 
-void PairingListModel::onPeersChanged()
+void PairingListModel::onAssociateChanged()
 {
 	qDebug()<<"FORWARDING UPDATE SIGNAL";
 	emit dataChanged(index(0,0),index(mStore.associateCount(),0));

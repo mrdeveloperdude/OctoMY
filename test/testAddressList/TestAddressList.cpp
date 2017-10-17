@@ -19,7 +19,7 @@ void TestAddressList::testAddressEntry()
 	const quint64 lastError=333;
 	const quint64 numSuccessful=444;
 	const quint64 numErraneous=555;
-	AddressEntry ae1(QSharedPointer<NetworkAddress>(new NetworkAddress(ha, port)), description, created, lastSuccess, lastError, numSuccessful, numErraneous);
+	AddressEntry ae1(NetworkAddress(ha, port), description, created, lastSuccess, lastError, numSuccessful, numErraneous);
 	QVariantMap map=ae1.toVariantMap();
 	QCOMPARE(map["address"].toMap(), NetworkAddress(ha,port).toVariantMap());
 	QCOMPARE(map["description"].toString(), description);
@@ -29,8 +29,8 @@ void TestAddressList::testAddressEntry()
 	QCOMPARE(map["numSuccessful"].toULongLong(), numSuccessful);
 	QCOMPARE(map["numErraneous"].toULongLong(), numErraneous);
 	AddressEntry ae1copy(map);
-	QCOMPARE(ae1copy.address.isNull(), ae1.address.isNull());
-	QCOMPARE(*ae1copy.address.data(), *ae1.address.data());
+	QCOMPARE(ae1copy.address, ae1.address);
+	QCOMPARE(ae1copy.address.isValid(), ae1.address.isValid());
 	QCOMPARE(ae1copy.description, ae1.description);
 	QCOMPARE(ae1copy.created, ae1.created);
 	QCOMPARE(ae1copy.lastSuccess, ae1.lastSuccess);
@@ -51,15 +51,15 @@ void TestAddressList::testAddressList()
 {
 	AddressList list;
 
-	QSharedPointer<NetworkAddress> addr1(new NetworkAddress(QHostAddress("10.0.0.1"), 8123));will
-	QSharedPointer<NetworkAddress> addr2(new NetworkAddress(QHostAddress("10.0.0.2"), 8123));
-	QSharedPointer<NetworkAddress> addr3(new NetworkAddress(QHostAddress("10.0.0.3"), 8123));
-	QSharedPointer<NetworkAddress> addr4(new NetworkAddress(QHostAddress("10.0.0.4"), 8123));
+	NetworkAddress addr1(QHostAddress("10.0.0.1"), 8123);
+	NetworkAddress addr2(QHostAddress("10.0.0.2"), 8123);
+	NetworkAddress addr3(QHostAddress("10.0.0.3"), 8123);
+	NetworkAddress addr4(QHostAddress("10.0.0.4"), 8123);
 
-	QCOMPARE(addr1->isValid(), true);
-	QCOMPARE(addr2->isValid(), true);
-	QCOMPARE(addr3->isValid(), true);
-	QCOMPARE(addr4->isValid(), true);
+	QCOMPARE(addr1.isValid(), true);
+	QCOMPARE(addr2.isValid(), true);
+	QCOMPARE(addr3.isValid(), true);
+	QCOMPARE(addr4.isValid(), true);
 
 	QSharedPointer<AddressEntry> ae1(new AddressEntry(addr1, "first"));
 	QSharedPointer<AddressEntry> ae2(new AddressEntry(addr2, "second"));
@@ -94,53 +94,60 @@ void TestAddressList::testAddressListScore()
 {
 	AddressList list;
 
-	QSharedPointer<NetworkAddress> addr0(nullptr);
-	QSharedPointer<NetworkAddress> addr1(new NetworkAddress(QHostAddress("10.0.0.1"), 8123));
-	QSharedPointer<NetworkAddress> addr2(new NetworkAddress(QHostAddress("10.0.0.2"), 8123));
-	QSharedPointer<NetworkAddress> addr3(new NetworkAddress(QHostAddress("10.0.0.3"), 8123));
-	QSharedPointer<NetworkAddress> addr4(new NetworkAddress(QHostAddress("10.0.0.4"), 8123));
+	NetworkAddress addr1(QHostAddress("10.0.0.1"), 8123);
+	NetworkAddress addr2(QHostAddress("10.0.0.2"), 8123);
+	NetworkAddress addr3(QHostAddress("10.0.0.3"), 8123);
+	NetworkAddress addr4(QHostAddress::Any, 0);
 
-	QCOMPARE(addr1->isValid(), true);
-	QCOMPARE(addr2->isValid(), true);
-	QCOMPARE(addr3->isValid(), true);
-	QCOMPARE(addr4->isValid(), true);
+	QCOMPARE(addr1.isValid(), true);
+	QCOMPARE(addr2.isValid(), true);
+	QCOMPARE(addr3.isValid(), true);
+	QCOMPARE(addr4.isValid(), false);
 
 	QSharedPointer<AddressEntry> ae00(nullptr);
-	QSharedPointer<AddressEntry> ae0(new AddressEntry(addr0, "zeroeth"));
 	QSharedPointer<AddressEntry> ae1(new AddressEntry(addr1, "first"));
 	QSharedPointer<AddressEntry> ae2(new AddressEntry(addr2, "second"));
 	QSharedPointer<AddressEntry> ae3(new AddressEntry(addr3, "third"));
-	QSharedPointer<AddressEntry> ae4(new AddressEntry(addr4, "fourth"));
+	QSharedPointer<AddressEntry> ae4(new AddressEntry(addr4, "invalid-4"));
 
 	QCOMPARE(ae00.isNull(), true);
-	QCOMPARE(ae0.isNull(), false);
 	QCOMPARE(ae1.isNull(), false);
 	QCOMPARE(ae2.isNull(), false);
 	QCOMPARE(ae3.isNull(), false);
 	QCOMPARE(ae4.isNull(), false);
 
 
-	QCOMPARE(list.size(), (quint64)0);
+	QCOMPARE(list.size(), (int)0);
 	list.add(ae00);
-	QCOMPARE(list.size(), (quint64)0);
-	list.add(ae0);
-	QCOMPARE(list.size(), (quint64)0);
-
+	QCOMPARE(list.size(), (int)0);
+	QCOMPARE(list.isValid(true), false);
+	QCOMPARE(list.isValid(false), false);
 
 	list.add(ae1);
-	QCOMPARE(list.size(), (quint64)1);
-	list.add(ae2);
-	QCOMPARE(list.size(), (quint64)2);
-	list.add(ae3);
-	QCOMPARE(list.size(), (quint64)3);
-	list.add(ae4);
-	QCOMPARE(list.size(), (quint64)4);
+	QCOMPARE(list.size(), (int)1);
+	QCOMPARE(list.isValid(true), true);
+	QCOMPARE(list.isValid(false), true);
 
+	list.add(ae2);
+	QCOMPARE(list.size(), (int)2);
+	QCOMPARE(list.isValid(true), true);
+	QCOMPARE(list.isValid(false), true);
+
+	list.add(ae3);
+	QCOMPARE(list.size(), (int)3);
+	QCOMPARE(list.isValid(true), true);
+	QCOMPARE(list.isValid(false), true);
+
+	list.add(ae4);
+	QCOMPARE(list.size(), (int)4);
+	QCOMPARE(list.isValid(true), false);
+	QCOMPARE(list.isValid(false), true);
+
+
+	//NOTE: ae4 is invalid thus we shanln't get a good result here
 	ae4->lastSuccess=2;
-	QCOMPARE(list.highestScore().isNull(), false);
-	qDebug()<<"AE4: "<<*ae4.data();
-	qDebug()<<"COMP: "<<*list.highestScore().data();
-	QCOMPARE(ae4, list.highestScore());
+	auto hs=list.highestScore();
+	QCOMPARE(hs.isNull(), true);
 
 	ae3->lastSuccess=3;
 	QCOMPARE(list.highestScore().isNull(), false);
@@ -156,6 +163,32 @@ void TestAddressList::testAddressListScore()
 
 }
 
+
+
+
+void TestAddressList::testAddressListStorage()
+{
+	AddressList list;
+	for(int i=0; i<4; ++i) {
+		{
+			QVariantList vlist=list.toVariantList();
+			AddressList list2(vlist);
+			//TODO: Implement operato== for AddressList if it is ever needed
+			//QCOMPARE(list,list2);
+			AddressList list3;
+			list3.fromVariantList(vlist);
+			//TODO: Implement operato== for AddressList if it is ever needed
+			//QCOMPARE(list,list3);
+		}
+
+		NetworkAddress addr1(QHostAddress("10.0.0."+QString::number(i)), 8123);
+		QCOMPARE(addr1.isValid(), true);
+		list.merge(addr1);
+		QCOMPARE(list.size(), (int)(i+1));
+		QCOMPARE(list.isValid(true), true);
+		QCOMPARE(list.isValid(false), true);
+	}
+}
 
 
 QTEST_MAIN(TestAddressList)

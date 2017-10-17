@@ -51,6 +51,8 @@ public:
 
 	QString filename() const;
 
+	void setHookAsyncStoreSignals(QObject &ob, bool hook);
+
 	friend class GenerateRunnable<AsyncStore>;
 
 signals:

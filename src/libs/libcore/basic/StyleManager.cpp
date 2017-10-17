@@ -163,3 +163,4 @@ void StyleManager::applyStyleSheet(QApplication &app){
 }
 
 
+

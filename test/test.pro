@@ -32,6 +32,7 @@ TEST_PROJECTS+= \
 	testKey \
 	testKeyStore \
 	testNetworkAddress \
+	testNetworkSettingsWidget\
 	testAssociate \
 	testAddressBook \
 	testAddressList \

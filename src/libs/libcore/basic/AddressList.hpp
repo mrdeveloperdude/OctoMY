@@ -7,7 +7,7 @@
 #include <QString>
 #include <QSharedPointer>
 
-
+class NetworkAddress;
 class AddressEntry;
 
 /**
@@ -24,12 +24,8 @@ class AddressEntry;
  *
  * When the time comes to select which address to try, the list is copied into an imutable version that is iterated during the connection attempt, starting with the highest scoring entry and working down in loops.
  */
-class AddressList
+class AddressList: public QList<QSharedPointer<AddressEntry> >
 {
-private:
-
-	QList<QSharedPointer<AddressEntry> > mAll;
-
 public:
 	explicit AddressList();
 	explicit AddressList(QVariantList list);
@@ -37,15 +33,31 @@ public:
 public:
 
 	void add(QSharedPointer<AddressEntry> address);
+	void merge(NetworkAddress adr, QString description="", quint64 now=0);
 	QSharedPointer<AddressEntry> highestScore()  const;
 	QMap<quint64, QSharedPointer<AddressEntry>> scoreMap()  const;
-	quint64 size() const;
+
+	NetworkAddress bestAddress() const;
 
 	QVariantList toVariantList() const;
+	void  fromVariantList(QVariantList list);
+	void fromLocalInterface(quint16 port);
 	QString toString();
+
+	bool isValid(bool allMustBeValid=false, bool allowLoopback=true, bool allowMulticast=false);
+
+
+
+	bool operator== (const AddressList &b) const;
+	bool operator!= (const AddressList &b) const;
 
 
 };
+
+
+
+
+
 
 const QDebug &operator<<(QDebug &d, AddressList &a);
 

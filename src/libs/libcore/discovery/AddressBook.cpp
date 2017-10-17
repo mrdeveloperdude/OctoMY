@@ -85,10 +85,7 @@ void AddressBook::save()
 		remotes.push_back(b.value()->toVariantMap());
 	}
 	map["peers"]=remotes;
-	QJsonDocument doc=QJsonDocument::fromVariant(map);
-	QString str=doc.toJson();
-
-	utility::stringToFile(mFilename,str);
+	utility::variantToJsonFile(mFilename, map);
 }
 
 
@@ -156,18 +153,18 @@ QMap<QString, QSharedPointer<Associate> > &AddressBook::all()
 // Forward the async storeReady signal
 void AddressBook::hookSignals(QObject &ob)
 {
-	if(!connect(this, SIGNAL(addressbookReady(bool)), &ob, SLOT(onPeerStoreReady(bool)),OC_CONTYPE)) {
+	if(!connect(this, SIGNAL(addressbookReady(bool)), &ob, SLOT(onAddressBookReady(bool)),OC_CONTYPE)) {
 		qWarning()<<"Could not connect "<<ob.objectName();
 	} else {
 		//qDebug()<<"HOOKING peerStoreReady";
 	}
-	if(!connect(this,SIGNAL(associateAdded(QString)),&ob,SLOT(onPeerAdded(QString)),OC_CONTYPE)) {
+	if(!connect(this,SIGNAL(associateAdded(QString)),&ob,SLOT(onAssociateAdded(QString)),OC_CONTYPE)) {
 		qWarning()<<"Could not connect "<<ob.objectName();
 	}
-	if(!connect(this,SIGNAL(associateRemoved(QString)),&ob,SLOT(onPeerRemoved(QString)),OC_CONTYPE)) {
+	if(!connect(this,SIGNAL(associateRemoved(QString)),&ob,SLOT(onAssociateRemoved(QString)),OC_CONTYPE)) {
 		qWarning()<<"Could not connect "<<ob.objectName();
 	}
-	if(!connect(this,SIGNAL(associatesChanged()),&ob,SLOT(onPeersChanged()),OC_CONTYPE)) {
+	if(!connect(this,SIGNAL(associatesChanged()),&ob,SLOT(onAssociateChanged()),OC_CONTYPE)) {
 		qWarning()<<"Could not connect "<<ob.objectName();
 	}
 }
@@ -175,18 +172,18 @@ void AddressBook::hookSignals(QObject &ob)
 
 void AddressBook::unHookSignals(QObject &ob)
 {
-	if(!disconnect(this, SIGNAL(addressbookReady(bool)), &ob, SLOT(onPeerStoreReady(bool)))) {
+	if(!disconnect(this, SIGNAL(addressbookReady(bool)), &ob, SLOT(onAddressBookReady(bool)))) {
 		qWarning()<<"Could not disconnect "<<ob.objectName();
 	} else {
 		//qDebug()<<"UN-HOOKING peerStoreReady";
 	}
-	if(!disconnect(this,SIGNAL(associateAdded(QString)),&ob,SLOT(onPeerAdded(QString)))) {
+	if(!disconnect(this,SIGNAL(associateAdded(QString)),&ob,SLOT(onAssociateAdded(QString)))) {
 		qWarning()<<"Could not disconnect "<<ob.objectName();
 	}
-	if(!disconnect(this,SIGNAL(associateRemoved(QString)),&ob,SLOT(onPeerRemoved(QString)))) {
+	if(!disconnect(this,SIGNAL(associateRemoved(QString)),&ob,SLOT(onAssociateRemoved(QString)))) {
 		qWarning()<<"Could not disconnect "<<ob.objectName();
 	}
-	if(!disconnect(this,SIGNAL(associatesChanged()),&ob,SLOT(onPeersChanged()))) {
+	if(!disconnect(this,SIGNAL(associatesChanged()),&ob,SLOT(onAssociateChanged()))) {
 		qWarning()<<"Could not disconnect "<<ob.objectName();
 	}
 }

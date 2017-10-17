@@ -14,6 +14,7 @@
 
 #include "basic/Settings.hpp"
 #include "security/KeyStore.hpp"
+#include "basic/LocalAddressList.hpp"
 
 #include <QObject>
 #include <QHostAddress>
@@ -39,6 +40,7 @@ class AppContext;
 class SensorsCourier;
 class BlobCourier;
 class BlobFuture;
+
 
 class Node : public QObject
 {
@@ -68,6 +70,8 @@ protected:
 
 	QUrl mServerURL;
 
+	LocalAddressList mAddresses;
+
 
 public:
 	explicit Node(AppContext *context, DiscoveryRole mRole, DiscoveryType mType, QObject *parent = nullptr);
@@ -76,6 +80,7 @@ public:
 public:
 
 	void init();
+	void deInit();
 
 	void updateDiscoveryClient();
 
@@ -92,7 +97,7 @@ public:
 
 	// Selectors
 public:
-	const QCommandLineParser &options() const;
+	const QCommandLineParser &commandLine() const;
 	Settings &settings();
 	KeyStore &keyStore();
 	AddressBook &peers();
@@ -113,7 +118,9 @@ public:
 
 	virtual QWidget *showWindow();
 
-	void startComms(const NetworkAddress &localAddress);
+	NetworkAddress localAddress();
+	LocalAddressList &localAddresses();
+	void startComms();
 	void stopComms();
 	bool isCommsStarted();
 	bool isCommsConnected();

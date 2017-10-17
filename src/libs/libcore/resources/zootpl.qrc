@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>zootpl/admin_index.mtpl</file>
+    </qresource>
+</RCC>

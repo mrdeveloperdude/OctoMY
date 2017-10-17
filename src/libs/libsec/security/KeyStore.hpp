@@ -54,9 +54,7 @@ public:
 
 public:
 
-	void hookSignals(QObject &ob);
-
-	void unhookSignals(QObject &ob);
+	void setHookSignals(QObject &ob, bool hook);
 
 	inline QSharedPointer<Key> localKey()
 	{

@@ -3,6 +3,7 @@
 
 #include <QApplication>
 #include <QButtonGroup>
+#include <QColor>
 #include <QComboBox>
 #include <QCoreApplication>
 #include <QDateTime>
@@ -19,6 +20,7 @@
 #include <QHostAddress>
 #include <QIcon>
 #include <QImage>
+#include <QImageWriter>
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLayout>
@@ -27,6 +29,8 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QPushButton>
+#include <QRectF>
+#include <QSplitter>
 #include <QStackedLayout>
 #include <QString>
 #include <QStringBuilder>
@@ -36,9 +40,7 @@
 #include <QUdpSocket>
 #include <QWidget>
 #include <QWindow>
-#include <QSplitter>
-#include <QImageWriter>
-#include <QColor>
+
 
 
 #include <algorithm>
@@ -471,6 +473,22 @@ QString fileToString(QString fn)
 	return "";
 }
 
+QVariant jsonFileToVariant(QString fn)
+{
+	QJsonParseError jsonError;
+	QByteArray raw=fileToByteArray(fn);
+	if(raw.size()>0) {
+		QJsonDocument doc = QJsonDocument::fromJson(raw, &jsonError);
+		if (QJsonParseError::NoError != jsonError.error) {
+			qWarning() << "ERROR: Parsing json data: "<<jsonError.errorString()<< " for data "<<raw<<" from file "<<fn;
+		} else {
+			//qDebug()<<"PARSED JSON: "<<doc.toJson();
+			return doc.toVariant();
+		}
+	}
+	return QVariant();
+}
+
 
 QByteArray fileToByteArray(QString fn)
 {
@@ -492,6 +510,15 @@ bool ensureDirExistsForFile(QString fn)
 	}
 	return true;
 }
+
+
+bool variantToJsonFile(QString fn, QVariant data)
+{
+	QJsonDocument doc=QJsonDocument::fromVariant(data);
+	return stringToFile(fn, doc.toJson());
+}
+
+
 
 
 bool stringToFile(QString fn, QString data, bool append)
@@ -746,7 +773,7 @@ void placeInScreen(QWidget &w,QPointF gravity, int pref)
 	}
 }
 
-int getNonPrimaryScreen()
+int nonPrimaryScreen()
 {
 	OC_FUNCTIONGATE();
 	QDesktopWidget *desktop=QApplication::desktop();
@@ -960,7 +987,7 @@ qreal moveSplitter(QSplitter &splitter, qreal pos)
 	//qDebug()<<"MOVING SPLITTER: "<<&splitter << " TO "<<pos;
 	QList<int> sz = splitter.sizes();
 	qreal tot=sz[0]+sz[1];
-	if(tot<=0.0){
+	if(tot<=0.0) {
 		tot=1000.0f;
 	}
 	const qreal oldPos=(sz[0]+1.0f)/(tot+1.0f);
@@ -971,6 +998,37 @@ qreal moveSplitter(QSplitter &splitter, qreal pos)
 	return oldPos;
 }
 
+
+
+
+
+
+void drawText(QPainter & painter, qreal x, qreal y, Qt::Alignment flags,
+			  const QString & text, QRectF * boundingRect)
+{
+	const qreal size = 32767.0;
+	QPointF corner(x, y - size);
+	if (flags & Qt::AlignHCenter) {
+		corner.rx() -= size/2.0;
+	} else if (flags & Qt::AlignRight) {
+		corner.rx() -= size;
+	}
+	if (flags & Qt::AlignVCenter) {
+		corner.ry() += size/2.0;
+	} else if (flags & Qt::AlignTop) {
+		corner.ry() += size;
+	} else {
+		flags |= Qt::AlignBottom;
+	}
+	QRectF rect{corner.x(), corner.y(), size, size};
+	painter.drawText(rect, flags, text, boundingRect);
+}
+
+void drawText(QPainter & painter, const QPointF & point, Qt::Alignment flags,
+			  const QString & text, QRectF * boundingRect)
+{
+	drawText(painter, point.x(), point.y(), flags, text, boundingRect);
+}
 
 
 QString toSoundex(QString in)
@@ -1099,7 +1157,7 @@ float frand()
 
 
 
-quint16	getFreeUDPPortForAddress(QHostAddress &adr)
+quint16	freeUDPPortForAddress(QHostAddress &adr)
 {
 	QUdpSocket udp;
 	const quint16 port=0; //0 means let OS decide port for me
@@ -1111,27 +1169,27 @@ quint16	getFreeUDPPortForAddress(QHostAddress &adr)
 
 
 
-QList<QHostAddress> getAllLocalNetworkAddresses()
+QList<QHostAddress> allLocalNetworkAddresses()
 {
 	QList<QHostAddress> out;
-	QList<QNetworkInterface> allInterfaces = QNetworkInterface::allInterfaces();
-	QNetworkInterface eth;
+	QList<QNetworkInterface> list= QNetworkInterface::allInterfaces();
+	for(int i=0; i<list.size(); i++) {
+		QNetworkInterface inter = list.at(i);
+		if (inter.flags().testFlag(QNetworkInterface::IsUp) && !inter.flags().testFlag(QNetworkInterface::IsLoopBack)) {
+			QList<QNetworkAddressEntry> list2= inter.addressEntries();
+			for(int j=0; j<list2.size(); j++) {
+				QNetworkAddressEntry entry = list2.at(j);
+				out << entry.ip();
 
-	foreach(eth, allInterfaces) {
-		QList<QNetworkAddressEntry> allEntries = eth.addressEntries();
-		QNetworkAddressEntry entry;
-		foreach (entry, allEntries) {
-			out << entry.ip();
-			//qDebug() << entry.ip().toString() << "/" << entry.netmask().toString();
+			}
 		}
 	}
 	return out;
-
 }
 
 QString localAddress()
 {
-	QList<QHostAddress> list=getAllLocalNetworkAddresses();
+	QList<QHostAddress> list=allLocalNetworkAddresses();
 	for(QHostAddress adr:list) {
 		if((QAbstractSocket::IPv4Protocol==adr.protocol()) && (!adr.isLoopback()) ) {
 			return adr.toString();
@@ -1140,6 +1198,15 @@ QString localAddress()
 	return "127.0.0.1";
 }
 
+bool isAddressOK(QString address, quint16 &port)
+{
+	QUdpSocket udp;
+	const bool ok=udp.bind(QHostAddress(address), port);
+	if(0==port) {
+		port=udp.localPort();
+	}
+	return ok;
+}
 
 
 static int ipow(int base, int exp)

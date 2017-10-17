@@ -6,15 +6,17 @@
 
 #include <QSharedPointer>
 
-class DiscoveryServer{
-	private:
-		QMap<QString, DiscoveryServerSession *> registry;
-	public:
+class DiscoveryServer
+{
+private:
+	QMap<QString, DiscoveryServerSession *> registry;
+public:
 
-		DiscoveryServerSession *request(QSharedPointer<Associate> part);
+	DiscoveryServerSession *request(QSharedPointer<Associate> part);
 
-		void prune(quint64 deadline);
+	void prune(quint64 deadline);
 
+	QVariantList toVariantList();
 
 };
 #endif // DISCOVERYSERVER_HPP

@@ -1,8 +1,7 @@
-
 if(!android){
-
 # Link to flex library
 LIBS += -lfl
+}
 
 # Specify flex sources.
 # NOTE: the basename of this file will need to match class names etc.
@@ -21,5 +20,3 @@ include($$PRIS/qlalr.pri)
 OTHER_FILES += \
 	$$FLEXSOURCES \
 	$$QLALRSOURCES \
-
-}

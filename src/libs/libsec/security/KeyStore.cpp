@@ -90,8 +90,7 @@ void KeyStore::load()
 							break;
 						}
 						mAssociates[remote["id"].toString()]=peerKey;
-					}
-					else{
+					} else {
 						qWarning()<<"ERROR: key had malformed json";
 						mError=true;
 						break;
@@ -157,24 +156,23 @@ void KeyStore::clear()
 }
 
 
-void KeyStore::hookSignals(QObject &ob)
+void KeyStore::setHookSignals(QObject &ob, bool hook)
 {
-	if(!connect(this, SIGNAL(keystoreReady(bool)), &ob, SLOT(onKeystoreReady(bool)),OC_CONTYPE)) {
-		qWarning()<<"Could not connect "<<ob.objectName();
+	if(hook) {
+		if(!connect(this, SIGNAL(keystoreReady(bool)), &ob, SLOT(onKeystoreReady(bool)),OC_CONTYPE)) {
+			qWarning()<<"Could not connect "<<ob.objectName();
+		} else {
+			//qDebug()<<"HOOKING keystoreReady";
+		}
 	} else {
-		//qDebug()<<"HOOKING keystoreReady";
+		if(!disconnect(this, SIGNAL(keystoreReady(bool)), &ob, SLOT(onKeystoreReady(bool)))) {
+			qWarning()<<"Could not disconnect "<<ob.objectName();
+		} else {
+			//qDebug()<<"UN-HOOKING keystoreReady";
+		}
 	}
-}
 
-void KeyStore::unhookSignals(QObject &ob)
-{
-	if(!disconnect(this, SIGNAL(keystoreReady(bool)), &ob, SLOT(onKeystoreReady(bool)))) {
-		qWarning()<<"Could not disconnect "<<ob.objectName();
-	} else {
-		//qDebug()<<"UN-HOOKING keystoreReady";
-	}
 }
-
 
 void KeyStore::dump()
 {

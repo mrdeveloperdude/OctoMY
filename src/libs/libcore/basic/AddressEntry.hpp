@@ -9,7 +9,7 @@
 
 struct AddressEntry {
 public:
-	QSharedPointer<NetworkAddress> address;
+	NetworkAddress address;
 	QString description;
 	quint64 created;
 	quint64 lastSuccess;
@@ -18,7 +18,7 @@ public:
 	quint64 numErraneous;
 public:
 
-	explicit AddressEntry(QSharedPointer<NetworkAddress> address, QString description, quint64 created=0, quint64 lastSuccess=0, quint64 lastError=0, quint64 numSuccessful=0, quint64 numErraneous=0);
+	explicit AddressEntry(NetworkAddress address, QString description="", quint64 created=0, quint64 lastSuccess=0, quint64 lastError=0, quint64 numSuccessful=0, quint64 numErraneous=0);
 	explicit AddressEntry(QVariantMap map);
 public:
 

@@ -7,7 +7,7 @@
 #include <QVariantMap>
 
 
-AddressEntry::AddressEntry(QSharedPointer<NetworkAddress> address, QString description, quint64 created, quint64 lastSuccess, quint64 lastError, quint64 numSuccessful, quint64 numErraneous)
+AddressEntry::AddressEntry(NetworkAddress address, QString description, quint64 created, quint64 lastSuccess, quint64 lastError, quint64 numSuccessful, quint64 numErraneous)
 	: address(address)
 	, description(description)
 	, created(created)
@@ -19,7 +19,7 @@ AddressEntry::AddressEntry(QSharedPointer<NetworkAddress> address, QString descr
 
 }
 AddressEntry::AddressEntry(QVariantMap map)
-	: address(new NetworkAddress( map["address"].toMap()  ) )
+	: address( map["address"].toMap() )
 	, description(map["description"].toString())
 	, created(map["createdMS"].toDateTime().toMSecsSinceEpoch())
 	, lastSuccess(map["lastSuccessMS"].toDateTime().toMSecsSinceEpoch())
@@ -35,7 +35,7 @@ AddressEntry::AddressEntry(QVariantMap map)
 quint64 AddressEntry::score() const
 {
 	// Trivial reject for useless entries
-	if(address.isNull() || !address->isValid()) {
+	if(!address.isValid()) {
 		return 0;
 	}
 	quint64 out=0;
@@ -72,7 +72,7 @@ void AddressEntry::tried(bool successful, quint64 now)
 QVariantMap AddressEntry::toVariantMap() const
 {
 	QVariantMap map;
-	map["address"]=address.isNull()?QVariantMap():address->toVariantMap();
+	map["address"]=address.toVariantMap();
 	map["description"]=description;
 	map["createdMS"]=QDateTime::fromMSecsSinceEpoch(created);
 	map["lastSuccessMS"]=QDateTime::fromMSecsSinceEpoch(lastSuccess);
@@ -87,7 +87,7 @@ QVariantMap AddressEntry::toVariantMap() const
 QString AddressEntry::toString()
 {
 	OC_METHODGATE();
-	return address->toString()
+	return address.toString()
 		   +", description: "+description
 		   +", createdMS: "+utility::formattedDateFromMS(created)
 		   +", lastSuccessMS: "+utility::formattedDateFromMS(lastSuccess)
@@ -103,8 +103,8 @@ QString AddressEntry::toString()
 bool AddressEntry::operator==(const AddressEntry &o) const
 {
 	OC_METHODGATE();
-	return ( (o.address.isNull() == this->address.isNull() )
-			 && (*o.address.data() == *this->address.data() )
+	return (
+			  (o.address == this->address )
 			 && (o.description == this->description )
 			 && (o.created == this->created )
 			 && (o.lastSuccess == this->lastSuccess )

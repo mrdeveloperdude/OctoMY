@@ -438,20 +438,20 @@ void RemoteWindow::onKeystoreReady(bool ok)
 // Peer Store slots
 
 
-void RemoteWindow::onPeerAdded(QString id)
+void RemoteWindow::onAssociateAdded(QString id)
 {
 	qDebug()<<"REMOTEW peer added: "<<id;
 	// Handled by change handler
 }
 
-void RemoteWindow::onPeerRemoved(QString id)
+void RemoteWindow::onAssociateRemoved(QString id)
 {
 	qDebug()<<"REMOTEW peer removed: "<<id;
 	// Handled by change handler
 }
 
 
-void RemoteWindow::onPeersChanged()
+void RemoteWindow::onAssociateChanged()
 {
 	qDebug()<<"REMOTEW peers changed: ";
 	updateAgentsList();
@@ -459,7 +459,7 @@ void RemoteWindow::onPeersChanged()
 
 
 
-void RemoteWindow::onPeerStoreReady(bool ok)
+void RemoteWindow::onAddressBookReady(bool ok)
 {
 	qDebug()<<"REMOTEW peer store load compelte: "<<(ok?"OK":"ERROR");
 	prepareDiscovery();

@@ -9,6 +9,7 @@
 #include "security/PortableID.hpp"
 #include "utility/Standard.hpp"
 
+#include "basic/AddressEntry.hpp"
 #include "models/PairingListModel.hpp"
 #include "PairingEditButtonDelegate.hpp"
 
@@ -60,23 +61,26 @@ PairingWizard::PairingWizard(QWidget *parent)
 }
 
 
+void PairingWizard::onNetworkSettingsChange(QHostAddress address, quint16 port, bool valid)
+{
+	if(nullptr!=mNode) {
+		if(valid) {
+			mNode->localAddresses().setCurrent(address, port);
+		}
+	}
+	updateNetworkSettings();
+}
+
+
 void PairingWizard::updateNetworkSettings()
 {
 	if(nullptr!=mNode) {
 		DiscoveryClient *client=mNode->discoveryClient();
 		if(nullptr!=client) {
 			const bool visible=this->isVisible();
-			const bool valid=ui->widgetNetworkSettings->verify(false);
-			if(valid) {
-				QSharedPointer<Associate> me=mNode->nodeIdentity();
-				if(nullptr!=me) {
-					NetworkAddress local=me->localAddress();
-					NetworkAddress cur=ui->widgetNetworkSettings->address();
-					local.setIP(cur.ip());
-					local.setPort(ui->widgetNetworkSettings->address().port());
-				}
-			}
-			if(visible && valid) {
+			//TODO: Only attemt to start discovery client when address is valid
+			const bool valid=true;//mNode->localAddresses().currentAddress().isValid()
+			if(visible) {
 				if(!client->isStarted()) {
 					client->start();
 				}
@@ -130,7 +134,6 @@ void PairingWizard::configure(Node *n)
 			}
 
 
-			quint16 defaultPort=0;
 			switch(type) {
 			case(TYPE_ZOO):
 			default:
@@ -138,31 +141,25 @@ void PairingWizard::configure(Node *n)
 			case(TYPE_AGENT): {
 				ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Agent").replace(QRegularExpression("\\[DEST\\]"), "Control"));
 				ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageAgent);
-				defaultPort=ZooConstants::OCTOMY_UDP_DEFAULT_PORT_AGENT;
 			}
 			break;
 			case(TYPE_REMOTE): {
 				ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Remote").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
 				ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
-				defaultPort=ZooConstants::OCTOMY_UDP_DEFAULT_PORT_REMOTE;
 			}
 			break;
 			case(TYPE_HUB): {
 				ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Hub").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
 				ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
-				defaultPort=ZooConstants::OCTOMY_UDP_DEFAULT_PORT_HUB;
 			}
 			break;
 			}
 
+			if(!connect(ui->widgetNetworkSettings, &NetworkSettingsWidget::addressChanged, this, &PairingWizard::updateNetworkSettings, OC_CONTYPE)) {
+				qWarning()<<"ERROR: Could not connect";
+			}
 
-			ui->widgetNetworkSettings->setPort(defaultPort);
-			connect(ui->widgetNetworkSettings, &NetworkSettingsWidget::validityChanged, this, [=](bool ok) {
-				updateNetworkSettings();
-			},OC_CONTYPE);
-			ui->widgetNetworkSettings->verify();
-
-
+			ui->widgetNetworkSettings->set(mNode->localAddress().ip(), mNode->localAddress().port());
 
 		} else {
 			qWarning()<<"ERROR: No local ass";
@@ -249,7 +246,6 @@ Node *PairingWizard::getNode()
 void PairingWizard::showEvent(QShowEvent *)
 {
 	updateNetworkSettings();
-
 }
 
 void PairingWizard::hideEvent(QHideEvent *)

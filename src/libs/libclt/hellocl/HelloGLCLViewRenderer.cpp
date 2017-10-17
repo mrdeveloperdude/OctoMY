@@ -2,6 +2,8 @@
 
 #ifdef EXTERNAL_LIB_OPENCL
 
+#include "utility/Standard.hpp"
+
 #include "HelloCLWorkerFactory.hpp"
 #include "clt/CLThreadManager.hpp"
 

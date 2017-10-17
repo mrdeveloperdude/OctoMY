@@ -222,16 +222,15 @@ void ClientWidget::setCourierRegistration(bool reg)
 		//qDebug()<<"COMMS LEFT WITH "<<ct<<" COURIERS";
 		//qDebug()<< cc->getSummary();
 		if(ct>0) {
-			if( (nullptr != mController) && (nullptr!= mController->nodeIdentity() ) && (!cc->isStarted()) ) {
-				//qDebug()<<"STARTING COMMS ";
-				cc->start(mController->nodeIdentity()->localAddress());
+			if(nullptr != mController) {
+				mController->startComms();
 			} else {
 				//qDebug()<<"COMMS ALREADY STARTED";
 			}
 		} else {
-			if( cc->isStarted() ) {
+			if( (nullptr != mController) &&  ( cc->isStarted() ) ) {
 				//qDebug()<<"STOPPING COMMS ";
-				cc->stop();
+				mController->stopComms();
 			} else {
 				//qDebug()<<"COMMS ALREADY STOPPED";
 			}

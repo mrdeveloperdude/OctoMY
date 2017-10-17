@@ -1,43 +1,65 @@
 #include "AddressList.hpp"
 
 #include "AddressEntry.hpp"
-
 #include "utility/Utility.hpp"
 
 #include <QDateTime>
-
 #include<QList>
 #include <QMap>
+#include <QSharedPointer>
+
 
 //QSharedPointer<AddressEntry> >
 
 AddressList::AddressList()
 {
-
+	OC_METHODGATE();
 }
 
 
 AddressList::AddressList(QVariantList list)
 {
-	for(QVariant var:list){
-		QVariantMap map=var.toMap();
-		mAll << QSharedPointer<AddressEntry>(new AddressEntry(map));
-	}
+	OC_METHODGATE();
+	fromVariantList(list);
 }
 
 
 void AddressList::add(QSharedPointer<AddressEntry> address)
 {
-	if(!address.isNull() && !address->address.isNull()) {
-		mAll<<address;
+	OC_METHODGATE();
+	if(!address.isNull() ) {
+		*this<<address;
 	}
+}
+
+void AddressList::merge(NetworkAddress adr, QString description, quint64 now)
+{
+	OC_METHODGATE();
+	//Never put bad addresses into the list
+	if(!adr.isValid()) {
+		qWarning()<<"WARNING: Skipping bad address "<<adr.toString()<<" while merging";
+		return;
+	}
+	if(0==now) {
+		now=QDateTime::currentMSecsSinceEpoch();
+	}
+	for(QSharedPointer<AddressEntry> entry:*this) {
+		if(!entry.isNull()) {
+			// Already inn, no need to continue
+			if(entry->address == adr) {
+				return;
+			}
+		}
+	}
+	*this<<QSharedPointer<AddressEntry>(new AddressEntry(adr, description, now));
 }
 
 QSharedPointer<AddressEntry> AddressList::highestScore() const
 {
+	OC_METHODGATE();
 	quint64 highestScore=0;
 	QSharedPointer<AddressEntry> highestEntry;
-	for(QSharedPointer<AddressEntry> entry:mAll) {
+	for(QSharedPointer<AddressEntry> entry:*this) {
 		if(!entry.isNull()) {
 			const quint64 score = entry->score();
 			if(score > highestScore) {
@@ -51,9 +73,10 @@ QSharedPointer<AddressEntry> AddressList::highestScore() const
 
 QMap<quint64, QSharedPointer<AddressEntry> > AddressList::scoreMap() const
 {
+	OC_METHODGATE();
 	QMap<quint64, QSharedPointer<AddressEntry> > map;
 
-	for(QSharedPointer<AddressEntry> entry:mAll) {
+	for(QSharedPointer<AddressEntry> entry:*this) {
 		if(!entry.isNull()) {
 			const quint64 score = entry->score();
 			map.insert(score, entry);
@@ -63,23 +86,52 @@ QMap<quint64, QSharedPointer<AddressEntry> > AddressList::scoreMap() const
 }
 
 
-
-quint64 AddressList::size() const
+NetworkAddress AddressList::bestAddress() const
 {
-	return mAll.size();
+	OC_METHODGATE();
+	QSharedPointer<AddressEntry>  hs = highestScore();
+	if(!hs.isNull()) {
+		return hs->address;
+	}
+	return NetworkAddress();
+
 }
 
 
 
 QVariantList AddressList::toVariantList() const
 {
+	OC_METHODGATE();
 	QVariantList list;
-	for(QSharedPointer<AddressEntry> entry:mAll) {
+	for(QSharedPointer<AddressEntry> entry:*this) {
 		if(!entry.isNull()) {
 			list<< entry->toVariantMap();
 		}
 	}
 	return list;
+}
+
+void AddressList::fromVariantList(QVariantList list)
+{
+	OC_METHODGATE();
+	clear();
+	for(QVariant var:list) {
+		QVariantMap map=var.toMap();
+		*this << QSharedPointer<AddressEntry>(new AddressEntry(map));
+	}
+}
+
+
+void AddressList::fromLocalInterface(quint16 port)
+{
+	OC_METHODGATE();
+	clear();
+	quint64 now=QDateTime::currentMSecsSinceEpoch();
+	QList<QHostAddress> local=utility::allLocalNetworkAddresses();
+	for(QHostAddress addr:local) {
+		NetworkAddress naddr(addr, port);
+		merge(naddr,"Local interface", now);
+	}
 }
 
 
@@ -88,7 +140,7 @@ QString AddressList::toString()
 {
 	OC_METHODGATE();
 	QString out="";
-	for(QSharedPointer<AddressEntry> entry:mAll) {
+	for(QSharedPointer<AddressEntry> entry:*this) {
 		if(entry.isNull()) {
 			out+="null, ";
 		} else {
@@ -96,6 +148,58 @@ QString AddressList::toString()
 		}
 	}
 	return out;
+}
+
+
+bool AddressList::isValid(bool allMustBeValid, bool allowLoopback, bool allowMulticast)
+{
+	OC_METHODGATE();
+	const int sz=size();
+	if(0==sz) {
+		qWarning()<<"0 == list.sz";
+		return false;
+	}
+	int ct=0;
+	for(QSharedPointer<AddressEntry> entry:*this) {
+		if(entry.isNull()) {
+			continue;
+		} else {
+			if(!entry->address.isValid(allowLoopback, allowMulticast)) {
+				continue;
+			} else {
+				ct++;
+			}
+		}
+	}
+	if(allMustBeValid) {
+		if(ct!=sz) {
+			qWarning()<<"ct("<<ct<<") != list.sz("<<sz<<")";
+			return false;
+		}
+	} else {
+		if(ct<1) {
+			qWarning()<<"ct("<<ct<<") < 1";
+			return false;
+		}
+	}
+	return true;
+}
+
+
+
+bool AddressList::operator== (const AddressList &b) const
+{
+	for(QSharedPointer<AddressEntry> ae:b) {
+		//TODO: Implement this if it is ever needed
+	}
+	return false;
+}
+
+
+bool AddressList::operator!= (const AddressList &b) const
+{
+	//TODO: Implement this if it is ever needed
+	return false;
 }
 
 

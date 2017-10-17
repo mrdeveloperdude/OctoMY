@@ -124,7 +124,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 		}
 #endif // EXTERNAL_LIB_OPENCL
 
-		const QCommandLineParser &opts=mHub->options();
+		const QCommandLineParser &opts=mHub->commandLine();
 		if(opts.isSet("local-port")) {
 			ui->lineEditBindPort->setText(opts.value("local-port"));
 			qDebug()<<"OVERRIDING LOCAL PORT WITH VALUE FROM CMDLINE: "<<opts.value("local-port");
@@ -255,35 +255,19 @@ void HubWindow::onListenStateChanged(const TryToggleState last, const TryToggleS
 	on?mSummaryTimer.start():mSummaryTimer.stop();
 	appendLog("New listening state: "+ToggleStateToSTring(current));
 	if(TRYING==current) {
-		QHostInfo::lookupHost("localhost",this, SLOT(onLocalHostLookupComplete(QHostInfo)));
+
+		mHub->localAddresses().setPort(ui->lineEditBindPort->text().toInt());
+		mHub->startComms();
+		ui->tryToggleListen->setState(ON);
+
+
+
 	} else if(OFF==current) {
 		CommsChannel *comms=mHub->comms();
 		if(0!=comms) {
-			comms->stop();
+			mHub->stopComms();
 		}
 	}
-}
-
-
-
-void HubWindow::onLocalHostLookupComplete(QHostInfo hi)
-{
-	OC_METHODGATE();
-	for(QHostAddress adr:hi.addresses()) {
-		if(adr.isNull()) {
-			ui->logScroll->appendLog("Skipping invalid address during local host lookup: "+adr.toString());
-		} else {
-			CommsChannel *comms=mHub->comms();
-			if(0!=comms) {
-				qDebug()<<"HUB comms start for " << adr.toString()<<":" << ui->lineEditBindPort->text();
-				comms->start(NetworkAddress(adr, ui->lineEditBindPort->text().toInt()));
-				ui->tryToggleListen->setState(ON);
-			}
-			return;
-		}
-	}
-	appendLog("No valid addresses found during host lookup, aborting bind");
-	ui->tryToggleListen->setState(OFF);
 }
 
 

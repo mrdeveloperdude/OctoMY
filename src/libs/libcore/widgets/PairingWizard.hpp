@@ -37,9 +37,6 @@ public:
 
 	void configure(Node *mNode);
 
-private:
-
-	void updateNetworkSettings();
 public:
 	void reset();
 
@@ -47,10 +44,18 @@ public:
 
 	Node *getNode();
 
+	void updateNetworkSettings();
+
 protected:
 
 	virtual void showEvent(QShowEvent *);
 	virtual void hideEvent(QHideEvent *);
+
+private slots:
+
+	void onNetworkSettingsChange(QHostAddress address, quint16 port, bool valid);
+
+
 
 private slots:
 	void on_pushButtonMaybeOnward_clicked();

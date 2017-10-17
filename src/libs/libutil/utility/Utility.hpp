@@ -49,11 +49,14 @@ qint32 getSelectedButtonIndex(QButtonGroup* group,qint32 def);
 void toggleButtonSelection(QAbstractButton* button, bool on, bool clearOnOff=true);
 void fitContent(QTableView &tv);
 void placeInScreen(QWidget &w,QPointF gravity=QPointF(0.5,0.5), int pref=-1);
-int getNonPrimaryScreen();
+int nonPrimaryScreen();
 void sendFakeKeyEvent(QWidget *target, Qt::Key k, QString ks);
 void populateComboboxWithLocalAdresses(QComboBox &cb);
 QImage tint(QImage src, QColor color, qreal strength=1.0);
 qreal moveSplitter(QSplitter &splitter, qreal pos);
+void drawText(QPainter & painter, qreal x, qreal y, Qt::Alignment flags, const QString & text, QRectF * boundingRect = nullptr);
+void drawText(QPainter & painter, const QPointF & point, Qt::Alignment flags, const QString & text, QRectF * boundingRect = {});
+
 template <typename T>
 void pack(T *stacked);
 
@@ -83,7 +86,9 @@ int levenshtein_distance(const QString &s1, const QString  &s2);
 
 QString fileToString(QString fn);
 QByteArray fileToByteArray(QString fn);
+QVariant jsonFileToVariant(QString fn);
 bool ensureDirExistsForFile(QString fn);
+bool variantToJsonFile(QString fn, QVariant data);
 bool stringToFile(QString fn, QString data, bool append=false);
 bool byteArrayToFile(QString fn, QByteArray data, bool append=false);
 bool verifyMedia(QString name);
@@ -97,9 +102,10 @@ double fsec();
 float frand();
 
 // Networking
-quint16	getFreeUDPPortForAddress(QHostAddress &adr);
-QList<QHostAddress> getAllLocalNetworkAddresses();
+quint16	freeUDPPortForAddress(QHostAddress &adr);
+QList<QHostAddress> allLocalNetworkAddresses();
 QString localAddress();
+bool isAddressOK(QString address, quint16 &port);
 
 
 

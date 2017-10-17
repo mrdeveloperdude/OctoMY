@@ -3,7 +3,7 @@
 #include "PairingWizard.hpp"
 #include "identity/Identicon.hpp"
 #include "security/PortableID.hpp"
-
+#include "utility/Utility.hpp"
 
 #include <QSvgRenderer>
 #include <QPainter>
@@ -16,6 +16,7 @@ PairingEditButtonDelegate::PairingEditButtonDelegate(PairingWizard &pwiz)
 	: QItemDelegate(&pwiz)
 	, pwiz(pwiz)
 {
+
 }
 
 PairingEditButtonDelegate::~PairingEditButtonDelegate()
@@ -105,9 +106,7 @@ FROM DATA:  QMap(("birthDate", QVariant(qulonglong, 1471476138556))
 ("key", QVariant(QVariantMap, QMap(("id", QVariant(QString, "53CD98E1996608801F960D46D86B15976FCB311B437142D943D2BDC65ACAD89C"))
 ("publicKey", QVariant(QString, "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAmVMIHQMoZ1TIuyYOBfVO\n4PwvR/Gc233ADpGezhCTKZ14zFl2MxxR167E0lVI4Qnl3L3LhKQgdRFEd2DiAoN+\nFId6fQuocGh/1PlV6tOBK7d2vVmuUrmHLoXi1gv8ZSN1BVTn64mBxWB7n57kDND9\nzoTqqICKsQ+7z2LTBryblOdisMcVVOY5a9ALokg/pgnpe0vDhX+342lhMYAaZfJP\nwxgCKJAcSTKhtAvdnnQXwkA1BjElvoq0UCB8SKo+oQ33h5w7unlyCsaJ07Q+U54g\nhZ5HvPKuDzZ/65wfB93MimJwM6Ew98FAqy73U9UZiLs3VrJ37x3EJAe39uIAMHKW\nlOx5Mu8yN9WWtzKqSX5F0k7Gs+c1MKk9lAcenJcsAqHNS9ND0x0NmAJVzanShan5\nsDx2V6J8cB5FssdAz301WxhnOi1sbfDJcy9dEpAHPs6g6FSYFBNAx1/9N4Yck1cR\n8M7JMxkCN9mo1BYbs8ON0leMGm/BtozgHpDGrDnTZ13fwNnODh9uSaZZeFvzQgDm\nHInb9+Wv8BoeSahlOKjsQV6Gqycb9qwZX3sJ/OK7X+hIDtc1yQ7Pdc5WN0zRuQvb\nu1uwlox6JAVXDhcrejweQgYI4garuRjfua0PEAqNk94v8bTvG+VPEYBdPRKiIDLp\ngEvoK4UpZOLXXmp1ao2lki8CAwEAAQ==\n-----END PUBLIC KEY-----\n")))))
 ("lastSeenMS", QVariant(qulonglong, 1471548235026))
-("localAddress", QVariant(Invalid))
 ("name", QVariant(QString, ""))
-("publicAddress", QVariant(QVariantMap, QMap(("ip", QVariant(QString, "0.0.0.0"))
 ("port", QVariant(int, 8123)))))
 ("role", QVariant(QString, "ROLE_CONTROL"))
 ("trusts", QVariant(QStringList, ("take-control")))
@@ -166,6 +165,17 @@ FROM DATA:  QMap(("birthDate", QVariant(qulonglong, 1471476138556))
 		//drawSVG(painter, , icX,border,buttonSize,buttonSize);
 		//icX+=buttonSize+border*2;
 
+
+		QString identifier=data["name"].toString().trimmed();
+		if(identifier.isEmpty()){
+			identifier=data["type"].toString().trimmed().mid(5)+"-"+id.id().left(10)+"...";
+		}
+		// Draw the identifier
+		painter->setPen(pwiz.palette().color(QPalette::ButtonText));
+		auto font=painter->font();
+		font.setPixelSize(buttonSize/2);
+		painter->setFont(font);
+		utility::drawText(*painter, QPointF(icX, r.height()/2), Qt::AlignVCenter, identifier);
 
 		// Draw the edit button to the far right
 		QStyleOptionButton button;

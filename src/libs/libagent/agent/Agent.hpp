@@ -97,10 +97,10 @@ public slots:
 
 	// NodeAssociate slots
 public slots:
-	void onPeerStoreReady(bool);
-	void onPeerAdded(QString);
-	void onPeerRemoved(QString);
-	void onPeersChanged();
+	void onAddressBookReady(bool);
+	void onAssociateAdded(QString);
+	void onAssociateRemoved(QString);
+	void onAssociateChanged();
 
 	//Agent State Courier slots
 public slots:

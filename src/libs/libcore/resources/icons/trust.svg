@@ -14,7 +14,7 @@
    viewBox="0 0 49.999998 49.999998"
    id="svg8058"
    version="1.1"
-   inkscape:version="0.91 r"
+   inkscape:version="0.92.2 (unknown)"
    sodipodi:docname="trust.svg">
   <defs
      id="defs8060" />
@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.9195959"
-     inkscape:cx="90.119308"
+     inkscape:cx="70.673871"
      inkscape:cy="15.606201"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -35,8 +35,8 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1879"
-     inkscape:window-height="1056"
+     inkscape:window-width="3799"
+     inkscape:window-height="2136"
      inkscape:window-x="41"
      inkscape:window-y="24"
      inkscape:window-maximized="1" />
@@ -48,7 +48,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -58,9 +58,9 @@
      id="layer1"
      transform="translate(879.28571,-398.79077)">
     <path
-       inkscape:connector-curvature="0"
-       id="path6605"
-       style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
-       d="m -859.94269,413.98435 0,0 c -4.71274,-0.1457 -9.56178,5.3354 -5.44502,12.1097 2.98933,4.2276 7.5931,7.3054 11.10659,9.1642 4.42475,-2.5366 8.35727,-5.1761 11.1066,-9.1663 6.08169,-10.0087 -7.41234,-17.1941 -11.1066,-7.5806 -1.19392,-3.107 -3.41124,-4.4585 -5.66157,-4.5281 z m 5.65697,-10.9579 18.32015,7.3367 0,14.7503 c 0,6.417 -9.64501,17.2154 -18.32015,19.4073 -8.67505,-2.1919 -18.31159,-12.9903 -18.31159,-19.4073 l 0,-14.7503 18.31159,-7.3367 z m 0,-2.8421 -20.8199,8.3467 0,16.7878 c -2e-5,7.3063 10.94338,19.5841 20.8199,22.0783 9.87653,-2.4942 20.81991,-14.772 20.81991,-22.0783 l 0,-16.7878 -20.81991,-8.3467 z" />
+       style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.62988758"
+       d="m -863.51314,406.45746 v 0 c -7.68101,-0.23733 -15.58436,8.69616 -8.87473,19.7375 4.87253,6.89043 12.37563,11.90687 18.10232,14.93647 7.21207,-4.1343 13.62139,-8.43646 18.10291,-14.93998 9.91255,-16.31305 -12.08113,-28.02437 -18.10291,-12.35546 -1.94565,-5.06416 -5.55979,-7.26691 -9.22759,-7.3803 z"
+       id="path12897"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

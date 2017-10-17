@@ -8,6 +8,7 @@
 #include "template/Mustache.hpp"
 
 #include "basic/Associate.hpp"
+#include "basic/AddressEntry.hpp"
 #include "utility/ScopedTimer.hpp"
 
 #include "security/PortableID.hpp"
@@ -16,6 +17,7 @@
 #include "ZooConstants.hpp"
 
 #include "node/AppContext.hpp"
+
 
 #include <QtNetwork/QHostAddress>
 #include <QJsonDocument>
@@ -41,40 +43,45 @@
 
 const quint64 ZooServer::BACKGROUND_TIMER_INTERVAL=1000*10; //10 sec
 const quint64 ZooServer::PRUNE_DEADLINE=1000*60*5; //5 min
+static const quint16 ZOO_MINIMAL_ADMIN_ID_LENGTH=10;
 
 
 ZooServer::ZooServer(AppContext *context, QObject *parent)
 	: QHttpServer(parent)
 	, mContext(context)
-	, keystore (mContext->baseDir() + "/keystore.json")
-	, storage(QDir::current())
+	, mKeystore (mContext->baseDir() + "/keystore.json")
+	, mStorage(QDir::current())
 
 {
+	OC_METHODGATE();
 	Q_ASSERT(nullptr!=mContext);
 	//ScopedTimer zooBootTimer(mContext->base()+"-boot");
 	setObjectName(mContext->base());
 
-	keystore.bootstrap();
-
+	mKeystore.setHookSignals(*this, true);
+	mKeystore.bootstrap();
 
 	if(!QDir().mkpath(mContext->baseDir())) {
 		qWarning()<<"ERROR: Could not create basedir for zoo";
 	}
 
-	qDebug()<<"Current dir for zoo storage is: "<<storage.dir().absolutePath();
+	qDebug()<<"Current dir for zoo storage is: "<<mStorage.dir().absolutePath();
 
-	if(!connect(&backgroundTimer, &QTimer::timeout, this, &ZooServer::onBackgroundTimer,OC_CONTYPE)) {
+	if(!connect(&mBackgroundTimer, &QTimer::timeout, this, &ZooServer::onBackgroundTimer,OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
-	backgroundTimer.setInterval(BACKGROUND_TIMER_INTERVAL);
-	backgroundTimer.setTimerType(Qt::CoarseTimer);
+	mBackgroundTimer.setInterval(BACKGROUND_TIMER_INTERVAL);
+	mBackgroundTimer.setTimerType(Qt::CoarseTimer);
+
+	Q_INIT_RESOURCE(zootpl);
+	mAdminIndexTPL=utility::fileToString("://zootpl/admin_index.mtpl");
 }
 
 
 ZooServer::~ZooServer()
 {
-
+	OC_METHODGATE();
 }
 
 static QDebug operator<<(QDebug d, qhttp::server::QHttpRequest &s)
@@ -93,7 +100,7 @@ static QDebug operator<<(QDebug d, qhttp::server::QHttpRequest &s)
 	return d.space();
 }
 
-static QDebug operator<<(QDebug d, qhttp::server::QHttpRequest *s)
+QDebug operator<<(QDebug d, qhttp::server::QHttpRequest *s)
 {
 	if(0!=s) {
 		d <<*s;
@@ -104,19 +111,21 @@ static QDebug operator<<(QDebug d, qhttp::server::QHttpRequest *s)
 }
 
 
+NetworkAddress ZooServer::serverAddress()
+{
+	QTcpServer *tc=tcpServer();
+	return (nullptr!=tc)?NetworkAddress (QHostAddress(tc->serverAddress().toString()), tc->serverPort()): NetworkAddress();
+}
+
 bool ZooServer::start(const QString pathOrPortNumber)
 {
+	OC_METHODGATE();
 	if(!connect(this,  &QHttpServer::newConnection, [this](qhttp::server::QHttpConnection*) {
 	//qDebug()<<"a new connection was made!\n";
 })) {
 		qWarning()<<"ERROR: Could not connect";
 	}
-
-
-
-	backgroundTimer.start();
-
-
+	mBackgroundTimer.start();
 	qhttp::server::TServerHandler conHandler=[this](qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res) {
 		req->collectData(OC_COLLECT_AT_MOST);
 		req->onEnd([this, req, res]() {
@@ -131,6 +140,9 @@ bool ZooServer::start(const QString pathOrPortNumber)
 				return;
 			} else if(path.startsWith("/api")) {
 				serveAPI(req,res);
+				return;
+			} else if( mAdminURL.length()>0 && path.startsWith(mAdminURL)) {
+				serveAdmin(req,res);
 				return;
 			} else {
 				serveFallback(req,res);
@@ -153,6 +165,7 @@ bool ZooServer::start(const QString pathOrPortNumber)
 
 void ZooServer::stop()
 {
+	OC_METHODGATE();
 	if ( !isListening() ) {
 		qWarning()<<"ERROR: Trying to stop server while not listeining";
 	} else {
@@ -168,6 +181,7 @@ bool ZooServer::isStarted()const
 
 void ZooServer::serveFallback(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
 {
+	OC_METHODGATE();
 	const static char KMessage[] = "Invalid request";
 	res->addHeader("connection", "close");
 	res->addHeader("server", ZooConstants::OCTOMY_SERVER);
@@ -182,7 +196,7 @@ void ZooServer::serveFallback(qhttp::server::QHttpRequest* req, qhttp::server::Q
 
 void ZooServer::serveIndex(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
 {
-
+	OC_METHODGATE();
 	QVariantHash contact;
 	contact["name"] = "John Smith";
 	contact["email"] = "john.smith@gmail.com";
@@ -195,6 +209,7 @@ void ZooServer::serveIndex(qhttp::server::QHttpRequest* req, qhttp::server::QHtt
 	QByteArray bytes=body.toUtf8();
 	res->addHeader("server", ZooConstants::OCTOMY_SERVER);
 	res->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
+	res->addHeader("content-type","text/html; charset=utf-8");
 	res->addHeaderValue("content-length", bytes.length());
 	res->end(bytes);
 
@@ -202,6 +217,7 @@ void ZooServer::serveIndex(qhttp::server::QHttpRequest* req, qhttp::server::QHtt
 
 void ZooServer::serveIdenticon(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
 {
+	OC_METHODGATE();
 	QUrlQuery query(req->url().query());
 	QString id=query.queryItemValue("id");
 	QByteArray idBA=0;
@@ -224,11 +240,12 @@ void ZooServer::serveIdenticon(qhttp::server::QHttpRequest* req, qhttp::server::
 	hInt=(hInt>1000)?1000:hInt;
 
 	PortableID pid;
-	identicon.setPortableID(pid);
+	pid.setType(TYPE_ZOO);
+	mIdenticon.setPortableID(pid);
 	QByteArray bytes;
 	QBuffer buffer( &bytes );
 	buffer.open( QIODevice::WriteOnly );
-	QImage image=identicon.image(wInt,hInt);
+	QImage image=mIdenticon.image(wInt,hInt);
 	if(image.isNull()) {
 		qWarning()<<"ERROR:Image is null";
 		return;
@@ -254,6 +271,7 @@ static const QRegularExpression reGeoPSK("^[0-9A-H]{5}$"); // trimmed 5-digit st
 
 void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
 {
+	OC_METHODGATE();
 	//qDebug()<<"API ENPOINT REACHED WITH NEW CONNECTION";
 	QByteArray data=req->collectedData();
 	//qDebug()<<"DATA RECEIVED: "<<data;
@@ -289,91 +307,51 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 	res->setStatusCode(qhttp::ESTATUS_OK);
 	QVariantMap map;
 	map["status"] = "ok";
-	//map["action"] = action;
-	/* TODO:Schedule for removal
-	 *
-	if(ZooConstants::OCTOMY_ZOO_API_GET_NODE_CRUMB==action){
-		QString ocid=root.value("ocid").toString();
-		if(reOCID.match(ocid).hasMatch()){
-			//qDebug()<<"GOT API CONNECTION WITH OCID="<<ocid;
-			HashstoreRecord rec=storage.resolve(ocid);
-			QByteArray ba=rec.get();
-			QJsonDocument jdoc= QJsonDocument::fromBinaryData(ba);
-			map["data"]=jdoc.toVariant().toMap();
-			map["ocid"] = ocid;
-		}
-		else {
-			qWarning()<<"ERROR: OCID did not match validation:" <<ocid;
-			msg="ERROR: OCID did not match validation: "+ocid;
-			ok=false;
-		}
-	}
-	else if(ZooConstants::OCTOMY_ZOO_API_PUT_NODE_CRUMB==action){
-		QString ocid=root.value("ocid").toString();
-		if(reOCID.match(ocid).hasMatch()){
-			//qDebug()<<"GOT API CONNECTION WITH OCID="<<ocid;
-			HashstoreRecord rec=storage.resolve(ocid);
-			QVariantMap data=root.value("data").toMap();
-			QByteArray ba;
-			QDataStream ds(ba);
-			ds<<data;
-			rec.put(ba);
-			map["ocid"] = ocid;
-		}
-		else {
-			qWarning()<<"ERROR: OCID did not match validation:" <<ocid;
-			msg="ERROR: OCID did not match validation:" +ocid;
-			ok=false;
-		}
-	}
-	else
-		*/
+
 	if(ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW==action) {
 		handleDiscoveryEscrow(root,map,req,res);
 	}
-	/* TODO: Schedule for removal
-	else if(ZooConstants::OCTOMY_ZOO_API_UDP_PUNCH==action){
-	QString punchToken=root.value("punchToken").toString();
-	if(rePunchToken.match(punchToken).hasMatch()){
-		QString remoteAddress=req->remoteAddress();
-		quint16 remotePort=req->remotePort();
-		QString localAddress=root["localAddress"].toString();
-		quint16 localPort=root["localPort"].toInt();
-		punches.update(punchToken, remoteAddress,remotePort,localAddress, localPort);
-		UDPPunch *punch=punches[punchToken];
-		if(nullptr!=punch){
-			map["data"]=punch->toVariantMap();
-		}
-	}
-	else {
-		qWarning()<<"ERROR: punchToken did not match validation:" <<punchToken;
-		msg="ERROR: punchToken did not match validation:" +punchToken;
-		ok=false;
-	}
-	}
-	*/
+
 	else {
 		map["message"] ="ERROR: Don't know how to handle action: "+action;
 		map["status"] ="error";
 	}
 
-	/*
-	qDebug()<<"PAIR: "<<msg+":";
-	QList<QVariant> l=map["peers"].toList();
-	for(QVariant pp:l){
-		QVariantMap p=pp.toMap();
-		qDebug()<< " + "
-				<<utility::toHash(p["publicKey"].toString())
-				<<" = "
-			   << p["type"].toString();
-	}
-	*/
 
 	QByteArray body  = QJsonDocument::fromVariant(map).toJson();
 	res->addHeader("server", ZooConstants::OCTOMY_SERVER);
-	res->addHeader("content-type","application/json");
+	res->addHeader("content-type","application/json; charset=utf-8");
 	res->addHeader("connection", "keep-alive");
 	res->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
+	res->addHeaderValue("content-length", body.length());
+	res->end(body);
+}
+
+void ZooServer::serveAdmin(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
+{
+	OC_METHODGATE();
+	//QByteArray data=req->collectedData();
+	QVariantHash parameters;
+
+	parameters["title"] = "OctoMY™ Zoo - Admin interface";
+	QVariantList sessions = mDiscovery.toVariantList();
+
+
+	QVariantList out;
+	for(auto session:sessions)	{
+		QVariantMap map;
+		map["row"]=session;
+		out << map;
+	}
+
+	parameters["sessions"]=out;
+	Mustache::Renderer renderer;
+	Mustache::QtVariantContext context(parameters);
+	const QByteArray body=renderer.render(mAdminIndexTPL, &context).toUtf8();
+	res->setStatusCode(qhttp::ESTATUS_OK);
+	res->addHeader("server", ZooConstants::OCTOMY_SERVER);
+	res->addHeader("content-type","text/html; charset=utf-8");
+	res->addHeader("connection", "keep-alive");
 	res->addHeaderValue("content-length", body.length());
 	res->end(body);
 }
@@ -381,30 +359,17 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 
 void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
 {
-	/*
-	QString publicKey=root["publicKey"].toString();
-	QString localAddress=root["localAddress"].toString();
-	DiscoveryRole role=DiscoveryRoleFromString(root["role"].toString());
-	DiscoveryType type=DiscoveryTypeFromString(root["type"].toString());
-	quint16 localPort=root["localPort"].toInt();
-
-	quint16 publicPort=root["publicPort"].toInt();
-	*/
+	OC_METHODGATE();
 	//qDebug()<<"FULL MAP IS: "<<root;
 	QSharedPointer<Associate> part(OC_NEW Associate(root));
 	qDebug()<<"GOT PARTICIPANT "<<part->name()<<"(type="<<DiscoveryTypeToString(part->type())<<", gender="<<part->gender()<<", id="<<part->id()<<")";
-	QString publicAddress="";
-	quint16 publicPort=0;
-	QTcpServer *tc=tcpServer();
-	if(nullptr!=tc) {
-		publicAddress=tc->serverAddress().toString();
-		publicPort=tc->serverPort();
-	}
-	part->publicAddress().setIP(QHostAddress(publicAddress));
-	part->publicAddress().setPort(publicPort);
+	NetworkAddress na(QHostAddress(req->remoteAddress()), req->remotePort());
+	qDebug()<<"Attaching public address "<<na.toString() <<" to participant";
+	QSharedPointer<AddressEntry> ae(new AddressEntry(na));
+	part->addressList().add(ae);
 	part->addPin(root.value("manualPin").toString());
 	part->addPin(root.value("geoPin").toString());
-	DiscoveryServerSession *ses=discovery.request(part);
+	DiscoveryServerSession *ses=mDiscovery.request(part);
 	if(nullptr!=ses) {
 		map["peers"]=ses->toVariantMap();
 	} else {
@@ -417,5 +382,14 @@ void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp
 
 void ZooServer::onBackgroundTimer()
 {
-	discovery.prune(QDateTime::currentMSecsSinceEpoch()-PRUNE_DEADLINE);//Prune all not seen for some time
+	OC_METHODGATE();
+	mDiscovery.prune(QDateTime::currentMSecsSinceEpoch()-PRUNE_DEADLINE);//Prune all not seen for some time
+}
+
+
+void ZooServer::onKeystoreReady(bool ok)
+{
+	OC_METHODGATE();
+	mAdminURL="/"+mKeystore.localPortableID().id().left(ZOO_MINIMAL_ADMIN_ID_LENGTH);
+	qDebug()<<"KEYSTORE READY! ADMIN ADRESS IS: "<<mAdminURL;
 }

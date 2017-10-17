@@ -47,6 +47,7 @@ class HubWindow;
 class CommsSession;
 class CommsSessionDirectory;
 class KeyStore;
+class AddressList;
 
 /*
  * Documentation moved here: https://sites.google.com/site/octomyproject/documentation/development/architectual-overview/communications
@@ -98,6 +99,7 @@ public:
 
 	CommsSessionDirectory &sessions();
 	void start(NetworkAddress localAddress);
+	//void start(AddressList addressList);
 	void stop();
 	bool isStarted() const;
 	bool isConnected() const;

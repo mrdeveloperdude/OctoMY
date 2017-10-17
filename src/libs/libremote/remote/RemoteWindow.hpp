@@ -104,10 +104,10 @@ public slots:
 
 	// Peer Store slots
 public slots:
-	void onPeerAdded(QString id);
-	void onPeerRemoved(QString id);
-	void onPeersChanged();
-	void onPeerStoreReady(bool);
+	void onAssociateAdded(QString id);
+	void onAssociateRemoved(QString id);
+	void onAssociateChanged();
+	void onAddressBookReady(bool);
 
 	// CommsChannel slots
 public slots:

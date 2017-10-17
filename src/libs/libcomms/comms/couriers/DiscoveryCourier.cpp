@@ -2,6 +2,9 @@
 
 #include "basic/Associate.hpp"
 #include "comms/messages/MessageType.hpp"
+#include "basic/AddressEntry.hpp"
+
+#include <QSharedPointer>
 
 DiscoveryCourier::DiscoveryCourier(QSharedPointer<Associate> ass, CommsChannel &comms, QObject *parent)
 	: Courier("Discovery", Courier::FIRST_USER_ID+1, comms, parent)
@@ -35,7 +38,11 @@ quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 {
 	qDebug()<<"Sending opportunity for "<<name();
 	quint16 bytes=0;
-	NetworkAddress nadr=mAss->localAddress();
+	NetworkAddress nadr;
+	QSharedPointer<AddressEntry> ae=mAss->addressList().highestScore();
+	if(!ae.isNull()) {
+		nadr=ae->address;
+	}
 	QHostAddress locAddr=nadr.ip();
 	const quint32 ip4LocAddr=locAddr.toIPv4Address();
 	const quint16 port= nadr.port();
@@ -52,6 +59,7 @@ quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 	mLastSend=QDateTime::currentMSecsSinceEpoch();
 	qDebug()<<"TX bytes="<<bytes<<" ( ip4LocAddr="<<ip4LocAddr<<":"<<port<<", bt="<<btAddr<<") = XOR( ip4LocAddr="<<ip4LocAddrXOR<<":"<<portXOR<<", bt="<<btAddrXOR<<")";
 	return bytes;
+
 }
 
 

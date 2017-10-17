@@ -36,7 +36,7 @@ public:
 
 public slots:
 
-	void onPeersChanged();
+	void onAssociateChanged();
 };
 
 #endif // PAIRINGLISTMODEL_HPP

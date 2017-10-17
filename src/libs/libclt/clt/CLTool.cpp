@@ -1,5 +1,7 @@
 #include "CLTool.hpp"
 
+#include "utility/Standard.hpp"
+
 #include <QOpenGLContext>
 #include <QGuiApplication>
 #include <QDebug>

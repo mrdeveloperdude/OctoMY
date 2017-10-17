@@ -7,27 +7,24 @@
 #include "CommsChannel.hpp"
 
 #include "CommsCarrier.hpp"
-
 #include "CommsSessionDirectory.hpp"
-
 #include "utility/Standard.hpp"
 #include "utility/Utility.hpp"
+#include "basic/AddressList.hpp"
 #include "comms/CommsSession.hpp"
 #include "messages/MessageType.hpp"
-
 #include "security/KeyStore.hpp"
-
 #include "pose/Pose.hpp"
-
 #include "discovery/AddressBook.hpp"
+#include "basic/AddressEntry.hpp"
 
 #include "PacketSendState.hpp"
 #include "PacketReadState.hpp"
-
 #include "IDDuel.hpp"
 
 #include <QDataStream>
 #include <QDateTime>
+#include <QSharedPointer>
 
 #define FIRST_STATE_ID ((SESSION_ID_TYPE)MULTIMAGIC_LAST)
 
@@ -63,33 +60,38 @@ CommsChannel::CommsChannel(CommsCarrier &carrier, KeyStore &keystore, QObject *p
 
 CommsChannel::~CommsChannel()
 {
+	OC_METHODGATE();
 	mCarrier.setHookCarrierSignals(*this, false);
 }
 
 CommsSessionDirectory &CommsChannel::sessions()
 {
+	OC_METHODGATE();
 	return mSessions;
 }
 
+
+//NOTE: This is LOCAL address, so no adressList necessary here!
 void CommsChannel::start(NetworkAddress localAddress)
 {
 	mCarrier.start(localAddress);
 }
 
-
-
 void CommsChannel::stop()
 {
+	OC_METHODGATE();
 	mCarrier.stop();
 }
 
 bool CommsChannel::isStarted() const
 {
+	OC_METHODGATE();
 	return mCarrier.isStarted();
 }
 
 bool CommsChannel::isConnected() const
 {
+	OC_METHODGATE();
 	return mCarrier.isConnected();
 }
 
@@ -168,9 +170,6 @@ bool CommsChannel::recieveMagicAndVersion(PacketReadState &state)
 }
 
 
-
-
-
 QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initiator)
 {
 	QSharedPointer<CommsSession> session(nullptr);
@@ -196,7 +195,15 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 							//session->setRemoteSessionID(desiredRemoteSessionID);
 							session->handshakeState().setInitiator(initiator);
 							session->setLocalSessionID(localSessionID);
-							session->setAddress(associate->localAddress());
+
+							NetworkAddress addr;
+							QSharedPointer<AddressEntry>  ae=associate->addressList().highestScore();
+							if(!ae.isNull()){
+								addr=ae->address;
+							}
+							//associate->localAddress()
+
+							session->setAddress(addr);
 							// Generate our syn nonce
 							const SESSION_NONCE_TYPE synNonce=session->createOurSynNonce();
 							qDebug()<<"OUR SYN TX NONCE CREATED: "<<synNonce;

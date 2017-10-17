@@ -154,6 +154,9 @@ void Identicon::regenerateIdenticon()
 		case(TYPE_HUB):
 			url=":/icons/hub.svg";
 			break;
+		case(TYPE_ZOO):
+			url=":/icons/zoo.svg";
+			break;
 		}
 
 		if(!url.isEmpty()) {

@@ -11,6 +11,7 @@ class TestAddressList:public QObject{
 		void testAddressEntry();
 		void testAddressList();
 		void testAddressListScore();
+		void testAddressListStorage();
 
 };
 

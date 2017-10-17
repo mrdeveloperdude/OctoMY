@@ -19,12 +19,14 @@ AsyncStore::AsyncStore(QString filename, QObject *parent)
 	, mInProgress(false)
 	, mFilename(filename)
 {
+	OC_METHODGATE();
 	setObjectName("AsyncStore");
 	//qDebug()<<"AsyncStore() file="<<mFilename;
 }
 
 void AsyncStore::bootstrapWorker()
 {
+	OC_METHODGATE();
 	//qDebug()<<"AsyncStore bootstrapWorker() inProgress=" << mInProgress<<", error=" << mError<<", ready=" << mReady;
 	if(!mInProgress) {
 		mInProgress=true;
@@ -38,6 +40,7 @@ void AsyncStore::bootstrapWorker()
 
 void AsyncStore::bootstrap(bool loadOnly, bool runInBackground)
 {
+	OC_METHODGATE();
 	//qDebug()<<"AsyncStore bootstrap() loadOnly="<<loadOnly<<", bg="<<runInBackground;
 	if(mReady) {
 		emit storeReady(!mError);
@@ -75,27 +78,49 @@ void AsyncStore::bootstrap(bool loadOnly, bool runInBackground)
 
 bool AsyncStore::isReady() // const not possible beacuse of atomics
 {
+	OC_METHODGATE();
 	return mReady.get();
 }
 
 bool AsyncStore::isInProgress() // const not possible beacuse of atomics
 {
+	OC_METHODGATE();
 	return mInProgress;
 }
 
 bool AsyncStore::hasError() // const not possible beacuse of atomics
 {
+	OC_METHODGATE();
 	return mError;
 }
 
 bool AsyncStore::fileExists() const
 {
+	OC_METHODGATE();
 	return QFile(mFilename).exists();
 }
 
 
 QString AsyncStore::filename() const
 {
+	OC_METHODGATE();
 	return mFilename;
 }
+
+void AsyncStore::setHookAsyncStoreSignals(QObject &ob, bool hook)
+{
+	OC_METHODGATE();
+	if(hook) {
+		if(!connect(this,SIGNAL(storeReady()),&ob,SLOT(onStoreReady()),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
+		}
+	} else {
+		if(!disconnect(this,SIGNAL(storeReady()),&ob,SLOT(onStoreReady()))) {
+			qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
+		}
+	}
+}
+
+
+
 

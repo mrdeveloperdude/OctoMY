@@ -34,14 +34,18 @@ private:
 	//Settings settings;
 	//QString baseDir;
 	AppContext *mContext;
-	KeyStore keystore;
+	KeyStore mKeystore;
 
-	Identicon identicon;
-	Hashstore storage;
-	PunchRegistry punches;
-	DiscoveryServer discovery;
+	Identicon mIdenticon;
+	Hashstore mStorage;
+	PunchRegistry mPunches;
+	DiscoveryServer mDiscovery;
 
-	QTimer backgroundTimer;
+	QString mAdminURL;
+
+	QTimer mBackgroundTimer;
+
+	QString mAdminIndexTPL;
 	static const quint64 BACKGROUND_TIMER_INTERVAL;
 	static const quint64 PRUNE_DEADLINE;
 
@@ -56,6 +60,12 @@ public:
 
 	virtual~ZooServer();
 
+
+private:
+
+	NetworkAddress serverAddress();
+
+public:
 	bool start(const QString pathOrPortNumber);
 	void stop();
 	bool isStarted() const;
@@ -66,6 +76,7 @@ public:
 	void serveIndex(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res);
 	void serveIdenticon(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res);
 	void serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res);
+	void serveAdmin(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res);
 
 	void handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res);
 
@@ -73,6 +84,11 @@ public slots:
 
 	void onBackgroundTimer();
 
+	void onKeystoreReady(bool ok);
+
 };
+
+
+QDebug operator<<(QDebug d, qhttp::server::QHttpRequest *s);
 
 #endif // ZOOSERVER_HPP

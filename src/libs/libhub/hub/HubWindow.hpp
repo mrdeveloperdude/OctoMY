@@ -74,7 +74,7 @@ public slots:
 
 private slots:
 	void onListenStateChanged(const TryToggleState last, const TryToggleState current);
-	void onLocalHostLookupComplete(QHostInfo hi);
+
 	void onRemoteHostLookupComplete(QHostInfo hi);
 	void onSummaryTimer();
 

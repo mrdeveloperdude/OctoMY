@@ -190,14 +190,14 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 
 				//TODO: Handles iOS
 #ifdef Q_OS_ANDROID
-				if(0!=videoProbe){
-					videoProbe->deleteLater();
-					videoProbe=0;
+				if(nullptr!=mVideoProbe){
+					mVideoProbe->deleteLater();
+					mVideoProbe=nullptr;
 				}
-				videoProbe = OC_NEW QVideoProbe(this);
-				if (videoProbe->setSource(camera)) {
+				mVideoProbe = OC_NEW QVideoProbe(this);
+				if (mVideoProbe->setSource(mCamera)) {
 					// Probing succeeded, videoProbe->isValid() should be true.
-					if(!connect(videoProbe, SIGNAL(videoFrameProbed(QVideoFrame)), this, SLOT(detectBarcodes(QVideoFrame)))){
+					if(!connect(mVideoProbe, SIGNAL(videoFrameProbed(QVideoFrame)), this, SLOT(detectBarcodes(QVideoFrame)))){
 						qWarning()<<"ERROR: could not connect";
 					}
 				}
@@ -207,14 +207,14 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 #else
 
 				/*
-			if(0!=poorVideoProbe){
-				poorVideoProbe->deleteLater();
-				poorVideoProbe=0;
+			if(nullptr!=mPoorVideoProbe){
+				mPoorVideoProbe->deleteLater();
+				mPoorVideoProbe=nullptr;
 			}
-			poorVideoProbe=OC_NEW PoorMansProbe(this);
-			if (poorVideoProbe->setSource(camera)) {
-				// Probing succeeded, videoProbe->isValid() should be true.
-				if(!connect(poorVideoProbe, SIGNAL(videoFrameProbed(QVideoFrame)), this, SLOT(detectBarcodes(QVideoFrame)))){
+			mPoorVideoProbe=OC_NEW PoorMansProbe(this);
+			if (mPoorVideoProbe->setSource(mCamera)) {
+				// Probing succeeded, mPoorVideoProbe->isValid() should be true.
+				if(!connect(mPoorVideoProbe, SIGNAL(videoFrameProbed(QVideoFrame)), this, SLOT(detectBarcodes(QVideoFrame)))){
 					qWarning()<<"ERROR: could not connect";
 				}
 			}

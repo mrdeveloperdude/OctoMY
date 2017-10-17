@@ -2,8 +2,9 @@
 
 #include "utility/Standard.hpp"
 
-#include <QHostAddress>
+#include "basic/AddressList.hpp"
 
+#include <QHostAddress>
 #include <QDateTime>
 
 quint64 CommsCarrier::sTotalRecCount = 0;

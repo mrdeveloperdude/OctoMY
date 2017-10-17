@@ -92,6 +92,7 @@ AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
 		//	fubar();
 		//QString text="Hello, my name is "+mAgent->name()+". I am an octomy agent. What is your bidding master?";
 		//QString text="Hello, my name is Bodhi. I am an octomy agent. What is your bidding master? 00 0 01010 010 010 010 010101 ";		PortableID id=mAgent->localNodeAssociate()->toPortableID();		OC_NEW OneOffSpeech(id, text);
+
 	}
 
 #ifdef Q_OS_ANDROID
@@ -545,68 +546,70 @@ void AgentWindow::updateOnlineStatus()
 			qWarning()<<"ERROR: No settings for agent";
 		}
 		//Spell it out for debugging
-		const QString localID=mAgent->nodeIdentity()->id();
-		qDebug()<<"Agent '"<<localID<<"' is currently trying to be "<<(isTryingToGoOnline?"ONLINE":"OFFLINE")<<" and we now want to try for "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
-		// Make necessary changes to state
-		const TryToggleState currentTryState=ui->widgetFace->connectionState();
-		TryToggleState nextTryState=currentTryState;
-		bool nextOnlineStatus=isTryingToGoOnline;
-		if(wantToBeOnline ) {
-			if(isTryingToGoOnline ) {
-				nextTryState=ON;
-			} else {
-				nextTryState=TRYING;
-				qDebug()<<"Decided to go online";
-				nextOnlineStatus=true;
-			}
-		} else {
-			if(isTryingToGoOnline ) {
-				qDebug()<<"Decided to go offline";
-				nextOnlineStatus=false;
-			} else {
-				nextTryState=OFF;
-			}
-		}
-		if(nextOnlineStatus!=isTryingToGoOnline) {
-			mAgent->comms()->setHoneymoonEnd(QDateTime::currentMSecsSinceEpoch()+(1000*60*5));//Set 5 minute honeymoon at every state change
-			QSet<QSharedPointer<Associate> > all=mAgent->allControls();
-			qDebug()<<"Decided to change online status for "<<QString::number(all.size())<< " controls:";
-			for(auto assoc:all) {
-				const QString assocID= assoc->id();
-				if(assocID == localID) {
-					qDebug()<<" + Skipping ME";
-					continue;
+		QSharedPointer<Associate> node=mAgent->nodeIdentity();
+		if(!node.isNull()) {
+			const QString localID=node->id();
+			qDebug()<<"Agent '"<<localID<<"' is currently trying to be "<<(isTryingToGoOnline?"ONLINE":"OFFLINE")<<" and we now want to try for "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
+			// Make necessary changes to state
+			const TryToggleState currentTryState=ui->widgetFace->connectionState();
+			TryToggleState nextTryState=currentTryState;
+			bool nextOnlineStatus=isTryingToGoOnline;
+			if(wantToBeOnline ) {
+				if(isTryingToGoOnline ) {
+					nextTryState=ON;
+				} else {
+					nextTryState=TRYING;
+					qDebug()<<"Decided to go online";
+					nextOnlineStatus=true;
 				}
-				qDebug()<<" + " << assocID;
-				mAgent->setCourierRegistration(assoc , nextOnlineStatus); //QSharedPointer<NodeAssociate> assoc, bool reg
-			}
-			/*
-			 * NOTE: DONT DO THIS AS IT IS DONE BY THE setCourierRegistration() line above
-			if(nextOnlineStatus) {
-				QTimer::singleShot(1000,[this]() {
-					QSharedPointer<NodeAssociate> ni=mAgent->nodeIdentity();
-					if(nullptr!=ni) {
-						mAgent->startComms(ni->localAddress());
-					}
-				});
 			} else {
-				mAgent->stopComms();
+				if(isTryingToGoOnline ) {
+					qDebug()<<"Decided to go offline";
+					nextOnlineStatus=false;
+				} else {
+					nextTryState=OFF;
+				}
 			}
-			*/
-		} else {
-			//qDebug()<<"No change in online status ("<<nextOnlineStatus<<")";
+			if(nextOnlineStatus!=isTryingToGoOnline) {
+				mAgent->comms()->setHoneymoonEnd(QDateTime::currentMSecsSinceEpoch()+(1000*60*5));//Set 5 minute honeymoon at every state change
+				QSet<QSharedPointer<Associate> > all=mAgent->allControls();
+				qDebug()<<"Decided to change online status for "<<QString::number(all.size())<< " controls:";
+				for(auto assoc:all) {
+					const QString assocID= assoc->id();
+					if(assocID == localID) {
+						qDebug()<<" + Skipping ME";
+						continue;
+					}
+					qDebug()<<" + " << assocID;
+					mAgent->setCourierRegistration(assoc , nextOnlineStatus); //QSharedPointer<NodeAssociate> assoc, bool reg
+				}
+				/*
+				 * NOTE: DONT DO THIS AS IT IS DONE BY THE setCourierRegistration() line above
+				if(nextOnlineStatus) {
+					QTimer::singleShot(1000,[this]() {
+						QSharedPointer<NodeAssociate> ni=mAgent->nodeIdentity();
+						if(nullptr!=ni) {
+							mAgent->startComms(ni->localAddress());
+						}
+					});
+				} else {
+					mAgent->stopComms();
+				}
+				*/
+			} else {
+				//qDebug()<<"No change in online status ("<<nextOnlineStatus<<")";
+			}
+			if(nextTryState!=currentTryState) {
+				//qDebug()<<"Decided to change tristate button from "<<current<<" -> "<<next;
+				ui->widgetFace->setConnectionState(nextTryState, false);
+			} else {
+				//qDebug()<<"No change tristate button ("<<current<<")";
+			}
+			// Propagate the possibly changed state to UI
+			updateFaceVisibility();
+			//mOnlineAction->setChecked(wantToBeOnline);
 		}
-		if(nextTryState!=currentTryState) {
-			//qDebug()<<"Decided to change tristate button from "<<current<<" -> "<<next;
-			ui->widgetFace->setConnectionState(nextTryState, false);
-		} else {
-			//qDebug()<<"No change tristate button ("<<current<<")";
-		}
-		// Propagate the possibly changed state to UI
-		updateFaceVisibility();
-		//mOnlineAction->setChecked(wantToBeOnline);
 	}
-
 }
 
 
