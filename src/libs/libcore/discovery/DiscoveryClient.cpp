@@ -96,7 +96,7 @@ void DiscoveryClient::discover()
 			cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
 			cmd["key"] = key->toVariantMap(true);
 			cmd["manualPin"] ="12345";
-			QSharedPointer<Associate> me=mNode.nodeIdentity();
+			QSharedPointer<Associate>  me=mNode.nodeIdentity();
 			if(nullptr!=me) {
 				QVariantMap map=me->toVariantMap();
 				merge(cmd, map);
@@ -113,6 +113,12 @@ void DiscoveryClient::discover()
 			} else {
 
 				qWarning()<<"ERROR: no me";
+			}
+
+			{
+				QVariantList alist;
+				alist<<mNode.localAddressList().currentNetworkAddress().toVariantMap();
+				cmd["addressList"]=alist;
 			}
 
 			//qDebug()<<"SENDING VAR: "<<cmd;

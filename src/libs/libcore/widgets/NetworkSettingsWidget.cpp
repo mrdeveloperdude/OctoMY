@@ -16,7 +16,6 @@ NetworkSettingsWidget::NetworkSettingsWidget(QWidget *parent)
 {
 	ui->setupUi(this);
 	ui->stackedWidget->setCurrentWidget(ui->pageView);
-	configure();
 	set(false);
 }
 
@@ -27,16 +26,15 @@ NetworkSettingsWidget::~NetworkSettingsWidget()
 }
 
 
-void NetworkSettingsWidget::configure()
+void NetworkSettingsWidget::configure(LocalAddressList &localAddresses)
 {
 	ui->comboBoxLocalAddress->clear();
-	QList<QHostAddress> localAddresses=utility::allLocalNetworkAddresses();
 	for(QHostAddress adr:localAddresses) {
 		if((QAbstractSocket::IPv4Protocol==adr.protocol()) && (!adr.isLoopback()) ) {
 			ui->comboBoxLocalAddress->addItem(adr.toString());
 		}
 	}
-	ui->comboBoxLocalAddress->setCurrentText(QHostAddress(QHostAddress::LocalHost).toString());
+	set(localAddresses.currentAddress(), localAddresses.port(), true);
 }
 
 bool NetworkSettingsWidget::set(QHostAddress naddr, quint16 nport, bool sendSignal)
@@ -54,8 +52,20 @@ bool NetworkSettingsWidget::set(bool sendSignal)
 	if( (mLastAddress==naddr) &&  (mLastPort==nport) ) {
 		return mLastValidity;
 	}
+	const bool addrOK=(ui->comboBoxLocalAddress->findText(naddr.toString())>-1);
 	bool ok=false;
-	ok= (portOK && (ui->comboBoxLocalAddress->findText(naddr.toString())>-1) && utility::isAddressOK(naddr.toString(), nport));
+	ok= (portOK && addrOK && utility::isAddressOK(naddr.toString(), nport));
+	// Retry but this time pass port=0 to let function find available port for us!
+	if(!ok) {
+		nport=0;
+		ok= (portOK && addrOK && utility::isAddressOK(naddr.toString(), nport));
+		if(0!=nport) {
+			qDebug()<<"Found free port: "<<nport;
+			setPort(nport);
+		}
+	}
+
+	qDebug()<<"SET portOK="<<portOK<<", addrOK="<<addrOK<<", nport="<<nport<<", ok="<<ok;
 	ui->widgetStatus->setLightOn(true);
 	ui->widgetStatus->setLightColor(ok?Qt::green:Qt::red);
 	if(ok) {

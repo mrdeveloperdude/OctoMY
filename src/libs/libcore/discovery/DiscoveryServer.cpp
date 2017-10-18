@@ -8,6 +8,7 @@
 
 DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<Associate> part)
 {
+	OC_METHODGATE();
 	quint32 participantAddCount=0;
 	quint32 sessionAddCount=0;
 	if(nullptr==part){
@@ -25,9 +26,9 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<Associate> part
 		for(QString p: pins){
 			pin=p;
 			//Look up the pin in question
-			if(registry.contains(pin)){
+			if(mRegistry.contains(pin)){
 				//qDebug()<<"PIN "<<pin<<" matched with a session";
-				ses=registry[pin];
+				ses=mRegistry[pin];
 				break;
 			}
 		}
@@ -42,7 +43,7 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<Associate> part
 				}
 				else{
 					//qDebug()<<"Adding session to registry under pin "<<pin;
-					registry[pin]=ses;
+					mRegistry[pin]=ses;
 					sessionAddCount++;
 					participantAddCount++;
 				}
@@ -81,9 +82,10 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<Associate> part
 
 void DiscoveryServer::prune(quint64 deadline)
 {
+	OC_METHODGATE();
 	quint64 participantPruneCount=0;
 	quint64 sessionPruneCount=0;
-	for(QMap<QString, DiscoveryServerSession *>::iterator it=registry.begin();it!=registry.end() /* not hoisted */; /* no increment */ ){
+	for(QMap<QString, DiscoveryServerSession *>::iterator it=mRegistry.begin();it!=mRegistry.end() /* not hoisted */; /* no increment */ ){
 		QString key=it.key();
 		DiscoveryServerSession *ses=it.value();
 		if(nullptr!=ses){
@@ -93,7 +95,7 @@ void DiscoveryServer::prune(quint64 deadline)
 				if(ses->count()<=0){
 					delete ses;
 					ses=nullptr;
-					registry.erase(it++);
+					mRegistry.erase(it++);
 					sessionPruneCount++;
 					continue;
 				}
@@ -112,8 +114,9 @@ void DiscoveryServer::prune(quint64 deadline)
 
 QVariantList DiscoveryServer::toVariantList()
 {
+	OC_METHODGATE();
 	QVariantList out;
-	for(QMap<QString, DiscoveryServerSession *>::iterator it=registry.begin();it!=registry.end() /* not hoisted */; /* no increment */ ){
+	for(QMap<QString, DiscoveryServerSession *>::iterator it=mRegistry.begin();it!=mRegistry.end() /* not hoisted */; /* no increment */ ){
 		QString key=it.key();
 		DiscoveryServerSession *ses=it.value();
 		if(nullptr!=ses){

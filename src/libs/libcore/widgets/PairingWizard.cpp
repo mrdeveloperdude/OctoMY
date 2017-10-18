@@ -75,6 +75,7 @@ void PairingWizard::onNetworkSettingsChange(QHostAddress address, quint16 port, 
 void PairingWizard::updateNetworkSettings()
 {
 	if(nullptr!=mNode) {
+		ui->widgetNetworkSettings->configure(mNode->localAddressList());
 		DiscoveryClient *client=mNode->discoveryClient();
 		if(nullptr!=client) {
 			const bool visible=this->isVisible();

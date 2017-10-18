@@ -10,25 +10,26 @@
 
 #include <QSharedPointer>
 
-class DiscoveryServerSession{
-	private:
+class DiscoveryServerSession
+{
+private:
 
 
-		QMap<QString, QSharedPointer<Associate>> mParticipantsByID;
+	QMap<QString, QSharedPointer<Associate>> mParticipantsByID;
 
-	public:
-		explicit DiscoveryServerSession();
+public:
+	explicit DiscoveryServerSession();
 
-		bool set(QSharedPointer<Associate> p);
-		bool has(QString id);
-
-
-		QVariantList toVariantMap();
+	bool set(QSharedPointer<Associate> p);
+	bool has(QString id);
 
 
-		quint64 prune(quint64 deadline);
+	QVariantList toVariantMap();
 
-		quint64 count();
+
+	quint64 prune(quint64 deadline);
+
+	quint64 count();
 
 };
 #endif // DISCOVERYSERVERSESSION_HPP

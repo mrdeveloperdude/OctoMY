@@ -309,12 +309,12 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 	map["status"] = "ok";
 
 	if(ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW==action) {
-		handleDiscoveryEscrow(root,map,req,res);
+		handleDiscoveryEscrow(root, map, req, res);
 	}
 
 	else {
-		map["message"] ="ERROR: Don't know how to handle action: "+action;
-		map["status"] ="error";
+		map["message"] = "ERROR: Don't know how to handle action: "+action;
+		map["status"] = "error";
 	}
 
 
@@ -357,16 +357,39 @@ void ZooServer::serveAdmin(qhttp::server::QHttpRequest* req, qhttp::server::QHtt
 }
 
 
+// Part of the server API
+// Handles incomming discovery escrow request
 void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
 {
 	OC_METHODGATE();
 	//qDebug()<<"FULL MAP IS: "<<root;
+	if(!root.contains("addressList")) {
+		res->setStatusCode(qhttp::ESTATUS_INTERNAL_SERVER_ERROR);
+		map["status"] = "error";
+		map["message"] = "ERROR: No addressList";
+		return;
+	}
+	QVariantList addressList=root["addressList"].toList();
+	QList<NetworkAddress> addresses;
+	for(QVariant a:addressList) {
+		auto am=a.toMap();
+		NetworkAddress nadr(am);
+		if(nadr.isValid(false,false)) {
+			qDebug()<<"ADDRESS FETCHED: "<<nadr.toString()<<" FROM "<<am;
+			addresses << nadr;
+		} else {
+			qDebug()<<"INVALID ADDRESS SKIPPED: "<<nadr.toString()<<" FROM "<<am;
+		}
+	}
+	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	QSharedPointer<Associate> part(OC_NEW Associate(root));
-	qDebug()<<"GOT PARTICIPANT "<<part->name()<<"(type="<<DiscoveryTypeToString(part->type())<<", gender="<<part->gender()<<", id="<<part->id()<<")";
+	qDebug()<<"GOT PARTICIPANT "<<part->name()<<"(type="<<DiscoveryTypeToString(part->type())<<", gender="<<part->gender()<<", id="<<part->id()<<", addresses="<<part->addressList().toString()<<")";
 	NetworkAddress na(QHostAddress(req->remoteAddress()), req->remotePort());
-	qDebug()<<"Attaching public address "<<na.toString() <<" to participant";
-	QSharedPointer<AddressEntry> ae(new AddressEntry(na));
-	part->addressList().add(ae);
+	qDebug()<<"Attaching visible address "<<na.toString() <<" to participant";
+	part->addressList().add(QSharedPointer<AddressEntry>(new AddressEntry(na, "public", now)));
+	for(auto nad:addresses) {
+		part->addressList().add(QSharedPointer<AddressEntry>(new AddressEntry(nad, "local", now)));
+	}
 	part->addPin(root.value("manualPin").toString());
 	part->addPin(root.value("geoPin").toString());
 	DiscoveryServerSession *ses=mDiscovery.request(part);

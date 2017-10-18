@@ -175,7 +175,7 @@ FROM DATA:  QMap(("birthDate", QVariant(qulonglong, 1471476138556))
 		auto font=painter->font();
 		font.setPixelSize(buttonSize/2);
 		painter->setFont(font);
-		utility::drawText(*painter, QPointF(icX, r.height()/2), Qt::AlignVCenter, identifier);
+		utility::drawText(*painter, QPointF(icX, r.top()+r.height()/2), Qt::AlignVCenter, identifier);
 
 		// Draw the edit button to the far right
 		QStyleOptionButton button;

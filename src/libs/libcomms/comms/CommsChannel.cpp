@@ -296,7 +296,7 @@ void CommsChannel::recieveHandshake(PacketReadState &state)
 				// Create session for remote full ID
 				session=createSession(state.octomyProtocolSenderID, false);
 				if(nullptr==session) {
-					QString es="ERROR: OctoMY Protocol Session could not be created for: " + state.octomyProtocolSenderID;
+					QString es="ERROR: OctoMY Protocol Session could not be created for: " + state.octomyProtocolSenderID+ " in receive handshake";
 					qWarning()<<es;
 					emit commsError(es);
 					return;
@@ -767,7 +767,7 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 		qDebug()<< "TX handshake was ok and state is now:" << session->handshakeState().toString();
 
 	} else {
-		QString es="ERROR: OctoMY Protocol session could not be created for: " + handShakeID;
+		QString es="ERROR: OctoMY Protocol session could not be created for: " + handShakeID+" in send handshake";
 		qWarning()<<es;
 		emit commsError(es);
 		return;

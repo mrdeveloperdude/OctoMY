@@ -9,7 +9,7 @@
 class DiscoveryServer
 {
 private:
-	QMap<QString, DiscoveryServerSession *> registry;
+	QMap<QString, DiscoveryServerSession *> mRegistry;
 public:
 
 	DiscoveryServerSession *request(QSharedPointer<Associate> part);

@@ -228,6 +228,7 @@ SensorInput *Node::sensorInput()
 	return mSensors;
 }
 
+//TODO: Should we really store our own data in the address book... I mean... yeahh..
 QSharedPointer<Associate> Node::nodeIdentity()
 {
 	OC_METHODGATE();

@@ -6,17 +6,19 @@
 
 DiscoveryServerSession::DiscoveryServerSession()
 {
-
+	OC_METHODGATE();
 }
 
 
-bool DiscoveryServerSession::set(QSharedPointer<Associate> part){
-	if(nullptr==part){
+bool DiscoveryServerSession::set(QSharedPointer<Associate> part)
+{
+	OC_METHODGATE();
+	if(part.isNull()) {
 		qWarning()<<"ERROR: participant was 0";
 		return false;
 	}
 	// Allready there
-	if(mParticipantsByID.contains(part->id())){
+	if(has(part->id())) {
 		//qDebug()<<"Participant " << part->ID << "already in session";
 		return true;
 	}
@@ -31,14 +33,18 @@ bool DiscoveryServerSession::set(QSharedPointer<Associate> part){
 	return true;
 }
 
-bool DiscoveryServerSession::has(QString id){
+bool DiscoveryServerSession::has(QString id)
+{
+	OC_METHODGATE();
 	return mParticipantsByID.contains(id);
 }
 
 
-QVariantList DiscoveryServerSession::toVariantMap(){
+QVariantList DiscoveryServerSession::toVariantMap()
+{
+	OC_METHODGATE();
 	QVariantList list;
-	for(QSharedPointer<Associate> part:mParticipantsByID){
+	for(QSharedPointer<Associate> part:mParticipantsByID) {
 		list.append(part->toVariantMap());
 	}
 	return list;
@@ -47,15 +53,15 @@ QVariantList DiscoveryServerSession::toVariantMap(){
 
 quint64 DiscoveryServerSession::prune(quint64 deadline)
 {
+	OC_METHODGATE();
 	quint64 ct=0;
-	for (QMap<QString, QSharedPointer<Associate>>::iterator  it = mParticipantsByID.begin(); it != mParticipantsByID.end() /* not hoisted */; /* no increment */){
+	for (QMap<QString, QSharedPointer<Associate>>::iterator  it = mParticipantsByID.begin(); it != mParticipantsByID.end() /* not hoisted */; /* no increment */) {
 		QString key=it.key();
 		QSharedPointer<Associate> part=it.value();
-		if(part->lastSeen()<=deadline){
+		if(part->lastSeen()<=deadline) {
 			mParticipantsByID.erase(it++);
 			ct++;
-		}
-		else{
+		} else {
 			++it;
 		}
 	}
@@ -65,5 +71,6 @@ quint64 DiscoveryServerSession::prune(quint64 deadline)
 
 quint64 DiscoveryServerSession::count()
 {
+	OC_METHODGATE();
 	return mParticipantsByID.size();
 }

@@ -27,10 +27,10 @@ public:
 	virtual ~NetworkSettingsWidget();
 
 private:
-	void configure();
 	bool set(bool sendSignal=true);
 
 public:
+	void configure(LocalAddressList &localAddresses);
 	bool set(QHostAddress naddr, quint16 nport, bool sendSignal=true);
 	bool setAddress(QHostAddress address);
 	bool setPort(quint16 port);
