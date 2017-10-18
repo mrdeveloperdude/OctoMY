@@ -65,7 +65,7 @@ void PairingWizard::onNetworkSettingsChange(QHostAddress address, quint16 port, 
 {
 	if(nullptr!=mNode) {
 		if(valid) {
-			mNode->localAddresses().setCurrent(address, port);
+			mNode->localAddressList().setCurrent(address, port);
 		}
 	}
 	updateNetworkSettings();
@@ -159,7 +159,10 @@ void PairingWizard::configure(Node *n)
 				qWarning()<<"ERROR: Could not connect";
 			}
 
-			ui->widgetNetworkSettings->set(mNode->localAddress().ip(), mNode->localAddress().port());
+
+			const auto nadr=mNode->localAddressList().currentNetworkAddress();
+
+			ui->widgetNetworkSettings->set(nadr.ip(), nadr.port());
 
 		} else {
 			qWarning()<<"ERROR: No local ass";

@@ -118,8 +118,7 @@ public:
 
 	virtual QWidget *showWindow();
 
-	NetworkAddress localAddress();
-	LocalAddressList &localAddresses();
+	LocalAddressList &localAddressList();
 	void startComms();
 	void stopComms();
 	bool isCommsStarted();

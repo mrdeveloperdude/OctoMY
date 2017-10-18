@@ -75,7 +75,7 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	, mCameras (OC_NEW CameraList(this))
 	, mLastStatusSend (0)
 	, mServerURL("http://zoo.octomy.org:"+QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
-	, mAddresses(defaultPortForNodeType(mType))
+	, mAddresses(defaultPortForNodeType(mType), true)
 {
 	OC_METHODGATE();
 	//ScopedTimer nodeBootTimer(mContext->base()+"-boot");
@@ -122,7 +122,6 @@ void Node::init()
 	if(nullptr!=mDiscovery) {
 		mDiscovery->setURL(mServerURL);
 	}
-
 }
 
 
@@ -250,19 +249,8 @@ QWidget *Node::showWindow()
 }
 
 
-NetworkAddress Node::localAddress()
-{
-	OC_METHODGATE();
-	QSharedPointer<Associate> nid=nodeIdentity();
-	if(!nid.isNull()) {
-		return nid->addressList().bestAddress();
-	}
-	return NetworkAddress();
-}
 
-
-
-LocalAddressList &Node::localAddresses()
+LocalAddressList &Node::localAddressList()
 {
 	OC_METHODGATE();
 	return mAddresses;
@@ -273,7 +261,7 @@ LocalAddressList &Node::localAddresses()
 void Node::startComms()
 {
 	OC_METHODGATE();
-	const NetworkAddress addr=localAddress();
+	const NetworkAddress addr=localAddressList().currentNetworkAddress();
 	if(nullptr!=mComms) {
 		qDebug()<<"comms.start  "<<addr.toString();
 		mComms->start(addr);

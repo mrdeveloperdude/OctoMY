@@ -256,7 +256,7 @@ void HubWindow::onListenStateChanged(const TryToggleState last, const TryToggleS
 	appendLog("New listening state: "+ToggleStateToSTring(current));
 	if(TRYING==current) {
 
-		mHub->localAddresses().setPort(ui->lineEditBindPort->text().toInt());
+		mHub->localAddressList().setPort(ui->lineEditBindPort->text().toInt());
 		mHub->startComms();
 		ui->tryToggleListen->setState(ON);
 

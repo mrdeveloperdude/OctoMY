@@ -203,11 +203,11 @@ static const QString zeroID=utility::toHash("", OCTOMY_KEY_HASH);
 void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 {
 	//qDebug()<<"REG";
-	QSharedPointer<Key> key=QSharedPointer<Key>(OC_NEW Key(map["key"].toMap(),true));
-	if(nullptr!=key) {
+	QSharedPointer<Key> key=QSharedPointer<Key>(OC_NEW Key(map["key"].toMap(), true));
+	if(!key.isNull()) {
 		KeyStore  &keyStore=mNode.keyStore();
 		auto ourKey=keyStore.localKey();
-		if(nullptr!=ourKey) {
+		if(!ourKey.isNull()) {
 			const QString partID=key->id();
 			const QString ourID=ourKey->id();
 			if(partID==zeroID) {
@@ -225,7 +225,7 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 					emit nodeDiscovered(partID);
 				} else {
 					part=QSharedPointer<Associate>(OC_NEW Associate(map));
-					if(nullptr!=part) {
+					if(!part.isNull()) {
 						if(part->isValidForClient()) {
 							CommsChannel *comms=mNode.comms();
 							if(nullptr!=comms) {
@@ -243,7 +243,7 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 								qWarning()<<"ERROR: Node had no comms";
 							}
 						} else {
-							qDebug()<<" + Deleting invalid new participant:"<<partID;
+							qDebug()<<" + Skipping invalid new participant:"<<partID;
 						}
 					} else {
 						qWarning()<<"ERROR: Could not allocate participant: "<<partID;

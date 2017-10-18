@@ -106,6 +106,11 @@ quint16	freeUDPPortForAddress(QHostAddress &adr);
 QList<QHostAddress> allLocalNetworkAddresses();
 QString localAddress();
 bool isAddressOK(QString address, quint16 &port);
+QHostAddress defaultGatewayAddress();
+
+quint32 addressCloseness(QHostAddress a, QHostAddress b);
+QHostAddress closestAddress(QList<QHostAddress> addresses, QHostAddress network);
+
 
 
 

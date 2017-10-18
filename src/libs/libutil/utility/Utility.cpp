@@ -1209,6 +1209,34 @@ bool isAddressOK(QString address, quint16 &port)
 }
 
 
+// NOTE: "QHostAddress defaultGatewayAddress()" is in its separate file "DefaultGatewayUtil.cpp"
+
+quint32 addressCloseness(QHostAddress a, QHostAddress b)
+{
+	// TODO: This is a grose hack that will probably fail spectacularly for any kind of IPv6
+	const QString as=a.toString();
+	const QString bs=b.toString();
+	const quint32 len=qMin(as.size(), bs.size());
+	quint32 i=0;
+	while(i<len && as[i]==bs[i])++i;
+	return i;
+}
+
+QHostAddress closestAddress(QList<QHostAddress> addresses, QHostAddress network)
+{
+	QHostAddress closest;
+	quint32  closestMatch=0;
+	for(QHostAddress address:addresses) {
+		quint32 closeness=addressCloseness(address, network);
+		if(closeness > closestMatch) {
+			closestMatch = closeness;
+			closest = address;
+		}
+	}
+	return closest;
+}
+
+
 static int ipow(int base, int exp)
 {
 	int result = 1;
