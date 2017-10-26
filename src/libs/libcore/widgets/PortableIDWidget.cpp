@@ -62,7 +62,7 @@ void PortableIDWidget::setPortableID(PortableID id)
 	}
 
 	ui->widgetBadgeIdenticon->setPortableID(id);
-	ui->labelBadgeName->setText(mID.name());
+	ui->labelBadgeName->setText(mID.identifier());
 	ui->labelBadgeName->setToolTip(mID.toPortableString());
 
 	//ui->widgetIdenticon->setMinimumHeight(100);	ui->widgetQR->setMinimumHeight(100);

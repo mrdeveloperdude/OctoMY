@@ -8,6 +8,7 @@
 #include "basic/Associate.hpp"
 #include "security/PortableID.hpp"
 #include "utility/Standard.hpp"
+#include "utility/Utility.hpp"
 
 #include "basic/AddressEntry.hpp"
 #include "models/PairingListModel.hpp"
@@ -37,6 +38,7 @@ PairingWizard::PairingWizard(QWidget *parent)
 	, mNode(nullptr)
 	, mList(nullptr)
 	, mDelegate (nullptr)
+	, mTrustIndex(-1)
 
 {
 	ui->setupUi(this);
@@ -58,8 +60,29 @@ PairingWizard::PairingWizard(QWidget *parent)
 			ui->stackedWidget->setCurrentIndex(next);
 		}, OC_CONTYPE);
 	}
+
+
+	if(!QObject::connect(ui->buttonGroupTrust, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(onTrustButtonClicked(QAbstractButton *)),OC_CONTYPE)) {
+		qWarning()<<"ERROR: Could not connect ";
+	}
+
+	mPulsatingTrustTimer.setTimerType(Qt::PreciseTimer);
+	mPulsatingTrustTimer.setInterval(1000/30); // Somewhat conservative FPS
+	mPulsatingTrustTimer.setSingleShot(false);
+
+	if(!QObject::connect(&mPulsatingTrustTimer, SIGNAL(timeout()), this, SLOT(onPulsatingTrustTimer()),OC_CONTYPE)) {
+		qWarning()<<"ERROR: Could not connect ";
+	}
+
 }
 
+
+
+PairingWizard::~PairingWizard()
+{
+	delete ui;
+	ui=nullptr;
+}
 
 void PairingWizard::onNetworkSettingsChange(QHostAddress address, quint16 port, bool valid)
 {
@@ -70,6 +93,63 @@ void PairingWizard::onNetworkSettingsChange(QHostAddress address, quint16 port, 
 	}
 	updateNetworkSettings();
 }
+
+void PairingWizard::onTrustButtonClicked(QAbstractButton *button)
+{
+	if (ui->radioButtonTrustUnset == button) {
+		mTrustIndex=0;
+		ui->widgetTrustLevel->setSvgURL(":/icons/ignore.svg");
+	}
+	if(ui->radioButtonTrustSet == button) {
+		mTrustIndex=1;
+		ui->widgetTrustLevel->setSvgURL(":/icons/trust.svg");
+	}
+	if(ui->radioButtonTrustBlock == button) {
+		mTrustIndex=2;
+		ui->widgetTrustLevel->setSvgURL(":/icons/block.svg");
+	}
+	//mTrustIndex=utility::getSelectedButtonIndex(ui->buttonGroupTrust, -1);
+	updatePulsating();
+	ui->widgetTrustLevel->update();
+	qDebug()<<"TRUST CHANGED TO index "<<mTrustIndex;
+
+}
+
+
+void PairingWizard::onPulsatingTrustTimer()
+{
+	static const QRgb palette[]= {
+		0x000000
+		,0xffffff
+		,0x883932
+		,0x67b6bd
+		,0x8b5429
+		,0x574200
+		,0xb86962
+		,0x505050
+		,0x8b3f96
+		,0x55a049
+		,0x40318d
+		,0xbfce72
+		,0x787878
+		,0x94e089
+		,0x7869c4
+		,0x9f9f9f
+	};
+	static const auto paletteSz = sizeof(palette) / sizeof(QRgb);
+	const auto lastColor=ui->widgetTrustLevel->silhouetteForeground();
+	QColor color=lastColor;
+	size_t index=0;
+	while(lastColor == color) {
+		index=qrand()%paletteSz;
+		color=QColor(palette[index]);
+	}
+	//qDebug()<<"INDEX: "<<index<<", COLOR: "<<color;
+	ui->widgetTrustLevel->setSilhouetteForeground(color);
+	ui->widgetTrustLevel->setSilhouetteEnabled(true);
+	ui->widgetTrustLevel->update();
+}
+
 
 
 void PairingWizard::updateNetworkSettings()
@@ -96,11 +176,19 @@ void PairingWizard::updateNetworkSettings()
 	}
 }
 
-PairingWizard::~PairingWizard()
+
+void PairingWizard::updatePulsating()
 {
-	delete ui;
-	ui=nullptr;
+	const bool pulsating=(isVisible() && ui->buttonGroupTrust->checkedButton() == ui->radioButtonTrustSet);
+	//qDebug()<<"PULSATING="<<pulsating;
+	ui->widgetTrustLevel->setSilhouetteEnabled(pulsating);
+	if(pulsating) {
+		mPulsatingTrustTimer.start();
+	} else {
+		mPulsatingTrustTimer.stop();
+	}
 }
+
 
 
 void PairingWizard::configure(Node *n)
@@ -228,7 +316,16 @@ void PairingWizard::startEdit(int row)
 					break;
 					}
 				}
-				ui->comboBoxTrust->setCurrentIndex(index);
+				mTrustIndex=index;
+				utility::setSelectedButtonIndex(ui->buttonGroupTrust, mTrustIndex);
+				onTrustButtonClicked(ui->buttonGroupTrust->checkedButton());
+				auto addresses=peer->addressList();
+				QStringList list;
+				for(auto address:addresses) {
+					list << address->description+"="+address->address.toString();
+				}
+				ui->labelStats->setText("Addresses for '"+peer->identifier()+"': [ "+list.join(", ")+" ]");
+
 				qDebug()<<"EDITING STARTS WITH trusts: "<<peer->trusts();
 				qDebug()<<"EDITING STARTS WITH name: "<<peer->name();
 				ui->widgetParticipantCertificate->configure(false,true);
@@ -250,11 +347,13 @@ Node *PairingWizard::getNode()
 void PairingWizard::showEvent(QShowEvent *)
 {
 	updateNetworkSettings();
+	updatePulsating();
 }
 
 void PairingWizard::hideEvent(QHideEvent *)
 {
 	updateNetworkSettings();
+	updatePulsating();
 }
 
 void PairingWizard::on_pushButtonMaybeOnward_clicked()
@@ -294,13 +393,12 @@ void PairingWizard::on_pushButtonSaveEdits_clicked()
 		QSharedPointer<Associate> peer=peers.associateByID(mCurrentlyEditing);
 		if(nullptr!=peer) {
 			DiscoveryType type=peer->type();
-			const int index=ui->comboBoxTrust->currentIndex();
 			peer->removeTrust("take-control");
 			peer->removeTrust("give-control");
 			peer->removeTrust("block");
-			if(2==index) {
+			if(2==mTrustIndex) {
 				peer->addTrust("block");
-			} else if(1==index) {
+			} else if(1==mTrustIndex) {
 				switch(type) {
 				default:
 				case(TYPE_ZOO):
@@ -350,3 +448,4 @@ void PairingWizard::on_pushButtonRefresh_clicked()
 {
 	qDebug()<<mList->status();
 }
+

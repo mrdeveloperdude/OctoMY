@@ -44,8 +44,9 @@ bool hasSelectionButtonGroup(QButtonGroup* group);
 bool isEnabledButtonGroup(QButtonGroup* group);
 void toggleButtonGroup(QButtonGroup* group,bool on,bool clearOnOff=true);
 void toggleButtonVisible(QButtonGroup* group,bool visible);
-QString getSelectedButtonName(QButtonGroup* group,QString def="");
-qint32 getSelectedButtonIndex(QButtonGroup* group,qint32 def);
+QString selectedButtonName(QButtonGroup* group,QString def="");
+qint32 selectedButtonIndex(QButtonGroup* group,qint32 def);
+void setSelectedButtonIndex(QButtonGroup* group, const qint32 index);
 void toggleButtonSelection(QAbstractButton* button, bool on, bool clearOnOff=true);
 void fitContent(QTableView &tv);
 void placeInScreen(QWidget &w,QPointF gravity=QPointF(0.5,0.5), int pref=-1);
@@ -110,9 +111,10 @@ QHostAddress defaultGatewayAddress();
 
 quint32 addressCloseness(QHostAddress a, QHostAddress b);
 QHostAddress closestAddress(QList<QHostAddress> addresses, QHostAddress network);
-
-
-
+bool isValidIPv4(const QString str);
+bool isValidIPv6(const QString str);
+bool isValidIPv4(const QHostAddress addr);
+bool isValidIPv6(const QHostAddress addr);
 
 
 // Random

@@ -15,24 +15,32 @@ class TryToggle;
 }
 
 
-QString ToggleStateToSTring(TryToggleState s);
-
 class TryToggle : public QWidget
 {
 	Q_OBJECT
 private:
+	Ui::TryToggle *ui;
 	QTimer mTimer;
 	TryToggleState mState;
-	QString mT1,mT2,mT3;
+	QString mOffText;
+	QString	mGoingOnText;
+	QString mOnText;
+	QString mGoingOffText;
+	QPalette mOnPalette;
+	QPalette mOffPalette;
+	bool mTimerToggle;
 
 public:
 	explicit TryToggle(QWidget *parent = nullptr);
 	~TryToggle();
 
 public:
-	void configure(const QString &, const QString &, const QString &, const QColor &color=QColor());
+	void configure(const QString &,    const QString &,    const QString &,    const QString &,     const QColor &color=QColor(), const QColor &bgColor=QColor());
 	TryToggleState state() const;
-	void setColor(const QColor &color);
+	void setColor(const QColor &color, const QColor &bgColor=QColor());
+
+	bool isPositive();
+	bool isTransitioning();
 
 private:
 	void updateText();
@@ -48,14 +56,10 @@ private slots:
 
 	void on_pushButtonToggle_toggled(bool checked);
 
-private:
-	Ui::TryToggle *ui;
 signals:
 	void stateChanged(const TryToggleState last, const TryToggleState current);
 };
 
-
-QDebug operator<<(QDebug d, const TryToggleState &s);
 
 
 #endif // TRYTOGGLE_HPP

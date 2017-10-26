@@ -22,7 +22,7 @@ Associate::Associate(const QVariantMap map, bool isPublic)
 	, mLastAdherentHandshakeMS( map["lastAdherentHandshakeMS"].toDateTime().toMSecsSinceEpoch() )
 	, mBirthDate( map["birthDate"].toDateTime().toMSecsSinceEpoch() )
 	, mAddressList( map["addressList"].toList() )
-	//	, mPins( map["pins"].toStringList())// DONT STORE PINS THEY ARE EPHEMERAL
+	  //	, mPins( map["pins"].toStringList())// DONT STORE PINS THEY ARE EPHEMERAL
 
 {
 	OC_METHODGATE();
@@ -45,18 +45,20 @@ Associate::Associate()
 
 
 
-Associate::~Associate(){
+Associate::~Associate()
+{
 	//qDebug()<<"DELETING node associate with ID "<<id();
 }
 
-bool Associate::update(const QVariantMap map, bool trustedSource){
+bool Associate::update(const QVariantMap map, bool trustedSource)
+{
 	OC_METHODGATE();
 	bool passesSecurityCheck=false;
-	if(map["key"].toMap()["publicKey"].toString()==mKey.pubKey() && map["key"].toMap()["privateKey"].toString()==mKey.key()){
+	if(map["key"].toMap()["publicKey"].toString()==mKey.pubKey() && map["key"].toMap()["privateKey"].toString()==mKey.key()) {
 		passesSecurityCheck=true;
 		//TODO: Intensify this security check and make tests that can verify it well
 	}
-	if(trustedSource || passesSecurityCheck){
+	if(trustedSource || passesSecurityCheck) {
 
 		//mKey=Key( map["key"].toMap(), true);
 		mName=( map["name"].toString() );
@@ -90,6 +92,23 @@ QString Associate::name() const
 {
 	OC_METHODGATE();
 	return mName;
+}
+
+//Unlike name() this always returns something. For agent it i sname, for remote it is remote:id etc.
+QString Associate::identifier()
+{
+	OC_METHODGATE();
+	switch(mType) {
+	case(TYPE_AGENT):
+		return mName;
+	case(TYPE_REMOTE):
+		return QStringLiteral("REMOTE-")+id().left(8);
+	case(TYPE_HUB):
+		return QStringLiteral("HUB-")+id().left(8);
+	case(TYPE_ZOO):
+		return QStringLiteral("ZOO-")+id().left(8);
+	}
+	return QStringLiteral("UNKNONW-")+id().left(8);
 }
 
 
@@ -128,7 +147,7 @@ bool Associate::isValidForClient(bool onlyPublic)
 	const bool keyValid=mKey.isValid(onlyPublic);
 	const bool listValid=mAddressList.isValid(false);
 	const bool out=( keyValid &&  listValid );
-	if(!out){
+	if(!out) {
 		qDebug()<<"keyValid(onlyPublic="<<onlyPublic<< ")="<<keyValid<<", listValid()="<<listValid;
 	}
 	return out;
@@ -141,7 +160,7 @@ bool Associate::isValidForServer()
 	const bool pinsEmpty=mPins.isEmpty();
 	const bool validForClient=isValidForClient(true);
 	const bool out= (!pinsEmpty) && validForClient;
-	if(!out){
+	if(!out) {
 		qDebug()<<"pinsEmpty()="<<pinsEmpty<<", validForClient()="<<validForClient;
 	}
 	return out;
@@ -164,7 +183,7 @@ QBluetoothAddress Associate::bluetoothAddress() const
 void Associate::setLastSeen(quint64 when)
 {
 	OC_METHODGATE();
-	if(0==when){
+	if(0==when) {
 		when=QDateTime::currentMSecsSinceEpoch();
 	}
 	mLastSeenMS=when;
@@ -210,16 +229,18 @@ void Associate::addTrust(QString trust)
 void Associate::removeTrust(QString trust)
 {
 	OC_METHODGATE();
-	if(mTrusts.contains(trust)){
+	if(mTrusts.contains(trust)) {
 		mTrusts.removeAll(trust);
 	}
 }
 
-bool Associate::hasTrust(QString trust){
+bool Associate::hasTrust(QString trust)
+{
 	return mTrusts.contains(trust);
 }
 
-const QStringList &Associate::trusts(){
+const QStringList &Associate::trusts()
+{
 	OC_METHODGATE();
 	return mTrusts;
 }
@@ -242,22 +263,23 @@ void Associate::clearPins()
 void Associate::addPin(QString pin)
 {
 	OC_METHODGATE();
-	if(rePin.match(pin).hasMatch()){
+	if(rePin.match(pin).hasMatch()) {
 		//qDebug()<<"ACCEPTED PIN:" <<pin;
 		mPins<<pin;
-	}
-	else {
+	} else {
 		//qDebug()<<"Pin "<<pin<<" did not match validation:";
 	}
 }
 
 
 
-bool Associate::hasPin(QString pin){
+bool Associate::hasPin(QString pin)
+{
 	return mPins.contains(pin);
 }
 
-const QStringList &Associate::pins(){
+const QStringList &Associate::pins()
+{
 	OC_METHODGATE();
 	return mPins;
 }
@@ -322,29 +344,31 @@ QString Associate::toString()
 {
 	OC_METHODGATE();
 	return mKey.toString()
-			+", name: "+mName
-			+", gender: "+mGender
-			+", addressList:"+mAddressList.toString()
-			+", lastSeenMS:"+utility::formattedDateFromMS(mLastSeenMS)
-			+", lastInitiatedHandshakeMS:"+utility::formattedDateFromMS(mLastInitiatedHandshakeMS)
-			+", lastAdherentHandshakeMS:"+utility::formattedDateFromMS(mLastAdherentHandshakeMS)
-			+", birthDate:"+utility::formattedDateFromMS(mBirthDate)
-			+", role:"+DiscoveryRoleToString(mRole)
-			+", type:"+DiscoveryTypeToString(mType)
-			+", pins:"+mPins.join(";");
+		   +", name: "+mName
+		   +", gender: "+mGender
+		   +", addressList:"+mAddressList.toString()
+		   +", lastSeenMS:"+utility::formattedDateFromMS(mLastSeenMS)
+		   +", lastInitiatedHandshakeMS:"+utility::formattedDateFromMS(mLastInitiatedHandshakeMS)
+		   +", lastAdherentHandshakeMS:"+utility::formattedDateFromMS(mLastAdherentHandshakeMS)
+		   +", birthDate:"+utility::formattedDateFromMS(mBirthDate)
+		   +", role:"+DiscoveryRoleToString(mRole)
+		   +", type:"+DiscoveryTypeToString(mType)
+		   +", pins:"+mPins.join(";");
 	+", trusts:"+mTrusts.join(";");
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool Associate::operator==(Associate &o){
+bool Associate::operator==(Associate &o)
+{
 	OC_METHODGATE();
 	return mKey.id() == o.mKey.id();
 }
 
 
-bool Associate::operator!=(Associate &o){
+bool Associate::operator!=(Associate &o)
+{
 	OC_METHODGATE();
 	return (! (o == *this));
 }

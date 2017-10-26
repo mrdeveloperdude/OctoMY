@@ -50,7 +50,6 @@ protected:
 	AppContext *mContext;
 	KeyStore mKeystore;
 	AddressBook mAssociates;
-
 	DiscoveryClient *mDiscovery;
 	DiscoveryRole mRole;
 	DiscoveryType mType;
@@ -58,24 +57,21 @@ protected:
 	CommsChannel *mComms;
 	ZooClient *mZooClient;
 	SensorInput *mSensors;
-
 	SensorsCourier *mSensorsCourier;
 	BlobCourier *mBlobCourier;
-
-	//NetworkAddress mPartnerAddress;
 	CameraList *mCameras;
-
 	qint64 mLastStatusSend;
-//	SensorsMessage *mSensorMessage;
-
 	QUrl mServerURL;
-
 	LocalAddressList mAddresses;
-
+	bool mWantToConnect;
 
 public:
 	explicit Node(AppContext *context, DiscoveryRole mRole, DiscoveryType mType, QObject *parent = nullptr);
 	virtual ~Node();
+
+private:
+	void startComms();
+	void stopComms();
 
 public:
 
@@ -108,19 +104,18 @@ public:
 	CommsChannel *comms();
 	ZooClient *zooClient();
 	SensorInput *sensorInput();
-
 	QSharedPointer<Associate> nodeIdentity();
-
 	CameraList *cameras();
+	LocalAddressList &localAddressList();
 
 	// Actions
 public:
 
 	virtual QWidget *showWindow();
 
-	LocalAddressList &localAddressList();
-	void startComms();
-	void stopComms();
+	// Node is responsible for connecting/disconnecting. Outsiders may set this as a hint that they would like it to connect.
+	void setWantToConnect(bool want);
+
 	bool isCommsStarted();
 	bool isCommsConnected();
 

@@ -53,6 +53,9 @@ public: //IContextProvider interface
 
 	Settings &settings() Q_DECL_OVERRIDE;
 
+public:
+	bool needConnection();
+
 private:
 	// Android spesifc notifications
 

@@ -2,6 +2,7 @@
 
 #include "utility/Standard.hpp"
 
+#include <QDataStream>
 
 NetworkAddress::NetworkAddress()
 //	: mIp("0.0.0.0")
@@ -122,11 +123,38 @@ void NetworkAddress::fromString(QString str, bool allowOnlyAddress)
 	}
 }
 
-bool NetworkAddress::isValid(bool allowLoopback, bool allowMulticast) const
+bool NetworkAddress::isValid(bool allowLoopback, bool allowMulticast, bool allowIPv6) const
 {
 	OC_METHODGATE();
-	return ( (((quint16)0) != mPort) && (!mIP.isNull()) &&  !( (QHostAddress::Any == mIP)  ||(QHostAddress::AnyIPv4 == mIP)  ||(QHostAddress::AnyIPv6 == mIP) ) && (allowLoopback || !mIP.isLoopback()) && (allowMulticast || !mIP.isMulticast()));
+	if(((quint16)0) == mPort) {
+		return false;
+	}
+	if(mIP.isNull()) {
+		return false;
+	}
+	if(!allowLoopback && mIP.isLoopback()) {
+		return false;
+	}
+	if(!allowMulticast && mIP.isMulticast()) {
+		return false;
+	}
+	if(!allowIPv6 && QAbstractSocket::IPv4Protocol != mIP.protocol()) {
+		return false;
+	}
+	return true;
 }
+
+
+bool NetworkAddress::isIPv4() const
+{
+	return QAbstractSocket::IPv4Protocol==mIP.protocol();
+}
+
+bool NetworkAddress::isIPv6() const
+{
+	return QAbstractSocket::IPv6Protocol==mIP.protocol();
+}
+
 
 bool NetworkAddress::operator==(const NetworkAddress &o) const
 {
@@ -141,11 +169,34 @@ bool NetworkAddress::operator!=(const NetworkAddress &o) const
 }
 
 
+void NetworkAddress::toStream(QDataStream &ds) const
+{
+	ds<<mPort;
+	ds<<mIP;
+}
 
 
+void NetworkAddress::fromStream(QDataStream &ds)
+{
+	ds>>mPort;
+	ds>>mIP;
+}
 
 const QDebug &operator<<(QDebug &d, const NetworkAddress &na)
 {
 	d.nospace() << na.toString();
 	return d.maybeSpace();
+}
+
+
+QDataStream &operator<<(QDataStream &ds, const NetworkAddress &addr)
+{
+	addr.toStream(ds);
+	return ds;
+}
+
+QDataStream &operator>>(QDataStream &ds, NetworkAddress &addr)
+{
+	addr.fromStream(ds);
+	return ds;
 }

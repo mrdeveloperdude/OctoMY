@@ -6,6 +6,7 @@
 
 #include <QString>
 #include <QSharedPointer>
+#include <QHostAddress>
 
 class NetworkAddress;
 class AddressEntry;
@@ -34,17 +35,16 @@ public:
 
 	void add(QSharedPointer<AddressEntry> address);
 	void merge(NetworkAddress adr, QString description="", quint64 now=0);
-	QSharedPointer<AddressEntry> highestScore()  const;
-	QMap<quint64, QSharedPointer<AddressEntry>> scoreMap()  const;
+	QSharedPointer<AddressEntry> highestScore(QHostAddress dgw=QHostAddress())  const;
+	QMap<quint64, QSharedPointer<AddressEntry>> scoreMap(QHostAddress dgw=QHostAddress())  const;
 
 	NetworkAddress bestAddress() const;
 
 	QVariantList toVariantList() const;
 	void  fromVariantList(QVariantList list);
-	void fromLocalInterface(quint16 port);
 	QString toString();
 
-	bool isValid(bool allMustBeValid=false, bool allowLoopback=true, bool allowMulticast=false);
+	bool isValid(bool allMustBeValid=false, bool allowLoopback=true, bool allowMulticast=false, bool allowIPv6=true);
 
 
 

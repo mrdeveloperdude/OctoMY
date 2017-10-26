@@ -76,6 +76,7 @@ Node::Node(AppContext *context, DiscoveryRole role, DiscoveryType type, QObject 
 	, mLastStatusSend (0)
 	, mServerURL("http://zoo.octomy.org:"+QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
 	, mAddresses(defaultPortForNodeType(mType), true)
+	, mWantToConnect(false)
 {
 	OC_METHODGATE();
 	//ScopedTimer nodeBootTimer(mContext->base()+"-boot");
@@ -243,13 +244,6 @@ CameraList *Node::cameras()
 	return mCameras;
 }
 
-QWidget *Node::showWindow()
-{
-	OC_METHODGATE();
-	return nullptr;
-}
-
-
 
 LocalAddressList &Node::localAddressList()
 {
@@ -257,6 +251,12 @@ LocalAddressList &Node::localAddressList()
 	return mAddresses;
 }
 
+
+QWidget *Node::showWindow()
+{
+	OC_METHODGATE();
+	return nullptr;
+}
 
 
 void Node::startComms()
@@ -280,6 +280,33 @@ void Node::stopComms()
 	} else {
 		qWarning()<<"ERROR: No comms";
 	}
+}
+
+
+void Node::setWantToConnect(bool want)
+{
+	OC_METHODGATE();
+	mWantToConnect=want;
+
+
+/*
+ * TODO: Integrate this somehow. Right now Im too tired to do it.
+	//qDebug()<<"COMMS LEFT WITH "<<ct<<" COURIERS";
+	//qDebug()<< cc->getSummary();
+	// Adaptively start commschannel when there are couriers registered
+	const int ct=courierCount();
+
+	if(ct>0 && mWantToConnect) {
+		startComms();
+	} else {
+		if( isCommsStarted() )  {
+			//qDebug()<<"STOPPING COMMS ";
+			stopComms();
+		} else {
+			//qDebug()<<"COMMS ALREADY STOPPED";
+		}
+	}
+	*/
 }
 
 bool Node::isCommsStarted()

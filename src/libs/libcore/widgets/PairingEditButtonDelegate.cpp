@@ -97,7 +97,7 @@ void PairingEditButtonDelegate::paint(QPainter *painter, const QStyleOptionViewI
 
 		// Draw identicon to the far left
 		PortableID id(data);
-		qDebug()<<"ID: "<<id.id()<< " FROM DATA: "<<data;
+		//qDebug()<<"ID: "<<id.id()<< " FROM DATA: "<<data;
 		/*
 
 FROM DATA:  QMap(("birthDate", QVariant(qulonglong, 1471476138556))
@@ -141,7 +141,7 @@ FROM DATA:  QMap(("birthDate", QVariant(qulonglong, 1471476138556))
 			case(4):onlineSymbol=":/icons/connection_off.svg"; break;
 		}
 
-		qDebug()<<"NOW="<<now<<", LastSeen="<<lastSeen<<", timeSinceLastSeen="<<timeSinceLastSeen<<", step="<<step<<", s="<<s<<", t="<<t<<", onlineSymbol="<<onlineSymbol;
+		//qDebug()<<"NOW="<<now<<", LastSeen="<<lastSeen<<", timeSinceLastSeen="<<timeSinceLastSeen<<", step="<<step<<", s="<<s<<", t="<<t<<", onlineSymbol="<<onlineSymbol;
 
 
 		//Seen less than 20 sec ago means online

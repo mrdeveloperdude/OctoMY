@@ -105,7 +105,7 @@ bool LocalAddressList::updateIfNeeded(bool keepCurrent)
 			}
 		}
 	}
-	qDebug()<<"LOCAL ADDRESS UPDATE NEEDED: "<<updateNeeded;
+	//qDebug()<<"LOCAL ADDRESS UPDATE NEEDED: "<<updateNeeded;
 	if(updateNeeded) {
 		updateAddresses(keepCurrent);
 	}
@@ -128,7 +128,7 @@ void LocalAddressList::updateAddresses(bool keepCurrent)
 	qDebug().noquote().nospace()<<" + last: "<<last;
 	qDebug().noquote().nospace()<<" + gateway: "<<dgw;
 	for(QHostAddress addr:local) {
-		qDebug().noquote().nospace()<<" + addr: "<<addr;
+		qDebug().noquote().nospace()<<" + addr: "<<addr<<" (dgw closeness= "<< utility::addressCloseness(addr, dgw)<< ")";
 		*this <<addr;
 	}
 	const QHostAddress closest=utility::closestAddress(*this, keepCurrent?last:dgw);

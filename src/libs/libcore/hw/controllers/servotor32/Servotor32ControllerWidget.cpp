@@ -15,7 +15,7 @@ Servotor32ControllerWidget::Servotor32ControllerWidget(QWidget *parent)
 	, mController(nullptr)
 {
 	ui->setupUi(this);
-	ui->tryToggleConnect->configure("Connect","Connecting","Connected", AgentConstants::AGENT_CONNECT_BUTTON_COLOR);
+	ui->tryToggleConnect->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_CONNECT_TEXT_COLOR);
 
 	if(!connect(ui->tryToggleConnect, SIGNAL(stateChanged(const TryToggleState, const TryToggleState)), this, SLOT(onConnectChanged(const TryToggleState, const TryToggleState))),OC_CONTYPE) {
 		qWarning()<<"ERROR: could not connect";
@@ -88,7 +88,7 @@ void Servotor32ControllerWidget::onConnectChanged(const TryToggleState last, con
 			setUILock(false);
 		}
 		break;
-		case(TRYING): {
+		case(GOING_ON): {
 			setUILock(true);
 			mController->setConnected(true);
 		}

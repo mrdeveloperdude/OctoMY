@@ -19,18 +19,18 @@ class EyesWidget : public QWidget
 {
 	Q_OBJECT
 private:
-	QTimer timer;
-	quint64 startTime;
-	quint64 lastTime;
-	qreal blink;
-	qreal cycle;
-	EyeRendrer leftEye;
-	EyeRendrer rightEye;
-	QBrush bgBrush;
+	QTimer mTimer;
+	quint64 mStartTime;
+	quint64 mLastTime;
+	qreal mBlink;
+	qreal mCycle;
+	EyeRendrer mLeftEye;
+	EyeRendrer mRightEye;
+	QBrush mBgBrush;
 
 	QVector2D upperLidSteer;
 	QVector2D lowerLidSteer;
-	QVector2D eyeSteer;
+	QVector2D mEyeSteer;
 	QVector2D eyeSteerSmooth;
 	QVector2D squintSteer;
 

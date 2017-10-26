@@ -198,7 +198,7 @@ quint64 CommsCarrier::maximalPacketInterval()
 quint64 CommsCarrier::setDesiredOpportunityInterval(quint64 desiredInterval)
 {
 	const quint64 actualInterval=qBound(maximalPacketInterval(), desiredInterval, minimalPacketInterval());
-	qDebug()<<"NEW SCHEDULE DELAY: "<<actualInterval<<" ("<<desiredInterval<<")";
+	//qDebug()<<"NEW SCHEDULE DELAY: "<<actualInterval<<" ("<<desiredInterval<<")";
 	mSendingTimer.setInterval(actualInterval);
 	return actualInterval;
 }

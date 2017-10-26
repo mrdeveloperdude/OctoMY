@@ -538,7 +538,7 @@ void AgentWindow::updateOnlineStatus()
 		bool isTryingToGoOnline=false;
 		isTryingToGoOnline=mAgent->isCommsStarted() && mAgent->comms()->courierRegistration();
 		// Find if we WANT to be online
-		bool wantToBeOnline=false;
+		bool wantToBeOnline=isTryingToGoOnline;
 		Settings *s=&mAgent->settings();
 		if(nullptr!=s) {
 			wantToBeOnline=s->getCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS, wantToBeOnline);
@@ -558,7 +558,7 @@ void AgentWindow::updateOnlineStatus()
 				if(isTryingToGoOnline ) {
 					nextTryState=ON;
 				} else {
-					nextTryState=TRYING;
+					nextTryState=GOING_ON;
 					qDebug()<<"Decided to go online";
 					nextOnlineStatus=true;
 				}
@@ -583,19 +583,7 @@ void AgentWindow::updateOnlineStatus()
 					qDebug()<<" + " << assocID;
 					mAgent->setCourierRegistration(assoc , nextOnlineStatus); //QSharedPointer<NodeAssociate> assoc, bool reg
 				}
-				/*
-				 * NOTE: DONT DO THIS AS IT IS DONE BY THE setCourierRegistration() line above
-				if(nextOnlineStatus) {
-					QTimer::singleShot(1000,[this]() {
-						QSharedPointer<NodeAssociate> ni=mAgent->nodeIdentity();
-						if(nullptr!=ni) {
-							mAgent->startComms(ni->localAddress());
-						}
-					});
-				} else {
-					mAgent->stopComms();
-				}
-				*/
+
 			} else {
 				//qDebug()<<"No change in online status ("<<nextOnlineStatus<<")";
 			}

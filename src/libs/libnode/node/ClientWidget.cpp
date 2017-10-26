@@ -24,6 +24,7 @@
 
 #include <QScrollBar>
 
+static const QString NODE_ONLINE_SETTINGS_KEY_BASE("octomy.online.");
 
 ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<Associate> nodeAssoc, QWidget *parent)
 	: QWidget(parent)
@@ -54,9 +55,7 @@ ClientWidget::ClientWidget(QSharedPointer<Node> controller, QSharedPointer<Assoc
 	}
 	updateTimer.start();
 	ui->widgetFace->setDisabled(true);
-
-
-	ui->tryToggleListen->configure("Connect","Connecting","Connected", AgentConstants::AGENT_CONNECT_BUTTON_COLOR);
+	ui->tryToggleListen->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_CONNECT_TEXT_COLOR);
 	ui->tryToggleListen->setState(OFF,false);
 
 	if(!connect(ui->tryToggleListen, &TryToggle::stateChanged, this, &ClientWidget::onConnectButtonStateChanged ,OC_CONTYPE)) {
@@ -158,7 +157,7 @@ void ClientWidget::updateOnlineStatus()
 			if(isTryingToGoOnline ) {
 				nextTryState=ON;
 			} else {
-				nextTryState=TRYING;
+				nextTryState=GOING_ON;
 				//qDebug()<<"Decided to go online";
 				nextOnlineStatus=true;
 			}
@@ -174,19 +173,7 @@ void ClientWidget::updateOnlineStatus()
 			mController->comms()->setHoneymoonEnd(QDateTime::currentMSecsSinceEpoch()+(1000*60*5));//Set 5 minute honeymoon at every state change
 			qDebug()<<"Decided to change online for "<<mNodeAssoc->name();
 			setCourierRegistration(nextOnlineStatus);
-			/*
-			 * NOTE: DONT DO THIS AS IT IS DONE BY THE setCourierRegistration() line above
-			if(nextOnlineStatus) {
-				QTimer::singleShot(1000,[this]() {
-					QSharedPointer<NodeAssociate> ni=mController->nodeIdentity();
-					if(nullptr!=ni) {
-						mController->startComms(ni->localAddress());
-					}
-				});
-			} else {
-				mController->stopComms();
-			}
-			*/
+
 		} else {
 			//qDebug()<<"No change in online status ("<<nextOnlineStatus<<")";
 		}
@@ -210,33 +197,24 @@ bool ClientWidget::courierRegistration()
 void ClientWidget::setCourierRegistration(bool reg)
 {
 	OC_METHODGATE();
-	CommsChannel *cc=comms();
-	if(nullptr!=cc) {
-		//qDebug()<<"REGISTERING SENSORS COURIER FOR " <<mNodeAssoc->id();
-		//cc->setCourierRegistered(*mAgentStateCourier, reg);
-		//cc->setCourierRegistered(*mSensorsCourier, reg);
-		//cc->setCourierRegistered(*mBlobCourier, reg);
-		mCouriers.setCommsEnabled(reg);
-		// Adaptively start commschannel when there are couriers registered
-		const int ct=cc->courierCount();
-		//qDebug()<<"COMMS LEFT WITH "<<ct<<" COURIERS";
-		//qDebug()<< cc->getSummary();
-		if(ct>0) {
-			if(nullptr != mController) {
-				mController->startComms();
-			} else {
-				//qDebug()<<"COMMS ALREADY STARTED";
-			}
-		} else {
-			if( (nullptr != mController) &&  ( cc->isStarted() ) ) {
-				//qDebug()<<"STOPPING COMMS ";
-				mController->stopComms();
-			} else {
-				//qDebug()<<"COMMS ALREADY STOPPED";
-			}
+	mCouriers.setCommsEnabled(reg);
+}
+
+
+
+bool ClientWidget::needConnection()
+{
+	OC_METHODGATE();
+	if(nullptr!=mController && nullptr!=mNodeAssoc) {
+		Settings *s=&mController->settings();
+		if(nullptr!=s) {
+			return s->getCustomSettingBool(NODE_ONLINE_SETTINGS_KEY_BASE+mNodeAssoc->name(), false);
 		}
 	}
+	return false;
 }
+
+
 
 void ClientWidget::init()
 {

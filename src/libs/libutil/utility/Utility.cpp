@@ -683,7 +683,7 @@ bool isEnabledButtonGroup(QButtonGroup* group)
 	return ret;
 }
 
-void toggleButtonGroup(QButtonGroup* group,bool on,bool clearOnOff)
+void toggleButtonGroup(QButtonGroup* group, bool on, bool clearOnOff)
 {
 	QList<QAbstractButton*> buts=group->buttons();
 	bool ex=group->exclusive();
@@ -701,7 +701,7 @@ void toggleButtonGroup(QButtonGroup* group,bool on,bool clearOnOff)
 }
 
 
-void toggleButtonVisible(QButtonGroup* group,bool visible)
+void toggleButtonVisible(QButtonGroup* group, bool visible)
 {
 	QList<QAbstractButton*> buts=group->buttons();
 	for(QList<QAbstractButton*>::iterator it=buts.begin(),end=buts.end(); it!=end; ++it) {
@@ -711,13 +711,13 @@ void toggleButtonVisible(QButtonGroup* group,bool visible)
 }
 
 
-QString getSelectedButtonName(QButtonGroup* group,QString def)
+QString selectedButtonName(QButtonGroup* group, QString def)
 {
-	if(0==group) {
+	if(nullptr==group) {
 		return def;
 	}
 	QAbstractButton *but=group->checkedButton();
-	if(0==but) {
+	if(nullptr==but) {
 		return def;
 	}
 	return but->objectName();
@@ -725,13 +725,13 @@ QString getSelectedButtonName(QButtonGroup* group,QString def)
 
 
 
-qint32 getSelectedButtonIndex(QButtonGroup* group,qint32 def)
+qint32 selectedButtonIndex(QButtonGroup* group, qint32 def)
 {
-	if(0==group) {
+	if(nullptr==group) {
 		return def;
 	}
 	QAbstractButton *but=group->checkedButton();
-	if(0==but) {
+	if(nullptr==but) {
 		return def;
 	}
 	qint32 index=0;
@@ -744,6 +744,24 @@ qint32 getSelectedButtonIndex(QButtonGroup* group,qint32 def)
 		index++;
 	}
 	return def;
+}
+
+
+void setSelectedButtonIndex(QButtonGroup* group, const qint32 index)
+{
+	if(nullptr==group) {
+		return;
+	}
+	qint32 ct = 0;
+	QList<QAbstractButton*> buts=group->buttons();
+	for(QList<QAbstractButton*>::iterator it=buts.begin(),end=buts.end(); it!=end; ++it) {
+		QAbstractButton *b=*it;
+		if(nullptr != b && index == ct) {
+			b->setChecked(true);
+			return;
+		}
+		ct++;
+	}
 }
 
 
@@ -1218,7 +1236,9 @@ quint32 addressCloseness(QHostAddress a, QHostAddress b)
 	const QString bs=b.toString();
 	const quint32 len=qMin(as.size(), bs.size());
 	quint32 i=0;
-	while(i<len && as[i]==bs[i])++i;
+	while(i<len && as[i]==bs[i]) {
+		++i;
+	}
 	return i;
 }
 
@@ -1235,6 +1255,35 @@ QHostAddress closestAddress(QList<QHostAddress> addresses, QHostAddress network)
 	}
 	return closest;
 }
+
+
+static const QRegularExpression reIPv4("(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])(?:\\.(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])){3}");
+static const QRegularExpression reIPv6("((?:[0-9a-fA-F]{1,4}:){7}(?:[0-9a-fA-F]{1,4}|:)|(?:[0-9a-fA-F]{1,4}:){6}(?:${v4}|:[0-9a-fA-F]{1,4}|:)|(?:[0-9a-fA-F]{1,4}:){5}(?::${v4}|(:[0-9a-fA-F]{1,4}){1,2}|:)|(?:[0-9a-fA-F]{1,4}:){4}(?:(:[0-9a-fA-F]{1,4}){0,1}:${v4}|(:[0-9a-fA-F]{1,4}){1,3}|:)|(?:[0-9a-fA-F]{1,4}:){3}(?:(:[0-9a-fA-F]{1,4}){0,2}:${v4}|(:[0-9a-fA-F]{1,4}){1,4}|:)|(?:[0-9a-fA-F]{1,4}:){2}(?:(:[0-9a-fA-F]{1,4}){0,3}:${v4}|(:[0-9a-fA-F]{1,4}){1,5}|:)|(?:[0-9a-fA-F]{1,4}:){1}(?:(:[0-9a-fA-F]{1,4}){0,4}:${v4}|(:[0-9a-fA-F]{1,4}){1,6}|:)|(?::((?::[0-9a-fA-F]{1,4}){0,5}:${v4}|(?::[0-9a-fA-F]{1,4}){1,7}|:)))(%[0-9a-zA-Z]{1,})?");
+
+
+//static const QRegularExpression reIPv4("/^(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]{1,2})(\\.(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})){3}$/");
+//static const QRegularExpression reIPv6("/^([0-9a-f]){1,4}(:([0-9a-f]){1,4}){7}$/i");
+
+bool isValidIPv4(const QString str)
+{
+	return reIPv4.match(str).hasMatch();
+}
+
+bool isValidIPv6(const QString str)
+{
+	return reIPv6.match(str).hasMatch();
+}
+
+bool isValidIPv4(const QHostAddress addr)
+{
+	return isValidIPv4(addr.toString());
+}
+
+bool isValidIPv6(const QHostAddress addr)
+{
+	return isValidIPv6(addr.toString());
+}
+
 
 
 static int ipow(int base, int exp)

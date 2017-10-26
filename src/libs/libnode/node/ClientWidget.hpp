@@ -62,8 +62,11 @@ private:
 	void setCourierRegistration(bool reg);
 
 
+public:
+	bool needConnection();
 
 public:
+
 	CommsChannel *comms();
 	QSharedPointer<Associate> nodeAssoc() const;
 

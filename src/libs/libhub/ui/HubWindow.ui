@@ -562,7 +562,7 @@
          <item>
           <widget class="QTabWidget" name="tabWidgetDevelopment">
            <property name="currentIndex">
-            <number>8</number>
+            <number>4</number>
            </property>
            <widget class="QWidget" name="tabTriggers">
             <attribute name="title">

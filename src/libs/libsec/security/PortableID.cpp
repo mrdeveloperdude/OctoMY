@@ -17,7 +17,7 @@ PortableID::PortableID()
 	: mBirthDate(0)
 	, mType(DiscoveryType::TYPE_UNKNOWN)
 {
-
+	OC_METHODGATE();
 }
 
 
@@ -28,40 +28,45 @@ PortableID::PortableID(QVariantMap &data)
 	, mBirthDate(QDateTime::fromString(data["createDate"].toString(), dateFMT).toMSecsSinceEpoch())
 	, mType(DiscoveryTypeFromString(data["type"].toString()))
 {
-
+	OC_METHODGATE();
 }
 
 PortableID::~PortableID()
 {
-
+	OC_METHODGATE();
 }
 
 
 
 void PortableID::setName(QString name)
 {
+	OC_METHODGATE();
 	mName=name;
 }
 
 void PortableID::setGender(QString gender)
 {
+	OC_METHODGATE();
 	mGender=gender;
 }
 
 void PortableID::setID(QString id)
 {
+	OC_METHODGATE();
 	mID=id;
 }
 
 
 void PortableID::setBirthDate(quint64 birthDate)
 {
+	OC_METHODGATE();
 	mBirthDate=birthDate;
 }
 
 
 void PortableID::setType(DiscoveryType type)
 {
+	OC_METHODGATE();
 	mType=type;
 }
 
@@ -70,26 +75,49 @@ void PortableID::setType(DiscoveryType type)
 
 QString PortableID::name() const
 {
+	OC_METHODGATE();
 	return mName;
 }
+
+QString PortableID::identifier() const
+{
+	OC_METHODGATE();
+	switch(mType) {
+	case(TYPE_AGENT):
+		return mName;
+	case(TYPE_REMOTE):
+		return QStringLiteral("REMOTE-")+mID.left(8);
+	case(TYPE_HUB):
+		return QStringLiteral("HUB-")+mID.left(8);
+	case(TYPE_ZOO):
+		return QStringLiteral("ZOO-")+mID.left(8);
+	}
+	return QStringLiteral("UNKNONW-")+mID.left(8);
+}
+
 QString PortableID::gender() const
 {
+	OC_METHODGATE();
 	return mGender;
 }
+
 QString PortableID::id() const
 {
+	OC_METHODGATE();
 	return mID;
 }
 
 
 quint64 PortableID::birthDate() const
 {
+	OC_METHODGATE();
 	return mBirthDate;
 }
 
 
 bool PortableID::fromPortableString(QString s)
 {
+	OC_METHODGATE();
 	QStringList parts = s.split(sepRE);
 	if(parts.size()!=5) {
 		return false;
@@ -105,6 +133,7 @@ bool PortableID::fromPortableString(QString s)
 
 QString PortableID::toPortableString()
 {
+	OC_METHODGATE();
 	QString dateString=QDateTime::fromMSecsSinceEpoch(mBirthDate).toString(dateFMT);
 	//qDebug()<<"birth="<<mBirthDate<<" to str="<<dateString;
 	return mName + SEP + mGender + SEP + mID + SEP + dateString + SEP + DiscoveryTypeToString(mType);
@@ -114,5 +143,6 @@ QString PortableID::toPortableString()
 
 DiscoveryType PortableID::type() const
 {
+	OC_METHODGATE();
 	return mType;
 }

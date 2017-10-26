@@ -3,12 +3,14 @@
 
 #include "utility/Standard.hpp"
 
+#include "agent/AgentConstants.hpp"
+
 ConnectionWidget::ConnectionWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::ConnectionWidget)
 {
 	ui->setupUi(this);
-	ui->tryToggleListen->configure("Connect","Connecting...","Connected");
+	ui->tryToggleListen->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_CONNECT_TEXT_COLOR);
 	setEditsEnabled(false);
 	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onConnectStateChanged(TryToggleState)),OC_CONTYPE)){
 		qWarning()<<"ERROR: could not connect";

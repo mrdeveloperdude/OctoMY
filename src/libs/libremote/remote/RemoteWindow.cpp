@@ -39,6 +39,7 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent)
 	, ui(OC_NEW Ui::RemoteWindow)
 	, mRemote(remote)
 {
+	OC_METHODGATE();
 	ui->setupUi(this);
 	//ui->stackedWidgetScreen->setUpdatesEnabled(false);
 	prepareDelivery();
@@ -59,6 +60,7 @@ RemoteWindow::RemoteWindow(Remote *remote, QWidget *parent)
 
 RemoteWindow::~RemoteWindow()
 {
+	OC_METHODGATE();
 	delete ui;
 	ui=nullptr;
 }
@@ -67,6 +69,7 @@ RemoteWindow::~RemoteWindow()
 
 void RemoteWindow::prepareDelivery()
 {
+	OC_METHODGATE();
 	if(nullptr!=mRemote) {
 		ui->widgetDelivery->configure(mRemote);
 		// Make sure to go to correct page after delivery is complete
@@ -82,6 +85,7 @@ void RemoteWindow::prepareDelivery()
 
 void RemoteWindow::prepareDiscovery()
 {
+	OC_METHODGATE();
 	if(nullptr!=mRemote) {
 		mRemote->updateDiscoveryClient();
 		mRemote->hookPeerSignals(*this);
@@ -92,6 +96,7 @@ void RemoteWindow::prepareDiscovery()
 
 void RemoteWindow::preparePairing()
 {
+	OC_METHODGATE();
 	if(nullptr!=mRemote) {
 		ui->widgetPairing->configure(mRemote);
 		//Make sure to go to correct page when pairing is complete
@@ -106,6 +111,7 @@ void RemoteWindow::preparePairing()
 
 void RemoteWindow::prepareAgentList()
 {
+	OC_METHODGATE();
 	// Add agents, getting the number of agents added
 	updateAgentsList();
 }
@@ -113,6 +119,7 @@ void RemoteWindow::prepareAgentList()
 
 void RemoteWindow::prepareControlLevelList()
 {
+	OC_METHODGATE();
 	if(nullptr!=mRemote) {
 		Settings &s=mRemote->settings();
 		ui->comboBoxControlLevel->setCurrentText(s.getCustomSetting("octomy.remote.control.level",ui->comboBoxControlLevel->currentText()));
@@ -126,6 +133,7 @@ void RemoteWindow::prepareControlLevelList()
 
 void RemoteWindow::hookSensorSignals()
 {
+	OC_METHODGATE();
 	if(nullptr!=mRemote) {
 		mRemote->hookSensorSignals(*this);
 	} else {
@@ -136,6 +144,7 @@ void RemoteWindow::hookSensorSignals()
 
 void RemoteWindow::goToStartPage()
 {
+	OC_METHODGATE();
 	//qDebug()<<"";
 	//qDebug()<<"----------------- - - - - - ------------------------- - - - - ";
 	if(nullptr!=mRemote) {
@@ -166,6 +175,7 @@ void RemoteWindow::goToStartPage()
 
 int RemoteWindow::updateAgentsList()
 {
+	OC_METHODGATE();
 	int ct=0;
 	ui->comboBoxAgent->clear();
 	if(nullptr!=mRemote) {
@@ -193,6 +203,7 @@ int RemoteWindow::updateAgentsList()
 
 void RemoteWindow::addAgentToList(QSharedPointer<Associate> peer)
 {
+	OC_METHODGATE();
 	if(nullptr!=peer) {
 		QString name=peer->name().trimmed();
 		if(""==name) {
@@ -216,11 +227,30 @@ void RemoteWindow::addAgentToList(QSharedPointer<Associate> peer)
 
 Settings &RemoteWindow::settings()
 {
+	OC_METHODGATE();
 	return mRemote->settings();
 }
 
+
+bool RemoteWindow::needConnection()
+{
+	OC_METHODGATE();
+	bool ret=false;
+	for(QMap<int, ClientWidget *>::iterator it=mClientWidgets.begin(), end=mClientWidgets.end();it!=end;++it){
+		ClientWidget * cw=it.value();
+		if(nullptr!=cw){
+			ret|=cw->needConnection();
+		}
+	}
+	return ret;
+}
+
+
+
+
 void RemoteWindow::notifyAndroid(QString s)
 {
+	OC_METHODGATE();
 	(void)s;
 	//TODO: This crashes with some jni exception stuff. Figure out why
 #ifdef Q_OS_ANDROID
@@ -235,6 +265,7 @@ void RemoteWindow::notifyAndroid(QString s)
 
 void RemoteWindow::toastAndroid(QString s)
 {
+	OC_METHODGATE();
 	(void)s;
 	//TODO: This crashes with some jni exception stuff. Figure out why
 #ifdef Q_OS_ANDROID
@@ -250,6 +281,7 @@ void RemoteWindow::toastAndroid(QString s)
 
 void RemoteWindow::keyReleaseEvent(QKeyEvent *e)
 {
+	OC_METHODGATE();
 	if(Qt::Key_Back==e->key()) {
 		/*
 		if(ui->pageConnect==ui->stackedWidgetScreen->currentWidget()){
@@ -378,6 +410,7 @@ void RemoteWindow::appendLog(const QString& text)
 
 void RemoteWindow::onStartShowBirthCertificate()
 {
+	OC_METHODGATE();
 	PortableID id;
 	Settings *s=(nullptr!=mRemote)?(&mRemote->settings()):nullptr;
 	if(nullptr!=s) {
@@ -397,6 +430,7 @@ void RemoteWindow::onStartShowBirthCertificate()
 
 void RemoteWindow::onStartPairing()
 {
+	OC_METHODGATE();
 	ui->widgetPairing->reset();
 	ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
 }
@@ -404,6 +438,7 @@ void RemoteWindow::onStartPairing()
 
 void RemoteWindow::onStartPlanEditor()
 {
+	OC_METHODGATE();
 	ui->stackedWidgetScreen->setCurrentWidget(ui->pagePlan);
 }
 
@@ -414,6 +449,7 @@ void RemoteWindow::onStartPlanEditor()
 
 void RemoteWindow::onDeliveryDone(bool pairNow)
 {
+	OC_METHODGATE();
 	qDebug()<<"REMOTEW DELIVERY DONE ";
 	prepareDiscovery();
 	preparePairing();
@@ -429,6 +465,7 @@ void RemoteWindow::onDeliveryDone(bool pairNow)
 
 void RemoteWindow::onKeystoreReady(bool ok)
 {
+	OC_METHODGATE();
 	qDebug()<<"REMOTEW keystore load compelte: "<<(ok?"OK":"ERROR");
 	prepareDiscovery();
 	preparePairing();
@@ -440,12 +477,14 @@ void RemoteWindow::onKeystoreReady(bool ok)
 
 void RemoteWindow::onAssociateAdded(QString id)
 {
+	OC_METHODGATE();
 	qDebug()<<"REMOTEW peer added: "<<id;
 	// Handled by change handler
 }
 
 void RemoteWindow::onAssociateRemoved(QString id)
 {
+	OC_METHODGATE();
 	qDebug()<<"REMOTEW peer removed: "<<id;
 	// Handled by change handler
 }
@@ -453,6 +492,7 @@ void RemoteWindow::onAssociateRemoved(QString id)
 
 void RemoteWindow::onAssociateChanged()
 {
+	OC_METHODGATE();
 	qDebug()<<"REMOTEW peers changed: ";
 	updateAgentsList();
 }
@@ -461,6 +501,7 @@ void RemoteWindow::onAssociateChanged()
 
 void RemoteWindow::onAddressBookReady(bool ok)
 {
+	OC_METHODGATE();
 	qDebug()<<"REMOTEW peer store load compelte: "<<(ok?"OK":"ERROR");
 	prepareDiscovery();
 	preparePairing();
@@ -473,12 +514,13 @@ void RemoteWindow::onAddressBookReady(bool ok)
 
 void RemoteWindow::onError(QString e)
 {
+	OC_METHODGATE();
 	qDebug()<<"REMOTEW comms: error "<<e;
 }
 
 void RemoteWindow::onClientAdded(CommsSession *c)
 {
-
+	OC_METHODGATE();
 	qDebug()<<"REMOTEW comms: client added "<<(0==c?"null":QString::number(c->localSessionID(),16));
 }
 
@@ -550,16 +592,19 @@ void RemoteWindow::on_pushButtonConfirmQuit_clicked()
 
 void RemoteWindow::on_pushButtonMenu_clicked()
 {
+	OC_METHODGATE();
 	mMenu.exec(mapToGlobal(ui->pushButtonMenu->pos()));
 }
 
 void RemoteWindow::on_pushButtonBack_6_clicked()
 {
+	OC_METHODGATE();
 	ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
 }
 
 void RemoteWindow::on_pushButtonStartPairing_clicked()
 {
+	OC_METHODGATE();
 	ui->widgetPairing->reset();
 	ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
 }

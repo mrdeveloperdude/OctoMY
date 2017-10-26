@@ -3,6 +3,7 @@
 
 #include "Courier.hpp"
 #include "basic/Associate.hpp"
+#include "basic/LoopingBuffer.hpp"
 
 #include <QList>
 #include <QMap>
@@ -24,6 +25,8 @@ private:
 	QSharedPointer<Associate> mAss;
 	QVariantMap mData;
 	quint64 mLastSend;
+	static const QByteArray sLooperBuf;
+	static const LoopingBuffer sLooper;
 
 public:
 	explicit DiscoveryCourier(QSharedPointer<Associate> ass, CommsChannel &comms, QObject *parent = nullptr);

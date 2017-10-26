@@ -92,6 +92,33 @@ void TestAddressList::testAddressList()
 
 void TestAddressList::testAddressListScore()
 {
+	NetworkAddress addr1(QHostAddress("10.0.0.1"), 8123);
+	NetworkAddress addr2(QHostAddress("10.0.0.2"), 8123);
+	NetworkAddress addr3(QHostAddress("::ffff:127.0.0.1"), 55880);
+	NetworkAddress addr4(QHostAddress::Any, 0);
+
+	QCOMPARE(addr1.isValid(), true);
+	QCOMPARE(addr2.isValid(), true);
+	QCOMPARE(addr3.isValid(), true);
+	QCOMPARE(addr4.isValid(), false);
+
+	QSharedPointer<AddressEntry> ae00(nullptr);
+	QSharedPointer<AddressEntry> ae1(new AddressEntry(addr1, "first"));
+	QSharedPointer<AddressEntry> ae2(new AddressEntry(addr2, "second"));
+	QSharedPointer<AddressEntry> ae3(new AddressEntry(addr3, "third"));
+	QSharedPointer<AddressEntry> ae4(new AddressEntry(addr4, "invalid-4"));
+
+	QCOMPARE(ae00.isNull(), true);
+	QCOMPARE(ae1.isNull(), false);
+	QCOMPARE(ae2.isNull(), false);
+	QCOMPARE(ae3.isNull(), false);
+	QCOMPARE(ae4.isNull(), false);
+
+
+}
+
+void TestAddressList::testAddressListHighscore()
+{
 	AddressList list;
 
 	NetworkAddress addr1(QHostAddress("10.0.0.1"), 8123);

@@ -80,6 +80,7 @@ public:
 public:
 	QString id();//NOTE no const please;
 	QString name() const;
+	QString identifier();
 	QString gender() const;
 	Key key();
 	DiscoveryType type() const;

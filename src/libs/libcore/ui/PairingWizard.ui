@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>438</width>
+    <width>437</width>
     <height>638</height>
    </rect>
   </property>
@@ -44,7 +44,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="pagePairWithPeers">
       <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -197,24 +197,72 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <widget class="QLabel" name="labelStats">
+         <property name="text">
+          <string>Stats: N/A</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="SvgWidget" name="widgetTrustLevel" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="svgURL" stdset="0">
+          <string>:/icons/block.svg</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <widget class="QLabel" name="label">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
            <property name="text">
-            <string>Trust:</string>
+            <string>Select trust level:</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBoxTrust">
+          <widget class="QRadioButton" name="radioButtonTrustUnset">
+           <property name="text">
+            <string>Unset</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroupTrust</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButtonTrustSet">
+           <property name="text">
+            <string>Trust</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroupTrust</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButtonTrustBlock">
+           <property name="text">
+            <string>Block</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroupTrust</string>
+           </attribute>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QPushButton" name="pushButtonSaveEdits">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -225,33 +273,9 @@
              <height>32</height>
             </size>
            </property>
-           <item>
-            <property name="text">
-             <string>Unset</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../resources/icons.qrc">
-              <normaloff>:/icons/ignore.svg</normaloff>:/icons/ignore.svg</iconset>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Trust</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../resources/icons.qrc">
-              <normaloff>:/icons/trust.svg</normaloff>:/icons/trust.svg</iconset>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Block</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../resources/icons.qrc">
-              <normaloff>:/icons/block.svg</normaloff>:/icons/block.svg</iconset>
-            </property>
-           </item>
+           <property name="text">
+            <string>Save</string>
+           </property>
           </widget>
          </item>
          <item>
@@ -272,25 +296,6 @@
           </widget>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButtonSaveEdits">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Save</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </widget>
@@ -489,10 +494,19 @@
    <header>widgets/CameraPairingWidget.hpp</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>SvgWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/SvgWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="../resources/icons.qrc"/>
   <include location="../resources/icons.qrc"/>
  </resources>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroupTrust"/>
+ </buttongroups>
 </ui>

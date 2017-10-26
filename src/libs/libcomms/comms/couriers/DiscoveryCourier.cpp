@@ -6,6 +6,10 @@
 
 #include <QSharedPointer>
 
+const QByteArray DiscoveryCourier::sLooperBuf=QString("lsdfjghsdklfjghklsdfjklsdjfklsdjflksjdflksjdf").toUtf8();
+const LoopingBuffer DiscoveryCourier::sLooper(DiscoveryCourier::sLooperBuf);
+
+
 DiscoveryCourier::DiscoveryCourier(QSharedPointer<Associate> ass, CommsChannel &comms, QObject *parent)
 	: Courier("Discovery", Courier::FIRST_USER_ID+1, comms, parent)
 	, mAss(ass)
@@ -26,38 +30,30 @@ CourierMandate DiscoveryCourier::mandate() const
 }
 
 
-//Hide adrresses by XORing them with a "random" number to counter bad
-//gateway firmware
-static const quint16 PORT_XOR=0x13e7;
-static const quint32 IP_XOR=0x13e7268a;
-static const quint64 BT_XOR=0x13e7268a13e7268a;
 
 //Override to act on sending opportunity.
 //Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
 quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 {
 	qDebug()<<"Sending opportunity for "<<name();
-	quint16 bytes=0;
-	NetworkAddress nadr;
-	QSharedPointer<AddressEntry> ae=mAss->addressList().highestScore();
-	if(!ae.isNull()) {
-		nadr=ae->address;
-	}
-	QHostAddress locAddr=nadr.ip();
-	const quint32 ip4LocAddr=locAddr.toIPv4Address();
-	const quint16 port= nadr.port();
+	NetworkAddress nAddr;
 	const quint64 btAddr=mAss->bluetoothAddress().toUInt64();
-	const quint32 ip4LocAddrXOR=ip4LocAddr ^ IP_XOR;
-	const quint16 portXOR=port ^ PORT_XOR;
-	const quint64 btAddrXOR=btAddr ^ BT_XOR;
-	ds << ip4LocAddrXOR;
-	bytes += sizeof(quint32);
-	ds << portXOR;
-	bytes += sizeof(quint16);
-	ds << btAddrXOR;
-	bytes += sizeof(quint64);
+	QByteArray ba;
+	{
+		QDataStream xds(ba);
+		QSharedPointer<AddressEntry> ae=mAss->addressList().highestScore();
+		if(!ae.isNull()) {
+			nAddr=ae->address;
+		}
+		xds<<nAddr;
+		xds<<btAddr;
+	}
+	//Hide adrresses by XORing them with a "random" number to counter bad gateway firmware
+	sLooper.doXor(ba);
+	ds << ba;
+	const auto bytes=ba.size();
 	mLastSend=QDateTime::currentMSecsSinceEpoch();
-	qDebug()<<"TX bytes="<<bytes<<" ( ip4LocAddr="<<ip4LocAddr<<":"<<port<<", bt="<<btAddr<<") = XOR( ip4LocAddr="<<ip4LocAddrXOR<<":"<<portXOR<<", bt="<<btAddrXOR<<")";
+	qDebug()<<" **DISCOVERY** TX bytes=" << bytes << " ( n=" << nAddr << ", bt=" << btAddr << ")";
 	return bytes;
 
 }
@@ -71,20 +67,19 @@ quint16 DiscoveryCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 		qWarning()<<"ERROR: payload size "<<ps<<" did not match received amount of data "<<availableBytes;
 		return 0;
 	}
-	quint16 bytes=0;
-	quint32 ip4RemoteAddr;
-	quint16 remotePort;
-	quint64 remoteBluetoothAddress;
-	ds >> ip4RemoteAddr;
-	ip4RemoteAddr ^= IP_XOR;
-	bytes += sizeof(quint32);
-	ds >> remotePort;
-	bytes += sizeof(quint16);
-	ds >> remoteBluetoothAddress;
-	remoteBluetoothAddress ^= BT_XOR;
-	bytes += sizeof(quint64);
-	QHostAddress remoteAddr(ip4RemoteAddr);
-	qDebug()<<"RX "<<bytes<<"="<<remoteAddr.toString()<<":"<<remotePort<<", bt="<<remoteBluetoothAddress;
-
+	NetworkAddress nAddr;
+	quint64 btAddrInt=0;
+	QByteArray ba;
+	ds >> ba;
+	auto bytes=ba.size();
+	//Hide adrresses by XORing them with a "random" number to counter bad gateway firmware
+	sLooper.doXor(ba);
+	{
+		QDataStream xds(ba);
+		xds>>nAddr;
+		xds>>btAddrInt;
+	}
+	const QBluetoothAddress btAddr(btAddrInt);
+	qDebug() << " **DISCOVERY** RX bytes=" << bytes << " ( n=" << nAddr << ", bt=" << btAddr << ")";
 	return bytes;
 }

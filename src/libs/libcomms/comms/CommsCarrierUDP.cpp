@@ -66,7 +66,6 @@ void CommsCarrierUDP::onError(QAbstractSocket::SocketError errorCode)
 
 bool CommsCarrierUDP::startImp(NetworkAddress address)
 {
-
 	mLocalAddress=address;
 	const bool b = mUDPSocket.bind(mLocalAddress.ip(), mLocalAddress.port());
 	qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< " with interval "<<utility::humanReadableElapsedMS(mSendingTimer.interval()) <<(b?" succeeded": " failed");

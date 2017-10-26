@@ -46,6 +46,8 @@ TEST_PROJECTS+= \
 	testTetraGPSEncoder \
 	testZooComms \
 	testIDDuel \
+	testUtility \
+	testTryToggle \
 
 # NOTE: EXTERNAL_LIB_OPENCL is enabled when useful in local_override.pri
 contains(DEFINES, EXTERNAL_LIB_OPENCL){

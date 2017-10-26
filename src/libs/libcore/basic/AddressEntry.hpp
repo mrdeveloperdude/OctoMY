@@ -22,7 +22,7 @@ public:
 	explicit AddressEntry(QVariantMap map);
 public:
 
-	quint64 score() const;
+	quint64 score(QHostAddress dgw = QHostAddress()) const;
 	quint64 last() const;
 	void tried(bool successful, quint64 now=0);
 

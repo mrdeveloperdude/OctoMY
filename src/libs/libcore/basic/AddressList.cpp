@@ -28,7 +28,11 @@ void AddressList::add(QSharedPointer<AddressEntry> address)
 {
 	OC_METHODGATE();
 	if(!address.isNull() ) {
-		*this<<address;
+		if(!address->address.isValid()) {
+			qWarning()<<"WARNING: Not adding invalid address: "<<address->address;
+		} else {
+			*this<<address;
+		}
 	}
 }
 
@@ -54,14 +58,14 @@ void AddressList::merge(NetworkAddress adr, QString description, quint64 now)
 	*this<<QSharedPointer<AddressEntry>(new AddressEntry(adr, description, now));
 }
 
-QSharedPointer<AddressEntry> AddressList::highestScore() const
+QSharedPointer<AddressEntry> AddressList::highestScore(QHostAddress dgw) const
 {
 	OC_METHODGATE();
 	quint64 highestScore=0;
 	QSharedPointer<AddressEntry> highestEntry;
 	for(QSharedPointer<AddressEntry> entry:*this) {
 		if(!entry.isNull()) {
-			const quint64 score = entry->score();
+			const quint64 score = entry->score(dgw);
 			if(score > highestScore) {
 				highestScore = score;
 				highestEntry = entry;
@@ -71,14 +75,14 @@ QSharedPointer<AddressEntry> AddressList::highestScore() const
 	return highestEntry;
 }
 
-QMap<quint64, QSharedPointer<AddressEntry> > AddressList::scoreMap() const
+QMap<quint64, QSharedPointer<AddressEntry> > AddressList::scoreMap(QHostAddress dgw) const
 {
 	OC_METHODGATE();
 	QMap<quint64, QSharedPointer<AddressEntry> > map;
 
 	for(QSharedPointer<AddressEntry> entry:*this) {
 		if(!entry.isNull()) {
-			const quint64 score = entry->score();
+			const quint64 score = entry->score(dgw);
 			map.insert(score, entry);
 		}
 	}
@@ -117,23 +121,9 @@ void AddressList::fromVariantList(QVariantList list)
 	clear();
 	for(QVariant var:list) {
 		QVariantMap map=var.toMap();
-		*this << QSharedPointer<AddressEntry>(new AddressEntry(map));
+		add(QSharedPointer<AddressEntry>(new AddressEntry(map)));
 	}
 }
-
-
-void AddressList::fromLocalInterface(quint16 port)
-{
-	OC_METHODGATE();
-	clear();
-	quint64 now=QDateTime::currentMSecsSinceEpoch();
-	QList<QHostAddress> local=utility::allLocalNetworkAddresses();
-	for(QHostAddress addr:local) {
-		NetworkAddress naddr(addr, port);
-		merge(naddr,"Local interface", now);
-	}
-}
-
 
 
 QString AddressList::toString()
@@ -151,7 +141,7 @@ QString AddressList::toString()
 }
 
 
-bool AddressList::isValid(bool allMustBeValid, bool allowLoopback, bool allowMulticast)
+bool AddressList::isValid(bool allMustBeValid, bool allowLoopback, bool allowMulticast, bool allowIPv6)
 {
 	OC_METHODGATE();
 	const int sz=size();
@@ -164,7 +154,7 @@ bool AddressList::isValid(bool allMustBeValid, bool allowLoopback, bool allowMul
 		if(entry.isNull()) {
 			continue;
 		} else {
-			if(!entry->address.isValid(allowLoopback, allowMulticast)) {
+			if(!entry->address.isValid(allowLoopback, allowMulticast, allowIPv6)) {
 				continue;
 			} else {
 				ct++;

@@ -15,7 +15,7 @@
    viewBox="0 0 4687.5001 2812.4998"
    id="svg28761"
    version="1.1"
-   inkscape:version="0.92.1 unknown"
+   inkscape:version="0.92.2 (unknown)"
    sodipodi:docname="ux.svg">
   <defs
      id="defs28763">
@@ -923,7 +923,7 @@
        xlink:href="#linearGradient6383"
        id="linearGradient9314"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-0.71891597,-9.364605e-5)"
+       gradientTransform="translate(2.0936004,-9.364605e-5)"
        x1="7324.1416"
        y1="-1413.723"
        x2="7324.1416"
@@ -1292,11 +1292,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.93903908"
-     inkscape:cx="2339.6782"
-     inkscape:cy="1359.6648"
+     inkscape:zoom="2.6560036"
+     inkscape:cx="823.24226"
+     inkscape:cy="1142.2102"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g9312"
      showgrid="false"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -9852,7 +9852,7 @@
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13.75px;font-family:Dosis;-inkscape-font-specification:'Dosis Bold';text-align:start;text-anchor:start">Trust settings</tspan></text>
     <g
        id="g8829"
-       transform="translate(-4881.0572,3372.2874)">
+       transform="translate(-4930.4735,3372.2874)">
       <rect
          ry="8.6002235"
          rx="8.6002235"
@@ -10200,27 +10200,27 @@
          x="2423.1565"
          sodipodi:role="line">ID: SDFGHSDFGSDFGSZDF</tspan></text>
     <g
-       transform="translate(-4925.0025,3372.2874)"
+       transform="translate(-4879.6117,3372.2874)"
        id="g9312">
       <rect
          style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:url(#linearGradient9314);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
          id="rect9306"
          width="43.945301"
          height="26.660645"
-         x="7343.728"
+         x="7346.5405"
          y="-1431.5686"
          rx="8.6002235"
          ry="8.6002235" />
       <text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.80512524px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         x="7365.7173"
+         x="7368.5298"
          y="-1414.3214"
          id="text9310"><tspan
            sodipodi:role="line"
            id="tspan9308"
-           x="7365.7173"
-           y="-1414.3214">Cancel</tspan></text>
+           x="7368.5298"
+           y="-1414.3214">Delete</tspan></text>
     </g>
     <g
        transform="matrix(0.48361177,0,0,0.48361177,158.04172,1615.5988)"

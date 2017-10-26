@@ -47,8 +47,6 @@ private:
 	Servotor32ControllerWidget *mHexy;
 	QMenu mMenu;
 
-
-
 	QAction *mCameraAction;
 	QAction *mPairingAction;
 	QAction *mHardwareAction;
@@ -89,8 +87,6 @@ private:
 	void updateOnlineStatus();
 
 	QSharedPointer<PoseMapping> poseMapping();
-
-
 
 private:
 	void notifyAndroid(QString);

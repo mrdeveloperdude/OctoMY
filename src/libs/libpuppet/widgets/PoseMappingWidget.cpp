@@ -139,8 +139,8 @@ void PoseMappingWidget::makeConnection()
 {
 	OC_METHODGATE();
 	if(nullptr!=fromButton && nullptr!=toButton) {
-		qint32 fromIndex=utility::getSelectedButtonIndex(butGroupFrom,-1);
-		qint32 toIndex=utility::getSelectedButtonIndex(butGroupTo,-1);
+		qint32 fromIndex=utility::selectedButtonIndex(butGroupFrom,-1);
+		qint32 toIndex=utility::selectedButtonIndex(butGroupTo,-1);
 		if(fromIndex>=0 && toIndex >=0) {
 			//qDebug()<<"SETTING MAPPING from "<<fromIndex<<" to "<<toIndex;
 			mMapping->setMapping(fromIndex,toIndex, true);

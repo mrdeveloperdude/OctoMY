@@ -61,7 +61,7 @@ CommsChannel::CommsChannel(CommsCarrier &carrier, KeyStore &keystore, QObject *p
 CommsChannel::~CommsChannel()
 {
 	OC_METHODGATE();
-	mCarrier.setHookCarrierSignals(*this, false);
+	//mCarrier.setHookCarrierSignals(*this, false);
 }
 
 CommsSessionDirectory &CommsChannel::sessions()
@@ -178,55 +178,63 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 		if(nullptr!=key) {
 			if(key->isValid(true)) {
 				SESSION_ID_TYPE localSessionID=mSessions.generateUnusedSessionID();
-				if(localSessionID < FIRST_STATE_ID ) {
-					QString es="ERROR: OctoMY Protocol local session ID not valid: "+QString::number(localSessionID);
-					qWarning()<<es;
-					emit commsError(es);
-				} else {
+				if(localSessionID >= FIRST_STATE_ID ) {
+
+
 					QSharedPointer<Associate> associate=mAssociates.associateByID(id);
-					if(nullptr==associate) {
+					if(nullptr!=associate) {
+						QSharedPointer<AddressEntry>  ae=associate->addressList().highestScore();
+						if(!ae.isNull()) {
+							NetworkAddress addr=ae->address;
+							if(addr.isValid()) {
+								session=QSharedPointer<CommsSession>(OC_NEW CommsSession(key));
+								OC_ASSERT(nullptr!=session);
+								if(nullptr!=session) {
+									//session->setRemoteSessionID(desiredRemoteSessionID);
+									session->handshakeState().setInitiator(initiator);
+									session->setLocalSessionID(localSessionID);
+
+
+									//associate->localAddress()
+
+									session->setAddress(addr);
+									// Generate our syn nonce
+									const SESSION_NONCE_TYPE synNonce=session->createOurSynNonce();
+									qDebug()<<"OUR SYN TX NONCE CREATED: "<<synNonce;
+
+									mSessions.insert(session);
+									qDebug()<< "NEW SESSION CREATED FOR ID "<<id<< " with local sessionID "<<QString::number(localSessionID)<< (initiator?"INITIATED":"");
+
+									//qDebug()<<"CREATE SESSION RETURNING VALUE: "<<session->summary();
+									/*
+									auto k=session->key();
+									if(nullptr!=k) {
+										qDebug()<<"IN:  KEY PTR="<<(void *)(k.data())<<", DKEY PTR="<<(void *)(k->d_func_dbg() );
+									} else {
+										qDebug()<<"IN:  NO KEY";
+									}
+									*/
+
+								} else {
+									QString es="ERROR: OctoMY Protocol Could not create session for sender with ID "+id+", could not allocate";
+									qWarning()<<es;
+									emit commsError(es);
+								}
+							} else {
+								qWarning()<<"ERROR: address was invalid when creating comms session for ID "+id;
+							}
+						} else {
+							qWarning()<<"ERROR: address was null when creating comms session for ID "+id;
+						}
+					} else {
 						QString es="ERROR: no associate found for ID "+id;
 						qWarning()<<es;
 						emit commsError(es);
-					} else {
-						session=QSharedPointer<CommsSession>(OC_NEW CommsSession(key));
-						OC_ASSERT(nullptr!=session);
-						if(nullptr!=session) {
-							//session->setRemoteSessionID(desiredRemoteSessionID);
-							session->handshakeState().setInitiator(initiator);
-							session->setLocalSessionID(localSessionID);
-
-							NetworkAddress addr;
-							QSharedPointer<AddressEntry>  ae=associate->addressList().highestScore();
-							if(!ae.isNull()){
-								addr=ae->address;
-							}
-							//associate->localAddress()
-
-							session->setAddress(addr);
-							// Generate our syn nonce
-							const SESSION_NONCE_TYPE synNonce=session->createOurSynNonce();
-							qDebug()<<"OUR SYN TX NONCE CREATED: "<<synNonce;
-
-							mSessions.insert(session);
-							qDebug()<< "NEW SESSION CREATED FOR ID "<<id<< " with local sessionID "<<QString::number(localSessionID)<< (initiator?"INITIATED":"");
-
-							//qDebug()<<"CREATE SESSION RETURNING VALUE: "<<session->summary();
-							/*
-							auto k=session->key();
-							if(nullptr!=k) {
-								qDebug()<<"IN:  KEY PTR="<<(void *)(k.data())<<", DKEY PTR="<<(void *)(k->d_func_dbg() );
-							} else {
-								qDebug()<<"IN:  NO KEY";
-							}
-							*/
-
-						} else {
-							QString es="ERROR: OctoMY Protocol Could not create session for sender with ID "+id+", could not allocate";
-							qWarning()<<es;
-							emit commsError(es);
-						}
 					}
+				} else {
+					QString es="ERROR: OctoMY Protocol local session ID not valid: "+QString::number(localSessionID);
+					qWarning()<<es;
+					emit commsError(es);
 				}
 			} else {
 				QString es="ERROR: OctoMY Protocol Could not create session for sender with ID "+id+", key was invalid";
@@ -679,7 +687,7 @@ void CommsChannel::doSendWithSession(PacketSendState &state)
 		return;
 	}
 	const NetworkAddress na=state.session->address();
-	if(!na.isValid(false,false)) {
+	if(!na.isValid(true,false)) {
 		qWarning()<<"ERROR: invalid address: "	<<na;
 		return;
 	}
@@ -691,7 +699,7 @@ void CommsChannel::doSendWithSession(PacketSendState &state)
 	const qint64 written=mCarrier.writeData(state.datagram, na);
 	//qDebug()<<"WROTE "<<written<<" bytes to "<<na.ip()<<":"<<na.port();
 	if(written<0) {
-		qDebug()<<"ERROR: in write for UDP SOCKET:"<<mCarrier.errorString()<< " for destination "<< na.toString()<<localID();
+		qDebug()<<"ERROR: while writing "<<sz<<" bytes for UDP SOCKET:"<<mCarrier.errorString()<< " for destination "<< na.toString()<<localID();
 		return;
 	} else if(written<sz) {
 		qDebug()<<"ERROR: Only " << written << " of " <<sz<<" bytes of idle packet written to UDP SOCKET:"<<mCarrier.errorString()<< " for destination "<< na.toString()<<localID();
@@ -1127,25 +1135,29 @@ void CommsChannel::onCarrierError(QString error)
 
 void CommsChannel::onCarrierSendingOpportunity(const quint64 now)
 {
+	const auto ctHandshake =mPendingHandshakes.size();
+	const auto ctScheduled=mSchedule.size();
+	const auto rate=mCarrier.minimalPacketInterval();
+	const auto lastActive= now-rate;
+	const auto idles=mSessions.byIdleTime(lastActive);
+	const int isz=idles.size();
 	qDebug()<<"";
-	qDebug()<<"--- SEND from "<< localID()<< " ---";
+	qDebug()<<" ### SENDING OPPERTUNITY from "<< localID()<< " HANDSHAKE: "<<ctHandshake<<", CARRIER: "<<ctScheduled<<", IDLE: "<< isz<<" (rate= "<<QString::number(rate)<<")";
 //	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 //	detectConnectionChanges(now);
 //	mTXOpportunityRate.countPacket(0);
 	// First look at handshakes
-	qDebug()<<"HANDSHAKES: "<<mPendingHandshakes.size();
 	for(QSet<QString> ::const_iterator i=mPendingHandshakes.begin(); i!= mPendingHandshakes.end(); ) {
 		const QString handShakeID=(*i);
-		qDebug() << " + " << handShakeID;
+		//qDebug() << " + " << handShakeID;
 		sendHandshake(now, handShakeID);
 		// Increase counter here to ensure that any removed items don't crash our loop
 		++i;
 	}
 	// Next look at courier schedule
-	qDebug()<<"SCHEDULED: "<<mSchedule.size();
 	for (QMap<quint64, Courier *>::iterator i = mSchedule.begin(); i != mSchedule.end(); ) {
 		Courier *courier=i.value();
-		qDebug() << " + " << i.key() << " = " << ((nullptr==courier)?"NULL":courier->toString());
+		//qDebug() << " + " << i.key() << " = " << ((nullptr==courier)?"NULL":courier->toString());
 		// Increase counter here to ensure that any removed items don't crash our loop
 		++i;
 	}
@@ -1161,11 +1173,6 @@ void CommsChannel::onCarrierSendingOpportunity(const quint64 now)
 		++i;
 	}
 	// Finally send idle packets to sessions that need it
-	auto rate=mCarrier.minimalPacketInterval();
-	auto lastActive= now-rate;
-	auto idles=mSessions.byIdleTime(lastActive);
-	const int isz=idles.size();
-	qDebug()<<"IDLES: "<< isz<<" (rate= "<<QString::number(rate)<<")";
 	if(isz>0) {
 		for(QSharedPointer<CommsSession> session:idles) {
 			if(nullptr!=session) {

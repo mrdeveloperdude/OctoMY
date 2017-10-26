@@ -28,6 +28,7 @@
 #include "widgets/hexedit/QHexEdit.hpp"
 #include "zbar/ZBarScanner.hpp"
 #include "zoo/ZooClient.hpp"
+#include "agent/AgentConstants.hpp"
 
 
 #include <QScrollBar>
@@ -78,7 +79,8 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 		ui->lineEditRemoteAddress->configure(&mHub->settings(), "localhost","hub-listen_address","The address of the remote host");
 		ui->lineEditRemotePort->configure(&mHub->settings(), "","hub-port","The port of the remote host");
-		ui->tryToggleListen->configure("Listen","Preparing...","Listening");
+		ui->tryToggleListen->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_CONNECT_TEXT_COLOR);
+
 		if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(const TryToggleState, const TryToggleState)),this,SLOT(onListenStateChanged(const TryToggleState, const TryToggleState)),OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
@@ -254,10 +256,11 @@ void HubWindow::onListenStateChanged(const TryToggleState last, const TryToggleS
 	//ui->tabWidget->setEnabled(on);
 	on?mSummaryTimer.start():mSummaryTimer.stop();
 	appendLog("New listening state: "+ToggleStateToSTring(current));
-	if(TRYING==current) {
+	if(GOING_ON==current) {
 
 		mHub->localAddressList().setPort(ui->lineEditBindPort->text().toInt());
-		mHub->startComms();
+		// TODO: Implement needConnection mechanism as in Remote/ClientWindow
+//		mHub->startComms();
 		ui->tryToggleListen->setState(ON);
 
 
@@ -265,7 +268,7 @@ void HubWindow::onListenStateChanged(const TryToggleState last, const TryToggleS
 	} else if(OFF==current) {
 		CommsChannel *comms=mHub->comms();
 		if(0!=comms) {
-			mHub->stopComms();
+	//		mHub->stopComms();
 		}
 	}
 }

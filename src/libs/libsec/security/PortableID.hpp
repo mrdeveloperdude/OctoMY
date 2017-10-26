@@ -50,6 +50,7 @@ public:
 	void setType(DiscoveryType type);
 
 	QString name() const;
+	QString identifier() const;
 	QString gender() const;
 	QString id() const;
 	quint64 birthDate() const;

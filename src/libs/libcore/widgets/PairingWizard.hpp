@@ -17,6 +17,7 @@ class PairingTable;
 class PairingListModel;
 
 class PairingEditButtonDelegate;
+class QAbstractButton;
 
 class PairingWizard : public QWidget
 {
@@ -29,7 +30,9 @@ private:
 	PairingEditButtonDelegate *mDelegate;
 	QString mTemplate;
 	QString mCurrentlyEditing;
+	int mTrustIndex;
 
+	QTimer mPulsatingTrustTimer;
 public:
 	explicit PairingWizard(QWidget *parent = 0);
 	virtual ~PairingWizard();
@@ -46,15 +49,18 @@ public:
 
 	void updateNetworkSettings();
 
+	void updatePulsating();
+
 protected:
 
-	virtual void showEvent(QShowEvent *);
-	virtual void hideEvent(QHideEvent *);
+	void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
+	void hideEvent(QHideEvent *) Q_DECL_OVERRIDE;
 
 private slots:
 
 	void onNetworkSettingsChange(QHostAddress address, quint16 port, bool valid);
-
+	void onTrustButtonClicked(QAbstractButton *);
+	void onPulsatingTrustTimer();
 
 
 private slots:
@@ -63,9 +69,7 @@ private slots:
 	void on_pushButtonDone_clicked();
 	void on_pushButtonCameraPair_clicked();
 	void on_pushButtonSaveEdits_clicked();
-
 	void on_pushButtonRemove_clicked();
-
 	void on_pushButtonRefresh_clicked();
 
 signals:
