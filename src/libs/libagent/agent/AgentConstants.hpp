@@ -16,7 +16,7 @@ struct AgentConstants {
 	static const QString AGENT_FACE_ONLINE_BUTTON_SHOW;
 
 	static const QString AGENT_CONNECT_BUTTON_COLOR;
-	static const QString AGENT_CONNECT_TEXT_COLOR;
+	static const QString AGENT_DISCONNECT_COLOR;
 
 	static const QString AGENT_CONNECTION_STATUS;
 

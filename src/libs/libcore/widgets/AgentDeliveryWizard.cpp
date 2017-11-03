@@ -28,6 +28,7 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	, completeCounter(0)
 	, completeOK(false)
 {
+	OC_METHODGATE();
 	ui->setupUi(this);
 	const qint32 minLetters=3;
 	QRegularExpression re("\\p{Ll}{"+QString::number(minLetters)+",20}");
@@ -68,6 +69,7 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 
 void AgentDeliveryWizard::reset()
 {
+	OC_METHODGATE();
 	ui->lineEditName->setText(mNameGenerator.generate());
 	ui->comboBoxGender->setCurrentIndex(0);
 	ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
@@ -75,6 +77,7 @@ void AgentDeliveryWizard::reset()
 
 static QString generateRandomGender()
 {
+	OC_FUNCTIONGATE();
 	RNG *rng=RNG::sourceFactory("devu");
 	QString gender="Genderless";
 	if(nullptr!=rng) {
@@ -88,21 +91,23 @@ static QString generateRandomGender()
 }
 
 
-void AgentDeliveryWizard::configure(Node *n)
+void AgentDeliveryWizard::configure(QSharedPointer<Node> n)
 {
+	OC_METHODGATE();
 	if(mNode!=n) {
 		mNode=n;
-		mSettings=(nullptr!=mNode)?&mNode->settings():nullptr;
+		mSettings=(!mNode.isNull())?&mNode->settings():nullptr;
 		reset();
 	}
-	if(nullptr==mNode) {
+	if(mNode.isNull()) {
 		qWarning()<<"WARNING: agent delivery configured with null node";
 	}
 }
 
 void AgentDeliveryWizard::startBirth()
 {
-	if(nullptr!=mNode) {
+	OC_METHODGATE();
+	if(!mNode.isNull()) {
 		KeyStore &keystore=mNode->keyStore();
 		if(!connect(&keystore, &KeyStore::keystoreReady, this, &AgentDeliveryWizard::onBirthComplete, OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
@@ -125,6 +130,7 @@ void AgentDeliveryWizard::startBirth()
 
 AgentDeliveryWizard::~AgentDeliveryWizard()
 {
+	OC_METHODGATE();
 	delete ui;
 	ui=nullptr;
 	delete mSpinner;
@@ -135,8 +141,9 @@ AgentDeliveryWizard::~AgentDeliveryWizard()
 
 void AgentDeliveryWizard::onBirthComplete(bool ok)
 {
+	OC_METHODGATE();
 	QMutexLocker timeoutLock(&timeoutMutex);
-	if(nullptr!=mNode) {
+	if(!mNode.isNull()) {
 		completeOK|=ok;
 		completeCounter++;
 		if(completeCounter>=2) {
@@ -194,20 +201,24 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 
 void AgentDeliveryWizard::on_pushButtonPairNow_clicked()
 {
+	OC_METHODGATE();
 	emit done(true);
 }
 
 void AgentDeliveryWizard::on_pushButtonRandomName_clicked()
 {
+	OC_METHODGATE();
 	ui->lineEditName->setText(mNameGenerator.generate());
 }
 
 void AgentDeliveryWizard::on_pushButtonOnward_clicked()
 {
+	OC_METHODGATE();
 	startBirth();
 }
 
 void AgentDeliveryWizard::on_pushButtonRandomGender_clicked()
 {
+	OC_METHODGATE();
 	ui->comboBoxGender->setCurrentIndex((rand()%(ui->comboBoxGender->count()-1))+1);
 }

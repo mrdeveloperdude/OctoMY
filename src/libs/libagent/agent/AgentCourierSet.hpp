@@ -4,15 +4,16 @@
 #include "comms/couriers/CourierSet.hpp"
 
 #include <QDataStream>
+#include <QSharedPointer>
 
 class AgentCourierSet : public CourierSet
 {
 private:
 	Agent &mAgent;
 	QDataStream mDatastream;
-	AgentStateCourier *mAgentStateCourier;
-	SensorsCourier *mSensorsCourier;
-	BlobCourier *mBlobCourier;
+	QSharedPointer<AgentStateCourier> mAgentStateCourier;
+	QSharedPointer<SensorsCourier> mSensorsCourier;
+	QSharedPointer<BlobCourier> mBlobCourier;
 
 public:
 	explicit AgentCourierSet(QString &fullID, Agent &agent);
@@ -20,7 +21,7 @@ public:
 
 public:
 
-	AgentStateCourier *agentStateCourier();
+	QSharedPointer<AgentStateCourier> agentStateCourier();
 };
 
 #endif // AGENTCOURIERSET_HPP

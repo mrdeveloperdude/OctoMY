@@ -30,7 +30,7 @@ protected:
 	WaitingSpinnerWidget *mSpinner;
 	AgentNameGenerator mNameGenerator;
 	Settings *mSettings;
-	Node *mNode;
+	QSharedPointer<Node> mNode;
 	PortableID mID;
 	QSharedPointer<Associate> mMyData;
 	quint64 mBirthDate;
@@ -51,7 +51,7 @@ public:
 public:
 	void reset();
 
-	void configure(Node *mNode);
+	void configure(QSharedPointer<Node> mNode);
 
 	void startBirth();
 

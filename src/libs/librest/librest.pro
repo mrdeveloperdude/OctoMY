@@ -118,6 +118,3 @@ INCLUDEPATH= $$unique(INCLUDEPATH)
 
 
 DEFINES=$$REST_DEFINES
-
-RESOURCES += \
-    ../libcore/resources/zootpl.qrc

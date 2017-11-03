@@ -21,16 +21,19 @@
 class CommsSession;
 class HubWindow;
 
-class Hub: public Node{
-		Q_OBJECT
-	public:
-		HubWindow *window;
-	public:
+class Hub: public Node
+{
+	Q_OBJECT
+public:
+	HubWindow *mWindow;
 
-		explicit Hub(NodeLauncher<Hub> &launcher, QObject *parent = nullptr);
-		virtual ~Hub();
+	QSharedPointer<Hub> mThis;
+public:
 
-		virtual QWidget *showWindow();
+	explicit Hub(NodeLauncher<Hub> &launcher, QObject *parent = nullptr);
+	virtual ~Hub();
+
+	virtual QWidget *showWindow();
 
 
 };

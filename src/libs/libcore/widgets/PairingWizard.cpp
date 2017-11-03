@@ -191,12 +191,10 @@ void PairingWizard::updatePulsating()
 
 
 
-void PairingWizard::configure(Node *n)
+void PairingWizard::configure(QSharedPointer<Node> n)
 {
 	mNode=n;
-	if(nullptr!=mNode) {
-
-
+	if(!mNode.isNull()) {
 		DiscoveryClient *discovery=mNode->discoveryClient();
 		DiscoveryType type=mNode->type();
 		QSharedPointer<Associate>  ass=mNode->nodeIdentity();
@@ -339,7 +337,7 @@ void PairingWizard::startEdit(int row)
 	}
 }
 
-Node *PairingWizard::getNode()
+QSharedPointer<Node> PairingWizard::node()
 {
 	return mNode;
 }

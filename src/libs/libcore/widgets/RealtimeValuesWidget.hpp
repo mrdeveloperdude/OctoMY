@@ -3,8 +3,9 @@
 
 #include <QWidget>
 
-namespace Ui {
-	class RealtimeValuesWidget;
+namespace Ui
+{
+class RealtimeValuesWidget;
 }
 
 
@@ -18,26 +19,26 @@ class Agent;
 
 class RealtimeValuesWidget : public QWidget
 {
-		Q_OBJECT
-	private:
-		Ui::RealtimeValuesWidget *ui;
-		Agent *agent;
+	Q_OBJECT
+private:
+	Ui::RealtimeValuesWidget *ui;
+	QSharedPointer<Agent> mAgent;
 
-	public:
-		explicit RealtimeValuesWidget(QWidget *parent = 0);
-		~RealtimeValuesWidget();
+public:
+	explicit RealtimeValuesWidget(QWidget *parent = 0);
+	~RealtimeValuesWidget();
 
-	public:
-		void resetView();
-		void setAgent(Agent *agent);
-		Agent *getAgent();
+public:
+	void resetView();
+	void setAgent(QSharedPointer<Agent> agent);
+	QSharedPointer<Agent> agent();
 
 
-	private slots:
-		void onPositionUpdated(const QGeoPositionInfo &info);
-		void onCompassUpdated(QCompassReading *);
-		void onAccelerometerUpdated(QAccelerometerReading *);
-		void onGyroscopeUpdated(QGyroscopeReading *r);
+private slots:
+	void onPositionUpdated(const QGeoPositionInfo &info);
+	void onCompassUpdated(QCompassReading *);
+	void onAccelerometerUpdated(QAccelerometerReading *);
+	void onGyroscopeUpdated(QGyroscopeReading *r);
 
 };
 

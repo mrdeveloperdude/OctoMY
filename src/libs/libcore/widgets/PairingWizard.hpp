@@ -25,7 +25,7 @@ class PairingWizard : public QWidget
 
 private:
 	Ui::PairingWizard *ui;
-	Node *mNode;
+	QSharedPointer<Node> mNode;
 	PairingListModel *mList;
 	PairingEditButtonDelegate *mDelegate;
 	QString mTemplate;
@@ -38,14 +38,14 @@ public:
 	virtual ~PairingWizard();
 public:
 
-	void configure(Node *mNode);
+	void configure(QSharedPointer<Node> node);
 
 public:
 	void reset();
 
 	void startEdit(int row);
 
-	Node *getNode();
+	QSharedPointer<Node> node();
 
 	void updateNetworkSettings();
 

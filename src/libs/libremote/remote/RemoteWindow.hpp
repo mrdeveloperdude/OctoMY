@@ -18,7 +18,7 @@ class QCompassReading;
 class QGyroscopeReading;
 class CommsChannel;
 class CommsSession;
-class ClientWidget;
+class RemoteClientWidget;
 
 
 namespace Ui
@@ -41,12 +41,13 @@ class RemoteWindow : public QWidget, public IContextProvider
 
 private:
 	Ui::RemoteWindow *ui;
-	Remote *mRemote;
+	QSharedPointer<Remote> mRemote;
 	QMenu mMenu;
-	QMap<int, ClientWidget *> mClientWidgets;
+
+	QMap<int, QWidget *> mClientWidgets;
 
 public:
-	explicit RemoteWindow(Remote *mRemote, QWidget *parent = nullptr);
+	explicit RemoteWindow(QSharedPointer<Remote> mRemote, QWidget *parent = nullptr);
 	virtual ~RemoteWindow();
 
 public: //IContextProvider interface
@@ -57,22 +58,8 @@ public:
 	bool needConnection();
 
 private:
-	// Android spesifc notifications
-
-	void notifyAndroid(QString);
-	void toastAndroid(QString);
-
-
-	void updateControlLevel();
-	void updateActiveAgent();
-
-	int updateAgentsList();
-	void addAgentToList(QSharedPointer<Associate> peer);
-
-	void hookSensorSignals();
 
 	// One time initialization of differnt parts
-
 	void prepareDelivery();
 	void prepareDiscovery();
 	void preparePairing();
@@ -80,10 +67,23 @@ private:
 	void prepareControlLevelList();
 	void prepareMenu();
 
+
+	void updateClientWidgetList();
+	void updateControlLevel();
+	void updateActiveAgent();
+	int  updateAgentsList();
+	void addAgentToList(QSharedPointer<Associate> peer);
+	void hookSensorSignals();
+
+
 	void goToStartPage();
 
 	void appendLog(const QString &str);
 
+
+	// Android spesifc notifications
+	void notifyAndroid(QString);
+	void toastAndroid(QString);
 
 public:
 

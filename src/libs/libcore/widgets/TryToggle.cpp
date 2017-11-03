@@ -17,14 +17,14 @@ TryToggle::TryToggle(QWidget *parent) :
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
-	mTimer.setInterval(1000/15); //Multiple of 60Hz gives stutter free animation
+	mTimer.setInterval(1000/5); //Multiple of 60Hz gives stutter free animation
 	mTimer.setTimerType(Qt::PreciseTimer);
 	connect(&mTimer,SIGNAL(timeout()),this,SLOT(onTimeout()));
 	qRegisterMetaType<TryToggleState>("TryToggleState");
 	// Leave off-palette unchanged
 	mOffPalette=this->palette();
 	// Set default on palette to white text on green color
-	setColor(QColor("green"), QColor("white"));
+	setColor(QColor("green"), QColor("blue"));
 }
 
 TryToggle::~TryToggle()
@@ -34,15 +34,15 @@ TryToggle::~TryToggle()
 	ui=nullptr;
 }
 
-void TryToggle::configure(const QString &offText, const QString &goingOnText, const QString &onText, const QString &goingOffText, const QColor &color, const QColor &bgColor)
+void TryToggle::configure(const QString &offText, const QString &goingOnText, const QString &onText, const QString &goingOffText, const QColor &onColor, const QColor &goingOffColor)
 {
 	OC_METHODGATE();
 	mOffText=offText;
 	mGoingOnText=goingOnText;
 	mOnText=onText;
 	mGoingOffText=goingOffText;
-	if(color.isValid()) {
-		setColor(color, bgColor);
+	if(onColor.isValid()) {
+		setColor(onColor, goingOffColor);
 	}
 	updateText();
 }
@@ -53,15 +53,15 @@ TryToggleState TryToggle::state() const
 	return mState;
 }
 
-void TryToggle::setColor(const QColor &color, const QColor &bgColor)
+void TryToggle::setColor(const QColor &onColor, const QColor &goingOffColor)
 {
 	OC_METHODGATE();
 	mOnPalette=mOffPalette;
-	if(color.isValid()) {
-		mOnPalette.setColor(QPalette::Button, color);
+	if(onColor.isValid()) {
+		mOnPalette.setColor(QPalette::Button, onColor);
 	}
-	if(bgColor.isValid()) {
-		mOnPalette.setColor(QPalette::ButtonText, bgColor);
+	if(goingOffColor.isValid()) {
+		mGoingOffPalette.setColor(QPalette::Button, goingOffColor);
 	}
 	ui->pushButtonToggle->setPalette(ON==mState?mOnPalette:mOffPalette);
 }
@@ -166,7 +166,7 @@ void TryToggle::on_pushButtonToggle_toggled(bool checked)
 void TryToggle::onTimeout()
 {
 	OC_METHODGATE();
-	ui->pushButtonToggle->setPalette(mTimerToggle?mOnPalette:mOffPalette);
+	ui->pushButtonToggle->setPalette(mTimerToggle?(isPositive()?mOnPalette:mGoingOffPalette):mOffPalette);
 	mTimerToggle=!mTimerToggle;
 }
 

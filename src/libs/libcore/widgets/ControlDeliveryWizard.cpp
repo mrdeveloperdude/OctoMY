@@ -60,11 +60,11 @@ void ControlDeliveryWizard::reset()
 
 
 
-void ControlDeliveryWizard::configure(Node *n)
+void ControlDeliveryWizard::configure(QSharedPointer<Node> n)
 {
 	if(mNode!=n) {
 		mNode=n;
-		if(nullptr!=mNode) {
+		if(!mNode.isNull()) {
 			mSettings=&mNode->settings();
 			KeyStore &keystore=mNode->keyStore();
 			if(!connect(&keystore, &KeyStore::storeReady, this, &ControlDeliveryWizard::onBirthComplete, OC_CONTYPE)) {

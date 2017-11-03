@@ -18,27 +18,27 @@ AgentCourierSet::AgentCourierSet(QString &fullID, Agent &agent)
 
 	CommsChannel *cc=agent.comms();
 	if(nullptr!=cc) {
-		mAgentStateCourier=(OC_NEW AgentStateCourier(nullptr , *cc, &agent));
-		mSensorsCourier=(OC_NEW SensorsCourier(*cc, &agent));
-		mBlobCourier=(OC_NEW BlobCourier(*cc, &agent));
+		mAgentStateCourier=QSharedPointer<AgentStateCourier>(OC_NEW AgentStateCourier(nullptr , *cc, &agent));
+		mSensorsCourier=QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*cc, &agent));
+		mBlobCourier=QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*cc, &agent));
 	} else {
 		qWarning()<<"ERROR: ClientWidget did not have commschannel";
 	}
 
-	if(nullptr!=mAgentStateCourier) {
+	if(!mAgentStateCourier.isNull()) {
 		mAgentStateCourier->setHookSignals(mAgent, true);
 		mAgentStateCourier->setDestination(fullID);
 		append(mAgentStateCourier);
 	} else {
 		qWarning()<<"ERROR: Could not allocate AgentStateCourier";
 	}
-	if(nullptr!=mSensorsCourier) {
+	if(!mSensorsCourier.isNull()) {
 		mSensorsCourier->setDestination(fullID);
 		append(mSensorsCourier);
 	} else {
 		qWarning()<<"ERROR: Could not allocate SensorsCourier";
 	}
-	if(nullptr!=mBlobCourier) {
+	if(!mBlobCourier.isNull()) {
 		mBlobCourier->setDestination(fullID);
 		append(mBlobCourier);
 	} else {
@@ -52,17 +52,11 @@ AgentCourierSet::AgentCourierSet(QString &fullID, Agent &agent)
 AgentCourierSet::~AgentCourierSet()
 {
 	OC_METHODGATE();
-	delete mAgentStateCourier;
-	mAgentStateCourier=nullptr;
-	delete mSensorsCourier;
-	mSensorsCourier=nullptr;
-	delete mBlobCourier;
-	mBlobCourier=nullptr;
 }
 
 
 
-AgentStateCourier *AgentCourierSet::agentStateCourier()
+QSharedPointer<AgentStateCourier> AgentCourierSet::agentStateCourier()
 {
 	OC_METHODGATE();
 	return mAgentStateCourier;

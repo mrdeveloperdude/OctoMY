@@ -13,17 +13,25 @@
 RealtimeValuesWidget::RealtimeValuesWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::RealtimeValuesWidget)
-	, agent(nullptr)
+	, mAgent(nullptr)
 {
 	ui->setupUi(this);
 	resetView();
-
-
+	OC_METHODGATE();
 }
 
 
+RealtimeValuesWidget::~RealtimeValuesWidget()
+{
+	OC_METHODGATE();
+	delete ui;
+	ui=nullptr;
+}
 
-void RealtimeValuesWidget::resetView(){
+
+void RealtimeValuesWidget::resetView()
+{
+	OC_METHODGATE();
 	ui->labelLocal->setText("N/A");
 	ui->labelControl->setText("N/A");
 	ui->labelGPS->setText("N/A");
@@ -49,33 +57,33 @@ void RealtimeValuesWidget::resetView(){
 	ui->labelAccelerometer->setVisible(false);
 }
 
-void RealtimeValuesWidget::setAgent(Agent *a){
-	if(agent!=a){
-		if(nullptr!=agent){
-			agent->unHookSensorSignals(*this);
+void RealtimeValuesWidget::setAgent(QSharedPointer<Agent> a)
+{
+	OC_METHODGATE();
+	if(mAgent!=a) {
+		if(!mAgent.isNull()) {
+			mAgent->unHookSensorSignals(*this);
 		}
-		agent=a;
-		if(nullptr!=agent){
-			agent->hookSensorSignals(*this);
+		mAgent=a;
+		if(!mAgent.isNull()) {
+			mAgent->hookSensorSignals(*this);
 		}
 		resetView();
 	}
 }
 
 
-Agent *RealtimeValuesWidget::getAgent(){
-	return agent;
-}
-
-RealtimeValuesWidget::~RealtimeValuesWidget()
+QSharedPointer<Agent> RealtimeValuesWidget::agent()
 {
-	delete ui;
-	ui=nullptr;
+	OC_METHODGATE();
+	return mAgent;
 }
 
 
 
-void RealtimeValuesWidget::onPositionUpdated(const QGeoPositionInfo &info){
+void RealtimeValuesWidget::onPositionUpdated(const QGeoPositionInfo &info)
+{
+	OC_METHODGATE();
 	ui->labelGPS->setText(QString("<%1, %2>").arg(info.coordinate().latitude(),0,'g',5).arg(info.coordinate().longitude(),0,'g',5));
 	//appendLog("GPS update: "+QString::number(info.coordinate().latitude())+", "+QString::number(info.coordinate().longitude()));
 	ui->labelGPSSymbol->setVisible(true);
@@ -83,20 +91,26 @@ void RealtimeValuesWidget::onPositionUpdated(const QGeoPositionInfo &info){
 }
 
 
-void RealtimeValuesWidget::onCompassUpdated(QCompassReading *r){
+void RealtimeValuesWidget::onCompassUpdated(QCompassReading *r)
+{
+	OC_METHODGATE();
 	ui->labelCompass->setText(QString("%1").arg(r->azimuth(),0,'g',2));
 	ui->labelCompassSymbol->setVisible(true);
 	ui->labelCompass->setVisible(true);
 }
 
-void RealtimeValuesWidget::onAccelerometerUpdated(QAccelerometerReading *r){
+void RealtimeValuesWidget::onAccelerometerUpdated(QAccelerometerReading *r)
+{
+	OC_METHODGATE();
 	ui->labelAccelerometer->setText(QString("<%1, %2, %3>").arg(r->x(),0,'g',2).arg(r->y(),0,'g',2).arg(r->z(),0,'g',2) );
 	ui->labelAccelerometerSymbol->setVisible(true);
 	ui->labelAccelerometer->setVisible(true);
 
 }
 
-void RealtimeValuesWidget::onGyroscopeUpdated(QGyroscopeReading *r){
+void RealtimeValuesWidget::onGyroscopeUpdated(QGyroscopeReading *r)
+{
+	OC_METHODGATE();
 	ui->labelGyroscope->setText(QString("<%1, %2, %3>").arg(r->x(),0,'g',2).arg(r->y(),0,'g',2).arg(r->z(),0,'g',2) );
 	ui->labelGyroscopeSymbol->setVisible(true);
 	ui->labelGyroscope->setVisible(true);

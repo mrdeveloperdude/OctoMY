@@ -43,7 +43,7 @@ class AgentWindow : public QWidget, public LogDestination
 
 private:
 	Ui::AgentWindow *ui;
-	Agent *mAgent;
+	QSharedPointer<Agent> mAgent;
 	Servotor32ControllerWidget *mHexy;
 	QMenu mMenu;
 
@@ -62,7 +62,7 @@ private:
 	bool mWasEverUndelivered;
 
 public:
-	explicit AgentWindow(Agent *mAgent, QWidget *parent = 0);
+	explicit AgentWindow(QSharedPointer<Agent> mAgent, QWidget *parent = 0);
 	virtual ~AgentWindow();
 
 public:

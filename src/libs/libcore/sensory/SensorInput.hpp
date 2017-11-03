@@ -42,7 +42,7 @@ class SensorInput : public QObject,  public QCompassFilter{
 
 		QString toSpecStanzas(QString space="");
 
-	public:
+	private:
 
 		bool filter(QCompassReading *reading) override;
 

@@ -41,6 +41,7 @@ CommsChannel::CommsChannel(CommsCarrier &carrier, KeyStore &keystore, AddressBoo
 	, mHoneyMoonEnd(0)
 //	, mConnected(false)
 {
+	OC_METHODGATE();
 	setObjectName("CommsChannel");
 	mCarrier.setHookCarrierSignals(*this, true);
 }
@@ -74,6 +75,7 @@ CommsSessionDirectory &CommsChannel::sessions()
 //NOTE: This is LOCAL address, so no adressList necessary here!
 void CommsChannel::start(NetworkAddress localAddress)
 {
+	OC_METHODGATE();
 	mCarrier.start(localAddress);
 }
 
@@ -101,6 +103,7 @@ bool CommsChannel::isConnected() const
 
 bool CommsChannel::recieveEncryptedBody(PacketReadState &state)
 {
+	OC_METHODGATE();
 	QSharedPointer<Key> localKey=mKeystore.localKey();
 	if(nullptr!=localKey) {
 		// Decrypt message body using local private-key
@@ -143,6 +146,7 @@ bool CommsChannel::recieveEncryptedBody(PacketReadState &state)
 
 bool CommsChannel::recieveMagicAndVersion(PacketReadState &state)
 {
+	OC_METHODGATE();
 	state.readProtocolMagic();
 	if(OCTOMY_PROTOCOL_MAGIC!=state.octomyProtocolMagic) {
 		QString es="ERROR: OctoMY Protocol Magic mismatch: "+QString::number(state.octomyProtocolMagic,16)+ " vs. "+QString::number((quint32)OCTOMY_PROTOCOL_MAGIC,16);
@@ -172,6 +176,7 @@ bool CommsChannel::recieveMagicAndVersion(PacketReadState &state)
 
 QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initiator)
 {
+	OC_METHODGATE();
 	QSharedPointer<CommsSession> session(nullptr);
 	if(mKeystore.hasPubKeyForID(id)) {
 		auto key=mKeystore.pubKeyForID(id);
@@ -258,6 +263,7 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 
 QSharedPointer<CommsSession> CommsChannel::lookUpSession(QString id)
 {
+	OC_METHODGATE();
 	// Look for existing sessions tied to this ID
 	QSharedPointer<CommsSession> session=mSessions.byFullID(id);
 	return session;
@@ -267,6 +273,7 @@ QSharedPointer<CommsSession> CommsChannel::lookUpSession(QString id)
 
 void CommsChannel::recieveIdle(PacketReadState &state)
 {
+	OC_METHODGATE();
 	qDebug()<<"RECEIVED IDLE PACKET";
 }
 
@@ -274,6 +281,7 @@ void CommsChannel::recieveIdle(PacketReadState &state)
 
 void CommsChannel::recieveHandshake(PacketReadState &state)
 {
+	OC_METHODGATE();
 	if(recieveEncryptedBody(state)) {
 
 		const auto multimagic=(Multimagic)state.multimagic;
@@ -388,6 +396,7 @@ void CommsChannel::recieveHandshake(PacketReadState &state)
 */
 bool CommsChannel::recieveSyn(PacketReadState &state, QSharedPointer<CommsSession> session)
 {
+	OC_METHODGATE();
 	// REMOTE FULL-ID
 	qDebug()<<"SYN RX FROM "<< state.octomyProtocolSenderID;
 
@@ -446,6 +455,7 @@ bool CommsChannel::recieveSyn(PacketReadState &state, QSharedPointer<CommsSessio
 */
 bool CommsChannel::recieveSynAck(PacketReadState &state, QSharedPointer<CommsSession> session)
 {
+	OC_METHODGATE();
 	// REMOTE FULL-ID
 	qDebug()<<"SYN-ACK RX FROM "<< state.octomyProtocolSenderID;
 
@@ -509,6 +519,7 @@ bool CommsChannel::recieveSynAck(PacketReadState &state, QSharedPointer<CommsSes
 */
 bool CommsChannel::recieveAck(PacketReadState &state, QSharedPointer<CommsSession> session)
 {
+	OC_METHODGATE();
 	// REMOTE FULL-ID
 	qDebug()<<"ACK RX FROM "<< state.octomyProtocolSenderID;
 
@@ -532,6 +543,7 @@ bool CommsChannel::recieveAck(PacketReadState &state, QSharedPointer<CommsSessio
 
 void CommsChannel::recieveData(PacketReadState &state)
 {
+	OC_METHODGATE();
 	qDebug()<<"RX DATA";
 	SESSION_ID_TYPE sessionID = (SESSION_ID_TYPE)state.multimagic;
 	if(sessionID < FIRST_STATE_ID) {
@@ -650,6 +662,7 @@ void CommsChannel::recieveData(PacketReadState &state)
 // Main packet reception
 void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHostS , quint16 remotePortS )
 {
+	OC_METHODGATE();
 	qDebug()<<"";
 	qDebug()<<"--- RECEIVE to "<< localID()<< " ---";
 	PacketReadState state(datagramS, remoteHostS, remotePortS);
@@ -681,6 +694,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHo
 
 void CommsChannel::doSendWithSession(PacketSendState &state)
 {
+	OC_METHODGATE();
 	// Send data in stream
 	if(nullptr==state.session) {
 		qWarning()<<"ERROR: session was null in doSend";
@@ -716,6 +730,7 @@ void CommsChannel::doSendWithSession(PacketSendState &state)
 // AND create new sessions for IDs that have not yet been enrolled
 void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 {
+	OC_METHODGATE();
 	QSharedPointer<CommsSession> session=mSessions.byFullID(handShakeID);
 	if(nullptr==session) {
 		qDebug()<<"CREATING NEW SESSION FOR ID "<< handShakeID<< " IN SEND HANDSHAKE";
@@ -798,6 +813,7 @@ void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 */
 void CommsChannel::sendSyn(PacketSendState &state)
 {
+	OC_METHODGATE();
 	// Send
 	state.writeMultimagic(MULTIMAGIC_SYN);
 	// FULL-ID
@@ -831,6 +847,7 @@ void CommsChannel::sendSyn(PacketSendState &state)
 */
 void CommsChannel::sendSynAck(PacketSendState &state)
 {
+	OC_METHODGATE();
 	// Send
 	state.writeMultimagic(MULTIMAGIC_SYNACK);
 	// FULL-ID
@@ -863,6 +880,7 @@ void CommsChannel::sendSynAck(PacketSendState &state)
 */
 void CommsChannel::sendAck(PacketSendState &state)
 {
+	OC_METHODGATE();
 	// Send
 	state.writeMultimagic(MULTIMAGIC_ACK);
 	// FULL-ID
@@ -884,6 +902,7 @@ void CommsChannel::sendAck(PacketSendState &state)
 
 void CommsChannel::sendIdle(const quint64 &now, QSharedPointer<CommsSession> session)
 {
+	OC_METHODGATE();
 	// NOTE: Session is needed because session holds the destination address
 	if(nullptr==session) {
 		qWarning()<<"ERROR: session was null";
@@ -902,6 +921,7 @@ void CommsChannel::sendIdle(const quint64 &now, QSharedPointer<CommsSession> ses
 
 void CommsChannel::sendCourierData(const quint64 &now, Courier &courier)
 {
+	OC_METHODGATE();
 	QString toID=courier.destination();
 	if(toID.isEmpty()) {
 		QString es="ERROR: Invalid courier destination when sending data";
@@ -968,6 +988,7 @@ void CommsChannel::sendCourierData(const quint64 &now, Courier &courier)
 
 quint64 CommsChannel::rescheduleSending(quint64 now)
 {
+	OC_METHODGATE();
 	mTXScheduleRate.countPacket(0);
 	const auto MINIMAL_PACKET_RATE=mCarrier.minimalPacketInterval();
 	const auto MAXIMAL_PACKET_RATE=mCarrier.maximalPacketInterval();
@@ -975,15 +996,15 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 	mMostUrgentSendingTime=MINIMAL_PACKET_RATE;
 	mSchedule.clear();
 	// Update first
-	for(Courier *courier:mCouriers) {
-		if(nullptr!=courier) {
+	for(QSharedPointer<Courier> courier:mCouriers) {
+		if(!courier.isNull()) {
 			courier->update(now);
 		}
 	}
 	mPendingHandshakes.clear();
 	// Re-schedule couriers (strive to adhere to the mandates set fourth by each courier)
-	for(Courier *courier:mCouriers) {
-		if(nullptr!=courier) {
+	for(QSharedPointer<Courier> courier:mCouriers) {
+		if(!courier.isNull()) {
 			CourierMandate cm=courier->mandate();
 			//qDebug()<<"MANDATE FOR "<<courier->name()<<" IS "<<cm.toString();
 			if(cm.sendActive) {
@@ -1054,11 +1075,13 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 // and be dispatched by logic in sending timer
 qint64 CommsChannel::sendRawData(QByteArray datagram, NetworkAddress address)
 {
+	OC_METHODGATE();
 	return mCarrier.writeData(datagram, address);
 }
 
 void CommsChannel::setHoneymoonEnd(quint64 hEndMS)
 {
+	OC_METHODGATE();
 	const quint64 iv=QDateTime::currentMSecsSinceEpoch() - hEndMS;
 	if(iv>0) {
 		qDebug()<<"HONEYMOON ENABLED FOR "<<utility::humanReadableElapsedMS(iv);
@@ -1070,6 +1093,7 @@ void CommsChannel::setHoneymoonEnd(quint64 hEndMS)
 
 bool CommsChannel::honeymoon(quint64 now)
 {
+	OC_METHODGATE();
 	if(0==now) {
 		now= QDateTime::currentMSecsSinceEpoch();
 	}
@@ -1084,6 +1108,7 @@ NetworkAddress CommsChannel::localAddress()
 
 QString CommsChannel::localID()
 {
+	OC_METHODGATE();
 	auto key=mKeystore.localKey();
 	if(nullptr==key) {
 		return "";
@@ -1093,10 +1118,10 @@ QString CommsChannel::localID()
 
 QString CommsChannel::getSummary()
 {
+	OC_METHODGATE();
 	QString out;
-
-	for(Courier *courier:mCouriers) {
-		if(nullptr==courier) {
+	for(QSharedPointer<Courier> courier:mCouriers) {
+		if(courier.isNull()) {
 			out+=" + NULL\n";
 		} else {
 			out+=" + "+courier->name()+"\n";
@@ -1109,6 +1134,7 @@ QString CommsChannel::getSummary()
 //Slot called when data arrives on socket
 void CommsChannel::onCarrierReadyRead()
 {
+	OC_METHODGATE();
 	qDebug()<<"----- READY READ for "<<localID();
 	while (mCarrier.hasPendingData()) {
 		qDebug()<<"      + UDP PACKET";
@@ -1128,6 +1154,7 @@ void CommsChannel::onCarrierReadyRead()
 
 void CommsChannel::onCarrierError(QString error)
 {
+	OC_METHODGATE();
 	qDebug()<<"Carrier error in CC:"<<error;
 	emit commsError(error);
 }
@@ -1135,6 +1162,7 @@ void CommsChannel::onCarrierError(QString error)
 
 void CommsChannel::onCarrierSendingOpportunity(const quint64 now)
 {
+	OC_METHODGATE();
 	const auto ctHandshake =mPendingHandshakes.size();
 	const auto ctScheduled=mSchedule.size();
 	const auto rate=mCarrier.minimalPacketInterval();
@@ -1155,16 +1183,16 @@ void CommsChannel::onCarrierSendingOpportunity(const quint64 now)
 		++i;
 	}
 	// Next look at courier schedule
-	for (QMap<quint64, Courier *>::iterator i = mSchedule.begin(); i != mSchedule.end(); ) {
-		Courier *courier=i.value();
+	for (QMap<quint64, QSharedPointer<Courier> >::iterator i = mSchedule.begin(); i != mSchedule.end(); ) {
+		QSharedPointer<Courier> courier=i.value();
 		//qDebug() << " + " << i.key() << " = " << ((nullptr==courier)?"NULL":courier->toString());
 		// Increase counter here to ensure that any removed items don't crash our loop
 		++i;
 	}
 	// ... and send data according to schedule
-	for (QMap<quint64, Courier *>::iterator i = mSchedule.begin(); i != mSchedule.end(); ) {
-		Courier *courier=i.value();
-		if(nullptr!=courier) {
+	for (QMap<quint64, QSharedPointer<Courier> >::iterator i = mSchedule.begin(); i != mSchedule.end(); ) {
+		QSharedPointer<Courier> courier=i.value();
+		if(!courier.isNull()) {
 			sendCourierData(now, *courier);
 		} else {
 			qWarning()<<"WARNING: scheduled courier was null";
@@ -1187,12 +1215,14 @@ void CommsChannel::onCarrierSendingOpportunity(const quint64 now)
 
 void CommsChannel::onCarrierConnectionStatusChanged(const bool connected)
 {
+	OC_METHODGATE();
 	emit commsConnectionStatusChanged(connected);
 }
 
 
 void CommsChannel::appendLog(QString msg)
 {
+	OC_METHODGATE();
 	qDebug()<<"COMMS_CHANNEL_LOG: "<<msg;
 }
 
@@ -1206,6 +1236,7 @@ void CommsChannel::setID(const QString &id)
 
 void CommsChannel::setHookCommsSignals(QObject &ob, bool hook)
 {
+	OC_METHODGATE();
 	qRegisterMetaType<CommsSession *>("Client *");
 	if(hook) {
 		if(!connect(this,SIGNAL(commsError(QString)),&ob,SLOT(onCommsError(QString)),OC_CONTYPE)) {
@@ -1235,6 +1266,7 @@ void CommsChannel::setHookCommsSignals(QObject &ob, bool hook)
 
 void CommsChannel::setHookCourierSignals(Courier &courier, bool hook)
 {
+	OC_METHODGATE();
 	if(hook) {
 		if(!connect(&courier, SIGNAL(reschedule(quint64)),this,SLOT(rescheduleSending(quint64)),OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect Courier::reschedule for "<<courier.name();
@@ -1257,36 +1289,40 @@ bool CommsChannel::courierRegistration()
 
 void CommsChannel::setCourierRegistered(Courier &courier, bool reg)
 {
+	OC_METHODGATE();
 	Q_ASSERT(this==&courier.comms());
+	QSharedPointer<Courier> p(&courier);
 	if(reg) {
-		if(mCouriers.contains(&courier)) {
+		if(mCouriers.contains(p)) {
 			qWarning()<<"ERROR: courier was allready registered";
 			return;
 		} else if(mCouriers.size()>10) {
 			qWarning()<<"ERROR: too many couriers, skipping registration of new one: "<<courier.id()<<courier.name();
 			return;
 		}
-		mCouriers.append(&courier);
+		mCouriers.append(p);
 		mCouriersByID[courier.id()]=&courier;
 		//qDebug()<<"Registered courier: "<<c.id()<<c.name()<<" for a total of "<<mCouriers.size()<<" couriers";
 	} else {
-		if(!mCouriers.contains(&courier)) {
+		if(!mCouriers.contains(p)) {
 			qDebug()<<"ERROR: courier was not registered";
 			return;
 		}
 		mCouriersByID.remove(courier.id());
-		mCouriers.removeAll(&courier);
+		mCouriers.removeAll(p);
 	}
 	setHookCourierSignals(courier,reg);
 }
 
 CourierSet CommsChannel::couriers()
 {
+	OC_METHODGATE();
 	return mCouriers;
 }
 
 int CommsChannel::courierCount()
 {
+	OC_METHODGATE();
 	return mCouriers.count();
 }
 
@@ -1294,11 +1330,14 @@ int CommsChannel::courierCount()
 
 bool CommsChannel::hasCourier(Courier &c) const
 {
-	return mCouriers.contains(&c);
+	OC_METHODGATE();
+	QSharedPointer<Courier> p(&c);
+	return mCouriers.contains(p);
 }
 
 Courier *CommsChannel::getCourierByID(quint32 id) const
 {
+	OC_METHODGATE();
 	if(mCouriersByID.contains(id)) {
 		return mCouriersByID[id];
 	}

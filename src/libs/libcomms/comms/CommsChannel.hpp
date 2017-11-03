@@ -77,7 +77,7 @@ protected:
 	// When honeymoon mode is enabled, all inactive associates are pinged continuously in an effort to start new connections
 	quint64 mHoneyMoonEnd;
 
-	QMap<quint64, Courier *> mSchedule; // Couriers with priority at next sending oportunity as calculated by rescheduleSending()
+	QMap<quint64, QSharedPointer<Courier> > mSchedule; // Couriers with priority at next sending oportunity as calculated by rescheduleSending()
 	QSet<QString> mPendingHandshakes;
 	qint64 mMostUrgentSendingTime; // The number of milliseconds until next sending opportunity as calculated by rescheduleSending()
 

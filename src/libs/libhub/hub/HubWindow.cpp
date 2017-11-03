@@ -13,7 +13,7 @@
 #include "hw/controllers/servotor32/Servotor32ControllerWidget.hpp"
 #include "models/ClientModel.hpp"
 #include "models/TriggerListModel.hpp"
-#include "node/ClientWidget.hpp"
+#include "node/RemoteClientWidget.hpp"
 #include "remote/Remote.hpp"
 #include "remote/RemoteWindow.hpp"
 #include "security/Key.hpp"
@@ -40,7 +40,7 @@
 #include <QProcess>
 
 
-HubWindow::HubWindow(Hub *hub, QWidget *parent) :
+HubWindow::HubWindow(QSharedPointer<Hub> hub, QWidget *parent) :
 	QMainWindow(parent)
 	, ui(OC_NEW Ui::HubWindow)
 	, mHub(hub)
@@ -49,7 +49,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 {
 	OC_METHODGATE();
 	setObjectName("HubWindow");
-	if(nullptr!=mHub) {
+	if(!mHub.isNull()) {
 		restoreGeometry(mHub->settings().getCustomSettingByteArray("window.geometry"));
 		QSplashScreen *splash=OC_NEW QSplashScreen(this, QPixmap(":/images/hub_butterfly.svg"), Qt::WindowStaysOnTopHint);
 		splash->show();
@@ -79,7 +79,7 @@ HubWindow::HubWindow(Hub *hub, QWidget *parent) :
 
 		ui->lineEditRemoteAddress->configure(&mHub->settings(), "localhost","hub-listen_address","The address of the remote host");
 		ui->lineEditRemotePort->configure(&mHub->settings(), "","hub-port","The port of the remote host");
-		ui->tryToggleListen->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_CONNECT_TEXT_COLOR);
+		ui->tryToggleListen->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_DISCONNECT_COLOR);
 
 		if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(const TryToggleState, const TryToggleState)),this,SLOT(onListenStateChanged(const TryToggleState, const TryToggleState)),OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
@@ -306,8 +306,8 @@ void HubWindow::onRemoteHostLookupComplete(QHostInfo hi)
 
 void HubWindow::on_pushButtonSendData_clicked()
 {
+	OC_METHODGATE();
 	//TODO: Implement or remove
-
 }
 
 

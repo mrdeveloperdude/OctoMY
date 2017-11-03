@@ -15,7 +15,7 @@ class Courier;
 
 #include <QList>
 
-class CourierSet: public QList<Courier *>
+class CourierSet: public QList<QSharedPointer<Courier> >
 {
 private:
 

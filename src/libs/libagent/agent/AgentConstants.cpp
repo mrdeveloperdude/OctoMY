@@ -12,8 +12,8 @@ const QString AgentConstants::AGENT_FACE_LOG_SHOW="agent.face.log.show";
 const QString AgentConstants::AGENT_FACE_STATS_SHOW="agent.face.stats.show";
 const QString AgentConstants::AGENT_FACE_ONLINE_BUTTON_SHOW="agent.face.online_button.show";
 
-const QString AgentConstants::AGENT_CONNECT_BUTTON_COLOR="green"; //"#1a3a52";
-const QString AgentConstants::AGENT_CONNECT_TEXT_COLOR="white";
+const QString AgentConstants::AGENT_CONNECT_BUTTON_COLOR="green";
+const QString AgentConstants::AGENT_DISCONNECT_COLOR="#1a3a52";
 
 
 const QString AgentConstants::AGENT_CONNECTION_STATUS="agent.connection.status";

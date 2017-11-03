@@ -45,6 +45,8 @@ private:
 
 	AgentWindow *mWindow;
 
+	QSharedPointer <Agent> mThis;
+
 public:
 	explicit Agent(NodeLauncher<Agent> &launcher, QObject *parent = nullptr);
 	virtual ~Agent();

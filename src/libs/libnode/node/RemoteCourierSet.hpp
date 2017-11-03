@@ -5,24 +5,27 @@
 
 #include "comms/couriers/CourierSet.hpp"
 
-#include <QDataStream>
 
-class ClientWidget;
+#include <QDataStream>
+#include <QSharedPointer>
+
+class RemoteClient;
 
 class RemoteCourierSet : public CourierSet
 {
 private:
-	AgentStateCourier *mAgentStateCourier;
-	SensorsCourier *mSensorsCourier;
-	BlobCourier *mBlobCourier;
+	QSharedPointer<AgentStateCourier> mAgentStateCourier;
+	QSharedPointer<SensorsCourier> mSensorsCourier;
+	QSharedPointer<BlobCourier> mBlobCourier;
+	RemoteClient & mRemoteClient;
 
 public:
-	explicit RemoteCourierSet(QString fullID, ClientWidget &cw);
+	explicit RemoteCourierSet(QString fullID, RemoteClient &cl);
 	virtual ~RemoteCourierSet();
 
 public:
 
-	AgentStateCourier *agentStateCourier();
+	QSharedPointer<AgentStateCourier> agentStateCourier();
 };
 
 

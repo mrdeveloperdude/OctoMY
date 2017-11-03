@@ -251,6 +251,12 @@ LocalAddressList &Node::localAddressList()
 	return mAddresses;
 }
 
+ClientList &Node::clientList()
+{
+	OC_METHODGATE();
+	return mClients;
+}
+
 
 QWidget *Node::showWindow()
 {
@@ -289,24 +295,24 @@ void Node::setWantToConnect(bool want)
 	mWantToConnect=want;
 
 
-/*
- * TODO: Integrate this somehow. Right now Im too tired to do it.
-	//qDebug()<<"COMMS LEFT WITH "<<ct<<" COURIERS";
-	//qDebug()<< cc->getSummary();
-	// Adaptively start commschannel when there are couriers registered
-	const int ct=courierCount();
+	/*
+	 * TODO: Integrate this somehow. Right now Im too tired to do it.
+		//qDebug()<<"COMMS LEFT WITH "<<ct<<" COURIERS";
+		//qDebug()<< cc->getSummary();
+		// Adaptively start commschannel when there are couriers registered
+		const int ct=courierCount();
 
-	if(ct>0 && mWantToConnect) {
-		startComms();
-	} else {
-		if( isCommsStarted() )  {
-			//qDebug()<<"STOPPING COMMS ";
-			stopComms();
+		if(ct>0 && mWantToConnect) {
+			startComms();
 		} else {
-			//qDebug()<<"COMMS ALREADY STOPPED";
+			if( isCommsStarted() )  {
+				//qDebug()<<"STOPPING COMMS ";
+				stopComms();
+			} else {
+				//qDebug()<<"COMMS ALREADY STOPPED";
+			}
 		}
-	}
-	*/
+		*/
 }
 
 bool Node::isCommsStarted()

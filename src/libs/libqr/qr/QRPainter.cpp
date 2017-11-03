@@ -25,3 +25,23 @@ void paintQR(QPainter &painter, const QSize sz, const QString &data, QColor fg)
 		}
 	}
 }
+
+
+
+QString asciiQR(const QString &data, QString on, QString off)
+{
+	char *str=data.toUtf8().data();
+	qrcodegen::QrCode qr = qrcodegen::QrCode::encodeText(str, qrcodegen::QrCode::Ecc::LOW);
+	const int s=qr.size>0?qr.size:1;
+	QString out="";
+	for(int y=0; y<s; y++) {
+		out = out + "\n";
+		for(int x=0; x<s; x++) {
+			const int color = qr.getModule(x, y);  // 0 for white, 1 for black
+			out = out + (0x0==color?off:on);
+		}
+	}
+	return out;
+}
+
+

@@ -33,7 +33,7 @@ class HubWindow : public QMainWindow, public LogDestination
 	Q_OBJECT
 private:
 	Ui::HubWindow *ui;
-	Hub *mHub;
+	QSharedPointer<Hub> mHub;
 	QTimer mSummaryTimer;
 	quint64 mLastTime;
 	qreal mAngle=0.0f;
@@ -44,7 +44,7 @@ private:
 
 
 public:
-	explicit HubWindow(Hub *mHub, QWidget *parent = 0);
+	explicit HubWindow(QSharedPointer<Hub> hub, QWidget *parent = 0);
 	virtual ~HubWindow();
 
 public:

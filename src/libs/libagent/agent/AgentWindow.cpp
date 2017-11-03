@@ -28,7 +28,7 @@
 #include "widgets/NameMappingWidget.hpp"
 
 
-AgentWindow::AgentWindow(Agent *agent, QWidget *parent)
+AgentWindow::AgentWindow(QSharedPointer<Agent> agent, QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::AgentWindow)
 	, mAgent(agent)
@@ -667,8 +667,8 @@ void AgentWindow::onSyncParameterChanged(ISyncParameter *sp)
 	const AgentControls &controls=mAgent->controls();
 	AgentCourierSet *set = controls.activeControl();
 	if(nullptr!=set) {
-		AgentStateCourier *asc=set->agentStateCourier();
-		if(nullptr!=asc) {
+		QSharedPointer<AgentStateCourier> asc=set->agentStateCourier();
+		if(!asc.isNull()) {
 			const bool panic=asc->panic();
 			ui->widgetFace->setPanic(panic);
 			ui->widgetFace->panic();

@@ -1,8 +1,6 @@
-#ifndef CLIENTWINDOW_HPP
-#define CLIENTWINDOW_HPP
+#ifndef REMOTECLIENTWIDGET_HPP
+#define REMOTECLIENTWIDGET_HPP
 
-#include <QWidget>
-#include <QTimer>
 
 #include "comms/CommsSession.hpp"
 
@@ -12,6 +10,9 @@
 
 
 #include <QSharedPointer>
+#include <QWidget>
+#include <QTimer>
+
 
 class WaitingSpinnerWidget;
 class SensorsCourier;
@@ -28,23 +29,21 @@ class ClientWidget;
  * @brief The ClientWidget class is the UI for one single Agent as seen on the remote
  */
 
-class ClientWidget : public QWidget
+class RemoteClientWidget : public QWidget
 {
 	Q_OBJECT
 
 private:
 	Ui::ClientWidget *ui;
-	QTimer updateTimer;
-	QSharedPointer<Node> mController;
-	QSharedPointer<Associate> mNodeAssoc;
+
 	WaitingSpinnerWidget *mSpinner;
+	QSharedPointer <RemoteClient> mRemoteClient;
 
 
-	RemoteCourierSet mCouriers;
 
 public:
-	explicit ClientWidget(QSharedPointer<Node> controller, QSharedPointer<Associate> nodeAssoc, QWidget *parent=nullptr);
-	virtual ~ClientWidget();
+	explicit RemoteClientWidget(QSharedPointer<RemoteClient> client, QWidget *parent=nullptr);
+	virtual ~RemoteClientWidget();
 
 private:
 	bool eventFilter(QObject *object, QEvent *event);
@@ -58,36 +57,25 @@ private:
 
 	void updateOnlineStatus();
 
+	/*
 	bool courierRegistration();
 	void setCourierRegistration(bool reg);
+*/
 
+	bool setSetting(QString key, bool val);
 
 public:
 	bool needConnection();
 
+
+
 public:
 
 	CommsChannel *comms();
-	QSharedPointer<Associate> nodeAssoc() const;
+	QSharedPointer<Associate> nodeAssociate() const;
+	QSharedPointer<Node> controller();
 
 	void updateControlLevel(int level);
-
-	// Agent State Courier slots
-public slots:
-	void onSyncParameterChanged(ISyncParameter *);
-
-	// CommsChannel slots
-private slots:
-	void onCommsError(QString);
-	void onCommsClientAdded(CommsSession *);
-	void onCommsConnectionStatusChanged(bool);
-
-
-
-	// Internal slots
-public slots:
-	void onUpdateTimer();
-	void appendLog(const QString& text);
 
 
 	// Internal custom UI slots
@@ -108,4 +96,4 @@ public slots:
 
 };
 
-#endif // CLIENTWINDOW_HPP
+#endif // REMOTECLIENTWIDGET_HPP

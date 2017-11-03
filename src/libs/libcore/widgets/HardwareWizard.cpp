@@ -55,7 +55,7 @@ static long mod(T a, T b)
 }
 
 
-void HardwareWizard::configure(Agent *agent)
+void HardwareWizard::configure(QSharedPointer<Agent> agent)
 {
 	mAgent=agent;
 	reset();
@@ -64,7 +64,7 @@ void HardwareWizard::configure(Agent *agent)
 void HardwareWizard::reset()
 {
 	IActuatorController *ctl=nullptr;
-	if(nullptr!=mAgent) {
+	if(!mAgent.isNull()) {
 		AgentConfigStore &mConfigStore=mAgent->configurationStore();
 		QSharedPointer<AgentConfig> config=mConfigStore.agentConfig();
 		if(!config.isNull()) {
@@ -160,7 +160,7 @@ void HardwareWizard::moveTo(int next)
 	// Controller config
 	case(1): {
 		IActuatorController *ctl=nullptr;
-		if(nullptr!=mAgent) {
+		if(!mAgent.isNull()) {
 			mAgent->reloadController();
 			ctl=mAgent->actuatorController();
 		}
@@ -237,7 +237,7 @@ void HardwareWizard::moveTo(int next)
 void HardwareWizard::save()
 {
 	IActuatorController *ctl=nullptr;
-	if(nullptr!=mAgent) {
+	if(!mAgent.isNull()) {
 		AgentConfigStore &mConfigStore=mAgent->configurationStore();
 		QSharedPointer<AgentConfig> config=mConfigStore.agentConfig();
 		if(!config.isNull()) {

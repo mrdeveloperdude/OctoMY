@@ -28,11 +28,12 @@
 
 
 Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
-	: Node(OC_NEW AppContext(launcher.getOptions(), launcher.getEnvironment(), "agent", parent), ROLE_AGENT, TYPE_AGENT, parent)
+	: Node(OC_NEW AppContext(launcher.options(), launcher.environment(), "agent", parent), ROLE_AGENT, TYPE_AGENT, parent)
 	, mControls(*this)
 	, mAgentConfigStore(mContext->baseDir() + "/agent_config.json")
 	, mActuatorController(nullptr)
 	, mWindow(nullptr)
+	, mThis(this)
 {
 	OC_METHODGATE();
 	mAssociates.hookSignals(*this);
@@ -57,7 +58,7 @@ QWidget *Agent::showWindow()
 {
 	OC_METHODGATE();
 	if(nullptr==mWindow) {
-		mWindow=OC_NEW AgentWindow(this, nullptr);
+		mWindow=OC_NEW AgentWindow(mThis, nullptr);
 	}
 	if(nullptr!=mWindow) {
 		mWindow->show();
@@ -197,8 +198,8 @@ void Agent::setPanic(bool panic)
 	AgentCourierSet *set=mControls.activeControl();
 
 	if(nullptr!=set) {
-		AgentStateCourier *asc=set->agentStateCourier();
-		if(nullptr!=asc) {
+		QSharedPointer<AgentStateCourier> asc=set->agentStateCourier();
+		if(!asc.isNull()) {
 			asc->setPanic(panic);
 		} else {
 			qWarning()<<"ERROR: No active control";

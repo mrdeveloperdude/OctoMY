@@ -26,7 +26,7 @@ ArduMYControllerWidget::ArduMYControllerWidget(QWidget *parent)
 
 	ui->widgetSerialSettings->configure(false, defaults);
 
-	ui->tryToggleConnect->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_CONNECT_TEXT_COLOR);
+	ui->tryToggleConnect->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_DISCONNECT_COLOR);
 
 	if(!connect(ui->widgetSerialSettings, &SerialSettingsWidget::settingsChanged, this, &ArduMYControllerWidget::onSerialSettingsChanged, OC_CONTYPE) ) {
 		qWarning()<<"ERROR: Could not connect";

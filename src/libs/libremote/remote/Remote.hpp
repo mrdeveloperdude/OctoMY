@@ -35,6 +35,8 @@ class Remote : public Node
 	Q_OBJECT
 private:
 	RemoteWindow *window;
+	// TODO: Figure out if this is complete horse manure or if it is actually sound (doubtful)
+	QSharedPointer <Remote> mThis;
 
 public:
 	explicit Remote(NodeLauncher<Remote> &launcher, QObject *parent = nullptr);

@@ -28,7 +28,7 @@ private:
 	Ui::FaceWidget *ui;
 
 	QString lastID;
-	Agent *mAgent;
+	QSharedPointer<Agent> mAgent;
 
 public:
 	explicit FaceWidget(QWidget *parent = 0);
@@ -36,7 +36,7 @@ public:
 
 protected:
 
-	Agent *agent();
+	QSharedPointer<Agent> agent();
 
 
 
@@ -44,7 +44,7 @@ public:
 	void updateEyeColor();
 	void updateVisibility();
 	void appendLog(const QString&);
-	void setAgent(Agent *);
+	void setAgent(QSharedPointer<Agent>);
 
 	void setConnectionState(const TryToggleState s, const bool doEmit=true);
 	TryToggleState  connectionState() const ;
@@ -70,7 +70,7 @@ private slots:
 
 	void on_splitterMiddle_splitterMoved(int pos, int index);
 
-	public slots:
+public slots:
 
 	void onSyncParameterChanged(ISyncParameter *);
 };

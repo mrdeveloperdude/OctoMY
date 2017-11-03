@@ -16,6 +16,7 @@ TriggerSet::~TriggerSet()
 {
 	OC_METHODGATE();
 	for(Trigger *trigger: *this) {
+		(void)trigger;
 		//trigger->deleteLater();
 	}
 	clear();

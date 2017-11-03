@@ -144,7 +144,7 @@ QStringList ArduinoPinMap::pinStringList()
 
 ArduinoPin ArduinoPinMap::pin(quint32 idx)
 {
-	if(idx>=mPins.size()) {
+	if(idx>=(quint32)mPins.size()) {
 		return ArduinoPin();
 	}
 	return mPins[idx];

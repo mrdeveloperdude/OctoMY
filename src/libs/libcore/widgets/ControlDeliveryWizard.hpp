@@ -27,7 +27,7 @@ class ControlDeliveryWizard : public QWidget
 		QTimer mBirthTimer;
 		WaitingSpinnerWidget *mSpinner;
 		Settings *mSettings;
-		Node *mNode;
+		QSharedPointer<Node> mNode;
 		PortableID mID;
 		QSharedPointer<Associate> mMyData;
 		quint64 mBirthDate;
@@ -45,7 +45,7 @@ class ControlDeliveryWizard : public QWidget
 	public:
 		void reset();
 
-		void configure(Node *mNode);
+		void configure(QSharedPointer<Node> mNode);
 
 	signals:
 		void done(bool);

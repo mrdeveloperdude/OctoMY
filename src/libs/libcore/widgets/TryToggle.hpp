@@ -28,6 +28,7 @@ private:
 	QString mGoingOffText;
 	QPalette mOnPalette;
 	QPalette mOffPalette;
+	QPalette mGoingOffPalette;
 	bool mTimerToggle;
 
 public:
@@ -35,9 +36,9 @@ public:
 	~TryToggle();
 
 public:
-	void configure(const QString &,    const QString &,    const QString &,    const QString &,     const QColor &color=QColor(), const QColor &bgColor=QColor());
+	void configure(const QString &,    const QString &,    const QString &,    const QString &,     const QColor &onColor=QColor(), const QColor &goingOffColor=QColor());
 	TryToggleState state() const;
-	void setColor(const QColor &color, const QColor &bgColor=QColor());
+	void setColor(const QColor &onColor, const QColor &goingOffColor=QColor());
 
 	bool isPositive();
 	bool isTransitioning();

@@ -86,7 +86,7 @@ private:
 	IActuatorController *mController;
 	AgentConfigStore *mConfigStore;
 	*/
-	Agent *mAgent;
+	QSharedPointer<Agent> mAgent;
 	ControllerStanzaList controllerStanzas;
 	MtlobeStanzaList mMtlobeStanzas;
 
@@ -108,7 +108,7 @@ private:
 
 public:
 
-	void configure(Agent *agent);
+	void configure(QSharedPointer<Agent> agent);
 	void reset();
 
 signals:

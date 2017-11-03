@@ -13,15 +13,16 @@
 #include <QSignalSpy>
 
 
-class AgentDeliveryWizardTest: public AgentDeliveryWizard{
+class AgentDeliveryWizardTest: public AgentDeliveryWizard
+{
 
-	public:
+public:
 
-		explicit AgentDeliveryWizardTest()
-			: AgentDeliveryWizard(nullptr)
-		{
+	explicit AgentDeliveryWizardTest()
+		: AgentDeliveryWizard(nullptr)
+	{
 
-		}
+	}
 
 };
 
@@ -38,7 +39,8 @@ static void testLineEdit(QLineEdit *lineEdit, QString in, QString out, const int
 }
 
 // http://stackoverflow.com/questions/38421981/how-can-i-test-a-full-qt5-gui-using-qtestlib
-void TestDeliveryWizard::test(){
+void TestDeliveryWizard::test()
+{
 	QProcessEnvironment env=QProcessEnvironment::systemEnvironment();
 	QCommandLineParser opts;
 	opts.setApplicationDescription("Test DeliveryWizard");
@@ -51,7 +53,7 @@ void TestDeliveryWizard::test(){
 	Q_INIT_RESOURCE(qfi);
 	Q_INIT_RESOURCE(3d);
 
-	Node *testAgent=OC_NEW Node(agentContext, DiscoveryRole::ROLE_AGENT, DiscoveryType::TYPE_AGENT, this);
+	QSharedPointer<Node> testAgent(OC_NEW Node(agentContext, DiscoveryRole::ROLE_AGENT, DiscoveryType::TYPE_AGENT, this));
 	QVERIFY(nullptr!=testAgent);
 	AgentDeliveryWizardTest *delWiz=OC_NEW AgentDeliveryWizardTest();
 	QVERIFY(nullptr!=delWiz);
@@ -74,7 +76,7 @@ void TestDeliveryWizard::test(){
 	QTest::mouseClick(pushButtonOnward, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), delay);
 	QCOMPARE(stackedWidget->currentWidget()->objectName(), QString("pageBirthInProgress"));
 	QCOMPARE(spyStackedWidget.count(), 1);
-	if(!spyStackedWidget.wait(AgentDeliveryWizard::MINIMUM_BIRTH_TIME*20)){
+	if(!spyStackedWidget.wait(AgentDeliveryWizard::MINIMUM_BIRTH_TIME*20)) {
 		qWarning()<<"WAIT #1 FAILED";
 	}
 	QCOMPARE(spyStackedWidget.count(), 2);

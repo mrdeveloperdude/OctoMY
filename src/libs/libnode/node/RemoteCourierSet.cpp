@@ -5,45 +5,51 @@
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/blob/BlobCourier.hpp"
 
-#include "node/ClientWidget.hpp"
+#include "node/RemoteClient.hpp"
+#include "node/Node.hpp"
 
 
-RemoteCourierSet::RemoteCourierSet(QString fullID, ClientWidget &cw)
+RemoteCourierSet::RemoteCourierSet(QString fullID, RemoteClient &client)
 	: CourierSet()
 	, mAgentStateCourier(nullptr)
 	, mSensorsCourier(nullptr)
 	, mBlobCourier(nullptr)
+	, mRemoteClient(client)
 {
 	OC_METHODGATE();
 
-	CommsChannel *cc=cw.comms();
+	auto ctl=mRemoteClient.node();
+
+	CommsChannel *cc=nullptr;
+	if(!ctl.isNull()) {
+		//cc=ctl->com
+	}
+
 	if(nullptr!=cc) {
-		mAgentStateCourier=(OC_NEW AgentStateCourier(nullptr , *cc, &cw));
-		mSensorsCourier=(OC_NEW SensorsCourier(*cc, &cw));
-		mBlobCourier=(OC_NEW BlobCourier(*cc, &cw));
+		mAgentStateCourier=QSharedPointer<AgentStateCourier>(OC_NEW AgentStateCourier(nullptr , *cc, &mRemoteClient));
+		if(!mAgentStateCourier.isNull()) {
+			mAgentStateCourier->setHookSignals(mRemoteClient, true);
+			mAgentStateCourier->setDestination(fullID);
+			append(mAgentStateCourier);
+		} else {
+			qWarning()<<"ERROR: Could not allocate AgentStateCourier";
+		}
+		mSensorsCourier=QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*cc, &mRemoteClient));
+		if(!mSensorsCourier.isNull()) {
+			mSensorsCourier->setDestination(fullID);
+			append(mSensorsCourier);
+		} else {
+			qWarning()<<"ERROR: Could not allocate SensorsCourier";
+		}
+		mBlobCourier=QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*cc, &mRemoteClient));
+		if(!mBlobCourier.isNull()) {
+			mBlobCourier->setDestination(fullID);
+			append(mBlobCourier);
+		} else {
+			qWarning()<<"ERROR: Could not allocate BlobCourier";
+		}
 	} else {
 		qWarning()<<"ERROR: ClientWidget did not have commschannel";
-	}
-
-
-	if(nullptr!=mAgentStateCourier) {
-		mAgentStateCourier->setHookSignals(cw, true);
-		mAgentStateCourier->setDestination(fullID);
-		append(mAgentStateCourier);
-	} else {
-		qWarning()<<"ERROR: Could not allocate AgentStateCourier";
-	}
-	if(nullptr!=mSensorsCourier) {
-		mSensorsCourier->setDestination(fullID);
-		append(mSensorsCourier);
-	} else {
-		qWarning()<<"ERROR: Could not allocate SensorsCourier";
-	}
-	if(nullptr!=mBlobCourier) {
-		mBlobCourier->setDestination(fullID);
-		append(mBlobCourier);
-	} else {
-		qWarning()<<"ERROR: Could not allocate BlobCourier";
 	}
 }
 
@@ -53,17 +59,12 @@ RemoteCourierSet::RemoteCourierSet(QString fullID, ClientWidget &cw)
 RemoteCourierSet::~RemoteCourierSet()
 {
 	OC_METHODGATE();
-	delete mAgentStateCourier;
-	mAgentStateCourier=nullptr;
-	delete mSensorsCourier;
-	mSensorsCourier=nullptr;
-	delete mBlobCourier;
-	mBlobCourier=nullptr;
+	// We rely on shared pointer to take care of the deletion of individual couriers
 }
 
 
 
-AgentStateCourier *RemoteCourierSet::agentStateCourier()
+QSharedPointer<AgentStateCourier> RemoteCourierSet::agentStateCourier()
 {
 	OC_METHODGATE();
 	return mAgentStateCourier;

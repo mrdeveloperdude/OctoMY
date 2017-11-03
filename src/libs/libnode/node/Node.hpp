@@ -15,6 +15,7 @@
 #include "basic/Settings.hpp"
 #include "security/KeyStore.hpp"
 #include "basic/LocalAddressList.hpp"
+#include "ClientList.hpp"
 
 #include <QObject>
 #include <QHostAddress>
@@ -63,6 +64,7 @@ protected:
 	qint64 mLastStatusSend;
 	QUrl mServerURL;
 	LocalAddressList mAddresses;
+	ClientList mClients;
 	bool mWantToConnect;
 
 public:
@@ -107,6 +109,7 @@ public:
 	QSharedPointer<Associate> nodeIdentity();
 	CameraList *cameras();
 	LocalAddressList &localAddressList();
+	ClientList &clientList();
 
 	// Actions
 public:
