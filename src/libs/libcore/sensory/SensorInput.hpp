@@ -16,51 +16,52 @@ class QGyroscope;
 class QGyroscopeReading;
 class QSensor;
 
-class SensorInput : public QObject,  public QCompassFilter{
-		Q_OBJECT
-	private:
+class SensorInput : public QObject,  public QCompassFilter
+{
+	Q_OBJECT
+private:
 
-		QList<QSensor*> m_availableSensors;
-		QGeoPositionInfoSource *source;
-		QAccelerometer *accelerometer;
-		QCompass*compass;
-		QGyroscope *gyroscope;
+	QList<QSensor*> m_availableSensors;
+	QGeoPositionInfoSource *source;
+	QAccelerometer *accelerometer;
+	QCompass*compass;
+	QGyroscope *gyroscope;
 
-	private:
+private:
 
-		qreal lastCompassFilterValue;
-		qreal lastCompassSmoothValue;
-
-
-	public:
-		explicit SensorInput(QObject *parent = nullptr);
+	qreal lastCompassFilterValue;
+	qreal lastCompassSmoothValue;
 
 
-		void hookSignals(QObject &);
-		void unHookSignals(QObject &);
+public:
+	explicit SensorInput(QObject *parent = nullptr);
 
 
-		QString toSpecStanzas(QString space="");
+	void hookSignals(QObject &);
+	void unHookSignals(QObject &);
 
-	private:
 
-		bool filter(QCompassReading *reading) override;
+	QString toSpecStanzas(QString space="");
 
-	private:
+public:
 
-		void load();
+	virtual bool filter(QCompassReading *reading) override;
 
-	private slots:
+private:
 
-		void onAccelerometerReadingChanged() ;
-		void onCompassReadingChanged() ;
-		void onGyroscopeReadingChanged() ;
+	void load();
 
-	signals:
+private slots:
 
-		void compassUpdated(QCompassReading *);
-		void accelerometerUpdated(QAccelerometerReading *);
-		void gyroscopeUpdated(QGyroscopeReading *);
+	void onAccelerometerReadingChanged() ;
+	void onCompassReadingChanged() ;
+	void onGyroscopeReadingChanged() ;
+
+signals:
+
+	void compassUpdated(QCompassReading *);
+	void accelerometerUpdated(QAccelerometerReading *);
+	void gyroscopeUpdated(QGyroscopeReading *);
 
 
 

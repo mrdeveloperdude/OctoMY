@@ -23,6 +23,7 @@ CommsCarrierUDP::CommsCarrierUDP(QObject *parent)
 	: CommsCarrier(parent)
 
 {
+	OC_METHODGATE();
 	setObjectName("CommsCarrierUDP");
 
 	if(!connect(&mUDPSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()), OC_CONTYPE)) {
@@ -39,7 +40,7 @@ CommsCarrierUDP::CommsCarrierUDP(QObject *parent)
 
 CommsCarrierUDP::~CommsCarrierUDP()
 {
-
+	OC_METHODGATE();
 }
 
 
@@ -48,11 +49,13 @@ CommsCarrierUDP::~CommsCarrierUDP()
 
 void CommsCarrierUDP::onReadyRead()
 {
+	OC_METHODGATE();
 	emit  carrierReadyRead();
 }
 
 void CommsCarrierUDP::onError(QAbstractSocket::SocketError errorCode)
 {
+	OC_METHODGATE();
 	emit carrierError(utility::socketErrorToString(errorCode));
 }
 
@@ -63,50 +66,62 @@ void CommsCarrierUDP::onError(QAbstractSocket::SocketError errorCode)
 //////////////////////////////////////////////////
 
 
-
-bool CommsCarrierUDP::startImp(NetworkAddress address)
+void CommsCarrierUDP::setAddressImp(NetworkAddress address)
 {
+	OC_METHODGATE();
 	mLocalAddress=address;
-	const bool b = mUDPSocket.bind(mLocalAddress.ip(), mLocalAddress.port());
-	qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< " with interval "<<utility::humanReadableElapsedMS(mSendingTimer.interval()) <<(b?" succeeded": " failed");
-	return b;
 }
 
-void CommsCarrierUDP::stopImp()
+bool CommsCarrierUDP::setStartImp(const bool start)
 {
-	mUDPSocket.close();
-	qDebug()<<"----- comms unbind "<< mLocalAddress.toString();
+	OC_METHODGATE();
+	bool success=true;
+	if(start) {
+		success = mUDPSocket.bind(mLocalAddress.ip(), mLocalAddress.port());
+		qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< " with interval "<<utility::humanReadableElapsedMS(mSendingTimer.interval()) <<(success?" succeeded": " failed");
+
+	} else {
+		mUDPSocket.close();
+		qDebug()<<"----- comms unbind "<< mLocalAddress.toString();
+	}
+	return success;
 }
 
 bool CommsCarrierUDP::isStartedImp() const
 {
+	OC_METHODGATE();
 	return (QAbstractSocket::BoundState == mUDPSocket.state());
 }
 
 
 qint64 CommsCarrierUDP::writeDataImp(const QByteArray &datagram, const NetworkAddress &address)
 {
+	OC_METHODGATE();
 	return mUDPSocket.writeDatagram(datagram, address.ip(), address.port());
 }
 
 qint64 CommsCarrierUDP::readDataImp(char *data, qint64 maxlen, QHostAddress *host, quint16 *port)
 {
+	OC_METHODGATE();
 	return mUDPSocket.readDatagram(data, maxlen, host, port);
 }
 
 bool CommsCarrierUDP::hasPendingDataImp()
 {
+	OC_METHODGATE();
 	return false;
 }
 
 qint64 CommsCarrierUDP::pendingDataSizeImp()
 {
+	OC_METHODGATE();
 	return 0;
 }
 
 
 QString CommsCarrierUDP::errorStringImp()
 {
+	OC_METHODGATE();
 	return mUDPSocket.errorString();
 }
 
@@ -114,17 +129,20 @@ QString CommsCarrierUDP::errorStringImp()
 
 NetworkAddress CommsCarrierUDP::addressImp()
 {
+	OC_METHODGATE();
 	return mLocalAddress;
 }
 
 
 quint64 CommsCarrierUDP::minimalPacketIntervalImp()
 {
+	OC_METHODGATE();
 	return OCTOMY_UDP_MINIMAL_PACKET_RATE;
 }
 
 quint64	CommsCarrierUDP::maximalPacketIntervalImp()
 {
+	OC_METHODGATE();
 	return OCTOMY_UDP_MAXIMAL_PACKET_RATE;
 }
 

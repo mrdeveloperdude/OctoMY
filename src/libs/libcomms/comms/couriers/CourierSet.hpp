@@ -13,9 +13,10 @@ class BlobCourier;
 class CommsSignature;
 class Courier;
 
-#include <QList>
+#include <QSet>
+#include <QSharedPointer>
 
-class CourierSet: public QList<QSharedPointer<Courier> >
+class CourierSet: public QSet<QSharedPointer<Courier> >
 {
 private:
 
@@ -29,6 +30,7 @@ public:
 	bool commsEnabled(bool conservative=true);
 
 
+	bool setRegistered(QSharedPointer<Courier> courier, bool reg);
 };
 
 #endif // COURIERSET_HPP

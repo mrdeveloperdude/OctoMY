@@ -27,6 +27,7 @@
 #include <QSharedPointer>
 
 #define FIRST_STATE_ID ((SESSION_ID_TYPE)MULTIMAGIC_LAST)
+#define MAX_CONCURRENT_COURIERS (100)
 
 //#define DO_CC_ENC
 
@@ -65,6 +66,20 @@ CommsChannel::~CommsChannel()
 	//mCarrier.setHookCarrierSignals(*this, false);
 }
 
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+CommsCarrier &CommsChannel::carrier()
+{
+	OC_METHODGATE();
+	return mCarrier;
+}
+
 CommsSessionDirectory &CommsChannel::sessions()
 {
 	OC_METHODGATE();
@@ -72,34 +87,6 @@ CommsSessionDirectory &CommsChannel::sessions()
 }
 
 
-//NOTE: This is LOCAL address, so no adressList necessary here!
-void CommsChannel::start(NetworkAddress localAddress)
-{
-	OC_METHODGATE();
-	mCarrier.start(localAddress);
-}
-
-void CommsChannel::stop()
-{
-	OC_METHODGATE();
-	mCarrier.stop();
-}
-
-bool CommsChannel::isStarted() const
-{
-	OC_METHODGATE();
-	return mCarrier.isStarted();
-}
-
-bool CommsChannel::isConnected() const
-{
-	OC_METHODGATE();
-	return mCarrier.isConnected();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
 
 bool CommsChannel::recieveEncryptedBody(PacketReadState &state)
 {
@@ -616,8 +603,8 @@ void CommsChannel::recieveData(PacketReadState &state)
 			}
 		} else {
 			//Use courier id for extendable messages
-			Courier *courier=getCourierByID(state.partMessageTypeID);
-			if(nullptr!=courier) {
+			QSharedPointer<Courier> courier=mCouriersByID.value(state.partMessageTypeID, nullptr);
+			if(!courier.isNull()) {
 				const quint16 bytesSpent=courier->dataReceived(*state.stream, state.partBytesAvailable);
 				const int left=state.partBytesAvailable-bytesSpent;
 				//qDebug()<<totalRecCount<<"GOT COURIER MSG "<<partMessageTypeID<<" "<<c->name()<<" bytes avail="<<partBytesAvailable<<" tot avail="<<totalAvailable<<" bytes spent="<<bytesSpent<<" left="<<left<<"  ";
@@ -1101,6 +1088,27 @@ bool CommsChannel::honeymoon(quint64 now)
 }
 
 
+
+// Report if this commschannel would rather be connected or not (registered couriers > 0)
+bool CommsChannel::needConnection()
+{
+	OC_METHODGATE();
+	return mCouriers.count()>0;
+}
+
+// [Dis]connect based on our needConnection()
+void CommsChannel::updateConnect()
+{
+	OC_METHODGATE();
+	const bool is=mCarrier.isConnected();
+	const bool needs = needConnection();
+	if(needs != is) {
+		qDebug()<<"Comms channel update decided to start carrier";
+		mCarrier.setStarted(needs);
+	}
+}
+
+
 NetworkAddress CommsChannel::localAddress()
 {
 	return mCarrier.address();
@@ -1216,7 +1224,7 @@ void CommsChannel::onCarrierSendingOpportunity(const quint64 now)
 void CommsChannel::onCarrierConnectionStatusChanged(const bool connected)
 {
 	OC_METHODGATE();
-	emit commsConnectionStatusChanged(connected);
+	emit commsConnectionStatusChanged(connected, mCouriers.commsEnabled(false));
 }
 
 
@@ -1245,7 +1253,7 @@ void CommsChannel::setHookCommsSignals(QObject &ob, bool hook)
 		if(!connect(this,SIGNAL(commsClientAdded(CommsSession *)),&ob,SLOT(onCommsClientAdded(CommsSession *)),OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
 		}
-		if(!connect(this,SIGNAL(commsConnectionStatusChanged(bool)),&ob,SLOT(onCommsConnectionStatusChanged(bool)),OC_CONTYPE)) {
+		if(!connect(this,SIGNAL(commsConnectionStatusChanged(bool, bool)),&ob,SLOT(onCommsConnectionStatusChanged(bool, bool)),OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
 		}
 	} else {
@@ -1255,7 +1263,7 @@ void CommsChannel::setHookCommsSignals(QObject &ob, bool hook)
 		if(!disconnect(this,SIGNAL(commsClientAdded(CommsSession *)),&ob,SLOT(onCommsClientAdded(CommsSession *)))) {
 			qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
 		}
-		if(!disconnect(this,SIGNAL(commsConnectionStatusChanged(bool)),&ob,SLOT(onCommsConnectionStatusChanged(bool)))) {
+		if(!disconnect(this,SIGNAL(commsConnectionStatusChanged(bool, bool)),&ob,SLOT(onCommsConnectionStatusChanged(bool, bool)))) {
 			qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
 		}
 	}
@@ -1264,54 +1272,69 @@ void CommsChannel::setHookCommsSignals(QObject &ob, bool hook)
 
 
 
-void CommsChannel::setHookCourierSignals(Courier &courier, bool hook)
+void CommsChannel::setHookCourierSignals(QSharedPointer<Courier> courier, bool hook)
 {
 	OC_METHODGATE();
-	if(hook) {
-		if(!connect(&courier, SIGNAL(reschedule(quint64)),this,SLOT(rescheduleSending(quint64)),OC_CONTYPE)) {
-			qWarning()<<"ERROR: Could not connect Courier::reschedule for "<<courier.name();
-		}
+	if(!courier.isNull()) {
+		if(hook) {
+			if(!connect(courier.data(), SIGNAL(reschedule(quint64)),this,SLOT(rescheduleSending(quint64)),OC_CONTYPE)) {
+				qWarning()<<"ERROR: Could not connect Courier::reschedule for "<<courier->name();
+			}
 
-	} else {
-		if(!disconnect(&courier, SIGNAL(reschedule(quint64)),this,SLOT(rescheduleSending(quint64)))) {
-			qWarning()<<"ERROR: Could not disconnect Courier::reschedule for "<<courier.name();
+		} else {
+			if(!disconnect(courier.data(), SIGNAL(reschedule(quint64)),this,SLOT(rescheduleSending(quint64)))) {
+				qWarning()<<"ERROR: Could not disconnect Courier::reschedule for "<<courier->name();
+			}
 		}
-
 	}
 }
 
-
+/*
 bool CommsChannel::courierRegistration()
 {
 	OC_METHODGATE();
 	return mCouriers.commsEnabled();
 }
+*/
 
-void CommsChannel::setCourierRegistered(Courier &courier, bool reg)
+// [Un]register courier to NODE
+void CommsChannel::setCourierRegistered(QSharedPointer<Courier> courier, bool reg)
 {
+
+
+	/*
+		//qDebug()<<"COMMS LEFT WITH "<<ct<<" COURIERS";
+		//qDebug()<< cc->getSummary();
+		// Adaptively start commschannel when there are couriers registered
+		const int ct=courierCount();
+
+		if(ct>0 && mWantToConnect) {
+			startComms();
+		} else {
+			if( isCommsStarted() )  {
+				//qDebug()<<"STOPPING COMMS ";
+				stopComms();
+			} else {
+				//qDebug()<<"COMMS ALREADY STOPPED";
+			}
+		}
+		*/
+
+
+
 	OC_METHODGATE();
-	Q_ASSERT(this==&courier.comms());
-	QSharedPointer<Courier> p(&courier);
-	if(reg) {
-		if(mCouriers.contains(p)) {
-			qWarning()<<"ERROR: courier was allready registered";
-			return;
-		} else if(mCouriers.size()>10) {
-			qWarning()<<"ERROR: too many couriers, skipping registration of new one: "<<courier.id()<<courier.name();
-			return;
+	if(!courier.isNull()) {
+		const bool ok=mCouriers.setRegistered(courier, reg);
+		if(ok) {
+			const quint32 id=courier->id();
+			if(reg) {
+				mCouriersByID[id]=courier;
+			} else {
+				mCouriersByID.remove(id);
+			}
 		}
-		mCouriers.append(p);
-		mCouriersByID[courier.id()]=&courier;
-		//qDebug()<<"Registered courier: "<<c.id()<<c.name()<<" for a total of "<<mCouriers.size()<<" couriers";
-	} else {
-		if(!mCouriers.contains(p)) {
-			qDebug()<<"ERROR: courier was not registered";
-			return;
-		}
-		mCouriersByID.remove(courier.id());
-		mCouriers.removeAll(p);
+		setHookCourierSignals(courier, (ok || !reg));
 	}
-	setHookCourierSignals(courier,reg);
 }
 
 CourierSet CommsChannel::couriers()
@@ -1320,6 +1343,7 @@ CourierSet CommsChannel::couriers()
 	return mCouriers;
 }
 
+/* TODO: repalce these by calls to couriers()
 int CommsChannel::courierCount()
 {
 	OC_METHODGATE();
@@ -1343,7 +1367,7 @@ Courier *CommsChannel::getCourierByID(quint32 id) const
 	}
 	return nullptr;
 }
-
+*/
 
 
 

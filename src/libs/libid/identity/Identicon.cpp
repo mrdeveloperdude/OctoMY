@@ -189,7 +189,7 @@ void Identicon::regenerateIdenticon()
 
 							QDomElement o=mDoc.documentElement();
 
-							DiscoveryType type=mID.type();
+							NodeType type=mID.type();
 
 							if(TYPE_AGENT==type) {
 								setAttrRecur(o, "stop", "agent_body_color_stop1", "style", "stop-color:"+bodyColorHighStr+";stop-opacity:1");

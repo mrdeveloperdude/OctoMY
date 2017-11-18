@@ -3,10 +3,15 @@
 #include "node/Node.hpp"
 #include "comms/CommsSession.hpp"
 
-Client::Client(QSharedPointer<Node> controller, QSharedPointer<Associate> nodeAssociate, QObject *parent)
+#include "ClientConnectionStatus.hpp"
+
+static const QString CLIENT_ONLINE_STATUS_BASE_KEY("octomy.client.online.");
+
+Client::Client(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssociate, QObject *parent)
 	: QObject(parent)
-	, mNode(controller)
+	, mNode(node)
 	, mNodeAssociate(nodeAssociate)
+	, mThis(this)
 {
 	OC_METHODGATE();
 
@@ -24,6 +29,59 @@ Client::~Client()
 
 }
 
+
+
+
+bool Client::needsConnection()
+{
+	OC_METHODGATE();
+	const bool def=false;
+	if(!mNode.isNull()){
+		return mNode->settings().getCustomSettingBool(CLIENT_ONLINE_STATUS_BASE_KEY+nodeAssociate()->id(), def);
+	}
+	return def;
+}
+
+
+
+bool Client::isConnected()
+{
+	OC_METHODGATE();
+	/*
+	const bool def=false;
+	if(!mNode.isNull()){
+		return mNode->settings().getCustomSettingBool(CLIENT_ONLINE_STATUS_BASE_KEY+nodeAssociate()->id(), def);
+	}
+	return def;
+	*/
+	return false;
+}
+
+
+
+void Client::setNeedsConnection(bool val)
+{
+	OC_METHODGATE();
+	if(!mNode.isNull()){
+		mNode->settings().setCustomSettingBool(CLIENT_ONLINE_STATUS_BASE_KEY+nodeAssociate()->id(), val);
+	}
+}
+
+
+
+
+void Client::setConnected(bool)
+{
+	OC_METHODGATE();
+}
+
+
+
+ClientConnectionStatus Client::connectionStatus()
+{
+	OC_METHODGATE();
+	return ClientConnectionStatus(mThis);
+}
 
 
 void Client::initTimer()
@@ -65,8 +123,18 @@ void Client::setCourierRegistration(bool reg)
 
 
 
+void Client::updateCourierRegistration()
+{
+	OC_METHODGATE();
+	setCourierRegistration(needsConnection());
+}
 
-// NOTE: This has a sister method in AgentWindow.cpp around line 625
+
+
+
+
+
+// NOTE: This has a sister method in Node.cpp around line 388
 //       Please remember that while they are similar they are very different!
 //       While the other one is a "One agent, one remote" deal
 //       this is a "one remote, many agents" deal.
@@ -133,7 +201,6 @@ void Client::updateOnlineStatus()
 
 
 
-
 //////////////////////////////////////////////////
 // Agent State Courier slots
 
@@ -167,7 +234,7 @@ void Client::onCommsClientAdded(CommsSession *c)
 	//qDebug()<<"ClientWidget UNIMP Client added: "<<c->toString();
 }
 
-void Client::onCommsConnectionStatusChanged(bool s)
+void Client::onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection)
 {
 	OC_METHODGATE();
 	//qDebug() <<"CLIENT WIDGET New connection status: "<<(s?"ONLINE":"OFFLINE");

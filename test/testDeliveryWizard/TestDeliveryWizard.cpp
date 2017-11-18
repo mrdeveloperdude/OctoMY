@@ -53,7 +53,7 @@ void TestDeliveryWizard::test()
 	Q_INIT_RESOURCE(qfi);
 	Q_INIT_RESOURCE(3d);
 
-	QSharedPointer<Node> testAgent(OC_NEW Node(agentContext, DiscoveryRole::ROLE_AGENT, DiscoveryType::TYPE_AGENT, this));
+	QSharedPointer<Node> testAgent(OC_NEW Node(agentContext, NodeRole::ROLE_AGENT, NodeType::TYPE_AGENT, this));
 	QVERIFY(nullptr!=testAgent);
 	AgentDeliveryWizardTest *delWiz=OC_NEW AgentDeliveryWizardTest();
 	QVERIFY(nullptr!=delWiz);

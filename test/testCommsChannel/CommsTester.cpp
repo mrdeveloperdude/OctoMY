@@ -30,9 +30,9 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 			qDebug() << mMyAddress << ":" << mMyPort << " --> " << toPort;
 			QString myID="1234";
 			//CommsSignature sig(myID, NetworkAddress(mMyAddress, toPort));
-			TestCourier *tc=OC_NEW TestCourier(mName+"Courier", myID, "This is my humble payload", mCc, mTestCount, mTestCount, this);
-			QVERIFY(nullptr!=tc);
-			mCc.setCourierRegistered(*tc, true);
+			QSharedPointer<TestCourier> tc(OC_NEW TestCourier(mName+"Courier", myID, "This is my humble payload", mCc, mTestCount, mTestCount, this));
+			QVERIFY(!tc.isNull());
+			mCc.setCourierRegistered(tc, true);
 		} else {
 			qDebug() << mMyAddress << ":" << mMyPort << " --> SKIPPED";
 		}
@@ -56,7 +56,8 @@ void CommsTester::onReadyRead()
 void CommsTester::startSendTest()
 {
 	qDebug()<<"Starting test for "<<toString();
-	mCc.start(NetworkAddress(mMyAddress, mMyPort));
+	mCc.carrier().setListenAddress(NetworkAddress(mMyAddress, mMyPort));
+	mCc.carrier().setStarted(true);
 }
 
 

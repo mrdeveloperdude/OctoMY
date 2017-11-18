@@ -1,10 +1,10 @@
-#include "RemoteClient.hpp"
+#include "AgentClient.hpp"
 
-#include "RemoteClientWidget.hpp"
+#include "AgentClientWidget.hpp"
 
-RemoteClient::RemoteClient(QSharedPointer<Node> controller, QSharedPointer<Associate> nodeAssoc, QObject *parent)
+AgentClient::AgentClient(QSharedPointer<Node> controller, QSharedPointer<Associate> nodeAssoc, QObject *parent)
 	: Client(controller, nodeAssoc, parent)
-	, mCouriers(nodeAssoc->id(), *this)
+//	, mCouriers(nodeAssoc->id(), *this)
 	, mWidget(nullptr)
 	, mThis(this)
 {
@@ -16,7 +16,7 @@ RemoteClient::RemoteClient(QSharedPointer<Node> controller, QSharedPointer<Assoc
 ///
 
 
-CourierSet &RemoteClient::courierSet()
+CourierSet &AgentClient::courierSet()
 {
 	OC_METHODGATE();
 	return mCouriers;
@@ -24,11 +24,11 @@ CourierSet &RemoteClient::courierSet()
 
 
 
-QWidget *RemoteClient::widget()
+QWidget *AgentClient::widget()
 {
 	OC_METHODGATE();
 	if(nullptr == mWidget) {
-		mWidget=OC_NEW RemoteClientWidget(mThis, nullptr);
+		mWidget=OC_NEW AgentClientWidget(mThis, nullptr);
 	}
 	return mWidget;
 }

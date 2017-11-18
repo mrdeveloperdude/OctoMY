@@ -23,9 +23,9 @@ void CommsSignalLogger::onCommsClientAdded(CommsSession *c)
 	qDebug()<<mName<<": onCommsClientAdded("<<c<<")";
 }
 
-void CommsSignalLogger::onCommsConnectionStatusChanged(bool c)
+void CommsSignalLogger::onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection)
 {
-	qDebug()<<mName<<": onCommsConnectionStatusChanged("<<c<<")";
+	qDebug()<<mName<<": onCommsConnectionStatusChanged(isConnected="<<isConnected<<", needsConnection="<<needsConnection<<")";
 }
 
 

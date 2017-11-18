@@ -40,6 +40,7 @@
 #include <QUdpSocket>
 #include <QWidget>
 #include <QWindow>
+#include <QStackedWidget>
 
 
 
@@ -303,6 +304,18 @@ void addIconToLayout(QString name,QLayout &l,int w,int h)
 	// l->addWidget(&but);
 }
 
+void clearStackedWidget(QStackedWidget *stackedWidget, bool deleteWidgets)
+{
+	if(nullptr!=stackedWidget) {
+		while(stackedWidget->count() > 0){
+			QWidget* widget = stackedWidget->widget(0);
+			stackedWidget->removeWidget(widget);
+			if(deleteWidgets) {
+				widget->deleteLater();
+			}
+		}
+	}
+}
 
 void clearWidget(QWidget *par)
 {

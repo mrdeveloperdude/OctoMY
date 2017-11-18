@@ -1,5 +1,5 @@
 #include "RemoteClientWidget.hpp"
-#include "ui_ClientWidget.h"
+#include "ui_RemoteClientWidget.h"
 
 #include "utility/Standard.hpp"
 
@@ -30,7 +30,7 @@ static const QString NODE_ONLINE_SETTINGS_KEY_BASE("octomy.online.");
 
 RemoteClientWidget::RemoteClientWidget(QSharedPointer<RemoteClient> client, QWidget *parent)
 	: QWidget(parent)
-	, ui(OC_NEW Ui::ClientWidget)
+	, ui(OC_NEW Ui::RemoteClientWidget)
 	, mSpinner(nullptr)
 	, mRemoteClient(client)
 {

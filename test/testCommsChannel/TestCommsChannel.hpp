@@ -45,6 +45,6 @@ private slots:
 
 
 void heading(QString msg, QString ch="_");
-QSharedPointer<Associate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, DiscoveryRole role, DiscoveryType type );
+QSharedPointer<Associate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, NodeRole role, NodeType type );
 
 #endif // TESTCOMMSCHANNEL_HPP

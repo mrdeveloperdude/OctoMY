@@ -29,13 +29,13 @@ void PortableIDWidget::setPortableID(PortableID id)
 {
 	//qDebug()<<"portable id widget was updated with "<<id;
 	mID=id;
-	const DiscoveryType type=mID.type();
+	const NodeType type=mID.type();
 	const bool isAgent=TYPE_AGENT==type;
 	ui->groupBoxBirthCertificate->setTitle(isAgent?"Birth Certificate": "Identification");
 
 	ui->labelType->setVisible(!isAgent);
 	ui->labelTypeCaption->setVisible(!isAgent);
-	ui->labelType->setText(DiscoveryTypeToString(type));
+	ui->labelType->setText(nodeTypeToString(type));
 
 	ui->labelName->setVisible(isAgent && !mID.name().isEmpty());
 	ui->labelNameCaption->setVisible(isAgent && !mID.name().isEmpty());

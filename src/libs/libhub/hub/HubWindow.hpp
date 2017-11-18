@@ -68,7 +68,7 @@ public slots:
 	//		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
 	void onCommsError(QString message);
 	void onCommsClientAdded(CommsSession *c);
-	void onCommsConnectionStatusChanged(bool c);
+	void onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection);
 
 
 
@@ -80,7 +80,7 @@ private slots:
 
 	void onQRRedraw();
 
-
+private slots:
 	void on_pushButtonSendData_clicked();
 	void on_comboBoxAddLocal_currentIndexChanged(const QString &arg1);
 	void on_tabWidget_currentChanged(int index);

@@ -13,7 +13,6 @@
 #include "AgentConfigStore.hpp"
 #include "hw/controllers/IActuatorController.hpp"
 
-#include "AgentControls.hpp"
 
 #include <QObject>
 #include <QList>
@@ -36,12 +35,9 @@ class Agent : public Node
 {
 	Q_OBJECT
 private:
-	AgentControls mControls;
+
 	AgentConfigStore mAgentConfigStore;
 	IActuatorController *mActuatorController;
-
-	QMap<QString, QSet< QSharedPointer<Courier> > > mCourierSets;
-	QSet<QSharedPointer<Associate> > mLastActiveControls;
 
 	AgentWindow *mWindow;
 
@@ -53,20 +49,10 @@ public:
 
 	virtual QWidget *showWindow();
 
-	// Moved from AgentWindow*
-public:
-
-	QSet<QSharedPointer<Associate> > allControls();
-	QSet<QSharedPointer<Associate> > controlsWithActiveSessions(quint64 now=0);
-	void setCourierRegistration(QSharedPointer<Associate>, bool);
-
-	void updateCourierRegistration(quint64 now=0);
 
 public:
 
 	void setPanic(bool);
-
-	const AgentControls &controls() const ;
 
 	AgentConfigStore &configurationStore();
 
@@ -74,6 +60,9 @@ public:
 
 	IActuatorController *actuatorController();
 	void reloadController();
+
+
+	void setNodeCouriersRegistered(bool reg) Q_DECL_OVERRIDE;
 
 	// Agent Config Store slots
 public slots:
@@ -94,7 +83,7 @@ public slots:
 private slots:
 	virtual void onCommsError(QString) Q_DECL_OVERRIDE;
 	virtual void onCommsClientAdded(CommsSession *)Q_DECL_OVERRIDE;
-	virtual void onCommsConnectionStatusChanged(bool)Q_DECL_OVERRIDE;
+	virtual void onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection)Q_DECL_OVERRIDE;
 
 
 

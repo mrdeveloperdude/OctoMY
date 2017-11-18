@@ -383,7 +383,7 @@ void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp
 	}
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	QSharedPointer<Associate> part(OC_NEW Associate(root));
-	qDebug()<<"GOT PARTICIPANT "<<part->name()<<"(type="<<DiscoveryTypeToString(part->type())<<", gender="<<part->gender()<<", id="<<part->id()<<", addresses="<<part->addressList().toString()<<")";
+	qDebug()<<"GOT PARTICIPANT "<<part->name()<<"(type="<<nodeTypeToString(part->type())<<", gender="<<part->gender()<<", id="<<part->id()<<", addresses="<<part->addressList().toString()<<")";
 	NetworkAddress na(QHostAddress(req->remoteAddress()), req->remotePort());
 	qDebug()<<"Attaching visible address "<<na.toString() <<" to participant";
 	part->addressList().add(QSharedPointer<AddressEntry>(new AddressEntry(na, "public", now)));

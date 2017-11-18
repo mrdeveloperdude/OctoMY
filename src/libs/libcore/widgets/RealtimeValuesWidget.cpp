@@ -62,11 +62,11 @@ void RealtimeValuesWidget::setAgent(QSharedPointer<Agent> a)
 	OC_METHODGATE();
 	if(mAgent!=a) {
 		if(!mAgent.isNull()) {
-			mAgent->unHookSensorSignals(*this);
+			mAgent->setHookSensorSignals(*this, false);
 		}
 		mAgent=a;
 		if(!mAgent.isNull()) {
-			mAgent->hookSensorSignals(*this);
+			mAgent->setHookSensorSignals(*this, true);
 		}
 		resetView();
 	}

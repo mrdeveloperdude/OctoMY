@@ -29,7 +29,8 @@ void TestCommsChannel::testCarrier()
 	NetworkAddress address(QHostAddress::LocalHost, 8123);
 
 	QCOMPARE(false, coca.isStarted());
-	coca.start(address);
+	coca.setListenAddress(address);
+	coca.setStarted(true);
 	QCOMPARE(true, coca.isStarted());
 
 	NetworkAddress addressCopy=coca.address();
@@ -63,7 +64,7 @@ void TestCommsChannel::testCarrier()
 	testSleep(timeout+100);
 
 	QCOMPARE(true, coca.isStarted());
-	coca.stop();
+	coca.setStarted(false);
 	QCOMPARE(false, coca.isStarted());
 	QCOMPARE(false, coca.isConnected());
 

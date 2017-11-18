@@ -1,10 +1,10 @@
-#include "RemoteClient.hpp"
+#include "HubClient.hpp"
 
-#include "RemoteClientWidget.hpp"
+#include "HubClientWidget.hpp"
 
-RemoteClient::RemoteClient(QSharedPointer<Node> controller, QSharedPointer<Associate> nodeAssoc, QObject *parent)
+HubClient::HubClient(QSharedPointer<Node> controller, QSharedPointer<Associate> nodeAssoc, QObject *parent)
 	: Client(controller, nodeAssoc, parent)
-	, mCouriers(nodeAssoc->id(), *this)
+//	, mCouriers(nodeAssoc->id(), *this)
 	, mWidget(nullptr)
 	, mThis(this)
 {
@@ -16,19 +16,18 @@ RemoteClient::RemoteClient(QSharedPointer<Node> controller, QSharedPointer<Assoc
 ///
 
 
-CourierSet &RemoteClient::courierSet()
+CourierSet &HubClient::courierSet()
 {
 	OC_METHODGATE();
 	return mCouriers;
 }
 
 
-
-QWidget *RemoteClient::widget()
+QWidget *HubClient::widget()
 {
 	OC_METHODGATE();
 	if(nullptr == mWidget) {
-		mWidget=OC_NEW RemoteClientWidget(mThis, nullptr);
+		mWidget=OC_NEW HubClientWidget(mThis, nullptr);
 	}
 	return mWidget;
 }

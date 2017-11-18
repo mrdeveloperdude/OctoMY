@@ -220,7 +220,7 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 			} else if(partID==ourID) {
 				//qDebug()<<" + Skipping new participant with our ID: "<<partID;
 			} else {
-				AddressBook &peers=mNode.peers();
+				AddressBook &peers=mNode.addressBook();
 				QSharedPointer<Associate> part;
 				if(peers.hasAssociate(partID)) {
 					qDebug()<<" + Updating participant with ID: "<<partID;
@@ -234,11 +234,11 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 						if(part->isValidForClient()) {
 							CommsChannel *comms=mNode.comms();
 							if(nullptr!=comms) {
-								DiscoveryCourier *courier=OC_NEW DiscoveryCourier(part, *comms);
-								if(nullptr!=courier) {
+								QSharedPointer<DiscoveryCourier> courier(OC_NEW DiscoveryCourier(part, *comms));
+								if(!courier.isNull()) {
 									peers.upsertAssociate(part);
 									courier->setDestination(part->id());
-									comms->setCourierRegistered(*courier, true);
+									comms->setCourierRegistered(courier, true);
 									qDebug()<<" + Adding new participant with ID: "<<partID;
 									emit nodeDiscovered(partID);
 								} else {

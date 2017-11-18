@@ -107,13 +107,13 @@ void ControlDeliveryWizard::onBirthComplete()
 					mBirthDate=QDateTime::currentMSecsSinceEpoch();
 					QVariantMap map;
 					map["key"]=key->toVariantMap(true);
-					map["type"]=DiscoveryTypeToString(TYPE_REMOTE);
-					map["role"]=DiscoveryRoleToString(ROLE_CONTROL);
+					map["type"]=nodeTypeToString(TYPE_REMOTE);
+					map["role"]=nodeRoleToString(ROLE_CONTROL);
 					map["birthDate"]=mBirthDate;
 					mMyData= QSharedPointer<Associate> (OC_NEW Associate(map));
 					mID=mMyData->toPortableID();
-					mNode->peers().upsertAssociate(mMyData);
-					mNode->peers().save();
+					mNode->addressBook().upsertAssociate(mMyData);
+					mNode->addressBook().save();
 					ui->widgetBirthCertificate->setPortableID(mID);
 					ui->stackedWidget->setCurrentWidget(ui->pageDone);
 				} else {

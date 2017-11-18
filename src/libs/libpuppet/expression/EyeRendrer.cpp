@@ -1,9 +1,9 @@
 #include "EyeRendrer.hpp"
 
+#include "utility/Standard.hpp"
+
 #include <QPainter>
-
 #include <QDebug>
-
 #include <QtMath>
 
 EyeRendrer::EyeRendrer(QVector2D center, qreal slant, QColor irisColor)
@@ -21,12 +21,12 @@ EyeRendrer::EyeRendrer(QVector2D center, qreal slant, QColor irisColor)
 	, mPupilRadius(0.1*0.25)
 
 {
-
+	OC_METHODGATE();
 }
 
 EyeRendrer::~EyeRendrer()
 {
-
+	OC_METHODGATE();
 }
 
 /*
@@ -43,6 +43,7 @@ static void generateElipsis(QVector2D &out,qreal rx,qreal ry,qreal ang)
 
 void EyeRendrer::update()
 {
+	OC_METHODGATE();
 	if(!mDirty) {
 		return;
 	}
@@ -90,6 +91,7 @@ void EyeRendrer::update()
 
 void EyeRendrer::setBlink(qreal bl)
 {
+	OC_METHODGATE();
 	if(bl!=mBlink) {
 		mDirty=true;
 	}
@@ -98,6 +100,7 @@ void EyeRendrer::setBlink(qreal bl)
 
 void EyeRendrer::setExpression(QVector2D ul, QVector2D ll, QVector2D sq)
 {
+	OC_METHODGATE();
 	mUpperLidSteer=ul+mCenter;
 	mLowerLidSteer=ll+mCenter;
 	mSquintSteer=sq;
@@ -106,11 +109,13 @@ void EyeRendrer::setExpression(QVector2D ul, QVector2D ll, QVector2D sq)
 
 void EyeRendrer::setColor(QColor irisColor)
 {
+	OC_METHODGATE();
 	mIrisBrush=QBrush(irisColor);
 }
 
 void EyeRendrer::setSteer(QVector2D ey)
 {
+	OC_METHODGATE();
 	ey+=mCenter;
 	if(!qFuzzyCompare(ey, mEyeSteer)) {
 		mDirty=true;
@@ -121,12 +126,14 @@ void EyeRendrer::setSteer(QVector2D ey)
 
 void EyeRendrer::setIrisImage(QImage irisImage)
 {
+	OC_METHODGATE();
 	mIrisImage=irisImage;
 	mDirty=true;
 }
 
 void EyeRendrer::paint(QPainter &painter)
 {
+	OC_METHODGATE();
 	//painter.setBrush(lidBrush);
 	//painter.drawPolygon(lowerMask);
 	//painter.drawPolygon(upperMask);
@@ -158,10 +165,19 @@ void EyeRendrer::paint(QPainter &painter)
 
 qreal EyeRendrer::irisRadius()
 {
+	OC_METHODGATE();
 	return mIrisRadius;
 }
 
 qreal EyeRendrer::pupilRadius()
 {
+	OC_METHODGATE();
 	return mPupilRadius;
+}
+
+
+bool EyeRendrer::isDirty()
+{
+	OC_METHODGATE();
+	return mDirty;
 }

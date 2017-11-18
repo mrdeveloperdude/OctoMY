@@ -1,8 +1,8 @@
 #ifndef PAIRINGLISTMODEL_HPP
 #define PAIRINGLISTMODEL_HPP
 
-#include "discovery/DiscoveryRole.hpp"
-#include "discovery/DiscoveryType.hpp"
+#include "node/NodeRole.hpp"
+#include "node/NodeType.hpp"
 
 #include <QDebug>
 #include <QAbstractListModel>
@@ -15,15 +15,15 @@ class PairingListModel: public QAbstractListModel
 	//Q_OBJECT
 private:
 	AddressBook &mStore;
-	DiscoveryType mTypeFilter;
+	NodeType mTypeFilter;
 	PairingWizard &mPwiz;
 
 
 private:
-	bool filter(DiscoveryType &t) const;
+	bool filter(NodeType &t) const;
 
 public:
-	explicit PairingListModel(AddressBook &mStore, DiscoveryType mTypeFilter, PairingWizard &mPwiz);
+	explicit PairingListModel(AddressBook &mStore, NodeType mTypeFilter, PairingWizard &mPwiz);
 	virtual ~PairingListModel();
 
 public:

@@ -4,7 +4,12 @@
 #include "Client.hpp"
 
 #include <QList>
+#include <QMap>
 #include <QSharedPointer>
+
+
+class AddressBook;
+class CommsSessionDirectory;
 
 /**
  * @brief The ClientList class is a convenience wrapper around QList to keep pointers to instances of Client
@@ -14,6 +19,113 @@ class ClientList: public QList<QSharedPointer<Client> >
 {
 public:
 	ClientList();
+
+public:
+
+	QMap<QString, QSharedPointer<Client> > toMapByID();
+	void syncToAddressBook(AddressBook &ab);
+
+
+	QSharedPointer<Client> byID(QString id);
+	QSet<QSharedPointer<Client> > withActiveSessions(CommsSessionDirectory &sessionDirectory, AddressBook &ab, quint64 now=0, const bool honeyMoon=false);
+
+	QList <QWidget * > widgets();
+
+	// [Un]register the couriers of all clients in this list
+	void setAllCouriersRegistered(const bool reg);
+
+	// Update the registrations of all clients in this list looking at their individual "needsConnection()" output
+	void updateCourierRegistration();
 };
 
 #endif // CLIENTLIST_HPP
+
+
+/*
+
+#include "AgentControls.hpp"
+
+
+
+AgentControls mControls;
+
+, mControls(*this)
+
+	qDebug()<<"AGENT found in addressbook "<< (ready?"READY":"UNREADY");
+	QMap<QString, QSharedPointer<Associate> > &associates = mAddressBook.all();
+	for(QSharedPointer<Associate> associate:associates) {
+		QSharedPointer<AddressEntry> ae=associate->addressList().highestScore();
+		if(!ae.isNull() && ae->address.isValid() && ROLE_CONTROL == associate->role()) {
+			qDebug()<<"Adding "<<ae->address.toString()<<"("<<associate->toString()<<") to agent control's list";
+			mControls.registerClient(associate->id());
+		}
+	}
+	mControls.setCommsEnabled(true);
+
+
+	const AgentControls &controls() const ;
+
+const AgentControls &Agent::controls() const
+{
+	OC_METHODGATE();
+	return mControls;
+}
+
+
+void Agent::setPanic(bool panic)
+{
+	OC_METHODGATE();
+	AgentCourierSet *set=mControls.activeControl();
+
+	if(nullptr!=set) {
+		QSharedPointer<AgentStateCourier> asc=set->agentStateCourier();
+		if(!asc.isNull()) {
+			asc->setPanic(panic);
+		} else {
+			qWarning()<<"ERROR: No active control";
+		}
+	} else {
+		qWarning()<<"ERROR: No set";
+	}
+
+}
+
+
+
+		// Adaptively start commschannel when there are couriers registered
+		const int ct = cc->courierCount();
+		if(ct > 0) {
+			if(nullptr != assoc) {
+				startComms();
+			}
+		} else {
+			stopComms();
+		}
+
+
+
+void FaceWidget::setAgent(QSharedPointer<Agent> a):
+		const AgentControls &ctl=mAgent->controls();
+		AgentCourierSet *set = ctl.activeControl();
+		if(nullptr!=set) {
+			QSharedPointer<AgentStateCourier> asc=set->agentStateCourier();
+			if(!asc.isNull()) {
+				asc->setHookSignals(*this,true);
+			}
+
+		}
+
+
+
+void AgentWindow::onSyncParameterChanged(ISyncParameter *sp):
+	const AgentControls &controls=mAgent->controls();
+	AgentCourierSet *set = controls.activeControl();
+	if(nullptr!=set) {
+		QSharedPointer<AgentStateCourier> asc=set->agentStateCourier();
+		if(!asc.isNull()) {
+			const bool panic=asc->panic();
+			ui->widgetFace->setPanic(panic);
+			ui->widgetFace->panic();
+		}
+	}
+*/

@@ -30,21 +30,21 @@ RemoteCourierSet::RemoteCourierSet(QString fullID, RemoteClient &client)
 		if(!mAgentStateCourier.isNull()) {
 			mAgentStateCourier->setHookSignals(mRemoteClient, true);
 			mAgentStateCourier->setDestination(fullID);
-			append(mAgentStateCourier);
+			insert(mAgentStateCourier);
 		} else {
 			qWarning()<<"ERROR: Could not allocate AgentStateCourier";
 		}
 		mSensorsCourier=QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*cc, &mRemoteClient));
 		if(!mSensorsCourier.isNull()) {
 			mSensorsCourier->setDestination(fullID);
-			append(mSensorsCourier);
+			insert(mSensorsCourier);
 		} else {
 			qWarning()<<"ERROR: Could not allocate SensorsCourier";
 		}
 		mBlobCourier=QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*cc, &mRemoteClient));
 		if(!mBlobCourier.isNull()) {
 			mBlobCourier->setDestination(fullID);
-			append(mBlobCourier);
+			insert(mBlobCourier);
 		} else {
 			qWarning()<<"ERROR: Could not allocate BlobCourier";
 		}

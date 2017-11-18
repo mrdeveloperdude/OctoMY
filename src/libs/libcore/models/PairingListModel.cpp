@@ -11,8 +11,9 @@
 #include <QDebug>
 #include <QAbstractListModel>
 
-bool PairingListModel::filter(DiscoveryType &t) const
+bool PairingListModel::filter(NodeType &t) const
 {
+	OC_METHODGATE();
 	switch(mTypeFilter) {
 	case(TYPE_AGENT):
 		return ((TYPE_REMOTE==t)||(TYPE_HUB==t));
@@ -27,12 +28,13 @@ bool PairingListModel::filter(DiscoveryType &t) const
 }
 
 
-PairingListModel::PairingListModel(AddressBook &store, DiscoveryType typeFilter, PairingWizard &pwiz)
+PairingListModel::PairingListModel(AddressBook &store, NodeType typeFilter, PairingWizard &pwiz)
 	: QAbstractListModel(&pwiz)
 	, mStore(store)
 	, mTypeFilter(typeFilter)
 	, mPwiz(pwiz)
 {
+	OC_METHODGATE();
 	if(!connect(&mStore, &AddressBook::associatesChanged, this, &PairingListModel::onAssociateChanged, OC_CONTYPE)) {
 		//if(!connect(&mStore, SIGNAL(peersChanged()), this, SLOT(onAssociateChanged()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect ";
@@ -41,6 +43,7 @@ PairingListModel::PairingListModel(AddressBook &store, DiscoveryType typeFilter,
 
 PairingListModel::~PairingListModel()
 {
+	OC_METHODGATE();
 }
 
 void PairingListModel::onAssociateChanged()
@@ -51,12 +54,13 @@ void PairingListModel::onAssociateChanged()
 
 int PairingListModel::rowCount(const QModelIndex &) const
 {
+	OC_METHODGATE();
 	int ret=0;
 	QMap<QString, QSharedPointer<Associate> > participants=mStore.all();
 	for(QMap<QString, QSharedPointer<Associate> >::const_iterator it=participants.begin(), e=participants.end(); it!=e; ++it) {
 		QSharedPointer<Associate> p=it.value();
 		if(nullptr!=p) {
-			DiscoveryType t=p->type();
+			NodeType t=p->type();
 			if(filter(t)) {
 				ret++;
 			}
@@ -68,11 +72,13 @@ int PairingListModel::rowCount(const QModelIndex &) const
 
 int PairingListModel::columnCount(const QModelIndex &) const
 {
+	OC_METHODGATE();
 	return 1;
 }
 
 QVariant PairingListModel::data(const QModelIndex &index, int role) const
 {
+	OC_METHODGATE();
 	QMap<QString, QSharedPointer<Associate> > &participants=mStore.all();
 	int targetRow=index.row();
 	int rowCounter=0;
@@ -81,7 +87,7 @@ QVariant PairingListModel::data(const QModelIndex &index, int role) const
 	for(QMap<QString, QSharedPointer<Associate> >::const_iterator it=participants.begin(), e=participants.end(); it!=e; ++it) {
 		QSharedPointer<Associate> p=it.value();
 		if(nullptr!=p) {
-			DiscoveryType t=p->type();
+			NodeType t=p->type();
 			if(filter(t)) {
 				if(rowCounter==targetRow) {
 					part=p;
@@ -93,12 +99,12 @@ QVariant PairingListModel::data(const QModelIndex &index, int role) const
 	}
 
 	if (nullptr!=part) {
-		DiscoveryType t=part->type();
+		NodeType t=part->type();
 		if(filter(t)) {
 			if(Qt::DisplayRole == role ) {
 				return part->toVariantMap();
 			} else if (Qt::ToolTipRole == role) {
-				return DiscoveryTypeToString(t) +": " +part->id();
+				return nodeTypeToString(t) +": " +part->id();
 			}
 		}
 	}
@@ -108,11 +114,16 @@ QVariant PairingListModel::data(const QModelIndex &index, int role) const
 
 QVariant PairingListModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
+	OC_METHODGATE();
 	return QVariant();
 }
 
 
 QString PairingListModel::status()
 {
-	return "STATUS: "+QString::number(mStore.associateCount())+" peers";
+	OC_METHODGATE();
+	QString out("STATUS: ");
+	out+=QString::number(mStore.associateCount());
+	out+=" peers";
+	return out;
 }

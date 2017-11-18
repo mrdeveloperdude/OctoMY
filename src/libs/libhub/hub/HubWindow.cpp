@@ -268,7 +268,7 @@ void HubWindow::onListenStateChanged(const TryToggleState last, const TryToggleS
 	} else if(OFF==current) {
 		CommsChannel *comms=mHub->comms();
 		if(0!=comms) {
-	//		mHub->stopComms();
+			//		mHub->stopComms();
 		}
 	}
 }
@@ -403,10 +403,10 @@ void HubWindow::onCommsClientAdded(CommsSession *c)
 }
 
 
-void HubWindow::onCommsConnectionStatusChanged(bool s)
+void HubWindow::onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection)
 {
 	OC_METHODGATE();
-	qDebug()<<"connection state changed: "<<s;
+	qDebug()<<"connection state changed: "<<isConnected<<needsConnection;
 }
 
 

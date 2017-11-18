@@ -21,15 +21,15 @@ void heading(QString msg, QString ch){
 
 
 
-QSharedPointer<Associate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, DiscoveryRole role, DiscoveryType type ){
+QSharedPointer<Associate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, NodeRole role, NodeType type ){
 	QVariantMap peerMap;
 	peerMap["publicAddress"]=addr.toVariantMap();
 	peerMap["localAddress"]=addr.toVariantMap();
 	peerMap["lastSeenMS"]=0;
 	peerMap["birthDate"]=0;
 	peerMap["key"]=key->toVariantMap(true);
-	peerMap["role"]=DiscoveryRoleToString(role);
-	peerMap["type"]=DiscoveryTypeToString(type);
+	peerMap["role"]=nodeRoleToString(role);
+	peerMap["type"]=nodeTypeToString(type);
 	peerMap["name"]=name;
 	peerMap["gender"]="Male";
 	peerMap["trusts"]=QStringList();

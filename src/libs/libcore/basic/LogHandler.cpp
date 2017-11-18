@@ -1,6 +1,5 @@
 #include "LogHandler.hpp"
 
-
 #include <QByteArray>
 #include <QFile>
 #include <QTextStream>
@@ -67,7 +66,12 @@ static void octomyLogMessageHandler(QtMsgType type, const QMessageLogContext &ct
 			out=QString("%1: [%2] %3 - @%5:%4 - %6 - %7")
 				.arg(severity,now.toString("hh:mm:ss.zzz"), exe, line,file,fun, str);
 		}
-		if(true) {
+		bool filter=false;
+		if(str.contains("hasn't been detected!")){
+			volatile QString old=str;
+			filter=true;
+		}
+		if(!filter) {
 			std::cerr << out.toStdString() <<std::endl;
 		}
 		if(false) {

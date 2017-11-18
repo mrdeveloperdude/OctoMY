@@ -22,7 +22,7 @@ class ISyncParameter;
 
 namespace Ui
 {
-class ClientWidget;
+class RemoteClientWidget;
 }
 
 /**
@@ -34,7 +34,7 @@ class RemoteClientWidget : public QWidget
 	Q_OBJECT
 
 private:
-	Ui::ClientWidget *ui;
+	Ui::RemoteClientWidget *ui;
 
 	WaitingSpinnerWidget *mSpinner;
 	QSharedPointer <RemoteClient> mRemoteClient;

@@ -44,7 +44,7 @@ private:
 	QSharedPointer<Remote> mRemote;
 	QMenu mMenu;
 
-	QMap<int, QWidget *> mClientWidgets;
+	QList<QWidget * > mClientWidgets;
 
 public:
 	explicit RemoteWindow(QSharedPointer<Remote> mRemote, QWidget *parent = nullptr);

@@ -41,6 +41,10 @@
 #define OCTOMY_PROTOCOL_VERSION_CURRENT (1)
 #define OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT (QDataStream::Qt_5_7)
 
+/*
+ * Documentation moved here: https://sites.google.com/site/octomyproject/documentation/development/architectual-overview/communications
+*/
+
 
 
 class HubWindow;
@@ -48,16 +52,10 @@ class CommsSession;
 class CommsSessionDirectory;
 class KeyStore;
 class AddressList;
-
-/*
- * Documentation moved here: https://sites.google.com/site/octomyproject/documentation/development/architectual-overview/communications
-*/
-
-
-
 class PacketReadState;
 class PacketSendState;
 class AddressBook;
+
 
 class CommsChannel : public QObject
 {
@@ -70,7 +68,7 @@ protected:
 	AddressBook &mAssociates; // The store wich is used to find network addresses to use when creating new sessions
 	CommsSessionDirectory mSessions; // The directory of sessions for this cc
 	CourierSet mCouriers; // The couriers that are in use by this cc. Only active couriers are in this list for performance reasons.
-	QMap<quint32, Courier *> mCouriersByID; // Map for quickly finding a particular courier by it's unique ID
+	QMap<quint32, QSharedPointer<Courier> > mCouriersByID; // Map for quickly finding a particular courier by it's unique ID
 	quint64 mLocalSessionID;
 	RateCalculator mTXScheduleRate;
 
@@ -97,33 +95,29 @@ protected:
 
 public:
 
-	CommsSessionDirectory &sessions();
-	void start(NetworkAddress localAddress);
-	//void start(AddressList addressList);
-	void stop();
-	bool isStarted() const;
-	bool isConnected() const;
 
+	CommsCarrier &carrier();
+	CommsSessionDirectory &sessions();
 	NetworkAddress localAddress();
 	QString localID();
 
 	QString getSummary();
 	//void setID(const QString &id);
 	void setHookCommsSignals(QObject &ob, bool hook);
-	void setHookCourierSignals(Courier &courier, bool hook);
+	void setHookCourierSignals(QSharedPointer<Courier> , bool hook);
 
-	void setCourierRegistered(Courier &, bool);
-	bool courierRegistration();
+	void setCourierRegistered(QSharedPointer<Courier>, bool);
 	CourierSet couriers();
-	int courierCount();
-	bool hasCourier(Courier &c) const;
-	Courier *getCourierByID(quint32 id) const;
 
 	qint64 sendRawData(QByteArray datagram, NetworkAddress address);
 
 	void setHoneymoonEnd(quint64 hEndMS);
 	bool honeymoon(quint64 now=0);
 
+	// Report if this commschannel would rather be connected or not (registered couriers > 0)
+	bool needConnection();
+	// [Dis]connect based on our needConnection()
+	void updateConnect();
 protected:
 
 	void appendLog(QString);
@@ -141,7 +135,7 @@ signals:
 	//		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
 	void commsError(QString message);
 	void commsClientAdded(CommsSession *c);
-	void commsConnectionStatusChanged(const bool c);
+	void commsConnectionStatusChanged(const bool isConnected, const bool needsConnection);
 
 public slots:
 	// Re-calculate the schedule for sending timer. May result in sending timer being called at a different time then what it was scheduled for when this method was called

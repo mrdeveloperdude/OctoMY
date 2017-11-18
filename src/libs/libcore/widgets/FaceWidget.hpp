@@ -50,8 +50,7 @@ public:
 	TryToggleState  connectionState() const ;
 
 
-	void hookSignals(QObject &ob);
-	void unHookSignals(QObject &ob);
+	void setHookSignals(QObject &ob, bool hook);
 
 
 	void setPanic(bool panic);

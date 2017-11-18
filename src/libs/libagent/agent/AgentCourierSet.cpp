@@ -28,19 +28,19 @@ AgentCourierSet::AgentCourierSet(QString &fullID, Agent &agent)
 	if(!mAgentStateCourier.isNull()) {
 		mAgentStateCourier->setHookSignals(mAgent, true);
 		mAgentStateCourier->setDestination(fullID);
-		append(mAgentStateCourier);
+		insert(mAgentStateCourier);
 	} else {
 		qWarning()<<"ERROR: Could not allocate AgentStateCourier";
 	}
 	if(!mSensorsCourier.isNull()) {
 		mSensorsCourier->setDestination(fullID);
-		append(mSensorsCourier);
+		insert(mSensorsCourier);
 	} else {
 		qWarning()<<"ERROR: Could not allocate SensorsCourier";
 	}
 	if(!mBlobCourier.isNull()) {
 		mBlobCourier->setDestination(fullID);
-		append(mBlobCourier);
+		insert(mBlobCourier);
 	} else {
 		qWarning()<<"ERROR: Could not allocate BlobCourier";
 	}

@@ -1,8 +1,8 @@
 #ifndef PORTABLEID_HPP
 #define PORTABLEID_HPP
 
-#include "discovery/DiscoveryRole.hpp"
-#include "discovery/DiscoveryType.hpp"
+#include "node/NodeRole.hpp"
+#include "node/NodeType.hpp"
 #include "utility/Standard.hpp"
 
 #include <QString>
@@ -28,7 +28,7 @@ private:
 	QString mGender;
 	QString mID;
 	quint64 mBirthDate;
-	DiscoveryType mType;
+	NodeType mType;
 
 	static const QString SEP;
 	static const QString SEP_RE;
@@ -47,14 +47,14 @@ public:
 	void setGender(QString gender);
 	void setID(QString id);
 	void setBirthDate(quint64 birthDate);
-	void setType(DiscoveryType type);
+	void setType(NodeType type);
 
 	QString name() const;
 	QString identifier() const;
 	QString gender() const;
 	QString id() const;
 	quint64 birthDate() const;
-	DiscoveryType type() const;
+	NodeType type() const;
 
 public:
 

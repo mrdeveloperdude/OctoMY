@@ -165,7 +165,7 @@ void TestCommsChannel::testCommsMock()
 	CommsChannel chanA(carrierA,keyStoreA, peersA);
 	CommsSignalLogger sigLogA("LOG-A");
 	chanA.setHookCommsSignals(sigLogA, true);
-	TestCourier courA1("Courier A1",idB, "This is datagram A1 123", chanA, maxSends, maxRecs);
+	QSharedPointer<TestCourier> courA1(OC_NEW TestCourier("Courier A1",idB, "This is datagram A1 123", chanA, maxSends, maxRecs));
 	chanA.setCourierRegistered(courA1, true);
 	//TestCourier courA2("Courier A2", commSigB, "This is datagram A2 uvw xyz", maxSends, maxRecs); chanA.setCourierRegistered(courA2, true);
 	qDebug()<<"SUMMARY: "<<chanA.getSummary();
@@ -175,7 +175,8 @@ void TestCommsChannel::testCommsMock()
 	const quint64 stepMS=1000;
 	NetworkAddress na(QHostAddress("127.0.0.1"), 8123);
 	carrierA.mockSetOverrideSendingtimer(true);
-	chanA.start(na);
+	chanA.carrier().setListenAddress(na);
+	chanA.carrier().setStarted(true);
 	CommsSessionDirectory & sessDirA=chanA.sessions();
 	QSharedPointer<CommsSession> sessA=QSharedPointer<CommsSession> (OC_NEW CommsSession(keyStoreA.localKey()));
 	auto sessAID=sessDirA.generateUnusedSessionID();
@@ -262,10 +263,10 @@ void TestCommsChannel::testCommsMock()
 
 	*/
 	heading("SUMMARIES 1st time with no sessions");/////////////////////////////////////////////////////
-	courA1.writeSummary();
+	courA1->writeSummary();
 
 	heading("STOP 1st time with no sessions");/////////////////////////////////////////////////////
-	chanA.stop();
+	chanA.carrier().setStarted(false);
 
 	heading("DELETING");
 	QTest::waitForEvents();

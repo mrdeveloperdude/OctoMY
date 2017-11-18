@@ -82,8 +82,8 @@ AgentWindow::AgentWindow(QSharedPointer<Agent> agent, QWidget *parent)
 
 
 		mAgent->setHookCommsSignals(*this, true);
-		mAgent->hookColorSignals(*ui->widgetFace);
-		ui->widgetFace->hookSignals(*this);
+		mAgent->setHookColorSignals(*ui->widgetFace, true);
+		ui->widgetFace->setHookSignals(*this, true);
 		ui->widgetPlanEditor->configure("agent.plan");
 		prepareMenu();
 		updateFaceVisibility();
@@ -115,7 +115,7 @@ void AgentWindow::gotoNextConfigPage()
 	auto ac=mAgent->configurationStore().agentConfig();
 	const QString ctl=ac->controllerName();
 	const bool isHardwareConfigured=((nullptr!=ac) && (""!=ctl)) || (ui->pageHardware==cur);
-	auto pct=mAgent->peers().associateCount();
+	auto pct=mAgent->addressBook().associateCount();
 	const bool isPaired=(pct>1) || (ui->pagePairing==cur);
 
 	qDebug()<<"NEXT CONFIG SCREEN: isDelivered"<<isDelivered<<", isPaired"<<isPaired<<", isHardwareConfigured"<<isHardwareConfigured<<" (ctlname="<<ctl<<", pct="<<pct<<")";
@@ -295,11 +295,11 @@ void AgentWindow::prepareMenu()
 				mWasEverUndelivered=true;
 				QSharedPointer<Associate> assID=mAgent->nodeIdentity();
 				if(nullptr!=assID) {
-					mAgent->peers().removeAssociate(assID->id());
+					mAgent->addressBook().removeAssociate(assID->id());
 				} else {
 					qWarning()<<"WARNING: there was no assID during unbirth";
 				}
-				mAgent->peers().save();
+				mAgent->addressBook().save();
 				mAgent->keyStore().clear();
 				updateIdentity();
 				ui->widgetDelivery->reset();
@@ -340,15 +340,12 @@ void AgentWindow::updateFaceVisibility()
 void AgentWindow::onConnectionStateChanged(const TryToggleState last, const TryToggleState current)
 {
 	OC_METHODGATE();
-	appendLog("CONNECT BUTTON TRYSTATE CHANGED FROM " +ToggleStateToSTring(last) +" TO "+ToggleStateToSTring(current));
-	if(current!=last) {
-		if(nullptr!=mAgent) {
-			Settings &s=mAgent->settings();
-			const bool on=(OFF!=current);
-			s.setCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS, on);
-		} else {
-			qWarning()<<"ERROR: No agent";
-		}
+	qDebug()<<"CONNECT BUTTON TRYSTATE CHANGED FROM " <<ToggleStateToSTring(last) <<" TO "<<ToggleStateToSTring(current);
+	if(!mAgent.isNull()) {
+		const bool on=(OFF!=current);
+		mAgent->setNeedsConnection(on);
+	} else {
+		qWarning()<<"ERROR: No agent";
 	}
 	updateOnlineStatus();
 }
@@ -439,7 +436,7 @@ void AgentWindow::onStartShowBirthCertificate()
 		auto key=mAgent->keyStore().localKey();
 		if(nullptr!=key) {
 			QString id=key->id();
-			QSharedPointer<Associate> myAss=mAgent->peers().associateByID(id);
+			QSharedPointer<Associate> myAss=mAgent->addressBook().associateByID(id);
 			if(nullptr!=myAss) {
 				pid=myAss->toPortableID();
 			} else {
@@ -507,6 +504,7 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 	OC_METHODGATE();
 	if(Qt::Key_Back==e->key()) {
 		/*
+		 * // TODO: Make useful andf working again
 		if(ui->pageConnect==ui->stackedWidget->currentWidget()) {
 			appendLog("EXITING APP ON BACK BUTTON");
 			ui->stackedWidget->setCurrentWidget(ui->pageConfirmQuit);
@@ -527,77 +525,21 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 }
 
 
-// NOTE: This has a sister method in ClientWidget.cpp around line 135
-//       Please see the comments there as they are also relevant here
-//       (about for example in what really important way these two methods differ).
 void AgentWindow::updateOnlineStatus()
 {
 	OC_METHODGATE();
-	if(nullptr!=mAgent) {
-		// Find if we ARE online
-		bool isTryingToGoOnline=false;
-		isTryingToGoOnline=mAgent->isCommsStarted() && mAgent->comms()->courierRegistration();
-		// Find if we WANT to be online
-		bool wantToBeOnline=isTryingToGoOnline;
-		Settings *s=&mAgent->settings();
-		if(nullptr!=s) {
-			wantToBeOnline=s->getCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS, wantToBeOnline);
-		} else {
-			qWarning()<<"ERROR: No settings for agent";
+	/* TODO
+	if(!mAgent.isNull()) {
+		const TryToggleState currentTryState=ui->widgetFace->connectionState();
+		const TryToggleState nextTryState=mAgent->updateOnlineStatus(currentTryState);
+		if(nextTryState != currentTryState) {
+			ui->widgetFace->setConnectionState(nextTryState, false);
 		}
-		//Spell it out for debugging
-		QSharedPointer<Associate> node=mAgent->nodeIdentity();
-		if(!node.isNull()) {
-			const QString localID=node->id();
-			qDebug()<<"Agent '"<<localID<<"' is currently trying to be "<<(isTryingToGoOnline?"ONLINE":"OFFLINE")<<" and we now want to try for "<<(wantToBeOnline?"ONLINE":"OFFLINE")<<".";
-			// Make necessary changes to state
-			const TryToggleState currentTryState=ui->widgetFace->connectionState();
-			TryToggleState nextTryState=currentTryState;
-			bool nextOnlineStatus=isTryingToGoOnline;
-			if(wantToBeOnline ) {
-				if(isTryingToGoOnline ) {
-					nextTryState=ON;
-				} else {
-					nextTryState=GOING_ON;
-					qDebug()<<"Decided to go online";
-					nextOnlineStatus=true;
-				}
-			} else {
-				if(isTryingToGoOnline ) {
-					qDebug()<<"Decided to go offline";
-					nextOnlineStatus=false;
-				} else {
-					nextTryState=OFF;
-				}
-			}
-			if(nextOnlineStatus!=isTryingToGoOnline) {
-				mAgent->comms()->setHoneymoonEnd(QDateTime::currentMSecsSinceEpoch()+(1000*60*5));//Set 5 minute honeymoon at every state change
-				QSet<QSharedPointer<Associate> > all=mAgent->allControls();
-				qDebug()<<"Decided to change online status for "<<QString::number(all.size())<< " controls:";
-				for(auto assoc:all) {
-					const QString assocID= assoc->id();
-					if(assocID == localID) {
-						qDebug()<<" + Skipping ME";
-						continue;
-					}
-					qDebug()<<" + " << assocID;
-					mAgent->setCourierRegistration(assoc , nextOnlineStatus); //QSharedPointer<NodeAssociate> assoc, bool reg
-				}
-
-			} else {
-				//qDebug()<<"No change in online status ("<<nextOnlineStatus<<")";
-			}
-			if(nextTryState!=currentTryState) {
-				//qDebug()<<"Decided to change tristate button from "<<current<<" -> "<<next;
-				ui->widgetFace->setConnectionState(nextTryState, false);
-			} else {
-				//qDebug()<<"No change tristate button ("<<current<<")";
-			}
-			// Propagate the possibly changed state to UI
-			updateFaceVisibility();
-			//mOnlineAction->setChecked(wantToBeOnline);
-		}
+		// Propagate the possibly changed state to UI
+		updateFaceVisibility();
+		//mOnlineAction->setChecked(wantToBeOnline);
 	}
+	*/
 }
 
 
@@ -618,7 +560,7 @@ void AgentWindow::notifyAndroid(QString s)
 	(void)s;
 	//TODO: This crashes with some jni exception stuff. Figure out why
 #ifdef Q_OS_ANDROID
-	qDebug()<<"QT: Android NOTIF: "<<s;
+	qDebug()<<"QT: Android NOTIFE: "<<s;
 	QAndroidJniObject::callStaticMethod<void>("org/octomy/Agent/Agent",
 			"notify",
 			"(Ljava/lang/String;)V",
@@ -664,16 +606,7 @@ void AgentWindow::onSyncParameterChanged(ISyncParameter *sp)
 {
 	OC_METHODGATE();
 	qDebug()<<"AgentWindow ASC changed: "<<sp->toString();
-	const AgentControls &controls=mAgent->controls();
-	AgentCourierSet *set = controls.activeControl();
-	if(nullptr!=set) {
-		QSharedPointer<AgentStateCourier> asc=set->agentStateCourier();
-		if(!asc.isNull()) {
-			const bool panic=asc->panic();
-			ui->widgetFace->setPanic(panic);
-			ui->widgetFace->panic();
-		}
-	}
+
 }
 
 
@@ -695,10 +628,10 @@ void AgentWindow::onCommsClientAdded(CommsSession *c)
 	//qDebug()<<"AgentWindow UNIMP Client added: "<<c->toString();
 }
 
-void AgentWindow::onCommsConnectionStatusChanged(bool s)
+void AgentWindow::onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection)
 {
 	OC_METHODGATE();
-	//qDebug() <<"AGENT WINDOW New connection status: "<<(s?"ONLINE":"OFFLINE");
+	qDebug() <<"AGENT WINDOW New connection status: isConnected="<<isConnected<<", needsConnection="<<needsConnection;
 	updateOnlineStatus();
 }
 

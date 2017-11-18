@@ -6,6 +6,7 @@
 #include "utility/SerialSize.hpp"
 #include "pose/Pose.hpp"
 
+#include "ardumyGeoCoordinate.hpp"
 
 #include <QObject>
 #include <QGeoCoordinate>
@@ -201,16 +202,6 @@ QString valueToString (const T v)
 	return QString::number(v);
 }
 
-
-static QString ardumyActuatorValueToString (const Pose &v)
-{
-	return v.toString();
-}
-
-static QString ardumyActuatorValueToString (const QGeoCoordinate &v)
-{
-	return v.toString();
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Implementation of ISyncParameter interface //////////////////////////////////

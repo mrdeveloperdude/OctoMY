@@ -1,5 +1,5 @@
-#include "RemoteClientWidget.hpp"
-#include "ui_ClientWidget.h"
+#include "AgentClientWidget.hpp"
+#include "ui_AgentClientWidget.h"
 
 #include "utility/Standard.hpp"
 
@@ -22,27 +22,27 @@
 
 #include "agent/AgentConstants.hpp"
 
-#include "node/RemoteClient.hpp"
+#include "node/AgentClient.hpp"
 
 #include <QScrollBar>
 
 static const QString NODE_ONLINE_SETTINGS_KEY_BASE("octomy.online.");
 
-RemoteClientWidget::RemoteClientWidget(QSharedPointer<RemoteClient> client, QWidget *parent)
+AgentClientWidget::AgentClientWidget(QSharedPointer<AgentClient> client, QWidget *parent)
 	: QWidget(parent)
-	, ui(OC_NEW Ui::ClientWidget)
+	, ui(OC_NEW Ui::AgentClientWidget)
 	, mSpinner(nullptr)
-	, mRemoteClient(client)
+	, mAgentClient(client)
 {
 	OC_METHODGATE();
-	qDebug()<<"CREATING REMOTE CLIENT WIDGET RemoteClient="<<(!mRemoteClient.isNull()?mRemoteClient->node()->name():"NULL")<<", parent="<<parent;
+	qDebug()<<"CREATING AGENT CLIENT WIDGET AgentClient="<<(!mAgentClient.isNull()?mAgentClient->node()->name():"NULL")<<", parent="<<parent;
 
 	ui->setupUi(this);
 
 	ui->widgetBirthCertificate->configure(false,true);
 
-	if(!mRemoteClient.isNull()) {
-		QSharedPointer<Node> node=mRemoteClient->node();
+	if(!mAgentClient.isNull()) {
+		QSharedPointer<Node> node=mAgentClient->node();
 		if(!node.isNull()) {
 			QSharedPointer<Associate> nodeAssociate=node->nodeIdentity();
 			if(!nodeAssociate.isNull()) {
@@ -62,7 +62,7 @@ RemoteClientWidget::RemoteClientWidget(QSharedPointer<RemoteClient> client, QWid
 	ui->tryToggleListen->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_DISCONNECT_COLOR);
 	ui->tryToggleListen->setState(OFF,false);
 
-	if(!connect(ui->tryToggleListen, &TryToggle::stateChanged, this, &RemoteClientWidget::onConnectButtonStateChanged ,OC_CONTYPE)) {
+	if(!connect(ui->tryToggleListen, &TryToggle::stateChanged, this, &AgentClientWidget::onConnectButtonStateChanged ,OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
@@ -87,14 +87,14 @@ RemoteClientWidget::RemoteClientWidget(QSharedPointer<RemoteClient> client, QWid
 	updateOnlineStatus();
 }
 
-RemoteClientWidget::~RemoteClientWidget()
+AgentClientWidget::~AgentClientWidget()
 {
 	OC_METHODGATE();
 	delete ui;
 	ui=nullptr;
 }
 
-void RemoteClientWidget::prepareSpinner()
+void AgentClientWidget::prepareSpinner()
 {
 	OC_METHODGATE();
 	mSpinner=OC_NEW WaitingSpinnerWidget(ui->stackedWidgetControl, true, true);
@@ -109,16 +109,16 @@ void RemoteClientWidget::prepareSpinner()
 	mSpinner->setStyle(style);
 }
 
-void RemoteClientWidget::prepareSteering()
+void AgentClientWidget::prepareSteering()
 {
 	OC_METHODGATE();
-	if(!connect(ui->widgetCarSteering, &CarSteeringWidget::steeringChanged, this, &RemoteClientWidget::onSteeringChanged ,OC_CONTYPE)) {
+	if(!connect(ui->widgetCarSteering, &CarSteeringWidget::steeringChanged, this, &AgentClientWidget::onSteeringChanged ,OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 }
 
 
-void RemoteClientWidget::setSpinnerActive(bool active)
+void AgentClientWidget::setSpinnerActive(bool active)
 {
 	OC_METHODGATE();
 	if(nullptr!=mSpinner) {
@@ -131,31 +131,16 @@ void RemoteClientWidget::setSpinnerActive(bool active)
 //       Please remember that while they are similar they are very different!
 //       While the other one is a "One agent, one remote" deal
 //       this is a "one remote, many agents" deal.
-void RemoteClientWidget::updateOnlineStatus()
+void AgentClientWidget::updateOnlineStatus()
 {
 	OC_METHODGATE();
-	if(!mRemoteClient.isNull()) {
-		mRemoteClient->updateOnlineStatus();
+	if(!mAgentClient.isNull()) {
+		mAgentClient->updateOnlineStatus();
 	}
 }
 
 
-/*
-bool RemoteClientWidget::courierRegistration()
-{
-	OC_METHODGATE();
-	return mCouriers.commsEnabled();
-}
-
-void RemoteClientWidget::setCourierRegistration(bool reg)
-{
-	OC_METHODGATE();
-	mCouriers.setCommsEnabled(reg);
-}
-*/
-
-
-bool RemoteClientWidget::setSetting(QString key, bool val)
+bool AgentClientWidget::setSetting(QString key, bool val)
 {
 	OC_METHODGATE();
 	QSharedPointer<Node> ctl=controller();
@@ -169,7 +154,7 @@ bool RemoteClientWidget::setSetting(QString key, bool val)
 	return false;
 }
 
-bool RemoteClientWidget::needConnection()
+bool AgentClientWidget::needConnection()
 {
 	OC_METHODGATE();
 	if(!controller().isNull() && !nodeAssociate().isNull()) {
@@ -183,7 +168,7 @@ bool RemoteClientWidget::needConnection()
 
 
 
-void RemoteClientWidget::init()
+void AgentClientWidget::init()
 {
 	OC_METHODGATE();
 //	ui->stackedWidgetControl->setUpdatesEnabled(false);
@@ -212,31 +197,31 @@ void RemoteClientWidget::init()
 }
 
 
-CommsChannel *RemoteClientWidget::comms()
+CommsChannel *AgentClientWidget::comms()
 {
 	OC_METHODGATE();
-	if(!mRemoteClient.isNull() && !mRemoteClient->node().isNull()) {
-		return mRemoteClient->node()->comms();
+	if(!mAgentClient.isNull() && !mAgentClient->node().isNull()) {
+		return mAgentClient->node()->comms();
 	}
 	return nullptr;
 }
 
 
 
-QSharedPointer<Node> RemoteClientWidget::controller()
+QSharedPointer<Node> AgentClientWidget::controller()
 {
 	OC_METHODGATE();
-	return mRemoteClient.isNull()?nullptr:mRemoteClient->node();
+	return mAgentClient.isNull()?nullptr:mAgentClient->node();
 }
 
 
-QSharedPointer<Associate> RemoteClientWidget::nodeAssociate() const
+QSharedPointer<Associate> AgentClientWidget::nodeAssociate() const
 {
 	OC_METHODGATE();
-	return mRemoteClient.isNull()?nullptr:mRemoteClient->nodeAssociate();
+	return mAgentClient.isNull()?nullptr:mAgentClient->nodeAssociate();
 }
 
-void RemoteClientWidget::updateControlLevel(int level)
+void AgentClientWidget::updateControlLevel(int level)
 {
 	//qDebug()<<"CONTROL LEVEL IS "<<level;
 	ui->stackedWidgetControl->setCurrentIndex(level);
@@ -245,7 +230,7 @@ void RemoteClientWidget::updateControlLevel(int level)
 }
 
 
-bool RemoteClientWidget::eventFilter(QObject *object, QEvent *event)
+bool AgentClientWidget::eventFilter(QObject *object, QEvent *event)
 {
 	OC_METHODGATE();
 	/*
@@ -268,7 +253,7 @@ bool RemoteClientWidget::eventFilter(QObject *object, QEvent *event)
 ///////////////////////////////////////// // Internal UI slots
 
 
-void RemoteClientWidget::onConnectButtonStateChanged(const TryToggleState last, const TryToggleState current)
+void AgentClientWidget::onConnectButtonStateChanged(const TryToggleState last, const TryToggleState current)
 {
 	OC_METHODGATE();
 	//qDebug()<< "CONNECT BUTTON TRYSTATE CHANGED FROM " << ToggleStateToSTring(last)<< " TO " << ToggleStateToSTring(current);
@@ -284,7 +269,7 @@ void RemoteClientWidget::onConnectButtonStateChanged(const TryToggleState last, 
 	updateOnlineStatus();
 }
 
-void RemoteClientWidget::onSteeringChanged(qreal throttle, qreal steeringAngle)
+void AgentClientWidget::onSteeringChanged(qreal throttle, qreal steeringAngle)
 {
 	OC_METHODGATE();
 	// TODO Upgrade this
@@ -302,7 +287,7 @@ void RemoteClientWidget::onSteeringChanged(qreal throttle, qreal steeringAngle)
 
 
 
-void RemoteClientWidget::on_checkBoxShowEyes_toggled(bool checked)
+void AgentClientWidget::on_checkBoxShowEyes_toggled(bool checked)
 {
 	OC_METHODGATE();
 	// TODO Upgrade this
@@ -319,7 +304,7 @@ void RemoteClientWidget::on_checkBoxShowEyes_toggled(bool checked)
 	*/
 }
 
-void RemoteClientWidget::on_checkBoxShowStats_toggled(bool checked)
+void AgentClientWidget::on_checkBoxShowStats_toggled(bool checked)
 {
 	OC_METHODGATE();
 	// TODO Upgrade this
@@ -335,7 +320,7 @@ void RemoteClientWidget::on_checkBoxShowStats_toggled(bool checked)
 	*/
 }
 
-void RemoteClientWidget::on_checkBoxShowLog_toggled(bool checked)
+void AgentClientWidget::on_checkBoxShowLog_toggled(bool checked)
 {
 	OC_METHODGATE();
 	// TODO Upgrade this
@@ -351,7 +336,7 @@ void RemoteClientWidget::on_checkBoxShowLog_toggled(bool checked)
 	*/
 }
 
-void RemoteClientWidget::on_checkBoxShowOnlineButton_toggled(bool checked)
+void AgentClientWidget::on_checkBoxShowOnlineButton_toggled(bool checked)
 {
 	OC_METHODGATE();
 	// TODO Upgrade this
@@ -369,7 +354,7 @@ void RemoteClientWidget::on_checkBoxShowOnlineButton_toggled(bool checked)
 
 
 
-void RemoteClientWidget::on_widgetPanic_toggled(bool panic)
+void AgentClientWidget::on_widgetPanic_toggled(bool panic)
 {
 	OC_METHODGATE();
 	if(panic) {

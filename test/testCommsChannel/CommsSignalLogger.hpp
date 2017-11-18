@@ -22,7 +22,7 @@ public:
 public slots:
 	void onCommsError(QString message);
 	void onCommsClientAdded(CommsSession *c);
-	void onCommsConnectionStatusChanged(bool c);
+	void onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection);
 
 };
 

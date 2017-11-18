@@ -79,8 +79,7 @@ bool RemoteWindow::needConnection()
 	OC_METHODGATE();
 	bool ret=false;
 
-	for(QMap<int, QWidget *>::iterator it=mClientWidgets.begin(), end=mClientWidgets.end(); it!=end; ++it) {
-		QWidget * cw=it.value();
+	for(QWidget * cw:mClientWidgets) {
 		RemoteClientWidget *rcw=qobject_cast<RemoteClientWidget *>(cw);
 		if(nullptr!=rcw) {
 			ret|=rcw->needConnection();
@@ -116,7 +115,7 @@ void RemoteWindow::prepareDiscovery()
 	qDebug()<<"REMOTEWIN PREPARE DISCOVERY";
 	if(!mRemote.isNull()) {
 		mRemote->updateDiscoveryClient();
-		mRemote->hookPeerSignals(*this);
+		mRemote->setHookPeerSignals(*this, true);
 	} else {
 		qWarning()<<"ERROR: no remote";
 	}
@@ -142,7 +141,6 @@ void RemoteWindow::prepareAgentList()
 {
 	OC_METHODGATE();
 	qDebug()<<"REMOTEWIN PREPARE AGENT LIST";
-	// Add agents, getting the number of agents added
 	updateAgentsList();
 }
 
@@ -184,42 +182,38 @@ void RemoteWindow::prepareMenu()
 
 
 
-// Rebuild the list of widget that correspond to our current list of clients
+// Rebuild the stack of client widgets based on available clients
 void RemoteWindow::updateClientWidgetList()
 {
 	OC_METHODGATE();
 	qDebug()<<"REMOTEWIN UPDATE CLIENT WIDGET LIST";
 	mClientWidgets.clear();
-	utility::clearWidget(ui->stackedWidgetControl);
+	utility::clearStackedWidget(ui->stackedWidgetControl);
 	if(!mRemote.isNull()) {
 		ClientList &clientList=mRemote->clientList();
-		int key=0;
-		for(QSharedPointer<Client> client: clientList) {
-			if(!client.isNull()) {
-				QWidget *widget=client->widget();
-				if(nullptr!=widget) {
-					mClientWidgets.insert(key, widget);
-					ui->stackedWidgetControl->addWidget(widget);
-					++key;
-				} else {
-					qWarning()<<"No client widget";
-				}
+		mClientWidgets=clientList.widgets();
+		qDebug()<<"REMOTEWIN CLIENT WIDGET LIST CONTAINED "<<mClientWidgets.count()<<" ITEMS";
+		for(QWidget *widget: mClientWidgets) {
+			if(nullptr!=widget) {
+				qDebug()<<"REMOTEWIN ADDING CLIENT WIDGET";
+				ui->stackedWidgetControl->addWidget(widget);
 			} else {
-				qWarning()<<"No client";
+				qWarning()<<"No client widget";
 			}
 		}
 	} else {
 		qWarning()<<"No remote";
 	}
 	int ct=ui->stackedWidgetControl->count();
-	//qDebug()<<"CLIENT WIDGETS: "<<ct;
+	qDebug()<<"REMOTEWIN ADDED TOTAL OF " << ct << " CLIENT WIDGET(S)";
 	//Add the placeholder back if count <=0
 	if(ct<=0) {
-		//qDebug()<<"ADDING PLACEHOLDER";
+		qDebug()<<"REMOTEWIN ADDING PLACEHOLDER";
 		ui->stackedWidgetControl->addWidget(ui->widgetClientPlaceholder);
 	}
 }
 
+// Update the control level combo box based on the currently selected agent
 void RemoteWindow::updateControlLevel()
 {
 	OC_METHODGATE();
@@ -239,7 +233,7 @@ void RemoteWindow::updateControlLevel()
 }
 
 
-
+// Update the currently displayed client widget based on the selection in the agent combobox
 void RemoteWindow::updateActiveAgent()
 {
 	OC_METHODGATE();
@@ -248,16 +242,12 @@ void RemoteWindow::updateActiveAgent()
 		const int idx=ui->comboBoxAgent->currentIndex();
 		const QString agentName=ui->comboBoxAgent->currentText();
 		const QString agentID=ui->comboBoxAgent->currentData().toString();
-		QSharedPointer<Associate>  clientAssociate=mRemote->peers().associateByID(agentID);
+
+		QSharedPointer<Associate>  clientAssociate=mRemote->addressBook().associateByID(agentID);
 		//qDebug()<<"SWITCHING ACTIVE AGENT TO "<<agentName<<"("<<idx<<", "<<agentID<<")";
-		if(idx>=0) {
-			QMap<int, QWidget *>::const_iterator it=mClientWidgets.find(idx);
-			QWidget *cw=nullptr;
-			if(mClientWidgets.end()!=it) {
-				cw=it.value();
-			} else {
-				qWarning()<<"widget not found for index "<<idx;
-			}
+		const int ct=mClientWidgets.size();
+		if((idx>=0) && (idx<ct)) {
+			QWidget *cw=mClientWidgets[idx];
 			if(nullptr!=cw) {
 
 				/*
@@ -272,13 +262,20 @@ void RemoteWindow::updateActiveAgent()
 				qDebug()<<"SWITCHING FROM "<<old << "("<<oldIndex << ", '"<<oldName << "') TO "<<cw <<"("<<newIndex << ", '"<<newName << "')";
 				*/
 				updateControlLevel();
+			} else {
+				qWarning()<<"No current widget found";
 			}
 		}
+		else{
+			qWarning().noquote().nospace()<<"Selected agent index out of range 0 - "<<ct;
+		}
+	} else {
+		qWarning()<<"No remote";
 	}
 }
 
 
-
+// Rebuild the list of agents in the agent combobox based on the actual list of clients
 int RemoteWindow::updateAgentsList()
 {
 	OC_METHODGATE();
@@ -287,14 +284,14 @@ int RemoteWindow::updateAgentsList()
 	ui->comboBoxAgent->clear();
 	if(nullptr!=mRemote) {
 		QSharedPointer<Associate> local=mRemote->nodeIdentity();
-		if(nullptr!=local) {
+		if(!local.isNull()) {
 			const QString myID=local->id();
-			AddressBook &peerStore=mRemote->peers();
+			AddressBook &peerStore=mRemote->addressBook();
 			QMap<QString, QSharedPointer<Associate> > &peers=peerStore.all();
 			for(QMap<QString, QSharedPointer<Associate> >::iterator i=peers.begin(), e=peers.end(); i!=e; ++i) {
 				const QString id=i.key();
 				QSharedPointer<Associate> peer=i.value();
-				if(DiscoveryType::TYPE_REMOTE!=peer->type()) {
+				if(NodeType::TYPE_REMOTE!=peer->type()) {
 					addAgentToList(peer);
 					ct++;
 				}
@@ -307,12 +304,12 @@ int RemoteWindow::updateAgentsList()
 }
 
 
-
+// Helper to add a single agent to the agent combo box based on associate
 void RemoteWindow::addAgentToList(QSharedPointer<Associate> peer)
 {
 	qDebug()<<"REMOTEWIN ADD AGENT TO LIST";
 	OC_METHODGATE();
-	if(nullptr!=peer) {
+	if(!peer.isNull()) {
 		QString name=peer->name().trimmed();
 		if(""==name) {
 			name=peer->id().mid(0,16);
@@ -326,7 +323,7 @@ void RemoteWindow::addAgentToList(QSharedPointer<Associate> peer)
 		icon=QIcon(identicon.pixmap());
 
 
-		//qDebug()<<"INSERTING AGENT IN DROPDOWN "<<peer->toPortableID().toPortableString();
+		qDebug()<<" + INSERTING AGENT IN DROPDOWN "<<peer->toPortableID().toPortableString();
 		ui->comboBoxAgent->insertItem(0, icon, name, userData);
 		ui->comboBoxAgent->setCurrentIndex(0);
 	}
@@ -338,7 +335,7 @@ void RemoteWindow::hookSensorSignals()
 {
 	OC_METHODGATE();
 	if(nullptr!=mRemote) {
-		mRemote->hookSensorSignals(*this);
+		mRemote->setHookSensorSignals(*this, true);
 	} else {
 		qWarning()<<"ERROR: no remote";
 	}
@@ -358,7 +355,7 @@ void RemoteWindow::goToStartPage()
 				//qDebug()<<"STARTING WITH DELIVERY";
 				ui->widgetDelivery->reset();
 				ui->stackedWidgetScreen->setCurrentWidget(ui->pageDelivery);
-			} else if(mRemote->peers().associateCount()<=0) {
+			} else if(mRemote->addressBook().associateCount()<=0) {
 				//qDebug()<<"STARTING WITH PAIRING";
 				ui->widgetPairing->reset();
 				ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);

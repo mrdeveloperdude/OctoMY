@@ -1,5 +1,5 @@
-#ifndef REMOTECLIENTWIDGET_HPP
-#define REMOTECLIENTWIDGET_HPP
+#ifndef HUBCLIENTWIDGET_HPP
+#define HUBCLIENTWIDGET_HPP
 
 
 #include "comms/CommsSession.hpp"
@@ -19,31 +19,33 @@ class SensorsCourier;
 class AgentStateCourier;
 class BlobCourier;
 class ISyncParameter;
+class HubClient;
+
 
 namespace Ui
 {
-class ClientWidget;
+class HubClientWidget;
 }
 
 /**
- * @brief The ClientWidget class is the UI for one single Agent as seen on the remote
+ * @brief The ClientWidget class is the UI for one single Hub as seen by other nodes
  */
 
-class RemoteClientWidget : public QWidget
+class HubClientWidget : public QWidget
 {
 	Q_OBJECT
 
 private:
-	Ui::ClientWidget *ui;
+	Ui::HubClientWidget *ui;
 
 	WaitingSpinnerWidget *mSpinner;
-	QSharedPointer <RemoteClient> mRemoteClient;
+	QSharedPointer <HubClient> mHubClient;
 
 
 
 public:
-	explicit RemoteClientWidget(QSharedPointer<RemoteClient> client, QWidget *parent=nullptr);
-	virtual ~RemoteClientWidget();
+	explicit HubClientWidget(QSharedPointer<HubClient> client, QWidget *parent=nullptr);
+	virtual ~HubClientWidget();
 
 private:
 	bool eventFilter(QObject *object, QEvent *event);
@@ -57,10 +59,6 @@ private:
 
 	void updateOnlineStatus();
 
-	/*
-	bool courierRegistration();
-	void setCourierRegistration(bool reg);
-*/
 
 	bool setSetting(QString key, bool val);
 
@@ -96,4 +94,4 @@ public slots:
 
 };
 
-#endif // REMOTECLIENTWIDGET_HPP
+#endif // HUBCLIENTWIDGET_HPP

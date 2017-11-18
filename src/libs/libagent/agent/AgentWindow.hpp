@@ -130,7 +130,7 @@ public slots:
 private slots:
 	void onCommsError(QString);
 	void onCommsClientAdded(CommsSession *);
-	void onCommsConnectionStatusChanged(bool);
+	void onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection);
 
 	// UI slots
 private slots:

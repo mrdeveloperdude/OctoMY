@@ -140,7 +140,8 @@ bool MockCommsCarrier::start(NetworkAddress address)
 	if(mOverrideStartStop) {
 		return isStarted();
 	} else {
-		return CommsCarrier::start(address);
+		CommsCarrier::setListenAddress(address);
+		return  CommsCarrier::setStarted(true);
 	}
 }
 
@@ -149,7 +150,7 @@ void MockCommsCarrier::stop()
 	if(mOverrideStartStop) {
 		return;
 	} else {
-		CommsCarrier::stop();
+		CommsCarrier::setStarted(false);
 	}
 }
 
@@ -158,23 +159,24 @@ void MockCommsCarrier::stop()
 
 //////////////////////////  CommsCarrier internal interface methods
 
-
-bool MockCommsCarrier::startImp(NetworkAddress address)
+void MockCommsCarrier::setAddressImp(NetworkAddress address)
 {
-	const bool oldIsStarted=mIsStarted;
-	if(!mStartFail) {
-		mOurAddress=address;
-		mIsStarted=true;
-	}
-	qDebug() << "start() called for address "<< address.toString() << " with mock-fail=" << mStartFail << " and isStarted " << oldIsStarted << " --> " << mIsStarted;
-	return mIsStarted;
+	qDebug() << "setAddress() called for address "<< address.toString();
+	mOurAddress=address;
 }
 
-
-void MockCommsCarrier::stopImp()
+bool MockCommsCarrier::setStartImp(bool start)
 {
-	qDebug() << "stop() called";
-	mIsStarted=false;
+	const bool oldIsStarted=mIsStarted;
+	if(start) {
+		if(!mStartFail) {
+			mIsStarted=true;
+		}
+	} else {
+		mIsStarted=false;
+	}
+	qDebug() << "setStart() called with start= "<<start<<" for address "<< mOurAddress.toString() << " with mock-fail=" << mStartFail << " and isStarted " << oldIsStarted << " --> " << mIsStarted;
+	return mIsStarted;
 }
 
 

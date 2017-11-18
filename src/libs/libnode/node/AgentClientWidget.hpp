@@ -6,7 +6,7 @@
 
 #include "widgets/TryToggle.hpp"
 #include "node/Node.hpp"
-#include "node/RemoteCourierSet.hpp"
+#include "agent/AgentCourierSet.hpp"
 
 
 #include <QSharedPointer>
@@ -19,31 +19,32 @@ class SensorsCourier;
 class AgentStateCourier;
 class BlobCourier;
 class ISyncParameter;
+class AgentClient;
 
 namespace Ui
 {
-class ClientWidget;
+class AgentClientWidget;
 }
 
 /**
  * @brief The ClientWidget class is the UI for one single Agent as seen on the remote
  */
 
-class RemoteClientWidget : public QWidget
+class AgentClientWidget : public QWidget
 {
 	Q_OBJECT
 
 private:
-	Ui::ClientWidget *ui;
+	Ui::AgentClientWidget *ui;
 
 	WaitingSpinnerWidget *mSpinner;
-	QSharedPointer <RemoteClient> mRemoteClient;
+	QSharedPointer <AgentClient> mAgentClient;
 
 
 
 public:
-	explicit RemoteClientWidget(QSharedPointer<RemoteClient> client, QWidget *parent=nullptr);
-	virtual ~RemoteClientWidget();
+	explicit AgentClientWidget(QSharedPointer<AgentClient> client, QWidget *parent=nullptr);
+	virtual ~AgentClientWidget();
 
 private:
 	bool eventFilter(QObject *object, QEvent *event);
@@ -56,11 +57,6 @@ private:
 	void init();
 
 	void updateOnlineStatus();
-
-	/*
-	bool courierRegistration();
-	void setCourierRegistration(bool reg);
-*/
 
 	bool setSetting(QString key, bool val);
 

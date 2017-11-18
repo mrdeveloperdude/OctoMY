@@ -42,3 +42,18 @@ QWidget *Remote::showWindow()
 	return window;
 }
 
+
+
+
+void Remote::setNodeCouriersRegistered(bool reg){
+	OC_METHODGATE();
+	Node::setNodeCouriersRegistered(reg);
+	// When we get a new remote specific courier, put it here
+	/*
+	if(nullptr!=mComms){
+		if(nullptr!=mRemoteCourierX){
+			mComms->setCourierRegistered(*mRemoteCourierX, reg);
+		}
+
+	}*/
+}

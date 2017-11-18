@@ -29,15 +29,14 @@
 
 Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 	: Node(OC_NEW AppContext(launcher.options(), launcher.environment(), "agent", parent), ROLE_AGENT, TYPE_AGENT, parent)
-	, mControls(*this)
 	, mAgentConfigStore(mContext->baseDir() + "/agent_config.json")
 	, mActuatorController(nullptr)
 	, mWindow(nullptr)
 	, mThis(this)
 {
 	OC_METHODGATE();
-	mAssociates.hookSignals(*this);
-	if(mAssociates.isReady()) {
+	mAddressBook.hookSignals(*this);
+	if(mAddressBook.isReady()) {
 		onAddressBookReady(true);
 	}
 	mAgentConfigStore.bootstrap(true, false);
@@ -67,156 +66,14 @@ QWidget *Agent::showWindow()
 }
 
 
-QSet<QSharedPointer<Associate> > Agent::allControls()
-{
-	OC_METHODGATE();
-	QSet<QSharedPointer<Associate> > out;
-	CommsChannel *cc=comms();
-	if(nullptr!=cc) {
-		AddressBook &p=peers();
-		out = p.all().values().toSet();
-	}
-	return out;
-}
-
-QSet<QSharedPointer<Associate> > Agent::controlsWithActiveSessions(quint64 now)
-{
-	OC_METHODGATE();
-	QSet<QSharedPointer<Associate> > out;
-	if(0==now) {
-		now=QDateTime::currentMSecsSinceEpoch();
-	}
-	const quint64 lastActive=now-(1000*60);//One minute ago. TODO: Turn into constant or setting
-
-	CommsChannel *cc=comms();
-	if(nullptr!=cc) {
-		AddressBook &p=peers();
-		CommsSessionDirectory &sessionDirectory=cc->sessions();
-		const bool honeyMoon=cc->honeymoon(now);
-		QSet<QSharedPointer<CommsSession> > sessions = ( (honeyMoon)? sessionDirectory.all() : sessionDirectory.byActiveTime(lastActive));
-		qDebug()<<"HoneyMoon enabled="<<honeyMoon<< " gave "<<sessions.size()<<" sessions";
-		for(QSharedPointer<CommsSession> session: sessions) {
-			auto key=session->key();
-			if(nullptr!=key) {
-				QString id=key->id();
-				if(id.size()>0) {
-					QSharedPointer<Associate> peer=p.associateByID(id);
-					if(nullptr!=peer) {
-						if(DiscoveryRole::ROLE_CONTROL==peer->role()) {
-							out<<peer;
-						}
-					}
-				}
-			} else {
-				qWarning()<<"ERROR: No key";
-			}
-		}
-	}
-
-	return out;
-}
-
-void Agent::setCourierRegistration(QSharedPointer<Associate> assoc, bool reg)
-{
-	OC_METHODGATE();
-		CommsChannel *cc=comms();
-	if(nullptr!=cc) {
-		if(nullptr != assoc) {
-			//quint64 now=0;
-			//if(0==now) {				now=QDateTime::currentMSecsSinceEpoch();			}
-			//const bool honeyMoon=cc->honeymoon(now);
-			//QSet<QSharedPointer<NodeAssociate> > controls = honeyMoon? allControls() : controlsWithActiveSessions(now);
-			const QString id=assoc->id();
-			if(reg) {
-				qDebug()<<"REGISTERING COURIERS FOR " <<id;
-				QSet< QSharedPointer<Courier> > set;
-				Courier *courier=OC_NEW SensorsCourier(*cc);
-				set<< QSharedPointer<Courier>(courier);
-				//QMap<const QString, QSet< QSharedPointer<Courier> > > mCourierSets;
-				mCourierSets.insert(id, set);
-
-				cc->setCourierRegistered(*courier, true);
-
-			} else {
-				qDebug()<<"UN-REGISTERING COURIERS FOR " <<id;
-				if(mCourierSets.contains(id)) {
-					QSet< QSharedPointer<Courier> > set=mCourierSets.take(id);
-					for(QSharedPointer<Courier>  courier:set) {
-						if(nullptr!=courier) {
-
-							cc->setCourierRegistered(*courier, false);
-						}
-					}
-				}
-			}
-		}
-		/*
-		// Adaptively start commschannel when there are couriers registered
-		const int ct = cc->courierCount();
-		if(ct > 0) {
-			if(nullptr != assoc) {
-				startComms();
-			}
-		} else {
-			stopComms();
-		}
-		*/
-	}
-
-}
-
-void Agent::updateCourierRegistration(quint64 now)
-{
-	OC_METHODGATE();
-	if(0==now) {
-		now=QDateTime::currentMSecsSinceEpoch();
-	}
-	QSet<QSharedPointer<Associate> > active = controlsWithActiveSessions(now);
-	if(active!=mLastActiveControls) {
-		for(QSharedPointer<Associate> assoc:mLastActiveControls) {
-			if(!active.contains(assoc)) {
-				//Decomission it
-				setCourierRegistration(assoc,false);
-			}
-		}
-		for(QSharedPointer<Associate> assoc:active) {
-			if(!mLastActiveControls.contains(assoc)) {
-				//Comission it
-				setCourierRegistration(assoc,true);
-			}
-		}
-	}
-	mLastActiveControls.clear();
-	mLastActiveControls = active;
-}
-
-
 
 void Agent::setPanic(bool panic)
 {
 	OC_METHODGATE();
-	AgentCourierSet *set=mControls.activeControl();
-
-	if(nullptr!=set) {
-		QSharedPointer<AgentStateCourier> asc=set->agentStateCourier();
-		if(!asc.isNull()) {
-			asc->setPanic(panic);
-		} else {
-			qWarning()<<"ERROR: No active control";
-		}
-	} else {
-		qWarning()<<"ERROR: No set";
-	}
-
 }
 
 
 
-const AgentControls &Agent::controls() const
-{
-	OC_METHODGATE();
-	return mControls;
-}
 AgentConfigStore &Agent::configurationStore()
 {
 	OC_METHODGATE();
@@ -264,6 +121,22 @@ void Agent::reloadController()
 	}
 }
 
+
+
+void Agent::setNodeCouriersRegistered(bool reg){
+	OC_METHODGATE();
+	Node::setNodeCouriersRegistered(reg);
+	// When we get a new agent specific courier, put it here
+	/*
+	if(nullptr!=mComms){
+		if(nullptr!=mAgentCourierX){
+			mComms->setCourierRegistered(*mAgentCourierX, reg);
+		}
+
+	}*/
+}
+
+
 //////////////////////////////////////////////////
 // Agent Config Store slots
 
@@ -283,16 +156,6 @@ void Agent::onAgentConfigStoreReady(bool ok)
 void Agent::onAddressBookReady(bool ready)
 {
 	OC_METHODGATE();
-	qDebug()<<"AGENT found in addressbook "<< (ready?"READY":"UNREADY");
-	QMap<QString, QSharedPointer<Associate> > &associates = mAssociates.all();
-	for(QSharedPointer<Associate> associate:associates) {
-		QSharedPointer<AddressEntry> ae=associate->addressList().highestScore();
-		if(!ae.isNull() && ae->address.isValid() && ROLE_CONTROL == associate->role()) {
-			qDebug()<<"Adding "<<ae->address.toString()<<"("<<associate->toString()<<") to agent control's list";
-			mControls.registerClient(associate->id());
-		}
-	}
-	mControls.setCommsEnabled(true);
 }
 
 
@@ -352,7 +215,7 @@ void Agent::onCommsClientAdded(CommsSession *c)
 	//qDebug()<<"AGENT UNIMP Client added: "<<c->toString();
 }
 
-void Agent::onCommsConnectionStatusChanged(bool s)
+void Agent::onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection)
 {
 	OC_METHODGATE();
 	//qDebug() <<"AGENT UNIMP New connection status: "<<(s?"ONLINE":"OFFLINE");

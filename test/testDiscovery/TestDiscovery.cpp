@@ -3,7 +3,7 @@
 #include "zoo/ZooServer.hpp"
 #include "zoo/ZooClient.hpp"
 #include "discovery/DiscoveryClient.hpp"
-#include "discovery/DiscoveryRole.hpp"
+#include "node/NodeRole.hpp"
 #include "node/Node.hpp"
 #include "node/AppContext.hpp"
 
@@ -41,7 +41,7 @@ void TestDiscovery::test(){
 
 
 		qDebug()<<"AGENT -----------------------";
-		Node *testAgent=OC_NEW Node(agentContext, DiscoveryRole::ROLE_AGENT, DiscoveryType::TYPE_AGENT, this);
+		Node *testAgent=OC_NEW Node(agentContext, NodeRole::ROLE_AGENT, NodeType::TYPE_AGENT, this);
 		QVERIFY(nullptr!=testAgent);
 		KeyStore *agentKeystore=&testAgent->keyStore();
 		QVERIFY(nullptr!=agentKeystore);
@@ -57,7 +57,7 @@ void TestDiscovery::test(){
 
 	if(nullptr!=remoteContext){
 		qDebug()<<"REMOTE -----------------------";
-		Node *testRemote=OC_NEW Node(remoteContext, DiscoveryRole::ROLE_CONTROL, DiscoveryType::TYPE_REMOTE, this);
+		Node *testRemote=OC_NEW Node(remoteContext, NodeRole::ROLE_CONTROL, NodeType::TYPE_REMOTE, this);
 		QVERIFY(nullptr!=testRemote);
 		KeyStore *remoteKeystore=&testRemote->keyStore();
 		QVERIFY(nullptr!=remoteKeystore);

@@ -125,3 +125,10 @@ QString Pose::toString() const
 	out+=" )";
 	return out;
 }
+
+
+
+QString ardumyActuatorValueToString (const Pose &v)
+{
+	return v.toString();
+}

@@ -36,8 +36,8 @@ EyesWidget::EyesWidget(QWidget *parent)
 	, mBgBrush("black")
 	, mEyeSteer(0,0)
 {
-	mTimer.setTimerType(Qt::CoarseTimer);
-	if(!connect(&mTimer,SIGNAL(timeout()),this,SLOT(onUpdateTimer())), OC_CONTYPE) {
+	mTimer.setTimerType(Qt::PreciseTimer);
+	if(!connect(&mTimer,SIGNAL(timeout()),this,SLOT(onUpdateTimer()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 	//	qDebug()<<"BUT: "<<but<<" squint "<< squint;
@@ -90,9 +90,48 @@ void EyesWidget::setPortableID(PortableID &pid)
 
 void EyesWidget::paintEvent(QPaintEvent *)
 {
+	mLeftEye.update();
+	mRightEye.update();
+
+	QPainter painter(this);
+	const qreal w=painter.device()->width();
+	const qreal h=painter.device()->height();
+	painter.setPen(Qt::NoPen);
+
+	painter.setRenderHint(QPainter::Antialiasing,true);
+	painter.translate(w/2,h/2);
+	const qreal s=w;// Width is most important.
+	//const qreal fh=h/w;// wee need to know face height
+	painter.scale(s,s);
+	//const qreal angle=(cycle*M_PI*2.0f)/cycleTime;
+	//painter.drawRect(0,sin(angle)/2,1,0.1);
+	painter.translate(0.2,0);
+	mLeftEye.paint(painter);
+	painter.translate(-0.4,0);
+	mRightEye.paint(painter);
+	//qDebug()<<"UPD";
+}
+
+
+void EyesWidget::onUpdateTimer()
+{
+	const qreal alpha=0.8, beta=1.0f-alpha;
+	const QVector2D lastEyeSteerSmooth=mEyeSteerSmooth;
+	mEyeSteerSmooth=(mEyeSteerSmooth*alpha)+(mEyeSteer*beta);
+	QVector2D dif=(mEyeSteerSmooth-mEyeSteer);
+	if(dif.length()<0.001) {
+		mEyeSteerSmooth=mEyeSteer;
+	}
+
+	if(lastEyeSteerSmooth!=mEyeSteerSmooth) {
+		//qDebug()<<"SMOOTH STEER: "<<eyeSteer<<", "<<eyeSteerSmooth<<", "<<dif.length();
+		mLeftEye.setSteer(mEyeSteerSmooth);
+		mRightEye.setSteer(mEyeSteerSmooth);
+	}
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 	//const quint64 sinceStart=now-startTime;
 	const quint64 sinceLastTime=now-mLastTime;
+	mLastTime=now;
 	const qreal cycleTime=7.0;
 	mCycle+=((qreal)sinceLastTime)/1000.0;
 	mCycle=fmod(mCycle,cycleTime);
@@ -108,44 +147,8 @@ void EyesWidget::paintEvent(QPaintEvent *)
 		mRightEye.setBlink(mBlink);
 	}
 
-	mLeftEye.update();
-	mRightEye.update();
 
-	QPainter painter(this);
-	const qreal w=painter.device()->width();
-	const qreal h=painter.device()->height();
-	painter.setPen(Qt::NoPen);
-
-	painter.setRenderHint(QPainter::Antialiasing,true);
-	painter.translate(w/2,h/2);
-	const qreal s=w;// Width is most important.
-	//const qreal fh=h/w;// wee need to know face height
-	painter.scale(s,s);
-	//const qreal angle=(cycle*M_PI*2.0f)/cycleTime;
-	mLastTime=now;
-	//painter.drawRect(0,sin(angle)/2,1,0.1);
-	painter.translate(0.2,0);
-	mLeftEye.paint(painter);
-	painter.translate(-0.4,0);
-	mRightEye.paint(painter);
-}
-
-
-void EyesWidget::onUpdateTimer()
-{
-	const qreal alpha=0.8, beta=1.0f-alpha;
-	const QVector2D lastEyeSteerSmooth=eyeSteerSmooth;
-	eyeSteerSmooth=(eyeSteerSmooth*alpha)+(mEyeSteer*beta);
-	QVector2D dif=(eyeSteerSmooth-mEyeSteer);
-	if(dif.length()<0.001) {
-		eyeSteerSmooth=mEyeSteer;
-	}
-
-	if(lastEyeSteerSmooth!=eyeSteerSmooth) {
-		//qDebug()<<"SMOOTH STEER: "<<eyeSteer<<", "<<eyeSteerSmooth<<", "<<dif.length();
-		mLeftEye.setSteer(eyeSteerSmooth);
-		mRightEye.setSteer(eyeSteerSmooth);
-
+	if(mLeftEye.isDirty() || mRightEye.isDirty()){
 		update();
 	}
 }

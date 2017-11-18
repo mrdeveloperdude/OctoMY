@@ -1,9 +1,9 @@
-#include "DiscoveryType.hpp"
+#include "NodeType.hpp"
 
 
 
 
-const QDebug &operator<<(QDebug &d, const DiscoveryType &type){
+const QDebug &operator<<(QDebug &d, const NodeType &type){
 	switch(type){
 		case(TYPE_AGENT):{d.nospace() << "TYPE_AGENT";}break;
 		case(TYPE_REMOTE):{d.nospace() << "TYPE_REMOTE";}break;
@@ -15,22 +15,22 @@ const QDebug &operator<<(QDebug &d, const DiscoveryType &type){
 }
 
 
-QString DiscoveryTypeToString(DiscoveryType s){
-#define  DiscoveryTypeToStringCASE(A) case (A):return #A
+QString nodeTypeToString(NodeType s){
+#define  NodeTypeToStringCASE(A) case (A):return #A
 	switch(s){
 		default:return "UNKNOWN";
-			DiscoveryTypeToStringCASE(TYPE_AGENT);
-			DiscoveryTypeToStringCASE(TYPE_REMOTE);
-			DiscoveryTypeToStringCASE(TYPE_HUB);
-			DiscoveryTypeToStringCASE(TYPE_ZOO);
-			DiscoveryTypeToStringCASE(TYPE_UNKNOWN);
+			NodeTypeToStringCASE(TYPE_AGENT);
+			NodeTypeToStringCASE(TYPE_REMOTE);
+			NodeTypeToStringCASE(TYPE_HUB);
+			NodeTypeToStringCASE(TYPE_ZOO);
+			NodeTypeToStringCASE(TYPE_UNKNOWN);
 	}
-#undef DiscoveryTypeToStringCASE
+#undef NodeTypeToStringCASE
 }
 
 
 
-DiscoveryType DiscoveryTypeFromString(QString s){
+NodeType nodeTypeFromString(QString s){
 	if("TYPE_AGENT"==s)return TYPE_AGENT;
 	if("TYPE_REMOTE"==s)return TYPE_REMOTE;
 	if("TYPE_HUB"==s)return TYPE_HUB;

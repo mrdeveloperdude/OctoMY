@@ -30,8 +30,8 @@ private slots:
 	// CommsCarrier internal interface methods
 protected:
 
-	bool startImp(NetworkAddress address) Q_DECL_OVERRIDE;
-	void stopImp() Q_DECL_OVERRIDE;
+	void setAddressImp(NetworkAddress address) Q_DECL_OVERRIDE;
+	bool setStartImp(const bool) Q_DECL_OVERRIDE;
 
 	bool isStartedImp() const Q_DECL_OVERRIDE;
 

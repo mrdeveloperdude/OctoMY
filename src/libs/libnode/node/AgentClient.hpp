@@ -1,24 +1,28 @@
-#ifndef REMOTECLIENT_HPP
-#define REMOTECLIENT_HPP
+#ifndef AGENTCLIENT_HPP
+#define AGENTCLIENT_HPP
 
 #include "Client.hpp"
-#include "RemoteCourierSet.hpp"
+#include "agent/AgentCourierSet.hpp"
 
 
 #include <QtGlobal>
 
-class RemoteClientWidget;
+class AgentClientWidget;
 
-class RemoteClient : public Client
+
+/**
+ * @brief The AgentClient is a specialization class derivig from Client that represents an agent that the current node has communications with
+ */
+class AgentClient : public Client
 {
 	Q_OBJECT
 private:
-	RemoteCourierSet mCouriers;
-	RemoteClientWidget *mWidget;
+	CourierSet mCouriers;
+	AgentClientWidget *mWidget;
 	// TODO: Figure out if this is complete horse manure or if it is actually sound (doubtful)
-	QSharedPointer <RemoteClient> mThis;
+	QSharedPointer <AgentClient> mThis;
 public:
-	explicit RemoteClient(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssoc, QObject *parent = nullptr);
+	explicit AgentClient(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssoc, QObject *parent = nullptr);
 
 
 	// Client interface
@@ -31,4 +35,7 @@ public:
 
 };
 
-#endif // REMOTECLIENT_HPP
+#endif // AGENTCLIENT_HPP
+
+
+

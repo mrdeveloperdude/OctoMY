@@ -9,13 +9,16 @@
 
 #include "comms/CommsCarrierUDP.hpp"
 
-#include "discovery/DiscoveryRole.hpp"
+#include "node/NodeRole.hpp"
 #include "discovery/AddressBook.hpp"
 
 #include "basic/Settings.hpp"
 #include "security/KeyStore.hpp"
 #include "basic/LocalAddressList.hpp"
 #include "ClientList.hpp"
+#include "widgets/TryToggleState.hpp"
+#include "comms/IConnectionStatus.hpp"
+
 
 #include <QObject>
 #include <QHostAddress>
@@ -43,37 +46,35 @@ class BlobCourier;
 class BlobFuture;
 
 
-class Node : public QObject
+class Node : public QObject, public IConnectionStatus
 {
 	Q_OBJECT
 protected:
 
 	AppContext *mContext;
+	NodeRole mRole;
+	NodeType mType;
 	KeyStore mKeystore;
-	AddressBook mAssociates;
-	DiscoveryClient *mDiscovery;
-	DiscoveryRole mRole;
-	DiscoveryType mType;
+	// Client ids
+	AddressBook mAddressBook;
+	// Client instances
+	ClientList mClients;
+	// Our local network addresses
+	LocalAddressList mAddresses;
 	CommsCarrier *mCarrier;
 	CommsChannel *mComms;
+	DiscoveryClient *mDiscovery;
 	ZooClient *mZooClient;
 	SensorInput *mSensors;
-	SensorsCourier *mSensorsCourier;
-	BlobCourier *mBlobCourier;
+	QSharedPointer<SensorsCourier> mSensorsCourier;
+	QSharedPointer<BlobCourier> mBlobCourier;
 	CameraList *mCameras;
 	qint64 mLastStatusSend;
 	QUrl mServerURL;
-	LocalAddressList mAddresses;
-	ClientList mClients;
-	bool mWantToConnect;
 
 public:
-	explicit Node(AppContext *context, DiscoveryRole mRole, DiscoveryType mType, QObject *parent = nullptr);
+	explicit Node(AppContext *context, NodeRole mRole, NodeType mType, QObject *parent = nullptr);
 	virtual ~Node();
-
-private:
-	void startComms();
-	void stopComms();
 
 public:
 
@@ -82,45 +83,76 @@ public:
 
 	void updateDiscoveryClient();
 
-	void hookColorSignals(QObject &o);
-	void unHookColorSignals(QObject &o);
-
-	void hookSensorSignals(QObject &o);
-	void unHookSensorSignals(QObject &o);
-
+	void setHookColorSignals(QObject &o, bool hook);
+	void setHookSensorSignals(QObject &o, bool hook);
 	void setHookCommsSignals(QObject &o, bool hook);
+	void setHookPeerSignals(QObject &o, bool hook);
 
-	void hookPeerSignals(QObject &o);
-	void unHookPeerSignals(QObject &o);
 
 	// Selectors
 public:
-	const QCommandLineParser &commandLine() const;
-	Settings &settings();
+	NodeRole role();
+	NodeType type();
 	KeyStore &keyStore();
-	AddressBook &peers();
-	DiscoveryClient *discoveryClient();
-	DiscoveryRole role();
-	DiscoveryType type();
+	AddressBook &addressBook();
+	ClientList &clientList();
+	LocalAddressList &localAddressList();
 	QString name();
 	CommsChannel *comms();
+	DiscoveryClient *discoveryClient();
 	ZooClient *zooClient();
 	SensorInput *sensorInput();
 	QSharedPointer<Associate> nodeIdentity();
-	CameraList *cameras();
-	LocalAddressList &localAddressList();
-	ClientList &clientList();
+	CameraList *cameraList();
+
+	const QCommandLineParser &commandLine() const;
+	Settings &settings();
+
+	QSet<QSharedPointer<Associate> > allControls();
+	QSet<QSharedPointer<Associate> > controlsWithActiveSessions(quint64 now=0);
+
+	//bool courierRegistration();
+	//void  rierRegistration(QSharedPointer<Associate>, bool);
+	//void updateCourierRegistration(quint64 now=0);
+
+
+	//TryToggleState updateOnlineStatus(const TryToggleState currentTryState);
+
+
+	// Couriers
+
+	// [Un]register local couriers with comms
+	virtual void setNodeCouriersRegistered(const bool reg);
+	// [Un]register client specific couriers with comms
+	void setClientCouriersRegistered(const bool reg);
+	// [Un]register couriers with comms
+	void setCouriersRegistered(const bool reg);
+
+	// Update client specific courier registration with comms depending on need
+	void updateClientCouriersRegistered();
+	// Update node specific courier registration with comms depending on need
+	void updateNodeCouriersRegistered();
+	// Update courier registration with comms depending on need
+	void updateCouriersRegistered();
+
+
 
 	// Actions
 public:
 
 	virtual QWidget *showWindow();
 
-	// Node is responsible for connecting/disconnecting. Outsiders may set this as a hint that they would like it to connect.
-	void setWantToConnect(bool want);
-
 	bool isCommsStarted();
 	bool isCommsConnected();
+
+
+	// IConnectionStatus interface
+public:
+	bool needsConnection() Q_DECL_OVERRIDE;
+	bool isConnected() Q_DECL_OVERRIDE;
+	void setNeedsConnection(const bool) Q_DECL_OVERRIDE;
+	void setConnected(const bool) Q_DECL_OVERRIDE;
+
 
 	// Blob courier
 	BlobFuture submitBlobForSending(QByteArray data, QString name);
@@ -139,7 +171,7 @@ private slots:
 private slots:
 	virtual void onCommsError(QString);
 	virtual void onCommsClientAdded(CommsSession *);
-	virtual void onCommsConnectionStatusChanged(bool);
+	virtual void onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection);
 
 
 	// SensorInput slots

@@ -8,7 +8,7 @@
 #define ASSOCIATE_HPP
 
 
-#include "discovery/DiscoveryRole.hpp"
+#include "node/NodeRole.hpp"
 #include "comms/NetworkAddress.hpp"
 #include "comms/CommsSignature.hpp"
 
@@ -18,7 +18,6 @@
 
 #include "basic/AddressList.hpp"
 
-
 #include <QBluetoothAddress>
 
 #include <QByteArray>
@@ -27,6 +26,8 @@
 
 
 class PortableID;
+class Client;
+class Node;
 
 /*
 
@@ -45,8 +46,8 @@ private:
 	QString mName;
 	QString mGender;
 	// The most updated trusted type and role for this associate
-	DiscoveryRole mRole;
-	DiscoveryType mType;
+	NodeRole mRole;
+	NodeType mType;
 	// A list of the trusts assigned to this associate
 	QStringList mTrusts;
 
@@ -83,8 +84,8 @@ public:
 	QString identifier();
 	QString gender() const;
 	Key key();
-	DiscoveryType type() const;
-	DiscoveryRole role() const;
+	NodeType type() const;
+	NodeRole role() const;
 
 	bool isValidForClient(bool onlyPublic=true);
 	bool isValidForServer();
@@ -120,7 +121,7 @@ public:// to/from
 	QVariantMap toVariantMap();
 	void fromVariantMap(const QVariantMap map);
 	QString toString();
-
+	QSharedPointer<Client> toClient(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssoc);
 
 public: // Operators
 	bool operator==(Associate &o);

@@ -2,7 +2,7 @@
 #define DISCOVERYCLIENT_HPP
 
 
-#include "DiscoveryRole.hpp"
+#include "node/NodeRole.hpp"
 #include "AddressBook.hpp"
 #include "basic/Associate.hpp"
 
@@ -34,7 +34,7 @@ class QHttpClient;
 		a. NFC: by having NFC range physical proximity is implied
 		b. Cam/QR: by having scanning QR with camera, physical proximity is implied
 		c. Bluetooth: by having bluetooth range physical proximity is implied
-		d. Zoo: posting exiring gps coords together with pairing signature
+		d. Zoo: posting expiring gps coords together with pairing signature
 		e. LAN: Identify common gateway
 	2. Exchange pairing signatures and pubkeys
 	3. Exchange pairing challenge/responses to verify legitimity of signature/pubkeys

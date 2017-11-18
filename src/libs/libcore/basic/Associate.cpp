@@ -7,6 +7,14 @@
 #include "basic/Associate.hpp"
 #include "utility/Utility.hpp"
 
+
+
+#include "node/Client.hpp"
+#include "node/AgentClient.hpp"
+#include "node/RemoteClient.hpp"
+#include "node/HubClient.hpp"
+
+
 #include <QRegularExpression>
 
 
@@ -14,8 +22,8 @@ Associate::Associate(const QVariantMap map, bool isPublic)
 	: mKey( map["key"].toMap(), isPublic)
 	, mName( map["name"].toString() )
 	, mGender( map["gender"].toString() )
-	, mRole( DiscoveryRoleFromString( map["role"].toString() ) )
-	, mType( DiscoveryTypeFromString( map["type"].toString() ) )
+	, mRole( nodeRoleFromString( map["role"].toString() ) )
+	, mType( nodeTypeFromString( map["type"].toString() ) )
 	, mTrusts( map["trusts"].toStringList())
 	, mLastSeenMS( map["lastSeenMS"].toDateTime().toMSecsSinceEpoch() )
 	, mLastInitiatedHandshakeMS( map["lastInitiatedHandshakeMS"].toDateTime().toMSecsSinceEpoch() )
@@ -63,8 +71,8 @@ bool Associate::update(const QVariantMap map, bool trustedSource)
 		//mKey=Key( map["key"].toMap(), true);
 		mName=( map["name"].toString() );
 		mGender=( map["gender"].toString() );
-		mRole=( DiscoveryRoleFromString( map["role"].toString() ) );
-		mType=( DiscoveryTypeFromString( map["type"].toString() ) );
+		mRole=( nodeRoleFromString( map["role"].toString() ) );
+		mType=( nodeTypeFromString( map["type"].toString() ) );
 		mLastSeenMS=(map["lastSeenMS"].toDateTime().toMSecsSinceEpoch() );
 		mLastInitiatedHandshakeMS=( map["lastInitiatedHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
 		mLastAdherentHandshakeMS=( map["lastAdherentHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
@@ -126,13 +134,13 @@ Key Associate::key()
 	return mKey;
 }
 
-DiscoveryType Associate::type() const
+NodeType Associate::type() const
 {
 	OC_METHODGATE();
 	return mType;
 }
 
-DiscoveryRole Associate::role() const
+NodeRole Associate::role() const
 {
 	OC_METHODGATE();
 	return mRole;
@@ -311,8 +319,8 @@ QVariantMap Associate::toVariantMap()
 	map["lastAdherentHandshakeMS"]=QDateTime::fromMSecsSinceEpoch(mLastAdherentHandshakeMS);
 	map["birthDate"]=QDateTime::fromMSecsSinceEpoch(mBirthDate);
 	map["key"]=mKey.toVariantMap(true);
-	map["role"]=DiscoveryRoleToString(mRole);
-	map["type"]=DiscoveryTypeToString(mType);
+	map["role"]=nodeRoleToString(mRole);
+	map["type"]=nodeTypeToString(mType);
 	map["name"]=mName;
 	map["gender"]=mGender;
 	//map["pins"]=mPins;//DONT STORE PINS THEY ARE EPHEMERAL
@@ -329,8 +337,8 @@ void Associate::fromVariantMap(const QVariantMap map)
 	mName=( map["name"].toString() );
 	mGender=( map["gender"].toString() );
 	mBirthDate= ( map["birthDate"].toDateTime().toMSecsSinceEpoch());
-	mRole=( DiscoveryRoleFromString( map["role"].toString() ) );
-	mType=( DiscoveryTypeFromString( map["type"].toString() ) );
+	mRole=( nodeRoleFromString( map["role"].toString() ) );
+	mType=( nodeTypeFromString( map["type"].toString() ) );
 	mLastSeenMS=( map["lastSeenMS"].toDateTime().toMSecsSinceEpoch() );
 	mLastInitiatedHandshakeMS=( map["lastInitiatedHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
 	mLastAdherentHandshakeMS=( map["lastAdherentHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
@@ -351,12 +359,26 @@ QString Associate::toString()
 		   +", lastInitiatedHandshakeMS:"+utility::formattedDateFromMS(mLastInitiatedHandshakeMS)
 		   +", lastAdherentHandshakeMS:"+utility::formattedDateFromMS(mLastAdherentHandshakeMS)
 		   +", birthDate:"+utility::formattedDateFromMS(mBirthDate)
-		   +", role:"+DiscoveryRoleToString(mRole)
-		   +", type:"+DiscoveryTypeToString(mType)
+		   +", role:"+nodeRoleToString(mRole)
+		   +", type:"+nodeTypeToString(mType)
 		   +", pins:"+mPins.join(";");
 	+", trusts:"+mTrusts.join(";");
 }
 
+
+QSharedPointer<Client> Associate::toClient(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssoc)
+{
+	switch(mType) {
+	case(TYPE_AGENT):
+		return QSharedPointer<Client>(OC_NEW AgentClient(node,nodeAssoc));
+	case(TYPE_REMOTE):
+		return QSharedPointer<Client>(OC_NEW RemoteClient(node,nodeAssoc));
+	case(TYPE_HUB):
+		return QSharedPointer<Client>(OC_NEW HubClient(node,nodeAssoc));
+	}
+	return nullptr;
+
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 

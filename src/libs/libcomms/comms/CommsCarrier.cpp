@@ -42,10 +42,14 @@ void CommsCarrier::detectConnectionChanges(const quint64 now)
 	const quint64 timeSinceLastRX = (now - mRXRate.mLast);
 	const quint64 timeout = connectionTimeout();
 	qDebug()<<"DETECTIN' connected=" << mConnected << "timeSinceLastRX=" <<  timeSinceLastRX << " vs. timeout="<<timeout<< " now="<<now;
+	/*
+	// TODO: Merge this with the rest of the "is vs. needed" crowd
 	if(mConnected && (timeSinceLastRX > timeout) ) {
 		qDebug()<<"Connection timed out, stopping";
-		stop();
-	} else if(!mConnected && (timeSinceLastRX <= timeout) ) {
+		setStarted(false);
+	} else
+		*/
+	if(!mConnected && (timeSinceLastRX <= timeout) ) {
 		mConnected=true;
 		qDebug()<<"Connection completed";
 		emit carrierConnectionStatusChanged(true);
@@ -110,42 +114,54 @@ void CommsCarrier::setHookCarrierSignals(QObject &ob, bool hook)
 // CommsCarrier internal interface methods
 ///////////////////////////////////////////////////////////
 
-bool CommsCarrier::start(NetworkAddress address)
+
+
+void CommsCarrier::setListenAddress(NetworkAddress address)
 {
-	if(isStarted()) {
-		stop();
-	}
-	const bool success=startImp(address);
-	if(success) {
-		mSendingTimer.start();
+	OC_METHODGATE();
+	setAddressImp(address);
+}
+bool CommsCarrier::setStarted(bool start)
+{
+	OC_METHODGATE();
+	bool success=true;
+	if(start) {
+		if(isStarted()) {
+			setStarted(false);
+		}
+		success=setStartImp(true);
+		if(success) {
+			mSendingTimer.start();
+		} else {
+			setStarted(false);
+		}
 	} else {
-		stop();
+		mConnected=false;
+		mSendingTimer.stop();
+		setStartImp(false);
+		emit carrierConnectionStatusChanged(false);
 	}
 	return success;
 }
 
-void CommsCarrier::stop()
-{
-	mConnected=false;
-	mSendingTimer.stop();
-	stopImp();
-	emit carrierConnectionStatusChanged(false);
-}
 
 bool CommsCarrier::isStarted() const
 {
+	OC_METHODGATE();
 	const bool isToo=isStartedImp();
 	return (mSendingTimer.isActive() && isToo);
 }
 
 bool CommsCarrier::isConnected() const
 {
+	OC_METHODGATE();
 	return mConnected;
 }
 
 
 qint64 CommsCarrier::writeData(const QByteArray &datagram, const NetworkAddress &address)
 {
+	OC_METHODGATE();
 	const qint64 len=writeDataImp(datagram, address);
 	mTXRate.countPacket(len);
 	sTotalRecCount++;
@@ -154,6 +170,7 @@ qint64 CommsCarrier::writeData(const QByteArray &datagram, const NetworkAddress 
 
 qint64 CommsCarrier::readData(char *data, qint64 maxlen, QHostAddress *host, quint16 *port)
 {
+	OC_METHODGATE();
 	const qint64 len=readDataImp(data,maxlen,host,port);
 	mRXRate.countPacket(len);
 	sTotalTxCount++;
@@ -162,41 +179,48 @@ qint64 CommsCarrier::readData(char *data, qint64 maxlen, QHostAddress *host, qui
 
 bool CommsCarrier::hasPendingData()
 {
+	OC_METHODGATE();
 	return hasPendingDataImp();
 }
 
 qint64 CommsCarrier::pendingDataSize()
 {
+	OC_METHODGATE();
 	return pendingDataSizeImp();
 }
 
 
 QString CommsCarrier::errorString()
 {
+	OC_METHODGATE();
 	return errorStringImp();
 }
 
 
 NetworkAddress CommsCarrier::address()
 {
+	OC_METHODGATE();
 	return addressImp();
 }
 
 
 quint64 CommsCarrier::minimalPacketInterval()
 {
+	OC_METHODGATE();
 	return minimalPacketIntervalImp();
 }
 
 
 quint64 CommsCarrier::maximalPacketInterval()
 {
+	OC_METHODGATE();
 	return maximalPacketIntervalImp();
 }
 
 
 quint64 CommsCarrier::setDesiredOpportunityInterval(quint64 desiredInterval)
 {
+	OC_METHODGATE();
 	const quint64 actualInterval=qBound(maximalPacketInterval(), desiredInterval, minimalPacketInterval());
 	//qDebug()<<"NEW SCHEDULE DELAY: "<<actualInterval<<" ("<<desiredInterval<<")";
 	mSendingTimer.setInterval(actualInterval);
@@ -205,5 +229,6 @@ quint64 CommsCarrier::setDesiredOpportunityInterval(quint64 desiredInterval)
 
 quint64 CommsCarrier::opportunityInterval()
 {
+	OC_METHODGATE();
 	return mSendingTimer.interval();
 }

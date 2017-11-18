@@ -15,7 +15,7 @@ const QString PortableID::dateFMT("yyyy-MM-dd_hh:mm:ss:zzz");
 
 PortableID::PortableID()
 	: mBirthDate(0)
-	, mType(DiscoveryType::TYPE_UNKNOWN)
+	, mType(NodeType::TYPE_UNKNOWN)
 {
 	OC_METHODGATE();
 }
@@ -26,7 +26,7 @@ PortableID::PortableID(QVariantMap &data)
 	, mGender(data["gender"].toString())
 	, mID(data["key"].toMap()["id"].toString())
 	, mBirthDate(QDateTime::fromString(data["createDate"].toString(), dateFMT).toMSecsSinceEpoch())
-	, mType(DiscoveryTypeFromString(data["type"].toString()))
+	, mType(nodeTypeFromString(data["type"].toString()))
 {
 	OC_METHODGATE();
 }
@@ -64,7 +64,7 @@ void PortableID::setBirthDate(quint64 birthDate)
 }
 
 
-void PortableID::setType(DiscoveryType type)
+void PortableID::setType(NodeType type)
 {
 	OC_METHODGATE();
 	mType=type;
@@ -126,7 +126,7 @@ bool PortableID::fromPortableString(QString s)
 	mGender=parts.at(1).trimmed();
 	mID=parts.at(2).trimmed();
 	mBirthDate=QDateTime::fromString(parts.at(3).trimmed(), dateFMT).toMSecsSinceEpoch();
-	mType=DiscoveryTypeFromString(parts.at(4).trimmed());
+	mType=nodeTypeFromString(parts.at(4).trimmed());
 	//qDebug()<<"from "<<s<<" gave birth="<<mBirthDate;
 	return true;
 }
@@ -136,12 +136,12 @@ QString PortableID::toPortableString()
 	OC_METHODGATE();
 	QString dateString=QDateTime::fromMSecsSinceEpoch(mBirthDate).toString(dateFMT);
 	//qDebug()<<"birth="<<mBirthDate<<" to str="<<dateString;
-	return mName + SEP + mGender + SEP + mID + SEP + dateString + SEP + DiscoveryTypeToString(mType);
+	return mName + SEP + mGender + SEP + mID + SEP + dateString + SEP + nodeTypeToString(mType);
 }
 
 
 
-DiscoveryType PortableID::type() const
+NodeType PortableID::type() const
 {
 	OC_METHODGATE();
 	return mType;

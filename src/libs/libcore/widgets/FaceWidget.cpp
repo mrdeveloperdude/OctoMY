@@ -93,15 +93,7 @@ void FaceWidget::setAgent(QSharedPointer<Agent> a)
 	ui->widgetRealtimeValues->setAgent(mAgent);
 
 	if(!mAgent.isNull()) {
-		const AgentControls &ctl=mAgent->controls();
-		AgentCourierSet *set = ctl.activeControl();
-		if(nullptr!=set) {
-			QSharedPointer<AgentStateCourier> asc=set->agentStateCourier();
-			if(!asc.isNull()) {
-				asc->setHookSignals(*this,true);
-			}
 
-		}
 		Settings &s=mAgent->settings();
 		if(s.hasCustomSetting(AgentConstants::AGENT_FACE_SPLITTER_MIDDLE_STATE)) {
 			//qDebug()<<"FOUND SETTING FOR "<<AgentConstants::AGENT_FACE_SPLITTER_MIDDLE_STATE;
@@ -141,36 +133,32 @@ TryToggleState FaceWidget::connectionState() const
 
 
 
-void FaceWidget::hookSignals(QObject &ob)
+void FaceWidget::setHookSignals(QObject &ob, bool hook)
 {
 	OC_METHODGATE();
-	if(!connect(this,SIGNAL(connectionStateChanged(TryToggleState, TryToggleState)),&ob,SLOT(onConnectionStateChanged(TryToggleState, TryToggleState)),OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
-	}
-	if(!connect(this,SIGNAL(colorChanged(QColor)),&ob,SLOT(onColorChanged(QColor)),OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
-	}
-	if(!connect(this,SIGNAL(panic()),&ob,SLOT(onPanic()),OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect "<<ob.objectName();
+	if(hook) {
+		if(!connect(this,SIGNAL(connectionStateChanged(TryToggleState, TryToggleState)),&ob,SLOT(onConnectionStateChanged(TryToggleState, TryToggleState)),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
+		}
+		if(!connect(this,SIGNAL(colorChanged(QColor)),&ob,SLOT(onColorChanged(QColor)),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
+		}
+		if(!connect(this,SIGNAL(panic()),&ob,SLOT(onPanic()),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
+		}
+	} else {
+		if(!disconnect(this,SIGNAL(connectionStateChanged(TryToggleState, TryToggleState)),&ob,SLOT(onConnectionStateChanged(TryToggleState, TryToggleState)))) {
+			qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
+		}
+		if(!disconnect(this,SIGNAL(colorChanged(QColor)),&ob,SLOT(onColorChanged(QColor)))) {
+			qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
+		}
+		if(!disconnect(this,SIGNAL(panic()),&ob,SLOT(onPanic()))) {
+			qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
+		}
 	}
 }
 
-
-void FaceWidget::unHookSignals(QObject &ob)
-{
-	OC_METHODGATE();
-	if(!disconnect(this,SIGNAL(connectionStateChanged(TryToggleState, TryToggleState)),&ob,SLOT(onConnectionStateChanged(TryToggleState, TryToggleState)))) {
-		qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
-	}
-
-	if(!disconnect(this,SIGNAL(colorChanged(QColor)),&ob,SLOT(onColorChanged(QColor)))) {
-		qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
-	}
-
-	if(!disconnect(this,SIGNAL(panic()),&ob,SLOT(onPanic()))) {
-		qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
-	}
-}
 
 
 void FaceWidget::setPanic(bool panic)

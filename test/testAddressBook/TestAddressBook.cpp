@@ -65,15 +65,15 @@ void TestAddressBook::test()
 	addressList.merge(NetworkAddress(QHostAddress(ip),port));
 	QVariantMap assMap;
 	assMap["key"]=keyMap;
-	const DiscoveryType type=TYPE_AGENT;
-	const DiscoveryRole role=ROLE_AGENT;
+	const NodeType type=TYPE_AGENT;
+	const NodeRole role=ROLE_AGENT;
 	const QString pin="12345";
 	const QString pin2="54321";
 	QStringList trusts;
 	trusts <<"trust-one";
 	trusts <<"trust-two";
-	assMap["role"]=DiscoveryRoleToString(role);
-	assMap["type"]=DiscoveryTypeToString(type);
+	assMap["role"]=nodeRoleToString(role);
+	assMap["type"]=nodeTypeToString(type);
 	assMap["addressList"]=addressList.toVariantList();
 	assMap["trusts"]=trusts;
 

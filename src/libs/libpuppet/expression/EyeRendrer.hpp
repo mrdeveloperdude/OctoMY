@@ -53,6 +53,8 @@ public:
 	qreal irisRadius();
 	qreal pupilRadius();
 
+	bool isDirty();
+
 };
 
 

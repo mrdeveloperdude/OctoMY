@@ -11,9 +11,10 @@ MultiView::MultiView(QWidget *parent) :
 	QWidget(parent),
 	ui(OC_NEW Ui::MultiView)
 {
+	OC_METHODGATE();
 	ui->setupUi(this);
 	QListView *list = ui->listView;
-	if(0!=list){
+	if(0!=list) {
 		list->setViewMode(QListView::IconMode);
 		list->setSelectionMode(QAbstractItemView::ExtendedSelection);
 		list->setAlternatingRowColors(false);
@@ -21,14 +22,14 @@ MultiView::MultiView(QWidget *parent) :
 		list->setAttribute(Qt::WA_MacShowFocusRect, false);
 	}
 	QTableView *table = ui->tableView;
-	if(0!=table ){
+	if(0!=table ) {
 		table->horizontalHeader()->setSectionsMovable(true);
 		table->verticalHeader()->setSectionsMovable(true);
 		// Set StaticContents to enable minimal repaints on resizes.
 		table->viewport()->setAttribute(Qt::WA_StaticContents);
 	}
 	QTreeView *tree = ui->treeView;
-	if(0!=tree ){
+	if(0!=tree ) {
 		tree->setUniformRowHeights(true);
 		tree->header()->setStretchLastSection(false);
 		tree->viewport()->setAttribute(Qt::WA_StaticContents);
@@ -37,114 +38,117 @@ MultiView::MultiView(QWidget *parent) :
 	}
 	//Start of with no data
 	setModel(nullptr);
-	if(!connect(ui->buttonGroupView,SIGNAL(buttonClicked(QAbstractButton*)),this,SLOT(onViewButtonClicked(QAbstractButton*)),OC_CONTYPE)){
+	if(!connect(ui->buttonGroupView,SIGNAL(buttonClicked(QAbstractButton*)),this,SLOT(onViewButtonClicked(QAbstractButton*)),OC_CONTYPE)) {
 		qDebug()<<"ERROR: could not connect";
 	}
 	//Trigger change
 	ui->pushButtonViewList->click();
 }
 
-void MultiView::setModel(QAbstractItemModel *data){
-	QItemSelectionModel *selections = 0==data?0:OC_NEW QItemSelectionModel(data);
-	QListView *list = ui->listView;
-	if(nullptr!=list){
-		QItemSelectionModel *oldSel = list->selectionModel();
-		list->setModel(data);
-		delete oldSel;
-		oldSel=nullptr;
-		if(nullptr!=selections){
-			list->setSelectionModel(selections);
-		}
-	}
-	QTableView *table = ui->tableView;
-	if(nullptr!=table ){
-		QItemSelectionModel *oldSel = table->selectionModel();
-		table->setModel(data);
-		delete oldSel;
-		oldSel=nullptr;
-		if(nullptr!=selections){
-			table->setSelectionModel(selections);
-		}
-	}
-	QTreeView *tree = ui->treeView;
-	if(nullptr!=tree ){
-		QItemSelectionModel *oldSel = tree->selectionModel();
-		tree->setModel(data);
-		delete oldSel;
-		oldSel=nullptr;
-		if(nullptr!=selections){
-			tree->setSelectionModel(selections);
-		}
-	}
-}
 
-MultiView::~MultiView(){
+MultiView::~MultiView()
+{
+	OC_METHODGATE();
 	delete ui;
 	ui=nullptr;
 }
 
 
-void MultiView::onViewButtonClicked(QAbstractButton*but){
+void MultiView::setModel(QAbstractItemModel *data)
+{
+	OC_METHODGATE();
+	QItemSelectionModel *selections = 0==data?0:OC_NEW QItemSelectionModel(data);
+	QListView *list = ui->listView;
+	if(nullptr!=list) {
+		QItemSelectionModel *oldSel = list->selectionModel();
+		list->setModel(data);
+		delete oldSel;
+		oldSel=nullptr;
+		if(nullptr!=selections) {
+			list->setSelectionModel(selections);
+		}
+	}
+	QTableView *table = ui->tableView;
+	if(nullptr!=table ) {
+		QItemSelectionModel *oldSel = table->selectionModel();
+		table->setModel(data);
+		delete oldSel;
+		oldSel=nullptr;
+		if(nullptr!=selections) {
+			table->setSelectionModel(selections);
+		}
+	}
+	QTreeView *tree = ui->treeView;
+	if(nullptr!=tree ) {
+		QItemSelectionModel *oldSel = tree->selectionModel();
+		tree->setModel(data);
+		delete oldSel;
+		oldSel=nullptr;
+		if(nullptr!=selections) {
+			tree->setSelectionModel(selections);
+		}
+	}
+}
+
+
+void MultiView::onViewButtonClicked(QAbstractButton*but)
+{
+	OC_METHODGATE();
 	QAbstractButton*c=ui->buttonGroupView->checkedButton();
 	QString item="";
-	if(c!=but && nullptr != but){
+	if(c!=but && nullptr != but) {
 		qDebug()<<"CLICKING BUTTON: "<<but->objectName();
 		but->click();
 	}
-	if(but==ui->pushButtonViewGrid){
+	if(but==ui->pushButtonViewGrid) {
 		ui->stackedWidget->setCurrentWidget(ui->pageList);
 		//ui->listView->clearPropertyFlags();
 		ui->listView->setViewMode(QListView::IconMode);
 		item="Grid";
-	}
-	else if(but==ui->pushButtonViewList){
+	} else if(but==ui->pushButtonViewList) {
 		ui->stackedWidget->setCurrentWidget(ui->pageList);
 		//ui->listView->clearPropertyFlags();
 		ui->listView->setViewMode(QListView::ListMode);
 		item="List";
-	}
-	else if(but==ui->pushButtonViewDetails){
+	} else if(but==ui->pushButtonViewDetails) {
 		ui->stackedWidget->setCurrentWidget(ui->pageTable);
 		item="Details";
-	}
-	else if(but==ui->pushButtonViewTree){
+	} else if(but==ui->pushButtonViewTree) {
 		ui->stackedWidget->setCurrentWidget(ui->pageTree);
 		item="Tree";
-	}
-	else{
+	} else {
 		qDebug()<<"ERROR: Unknwon button click detected";
 		return;
 	}
-	if(nullptr!=settings){
+	if(nullptr!=settings) {
 		settings->setCustomSetting(k,item);
 	}
 }
 
 
 
-void MultiView::configure(Settings &s, QString val, QString key){
+void MultiView::configure(Settings &s, QString val, QString key)
+{
+	OC_METHODGATE();
 	settings=&s;
 	k=key.trimmed();
-	if(""!=k && nullptr!=settings){
+	if(""!=k && nullptr!=settings) {
 		val=settings->getCustomSetting(k,val);
 	}
 	QAbstractButton *but=nullptr;
-	if("Grid"==val){
+	if("Grid"==val) {
 		but=ui->pushButtonViewGrid;
-	}
-	else if("List"==val){
+	} else if("List"==val) {
 		but=ui->pushButtonViewList;
-	}
-	else if("Details"==val){
+	} else if("Details"==val) {
 		but=ui->pushButtonViewDetails;
-	}
-	else if("Tree"==val){
+	} else if("Tree"==val) {
 		but=ui->pushButtonViewTree;
-	}
-	else{
+	} else {
 		qDebug()<<"ERROR: NO SUITABLE BUTTON NAME FOUDND FOR "<<val;
 		return;
 	}
 	//onViewButtonClicked(but);
 }
+
 

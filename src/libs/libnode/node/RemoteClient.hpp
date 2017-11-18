@@ -9,6 +9,9 @@
 
 class RemoteClientWidget;
 
+/**
+ * @brief The RemoteClient is a specialization class derivig from Client that represents a remote that the current node has communications with
+ */
 class RemoteClient : public Client
 {
 	Q_OBJECT

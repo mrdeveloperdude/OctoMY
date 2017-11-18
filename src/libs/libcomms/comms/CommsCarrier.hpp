@@ -11,6 +11,14 @@
 class AddressList;
 class QHostAddress;
 
+/**
+ * @brief The CommsCarrier class is the base for the data carriers availabler to CommsChannel.
+ *
+ * The job of the carrier is to perform RX/TX of data buffers to and from designated carrier-specific addresses.
+ *
+ * The most importnat carrier subclass is CommsCarrierUDP which imlpements transport over UDP/IP networks.
+ *
+ */
 class CommsCarrier: public QObject
 {
 	Q_OBJECT
@@ -51,8 +59,9 @@ public slots:
 	quint64 connectionTimeout();
 
 	void setHookCarrierSignals(QObject &ob, bool hook);
-	virtual bool start(NetworkAddress address);
-	virtual void stop();
+
+	virtual void setListenAddress(NetworkAddress address);
+	virtual bool setStarted(bool start);
 
 	bool isStarted() const;
 	bool isConnected() const;
@@ -78,8 +87,8 @@ public slots:
 // CommsCarrier internal interface methods
 protected:
 
-	virtual bool startImp(NetworkAddress address) =0;
-	virtual void stopImp() =0;
+	virtual void setAddressImp(NetworkAddress address) =0;
+	virtual bool setStartImp(const bool) =0;
 
 	virtual bool isStartedImp() const =0 ;
 
@@ -101,11 +110,8 @@ signals:
 
 	// Send this signal when there is new data ready for reading
 	void carrierReadyRead();
-
 	void carrierError(QString string);
-
 	void carrierSendingOpportunity(quint64 now);
-
 	void carrierConnectionStatusChanged(bool connected);
 
 };

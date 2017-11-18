@@ -1,24 +1,28 @@
-#ifndef REMOTECLIENT_HPP
-#define REMOTECLIENT_HPP
+#ifndef HUBCLIENT_HPP
+#define HUBCLIENT_HPP
 
 #include "Client.hpp"
-#include "RemoteCourierSet.hpp"
+#include "HubCourierSet.hpp"
 
 
 #include <QtGlobal>
 
-class RemoteClientWidget;
+class HubClientWidget;
 
-class RemoteClient : public Client
+/**
+ * @brief The HubClient is a specialization class derivig from Client that represents a hub that the current node has communications with
+ */
+
+class HubClient : public Client
 {
 	Q_OBJECT
 private:
-	RemoteCourierSet mCouriers;
-	RemoteClientWidget *mWidget;
+	CourierSet mCouriers;
+	HubClientWidget *mWidget;
 	// TODO: Figure out if this is complete horse manure or if it is actually sound (doubtful)
-	QSharedPointer <RemoteClient> mThis;
+	QSharedPointer <HubClient> mThis;
 public:
-	explicit RemoteClient(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssoc, QObject *parent = nullptr);
+	explicit HubClient(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssoc, QObject *parent = nullptr);
 
 
 	// Client interface
@@ -31,4 +35,4 @@ public:
 
 };
 
-#endif // REMOTECLIENT_HPP
+#endif // HUBCLIENT_HPP

@@ -8,6 +8,7 @@
 #include "basic/Associate.hpp"
 
 
+
 #include <QSharedPointer>
 #include <QObject>
 #include <QTimer>
@@ -19,6 +20,7 @@
 class Node;
 class CommsSession;
 class CourierSet;
+class ClientConnectionStatus;
 
 class Client: public QObject
 {
@@ -28,7 +30,7 @@ protected:
 	QTimer mUpdateTimer;
 	QSharedPointer<Node> mNode;
 	QSharedPointer<Associate> mNodeAssociate;
-
+	QSharedPointer<Client> mThis;
 
 
 public:
@@ -45,6 +47,20 @@ public:
 	virtual QWidget *widget() =0;
 
 
+
+protected:
+
+	friend class ClientConnectionStatus;
+
+	bool needsConnection();
+	bool isConnected();
+	void setNeedsConnection(bool);
+	void setConnected(bool);
+
+public:
+
+	ClientConnectionStatus connectionStatus();
+
 public:
 
 	void initTimer();
@@ -54,8 +70,7 @@ public:
 
 	bool courierRegistration();
 	void setCourierRegistration(bool reg);
-
-
+	void updateCourierRegistration();
 	void updateOnlineStatus();
 
 
@@ -68,7 +83,7 @@ public slots:
 private slots:
 	void onCommsError(QString);
 	void onCommsClientAdded(CommsSession *);
-	void onCommsConnectionStatusChanged(bool);
+	void onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection);
 
 
 

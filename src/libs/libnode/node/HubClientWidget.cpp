@@ -1,5 +1,5 @@
-#include "RemoteClientWidget.hpp"
-#include "ui_ClientWidget.h"
+#include "HubClientWidget.hpp"
+#include "ui_HubClientWidget.h"
 
 #include "utility/Standard.hpp"
 
@@ -22,27 +22,27 @@
 
 #include "agent/AgentConstants.hpp"
 
-#include "node/RemoteClient.hpp"
+#include "node/HubClient.hpp"
 
 #include <QScrollBar>
 
 static const QString NODE_ONLINE_SETTINGS_KEY_BASE("octomy.online.");
 
-RemoteClientWidget::RemoteClientWidget(QSharedPointer<RemoteClient> client, QWidget *parent)
+HubClientWidget::HubClientWidget(QSharedPointer<HubClient> client, QWidget *parent)
 	: QWidget(parent)
-	, ui(OC_NEW Ui::ClientWidget)
+	, ui(OC_NEW Ui::HubClientWidget)
 	, mSpinner(nullptr)
-	, mRemoteClient(client)
+	, mHubClient(client)
 {
 	OC_METHODGATE();
-	qDebug()<<"CREATING REMOTE CLIENT WIDGET RemoteClient="<<(!mRemoteClient.isNull()?mRemoteClient->node()->name():"NULL")<<", parent="<<parent;
+	qDebug()<<"CREATING HUB CLIENT WIDGET RemoteClient="<<(!mHubClient.isNull()?mHubClient->node()->name():"NULL")<<", parent="<<parent;
 
 	ui->setupUi(this);
 
 	ui->widgetBirthCertificate->configure(false,true);
 
-	if(!mRemoteClient.isNull()) {
-		QSharedPointer<Node> node=mRemoteClient->node();
+	if(!mHubClient.isNull()) {
+		QSharedPointer<Node> node=mHubClient->node();
 		if(!node.isNull()) {
 			QSharedPointer<Associate> nodeAssociate=node->nodeIdentity();
 			if(!nodeAssociate.isNull()) {
@@ -62,7 +62,7 @@ RemoteClientWidget::RemoteClientWidget(QSharedPointer<RemoteClient> client, QWid
 	ui->tryToggleListen->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_DISCONNECT_COLOR);
 	ui->tryToggleListen->setState(OFF,false);
 
-	if(!connect(ui->tryToggleListen, &TryToggle::stateChanged, this, &RemoteClientWidget::onConnectButtonStateChanged ,OC_CONTYPE)) {
+	if(!connect(ui->tryToggleListen, &TryToggle::stateChanged, this, &HubClientWidget::onConnectButtonStateChanged ,OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
@@ -87,14 +87,14 @@ RemoteClientWidget::RemoteClientWidget(QSharedPointer<RemoteClient> client, QWid
 	updateOnlineStatus();
 }
 
-RemoteClientWidget::~RemoteClientWidget()
+HubClientWidget::~HubClientWidget()
 {
 	OC_METHODGATE();
 	delete ui;
 	ui=nullptr;
 }
 
-void RemoteClientWidget::prepareSpinner()
+void HubClientWidget::prepareSpinner()
 {
 	OC_METHODGATE();
 	mSpinner=OC_NEW WaitingSpinnerWidget(ui->stackedWidgetControl, true, true);
@@ -109,16 +109,16 @@ void RemoteClientWidget::prepareSpinner()
 	mSpinner->setStyle(style);
 }
 
-void RemoteClientWidget::prepareSteering()
+void HubClientWidget::prepareSteering()
 {
 	OC_METHODGATE();
-	if(!connect(ui->widgetCarSteering, &CarSteeringWidget::steeringChanged, this, &RemoteClientWidget::onSteeringChanged ,OC_CONTYPE)) {
+	if(!connect(ui->widgetCarSteering, &CarSteeringWidget::steeringChanged, this, &HubClientWidget::onSteeringChanged ,OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 }
 
 
-void RemoteClientWidget::setSpinnerActive(bool active)
+void HubClientWidget::setSpinnerActive(bool active)
 {
 	OC_METHODGATE();
 	if(nullptr!=mSpinner) {
@@ -127,35 +127,17 @@ void RemoteClientWidget::setSpinnerActive(bool active)
 }
 
 
-// NOTE: This has a sister method in AgentWindow.cpp around line 625
-//       Please remember that while they are similar they are very different!
-//       While the other one is a "One agent, one remote" deal
-//       this is a "one remote, many agents" deal.
-void RemoteClientWidget::updateOnlineStatus()
+void HubClientWidget::updateOnlineStatus()
 {
 	OC_METHODGATE();
-	if(!mRemoteClient.isNull()) {
-		mRemoteClient->updateOnlineStatus();
+	if(!mHubClient.isNull()) {
+		mHubClient->updateOnlineStatus();
 	}
 }
 
 
-/*
-bool RemoteClientWidget::courierRegistration()
-{
-	OC_METHODGATE();
-	return mCouriers.commsEnabled();
-}
 
-void RemoteClientWidget::setCourierRegistration(bool reg)
-{
-	OC_METHODGATE();
-	mCouriers.setCommsEnabled(reg);
-}
-*/
-
-
-bool RemoteClientWidget::setSetting(QString key, bool val)
+bool HubClientWidget::setSetting(QString key, bool val)
 {
 	OC_METHODGATE();
 	QSharedPointer<Node> ctl=controller();
@@ -169,7 +151,7 @@ bool RemoteClientWidget::setSetting(QString key, bool val)
 	return false;
 }
 
-bool RemoteClientWidget::needConnection()
+bool HubClientWidget::needConnection()
 {
 	OC_METHODGATE();
 	if(!controller().isNull() && !nodeAssociate().isNull()) {
@@ -183,7 +165,7 @@ bool RemoteClientWidget::needConnection()
 
 
 
-void RemoteClientWidget::init()
+void HubClientWidget::init()
 {
 	OC_METHODGATE();
 //	ui->stackedWidgetControl->setUpdatesEnabled(false);
@@ -212,31 +194,31 @@ void RemoteClientWidget::init()
 }
 
 
-CommsChannel *RemoteClientWidget::comms()
+CommsChannel *HubClientWidget::comms()
 {
 	OC_METHODGATE();
-	if(!mRemoteClient.isNull() && !mRemoteClient->node().isNull()) {
-		return mRemoteClient->node()->comms();
+	if(!mHubClient.isNull() && !mHubClient->node().isNull()) {
+		return mHubClient->node()->comms();
 	}
 	return nullptr;
 }
 
 
 
-QSharedPointer<Node> RemoteClientWidget::controller()
+QSharedPointer<Node> HubClientWidget::controller()
 {
 	OC_METHODGATE();
-	return mRemoteClient.isNull()?nullptr:mRemoteClient->node();
+	return mHubClient.isNull()?nullptr:mHubClient->node();
 }
 
 
-QSharedPointer<Associate> RemoteClientWidget::nodeAssociate() const
+QSharedPointer<Associate> HubClientWidget::nodeAssociate() const
 {
 	OC_METHODGATE();
-	return mRemoteClient.isNull()?nullptr:mRemoteClient->nodeAssociate();
+	return mHubClient.isNull()?nullptr:mHubClient->nodeAssociate();
 }
 
-void RemoteClientWidget::updateControlLevel(int level)
+void HubClientWidget::updateControlLevel(int level)
 {
 	//qDebug()<<"CONTROL LEVEL IS "<<level;
 	ui->stackedWidgetControl->setCurrentIndex(level);
@@ -245,7 +227,7 @@ void RemoteClientWidget::updateControlLevel(int level)
 }
 
 
-bool RemoteClientWidget::eventFilter(QObject *object, QEvent *event)
+bool HubClientWidget::eventFilter(QObject *object, QEvent *event)
 {
 	OC_METHODGATE();
 	/*
@@ -268,7 +250,7 @@ bool RemoteClientWidget::eventFilter(QObject *object, QEvent *event)
 ///////////////////////////////////////// // Internal UI slots
 
 
-void RemoteClientWidget::onConnectButtonStateChanged(const TryToggleState last, const TryToggleState current)
+void HubClientWidget::onConnectButtonStateChanged(const TryToggleState last, const TryToggleState current)
 {
 	OC_METHODGATE();
 	//qDebug()<< "CONNECT BUTTON TRYSTATE CHANGED FROM " << ToggleStateToSTring(last)<< " TO " << ToggleStateToSTring(current);
@@ -284,7 +266,7 @@ void RemoteClientWidget::onConnectButtonStateChanged(const TryToggleState last, 
 	updateOnlineStatus();
 }
 
-void RemoteClientWidget::onSteeringChanged(qreal throttle, qreal steeringAngle)
+void HubClientWidget::onSteeringChanged(qreal throttle, qreal steeringAngle)
 {
 	OC_METHODGATE();
 	// TODO Upgrade this
@@ -302,7 +284,7 @@ void RemoteClientWidget::onSteeringChanged(qreal throttle, qreal steeringAngle)
 
 
 
-void RemoteClientWidget::on_checkBoxShowEyes_toggled(bool checked)
+void HubClientWidget::on_checkBoxShowEyes_toggled(bool checked)
 {
 	OC_METHODGATE();
 	// TODO Upgrade this
@@ -319,7 +301,7 @@ void RemoteClientWidget::on_checkBoxShowEyes_toggled(bool checked)
 	*/
 }
 
-void RemoteClientWidget::on_checkBoxShowStats_toggled(bool checked)
+void HubClientWidget::on_checkBoxShowStats_toggled(bool checked)
 {
 	OC_METHODGATE();
 	// TODO Upgrade this
@@ -335,7 +317,7 @@ void RemoteClientWidget::on_checkBoxShowStats_toggled(bool checked)
 	*/
 }
 
-void RemoteClientWidget::on_checkBoxShowLog_toggled(bool checked)
+void HubClientWidget::on_checkBoxShowLog_toggled(bool checked)
 {
 	OC_METHODGATE();
 	// TODO Upgrade this
@@ -351,7 +333,7 @@ void RemoteClientWidget::on_checkBoxShowLog_toggled(bool checked)
 	*/
 }
 
-void RemoteClientWidget::on_checkBoxShowOnlineButton_toggled(bool checked)
+void HubClientWidget::on_checkBoxShowOnlineButton_toggled(bool checked)
 {
 	OC_METHODGATE();
 	// TODO Upgrade this
@@ -369,13 +351,13 @@ void RemoteClientWidget::on_checkBoxShowOnlineButton_toggled(bool checked)
 
 
 
-void RemoteClientWidget::on_widgetPanic_toggled(bool panic)
+void HubClientWidget::on_widgetPanic_toggled(bool panic)
 {
 	OC_METHODGATE();
 	if(panic) {
 		QString str="P A N I C !";
 		qWarning()<<str;
-	//	appendLog(str);
+		//	appendLog(str);
 	} else {
 		QString str="Panic averted";
 		qWarning()<<str;
