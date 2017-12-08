@@ -71,6 +71,10 @@ static void octomyLogMessageHandler(QtMsgType type, const QMessageLogContext &ct
 			volatile QString old=str;
 			filter=true;
 		}
+		if(str.contains("Cannot queue argument")){
+			volatile QString old=str;
+			//filter=true;
+		}
 		if(!filter) {
 			std::cerr << out.toStdString() <<std::endl;
 		}

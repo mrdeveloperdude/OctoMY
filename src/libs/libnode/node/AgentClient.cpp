@@ -9,6 +9,7 @@ AgentClient::AgentClient(QSharedPointer<Node> controller, QSharedPointer<Associa
 	, mThis(this)
 {
 	OC_METHODGATE();
+	updateCourierRegistration();
 }
 
 /////////////////////////////////////////////////////

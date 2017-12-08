@@ -7,23 +7,24 @@
 #include <QMap>
 #include <QSharedPointer>
 
-
 class AddressBook;
 class CommsSessionDirectory;
-
+class Node;
 /**
  * @brief The ClientList class is a convenience wrapper around QList to keep pointers to instances of Client
  */
 
-class ClientList: public QList<QSharedPointer<Client> >
+class ClientList
 {
+private:
+	QList<QSharedPointer<Client> > mClients;
 public:
 	ClientList();
 
 public:
 
 	QMap<QString, QSharedPointer<Client> > toMapByID();
-	void syncToAddressBook(AddressBook &ab);
+	void syncToAddressBook(AddressBook &ab, QSharedPointer<Node> node);
 
 
 	QSharedPointer<Client> byID(QString id);

@@ -58,10 +58,12 @@ private:
 
 	void updateOnlineStatus();
 
+	QString id();
+
 	bool setSetting(QString key, bool val);
 
 public:
-	bool needConnection();
+	//bool needConnection();
 
 
 

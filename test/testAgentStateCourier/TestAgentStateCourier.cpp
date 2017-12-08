@@ -131,4 +131,4 @@ void TestAgentStateCourier::test()
 
 
 
-QTEST_MAIN(TestAgentStateCourier)
+OC_TEST_MAIN(test, TestAgentStateCourier)

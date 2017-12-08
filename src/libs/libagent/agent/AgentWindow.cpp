@@ -118,7 +118,7 @@ void AgentWindow::gotoNextConfigPage()
 	auto pct=mAgent->addressBook().associateCount();
 	const bool isPaired=(pct>1) || (ui->pagePairing==cur);
 
-	qDebug()<<"NEXT CONFIG SCREEN: isDelivered"<<isDelivered<<", isPaired"<<isPaired<<", isHardwareConfigured"<<isHardwareConfigured<<" (ctlname="<<ctl<<", pct="<<pct<<")";
+	//qDebug()<<"NEXT CONFIG SCREEN: isDelivered"<<isDelivered<<", isPaired"<<isPaired<<", isHardwareConfigured"<<isHardwareConfigured<<" (ctlname="<<ctl<<", pct="<<pct<<")";
 	if(isDelivered) {
 		cur=ui->pageHardware;
 
@@ -342,7 +342,7 @@ void AgentWindow::onConnectionStateChanged(const TryToggleState last, const TryT
 	OC_METHODGATE();
 	qDebug()<<"CONNECT BUTTON TRYSTATE CHANGED FROM " <<ToggleStateToSTring(last) <<" TO "<<ToggleStateToSTring(current);
 	if(!mAgent.isNull()) {
-		const bool on=(OFF!=current);
+		const bool on=((ON==current) || (GOING_ON == current));
 		mAgent->setNeedsConnection(on);
 	} else {
 		qWarning()<<"ERROR: No agent";

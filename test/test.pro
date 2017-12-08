@@ -83,9 +83,12 @@ TEST_PROJECTS+= \
 contains(DEFINES, USE_TESTS_SELECTED){
 message(ADDING 'SELECTED' TESTS TO BUILD)
 TEST_PROJECTS+= \
-	testCommsChannel \
-	testDeliveryWizard \
+#	testOpenCL \
+#	testNetworkSettingsWidget\
+	testLightWidget\
 
+STRESS_PROJECTS+= \
+#	stressCapabilities \
 }
 
 # NOTE: USE_TESTS_STRESS is enabled in local_overrides.pri when you want to build/run stress tests.
@@ -95,6 +98,7 @@ message(ADDING 'STRESS' TESTS TO BUILD)
 
 	STRESS_PROJECTS+= \
 	stressQR \
+	stressCapabilities \
 
 }
 

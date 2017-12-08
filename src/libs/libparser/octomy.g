@@ -1,5 +1,5 @@
 --/*
--- NOTE: Faux comment are scattered liberally around this file so as to allow
+-- NOTE: Faux comments are scattered liberally around this file so as to allow
 --       us to edit it in QtCreator without wihtout feeling like pulling one's
 --       hard earned grey hair out.
 --

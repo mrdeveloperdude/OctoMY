@@ -17,7 +17,7 @@
 #include "discovery/AddressBook.hpp"
 
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 #include <QHostAddress>
 #include <QSignalSpy>
 #include <QFileInfo>

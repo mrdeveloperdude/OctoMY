@@ -26,8 +26,6 @@
 
 #include <QScrollBar>
 
-static const QString NODE_ONLINE_SETTINGS_KEY_BASE("octomy.online.");
-
 AgentClientWidget::AgentClientWidget(QSharedPointer<AgentClient> client, QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::AgentClientWidget)
@@ -48,7 +46,7 @@ AgentClientWidget::AgentClientWidget(QSharedPointer<AgentClient> client, QWidget
 			if(!nodeAssociate.isNull()) {
 				ui->widgetBirthCertificate->setPortableID(nodeAssociate->toPortableID());
 			}
-			node->setHookCommsSignals(*this, true);
+			node->setHookCommsSignals(*mAgentClient.data(), true);
 		} else {
 			qWarning()<<"ERROR: no associate";
 		}
@@ -127,6 +125,19 @@ void AgentClientWidget::setSpinnerActive(bool active)
 }
 
 
+QString AgentClientWidget::id()
+{
+	OC_METHODGATE();
+	if(!mAgentClient.isNull()){
+		QSharedPointer<Associate> na=mAgentClient->nodeAssociate();
+		if(!na.isNull()){
+			return na->id();
+		}
+	}
+	return "";
+}
+
+
 // NOTE: This has a sister method in AgentWindow.cpp around line 625
 //       Please remember that while they are similar they are very different!
 //       While the other one is a "One agent, one remote" deal
@@ -135,7 +146,7 @@ void AgentClientWidget::updateOnlineStatus()
 {
 	OC_METHODGATE();
 	if(!mAgentClient.isNull()) {
-		mAgentClient->updateOnlineStatus();
+		mAgentClient->updateCourierRegistration();
 	}
 }
 
@@ -154,18 +165,19 @@ bool AgentClientWidget::setSetting(QString key, bool val)
 	return false;
 }
 
+/*
 bool AgentClientWidget::needConnection()
 {
 	OC_METHODGATE();
 	if(!controller().isNull() && !nodeAssociate().isNull()) {
 		Settings *s=&controller()->settings();
 		if(nullptr!=s) {
-			return s->getCustomSettingBool(NODE_ONLINE_SETTINGS_KEY_BASE+nodeAssociate()->name(), false);
+			return s->getCustomSettingBool(CLIENT_ONLINE_STATUS_BASE_KEY+nodeAssociate()->name(), false);
 		}
 	}
 	return false;
 }
-
+*/
 
 
 void AgentClientWidget::init()
@@ -256,17 +268,10 @@ bool AgentClientWidget::eventFilter(QObject *object, QEvent *event)
 void AgentClientWidget::onConnectButtonStateChanged(const TryToggleState last, const TryToggleState current)
 {
 	OC_METHODGATE();
-	//qDebug()<< "CONNECT BUTTON TRYSTATE CHANGED FROM " << ToggleStateToSTring(last)<< " TO " << ToggleStateToSTring(current);
-	if(current!=last) {
-		QSharedPointer<Associate> nodeAssoc=nodeAssociate();
-		if(!nodeAssoc.isNull()) {
-			const bool on=(OFF!=current);
-			setSetting("octomy.online."+nodeAssoc->name(), on);
-		}
-	} else {
-		qWarning()<<"ERROR: no nodeAssociate";
+	qDebug()<< "AGENT CLIENT CONNECT BUTTON TRYSTATE CHANGED FROM " << ToggleStateToSTring(last)<< " TO " << ToggleStateToSTring(current);
+	if(!mAgentClient.isNull()) {
+		mAgentClient->setNeedsConnection( ( GOING_ON == current ) || (ON == current) );
 	}
-	updateOnlineStatus();
 }
 
 void AgentClientWidget::onSteeringChanged(qreal throttle, qreal steeringAngle)

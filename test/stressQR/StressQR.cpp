@@ -145,4 +145,4 @@ void StressQR::stress()
 }
 
 
-QTEST_MAIN(StressQR)
+OC_TEST_MAIN(stress, StressQR)

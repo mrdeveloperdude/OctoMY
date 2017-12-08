@@ -26,4 +26,4 @@ void TestESpeak::test()
 
 
 
-QTEST_MAIN(TestESpeak)
+OC_TEST_MAIN(test, TestESpeak)

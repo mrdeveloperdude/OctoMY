@@ -44,8 +44,6 @@ private:
 	QSharedPointer<Remote> mRemote;
 	QMenu mMenu;
 
-	QList<QWidget * > mClientWidgets;
-
 public:
 	explicit RemoteWindow(QSharedPointer<Remote> mRemote, QWidget *parent = nullptr);
 	virtual ~RemoteWindow();
@@ -55,7 +53,7 @@ public: //IContextProvider interface
 	Settings &settings() Q_DECL_OVERRIDE;
 
 public:
-	bool needConnection();
+	//bool needConnection();
 
 private:
 
@@ -63,16 +61,16 @@ private:
 	void prepareDelivery();
 	void prepareDiscovery();
 	void preparePairing();
-	void prepareAgentList();
+	void prepareClientList();
 	void prepareControlLevelList();
 	void prepareMenu();
 
 
 	void updateClientWidgetList();
 	void updateControlLevel();
-	void updateActiveAgent();
-	int  updateAgentsList();
-	void addAgentToList(QSharedPointer<Associate> peer);
+	void updateActiveClient();
+	int  updateClientsList();
+	void addClientToList(QSharedPointer<Associate> peer);
 	void hookSensorSignals();
 
 
@@ -127,7 +125,6 @@ private slots:
 
 	//Internal UI slots
 private slots:
-	void on_comboBoxAgent_currentIndexChanged(int index);
 	void on_comboBoxControlLevel_activated(const QString &arg1);
 	void on_pushButtonConfirmQuit_clicked();
 	void on_pushButtonMenu_clicked();

@@ -1060,15 +1060,27 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>PortableIDWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/PortableIDWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>PlanEditor</class>
    <extends>QWidget</extends>
-   <header location="global">widgets/planedit/PlanEditor.hpp</header>
+   <header>widgets/planedit/PlanEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PairingWizard</class>
    <extends>QWidget</extends>
-   <header location="global">widgets/PairingWizard.hpp</header>
+   <header>widgets/PairingWizard.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FaceWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/FaceWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -1087,18 +1099,6 @@
    <class>Camera</class>
    <extends>QWidget</extends>
    <header location="global">camera/Camera.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>PortableIDWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/PortableIDWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>FaceWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/FaceWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

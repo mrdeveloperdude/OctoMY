@@ -1,14 +1,15 @@
 #ifndef STRESSTEMPLATE_HPP
 #define STRESSTEMPLATE_HPP
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
-class StressTemplate:public QObject{
-		Q_OBJECT
+class StressTemplate:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void stress();
+private slots:
+	void stress();
 
 };
 

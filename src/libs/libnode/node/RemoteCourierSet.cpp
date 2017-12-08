@@ -18,11 +18,11 @@ RemoteCourierSet::RemoteCourierSet(QString fullID, RemoteClient &client)
 {
 	OC_METHODGATE();
 
-	auto ctl=mRemoteClient.node();
+	QSharedPointer<Node> node=mRemoteClient.node();
 
 	CommsChannel *cc=nullptr;
-	if(!ctl.isNull()) {
-		//cc=ctl->com
+	if(!node.isNull()) {
+		cc=node->comms();
 	}
 
 	if(nullptr!=cc) {
@@ -49,7 +49,7 @@ RemoteCourierSet::RemoteCourierSet(QString fullID, RemoteClient &client)
 			qWarning()<<"ERROR: Could not allocate BlobCourier";
 		}
 	} else {
-		qWarning()<<"ERROR: ClientWidget did not have commschannel";
+		qWarning()<<"ERROR: RemoteCourierSet did not have commschannel";
 	}
 }
 

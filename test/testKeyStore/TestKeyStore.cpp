@@ -153,6 +153,6 @@ void TestKeyStore::testInsertRemove()
 
 
 
-QTEST_MAIN(TestKeyStore)
+OC_TEST_MAIN(test, TestKeyStore)
 
 

@@ -34,4 +34,4 @@ void TestIDDuel::test(){
 
 
 
-QTEST_MAIN(TestIDDuel)
+OC_TEST_MAIN(test, TestIDDuel)

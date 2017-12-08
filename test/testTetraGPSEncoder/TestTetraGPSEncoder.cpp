@@ -10,4 +10,4 @@ void TestTetraGPSEncoder::test(){
 
 
 
-QTEST_MAIN(TestTetraGPSEncoder)
+OC_TEST_MAIN(test, TestTetraGPSEncoder)

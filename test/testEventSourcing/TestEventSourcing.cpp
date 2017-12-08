@@ -6,4 +6,4 @@ void TestEventSourcing::test()
 }
 
 
-QTEST_MAIN(TestEventSourcing)
+OC_TEST_MAIN(test, TestEventSourcing)

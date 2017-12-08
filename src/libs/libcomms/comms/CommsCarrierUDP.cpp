@@ -78,11 +78,11 @@ bool CommsCarrierUDP::setStartImp(const bool start)
 	bool success=true;
 	if(start) {
 		success = mUDPSocket.bind(mLocalAddress.ip(), mLocalAddress.port());
-		qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< " with interval "<<utility::humanReadableElapsedMS(mSendingTimer.interval()) <<(success?" succeeded": " failed");
+		//qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< " with interval "<<utility::humanReadableElapsedMS(mSendingTimer.interval()) <<(success?" succeeded": " failed");
 
 	} else {
 		mUDPSocket.close();
-		qDebug()<<"----- comms unbind "<< mLocalAddress.toString();
+		//qDebug()<<"----- comms unbind "<< mLocalAddress.toString();
 	}
 	return success;
 }

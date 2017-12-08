@@ -450,7 +450,7 @@ void TestOpenCL::testWithoutGLInterop()
 	TestCLWorkerFactory twf;
 	CLGLInteropConfig ic(nullptr);
 	// Just do CPU for maximum portability/availability/debugability
-	CLThreadManager tm(twf, ic, "", false, true); // CLWorkerFactory &factory, CLGLInteropConfig config=CLGLInteropConfig(), QString deviceSelectionString="", bool allowGPU=true, bool allowCPU=false, QObject *parent = nullptr
+	CLThreadManager tm(twf, ic, "", true, true); // CLWorkerFactory &factory, CLGLInteropConfig config=CLGLInteropConfig(), QString deviceSelectionString="", bool allowGPU=true, bool allowCPU=false, QObject *parent = nullptr
 	tm.setRunning(true);
 	const quint64 start=QDateTime::currentMSecsSinceEpoch();
 	quint64 now=start;
@@ -494,7 +494,7 @@ void TestOpenCL::testWithGLInterop()
 	TestCLWorkerFactory twf;
 	CLGLInteropConfig ic(&shareingContext, sz);
 	// Just do CPU for maximum portability/availability/debugability
-	CLThreadManager tm(twf, ic, "", true, false); // CLWorkerFactory &factory, CLGLInteropConfig config=CLGLInteropConfig(), QString deviceSelectionString="", bool allowGPU=true, bool allowCPU=false, QObject *parent = nullptr
+	CLThreadManager tm(twf, ic, "", true, true); // CLWorkerFactory &factory, CLGLInteropConfig config=CLGLInteropConfig(), QString deviceSelectionString="", bool allowGPU=true, bool allowCPU=false, QObject *parent = nullptr
 	testCLGLViewRendrer_p->setManager(&tm);
 
 	testCLGLViewRendrer_p->initialize(shareingContext);
@@ -535,7 +535,7 @@ void TestOpenCL::cleanupTestCase()
 
 // I CANNOT USE QTEST_MAIN MACRO HERE BECAUSE I NEED TO
 // ALTER THE QApplication OBJECT BEFORE EXEC TO HAVE GL-CL INTEROP WORKINIG
-// QTEST_MAIN(TestOpenCL)
+// OC_TEST_MAIN(test, TestOpenCL)
 
 QT_BEGIN_NAMESPACE
 QTEST_ADD_GPU_BLACKLIST_SUPPORT_DEFS

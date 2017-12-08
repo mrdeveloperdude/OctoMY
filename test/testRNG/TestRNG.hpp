@@ -1,7 +1,7 @@
 #ifndef TESTRNG_HPP
 #define TESTRNG_HPP
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class TestRNG:public QObject{

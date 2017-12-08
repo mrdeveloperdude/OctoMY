@@ -217,25 +217,24 @@ QDebug &operator<<(QDebug &d, cl::Device *dev)
 
 QSurfaceFormat properOctomyDefaultFormat()
 {
-	QSurfaceFormat format=QSurfaceFormat::defaultFormat();
+	QSurfaceFormat defFormat=QSurfaceFormat::defaultFormat();
+	QSurfaceFormat format = defFormat;
 	format.setVersion( OCTOMY_QT_OGL_VERSION_MAJOR, OCTOMY_QT_OGL_VERSION_MINOR );
 	format.setProfile( QSurfaceFormat::OCTOMY_QT_OGL_SURFACE_PROFILE );
-	format.setRenderableType( QSurfaceFormat::OpenGL);
 	format.setOption(QSurfaceFormat::DebugContext);
 	format.setDepthBufferSize(OCTOMY_QT_OGL_DEPTH_BUFFER);
 	format.setStencilBufferSize(OCTOMY_QT_OGL_STENSIL_BUFFER);
-
-	// TODO: Look at making this part of includeGL stuff
-	format.setSwapBehavior(QSurfaceFormat::TripleBuffer);
+	format.setSwapBehavior(QSurfaceFormat::OCTOMY_QT_OGL_SWAP_BEHAVIOUR);
 	format.setSwapInterval(OCTOMY_QT_OGL_SWAP_INTERVAL);
-
+	format.setRenderableType(QSurfaceFormat::OCTOMY_QT_OGL_RENDERABLE_TYPE);
 	// Log stuff
-	const QSurfaceFormat defaultFormat=QSurfaceFormat::defaultFormat();
-	qDebug().noquote().nospace()<<"       OCTOMY_QT_OGL_VERSION: "<< OCTOMY_QT_OGL_VERSION_MAJOR << "." << OCTOMY_QT_OGL_VERSION_MINOR << ",\tformat= "<<format.version().first<<"."<<format.version().second <<"  vs. DEFAULT:\t"<<defaultFormat.version().first<<"."<<defaultFormat.version().second;
-	qDebug().noquote().nospace()<<"       OCTOMY_QT_OGL_PROFILE: "<< OCTOMY_QT_OGL_PROFILE_STR <<	",\tformat= "<< format.profile() <<		    " vs. DEFAULT:\t"<<defaultFormat.profile();
-	qDebug().noquote().nospace()<<"  OCTOMY_QT_OGL_DEPTH_BUFFER: "<< OCTOMY_QT_OGL_DEPTH_BUFFER<<	",\tformat= "<< format.depthBufferSize() <<	" vs. DEFAULT:\t"<<defaultFormat.depthBufferSize();
-	qDebug().noquote().nospace()<<"OCTOMY_QT_OGL_STENSIL_BUFFER: "<< OCTOMY_QT_OGL_STENSIL_BUFFER<< ",\tformat= "<< format.stencilBufferSize() <<" vs. DEFAULT:\t"<<defaultFormat.stencilBufferSize();
-	qDebug().noquote().nospace()<<" OCTOMY_QT_OGL_SWAP_INTERVAL: "<< OCTOMY_QT_OGL_SWAP_INTERVAL<<  ",\tformat= "<< format.swapInterval() <<     " vs. DEFAULT:\t"<<defaultFormat.swapInterval();
+	qDebug().noquote().nospace()<<"        OCTOMY_QT_OGL_VERSION: "<< OCTOMY_QT_OGL_VERSION_MAJOR << "." << OCTOMY_QT_OGL_VERSION_MINOR << ",\tformat= "<<format.version().first<<"."<<format.version().second <<"  vs. DEFAULT:\t"<<defFormat.version().first<<"."<<defFormat.version().second;
+	qDebug().noquote().nospace()<<"        OCTOMY_QT_OGL_PROFILE: "<< OCTOMY_QT_OGL_PROFILE_STR <<	",\tformat= "<< format.profile() <<		    " vs. DEFAULT:\t"<<defFormat.profile();
+	qDebug().noquote().nospace()<<"   OCTOMY_QT_OGL_DEPTH_BUFFER: "<< OCTOMY_QT_OGL_DEPTH_BUFFER<<	",\tformat= "<< format.depthBufferSize() <<	" vs. DEFAULT:\t"<<defFormat.depthBufferSize();
+	qDebug().noquote().nospace()<<" OCTOMY_QT_OGL_STENSIL_BUFFER: "<< STRINGIFY(OCTOMY_QT_OGL_STENSIL_BUFFER) << ",\tformat= "<< format.stencilBufferSize() <<" vs. DEFAULT:\t"<<defFormat.stencilBufferSize();
+	qDebug().noquote().nospace()<<" OCTOMY_QT_OGL_SWAP_BEHAVIOUR: "<< STRINGIFY(OCTOMY_QT_OGL_SWAP_BEHAVIOUR) <<  ",\tformat= "<< format.swapBehavior() <<     " vs. DEFAULT:\t"<<defFormat.swapBehavior();
+	qDebug().noquote().nospace()<<"  OCTOMY_QT_OGL_SWAP_INTERVAL: "<< OCTOMY_QT_OGL_SWAP_INTERVAL<<  ",\tformat= "<< format.swapInterval() <<     " vs. DEFAULT:\t"<<defFormat.swapInterval();
+	qDebug().noquote().nospace()<<"OCTOMY_QT_OGL_RENDERABLE_TYPE: "<< STRINGIFY(OCTOMY_QT_OGL_RENDERABLE_TYPE)<<  ",\tformat= "<< format.renderableType() <<     " vs. DEFAULT:\t"<<defFormat.renderableType();
 	// Done
 	qDebug()<<"PROPER OCTOMY FORMAT WAS: "<<format;
 	return format;

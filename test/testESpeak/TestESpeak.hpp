@@ -1,7 +1,7 @@
 #ifndef TESTESPEAK_HPP
 #define TESTESPEAK_HPP
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class TestESpeak:public QObject{

@@ -1,7 +1,7 @@
 #ifndef STRESSQR_HPP
 #define STRESSQR_HPP
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class StressQR:public QObject

@@ -1,7 +1,7 @@
 #ifndef TESTADDRESSLIST_HPP
 #define TESTADDRESSLIST_HPP
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class TestAddressList:public QObject{

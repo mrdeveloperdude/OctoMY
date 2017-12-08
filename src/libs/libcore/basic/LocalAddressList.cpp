@@ -12,13 +12,13 @@ LocalAddressList::LocalAddressList(quint16 port, bool startTimer)
 {
 	OC_METHODGATE();
 	setPort(port);
-	updateAddresses();
+	updateAddresses(false);
 	// Look for changes in network config every XXX ms
 	mTimer.setInterval(5000);
 	// We don't need precision, slop is fine
 	mTimer.setTimerType(Qt::CoarseTimer);
 	if(!QObject::connect(&mTimer, &QTimer::timeout, mObj, [this]() {
-	updateIfNeeded(false);
+		updateIfNeeded(false);
 	}, OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect ";
 	}
@@ -81,8 +81,7 @@ QHostAddress LocalAddressList::currentAddress() const
 	return QHostAddress();
 }
 
-
-bool LocalAddressList::updateIfNeeded(bool keepCurrent)
+bool LocalAddressList::isUpdateNeeded()
 {
 	QList<QHostAddress> local=utility::allLocalNetworkAddresses();
 	bool updateNeeded=false;
@@ -105,6 +104,12 @@ bool LocalAddressList::updateIfNeeded(bool keepCurrent)
 			}
 		}
 	}
+	return updateNeeded;
+}
+
+bool LocalAddressList::updateIfNeeded(bool keepCurrent)
+{
+	const bool updateNeeded=isUpdateNeeded();
 	//qDebug()<<"LOCAL ADDRESS UPDATE NEEDED: "<<updateNeeded;
 	if(updateNeeded) {
 		updateAddresses(keepCurrent);
@@ -121,18 +126,19 @@ void LocalAddressList::updateAddresses(bool keepCurrent)
 {
 	OC_METHODGATE();
 	QHostAddress last=currentAddress();
+	const bool lastIsGood=!last.isNull();
 	clear();
 	const QHostAddress dgw=utility::defaultGatewayAddress();
 	QList<QHostAddress> local=utility::allLocalNetworkAddresses();
-	qDebug().noquote().nospace()<<"UPDATING LOCAL ADDRESSES: ";
-	qDebug().noquote().nospace()<<" + last: "<<last;
-	qDebug().noquote().nospace()<<" + gateway: "<<dgw;
+	//qDebug().noquote().nospace()<<"UPDATING LOCAL ADDRESSES: ";
+	//qDebug().noquote().nospace()<<" + last: "<<last;
+	//qDebug().noquote().nospace()<<" + gateway: "<<dgw;
 	for(QHostAddress addr:local) {
-		qDebug().noquote().nospace()<<" + addr: "<<addr<<" (dgw closeness= "<< utility::addressCloseness(addr, dgw)<< ")";
+		//qDebug().noquote().nospace()<<" + addr: "<<addr<<" (dgw closeness= "<< utility::addressCloseness(addr, dgw)<< ")";
 		*this <<addr;
 	}
-	const QHostAddress closest=utility::closestAddress(*this, keepCurrent?last:dgw);
-	qDebug().noquote().nospace()<<" + closest: "<<closest<<" (keepCurrent="<< keepCurrent<<")";
+	const QHostAddress closest=utility::closestAddress(*this, (keepCurrent && lastIsGood)?last:dgw);
+	//qDebug().noquote().nospace()<<" + closest: "<<closest<<" (keepCurrent="<< keepCurrent<<")";
 	setCurrent(closest, port());
 }
 

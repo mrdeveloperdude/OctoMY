@@ -210,4 +210,4 @@ void TestBlob::testBlobCourier2()
 }
 
 
-QTEST_MAIN(TestBlob)
+OC_TEST_MAIN(test, TestBlob)

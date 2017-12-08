@@ -1,7 +1,7 @@
 #ifndef TESTCREEPYVOICE_HPP
 #define TESTCREEPYVOICE_HPP
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class TestCreepyVoice:public QObject{

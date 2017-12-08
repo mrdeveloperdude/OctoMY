@@ -16,7 +16,7 @@
 
 #include "../arduino/ArduMYParserState.hpp"
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 #include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 

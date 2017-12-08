@@ -7,7 +7,7 @@
 #include <QVariantMap>
 
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 #define scrutinize(na, expectedValid, expectedAddress, expectedPort) \
@@ -302,4 +302,4 @@ void TestNetworkAddress::testToFromString()
 
 }
 
-QTEST_MAIN(TestNetworkAddress)
+OC_TEST_MAIN(test, TestNetworkAddress)

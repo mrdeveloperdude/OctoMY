@@ -11,11 +11,23 @@ CONFIG += staticlib
 
 SOURCES+= \
 	CourierTester.cpp \
-    Corruptifier.cpp
+    Corruptifier.cpp \
+    TestCommon.cpp \
+    CPUBurner.cpp \
+    GeometryEngine.cpp \
+    GLStressWidget.cpp \
+    MEMTrasher.cpp \
+    Stress.cpp
 
 HEADERS+= \
 	CourierTester.hpp \
-    Corruptifier.hpp
+    Corruptifier.hpp \
+    TestCommon.hpp \
+    CPUBurner.hpp \
+    GeometryEngine.hpp \
+    GLStressWidget.hpp \
+    MEMTrasher.hpp \
+    Stress.hpp
 
 
 common.depends=		$${SRCS}/libs

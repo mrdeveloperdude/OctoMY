@@ -43,7 +43,7 @@ void KeyStore::bootstrapWorkerImpl()
 	//qDebug()<<"KeyStore() bootstrapWorkerImpl() file="<<mFilename;
 	QFile f(mFilename);
 	if(!f.exists()) {
-		qDebug()<<"KEYSTORE: no keystore file found, generating local keypair and saving";
+		//qDebug()<<"KEYSTORE: no keystore file found, generating local keypair and saving";
 		mLocalKey=QSharedPointer<Key>(OC_NEW Key(mPolicy.bits()));
 		save();
 	}
@@ -70,7 +70,7 @@ void KeyStore::load()
 			//qDebug()<<"PARSING JSON: "<<doc.toJson();
 			QVariantMap map = doc.object().toVariantMap();
 			QVariantMap localMap=map["localKey"].toMap();
-			qDebug()<<"LOCAL MAP: "<<localMap;
+			//qDebug()<<"LOCAL MAP: "<<localMap;
 			mLocalKey=QSharedPointer<Key>(OC_NEW Key(localMap, false));
 			if(!mLocalKey->isValid(false)) {
 				qWarning()<<"ERROR: local key was not valid";
@@ -82,7 +82,7 @@ void KeyStore::load()
 					QVariantMap remote=(*b).toMap();
 					if(remote.contains("key")) {
 						QVariantMap  keyMap=remote["key"].toMap();
-						qDebug()<<"Loading key from: "<<keyMap;
+						//qDebug()<<"Loading key from: "<<keyMap;
 						QSharedPointer<Key> peerKey= QSharedPointer<Key>(OC_NEW Key(keyMap,true));
 						if(!peerKey->isValid(true)) {
 							qWarning()<<"ERROR: peer key was not valid";

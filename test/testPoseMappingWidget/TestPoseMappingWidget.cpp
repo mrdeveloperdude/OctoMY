@@ -80,4 +80,4 @@ void TestPoseMappingWidget::testWidget()
 
 
 
-QTEST_MAIN(TestPoseMappingWidget)
+OC_TEST_MAIN(test, TestPoseMappingWidget)

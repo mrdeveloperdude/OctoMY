@@ -74,4 +74,4 @@ void TestPortableID::test(){
 
 
 
-QTEST_MAIN(TestPortableID)
+OC_TEST_MAIN(test, TestPortableID)

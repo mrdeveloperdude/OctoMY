@@ -1,8 +1,9 @@
 #include "TestTemplate.hpp"
 
-void TestTemplate::test(){
+void TestTemplate::test()
+{
 }
 
 
+OC_TEST_MAIN(test, TestTemplate)
 
-QTEST_MAIN(TestTemplate)

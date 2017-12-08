@@ -6,6 +6,7 @@
 
 #include <QComboBox>
 
+Q_DECLARE_METATYPE(QHostAddress)
 
 
 NetworkSettingsWidget::NetworkSettingsWidget(QWidget *parent)
@@ -14,6 +15,7 @@ NetworkSettingsWidget::NetworkSettingsWidget(QWidget *parent)
 	, mLastPort(0)
 	, mLastValidity(false)
 {
+	OC_METHODGATE();
 	ui->setupUi(this);
 	ui->stackedWidget->setCurrentWidget(ui->pageView);
 	set(false);
@@ -21,6 +23,7 @@ NetworkSettingsWidget::NetworkSettingsWidget(QWidget *parent)
 
 NetworkSettingsWidget::~NetworkSettingsWidget()
 {
+	OC_METHODGATE();
 	delete ui;
 	ui=nullptr;
 }
@@ -28,6 +31,7 @@ NetworkSettingsWidget::~NetworkSettingsWidget()
 
 void NetworkSettingsWidget::configure(LocalAddressList &localAddresses)
 {
+	OC_METHODGATE();
 	ui->comboBoxLocalAddress->clear();
 	for(QHostAddress adr:localAddresses) {
 		if((QAbstractSocket::IPv4Protocol==adr.protocol()) && (!adr.isLoopback()) ) {
@@ -39,6 +43,7 @@ void NetworkSettingsWidget::configure(LocalAddressList &localAddresses)
 
 bool NetworkSettingsWidget::set(QHostAddress naddr, quint16 nport, bool sendSignal)
 {
+	OC_METHODGATE();
 	ui->comboBoxLocalAddress->setCurrentText(naddr.toString());
 	ui->lineEditLocalPort->setText(QString::number(nport));
 	return set(sendSignal);
@@ -46,6 +51,7 @@ bool NetworkSettingsWidget::set(QHostAddress naddr, quint16 nport, bool sendSign
 
 bool NetworkSettingsWidget::set(bool sendSignal)
 {
+	OC_METHODGATE();
 	bool portOK=false;
 	const auto naddr=address();
 	auto nport=port(&portOK);
@@ -65,7 +71,7 @@ bool NetworkSettingsWidget::set(bool sendSignal)
 		}
 	}
 
-	qDebug()<<"SET portOK="<<portOK<<", addrOK="<<addrOK<<", nport="<<nport<<", ok="<<ok;
+	qDebug().noquote().nospace()<<"SET addrOK="<<addrOK<<", portOK="<<portOK<<", nport="<<nport<<", ok="<<ok;
 	ui->widgetStatus->setLightOn(true);
 	ui->widgetStatus->setLightColor(ok?Qt::green:Qt::red);
 	if(ok) {
@@ -75,6 +81,7 @@ bool NetworkSettingsWidget::set(bool sendSignal)
 	}
 	ui->pushButtonEdit->setText(mLastAddress.toString()+" : "+QString::number(mLastPort));
 	if(sendSignal) {
+		qRegisterMetaType<QHostAddress>("QHostAddress");
 		emit addressChanged(naddr, nport, ok);
 	}
 	return ok;
@@ -83,6 +90,7 @@ bool NetworkSettingsWidget::set(bool sendSignal)
 
 bool NetworkSettingsWidget::setAddress(QHostAddress naddr)
 {
+	OC_METHODGATE();
 	ui->comboBoxLocalAddress->setCurrentText(naddr.toString());
 	return set();
 }
@@ -91,6 +99,7 @@ bool NetworkSettingsWidget::setAddress(QHostAddress naddr)
 
 bool NetworkSettingsWidget::setPort(quint16 nport)
 {
+	OC_METHODGATE();
 	ui->lineEditLocalPort->setText(QString::number(nport));
 	return set();
 }
@@ -98,32 +107,38 @@ bool NetworkSettingsWidget::setPort(quint16 nport)
 
 QHostAddress NetworkSettingsWidget::address() const
 {
+	OC_METHODGATE();
 	return QHostAddress(ui->comboBoxLocalAddress->currentText());
 }
 
 
 quint16 NetworkSettingsWidget::port(bool *ok) const
 {
+	OC_METHODGATE();
 	return quint16(ui->lineEditLocalPort->text().toInt(ok));
 }
 
 
 void NetworkSettingsWidget::on_pushButtonEdit_clicked()
 {
+	OC_METHODGATE();
 	ui->stackedWidget->setCurrentWidget(ui->pageEdit);
 }
 
 void NetworkSettingsWidget::on_pushButtonSave_clicked()
 {
+	OC_METHODGATE();
 	ui->stackedWidget->setCurrentWidget(ui->pageView);
 }
 
 void NetworkSettingsWidget::on_comboBoxLocalAddress_currentIndexChanged(int)
 {
+	OC_METHODGATE();
 	set();
 }
 
 void NetworkSettingsWidget::on_lineEditLocalPort_textChanged(const QString &arg1)
 {
+	OC_METHODGATE();
 	set();
 }

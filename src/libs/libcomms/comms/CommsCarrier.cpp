@@ -7,9 +7,11 @@
 #include <QHostAddress>
 #include <QDateTime>
 
+Q_DECLARE_METATYPE(QHostAddress)
+Q_DECLARE_METATYPE(QHostAddress *)
+
 quint64 CommsCarrier::sTotalRecCount = 0;
 quint64 CommsCarrier::sTotalTxCount = 0;
-
 
 CommsCarrier::CommsCarrier(QObject *parent)
 	: QObject(parent)
@@ -41,7 +43,7 @@ void CommsCarrier::detectConnectionChanges(const quint64 now)
 	OC_METHODGATE();
 	const quint64 timeSinceLastRX = (now - mRXRate.mLast);
 	const quint64 timeout = connectionTimeout();
-	qDebug()<<"DETECTIN' connected=" << mConnected << "timeSinceLastRX=" <<  timeSinceLastRX << " vs. timeout="<<timeout<< " now="<<now;
+	//qDebug()<<"DETECTIN' connected=" << mConnected << "timeSinceLastRX=" <<  timeSinceLastRX << " vs. timeout="<<timeout<< " now="<<now;
 	/*
 	// TODO: Merge this with the rest of the "is vs. needed" crowd
 	if(mConnected && (timeSinceLastRX > timeout) ) {
@@ -136,9 +138,9 @@ bool CommsCarrier::setStarted(bool start)
 			setStarted(false);
 		}
 	} else {
-		mConnected=false;
 		mSendingTimer.stop();
 		setStartImp(false);
+		mConnected=false;
 		emit carrierConnectionStatusChanged(false);
 	}
 	return success;

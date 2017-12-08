@@ -292,4 +292,4 @@ void TestUtility::testIPv6()
 
 
 
-QTEST_MAIN(TestUtility)
+OC_TEST_MAIN(test, TestUtility)

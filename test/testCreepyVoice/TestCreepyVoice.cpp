@@ -18,4 +18,4 @@ void TestCreepyVoice::test()
 
 
 
-QTEST_MAIN(TestCreepyVoice)
+OC_TEST_MAIN(test, TestCreepyVoice)

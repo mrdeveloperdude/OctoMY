@@ -48,7 +48,7 @@ RemoteClientWidget::RemoteClientWidget(QSharedPointer<RemoteClient> client, QWid
 			if(!nodeAssociate.isNull()) {
 				ui->widgetBirthCertificate->setPortableID(nodeAssociate->toPortableID());
 			}
-			node->setHookCommsSignals(*this, true);
+			node->setHookCommsSignals(*mRemoteClient.data(), true);
 		} else {
 			qWarning()<<"ERROR: no associate";
 		}

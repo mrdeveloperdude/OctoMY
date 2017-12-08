@@ -6,6 +6,8 @@
 #include <QWidget>
 
 
+Q_DECLARE_METATYPE(QHostAddress)
+Q_DECLARE_METATYPE(QHostAddress *)
 
 namespace Ui
 {

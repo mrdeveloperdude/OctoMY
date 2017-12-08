@@ -9,6 +9,7 @@ HubClient::HubClient(QSharedPointer<Node> controller, QSharedPointer<Associate> 
 	, mThis(this)
 {
 	OC_METHODGATE();
+	updateCourierRegistration();
 }
 
 /////////////////////////////////////////////////////

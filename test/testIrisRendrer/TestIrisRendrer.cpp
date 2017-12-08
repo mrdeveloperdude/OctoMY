@@ -99,4 +99,4 @@ void TestIrisRendrer::testHuge()
 
 
 
-QTEST_MAIN(TestIrisRendrer)
+OC_TEST_MAIN(test, TestIrisRendrer)

@@ -100,7 +100,7 @@ void TryToggle::updateText()
 		t=mGoingOffText;
 		break;
 	}
-	qDebug()<<"TRYTOGGLE TEXT CHANGED TO "<<t;
+	//qDebug()<<"TRYTOGGLE TEXT CHANGED TO "<<t;
 	ui->pushButtonToggle->setText(t);
 }
 

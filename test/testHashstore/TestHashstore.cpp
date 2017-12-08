@@ -43,4 +43,4 @@ void TestHashstore::test(){
 
 
 
-QTEST_MAIN(TestHashstore)
+OC_TEST_MAIN(test, TestHashstore)

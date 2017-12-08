@@ -63,4 +63,4 @@ void TestRNG::test(){
 
 
 
-QTEST_MAIN(TestRNG)
+OC_TEST_MAIN(test, TestRNG)

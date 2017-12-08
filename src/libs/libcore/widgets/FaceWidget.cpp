@@ -29,7 +29,7 @@ FaceWidget::FaceWidget(QWidget *parent)
 	ui->setupUi(this);
 	ui->tryToggleConnect->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_DISCONNECT_COLOR);
 	if(!connect(ui->tryToggleConnect, SIGNAL(stateChanged(const TryToggleState, const TryToggleState)), this, SIGNAL(connectionStateChanged(const TryToggleState, const TryToggleState)), OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect";
+		qWarning()<<"ERROR: Could not forward connectionStateChanged signal";
 	}
 	updateEyeColor();
 }
@@ -167,6 +167,26 @@ void FaceWidget::setPanic(bool panic)
 	ui->pushButtonPanic->setPanic(panic);
 }
 
+
+
+void FaceWidget::onSyncParameterChanged(ISyncParameter *sp)
+{
+	OC_METHODGATE();
+	//qDebug()<<"Agent ASC changed: "<<sp->toString();
+//TODO: THIS IS ALL WRONG
+	/*
+	SyncParameter<Pose> *targetPoseParameter=qobject_cast< SyncParameter<Pose> >(sp);
+	if(nullptr!=targetPoseParameter) {
+		Pose targetPose=targetPoseParameter->bestValue(true);
+		//qDebug()<<"TARGET POSE: "<<targetPose.toString();
+		ui->widgetPose->poseChanged(targetPose);
+		qDebug()<<"ARNOLD!";
+	} else {
+		qWarning()<<"ERROR: sp was nullptr";
+	}
+	*/
+}
+
 void FaceWidget::on_pushButtonNewColor_clicked()
 {
 	OC_METHODGATE();
@@ -198,24 +218,6 @@ void FaceWidget::on_pushButtonPanic_toggled(bool panic)
 }
 
 
-
-void FaceWidget::onSyncParameterChanged(ISyncParameter *sp)
-{
-	OC_METHODGATE();
-	//qDebug()<<"Agent ASC changed: "<<sp->toString();
-//TODO: THIS IS ALL WRONG
-	/*
-	SyncParameter<Pose> *targetPoseParameter=qobject_cast< SyncParameter<Pose> >(sp);
-	if(nullptr!=targetPoseParameter) {
-		Pose targetPose=targetPoseParameter->bestValue(true);
-		//qDebug()<<"TARGET POSE: "<<targetPose.toString();
-		ui->widgetPose->poseChanged(targetPose);
-		qDebug()<<"ARNOLD!";
-	} else {
-		qWarning()<<"ERROR: sp was nullptr";
-	}
-	*/
-}
 
 void FaceWidget::on_splitterTop_splitterMoved(int, int)
 {

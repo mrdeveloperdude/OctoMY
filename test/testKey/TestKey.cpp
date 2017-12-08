@@ -430,4 +430,4 @@ void TestKey::testEncryption()
 
 
 
-QTEST_MAIN(TestKey)
+OC_TEST_MAIN(test, TestKey)

@@ -1,7 +1,7 @@
 #ifndef TESTEYESWIDGET_HPP
 #define TESTEYESWIDGET_HPP
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class TestEyesWidget:public QObject{

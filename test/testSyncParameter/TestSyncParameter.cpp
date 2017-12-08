@@ -203,4 +203,4 @@ void TestSyncParameter::test()
 }
 
 
-QTEST_MAIN(TestSyncParameter)
+OC_TEST_MAIN(test, TestSyncParameter)

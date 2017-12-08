@@ -88,7 +88,7 @@ CLGLView::~CLGLView()
 void CLGLView::setRenderer(CLGLViewRenderer * renderer)
 {
 	const QString oldSpec=(nullptr!=mRenderer)?mRenderer->getRendererSpec():"NONE";
-	const QString OC_NEWSpec=(nullptr!=renderer)?renderer->getRendererSpec():"NONE";
+	const QString newSpec=(nullptr!=renderer)?renderer->getRendererSpec():"NONE";
 	qDebug()<<"CHANGING ACTIVE RENDERER FROM "<<oldSpec<<" --> "<<newSpec;
 	if(mRenderer!=renderer && nullptr!=renderer) {
 		renderer->resize(mLastResize);

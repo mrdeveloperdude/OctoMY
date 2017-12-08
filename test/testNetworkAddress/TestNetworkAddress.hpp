@@ -1,7 +1,7 @@
 #ifndef TESTNETWORKADDRESS_HPP
 #define TESTNETWORKADDRESS_HPP
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class TestNetworkAddress:public QObject{

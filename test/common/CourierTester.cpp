@@ -7,7 +7,7 @@
 #include <QBuffer>
 #include <QDataStream>
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 

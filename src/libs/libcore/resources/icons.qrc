@@ -123,5 +123,8 @@
         <file>icons/digital_output.svg</file>
         <file>icons/digital_input.svg</file>
         <file>icons/pwm.svg</file>
+        <file>icons/bug.svg</file>
+        <file>icons/test.svg</file>
+        <file>icons/stress.svg</file>
     </qresource>
 </RCC>

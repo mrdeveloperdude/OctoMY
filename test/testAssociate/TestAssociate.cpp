@@ -132,4 +132,4 @@ void TestAssociate::test(){
 
 
 
-QTEST_MAIN(TestAssociate)
+OC_TEST_MAIN(test, TestAssociate)

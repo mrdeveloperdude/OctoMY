@@ -4,7 +4,7 @@
 
 
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 class ArduMYActuatorConfig;
 class ArduMYActuatorState;

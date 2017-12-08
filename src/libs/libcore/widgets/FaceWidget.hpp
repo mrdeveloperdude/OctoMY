@@ -49,29 +49,24 @@ public:
 	void setConnectionState(const TryToggleState s, const bool doEmit=true);
 	TryToggleState  connectionState() const ;
 
-
 	void setHookSignals(QObject &ob, bool hook);
-
-
 	void setPanic(bool panic);
+
 signals:
 	void connectionStateChanged(const TryToggleState last, const TryToggleState current);
 	void colorChanged(QColor);
 	void panic();
 
+public slots:
+	void onSyncParameterChanged(ISyncParameter *);
+
 private slots:
 	void on_pushButtonNewColor_clicked();
 	void on_pushButtonPanic_toggled(bool checked);
-
 	void on_splitterTop_splitterMoved(int pos, int index);
-
 	void on_splitterBottom_splitterMoved(int pos, int index);
-
 	void on_splitterMiddle_splitterMoved(int pos, int index);
 
-public slots:
-
-	void onSyncParameterChanged(ISyncParameter *);
 };
 
 #endif // FACEWIDGET_HPP

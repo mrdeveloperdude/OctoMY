@@ -19,7 +19,8 @@
 
 
 Associate::Associate(const QVariantMap map, bool isPublic)
-	: mKey( map["key"].toMap(), isPublic)
+	: mThis(this)
+	, mKey( map["key"].toMap(), isPublic)
 	, mName( map["name"].toString() )
 	, mGender( map["gender"].toString() )
 	, mRole( nodeRoleFromString( map["role"].toString() ) )
@@ -366,15 +367,15 @@ QString Associate::toString()
 }
 
 
-QSharedPointer<Client> Associate::toClient(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssoc)
+QSharedPointer<Client> Associate::toClient(QSharedPointer<Node> node)
 {
 	switch(mType) {
 	case(TYPE_AGENT):
-		return QSharedPointer<Client>(OC_NEW AgentClient(node,nodeAssoc));
+		return QSharedPointer<Client>(OC_NEW AgentClient(node, mThis));
 	case(TYPE_REMOTE):
-		return QSharedPointer<Client>(OC_NEW RemoteClient(node,nodeAssoc));
+		return QSharedPointer<Client>(OC_NEW RemoteClient(node, mThis));
 	case(TYPE_HUB):
-		return QSharedPointer<Client>(OC_NEW HubClient(node,nodeAssoc));
+		return QSharedPointer<Client>(OC_NEW HubClient(node, mThis));
 	}
 	return nullptr;
 

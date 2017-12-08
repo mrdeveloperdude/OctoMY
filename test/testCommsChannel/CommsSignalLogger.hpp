@@ -4,7 +4,7 @@
 
 #include  <QString>
 #include <QObject>
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class CommsSession;

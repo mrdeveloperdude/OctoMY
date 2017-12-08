@@ -1249,7 +1249,7 @@ void TestArduMY::testCommandSerializerFull()
 
 }
 
-QTEST_MAIN(TestArduMY)
+OC_TEST_MAIN(test, TestArduMY)
 
 
 

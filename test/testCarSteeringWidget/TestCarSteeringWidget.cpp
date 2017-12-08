@@ -37,4 +37,4 @@ void TestCarSteeringWidget::test(){
 
 
 
-QTEST_MAIN(TestCarSteeringWidget)
+OC_TEST_MAIN(test, TestCarSteeringWidget)

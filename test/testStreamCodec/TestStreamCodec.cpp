@@ -51,4 +51,4 @@ void TestStreamCodec::test()
 }
 
 
-QTEST_MAIN(TestStreamCodec)
+OC_TEST_MAIN(test, TestStreamCodec)

@@ -47,7 +47,7 @@ public:
 	virtual QWidget *showWindow();
 
 
-	void setNodeCouriersRegistered(bool reg) Q_DECL_OVERRIDE;
+	void setNodeCouriersRegistration(bool reg) Q_DECL_OVERRIDE;
 
 
 };

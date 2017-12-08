@@ -41,6 +41,7 @@ class Node;
 class Associate
 {
 private:
+	QSharedPointer<Associate> mThis;
 	Key mKey;
 
 	QString mName;
@@ -121,7 +122,7 @@ public:// to/from
 	QVariantMap toVariantMap();
 	void fromVariantMap(const QVariantMap map);
 	QString toString();
-	QSharedPointer<Client> toClient(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssoc);
+	QSharedPointer<Client> toClient(QSharedPointer<Node> node);
 
 public: // Operators
 	bool operator==(Associate &o);

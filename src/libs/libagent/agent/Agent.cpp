@@ -123,9 +123,9 @@ void Agent::reloadController()
 
 
 
-void Agent::setNodeCouriersRegistered(bool reg){
+void Agent::setNodeCouriersRegistration(bool reg){
 	OC_METHODGATE();
-	Node::setNodeCouriersRegistered(reg);
+	Node::setNodeCouriersRegistration(reg);
 	// When we get a new agent specific courier, put it here
 	/*
 	if(nullptr!=mComms){

@@ -50,7 +50,7 @@ class Node : public QObject, public IConnectionStatus
 {
 	Q_OBJECT
 protected:
-
+	QSharedPointer<Node> mThisNode;
 	AppContext *mContext;
 	NodeRole mRole;
 	NodeType mType;
@@ -71,6 +71,7 @@ protected:
 	CameraList *mCameras;
 	qint64 mLastStatusSend;
 	QUrl mServerURL;
+
 
 public:
 	explicit Node(AppContext *context, NodeRole mRole, NodeType mType, QObject *parent = nullptr);
@@ -122,18 +123,18 @@ public:
 	// Couriers
 
 	// [Un]register local couriers with comms
-	virtual void setNodeCouriersRegistered(const bool reg);
+	virtual void setNodeCouriersRegistration(const bool reg);
 	// [Un]register client specific couriers with comms
-	void setClientCouriersRegistered(const bool reg);
+	void setClientCouriersRegistration(const bool reg);
 	// [Un]register couriers with comms
-	void setCouriersRegistered(const bool reg);
+	void setCouriersRegistration(const bool reg);
 
 	// Update client specific courier registration with comms depending on need
-	void updateClientCouriersRegistered();
+	void updateClientCouriersRegistration();
 	// Update node specific courier registration with comms depending on need
-	void updateNodeCouriersRegistered();
+	void updateNodeCouriersRegistration();
 	// Update courier registration with comms depending on need
-	void updateCouriersRegistered();
+	void updateCouriersRegistration();
 
 
 
@@ -182,5 +183,7 @@ private slots:
 	void onGyroscopeUpdated(QGyroscopeReading *r);
 
 };
+
+typedef Node Nodee;
 
 #endif // NODE_HPP

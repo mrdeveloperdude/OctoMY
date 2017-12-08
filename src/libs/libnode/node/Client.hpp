@@ -51,11 +51,12 @@ public:
 protected:
 
 	friend class ClientConnectionStatus;
+	friend class AgentClientWidget;
 
 	bool needsConnection();
 	bool isConnected();
-	void setNeedsConnection(bool);
-	void setConnected(bool);
+	void setNeedsConnection(const bool);
+	void setConnected(const bool);
 
 public:
 

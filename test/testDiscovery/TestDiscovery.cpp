@@ -86,4 +86,4 @@ void TestDiscovery::test(){
 
 
 
-QTEST_MAIN(TestDiscovery)
+OC_TEST_MAIN(test, TestDiscovery)

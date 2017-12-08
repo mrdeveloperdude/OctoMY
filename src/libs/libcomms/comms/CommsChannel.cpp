@@ -29,6 +29,10 @@
 #define FIRST_STATE_ID ((SESSION_ID_TYPE)MULTIMAGIC_LAST)
 #define MAX_CONCURRENT_COURIERS (100)
 
+Q_DECLARE_METATYPE(QHostAddress)
+Q_DECLARE_METATYPE(QHostAddress *)
+
+
 //#define DO_CC_ENC
 
 CommsChannel::CommsChannel(CommsCarrier &carrier, KeyStore &keystore, AddressBook &peers, QObject *parent)
@@ -1102,8 +1106,9 @@ void CommsChannel::updateConnect()
 	OC_METHODGATE();
 	const bool is=mCarrier.isConnected();
 	const bool needs = needConnection();
+	qDebug()<<"Comms channel update isConnected="<<is<<", needsConnection="<<needs;
 	if(needs != is) {
-		qDebug()<<"Comms channel update decided to start carrier";
+		qDebug()<<"Comms channel update decided to " << (needs?"start":"stop")<< " carrier";
 		mCarrier.setStarted(needs);
 	}
 }
@@ -1323,6 +1328,7 @@ void CommsChannel::setCourierRegistered(QSharedPointer<Courier> courier, bool re
 
 
 	OC_METHODGATE();
+	//qDebug()<<"SETTING COURIER "<<courier->toString()<<" TO "<<(reg?"REGISTERED":"UNREGISTERED");
 	if(!courier.isNull()) {
 		const bool ok=mCouriers.setRegistered(courier, reg);
 		if(ok) {

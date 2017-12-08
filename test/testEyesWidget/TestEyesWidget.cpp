@@ -82,4 +82,4 @@ void TestEyesWidget::testWidget()
 
 
 
-QTEST_MAIN(TestEyesWidget)
+OC_TEST_MAIN(test, TestEyesWidget)

@@ -2,6 +2,7 @@
 
 #include "node/Node.hpp"
 #include "comms/CommsSession.hpp"
+#include "comms/CommsChannel.hpp"
 
 #include "ClientConnectionStatus.hpp"
 
@@ -15,11 +16,8 @@ Client::Client(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssociat
 {
 	OC_METHODGATE();
 
-	qDebug()<<"CREATING LIENT mController="<<(nullptr!=mNode?mNode->name():"NULL")<<", mNodeAssoc="<<(nullptr!=mNodeAssociate?mNodeAssociate->name():"NULL")<<", parent="<<parent;
-
-
+	//qDebug()<<"CREATING LIENT mController="<<(nullptr!=mNode?mNode->name():"NULL")<<", mNodeAssoc="<<(nullptr!=mNodeAssociate?mNodeAssociate->name():"NULL")<<", parent="<<parent;
 	initTimer();
-
 }
 
 
@@ -59,14 +57,23 @@ bool Client::isConnected()
 
 
 
-void Client::setNeedsConnection(bool val)
+void Client::setNeedsConnection(const bool current)
 {
 	OC_METHODGATE();
+	qDebug()<<"CLIENT::set needs connection: "<<current;
 	if(!mNode.isNull()){
-		mNode->settings().setCustomSettingBool(CLIENT_ONLINE_STATUS_BASE_KEY+nodeAssociate()->id(), val);
+		const QString key=CLIENT_ONLINE_STATUS_BASE_KEY+nodeAssociate()->id();
+		const bool last=needsConnection();
+		if(current!=last) {
+			mNode->settings().setCustomSettingBool(key, current);
+			updateCourierRegistration();
+			CommsChannel *comms=mNode->comms();
+			if(nullptr != comms){
+				comms->updateConnect();
+			}
+		}
 	}
 }
-
 
 
 

@@ -63,6 +63,7 @@ static quint16 defaultPortForNodeType(NodeType type)
 
 Node::Node(AppContext *context, NodeRole role, NodeType type, QObject *parent)
 	: QObject (parent)
+	, mThisNode(this)
 	, mContext(context)
 	, mRole (role)
 	, mType (type)
@@ -103,6 +104,8 @@ void Node::init()
 	mKeystore.bootstrap(ROLE_AGENT==mRole);
 
 	mAddressBook.bootstrap(true, false);
+
+	mClients.syncToAddressBook(mAddressBook, mThisNode);
 
 	StyleManager *style=OC_NEW StyleManager(QColor(TYPE_AGENT==mType?"#e83636":TYPE_REMOTE==mType?"#36bee8":"#36e843"));
 	if(nullptr!=style) {
@@ -509,7 +512,7 @@ bool Node::isConnected()
 
 
 // [Un]register node specific couriers with comms
-void Node::setNodeCouriersRegistered(const bool reg){
+void Node::setNodeCouriersRegistration(const bool reg){
 	OC_METHODGATE();
 	if(nullptr!=mComms){
 		if(nullptr!=mSensorsCourier){
@@ -522,52 +525,53 @@ void Node::setNodeCouriersRegistered(const bool reg){
 }
 
 // [Un]register client specific couriers with comms
-void Node::setClientCouriersRegistered(const bool reg){
+void Node::setClientCouriersRegistration(const bool reg){
 	OC_METHODGATE();
 	mClients.setAllCouriersRegistered(reg);
 }
 
 
 // [Un]register couriers with comms
-void Node::setCouriersRegistered(const bool reg){
+void Node::setCouriersRegistration(const bool reg){
 	OC_METHODGATE();
-	setNodeCouriersRegistered(reg);
-	setClientCouriersRegistered(reg);
+	setNodeCouriersRegistration(reg);
+	setClientCouriersRegistration(reg);
 }
 
 
 // Update client specific courier registration with comms depending on need
-void Node::updateClientCouriersRegistered(){
+void Node::updateClientCouriersRegistration(){
 	OC_METHODGATE();
 	mClients.updateCourierRegistration();
 }
 
 
 // Update node specific courier registration with comms depending on need
-void Node::updateNodeCouriersRegistered(){
+void Node::updateNodeCouriersRegistration(){
 	OC_METHODGATE();
-	setNodeCouriersRegistered(needsConnection());
+	setNodeCouriersRegistration(needsConnection());
 }
 
 
 // Update courier registration with comms depending on need
-void Node::updateCouriersRegistered(){
+void Node::updateCouriersRegistration(){
 	OC_METHODGATE();
-	updateClientCouriersRegistered();
-	updateNodeCouriersRegistered();
+	updateClientCouriersRegistration();
+	updateNodeCouriersRegistration();
 }
 
 
 void Node::setNeedsConnection(const bool current)
 {
 	OC_METHODGATE();
+	qDebug()<<"NODE::set needs connection: "<<current;
 	QSharedPointer<Associate> ni=nodeIdentity();
 	if(!ni.isNull()) {
 		const QString key=NODE_ONLINE_STATUS_BASE_KEY + ni->id();
 		const bool last=settings().getCustomSettingBool(key, false);
 		if(current!=last) {
 			settings().setCustomSettingBool(key, current);
-			updateCouriersRegistered();
+			updateCouriersRegistration();
 			mComms->updateConnect();
 		}
 	}
@@ -641,7 +645,7 @@ void Node::setHookCommsSignals(QObject &o, bool hook)
 {
 	OC_METHODGATE();
 	if(nullptr!=mComms) {
-		mComms->setHookCommsSignals(o,hook);
+		mComms->setHookCommsSignals(o, hook);
 	}
 }
 

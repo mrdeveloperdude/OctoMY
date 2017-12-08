@@ -7,6 +7,7 @@
 #include "comms/CommsSession.hpp"
 #include "basic/Associate.hpp"
 
+#include "Node.hpp"
 
 ClientList::ClientList()
 {
@@ -19,7 +20,7 @@ QMap<QString, QSharedPointer<Client> > ClientList::toMapByID()
 {
 	OC_METHODGATE();
 	QMap<QString, QSharedPointer<Client> > map;
-	for(QSharedPointer<Client> client: *this) {
+	for(QSharedPointer<Client> client: mClients) {
 		if(!client.isNull()) {
 			QSharedPointer<Associate> nodeAssociate=client->nodeAssociate();
 			if(!nodeAssociate.isNull()) {
@@ -34,17 +35,19 @@ QMap<QString, QSharedPointer<Client> > ClientList::toMapByID()
 	return map;
 }
 
-void ClientList::syncToAddressBook(AddressBook &ab)
+void ClientList::syncToAddressBook(AddressBook &ab, QSharedPointer<Node> node)
 {
 	OC_METHODGATE();
+	qDebug()<<"Synchronizing client list to address book with "<<ab.all().size()<<" items";
 	QMap<QString, QSharedPointer<Client> > existingMap=toMapByID();
 	// Remove what isn't there
-	for(QSharedPointer<Client> client: *this) {
+	for(QSharedPointer<Client> client: mClients) {
 		if(!client.isNull()) {
 			QSharedPointer<Associate> nodeAssociate=client->nodeAssociate();
 			if(!nodeAssociate.isNull()) {
 				QString id=nodeAssociate->id();
 				if(!ab.hasAssociate(id)) {
+					qDebug()<<" + Removing "<<id;
 					existingMap.remove(id);
 				}
 			}
@@ -55,19 +58,22 @@ void ClientList::syncToAddressBook(AddressBook &ab)
 	QList<QString> keys=all.keys();
 	for(QString key: keys) {
 		if(!existingMap.contains(key)) {
-			//TODO: Handle node and nodeass
-//			existingMap[key]=all[key]->toClient();
+			QSharedPointer<Associate> ass=all[key];
+			if(!ass.isNull()) {
+				qDebug()<<" + Adding "<<key;
+				existingMap[key]=ass->toClient(node);
+			}
 		}
 	}
 	// Make it so
-	clear();
-	append(existingMap.values());
+	mClients.clear();
+	mClients.append(existingMap.values());
 }
 
 QSharedPointer<Client> ClientList::byID(QString id)
 {
 	OC_METHODGATE();
-	for(QSharedPointer<Client> client: *this) {
+	for(QSharedPointer<Client> client: mClients) {
 		if(!client.isNull()) {
 			QSharedPointer<Associate> nodeAssociate=client->nodeAssociate();
 			if(!nodeAssociate.isNull()) {
@@ -120,12 +126,18 @@ QList<QWidget * > ClientList::widgets()
 	OC_METHODGATE();
 	int idx=0;
 	QList<QWidget * > out;
-	for(QSharedPointer<Client> client: *this) {
+	const int ct=mClients.count();
+	qDebug()<<"Preparing widgets from client list of "<<ct<<" clients";
+	out.reserve(ct);
+	for(QSharedPointer<Client> client: mClients) {
 		QWidget *widget=nullptr;
 		if(!client.isNull()) {
 			widget=client->widget();
 		}
-		out[idx++]=widget;
+		qDebug()<<" + got widget: "<<widget<< " for client "<< client<<" idx="<<idx<<" ct="<<ct;
+		// NOTE: We use idx isntead of operator<< to maintan the order
+		out.insert(idx,widget);
+		idx++;
 	}
 	return out;
 }
@@ -136,7 +148,7 @@ QList<QWidget * > ClientList::widgets()
 void ClientList::setAllCouriersRegistered(const bool reg)
 {
 	OC_METHODGATE();
-	for(QSharedPointer<Client> client: *this) {
+	for(QSharedPointer<Client> client: mClients) {
 		if(!client.isNull()) {
 			client->setCourierRegistration(reg);
 		}
@@ -147,7 +159,7 @@ void ClientList::setAllCouriersRegistered(const bool reg)
 void ClientList::updateCourierRegistration()
 {
 	OC_METHODGATE();
-	for(QSharedPointer<Client> client: *this) {
+	for(QSharedPointer<Client> client: mClients) {
 		if(!client.isNull()) {
 			client->updateCourierRegistration();
 		}

@@ -1,7 +1,7 @@
 #ifndef TESTPORTABLEID_HPP
 #define TESTPORTABLEID_HPP
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class TestPortableID:public QObject{

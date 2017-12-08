@@ -1,7 +1,7 @@
 #ifndef TESTTRYTOGGLE_HPP
 #define TESTTRYTOGGLE_HPP
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class TestTryToggle:public QObject

@@ -22,7 +22,7 @@ AgentCourierSet::AgentCourierSet(QString &fullID, Agent &agent)
 		mSensorsCourier=QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*cc, &agent));
 		mBlobCourier=QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*cc, &agent));
 	} else {
-		qWarning()<<"ERROR: ClientWidget did not have commschannel";
+		qWarning()<<"ERROR: AgentCourierSet did not have commschannel";
 	}
 
 	if(!mAgentStateCourier.isNull()) {

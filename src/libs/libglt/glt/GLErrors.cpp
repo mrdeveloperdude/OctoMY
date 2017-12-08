@@ -1,5 +1,10 @@
 #include "GLErrors.hpp"
 
+#include <QOpenGLDebugLogger>
+
+#include <QOpenGLDebugMessage>
+#include <QOpenGLContext>
+
 #include "IncludeOpenGL.hpp"
 
 struct token_string {
@@ -43,16 +48,36 @@ gluErrorString(GLenum errorCode)
 
 
 
-bool spewGLErrors(int line)
+bool spewGLErrors(QString file, int line, QString func)
 {
 	int ct=0;
 	GLenum err=glGetError();
 	while (err != GL_NO_ERROR) {
 		const char * s=(const char *)gluErrorString(err);
-		qWarning()<<line<<"."<<ct<<" GL-ERROR: "<<QString::fromLatin1(s,strlen(s));
+		qWarning().noquote().nospace()<<file<<"::"<<func<<":"<<line<<" ["<<ct<<"] GL-ERROR: "<<QString::fromLatin1(s,strlen(s));
 		ct++;
 		err = glGetError();
 	}
-	qDebug()<<"GLSPEW: @"<<line<<" GAVE  "<<ct<<" ERRORS";
+	//qDebug()<<"GLSPEW: @"<<line<<" GAVE  "<<ct<<" ERRORS";
 	return ct>0;
+}
+
+
+bool enableGLLogger(QOpenGLContext *ctx)
+{
+	if(nullptr != ctx && ctx->hasExtension(QByteArrayLiteral("GL_KHR_debug"))) {
+		qDebug()<<"OpenGL Debugging ENABLED";
+		QOpenGLDebugLogger *logger = new QOpenGLDebugLogger(ctx);
+		logger->initialize();
+		QObject::connect(logger, &QOpenGLDebugLogger::messageLogged, ctx, [=](const QOpenGLDebugMessage &message) {
+			if(message.severity()<= QOpenGLDebugMessage::MediumSeverity) {
+				qDebug().noquote().nospace()<<"OPENGL-ERROR: src="<<message.source()<<", msg="<<message.message()<<", type="<<message.type()<<"";
+			}
+		});
+		logger->startLogging();
+		return true;
+	} else {
+		qWarning()<<"OpenGL Debugging DISABLED";
+	}
+	return false;
 }

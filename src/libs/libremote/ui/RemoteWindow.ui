@@ -55,7 +55,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="QComboBox" name="comboBoxAgent">
+          <widget class="QComboBox" name="comboBoxClient">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
              <horstretch>0</horstretch>
@@ -232,7 +232,7 @@
                  <item>
                   <widget class="QLabel" name="label">
                    <property name="text">
-                    <string>To control an Agent, please pair with it first. </string>
+                    <string>To control a client, please pair with it first. </string>
                    </property>
                   </widget>
                  </item>

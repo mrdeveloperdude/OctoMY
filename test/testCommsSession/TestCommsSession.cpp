@@ -260,4 +260,4 @@ void TestCommsSession::test()
 
 
 
-QTEST_MAIN(TestCommsSession)
+OC_TEST_MAIN(test, TestCommsSession)

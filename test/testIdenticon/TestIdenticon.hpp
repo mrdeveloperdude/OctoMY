@@ -1,7 +1,7 @@
 #ifndef TESTIDENTICON_HPP
 #define TESTIDENTICON_HPP
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class TestIdenticon:public QObject{

@@ -33,4 +33,4 @@ void TestServotor32Controller::test()
 
 
 
-QTEST_MAIN(TestServotor32Controller)
+OC_TEST_MAIN(test, TestServotor32Controller)

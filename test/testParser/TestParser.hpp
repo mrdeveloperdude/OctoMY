@@ -1,7 +1,7 @@
 #ifndef TESTPARSER_HPP
 #define TESTPARSER_HPP
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class TestParser:public QObject{

@@ -6,4 +6,4 @@ void TestIdenticon::test(){
 
 
 
-QTEST_MAIN(TestIdenticon)
+OC_TEST_MAIN(test, TestIdenticon)

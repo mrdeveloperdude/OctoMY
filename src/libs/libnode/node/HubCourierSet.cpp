@@ -49,7 +49,7 @@ HubCourierSet::HubCourierSet(QString fullID, HubClient &client)
 			qWarning()<<"ERROR: Could not allocate BlobCourier";
 		}
 	} else {
-		qWarning()<<"ERROR: ClientWidget did not have commschannel";
+		qWarning()<<"ERROR: HubCourierSet did not have commschannel";
 	}
 }
 

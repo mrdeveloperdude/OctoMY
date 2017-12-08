@@ -7,7 +7,7 @@
 
 #include <QObject>
 #include <QHostAddress>
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 class RNG;
 

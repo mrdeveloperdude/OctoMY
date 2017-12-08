@@ -11,4 +11,4 @@ void TestParser::test(){
 
 
 
-QTEST_MAIN(TestParser)
+OC_TEST_MAIN(test, TestParser)

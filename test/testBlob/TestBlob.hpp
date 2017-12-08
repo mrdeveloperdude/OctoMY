@@ -1,7 +1,7 @@
 #ifndef TESTBLOB_HPP
 #define TESTBLOB_HPP
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class TestBlob:public QObject

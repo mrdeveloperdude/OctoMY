@@ -4,41 +4,60 @@
 
 #include <QPainter>
 
+const QColor LightWidget::sBgColor("black");
+const QColor LightWidget::sHighlightColor(255,255,255,192);
 
-LightWidget::LightWidget(QWidget *parent,const QColor &color):
-	QWidget(parent)
-	, color(color)
-	, on(false)
+
+LightWidget::LightWidget(QWidget *parent, const QColor &color)
+	: QWidget(parent)
+	, mOn(false)
 {
 	OC_METHODGATE();
+	setLightColor(color);
 }
 
 bool LightWidget::isLightOn() const
 {
 	OC_METHODGATE();
-	return on;
+	return mOn;
 }
 
 void LightWidget::setLightOn(bool o)
 {
 	OC_METHODGATE();
-	if (on == o) {
+	if (mOn == o) {
 		return;
 	}
-	on = o;
+	mOn = o;
 	update();
 }
 
 void LightWidget::setLightColor(QColor c)
 {
 	OC_METHODGATE();
-	color=c;
+	mLightColor=c;
+	mLightColorDarker=mLightColor.darker(300);
+	QColor saturated=QColor::fromHslF(mLightColor.toHsv().hslHueF(), 1.0,0.5,1.0);
+	const qreal r = qMin(1.0, saturated.redF());
+	const qreal g = qMin(1.0, saturated.greenF());
+	const qreal b = qMin(1.0, saturated.blueF());
+	QGradientStops gs;
+	qreal step=0.0;
+	const qreal ofs=1.01;
+	for(int i=0;i<11;++i){
+		const qreal istep=1.0-step;
+		const qreal p=qPow(1.2,step*10.0)-0.2;
+		const qreal a=qMin(1.0, step*10.0);
+		gs.append(QGradientStop(istep, QColor::fromRgbF(qBound(0.0, qPow(r+ofs, p)-ofs, 1.0), qBound(0.0, qPow(g+ofs, p)-ofs, 1.0), qBound(0.0, qPow(b+ofs, p)-ofs, 1.0), a)));
+		step+=0.1;
+	}
+	mLightGradient.setStops(gs);
 	update();
 }
 
 void LightWidget::toggleLight()
 {
-	on=!on;
+	mOn=!mOn;
 	update();
 }
 
@@ -52,18 +71,7 @@ void LightWidget::turnLightOn()
 	OC_METHODGATE();
 	setLightOn(true);
 }
-/*
 
-int LightWidget::heightForWidth(int w) const
-{
-	return w;
-}
-bool LightWidget::hasHeightForWidth() const
-{
-	return true;
-}
-
-*/
 
 void LightWidget::paintEvent(QPaintEvent *)
 {
@@ -71,23 +79,35 @@ void LightWidget::paintEvent(QPaintEvent *)
 	QPainter painter(this);
 	painter.setPen(Qt::NoPen);
 	painter.setRenderHint(QPainter::Antialiasing);
-	QColor black("black");
-	QColor white("white");
-	painter.setBrush(black);
-	int m=2,m2=m*2;
-	int w=width()-1, h=height()-1;
-	int w2=w/2;
-	int h2=h/2;
-	int dim=std::min(w,h)-m2-2;
-	int a=dim/2,b=a*2;
-	painter.drawEllipse(w2-a-m,h2-a-m,b+m2,b+m2);
-	painter.setRenderHint(QPainter::Antialiasing);
 
-	painter.setBrush(on?color:color.darker(300));
-	painter.drawEllipse(w2-a,h2-a,b,b);
-	white.setAlpha(192);
-	painter.setBrush(white);
-	int hl=b/4;
-	painter.drawEllipse(w2+a/2-hl, h2-a/2-hl,hl*2,hl*2);
+	const int border=2;
+	const int border2=border*2;
+	const int w=width()-1;
+	const int h=height()-1;
+	const int w2=w/2;
+	const int h2=h/2;
+	const int t=qMin(w,h)-border2*2;
+	const int radius=t/2;
+	const int diameter=radius*2;
+	// Black bg
+	painter.setBrush(sBgColor);
+	painter.drawEllipse(w2-radius-border, h2-radius-border, diameter+border2, diameter+border2);
+	// Light bg
+	painter.setBrush(mLightColorDarker);
+	painter.drawEllipse(w2-radius, h2-radius, diameter, diameter);
+	// Light shine
+	if(mOn) {
+		mLightGradient.setCenter(w2, h2);
+		mLightGradient.setFocalPoint(w2, h2);
+		mLightGradient.setRadius(radius);
+		painter.setBrush(mLightGradient);
+		painter.drawEllipse(w2-radius-border, h2-radius-border, diameter+border2, diameter+border2);
+	}
+	// Highlight
+	painter.setBrush(sHighlightColor);
+	const int hp=radius/2;
+	const int hr=radius/3;
+	const int hd=hr*2;
+	painter.drawEllipse(w2+hp-hr, h2-hp-hr, hd, hd);
 }
 

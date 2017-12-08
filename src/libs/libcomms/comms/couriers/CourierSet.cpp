@@ -54,7 +54,7 @@ bool  CourierSet::setRegistered(QSharedPointer<Courier> courier, bool reg)
 	if(!courier.isNull()) {
 		if(reg) {
 			if(contains(courier)) {
-				qWarning()<<"ERROR: courier was allready registered";
+				qWarning()<<"WARNING: courier was allready registered";
 				return false;
 			} else if(size()>MAX_CONCURRENT_COURIERS) {
 				qWarning()<<"ERROR: more than maximum of "<<QString::number(MAX_CONCURRENT_COURIERS)<<" couriers, skipping registration of new one: "<<courier->id()<<courier->name();
@@ -64,7 +64,7 @@ bool  CourierSet::setRegistered(QSharedPointer<Courier> courier, bool reg)
 			//qDebug()<<"Registered courier: "<<c.id()<<c.name()<<" for a total of "<<mCouriers.size()<<" couriers";
 		} else {
 			if(!contains(courier)) {
-				qDebug()<<"ERROR: courier was not registered";
+				qDebug()<<"WARNING: courier was not registered while unregistering";
 				return false;
 			}
 			remove(courier);

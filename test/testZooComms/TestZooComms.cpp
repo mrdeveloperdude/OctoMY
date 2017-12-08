@@ -68,4 +68,4 @@ void TestZooComms::test(){
 
 
 
-QTEST_MAIN(TestZooComms)
+OC_TEST_MAIN(test, TestZooComms)

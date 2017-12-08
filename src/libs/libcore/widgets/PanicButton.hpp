@@ -2,6 +2,7 @@
 #define PANICBUTTON_HPP
 
 #include <QWidget>
+#include <QTimer>
 
 namespace Ui
 {
@@ -11,18 +12,27 @@ class PanicButton;
 class PanicButton : public QWidget
 {
 	Q_OBJECT
-
+private:
+	Ui::PanicButton *ui;
+	QTimer mTimer;
+	QPalette mPaletteNormal;
+	QPalette mPaletteBlink;
+	bool mFlipFlop;
 public:
 	explicit PanicButton(QWidget *parent = 0);
 	virtual ~PanicButton();
 
-private:
-	Ui::PanicButton *ui;
 
 public:
 
 	void setPanic(bool);
 	bool panic() const;
+
+
+private slots:
+
+	void onToggled(bool checked);
+	void onTimeout();
 
 signals:
 	void pressed();

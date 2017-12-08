@@ -2,7 +2,7 @@
 #define TESTADDRESSBOOK_HPP
 
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class TestAddressBook:public QObject{

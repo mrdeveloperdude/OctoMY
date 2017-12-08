@@ -131,7 +131,7 @@ void AddressBook::upsertAssociate(QSharedPointer<Associate> associate)
 	if(nullptr!=associate) {
 		auto id=associate->id();
 		const bool isNew=!hasAssociate(id);
-		qDebug().noquote().nospace()<<(isNew?"REGISTERING NEW":"UPDATING EXISTING")<< " ASSOCIATE WITH ID: "<<id;
+		//qDebug().noquote().nospace()<<(isNew?"REGISTERING NEW":"UPDATING EXISTING")<< " ASSOCIATE WITH ID: "<<id;
 		mAssociates[id]=associate;
 		if(isNew) {
 			emit associateAdded(id);

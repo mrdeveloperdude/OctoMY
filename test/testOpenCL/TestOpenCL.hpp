@@ -2,7 +2,7 @@
 #define TESTOPENCL_HPP
 
 #include "utility/CrashHelp.hpp"
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class TestOpenCL:public QObject

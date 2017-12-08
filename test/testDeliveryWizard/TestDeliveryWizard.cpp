@@ -87,5 +87,5 @@ void TestDeliveryWizard::test()
 
 
 
-QTEST_MAIN(TestDeliveryWizard)
+OC_TEST_MAIN(test, TestDeliveryWizard)
 

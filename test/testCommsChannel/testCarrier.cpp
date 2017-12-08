@@ -6,7 +6,7 @@
 #include "MockCommsCarrierLog.hpp"
 #include "MockCommsCarrier.hpp"
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 static void testSleep(quint64 ms)

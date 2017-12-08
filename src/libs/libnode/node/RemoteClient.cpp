@@ -9,6 +9,7 @@ RemoteClient::RemoteClient(QSharedPointer<Node> controller, QSharedPointer<Assoc
 	, mThis(this)
 {
 	OC_METHODGATE();
+	updateCourierRegistration();
 }
 
 /////////////////////////////////////////////////////

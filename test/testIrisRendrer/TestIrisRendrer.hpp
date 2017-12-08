@@ -1,7 +1,7 @@
 #ifndef TESTIRISRENDRER_HPP
 #define TESTIRISRENDRER_HPP
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 
 
 class TestIrisRendrer:public QObject

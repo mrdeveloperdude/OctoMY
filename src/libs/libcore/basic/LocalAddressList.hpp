@@ -41,6 +41,7 @@ public:
 	NetworkAddress currentNetworkAddress() const;
 	QHostAddress currentAddress() const;
 
+	bool isUpdateNeeded();
 	bool updateIfNeeded(bool keepCurrent=false);
 	void updateAddresses(bool keepCurrent=false);
 };

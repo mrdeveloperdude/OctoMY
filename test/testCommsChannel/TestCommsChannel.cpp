@@ -1,9 +1,9 @@
 #include "TestCommsChannel.hpp"
 
-#include <QTest>
+#include "../common/TestCommon.hpp"
 #include <QString>
 
-QTEST_MAIN(TestCommsChannel)
+OC_TEST_MAIN(test, TestCommsChannel)
 
 
 void heading(QString msg, QString ch){

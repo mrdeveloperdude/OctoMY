@@ -218,4 +218,4 @@ void TestAddressList::testAddressListStorage()
 }
 
 
-QTEST_MAIN(TestAddressList)
+OC_TEST_MAIN(test, TestAddressList)

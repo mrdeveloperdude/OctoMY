@@ -62,7 +62,7 @@ public:
 	void reloadController();
 
 
-	void setNodeCouriersRegistered(bool reg) Q_DECL_OVERRIDE;
+	void setNodeCouriersRegistration(bool reg) Q_DECL_OVERRIDE;
 
 	// Agent Config Store slots
 public slots:

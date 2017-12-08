@@ -3,29 +3,29 @@
 
 #include <QWidget>
 #include <QColor>
+#include <QRadialGradient>
 
 class LightWidget : public QWidget
 {
 	Q_OBJECT
-	Q_PROPERTY(bool on READ isLightOn WRITE setLightOn)
+	Q_PROPERTY(bool mOn READ isLightOn WRITE setLightOn)
 
 private:
-	QColor color;
-	bool on;
-public:
-	LightWidget(QWidget *parent = 0,const QColor &color="#7cc043");
+	QColor mLightColor;
+	QColor mLightColorDarker;
+	bool mOn;
+	static const QColor sBgColor;
+	static const QColor sHighlightColor;
+
+	QRadialGradient mLightGradient;
 
 public:
-
-/*
-	virtual int heightForWidth(int) const Q_DECL_OVERRIDE;
-	virtual bool hasHeightForWidth() const Q_DECL_OVERRIDE;
-*/
+	LightWidget(QWidget *parent = nullptr,const QColor &mLightColorInner="#7cc043");
 
 public:
 
 	bool isLightOn() const;
-	void setLightOn(bool on);
+	void setLightOn(bool mOn);
 	void setLightColor(QColor c);
 	void toggleLight();
 

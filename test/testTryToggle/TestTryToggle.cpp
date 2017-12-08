@@ -38,4 +38,4 @@ void TestTryToggle::testUI()
 	}
 }
 
-QTEST_MAIN(TestTryToggle)
+OC_TEST_MAIN(test, TestTryToggle)

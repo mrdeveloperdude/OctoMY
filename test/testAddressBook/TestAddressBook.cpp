@@ -292,7 +292,7 @@ void TestAddressBook::test()
 
 
 
-QTEST_MAIN(TestAddressBook)
+OC_TEST_MAIN(test, TestAddressBook)
 
 
 

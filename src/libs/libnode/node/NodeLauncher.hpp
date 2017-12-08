@@ -114,26 +114,26 @@ void NodeLauncher<T>::run()
 	mCommandlineOptions.process(arguments);
 	mIsHeadless=mCommandlineOptions.isSet(headlessOption);
 
+
+	QSurfaceFormat format=QSurfaceFormat::defaultFormat();
+	format.setVersion( OCTOMY_QT_OGL_VERSION_MAJOR, OCTOMY_QT_OGL_VERSION_MINOR );
+	format.setProfile( QSurfaceFormat::OCTOMY_QT_OGL_SURFACE_PROFILE );
+	format.setOption(QSurfaceFormat::DebugContext);
+	format.setDepthBufferSize(OCTOMY_QT_OGL_DEPTH_BUFFER);
+	format.setStencilBufferSize(OCTOMY_QT_OGL_STENSIL_BUFFER);
+	format.setSwapBehavior(QSurfaceFormat::OCTOMY_QT_OGL_SWAP_BEHAVIOUR);
+	format.setSwapInterval(OCTOMY_QT_OGL_SWAP_INTERVAL);
+	format.setRenderableType(QSurfaceFormat::OCTOMY_QT_OGL_RENDERABLE_TYPE);
+	QSurfaceFormat::setDefaultFormat(format);
+
+	QApplication::setAttribute(Qt::OCTOMY_QT_OGL_APP_ATTRIBUTE); \
+	QApplication::setAttribute(Qt::AA_ShareOpenGLContexts); \
+
 	mApp=(mIsHeadless?(OC_NEW QCoreApplication(mArgc, mArgv)):(OC_NEW QApplication(mArgc, mArgv)));
 	//qDebug()<<(headless?"HEADLESS":"GUI ENABLED");
 
 	if(nullptr!=mApp) {
-
-
 		start();
-
-		QSurfaceFormat format=QSurfaceFormat::defaultFormat();
-		format.setVersion( OCTOMY_QT_OGL_VERSION_MAJOR, OCTOMY_QT_OGL_VERSION_MINOR );
-		format.setProfile( QSurfaceFormat::OCTOMY_QT_OGL_SURFACE_PROFILE );
-		format.setRenderableType( QSurfaceFormat::OpenGL);
-		format.setOption(QSurfaceFormat::DebugContext);
-		format.setDepthBufferSize(24);
-
-		format.setStencilBufferSize(0);
-		format.setSwapBehavior(QSurfaceFormat::TripleBuffer);
-		format.setSwapInterval(1);
-		QSurfaceFormat::setDefaultFormat(format);
-
 		Q_INIT_RESOURCE(icons);
 		Q_INIT_RESOURCE(images);
 		Q_INIT_RESOURCE(3d);

@@ -7,5 +7,9 @@
         <file>3d/textures/grating_tiled.png</file>
         <file>3d/shaders/fshader.glsl</file>
         <file>3d/shaders/vshader.glsl</file>
+        <file>3d/shaders/stress_test.frag.glsl</file>
+        <file>3d/shaders/stress_test.vert.glsl</file>
+        <file>3d/textures/stress_test_cube_green.svg</file>
+        <file>3d/textures/stress_test_cube_red.svg</file>
     </qresource>
 </RCC>
