@@ -81,32 +81,32 @@ bool NetworkSettingsWidget::verifyAndSet(bool sendSignal, bool doCorrection)
 	bool addrOK=isAddrOK(naddr);
 	quint16 nport=(port());
 	bool portOK=isPortOK(naddr, nport);
-	qDebug().noquote().nospace()<<"VERIFY & SET BEFORE naddr="<<naddr<<"("<<addrOK<<"), nport="<<nport<<"("<<portOK<<") sendSignal="<<sendSignal<<", doCorrection="<<doCorrection;
+	//qDebug().noquote().nospace()<<"VERIFY & SET BEFORE naddr="<<naddr<<"("<<addrOK<<"), nport="<<nport<<"("<<portOK<<") sendSignal="<<sendSignal<<", doCorrection="<<doCorrection;
 	if(doCorrection) {
 		if(!addrOK) {
 			// Correct bad address by selecting first entry in combobox (combobox is assumed to be all GOOD addresses)
 			if(ui->comboBoxLocalAddress->count()>0) {
 				naddr=QHostAddress(ui->comboBoxLocalAddress->itemText(0));
-				qDebug()<<"Found free address: "<<naddr;
+				//qDebug()<<"Found free address: "<<naddr;
 				setAddress(naddr, false, false);
 				naddr=address();
 				addrOK=isAddrOK(naddr);
-				qDebug()<<"Free address: "<<naddr<<"("<<addrOK<<")";
+				//qDebug()<<"Free address: "<<naddr<<"("<<addrOK<<")";
 			}
 		}
 		if(addrOK && !portOK) {
 			// Correct bad port by finding an available one for us!
 			nport = utility::freeUDPPortForAddress(naddr);
 			if(0 != nport) {
-				qDebug()<<"Found free port: "<<nport;
+				//qDebug()<<"Found free port: "<<nport;
 				setPort(nport, false, false);
 				nport=port();
 				portOK=isPortOK(naddr, nport);
-				qDebug()<<"Free port: "<<nport<<"("<<portOK<<")";
+				//qDebug()<<"Free port: "<<nport<<"("<<portOK<<")";
 			}
 		}
 	}
-	qDebug().noquote().nospace()<<"VERIFY & SET AFTER  naddr="<<naddr<<"("<<addrOK<<"), nport="<<nport<<"("<<portOK<<") sendSignal="<<sendSignal<<", doCorrection="<<doCorrection;
+	//qDebug().noquote().nospace()<<"VERIFY & SET AFTER  naddr="<<naddr<<"("<<addrOK<<"), nport="<<nport<<"("<<portOK<<") sendSignal="<<sendSignal<<", doCorrection="<<doCorrection;
 	const bool ok=(addrOK && portOK);
 	ui->widgetStatus->setLightColor(ok?LightWidget::sDefaultOKColor:LightWidget::sDefaultErrorColor);
 	ui->widgetStatus->setLightOn(true);
@@ -196,14 +196,14 @@ void NetworkSettingsWidget::on_pushButtonSave_clicked()
 	if(!ok) {
 		QMessageBox::StandardButton reply = QMessageBox::question(this, "The settings are invalid", "Would you like to automatically correct them?", QMessageBox::No|QMessageBox::Yes);
 		if (QMessageBox::Yes==reply) {
-			qDebug()<<"OK";
+			//qDebug()<<"OK";
 			go=verifyAndSet(true, true);
 		}
 	} else {
 		go=true;
 	}
 	if(go) {
-		qDebug()<<"Back to civ";
+		//qDebug()<<"Back to civ";
 		ui->stackedWidget->setCurrentWidget(ui->pageView);
 	}
 }

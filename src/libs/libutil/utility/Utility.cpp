@@ -1237,7 +1237,7 @@ quint16	freeUDPPortForAddress(QHostAddress address)
 		// Return whatever random available port was selected
 		port = udp.localPort();
 	}
-	qDebug()<<"Free UDP port "<<port<<" found for "<<address;
+	//qDebug()<<"Free UDP port "<<port<<" found for "<<address;
 	return port;
 }
 
