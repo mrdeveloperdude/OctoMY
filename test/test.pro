@@ -84,8 +84,8 @@ contains(DEFINES, USE_TESTS_SELECTED){
 message(ADDING 'SELECTED' TESTS TO BUILD)
 TEST_PROJECTS+= \
 #	testOpenCL \
-#	testNetworkSettingsWidget\
-	testLightWidget\
+	testNetworkSettingsWidget\
+#	testLightWidget\
 
 STRESS_PROJECTS+= \
 #	stressCapabilities \

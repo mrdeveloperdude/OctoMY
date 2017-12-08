@@ -7,6 +7,9 @@
 const QColor LightWidget::sBgColor("black");
 const QColor LightWidget::sHighlightColor(255,255,255,192);
 
+const QColor LightWidget::sDefaultOKColor("#7cc043");
+const QColor LightWidget::sDefaultErrorColor("#c07c43");
+
 
 LightWidget::LightWidget(QWidget *parent, const QColor &color)
 	: QWidget(parent)

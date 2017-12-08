@@ -105,10 +105,10 @@ double fsec();
 float frand();
 
 // Networking
-quint16	freeUDPPortForAddress(QHostAddress &adr);
 QList<QHostAddress> allLocalNetworkAddresses();
 QString localAddress();
-bool isAddressOK(QString address, quint16 &port);
+bool checkUDPAddress(QHostAddress address, quint16 port);
+quint16	freeUDPPortForAddress(QHostAddress adr);
 QHostAddress defaultGatewayAddress();
 
 quint32 addressCloseness(QHostAddress a, QHostAddress b);

@@ -9,18 +9,20 @@ class LightWidget : public QWidget
 {
 	Q_OBJECT
 	Q_PROPERTY(bool mOn READ isLightOn WRITE setLightOn)
-
+private:
+	static const QColor sBgColor;
+	static const QColor sHighlightColor;
+public:
+	static const QColor sDefaultOKColor;
+	static const QColor sDefaultErrorColor;
 private:
 	QColor mLightColor;
 	QColor mLightColorDarker;
 	bool mOn;
-	static const QColor sBgColor;
-	static const QColor sHighlightColor;
-
 	QRadialGradient mLightGradient;
 
 public:
-	LightWidget(QWidget *parent = nullptr,const QColor &mLightColorInner="#7cc043");
+	LightWidget(QWidget *parent = nullptr,const QColor &mLightColorInner=sDefaultOKColor);
 
 public:
 

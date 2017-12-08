@@ -249,7 +249,7 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 
 			const auto nadr=mNode->localAddressList().currentNetworkAddress();
 
-			ui->widgetNetworkSettings->set(nadr.ip(), nadr.port());
+			ui->widgetNetworkSettings->setHostAddress(nadr.ip(), nadr.port());
 
 		} else {
 			qWarning()<<"ERROR: No local ass";

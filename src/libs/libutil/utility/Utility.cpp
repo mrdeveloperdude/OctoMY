@@ -307,7 +307,7 @@ void addIconToLayout(QString name,QLayout &l,int w,int h)
 void clearStackedWidget(QStackedWidget *stackedWidget, bool deleteWidgets)
 {
 	if(nullptr!=stackedWidget) {
-		while(stackedWidget->count() > 0){
+		while(stackedWidget->count() > 0) {
 			QWidget* widget = stackedWidget->widget(0);
 			stackedWidget->removeWidget(widget);
 			if(deleteWidgets) {
@@ -1183,23 +1183,6 @@ float frand()
 }
 
 
-
-
-
-
-
-quint16	freeUDPPortForAddress(QHostAddress &adr)
-{
-	QUdpSocket udp;
-	const quint16 port=0; //0 means let OS decide port for me
-	if(udp.bind(adr, port)) {
-		return udp.localPort();
-	}
-	return 0;
-}
-
-
-
 QList<QHostAddress> allLocalNetworkAddresses()
 {
 	QList<QHostAddress> out;
@@ -1229,19 +1212,37 @@ QString localAddress()
 	return "127.0.0.1";
 }
 
-bool isAddressOK(QString address, quint16 &port)
+bool checkUDPAddress(QHostAddress address, quint16 port)
 {
-	QUdpSocket udp;
-	const bool ok=udp.bind(QHostAddress(address), port);
-	if(0==port) {
-		port=udp.localPort();
+	// Avoid special case where port=0 returning true by mistake
+	if(0 == port){
+		return false;
 	}
+	// Try the address+port by temporarily binding with it
+	QUdpSocket udp;
+	const bool ok=udp.bind(address, port);
+	udp.abort();
 	return ok;
 }
 
 
-// NOTE: "QHostAddress defaultGatewayAddress()" is in its separate file "DefaultGatewayUtil.cpp"
 
+
+quint16	freeUDPPortForAddress(QHostAddress address)
+{
+	QUdpSocket udp;
+	// NOTE: If port==0, this will bind to a random available port (See documentation for QAbstractSocker::bind() for details )
+	quint16 port=0;
+	if(udp.bind(address, port)) {
+		// Return whatever random available port was selected
+		port = udp.localPort();
+	}
+	qDebug()<<"Free UDP port "<<port<<" found for "<<address;
+	return port;
+}
+
+
+// NOTE: "QHostAddress defaultGatewayAddress()" is in its separate file "DefaultGatewayUtil.cpp"
 quint32 addressCloseness(QHostAddress a, QHostAddress b)
 {
 	// TODO: This is a grose hack that will probably fail spectacularly for any kind of IPv6

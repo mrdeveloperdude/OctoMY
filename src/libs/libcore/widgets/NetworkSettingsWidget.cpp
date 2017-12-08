@@ -5,6 +5,7 @@
 #include "basic/LocalAddressList.hpp"
 
 #include <QComboBox>
+#include <QMessageBox>
 
 Q_DECLARE_METATYPE(QHostAddress)
 
@@ -13,12 +14,16 @@ NetworkSettingsWidget::NetworkSettingsWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::NetworkSettingsWidget)
 	, mLastPort(0)
-	, mLastValidity(false)
+	, mLastPortOK(false)
+	, mLastAddressOK(false)
+	, mMuteSignals(false)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
+	ui->lineEditLocalPort->setValidator( new QIntValidator(0, 0xFFFF, this) );
 	ui->stackedWidget->setCurrentWidget(ui->pageView);
-	set(false);
+	verifyAndSet(false);
+	qRegisterMetaType<QHostAddress>("QHostAddress");
 }
 
 NetworkSettingsWidget::~NetworkSettingsWidget()
@@ -32,76 +37,127 @@ NetworkSettingsWidget::~NetworkSettingsWidget()
 void NetworkSettingsWidget::configure(LocalAddressList &localAddresses)
 {
 	OC_METHODGATE();
+	mMuteSignals=true;
 	ui->comboBoxLocalAddress->clear();
 	for(QHostAddress adr:localAddresses) {
 		if((QAbstractSocket::IPv4Protocol==adr.protocol()) && (!adr.isLoopback()) ) {
 			ui->comboBoxLocalAddress->addItem(adr.toString());
 		}
 	}
-	set(localAddresses.currentAddress(), localAddresses.port(), true);
+	volatile int x=0;
+
+	setHostAddress(localAddresses.currentAddress(), localAddresses.port(), true, false);
+	mMuteSignals=false;
 }
 
-bool NetworkSettingsWidget::set(QHostAddress naddr, quint16 nport, bool sendSignal)
+bool NetworkSettingsWidget::setHostAddress(QHostAddress naddr, quint16 nport, bool verify, bool sendSignal)
 {
 	OC_METHODGATE();
 	ui->comboBoxLocalAddress->setCurrentText(naddr.toString());
 	ui->lineEditLocalPort->setText(QString::number(nport));
-	return set(sendSignal);
-}
-
-bool NetworkSettingsWidget::set(bool sendSignal)
-{
-	OC_METHODGATE();
-	bool portOK=false;
-	const auto naddr=address();
-	auto nport=port(&portOK);
-	if( (mLastAddress==naddr) &&  (mLastPort==nport) ) {
-		return mLastValidity;
-	}
-	const bool addrOK=(ui->comboBoxLocalAddress->findText(naddr.toString())>-1);
 	bool ok=false;
-	ok= (portOK && addrOK && utility::isAddressOK(naddr.toString(), nport));
-	// Retry but this time pass port=0 to let function find available port for us!
-	if(!ok) {
-		nport=0;
-		ok= (portOK && addrOK && utility::isAddressOK(naddr.toString(), nport));
-		if(0!=nport) {
-			qDebug()<<"Found free port: "<<nport;
-			setPort(nport);
-		}
-	}
-
-	qDebug().noquote().nospace()<<"SET addrOK="<<addrOK<<", portOK="<<portOK<<", nport="<<nport<<", ok="<<ok;
-	ui->widgetStatus->setLightOn(true);
-	ui->widgetStatus->setLightColor(ok?Qt::green:Qt::red);
-	if(ok) {
-		mLastAddress=naddr;
-		mLastPort=nport;
-		mLastValidity=ok;
-	}
-	ui->pushButtonEdit->setText(mLastAddress.toString()+" : "+QString::number(mLastPort));
-	if(sendSignal) {
-		qRegisterMetaType<QHostAddress>("QHostAddress");
-		emit addressChanged(naddr, nport, ok);
+	if(verify) {
+		ok=verifyAndSet(sendSignal);
 	}
 	return ok;
 }
 
 
-bool NetworkSettingsWidget::setAddress(QHostAddress naddr)
+bool NetworkSettingsWidget::isAddrOK(QHostAddress naddr)
+{
+	return (ui->comboBoxLocalAddress->findText(naddr.toString())>-1);
+}
+
+bool NetworkSettingsWidget::isPortOK(QHostAddress naddr, quint16 nport)
+{
+	return utility::checkUDPAddress(naddr, nport);
+}
+
+
+bool NetworkSettingsWidget::verifyAndSet(bool sendSignal, bool doCorrection)
+{
+	OC_METHODGATE();
+	QHostAddress naddr=(address());
+	bool addrOK=isAddrOK(naddr);
+	quint16 nport=(port());
+	bool portOK=isPortOK(naddr, nport);
+	qDebug().noquote().nospace()<<"VERIFY & SET BEFORE naddr="<<naddr<<"("<<addrOK<<"), nport="<<nport<<"("<<portOK<<") sendSignal="<<sendSignal<<", doCorrection="<<doCorrection;
+	if(doCorrection) {
+		if(!addrOK) {
+			// Correct bad address by selecting first entry in combobox (combobox is assumed to be all GOOD addresses)
+			if(ui->comboBoxLocalAddress->count()>0) {
+				naddr=QHostAddress(ui->comboBoxLocalAddress->itemText(0));
+				qDebug()<<"Found free address: "<<naddr;
+				setAddress(naddr, false, false);
+				naddr=address();
+				addrOK=isAddrOK(naddr);
+				qDebug()<<"Free address: "<<naddr<<"("<<addrOK<<")";
+			}
+		}
+		if(addrOK && !portOK) {
+			// Correct bad port by finding an available one for us!
+			nport = utility::freeUDPPortForAddress(naddr);
+			if(0 != nport) {
+				qDebug()<<"Found free port: "<<nport;
+				setPort(nport, false, false);
+				nport=port();
+				portOK=isPortOK(naddr, nport);
+				qDebug()<<"Free port: "<<nport<<"("<<portOK<<")";
+			}
+		}
+	}
+	qDebug().noquote().nospace()<<"VERIFY & SET AFTER  naddr="<<naddr<<"("<<addrOK<<"), nport="<<nport<<"("<<portOK<<") sendSignal="<<sendSignal<<", doCorrection="<<doCorrection;
+	const bool ok=(addrOK && portOK);
+	ui->widgetStatus->setLightColor(ok?LightWidget::sDefaultOKColor:LightWidget::sDefaultErrorColor);
+	ui->widgetStatus->setLightOn(true);
+	// Remeber the new good stuff
+	if(portOK) {
+		mLastPort=nport;
+		mLastPortOK=portOK;
+	}
+	if(addrOK) {
+		mLastAddress=naddr;
+		mLastAddressOK=addrOK;
+	}
+	// Correct to last known good if everything else fails
+	if(doCorrection) {
+		if(!addrOK && mLastAddressOK) {
+			setAddress(mLastAddress, false, false);
+		}
+		if(!portOK && mLastPortOK) {
+			setPort(mLastPort, false, false);
+		}
+	}
+	ui->pushButtonEdit->setText(mLastAddress.toString()+" : "+QString::number(mLastPort));
+	if(sendSignal && (naddr != mLastAddress || nport != mLastPort)) {
+		emit addressChanged(mLastAddress, mLastPort, ok);
+	}
+	return ok;
+}
+
+
+bool NetworkSettingsWidget::setAddress(QHostAddress naddr, bool verify, bool sendSignal)
 {
 	OC_METHODGATE();
 	ui->comboBoxLocalAddress->setCurrentText(naddr.toString());
-	return set();
+	bool ok=false;
+	if(verify) {
+		ok=verifyAndSet(sendSignal);
+	}
+	return ok;
 }
 
 
 
-bool NetworkSettingsWidget::setPort(quint16 nport)
+bool NetworkSettingsWidget::setPort(quint16 nport, bool verify, bool sendSignal)
 {
 	OC_METHODGATE();
 	ui->lineEditLocalPort->setText(QString::number(nport));
-	return set();
+	bool ok=false;
+	if(verify) {
+		ok=verifyAndSet(sendSignal);
+	}
+	return ok;
 }
 
 
@@ -112,10 +168,16 @@ QHostAddress NetworkSettingsWidget::address() const
 }
 
 
-quint16 NetworkSettingsWidget::port(bool *ok) const
+quint16 NetworkSettingsWidget::port() const
 {
 	OC_METHODGATE();
-	return quint16(ui->lineEditLocalPort->text().toInt(ok));
+	bool ok=false;
+	quint16 nport(ui->lineEditLocalPort->text().toUShort(&ok));
+	if(!ok) {
+		// Signal the port is bad
+		nport=0;
+	}
+	return nport;
 }
 
 
@@ -128,17 +190,44 @@ void NetworkSettingsWidget::on_pushButtonEdit_clicked()
 void NetworkSettingsWidget::on_pushButtonSave_clicked()
 {
 	OC_METHODGATE();
-	ui->stackedWidget->setCurrentWidget(ui->pageView);
+	bool go=false;
+	const bool ok=verifyAndSet(false, false);
+
+	if(!ok) {
+		QMessageBox::StandardButton reply = QMessageBox::question(this, "The settings are invalid", "Would you like to automatically correct them?", QMessageBox::No|QMessageBox::Yes);
+		if (QMessageBox::Yes==reply) {
+			qDebug()<<"OK";
+			go=verifyAndSet(true, true);
+		}
+	} else {
+		go=true;
+	}
+	if(go) {
+		qDebug()<<"Back to civ";
+		ui->stackedWidget->setCurrentWidget(ui->pageView);
+	}
 }
 
 void NetworkSettingsWidget::on_comboBoxLocalAddress_currentIndexChanged(int)
 {
 	OC_METHODGATE();
-	set();
+	if(!mMuteSignals) {
+		verifyAndSet();
+	}
 }
 
-void NetworkSettingsWidget::on_lineEditLocalPort_textChanged(const QString &arg1)
+void NetworkSettingsWidget::on_lineEditLocalPort_textChanged(const QString &)
 {
 	OC_METHODGATE();
-	set();
+	if(!mMuteSignals) {
+		verifyAndSet(false, false);
+	}
+}
+
+void NetworkSettingsWidget::on_lineEditLocalPort_editingFinished()
+{
+	OC_METHODGATE();
+	if(!mMuteSignals) {
+		verifyAndSet(false, false);
+	}
 }

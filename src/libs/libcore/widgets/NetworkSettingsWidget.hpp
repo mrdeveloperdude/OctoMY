@@ -21,22 +21,27 @@ private:
 	Ui::NetworkSettingsWidget *ui;
 	QHostAddress mLastAddress;
 	quint16 mLastPort;
-	bool mLastValidity;
+	bool mLastPortOK;
+	bool mLastAddressOK;
+	bool mMuteSignals;
 public:
 	explicit NetworkSettingsWidget(QWidget *parent = nullptr);
 	virtual ~NetworkSettingsWidget();
 
 private:
-	bool set(bool sendSignal=true);
+
+	bool isAddrOK(QHostAddress naddr);
+	bool isPortOK(QHostAddress naddr, quint16 nport);
+	bool verifyAndSet(bool sendSignal=true, bool doCorrection=true);
 
 public:
 	void configure(LocalAddressList &localAddresses);
-	bool set(QHostAddress naddr, quint16 nport, bool sendSignal=true);
-	bool setAddress(QHostAddress address);
-	bool setPort(quint16 port);
+	bool setHostAddress(QHostAddress naddr, quint16 nport, bool verify=true, bool sendSignal=true);
+	bool setAddress(QHostAddress address, bool verify=true, bool sendSignal=true);
+	bool setPort(quint16 port, bool verify=true, bool sendSignal=true);
 
 	QHostAddress address() const;
-	quint16 port(bool *ok=nullptr) const;
+	quint16 port() const;
 
 private slots:
 
@@ -47,6 +52,8 @@ private slots:
 	void on_comboBoxLocalAddress_currentIndexChanged(int index);
 
 	void on_lineEditLocalPort_textChanged(const QString &arg1);
+
+	void on_lineEditLocalPort_editingFinished();
 
 	signals:
 
