@@ -12,7 +12,6 @@ Client::Client(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssociat
 	: QObject(parent)
 	, mNode(node)
 	, mNodeAssociate(nodeAssociate)
-	, mThis(this)
 {
 	OC_METHODGATE();
 
@@ -34,7 +33,7 @@ bool Client::needsConnection()
 {
 	OC_METHODGATE();
 	const bool def=false;
-	if(!mNode.isNull()){
+	if(!mNode.isNull()) {
 		return mNode->settings().getCustomSettingBool(CLIENT_ONLINE_STATUS_BASE_KEY+nodeAssociate()->id(), def);
 	}
 	return def;
@@ -61,14 +60,14 @@ void Client::setNeedsConnection(const bool current)
 {
 	OC_METHODGATE();
 	qDebug()<<"CLIENT::set needs connection: "<<current;
-	if(!mNode.isNull()){
+	if(!mNode.isNull()) {
 		const QString key=CLIENT_ONLINE_STATUS_BASE_KEY+nodeAssociate()->id();
 		const bool last=needsConnection();
 		if(current!=last) {
 			mNode->settings().setCustomSettingBool(key, current);
 			updateCourierRegistration();
 			CommsChannel *comms=mNode->comms();
-			if(nullptr != comms){
+			if(nullptr != comms) {
 				comms->updateConnect();
 			}
 		}
@@ -87,7 +86,7 @@ void Client::setConnected(bool)
 ClientConnectionStatus Client::connectionStatus()
 {
 	OC_METHODGATE();
-	return ClientConnectionStatus(mThis);
+	return ClientConnectionStatus(sharedFromThis());
 }
 
 

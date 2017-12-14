@@ -51,7 +51,7 @@ AgentWindow::AgentWindow(QSharedPointer<Agent> agent, QWidget *parent)
 
 	updateIdentity();
 
-	if(nullptr!=mAgent) {
+	if(!mAgent.isNull()) {
 		//Settings &s=agent->settings();
 		ui->widgetHardware->configure(mAgent);
 		//Select correct starting page
@@ -93,6 +93,8 @@ AgentWindow::AgentWindow(QSharedPointer<Agent> agent, QWidget *parent)
 		//QString text="Hello, my name is "+mAgent->name()+". I am an octomy agent. What is your bidding master?";
 		//QString text="Hello, my name is Bodhi. I am an octomy agent. What is your bidding master? 00 0 01010 010 010 010 010101 ";		PortableID id=mAgent->localNodeAssociate()->toPortableID();		OC_NEW OneOffSpeech(id, text);
 
+	} else {
+		qWarning()<<"WARNING: No Agent in agent window";
 	}
 
 #ifdef Q_OS_ANDROID
@@ -150,7 +152,7 @@ void AgentWindow::gotoNextConfigPage()
 void AgentWindow::updateIdentity()
 {
 	OC_METHODGATE();
-	if(nullptr!=mAgent) {
+	if(!mAgent.isNull()) {
 		mAgent->updateDiscoveryClient();
 		updateIcon();
 	} else {
@@ -523,6 +525,15 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 		//appendLog("UNKNOWN BUTTON: "+QString::number(e->key()));
 	}
 }
+
+void AgentWindow::closeEvent(QCloseEvent *event)
+{
+	OC_METHODGATE();
+	if(!mAgent.isNull()) {
+		emit mAgent->closeApp();
+	}
+}
+
 
 
 void AgentWindow::updateOnlineStatus()

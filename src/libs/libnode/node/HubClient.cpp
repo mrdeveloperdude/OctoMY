@@ -6,7 +6,6 @@ HubClient::HubClient(QSharedPointer<Node> controller, QSharedPointer<Associate> 
 	: Client(controller, nodeAssoc, parent)
 //	, mCouriers(nodeAssoc->id(), *this)
 	, mWidget(nullptr)
-	, mThis(this)
 {
 	OC_METHODGATE();
 	updateCourierRegistration();
@@ -28,7 +27,7 @@ QWidget *HubClient::widget()
 {
 	OC_METHODGATE();
 	if(nullptr == mWidget) {
-		mWidget=OC_NEW HubClientWidget(mThis, nullptr);
+		mWidget=OC_NEW HubClientWidget(QEnableSharedFromThis<HubClient>::sharedFromThis(), nullptr);
 	}
 	return mWidget;
 }

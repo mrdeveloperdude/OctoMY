@@ -429,6 +429,16 @@ void RemoteWindow::keyReleaseEvent(QKeyEvent *e)
 
 
 
+void RemoteWindow::closeEvent(QCloseEvent *event)
+{
+	OC_METHODGATE();
+	if(!mRemote.isNull()) {
+		emit mRemote->closeApp();
+	}
+}
+
+
+
 //////////////////////////////////////////////////
 // Internal slots
 

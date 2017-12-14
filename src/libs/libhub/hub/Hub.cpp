@@ -6,9 +6,7 @@
 
 
 Hub::Hub(NodeLauncher<Hub> &launcher, QObject *parent)
-	: Node(OC_NEW AppContext(launcher.options(), launcher.environment(), "hub", parent), ROLE_CONTROL, TYPE_HUB, parent)
-	, mWindow(nullptr)
-	, mThis(this)
+	: Node(launcher, OC_NEW AppContext(launcher.options(), launcher.environment(), "hub", parent), ROLE_CONTROL, TYPE_HUB, parent)
 {
 }
 
@@ -18,14 +16,21 @@ Hub::~Hub()
 
 
 
-QWidget *Hub::showWindow()
+QSharedPointer<QWidget> Hub::showWindow()
 {
-	if(nullptr==mWindow) {
-		mWindow=OC_NEW HubWindow(mThis, nullptr);
+	if(mWindow.isNull()) {
+		mWindow=QSharedPointer<HubWindow>(OC_NEW HubWindow(QEnableSharedFromThis<Hub>::sharedFromThis(), nullptr));
 	}
-	if(nullptr!=mWindow) {
+	if(!mWindow.isNull()) {
 		mWindow->show();
 	}
 	return mWindow;
 }
 
+
+
+QSharedPointer<Node> Hub::sharedThis()
+{
+	OC_METHODGATE();
+	return sharedFromThis();
+}

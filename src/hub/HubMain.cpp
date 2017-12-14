@@ -4,6 +4,6 @@
 
 
 int main(int argc, char *argv[]){
-	NodeLauncher<Hub> m(argc,argv);
-	m.run();
+	NodeLauncher<Hub> hubMain(argc,argv);
+	return hubMain.run();
 }

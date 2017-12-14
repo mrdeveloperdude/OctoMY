@@ -30,13 +30,11 @@ class RemoteWindow;
 
 */
 
-class Remote : public Node
+class Remote : public Node, public QEnableSharedFromThis<Remote>
 {
 	Q_OBJECT
 private:
-	RemoteWindow *window;
-	// TODO: Figure out if this is complete horse manure or if it is actually sound (doubtful)
-	QSharedPointer <Remote> mThis;
+	QSharedPointer<RemoteWindow> mWindow;
 
 public:
 	explicit Remote(NodeLauncher<Remote> &launcher, QObject *parent = nullptr);
@@ -44,11 +42,12 @@ public:
 
 	//void startComms(const NetworkAddress &localAddress, const NetworkAddress &partnerAddress);
 
-	virtual QWidget *showWindow();
+	virtual QSharedPointer<QWidget> showWindow();
 
 
 	void setNodeCouriersRegistration(bool reg) Q_DECL_OVERRIDE;
 
+	QSharedPointer<Node> sharedThis() Q_DECL_OVERRIDE;
 
 };
 

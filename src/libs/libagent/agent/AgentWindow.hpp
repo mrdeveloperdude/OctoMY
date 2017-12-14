@@ -66,12 +66,6 @@ public:
 	virtual ~AgentWindow();
 
 public:
-
-	Ui::AgentWindow * getUI()
-	{
-		return this->ui;
-	}
-
 	void appendLog(const QString& text);
 	void updateFaceVisibility();
 
@@ -95,6 +89,7 @@ private:
 public:
 
 	virtual void keyReleaseEvent(QKeyEvent *) Q_DECL_OVERRIDE;
+	virtual	void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 
 	// Actions
 private slots:

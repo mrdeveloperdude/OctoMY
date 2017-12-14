@@ -38,10 +38,9 @@ class Node;
 */
 
 
-class Associate
+class Associate: public QEnableSharedFromThis<Associate>
 {
 private:
-	QSharedPointer<Associate> mThis;
 	Key mKey;
 
 	QString mName;

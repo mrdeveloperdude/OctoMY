@@ -86,7 +86,7 @@ private:
 public:
 
 	virtual void keyReleaseEvent(QKeyEvent *);
-
+	virtual	void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 
 	// Internal slots
 private slots:

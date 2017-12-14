@@ -17,9 +17,7 @@
 
 
 Remote::Remote(NodeLauncher<Remote> &launcher, QObject *parent)
-	: Node(OC_NEW AppContext(launcher.options(), launcher.environment(), "remote", parent), ROLE_CONTROL, TYPE_REMOTE, parent)
-	, window(nullptr)
-	, mThis(this)
+	: Node(launcher, OC_NEW AppContext(launcher.options(), launcher.environment(), "remote", parent), ROLE_CONTROL, TYPE_REMOTE, parent)
 {
 	OC_METHODGATE();
 }
@@ -30,22 +28,24 @@ Remote::~Remote()
 }
 
 
-QWidget *Remote::showWindow()
+
+QSharedPointer<QWidget> Remote::showWindow()
 {
 	OC_METHODGATE();
-	if(nullptr==window) {
-		window=OC_NEW RemoteWindow(mThis, nullptr);
+	if(mWindow.isNull()) {
+		mWindow=QSharedPointer<RemoteWindow>(OC_NEW RemoteWindow(QEnableSharedFromThis<Remote>::sharedFromThis(), nullptr));
 	}
-	if(nullptr!=window) {
-		window->show();
+	if(!mWindow.isNull()) {
+		mWindow->show();
 	}
-	return window;
+	return mWindow;
 }
 
 
 
 
-void Remote::setNodeCouriersRegistration(bool reg){
+void Remote::setNodeCouriersRegistration(bool reg)
+{
 	OC_METHODGATE();
 	Node::setNodeCouriersRegistration(reg);
 	// When we get a new remote specific courier, put it here
@@ -56,4 +56,11 @@ void Remote::setNodeCouriersRegistration(bool reg){
 		}
 
 	}*/
+}
+
+
+QSharedPointer<Node> Remote::sharedThis()
+{
+	OC_METHODGATE();
+	return sharedFromThis();
 }

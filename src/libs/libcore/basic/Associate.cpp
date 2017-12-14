@@ -19,8 +19,7 @@
 
 
 Associate::Associate(const QVariantMap map, bool isPublic)
-	: mThis(this)
-	, mKey( map["key"].toMap(), isPublic)
+	: mKey( map["key"].toMap(), isPublic)
 	, mName( map["name"].toString() )
 	, mGender( map["gender"].toString() )
 	, mRole( nodeRoleFromString( map["role"].toString() ) )
@@ -56,6 +55,7 @@ Associate::Associate()
 
 Associate::~Associate()
 {
+	OC_METHODGATE();
 	//qDebug()<<"DELETING node associate with ID "<<id();
 }
 
@@ -192,7 +192,7 @@ QBluetoothAddress Associate::bluetoothAddress() const
 void Associate::setLastSeen(quint64 when)
 {
 	OC_METHODGATE();
-	if(0==when) {
+	if(0 == when) {
 		when=QDateTime::currentMSecsSinceEpoch();
 	}
 	mLastSeenMS=when;
@@ -371,11 +371,11 @@ QSharedPointer<Client> Associate::toClient(QSharedPointer<Node> node)
 {
 	switch(mType) {
 	case(TYPE_AGENT):
-		return QSharedPointer<Client>(OC_NEW AgentClient(node, mThis));
+		return QSharedPointer<AgentClient>(OC_NEW AgentClient(node, sharedFromThis()));
 	case(TYPE_REMOTE):
-		return QSharedPointer<Client>(OC_NEW RemoteClient(node, mThis));
+		return QSharedPointer<RemoteClient>(OC_NEW RemoteClient(node, sharedFromThis()));
 	case(TYPE_HUB):
-		return QSharedPointer<Client>(OC_NEW HubClient(node, mThis));
+		return QSharedPointer<HubClient>(OC_NEW HubClient(node, sharedFromThis()));
 	}
 	return nullptr;
 

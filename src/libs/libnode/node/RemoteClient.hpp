@@ -12,16 +12,16 @@ class RemoteClientWidget;
 /**
  * @brief The RemoteClient is a specialization class derivig from Client that represents a remote that the current node has communications with
  */
-class RemoteClient : public Client
+class RemoteClient : public Client, public QEnableSharedFromThis<RemoteClient>
 {
 	Q_OBJECT
 private:
 	RemoteCourierSet mCouriers;
 	RemoteClientWidget *mWidget;
-	// TODO: Figure out if this is complete horse manure or if it is actually sound (doubtful)
-	QSharedPointer <RemoteClient> mThis;
+
 public:
 	explicit RemoteClient(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssoc, QObject *parent = nullptr);
+	virtual ~RemoteClient();
 
 
 	// Client interface

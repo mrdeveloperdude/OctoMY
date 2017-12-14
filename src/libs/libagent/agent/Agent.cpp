@@ -28,14 +28,12 @@
 
 
 Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
-	: Node(OC_NEW AppContext(launcher.options(), launcher.environment(), "agent", parent), ROLE_AGENT, TYPE_AGENT, parent)
+	: Node(launcher, OC_NEW AppContext(launcher.options(), launcher.environment(), "agent", parent), ROLE_AGENT, TYPE_AGENT, parent)
 	, mAgentConfigStore(mContext->baseDir() + "/agent_config.json")
 	, mActuatorController(nullptr)
-	, mWindow(nullptr)
-	, mThis(this)
 {
 	OC_METHODGATE();
-	mAddressBook.hookSignals(*this);
+	mAddressBook.setHookSignals(*this, true);
 	if(mAddressBook.isReady()) {
 		onAddressBookReady(true);
 	}
@@ -45,21 +43,26 @@ Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 Agent::~Agent()
 {
 	OC_METHODGATE();
+	mAddressBook.setHookSignals(*this, false);
 	if(nullptr!=mActuatorController) {
 		mActuatorController->setConnected(false);
+		mActuatorController=nullptr;
 	}
 }
 
 
-
-
-QWidget *Agent::showWindow()
+QSharedPointer<QWidget> Agent::showWindow()
 {
 	OC_METHODGATE();
-	if(nullptr==mWindow) {
-		mWindow=OC_NEW AgentWindow(mThis, nullptr);
+	if(mWindow.isNull()) {
+		QSharedPointer<Agent> sp=this->QEnableSharedFromThis<Agent>::sharedFromThis();
+		if(sp.isNull()){
+			volatile int ba=0;
+			qWarning()<<"SHARED POINTER TO THIS WAS NULL!"<<ba;
+		}
+		mWindow=QSharedPointer<AgentWindow>(OC_NEW AgentWindow(sp, nullptr));
 	}
-	if(nullptr!=mWindow) {
+	if(!mWindow.isNull()) {
 		mWindow->show();
 	}
 	return mWindow;
@@ -134,6 +137,14 @@ void Agent::setNodeCouriersRegistration(bool reg){
 		}
 
 	}*/
+}
+
+
+
+QSharedPointer<Node> Agent::sharedThis()
+{
+	OC_METHODGATE();
+	return sharedFromThis();
 }
 
 

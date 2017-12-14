@@ -7,7 +7,7 @@
 
 int main(int argc, char *argv[]){
 	NodeLauncher<Remote> remoteMain(argc,argv);
-	remoteMain.run();
+	return remoteMain.run();
 }
 
 

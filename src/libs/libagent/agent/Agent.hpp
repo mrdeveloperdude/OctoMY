@@ -31,23 +31,21 @@ class AgentCourierSet;
 
 
 
-class Agent : public Node
+class Agent : public Node, public QEnableSharedFromThis<Agent>
 {
 	Q_OBJECT
 private:
-
 	AgentConfigStore mAgentConfigStore;
 	IActuatorController *mActuatorController;
 
-	AgentWindow *mWindow;
+	QSharedPointer<AgentWindow> mWindow;
 
-	QSharedPointer <Agent> mThis;
 
 public:
 	explicit Agent(NodeLauncher<Agent> &launcher, QObject *parent = nullptr);
 	virtual ~Agent();
 
-	virtual QWidget *showWindow();
+	virtual QSharedPointer<QWidget> showWindow();
 
 
 public:
@@ -63,6 +61,9 @@ public:
 
 
 	void setNodeCouriersRegistration(bool reg) Q_DECL_OVERRIDE;
+
+	QSharedPointer<Node> sharedThis() Q_DECL_OVERRIDE;
+
 
 	// Agent Config Store slots
 public slots:

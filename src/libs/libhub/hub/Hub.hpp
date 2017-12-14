@@ -21,20 +21,22 @@
 class CommsSession;
 class HubWindow;
 
-class Hub: public Node
+class Hub: public Node, public QEnableSharedFromThis<Hub>
 {
 	Q_OBJECT
 public:
-	HubWindow *mWindow;
+	QSharedPointer<HubWindow> mWindow;
 
-	QSharedPointer<Hub> mThis;
 public:
 
 	explicit Hub(NodeLauncher<Hub> &launcher, QObject *parent = nullptr);
 	virtual ~Hub();
 
-	virtual QWidget *showWindow();
+public:
+	virtual QSharedPointer<QWidget> showWindow();
 
+
+	QSharedPointer<Node> sharedThis() Q_DECL_OVERRIDE;
 
 };
 

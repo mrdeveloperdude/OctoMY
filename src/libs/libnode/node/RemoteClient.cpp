@@ -6,10 +6,15 @@ RemoteClient::RemoteClient(QSharedPointer<Node> controller, QSharedPointer<Assoc
 	: Client(controller, nodeAssoc, parent)
 	, mCouriers(nodeAssoc->id(), *this)
 	, mWidget(nullptr)
-	, mThis(this)
 {
 	OC_METHODGATE();
 	updateCourierRegistration();
+}
+
+
+RemoteClient::~RemoteClient()
+{
+
 }
 
 /////////////////////////////////////////////////////
@@ -29,7 +34,7 @@ QWidget *RemoteClient::widget()
 {
 	OC_METHODGATE();
 	if(nullptr == mWidget) {
-		mWidget=OC_NEW RemoteClientWidget(mThis, nullptr);
+		mWidget=OC_NEW RemoteClientWidget(QEnableSharedFromThis<RemoteClient>::sharedFromThis(), nullptr);
 	}
 	return mWidget;
 }

@@ -243,6 +243,15 @@ void HubWindow::appendLog(const QString& text)
 	ui->logScroll->appendLog(text);
 }
 
+void HubWindow::closeEvent(QCloseEvent *event)
+{
+	OC_METHODGATE();
+	if(!mHub.isNull()) {
+		emit mHub->closeApp();
+	}
+}
+
+
 void HubWindow::onListenStateChanged(const TryToggleState last, const TryToggleState current)
 {
 	OC_METHODGATE();

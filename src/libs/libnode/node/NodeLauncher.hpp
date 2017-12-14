@@ -14,6 +14,7 @@
 
 #include "comms/CommsChannel.hpp"
 #include "basic/LogHandler.hpp"
+#include "INodeLauncher.hpp"
 
 #include <QDebug>
 #include <QTimer>
@@ -21,16 +22,28 @@
 #include <QFileInfo>
 #include <QSurfaceFormat>
 
-class Node;
 class Settings;
-
-
+/** The NodeLauncher class wraps a node (agent/hub/remote) main class providing it with all the necessary services that are important before and after the main eventloop of the application runs
+ *  which is to say before and after qApp.exec()
+ *
+ *  This includes:
+ *  + Parsing of commandline parameters
+ *  + Maintaining environment variables
+ *  + Selecting QCodeApplication or QApplication for headless or gui application respectively
+ *  + Any OS level signal/event handling
+ *  + Any OS level privilege stuff
+ *  + Any OS Level watchdog stuff
+ *  + Ant OS level whatever!
+ *  + Capturing and cleanup in case of exceptions and OS level lifecycle events such as sleep/termination etc.
+ *  + API for graceful termination
+ *
+ */
 template <typename T>
-class NodeLauncher
+class NodeLauncher: public INodeLauncher
 {
 private:
-	T *mNode;
-	QWidget *mWindow;
+	QSharedPointer<T> mNode;
+	QSharedPointer<QWidget> mWindow;
 	StyleManager *mStyleManager;
 	int mReturnValue;
 	int mArgc;
@@ -46,10 +59,12 @@ public:
 	explicit NodeLauncher(int argc, char *argv[]);
 	virtual ~NodeLauncher();
 
-	void run();
+	int run();
 
 	void start();
 	void stop();
+
+	virtual void nodeDone() Q_DECL_OVERRIDE;
 
 	QCommandLineParser &options();
 
@@ -60,9 +75,7 @@ public:
 
 template <typename T>
 NodeLauncher<T>::NodeLauncher(int argc, char *argv[])
-	: mNode(nullptr)
-	, mWindow(nullptr)
-	, mReturnValue(EXIT_SUCCESS)
+	: mReturnValue(EXIT_SUCCESS)
 	, mArgc(argc)
 	, mArgv(argv)
 	, mApp(nullptr)
@@ -73,7 +86,7 @@ NodeLauncher<T>::NodeLauncher(int argc, char *argv[])
 }
 
 template <typename T>
-void NodeLauncher<T>::run()
+int NodeLauncher<T>::run()
 {
 	OC_METHODGATE();
 	QCoreApplication::setOrganizationName(Settings::ORGANIZATION_NAME);
@@ -125,25 +138,26 @@ void NodeLauncher<T>::run()
 	format.setSwapInterval(OCTOMY_QT_OGL_SWAP_INTERVAL);
 	format.setRenderableType(QSurfaceFormat::OCTOMY_QT_OGL_RENDERABLE_TYPE);
 	QSurfaceFormat::setDefaultFormat(format);
-
-	QApplication::setAttribute(Qt::OCTOMY_QT_OGL_APP_ATTRIBUTE); \
-	QApplication::setAttribute(Qt::AA_ShareOpenGLContexts); \
+	QApplication::setAttribute(Qt::OCTOMY_QT_OGL_APP_ATTRIBUTE);
+	QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
 	mApp=(mIsHeadless?(OC_NEW QCoreApplication(mArgc, mArgv)):(OC_NEW QApplication(mArgc, mArgv)));
 	//qDebug()<<(headless?"HEADLESS":"GUI ENABLED");
 
 	if(nullptr!=mApp) {
+		QApplication::setQuitOnLastWindowClosed(false);
 		start();
 		Q_INIT_RESOURCE(icons);
 		Q_INIT_RESOURCE(images);
 		Q_INIT_RESOURCE(3d);
 
 		mReturnValue=mApp->exec();
+
 		qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done, quitting";
 	} else {
 		qWarning()<<"ERROR: no app, quitting";
 	}
-	stop();
+	return mReturnValue;
 }
 
 
@@ -151,9 +165,16 @@ template <typename T>
 void NodeLauncher<T>::start()
 {
 	OC_METHODGATE();
-	mNode=OC_NEW T(*this, nullptr);
-	if(!mIsHeadless && nullptr!=mNode) {
-		mWindow=mNode->showWindow();
+	qDebug()<<"NODE LAUNCHER: START";
+	mNode=QSharedPointer<T>(OC_NEW T(*this, nullptr));
+	if(!mNode.isNull()) {
+		if(!mIsHeadless) {
+			QObject::connect(mNode.data(), &T::closeApp, mNode.data(), [=]() {
+				qDebug()<<"QUIT WELL RECIEVED SIR";
+				stop();
+			});
+			mWindow=mNode->showWindow();
+		}
 	}
 }
 
@@ -162,11 +183,24 @@ template <typename T>
 void NodeLauncher<T>::stop()
 {
 	OC_METHODGATE();
-	if(nullptr!=mNode) {
+	qDebug()<<"NODE LAUNCHER: STOP";
+	if(!mNode.isNull()) {
+		//mNode.reset();
+		mNode->deInit();
 		mNode->deleteLater();
 		mNode=nullptr;
 	}
 }
+
+template <typename T>
+void NodeLauncher<T>::nodeDone()
+{
+	qDebug()<<"NODELAUNCHER DONE";
+	if(nullptr!=mApp) {
+		mApp->quit();
+	}
+}
+
 
 template <typename T>
 NodeLauncher<T>::~NodeLauncher()

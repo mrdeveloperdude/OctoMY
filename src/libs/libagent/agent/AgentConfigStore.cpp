@@ -23,6 +23,7 @@ AgentConfigStore::AgentConfigStore(QString filename, QObject *parent)
 
 AgentConfigStore::~AgentConfigStore()
 {
+	qDebug()<<"AGENT CONFIG STORE DTOR";
 	save();
 }
 

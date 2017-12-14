@@ -13,14 +13,13 @@ class HubClientWidget;
  * @brief The HubClient is a specialization class derivig from Client that represents a hub that the current node has communications with
  */
 
-class HubClient : public Client
+class HubClient : public Client, public QEnableSharedFromThis<HubClient>
 {
 	Q_OBJECT
 private:
 	CourierSet mCouriers;
 	HubClientWidget *mWidget;
-	// TODO: Figure out if this is complete horse manure or if it is actually sound (doubtful)
-	QSharedPointer <HubClient> mThis;
+
 public:
 	explicit HubClient(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssoc, QObject *parent = nullptr);
 

@@ -50,6 +50,9 @@ public:
 public:
 	void appendLog(const QString& text);
 
+	virtual	void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
+
+
 
 private:
 

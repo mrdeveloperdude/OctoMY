@@ -25,7 +25,7 @@
 #include "AppContext.hpp"
 #include "zoo/ZooConstants.hpp"
 #include "agent/AgentConstants.hpp"
-
+#include "INodeLauncher.hpp"
 
 #include <QCommandLineParser>
 #include <QAccelerometerReading>
@@ -61,9 +61,9 @@ static quint16 defaultPortForNodeType(NodeType type)
 }
 
 
-Node::Node(AppContext *context, NodeRole role, NodeType type, QObject *parent)
+Node::Node(INodeLauncher &laucher, AppContext *context, NodeRole role, NodeType type, QObject *parent)
 	: QObject (parent)
-	, mThisNode(this)
+	, mLauncher(laucher)
 	, mContext(context)
 	, mRole (role)
 	, mType (type)
@@ -82,16 +82,22 @@ Node::Node(AppContext *context, NodeRole role, NodeType type, QObject *parent)
 	, mServerURL("http://zoo.octomy.org:"+QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
 {
 	OC_METHODGATE();
-	//ScopedTimer nodeBootTimer(mContext->base()+"-boot");
+	// ScopedTimer nodeBootTimer(mContext->base()+"-boot");
 	setObjectName(mContext->base());
+	// Run init() from eventloop since it will call pure virtual members (which as you know are NOT allowed to be run from ctor in C++)
+	QTimer::singleShot(0, Qt::VeryCoarseTimer, [=]() {
+		init();
+	});
 
-	init();
 }
 
 Node::~Node()
 {
 	OC_METHODGATE();
+	qDebug()<<"NODE::DTOR DEINIT";
 	deInit();
+	qDebug()<<"NODE::DTOR SENDING NODE DONE";
+	mLauncher.nodeDone();
 }
 
 
@@ -105,7 +111,7 @@ void Node::init()
 
 	mAddressBook.bootstrap(true, false);
 
-	mClients.syncToAddressBook(mAddressBook, mThisNode);
+	mClients.syncToAddressBook(mAddressBook, sharedThis());
 
 	StyleManager *style=OC_NEW StyleManager(QColor(TYPE_AGENT==mType?"#e83636":TYPE_REMOTE==mType?"#36bee8":"#36e843"));
 	if(nullptr!=style) {
@@ -138,9 +144,43 @@ void Node::init()
 
 void Node::deInit()
 {
+	OC_METHODGATE();
 	setHookSensorSignals(*this, false);
 	setHookCommsSignals(*this,false);
 	mKeystore.setHookSignals(*this, false);
+	mContext=nullptr;
+	if(nullptr!=mCarrier) {
+		mCarrier->deleteLater();
+		mCarrier=nullptr;
+	}
+	if(nullptr!=mComms) {
+		mComms->deleteLater();
+		mComms=nullptr;
+	}
+	if(nullptr!=mDiscovery) {
+		mDiscovery->deleteLater();
+		mDiscovery=nullptr;
+	}
+	if(nullptr!=mZooClient) {
+		mZooClient->deleteLater();
+		mZooClient=nullptr;
+	}
+	if(nullptr!=mSensors) {
+		mSensors->deleteLater();
+		mSensors=nullptr;
+	}
+	if(nullptr!=mSensorsCourier) {
+		mSensorsCourier->deleteLater();
+		mSensorsCourier=nullptr;
+	}
+	if(nullptr!=mBlobCourier) {
+		mBlobCourier->deleteLater();
+		mBlobCourier=nullptr;
+	}
+	if(nullptr!=mCameras) {
+		mCameras->deleteLater();
+		mCameras=nullptr;
+	}
 }
 
 
@@ -476,7 +516,7 @@ TryToggleState Node::updateOnlineStatus(const TryToggleState currentTryState)
 }
 */
 
-QWidget *Node::showWindow()
+QSharedPointer<QWidget> Node::showWindow()
 {
 	OC_METHODGATE();
 	return nullptr;
@@ -512,27 +552,30 @@ bool Node::isConnected()
 
 
 // [Un]register node specific couriers with comms
-void Node::setNodeCouriersRegistration(const bool reg){
+void Node::setNodeCouriersRegistration(const bool reg)
+{
 	OC_METHODGATE();
-	if(nullptr!=mComms){
-		if(nullptr!=mSensorsCourier){
+	if(nullptr!=mComms) {
+		if(nullptr!=mSensorsCourier) {
 			mComms->setCourierRegistered(mSensorsCourier, reg);
 		}
-		if(nullptr!=mBlobCourier){
+		if(nullptr!=mBlobCourier) {
 			mComms->setCourierRegistered(mBlobCourier, reg);
 		}
 	}
 }
 
 // [Un]register client specific couriers with comms
-void Node::setClientCouriersRegistration(const bool reg){
+void Node::setClientCouriersRegistration(const bool reg)
+{
 	OC_METHODGATE();
 	mClients.setAllCouriersRegistered(reg);
 }
 
 
 // [Un]register couriers with comms
-void Node::setCouriersRegistration(const bool reg){
+void Node::setCouriersRegistration(const bool reg)
+{
 	OC_METHODGATE();
 	setNodeCouriersRegistration(reg);
 	setClientCouriersRegistration(reg);
@@ -540,21 +583,24 @@ void Node::setCouriersRegistration(const bool reg){
 
 
 // Update client specific courier registration with comms depending on need
-void Node::updateClientCouriersRegistration(){
+void Node::updateClientCouriersRegistration()
+{
 	OC_METHODGATE();
 	mClients.updateCourierRegistration();
 }
 
 
 // Update node specific courier registration with comms depending on need
-void Node::updateNodeCouriersRegistration(){
+void Node::updateNodeCouriersRegistration()
+{
 	OC_METHODGATE();
 	setNodeCouriersRegistration(needsConnection());
 }
 
 
 // Update courier registration with comms depending on need
-void Node::updateCouriersRegistration(){
+void Node::updateCouriersRegistration()
+{
 	OC_METHODGATE();
 	updateClientCouriersRegistration();
 	updateNodeCouriersRegistration();
@@ -654,11 +700,7 @@ void Node::setHookCommsSignals(QObject &o, bool hook)
 void Node::setHookPeerSignals(QObject &o, bool set)
 {
 	OC_METHODGATE();
-	if(set) {
-		mAddressBook.hookSignals(o);
-	} else {
-		mAddressBook.unHookSignals(o);
-	}
+	mAddressBook.setHookSignals(o, set);
 }
 
 

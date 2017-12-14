@@ -22,7 +22,7 @@ class CommsSession;
 class CourierSet;
 class ClientConnectionStatus;
 
-class Client: public QObject
+class Client: public QObject, public QEnableSharedFromThis<Client>
 {
 	Q_OBJECT
 protected:
@@ -30,8 +30,6 @@ protected:
 	QTimer mUpdateTimer;
 	QSharedPointer<Node> mNode;
 	QSharedPointer<Associate> mNodeAssociate;
-	QSharedPointer<Client> mThis;
-
 
 public:
 

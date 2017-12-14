@@ -6,7 +6,6 @@ AgentClient::AgentClient(QSharedPointer<Node> controller, QSharedPointer<Associa
 	: Client(controller, nodeAssoc, parent)
 //	, mCouriers(nodeAssoc->id(), *this)
 	, mWidget(nullptr)
-	, mThis(this)
 {
 	OC_METHODGATE();
 	updateCourierRegistration();
@@ -29,7 +28,7 @@ QWidget *AgentClient::widget()
 {
 	OC_METHODGATE();
 	if(nullptr == mWidget) {
-		mWidget=OC_NEW AgentClientWidget(mThis, nullptr);
+		mWidget=OC_NEW AgentClientWidget(QEnableSharedFromThis<AgentClient>::sharedFromThis(), nullptr);
 	}
 	return mWidget;
 }

@@ -52,8 +52,7 @@ public:
 
 	QMap<QString, QSharedPointer<Associate> > &all();
 
-	void hookSignals(QObject &ob);
-	void unHookSignals(QObject &ob);
+	void setHookSignals(QObject &ob, bool hook);
 
 
 signals:

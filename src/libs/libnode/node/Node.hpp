@@ -45,12 +45,13 @@ class SensorsCourier;
 class BlobCourier;
 class BlobFuture;
 
+class INodeLauncher;
 
-class Node : public QObject, public IConnectionStatus
+class Node : public QObject, public IConnectionStatus//, public QEnableSharedFromThis<Node>
 {
 	Q_OBJECT
 protected:
-	QSharedPointer<Node> mThisNode;
+	INodeLauncher &mLauncher;
 	AppContext *mContext;
 	NodeRole mRole;
 	NodeType mType;
@@ -74,7 +75,7 @@ protected:
 
 
 public:
-	explicit Node(AppContext *context, NodeRole mRole, NodeType mType, QObject *parent = nullptr);
+	explicit Node(INodeLauncher &laucher, AppContext *context, NodeRole mRole, NodeType mType, QObject *parent = nullptr);
 	virtual ~Node();
 
 public:
@@ -120,8 +121,14 @@ public:
 	//TryToggleState updateOnlineStatus(const TryToggleState currentTryState);
 
 
-	// Couriers
+	virtual QSharedPointer<Node> sharedThis() =0;
 
+	// General signals
+signals:
+	void closeApp();
+
+	// Couriers
+public:
 	// [Un]register local couriers with comms
 	virtual void setNodeCouriersRegistration(const bool reg);
 	// [Un]register client specific couriers with comms
@@ -141,7 +148,7 @@ public:
 	// Actions
 public:
 
-	virtual QWidget *showWindow();
+	virtual QSharedPointer<QWidget> showWindow();
 
 	bool isCommsStarted();
 	bool isCommsConnected();
