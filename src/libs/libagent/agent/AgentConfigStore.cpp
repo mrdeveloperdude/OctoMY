@@ -11,6 +11,7 @@ AgentConfigStore::AgentConfigStore(QString filename, QObject *parent)
 	: AsyncStore(filename, parent)
 	, mAgentConfig(OC_NEW AgentConfig())
 {
+	OC_METHODGATE();
 	setObjectName("AgentConfigStore");
 	//qDebug()<<"PoseMappingStore() file="<<fn;
 	// Forward the async storeReady signal
@@ -23,6 +24,7 @@ AgentConfigStore::AgentConfigStore(QString filename, QObject *parent)
 
 AgentConfigStore::~AgentConfigStore()
 {
+	OC_METHODGATE();
 	qDebug()<<"AGENT CONFIG STORE DTOR";
 	save();
 }
@@ -30,12 +32,14 @@ AgentConfigStore::~AgentConfigStore()
 
 QSharedPointer<AgentConfig> AgentConfigStore::agentConfig() const
 {
+	OC_METHODGATE();
 	return mAgentConfig;
 }
 
 
 void AgentConfigStore::setAgentConfig(QSharedPointer<AgentConfig> config)
 {
+	OC_METHODGATE();
 	mAgentConfig=config;
 }
 
@@ -44,6 +48,7 @@ void AgentConfigStore::setAgentConfig(QSharedPointer<AgentConfig> config)
 
 void AgentConfigStore::bootstrapWorkerImpl()
 {
+	OC_METHODGATE();
 	//qDebug()<<"PoseMappingStore() bootstrapWorkerImpl() file="<<mFilename;
 	QFile f(mFilename);
 	if(!f.exists()) {
@@ -56,7 +61,8 @@ void AgentConfigStore::bootstrapWorkerImpl()
 
 void AgentConfigStore::load()
 {
-	//qDebug()<<"NodeAssociateStore: Loading from file "<<mFilename;
+	OC_METHODGATE();
+	qDebug()<<"AgentConfigStore: Loading from file: "<<mFilename;
 	QJsonParseError jsonError;
 	QByteArray raw=utility::fileToByteArray(mFilename);
 	if(raw.size()<1) {
@@ -87,6 +93,7 @@ void AgentConfigStore::load()
 
 void AgentConfigStore::save()
 {
+	OC_METHODGATE();
 	qDebug()<<"AgentConfigStore: Saving to file: "<<mFilename;
 	QVariantMap map;
 	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();

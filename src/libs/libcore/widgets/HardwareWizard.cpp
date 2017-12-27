@@ -24,10 +24,6 @@ HardwareWizard::HardwareWizard(QWidget *parent)
 	, mHardwareTemplateModel(OC_NEW HardwareTemplateModel(this))
 	, mSelectedTempalte(nullptr)
 	, mAgent(nullptr)
-	  /*
-	  , mController(nullptr)
-	  , mConfigStore(nullptr)
-	  */
 
 {
 	ui->setupUi(this);
@@ -273,7 +269,7 @@ void HardwareWizard::save()
 					qWarning()<<"ERROR: Could not find controller while saving controller config in hardware wizard";
 				}
 			} else {
-				qDebug()<<" S A V E calledf with unknwon cur";
+				qDebug()<<" S A V E called with unknwon cur";
 			}
 
 		} else {

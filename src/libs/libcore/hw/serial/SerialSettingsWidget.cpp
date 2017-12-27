@@ -204,7 +204,7 @@ void SerialSettingsWidget::setSettings(SerialSettings &settings)
 void SerialSettingsWidget::registerChange()
 {
 	if(!mManualSaveMode) {
-		qDebug()<<"AUTOSAVE!";
+		// qDebug()<<"AUTOSAVE!";
 		apply();
 	}
 }

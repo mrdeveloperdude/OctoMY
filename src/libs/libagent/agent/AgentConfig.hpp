@@ -15,27 +15,20 @@ private:
 	QVariantMap mControllerConfig;
 	QSharedPointer<PoseMapping> mPoseMapping;
 
-
 public:
 	AgentConfig();
 	AgentConfig(const QVariantMap &map);
 
-
 public:
-
 	void fromMap(const QVariantMap &map);
 	QVariantMap toMap();
 
 public:
-
-
 	QString controllerName();
 	void setControllerName(const QString &);
 
 	QVariantMap controllerConfig();
 	void setControllerConfig(const QVariantMap &);
-
-
 
 	QSharedPointer<PoseMapping> poseMapping();
 	void setPoseMapping(QSharedPointer<PoseMapping> mapping);

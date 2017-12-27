@@ -22,7 +22,6 @@ class HardwareWizard;
 }
 
 
-
 struct ControllerStanza {
 	QString nickName;
 	QString fullName;
@@ -80,12 +79,6 @@ private:
 	SerialDeviceListModel *mSerialDevicesModel;
 	HardwareTemplateModel *mHardwareTemplateModel;
 	HardwareTemplate *mSelectedTempalte;
-
-	/*
-	ActuatorControllerFactory mControllerFactory;
-	IActuatorController *mController;
-	AgentConfigStore *mConfigStore;
-	*/
 	QSharedPointer<Agent> mAgent;
 	ControllerStanzaList controllerStanzas;
 	MtlobeStanzaList mMtlobeStanzas;
@@ -97,7 +90,6 @@ public:
 	virtual ~HardwareWizard();
 
 private:
-
 	void initControllerList();
 	void initMtlobeList();
 	int controllerIndexByName(QString name);
@@ -107,20 +99,15 @@ private:
 	void loadFromTemplate();
 
 public:
-
 	void configure(QSharedPointer<Agent> agent);
 	void reset();
 
 signals:
-
 	void done();
 
 private slots:
 	void on_pushButtonOnward_clicked();
-
 	void on_pushButtonBack_clicked();
-
-
 	void on_listWidgetController_doubleClicked(const QModelIndex &index);
 	void on_comboBoxAddMtlobe_currentIndexChanged(int index);
 };

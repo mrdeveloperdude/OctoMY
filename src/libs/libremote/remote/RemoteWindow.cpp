@@ -325,22 +325,18 @@ void RemoteWindow::goToStartPage()
 	//qDebug()<<"----------------- - - - - - ------------------------- - - - - ";
 	if(nullptr!=mRemote) {
 		//Select correct starting page
-		auto key=mRemote->keyStore().localKey();
-		if(nullptr!=key) {
-			if(!key->isValid(true)) {
-				//qDebug()<<"STARTING WITH DELIVERY";
-				ui->widgetDelivery->reset();
-				ui->stackedWidgetScreen->setCurrentWidget(ui->pageDelivery);
-			} else if(mRemote->addressBook().associateCount()<=0) {
-				//qDebug()<<"STARTING WITH PAIRING";
-				ui->widgetPairing->reset();
-				ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
-			} else {
-				//qDebug()<<"STARTING WITH RUN";
-				ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
-			}
+		QSharedPointer<Key> key=mRemote->keyStore().localKey();
+		if(key.isNull() || !key->isValid(true)) {
+			//qDebug()<<"STARTING WITH DELIVERY";
+			ui->widgetDelivery->reset();
+			ui->stackedWidgetScreen->setCurrentWidget(ui->pageDelivery);
+		} else if(mRemote->addressBook().associateCount()<=0) {
+			//qDebug()<<"STARTING WITH PAIRING";
+			ui->widgetPairing->reset();
+			ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
 		} else {
-			qWarning()<<"ERROR: no key";
+			//qDebug()<<"STARTING WITH RUN";
+			ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
 		}
 	} else {
 		qWarning()<<"ERROR: no remote";

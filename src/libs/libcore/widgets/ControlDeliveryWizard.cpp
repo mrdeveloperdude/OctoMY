@@ -21,6 +21,7 @@ ControlDeliveryWizard::ControlDeliveryWizard(QWidget *parent)
 	, mSettings(nullptr)
 	, mBirthDate(0)
 {
+	OC_METHODGATE();
 	ui->setupUi(this);
 	const qint32 minLetters=3;
 	QRegularExpression re("\\p{Ll}{"+QString::number(minLetters)+",20}");
@@ -46,15 +47,9 @@ ControlDeliveryWizard::ControlDeliveryWizard(QWidget *parent)
 	}
 }
 
-
-
-
-void ControlDeliveryWizard::save()
-{
-}
-
 void ControlDeliveryWizard::reset()
 {
+	OC_METHODGATE();
 	ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);
 }
 
@@ -62,6 +57,7 @@ void ControlDeliveryWizard::reset()
 
 void ControlDeliveryWizard::configure(QSharedPointer<Node> n)
 {
+	OC_METHODGATE();
 	if(mNode!=n) {
 		mNode=n;
 		if(!mNode.isNull()) {
@@ -77,6 +73,7 @@ void ControlDeliveryWizard::configure(QSharedPointer<Node> n)
 
 ControlDeliveryWizard::~ControlDeliveryWizard()
 {
+	OC_METHODGATE();
 	delete ui;
 	ui=nullptr;
 	delete mSpinner;
@@ -87,6 +84,7 @@ ControlDeliveryWizard::~ControlDeliveryWizard()
 
 void ControlDeliveryWizard::onBirthComplete()
 {
+	OC_METHODGATE();
 	if(nullptr!=mNode) {
 		KeyStore &keystore=mNode->keyStore();
 		if(keystore.isReady() && !mBirthTimer.isActive()) {
@@ -132,5 +130,6 @@ void ControlDeliveryWizard::onBirthComplete()
 
 void ControlDeliveryWizard::on_pushButtonPairNow_clicked()
 {
+	OC_METHODGATE();
 	emit done(true);
 }

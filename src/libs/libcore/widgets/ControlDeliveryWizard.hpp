@@ -12,49 +12,46 @@
 
 class WaitingSpinnerWidget;
 
-namespace Ui {
-	class ControlDeliveryWizard;
+namespace Ui
+{
+class ControlDeliveryWizard;
 }
 
 class Settings;
 class Node;
 class ControlDeliveryWizard : public QWidget
 {
-		Q_OBJECT
+	Q_OBJECT
 
-	protected:
-		Ui::ControlDeliveryWizard *ui;
-		QTimer mBirthTimer;
-		WaitingSpinnerWidget *mSpinner;
-		Settings *mSettings;
-		QSharedPointer<Node> mNode;
-		PortableID mID;
-		QSharedPointer<Associate> mMyData;
-		quint64 mBirthDate;
+protected:
+	Ui::ControlDeliveryWizard *ui;
+	QTimer mBirthTimer;
+	WaitingSpinnerWidget *mSpinner;
+	Settings *mSettings;
+	QSharedPointer<Node> mNode;
+	PortableID mID;
+	QSharedPointer<Associate> mMyData;
+	quint64 mBirthDate;
 
-	public:
+public:
+	static const quint64 MINIMUM_BIRTH_TIME;
 
-		static const quint64 MINIMUM_BIRTH_TIME;
+public:
+	explicit ControlDeliveryWizard(QWidget *parent = 0);
+	~ControlDeliveryWizard();
 
-	public:
-		explicit ControlDeliveryWizard(QWidget *parent = 0);
-		~ControlDeliveryWizard();
+public:
+	void reset();
+	void configure(QSharedPointer<Node> mNode);
 
-	private:
-		void save();
-	public:
-		void reset();
+signals:
+	void done(bool);
 
-		void configure(QSharedPointer<Node> mNode);
+private slots:
+	void onBirthComplete();
 
-	signals:
-		void done(bool);
-
-	private slots:
-		void onBirthComplete();
-
-	private slots:
-		void on_pushButtonPairNow_clicked();
+private slots:
+	void on_pushButtonPairNow_clicked();
 
 };
 

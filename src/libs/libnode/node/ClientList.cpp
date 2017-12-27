@@ -135,7 +135,7 @@ QList<QWidget * > ClientList::widgets()
 			widget=client->widget();
 		}
 		qDebug()<<" + got widget: "<<widget<< " for client "<< client<<" idx="<<idx<<" ct="<<ct;
-		// NOTE: We use idx isntead of operator<< to maintan the order
+		// NOTE: We use insert(idx, widget) instead of operator<<() to maintan the exact order of clients
 		out.insert(idx,widget);
 		idx++;
 	}
