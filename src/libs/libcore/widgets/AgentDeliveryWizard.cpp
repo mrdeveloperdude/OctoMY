@@ -175,11 +175,10 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 					map["gender"]=ui->comboBoxGender->currentText();
 					map["type"]=nodeTypeToString(TYPE_AGENT);
 					map["role"]=nodeRoleToString(ROLE_AGENT);
-					map["birthDate"]=mBirthDate;
-					mMyData= QSharedPointer<Associate> (OC_NEW Associate(map));
-					mID=mMyData->toPortableID();
-					mNode->addressBook().upsertAssociate(mMyData);
-					mNode->addressBook().save();
+					map["birthDate"]=QDateTime::fromMSecsSinceEpoch(mBirthDate);
+					mNodeIdentity= QSharedPointer<Associate> (OC_NEW Associate(map));
+					mNode->setNodeIdentity(mNodeIdentity);
+					mID=mNodeIdentity->toPortableID();
 					ui->widgetBirthCertificate->setPortableID(mID);
 					ui->stackedWidget->setCurrentWidget(ui->pageDone);
 					//"+(mID.gender().toLower()==QStringLiteral("male")?QStringLiteral("Mr. "):(mID.gender().toLower()==QStringLiteral("female")?QStringLiteral("Mrs. "):QStringLiteral("")))+

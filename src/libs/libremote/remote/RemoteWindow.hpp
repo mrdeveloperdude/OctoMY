@@ -74,6 +74,7 @@ private:
 	void hookSensorSignals();
 
 
+	void setCurrentPage(QWidget *cur);
 	void goToStartPage();
 
 	void appendLog(const QString &str);

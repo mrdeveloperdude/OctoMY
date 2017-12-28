@@ -250,12 +250,12 @@ void HardwareWizard::save()
 				loadFromTemplate();
 			*/
 			const QWidget *cur=ui->stackedWidget->currentWidget();
-			qDebug()<<" S A V E called with cur= "<<cur;
+			qDebug().noquote().nospace()<<" S A V E called with cur= "<<cur;
 
 			// Controller
 			if(cur==ui->pageController) {
 				QString controllerName=selectedControllerName();
-				qDebug()<< "Saving controller name '"<<controllerName<<"' in Agent Config Store";
+				qDebug().noquote().nospace()<< "Saving controller name '"<<controllerName<<"' in Agent Config Store";
 				config->setControllerName(controllerName);
 			}
 
@@ -263,13 +263,15 @@ void HardwareWizard::save()
 			else if (cur == ui->pageControllerConfiguration) {
 				ctl=mAgent->actuatorController();
 				if(nullptr!=ctl) {
-					qDebug()<< "Saving controller data";
+					qDebug().noquote().nospace()<< "Saving controller data";
 					config->setControllerConfig(ctl->configuration());
 				} else {
-					qWarning()<<"ERROR: Could not find controller while saving controller config in hardware wizard";
+					qWarning()<<"WARNING: Saving empty controller config in hardware wizard";
+					QVariantMap empty;
+					config->setControllerConfig(empty);
 				}
 			} else {
-				qDebug()<<" S A V E called with unknwon cur";
+				qDebug()<<"WARNING: S A V E called with unknwon cur";
 			}
 
 		} else {
@@ -299,8 +301,15 @@ void HardwareWizard::loadFromTemplate()
 void HardwareWizard::on_pushButtonOnward_clicked()
 {
 	save();
-	const int cur=ui->stackedWidget->currentIndex();
-	const int next=mod(cur+1, ui->stackedWidget->count());
+	const QWidget *cur=ui->stackedWidget->currentWidget();
+	int curIndex=ui->stackedWidget->currentIndex();
+	if(cur == ui->pageController){
+		if ("none" == selectedControllerName()){
+			// HACK: Skip the controller config page
+			curIndex++;
+		}
+	}
+	const int next=mod(curIndex+1, ui->stackedWidget->count());
 	moveTo(next);
 }
 

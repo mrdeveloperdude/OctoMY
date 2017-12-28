@@ -58,15 +58,17 @@ public:
 
 	inline QSharedPointer<Key> localKey()
 	{
+		OC_METHODGATE();
 		return mLocalKey;
 	}
 
 	inline PortableID localPortableID()
 	{
+		OC_METHODGATE();
 		PortableID pid;
 		//pid.setName("Arne");
 		//pid.setGender("Male");
-		if(nullptr!=mLocalKey){
+		if(nullptr!=mLocalKey) {
 			pid.setID(mLocalKey->id());
 		}
 		pid.setBirthDate(QFileInfo(mFilename).created().toMSecsSinceEpoch());
@@ -95,12 +97,15 @@ public:
 
 	// return pub-key for node identified by give fingerprint ID
 	QSharedPointer<Key> pubKeyForID(const QString &id);
-
-	friend const QDebug &operator<<(QDebug &d, KeyStore &ks);
-
 signals:
 
 	void keystoreReady(bool);
+
+
+public:
+
+	friend const QDebug &operator<<(QDebug &d, KeyStore &ks);
+
 
 };
 

@@ -30,6 +30,8 @@ void AsyncStore::bootstrapWorker()
 	//qDebug()<<"AsyncStore bootstrapWorker() inProgress=" << mInProgress<<", error=" << mError<<", ready=" << mReady;
 	if(!mInProgress) {
 		mInProgress=true;
+		mReady=false;
+		mError=false;
 		bootstrapWorkerImpl();
 		mInProgress=false;
 	} else {
@@ -42,10 +44,10 @@ void AsyncStore::bootstrap(bool loadOnly, bool runInBackground)
 {
 	OC_METHODGATE();
 	//qDebug()<<"AsyncStore bootstrap() loadOnly="<<loadOnly<<", bg="<<runInBackground;
-	if(mReady) {
-		emit storeReady(!mError);
+	if(isReady()) {
+		emit storeReady(!hasError());
 		return;
-	} else if(mInProgress) {
+	} else if(isInProgress()) {
 		return;
 	} else if(loadOnly) {
 		load();

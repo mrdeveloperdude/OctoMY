@@ -41,6 +41,7 @@ PairingWizard::PairingWizard(QWidget *parent)
 	, mTrustIndex(-1)
 
 {
+	OC_METHODGATE();
 	ui->setupUi(this);
 	ui->widgetMyCertificate->configure(false,true);
 	mTemplate=ui->labelBodyPair->text();
@@ -80,12 +81,14 @@ PairingWizard::PairingWizard(QWidget *parent)
 
 PairingWizard::~PairingWizard()
 {
+	OC_METHODGATE();
 	delete ui;
 	ui=nullptr;
 }
 
 void PairingWizard::onNetworkSettingsChange(QHostAddress address, quint16 port, bool valid)
 {
+	OC_METHODGATE();
 	if(nullptr!=mNode) {
 		if(valid) {
 			mNode->localAddressList().setCurrent(address, port);
@@ -96,6 +99,7 @@ void PairingWizard::onNetworkSettingsChange(QHostAddress address, quint16 port, 
 
 void PairingWizard::onTrustButtonClicked(QAbstractButton *button)
 {
+	OC_METHODGATE();
 	if (ui->radioButtonTrustUnset == button) {
 		mTrustIndex=0;
 		ui->widgetTrustLevel->setSvgURL(":/icons/ignore.svg");
@@ -118,6 +122,7 @@ void PairingWizard::onTrustButtonClicked(QAbstractButton *button)
 
 void PairingWizard::onPulsatingTrustTimer()
 {
+	OC_METHODGATE();
 	static const QRgb palette[]= {
 		0x000000
 		,0xffffff
@@ -154,6 +159,7 @@ void PairingWizard::onPulsatingTrustTimer()
 
 void PairingWizard::updateNetworkSettings()
 {
+	OC_METHODGATE();
 	if(nullptr!=mNode) {
 		ui->widgetNetworkSettings->configure(mNode->localAddressList());
 		DiscoveryClient *client=mNode->discoveryClient();
@@ -179,6 +185,7 @@ void PairingWizard::updateNetworkSettings()
 
 void PairingWizard::updatePulsating()
 {
+	OC_METHODGATE();
 	const bool pulsating=(isVisible() && ui->buttonGroupTrust->checkedButton() == ui->radioButtonTrustSet);
 	//qDebug()<<"PULSATING="<<pulsating;
 	ui->widgetTrustLevel->setSilhouetteEnabled(pulsating);
@@ -193,12 +200,13 @@ void PairingWizard::updatePulsating()
 
 void PairingWizard::configure(QSharedPointer<Node> n)
 {
+	OC_METHODGATE();
 	mNode=n;
 	if(!mNode.isNull()) {
 		DiscoveryClient *discovery=mNode->discoveryClient();
 		NodeType type=mNode->type();
 		QSharedPointer<Associate>  ass=mNode->nodeIdentity();
-		if(nullptr!=ass) {
+		if(!ass.isNull()) {
 			PortableID pid=ass->toPortableID();
 			//qDebug()<<"CONFIGURE PAIRING WIZ FOR "<<pid.toPortableString();
 			ui->widgetMyCertificate->setPortableID(pid);
@@ -261,14 +269,22 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 }
 
 
+void PairingWizard::setCurrentPage(QWidget *cur)
+{
+	OC_METHODGATE();
+	ui->stackedWidget->setCurrentWidget(cur);
+}
+
 void PairingWizard::reset()
 {
-	ui->stackedWidget->setCurrentWidget(ui->pagePairWithPeers);
+	OC_METHODGATE();
+	setCurrentPage(ui->pagePairWithPeers);
 }
 
 
 void PairingWizard::startEdit(int row)
 {
+	OC_METHODGATE();
 	qDebug()<<"STARTING EDIT FOR "<<row;
 	QModelIndex index=mList->index(row,0);
 	if(index.isValid()) {
@@ -330,7 +346,7 @@ void PairingWizard::startEdit(int row)
 				ui->widgetParticipantCertificate->setPortableID(peer->toPortableID());
 			}
 		}
-		ui->stackedWidget->setCurrentWidget(ui->pagePeerDetail);
+		setCurrentPage(ui->pagePeerDetail);
 		//	setUpdatesEnabled(true);
 	} else {
 		qWarning()<<"ERROR: Index was invalid for row "<<row;
@@ -339,23 +355,27 @@ void PairingWizard::startEdit(int row)
 
 QSharedPointer<Node> PairingWizard::node()
 {
+	OC_METHODGATE();
 	return mNode;
 }
 
 void PairingWizard::showEvent(QShowEvent *)
 {
+	OC_METHODGATE();
 	updateNetworkSettings();
 	updatePulsating();
 }
 
 void PairingWizard::hideEvent(QHideEvent *)
 {
+	OC_METHODGATE();
 	updateNetworkSettings();
 	updatePulsating();
 }
 
 void PairingWizard::on_pushButtonMaybeOnward_clicked()
 {
+	OC_METHODGATE();
 	if(nullptr!=mNode) {
 		AddressBook &store=mNode->addressBook();
 		if(store.all().size()>0) {
@@ -363,28 +383,32 @@ void PairingWizard::on_pushButtonMaybeOnward_clicked()
 			return;
 		}
 	}
-	ui->stackedWidget->setCurrentWidget(ui->pageNoPeers);
+	setCurrentPage(ui->pageNoPeers);
 }
 
 
 void PairingWizard::on_pushButtonTryAgain_clicked()
 {
-	ui->stackedWidget->setCurrentWidget(ui->pagePairWithPeers);
+	OC_METHODGATE();
+	setCurrentPage(ui->pagePairWithPeers);
 }
 
 void PairingWizard::on_pushButtonDone_clicked()
 {
+	OC_METHODGATE();
 	emit done();
 }
 
 
 void PairingWizard::on_pushButtonCameraPair_clicked()
 {
-	ui->stackedWidget->setCurrentWidget(ui->pageCameraPairing);
+	OC_METHODGATE();
+	setCurrentPage(ui->pageCameraPairing);
 }
 
 void PairingWizard::on_pushButtonSaveEdits_clicked()
 {
+	OC_METHODGATE();
 	qDebug()<<"SAVING AFTER EDIT OF "<<mCurrentlyEditing;
 	if(nullptr!=mNode) {
 		AddressBook &peers=mNode->addressBook();
@@ -422,7 +446,7 @@ void PairingWizard::on_pushButtonSaveEdits_clicked()
 			qWarning()<<"ERROR: No peer while saving trust edits";
 		}
 		//ui->listViewNodes->update();
-		ui->stackedWidget->setCurrentWidget(ui->pagePairWithPeers);
+		setCurrentPage(ui->pagePairWithPeers);
 	} else {
 		qWarning()<<"ERROR: No node while saving trust edits";
 	}
@@ -431,6 +455,7 @@ void PairingWizard::on_pushButtonSaveEdits_clicked()
 
 void PairingWizard::on_pushButtonRemove_clicked()
 {
+	OC_METHODGATE();
 	if (QMessageBox::Yes == QMessageBox::question(this, "Warning", "Are you sure you want to permanently DELETE this peer?", QMessageBox::Yes|QMessageBox::No)) {
 
 		if(nullptr!=mNode) {
@@ -438,12 +463,13 @@ void PairingWizard::on_pushButtonRemove_clicked()
 			peers.removeAssociate(mCurrentlyEditing);
 			peers.save();
 		}
-		ui->stackedWidget->setCurrentWidget(ui->pagePairWithPeers);
+		setCurrentPage(ui->pagePairWithPeers);
 	}
 }
 
 void PairingWizard::on_pushButtonRefresh_clicked()
 {
+	OC_METHODGATE();
 	if(nullptr!=mList) {
 		qDebug()<<mList->status();
 	} else {

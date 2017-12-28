@@ -64,6 +64,18 @@ public:
 
 	QSharedPointer<Node> sharedThis() Q_DECL_OVERRIDE;
 
+private:
+
+	bool checkLoadCompleted();
+
+
+	// KeyStore slots
+private slots:
+	void onKeystoreReady(bool);
+
+	// ConfigStore slots
+private slots:
+	void onConfigReady(bool);
 
 	// Agent Config Store slots
 public slots:
@@ -75,6 +87,7 @@ public slots:
 	void onAssociateAdded(QString);
 	void onAssociateRemoved(QString);
 	void onAssociateChanged();
+
 
 	//Agent State Courier slots
 public slots:

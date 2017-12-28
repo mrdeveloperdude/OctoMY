@@ -10,6 +10,7 @@
 #include "comms/CommsCarrierUDP.hpp"
 
 #include "node/NodeRole.hpp"
+#include "node/ConfigStore.hpp"
 #include "discovery/AddressBook.hpp"
 
 #include "basic/Settings.hpp"
@@ -55,13 +56,17 @@ protected:
 	AppContext *mContext;
 	NodeRole mRole;
 	NodeType mType;
-	KeyStore mKeystore;
-	// Client ids
+	KeyStore mKeyStore;
+	// Local ID
+	ConfigStore mConfigStore;
+	// Clients' IDs
 	AddressBook mAddressBook;
 	// Client instances
 	ClientList mClients;
 	// Our local network addresses
 	LocalAddressList mAddresses;
+	//Our identity
+	QSharedPointer<Associate> mNodeIdentity;
 	CommsCarrier *mCarrier;
 	CommsChannel *mComms;
 	DiscoveryClient *mDiscovery;
@@ -80,14 +85,16 @@ public:
 
 public:
 
-	void init();
-	void deInit();
+	virtual void init();
+	virtual void deInit();
+	void unbirth();
 
 	void updateDiscoveryClient();
 
 	void setHookColorSignals(QObject &o, bool hook);
 	void setHookSensorSignals(QObject &o, bool hook);
 	void setHookCommsSignals(QObject &o, bool hook);
+	void setHookConfigSignals(QObject &o, bool hook);
 	void setHookPeerSignals(QObject &o, bool hook);
 
 
@@ -105,6 +112,7 @@ public:
 	ZooClient *zooClient();
 	SensorInput *sensorInput();
 	QSharedPointer<Associate> nodeIdentity();
+	void setNodeIdentity(QSharedPointer<Associate> nodeID);
 	CameraList *cameraList();
 
 	const QCommandLineParser &commandLine() const;
@@ -121,11 +129,12 @@ public:
 	//TryToggleState updateOnlineStatus(const TryToggleState currentTryState);
 
 
-	virtual QSharedPointer<Node> sharedThis() =0;
+	virtual QSharedPointer<Node> sharedThis();
 
 	// General signals
 signals:
-	void closeApp();
+	void appClose();
+	void appLoaded();
 
 	// Couriers
 public:
@@ -174,6 +183,10 @@ signals:
 	// KeyStore slots
 private slots:
 	void onKeystoreReady(bool);
+
+	// ConfigStore slots
+private slots:
+	void onConfigReady(bool);
 
 	// CommsChannel slots
 private slots:

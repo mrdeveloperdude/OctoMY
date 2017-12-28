@@ -121,6 +121,15 @@ QSet<QSharedPointer<Client> > ClientList::withActiveSessions(CommsSessionDirecto
 
 
 
+
+void ClientList::clear()
+{
+	OC_METHODGATE();
+	mClients.clear();
+}
+
+
+
 QList<QWidget * > ClientList::widgets()
 {
 	OC_METHODGATE();

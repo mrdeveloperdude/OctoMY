@@ -79,7 +79,6 @@ void RemoteWindow::prepareDelivery()
 	OC_METHODGATE();
 	qDebug()<<"REMOTEWIN PREPARE DELIVERY";
 	if(!mRemote.isNull()) {
-		ui->widgetDelivery->configure(mRemote);
 		// Make sure to go to correct page after delivery is complete
 		if(!connect(ui->widgetDelivery, SIGNAL(done(bool)), this, SLOT(onDeliveryDone(bool)), OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect ";
@@ -107,10 +106,9 @@ void RemoteWindow::preparePairing()
 	OC_METHODGATE();
 	qDebug()<<"REMOTEWIN PREPARE PAIRING";
 	if(!mRemote.isNull()) {
-		ui->widgetPairing->configure(mRemote);
 		//Make sure to go to correct page when pairing is complete
 		connect(ui->widgetPairing, &PairingWizard::done, [=]() {
-			ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
+			setCurrentPage(ui->pageRunning);
 		});
 	} else {
 		qWarning()<<"ERROR: no remote";
@@ -318,6 +316,43 @@ void RemoteWindow::hookSensorSignals()
 }
 
 
+void RemoteWindow::setCurrentPage(QWidget *curr)
+{
+	OC_METHODGATE();
+	const QWidget *cur=curr;
+	if(cur == ui->pageRunning) {
+		if(!mRemote.isNull()) {
+			ui->widgetPairing->configure(mRemote);
+		}
+	} else if(cur == ui->pageDelivery) {
+		if(!mRemote.isNull()) {
+			ui->widgetDelivery->configure(mRemote);
+		}
+		ui->widgetDelivery->reset();
+	} else if(cur == ui->pagePairing) {
+		if(!mRemote.isNull()) {
+			ui->widgetPairing->configure(mRemote);
+		}
+		ui->widgetPairing->reset();
+	} else if(cur == ui->pageMyID) {
+		PortableID id;
+		Settings *s=(!mRemote.isNull())?(&mRemote->settings()):nullptr;
+		if(nullptr!=s) {
+			id.fromPortableString(s->getCustomSetting("octomy.portable.id",""));
+		}
+		QSharedPointer<Key> key=(!mRemote.isNull())?mRemote->keyStore().localKey():QSharedPointer<Key>(nullptr);
+		if(!key.isNull()) {
+			id.setID(key->id());
+		} else {
+			qWarning()<<"ERROR: No key";
+		}
+		id.setType(TYPE_REMOTE);
+		ui->widgetBirthCertificate->setPortableID(id);
+
+	}
+	ui->stackedWidgetScreen->setCurrentWidget(curr);
+}
+
 void RemoteWindow::goToStartPage()
 {
 	OC_METHODGATE();
@@ -328,15 +363,13 @@ void RemoteWindow::goToStartPage()
 		QSharedPointer<Key> key=mRemote->keyStore().localKey();
 		if(key.isNull() || !key->isValid(true)) {
 			//qDebug()<<"STARTING WITH DELIVERY";
-			ui->widgetDelivery->reset();
-			ui->stackedWidgetScreen->setCurrentWidget(ui->pageDelivery);
+			setCurrentPage(ui->pageDelivery);
 		} else if(mRemote->addressBook().associateCount()<=0) {
 			//qDebug()<<"STARTING WITH PAIRING";
-			ui->widgetPairing->reset();
-			ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
+			setCurrentPage(ui->pagePairing);
 		} else {
 			//qDebug()<<"STARTING WITH RUN";
-			ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
+			setCurrentPage(ui->pageRunning);
 		}
 	} else {
 		qWarning()<<"ERROR: no remote";
@@ -397,11 +430,11 @@ void RemoteWindow::keyReleaseEvent(QKeyEvent *e)
 		/*
 		if(ui->pageConnect==ui->stackedWidgetScreen->currentWidget()){
 			appendLog("EXITING APP ON BACK BUTTON");
-			ui->stackedWidgetScreen->setCurrentWidget(ui->pageConfirmQuit);
+			setCurrentPage(ui->pageConfirmQuit);
 		}
 		else if(ui->pageStatus==ui->stackedWidgetScreen->currentWidget()){
 			appendLog("GOING TO CONNECTION SCREEN ON BACK BUTTON");
-			ui->stackedWidgetScreen->setCurrentWidget(ui->pageConnect);
+			setCurrentPage(ui->pageConnect);
 		}
 		else
 		*/
@@ -409,10 +442,10 @@ void RemoteWindow::keyReleaseEvent(QKeyEvent *e)
 
 		if(ui->pageRunning==ui->stackedWidgetScreen->currentWidget()) {
 			appendLog("GOING TO CONFIRM QUIT SCREEN ON BACK BUTTON");
-			ui->stackedWidgetScreen->setCurrentWidget(ui->pageConfirmQuit);
+			setCurrentPage(ui->pageConfirmQuit);
 		} else if(ui->pageConfirmQuit==ui->stackedWidgetScreen->currentWidget()) {
 			appendLog("GOING TO RUNNING SCREEN ON BACK BUTTON");
-			ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
+			setCurrentPage(ui->pageRunning);
 		} else {
 			appendLog("ERROR ON BACK BUTTON");
 		}
@@ -429,7 +462,7 @@ void RemoteWindow::closeEvent(QCloseEvent *event)
 {
 	OC_METHODGATE();
 	if(!mRemote.isNull()) {
-		emit mRemote->closeApp();
+		emit mRemote->appClose();
 	}
 }
 
@@ -443,20 +476,7 @@ void RemoteWindow::closeEvent(QCloseEvent *event)
 void RemoteWindow::onStartShowBirthCertificate()
 {
 	OC_METHODGATE();
-	PortableID id;
-	Settings *s=(nullptr!=mRemote)?(&mRemote->settings()):nullptr;
-	if(nullptr!=s) {
-		id.fromPortableString(s->getCustomSetting("octomy.portable.id",""));
-	}
-	auto key=mRemote->keyStore().localKey();
-	if(nullptr!=key) {
-		id.setID(key->id());
-	} else {
-		qWarning()<<"ERROR: No key";
-	}
-	id.setType(TYPE_REMOTE);
-	ui->widgetBirthCertificate->setPortableID(id);
-	ui->stackedWidgetScreen->setCurrentWidget(ui->pageMyID);
+	setCurrentPage(ui->pageMyID);
 }
 
 
@@ -464,14 +484,14 @@ void RemoteWindow::onStartPairing()
 {
 	OC_METHODGATE();
 	ui->widgetPairing->reset();
-	ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
+	setCurrentPage(ui->pagePairing);
 }
 
 
 void RemoteWindow::onStartPlanEditor()
 {
 	OC_METHODGATE();
-	ui->stackedWidgetScreen->setCurrentWidget(ui->pagePlan);
+	setCurrentPage(ui->pagePlan);
 }
 
 
@@ -488,7 +508,7 @@ void RemoteWindow::onDeliveryDone(bool pairNow)
 	if(pairNow) {
 		ui->widgetPairing->reset();
 	}
-	ui->stackedWidgetScreen->setCurrentWidget(pairNow?ui->pagePairing:ui->pageRunning);
+	setCurrentPage(pairNow?ui->pagePairing:ui->pageRunning);
 }
 
 //////////////////////////////////////////////////
@@ -624,12 +644,12 @@ void RemoteWindow::on_pushButtonMenu_clicked()
 void RemoteWindow::on_pushButtonBack_6_clicked()
 {
 	OC_METHODGATE();
-	ui->stackedWidgetScreen->setCurrentWidget(ui->pageRunning);
+	setCurrentPage(ui->pageRunning);
 }
 
 void RemoteWindow::on_pushButtonStartPairing_clicked()
 {
 	OC_METHODGATE();
 	ui->widgetPairing->reset();
-	ui->stackedWidgetScreen->setCurrentWidget(ui->pagePairing);
+	setCurrentPage(ui->pagePairing);
 }

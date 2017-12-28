@@ -160,7 +160,7 @@ namespace qpolarssl {
 						return ret;
 					}
 					else{
-						qDebug()<<"setup ok";
+						//qDebug()<<"setup ok";
 					}
 					itype   = mbedtls_pk_get_type(context());
 					if(MBEDTLS_PK_RSA!=itype){
@@ -168,7 +168,7 @@ namespace qpolarssl {
 						return 1;
 					}
 					else{
-						qDebug()<<"type ok";
+						//qDebug()<<"type ok";
 					}
 					mbedtls_rsa_context *rsa = mbedtls_pk_rsa( ictx);
 					//mbedtls_rsa_init( rsa, MBEDTLS_RSA_PKCS_V15, 0 );
@@ -180,16 +180,16 @@ namespace qpolarssl {
 					mbedtls_ctr_drbg_context ctr_drbg;
 					const char *pers = "rsa_genkey";
 					mbedtls_ctr_drbg_init( &ctr_drbg );
-					qDebug()<<"Seeding the random number generator..." ;
+					//qDebug()<<"Seeding the random number generator..." ;
 					mbedtls_entropy_init( &entropy );
 					if( ( ret = mbedtls_ctr_drbg_seed( &ctr_drbg, mbedtls_entropy_func, &entropy, (const unsigned char *) pers, strlen( pers ) ) ) != 0 ) {
-						qDebug()<<" failed\n  ! mbedtls_ctr_drbg_seed returned" << ret ;
+						qWarning()<<" failed\n  ! mbedtls_ctr_drbg_seed returned" << ret ;
 						return ret;
 					}
-					qDebug()<<" ok\n  . Generating the RSA key of size " <<bits;
+					//qDebug()<<" ok\n  . Generating the RSA key of size " <<bits;
 					const int exponent=65537;
 					if( ( ret = mbedtls_rsa_gen_key( rsa, mbedtls_ctr_drbg_random, &ctr_drbg, bits, exponent ) ) != 0 ){
-						qDebug()<<" failed\n  ! mbedtls_rsa_gen_key returned "<<ret;
+						qWarning()<<" failed\n  ! mbedtls_rsa_gen_key returned "<<ret;
 						return ret;
 					}
 

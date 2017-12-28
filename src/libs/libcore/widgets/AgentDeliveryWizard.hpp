@@ -32,7 +32,7 @@ protected:
 	Settings *mSettings;
 	QSharedPointer<Node> mNode;
 	PortableID mID;
-	QSharedPointer<Associate> mMyData;
+	QSharedPointer<Associate> mNodeIdentity;
 	quint64 mBirthDate;
 
 	QMutex timeoutMutex;

@@ -71,12 +71,11 @@ public:
 
 private:
 
+	void setCurrentPage(QWidget *cur);
 	void gotoNextConfigPage();
 
 	void updateIcon();
-	void updateIdentity();
 	void prepareMenu();
-	CommsChannel *comms();
 
 	void updateOnlineStatus();
 

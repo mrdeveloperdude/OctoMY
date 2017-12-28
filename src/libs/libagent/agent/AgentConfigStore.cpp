@@ -43,6 +43,7 @@ void AgentConfigStore::setAgentConfig(QSharedPointer<AgentConfig> config)
 	mAgentConfig=config;
 }
 
+
 // AsyncStore interface
 ////////////////////////////
 

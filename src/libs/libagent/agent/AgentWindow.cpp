@@ -49,20 +49,12 @@ AgentWindow::AgentWindow(QSharedPointer<Agent> agent, QWidget *parent)
 	OC_METHODGATE();
 	ui->setupUi(this);
 
-	updateIdentity();
-
 	if(!mAgent.isNull()) {
-		//Settings &s=agent->settings();
-		ui->widgetHardware->configure(mAgent);
 		//Select correct starting page
-		ui->widgetDelivery->reset();
 		mWasEverUndelivered=!mAgent->keyStore().fileExists();
-		ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
-		gotoNextConfigPage();
 
 		if(!QObject::connect(ui->widgetDelivery, &AgentDeliveryWizard::done, [=]() {
-		updateIdentity();
-			gotoNextConfigPage();
+		gotoNextConfigPage();
 		} ) ) {
 			qWarning()<<"ERROR: Could not connect ";
 		}
@@ -89,9 +81,13 @@ AgentWindow::AgentWindow(QSharedPointer<Agent> agent, QWidget *parent)
 		updateFaceVisibility();
 
 		updateOnlineStatus();
-		//	fubar();
-		//QString text="Hello, my name is "+mAgent->name()+". I am an octomy agent. What is your bidding master?";
-		//QString text="Hello, my name is Bodhi. I am an octomy agent. What is your bidding master? 00 0 01010 010 010 010 010101 ";		PortableID id=mAgent->localNodeAssociate()->toPortableID();		OC_NEW OneOffSpeech(id, text);
+		ui->widgetPairing->configure(mAgent);
+		ui->widgetDelivery->configure(mAgent);
+		ui->widgetHardware->configure(mAgent);
+		ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
+		ui->widgetFace->setAgent(mAgent);
+		gotoNextConfigPage();
+
 
 	} else {
 		qWarning()<<"WARNING: No Agent in agent window";
@@ -109,6 +105,42 @@ AgentWindow::~AgentWindow()
 	ui=nullptr;
 }
 
+
+
+
+void AgentWindow::setCurrentPage(QWidget *curr)
+{
+	OC_METHODGATE();
+	const QWidget *cur=curr;
+	if(ui->pagePairing == cur) {
+		if(!mAgent.isNull()) {
+			mAgent->updateDiscoveryClient();
+		}
+		ui->widgetPairing->reset();
+	} else if (ui->pageDelivery == cur) {
+		ui->widgetDelivery->reset();
+	} else if (ui->pageHardware == cur) {
+		ui->widgetHardware->reset();
+	} else if (ui->pageBirthCertificate == cur) {
+		PortableID pid;
+		pid.setType(NodeType::TYPE_AGENT);
+		if(!mAgent.isNull()) {
+			QSharedPointer<Associate> myAss=mAgent->nodeIdentity();
+			if(!myAss.isNull()) {
+				pid=myAss->toPortableID();
+			} else {
+				qWarning()<<"ERROR: No ass";
+			}
+		}
+		ui->widgetBirthCertificate->setPortableID(pid);
+	} else if (ui->pageRunning == cur) {
+		updateIcon();
+	}
+	QWidget *last=ui->stackedWidget->currentWidget();
+	qDebug()<<"Changing current page from "<<last<<" to "<<cur;
+	ui->stackedWidget->setCurrentWidget(curr);
+}
+
 void AgentWindow::gotoNextConfigPage()
 {
 	// Find next config screen to show
@@ -123,7 +155,6 @@ void AgentWindow::gotoNextConfigPage()
 	//qDebug()<<"NEXT CONFIG SCREEN: isDelivered"<<isDelivered<<", isPaired"<<isPaired<<", isHardwareConfigured"<<isHardwareConfigured<<" (ctlname="<<ctl<<", pct="<<pct<<")";
 	if(isDelivered) {
 		cur=ui->pageHardware;
-
 	}
 
 	// Only ask the first time
@@ -137,7 +168,8 @@ void AgentWindow::gotoNextConfigPage()
 			cur=ui->pageRunning;
 		}
 	}
-	ui->stackedWidget->setCurrentWidget(cur);
+
+	setCurrentPage(cur);
 
 	// In case user skips through the whole thing, remind her
 	ui->stackedWidgetFaceOrConfig->setCurrentWidget((mWasEverUndelivered || (isPaired && isHardwareConfigured))?ui->pageFace : ui->pageConfig);
@@ -149,42 +181,24 @@ void AgentWindow::gotoNextConfigPage()
 	ui->pushButtonPairWithControls->setEnabled(!isPaired);
 }
 
-void AgentWindow::updateIdentity()
-{
-	OC_METHODGATE();
-	if(!mAgent.isNull()) {
-		mAgent->updateDiscoveryClient();
-		updateIcon();
-	} else {
-		qWarning()<<"WARNING: No Agent in agent window";
-	}
-	ui->widgetFace->setAgent(mAgent);
-	ui->widgetDelivery->configure(mAgent);
-	ui->widgetPairing->configure(mAgent);
-
-}
 
 void AgentWindow::updateIcon()
 {
 	OC_METHODGATE();
-	if(nullptr!=mAgent) {
-		//Set our custom identicon as window icon
-		PortableID pid;
-		auto key=mAgent->keyStore().localKey();
-		if(nullptr!=key) {
-			pid.setID(key->id());
-		} else {
-			qWarning()<<"NO KEY!";
+	PortableID pid;
+	if(!mAgent.isNull()) {
+		QSharedPointer<Associate>nid=mAgent->nodeIdentity();
+		if(!nid.isNull()) {
+			pid=nid->toPortableID();
 		}
-		Identicon id(pid);
-		QIcon icon;//=windowIcon();
-		icon.addPixmap(id.pixmap());
-		//	icon.addFile(QStringLiteral(":/icons/agent.svg"), QSize(), QIcon::Normal, QIcon::Off);
-		setWindowIcon(icon);
 	}
+	//Set our custom identicon as window icon
+	Identicon id(pid);
+	QIcon icon;//=windowIcon();
+	icon.addPixmap(id.pixmap());
+	//	icon.addFile(QStringLiteral(":/icons/agent.svg"), QSize(), QIcon::Normal, QIcon::Off);
+	setWindowIcon(icon);
 }
-
-
 
 
 void AgentWindow::prepareMenu()
@@ -295,38 +309,14 @@ void AgentWindow::prepareMenu()
 			QMessageBox::StandardButton reply = QMessageBox::question(this, "Unbirth", "Are you sure you want to DELETE the personality of this robot forever?", QMessageBox::No|QMessageBox::Yes);
 			if (QMessageBox::Yes==reply) {
 				mWasEverUndelivered=true;
-				QSharedPointer<Associate> assID=mAgent->nodeIdentity();
-				if(nullptr!=assID) {
-					mAgent->addressBook().removeAssociate(assID->id());
-				} else {
-					qWarning()<<"WARNING: there was no assID during unbirth";
-				}
-				mAgent->addressBook().save();
-				mAgent->keyStore().clear();
-				updateIdentity();
-				ui->widgetDelivery->reset();
-				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
+				mAgent->unbirth();
+				setCurrentPage(ui->pageDelivery);
 				qDebug()<<"UNBIRTHED!";
 			}
 		}
 	});
 	mMenu.addAction(mUnbirthAction);
 }
-
-
-
-
-
-CommsChannel *AgentWindow::comms()
-{
-	OC_METHODGATE();
-	if(nullptr!=mAgent) {
-		return mAgent->comms();
-	}
-	return nullptr;
-}
-
-
 
 
 
@@ -433,23 +423,7 @@ void AgentWindow::onStatsVisibilityChanged(bool on)
 void AgentWindow::onStartShowBirthCertificate()
 {
 	OC_METHODGATE();
-	PortableID pid;
-	if(nullptr!=mAgent) {
-		auto key=mAgent->keyStore().localKey();
-		if(nullptr!=key) {
-			QString id=key->id();
-			QSharedPointer<Associate> myAss=mAgent->addressBook().associateByID(id);
-			if(nullptr!=myAss) {
-				pid=myAss->toPortableID();
-			} else {
-				qWarning()<<"ERROR: No ass";
-			}
-		} else {
-			qWarning()<<"ERROR: No key";
-		}
-	}
-	ui->widgetBirthCertificate->setPortableID(pid);
-	ui->stackedWidget->setCurrentWidget(ui->pageBirthCertificate);
+	setCurrentPage(ui->pageBirthCertificate);
 }
 
 
@@ -458,20 +432,20 @@ void AgentWindow::onStartDelivery()
 {
 	OC_METHODGATE();
 	ui->widgetDelivery->reset();
-	ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
+	setCurrentPage(ui->pageDelivery);
 }
 
 void AgentWindow::onStartCameraPairing()
 {
 	OC_METHODGATE();
-	ui->stackedWidget->setCurrentWidget(ui->pageCamera);
+	setCurrentPage(ui->pageCamera);
 }
 
 void AgentWindow::onStartPairing()
 {
 	OC_METHODGATE();
 	ui->widgetPairing->reset();
-	ui->stackedWidget->setCurrentWidget(ui->pagePairing);
+	setCurrentPage(ui->pagePairing);
 }
 
 
@@ -479,7 +453,7 @@ void AgentWindow::onStartHardware()
 {
 	OC_METHODGATE();
 	ui->widgetHardware->reset();
-	ui->stackedWidget->setCurrentWidget(ui->pageHardware);
+	setCurrentPage(ui->pageHardware);
 }
 
 
@@ -487,7 +461,7 @@ void AgentWindow::onStartHardware()
 void AgentWindow::onStartPlanEditor()
 {
 	OC_METHODGATE();
-	ui->stackedWidget->setCurrentWidget(ui->pagePlan);
+	setCurrentPage(ui->pagePlan);
 }
 
 
@@ -509,13 +483,13 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 		 * // TODO: Make useful andf working again
 		if(ui->pageConnect==ui->stackedWidget->currentWidget()) {
 			appendLog("EXITING APP ON BACK BUTTON");
-			ui->stackedWidget->setCurrentWidget(ui->pageConfirmQuit);
+			setCurrentPage(ui->pageConfirmQuit);
 		} else if(ui->pageRunning==ui->stackedWidget->currentWidget()) {
 			appendLog("GOING TO CONNECTION SCREEN ON BACK BUTTON");
-			ui->stackedWidget->setCurrentWidget(ui->pageConnect);
+			setCurrentPage(ui->pageConnect);
 		} else if(ui->pageConfirmQuit==ui->stackedWidget->currentWidget()) {
 			appendLog("GOING TO CONNECTION SCREEN ON BACK BUTTON");
-			ui->stackedWidget->setCurrentWidget(ui->pageConnect);
+			setCurrentPage(ui->pageConnect);
 		} else {
 			appendLog("ERROR ON BACK BUTTON");
 		}
@@ -530,7 +504,7 @@ void AgentWindow::closeEvent(QCloseEvent *event)
 {
 	OC_METHODGATE();
 	if(!mAgent.isNull()) {
-		emit mAgent->closeApp();
+		emit mAgent->appClose();
 	}
 }
 
@@ -598,7 +572,7 @@ void AgentWindow::toastAndroid(QString s)
 void AgentWindow::on_pushButtonBack_clicked()
 {
 	OC_METHODGATE();
-	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+	setCurrentPage(ui->pageRunning);
 }
 
 
@@ -659,36 +633,36 @@ void AgentWindow::on_pushButtonConfirmQuit_clicked()
 void AgentWindow::on_pushButtonBack_2_clicked()
 {
 	OC_METHODGATE();
-	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+	setCurrentPage(ui->pageRunning);
 }
 
 void AgentWindow::on_pushButtonBack_4_clicked()
 {
 	OC_METHODGATE();
-	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+	setCurrentPage(ui->pageRunning);
 }
 
 void AgentWindow::on_pushButtonBack_3_clicked()
 {
 	OC_METHODGATE();
-	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+	setCurrentPage(ui->pageRunning);
 }
 
 void AgentWindow::on_pushButtonBack_5_clicked()
 {
 	OC_METHODGATE();
-	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+	setCurrentPage(ui->pageRunning);
 }
 
 void AgentWindow::on_pushButtonBack_6_clicked()
 {
 	OC_METHODGATE();
-	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+	setCurrentPage(ui->pageRunning);
 }
 
 void AgentWindow::on_pushButtonSkipConfig_clicked()
 {
-	ui->stackedWidget->setCurrentWidget(ui->pageRunning);
+	setCurrentPage(ui->pageRunning);
 	ui->stackedWidgetFaceOrConfig->setCurrentWidget(ui->pageFace);
 }
 

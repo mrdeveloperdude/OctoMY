@@ -33,9 +33,17 @@ Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 	, mActuatorController(nullptr)
 {
 	OC_METHODGATE();
+	mKeyStore.setHookSignals(*this, true);
+	if(mKeyStore.isReady()) {
+		onKeystoreReady(mKeyStore.hasError());
+	}
+	mConfigStore.setHookSignals(*this, true);
+	if(mConfigStore.isReady()) {
+		onConfigReady(mConfigStore.hasError());
+	}
 	mAddressBook.setHookSignals(*this, true);
 	if(mAddressBook.isReady()) {
-		onAddressBookReady(true);
+		onAddressBookReady(mAddressBook.hasError());
 	}
 	mAgentConfigStore.bootstrap(true, false);
 }
@@ -56,7 +64,7 @@ QSharedPointer<QWidget> Agent::showWindow()
 	OC_METHODGATE();
 	if(mWindow.isNull()) {
 		QSharedPointer<Agent> sp=this->QEnableSharedFromThis<Agent>::sharedFromThis();
-		if(sp.isNull()){
+		if(sp.isNull()) {
 			volatile int ba=0;
 			qWarning()<<"SHARED POINTER TO THIS WAS NULL!"<<ba;
 		}
@@ -85,16 +93,19 @@ AgentConfigStore &Agent::configurationStore()
 
 QSharedPointer<PoseMapping> Agent::poseMapping()
 {
+	OC_METHODGATE();
 	return mAgentConfigStore.agentConfig()->poseMapping();
 }
 
 IActuatorController *Agent::actuatorController()
 {
+	OC_METHODGATE();
 	return mActuatorController;
 }
 
 void Agent::reloadController()
 {
+	OC_METHODGATE();
 	// Unload old controller
 	if(nullptr!=mActuatorController) {
 		qDebug()<<"Unloading old controller";
@@ -126,7 +137,8 @@ void Agent::reloadController()
 
 
 
-void Agent::setNodeCouriersRegistration(bool reg){
+void Agent::setNodeCouriersRegistration(bool reg)
+{
 	OC_METHODGATE();
 	Node::setNodeCouriersRegistration(reg);
 	// When we get a new agent specific courier, put it here
@@ -148,6 +160,49 @@ QSharedPointer<Node> Agent::sharedThis()
 }
 
 
+bool Agent::checkLoadCompleted()
+{
+	OC_METHODGATE();
+#define CHECK(A, B) const bool A = (B).isReady(); qDebug()<<"CHECK "  #B   " GAVE "<< A
+	CHECK(adr, mAddressBook);
+	CHECK(ag, mAgentConfigStore);
+	CHECK(conf, mConfigStore);
+	CHECK(key, mKeyStore);
+#undef CHECK
+
+	const bool loaded = adr && ag && conf && key ;
+
+	qDebug()<<"CHECK LOAD COMPLETE: "<<loaded;
+	if(loaded) {
+		emit appLoaded();
+	}
+	return loaded;
+}
+
+
+//////////////////////////////////////////////////
+// Key Store slots
+
+void Agent::onKeystoreReady(bool ok)
+{
+	OC_METHODGATE();
+	checkLoadCompleted();
+}
+
+
+
+
+//////////////////////////////////////////////////
+// Config Store slots
+
+void Agent::onConfigReady(bool ok)
+{
+	OC_METHODGATE();
+	checkLoadCompleted();
+}
+
+
+
 //////////////////////////////////////////////////
 // Agent Config Store slots
 
@@ -155,7 +210,9 @@ QSharedPointer<Node> Agent::sharedThis()
 
 void Agent::onAgentConfigStoreReady(bool ok)
 {
+	OC_METHODGATE();
 	qDebug()<<"Agent config store ready";
+	checkLoadCompleted();
 	reloadController();
 }
 
@@ -167,6 +224,7 @@ void Agent::onAgentConfigStoreReady(bool ok)
 void Agent::onAddressBookReady(bool ready)
 {
 	OC_METHODGATE();
+	checkLoadCompleted();
 }
 
 

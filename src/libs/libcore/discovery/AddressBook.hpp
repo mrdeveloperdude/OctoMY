@@ -54,6 +54,8 @@ public:
 
 	void setHookSignals(QObject &ob, bool hook);
 
+	void clear();
+
 
 signals:
 
@@ -61,7 +63,19 @@ signals:
 	void associateRemoved(QString id);
 	void associatesChanged();
 	void addressbookReady(bool);
+
+
+
+public:
+
+	friend const QDebug &operator<<(QDebug &d, AddressBook &ks);
+
+
 };
+
+
+
+const QDebug &operator<<(QDebug &d, AddressBook &ks);
 
 
 #endif // ADDRESSBOOK_HPP

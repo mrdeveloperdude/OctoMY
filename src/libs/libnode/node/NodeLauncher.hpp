@@ -169,11 +169,14 @@ void NodeLauncher<T>::start()
 	mNode=QSharedPointer<T>(OC_NEW T(*this, nullptr));
 	if(!mNode.isNull()) {
 		if(!mIsHeadless) {
-			QObject::connect(mNode.data(), &T::closeApp, mNode.data(), [=]() {
-				qDebug()<<"QUIT WELL RECIEVED SIR";
+			QObject::connect(mNode.data(), &T::appClose, mNode.data(), [=]() {
+				qDebug()<<"QUIT WELL RECIEVED";
 				stop();
 			});
-			mWindow=mNode->showWindow();
+			QObject::connect(mNode.data(), &T::appLoaded, mNode.data(), [=]() {
+				qDebug()<<"LOAD WELL RECIEVED";
+				mWindow=mNode->showWindow();
+			});
 		}
 	}
 }

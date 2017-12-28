@@ -22,6 +22,7 @@ KeyStore::KeyStore(QString fn, KeySecurityPolicy policy, QObject *parent)
 	: AsyncStore(fn, parent)
 	, mPolicy(policy)
 {
+	OC_METHODGATE();
 	setObjectName("KeyStore");
 //qDebug()<<"KeyStore() file="<<fn;
 	if(!connect( this, SIGNAL(storeReady(bool)), SIGNAL(keystoreReady(bool)), OC_CONTYPE)) {
@@ -34,12 +35,14 @@ KeyStore::KeyStore(QString fn, KeySecurityPolicy policy, QObject *parent)
 
 KeyStore::~KeyStore()
 {
+	OC_METHODGATE();
 	save();
 }
 
 
 void KeyStore::bootstrapWorkerImpl()
 {
+	OC_METHODGATE();
 	//qDebug()<<"KeyStore() bootstrapWorkerImpl() file="<<mFilename;
 	QFile f(mFilename);
 	if(!f.exists()) {
@@ -53,6 +56,7 @@ void KeyStore::bootstrapWorkerImpl()
 
 void KeyStore::load()
 {
+	OC_METHODGATE();
 	//qDebug()<<"KeyStore() load="<<mFilename;
 	if(!QFile(mFilename).exists()) {
 		//qDebug() << "File did not exist"<<mFilename;
@@ -107,6 +111,7 @@ void KeyStore::load()
 
 void KeyStore::save()
 {
+	OC_METHODGATE();
 	//qDebug()<<"KeyStore() save="<<mFilename;
 	//qDebug()<<"KEYSTORE: Saving to file: "<<*this;
 	QVariantMap map;
@@ -137,6 +142,7 @@ void KeyStore::save()
 
 void KeyStore::clear()
 {
+	OC_METHODGATE();
 	//qDebug()<<"KeyStore() clear="<<mFilename;
 	QFile file(mFilename);
 	if(file.exists()) {
@@ -158,6 +164,8 @@ void KeyStore::clear()
 
 void KeyStore::setHookSignals(QObject &ob, bool hook)
 {
+	OC_METHODGATE();
+	qDebug()<<"KEY HOOK "<<ob.objectName()<<" = "<<hook;
 	if(hook) {
 		if(!connect(this, SIGNAL(keystoreReady(bool)), &ob, SLOT(onKeystoreReady(bool)),OC_CONTYPE)) {
 			qWarning()<<"Could not connect "<<ob.objectName();
@@ -176,6 +184,7 @@ void KeyStore::setHookSignals(QObject &ob, bool hook)
 
 void KeyStore::dump()
 {
+	OC_METHODGATE();
 	KeyStore &ks=*this;
 	qDebug()<<"KEYSTORE DUMP:";
 	qDebug().nospace() <<" + fn="<<ks.mFilename;
@@ -194,6 +203,7 @@ void KeyStore::dump()
 
 QByteArray KeyStore::sign(const QByteArray &source)
 {
+	OC_METHODGATE();
 	if(!mReady || (nullptr==mLocalKey)) {
 		return QByteArray();
 	}
@@ -204,6 +214,7 @@ QByteArray KeyStore::sign(const QByteArray &source)
 
 bool KeyStore::verify(const QByteArray &message, const QByteArray &signature)
 {
+	OC_METHODGATE();
 	if(!mReady|| (nullptr==mLocalKey)) {
 		return false;
 	}
@@ -213,6 +224,7 @@ bool KeyStore::verify(const QByteArray &message, const QByteArray &signature)
 
 bool KeyStore::verify(const QString &fingerprint, const QByteArray &message, const QByteArray &signature)
 {
+	OC_METHODGATE();
 	if(!mReady) {
 		return false;
 	}
@@ -228,6 +240,7 @@ bool KeyStore::verify(const QString &fingerprint, const QByteArray &message, con
 
 bool KeyStore::hasPubKeyForID(const QString &id)
 {
+	OC_METHODGATE();
 	if(!mReady) {
 		return false;
 	}
@@ -236,6 +249,7 @@ bool KeyStore::hasPubKeyForID(const QString &id)
 
 void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
 {
+	OC_METHODGATE();
 	if(!mReady) {
 		return;
 	}
@@ -246,6 +260,7 @@ void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
 
 QSharedPointer<Key> KeyStore::pubKeyForID(const QString &id)
 {
+	OC_METHODGATE();
 	if(!mReady) {
 		qWarning()<<"WARNING: returning empty key for id="<<id<<" because keystore not ready..";
 		return nullptr;
@@ -255,6 +270,7 @@ QSharedPointer<Key> KeyStore::pubKeyForID(const QString &id)
 
 const QDebug &operator<<(QDebug &d, KeyStore &ks)
 {
+	OC_FUNCTIONGATE();
 	d.nospace() <<"KeyStore{ fn="<<ks.mFilename<<", fexists="<<ks.fileExists()<<", ready="<<(const bool)ks.mReady<<", inProgress="<<(const bool)ks.mInProgress<<", error="<<(const bool)ks.mError<<", peer-keys:[";
 	for(QMap<QString, QSharedPointer<Key> >::iterator b=ks.mAssociates.begin(), e=ks.mAssociates.end(); b!=e; ++b) {
 		QString key=b.key();
@@ -264,145 +280,3 @@ const QDebug &operator<<(QDebug &d, KeyStore &ks)
 	d.nospace() <<"]}";
 	return d.maybeSpace();
 }
-
-
-
-
-
-/*
- *
-void HubWindow::on_pushButtonTestKeyPair_clicked(){
-	//const auto priPath = QString("/home/lennart/keypairs/private_key.pem"); 	const auto pubPath = QString("/home/lennart/keypairs/public_key.pem"); utility::fileToByteArray(pubPath);
-	int ret=0;
-	qpolarssl::Pki pkiPrivate;
-	QByteArray priKeyData  = ui->plainTextEditPrivateKey->toPlainText().toUtf8();
-	if( (ret=pkiPrivate.parseKey(priKeyData) != 0) ){
-		QMessageBox msgBox;
-		msgBox.setIcon(QMessageBox::Critical);
-		msgBox.setText("Parsing of private key failed with code "+QString::number(ret));
-		msgBox.exec();
-		return;
-	}
-	else if(!pkiPrivate.isValid()){
-		QMessageBox msgBox;
-		msgBox.setIcon(QMessageBox::Critical);
-		msgBox.setText("PKI was invalid after parsing of private key");
-		msgBox.exec();
-		return;
-	}
-
-	qpolarssl::Pki pkiPublic;
-	QByteArray pubKeyData  = ui->plainTextEditPublicKey->toPlainText().toUtf8();
-	if( (ret=pkiPublic.parsePublicKey(pubKeyData) != 0) ){
-		QMessageBox msgBox;
-		msgBox.setIcon(QMessageBox::Critical);
-		msgBox.setText("Parsing of public key failed with code -"+QString::number(-ret,16));
-		msgBox.exec();
-		return;
-	}
-	else if(!pkiPublic.isValid()){
-		QMessageBox msgBox;
-		msgBox.setIcon(QMessageBox::Critical);
-		msgBox.setText("PKI was invalid after parsing of public key");
-		msgBox.exec();
-		return;
-	}
-
-	const QByteArray sourceData = QString("OctoMY™ test data in cleartext").toUtf8();
-
-	const QByteArray signature = pkiPrivate.sign(sourceData, qpolarssl::THash::SHA256);
-
-	const int siglen=signature.length();
-	if((siglen <= 64) ){
-		QMessageBox msgBox;
-		msgBox.setIcon(QMessageBox::Critical);
-		msgBox.setText("Signature size "+QString::number(siglen)+" was less than 64");
-		msgBox.exec();
-		return;
-	}
-
-	ret = pkiPublic.verify(sourceData, signature, qpolarssl::THash::SHA256);
-
-	if(ret!=0){
-		QMessageBox msgBox;
-		msgBox.setIcon(QMessageBox::Critical);
-		msgBox.setText("Signature verification failed with code -"+QString::number(-ret,16));
-		msgBox.exec();
-		return;
-	}
-
-	QMessageBox msgBox;
-	msgBox.setIcon(QMessageBox::Information);
-	msgBox.setText("Signature verification succeeded.");
-	msgBox.exec();
-}
-
-
-
-
-void KeyStore::verifyKeypair(){
-	//const auto priPath = QString("/home/lennart/keypairs/private_key.pem"); 	const auto pubPath = QString("/home/lennart/keypairs/public_key.pem"); utility::fileToByteArray(pubPath);
-	int ret=0;
-	qpolarssl::Pki pkiPrivate;
-	QByteArray priKeyData  = ui->plainTextEditPrivateKey->toPlainText().toUtf8();
-	if( (ret=pkiPrivate.parseKey(priKeyData) != 0) ){
-		QMessageBox msgBox;
-		msgBox.setIcon(QMessageBox::Critical);
-		msgBox.setText("Parsing of private key failed with code "+QString::number(ret));
-		msgBox.exec();
-		return;
-	}
-	else if(!pkiPrivate.isValid()){
-		QMessageBox msgBox;
-		msgBox.setIcon(QMessageBox::Critical);
-		msgBox.setText("PKI was invalid after parsing of private key");
-		msgBox.exec();
-		return;
-	}
-
-	qpolarssl::Pki pkiPublic;
-	QByteArray pubKeyData  = ui->plainTextEditPublicKey->toPlainText().toUtf8();
-	if( (ret=pkiPublic.parsePublicKey(pubKeyData) != 0) ){
-		QMessageBox msgBox;
-		msgBox.setIcon(QMessageBox::Critical);
-		msgBox.setText("Parsing of public key failed with code -"+QString::number(-ret,16));
-		msgBox.exec();
-		return;
-	}
-	else if(!pkiPublic.isValid()){
-		QMessageBox msgBox;
-		msgBox.setIcon(QMessageBox::Critical);
-		msgBox.setText("PKI was invalid after parsing of public key");
-		msgBox.exec();
-		return;
-	}
-
-	const QByteArray sourceData = QString("OctoMY™ test data in cleartext").toUtf8();
-
-	const QByteArray signature = pkiPrivate.sign(sourceData, qpolarssl::THash::SHA256);
-
-	const int siglen=signature.length();
-	if((siglen <= 64) ){
-		QMessageBox msgBox;
-		msgBox.setIcon(QMessageBox::Critical);
-		msgBox.setText("Signature size "+QString::number(siglen)+" was less than 64");
-		msgBox.exec();
-		return;
-	}
-
-	ret = pkiPublic.verify(sourceData, signature, qpolarssl::THash::SHA256);
-
-	if(ret!=0){
-		QMessageBox msgBox;
-		msgBox.setIcon(QMessageBox::Critical);
-		msgBox.setText("Signature verification failed with code -"+QString::number(-ret,16));
-		msgBox.exec();
-		return;
-	}
-
-	QMessageBox msgBox;
-	msgBox.setIcon(QMessageBox::Information);
-	msgBox.setText("Signature verification succeeded.");
-	msgBox.exec();
-}
-*/

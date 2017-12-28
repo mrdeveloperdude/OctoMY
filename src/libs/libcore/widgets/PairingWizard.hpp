@@ -43,6 +43,9 @@ public:
 	void configure(QSharedPointer<Node> node);
 
 public:
+
+
+	void setCurrentPage(QWidget *cur);
 	void reset();
 
 	void startEdit(int row);

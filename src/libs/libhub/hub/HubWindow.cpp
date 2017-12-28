@@ -247,7 +247,7 @@ void HubWindow::closeEvent(QCloseEvent *event)
 {
 	OC_METHODGATE();
 	if(!mHub.isNull()) {
-		emit mHub->closeApp();
+		emit mHub->appClose();
 	}
 }
 

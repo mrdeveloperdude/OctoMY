@@ -30,6 +30,8 @@ public:
 	QSharedPointer<Client> byID(QString id);
 	QSet<QSharedPointer<Client> > withActiveSessions(CommsSessionDirectory &sessionDirectory, AddressBook &ab, quint64 now=0, const bool honeyMoon=false);
 
+	void clear();
+
 	QList <QWidget * > widgets();
 
 	// [Un]register the couriers of all clients in this list

@@ -197,3 +197,38 @@ void AddressBook::setHookSignals(QObject &ob, bool hook)
 	}
 }
 
+
+
+void AddressBook::clear()
+{
+	OC_METHODGATE();
+	QFile file(mFilename);
+	if(file.exists()) {
+		if(file.remove()) {
+			//qDebug()<<"ADDRESSBOOK: Cleared: "<<*this;
+			mAssociates.clear();
+			mReady=false;
+			mError=false;
+		} else {
+			qWarning()<<"ERROR: Could not clear "<<*this;
+		}
+	} else {
+		//qDebug()<<"ADDRESSBOOK: Could not clear missing file: "<< *this;
+	}
+}
+
+
+
+
+const QDebug &operator<<(QDebug &d, AddressBook &ks)
+{
+	OC_FUNCTIONGATE();
+	d.nospace() <<"AddressBook{ fn="<<ks.mFilename<<", fexists="<<ks.fileExists()<<", ready="<<(const bool)ks.mReady<<", inProgress="<<(const bool)ks.mInProgress<<", error="<<(const bool)ks.mError<<", peers:[";
+	for(QMap<QString, QSharedPointer<Associate> >::iterator b=ks.mAssociates.begin(), e=ks.mAssociates.end(); b!=e; ++b) {
+		QString key=b.key();
+		//b.value();
+		d.nospace()<<" + " <<key;
+	}
+	d.nospace() <<"]}";
+	return d.maybeSpace();
+}

@@ -26,6 +26,7 @@
 #include "zoo/ZooConstants.hpp"
 #include "agent/AgentConstants.hpp"
 #include "INodeLauncher.hpp"
+#include "basic/Associate.hpp"
 
 #include <QCommandLineParser>
 #include <QAccelerometerReading>
@@ -67,11 +68,12 @@ Node::Node(INodeLauncher &laucher, AppContext *context, NodeRole role, NodeType 
 	, mContext(context)
 	, mRole (role)
 	, mType (type)
-	, mKeystore (mContext->baseDir() + "/keystore.json")
+	, mKeyStore (mContext->baseDir() + "/keystore.json")
+	, mConfigStore(mContext->baseDir() + "/local_identity.json")
 	, mAddressBook (mContext->baseDir() + "/addressbook.json")
 	, mAddresses(defaultPortForNodeType(mType), true)
 	, mCarrier(OC_NEW CommsCarrierUDP( (QObject *)this) )
-	, mComms (OC_NEW CommsChannel(*mCarrier, mKeystore, mAddressBook, (QObject *)this))
+	, mComms (OC_NEW CommsChannel(*mCarrier, mKeyStore, mAddressBook, (QObject *)this))
 	, mDiscovery (OC_NEW DiscoveryClient(*this))
 	, mZooClient (OC_NEW ZooClient(this))
 	, mSensors (OC_NEW SensorInput(this))
@@ -80,6 +82,8 @@ Node::Node(INodeLauncher &laucher, AppContext *context, NodeRole role, NodeType 
 	, mCameras (OC_NEW CameraList(this))
 	, mLastStatusSend (0)
 	, mServerURL("http://zoo.octomy.org:"+QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
+
+
 {
 	OC_METHODGATE();
 	// ScopedTimer nodeBootTimer(mContext->base()+"-boot");
@@ -94,7 +98,7 @@ Node::Node(INodeLauncher &laucher, AppContext *context, NodeRole role, NodeType 
 Node::~Node()
 {
 	OC_METHODGATE();
-	qDebug()<<"NODE::DTOR DEINIT";
+	qDebug()<<"NODE::DTOR DE-INIT";
 	deInit();
 	qDebug()<<"NODE::DTOR SENDING NODE DONE";
 	mLauncher.nodeDone();
@@ -105,10 +109,14 @@ Node::~Node()
 void Node::init()
 {
 	OC_METHODGATE();
-	mKeystore.setHookSignals(*this, true);
+	mKeyStore.setHookSignals(*this, true);
 	// Only Agents are "born"
-	mKeystore.bootstrap(ROLE_AGENT==mRole);
+	mKeyStore.bootstrap(ROLE_AGENT==mRole, true);
 
+	mConfigStore.setHookSignals(*this, true);
+	mConfigStore.bootstrap(true, false);
+
+	mAddressBook.setHookSignals(*this, true);
 	mAddressBook.bootstrap(true, false);
 
 	mClients.syncToAddressBook(mAddressBook, sharedThis());
@@ -147,7 +155,7 @@ void Node::deInit()
 	OC_METHODGATE();
 	setHookSensorSignals(*this, false);
 	setHookCommsSignals(*this,false);
-	mKeystore.setHookSignals(*this, false);
+	mKeyStore.setHookSignals(*this, false);
 	mContext=nullptr;
 	if(nullptr!=mCarrier) {
 		mCarrier->deleteLater();
@@ -186,6 +194,26 @@ void Node::deInit()
 
 
 
+
+void Node::unbirth()
+{
+	OC_METHODGATE();
+	mKeyStore.clear();
+	mConfigStore.clear();
+	mAddressBook.clear();
+	mClients.clear();
+
+	mKeyStore.save();
+	mConfigStore.save();
+	mAddressBook.save();
+
+}
+
+
+
+
+
+
 NodeRole Node::role()
 {
 	OC_METHODGATE();
@@ -203,7 +231,7 @@ NodeType Node::type()
 KeyStore  &Node::keyStore()
 {
 	OC_METHODGATE();
-	return mKeystore;
+	return mKeyStore;
 }
 
 AddressBook &Node::addressBook()
@@ -285,13 +313,23 @@ SensorInput *Node::sensorInput()
 	return mSensors;
 }
 
-//TODO: Should we really store our own data in the address book... I mean... yeahh..
 QSharedPointer<Associate> Node::nodeIdentity()
 {
 	OC_METHODGATE();
-	auto key=mKeystore.localKey();
-	QSharedPointer<Associate> me=(!key.isNull())?mAddressBook.associateByID(key->id()):nullptr;
-	return me;
+	return mNodeIdentity;
+}
+
+
+void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
+{
+	OC_METHODGATE();
+	mNodeIdentity=nodeID;
+	QVariantMap map;
+	if(!mNodeIdentity.isNull()) {
+		map=mNodeIdentity->toVariantMap();
+	}
+	mConfigStore.setConfig(map);
+	mConfigStore.save();
 }
 
 CameraList *Node::cameraList()
@@ -365,6 +403,14 @@ QSet<QSharedPointer<Associate> > Node::controlsWithActiveSessions(quint64 now)
 	}
 
 	return out;
+}
+
+
+QSharedPointer<Node> Node::sharedThis()
+{
+	OC_METHODGATE();
+	qWarning()<<"ERROR: Trying to get shared this from base class Node";
+	return  QSharedPointer<Node>(nullptr);
 }
 
 /*
@@ -673,6 +719,7 @@ void Node::setHookColorSignals(QObject &ob, bool set)
 
 
 void Node::setHookSensorSignals(QObject &o, bool set)
+TODO: find a way to connect onReady signals for all stores across node & subclasses alike
 {
 	OC_METHODGATE();
 	if(set) {
@@ -693,6 +740,14 @@ void Node::setHookCommsSignals(QObject &o, bool hook)
 	if(nullptr!=mComms) {
 		mComms->setHookCommsSignals(o, hook);
 	}
+}
+
+
+
+void Node::setHookConfigSignals(QObject &o, bool set)
+{
+	OC_METHODGATE();
+	mConfigStore.setHookSignals(o, set);
 }
 
 
@@ -721,6 +776,21 @@ void Node::onKeystoreReady(bool ok)
 {
 	OC_METHODGATE();
 	//qDebug()<<"Key Store READY="<<mKeystore.isReady()<<", ERROR="<<mKeystore.hasError();
+}
+
+
+
+//////////////////////////////////////////////////
+// Config Store slots
+
+void Node::onConfigReady(bool ok)
+{
+	OC_METHODGATE();
+	qDebug()<<"Local identity loaded: "<<ok;
+	if(ok) {
+		QSharedPointer<Associate> ass = QSharedPointer<Associate> (OC_NEW Associate(mConfigStore.config(), false ) );
+		setNodeIdentity(ass);
+	}
 }
 
 

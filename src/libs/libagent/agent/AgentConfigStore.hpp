@@ -15,6 +15,8 @@ class PoseMapping;
 
   The store supports loading and saving asynchrounusly.
 
+
+  TODO: Look at possability of overloading ConfigStore somehow
 */
 
 
