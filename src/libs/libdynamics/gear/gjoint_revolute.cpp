@@ -1,3 +1,4 @@
+#ifdef USE_GEAR_DYNAMICS
 // -------------------------------------------------------------------------------
 // Copyright (c) 2012, Junggon Kim
 // All rights reserved.
@@ -93,3 +94,4 @@ RMatrix GJointRevolute::get_DdSDq(GCoordinate *)
 	return Zeros(6,1);
 }
 
+#endif

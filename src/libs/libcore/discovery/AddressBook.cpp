@@ -11,18 +11,12 @@
 #include <QVariantMap>
 #include <QVariantList>
 
-AddressBook::AddressBook(QString fn, QObject *parent)
-	: AsyncStore(fn, parent)
+AddressBook::AddressBook(QString filename, QObject *parent)
+	: QObject(parent)
+	, SimpleDataStore(filename)
 {
 	OC_METHODGATE();
-	setObjectName("NodeAssociateStore");
-	//qDebug()<<"NodeAssociateStore() file="<<fn;
-	// Forward the async storeReady signal
-	if(!connect( this, SIGNAL(storeReady(bool)), SIGNAL(addressbookReady(bool)), OC_CONTYPE)) {
-		qWarning()<<"Could not connect "<<objectName();
-	} else {
-		//qDebug()<<"FORWARDING storeReady -> peerStoreReady";
-	}
+	setObjectName("AddressBook");
 }
 
 
@@ -30,69 +24,31 @@ AddressBook::AddressBook(QString fn, QObject *parent)
 AddressBook::~AddressBook()
 {
 	OC_METHODGATE();
-	save();
 }
 
 
-
-void AddressBook::bootstrapWorkerImpl()
+bool AddressBook::fromMap(QVariantMap data)
 {
 	OC_METHODGATE();
-	//qDebug()<<"KeyStore() bootstrapWorkerImpl() file="<<mFilename;
-	QFile f(mFilename);
-	if(!f.exists()) {
-		qDebug()<<"NodeAssociateStore: no keystore file found, saving";
-		save();
+	QVariantList peers=data["peers"].toList();
+	for(QVariantList::iterator b=peers.begin(), e=peers.end(); b!=e; ++b) {
+		QSharedPointer<Associate> peer=QSharedPointer<Associate>(OC_NEW Associate((*b).toMap()));
+		upsertAssociate(peer);
 	}
-	load();
+	return true;
 }
 
-
-void AddressBook::load()
+QVariantMap AddressBook::toMap()
 {
 	OC_METHODGATE();
-	//qDebug()<<"NodeAssociateStore: Loading from file "<<mFilename;
-	QJsonParseError jsonError;
-	QByteArray raw=utility::fileToByteArray(mFilename);
-	if(raw.size()<1) {
-		//Let empty data pass because it is valid the first time app starts
-		qWarning() << "WARNING: Data read from file "<<mFilename<< " was empty";
-		mReady=true;
-	} else {
-		QJsonDocument doc = QJsonDocument::fromJson(raw, &jsonError);
-		if (QJsonParseError::NoError != jsonError.error) {
-			qWarning() << "ERROR: Parsing json data: "<<jsonError.errorString()<< " for data "<<raw<<" from file "<<mFilename;
-			mError=true;
-		} else {
-			//qDebug()<<"PARSED JSON: "<<doc.toJson();
-			mAssociates.clear();
-			QVariantMap map = doc.object().toVariantMap();
-			QVariantList peers=map["peers"].toList();
-			for(QVariantList::iterator b=peers.begin(), e=peers.end(); b!=e; ++b) {
-				QSharedPointer<Associate> peer=QSharedPointer<Associate>(OC_NEW Associate((*b).toMap()));
-				upsertAssociate(peer);
-			}
-			mReady=true;
-		}
-	}
-	//qDebug()<<"EMITTING storeReady";
-	emit addressbookReady(!mError);
-}
-
-void AddressBook::save()
-{
-	OC_METHODGATE();
-	//qDebug()<<"NodeAssociateStore: Saving to file: "<<mFilename;
 	QVariantMap map;
-	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();
 	QVariantList remotes;
 	for(QMap<QString, QSharedPointer<Associate> >::const_iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
 		remotes.push_back(b.value()->toVariantMap());
 	}
 	map["peers"]=remotes;
-	utility::variantToJsonFile(mFilename, map);
+	return map;
 }
-
 
 
 
@@ -165,11 +121,6 @@ void AddressBook::setHookSignals(QObject &ob, bool hook)
 {
 	OC_METHODGATE();
 	if(hook) {
-		if(!connect(this, SIGNAL(addressbookReady(bool)), &ob, SLOT(onAddressBookReady(bool)),OC_CONTYPE)) {
-			qWarning()<<"Could not connect "<<ob.objectName();
-		} else {
-			//qDebug()<<"HOOKING peerStoreReady";
-		}
 		if(!connect(this,SIGNAL(associateAdded(QString)),&ob,SLOT(onAssociateAdded(QString)),OC_CONTYPE)) {
 			qWarning()<<"Could not connect "<<ob.objectName();
 		}
@@ -180,11 +131,6 @@ void AddressBook::setHookSignals(QObject &ob, bool hook)
 			qWarning()<<"Could not connect "<<ob.objectName();
 		}
 	} else {
-		if(!disconnect(this, SIGNAL(addressbookReady(bool)), &ob, SLOT(onAddressBookReady(bool)))) {
-			qWarning()<<"Could not disconnect "<<ob.objectName();
-		} else {
-			//qDebug()<<"UN-HOOKING peerStoreReady";
-		}
 		if(!disconnect(this,SIGNAL(associateAdded(QString)),&ob,SLOT(onAssociateAdded(QString)))) {
 			qWarning()<<"Could not disconnect "<<ob.objectName();
 		}
@@ -199,32 +145,12 @@ void AddressBook::setHookSignals(QObject &ob, bool hook)
 
 
 
-void AddressBook::clear()
-{
-	OC_METHODGATE();
-	QFile file(mFilename);
-	if(file.exists()) {
-		if(file.remove()) {
-			//qDebug()<<"ADDRESSBOOK: Cleared: "<<*this;
-			mAssociates.clear();
-			mReady=false;
-			mError=false;
-		} else {
-			qWarning()<<"ERROR: Could not clear "<<*this;
-		}
-	} else {
-		//qDebug()<<"ADDRESSBOOK: Could not clear missing file: "<< *this;
-	}
-}
 
-
-
-
-const QDebug &operator<<(QDebug &d, AddressBook &ks)
+const QDebug &operator<<(QDebug &d, AddressBook &ab)
 {
 	OC_FUNCTIONGATE();
-	d.nospace() <<"AddressBook{ fn="<<ks.mFilename<<", fexists="<<ks.fileExists()<<", ready="<<(const bool)ks.mReady<<", inProgress="<<(const bool)ks.mInProgress<<", error="<<(const bool)ks.mError<<", peers:[";
-	for(QMap<QString, QSharedPointer<Associate> >::iterator b=ks.mAssociates.begin(), e=ks.mAssociates.end(); b!=e; ++b) {
+	d.nospace() <<"AddressBook{ fn="<<ab.filename()<<", fexists="<<ab.fileExists()<<", ready="<<(const bool)ab.ready()<<", peers:[";
+	for(QMap<QString, QSharedPointer<Associate> >::iterator b=ab.mAssociates.begin(), e=ab.mAssociates.end(); b!=e; ++b) {
 		QString key=b.key();
 		//b.value();
 		d.nospace()<<" + " <<key;

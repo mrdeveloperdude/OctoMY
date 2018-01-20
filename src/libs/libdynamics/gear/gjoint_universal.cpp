@@ -1,3 +1,4 @@
+#ifdef USE_GEAR_DYNAMICS
 // -------------------------------------------------------------------------------
 // Copyright (c) 2012, Junggon Kim
 // All rights reserved.
@@ -191,3 +192,5 @@ RMatrix GJointUniversalXY::get_DdSDq(GCoordinate *pCoordinate_)
 	return DdSDq;
 }
 
+
+#endif

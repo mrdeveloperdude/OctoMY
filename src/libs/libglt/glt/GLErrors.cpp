@@ -17,12 +17,14 @@ static const struct token_string errors[] = {
 	, { GL_INVALID_ENUM, "invalid enumerant" }
 	, { GL_INVALID_VALUE, "invalid value" }
 	, { GL_INVALID_OPERATION, "invalid operation" }
-#ifndef ANDROID
+#ifdef GL_STACK_OVERFLOW
 	, { GL_STACK_OVERFLOW, "stack overflow" }
+#endif
+#ifdef GL_STACK_UNDERFLOW
 	, { GL_STACK_UNDERFLOW, "stack underflow" }
 #endif
 	, { GL_OUT_OF_MEMORY, "out of memory" }
-#ifndef ANDROID
+#ifdef GL_TABLE_TOO_LARGE
 	, { GL_TABLE_TOO_LARGE, "table too large" }
 #endif
 #ifdef GL_EXT_framebuffer_object

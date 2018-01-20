@@ -1,3 +1,4 @@
+#ifdef USE_GEAR_DYNAMICS
 // -------------------------------------------------------------------------------
 // Copyright (c) 2012, Junggon Kim
 // All rights reserved.
@@ -309,3 +310,4 @@ bool GSystemIK::solveIK_dq(RMatrix &dq, std::vector<GBody*> pbodies_primary, std
 
 	return true;
 }
+#endif

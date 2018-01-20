@@ -10,7 +10,7 @@
 #include "comms/CommsCarrierUDP.hpp"
 
 #include "node/NodeRole.hpp"
-#include "node/ConfigStore.hpp"
+#include "node/DataStore.hpp"
 #include "discovery/AddressBook.hpp"
 
 #include "basic/Settings.hpp"
@@ -58,7 +58,7 @@ protected:
 	NodeType mType;
 	KeyStore mKeyStore;
 	// Local ID
-	ConfigStore mConfigStore;
+	SimpleMapStore mConfigStore;
 	// Clients' IDs
 	AddressBook mAddressBook;
 	// Client instances
@@ -94,9 +94,6 @@ public:
 	void setHookColorSignals(QObject &o, bool hook);
 	void setHookSensorSignals(QObject &o, bool hook);
 	void setHookCommsSignals(QObject &o, bool hook);
-	void setHookConfigSignals(QObject &o, bool hook);
-	void setHookPeerSignals(QObject &o, bool hook);
-
 
 	// Selectors
 public:
@@ -184,9 +181,6 @@ signals:
 private slots:
 	void onKeystoreReady(bool);
 
-	// ConfigStore slots
-private slots:
-	void onConfigReady(bool);
 
 	// CommsChannel slots
 private slots:

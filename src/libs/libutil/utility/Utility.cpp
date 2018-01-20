@@ -508,6 +508,8 @@ QByteArray fileToByteArray(QString fn)
 	QFile file(fn);
 	if(file.open(QFile::ReadOnly)) {
 		return file.readAll();
+	} else {
+		qWarning().nospace().noquote()<<"ERROR: Could not open "<<fn << " for reading: "<< file.errorString();
 	}
 	return "";
 }
@@ -1215,7 +1217,7 @@ QString localAddress()
 bool checkUDPAddress(QHostAddress address, quint16 port)
 {
 	// Avoid special case where port=0 returning true by mistake
-	if(0 == port){
+	if(0 == port) {
 		return false;
 	}
 	// Try the address+port by temporarily binding with it

@@ -1,3 +1,4 @@
+#ifdef USE_GEAR_DYNAMICS
 // -------------------------------------------------------------------------------
 // Copyright (c) 2012, Junggon Kim
 // All rights reserved.
@@ -95,3 +96,4 @@ RMatrix GJointPrismatic::get_DdSDq(GCoordinate *pCoordinate_)
 	return Zeros(6,1);
 }
 
+#endif

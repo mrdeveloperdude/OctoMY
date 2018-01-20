@@ -1,15 +1,16 @@
+#ifdef USE_GEAR_DYNAMICS
 // -------------------------------------------------------------------------------
 // Copyright (c) 2012, Junggon Kim
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met: 
+// modification, are permitted provided that the following conditions are met:
 //
 // 1. Redistributions of source code must retain the above copyright notice, this
-//    list of conditions and the following disclaimer. 
+//    list of conditions and the following disclaimer.
 // 2. Redistributions in binary form must reproduce the above copyright notice,
 //    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution. 
+//    and/or other materials provided with the distribution.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -31,7 +32,7 @@
 //=============================================================
 
 GSpringDamperBody::GSpringDamperBody()
-{ 
+{
 	forceType = GFORCE_SPRINGDAMPER_BODY;
 	pLeftBody = pRightBody = NULL;
 	T_left.SetIdentity();
@@ -42,8 +43,8 @@ GSpringDamperBody::GSpringDamperBody()
 	C[0] = C[1] = C[2] = C[3] = C[4] = C[5] = 0;
 }
 
-GSpringDamperBody::~GSpringDamperBody() 
-{ 
+GSpringDamperBody::~GSpringDamperBody()
+{
 }
 
 void GSpringDamperBody::clear()
@@ -132,7 +133,7 @@ bool GSpringDamperBody::applyForce(bool badd_)
 
 	dse3 F_left;	// force to be acting on the left body
 	for (int i=0; i<6; i++) {
-		F_left[i] = K[i] * x[i] - C[i] * V_left[i]; 
+		F_left[i] = K[i] * x[i] - C[i] * V_left[i];
 	}
 
 	if ( badd_ ) {
@@ -272,7 +273,7 @@ bool GSpringDamperJoint::setDamper(gReal *C_)
 	for (int i=0; i<pJoint->getDOF(); i++) {
 		C[i] = C_[i];
 	}
-	
+
 	return true;
 }
 
@@ -312,3 +313,5 @@ bool GSpringDamperJoint::applyForce(bool badd_)
 
 	return true;
 }
+
+#endif

@@ -11,7 +11,8 @@
 #include "Key.hpp"
 #include "PortableID.hpp"
 #include "basic/GenerateRunnable.hpp"
-#include "basic/AsyncStore.hpp"
+#include "basic/AtomicBoolean.hpp"
+#include "node/DataStore.hpp"
 #include "KeySecurityPolicy.hpp"
 
 #include <QByteArray>
@@ -25,57 +26,34 @@
 #include <QString>
 
 
-class KeyStore: public AsyncStore
+class KeyStore: public QObject, public SimpleDataStore
 {
 	Q_OBJECT
 private:
 
+	bool mDoBootstrap;
+	KeySecurityPolicy mPolicy;
 	QSharedPointer<Key> mLocalKey;
 	QMap<QString, QSharedPointer<Key> > mAssociates;
 
-	KeySecurityPolicy mPolicy;
+
 
 	friend class GenerateRunnable<KeyStore>;
 
 public:
-	explicit KeyStore(QString="", KeySecurityPolicy policy=KeySecurityPolicy(), QObject *parent=nullptr);
+	explicit KeyStore(QString filename="", bool doBootstrap=false, KeySecurityPolicy policy=KeySecurityPolicy(), QObject *parent=nullptr);
 	virtual ~KeyStore();
 
-
-protected:
-	void bootstrapWorkerImpl() override;
+	// SimpleDataStore interface
 public:
-	void load() override;
-	void save() override;
+	bool fromMap(QVariantMap data)  Q_DECL_OVERRIDE;
+	QVariantMap toMap() Q_DECL_OVERRIDE;
 
 public:
 
-	void clear();
+	QSharedPointer<Key> localKey();
 
-public:
-
-	void setHookSignals(QObject &ob, bool hook);
-
-	inline QSharedPointer<Key> localKey()
-	{
-		OC_METHODGATE();
-		return mLocalKey;
-	}
-
-	inline PortableID localPortableID()
-	{
-		OC_METHODGATE();
-		PortableID pid;
-		//pid.setName("Arne");
-		//pid.setGender("Male");
-		if(nullptr!=mLocalKey) {
-			pid.setID(mLocalKey->id());
-		}
-		pid.setBirthDate(QFileInfo(mFilename).created().toMSecsSinceEpoch());
-		//pid.setType(DiscoveryType type);
-		return pid;
-	}
-
+	PortableID localPortableID();
 
 	void dump();
 
@@ -100,6 +78,7 @@ public:
 signals:
 
 	void keystoreReady(bool);
+	//storeReady(!mError);
 
 
 public:

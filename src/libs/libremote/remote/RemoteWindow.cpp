@@ -95,7 +95,12 @@ void RemoteWindow::prepareDiscovery()
 	qDebug()<<"REMOTEWIN PREPARE DISCOVERY";
 	if(!mRemote.isNull()) {
 		mRemote->updateDiscoveryClient();
-		mRemote->setHookPeerSignals(*this, true);
+		mRemote->addressBook().setHookSignals(*this, true);
+		mRemote->addressBook().synchronize([=](SimpleDataStore &ab, bool ok) {
+			qDebug()<<"Address book synchronized: "<<ok;
+			prepareDiscovery();
+			preparePairing();
+		});
 	} else {
 		qWarning()<<"ERROR: no remote";
 	}
@@ -550,15 +555,6 @@ void RemoteWindow::onAssociateChanged()
 	updateClientWidgetList();
 }
 
-
-
-void RemoteWindow::onAddressBookReady(bool ok)
-{
-	OC_METHODGATE();
-	qDebug()<<"REMOTEWIN peer store load compelte: "<<(ok?"OK":"ERROR");
-	prepareDiscovery();
-	preparePairing();
-}
 
 
 //////////////////////////////////////////////////

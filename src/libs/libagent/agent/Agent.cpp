@@ -31,27 +31,36 @@ Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 	: Node(launcher, OC_NEW AppContext(launcher.options(), launcher.environment(), "agent", parent), ROLE_AGENT, TYPE_AGENT, parent)
 	, mAgentConfigStore(mContext->baseDir() + "/agent_config.json")
 	, mActuatorController(nullptr)
+	, mKeyStoreReady(false)
+	, mConfigStoreReady(false)
+	, mAgentConfigStoreReady(false)
+
 {
 	OC_METHODGATE();
-	mKeyStore.setHookSignals(*this, true);
-	if(mKeyStore.isReady()) {
-		onKeystoreReady(mKeyStore.hasError());
-	}
-	mConfigStore.setHookSignals(*this, true);
-	if(mConfigStore.isReady()) {
-		onConfigReady(mConfigStore.hasError());
-	}
-	mAddressBook.setHookSignals(*this, true);
-	if(mAddressBook.isReady()) {
-		onAddressBookReady(mAddressBook.hasError());
-	}
-	mAgentConfigStore.bootstrap(true, false);
+
+	mKeyStore.synchronize([this](SimpleDataStore &sms, bool ok){
+		qDebug()<<"Keystore synchronized: "<<ok;
+		mKeyStoreReady=ok;
+		checkLoadCompleted();
+	});
+
+	mConfigStore.synchronize([this](SimpleDataStore &sms, bool ok){
+		qDebug()<<"Local identity synchronized: "<<ok;
+		mConfigStoreReady=ok;
+		checkLoadCompleted();
+	});
+
+	mAgentConfigStore.synchronize([this](SimpleDataStore &sms, bool ok){
+		qDebug()<<"Agent Config Store synchronized: "<<ok;
+		mAgentConfigStoreReady=ok;
+		checkLoadCompleted();
+		reloadController();
+	});
 }
 
 Agent::~Agent()
 {
 	OC_METHODGATE();
-	mAddressBook.setHookSignals(*this, false);
 	if(nullptr!=mActuatorController) {
 		mActuatorController->setConnected(false);
 		mActuatorController=nullptr;
@@ -163,15 +172,7 @@ QSharedPointer<Node> Agent::sharedThis()
 bool Agent::checkLoadCompleted()
 {
 	OC_METHODGATE();
-#define CHECK(A, B) const bool A = (B).isReady(); qDebug()<<"CHECK "  #B   " GAVE "<< A
-	CHECK(adr, mAddressBook);
-	CHECK(ag, mAgentConfigStore);
-	CHECK(conf, mConfigStore);
-	CHECK(key, mKeyStore);
-#undef CHECK
-
-	const bool loaded = adr && ag && conf && key ;
-
+	const bool loaded = mKeyStoreReady && mConfigStoreReady && mAgentConfigStoreReady;
 	qDebug()<<"CHECK LOAD COMPLETE: "<<loaded;
 	if(loaded) {
 		emit appLoaded();
@@ -180,70 +181,10 @@ bool Agent::checkLoadCompleted()
 }
 
 
-//////////////////////////////////////////////////
-// Key Store slots
 
-void Agent::onKeystoreReady(bool ok)
-{
-	OC_METHODGATE();
-	checkLoadCompleted();
-}
-
-
-
-
-//////////////////////////////////////////////////
-// Config Store slots
-
-void Agent::onConfigReady(bool ok)
-{
-	OC_METHODGATE();
-	checkLoadCompleted();
-}
-
-
-
-//////////////////////////////////////////////////
-// Agent Config Store slots
-
-
-
-void Agent::onAgentConfigStoreReady(bool ok)
-{
-	OC_METHODGATE();
-	qDebug()<<"Agent config store ready";
-	checkLoadCompleted();
-	reloadController();
-}
 
 #include "basic/AddressEntry.hpp"
 #include <QSharedPointer>
-
-//////////////////////////////////////////////////
-// Node Associate Store slots
-void Agent::onAddressBookReady(bool ready)
-{
-	OC_METHODGATE();
-	checkLoadCompleted();
-}
-
-
-
-void Agent::onAssociateAdded(QString)
-{
-	OC_METHODGATE();
-}
-
-void Agent::onAssociateRemoved(QString)
-{
-	OC_METHODGATE();
-}
-
-void Agent::onAssociateChanged()
-{
-	OC_METHODGATE();
-}
-
 
 
 //////////////////////////////////////////////////
@@ -265,27 +206,4 @@ void Agent::onSyncParameterChanged(ISyncParameter *sp)
 	} else {
 		qWarning()<<"ERROR: sp was nullptr";
 	}
-}
-
-
-//////////////////////////////////////////////////
-// CommsChannel slots
-
-
-void Agent::onCommsError(QString e)
-{
-	OC_METHODGATE();
-	//qDebug()<<"AGENT UNIMP Comms error: "<<e;
-}
-
-void Agent::onCommsClientAdded(CommsSession *c)
-{
-	OC_METHODGATE();
-	//qDebug()<<"AGENT UNIMP Client added: "<<c->toString();
-}
-
-void Agent::onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection)
-{
-	OC_METHODGATE();
-	//qDebug() <<"AGENT UNIMP New connection status: "<<(s?"ONLINE":"OFFLINE");
 }

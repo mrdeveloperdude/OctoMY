@@ -1,7 +1,7 @@
 #ifndef AGENTCONFIGSTORE_HPP
 #define AGENTCONFIGSTORE_HPP
 
-#include "basic/AsyncStore.hpp"
+#include "node/DataStore.hpp"
 #include "AgentConfig.hpp"
 
 
@@ -15,17 +15,16 @@ class PoseMapping;
 
   The store supports loading and saving asynchrounusly.
 
-
   TODO: Look at possability of overloading ConfigStore somehow
+
 */
 
 
 
-class AgentConfigStore: public AsyncStore
+class AgentConfigStore: public QObject, public SimpleDataStore
 {
 	Q_OBJECT
 private:
-
 	QSharedPointer<AgentConfig> mAgentConfig;
 
 public:
@@ -36,12 +35,14 @@ public:
 	QSharedPointer<AgentConfig> agentConfig() const;
 	void setAgentConfig(QSharedPointer<AgentConfig> config);
 
-	// AsyncStore interface
-protected:
-	void bootstrapWorkerImpl() Q_DECL_OVERRIDE;
+
+	// SimpleDataStore interface
 public:
-	void load() Q_DECL_OVERRIDE;
-	void save() Q_DECL_OVERRIDE;
+	bool fromMap(QVariantMap data)  Q_DECL_OVERRIDE;
+	QVariantMap toMap() Q_DECL_OVERRIDE;
+
+
+
 
 signals:
 

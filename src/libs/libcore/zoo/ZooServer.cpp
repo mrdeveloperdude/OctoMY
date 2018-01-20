@@ -49,7 +49,7 @@ static const quint16 ZOO_MINIMAL_ADMIN_ID_LENGTH=10;
 ZooServer::ZooServer(AppContext *context, QObject *parent)
 	: QHttpServer(parent)
 	, mContext(context)
-	, mKeystore (mContext->baseDir() + "/keystore.json")
+	, mKeyStore (mContext->baseDir() + "/keystore.json")
 	, mStorage(QDir::current())
 
 {
@@ -58,8 +58,11 @@ ZooServer::ZooServer(AppContext *context, QObject *parent)
 	//ScopedTimer zooBootTimer(mContext->base()+"-boot");
 	setObjectName(mContext->base());
 
-	mKeystore.setHookSignals(*this, true);
-	mKeystore.bootstrap();
+	mKeyStore.synchronize([this](SimpleDataStore &sms, bool ok){
+		qDebug()<<"Keystore synchronized: "<<ok;
+		onKeystoreReady(ok);
+	});
+
 
 	if(!QDir().mkpath(mContext->baseDir())) {
 		qWarning()<<"ERROR: Could not create basedir for zoo";
@@ -413,6 +416,6 @@ void ZooServer::onBackgroundTimer()
 void ZooServer::onKeystoreReady(bool ok)
 {
 	OC_METHODGATE();
-	mAdminURL="/"+mKeystore.localPortableID().id().left(ZOO_MINIMAL_ADMIN_ID_LENGTH);
+	mAdminURL="/"+mKeyStore.localPortableID().id().left(ZOO_MINIMAL_ADMIN_ID_LENGTH);
 	qDebug()<<"KEYSTORE READY! ADMIN ADRESS IS: "<<mAdminURL;
 }

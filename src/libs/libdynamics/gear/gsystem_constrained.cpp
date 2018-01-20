@@ -1,3 +1,4 @@
+#ifdef USE_GEAR_DYNAMICS
 // -------------------------------------------------------------------------------
 // Copyright (c) 2012, Junggon Kim
 // All rights reserved.
@@ -582,3 +583,4 @@ void GSystemConstrained::_copy_dJdt(RMatrix &dJdt, vector<GCoordinate*> pcoords)
 		r += (*iter_pconstr)->constrNum;
 	}
 }
+#endif

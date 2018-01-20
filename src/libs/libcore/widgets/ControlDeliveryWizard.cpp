@@ -60,14 +60,11 @@ void ControlDeliveryWizard::configure(QSharedPointer<Node> n)
 	OC_METHODGATE();
 	if(mNode!=n) {
 		mNode=n;
-		if(!mNode.isNull()) {
-			mSettings=&mNode->settings();
-			KeyStore &keystore=mNode->keyStore();
-			if(!connect(&keystore, &KeyStore::storeReady, this, &ControlDeliveryWizard::onBirthComplete, OC_CONTYPE)) {
-				qWarning()<<"ERROR: Could not connect";
-			}
-			reset();
-		}
+		mSettings=(!mNode.isNull())?&mNode->settings():nullptr;
+		reset();
+	}
+	if(mNode.isNull()) {
+		qWarning()<<"WARNING: control delivery configured with null node";
 	}
 }
 
@@ -87,35 +84,31 @@ void ControlDeliveryWizard::onBirthComplete()
 	OC_METHODGATE();
 	if(nullptr!=mNode) {
 		KeyStore &keystore=mNode->keyStore();
-		if(keystore.isReady() && !mBirthTimer.isActive()) {
+		if(keystore.ready() && !mBirthTimer.isActive()) {
 			qDebug()<<"XXX - Birth complete!";
 			mBirthTimer.stop();
 			mSpinner->stop();
-			if(keystore.hasError()) {
+			auto key=keystore.localKey();
+			if(nullptr!=key) {
+				QString id=key->id();
+				//qDebug()<<"XXX - All is good, ID: "<<id;
+				//qDebug()<<"XXX: DATA AFTER OK LOAD WAS: "<<keystore;
+				mBirthDate=QDateTime::currentMSecsSinceEpoch();
+				QVariantMap map;
+				map["key"]=key->toVariantMap(true);
+				map["type"]=nodeTypeToString(TYPE_REMOTE);
+				map["role"]=nodeRoleToString(ROLE_CONTROL);
+				map["birthDate"]=QDateTime::fromMSecsSinceEpoch(mBirthDate);
+				mNodeIdentity= QSharedPointer<Associate> (OC_NEW Associate(map));
+				mNode->setNodeIdentity(mNodeIdentity);
+				mID=mNodeIdentity->toPortableID();
+				ui->widgetBirthCertificate->setPortableID(mID);
+				ui->stackedWidget->setCurrentWidget(ui->pageDone);
+			} else {
 				qWarning()<<"XXX - ERROR: Birthdefects detected!";
 				qDebug()<<"XXX: DATA AFTER FAILED LOAD WAS: "<<keystore;
 				//Go back to try again
 				ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);
-			} else {
-				auto key=keystore.localKey();
-				if(nullptr!=key) {
-					QString id=key->id();
-					//qDebug()<<"XXX - All is good, ID: "<<id;
-					//qDebug()<<"XXX: DATA AFTER OK LOAD WAS: "<<keystore;
-					mBirthDate=QDateTime::currentMSecsSinceEpoch();
-					QVariantMap map;
-					map["key"]=key->toVariantMap(true);
-					map["type"]=nodeTypeToString(TYPE_REMOTE);
-					map["role"]=nodeRoleToString(ROLE_CONTROL);
-					map["birthDate"]=QDateTime::fromMSecsSinceEpoch(mBirthDate);
-					mNodeIdentity= QSharedPointer<Associate> (OC_NEW Associate(map));
-					mNode->setNodeIdentity(mNodeIdentity);
-					mID=mNodeIdentity->toPortableID();
-					ui->widgetBirthCertificate->setPortableID(mID);
-					ui->stackedWidget->setCurrentWidget(ui->pageDone);
-				} else {
-					qWarning()<<"ERROR: No key";
-				}
 			}
 		} else {
 			//Debug()<<"XXX - Birth almost complete...";

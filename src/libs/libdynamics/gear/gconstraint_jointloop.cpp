@@ -1,15 +1,16 @@
+#ifdef USE_GEAR_DYNAMICS
 // -------------------------------------------------------------------------------
 // Copyright (c) 2012, Junggon Kim
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met: 
+// modification, are permitted provided that the following conditions are met:
 //
 // 1. Redistributions of source code must retain the above copyright notice, this
-//    list of conditions and the following disclaimer. 
+//    list of conditions and the following disclaimer.
 // 2. Redistributions in binary form must reproduce the above copyright notice,
 //    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution. 
+//    and/or other materials provided with the distribution.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -89,7 +90,7 @@ bool GConstraintJointLoop::setJoints(std::list<GJoint *> pjoints)
 		}
 		num_coord += (*iter_pjoint)->getDOF();
 	}
-	
+
 	jointLoopConstraintType = JOINTLOOP_ORIENTATION_POSITION;
 	constrNum = 6;
 
@@ -143,16 +144,16 @@ SE3 GConstraintJointLoop::getLoopSE3()
 		re *= (*iter_pjoint)->inv_T_right;
 	}
 	re *= M1;
-	
+
 	return re;
 }
 
 void GConstraintJointLoop::update_C()
 {
 	std::list<GJoint *>::iterator iter_pjoint;
-	SE3 T_loop_left, T_loop_right; 
+	SE3 T_loop_left, T_loop_right;
 	gReal re[6];
-	
+
 	// left side of the loop
 	T_loop_left.SetIdentity();
 	for (iter_pjoint = pJoints.begin(); iter_pjoint != pJoints.end(); iter_pjoint++) {
@@ -175,7 +176,7 @@ void GConstraintJointLoop::update_C()
 
 	//put_se3_to_matrix(re, InvSkew(Inv(T_loop_right)*T_loop_left), 0);		// InvSkew(G) = unskew(G-I), where G-I is assumed to be a 4x4 se3.
 	matSet(re, InvSkew(Inv(T_loop_right)*T_loop_left).GetArray(), 6);		// InvSkew(G) = unskew(G-I), where G-I is assumed to be a 4x4 se3.
-																// ** Modified in 2007.05.22: 
+																// ** Modified in 2007.05.22:
 																//    InvSkew(Inv(T_right)*T_left) --> InvSkew(Inv(T_left)*T_right)
 																// ** Modification canceled in 2007.05.22, i.e.,
 																//    InvSkew(Inv(T_left)*T_right) --> InvSkew(Inv(T_right)*T_left)
@@ -200,10 +201,10 @@ void GConstraintJointLoop::update_C()
 // case f*M=T : J = [ inv(f*M)*dot(f*M) ] = Ad( inv(M), [ inv(f)*dot(f) ] )
 void GConstraintJointLoop::update_J()
 {
-	int idx; 
+	int idx;
 	SE3 Ti;
 	std::list<GJoint *>::reverse_iterator riter_pjoint;
-	
+
 	jacobian.SetZero(6, getNumCoordinates());
 
 	idx = num_coord;
@@ -227,7 +228,7 @@ void GConstraintJointLoop::update_J()
 		Ti *= (*riter_pjoint)->inv_T;
 		Ti *= (*riter_pjoint)->inv_T_left;
 	}
-	
+
 	J.SetZero(constrNum, getNumCoordinates());
 	switch ( jointLoopConstraintType )
 	{
@@ -283,7 +284,7 @@ void GConstraintJointLoop::update_dJdt()
 			// Jsum += ad(get_jacobian(i), get_jacobian(j)) * (*iter_pcoord_j)->dq;
 			Jtmp.set_ad(&jacobian[6*i], &jacobian[6*j]);
 			Jtmp *= (*iter_pcoord_j)->dq;
-			Jsum -= Jtmp; // cautious! '-=' used here 
+			Jsum -= Jtmp; // cautious! '-=' used here
 
 			iter_pcoord_j++;
 		}
@@ -328,3 +329,4 @@ std::string GConstraintJointLoop::getInfoStr()
 
 	return sstr.str();
 }
+#endif

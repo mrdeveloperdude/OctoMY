@@ -109,9 +109,10 @@ void AgentDeliveryWizard::startBirth()
 	OC_METHODGATE();
 	if(!mNode.isNull()) {
 		KeyStore &keystore=mNode->keyStore();
-		if(!connect(&keystore, &KeyStore::keystoreReady, this, &AgentDeliveryWizard::onBirthComplete, OC_CONTYPE)) {
-			qWarning()<<"ERROR: Could not connect";
-		}
+		keystore.clear();
+		keystore.synchronize([this](SimpleDataStore &sds, bool ok){
+			onBirthComplete(ok);
+		});
 		QString name=ui->lineEditName->text();
 		name[0]=name[0].toUpper();
 		mID.setName(name);
@@ -122,8 +123,6 @@ void AgentDeliveryWizard::startBirth()
 		completeCounter=0;
 		completeOK=false;
 		mBirthTimer.start();
-		keystore.clear();
-		keystore.bootstrap(false,true);
 		ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);
 	}
 }
@@ -148,13 +147,10 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 		completeCounter++;
 		if(completeCounter>=2) {
 			KeyStore &keystore=mNode->keyStore();
-			if(!disconnect(&keystore, &KeyStore::keystoreReady, this, &AgentDeliveryWizard::onBirthComplete)) {
-				qWarning()<<"ERROR: Could not disconnect";
-			}
 			qDebug()<<"XXX - Birth complete!";
 			mBirthTimer.stop();
 			mSpinner->stop();
-			if(!keystore.isReady() || keystore.hasError() ) {
+			if(!keystore.ready() || !ok ) {
 				qWarning()<<"XXX - ERROR: Birthdefects detected!";
 				qDebug()<<"XXX: DATA AFTER AFILED LOAD WAS: "<<keystore;
 				//Go back to try again

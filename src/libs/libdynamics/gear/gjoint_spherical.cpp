@@ -1,3 +1,4 @@
+#ifdef USE_GEAR_DYNAMICS
 // -------------------------------------------------------------------------------
 // Copyright (c) 2012, Junggon Kim
 // All rights reserved.
@@ -1194,3 +1195,4 @@ void GJointSpherical::setMotion(const SO3 &R_, const Vec3 &w_, const Vec3 &dot_w
 	coordinates[0].ddq = ddq[0]; coordinates[1].ddq = ddq[1]; coordinates[2].ddq = ddq[2];
 }
 
+#endif

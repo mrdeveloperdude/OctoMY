@@ -41,6 +41,11 @@ private:
 	QSharedPointer<AgentWindow> mWindow;
 
 
+	bool mKeyStoreReady;
+	bool mConfigStoreReady;
+	bool mAgentConfigStoreReady;
+
+
 public:
 	explicit Agent(NodeLauncher<Agent> &launcher, QObject *parent = nullptr);
 	virtual ~Agent();
@@ -69,37 +74,9 @@ private:
 	bool checkLoadCompleted();
 
 
-	// KeyStore slots
-private slots:
-	void onKeystoreReady(bool);
-
-	// ConfigStore slots
-private slots:
-	void onConfigReady(bool);
-
-	// Agent Config Store slots
-public slots:
-	void onAgentConfigStoreReady(bool);
-
-	// NodeAssociate slots
-public slots:
-	void onAddressBookReady(bool);
-	void onAssociateAdded(QString);
-	void onAssociateRemoved(QString);
-	void onAssociateChanged();
-
-
 	//Agent State Courier slots
 public slots:
 	void onSyncParameterChanged(ISyncParameter *);
-
-	// CommsChannel slots
-private slots:
-	virtual void onCommsError(QString) Q_DECL_OVERRIDE;
-	virtual void onCommsClientAdded(CommsSession *)Q_DECL_OVERRIDE;
-	virtual void onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection)Q_DECL_OVERRIDE;
-
-
 
 };
 

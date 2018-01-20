@@ -1,15 +1,9 @@
 #include "HashstoreRecord.hpp"
-
 #include "Hashstore.hpp"
-
-
 #include "utility/Standard.hpp"
 
-
 #include <QDebug>
-
 #include <QRegularExpression>
-
 #include <QDataStream>
 
 

@@ -2,17 +2,6 @@ TEMPLATE = subdirs
 
 CONFIG += ordered
 
-
-# BUILD ARCHITECTURE
-# AN IMPORTANT CORE VALUE OF THE OCTOMY PROJECT IS TO
-# "PUT THE QUALITY OF THE END RESULT BEFORE DEVELOPER CONVENIENCE".
-#
-# WHAT DOES THIS MEAN IN PRACTICE ?
-# IT MEANS THAT YOU AS A DEVELOPER, WHEN PRESENTED WITH A SITUATION WHERE YOU
-# HAVE TO CHOOSE BETWEEN ARCHITECTURES THAT MAKES DEVELOPMENT MORE PLEASANT
-# VERSUS ARCHITECTURES THAT IMPROVE QUALITY , SHOULD ALWAYS PREFER THE LATTER.
-# AND IN THE CASE YOU DON'T HAVE TO CHOOSE, YOU SHOULD OPT FOR BOTH!
-
 message("")
 message("New OctoMY™ qmake run started...")
 message("________________________________")
@@ -72,3 +61,8 @@ doc.depends=		$${SRCS}/libs $${SRCS}/hub $${SRCS}/remote $${SRCS}/agent $${TESTS
 
 
 include($$PRIS/status.pri)
+
+OTHER_FILES+= $$files(pri/overrides/*, true)
+OTHER_FILES+= $$files(integration/*, true)
+#OTHER_FILES+= $$files(doc/*, true)
+#OTHER_FILES+= $$files(design/*, true)

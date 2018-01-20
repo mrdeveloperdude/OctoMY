@@ -1,3 +1,4 @@
+#ifdef USE_GEAR_DYNAMICS
 // -------------------------------------------------------------------------------
 // Copyright (c) 2012, Junggon Kim
 // All rights reserved.
@@ -87,3 +88,5 @@ RMatrix GJointPlanar::get_DdSDq(GCoordinate *pCoordinate_)
 	Q_UNUSED(pCoordinate_);
 	return Zeros(6,2);
 }
+
+#endif

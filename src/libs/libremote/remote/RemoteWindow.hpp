@@ -109,7 +109,6 @@ public slots:
 	void onAssociateAdded(QString id);
 	void onAssociateRemoved(QString id);
 	void onAssociateChanged();
-	void onAddressBookReady(bool);
 
 	// CommsChannel slots
 public slots:

@@ -1,3 +1,4 @@
+#ifdef USE_GEAR_DYNAMICS
 //====================================================================================================
 //
 //      Title :   rmatrix3j.cpp
@@ -2922,3 +2923,4 @@ void solve_Ax_b_srInvW2(RMatrix &x, const RMatrix &A, const RMatrix &b, const RM
 	MultaB(x, iw, x_); // x = Diag(iw) * x_;
 }
 
+#endif

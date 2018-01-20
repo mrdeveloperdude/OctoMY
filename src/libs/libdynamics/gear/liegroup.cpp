@@ -1,3 +1,4 @@
+#ifdef USE_GEAR_DYNAMICS
 //====================================================================================================
 //
 //      Title :   liegroup.cpp
@@ -14,10 +15,10 @@ int __idamax(int n, gReal *dx)
 {
 	gReal dmax;
 	int i, idamax = 0;
-      
+
 	if ( n < 1 ) return 0;
 	if ( n == 1 ) return 1;
-	
+
 	dmax = fabs(dx[0]);
 	for ( i = 1; i < n; i++ )
 	{
@@ -69,7 +70,7 @@ void __dgefa(gReal *x, int lda, int n, int *jpvt, int &info)
 					}
 					for ( i = 1+k; i < n; i++ ) xj[i] += t * xk[i];
 				}
-	        }
+			}
 		}
 	} else k = 0;
 
@@ -83,7 +84,7 @@ void __dgesl(gReal *x, int lda, int n, int *jpvt, gReal *b, int job)
 	gReal t, *xk = x;
 	int k, l;
 
-	if ( job == 0 ) 
+	if ( job == 0 )
 	{
 		// job = 0 , solve  a * x = b
 		// first solve  l*y = b
@@ -99,7 +100,7 @@ void __dgesl(gReal *x, int lda, int n, int *jpvt, gReal *b, int job)
 					b[k] = t;
 				}
 				for ( l = k+1; l < n; l++ ) b[l] += t * xk[l];
-				xk += lda;				
+				xk += lda;
 			}
 		}
 		// now solve  u*x = y
@@ -108,7 +109,7 @@ void __dgesl(gReal *x, int lda, int n, int *jpvt, gReal *b, int job)
 			b[k] /= xk[k];
 			t = -b[k];
 			for ( l = 0; l < k; l++ ) b[l] += t * xk[l];
-			xk -= lda;			
+			xk -= lda;
 		}
 		return;
 	}
@@ -123,12 +124,12 @@ void __dgesl(gReal *x, int lda, int n, int *jpvt, gReal *b, int job)
 		xk += lda;
 	}
 	// now solve trans(l)*x = y
-  	if ( n >= 2 )
+	if ( n >= 2 )
 	{
 		xk--;
 		for ( k = n-1; k >= 0; k-- )
 		{
-			t = 0.0;			
+			t = 0.0;
 			for ( l = 1; l < n-k; l++ ) t += xk[l] * b[k+l];
 			b[k] += t;
 
@@ -145,3 +146,4 @@ void __dgesl(gReal *x, int lda, int n, int *jpvt, gReal *b, int job)
 	return;
 }
 
+#endif

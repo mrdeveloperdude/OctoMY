@@ -9,7 +9,7 @@
 #include <QDir>
 
 /**
-  ZooStorage is a storage manager class that is the starting point for the
+  Hashstore is a storage manager class that is the starting point for the
   persistent storage API for Zoo.
 */
 class Hashstore{

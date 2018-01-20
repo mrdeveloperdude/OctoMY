@@ -1,15 +1,16 @@
+#ifdef USE_GEAR_DYNAMICS
 // -------------------------------------------------------------------------------
 // Copyright (c) 2012, Junggon Kim
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met: 
+// modification, are permitted provided that the following conditions are met:
 //
 // 1. Redistributions of source code must retain the above copyright notice, this
-//    list of conditions and the following disclaimer. 
+//    list of conditions and the following disclaimer.
 // 2. Redistributions in binary form must reproduce the above copyright notice,
 //    this list of conditions and the following disclaimer in the documentation
-//    and/or other materials provided with the distribution. 
+//    and/or other materials provided with the distribution.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -189,7 +190,7 @@ void GBody::addMass(const gReal &mass_, const gReal &ixx_, const gReal &iyy_, co
 	Inertia I_;									// I_ = the generalized inertia w.r.t. {ref}
 	I_.SetMass(mass_);
 	I_.SetInertia(ixx_,iyy_,izz_,ixy_,ixz_,iyz_);
-	
+
 	Inertia I_b = I_.Transform(Inv(T_ref_));	// I_b = the generalized inertia w.r.t. {body}
 
 	// I += I_b
@@ -326,9 +327,9 @@ Vec3 GBody::getPositionCOM()
 	}
 }
 
-Vec3 GBody::getPositionCOMGlobal() 
-{ 
-	return T_global * getPositionCOM(); 
+Vec3 GBody::getPositionCOMGlobal()
+{
+	return T_global * getPositionCOM();
 }
 
 Vec3 GBody::getVelocityCOMGlobal()
@@ -420,7 +421,7 @@ void GBody::neDynaRecursion_a()
 	update_base_joint_info();
 
 	update_T();
-	update_V();				
+	update_V();
 	update_eta();
 	update_dV(false);
 }
@@ -436,7 +437,7 @@ void GBody::fsDynaRecursion_a()
 	update_base_joint_info();
 
 	update_T();
-	update_V();				
+	update_V();
 	update_eta();
 }
 
@@ -464,7 +465,7 @@ void GBody::fsDynaRecursion_c()
 
 void GBody::neDynaRecursion_DaDp()
 {
-	update_DVDp();				
+	update_DVDp();
 	update_DetaDp();
 	update_DdVDp();
 }
@@ -477,7 +478,7 @@ void GBody::neDynaRecursion_DbDp()
 
 void GBody::fsDynaRecursion_DaDp()
 {
-	update_DVDp();				
+	update_DVDp();
 	update_DetaDp();
 }
 
@@ -525,7 +526,7 @@ dse3 GBody::getTransformed_DFDp()
 	if ( bnzDhDp ) {
 		tmp -= dad(DhDp, F);
 	}
-	
+
 	return dAd(invT, tmp);
 }
 
@@ -717,7 +718,7 @@ void GBody::update_T()
 	T *= pBaseJoint->inv_T_right;
 
 	invT.SetInvOf(T);
-	
+
 	T_global = pParentBody->T_global * T; // update global location of the body
 }
 
@@ -749,7 +750,7 @@ void GBody::update_dV(bool b_update_)
 		dV.set_Ad(invT, pParentBody->dV);
 	} else {
 		dV.set_Ad(invT, pParentBody->dV);
-		if ( b_update_ ) { // use new joint acceleration 
+		if ( b_update_ ) { // use new joint acceleration
 			pBaseJoint->get_ddq(ddq_);
 			matSet_multAB(Sddq_, S.GetPtr(), ddq_, 6, bjDOF, bjDOF, 1);
 			dV += Sddq_;
@@ -787,7 +788,7 @@ void GBody::update_aI()
 
 	for (iter_pbody_child = pChildBodies.begin(); iter_pbody_child != pChildBodies.end(); iter_pbody_child++) {
 		aI += (*iter_pbody_child)->getTransformed_aI();
-		//aI.AddTransform(((GBody*)(*iter_pbody_child))->Pi, ((GBody*)(*iter_pbody_child))->invT); 
+		//aI.AddTransform(((GBody*)(*iter_pbody_child))->Pi, ((GBody*)(*iter_pbody_child))->invT);
 	}
 }
 
@@ -976,7 +977,7 @@ void GBody::update_DVDp()
 	}
 
 	DVDp.set_Ad(invT, pParentBody->DVDp);
-	
+
 	if ( bnzDhDp ) {
 		DVDp -= ad(DhDp, Ad(invT, pParentBody->V));
 	}
@@ -1110,13 +1111,13 @@ void GBody::update_DFDp_fs()
 {
 	if ( bDpAlien ) {
 		DFDp = aI * DdVDp;
-		DFDp += DaBDp;	
+		DFDp += DaBDp;
 		return;
 	}
 
 	DFDp = DaIDp * dV;
 	DFDp += aI * DdVDp;
-	DFDp += DaBDp;	
+	DFDp += DaBDp;
 }
 
 void GBody::update_DaIDp()
@@ -1145,8 +1146,8 @@ void GBody::update_DaBDp()
 
 	if ( bDpAlien ) {
 		DaBDp.SetZero();
-		if ( bnzDFeDp ) { 
-			DaBDp -= DFeDp; 
+		if ( bnzDFeDp ) {
+			DaBDp -= DFeDp;
 		}
 		for (iter_pbody_child = pChildBodies.begin(); iter_pbody_child != pChildBodies.end(); iter_pbody_child++) {
 			DaBDp += (*iter_pbody_child)->getTransformed_DaBDp();
@@ -1216,8 +1217,8 @@ void GBody::update_DPsiDp()
 
 void GBody::update_DPiDp()
 {
-	// DPiDp = DaIDp 
-	//		 - aI_S * DPsiDp * ~aI_S 
+	// DPiDp = DaIDp
+	//		 - aI_S * DPsiDp * ~aI_S
 	//		 - ( (DaIDp * S * Psi * ~aI_S) + ~(DaIDp * S * Psi * ~aI_S) )
 	//		 - ( (aI * DSDp * Psi * ~aI_S) + ~(aI * DSDp * Psi * ~aI_S) )
 
@@ -1274,7 +1275,7 @@ void GBody::update_DbetaDp()
 	if ( bDpAlien ) {
 		if ( pBaseJoint->isPrescribed() ) {
 			DbetaDp = DaBDp;
-			if ( bjDOF > 0 ) { 
+			if ( bjDOF > 0 ) {
 				//DbetaDp += aI * convert_to_se3(S * pBaseJoint->get_DddqDp());
 				pBaseJoint->get_DddqDp(vtmp1); // vtmp1 = DddqDp
 				matSet_multAB(stmp1, S.GetPtr(), vtmp1, 6, bjDOF, bjDOF, 1); // stmp1 = S * DddqDp
@@ -1351,10 +1352,10 @@ void GBody::update_DbetaDp()
 			pBaseJoint->get_DtauDp(vtmp2); // vtmp2 = DtauDp
 			dse3 dse3tmp1 = aI * eta + aB;
 			dse3 dse3tmp2 = DaIDp * eta + aI * DetaDp + DaBDp;
-			for (int i=0; i<bjDOF; i++) { 
+			for (int i=0; i<bjDOF; i++) {
 				vtmp1[i] -= dse3tmp1.InnerProductWith(&S[6*i]); // vtmp1 = tau - ~S * (aI * eta + aB)
 				vtmp2[i] -= dse3tmp2.InnerProductWith(&S[6*i]); // vtmp2 = DtauDp - ~S * (DaIDp * eta + aI * DetaDp + DaBDp)
-			} 
+			}
 			matSet_multAB(vtmp3, Psi.GetPtr(), vtmp1, bjDOF, bjDOF, bjDOF, 1); // vtmp3 = Psi * ( tau - ~S * (aI * eta + aB) )
 			matSet_multAB(vtmp4, DPsiDp.GetPtr(), vtmp1, bjDOF, bjDOF, bjDOF, 1); // vtmp4 = DPsiDp * ( tau - ~S * (aI * eta + aB) )
 			matSet(stmp1, eta.GetArray(), 6); // stmp1 = eta
@@ -1363,7 +1364,7 @@ void GBody::update_DbetaDp()
 			matAdd_multAB(stmp2, S.GetPtr(), vtmp4, 6, bjDOF, bjDOF, 1); // stmp2 = DetaDp + S * DPsiDp * ( tau - ~S * (aI * eta + aB) )
 			if ( bnzDSDp ) {
 				matAdd_multAB(stmp2, DSDp.GetPtr(), vtmp3, 6, bjDOF, bjDOF, 1); // stmp2 += DSDp * Psi * ( tau - ~S * (aI * eta + aB) )
-				for (int i=0; i<bjDOF; i++) { 
+				for (int i=0; i<bjDOF; i++) {
 					vtmp2[i] -= dse3tmp1.InnerProductWith(&DSDp[6*i]); // vtmp2 -= ~DSDp * (aI * eta + aB)
 				}
 			}
@@ -1476,20 +1477,20 @@ void GBody::update_DddqDp()
 		// vtmp2 -= ~S * ( DaIDp * (Ad(dV)+eta) + aI * (Ad(DdVDp) + DetaDp - ad(DhDp, Ad(dV))) + DaBDp )
 		dse3 dse3tmp2 = DaIDp * Ad_dV_eta + aI * ( Ad(invT, pParentBody->DdVDp) + DetaDp - ad(DhDp, Ad_dV) ) + DaBDp;
 		for (i=0; i<bjDOF; i++) {
-			vtmp2[i] -= dse3tmp2.InnerProductWith(&S[6*i]); 
+			vtmp2[i] -= dse3tmp2.InnerProductWith(&S[6*i]);
 		}
 	} else {
 		// vtmp2 -= ~S * ( DaIDp * (Ad(dV)+eta) + aI * (Ad(DdVDp) + DetaDp) + DaBDp )
 		dse3 dse3tmp2 = DaIDp * Ad_dV_eta + aI * ( Ad(invT, pParentBody->DdVDp) + DetaDp ) + DaBDp;
 		for (i=0; i<bjDOF; i++) {
-			vtmp2[i] -= dse3tmp2.InnerProductWith(&S[6*i]); 
+			vtmp2[i] -= dse3tmp2.InnerProductWith(&S[6*i]);
 		}
 	}
 	if ( bnzDSDp ) {
 		// vtmp2 -= ~DSDp * ( aI * (Ad(dV)+eta) + aB )
 		dse3 dse3tmp3 = aI * Ad_dV_eta + aB;
 		for (i=0; i<bjDOF; i++) {
-			vtmp2[i] -= dse3tmp3.InnerProductWith(&DSDp[6*i]); 
+			vtmp2[i] -= dse3tmp3.InnerProductWith(&DSDp[6*i]);
 		}
 	}
 	// vtmp3 = DPsiDp * vtmp1 + Psi * vtmp2
@@ -1549,7 +1550,7 @@ RMatrix GBody::get_DdSDdq(GCoordinate *pCoordinate_)
 
 bool GBody::isIncluded(GCoordinate *pCoordinate_)
 {
-	if ( find(pBaseJoint->pCoordinates.begin(), pBaseJoint->pCoordinates.end(), pCoordinate_) != pBaseJoint->pCoordinates.end() ) 
+	if ( find(pBaseJoint->pCoordinates.begin(), pBaseJoint->pCoordinates.end(), pCoordinate_) != pBaseJoint->pCoordinates.end() )
 		return true;
 	else
 		return false;
@@ -1591,3 +1592,4 @@ std::string GBody::getInfoStr()
 
 	return sstr.str();
 }
+#endif

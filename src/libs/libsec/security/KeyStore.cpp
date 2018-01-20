@@ -18,109 +18,76 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-KeyStore::KeyStore(QString fn, KeySecurityPolicy policy, QObject *parent)
-	: AsyncStore(fn, parent)
+KeyStore::KeyStore(QString filename, bool doBootstrap, KeySecurityPolicy policy, QObject *parent)
+	: QObject(parent)
+	, SimpleDataStore(filename)
+	, mDoBootstrap(doBootstrap)
 	, mPolicy(policy)
 {
 	OC_METHODGATE();
 	setObjectName("KeyStore");
-//qDebug()<<"KeyStore() file="<<fn;
-	if(!connect( this, SIGNAL(storeReady(bool)), SIGNAL(keystoreReady(bool)), OC_CONTYPE)) {
-		qWarning()<<"Could not connect "<<objectName();
-	} else {
-		//qDebug()<<"FORWARDING storeReady -> keystoreReady";
-	}
+	synchronize([this](SimpleDataStore &ds, bool ok) {
+
+	});
 }
 
 
 KeyStore::~KeyStore()
 {
 	OC_METHODGATE();
-	save();
 }
 
 
-void KeyStore::bootstrapWorkerImpl()
+bool KeyStore::fromMap(QVariantMap map)
 {
-	OC_METHODGATE();
-	//qDebug()<<"KeyStore() bootstrapWorkerImpl() file="<<mFilename;
-	QFile f(mFilename);
-	if(!f.exists()) {
-		//qDebug()<<"KEYSTORE: no keystore file found, generating local keypair and saving";
-		mLocalKey=QSharedPointer<Key>(OC_NEW Key(mPolicy.bits()));
-		save();
-	}
-	load();
-}
-
-
-void KeyStore::load()
-{
-	OC_METHODGATE();
-	//qDebug()<<"KeyStore() load="<<mFilename;
-	if(!QFile(mFilename).exists()) {
-		//qDebug() << "File did not exist"<<mFilename;
-		//Silently ignore missing file
-		//mError=true;
-	} else {
-		//qDebug()<<"KEYSTORE: Loading from file: " << *this;
-		QJsonParseError jsonError;
-		QByteArray raw=utility::fileToByteArray(mFilename);
-		QJsonDocument doc = QJsonDocument::fromJson(raw, &jsonError);
-		if (QJsonParseError::NoError != jsonError.error) {
-			qWarning() << "ERROR: Parsing json data: "<<jsonError.errorString()<< " for data "<<raw<<" from file "<<mFilename;
-			mError=true;
+	QSharedPointer<Key> localKey;
+	bool ok=true;
+	mLocalKey=nullptr;
+	mAssociates.clear();
+	if(map.contains("localKey")) {
+		QVariantMap localMap=map["localKey"].toMap();
+		QSharedPointer<Key> localKey(OC_NEW Key(localMap, false));
+		if(!localKey->isValid(false)) {
+			ok=false;
 		} else {
-			//qDebug()<<"PARSING JSON: "<<doc.toJson();
-			QVariantMap map = doc.object().toVariantMap();
-			QVariantMap localMap=map["localKey"].toMap();
-			//qDebug()<<"LOCAL MAP: "<<localMap;
-			mLocalKey=QSharedPointer<Key>(OC_NEW Key(localMap, false));
-			if(!mLocalKey->isValid(false)) {
-				qWarning()<<"ERROR: local key was not valid";
-				mError=true;
-			} else {
-				QVariantList remotes=map["remoteKeys"].toList();
-				mAssociates.clear();
-				for(QVariantList::iterator b=remotes.begin(), e=remotes.end(); b!=e; ++b) {
-					QVariantMap remote=(*b).toMap();
-					if(remote.contains("key")) {
-						QVariantMap  keyMap=remote["key"].toMap();
-						//qDebug()<<"Loading key from: "<<keyMap;
-						QSharedPointer<Key> peerKey= QSharedPointer<Key>(OC_NEW Key(keyMap,true));
-						if(!peerKey->isValid(true)) {
-							qWarning()<<"ERROR: peer key was not valid";
-							mError=true;
-							break;
-						}
-						mAssociates[remote["id"].toString()]=peerKey;
-					} else {
-						qWarning()<<"ERROR: key had malformed json";
-						mError=true;
-						break;
-					}
-				}
-			}
-			mReady=true;
-			//qDebug()<<"RESULT AFTER LOAD: "<<this;
+			mLocalKey=localKey;
 		}
 	}
-	//qDebug()<<"EMITTING KEYSTORE READY WITH"<<(mError?"ERROR":"A-OK");
-	emit storeReady(!mError);
+	if(ok) {
+		QVariantList remoteList=map["remoteKeys"].toList();
+		for(QVariantList::iterator b=remoteList.begin(), e=remoteList.end(); b!=e; ++b) {
+			QVariantMap remote=(*b).toMap();
+			if(remote.contains("key")) {
+				QVariantMap  keyMap=remote["key"].toMap();
+				QSharedPointer<Key> peerKey= QSharedPointer<Key>(OC_NEW Key(keyMap,true));
+				if(!peerKey->isValid(true)) {
+					qWarning()<<"ERROR: peer key was not valid";
+					ok=false;
+					break;
+				}
+				mAssociates[remote["id"].toString()]=peerKey;
+			} else {
+				qWarning()<<"ERROR: no key in remote keys";
+				ok=false;
+				break;
+			}
+		}
+	}
+	return ok;
 }
 
-void KeyStore::save()
+QVariantMap KeyStore::toMap()
 {
-	OC_METHODGATE();
-	//qDebug()<<"KeyStore() save="<<mFilename;
-	//qDebug()<<"KEYSTORE: Saving to file: "<<*this;
 	QVariantMap map;
-	map["createdTimeStamp"]=QDateTime::currentMSecsSinceEpoch();
+	// This is where we bootstrap by creating the local key if none exist
+	if(nullptr==mLocalKey && mDoBootstrap) {
+		mLocalKey=QSharedPointer<Key>(OC_NEW Key(mPolicy.bits()));
+	}
 	if(nullptr!=mLocalKey) {
 		map["localKey"]=mLocalKey->toVariantMap(false);
 	}
 	QVariantList remotes;
-	for(QMap<QString, QSharedPointer<Key> >::iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
+	for(QMap<QString, QSharedPointer<Key> >::const_iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
 		QVariantMap remote;
 		QString id=b.key();
 		auto key=b.value();
@@ -133,65 +100,39 @@ void KeyStore::save()
 		}
 	}
 	map["remoteKeys"]=remotes;
-	QJsonDocument doc=QJsonDocument::fromVariant(map);
-	QString raw=doc.toJson();
-	//qDebug()<<"SAVING KEYSTORE JSON: "<<raw;
-	utility::stringToFile(mFilename,raw);
+	return map;
 }
 
 
-void KeyStore::clear()
+QSharedPointer<Key> KeyStore::localKey()
 {
 	OC_METHODGATE();
-	//qDebug()<<"KeyStore() clear="<<mFilename;
-	QFile file(mFilename);
-	if(file.exists()) {
-		if(file.remove()) {
-			//qDebug()<<"KEYSTORE: Cleared: "<<*this;
-			mLocalKey=nullptr;
-			mAssociates.clear();
-			mReady=false;
-			mError=false;
-		} else {
-			qWarning()<<"ERROR: Could not clear "<<*this;
-		}
-	} else {
-		//qDebug()<<"KEYSTORE: Could not clear missing file: "<< *this;
-	}
-
+	return mLocalKey;
 }
 
 
-void KeyStore::setHookSignals(QObject &ob, bool hook)
+PortableID KeyStore::localPortableID()
 {
 	OC_METHODGATE();
-	qDebug()<<"KEY HOOK "<<ob.objectName()<<" = "<<hook;
-	if(hook) {
-		if(!connect(this, SIGNAL(keystoreReady(bool)), &ob, SLOT(onKeystoreReady(bool)),OC_CONTYPE)) {
-			qWarning()<<"Could not connect "<<ob.objectName();
-		} else {
-			//qDebug()<<"HOOKING keystoreReady";
-		}
-	} else {
-		if(!disconnect(this, SIGNAL(keystoreReady(bool)), &ob, SLOT(onKeystoreReady(bool)))) {
-			qWarning()<<"Could not disconnect "<<ob.objectName();
-		} else {
-			//qDebug()<<"UN-HOOKING keystoreReady";
-		}
+	PortableID pid;
+	//pid.setName("Arne");
+	//pid.setGender("Male");
+	if(nullptr!=mLocalKey) {
+		pid.setID(mLocalKey->id());
 	}
-
+	pid.setBirthDate(QFileInfo(filename()).created().toMSecsSinceEpoch());
+	//pid.setType(DiscoveryType type);
+	return pid;
 }
+
 
 void KeyStore::dump()
 {
 	OC_METHODGATE();
 	KeyStore &ks=*this;
 	qDebug()<<"KEYSTORE DUMP:";
-	qDebug().nospace() <<" + fn="<<ks.mFilename;
+	qDebug().nospace() <<" + fn="<<ks.filename();
 	qDebug().nospace() <<" + fexists="<<ks.fileExists();
-	qDebug().nospace() <<" + ready="<<(const bool)ks.mReady;
-	qDebug().nospace() <<" + inProgress="<<(const bool)ks.mInProgress;
-	qDebug().nospace() <<" + error="<<(const bool)ks.mError;
 	qDebug().nospace() <<" + peer-keys:";
 	for(QMap<QString, QSharedPointer<Key> >::iterator b=ks.mAssociates.begin(), e=ks.mAssociates.end(); b!=e; ++b) {
 		QString key=b.key();
@@ -204,7 +145,7 @@ void KeyStore::dump()
 QByteArray KeyStore::sign(const QByteArray &source)
 {
 	OC_METHODGATE();
-	if(!mReady || (nullptr==mLocalKey)) {
+	if(!ready() || (nullptr==mLocalKey)) {
 		return QByteArray();
 	}
 
@@ -215,7 +156,7 @@ QByteArray KeyStore::sign(const QByteArray &source)
 bool KeyStore::verify(const QByteArray &message, const QByteArray &signature)
 {
 	OC_METHODGATE();
-	if(!mReady|| (nullptr==mLocalKey)) {
+	if(!ready()|| (nullptr==mLocalKey)) {
 		return false;
 	}
 	return mLocalKey->verify(message, signature);
@@ -225,7 +166,7 @@ bool KeyStore::verify(const QByteArray &message, const QByteArray &signature)
 bool KeyStore::verify(const QString &fingerprint, const QByteArray &message, const QByteArray &signature)
 {
 	OC_METHODGATE();
-	if(!mReady) {
+	if(!ready()) {
 		return false;
 	}
 	QMap<QString, QSharedPointer<Key> >::iterator f=mAssociates.find(fingerprint);
@@ -241,7 +182,7 @@ bool KeyStore::verify(const QString &fingerprint, const QByteArray &message, con
 bool KeyStore::hasPubKeyForID(const QString &id)
 {
 	OC_METHODGATE();
-	if(!mReady) {
+	if(!ready()) {
 		return false;
 	}
 	return (mAssociates.end()!=mAssociates.find(id));
@@ -250,7 +191,7 @@ bool KeyStore::hasPubKeyForID(const QString &id)
 void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
 {
 	OC_METHODGATE();
-	if(!mReady) {
+	if(!ready()) {
 		return;
 	}
 	QSharedPointer<Key> peer(OC_NEW Key(pubkeyPEM, true));
@@ -261,7 +202,7 @@ void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
 QSharedPointer<Key> KeyStore::pubKeyForID(const QString &id)
 {
 	OC_METHODGATE();
-	if(!mReady) {
+	if(!ready()) {
 		qWarning()<<"WARNING: returning empty key for id="<<id<<" because keystore not ready..";
 		return nullptr;
 	}
@@ -271,7 +212,7 @@ QSharedPointer<Key> KeyStore::pubKeyForID(const QString &id)
 const QDebug &operator<<(QDebug &d, KeyStore &ks)
 {
 	OC_FUNCTIONGATE();
-	d.nospace() <<"KeyStore{ fn="<<ks.mFilename<<", fexists="<<ks.fileExists()<<", ready="<<(const bool)ks.mReady<<", inProgress="<<(const bool)ks.mInProgress<<", error="<<(const bool)ks.mError<<", peer-keys:[";
+	d.nospace() <<"KeyStore{ fn="<<ks.filename()<<", fexists="<<ks.fileExists()<<", ready="<<(const bool)ks.ready()<<", peer-keys:[";
 	for(QMap<QString, QSharedPointer<Key> >::iterator b=ks.mAssociates.begin(), e=ks.mAssociates.end(); b!=e; ++b) {
 		QString key=b.key();
 		//b.value();

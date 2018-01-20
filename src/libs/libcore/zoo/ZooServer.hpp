@@ -34,7 +34,7 @@ private:
 	//Settings settings;
 	//QString baseDir;
 	AppContext *mContext;
-	KeyStore mKeystore;
+	KeyStore mKeyStore;
 
 	Identicon mIdenticon;
 	Hashstore mStorage;

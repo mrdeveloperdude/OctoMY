@@ -244,7 +244,7 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 		}
 	} else {
 		//mKeystore.dump();
-		QString es=QStringLiteral("ERROR: OctoMY Protocol Session-Less sender '")+id+QStringLiteral("' unknown. (Keystore.ready=")+QString(mKeystore.isReady()?"YES":"NO")+")";
+		QString es=QStringLiteral("ERROR: OctoMY Protocol Session-Less sender '")+id+QStringLiteral("' unknown. (Keystore.ready=")+QString(mKeystore.ready()?"YES":"NO")+")";
 		qWarning().noquote()<<es;
 		emit commsError(es);
 	}

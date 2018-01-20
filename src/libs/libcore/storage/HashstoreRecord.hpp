@@ -49,7 +49,7 @@ class HashstoreRecordPrivate{
 
 /**
   HashstoreRecord is a "reusable future" that wraps each record in hasstore
-  It has a QtStyle private class so it can easily be copied by value
+  It has a Qt style private class so it can easily be copied by value
 */
 
 class HashstoreRecord{

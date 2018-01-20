@@ -68,7 +68,7 @@ Node::Node(INodeLauncher &laucher, AppContext *context, NodeRole role, NodeType 
 	, mContext(context)
 	, mRole (role)
 	, mType (type)
-	, mKeyStore (mContext->baseDir() + "/keystore.json")
+	, mKeyStore (mContext->baseDir() + "/keystore.json", ROLE_AGENT==mRole)
 	, mConfigStore(mContext->baseDir() + "/local_identity.json")
 	, mAddressBook (mContext->baseDir() + "/addressbook.json")
 	, mAddresses(defaultPortForNodeType(mType), true)
@@ -109,15 +109,21 @@ Node::~Node()
 void Node::init()
 {
 	OC_METHODGATE();
-	mKeyStore.setHookSignals(*this, true);
-	// Only Agents are "born"
-	mKeyStore.bootstrap(ROLE_AGENT==mRole, true);
+	mKeyStore.synchronize([this](SimpleDataStore &sms, bool ok){
+		qDebug()<<"Keystore synchronized: "<<ok;
+	});
 
-	mConfigStore.setHookSignals(*this, true);
-	mConfigStore.bootstrap(true, false);
+	mConfigStore.synchronize([this](SimpleDataStore &sms, bool ok){
+		qDebug()<<"Local identity synchronized: "<<ok;
+		if(ok) {
+			QSharedPointer<Associate> ass = QSharedPointer<Associate> (OC_NEW Associate(sms.toMap(), false ) );
+			setNodeIdentity(ass);
+		}
+	});
 
-	mAddressBook.setHookSignals(*this, true);
-	mAddressBook.bootstrap(true, false);
+	mAddressBook.synchronize([=](SimpleDataStore &ab, bool ok){
+		qDebug()<<"Address book synchronized: "<<ok;
+	});
 
 	mClients.syncToAddressBook(mAddressBook, sharedThis());
 
@@ -155,7 +161,6 @@ void Node::deInit()
 	OC_METHODGATE();
 	setHookSensorSignals(*this, false);
 	setHookCommsSignals(*this,false);
-	mKeyStore.setHookSignals(*this, false);
 	mContext=nullptr;
 	if(nullptr!=mCarrier) {
 		mCarrier->deleteLater();
@@ -202,10 +207,6 @@ void Node::unbirth()
 	mConfigStore.clear();
 	mAddressBook.clear();
 	mClients.clear();
-
-	mKeyStore.save();
-	mConfigStore.save();
-	mAddressBook.save();
 
 }
 
@@ -328,7 +329,7 @@ void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 	if(!mNodeIdentity.isNull()) {
 		map=mNodeIdentity->toVariantMap();
 	}
-	mConfigStore.setConfig(map);
+	mConfigStore.fromMap(map);
 	mConfigStore.save();
 }
 
@@ -719,7 +720,6 @@ void Node::setHookColorSignals(QObject &ob, bool set)
 
 
 void Node::setHookSensorSignals(QObject &o, bool set)
-TODO: find a way to connect onReady signals for all stores across node & subclasses alike
 {
 	OC_METHODGATE();
 	if(set) {
@@ -744,21 +744,6 @@ void Node::setHookCommsSignals(QObject &o, bool hook)
 
 
 
-void Node::setHookConfigSignals(QObject &o, bool set)
-{
-	OC_METHODGATE();
-	mConfigStore.setHookSignals(o, set);
-}
-
-
-
-void Node::setHookPeerSignals(QObject &o, bool set)
-{
-	OC_METHODGATE();
-	mAddressBook.setHookSignals(o, set);
-}
-
-
 
 void Node::updateDiscoveryClient()
 {
@@ -779,19 +764,6 @@ void Node::onKeystoreReady(bool ok)
 }
 
 
-
-//////////////////////////////////////////////////
-// Config Store slots
-
-void Node::onConfigReady(bool ok)
-{
-	OC_METHODGATE();
-	qDebug()<<"Local identity loaded: "<<ok;
-	if(ok) {
-		QSharedPointer<Associate> ass = QSharedPointer<Associate> (OC_NEW Associate(mConfigStore.config(), false ) );
-		setNodeIdentity(ass);
-	}
-}
 
 
 //////////////////////////////////////////////////
@@ -841,3 +813,7 @@ void Node::onGyroscopeUpdated(QGyroscopeReading *r)
 {
 	OC_METHODGATE();
 }
+
+
+
+

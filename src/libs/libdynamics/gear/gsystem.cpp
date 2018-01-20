@@ -1,3 +1,4 @@
+#ifdef USE_GEAR_DYNAMICS
 // -------------------------------------------------------------------------------
 // Copyright (c) 2012, Junggon Kim
 // All rights reserved.
@@ -1426,3 +1427,4 @@ bool gTraceJointsBackward(GJoint *pEndJoint_, GBody *pLeftBodyOfEndJoint_, std::
 
 	return true;
 }
+#endif
