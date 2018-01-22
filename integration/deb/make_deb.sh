@@ -1,7 +1,23 @@
 #!/bin/bash
 
+
 VER=1.0-1
 NAME=octomy
+PACKAGE=""
+
+if [ ! -z "$1" ]
+then
+	PACKAGE="$1"
+else
+	echo "You need to specify the package name"
+	exit -1
+fi
+
+if [ ! -z "$2" ]
+then
+	VER="$2"
+fi
+
 
 function make_deb(){
 
@@ -9,10 +25,11 @@ START=$(pwd)
 NAME=$1
 VER=$2
 DIR=${NAME}_${VER}
+TMP_DIR="/tmp/$DIR"
 BUILD_BASE=$START/build
 
-mkdir /tmp/$DIR
-cd /tmp/$DIR
+mkdir "$TMP_DIR"
+cd "$TMP_DIR"
 mkdir -p usr/local/bin
 cp -a $BUILD_BASE/$NAME/$NAME		usr/local/bin
 
@@ -34,13 +51,10 @@ EOF
 
 cd $START
 
-dpkg-deb --build /tmp/$DIR
-rm -rf /tmp/$DIR
+dpkg-deb --build "$TMP_DIR"
+rm -rf "$TMP_DIR"
 
 }
 
 
-make_deb agent $VER
-make_deb remote $VER
-make_deb hub $VER
-make_deb zoo $VER
+make_deb "$PACKAGE" "$VER"
