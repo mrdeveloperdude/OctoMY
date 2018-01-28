@@ -3,13 +3,21 @@
 
 VER=1.0-1
 NAME=octomy
+PACKAGE_PATH=""
 PACKAGE=""
 
 if [ ! -z "$1" ]
 then
-	PACKAGE="$1"
+	PACKAGE_DIR="$1"
+	if [ ! -x "$PACKAGE_DIR" ]
+	then
+		echo "Specified package '$PACKAGE_DIR' did not exist or was not executable"
+		exit -1
+	fi
+	PACKAGE="$(basedir $PACKAGE_DIR)"
+	echo "Using package '$PACKAGE' from '$PACKAGE_DIR'"
 else
-	echo "You need to specify the package name"
+	echo "You need to specify the full package path"
 	exit -1
 fi
 
@@ -18,6 +26,7 @@ then
 	VER="$2"
 fi
 
+echo "Using version '$VER'"
 
 function make_deb(){
 
@@ -27,11 +36,12 @@ VER=$2
 DIR=${NAME}_${VER}
 TMP_DIR="/tmp/$DIR"
 BUILD_BASE=$START/build
+echo "Using base dir '$BUILD_BASE'"
 
-mkdir "$TMP_DIR"
+mkdir -p "$TMP_DIR"
 cd "$TMP_DIR"
 mkdir -p usr/local/bin
-cp -a $BUILD_BASE/$NAME/$NAME		usr/local/bin
+cp -a "$PACKAGE_DIR" usr/local/bin
 
 mkdir DEBIAN
 
