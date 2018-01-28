@@ -14,8 +14,7 @@ then
 		echo "Specified package '$PACKAGE_DIR' did not exist or was not executable"
 		exit -1
 	fi
-	PACKAGE="$(basename
-	$PACKAGE_DIR)"
+	PACKAGE="$(basename $PACKAGE_DIR)"
 	echo "Using package '$PACKAGE' from '$PACKAGE_DIR'"
 else
 	echo "You need to specify the full package path"
