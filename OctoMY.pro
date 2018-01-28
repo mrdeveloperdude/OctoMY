@@ -63,6 +63,10 @@ doc.depends=		$${SRCS}/libs $${SRCS}/hub $${SRCS}/remote $${SRCS}/agent $${TESTS
 include($$PRIS/status.pri)
 
 OTHER_FILES+= $$files(pri/overrides/*, true)
-OTHER_FILES+= $$files(integration/*, true)
+OTHER_FILES+= $$files(integration/local/*, true)
+OTHER_FILES+= $$files(integration/multidocker/*, true)
+OTHER_FILES+= $$files(integration/deb/*, true)
+OTHER_FILES+= $$files(integration/travis_ci/*, true)
+#OTHER_FILES+= $$files(integration/docker/*, true)
 #OTHER_FILES+= $$files(doc/*, true)
 #OTHER_FILES+= $$files(design/*, true)
