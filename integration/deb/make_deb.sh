@@ -8,14 +8,14 @@ PACKAGE=""
 
 if [ ! -z "$1" ]
 then
-	PACKAGE_DIR="$1"
-	if [ ! -x "$PACKAGE_DIR" ]
+	PACKAGE_PATH="$1"
+	if [ ! -x "$PACKAGE_PATH" ]
 	then
-		echo "Specified package '$PACKAGE_DIR' did not exist or was not executable"
+		echo "Specified package '$PACKAGE_PATH' did not exist or was not executable"
 		exit -1
 	fi
-	PACKAGE="$(basename $PACKAGE_DIR)"
-	echo "Using package '$PACKAGE' from '$PACKAGE_DIR'"
+	PACKAGE="$(basename $PACKAGE_PATH)"
+	echo "Using package '$PACKAGE' from '$PACKAGE_PATH'"
 else
 	echo "You need to specify the full package path"
 	exit -1
@@ -28,11 +28,6 @@ fi
 
 echo "Using version '$VER'"
 
-function make_deb(){
-
-START=$(pwd)
-NAME=$1
-VER=$2
 DIR=${NAME}_${VER}
 TMP_DIR="/tmp/$DIR"
 BUILD_BASE=$START/build
@@ -41,7 +36,7 @@ echo "Using base dir '$BUILD_BASE'"
 mkdir -p "$TMP_DIR"
 cd "$TMP_DIR"
 mkdir -p usr/local/bin
-cp -a "$PACKAGE_DIR" usr/local/bin
+cp -a "$PACKAGE_PATH" usr/local/bin
 
 mkdir DEBIAN
 
@@ -64,7 +59,4 @@ cd $START
 dpkg-deb --build "$TMP_DIR"
 rm -rf "$TMP_DIR"
 
-}
 
-
-make_deb "$PACKAGE" "$VER"
