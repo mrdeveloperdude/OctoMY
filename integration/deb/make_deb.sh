@@ -56,7 +56,11 @@ EOF
 
 cd $START
 
-dpkg-deb --build "$TMP_DIR"
+dpkg-deb --version
+dpkg-deb --build -v -z9 -Zxz -Sextreme --uniform-compression "$TMP_DIR" "$PACKAGE"
+dpkg-deb -c "$PACKAGE"
+dpkg-deb -i "$PACKAGE"
+
 rm -rf "$TMP_DIR"
 
 
