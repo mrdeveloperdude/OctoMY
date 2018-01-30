@@ -57,9 +57,12 @@ EOF
 cd $START
 
 dpkg-deb --version
+echo "PACKAGE BUILD -------------------"
 dpkg-deb --build -v -z9 -Zxz -Sextreme --uniform-compression "$TMP_DIR" "$PACKAGE"
+echo "PACKAGE CONTENT -----------------"
 dpkg-deb -c "$PACKAGE"
-dpkg-deb -i "$PACKAGE"
+echo "PACKAGE INFO --------------------"
+dpkg-deb -I "$PACKAGE"
 
 rm -rf "$TMP_DIR"
 
