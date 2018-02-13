@@ -6,7 +6,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QThread>
-
+#include <QtMath>
 
 #include <unistd.h>
 
@@ -55,8 +55,8 @@ public:
 	{
 		volatile double sum=0.0;
 		for (int i = 0; i < iterations; ++i) {
-			sum+=sqrt((double)mwc());
-			sum-=sqrt((double)mwc());
+			sum+=qSqrt((double)mwc());
+			sum-=qSqrt((double)mwc());
 			sum*=0.99;
 		}
 		return sum;
