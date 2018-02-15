@@ -1,0 +1,21 @@
+ARG debtest_base=qt5.10.0_static_ubuntu_amd64.octomy.deb:latest
+FROM "$debtest_base" as build
+
+FROM    ubuntu:16.04
+
+RUN     apt-get update && \
+		apt-get install -y x11vnc xvfb
+
+#mkdir ~/.vnc
+#		x11vnc -storepasswd 1234 ~/.vnc/passwd
+
+ENV		DEB_DIR /root/deb
+
+WORKDIR	/tmp
+ENV		debfile=octomy-agent.deb
+COPY	--from=build  $DEB_DIR/$debfile .
+RUN		apt install --no-install-recommends -y ./$debfile
+#RUN		bash -c 'echo "exec /usr/local/bin/agent > /tmp/agent.log" >> /.Xsession'
+
+
+#ENTRYPOINT DISPLAY=:0 /usr/local/bin/agent

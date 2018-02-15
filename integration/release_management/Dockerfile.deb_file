@@ -1,0 +1,38 @@
+ARG deb_base=qt5.10.0_static_ubuntu_amd64.octomy:latest
+FROM "$deb_base"
+ENV DEB_DIR /root/deb
+#WORKDIR $OC_DIR/src
+#RUN		git pull
+WORKDIR $DEB_DIR
+COPY	make_deb.sh ../octomy/src/integration/deb/make_deb.sh
+
+RUN		ls -halt ../octomy/build/src/agent
+RUN		apt-get install -y nano
+RUN		md5sum ../octomy/src/integration/deb/make_deb.sh
+RUN		../octomy/src/integration/deb/make_deb.sh 	"$(pwd)/../octomy/build/src/agent/agent" "1" || true
+#RUN	../octomy/src/integration/deb/make_deb.sh 	"$(pwd)/../octomy/build/src/remote/remote" "1" || true
+#RUN	../octomy/src/integration/deb/make_deb.sh 	"$(pwd)/../octomy/build/src/hub/hub" "1" || true
+#RUN	../octomy/src/integration/deb/make_deb.sh 	"$(pwd)/../octomy/build/src/zoo/zoo" "1" || true
+RUN pwd
+#RUN ls -halt
+
+#WORKDIR /tmp
+#RUN pwd
+#RUN ls -halt
+
+#WORKDIR /root
+#RUN pwd
+#RUN ls -halt
+
+WORKDIR /root/deb
+RUN pwd
+RUN ls -halt
+
+#WORKDIR /root/octomy/build/src/agent
+#RUN pwd
+#RUN ls -halt
+
+#WORKDIR /root/octomy/src/integration/deb
+#RUN pwd
+#RUN ls -halt
+
