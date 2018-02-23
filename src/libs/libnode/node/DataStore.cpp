@@ -7,6 +7,37 @@
 
 #include <QJsonParseError>
 #include <QByteArray>
+#include <QMap>
+
+
+static quint64 handleCounter=0;
+static QMap<Qt::HANDLE, quint64> handleMap;
+static QString handleCounterString(Qt::HANDLE h)
+{
+	if(nullptr==h) {
+		return "H-null";
+	}
+	if(!handleMap.contains(h)) {
+		handleCounter++;
+		handleMap.insert(h,handleCounter);
+	}
+	return "H-"+QString::number(handleMap[h]);
+}
+
+
+static quint64 privCounter=0;
+static QMap<const TransactionPrivate *, quint64> privMap;
+static QString privCounterString(const TransactionPrivate *p)
+{
+	if(nullptr==p) {
+		return "P-null";
+	}
+	if(!privMap.contains(p)) {
+		privCounter++;
+		privMap.insert(p, privCounter);
+	}
+	return "P-"+QString::number(privMap[p]);
+}
 
 
 TransactionPrivate::TransactionPrivate(DataStore & store, const TransactionType type, QVariantMap data)
@@ -108,23 +139,39 @@ bool Transaction::isFinished()
 	return d->mFinished;
 }
 
+void Transaction::notifyFinished()
+{
+	OC_METHODGATE();
+	Q_D(Transaction);
+	qDebug()<<"Entered Transaction::notifyFinished() from thread "<<handleCounterString(QThread::currentThreadId())<< " and d="<<privCounterString(d);
+	QMutexLocker finishedLock(&d->mFinishedMutex);
+	qDebug()<<"NOTE BEFORE: finished was "<<d->mFinished;
+	d->mFinished=true;
+	// Get values while they are under lock for the return
+	bool ret = d->mFinished && d->mSuccessfull;
+	qDebug()<<"NOTE AFTER: finished was "<<d->mFinished;
+	qDebug().noquote().nospace()<<" + Transaction::run() signalling finished transaction from thread "<<handleCounterString(QThread::currentThreadId());
+	qDebug().noquote().nospace()<<" + Transaction::run() WAKE ALLLLLLLLL";
+	d->mFinishedCond.wakeAll();
+}
 
 void Transaction::waitForFinished()
 {
 	OC_METHODGATE();
-	qDebug()<<"Entered Transaction::waitForFinished() from thread "<<QThread::currentThreadId();
 	Q_D(Transaction);
+	qDebug()<<"Entered Transaction::waitForFinished() from thread "<<handleCounterString(QThread::currentThreadId())<< " and d="<<privCounterString(d);
 	QMutexLocker ml(&d->mFinishedMutex);
 
 	while(! d->mFinished) {
 		qDebug()<<"NOTE: finished was "<<d->mFinished;
-		qDebug()<<" + Transaction::waitForFinished() waiting from thread "<<QThread::currentThreadId();
+		qDebug()<<" + Transaction::waitForFinished() WAITING from thread "<<handleCounterString(QThread::currentThreadId());
 		d->mFinishedCond.wait(&d->mFinishedMutex);
 		ml.unlock();
 		ml.relock();
+		qDebug()<<" + Transaction::waitForFinished() NOTIFIED from thread "<<handleCounterString(QThread::currentThreadId())<< " with finished= "<<d->mFinished;
 	}
 
-	qDebug()<<"Exiting Transaction::waitForFinished() from thread "<<QThread::currentThreadId();
+	qDebug()<<"Exiting Transaction::waitForFinished() from thread "<<handleCounterString(QThread::currentThreadId());
 }
 
 
@@ -150,7 +197,7 @@ QString Transaction::message()
 bool Transaction::run()
 {
 	OC_METHODGATE();
-	qDebug()<<"Entered Transaction::run() from thread "<<QThread::currentThreadId();
+	qDebug()<<"Entered Transaction::run() from thread "<<handleCounterString(QThread::currentThreadId());
 	Q_D(Transaction);
 	QMutexLocker startedLock(&d->mStartedMutex);
 	bool ret=false;
@@ -205,21 +252,11 @@ bool Transaction::run()
 		}
 		break;
 		}
-		{
-			QMutexLocker finishedLock(&d->mFinishedMutex);
-			qDebug()<<"NOTE BEFORE: finished was "<<d->mFinished;
-			d->mFinished=true;
-			// Get values while they are under lock for the return
-			ret = d->mFinished && d->mSuccessfull;
-			qDebug()<<"NOTE AFTER: finished was "<<d->mFinished;
-			qDebug().noquote().nospace()<<" + Transaction::run() signalling finished transaction from thread "<<QThread::currentThreadId();
-		}
-		qDebug().noquote().nospace()<<" + Transaction::run() WAKE ALLLLLLLLL";
-		d->mFinishedCond.wakeAll();
+		notifyFinished();
 	} else {
 		qWarning()<<"ERROR: Trying to re-run transaction";
 	}
-	qDebug().noquote().nospace()<<"Exiting Transaction::run() with return value "<<ret<< " from thread "<<QThread::currentThreadId();
+	qDebug().noquote().nospace()<<"Exiting Transaction::run() with return value "<<ret<< " from thread "<<handleCounterString(QThread::currentThreadId());
 	return ret;
 }
 
@@ -247,11 +284,12 @@ DataStore::DataStore(QString filename, QObject *parent)
 		// Make sure that a sync from initial state will perform a load if there is data on disk
 		mDiskCounter=autoIncrement();
 	}
+	// Start transaction processing in separate thread
 	QtConcurrent::run([this]() {
 		OC_METHODGATE();
-		qDebug()<<"Entered DataStore::QtConcurrent::run::lambda() from thread "<<QThread::currentThreadId();
+		qDebug()<<"Entered DataStore::QtConcurrent::run::lambda() from thread "<<handleCounterString(QThread::currentThreadId());
 		processTransactions();
-		qDebug()<<"Exiting DataStore::QtConcurrent::run::lambda() from thread "<<QThread::currentThreadId();
+		qDebug()<<"Exiting DataStore::QtConcurrent::run::lambda() from thread "<<handleCounterString(QThread::currentThreadId());
 	});
 
 
@@ -265,11 +303,11 @@ DataStore::DataStore(QString filename, QObject *parent)
 DataStore::~DataStore()
 {
 	OC_METHODGATE();
-	qDebug()<<"Entered DataStore::~DataStore() from thread "<<QThread::currentThreadId();
+	qDebug()<<"Entered DataStore::~DataStore() from thread "<<handleCounterString(QThread::currentThreadId());
 	mDone=true;
 	// TODO: Look at how to avoid the possibility of an unecessary load during this final sync
 	synchronize().waitForFinished();
-	qDebug()<<"Exiting DataStore::~DataStore() from thread "<<QThread::currentThreadId();
+	qDebug()<<"Exiting DataStore::~DataStore() from thread "<<handleCounterString(QThread::currentThreadId());
 }
 
 
@@ -298,7 +336,7 @@ bool DataStore::ready()
 Transaction DataStore::enqueueTransaction(Transaction trans)
 {
 	OC_METHODGATE();
-	qDebug()<<"Entered DataStore::enqueueTransaction() from thread "<<QThread::currentThreadId();
+	qDebug()<<"Entered DataStore::enqueueTransaction() from thread "<<handleCounterString(QThread::currentThreadId());
 	{
 		QMutexLocker ml(&mTransactionLogMutex);
 		const int count=mTransactionLog.count();
@@ -314,7 +352,7 @@ Transaction DataStore::enqueueTransaction(Transaction trans)
 		QMutexLocker ml(&mTransactionLogMutex);
 		mTransactionLogNotEmpty.wakeAll();
 	}
-	qDebug()<<"Exiting DataStore::enqueueTransaction() from thread "<<QThread::currentThreadId();
+	qDebug()<<"Exiting DataStore::enqueueTransaction() from thread "<<handleCounterString(QThread::currentThreadId());
 	return trans;
 }
 
@@ -322,7 +360,7 @@ Transaction DataStore::enqueueTransaction(Transaction trans)
 void DataStore::processTransactions()
 {
 	OC_METHODGATE();
-	qDebug()<<"Entered DataStore::processTransactions() from thread "<<QThread::currentThreadId();
+	qDebug()<<"Entered DataStore::processTransactions() from thread "<<handleCounterString(QThread::currentThreadId());
 	{
 		QMutexLocker ml(&mThreadStartedMutex);
 		mThreadStarted=true;
@@ -333,9 +371,9 @@ void DataStore::processTransactions()
 			QMutexLocker ml(&mTransactionLogMutex);
 			const int count=mTransactionLog.count();
 			if (count <=0) {
-				qDebug()<<" + DataStore::processTransactions() waiting for not empty from thread "<<QThread::currentThreadId();
+				qDebug()<<" + DataStore::processTransactions() waiting for not empty from thread "<<handleCounterString(QThread::currentThreadId());
 				mTransactionLogNotEmpty.wait(&mTransactionLogMutex);
-				qDebug()<<" + DataStore::processTransactions() got not empty: "<<mTransactionLog.count()<< " from thread "<<QThread::currentThreadId();
+				qDebug()<<" + DataStore::processTransactions() got not empty: "<<mTransactionLog.count()<< " from thread "<<handleCounterString(QThread::currentThreadId());
 			}
 		}
 		Transaction trans;
@@ -349,7 +387,7 @@ void DataStore::processTransactions()
 		trans.run();
 		qDebug()<<" + DataStore::processTransactions() done running transaction";
 	}
-	qDebug()<<"Exiting DataStore::processTransactions() from thread "<<QThread::currentThreadId();
+	qDebug()<<"Exiting DataStore::processTransactions() from thread "<<handleCounterString(QThread::currentThreadId());
 }
 
 quint64 DataStore::autoIncrement()

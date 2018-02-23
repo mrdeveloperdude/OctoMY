@@ -117,6 +117,7 @@ public:
 	bool isStarted();
 
 	bool isFinished();
+	void notifyFinished();
 	void waitForFinished();
 	template <typename F>
 	void onFinished(F callBack);
