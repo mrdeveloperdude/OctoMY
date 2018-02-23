@@ -29,7 +29,7 @@ void TestCommsChannel::testMultiple()
 		QString peersFilenameB;
 		Key keyB;
 		AddressBook peersB(peersFilenameB);
-		peersB.bootstrap(false,false);
+//		peersB.bootstrap(false,false);
 		QVariantMap peerMapB;
 		QString nameB="PARTY B";
 		/*

@@ -48,6 +48,7 @@ TEST_PROJECTS+= \
 	testIDDuel \
 	testUtility \
 	testTryToggle \
+	testSimpleDatastore \
 
 # NOTE: EXTERNAL_LIB_OPENCL is enabled when useful in local_override.pri
 contains(DEFINES, EXTERNAL_LIB_OPENCL){
@@ -84,8 +85,10 @@ contains(DEFINES, USE_TESTS_SELECTED){
 message(ADDING 'SELECTED' TESTS TO BUILD)
 TEST_PROJECTS+= \
 #	testOpenCL \
-	testNetworkSettingsWidget\
-#	testLightWidget\
+#	testNetworkSettingsWidget \
+#	testLightWidget \
+	testSimpleDatastore \
+
 
 STRESS_PROJECTS+= \
 #	stressCapabilities \
