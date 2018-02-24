@@ -64,7 +64,7 @@ CLDeviceSelection::CLDeviceSelection(const QString selectString, bool allowGPU, 
 
 	if (size() == 0) {
 		qWarning()<<"This program requires OpenCL enabled hardware. Unable to find any OpenCL GPU devices, so quitting";
-		exit(1);
+		//exit(1);
 	}
 }
 

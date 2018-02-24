@@ -51,7 +51,7 @@ void TriggerManagerWidget::configure(TriggerSet &set)
 
 void TriggerManagerWidget::addWidget(QWidget &w)
 {
-	qDebug()<<"--- ADDING WIDGET TO TRIGGER MANAGER";
+	//qDebug()<<"--- ADDING WIDGET TO TRIGGER MANAGER";
 	QWidget *si=&w;
 	if(!mWidgets.contains(si)) {
 		mWidgets.push_back(si);
@@ -67,7 +67,7 @@ void TriggerManagerWidget::addWidget(QWidget &w)
 
 void TriggerManagerWidget::removeWidget(QWidget &w)
 {
-	qDebug()<<"--- REMOVING WIDGET FROM TRIGGER MANAGER";
+	//qDebug()<<"--- REMOVING WIDGET FROM TRIGGER MANAGER";
 	if(mWidgets.contains(&w)) {
 		mWidgets.removeAll(&w);
 		ui->widgetCompressedContent->layout()->removeWidget(&w);

@@ -140,7 +140,7 @@ void failOnCLError(cl_int code, QString msg, QString file, int line)
 	}
 	QString error=OCLErrorString(code);
 	qWarning()<<"CL: ERROR: "<<error<<"("<<code<<") for "<<msg<<" @"<<file<<":"<<line;
-	exit(1);
+	//exit(1);
 }
 
 

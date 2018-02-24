@@ -84,6 +84,9 @@ CLGLView::~CLGLView()
 	qDebug()<<"Dtor for glveiw end";
 }
 
+void clglviewFail(QString message){
+	qWarning().noquote().nospace()<<"CLGLVIEW-FAIL: "<<message;
+}
 
 void CLGLView::setRenderer(CLGLViewRenderer * renderer)
 {
@@ -320,12 +323,10 @@ void CLGLView::initCanvas()
 		makeCurrent();
 		canvasVBO=OC_NEW QOpenGLBuffer;
 		if(!canvasVBO->create()) {
-			qWarning()<<"ERROR Creating VBO";
-			exit(1);
+			clglviewFail("ERROR Creating VBO");
 		}
 		if(!canvasVBO->bind()) {
-			qWarning()<<"ERROR Binding VBO";
-			exit(1);
+			clglviewFail("ERROR Binding VBO");
 		}
 		QVector<GLfloat> vertData;
 		const GLfloat s=1.0f;
@@ -382,8 +383,7 @@ void CLGLView::initCanvas()
 
 		canvasTexture->setSize(w,h);
 		if(!canvasTexture->create()) {
-			qWarning()<<"ERROR Creating tex of size "<<w<<"x"<<h;
-			exit(1);
+			clglviewFail("ERROR Creating tex of size "+QString::number(w)+"x"+QString::number(h));
 		}
 		qDebug()<<"CREATED TEX WITH ID "<<canvasTexture->textureId()<< " AND SIZE "<<w<<"x"<<h;
 
@@ -402,12 +402,10 @@ void CLGLView::initCanvas()
 	if(nullptr==canvasProgram) {
 		canvasProgram = OC_NEW QOpenGLShaderProgram;
 		if(!canvasProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl_shaders/basic.vert")) {
-			qWarning()<<"ERROR: Could not add vertex shader from source: "<<canvasProgram->log();
-			exit(1);
+			clglviewFail("ERROR: Could not add vertex shader from source: "+canvasProgram->log());
 		}
 		if(!canvasProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl_shaders/basic.frag")) {
-			qWarning()<<"ERROR: Could not add fragment shader from source: "<<canvasProgram->log();
-			exit(1);
+			clglviewFail("ERROR: Could not add fragment shader from source: "+canvasProgram->log());
 		}
 		canvasProgram->bindAttributeLocation("vertex", PROGRAM_VERTEX_ATTRIBUTE);
 		canvasProgram->bindAttributeLocation("texCoord", PROGRAM_TEXCOORD_ATTRIBUTE);
@@ -476,8 +474,7 @@ void CLGLView::initCTX()
 
 	qDebug()<<"MCTX: "<<tempCTX<<" is "<<(tempCTX->isValid()?"VALID":"INVALID");
 	if(!tempCTX->isValid()) {
-		qWarning()<<"ERROR ctx not valid";
-		exit(1);
+		clglviewFail("ERROR ctx not valid");
 	}
 
 	makeCurrent();
@@ -486,14 +483,12 @@ void CLGLView::initCTX()
 		osurf->setFormat(ctx->surface()->format());
 		osurf->create();
 	} else {
-		qWarning()<<"ERROR preparing offscreen surface for engine context";
-		exit(1);
+		clglviewFail("ERROR preparing offscreen surface for engine context");
 	}
 	QSurface *osurfp=osurf;
 	//ctx->surface();
 	if(nullptr==osurfp) {
-		qWarning()<<"ERROR getting surface for engine context";
-		exit(1);
+		clglviewFail("ERROR getting surface for engine context");
 	}
 	doneCurrent();
 	//GLContext tempSharingGLContext(tempCTX, osurfp);	mSharingGLContext=tempSharingGLContext;
