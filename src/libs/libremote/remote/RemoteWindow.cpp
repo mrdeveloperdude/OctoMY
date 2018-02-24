@@ -98,7 +98,7 @@ void RemoteWindow::prepareDiscovery()
 		mRemote->addressBook().setHookSignals(*this, true);
 		mRemote->addressBook().synchronize([=](SimpleDataStore &ab, bool ok) {
 			qDebug()<<"Address book synchronized: "<<ok;
-			prepareDiscovery();
+			//prepareDiscovery();
 			preparePairing();
 		});
 	} else {

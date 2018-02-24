@@ -40,6 +40,10 @@ public:
 	explicit Remote(NodeLauncher<Remote> &launcher, QObject *parent = nullptr);
 	virtual ~Remote();
 
+public:
+	virtual void init();
+	virtual void deInit();
+
 	//void startComms(const NetworkAddress &localAddress, const NetworkAddress &partnerAddress);
 
 	virtual QSharedPointer<QWidget> showWindow();

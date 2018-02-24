@@ -55,6 +55,9 @@ public:
 
 public:
 
+	virtual void init();
+	virtual void deInit();
+
 	void setPanic(bool);
 
 	AgentConfigStore &configurationStore();

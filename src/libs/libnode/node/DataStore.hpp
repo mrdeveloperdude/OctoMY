@@ -50,8 +50,12 @@ class Transaction;
 class DataStore;
 
 
+
+QDebug operator<< (QDebug d, TransactionType tt);
+
+
 /**
-  Qt Style private class for Transaction
+  Private class for Transaction handle
   ( http://stackoverflow.com/questions/25250171/how-to-use-the-qts-pimpl-idiom )
 */
 
@@ -90,15 +94,14 @@ public:
 class Transaction
 {
 private:
-	QScopedPointer<TransactionPrivate>  d_ptr;
-	Q_DECLARE_PRIVATE(Transaction)
+	QSharedPointer<TransactionPrivate>  p_ptr;
 
 public:
 	inline Transaction() Q_DECL_NOTHROW{}
 	virtual ~Transaction() {}
 public:
 	explicit Transaction(DataStore & store, const TransactionType type, QVariantMap data=QVariantMap());
-	explicit Transaction(TransactionPrivate &dd);
+	explicit Transaction(TransactionPrivate &pp);
 
 	Transaction(const Transaction & other);
 	Transaction(Transaction && other);
@@ -107,7 +110,7 @@ public:
 	bool operator==(Transaction &other);
 	bool operator!=(Transaction &other);
 
-	friend void swap(Transaction& first, Transaction& second) /* nothrow */;
+	//friend void swap(Transaction& first, Transaction& second) Q_DECL_NOTHROW;
 
 
 public:
@@ -238,7 +241,7 @@ private:
 
 public:
 
-	explicit SimpleDataStore(QString filename);
+	explicit SimpleDataStore(QString filename="");
 	virtual ~SimpleDataStore();
 
 	// SimpleDataStore interface
@@ -337,7 +340,7 @@ class SimpleMapStore: public SimpleDataStore
 private:
 	QVariantMap mMap;
 public:
-	explicit SimpleMapStore(QString filename);
+	explicit SimpleMapStore(QString filename="");
 	virtual ~SimpleMapStore();
 
 	// SimpleDataStore interface

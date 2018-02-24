@@ -20,6 +20,7 @@ Remote::Remote(NodeLauncher<Remote> &launcher, QObject *parent)
 	: Node(launcher, OC_NEW AppContext(launcher.options(), launcher.environment(), "remote", parent), ROLE_CONTROL, TYPE_REMOTE, parent)
 {
 	OC_METHODGATE();
+	// NOTE: Please do not put code here that generates events. Instead put them in init()
 }
 
 Remote::~Remote()
@@ -27,6 +28,22 @@ Remote::~Remote()
 	OC_METHODGATE();
 }
 
+
+void Remote::init()
+{
+	OC_METHODGATE();
+	Node::init();
+
+	qDebug()<<"EMITTING LOAD COMLPETE";
+	emit appLoaded();
+}
+
+
+void Remote::deInit()
+{
+	OC_METHODGATE();
+	Node::deInit();
+}
 
 
 QSharedPointer<QWidget> Remote::showWindow()

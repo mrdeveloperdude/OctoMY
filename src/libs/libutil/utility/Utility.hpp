@@ -127,7 +127,8 @@ QByteArray imageToByteArray(QImage &image );
 QByteArray randomImageByteArray(int w=512, int h=512 );
 QByteArray randomJPEGByteArray(int w=512, int h=512, int q=85 );
 
-
+//Data
+bool mapIsIn(const QVariantMap &orig, const QVariantMap &in, const bool careAboutType=false);
 
 
 ///////////////////////////////////////////

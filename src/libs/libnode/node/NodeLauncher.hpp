@@ -142,7 +142,7 @@ int NodeLauncher<T>::run()
 	QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
 	mApp=(mIsHeadless?(OC_NEW QCoreApplication(mArgc, mArgv)):(OC_NEW QApplication(mArgc, mArgv)));
-	//qDebug()<<(headless?"HEADLESS":"GUI ENABLED");
+	qDebug()<<(mIsHeadless?"HEADLESS":"GUI ENABLED");
 
 	if(nullptr!=mApp) {
 		QApplication::setQuitOnLastWindowClosed(false);
@@ -178,6 +178,9 @@ void NodeLauncher<T>::start()
 				mWindow=mNode->showWindow();
 			});
 		}
+	}
+	else{
+		qWarning()<<"ERROR: No node could be created";
 	}
 }
 

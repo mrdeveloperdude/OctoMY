@@ -2,21 +2,23 @@
 
 #include "node/DataStore.hpp"
 
+#include "utility/Utility.hpp"
+
 void TestDataStore::test()
 {
-	// Make sure file does not already exist
+	qDebug()<<" -- Make sure file does not already exist";
 	const QString fn="test_datastore.json";
 	QFile f(fn);
-	if(f.exists()){
+	if(f.exists()) {
 		QCOMPARE(f.remove(), true);
 	}
 
 
-	// Create some dummy data
+	qDebug()<<" -- Create some dummy data";
 	QVariantMap data;
 	{
-		data["myInt"]=123;
-		data["myFloat"]=123.4;
+		data["myInt"]=(quint32)123;
+		data["myFloat"]=(double)123.4;
 		data["myString"]="Abc";
 		QVariantMap map;
 		map["A"]="A";
@@ -24,24 +26,33 @@ void TestDataStore::test()
 		data["myMap"]=map;
 	}
 
-	// Create data store on disk, saving the dummy data
+	qDebug()<<" -- Create data store on disk, saving the dummy data";
 	{
 		DataStore ds(fn);
 		QCOMPARE(ds.filename(), fn);
 		QCOMPARE(ds.fileExists(), false);
 		ds.set(data);
+		QCOMPARE(ds.fileExists(), false);
+		Transaction sts=ds.save();
+		sts.waitForFinished();
+		QCOMPARE(ds.fileExists(), true);
 	}
 
-	// Load data store and verify that the data is loaded correctly
+	qDebug()<<" -- Load data store and verify that the data is loaded correctly";
 	{
 		DataStore ds(fn);
 		QCOMPARE(ds.filename(), fn);
 		QCOMPARE(ds.fileExists(), true);
+		Transaction lts=ds.load();
+		lts.waitForFinished();
 		Transaction gts=ds.get();
 		gts.waitForFinished();
 		QVariantMap g=gts.data();
-		QCOMPARE(g, data);
+		qDebug()<<"Orig: "<<data;
+		qDebug()<<"Loaded: "<<g;
+		QVERIFY(utility::mapIsIn(g, data));
 	}
+	qDebug()<<" -- Done";
 
 }
 

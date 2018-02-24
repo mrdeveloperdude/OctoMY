@@ -33,6 +33,11 @@ public:
 	virtual ~Hub();
 
 public:
+	virtual void init();
+	virtual void deInit();
+
+
+public:
 	virtual QSharedPointer<QWidget> showWindow();
 
 

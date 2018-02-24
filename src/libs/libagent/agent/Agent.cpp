@@ -15,6 +15,7 @@
 #include "zoo/ZooClient.hpp"
 #include "node/AppContext.hpp"
 #include "hw/controllers/ActuatorControllerFactory.hpp"
+#include "basic/AddressEntry.hpp"
 
 #include "AgentCourierSet.hpp"
 
@@ -24,6 +25,7 @@
 #include <QAccelerometerReading>
 #include <QGyroscopeReading>
 #include <QGeoPositionInfo>
+#include <QSharedPointer>
 
 
 
@@ -37,25 +39,7 @@ Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 
 {
 	OC_METHODGATE();
-
-	mKeyStore.synchronize([this](SimpleDataStore &sms, bool ok){
-		qDebug()<<"Keystore synchronized: "<<ok;
-		mKeyStoreReady=ok;
-		checkLoadCompleted();
-	});
-
-	mConfigStore.synchronize([this](SimpleDataStore &sms, bool ok){
-		qDebug()<<"Local identity synchronized: "<<ok;
-		mConfigStoreReady=ok;
-		checkLoadCompleted();
-	});
-
-	mAgentConfigStore.synchronize([this](SimpleDataStore &sms, bool ok){
-		qDebug()<<"Agent Config Store synchronized: "<<ok;
-		mAgentConfigStoreReady=ok;
-		checkLoadCompleted();
-		reloadController();
-	});
+	// NOTE: Please do not put code here that generates events. Instead put them in init()
 }
 
 Agent::~Agent()
@@ -65,6 +49,39 @@ Agent::~Agent()
 		mActuatorController->setConnected(false);
 		mActuatorController=nullptr;
 	}
+}
+
+
+
+void Agent::init()
+{
+	OC_METHODGATE();
+	Node::init();
+	mKeyStore.synchronize([this](SimpleDataStore &sms, bool ok) {
+		qDebug()<<"Keystore synchronized: "<<ok;
+		mKeyStoreReady=ok;
+		checkLoadCompleted();
+	});
+
+	mConfigStore.synchronize([this](SimpleDataStore &sms, bool ok) {
+		qDebug()<<"Local identity synchronized: "<<ok;
+		mConfigStoreReady=ok;
+		checkLoadCompleted();
+	});
+
+	mAgentConfigStore.synchronize([this](SimpleDataStore &sms, bool ok) {
+		qDebug()<<"Agent Config Store synchronized: "<<ok;
+		mAgentConfigStoreReady=ok;
+		checkLoadCompleted();
+		reloadController();
+	});
+}
+
+
+void Agent::deInit()
+{
+	OC_METHODGATE();
+	Node::deInit();
 }
 
 
@@ -175,6 +192,7 @@ bool Agent::checkLoadCompleted()
 	const bool loaded = mKeyStoreReady && mConfigStoreReady && mAgentConfigStoreReady;
 	qDebug()<<"CHECK LOAD COMPLETE: "<<loaded;
 	if(loaded) {
+		qDebug()<<"EMITTING LOAD COMLPETE";
 		emit appLoaded();
 	}
 	return loaded;
@@ -183,8 +201,6 @@ bool Agent::checkLoadCompleted()
 
 
 
-#include "basic/AddressEntry.hpp"
-#include <QSharedPointer>
 
 
 //////////////////////////////////////////////////
