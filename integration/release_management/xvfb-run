@@ -1,0 +1,60 @@
+#!/bin/bash
+XVFBPID=-1
+X11VNCPID=-1
+PAYLOADPID=-1
+# trap ctrl-c and call ctrl_c()
+trap ctrl_c INT
+
+function ctrl_c() {
+	echo "** Trapped CTRL-C, killing payload"
+	kill -9 "$PAYLOADPID"
+}
+
+
+export DISPLAY=:1
+#/etc/init.d/xvfb start
+#sleep 1
+#/etc/init.d/x11vnc start
+#sleep 1
+
+
+function do_xvfb(){
+	XVFB=/usr/bin/Xvfb
+	XVFBARGS="$DISPLAY -ac -screen 0 1024x768x16 +extension RANDR"
+	echo "--- Starting virtual X frame buffer: Xvfb"
+	echo "    CMD=$XVFB $XVFBARGS"
+	$XVFB $XVFBARGS &
+	XVFBPID="$!"
+}
+
+
+function do_vnc(){
+	X11VNC=/usr/bin/x11vnc
+	X11VNCARGS="-v -bg -rfbport 5900 -forever -nopw -ncache_cr -ncache 10"
+	# -env X11VNC_CREATE_GEOM=${1:-1024x768x16} 
+	# -env X11VNC_FINDDISPLAY_ALWAYS_FAILS=1
+	echo "--- Starting x11 remote access: X11vnc on $DISPLAY"
+	echo "    CMD=$X11VNC $X11VNCARGS"
+	$X11VNC $X11VNCARGS
+	X11VNCPID="$!"
+}
+
+function do_payload(){
+	echo "--- Starting payload $@"
+	$1 &
+	PAYLOADPID="$!"
+	wait $PAYLOADPID
+	exit_value=$?
+	#/etc/init.d/x11vnc stop
+	#/etc/init.d/xvfb stop
+	echo "--- Payload completed with exit code $exit_value, quitting"
+	exit $exit_value
+}
+
+
+do_xvfb
+sleep 2
+do_vnc
+sleep 2
+do_payload $@
+
