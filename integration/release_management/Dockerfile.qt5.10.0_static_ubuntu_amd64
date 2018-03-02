@@ -34,6 +34,7 @@ RUN apt-get install -y \
 #       libgstreamer-vaapi1.0-dev
         libgypsy-dev \
         libharfbuzz-dev \
+        libfreetype6-dev \
         libicu-dev \
         libjsoncpp-dev \
         libminizip-dev \
