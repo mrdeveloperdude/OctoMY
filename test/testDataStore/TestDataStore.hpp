@@ -7,8 +7,11 @@ class TestDataStore:public QObject
 {
 	Q_OBJECT
 private slots:
-	void test();
 
+	void testConcurrentQueue();
+	void testDataStore();
+	void testStressDataStore();
+public:
 };
 
 

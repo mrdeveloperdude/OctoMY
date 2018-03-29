@@ -1,9 +1,11 @@
 #include "TestDeliveryWizard.hpp"
 
 #include "node/Node.hpp"
+#include "node/NodeLauncher.hpp"
 #include "node/AppContext.hpp"
 
 #include "widgets/AgentDeliveryWizard.hpp"
+
 
 #include <QProcessEnvironment>
 #include <QCommandLineParser>
@@ -53,36 +55,54 @@ void TestDeliveryWizard::test()
 	Q_INIT_RESOURCE(qfi);
 	Q_INIT_RESOURCE(3d);
 
-	QSharedPointer<Node> testAgent(OC_NEW Node(agentContext, NodeRole::ROLE_AGENT, NodeType::TYPE_AGENT, this));
-	QVERIFY(nullptr!=testAgent);
-	AgentDeliveryWizardTest *delWiz=OC_NEW AgentDeliveryWizardTest();
-	QVERIFY(nullptr!=delWiz);
-	delWiz->configure(testAgent);
-	delWiz->show();
-	const int delay=50;
-	QLineEdit *lineEditName=delWiz->findChild<QLineEdit *>("lineEditName");
-	QString agentName="rnoldg";
-	testLineEdit(lineEditName, "Arnold1337!!#g", agentName, delay);
-	QStackedWidget *stackedWidget=delWiz->findChild<QStackedWidget*>("stackedWidget");
-	QVERIFY(nullptr!=stackedWidget);
-	QPushButton *pushButtonOnward=delWiz->findChild<QPushButton *>("pushButtonOnward");
-	QVERIFY(nullptr!=pushButtonOnward);
-	QVERIFY(pushButtonOnward->isEnabled());
-	QVERIFY(pushButtonOnward->isVisible());
-	QCOMPARE(stackedWidget->currentWidget()->objectName(), QString("pageDelivery"));
-	QSignalSpy spyStackedWidget(stackedWidget , SIGNAL(currentChanged(int)));
-	QCOMPARE(spyStackedWidget.count(), 0);
-	//QSignalSpy spyPushButtonOnward(pushButtonOnward , SIGNAL(clicked(bool)));
-	QTest::mouseClick(pushButtonOnward, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), delay);
-	QCOMPARE(stackedWidget->currentWidget()->objectName(), QString("pageBirthInProgress"));
-	QCOMPARE(spyStackedWidget.count(), 1);
-	if(!spyStackedWidget.wait(AgentDeliveryWizard::MINIMUM_BIRTH_TIME*20)) {
-		qWarning()<<"WAIT #1 FAILED";
+	for( int i=0;i<100;++i){
+		NodeLauncher<Agent> nodeLauncher(0, nullptr);
+
+		QSharedPointer<Node> testAgent(OC_NEW Node(nodeLauncher, agentContext, NodeRole::ROLE_AGENT, NodeType::TYPE_AGENT, this));
+		QVERIFY(nullptr!=testAgent);
+		QFile file(testAgent->keyStore().filename());
+		if(file.exists()){
+			file.remove();
+		}
+		QVERIFY(!file.exists());
+		// At this point we sleep to let async init complete
+		// TODO: We might want to perform synchronization instead
+		QThread::msleep(1000);
+
+		AgentDeliveryWizardTest *delWiz=OC_NEW AgentDeliveryWizardTest();
+		QVERIFY(nullptr!=delWiz);
+		delWiz->configure(testAgent);
+		delWiz->show();
+
+
+
+
+		const int delay=50;
+		QLineEdit *lineEditName=delWiz->findChild<QLineEdit *>("lineEditName");
+		QString agentName="arnold";
+		testLineEdit(lineEditName, "AarnXol1337!!#d", agentName, delay);
+		QStackedWidget *stackedWidget=delWiz->findChild<QStackedWidget*>("stackedWidget");
+		QVERIFY(nullptr!=stackedWidget);
+		QPushButton *pushButtonOnward=delWiz->findChild<QPushButton *>("pushButtonOnward");
+		QVERIFY(nullptr!=pushButtonOnward);
+		QVERIFY(pushButtonOnward->isEnabled());
+		QVERIFY(pushButtonOnward->isVisible());
+		QCOMPARE(stackedWidget->currentWidget()->objectName(), QString("pageDelivery"));
+		QSignalSpy spyStackedWidget(stackedWidget , SIGNAL(currentChanged(int)));
+		QCOMPARE(spyStackedWidget.count(), 0);
+		//QSignalSpy spyPushButtonOnward(pushButtonOnward , SIGNAL(clicked(bool)));
+		QTest::mouseClick(pushButtonOnward, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), delay);
+		QCOMPARE(stackedWidget->currentWidget()->objectName(), QString("pageBirthInProgress"));
+		QCOMPARE(spyStackedWidget.count(), 1);
+		if(!spyStackedWidget.wait(AgentDeliveryWizard::MINIMUM_BIRTH_TIME*20)) {
+			qWarning()<<"WAIT #1 FAILED";
+		}
+		QCOMPARE(spyStackedWidget.count(), 2);
+		QCOMPARE(stackedWidget->currentWidget()->objectName(), QString("pageDone"));
+		delete delWiz;
+		delWiz=nullptr;
 	}
-	QCOMPARE(spyStackedWidget.count(), 2);
-	QCOMPARE(stackedWidget->currentWidget()->objectName(), QString("pageDone"));
-	delete delWiz;
-	delWiz=nullptr;
+	QThread::msleep(1000);
 }
 
 

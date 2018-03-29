@@ -25,8 +25,8 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	, mSettings(nullptr)
 	, mNode(nullptr)
 	, mBirthDate(0)
-	, completeCounter(0)
-	, completeOK(false)
+	, mCompleteCounter(0)
+	, mCompleteOK(false)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
@@ -53,13 +53,14 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	mBirthTimer.setSingleShot(true);
 
 	if(!connect(&mBirthTimer, &QTimer::timeout, this, [=]() {
-	onBirthComplete(true);
+		qDebug()<<"birth timer timed out, calling birth done";
+		onBirthComplete(true);
 	}, OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
 	if(!connect(ui->lineEditName, &QLineEdit::textEdited, this, [=](QString s) {
-	ui->pushButtonOnward->setEnabled(s.length()>=minLetters);
+		ui->pushButtonOnward->setEnabled(s.length()>=minLetters);
 	},OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
@@ -108,11 +109,6 @@ void AgentDeliveryWizard::startBirth()
 {
 	OC_METHODGATE();
 	if(!mNode.isNull()) {
-		KeyStore &keystore=mNode->keyStore();
-		keystore.clear();
-		keystore.synchronize([this](SimpleDataStore &sds, bool ok){
-			onBirthComplete(ok);
-		});
 		QString name=ui->lineEditName->text();
 		name[0]=name[0].toUpper();
 		mID.setName(name);
@@ -120,10 +116,17 @@ void AgentDeliveryWizard::startBirth()
 		mID.setGender(gender);
 		qDebug()<<"XXX - Started birth for NAME: "<<name<<", GENDER: "<<gender;
 		mSpinner->start();
-		completeCounter=0;
-		completeOK=false;
+		mCompleteCounter=0;
+		mCompleteOK=false;
 		mBirthTimer.start();
 		ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);
+		KeyStore &keystore=mNode->keyStore();
+		keystore.clear();
+		keystore.save();
+		keystore.synchronize([this](SimpleDataStore &sds, bool ok){
+			qDebug()<<"synchronized keystore, calling birth done";
+			onBirthComplete(ok);
+		});
 	}
 }
 
@@ -141,17 +144,19 @@ AgentDeliveryWizard::~AgentDeliveryWizard()
 void AgentDeliveryWizard::onBirthComplete(bool ok)
 {
 	OC_METHODGATE();
-	QMutexLocker timeoutLock(&timeoutMutex);
+	qDebug()<<"onBirthComplete got "<<ok;
+	QMutexLocker timeoutLock(&mTimeoutMutex);
 	if(!mNode.isNull()) {
-		completeOK|=ok;
-		completeCounter++;
-		if(completeCounter>=2) {
+		mCompleteOK|=ok;
+		mCompleteCounter++;
+		if(mCompleteCounter>=2) {
 			KeyStore &keystore=mNode->keyStore();
 			qDebug()<<"XXX - Birth complete!";
 			mBirthTimer.stop();
 			mSpinner->stop();
-			if(!keystore.ready() || !ok ) {
-				qWarning()<<"XXX - ERROR: Birthdefects detected!";
+			const bool dok=keystore.ready();
+			if(!dok || !ok ) {
+				qWarning()<<"XXX - ERROR: Birthdefects detected: datastore.ready="<<dok<<", ok="<<ok;
 				qDebug()<<"XXX: DATA AFTER AFILED LOAD WAS: "<<keystore;
 				//Go back to try again
 				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
@@ -186,11 +191,12 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 				}
 			}
 		} else {
-			//qDebug()<<"XXX - Birth almost complete...";
+			qDebug()<<"XXX - Birth almost complete...";
 		}
 	} else {
 		qWarning()<<"ERROR: No node";
 	}
+	qDebug()<<"onBirthComplete over with completeCounter="<<mCompleteCounter<<" and page="<<ui->stackedWidget->currentWidget()->objectName();
 }
 
 

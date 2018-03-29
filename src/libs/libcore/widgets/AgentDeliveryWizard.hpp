@@ -35,9 +35,9 @@ protected:
 	QSharedPointer<Associate> mNodeIdentity;
 	quint64 mBirthDate;
 
-	QMutex timeoutMutex;
-	quint8 completeCounter;
-	bool completeOK;
+	QMutex mTimeoutMutex;
+	quint8 mCompleteCounter;
+	bool mCompleteOK;
 
 public:
 

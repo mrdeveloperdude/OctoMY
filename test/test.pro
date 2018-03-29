@@ -85,11 +85,12 @@ contains(DEFINES, USE_TESTS_WEB){
 contains(DEFINES, USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
-	#	testOpenCL \
-	#	testNetworkSettingsWidget \
-	#	testLightWidget \
+#		testOpenCL \
+#		testNetworkSettingsWidget \
+#		testLightWidget \
 		testDataStore \
 		testSimpleDataStore \
+		testDeliveryWizard \
 
 
 	STRESS_PROJECTS+= \

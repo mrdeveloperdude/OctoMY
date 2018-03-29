@@ -20,6 +20,7 @@ QDebug operator<< (QDebug d, TransactionType tt)
 		TransactionType_case_stanza(TRANSACTION_LOAD);
 		TransactionType_case_stanza(TRANSACTION_SAVE);
 		TransactionType_case_stanza(TRANSACTION_SYNCHRONIZE);
+		TransactionType_case_stanza(TRANSACTION_DONE);
 	default: {
 		d.nospace() << "UNKNOWN";
 	}
@@ -46,8 +47,8 @@ static QString handleCounterString(Qt::HANDLE h)
 
 
 static quint64 privCounter=0;
-static QMap<const TransactionPrivate *, quint64> privMap;
-static QString privCounterString(const TransactionPrivate *p)
+static QMap<const StorageEventPrivate *, quint64> privMap;
+static QString privCounterString(const StorageEventPrivate *p)
 {
 	if(nullptr==p) {
 		return "P-null";
@@ -60,7 +61,7 @@ static QString privCounterString(const TransactionPrivate *p)
 }
 
 
-TransactionPrivate::TransactionPrivate(DataStore & store, const TransactionType type, QVariantMap data)
+StorageEventPrivate::StorageEventPrivate(DataStore & store, const TransactionType type, QVariantMap data)
 	: mStore(store)
 	, mType(type)
 	, mData(data)
@@ -75,14 +76,14 @@ TransactionPrivate::TransactionPrivate(DataStore & store, const TransactionType 
 ////////////////////////////////////////////////////////////////////////////////
 
 
-Transaction::Transaction(DataStore & store, const TransactionType type, QVariantMap data)
-	: p_ptr(OC_NEW TransactionPrivate(store, type, data))
+StorageEvent::StorageEvent(DataStore & store, const TransactionType type, QVariantMap data)
+	: p_ptr(OC_NEW StorageEventPrivate(store, type, data))
 {
 }
 
 
 
-Transaction::Transaction(Transaction && other)
+StorageEvent::StorageEvent(StorageEvent && other)
 	: p_ptr(other.p_ptr)
 {
 	//swap(*this, other);
@@ -90,34 +91,34 @@ Transaction::Transaction(Transaction && other)
 }
 
 
-Transaction::Transaction(const Transaction & other)
+StorageEvent::StorageEvent(const StorageEvent & other)
 //	: d_ptr(OC_NEW TransactionPrivate(other.d_func()->mStore, other.d_func()->mType, other.d_func()->mData))
 	: p_ptr(other.p_ptr)
 {
 
 }
 
-Transaction::Transaction(TransactionPrivate &pp)
+StorageEvent::StorageEvent(StorageEventPrivate &pp)
 	: p_ptr(&pp)
 {
 }
 
 
 
-Transaction & Transaction::operator=(Transaction other)
+StorageEvent & StorageEvent::operator=(StorageEvent other)
 {
 	//if(!p_ptr.isNull()){	p_ptr.reset();	}
 	p_ptr=other.p_ptr;
 	return *this;
 }
 
-bool Transaction::operator==(Transaction &other)
+bool StorageEvent::operator==(StorageEvent &other)
 {
 	return ( other.p_ptr == p_ptr );
 }
 
 
-bool Transaction::operator!=(Transaction &other)
+bool StorageEvent::operator!=(StorageEvent &other)
 {
 	return !operator==(other);
 }
@@ -130,48 +131,48 @@ void swap(Transaction& first, Transaction& second)  Q_DECL_NOTHROW
 */
 
 
-DataStore & Transaction::store() const
+DataStore & StorageEvent::store() const
 {
 	OC_METHODGATE();
-	const TransactionPrivate *p=p_ptr.data();
+	const StorageEventPrivate *p=p_ptr.data();
 	return p->mStore;
 }
 
-TransactionType Transaction::type() const
+TransactionType StorageEvent::type() const
 {
 	OC_METHODGATE();
-	const TransactionPrivate *p=p_ptr.data();
+	const StorageEventPrivate *p=p_ptr.data();
 	return p->mType;
 }
 
-QVariantMap Transaction::data() const
+QVariantMap StorageEvent::data() const
 {
 	OC_METHODGATE();
-	const TransactionPrivate *p=p_ptr.data();
+	const StorageEventPrivate *p=p_ptr.data();
 	return p->mData;
 }
 
-bool Transaction::isStarted()
+bool StorageEvent::isStarted()
 {
 	OC_METHODGATE();
-	TransactionPrivate *p=p_ptr.data();
+	StorageEventPrivate *p=p_ptr.data();
 	QMutexLocker ml(&p->mStartedMutex);
 	return p->mStarted;
 }
 
 
-bool Transaction::isFinished()
+bool StorageEvent::isFinished()
 {
 	OC_METHODGATE();
-	TransactionPrivate *p=p_ptr.data();
+	StorageEventPrivate *p=p_ptr.data();
 	QMutexLocker ml(&p->mFinishedMutex);
 	return p->mFinished;
 }
 
-void Transaction::notifyFinished()
+void StorageEvent::notifyFinished()
 {
 	OC_METHODGATE();
-	TransactionPrivate *p=p_ptr.data();
+	StorageEventPrivate *p=p_ptr.data();
 	//qDebug()<<"Entered Transaction::notifyFinished() from thread "<<handleCounterString(QThread::currentThreadId())<< " and P="<<privCounterString(p);
 	QMutexLocker finishedLock(&p->mFinishedMutex);
 	//const bool oldFinished=p->mFinished;
@@ -185,10 +186,10 @@ void Transaction::notifyFinished()
 	//qDebug().noquote().nospace()<<" + Transaction::run() ALL AWOKE";
 }
 
-void Transaction::waitForFinished()
+void StorageEvent::waitForFinished()
 {
 	OC_METHODGATE();
-	TransactionPrivate *p=p_ptr.data();
+	StorageEventPrivate *p=p_ptr.data();
 	//qDebug()<<"Entered Transaction::waitForFinished() from thread "<<handleCounterString(QThread::currentThreadId())<< " and P="<<privCounterString(p);
 	QMutexLocker ml(&p->mFinishedMutex);
 
@@ -205,27 +206,27 @@ void Transaction::waitForFinished()
 	//qDebug()<<"Exiting Transaction::waitForFinished() from thread "<<handleCounterString(QThread::currentThreadId());
 }
 
-bool Transaction::isSuccessfull()
+bool StorageEvent::isSuccessfull()
 {
 	OC_METHODGATE();
-	TransactionPrivate *p=p_ptr.data();
+	StorageEventPrivate *p=p_ptr.data();
 	QMutexLocker ml(&p->mSuccessfullMutex);
 	return p->mSuccessfull;
 }
 
-QString Transaction::message()
+QString StorageEvent::message()
 {
 	OC_METHODGATE();
-	TransactionPrivate *p=p_ptr.data();
+	StorageEventPrivate *p=p_ptr.data();
 	QMutexLocker ml(&p->mMessageMutex);
 	return p->mMessage;
 }
 
-bool Transaction::run()
+bool StorageEvent::run()
 {
 	OC_METHODGATE();
 	//qDebug()<<"Entered Transaction::run() from thread "<<handleCounterString(QThread::currentThreadId());
-	TransactionPrivate *p=p_ptr.data();
+	StorageEventPrivate *p=p_ptr.data();
 	QMutexLocker startedLock(&p->mStartedMutex);
 	bool ret=false;
 	// We only run once
@@ -273,6 +274,12 @@ bool Transaction::run()
 			p->mMessage=p->mSuccessfull?"synchronization succeeded":"synchronization failed";
 		}
 		break;
+		case(TRANSACTION_DONE): {
+			p->mMessage="completion started";
+			p->mSuccessfull=p->mStore.completeSync();
+			p->mMessage=p->mSuccessfull?"complete succeeded":"complete failed";
+		}
+		break;
 		default: {
 			p->mMessage="unknown transaction type";
 			p->mSuccessfull=false;
@@ -298,7 +305,6 @@ bool Transaction::run()
 DataStore::DataStore(QString filename, QObject *parent)
 	: QObject(parent)
 	, mFilename(filename)
-	, mThreadStarted(false)
 	, mAutoIncrement(0)
 	, mDiskCounter(0)
 	, mMemoryCounter(0)
@@ -306,26 +312,20 @@ DataStore::DataStore(QString filename, QObject *parent)
 {
 	OC_METHODGATE();
 	setObjectName("DataStore");
-	qDebug()<<"DataStore created () with filename="<< mFilename <<"	from thread "<<handleCounterString(QThread::currentThreadId());
 	QFile file(mFilename);
-	if(file.exists()) {
+	const bool exists=file.exists();
+	qDebug().noquote().nospace()<<"DataStore created () with filename="<< mFilename <<" (exists="<<exists<<") from thread "<<handleCounterString(QThread::currentThreadId());
+	if(exists) {
 		// Make sure that a sync from initial state will perform a load if there is data on disk
 		mDiskCounter=autoIncrement();
 	}
 	// Start transaction processing in separate thread
-	QtConcurrent::run([this]() {
+	mCompleteFuture=QtConcurrent::run([this]() {
 		OC_METHODGATE();
 		//qDebug()<<"Entered DataStore::QtConcurrent::run::lambda() from thread "<<handleCounterString(QThread::currentThreadId());
 		processTransactions();
 		//qDebug()<<"Exiting DataStore::QtConcurrent::run::lambda() from thread "<<handleCounterString(QThread::currentThreadId());
 	});
-
-
-	QMutexLocker ml(&mThreadStartedMutex);
-	if (!mThreadStarted) {
-		mThreadStartedWait.wait(&mThreadStartedMutex);
-	}
-
 }
 
 DataStore::~DataStore()
@@ -333,8 +333,9 @@ DataStore::~DataStore()
 	OC_METHODGATE();
 	//qDebug()<<"Entered DataStore::~DataStore() from thread "<<handleCounterString(QThread::currentThreadId());
 	// TODO: Look at how to avoid the possibility of an unecessary load during this final sync
-	synchronize().waitForFinished();
-	mDone=true;
+	synchronize();
+	complete();
+	mCompleteFuture.waitForFinished();
 	//qDebug()<<"Exiting DataStore::~DataStore() from thread "<<handleCounterString(QThread::currentThreadId());
 }
 
@@ -361,25 +362,11 @@ bool DataStore::ready()
 
 
 
-Transaction DataStore::enqueueTransaction(Transaction trans)
+StorageEvent DataStore::enqueueTransaction(StorageEvent trans)
 {
 	OC_METHODGATE();
 	//qDebug()<<"Entered DataStore::enqueueTransaction() from thread "<<handleCounterString(QThread::currentThreadId());
-	{
-		QMutexLocker ml(&mTransactionLogMutex);
-		const int count=mTransactionLog.count();
-		if (count >= 100) {
-			//qDebug()<<" + DataStore::enqueueTransaction() waiting for not full";
-			mTransactionLogNotFull.wait(&mTransactionLogMutex);
-			//qDebug()<<" + DataStore::enqueueTransaction() got not full";
-		}
-		mTransactionLog.push_front(trans);
-		//qDebug()<<" + DataStore::enqueueTransaction() appended transaction giving total of "<<mTransactionLog.count();
-	}
-	{
-		QMutexLocker ml(&mTransactionLogMutex);
-		mTransactionLogNotEmpty.wakeAll();
-	}
+	mTransactions.put(trans);
 	//qDebug()<<"Exiting DataStore::enqueueTransaction() from thread "<<handleCounterString(QThread::currentThreadId());
 	return trans;
 }
@@ -388,32 +375,13 @@ Transaction DataStore::enqueueTransaction(Transaction trans)
 void DataStore::processTransactions()
 {
 	OC_METHODGATE();
+	//QThread::msleep(2000);
 	//qDebug()<<"Entered DataStore::processTransactions() from thread "<<handleCounterString(QThread::currentThreadId());
-	{
-		QMutexLocker ml(&mThreadStartedMutex);
-		mThreadStarted=true;
-		mThreadStartedWait.wakeAll();
-	}
 	while(!mDone) {
-		{
-			QMutexLocker ml(&mTransactionLogMutex);
-			const int count=mTransactionLog.count();
-			if (count <=0) {
-				//qDebug()<<" + DataStore::processTransactions() waiting for not empty from thread "<<handleCounterString(QThread::currentThreadId());
-				mTransactionLogNotEmpty.wait(&mTransactionLogMutex);
-				//qDebug()<<" + DataStore::processTransactions() got not empty: "<<mTransactionLog.count()<< " from thread "<<handleCounterString(QThread::currentThreadId());
-			}
-		}
-		Transaction trans;
-		{
-			QMutexLocker ml(&mTransactionLogMutex);
-			trans=mTransactionLog.takeFirst();
-			//qDebug()<<" + DataStore::processTransactions() fetched transaction leaving behind "<<mTransactionLog.count();
-			mTransactionLogNotFull.wakeAll();
-		}
-		//qDebug()<<" + DataStore::processTransactions() running transaction with type="<<trans.type();
+		StorageEvent trans=mTransactions.get();
+		//qDebug()<<" + DataStore::processTransactions() running transaction with type="<<trans.type()<<"	from thread "<<handleCounterString(QThread::currentThreadId());
 		trans.run();
-		//qDebug()<<" + DataStore::processTransactions() done running transaction with type="<<trans.type();
+		//qDebug()<<" + DataStore::processTransactions() done running transaction with type="<<trans.type()<<" from thread "<<handleCounterString(QThread::currentThreadId());
 	}
 	//qDebug()<<"Exiting DataStore::processTransactions() from thread "<<handleCounterString(QThread::currentThreadId());
 }
@@ -426,46 +394,51 @@ quint64 DataStore::autoIncrement()
 
 
 
-Transaction DataStore::clear()
+StorageEvent DataStore::clear()
 {
 	OC_METHODGATE();
-	return enqueueTransaction(Transaction(*this, TRANSACTION_CLEAR));
+	return enqueueTransaction(StorageEvent(*this, TRANSACTION_CLEAR));
 }
 
-Transaction DataStore::get()
+StorageEvent DataStore::get()
 {
 	OC_METHODGATE();
-	return enqueueTransaction(Transaction(*this, TRANSACTION_GET));
+	return enqueueTransaction(StorageEvent(*this, TRANSACTION_GET));
 }
 
-Transaction DataStore::set(QVariantMap data)
+StorageEvent DataStore::set(QVariantMap data)
 {
 	OC_METHODGATE();
-	return enqueueTransaction(Transaction(*this, TRANSACTION_SET, data));
-}
-
-
-Transaction DataStore::load()
-{
-	OC_METHODGATE();
-	return enqueueTransaction(Transaction(*this, TRANSACTION_LOAD));
+	return enqueueTransaction(StorageEvent(*this, TRANSACTION_SET, data));
 }
 
 
-Transaction DataStore::save()
+StorageEvent DataStore::load()
 {
 	OC_METHODGATE();
-	return enqueueTransaction(Transaction(*this, TRANSACTION_SAVE));
+	return enqueueTransaction(StorageEvent(*this, TRANSACTION_LOAD));
 }
 
 
-Transaction DataStore::synchronize()
+StorageEvent DataStore::save()
 {
 	OC_METHODGATE();
-	return enqueueTransaction(Transaction(*this, TRANSACTION_SYNCHRONIZE));
+	return enqueueTransaction(StorageEvent(*this, TRANSACTION_SAVE));
 }
 
 
+StorageEvent DataStore::synchronize()
+{
+	OC_METHODGATE();
+	return enqueueTransaction(StorageEvent(*this, TRANSACTION_SYNCHRONIZE));
+}
+
+
+StorageEvent DataStore::complete()
+{
+	OC_METHODGATE();
+	return enqueueTransaction(StorageEvent(*this, TRANSACTION_DONE));
+}
 
 
 bool DataStore::clearSync()
@@ -578,6 +551,17 @@ bool DataStore::synchronizeSync()
 		succeeded=saveSync();
 	}
 	//qDebug()<<"Exiting Sync Synchronize with succeeded="<<succeeded;
+	return succeeded;
+}
+
+
+bool DataStore::completeSync()
+{
+	OC_METHODGATE();
+	//qDebug()<<"Entering Sync Completion";
+	bool succeeded=true;
+	mDone=true;
+	//qDebug()<<"Exiting Sync Completion with succeeded="<<succeeded;
 	return succeeded;
 }
 

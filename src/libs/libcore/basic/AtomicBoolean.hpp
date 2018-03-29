@@ -2,32 +2,41 @@
 #define ATOMICBOOLEAN_HPP
 
 #include <QMutex>
+#include <QAtomicInteger>
+#include <QDebug>
 
 class AtomicBoolean{
 	private:
-		QMutex mMutex;
-		bool mBool;
+		//QMutex mMutex;
+		//bool mBool;
+		QAtomicInteger<int> mBoolInt;
 		Q_DISABLE_COPY(AtomicBoolean)
 
 	public:
 		AtomicBoolean(bool v)
 			:
-			  mMutex()
-			, mBool(false)
+			//  mMutex()
+			//, mBool(false)
+			 mBoolInt(0)
 		{
 			set(v);
 		}
 
 		bool set(bool v)
 		{
-			QMutexLocker ml(&mMutex);
-			return (mBool=v);
+			//qDebug()<<"atomic bool transition from "<<(0!=mBoolInt)<<" -> "<< v;
+			//QMutexLocker ml(&mMutex);
+			mBoolInt=(v?1:0);
+			return true;
+			//return (mBool=v);
 		}
 
 		bool get()
 		{
-			QMutexLocker ml(&mMutex);
-			return mBool;
+			//QMutexLocker ml(&mMutex);
+			const bool ret=(0!=mBoolInt);
+			return ret;
+			//return mBool;
 		}
 
 

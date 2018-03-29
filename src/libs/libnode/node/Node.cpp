@@ -110,19 +110,21 @@ void Node::init()
 {
 	OC_METHODGATE();
 	mKeyStore.synchronize([this](SimpleDataStore &sms, bool ok){
-		qDebug()<<"Keystore synchronized: "<<ok;
+		qDebug()<<"Keystore synchronized with ok="<<ok;
 	});
 
 	mConfigStore.synchronize([this](SimpleDataStore &sms, bool ok){
-		qDebug()<<"Local identity synchronized: "<<ok;
+		auto map=sms.toMap();
+		qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
 		if(ok) {
-			QSharedPointer<Associate> ass = QSharedPointer<Associate> (OC_NEW Associate(sms.toMap(), false ) );
+
+			QSharedPointer<Associate> ass = QSharedPointer<Associate> (OC_NEW Associate(map, false ) );
 			setNodeIdentity(ass);
 		}
 	});
 
 	mAddressBook.synchronize([=](SimpleDataStore &ab, bool ok){
-		qDebug()<<"Address book synchronized: "<<ok;
+		qDebug()<<"Address book synchronized with ok="<<ok;
 	});
 
 	mClients.syncToAddressBook(mAddressBook, sharedThis());

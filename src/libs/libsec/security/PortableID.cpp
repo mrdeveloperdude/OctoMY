@@ -92,7 +92,7 @@ QString PortableID::identifier() const
 	case(TYPE_ZOO):
 		return QStringLiteral("ZOO-")+mID.left(8);
 	}
-	return QStringLiteral("UNKNONW-")+mID.left(8);
+	return QStringLiteral("UNKNOWN-")+mID.left(8);
 }
 
 QString PortableID::gender() const

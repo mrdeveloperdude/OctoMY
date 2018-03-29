@@ -58,19 +58,19 @@ void Agent::init()
 	OC_METHODGATE();
 	Node::init();
 	mKeyStore.synchronize([this](SimpleDataStore &sms, bool ok) {
-		qDebug()<<"Keystore synchronized: "<<ok;
+		qDebug()<<"Keystore synchronized with ok="<<ok;
 		mKeyStoreReady=ok;
 		checkLoadCompleted();
 	});
 
 	mConfigStore.synchronize([this](SimpleDataStore &sms, bool ok) {
-		qDebug()<<"Local identity synchronized: "<<ok;
+		qDebug()<<"Local identity synchronized with ok="<<ok;
 		mConfigStoreReady=ok;
 		checkLoadCompleted();
 	});
 
 	mAgentConfigStore.synchronize([this](SimpleDataStore &sms, bool ok) {
-		qDebug()<<"Agent Config Store synchronized: "<<ok;
+		qDebug()<<"Agent Config Store synchronized with ok="<<ok;
 		mAgentConfigStoreReady=ok;
 		checkLoadCompleted();
 		reloadController();

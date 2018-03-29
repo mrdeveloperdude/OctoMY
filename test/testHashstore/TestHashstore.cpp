@@ -23,13 +23,13 @@ void TestHashstore::test(){
 	QByteArray ba_truth;
 	QByteArray ba;
 	qDebug()<<"BAT ORIG: "<<QString::fromLatin1(ba_truth);
-	qDebug()<<"BA ORIG: "<<QString::fromLatin1(ba);
+	qDebug()<<"BA ORIG:  "<<QString::fromLatin1(ba);
 	rec0.put(ba);
 	for(int i=0;i<100;++i){
 		ba=rec0.get();
 		QByteArray m="LALALA_"+QString::number(i).toUtf8();
 		qDebug()<<"BAT BEFORE: "<<QString::fromLatin1(ba_truth);
-		qDebug()<<"BA BEFORE: "<<QString::fromLatin1(ba);
+		qDebug()<<"BA BEFORE:  "<<QString::fromLatin1(ba);
 		ba+=m;
 
 		ba_truth+=m;

@@ -132,13 +132,15 @@ bool CreepyVoice::isInitialized()
 	return mInited;
 }
 
-void CreepyVoice::speak(QString word)
+void CreepyVoice::speak(QString sentence)
 {
 	if (isInitialized()) {
-		qDebug() << " speaking \"" << word << "\"\n";
 #ifdef EXTERNAL_LIB_ESPEAK
+		qDebug().noquote().nospace() << "Speaking \"" << sentence << "\"\n";
 		espeak_Synth(word.toStdString().c_str(), word.size() + 1, 0, POS_CHARACTER, 0, espeakCHARS_AUTO, nullptr, (void *)this);
 		//espeak_Synchronize();
+#else
+		qDebug().noquote().nospace() << "I am mute, not speaking \"" << sentence << "\"\n";
 #endif
 	}
 }

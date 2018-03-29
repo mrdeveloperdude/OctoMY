@@ -117,7 +117,7 @@ QString Associate::identifier()
 	case(TYPE_ZOO):
 		return QStringLiteral("ZOO-")+id().left(8);
 	}
-	return QStringLiteral("UNKNONW-")+id().left(8);
+	return QStringLiteral("UNKNOWN-")+id().left(8);
 }
 
 
