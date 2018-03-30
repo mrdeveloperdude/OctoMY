@@ -4,6 +4,7 @@
 
 #include "utility/Utility.hpp"
 
+#include <QVariantMap>
 
 static quint64 sinSleep(qreal phase=0.0, quint64 min=1, quint64 max=50 )
 {
@@ -39,7 +40,7 @@ void TestDataStore::testConcurrentQueue()
 {
 	ConcurrentQueue<QSharedPointer<TestTask> > queue, *queuep = &queue;
 	const int num=4;
-	const int its=1000;
+	const int its=10;
 	QFuture<void> futures[num*2];
 	auto futuresp = &futures;
 	qDebug()<<"Starting "<<num<<" consumers: ";
@@ -133,6 +134,50 @@ void TestDataStore::testDataStore()
 	}
 	qDebug()<<" -- Done";
 
+}
+
+void TestDataStore::testDataStoreSyncEmpty()
+{
+	qDebug()<<" -- Make sure file does not already exist";
+	const QString fn="test_datastore_sync_empty.json";
+	QFile f(fn);
+	if(f.exists()) {
+		QCOMPARE(f.remove(), true);
+	}
+
+
+	qDebug()<<" -- Create some dummy data";
+	QVariantMap data;
+	{
+		data["myInt"]=(quint32)123;
+		data["myFloat"]=(double)123.4;
+		data["myString"]="Abc";
+		QVariantMap map;
+		map["A"]="A";
+		map["B"]="B";
+		data["myMap"]=map;
+	}
+	qDebug()<<" -- Create temporary data store in memory";
+	{
+		DataStore ds;
+	}
+
+	qDebug()<<" -- Create empty datastore with filename and sync";
+	{
+		DataStore ds(fn);
+		QCOMPARE(ds.filename(), fn);
+		QCOMPARE(ds.fileExists(), false);
+		StorageEvent se=ds.synchronize();
+		QCOMPARE(se.isFinished(), false);
+		QCOMPARE(se.type(), STORAGE_EVENT_SYNCHRONIZE);
+		se.waitForFinished();
+		QCOMPARE(se.isFinished(), true);
+		QVariantMap data=se.data();
+		QCOMPARE(data.isEmpty(), true);
+		QCOMPARE(ds.fileExists(), false);
+
+	}
+	qDebug()<<" -- Done";
 }
 
 

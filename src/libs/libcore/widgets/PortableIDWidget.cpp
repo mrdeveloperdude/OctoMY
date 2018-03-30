@@ -54,7 +54,7 @@ void PortableIDWidget::setPortableID(PortableID id)
 	if(ts>0) {
 		ui->labelBirthdate->setVisible(true);
 		ui->labelBirthdateCaption->setVisible(true);
-		ui->labelBirthdate->setText(QDateTime::fromMSecsSinceEpoch(ts).toString("yyyy.MM.dd hh:mm:ss.zzz"));
+		ui->labelBirthdate->setText(QDateTime::fromMSecsSinceEpoch(ts).toString(PortableID::dateFMT));
 		ui->labelBirthdateCaption->setText(isAgent?"Birth date": "Create date");
 	} else {
 		ui->labelBirthdate->setVisible(false);

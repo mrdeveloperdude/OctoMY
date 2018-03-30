@@ -6,12 +6,15 @@
 class TestDataStore:public QObject
 {
 	Q_OBJECT
-private slots:
 
-	void testConcurrentQueue();
-	void testDataStore();
-	void testStressDataStore();
 public:
+	void testConcurrentQueue();
+	void testStressDataStore();
+
+private slots:
+	void testDataStore();
+	void testDataStoreSyncEmpty();
+
 };
 
 

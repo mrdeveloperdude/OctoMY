@@ -21,9 +21,9 @@ AddressEntry::AddressEntry(NetworkAddress address, QString description, quint64 
 AddressEntry::AddressEntry(QVariantMap map)
 	: address( map["address"].toMap() )
 	, description(map["description"].toString())
-	, created(map["createdMS"].toDateTime().toMSecsSinceEpoch())
-	, lastSuccess(map["lastSuccessMS"].toDateTime().toMSecsSinceEpoch())
-	, lastError(map["lastErrorMS"].toDateTime().toMSecsSinceEpoch())
+	, created(utility::variantToMs(map["createdMS"]))
+	, lastSuccess(utility::variantToMs(map["lastSuccessMS"]))
+	, lastError(utility::variantToMs(map["lastErrorMS"]))
 	, numSuccessful(map["numSuccessful"].toULongLong())
 	, numErraneous(map["numErraneous"].toULongLong())
 {
@@ -92,9 +92,9 @@ QVariantMap AddressEntry::toVariantMap() const
 	QVariantMap map;
 	map["address"]=address.toVariantMap();
 	map["description"]=description;
-	map["createdMS"]=QDateTime::fromMSecsSinceEpoch(created);
-	map["lastSuccessMS"]=QDateTime::fromMSecsSinceEpoch(lastSuccess);
-	map["lastErrorMS"]=QDateTime::fromMSecsSinceEpoch(lastError);
+	map["createdMS"]=utility::msToVariant(created);
+	map["lastSuccessMS"]=utility::msToVariant(lastSuccess);
+	map["lastErrorMS"]=utility::msToVariant(lastError);
 	map["numSuccessful"]=numSuccessful;
 	map["numErraneous"]=numErraneous;
 	return map;

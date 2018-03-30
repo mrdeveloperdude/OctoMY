@@ -19,7 +19,7 @@
 #include "ClientList.hpp"
 #include "widgets/TryToggleState.hpp"
 #include "comms/IConnectionStatus.hpp"
-
+#include "node/LocalIdentityStore.hpp"
 
 #include <QObject>
 #include <QHostAddress>
@@ -48,6 +48,8 @@ class BlobFuture;
 
 class INodeLauncher;
 
+
+
 class Node : public QObject, public IConnectionStatus//, public QEnableSharedFromThis<Node>
 {
 	Q_OBJECT
@@ -58,7 +60,7 @@ protected:
 	NodeType mType;
 	KeyStore mKeyStore;
 	// Local ID
-	SimpleMapStore mConfigStore;
+	LocalIdentityStore mLocalIdentity;
 	// Clients' IDs
 	AddressBook mAddressBook;
 	// Client instances
@@ -109,6 +111,7 @@ public:
 	ZooClient *zooClient();
 	SensorInput *sensorInput();
 	QSharedPointer<Associate> nodeIdentity();
+	void setNodeIdentity(QVariantMap map);
 	void setNodeIdentity(QSharedPointer<Associate> nodeID);
 	CameraList *cameraList();
 
@@ -124,6 +127,8 @@ public:
 
 
 	//TryToggleState updateOnlineStatus(const TryToggleState currentTryState);
+
+	virtual void identityChanged();
 
 
 	virtual QSharedPointer<Node> sharedThis();

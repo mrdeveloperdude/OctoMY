@@ -104,6 +104,11 @@ void delay( int millisecondsToWait );
 double fsec();
 float frand();
 
+
+quint64 variantToMs(QVariant v);
+QVariant msToVariant(quint64 ms);
+
+
 // Networking
 QList<QHostAddress> allLocalNetworkAddresses();
 QString localAddress();

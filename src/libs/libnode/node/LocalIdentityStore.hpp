@@ -1,11 +1,14 @@
 #ifndef LOCALIDENTITYSTORE_HPP
 #define LOCALIDENTITYSTORE_HPP
 
+#include "DataStore.hpp"
 
-class LocalIdentityStore
+
+class LocalIdentityStore: public SimpleMapStore
 {
-	public:
-		LocalIdentityStore();
+public:
+	explicit LocalIdentityStore(QString filename="");
+	virtual ~LocalIdentityStore();
 };
 
 #endif // LOCALIDENTITYSTORE_HPP

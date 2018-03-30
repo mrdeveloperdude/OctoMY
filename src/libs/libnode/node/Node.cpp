@@ -28,6 +28,7 @@
 #include "INodeLauncher.hpp"
 #include "basic/Associate.hpp"
 
+
 #include <QCommandLineParser>
 #include <QAccelerometerReading>
 #include <QGyroscopeReading>
@@ -69,7 +70,7 @@ Node::Node(INodeLauncher &laucher, AppContext *context, NodeRole role, NodeType 
 	, mRole (role)
 	, mType (type)
 	, mKeyStore (mContext->baseDir() + "/keystore.json", ROLE_AGENT==mRole)
-	, mConfigStore(mContext->baseDir() + "/local_identity.json")
+	, mLocalIdentity(mContext->baseDir() + "/local_identity.json")
 	, mAddressBook (mContext->baseDir() + "/addressbook.json")
 	, mAddresses(defaultPortForNodeType(mType), true)
 	, mCarrier(OC_NEW CommsCarrierUDP( (QObject *)this) )
@@ -113,13 +114,12 @@ void Node::init()
 		qDebug()<<"Keystore synchronized with ok="<<ok;
 	});
 
-	mConfigStore.synchronize([this](SimpleDataStore &sms, bool ok){
+	mLocalIdentity.synchronize([this](SimpleDataStore &sms, bool ok){
 		auto map=sms.toMap();
 		qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
-		if(ok) {
-
-			QSharedPointer<Associate> ass = QSharedPointer<Associate> (OC_NEW Associate(map, false ) );
-			setNodeIdentity(ass);
+		if(ok && !map.isEmpty()) {
+			qDebug()<<"Enabling newly loaded identity from map: "<<map;
+			setNodeIdentity(map);
 		}
 	});
 
@@ -206,7 +206,7 @@ void Node::unbirth()
 {
 	OC_METHODGATE();
 	mKeyStore.clear();
-	mConfigStore.clear();
+	mLocalIdentity.clear();
 	mAddressBook.clear();
 	mClients.clear();
 
@@ -323,6 +323,17 @@ QSharedPointer<Associate> Node::nodeIdentity()
 }
 
 
+void Node::setNodeIdentity(QVariantMap map)
+{
+	OC_METHODGATE();
+	mNodeIdentity=QSharedPointer<Associate>(OC_NEW Associate(map, true));
+	//qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED BY MAP: "<<map;
+	mLocalIdentity.fromMap(map);
+	mLocalIdentity.save();
+	identityChanged();
+}
+
+
 void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 {
 	OC_METHODGATE();
@@ -331,8 +342,10 @@ void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 	if(!mNodeIdentity.isNull()) {
 		map=mNodeIdentity->toVariantMap();
 	}
-	mConfigStore.fromMap(map);
-	mConfigStore.save();
+	//qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED: "<<map<< " FROM nodeID="<<*mNodeIdentity;
+	mLocalIdentity.fromMap(map);
+	mLocalIdentity.save();
+	identityChanged();
 }
 
 CameraList *Node::cameraList()
@@ -408,6 +421,11 @@ QSet<QSharedPointer<Associate> > Node::controlsWithActiveSessions(quint64 now)
 	return out;
 }
 
+
+void Node::identityChanged()
+{
+	OC_METHODGATE();
+}
 
 QSharedPointer<Node> Node::sharedThis()
 {

@@ -4,11 +4,16 @@
 #include "../common/TestCommon.hpp"
 
 
-class TestAssociate:public QObject{
-		Q_OBJECT
+class TestAssociate:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void test();
+private slots:
+	void test();
+
+	void testMapConversions();
+
+	void testTimeConversions();
 
 };
 

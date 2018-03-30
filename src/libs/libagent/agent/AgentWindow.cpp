@@ -17,6 +17,7 @@
 
 #include <QDebug>
 #include <QMessageBox>
+#include <QMap>
 
 #ifdef Q_OS_ANDROID
 #include <QAndroidJniObject>
@@ -31,7 +32,7 @@
 AgentWindow::AgentWindow(QSharedPointer<Agent> agent, QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::AgentWindow)
-	, mAgent(agent)
+	, mAgent(nullptr)
 	, mHexy(nullptr)
 	, mCameraAction(OC_NEW QAction(tr("Camera"), this))
 	, mPairingAction(OC_NEW QAction(tr("Pair"), this))
@@ -48,8 +49,15 @@ AgentWindow::AgentWindow(QSharedPointer<Agent> agent, QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
+	prepareMenu();
+
+	ui->widgetFace->setHookSignals(*this, true);
+	ui->widgetPlanEditor->configure("agent.plan");
+
+	configure(agent);
 
 	if(!mAgent.isNull()) {
+
 		//Select correct starting page
 		mWasEverUndelivered=!mAgent->keyStore().fileExists();
 
@@ -65,7 +73,6 @@ AgentWindow::AgentWindow(QSharedPointer<Agent> agent, QWidget *parent)
 			qWarning()<<"ERROR: Could not connect ";
 		}
 
-
 		if(!connect(ui->widgetHardware, &HardwareWizard::done, [=]() {
 		gotoNextConfigPage();
 		} )) {
@@ -73,25 +80,14 @@ AgentWindow::AgentWindow(QSharedPointer<Agent> agent, QWidget *parent)
 		}
 
 
-		mAgent->setHookCommsSignals(*this, true);
-		mAgent->setHookColorSignals(*ui->widgetFace, true);
-		ui->widgetFace->setHookSignals(*this, true);
-		ui->widgetPlanEditor->configure("agent.plan");
-		prepareMenu();
-		updateFaceVisibility();
-
-		updateOnlineStatus();
-		ui->widgetPairing->configure(mAgent);
-		ui->widgetDelivery->configure(mAgent);
-		ui->widgetHardware->configure(mAgent);
-		ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
-		ui->widgetFace->setAgent(mAgent);
-		gotoNextConfigPage();
-
-
-	} else {
-		qWarning()<<"WARNING: No Agent in agent window";
+		mAgent->synchronizeLocalIdentity([=](QVariantMap map, bool ok) {
+			qDebug()<<" ***** ***** ***** synchronizeLocalIdentity OK="<<ok<<", map="<<map;
+			configure(agent);
+		});
 	}
+
+	ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
+	gotoNextConfigPage();
 
 #ifdef Q_OS_ANDROID
 	showFullScreen();
@@ -106,6 +102,44 @@ AgentWindow::~AgentWindow()
 }
 
 
+
+void AgentWindow::configure(QSharedPointer<Agent> agent)
+{
+	OC_METHODGATE();
+	// Dissconnect old agent
+	if(!mAgent.isNull()) {
+		mAgent->setHookCommsSignals(*this, false);
+		mAgent->setHookColorSignals(*ui->widgetFace, false);
+	}
+
+	// Set new agent
+	mAgent=agent;
+
+	// Connect new agent
+	if(!mAgent.isNull()) {
+
+		Settings *s=&mAgent->settings();
+		if(nullptr!=s) {
+			mOnlineAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS, false));
+			mShowOnlineButtonAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS));
+			mShowFaceAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_FACE_EYES_SHOW));
+			mShowLogAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_FACE_LOG_SHOW));
+			mShowStatsAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_FACE_STATS_SHOW));
+		}
+
+		mAgent->setHookCommsSignals(*this, true);
+		mAgent->setHookColorSignals(*ui->widgetFace, true);
+		updateOnlineStatus();
+		ui->widgetPairing->configure(mAgent);
+		ui->widgetDelivery->configure(mAgent);
+		ui->widgetHardware->configure(mAgent);
+		ui->widgetFace->setAgent(mAgent);
+		updateFaceVisibility();
+
+	} else {
+		qWarning()<<"WARNING: No Agent in agent window";
+	}
+}
 
 
 void AgentWindow::setCurrentPage(QWidget *curr)
@@ -172,7 +206,8 @@ void AgentWindow::gotoNextConfigPage()
 	setCurrentPage(cur);
 
 	// In case user skips through the whole thing, remind her
-	ui->stackedWidgetFaceOrConfig->setCurrentWidget((mWasEverUndelivered || (isPaired && isHardwareConfigured))?ui->pageFace : ui->pageConfig);
+	const bool stillNeedsConfig= !(mWasEverUndelivered || (isPaired && isHardwareConfigured));
+	ui->stackedWidgetFaceOrConfig->setCurrentWidget(stillNeedsConfig ? ui->pageConfig : ui->pageFace);
 	ui->widgetDeliveryStatus->setLightOn(isDelivered);
 	ui->pushButtonDeliver->setEnabled(!isDelivered);
 	ui->widgetHardwareStatus->setLightOn(isHardwareConfigured);
@@ -204,11 +239,9 @@ void AgentWindow::updateIcon()
 void AgentWindow::prepareMenu()
 {
 	OC_METHODGATE();
-	Settings *s=(nullptr!=mAgent)?(&mAgent->settings()):nullptr;
 
 	// Camera
 	//////////////////
-
 
 	mCameraAction->setStatusTip(tr("Do the camera dance"));
 	mCameraAction->setIcon(QIcon(":/icons/eye.svg"));
@@ -243,10 +276,6 @@ void AgentWindow::prepareMenu()
 	//////////////////
 	mOnlineAction->setStatusTip(tr("Toggle availability of Agent"));
 	mOnlineAction->setCheckable(true);
-
-	if(nullptr!=s) {
-		mOnlineAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS, false));
-	}
 	connect(mOnlineAction, &QAction::triggered, this, &AgentWindow::onOnlineChanged);
 	mMenu.addAction(mOnlineAction);
 
@@ -254,10 +283,6 @@ void AgentWindow::prepareMenu()
 	//////////////////
 	mShowOnlineButtonAction->setStatusTip(tr("Show connect button in main screen"));
 	mShowOnlineButtonAction->setCheckable(true);
-
-	if(nullptr!=s) {
-		mShowOnlineButtonAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_CONNECTION_STATUS));
-	}
 	connect(mShowOnlineButtonAction, &QAction::triggered, this, &AgentWindow::onOnlineButtonVisibilityChanged);
 	mMenu.addAction(mShowOnlineButtonAction);
 
@@ -266,10 +291,6 @@ void AgentWindow::prepareMenu()
 
 	mShowFaceAction->setStatusTip(tr("Show face in main screen"));
 	mShowFaceAction->setCheckable(true);
-
-	if(nullptr!=s) {
-		mShowFaceAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_FACE_EYES_SHOW));
-	}
 	connect(mShowFaceAction, &QAction::triggered, this, &AgentWindow::onFaceVisibilityChanged);
 	mMenu.addAction(mShowFaceAction);
 
@@ -277,9 +298,6 @@ void AgentWindow::prepareMenu()
 	//////////////////
 	mShowLogAction->setStatusTip(tr("Show log in main screen"));
 	mShowLogAction->setCheckable(true);
-	if(nullptr!=s) {
-		mShowLogAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_FACE_LOG_SHOW));
-	}
 	connect(mShowLogAction, &QAction::triggered, this, &AgentWindow::onLogVisibilityChanged);
 	mMenu.addAction(mShowLogAction);
 
@@ -287,9 +305,6 @@ void AgentWindow::prepareMenu()
 	//////////////////
 	mShowStatsAction->setStatusTip(tr("Show stats in main screen"));
 	mShowStatsAction->setCheckable(true);
-	if(nullptr!=s) {
-		mShowStatsAction->setChecked(s->getCustomSettingBool(AgentConstants::AGENT_FACE_STATS_SHOW));
-	}
 	connect(mShowStatsAction, &QAction::triggered, this, &AgentWindow::onStatsVisibilityChanged);
 	mMenu.addAction(mShowStatsAction);
 
@@ -305,7 +320,7 @@ void AgentWindow::prepareMenu()
 	mUnbirthAction->setStatusTip(tr("Delete the identity of this agent to restart birth"));
 	mUnbirthAction->setIcon(QIcon(":/icons/kill.svg"));
 	connect(mUnbirthAction, &QAction::triggered, this, [=]() {
-		if(nullptr!=mAgent) {
+		if(!mAgent.isNull()) {
 			QMessageBox::StandardButton reply = QMessageBox::question(this, "Unbirth", "Are you sure you want to DELETE the personality of this robot forever?", QMessageBox::No|QMessageBox::Yes);
 			if (QMessageBox::Yes==reply) {
 				mWasEverUndelivered=true;
@@ -480,7 +495,7 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 	OC_METHODGATE();
 	if(Qt::Key_Back==e->key()) {
 		/*
-		 * // TODO: Make useful andf working again
+		 * // TODO: Make useful and working again
 		if(ui->pageConnect==ui->stackedWidget->currentWidget()) {
 			appendLog("EXITING APP ON BACK BUTTON");
 			setCurrentPage(ui->pageConfirmQuit);
@@ -513,8 +528,8 @@ void AgentWindow::closeEvent(QCloseEvent *event)
 void AgentWindow::updateOnlineStatus()
 {
 	OC_METHODGATE();
-	/* TODO
 	if(!mAgent.isNull()) {
+		/*
 		const TryToggleState currentTryState=ui->widgetFace->connectionState();
 		const TryToggleState nextTryState=mAgent->updateOnlineStatus(currentTryState);
 		if(nextTryState != currentTryState) {
@@ -523,8 +538,8 @@ void AgentWindow::updateOnlineStatus()
 		// Propagate the possibly changed state to UI
 		updateFaceVisibility();
 		//mOnlineAction->setChecked(wantToBeOnline);
+		*/
 	}
-	*/
 }
 
 

@@ -1,89 +1,146 @@
 #include "TestAssociate.hpp"
 
 #include "basic/Associate.hpp"
+#include "basic/AddressEntry.hpp"
+#include "utility/Utility.hpp"
 
-// YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
-void TestAssociate::test(){
-	//http://travistidwell.com/jsencrypt/demo/
-	const QString key="-----BEGIN RSA PRIVATE KEY-----\n"
-					"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\n"
-					"-----END RSA PRIVATE KEY-----\n";
 
-	const QString pubKey="-----BEGIN PUBLIC KEY-----\n"
-					"MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAhfwrwmldif7ReZEqrMOd\n"
-					"rDNQfgexYttfWjfHyReQzKiolDUrbVLBlSAGk/3R6MKfLjm+dHSJAQRyfp8daJMg\n"
-					"YsYU3NQildb3mnjb3pevJC9DtSnX59aR9xyAuU5Ohm1LU0LcmL3S8p002YRL3U/0\n"
-					"6g1ZDuW2UQU8uuvx8AtVnHN4IKhbHLCOaxdHJ8vItvVJ3wTAXMsG+iOWCFEzej/s\n"
-					"6nN3qhNhQ3W0jWpC4d+Z6VIwUNWMq5Zz1HThZ9ZoSPYUIDivjhRaQtN5zrZyPjOz\n"
-					"47r5etO4Rc07JCe7Gdvh6lx8coxA1DyAPVM6WEVcvfSucVVokd7lzvLcO3n41m/t\n"
-					"WfRZsUkDR0MCdlRFycQ9LwF6ae/d/OD+vkZ4q0sobdwjqvZ85FUsIivxDACCpZHX\n"
-					"t6tgLO74g0eWYRmfsq8JEEtTW0gjI7vpXoRsC2N0KWDAVN2Cw7f8qtneU9LyVDvx\n"
-					"J69K0tn5nBj5aZFVVoDpaLLCy2SmGSf7x4HqUeE9daah1J9YFs7TMq7wZ9Cx/F2P\n"
-					"pT8OvSPpX4uq1OLma5T0A0BxbnxJkmQxFPQJo0yXTgybY+GV82JRHvhAOmObNomv\n"
-					"UgDsyr52AnWOI1ilJcX8EPSR7Jc5gLow8++j+SBrcZDDJ+fAIvmNO2a8wZjVWT+G\n"
-					"GvVy7USArMzrGfjWcX90ugUCAwEAAQ==\n"
-					"-----END PUBLIC KEY-----\n";
-	const QString id="BC68E2093C30E393159B404B5A39F1AB7CE9E9FA452CD0F2C81563BB19F10DE5";
-	const QString ip="127.0.0.1";
-	const quint16 port=8123;
+//http://travistidwell.com/jsencrypt/demo/
+static const QString key="-----BEGIN RSA PRIVATE KEY-----\n"
+						 "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\n"
+						 "-----END RSA PRIVATE KEY-----\n";
+
+static const QString pubKey="-----BEGIN PUBLIC KEY-----\n"
+							"MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAhfwrwmldif7ReZEqrMOd\n"
+							"rDNQfgexYttfWjfHyReQzKiolDUrbVLBlSAGk/3R6MKfLjm+dHSJAQRyfp8daJMg\n"
+							"YsYU3NQildb3mnjb3pevJC9DtSnX59aR9xyAuU5Ohm1LU0LcmL3S8p002YRL3U/0\n"
+							"6g1ZDuW2UQU8uuvx8AtVnHN4IKhbHLCOaxdHJ8vItvVJ3wTAXMsG+iOWCFEzej/s\n"
+							"6nN3qhNhQ3W0jWpC4d+Z6VIwUNWMq5Zz1HThZ9ZoSPYUIDivjhRaQtN5zrZyPjOz\n"
+							"47r5etO4Rc07JCe7Gdvh6lx8coxA1DyAPVM6WEVcvfSucVVokd7lzvLcO3n41m/t\n"
+							"WfRZsUkDR0MCdlRFycQ9LwF6ae/d/OD+vkZ4q0sobdwjqvZ85FUsIivxDACCpZHX\n"
+							"t6tgLO74g0eWYRmfsq8JEEtTW0gjI7vpXoRsC2N0KWDAVN2Cw7f8qtneU9LyVDvx\n"
+							"J69K0tn5nBj5aZFVVoDpaLLCy2SmGSf7x4HqUeE9daah1J9YFs7TMq7wZ9Cx/F2P\n"
+							"pT8OvSPpX4uq1OLma5T0A0BxbnxJkmQxFPQJo0yXTgybY+GV82JRHvhAOmObNomv\n"
+							"UgDsyr52AnWOI1ilJcX8EPSR7Jc5gLow8++j+SBrcZDDJ+fAIvmNO2a8wZjVWT+G\n"
+							"GvVy7USArMzrGfjWcX90ugUCAwEAAQ==\n"
+							"-----END PUBLIC KEY-----\n";
+static const QString id="BC68E2093C30E393159B404B5A39F1AB7CE9E9FA452CD0F2C81563BB19F10DE5";
+static const QString ip="127.0.0.1";
+static const quint16 port=8123;
+
+static const NodeType type=TYPE_AGENT;
+static const NodeRole role=ROLE_AGENT;
+static const QString pin="12345";
+static const QString pin2="54321";
+
+const quint64 now=QDateTime::currentMSecsSinceEpoch();
+
+static QStringList trusts= {
+	"trust-one", "trust-two"
+};
+
+static QVariantMap generateMap()
+{
 
 	QVariantMap keyMap;
 
-	keyMap["privateKey"]="";//Use empty private key on purpose, as associates will not have it (it is included above for completeness only)
+	//keyMap["privateKey"]="";//Use empty private key on purpose, as associates will not have it (it is included above for completeness only)
 	keyMap["publicKey"]=pubKey;
+	keyMap["id"]=id;
+
+	QVariantMap assMap;
+	assMap["key"]=keyMap;
+
+
+	/*
 	QVariantMap localAddrMap;
 	localAddrMap["ip"]=ip;
 	localAddrMap["port"]=port;
+	assMap["localAddress"]=localAddrMap;
+
 	QVariantMap publicAddrMap;
 	publicAddrMap["ip"]=ip;
 	publicAddrMap["port"]=port;
-	QVariantMap assMap;
-	assMap["key"]=keyMap;
-	const NodeType type=TYPE_AGENT;
-	const NodeRole role=ROLE_AGENT;
-	const QString pin="12345";
-	const QString pin2="54321";
+	assMap["publicAddress"]=publicAddrMap;
+	*/
 
 
-	QStringList trusts;
-	trusts <<"trust-one";
-	trusts <<"trust-two";
+
+
+	assMap["name"]="hogboll";
+	assMap["gender"]="Male";
+	assMap["birthDate"]=utility::msToVariant(now-(1000*60*60*24*10));
 
 	assMap["role"]=nodeRoleToString(role);
 	assMap["type"]=nodeTypeToString(type);
-	assMap["publicAddress"]=publicAddrMap;
-	assMap["localAddress"]=localAddrMap;
 	assMap["trusts"]=trusts;
+
+	QVariantList adrList;
+
+	QVariantMap nadrMap;
+	QVariantMap adrMap;
+	nadrMap["ip"]=ip;
+	nadrMap["port"]=port;
+	adrMap["address"]=nadrMap;
+	adrMap["description"]="Description of address";
+
+
+	adrMap["createdMS"]=utility::msToVariant(now);
+	adrMap["lastSuccessMS"]=utility::msToVariant(now);
+	adrMap["lastErrorMS"]=utility::msToVariant(now);
+	adrMap["numSuccessful"]=(quint64)3;
+	adrMap["numErraneous"]=(quint64)3;
+
+	adrList<<adrMap;
+	assMap["addressList"]=adrList;
+
+
+	assMap["lastSeenMS"]=utility::msToVariant(now-9000);
+	assMap["lastInitiatedHandshakeMS"]=utility::msToVariant(now-6000);
+	assMap["lastAdherentHandshakeMS"]=utility::msToVariant(now-10000);
+
+
+	return assMap;
+}
+
+void TestAssociate::test()
+{
+
+	QVariantMap assMap=generateMap();
 
 	QSharedPointer<Associate> ass(OC_NEW Associate(assMap));
 
-	QCOMPARE(ass->id(),id);
-	QCOMPARE(ass->type(),type);
-	QCOMPARE(ass->role(),role);
+	QCOMPARE(ass->id(), id);
+	QCOMPARE(ass->type(), type);
+	QCOMPARE(ass->role(), role);
+
+	QCOMPARE(ass->key().isValid(true), true);
+	QCOMPARE(ass->addressList().isValid(false), true);
+
 	QVERIFY(ass->isValidForClient(true));
 
 	QCOMPARE(ass->trusts(), trusts);
@@ -128,6 +185,86 @@ void TestAssociate::test(){
 	ass->clearPins();
 	const QStringList &pins4=ass->pins();
 	QCOMPARE(pins4.size(),0);
+}
+
+
+void TestAssociate::testMapConversions()
+{
+	QVariantMap assMap1=generateMap();
+
+
+	QSharedPointer<Associate> ass1(OC_NEW Associate(assMap1));
+
+
+	QCOMPARE(ass1->id(), id);
+	QCOMPARE(ass1->type(), type);
+	QCOMPARE(ass1->role(), role);
+
+	QCOMPARE(ass1->key().isValid(true), true);
+
+	auto key=ass1->key();
+
+	QCOMPARE(key.pubKey(), pubKey);
+	QCOMPARE(key.key(), "");
+	auto keyMap=key.toVariantMap(true);
+	qDebug()<<"KEYMAP: "<<keyMap;
+	QCOMPARE(keyMap["privateKey"], QVariant());
+	QCOMPARE(keyMap["publicKey"], pubKey);
+
+	QCOMPARE(ass1->addressList().isValid(false), true);
+
+	QVERIFY(ass1->isValidForClient(true));
+
+	QVariantMap assMap2=ass1->toVariantMap();
+
+	qDebug()<<"ASSMAP-1: "<<assMap1;
+	qDebug()<<"ASSMAP-2: "<<assMap2;
+	QCOMPARE(assMap1, assMap2);
+
+	QSharedPointer<Associate> ass2(OC_NEW Associate(assMap2));
+
+	Associate &assRef1=*ass1.data();
+	Associate &assRef2=*ass2.data();
+
+	qDebug()<<"ASS-1: "<<assRef1;
+	qDebug()<<"ASS-2: "<<assRef2;
+	QVERIFY(assRef1 == assRef2);
+
+	/*
+	map["addressList"]=mAddressList.toVariantList();
+	map["lastSeenMS"]=utility::msToVariant(mLastSeenMS);
+	map["lastInitiatedHandshakeMS"]=utility::msToVariant(mLastInitiatedHandshakeMS);
+	map["lastAdherentHandshakeMS"]=utility::msToVariant(mLastAdherentHandshakeMS);
+	map["birthDate"]=utility::msToVariant(mBirthDate);
+	map["key"]=mKey.toVariantMap(true);
+	map["role"]=nodeRoleToString(mRole);
+	map["type"]=nodeTypeToString(mType);
+	map["name"]=mName;
+	map["gender"]=mGender;
+	//map["pins"]=mPins;//DONT STORE PINS THEY ARE EPHEMERAL
+	map["trusts"]=mTrusts;
+	*/
+
+}
+
+
+void TestAssociate::testTimeConversions()
+{
+	QDateTime dtNow=QDateTime::currentDateTimeUtc();
+	quint64 tsNow=QDateTime::currentMSecsSinceEpoch();
+	QVariant vNow;
+	vNow=dtNow;
+	QVariant vNow2;
+	vNow2=QDateTime::fromMSecsSinceEpoch(tsNow, Qt::UTC);
+	quint64 tsNow2=vNow.toDateTime().toMSecsSinceEpoch();
+	qDebug()<<"dtNow="<<dtNow<<", vNow="<<vNow<<", tsNow="<<tsNow<<", vNow2="<<vNow2<<", tsNow2="<<tsNow2;
+
+	quint64 ms1=utility::variantToMs(dtNow);
+	QVariant v1=utility::msToVariant(ms1);
+	QCOMPARE(v1.toDateTime(), dtNow);
+	quint64 ms2=utility::variantToMs(v1);
+	QCOMPARE(ms2, ms2);
+
 }
 
 

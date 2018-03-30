@@ -41,8 +41,8 @@
 */
 
 
-enum TransactionType {
-	TRANSACTION_CLEAR, TRANSACTION_GET, TRANSACTION_SET, TRANSACTION_LOAD, TRANSACTION_SAVE, TRANSACTION_SYNCHRONIZE, TRANSACTION_DONE
+enum StorageEventType: quint8 {
+	STORAGE_EVENT_CLEAR, STORAGE_EVENT_GET, STORAGE_EVENT_SET, STORAGE_EVENT_LOAD, STORAGE_EVENT_SAVE, STORAGE_EVENT_SYNCHRONIZE, STORAGE_EVENT_DONE
 };
 
 
@@ -51,7 +51,7 @@ class DataStore;
 
 
 
-QDebug operator<< (QDebug d, TransactionType tt);
+QDebug operator<< (QDebug d, StorageEventType tt);
 
 
 /**
@@ -65,7 +65,7 @@ class StorageEventPrivate
 {
 private:
 	DataStore & mStore;
-	const TransactionType mType;
+	const StorageEventType mType;
 	QVariantMap mData;
 	QMutex mStartedMutex;
 	QMutex mFinishedMutex;
@@ -79,7 +79,7 @@ private:
 
 
 public:
-	explicit StorageEventPrivate(DataStore & store, const TransactionType type, QVariantMap data=QVariantMap());
+	explicit StorageEventPrivate(DataStore & store, const StorageEventType type, QVariantMap data=QVariantMap());
 	virtual ~StorageEventPrivate() {}
 
 public:
@@ -100,7 +100,7 @@ public:
 	inline StorageEvent() Q_DECL_NOTHROW{}
 	virtual ~StorageEvent() {}
 public:
-	explicit StorageEvent(DataStore & store, const TransactionType type, QVariantMap data=QVariantMap());
+	explicit StorageEvent(DataStore & store, const StorageEventType type, QVariantMap data=QVariantMap());
 	explicit StorageEvent(StorageEventPrivate &pp);
 
 	StorageEvent(const StorageEvent & other);
@@ -115,7 +115,7 @@ public:
 
 public:
 	DataStore & store() const ;
-	TransactionType type() const ;
+	StorageEventType type() const ;
 	QVariantMap data() const ;
 	bool isStarted();
 
@@ -222,9 +222,12 @@ T ConcurrentQueue<T>::get()
 	while((count<=0) && (!mDone)) {
 		const bool wok=mNotEmpty.wait(&mMutex, rtto);
 		if(!wok){
-			qDebug()<<" ... done="<<mDone <<" count="<<count;
+			//qDebug()<<" ... done="<<mDone <<" count="<<count;
 		}
 		count=mItems.count();
+	}
+	if(mDone){
+		return item;
 	}
 	//qDebug()<<"Got not-empty with count="<<count;
 	const bool wasFull=(count >= mCapacity);
@@ -420,7 +423,7 @@ void SimpleDataStore::clear(F callBack)
 		fromMap(QVariantMap());
 		const bool clear_ok=clear_t.isSuccessfull();
 		if(clear_ok) {
-			qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" clear SUCCEEDED";
+			//qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" clear SUCCEEDED";
 		} else {
 			qWarning()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" clear FAILED";
 		}
@@ -436,7 +439,7 @@ void SimpleDataStore::save(F callBack)
 	mDataStore.save().onFinished([=](StorageEvent save_t) {
 		const bool save_ok=save_t.isSuccessfull();
 		if(save_ok) {
-			qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" save SUCCEEDED";
+			//qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" save SUCCEEDED";
 		} else {
 			qWarning()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" save FAILED";
 		}
@@ -452,13 +455,13 @@ void SimpleDataStore::load(F callBack)
 	OC_METHODGATE();
 	mDataStore.load().onFinished([=](StorageEvent load_t) {
 		const bool load_ok=load_t.isSuccessfull();
-		qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" load finished with ok="<<load_ok;
+		//qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" load finished with ok="<<load_ok;
 		if(load_ok) {
 			mDataStore.get().onFinished([=](StorageEvent get_t) {
 				const bool get_ok=get_t.isSuccessfull();
 				if(get_ok) {
 					auto data=get_t.data();
-					qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" load-get SUCCEEDED with data="<<data;
+					//qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" load-get SUCCEEDED with data="<<data;
 					fromMap(data);
 				} else {
 					qWarning()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" load-get FAILED";
@@ -481,13 +484,13 @@ void SimpleDataStore::synchronize(F callBack)
 	OC_METHODGATE();
 	mDataStore.synchronize().onFinished([=](StorageEvent sync_t) {
 		const bool sync_ok=sync_t.isSuccessfull();
-		qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" sync finished with ok="<<sync_ok;
+		//qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" sync finished with ok="<<sync_ok;
 		if(sync_ok) {
 			mDataStore.get().onFinished([=](StorageEvent get_t) {
 				const bool get_ok=get_t.isSuccessfull();
 				if(get_ok) {
 					auto data=get_t.data();
-					qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" sync-get SUCCEEDED with data="<<data;
+					//qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" sync-get SUCCEEDED with data="<<data;
 					fromMap(data);
 				} else {
 					qWarning()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" sync-get FAILED";

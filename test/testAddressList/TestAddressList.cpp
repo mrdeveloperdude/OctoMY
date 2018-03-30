@@ -6,7 +6,7 @@
 
 #include "comms/NetworkAddress.hpp"
 
-
+#include "utility/Utility.hpp"
 
 void TestAddressList::testAddressEntry()
 {
@@ -23,9 +23,9 @@ void TestAddressList::testAddressEntry()
 	QVariantMap map=ae1.toVariantMap();
 	QCOMPARE(map["address"].toMap(), NetworkAddress(ha,port).toVariantMap());
 	QCOMPARE(map["description"].toString(), description);
-	QCOMPARE(map["createdMS"].toDateTime(), QDateTime::fromMSecsSinceEpoch(created));
-	QCOMPARE(map["lastSuccessMS"].toDateTime(), QDateTime::fromMSecsSinceEpoch(lastSuccess));
-	QCOMPARE(map["lastErrorMS"].toDateTime(), QDateTime::fromMSecsSinceEpoch(lastError));
+	QCOMPARE(map["createdMS"].toDateTime(), utility::msToVariant(created));
+	QCOMPARE(map["lastSuccessMS"].toDateTime(), utility::msToVariant(lastSuccess));
+	QCOMPARE(map["lastErrorMS"].toDateTime(), utility::msToVariant(lastError));
 	QCOMPARE(map["numSuccessful"].toULongLong(), numSuccessful);
 	QCOMPARE(map["numErraneous"].toULongLong(), numErraneous);
 	AddressEntry ae1copy(map);

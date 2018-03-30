@@ -61,7 +61,16 @@ void FaceWidget::updateEyeColor()
 				PortableID pid=ass->toPortableID();
 				ui->widgetEyes->setPortableID(pid);
 			}
+			else{
+				qWarning()<<"ERROR: no change in ID while updating eye color of face widget: '"<<id<<"'";
+			}
 		}
+		else{
+			qWarning()<<"ERROR: no associate while updating eye color of face widget";
+		}
+	}
+	else{
+		qWarning()<<"ERROR: no agent while updating eye color of face widget";
 	}
 }
 

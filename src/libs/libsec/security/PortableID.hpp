@@ -33,6 +33,7 @@ private:
 	static const QString SEP;
 	static const QString SEP_RE;
 	static const QRegularExpression sepRE;
+public:
 	static const QString dateFMT;
 
 public:

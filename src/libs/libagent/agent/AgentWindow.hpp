@@ -62,9 +62,13 @@ private:
 	bool mWasEverUndelivered;
 
 public:
-	explicit AgentWindow(QSharedPointer<Agent> mAgent, QWidget *parent = 0);
+	explicit AgentWindow(QSharedPointer<Agent> agent, QWidget *parent = 0);
 	virtual ~AgentWindow();
 
+
+public:
+
+	void configure(QSharedPointer<Agent> agent);
 public:
 	void appendLog(const QString& text);
 	void updateFaceVisibility();

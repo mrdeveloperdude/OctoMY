@@ -69,7 +69,9 @@ void HardwareWizard::reset()
 			ui->listWidgetController->setCurrentRow(ctlIndex);
 		}
 	}
-
+	else{
+		qWarning()<<"ERROR: Agent was null while reseting hardware wizard";
+	}
 	moveTo(0);
 }
 

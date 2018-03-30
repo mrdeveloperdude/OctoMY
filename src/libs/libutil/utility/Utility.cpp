@@ -1185,6 +1185,19 @@ float frand()
 }
 
 
+
+quint64 variantToMs(QVariant v)
+{
+	return v.toDateTime().toMSecsSinceEpoch();
+}
+
+QVariant msToVariant(quint64 ms)
+{
+	QVariant v=QDateTime::fromMSecsSinceEpoch(ms, Qt::UTC);
+	return v;
+}
+
+
 QList<QHostAddress> allLocalNetworkAddresses()
 {
 	QList<QHostAddress> out;
@@ -1396,21 +1409,20 @@ bool mapIsIn(const QVariantMap &orig, const QVariantMap &in, const bool careAbou
 	for(QVariantMap::const_iterator i = in.constBegin(), e=in.constEnd(); e != i; ++i) {
 		const auto k=i.key();
 		//const auto v=i.value();
-		if(!orig.contains(k)){
+		if(!orig.contains(k)) {
 			qWarning().noquote().nospace()<<"MISMATCH: Orig did not contain key "<<k<< " (which btw should have a value of '"<< in[k]<<"' )";
 			return false;
 		}
-		if(careAboutType && (orig[k].type() != in[k].type()) ){
+		if(careAboutType && (orig[k].type() != in[k].type()) ) {
 			qWarning().noquote().nospace()<<"MISMATCH: Type for key "<<k<< " was '"<< orig[k].type()<<"' but should be '"<< in[k].type()<<"' )";
 			return false;
 		}
-		if(in[k].type()==QVariant::Map){
+		if(in[k].type()==QVariant::Map) {
 			const bool ok=mapIsIn(orig[k].toMap(), in[k].toMap(), careAboutType);
-			if(!ok){
+			if(!ok) {
 				return false;
 			}
-		}
-		else if(orig[k].toString() != in[k].toString()){
+		} else if(orig[k].toString() != in[k].toString()) {
 			qWarning().noquote().nospace()<<"MISMATCH: Value for key "<<k<< " was '"<< orig[k].toString()<<"' but should be '"<< in[k].toString()<<"' )";
 			return false;
 		}

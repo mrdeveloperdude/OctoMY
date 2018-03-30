@@ -25,10 +25,10 @@ Associate::Associate(const QVariantMap map, bool isPublic)
 	, mRole( nodeRoleFromString( map["role"].toString() ) )
 	, mType( nodeTypeFromString( map["type"].toString() ) )
 	, mTrusts( map["trusts"].toStringList())
-	, mLastSeenMS( map["lastSeenMS"].toDateTime().toMSecsSinceEpoch() )
-	, mLastInitiatedHandshakeMS( map["lastInitiatedHandshakeMS"].toDateTime().toMSecsSinceEpoch() )
-	, mLastAdherentHandshakeMS( map["lastAdherentHandshakeMS"].toDateTime().toMSecsSinceEpoch() )
-	, mBirthDate( map["birthDate"].toDateTime().toMSecsSinceEpoch() )
+	, mLastSeenMS( utility::variantToMs(map["lastSeenMS"]) )
+	, mLastInitiatedHandshakeMS( utility::variantToMs(map["lastInitiatedHandshakeMS"]) )
+	, mLastAdherentHandshakeMS( utility::variantToMs(map["lastAdherentHandshakeMS"]) )
+	, mBirthDate( utility::variantToMs(map["birthDate"]) )
 	, mAddressList( map["addressList"].toList() )
 	  //	, mPins( map["pins"].toStringList())// DONT STORE PINS THEY ARE EPHEMERAL
 
@@ -74,10 +74,10 @@ bool Associate::update(const QVariantMap map, bool trustedSource)
 		mGender=( map["gender"].toString() );
 		mRole=( nodeRoleFromString( map["role"].toString() ) );
 		mType=( nodeTypeFromString( map["type"].toString() ) );
-		mLastSeenMS=(map["lastSeenMS"].toDateTime().toMSecsSinceEpoch() );
-		mLastInitiatedHandshakeMS=( map["lastInitiatedHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
-		mLastAdherentHandshakeMS=( map["lastAdherentHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
-		mBirthDate=( map["birthDate"].toDateTime().toMSecsSinceEpoch() );
+		mLastSeenMS=utility::variantToMs(map["lastSeenMS"]);
+		mLastInitiatedHandshakeMS=utility::variantToMs( map["lastInitiatedHandshakeMS"] );
+		mLastAdherentHandshakeMS=utility::variantToMs( map["lastAdherentHandshakeMS"]);
+		mBirthDate=utility::variantToMs( map["birthDate"]);
 
 		mAddressList=AddressList( map["addressList"].toList() );
 
@@ -155,6 +155,20 @@ bool Associate::isValidForClient(bool onlyPublic)
 	OC_METHODGATE();
 	const bool keyValid=mKey.isValid(onlyPublic);
 	const bool listValid=mAddressList.isValid(false);
+	const bool out=( keyValid &&  listValid );
+	if(!out) {
+		qDebug()<<"keyValid(onlyPublic="<<onlyPublic<< ")="<<keyValid<<", listValid()="<<listValid;
+	}
+	return out;
+}
+
+
+
+bool Associate::isValidForLocalIdentity(bool onlyPublic)
+{
+	OC_METHODGATE();
+	const bool keyValid=mKey.isValid(onlyPublic);
+	const bool listValid=true;
 	const bool out=( keyValid &&  listValid );
 	if(!out) {
 		qDebug()<<"keyValid(onlyPublic="<<onlyPublic<< ")="<<keyValid<<", listValid()="<<listValid;
@@ -315,10 +329,11 @@ QVariantMap Associate::toVariantMap()
 	OC_METHODGATE();
 	QVariantMap map;
 	map["addressList"]=mAddressList.toVariantList();
-	map["lastSeenMS"]=QDateTime::fromMSecsSinceEpoch(mLastSeenMS);
-	map["lastInitiatedHandshakeMS"]=QDateTime::fromMSecsSinceEpoch(mLastInitiatedHandshakeMS);
-	map["lastAdherentHandshakeMS"]=QDateTime::fromMSecsSinceEpoch(mLastAdherentHandshakeMS);
-	map["birthDate"]=QDateTime::fromMSecsSinceEpoch(mBirthDate);
+	map["lastSeenMS"]=utility::msToVariant(mLastSeenMS);
+	map["lastInitiatedHandshakeMS"]=utility::msToVariant(mLastInitiatedHandshakeMS);
+
+	map["lastAdherentHandshakeMS"]=utility::msToVariant(mLastAdherentHandshakeMS);
+	map["birthDate"]=utility::msToVariant(mBirthDate);
 	map["key"]=mKey.toVariantMap(true);
 	map["role"]=nodeRoleToString(mRole);
 	map["type"]=nodeTypeToString(mType);
@@ -337,12 +352,12 @@ void Associate::fromVariantMap(const QVariantMap map)
 	mKey=Key( map["key"].toMap(), true);
 	mName=( map["name"].toString() );
 	mGender=( map["gender"].toString() );
-	mBirthDate= ( map["birthDate"].toDateTime().toMSecsSinceEpoch());
+	mBirthDate= utility::variantToMs( map["birthDate"]);
 	mRole=( nodeRoleFromString( map["role"].toString() ) );
 	mType=( nodeTypeFromString( map["type"].toString() ) );
-	mLastSeenMS=( map["lastSeenMS"].toDateTime().toMSecsSinceEpoch() );
-	mLastInitiatedHandshakeMS=( map["lastInitiatedHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
-	mLastAdherentHandshakeMS=( map["lastAdherentHandshakeMS"].toDateTime().toMSecsSinceEpoch() );
+	mLastSeenMS=utility::variantToMs( map["lastSeenMS"]);
+	mLastInitiatedHandshakeMS=utility::variantToMs( map["lastInitiatedHandshakeMS"]);
+	mLastAdherentHandshakeMS=utility::variantToMs( map["lastAdherentHandshakeMS"]);
 	mAddressList=AddressList( map["addressList"].toList() );
 	mTrusts=map["trusts"].toStringList();
 }
@@ -395,8 +410,6 @@ bool Associate::operator!=(Associate &o)
 	OC_METHODGATE();
 	return (! (o == *this));
 }
-
-
 
 
 const QDebug &operator<<(QDebug &d, Associate &ass)

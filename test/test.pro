@@ -91,6 +91,7 @@ contains(DEFINES, USE_TESTS_SELECTED){
 		testDataStore \
 		testSimpleDataStore \
 		testDeliveryWizard \
+		testAssociate \
 
 
 	STRESS_PROJECTS+= \

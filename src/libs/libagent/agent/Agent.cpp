@@ -34,7 +34,7 @@ Agent::Agent(NodeLauncher<Agent> &launcher, QObject *parent)
 	, mAgentConfigStore(mContext->baseDir() + "/agent_config.json")
 	, mActuatorController(nullptr)
 	, mKeyStoreReady(false)
-	, mConfigStoreReady(false)
+	, mLocalIdentityStoreReady(false)
 	, mAgentConfigStoreReady(false)
 
 {
@@ -63,9 +63,9 @@ void Agent::init()
 		checkLoadCompleted();
 	});
 
-	mConfigStore.synchronize([this](SimpleDataStore &sms, bool ok) {
+	mLocalIdentity.synchronize([this](SimpleDataStore &sms, bool ok) {
 		qDebug()<<"Local identity synchronized with ok="<<ok;
-		mConfigStoreReady=ok;
+		mLocalIdentityStoreReady=ok;
 		checkLoadCompleted();
 	});
 
@@ -134,7 +134,7 @@ void Agent::reloadController()
 	OC_METHODGATE();
 	// Unload old controller
 	if(nullptr!=mActuatorController) {
-		qDebug()<<"Unloading old controller";
+		qDebug()<<"Unloading old actuator controller";
 		mActuatorController->setConnected(false);
 		mActuatorController->deleteLater();
 		mActuatorController=nullptr;
@@ -144,23 +144,37 @@ void Agent::reloadController()
 		AgentConfig &config=*configp;
 		QString controllerName=config.controllerName().trimmed();
 		if(!controllerName.isEmpty()) {
-			qDebug()<<"Attempting to generate controller of type "<<controllerName;
+			qDebug()<<"Attempting to generate actuator controller of type "<<controllerName;
 			ActuatorControllerFactory factory;
 			mActuatorController=factory.controllerFactory(controllerName);
 			if(nullptr!=mActuatorController) {
-				qDebug()<<"Controller created, configuring";
+				qDebug()<<"Actuator controller created, configuring";
 				QVariantMap controllerConfig=config.controllerConfig();
 				mActuatorController->setConfiguration(controllerConfig);
 				mActuatorController->setConnected(true);
 			}
 		} else {
-			qDebug()<<"No controller named in agent config";
+			qDebug()<<"No actuator controller named in agent config";
 		}
 	} else {
 		qDebug()<<"No agent config";
 	}
 }
 
+
+void Agent::identityChanged()
+{
+	OC_METHODGATE();
+
+	if(!mWindow.isNull()) {
+		QSharedPointer<Agent> sp=this->QEnableSharedFromThis<Agent>::sharedFromThis();
+		if(sp.isNull()) {
+			volatile int ba=0;
+			qWarning()<<"SHARED POINTER TO THIS WAS NULL!"<<ba;
+		}
+		mWindow->configure(sp);
+	}
+}
 
 
 void Agent::setNodeCouriersRegistration(bool reg)
@@ -185,11 +199,10 @@ QSharedPointer<Node> Agent::sharedThis()
 	return sharedFromThis();
 }
 
-
 bool Agent::checkLoadCompleted()
 {
 	OC_METHODGATE();
-	const bool loaded = mKeyStoreReady && mConfigStoreReady && mAgentConfigStoreReady;
+	const bool loaded = mKeyStoreReady && mLocalIdentityStoreReady && mAgentConfigStoreReady;
 	qDebug()<<"CHECK LOAD COMPLETE: "<<loaded;
 	if(loaded) {
 		qDebug()<<"EMITTING LOAD COMLPETE";

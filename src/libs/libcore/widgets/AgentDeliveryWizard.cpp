@@ -9,6 +9,7 @@
 
 #include "audio/OneOffSpeech.hpp"
 #include "zoo/ZooConstants.hpp"
+#include "utility/Utility.hpp"
 
 #include <QDebug>
 #include <QRegularExpressionValidator>
@@ -53,14 +54,14 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	mBirthTimer.setSingleShot(true);
 
 	if(!connect(&mBirthTimer, &QTimer::timeout, this, [=]() {
-		qDebug()<<"birth timer timed out, calling birth done";
+	qDebug()<<"birth timer timed out, calling birth done";
 		onBirthComplete(true);
 	}, OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
 	if(!connect(ui->lineEditName, &QLineEdit::textEdited, this, [=](QString s) {
-		ui->pushButtonOnward->setEnabled(s.length()>=minLetters);
+	ui->pushButtonOnward->setEnabled(s.length()>=minLetters);
 	},OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
@@ -120,12 +121,16 @@ void AgentDeliveryWizard::startBirth()
 		mCompleteOK=false;
 		mBirthTimer.start();
 		ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);
-		KeyStore &keystore=mNode->keyStore();
-		keystore.clear();
-		keystore.save();
-		keystore.synchronize([this](SimpleDataStore &sds, bool ok){
-			qDebug()<<"synchronized keystore, calling birth done";
-			onBirthComplete(ok);
+		QTimer::singleShot(0, Qt::VeryCoarseTimer, [=]() {
+			KeyStore &keystore=mNode->keyStore();
+			keystore.clear();
+			keystore.save();
+			qDebug()<<"Synchronizing keystore START";
+			keystore.synchronize([this](SimpleDataStore &sds, bool ok) {
+				qDebug()<<"synchronized keystore, calling birth done";
+				onBirthComplete(ok);
+			});
+			qDebug()<<"Synchronizing keystore END";
 		});
 	}
 }
@@ -147,10 +152,14 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 	qDebug()<<"onBirthComplete got "<<ok;
 	QMutexLocker timeoutLock(&mTimeoutMutex);
 	if(!mNode.isNull()) {
+		KeyStore &keystore=mNode->keyStore();
+		qDebug()<<"XXX - keystore.ready()="<<keystore.ready()<<", ok="<<ok;
 		mCompleteOK|=ok;
 		mCompleteCounter++;
-		if(mCompleteCounter>=2) {
-			KeyStore &keystore=mNode->keyStore();
+		if(mCompleteCounter<2) {
+			qDebug()<<"XXX - Birth almost complete...";
+		} else {
+
 			qDebug()<<"XXX - Birth complete!";
 			mBirthTimer.stop();
 			mSpinner->stop();
@@ -167,7 +176,7 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 				mBirthDate=QDateTime::currentMSecsSinceEpoch();
 				QVariantMap map;
 				auto key=keystore.localKey();
-				if(nullptr!=key) {
+				if(!key.isNull()) {
 					map["key"]=key->toVariantMap(true);
 					map["name"]=ui->lineEditName->text();
 					if(0==ui->comboBoxGender->currentIndex()) {
@@ -176,22 +185,19 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 					map["gender"]=ui->comboBoxGender->currentText();
 					map["type"]=nodeTypeToString(TYPE_AGENT);
 					map["role"]=nodeRoleToString(ROLE_AGENT);
-					map["birthDate"]=QDateTime::fromMSecsSinceEpoch(mBirthDate);
+					map["birthDate"]=utility::msToVariant(mBirthDate);
 					mNodeIdentity= QSharedPointer<Associate> (OC_NEW Associate(map));
 					mNode->setNodeIdentity(mNodeIdentity);
 					mID=mNodeIdentity->toPortableID();
 					ui->widgetBirthCertificate->setPortableID(mID);
 					ui->stackedWidget->setCurrentWidget(ui->pageDone);
 					//"+(mID.gender().toLower()==QStringLiteral("male")?QStringLiteral("Mr. "):(mID.gender().toLower()==QStringLiteral("female")?QStringLiteral("Mrs. "):QStringLiteral("")))+
-					//QString text="Hello, my name is "+mID.name()+". I am an octomy agent. What is your bidding master?";
-					QString text="My name is "+mID.name()+". I am an octomy agent. What is your bidding master?";
+					QString text="My name is "+mID.name()+". I am an octomy agent. How do you do!";
 					OC_NEW OneOffSpeech(mID,text);
 				} else {
 					qWarning()<<"ERROR: No key";
 				}
 			}
-		} else {
-			qDebug()<<"XXX - Birth almost complete...";
 		}
 	} else {
 		qWarning()<<"ERROR: No node";

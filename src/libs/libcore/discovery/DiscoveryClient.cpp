@@ -96,7 +96,7 @@ void DiscoveryClient::discover()
 			cmd["key"] = key->toVariantMap(true);
 			cmd["manualPin"] ="12345";
 			QSharedPointer<Associate>  me=mNode.nodeIdentity();
-			if(nullptr!=me) {
+			if(!me.isNull()) {
 				QVariantMap map=me->toVariantMap();
 				merge(cmd, map);
 

@@ -88,6 +88,7 @@ public:
 	NodeRole role() const;
 
 	bool isValidForClient(bool onlyPublic=true);
+	bool isValidForLocalIdentity(bool onlyPublic=true);
 	bool isValidForServer();
 
 	AddressList &addressList();

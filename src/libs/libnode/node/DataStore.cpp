@@ -9,18 +9,18 @@
 #include <QMap>
 
 
-QDebug operator<< (QDebug d, TransactionType tt)
+QDebug operator<< (QDebug d, StorageEventType tt)
 {
 	OC_FUNCTIONGATE();
 	switch(tt) {
 #define TransactionType_case_stanza(A) case(A):{ d.nospace() << #A; }break
-		TransactionType_case_stanza(TRANSACTION_CLEAR);
-		TransactionType_case_stanza(TRANSACTION_GET);
-		TransactionType_case_stanza(TRANSACTION_SET);
-		TransactionType_case_stanza(TRANSACTION_LOAD);
-		TransactionType_case_stanza(TRANSACTION_SAVE);
-		TransactionType_case_stanza(TRANSACTION_SYNCHRONIZE);
-		TransactionType_case_stanza(TRANSACTION_DONE);
+		TransactionType_case_stanza(STORAGE_EVENT_CLEAR);
+		TransactionType_case_stanza(STORAGE_EVENT_GET);
+		TransactionType_case_stanza(STORAGE_EVENT_SET);
+		TransactionType_case_stanza(STORAGE_EVENT_LOAD);
+		TransactionType_case_stanza(STORAGE_EVENT_SAVE);
+		TransactionType_case_stanza(STORAGE_EVENT_SYNCHRONIZE);
+		TransactionType_case_stanza(STORAGE_EVENT_DONE);
 	default: {
 		d.nospace() << "UNKNOWN";
 	}
@@ -61,7 +61,7 @@ static QString privCounterString(const StorageEventPrivate *p)
 }
 
 
-StorageEventPrivate::StorageEventPrivate(DataStore & store, const TransactionType type, QVariantMap data)
+StorageEventPrivate::StorageEventPrivate(DataStore & store, const StorageEventType type, QVariantMap data)
 	: mStore(store)
 	, mType(type)
 	, mData(data)
@@ -76,7 +76,7 @@ StorageEventPrivate::StorageEventPrivate(DataStore & store, const TransactionTyp
 ////////////////////////////////////////////////////////////////////////////////
 
 
-StorageEvent::StorageEvent(DataStore & store, const TransactionType type, QVariantMap data)
+StorageEvent::StorageEvent(DataStore & store, const StorageEventType type, QVariantMap data)
 	: p_ptr(OC_NEW StorageEventPrivate(store, type, data))
 {
 }
@@ -138,7 +138,7 @@ DataStore & StorageEvent::store() const
 	return p->mStore;
 }
 
-TransactionType StorageEvent::type() const
+StorageEventType StorageEvent::type() const
 {
 	OC_METHODGATE();
 	const StorageEventPrivate *p=p_ptr.data();
@@ -237,44 +237,44 @@ bool StorageEvent::run()
 		startedLock.unlock();
 
 		switch(p->mType) {
-		case(TRANSACTION_CLEAR): {
+		case(STORAGE_EVENT_CLEAR): {
 			p->mMessage="clear started";
 			bool b=p->mStore.clearSync();
 			p->mSuccessfull=b;
 			p->mMessage=p->mSuccessfull?"clear succeeded":"clear failed";
 		}
 		break;
-		case(TRANSACTION_GET): {
+		case(STORAGE_EVENT_GET): {
 			p->mMessage="get started";
 			p->mData=p->mStore.getSync();
 			p->mSuccessfull=true;
 			p->mMessage=p->mSuccessfull?"get succeeded":"get failed";
 		}
 		break;
-		case(TRANSACTION_SET): {
+		case(STORAGE_EVENT_SET): {
 			p->mMessage="set started";
 			p->mSuccessfull=p->mStore.setSync(p->mData);
 			p->mMessage=p->mSuccessfull?"set succeeded":"set failed";
 		}
 		break;
-		case(TRANSACTION_LOAD): {
+		case(STORAGE_EVENT_LOAD): {
 			p->mMessage="load started";
 			p->mSuccessfull=p->mStore.loadSync();
 			p->mMessage=p->mSuccessfull?"load succeeded":"load failed";
 		}
 		break;
-		case(TRANSACTION_SAVE): {
+		case(STORAGE_EVENT_SAVE): {
 			p->mMessage="save started";
 			p->mSuccessfull=p->mStore.saveSync();
 			p->mMessage=p->mSuccessfull?"save succeeded":"save failed";
 		}
-		case(TRANSACTION_SYNCHRONIZE): {
+		case(STORAGE_EVENT_SYNCHRONIZE): {
 			p->mMessage="synchronization started";
 			p->mSuccessfull=p->mStore.synchronizeSync();
 			p->mMessage=p->mSuccessfull?"synchronization succeeded":"synchronization failed";
 		}
 		break;
-		case(TRANSACTION_DONE): {
+		case(STORAGE_EVENT_DONE): {
 			p->mMessage="completion started";
 			p->mSuccessfull=p->mStore.completeSync();
 			p->mMessage=p->mSuccessfull?"complete succeeded":"complete failed";
@@ -389,7 +389,7 @@ void DataStore::processTransactions()
 quint64 DataStore::autoIncrement()
 {
 	OC_METHODGATE();
-	return mAutoIncrement++;
+	return ++mAutoIncrement;
 }
 
 
@@ -397,47 +397,44 @@ quint64 DataStore::autoIncrement()
 StorageEvent DataStore::clear()
 {
 	OC_METHODGATE();
-	return enqueueTransaction(StorageEvent(*this, TRANSACTION_CLEAR));
+	return enqueueTransaction(StorageEvent(*this, STORAGE_EVENT_CLEAR));
 }
 
 StorageEvent DataStore::get()
 {
 	OC_METHODGATE();
-	return enqueueTransaction(StorageEvent(*this, TRANSACTION_GET));
+	return enqueueTransaction(StorageEvent(*this, STORAGE_EVENT_GET));
 }
 
 StorageEvent DataStore::set(QVariantMap data)
 {
 	OC_METHODGATE();
-	return enqueueTransaction(StorageEvent(*this, TRANSACTION_SET, data));
+	return enqueueTransaction(StorageEvent(*this, STORAGE_EVENT_SET, data));
 }
-
 
 StorageEvent DataStore::load()
 {
 	OC_METHODGATE();
-	return enqueueTransaction(StorageEvent(*this, TRANSACTION_LOAD));
+	return enqueueTransaction(StorageEvent(*this, STORAGE_EVENT_LOAD));
 }
-
 
 StorageEvent DataStore::save()
 {
 	OC_METHODGATE();
-	return enqueueTransaction(StorageEvent(*this, TRANSACTION_SAVE));
+	return enqueueTransaction(StorageEvent(*this, STORAGE_EVENT_SAVE));
 }
-
 
 StorageEvent DataStore::synchronize()
 {
 	OC_METHODGATE();
-	return enqueueTransaction(StorageEvent(*this, TRANSACTION_SYNCHRONIZE));
+	return enqueueTransaction(StorageEvent(*this, STORAGE_EVENT_SYNCHRONIZE));
 }
 
 
 StorageEvent DataStore::complete()
 {
 	OC_METHODGATE();
-	return enqueueTransaction(StorageEvent(*this, TRANSACTION_DONE));
+	return enqueueTransaction(StorageEvent(*this, STORAGE_EVENT_DONE));
 }
 
 
@@ -459,7 +456,9 @@ bool DataStore::clearSync()
 	if(fileOk) {
 		mDiskCounter=0;
 		mData.clear();
+		const auto old=mMemoryCounter;
 		mMemoryCounter=0;
+		//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA CLEAR";
 		succeeded=true;
 	}
 	return succeeded;
@@ -482,7 +481,9 @@ bool DataStore::setSync(QVariantMap data)
 	//qDebug()<<"Entering Sync Set with data="<<data;
 	const bool succeeded=true;
 	mData=data;
+	const auto old=mMemoryCounter;
 	mMemoryCounter=autoIncrement();
+	//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT";
 	//qDebug()<<"Exiting Sync Set with succeeded="<<succeeded;
 	return succeeded;
 }
@@ -507,7 +508,9 @@ bool DataStore::loadSync()
 			succeeded=false;
 		} else {
 			mData=doc.object().toVariantMap();
+			const auto old=mMemoryCounter;
 			mMemoryCounter=mDiskCounter;
+			//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA DISK COUNTER";
 			succeeded=true;
 		}
 	}
@@ -521,7 +524,7 @@ bool DataStore::saveSync()
 	//qDebug()<<"Entering Sync Save";
 	bool succeeded=false;
 	qDebug().noquote().nospace()<<"Saving datastore to file '"<<mFilename<<"'";
-	auto t=QDateTime::currentMSecsSinceEpoch();
+	const auto t=QDateTime::currentDateTime();
 	if(!mData.contains("createdTimeStamp")) {
 		mData["createdTimeStamp"]=t;
 	}

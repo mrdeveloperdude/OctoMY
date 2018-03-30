@@ -45,6 +45,8 @@ EyesWidget::EyesWidget(QWidget *parent)
 	mRightEye.setExpression(lowerLidSteer,upperLidSteer,squintSteer);
 	mLeftEye.setSteer(mEyeSteer);
 	mRightEye.setSteer(mEyeSteer);
+	onUpdateTimer();
+	updateIris();
 }
 
 
@@ -76,6 +78,7 @@ void EyesWidget::updateIris()
 
 void EyesWidget::setPortableID(PortableID &pid)
 {
+	qDebug()<<"Setting eye colors from PID: "<<pid;
 	PersonalityColors colors(pid.id());
 	QColor irisColor=colors.backgroundColorLow();//QColor("#2d8ac9");
 	mLeftEye.setColor(irisColor);

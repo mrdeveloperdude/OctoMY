@@ -16,6 +16,7 @@
 
 #include <QObject>
 #include <QList>
+
 #include <QCommandLineParser>
 
 class ZooClient;
@@ -24,7 +25,6 @@ class AgentWindow;
 class AgentStateCourier;
 class ISyncParameter;
 class Agent;
-
 
 class AgentCourierSet;
 
@@ -42,7 +42,7 @@ private:
 
 
 	bool mKeyStoreReady;
-	bool mConfigStoreReady;
+	bool mLocalIdentityStoreReady;
 	bool mAgentConfigStoreReady;
 
 
@@ -68,9 +68,22 @@ public:
 	void reloadController();
 
 
+public:
+
+	void identityChanged() Q_DECL_OVERRIDE;
+
 	void setNodeCouriersRegistration(bool reg) Q_DECL_OVERRIDE;
 
 	QSharedPointer<Node> sharedThis() Q_DECL_OVERRIDE;
+
+
+
+
+public:
+
+	template <typename F>
+	void synchronizeLocalIdentity(F callBack);
+
 
 private:
 
@@ -82,6 +95,20 @@ public slots:
 	void onSyncParameterChanged(ISyncParameter *);
 
 };
+
+
+#include <QVariantMap>
+
+template <typename F>
+void Agent::synchronizeLocalIdentity(F callBack)
+{
+	mLocalIdentity.synchronize([=](SimpleDataStore &sms, bool ok) {
+		QVariantMap map=sms.toMap();
+		qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
+		//callBack(ok);
+		callBack(map, ok);
+	});
+}
 
 
 

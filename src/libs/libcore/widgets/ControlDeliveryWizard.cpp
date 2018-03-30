@@ -6,6 +6,7 @@
 #include "widgets/WaitingSpinnerWidget.hpp"
 #include "node/Node.hpp"
 #include "rng/RNG.hpp"
+#include "utility/Utility.hpp"
 
 #include <QDebug>
 #include <QRegularExpressionValidator>
@@ -98,7 +99,7 @@ void ControlDeliveryWizard::onBirthComplete()
 				map["key"]=key->toVariantMap(true);
 				map["type"]=nodeTypeToString(TYPE_REMOTE);
 				map["role"]=nodeRoleToString(ROLE_CONTROL);
-				map["birthDate"]=QDateTime::fromMSecsSinceEpoch(mBirthDate);
+				map["birthDate"]=utility::msToVariant(mBirthDate);
 				mNodeIdentity= QSharedPointer<Associate> (OC_NEW Associate(map));
 				mNode->setNodeIdentity(mNodeIdentity);
 				mID=mNodeIdentity->toPortableID();
