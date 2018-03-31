@@ -2,12 +2,10 @@
 #define AGENTWINDOW_HPP
 
 #include "widgets/TryToggleState.hpp"
-
 #include "basic/LogDestination.hpp"
-
 #include "basic/Associate.hpp"
-
 #include "pose/PoseMapping.hpp"
+#include "node/NodeWindow.hpp"
 
 #include <QWidget>
 #include <QGeoPositionInfo>
@@ -37,7 +35,7 @@ class AgentWindow;
  *
  * This is useful for when your robots has no screen and/or is low on resources.
  */
-class AgentWindow : public QWidget, public LogDestination
+class AgentWindow : public NodeWindow, public LogDestination
 {
 	Q_OBJECT
 
@@ -78,16 +76,13 @@ private:
 	void setCurrentPage(QWidget *cur);
 	void gotoNextConfigPage();
 
-	void updateIcon();
+	void updateWindowIcon();
 	void prepareMenu();
 
 	void updateOnlineStatus();
 
 	QSharedPointer<PoseMapping> poseMapping();
 
-private:
-	void notifyAndroid(QString);
-	void toastAndroid(QString);
 
 public:
 

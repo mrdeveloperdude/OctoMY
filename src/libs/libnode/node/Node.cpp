@@ -69,7 +69,7 @@ Node::Node(INodeLauncher &laucher, AppContext *context, NodeRole role, NodeType 
 	, mContext(context)
 	, mRole (role)
 	, mType (type)
-	, mKeyStore (mContext->baseDir() + "/keystore.json", ROLE_AGENT==mRole)
+	, mKeyStore (mContext->baseDir() + "/keystore.json", true)
 	, mLocalIdentity(mContext->baseDir() + "/local_identity.json")
 	, mAddressBook (mContext->baseDir() + "/addressbook.json")
 	, mAddresses(defaultPortForNodeType(mType), true)
@@ -777,12 +777,13 @@ void Node::updateDiscoveryClient()
 //////////////////////////////////////////////////
 // Key Store slots
 
+/*
 void Node::onKeystoreReady(bool ok)
 {
 	OC_METHODGATE();
 	//qDebug()<<"Key Store READY="<<mKeystore.isReady()<<", ERROR="<<mKeystore.hasError();
 }
-
+*/
 
 
 

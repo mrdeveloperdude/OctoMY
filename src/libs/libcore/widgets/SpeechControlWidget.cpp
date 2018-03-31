@@ -6,6 +6,7 @@
 #include "security/PortableID.hpp"
 #include "security/SecurityConstants.hpp"
 #include "audio/OneOffSpeech.hpp"
+#include "audio/CreepyVoice.hpp"
 #include "basic/GenericKeyEventHandler.hpp"
 
 
@@ -38,6 +39,12 @@ SpeechControlWidget::SpeechControlWidget(QWidget *parent) :
 		}
 		return false;
 	});
+
+	const bool available=CreepyVoice::voiceIsAvailable();
+
+	ui->widgetVoiceEnabledStatus->setLightOn(available);
+	ui->pushButtonSay->setEnabled(available);
+	ui->label->setText(QStringLiteral("Speech ")+QString(available?"available":"not available"));
 }
 
 SpeechControlWidget::~SpeechControlWidget()

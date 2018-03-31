@@ -69,6 +69,16 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 }
 
 
+AgentDeliveryWizard::~AgentDeliveryWizard()
+{
+	OC_METHODGATE();
+	delete ui;
+	ui=nullptr;
+	delete mSpinner;
+	mSpinner=nullptr;
+}
+
+
 void AgentDeliveryWizard::reset()
 {
 	OC_METHODGATE();
@@ -135,14 +145,6 @@ void AgentDeliveryWizard::startBirth()
 	}
 }
 
-AgentDeliveryWizard::~AgentDeliveryWizard()
-{
-	OC_METHODGATE();
-	delete ui;
-	ui=nullptr;
-	delete mSpinner;
-	mSpinner=nullptr;
-}
 
 
 
@@ -170,9 +172,6 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 				//Go back to try again
 				ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
 			} else {
-				//QString id=keystore.localKey().id();
-				//qDebug()<<"XXX - All is good, ID: "<<id;
-				//qDebug()<<"XXX: DATA AFTER OK LOAD WAS: "<<keystore;
 				mBirthDate=QDateTime::currentMSecsSinceEpoch();
 				QVariantMap map;
 				auto key=keystore.localKey();

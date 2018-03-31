@@ -4,6 +4,7 @@
 #include "widgets/TryToggle.hpp"
 #include "node/IContextProvider.hpp"
 #include "basic/Associate.hpp"
+#include "node/NodeWindow.hpp"
 
 #include <QWidget>
 #include <QSharedPointer>
@@ -35,7 +36,7 @@ class RemoteWindow;
  * similar situations where the UI may not be needed.
  */
 
-class RemoteWindow : public QWidget, public IContextProvider
+class RemoteWindow : public NodeWindow, public IContextProvider
 {
 	Q_OBJECT
 
@@ -53,6 +54,12 @@ public: //IContextProvider interface
 	Settings &settings() Q_DECL_OVERRIDE;
 
 public:
+
+	void configure(QSharedPointer<Remote>);
+
+	void updateWindowIcon();
+
+public:
 	//bool needConnection();
 
 private:
@@ -60,8 +67,6 @@ private:
 	// One time initialization of differnt parts
 	void prepareDelivery();
 	void prepareDiscovery();
-	void preparePairing();
-	void prepareClientList();
 	void prepareControlLevelList();
 	void prepareMenu();
 
@@ -71,18 +76,12 @@ private:
 	void updateActiveClient();
 	int  updateClientsList();
 	void addClientToList(QSharedPointer<Associate> peer);
-	void hookSensorSignals();
-
 
 	void setCurrentPage(QWidget *cur);
 	void goToStartPage();
 
 	void appendLog(const QString &str);
 
-
-	// Android spesifc notifications
-	void notifyAndroid(QString);
-	void toastAndroid(QString);
 
 public:
 
@@ -95,14 +94,6 @@ private slots:
 	void onStartPlanEditor();
 	void onStartShowBirthCertificate();
 
-	// Delivery wizard slots
-
-public slots:
-	void onDeliveryDone(bool pairNow);
-
-	// Keystore slots
-public slots:
-	void onKeystoreReady(bool);
 
 	// Peer Store slots
 public slots:

@@ -45,7 +45,7 @@ public:
 
 public:
 	explicit AgentDeliveryWizard(QWidget *parent = 0);
-	~AgentDeliveryWizard();
+	virtual ~AgentDeliveryWizard();
 
 
 public:

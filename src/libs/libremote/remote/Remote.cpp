@@ -60,6 +60,20 @@ QSharedPointer<QWidget> Remote::showWindow()
 
 
 
+void Remote::identityChanged()
+{
+	OC_METHODGATE();
+
+	if(!mWindow.isNull()) {
+		QSharedPointer<Remote> sp=this->QEnableSharedFromThis<Remote>::sharedFromThis();
+		if(sp.isNull()) {
+			volatile int ba=0;
+			qWarning()<<"SHARED POINTER TO THIS WAS NULL!"<<ba;
+		}
+		mWindow->configure(sp);
+	}
+}
+
 
 void Remote::setNodeCouriersRegistration(bool reg)
 {

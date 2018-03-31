@@ -35,24 +35,36 @@
 #endif
 
 RemoteWindow::RemoteWindow(QSharedPointer<Remote> remote, QWidget *parent)
-	: QWidget(parent)
+	: NodeWindow(parent)
 	, ui(OC_NEW Ui::RemoteWindow)
-	, mRemote(remote)
+	, mRemote(nullptr)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
+
+	configure(remote);
+
 	prepareDelivery();
 	prepareDiscovery();
-	preparePairing();
-	prepareClientList();
-	prepareControlLevelList();
-	prepareMenu();
 
-	hookSensorSignals();
-	goToStartPage();
+	if(!connect(ui->widgetPairing, &PairingWizard::done, [=]() {
+	setCurrentPage(ui->pageRunning);
+	})) {
+		qWarning()<<"ERROR: Could not connect ";
+	}
 
 	updateClientsList();
+	prepareControlLevelList();
+	prepareMenu();
 	updateClientWidgetList();
+
+	if(!mRemote.isNull()) {
+		mRemote->keyStore().synchronize([this](SimpleDataStore &sms, bool ok) {
+			qDebug()<<"REMOTEWIN keystore load compelte: "<<(ok?"OK":"ERROR");
+			prepareDiscovery();
+			goToStartPage();
+		});
+	}
 
 #ifdef Q_OS_ANDROID
 	showFullScreen();
@@ -74,13 +86,59 @@ Settings &RemoteWindow::settings()
 }
 
 
+
+void RemoteWindow::configure(QSharedPointer<Remote> remote)
+{
+	OC_METHODGATE();
+	// Dissconnect old agent
+	if(!mRemote.isNull()) {
+		mRemote->setHookSensorSignals(*this, false);
+	}
+
+	// Set new agent
+	mRemote=remote;
+
+	// Connect new agent
+	if(!mRemote.isNull()) {
+		mRemote->setHookSensorSignals(*this, true);
+		updateWindowIcon();
+	} else {
+		qWarning()<<"WARNING: No Remote in remote window";
+	}
+}
+
+
+void RemoteWindow::updateWindowIcon()
+{
+	OC_METHODGATE();
+	PortableID pid;
+	if(!mRemote.isNull()) {
+		QSharedPointer<Associate>nid=mRemote->nodeIdentity();
+		if(!nid.isNull()) {
+			pid=nid->toPortableID();
+		}
+	}
+	//Set our custom identicon as window icon
+	Identicon id(pid);
+	QIcon icon;
+	icon.addPixmap(id.pixmap(512,512));
+	setWindowIcon(icon);
+}
+
+
 void RemoteWindow::prepareDelivery()
 {
 	OC_METHODGATE();
 	qDebug()<<"REMOTEWIN PREPARE DELIVERY";
 	if(!mRemote.isNull()) {
 		// Make sure to go to correct page after delivery is complete
-		if(!connect(ui->widgetDelivery, SIGNAL(done(bool)), this, SLOT(onDeliveryDone(bool)), OC_CONTYPE)) {
+		if(!connect(ui->widgetDelivery, &ControlDeliveryWizard::done, [=](bool pairNow) {
+		qDebug()<<"REMOTEWIN DELIVERY DONE ";
+			if(pairNow) {
+				ui->widgetPairing->reset();
+			}
+			setCurrentPage(pairNow?ui->pagePairing:ui->pageRunning);
+		})) {
 			qWarning()<<"ERROR: Could not connect ";
 		}
 	} else {
@@ -98,35 +156,12 @@ void RemoteWindow::prepareDiscovery()
 		mRemote->addressBook().setHookSignals(*this, true);
 		mRemote->addressBook().synchronize([=](SimpleDataStore &ab, bool ok) {
 			qDebug()<<"Address book synchronized: "<<ok;
-			//prepareDiscovery();
-			preparePairing();
 		});
 	} else {
 		qWarning()<<"ERROR: no remote";
 	}
 }
 
-void RemoteWindow::preparePairing()
-{
-	OC_METHODGATE();
-	qDebug()<<"REMOTEWIN PREPARE PAIRING";
-	if(!mRemote.isNull()) {
-		//Make sure to go to correct page when pairing is complete
-		connect(ui->widgetPairing, &PairingWizard::done, [=]() {
-			setCurrentPage(ui->pageRunning);
-		});
-	} else {
-		qWarning()<<"ERROR: no remote";
-	}
-
-}
-
-void RemoteWindow::prepareClientList()
-{
-	OC_METHODGATE();
-	qDebug()<<"REMOTEWIN PREPARE CLIENT LIST";
-	updateClientsList();
-}
 
 
 void RemoteWindow::prepareControlLevelList()
@@ -310,16 +345,6 @@ void RemoteWindow::addClientToList(QSharedPointer<Associate> peer)
 
 
 
-void RemoteWindow::hookSensorSignals()
-{
-	OC_METHODGATE();
-	if(nullptr!=mRemote) {
-		mRemote->setHookSensorSignals(*this, true);
-	} else {
-		qWarning()<<"ERROR: no remote";
-	}
-}
-
 
 void RemoteWindow::setCurrentPage(QWidget *curr)
 {
@@ -363,17 +388,18 @@ void RemoteWindow::goToStartPage()
 	OC_METHODGATE();
 	//qDebug()<<"";
 	//qDebug()<<"----------------- - - - - - ------------------------- - - - - ";
-	if(nullptr!=mRemote) {
+	if(!mRemote.isNull()) {
 		//Select correct starting page
 		QSharedPointer<Key> key=mRemote->keyStore().localKey();
 		if(key.isNull() || !key->isValid(true)) {
-			//qDebug()<<"STARTING WITH DELIVERY";
+			qDebug()<<"STARTING WITH DELIVERY";
 			setCurrentPage(ui->pageDelivery);
+			ui->widgetDelivery->startBirth();
 		} else if(mRemote->addressBook().associateCount()<=0) {
-			//qDebug()<<"STARTING WITH PAIRING";
+			qDebug()<<"STARTING WITH PAIRING";
 			setCurrentPage(ui->pagePairing);
 		} else {
-			//qDebug()<<"STARTING WITH RUN";
+			qDebug()<<"STARTING WITH RUN";
 			setCurrentPage(ui->pageRunning);
 		}
 	} else {
@@ -392,38 +418,6 @@ void RemoteWindow::appendLog(const QString& text)
 	if(nullptr!=vsb) {
 		vsb->setValue(vsb->maximum());
 	}
-}
-
-
-
-
-void RemoteWindow::notifyAndroid(QString s)
-{
-	OC_METHODGATE();
-	(void)s;
-	//TODO: This crashes with some jni exception stuff. Figure out why
-#ifdef Q_OS_ANDROID
-	qDebug()<<"QT: Android NOTIF: "<<s;
-	QAndroidJniObject::callStaticMethod<void>("org/octomy/remote/Remote",
-			"notify",
-			"(Ljava/lang/String;)V",
-			QAndroidJniObject::fromString(s).object<jstring>());
-#endif
-}
-
-
-void RemoteWindow::toastAndroid(QString s)
-{
-	OC_METHODGATE();
-	(void)s;
-	//TODO: This crashes with some jni exception stuff. Figure out why
-#ifdef Q_OS_ANDROID
-	qDebug()<<"QT: Android TOAST: "<<s;
-	QAndroidJniObject::callStaticMethod<void>("org/octomy/remote/Remote",
-			"toast",
-			"(Ljava/lang/String;)V",
-			QAndroidJniObject::fromString(s).object<jstring>());
-#endif
 }
 
 
@@ -500,33 +494,7 @@ void RemoteWindow::onStartPlanEditor()
 }
 
 
-//////////////////////////////////////////////////
-// Delivery Wizard slots
 
-
-void RemoteWindow::onDeliveryDone(bool pairNow)
-{
-	OC_METHODGATE();
-	qDebug()<<"REMOTEWIN DELIVERY DONE ";
-	prepareDiscovery();
-	preparePairing();
-	if(pairNow) {
-		ui->widgetPairing->reset();
-	}
-	setCurrentPage(pairNow?ui->pagePairing:ui->pageRunning);
-}
-
-//////////////////////////////////////////////////
-// Keystore slots
-
-
-void RemoteWindow::onKeystoreReady(bool ok)
-{
-	OC_METHODGATE();
-	qDebug()<<"REMOTEWIN keystore load compelte: "<<(ok?"OK":"ERROR");
-	prepareDiscovery();
-	preparePairing();
-}
 
 //////////////////////////////////////////////////
 // Peer Store slots

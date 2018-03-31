@@ -61,6 +61,8 @@ public:
 	void speak(QString word);
 	void deinit();
 
+	static bool voiceIsAvailable();
+
 
 	//IAudioSource interface
 public:

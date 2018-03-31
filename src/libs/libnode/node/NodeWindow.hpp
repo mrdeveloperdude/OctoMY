@@ -5,13 +5,16 @@
 
 class NodeWindow : public QWidget
 {
-		Q_OBJECT
-	public:
-		explicit NodeWindow(QWidget *parent = nullptr);
+	Q_OBJECT
+public:
+	explicit NodeWindow(QWidget *parent = nullptr);
+		virtual ~NodeWindow();
 
-	signals:
 
-	public slots:
+
+private:
+	void notifyAndroid(QString);
+	void toastAndroid(QString);
 };
 
 #endif // NODEWINDOW_HPP

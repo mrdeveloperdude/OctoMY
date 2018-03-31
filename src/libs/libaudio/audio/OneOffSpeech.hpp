@@ -29,6 +29,11 @@ public:
 public slots:
 
 	void onPeriodComplete();
+
+public:
+
+	CreepyVoice *creepyVoice();
+	AudioStream *audioStream();
 };
 
 #endif // ONEOFFSPEECH_HPP

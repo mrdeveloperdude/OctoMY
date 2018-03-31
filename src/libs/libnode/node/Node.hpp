@@ -182,10 +182,11 @@ signals:
 	void blobReceived(QString name);
 	void blobSendComplete(QString name);
 
+	/*
 	// KeyStore slots
 private slots:
 	void onKeystoreReady(bool);
-
+*/
 
 	// CommsChannel slots
 private slots:

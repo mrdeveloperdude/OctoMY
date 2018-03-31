@@ -547,10 +547,13 @@ bool DataStore::synchronizeSync()
 	const quint64 disk=mDiskCounter;
 	const quint64 mem=mMemoryCounter;
 	if(disk == mem) {
+		qDebug()<<"DataStore::synchronizeSync("<<filename()<<"): disk("<<disk<<") == mem("<<mem<<"), done";
 		succeeded=true;
 	} else if(disk > mem) {
+		qDebug()<<"DataStore::synchronizeSync("<<filename()<<"): disk("<<disk<<") > mem("<<mem<<"), loading";
 		succeeded=loadSync();
 	} else if(disk < mem) {
+		qDebug()<<"DataStore::synchronizeSync("<<filename()<<"): disk("<<disk<<") < mem("<<mem<<"), saving";
 		succeeded=saveSync();
 	}
 	//qDebug()<<"Exiting Sync Synchronize with succeeded="<<succeeded;

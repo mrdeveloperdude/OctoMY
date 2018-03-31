@@ -19,11 +19,12 @@ struct CreepyBuffer {
 		: mSize(size)
 		, mBuffer(OC_NEW short[mSize])
 	{
-
+		OC_METHODGATE();
 	}
 
 	~CreepyBuffer()
 	{
+		OC_METHODGATE();
 		delete[] mBuffer;
 		mBuffer=nullptr;
 		mSize=0;
@@ -51,6 +52,7 @@ CreepyVoice::CreepyVoice(PortableID &id, QObject *parent)
 
 CreepyVoice::~CreepyVoice()
 {
+	OC_METHODGATE();
 	cur=nullptr;
 	for(CreepyBuffer *buffer:mBuffersFree) {
 		delete buffer;
@@ -68,6 +70,7 @@ CreepyVoice::~CreepyVoice()
 
 double CreepyVoice::frandGauss()
 {
+	OC_METHODGATE();
 	return rng->generateGauss();
 }
 
@@ -76,11 +79,13 @@ double CreepyVoice::frandGauss()
 
 double CreepyVoice::frandGaussAbs()
 {
+	OC_METHODGATE();
 	return qAbs(rng->generateGauss());
 }
 
 void CreepyVoice::freeBuffer(CreepyBuffer *buf)
 {
+	OC_METHODGATE();
 	if(nullptr!=buf) {
 		mBuffersInUse.removeAll(buf);
 		mBuffersFree.append(buf);
@@ -89,6 +94,7 @@ void CreepyVoice::freeBuffer(CreepyBuffer *buf)
 
 CreepyBuffer *CreepyVoice::getFreeBuffer(int numsamples)
 {
+	OC_METHODGATE();
 	CreepyBuffer *ret=nullptr;
 	int i=0;
 	for(CreepyBuffer *buffer:mBuffersFree) {
@@ -129,11 +135,13 @@ void CreepyVoice::feed(short *wav, int numsamples, espeak_EVENT *events)
 
 bool CreepyVoice::isInitialized()
 {
+	OC_METHODGATE();
 	return mInited;
 }
 
 void CreepyVoice::speak(QString sentence)
 {
+	OC_METHODGATE();
 	if (isInitialized()) {
 #ifdef EXTERNAL_LIB_ESPEAK
 		qDebug().noquote().nospace() << "Speaking \"" << sentence << "\"\n";
@@ -147,6 +155,7 @@ void CreepyVoice::speak(QString sentence)
 
 void CreepyVoice::deinit()
 {
+	OC_METHODGATE();
 	if (isInitialized()) {
 #ifdef EXTERNAL_LIB_ESPEAK
 		espeak_Terminate();
@@ -154,6 +163,16 @@ void CreepyVoice::deinit()
 	}
 }
 
+bool CreepyVoice::voiceIsAvailable()
+{
+	OC_FUNCTIONGATE();
+#ifdef EXTERNAL_LIB_ESPEAK
+	return true;
+#else
+	return false;
+#endif
+
+}
 
 
 #ifdef EXTERNAL_LIB_ESPEAK

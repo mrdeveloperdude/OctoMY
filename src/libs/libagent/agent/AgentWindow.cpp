@@ -15,6 +15,7 @@
 #include "AgentCourierSet.hpp"
 #include "AgentConstants.hpp"
 
+
 #include <QDebug>
 #include <QMessageBox>
 #include <QMap>
@@ -30,7 +31,7 @@
 
 
 AgentWindow::AgentWindow(QSharedPointer<Agent> agent, QWidget *parent)
-	: QWidget(parent)
+	: NodeWindow(parent)
 	, ui(OC_NEW Ui::AgentWindow)
 	, mAgent(nullptr)
 	, mHexy(nullptr)
@@ -135,6 +136,7 @@ void AgentWindow::configure(QSharedPointer<Agent> agent)
 		ui->widgetHardware->configure(mAgent);
 		ui->widgetFace->setAgent(mAgent);
 		updateFaceVisibility();
+		updateWindowIcon();
 
 	} else {
 		qWarning()<<"WARNING: No Agent in agent window";
@@ -168,7 +170,7 @@ void AgentWindow::setCurrentPage(QWidget *curr)
 		}
 		ui->widgetBirthCertificate->setPortableID(pid);
 	} else if (ui->pageRunning == cur) {
-		updateIcon();
+
 	}
 	QWidget *last=ui->stackedWidget->currentWidget();
 	qDebug()<<"Changing current page from "<<last<<" to "<<cur;
@@ -217,7 +219,7 @@ void AgentWindow::gotoNextConfigPage()
 }
 
 
-void AgentWindow::updateIcon()
+void AgentWindow::updateWindowIcon()
 {
 	OC_METHODGATE();
 	PortableID pid;
@@ -230,7 +232,7 @@ void AgentWindow::updateIcon()
 	//Set our custom identicon as window icon
 	Identicon id(pid);
 	QIcon icon;//=windowIcon();
-	icon.addPixmap(id.pixmap());
+	icon.addPixmap(id.pixmap(512,512));
 	//	icon.addFile(QStringLiteral(":/icons/agent.svg"), QSize(), QIcon::Normal, QIcon::Off);
 	setWindowIcon(icon);
 }
@@ -552,36 +554,7 @@ QSharedPointer<PoseMapping> AgentWindow::poseMapping()
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 
-void AgentWindow::notifyAndroid(QString s)
-{
-	OC_METHODGATE();
-	(void)s;
-	//TODO: This crashes with some jni exception stuff. Figure out why
-#ifdef Q_OS_ANDROID
-	qDebug()<<"QT: Android NOTIFE: "<<s;
-	QAndroidJniObject::callStaticMethod<void>("org/octomy/Agent/Agent",
-			"notify",
-			"(Ljava/lang/String;)V",
-			QAndroidJniObject::fromString(s).object<jstring>());
-#endif
-}
-
-
-void AgentWindow::toastAndroid(QString s)
-{
-	OC_METHODGATE();
-	(void)s;
-	//TODO: This crashes with some jni exception stuff. Figure out why
-#ifdef Q_OS_ANDROID
-	qDebug()<<"QT: Android TOAST: "<<s;
-	QAndroidJniObject::callStaticMethod<void>("org/octomy/Agent/Agent",
-			"toast",
-			"(Ljava/lang/String;)V",
-			QAndroidJniObject::fromString(s).object<jstring>());
-#endif
-}
 
 
 void AgentWindow::on_pushButtonBack_clicked()

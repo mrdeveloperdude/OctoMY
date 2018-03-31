@@ -21,6 +21,8 @@ ControlDeliveryWizard::ControlDeliveryWizard(QWidget *parent)
 	, mSpinner(nullptr)
 	, mSettings(nullptr)
 	, mBirthDate(0)
+	, mCompleteCounter(0)
+	, mCompleteOK(false)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
@@ -43,10 +45,28 @@ ControlDeliveryWizard::ControlDeliveryWizard(QWidget *parent)
 	mBirthTimer.setInterval(MINIMUM_BIRTH_TIME); //Minimum birth time gives this moment some depth in case keygen should finish quickly.
 	mBirthTimer.setSingleShot(true);
 
-	if(!connect(&mBirthTimer, &QTimer::timeout, this, &ControlDeliveryWizard::onBirthComplete, OC_CONTYPE)) {
+	if(!connect(&mBirthTimer, &QTimer::timeout, this, [=]() {
+	qDebug()<<"birth timer timed out, calling birth done";
+		onBirthComplete(true);
+	}, OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 }
+
+
+
+ControlDeliveryWizard::~ControlDeliveryWizard()
+{
+	OC_METHODGATE();
+	delete ui;
+	ui=nullptr;
+	delete mSpinner;
+	mSpinner=nullptr;
+}
+
+
+
+
 
 void ControlDeliveryWizard::reset()
 {
@@ -69,54 +89,74 @@ void ControlDeliveryWizard::configure(QSharedPointer<Node> n)
 	}
 }
 
-ControlDeliveryWizard::~ControlDeliveryWizard()
+
+
+void ControlDeliveryWizard::startBirth()
 {
 	OC_METHODGATE();
-	delete ui;
-	ui=nullptr;
-	delete mSpinner;
-	mSpinner=nullptr;
+	if(!mNode.isNull()) {
+		qDebug()<<"XXX - Started birth for control";
+		mSpinner->start();
+		mCompleteCounter=0;
+		mCompleteOK=false;
+		mBirthTimer.start();
+		ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);
+		QTimer::singleShot(0, Qt::VeryCoarseTimer, [=]() {
+			KeyStore &keystore=mNode->keyStore();
+			keystore.clear();
+			keystore.save();
+			qDebug()<<"Synchronizing keystore START";
+			keystore.synchronize([this](SimpleDataStore &sds, bool ok) {
+				qDebug()<<"synchronized keystore, calling birth done with OK="<<ok;
+				onBirthComplete(ok);
+			});
+			qDebug()<<"Synchronizing keystore END";
+		});
+	}
 }
 
-
-
-void ControlDeliveryWizard::onBirthComplete()
+void ControlDeliveryWizard::onBirthComplete(bool ok)
 {
 	OC_METHODGATE();
-	if(nullptr!=mNode) {
+	if(!mNode.isNull()) {
 		KeyStore &keystore=mNode->keyStore();
-		if(keystore.ready() && !mBirthTimer.isActive()) {
+		mCompleteOK|=ok;
+		mCompleteCounter++;
+		if(mCompleteCounter<2) {
+			qDebug()<<"XXX - Birth almost complete...";
+		} else {
 			qDebug()<<"XXX - Birth complete!";
 			mBirthTimer.stop();
 			mSpinner->stop();
-			auto key=keystore.localKey();
-			if(nullptr!=key) {
-				QString id=key->id();
-				//qDebug()<<"XXX - All is good, ID: "<<id;
-				//qDebug()<<"XXX: DATA AFTER OK LOAD WAS: "<<keystore;
-				mBirthDate=QDateTime::currentMSecsSinceEpoch();
-				QVariantMap map;
-				map["key"]=key->toVariantMap(true);
-				map["type"]=nodeTypeToString(TYPE_REMOTE);
-				map["role"]=nodeRoleToString(ROLE_CONTROL);
-				map["birthDate"]=utility::msToVariant(mBirthDate);
-				mNodeIdentity= QSharedPointer<Associate> (OC_NEW Associate(map));
-				mNode->setNodeIdentity(mNodeIdentity);
-				mID=mNodeIdentity->toPortableID();
-				ui->widgetBirthCertificate->setPortableID(mID);
-				ui->stackedWidget->setCurrentWidget(ui->pageDone);
-			} else {
-				qWarning()<<"XXX - ERROR: Birthdefects detected!";
-				qDebug()<<"XXX: DATA AFTER FAILED LOAD WAS: "<<keystore;
+			const bool dok=keystore.ready();
+			if(!dok || !ok ) {
+				qWarning()<<"XXX - ERROR: Birthdefects detected: datastore.ready="<<dok<<", ok="<<ok;
+				qDebug()<<"XXX: DATA AFTER AFILED LOAD WAS: "<<keystore;
 				//Go back to try again
 				ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);
+			} else {
+				mBirthDate=QDateTime::currentMSecsSinceEpoch();
+				QVariantMap map;
+				auto key=keystore.localKey();
+				if(!key.isNull()) {
+					map["key"]=key->toVariantMap(true);
+					map["type"]=nodeTypeToString(TYPE_REMOTE);
+					map["role"]=nodeRoleToString(ROLE_CONTROL);
+					map["birthDate"]=utility::msToVariant(mBirthDate);
+					mNodeIdentity= QSharedPointer<Associate> (OC_NEW Associate(map));
+					mNode->setNodeIdentity(mNodeIdentity);
+					mID=mNodeIdentity->toPortableID();
+					ui->widgetBirthCertificate->setPortableID(mID);
+					ui->stackedWidget->setCurrentWidget(ui->pageDone);
+				} else {
+					qWarning()<<"No key";
+				}
 			}
-		} else {
-			//Debug()<<"XXX - Birth almost complete...";
 		}
 	} else {
 		qWarning()<<"ERROR: No node";
 	}
+	qDebug()<<"onBirthComplete over with completeCounter="<<mCompleteCounter<<" and page="<<ui->stackedWidget->currentWidget()->objectName();
 }
 
 

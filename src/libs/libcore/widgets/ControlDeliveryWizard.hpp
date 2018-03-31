@@ -23,7 +23,7 @@ class ControlDeliveryWizard : public QWidget
 {
 	Q_OBJECT
 
-protected:
+private:
 	Ui::ControlDeliveryWizard *ui;
 	QTimer mBirthTimer;
 	WaitingSpinnerWidget *mSpinner;
@@ -32,6 +32,10 @@ protected:
 	PortableID mID;
 	QSharedPointer<Associate> mNodeIdentity;
 	quint64 mBirthDate;
+
+	quint8 mCompleteCounter;
+	bool mCompleteOK;
+
 
 public:
 	static const quint64 MINIMUM_BIRTH_TIME;
@@ -43,12 +47,13 @@ public:
 public:
 	void reset();
 	void configure(QSharedPointer<Node> mNode);
+	void startBirth();
 
 signals:
 	void done(bool);
 
 private slots:
-	void onBirthComplete();
+	void onBirthComplete(bool ok);
 
 private slots:
 	void on_pushButtonPairNow_clicked();

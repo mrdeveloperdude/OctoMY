@@ -48,6 +48,10 @@ public:
 
 	virtual QSharedPointer<QWidget> showWindow();
 
+public:
+
+	void identityChanged() Q_DECL_OVERRIDE;
+
 
 	void setNodeCouriersRegistration(bool reg) Q_DECL_OVERRIDE;
 

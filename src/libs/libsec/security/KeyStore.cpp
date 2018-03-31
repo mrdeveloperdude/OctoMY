@@ -7,6 +7,7 @@
 //#include "qpolarssl/qpolarsslpki.hpp"
 #include "KeyStore.hpp"
 #include "utility/Utility.hpp"
+#include "utility/ScopedTimer.hpp"
 
 #include <QJsonObject>
 #include <QJsonParseError>
@@ -27,7 +28,7 @@ KeyStore::KeyStore(QString filename, bool doBootstrap, KeySecurityPolicy policy,
 	OC_METHODGATE();
 	setObjectName("KeyStore");
 	synchronize([this](SimpleDataStore &ds, bool ok) {
-
+		qDebug()<<"KeyStore::KeyStore() SELF ASSESMENT: SYNC WAS OK="<<ok;
 	});
 }
 
@@ -40,6 +41,7 @@ KeyStore::~KeyStore()
 
 bool KeyStore::fromMap(QVariantMap map)
 {
+	OC_METHODGATE();
 	QSharedPointer<Key> localKey;
 	bool ok=true;
 	mLocalKey=nullptr;
@@ -47,10 +49,10 @@ bool KeyStore::fromMap(QVariantMap map)
 	if(map.contains("localKey")) {
 		QVariantMap localMap=map["localKey"].toMap();
 		QSharedPointer<Key> localKey(OC_NEW Key(localMap, false));
-		if(!localKey->isValid(false)) {
-			ok=false;
-		} else {
+		if(localKey->isValid(false)) {
 			mLocalKey=localKey;
+		} else {
+			ok=false;
 		}
 	}
 	if(ok) {
@@ -78,12 +80,16 @@ bool KeyStore::fromMap(QVariantMap map)
 
 QVariantMap KeyStore::toMap()
 {
+	OC_METHODGATE();
 	QVariantMap map;
 	// This is where we bootstrap by creating the local key if none exist
-	if(nullptr==mLocalKey && mDoBootstrap) {
-		mLocalKey=QSharedPointer<Key>(OC_NEW Key(mPolicy.bits()));
+	if(mLocalKey.isNull() && mDoBootstrap) {
+		ScopedTimer st("local key bootstrap");
+		const auto bits=mPolicy.bits();
+		qDebug()<<"KeyStore: bootstrapping started with "<<bits<<"bits";
+		mLocalKey=QSharedPointer<Key>(OC_NEW Key(bits));
 	}
-	if(nullptr!=mLocalKey) {
+	if(!mLocalKey.isNull()) {
 		map["localKey"]=mLocalKey->toVariantMap(false);
 	}
 	QVariantList remotes;
