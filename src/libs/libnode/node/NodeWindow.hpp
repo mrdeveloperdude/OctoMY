@@ -1,0 +1,17 @@
+#ifndef NODEWINDOW_HPP
+#define NODEWINDOW_HPP
+
+#include <QWidget>
+
+class NodeWindow : public QWidget
+{
+		Q_OBJECT
+	public:
+		explicit NodeWindow(QWidget *parent = nullptr);
+
+	signals:
+
+	public slots:
+};
+
+#endif // NODEWINDOW_HPP
