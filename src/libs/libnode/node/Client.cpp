@@ -132,7 +132,9 @@ void Client::setCourierRegistration(bool reg)
 void Client::updateCourierRegistration()
 {
 	OC_METHODGATE();
-	setCourierRegistration(needsConnection());
+	const bool needs=needsConnection();
+	qDebug()<<"update courier reg with needs="<<needs;
+	setCourierRegistration(needs);
 }
 
 

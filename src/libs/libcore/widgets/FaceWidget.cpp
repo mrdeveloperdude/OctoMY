@@ -13,7 +13,7 @@
 #include "utility/Utility.hpp"
 #include "agent/AgentConstants.hpp"
 #include "agent/AgentControls.hpp"
-#include "agent/AgentCourierSet.hpp"
+#include "comms/couriers/sets/AgentCourierSet.hpp"
 
 
 #include <QScrollBar>

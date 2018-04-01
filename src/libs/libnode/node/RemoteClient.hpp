@@ -2,7 +2,7 @@
 #define REMOTECLIENT_HPP
 
 #include "Client.hpp"
-#include "RemoteCourierSet.hpp"
+#include "comms/couriers/sets/RemoteCourierSet.hpp"
 
 
 #include <QtGlobal>

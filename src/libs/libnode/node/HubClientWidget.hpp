@@ -6,7 +6,7 @@
 
 #include "widgets/TryToggle.hpp"
 #include "node/Node.hpp"
-#include "node/RemoteCourierSet.hpp"
+#include "comms/couriers/sets/RemoteCourierSet.hpp"
 #include "node/ClientWidget.hpp"
 
 #include <QSharedPointer>

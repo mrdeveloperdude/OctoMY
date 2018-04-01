@@ -1,11 +1,10 @@
 #include "AgentCourierSet.hpp"
 
-#include "Agent.hpp"
+#include "agent/Agent.hpp"
 #include "comms/CommsSignature.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/blob/BlobCourier.hpp"
-
 
 AgentCourierSet::AgentCourierSet(QString &fullID, Agent &agent)
 	: CourierSet()
@@ -16,11 +15,11 @@ AgentCourierSet::AgentCourierSet(QString &fullID, Agent &agent)
 {
 	OC_METHODGATE();
 
-	CommsChannel *cc=agent.comms();
+	CommsChannel *cc=mAgent.comms();
 	if(nullptr!=cc) {
-		mAgentStateCourier=QSharedPointer<AgentStateCourier>(OC_NEW AgentStateCourier(nullptr , *cc, &agent));
-		mSensorsCourier=QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*cc, &agent));
-		mBlobCourier=QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*cc, &agent));
+		mAgentStateCourier=QSharedPointer<AgentStateCourier>(OC_NEW AgentStateCourier(nullptr , *cc, &mAgent));
+		mSensorsCourier=QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*cc, &mAgent));
+		mBlobCourier=QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*cc, &mAgent));
 	} else {
 		qWarning()<<"ERROR: AgentCourierSet did not have commschannel";
 	}

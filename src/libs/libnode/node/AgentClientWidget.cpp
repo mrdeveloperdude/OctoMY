@@ -233,7 +233,7 @@ void AgentClientWidget::updateControlLevel(int level)
 	//qDebug()<<"CONTROL LEVEL IS "<<level;
 	ui->stackedWidgetControl->setCurrentIndex(level);
 	//Enable spinner when any level is selected except connect and we are not conneted
-	//setSpinnerActive(level!=0 && ON != ui->tryToggleListen->state());
+	setSpinnerActive(level!=0 && ON != ui->tryToggleListen->state());
 }
 
 

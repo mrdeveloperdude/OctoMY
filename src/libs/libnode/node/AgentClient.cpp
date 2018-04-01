@@ -4,10 +4,11 @@
 
 AgentClient::AgentClient(QSharedPointer<Node> controller, QSharedPointer<Associate> nodeAssoc, QObject *parent)
 	: Client(controller, nodeAssoc, parent)
-//	, mCouriers(nodeAssoc->id(), *this)
+	, mCouriers(nodeAssoc->id(), *this)
 	, mWidget(nullptr)
 {
 	OC_METHODGATE();
+	qDebug()<<"AGENT CLIENT WIDGET COURIER SET IS : "<<mCouriers;
 	updateCourierRegistration();
 }
 

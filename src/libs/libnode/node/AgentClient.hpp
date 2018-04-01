@@ -2,7 +2,7 @@
 #define AGENTCLIENT_HPP
 
 #include "Client.hpp"
-#include "agent/AgentCourierSet.hpp"
+#include "comms/couriers/sets/AgentClientCourierSet.hpp"
 
 
 #include <QtGlobal>
@@ -17,7 +17,7 @@ class AgentClient : public Client//, public QEnableSharedFromThis<AgentClient>  
 {
 	Q_OBJECT
 private:
-	CourierSet mCouriers;
+	AgentClientCourierSet mCouriers;
 	AgentClientWidget *mWidget;
 
 public:

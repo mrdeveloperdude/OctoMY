@@ -6,7 +6,7 @@
 
 #include "widgets/TryToggle.hpp"
 #include "node/Node.hpp"
-#include "agent/AgentCourierSet.hpp"
+#include "comms/couriers/sets/AgentCourierSet.hpp"
 #include "node/ClientWidget.hpp"
 
 #include <QSharedPointer>

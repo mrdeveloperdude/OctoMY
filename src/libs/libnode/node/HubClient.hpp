@@ -2,7 +2,7 @@
 #define HUBCLIENT_HPP
 
 #include "Client.hpp"
-#include "HubCourierSet.hpp"
+#include "comms/couriers/sets/HubCourierSet.hpp"
 
 
 #include <QtGlobal>
