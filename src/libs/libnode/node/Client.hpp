@@ -21,6 +21,7 @@ class Node;
 class CommsSession;
 class CourierSet;
 class ClientConnectionStatus;
+class ClientWidget;
 
 class Client: public QObject, public QEnableSharedFromThis<Client>
 {
@@ -29,20 +30,18 @@ protected:
 
 	QTimer mUpdateTimer;
 	QSharedPointer<Node> mNode;
-	QSharedPointer<Associate> mNodeAssociate;
+	QSharedPointer<Associate> mAssociate;
 
 public:
 
-	explicit Client(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssoc, QObject *parent=nullptr);
+	explicit Client(QSharedPointer<Node> node, QSharedPointer<Associate> associate, QObject *parent=nullptr);
 	virtual ~Client();
 
 
 // Client interface
 public:
-
 	virtual CourierSet &courierSet() =0;
-
-	virtual QWidget *widget() =0;
+	virtual ClientWidget *widget() =0;
 
 
 
@@ -65,7 +64,7 @@ public:
 	void initTimer();
 
 	QSharedPointer<Node> node();
-	QSharedPointer<Associate> nodeAssociate();
+	QSharedPointer<Associate> associate();
 
 	bool courierRegistration();
 	void setCourierRegistration(bool reg);

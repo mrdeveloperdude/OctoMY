@@ -53,6 +53,13 @@
      <widget class="QWidget" name="pageRunning">
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
+        <widget class="QPushButton" name="pushButtonUpdateStuff">
+         <property name="text">
+          <string>Update stuff</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QComboBox" name="comboBoxClient">
@@ -473,27 +480,27 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>PortableIDWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/PortableIDWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>PlanEditor</class>
    <extends>QWidget</extends>
-   <header>widgets/planedit/PlanEditor.hpp</header>
+   <header location="global">widgets/planedit/PlanEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PairingWizard</class>
    <extends>QWidget</extends>
-   <header>widgets/PairingWizard.hpp</header>
+   <header location="global">widgets/PairingWizard.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>LogWidget</class>
    <extends>QPlainTextEdit</extends>
-   <header>widgets/LogWidget.hpp</header>
+   <header location="global">widgets/LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>PortableIDWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/PortableIDWidget.hpp</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>ControlDeliveryWizard</class>

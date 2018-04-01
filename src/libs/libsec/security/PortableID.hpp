@@ -60,18 +60,12 @@ public:
 public:
 
 	bool fromPortableString(QString);
-	QString toPortableString();
+	QString toPortableString() const;
 
 
 };
 
+const QDebug &operator<<(QDebug &d, const PortableID &ass);
 
-
-inline const QDebug &operator<<(QDebug &d, PortableID &ass)
-{
-	OC_FUNCTIONGATE();
-	d.nospace() << "PortableID("<<ass.toPortableString()<<")";
-	return d.maybeSpace();
-}
 
 #endif // PORTABLEID_HPP

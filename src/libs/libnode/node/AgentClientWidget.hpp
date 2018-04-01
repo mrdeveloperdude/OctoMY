@@ -7,7 +7,7 @@
 #include "widgets/TryToggle.hpp"
 #include "node/Node.hpp"
 #include "agent/AgentCourierSet.hpp"
-
+#include "node/ClientWidget.hpp"
 
 #include <QSharedPointer>
 #include <QWidget>
@@ -30,7 +30,7 @@ class AgentClientWidget;
  * @brief The ClientWidget class is the UI for one single Agent as seen on the remote
  */
 
-class AgentClientWidget : public QWidget
+class AgentClientWidget : public ClientWidget
 {
 	Q_OBJECT
 
@@ -39,8 +39,6 @@ private:
 
 	WaitingSpinnerWidget *mSpinner;
 	QSharedPointer <AgentClient> mAgentClient;
-
-
 
 public:
 	explicit AgentClientWidget(QSharedPointer<AgentClient> client, QWidget *parent=nullptr);
@@ -63,17 +61,14 @@ private:
 	bool setSetting(QString key, bool val);
 
 public:
-	//bool needConnection();
-
-
-
-public:
 
 	CommsChannel *comms();
 	QSharedPointer<Associate> nodeAssociate() const;
 	QSharedPointer<Node> controller();
 
-	void updateControlLevel(int level);
+	// ClientWidget interface
+public:
+	void updateControlLevel(int level) Q_DECL_OVERRIDE;
 
 
 	// Internal custom UI slots

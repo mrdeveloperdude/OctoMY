@@ -22,7 +22,7 @@ QMap<QString, QSharedPointer<Client> > ClientList::toMapByID()
 	QMap<QString, QSharedPointer<Client> > map;
 	for(QSharedPointer<Client> client: mClients) {
 		if(!client.isNull()) {
-			QSharedPointer<Associate> nodeAssociate=client->nodeAssociate();
+			QSharedPointer<Associate> nodeAssociate=client->associate();
 			if(!nodeAssociate.isNull()) {
 				QString key=nodeAssociate->id();
 				if(map.contains(key)) {
@@ -43,11 +43,11 @@ void ClientList::syncToAddressBook(AddressBook &ab, QSharedPointer<Node> node)
 	// Remove what isn't there
 	for(QSharedPointer<Client> client: mClients) {
 		if(!client.isNull()) {
-			QSharedPointer<Associate> nodeAssociate=client->nodeAssociate();
+			QSharedPointer<Associate> nodeAssociate=client->associate();
 			if(!nodeAssociate.isNull()) {
 				QString id=nodeAssociate->id();
 				if(!ab.hasAssociate(id)) {
-					qDebug()<<" + Removing "<<id;
+					qDebug()<<" + Removing client "<<id;
 					existingMap.remove(id);
 				}
 			}
@@ -60,7 +60,7 @@ void ClientList::syncToAddressBook(AddressBook &ab, QSharedPointer<Node> node)
 		if(!existingMap.contains(key)) {
 			QSharedPointer<Associate> ass=all[key];
 			if(!ass.isNull()) {
-				qDebug()<<" + Adding "<<key;
+				qDebug()<<" + Adding client "<<ass->toPortableID();
 				existingMap[key]=ass->toClient(node);
 			}
 		}
@@ -75,7 +75,7 @@ QSharedPointer<Client> ClientList::byID(QString id)
 	OC_METHODGATE();
 	for(QSharedPointer<Client> client: mClients) {
 		if(!client.isNull()) {
-			QSharedPointer<Associate> nodeAssociate=client->nodeAssociate();
+			QSharedPointer<Associate> nodeAssociate=client->associate();
 			if(!nodeAssociate.isNull()) {
 				QString id2=nodeAssociate->id();
 				if(id==id2) {
@@ -115,7 +115,6 @@ QSet<QSharedPointer<Client> > ClientList::withActiveSessions(CommsSessionDirecto
 			qWarning()<<"ERROR: No key";
 		}
 	}
-
 	return out;
 }
 
@@ -130,17 +129,18 @@ void ClientList::clear()
 
 
 
-QList<QWidget * > ClientList::widgets()
+QList<ClientWidget * > ClientList::widgets()
 {
 	OC_METHODGATE();
 	int idx=0;
-	QList<QWidget * > out;
+	QList<ClientWidget * > out;
 	const int ct=mClients.count();
 	qDebug()<<"Preparing widgets from client list of "<<ct<<" clients";
 	out.reserve(ct);
 	for(QSharedPointer<Client> client: mClients) {
-		QWidget *widget=nullptr;
+		ClientWidget *widget=nullptr;
 		if(!client.isNull()) {
+			qDebug()<<" + getting widget for " << client->associate()->name();
 			widget=client->widget();
 		}
 		qDebug()<<" + got widget: "<<widget<< " for client "<< client<<" idx="<<idx<<" ct="<<ct;
@@ -152,6 +152,11 @@ QList<QWidget * > ClientList::widgets()
 }
 
 
+int ClientList::count() const
+{
+	OC_METHODGATE();
+	return mClients.count();
+}
 
 
 void ClientList::setAllCouriersRegistered(const bool reg)

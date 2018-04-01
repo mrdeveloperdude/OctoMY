@@ -23,13 +23,21 @@ CourierSet &HubClient::courierSet()
 }
 
 
-QWidget *HubClient::widget()
+
+ClientWidget *HubClient::widget()
 {
 	OC_METHODGATE();
 	if(nullptr == mWidget) {
-		mWidget=OC_NEW HubClientWidget(QEnableSharedFromThis<HubClient>::sharedFromThis(), nullptr);
+		QSharedPointer<HubClient> sharedThis = qSharedPointerCast<HubClient>(sharedFromThis());
+		if(!sharedThis.isNull()) {
+			mWidget=OC_NEW HubClientWidget(sharedThis, nullptr);
+			if(nullptr == mWidget) {
+				qWarning()<<"ERROR: could not create RemoteClientWidget for HubClient";
+			}
+		} else {
+			qWarning()<<"ERROR: sharedFromThis was null for HubClient";
+		}
 	}
 	return mWidget;
 }
-
 

@@ -11,7 +11,7 @@ static const QString CLIENT_ONLINE_STATUS_BASE_KEY("octomy.client.online.");
 Client::Client(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssociate, QObject *parent)
 	: QObject(parent)
 	, mNode(node)
-	, mNodeAssociate(nodeAssociate)
+	, mAssociate(nodeAssociate)
 {
 	OC_METHODGATE();
 
@@ -34,7 +34,7 @@ bool Client::needsConnection()
 	OC_METHODGATE();
 	const bool def=false;
 	if(!mNode.isNull()) {
-		return mNode->settings().getCustomSettingBool(CLIENT_ONLINE_STATUS_BASE_KEY+nodeAssociate()->id(), def);
+		return mNode->settings().getCustomSettingBool(CLIENT_ONLINE_STATUS_BASE_KEY+associate()->id(), def);
 	}
 	return def;
 }
@@ -61,7 +61,7 @@ void Client::setNeedsConnection(const bool current)
 	OC_METHODGATE();
 	qDebug()<<"CLIENT::set needs connection: "<<current;
 	if(!mNode.isNull()) {
-		const QString key=CLIENT_ONLINE_STATUS_BASE_KEY+nodeAssociate()->id();
+		const QString key=CLIENT_ONLINE_STATUS_BASE_KEY+associate()->id();
 		const bool last=needsConnection();
 		if(current!=last) {
 			mNode->settings().setCustomSettingBool(key, current);
@@ -86,7 +86,7 @@ void Client::setConnected(bool)
 ClientConnectionStatus Client::connectionStatus()
 {
 	OC_METHODGATE();
-	return ClientConnectionStatus(sharedFromThis());
+	return ClientConnectionStatus( QEnableSharedFromThis<Client>::sharedFromThis() );
 }
 
 
@@ -105,10 +105,10 @@ QSharedPointer<Node> Client::node()
 	OC_METHODGATE();
 	return mNode;
 }
-QSharedPointer<Associate> Client::nodeAssociate()
+QSharedPointer<Associate> Client::associate()
 {
 	OC_METHODGATE();
-	return mNodeAssociate;
+	return mAssociate;
 }
 
 

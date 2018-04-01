@@ -27,14 +27,16 @@
 #include <QScrollBar>
 
 AgentClientWidget::AgentClientWidget(QSharedPointer<AgentClient> client, QWidget *parent)
-	: QWidget(parent)
+	: ClientWidget(parent)
 	, ui(OC_NEW Ui::AgentClientWidget)
 	, mSpinner(nullptr)
 	, mAgentClient(client)
 {
 	OC_METHODGATE();
 	qDebug()<<"CREATING AGENT CLIENT WIDGET AgentClient="<<(!mAgentClient.isNull()?mAgentClient->node()->name():"NULL")<<", parent="<<parent;
-
+	if(mAgentClient.isNull()){
+		qWarning()<<"WARNING: agentClient was NULL!!!";
+	}
 	ui->setupUi(this);
 
 	ui->widgetBirthCertificate->configure(false,true);
@@ -129,7 +131,7 @@ QString AgentClientWidget::id()
 {
 	OC_METHODGATE();
 	if(!mAgentClient.isNull()){
-		QSharedPointer<Associate> na=mAgentClient->nodeAssociate();
+		QSharedPointer<Associate> na=mAgentClient->associate();
 		if(!na.isNull()){
 			return na->id();
 		}
@@ -230,7 +232,7 @@ QSharedPointer<Node> AgentClientWidget::controller()
 QSharedPointer<Associate> AgentClientWidget::nodeAssociate() const
 {
 	OC_METHODGATE();
-	return mAgentClient.isNull()?nullptr:mAgentClient->nodeAssociate();
+	return mAgentClient.isNull()?nullptr:mAgentClient->associate();
 }
 
 void AgentClientWidget::updateControlLevel(int level)

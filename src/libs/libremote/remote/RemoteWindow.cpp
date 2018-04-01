@@ -41,27 +41,23 @@ RemoteWindow::RemoteWindow(QSharedPointer<Remote> remote, QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
+	prepareMenu();
 
 	configure(remote);
 
-	prepareDelivery();
-	prepareDiscovery();
+
 
 	if(!connect(ui->widgetPairing, &PairingWizard::done, [=]() {
-	setCurrentPage(ui->pageRunning);
+	qDebug()<<"GOING NEXT PAGE FROM PAIRING WIZARD";
+		setCurrentPage(ui->pageRunning);
 	})) {
 		qWarning()<<"ERROR: Could not connect ";
 	}
 
-	updateClientsList();
-	prepareControlLevelList();
-	prepareMenu();
-	updateClientWidgetList();
 
 	if(!mRemote.isNull()) {
 		mRemote->keyStore().synchronize([this](SimpleDataStore &sms, bool ok) {
 			qDebug()<<"REMOTEWIN keystore load compelte: "<<(ok?"OK":"ERROR");
-			prepareDiscovery();
 			goToStartPage();
 		});
 	}
@@ -90,9 +86,11 @@ Settings &RemoteWindow::settings()
 void RemoteWindow::configure(QSharedPointer<Remote> remote)
 {
 	OC_METHODGATE();
+	qDebug()<<"REMOTE CONFIGURE CALLED  # # # # ";
 	// Dissconnect old agent
 	if(!mRemote.isNull()) {
 		mRemote->setHookSensorSignals(*this, false);
+		mRemote->addressBook().setHookSignals(*this, false);
 	}
 
 	// Set new agent
@@ -101,6 +99,38 @@ void RemoteWindow::configure(QSharedPointer<Remote> remote)
 	// Connect new agent
 	if(!mRemote.isNull()) {
 		mRemote->setHookSensorSignals(*this, true);
+
+
+
+		/*
+		qDebug()<<"REMOTEWIN PREPARE DELIVERY";
+		// Make sure to go to correct page after delivery is complete
+		if(!connect(ui->widgetDelivery, &ControlDeliveryWizard::done, [=](bool pairNow) {
+		qDebug()<<"REMOTEWIN DELIVERY DONE ";
+			if(pairNow) {
+				ui->widgetPairing->reset();
+			}
+			setCurrentPage(pairNow?ui->pagePairing:ui->pageRunning);
+		})) {
+			qWarning()<<"ERROR: Could not connect ";
+		}
+		*/
+
+
+
+		/*
+		qDebug()<<"REMOTEWIN PREPARE DISCOVERY";
+		mRemote->updateDiscoveryClient();
+		mRemote->addressBook().setHookSignals(*this, true);
+		mRemote->addressBook().synchronize([=](SimpleDataStore &ab, bool ok) {
+			qDebug()<<"Address book synchronized: "<<ok;
+		*/
+
+		updateClientCombobox();
+		prepareControlLevelList();
+		updateClientWidgetStack();
+
+
 		updateWindowIcon();
 	} else {
 		qWarning()<<"WARNING: No Remote in remote window";
@@ -126,43 +156,6 @@ void RemoteWindow::updateWindowIcon()
 }
 
 
-void RemoteWindow::prepareDelivery()
-{
-	OC_METHODGATE();
-	qDebug()<<"REMOTEWIN PREPARE DELIVERY";
-	if(!mRemote.isNull()) {
-		// Make sure to go to correct page after delivery is complete
-		if(!connect(ui->widgetDelivery, &ControlDeliveryWizard::done, [=](bool pairNow) {
-		qDebug()<<"REMOTEWIN DELIVERY DONE ";
-			if(pairNow) {
-				ui->widgetPairing->reset();
-			}
-			setCurrentPage(pairNow?ui->pagePairing:ui->pageRunning);
-		})) {
-			qWarning()<<"ERROR: Could not connect ";
-		}
-	} else {
-		qWarning()<<"ERROR: no remote";
-	}
-}
-
-
-void RemoteWindow::prepareDiscovery()
-{
-	OC_METHODGATE();
-	qDebug()<<"REMOTEWIN PREPARE DISCOVERY";
-	if(!mRemote.isNull()) {
-		mRemote->updateDiscoveryClient();
-		mRemote->addressBook().setHookSignals(*this, true);
-		mRemote->addressBook().synchronize([=](SimpleDataStore &ab, bool ok) {
-			qDebug()<<"Address book synchronized: "<<ok;
-		});
-	} else {
-		qWarning()<<"ERROR: no remote";
-	}
-}
-
-
 
 void RemoteWindow::prepareControlLevelList()
 {
@@ -170,7 +163,7 @@ void RemoteWindow::prepareControlLevelList()
 	qDebug()<<"REMOTEWIN PREPARE CONTROL LEVEL LIST";
 	if(nullptr!=mRemote) {
 		Settings &s=mRemote->settings();
-		ui->comboBoxControlLevel->setCurrentText(s.getCustomSetting("octomy.remote.control.level",ui->comboBoxControlLevel->currentText()));
+		ui->comboBoxControlLevel->setCurrentText(s.getCustomSetting("octomy.remote.control.level", ui->comboBoxControlLevel->currentText()));
 		updateControlLevel();
 	} else {
 		qWarning()<<"ERROR: no remote";
@@ -198,22 +191,19 @@ void RemoteWindow::prepareMenu()
 
 
 
-
-
-
 // Rebuild the stack of client widgets based on available clients
-void RemoteWindow::updateClientWidgetList()
+void RemoteWindow::updateClientWidgetStack()
 {
 	OC_METHODGATE();
-	qDebug()<<"REMOTEWIN UPDATE CLIENT WIDGET LIST";
+	qDebug()<<"REMOTEWIN UPDATE CLIENT WIDGET STACK WITH "<<mRemote->clientList().count()<<" CLIENTS";
 	if(!mRemote.isNull()) {
-		QList <QWidget * > widgets=mRemote->clientList().widgets();
+		QList <ClientWidget * > widgets=mRemote->clientList().widgets();
 		utility::clearStackedWidget(ui->stackedWidgetControl);
 		if(!mRemote.isNull()) {
-			qDebug()<<"REMOTEWIN CLIENT WIDGET LIST CONTAINED "<<widgets.count()<<" ITEMS";
-			for(QWidget *widget: widgets) {
+			qDebug()<<"REMOTEWIN CLIENT WIDGET STACK CONTAINED "<<widgets.count()<<" ITEMS";
+			for(ClientWidget *widget: widgets) {
 				if(nullptr!=widget) {
-					qDebug()<<"REMOTEWIN ADDING CLIENT WIDGET";
+					qDebug()<<"REMOTEWIN ADDING "<< widget << " TO WIDGET STACK";
 					ui->stackedWidgetControl->addWidget(widget);
 				} else {
 					qWarning()<<"No client widget";
@@ -232,16 +222,67 @@ void RemoteWindow::updateClientWidgetList()
 	}
 }
 
+
+
+// Rebuild the list of clients in the client combobox based on the actual list of clients
+int RemoteWindow::updateClientCombobox()
+{
+	OC_METHODGATE();
+	qDebug()<<"REMOTEWIN UPDATE CLIENT COMBOBOX";
+	int ct=0;
+	ui->comboBoxClient->clear();
+	if(nullptr!=mRemote) {
+		QSharedPointer<Associate> local=mRemote->nodeIdentity();
+		if(!local.isNull()) {
+			const QString myID=local->id();
+			AddressBook &peerStore=mRemote->addressBook();
+			QMap<QString, QSharedPointer<Associate> > &peers=peerStore.all();
+			for(QMap<QString, QSharedPointer<Associate> >::iterator i=peers.begin(), e=peers.end(); i!=e; ++i) {
+				const QString id=i.key();
+				QSharedPointer<Associate> peer=i.value();
+				if(NodeType::TYPE_REMOTE!=peer->type()) {
+					addClientToCombobox(peer);
+					ct++;
+				}
+			}
+		}
+	} else {
+		qWarning()<<"ERROR: no remote";
+	}
+	return ct;
+}
+
+
+// Helper to add a single client to the client combo box based on associate
+void RemoteWindow::addClientToCombobox(QSharedPointer<Associate> peer)
+{
+	qDebug()<<"REMOTEWIN ADD CLIENT TO COMBOBOX";
+	OC_METHODGATE();
+	if(!peer.isNull()) {
+		QString name=peer->name().trimmed();
+		if(""==name) {
+			name=peer->id().mid(0,16);
+		}
+		QVariant userData=peer->id();
+		PortableID pid=peer->toPortableID();
+		Identicon identicon(pid);
+		QIcon icon=QIcon(identicon.pixmap());
+		qDebug()<<" + INSERTING CLIENT IN COMBOBOX "<<peer->toPortableID().toPortableString();
+		ui->comboBoxClient->insertItem(0, icon, name, userData);
+		ui->comboBoxClient->setCurrentIndex(0);
+	}
+}
+
+
 // Update the control level combo box based on the currently selected client
 void RemoteWindow::updateControlLevel()
 {
 	OC_METHODGATE();
-	qDebug()<<"REMOTEWIN UPDATE CONTROL LEVEL";
-	//qDebug()<<"SWITCHING CONTROL LEVEL TO "<<ui->comboBoxControlLevel->currentText();
-	if(ui->comboBoxClient->count() >0) {
+	qDebug()<<"REMOTEWIN UPDATE CONTROL LEVEL TO "<<ui->comboBoxControlLevel->currentText();
+	if(ui->comboBoxClient->count() > 0) {
 		ui->comboBoxControlLevel->setEnabled(true);
 		const int idx=ui->comboBoxControlLevel->currentIndex();
-		RemoteClientWidget *clientWidget = qobject_cast<RemoteClientWidget *>(ui->stackedWidgetControl->currentWidget());
+		ClientWidget *clientWidget = qobject_cast<ClientWidget *>(ui->stackedWidgetControl->currentWidget());
 		if(nullptr!=clientWidget) {
 			clientWidget->updateControlLevel(idx);
 		}
@@ -264,10 +305,10 @@ void RemoteWindow::updateActiveClient()
 
 		QSharedPointer<Associate>  clientAssociate=mRemote->addressBook().associateByID(clientID);
 		qDebug()<<"SWITCHING ACTIVE CLIENT TO "<<clientName<<"("<<idx<<", "<<clientID<<")";
-		QList <QWidget * > widgets=mRemote->clientList().widgets();
+		QList <ClientWidget * > widgets=mRemote->clientList().widgets();
 		const int ct=widgets.size();
 		if((idx>=0) && (idx<ct)) {
-			QWidget *cw=widgets[idx];
+			ClientWidget *cw=widgets[idx];
 			if(nullptr!=cw) {
 
 				/*
@@ -293,55 +334,6 @@ void RemoteWindow::updateActiveClient()
 	}
 }
 
-
-// Rebuild the list of clients in the client combobox based on the actual list of clients
-int RemoteWindow::updateClientsList()
-{
-	OC_METHODGATE();
-	qDebug()<<"REMOTEWIN UPDATE CLIENT LIST";
-	int ct=0;
-	ui->comboBoxClient->clear();
-	if(nullptr!=mRemote) {
-		QSharedPointer<Associate> local=mRemote->nodeIdentity();
-		if(!local.isNull()) {
-			const QString myID=local->id();
-			AddressBook &peerStore=mRemote->addressBook();
-			QMap<QString, QSharedPointer<Associate> > &peers=peerStore.all();
-			for(QMap<QString, QSharedPointer<Associate> >::iterator i=peers.begin(), e=peers.end(); i!=e; ++i) {
-				const QString id=i.key();
-				QSharedPointer<Associate> peer=i.value();
-				if(NodeType::TYPE_REMOTE!=peer->type()) {
-					addClientToList(peer);
-					ct++;
-				}
-			}
-		}
-	} else {
-		qWarning()<<"ERROR: no remote";
-	}
-	return ct;
-}
-
-
-// Helper to add a single client to the client combo box based on associate
-void RemoteWindow::addClientToList(QSharedPointer<Associate> peer)
-{
-	qDebug()<<"REMOTEWIN ADD CLIENT TO LIST";
-	OC_METHODGATE();
-	if(!peer.isNull()) {
-		QString name=peer->name().trimmed();
-		if(""==name) {
-			name=peer->id().mid(0,16);
-		}
-		QVariant userData=peer->id();
-		PortableID pid=peer->toPortableID();
-		Identicon identicon(pid);
-		QIcon icon=QIcon(identicon.pixmap());
-		qDebug()<<" + INSERTING CLIENT IN DROPDOWN "<<peer->toPortableID().toPortableString();
-		ui->comboBoxClient->insertItem(0, icon, name, userData);
-		ui->comboBoxClient->setCurrentIndex(0);
-	}
-}
 
 
 
@@ -519,8 +511,8 @@ void RemoteWindow::onAssociateChanged()
 {
 	OC_METHODGATE();
 	qDebug()<<"REMOTEWIN peers changed: ";
-	updateClientsList();
-	updateClientWidgetList();
+	updateClientCombobox();
+	updateClientWidgetStack();
 }
 
 
@@ -616,4 +608,10 @@ void RemoteWindow::on_pushButtonStartPairing_clicked()
 	OC_METHODGATE();
 	ui->widgetPairing->reset();
 	setCurrentPage(ui->pagePairing);
+}
+
+void RemoteWindow::on_pushButtonUpdateStuff_clicked()
+{
+	OC_METHODGATE();
+	configure(mRemote);
 }

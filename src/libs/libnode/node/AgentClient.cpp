@@ -24,11 +24,19 @@ CourierSet &AgentClient::courierSet()
 
 
 
-QWidget *AgentClient::widget()
+ClientWidget *AgentClient::widget()
 {
 	OC_METHODGATE();
 	if(nullptr == mWidget) {
-		mWidget=OC_NEW AgentClientWidget(QEnableSharedFromThis<AgentClient>::sharedFromThis(), nullptr);
+		QSharedPointer<AgentClient> sharedThis = qSharedPointerCast<AgentClient>(sharedFromThis());
+		if(!sharedThis.isNull()) {
+			mWidget=OC_NEW AgentClientWidget(sharedThis, nullptr);
+			if(nullptr == mWidget) {
+				qWarning()<<"ERROR: could not create AgentClientWidget for AgentClient";
+			}
+		} else {
+			qWarning()<<"ERROR: sharedFromThis was null for AgentClient";
+		}
 	}
 	return mWidget;
 }

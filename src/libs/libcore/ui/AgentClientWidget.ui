@@ -18,7 +18,7 @@
     <number>0</number>
    </property>
    <property name="topMargin">
-    <number>0</number>
+    <number>6</number>
    </property>
    <property name="rightMargin">
     <number>0</number>
@@ -29,7 +29,7 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <item row="0" column="0">
+   <item row="1" column="0">
     <widget class="QStackedWidget" name="stackedWidgetControl">
      <property name="currentIndex">
       <number>0</number>
@@ -608,24 +608,20 @@
      </widget>
     </widget>
    </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>AGENT CLIENT WIDGET</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>PortableIDWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/PortableIDWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LogWidget</class>
-   <extends>QPlainTextEdit</extends>
-   <header>widgets/LogWidget.hpp</header>
-  </customwidget>
-  <customwidget>
    <class>TryToggle</class>
    <extends>QWidget</extends>
-   <header>widgets/TryToggle.hpp</header>
+   <header location="global">widgets/TryToggle.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -635,27 +631,38 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>LogWidget</class>
+   <extends>QPlainTextEdit</extends>
+   <header location="global">widgets/LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>MapEditor</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/MapEditor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SpeechControlWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/SpeechControlWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PortableIDWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/PortableIDWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>FaceWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/FaceWidget.hpp</header>
+   <header location="global">widgets/FaceWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PanicButton</class>
    <extends>QWidget</extends>
    <header>widgets/PanicButton.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>MapEditor</class>
-   <extends>QWidget</extends>
-   <header>widgets/MapEditor.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SpeechControlWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/SpeechControlWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

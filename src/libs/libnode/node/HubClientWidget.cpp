@@ -29,7 +29,7 @@
 static const QString NODE_ONLINE_SETTINGS_KEY_BASE("octomy.online.");
 
 HubClientWidget::HubClientWidget(QSharedPointer<HubClient> client, QWidget *parent)
-	: QWidget(parent)
+	: ClientWidget(parent)
 	, ui(OC_NEW Ui::HubClientWidget)
 	, mSpinner(nullptr)
 	, mHubClient(client)
@@ -215,7 +215,7 @@ QSharedPointer<Node> HubClientWidget::controller()
 QSharedPointer<Associate> HubClientWidget::nodeAssociate() const
 {
 	OC_METHODGATE();
-	return mHubClient.isNull()?nullptr:mHubClient->nodeAssociate();
+	return mHubClient.isNull()?nullptr:mHubClient->associate();
 }
 
 void HubClientWidget::updateControlLevel(int level)

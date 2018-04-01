@@ -5,13 +5,18 @@
 
 class ClientWidget : public QWidget
 {
-		Q_OBJECT
-	public:
-		explicit ClientWidget(QWidget *parent = nullptr);
+	Q_OBJECT
+public:
+	explicit ClientWidget(QWidget *parent = nullptr);
 
-	signals:
+	virtual ~ClientWidget();
 
-	public slots:
+
+		// ClientWidget interface
+public:
+
+	virtual void updateControlLevel(int level) =0;
+
 };
 
 #endif // CLIENTWIDGET_HPP

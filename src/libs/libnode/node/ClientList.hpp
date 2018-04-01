@@ -32,7 +32,9 @@ public:
 
 	void clear();
 
-	QList <QWidget * > widgets();
+	QList <ClientWidget * > widgets();
+
+	int count() const;
 
 	// [Un]register the couriers of all clients in this list
 	void setAllCouriersRegistered(const bool reg);

@@ -7,7 +7,7 @@
 #include "widgets/TryToggle.hpp"
 #include "node/Node.hpp"
 #include "node/RemoteCourierSet.hpp"
-
+#include "node/ClientWidget.hpp"
 
 #include <QSharedPointer>
 #include <QWidget>
@@ -31,7 +31,7 @@ class HubClientWidget;
  * @brief The ClientWidget class is the UI for one single Hub as seen by other nodes
  */
 
-class HubClientWidget : public QWidget
+class HubClientWidget : public ClientWidget
 {
 	Q_OBJECT
 

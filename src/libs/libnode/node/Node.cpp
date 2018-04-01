@@ -125,9 +125,8 @@ void Node::init()
 
 	mAddressBook.synchronize([=](SimpleDataStore &ab, bool ok){
 		qDebug()<<"Address book synchronized with ok="<<ok;
+		mClients.syncToAddressBook(mAddressBook, sharedThis());
 	});
-
-	mClients.syncToAddressBook(mAddressBook, sharedThis());
 
 	StyleManager *style=OC_NEW StyleManager(QColor(TYPE_AGENT==mType?"#e83636":TYPE_REMOTE==mType?"#36bee8":"#36e843"));
 	if(nullptr!=style) {
@@ -263,9 +262,9 @@ QString Node::name()
 	QSharedPointer<Associate>  me=nodeIdentity();
 	QString name;
 	if(nullptr!=me) {
-		name=me->name();
+		name=me->name().trimmed();
 	}
-	if(""!=name.trimmed()) {
+	if(""!=name) {
 		switch(mType) {
 		case(TYPE_AGENT): {
 			name="Agent ";

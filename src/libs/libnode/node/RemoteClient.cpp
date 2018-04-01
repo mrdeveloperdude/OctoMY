@@ -30,13 +30,20 @@ CourierSet &RemoteClient::courierSet()
 
 
 
-QWidget *RemoteClient::widget()
+ClientWidget *RemoteClient::widget()
 {
 	OC_METHODGATE();
 	if(nullptr == mWidget) {
-		mWidget=OC_NEW RemoteClientWidget(QEnableSharedFromThis<RemoteClient>::sharedFromThis(), nullptr);
+		QSharedPointer<RemoteClient> sharedThis = qSharedPointerCast<RemoteClient>(sharedFromThis());
+		if(!sharedThis.isNull()) {
+			mWidget=OC_NEW RemoteClientWidget(sharedThis, nullptr);
+			if(nullptr == mWidget) {
+				qWarning()<<"ERROR: could not create RemoteClientWidget for RemoteClient";
+			}
+		} else {
+			qWarning()<<"ERROR: sharedFromThis was null for RemoteClient";
+		}
 	}
 	return mWidget;
 }
-
 

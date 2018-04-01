@@ -29,7 +29,7 @@
 static const QString NODE_ONLINE_SETTINGS_KEY_BASE("octomy.online.");
 
 RemoteClientWidget::RemoteClientWidget(QSharedPointer<RemoteClient> client, QWidget *parent)
-	: QWidget(parent)
+	: ClientWidget(parent)
 	, ui(OC_NEW Ui::RemoteClientWidget)
 	, mSpinner(nullptr)
 	, mRemoteClient(client)
@@ -233,7 +233,7 @@ QSharedPointer<Node> RemoteClientWidget::controller()
 QSharedPointer<Associate> RemoteClientWidget::nodeAssociate() const
 {
 	OC_METHODGATE();
-	return mRemoteClient.isNull()?nullptr:mRemoteClient->nodeAssociate();
+	return mRemoteClient.isNull()?nullptr:mRemoteClient->associate();
 }
 
 void RemoteClientWidget::updateControlLevel(int level)

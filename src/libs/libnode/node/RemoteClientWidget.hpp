@@ -8,6 +8,8 @@
 #include "node/Node.hpp"
 #include "node/RemoteCourierSet.hpp"
 
+#include "node/ClientWidget.hpp"
+
 
 #include <QSharedPointer>
 #include <QWidget>
@@ -29,7 +31,7 @@ class RemoteClientWidget;
  * @brief The ClientWidget class is the UI for one single Agent as seen on the remote
  */
 
-class RemoteClientWidget : public QWidget
+class RemoteClientWidget : public ClientWidget
 {
 	Q_OBJECT
 
@@ -60,7 +62,7 @@ private:
 	/*
 	bool courierRegistration();
 	void setCourierRegistration(bool reg);
-*/
+	*/
 
 	bool setSetting(QString key, bool val);
 
@@ -75,7 +77,10 @@ public:
 	QSharedPointer<Associate> nodeAssociate() const;
 	QSharedPointer<Node> controller();
 
-	void updateControlLevel(int level);
+
+	// ClientWidget interface
+public:
+	void updateControlLevel(int level) Q_DECL_OVERRIDE;
 
 
 	// Internal custom UI slots

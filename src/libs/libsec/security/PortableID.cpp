@@ -131,7 +131,7 @@ bool PortableID::fromPortableString(QString s)
 	return true;
 }
 
-QString PortableID::toPortableString()
+QString PortableID::toPortableString() const
 {
 	OC_METHODGATE();
 	QString dateString=QDateTime::fromMSecsSinceEpoch(mBirthDate).toString(dateFMT);
@@ -145,4 +145,13 @@ NodeType PortableID::type() const
 {
 	OC_METHODGATE();
 	return mType;
+}
+
+
+
+const QDebug &operator<<(QDebug &d, const PortableID &pid)
+{
+	OC_FUNCTIONGATE();
+	d.nospace() << "PortableID("<<pid.toPortableString()<<")";
+	return d.maybeSpace();
 }

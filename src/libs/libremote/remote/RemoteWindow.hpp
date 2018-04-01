@@ -54,28 +54,22 @@ public: //IContextProvider interface
 	Settings &settings() Q_DECL_OVERRIDE;
 
 public:
-
 	void configure(QSharedPointer<Remote>);
-
 	void updateWindowIcon();
 
-public:
-	//bool needConnection();
 
 private:
 
 	// One time initialization of differnt parts
-	void prepareDelivery();
-	void prepareDiscovery();
 	void prepareControlLevelList();
 	void prepareMenu();
 
+	void updateClientWidgetStack();
+	int  updateClientCombobox();
+	void addClientToCombobox(QSharedPointer<Associate> peer);
 
-	void updateClientWidgetList();
 	void updateControlLevel();
 	void updateActiveClient();
-	int  updateClientsList();
-	void addClientToList(QSharedPointer<Associate> peer);
 
 	void setCurrentPage(QWidget *cur);
 	void goToStartPage();
@@ -124,6 +118,7 @@ private slots:
 
 
 	void on_pushButtonStartPairing_clicked();
+	void on_pushButtonUpdateStuff_clicked();
 };
 
 #endif // REMOTEWINDOW_HPP
