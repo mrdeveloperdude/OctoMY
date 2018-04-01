@@ -33,27 +33,20 @@ AgentClientWidget::AgentClientWidget(QSharedPointer<AgentClient> client, QWidget
 	, mAgentClient(client)
 {
 	OC_METHODGATE();
-	qDebug()<<"CREATING AGENT CLIENT WIDGET AgentClient="<<(!mAgentClient.isNull()?mAgentClient->node()->name():"NULL")<<", parent="<<parent;
-	if(mAgentClient.isNull()){
-		qWarning()<<"WARNING: agentClient was NULL!!!";
-	}
 	ui->setupUi(this);
-
+	qDebug()<<"CREATING AGENT CLIENT WIDGET AgentClient="<<(!mAgentClient.isNull()?mAgentClient->node()->name():"NULL")<<", parent="<<parent;
 	ui->widgetBirthCertificate->configure(false,true);
-
 	if(!mAgentClient.isNull()) {
 		QSharedPointer<Node> node=mAgentClient->node();
 		if(!node.isNull()) {
-			QSharedPointer<Associate> nodeAssociate=node->nodeIdentity();
-			if(!nodeAssociate.isNull()) {
-				ui->widgetBirthCertificate->setPortableID(nodeAssociate->toPortableID());
-			}
 			node->setHookCommsSignals(*mAgentClient.data(), true);
 		} else {
 			qWarning()<<"ERROR: no associate";
 		}
-
-
+		QSharedPointer<Associate> ass=mAgentClient->associate();
+		if(!ass.isNull()) {
+			ui->widgetBirthCertificate->setPortableID(ass->toPortableID());
+		}
 	} else {
 		qWarning()<<"ERROR: no client";
 	}
@@ -130,9 +123,9 @@ void AgentClientWidget::setSpinnerActive(bool active)
 QString AgentClientWidget::id()
 {
 	OC_METHODGATE();
-	if(!mAgentClient.isNull()){
+	if(!mAgentClient.isNull()) {
 		QSharedPointer<Associate> na=mAgentClient->associate();
-		if(!na.isNull()){
+		if(!na.isNull()) {
 			return na->id();
 		}
 	}
@@ -367,7 +360,7 @@ void AgentClientWidget::on_widgetPanic_toggled(bool panic)
 	if(panic) {
 		QString str="P A N I C !";
 		qWarning()<<str;
-	//	appendLog(str);
+		//	appendLog(str);
 	} else {
 		QString str="Panic averted";
 		qWarning()<<str;
