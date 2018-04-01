@@ -8,6 +8,10 @@
 #include <QSharedPointer>
 
 class AgentClient;
+class BlobCourier;
+class SensorsCourier;
+class AgentStateCourier;
+
 
 class AgentClientCourierSet : public CourierSet
 {

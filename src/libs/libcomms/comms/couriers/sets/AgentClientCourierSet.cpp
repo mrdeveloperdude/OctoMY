@@ -16,7 +16,7 @@ AgentClientCourierSet::AgentClientCourierSet(QString fullID, AgentClient &client
 {
 	OC_METHODGATE();
 
-	CommsChannel *cc=nullptr;//mClient.comms();
+	CommsChannel *cc=mClient.comms();
 	if(nullptr!=cc) {
 		mAgentStateCourier=QSharedPointer<AgentStateCourier>(OC_NEW AgentStateCourier(nullptr , *cc, &mClient));
 		mSensorsCourier=QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*cc, &mClient));

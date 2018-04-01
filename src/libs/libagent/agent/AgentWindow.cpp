@@ -12,7 +12,7 @@
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"
 #include "comms/SyncParameter.hpp"
-#include "AgentCourierSet.hpp"
+#include "comms/couriers/sets/AgentCourierSet.hpp"
 #include "AgentConstants.hpp"
 
 

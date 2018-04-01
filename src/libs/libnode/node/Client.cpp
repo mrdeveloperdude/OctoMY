@@ -105,6 +105,15 @@ QSharedPointer<Node> Client::node()
 	OC_METHODGATE();
 	return mNode;
 }
+
+
+CommsChannel *Client::comms()
+{
+	OC_METHODGATE();
+	return mNode.isNull()?nullptr:mNode->comms();
+}
+
+
 QSharedPointer<Associate> Client::associate()
 {
 	OC_METHODGATE();

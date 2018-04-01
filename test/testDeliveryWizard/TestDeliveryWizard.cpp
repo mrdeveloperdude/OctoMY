@@ -1,5 +1,6 @@
 #include "TestDeliveryWizard.hpp"
 
+#include "agent/Agent.hpp"
 #include "node/Node.hpp"
 #include "node/NodeLauncher.hpp"
 #include "node/AppContext.hpp"
@@ -13,6 +14,7 @@
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QSignalSpy>
+
 
 
 class AgentDeliveryWizardTest: public AgentDeliveryWizard

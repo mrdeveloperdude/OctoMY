@@ -6,6 +6,14 @@
 #include <QDataStream>
 #include <QSharedPointer>
 
+
+class Agent;
+
+class AgentStateCourier;
+class SensorsCourier;
+class BlobCourier;
+
+
 class AgentCourierSet : public CourierSet
 {
 private:

@@ -9,6 +9,11 @@
 
 class HubClient;
 
+
+class AgentStateCourier;
+class SensorsCourier;
+class BlobCourier;
+
 class HubCourierSet : public CourierSet
 {
 private:

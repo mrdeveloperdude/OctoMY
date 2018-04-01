@@ -22,6 +22,13 @@ class CommsSession;
 class CourierSet;
 class ClientConnectionStatus;
 class ClientWidget;
+class CommsChannel;
+
+class ISyncParameter;
+
+
+
+
 
 class Client: public QObject, public QEnableSharedFromThis<Client>
 {
@@ -64,6 +71,7 @@ public:
 	void initTimer();
 
 	QSharedPointer<Node> node();
+	CommsChannel *comms();
 	QSharedPointer<Associate> associate();
 
 	bool courierRegistration();

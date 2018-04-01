@@ -1,16 +1,6 @@
 #ifndef COURIERSET_HPP
 #define COURIERSET_HPP
 
-
-class ZooClient;
-class DiscoveryClient;
-class AgentWindow;
-class AgentStateCourier;
-class ISyncParameter;
-class Agent;
-class SensorsCourier;
-class BlobCourier;
-class CommsSignature;
 class Courier;
 
 #include <QSet>

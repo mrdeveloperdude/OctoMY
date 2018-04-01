@@ -11,6 +11,11 @@
 
 class RemoteClient;
 
+class AgentStateCourier;
+class SensorsCourier;
+class BlobCourier;
+
+
 class RemoteCourierSet : public CourierSet
 {
 private:
