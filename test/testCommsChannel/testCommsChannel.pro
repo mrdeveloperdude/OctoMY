@@ -6,20 +6,19 @@ HEADERS += \
 	CommsSignalLogger.hpp \
 	CommsTester.hpp \
 	TestCommsChannel.hpp \
-	TestCourier.hpp \
-    MockCommsCarrierLog.hpp \
-    MockCommsCarrier.hpp
+	../common/mock/MockCommsCarrierLog.hpp \
+	../common/mock/MockCommsCarrier.hpp \
+	../common/mock/MockCourier.hpp
 
 SOURCES += \
+	TestCommsChannel.cpp \
+	../common/mock/MockCommsCarrierLog.cpp \
+	../common/mock/MockCommsCarrier.cpp \
+	../common/mock/MockCourier.cpp \
 	CommsSignalLogger.cpp \
 	CommsTester.cpp \
-	testCarrier.cpp \
-	TestCommsChannel.cpp \
-	TestCourier.cpp \
 	testMultiple.cpp \
 	testSingle.cpp \
-    MockCommsCarrierLog.cpp \
-    MockCommsCarrier.cpp \
-    testCommsMock.cpp
+	testCommsMock.cpp \
 
 include($$TESTS/test_autorun.pri)

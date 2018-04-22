@@ -51,19 +51,6 @@ CommsChannel::CommsChannel(CommsCarrier &carrier, KeyStore &keystore, AddressBoo
 	mCarrier.setHookCarrierSignals(*this, true);
 }
 
-/*
-//TODO: Remove once nobody refers to it any more
-CommsChannel::CommsChannel(CommsCarrier &carrier, KeyStore &keystore, QObject *parent)
-	: QObject(parent)
-	, mCarrier(carrier)
-	, mKeystore(keystore)
-	, mAssociates(*((NodeAssociateStore *) nullptr ))//HACK
-	, mSessions(mKeystore)
-{
-	qWarning()<<"ERROR: PLEASE USE THE OTHER CONSTRUCTOR AS THIS IS UNSUPPORTEDF!";
-}
-*/
-
 CommsChannel::~CommsChannel()
 {
 	OC_METHODGATE();
@@ -983,7 +970,7 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 	mTXScheduleRate.countPacket(0);
 	const auto MINIMAL_PACKET_RATE=mCarrier.minimalPacketInterval();
 	const auto MAXIMAL_PACKET_RATE=mCarrier.maximalPacketInterval();
-	qDebug()<<" ... R E S C H E D U L E ... "<<now;
+	qDebug()<<" ... R E S C H E D U L E ... "<<utility::formattedDateFromMS(now)<< " with "<<mCouriers.count()<<" couriers and honemyoon= "<<honeymoon(now);
 	mMostUrgentSendingTime=MINIMAL_PACKET_RATE;
 	mSchedule.clear();
 	// Update first
@@ -996,6 +983,7 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 	// Re-schedule couriers (strive to adhere to the mandates set fourth by each courier)
 	for(QSharedPointer<Courier> courier:mCouriers) {
 		if(!courier.isNull()) {
+			qDebug()<<" + " << courier->toString();
 			CourierMandate cm=courier->mandate();
 			//qDebug()<<"MANDATE FOR "<<courier->name()<<" IS "<<cm.toString();
 			if(cm.sendActive) {
@@ -1009,13 +997,13 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 						if(timeLeft < mMostUrgentSendingTime) {
 							const quint64 lastUrgent=mMostUrgentSendingTime;
 							mMostUrgentSendingTime=qMax(timeLeft, 0LL);
-							qDebug()<<courier->name()<<courier->id()<<courier->ser()<<" WITH TIME LEFT " << timeLeft<< " BUMPED URGENT FROM "<<lastUrgent<<" -> "<<mMostUrgentSendingTime;
+							qDebug()<<courier->name()<<courier->id()<<courier->serial()<<" WITH TIME LEFT " << timeLeft<< " BUMPED URGENT FROM "<<lastUrgent<<" -> "<<mMostUrgentSendingTime;
 						}
 						// Actual sending is due, schedule a packet to associate of client
 						if(timeLeft < 0) {
 							const quint64 score=(cm.priority * -timeLeft );
 							mSchedule.insert(score, courier); //TODO: make this broadcast somehow (use ClientDirectory::getByLastActive() and ClientSignature::isValid() in combination or similar).
-							qDebug()<<courier->name()<<courier->id()<<courier->ser()<<" SCHEDULED WITH TIMELEFT "<<timeLeft<<" AND SCORE "<<score;
+							qDebug()<<courier->name()<<courier->id()<<courier->serial()<<" SCHEDULED WITH TIMELEFT "<<timeLeft<<" AND SCORE "<<score;
 						}
 					} else {
 						if(session->handshakeState().isSending()) {
@@ -1047,6 +1035,7 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 		}
 	}
 	// Ensure we get immediate sending opportunities for sessions that are in handshake
+	qDebug()<<"PENDING HANDSHAKES: "<< mPendingHandshakes.size()<<", HANDSHAKES IN PROGRESS: "<< mSessions.hasHandshakers();
 	if( (mPendingHandshakes.size()>0) || (mSessions.hasHandshakers()) ) {
 		mMostUrgentSendingTime=qMin(mMostUrgentSendingTime, 0LL);
 	}
@@ -1088,7 +1077,9 @@ bool CommsChannel::honeymoon(quint64 now)
 	if(0==now) {
 		now= QDateTime::currentMSecsSinceEpoch();
 	}
-	return mHoneyMoonEnd > now;
+	const bool ret=mHoneyMoonEnd > now;
+	qDebug()<<"now="<<now<<", mHoneyMoonEnd="<<mHoneyMoonEnd<<" HONEYMOON="<<ret<<" left="<<(mHoneyMoonEnd-now);
+	return ret;
 }
 
 
@@ -1104,12 +1095,15 @@ bool CommsChannel::needConnection()
 void CommsChannel::updateConnect()
 {
 	OC_METHODGATE();
-	const bool is=mCarrier.isConnected();
-	const bool needs = needConnection();
-	qDebug()<<"Comms channel update isConnected="<<is<<", needsConnection="<<needs;
-	if(needs != is) {
-		qDebug()<<"Comms channel update decided to " << (needs?"start":"stop")<< " carrier";
-		mCarrier.setStarted(needs);
+	const bool isConencted=mCarrier.isConnected();
+	const bool needsConnection = needConnection();
+	qDebug()<<"Comms channel update isConnected="<<isConencted<<", needsConnection="<<needsConnection;
+	if(needsConnection != isConencted) {
+		qDebug()<<"Comms channel update decided to " << (needsConnection?"start":"stop")<< " carrier";
+		if(needsConnection) {
+			setHoneymoonEnd(QDateTime::currentMSecsSinceEpoch()+60*1000);
+		}
+		mCarrier.setStarted(needsConnection);
 	}
 }
 
@@ -1348,34 +1342,6 @@ CourierSet CommsChannel::couriers()
 	OC_METHODGATE();
 	return mCouriers;
 }
-
-/* TODO: repalce these by calls to couriers()
-int CommsChannel::courierCount()
-{
-	OC_METHODGATE();
-	return mCouriers.count();
-}
-
-
-
-bool CommsChannel::hasCourier(Courier &c) const
-{
-	OC_METHODGATE();
-	QSharedPointer<Courier> p(&c);
-	return mCouriers.contains(p);
-}
-
-Courier *CommsChannel::getCourierByID(quint32 id) const
-{
-	OC_METHODGATE();
-	if(mCouriersByID.contains(id)) {
-		return mCouriersByID[id];
-	}
-	return nullptr;
-}
-*/
-
-
 
 #ifdef SHOW_ACKS
 // show packets that were acked this frame

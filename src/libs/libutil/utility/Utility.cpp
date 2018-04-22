@@ -1431,4 +1431,14 @@ bool mapIsIn(const QVariantMap &orig, const QVariantMap &in, const bool careAbou
 }
 
 
+void merge( QVariantMap  &c, QVariantMap  &b)
+{
+	//QVariantMap  c(a);
+	for(QVariantMap::const_iterator i=b.begin(), e=b.end() ; i!=e ; ++i) {
+		c.insert(i.key(), i.value());
+	}
+	//return c;
+}
+
+
 }

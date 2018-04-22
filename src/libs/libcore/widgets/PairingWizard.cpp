@@ -166,18 +166,9 @@ void PairingWizard::updateNetworkSettings()
 		if(nullptr!=client) {
 			const bool visible=this->isVisible();
 			//TODO: Only attemt to start discovery client when address is valid
-			const bool valid=true;//mNode->localAddresses().currentAddress().isValid()
-			if(visible) {
-				if(!client->isStarted()) {
-					client->start();
-				}
-				ui->progressBarSearching->setVisible(true);
-			} else {
-				if(client->isStarted()) {
-					client->stop();
-				}
-				ui->progressBarSearching->setVisible(false);
-			}
+			//const bool valid=true;//mNode->localAddresses().currentAddress().isValid()
+			client->setStart(visible);
+			ui->progressBarSearching->setVisible(visible);
 		}
 	}
 }
@@ -293,9 +284,9 @@ void PairingWizard::startEdit(int row)
 		qDebug()<<"DATA FOR "<<row<<" DURING EDIT IS: "<<map;
 		if(nullptr!=mNode) {
 			AddressBook &peerStore=mNode->addressBook();
-			mCurrentlyEditing=map["key"].toMap()["id"].toString();
-			qDebug()<<"CURRENTLY EDITING ID "<<mCurrentlyEditing;
-			QSharedPointer<Associate> peer=peerStore.associateByID(mCurrentlyEditing);
+			mCurrentlyEditingID=map["key"].toMap()["id"].toString();
+			qDebug()<<"CURRENTLY EDITING ID "<<mCurrentlyEditingID;
+			QSharedPointer<Associate> peer=peerStore.associateByID(mCurrentlyEditingID);
 			if(nullptr!=peer) {
 				const QStringList trusts=peer->trusts();
 				const NodeType type=peer->type();
@@ -409,11 +400,11 @@ void PairingWizard::on_pushButtonCameraPair_clicked()
 void PairingWizard::on_pushButtonSaveEdits_clicked()
 {
 	OC_METHODGATE();
-	qDebug()<<"SAVING AFTER EDIT OF "<<mCurrentlyEditing;
+	qDebug()<<"SAVING AFTER EDIT OF "<<mCurrentlyEditingID;
 	if(nullptr!=mNode) {
 		AddressBook &peers=mNode->addressBook();
-		QSharedPointer<Associate> peer=peers.associateByID(mCurrentlyEditing);
-		if(nullptr!=peer) {
+		QSharedPointer<Associate> peer=peers.associateByID(mCurrentlyEditingID);
+		if(!peer.isNull()) {
 			NodeType type=peer->type();
 			peer->removeTrust("take-control");
 			peer->removeTrust("give-control");
@@ -450,7 +441,7 @@ void PairingWizard::on_pushButtonSaveEdits_clicked()
 	} else {
 		qWarning()<<"ERROR: No node while saving trust edits";
 	}
-	mCurrentlyEditing="";
+	mCurrentlyEditingID="";
 }
 
 void PairingWizard::on_pushButtonRemove_clicked()
@@ -460,7 +451,7 @@ void PairingWizard::on_pushButtonRemove_clicked()
 
 		if(nullptr!=mNode) {
 			AddressBook &peers=mNode->addressBook();
-			peers.removeAssociate(mCurrentlyEditing);
+			peers.removeAssociate(mCurrentlyEditingID);
 			peers.save();
 		}
 		setCurrentPage(ui->pagePairWithPeers);

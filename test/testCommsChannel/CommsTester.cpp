@@ -1,7 +1,7 @@
 #include "CommsTester.hpp"
 
 #include "rng/RNG.hpp"
-#include "TestCourier.hpp"
+#include "../common/mock/MockCourier.hpp"
 
 CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, quint16 basePort, quint16 portRange, quint16 testCount, KeyStore &keyStore, AddressBook &peers, QObject *parent)
 	: QObject(parent)
@@ -30,7 +30,7 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 			qDebug() << mMyAddress << ":" << mMyPort << " --> " << toPort;
 			QString myID="1234";
 			//CommsSignature sig(myID, NetworkAddress(mMyAddress, toPort));
-			QSharedPointer<TestCourier> tc(OC_NEW TestCourier(mName+"Courier", myID, "This is my humble payload", mCc, mTestCount, mTestCount, this));
+			QSharedPointer<MockCourier> tc(OC_NEW MockCourier(mName+"Courier", myID, "This is my humble payload", mCc, mTestCount, mTestCount, this));
 			QVERIFY(!tc.isNull());
 			mCc.setCourierRegistered(tc, true);
 		} else {

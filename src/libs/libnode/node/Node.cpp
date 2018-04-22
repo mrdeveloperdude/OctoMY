@@ -110,11 +110,17 @@ Node::~Node()
 void Node::init()
 {
 	OC_METHODGATE();
-	mKeyStore.synchronize([this](SimpleDataStore &sms, bool ok){
+
+	if(nullptr!= mCarrier) {
+		const NetworkAddress listenAddress(QHostAddress::Any, mAddresses.port());
+		mCarrier->setListenAddress(listenAddress);
+	}
+
+	mKeyStore.synchronize([this](SimpleDataStore &sms, bool ok) {
 		qDebug()<<"Keystore synchronized with ok="<<ok;
 	});
 
-	mLocalIdentity.synchronize([this](SimpleDataStore &sms, bool ok){
+	mLocalIdentity.synchronize([this](SimpleDataStore &sms, bool ok) {
 		auto map=sms.toMap();
 		qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
 		if(ok && !map.isEmpty()) {
@@ -123,7 +129,7 @@ void Node::init()
 		}
 	});
 
-	mAddressBook.synchronize([=](SimpleDataStore &ab, bool ok){
+	mAddressBook.synchronize([=](SimpleDataStore &ab, bool ok) {
 		qDebug()<<"Address book synchronized with ok="<<ok;
 		mClients.syncToAddressBook(mAddressBook, sharedThis());
 	});

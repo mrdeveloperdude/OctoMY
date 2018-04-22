@@ -17,7 +17,9 @@ SOURCES+= \
     GeometryEngine.cpp \
     GLStressWidget.cpp \
     MEMTrasher.cpp \
-    Stress.cpp
+    Stress.cpp \
+    Utilities.cpp \
+    UDPTester.cpp
 
 HEADERS+= \
 	CourierTester.hpp \
@@ -27,7 +29,9 @@ HEADERS+= \
     GeometryEngine.hpp \
     GLStressWidget.hpp \
     MEMTrasher.hpp \
-    Stress.hpp
+    Stress.hpp \
+    Utilities.hpp \
+    UDPTester.hpp
 
 
 common.depends=		$${SRCS}/libs

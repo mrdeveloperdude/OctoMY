@@ -36,7 +36,7 @@ char LoopingBuffer::operator[](int i) const
 void LoopingBuffer::doXor(QByteArray &ba) const
 {
 	auto sz=ba.size();
-	for(int i=0;i<sz;++i){
+	for(int i=0; i<sz; ++i) {
 		ba[i]=ba[i]^at(i);
 	}
 }

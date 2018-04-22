@@ -29,22 +29,19 @@ class TestCommsChannel:public QObject
 
 public:
 
-	void testMultiple();
 
 private slots:
 
+	void testMultiple();
 
-
-		void testCarrier();
-
-		void testSingle();
-
+	void testSingle();
 	void testCommsMock();
+
 
 };
 
 
-void heading(QString msg, QString ch="_");
+
 QSharedPointer<Associate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, NodeRole role, NodeType type );
 
 #endif // TESTCOMMSCHANNEL_HPP

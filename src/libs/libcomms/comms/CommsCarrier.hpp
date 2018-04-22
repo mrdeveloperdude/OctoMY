@@ -25,7 +25,7 @@ class CommsCarrier: public QObject
 private:
 
 	//Receive counter used in debug messages to make sense of the order of things
-	static quint64 sTotalRecCount;
+	static quint64 sTotalRxCount;
 	static quint64 sTotalTxCount;
 
 

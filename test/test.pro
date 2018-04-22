@@ -22,6 +22,7 @@ contains(DEFINES, USE_TESTS_BASIC){
 		testCarSteeringWidget \
 		testCommsChannel \
 		testCommsSession \
+		testCommsCarrier \
 		testDeliveryWizard \
 		testDiscovery \
 		testEventSourcing \
@@ -50,6 +51,8 @@ contains(DEFINES, USE_TESTS_BASIC){
 		testTryToggle \
 		testDataStore \
 		testSimpleDataStore \
+		testRateCalculator \
+
 
 	# NOTE: EXTERNAL_LIB_OPENCL is enabled when useful in local_override.pri
 	contains(DEFINES, EXTERNAL_LIB_OPENCL){
@@ -88,11 +91,14 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testOpenCL \
 #		testNetworkSettingsWidget \
 #		testLightWidget \
-		testDataStore \
-		testSimpleDataStore \
-		testDeliveryWizard \
-		testAssociate \
-
+#		testDataStore \
+#		testSimpleDataStore \
+#		testDeliveryWizard \
+#		testAssociate \
+#		testDiscovery \
+		testCommsChannel \
+		testCommsCarrier \
+		testRateCalculator \
 
 	STRESS_PROJECTS+= \
 	#	stressCapabilities \

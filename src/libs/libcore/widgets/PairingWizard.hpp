@@ -31,7 +31,7 @@ private:
 	PairingListModel *mList;
 	PairingEditButtonDelegate *mDelegate;
 	QString mTemplate;
-	QString mCurrentlyEditing;
+	QString mCurrentlyEditingID;
 	int mTrustIndex;
 
 	QTimer mPulsatingTrustTimer;

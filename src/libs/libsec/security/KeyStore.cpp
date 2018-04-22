@@ -200,9 +200,13 @@ void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
 	if(!ready()) {
 		return;
 	}
-	QSharedPointer<Key> peer(OC_NEW Key(pubkeyPEM, true));
-	OC_ASSERT(nullptr!=peer);
-	mAssociates.insert(peer->id(), peer);
+	QSharedPointer<Key> key(OC_NEW Key(pubkeyPEM, true));
+	OC_ASSERT(nullptr!=key);
+	if(!key.isNull() ){
+		if( key->isValid(true) ){
+			mAssociates.insert(key->id(), key);
+		}
+	}
 }
 
 QSharedPointer<Key> KeyStore::pubKeyForID(const QString &id)

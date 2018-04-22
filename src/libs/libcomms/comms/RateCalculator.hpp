@@ -14,11 +14,17 @@ public:
 	quint64 mLastLog; // Last time we logged rate
 	quint64 mCountLog; // Number of packets passed since last log
 	quint64 mBytesLog; // Number of bytes passed since last log
+	quint64 mLogInterval; // Interval for logging. 0 means no logging
 
 public:
 
-	RateCalculator(QString name="Unnamed");
+	RateCalculator(QString name="Unnamed", const quint64 logInterval=0);
 
-	void countPacket(quint32 bytes);
+	void countPacket(quint32 bytes=0, quint64 now=0);
 };
+
+const QDebug &operator<<(QDebug &d, const RateCalculator &rc);
+
+
+
 #endif // RATECALCULATOR_HPP

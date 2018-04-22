@@ -78,11 +78,11 @@ bool CommsCarrierUDP::setStartImp(const bool start)
 	bool success=true;
 	if(start) {
 		success = mUDPSocket.bind(mLocalAddress.ip(), mLocalAddress.port());
-		//qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< " with interval "<<utility::humanReadableElapsedMS(mSendingTimer.interval()) <<(success?" succeeded": " failed");
+		qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< " with interval "<<utility::humanReadableElapsedMS(mSendingTimer.interval()) <<(success?" succeeded": (" failed with '"+mUDPSocket.errorString()+"'") );
 
 	} else {
 		mUDPSocket.close();
-		//qDebug()<<"----- comms unbind "<< mLocalAddress.toString();
+		qDebug()<<"----- comms unbind "<< mLocalAddress.toString();
 	}
 	return success;
 }
@@ -97,25 +97,33 @@ bool CommsCarrierUDP::isStartedImp() const
 qint64 CommsCarrierUDP::writeDataImp(const QByteArray &datagram, const NetworkAddress &address)
 {
 	OC_METHODGATE();
-	return mUDPSocket.writeDatagram(datagram, address.ip(), address.port());
+	const qint64 ret=mUDPSocket.writeDatagram(datagram, address.ip(), address.port());
+	if(ret<0) {
+		qWarning()<<"ERROR: Writing data to UDB socket: "<<mUDPSocket.errorString();
+	}
+	return ret;
 }
 
 qint64 CommsCarrierUDP::readDataImp(char *data, qint64 maxlen, QHostAddress *host, quint16 *port)
 {
 	OC_METHODGATE();
-	return mUDPSocket.readDatagram(data, maxlen, host, port);
+	const qint64 ret=mUDPSocket.readDatagram(data, maxlen, host, port);
+	if(ret<0) {
+		qWarning()<<"ERROR: Reading data from UDB socket: "<<mUDPSocket.errorString();
+	}
+	return ret;
 }
 
 bool CommsCarrierUDP::hasPendingDataImp()
 {
 	OC_METHODGATE();
-	return false;
+	return mUDPSocket.hasPendingDatagrams();
 }
 
 qint64 CommsCarrierUDP::pendingDataSizeImp()
 {
 	OC_METHODGATE();
-	return 0;
+	return mUDPSocket.pendingDatagramSize();
 }
 
 

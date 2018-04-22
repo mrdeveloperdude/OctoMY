@@ -24,6 +24,10 @@
 
 #include <functional>
 
+
+static const QString zeroID=utility::toHash("", OCTOMY_KEY_HASH);
+
+
 DiscoveryClient::DiscoveryClient(Node &node)
 	: QObject(&node)
 	, mLastZooPair(0)
@@ -49,22 +53,18 @@ bool DiscoveryClient::isStarted()
 	return mTimer.isActive();
 }
 
-void DiscoveryClient::start()
+void DiscoveryClient::setStart(bool start)
 {
-	qDebug()<<"DISCOVERY CLIENT STARTED";
+	qDebug()<<"DISCOVERY CLIENT "<<QString(start?"STARTED":"STOPPED");
 	if(!mTimer.isActive()) {
 		onTimer();
 	}
-	mTimer.start();
+	if(start) {
+		mTimer.start();
+	} else {
+		mTimer.stop();
+	}
 }
-
-void DiscoveryClient::stop()
-{
-	qDebug()<<"DISCOVERY CLIENT STOPPED";
-	mTimer.stop();
-}
-
-
 
 
 void DiscoveryClient::setURL(const QUrl& serverURL)
@@ -75,14 +75,6 @@ void DiscoveryClient::setURL(const QUrl& serverURL)
 }
 
 
-static void merge( QVariantMap  &c, QVariantMap  &b)
-{
-	//QVariantMap  c(a);
-	for(QVariantMap::const_iterator i=b.begin(), e=b.end() ; i!=e ; ++i) {
-		c.insert(i.key(), i.value());
-	}
-	//return c;
-}
 
 void DiscoveryClient::discover()
 {
@@ -98,19 +90,8 @@ void DiscoveryClient::discover()
 			QSharedPointer<Associate>  me=mNode.nodeIdentity();
 			if(!me.isNull()) {
 				QVariantMap map=me->toVariantMap();
-				merge(cmd, map);
-
-				/*
-								cmd["localAddress"] = "10.0.0.3";
-								cmd["localPort"] = 12345;
-								cmd["publicPort"] = 54321;
-								cmd["name"] = node.name();
-								cmd["gender"] = node
-								cmd["role"] = DiscoveryRoleToString(node.role());
-								cmd["type"] = DiscoveryTypeToString(node.type());
-										*/
+				utility::merge(cmd, map);
 			} else {
-
 				qWarning()<<"ERROR: no me";
 			}
 
@@ -199,11 +180,11 @@ void DiscoveryClient::discover()
 	};
 	//qDebug()<<"DISCOVERY CLIENT OUTREACH TO "<<mServerURL;
 	mClient->request(qhttp::EHTTP_POST, mServerURL, reqHandler, resHandler);
-
-
 }
 
-static const QString zeroID=utility::toHash("", OCTOMY_KEY_HASH);
+
+
+
 
 void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 {
@@ -236,6 +217,7 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 							if(nullptr!=comms) {
 								QSharedPointer<DiscoveryCourier> courier(OC_NEW DiscoveryCourier(part, *comms));
 								if(!courier.isNull()) {
+									//TODO: Security issue. what if the current associate has lots of important data? we need a smart merge instead of this.
 									peers.upsertAssociate(part);
 									courier->setDestination(part->id());
 									comms->setCourierRegistered(courier, true);

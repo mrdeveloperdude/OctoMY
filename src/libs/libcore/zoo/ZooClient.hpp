@@ -35,19 +35,11 @@ Q_OBJECT
 		virtual ~ZooClient();
 
 	public:
-
 		void setURL(const QUrl& server);
-		void getNodeCrumb(const QString OCID, TVariantMapHandler handler);
-		void putNodeCrumb(const QString OCID, const QByteArray data);
 		void doPairingEscrow(const QString OCID, TVariantMapHandler handler);
-
-		void punchUDP(const QString punchToken);
 
 	signals:
 		void getNodeDone();
-		void putNodeDone();
-
-
 
 };
 

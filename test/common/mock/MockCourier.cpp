@@ -1,10 +1,10 @@
-#include "TestCourier.hpp"
+#include "MockCourier.hpp"
 
 #include "CommsTester.hpp"
 
 #include "QTest"
 
-TestCourier::TestCourier(QString name, QString  dest, QByteArray datagram, CommsChannel &comms, const qint32 maxSends , const qint32 maxRecs, CommsTester *parent)
+MockCourier::MockCourier(QString name, QString  dest, QByteArray datagram, CommsChannel &comms, const qint32 maxSends , const qint32 maxRecs, CommsTester *parent)
 	: Courier(name, Courier::FIRST_USER_ID+313, comms, parent)
 	, mCt(parent)
 	, mSoFar(0)
@@ -25,7 +25,7 @@ TestCourier::TestCourier(QString name, QString  dest, QByteArray datagram, Comms
 	setDestination(dest);
 }
 
-TestCourier::~TestCourier()
+MockCourier::~MockCourier()
 {
 
 }
@@ -33,14 +33,14 @@ TestCourier::~TestCourier()
 
 
 // Let the CommChannel know what we want
-CourierMandate TestCourier::mandate() const
+CourierMandate MockCourier::mandate() const
 {
 	return mMandate;
 }
 
 // Override to act on sending opportunity.
 // Return number of bytes sent ( >0 ) if you took advantage of the opportunity
-quint16 TestCourier::sendingOpportunity(QDataStream &ds )
+quint16 MockCourier::sendingOpportunity(QDataStream &ds )
 {
 	mSendCount++;
 	const qint16 sendsLeft=mMaxSends-mSendCount;
@@ -60,7 +60,7 @@ quint16 TestCourier::sendingOpportunity(QDataStream &ds )
 
 // Override to act on data received
 // Return number of bytes actually read.
-quint16 TestCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
+quint16 MockCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 {
 	mRecCount++;
 	const qint16 recLeft=mMaxRecs-mRecCount;
@@ -76,7 +76,7 @@ quint16 TestCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 	return in.size()+4;
 }
 
-void TestCourier::writeSummary()
+void MockCourier::writeSummary()
 {
 
 	qDebug()<<"";

@@ -78,10 +78,8 @@ bool Associate::update(const QVariantMap map, bool trustedSource)
 		mLastInitiatedHandshakeMS=utility::variantToMs( map["lastInitiatedHandshakeMS"] );
 		mLastAdherentHandshakeMS=utility::variantToMs( map["lastAdherentHandshakeMS"]);
 		mBirthDate=utility::variantToMs( map["birthDate"]);
-
 		mAddressList=AddressList( map["addressList"].toList() );
-
-		//TODO: Figure out why we dont just ust fromVariantMap here!
+		//NOTE: We don't just use fromVariantMap here for security reasons. See "trustedSource" parameter
 		//fromVariantMap(map);
 		return true;
 	}

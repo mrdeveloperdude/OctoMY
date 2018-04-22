@@ -23,32 +23,34 @@ Courier::Courier(QString name, quint32 id, CommsChannel &cc, QObject *parent)
 	, mComms(cc)
 	, mName(name)
 	, mID(id)
-	, mSer(mCt++)
+	, mSerial(mCt++)
 	, mLastOpportunity(0)
 {
-
-
+	OC_METHODGATE();
 }
 
 void Courier::setDestination(const QString sig)
 {
+	OC_METHODGATE();
 	mDestination=sig;
 }
 
 const QString  &Courier::destination() const
 {
+	OC_METHODGATE();
 	return mDestination;
 }
 
 
 CommsChannel &Courier::comms() const
 {
+	OC_METHODGATE();
 	return mComms;
 }
 
-
 void Courier::setForwardRescheduleSignal(QObject &ob, bool fwd)
 {
+	OC_METHODGATE();
 	if(fwd) {
 		if(!connect(&ob,SIGNAL(reschedule(quint64)),this,SIGNAL(reschedule(quint64)),OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
@@ -60,45 +62,47 @@ void Courier::setForwardRescheduleSignal(QObject &ob, bool fwd)
 	}
 }
 
-
-
 quint64 Courier::lastOpportunity() const
 {
+	OC_METHODGATE();
 	return mLastOpportunity;
 }
 
 void  Courier::setLastOpportunity(quint64 now)
 {
+	OC_METHODGATE();
 	mLastOpportunity=now;
 }
 
-
-
 quint32 Courier::id()const
 {
+	OC_METHODGATE();
 	return mID;
 }
+
 QString Courier::name() const
 {
+	OC_METHODGATE();
 	return mName;
 }
 
-
-quint32 Courier::ser()const
+quint32 Courier::serial()const
 {
-	return mSer;
+	OC_METHODGATE();
+	return mSerial;
 }
-
 
 QString Courier::toString() const
 {
-	QString out="Courier{name="+mName+", id="+mID+", ser="+QString::number(mSer)+"}";
+	OC_METHODGATE();
+	QString out="Courier{name="+mName+", id="+mID+", dest= "+mDestination+", serial="+QString::number(mSerial)+", RX="+(mandate().receiveActive?"ON":"OFF")+", TX="+(mandate().sendActive?"ON":"OFF")+"}";
 	return out;
 }
 
 // Update courier state when channel has opportunity
 void Courier::update(quint64 now)
 {
+	OC_METHODGATE();
 	//It is perfectly fine to skip on this
 	//qWarning()<<"WARNING: Unimplemented update() in "<<mName<<"("<<mID<<")";
 }
@@ -107,6 +111,7 @@ void Courier::update(quint64 now)
 // Let the CommChannel know what we want
 CourierMandate Courier::mandate() const
 {
+	OC_METHODGATE();
 	return CourierMandate(0);
 }
 
@@ -114,6 +119,7 @@ CourierMandate Courier::mandate() const
 // Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
 quint16 Courier::sendingOpportunity(QDataStream &ds)
 {
+	OC_METHODGATE();
 	(void)ds;
 	qWarning()<<"WARNING: Unimplemented sendingOpportunity() in "<<mName<<"("<<mID<<")";
 	return 0;
@@ -124,6 +130,7 @@ quint16 Courier::sendingOpportunity(QDataStream &ds)
 // Return number of bytes actually read.
 quint16 Courier::dataReceived(QDataStream &ds, quint16 availableBytes)
 {
+	OC_METHODGATE();
 	(void)ds;
 	(void)availableBytes;
 	qWarning()<<"WARNING: Unimplemented dataReceived() in "<<mName<<"("<<mID<<")";

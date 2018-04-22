@@ -99,8 +99,7 @@ public:
 	void setURL(const QUrl&);
 
 	bool isStarted();
-	void start();
-	void stop();
+	void setStart(bool start);
 
 	void discover();
 

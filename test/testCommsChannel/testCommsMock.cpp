@@ -1,11 +1,12 @@
 #include "TestCommsChannel.hpp"
 
-#include "MockCommsCarrier.hpp"
+#include "../common/mock/MockCommsCarrier.hpp"
+#include "../common/Utilities.hpp"
 
 #include "comms/PacketSendState.hpp"
 #include "comms/PacketReadState.hpp"
 
-#include "TestCourier.hpp"
+#include "../common/mock/MockCourier.hpp"
 
 
 
@@ -94,7 +95,7 @@ void TestCommsChannel::testCommsMock()
 	const KeySecurityPolicy policy(keyBits, hashAlgo);
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 
-	heading("PARAMETER SUMMARY");
+	testHeading("PARAMETER SUMMARY");
 	qDebug()<<"  + localhost: "<<local;
 	qDebug()<<"  + basePort:  "<<basePort;
 	qDebug()<<"  + maxSends:  "<<maxSends;
@@ -103,14 +104,14 @@ void TestCommsChannel::testCommsMock()
 	qDebug()<<"  + hashAlgo:  "<<hashAlgo;
 	qDebug()<<"  + now:       "<<now;
 
-	heading("INITIALIZING ID FOR PARTY A");/////////////////////////////////////////////////////
+	testHeading("INITIALIZING ID FOR PARTY A");/////////////////////////////////////////////////////
 	QString keyStoreFilenameA="keyFileA.json";
 	QFile keyStoreFileA(keyStoreFilenameA);
 	if(keyStoreFileA.exists()) {
 		keyStoreFileA.remove();
 	}
-	KeyStore keyStoreA(keyStoreFilenameA, policy);
-	keyStoreA.bootstrap(false,false);
+	KeyStore keyStoreA(keyStoreFilenameA, true, policy);
+
 	auto keyA=keyStoreA.localKey();
 	//qDebug() << keyA->toString();
 	QString idA=keyA->id();
@@ -122,19 +123,19 @@ void TestCommsChannel::testCommsMock()
 		peersFileA.remove();
 	}
 	AddressBook peersA(peersFilenameA);
-	peersA.bootstrap(false,false);
+
 	QVariantMap peerMapA;
 	QString nameA="PARTY A";
 	QSharedPointer<Associate> partA=generatePart(nameA, keyA, addrA, ROLE_AGENT, TYPE_AGENT);
 
-	heading("INITIALIZING ID FOR PARTY B");/////////////////////////////////////////////////////
+	testHeading("INITIALIZING ID FOR PARTY B");/////////////////////////////////////////////////////
 	QString keyStoreFilenameB="keyFileB.json";
 	QFile keyStoreFileB(keyStoreFilenameB);
 	if(keyStoreFileB.exists()) {
 		QVERIFY(keyStoreFileB.remove());
 	}
-	KeyStore keyStoreB(keyStoreFilenameB, policy);
-	keyStoreB.bootstrap(false,false);
+	KeyStore keyStoreB(keyStoreFilenameB, true, policy);
+
 	auto keyB=keyStoreB.localKey();
 	//qDebug() << keyB->toString();
 
@@ -148,29 +149,29 @@ void TestCommsChannel::testCommsMock()
 	}
 
 	AddressBook peersB(peersFilenameB);
-	peersB.bootstrap(false,false);
+
 	QVariantMap peerMapB;
 	QString nameB="PARTY B";
 	QVariantMap addrBMap=addrB.toVariantMap();
 	QSharedPointer<Associate> partB=generatePart(nameB, keyB, addrB, ROLE_CONTROL, TYPE_REMOTE);
 
-	heading("BIND PARTY A to B");/////////////////////////////////////////////////////
+	testHeading("BIND PARTY A to B");/////////////////////////////////////////////////////
 	partA->addTrust(idB);
 	peersA.upsertAssociate(partB);
 	qDebug()<<"IDB="<<idB;
 	keyStoreA.setPubKeyForID(keyB->pubKey());
 
-	heading("INITIALIZING COMMS FOR PARTY A");/////////////////////////////////////////////////////
+	testHeading("INITIALIZING COMMS FOR PARTY A");/////////////////////////////////////////////////////
 	MockCommsCarrier carrierA;
 	CommsChannel chanA(carrierA,keyStoreA, peersA);
 	CommsSignalLogger sigLogA("LOG-A");
 	chanA.setHookCommsSignals(sigLogA, true);
-	QSharedPointer<TestCourier> courA1(OC_NEW TestCourier("Courier A1",idB, "This is datagram A1 123", chanA, maxSends, maxRecs));
+	QSharedPointer<MockCourier> courA1(OC_NEW MockCourier("Courier A1",idB, "This is datagram A1 123", chanA, maxSends, maxRecs));
 	chanA.setCourierRegistered(courA1, true);
 	//TestCourier courA2("Courier A2", commSigB, "This is datagram A2 uvw xyz", maxSends, maxRecs); chanA.setCourierRegistered(courA2, true);
 	qDebug()<<"SUMMARY: "<<chanA.getSummary();
 
-	heading("Preparing lots of test data");/////////////////////////////////////////////////////
+	testHeading("Preparing lots of test data");/////////////////////////////////////////////////////
 	quint64 time=QDateTime::currentMSecsSinceEpoch();
 	const quint64 stepMS=1000;
 	NetworkAddress na(QHostAddress("127.0.0.1"), 8123);
@@ -198,35 +199,35 @@ void TestCommsChannel::testCommsMock()
 	}
 
 
-	heading("RUNNING THE ACTUAL TESTS", "#");/////////////////////////////////////////////////////
+	testHeading("RUNNING THE ACTUAL TESTS", "#");/////////////////////////////////////////////////////
 
 
-	heading("Send garbled packet from unknown address");/////////////////////////////////////////////////////
+	testHeading("Send garbled packet from unknown address");/////////////////////////////////////////////////////
 	carrierA.mockWriteMock(garbledPacket, unknownAddress);
 	carrierA.mockReadMock(addrB);
 
 
-	heading("Send idle packet from unknown address");/////////////////////////////////////////////////////
+	testHeading("Send idle packet from unknown address");/////////////////////////////////////////////////////
 	carrierA.mockWriteMock(idlePacket, unknownAddress);
 	carrierA.mockReadMock(addrB);
 
 
-	heading("Send garbled packet from known address");/////////////////////////////////////////////////////
+	testHeading("Send garbled packet from known address");/////////////////////////////////////////////////////
 	carrierA.mockWriteMock(garbledPacket, addrB);
 	carrierA.mockReadMock(addrB);
 
 
-	heading("Send idle packet from known address");/////////////////////////////////////////////////////
+	testHeading("Send idle packet from known address");/////////////////////////////////////////////////////
 	carrierA.mockWriteMock(idlePacket, addrB);
 	carrierA.mockReadMock(addrB);
 
-	heading("Send handshake-syn packet from known address");/////////////////////////////////////////////////////
+	testHeading("Send handshake-syn packet from known address");/////////////////////////////////////////////////////
 	carrierA.mockWriteMock(handshakeSynPacket(sessA, idB, localSessionID, synNonce), addrB);
 
 
 	SESSION_NONCE_TYPE ackReturnNonce=INVALID_NONCE;
 	for(int i=0; i<4; ++i) {
-		heading("Looking for return SYN-ACK "+QString::number(i));/////////////////////////////////////////////////////
+		testHeading("Looking for return SYN-ACK "+QString::number(i));/////////////////////////////////////////////////////
 		carrierA.mockTriggerSendingOpportunity(time+=stepMS);
 		QByteArray data=carrierA.mockReadMock(addrB);
 		PacketReadState rstate(data, addrB.ip(), addrB.port());
@@ -249,7 +250,7 @@ void TestCommsChannel::testCommsMock()
 		}
 	}
 
-	heading("Send handshake-ack packet from known address");/////////////////////////////////////////////////////
+	testHeading("Send handshake-ack packet from known address");/////////////////////////////////////////////////////
 	carrierA.mockWriteMock(handshakeAckPacket(sessA, idB, localSessionID, ackReturnNonce), addrB);
 
 
@@ -262,13 +263,13 @@ void TestCommsChannel::testCommsMock()
 	}
 
 	*/
-	heading("SUMMARIES 1st time with no sessions");/////////////////////////////////////////////////////
+	testHeading("SUMMARIES 1st time with no sessions");/////////////////////////////////////////////////////
 	courA1->writeSummary();
 
-	heading("STOP 1st time with no sessions");/////////////////////////////////////////////////////
+	testHeading("STOP 1st time with no sessions");/////////////////////////////////////////////////////
 	chanA.carrier().setStarted(false);
 
-	heading("DELETING");
+	testHeading("DELETING");
 	QTest::waitForEvents();
 
 }

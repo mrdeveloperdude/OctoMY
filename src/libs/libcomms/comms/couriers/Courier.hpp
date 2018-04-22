@@ -30,18 +30,16 @@ private:
 	//Identification
 	QString mName;
 	quint32 mID;
-	quint32 mSer;
+	quint32 mSerial;
 	static quint32 mCt;
 	//Last oportunity time
 	quint64 mLastOpportunity;
-
 
 public:
 	static const quint32 FIRST_USER_ID;
 
 public:
 	explicit Courier(QString name, quint32 id, CommsChannel &comms, QObject *parent=0);
-
 
 public:
 
@@ -50,14 +48,13 @@ public:
 
 public:
 
-
 	CommsChannel &comms() const;
 	void setForwardRescheduleSignal(QObject &ob, bool fwd);
 	quint64 lastOpportunity() const;
 	void  setLastOpportunity(quint64 now);
 	quint32 id() const;
 	QString name() const;
-	quint32 ser() const;
+	quint32 serial() const;
 	QString toString() const;
 
 signals:
@@ -68,7 +65,6 @@ public:
 
 // Update courier state when channel has opportunity
 	virtual void update(quint64 now);
-
 
 // Let the CommChannel know what we want
 	virtual CourierMandate mandate() const;

@@ -1,6 +1,8 @@
  #include "TestCommsChannel.hpp"
 
-#include "TestCourier.hpp"
+#include "../common/mock/MockCourier.hpp"
+
+#include "../common/Utilities.hpp"
 
 /*
 Basic test that sets up two CommsChannels ( A & B ) and have them sending data via couriers to eachother.
@@ -23,7 +25,7 @@ void TestCommsChannel::testSingle()
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
 
 
-	heading("PARAMETER SUMMARY");
+	testHeading("PARAMETER SUMMARY");
 	qDebug()<<"  + localhost: "<<local;
 	qDebug()<<"  + basePort:  "<<basePort;
 	qDebug()<<"  + maxSends:  "<<maxSends;
@@ -32,7 +34,7 @@ void TestCommsChannel::testSingle()
 	qDebug()<<"  + hashAlgo:  "<<hashAlgo;
 	qDebug()<<"  + now:       "<<now;
 
-	heading("INITIALIZING ID FOR PARTY A");/////////////////////////////////////////////
+	testHeading("INITIALIZING ID FOR PARTY A");/////////////////////////////////////////////
 	QString keyStoreFilenameA="keyFileA.json";
 	QFile keyStoreFileA(keyStoreFilenameA);
 	if(keyStoreFileA.exists()) {
@@ -40,8 +42,7 @@ void TestCommsChannel::testSingle()
 	}
 	QVERIFY(!keyStoreFileA.exists());
 
-	KeyStore keyStoreA(keyStoreFilenameA, policy);
-	keyStoreA.bootstrap(false,false);
+	KeyStore keyStoreA(keyStoreFilenameA, true, policy);
 
 	auto keyA=keyStoreA.localKey();
 	QVERIFY(nullptr!=keyA);
@@ -60,19 +61,19 @@ void TestCommsChannel::testSingle()
 	}
 	QVERIFY(!peersFileA.exists());
 	AddressBook peersA(peersFilenameA);
-	peersA.bootstrap(false,false);
+
 	QString nameA="PARTY A";
 	QSharedPointer<Associate> partA=generatePart(nameA, keyA, addrA, ROLE_AGENT, TYPE_AGENT);
 
-	heading("INITIALIZING ID FOR PARTY B");////////////////////////////////////////////////
+	testHeading("INITIALIZING ID FOR PARTY B");////////////////////////////////////////////////
 	QString keyStoreFilenameB="keyFileB.json";
 	QFile keyStoreFileB(keyStoreFilenameB);
 	if(keyStoreFileB.exists()) {
 		QVERIFY(keyStoreFileB.remove());
 	}
 	QVERIFY(!keyStoreFileB.exists());
-	KeyStore keyStoreB(keyStoreFilenameB, policy);
-	keyStoreB.bootstrap(false,false);
+	KeyStore keyStoreB(keyStoreFilenameB, true, policy);
+
 	auto keyB=keyStoreB.localKey();
 	QVERIFY(nullptr!=keyB);
 	qDebug() << keyB->toString();
@@ -91,48 +92,48 @@ void TestCommsChannel::testSingle()
 	QVERIFY(!peersFileB.exists());
 
 	AddressBook peersB(peersFilenameB);
-	peersB.bootstrap(false,false);
+
 	QString nameB="PARTY B";
 	QVariantMap addrBMap=addrB.toVariantMap();
 	QCOMPARE(addrBMap.size(), 2);
 	QSharedPointer<Associate> partB=generatePart(nameB, keyB, addrB, ROLE_CONTROL, TYPE_REMOTE);
 
 
-	heading("BIND PARTY A to B");////////////////////////////////////////////////
+	testHeading("BIND PARTY A to B");////////////////////////////////////////////////
 	partA->addTrust(idB);
 	peersA.upsertAssociate(partB);
 	qDebug()<<"IDB="<<idB;
 	keyStoreA.setPubKeyForID(keyB->pubKey());
 
 
-	heading("BIND PARTY B to A");/////////////////////////////////////////////////
+	testHeading("BIND PARTY B to A");/////////////////////////////////////////////////
 	partB->addTrust(idA);
 	peersB.upsertAssociate(partA);
 	keyStoreB.setPubKeyForID(keyA->pubKey());
 
 
-	heading("INITIALIZING COMMS FOR PARTY A");///////////////////////////////////
+	testHeading("INITIALIZING COMMS FOR PARTY A");///////////////////////////////////
 	CommsCarrierUDP carrierA;
 	CommsChannel chanA(carrierA,keyStoreA, peersA);
 	CommsSignalLogger sigLogA("LOG-A");
 	chanA.setHookCommsSignals(sigLogA, true);
-	QSharedPointer<TestCourier> courA1(OC_NEW TestCourier("Courier A1",idB, "This is datagram A1 123", chanA, maxSends, maxRecs));
+	QSharedPointer<MockCourier> courA1(OC_NEW MockCourier("Courier A1",idB, "This is datagram A1 123", chanA, maxSends, maxRecs));
 	chanA.setCourierRegistered(courA1, true);
 
 	//TestCourier courA2("Courier A2", commSigB, "This is datagram A2 uvw xyz", maxSends, maxRecs); chanA.setCourierRegistered(courA2, true);
 	qDebug()<<"SUMMARY: "<<chanA.getSummary();
 
-	heading("INITIALIZING COMMS FOR PARTY B");//////////////////////////////////
+	testHeading("INITIALIZING COMMS FOR PARTY B");//////////////////////////////////
 	CommsCarrierUDP carrierB;
 	CommsChannel chanB(carrierB, keyStoreB, peersB);
 	CommsSignalLogger sigLogB("LOG-B");
 	chanA.setHookCommsSignals(sigLogB, true);
-	QSharedPointer<TestCourier> courB1(OC_NEW TestCourier("Courier B1", idA, "This is datagram B1 æøåä", chanB, maxSends, maxRecs));
+	QSharedPointer<MockCourier> courB1(OC_NEW MockCourier("Courier B1", idA, "This is datagram B1 æøåä", chanB, maxSends, maxRecs));
 	chanB.setCourierRegistered(courB1, true);
 	//TestCourier courB2("Courier B2", commSigA, "This is datagram B2 Q", maxSends, maxRecs); chanB.setCourierRegistered(courB2, true);
 	qDebug()<<"SUMMARY: "<<chanB.getSummary();
 
-	heading("STARTING 1st time with no sessions","#");//////////////////////////////////
+	testHeading("STARTING 1st time with no sessions","#");//////////////////////////////////
 	chanA.rescheduleSending(now);
 	chanA.carrier().setListenAddress(addrA);
 	chanA.carrier().setStarted(true);
@@ -140,7 +141,7 @@ void TestCommsChannel::testSingle()
 	chanB.carrier().setListenAddress(addrB);
 	chanB.carrier().setStarted(true);
 
-	heading("WAITING 1st time with no sessions");///////////////////////////////
+	testHeading("WAITING 1st time with no sessions");///////////////////////////////
 	{
 		quint64 now=QDateTime::currentMSecsSinceEpoch();
 		const quint64 end=now+15000;
@@ -151,11 +152,11 @@ void TestCommsChannel::testSingle()
 		}
 	}
 
-	heading("SUMMARIES 1st time with no sessions");//////////////////////////////
+	testHeading("SUMMARIES 1st time with no sessions");//////////////////////////////
 	courA1->writeSummary();
 	courB1->writeSummary();
 
-	heading("STOP 1st time with no sessions");///////////////////////////////////
+	testHeading("STOP 1st time with no sessions");///////////////////////////////////
 	chanA.carrier().setStarted(false);
 	chanB.carrier().setStarted(false);
 
@@ -199,7 +200,7 @@ void TestCommsChannel::testSingle()
 	courB1.writeSummary();
 
 	*/
-	heading("DELETING");///////////////////////////////////////////////////////////
+	testHeading("DELETING");///////////////////////////////////////////////////////////
 
 }
 

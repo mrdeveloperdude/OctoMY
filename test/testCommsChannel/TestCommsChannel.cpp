@@ -3,25 +3,17 @@
 #include "../common/TestCommon.hpp"
 #include <QString>
 
+
+
 OC_TEST_MAIN(test, TestCommsChannel)
 
 
-void heading(QString msg, QString ch){
-	auto sz=msg.size();
-	auto full=80-4;
-	auto half=(full-sz)/2;
-	auto second=full-sz-half;
-	QTest::waitForEvents();
-	qDebug()<<"";
-	qDebug()<<"";
-	qDebug().nospace().noquote()<<QString(ch).repeated(half)<< " # "<<msg << " # "<<QString(ch).repeated(second);
-	qDebug()<<"";
-}
 
 
 
 
-QSharedPointer<Associate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, NodeRole role, NodeType type ){
+QSharedPointer<Associate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, NodeRole role, NodeType type )
+{
 	QVariantMap peerMap;
 	peerMap["publicAddress"]=addr.toVariantMap();
 	peerMap["localAddress"]=addr.toVariantMap();
@@ -36,3 +28,7 @@ QSharedPointer<Associate> generatePart(QString name, QSharedPointer<Key> key, Ne
 	QSharedPointer<Associate> part(OC_NEW Associate(peerMap));
 	return part;
 }
+
+
+
+// NOTE: The rest of the test code is distributed in other files.

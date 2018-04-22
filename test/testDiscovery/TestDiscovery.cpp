@@ -5,7 +5,10 @@
 #include "discovery/DiscoveryClient.hpp"
 #include "node/NodeRole.hpp"
 #include "node/Node.hpp"
+#include "node/NodeLauncher.hpp"
 #include "node/AppContext.hpp"
+#include "agent/Agent.hpp"
+#include "remote/Remote.hpp"
 
 #include <QSignalSpy>
 
@@ -14,7 +17,8 @@
 #include <QStandardPaths>
 
 // YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
-void TestDiscovery::test(){
+void TestDiscovery::test()
+{
 	qDebug()<<"INIT -----------------------";
 	QProcessEnvironment env=QProcessEnvironment::systemEnvironment();
 	QCommandLineParser opts;
@@ -25,61 +29,52 @@ void TestDiscovery::test(){
 	AppContext *agentContext=OC_NEW AppContext(opts, env, "testDiscoveryAgent", this);
 	AppContext *remoteContext=OC_NEW AppContext(opts, env, "testDiscoveryRemote", this);
 
-	QSignalSpy *spyAgentKeyReady=nullptr;
-	QSignalSpy *spyRemoteKeyReady=nullptr;
+	QVERIFY(nullptr!=zooContext);
+	qDebug()<<"ZOO -----------------------";
+	QString port="8123";
+	ZooServer *zooServer=OC_NEW ZooServer (zooContext, this);
+	QVERIFY(nullptr!=zooServer);
+	zooServer->start(port);
+	qDebug()<<"ZOO    APP DIR: "<<QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 
-	if(nullptr!=zooContext){
-		qDebug()<<"ZOO -----------------------";
-		QString port="8123";
-		ZooServer *zooServer=OC_NEW ZooServer (zooContext, this);
-		QVERIFY(nullptr!=zooServer);
-		zooServer->start(port);
-		qDebug()<<"APP DIR: "<<QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-	}
+	QVERIFY(nullptr!=agentContext);
+	qDebug()<<"AGENT -----------------------";
+	NodeLauncher<Agent> agentLauncher;
+	Node *testAgent=OC_NEW Node(agentLauncher, agentContext, NodeRole::ROLE_AGENT, NodeType::TYPE_AGENT, this);
+	QVERIFY(nullptr!=testAgent);
+	KeyStore *agentKeystore=&testAgent->keyStore();
+	QVERIFY(nullptr!=agentKeystore);
+	agentKeystore->synchronize([=](SimpleDataStore &sds, bool ok) {
+		qDebug()<<"AGENT KEYSTORE READY "<<ok;
+		testAgent->updateDiscoveryClient();
+		testAgent->discoveryClient()->setStart(true);
+//			Jeg avbryter herved denne samtalen fordi jeg tror ikke vi er noe god match for hverandre. Du er ute etter "kjærligheten" og jeg er ute etter en livlig samtalepartner. Så langt har jeg måtte hale ut av deg hver minste lille detalj,
+	} );
+	qDebug()<<"AGENT  APP DIR: "<<QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 
-	if(nullptr!=agentContext){
-
-
-		qDebug()<<"AGENT -----------------------";
-		Node *testAgent=OC_NEW Node(agentContext, NodeRole::ROLE_AGENT, NodeType::TYPE_AGENT, this);
-		QVERIFY(nullptr!=testAgent);
-		KeyStore *agentKeystore=&testAgent->keyStore();
-		QVERIFY(nullptr!=agentKeystore);
-		spyAgentKeyReady=OC_NEW QSignalSpy(agentKeystore,SIGNAL(keystoreReady(bool)));
-		bool conret1=connect(agentKeystore, &KeyStore::storeReady, [=](bool ok){
-			qDebug()<<"AGENT KEYSTORE READY "<<ok;
-			QVERIFY(agentKeystore->isReady());
-			QVERIFY(!agentKeystore->hasError());
-		} );
-		QVERIFY(conret1);
-		qDebug()<<"APP DIR: "<<QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-	}
-
-	if(nullptr!=remoteContext){
-		qDebug()<<"REMOTE -----------------------";
-		Node *testRemote=OC_NEW Node(remoteContext, NodeRole::ROLE_CONTROL, NodeType::TYPE_REMOTE, this);
-		QVERIFY(nullptr!=testRemote);
-		KeyStore *remoteKeystore=&testRemote->keyStore();
-		QVERIFY(nullptr!=remoteKeystore);
-		spyRemoteKeyReady=OC_NEW QSignalSpy(remoteKeystore, SIGNAL(storeReady(bool)));
-		bool conret2=connect(remoteKeystore, &KeyStore::storeReady, [=](){
-			qDebug()<<"REMOTE KEYSTORE READY";
-			QVERIFY(remoteKeystore->isReady());
-			QVERIFY(!remoteKeystore->hasError());
-		} );
-		QVERIFY(conret2);
-		qDebug()<<"APP DIR: "<<QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-	}
+	QVERIFY(nullptr!=remoteContext);
+	qDebug()<<"REMOTE -----------------------";
+	NodeLauncher<Remote> remoteLauncher;
+	Node *testRemote=OC_NEW Node(remoteLauncher, remoteContext, NodeRole::ROLE_CONTROL, NodeType::TYPE_REMOTE, this);
+	QVERIFY(nullptr!=testRemote);
+	KeyStore *remoteKeystore=&testRemote->keyStore();
+	QVERIFY(nullptr!=remoteKeystore);
+	remoteKeystore->synchronize([=](SimpleDataStore &sds, bool ok) {
+		qDebug()<<"REMOTE KEYSTORE READY "<<ok;
+		testRemote->updateDiscoveryClient();
+		testRemote->discoveryClient()->setStart(true);
+	} );
+	qDebug()<<"REMOTE APP DIR: "<<QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 
 	qDebug()<<"DE-INIT -----------------------";
 	quint64 spyWait=20000;//20 sec
 	qDebug()<<"SPYTIME: "<<spyWait;
-
-	if(nullptr!=spyAgentKeyReady){
-		QVERIFY(spyAgentKeyReady->wait(spyWait));	QVERIFY(1==spyAgentKeyReady->count());
+	QTest::qSleep(spyWait);
+	if(nullptr!=agentContext) {
+		testAgent->discoveryClient()->setStart(false);
 	}
-	if(nullptr!=spyRemoteKeyReady){
-		QVERIFY(spyRemoteKeyReady->wait(spyWait));	QVERIFY(1==spyRemoteKeyReady->count());
+	if(nullptr!=remoteContext) {
+		testRemote->discoveryClient()->setStart(false);
 	}
 }
 

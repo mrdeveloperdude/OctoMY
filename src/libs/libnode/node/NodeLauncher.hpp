@@ -56,7 +56,7 @@ protected:
 	bool mIsHeadless;
 
 public:
-	explicit NodeLauncher(int argc, char *argv[]);
+	explicit NodeLauncher(int argc=0, char *argv[]=nullptr);
 	virtual ~NodeLauncher();
 
 	int run();

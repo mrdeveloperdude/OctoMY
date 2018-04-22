@@ -1,12 +1,12 @@
-#ifndef TESTCOURIER_HPP
-#define TESTCOURIER_HPP
+#ifndef MOCKCOURIER_HPP
+#define MOCKCOURIER_HPP
 
 #include "comms/couriers/Courier.hpp"
 
 #include "QObject"
 
 class CommsTester;
-class TestCourier:public Courier
+class MockCourier:public Courier
 {
 	Q_OBJECT
 
@@ -23,8 +23,8 @@ public:
 	CourierMandate mMandate;
 
 public:
-	explicit TestCourier(QString name, QString dest, QByteArray datagram, CommsChannel &comms, const qint32 mMaxSends=1, const qint32 mMaxRecs=1, CommsTester *parent = nullptr);
-	virtual ~TestCourier();
+	explicit MockCourier(QString name, QString dest, QByteArray datagram, CommsChannel &comms, const qint32 mMaxSends=1, const qint32 mMaxRecs=1, CommsTester *parent = nullptr);
+	virtual ~MockCourier();
 
 public:
 
@@ -43,4 +43,4 @@ public:
 };
 
 
-#endif // TESTCOURIER_HPP
+#endif // MOCKCOURIER_HPP

@@ -10,19 +10,18 @@
 Q_DECLARE_METATYPE(QHostAddress)
 Q_DECLARE_METATYPE(QHostAddress *)
 
-quint64 CommsCarrier::sTotalRecCount = 0;
+quint64 CommsCarrier::sTotalRxCount = 0;
 quint64 CommsCarrier::sTotalTxCount = 0;
 
 CommsCarrier::CommsCarrier(QObject *parent)
 	: QObject(parent)
 	, mConnected(false)
-	, mRXRate("RX RATE")
-	, mTXRate("TX RATE")
+	, mRXRate("RX RATE", 10000)
+	, mTXRate("TX RATE", 10000)
 	, mTXOpportunityRate("OP RATE")
 
 {
 	OC_METHODGATE();
-	setObjectName("ERROR: INSTANCIATED PURE VIRTUAL CLASS SOMEHOW");
 	mSendingTimer.setSingleShot(false);
 	mSendingTimer.setTimerType(Qt::PreciseTimer);
 	if(!connect(&mSendingTimer, SIGNAL(timeout()), this, SLOT(onOpportunityTimer()), OC_CONTYPE)) {
@@ -43,14 +42,11 @@ void CommsCarrier::detectConnectionChanges(const quint64 now)
 	OC_METHODGATE();
 	const quint64 timeSinceLastRX = (now - mRXRate.mLast);
 	const quint64 timeout = connectionTimeout();
-	//qDebug()<<"DETECTIN' connected=" << mConnected << "timeSinceLastRX=" <<  timeSinceLastRX << " vs. timeout="<<timeout<< " now="<<now;
-	/*
-	// TODO: Merge this with the rest of the "is vs. needed" crowd
+	qDebug().nospace().noquote()<<"DETECTIN' timeSinceLastRX="<<timeSinceLastRX<<", timeout="<<timeout<<", now="<<now<<", mRXRate="<<mRXRate<<", mConnected="<<(mConnected?"YES":"NO");
 	if(mConnected && (timeSinceLastRX > timeout) ) {
-		qDebug()<<"Connection timed out, stopping";
-		setStarted(false);
+		mConnected=false;
+		qDebug()<<"Connection timed out";
 	} else
-		*/
 	if(!mConnected && (timeSinceLastRX <= timeout) ) {
 		mConnected=true;
 		qDebug()<<"Connection completed";
@@ -63,9 +59,10 @@ void CommsCarrier::detectConnectionChanges(const quint64 now)
 void CommsCarrier::onOpportunityTimer()
 {
 	OC_METHODGATE();
+	qDebug()<<"Opportunity timer";
 	const quint64 now=QDateTime::currentMSecsSinceEpoch();
+	mTXOpportunityRate.countPacket(0, now);
 	detectConnectionChanges(now);
-	mTXOpportunityRate.countPacket(0);
 	emit carrierSendingOpportunity(now);
 }
 
@@ -123,6 +120,7 @@ void CommsCarrier::setListenAddress(NetworkAddress address)
 	OC_METHODGATE();
 	setAddressImp(address);
 }
+
 bool CommsCarrier::setStarted(bool start)
 {
 	OC_METHODGATE();
@@ -166,7 +164,7 @@ qint64 CommsCarrier::writeData(const QByteArray &datagram, const NetworkAddress 
 	OC_METHODGATE();
 	const qint64 len=writeDataImp(datagram, address);
 	mTXRate.countPacket(len);
-	sTotalRecCount++;
+	sTotalRxCount++;
 	return len;
 }
 
