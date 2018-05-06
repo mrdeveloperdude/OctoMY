@@ -31,7 +31,7 @@
 
 
 AgentWindow::AgentWindow(QSharedPointer<Agent> agent, QWidget *parent)
-	: NodeWindow(parent)
+	: NodeWindow(agent, parent)
 	, ui(OC_NEW Ui::AgentWindow)
 	, mAgent(nullptr)
 	, mHexy(nullptr)
@@ -90,14 +90,14 @@ AgentWindow::AgentWindow(QSharedPointer<Agent> agent, QWidget *parent)
 	ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
 	gotoNextConfigPage();
 
-#ifdef Q_OS_ANDROID
-	showFullScreen();
-#endif
+	loadWindowGeometry();
 }
 
 AgentWindow::~AgentWindow()
 {
 	OC_METHODGATE();
+	qDebug()<<"#*#*#*#*#*#*#*#* AGENT WINDOW DTOR";
+	saveWindowGeometry();
 	delete ui;
 	ui=nullptr;
 }

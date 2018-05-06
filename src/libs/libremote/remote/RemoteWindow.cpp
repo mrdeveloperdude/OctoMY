@@ -35,7 +35,7 @@
 #endif
 
 RemoteWindow::RemoteWindow(QSharedPointer<Remote> remote, QWidget *parent)
-	: NodeWindow(parent)
+	: NodeWindow(remote, parent)
 	, ui(OC_NEW Ui::RemoteWindow)
 	, mRemote(nullptr)
 {
@@ -62,9 +62,7 @@ RemoteWindow::RemoteWindow(QSharedPointer<Remote> remote, QWidget *parent)
 		});
 	}
 
-#ifdef Q_OS_ANDROID
-	showFullScreen();
-#endif
+	loadWindowGeometry();
 }
 
 RemoteWindow::~RemoteWindow()

@@ -255,7 +255,10 @@ void Client::onCommsConnectionStatusChanged(const bool isConnected, const bool n
 {
 	OC_METHODGATE();
 	//qDebug() <<"CLIENT WIDGET New connection status: "<<(s?"ONLINE":"OFFLINE");
-	updateOnlineStatus();
+	//updateOnlineStatus();
+
+	setNeedsConnection(needsConnection);
+	setConnected(isConnected);
 }
 
 

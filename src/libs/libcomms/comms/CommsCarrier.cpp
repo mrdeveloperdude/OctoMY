@@ -43,14 +43,16 @@ void CommsCarrier::detectConnectionChanges(const quint64 now)
 	const quint64 timeSinceLastRX = (now - mRXRate.mLast);
 	const quint64 timeout = connectionTimeout();
 	qDebug().nospace().noquote()<<"DETECTIN' timeSinceLastRX="<<timeSinceLastRX<<", timeout="<<timeout<<", now="<<now<<", mRXRate="<<mRXRate<<", mConnected="<<(mConnected?"YES":"NO");
+	const bool old=mConnected;
 	if(mConnected && (timeSinceLastRX > timeout) ) {
 		mConnected=false;
-		qDebug()<<"Connection timed out";
-	} else
-	if(!mConnected && (timeSinceLastRX <= timeout) ) {
+		qDebug()<<" #!#!#!# Connection timed out";
+	} else if(!mConnected && (timeSinceLastRX <= timeout) ) {
 		mConnected=true;
-		qDebug()<<"Connection completed";
-		emit carrierConnectionStatusChanged(true);
+		qDebug()<<" #!#!#!# Connection completed";
+	}
+	if(old!=mConnected) {
+		emit carrierConnectionStatusChanged(mConnected);
 	}
 }
 
