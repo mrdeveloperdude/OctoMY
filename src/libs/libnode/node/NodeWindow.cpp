@@ -35,7 +35,7 @@ void NodeWindow::loadWindowGeometry()
 	QByteArray geometry;
 	if(!mNode.isNull()) {
 		Settings &s=mNode->settings();
-		geometry = QVariant::fromValue(s.getCustomSetting("geometry", QString())).toByteArray();
+		geometry = s.getCustomSettingByteArray("geometry", QByteArray());
 	}
 	qDebug()<<"#*#*#*#*#*#*#*#* LOADED GEOMETRY WAS "<<geometry;
 	if (geometry.isEmpty()) {
@@ -57,9 +57,9 @@ void NodeWindow::saveWindowGeometry()
 	qDebug()<<"#*#*#*#*#*#*#*#* SAVING GEOMETRY REACHED IN NODEWIN";
 	if(!mNode.isNull()) {
 		Settings &s=mNode->settings();
-		QString geometry = QVariant::fromValue(saveGeometry()).toString();
+		QByteArray geometry = saveGeometry();
 		qDebug()<<"#*#*#*#*#*#*#*#* SAVING GEOMETRY "<<geometry;
-		s.getCustomSetting("geometry", geometry);
+		s.setCustomSettingByteArray("geometry", geometry);
 	}
 }
 

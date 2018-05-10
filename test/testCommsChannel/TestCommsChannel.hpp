@@ -29,13 +29,14 @@ class TestCommsChannel:public QObject
 
 public:
 
+		void testMultiple();
+		void testCommsMock();
 
 private slots:
 
-	void testMultiple();
 
 	void testSingle();
-	void testCommsMock();
+
 
 
 };

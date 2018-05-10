@@ -1,7 +1,7 @@
 #ifndef LOCALIDENTITYSTORE_HPP
 #define LOCALIDENTITYSTORE_HPP
 
-#include "DataStore.hpp"
+#include "node/SimpleMapStore.hpp"
 
 
 class LocalIdentityStore: public SimpleMapStore

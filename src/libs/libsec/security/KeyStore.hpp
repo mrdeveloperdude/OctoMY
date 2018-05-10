@@ -12,7 +12,7 @@
 #include "PortableID.hpp"
 #include "basic/GenerateRunnable.hpp"
 #include "basic/AtomicBoolean.hpp"
-#include "node/DataStore.hpp"
+#include "node/SimpleDataStore.hpp"
 #include "KeySecurityPolicy.hpp"
 
 #include <QByteArray>
@@ -49,14 +49,22 @@ public:
 	bool fromMap(QVariantMap data)  Q_DECL_OVERRIDE;
 	QVariantMap toMap() Q_DECL_OVERRIDE;
 
+
+private:
+
+	// To call this, make sure to set boostrapping to true and teh ncall synchronize() or save()
+	void bootstrap();
 public:
+
+
+	bool bootstrapEnabled();
+	void setBootstrapEnabled(bool doBootstrap);
 
 	QSharedPointer<Key> localKey();
 
 	PortableID localPortableID();
 
 	void dump();
-
 
 	// Sign message with our private key
 	QByteArray sign(const QByteArray &source);

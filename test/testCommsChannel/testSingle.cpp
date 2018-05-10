@@ -45,7 +45,7 @@ void TestCommsChannel::testSingle()
 	KeyStore keyStoreA(keyStoreFilenameA, true, policy);
 
 	auto keyA=keyStoreA.localKey();
-	QVERIFY(nullptr!=keyA);
+	QVERIFY(!keyA.isNull());
 	qDebug() << keyA->toString();
 	QVERIFY(keyA->isValid(true));
 	QVERIFY(keyA->hasPrivate(true));

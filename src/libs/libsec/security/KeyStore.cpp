@@ -42,6 +42,7 @@ KeyStore::~KeyStore()
 bool KeyStore::fromMap(QVariantMap map)
 {
 	OC_METHODGATE();
+	qDebug()<<"KEYSTORE FROM MAP";
 	QSharedPointer<Key> localKey;
 	bool ok=true;
 	mLocalKey=nullptr;
@@ -54,6 +55,10 @@ bool KeyStore::fromMap(QVariantMap map)
 		} else {
 			ok=false;
 		}
+	}
+	// This is where we bootstrap by creating the local key if none exist
+	else if(mLocalKey.isNull() && mDoBootstrap) {
+		bootstrap();
 	}
 	if(ok) {
 		QVariantList remoteList=map["remoteKeys"].toList();
@@ -81,14 +86,8 @@ bool KeyStore::fromMap(QVariantMap map)
 QVariantMap KeyStore::toMap()
 {
 	OC_METHODGATE();
+	qDebug()<<"KEYSTORE TO MAP";
 	QVariantMap map;
-	// This is where we bootstrap by creating the local key if none exist
-	if(mLocalKey.isNull() && mDoBootstrap) {
-		ScopedTimer st("local key bootstrap");
-		const auto bits=mPolicy.bits();
-		qDebug()<<"KeyStore: bootstrapping started with "<<bits<<"bits";
-		mLocalKey=QSharedPointer<Key>(OC_NEW Key(bits));
-	}
 	if(!mLocalKey.isNull()) {
 		map["localKey"]=mLocalKey->toVariantMap(false);
 	}
@@ -107,6 +106,28 @@ QVariantMap KeyStore::toMap()
 	}
 	map["remoteKeys"]=remotes;
 	return map;
+}
+
+
+void KeyStore::bootstrap()
+{
+	OC_METHODGATE();
+	ScopedTimer st("local key bootstrap");
+	const auto bits=mPolicy.bits();
+	qDebug()<<"KeyStore: bootstrapping started with "<<bits<<"bits";
+	mLocalKey=QSharedPointer<Key>(OC_NEW Key(bits));
+}
+
+bool KeyStore::bootstrapEnabled()
+{
+	OC_METHODGATE();
+	return mDoBootstrap;
+}
+
+void KeyStore::setBootstrapEnabled(bool doBootstrap)
+{
+	OC_METHODGATE();
+	mDoBootstrap = doBootstrap;
 }
 
 
@@ -202,8 +223,8 @@ void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
 	}
 	QSharedPointer<Key> key(OC_NEW Key(pubkeyPEM, true));
 	OC_ASSERT(nullptr!=key);
-	if(!key.isNull() ){
-		if( key->isValid(true) ){
+	if(!key.isNull() ) {
+		if( key->isValid(true) ) {
 			mAssociates.insert(key->id(), key);
 		}
 	}

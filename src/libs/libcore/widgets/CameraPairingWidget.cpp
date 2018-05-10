@@ -22,7 +22,8 @@ const qint64 CameraPairingWidget::TIMEOUT=30000;
 
 
 
-QCameraInfo getBestCamera(){
+static QCameraInfo getBestCamera(){
+	OC_FUNCTIONGATE();
 	//Try to get front facing camera because it serves this purpose best
 	auto list=QCameraInfo::availableCameras(QCamera::FrontFace);
 	QCameraInfo ci;

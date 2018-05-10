@@ -96,6 +96,7 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testDeliveryWizard \
 #		testAssociate \
 #		testDiscovery \
+		testKeyStore \
 		testCommsChannel \
 		testCommsCarrier \
 		testRateCalculator \

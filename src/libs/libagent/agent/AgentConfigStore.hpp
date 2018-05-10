@@ -1,7 +1,7 @@
 #ifndef AGENTCONFIGSTORE_HPP
 #define AGENTCONFIGSTORE_HPP
 
-#include "node/DataStore.hpp"
+#include "node/SimpleDataStore.hpp"
 #include "AgentConfig.hpp"
 
 

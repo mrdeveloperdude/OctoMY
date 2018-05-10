@@ -4,7 +4,7 @@
 #include "basic/AtomicBoolean.hpp"
 #include "basic/GenerateRunnable.hpp"
 #include "basic/Associate.hpp"
-#include "node/DataStore.hpp"
+#include "node/SimpleDataStore.hpp"
 
 #include <QObject>
 
