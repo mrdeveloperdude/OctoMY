@@ -7,6 +7,7 @@
 
 #include "node/StorageEvent.hpp"
 
+//#include "node/DataStoreInterface.hpp"
 
 #include <QObject>
 #include <QSharedPointer>
@@ -46,12 +47,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-class DataStore: public QObject
+class DataStore
 {
-	Q_OBJECT
 protected:
+
 	QVariantMap mData;
 	QString mFilename;
+
 
 	ConcurrentQueue<StorageEvent> mTransactions;
 
@@ -88,9 +90,8 @@ public:
 	StorageEvent set(QVariantMap data);
 	StorageEvent load();
 	StorageEvent save();
+	StorageEvent bootstrap();
 	StorageEvent synchronize();
-
-
 
 private:
 
@@ -109,8 +110,10 @@ private:
 	bool loadSync();
 	// Save data from memory into file on disk
 	bool saveSync();
+	// Bootstrap data into memory
+	bool bootstrapSync();
 
-	// Save or load data depending on wether memory or disk is newest
+	// Save, load  or bootstrap data depending on wether memory or disk is newest
 	bool synchronizeSync();
 
 	// Internal transaction to stop transaction processing thread

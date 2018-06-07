@@ -30,3 +30,10 @@ QVariantMap SimpleMapStore::toMap()
 	OC_METHODGATE();
 	return mMap;
 }
+
+bool SimpleMapStore::fromDefault()
+{
+	OC_METHODGATE();
+	mMap=QVariantMap();
+	return true;
+}

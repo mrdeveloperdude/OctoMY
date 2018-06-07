@@ -20,6 +20,8 @@ public:
 	// NOTE: Must accept empty map, beacuse calling fromMap with empty map is the semantic for clearing
 	virtual bool fromMap(QVariantMap data)=0;
 	virtual QVariantMap toMap() =0;
+	// This is the "bootstrapping alibi", that is this is called when there is no data on disk at load time to initialize the first time.
+	virtual bool fromDefault()=0;
 
 public:
 
@@ -103,7 +105,6 @@ void SimpleDataStore::load(F callBack)
 			callBack(*this, false);
 		}
 	});
-
 }
 
 

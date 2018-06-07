@@ -10,38 +10,19 @@
 
 
 
-static quint64 handleCounter=0;
-static QMap<Qt::HANDLE, quint64> handleMap;
-static QString handleCounterString(Qt::HANDLE h)
-{
-	if(nullptr==h) {
-		return "H-null";
-	}
-	if(!handleMap.contains(h)) {
-		handleCounter++;
-		handleMap.insert(h,handleCounter);
-	}
-	return "H-"+QString::number(handleMap[h]);
-}
-
-
-
-
-
-
 DataStore::DataStore(QString filename, QObject *parent)
-	: QObject(parent)
-	, mFilename(filename)
+	//: QObject(parent)
+	: mFilename(filename)
 	, mAutoIncrement(0)
 	, mDiskCounter(0)
 	, mMemoryCounter(0)
 	, mDone(false)
 {
 	OC_METHODGATE();
-	setObjectName("DataStore");
+//	setObjectName("DataStore");
 	QFile file(mFilename);
 	const bool exists=file.exists();
-	qDebug().noquote().nospace()<<"DataStore created () with filename="<< mFilename <<" (exists="<<exists<<") from thread "<<handleCounterString(QThread::currentThreadId());
+	qDebug().noquote().nospace()<<"DataStore created () with filename="<< mFilename <<" (exists="<<exists<<") from thread "<<utility::currentThreadID();
 	if(exists) {
 		// Make sure that a sync from initial state will perform a load if there is data on disk
 		mDiskCounter=autoIncrement();
@@ -49,21 +30,21 @@ DataStore::DataStore(QString filename, QObject *parent)
 	// Start transaction processing in separate thread
 	mCompleteFuture=QtConcurrent::run([this]() {
 		OC_METHODGATE();
-		//qDebug()<<"Entered DataStore::QtConcurrent::run::lambda() from thread "<<handleCounterString(QThread::currentThreadId());
+		//qDebug()<<"Entered DataStore::QtConcurrent::run::lambda() from thread "<<utility::currentThreadID();
 		processTransactions();
-		//qDebug()<<"Exiting DataStore::QtConcurrent::run::lambda() from thread "<<handleCounterString(QThread::currentThreadId());
+		//qDebug()<<"Exiting DataStore::QtConcurrent::run::lambda() from thread "<<utility::currentThreadID();
 	});
 }
 
 DataStore::~DataStore()
 {
 	OC_METHODGATE();
-	//qDebug()<<"Entered DataStore::~DataStore() from thread "<<handleCounterString(QThread::currentThreadId());
+	//qDebug()<<"Entered DataStore::~DataStore() from thread "<<utility::currentThreadID();
 	// TODO: Look at how to avoid the possibility of an unecessary load during this final sync
 	synchronize();
 	complete();
 	mCompleteFuture.waitForFinished();
-	//qDebug()<<"Exiting DataStore::~DataStore() from thread "<<handleCounterString(QThread::currentThreadId());
+	//qDebug()<<"Exiting DataStore::~DataStore() from thread "<<utility::currentThreadID();
 }
 
 
@@ -92,9 +73,9 @@ bool DataStore::ready()
 StorageEvent DataStore::enqueueTransaction(StorageEvent trans)
 {
 	OC_METHODGATE();
-	//qDebug()<<"Entered DataStore::enqueueTransaction() from thread "<<handleCounterString(QThread::currentThreadId());
+	//qDebug()<<"Entered DataStore::enqueueTransaction() from thread "<<utility::currentThreadID();
 	mTransactions.put(trans);
-	//qDebug()<<"Exiting DataStore::enqueueTransaction() from thread "<<handleCounterString(QThread::currentThreadId());
+	//qDebug()<<"Exiting DataStore::enqueueTransaction() from thread "<<utility::currentThreadID();
 	return trans;
 }
 
@@ -103,14 +84,14 @@ void DataStore::processTransactions()
 {
 	OC_METHODGATE();
 	//QThread::msleep(2000);
-	//qDebug()<<"Entered DataStore::processTransactions() from thread "<<handleCounterString(QThread::currentThreadId());
+	//qDebug()<<"Entered DataStore::processTransactions() from thread "<<utility::currentThreadID();
 	while(!mDone) {
 		StorageEvent trans=mTransactions.get();
-		//qDebug()<<" + DataStore::processTransactions() running transaction with type="<<trans.type()<<"	from thread "<<handleCounterString(QThread::currentThreadId());
+		//qDebug()<<" + DataStore::processTransactions() running transaction with type="<<trans.type()<<"	from thread "<<utility::currentThreadID();
 		trans.run();
-		//qDebug()<<" + DataStore::processTransactions() done running transaction with type="<<trans.type()<<" from thread "<<handleCounterString(QThread::currentThreadId());
+		//qDebug()<<" + DataStore::processTransactions() done running transaction with type="<<trans.type()<<" from thread "<<utility::currentThreadID();
 	}
-	//qDebug()<<"Exiting DataStore::processTransactions() from thread "<<handleCounterString(QThread::currentThreadId());
+	//qDebug()<<"Exiting DataStore::processTransactions() from thread "<<utility::currentThreadID();
 }
 
 quint64 DataStore::autoIncrement()
@@ -221,7 +202,7 @@ bool DataStore::loadSync()
 	OC_METHODGATE();
 	//qDebug()<<"Entering Sync Load";
 	bool succeeded=false;
-	qDebug().noquote().nospace()<<"Loading datastore from file '"<<mFilename<<"'";
+	//qDebug().noquote().nospace()<<"Loading datastore from file '"<<mFilename<<"'";
 	QJsonParseError jsonError;
 	QByteArray raw=utility::fileToByteArray(mFilename);
 	if(raw.size()<=0) {
@@ -266,6 +247,13 @@ bool DataStore::saveSync()
 }
 
 
+// Bootstrap data into memory
+bool DataStore::bootstrapSync()
+{
+	OC_METHODGATE();
+	return true;
+}
+
 bool DataStore::synchronizeSync()
 {
 	OC_METHODGATE();
@@ -274,8 +262,14 @@ bool DataStore::synchronizeSync()
 	const quint64 disk=mDiskCounter;
 	const quint64 mem=mMemoryCounter;
 	if(disk == mem) {
-		qDebug()<<"DataStore::synchronizeSync("<<filename()<<"): disk("<<disk<<") == mem("<<mem<<"), no-op";
-		succeeded=true;
+		//qDebug()<<"DataStore::synchronizeSync("<<filename()<<"): disk("<<disk<<") == mem("<<mem<<"), no-op";
+		if(0 == disk){
+			//qDebug()<<" + need to generate";
+			succeeded=bootstrapSync();
+		}
+		else{
+			succeeded=true;
+		}
 	} else if(disk > mem) {
 		//qDebug()<<"DataStore::synchronizeSync("<<filename()<<"): disk("<<disk<<") > mem("<<mem<<"), loading";
 		succeeded=loadSync();

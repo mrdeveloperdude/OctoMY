@@ -106,7 +106,8 @@ void ControlDeliveryWizard::startBirth()
 			keystore.clear();
 			keystore.save();
 			qDebug()<<"Synchronizing keystore START";
-			keystore.synchronize([this](SimpleDataStore &sds, bool ok) {
+			keystore.synchronize([this](ASEvent<QVariantMap> &se) {
+				const bool ok=se.isSuccessfull();
 				qDebug()<<"synchronized keystore, calling birth done with OK="<<ok;
 				onBirthComplete(ok);
 			});

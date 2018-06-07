@@ -62,3 +62,11 @@ QVariantMap AgentConfigStore::toMap()
 	return map;
 }
 
+
+
+bool AgentConfigStore::fromDefault()
+{
+	OC_METHODGATE();
+	mAgentConfig=QSharedPointer<AgentConfig>(OC_NEW AgentConfig());
+	return true;
+}

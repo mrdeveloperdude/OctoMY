@@ -16,6 +16,7 @@ contains(DEFINES, USE_TESTS_BASIC){
 	message(ADDING BASIC TESTS TO BUILD)
 	#
 	TEST_PROJECTS+= \
+		testAsyncStore \
 		testAgentStateCourier \
 		testArduMY \
 		testBlob \
@@ -96,10 +97,11 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testDeliveryWizard \
 #		testAssociate \
 #		testDiscovery \
+		testAsyncStore \
 		testKeyStore \
-		testCommsChannel \
-		testCommsCarrier \
-		testRateCalculator \
+#		testCommsChannel \
+#		testCommsCarrier \
+#		testRateCalculator \
 
 	STRESS_PROJECTS+= \
 	#	stressCapabilities \

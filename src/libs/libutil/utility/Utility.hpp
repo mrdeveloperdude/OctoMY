@@ -84,6 +84,10 @@ QString socketErrorToString( QAbstractSocket::SocketError se);
 QString padstring(int level, QString base=" ");
 QString toSoundex(QString in);
 int levenshtein_distance(const QString &s1, const QString  &s2);
+QString handleCounterString(Qt::HANDLE h);
+QString currentThreadID();
+
+
 
 // File
 

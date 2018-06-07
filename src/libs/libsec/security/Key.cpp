@@ -234,6 +234,7 @@ QString Key::describe()
 	return d->describe();
 }
 
+
 int Key::kid() const
 {
 	OC_METHODGATE();

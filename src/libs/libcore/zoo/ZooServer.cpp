@@ -58,7 +58,8 @@ ZooServer::ZooServer(AppContext *context, QObject *parent)
 	//ScopedTimer zooBootTimer(mContext->base()+"-boot");
 	setObjectName(mContext->base());
 
-	mKeyStore.synchronize([this](SimpleDataStore &sms, bool ok){
+	mKeyStore.synchronize([this](ASEvent<QVariantMap> &se) {
+		const bool ok=se.isSuccessfull();
 		qDebug()<<"Keystore synchronized: "<<ok;
 		onKeystoreReady(ok);
 	});
@@ -416,6 +417,8 @@ void ZooServer::onBackgroundTimer()
 void ZooServer::onKeystoreReady(bool ok)
 {
 	OC_METHODGATE();
-	mAdminURL="/"+mKeyStore.localPortableID().id().left(ZOO_MINIMAL_ADMIN_ID_LENGTH);
+	auto key=mKeyStore.localKey();
+	auto id=key.isNull()?"NULL":key->id().left(ZOO_MINIMAL_ADMIN_ID_LENGTH);
+	mAdminURL="/"+id;
 	qDebug()<<"KEYSTORE READY! ADMIN ADRESS IS: "<<mAdminURL;
 }

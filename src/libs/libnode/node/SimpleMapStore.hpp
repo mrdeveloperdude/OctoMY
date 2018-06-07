@@ -17,6 +17,8 @@ public:
 public:
 	bool fromMap(QVariantMap data)  Q_DECL_OVERRIDE;
 	QVariantMap toMap() Q_DECL_OVERRIDE;
+	bool fromDefault()  Q_DECL_OVERRIDE;
+
 };
 
 

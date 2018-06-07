@@ -44,8 +44,9 @@ public:
 	QString toSpecStanzas(QString space="");
 
 public:
-
-	virtual bool filter(QCompassReading *reading) override;
+#pragma GCC diagnostic ignored "-Woverloaded-virtual"
+	bool filter(QCompassReading *reading) Q_DECL_OVERRIDE;
+#pragma GCC diagnostic warning "-Woverloaded-virtual"
 
 private:
 

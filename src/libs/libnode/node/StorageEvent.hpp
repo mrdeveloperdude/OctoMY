@@ -105,7 +105,7 @@ public:
 };
 
 
-
+// NOTE: Will block, which may not be what you expect or want
 template <typename F>
 void StorageEvent::onFinished(F callBack)
 {

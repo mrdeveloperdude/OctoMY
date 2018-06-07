@@ -143,11 +143,11 @@ bool ConcurrentQueue<T>::isEmpty()
 			}
 		}
 		if(gotOne) {
-			qDebug()<<" + DataStore::processTransactions() running transaction with type="<<trans.type()<<"	from thread "<<handleCounterString(QThread::currentThreadId());
+			qDebug()<<" + DataStore::processTransactions() running transaction with type="<<trans.type()<<"	from thread "<<utility::currentThreadID();
 			trans.run();
-			qDebug()<<" + DataStore::processTransactions() done running transaction with type="<<trans.type()<<" from thread "<<handleCounterString(QThread::currentThreadId());
+			qDebug()<<" + DataStore::processTransactions() done running transaction with type="<<trans.type()<<" from thread "<<utility::currentThreadID();
 		} else {
-			qDebug()<<" + DataStore::processTransactions() no transaction fetched, looping from thread "<<handleCounterString(QThread::currentThreadId());
+			qDebug()<<" + DataStore::processTransactions() no transaction fetched, looping from thread "<<utility::currentThreadID();
 		}
 		return trans;
 

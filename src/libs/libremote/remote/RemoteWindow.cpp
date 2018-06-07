@@ -56,7 +56,8 @@ RemoteWindow::RemoteWindow(QSharedPointer<Remote> remote, QWidget *parent)
 
 
 	if(!mRemote.isNull()) {
-		mRemote->keyStore().synchronize([this](SimpleDataStore &sms, bool ok) {
+		mRemote->keyStore().synchronize([this](ASEvent<QVariantMap> &se) {
+			const bool ok=se.isSuccessfull();
 			qDebug()<<"REMOTEWIN keystore load compelte: "<<(ok?"OK":"ERROR");
 			goToStartPage();
 		});

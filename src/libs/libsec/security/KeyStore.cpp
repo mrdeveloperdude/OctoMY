@@ -18,17 +18,19 @@
 
 /////////////////////////////////////////////////////////////////////////////
 
-
 KeyStore::KeyStore(QString filename, bool doBootstrap, KeySecurityPolicy policy, QObject *parent)
 	: QObject(parent)
-	, SimpleDataStore(filename)
+	, mBackend(filename)
+	, mStore(mBackend, *this)
+	, mCache()
+	, mDirty(true)
 	, mDoBootstrap(doBootstrap)
 	, mPolicy(policy)
 {
 	OC_METHODGATE();
 	setObjectName("KeyStore");
-	synchronize([this](SimpleDataStore &ds, bool ok) {
-		qDebug()<<"KeyStore::KeyStore() SELF ASSESMENT: SYNC WAS OK="<<ok;
+	synchronize([this](ASEvent<QVariantMap> &se) {
+		qDebug()<<"KeyStore::KeyStore() SELF ASSESMENT: SYNC WAS OK=";
 	});
 }
 
@@ -39,10 +41,17 @@ KeyStore::~KeyStore()
 }
 
 
-bool KeyStore::fromMap(QVariantMap map)
+
+
+
+
+
+
+bool KeyStore::setFrontend(QVariantMap map)
 {
 	OC_METHODGATE();
 	qDebug()<<"KEYSTORE FROM MAP";
+	mDirty=true;
 	QSharedPointer<Key> localKey;
 	bool ok=true;
 	mLocalKey=nullptr;
@@ -55,10 +64,6 @@ bool KeyStore::fromMap(QVariantMap map)
 		} else {
 			ok=false;
 		}
-	}
-	// This is where we bootstrap by creating the local key if none exist
-	else if(mLocalKey.isNull() && mDoBootstrap) {
-		bootstrap();
 	}
 	if(ok) {
 		QVariantList remoteList=map["remoteKeys"].toList();
@@ -83,39 +88,60 @@ bool KeyStore::fromMap(QVariantMap map)
 	return ok;
 }
 
-QVariantMap KeyStore::toMap()
+QVariantMap KeyStore::getFrontend(bool &ok)
 {
 	OC_METHODGATE();
-	qDebug()<<"KEYSTORE TO MAP";
-	QVariantMap map;
-	if(!mLocalKey.isNull()) {
-		map["localKey"]=mLocalKey->toVariantMap(false);
-	}
-	QVariantList remotes;
-	for(QMap<QString, QSharedPointer<Key> >::const_iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
-		QVariantMap remote;
-		QString id=b.key();
-		auto key=b.value();
-		if(nullptr!=key) {
-			QVariantMap val=key->toVariantMap(true);
-			qDebug()<<"SAVING REMOTE KEYPAIR "<<id<<"="<<val;
-			remote["id"]=id;
-			remote["key"]=val;
-			remotes.push_back(remote);
+	ok=true;
+	if(mDirty) {
+		mDirty=false;
+		qDebug()<<"KEYSTORE TO MAP";
+		mCache = QVariantMap();
+		if(!mLocalKey.isNull()) {
+			mCache["localKey"]=mLocalKey->toVariantMap(false);
 		}
+		QVariantList remotes;
+		for(QMap<QString, QSharedPointer<Key> >::const_iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
+			QVariantMap remote;
+			QString id=b.key();
+			auto key=b.value();
+			if(nullptr!=key) {
+				QVariantMap val=key->toVariantMap(true);
+				qDebug()<<"SAVING REMOTE KEYPAIR "<<id<<"="<<val;
+				remote["id"]=id;
+				remote["key"]=val;
+				remotes.push_back(remote);
+			}
+		}
+		mCache["remoteKeys"]=remotes;
 	}
-	map["remoteKeys"]=remotes;
-	return map;
+	return mCache;
 }
 
 
-void KeyStore::bootstrap()
+
+bool KeyStore::generateFrontend()
 {
 	OC_METHODGATE();
-	ScopedTimer st("local key bootstrap");
-	const auto bits=mPolicy.bits();
-	qDebug()<<"KeyStore: bootstrapping started with "<<bits<<"bits";
-	mLocalKey=QSharedPointer<Key>(OC_NEW Key(bits));
+	mDirty=true;
+	mAssociates.clear();
+	mLocalKey.clear();
+	if(mDoBootstrap) {
+		ScopedTimer st("local key generation");
+		const auto bits=mPolicy.bits();
+		qDebug()<<"KeyStore: bootstrapping started with "<<bits<<"bits";
+		mLocalKey=QSharedPointer<Key>(OC_NEW Key(bits));
+	}
+	return true;
+}
+
+
+bool KeyStore::clearFrontend()
+{
+	OC_METHODGATE();
+	mDirty=true;
+	mAssociates.clear();
+	mLocalKey.clear();
+	return true;
 }
 
 bool KeyStore::bootstrapEnabled()
@@ -138,72 +164,6 @@ QSharedPointer<Key> KeyStore::localKey()
 }
 
 
-PortableID KeyStore::localPortableID()
-{
-	OC_METHODGATE();
-	PortableID pid;
-	//pid.setName("Arne");
-	//pid.setGender("Male");
-	if(nullptr!=mLocalKey) {
-		pid.setID(mLocalKey->id());
-	}
-	pid.setBirthDate(QFileInfo(filename()).created().toMSecsSinceEpoch());
-	//pid.setType(DiscoveryType type);
-	return pid;
-}
-
-
-void KeyStore::dump()
-{
-	OC_METHODGATE();
-	KeyStore &ks=*this;
-	qDebug()<<"KEYSTORE DUMP:";
-	qDebug().nospace() <<" + fn="<<ks.filename();
-	qDebug().nospace() <<" + fexists="<<ks.fileExists();
-	qDebug().nospace() <<" + peer-keys:";
-	for(QMap<QString, QSharedPointer<Key> >::iterator b=ks.mAssociates.begin(), e=ks.mAssociates.end(); b!=e; ++b) {
-		QString key=b.key();
-		//b.value();
-		qDebug().nospace()<<"    x " <<key;
-	}
-}
-
-
-QByteArray KeyStore::sign(const QByteArray &source)
-{
-	OC_METHODGATE();
-	if(!ready() || (nullptr==mLocalKey)) {
-		return QByteArray();
-	}
-
-	return mLocalKey->sign(source);
-}
-
-
-bool KeyStore::verify(const QByteArray &message, const QByteArray &signature)
-{
-	OC_METHODGATE();
-	if(!ready()|| (nullptr==mLocalKey)) {
-		return false;
-	}
-	return mLocalKey->verify(message, signature);
-}
-
-
-bool KeyStore::verify(const QString &fingerprint, const QByteArray &message, const QByteArray &signature)
-{
-	OC_METHODGATE();
-	if(!ready()) {
-		return false;
-	}
-	QMap<QString, QSharedPointer<Key> >::iterator f=mAssociates.find(fingerprint);
-	if(mAssociates.end()==f) {
-		return false;
-	}
-	QSharedPointer<Key> remote=f.value();
-	OC_ASSERT(nullptr!=remote);
-	return remote->verify(message, signature);
-}
 
 
 bool KeyStore::hasPubKeyForID(const QString &id)
@@ -222,9 +182,10 @@ void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
 		return;
 	}
 	QSharedPointer<Key> key(OC_NEW Key(pubkeyPEM, true));
-	OC_ASSERT(nullptr!=key);
+	OC_ASSERT(!key.isNull());
 	if(!key.isNull() ) {
 		if( key->isValid(true) ) {
+			mDirty=true;
 			mAssociates.insert(key->id(), key);
 		}
 	}
@@ -237,18 +198,87 @@ QSharedPointer<Key> KeyStore::pubKeyForID(const QString &id)
 		qWarning()<<"WARNING: returning empty key for id="<<id<<" because keystore not ready..";
 		return nullptr;
 	}
-	return mAssociates[id];
+	QMap<QString, QSharedPointer<Key> >::iterator f=mAssociates.find(id);
+	if(mAssociates.end()==f) {
+		return nullptr;
+	}
+	return f.value();
 }
+
+
+
+void KeyStore::dump()
+{
+	OC_METHODGATE();
+	KeyStore &ks=*this;
+	qDebug()<<"KEYSTORE DUMP:";
+	qDebug().nospace() <<" + fn="<<ks.filename();
+	qDebug().nospace() <<" + fexists="<<ks.fileExists();
+	qDebug().nospace() <<" + local-key:";
+	qDebug().nospace()<<"    x " <<mLocalKey;
+	qDebug().nospace() <<" + peer-keys:";
+	for(QMap<QString, QSharedPointer<Key> >::iterator b=ks.mAssociates.begin(), e=ks.mAssociates.end(); b!=e; ++b) {
+		QString key=b.key();
+		//b.value();
+		qDebug().nospace()<<"    x " <<key;
+	}
+}
+
+QString KeyStore::toString()
+{
+	OC_METHODGATE();
+	QString out="KeyStore{ fn="+filename()+", fexists="+fileExists()+", ready="+(const bool)ready()+", peer-keys:[";
+	for(QMap<QString, QSharedPointer<Key> >::iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
+		QString key=b.key();
+		//b.value();
+		out=out+" + " +key;
+	}
+	out=out+"]}";
+	return out;
+}
+
+
+
+QString KeyStore::filename() const
+{
+	OC_METHODGATE();
+	return mStore.filename();
+}
+
+bool KeyStore::fileExists() const
+{
+	OC_METHODGATE();
+	return mStore.fileExists();
+}
+
+bool KeyStore::ready()
+{
+	OC_METHODGATE();
+	return mStore.ready();
+}
+
+
+
+
+void KeyStore::waitForSync()
+{
+	OC_METHODGATE();
+	mStore.synchronize().waitForFinished();
+}
+
 
 const QDebug &operator<<(QDebug &d, KeyStore &ks)
 {
 	OC_FUNCTIONGATE();
-	d.nospace() <<"KeyStore{ fn="<<ks.filename()<<", fexists="<<ks.fileExists()<<", ready="<<(const bool)ks.ready()<<", peer-keys:[";
+	d.nospace().noquote() << ks.toString();
+	/*
+	<<"KeyStore{ fn="<<ks.filename()<<", fexists="<<ks.fileExists()<<", ready="<<(const bool)ks.ready()<<", peer-keys:[";
 	for(QMap<QString, QSharedPointer<Key> >::iterator b=ks.mAssociates.begin(), e=ks.mAssociates.end(); b!=e; ++b) {
 		QString key=b.key();
 		//b.value();
 		d.nospace()<<" + " <<key;
 	}
 	d.nospace() <<"]}";
+	*/
 	return d.maybeSpace();
 }

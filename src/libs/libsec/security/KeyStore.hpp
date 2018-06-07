@@ -12,8 +12,10 @@
 #include "PortableID.hpp"
 #include "basic/GenerateRunnable.hpp"
 #include "basic/AtomicBoolean.hpp"
-#include "node/SimpleDataStore.hpp"
+#include "node/JsonAsyncBackend.hpp"
+#include "node/AsyncStore.hpp"
 #include "KeySecurityPolicy.hpp"
+
 
 #include <QByteArray>
 #include <QCryptographicHash>
@@ -25,18 +27,29 @@
 #include <QSharedPointer>
 #include <QString>
 
+template <typename T>
+static void noop(ASEvent<T> &)
+{
 
-class KeyStore: public QObject, public SimpleDataStore
+}
+
+struct nop {
+	void operator()(...) const volatile {}
+};
+
+
+class KeyStore: public QObject, public AsyncFrontend<QVariantMap>
 {
 	Q_OBJECT
 private:
-
+	JsonAsyncBackend mBackend;
+	AsyncStore<QVariantMap> mStore;
+	QVariantMap mCache;
+	bool mDirty;
 	bool mDoBootstrap;
 	KeySecurityPolicy mPolicy;
 	QSharedPointer<Key> mLocalKey;
 	QMap<QString, QSharedPointer<Key> > mAssociates;
-
-
 
 	friend class GenerateRunnable<KeyStore>;
 
@@ -44,36 +57,28 @@ public:
 	explicit KeyStore(QString filename="", bool doBootstrap=false, KeySecurityPolicy policy=KeySecurityPolicy(), QObject *parent=nullptr);
 	virtual ~KeyStore();
 
-	// SimpleDataStore interface
+
+	// AsyncFrontend interface
 public:
-	bool fromMap(QVariantMap data)  Q_DECL_OVERRIDE;
-	QVariantMap toMap() Q_DECL_OVERRIDE;
+
+	bool clearFrontend() Q_DECL_OVERRIDE;
+	bool setFrontend(QVariantMap data) Q_DECL_OVERRIDE;
+	QVariantMap getFrontend(bool &ok) Q_DECL_OVERRIDE;
+	bool generateFrontend() Q_DECL_OVERRIDE;
+
 
 
 private:
 
-	// To call this, make sure to set boostrapping to true and teh ncall synchronize() or save()
+	// To have this called, make sure to set boostrapping to true and then call synchronize()
 	void bootstrap();
 public:
-
 
 	bool bootstrapEnabled();
 	void setBootstrapEnabled(bool doBootstrap);
 
 	QSharedPointer<Key> localKey();
 
-	PortableID localPortableID();
-
-	void dump();
-
-	// Sign message with our private key
-	QByteArray sign(const QByteArray &source);
-
-	// Verify signature with our pub-key
-	bool verify(const QByteArray &message, const QByteArray &signature);
-
-	// Verify signature with pub-key of node recognized by fiven fingerprint id
-	bool verify(const QString &fingerprint, const QByteArray &message, const QByteArray &signature);
 
 	// Check if we have pub-key for node identified by give fingerprint ID
 	bool hasPubKeyForID(const QString &id);
@@ -83,10 +88,44 @@ public:
 
 	// return pub-key for node identified by give fingerprint ID
 	QSharedPointer<Key> pubKeyForID(const QString &id);
-signals:
 
-	void keystoreReady(bool);
-	//storeReady(!mError);
+
+
+	void dump();
+	QString toString();
+
+
+public:
+
+	QString filename() const;
+	bool fileExists() const;
+	bool ready();
+
+
+	template <typename F>
+	void clear(F callBack);
+	template <typename F>
+	void save(F callBack);
+	template <typename F>
+	void load(F callBack);
+	template <typename F>
+	void synchronize(F callBack);
+
+	void waitForSync();
+
+public:
+	void clear()
+	{
+		clear([](ASEvent<QVariantMap> &ase){});
+	}
+	void save()
+	{
+		save([](ASEvent<QVariantMap> &ase){});
+	}
+	void load()
+	{
+		load([](ASEvent<QVariantMap> &ase){});
+	}
 
 
 public:
@@ -94,10 +133,58 @@ public:
 	friend const QDebug &operator<<(QDebug &d, KeyStore &ks);
 
 
+signals:
+
+	void keystoreReady(bool);
+	//storeReady(!mError);
+
 };
 
 
 
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+template <typename F>
+void KeyStore::clear(F callBack)
+{
+	OC_METHODGATE();
+	mStore.clear().onFinished(callBack);
+}
+
+template <typename F>
+void KeyStore::save(F callBack)
+{
+	OC_METHODGATE();
+	mStore.save().onFinished(callBack);
+}
+
+
+
+template <typename F>
+void KeyStore::load(F callBack)
+{
+	OC_METHODGATE();
+	mStore.load().onFinished(callBack);
+}
+
+
+
+template <typename F>
+void KeyStore::synchronize(F callBack)
+{
+	OC_METHODGATE();
+	mStore.synchronize().onFinished(callBack);
+}
+
+
+
+
 const QDebug &operator<<(QDebug &d, KeyStore &ks);
+
+
+
 
 #endif // KEYSTORE_HPP

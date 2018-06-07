@@ -20,7 +20,6 @@ SimpleDataStore::~SimpleDataStore()
 
 
 
-
 QString SimpleDataStore::filename() const
 {
 	OC_METHODGATE();

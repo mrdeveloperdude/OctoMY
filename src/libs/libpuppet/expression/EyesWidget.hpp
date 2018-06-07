@@ -38,6 +38,8 @@ private:
 
 	IrisRendrer mIrisRendrer;
 
+	bool mHideEyes;
+
 public:
 	explicit EyesWidget(QWidget *parent = 0);
 

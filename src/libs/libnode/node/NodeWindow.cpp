@@ -39,13 +39,13 @@ void NodeWindow::loadWindowGeometry()
 	}
 	qDebug()<<"#*#*#*#*#*#*#*#* LOADED GEOMETRY WAS "<<geometry;
 	if (geometry.isEmpty()) {
-		qDebug()<<"NO GEOMETRY FOUND IN SETTINGS";
+		qDebug()<<"WARNING: No window geometry found in settings";
 		const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
 		resize(availableGeometry.width() / 3, availableGeometry.height() / 2);
 		move((availableGeometry.width() - width()) / 2,
 			 (availableGeometry.height() - height()) / 2);
 	} else {
-		qDebug()<<"GEOMETRY FOUND IN SETTINGS";
+		qDebug()<<"Window geometry found in settings, restoring.";
 		restoreGeometry(geometry);
 	}
 

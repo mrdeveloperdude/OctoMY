@@ -33,8 +33,8 @@ HardwareWizard::HardwareWizard(QWidget *parent)
 	//qDebug()<<"Setting model";
 	ui->listViewSerialInterface->setModel(mSerialDevicesModel);
 	ui->listViewTemplate->setModel(mHardwareTemplateModel);
-	ui->widgetLociManager->configure(0);
-	reset();
+	ui->widgetLociManager->configure(nullptr);
+	moveTo(0);
 }
 
 HardwareWizard::~HardwareWizard()
@@ -59,7 +59,6 @@ void HardwareWizard::configure(QSharedPointer<Agent> agent)
 
 void HardwareWizard::reset()
 {
-	IActuatorController *ctl=nullptr;
 	if(!mAgent.isNull()) {
 		AgentConfigStore &mConfigStore=mAgent->configurationStore();
 		QSharedPointer<AgentConfig> config=mConfigStore.agentConfig();

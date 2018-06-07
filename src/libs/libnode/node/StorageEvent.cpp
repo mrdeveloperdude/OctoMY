@@ -169,7 +169,7 @@ void StorageEvent::notifyFinished()
 	//qDebug()<<"NOTIFY changed finished from "<<oldFinished << " to " <<p->mFinished;
 	// Get values while they are under lock for the return
 	// bool ret = p->mFinished && p->mSuccessfull;
-	//qDebug().noquote().nospace()<<" + Transaction::run() signalling finished transaction from thread "<<handleCounterString(QThread::currentThreadId());
+	//qDebug().noquote().nospace()<<" + Transaction::run() signalling finished transaction from thread "<<utility::currentThreadID();
 	//qDebug().noquote().nospace()<<" + Transaction::run() WAKE ALL";
 	p->mFinishedCond.wakeAll();
 	//qDebug().noquote().nospace()<<" + Transaction::run() ALL AWOKE";
@@ -184,7 +184,7 @@ void StorageEvent::waitForFinished()
 
 	while(! p->mFinished) {
 		//qDebug()<<"BEFORE WAIT, finished was "<<p->mFinished;
-		//qDebug()<<" + Transaction::waitForFinished() WAITING from thread "<<handleCounterString(QThread::currentThreadId());
+		//qDebug()<<" + Transaction::waitForFinished() WAITING from thread "<<utility::currentThreadID();
 		p->mFinishedCond.wait(&p->mFinishedMutex);
 		//qDebug()<<"AFTER WAIT, finished was "<<p->mFinished;
 		ml.unlock();
@@ -192,7 +192,7 @@ void StorageEvent::waitForFinished()
 		//qDebug()<<" + Transaction::waitForFinished() NOTIFIED from thread "<<handleCounterString(QThread::currentThreadId())<< " with finished= "<<p->mFinished;
 	}
 
-	//qDebug()<<"Exiting Transaction::waitForFinished() from thread "<<handleCounterString(QThread::currentThreadId());
+	//qDebug()<<"Exiting Transaction::waitForFinished() from thread "<<utility::currentThreadID();
 }
 
 bool StorageEvent::isSuccessfull()
@@ -214,7 +214,7 @@ QString StorageEvent::message()
 bool StorageEvent::run()
 {
 	OC_METHODGATE();
-	//qDebug()<<"Entered Transaction::run() from thread "<<handleCounterString(QThread::currentThreadId());
+	//qDebug()<<"Entered Transaction::run() from thread "<<utility::currentThreadID();
 	StorageEventPrivate *p=p_ptr.data();
 	QMutexLocker startedLock(&p->mStartedMutex);
 	bool ret=false;
@@ -279,7 +279,7 @@ bool StorageEvent::run()
 	} else {
 		qWarning()<<"ERROR: Trying to re-run transaction";
 	}
-	//qDebug().noquote().nospace()<<"Exiting Transaction::run() with return value "<<ret<< " from thread "<<handleCounterString(QThread::currentThreadId());
+	//qDebug().noquote().nospace()<<"Exiting Transaction::run() with return value "<<ret<< " from thread "<<utility::currentThreadID();
 	return ret;
 }
 

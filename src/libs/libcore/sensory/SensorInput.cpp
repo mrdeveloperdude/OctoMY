@@ -6,6 +6,8 @@
 #include <QCompass>
 #include <QGyroscope>
 
+#pragma GCC diagnostic ignored "-Woverloaded-virtual"
+
 
 SensorInput::SensorInput(QObject *parent):
 	QObject(parent)

@@ -35,6 +35,7 @@ EyesWidget::EyesWidget(QWidget *parent)
 	, mRightEye(QVector2D(0.2,0),0.1*M_PI)
 	, mBgBrush("black")
 	, mEyeSteer(0,0)
+	, mHideEyes(true)
 {
 	mTimer.setTimerType(Qt::PreciseTimer);
 	if(!connect(&mTimer,SIGNAL(timeout()),this,SLOT(onUpdateTimer()), OC_CONTYPE)) {
@@ -79,12 +80,16 @@ void EyesWidget::updateIris()
 void EyesWidget::setPortableID(PortableID &pid)
 {
 	qDebug()<<"Setting eye colors from PID: "<<pid;
-	PersonalityColors colors(pid.id());
+	QString id=pid.id();
+	const bool oldHideEyes=mHideEyes;
+	mHideEyes=!id.isEmpty();
+	PersonalityColors colors(id);
+
 	QColor irisColor=colors.backgroundColorLow();//QColor("#2d8ac9");
 	mLeftEye.setColor(irisColor);
 	mRightEye.setColor(irisColor);
 
-	if(mIrisRendrer.portableID().id() !=pid.id()) {
+	if((mIrisRendrer.portableID().id() !=pid.id() ) || ( oldHideEyes!=mHideEyes) ) {
 		mIrisRendrer.setPortableID(pid);
 		updateIris();
 	}
@@ -99,20 +104,35 @@ void EyesWidget::paintEvent(QPaintEvent *)
 	QPainter painter(this);
 	const qreal w=painter.device()->width();
 	const qreal h=painter.device()->height();
-	painter.setPen(Qt::NoPen);
+	painter.setRenderHint(QPainter::Antialiasing, true);
 
-	painter.setRenderHint(QPainter::Antialiasing,true);
-	painter.translate(w/2,h/2);
-	const qreal s=w;// Width is most important.
-	//const qreal fh=h/w;// wee need to know face height
-	painter.scale(s,s);
-	//const qreal angle=(cycle*M_PI*2.0f)/cycleTime;
-	//painter.drawRect(0,sin(angle)/2,1,0.1);
-	painter.translate(0.2,0);
-	mLeftEye.paint(painter);
-	painter.translate(-0.4,0);
-	mRightEye.paint(painter);
-	//qDebug()<<"UPD";
+	if(mHideEyes) {
+		// Eyes denied!
+		QPen pen(QColor(192, 64, 32, 128));
+		const int b=5, b2=b*2, b4=b2*2;
+		pen.setStyle(Qt::DotLine);
+		pen.setCapStyle(Qt::RoundCap);
+		pen.setWidth(b);
+		painter.setPen(pen);
+		painter.drawRoundedRect(QRect(b2, b2, w-b4, h-b4), b4, b4);
+		painter.drawLine(QPoint(b4, b4), QPoint(w-b4, h-b4));
+		//painter.drawLine(QPoint(b4, h-b4), QPoint(w-b4, b4));
+	} else {
+		painter.setPen(Qt::NoPen);
+		painter.translate(w/2,h/2);
+		const qreal s=w;// Width is most important.
+		//const qreal fh=h/w;// wee need to know face height
+		painter.scale(s,s);
+		//const qreal angle=(cycle*M_PI*2.0f)/cycleTime;
+		//painter.drawRect(0,sin(angle)/2,1,0.1);
+
+
+		painter.translate(0.2,0);
+		mLeftEye.paint(painter);
+		painter.translate(-0.4,0);
+		mRightEye.paint(painter);
+	}
+//qDebug()<<"UPD";
 }
 
 
@@ -151,7 +171,7 @@ void EyesWidget::onUpdateTimer()
 	}
 
 
-	if(mLeftEye.isDirty() || mRightEye.isDirty()){
+	if(mLeftEye.isDirty() || mRightEye.isDirty()) {
 		update();
 	}
 }

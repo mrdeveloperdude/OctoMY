@@ -18,13 +18,14 @@ void TestKeyStore::testInit()
 	QVERIFY(nullptr!=keystorep);
 	QVERIFY(!filep->exists());
 
-	keystore.synchronize();
+	keystore.waitForSync();
 
 	QVERIFY(!filep->exists());
 
 	keystore.setBootstrapEnabled(true);
 
-	keystore.synchronize();
+
+	keystore.waitForSync();
 
 	QVERIFY(filep->exists());
 	{
@@ -171,9 +172,13 @@ void TestKeyStore::testInsertRemove()
 	QByteArray raw="This is some text to be signed and verified";
 	QByteArray bad="This is some text that will fail verification";
 
-	QByteArray sign=keystore.sign(raw);
-	QVERIFY(keystore.verify(raw,sign));
-	QVERIFY(!keystore.verify(bad,sign));
+
+	auto lkey=keystore.localKey();
+	QVERIFY(!lkey.isNull());
+	QByteArray sign=lkey->sign(raw);
+
+	QVERIFY(lkey->verify(raw,sign));
+	QVERIFY(!lkey->verify(bad,sign));
 
 	keystore.clear();
 	QVERIFY(!keystore.hasPubKeyForID(id));

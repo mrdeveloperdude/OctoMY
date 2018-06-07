@@ -31,7 +31,6 @@ FaceWidget::FaceWidget(QWidget *parent)
 	if(!connect(ui->tryToggleConnect, SIGNAL(stateChanged(const TryToggleState, const TryToggleState)), this, SIGNAL(connectionStateChanged(const TryToggleState, const TryToggleState)), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not forward connectionStateChanged signal";
 	}
-	updateEyeColor();
 }
 
 FaceWidget::~FaceWidget()
@@ -52,17 +51,17 @@ QSharedPointer<Agent> FaceWidget::agent()
 void FaceWidget::updateEyeColor()
 {
 	OC_METHODGATE();
+	bool doUpdate=false;
 	if(!mAgent.isNull()) {
 		QSharedPointer<Associate> ass=mAgent->nodeIdentity();
-		if(nullptr!=ass) {
-			const QString id=ass->id();
-			if(id!=lastID) {
-				lastID=id;
-				PortableID pid=ass->toPortableID();
-				ui->widgetEyes->setPortableID(pid);
+		if(!ass.isNull()) {
+			const PortableID pid=ass->toPortableID();
+			if(pid.id()!=mLastPID.id()) {
+				mLastPID=pid;
+				doUpdate=true;
 			}
 			else{
-				qWarning()<<"ERROR: no change in ID while updating eye color of face widget: '"<<id<<"'";
+				qWarning()<<"ERROR: no change in ID while updating eye color of face widget: '"<<pid.id()<<"'";
 			}
 		}
 		else{
@@ -71,6 +70,11 @@ void FaceWidget::updateEyeColor()
 	}
 	else{
 		qWarning()<<"ERROR: no agent while updating eye color of face widget";
+	}
+	if(doUpdate){
+		if(!mLastPID.id().isEmpty()){
+			ui->widgetEyes->setPortableID(mLastPID);
+		}
 	}
 }
 

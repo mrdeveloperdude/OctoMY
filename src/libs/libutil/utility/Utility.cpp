@@ -1166,7 +1166,24 @@ int levenshtein_distance(const QString &s1, const QString  &s2)
 }
 
 
+static quint64 handleCounter=0;
+static QMap<Qt::HANDLE, quint64> handleMap;
+QString handleCounterString(Qt::HANDLE h)
+{
+	if(nullptr==h) {
+		return "H-null";
+	}
+	if(!handleMap.contains(h)) {
+		handleCounter++;
+		handleMap.insert(h,handleCounter);
+	}
+	return "H-"+QString::number(handleMap[h]);
+}
 
+QString currentThreadID()
+{
+	return handleCounterString(QThread::currentThreadId());
+}
 
 double fsec()
 {

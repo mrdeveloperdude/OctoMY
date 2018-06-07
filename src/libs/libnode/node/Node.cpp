@@ -116,7 +116,8 @@ void Node::init()
 		mCarrier->setListenAddress(listenAddress);
 	}
 
-	mKeyStore.synchronize([this](SimpleDataStore &sms, bool ok) {
+	mKeyStore.synchronize([this](ASEvent<QVariantMap> &se) {
+		const bool ok=se.isSuccessfull();
 		qDebug()<<"Keystore synchronized with ok="<<ok;
 	});
 
@@ -216,9 +217,6 @@ void Node::unbirth()
 	mClients.clear();
 
 }
-
-
-
 
 
 

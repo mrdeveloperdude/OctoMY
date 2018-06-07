@@ -8,6 +8,7 @@
 #define FACEWIDGET_HPP
 
 #include "widgets/TryToggle.hpp"
+#include "security/PortableID.hpp"
 
 #include <QWidget>
 
@@ -26,8 +27,7 @@ class FaceWidget : public QWidget
 	Q_OBJECT
 private:
 	Ui::FaceWidget *ui;
-
-	QString lastID;
+	PortableID mLastPID;
 	QSharedPointer<Agent> mAgent;
 
 public:

@@ -57,15 +57,19 @@ void Agent::init()
 {
 	OC_METHODGATE();
 	Node::init();
-	mKeyStore.synchronize([this](SimpleDataStore &sms, bool ok) {
+
+	mKeyStore.synchronize([this](ASEvent<QVariantMap> &se) {
+		const bool ok=se.isSuccessfull();
 		qDebug()<<"Keystore synchronized with ok="<<ok;
 		mKeyStoreReady=ok;
+		// TODO: Don't wait for sync here. Make truely async
 		checkLoadCompleted();
 	});
 
 	mLocalIdentity.synchronize([this](SimpleDataStore &sms, bool ok) {
 		qDebug()<<"Local identity synchronized with ok="<<ok;
 		mLocalIdentityStoreReady=ok;
+		// TODO: Don't wait for sync here. Make truely async
 		checkLoadCompleted();
 	});
 
@@ -73,6 +77,7 @@ void Agent::init()
 		qDebug()<<"Agent Config Store synchronized with ok="<<ok;
 		mAgentConfigStoreReady=ok;
 		checkLoadCompleted();
+		// TODO: Don't wait for sync here. Make truely async
 		reloadController();
 	});
 }
@@ -154,10 +159,10 @@ void Agent::reloadController()
 				mActuatorController->setConnected(true);
 			}
 		} else {
-			qDebug()<<"No actuator controller named in agent config";
+			qDebug()<<"ERROR: No actuator controller named in agent config";
 		}
 	} else {
-		qDebug()<<"No agent config";
+		qDebug()<<"ERROR: No agent config";
 	}
 }
 
@@ -202,8 +207,9 @@ QSharedPointer<Node> Agent::sharedThis()
 bool Agent::checkLoadCompleted()
 {
 	OC_METHODGATE();
+	// TODO: Make truely async
 	const bool loaded = mKeyStoreReady && mLocalIdentityStoreReady && mAgentConfigStoreReady;
-	qDebug()<<"CHECK LOAD COMPLETE: "<<loaded;
+	qDebug()<<"CHECK LOAD COMPLETE: "<<loaded<<" for mKeyStoreReady="<<mKeyStoreReady<<", mLocalIdentityStoreReady="<<mLocalIdentityStoreReady<<", mAgentConfigStoreReady="<<mAgentConfigStoreReady;
 	if(loaded) {
 		qDebug()<<"EMITTING LOAD COMLPETE";
 		emit appLoaded();

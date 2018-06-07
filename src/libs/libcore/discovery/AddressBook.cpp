@@ -30,6 +30,7 @@ AddressBook::~AddressBook()
 bool AddressBook::fromMap(QVariantMap data)
 {
 	OC_METHODGATE();
+	mAssociates.clear();
 	QVariantList peers=data["peers"].toList();
 	for(QVariantList::iterator b=peers.begin(), e=peers.end(); b!=e; ++b) {
 		QSharedPointer<Associate> peer=QSharedPointer<Associate>(OC_NEW Associate((*b).toMap()));
@@ -50,6 +51,13 @@ QVariantMap AddressBook::toMap()
 	return map;
 }
 
+
+bool AddressBook::fromDefault()
+{
+	OC_METHODGATE();
+	mAssociates.clear();
+	return true;
+}
 
 
 bool AddressBook::hasAssociate(const QString &id)
