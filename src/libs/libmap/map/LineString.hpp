@@ -26,102 +26,102 @@
 #ifndef LINESTRING_H
 #define LINESTRING_H
 
-#include "qMapControlGlobal.hpp"
+#include "map/qMapControlGlobal.hpp"
 #include "Curve.hpp"
 
 namespace qmapcontrol
 {
-    //! A collection of Point objects to describe a line
-    /*!
-     * A LineString is a Curve with linear interpolation between Points. Each consecutive pair of Points defines a Line segment.
-     *	@author Kai Winter <kaiwinter@gmx.de>
-     */
-    class QMAPCONTROL_EXPORT LineString : public Curve
-    {
-        Q_OBJECT
+//! A collection of Point objects to describe a line
+/*!
+ * A LineString is a Curve with linear interpolation between Points. Each consecutive pair of Points defines a Line segment.
+ *	@author Kai Winter <kaiwinter@gmx.de>
+ */
+class QMAPCONTROL_EXPORT LineString : public Curve
+{
+	Q_OBJECT
 
-    public:
-        LineString();
-        //! constructor
-        /*!
-         * The constructor of a LineString takes a list of Points to form a line.
-         * @param points a list of points
-         * @param name the name of the LineString
-         * @param pen a QPen can be used to modify the look of the line.
-         * @see http://doc.trolltech.com/4.3/qpen.html
-         */
-        LineString ( QList<Point*> const points, QString name = QString(), QPen* pen = 0 );
-        virtual ~LineString();
+public:
+	LineString();
+	//! constructor
+	/*!
+	 * The constructor of a LineString takes a list of Points to form a line.
+	 * @param points a list of points
+	 * @param name the name of the LineString
+	 * @param pen a QPen can be used to modify the look of the line.
+	 * @see http://doc.trolltech.com/4.3/qpen.html
+	 */
+	LineString ( QList<Point*> const points, QString name = QString(), QPen* pen = 0 );
+	virtual ~LineString();
 
-        //! returns the points of the LineString
-        /*!
-         * @return  a list with the points of the LineString
-         */
-        QList<Point*>	points();
+	//! returns the points of the LineString
+	/*!
+	 * @return  a list with the points of the LineString
+	 */
+	QList<Point*>	points();
 
-        //! adds a point at the end of the LineString
-        /*!
-         * @param point the point which should be added to the LineString
-         */
-        void addPoint ( Point* point );
+	//! adds a point at the end of the LineString
+	/*!
+	 * @param point the point which should be added to the LineString
+	 */
+	void addPoint ( Point* point );
 
-        //! sets the given list as points of the LineString
-        //! NOTE: these points will get reparented and cleaned up automatically
-        /*!
-         * @param points the points which should be set for the LineString
-         */
-        void setPoints ( QList<Point*> points);
+	//! sets the given list as points of the LineString
+	//! NOTE: these points will get reparented and cleaned up automatically
+	/*!
+	 * @param points the points which should be set for the LineString
+	 */
+	void setPoints ( QList<Point*> points);
 
-        //! returns the number of Points the LineString consists of
-        /*!
-         * @return the number of the LineString´s Points
-         */
-        int numberOfPoints() const;
+	//! returns the number of Points the LineString consists of
+	/*!
+	 * @return the number of the LineString´s Points
+	 */
+	int numberOfPoints() const;
 
-        //! returns the bounding box (rect) that contains all points
-        /*!
-         * @return the rect that contains all points
-         */
-        virtual QRectF boundingBox();
+	//! returns the bounding box (rect) that contains all points
+	/*!
+	 * @return the rect that contains all points
+	 */
+	virtual QRectF boundingBox();
 
-        //! returns true if the LineString has Childs
-        /*!
-         * This is equal to: numberOfPoints() > 0
-         * @return true it the LineString has Childs (=Points)
-         * @see clickedPoints()
-         */
-        virtual bool hasPoints() const;
+	//! returns true if the LineString has Childs
+	/*!
+	 * This is equal to: numberOfPoints() > 0
+	 * @return true it the LineString has Childs (=Points)
+	 * @see clickedPoints()
+	 */
+	virtual bool hasPoints() const;
 
-        //! returns true if the LineString has clicked Points
-        /*!
-         * @return true if childs of a LineString were clicked
-         * @see clickedPoints()
-         */
-        virtual bool hasClickedPoints() const;
+	//! returns true if the LineString has clicked Points
+	/*!
+	 * @return true if childs of a LineString were clicked
+	 * @see clickedPoints()
+	 */
+	virtual bool hasClickedPoints() const;
 
-        //! returns the clicked Points
-        /*!
-         * If a LineString was clicked it could be neccessary to figure out which of its points where clicked.
-         * Do do so the methods hasPoints() and clickedPoints() can be used.
-         * When a point is added to a LineString the Point becomes its child.
-         * It is possible (depending on the zoomfactor) to click more than one Point of a LineString, so this method returns a list.
-         * @return the clicked Points of the LineString
-         */
-        virtual QList<Geometry*> & clickedPoints();
+	//! returns the clicked Points
+	/*!
+	 * If a LineString was clicked it could be neccessary to figure out which of its points where clicked.
+	 * Do do so the methods hasPoints() and clickedPoints() can be used.
+	 * When a point is added to a LineString the Point becomes its child.
+	 * It is possible (depending on the zoomfactor) to click more than one Point of a LineString, so this method returns a list.
+	 * @return the clicked Points of the LineString
+	 */
+	virtual QList<Geometry*> & clickedPoints();
 
-    protected:
-        virtual bool Touches ( Geometry* geom, const MapAdapter* mapadapter );
-        virtual bool Touches ( Point* geom, const MapAdapter* mapadapter );
-        virtual void draw ( QPainter* painter, const MapAdapter* mapadapter, const QRect &screensize, const QPoint offset );
+protected:
+	virtual bool Touches ( Geometry* geom, const QSharedPointer<MapAdapter> mapadapter );
+	virtual bool Touches ( Point* geom, const QSharedPointer<MapAdapter> mapadapter );
+	virtual void draw ( QPainter* painter, const QSharedPointer<MapAdapter> mapadapter, const QRect &screensize, const QPoint offset );
 
-    private:
-        //! removes cleans up memory of child points that were reparented with setPoints()
-        /*!
-         * @see setPoints()
-         */
-        void removePoints();
+private:
+	//! removes cleans up memory of child points that were reparented with setPoints()
+	/*!
+	 * @see setPoints()
+	 */
+	void removePoints();
 
-        QList<Point*>	childPoints;
-    };
+	QList<Point*>	childPoints;
+};
 }
 #endif

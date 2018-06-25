@@ -5,7 +5,7 @@
 #include "utility/Standard.hpp"
 #include "utility/Utility.hpp"
 #include "utility/ConcurrentQueue.hpp"
-
+#include "AsyncStoreStatus.hpp"
 #include "node/ASEvent.hpp"
 
 
@@ -82,6 +82,8 @@ class AsyncStore
 {
 protected:
 
+	QObject *mSignallingObject;
+
 	AsyncBackend<T> &mBackend;
 	AsyncFrontend<T> &mFrontend;
 
@@ -124,6 +126,7 @@ private:
 	quint64 autoIncrement();
 
 public:
+	ASEvent<T> status();
 	ASEvent<T> clear();
 	ASEvent<T> get();
 	ASEvent<T> set(T data);
@@ -135,10 +138,12 @@ public:
 private:
 
 	ASEvent<T> complete();
-
+	void runCallbacksForEvent(ASEvent<T> event);
 
 private:
 
+	// Get current status
+	AsyncStoreStatus statusSync();
 	// Delete data on disk and in memory
 	bool clearSync();
 	// Get data from memory
@@ -173,13 +178,11 @@ public:
 
 
 
-
-
-
 template <typename T>
 AsyncStore<T>::AsyncStore(AsyncBackend<T> &backend, AsyncFrontend<T> &frontend, QObject *parent)
 //: QObject(parent)
-	: mBackend(backend)
+	: mSignallingObject(OC_NEW QObject())
+	, mBackend(backend)
 	, mFrontend(frontend)
 	, mAutoIncrement(0)
 	, mDiskCounter(0)
@@ -213,6 +216,8 @@ AsyncStore<T>::~AsyncStore()
 	synchronize();
 	complete();
 	mCompleteFuture.waitForFinished();
+	mSignallingObject->deleteLater();
+	mSignallingObject=nullptr;
 	//qDebug()<<"Exiting AsyncStore::~AsyncStore() from thread "<<utility::currentThreadID();
 }
 
@@ -281,11 +286,20 @@ quint64 AsyncStore<T>::autoIncrement()
 
 
 template <typename T>
+ASEvent<T> AsyncStore<T>::status()
+{
+	OC_METHODGATE();
+	return enqueueTransaction(ASEvent<T>(*this, AS_EVENT_STATUS));
+}
+
+
+template <typename T>
 ASEvent<T> AsyncStore<T>::clear()
 {
 	OC_METHODGATE();
 	return enqueueTransaction(ASEvent<T>(*this, AS_EVENT_CLEAR));
 }
+
 
 template <typename T>
 ASEvent<T> AsyncStore<T>::get()
@@ -335,6 +349,31 @@ ASEvent<T> AsyncStore<T>::complete()
 	OC_METHODGATE();
 	return enqueueTransaction(ASEvent<T>(*this, AS_EVENT_DONE));
 }
+
+
+template <typename T>
+void AsyncStore<T>::runCallbacksForEvent(ASEvent<T> event)
+{
+	OC_METHODGATE();
+	auto p=event.p();
+	qDebug()<<"runCallbacksForEvent() from "<<utility::currentThreadID();
+	utility::postToThread([p] {
+		qDebug()<<"CALLBACKS SINGLESHOT from "<<utility::currentThreadID();
+		ASEvent<T> e(p);
+		e.runCallbacks();
+	});
+}
+
+
+template <typename T>
+AsyncStoreStatus AsyncStore<T>::statusSync()
+{
+	OC_METHODGATE();
+	return AsyncStoreStatus(mDiskCounter, mMemoryCounter);
+}
+
+
+
 
 template <typename T>
 bool AsyncStore<T>::clearSync()

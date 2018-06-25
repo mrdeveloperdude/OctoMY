@@ -58,9 +58,9 @@ void Agent::init()
 	OC_METHODGATE();
 	Node::init();
 
-	mKeyStore.synchronize([this](ASEvent<QVariantMap> &se) {
+	mKeyStore.status([this](ASEvent<QVariantMap> &se) {
 		const bool ok=se.isSuccessfull();
-		qDebug()<<"Keystore synchronized with ok="<<ok;
+		qDebug()<<"Keystore status with ok="<<ok;
 		mKeyStoreReady=ok;
 		// TODO: Don't wait for sync here. Make truely async
 		checkLoadCompleted();
@@ -186,7 +186,7 @@ void Agent::setNodeCouriersRegistration(bool reg)
 {
 	OC_METHODGATE();
 	Node::setNodeCouriersRegistration(reg);
-	// When we get a new agent specific courier, put it here
+	// TODO: When we get a new agent specific courier, put it here
 	/*
 	if(nullptr!=mComms){
 		if(nullptr!=mAgentCourierX){

@@ -3,7 +3,7 @@
 * This file is part of QMapControl,
 * an open-source cross-platform map widget
 *
-* Copyright (C) 2007 - 2008 Kai Winter
+* Copyright (C) 2007 - 2009 Kai Winter
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -23,39 +23,28 @@
 *
 */
 
-#ifndef GOOGLEMAPADAPTER_H
-#define GOOGLEMAPADAPTER_H
+#ifndef OPENAERIALMAPADAPTER_H
+#define OPENAERIALMAPADAPTER_H
 
-#include "qMapControlGlobal.hpp"
+#include "map/qMapControlGlobal.hpp"
 #include "TileMapAdapter.hpp"
-
 namespace qmapcontrol
 {
-    //! MapAdapter for Google
+    //! MapAdapter for OpenStreetMap
     /*!
-     * This is a conveniece class, which extends and configures a TileMapAdapter
+     * This is a conveniece class, which extends and configures a TileMapAdapter. Source of maps is http://www.openaerialmap.org/
      *	@author Kai Winter <kaiwinter@gmx.de>
      */
-    class QMAPCONTROL_EXPORT GoogleMapAdapter : public TileMapAdapter
+    class QMAPCONTROL_EXPORT OpenAerialMapAdapter : public TileMapAdapter
     {
         Q_OBJECT
-
-    public:
-        enum googleLayerType
-        {
-            roadmap = 0,
-            satellite,
-            terrain,
-            hybrid
-        };
+                public:
         //! constructor
         /*!
-         * This construct a Google Adapter
+         * This construct a OpenAerialMap Adapter
          */
-        GoogleMapAdapter( googleLayerType qLayerType = roadmap );
-        virtual ~GoogleMapAdapter();
-    private:
-            QString typeToString( googleLayerType qLayerType );
+        OpenAerialMapAdapter();
+        virtual ~OpenAerialMapAdapter();
     };
 }
 #endif

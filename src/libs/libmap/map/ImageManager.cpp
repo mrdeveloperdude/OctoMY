@@ -50,7 +50,7 @@ namespace qmapcontrol
 		//initialize loading image
 		loadingPixmap.fill( Qt::transparent );
 		QPainter paint(&loadingPixmap);
-		QBrush brush( Qt::lightGray, Qt::Dense5Pattern );
+		QBrush brush( Qt::darkGray, Qt::Dense5Pattern );
 		paint.fillRect(loadingPixmap.rect(), brush );
 		paint.end();
 
@@ -154,7 +154,7 @@ namespace qmapcontrol
 	}
 
 
-	void ImageManager::setCacheDir(const QDir& path, const int qDiskSizeMB)
+	void ImageManager::setCacheDir(const QDir& path, const int qDiskSizeMiB)
 	{
 		if ( !path.absolutePath().isEmpty() )
 		{
@@ -163,14 +163,15 @@ namespace qmapcontrol
 			{
 				cacheDir.mkpath( cacheDir.absolutePath() );
 			}
-			//qDebug()<<"Map Disk Cache: "<<cacheDir.absolutePath();
+			qDebug()<<"Map Disk Cache: "<<cacheDir.absolutePath()<< " with max size "<<qDiskSizeMiB<<"MiB";
 			diskCache->setCacheDirectory( cacheDir.absolutePath() );
-			diskCache->setMaximumCacheSize( qDiskSizeMB *1024*1024 ); //Megabytes to bytes
+			diskCache->setMaximumCacheSize( qDiskSizeMiB *1024*1024 ); //Megabytes to bytes
 			net->setDiskCache(diskCache);
 		}
 		else
 		{
-			net->setDiskCache(0);
+			qDebug()<<"Map Disk Cache: DISABLED ";
+			net->setDiskCache(nullptr);
 		}
 	}
 

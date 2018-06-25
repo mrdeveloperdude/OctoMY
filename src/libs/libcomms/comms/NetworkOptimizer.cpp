@@ -33,7 +33,7 @@ QNetworkAccessManager &NetworkOptimizer::instance(QString host){
 			}
 			if (dir.exists()){
 				QNetworkDiskCache *cache=OC_NEW QNetworkDiskCache;
-				cache->setCacheDirectory(cacheDir);
+				cache->setCacheDirectory(dir.absoluteFilePath("NetworkHorse"));
 				nam->setCache(cache);
 			}
 			else{

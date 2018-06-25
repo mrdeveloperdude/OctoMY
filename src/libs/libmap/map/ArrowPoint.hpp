@@ -29,7 +29,7 @@
 
 #include <QBrush>
 
-#include "qMapControlGlobal.hpp"
+#include "map/qMapControlGlobal.hpp"
 #include "math.h"
 #include "Point.hpp"
 

@@ -26,7 +26,7 @@
 #ifndef GPS_POSITION_H
 #define GPS_POSITION_H
 
-#include "qMapControlGlobal.hpp"
+#include "map/qMapControlGlobal.hpp"
 #include <QString>
 
 namespace qmapcontrol

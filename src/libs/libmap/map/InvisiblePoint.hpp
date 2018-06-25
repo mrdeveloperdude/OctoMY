@@ -27,7 +27,7 @@
 #ifndef INVISIBLEPOINT_H
 #define INVISIBLEPOINT_H
 
-#include "qMapControlGlobal.hpp"
+#include "map/qMapControlGlobal.hpp"
 #include "Point.hpp"
 
 namespace qmapcontrol

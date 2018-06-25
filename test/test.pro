@@ -16,43 +16,47 @@ contains(DEFINES, USE_TESTS_BASIC){
 	message(ADDING BASIC TESTS TO BUILD)
 	#
 	TEST_PROJECTS+= \
-		testAsyncStore \
+		testAddressBook \
+		testAddressList \
 		testAgentStateCourier \
 		testArduMY \
+		testAssociate \
+		testAsyncStore \
 		testBlob \
 		testCarSteeringWidget \
+		testCommsCarrier \
 		testCommsChannel \
 		testCommsSession \
-		testCommsCarrier \
+		testConcurrentQueue \
+		testDataStore \
 		testDeliveryWizard \
 		testDiscovery \
 		testEventSourcing \
 		testEyesWidget \
 		testHashstore \
+		testIDDuel \
 		testIdenticon \
 		testIrisRendrer \
 		testKey \
 		testKeyStore \
+		testMapEditor\
 		testNetworkAddress \
 		testNetworkSettingsWidget\
-		testAssociate \
-		testAddressBook \
-		testAddressList \
 		testParser \
 		testPortableID \
 		testPoseMappingWidget \
+		testRateCalculator \
 		testRNG \
 		testServotor32Controller \
+		testSimpleDataStore \
 		testStreamCodec \
 		testSyncParameter \
+		testTaskQueue \
 		testTetraGPSEncoder \
-		testZooComms \
-		testIDDuel \
-		testUtility \
 		testTryToggle \
-		testDataStore \
-		testSimpleDataStore \
-		testRateCalculator \
+		testUtility \
+		testZooComms \
+
 
 
 	# NOTE: EXTERNAL_LIB_OPENCL is enabled when useful in local_override.pri
@@ -72,8 +76,6 @@ contains(DEFINES, USE_TESTS_BASIC){
 		testCreepyVoice \
 
 	}
-
-
 }
 
 
@@ -98,10 +100,13 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testAssociate \
 #		testDiscovery \
 		testAsyncStore \
-		testKeyStore \
+#		testKeyStore \
+		testConcurrentQueue \
+		testTaskQueue \
 #		testCommsChannel \
 #		testCommsCarrier \
 #		testRateCalculator \
+		testMapEditor\
 
 	STRESS_PROJECTS+= \
 	#	stressCapabilities \

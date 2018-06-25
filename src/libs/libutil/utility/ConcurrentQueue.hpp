@@ -7,6 +7,7 @@
 
 #include <QMutex>
 #include <QWaitCondition>
+#include <QLinkedList>
 
 template <typename T>
 class ConcurrentQueue
@@ -30,6 +31,7 @@ public:
 public:
 	void put(T item);
 	T get();
+	T tryGet(bool &got);
 	int count();
 	bool isEmpty();
 };
@@ -76,11 +78,11 @@ void ConcurrentQueue<T>::put(T item)
 	}
 }
 
+// Block until queue actually contains something before fetching the first item
 template <typename T>
 T ConcurrentQueue<T>::get()
 {
 	OC_METHODGATE();
-	// Block until queue actually contains something before fetching the first item
 	unsigned long rtto=1000;
 	T item;
 	QMutexLocker ml(&mMutex);
@@ -111,6 +113,40 @@ T ConcurrentQueue<T>::get()
 	//qDebug()<<"'GET' DONE";
 	return item;
 }
+
+
+
+// Only get if there is something to be got
+template <typename T>
+T ConcurrentQueue<T>::tryGet(bool &got)
+{
+	OC_METHODGATE();
+	T item;
+	QMutexLocker ml(&mMutex);
+	int count=mItems.count();
+	if(count<=0){
+		got=false;
+		return item;
+	}
+	//qDebug()<<"Got not-empty with count="<<count;
+	const bool wasFull=(count >= mCapacity);
+	item=mItems.takeLast();
+	got=true;
+	count=mItems.count();
+	const bool isFull=(count < mCapacity);
+	//qDebug()<<"State mCapacity="<<mCapacity<<", wasFull="<<wasFull<<", isFull="<<isFull<<", count="<<count;
+	if((mCapacity>0) && (wasFull) && (!isFull)) {
+		//qDebug()<<"Signaling not-full";
+		ml.unlock();
+		mNotFull.wakeAll();
+		ml.relock();
+	}
+	//qDebug()<<"'GET' DONE";
+	return item;
+}
+
+
+
 
 
 template <typename T>

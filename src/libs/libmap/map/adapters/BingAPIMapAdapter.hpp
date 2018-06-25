@@ -35,39 +35,39 @@
 #ifndef BINGAPIMAPADAPTER_H
 #define BINGAPIMAPADAPTER_H
 
-#include "qMapControlGlobal.hpp"
+#include "map/qMapControlGlobal.hpp"
 #include "TileMapAdapter.hpp"
 
 namespace qmapcontrol
 {
-    class QMAPCONTROL_EXPORT bingApiMapadapter : public TileMapAdapter
-    {
-        Q_OBJECT
-    public:
-        bingApiMapadapter(QString mapType = "Road", QString apiKey = "");
-        virtual ~bingApiMapadapter();
+	class QMAPCONTROL_EXPORT bingApiMapadapter : public TileMapAdapter
+	{
+		Q_OBJECT
+	public:
+		bingApiMapadapter(QString mapType = "Road", QString apiKey = "");
+		virtual ~bingApiMapadapter();
 
-        virtual QPoint coordinateToDisplay(const QPointF&) const;
-        virtual QPointF displayToCoordinate(const QPoint&) const;
+		virtual QPoint coordinateToDisplay(const QPointF&) const;
+		virtual QPointF displayToCoordinate(const QPoint&) const;
 
-        void setKey(QString apiKey);
-        void setMapType(QString mapType); /* Aerial, AerialWithLabels, Road */
+		void setKey(QString apiKey);
+		void setMapType(QString mapType); /* Aerial, AerialWithLabels, Road */
 
-    protected:
-        virtual void zoom_in();
-        virtual void zoom_out();
+	protected:
+		virtual void zoom_in();
+		virtual void zoom_out();
 
-    private:
-        virtual QString getQ(qreal longitude, qreal latitude, int zoom) const;
-        qreal getMercatorLatitude(qreal YCoord) const;
-        qreal getMercatorYCoord(qreal lati) const;
+	private:
+		virtual QString getQ(qreal longitude, qreal latitude, int zoom) const;
+		qreal getMercatorLatitude(qreal YCoord) const;
+		qreal getMercatorYCoord(qreal lati) const;
 
-        qreal coord_per_x_tile;
-        qreal coord_per_y_tile;
-        int srvNum;
-        QString myKey;
-        QString myMapType;
-    };
+		qreal coord_per_x_tile;
+		qreal coord_per_y_tile;
+		int srvNum;
+		QString myKey;
+		QString myMapType;
+	};
 }
 
 #endif // BINGAPIMAPADAPTER_H

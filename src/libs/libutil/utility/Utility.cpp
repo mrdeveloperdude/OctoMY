@@ -25,6 +25,7 @@
 #include <QLabel>
 #include <QLayout>
 #include <QMediaContent>
+#include <QMutex>
 #include <QNetworkAddressEntry>
 #include <QPainter>
 #include <QPixmap>
@@ -32,6 +33,7 @@
 #include <QRectF>
 #include <QSplitter>
 #include <QStackedLayout>
+#include <QStackedWidget>
 #include <QString>
 #include <QStringBuilder>
 #include <QTableView>
@@ -40,7 +42,7 @@
 #include <QUdpSocket>
 #include <QWidget>
 #include <QWindow>
-#include <QStackedWidget>
+
 
 
 
@@ -1166,13 +1168,22 @@ int levenshtein_distance(const QString &s1, const QString  &s2)
 }
 
 
-static quint64 handleCounter=0;
-static QMap<Qt::HANDLE, quint64> handleMap;
-QString handleCounterString(Qt::HANDLE h)
+
+
+HandleCounter::HandleCounter()
+	: handleCounter(0)
+	, handleMap()
+	, handleMutex(QMutex::Recursive)
+{
+
+}
+
+QString HandleCounter::handleCounterString(Qt::HANDLE h)
 {
 	if(nullptr==h) {
 		return "H-null";
 	}
+	QMutexLocker lock(&handleMutex);
 	if(!handleMap.contains(h)) {
 		handleCounter++;
 		handleMap.insert(h,handleCounter);
@@ -1180,9 +1191,13 @@ QString handleCounterString(Qt::HANDLE h)
 	return "H-"+QString::number(handleMap[h]);
 }
 
+
+
+static HandleCounter hc;
+
 QString currentThreadID()
 {
-	return handleCounterString(QThread::currentThreadId());
+	return hc.handleCounterString(QThread::currentThreadId());
 }
 
 double fsec()

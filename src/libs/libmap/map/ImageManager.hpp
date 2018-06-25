@@ -26,7 +26,7 @@
 #ifndef IMAGEMANAGER_H
 #define IMAGEMANAGER_H
 
-#include "qMapControlGlobal.hpp"
+#include "map/qMapControlGlobal.hpp"
 #include <QObject>
 #include <QPixmapCache>
 #include <QDebug>
@@ -97,7 +97,7 @@ namespace qmapcontrol
 		 * @param path the path where map tiles should be stored
 		 * @param qDiskSizeMB the about of disk space to use for caching. Default is 250MB
 		 */
-		void setCacheDir(const QDir& path, const int qDiskSizeMB = 250);
+		void setCacheDir(const QDir& path, const int qDiskSizeMiB = 250);
 
 		/*!
 		 * @return Number of images pending in the load queue

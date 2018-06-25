@@ -9,8 +9,8 @@
 
 
 #include "map/MapControl.hpp"
-#include "map/OSMMapAdapter.hpp"
-#include "map/OpenAerialMapAdapter.hpp"
+#include "map/adapters/OSMMapAdapter.hpp"
+#include "map/adapters/OpenAerialMapAdapter.hpp"
 #include "map/MapLayer.hpp"
 #include "map/LineString.hpp"
 

@@ -56,6 +56,7 @@ private:
 	QAction *mShowStatsAction;
 	QAction *mShowBirthCertificateAction;
 	QAction *mUnbirthAction;
+	QAction *mQuitAction;
 
 	bool mWasEverUndelivered;
 
@@ -98,6 +99,8 @@ private slots:
 	void onStartHardware();
 	void onStartPlanEditor();
 	void onStartShowBirthCertificate();
+	void onStartUnbirth();
+	void onStartQuitApplication();
 
 	// Actions
 private slots:

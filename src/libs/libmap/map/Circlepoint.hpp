@@ -26,7 +26,7 @@
 #ifndef CIRCLEPOINT_H
 #define CIRCLEPOINT_H
 
-#include "qMapControlGlobal.hpp"
+#include "map/qMapControlGlobal.hpp"
 #include "Point.hpp"
 
 namespace qmapcontrol

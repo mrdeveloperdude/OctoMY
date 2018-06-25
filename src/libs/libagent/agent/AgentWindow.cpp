@@ -46,6 +46,7 @@ AgentWindow::AgentWindow(QSharedPointer<Agent> agent, QWidget *parent)
 	, mShowStatsAction(OC_NEW QAction(tr("Show Stats"), this))
 	, mShowBirthCertificateAction(OC_NEW QAction(tr("Show Birth Certificate"), this))
 	, mUnbirthAction(OC_NEW QAction(tr("Unbirth!"), this))
+	, mQuitAction(OC_NEW QAction(tr("Exit"), this))
 	, mWasEverUndelivered(false)
 {
 	OC_METHODGATE();
@@ -321,18 +322,16 @@ void AgentWindow::prepareMenu()
 	//////////////////
 	mUnbirthAction->setStatusTip(tr("Delete the identity of this agent to restart birth"));
 	mUnbirthAction->setIcon(QIcon(":/icons/kill.svg"));
-	connect(mUnbirthAction, &QAction::triggered, this, [=]() {
-		if(!mAgent.isNull()) {
-			QMessageBox::StandardButton reply = QMessageBox::question(this, "Unbirth", "Are you sure you want to DELETE the personality of this robot forever?", QMessageBox::No|QMessageBox::Yes);
-			if (QMessageBox::Yes==reply) {
-				mWasEverUndelivered=true;
-				mAgent->unbirth();
-				setCurrentPage(ui->pageDelivery);
-				qDebug()<<"UNBIRTHED!";
-			}
-		}
-	});
+	connect(mUnbirthAction, &QAction::triggered, this, &AgentWindow::onStartUnbirth);
 	mMenu.addAction(mUnbirthAction);
+
+
+	// Quit application
+	///////////////////////////
+	mQuitAction->setStatusTip(tr("Terminate execution of this agent"));
+	mQuitAction->setIcon(QIcon(":/icons/no.svg"));
+	connect(mQuitAction, &QAction::triggered, this, &AgentWindow::onStartQuitApplication);
+	mMenu.addAction(mQuitAction);
 }
 
 
@@ -444,6 +443,35 @@ void AgentWindow::onStartShowBirthCertificate()
 }
 
 
+void AgentWindow::onStartUnbirth()
+{
+	OC_METHODGATE();
+	if(!mAgent.isNull()) {
+		QMessageBox::StandardButton reply = QMessageBox::question(this, "Unbirth", "Are you sure you want to DELETE the personality of this agent forever?", QMessageBox::No|QMessageBox::Yes);
+		if (QMessageBox::Yes==reply) {
+			mWasEverUndelivered=true;
+			mAgent->unbirth();
+			setCurrentPage(ui->pageDelivery);
+			qDebug()<<"UNBIRTHED!";
+		}
+	}
+}
+
+
+void AgentWindow::onStartQuitApplication()
+{
+	OC_METHODGATE();
+
+	if(!mAgent.isNull()) {
+		QMessageBox::StandardButton reply = QMessageBox::question(this, "Quit", "Are you sure you want to quit?", QMessageBox::No|QMessageBox::Yes);
+		if (QMessageBox::Yes==reply) {
+			setCurrentPage(ui->pageQuit);
+			emit mAgent->appClose();
+			qDebug()<<"QUIT!";
+		}
+	}
+}
+
 
 void AgentWindow::onStartDelivery()
 {
@@ -523,6 +551,8 @@ void AgentWindow::closeEvent(QCloseEvent *event)
 	if(!mAgent.isNull()) {
 		emit mAgent->appClose();
 	}
+
+
 }
 
 

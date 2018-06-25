@@ -26,41 +26,41 @@
 #include "FixedImageOverlay.hpp"
 namespace qmapcontrol
 {
-    FixedImageOverlay::FixedImageOverlay(qreal x_upperleft, qreal y_upperleft, qreal x_lowerright, qreal y_lowerright, QString filename, QString name)
-            : ImagePoint(x_upperleft, y_upperleft, filename, name, TopLeft),
-            x_lowerright(x_lowerright), y_lowerright(y_lowerright)
-    {
-        //qDebug() << "loading image: " << filename;
-        mypixmap = QPixmap(filename);
-        size = mypixmap.size();
-        //qDebug() << "image size: " << size;
-    }
+	FixedImageOverlay::FixedImageOverlay(qreal x_upperleft, qreal y_upperleft, qreal x_lowerright, qreal y_lowerright, QString filename, QString name)
+			: ImagePoint(x_upperleft, y_upperleft, filename, name, TopLeft),
+			x_lowerright(x_lowerright), y_lowerright(y_lowerright)
+	{
+		//qDebug() << "loading image: " << filename;
+		mypixmap = QPixmap(filename);
+		size = mypixmap.size();
+		//qDebug() << "image size: " << size;
+	}
 
-    FixedImageOverlay::FixedImageOverlay(qreal x_upperleft, qreal y_upperleft, qreal x_lowerright, qreal y_lowerright, QPixmap pixmap, QString name)
-            : ImagePoint(x_upperleft, y_upperleft, pixmap, name, TopLeft),
-            x_lowerright(x_lowerright), y_lowerright(y_lowerright)
-    {
-        mypixmap = pixmap;
-        size = mypixmap.size();
-    }
+	FixedImageOverlay::FixedImageOverlay(qreal x_upperleft, qreal y_upperleft, qreal x_lowerright, qreal y_lowerright, QPixmap pixmap, QString name)
+			: ImagePoint(x_upperleft, y_upperleft, pixmap, name, TopLeft),
+			x_lowerright(x_lowerright), y_lowerright(y_lowerright)
+	{
+		mypixmap = pixmap;
+		size = mypixmap.size();
+	}
 
-    void FixedImageOverlay::draw(QPainter* painter, const MapAdapter* mapadapter, const QRect &, const QPoint)
-    {
-        if (!visible)
-            return;
+	void FixedImageOverlay::draw(QPainter* painter, const QSharedPointer<MapAdapter> mapadapter, const QRect &, const QPoint)
+	{
+		if (!visible)
+			return;
 
-            const QPointF c = QPointF(X, Y);
-            QPoint topleft = mapadapter->coordinateToDisplay(c);
+			const QPointF c = QPointF(X, Y);
+			QPoint topleft = mapadapter->coordinateToDisplay(c);
 
-            const QPointF c2 = QPointF(x_lowerright, y_lowerright);
-            QPoint lowerright = mapadapter->coordinateToDisplay(c2);
+			const QPointF c2 = QPointF(x_lowerright, y_lowerright);
+			QPoint lowerright = mapadapter->coordinateToDisplay(c2);
 
-        painter->drawPixmap(topleft.x(), topleft.y(), lowerright.x()-topleft.x(), lowerright.y()-topleft.y(), mypixmap);
+		painter->drawPixmap(topleft.x(), topleft.y(), lowerright.x()-topleft.x(), lowerright.y()-topleft.y(), mypixmap);
 
 
-    }
+	}
 
-    FixedImageOverlay::~FixedImageOverlay()
-    {
-    }
+	FixedImageOverlay::~FixedImageOverlay()
+	{
+	}
 }

@@ -7,6 +7,7 @@ class TestAsyncStore:public QObject
 {
 	Q_OBJECT
 private slots:
+	void testEvents();
 	void testFileExists();
 	void testGenerate();
 	void testSaveChange();

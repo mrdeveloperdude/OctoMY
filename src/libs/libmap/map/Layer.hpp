@@ -26,20 +26,20 @@
 #ifndef LAYER_H
 #define LAYER_H
 
-#include "qMapControlGlobal.hpp"
+#include "map/qMapControlGlobal.hpp"
 #include <QObject>
 #include <QDebug>
 #include <QPainter>
 #include <QMouseEvent>
 
-#include "MapAdapter.hpp"
+#include "adapters/MapAdapter.hpp"
 #include "LayerManager.hpp"
 #include "ImageManager.hpp"
 #include "Geometry.hpp"
 #include "Point.hpp"
 
-#include "WMSMapAdapter.hpp"
-#include "TileMapAdapter.hpp"
+#include "adapters/WMSMapAdapter.hpp"
+#include "adapters/TileMapAdapter.hpp"
 #include "utility/Standard.hpp"
 
 namespace qmapcontrol
@@ -90,7 +90,7 @@ namespace qmapcontrol
 		 * be something like a "speed up hint"
 		 */
 
-		Layer(QString layername, MapAdapter* mapadapter, enum LayerType layertype, bool takeevents=true);
+		Layer(QString layername, QSharedPointer<MapAdapter> mapadapter, enum LayerType layertype, bool takeevents=true);
 		virtual ~Layer();
 
 		//! returns the layer's name
@@ -105,7 +105,7 @@ namespace qmapcontrol
 		 * to do coordinate transformations.
 		 * @return the MapAdapter which us used by this Layer
 		 */
-		MapAdapter* mapadapter();
+		QSharedPointer<MapAdapter> mapadapter();
 
 		//! adds a Geometry object to this Layer
 		/*!
@@ -170,7 +170,7 @@ namespace qmapcontrol
 		 */
 		Layer::LayerType layertype() const;
 
-		void setMapAdapter(MapAdapter* mapadapter);
+		void setMapAdapter(QSharedPointer<MapAdapter> mapadapter);
 		void setImageManager(ImageManager* qImageManager);
 
 	private:
@@ -192,7 +192,7 @@ namespace qmapcontrol
 		QPoint screenmiddle;
 
 		QList<Geometry*> geometries;
-		MapAdapter* mapAdapter;
+		QSharedPointer<MapAdapter> mapAdapter;
 		bool takeevents;
 		mutable QRect myoffscreenViewport;
 

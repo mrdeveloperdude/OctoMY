@@ -23,30 +23,28 @@
 *
 */
 
-#include "GoogleMapAdapter.hpp"
+#ifndef OSMMAPADAPTER_H
+#define OSMMAPADAPTER_H
+
+#include "map/qMapControlGlobal.hpp"
+#include "TileMapAdapter.hpp"
 namespace qmapcontrol
 {
-    GoogleMapAdapter::GoogleMapAdapter( googleLayerType qLayerType )
-        : TileMapAdapter("mt1.google.com", "/vt/v=ap.106&hl=en&x=%2&y=%3&zoom=%1&lyrs=" + typeToString(qLayerType), 256, 17, 0)
-            //: TileMapAdapter("tile.openstreetmap.org", "/%1/%2/%3.png", 256, 0, 17)
+    //! MapAdapter for OpenStreetMap
+    /*!
+     * This is a conveniece class, which extends and configures a TileMapAdapter
+     *	@author Kai Winter <kaiwinter@gmx.de>
+     */
+    class QMAPCONTROL_EXPORT OSMMapAdapter : public TileMapAdapter
     {
-        QString layerType = typeToString( qLayerType );
-    }
-
-    GoogleMapAdapter::~GoogleMapAdapter()
-    {
-    }
-
-    QString GoogleMapAdapter::typeToString( googleLayerType qLayerType )
-    {
-        switch (qLayerType)
-        {
-            case satellite: return "s";
-            case terrain: return "t";
-            case hybrid: return "h";
-            case roadmap:
-            default: 
-                return "m";
-        }
-    }
+        Q_OBJECT
+                public:
+        //! constructor
+        /*!
+         * This construct a OpenStreetmap Adapter
+         */
+        OSMMapAdapter();
+        virtual ~OSMMapAdapter();
+    };
 }
+#endif

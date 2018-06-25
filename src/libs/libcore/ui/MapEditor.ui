@@ -29,15 +29,18 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <item row="1" column="0" colspan="3">
-    <widget class="qmapcontrol::MapControl" name="widgetMap" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+   <item row="0" column="4">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
-    </widget>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item row="0" column="0">
     <widget class="QToolButton" name="toolButtonHome">
@@ -52,19 +55,6 @@
        <normaloff>:/icons/home.svg</normaloff>:/icons/home.svg</iconset>
      </property>
     </widget>
-   </item>
-   <item row="0" column="2">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
    </item>
    <item row="0" column="1">
     <widget class="QToolButton" name="toolButtonCenter">
@@ -83,6 +73,40 @@
      </property>
     </widget>
    </item>
+   <item row="1" column="0" colspan="5">
+    <widget class="qmapcontrol::MapControl" name="widgetMap" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QLabel" name="labelPosition">
+     <property name="text">
+      <string>Position</string>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QComboBox" name="comboBoxMapType">
+     <item>
+      <property name="text">
+       <string>Satellite</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Street</string>
+      </property>
+     </item>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -94,7 +118,6 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../resources/icons.qrc"/>
   <include location="../resources/icons.qrc"/>
   <include location="../resources/icons.qrc"/>
  </resources>

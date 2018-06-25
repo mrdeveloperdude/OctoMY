@@ -103,6 +103,8 @@ public:
 
 
 	template <typename F>
+	void status(F callBack);
+	template <typename F>
 	void clear(F callBack);
 	template <typename F>
 	void save(F callBack);
@@ -146,6 +148,13 @@ signals:
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
+template <typename F>
+void KeyStore::status(F callBack)
+{
+	OC_METHODGATE();
+	mStore.status().onFinished(callBack);
+}
 
 template <typename F>
 void KeyStore::clear(F callBack)

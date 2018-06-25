@@ -26,7 +26,7 @@
 #ifndef MAPNETWORK_H
 #define MAPNETWORK_H
 
-#include "qMapControlGlobal.hpp"
+#include "map/qMapControlGlobal.hpp"
 #include <QObject>
 #include <QDebug>
 #include <QNetworkAccessManager>
@@ -44,67 +44,70 @@
  */
 namespace qmapcontrol
 {
-	class ImageManager;
-	class QMAPCONTROL_EXPORT MapNetwork : QObject
-	{
-			Q_OBJECT
+class ImageManager;
+class QMAPCONTROL_EXPORT MapNetwork : QObject
+{
+	Q_OBJECT
 
-		public:
-			MapNetwork(ImageManager* parent);
-			~MapNetwork();
+private:
+	Q_DISABLE_COPY (MapNetwork)
 
-			void loadImage(const QString& host, const QString& url);
+	ImageManager* mParent;
+	QNetworkAccessManager* mNetworkMan;
+	QList<QNetworkReply*> mReplyList;
+	QMap<QString, QString> mLoadingMap;
+	qreal mLoaded;
+	mutable QMutex mVectorMutex;
+	bool    mNetworkActive;
+	bool    mCacheEnabled;
 
-			/*!
-		 * checks if the given url is already loading
-		 * @param url the url of the image
-		 * @return boolean, if the image is already loading
-		 */
-			bool imageIsLoading(QString url);
+public:
+	MapNetwork(ImageManager* mParent);
+	~MapNetwork();
 
-			/*!
-		 * Aborts all current loading threads.
-		 * This is useful when changing the zoom-factor, though newly needed images loads faster
-		 */
-			void abortLoading();
-			void setProxy(QString host, int port, const QString username = QString(), const QString password = QString());
+	void loadImage(const QString& host, const QString& url);
 
-			/*!
-		*
-		* @return number of elements in the load queue
-		*/
-			int loadQueueSize() const;
+	/*!
+	* checks if the given url is already loading
+	* @param url the url of the image
+	* @return boolean, if the image is already loading
+	*/
+	bool imageIsLoading(QString url);
 
-			/*!
-		*
-		* @return next free http downloader thread
-		*/
-			QNetworkAccessManager* nextFreeHttp();
+	/*!
+	* Aborts all current loading threads.
+	* This is useful when changing the zoom-factor, though newly needed images loads faster
+	*/
+	void abortLoading();
+	void setProxy(QString host, int port, const QString username = QString(), const QString password = QString());
 
-			/*!
-		 * sets the disk cache for each network manager
-		 * @param qCache the disk cache object to set
-		 */
-			void setDiskCache( QNetworkDiskCache* qCache );
+	/*!
+	*
+	* @return number of elements in the load queue
+	*/
+	int loadQueueSize() const;
 
-		private:
+	/*!
+	*
+	* @return next free http downloader thread
+	*/
+	QNetworkAccessManager* nextFreeHttp();
 
-			void heatUp(QString host);
+	/*!
+	* sets the disk cache for each network manager
+	* @param qCache the disk cache object to set
+	*/
+	void setDiskCache( QNetworkDiskCache* qCache );
 
-		private:
-			Q_DISABLE_COPY (MapNetwork)
+private:
 
-			ImageManager* parent;
-			QNetworkAccessManager* http;
-			QList<QNetworkReply*> replyList;
-			QMap<QString, QString> loadingMap;
-			qreal loaded;
-			mutable QMutex vectorMutex;
-			bool    networkActive;
-			bool    cacheEnabled;
+	void heatUp(QString host);
 
-		private slots:
-			void requestFinished(QNetworkReply *reply);
-	};
+
+
+private slots:
+	void requestFinished(QNetworkReply *reply);
+};
 }
 #endif
+

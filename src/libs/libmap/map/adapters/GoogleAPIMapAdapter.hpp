@@ -35,7 +35,7 @@
 #ifndef GOOGLEAPIMAPADAPTER_H
 #define GOOGLEAPIMAPADAPTER_H
 
-#include "qMapControlGlobal.hpp"
+#include "map/qMapControlGlobal.hpp"
 #include "TileMapAdapter.hpp"
 
 namespace qmapcontrol
