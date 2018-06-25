@@ -2,8 +2,8 @@
 #include "ui_MapEditor.h"
 
 #include "map/MapControl.hpp"
-#include "map/MapLayer.hpp"
-#include "map/LineString.hpp"
+#include "map/layers/MapLayer.hpp"
+#include "map/geometries/curves/LineString.hpp"
 #include "map/adapters/OSMMapAdapter.hpp"
 #include "map/adapters/OpenAerialMapAdapter.hpp"
 #include "map/adapters/GoogleMapAdapter.hpp"

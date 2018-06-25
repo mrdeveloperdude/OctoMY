@@ -27,7 +27,7 @@
 #define MAPLAYER_H
 
 #include "map/qMapControlGlobal.hpp"
-#include "Layer.hpp"
+#include "map/Layer.hpp"
 
 namespace qmapcontrol
 {

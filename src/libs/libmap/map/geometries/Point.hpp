@@ -36,7 +36,7 @@
 #endif
 
 #include "map/qMapControlGlobal.hpp"
-#include "Geometry.hpp"
+#include "map/Geometry.hpp"
 
 namespace qmapcontrol
 {

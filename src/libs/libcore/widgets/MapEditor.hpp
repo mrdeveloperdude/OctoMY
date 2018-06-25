@@ -2,7 +2,7 @@
 #define MAPEDITOR_HPP
 
 
-#include "map/MapLayer.hpp"
+#include "map/layers/MapLayer.hpp"
 
 #include <QWidget>
 #include <QGeoPositionInfo>

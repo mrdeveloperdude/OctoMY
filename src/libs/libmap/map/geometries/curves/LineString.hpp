@@ -27,7 +27,7 @@
 #define LINESTRING_H
 
 #include "map/qMapControlGlobal.hpp"
-#include "Curve.hpp"
+#include "map/geometries/Curve.hpp"
 
 namespace qmapcontrol
 {

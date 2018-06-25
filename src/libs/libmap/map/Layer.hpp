@@ -36,7 +36,7 @@
 #include "LayerManager.hpp"
 #include "ImageManager.hpp"
 #include "Geometry.hpp"
-#include "Point.hpp"
+#include "map/geometries/Point.hpp"
 
 #include "adapters/WMSMapAdapter.hpp"
 #include "adapters/TileMapAdapter.hpp"

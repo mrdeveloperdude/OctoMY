@@ -27,8 +27,8 @@
 #define CURVE_H
 
 #include "map/qMapControlGlobal.hpp"
-#include "Geometry.hpp"
-#include "Point.hpp"
+#include "map/Geometry.hpp"
+#include "map/geometries/Point.hpp"
 
 namespace qmapcontrol
 {
