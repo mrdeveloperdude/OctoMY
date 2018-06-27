@@ -7,9 +7,19 @@
 #include "map/adapters/OSMMapAdapter.hpp"
 #include "map/adapters/OpenAerialMapAdapter.hpp"
 #include "map/adapters/GoogleMapAdapter.hpp"
-
+#include "MapLocationEditor.hpp"
 
 #include <QGeoPositionInfoSource>
+
+
+
+class MapGeometryFactory
+{
+
+
+
+};
+
 
 MapEditor::MapEditor(QWidget *parent)
 	: QWidget(parent)
@@ -31,6 +41,7 @@ MapEditor::MapEditor(QWidget *parent)
 	}
 	prepareMapTypes();
 	prepareMap();
+	prepareLocationEditor();
 	selectMapType("google.roadmap");
 	homeMap();
 }
@@ -96,11 +107,15 @@ void MapEditor::selectMapType(QString name)
 }
 
 
-class MapGeometryFactory{
 
+void MapEditor::prepareLocationEditor()
+{
+	OC_METHODGATE();
+	if(!connect(ui->widgetLocationEditor, &MapLocationEditor::done, this, &MapEditor::onLocationEditorDone, OC_CONTYPE)) {
+		qWarning()<<"ERROR: Could not connect to "<<ui->widgetLocationEditor->objectName();
+	}
+}
 
-
-};
 
 void MapEditor::prepareMap()
 {
@@ -171,8 +186,17 @@ void MapEditor::onPositionUpdated(QGeoPositionInfo pi)
 void MapEditor::onMapControlViewChanged(const QPointF &coordinate, int zoom )
 {
 	OC_METHODGATE();
-	QString str=QString("<%1, %2>@%3").arg(coordinate.x()).arg(coordinate.y()).arg(zoom);
+	QString str=QString("lat-long: <%1, %2> zoom: %3").arg(coordinate.y()).arg(coordinate.x()).arg(zoom);
 	ui->labelPosition->setText(str);
+}
+
+
+
+void MapEditor::onLocationEditorDone(bool done)
+{
+	OC_METHODGATE();
+	qDebug()<<"DONE: "<<done;
+	ui->stackedWidget->setCurrentWidget(ui->pageMapEditor);
 }
 
 void MapEditor::on_toolButtonHome_clicked()
@@ -196,4 +220,10 @@ void MapEditor::on_comboBoxMapType_currentIndexChanged(int)
 {
 	OC_METHODGATE();
 	selectMapType(ui->comboBoxMapType->currentText());
+}
+
+void MapEditor::on_pushButtonCreateLocation_clicked()
+{
+	OC_METHODGATE();
+	ui->stackedWidget->setCurrentWidget(ui->pageLocationEditor);
 }

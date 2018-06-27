@@ -320,8 +320,11 @@ void MapControl::mouseMoveEvent(QMouseEvent* evnt)
 	OC_METHODGATE();
 	if (mMousePressed && mMouseMode == Panning) {
 		QPoint offset = mPreClickPixel - QPoint(evnt->x(), evnt->y());
-		mLayerManager->scrollView(offset);
+		//mLayerManager->scrollView(offset);
+		scroll(offset);
 		mPreClickPixel = QPoint(evnt->x(), evnt->y());
+
+		//emit viewChanged(currentCoordinate(), currentZoom());
 	} else if (mMousePressed && mMouseMode == Dragging) {
 		mCurrentMousePos = QPoint(evnt->x(), evnt->y());
 	}
@@ -508,6 +511,7 @@ void MapControl::setView(const Point* point) const
 {
 	OC_METHODGATE();
 	mLayerManager->setView(point->coordinate());
+	emit viewChanged(currentCoordinate(), currentZoom());
 }
 
 void MapControl::loadingFinished()

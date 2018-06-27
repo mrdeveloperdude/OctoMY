@@ -56,7 +56,8 @@ struct MapType {
 		qDebug()<<"Map tiles for "<<name<<" is kept in cache dir "<<dir.absolutePath();
 	}
 
-	virtual ~MapType(){
+	virtual ~MapType()
+	{
 	}
 };
 
@@ -84,19 +85,26 @@ private:
 	void registerMapType(MapType mapType);
 	void prepareMapTypes();
 	void selectMapType(QString name);
+	void prepareLocationEditor();
 
 public:
 
 
 	void prepareMap();
+
 	void homeMap();
 
 private slots:
 	void onPositionUpdated(QGeoPositionInfo);
 	void onMapControlViewChanged(const QPointF &coordinate, int zoom );
+	void onLocationEditorDone(bool done);
+
+private slots:
 	void on_toolButtonHome_clicked();
 	void on_toolButtonCenter_toggled(bool checked);
 	void on_comboBoxMapType_currentIndexChanged(int index);
+	void on_pushButtonCreateLocation_clicked();
 };
 
 #endif // MAPEDITOR_HPP
+
