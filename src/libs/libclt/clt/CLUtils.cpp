@@ -158,7 +158,9 @@ QString CLDeviceToString(const cl::Device *dev)
 	const cl_bool available= dev->getInfo<CL_DEVICE_AVAILABLE>();
 	const cl_bool compailerAvailable= dev->getInfo<CL_DEVICE_COMPILER_AVAILABLE>();
 	const cl_bool errorCorrection= dev->getInfo<CL_DEVICE_ERROR_CORRECTION_SUPPORT>();
-	const QString endianess=dev->getInfo<CL_DEVICE_ENDIAN_LITTLE>()?"L":"B";
+	const QString endianess=dev->getInfo<CL_DEVICE_ENDIAN_LITTLE>()?"Little, ":"Big, ";
+	const QString extensions=QString::fromLocal8Bit(dev->getInfo<CL_DEVICE_EXTENSIONS>().c_str());
+	const bool interopAvailable=extensions.contains("cl_khr_gl_sharing");
 
 	return name //Device name
 		   + " ( "+OCLDeviceTypeString(dev->getInfo<CL_DEVICE_TYPE>()) +" x " //Type
@@ -166,7 +168,7 @@ QString CLDeviceToString(const cl::Device *dev)
 		   + utility::humanReadableSize(dev->getInfo<CL_DEVICE_GLOBAL_MEM_SIZE>(), 2) + " Global, "
 		   + utility::humanReadableSize(dev->getInfo<CL_DEVICE_LOCAL_MEM_SIZE>(), 2) + (CL_GLOBAL==dev->getInfo<CL_DEVICE_LOCAL_MEM_TYPE>()?" Global, ":" Local, ")
 		   + utility::humanReadableSize(dev->getInfo<CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE>(), 2) +" Constant"
-		   + "FLAGS["+(available?"A":"-")+(compailerAvailable?"C":"-")+(errorCorrection?"E":"-")+ endianess+"]"
+		   + " FLAGS["+(available?"Available, ":" --------, ")+(compailerAvailable?"Compiler, ":" -------, ")+(errorCorrection?"ErrCorr, ":" ------, ")+ endianess+(interopAvailable?"Interop":" ------")+"]"
 		   + " profile= "+profileName;
 }
 

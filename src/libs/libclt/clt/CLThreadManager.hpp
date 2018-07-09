@@ -41,6 +41,9 @@ public:
 
 public:
 
+	// Returns true if we have an OpenCL device
+	bool haveDevice();
+
 	// Return wether or not this worker manager is in a running state
 	bool isRunning()  const;
 	// Set this worker manager to a running or stopped state.

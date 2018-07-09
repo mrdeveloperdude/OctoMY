@@ -91,7 +91,7 @@ contains(DEFINES, USE_TESTS_WEB){
 contains(DEFINES, USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
-#		testOpenCL \
+		testOpenCL \
 #		testNetworkSettingsWidget \
 #		testLightWidget \
 #		testDataStore \
@@ -99,14 +99,14 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testDeliveryWizard \
 #		testAssociate \
 #		testDiscovery \
-		testAsyncStore \
+#		testAsyncStore \
 #		testKeyStore \
-		testConcurrentQueue \
-		testTaskQueue \
+#		testConcurrentQueue \
+#		testTaskQueue \
 #		testCommsChannel \
 #		testCommsCarrier \
 #		testRateCalculator \
-		testMapEditor\
+#		testMapEditor\
 
 	STRESS_PROJECTS+= \
 	#	stressCapabilities \

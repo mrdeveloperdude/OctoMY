@@ -12,7 +12,7 @@ CLDeviceSelection::CLDeviceSelection(const QString selectString, bool allowGPU, 
 	VECTOR_CLASS<cl::Platform> allPlatforms;
 	CL_DETECT_ERROR(cl::Platform::get(&allPlatforms));
 	int selectIndex = 0;
-	qDebug().nospace().noquote()<<"Making OpenCL device selection with selectstring='"<< selectString<< "', allowGPU="<<allowGPU<<", allowCPU="<<allowCPU<<"";
+	qDebug().nospace().noquote()<<"Making OpenCL device selection with selectString='"<<selectString<<"', allowGPU='"<<allowGPU<<"', allowCPU='"<<allowCPU<<"', mustSupportGLInterop='"<<mustSupportGLInterop<<"'";
 	for (size_t i = 0; i < allPlatforms.size(); ++i) {
 		qDebug().nospace().noquote()<<"Platform-" << i << ": " << QString::fromLocal8Bit(allPlatforms[i].getInfo<CL_PLATFORM_VENDOR>().c_str());
 
@@ -25,9 +25,8 @@ CLDeviceSelection::CLDeviceSelection(const QString selectString, bool allowGPU, 
 			const cl_device_type type=devices[j].getInfo<CL_DEVICE_TYPE>();
 			bool interop_ok=false;
 			if(mustSupportGLInterop) {
-				const cl::STRING_CLASS extStd=devices[j].getInfo<CL_DEVICE_EXTENSIONS>();
-				const QString extensions=QString::fromStdString(extStd);
-				qDebug()<<"EXTENSIONS: "<<extensions;
+				const QString extensions=QString::fromLocal8Bit(devices[j].getInfo<CL_DEVICE_EXTENSIONS>().c_str());
+				qDebug()<<"OpenCL extensions: "<<extensions;
 				if(extensions.contains("cl_khr_gl_sharing")) {
 					interop_ok=true;
 				}
@@ -63,7 +62,7 @@ CLDeviceSelection::CLDeviceSelection(const QString selectString, bool allowGPU, 
 	}
 
 	if (size() == 0) {
-		qWarning()<<"This program requires OpenCL enabled hardware. Unable to find any OpenCL GPU devices, so quitting";
+		qWarning().nospace().noquote()<<"WARNING: Unable to find OpenCL devices matching selectString='"<<selectString<<"', allowGPU='"<<allowGPU<<"', allowCPU='"<<allowCPU<<"', mustSupportGLInterop='"<<mustSupportGLInterop<<"'";
 		//exit(1);
 	}
 }
