@@ -16,11 +16,34 @@ QMAKE_RESOURCE_FLAGS += -compress 9
 # NOTE: PLEASE USE THE local_overrides.pri FILE TO INCLUDE THEM (SEE BELOW)
 
 # PUT YOUR LOCAL OVERRIDES IN THIS FILE AND DON'T INCLUDE IT IN GIT!
-!include( local_overrides.pri ) {
-	LOCAL_OVERRIDES=false
+LOCAL_OVERRIDES_NAME=$$PRIS/local_overrides.pri
+DEFAULT_OVERRIDES_NAME=$$PRIS/overrides/default.pri
+
+# If it does not exist, copy the defaults
+exists( $$LOCAL_OVERRIDES_NAME ) {
+    message("Found local overrides file")
 }else{
-	LOCAL_OVERRIDES=true
+    exists( $$DEFAULT_OVERRIDES_NAME ) {
+        # TODO: shell_path() is not correct because we might be creating a makefile for another platform
+        #       than what qmake is running under. If this starts miss-behaving during cross-compiles
+        #       then that is the reason.
+        copcmd="$$QMAKE_COPY_FILE $$shell_path($$DEFAULT_OVERRIDES_NAME) $$shell_path($$LOCAL_OVERRIDES_NAME)"
+        message("Copying local overrides from defaults with command " $$copcmd)
+        copy_output=$$system($$copcmd)
+        message("Copy output was " $${copy_output})
+    }else{
+        message("Default overrides file '" $${DEFAULT_OVERRIDES_NAME} "' was not found")
+    }
 }
+
+
+!include( $$LOCAL_OVERRIDES_NAME ) {
+    LOCAL_OVERRIDES=false
+} else {
+    LOCAL_OVERRIDES=true
+    #message($${LOCAL_OVERRIDES_NAME} " was loaded")
+}
+
 
 # Add only plugins that are used and supported by the Qt build you are using
 QT += core gui opengl widgets network multimedia multimediawidgets positioning serialport bluetooth sensors xml svg sql testlib quick printsupport openglextensions
