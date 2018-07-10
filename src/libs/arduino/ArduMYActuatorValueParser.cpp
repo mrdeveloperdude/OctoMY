@@ -62,7 +62,7 @@ bool ArduMYActuatorValueParser::parse(const uint8_t in)
 			//qDebug()<<"PARSER     ACTUATOR COUNT: "<<setSize<<" ENABLE BITS BYTE COUNT: "<<enableByteCount<<" ENABLED COUNT: "<<enabledActuatorCount;
 			nextParseStep();
 			currentActuatorIndex=-1;
-			currentBatchRepresentation=ArduMYActuatorValueRepresentation::BIT;
+			currentBatchRepresentation=ArduMYActuatorValueRepresentation::VALREP_BIT;
 			nextActuator();
 		}
 	}
@@ -71,9 +71,9 @@ bool ArduMYActuatorValueParser::parse(const uint8_t in)
 	case(ACTUATOR_VALUE_BATCHES): {
 		// TODO: Verify that the case with 0 actuators is handled. See note above.
 		switch(currentBatchRepresentation) {
-		case(ArduMYActuatorValueRepresentation::BIT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_BIT): {
 			for( uint8_t i = 0; i < 8; ++i ) {
-				if(ArduMYActuatorValueRepresentation::BIT == currentBatchRepresentation) {
+				if(ArduMYActuatorValueRepresentation::VALREP_BIT == currentBatchRepresentation) {
 					ArduMYActuator *actuator = currentActuator();
 					if( nullptr != actuator ) {
 						Q_ASSERT( actuator->config.representation == currentBatchRepresentation );
@@ -89,7 +89,7 @@ bool ArduMYActuatorValueParser::parse(const uint8_t in)
 			}
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::BYTE): {
+		case(ArduMYActuatorValueRepresentation::VALREP_BYTE): {
 			ArduMYActuator *actuator = currentActuator();
 			if(nullptr!=actuator) {
 				actuator->state.value.byte=in;
@@ -98,7 +98,7 @@ bool ArduMYActuatorValueParser::parse(const uint8_t in)
 			nextActuator();
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_WORD): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==(2)) {
@@ -113,7 +113,7 @@ bool ArduMYActuatorValueParser::parse(const uint8_t in)
 			}
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_WORD): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==(4)) {
@@ -127,7 +127,7 @@ bool ArduMYActuatorValueParser::parse(const uint8_t in)
 			}
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==(8)) {
@@ -141,7 +141,7 @@ bool ArduMYActuatorValueParser::parse(const uint8_t in)
 			}
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_SINGLE_FLOAT): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==(4)) {
@@ -155,7 +155,7 @@ bool ArduMYActuatorValueParser::parse(const uint8_t in)
 			}
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_FLOAT): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==(8)) {
@@ -170,7 +170,7 @@ bool ArduMYActuatorValueParser::parse(const uint8_t in)
 		}
 		break;
 		default:
-		case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT): {
 			// TODO: Handle this as an error somehow
 		}
 		break;

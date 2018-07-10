@@ -513,7 +513,7 @@ void ArduMYController::setConfiguration(QVariantMap &configuration)
 			qDebug()<<" "<<i<<" actuator config: ";
 			QVariantMap actuatorMap=actuatorList[i].toMap();
 			qDebug()<<"actuatorMap: "<<actuatorMap;
-			ArduMYActuatorValueRepresentation representation=REPRESENTATION_COUNT;
+			ArduMYActuatorValueRepresentation representation=VALREP_REPRESENTATION_COUNT;
 			{
 				ArduMYActuatorConfig &config=mActuators[i].config;
 				QVariantMap actuatorConfigMap=actuatorMap["config"].toMap();

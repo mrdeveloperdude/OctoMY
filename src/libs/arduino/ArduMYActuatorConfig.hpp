@@ -17,7 +17,7 @@ struct ArduMYActuatorConfig {
 	ArduMYActuatorConfig()
 		: flags(0)
 		, type(TYPE_COUNT)
-		, representation(REPRESENTATION_COUNT)
+		, representation(VALREP_REPRESENTATION_COUNT)
 		, nickName{'\0'}
 		, gearRatioNumerator(1)
 		, gearRatioDenominator(1)
@@ -100,36 +100,36 @@ struct ArduMYActuatorConfig {
 	{
 		ArduMYActuatorValue out=rangeStart;
 		switch(representation) {
-		case(BIT): {
+		case(VALREP_BIT): {
 			out.bit=rangeStart.bit + rangeSpan.bit;
 		}
 		break;
-		case(BYTE): {
+		case(VALREP_BYTE): {
 			out.byte=rangeStart.byte + rangeSpan.byte;
 		}
 		break;
-		case(WORD): {
+		case(VALREP_WORD): {
 			out.word=rangeStart.word + rangeSpan.word;
 		}
 		break;
-		case(DOUBLE_WORD): {
+		case(VALREP_DOUBLE_WORD): {
 			out.doubleWord=rangeStart.doubleWord + rangeSpan.doubleWord;
 		}
 		break;
-		case(QUAD_WORD): {
+		case(VALREP_QUAD_WORD): {
 			out.quadWord=rangeStart.quadWord + rangeSpan.quadWord;
 		}
 		break;
-		case(SINGLE_FLOAT): {
+		case(VALREP_SINGLE_FLOAT): {
 			out.singlePrecision=rangeStart.singlePrecision + rangeSpan.singlePrecision;
 		}
 		break;
-		case(DOUBLE_FLOAT): {
+		case(VALREP_DOUBLE_FLOAT): {
 			out.doublePrecision=rangeStart.doublePrecision + rangeSpan.doublePrecision;
 		}
 		break;
 		default:
-		case(REPRESENTATION_COUNT): {
+		case(VALREP_REPRESENTATION_COUNT): {
 			//TODO: Handle this as an error somehow
 		} break;
 		}
@@ -140,7 +140,7 @@ struct ArduMYActuatorConfig {
 	{
 		flags=0;
 		type=TYPE_COUNT;
-		representation=REPRESENTATION_COUNT;
+		representation=VALREP_REPRESENTATION_COUNT;
 		for(int i=0; i<20; ++i) {
 			nickName[i]='\0';
 		}

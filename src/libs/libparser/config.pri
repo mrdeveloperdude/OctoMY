@@ -1,3 +1,5 @@
+contains(DEFINES, USE_FLEX){
+
 if(!android){
 # Link to flex library
 LIBS += -lfl
@@ -20,3 +22,5 @@ include($$PRIS/qlalr.pri)
 OTHER_FILES += \
 	$$FLEXSOURCES \
 	$$QLALRSOURCES \
+
+}

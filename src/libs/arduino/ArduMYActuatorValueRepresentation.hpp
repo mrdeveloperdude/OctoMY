@@ -4,14 +4,14 @@
 #include "ArduMY.hpp"
 
 enum ArduMYActuatorValueRepresentation: uint8_t {
-	BIT
-	, BYTE
-	, WORD
-	, DOUBLE_WORD
-	, QUAD_WORD
-	, SINGLE_FLOAT
-	, DOUBLE_FLOAT
-	, REPRESENTATION_COUNT
+    VALREP_BIT
+    , VALREP_BYTE
+    , VALREP_WORD
+    , VALREP_DOUBLE_WORD
+    , VALREP_QUAD_WORD
+    , VALREP_SINGLE_FLOAT
+    , VALREP_DOUBLE_FLOAT
+    , VALREP_REPRESENTATION_COUNT
 };
 
 

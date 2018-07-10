@@ -175,7 +175,7 @@ void ArduMYControllerWidget::on_comboBoxAddActuator_currentIndexChanged(int inde
 	const auto idx=ui->comboBoxAddActuator->currentIndex();
 	auto ct=mController->actuatorCount();
 	ArduMYActuatorType type=ArduMYActuatorType::TYPE_COUNT;
-	ArduMYActuatorValueRepresentation representation =ArduMYActuatorValueRepresentation::WORD;
+	ArduMYActuatorValueRepresentation representation =ArduMYActuatorValueRepresentation::VALREP_WORD;
 
 	switch(idx) {
 
@@ -198,7 +198,7 @@ void ArduMYControllerWidget::on_comboBoxAddActuator_currentIndexChanged(int inde
 	break;
 	case(4): {
 		type=RELAY;
-		representation=BIT;
+		representation=VALREP_BIT;
 	}
 	break;
 	default:

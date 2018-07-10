@@ -92,7 +92,7 @@ QString ArduMYActuatorConfigToString(ArduMYActuatorConfig &config)
 
 */
 
-const ArduMYActuatorValueRepresentation DEFAULT_REPRESENTATION=REPRESENTATION_COUNT;
+const ArduMYActuatorValueRepresentation DEFAULT_REPRESENTATION=VALREP_REPRESENTATION_COUNT;
 
 
 
@@ -286,34 +286,34 @@ QString ardumyParserStateToString(const ArduMYParserState &ps);
 void ardumyActuatorValueFromVariant(ArduMYActuatorValue &val, const QVariant &variant, const ArduMYActuatorValueRepresentation &representation)
 {
 	switch(representation) {
-	case(ArduMYActuatorValueRepresentation::BIT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_BIT): {
 		val.bit=variant.toBool();
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::BYTE): {
+	case(ArduMYActuatorValueRepresentation::VALREP_BYTE): {
 		val.byte=variant.toUInt();
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_WORD): {
 		val.word=variant.toUInt();
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_WORD): {
 		val.doubleWord=variant.toUInt();
 	}
 	break;
 	//Default to strictest possible equality when representation is unknown
 	default:
-	case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT):
-	case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT):
+	case(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
 		val.quadWord=variant.toULongLong();
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_SINGLE_FLOAT): {
 		val.singlePrecision=variant.toFloat();
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_FLOAT): {
 		val.doublePrecision=variant.toDouble();
 	}
 	break;
@@ -324,34 +324,34 @@ void ardumyActuatorValueFromVariant(ArduMYActuatorValue &val, const QVariant &va
 QVariant ardumyActuatorValueToVariant(const ArduMYActuatorValue &val, const ArduMYActuatorValueRepresentation &representation)
 {
 	switch(representation) {
-	case(ArduMYActuatorValueRepresentation::BIT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_BIT): {
 		return QVariant((bool)val.bit);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::BYTE): {
+	case(ArduMYActuatorValueRepresentation::VALREP_BYTE): {
 		return QVariant((quint8)val.byte);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_WORD): {
 		return QVariant((quint16)val.word);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_WORD): {
 		return QVariant((quint32)val.doubleWord);
 	}
 	break;
 	//Default to strictest possible equality when representation is unknown
 	default:
-	case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT):
-	case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT):
+	case(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
 		return QVariant((quint64)val.quadWord);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_SINGLE_FLOAT): {
 		return QVariant((float)val.singlePrecision);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_FLOAT): {
 		return QVariant((double)val.doublePrecision);
 	}
 	break;
@@ -365,17 +365,17 @@ QVariant ardumyActuatorValueToVariant(const ArduMYActuatorValue &val, const Ardu
 ArduMYActuatorValueRepresentation ardumyActuatorValueRepresentationFromString(const QString &s)
 {
 #define  ardumyActuatorTypeFromStringCASE(A) if (#A == s)return A
-	ardumyActuatorTypeFromStringCASE(BIT);
-	ardumyActuatorTypeFromStringCASE(BYTE);
-	ardumyActuatorTypeFromStringCASE(WORD);
-	ardumyActuatorTypeFromStringCASE(DOUBLE_WORD);
-	ardumyActuatorTypeFromStringCASE(QUAD_WORD);
-	ardumyActuatorTypeFromStringCASE(SINGLE_FLOAT);
-	ardumyActuatorTypeFromStringCASE(DOUBLE_FLOAT);
-	ardumyActuatorTypeFromStringCASE(REPRESENTATION_COUNT);
+	ardumyActuatorTypeFromStringCASE(VALREP_BIT);
+	ardumyActuatorTypeFromStringCASE(VALREP_BYTE);
+	ardumyActuatorTypeFromStringCASE(VALREP_WORD);
+	ardumyActuatorTypeFromStringCASE(VALREP_DOUBLE_WORD);
+	ardumyActuatorTypeFromStringCASE(VALREP_QUAD_WORD);
+	ardumyActuatorTypeFromStringCASE(VALREP_SINGLE_FLOAT);
+	ardumyActuatorTypeFromStringCASE(VALREP_DOUBLE_FLOAT);
+	ardumyActuatorTypeFromStringCASE(VALREP_REPRESENTATION_COUNT);
 
 #undef ardumyActuatorTypeFromStringCASE
-	return REPRESENTATION_COUNT;
+	return VALREP_REPRESENTATION_COUNT;
 }
 
 
@@ -387,14 +387,14 @@ QString ardumyActuatorValueRepresentationToString(const ArduMYActuatorValueRepre
 	switch(rep) {
 	default:
 		return "UNKNOWN";
-		ArduMYActuatorTypeToStringCASE(BIT);
-		ArduMYActuatorTypeToStringCASE(BYTE);
-		ArduMYActuatorTypeToStringCASE(WORD);
-		ArduMYActuatorTypeToStringCASE(DOUBLE_WORD);
-		ArduMYActuatorTypeToStringCASE(QUAD_WORD);
-		ArduMYActuatorTypeToStringCASE(SINGLE_FLOAT);
-		ArduMYActuatorTypeToStringCASE(DOUBLE_FLOAT);
-		ArduMYActuatorTypeToStringCASE(REPRESENTATION_COUNT);
+		ArduMYActuatorTypeToStringCASE(VALREP_BIT);
+		ArduMYActuatorTypeToStringCASE(VALREP_BYTE);
+		ArduMYActuatorTypeToStringCASE(VALREP_WORD);
+		ArduMYActuatorTypeToStringCASE(VALREP_DOUBLE_WORD);
+		ArduMYActuatorTypeToStringCASE(VALREP_QUAD_WORD);
+		ArduMYActuatorTypeToStringCASE(VALREP_SINGLE_FLOAT);
+		ArduMYActuatorTypeToStringCASE(VALREP_DOUBLE_FLOAT);
+		ArduMYActuatorTypeToStringCASE(VALREP_REPRESENTATION_COUNT);
 
 	}
 #undef ArduMYActuatorTypeToStringCASE
@@ -408,32 +408,32 @@ QString ardumyActuatorValueToString(const ArduMYActuatorValue &v, const ArduMYAc
 {
 	QString ret=ardumyActuatorValueRepresentationToString(rep)+" ( ";
 	switch(rep) {
-	case(BIT):
+	case(VALREP_BIT):
 		ret+=(v.bit?"TRUE":"FALSE");
 		break;
-	case(BYTE):
+	case(VALREP_BYTE):
 		ret+=QString::number(v.byte);
 		break;
-	case(WORD):
+	case(VALREP_WORD):
 		ret+=QString::number(v.word);
 		break;
-	case(DOUBLE_WORD):
+	case(VALREP_DOUBLE_WORD):
 		ret+=QString::number(v.doubleWord);
 		break;
-	case(REPRESENTATION_COUNT):
+	case(VALREP_REPRESENTATION_COUNT):
 		ret+="REPRESENTATION_COUNT";
 		break;
 	default:
 		ret+="OUT_OF_RANGE!";
 		break;
-	case(QUAD_WORD): {
+	case(VALREP_QUAD_WORD): {
 		ret+=QString::number(v.quadWord);
 	}
 	break;
-	case(SINGLE_FLOAT):
+	case(VALREP_SINGLE_FLOAT):
 		ret+=QString::number(v.singlePrecision);
 		break;
-	case(DOUBLE_FLOAT):
+	case(VALREP_DOUBLE_FLOAT):
 		ret+=QString::number(v.doublePrecision);
 		break;
 	}

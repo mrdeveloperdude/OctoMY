@@ -7,7 +7,7 @@ ArduMYActuatorValueSerializerBase::ArduMYActuatorValueSerializerBase()
 	, step(END_OF_OP)
 	, byteIndex(0)
 	, currentActuatorIndex(0)
-	, currentBatchRepresentation(ArduMYActuatorValueRepresentation::BIT)
+	, currentBatchRepresentation(ArduMYActuatorValueRepresentation::VALREP_BIT)
 	, enabledActuatorCount(0)
 	, enableBits{0x00}
 {
@@ -34,7 +34,7 @@ void ArduMYActuatorValueSerializerBase::reset()
 	}
 	byteIndex=0;
 	currentActuatorIndex = 0;
-	currentBatchRepresentation = ArduMYActuatorValueRepresentation::BIT;
+	currentBatchRepresentation = ArduMYActuatorValueRepresentation::VALREP_BIT;
 	enabledActuatorCount = 0;
 	for( size_t i = 0; i < sizeof(enableBits); ++i ) {
 		enableBits[i] = 0x00;
@@ -45,7 +45,7 @@ void ArduMYActuatorValueSerializerBase::reset()
 
 bool ArduMYActuatorValueSerializerBase::isDone() const
 {
-	return (currentBatchRepresentation>=REPRESENTATION_COUNT);
+	return (currentBatchRepresentation>=VALREP_REPRESENTATION_COUNT);
 }
 
 
@@ -137,30 +137,30 @@ bool ArduMYActuatorValueSerializerBase::currentActuatorIsOfRepresentation(ArduMY
 void ArduMYActuatorValueSerializerBase::nextBatch()
 {
 	switch(currentBatchRepresentation) {
-	case(BIT):
-		currentBatchRepresentation=BYTE;
+	case(VALREP_BIT):
+		currentBatchRepresentation=VALREP_BYTE;
 		break;
-	case(BYTE):
-		currentBatchRepresentation=WORD;
+	case(VALREP_BYTE):
+		currentBatchRepresentation=VALREP_WORD;
 		break;
-	case(WORD):
-		currentBatchRepresentation=DOUBLE_WORD;
+	case(VALREP_WORD):
+		currentBatchRepresentation=VALREP_DOUBLE_WORD;
 		break;
-	case(DOUBLE_WORD):
-		currentBatchRepresentation=QUAD_WORD;
+	case(VALREP_DOUBLE_WORD):
+		currentBatchRepresentation=VALREP_QUAD_WORD;
 		break;
-	case(QUAD_WORD):
-		currentBatchRepresentation=SINGLE_FLOAT;
+	case(VALREP_QUAD_WORD):
+		currentBatchRepresentation=VALREP_SINGLE_FLOAT;
 		break;
-	case(SINGLE_FLOAT):
-		currentBatchRepresentation=DOUBLE_FLOAT;
+	case(VALREP_SINGLE_FLOAT):
+		currentBatchRepresentation=VALREP_DOUBLE_FLOAT;
 		break;
-	case(DOUBLE_FLOAT):
-		currentBatchRepresentation=REPRESENTATION_COUNT;
+	case(VALREP_DOUBLE_FLOAT):
+		currentBatchRepresentation=VALREP_REPRESENTATION_COUNT;
 		nextParseStep();
 		break;
 	//Do nothing at end or error
-	case(REPRESENTATION_COUNT):
+	case(VALREP_REPRESENTATION_COUNT):
 	default:
 		break;
 	}

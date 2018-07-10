@@ -1,8 +1,8 @@
 #ifndef CODEEDITOR_HPP
 #define CODEEDITOR_HPP
 
-
-#include "octomy_parser.hpp"
+#include "parser/PlanParser.hpp"
+#include "ParseError.hpp"
 
 #include <QPlainTextEdit>
 #include <QVector>
@@ -14,41 +14,41 @@ class QAbstractItemModel;
 
 class CodeEditor : public QPlainTextEdit
 {
-		Q_OBJECT
-	private:
-		QWidget *lineNumberArea;
-		QCompleter *m_completer;
-		QVector<ParseError> errors;
+        Q_OBJECT
+    private:
+        QWidget *lineNumberArea;
+        QCompleter *m_completer;
+        QVector<ParseError> errors;
 
-	public:
-		CodeEditor(QWidget *parent = 0);
+    public:
+        CodeEditor(QWidget *parent = 0);
 
-		void lineNumberAreaPaintEvent(QPaintEvent *event);
-		int lineNumberAreaWidth();
+        void lineNumberAreaPaintEvent(QPaintEvent *event);
+        int lineNumberAreaWidth();
 
-	private:
-		QString textUnderCursor() const;
+    private:
+        QString textUnderCursor() const;
 
-		QAbstractItemModel *modelFromFile(const QString& fileName);
+        QAbstractItemModel *modelFromFile(const QString& fileName);
 
-		void blockIndent(bool in=true);
-	public:
+        void blockIndent(bool in=true);
+    public:
 
-		void setCompleter(QCompleter *completer);
-		QCompleter *completer() const;
+        void setCompleter(QCompleter *completer);
+        QCompleter *completer() const;
 
-		void setErrors(QVector<ParseError> errors);
+        void setErrors(QVector<ParseError> errors);
 
-	protected:
-		void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
-		void focusInEvent(QFocusEvent *e) Q_DECL_OVERRIDE;
-		void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+    protected:
+        void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
+        void focusInEvent(QFocusEvent *e) Q_DECL_OVERRIDE;
+        void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
 
-	private slots:
-		void insertCompletion(const QString &completion);
-		void updateLineNumberAreaWidth(int newBlockCount);
-		void highlightCurrentLine();
-		void updateLineNumberArea(const QRect &, int);
+    private slots:
+        void insertCompletion(const QString &completion);
+        void updateLineNumberAreaWidth(int newBlockCount);
+        void highlightCurrentLine();
+        void updateLineNumberArea(const QRect &, int);
 };
 
 #endif // CODEEDITOR_HPP

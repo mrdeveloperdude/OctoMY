@@ -31,7 +31,7 @@
 
 #include "map/qMapControlGlobal.hpp"
 #include "math.h"
-#include "Point.hpp"
+#include "map/geometries/Point.hpp"
 
 namespace qmapcontrol
 {

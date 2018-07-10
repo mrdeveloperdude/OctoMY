@@ -20,7 +20,7 @@ struct ArduMYActuatorState {
 
 	ArduMYActuatorValue value;
 
-	bool isEqual(const ArduMYActuatorState &other, ArduMYActuatorValueRepresentation representation=ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT) const
+	bool isEqual(const ArduMYActuatorState &other, ArduMYActuatorValueRepresentation representation=ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT) const
 	{
 
 		// Mask to remove ephemeral parts of flags (currently only isDirty)

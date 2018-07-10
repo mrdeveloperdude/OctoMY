@@ -107,31 +107,31 @@ static void randomValue(ArduMYActuatorValue &v, ArduMYActuatorValueRepresentatio
 {
 	v.quadWord=0x0;
 	switch(rep) {
-	case(BIT):
+	case(VALREP_BIT):
 		v.bit=percentChance(50);
 		break;
-	case(BYTE):
+	case(VALREP_BYTE):
 		v.byte=qrand()%0xFF;
 		break;
-	case(WORD):
+	case(VALREP_WORD):
 		v.doubleWord=qrand()%0xFFFF;
 		break;
-	case(DOUBLE_WORD):
+	case(VALREP_DOUBLE_WORD):
 		v.doubleWord=qrand()%0xFFFFFFFF;
 		break;
 	default:// Just make sure its random m-kay?
-	case(REPRESENTATION_COUNT):
-	case(QUAD_WORD): {
+	case(VALREP_REPRESENTATION_COUNT):
+	case(VALREP_QUAD_WORD): {
 		uint64_t qw=(qrand()%0xFFFFFFFF);
 		qw<<=32;
 		qw|=(qrand()%0xFFFFFFFF);
 		v.quadWord=qw;
 	}
 	break;
-	case(SINGLE_FLOAT):
+	case(VALREP_SINGLE_FLOAT):
 		v.singlePrecision=frand();
 		break;
-	case(DOUBLE_FLOAT):
+	case(VALREP_DOUBLE_FLOAT):
 		v.doublePrecision=dfrand();
 		break;
 	}
@@ -160,12 +160,12 @@ ArduMYActuatorConfig TestArduMY::randomConfig() const
 
 	// Set random representation
 
-	c.representation=(ArduMYActuatorValueRepresentation)(qrand() % ((quint8)ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT));
+	c.representation=(ArduMYActuatorValueRepresentation)(qrand() % ((quint8)ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT));
 
 	// All but BIT is ok
 	do {
-		c.representation=(ArduMYActuatorValueRepresentation)(qrand() % ((quint8)ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT)) ;
-	} while (ArduMYActuatorValueRepresentation::BIT==c.representation);
+		c.representation=(ArduMYActuatorValueRepresentation)(qrand() % ((quint8)ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT)) ;
+	} while (ArduMYActuatorValueRepresentation::VALREP_BIT==c.representation);
 
 	// All BIT
 	//c.representation=ArduMYActuatorValueRepresentation::BIT;
@@ -207,29 +207,29 @@ ArduMYActuatorConfig TestArduMY::randomConfig() const
 
 	// Set random range
 	switch(c.representation) {
-	case(ArduMYActuatorValueRepresentation::BIT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_BIT): {
 		c.rangeStart.byte=0;
 		c.rangeSpan.byte=0;
 		c.rangeStart.bit=false;
 		c.rangeSpan.bit=true;
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::BYTE): {
+	case(ArduMYActuatorValueRepresentation::VALREP_BYTE): {
 		c.rangeStart.byte=qrand()%qrand()%(0xFF);
 		c.rangeSpan.byte=qrand()%((0xFF)-c.rangeStart.byte);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_WORD): {
 		c.rangeStart.word=qrand()%qrand()%(0xFFFF);
 		c.rangeSpan.word=qrand()%((0xFFFF)-c.rangeStart.word);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_WORD): {
 		c.rangeStart.doubleWord=qrand()%qrand()%(0xFFFFFFFF);
 		c.rangeSpan.doubleWord=qrand()%((0xFFFFFFFF)-c.rangeStart.doubleWord);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
 		// Naive attempt at making 64bit random numbers using qrand()
 		uint64_t r1=((uint64_t)(qrand()%(0xFFFFFFFF)))<<32 | ((uint64_t)(qrand()%(0xFFFFFFFF)));
 		uint64_t r2=((uint64_t)(qrand()%(0xFFFFFFFF)))<<32 | ((uint64_t)(qrand()%(0xFFFFFFFF)));
@@ -238,7 +238,7 @@ ArduMYActuatorConfig TestArduMY::randomConfig() const
 		c.rangeSpan.quadWord=r3%((0xFFFFFFFFFFFFFFFF)-c.rangeStart.quadWord);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_SINGLE_FLOAT): {
 		float r1=frand();
 		float r2=frand();
 		float r3=frand();
@@ -246,7 +246,7 @@ ArduMYActuatorConfig TestArduMY::randomConfig() const
 		c.rangeSpan.singlePrecision=r3-c.rangeStart.singlePrecision;
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_FLOAT): {
 		double r1=dfrand();
 		double r2=dfrand();
 		double r3=dfrand();
@@ -255,7 +255,7 @@ ArduMYActuatorConfig TestArduMY::randomConfig() const
 	}
 	break;
 	default:
-	case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT): {
 		qWarning()<<"bad representation";
 	}
 	break;
@@ -317,7 +317,7 @@ ArduMYActuatorSet TestArduMY::fixedActuatorSet()
 	{
 		//Actuator a=randomActuator();
 		//a.config.representation=ActuatorValueRepresentation::BYTE;		a.state.value.quadWord=0;		a.state.value.byte=133;		a.state.setDirty(true);
-		b.config.representation=ArduMYActuatorValueRepresentation::BYTE;
+		b.config.representation=ArduMYActuatorValueRepresentation::VALREP_BYTE;
 		b.state.value.quadWord=0;
 		b.state.value.byte=133;
 		b.state.setDirty(true);
@@ -328,7 +328,7 @@ ArduMYActuatorSet TestArduMY::fixedActuatorSet()
 	{
 		//Actuator a=randomActuator();
 		//a.config.representation=ActuatorValueRepresentation::BIT;		a.state.value.quadWord=0;		a.state.value.bit=true;		a.state.setDirty(false);
-		b.config.representation=ArduMYActuatorValueRepresentation::BIT;
+		b.config.representation=ArduMYActuatorValueRepresentation::VALREP_BIT;
 		b.state.value.quadWord=0;
 		b.state.value.bit=true;
 		b.state.setDirty(false);
@@ -339,7 +339,7 @@ ArduMYActuatorSet TestArduMY::fixedActuatorSet()
 	{
 		//Actuator a=randomActuator();
 		//a.config.representation=ActuatorValueRepresentation::DOUBLE_FLOAT;		a.state.value.quadWord=0;		a.state.value.doublePrecision=3.14159265;		a.state.setDirty(true);
-		b.config.representation=ArduMYActuatorValueRepresentation::DOUBLE_FLOAT;
+		b.config.representation=ArduMYActuatorValueRepresentation::VALREP_DOUBLE_FLOAT;
 		b.state.value.quadWord=0;
 		b.state.value.doublePrecision=3.14159265;
 		b.state.setDirty(true);
@@ -413,28 +413,28 @@ ArduMYActuatorSet TestArduMY::fuzzActuatorSet()
 
 void TestArduMY::testToFromString()
 {
-	QCOMPARE(QString("BIT"), ardumyActuatorValueRepresentationToString(BIT) );
-	QCOMPARE(QString("BYTE"), ardumyActuatorValueRepresentationToString(BYTE) );
-	QCOMPARE(QString("WORD"), ardumyActuatorValueRepresentationToString(WORD) );
-	QCOMPARE(QString("DOUBLE_WORD"), ardumyActuatorValueRepresentationToString(DOUBLE_WORD) );
-	QCOMPARE(QString("QUAD_WORD"), ardumyActuatorValueRepresentationToString(QUAD_WORD) );
-	QCOMPARE(QString("SINGLE_FLOAT"), ardumyActuatorValueRepresentationToString(SINGLE_FLOAT) );
-	QCOMPARE(QString("DOUBLE_FLOAT"), ardumyActuatorValueRepresentationToString(DOUBLE_FLOAT) );
-	QCOMPARE(QString("REPRESENTATION_COUNT"), ardumyActuatorValueRepresentationToString(REPRESENTATION_COUNT) );
-	QCOMPARE(QString("UNKNOWN"), ardumyActuatorValueRepresentationToString((ArduMYActuatorValueRepresentation)(REPRESENTATION_COUNT+1)) );
-	QCOMPARE(QString("UNKNOWN"), ardumyActuatorValueRepresentationToString((ArduMYActuatorValueRepresentation)(BIT-1)) );
+	QCOMPARE(QString("BIT"), ardumyActuatorValueRepresentationToString(VALREP_BIT) );
+	QCOMPARE(QString("BYTE"), ardumyActuatorValueRepresentationToString(VALREP_BYTE) );
+	QCOMPARE(QString("WORD"), ardumyActuatorValueRepresentationToString(VALREP_WORD) );
+	QCOMPARE(QString("DOUBLE_WORD"), ardumyActuatorValueRepresentationToString(VALREP_DOUBLE_WORD) );
+	QCOMPARE(QString("QUAD_WORD"), ardumyActuatorValueRepresentationToString(VALREP_QUAD_WORD) );
+	QCOMPARE(QString("SINGLE_FLOAT"), ardumyActuatorValueRepresentationToString(VALREP_SINGLE_FLOAT) );
+	QCOMPARE(QString("DOUBLE_FLOAT"), ardumyActuatorValueRepresentationToString(VALREP_DOUBLE_FLOAT) );
+	QCOMPARE(QString("REPRESENTATION_COUNT"), ardumyActuatorValueRepresentationToString(VALREP_REPRESENTATION_COUNT) );
+	QCOMPARE(QString("UNKNOWN"), ardumyActuatorValueRepresentationToString((ArduMYActuatorValueRepresentation)(VALREP_REPRESENTATION_COUNT+1)) );
+	QCOMPARE(QString("UNKNOWN"), ardumyActuatorValueRepresentationToString((ArduMYActuatorValueRepresentation)(VALREP_BIT-1)) );
 
-	QCOMPARE(BIT, ardumyActuatorValueRepresentationFromString("BIT") );
-	QCOMPARE(BYTE, ardumyActuatorValueRepresentationFromString("BYTE") );
-	QCOMPARE(WORD, ardumyActuatorValueRepresentationFromString("WORD") );
-	QCOMPARE(DOUBLE_WORD, ardumyActuatorValueRepresentationFromString("DOUBLE_WORD") );
-	QCOMPARE(QUAD_WORD, ardumyActuatorValueRepresentationFromString("QUAD_WORD") );
-	QCOMPARE(SINGLE_FLOAT, ardumyActuatorValueRepresentationFromString("SINGLE_FLOAT") );
-	QCOMPARE(DOUBLE_FLOAT, ardumyActuatorValueRepresentationFromString("DOUBLE_FLOAT") );
-	QCOMPARE(REPRESENTATION_COUNT, ardumyActuatorValueRepresentationFromString("REPRESENTATION_COUNT") );
-	QCOMPARE(REPRESENTATION_COUNT, ardumyActuatorValueRepresentationFromString("UNKNOWN") );
-	QCOMPARE(REPRESENTATION_COUNT, ardumyActuatorValueRepresentationFromString("LOLBOB") );
-	QCOMPARE(REPRESENTATION_COUNT, ardumyActuatorValueRepresentationFromString("BLÆÆÆ") );
+	QCOMPARE(VALREP_BIT, ardumyActuatorValueRepresentationFromString("BIT") );
+	QCOMPARE(VALREP_BYTE, ardumyActuatorValueRepresentationFromString("BYTE") );
+	QCOMPARE(VALREP_WORD, ardumyActuatorValueRepresentationFromString("WORD") );
+	QCOMPARE(VALREP_DOUBLE_WORD, ardumyActuatorValueRepresentationFromString("DOUBLE_WORD") );
+	QCOMPARE(VALREP_QUAD_WORD, ardumyActuatorValueRepresentationFromString("QUAD_WORD") );
+	QCOMPARE(VALREP_SINGLE_FLOAT, ardumyActuatorValueRepresentationFromString("SINGLE_FLOAT") );
+	QCOMPARE(VALREP_DOUBLE_FLOAT, ardumyActuatorValueRepresentationFromString("DOUBLE_FLOAT") );
+	QCOMPARE(VALREP_REPRESENTATION_COUNT, ardumyActuatorValueRepresentationFromString("REPRESENTATION_COUNT") );
+	QCOMPARE(VALREP_REPRESENTATION_COUNT, ardumyActuatorValueRepresentationFromString("UNKNOWN") );
+	QCOMPARE(VALREP_REPRESENTATION_COUNT, ardumyActuatorValueRepresentationFromString("LOLBOB") );
+	QCOMPARE(VALREP_REPRESENTATION_COUNT, ardumyActuatorValueRepresentationFromString("BLÆÆÆ") );
 
 	QCOMPARE(QString("DC_MOTOR"), ardumyActuatorTypeToString(DC_MOTOR) );
 	QCOMPARE(QString("STEP_MOTOR"), ardumyActuatorTypeToString(STEP_MOTOR) );
@@ -648,7 +648,7 @@ void TestArduMY::testDynamicArrayPOD()
 void TestArduMY::testActuatorValue()
 {
 	DO_LOOPS_START("ActuatorValue", LOOPS)
-	for(int i=0; i<(int)ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT; ++i) {
+	for(int i=0; i<(int)ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT; ++i) {
 		ArduMYActuatorValueRepresentation rep=(ArduMYActuatorValueRepresentation)i;
 		ArduMYActuatorValue a;
 		QCOMPARE(a.bit,false);
@@ -676,12 +676,12 @@ void TestArduMY::testActuatorValue()
 void TestArduMY::testValueConverter()
 {
 	DO_LOOPS_START("Converter", LOOPS)
-	for(int i=0; i<(int)ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT; ++i) {
+	for(int i=0; i<(int)ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT; ++i) {
 		ArduMYActuatorValueRepresentation rep=(ArduMYActuatorValueRepresentation)i;
 		Converter a;
 		switch(rep) {
 		default:
-		case(BIT): {
+		case(VALREP_BIT): {
 			for(int j=0; j<8; ++j) {
 				QCOMPARE(a.int8[j], (int8_t)0);
 			}
@@ -690,7 +690,7 @@ void TestArduMY::testValueConverter()
 			}
 		}
 		break;
-		case(BYTE): {
+		case(VALREP_BYTE): {
 			for(int j=0; j<8; ++j) {
 				QCOMPARE(a.int8[j], (int8_t)0);
 			}
@@ -699,7 +699,7 @@ void TestArduMY::testValueConverter()
 			}
 		}
 		break;
-		case(WORD): {
+		case(VALREP_WORD): {
 			for(int j=0; j<4; ++j) {
 				QCOMPARE(a.int16[j], (int16_t)0);
 			}
@@ -708,7 +708,7 @@ void TestArduMY::testValueConverter()
 			}
 		}
 		break;
-		case(DOUBLE_WORD): {
+		case(VALREP_DOUBLE_WORD): {
 			for(int j=0; j<2; ++j) {
 				QCOMPARE(a.int32[j], (int32_t)0);
 			}
@@ -717,18 +717,18 @@ void TestArduMY::testValueConverter()
 			}
 		}
 		break;
-		case(QUAD_WORD): {
+		case(VALREP_QUAD_WORD): {
 			QCOMPARE(a.int64, (typeof(a.int64))0);
 			QCOMPARE(a.uint64, (typeof(a.uint64))0);
 		}
 		break;
-		case(SINGLE_FLOAT): {
+		case(VALREP_SINGLE_FLOAT): {
 			for(int j=0; j<2; ++j) {
 				QCOMPARE(a.float32[j], (float)0.0f);
 			}
 		}
 		break;
-		case(DOUBLE_FLOAT): {
+		case(VALREP_DOUBLE_FLOAT): {
 			QCOMPARE(a.float64, (double)0.0);
 			break;
 		}
@@ -737,29 +737,29 @@ void TestArduMY::testValueConverter()
 		randomValue(v, rep);
 		switch(rep) {
 		default:
-		case(BIT):
-		case(BYTE): {
+		case(VALREP_BIT):
+		case(VALREP_BYTE): {
 			a.int8[0]=v.byte;
 		}
 		break;
-		case(WORD): {
+		case(VALREP_WORD): {
 			a.int16[0]=v.word;
 		}
 		break;
-		case(DOUBLE_WORD): {
+		case(VALREP_DOUBLE_WORD): {
 			a.int32[0]=v.doubleWord;
 		}
 		break;
 		break;
-		case(QUAD_WORD): {
+		case(VALREP_QUAD_WORD): {
 			a.int64=v.quadWord;
 		}
 		break;
-		case(SINGLE_FLOAT): {
+		case(VALREP_SINGLE_FLOAT): {
 			a.float32[0]=v.singlePrecision;
 		}
 		break;
-		case(DOUBLE_FLOAT): {
+		case(VALREP_DOUBLE_FLOAT): {
 			a.float64=v.doublePrecision;
 		}
 		break;
@@ -940,16 +940,16 @@ void TestArduMY::testRepresentationBoundary()
 	ArduMYActuatorSet outSet;
 	inSet.setSize(4);
 	outSet.setSize(4);
-	inSet[0].config.representation=ArduMYActuatorValueRepresentation::BYTE;
+	inSet[0].config.representation=ArduMYActuatorValueRepresentation::VALREP_BYTE;
 	inSet[0].state.value.quadWord=0;
 	inSet[0].state.value.byte=111;
-	inSet[1].config.representation=ArduMYActuatorValueRepresentation::BYTE;
+	inSet[1].config.representation=ArduMYActuatorValueRepresentation::VALREP_BYTE;
 	inSet[1].state.value.quadWord=0;
 	inSet[1].state.value.byte=222;
-	inSet[2].config.representation=ArduMYActuatorValueRepresentation::WORD;
+	inSet[2].config.representation=ArduMYActuatorValueRepresentation::VALREP_WORD;
 	inSet[2].state.value.quadWord=0;
 	inSet[2].state.value.word=33333;
-	inSet[3].config.representation=ArduMYActuatorValueRepresentation::WORD;
+	inSet[3].config.representation=ArduMYActuatorValueRepresentation::VALREP_WORD;
 	inSet[3].state.value.quadWord=0;
 	inSet[3].state.value.word=44444;
 	for(size_t i =0; i<4; ++i) {
@@ -973,7 +973,7 @@ void TestArduMY::testRepresentationBoundary()
 		QCOMPARE(parser.enableBits[i], (uint8_t)0x00);
 	}
 	QCOMPARE(parser.enabledActuatorCount, (uint8_t)0);
-	QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ArduMYActuatorValueRepresentation::BIT);
+	QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ArduMYActuatorValueRepresentation::VALREP_BIT);
 	QCOMPARE((int16_t)parser.currentActuatorIndex, (int16_t)0);
 
 	//All enabled
@@ -982,7 +982,7 @@ void TestArduMY::testRepresentationBoundary()
 
 	for(uint8_t v=0; v<2; ++v) {
 
-		QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ArduMYActuatorValueRepresentation::BYTE);
+		QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ArduMYActuatorValueRepresentation::VALREP_BYTE);
 		QCOMPARE((int16_t)parser.currentActuatorIndex, (int16_t)v);
 		QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
 		parser.parse(inSet[v].state.value.byte);
@@ -996,7 +996,7 @@ void TestArduMY::testRepresentationBoundary()
 	}
 	for(uint8_t v=0; v<2; ++v) {
 		for(uint8_t b=0; b<2; ++b) {
-			QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ArduMYActuatorValueRepresentation::WORD);
+			QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ArduMYActuatorValueRepresentation::VALREP_WORD);
 			QCOMPARE((int16_t)parser.currentActuatorIndex, (int16_t)(2+v));
 			QCOMPARE((uint8_t)parser.step, (uint8_t)ArduMYActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES);
 			Converter cv;
@@ -1012,7 +1012,7 @@ void TestArduMY::testRepresentationBoundary()
 		}
 	}
 
-	QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT);
+	QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT);
 	QCOMPARE((int16_t)parser.currentActuatorIndex, (int16_t)0);
 
 }
@@ -1140,18 +1140,18 @@ void TestArduMY::testCommandSerializerSimple()
 	//qDebug()<<"FROM CONFIG FLAGS (0) FOR INDEX 0"<<actuatorsFrom[0].config.flags;
 
 	actuatorsFrom[0].config.type=RC_SERVO;
-	actuatorsFrom[0].config.representation=WORD;
+	actuatorsFrom[0].config.representation=VALREP_WORD;
 	ardumyActuatorNameFromString(actuatorsFrom[0].config,"Trololoo 1");
 	actuatorsFrom[0].state.value.word=123;
 
 	actuatorsFrom[1].config.type=DC_MOTOR;
-	actuatorsFrom[1].config.representation=QUAD_WORD;
+	actuatorsFrom[1].config.representation=VALREP_QUAD_WORD;
 	ardumyActuatorNameFromString(actuatorsFrom[1].config,"Dum dum bum 2");
 	actuatorsFrom[1].state.value.quadWord=567890123;
 
 
 	actuatorsFrom[2].config.type=RELAY;
-	actuatorsFrom[2].config.representation=BIT;
+	actuatorsFrom[2].config.representation=VALREP_BIT;
 	ardumyActuatorNameFromString(actuatorsFrom[2].config,"la la la 3");
 	actuatorsFrom[2].state.value.bit=true;
 

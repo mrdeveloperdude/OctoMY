@@ -16,13 +16,15 @@
 class CrashHelp
 {
 public:
-		explicit CrashHelp();
-	explicit CrashHelp(bool enableImplicitly);
-	virtual ~CrashHelp();
+        explicit CrashHelp();
+    explicit CrashHelp(bool enableImplicitly);
+    virtual ~CrashHelp();
 
 public:
 
-	void setEnabled(bool enabled);
+    void setEnabled(bool enabled);
+
+    bool isAvailable();
 
 };
 

@@ -137,17 +137,17 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 
 	case(RANGE_START): {
 		switch(config->representation) {
-		case(ArduMYActuatorValueRepresentation::BIT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_BIT): {
 			config->rangeStart.bit=((in&1)>0);// Send bit as byte ignoring all but the first bit
 			nextStep();
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::BYTE): {
+		case(ArduMYActuatorValueRepresentation::VALREP_BYTE): {
 			config->rangeStart.byte=in;
 			nextStep();
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_WORD): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==2) {
@@ -156,7 +156,7 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 			}
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_WORD): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==4) {
@@ -165,7 +165,7 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 			}
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==8) {
@@ -174,7 +174,7 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 			}
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_SINGLE_FLOAT): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==4) {
@@ -183,7 +183,7 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 			}
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_FLOAT): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==8) {
@@ -193,7 +193,7 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 		}
 		break;
 		default:
-		case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT): {
 			// TODO: Handle this as an error somehow
 		}
 		break;
@@ -202,17 +202,17 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 	break;
 	case(RANGE_SPAN): {
 		switch(config->representation) {
-		case(ArduMYActuatorValueRepresentation::BIT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_BIT): {
 			config->rangeSpan.bit=((in&1)>0);// Send bit as byte ignoring all but the first bit
 			nextStep();
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::BYTE): {
+		case(ArduMYActuatorValueRepresentation::VALREP_BYTE): {
 			config->rangeSpan.byte=in;
 			nextStep();
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_WORD): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==2) {
@@ -221,7 +221,7 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 			}
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_WORD): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==4) {
@@ -230,7 +230,7 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 			}
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==8) {
@@ -239,7 +239,7 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 			}
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_SINGLE_FLOAT): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==4) {
@@ -248,7 +248,7 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 			}
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_FLOAT): {
 			converter.uint8[byteIndex]=in;
 			byteIndex++;
 			if(byteIndex==8) {
@@ -258,7 +258,7 @@ bool ArduMYActuatorConfigParser::parse(const uint8_t in)
 		}
 		break;
 		default:
-		case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT): {
 			// TODO: Handle this as an error somehow
 		}
 		break;

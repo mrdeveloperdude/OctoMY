@@ -122,33 +122,33 @@ void ArduMYActuatorWidget::configure(ArduMYActuator *actuator, quint32 id)
 		ui->comboBoxActuatorType->setCurrentIndex(typeIndex);
 		quint32 representationIndex=0;
 		switch(mActuator->config.representation) {
-		case(BIT): {
+		case(VALREP_BIT): {
 			representationIndex=0;
 		}
 		break;
-		case(BYTE): {
+		case(VALREP_BYTE): {
 			representationIndex=1;
 		}
 		break;
 		default:
-		case(REPRESENTATION_COUNT):
-		case(WORD): {
+		case(VALREP_REPRESENTATION_COUNT):
+		case(VALREP_WORD): {
 			representationIndex=2;
 		}
 		break;
-		case(DOUBLE_WORD): {
+		case(VALREP_DOUBLE_WORD): {
 			representationIndex=3;
 		}
 		break;
-		case(QUAD_WORD): {
+		case(VALREP_QUAD_WORD): {
 			representationIndex=4;
 		}
 		break;
-		case(SINGLE_FLOAT): {
+		case(VALREP_SINGLE_FLOAT): {
 			representationIndex=5;
 		}
 		break;
-		case(DOUBLE_FLOAT): {
+		case(VALREP_DOUBLE_FLOAT): {
 			representationIndex=6;
 		}
 		break;
@@ -233,32 +233,32 @@ void ArduMYActuatorWidget::onActuatorMoved()
 	if(nullptr!=mActuator) {
 
 		switch(mActuator->config.representation) {
-		case(BIT): {
+		case(VALREP_BIT): {
 			mActuator->state.value.bit=val>mid;
 		}
 		break;
-		case(BYTE): {
+		case(VALREP_BYTE): {
 			mActuator->state.value.byte=0xFF*val;
 		}
 		break;
-		case(WORD): {
+		case(VALREP_WORD): {
 			mActuator->state.value.word=0xFFFF*val;
 		}
 		break;
-		case(DOUBLE_WORD): {
+		case(VALREP_DOUBLE_WORD): {
 			mActuator->state.value.doubleWord=0xFFFFFFFF*val;
 		}
 		break;
-		case(QUAD_WORD): {
+		case(VALREP_QUAD_WORD): {
 			mActuator->state.value.quadWord=0xFFFFFFFFFFFFFFFF*val;
 		}
 		break;
 		default:// Fall back to single precision float for now
-		case(SINGLE_FLOAT): {
+		case(VALREP_SINGLE_FLOAT): {
 			mActuator->state.value.singlePrecision=val;
 		}
 		break;
-		case(DOUBLE_FLOAT): {
+		case(VALREP_DOUBLE_FLOAT): {
 			mActuator->state.value.doublePrecision=val;
 		}
 		break;
@@ -339,9 +339,9 @@ void ArduMYActuatorWidget::on_comboBoxActuatorRepresentation_currentIndexChanged
 {
 	if(nullptr!=mActuator) {
 		if(index<0) {
-			index=(int)REPRESENTATION_COUNT;
-		} else if(index>(int)REPRESENTATION_COUNT) {
-			index=(int)REPRESENTATION_COUNT;
+			index=(int)VALREP_REPRESENTATION_COUNT;
+		} else if(index>(int)VALREP_REPRESENTATION_COUNT) {
+			index=(int)VALREP_REPRESENTATION_COUNT;
 		}
 		mActuator->config.representation=(ArduMYActuatorValueRepresentation)index;
 	}

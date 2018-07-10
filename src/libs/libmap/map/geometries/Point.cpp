@@ -23,7 +23,7 @@
 *
 */
 
-#include "Point.hpp"
+#include "map/geometries/Point.hpp"
 namespace qmapcontrol
 {
 Point::Point()

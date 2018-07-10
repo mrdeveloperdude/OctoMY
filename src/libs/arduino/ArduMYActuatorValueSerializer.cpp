@@ -81,7 +81,7 @@ uint8_t ArduMYActuatorValueSerializer::nextByte()
 	break;
 	case(ArduMYActuatorValuesParserStep::ACTUATOR_VALUE_BATCHES): {
 		// Serialize actuator values in batches, each batch per one representation type
-		for(; currentBatchRepresentation<ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT; nextBatch() ) {
+		for(; currentBatchRepresentation<ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT; nextBatch() ) {
 			//representationByteCount
 			uint8_t bitCount=0;
 			for(; currentActuatorIndex<setSize; ++currentActuatorIndex) {
@@ -91,8 +91,8 @@ uint8_t ArduMYActuatorValueSerializer::nextByte()
 					const ArduMYActuator &a=*actuator;
 					if(a.config.representation == currentBatchRepresentation && a.state.isDirty()) {
 						switch (currentBatchRepresentation) {
-						case (ArduMYActuatorValueRepresentation::BIT): {
-							while(ArduMYActuatorValueRepresentation::BIT==currentBatchRepresentation) {
+						case (ArduMYActuatorValueRepresentation::VALREP_BIT): {
+							while(ArduMYActuatorValueRepresentation::VALREP_BIT==currentBatchRepresentation) {
 								bool wasDirty=false;
 								actuator = currentActuator();
 								if(nullptr!=actuator) {
@@ -120,13 +120,13 @@ uint8_t ArduMYActuatorValueSerializer::nextByte()
 							}
 						}
 						break;
-						case (ArduMYActuatorValueRepresentation::BYTE): {
+						case (ArduMYActuatorValueRepresentation::VALREP_BYTE): {
 							ret=a.state.value.byte;
 							nextActuator();
 							goto byte_ready;
 						}
 						break;
-						case (ArduMYActuatorValueRepresentation::WORD): {
+						case (ArduMYActuatorValueRepresentation::VALREP_WORD): {
 							converter.uint64=0;
 							converter.uint16[0]=a.state.value.word;
 							ret=converter.uint8[byteIndex];
@@ -137,7 +137,7 @@ uint8_t ArduMYActuatorValueSerializer::nextByte()
 							goto byte_ready;
 						}
 						break;
-						case (ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
+						case (ArduMYActuatorValueRepresentation::VALREP_DOUBLE_WORD): {
 							converter.uint64=0;
 							converter.uint32[0]=a.state.value.doubleWord;
 							ret=converter.uint8[byteIndex];
@@ -148,7 +148,7 @@ uint8_t ArduMYActuatorValueSerializer::nextByte()
 							goto byte_ready;
 						}
 						break;
-						case (ArduMYActuatorValueRepresentation::QUAD_WORD): {
+						case (ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
 							converter.uint64=a.state.value.quadWord;
 							ret=converter.uint8[byteIndex];
 							byteIndex++;
@@ -158,7 +158,7 @@ uint8_t ArduMYActuatorValueSerializer::nextByte()
 							goto byte_ready;
 						}
 						break;
-						case (ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
+						case (ArduMYActuatorValueRepresentation::VALREP_SINGLE_FLOAT): {
 							converter.uint64=0;
 							converter.float32[0]=a.state.value.singlePrecision;
 							ret=converter.uint8[byteIndex];
@@ -169,7 +169,7 @@ uint8_t ArduMYActuatorValueSerializer::nextByte()
 							goto byte_ready;
 						}
 						break;
-						case (ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
+						case (ArduMYActuatorValueRepresentation::VALREP_DOUBLE_FLOAT): {
 							converter.float64=a.state.value.doublePrecision;
 							ret=converter.uint8[byteIndex];
 							byteIndex++;

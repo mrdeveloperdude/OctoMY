@@ -24,30 +24,30 @@ union ArduMYActuatorValue {
 	float singlePrecision;
 	double doublePrecision;
 
-	bool isEqual(const ArduMYActuatorValue &other, ArduMYActuatorValueRepresentation representation=ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT) const {
+	bool isEqual(const ArduMYActuatorValue &other, ArduMYActuatorValueRepresentation representation=ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT) const {
 		switch(representation) {
-		case(ArduMYActuatorValueRepresentation::BIT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_BIT): {
 			if(bit != other.bit) {
 				return false;
 			}
 
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::BYTE): {
+		case(ArduMYActuatorValueRepresentation::VALREP_BYTE): {
 			if(byte != other.byte) {
 				return false;
 			}
 
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_WORD): {
 			if(word != other.word) {
 				return false;
 			}
 
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_WORD): {
 			if(doubleWord != other.doubleWord) {
 				return false;
 			}
@@ -56,22 +56,22 @@ union ArduMYActuatorValue {
 		break;
 		//Default to strictest possible equality when representation is unknown
 		default:
-		case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT):
-		case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT):
+		case(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
 			if(quadWord != other.quadWord) {
 				return false;
 			}
 
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_SINGLE_FLOAT): {
 			if(singlePrecision != other.singlePrecision) {
 				return false;
 			}
 
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_FLOAT): {
 			if(doublePrecision != other.doublePrecision) {
 				return false;
 			}
@@ -85,38 +85,38 @@ union ArduMYActuatorValue {
 	}
 
 
-	qreal toFloat(ArduMYActuatorValueRepresentation representation=ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT) {
+	qreal toFloat(ArduMYActuatorValueRepresentation representation=ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT) {
 		qreal ret=0.0f;
 
 		switch(representation) {
-		case(ArduMYActuatorValueRepresentation::BIT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_BIT): {
 			ret=bit?1.0f:0.0f;
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::BYTE): {
+		case(ArduMYActuatorValueRepresentation::VALREP_BYTE): {
 			ret=((qreal)byte)/0xFF;
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_WORD): {
 			ret=((qreal)word)/0xFFFF;
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_WORD): {
 			ret=((qreal)doubleWord)/0xFFFFFFFF;
 		}
 		break;
 		//Default to strictest possible equality when representation is unknown
 		default:
-		case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT):
-		case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
+		case(ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT):
+		case(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
 			ret=((qreal)quadWord)/0xFFFFFFFFFFFFFFFF;
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_SINGLE_FLOAT): {
 			ret=singlePrecision;
 		}
 		break;
-		case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
+		case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_FLOAT): {
 			ret=doublePrecision;
 		}
 		break;
