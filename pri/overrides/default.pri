@@ -1,5 +1,5 @@
 # DEFAULT OVERRIDES FILE
-# PLEASE NOTE: THIS FILE WILL BE COPIED TO local_overrides.pri 
+# PLEASE NOTE: THIS FILE WILL BE COPIED TO local_overrides.pri
 # BY common.pri UPON RUNNING OF qmake IF local_overrides.pri IS MISSING
 
 #DEFINES += USE_DOCS
@@ -14,6 +14,8 @@
 #DEFINES += EXTERNAL_LIB_OPENCL
 #DEFINES += USE_ARDUINO
 #DEFINES += USE_STATUS
+#DEFINES += USE_ZBAR
+#DEFINES += USE_PARSER
 
 # Reduce build output to only warnings/errors
 CONFIG += silent
