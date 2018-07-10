@@ -16,6 +16,7 @@
 #DEFINES += USE_STATUS
 #DEFINES += USE_ZBAR
 #DEFINES += USE_PARSER
+#DEFINES += USE_CRASH_HELP
 
 # Reduce build output to only warnings/errors
 CONFIG += silent
