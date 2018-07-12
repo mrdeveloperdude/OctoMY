@@ -23,49 +23,49 @@
 *
 */
 
-#include "Circlepoint.hpp"
+#include "map/geometries/points/CirclePoint.hpp"
 namespace qmapcontrol
 {
-    CirclePoint::CirclePoint(qreal x, qreal y, int radius, QString name, Alignment alignment, QPen* pen)
-            : Point(x, y, name, alignment)
-    {
-        size = QSize(radius, radius);
-        mypen = pen;
-        mypixmap = QPixmap(radius+1, radius+1);
-        drawCircle();
-    }
+	CirclePoint::CirclePoint(qreal x, qreal y, int radius, QString name, Alignment alignment, QPen* pen)
+			: Point(x, y, name, alignment)
+	{
+		size = QSize(radius, radius);
+		mypen = pen;
+		mypixmap = QPixmap(radius+1, radius+1);
+		drawCircle();
+	}
 
-    CirclePoint::CirclePoint(qreal x, qreal y, QString name, Alignment alignment, QPen* pen)
-            : Point(x, y, name, alignment)
-    {
-        int radius = 10;
-        size = QSize(radius, radius);
-        mypen = pen;
-        mypixmap = QPixmap(radius+1, radius+1);
-        drawCircle();
-    }
+	CirclePoint::CirclePoint(qreal x, qreal y, QString name, Alignment alignment, QPen* pen)
+			: Point(x, y, name, alignment)
+	{
+		int radius = 10;
+		size = QSize(radius, radius);
+		mypen = pen;
+		mypixmap = QPixmap(radius+1, radius+1);
+		drawCircle();
+	}
 
-    CirclePoint::~CirclePoint()
-    {
-    }
+	CirclePoint::~CirclePoint()
+	{
+	}
 
-    void CirclePoint::setPen(QPen* pen)
-    {
-        mypen = pen;
-        drawCircle();
-    }
+	void CirclePoint::setPen(QPen* pen)
+	{
+		mypen = pen;
+		drawCircle();
+	}
 
-    void CirclePoint::drawCircle()
-    {
-        mypixmap.fill(Qt::transparent);
-        QPainter painter(&mypixmap);
+	void CirclePoint::drawCircle()
+	{
+		mypixmap.fill(Qt::transparent);
+		QPainter painter(&mypixmap);
 //#if !defined Q_WS_MAEMO_5 //FIXME Maemo has a bug - it will antialias our point out of existence
-        painter.setRenderHints(QPainter::Antialiasing|QPainter::HighQualityAntialiasing);
+		painter.setRenderHints(QPainter::Antialiasing|QPainter::HighQualityAntialiasing);
 //#endif
-        if (mypen != 0)
-        {
-            painter.setPen(*mypen);
-        }
-        painter.drawEllipse(0,0, size.width(), size.height());
-    }
+		if (mypen != 0)
+		{
+			painter.setPen(*mypen);
+		}
+		painter.drawEllipse(0,0, size.width(), size.height());
+	}
 }
