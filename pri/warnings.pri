@@ -1,4 +1,5 @@
 
+gcc{
 
 # The most comprehensive and strict set of checks available
 QMAKE_CXXFLAGS += -pedantic -Wall -Wextra
@@ -67,4 +68,4 @@ QMAKE_CFLAGS += -Wno-unused-parameter -Wno-sometimes-uninitialized
 #	QMAKE_CXXFLAGS -= -fstack-usage -Wno-format-contains-nul
 #}
 
-
+}

@@ -57,9 +57,13 @@
 #include <signal.h>
 #include <sstream>
 #include <string>
+#include <vector>
+
+#if defined(Q_OS_UNIX) || defined(Q_OS_LINUX)
 #include <sys/time.h>
 #include <unistd.h>
-#include <vector>
+#endif
+
 
 namespace utility
 {
@@ -147,15 +151,12 @@ QString humanReadableSize(qint64 bytes,int prec)
         ,{K*K*K*K,"TiB"}
         ,{K*K*K*K*K,"PiB"}
         ,{K*K*K*K*K*K,"EiB"}
-        ,{K*K*K*K*K*K*K,"ZiB"}
-        ,{K*K*K*K*K*K*K*K,"YiB"}
+//        ,{K*K*K*K*K*K*K,"ZiB"}
+//        ,{K*K*K*K*K*K*K*K,"YiB"}
     };
     int i=1,l=sizeof(stances)/sizeof(stance)-1;
     if(bytes<0) {
         bytes=-bytes;
-    }
-    if(std::isnan(bytes) ) {
-        bytes=0;
     }
     if(0==bytes) {
         bytes=0;
@@ -223,7 +224,7 @@ void makeFiller(QWidget *w)
 
 
 
-int snprint_hex(char *dst, size_t size, const uint8_t *pbtData, const size_t szBytes)
+size_t snprint_hex(char *dst, size_t size, const uint8_t *pbtData, const size_t szBytes)
 {
     size_t  szPos;
     size_t res = 0;

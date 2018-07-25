@@ -47,10 +47,10 @@ QMAKE_CXXFLAGS -= -std=c++1z
 QMAKE_CXXFLAGS -= -std=gnu++1z
 
 contains(CONFIG, c++14){
-	QMAKE_CXXFLAGS += -std=c++14 -std=c++1y
+	gcc:QMAKE_CXXFLAGS += -std=c++14 -std=c++1y
 }
 contains(CONFIG, c++11){
-	QMAKE_CXXFLAGS += -std=c++11
+	gcc:QMAKE_CXXFLAGS += -std=c++11
 }
 
 
@@ -81,7 +81,7 @@ QMAKE_CFLAGS -= -std=gnu11
 QMAKE_CFLAGS -= -std=gnu1x
 
 
-QMAKE_CFLAGS += -std=c11
+gcc:QMAKE_CFLAGS += -std=c11
 
 
 #PRECOMPILED_HEADER = $${SRCS}/libs/precompiled_headers.pch

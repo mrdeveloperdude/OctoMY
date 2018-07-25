@@ -1,3 +1,4 @@
+gcc{
 
 # Automatic support for ccache
 CCACHE_EXISTS=$$system("which ccache >/dev/null 2>&1; echo $?")
@@ -7,3 +8,4 @@ equals(CCACHE_EXISTS, "0"){
 }
 
 #message("QMAKE_CXX: $$QMAKE_CXX, CCACHE_EXISTS: $$CCACHE_EXISTS")
+}
