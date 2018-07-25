@@ -91,7 +91,7 @@ contains(DEFINES, USE_TESTS_WEB){
 contains(DEFINES, USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
-		testOpenCL \
+#		testOpenCL \
 #		testNetworkSettingsWidget \
 #		testLightWidget \
 #		testDataStore \
@@ -102,7 +102,7 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testAsyncStore \
 #		testKeyStore \
 #		testConcurrentQueue \
-#		testTaskQueue \
+		testTaskQueue \
 #		testCommsChannel \
 #		testCommsCarrier \
 #		testRateCalculator \
