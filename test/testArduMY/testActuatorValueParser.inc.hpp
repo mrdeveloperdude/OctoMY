@@ -102,7 +102,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 		const uint8_t mask=( 1 << bit );
 		if( 0 != ( enableBits[byte] & mask ) ) {
 			ArduMYActuator &a=inSet[i];
-			if(ArduMYActuatorValueRepresentation::BIT==a.config.representation) {
+			if(ArduMYActuatorValueRepresentation::VALREP_BIT==a.config.representation) {
 				if(a.state.value.bit) {
 					bits |= ( 1 << bitCount );
 				}
@@ -122,7 +122,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 	// Send any remaining bits we have
 	if(bitCount>0) {
 		//acc+=" REST: "+byteToStr(bits);
-		QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ArduMYActuatorValueRepresentation::BIT);
+		QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)ArduMYActuatorValueRepresentation::VALREP_BIT);
 		QCOMPARE((uint8_t)parser.byteIndex, (uint8_t)0);//One would think that byteIndex was the same BUT it isn't so get over it!
 		byteIndex++;
 		parser.parse(bits);
@@ -138,7 +138,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 		const uint8_t mask=( 1 << bit );
 		if( 0 != ( enableBits[byte] & mask ) ) {
 			ArduMYActuator &a=inSet[i];
-			if(ArduMYActuatorValueRepresentation::BIT == a.config.representation) {
+			if(ArduMYActuatorValueRepresentation::VALREP_BIT == a.config.representation) {
 				//qDebug()<<"SENT BIT VALUE FOR "<<byte<<"."<<bit<<": " << a.state.value.bit;
 				ArduMYActuator &b=outSet[i];
 				QCOMPARE(a.config.representation, b.config.representation);
@@ -155,7 +155,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 		const uint8_t mask=( 1 << bit );
 		if( 0 != ( enableBits[byte] & mask ) ) {
 			ArduMYActuator &a=inSet[i];
-			if(ArduMYActuatorValueRepresentation::BYTE==a.config.representation) {
+			if(ArduMYActuatorValueRepresentation::VALREP_BYTE==a.config.representation) {
 				//qDebug().noquote().nospace()<<"SENDING BYTE VALUE FOR "<<byte<<"."<<bit<<" (" << QString("%1").arg(i,2,10,QChar(' '))<< "/" << QString("%1").arg(inSize,2,10,QChar(' '))<< "): "<<a.state.value.byte;
 				QCOMPARE((uint8_t)parser.currentBatchRepresentation, (uint8_t)a.config.representation);
 				QCOMPARE(parser.currentActuatorIndex, (int16_t )i);
@@ -176,7 +176,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 		const uint8_t mask=( 1 << bit );
 		if( 0 != ( enableBits[byte] & mask ) ) {
 			ArduMYActuator &a=inSet[i];
-			if(ArduMYActuatorValueRepresentation::WORD==a.config.representation) {
+			if(ArduMYActuatorValueRepresentation::VALREP_WORD==a.config.representation) {
 				//qDebug()<<"SENDING WORD VALUE FOR "<<byte<<"."<<bit<<": "<<a.state.value.word;
 				cv.int64=0x00;
 				cv.uint16[0]=a.state.value.word;
@@ -202,7 +202,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 		const uint8_t mask=( 1 << bit );
 		if( 0 != ( enableBits[byte] & mask ) ) {
 			ArduMYActuator &a=inSet[i];
-			if(ArduMYActuatorValueRepresentation::DOUBLE_WORD==a.config.representation) {
+			if(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_WORD==a.config.representation) {
 				//qDebug()<<"SENDING DWORD VALUE FOR "<<byte<<"."<<bit<<": "<<a.state.value.doubleWord;
 				cv.int64=0x00;
 				cv.uint32[0]=a.state.value.doubleWord;
@@ -228,7 +228,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 		const uint8_t mask=( 1 << bit );
 		if( 0 != ( enableBits[byte] & mask ) ) {
 			ArduMYActuator &a=inSet[i];
-			if(ArduMYActuatorValueRepresentation::QUAD_WORD==a.config.representation) {
+			if(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD==a.config.representation) {
 				//qDebug()<<"SENDING QWORD VALUE FOR "<<byte<<"."<<bit<<": "<<a.state.value.quadWord;
 				cv.int64=0x00;
 				cv.uint64=a.state.value.quadWord;
@@ -254,7 +254,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 		const uint8_t mask=( 1 << bit );
 		if( 0 != ( enableBits[byte] & mask ) ) {
 			ArduMYActuator &a=inSet[i];
-			if(ArduMYActuatorValueRepresentation::SINGLE_FLOAT==a.config.representation) {
+			if(ArduMYActuatorValueRepresentation::VALREP_SINGLE_FLOAT==a.config.representation) {
 				//qDebug()<<"SENDING FLOAT VALUE FOR "<<byte<<"."<<bit<<": "<<a.state.value.singlePrecision;
 				cv.int64=0x00;
 				cv.float32[0]=a.state.value.singlePrecision;
@@ -280,7 +280,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 		const uint8_t mask=( 1 << bit );
 		if( 0 != ( enableBits[byte] & mask ) ) {
 			ArduMYActuator &a=inSet[i];
-			if(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT==a.config.representation) {
+			if(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_FLOAT==a.config.representation) {
 				ArduMYActuator &b=outSet[i];
 				//qDebug()<<"Actuator:"<<i<<", value: "<<a.state.value.doublePrecision<<", mask="<<mask;
 				QCOMPARE(a.config.representation, b.config.representation);

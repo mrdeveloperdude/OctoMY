@@ -14,7 +14,6 @@ TEST_PROJECTS+= \
 contains(DEFINES, USE_TESTS_BASIC){
 
 	message(ADDING BASIC TESTS TO BUILD)
-	#
 	TEST_PROJECTS+= \
 		testAddressBook \
 		testAddressList \
@@ -33,6 +32,7 @@ contains(DEFINES, USE_TESTS_BASIC){
 		testDiscovery \
 		testEventSourcing \
 		testEyesWidget \
+		testFivePhase \
 		testHashstore \
 		testIDDuel \
 		testIdenticon \
@@ -59,6 +59,7 @@ contains(DEFINES, USE_TESTS_BASIC){
 
 
 
+
 	# NOTE: EXTERNAL_LIB_OPENCL is enabled when useful in local_override.pri
 	contains(DEFINES, EXTERNAL_LIB_OPENCL){
 	message(ADDING 'OPENCL' TESTS TO BUILD)
@@ -79,7 +80,7 @@ contains(DEFINES, USE_TESTS_BASIC){
 }
 
 
-# NOTE: USE_TESTS_WEB is enabled in local_override.pri when the build server is connected to the internet
+# NOTE: USE_TESTS_WEB can enabled in local_override.pri when the build server is connected to the internet
 contains(DEFINES, USE_TESTS_WEB){
 	message(ADDING 'WEB' TESTS TO BUILD)
 	TEST_PROJECTS+= \
@@ -87,10 +88,12 @@ contains(DEFINES, USE_TESTS_WEB){
 }
 
 
-# NOTE: USE_TESTS_SELECTED is enabled in local_override.pri to build a few tests taht you are working on (as a developer)
+# NOTE: USE_TESTS_SELECTED can enabled in local_override.pri to build a few tests that you are working on (as a developer)
 contains(DEFINES, USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
+		testFivePhase \
+		testArduMY \
 #		testOpenCL \
 #		testNetworkSettingsWidget \
 #		testLightWidget \
@@ -102,7 +105,7 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testAsyncStore \
 #		testKeyStore \
 #		testConcurrentQueue \
-		testTaskQueue \
+#		testTaskQueue \
 #		testCommsChannel \
 #		testCommsCarrier \
 #		testRateCalculator \

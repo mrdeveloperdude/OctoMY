@@ -1,4 +1,4 @@
-ZBAR_TOP= $$SRCS/libs/libzbar
+ZBAR_TOP= $${SRCS}/libs/libzbar
 
 contains(DEFINES, USE_ZBAR){
 

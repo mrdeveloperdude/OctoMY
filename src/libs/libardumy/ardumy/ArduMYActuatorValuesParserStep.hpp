@@ -1,0 +1,13 @@
+#ifndef ACTUATORVALUESPARSERSTEP_HPP
+#define ACTUATORVALUESPARSERSTEP_HPP
+
+#include "ardumy/ArduMY.hpp"
+
+enum ArduMYActuatorValuesParserStep: uint8_t {
+
+	ENABLED_ACTUATOR_BITS, ACTUATOR_VALUE_BATCHES, END_OF_OP
+
+};
+
+
+#endif // ACTUATORVALUESPARSERSTEP_HPP

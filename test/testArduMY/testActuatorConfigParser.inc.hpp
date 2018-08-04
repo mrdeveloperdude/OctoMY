@@ -172,21 +172,21 @@ void testActuatorConfigEqualsInclude(ActuatorSet &inSet)
 //qDebug()<<"STEP "<< parser.step << ServoConfigParser::RANGE_START;
 // Send range start
 	switch(parser.config->representation) {
-	case(ArduMYActuatorValueRepresentation::BIT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_BIT): {
 		QCOMPARE(parser.step,  ArduMYActuatorConfigParserStep::RANGE_START);
 		parser.parse(c.rangeStart.bit?(uint8_t)1:(uint8_t)0);
 		QCOMPARE(parser.byteIndex, (uint16_t) 0);
 		QCOMPARE(parser.config->rangeStart.bit, c.rangeStart.bit);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::BYTE): {
+	case(ArduMYActuatorValueRepresentation::VALREP_BYTE): {
 		QCOMPARE(parser.step,  ArduMYActuatorConfigParserStep::RANGE_START);
 		parser.parse(c.rangeStart.byte);
 		QCOMPARE(parser.byteIndex, (uint16_t) 0);
 		QCOMPARE(parser.config->rangeStart.byte, c.rangeStart.byte);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_WORD): {
 		QCOMPARE(parser.step,  ArduMYActuatorConfigParserStep::RANGE_START);
 		cv.uint16[0]=c.rangeStart.word;
 		parser.parse(cv.uint8[0]);
@@ -197,7 +197,7 @@ void testActuatorConfigEqualsInclude(ActuatorSet &inSet)
 		QCOMPARE(parser.config->rangeStart.word, c.rangeStart.word);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_WORD): {
 		QCOMPARE(parser.step,  ArduMYActuatorConfigParserStep::RANGE_START);
 		cv.uint32[0]=c.rangeStart.doubleWord;
 		parser.parse(cv.uint8[0]);
@@ -214,7 +214,7 @@ void testActuatorConfigEqualsInclude(ActuatorSet &inSet)
 		QCOMPARE(parser.config->rangeStart.doubleWord, c.rangeStart.doubleWord);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
 		QCOMPARE(parser.step,  ArduMYActuatorConfigParserStep::RANGE_START);
 		cv.uint64=c.rangeStart.quadWord;
 		parser.parse(cv.uint8[0]);
@@ -243,7 +243,7 @@ void testActuatorConfigEqualsInclude(ActuatorSet &inSet)
 		QCOMPARE(parser.config->rangeStart.quadWord, c.rangeStart.quadWord);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_SINGLE_FLOAT): {
 		QCOMPARE(parser.step,  ArduMYActuatorConfigParserStep::RANGE_START);
 		cv.float32[0]=c.rangeStart.singlePrecision;
 		parser.parse(cv.uint8[0]);
@@ -260,7 +260,7 @@ void testActuatorConfigEqualsInclude(ActuatorSet &inSet)
 		QCOMPARE(parser.config->rangeStart.singlePrecision, c.rangeStart.singlePrecision);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_FLOAT): {
 		QCOMPARE(parser.step,  ArduMYActuatorConfigParserStep::RANGE_START);
 		cv.float64=c.rangeStart.doublePrecision;
 		parser.parse(cv.uint8[0]);
@@ -290,7 +290,7 @@ void testActuatorConfigEqualsInclude(ActuatorSet &inSet)
 	}
 	break;
 	default:
-	case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT): {
 		QFAIL("bad representation for range start");
 	}
 	break;
@@ -299,21 +299,21 @@ void testActuatorConfigEqualsInclude(ActuatorSet &inSet)
 
 // Send range span
 	switch(parser.config->representation) {
-	case(ArduMYActuatorValueRepresentation::BIT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_BIT): {
 		QCOMPARE(parser.step,  ArduMYActuatorConfigParserStep::RANGE_SPAN);
 		parser.parse(c.rangeSpan.bit?(uint8_t)1:(uint8_t)0);
 		QCOMPARE(parser.byteIndex, (uint16_t) 0);
 		QCOMPARE(parser.config->rangeSpan.bit, c.rangeSpan.bit);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::BYTE): {
+	case(ArduMYActuatorValueRepresentation::VALREP_BYTE): {
 		QCOMPARE(parser.step,  ArduMYActuatorConfigParserStep::RANGE_SPAN);
 		parser.parse(c.rangeSpan.byte);
 		QCOMPARE(parser.byteIndex, (uint16_t) 0);
 		QCOMPARE(parser.config->rangeSpan.byte, c.rangeSpan.byte);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_WORD): {
 		QCOMPARE(parser.step,  ArduMYActuatorConfigParserStep::RANGE_SPAN);
 		cv.uint16[0]=c.rangeSpan.word;
 		parser.parse(cv.uint8[0]);
@@ -324,7 +324,7 @@ void testActuatorConfigEqualsInclude(ActuatorSet &inSet)
 		QCOMPARE(parser.config->rangeSpan.word, c.rangeSpan.word);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_WORD): {
 		QCOMPARE(parser.step,  ArduMYActuatorConfigParserStep::RANGE_SPAN);
 		cv.uint32[0]=c.rangeSpan.doubleWord;
 		parser.parse(cv.uint8[0]);
@@ -341,7 +341,7 @@ void testActuatorConfigEqualsInclude(ActuatorSet &inSet)
 		QCOMPARE(parser.config->rangeSpan.doubleWord, c.rangeSpan.doubleWord);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
 		QCOMPARE(parser.step,  ArduMYActuatorConfigParserStep::RANGE_SPAN);
 		cv.uint64=c.rangeSpan.quadWord;
 		parser.parse(cv.uint8[0]);
@@ -370,7 +370,7 @@ void testActuatorConfigEqualsInclude(ActuatorSet &inSet)
 		QCOMPARE(parser.config->rangeSpan.quadWord, c.rangeSpan.quadWord);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_SINGLE_FLOAT): {
 		QCOMPARE(parser.step,  ArduMYActuatorConfigParserStep::RANGE_SPAN);
 		cv.float32[0]=c.rangeSpan.singlePrecision;
 		parser.parse(cv.uint8[0]);
@@ -387,7 +387,7 @@ void testActuatorConfigEqualsInclude(ActuatorSet &inSet)
 		QCOMPARE(parser.config->rangeSpan.singlePrecision, c.rangeSpan.singlePrecision);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_FLOAT): {
 		QCOMPARE(parser.step,  ArduMYActuatorConfigParserStep::RANGE_SPAN);
 		cv.float64=c.rangeSpan.doublePrecision;
 		parser.parse(cv.uint8[0]);
@@ -417,7 +417,7 @@ void testActuatorConfigEqualsInclude(ActuatorSet &inSet)
 	}
 	break;
 	default:
-	case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT): {
 		QFAIL("bad representation for range span");
 	}
 	break;

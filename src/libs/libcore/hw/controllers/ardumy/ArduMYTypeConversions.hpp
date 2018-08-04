@@ -14,12 +14,12 @@
 #error "WE ARE TRYING TO COMPILE ArdumyTypeConversions on AVR!"
 #endif
 
-#include "../arduino/ArduMYActuatorType.hpp"
-#include "../arduino/ArduMYActuatorValueRepresentation.hpp"
-#include "../arduino/ArduMYActuatorValue.hpp"
-#include "../arduino/ArduMYActuatorConfigParserStep.hpp"
-#include "../arduino/ArduMYActuatorValuesParserStep.hpp"
-#include "../arduino/ArduMYParserState.hpp"
+#include "ardumy/ArduMYActuatorType.hpp"
+#include "ardumy/ArduMYActuatorValueRepresentation.hpp"
+#include "ardumy/ArduMYActuatorValue.hpp"
+#include "ardumy/ArduMYActuatorConfigParserStep.hpp"
+#include "ardumy/ArduMYActuatorValuesParserStep.hpp"
+#include "ardumy/ArduMYParserState.hpp"
 
 class ArduMYActuatorState;
 class ArduMYActuatorConfig;

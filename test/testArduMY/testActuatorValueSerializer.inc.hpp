@@ -136,7 +136,7 @@ void testActuatorValueSerializerInclude(ArduMYActuatorSet &inSet)
 		// Only the dirty ones were copied!
 		if(a.state.isDirty()) {
 			//qDebug()<<"For actuator "<<(i+1)<<"/"<< inSize<<"SERIALIZER(A): "<<ardumyActuatorValueToString(a.state.value, a.config.representation)<<", PARSER(B): "<<ardumyActuatorValueToString(b.state.value, b.config.representation);
-			if(ArduMYActuatorValueRepresentation::BIT!=a.config.representation || true) {
+			if(ArduMYActuatorValueRepresentation::VALREP_BIT!=a.config.representation || true) {
 				if(a.state.value != b.state.value) {
 					Converter cva;
 					Converter cvb;

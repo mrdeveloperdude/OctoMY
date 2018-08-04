@@ -2,19 +2,21 @@
 #define TEST_INC_HPP
 
 
-#include "../arduino/ArduMYActuatorConfigParser.hpp"
-#include "../arduino/ArduMYActuatorConfigSerializer.hpp"
+#include "ardumy/ArduMYActuatorConfigParser.hpp"
+#include "ardumy/ArduMYActuatorConfigSerializer.hpp"
 
 
-#include "../arduino/ArduMYActuatorValueParser.hpp"
-#include "../arduino/ArduMYActuatorValueSerializer.hpp"
+#include "ardumy/ArduMYActuatorValueParser.hpp"
+#include "ardumy/ArduMYActuatorValueSerializer.hpp"
 
-#include "../arduino/MagicDetector.hpp"
+#include "ardumy/MagicDetector.hpp"
+
+#include "ardumy/ArduMYActuatorValueRepresentation.hpp"
 
 
-#include "../arduino/ArduMYCommandParser.hpp"
+#include "ardumy/ArduMYCommandParser.hpp"
 
-#include "../arduino/ArduMYParserState.hpp"
+#include "ardumy/ArduMYParserState.hpp"
 
 #include "../common/TestCommon.hpp"
 
