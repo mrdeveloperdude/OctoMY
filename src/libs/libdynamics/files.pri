@@ -1,5 +1,5 @@
 
-DYN_TOP= $$SRCS/libs/libdynamics
+DYN_TOP= $${SRCS}/libs/libdynamics
 
 contains(DEFINES, USE_GEAR){
 

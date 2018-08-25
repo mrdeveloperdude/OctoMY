@@ -1,7 +1,7 @@
 #ifndef AGENTCONFIG_HPP
 #define AGENTCONFIG_HPP
 
-#include "../arduino/ArduMYActuator.hpp"
+#include "ardumy/ArduMYActuator.hpp"
 
 #include "pose/PoseMapping.hpp"
 

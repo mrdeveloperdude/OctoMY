@@ -1,20 +1,20 @@
 #include "TestArduMY.hpp"
 #include "utility/Utility.hpp"
 
-#include "../arduino/ArduMYActuatorConfigParser.hpp"
-#include "../arduino/ArduMYActuatorConfigSerializer.hpp"
+#include "ardumy/ArduMYActuatorConfigParser.hpp"
+#include "ardumy/ArduMYActuatorConfigSerializer.hpp"
 
 
-#include "../arduino/ArduMYActuatorValueParser.hpp"
-#include "../arduino/ArduMYActuatorValueSerializer.hpp"
+#include "ardumy/ArduMYActuatorValueParser.hpp"
+#include "ardumy/ArduMYActuatorValueSerializer.hpp"
 
-#include "../arduino/MagicDetector.hpp"
+#include "ardumy/MagicDetector.hpp"
 
 
-#include "../arduino/ArduMYCommandParser.hpp"
-#include "../arduino/ArduMYCommandSerializer.hpp"
+#include "ardumy/ArduMYCommandParser.hpp"
+#include "ardumy/ArduMYCommandSerializer.hpp"
 
-#include "../arduino/ArduMYParserState.hpp"
+#include "ardumy/ArduMYParserState.hpp"
 
 #include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
@@ -168,7 +168,7 @@ ArduMYActuatorConfig TestArduMY::randomConfig() const
 	} while (ArduMYActuatorValueRepresentation::VALREP_BIT==c.representation);
 
 	// All BIT
-	//c.representation=ArduMYActuatorValueRepresentation::BIT;
+	//c.representation=ArduMYActuatorValueRepresentation::VALREP_BIT;
 
 	// Set random name
 	const quint8 nameSize=(qrand()%20);

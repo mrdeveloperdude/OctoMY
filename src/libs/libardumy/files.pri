@@ -1,42 +1,46 @@
 
-ARDUMY_TOP= $${SRCS}/libs/arduino
+ARDUMY_TOP= $${SRCS}/libs/libardumy
 ARDUMY_HEADERS += \
-	$$ARDUMY_TOP/ArduMYActuatorConfig.hpp \
-	$$ARDUMY_TOP/ArduMYActuatorConfigParser.hpp \
-	$$ARDUMY_TOP/ArduMYActuatorConfigSerializerBase.hpp \
-	$$ARDUMY_TOP/ArduMYActuatorConfigSerializer.hpp \
-	$$ARDUMY_TOP/ArduMYActuator.hpp \
-	$$ARDUMY_TOP/ArduMYActuatorSet.hpp \
-	$$ARDUMY_TOP/ArduMYActuatorState.hpp \
-	$$ARDUMY_TOP/ArduMYActuatorValue.hpp \
-	$$ARDUMY_TOP/ArduMYActuatorValueParser.hpp \
-	$$ARDUMY_TOP/ArduMYActuatorValueRepresentation.hpp \
-	$$ARDUMY_TOP/ArduMYActuatorValueSerializerBase.hpp \
-	$$ARDUMY_TOP/ArduMYActuatorValueSerializer.hpp \
-	$$ARDUMY_TOP/ArduMYCommandParser.hpp \
-	$$ARDUMY_TOP/ArduMYCommandSerializer.hpp \
-	$$ARDUMY_TOP/MagicDetector.hpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorConfig.hpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorConfigParser.hpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorConfigSerializerBase.hpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorConfigSerializer.hpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuator.hpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorSet.hpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorState.hpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorValue.hpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorValueParser.hpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorValueRepresentation.hpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorValueSerializerBase.hpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorValueSerializer.hpp \
+	$$ARDUMY_TOP/ardumy/ArduMYCommandParser.hpp \
+	$$ARDUMY_TOP/ardumy/ArduMYCommandSerializer.hpp \
+	$$ARDUMY_TOP/ardumy/MagicDetector.hpp \
+	$$ARDUMY_TOP/ardumy/FivePhase.hpp \
 
 
 
 ARDUMY_SOURCES += \
-	$$ARDUMY_TOP/ArduMYActuatorConfig.cpp \
-	$$ARDUMY_TOP/ArduMYActuatorConfigParser.cpp \
-	$$ARDUMY_TOP/ArduMYActuatorConfigSerializerBase.cpp \
-	$$ARDUMY_TOP/ArduMYActuatorConfigSerializer.cpp \
-	$$ARDUMY_TOP/ArduMYActuator.cpp \
-	$$ARDUMY_TOP/ArduMYActuatorSet.cpp \
-	$$ARDUMY_TOP/ArduMYActuatorState.cpp \
-	$$ARDUMY_TOP/ArduMYActuatorValue.cpp \
-	$$ARDUMY_TOP/ArduMYActuatorValueParser.cpp \
-	$$ARDUMY_TOP/ArduMYActuatorValueRepresentation.cpp \
-	$$ARDUMY_TOP/ArduMYActuatorValueSerializerBase.cpp \
-	$$ARDUMY_TOP/ArduMYActuatorValueSerializer.cpp \
-	$$ARDUMY_TOP/ArduMYCommandParser.cpp \
-	$$ARDUMY_TOP/ArduMYCommandSerializer.cpp \
-	$$ARDUMY_TOP/MagicDetector.cpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorConfig.cpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorConfigParser.cpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorConfigSerializerBase.cpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorConfigSerializer.cpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuator.cpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorSet.cpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorState.cpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorValue.cpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorValueParser.cpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorValueRepresentation.cpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorValueSerializerBase.cpp \
+	$$ARDUMY_TOP/ardumy/ArduMYActuatorValueSerializer.cpp \
+	$$ARDUMY_TOP/ardumy/ArduMYCommandParser.cpp \
+	$$ARDUMY_TOP/ardumy/ArduMYCommandSerializer.cpp \
+	$$ARDUMY_TOP/ardumy/MagicDetector.cpp \
+	$$ARDUMY_TOP/ardumy/FivePhase.cpp \
 
-HEADERS += $$ARDUMY_HEADERS
-SOURCES += $$ARDUMY_SOURCES
+HEADERS += $$ARDUMY_HEADERS \
+
+SOURCES += $$ARDUMY_SOURCES \
+
 
 

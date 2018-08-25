@@ -1,12 +1,12 @@
 #include "ArduMYTypeConversions.hpp"
 
-#include "../arduino/ArduMYActuatorState.hpp"
-#include "../arduino/ArduMYActuatorConfig.hpp"
-#include "../arduino/ArduMYActuator.hpp"
+#include "ardumy/ArduMYActuatorState.hpp"
+#include "ardumy/ArduMYActuatorConfig.hpp"
+#include "ardumy/ArduMYActuator.hpp"
 
-#include "../arduino/ArduMYActuatorSet.hpp"
-#include "../arduino/ArduMYCommandSerializer.hpp"
-#include "../arduino/ArduMYCommandParser.hpp"
+#include "ardumy/ArduMYActuatorSet.hpp"
+#include "ardumy/ArduMYCommandSerializer.hpp"
+#include "ardumy/ArduMYCommandParser.hpp"
 
 
 /*
@@ -39,34 +39,34 @@ QString ArduMYActuatorValueRepresentationToString(ArduMYActuatorValueRepresentat
 QString ArduMYActuatorValueToString(ArduMYActuatorValue val, ArduMYActuatorValueRepresentation representation)
 {
 	switch(representation) {
-	case(ArduMYActuatorValueRepresentation::BIT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_BIT): {
 		return val.bit?"true":"false";
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::BYTE): {
+	case(ArduMYActuatorValueRepresentation::VALREP_BYTE): {
 		return QString::number((quint8)val.byte);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_WORD): {
 		return QString::number((quint16)val.word);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::DOUBLE_WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_WORD): {
 		return QString::number((quint32)val.doubleWord);
 	}
 	break;
 	//Default to strictest possible equality when representation is unknown
 	default:
-	case(ArduMYActuatorValueRepresentation::REPRESENTATION_COUNT):
-	case(ArduMYActuatorValueRepresentation::QUAD_WORD): {
+	case(ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT):
+	case(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
 		return QString::number((quint64)val.quadWord);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::SINGLE_FLOAT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_SINGLE_FLOAT): {
 		return QString::number((float)val.singlePrecision);
 	}
 	break;
-	case(ArduMYActuatorValueRepresentation::DOUBLE_FLOAT): {
+	case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_FLOAT): {
 		return QString::number((double)val.doublePrecision);
 	}
 	break;

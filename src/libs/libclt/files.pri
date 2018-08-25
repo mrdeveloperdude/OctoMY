@@ -1,5 +1,5 @@
 
-CLT_TOP= $$SRCS/libs/libclt
+CLT_TOP= $${SRCS}/libs/libclt
 
 contains(DEFINES, EXTERNAL_LIB_OPENCL){
 

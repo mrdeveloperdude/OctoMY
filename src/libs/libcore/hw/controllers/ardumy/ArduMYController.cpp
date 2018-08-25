@@ -1,7 +1,7 @@
 #include "ArduMYController.hpp"
 
 #include "hw/serial/SerialSettingsWidget.hpp"
-#include "../arduino/ArduMYParserState.hpp"
+#include "ardumy/ArduMYParserState.hpp"
 #include "utility/Standard.hpp"
 #include "ArduMYControllerWidget.hpp"
 #include "ArduMYTypeConversions.hpp"
