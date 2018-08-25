@@ -1,5 +1,5 @@
 include( standard.pri )
-include( optimize_small.pri )
+include( optimization.pri )
 include( warnings.pri )
 include( protection.pri )
 include( ccache.pri )
