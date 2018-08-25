@@ -52,7 +52,7 @@ ZBarScanner::ZBarScanner()
     //}
 }
 
-const bool ZBarScanner::isAvailable()
+bool ZBarScanner::isAvailable()
 {
     return true;
 }
@@ -154,7 +154,7 @@ ZBarScanner::ZBarScanner()
 {
 }
 
-const bool ZBarScanner::isAvailable()
+bool ZBarScanner::isAvailable()
 {
     return false;
 }

@@ -7,8 +7,6 @@ include($$PRIS/common.pri)
 include($$PRIS/lib.pri)
 include($$PRIS/lib_list.pri)
 
-
-
 # Link objects directly
 REST_DEFINES=$$DEFINES
 DEFINES += INCLUDER_BUILD
@@ -34,7 +32,7 @@ for(INCLIBBASE, AUTOALL) {
 
 
 for(LIBBASE, AUTOLINKS) {
-	LIBNAME=lib$${LIBBASE}
+	LIBNAME=$$OC_LIB_PREFIX$${LIBBASE}
 	contains(AUTOLIB, $$LIBBASE){
 		error(" * * * " $$LIBNAME "WAS IN BOTH AUTOLIBS & AUTOLINKS AT THE SAME TIME (rest)")
 	}

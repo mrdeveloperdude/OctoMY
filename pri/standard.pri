@@ -12,9 +12,11 @@ CONFIG += x86 x86_64
 #CONFIG += console
 
 # Stop build if no std is selected
-!contains(CONFIG, c++14){
-	!contains(CONFIG, c++11){
-		error( "CONFIG MUST CONTAIN c++11 or c++14. Both are missing, aborting build!")
+!contains(CONFIG, c++17){
+	!contains(CONFIG, c++14){
+		!contains(CONFIG, c++11){
+			error( "CONFIG MUST CONTAIN c++11, c++14 or c++17. All are missing, aborting build!")
+		}
 	}
 }
 
@@ -22,7 +24,7 @@ CONFIG += x86 x86_64
 
 
 
-# Strive towards the most modern standard of C++ language available
+# Strive towards the most modern standard of C++ language available that is compatible with our target
 # From https://gcc.gnu.org/onlinedocs/gcc-5.1.0/gcc/C-Dialect-Options.html#C-Dialect-Options
 #     ______
 #    / ____/__    __
@@ -45,16 +47,27 @@ QMAKE_CXXFLAGS -= -std=gnu++14
 QMAKE_CXXFLAGS -= -std=gnu++1y
 QMAKE_CXXFLAGS -= -std=c++1z
 QMAKE_CXXFLAGS -= -std=gnu++1z
+QMAKE_CXXFLAGS -= -std=c++17
+QMAKE_CXXFLAGS -= -std=gnu++17
 
+QMAKE_CXXFLAGS -= /std:c++14
+QMAKE_CXXFLAGS -= /std:c++17
+QMAKE_CXXFLAGS -= /std:c++latest
+
+contains(CONFIG, c++17){
+	gcc:QMAKE_CXXFLAGS += -std=c++17
+	msvc:QMAKE_CXXFLAGS += /std:c++17
+}
 contains(CONFIG, c++14){
 	gcc:QMAKE_CXXFLAGS += -std=c++14 -std=c++1y
+	msvc:QMAKE_CXXFLAGS += /std:c++14
 }
 contains(CONFIG, c++11){
 	gcc:QMAKE_CXXFLAGS += -std=c++11
 }
 
 
-# Strive towards the most modern standard of pure C language available
+# Strive towards the most modern standard of pure C language available that is compatible with our target
 #     ______
 #    / ____/
 #   / /

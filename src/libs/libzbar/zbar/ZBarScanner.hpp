@@ -42,7 +42,7 @@ public:
     ZBarScanner();
 public:
 
-    static const bool isAvailable();
+    static bool isAvailable();
 
 public:
     QList<ZScanResult> scan(const QVideoFrame &frame);
