@@ -168,12 +168,18 @@ class QHttpResponsePrivate;
 ///////////////////////////////////////////////////////////////////////////////
 } // namespace client
 ///////////////////////////////////////////////////////////////////////////////
+
+#if false
 #ifdef Q_OS_WIN
 #   if defined(QHTTP_EXPORT)
 #       define QHTTP_API __declspec(dllexport)
 #   else
 #       define QHTTP_API __declspec(dllimport)
 #   endif
+#else
+#   define QHTTP_API
+#endif
+
 #else
 #   define QHTTP_API
 #endif

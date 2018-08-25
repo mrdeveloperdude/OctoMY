@@ -30,14 +30,9 @@ g++ {
 QMAKE_CXXFLAGS -= -Wold-style-cast -Wctor-dtor-privacy -Wshadow -Wswitch-default
 QMAKE_CXXFLAGS -= -Wsign-conversion -Wno-gnu-array-member-paren-init
 QMAKE_CXXFLAGS += -Wno-unused-parameter -Wno-format-contains-nul  -Wno-format-security -Wno-vla
-#Make stacktrace beautiful dureing debugging
-QMAKE_CXXFLAGS += -fno-omit-frame-pointer
 # Brave...
 #QMAKE_CXXFLAGS += -Werror
 
-# Build in all available bug protection
-QMAKE_CXXFLAGS += -fstack-protector-all -fstrict-overflow -fstack-usage
-#QMAKE_CXXFLAGS +=-fsanitize=address
 
 ########## Here are some warnings disabled to reduce logging:
 

@@ -14,14 +14,14 @@ contains(AUTOLIBS, $$LIBBASE ){
 		#message("-----------------------------------------------------------------")
 		#message("AUTOLIB  for '" $$LIBNAME "'" )
 
-		TARGET=$$LIBBASE
-		CONFIG +=	staticlib
-		TEMPLATE=lib
+		TARGET = $$LIBBASE
+		CONFIG += staticlib
+		TEMPLATE = lib
 		include($$PRIS/common.pri)
 		include($$PRIS/lib.pri)
 
 		INCLUDEPATH =
-		AUTOALL=$$AUTOLINKS $$AUTOLIBS
+		AUTOALL = $$AUTOLINKS $$AUTOLIBS
 #message("AUTOLINKS: " $$AUTOLINKS)message("AUTOLIBS: " $$AUTOLIBS)message("AUTOALL: " $$AUTOALL)
 		#AUTOALL -= $$LIBBASE
 		for(INCLIBBASE, AUTOALL) {

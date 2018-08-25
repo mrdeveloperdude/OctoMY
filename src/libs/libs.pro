@@ -16,6 +16,7 @@ CONFIG +=	ordered
 include($$PRIS/common.pri)
 include($$PRIS/lib_list.pri)
 
+
 #= #$$files(lib*)
 
 unset(SUBDIRS)

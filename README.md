@@ -1,4 +1,4 @@
-# ![OctoMY™ Logo](design/octomy_logo.png) OctoMY™ N-limbed madness!
+# ![OctoMY™ Logo](design/octomy_logo.png) OctoMY™ - Ready-to-run robot software
 
 [![OctoMY™ Build status](https://travis-ci.org/mrdeveloperdude/OctoMY.svg?branch=master)](https://travis-ci.org/mrdeveloperdude/OctoMY)
 
@@ -28,7 +28,7 @@ OctoMY™ Is fast, stable and ultimately flexible.
 Where can I download?
 ---------------------
 
-Install directly from google play (NOT YET), from binaries on main project page or from source via github
+Install directly from google play (NOT YET), from [binaries on main project page](http://www.octomy.org/download) or from source via github
 
 [read more...](http://www.octomy.org/code)
 
