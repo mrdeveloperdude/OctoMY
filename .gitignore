@@ -24,7 +24,7 @@ moc_*.cpp
 qrc_*.cpp
 ui_*.h
 Makefile*
-*-build-*
+*build-*
 
 # QtCreator
 
@@ -34,9 +34,12 @@ Makefile*
 *.qmlproject.user
 *.qmlproject.user.*
 
+# OctoMY
+
 local_overrides.pri
 
-/build
+
+/build*
 /integration/mxe
 /integration/scripts
 *.txt
