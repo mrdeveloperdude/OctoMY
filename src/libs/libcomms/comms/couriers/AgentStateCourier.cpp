@@ -10,6 +10,7 @@
 #include "comms/couriers/CourierMandate.hpp"
 
 #include "utility/Standard.hpp"
+#include "utility/Utility.hpp"
 
 #include <QDebug>
 #include <QDataStream>
@@ -34,8 +35,8 @@ AgentStateCourier::AgentStateCourier(QDataStream *initialization, CommsChannel &
 {
 	OC_METHODGATE();
 	initParams(initialization);
-	//mParams.forceSync(QDateTime::currentMSecsSinceEpoch());
-	mParams.update(QDateTime::currentMSecsSinceEpoch());
+	//mParams.forceSync(utility::currentMsecsSinceEpoch<quint64>());
+	mParams.update(utility::currentMsecsSinceEpoch<quint64>());
 
 	//setForwardRescheduleSignal(mParams, true);
 
@@ -234,7 +235,7 @@ quint16 AgentStateCourier::sendingOpportunity(QDataStream &ds)
 		ds << mParams;
 		quint16 bytes=mParams.bytesSent();
 		qDebug()<<"Spent sending opportunity for agent status data with "<<bytes<<" bytes";
-		mLastSendTime=QDateTime::currentMSecsSinceEpoch();
+		mLastSendTime=utility::currentMsecsSinceEpoch<quint64>();
 		return  bytes;
 	} else {
 		qWarning()<<"ERROR: sendingOpportunity while sendActive=false";
@@ -246,6 +247,7 @@ quint16 AgentStateCourier::sendingOpportunity(QDataStream &ds)
 quint16 AgentStateCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 {
 	OC_METHODGATE();
+	Q_UNUSED(availableBytes);
 	if(mandate().receiveActive) {
 		ds >> mParams;
 		quint16 bytes=mParams.bytesRead();

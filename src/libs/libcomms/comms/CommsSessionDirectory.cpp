@@ -192,7 +192,7 @@ SESSION_ID_TYPE CommsSessionDirectory::generateUnusedSessionID()
 		// NOTE: Starting at 1 ensures that we never get INVALID_SESSION_ID by accident
 		const SESSION_ID_TYPE  inc = 1 + (mRng->generateInt32() % m10);
 		mUnusedIndex = (mUnusedIndex + inc)% m;
-		if(0!= mUnusedIndex && (mBySessionID.end() == mBySessionID.find(mUnusedIndex))) {
+		if((0!= mUnusedIndex) && (mBySessionID.end() == mBySessionID.find(mUnusedIndex))) {
 			// We have found an unused session
 			return mUnusedIndex;
 		}

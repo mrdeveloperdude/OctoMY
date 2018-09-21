@@ -2,12 +2,13 @@
 #include "ui_HUDWidget.h"
 
 #include "utility/Standard.hpp"
+#include "utility/Utility.hpp"
 #include <QDateTime>
 
 HUDWidget::HUDWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::HUDWidget)
-	, startTime(QDateTime::currentMSecsSinceEpoch())
+	, startTime(utility::currentMsecsSinceEpoch<quint64>())
 {
 	ui->setupUi(this);
 	gaugeTimer.setInterval(1000/60);
@@ -35,8 +36,8 @@ void HUDWidget::hideEvent(QHideEvent *){
 
 
 void HUDWidget::onGaugeTimer(){
-	const float cmsse=QDateTime::currentMSecsSinceEpoch()-startTime;
-	const float ms = cmsse/1000.0f;
+	const double cmsse=utility::currentMsecsSinceEpoch<quint64>()-startTime;
+	const double ms = cmsse/1000.0;
 
 	float alpha     =  0.0f;
 	float beta      =  0.0f;
@@ -56,22 +57,22 @@ void HUDWidget::onGaugeTimer(){
 	float dme       =  0.0f;
 
 
-	alpha     =   20.0f * sin( ms /  10.0f );
-	beta      =   15.0f * sin( ms /  10.0f );
-	roll      =  180.0f * sin( ms /  10.0f );
-	pitch     =   90.0f * sin( ms /  20.0f );
-	heading   =  360.0f * sin( ms /  40.0f );
-	slipSkid  =    1.0f * sin( ms /  10.0f );
-	turnRate  =    7.0f * sin( ms /  10.0f );
-	devH      =    1.0f * sin( ms /  20.0f );
-	devV      =    1.0f * sin( ms /  20.0f );
-	airspeed  =  125.0f * sin( ms /  40.0f ) +  125.0f;
-	altitude  = 9000.0f * sin( ms /  40.0f ) + 9000.0f;
-	pressure  =    2.0f * sin( ms /  20.0f ) +   30.0f;
-	climbRate =  650.0f * sin( ms /  20.0f );
-	machNo    = airspeed / 650.0f;
-	adf       = -360.0f * sin( ms /  50.0f );
-	dme       =   99.0f * sin( ms / 100.0f );
+	alpha     = static_cast<float>(   20.0 * sin( ms /  10.0 ));
+	beta      = static_cast<float>(   15.0 * sin( ms /  10.0 ));
+	roll      = static_cast<float>(  180.0 * sin( ms /  10.0 ));
+	pitch     = static_cast<float>(   90.0 * sin( ms /  20.0 ));
+	heading   = static_cast<float>(  360.0 * sin( ms /  40.0 ));
+	slipSkid  = static_cast<float>(    1.0 * sin( ms /  10.0 ));
+	turnRate  = static_cast<float>(    7.0 * sin( ms /  10.0 ));
+	devH      = static_cast<float>(    1.0 * sin( ms /  20.0 ));
+	devV      = static_cast<float>(    1.0 * sin( ms /  20.0 ));
+	airspeed  = static_cast<float>(  125.0 * sin( ms /  40.0 ) +  125.0);
+	altitude  = static_cast<float>( 9000.0 * sin( ms /  40.0 ) + 9000.0);
+	pressure  = static_cast<float>(    2.0 * sin( ms /  20.0 ) +   30.0);
+	climbRate = static_cast<float>(  650.0 * sin( ms /  20.0 ));
+	machNo    = static_cast<float>( airspeed / 650.0f);
+	adf       = static_cast<float>( -360.0 * sin( ms /  50.0 ));
+	dme       = static_cast<float>(   99.0 * sin( ms / 100.0 ));
 
 	ui->widgetPFD->setFlightPathMarker ( alpha, beta );
 	ui->widgetPFD->setRoll          ( roll     );

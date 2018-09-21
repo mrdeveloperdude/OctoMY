@@ -85,7 +85,7 @@ void CLWorker::setInitPBO(const bool init)
 				}
 			}
 		} else {
-			if(0!=mPbo) {
+			if(nullptr!=mPbo) {
 				qDebug()<<"Trying to free PBO "<<QString::number(mPbo);
 				glDeleteBuffers(1, &mPbo);
 				mPbo=0;

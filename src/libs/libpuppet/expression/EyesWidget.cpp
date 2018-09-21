@@ -5,6 +5,8 @@
 #include "identity/Identicon.hpp"
 #include "security/PortableID.hpp"
 
+#include "utility/Utility.hpp"
+
 
 
 #include <QDateTime>
@@ -27,12 +29,12 @@
 
 EyesWidget::EyesWidget(QWidget *parent)
 	: QWidget(parent)
-	, mStartTime(QDateTime::currentMSecsSinceEpoch())
+	, mStartTime(utility::currentMsecsSinceEpoch<quint64>())
 	, mLastTime(0)
 	, mBlink(0.0)
 	, mCycle(0.0)
-	, mLeftEye(QVector2D(-0.2,0),-0.1*M_PI)
-	, mRightEye(QVector2D(0.2,0),0.1*M_PI)
+	, mLeftEye(QVector2D(-0.2f, 0.0f), -0.1*M_PI)
+	, mRightEye(QVector2D(0.2f, 0.0f), 0.1*M_PI)
 	, mBgBrush("black")
 	, mEyeSteer(0,0)
 	, mHideEyes(true)
@@ -151,7 +153,7 @@ void EyesWidget::onUpdateTimer()
 		mLeftEye.setSteer(mEyeSteerSmooth);
 		mRightEye.setSteer(mEyeSteerSmooth);
 	}
-	const quint64 now=QDateTime::currentMSecsSinceEpoch();
+	const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 	//const quint64 sinceStart=now-startTime;
 	const quint64 sinceLastTime=now-mLastTime;
 	mLastTime=now;

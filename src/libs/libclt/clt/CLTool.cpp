@@ -67,21 +67,21 @@ cl_context_properties *CLTool::generateProperties( const cl_platform_id platform
 	const Display* glxDisp=glXGetCurrentDisplay();
 	// Build properties list
 	int i=0;
-	if(0!=glxCtx) {
+	if(nullptr!=glxCtx) {
 		qDebug()<<"CLWORKER! Added property: GLX enabled";
 		contextProps[i++]=CL_GL_CONTEXT_KHR;
 		contextProps[i++]= (cl_context_properties)(glxCtx);
 	} else {
 		qDebug()<<"CLWORKER! Added property: GLX disabled";
 	}
-	if(0!=glxDisp) {
+	if(nullptr!=glxDisp) {
 		qDebug()<<"CLWORKER! Added property: GLX Display enabled";
 		contextProps[i++]=CL_GLX_DISPLAY_KHR;
 		contextProps[i++]= (cl_context_properties)(glxDisp);
 	} else {
 		qDebug()<<"CLWORKER! Added property: GLX Display disabled";
 	}
-	if(0!=platformID) {
+	if(nullptr!=platformID) {
 		qDebug()<<"CLWORKER! Added property: Platform enabled with ID "<<platformID;
 		contextProps[i++]=CL_CONTEXT_PLATFORM;
 		contextProps[i++]=(cl_context_properties)(platformID);

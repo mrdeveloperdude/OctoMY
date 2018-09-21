@@ -20,13 +20,13 @@ SensorInput::SensorInput(QObject *parent):
 
 	//qDebug()<<"SENSOR INPUT STARTING";
 	load();
-	if (0 != source) {
+	if (nullptr != source) {
 		source->setPreferredPositioningMethods(QGeoPositionInfoSource::AllPositioningMethods);
 		source->startUpdates();
 	}
 
 	QAccelerometer *a=OC_NEW QAccelerometer(this);
-	if(0!=a){
+	if(nullptr != a){
 		if(!a->connectToBackend()){
 			delete a;
 			a=nullptr;
@@ -43,7 +43,7 @@ SensorInput::SensorInput(QObject *parent):
 	}
 
 	QCompass *c=OC_NEW QCompass(this);
-	if(0!=c){
+	if(nullptr != c){
 		if(!c->connectToBackend()){
 			delete c;
 			c=nullptr;
@@ -60,7 +60,7 @@ SensorInput::SensorInput(QObject *parent):
 	}
 
 	QGyroscope*g=OC_NEW QGyroscope(this);
-	if(0!=g){
+	if(nullptr != g){
 		if(!g->connectToBackend()){
 			delete g;
 			g=nullptr;
@@ -80,9 +80,9 @@ SensorInput::SensorInput(QObject *parent):
 
 void SensorInput::onAccelerometerReadingChanged()
 {
-	if(0!=accelerometer){
+	if(nullptr!=accelerometer){
 		QAccelerometerReading *r=accelerometer->reading();
-		if(0!=r){
+		if(nullptr!=r){
 			emit accelerometerUpdated(r);
 		}
 	}
@@ -90,9 +90,9 @@ void SensorInput::onAccelerometerReadingChanged()
 
 void SensorInput::onCompassReadingChanged()
 {
-	if(0!=compass){
+	if(nullptr!=compass){
 		QCompassReading *r=compass->reading();
-		if(0!=r){
+		if(nullptr!=r){
 			emit compassUpdated(r);
 		}
 	}
@@ -101,9 +101,9 @@ void SensorInput::onCompassReadingChanged()
 
 void SensorInput::onGyroscopeReadingChanged()
 {
-	if(0!=gyroscope){
+	if(nullptr!=gyroscope){
 		QGyroscopeReading *r=gyroscope->reading();
-		if(0!=r){
+		if(nullptr!=r){
 			emit gyroscopeUpdated(r);
 		}
 	}
@@ -124,7 +124,7 @@ void SensorInput::onGyroscopeReadingChanged()
 void SensorInput::hookSignals(QObject &o)
 {
 
-	if(0!=source){
+	if(nullptr!=source){
 		if(!connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)),&o,SLOT(onPositionUpdated(QGeoPositionInfo)),OC_CONTYPE)){
 			qWarning()<<"ERROR: Could not connect";
 		}
@@ -145,8 +145,8 @@ void SensorInput::hookSignals(QObject &o)
 
 void SensorInput::unHookSignals(QObject &o)
 {
-	if(0!=source){
-		if(!disconnect(source, SIGNAL(positionUpdated(QGeoPositionInfo)),&o,SLOT(onPositionUpdated(QGeoPositionInfo)))){
+	if(nullptr!=source){
+		if(!disconnect(source, SIGNAL(positionUpdated(QGeoPositionInfo)), &o, SLOT(onPositionUpdated(QGeoPositionInfo)))){
 			qWarning()<<"ERROR: Could not disconnect";
 		}
 	}

@@ -12,7 +12,7 @@
 
 
 int main(int argc, char *argv[]){
-	qsrand(QDateTime::currentMSecsSinceEpoch());
+	qsrand(utility::currentMsecsSinceEpoch<quint64>());
 	LogHandler::setLogging(true);
 
 	QCoreApplication app(argc, argv);

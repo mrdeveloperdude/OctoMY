@@ -44,7 +44,7 @@ static quint16 defaultPortForNodeType(NodeType type)
 	quint16 defaultPort=0;
 	switch(type) {
 	case(TYPE_ZOO):
-	default:
+	//default:
 	case(TYPE_UNKNOWN):
 	case(TYPE_AGENT): {
 		defaultPort=ZooConstants::OCTOMY_UDP_DEFAULT_PORT_AGENT;
@@ -73,8 +73,8 @@ Node::Node(INodeLauncher &laucher, AppContext *context, NodeRole role, NodeType 
 	, mLocalIdentity(mContext->baseDir() + "/local_identity.json")
 	, mAddressBook (mContext->baseDir() + "/addressbook.json")
 	, mAddresses(defaultPortForNodeType(mType), true)
-	, mCarrier(OC_NEW CommsCarrierUDP( (QObject *)this) )
-	, mComms (OC_NEW CommsChannel(*mCarrier, mKeyStore, mAddressBook, (QObject *)this))
+	, mCarrier(OC_NEW CommsCarrierUDP( static_cast<QObject *>(this)) )
+	, mComms (OC_NEW CommsChannel(*mCarrier, mKeyStore, mAddressBook, static_cast<QObject *>(this)))
 	, mDiscovery (OC_NEW DiscoveryClient(*this))
 	, mZooClient (OC_NEW ZooClient(this))
 	, mSensors (OC_NEW SensorInput(this))
@@ -116,7 +116,7 @@ void Node::init()
 		mCarrier->setListenAddress(listenAddress);
 	}
 
-	mKeyStore.synchronize([this](ASEvent<QVariantMap> &se) {
+	mKeyStore.synchronize([](ASEvent<QVariantMap> &se) {
 		const bool ok=se.isSuccessfull();
 		qDebug()<<"Keystore synchronized with ok="<<ok;
 	});
@@ -131,6 +131,7 @@ void Node::init()
 	});
 
 	mAddressBook.synchronize([=](SimpleDataStore &ab, bool ok) {
+		Q_UNUSED(ab);
 		qDebug()<<"Address book synchronized with ok="<<ok;
 		mClients.syncToAddressBook(mAddressBook, sharedThis());
 	});
@@ -390,7 +391,7 @@ QSet<QSharedPointer<Associate> > Node::controlsWithActiveSessions(quint64 now)
 	OC_METHODGATE();
 	QSet<QSharedPointer<Associate> > out;
 	if(0==now) {
-		now=QDateTime::currentMSecsSinceEpoch();
+		now=utility::currentMsecsSinceEpoch<quint64>();
 	}
 	const quint64 lastActive=now-(1000*60);//One minute ago. TODO: Turn into constant or setting
 
@@ -459,7 +460,7 @@ void Node::setCourierRegistration(QSharedPointer<Associate> assoc, bool reg)
 	if(nullptr!=cc) {
 		if(!assoc.isNull()) {
 			//quint64 now=0;
-			//if(0==now) {				now=QDateTime::currentMSecsSinceEpoch();			}
+			//if(0==now) {				now=utility::currentMsecsSinceEpoch<quint64>();			}
 			//const bool honeyMoon=cc->honeymoon(now);
 			//QSet<QSharedPointer<NodeAssociate> > controls = honeyMoon? allControls() : controlsWithActiveSessions(now);
 			const QString id=assoc->id();
@@ -494,7 +495,7 @@ void Node::updateCourierRegistration(quint64 now)
 {
 	OC_METHODGATE();
 	if(0==now) {
-		now=QDateTime::currentMSecsSinceEpoch();
+		now=utility::currentMsecsSinceEpoch<quint64>();
 	}
 	QSet<QSharedPointer<Associate> > active = controlsWithActiveSessions(now);
 	if(active!=mLastActiveControls) {
@@ -558,7 +559,7 @@ TryToggleState Node::updateOnlineStatus(const TryToggleState currentTryState)
 			}
 		}
 		if(nextOnlineStatus!=isTryingToGoOnline) {
-			comms()->setHoneymoonEnd(QDateTime::currentMSecsSinceEpoch()+(1000*60*5));//Set 5 minute honeymoon at every state change
+			comms()->setHoneymoonEnd(utility::currentMsecsSinceEpoch<quint64>()+(1000*60*5));//Set 5 minute honeymoon at every state change
 			QSet<QSharedPointer<Associate> > all=allControls();
 			qDebug()<<"Decided to change online status for "<<QString::number(all.size())<< " controls:";
 			for(auto assoc:all) {
@@ -796,18 +797,22 @@ void Node::onKeystoreReady(bool ok)
 
 void Node::onCommsError(QString e)
 {
+	Q_UNUSED(e);
 	OC_METHODGATE();
 	//qDebug()<<"NODE UNIMP Comms error: "<<e;
 }
 
 void Node::onCommsClientAdded(CommsSession *c)
 {
+	Q_UNUSED(c);
 	OC_METHODGATE();
 	//qDebug()<<"NODE UNIMP Client added: "<<c->toString();
 }
 
 void Node::onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection)
 {
+	Q_UNUSED(isConnected);
+	Q_UNUSED(needsConnection);
 	OC_METHODGATE();
 	//qDebug() <<"NODE UNIMP New connection status: "<<(s?"ONLINE":"OFFLINE");
 }
@@ -819,22 +824,26 @@ void Node::onCommsConnectionStatusChanged(const bool isConnected, const bool nee
 
 void Node::onPositionUpdated(const QGeoPositionInfo &info)
 {
+	Q_UNUSED(info);
 	OC_METHODGATE();
 }
 
 
 void Node::onCompassUpdated(QCompassReading *r)
 {
+	Q_UNUSED(r);
 	OC_METHODGATE();
 }
 
 void Node::onAccelerometerUpdated(QAccelerometerReading *r)
 {
+	Q_UNUSED(r);
 	OC_METHODGATE();
 }
 
 void Node::onGyroscopeUpdated(QGyroscopeReading *r)
 {
+	Q_UNUSED(r);
 	OC_METHODGATE();
 }
 

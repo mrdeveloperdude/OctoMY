@@ -106,7 +106,7 @@ static QDebug operator<<(QDebug d, qhttp::server::QHttpRequest &s)
 
 QDebug operator<<(QDebug d, qhttp::server::QHttpRequest *s)
 {
-	if(0!=s) {
+	if(nullptr!=s) {
 		d <<*s;
 	} else {
 		d.nospace()<<"NULL";
@@ -127,6 +127,7 @@ bool ZooServer::start(const QString pathOrPortNumber)
 	if(!connect(this,  &QHttpServer::newConnection, [this](qhttp::server::QHttpConnection*) {
 	//qDebug()<<"a new connection was made!\n";
 })) {
+		Q_UNUSED(this);
 		qWarning()<<"ERROR: Could not connect";
 	}
 	mBackgroundTimer.start();
@@ -186,6 +187,7 @@ bool ZooServer::isStarted()const
 void ZooServer::serveFallback(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
 {
 	OC_METHODGATE();
+	Q_UNUSED(req);
 	const static char KMessage[] = "Invalid request";
 	res->addHeader("connection", "close");
 	res->addHeader("server", ZooConstants::OCTOMY_SERVER);
@@ -201,6 +203,7 @@ void ZooServer::serveFallback(qhttp::server::QHttpRequest* req, qhttp::server::Q
 void ZooServer::serveIndex(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
 {
 	OC_METHODGATE();
+	Q_UNUSED(req);
 	QVariantHash contact;
 	contact["name"] = "John Smith";
 	contact["email"] = "john.smith@gmail.com";
@@ -224,18 +227,18 @@ void ZooServer::serveIdenticon(qhttp::server::QHttpRequest* req, qhttp::server::
 	OC_METHODGATE();
 	QUrlQuery query(req->url().query());
 	QString id=query.queryItemValue("id");
-	QByteArray idBA=0;
+	QByteArray idBA;
 	if(""!=id) {
 		idBA=id.toUtf8();
 	}
 
 	QString w=query.queryItemValue("w");
-	quint64 wInt=64;
+	int wInt=64;
 	if(""!=w) {
 		wInt=w.toInt();
 	}
 	QString h=query.queryItemValue("h");
-	quint64 hInt=64;
+	int hInt=64;
 	if(""!=h) {
 		hInt=h.toInt();
 	}
@@ -334,6 +337,7 @@ void ZooServer::serveAPI(qhttp::server::QHttpRequest* req, qhttp::server::QHttpR
 void ZooServer::serveAdmin(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
 {
 	OC_METHODGATE();
+	Q_UNUSED(req);
 	//QByteArray data=req->collectedData();
 	QVariantHash parameters;
 
@@ -385,7 +389,7 @@ void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp
 			qDebug()<<"INVALID ADDRESS SKIPPED: "<<nadr.toString()<<" FROM "<<am;
 		}
 	}
-	const quint64 now=QDateTime::currentMSecsSinceEpoch();
+	const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 	QSharedPointer<Associate> part(OC_NEW Associate(root));
 	qDebug()<<"GOT PARTICIPANT "<<part->name()<<"(type="<<nodeTypeToString(part->type())<<", gender="<<part->gender()<<", id="<<part->id()<<", addresses="<<part->addressList().toString()<<")";
 	NetworkAddress na(QHostAddress(req->remoteAddress()), req->remotePort());
@@ -410,7 +414,7 @@ void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp
 void ZooServer::onBackgroundTimer()
 {
 	OC_METHODGATE();
-	mDiscovery.prune(QDateTime::currentMSecsSinceEpoch()-PRUNE_DEADLINE);//Prune all not seen for some time
+	mDiscovery.prune(utility::currentMsecsSinceEpoch<quint64>()-PRUNE_DEADLINE);//Prune all not seen for some time
 }
 
 

@@ -2,6 +2,7 @@
 #define PUNCHREGISTRY_HPP
 
 #include "utility/Standard.hpp"
+#include "utility/Utility.hpp"
 
 #include <QDateTime>
 #include <QMap>
@@ -29,7 +30,7 @@ struct PunchPartner{
 			, public_port(public_port)
 			, local_address(local_address)
 			, local_port(local_port)
-			, lastTime (QDateTime::currentMSecsSinceEpoch())
+			, lastTime (utility::currentMsecsSinceEpoch<quint64>())
 		{
 
 		}

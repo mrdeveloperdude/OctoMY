@@ -75,7 +75,7 @@ quint64 AddressEntry::last() const
 void AddressEntry::tried(bool successful, quint64 now)
 {
 	if(0==now) {
-		now = QDateTime::currentMSecsSinceEpoch();
+		now = utility::currentMsecsSinceEpoch<quint64>();
 	}
 	if(successful) {
 		lastSuccess = now;

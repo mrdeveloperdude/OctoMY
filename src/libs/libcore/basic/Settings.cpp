@@ -1,6 +1,7 @@
 #include "basic/Settings.hpp"
 #include <QCoreApplication>
 #include "utility/Standard.hpp"
+#include "utility/Utility.hpp"
 #include "basic/UniquePlatformFingerprint.hpp"
 
 #include <QDateTime>
@@ -76,7 +77,7 @@ void Settings::sync()
 {
 	OC_METHODGATE();
 	if(nullptr!=mSettings)	{
-		const qint64 now=QDateTime::currentMSecsSinceEpoch();
+		const qint64 now=utility::currentMsecsSinceEpoch<quint64>();
 		const qint64 timeSinceLastSync=now-mLastSync;
 		if(timeSinceLastSync>MAX_SYNC_INTERVAL) {
 			delayedSync();
@@ -96,7 +97,7 @@ void Settings::delayedSync()
 	if(nullptr!=mSettings)	{
 		//qDebug()<<"SETTINGS SYNC PERFORMED";
 		mSettings->sync();
-		mLastSync=QDateTime::currentMSecsSinceEpoch();
+		mLastSync=utility::currentMsecsSinceEpoch<quint64>();
 	}
 }
 

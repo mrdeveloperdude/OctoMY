@@ -198,7 +198,7 @@ void Client::updateOnlineStatus()
 			}
 		}
 		if(nextOnlineStatus!=isTryingToGoOnline) {
-			ctl->comms()->setHoneymoonEnd(QDateTime::currentMSecsSinceEpoch()+(1000*60*5));//Set 5 minute honeymoon at every state change
+			ctl->comms()->setHoneymoonEnd(utility::currentMsecsSinceEpoch<quint64>()+(1000*60*5));//Set 5 minute honeymoon at every state change
 			qDebug()<<"Decided to change online for "<<nodeAss->name();
 			setCourierRegistration(nextOnlineStatus);
 

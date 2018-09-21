@@ -3,8 +3,10 @@
 #include "basic/Associate.hpp"
 #include "comms/messages/MessageType.hpp"
 #include "basic/AddressEntry.hpp"
+#include "utility/Utility.hpp"
 
 #include <QSharedPointer>
+#include <QString>
 
 const QByteArray DiscoveryCourier::sLooperBuf=QString("lsdfjghsdklfjghklsdfjklsdjfklsdjflksjdflksjdf").toUtf8();
 const LoopingBuffer DiscoveryCourier::sLooper(DiscoveryCourier::sLooperBuf);
@@ -52,9 +54,16 @@ quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 	sLooper.doXor(ba);
 	ds << ba;
 	const auto bytes=ba.size();
-	mLastSend=QDateTime::currentMSecsSinceEpoch();
-	qDebug()<<" **DISCOVERY** TX bytes=" << bytes << " ( n=" << nAddr << ", bt=" << btAddr << ")";
-	return bytes;
+	mLastSend=utility::currentMsecsSinceEpoch<quint64>();
+	qDebug().noquote().nospace()<<" **DISCOVERY** TX bytes="
+	<< QString::number(bytes)
+	<< " ( n="
+	<< nAddr.toString()
+	<< ", bt="
+	<< btAddr
+	<< ")";
+	return static_cast<quint16>(bytes);
+
 
 }
 
@@ -80,6 +89,6 @@ quint16 DiscoveryCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 		xds>>btAddrInt;
 	}
 	const QBluetoothAddress btAddr(btAddrInt);
-	qDebug() << " **DISCOVERY** RX bytes=" << bytes << " ( n=" << nAddr << ", bt=" << btAddr << ")";
-	return bytes;
+	qDebug() << " **DISCOVERY** RX bytes=" << bytes << " ( n=" << nAddr.toString() << ", bt=" << btAddr << ")";
+	return static_cast<quint16>(bytes);
 }

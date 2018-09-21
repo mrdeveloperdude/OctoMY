@@ -43,7 +43,7 @@ ClientModel::ClientModel(CommsSessionDirectory *clients, QObject *parent)
 	: QAbstractItemModel(parent)
 	, clients(clients)
 	, services(QPixmap(":/images/services.png"))
-	, tree(OC_NEW QVector<Node>(0, Node(0)))
+	, tree(OC_NEW QVector<Node>(0, Node(nullptr)))
 {
 
 }
@@ -128,7 +128,7 @@ bool ClientModel::hasChildren(const QModelIndex &parent) const
 Qt::ItemFlags ClientModel::flags(const QModelIndex &index) const
 {
 	if (!index.isValid()) {
-		return 0;
+		return nullptr;
 	}
 	return Qt::ItemIsDragEnabled|QAbstractItemModel::flags(index);
 }
@@ -144,7 +144,7 @@ ClientModel::Node *ClientModel::node(int row, Node *parent) const
 
 ClientModel::Node *ClientModel::parent(Node *child) const
 {
-	return child ? child->parent : 0;
+	return child ? child->parent : nullptr;
 }
 
 int ClientModel::row(Node *node) const

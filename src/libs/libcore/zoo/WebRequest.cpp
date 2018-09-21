@@ -32,7 +32,7 @@ WebRequest::WebRequest(QString friendlyName):
   , doMultipart(false)
 {
 	OC_METHODGATE();
-	reqStart=QDateTime::currentMSecsSinceEpoch();
+	reqStart=utility::currentMsecsSinceEpoch<quint64>();
 	req.setRawHeader("User-Agent", Settings::USERAGENT.toUtf8());
 }
 
@@ -69,7 +69,7 @@ QDebug operator<<(QDebug d, Method m){
 QString WebRequest::elapsed(){
 	OC_METHODGATE();
 	if(reqStart>0){
-		return utility::humanReadableElapsedSeconds(((long double)QDateTime::currentMSecsSinceEpoch()-reqStart)/1000.0,3);
+		return utility::humanReadableElapsedSeconds(((long double)utility::currentMsecsSinceEpoch<quint64>()-reqStart)/1000.0,3);
 	}
 	else{
 		return "Not started";
@@ -140,7 +140,7 @@ void WebRequest::startRequestWorker(){
 	OC_METHODGATE();
 	qDebug()<<signature()<<" STARTED";
 	optimizeRequest();
-	reqStart=QDateTime::currentMSecsSinceEpoch();
+	reqStart=utility::currentMsecsSinceEpoch<quint64>();
 	completed=false;
 	hookManagerSignals();
 	switch(method){
@@ -178,17 +178,17 @@ void WebRequest::startRequestWorker(){
 				}
 				else{
 					qWarning() << signature()<< "ERROR: no out: "<<out;
-					rep=0;
+					rep=nullptr;
 				}
 			}break;
 
 		default:
 		case(UNSET_METHOD):{
 				qWarning()<< signature()<< "ERROR: method unset or UNKNOWN";
-				rep=0;
+				rep=nullptr;
 			}return;
 	}
-	if(0!=rep){
+	if(nullptr!=rep){
 		hookReplySignals();
 		startTimeoutTimer();
 	}
@@ -284,7 +284,7 @@ void WebRequest::onReplyTimeout(){
 		return;
 	}
 	//Be conservative, require the full timeout to be expired
-	const qint64 now=QDateTime::currentMSecsSinceEpoch();
+	const qint64 now=utility::currentMsecsSinceEpoch<quint64>();
 	const qint64 left=reqStart+timeoutInterval-now;
 	if(left>0){
 		//qDebug()<< "TIMEOUT - Full timeout not reached, continuing to wait";

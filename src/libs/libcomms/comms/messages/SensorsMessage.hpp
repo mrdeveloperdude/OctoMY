@@ -4,8 +4,12 @@
 #include <QDataStream>
 #include <QVector3D>
 #include <QVector2D>
+
+#pragma GCC diagnostic ignored "-Woverloaded-virtual"
 #include <QGeoCoordinate>
-#include <QCompassReading>
+#include <QCompassFilter>
+#pragma GCC diagnostic warning "-Woverloaded-virtual"
+
 #include <QColor>
 
 class SensorsMessage

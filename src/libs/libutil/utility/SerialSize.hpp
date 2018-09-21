@@ -19,7 +19,7 @@ public:
 	}
 
 	template <typename T>
-	quint64 operator ()(const T & t)
+	qint64 operator ()(const T & t)
 	{
 		data.seek(0);
 		stream << t;

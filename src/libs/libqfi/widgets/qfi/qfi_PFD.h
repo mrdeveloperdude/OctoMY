@@ -71,7 +71,7 @@ class qfi_PFD : public QGraphicsView
 		};
 
 		/** Constructor. */
-		explicit qfi_PFD( QWidget *parent = 0 );
+		explicit qfi_PFD( QWidget *parent = nullptr );
 
 		/** Destructor. */
 		~qfi_PFD();
@@ -98,13 +98,13 @@ class qfi_PFD : public QGraphicsView
 		}
 
 		/** @param roll angle [deg] */
-		inline void setRoll( float roll )
+		inline void setRoll( qreal roll )
 		{
 			m_adi->setRoll( roll );
 		}
 
 		/** @param pitch angle [deg] */
-		inline void setPitch( float pitch )
+		inline void setPitch( qreal pitch )
 		{
 			m_adi->setPitch( pitch );
 		}
@@ -113,13 +113,13 @@ class qfi_PFD : public QGraphicsView
 	 * @param angle of attack [deg]
 	 * @param angle of sideslip [deg]
 	 * @param flight path marker visibility */
-		inline void setFlightPathMarker( float aoa, float sideslip, bool visible = true )
+		inline void setFlightPathMarker( qreal aoa, qreal sideslip, bool visible = true )
 		{
 			m_adi->setFlightPathMarker( aoa, sideslip, visible );
 		}
 
 		/** @param normalized slip or skid (range from -1.0 to 1.0) */
-		inline void setSlipSkid( float slipSkid )
+		inline void setSlipSkid( qreal slipSkid )
 		{
 			m_adi->setSlipSkid( slipSkid );
 		}
@@ -127,7 +127,7 @@ class qfi_PFD : public QGraphicsView
 		/**
 	 * @param normalized turn rate (range from -1.0 to 1.0),
 	 * hash marks positions are set to be -0.5 and 0.5 */
-		inline void setTurnRate( float turnRate )
+		inline void setTurnRate( qreal turnRate )
 		{
 			m_adi->setTurnRate( turnRate );
 		}
@@ -135,7 +135,7 @@ class qfi_PFD : public QGraphicsView
 		/**
 	 * @param normalized horizontal deviation bar position (range from -1.0 to 1.0)
 	 * @param horizontal deviation bar visibility */
-		inline void setBarH( float barH, bool visible = true )
+		inline void setBarH( qreal barH, bool visible = true )
 		{
 			m_adi->setBarH( barH, visible );
 		}
@@ -143,7 +143,7 @@ class qfi_PFD : public QGraphicsView
 		/**
 	 * @param normalized vertical deviation bar position (range from -1.0 to 1.0)
 	 * @param vertical deviation bar visibility */
-		inline void setBarV( float barV, bool visible = true )
+		inline void setBarV( qreal barV, bool visible = true )
 		{
 			m_adi->setBarV( barV, visible );
 		}
@@ -151,7 +151,7 @@ class qfi_PFD : public QGraphicsView
 		/**
 	 * @param normalized horizontal deviation dot position (range from -1.0 to 1.0)
 	 * @param horizontal deviation dot visibility */
-		inline void setDotH( float dotH, bool visible = true )
+		inline void setDotH( qreal dotH, bool visible = true )
 		{
 			m_adi->setDotH( dotH, visible );
 		}
@@ -159,13 +159,13 @@ class qfi_PFD : public QGraphicsView
 		/**
 	 * @param normalized vertical deviation dot position (range from -1.0 to 1.0)
 	 * @param vertical deviation dot visibility */
-		inline void setDotV( float dotV, bool visible = true )
+		inline void setDotV( qreal dotV, bool visible = true )
 		{
 			m_adi->setDotV( dotV, visible );
 		}
 
 		/** @param altitude (dimensionless numeric value) */
-		inline void setAltitude( float altitude )
+		inline void setAltitude( qreal altitude )
 		{
 			m_alt->setAltitude( altitude );
 		}
@@ -173,31 +173,31 @@ class qfi_PFD : public QGraphicsView
 		/**
 	 * @param pressure (dimensionless numeric value)
 	 * @param pressure unit according to GraphicsPFD::PressureUnit */
-		inline void setPressure( float pressure, PressureUnit pressureUnit )
+		inline void setPressure( qreal pressure, PressureUnit pressureUnit )
 		{
 			m_alt->setPressure( pressure, pressureUnit );
 		}
 
 		/** @param airspeed (dimensionless numeric value) */
-		inline void setAirspeed( float airspeed )
+		inline void setAirspeed( qreal airspeed )
 		{
 			m_asi->setAirspeed( airspeed );
 		}
 
 		/** @param Mach number */
-		inline void setMachNo( float machNo )
+		inline void setMachNo( qreal machNo )
 		{
 			m_asi->setMachNo( machNo );
 		}
 
 		/** @param heading [deg] */
-		inline void setHeading( float heading )
+		inline void setHeading( qreal heading )
 		{
 			m_hsi->setHeading( heading );
 		}
 
 		/** @param climb rate (dimensionless numeric value)  */
-		inline void setClimbRate( float climbRate )
+		inline void setClimbRate( qreal climbRate )
 		{
 			m_vsi->setClimbRate( climbRate );
 		}
@@ -213,17 +213,17 @@ class qfi_PFD : public QGraphicsView
 			public:
 
 				ADI( QGraphicsScene *scene );
-				void init( float scaleX, float scaleY );
-				void update( float scaleX, float scaleY );
-				void setRoll( float roll );
-				void setPitch( float pitch );
-				void setFlightPathMarker( float aoa, float sideslip, bool visible = true );
-				void setSlipSkid( float slipSkid );
-				void setTurnRate( float turnRate );
-				void setBarH( float barH, bool visible = true );
-				void setBarV( float barV, bool visible = true );
-				void setDotH( float dotH, bool visible = true );
-				void setDotV( float dotV, bool visible = true );
+				void init( qreal scaleX, qreal scaleY );
+				void update( qreal scaleX, qreal scaleY );
+				void setRoll( qreal roll );
+				void setPitch( qreal pitch );
+				void setFlightPathMarker( qreal aoa, qreal sideslip, bool visible = true );
+				void setSlipSkid( qreal slipSkid );
+				void setTurnRate( qreal turnRate );
+				void setBarH( qreal barH, bool visible = true );
+				void setBarV( qreal barV, bool visible = true );
+				void setDotH( qreal dotH, bool visible = true );
+				void setDotV( qreal dotV, bool visible = true );
 
 				/** @param theme name */
 				void setTheme(QString theme);
@@ -251,16 +251,16 @@ class qfi_PFD : public QGraphicsView
 				QGraphicsSvgItem  *m_itemScaleH;
 				QGraphicsSvgItem  *m_itemScaleV;
 
-				float m_roll;
-				float m_pitch;
-				float m_angleOfAttack;
-				float m_sideslipAngle;
-				float m_slipSkid;
-				float m_turnRate;
-				float m_barH;
-				float m_barV;
-				float m_dotH;
-				float m_dotV;
+				qreal m_roll;
+				qreal m_pitch;
+				qreal m_angleOfAttack;
+				qreal m_sideslipAngle;
+				qreal m_slipSkid;
+				qreal m_turnRate;
+				qreal m_barH;
+				qreal m_barV;
+				qreal m_dotH;
+				qreal m_dotV;
 
 				bool m_pathValid;
 
@@ -270,47 +270,47 @@ class qfi_PFD : public QGraphicsView
 				bool m_dotHVisible;
 				bool m_dotVVisible;
 
-				float m_laddDeltaX_new;
-				float m_laddDeltaX_old;
-				float m_laddBackDeltaX_new;
-				float m_laddBackDeltaX_old;
-				float m_laddBackDeltaY_new;
-				float m_laddBackDeltaY_old;
-				float m_laddDeltaY_new;
-				float m_laddDeltaY_old;
-				float m_slipDeltaX_new;
-				float m_slipDeltaX_old;
-				float m_slipDeltaY_new;
-				float m_slipDeltaY_old;
-				float m_turnDeltaX_new;
-				float m_turnDeltaX_old;
-				float m_pathDeltaX_new;
-				float m_pathDeltaX_old;
-				float m_pathDeltaY_new;
-				float m_pathDeltaY_old;
-				float m_markDeltaX_new;
-				float m_markDeltaX_old;
-				float m_markDeltaY_new;
-				float m_markDeltaY_old;
-				float m_barHDeltaX_new;
-				float m_barHDeltaX_old;
-				float m_barVDeltaY_new;
-				float m_barVDeltaY_old;
-				float m_dotHDeltaX_new;
-				float m_dotHDeltaX_old;
-				float m_dotVDeltaY_new;
-				float m_dotVDeltaY_old;
+				qreal m_laddDeltaX_new;
+				qreal m_laddDeltaX_old;
+				qreal m_laddBackDeltaX_new;
+				qreal m_laddBackDeltaX_old;
+				qreal m_laddBackDeltaY_new;
+				qreal m_laddBackDeltaY_old;
+				qreal m_laddDeltaY_new;
+				qreal m_laddDeltaY_old;
+				qreal m_slipDeltaX_new;
+				qreal m_slipDeltaX_old;
+				qreal m_slipDeltaY_new;
+				qreal m_slipDeltaY_old;
+				qreal m_turnDeltaX_new;
+				qreal m_turnDeltaX_old;
+				qreal m_pathDeltaX_new;
+				qreal m_pathDeltaX_old;
+				qreal m_pathDeltaY_new;
+				qreal m_pathDeltaY_old;
+				qreal m_markDeltaX_new;
+				qreal m_markDeltaX_old;
+				qreal m_markDeltaY_new;
+				qreal m_markDeltaY_old;
+				qreal m_barHDeltaX_new;
+				qreal m_barHDeltaX_old;
+				qreal m_barVDeltaY_new;
+				qreal m_barVDeltaY_old;
+				qreal m_dotHDeltaX_new;
+				qreal m_dotHDeltaX_old;
+				qreal m_dotVDeltaY_new;
+				qreal m_dotVDeltaY_old;
 
-				float m_scaleX;
-				float m_scaleY;
+				qreal m_scaleX;
+				qreal m_scaleY;
 
-				const float m_originalPixPerDeg;
-				const float m_deltaLaddBack_max;
-				const float m_deltaLaddBack_min;
-				const float m_maxSlipDeflection;
-				const float m_maxTurnDeflection;
-				const float m_maxBarsDeflection;
-				const float m_maxDotsDeflection;
+				const qreal m_originalPixPerDeg;
+				const qreal m_deltaLaddBack_max;
+				const qreal m_deltaLaddBack_min;
+				const qreal m_maxSlipDeflection;
+				const qreal m_maxTurnDeflection;
+				const qreal m_maxBarsDeflection;
+				const qreal m_maxDotsDeflection;
 
 				QPointF m_originalAdiCtr;
 				QPointF m_originalBackPos;
@@ -340,10 +340,10 @@ class qfi_PFD : public QGraphicsView
 
 
 				void reset();
-				void updateLadd( float delta, float sinRoll, float cosRoll );
-				void updateLaddBack( float delta, float sinRoll, float cosRoll );
+				void updateLadd( qreal delta, qreal sinRoll, qreal cosRoll );
+				void updateLaddBack( qreal delta, qreal sinRoll, qreal cosRoll );
 				void updateRoll();
-				void updateSlipSkid( float sinRoll, float cosRoll );
+				void updateSlipSkid( qreal sinRoll, qreal cosRoll );
 				void updateTurnRate();
 				void updateFlightPath();
 				void updateBars();
@@ -355,10 +355,10 @@ class qfi_PFD : public QGraphicsView
 			public:
 
 				ALT( QGraphicsScene *scene );
-				void init( float scaleX, float scaleY );
-				void update( float scaleX, float scaleY );
-				void setAltitude( float altitude );
-				void setPressure( float pressure, int pressureUnit );
+				void init( qreal scaleX, qreal scaleY );
+				void update( qreal scaleX, qreal scaleY );
+				void setAltitude( qreal altitude );
+				void setPressure( qreal pressure, int pressureUnit );
 
 				/** @param theme name */
 				void setTheme(QString theme);
@@ -389,29 +389,29 @@ class qfi_PFD : public QGraphicsView
 				QFont  m_frameTextFont;
 				QFont  m_labelsFont;
 
-				float m_altitude;
-				float m_pressure;
+				qreal m_altitude;
+				qreal m_pressure;
 
 				int m_pressureUnit;
 
-				float m_scale1DeltaY_new;
-				float m_scale1DeltaY_old;
-				float m_scale2DeltaY_new;
-				float m_scale2DeltaY_old;
-				float m_groundDeltaY_new;
-				float m_groundDeltaY_old;
-				float m_labelsDeltaY_new;
-				float m_labelsDeltaY_old;
+				qreal m_scale1DeltaY_new;
+				qreal m_scale1DeltaY_old;
+				qreal m_scale2DeltaY_new;
+				qreal m_scale2DeltaY_old;
+				qreal m_groundDeltaY_new;
+				qreal m_groundDeltaY_old;
+				qreal m_labelsDeltaY_new;
+				qreal m_labelsDeltaY_old;
 
-				float m_scaleX;
-				float m_scaleY;
+				qreal m_scaleX;
+				qreal m_scaleY;
 
-				const float m_originalPixPerAlt;
-				const float m_originalScaleHeight;
-				const float m_originalLabelsX;
-				const float m_originalLabel1Y;
-				const float m_originalLabel2Y;
-				const float m_originalLabel3Y;
+				const qreal m_originalPixPerAlt;
+				const qreal m_originalScaleHeight;
+				const qreal m_originalLabelsX;
+				const qreal m_originalLabel1Y;
+				const qreal m_originalLabel2Y;
+				const qreal m_originalLabel3Y;
 
 				QPointF m_originalBackPos;
 				QPointF m_originalScale1Pos;
@@ -441,10 +441,10 @@ class qfi_PFD : public QGraphicsView
 			public:
 
 				ASI( QGraphicsScene *scene );
-				void init( float scaleX, float scaleY );
-				void update( float scaleX, float scaleY );
-				void setAirspeed( float airspeed );
-				void setMachNo( float machNo );
+				void init( qreal scaleX, qreal scaleY );
+				void update( qreal scaleX, qreal scaleY );
+				void setAirspeed( qreal airspeed );
+				void setMachNo( qreal machNo );
 
 				/** @param theme name */
 				void setTheme(QString theme);
@@ -477,29 +477,29 @@ class qfi_PFD : public QGraphicsView
 				QFont  m_frameTextFont;
 				QFont  m_labelsFont;
 
-				float m_airspeed;
-				float m_machNo;
+				qreal m_airspeed;
+				qreal m_machNo;
 
-				float m_scale1DeltaY_new;
-				float m_scale1DeltaY_old;
-				float m_scale2DeltaY_new;
-				float m_scale2DeltaY_old;
-				float m_labelsDeltaY_new;
-				float m_labelsDeltaY_old;
+				qreal m_scale1DeltaY_new;
+				qreal m_scale1DeltaY_old;
+				qreal m_scale2DeltaY_new;
+				qreal m_scale2DeltaY_old;
+				qreal m_labelsDeltaY_new;
+				qreal m_labelsDeltaY_old;
 
-				float m_scaleX;
-				float m_scaleY;
+				qreal m_scaleX;
+				qreal m_scaleY;
 
-				const float m_originalPixPerSpd;
-				const float m_originalScaleHeight;
-				const float m_originalLabelsX;
-				const float m_originalLabel1Y;
-				const float m_originalLabel2Y;
-				const float m_originalLabel3Y;
-				const float m_originalLabel4Y;
-				const float m_originalLabel5Y;
-				const float m_originalLabel6Y;
-				const float m_originalLabel7Y;
+				const qreal m_originalPixPerSpd;
+				const qreal m_originalScaleHeight;
+				const qreal m_originalLabelsX;
+				const qreal m_originalLabel1Y;
+				const qreal m_originalLabel2Y;
+				const qreal m_originalLabel3Y;
+				const qreal m_originalLabel4Y;
+				const qreal m_originalLabel5Y;
+				const qreal m_originalLabel6Y;
+				const qreal m_originalLabel7Y;
 
 				QPointF m_originalBackPos;
 				QPointF m_originalScale1Pos;
@@ -526,9 +526,9 @@ class qfi_PFD : public QGraphicsView
 			public:
 
 				HSI( QGraphicsScene *scene );
-				void init( float scaleX, float scaleY );
-				void update( float scaleX, float scaleY );
-				void setHeading( float heading );
+				void init( qreal scaleX, qreal scaleY );
+				void update( qreal scaleX, qreal scaleY );
+				void setHeading( qreal heading );
 
 				/** @param theme name */
 				void setTheme(QString theme);
@@ -550,10 +550,10 @@ class qfi_PFD : public QGraphicsView
 
 				QFont  m_frameTextFont;
 
-				float m_heading;
+				qreal m_heading;
 
-				float m_scaleX;
-				float m_scaleY;
+				qreal m_scaleX;
+				qreal m_scaleY;
 
 				QPointF m_originalHsiCtr;
 				QPointF m_originalBackPos;
@@ -576,9 +576,9 @@ class qfi_PFD : public QGraphicsView
 			public:
 
 				VSI( QGraphicsScene *scene );
-				void init( float scaleX, float scaleY );
-				void update( float scaleX, float scaleY );
-				void setClimbRate( float climbRate );
+				void init( qreal scaleX, qreal scaleY );
+				void update( qreal scaleX, qreal scaleY );
+				void setClimbRate( qreal climbRate );
 
 				/** @param theme name */
 				void setTheme(QString theme);
@@ -594,18 +594,18 @@ class qfi_PFD : public QGraphicsView
 				QGraphicsSvgItem  *m_itemScale;
 				QGraphicsSvgItem  *m_itemArrow;
 
-				float m_climbRate;
+				qreal m_climbRate;
 
-				float m_arrowDeltaY_new;
-				float m_arrowDeltaY_old;
+				qreal m_arrowDeltaY_new;
+				qreal m_arrowDeltaY_old;
 
-				float m_scaleX;
-				float m_scaleY;
+				qreal m_scaleX;
+				qreal m_scaleY;
 
-				//const float m_originalMarkeHeight;
-				const float m_originalPixPerSpd1;
-				const float m_originalPixPerSpd2;
-				const float m_originalPixPerSpd4;
+				//const qreal m_originalMarkeHeight;
+				const qreal m_originalPixPerSpd1;
+				const qreal m_originalPixPerSpd2;
+				const qreal m_originalPixPerSpd4;
 
 				QPointF m_originalScalePos;
 				QPointF m_originalArrowPos;
@@ -629,8 +629,8 @@ class qfi_PFD : public QGraphicsView
 		QGraphicsSvgItem *m_itemBack;
 		QGraphicsSvgItem *m_itemMask;
 
-		float m_scaleX;
-		float m_scaleY;
+		qreal m_scaleX;
+		qreal m_scaleY;
 
 		const int m_originalHeight;
 		const int m_originalWidth;

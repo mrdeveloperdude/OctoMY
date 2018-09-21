@@ -28,8 +28,8 @@ class ZooClient: public QObject
 Q_OBJECT
 
 	public:
-		QUrl  m_serverURL;
-		qhttp::client::QHttpClient     *m_client;
+		QUrl  mServerURL;
+		qhttp::client::QHttpClient     *mClient;
 	public:
 		explicit ZooClient(QObject *parent=0);
 		virtual ~ZooClient();

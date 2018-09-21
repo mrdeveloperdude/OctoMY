@@ -1,6 +1,8 @@
 #include "SyncContext.hpp"
 #include "ISyncParameter.hpp"
 
+#include "utility/Utility.hpp"
+
 #include <QDateTime>
 #include <QDataStream>
 
@@ -8,7 +10,7 @@
 
 SyncContext::SyncContext(quint64 rtt, quint64 now)
 	: QObject(nullptr)
-	, mNow(0)
+	, mNow(now)
 	, mRTT(rtt)
 	, mIdealSendingPayloadSize(0)
 	, mLastSendingPayloadSize(0)
@@ -42,7 +44,7 @@ void SyncContext::update(quint64 ts)
 		return;
 	}
 	if(0==ts) {
-		ts=QDateTime::currentMSecsSinceEpoch();
+		ts=utility::currentMsecsSinceEpoch<quint64>();
 	}
 	mNow=ts;
 	// Recalculate state

@@ -4,8 +4,9 @@
 #include <QObject>
 
 #include <QGeoPositionInfoSource>
-
+#pragma GCC diagnostic ignored "-Woverloaded-virtual"
 #include <QCompassFilter>
+#pragma GCC diagnostic warning "-Woverloaded-virtual"
 
 class QSensor;
 class QAccelerometer;
@@ -44,9 +45,9 @@ public:
 	QString toSpecStanzas(QString space="");
 
 public:
-#pragma GCC diagnostic ignored "-Woverloaded-virtual"
+
 	bool filter(QCompassReading *reading) Q_DECL_OVERRIDE;
-#pragma GCC diagnostic warning "-Woverloaded-virtual"
+
 
 private:
 

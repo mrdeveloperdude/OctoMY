@@ -214,7 +214,7 @@ void Servotor32ControllerWidget::killAll()
 		QList<Servotor32ActuatorWidget *> si=ui->scrollAreaWidgetContents->findChildren<Servotor32ActuatorWidget *>();
 		for(QList<Servotor32ActuatorWidget*>::iterator it=si.begin(),e=si.end(); it!=e; ++it) {
 			Servotor32ActuatorWidget *s=*it;
-			if(0!=s) {
+			if(nullptr != s) {
 				QSignalBlocker sb(s);
 				s->disableServo();
 			}

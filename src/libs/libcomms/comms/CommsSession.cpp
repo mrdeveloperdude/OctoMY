@@ -4,6 +4,7 @@
 #include "CommsChannel.hpp"
 #include "security/Key.hpp"
 #include "utility/Standard.hpp"
+#include "utility/Utility.hpp"
 
 
 #include <QDateTime>
@@ -19,7 +20,7 @@ CommsSession::CommsSession(QSharedPointer<Key> key)
 	, mRemoteSessionID(INVALID_SESSION_ID) // INVALID_SESSION_ID means we did not receive a valid session id yet
 	, mLastSendTime(0)
 	, mLastReceiveTime(mLastSendTime)
-	, mDisconnectTimeoutAccumulator(0.0f)
+	, mDisconnectTimeoutAccumulator(0.0)
 	, mDisconnectTimeout(3.0)
 	, mExpireTimeoutAccumulator(0)
 	, mExpireTimeout(5*60*1000) // 5 minutes of inactivity means the session may be pruned (by default, value may change)
@@ -231,7 +232,7 @@ void CommsSession::setExpired()
 
 void CommsSession::countSend(qint64 written)
 {
-	const qint64 now=QDateTime::currentMSecsSinceEpoch();
+	const qint64 now=utility::currentMsecsSinceEpoch<quint64>();
 	if(mLastSendTime<=0) {
 		mLastSendTime=now-1;
 	}
@@ -262,7 +263,7 @@ void CommsSession::countSend(qint64 written)
 
 void CommsSession::receive()
 {
-	mLastReceiveTime=QDateTime::currentMSecsSinceEpoch();
+	mLastReceiveTime=utility::currentMsecsSinceEpoch<quint64>();
 	mConnected=true;
 	mDisconnectTimeoutAccumulator = 0.0f;
 	mExpireTimeoutAccumulator=0;

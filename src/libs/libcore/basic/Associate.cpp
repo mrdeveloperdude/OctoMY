@@ -205,7 +205,7 @@ void Associate::setLastSeen(quint64 when)
 {
 	OC_METHODGATE();
 	if(0 == when) {
-		when=QDateTime::currentMSecsSinceEpoch();
+		when=utility::currentMsecsSinceEpoch<quint64>();
 	}
 	mLastSeenMS=when;
 }

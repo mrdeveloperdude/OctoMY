@@ -1,6 +1,7 @@
 #include "CommsCarrier.hpp"
 
 #include "utility/Standard.hpp"
+#include "utility/Utility.hpp"
 
 #include "basic/AddressList.hpp"
 
@@ -42,7 +43,18 @@ void CommsCarrier::detectConnectionChanges(const quint64 now)
 	OC_METHODGATE();
 	const quint64 timeSinceLastRX = (now - mRXRate.mLast);
 	const quint64 timeout = connectionTimeout();
-	qDebug().nospace().noquote()<<"DETECTIN' timeSinceLastRX="<<timeSinceLastRX<<", timeout="<<timeout<<", now="<<now<<", mRXRate="<<mRXRate<<", mConnected="<<(mConnected?"YES":"NO");
+	qDebug().nospace().noquote()
+			<< ("DETECTIN' timeSinceLastRX=")
+			<< timeSinceLastRX
+			<< (", timeout=")
+			<< timeout
+			<< (", now=")
+			<< now
+			<< (", mRXRate=")
+			<< mRXRate
+			//<< (", mConnected=")
+			//<< (mConnected?"YES":"NO");
+			   ;
 	const bool old=mConnected;
 	if(mConnected && (timeSinceLastRX > timeout) ) {
 		mConnected=false;
@@ -62,7 +74,7 @@ void CommsCarrier::onOpportunityTimer()
 {
 	OC_METHODGATE();
 	qDebug()<<"Opportunity timer";
-	const quint64 now=QDateTime::currentMSecsSinceEpoch();
+	const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 	mTXOpportunityRate.countPacket(0, now);
 	detectConnectionChanges(now);
 	emit carrierSendingOpportunity(now);

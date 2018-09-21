@@ -1062,7 +1062,7 @@ qint64 CommsChannel::sendRawData(QByteArray datagram, NetworkAddress address)
 void CommsChannel::setHoneymoonEnd(quint64 hEndMS)
 {
 	OC_METHODGATE();
-	const quint64 iv=QDateTime::currentMSecsSinceEpoch() - hEndMS;
+	const quint64 iv=utility::currentMsecsSinceEpoch<quint64>() - hEndMS;
 	if(iv>0) {
 		qDebug()<<"HONEYMOON ENABLED FOR "<<utility::humanReadableElapsedMS(iv);
 	} else {
@@ -1075,7 +1075,7 @@ bool CommsChannel::honeymoon(quint64 now)
 {
 	OC_METHODGATE();
 	if(0==now) {
-		now= QDateTime::currentMSecsSinceEpoch();
+		now= utility::currentMsecsSinceEpoch<quint64>();
 	}
 	const bool ret=mHoneyMoonEnd > now;
 	qDebug()<<"now="<<now<<", mHoneyMoonEnd="<<mHoneyMoonEnd<<" HONEYMOON="<<ret<<" left="<<(mHoneyMoonEnd-now);
@@ -1101,7 +1101,7 @@ void CommsChannel::updateConnect()
 	if(needsConnection != isConencted) {
 		qDebug()<<"Comms channel update decided to " << (needsConnection?"start":"stop")<< " carrier";
 		if(needsConnection) {
-			setHoneymoonEnd(QDateTime::currentMSecsSinceEpoch()+60*1000);
+			setHoneymoonEnd(utility::currentMsecsSinceEpoch<quint64>()+60*1000);
 		}
 		mCarrier.setStarted(needsConnection);
 	}
@@ -1178,7 +1178,7 @@ void CommsChannel::onCarrierSendingOpportunity(const quint64 now)
 	const int isz=idles.size();
 	qDebug()<<"";
 	qDebug()<<" ### SENDING OPPERTUNITY from "<< localID()<< " HANDSHAKE: "<<ctHandshake<<", CARRIER: "<<ctScheduled<<", IDLE: "<< isz<<" (rate= "<<QString::number(rate)<<")";
-//	const quint64 now=QDateTime::currentMSecsSinceEpoch();
+//	const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 //	detectConnectionChanges(now);
 //	mTXOpportunityRate.countPacket(0);
 	// First look at handshakes

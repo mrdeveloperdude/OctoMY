@@ -2,6 +2,7 @@
 #include "ui_SpeechControlWidget.h"
 
 #include "utility/Standard.hpp"
+#include "utility/Utility.hpp"
 
 #include "security/PortableID.hpp"
 #include "security/SecurityConstants.hpp"
@@ -23,6 +24,7 @@ SpeechControlWidget::SpeechControlWidget(QWidget *parent) :
 
 	GenericKeyEventHandler *gkh=OC_NEW GenericKeyEventHandler(ui->plainTextEditSpeechText);
 	gkh->setEventProcessor([=](QObject *o, QKeyEvent *keyEvent) {
+		Q_UNUSED(o);
 		auto t=keyEvent->type();
 		if(t==QEvent::KeyPress || t==QEvent::KeyRelease) {
 			keyEvent->accept();
@@ -79,9 +81,9 @@ void SpeechControlWidget::on_pushButtonSay_clicked()
 			quint8 c8[8];
 			quint64 i64;
 		} a;
-		a.i64=QDateTime::currentMSecsSinceEpoch();
+		a.i64=utility::currentMsecsSinceEpoch<quint64>();
 		for(int i=0; i<8; ++i) {
-			ba[i]=a.c8[i];
+			ba[i]=static_cast<char>(a.c8[i]);
 		}
 		ch.addData(ba);
 		id.setID(ch.result().toHex().toUpper());

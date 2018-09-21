@@ -21,7 +21,7 @@ SensorsCourier::SensorsCourier(CommsChannel &comms, QObject *parent)
 	  //const quint16 payloadSize , const quint8 priority=10, const quint64 interval=1000, const bool receiveActive=true, const bool sendActive=true);
 {
 	SerialSize size;
-	mMandate.payloadSize=size(mMessage);
+	mMandate.payloadSize=static_cast<quint16>(size(mMessage));
 }
 
 //Let the CommChannel know what we want
@@ -37,7 +37,7 @@ quint16 SensorsCourier::sendingOpportunity(QDataStream &ds)
 	(void)ds;
 	if(mMandate.sendActive) {
 		qDebug()<<"Spending sending opportunity for sensors data";
-		const quint32 bytes=mMessage.bytes();
+		const quint16 bytes=static_cast<quint16>(mMessage.bytes());
 		if(bytes>mMandate.payloadSize) {
 			qWarning()<<" + return 0 (message size "<<bytes<<" bigger than payload mandate size "<<mMandate.payloadSize<<" )";
 			return 0;
@@ -61,6 +61,16 @@ quint16 SensorsCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 }
 
 
+// https://stackoverflow.com/questions/52030285/what-is-correct-way-to-convert-qgyroscopereading-to-qvector3d
+template <typename T>
+static QVector3D readingToVector(T *r)
+{
+	if(nullptr==r){
+		return QVector3D();
+	}
+	return QVector3D(static_cast<float>(r->x()), static_cast<float>(r->y()), static_cast<float>(r->z()));
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 
 void SensorsCourier::onPositionUpdated(const QGeoPositionInfo &info)
@@ -72,7 +82,7 @@ void SensorsCourier::onPositionUpdated(const QGeoPositionInfo &info)
 
 void SensorsCourier::onCompassUpdated(QCompassReading *r)
 {
-	if(0!=r) {
+	if(nullptr!=r) {
 		mMessage.compassAzimuth=r->azimuth();
 		mMessage.compassAccuracy=r->calibrationLevel();
 		mMandate.sendActive=true;
@@ -81,8 +91,8 @@ void SensorsCourier::onCompassUpdated(QCompassReading *r)
 
 void SensorsCourier::onAccelerometerUpdated(QAccelerometerReading *r)
 {
-	if(0!=r) {
-		mMessage.accellerometer=QVector3D(r->x(), r->y(), r->z());
+	if(nullptr!=r) {
+		mMessage.accellerometer=readingToVector(r);
 		mMandate.sendActive=true;
 	}
 	//ui->labelAccelerometer->setText("ACCEL: <"+QString::number(r->x())+", "+QString::number(r->y())+", "+ QString::number(r->z())+">");
@@ -90,8 +100,8 @@ void SensorsCourier::onAccelerometerUpdated(QAccelerometerReading *r)
 
 void SensorsCourier::onGyroscopeUpdated(QGyroscopeReading *r)
 {
-	if(0!=r) {
-		mMessage.gyroscope=QVector3D(r->x(), r->y(), r->z());
+	if(nullptr!=r) {
+		mMessage.gyroscope=readingToVector(r);
 		mMandate.sendActive=true;
 	}
 	//ui->labelGyroscope->setText("GYRO: <"+QString::number(r->x())+", "+QString::number(r->y())+", "+ QString::number(r->z())+">");

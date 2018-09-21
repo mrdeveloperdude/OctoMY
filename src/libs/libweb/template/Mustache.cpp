@@ -27,11 +27,11 @@ QString Mustache::renderTemplate(const QString& templateString, const QVariantHa
 	return renderer.render(templateString, &context);
 }
 
-QString escapeHtml(const QString& input)
+static QString escapeHtml(const QString& input)
 {
 	QString escaped(input);
 	for (int i=0; i < escaped.count();) {
-		const char* replacement = 0;
+		const char* replacement = nullptr;
 		ushort ch = escaped.at(i).unicode();
 		if (ch == '&') {
 			replacement = "&amp;";
@@ -52,7 +52,7 @@ QString escapeHtml(const QString& input)
 	return escaped;
 }
 
-QString unescapeHtml(const QString& escaped)
+static QString unescapeHtml(const QString& escaped)
 {
 	QString unescaped(escaped);
 	unescaped.replace(QLatin1String("&lt;"), QLatin1String("<"));

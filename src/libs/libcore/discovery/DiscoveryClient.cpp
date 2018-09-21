@@ -259,7 +259,7 @@ const quint64 ZOO_PAIR_INTERVAL=20000;
 void DiscoveryClient::onTimer()
 {
 	//qDebug()<<"PING";
-	const quint64 now=QDateTime::currentMSecsSinceEpoch();
+	const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 	if(now>ZOO_PAIR_INTERVAL+mLastZooPair) {
 		//qDebug()<<"ZOO PAIR TIME!";
 		mLastZooPair=now;

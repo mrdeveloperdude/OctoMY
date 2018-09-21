@@ -10,6 +10,8 @@
 
 #include <QtMath>
 
+#include "utility/Utility.hpp"
+
 template <typename T>
 class GaitController;
 
@@ -35,7 +37,7 @@ public:
 			T a=0;
 			T b=0;
 			//Alternate odd/even limbs
-			T L2=L/2;
+		  //  T L2=L/2;
 			for(i=0; i<L; ++i) {
 				a|=(1<<(i*2));
 				b|=(2<<(i*2));
@@ -48,6 +50,10 @@ public:
 
 		}
 		break;
+		case(RIPPLE):
+		{} break;
+		case(WAVE):
+		{} break;
 		}
 
 	}
@@ -62,7 +68,7 @@ public:
 	}
 };
 
-const qreal LIMB_UNIT_LENGTH=0.2;
+static const qreal LIMB_UNIT_LENGTH(0.2);
 
 template <typename T>
 class GaitLimb
@@ -141,7 +147,7 @@ public:
 				//qDebug()<<"LIMB "<<id<<" touch down";
 			}
 			T cyclePosition=cycleInterval;
-			cyclePosition/=((T)feedcycle);
+			cyclePosition/=(static_cast<T>(feedcycle));
 			const T p=1.0-(cos(cyclePosition*M_PI)+1.0)*0.5;//Easing
 			const T ip=1.0-p;
 			cx=sx*ip+tx*p;
@@ -189,10 +195,10 @@ public:
 		T dy=cy-body.cy;
 		T CoxaFootDist = sqrt( pow(dy, 2) + pow(dx, 2) );
 		T IKSW = sqrt( pow(CoxaFootDist-LENGTH_COXA, 2) + pow(dz, 2) );
-		T IKA1 = atan2( (CoxaFootDist - LENGTH_COXA) , dz );
+		T IKA1 = atan2( (CoxaFootDist - LENGTH_COXA), dz );
 		T IKA2 = acos( (pow(LENGTH_TIBIA, 2) - pow(LENGTH_FEMUR, 2) - pow(IKSW, 2) ) / (-2.0*IKSW*LENGTH_FEMUR) );
 		tibiaAngle = acos( (pow(IKSW, 2) - pow(LENGTH_TIBIA, 2) - pow(LENGTH_FEMUR, 2)) / (-2.0*LENGTH_FEMUR*LENGTH_TIBIA) );
-		coxaAngle=atan2( dy , dx) ;
+		coxaAngle=atan2( dy, dx) ;
 		femurAngle= IKA1 + IKA2 ;
 	}
 
@@ -261,7 +267,7 @@ class GaitControllerMessenger:
 	Q_OBJECT
 public:
 	explicit GaitControllerMessenger()
-		:QObject(0)
+		: QObject(nullptr)
 	{
 
 	}
@@ -331,7 +337,7 @@ public:
 		, stridelength(stridelengthTarget)
 		, feedrateTarget(1.0)
 		, feedrate(feedrateTarget)
-		, dxT(0), dyT(-1), dx(dxT), dy(dyT), adx(dx), ady(dy), ddx(dx), ddy(dy), cx(0), cy(0)
+		, dxT(0), dyT(-1), dx(dxT), dy(dyT), ddx(dx), ddy(dy), adx(dx), ady(dy), cx(0), cy(0)
 		, cogx(0), cogy(0)
 		, cobx(0), coby(0)
 		, singleLimbMode(false)
@@ -343,7 +349,7 @@ public:
 			T bx=sin(a)*s*0.7;
 			T by=cos(a)*s;
 			limbs[i]=OC_NEW GaitLimb<T>(*this,i,bx,by,a<M_PI?M_PI/2:(M_PI*3/2));
-			a+=((M_PI*2.0)/(qreal)limbCount);
+			a+=((M_PI*2.0) / static_cast<qreal>(limbCount));
 		}
 	}
 
@@ -351,7 +357,7 @@ public:
 	void update()
 	{
 		// Update time-keeping
-		const quint64 now=QDateTime::currentMSecsSinceEpoch();
+		const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 		if(0==lastUpdate) {
 			lastUpdate=now-1;
 		}
@@ -514,7 +520,7 @@ public:
 				T loney=(limbs[i]->cy-limbs[j]->cy);
 				T lone=sqrt(lonex*lonex+loney*loney);
 				if(lone>0 && lone > loned) {
-					candidate2=i;
+					candidate2=static_cast<int>(i);
 					loned=lone;
 				}
 			}
@@ -552,7 +558,7 @@ public:
 			}
 			T e=limbs[i]->score;
 			if(e>0 && e > error) {
-				candidate=i;
+				candidate=static_cast<int>(i);
 				error=e;
 			}
 		}

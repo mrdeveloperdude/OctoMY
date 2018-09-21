@@ -1,5 +1,7 @@
 #include "FPSCalculator.hpp"
 
+#include "utility/Utility.hpp"
+
 #include <QDateTime>
 #include <QDebug>
 
@@ -23,7 +25,7 @@ FPSCalculator::~FPSCalculator()
 
 void FPSCalculator::update()
 {
-	quint64 now=QDateTime::currentMSecsSinceEpoch();
+	quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 	quint64 interval=now-lastTime;
 	frameAccumulator++;
 	if(interval>logInterval) {

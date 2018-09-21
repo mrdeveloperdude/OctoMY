@@ -94,7 +94,7 @@ int NodeLauncher<T>::run()
 
 	QLoggingCategory::setFilterRules("qt.network.ssl.warning=false");
 
-	qsrand(QDateTime::currentMSecsSinceEpoch());
+	qsrand(utility::currentMsecsSinceEpoch<quint64>());
 
 #ifndef Q_OS_ANDROID
 	LogHandler::setLogging(true);

@@ -8,7 +8,7 @@
 
 
 ScopedTimer::ScopedTimer(QString name, bool doLog, bool, QString fmt)
-	: startTime(QDateTime::currentMSecsSinceEpoch())
+	: startTime(utility::currentMsecsSinceEpoch<quint64>())
 	, now(startTime)
 	, interval(0)
 	, doLog(doLog)
@@ -28,7 +28,7 @@ ScopedTimer::ScopedTimer(QString name, bool doLog, bool, QString fmt)
 
 
 ScopedTimer::ScopedTimer(QString name, qint64 timeout, bool ,QString fmt)
-	: startTime(QDateTime::currentMSecsSinceEpoch())
+	: startTime(utility::currentMsecsSinceEpoch<quint64>())
 	, now(startTime)
 	, interval(0)
 	, doLog(false)
@@ -56,7 +56,7 @@ ScopedTimer::~ScopedTimer(){
 
 void ScopedTimer::update(){
 	OC_METHODGATE();
-	now=QDateTime::currentMSecsSinceEpoch();
+	now=utility::currentMsecsSinceEpoch<quint64>();
 	interval=now-startTime;
 }
 

@@ -36,7 +36,7 @@ private:
 
 public:
 	explicit Servotor32Controller(QObject *parent = nullptr);
-	virtual ~Servotor32Controller();
+	virtual ~Servotor32Controller() override;
 
 public:
 	void configure(SerialSettings &serialSettings);

@@ -78,7 +78,7 @@ void Camera::setCamera(const QCameraInfo &ci)
 	else{
 		{
 			camera = OC_NEW QCamera(ci);
-			if(0!=camera){
+			if(nullptr!=camera){
 				cameraInfo=ci;
 				qDebug()<<"Using camera: "<<cameraInfo;
 				if(!connect(camera, SIGNAL(stateChanged(QCamera::State)), this, SLOT(updateCameraState(QCamera::State)))){
@@ -99,7 +99,7 @@ void Camera::setCamera(const QCameraInfo &ci)
 
 				if(camera->isCaptureModeSupported(QCamera::CaptureVideo)){
 					mediaRecorder = OC_NEW QMediaRecorder(camera);
-					if(0!=mediaRecorder){
+					if(nullptr!=mediaRecorder){
 						//mediaRecorder->setOutputLocation(QUrl::fromLocalFile("/tmp/video.mp4"));
 						//audio codecs
 						ui->audioCodecBox->addItem(tr("Default audio codec"), QVariant(QString()));
@@ -159,7 +159,7 @@ void Camera::setCamera(const QCameraInfo &ci)
 				if(camera->isCaptureModeSupported(QCamera::CaptureStillImage)){
 					imageCapture = OC_NEW QCameraImageCapture(camera);
 
-					if(0!=imageCapture){
+					if(nullptr!=imageCapture){
 						//image codecs
 						ui->imageCodecBox->addItem(tr("Default image format"), QVariant(QString()));
 						foreach(const QString &codecName, imageCapture->supportedImageCodecs()) {
@@ -195,7 +195,7 @@ void Camera::setCamera(const QCameraInfo &ci)
 #ifdef Q_OS_ANDROID
 				//#if 1
 				camera->setViewfinder(ui->viewfinder);
-				if(0!=videoProbe){
+				if(nullptr != videoProbe){
 					videoProbe->deleteLater();
 					videoProbe=0;
 				}
@@ -210,9 +210,9 @@ void Camera::setCamera(const QCameraInfo &ci)
 					qWarning()<<"ERROR: Could not set up probing of camera";
 				}
 #else
-				if(0!=poorVideoProbe){
+				if(nullptr!=poorVideoProbe){
 					poorVideoProbe->deleteLater();
-					poorVideoProbe=0;
+					poorVideoProbe=nullptr;
 				}
 				poorVideoProbe=OC_NEW PoorMansProbe(this);
 				if (poorVideoProbe->setSource(camera)) {
@@ -532,10 +532,10 @@ void Camera::showMessage(QString msg)
 void Camera::detectBarcodes(const QVideoFrame &frame)
 {
 	//qDebug()<<"GOT FRAME "<<frame;
-	if(0==zbar){
+	if(nullptr==zbar){
 		zbar=OC_NEW ZBarScanner;
 	}
-	if(0!=zbar){
+	if(nullptr!=zbar){
 		zbar->scan(frame);
 	}
 }
@@ -546,7 +546,7 @@ void Camera::onCameraDevicesChanged()
 	QList<QCameraInfo> cams=QCameraInfo::availableCameras();
 	//const int l=cams.size(); qDebug()<<"CAMS FOUND ON POLL: "<<l;
 	const QCameraInfo &def=QCameraInfo::defaultCamera();
-	const QCameraInfo last=0!=camera?cameraInfo:def;
+	const QCameraInfo last=nullptr!=camera?cameraInfo:def;
 	QIcon ic(":/icons/eye.svg") ;
 	ui->listWidgetCameras->clear();
 	foreach (const QCameraInfo &ci, cams) {
@@ -563,7 +563,7 @@ void Camera::onCameraDevicesChanged()
 		}
 	}
 	/*
-if(0!=camera){
+if(nullptr != camera){
 	setCamera(last);
 }*/
 	const int num=ui->listWidgetCameras->count();

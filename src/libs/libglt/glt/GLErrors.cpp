@@ -31,21 +31,21 @@ static const struct token_string errors[] = {
 	, { GL_INVALID_FRAMEBUFFER_OPERATION_EXT, "invalid framebuffer operation" }
 #endif
 
-	, { (GLuint)~0, NULL } /* end of list indicator */
+	, { static_cast<GLuint>(~0), nullptr } /* end of list indicator */
 };
 
 
 
-const GLubyte*
+static const GLubyte*
 gluErrorString(GLenum errorCode)
 {
 	int i;
 	for (i = 0; errors[i].string; i++) {
 		if (errors[i].token == errorCode) {
-			return (const GLubyte *) errors[i].string;
+			return reinterpret_cast<const GLubyte *> (errors[i].string);
 		}
 	}
-	return (const GLubyte *) 0;
+	return nullptr;
 }
 
 
@@ -55,8 +55,8 @@ bool spewGLErrors(QString file, int line, QString func)
 	int ct=0;
 	GLenum err=glGetError();
 	while (err != GL_NO_ERROR) {
-		const char * s=(const char *)gluErrorString(err);
-		qWarning().noquote().nospace()<<file<<"::"<<func<<":"<<line<<" ["<<ct<<"] GL-ERROR: "<<QString::fromLatin1(s,strlen(s));
+		const char * s= reinterpret_cast<const char *>(gluErrorString(err));
+		qWarning().noquote().nospace()<<file<<"::"<<func<<":"<<line<<" ["<<ct<<"] GL-ERROR: "<<QString::fromLatin1(s,static_cast<int>(strlen(s)));
 		ct++;
 		err = glGetError();
 	}

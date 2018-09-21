@@ -9,6 +9,8 @@
 
 #include "Node.hpp"
 
+#include "utility/Utility.hpp"
+
 ClientList::ClientList()
 {
 	OC_METHODGATE();
@@ -92,7 +94,7 @@ QSet<QSharedPointer<Client> > ClientList::withActiveSessions(CommsSessionDirecto
 	OC_METHODGATE();
 	QSet<QSharedPointer<Client> > out;
 	if(0==now) {
-		now=QDateTime::currentMSecsSinceEpoch();
+		now=utility::currentMsecsSinceEpoch<quint64>();
 	}
 	//TODO: Turn into constant or setting:
 	const quint64 lastActive=now-(1000*60);//One minute ago.

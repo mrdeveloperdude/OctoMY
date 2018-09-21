@@ -45,7 +45,7 @@ void AddressList::merge(NetworkAddress adr, QString description, quint64 now)
 		return;
 	}
 	if(0==now) {
-		now=QDateTime::currentMSecsSinceEpoch();
+		now=utility::currentMsecsSinceEpoch<quint64>();
 	}
 	for(QSharedPointer<AddressEntry> entry:*this) {
 		if(!entry.isNull()) {

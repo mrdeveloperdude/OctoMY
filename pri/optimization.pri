@@ -1,3 +1,10 @@
+#     ______
+#    / ____/__    __
+#   / /  __/ /___/ /_
+#  / /__/_  __/_  __/
+#  \____//_/   /_/
+#
+
 
 REMOVE_FLAGS += -O
 REMOVE_FLAGS += -O2
@@ -84,3 +91,15 @@ QMAKE_CXXFLAGS_DEBUG+=    $$QMAKE_CXXFLAGS_COMMON
 
 
 QMAKE_LFLAGS += $$QMAKE_CXXFLAGS
+
+
+#     ______
+#    / ____/
+#   / /
+#  / /___
+#  \____/
+#
+
+
+
+# TODO: No optimization flags for pure C yet

@@ -10,7 +10,6 @@
 
 
 
-
 //#include "node/DataStoreInterface.hpp"
 #include <QByteArray>
 #include <QDebug>
@@ -46,6 +45,10 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// The backend is the synchronous part of the API that actually carries out the
+// storage operations.
+
+
 template <typename T>
 class AsyncBackend
 {
@@ -63,19 +66,23 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// The frontend is the asynchronous interface to the backend.
+
 template <typename T>
 class AsyncFrontend
 {
 	// AsyncFrontend interface
 public:
 
-	virtual bool clearFrontend()=0;
-	virtual bool setFrontend(T data)=0;
-	virtual T getFrontend(bool &ok)=0;
-	virtual bool generateFrontend()=0;
+	virtual bool clearFrontend() = 0;
+	virtual bool setFrontend(T data) = 0;
+	virtual T getFrontend(bool &ok) = 0;
+	virtual bool generateFrontend() = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+
+
 
 template <typename T>
 class AsyncStore
@@ -169,7 +176,8 @@ public:
 	friend class ASEvent<T>;
 	friend class ASEventPrivate<T>;
 	friend class SimpleDataStore;
-	friend const QDebug &operator<< (QDebug &d, AsyncStore<T> &as);
+	template <typename F>
+	friend const QDebug &operator<< (QDebug &d, AsyncStore<F> &as);
 };
 
 
@@ -190,6 +198,7 @@ AsyncStore<T>::AsyncStore(AsyncBackend<T> &backend, AsyncFrontend<T> &frontend, 
 	, mDone(false)
 {
 	OC_METHODGATE();
+	Q_UNUSED(parent);
 //	setObjectName("AsyncStore");
 	const QString filename=mBackend.filenameBackend();
 	const bool exists=mBackend.existsBackend();

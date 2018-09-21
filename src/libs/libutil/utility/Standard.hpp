@@ -31,7 +31,7 @@
 
 #define OC_ASSERT(a) { const bool c=(a); if(!c){ qWarning()<< "OC_ASSERT FAILED: " #a; } }
 
-#define OC_CONTYPE (Qt::ConnectionType) (Qt::QueuedConnection | Qt::UniqueConnection)
+#define OC_CONTYPE static_cast<Qt::ConnectionType> (Qt::QueuedConnection | Qt::UniqueConnection)
 
 #define OC_COLLECT_AT_MOST (1024*100)
 

@@ -115,7 +115,7 @@ void CameraPairingWidget::on_pushButtonBadge_toggled(bool show)
 	ui->pushButtonScanner->setVisible(!show);
 	qDebug()<<"Badge "<<(show?"on":"off");
 	if(show){
-		badgeDisableTime=TIMEOUT+QDateTime::currentMSecsSinceEpoch();
+		badgeDisableTime=TIMEOUT+utility::currentMsecsSinceEpoch<quint64>();
 		onCountDownTimeout();
 		if(!countDownTimer.isActive()){
 			countDownTimer.start();
@@ -167,7 +167,7 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 		qDebug()<<"TRYING TO START CAMERA "<<ci;
 		if(!ci.isNull()){
 			mCamera = OC_NEW QCamera(ci);
-			if(0!=mCamera){
+			if(nullptr!=mCamera){
 
 				if(!connect(mCamera,SIGNAL(statusChanged(QCamera::Status)),this,SLOT(cameraStatusUpdated(QCamera::Status)))){
 					qWarning()<<"ERROR: Could not connect";
@@ -227,7 +227,7 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 				//Invoke later to make sure ui update does not lagg
 				QTimer::singleShot(0, mCamera, SLOT(start()));
 			}
-			scanDisableTime=TIMEOUT+QDateTime::currentMSecsSinceEpoch();
+			scanDisableTime=TIMEOUT+utility::currentMsecsSinceEpoch<quint64>();
 			onCountDownTimeout();
 			if(!countDownTimer.isActive()){
 				countDownTimer.start();
@@ -244,7 +244,7 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 
 void CameraPairingWidget::onCountDownTimeout()
 {
-	const qint64 now=QDateTime::currentMSecsSinceEpoch();
+	const qint64 now=utility::currentMsecsSinceEpoch<quint64>();
 	const qint64 badgeLeft=(badgeDisableTime-now)/1000;
 	const qint64 scanLeft=(scanDisableTime-now)/1000;
 	if(badgeDisableTime>0){

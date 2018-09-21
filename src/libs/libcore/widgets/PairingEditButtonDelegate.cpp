@@ -117,7 +117,7 @@ FROM DATA:  QMap(("birthDate", QVariant(qulonglong, 1471476138556))
 
 		// Draw state symbols in the middle
 		quint32 icX=buttonSize+border*2;
-		const qint64 now=QDateTime::currentMSecsSinceEpoch();
+		const qint64 now=utility::currentMsecsSinceEpoch<quint64>();
 
 		const qint64 off=60*1000; //After a minute means M.I.A
 		const qint64 full=10*1000; //Less than  10 sec means full-on

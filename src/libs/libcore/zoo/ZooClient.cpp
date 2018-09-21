@@ -20,27 +20,27 @@
 
 ZooClient::ZooClient(QObject *parent)
 	: QObject(parent)
-	, m_client( OC_NEW qhttp::client::QHttpClient)
+	, mClient( OC_NEW qhttp::client::QHttpClient)
 {
 }
 
 ZooClient::~ZooClient(){
-	if(0!=m_client){
-		m_client->deleteLater();
-		m_client=0;
+	if(nullptr!=mClient){
+		mClient->deleteLater();
+		mClient=nullptr;
 	}
 }
 
 
 void ZooClient::setURL(const QUrl& serverURL) {
 	//qDebug()<<"Setting new URL: "<<serverURL;
-	m_serverURL   = serverURL;
+	mServerURL   = serverURL;
 }
 
 
 void ZooClient::doPairingEscrow(const QString OCID, TVariantMapHandler handler) {
 	qhttp::client::TRequstHandler reqHandler= [this, OCID](qhttp::client::QHttpRequest* req){
-		qDebug()<<"doPairingEscrow handler for " << m_serverURL;
+		qDebug()<<"doPairingEscrow handler for " << mServerURL;
 		QVariantMap cmd;
 		cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
 		cmd["ocid"] = OCID;
@@ -80,6 +80,6 @@ void ZooClient::doPairingEscrow(const QString OCID, TVariantMapHandler handler) 
 		});
 		//qDebug()<<"Getting node by OCID:"<<OCID << " RES DONE";
 	};
-	m_client->request(qhttp::EHTTP_POST, m_serverURL, reqHandler, resHandler);
+	mClient->request(qhttp::EHTTP_POST, mServerURL, reqHandler, resHandler);
 }
 

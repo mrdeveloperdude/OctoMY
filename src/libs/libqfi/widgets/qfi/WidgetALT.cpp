@@ -60,8 +60,8 @@
 WidgetALT::WidgetALT( QWidget *parent ) :
 	QWidget( parent ),
 	m_ui( OC_NEW Ui::WidgetALT ),
-	m_alt ( 0 ),
-	m_layoutSq ( 0 )
+	m_alt ( nullptr ),
+	m_layoutSq ( nullptr )
 {
 	Q_INIT_RESOURCE(qfi);
 	m_ui->setupUi( this );
@@ -75,9 +75,15 @@ WidgetALT::WidgetALT( QWidget *parent ) :
 
 WidgetALT::~WidgetALT()
 {
-	if ( m_layoutSq ) delete m_layoutSq; m_layoutSq = 0;
+	if ( nullptr!= m_layoutSq ) {
+		delete m_layoutSq;
+	}
+		m_layoutSq = nullptr;
 
-	if ( m_ui ) delete m_ui; m_ui = 0;
+	if ( nullptr!= m_ui ) {
+		delete m_ui;
+	}
+	m_ui = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

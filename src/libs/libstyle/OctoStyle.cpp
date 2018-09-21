@@ -253,9 +253,9 @@ static QString uniqueName(const QString &key, const QStyleOption *option, const 
 	QString tmp = key % HexString<uint>(option->state)
 				  % HexString<uint>(option->direction)
 				  % HexString<uint>(complexOption ? uint(complexOption->activeSubControls) : 0u)
-				  % HexString<quint64>(option->palette.cacheKey())
-				  % HexString<uint>(size.width())
-				  % HexString<uint>(size.height());
+				  % HexString<qint64>(option->palette.cacheKey())
+				  % HexString<int>(size.width())
+				  % HexString<int>(size.height());
 
 #ifndef QT_NO_SPINBOX
 	if (const QStyleOptionSpinBox *spinBox = qstyleoption_cast<const QStyleOptionSpinBox *>(option)) {
@@ -402,14 +402,14 @@ static QPixmap colorizedImage(const QString &fileName, const QColor &color, int 
 
 		int width = image.width();
 		int height = image.height();
-		int source = color.rgba();
+		auto source = color.rgba();
 
-		unsigned char sourceRed = qRed(source);
-		unsigned char sourceGreen = qGreen(source);
-		unsigned char sourceBlue = qBlue(source);
+		unsigned char sourceRed = static_cast<unsigned char>(qRed(source));
+		unsigned char sourceGreen = static_cast<unsigned char>(qGreen(source));
+		unsigned char sourceBlue = static_cast<unsigned char>(qBlue(source));
 
 		for (int y = 0; y < height; ++y) {
-			QRgb *data = (QRgb*) image.scanLine(y);
+			QRgb *data = reinterpret_cast<QRgb *>(image.scanLine(y));
 			for (int x = 0 ; x < width ; ++x) {
 				QRgb col = data[x];
 				unsigned int colorDiff = (qBlue(col) - qRed(col));
@@ -1701,7 +1701,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 		painter->restore();
 		break;
 	case CE_ProgressBarLabel:
-		if (const QStyleOptionProgressBarV2 *bar = qstyleoption_cast<const QStyleOptionProgressBarV2 *>(option)) {
+		if (const QStyleOptionProgressBar *bar = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
 			QRect leftRect;
 			QRect rect = bar->rect;
 			QColor textColor = option->palette.text().color();
@@ -1714,8 +1714,8 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 			if (vertical) {
 				rect = QRect(rect.left(), rect.top(), rect.height(), rect.width());    // flip width and height
 			}
-			const int progressIndicatorPos = (bar->progress - qreal(bar->minimum)) * rect.width() /
-											 qMax(qreal(1.0), qreal(bar->maximum) - bar->minimum);
+			const int progressIndicatorPos = static_cast<int> ((bar->progress - qreal(bar->minimum)) * rect.width() /
+											 qMax(qreal(1.0), qreal(bar->maximum) - bar->minimum));
 			if (progressIndicatorPos >= 0 && progressIndicatorPos <= rect.width()) {
 				leftRect = QRect(rect.left(), rect.top(), progressIndicatorPos, rect.height());
 			}
@@ -3700,12 +3700,14 @@ QRect OctoStyle::subControlRect(ComplexControl control, const QStyleOptionComple
 				if (tb->titleBarFlags & Qt::WindowContextHelpButtonHint) {
 					offset += delta;
 				}
+				[[fallthrough]];
 			case SC_TitleBarMinButton:
 				if (!isMinimized && (tb->titleBarFlags & Qt::WindowMinimizeButtonHint)) {
 					offset += delta;
 				} else if (sc == SC_TitleBarMinButton) {
 					break;
 				}
+				[[fallthrough]];
 			case SC_TitleBarNormalButton:
 				if (isMinimized && (tb->titleBarFlags & Qt::WindowMinimizeButtonHint)) {
 					offset += delta;
@@ -3714,24 +3716,28 @@ QRect OctoStyle::subControlRect(ComplexControl control, const QStyleOptionComple
 				} else if (sc == SC_TitleBarNormalButton) {
 					break;
 				}
+				[[fallthrough]];
 			case SC_TitleBarMaxButton:
 				if (!isMaximized && (tb->titleBarFlags & Qt::WindowMaximizeButtonHint)) {
 					offset += delta;
 				} else if (sc == SC_TitleBarMaxButton) {
 					break;
 				}
+				[[fallthrough]];
 			case SC_TitleBarShadeButton:
 				if (!isMinimized && (tb->titleBarFlags & Qt::WindowShadeButtonHint)) {
 					offset += delta;
 				} else if (sc == SC_TitleBarShadeButton) {
 					break;
 				}
+				[[fallthrough]];
 			case SC_TitleBarUnshadeButton:
 				if (isMinimized && (tb->titleBarFlags & Qt::WindowShadeButtonHint)) {
 					offset += delta;
 				} else if (sc == SC_TitleBarUnshadeButton) {
 					break;
 				}
+				[[fallthrough]];
 			case SC_TitleBarCloseButton:
 				if (tb->titleBarFlags & Qt::WindowSystemMenuHint) {
 					offset += delta;
@@ -3800,7 +3806,7 @@ int OctoStyle::styleHint(StyleHint hint, const QStyleOption* option, const QWidg
 		return 0;
 
 	case SH_Table_GridLineColor:
-		return option ? option->palette.background().color().darker(120).rgb() : 0;
+		return option ? static_cast<int>(option->palette.background().color().darker(120).rgb()) : 0;
 
 	case SH_MessageBox_TextInteractionFlags:
 		return Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse;
@@ -3827,6 +3833,7 @@ int OctoStyle::styleHint(StyleHint hint, const QStyleOption* option, const QWidg
 			mask->region -= QRect(option->rect.right() , option->rect.top() + 3, 1, 2);
 			return 1;
 		}
+		break;
 	default:
 		break;
 	}

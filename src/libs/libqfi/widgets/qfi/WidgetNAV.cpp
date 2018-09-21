@@ -58,8 +58,8 @@
 WidgetNAV::WidgetNAV( QWidget *parent ) :
 	QWidget( parent ),
 	m_ui( OC_NEW Ui::WidgetNAV ),
-	m_nav ( 0 ),
-	m_layoutSq ( 0 )
+	m_nav ( nullptr ),
+	m_layoutSq ( nullptr )
 {
 	Q_INIT_RESOURCE(qfi);
 	m_ui->setupUi( this );
@@ -73,9 +73,14 @@ WidgetNAV::WidgetNAV( QWidget *parent ) :
 
 WidgetNAV::~WidgetNAV()
 {
-	if ( m_layoutSq ) delete m_layoutSq; m_layoutSq = 0;
+	if ( nullptr!= m_layoutSq ){
+		delete m_layoutSq;
+	}
+	m_layoutSq = nullptr;
 
-	if ( m_ui ) delete m_ui; m_ui = 0;
+	if ( nullptr!= m_ui ){
+		delete m_ui;
+	}m_ui = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

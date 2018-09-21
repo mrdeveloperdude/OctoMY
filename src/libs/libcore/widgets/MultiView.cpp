@@ -14,7 +14,7 @@ MultiView::MultiView(QWidget *parent) :
 	OC_METHODGATE();
 	ui->setupUi(this);
 	QListView *list = ui->listView;
-	if(0!=list) {
+	if(nullptr != list) {
 		list->setViewMode(QListView::IconMode);
 		list->setSelectionMode(QAbstractItemView::ExtendedSelection);
 		list->setAlternatingRowColors(false);
@@ -22,14 +22,14 @@ MultiView::MultiView(QWidget *parent) :
 		list->setAttribute(Qt::WA_MacShowFocusRect, false);
 	}
 	QTableView *table = ui->tableView;
-	if(0!=table ) {
+	if(nullptr != table) {
 		table->horizontalHeader()->setSectionsMovable(true);
 		table->verticalHeader()->setSectionsMovable(true);
 		// Set StaticContents to enable minimal repaints on resizes.
 		table->viewport()->setAttribute(Qt::WA_StaticContents);
 	}
 	QTreeView *tree = ui->treeView;
-	if(0!=tree ) {
+	if(nullptr != tree) {
 		tree->setUniformRowHeights(true);
 		tree->header()->setStretchLastSection(false);
 		tree->viewport()->setAttribute(Qt::WA_StaticContents);
@@ -57,9 +57,9 @@ MultiView::~MultiView()
 void MultiView::setModel(QAbstractItemModel *data)
 {
 	OC_METHODGATE();
-	QItemSelectionModel *selections = 0==data?0:OC_NEW QItemSelectionModel(data);
+	QItemSelectionModel *selections = nullptr==data?nullptr:OC_NEW QItemSelectionModel(data);
 	QListView *list = ui->listView;
-	if(nullptr!=list) {
+	if(nullptr != list) {
 		QItemSelectionModel *oldSel = list->selectionModel();
 		list->setModel(data);
 		delete oldSel;
@@ -69,7 +69,7 @@ void MultiView::setModel(QAbstractItemModel *data)
 		}
 	}
 	QTableView *table = ui->tableView;
-	if(nullptr!=table ) {
+	if(nullptr != table) {
 		QItemSelectionModel *oldSel = table->selectionModel();
 		table->setModel(data);
 		delete oldSel;
@@ -79,7 +79,7 @@ void MultiView::setModel(QAbstractItemModel *data)
 		}
 	}
 	QTreeView *tree = ui->treeView;
-	if(nullptr!=tree ) {
+	if(nullptr != tree) {
 		QItemSelectionModel *oldSel = tree->selectionModel();
 		tree->setModel(data);
 		delete oldSel;

@@ -29,9 +29,9 @@ MapEditor::MapEditor(QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
-	if (0 != mGps) {
+	if (nullptr != mGps) {
 		mGps->setPreferredPositioningMethods(QGeoPositionInfoSource::SatellitePositioningMethods);
-		if(0!=mGps) {
+		if(nullptr != mGps) {
 			if(!connect(mGps, SIGNAL(positionUpdated(QGeoPositionInfo)),this,SLOT(onPositionUpdated(QGeoPositionInfo)))) {
 				qWarning()<<"ERROR: Could not connect";
 			}
@@ -154,7 +154,7 @@ void MapEditor::homeMap()
 {
 	OC_METHODGATE();
 	qmapcontrol::MapControl *mc=ui->widgetMap;
-	if(0!=mc) {
+	if(nullptr != mc) {
 		//qDebug()<<"HOME";
 		QList<QPointF> londalen;
 		londalen <<QPointF(5.452844, 60.385883);
@@ -171,7 +171,7 @@ void MapEditor::onPositionUpdated(QGeoPositionInfo pi)
 		QGeoCoordinate c=pi.coordinate();
 		if(c.isValid()) {
 			qmapcontrol::MapControl *mc=ui->widgetMap;
-			if(0!=mc) {
+			if(nullptr != mc) {
 				QPointF p(c.longitude(), c.latitude());
 				//qDebug()<<"CENTER";
 				QList<QPointF> center;

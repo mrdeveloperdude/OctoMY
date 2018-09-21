@@ -136,7 +136,7 @@ void ControlDeliveryWizard::onBirthComplete(bool ok)
 				//Go back to try again
 				ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);
 			} else {
-				mBirthDate=QDateTime::currentMSecsSinceEpoch();
+				mBirthDate=utility::currentMsecsSinceEpoch<quint64>();
 				QVariantMap map;
 				auto key=keystore.localKey();
 				if(!key.isNull()) {

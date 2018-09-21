@@ -189,7 +189,7 @@ SendingBlobChunk SendingBlob::findNextSendingChunk()
 			//qDebug()<<"SUGGESTING TO SEND "<<nextInTransit;
 			mUnsentIndex++;
 		} else {
-			const quint64 now=QDateTime::currentMSecsSinceEpoch();
+			const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 			const quint64 BLOB_CHUNK_TIMEOUT=10;//TTL
 			//Time for resend?
 			qint64 diff=(now-BLOB_CHUNK_TIMEOUT)-mLastResendTime;
@@ -252,7 +252,7 @@ void SendingBlob::setSent(int index)
 		return;
 	}
 	mIsSent.setBit(index);
-	mLastResendTime=QDateTime::currentMSecsSinceEpoch();
+	mLastResendTime=utility::currentMsecsSinceEpoch<quint64>();
 }
 
 
@@ -395,7 +395,7 @@ void ReceivingBlob::setReceived(int index)
 		return;
 	}
 	mIsReceived.setBit(index);
-	mLastReceivedTime=QDateTime::currentMSecsSinceEpoch();
+	mLastReceivedTime=utility::currentMsecsSinceEpoch<quint64>();
 }
 
 QBitArray ReceivingBlob::isReceived() const

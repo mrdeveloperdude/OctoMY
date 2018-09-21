@@ -14,9 +14,9 @@
 
 Servotor32Controller::Servotor32Controller(QObject *parent)
 	: IActuatorController("Servotor32", parent)
-	, mSerialInterface(OC_NEW QSerialPort(this))
 	, mReads(0)
 	, mWidget(nullptr)
+	, mSerialInterface(OC_NEW QSerialPort(this))
 {
 
 	qRegisterMetaType<QSerialPort::SerialPortError>();

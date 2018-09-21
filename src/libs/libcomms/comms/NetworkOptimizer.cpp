@@ -18,10 +18,10 @@ NetworkOptimizer::NetworkOptimizer()
 QNetworkAccessManager *NetworkOptimizer::nam=nullptr;
 
 QNetworkAccessManager &NetworkOptimizer::instance(QString host){
-	if(0==nam){
+	if(nullptr==nam){
 		nam=OC_NEW QNetworkAccessManager();
 	}
-	if(0!=nam){
+	if(nullptr!=nam){
 		//Make HTTP cache dir
 		const QString cacheDir=QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 		if(""!=cacheDir){
