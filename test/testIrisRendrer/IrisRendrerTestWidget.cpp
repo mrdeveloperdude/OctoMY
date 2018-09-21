@@ -3,6 +3,7 @@
 
 #include "basic/Settings.hpp"
 #include "utility/Standard.hpp"
+#include "utility/Utility.hpp"
 
 #include <QPixmap>
 #include <QImage>
@@ -77,7 +78,7 @@ void IrisRendrerTestWidget::on_pushButtonClose_clicked()
 
 void IrisRendrerTestWidget::on_pushButtonRandom_clicked()
 {
-	qsrand(QDateTime::currentMSecsSinceEpoch());
+	qsrand(utility::currentMsecsSinceEpoch<quint64>());
 	auto l=mSliders.size();
 	for(int row=0; row<l; ++row) {
 		QSlider *horizontalSlider = mSliders[row];

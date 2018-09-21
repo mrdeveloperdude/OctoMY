@@ -5,35 +5,52 @@
 #include <QtConcurrent/QtConcurrent>
 
 
-struct TestItem {
-	quint32 index, noise, carry, seed, acc, invocations;
+class TestItem
+{
+private:
 
+	quint32 mIndex, mNoise, mCarry, mSeed, mAcc, mInvocations;
+
+
+public:
 
 	TestItem(quint32 index=0, quint32 seed=0)
-		: index(index)
-		, noise(0)
-		, carry(0)
-		, seed(seed+1337)
-		, acc(0)
-		, invocations(0)
+		: mIndex(index)
+		, mNoise(0)
+		, mCarry(0)
+		, mSeed(seed+1337)
+		, mAcc(0)
+		, mInvocations(0)
 	{
 		for(int i=0; i<100; ++i) {
 			makeNoise();
 		}
 	}
 
+
+private:
+
 	// Deterministic PRNG
 	quint32 makeNoise()
 	{
-		noise = seed;
-		noise >>= 3;
-		noise ^= seed;
-		carry = noise & 1;
-		noise >>= 1;
-		seed >>= 1;
-		seed |= (carry << 30);
-		invocations++;
-		return noise;
+		mNoise = mSeed;
+		mNoise >>= 3;
+		mNoise ^= mSeed;
+		mCarry = mNoise & 1;
+		mNoise >>= 1;
+		mSeed >>= 1;
+		mSeed |= (mCarry << 30);
+		mInvocations++;
+		return mNoise;
+	}
+
+
+public:
+
+
+	quint32 index() const
+	{
+		return mIndex;
 	}
 
 	// Simulate a varying workload
@@ -41,14 +58,16 @@ struct TestItem {
 	{
 		const quint32 num=1+(makeNoise()%10);
 		for(quint32 i=0; i<num; ++i) {
-			acc += ((makeNoise()>0x8888888)?1:0);
+			mAcc += ((makeNoise()>0x8888888)?1:0);
 		}
 		//qDebug()<<"Item "<<index<<" Worked for "<<num<<" iterations to produce "<<acc;
 	}
 
+
+
 	bool operator==(const TestItem &other) const
 	{
-		return (index == other.index) && (noise == other.noise)&& (carry == other.carry)&& (seed == other.seed)&& (acc == other.acc)&& (invocations == other.invocations);
+		return (mIndex == other.mIndex) && (mNoise == other.mNoise)&& (mCarry == other.mCarry)&& (mSeed == other.mSeed)&& (mAcc == other.mAcc)&& (mInvocations == other.mInvocations);
 	}
 
 	bool operator!=(const TestItem &other) const
@@ -56,15 +75,16 @@ struct TestItem {
 		return !operator ==(other);
 	}
 
-	QString toString()
+
+	QString toString() const
 	{
 		return
-			QString("TestItem{index=")+QString::number(index)
-			+", noise="+QString::number(noise)
-			+", carry="+QString::number(carry)
-			+", seed="+QString::number(seed)
-			+", acc="+QString::number(acc)
-			+", invocations="+QString::number(invocations)
+			QString("TestItem{index=")+QString::number(mIndex)
+			+", noise="+QString::number(mNoise)
+			+", carry="+QString::number(mCarry)
+			+", seed="+QString::number(mSeed)
+			+", acc="+QString::number(mAcc)
+			+", invocations="+QString::number(mInvocations)
 			+"}";
 	}
 };
@@ -77,53 +97,61 @@ static QDebug &operator<< (QDebug &d, TestItem &ti )
 
 
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 void TestConcurrentQueue::test()
 {
-	const int num=2000, numt=10, times=200000;
-	int start_seed=0;
-	for(int j=0; j < times; ++j) {
+	const int itemsPerQueue=2000, maxThreadCount=10, timesToRepeatTest=200000;
+	quint32 start_seed=0;
+	for(int j=0; j < timesToRepeatTest; ++j) {
 		//qDebug()<<"DOING BATCH " << j << " of " << times;
 
-		ConcurrentQueue<TestItem> cq, cqf, *pcq=&cq, *pcfq=&cqf;
+		ConcurrentQueue<TestItem> itemQueue, itemQueFacit, *itemQueuePtr=&itemQueue, *itemQueFacitPtr=&itemQueFacit;
 
-		for(int i=0; i<num; ++i) {
+		for(quint32 i=0; i<itemsPerQueue; ++i) {
 			TestItem ti(i, start_seed);
 			start_seed++;
-			cq.put(ti);
-			cqf.put(ti);
+			itemQueue.put(ti);
+			itemQueFacit.put(ti);
 		}
 
-		TestItem fasit[num],  *pfasit=fasit;
-		TestItem result[num], *presult=result;
+		TestItem fasit[itemsPerQueue],  *pfasit=fasit;
+		TestItem result[itemsPerQueue], *presult=result;
 
 		// Calculate the facit
-		for(int i=0; i<num; ++i) {
-			TestItem tif = cqf.get();
+		for(int i = 0; i<itemsPerQueue; ++i) {
+			TestItem tif = itemQueFacit.get();
 			tif.work();
-			fasit[tif.index] = tif;
+			fasit[tif.index()] = tif;
 		}
 
 		QThreadPool tp;
-		tp.setMaxThreadCount(numt);
+		tp.setMaxThreadCount(maxThreadCount);
 
-		for(int i=0; i < num; ++i) {
-			QtConcurrent::run(&tp, [i, pcq, pcfq, presult, pfasit] {
+		for(quint32 i = 0; i < itemsPerQueue; ++i) {
+			QtConcurrent::run(&tp, [i, itemQueuePtr, itemQueFacitPtr, presult, pfasit] {
+				Q_UNUSED(i);
+				Q_UNUSED(itemQueFacitPtr);
 				//qDebug()<<"RUNNABLE-"<<i<<" STARTED";
-				TestItem ti = pcq->get();
+				TestItem ti = itemQueuePtr->get();
 				ti.work();
-				presult[ti.index] = ti;
-				if (pfasit[ti.index] != presult[ti.index]) {
-					qDebug()<< "FACIT: "<<pfasit[ti.index]<< " vs. RESULT: "<<presult[ti.index];
+				presult[ti.index()] = ti;
+				if (pfasit[ti.index()] != presult[ti.index()])
+				{
+					qDebug()<< "FACIT: "<<pfasit[ti.index()]<< " vs. RESULT: "<<presult[ti.index()];
 				}
-				QCOMPARE(presult[ti.index], pfasit[ti.index]);
+				QCOMPARE(presult[ti.index()], pfasit[ti.index()]);
 				//qDebug()<<"RUNNABLE-"<<i<<" DONE";
 			});
 		}
 
 		//qDebug()<<"WAITING FOR BATCH "<<j<<" of "<<times<<" TO COMPLETE";
 		tp.waitForDone();
-		qDebug()<<"BATCH "<<j<<" of "<<times<<" DONE";
-		for(int i=0; i<num; ++i) {
+		qDebug()<<"BATCH "<<j<<" of "<<timesToRepeatTest<<" DONE";
+		for(int i = 0; i<itemsPerQueue; ++i) {
 			if (fasit[i] != result[i]) {
 				qDebug()<< "FACIT: "<<fasit[i]<< " vs. RESULT: "<<result[i];
 			}

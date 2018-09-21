@@ -22,7 +22,7 @@ void TestCommsChannel::testSingle()
 	const qint16 keyBits=128;
 	const QCryptographicHash::Algorithm hashAlgo=QCryptographicHash::Md5;
 	const KeySecurityPolicy policy(keyBits, hashAlgo);
-	const quint64 now=QDateTime::currentMSecsSinceEpoch();
+	const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 
 
 	testHeading("PARAMETER SUMMARY");
@@ -143,11 +143,11 @@ void TestCommsChannel::testSingle()
 
 	testHeading("WAITING 1st time with no sessions");///////////////////////////////
 	{
-		quint64 now=QDateTime::currentMSecsSinceEpoch();
+		quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 		const quint64 end=now+15000;
 		while(now<end) {
 			//qDebug()<<" * * * Tick Tock.....................";
-			now=QDateTime::currentMSecsSinceEpoch();
+			now=utility::currentMsecsSinceEpoch<quint64>();
 			QCoreApplication::processEvents();
 		}
 	}
@@ -187,10 +187,10 @@ void TestCommsChannel::testSingle()
 	qDebug()<<"";
 	qDebug()<<"####################################### WAITING 2nd time with sessions";
 	{
-		const quint64 start=QDateTime::currentMSecsSinceEpoch();
+		const quint64 start=utility::currentMsecsSinceEpoch<quint64>();
 		quint64 now=start;
 		while(now<start+10000) {
-			now=QDateTime::currentMSecsSinceEpoch();
+			now=utility::currentMsecsSinceEpoch<quint64>();
 			QCoreApplication::processEvents();
 		}
 	}

@@ -198,12 +198,13 @@ void TestAddressBook::test()
 	{
 		AddressBook *store=OC_NEW AddressBook(filename);
 		QVERIFY(nullptr!=store);
+		/*
 		store->bootstrap(false, false); // Leave async test to TestKeyStore and TestAsyncStore
 
 		QVERIFY(store->isReady());
 		QVERIFY(!store->isInProgress());
 		QVERIFY(!store->hasError());
-
+*/
 		QVERIFY(!store->hasAssociate(id));
 		QVERIFY(!store->hasAssociate(badId));
 
@@ -246,12 +247,14 @@ void TestAddressBook::test()
 	{
 		AddressBook *store2=OC_NEW AddressBook(filename);
 		QVERIFY(nullptr!=store2);
+
+		/*
 		store2->bootstrap(true, false); // Leave async test to TestKeyStore and TestAsyncStore
 
 		QVERIFY(store2->isReady());
 		QVERIFY(!store2->isInProgress());
 		QVERIFY(!store2->hasError());
-
+*/
 		QVERIFY(store2->hasAssociate(id));
 		QVERIFY(!store2->hasAssociate(badId));
 

@@ -3,7 +3,7 @@
 #include "IrisRendrerTestWidget.hpp"
 
 #include "expression/IrisRendrer.hpp"
-
+#include "utility/Utility.hpp"
 
 #include <QPainter>
 #include <QImage>
@@ -57,7 +57,7 @@ void TestIrisRendrer::testUI()
 
 void TestIrisRendrer::testSave()
 {
-	qsrand(QDateTime::currentMSecsSinceEpoch());
+	qsrand(utility::currentMsecsSinceEpoch<quint64>());
 	const QImage::Format fmt=QImage::Format_ARGB32;
 	const QSize sz(512,512);
 	QImage im(sz,fmt);
@@ -81,7 +81,7 @@ void TestIrisRendrer::testSave()
 
 void TestIrisRendrer::testHuge()
 {
-	qsrand(QDateTime::currentMSecsSinceEpoch());
+	qsrand(utility::currentMsecsSinceEpoch<quint64>());
 	const QImage::Format fmt=QImage::Format_ARGB32;
 	int s=2160;
 	const QSize sz(s,s);

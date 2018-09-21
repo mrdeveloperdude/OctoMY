@@ -14,7 +14,7 @@ void TestPortableID::test(){
 	pid.setGender(gender);
 	QCOMPARE(pid.gender(), gender);
 
-	const quint64 birthDate=QDateTime::currentMSecsSinceEpoch()-1000;
+	const quint64 birthDate=utility::currentMsecsSinceEpoch<quint64>()-1000;
 	QVERIFY(pid.birthDate() != birthDate);
 	pid.setBirthDate(birthDate);
 	QCOMPARE(pid.birthDate(), birthDate);

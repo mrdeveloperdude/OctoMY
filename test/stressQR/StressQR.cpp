@@ -68,7 +68,7 @@ void StressQR::stress()
 	pv2.show();
 	ZBarScanner scanner;
 	qApp->processEvents();
-	quint64 lastTime=QDateTime::currentMSecsSinceEpoch();
+	quint64 lastTime=utility::currentMsecsSinceEpoch<quint64>();
 	int ct=0;
 	int hits=0;
 	const qreal dw=3;
@@ -80,7 +80,7 @@ void StressQR::stress()
 	const int globalSize=300;
 	const int globalSafetyMargin=(globalSize+globalBaseSize)*0.5;
 	for(int i=0; i<10000; ++i) {
-		const quint64 now=QDateTime::currentMSecsSinceEpoch();
+		const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 		const quint64 interval=now-lastTime;
 		if(interval>1000) {
 			qDebug()<<"Running QR test "<<i<<" @ "<<ct<<"/sec ( "<<hits<<"hits "<<(((hits+1)*100)/(ct+1))<<"%)";

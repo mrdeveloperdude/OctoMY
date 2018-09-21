@@ -53,7 +53,7 @@ void CourierTester::onTestInit()
 	QVERIFY(nullptr!=mFromCourier);
 	QVERIFY(nullptr!=mToCourier);
 	onTestInitImp();
-	quint64 now=QDateTime::currentMSecsSinceEpoch();
+	quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 	qDebug()<<"--- INITIAL UPDATE "<<mFromName;
 	mFromCourier->update(now);
 	qDebug()<<"--- INITIAL UPDATE "<<mToName;
@@ -80,7 +80,7 @@ void CourierTester::onTestRoundEnd()
 {
 	qDebug()<<"--- ROUND END -----------";
 	qDebug()<<"--- UPDATE "<<mFromName;
-	quint64 now=QDateTime::currentMSecsSinceEpoch();
+	quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 	mFromCourier->update(now);
 	qDebug()<<"--- UPDATE "<<mToName;
 	mToCourier->update(now);

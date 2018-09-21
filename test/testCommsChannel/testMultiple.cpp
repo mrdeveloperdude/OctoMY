@@ -70,10 +70,10 @@ void TestCommsChannel::testMultiple()
 		qApp->processEvents();
 		qDebug()<<" + WAIT OVER FOR CourierTester "<<senders[i]->toString()<<" * * * * * * << GOT "<<spy.count()<<" FINISH SIGNALS";
 	}
-	const quint64 start=QDateTime::currentMSecsSinceEpoch();
+	const quint64 start=utility::currentMsecsSinceEpoch<quint64>();
 	quint64 now=start;
 	while(now<start+3000) {
-		now=QDateTime::currentMSecsSinceEpoch();
+		now=utility::currentMsecsSinceEpoch<quint64>();
 		QCoreApplication::processEvents();
 	}
 	qDebug()<<"####################################### DELETING";

@@ -93,7 +93,7 @@ void TestCommsChannel::testCommsMock()
 	const qint16 keyBits=128;
 	const QCryptographicHash::Algorithm hashAlgo=QCryptographicHash::Md5;
 	const KeySecurityPolicy policy(keyBits, hashAlgo);
-	const quint64 now=QDateTime::currentMSecsSinceEpoch();
+	const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 
 	testHeading("PARAMETER SUMMARY");
 	qDebug()<<"  + localhost: "<<local;
@@ -172,7 +172,7 @@ void TestCommsChannel::testCommsMock()
 	qDebug()<<"SUMMARY: "<<chanA.getSummary();
 
 	testHeading("Preparing lots of test data");/////////////////////////////////////////////////////
-	quint64 time=QDateTime::currentMSecsSinceEpoch();
+	quint64 time=utility::currentMsecsSinceEpoch<quint64>();
 	const quint64 stepMS=1000;
 	NetworkAddress na(QHostAddress("127.0.0.1"), 8123);
 	carrierA.mockSetOverrideSendingtimer(true);

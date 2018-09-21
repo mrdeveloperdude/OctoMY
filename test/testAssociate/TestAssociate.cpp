@@ -57,7 +57,7 @@ static const NodeRole role=ROLE_AGENT;
 static const QString pin="12345";
 static const QString pin2="54321";
 
-const quint64 now=QDateTime::currentMSecsSinceEpoch();
+const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 
 static QStringList trusts= {
 	"trust-one", "trust-two"
@@ -251,7 +251,7 @@ void TestAssociate::testMapConversions()
 void TestAssociate::testTimeConversions()
 {
 	QDateTime dtNow=QDateTime::currentDateTimeUtc();
-	quint64 tsNow=QDateTime::currentMSecsSinceEpoch();
+	quint64 tsNow=utility::currentMsecsSinceEpoch<quint64>();
 	QVariant vNow;
 	vNow=dtNow;
 	QVariant vNow2;

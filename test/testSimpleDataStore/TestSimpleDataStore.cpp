@@ -2,6 +2,8 @@
 
 #include "node/DataStore.hpp"
 
+#include "node/SimpleDataStore.hpp"
+
 #include "utility/Utility.hpp"
 
 
@@ -12,12 +14,14 @@ private:
 
 public:
 	explicit MySimpleDataStore(QString filename="");
-	virtual ~MySimpleDataStore();
+	virtual ~MySimpleDataStore() Q_DECL_OVERRIDE;
 
 	// SimpleDataStore interface
 public:
 	bool fromMap(QVariantMap data) Q_DECL_OVERRIDE;
 	QVariantMap toMap() Q_DECL_OVERRIDE;
+
+	bool fromDefault()Q_DECL_OVERRIDE;
 };
 
 
@@ -45,6 +49,12 @@ QVariantMap MySimpleDataStore::toMap()
 	return mMyMap;
 }
 
+
+bool MySimpleDataStore::fromDefault()
+{
+	OC_METHODGATE();
+	return false;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 

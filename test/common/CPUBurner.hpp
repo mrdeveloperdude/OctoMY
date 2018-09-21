@@ -1,7 +1,7 @@
 #ifndef CPUBURNER_HPP
 #define CPUBURNER_HPP
 
-
+#include "utility/Utility.hpp"
 
 #include <QDateTime>
 #include <QDebug>
@@ -40,7 +40,7 @@ public:
 		struct timeval tv;
 		int i, n;
 		mwc_z = 0;
-		qint64 now=QDateTime::currentMSecsSinceEpoch();
+		qint64 now=utility::currentMsecsSinceEpoch<quint64>();
 		mwc_z = (now/1000)^ now;
 		mwc_z += ~((unsigned char *)&mwc_z - (unsigned char *)&tv);
 		mwc_w = (qint64)getpid() ^ (qint64)getppid()<<12;
@@ -67,7 +67,7 @@ public:
 	{
 		const qint64 total_ms=1000;
 		const qint64 cpu_ms=(total_ms*pct)/100;
-		const qint64 start=QDateTime::currentMSecsSinceEpoch();
+		const qint64 start=utility::currentMsecsSinceEpoch<quint64>();
 		qint64 interval=0;
 		qint64 ct=0;
 		volatile double sum=0.0;
@@ -76,7 +76,7 @@ public:
 				sum+=burnCPU(stressCPULoopCount);
 				sum/=stressCPULoopCount;
 			}
-			interval=QDateTime::currentMSecsSinceEpoch()-start;
+			interval=utility::currentMsecsSinceEpoch<quint64>()-start;
 			ct++;
 		} while(interval<cpu_ms);
 		qint64 msPer100Cycle=1;

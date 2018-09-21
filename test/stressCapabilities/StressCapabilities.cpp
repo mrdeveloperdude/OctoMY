@@ -13,14 +13,14 @@ void StressCapabilities::stress()
 	GLStressWidget glsw;
 	glsw.show();
 	glsw.initTextures(true);
-	const quint64 start=QDateTime::currentMSecsSinceEpoch();
+	const quint64 start=utility::currentMsecsSinceEpoch<quint64>();
 	const quint64 stress_time=1000*60;
 	mStress.setActive(doStress);
 	QTimer timer;
 	const quint64 loop = 1000 * 20; //Loop at X seconds
-	const quint64 startTime = QDateTime::currentMSecsSinceEpoch();
+	const quint64 startTime = utility::currentMsecsSinceEpoch<quint64>();
 	connect(&timer, &QTimer::timeout, this, [=]() {
-		const quint64 now=QDateTime::currentMSecsSinceEpoch();
+		const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 		const quint64 interval=(now-startTime);
 		const float factor=(interval % loop) /(float)loop;
 		const float angle=factor * M_PI*2.0;
@@ -33,7 +33,7 @@ void StressCapabilities::stress()
 	if(doStress){
 		timer.start(100);
 	}
-	while(QDateTime::currentMSecsSinceEpoch()-start < stress_time) {
+	while(utility::currentMsecsSinceEpoch<quint64>()-start < stress_time) {
 		qApp->processEvents();
 	}
 	timer.stop();

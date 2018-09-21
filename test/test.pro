@@ -92,24 +92,47 @@ contains(DEFINES, USE_TESTS_WEB){
 contains(DEFINES, USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
-		testFivePhase \
-		testArduMY \
-#		testOpenCL \
-#		testNetworkSettingsWidget \
-#		testLightWidget \
-#		testDataStore \
-#		testSimpleDataStore \
-#		testDeliveryWizard \
+#		testAddressBook \
+#		testAddressList \
+#		testAgentStateCourier \
+#		testArduMY \
 #		testAssociate \
-#		testDiscovery \
 #		testAsyncStore \
-#		testKeyStore \
-#		testConcurrentQueue \
-#		testTaskQueue \
-#		testCommsChannel \
+#		testBlob \
+#		testCarSteeringWidget \
 #		testCommsCarrier \
-#		testRateCalculator \
+#		testCommsChannel \
+#		testCommsSession \
+#		testConcurrentQueue \
+#		testDataStore \
+#		testDeliveryWizard \
+#		testDiscovery \
+#		testEventSourcing \
+#		testEyesWidget \
+#		testFivePhase \
+#		testHashstore \
+#		testIDDuel \
+#		testIdenticon \
+#		testIrisRendrer \
+#		testKey \
+#		testKeyStore \
 #		testMapEditor\
+#		testNetworkAddress \
+#		testNetworkSettingsWidget\
+#		testParser \
+#		testPortableID \
+#		testPoseMappingWidget \
+#		testRateCalculator \
+#		testRNG \
+#		testServotor32Controller \
+#		testSimpleDataStore \
+#		testStreamCodec \
+#		testSyncParameter \
+#		testTaskQueue \
+#		testTetraGPSEncoder \
+#		testTryToggle \
+#		testUtility \
+#		testZooComms \
 
 	STRESS_PROJECTS+= \
 	#	stressCapabilities \

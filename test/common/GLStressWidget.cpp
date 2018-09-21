@@ -155,7 +155,7 @@ void GLStressWidget::paintGL()
 		geometries->drawCubeGeometry(&program);
 	}
 
-	const qint64 now=QDateTime::currentMSecsSinceEpoch();
+	const qint64 now=utility::currentMsecsSinceEpoch<quint64>();
 	const qint64 iv=now -lastRenderRime;
 	lastRenderRime=now;
 	//Strive for 25 fps

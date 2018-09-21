@@ -8,7 +8,7 @@
 
 static quint64 sinSleep(qreal phase=0.0, quint64 min=1, quint64 max=50 )
 {
-	const qreal t=phase+((QDateTime::currentMSecsSinceEpoch()*M_PI*2.0)/4000.0);
+	const qreal t=phase+((utility::currentMsecsSinceEpoch<quint64>()*M_PI*2.0)/4000.0);
 	const int ms=min+((qSin(t)+1.0)*0.5)*(max-min);
 	//qDebug()<<"sinSleep: "<<ms;
 	//QThread::msleep(ms);
@@ -29,7 +29,7 @@ struct TestTask {
 
 	void execute()
 	{
-		const int ms=sinSleep(0.0); //(qSin(QDateTime::currentMSecsSinceEpoch()/10000.0)+1.0)*1000;
+		const int ms=sinSleep(0.0); //(qSin(utility::currentMsecsSinceEpoch<quint64>()/10000.0)+1.0)*1000;
 		qDebug()<<" + Item "<<i<<" start sleeping for "<<ms<<"ms";
 		QThread::msleep(ms);
 		qDebug()<<" - Item "<<i<<" done sleeping for "<<ms<<"ms";
@@ -62,7 +62,7 @@ void TestDataStore::testConcurrentQueue()
 				qDebug()<<"Producing item "<<i<<"-"<<j;
 				int ct=0;
 				queuep->put(QSharedPointer<TestTask>(new TestTask(ct++)));
-				const int ms=sinSleep(M_PI); //(qSin(QDateTime::currentMSecsSinceEpoch()/10000.0+M_PI)+1.0)*1000;
+				const int ms=sinSleep(M_PI); //(qSin(utility::currentMsecsSinceEpoch<quint64>()/10000.0+M_PI)+1.0)*1000;
 				qDebug()<<"production break "<<ms<< "ms";
 				QThread::msleep(ms);
 			}

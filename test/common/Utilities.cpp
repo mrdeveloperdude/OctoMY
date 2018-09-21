@@ -1,5 +1,7 @@
 #include "Utilities.hpp"
 
+#include "utility/Utility.hpp"
+
 #include <QDateTime>
 #include <QCoreApplication>
 #include <QTest>
@@ -9,10 +11,10 @@ void testSleep(quint64 ms, QString occation)
 	if(!occation.isEmpty()) {
 		qDebug()<<"Sleeping, waiting for "+occation;
 	}
-	const quint64 start=QDateTime::currentMSecsSinceEpoch();
+	const quint64 start=utility::currentMsecsSinceEpoch<quint64>();
 	quint64 now=start;
 	while(now<start+ms) {
-		now=QDateTime::currentMSecsSinceEpoch();
+		now=utility::currentMsecsSinceEpoch<quint64>();
 		QCoreApplication::processEvents();
 	}
 	if(!occation.isEmpty()) {

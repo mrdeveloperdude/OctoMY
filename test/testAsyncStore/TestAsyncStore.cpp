@@ -46,7 +46,8 @@ public:
 		if(doFailClear)
 		{
 			ret=false;
-		} else{
+		} else
+		{
 			exists = false;
 			diskData = T();
 		}
@@ -59,7 +60,8 @@ public:
 		if(doFailSave)
 		{
 			ret=false;
-		} else{
+		} else
+		{
 			this->diskData=data;
 			this->exists=true;
 		}
@@ -74,13 +76,13 @@ public:
 			T data=T();
 			qDebug().nospace().noquote()<<"loadBackend("<<ok<<") with doFailLoad="<<doFailLoad<<" returned "<<data<< " @ "<<utility::currentThreadID();
 			return data;
-		} else{
-			if(exists)
-			{
+		} else
+		{
+			if(exists) {
 				ok=true;
 				qDebug().nospace().noquote()<<"loadBackend("<<ok<<") with doFailLoad="<<doFailLoad<<" returned "<<diskData<< " @ "<<utility::currentThreadID();
 				return diskData;
-			} else{
+			} else {
 				ok=false;
 				T data=T();
 				qDebug().nospace().noquote()<<"loadBackend("<<ok<<") with doFailLoad="<<doFailLoad<<" returned "<<data<< " @ "<<utility::currentThreadID();
@@ -116,6 +118,13 @@ public:
 	{
 		qDebug().nospace().noquote()<<"FrontendMock::FrontendMock(exists="<<exists<<", openData="<<openData<<", generateData="<<generateData<<", doFailClear="<<doFailClear<<", doFailSet="<<doFailSet<<", doFailGet="<<doFailGet<<", doFailGenerate="<<doFailGenerate<<") @ "<<utility::currentThreadID();
 	}
+
+
+	virtual ~FrontendMock()
+	{
+
+	}
+
 	// AsyncFrontend interface
 public:
 
@@ -124,7 +133,8 @@ public:
 		if(doFailClear)
 		{
 			ret=false;
-		} else{
+		} else
+		{
 			exists=false;
 			memData=T();
 		}
@@ -137,7 +147,8 @@ public:
 		if(doFailSet)
 		{
 			ret=false;
-		} else{
+		} else
+		{
 			memData=data;
 			exists=true;
 		}
@@ -152,13 +163,13 @@ public:
 			T data=T();
 			qDebug().nospace().noquote()<<"getFrontend("<<ok<<") with doFailGet="<<doFailGet<<" returned "<<data<< " @ "<<utility::currentThreadID();
 			return data;
-		} else{
-			if(exists)
-			{
+		} else
+		{
+			if(exists) {
 				ok=true;
 				qDebug().nospace().noquote()<<"getFrontend("<<ok<<") with doFailGet="<<doFailGet<<" returned "<<memData<< " @ "<<utility::currentThreadID();
 				return memData;
-			} else{
+			} else {
 				ok=false;
 				T data=T();
 				qDebug().nospace().noquote()<<"getFrontend("<<ok<<") with doFailGet="<<doFailGet<<" returned "<<data<< " @ "<<utility::currentThreadID();
@@ -172,7 +183,8 @@ public:
 		if(doFailGenerate)
 		{
 			ret=false;
-		} else{
+		} else
+		{
 			memData=generateData;
 			QThread::msleep(1000);
 			exists=true;
@@ -200,12 +212,12 @@ public:
 								 , T frontendData
 								 , T frontendGeneratorData
 								 , bool backendDoFailClear=false
-										 , bool backendDoFailSave=false
-												 , bool backendDoFailLoad=false
-														 , bool frontendDoFailClear=false
-																 , bool frontendDoFailSet=false
-																		 , bool frontendDoFailGet=false
-																				 , bool frontendDoFailGenerate=false);
+								 , bool backendDoFailSave=false
+								 , bool backendDoFailLoad=false
+								 , bool frontendDoFailClear=false
+								 , bool frontendDoFailSet=false
+								 , bool frontendDoFailGet=false
+								 , bool frontendDoFailGenerate=false);
 
 
 	virtual ~AsyncStoreTester<T>();
@@ -304,6 +316,7 @@ void TestAsyncStore::testFileExists()
 		qDebug().nospace().noquote()<<"Sync "<<utility::currentThreadID();
 		//QVERIFY(ast.);
 		ast.store.synchronize().onFinished([](ASEvent<TestType> &a) {
+			Q_UNUSED(a);
 			qDebug().nospace().noquote()<<"AsyncStoreTest::synchronize().onFinished() "<<utility::currentThreadID();
 		});
 
@@ -319,6 +332,7 @@ void TestAsyncStore::testGenerate()
 		AsyncStoreTester<TestType> ast("dummy.json", false, 1234, false, 0, 1337);
 		qDebug().nospace().noquote()<<"Sync "<<utility::currentThreadID();
 		ast.store.synchronize().onFinished([](ASEvent<TestType> &a) {
+			Q_UNUSED(a);
 			qDebug().nospace().noquote()<<"AsyncStoreTest::synchronize().onFinished() "<<utility::currentThreadID();
 		});
 		qDebug().nospace().noquote()<<"Done with disk=" << ast.backend.diskData<< "(" << ast.backend.exists<< "), mem="<< ast.frontend.memData<< " @ "<<utility::currentThreadID();
@@ -333,10 +347,12 @@ void TestAsyncStore::testSaveChange()
 		AsyncStoreTester<TestType> ast("dummy.json", true, 1234, false, 0, 1337);
 		qDebug().nospace().noquote()<<"Sync "<<utility::currentThreadID();
 		ast.store.synchronize().onFinished([](ASEvent<TestType> &a) {
+			Q_UNUSED(a);
 			qDebug().nospace().noquote()<<"AsyncStoreTest::synchronize().onFinished() "<<utility::currentThreadID();
 		});
 
 		ast.store.set(666).onFinished([](ASEvent<TestType> &a) {
+			Q_UNUSED(a);
 			qDebug().nospace().noquote()<<"AsyncStoreTest::set().onFinished() "<<utility::currentThreadID();
 		});
 

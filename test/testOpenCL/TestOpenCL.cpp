@@ -452,10 +452,10 @@ void TestOpenCL::testWithoutGLInterop()
 	// Just do CPU for maximum portability/availability/debugability
 	CLThreadManager tm(twf, ic, "", true, true); // CLWorkerFactory &factory, CLGLInteropConfig config=CLGLInteropConfig(), QString deviceSelectionString="", bool allowGPU=true, bool allowCPU=false, QObject *parent = nullptr
 	tm.setRunning(true);
-	const quint64 start=QDateTime::currentMSecsSinceEpoch();
+	const quint64 start=utility::currentMsecsSinceEpoch<quint64>();
 	quint64 now=start;
 	while(now<start+10000) {
-		now=QDateTime::currentMSecsSinceEpoch();
+		now=utility::currentMsecsSinceEpoch<quint64>();
 		qApp->processEvents();
 	}
 	tm.setRunning(false,true);
@@ -506,10 +506,10 @@ void TestOpenCL::testWithGLInterop()
 
 	testCLGLViewRendrer_p->setRendering(true);
 	qDebug()<<"--- WAITING ---";
-	const quint64 start=QDateTime::currentMSecsSinceEpoch();
+	const quint64 start=utility::currentMsecsSinceEpoch<quint64>();
 	quint64 now=start;
 	while(now<start+20000) {
-		now=QDateTime::currentMSecsSinceEpoch();
+		now=utility::currentMsecsSinceEpoch<quint64>();
 		qApp->processEvents();
 	}
 	qDebug()<<"--- DONE ---";
