@@ -170,7 +170,6 @@ private:
 	// Internal transaction to stop transaction processing thread
 	bool completeSync();
 
-
 public:
 
 	friend class ASEvent<T>;

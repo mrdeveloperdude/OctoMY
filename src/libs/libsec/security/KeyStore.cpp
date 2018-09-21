@@ -29,7 +29,8 @@ KeyStore::KeyStore(QString filename, bool doBootstrap, KeySecurityPolicy policy,
 {
 	OC_METHODGATE();
 	setObjectName("KeyStore");
-	synchronize([this](ASEvent<QVariantMap> &se) {
+	synchronize([](ASEvent<QVariantMap> &se) {
+		Q_UNUSED(se);
 		qDebug()<<"KeyStore::KeyStore() SELF ASSESMENT: SYNC WAS OK=";
 	});
 }
@@ -39,11 +40,6 @@ KeyStore::~KeyStore()
 {
 	OC_METHODGATE();
 }
-
-
-
-
-
 
 
 
@@ -227,7 +223,8 @@ void KeyStore::dump()
 QString KeyStore::toString()
 {
 	OC_METHODGATE();
-	QString out="KeyStore{ fn="+filename()+", fexists="+fileExists()+", ready="+(const bool)ready()+", peer-keys:[";
+
+	QString out="KeyStore{ fn="+filename()+", fexists="+fileExists()+", ready=" + static_cast<const bool>(ready())+ ", peer-keys:[";
 	for(QMap<QString, QSharedPointer<Key> >::iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
 		QString key=b.key();
 		//b.value();
@@ -271,14 +268,5 @@ const QDebug &operator<<(QDebug &d, KeyStore &ks)
 {
 	OC_FUNCTIONGATE();
 	d.nospace().noquote() << ks.toString();
-	/*
-	<<"KeyStore{ fn="<<ks.filename()<<", fexists="<<ks.fileExists()<<", ready="<<(const bool)ks.ready()<<", peer-keys:[";
-	for(QMap<QString, QSharedPointer<Key> >::iterator b=ks.mAssociates.begin(), e=ks.mAssociates.end(); b!=e; ++b) {
-		QString key=b.key();
-		//b.value();
-		d.nospace()<<" + " <<key;
-	}
-	d.nospace() <<"]}";
-	*/
 	return d.maybeSpace();
 }

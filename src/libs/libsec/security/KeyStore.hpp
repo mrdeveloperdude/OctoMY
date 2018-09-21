@@ -34,111 +34,112 @@ static void noop(ASEvent<T> &)
 }
 
 struct nop {
-    void operator()(...) const volatile {}
+	void operator()(...) const volatile {}
 };
 
 
 class KeyStore: public QObject, public AsyncFrontend<QVariantMap>
 {
-    Q_OBJECT
+	Q_OBJECT
 private:
-    JsonAsyncBackend mBackend;
-    AsyncStore<QVariantMap> mStore;
-    QVariantMap mCache;
-    bool mDirty;
-    bool mDoBootstrap;
-    KeySecurityPolicy mPolicy;
-    QSharedPointer<Key> mLocalKey;
-    QMap<QString, QSharedPointer<Key> > mAssociates;
+	JsonAsyncBackend mBackend;
+	AsyncStore<QVariantMap> mStore;
+	QVariantMap mCache;
+	bool mDirty;
+	bool mDoBootstrap;
+	KeySecurityPolicy mPolicy;
+	QSharedPointer<Key> mLocalKey;
+	QMap<QString, QSharedPointer<Key> > mAssociates;
 
-    friend class GenerateRunnable<KeyStore>;
+	friend class GenerateRunnable<KeyStore>;
 
 public:
-    explicit KeyStore(QString filename="", bool doBootstrap=false, KeySecurityPolicy policy=KeySecurityPolicy(), QObject *parent=nullptr);
-    virtual ~KeyStore();
+	explicit KeyStore(QString filename="", bool doBootstrap=false, KeySecurityPolicy policy=KeySecurityPolicy(), QObject *parent=nullptr);
+	virtual ~KeyStore() Q_DECL_OVERRIDE;
 
 
-    // AsyncFrontend interface
+	// AsyncFrontend interface
 public:
 
-    bool clearFrontend() Q_DECL_OVERRIDE;
-    bool setFrontend(QVariantMap data) Q_DECL_OVERRIDE;
-    QVariantMap getFrontend(bool &ok) Q_DECL_OVERRIDE;
-    bool generateFrontend() Q_DECL_OVERRIDE;
+	bool clearFrontend() Q_DECL_OVERRIDE;
+	bool setFrontend(QVariantMap data) Q_DECL_OVERRIDE;
+	QVariantMap getFrontend(bool &ok) Q_DECL_OVERRIDE;
+	bool generateFrontend() Q_DECL_OVERRIDE;
 
 
 
 private:
 
-    // To have this called, make sure to set boostrapping to true and then call synchronize()
-    void bootstrap();
+	// To have this called, make sure to set boostrapping to true and then call synchronize()
+	void bootstrap();
 public:
 
-    bool bootstrapEnabled();
-    void setBootstrapEnabled(bool doBootstrap);
+	bool bootstrapEnabled();
+	void setBootstrapEnabled(bool doBootstrap);
 
-    QSharedPointer<Key> localKey();
-
-
-    // Check if we have pub-key for node identified by give fingerprint ID
-    bool hasPubKeyForID(const QString &id);
-
-    // Set pub-key for node identified by given fingerprint ID to given UTF-8 encoded string containing pubkey PEM format
-    void setPubKeyForID(const QString &pubkeyPEM);
-
-    // return pub-key for node identified by give fingerprint ID
-    QSharedPointer<Key> pubKeyForID(const QString &id);
+	QSharedPointer<Key> localKey();
 
 
+	// Check if we have pub-key for node identified by give fingerprint ID
+	bool hasPubKeyForID(const QString &id);
 
-    void dump();
-    QString toString();
+	// Set pub-key for node identified by given fingerprint ID to given UTF-8 encoded string containing pubkey PEM format
+	void setPubKeyForID(const QString &pubkeyPEM);
 
-
-public:
-
-    QString filename() const;
-    bool fileExists() const;
-    bool ready();
+	// return pub-key for node identified by give fingerprint ID
+	QSharedPointer<Key> pubKeyForID(const QString &id);
 
 
-    template <typename F>
-    void status(F callBack);
-    template <typename F>
-    void clear(F callBack);
-    template <typename F>
-    void save(F callBack);
-    template <typename F>
-    void load(F callBack);
-    template <typename F>
-    void synchronize(F callBack);
 
-    void waitForSync();
-
-public:
-    void clear()
-    {
-        clear([](ASEvent<QVariantMap> &ase){Q_UNUSED(ase);});
-    }
-    void save()
-    {
-        save([](ASEvent<QVariantMap> &ase){Q_UNUSED(ase);});
-    }
-    void load()
-    {
-        load([](ASEvent<QVariantMap> &ase){Q_UNUSED(ase);});
-    }
+	void dump();
+	QString toString();
 
 
 public:
 
-    friend const QDebug &operator<<(QDebug &d, KeyStore &ks);
+
+	QString filename() const;
+	bool fileExists() const;
+	bool ready();
+
+
+	template <typename F>
+	void status(F callBack);
+	template <typename F>
+	void clear(F callBack);
+	template <typename F>
+	void save(F callBack);
+	template <typename F>
+	void load(F callBack);
+	template <typename F>
+	void synchronize(F callBack);
+
+	void waitForSync();
+
+public:
+	void clear()
+	{
+		clear([](ASEvent<QVariantMap> &ase){Q_UNUSED(ase);});
+	}
+	void save()
+	{
+		save([](ASEvent<QVariantMap> &ase){Q_UNUSED(ase);});
+	}
+	void load()
+	{
+		load([](ASEvent<QVariantMap> &ase){Q_UNUSED(ase);});
+	}
+
+
+public:
+
+	friend const QDebug &operator<<(QDebug &d, KeyStore &ks);
 
 
 signals:
 
-    void keystoreReady(bool);
-    //storeReady(!mError);
+	void keystoreReady(bool);
+	//storeReady(!mError);
 
 };
 
@@ -152,22 +153,22 @@ signals:
 template <typename F>
 void KeyStore::status(F callBack)
 {
-    OC_METHODGATE();
-    mStore.status().onFinished(callBack);
+	OC_METHODGATE();
+	mStore.status().onFinished(callBack);
 }
 
 template <typename F>
 void KeyStore::clear(F callBack)
 {
-    OC_METHODGATE();
-    mStore.clear().onFinished(callBack);
+	OC_METHODGATE();
+	mStore.clear().onFinished(callBack);
 }
 
 template <typename F>
 void KeyStore::save(F callBack)
 {
-    OC_METHODGATE();
-    mStore.save().onFinished(callBack);
+	OC_METHODGATE();
+	mStore.save().onFinished(callBack);
 }
 
 
@@ -175,8 +176,8 @@ void KeyStore::save(F callBack)
 template <typename F>
 void KeyStore::load(F callBack)
 {
-    OC_METHODGATE();
-    mStore.load().onFinished(callBack);
+	OC_METHODGATE();
+	mStore.load().onFinished(callBack);
 }
 
 
@@ -184,8 +185,8 @@ void KeyStore::load(F callBack)
 template <typename F>
 void KeyStore::synchronize(F callBack)
 {
-    OC_METHODGATE();
-    mStore.synchronize().onFinished(callBack);
+	OC_METHODGATE();
+	mStore.synchronize().onFinished(callBack);
 }
 
 
