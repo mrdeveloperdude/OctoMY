@@ -1,31 +1,19 @@
 #ifndef AGENTNAMEGENERATOR_HPP
 #define AGENTNAMEGENERATOR_HPP
 
+
+#include "NameGenerator.hpp"
+
 #include <QString>
 
 
-class RNG;
+class AgentNameGenerator: public NameGenerator
+{
 
-class AgentNameGenerator{
-	private:
-		RNG *rng;
+public:
 
-	private:
-
-		static const char* namePrefix[];
-		static const char* nameStem[];
-		static const char* nameSuffix[];
-
-	private:
-
-		quint32 randomInt();
-
-	public:
-
-		explicit AgentNameGenerator();
-		virtual ~AgentNameGenerator();
-
-		QString generate ();
+	explicit AgentNameGenerator();
+	virtual ~AgentNameGenerator();
 
 };
 

@@ -1,11 +1,14 @@
 #ifndef REMOTENAMEGENERATOR_HPP
 #define REMOTENAMEGENERATOR_HPP
 
+#include "NameGenerator.hpp"
 
-class RemoteNameGenerator
+
+class RemoteNameGenerator: public NameGenerator
 {
-	public:
-		RemoteNameGenerator();
+public:
+	explicit RemoteNameGenerator();
+	virtual  ~RemoteNameGenerator();
 };
 
 #endif // REMOTENAMEGENERATOR_HPP
