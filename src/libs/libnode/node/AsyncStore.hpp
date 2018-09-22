@@ -201,7 +201,7 @@ AsyncStore<T>::AsyncStore(AsyncBackend<T> &backend, AsyncFrontend<T> &frontend, 
 //	setObjectName("AsyncStore");
 	const QString filename=mBackend.filenameBackend();
 	const bool exists=mBackend.existsBackend();
-	qDebug().noquote().nospace()<<"AsyncStore created () with filename="<< filename <<" (exists="<<exists<<") from "<<utility::currentThreadID();
+	//qDebug().noquote().nospace()<<"AsyncStore created () with filename="<< filename <<" (exists="<<exists<<") from "<<utility::currentThreadID();
 	if(exists) {
 		// Make sure that a sync from initial state will perform a load if there is data on disk
 		mDiskCounter=autoIncrement();

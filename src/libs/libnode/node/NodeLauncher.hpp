@@ -142,7 +142,7 @@ int NodeLauncher<T>::run()
 	QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
 	mApp=(mIsHeadless?(OC_NEW QCoreApplication(mArgc, mArgv)):(OC_NEW QApplication(mArgc, mArgv)));
-	qDebug()<<(mIsHeadless?"HEADLESS":"GUI ENABLED");
+	//qDebug()<<(mIsHeadless?"HEADLESS":"GUI ENABLED");
 
 	if(nullptr!=mApp) {
 		QApplication::setQuitOnLastWindowClosed(false);
@@ -165,7 +165,7 @@ template <typename T>
 void NodeLauncher<T>::start()
 {
 	OC_METHODGATE();
-	qDebug()<<"NODE LAUNCHER: START";
+	//qDebug()<<"NODE LAUNCHER: START";
 	mNode=QSharedPointer<T>(OC_NEW T(*this, nullptr));
 	if(!mNode.isNull()) {
 		if(!mIsHeadless) {
@@ -189,7 +189,7 @@ template <typename T>
 void NodeLauncher<T>::stop()
 {
 	OC_METHODGATE();
-	qDebug()<<"NODE LAUNCHER: STOP";
+	//qDebug()<<"NODE LAUNCHER: STOP";
 	if(!mNode.isNull()) {
 		//mNode.reset();
 		mNode->deInit();
@@ -201,7 +201,7 @@ void NodeLauncher<T>::stop()
 template <typename T>
 void NodeLauncher<T>::nodeDone()
 {
-	qDebug()<<"NODELAUNCHER DONE";
+	//qDebug()<<"NODELAUNCHER DONE";
 	if(nullptr!=mApp) {
 		mApp->quit();
 	}

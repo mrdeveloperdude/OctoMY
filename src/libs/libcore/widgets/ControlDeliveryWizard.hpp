@@ -3,6 +3,7 @@
 
 #include "security/KeyStore.hpp"
 #include "security/PortableID.hpp"
+#include "basic/RemoteNameGenerator.hpp"
 #include "basic/Associate.hpp"
 
 
@@ -27,6 +28,7 @@ private:
 	Ui::ControlDeliveryWizard *ui;
 	QTimer mBirthTimer;
 	WaitingSpinnerWidget *mSpinner;
+	RemoteNameGenerator mNameGenerator;
 	Settings *mSettings;
 	QSharedPointer<Node> mNode;
 	PortableID mID;
@@ -58,6 +60,8 @@ private slots:
 private slots:
 	void on_pushButtonPairNow_clicked();
 
+	void on_pushButtonRandomName_clicked();
+	void on_pushButtonOnward_clicked();
 };
 
 #endif // CONTROLDELIVERYWIZARD_HPP

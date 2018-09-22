@@ -22,7 +22,7 @@ DataStore::DataStore(QString filename, QObject *parent)
 //	setObjectName("DataStore");
 	QFile file(mFilename);
 	const bool exists=file.exists();
-	qDebug().noquote().nospace()<<"DataStore created () with filename="<< mFilename <<" (exists="<<exists<<") from thread "<<utility::currentThreadID();
+	//qDebug().noquote().nospace()<<"DataStore created () with filename="<< mFilename <<" (exists="<<exists<<") from thread "<<utility::currentThreadID();
 	if(exists) {
 		// Make sure that a sync from initial state will perform a load if there is data on disk
 		mDiskCounter=autoIncrement();

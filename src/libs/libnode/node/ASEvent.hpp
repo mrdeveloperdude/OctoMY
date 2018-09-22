@@ -212,7 +212,7 @@ ASEventPrivate<T>::ASEventPrivate(AsyncStore<T> & store, const ASEventType type,
 {
 
 	OC_METHODGATE();
-	qDebug()<<"ASEventPrivate created ( store=" << mStore.filename() << ", type=" << mType << " ) from thread " << utility::currentThreadID() << " and P:" << privCounterString(this);
+	//qDebug()<<"ASEventPrivate created ( store=" << mStore.filename() << ", type=" << mType << " ) from thread " << utility::currentThreadID() << " and P:" << privCounterString(this);
 }
 
 /*
@@ -226,7 +226,7 @@ template <typename T>
 ASEventPrivate<T>::ASEventPrivate()
 {
 	OC_METHODGATE();
-	qDebug()<<"ASEventPrivate created ( defaults ) from thread " << utility::currentThreadID() << " and P:" << privCounterString(this);
+	//qDebug()<<"ASEventPrivate created ( defaults ) from thread " << utility::currentThreadID() << " and P:" << privCounterString(this);
 }
 
 
@@ -248,7 +248,7 @@ void ASEvent<T>::onFinished(F callBack)
 	//auto f = [this, callBack](ASEvent<T> &ase) { callBack(ase); };
 
 	//ASEventPrivate::CallbackType
-	qDebug().nospace().noquote()<<"P:"<<ASEventPrivate<T>::privCounterString(p) <<" from "<<utility::currentThreadID();
+	//qDebug().nospace().noquote()<<"P:"<<ASEventPrivate<T>::privCounterString(p) <<" from "<<utility::currentThreadID();
 	{
 		//qDebug()<<"IS RECURSIVE: "<< p->mCallbackMutex.isRecursive();
 //		QMutexLocker callbackLock(&p->mCallbackMutex);
@@ -265,13 +265,13 @@ template <typename T>
 void ASEvent<T>::runCallbacks()
 {
 	OC_METHODGATE();
-	qDebug()<<"runCallbacks() from "<<utility::currentThreadID();
+	//qDebug()<<"runCallbacks() from "<<utility::currentThreadID();
 	ASEventPrivate<T> *p=p_ptr.data();
 	if(nullptr==p) {
 		qWarning().nospace().noquote()<<"ERROR: No p";
 		return;
 	}
-	qDebug().nospace().noquote()<< " from "<<utility::currentThreadID() <<"P:"<<ASEventPrivate<T>::privCounterString(p);
+	//qDebug().nospace().noquote()<< " from "<<utility::currentThreadID() <<"P:"<<ASEventPrivate<T>::privCounterString(p);
 	//qDebug().nospace().noquote()<<" runCallbacks Locking callbakc mutex from "<<utility::currentThreadID();
 	//QVector< std::function<void(ASEvent<T> &)> > copy;
 	{
@@ -293,7 +293,7 @@ void ASEvent<T>::runCallbacks()
 			callBack(*this);
 		}
 		*/
-		qDebug().nospace().noquote()<<"RUNNING CALLBACKS FOR "<<type()<<" event with message="<<p->mMessage<<" started="<<p->mStarted<<" finished="<<p->mFinished;
+		//qDebug().nospace().noquote()<<"RUNNING CALLBACKS FOR "<<type()<<" event with message="<<p->mMessage<<" started="<<p->mStarted<<" finished="<<p->mFinished;
 	}
 
 	//qDebug().nospace().noquote()<<" runCallbacks callbakc mutex UNLOCKED from "<<utility::currentThreadID();
@@ -400,7 +400,7 @@ template <typename T>
 void ASEvent<T>::tTest() const
 {
 	QString cT=utility::currentThreadID();
-	qDebug()<<"ALLOCATION: "<<mAllocation;
+	//qDebug()<<"ALLOCATION: "<<mAllocation;
 	if(mT!=cT) {
 		qDebug()<<"WARNING: THEAD THAT CREATED ASEVENT: '"<<mT<<"' WAS NOT THE ONE THAT CALLED TTEST: '"<<cT <<"'";
 	}

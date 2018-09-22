@@ -182,9 +182,9 @@ struct FunctorEvent : public QEvent {
 	explicit FunctorEvent(const Functor & fun) : QEvent(QEvent::None), functor(fun) {}
 	virtual ~FunctorEvent()
 	{
-		qDebug()<<"CALLING FUNCTOR FOR FUNCTOR EVENT";
+		//qDebug()<<"CALLING FUNCTOR FOR FUNCTOR EVENT";
 		functor();
-		qDebug()<<"DONE CALLING FUNCTOR FOR FUNCTOR EVENT";
+		//qDebug()<<"DONE CALLING FUNCTOR FOR FUNCTOR EVENT";
 	}
 };
 

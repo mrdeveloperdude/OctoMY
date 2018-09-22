@@ -385,7 +385,7 @@ void RemoteWindow::goToStartPage()
 		if(key.isNull() || !key->isValid(true)) {
 			qDebug()<<"STARTING WITH DELIVERY";
 			setCurrentPage(ui->pageDelivery);
-			ui->widgetDelivery->startBirth();
+			//ui->widgetDelivery->startBirth();
 		} else if(mRemote->addressBook().associateCount()<=0) {
 			qDebug()<<"STARTING WITH PAIRING";
 			setCurrentPage(ui->pagePairing);

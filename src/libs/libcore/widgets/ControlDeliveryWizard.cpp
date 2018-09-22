@@ -51,6 +51,14 @@ ControlDeliveryWizard::ControlDeliveryWizard(QWidget *parent)
 	}, OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
+
+
+	if(!connect(ui->lineEditName, &QLineEdit::textEdited, this, [=](QString s) {
+	ui->pushButtonOnward->setEnabled(s.length()>=minLetters);
+	},OC_CONTYPE)) {
+		qWarning()<<"ERROR: Could not connect";
+	}
+
 }
 
 
@@ -71,7 +79,8 @@ ControlDeliveryWizard::~ControlDeliveryWizard()
 void ControlDeliveryWizard::reset()
 {
 	OC_METHODGATE();
-	ui->stackedWidget->setCurrentWidget(ui->pageBirthInProgress);
+	ui->lineEditName->setText(mNameGenerator.generate());
+	ui->stackedWidget->setCurrentWidget(ui->pageDelivery);
 }
 
 
@@ -166,4 +175,16 @@ void ControlDeliveryWizard::on_pushButtonPairNow_clicked()
 {
 	OC_METHODGATE();
 	emit done(true);
+}
+
+void ControlDeliveryWizard::on_pushButtonRandomName_clicked()
+{
+	OC_METHODGATE();
+	ui->lineEditName->setText(mNameGenerator.generate());
+}
+
+void ControlDeliveryWizard::on_pushButtonOnward_clicked()
+{
+	OC_METHODGATE();
+	startBirth();
 }
