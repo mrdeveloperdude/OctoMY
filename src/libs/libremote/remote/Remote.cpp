@@ -34,7 +34,7 @@ void Remote::init()
 	OC_METHODGATE();
 	Node::init();
 
-	qDebug()<<"EMITTING LOAD COMLPETE";
+	//qDebug()<<"EMITTING LOAD COMLPETE";
 	emit appLoaded();
 }
 

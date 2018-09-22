@@ -19,7 +19,7 @@ NodeWindow::NodeWindow(QSharedPointer<Node> node, QWidget *parent)
 NodeWindow::~NodeWindow()
 {
 	OC_METHODGATE();
-	qDebug()<<"####################################### NODEWINDOW DTOR";
+	//qDebug()<<"####################################### NODEWINDOW DTOR";
 
 }
 
@@ -37,7 +37,7 @@ void NodeWindow::loadWindowGeometry()
 		Settings &s=mNode->settings();
 		geometry = s.getCustomSettingByteArray("geometry", QByteArray());
 	}
-	qDebug()<<"#*#*#*#*#*#*#*#* LOADED GEOMETRY WAS "<<geometry;
+	//qDebug()<<"#*#*#*#*#*#*#*#* LOADED GEOMETRY WAS "<<geometry;
 	if (geometry.isEmpty()) {
 		qDebug()<<"WARNING: No window geometry found in settings";
 		const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
@@ -45,7 +45,7 @@ void NodeWindow::loadWindowGeometry()
 		move((availableGeometry.width() - width()) / 2,
 			 (availableGeometry.height() - height()) / 2);
 	} else {
-		qDebug()<<"Window geometry found in settings, restoring.";
+		//qDebug()<<"Window geometry found in settings, restoring.";
 		restoreGeometry(geometry);
 	}
 
@@ -54,11 +54,11 @@ void NodeWindow::loadWindowGeometry()
 
 void NodeWindow::saveWindowGeometry()
 {
-	qDebug()<<"#*#*#*#*#*#*#*#* SAVING GEOMETRY REACHED IN NODEWIN";
+	//qDebug()<<"#*#*#*#*#*#*#*#* SAVING GEOMETRY REACHED IN NODEWIN";
 	if(!mNode.isNull()) {
 		Settings &s=mNode->settings();
 		QByteArray geometry = saveGeometry();
-		qDebug()<<"#*#*#*#*#*#*#*#* SAVING GEOMETRY "<<geometry;
+		//qDebug()<<"#*#*#*#*#*#*#*#* SAVING GEOMETRY "<<geometry;
 		s.setCustomSettingByteArray("geometry", geometry);
 	}
 }

@@ -40,7 +40,7 @@ QMap<QString, QSharedPointer<Client> > ClientList::toMapByID()
 void ClientList::syncToAddressBook(AddressBook &ab, QSharedPointer<Node> node)
 {
 	OC_METHODGATE();
-	qDebug()<<"Synchronizing client list to address book with "<<ab.all().size()<<" items";
+	//qDebug()<<"Synchronizing client list to address book with "<<ab.all().size()<<" items";
 	QMap<QString, QSharedPointer<Client> > existingMap=toMapByID();
 	// Remove what isn't there
 	for(QSharedPointer<Client> client: mClients) {
@@ -99,7 +99,7 @@ QSet<QSharedPointer<Client> > ClientList::withActiveSessions(CommsSessionDirecto
 	//TODO: Turn into constant or setting:
 	const quint64 lastActive=now-(1000*60);//One minute ago.
 	QSet<QSharedPointer<CommsSession> > sessions = ( (honeyMoon)? sessionDirectory.all() : sessionDirectory.byActiveTime(lastActive));
-	qDebug()<<"HoneyMoon enabled="<<honeyMoon<< " gave "<<sessions.size()<<" sessions";
+	//qDebug()<<"HoneyMoon enabled="<<honeyMoon<< " gave "<<sessions.size()<<" sessions";
 	for(QSharedPointer<CommsSession> session: sessions) {
 		auto key=session->key();
 		if(nullptr!=key) {
@@ -137,15 +137,15 @@ QList<ClientWidget * > ClientList::widgets()
 	int idx=0;
 	QList<ClientWidget * > out;
 	const int ct=mClients.count();
-	qDebug()<<"Preparing widgets from client list of "<<ct<<" clients";
+	//qDebug()<<"Preparing widgets from client list of "<<ct<<" clients";
 	out.reserve(ct);
 	for(QSharedPointer<Client> client: mClients) {
 		ClientWidget *widget=nullptr;
 		if(!client.isNull()) {
-			qDebug()<<" + getting widget for " << client->associate()->name();
+			//qDebug()<<" + getting widget for " << client->associate()->name();
 			widget=client->widget();
 		}
-		qDebug()<<" + got widget: "<<widget<< " for client "<< client<<" idx="<<idx<<" ct="<<ct;
+		//qDebug()<<" + got widget: "<<widget<< " for client "<< client<<" idx="<<idx<<" ct="<<ct;
 		// NOTE: We use insert(idx, widget) instead of operator<<() to maintan the exact order of clients
 		out.insert(idx,widget);
 		idx++;

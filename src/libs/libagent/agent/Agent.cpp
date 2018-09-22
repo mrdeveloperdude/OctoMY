@@ -60,21 +60,21 @@ void Agent::init()
 
 	mKeyStore.status([this](ASEvent<QVariantMap> &se) {
 		const bool ok=se.isSuccessfull();
-		qDebug()<<"Keystore status with ok="<<ok;
+		//qDebug()<<"Keystore status with ok="<<ok;
 		mKeyStoreReady=ok;
 		// TODO: Don't wait for sync here. Make truely async
 		checkLoadCompleted();
 	});
 
 	mLocalIdentity.synchronize([this](SimpleDataStore &sms, bool ok) {
-		qDebug()<<"Local identity synchronized with ok="<<ok;
+		//qDebug()<<"Local identity synchronized with ok="<<ok;
 		mLocalIdentityStoreReady=ok;
 		// TODO: Don't wait for sync here. Make truely async
 		checkLoadCompleted();
 	});
 
 	mAgentConfigStore.synchronize([this](SimpleDataStore &sms, bool ok) {
-		qDebug()<<"Agent Config Store synchronized with ok="<<ok;
+		//qDebug()<<"Agent Config Store synchronized with ok="<<ok;
 		mAgentConfigStoreReady=ok;
 		checkLoadCompleted();
 		// TODO: Don't wait for sync here. Make truely async
@@ -139,7 +139,7 @@ void Agent::reloadController()
 	OC_METHODGATE();
 	// Unload old controller
 	if(nullptr!=mActuatorController) {
-		qDebug()<<"Unloading old actuator controller";
+		//qDebug()<<"Unloading old actuator controller";
 		mActuatorController->setConnected(false);
 		mActuatorController->deleteLater();
 		mActuatorController=nullptr;
@@ -149,11 +149,11 @@ void Agent::reloadController()
 		AgentConfig &config=*configp;
 		QString controllerName=config.controllerName().trimmed();
 		if(!controllerName.isEmpty()) {
-			qDebug()<<"Attempting to generate actuator controller of type "<<controllerName;
+			//qDebug()<<"Attempting to generate actuator controller of type "<<controllerName;
 			ActuatorControllerFactory factory;
 			mActuatorController=factory.controllerFactory(controllerName);
 			if(nullptr!=mActuatorController) {
-				qDebug()<<"Actuator controller created, configuring";
+				//qDebug()<<"Actuator controller created, configuring";
 				QVariantMap controllerConfig=config.controllerConfig();
 				mActuatorController->setConfiguration(controllerConfig);
 				mActuatorController->setConnected(true);
@@ -209,9 +209,9 @@ bool Agent::checkLoadCompleted()
 	OC_METHODGATE();
 	// TODO: Make truely async
 	const bool loaded = mKeyStoreReady && mLocalIdentityStoreReady && mAgentConfigStoreReady;
-	qDebug()<<"CHECK LOAD COMPLETE: "<<loaded<<" for mKeyStoreReady="<<mKeyStoreReady<<", mLocalIdentityStoreReady="<<mLocalIdentityStoreReady<<", mAgentConfigStoreReady="<<mAgentConfigStoreReady;
+	//qDebug()<<"CHECK LOAD COMPLETE: "<<loaded<<" for mKeyStoreReady="<<mKeyStoreReady<<", mLocalIdentityStoreReady="<<mLocalIdentityStoreReady<<", mAgentConfigStoreReady="<<mAgentConfigStoreReady;
 	if(loaded) {
-		qDebug()<<"EMITTING LOAD COMLPETE";
+		//qDebug()<<"EMITTING LOAD COMLPETE";
 		emit appLoaded();
 	}
 	return loaded;
@@ -233,7 +233,7 @@ void Agent::onSyncParameterChanged(ISyncParameter *sp)
 		if("TargetPose"==sp->name()) {
 			SyncParameter<Pose> *targetPoseParameter=(SyncParameter<Pose> *)sp;
 			Pose targetPose=targetPoseParameter->bestValue(true);
-			qDebug()<<"TARGET POSE: "<<targetPose.toString();
+			//qDebug()<<"TARGET POSE: "<<targetPose.toString();
 			if(nullptr!=mActuatorController) {
 				mActuatorController->move(targetPose);
 			}

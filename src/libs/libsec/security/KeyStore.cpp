@@ -31,7 +31,7 @@ KeyStore::KeyStore(QString filename, bool doBootstrap, KeySecurityPolicy policy,
 	setObjectName("KeyStore");
 	synchronize([](ASEvent<QVariantMap> &se) {
 		Q_UNUSED(se);
-		qDebug()<<"KeyStore::KeyStore() SELF ASSESMENT: SYNC WAS OK=";
+		//qDebug()<<"KeyStore::KeyStore() SELF ASSESMENT: SYNC WAS OK=";
 	});
 }
 
@@ -46,7 +46,7 @@ KeyStore::~KeyStore()
 bool KeyStore::setFrontend(QVariantMap map)
 {
 	OC_METHODGATE();
-	qDebug()<<"KEYSTORE FROM MAP";
+	//qDebug()<<"KEYSTORE FROM MAP";
 	mDirty=true;
 	QSharedPointer<Key> localKey;
 	bool ok=true;
@@ -90,7 +90,7 @@ QVariantMap KeyStore::getFrontend(bool &ok)
 	ok=true;
 	if(mDirty) {
 		mDirty=false;
-		qDebug()<<"KEYSTORE TO MAP";
+		//qDebug()<<"KEYSTORE TO MAP";
 		mCache = QVariantMap();
 		if(!mLocalKey.isNull()) {
 			mCache["localKey"]=mLocalKey->toVariantMap(false);
@@ -102,7 +102,7 @@ QVariantMap KeyStore::getFrontend(bool &ok)
 			auto key=b.value();
 			if(nullptr!=key) {
 				QVariantMap val=key->toVariantMap(true);
-				qDebug()<<"SAVING REMOTE KEYPAIR "<<id<<"="<<val;
+				//qDebug()<<"SAVING REMOTE KEYPAIR "<<id<<"="<<val;
 				remote["id"]=id;
 				remote["key"]=val;
 				remotes.push_back(remote);
@@ -124,7 +124,7 @@ bool KeyStore::generateFrontend()
 	if(mDoBootstrap) {
 		ScopedTimer st("local key generation");
 		const auto bits=mPolicy.bits();
-		qDebug()<<"KeyStore: bootstrapping started with "<<bits<<"bits";
+		//qDebug()<<"KeyStore: bootstrapping started with "<<bits<<"bits";
 		mLocalKey=QSharedPointer<Key>(OC_NEW Key(bits));
 	}
 	return true;

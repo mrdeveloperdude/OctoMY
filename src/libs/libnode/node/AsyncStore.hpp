@@ -364,9 +364,9 @@ void AsyncStore<T>::runCallbacksForEvent(ASEvent<T> event)
 {
 	OC_METHODGATE();
 	auto p=event.p();
-	qDebug()<<"runCallbacksForEvent() from "<<utility::currentThreadID();
+	//qDebug()<<"runCallbacksForEvent() from "<<utility::currentThreadID();
 	utility::postToThread([p] {
-		qDebug()<<"CALLBACKS SINGLESHOT from "<<utility::currentThreadID();
+		//qDebug()<<"CALLBACKS SINGLESHOT from "<<utility::currentThreadID();
 		ASEvent<T> e(p);
 		e.runCallbacks();
 	});
@@ -408,10 +408,10 @@ template <typename T>
 T AsyncStore<T>::getSync(bool &ok)
 {
 	OC_METHODGATE();
-	qDebug()<<"Entering Sync Get from "<<utility::currentThreadID();
+	//qDebug()<<"Entering Sync Get from "<<utility::currentThreadID();
 	ok=false;
 	T data = mFrontend.getFrontend(ok);
-	qDebug()<<"Exiting Sync Get with ok="<<ok<<" and data="<<data<<" from "<<utility::currentThreadID();
+	//qDebug()<<"Exiting Sync Get with ok="<<ok<<" and data="<<data<<" from "<<utility::currentThreadID();
 	return data;
 }
 
@@ -420,14 +420,14 @@ template <typename T>
 bool AsyncStore<T>::setSync(T data)
 {
 	OC_METHODGATE();
-	qDebug()<<"Entering Sync Set with data="<<data<<" from "<<utility::currentThreadID();
+	//qDebug()<<"Entering Sync Set with data="<<data<<" from "<<utility::currentThreadID();
 	const  bool ok=mFrontend.setFrontend(data);
 	//const auto old=mMemoryCounter;
 	if(ok) {
 		mMemoryCounter=autoIncrement();
 	}
 	//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT";
-	qDebug()<<"Exiting Sync Set with ok="<<ok<<" from "<<utility::currentThreadID();
+	//qDebug()<<"Exiting Sync Set with ok="<<ok<<" from "<<utility::currentThreadID();
 	return ok;
 }
 
@@ -435,7 +435,7 @@ template <typename T>
 bool AsyncStore<T>::loadSync()
 {
 	OC_METHODGATE();
-	qDebug()<<"Entering Sync Load from "<<utility::currentThreadID();
+	//qDebug()<<"Entering Sync Load from "<<utility::currentThreadID();
 	bool ok=false;
 	T data = mBackend.loadBackend(ok);
 	if(ok) {
@@ -444,7 +444,7 @@ bool AsyncStore<T>::loadSync()
 			mMemoryCounter = mDiskCounter;
 		}
 	}
-	qDebug()<<"Exiting Sync Load with ok="<<ok<<"  from "<<utility::currentThreadID();
+	//qDebug()<<"Exiting Sync Load with ok="<<ok<<"  from "<<utility::currentThreadID();
 	return ok;
 }
 
@@ -452,7 +452,7 @@ template <typename T>
 bool AsyncStore<T>::saveSync()
 {
 	OC_METHODGATE();
-	qDebug()<<"Entering Sync Save from "<<utility::currentThreadID();
+	//qDebug()<<"Entering Sync Save from "<<utility::currentThreadID();
 	bool ok=false;
 	T data = mFrontend.getFrontend(ok);
 	if(ok) {
@@ -461,7 +461,7 @@ bool AsyncStore<T>::saveSync()
 			mDiskCounter = mMemoryCounter;
 		}
 	}
-	qDebug()<<"Exiting Sync Save with ok="<<ok<<"  from "<<utility::currentThreadID();
+	//qDebug()<<"Exiting Sync Save with ok="<<ok<<"  from "<<utility::currentThreadID();
 	return ok;
 }
 
@@ -471,14 +471,14 @@ template <typename T>
 bool AsyncStore<T>::generateSync()
 {
 	OC_METHODGATE();
-	qDebug()<<"Entering Sync Generate from "<<utility::currentThreadID();
+	//qDebug()<<"Entering Sync Generate from "<<utility::currentThreadID();
 	const bool ok=mFrontend.generateFrontend();
 	//const auto old=mMemoryCounter;
 	if(ok) {
 		mMemoryCounter=autoIncrement();
 	}
 	//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT";
-	qDebug()<<"Exiting Sync Generate with ok="<<ok<<"  from "<<utility::currentThreadID();
+	//qDebug()<<"Exiting Sync Generate with ok="<<ok<<"  from "<<utility::currentThreadID();
 	return ok;
 }
 
@@ -490,21 +490,21 @@ bool AsyncStore<T>::synchronizeSync()
 	bool ok=false;
 	const quint64 disk=mDiskCounter;
 	const quint64 mem= mMemoryCounter;
-	qDebug()<<"AsyncStore::synchronizeSync("<<filename()<<"): disk("<<disk<<") == mem("<<mem<<")  from "<<utility::currentThreadID();
+	//qDebug()<<"AsyncStore::synchronizeSync("<<filename()<<"): disk("<<disk<<") == mem("<<mem<<")  from "<<utility::currentThreadID();
 	if(disk == mem) {
 		if(0 == disk) {
 			ok=generateSync();
-			qDebug()<<" + generate:"<<ok<<"  from "<<utility::currentThreadID();
+			//qDebug()<<" + generate:"<<ok<<"  from "<<utility::currentThreadID();
 		} else {
 			ok=true;
-			qDebug()<<" + no-op:"<<ok<<"  from "<<utility::currentThreadID();
+			//qDebug()<<" + no-op:"<<ok<<"  from "<<utility::currentThreadID();
 		}
 	} else if(disk > mem) {
 		ok=loadSync();
-		qDebug()<<" + load:"<<ok<<"  from "<<utility::currentThreadID();
+		//qDebug()<<" + load:"<<ok<<"  from "<<utility::currentThreadID();
 	} else if(disk < mem) {
 		ok=saveSync();
-		qDebug()<<" + save:"<<ok<<"  from "<<utility::currentThreadID();
+		//qDebug()<<" + save:"<<ok<<"  from "<<utility::currentThreadID();
 	}
 	return ok;
 }

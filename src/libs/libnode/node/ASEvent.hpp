@@ -636,9 +636,9 @@ bool ASEvent<T>::run()
 		break;
 		}
 		notifyFinished();
-		qDebug()<<"ASEvent runnibng callbaks with message="<<p->mMessage<<" started="<<p->mStarted<<" finished="<<p->mFinished<<" P:"<<ASEventPrivate<T>::privCounterString(p);
+		//qDebug()<<"ASEvent runnibng callbaks with message="<<p->mMessage<<" started="<<p->mStarted<<" finished="<<p->mFinished<<" P:"<<ASEventPrivate<T>::privCounterString(p);
 		p->mStore.runCallbacksForEvent(*this);
-		qDebug()<<"ASEvent finished with message="<<p->mMessage<<" started="<<p->mStarted<<" finished="<<p->mFinished<<" P:"<<ASEventPrivate<T>::privCounterString(p);
+		//qDebug()<<"ASEvent finished with message="<<p->mMessage<<" started="<<p->mStarted<<" finished="<<p->mFinished<<" P:"<<ASEventPrivate<T>::privCounterString(p);
 	} else {
 		qWarning()<<"ERROR: Trying to re-run transaction";
 	}

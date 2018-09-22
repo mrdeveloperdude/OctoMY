@@ -52,7 +52,7 @@ bool JsonAsyncBackend::saveBackend(QVariantMap data)
 	OC_METHODGATE();
 	//qDebug()<<"Entering saveBackend";
 	bool succeeded=false;
-	qDebug().noquote().nospace()<<"Saving data to file '"<<mFilename<<"'";
+	//qDebug().noquote().nospace()<<"Saving data to file '"<<mFilename<<"'";
 	const auto t=QDateTime::currentDateTime();
 	if(!data.contains("createdTimeStamp")) {
 		data["createdTimeStamp"]=t;
@@ -71,7 +71,7 @@ QVariantMap JsonAsyncBackend::loadBackend(bool &ok)
 	//qDebug()<<"Entering loadBackend";'
 	QVariantMap data;
 	ok=false;
-	qDebug().noquote().nospace()<<"Loading data from file '"<<mFilename<<"'";
+	//qDebug().noquote().nospace()<<"Loading data from file '"<<mFilename<<"'";
 
 	// TODO: Will this ever occur?
 	if(!existsBackend()){

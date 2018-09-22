@@ -170,11 +170,11 @@ void NodeLauncher<T>::start()
 	if(!mNode.isNull()) {
 		if(!mIsHeadless) {
 			QObject::connect(mNode.data(), &T::appClose, mNode.data(), [=]() {
-				qDebug()<<"QUIT WELL RECIEVED";
+				//qDebug()<<"QUIT WELL RECIEVED";
 				stop();
 			});
 			QObject::connect(mNode.data(), &T::appLoaded, mNode.data(), [=]() {
-				qDebug()<<"LOAD WELL RECIEVED";
+				//qDebug()<<"LOAD WELL RECIEVED";
 				mWindow=mNode->showWindow();
 			});
 		}

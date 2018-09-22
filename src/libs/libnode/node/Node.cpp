@@ -99,9 +99,9 @@ Node::Node(INodeLauncher &laucher, AppContext *context, NodeRole role, NodeType 
 Node::~Node()
 {
 	OC_METHODGATE();
-	qDebug()<<"NODE::DTOR DE-INIT";
+	//qDebug()<<"NODE::DTOR DE-INIT";
 	deInit();
-	qDebug()<<"NODE::DTOR SENDING NODE DONE";
+	//qDebug()<<"NODE::DTOR SENDING NODE DONE";
 	mLauncher.nodeDone();
 }
 
@@ -119,21 +119,21 @@ void Node::init()
 	mKeyStore.synchronize([](ASEvent<QVariantMap> &se) {
 
 		const bool ok=se.isSuccessfull();
-		qDebug()<<"Keystore synchronized with ok="<<ok;
+		//qDebug()<<"Keystore synchronized with ok="<<ok;
 	});
 
 	mLocalIdentity.synchronize([this](SimpleDataStore &sms, bool ok) {
 		auto map=sms.toMap();
-		qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
+		//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
 		if(ok && !map.isEmpty()) {
-			qDebug()<<"Enabling newly loaded identity from map: "<<map;
+			//qDebug()<<"Enabling newly loaded identity from map: "<<map;
 			setNodeIdentity(map);
 		}
 	});
 
 	mAddressBook.synchronize([=](SimpleDataStore &ab, bool ok) {
 		Q_UNUSED(ab);
-		qDebug()<<"Address book synchronized with ok="<<ok;
+		//qDebug()<<"Address book synchronized with ok="<<ok;
 		mClients.syncToAddressBook(mAddressBook, sharedThis());
 	});
 
@@ -402,7 +402,7 @@ QSet<QSharedPointer<Associate> > Node::controlsWithActiveSessions(quint64 now)
 		CommsSessionDirectory &sessionDirectory=cc->sessions();
 		const bool honeyMoon=cc->honeymoon(now);
 		QSet<QSharedPointer<CommsSession> > sessions = ( (honeyMoon)? sessionDirectory.all() : sessionDirectory.byActiveTime(lastActive));
-		qDebug()<<"HoneyMoon enabled="<<honeyMoon<< " gave "<<sessions.size()<<" sessions";
+		//qDebug()<<"HoneyMoon enabled="<<honeyMoon<< " gave "<<sessions.size()<<" sessions";
 		for(QSharedPointer<CommsSession> session: sessions) {
 			auto key=session->key();
 			if(nullptr!=key) {
@@ -682,7 +682,7 @@ void Node::updateCouriersRegistration()
 void Node::setNeedsConnection(const bool current)
 {
 	OC_METHODGATE();
-	qDebug()<<"NODE::set needs connection: "<<current;
+	//qDebug()<<"NODE::set needs connection: "<<current;
 	QSharedPointer<Associate> ni=nodeIdentity();
 	if(!ni.isNull()) {
 		const QString key=NODE_ONLINE_STATUS_BASE_KEY + ni->id();
