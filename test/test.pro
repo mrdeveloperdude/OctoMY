@@ -15,6 +15,7 @@ contains(DEFINES, USE_TESTS_BASIC){
 
 	message(ADDING BASIC TESTS TO BUILD)
 	TEST_PROJECTS+= \
+		testNameGenerator \
 		testAddressBook \
 		testAddressList \
 		testAgentStateCourier \
@@ -118,7 +119,8 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testKeyStore \
 #		testMapEditor\
 #		testNetworkAddress \
-#		testNetworkSettingsWidget\
+#		testNetworkSettingsWidget \
+#		testNameGenerator \
 #		testParser \
 #		testPortableID \
 #		testPoseMappingWidget \
