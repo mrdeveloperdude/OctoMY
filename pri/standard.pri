@@ -5,8 +5,7 @@ CONFIG += qt # xcb debug thread 3dnow mmx stl sse sse2 largefile
 CONFIG += c++14
 
 
-#
-#CONFIG += static
+
 # Support all kinds of architectures (universal builds etc)
 CONFIG += x86 x86_64
 #CONFIG += console

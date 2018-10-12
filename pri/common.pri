@@ -1,6 +1,7 @@
 include( standard.pri )
 include( optimization.pri )
 include( warnings.pri )
+include( linkage.pri )
 include( protection.pri )
 include( ccache.pri )
 
