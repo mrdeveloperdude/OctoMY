@@ -4,7 +4,8 @@
 #QMAKE_CXXFLAGS += -fstack-protector-all -fstrict-overflow -fstack-usage
 #QMAKE_CXXFLAGS +=-fsanitize=address
 
-USE_PROTECTION{
+USE_SANITIZER_MEMORY{
+
 #    Enable AddressSanitizer, a fast memory error detector. Memory access instructions will be instrumented to detect out-of-bounds and use-after-free bugs. See http://code.google.com/p/address-sanitizer/ for more details. The run-time behavior can be influenced using the ASAN_OPTIONS environment variable; see https://code.google.com/p/address-sanitizer/wiki/Flags#Run-time_flags for a list of supported options.
 #QMAKE_CXXFLAGS +=-fsanitize=kernel-address
 #    Enable AddressSanitizer for Linux kernel. See http://code.google.com/p/address-sanitizer/wiki/AddressSanitizerForKernel for more details.
