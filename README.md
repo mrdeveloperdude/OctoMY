@@ -1,4 +1,4 @@
-# ![OctoMY™ Logo](design/octomy_logo.png) OctoMY™ - Ready-to-run robot software
+# ![OctoMY™ Logo](content/design/octomy_logo.png) OctoMY™ - Ready-to-run robot software
 
 [![OctoMY™ Build status](https://travis-ci.org/mrdeveloperdude/OctoMY.svg?branch=master)](https://travis-ci.org/mrdeveloperdude/OctoMY)
 
