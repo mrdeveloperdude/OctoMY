@@ -44,7 +44,7 @@ local_overrides.pri
 /integration/scripts
 *.txt
 
-/design/footage*
+/content/design/footage*
 /integration/docker
 
 /*/android/gradle*
@@ -59,14 +59,14 @@ libzeroconf*
 *~
 
 
-/design/*
-!/design/favicon.ico
-!/design/favicon.png
-!/design/icons.svg
-!/design/octomy_logo.png
-!/design/octomy_logo.svg
-!/design/profile_graphics/logos/octomy_logo_blog_shiny.png
-!/design/ux.svg
+/content/design/*
+!/content/design/favicon.ico
+!/content/design/favicon.png
+!/content/design/icons.svg
+!/content/design/octomy_logo.png
+!/content/design/octomy_logo.svg
+!/content/design/profile_graphics/logos/octomy_logo_blog_shiny.png
+!/content/design/ux.svg
 
 
 src/libs/.qmake.stash
