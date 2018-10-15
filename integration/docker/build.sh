@@ -6,7 +6,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 
-PW=$(pwd)
+pw=$(pwd)
 app=$(basename $0)
 
 BASE="octomy"
@@ -17,20 +17,29 @@ VARIANT="minbase"
 
 maintainer="OctoMY™ Project by Lennart Rolland <lennartrolland@gmail.com>"
 
-qt_version="5.6.0"
-qt_version_short="${qt_version%.*}"
+qt_version_long="5.11.2"
+qt_version="${qt_version_long%.*}"
 qt_build_log="qt-${qt_version}-build-log.txt"
-qt_prefix_dir="/usr/local/Qt"
-
+#qt_prefix_dir="/usr/local/Qt"
+qt_install_dir="/qt_$qt_version/install"
 
 
 
 
 function do_test(){
-	generate_docs
+	echo ""
+	echo ""
+	echo ""
+	echo ""
+	echo "--------------------------------------------------------"
+	echo "--------------------------------------------------------"
+	echo "--------------------------------------------------------"
+	echo "--------------------------------------------------------"
+	echo ""
+	build_with_dockers
 }
 
-function generate_docs(){
+function build_with_dockers(){
 	#
 	#   image naming convention:
 	#
@@ -51,51 +60,43 @@ function generate_docs(){
 
 	checkout="master"
 	linkage="static"
-	qt_ver="5.11"
+
 	
-#	generate_doc "debian-stretch-amd64-debian-jessie-amd64-$qt_ver-$linkage-$checkout"
-#	generate_doc "debian-stretch-amd64-debian-jessie-x86-$qt_ver-$linkage-$checkout"#
-	generate_doc "debian-stretch-amd64-debian-stretch-amd64-$qt_ver-$linkage-$checkout"
-#	generate_doc "debian-stretch-amd64-debian-stretch-x86-$qt_ver-$linkage-$checkout"
-#	generate_doc "debian-stretch-amd64-ubuntu-16.04-amd64-$qt_ver-$linkage-$checkout"
-#	generate_doc "debian-stretch-amd64-ubuntu-16.04-x86-$qt_ver-$linkage-$checkout"
-#	generate_doc "debian-stretch-amd64-ubuntu-18.04-amd64-$qt_ver-$linkage-$checkout"
-#	generate_doc "debian-stretch-amd64-ubuntu-18.04-x86-$qt_ver-$linkage-$checkout"
-#	generate_doc "debian-stretch-amd64-android-4-arm7-$qt_ver-$linkage-$checkout"
-#	generate_doc "debian-stretch-amd64-android-5-arm7-$qt_ver-$linkage-$checkout"
-#	generate_doc "debian-stretch-amd64-android-6-arm7-$qt_ver-$linkage-$checkout"
-#	generate_doc "debian-stretch-amd64-android-7-arm7-$qt_ver-$linkage-$checkout"
-#	generate_doc "debian-stretch-amd64-android-8-arm7-$qt_ver-$linkage-$checkout"
-#	generate_doc "debian-stretch-amd64-android-9-arm7-$qt_ver-$linkage-$checkout"
-#	generate_doc "windows-10-amd64-windows-10-amd64-$qt_ver-$linkage-$checkout"
-#	generate_doc "windows-10-amd64-windows-10-x86-$qt_ver-$linkage-$checkout"
-#	generate_doc "osx-10.5-amd64-osx-10.5-amd64-$qt_ver-$linkage-$checkout"
-#	generate_doc "osx-10.5-amd64-osx-10.5-x86-$qt_ver-$linkage-$checkout"
-#	generate_doc "osx-10.5-amd64-ios-10-arm7-$qt_ver-$linkage-$checkout"
-#	generate_doc "osx-10.5-amd64-ios-11-arm7-$qt_ver-$linkage-$checkout"
-	
-	echo "------------------------ Dockerfile"
-	NAME="debian-stretch-amd64-debian-stretch-amd64-$qt_ver-$linkage-$checkout"
-	DIR="builds/debian/stretch/amd64/debian/stretch/amd64/$qt_ver/$linkage/$checkout"
-	DOC="$DIR/Dockerfile"
-	cat "$DOC"
-	echo "------------------------ Docker"
-#	CMD="docker build -t ${NAME} ${DIR}"
-	CMD="docker build ${DIR}"
-	echo "-- CMD=$CMD"
-	$CMD
+	build_with_docker "debian-stretch-amd64-debian-stretch-amd64-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-stretch-amd64-debian-stretch-x86-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-stretch-amd64-debian-jessie-amd64-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-stretch-amd64-debian-jessie-x86-$qt_version-$linkage-$checkout"#
+#	build_with_docker "debian-stretch-amd64-ubuntu-16.04-amd64-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-stretch-amd64-ubuntu-16.04-x86-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-stretch-amd64-ubuntu-18.04-amd64-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-stretch-amd64-ubuntu-18.04-x86-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-stretch-amd64-android-4-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-stretch-amd64-android-5-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-stretch-amd64-android-6-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-stretch-amd64-android-7-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-stretch-amd64-android-8-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-stretch-amd64-android-9-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "windows-10-amd64-windows-10-amd64-$qt_version-$linkage-$checkout"
+#	build_with_docker "windows-10-amd64-windows-10-x86-$qt_version-$linkage-$checkout"
+#	build_with_docker "osx-10.5-amd64-osx-10.5-amd64-$qt_version-$linkage-$checkout"
+#	build_with_docker "osx-10.5-amd64-osx-10.5-x86-$qt_version-$linkage-$checkout"
+#	build_with_docker "osx-10.5-amd64-ios-10-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "osx-10.5-amd64-ios-11-arm7-$qt_version-$linkage-$checkout"
 	
 }
 
 
-function generate_doc(){
+function build_with_docker(){
 	local spec="$1"
 	IFS='-' read -r host_os host_os_version host_os_arch target_os target_os_version target_os_arch qt_version qt_linkage checkout <<<"$spec"
-	echo "$host_os.$host_os_version.$host_os_arch.$target_os.$target_os_version.$target_os_arch.$qt_version.$qt_linkage.$checkout"
 	local dir="builds/$host_os/$host_os_version/$host_os_arch/$target_os/$target_os_version/$target_os_arch/$qt_version/$qt_linkage/$checkout"
-	local doc="$dir/Dockerfile"
-	mkdir -p "$dir"
+	local doc="$pw/$dir/Dockerfile"
+	local src_overrides="/src/octomy_$checkout/pri/overrides/release.pri"
+	local dst_overrides="/src/octomy_$checkout/pri/local_overrides.pri"
+	local octomy_git_ver="octomy_version.txt"
 	
+	mkdir -p "$dir"
+	pushd "$dir"
 	
 	local sources="/etc/apt/sources.list"
 	local temp_sources="/etc/apt/sources.list_tmp"
@@ -295,22 +296,12 @@ echo	-confirm-license \
 		OPTS+=" -recheck-all"
 		OPTS+=" -c++std c++14"
 #		OPTS+=" -continue"
-		OPTS+=" -dbus-runtime" # runtime is important because dbus test fails for linked
-		OPTS+=" -alsa"
-		OPTS+=" -glib"
-		OPTS+=" -gstreamer"
-		OPTS+=" -gui"
-
-		OPTS+=" -inotify"
-		OPTS+=" -eventfd"
-
 #		OPTS+=" -largefile" 
 		OPTS+=" -opengl es2"
 		OPTS+=" -qpa xcb"
 		OPTS+=" -widgets"
+		OPTS+=" -prefix \"$qt_install_dir\""
 #		OPTS+=" -platform linux-clang"
-#		OPTS+=" -prefix \"${qt_prefix_dir}\""
-#		OPTS+=" -prefix /usr/local/Qt"
 #		OPTS+=" -qpa wayland"
 
 		# BUNDLED LIBS
@@ -341,11 +332,21 @@ echo	-confirm-license \
 		OPTS+=" -use-gold-linker"
 		
 		# OPTIONAL PARTS
+		OPTS+=" -make libs"
 		OPTS+=" -nomake examples"
 		OPTS+=" -nomake tests"
 		OPTS+=" -nomake tools"
 
+
 		# OPTIONAL FEATURES
+		OPTS+=" -dbus-runtime" # runtime is important because dbus test fails for linked
+		OPTS+=" -alsa"
+		OPTS+=" -glib"
+		OPTS+=" -gstreamer"
+		OPTS+=" -gui"
+		OPTS+=" -inotify"
+		OPTS+=" -eventfd"
+
 #		OPTS+=" -no-nis"
 		OPTS+=" -no-pulseaudio"
 #		OPTS+=" -no-qml-debug"
@@ -408,6 +409,166 @@ echo	-confirm-license \
 		OPTS+=" -skip qtwayland"
 		OPTS+=" -skip qtwinextras"
 #		OPTS+=" -skip qtx11extras"
+ 
+	elif [ "ubuntu" == "$host_os" ]
+	then
+	
+#		DEPS+=" libsslcommon2-dev" #Not in Debian
+		echo "Host OS \'$host_os\' not supported yet"
+		exit 1
+		
+	elif [ "windows" == "$host_os" ]
+	then
+	
+#		DEPS+=" libsslcommon2-dev" #Not in Debian
+		echo "Host OS \'$host_os\' not supported yet"
+		exit 1
+
+	else
+
+	
+#		DEPS+=" libsslcommon2-dev" #Not in Debian
+		echo "Host OS \'$host_os\' not recognized, maybe check your spelling?"
+		exit 1
+
+	fi
+	
+	cat << EOF > "$doc"
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+# Autogenerated by $app @ $(date).
+#
+# Your manual changes will be erased at next run
+#
+#
+# Spec: $spec
+#
+FROM		$host_os:$host_os_version
+LABEL maintainer="$maintainer"
+
+EOF
+
+	git describe --tags --long --dirty --always > "$octomy_git_ver"
+	echo "OCTOMY GIT VERSION #############################"
+	pwd
+	ls -halt "$octomy_git_ver"
+	cat "$octomy_git_ver"
+	echo "OCTOMY GIT VERSION #############################"
+
+	if [ "debian" == "$host_os" ]
+	then
+
+		cat << EOF >> "$doc"
+
+RUN echo "---- FIX SHELL ------------------------"
+RUN ["/bin/bash", "-c", "unlink /bin/sh"]
+RUN ["/bin/bash", "-c", "ln -s /bin/bash /bin/sh"]
+
+RUN echo "---- ADD APT SRC ----------------------" && \
+	sed "s/^deb/deb-src/g" ${sources} > ${temp_sources} && \
+	cat ${temp_sources} >> ${sources}
+
+# From https://wiki.debian.org/ReduceDebian
+RUN echo "---- INITIALIZE APT -------------------" && \
+	echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;' >> /etc/apt/apt.conf && \
+	apt-get update && \
+	apt-get upgrade -y && \
+	apt-get autoremove -y && \
+	apt-get clean -y
+
+RUN	echo "---- INSTALL EARLY DEPENDENCIES -------" && \
+	apt-get install -y --allow-unauthenticated $EDEPS
+
+RUN	echo "---- FIX SSL CERTIFICATES -------------" && \
+	rm -f /usr/local/share/ca-certificates/certificate.crt; \
+	update-ca-certificates --fresh
+
+WORKDIR /src
+
+RUN echo "---- CLONE QT -------------------------" && \
+	git clone https://github.com/qt/qt5.git -j$(nproc) --recurse-submodules -b $qt_version /src/qt_$qt_version
+
+RUN	echo "---- CLONE OCTOMY ---------------------" && \
+	git clone https://github.com/mrdeveloperdude/OctoMY.git -j$(nproc) --recurse-submodules -b "$checkout" /src/octomy_$checkout
+
+RUN echo "---- GET QT DEPENDENCIES --------------" && \
+	apt-get build-dep -y --allow-unauthenticated qt5-default && \
+	apt-get install -y --allow-unauthenticated $BDEPS $DEPS
+
+RUN echo "---- CLEAN APT ------------------------" && \
+	apt-get autoremove -y && apt-get clean -y && \
+	rm -rf /var/lib/apt/lists/* /usr/share/man
+
+EOF
+fi
+
+	cat << EOF >> "$doc"
+
+
+WORKDIR /qt_$qt_version
+
+RUN echo "---- HELP QT --------------------------" && \
+	/src/qt_$qt_version/configure --help
+	
+RUN echo "---- LIST QT FEATURES -----------------" && \
+	/src/qt_$qt_version/configure	$OPTS -list-features; \
+	exit 0
+
+RUN echo "---- LIST QT LIBRARIES ----------------" && \
+	/src/qt_$qt_version/configure	$OPTS -list-libraries; \
+	exit 0
+
+RUN echo "---- CONFIGURE QT ---------------------" && \
+	/src/qt_$qt_version/configure	$OPTS
+
+RUN echo "---- INSPECT CONFIGURATION OF QT ------" && \
+	ls -halt
+
+RUN echo "---- BUILD QT -------------------------" && \
+	ls | grep qt; \
+	make -k -j $(nproc) ; \
+	mkdir -p install; \
+	make -k -j $(nproc) install; \
+
+RUN echo "---- SHOW QMAKE VERSION ---------------" && \
+	find $qt_install_dir; \
+	find $qt_install_dir/lib/qtbase/bin/qmake --version
+
+WORKDIR /src/octomy_$checkout
+
+ADD "$octomy_git_ver" "git_version"
+
+RUN	echo "---- UPDATE OCTOMY --------------------" && \
+		git checkout "$checkout" && \
+		git pull
+	
+WORKDIR /OctoMY
+
+RUN	echo "---- BUILD QMAKE TEST -----------------" && \
+	ls -halt /src/octomy_$checkout/integration/docker/ && \
+	/qt_$qt_version/qtbase/bin/qmake /src/octomy_$checkout/integration/docker/qmake_test/QmakeTest.pro && \
+	make -j $(nproc)
+
+
+RUN	echo "---- BUILD OCTOMY ---------------------" && \
+	cp -a "$src_overrides" "$dst_overrides" && \
+	cat "$dst_overrides" && \
+	/qt_$qt_version/qtbase/bin/qmake /src/octomy_$checkout/OctoMY.pro && \
+	make -j $(nproc)
+
+# 	cd /src/qt_$qt_version && \
+#EXPOSE 8080:80
+#CMD ["/usr/sbin/apache2", "-D",  "FOREGROUND"]
+
+EOF
+
+	local cmd="docker build . -t octomy:${spec}"
+	docker build --help
+	echo "Executing: $cmd --------- "
+	$cmd
+	popd
+}
+
 
 #		OPTS+=" -no-abstractbutton .......... Widgets: Abstract base class of button widgets, providing functionality common to buttons."
 #		OPTS+=" -no-abstractslider .......... Widgets: Common super class for widgets like QScrollBar, QSlider and QDial."
@@ -595,129 +756,6 @@ echo	-confirm-license \
 #		OPTS+=" -no-xmlstreamreader ......... Kernel: Provides a well-formed XML parser with a simple streaming API."
 #		OPTS+=" -no-xmlstreamwriter ......... Kernel: Provides a XML writer with a simple streaming API."
 
-	elif [ "ubuntu" == "$host_os" ]
-	then
-	
-#		DEPS+=" libsslcommon2-dev" #Not in Debian
-		echo "UBUNTU NOT SUPPORTED YET!!"
-		exit 1
-
-	else
-
-	
-#		DEPS+=" libsslcommon2-dev" #Not in Debian
-		echo "UNKNOWEN HOST OS: $host_os:"
-		exit 1
-
-	fi
-	
-	cat << EOF > $doc
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#
-# Autogenerated by $app @ $(date).
-#
-# Your manual changes will be erased at next run
-#
-#
-# Spec: $spec
-#
-FROM		$host_os:$host_os_version
-LABEL maintainer="$maintainer"
-
-EOF
-
-	if [ "debian" == "$host_os" ]
-	then
-
-		cat << EOF >> $doc
-
-RUN echo "---- FIX SHELL ------------------------"
-RUN ["/bin/bash", "-c", "unlink /bin/sh"]
-RUN ["/bin/bash", "-c", "ln -s /bin/bash /bin/sh"]
-
-RUN echo "---- ADD APT SRC ----------------------" && \
-	sed "s/^deb/deb-src/g" ${sources} > ${temp_sources} && \
-	cat ${temp_sources} >> ${sources}
-
-# From https://wiki.debian.org/ReduceDebian
-RUN echo "---- INITIALIZE APT -------------------" && \
-	echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;' >> /etc/apt/apt.conf && \
-	apt-get update && \
-	apt-get upgrade -y && \
-	apt-get autoremove -y && \
-	apt-get clean -y
-
-RUN	echo "---- INSTALL EARLY DEPENDENCIES -------" && \
-	apt-get install -y --allow-unauthenticated $EDEPS
-
-RUN	echo "---- FIX SSL CERTIFICATES -------------" && \
-	rm -f /usr/local/share/ca-certificates/certificate.crt; \
-	update-ca-certificates --fresh
-
-WORKDIR /src
-
-RUN echo "---- CLONE QT -------------------------" && \
-	git clone https://github.com/qt/qt5.git -j$(nproc) --recurse-submodules -b $qt_version /src/qt_$qt_version
-
-RUN	echo "---- CLONE OCTOMY ---------------------" && \
-	git clone https://github.com/mrdeveloperdude/OctoMY.git -j$(nproc) --recurse-submodules -b "$checkout" /src/octomy_$checkout
-
-RUN echo "---- GET QT DEPENDENCIES --------------" && \
-	apt-get build-dep -y --allow-unauthenticated qt5-default && \
-	apt-get install -y --allow-unauthenticated $BDEPS $DEPS
-
-RUN echo "---- CLEAN APT ------------------------" && \
-	apt-get autoremove -y && apt-get clean -y && \
-	rm -rf /var/lib/apt/lists/* /usr/share/man
-
-EOF
-fi
-
-	cat << EOF >> $doc
-
-
-WORKDIR /qt_$qt_version
-
-RUN echo "---- HELP QT --------------------------" && \
-	/src/qt_$qt_version/configure --help
-	
-RUN echo "---- LIST QT FEATURES -----------------" && \
-	/src/qt_$qt_version/configure	$OPTS -list-features; \
-	exit 0
-
-
-RUN echo "---- LIST QT LIBRARIES ----------------" && \
-	/src/qt_$qt_version/configure	$OPTS -list-libraries; \
-	exit 0
-
-RUN echo "---- CONFIGURE QT ---------------------" && \
-	/src/qt_$qt_version/configure	$OPTS
-
-RUN echo "---- INSPECT CONFIGURATION OF QT ------" && \
-	ls -halt
-
-RUN echo "---- BUILD QT -------------------------" && \
-	ls | grep qt; \
-	make -j $(nproc) ; \
-	make -j $(nproc) ; \
-
-RUN echo "---- SHOW QMAKE VERSION ---------------" && \
-	qtbase/bin/qmake --version
-
-WORKDIR /OctoMY
-
-RUN	echo "---- BUILD OCTOMY ---------------------" && \
-	/qt_$qt_version/qtbase/bin/qmake /src/octomy_$checkout/OctoMY.pro && \
-	make -j $(nproc)
-
-# 	cd /src/qt_$qt_version && \
-#EXPOSE 8080:80
-#CMD ["/usr/sbin/apache2", "-D",  "FOREGROUND"]
-
-EOF
-
-
-}
 
 
 
@@ -846,7 +884,7 @@ function do_debian(){
 		DEPS+=" libsrtp-dev" # Secure RTP (SRTP) and UST Reference Implementations
 
 	
-	cd $PW
+	cd $pw
 	mkdir -p "$NAME"
 	cd "$NAME"
 	
@@ -887,7 +925,7 @@ RUN apt-get autoremove -y && apt-get clean -y
 RUN rm -rf /var/lib/apt/lists/* /usr/share/man
 
 EOT
-	cd $PW
+	cd $pw
 	C="docker build $CACHE -t ${NAME} ${NAME}"
 	echo "-- $(pwd) NAME=${NAME}, BASE=${BASE}, CMD=$C"
 	$C
@@ -1014,7 +1052,7 @@ function do_ubuntu(){
 		DEPS+=" libsrtp-dev" # Secure RTP (SRTP) and UST Reference Implementations
 
 	
-	cd $PW
+	cd $pw
 	mkdir -p "$NAME"
 	cd "$NAME"
 	
@@ -1058,7 +1096,7 @@ function do_qt_src(){
 	else
 		mkdir -p src && cd src && wget -O - http://download.qt.io/official_releases/qt/${qt_version_short}/${qt_version}/single/qt-everywhere-opensource-src-${qt_version}.tar.gz | pigz -d | tar pxf - && cd ..
 	fi
-	cd "$PW/$NAME"
+	cd "$pw/$NAME"
 	
 	cat << EOT >Dockerfile
 FROM		${BASE}_apt
@@ -1069,7 +1107,7 @@ RUN ln -s /src/qt-everywhere-opensource-src-${qt_version} /src/qt
 
 
 EOT
-	cd $PW
+	cd $pw
 	C="docker build $CACHE -t ${NAME} ${NAME}"
 	echo "-- $(pwd) NAME=${NAME}, BASE=${BASE}, CMD=$C"
 	$C
@@ -1083,7 +1121,7 @@ function do_qt_conf(){
 	mkdir -p "$NAME"
 	cd "$NAME"
 	
-	cd "$PW/$NAME"
+	cd "$pw/$NAME"
 	
 	local OPTS=""
 	
@@ -1242,7 +1280,7 @@ ADD log.sh /tmp/
 RUN cd /src/qt && /tmp/log.sh
 
 EOT
-	cd $PW
+	cd $pw
 	C="docker build $CACHE -t ${NAME} ${NAME}"
 	echo "-- $(pwd) NAME=${NAME}, BASE=${BASE}, CMD=$C"
 	$C
@@ -1255,7 +1293,7 @@ function do_qt_build(){
 	local NAME="${BASE}_qt_build"
 	
 	mkdir -p "$NAME"
-	cd "$PW/$NAME"
+	cd "$pw/$NAME"
 	
 	cat << EOT >log.sh
 
@@ -1282,7 +1320,7 @@ ADD log.sh /tmp/
 RUN cd /src/qt && /tmp/log.sh
 
 EOT
-	cd $PW
+	cd $pw
 	C="docker build $CACHE -t ${NAME} ${NAME}"
 	echo "-- $(pwd) NAME=${NAME}, BASE=${BASE}, CMD=$C"
 	$C
@@ -1299,7 +1337,7 @@ function do_zoo(){
 	local qt_qmake="/src/qt/qtbase/bin/qmake"
 	mkdir -p "$NAME"
 	
-	cd "$PW/$NAME"
+	cd "$pw/$NAME"
 	
 	cat << EOT >Dockerfile
 FROM		${BASE}_qt_build
@@ -1319,7 +1357,7 @@ EXPOSE 8080:80
 CMD ["/usr/sbin/apache2", "-D",  "FOREGROUND"]
 
 EOT
-	cd $PW
+	cd $pw
 	C="docker build $CACHE -t ${NAME} ${NAME}"
 	echo "-- $(pwd) NAME=${NAME}, BASE=${BASE}, CMD=$C"
 	$C
@@ -1365,6 +1403,6 @@ do
     shift
 done
 
-#generate_doc_tree;;
+#build_with_docker_tree;;
 #docker ps -a
 
