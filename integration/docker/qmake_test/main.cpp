@@ -1,7 +1,4 @@
-#include "Widget.hpp"
 #include <QApplication>
-
-
 #include <QMediaPlayer>
 #include <QVideoWidget>
 #include <QMediaPlaylist>
