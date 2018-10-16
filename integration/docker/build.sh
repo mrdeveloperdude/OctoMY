@@ -33,6 +33,11 @@ OPTS=""
 
 
 function do_test(){
+	echo "TROLOLOLOO"
+}
+
+
+function do_build(){
 	echo ""
 	echo ""
 	echo ""
