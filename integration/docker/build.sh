@@ -272,8 +272,10 @@ EOF
 
 
 function do_ubuntu_deps(){
-#		DEPS+=" libsslcommon2-dev" #Not in Debian
+	#		DEPS+=" libsslcommon2-dev" #Not in Debian
+	echo "NO"
 }
+
 
 function do_common_deps(){
 	
