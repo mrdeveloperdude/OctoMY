@@ -263,7 +263,7 @@ RUN	echo "---- BUILD OCTOMY ---------------------" && \
 
 EOF
 
-	local cmd="time docker build . -t octomy:${spec}"
+	local cmd="docker build . -t octomy:${spec}"
 	docker build --help
 	echo "Executing: $cmd --------- "
 	$cmd
@@ -317,8 +317,8 @@ function do_common_deps(){
 		# INSTALL LOCATION
 		OPTS+=" -prefix \"$qt_install_dir\""
 		# VERBOSITY
-#		OPTS+=" -silent"
-		OPTS+=" -verbose"
+		OPTS+=" -silent"
+#		OPTS+=" -verbose"
 
 		# LICENCE
 		OPTS+=" -opensource"
@@ -445,12 +445,14 @@ function do_common_deps(){
 
 function do_debian_deps(){
 
-
+	
 		EDEPS+=" gnupg2"
 		EDEPS+=" apt-utils"
 		EDEPS+=" wget"
-		EDEPS+=" pigz"
 		EDEPS+=" ca-certificates"
+		EDEPS+=" apt-transport-https"
+		EDEPS+=" curl"
+		EDEPS+=" software-properties-common"
 		EDEPS+=" git"
 
 		BDEPS+=" perl"
@@ -893,6 +895,20 @@ function do_ubuntu_deps(){
 
 
 
+function do_prep(){
+	apt update
+	apt upgrade
+	apt install git
+	
+	apt install apt-transport-https ca-certificates curl gnupg2 software-properties-common
+	curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+	add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+	apt update
+	apt-cache policy docker-ce
+	apt install docker-ce
+	systemctl status docker
+
+}
 
 if [ ! "${1+defined}" ]
 then
@@ -919,6 +935,7 @@ do
         -c* )	CACHE=" --no-cache" ;;
         build )		do_build ;;
         test)		do_test ;;
+        prep)		do_prep ;;
         *) echo "UNKNWON COMMAND: '$1', SKIPPING..."    ;;
     esac
     shift
