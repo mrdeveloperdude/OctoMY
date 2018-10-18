@@ -244,8 +244,8 @@ RUN >&2 echo "\n\n---- INSPECT CONFIGURATION OF QT ------\n" && \
 	ls -halt
 
 RUN >&2 echo "\n\n---- BUILD QT -------------------------\n" && \
-	MAKEFLAGS=-j\$(nproc) make -k -j \$(nproc) && \
-	MAKEFLAGS=-j\$(nproc) make -k -j \$(nproc)
+	MAKEFLAGS=-j\$(nproc) make -k -j \$(nproc) >  qt_build_log.txt ; \
+	MAKEFLAGS=-j\$(nproc) make -k -j \$(nproc) >> qt_build_log.txt 
 
 RUN >&2 echo "\n\n---- INSTALL QT -----------------------\n" && \
 	mkdir -p "$qt_install_dir"; \
@@ -928,7 +928,7 @@ function do_ubuntu_deps(){
 
 
 function do_prep(){
-	local acmd=apt-get -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+	local acmd="apt-get -y --force-yes -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
 	$acmd update
 	$acmd upgrade
 	$acmd install git curl jq nmap
@@ -1078,21 +1078,23 @@ function do_provision(){
 	# SAFETY: The droplet we just provisioned can be really expensive. So as a safe-guard we schedule its demise in 55 minutes no matter what happens:
 	(echo "KILL TIMER SET FOR ${killtime} minutes"; sleep "${killtime}m"; echo "${killtime} minutes is up, TIME TO DIE!!1!"; dioc_delete "$droplet_id"; exit) &
 	
+	local acmd="apt-get -y --force-yes -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
+	
 	local cmd=$(cat <<EOT
 (echo "SHUTDOWN TIMER SET FOR ${shutdowntime} minutes"; sleep "${shutdowntime}m"; echo "${shutdowntime} minutes is up, TIME TO SHUTDOWN!!1!"; shutdown -h now; exit) & \
 echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;' >> /etc/apt/apt.conf && \
-apt-get update && \
-apt-get upgrade -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
-apt-get install -f -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
-apt-get install -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated gnupg2 wget ca-certificates apt-transport-https curl software-properties-common git && \
+$acmd update && \
+$acmd upgrade -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
+$acmd install -f -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
+$acmd install -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated gnupg2 wget ca-certificates apt-transport-https curl software-properties-common git && \
 rm -f /usr/local/share/ca-certificates/certificate.crt; \
 update-ca-certificates --fresh && \
-apt-get update && \
-apt-get upgrade -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
-apt-get install -f -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
-apt-get install -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated gnupg2 wget ca-certificates apt-transport-https curl software-properties-common git && \
-apt-get autoremove -y && \
-apt-get clean -y && \
+$acmd update && \
+$acmd upgrade -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
+$acmd install -f -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
+$acmd install -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated gnupg2 wget ca-certificates apt-transport-https curl software-properties-common git && \
+$acmd autoremove -y && \
+$acmd clean -y && \
 git clone https://github.com/mrdeveloperdude/OctoMY.git -j\$(nproc) --recurse-submodules && \
 pushd OctoMY/integration/docker && \
 ./build.sh prep && \
