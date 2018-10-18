@@ -32,7 +32,7 @@ DEPS=""
 OPTS=""
 
 acmd="apt-get"
-aptgetops="-y --allow-unauthenticated -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
+aptgetops="-y --allow-unauthenticated -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold"
 
 ephemeral_tag="ephemeral"
 
