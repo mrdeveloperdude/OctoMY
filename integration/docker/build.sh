@@ -5,6 +5,7 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
+DIOC_TOKEN=$(cat "DIGITAL_OCEAN_OAUTH_TOKEN.var")
 
 pw=$(pwd)
 app=$(basename $0)
@@ -34,6 +35,9 @@ OPTS=""
 
 function do_test(){
 	echo "TROLOLOLOO"
+	
+	
+	cat DROPLET.json | jq -r '.droplet.ip'
 }
 
 
@@ -173,35 +177,51 @@ RUN echo "---- ADD APT SRC ----------------------" && \
 	cat ${temp_sources} >> ${sources}
 
 # From https://wiki.debian.org/ReduceDebian
-RUN echo "---- INITIALIZE APT -------------------" && \
+RUN >&2 echo "---- INITIALIZE APT -------------------" && \
 	echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;' >> /etc/apt/apt.conf && \
 	apt-get update && \
 	apt-get upgrade -y && \
 	apt-get autoremove -y && \
 	apt-get clean -y
 
-RUN	echo "---- INSTALL EARLY DEPENDENCIES -------" && \
+WORKDIR /OctoMY
+
+RUN	>&2 echo "---- RECORD INITIAL DEPENDENCIES ------" && \	
+	apt list --installed | sort | uniq -u > "/OctoMY/apt_initial.txt"
+
+RUN	>&2 echo "---- INSTALL EARLY DEPENDENCIES -------" && \
 	apt-get install -y --allow-unauthenticated $EDEPS
 
-RUN	echo "---- FIX SSL CERTIFICATES -------------" && \
+RUN	>&2 echo "---- RECORD EARLY DEPENDENCIES --------" && \	
+	apt list --installed | sort | uniq -u > "/OctoMY/apt_early.txt" && \
+	comm -2 -3 "/OctoMY/apt_early.txt" "/OctoMY/apt_initial.txt" > "/OctoMY/apt_early_new.txt" && \
+	cat "/OctoMY/apt_early_new.txt"
+
+RUN	>&2 echo "---- FIX SSL CERTIFICATES -------------" && \
 	rm -f /usr/local/share/ca-certificates/certificate.crt; \
 	update-ca-certificates --fresh
 
 WORKDIR /src
 
-RUN echo "---- CLONE QT -------------------------" && \
+RUN >&2 echo "---- CLONE QT -------------------------" && \
 	git clone https://github.com/qt/qt5.git -j\$(nproc) --recurse-submodules -b $qt_version /src/qt_$qt_version
 
-RUN	echo "---- CLONE OCTOMY ---------------------" && \
+RUN	>&2 echo "---- CLONE OCTOMY ---------------------" && \
 	git clone https://github.com/mrdeveloperdude/OctoMY.git -j\$(nproc) --recurse-submodules -b "$checkout" /src/octomy_$checkout
 
-RUN echo "---- GET QT DEPENDENCIES --------------" && \
+RUN >&2 echo "---- GET QT DEPENDENCIES --------------" && \
 	apt-get build-dep -y --allow-unauthenticated qt5-default && \
 	apt-get install -y --allow-unauthenticated $BDEPS $DEPS
 
-RUN echo "---- CLEAN APT ------------------------" && \
+RUN >&2 echo "---- CLEAN APT ------------------------" && \
 	apt-get autoremove -y && apt-get clean -y && \
 	rm -rf /var/lib/apt/lists/* /usr/share/man
+
+
+RUN	>&2 echo "---- RECORD QT DEPENDENCIES -----------" && \	
+	apt list --installed | sort | uniq -u > "/OctoMY/apt_qt.txt" && \
+	comm -2 -3 "/OctoMY/apt_qt.txt" "/OctoMY/apt_early.txt" > "/OctoMY/apt_qt_new.txt" && \
+	cat "/OctoMY/apt_qt_new.txt"
 
 EOF
 	else
@@ -214,59 +234,68 @@ EOF
 
 WORKDIR /qt_$qt_version
 
-RUN echo "---- HELP QT --------------------------" && \
+RUN >&2 echo "---- HELP QT --------------------------" && \
 	/src/qt_$qt_version/configure --help
 
-RUN echo "---- CONFIGURE QT ---------------------" && \
+RUN >&2 echo "---- CONFIGURE QT ---------------------" && \
 	/src/qt_$qt_version/configure $OPTS
 
-RUN echo "---- INSPECT CONFIGURATION OF QT ------" && \
+RUN >&2 echo "---- INSPECT CONFIGURATION OF QT ------" && \
 	ls -halt
 
-RUN echo "---- BUILD QT -------------------------" && \
+RUN >&2 echo "---- BUILD QT -------------------------" && \
 	MAKEFLAGS=-j\$(nproc) make -k -j \$(nproc)
 
-RUN echo "---- INSTALL QT -----------------------" && \
+RUN >&2 echo "---- INSTALL QT -----------------------" && \
 	mkdir -p "$qt_install_dir"; \
 	MAKEFLAGS=-j\$(nproc) make -k -j \$(nproc) install
 
-RUN echo "---- SHOW QMAKE VERSION ---------------" && \
+RUN >&2 echo "---- SHOW QMAKE VERSION ---------------" && \
 	"$qt_qmake" --version
 
 WORKDIR /src/octomy_$checkout
 
-# This step si a cache buster that forces rebuild on changes in git
+# This step is a cache buster that forces rebuild on changes in git repo
 ADD "$octomy_git_ver" "git_version"
 
-RUN	echo "---- UPDATE OCTOMY --------------------" && \
+RUN	>&2 echo "---- UPDATE OCTOMY --------------------" && \
 		git checkout "$checkout" && \
 		git pull
 	
 WORKDIR /qmake_test
 
-RUN	echo "---- BUILD QMAKE TEST -----------------" && \
+RUN	>&2 echo "---- BUILD QMAKE TEST -----------------" && \
 	ls -halt /src/octomy_$checkout/integration/docker/ && \
 	MAKEFLAGS=-j\$(nproc) "$qt_qmake" /src/octomy_$checkout/integration/docker/qmake_test/QmakeTest.pro && \
 	MAKEFLAGS=-j\$(nproc) make -j \$(nproc); \
 
 WORKDIR /OctoMY
 
-RUN	echo "---- BUILD OCTOMY ---------------------" && \
+RUN	>&2 echo "---- BUILD OCTOMY ---------------------" && \
 	cp -a "$src_overrides" "$dst_overrides" && \
 	cat "$dst_overrides" && \
 	MAKEFLAGS=-j\$(nproc) "$qt_qmake" /src/octomy_$checkout/OctoMY.pro && \
 	MAKEFLAGS=-j\$(nproc) make -j \$(nproc)
 
+RUN	>&2 echo "---- INSPECT ARTEFACTS ----------------" && \
+	find
+	
 # 	cd /src/qt_$qt_version && \
 #EXPOSE 8080:80
 #CMD ["/usr/sbin/apache2", "-D",  "FOREGROUND"]
 
 EOF
 
-	local cmd="docker build . -t octomy:${spec}"
-	docker build --help
-	echo "Executing: $cmd --------- "
-	$cmd
+	# build
+	docker build . -t "octomy:${spec}"
+	# Create but don't run container from resulting image
+	#local container_id==$(docker create "${spec}")
+	# Copy artifacts from image
+	#docker cp "${container_id}:/path/to/artifacts" "/local/path/to/artifacts"
+
+	# Container be gone
+	# docker rm "${container_id}"
+	docker images
 	popd
 }
 
@@ -320,6 +349,7 @@ function do_common_deps(){
 		OPTS+=" -silent"
 #		OPTS+=" -verbose"
 
+
 		# LICENCE
 		OPTS+=" -opensource"
 		OPTS+=" -confirm-license"
@@ -361,12 +391,15 @@ function do_common_deps(){
 		OPTS+=" -optimize-size"
 		OPTS+=" -ltcg"
 		OPTS+=" -use-gold-linker"
+		OPTS+=" -optimized-qmake"
+		OPTS+=" -reduce-relocations"
 		
 		# OPTIONAL PARTS
 		OPTS+=" -make libs"
 		OPTS+=" -nomake examples"
 		OPTS+=" -nomake tests"
 		OPTS+=" -nomake tools"
+		OPTS+=" -nomake demos"
 
 
 		# OPTIONAL FEATURES
@@ -378,6 +411,7 @@ function do_common_deps(){
 		OPTS+=" -inotify"
 		OPTS+=" -eventfd"
 
+		OPTS+=" -no-exceptions"
 #		OPTS+=" -no-nis"
 		OPTS+=" -no-pulseaudio"
 #		OPTS+=" -no-qml-debug"
@@ -447,7 +481,7 @@ function do_debian_deps(){
 
 	
 		EDEPS+=" gnupg2"
-		EDEPS+=" apt-utils"
+#		EDEPS+=" apt-utils"
 		EDEPS+=" wget"
 		EDEPS+=" ca-certificates"
 		EDEPS+=" apt-transport-https"
@@ -892,38 +926,200 @@ function do_ubuntu_deps(){
 }
 
 
-
-
-
 function do_prep(){
-	apt update
-	apt upgrade
-	apt install git
-	
-	apt install apt-transport-https ca-certificates curl gnupg2 software-properties-common
+	local acmd=apt-get -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+	$acmd update
+	$acmd upgrade
+	$acmd install git curl jq nmap
+	$acmd install apt-transport-https ca-certificates curl gnupg2 software-properties-common
 	curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
 	add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-	apt update
+	$acmd update
 	apt-cache policy docker-ce
-	apt install docker-ce
+	$acmd install docker-ce
 	systemctl status docker
+}
 
+function do_keys(){
+
+	echo "SIZES -----------------------------"
+	curl -X GET\
+		-H "Content-Type: application/json"\
+		-H "Authorization: Bearer $DIOC_TOKEN"\
+		"https://api.digitalocean.com/v2/sizes"
+	
+	echo "SSH KEYS---------------------------"
+	curl -X GET\
+		-H "Content-Type: application/json"\
+		-H "Authorization: Bearer $DIOC_TOKEN"\
+		"https://api.digitalocean.com/v2/account/keys"
+}
+
+function dioc_api(){
+	local mathod="$1"
+	local path="$2"
+	local body="$3"
+	local P="https://api.digitalocean.com/v2$path"
+	#>&2 echo "CURL $mathod '$P' '$body'"
+	local res=$(curl -s -X "$mathod" \
+		-H "Content-Type: application/json" \
+		-H "Authorization: Bearer $DIOC_TOKEN" \
+		-d "$body" \
+		$P)
+	echo "$res"
+}
+
+function wait_for_ssh(){
+	local ip="$1"
+	while true
+	do
+		#>&2 echo "WAITING FOR SSH $ip"
+		sleep 1
+		local ssh_port_status=$(nmap "$ip" -PN -p ssh | egrep 'open|closed|filtered' | awk '{print $2}')
+		if [ "open" == "$ssh_port_status" ]
+		then
+			>&2 echo "SSH PORT OPEN"
+			break
+		fi
+	done
+}
+
+function wait_for_droplet(){
+	local droplet_id="$1"
+	while true
+	do
+		#>&2 echo "WAITING FOR DROPLET $droplet_id"
+		sleep 1
+		local droplet=$(dioc_api "GET" "/droplets/$droplet_id")
+		echo "$droplet" > "DROPLET_STATUS.json"
+		local status=$(echo "$droplet" | jq -r '.droplet.status')
+		local ip=$(echo "$droplet" | jq -r '.droplet.networks.v4[0].ip_address')
+		#echo "DROPLET status=$status, ip=$ip";
+		if [ "active" == "$status" ]
+		then
+			>&2 echo "DROPLET $droplet_id READY WITH IP: $ip"
+			echo "$ip"
+			break
+		fi
+	done
+}
+
+function dioc_provision(){
+	local region="$1"
+	local image="$2"
+	local size="$3"
+
+	>&2 echo "CREATING DROPLET region=$region, image=$image, size=$size"
+	local body=$(cat <<EOT
+{
+	 "name":		"octomy-quick-build"
+	,"region":		"$region"
+	,"size":		"$size"
+	,"image":		"$image"
+	,"ssh_keys":	["14:8f:e8:cc:4c:f3:ef:d4:da:c9:c9:4f:67:65:57:eb"]
+	,"backups":		false
+	,"ipv6":		false
+	,"user_data":	null
+	,"private_networking":null
+	,"volumes":		null
+	,"tags":		["ephemeral"]
+}
+
+EOT
+)
+	#>&2 echo "BODY=$body"
+	local res=$(dioc_api "POST" "/droplets" "$body")
+	echo "$res" > "DROPLET.json"
+	local droplet_id=$(echo "$res" | jq -r '.droplet.id')
+	if [ "" == "$droplet_id" ]
+	then
+		>&2 echo "DROPLET CREATION FAILED"
+		echo ""
+		return
+	fi
+	>&2 echo "DROPLET $droplet_id CREATED"
+	local ip=$(wait_for_droplet "$droplet_id")
+	wait_for_ssh "$ip"	
+	echo "$droplet_id" "$ip"
+}
+
+function dioc_delete(){
+	local droplet_id="$1"
+	dioc_api "DELETE" "/droplets/$droplet_id"
+}
+
+
+function dioc_delete_by_tag(){
+	local tag="$1"
+	dioc_api "DELETE" "/droplets?tag_name=$tag"
+}
+
+function ssh_cmd(){
+	local host="$1"
+	local cmd="$2"
+	ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null"  "$host" "$cmd"
+}
+
+function do_provision(){
+	local shutdowntime=55
+	local region="fra1"
+	local image="debian-9-x64"
+	local size="c-32"
+	# Give it 1 minute(s) to be gone
+	local killtime=$((shutdowntime+1))
+	read droplet_id ip < <(dioc_provision "$region" "$image" "$size")
+	if [ "" == "$droplet_id" ] || [ "" == "$ip" ]
+	then
+		>&2 echo "Could not provision (droplet_id=$droplet_id, ip=$ip)"
+		exit 1
+	fi
+	echo "PROVISIONED '$droplet_id' with IP $ip"
+	# SAFETY: The droplet we just provisioned can be really expensive. So as a safe-guard we schedule its demise in 55 minutes no matter what happens:
+	(echo "KILL TIMER SET FOR ${killtime} minutes"; sleep "${killtime}m"; echo "${killtime} minutes is up, TIME TO DIE!!1!"; dioc_delete "$droplet_id"; exit) &
+	
+	local cmd=$(cat <<EOT
+(echo "SHUTDOWN TIMER SET FOR ${shutdowntime} minutes"; sleep "${shutdowntime}m"; echo "${shutdowntime} minutes is up, TIME TO SHUTDOWN!!1!"; shutdown -h now; exit) & \
+echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;' >> /etc/apt/apt.conf && \
+apt-get update && \
+apt-get upgrade -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
+apt-get install -f -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
+apt-get install -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated gnupg2 wget ca-certificates apt-transport-https curl software-properties-common git && \
+rm -f /usr/local/share/ca-certificates/certificate.crt; \
+update-ca-certificates --fresh && \
+apt-get update && \
+apt-get upgrade -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
+apt-get install -f -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
+apt-get install -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated gnupg2 wget ca-certificates apt-transport-https curl software-properties-common git && \
+apt-get autoremove -y && \
+apt-get clean -y && \
+git clone https://github.com/mrdeveloperdude/OctoMY.git -j\$(nproc) --recurse-submodules && \
+pushd OctoMY/integration/docker && \
+./build.sh prep && \
+./build.sh build && \
+popd
+
+EOT
+)
+	ssh_cmd "root@$ip" "$cmd"
+}
+
+function do_prune(){
+	dioc_delete_by_tag "ephemeral"
 }
 
 if [ ! "${1+defined}" ]
 then
+
 	echo ""
 	echo "   USAGE: $0 <commands>"
 	echo ""
 	echo "      Where commands is a list of one or more of the following:"
 	echo ""
 	echo "       -v <QT-VERSION> (default: ${qt_version})"
-	echo "       + debian    - use debootstraped minbase debian as base image WANRING: DOES NOT WORK PROPERLY"
-	echo "       + ubuntu    - use ubuntu 14.04 from docker hub as base image"
-	echo "       + qt_src    - download qt source (if missing) and import into image"
-	echo "       + qt_conf   - configure qt and prepare for build"
-	echo "       + qt_build  - build qt"
-	echo "       + zoo       - clone OctoMY from github and build it"
+	echo "       + build     - Build OctoMY"
+	echo "       + prep      - Prepare local environment for running build by instalkling necessary tools such as docker"
+	echo "       + provision - Run developers test. NOTE: ONly for developer, not for production use!"
+	echo "       + test      - Provision droplet at digital ocean"
 	echo ""
 	exit 1
 fi
@@ -936,6 +1132,8 @@ do
         build )		do_build ;;
         test)		do_test ;;
         prep)		do_prep ;;
+        provision)	do_provision ;;
+        prune)		do_prune ;;
         *) echo "UNKNWON COMMAND: '$1', SKIPPING..."    ;;
     esac
     shift
