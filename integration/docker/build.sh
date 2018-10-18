@@ -31,7 +31,10 @@ BDEPS=""
 DEPS=""
 OPTS=""
 
-acmd=apt-get -y --allow-unauthenticated -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\"
+acmd="apt-get"
+aptgetops="-y --allow-unauthenticated -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
+
+ephemeral_tag="ephemeral"
 
 function do_test(){
 	echo "TROLOLOLOO"
@@ -181,10 +184,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN >&2 echo "\n\n---- INITIALIZE APT -------------------\n" && \
 	echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;' >> /etc/apt/apt.conf && \
 	export DEBIAN_FRONTEND=noninteractive && \
-	$acmd update && \
-	$acmd upgrade && \
-	$acmd autoremove && \
-	$acmd clean
+	$acmd update $aptgetops && \
+	$acmd upgrade $aptgetops && \
+	$acmd autoremove $aptgetops && \
+	$acmd clean $aptgetops
 
 WORKDIR /OctoMY
 
@@ -932,15 +935,15 @@ function do_ubuntu_deps(){
 
 function do_prep(){
 	export DEBIAN_FRONTEND=noninteractive
-	$acmd update
-	$acmd upgrade
-	$acmd install git curl jq nmap
-	$acmd install apt-transport-https ca-certificates curl gnupg2 software-properties-common
+	$acmd update $aptgetops
+	$acmd upgrade $aptgetops
+	$acmd install $aptgetops git curl jq nmap
+	$acmd install $aptgetops apt-transport-https ca-certificates curl gnupg2 software-properties-common 
 	curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
 	add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-	$acmd update
+	$acmd update $aptgetops
 	apt-cache policy docker-ce
-	$acmd install docker-ce
+	$acmd install $aptgetops docker-ce
 	systemctl status docker
 }
 
@@ -1026,7 +1029,7 @@ function dioc_provision(){
 	,"user_data":	null
 	,"private_networking":null
 	,"volumes":		null
-	,"tags":		["ephemeral"]
+	,"tags":		["$ephemeral_tag"]
 }
 
 EOT
@@ -1085,19 +1088,19 @@ function do_provision(){
 (echo "SHUTDOWN TIMER SET FOR ${shutdowntime} minutes"; sleep "${shutdowntime}m"; echo "${shutdowntime} minutes is up, TIME TO SHUTDOWN!!1!"; shutdown -h now; exit) & \
 echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;' >> /etc/apt/apt.conf && \
 export DEBIAN_FRONTEND=noninteractive && \
-$acmd update && \
-$acmd upgrade && \
-$acmd install -f && \
-$acmd install gnupg2 wget ca-certificates apt-transport-https curl software-properties-common git && \
-$acmd autoremove && \
+$acmd update $aptgetops && \
+$acmd upgrade $aptgetops && \
+$acmd install -f $aptgetops && \
+$acmd install $aptgetops gnupg2 wget ca-certificates apt-transport-https curl software-properties-common git && \
+$acmd autoremove $aptgetops && \
 rm -f /usr/local/share/ca-certificates/certificate.crt; \
 update-ca-certificates --fresh && \
-$acmd update && \
-$acmd upgrade && \
-$acmd install -f && \
-$acmd install gnupg2 wget ca-certificates apt-transport-https curl software-properties-common git && \
-$acmd autoremove && \
-$acmd clean && \
+$acmd update $aptgetops && \
+$acmd upgrade $aptgetops && \
+$acmd install -f $aptgetops && \
+$acmd install $aptgetops gnupg2 wget ca-certificates apt-transport-https curl software-properties-common git && \
+$acmd autoremove $aptgetops && \
+$acmd clean $aptgetops && \
 git clone https://github.com/mrdeveloperdude/OctoMY.git -j\$(nproc) --recurse-submodules && \
 pushd OctoMY/integration/docker && \
 ./build.sh prep && \
@@ -1110,7 +1113,8 @@ EOT
 }
 
 function do_prune(){
-	dioc_delete_by_tag "ephemeral"
+	>&2 echo "PRUNING DROPLETS WITH TAG=$ephemeral_tag"
+	dioc_delete_by_tag "$ephemeral_tag"
 }
 
 if [ ! "${1+defined}" ]
