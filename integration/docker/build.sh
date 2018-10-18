@@ -31,7 +31,7 @@ BDEPS=""
 DEPS=""
 OPTS=""
 
-acmd="apt-get -y --allow-unauthenticated -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
+acmd="DEBIAN_FRONTEND=noninteractive apt-get -y --allow-unauthenticated -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
 
 function do_test(){
 	echo "TROLOLOLOO"
