@@ -167,17 +167,17 @@ EOF
 	then
 		cat << EOF >> "$doc"
 
-RUN echo "---- FIX SHELL ------------------------"
+RUN >&2 echo "\n\n---- FIX SHELL ------------------------\n"
 RUN ["/bin/bash", "-c", "unlink /bin/sh"]
 RUN ["/bin/bash", "-c", "ln -s /bin/bash /bin/sh"]
 RUN echo "CORES AVAILABLE: \$(nproc)"
 
-RUN echo "---- ADD APT SRC ----------------------" && \
+RUN >&2 echo "\n\n---- ADD APT SRC ----------------------\n" && \
 	sed "s/^deb/deb-src/g" ${sources} > ${temp_sources} && \
 	cat ${temp_sources} >> ${sources}
 
 # From https://wiki.debian.org/ReduceDebian
-RUN >&2 echo "---- INITIALIZE APT -------------------" && \
+RUN >&2 echo "\n\n---- INITIALIZE APT -------------------\n" && \
 	echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;' >> /etc/apt/apt.conf && \
 	apt-get update && \
 	apt-get upgrade -y && \
@@ -186,39 +186,39 @@ RUN >&2 echo "---- INITIALIZE APT -------------------" && \
 
 WORKDIR /OctoMY
 
-RUN	>&2 echo "---- RECORD INITIAL DEPENDENCIES ------" && \	
+RUN	>&2 echo "\n\n---- RECORD INITIAL DEPENDENCIES ------\n" && \	
 	apt list --installed | sort | uniq -u > "/OctoMY/apt_initial.txt"
 
-RUN	>&2 echo "---- INSTALL EARLY DEPENDENCIES -------" && \
+RUN	>&2 echo "\n\n---- INSTALL EARLY DEPENDENCIES -------\n" && \
 	apt-get install -y --allow-unauthenticated $EDEPS
 
-RUN	>&2 echo "---- RECORD EARLY DEPENDENCIES --------" && \	
+RUN	>&2 echo "\n\n---- RECORD EARLY DEPENDENCIES --------\n" && \	
 	apt list --installed | sort | uniq -u > "/OctoMY/apt_early.txt" && \
 	comm -2 -3 "/OctoMY/apt_early.txt" "/OctoMY/apt_initial.txt" > "/OctoMY/apt_early_new.txt" && \
 	cat "/OctoMY/apt_early_new.txt"
 
-RUN	>&2 echo "---- FIX SSL CERTIFICATES -------------" && \
+RUN	>&2 echo "\n\n---- FIX SSL CERTIFICATES -------------\n" && \
 	rm -f /usr/local/share/ca-certificates/certificate.crt; \
 	update-ca-certificates --fresh
 
 WORKDIR /src
 
-RUN >&2 echo "---- CLONE QT -------------------------" && \
+RUN >&2 echo "\n\n---- CLONE QT -------------------------\n" && \
 	git clone https://github.com/qt/qt5.git -j\$(nproc) --recurse-submodules -b $qt_version /src/qt_$qt_version
 
-RUN	>&2 echo "---- CLONE OCTOMY ---------------------" && \
+RUN	>&2 echo "\n\n---- CLONE OCTOMY ---------------------\n" && \
 	git clone https://github.com/mrdeveloperdude/OctoMY.git -j\$(nproc) --recurse-submodules -b "$checkout" /src/octomy_$checkout
 
-RUN >&2 echo "---- GET QT DEPENDENCIES --------------" && \
+RUN >&2 echo "\n\n---- GET QT DEPENDENCIES --------------\n" && \
 	apt-get build-dep -y --allow-unauthenticated qt5-default && \
 	apt-get install -y --allow-unauthenticated $BDEPS $DEPS
 
-RUN >&2 echo "---- CLEAN APT ------------------------" && \
+RUN >&2 echo "\n\n---- CLEAN APT ------------------------\n" && \
 	apt-get autoremove -y && apt-get clean -y && \
 	rm -rf /var/lib/apt/lists/* /usr/share/man
 
 
-RUN	>&2 echo "---- RECORD QT DEPENDENCIES -----------" && \	
+RUN	>&2 echo "\n\n---- RECORD QT DEPENDENCIES -----------\n" && \	
 	apt list --installed | sort | uniq -u > "/OctoMY/apt_qt.txt" && \
 	comm -2 -3 "/OctoMY/apt_qt.txt" "/OctoMY/apt_early.txt" > "/OctoMY/apt_qt_new.txt" && \
 	cat "/OctoMY/apt_qt_new.txt"
@@ -234,23 +234,24 @@ EOF
 
 WORKDIR /qt_$qt_version
 
-RUN >&2 echo "---- HELP QT --------------------------" && \
+RUN >&2 echo "\n\n---- HELP QT --------------------------\n" && \
 	/src/qt_$qt_version/configure --help
 
-RUN >&2 echo "---- CONFIGURE QT ---------------------" && \
+RUN >&2 echo "\n\n---- CONFIGURE QT ---------------------\n" && \
 	/src/qt_$qt_version/configure $OPTS
 
-RUN >&2 echo "---- INSPECT CONFIGURATION OF QT ------" && \
+RUN >&2 echo "\n\n---- INSPECT CONFIGURATION OF QT ------\n" && \
 	ls -halt
 
-RUN >&2 echo "---- BUILD QT -------------------------" && \
+RUN >&2 echo "\n\n---- BUILD QT -------------------------\n" && \
+	MAKEFLAGS=-j\$(nproc) make -k -j \$(nproc) && \
 	MAKEFLAGS=-j\$(nproc) make -k -j \$(nproc)
 
-RUN >&2 echo "---- INSTALL QT -----------------------" && \
+RUN >&2 echo "\n\n---- INSTALL QT -----------------------\n" && \
 	mkdir -p "$qt_install_dir"; \
 	MAKEFLAGS=-j\$(nproc) make -k -j \$(nproc) install
 
-RUN >&2 echo "---- SHOW QMAKE VERSION ---------------" && \
+RUN >&2 echo "\n\n---- SHOW QMAKE VERSION ---------------\n" && \
 	"$qt_qmake" --version
 
 WORKDIR /src/octomy_$checkout
@@ -258,26 +259,26 @@ WORKDIR /src/octomy_$checkout
 # This step is a cache buster that forces rebuild on changes in git repo
 ADD "$octomy_git_ver" "git_version"
 
-RUN	>&2 echo "---- UPDATE OCTOMY --------------------" && \
+RUN	>&2 echo "\n\n---- UPDATE OCTOMY --------------------\n" && \
 		git checkout "$checkout" && \
 		git pull
 	
 WORKDIR /qmake_test
 
-RUN	>&2 echo "---- BUILD QMAKE TEST -----------------" && \
+RUN	>&2 echo "\n\n---- BUILD QMAKE TEST -----------------\n" && \
 	ls -halt /src/octomy_$checkout/integration/docker/ && \
 	MAKEFLAGS=-j\$(nproc) "$qt_qmake" /src/octomy_$checkout/integration/docker/qmake_test/QmakeTest.pro && \
 	MAKEFLAGS=-j\$(nproc) make -j \$(nproc); \
 
 WORKDIR /OctoMY
 
-RUN	>&2 echo "---- BUILD OCTOMY ---------------------" && \
+RUN	>&2 echo "\n\n---- BUILD OCTOMY ---------------------\n" && \
 	cp -a "$src_overrides" "$dst_overrides" && \
 	cat "$dst_overrides" && \
 	MAKEFLAGS=-j\$(nproc) "$qt_qmake" /src/octomy_$checkout/OctoMY.pro && \
 	MAKEFLAGS=-j\$(nproc) make -j \$(nproc)
 
-RUN	>&2 echo "---- INSPECT ARTEFACTS ----------------" && \
+RUN	>&2 echo "\n\n---- INSPECT ARTEFACTS ----------------\n" && \
 	find
 	
 # 	cd /src/qt_$qt_version && \
