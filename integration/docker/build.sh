@@ -31,7 +31,7 @@ BDEPS=""
 DEPS=""
 OPTS=""
 
-
+acmd="apt-get -y --allow-unauthenticated -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
 
 function do_test(){
 	echo "TROLOLOLOO"
@@ -929,7 +929,6 @@ function do_ubuntu_deps(){
 
 
 function do_prep(){
-	local acmd="apt-get -y --force-yes -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
 	$acmd update
 	$acmd upgrade
 	$acmd install git curl jq nmap
@@ -1079,23 +1078,22 @@ function do_provision(){
 	# SAFETY: The droplet we just provisioned can be really expensive. So as a safe-guard we schedule its demise in 55 minutes no matter what happens:
 	(echo "KILL TIMER SET FOR ${killtime} minutes"; sleep "${killtime}m"; echo "${killtime} minutes is up, TIME TO DIE!!1!"; dioc_delete "$droplet_id"; exit) &
 	
-	local acmd="apt-get -y --force-yes -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
-	
 	local cmd=$(cat <<EOT
 (echo "SHUTDOWN TIMER SET FOR ${shutdowntime} minutes"; sleep "${shutdowntime}m"; echo "${shutdowntime} minutes is up, TIME TO SHUTDOWN!!1!"; shutdown -h now; exit) & \
 echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;' >> /etc/apt/apt.conf && \
 $acmd update && \
-$acmd upgrade -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
-$acmd install -f -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
-$acmd install -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated gnupg2 wget ca-certificates apt-transport-https curl software-properties-common git && \
+$acmd upgrade && \
+$acmd install -f && \
+$acmd install gnupg2 wget ca-certificates apt-transport-https curl software-properties-common git && \
+$acmd autoremove && \
 rm -f /usr/local/share/ca-certificates/certificate.crt; \
 update-ca-certificates --fresh && \
 $acmd update && \
-$acmd upgrade -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
-$acmd install -f -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" && \
-$acmd install -y --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated gnupg2 wget ca-certificates apt-transport-https curl software-properties-common git && \
-$acmd autoremove -y && \
-$acmd clean -y && \
+$acmd upgrade && \
+$acmd install -f && \
+$acmd install gnupg2 wget ca-certificates apt-transport-https curl software-properties-common git && \
+$acmd autoremove && \
+$acmd clean && \
 git clone https://github.com/mrdeveloperdude/OctoMY.git -j\$(nproc) --recurse-submodules && \
 pushd OctoMY/integration/docker && \
 ./build.sh prep && \
