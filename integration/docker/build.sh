@@ -31,7 +31,7 @@ BDEPS=""
 DEPS=""
 OPTS=""
 
-acmd="apt-get -y --allow-unauthenticated -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
+acmd=apt-get -y --allow-unauthenticated -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\"
 
 function do_test(){
 	echo "TROLOLOLOO"
@@ -177,6 +177,7 @@ RUN >&2 echo "\n\n---- ADD APT SRC ----------------------\n" && \
 	cat ${temp_sources} >> ${sources}
 
 # From https://wiki.debian.org/ReduceDebian
+ARG DEBIAN_FRONTEND=noninteractive
 RUN >&2 echo "\n\n---- INITIALIZE APT -------------------\n" && \
 	echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;' >> /etc/apt/apt.conf && \
 	export DEBIAN_FRONTEND=noninteractive && \
