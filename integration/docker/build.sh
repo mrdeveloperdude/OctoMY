@@ -31,7 +31,7 @@ BDEPS=""
 DEPS=""
 OPTS=""
 
-acmd="DEBIAN_FRONTEND=noninteractive apt-get -y --allow-unauthenticated -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
+acmd="apt-get -y --allow-unauthenticated -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
 
 function do_test(){
 	echo "TROLOLOLOO"
@@ -179,10 +179,11 @@ RUN >&2 echo "\n\n---- ADD APT SRC ----------------------\n" && \
 # From https://wiki.debian.org/ReduceDebian
 RUN >&2 echo "\n\n---- INITIALIZE APT -------------------\n" && \
 	echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;' >> /etc/apt/apt.conf && \
-	apt-get update && \
-	apt-get upgrade -y && \
-	apt-get autoremove -y && \
-	apt-get clean -y
+	export DEBIAN_FRONTEND=noninteractive && \
+	$acmd update && \
+	$acmd upgrade && \
+	$acmd autoremove && \
+	$acmd clean
 
 WORKDIR /OctoMY
 
@@ -929,6 +930,7 @@ function do_ubuntu_deps(){
 
 
 function do_prep(){
+	export DEBIAN_FRONTEND=noninteractive
 	$acmd update
 	$acmd upgrade
 	$acmd install git curl jq nmap
@@ -1081,6 +1083,7 @@ function do_provision(){
 	local cmd=$(cat <<EOT
 (echo "SHUTDOWN TIMER SET FOR ${shutdowntime} minutes"; sleep "${shutdowntime}m"; echo "${shutdowntime} minutes is up, TIME TO SHUTDOWN!!1!"; shutdown -h now; exit) & \
 echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;' >> /etc/apt/apt.conf && \
+export DEBIAN_FRONTEND=noninteractive && \
 $acmd update && \
 $acmd upgrade && \
 $acmd install -f && \
