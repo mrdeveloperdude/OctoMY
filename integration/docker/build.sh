@@ -190,18 +190,18 @@ RUN >&2 printf "\n\n---- INITIALIZE APT -------------------\n" && \
 
 WORKDIR /OctoMY
 
-RUN	>&2 echo "\n\n---- RECORD INITIAL DEPENDENCIES ------\n" && \	
+RUN	>&2 printf "\n\n---- RECORD INITIAL DEPENDENCIES ------\n" && \	
 	apt list --installed | sort | uniq -u > "/OctoMY/apt_initial.txt"
 
-RUN	>&2 echo "\n\n---- INSTALL EARLY DEPENDENCIES -------\n" && \
+RUN	>&2 printf "\n\n---- INSTALL EARLY DEPENDENCIES -------\n" && \
 	apt-get install -y --allow-unauthenticated $EDEPS
 
-RUN	>&2 echo "\n\n---- RECORD EARLY DEPENDENCIES --------\n" && \	
+RUN	>&2 printf "\n\n---- RECORD EARLY DEPENDENCIES --------\n" && \	
 	apt list --installed | sort | uniq -u > "/OctoMY/apt_early.txt" && \
 	comm -2 -3 "/OctoMY/apt_early.txt" "/OctoMY/apt_initial.txt" > "/OctoMY/apt_early_new.txt" && \
 	cat "/OctoMY/apt_early_new.txt"
 
-RUN	>&2 echo "\n\n---- FIX SSL CERTIFICATES -------------\n" && \
+RUN	>&2 printf "\n\n---- FIX SSL CERTIFICATES -------------\n" && \
 	rm -f /usr/local/share/ca-certificates/certificate.crt; \
 	update-ca-certificates --fresh
 
@@ -210,7 +210,7 @@ WORKDIR /src
 RUN >&2 printf "\n\n---- CLONE QT -------------------------\n" && \
 	git clone https://github.com/qt/qt5.git -j\$(nproc) --recurse-submodules -b $qt_version /src/qt_$qt_version
 
-RUN	>&2 echo "\n\n---- CLONE OCTOMY ---------------------\n" && \
+RUN	>&2 printf "\n\n---- CLONE OCTOMY ---------------------\n" && \
 	git clone https://github.com/mrdeveloperdude/OctoMY.git -j\$(nproc) --recurse-submodules -b "$checkout" /src/octomy_$checkout
 
 RUN >&2 printf "\n\n---- GET QT DEPENDENCIES --------------\n" && \
@@ -222,7 +222,7 @@ RUN >&2 printf "\n\n---- CLEAN APT ------------------------\n" && \
 	rm -rf /var/lib/apt/lists/* /usr/share/man
 
 
-RUN	>&2 echo "\n\n---- RECORD QT DEPENDENCIES -----------\n" && \	
+RUN	>&2 printf "\n\n---- RECORD QT DEPENDENCIES -----------\n" && \	
 	apt list --installed | sort | uniq -u > "/OctoMY/apt_qt.txt" && \
 	comm -2 -3 "/OctoMY/apt_qt.txt" "/OctoMY/apt_early.txt" > "/OctoMY/apt_qt_new.txt" && \
 	cat "/OctoMY/apt_qt_new.txt"
@@ -269,20 +269,20 @@ RUN	>&2 echo "\n\n---- UPDATE OCTOMY --------------------\n" && \
 	
 WORKDIR /qmake_test
 
-RUN	>&2 echo "\n\n---- BUILD QMAKE TEST -----------------\n" && \
+RUN	>&2 printf "\n\n---- BUILD QMAKE TEST -----------------\n" && \
 	ls -halt /src/octomy_$checkout/integration/docker/ && \
 	MAKEFLAGS=-j\$(nproc) "$qt_qmake" /src/octomy_$checkout/integration/docker/qmake_test/QmakeTest.pro && \
 	MAKEFLAGS=-j\$(nproc) make -j \$(nproc); \
 
 WORKDIR /OctoMY
 
-RUN	>&2 echo "\n\n---- BUILD OCTOMY ---------------------\n" && \
+RUN	>&2 printf "\n\n---- BUILD OCTOMY ---------------------\n" && \
 	cp -a "$src_overrides" "$dst_overrides" && \
 	cat "$dst_overrides" && \
 	MAKEFLAGS=-j\$(nproc) "$qt_qmake" /src/octomy_$checkout/OctoMY.pro; exit 0 \
 
 
-RUN	>&2 echo "\n\n---- INSPECT ARTEFACTS ----------------\n" && \
+RUN	>&2 printf "\n\n---- INSPECT ARTEFACTS ----------------\n" && \
 	find
 	
 
@@ -384,7 +384,7 @@ function do_common_deps(){
 		OPTS+=" -inotify"
 		OPTS+=" -eventfd"
 
-		OPTS+=" -no-exceptions"
+#		OPTS+=" -no-exceptions" #DOES NOT WORK? INVENSTIGATE
 #		OPTS+=" -no-nis"
 		OPTS+=" -no-pulseaudio"
 		OPTS+=" -no-qml-debug"
@@ -400,9 +400,6 @@ function do_common_deps(){
 		OPTS+=" -no-warnings-are-errors"
 #		OPTS+=" -no-xcb"
 		OPTS+=" -no-compile-examples"
-		OPTS+=" -no-cups" 
-		OPTS+=" -no-directfb"
-		OPTS+=" -no-eglfs"
 		OPTS+=" -no-gif"
 #		OPTS+=" -no-gtkstyle"
 #		OPTS+=" -no-iconv"
@@ -426,8 +423,6 @@ function do_common_deps(){
 		OPTS+=" -no-linuxfb"
 		OPTS+=" -no-glib"
 		OPTS+=" -no-kms"
-		OPTS+=" -nomake examples" 
-		#OPTS+=" -nomake demos" NOT AVAILABLE ANYMORE
 		#OPTS+=" -no-openssl"
 
 		# OPTIONAL MODULES AND COMPONENTS
