@@ -295,17 +295,52 @@ RUN	>&2 printf "\n\n---- INSPECT OCTOMY ARTEFACTS ---------\n" && \
 
 EOF
 
+	local tag="octomy:${spec}"
 	# build
-	docker build . -t "octomy:${spec}"
+	docker build . -t "$tag"
+
+	popd
+	
+	artefacts=()
+	for artefact in agent remote hub zoo
+	do
+		artefacts=("${artefacts[@]}" "/OctoMY/src/$artefact/$artefact")
+	done
+
+	extract_artefacts "$tag" ${artefacts[@]}
+	
+
+}
+
+function extract_artefacts(){
+	local tag="$1"
+	shift
+	local artefacts=$@
+#	>&2 echo "EXTRACTING ARTEFACTS $artefacts FROM IMAGE '$tag'"
 	# Create but don't run container from resulting image
-	#local container_id==$(docker create "${spec}")
-	# Copy artifacts from image
-	#docker cp "${container_id}:/path/to/artifacts" "/local/path/to/artifacts"
+	local container_id=$(docker create "${tag}")
+	# Copy artefacts from image
+	for artefact in $artefacts
+	do
+		docker cp "${container_id}:$artefact" "$(basename $artefact)"
+	done
 
 	# Container be gone
-	# docker rm "${container_id}"
+	docker rm "${container_id}"
 	docker images
-	popd
+}
+
+
+function do_extract(){
+	local tag="$1"
+	shift
+	>&2 echo "EXTRACTING ARTEFACTS WITH TAG=$tag"
+	artefacts=()
+	for artefact in agent remote hub zoo
+	do
+		artefacts=("${artefacts[@]}" "/OctoMY/src/$artefact/$artefact")
+	done
+	extract_artefacts "$tag" ${artefacts[@]}
 }
 
 
@@ -1087,30 +1122,34 @@ function do_prune(){
 if [ ! "${1+defined}" ]
 then
 
-	echo ""
-	echo "   USAGE: $0 <commands>"
-	echo ""
-	echo "      Where commands is a list of one or more of the following:"
-	echo ""
-	echo "       -v <QT-VERSION> (default: ${qt_version})"
-	echo "       + build     - Build OctoMY"
-	echo "       + prep      - Prepare local environment for running build by instalkling necessary tools such as docker"
-	echo "       + provision - Run developers test. NOTE: ONly for developer, not for production use!"
-	echo "       + test      - Provision droplet at digital ocean"
-	echo ""
+cat << EOT
+   USAGE: $0 <commands>
+
+      Where commands is a list of one or more of the following:
+
+       -v <QT-VERSION> (default: ${qt_version})
+       + build     - Build OctoMY
+       + prep      - Prepare local environment for running build by instalkling necessary tools such as docker
+       + provision - Run developers test. NOTE: ONly for developer, not for production use!
+       + test      - Provision droplet at digital ocean
+       + extract   - Extract artifacts from named image
+
+EOT
 	exit 1
+	
 fi
 
 while [ "${1+defined}" ]
 do
     case $1 in
-        -v* )	shift; qt_version_long="$"; qt_version="${qt_version_long%.*}" ;;
+        -v* )	shift; qt_version_long="$1"; qt_version="${qt_version_long%.*}" ;;
         -c* )	CACHE=" --no-cache" ;;
         build )		do_build ;;
         test)		do_test ;;
         prep)		do_prep ;;
         provision)	do_provision ;;
         prune)		do_prune ;;
+        extract)    shift; tag="$1"; do_extract "$tag" ;;
         *) echo "UNKNWON COMMAND: '$1', SKIPPING..."    ;;
     esac
     shift
