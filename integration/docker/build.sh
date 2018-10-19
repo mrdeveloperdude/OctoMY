@@ -414,7 +414,7 @@ function do_common_deps(){
 		OPTS+=" -no-sql-oci" 
 		OPTS+=" -no-sql-odbc" 
 		OPTS+=" -no-sql-psql" 
-		#OPTS+=" -no-sql-sqlite"  # we want sqlite3 support
+#		OPTS+=" -no-sql-sqlite"  # we want sqlite3 support
 		OPTS+=" -no-sql-sqlite2" 
 		OPTS+=" -no-sql-tds"
 		
@@ -426,7 +426,7 @@ function do_common_deps(){
 		OPTS+=" -no-linuxfb"
 		OPTS+=" -no-glib"
 		OPTS+=" -no-kms"
-		#OPTS+=" -no-openssl"
+#		OPTS+=" -no-openssl"
 
 		# OPTIONAL MODULES AND COMPONENTS
 		OPTS+=" -skip qtandroidextras"
@@ -435,8 +435,8 @@ function do_common_deps(){
 		OPTS+=" -skip qtenginio"
 #		OPTS+=" -skip qtgraphicaleffects"
 		OPTS+=" -skip qtmacextras"
-		OPTS+=" -skip qtquickcontrols"
-		OPTS+=" -skip qtquickcontrols2"
+#		OPTS+=" -skip qtquickcontrols"
+#		OPTS+=" -skip qtquickcontrols2"
 		OPTS+=" -skip qtwayland"
 		OPTS+=" -skip qtwebchannel"
 		OPTS+=" -skip qtwebengine"
