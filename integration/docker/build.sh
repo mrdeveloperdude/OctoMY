@@ -170,18 +170,18 @@ EOF
 	then
 		cat << EOF >> "$doc"
 
-RUN >&2 echo "\n\n---- FIX SHELL ------------------------\n"
+RUN >&2 printf "\n\n---- FIX SHELL ------------------------\n"
 RUN ["/bin/bash", "-c", "unlink /bin/sh"]
 RUN ["/bin/bash", "-c", "ln -s /bin/bash /bin/sh"]
 RUN echo "CORES AVAILABLE: \$(nproc)"
 
-RUN >&2 echo "\n\n---- ADD APT SRC ----------------------\n" && \
+RUN >&2 printf "\n\n---- ADD APT SRC ----------------------\n" && \
 	sed "s/^deb/deb-src/g" ${sources} > ${temp_sources} && \
 	cat ${temp_sources} >> ${sources}
 
 # From https://wiki.debian.org/ReduceDebian
 ARG DEBIAN_FRONTEND=noninteractive
-RUN >&2 echo "\n\n---- INITIALIZE APT -------------------\n" && \
+RUN >&2 printf "\n\n---- INITIALIZE APT -------------------\n" && \
 	echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ;' >> /etc/apt/apt.conf && \
 	export DEBIAN_FRONTEND=noninteractive && \
 	$acmd update $aptgetops && \
@@ -208,17 +208,17 @@ RUN	>&2 echo "\n\n---- FIX SSL CERTIFICATES -------------\n" && \
 
 WORKDIR /src
 
-RUN >&2 echo "\n\n---- CLONE QT -------------------------\n" && \
+RUN >&2 printf "\n\n---- CLONE QT -------------------------\n" && \
 	git clone https://github.com/qt/qt5.git -j\$(nproc) --recurse-submodules -b $qt_version /src/qt_$qt_version
 
 RUN	>&2 echo "\n\n---- CLONE OCTOMY ---------------------\n" && \
 	git clone https://github.com/mrdeveloperdude/OctoMY.git -j\$(nproc) --recurse-submodules -b "$checkout" /src/octomy_$checkout
 
-RUN >&2 echo "\n\n---- GET QT DEPENDENCIES --------------\n" && \
+RUN >&2 printf "\n\n---- GET QT DEPENDENCIES --------------\n" && \
 	apt-get build-dep -y --allow-unauthenticated qt5-default && \
 	apt-get install -y --allow-unauthenticated $BDEPS $DEPS
 
-RUN >&2 echo "\n\n---- CLEAN APT ------------------------\n" && \
+RUN >&2 printf "\n\n---- CLEAN APT ------------------------\n" && \
 	apt-get autoremove -y && apt-get clean -y && \
 	rm -rf /var/lib/apt/lists/* /usr/share/man
 
@@ -239,24 +239,24 @@ EOF
 
 WORKDIR /qt_$qt_version
 
-RUN >&2 echo "\n\n---- HELP QT --------------------------\n" && \
+RUN >&2 printf "\n\n---- HELP QT --------------------------\n" && \
 	/src/qt_$qt_version/configure --help
 
-RUN >&2 echo "\n\n---- CONFIGURE QT ---------------------\n" && \
+RUN >&2 printf "\n\n---- CONFIGURE QT ---------------------\n" && \
 	/src/qt_$qt_version/configure $OPTS
 
-RUN >&2 echo "\n\n---- INSPECT CONFIGURATION OF QT ------\n" && \
+RUN >&2 printf "\n\n---- INSPECT CONFIGURATION OF QT ------\n" && \
 	ls -halt
 
-RUN >&2 echo "\n\n---- BUILD QT -------------------------\n" && \
+RUN >&2 printf "\n\n---- BUILD QT -------------------------\n" && \
 	MAKEFLAGS=-j\$(nproc) make -k -j \$(nproc) >  qt_build_log.txt ; \
 	MAKEFLAGS=-j\$(nproc) make -k -j \$(nproc) >> qt_build_log.txt 
 
-RUN >&2 echo "\n\n---- INSTALL QT -----------------------\n" && \
+RUN >&2 printf "\n\n---- INSTALL QT -----------------------\n" && \
 	mkdir -p "$qt_install_dir"; \
 	MAKEFLAGS=-j\$(nproc) make -k -j \$(nproc) install
 
-RUN >&2 echo "\n\n---- SHOW QMAKE VERSION ---------------\n" && \
+RUN >&2 printf "\n\n---- SHOW QMAKE VERSION ---------------\n" && \
 	"$qt_qmake" --version
 
 WORKDIR /src/octomy_$checkout
@@ -315,41 +315,7 @@ function do_ubuntu_deps(){
 
 function do_common_deps(){
 	
-	echo	-confirm-license \
-			-dbus-runtime \
-			-no-compile-examples \
-			-no-cups \
-			-no-gif \
-			-nomake examples \
-			-nomake tests \
-			-nomake tools \
-			-no-qml-debug \
-			-no-sql-db2 \
-			-no-sql-ibase \
-			-no-sql-mysql \
-			-no-sql-oci \
-			-no-sql-odbc \
-			-no-sql-psql \
-			-no-sql-sqlite2 \
-			-no-sql-tds \
-			-no-warnings-are-errors \
-			-no-xcb -prefix /usr/local/Qt \
-			-opensource \
-			-skip qtandroidextras \
-			-skip qtcanvas3d \
-			-skip qtdeclarative \
-			-skip qtenginio \
-			-skip qtmacextras \
-			-skip qtquickcontrols \
-			-skip qtquickcontrols2 \
-			-skip qtwebchannel \
-			-skip qtwebengine \
-			-skip qtwebsockets \
-			-skip qtwebview \
-			-skip qtwinextras \
-			-skip qtx11extras \
-			-verbose  >> /dev/null
-
+	echo	
 		# INSTALL LOCATION
 		OPTS+=" -prefix \"$qt_install_dir\""
 		# VERBOSITY
@@ -421,7 +387,7 @@ function do_common_deps(){
 		OPTS+=" -no-exceptions"
 #		OPTS+=" -no-nis"
 		OPTS+=" -no-pulseaudio"
-#		OPTS+=" -no-qml-debug"
+		OPTS+=" -no-qml-debug"
 #		OPTS+=" -no-qpa-platform-guard"
 		OPTS+=" -no-sql-db2" 
 		OPTS+=" -no-sql-ibase" 
@@ -451,7 +417,7 @@ function do_common_deps(){
 		#OPTS+=" -no-sql-sqlite"  # we want sqlite3 support
 		OPTS+=" -no-sql-sqlite2" 
 		OPTS+=" -no-sql-tds"
-		OPTS+=" -no-gif"
+		
 		OPTS+=" -no-cups" 
 		OPTS+=" -no-iconv"
 		OPTS+=" -no-dbus"
@@ -477,11 +443,13 @@ function do_common_deps(){
 		OPTS+=" -skip qtwebchannel"
 		OPTS+=" -skip qtwebengine"
 		OPTS+=" -skip qtwebsockets"
+		OPTS+=" -skip qtwebkit"
+		OPTS+=" -skip qtwebkit-examples"
 		OPTS+=" -skip qtwebview"
 		OPTS+=" -skip qtwayland"
 		OPTS+=" -skip qtwinextras"
 #		OPTS+=" -skip qtx11extras"
- 
+
 }
 
 function do_debian_deps(){
