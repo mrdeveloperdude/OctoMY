@@ -372,7 +372,7 @@ function do_common_deps(){
 		OPTS+=" -nomake examples"
 		OPTS+=" -nomake tests"
 		OPTS+=" -nomake tools"
-		OPTS+=" -nomake demos"
+#		OPTS+=" -nomake demos" # OLD
 
 
 		# OPTIONAL FEATURES
