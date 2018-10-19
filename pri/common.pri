@@ -63,7 +63,7 @@ QT += xml
 QT += svg
 QT += sql
 QT += testlib
-QT += quick
+#QT += quick
 QT += printsupport
 QT += openglextensions
 
