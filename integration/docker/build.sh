@@ -280,8 +280,8 @@ WORKDIR /OctoMY
 RUN	>&2 echo "\n\n---- BUILD OCTOMY ---------------------\n" && \
 	cp -a "$src_overrides" "$dst_overrides" && \
 	cat "$dst_overrides" && \
-	MAKEFLAGS=-j\$(nproc) "$qt_qmake" /src/octomy_$checkout/OctoMY.pro && \
-	MAKEFLAGS=-j\$(nproc) make -j \$(nproc)
+	MAKEFLAGS=-j\$(nproc) "$qt_qmake" /src/octomy_$checkout/OctoMY.pro; exit 0 \
+
 
 RUN	>&2 echo "\n\n---- INSPECT ARTEFACTS ----------------\n" && \
 	find
@@ -322,6 +322,7 @@ function do_common_deps(){
 		OPTS+=" -silent"
 #		OPTS+=" -verbose"
 
+## https://wiki.qt.io/Qt5_platform_configurations
 
 		# LICENCE
 		OPTS+=" -opensource"
@@ -366,6 +367,7 @@ function do_common_deps(){
 		OPTS+=" -use-gold-linker"
 		OPTS+=" -optimized-qmake"
 		OPTS+=" -reduce-relocations"
+		OPTS+=" -reduce-exports"
 		
 		# OPTIONAL PARTS
 		OPTS+=" -make libs"
