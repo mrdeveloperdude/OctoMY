@@ -274,15 +274,18 @@ RUN	>&2 printf "\n\n---- BUILD QMAKE TEST -----------------\n" && \
 	MAKEFLAGS=-j\$(nproc) "$qt_qmake" /src/octomy_$checkout/integration/docker/qmake_test/QmakeTest.pro && \
 	MAKEFLAGS=-j\$(nproc) make -j \$(nproc); \
 
+RUN	>&2 printf "\n\n---- INSPECT QMAKE TEST ARTEFACTS -----\n" && \
+	find
+
 WORKDIR /OctoMY
 
 RUN	>&2 printf "\n\n---- BUILD OCTOMY ---------------------\n" && \
 	cp -a "$src_overrides" "$dst_overrides" && \
 	cat "$dst_overrides" && \
-	MAKEFLAGS=-j\$(nproc) "$qt_qmake" /src/octomy_$checkout/OctoMY.pro; exit 0 \
+	MAKEFLAGS=-j\$(nproc) "$qt_qmake" /src/octomy_$checkout/OctoMY.pro; \
+	MAKEFLAGS=-j\$(nproc) make -j \$(nproc); \
 
-
-RUN	>&2 printf "\n\n---- INSPECT ARTEFACTS ----------------\n" && \
+RUN	>&2 printf "\n\n---- INSPECT OCTOMY ARTEFACTS ---------\n" && \
 	find
 	
 
