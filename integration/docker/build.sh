@@ -387,7 +387,7 @@ function do_common_deps(){
 #		OPTS+=" -no-exceptions" #DOES NOT WORK? INVENSTIGATE
 #		OPTS+=" -no-nis"
 		OPTS+=" -no-pulseaudio"
-		OPTS+=" -no-qml-debug"
+#		OPTS+=" -no-qml-debug" #Does not work? invenstigate
 #		OPTS+=" -no-qpa-platform-guard"
 		OPTS+=" -no-sql-db2" 
 		OPTS+=" -no-sql-ibase" 
