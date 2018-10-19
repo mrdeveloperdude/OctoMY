@@ -122,9 +122,8 @@ function build_with_docker(){
 	
 	if [ "debian" == "$host_os" ]
 	then
-		
+		do_common_deps		
 		do_debian_deps
-		do_common_opts
 
 	elif [ "ubuntu" == "$host_os" ]
 	then
