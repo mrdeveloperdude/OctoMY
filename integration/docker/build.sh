@@ -443,8 +443,8 @@ function do_common_deps(){
 		OPTS+=" -skip qtwebchannel"
 		OPTS+=" -skip qtwebengine"
 		OPTS+=" -skip qtwebsockets"
-		OPTS+=" -skip qtwebkit"
-		OPTS+=" -skip qtwebkit-examples"
+#		OPTS+=" -skip qtwebkit" # Old
+#		OPTS+=" -skip qtwebkit-examples"
 		OPTS+=" -skip qtwebview"
 		OPTS+=" -skip qtwayland"
 		OPTS+=" -skip qtwinextras"
