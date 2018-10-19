@@ -315,7 +315,6 @@ function do_ubuntu_deps(){
 
 function do_common_deps(){
 	
-	echo	
 		# INSTALL LOCATION
 		OPTS+=" -prefix \"$qt_install_dir\""
 		# VERBOSITY
