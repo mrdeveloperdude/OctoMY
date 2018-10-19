@@ -977,6 +977,7 @@ function wait_for_droplet(){
 	done
 }
 
+
 function dioc_provision(){
 	local region="$1"
 	local image="$2"
