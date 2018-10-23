@@ -25,6 +25,12 @@ qt_build_log="qt-${qt_version}-build-log.txt"
 qt_install_dir="/qt_$qt_version/install"
 qt_qmake="$qt_install_dir/bin/qmake"
 
+apt_initial="apt_initial.txt"
+apt_early="apt_early.txt"
+apt_early_new="apt_early_new.txt"
+apt_qt="apt_qt.txt"
+apt_qt_new="apt_qt_new.txt"
+
 
 EDEPS=""
 BDEPS=""
@@ -61,76 +67,109 @@ function build_with_dockers(){
 	#
 	#   image naming convention:
 	#
-	#   <host_os>/<host_os_version>/<target_os>/<target_os_version>/<qt_version>/<qt_linkade>/<checkout>
+	#   <target_os>/<target_os_version>/<target_os_arch>/<qt_version>/<qt_linkade>/<checkout>
 	#
 	#   Where:
 	#
-	#   + <host_os> - The OS that hosts the build. Example: ubuntu. NOTE: the host OS is not necessarily the OS where the artifacts will run.
-	#   + <host_os_arch> - The hardware architecture of the OS that hosts the build. Example: amd64.
-	#   + <host_os_version> - The version of the host OS. Example: 18.04. 
 	#   + <target_os> - The OS for which the artifacts are supposed to be built and run. Example: android
-	#   + <target_os_arch> - The hardware architecture for which the artifacts are supposed to be built and run. Example: armv7.
 	#   + <target_os_version> - The version of the target OS. Example: 28 (Android 9, API level 28)
+	#   + <target_os_arch> - The hardware architecture for which the artifacts are supposed to be built and run. Example: armv7.
 	#   + <qt_version> - The version of Qt we want to use. NOTE: Qt will be built from source.
 	#   + <qt_linkage> - One of "shared", "os", and "static" which determines how to link Qt. NOTE: os means simply use the prebuilt Qt available in OS (not always possible).
 	#   + <checkout/branch> - The git checkout hash or branch name that we want to build
 	#
+	# NOTE: The host os/ver/arch is inferred from the target in question, and internally will be referred to as follows:
+	#
+	#   + <host_os> - The OS that hosts the build. Example: ubuntu. NOTE: the host OS is not necessarily the OS where the artifacts will run.
+	#   + <host_os_version> - The version of the host OS. Example: 18.04. 
+	#   + <host_os_arch> - The hardware architecture of the OS that hosts the build. Example: amd64.
+
 
 	checkout="master"
 	linkage="static"
 
-	
-	build_with_docker "debian-stretch-amd64-debian-stretch-amd64-$qt_version-$linkage-$checkout"
-#	build_with_docker "debian-stretch-amd64-debian-stretch-x86-$qt_version-$linkage-$checkout"
-#	build_with_docker "debian-stretch-amd64-debian-jessie-amd64-$qt_version-$linkage-$checkout"
-#	build_with_docker "debian-stretch-amd64-debian-jessie-x86-$qt_version-$linkage-$checkout"#
-#	build_with_docker "debian-stretch-amd64-ubuntu-16.04-amd64-$qt_version-$linkage-$checkout"
-#	build_with_docker "debian-stretch-amd64-ubuntu-16.04-x86-$qt_version-$linkage-$checkout"
-#	build_with_docker "debian-stretch-amd64-ubuntu-18.04-amd64-$qt_version-$linkage-$checkout"
-#	build_with_docker "debian-stretch-amd64-ubuntu-18.04-x86-$qt_version-$linkage-$checkout"
-#	build_with_docker "debian-stretch-amd64-android-4-arm7-$qt_version-$linkage-$checkout"
-#	build_with_docker "debian-stretch-amd64-android-5-arm7-$qt_version-$linkage-$checkout"
-#	build_with_docker "debian-stretch-amd64-android-6-arm7-$qt_version-$linkage-$checkout"
-#	build_with_docker "debian-stretch-amd64-android-7-arm7-$qt_version-$linkage-$checkout"
-#	build_with_docker "debian-stretch-amd64-android-8-arm7-$qt_version-$linkage-$checkout"
-#	build_with_docker "debian-stretch-amd64-android-9-arm7-$qt_version-$linkage-$checkout"
-#	build_with_docker "windows-10-amd64-windows-10-amd64-$qt_version-$linkage-$checkout"
-#	build_with_docker "windows-10-amd64-windows-10-x86-$qt_version-$linkage-$checkout"
-#	build_with_docker "osx-10.5-amd64-osx-10.5-amd64-$qt_version-$linkage-$checkout"
-#	build_with_docker "osx-10.5-amd64-osx-10.5-x86-$qt_version-$linkage-$checkout"
-#	build_with_docker "osx-10.5-amd64-ios-10-arm7-$qt_version-$linkage-$checkout"
-#	build_with_docker "osx-10.5-amd64-ios-11-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-stretch-amd64-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-stretch-x86-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-jessie-amd64-$qt_version-$linkage-$checkout"
+#	build_with_docker "debian-jessie-x86-$qt_version-$linkage-$checkout"#
+#	build_with_docker "ubuntu-16.04-amd64-$qt_version-$linkage-$checkout"
+#	build_with_docker "ubuntu-16.04-x86-$qt_version-$linkage-$checkout"
+	build_with_docker "ubuntu-18.04-amd64-$qt_version-$linkage-$checkout"
+#	build_with_docker "ubuntu-18.04-x86-$qt_version-$linkage-$checkout"
+#	build_with_docker "android-4-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "android-5-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "android-6-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "android-7-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "android-8-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "android-9-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "windows-10-amd64-$qt_version-$linkage-$checkout"
+#	build_with_docker "windows-10-x86-$qt_version-$linkage-$checkout"
+#	build_with_docker "osx-10.5-amd64-$qt_version-$linkage-$checkout"
+#	build_with_docker "osx-10.5-x86-$qt_version-$linkage-$checkout"
+#	build_with_docker "ios-10-arm7-$qt_version-$linkage-$checkout"
+#	build_with_docker "ios-11-arm7-$qt_version-$linkage-$checkout"
 	
 }
 
+function infer_host_os(){
+	local target_os="$1"
+	local target_ver="$2"
+	local target_arch="$3"
+	local same=false
+	if [ "debian" == "$target_os" ] || [ "ubuntu" == "$target_os" ]
+	then
+		# Use actual target OS for building
+		echo "$target_os" "$target_ver" "$target_arch"
+		return
+	elif [ "android" == "$target_os" ]
+	then
+		# Our trusty old horse
+		echo "debian" "stretch" "amd64"
+		return
+	elif [ "windows" == "$target_os" ]
+	then
+		echo "microsoft/windowsservercore" "10.0.14393.1715" "$target_arch"
+		return
+	elif [ "osx" == "$target_os" ] || [ "ios" == "$target_os" ]
+	then
+		# This is just to host qemu for running osx
+		# https://github.com/Cleafy/sxkdvm/blob/master/Dockerfile
+		echo "voidlinux/voidlinux" "latest" "amd64"
+		return
+	fi
+	
+	# Unable to infer
+	echo "Unable" "to" "infer"
+}
 
 function build_with_docker(){
 	local spec="$1"
-	IFS='-' read -r host_os host_os_version host_os_arch target_os target_os_version target_os_arch qt_version qt_linkage checkout <<<"$spec"
-	local dir="builds/$host_os/$host_os_version/$host_os_arch/$target_os/$target_os_version/$target_os_arch/$qt_version/$qt_linkage/$checkout"
+	IFS='-' read -r target_os target_os_version target_os_arch qt_version qt_linkage checkout <<<"$spec"	
+	local dir="builds/$target_os/$target_os_version/$target_os_arch/$qt_version/$qt_linkage/$checkout"
 	local doc="$pw/$dir/Dockerfile"
 	local src_overrides="/src/octomy_$checkout/pri/overrides/release.pri"
 	local dst_overrides="/src/octomy_$checkout/pri/local_overrides.pri"
 	local octomy_git_ver="octomy_version.txt"
-	
-	mkdir -p "$dir"
-	pushd "$dir"
-	
+	local host_os="Not"
+	local host_os="set"
+	local host_os="yet"
+	read host_os host_ver host_arch < <(infer_host_os "$target_os" "$target_ver" "$target_arch")	
 	local sources="/etc/apt/sources.list"
 	local temp_sources="/etc/apt/sources.list_tmp"
 
-	
+	mkdir -p "$dir"
+	pushd "$dir"
+
 	if [ "debian" == "$host_os" ]
 	then
-		do_common_deps		
+		do_common_opts
 		do_debian_deps
 
 	elif [ "ubuntu" == "$host_os" ]
 	then
+		do_common_opts
 		do_ubuntu_deps
-		echo "Host OS \'$host_os\' not supported yet"
-		exit 1
-		
+
 	elif [ "windows" == "$host_os" ]
 	then
 		echo "Host OS \'$host_os\' not supported yet"
@@ -138,17 +177,21 @@ function build_with_docker(){
 	else
 		echo "Host OS \'$host_os\' not recognized, maybe check your spelling?"
 		exit 1
-
 	fi
 
 	git describe --tags --long --dirty --always > "$octomy_git_ver"
-	echo "OCTOMY GIT VERSION #############################"
-	pwd
-	ls -halt "$octomy_git_ver"
-	cat "$octomy_git_ver"
-	echo "OCTOMY GIT VERSION #############################"
-
 	
+	echo "###################################################"
+	echo "  HOST-OS: $host_os-$host_ver[$host_arch]"
+	echo "TARGET-OS: $target_os-$target_ver[$target_arch]"
+	echo "      PWD: $(pwd)"
+	echo "LS GITVER: $(ls -halt "$octomy_git_ver")"
+	echo "   GITVER: $(cat "$octomy_git_ver")"
+	echo "###################################################"
+	
+#	clean_deps $DEPS
+
+
 	cat << EOF > "$doc"
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
@@ -159,13 +202,13 @@ function build_with_docker(){
 #
 # Spec: $spec
 #
-FROM  $host_os:$host_os_version
+FROM  $target_os:$target_os_version
 LABEL maintainer="$maintainer"
 
 EOF
 
 
-	if [ "debian" == "$host_os" ]
+	if [ "debian" == "$target_os" ]
 	then
 		cat << EOF >> "$doc"
 
@@ -191,15 +234,15 @@ RUN >&2 printf "\n\n---- INITIALIZE APT -------------------\n" && \
 WORKDIR /OctoMY
 
 RUN	>&2 printf "\n\n---- RECORD INITIAL DEPENDENCIES ------\n" && \	
-	apt list --installed | sort | uniq -u > "/OctoMY/apt_initial.txt"
+	apt list --installed | sort | uniq -u > "/OctoMY/$apt_initial"
 
 RUN	>&2 printf "\n\n---- INSTALL EARLY DEPENDENCIES -------\n" && \
 	apt-get install -y --allow-unauthenticated $EDEPS
 
 RUN	>&2 printf "\n\n---- RECORD EARLY DEPENDENCIES --------\n" && \	
 	apt list --installed | sort | uniq -u > "/OctoMY/apt_early.txt" && \
-	comm -2 -3 "/OctoMY/apt_early.txt" "/OctoMY/apt_initial.txt" > "/OctoMY/apt_early_new.txt" && \
-	cat "/OctoMY/apt_early_new.txt"
+	comm -2 -3 "/OctoMY/$apt_early" "/OctoMY/$apt_initial" > "/OctoMY/$apt_early_new" && \
+
 
 RUN	>&2 printf "\n\n---- FIX SSL CERTIFICATES -------------\n" && \
 	rm -f /usr/local/share/ca-certificates/certificate.crt; \
@@ -223,13 +266,12 @@ RUN >&2 printf "\n\n---- CLEAN APT ------------------------\n" && \
 
 
 RUN	>&2 printf "\n\n---- RECORD QT DEPENDENCIES -----------\n" && \	
-	apt list --installed | sort | uniq -u > "/OctoMY/apt_qt.txt" && \
-	comm -2 -3 "/OctoMY/apt_qt.txt" "/OctoMY/apt_early.txt" > "/OctoMY/apt_qt_new.txt" && \
-	cat "/OctoMY/apt_qt_new.txt"
+	apt list --installed | sort | uniq -u > "/OctoMY/$apt_qt" && \
+	comm -2 -3 "/OctoMY/$apt_qt" "/OctoMY/$apt_early" > "/OctoMY/$apt_qt_new" && \
 
 EOF
 	else
-		echo "$host_os not supported at this time."
+		echo "$target_os not supported at this time."
 		exit 1
 	fi
 
@@ -350,7 +392,7 @@ function do_ubuntu_deps(){
 }
 
 
-function do_common_deps(){
+function do_common_opts(){
 	
 		# INSTALL LOCATION
 		OPTS+=" -prefix \"$qt_install_dir\""
@@ -486,147 +528,440 @@ function do_common_deps(){
 }
 
 function do_debian_deps(){
+	local os_ver="$1"
+	local os_arch="$2"
 
+# Early dependencies
+	EDEPS+=" gnupg2"
+#	EDEPS+=" apt-utils"
+	EDEPS+=" wget"
+	EDEPS+=" ca-certificates"
+	EDEPS+=" apt-transport-https"
+	EDEPS+=" curl"
+	EDEPS+=" software-properties-common"
+	EDEPS+=" git"
+
+	# Build dependencies
+	BDEPS+=" perl"
+	BDEPS+=" python"
+	BDEPS+=" build-essential"
+	BDEPS+=" clang"
 	
-		EDEPS+=" gnupg2"
-#		EDEPS+=" apt-utils"
-		EDEPS+=" wget"
-		EDEPS+=" ca-certificates"
-		EDEPS+=" apt-transport-https"
-		EDEPS+=" curl"
-		EDEPS+=" software-properties-common"
-		EDEPS+=" git"
-
-		BDEPS+=" perl"
-		BDEPS+=" python"
-		BDEPS+=" build-essential"
-		BDEPS+=" clang"
-		
-
-		# Window system
-		DEPS+=" ^libxcb.*-dev"
-		DEPS+=" libxcb-dri3-dev"
-		DEPS+=" libxcb-present-dev"
-		DEPS+=" libxcb-sync-dev"
-		DEPS+=" libx11-xcb-dev"
-		DEPS+=" libglu1-mesa-dev"
-		DEPS+=" libxrender-dev"
-		DEPS+=" libxi-dev"
-#		DEPS+=" libX11-dev"
-#		DEPS+=" libX11-xcb-dev"
-#		DEPS+=" libXau-dev"
-#		DEPS+=" libXcomposite-dev"
-#		DEPS+=" libXcursor-dev"
-#		DEPS+=" libXdamage-dev"
-#		DEPS+=" libXdmcp-dev"
-#		DEPS+=" libXext-dev"
-#		DEPS+=" libXi-dev"
-#		DEPS+=" libXrender-dev"
-#		DEPS+=" libXtst-dev"
-#		DEPS+=" libXxf86vm-dev"
-
-
-
-		# GLX
-		DEPS+=" libgl1-mesa-dev"
-#		DEPS+=" glx-alternative-mesa"
-		DEPS+=" libgl1-mesa-dev"
-		DEPS+=" libgl1-mesa-dev"
-		DEPS+=" libgles2-mesa-dev"
-		DEPS+=" mesa-common-dev"
-		DEPS+=" libgl1-mesa-dev"
-		DEPS+=" libegl1-mesa-dev"
-
-		
-		DEPS+=" libasyncns-dev"
-		DEPS+=" libc-dev"
-		DEPS+=" libdbus-1-dev"
-		DEPS+=" libdrm-dev"
-		DEPS+=" libexpat-dev"
-		
-		
+	
 		DEPS+=" libclang-dev"
+		DEPS+=" libc-dev"
+
+	# Window system
+	DEPS+=" ^libxcb.*-dev"
+	DEPS+=" libxcb-dri3-dev"
+	DEPS+=" libxcb-present-dev"
+	DEPS+=" libxcb-sync-dev"
+	DEPS+=" libx11-xcb-dev"
+	DEPS+=" libglu1-mesa-dev"
+	DEPS+=" libxrender-dev"
+	DEPS+=" libxi-dev"
+
+	# GLX
+	DEPS+=" libgl1-mesa-dev"
+#	DEPS+=" glx-alternative-mesa"
+	DEPS+=" libgl1-mesa-dev"
+	DEPS+=" libgl1-mesa-dev"
+	DEPS+=" libgles2-mesa-dev"
+	DEPS+=" mesa-common-dev"
+	DEPS+=" libgl1-mesa-dev"
+	DEPS+=" libegl1-mesa-dev"
+	DEPS+=" libdrm-dev"
+	DEPS+=" libgbm-dev"
+	
+	
+	# Network
+	DEPS+=" libasyncns-dev"
+	
+	# Bus
+	DEPS+=" libdbus-1-dev"
+	
+	
+	# Xml/ Json
+	DEPS+=" libexpat-dev"
+	DEPS+=" libjson-c-dev"
+
+	# Security
+	DEPS+=" libssl-dev"
+	DEPS+=" gnutls-dev"
+	DEPS+=" libnss3-dev"
+	
+	# Database /sqlite
+	DEPS+=" libsqlite-dev"
+	DEPS+=" libsqlite3-dev"
+
+	# Font
+	DEPS+=" libfontconfig-dev"
+	
+	# Framework
+	DEPS+=" libnspr4-dev"
+
+	# Compression	
+	DEPS+=" liblzma-dev"
+	
 		
-		DEPS+=" libsqlite-dev"
-		DEPS+=" libsqlite3-dev"
-		DEPS+=" libssl-dev"
-		DEPS+=" gnutls-dev"
+	# For qtmultimedia
+	DEPS+=" libasound2-dev"
+	DEPS+=" libffi-dev"
+#	DEPS+=" libFLAC-dev"
+	DEPS+=" libflac-dev"
+	DEPS+=" libgstreamer1.0-dev"
+	DEPS+=" libgstreamer-plugins-base1.0-dev"
+	DEPS+=" libogg-dev"
+	DEPS+=" libpng-dev"
+	DEPS+=" libpulse-dev"
+#	DEPS+=" libSM-dev"
+	DEPS+=" libsndfile-dev"
+	DEPS+=" libvorbis-dev"
+	DEPS+=" libxml2-dev"
+	
+	#NOTE: one of these might provide "gst/interfaces/photography.h
+	DEPS+=" libgstreamer-plugins-bad1.0-dev"	# GStreamer development files for libraries from the "ba
+	DEPS+=" libgstreamer-plugins-base1.0-dev"	# GStreamer development files for libraries from the "ba
+#	DEPS+=" libgstreamer-plugins-good1.0-dev"	# GStreamer development files for libraries from the "go (UBUNTU)
+	
+	DEPS+=" libgstreamer1.0-dev"
+#	DEPS+=" libgstbuzztard-dev"					# Buzztard - Support plugins for GStreamer (UBUNTU)
+#	DEPS+=" libgstreamer1.0-vaapi-dev"			# VA-API stuff for Gstreamer (interface for hardware acceleration of media encoding/decoding)
+
+	DEPS+=" libxshmfence-dev"
+	DEPS+=" libxslt-dev"
+	DEPS+=" libz-dev"
+	
+	# Module spesific for qt3d
+	DEPS+=" libassimp-dev"						# Asset management (loading/saving of 3D content) library
+	
+	# Module spesific for qtconnectivity (bluetooth++)
+#	DEPS+=" libbluez-dev"						# Bluetooth support (UBUNTU)
+	DEPS+=" libbluetooth-dev"						# Bluetooth support (DEBIAN)
+	
+	# Module spesific for qtimageformats 
+#	DEPS+=" libjasper-dev"						# Jpeg2000 image support
+	DEPS+=" libmng-dev"							# mng image support
+	DEPS+=" libtiff-dev"						# tiff image support
+	DEPS+=" libwebp-dev"						# webp image support
+	DEPS+=" libwebp-dev"						# webp image support
+
+	# Module spesific for qtlocation
+#	DEPS+=" libgypsy-dev"						# libgypsy GPS multiplexing daemon (UBUNTU)
+	DEPS+=" libgps-dev"						# libgypsy GPS multiplexing daemon (DEBIAN)
+
+	# Module spesific for qtmultimedia
+	DEPS+=" libopenal-dev"						# OpenAL portable hardware accelerated autio library
+	DEPS+=" libasound2-dev"						# ALSA2 low level sound library for Linux 
 
 
-		DEPS+=" libfontconfig-dev"
-		DEPS+=" libgbm-dev"
-#		DEPS+=" libICE-dev"
-		DEPS+=" libjson-c-dev"
-		DEPS+=" liblzma-dev"
-		DEPS+=" libnspr4-dev"
-		DEPS+=" libnss3-dev"
-				
-		# For qtmultimedia
-		DEPS+=" libasound2-dev"
-		DEPS+=" libgstreamer1.0-dev"
-		DEPS+=" libgstreamer-plugins-base1.0-dev"
-		DEPS+=" libffi-dev"
-#		DEPS+=" libFLAC-dev"
-		DEPS+=" libflac-dev"
-		DEPS+=" libogg-dev"
-		DEPS+=" libpng-dev"
-		DEPS+=" libpulse-dev"
-#		DEPS+=" libSM-dev"
-		DEPS+=" libsndfile-dev"
-		DEPS+=" libvorbis-dev"
-		DEPS+=" libxml2-dev"
-		
-		#NOTE: one of these might provide "gst/interfaces/photography.h
-		DEPS+=" libgstreamer-plugins-bad1.0-dev"	# GStreamer development files for libraries from the "ba
-		DEPS+=" libgstreamer-plugins-base1.0-dev"	# GStreamer development files for libraries from the "ba
-#		DEPS+=" libgstreamer-plugins-good1.0-dev"	# GStreamer development files for libraries from the "go (UBUNTU)
-		
-		DEPS+=" libgstreamer1.0-dev"
-#		DEPS+=" libgstbuzztard-dev"					# Buzztard - Support plugins for GStreamer (UBUNTU)
-#		DEPS+=" libgstreamer1.0-vaapi-dev"			# VA-API stuff for Gstreamer (interface for hardware acceleration of media encoding/decoding)
-
-		DEPS+=" libxshmfence-dev"
-		DEPS+=" libxslt-dev"
-		DEPS+=" libz-dev"
-		
-		# Module spesific for qt3d
-		DEPS+=" libassimp-dev"						# Asset management (loading/saving of 3D content) library
-		
-		# Module spesific for qtconnectivity (bluetooth++)
-#		DEPS+=" libbluez-dev"						# Bluetooth support (UBUNTU)
-		DEPS+=" libbluetooth-dev"						# Bluetooth support (DEBIAN)
-		
-		# Module spesific for qtimageformats 
-#		DEPS+=" libjasper-dev"						# Jpeg2000 image support
-		DEPS+=" libmng-dev"							# mng image support
-		DEPS+=" libtiff-dev"						# tiff image support
-		DEPS+=" libwebp-dev"						# webp image support
-		DEPS+=" libwebp-dev"						# webp image support
-
-		# Module spesific for qtlocation
-#		DEPS+=" libgypsy-dev"						# libgypsy GPS multiplexing daemon (UBUNTU)
-		DEPS+=" libgps-dev"						# libgypsy GPS multiplexing daemon (DEBIAN)
-
-		# Module spesific for qtmultimedia
-		DEPS+=" libopenal-dev"						# OpenAL portable hardware accelerated autio library
-		DEPS+=" libasound2-dev"						# ALSA2 low level sound library for Linux 
-
-
-		# Module spesific for qtwayland
-		#DEPS+=" libwayland-dev"						# Wayland compositor infrastructure - development files
-		#DEPS+=" libxkbcommon-dev"					# Library interface to the XKB compiler
-		#DEPS+=" libxcomposite-dev"					# X11 Composite extension library (development headers)
-		
-		# Module spesific for qtlinuxfb
-		#DEPS+=" libdirectfb-dev"					# direct framebuffer stuff 
-		
-		# Module spesific for qtwebengine
-		#DEPS+=" libcap-dev" # Development and header files for libcap
-		#DEPS+=" libsnappy-dev" # Fast compression/decompression library
-		#DEPS+=" libsrtp-dev" # Secure RTP (SRTP) and UST Reference Implementations
-
+	# Module spesific for qtwayland
+	#DEPS+=" libwayland-dev"						# Wayland compositor infrastructure - development files
+	#DEPS+=" libxkbcommon-dev"					# Library interface to the XKB compiler
+	#DEPS+=" libxcomposite-dev"					# X11 Composite extension library (development headers)
+	
+	# Module spesific for qtlinuxfb
+	#DEPS+=" libdirectfb-dev"					# direct framebuffer stuff 
+	
+	# Module spesific for qtwebengine
+	#DEPS+=" libcap-dev" # Development and header files for libcap
+	#DEPS+=" libsnappy-dev" # Fast compression/decompression library
+	#DEPS+=" libsrtp-dev" # Secure RTP (SRTP) and UST Reference Implementations
 
 }
+
+function comment_for_dep(){
+	local dep="$1"
+	local dep_desc_dir=".dep_desc"
+	local dep_desc_file="$dep_desc_dir/$dep"
+	local dep_desc_html_file="$dep_desc_dir/${dep}.html"
+	local ret=""
+	local pdesc_regex='id="pdesc"\s*>\s*<\s*h2\s*>\s*([^<]*)\s*</h2>' #<h2><h2>\s*\(.*\)\s*<\/h2>'
+	
+	
+	
+
+#  <div id="pdeps"><h2>Packages providing libc-dev</h2><dl>
+#    <dt><a href="/stretch/libc6-dev">libc6-dev</a></dt>
+#    <dd lang="en">GNU C Library: Development Libraries and Header Files</dd>
+#  </dl></div>
+  
+  
+	local pdeps_regex='id="pdeps"\s*>\s*<h2>[^<]*<\/h2>\s*<dl>\s*<dt>\s*<a\s*href="[^"]*">\s*([^<]*)\s*<\/a>\s*<\/dt>\s*<dd\s*lang="en"\s*>\s*([^<]*)\s*<\/dd\s*'
+	if [ -f "$dep_desc_file" ]
+	then
+		ret=$(cat "$dep_desc_file")
+	else
+		mkdir -p "$dep_desc_dir"
+		if [ -d "$dep_desc_dir" ]
+		then
+			local html=""
+			if [ -f "$dep_desc_html_file" ]
+			then
+				html=$(cat "$dep_desc_html_file")
+			else
+				html=$(wget -qO- "https://packages.debian.org/stretch/$dep")
+				echo "$html" > "$dep_desc_html_file"
+			fi
+			oneline=$(echo "$html" | tr -d '\r\n')
+			if [[ $oneline =~ $pdesc_regex ]]
+			then
+				ret="${BASH_REMATCH[1]}"
+			elif [[ $oneline =~ $pdeps_regex ]]
+			then
+				ret="${BASH_REMATCH[2]} (by ${BASH_REMATCH[1]})"
+			else
+				ret="No match"
+			fi
+		fi
+	fi
+	echo "$ret"
+}
+
+
+
+function clean_deps(){
+	local deps=$@
+	for dep in $deps
+	do
+		local comment=$(comment_for_dep "$dep")
+		#echo "COMMENT: $comment"
+		printf "\t%-.50s %s\n" "DEPS+=\" $dep\"                                           " "# $comment"
+		#exit 0
+	done
+}
+
+
+function do_ubuntu_deps(){
+	local os_ver="$1"
+	local os_arch="$2"
+	
+
+	# Early dependencies
+	EDEPS+=" gnupg2"
+#	EDEPS+=" apt-utils"
+	EDEPS+=" wget"
+	EDEPS+=" ca-certificates"
+	EDEPS+=" apt-transport-https"
+	EDEPS+=" curl"
+	EDEPS+=" software-properties-common"
+	EDEPS+=" git"
+
+	# Build dependencies
+	BDEPS+=" perl"
+	BDEPS+=" python"
+	BDEPS+=" build-essential"
+	BDEPS+=" clang"
+	
+		DEPS+=" libc-dev"
+			DEPS+=" libclang-dev"
+	
+	# Window system
+	DEPS+=" libglu1-mesa-dev"
+	DEPS+=" libSM-dev"
+	DEPS+=" libX11-dev"
+	DEPS+=" libx11-xcb-dev"
+	DEPS+=" libX11-xcb-dev"
+	DEPS+=" libXau-dev"
+	DEPS+=" ^libxcb.*-dev"
+	DEPS+=" libxcb-dri3-dev"
+	DEPS+=" libxcb-present-dev"
+	DEPS+=" libxcb-sync-dev"
+	DEPS+=" libXcomposite-dev"
+	DEPS+=" libXcursor-dev"
+	DEPS+=" libXdamage-dev"
+	DEPS+=" libXdmcp-dev"
+	DEPS+=" libXext-dev"
+	DEPS+=" libxi-dev"
+	DEPS+=" libXi-dev"
+	DEPS+=" libxrender-dev"
+	DEPS+=" libXrender-dev"
+	DEPS+=" libxshmfence-dev"
+	DEPS+=" libXtst-dev"
+	DEPS+=" libXxf86vm-dev"
+	
+
+	# GLX
+#	DEPS+=" glx-alternative-mesa"
+	DEPS+=" libdrm-dev"
+	DEPS+=" libegl1-mesa-dev"
+	DEPS+=" libgbm-dev"
+	DEPS+=" libgl1-mesa-dev"
+	DEPS+=" libgles2-mesa-dev"
+	DEPS+=" mesa-common-dev"
+
+	# Compression
+	DEPS+=" pigz"
+	DEPS+=" liblzma-dev"
+	DEPS+=" libz-dev"
+
+
+	# Network
+	DEPS+=" libasyncns-dev"
+		
+	# Bus
+	DEPS+=" libdbus-1-dev"
+
+	#Font
+	DEPS+=" libfontconfig-dev"
+	
+
+	# Frameworks
+	DEPS+=" libnspr4-dev"
+
+
+	# XML / Json
+	DEPS+=" libexpat-dev"
+	DEPS+=" libjson-c-dev"
+	DEPS+=" libxml2-dev"
+	DEPS+=" libxslt-dev"
+
+	
+	# Security
+	DEPS+=" gnutls-dev"
+	DEPS+=" libexpat-dev"
+	DEPS+=" libgnutls-dev"
+	DEPS+=" libnss3-dev"
+	DEPS+=" libsslcommon2-dev" #Not in Debian
+	DEPS+=" libssl-dev"
+	
+	# Database/sqlite	
+	DEPS+=" libsqlite-dev"
+	DEPS+=" libsqlite3-dev"
+
+	
+	#NOTE: one of these might provide "gst/interfaces/photography.h
+	DEPS+=" libgstreamer-plugins-bad1.0-dev"	# GStreamer development files for libraries from the "ba
+	DEPS+=" libgstreamer-plugins-base1.0-dev"	# GStreamer development files for libraries from the "ba
+#	DEPS+=" libgstreamer-plugins-good1.0-dev"	# GStreamer development files for libraries from the "go (UBUNTU)
+	
+	DEPS+=" libgstreamer1.0-dev"
+	DEPS+=" libgstbuzztard-dev"					# Buzztard - Support plugins for GStreamer (UBUNTU)
+	DEPS+=" libgstreamer1.0-vaapi-dev"			# VA-API stuff for Gstreamer (interface for hardware acceleration of media encoding/decoding)
+
+	# For qtmultimedia
+	DEPS+=" libasound2-dev"
+	DEPS+=" libffi-dev"
+	DEPS+=" libFLAC-dev"
+	DEPS+=" libflac-dev"
+	DEPS+=" libFLAC-dev"
+	DEPS+=" libgbm-dev"
+	DEPS+=" libgstreamer1.0-dev"
+	DEPS+=" libgstreamer-plugins-base1.0-dev"
+	DEPS+=" libICE-dev"
+	DEPS+=" libogg-dev"
+	DEPS+=" libpng12-dev"
+	DEPS+=" libpng-dev"
+	DEPS+=" libpulse-dev"
+	DEPS+=" libSM-dev"
+	DEPS+=" libsndfile-dev"
+	DEPS+=" libvorbis-dev"
+	DEPS+=" libxml2-dev"
+
+
+	DEPS+=" libxshmfence-dev"
+	DEPS+=" libxslt-dev"
+	DEPS+=" libz-dev"
+	
+	# Module spesific for qt3d
+	DEPS+=" libassimp-dev"						# Asset management (loading/saving of 3D content) library
+	
+	# Module spesific for qtconnectivity (bluetooth++)
+#	DEPS+=" libbluez-dev"						# Bluetooth support (UBUNTU)
+	DEPS+=" libbluetooth-dev"						# Bluetooth support (DEBIAN)
+	
+	# Module spesific for qtimageformats 
+#	DEPS+=" libjasper-dev"						# Jpeg2000 image support
+	DEPS+=" libmng-dev"							# mng image support
+	DEPS+=" libtiff-dev"						# tiff image support
+	DEPS+=" libwebp-dev"						# webp image support
+	DEPS+=" libwebp-dev"						# webp image support
+
+	# Module spesific for qtlocation
+#	DEPS+=" libgypsy-dev"						# libgypsy GPS multiplexing daemon (UBUNTU)
+	DEPS+=" libgps-dev"						# libgypsy GPS multiplexing daemon (DEBIAN)
+
+	# Module spesific for qtmultimedia
+	DEPS+=" libopenal-dev"						# OpenAL portable hardware accelerated autio library
+	DEPS+=" libasound2-dev"						# ALSA2 low level sound library for Linux 
+
+
+	# Module spesific for qtwayland
+	#DEPS+=" libwayland-dev"						# Wayland compositor infrastructure - development files
+	#DEPS+=" libxkbcommon-dev"					# Library interface to the XKB compiler
+	#DEPS+=" libxcomposite-dev"					# X11 Composite extension library (development headers)
+	
+	# Module spesific for qtlinuxfb
+	#DEPS+=" libdirectfb-dev"					# direct framebuffer stuff 
+	
+	# Module spesific for qtwebengine
+	#DEPS+=" libcap-dev" # Development and header files for libcap
+	#DEPS+=" libsnappy-dev" # Fast compression/decompression library
+	#DEPS+=" libsrtp-dev" # Secure RTP (SRTP) and UST Reference Implementations
+	
+
+	
+	
+	# Module spesific for qt3d
+	DEPS+=" libassimp-dev"						# Asset management (loading/saving of 3D content) library
+	
+	# Module spesific for qtconnectivity (bluetooth++)
+	DEPS+=" bluez"						# Bluetooth support (UBUNTU)
+	DEPS+=" libbluetooth-dev"
+	
+	# Module spesific for qtimageformats 
+	DEPS+=" libjasper-dev"						# Jpeg2000 image support
+	DEPS+=" libmng-dev"							# mng image support
+	DEPS+=" libtiff-dev"						# tiff image support
+	DEPS+=" libwebp-dev"						# webp image support
+	DEPS+=" libwebp-dev"						# webp image support
+
+	# Module spesific for qtlocation
+	DEPS+=" libgypsy-dev"						# libgypsy GPS multiplexing daemon (UBUNTU)
+#		DEPS+=" libgps-dev"						# libgypsy GPS multiplexing daemon (DEBIAN)
+
+	# Module spesific for qtmultimedia
+	DEPS+=" libopenal-dev"						# OpenAL portable hardware accelerated autio library
+	DEPS+=" libasound2-dev"						# ALSA2 low level sound library for Linux 
+
+	#NOTE: one of these might provide "gst/interfaces/photography.h
+	DEPS+=" libgstreamer-plugins-bad1.0-dev"	# GStreamer development files for libraries from the "ba
+	DEPS+=" libgstreamer-plugins-base1.0-dev"	# GStreamer development files for libraries from the "ba
+	DEPS+=" libgstreamer-plugins-good1.0-dev"	# GStreamer development files for libraries from the "go (UBUNTU)
+	
+	DEPS+=" libgstreamer0.10-dev"
+	DEPS+=" libgstreamer1.0-dev"
+	DEPS+=" libgstreamer-plugins-base0.10-dev"
+
+	
+	DEPS+=" libgstbuzztard-dev"					# Buzztard - Support plugins for GStreamer (UBUNTU)
+	DEPS+=" libgstreamer-vaapi1.0-dev"			# VA-API stuff for Gstreamer (interface for hardware acceleration of media encoding/decoding)
+
+	# Module spesific for qtwayland
+	DEPS+=" libwayland-dev"						# Wayland compositor infrastructure - development files
+	DEPS+=" libxkbcommon-dev"					# Library interface to the XKB compiler
+	DEPS+=" libxcomposite-dev"					# X11 Composite extension library (development headers)
+	
+	# Module spesific for qtlinuxfb
+	DEPS+=" libdirectfb-dev"					# direct framebuffer stuff 
+	
+	DEPS+=" libgles2-mesa-dev"
+	DEPS+=" mesa-common-dev"
+	DEPS+=" libgl1-mesa-dev"
+	DEPS+=" libegl1-mesa-dev"
+	
+
+	# Module spesific for qtwebengine
+	DEPS+=" libcap-dev" # Development and header files for libcap
+	DEPS+=" libsnappy-dev" # Fast compression/decompression library
+	DEPS+=" libsrtp-dev" # Secure RTP (SRTP) and UST Reference Implementations
+	
+	
+
+}
+
+
+
 
 #		OPTS+=" -no-abstractbutton .......... Widgets: Abstract base class of button widgets, providing functionality common to buttons."
 #		OPTS+=" -no-abstractslider .......... Widgets: Common super class for widgets like QScrollBar, QSlider and QDial."
@@ -815,123 +1150,6 @@ function do_debian_deps(){
 #		OPTS+=" -no-xmlstreamwriter ......... Kernel: Provides a XML writer with a simple streaming API."
 
 
-
-
-function do_ubuntu_deps(){
-
-	local DEPS=""
-		DEPS+=" libasound2-dev"
-		DEPS+=" libsqlite-dev"
-		DEPS+=" libsqlite3-dev"
-		DEPS+=" libssl-dev"
-		DEPS+=" libgnutls-dev"
-#		DEPS+=" libsslcommon2-dev" #Not in Debian
-		DEPS+=" build-essential"
-		DEPS+=" perl"
-		DEPS+=" python"
-		DEPS+=" git"
-		DEPS+=" wget"
-		DEPS+=" libgl1-mesa-dev"
-		DEPS+=" clang"
-		DEPS+=" pigz"
-		DEPS+=" libgl1-mesa-dev"
-		DEPS+=" libgl1-mesa-dev"
-		DEPS+=" ca-certificates"
-		DEPS+=" libasyncns-dev"
-		DEPS+=" libc-dev"
-		DEPS+=" libdbus-1-dev"
-		DEPS+=" libdrm-dev"
-		DEPS+=" libexpat-dev"
-		DEPS+=" libffi-dev"
-		DEPS+=" libFLAC-dev"
-		DEPS+=" libfontconfig-dev"
-		DEPS+=" libgbm-dev"
-		DEPS+=" libICE-dev"
-		DEPS+=" libjson-c-dev"
-		DEPS+=" liblzma-dev"
-		DEPS+=" libnspr4-dev"
-		DEPS+=" libnss3-dev"
-		DEPS+=" libogg-dev"
-		DEPS+=" libpng12-dev"
-		DEPS+=" libpulse-dev"
-		DEPS+=" libSM-dev"
-		DEPS+=" libsndfile-dev"
-		DEPS+=" libvorbis-dev"
-		DEPS+=" libX11-dev"
-		DEPS+=" libX11-xcb-dev"
-		DEPS+=" libXau-dev"
-		DEPS+=" libxcb-dri3-dev"
-		DEPS+=" libxcb-present-dev"
-		DEPS+=" libxcb-sync-dev"
-		DEPS+=" libXcomposite-dev"
-		DEPS+=" libXcursor-dev"
-		DEPS+=" libXdamage-dev"
-		DEPS+=" libXdmcp-dev"
-		DEPS+=" libXext-dev"
-		DEPS+=" libXi-dev"
-		DEPS+=" libxml2-dev"
-		DEPS+=" libXrender-dev"
-		DEPS+=" libxshmfence-dev"
-		DEPS+=" libxslt-dev"
-		DEPS+=" libXtst-dev"
-		DEPS+=" libXxf86vm-dev"
-		DEPS+=" libz-dev"
-		
-		# Module spesific for qt3d
-		DEPS+=" libassimp-dev"						# Asset management (loading/saving of 3D content) library
-		
-		# Module spesific for qtconnectivity (bluetooth++)
-		DEPS+=" bluez"						# Bluetooth support (UBUNTU)
-		DEPS+=" libbluetooth-dev"
-		
-		# Module spesific for qtimageformats 
-		DEPS+=" libjasper-dev"						# Jpeg2000 image support
-		DEPS+=" libmng-dev"							# mng image support
-		DEPS+=" libtiff-dev"						# tiff image support
-		DEPS+=" libwebp-dev"						# webp image support
-		DEPS+=" libwebp-dev"						# webp image support
-
-		# Module spesific for qtlocation
-		DEPS+=" libgypsy-dev"						# libgypsy GPS multiplexing daemon (UBUNTU)
-#		DEPS+=" libgps-dev"						# libgypsy GPS multiplexing daemon (DEBIAN)
-
-		# Module spesific for qtmultimedia
-		DEPS+=" libopenal-dev"						# OpenAL portable hardware accelerated autio library
-		DEPS+=" libasound2-dev"						# ALSA2 low level sound library for Linux 
-
-		#NOTE: one of these might provide "gst/interfaces/photography.h
-		DEPS+=" libgstreamer-plugins-bad1.0-dev"	# GStreamer development files for libraries from the "ba
-		DEPS+=" libgstreamer-plugins-base1.0-dev"	# GStreamer development files for libraries from the "ba
-		DEPS+=" libgstreamer-plugins-good1.0-dev"	# GStreamer development files for libraries from the "go (UBUNTU)
-		
-		DEPS+=" libgstreamer0.10-dev"
-		DEPS+=" libgstreamer1.0-dev"
-		DEPS+=" libgstreamer-plugins-base0.10-dev"
-
-		
-		DEPS+=" libgstbuzztard-dev"					# Buzztard - Support plugins for GStreamer (UBUNTU)
-		DEPS+=" libgstreamer-vaapi1.0-dev"			# VA-API stuff for Gstreamer (interface for hardware acceleration of media encoding/decoding)
-
-		# Module spesific for qtwayland
-		DEPS+=" libwayland-dev"						# Wayland compositor infrastructure - development files
-		DEPS+=" libxkbcommon-dev"					# Library interface to the XKB compiler
-		DEPS+=" libxcomposite-dev"					# X11 Composite extension library (development headers)
-		
-		# Module spesific for qtlinuxfb
-		DEPS+=" libdirectfb-dev"					# direct framebuffer stuff 
-		
-		DEPS+=" libgles2-mesa-dev"
-		DEPS+=" mesa-common-dev"
-		DEPS+=" libgl1-mesa-dev"
-		DEPS+=" libegl1-mesa-dev"
-		
-
-		# Module spesific for qtwebengine
-		DEPS+=" libcap-dev" # Development and header files for libcap
-		DEPS+=" libsnappy-dev" # Fast compression/decompression library
-		DEPS+=" libsrtp-dev" # Secure RTP (SRTP) and UST Reference Implementations
-
-}
 
 
 function do_prep(){
