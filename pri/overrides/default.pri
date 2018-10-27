@@ -21,6 +21,7 @@
 #DEFINES += USE_TESTS_STRESS
 #DEFINES += USE_TESTS_WEB
 #DEFINES += USE_ZBAR
+DEFINES += USE_MARKDOWN
 
 
 # Reduce build output to only warnings/errors

@@ -7,6 +7,7 @@ AUTOLIBS += \
 	qpolarssl \
 	mbedtls \
 	qfi \
+	markdown \
 
 
 # The libraries in this list will be built into one big library called librest

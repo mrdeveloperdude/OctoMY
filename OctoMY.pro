@@ -16,6 +16,7 @@ SUBDIRS += \
 	$${SRCS}/remote \
 	$${SRCS}/hub \
 	$${SRCS}/zoo \
+	$${SRCS}/web \
 
 
 # NOTE: USE_TESTS_* is enabled when useful in local_override.pri
@@ -48,6 +49,7 @@ hub.subdir=			$${SRCS}/hub
 agent.subdir=		$${SRCS}/agent
 remote.subdir=		$${SRCS}/remote
 zoo.subdir=			$${SRCS}/zoo
+web.subdir=			$${SRCS}/web
 test.subdir=		$${TESTS}
 doc.subdir=			$${DOCS}
 
@@ -56,6 +58,7 @@ hub.depends=		$${SRCS}/libs
 agent.depends=		$${SRCS}/libs
 remote.depends=		$${SRCS}/libs
 zoo.depends=		$${SRCS}/libs
+web.depends=		$${SRCS}/libs
 test.depends=		$${SRCS}/libs
 doc.depends=		$${SRCS}/libs $${SRCS}/hub $${SRCS}/remote $${SRCS}/agent $${TESTS}
 
