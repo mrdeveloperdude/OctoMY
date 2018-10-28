@@ -1,6 +1,8 @@
 #ifndef MARKDOWN_HPP
 #define MARKDOWN_HPP
 
+#include <QString>
+
 class Markdown
 {
 
@@ -9,6 +11,8 @@ public:
 public:
 
 	static bool isAvailable();
+
+	QString process (QString input);
 
 };
 

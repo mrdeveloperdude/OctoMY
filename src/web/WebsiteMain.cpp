@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	qsrand(utility::currentMsecsSinceEpoch<quint32>());
 	LogHandler::setLogging(true);
 
-	//QCoreApplication app(argc, argv);
+	QCoreApplication app(argc, argv), *papp=&app;
 
 	//Q_INIT_RESOURCE(webpages);
 
@@ -44,8 +44,11 @@ int main(int argc, char *argv[])
 
 	Website website(OC_NEW AppContext(opts, env, "website", nullptr));
 	website.run();
-//	app.exit(0);
-	//return app.exec();
+	QTimer::singleShot(0, [=]() {
+		papp->exit(0);
+	});
+
+	return app.exec();
 }
 
 
