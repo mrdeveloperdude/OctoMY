@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="icon" href="{{webroot}}/favicon.ico">
+
+		<title>OctoMY&trade; - {{title}}</title>
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+		<style>
+			* {
+				font-family: 'Dosis', sans-serif;
+			}
+			body{
+				background-color: #2c282c;
+				color: #e0d5df;
+				font-size: 20px; /* https://bootstrapcreative.com/bootstrap-text-sizes/ */ 
+			}
+			
+			h1{
+				font-size: 30px;
+				font-weight:bold;
+			}
+			
+			h2{
+				font-size: 24px;
+				font-weight:bold;
+			}
+			
+			h1,h2,h3,h4,h5,h6{
+				margin-top: 20px;
+			    margin-bottom: 10px;
+				margin-block-start: 0.83em;
+				margin-block-end: 0.83em;
+			}
+			
+			p, ul, ol{
+				margin-block-start: 1em;
+			    margin-block-end: 1em;
+			}
+
+			.container[role=main]{
+				background-color: #443e43;
+			}
+			
+			.table-striped>tbody>tr:nth-of-type(odd) 
+			, .well
+			, .list-group-item
+			, .panel-body
+			{
+				background-color: #615c60;
+			}
+			
+			
+			/*************** LINKS **************************************************/
+			a
+			, .btn-link
+			, .navbar-default .navbar-nav>li>a
+			, .navbar-inverse .navbar-nav>li>a
+			, .navbar-default .navbar-brand
+			, .navbar-inverse .navbar-brand
+			, a.list-group-item, button.list-group-item
+			{
+				color: #44dd45;
+			}
+			
+			.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover{
+				color: #443e43;
+			}
+			
+			.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover{
+				background-color: #44dd45;
+				border-color: #44dd45;
+/*				color: #e0d5df;*/
+			}
+			
+			
+			.jumbotron{
+				color: #e0d5df;
+				background-color: #615c60;
+			}
+			
+			/*********************** GRIDS ******************************/
+			
+			
+			.col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9{
+				padding-left:2em;
+				padding-right:2em;
+			}
+			
+			/************************ NAVS *********************************/
+			
+			
+			.navbar-default{
+				background-image:linear-gradient(to bottom, #615c60 0, #443e43 100%);
+				border-color: #615c60;
+			}
+			
+			.navbar-inverse{
+				background-image:linear-gradient(to bottom, #2c282c 0, #443e43 100%);
+				border-color: #2c282c;
+			}
+			
+			
+			.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover{
+				background-color: #44dd45;
+			}
+			
+			.list-group-item.active>.badge, .nav-pills>.active>a>.badge{
+				color: #44dd45;
+			}
+			
+			/************************ BUTTONS *********************************/
+
+			.btn-default{
+				font-size:20px;
+			}
+			
+			.btn-default{
+				background-color: #615c60;
+				border-color: #615c60;
+				color: #443e43;
+				background-color: #e0d5df;
+
+			}
+
+			.btn-primary{
+				background-color: #0754ab;
+				border-color: #0754ab;
+				color: #e0d5df;
+			}
+			
+			.btn-success{
+				background-color: #20ae22;
+				border-color: #20ae22;
+				color: #e0d5df;
+			}
+			
+			.btn-info{
+				background-color: #2f8bf6;
+				border-color: #2f8bf6;
+				color: #e0d5df;
+			}
+			
+			.btn-warning{
+				background-color: #ffe948;
+				border-color: #ffe948;
+				color: #443e43;
+			}
+			
+			.btn-danger{
+				background-color: #eb4e4e;
+				border-color: #eb4e4e;
+				color: #443e43;
+			}
+			
+			/******************** LABELS *********************************/
+			
+			.label-default{
+				background-color: #615c60;
+			}
+			
+			.label-primary{
+				background-color: #0754ab;
+			}
+			
+			.label-success{
+				background-color: #20ae22;
+			}
+			
+			.label-info{
+				background-color: #2f8bf6;
+			}
+			
+			.label-warning{
+/*			background-color: #d18000; */ /*zoo dark*/
+				background-color: #ffe948;/*zoo light*/
+				color: #443e43;
+			}
+			
+			.label-danger{
+				background-color: #eb4e4e;
+				color: #443e43;
+			}
+			
+			
+			
+			
+			/***************** PANEL HEADINGS **********************/
+			
+			.panel-title{
+				font-size: 20px;
+			}
+			
+			
+			.panel-default, .panel-default>.panel-heading{
+				border-color: #2c282c;
+			}
+			.panel-default>.panel-heading{
+				background-color: #2c282c;
+				color: #e0d5df;
+			}
+			
+			
+			.panel-success, .panel-success>.panel-heading{
+				border-color: #20ae22;
+			}
+			.panel-success>.panel-heading{
+				background-color: #20ae22;
+				color: #e0d5df;
+			}
+
+
+			.panel-primary, .panel-primary>.panel-heading{
+				border-color: #0754ab;
+			}
+			.panel-primary>.panel-heading{
+				background-color: #0754ab;
+				color: #e0d5df;
+			}
+
+
+			.panel-info, .panel-info>.panel-heading{
+				border-color: #2f8bf6;
+			}
+			.panel-info>.panel-heading{
+				background-color: #2f8bf6;
+				color: #e0d5df;
+			}
+			
+			
+			.panel-warning, .panel-warning>.panel-heading{
+				border-color: #ffe948;
+			}
+			.panel-warning>.panel-heading{
+				background-color: #ffe948;
+				color: #443e43;
+			}
+			
+			
+			.panel-danger, .panel-danger>.panel-heading{
+				border-color: #eb4e4e;
+			}
+			.panel-danger>.panel-heading{
+				background-color: #eb4e4e;
+				color: #443e43;
+			}
+			
+			.list-group-item.active .list-group-item-text, .list-group-item.active:focus .list-group-item-text, .list-group-item.active:hover .list-group-item-text{
+				color: #443e43;
+			}
+			/************************ ALERTS *********************************/
+
+			
+			.alert-success{
+				background-color: #20ae22;
+				border-color: #20ae22;
+				color: #e0d5df;
+			}
+			
+			.alert-info{
+				background-color: #2f8bf6;
+				border-color: #2f8bf6;
+				color: #e0d5df;
+			}
+			
+			.alert-warning{
+				background-color: #ffe948;
+				border-color: #ffe948;
+				color: #443e43;
+			}
+			
+			.alert-danger{
+				background-color: #eb4e4e;
+				border-color: #eb4e4e;
+				color: #443e43;
+			}
+			
+			/***************** PROGRESS **********************/
+					
+			.progress{
+				background-color: #2c282c;
+			}
+
+			.progress-bar{
+				background-color: #0754ab;
+			}
+			
+			.progress-bar-success{
+				background-color: #20ae22;
+			}
+			
+			.progress-bar-info{
+				background-color: #2f8bf6;
+			}
+
+			.progress-bar-warning{
+				background-color: #ffe948;
+			}
+
+			.progress-bar-danger{
+				background-color: #eb4e4e;
+			}
+			
+			
+			/***************** MISC **********************/
+			
+			.page-header{
+				border-bottom-color: #e0d5df;
+			}
+			
+			/********************* CONTENT *************************/
+			
+			 img.illustration{
+				 vertical-align:middle;
+				 width:300px;
+				 height:*;
+				 display:block;
+				 margin:5px auto;
+				 text-align:center;
+			 }
+			
+		</style>
+		
+		<link href="https://fonts.googleapis.com/css?family=Dosis" rel="stylesheet">
+	</head>
+	<body>
+
+
