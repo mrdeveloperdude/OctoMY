@@ -46,7 +46,7 @@ ControlDeliveryWizard::ControlDeliveryWizard(QWidget *parent)
 	mBirthTimer.setSingleShot(true);
 
 	if(!connect(&mBirthTimer, &QTimer::timeout, this, [=]() {
-	qDebug()<<"birth timer timed out, calling birth done";
+	qDebug()<<"Birth timer timed out, calling birth done";
 		onBirthComplete(true);
 	}, OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
@@ -104,7 +104,10 @@ void ControlDeliveryWizard::startBirth()
 {
 	OC_METHODGATE();
 	if(!mNode.isNull()) {
-		qDebug()<<"XXX - Started birth for control";
+		QString name=ui->lineEditName->text();
+		name[0]=name[0].toUpper();
+		mID.setName(name);
+		qDebug()<<"XXX - Started birth of control with NAME: "<<name;
 		mSpinner->start();
 		mCompleteCounter=0;
 		mCompleteOK=false;
@@ -150,6 +153,7 @@ void ControlDeliveryWizard::onBirthComplete(bool ok)
 				auto key=keystore.localKey();
 				if(!key.isNull()) {
 					map["key"]=key->toVariantMap(true);
+					map["name"]=ui->lineEditName->text();
 					map["type"]=nodeTypeToString(TYPE_REMOTE);
 					map["role"]=nodeRoleToString(ROLE_CONTROL);
 					map["birthDate"]=utility::msToVariant(mBirthDate);

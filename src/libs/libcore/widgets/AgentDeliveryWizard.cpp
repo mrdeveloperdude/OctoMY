@@ -54,7 +54,7 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	mBirthTimer.setSingleShot(true);
 
 	if(!connect(&mBirthTimer, &QTimer::timeout, this, [=]() {
-	qDebug()<<"birth timer timed out, calling birth done";
+	qDebug()<<"Birth timer timed out, calling birth done";
 		onBirthComplete(true);
 	}, OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
@@ -125,7 +125,7 @@ void AgentDeliveryWizard::startBirth()
 		mID.setName(name);
 		QString gender=0>ui->comboBoxGender->currentIndex()?ui->comboBoxGender->currentText():generateRandomGender();
 		mID.setGender(gender);
-		qDebug()<<"XXX - Started birth for NAME: "<<name<<", GENDER: "<<gender;
+		qDebug()<<"XXX - Started birth of agent with NAME: "<<name<<", GENDER: "<<gender;
 		mSpinner->start();
 		mCompleteCounter=0;
 		mCompleteOK=false;
