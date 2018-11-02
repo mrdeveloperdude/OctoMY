@@ -32,12 +32,48 @@ apt_qt="apt_qt.txt"
 apt_qt_new="apt_qt_new.txt"
 
 
+deb_ver="1.0-1"
+deb_name="octomy"
+deb_path="./agent"
+deb_base="$(basename $deb_path)"
+deb_file="$deb_name-$deb_base.deb"
+
+deb_deps=""
+deb_deps+="libgstreamer1.0-0"
+deb_deps+=", libgstreamer-plugins-base1.0-0"
+deb_deps+=", libasound2"
+deb_deps+=", libwayland-egl1-mesa"
+deb_deps+=", libwayland-cursor0"
+deb_deps+=", libxcb-xkb1"
+deb_deps+=", libxcb-render-util0"
+deb_deps+=", libxcb-xinerama0"
+deb_deps+=", libxcb-randr0"
+deb_deps+=", libxcb-image0"
+deb_deps+=", libxcb-keysyms1"
+deb_deps+=", libxcb-icccm4"
+deb_deps+=", libpulse0"
+deb_deps+=", libharfbuzz0b"
+deb_deps+=", libpcre2-16-0"
+deb_deps+=", libdouble-conversion1v5"
+deb_deps+=", libgles2-mesa"
+
+#DEPS+=", libgles2-mesa"
+
+#librt, libpthread, libstdc++, libm, libgcc_s, libc, libcups, libgstaudio-1.0, libgstvideo-1.0, libgstpbutils-1.0, libgstapp-1.0, libgstbase-1.0, libgstreamer-1.0, libgobject-2.0, libasound, libwayland-egl, libXcomposite, libwayland-client, libwayland-cursor, libXi, libSM, libICE, libXrender, libxcb-xkb, libxcb-render-util, libxcb-sync, libxcb-xfixes, libxcb-xinerama, libxcb-randr, libxcb-render, libxcb-image, libxcb-shm, libxcb-keysyms, libxcb-icccm, libxcb-shape, libxkbcommon-x11, libjpeg, libgbm, libdrm, libfontconfig, libfreetype, libxkbcommon, libX11-xcb, libX11, libxcb, libEGL, libmysqlclient, libodbc, libpq, libsybdb, libpulse, libpng12, libharfbuzz, libudev, libdbus-1, libz, libicui18n, libicuuc, libpcre2-16, libdouble-conversion, libdl, libglib-2.0, libGLESv2, libgssapi_krb5, libgnutls, libavahi-common, libavahi-client, libgsttag-1.0, liborc-0.4, libgmodule-2.0, libffi, libXext, libuuid, libxcb-util, libexpat, libwayland-server, libXau, libXdmcp, libxcb-dri2, libxcb-dri3, libxcb-present, libxshmfence, libmirclient, libltdl, libssl, libcrypto, libldap_r-2.4, libjson-c, libpulsecommon-8.0, libgraphite2, libsystemd, libicudata, libpcre, libglapi, libkrb5, libk5crypto, libcom_err, libkrb5support, libp11-kit, libidn, libtasn1, libnettle,libhogweed, libgmp, libmircommon ,libmirprotobuf, libcapnp-0.5.3, libmircore, libboost_system, libprotobuf-lite, liblber-2.4, libresolv, libsasl2, libgssapi, libwrap, libsndfile, libasyncns, libselinux, liblzma, libgcrypt, libkeyutils, libboost_filesystem, libkj-0.5.3, libheimntlm, libkrb5, libasn1, libhcrypto, libroken, libnsl, libFLAC,libvorbisenc, libgpg-error, libwind, libheimbase, libhx509, libsqlite3, libcrypt, libogg, libvorbis"
+
+
+deb_dir=${deb_name}_${deb_ver}
+tmp_dir="/tmp/$deb_dir"
+
+
+
 EDEPS=""
 BDEPS=""
 DEPS=""
 OPTS=""
 
 acmd="apt-get"
+lacmd="aptitude search -F '%p' '~i!~M'"
 aptgetops="-y --allow-unauthenticated -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold"
 
 ephemeral_tag="ephemeral"
@@ -113,13 +149,13 @@ function build_with_dockers(){
 
 function infer_host_os(){
 	local target_os="$1"
-	local target_ver="$2"
+	local target_version="$2"
 	local target_arch="$3"
 	local same=false
 	if [ "debian" == "$target_os" ] || [ "ubuntu" == "$target_os" ]
 	then
 		# Use actual target OS for building
-		echo "$target_os" "$target_ver" "$target_arch"
+		echo "$target_os" "$target_version" "$target_arch"
 		return
 	elif [ "android" == "$target_os" ]
 	then
@@ -149,11 +185,11 @@ function build_with_docker(){
 	local doc="$pw/$dir/Dockerfile"
 	local src_overrides="/src/octomy_$checkout/pri/overrides/release.pri"
 	local dst_overrides="/src/octomy_$checkout/pri/local_overrides.pri"
-	local octomy_git_ver="octomy_version.txt"
+	local octomy_git_version="octomy_version.txt"
 	local host_os="Not"
-	local host_os="set"
-	local host_os="yet"
-	read host_os host_ver host_arch < <(infer_host_os "$target_os" "$target_ver" "$target_arch")	
+	local host_os_version="set"
+	local host_os_arch="yet"
+	read host_os host_os_version host_os_arch < <(infer_host_os "$target_os" "$target_os_version" "$target_os_arch")	
 	local sources="/etc/apt/sources.list"
 	local temp_sources="/etc/apt/sources.list_tmp"
 
@@ -179,18 +215,17 @@ function build_with_docker(){
 		exit 1
 	fi
 
-	git describe --tags --long --dirty --always > "$octomy_git_ver"
+	git describe --tags --long --dirty --always > "$octomy_git_version"
 	
 	echo "###################################################"
-	echo "  HOST-OS: $host_os-$host_ver[$host_arch]"
-	echo "TARGET-OS: $target_os-$target_ver[$target_arch]"
+	echo "  HOST-OS: $host_os-$host_os_version[$host_os_arch]"
+	echo "TARGET-OS: $target_os-$target_os_version[$target_os_arch]"
 	echo "      PWD: $(pwd)"
-	echo "LS GITVER: $(ls -halt "$octomy_git_ver")"
-	echo "   GITVER: $(cat "$octomy_git_ver")"
+	echo "LS GITVER: $(ls -halt "$octomy_git_version")"
+	echo "   GITVER: $(cat "$octomy_git_version")"
 	echo "###################################################"
 	
 #	clean_deps $DEPS
-
 
 	cat << EOF > "$doc"
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -202,19 +237,19 @@ function build_with_docker(){
 #
 # Spec: $spec
 #
-FROM  $target_os:$target_os_version
+FROM  $host_os:$host_os_version
 LABEL maintainer="$maintainer"
 
 EOF
 
 
-	if [ "debian" == "$target_os" ]
+	if [ "debian" == "$target_os" ] || [ "ubuntu" == "$target_os" ]
 	then
 		cat << EOF >> "$doc"
 
 RUN >&2 printf "\n\n---- FIX SHELL ------------------------\n"
-RUN ["/bin/bash", "-c", "unlink /bin/sh"]
-RUN ["/bin/bash", "-c", "ln -s /bin/bash /bin/sh"]
+SHELL ["/bin/bash", "-c"]
+
 RUN echo "CORES AVAILABLE: \$(nproc)"
 
 RUN >&2 printf "\n\n---- ADD APT SRC ----------------------\n" && \
@@ -229,25 +264,36 @@ RUN >&2 printf "\n\n---- INITIALIZE APT -------------------\n" && \
 	$acmd update $aptgetops && \
 	$acmd upgrade $aptgetops && \
 	$acmd autoremove $aptgetops && \
-	$acmd clean $aptgetops
+	$acmd clean $aptgetops && \
+	$acmd install $aptgetops aptitude
 
 WORKDIR /OctoMY
 
 RUN	>&2 printf "\n\n---- RECORD INITIAL DEPENDENCIES ------\n" && \	
-	apt list --installed | sort | uniq -u > "/OctoMY/$apt_initial"
+	$lacmd | sort | uniq -u > "/OctoMY/$apt_initial"
 
 RUN	>&2 printf "\n\n---- INSTALL EARLY DEPENDENCIES -------\n" && \
-	apt-get install -y --allow-unauthenticated $EDEPS
+	$acmd install $aptgetops $EDEPS
 
 RUN	>&2 printf "\n\n---- RECORD EARLY DEPENDENCIES --------\n" && \	
-	apt list --installed | sort | uniq -u > "/OctoMY/apt_early.txt" && \
-	comm -2 -3 "/OctoMY/$apt_early" "/OctoMY/$apt_initial" > "/OctoMY/$apt_early_new" && \
+	$lacmd | sort | uniq -u > "/OctoMY/apt_early.txt" && \
+	comm -2 -3 "/OctoMY/$apt_early" "/OctoMY/$apt_initial" > "/OctoMY/$apt_early_new"
 
 
 RUN	>&2 printf "\n\n---- FIX SSL CERTIFICATES -------------\n" && \
 	rm -f /usr/local/share/ca-certificates/certificate.crt; \
 	update-ca-certificates --fresh
 
+EOF
+
+	else
+		echo "$target_os not supported at this time."
+		exit 1
+	fi
+
+
+	cat << EOF >> "$doc"
+	
 WORKDIR /src
 
 RUN >&2 printf "\n\n---- CLONE QT -------------------------\n" && \
@@ -256,20 +302,46 @@ RUN >&2 printf "\n\n---- CLONE QT -------------------------\n" && \
 RUN	>&2 printf "\n\n---- CLONE OCTOMY ---------------------\n" && \
 	git clone https://github.com/mrdeveloperdude/OctoMY.git -j\$(nproc) --recurse-submodules -b "$checkout" /src/octomy_$checkout
 
+EOF
+
+	if [ "debian" == "$target_os" ] || [ "ubuntu" == "$target_os" ]
+	then
+		cat << EOF >> "$doc"
+
 RUN >&2 printf "\n\n---- GET QT DEPENDENCIES --------------\n" && \
-	apt-get build-dep -y --allow-unauthenticated qt5-default && \
-	apt-get install -y --allow-unauthenticated $BDEPS $DEPS
+	$acmd build-dep $aptgetops qt5-default && \
+	$acmd install $aptgetops $BDEPS $DEPS
 
 RUN >&2 printf "\n\n---- CLEAN APT ------------------------\n" && \
-	apt-get autoremove -y && apt-get clean -y && \
-	rm -rf /var/lib/apt/lists/* /usr/share/man
+	$acmd autoremove $aptgetops && \
+	$acmd clean $aptgetops && \
+	rm -rf  /usr/share/man # /var/lib/apt/lists/*
 
 
 RUN	>&2 printf "\n\n---- RECORD QT DEPENDENCIES -----------\n" && \	
-	apt list --installed | sort | uniq -u > "/OctoMY/$apt_qt" && \
-	comm -2 -3 "/OctoMY/$apt_qt" "/OctoMY/$apt_early" > "/OctoMY/$apt_qt_new" && \
+	$lacmd | sort | uniq -u > "/OctoMY/$apt_qt" && \
+	comm -2 -3 "/OctoMY/$apt_qt" "/OctoMY/$apt_early" > "/OctoMY/$apt_qt_new"
+
+WORKDIR /OctoMY
+
+
+RUN	>&2 printf "\n\n---- SHOW PACKAGES FOR INITIAL --------\n" && \
+	cat "/OctoMY/$apt_initial"
+
+RUN	>&2 printf "\n\n---- SHOW PACKAGES FOR EARLY NEW ------\n" && \
+	cat "/OctoMY/$apt_early_new"
+
+RUN	>&2 printf "\n\n---- SHOW PACKAGES FOR EARLY ----------\n" && \
+	cat "/OctoMY/$apt_early"
+
+RUN	>&2 printf "\n\n---- SHOW PACKAGES FOR QT -------------\n" && \
+	cat "/OctoMY/$apt_qt"
+
+RUN	>&2 printf "\n\n---- SHOW PACKAGES FOR QT NEW ---------\n" && \
+	cat "/OctoMY/$apt_qt_new"
 
 EOF
+
 	else
 		echo "$target_os not supported at this time."
 		exit 1
@@ -303,7 +375,7 @@ RUN >&2 printf "\n\n---- SHOW QMAKE VERSION ---------------\n" && \
 WORKDIR /src/octomy_$checkout
 
 # This step is a cache buster that forces rebuild on changes in git repo
-ADD "$octomy_git_ver" "git_version"
+ADD "$octomy_git_version" "git_version"
 
 RUN	>&2 echo "\n\n---- UPDATE OCTOMY --------------------\n" && \
 		git checkout "$checkout" && \
@@ -327,10 +399,71 @@ RUN	>&2 printf "\n\n---- BUILD OCTOMY ---------------------\n" && \
 	MAKEFLAGS=-j\$(nproc) "$qt_qmake" /src/octomy_$checkout/OctoMY.pro; \
 	MAKEFLAGS=-j\$(nproc) make -j \$(nproc); \
 
-RUN	>&2 printf "\n\n---- INSPECT OCTOMY ARTEFACTS ---------\n" && \
-	find
-	
 
+WORKDIR /OctoMY/bin
+
+RUN	>&2 printf "\n\n---- COLLECT OCTOMY ARTEFACTS ---------\n" && \
+	cp -a "/OctoMY/src/agent/agent" ./ && \
+	cp -a "/OctoMY/src/remote/remote" ./ && \
+	cp -a "/OctoMY/src/hub/hub" ./ && \
+	cp -a "/OctoMY/src/zoo/zoo" ./ && \
+	ls -halt
+
+
+
+WORKDIR /src/upx
+
+RUN >&2 printf "\n\n---- CLONE UPX ------------------------\n" && \
+	git clone https://github.com/upx/upx.git -j\$(nproc) --recurse-submodules .
+
+RUN >&2 printf "\n\n---- BUILD UPX ------------------------\n" && \
+	$acmd build-dep $aptgetops upx-ucl && \
+	MAKEFLAGS=-j\$(nproc) make -k -j \$(nproc) >  upx_build_log.txt
+
+	
+WORKDIR /OctoMY/deb
+
+echo "###################################################"
+echo "     Using deb package:'$deb_file' from '$deb_path'"
+echo "     Using deb version:'$deb_ver'"
+echo "Using deb dependencies:'$deb_deps'"
+echo "     Using deb tmp dir:'$tmp_dir'"
+echo "    Using deb base dir:'$deb_base'"
+echo "###################################################"
+
+
+cat << EOF > "$deb_control"
+Package: $deb_name-$deb_base
+Version: $deb_ver
+Section: base
+Priority: optional
+Architecture: amd64
+Depends: $deb_deps
+Maintainer: Lennart Rolland <lennartrolland@gmail.com>
+Description: OctoMY™ $deb_name
+ Part of a suite of programs for controlling robots of all sizes and shapes.
+ Official website: http://octomy.org
+
+EOF
+
+RUN >&2 printf "\n\n---- INSPECT DEB CONTROL FILE ---------\n" && \
+	echo "$deb_control"
+
+RUN >&2 printf "\n\n---- CREATE DEB PACKAGE ---------------\n" && \
+	mkdir -p "$tmp_dir" && \
+	cd "$tmp_dir"  && \
+	mkdir -p usr/local/bin  && \
+	cp -a "$deb_path" usr/local/bin  && \
+	mkdir DEBIAN  && \
+	echo "$deb_control" > DEBIAN/control && \
+	cd "$deb_base" && \
+	dpkg-deb --version && \
+	dpkg-deb --build -v -z9 -Zxz -Sextreme --uniform-compression "$tmp_dir" "$deb_file" && \
+	dpkg-deb -c "$deb_file" && \
+	dpkg-deb -I "$deb_file" && \
+	rm -rf "$tmp_dir"
+
+	
 # 	cd /src/qt_$qt_version && \
 #EXPOSE 8080:80
 #CMD ["/usr/sbin/apache2", "-D",  "FOREGROUND"]
@@ -338,6 +471,9 @@ RUN	>&2 printf "\n\n---- INSPECT OCTOMY ARTEFACTS ---------\n" && \
 EOF
 
 	local tag="octomy:${spec}"
+	echo "_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-="
+	cat "$doc"
+	echo "_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-="
 	# build
 	docker build . -t "$tag"
 
@@ -386,10 +522,6 @@ function do_extract(){
 }
 
 
-function do_ubuntu_deps(){
-	#		DEPS+=" libsslcommon2-dev" #Not in Debian
-	echo "NO"
-}
 
 
 function do_common_opts(){
@@ -614,7 +746,6 @@ function do_debian_deps(){
 	DEPS+=" libogg-dev"
 	DEPS+=" libpng-dev"
 	DEPS+=" libpulse-dev"
-#	DEPS+=" libSM-dev"
 	DEPS+=" libsndfile-dev"
 	DEPS+=" libvorbis-dev"
 	DEPS+=" libxml2-dev"
@@ -732,6 +863,52 @@ function clean_deps(){
 }
 
 
+
+#Package libgnutls-dev is not available, but is referred to by another package.
+#This may mean that the package is missing, has been obsoleted, or
+#is only available from another source
+
+#Package libpng12-dev is not available, but is referred to by another package.
+#This may mean that the package is missing, has been obsoleted, or
+#is only available from another source
+
+##E: Unable to locate package libSM-dev
+#E: Unable to locate package libX11-dev
+#E: Unable to locate package libX11-xcb-dev
+#E: Unable to locate package libXau-dev
+#E: Unable to locate package libXcomposite-dev
+#E: Unable to locate package libXcursor-dev
+#E: Unable to locate package libXdamage-dev
+#E: Unable to locate package libXdmcp-dev
+#E: Unable to locate package libXext-dev
+#E: Unable to locate package libXi-dev
+#E: Unable to locate package libXrender-dev
+#E: Unable to locate package libXtst-dev
+#E: Unable to locate package libXxf86vm-dev
+#E: Package 'libgnutls-dev' has no installation candidate
+#E: Unable to locate package libsslcommon2-dev
+#E: Unable to locate package libgstbuzztard-dev
+#E: Unable to locate package libgstreamer1.0-vaapi-dev
+#E: Couldn't find any package by glob 'libgstreamer1.0-vaapi-dev'
+#E: Couldn't find any package by regex 'libgstreamer1.0-vaapi-dev'
+#E: Unable to locate package libFLAC-dev
+#E: Unable to locate package libFLAC-dev
+#E: Unable to locate package libICE-dev
+#E: Package 'libpng12-dev' has no installation candidate
+#E: Unable to locate package libSM-dev
+#E: Unable to locate package libjasper-dev
+#E: Unable to locate package libgstreamer0.10-dev
+#E: Couldn't find any package by glob 'libgstreamer0.10-dev'
+#E: Couldn't find any package by regex 'libgstreamer0.10-dev'
+#E: Unable to locate package libgstreamer-plugins-base0.10-dev
+#E: Couldn't find any package by glob 'libgstreamer-plugins-base0.10-dev'
+#E: Couldn't find any package by regex 'libgstreamer-plugins-base0.10-dev'
+#E: Unable to locate package libgstbuzztard-dev
+#E: Unable to locate package libgstreamer-vaapi1.0-dev
+#E: Couldn't find any package by glob 'libgstreamer-vaapi1.0-dev'
+#E: Couldn't find any package by regex 'libgstreamer-vaapi1.0-dev'
+
+
 function do_ubuntu_deps(){
 	local os_ver="$1"
 	local os_arch="$2"
@@ -753,34 +930,22 @@ function do_ubuntu_deps(){
 	BDEPS+=" build-essential"
 	BDEPS+=" clang"
 	
-		DEPS+=" libc-dev"
-			DEPS+=" libclang-dev"
+	DEPS+=" libc-dev"
+	DEPS+=" libclang-dev"
 	
 	# Window system
 	DEPS+=" libglu1-mesa-dev"
-	DEPS+=" libSM-dev"
-	DEPS+=" libX11-dev"
-	DEPS+=" libx11-xcb-dev"
-	DEPS+=" libX11-xcb-dev"
-	DEPS+=" libXau-dev"
 	DEPS+=" ^libxcb.*-dev"
 	DEPS+=" libxcb-dri3-dev"
 	DEPS+=" libxcb-present-dev"
 	DEPS+=" libxcb-sync-dev"
-	DEPS+=" libXcomposite-dev"
-	DEPS+=" libXcursor-dev"
-	DEPS+=" libXdamage-dev"
-	DEPS+=" libXdmcp-dev"
-	DEPS+=" libXext-dev"
-	DEPS+=" libxi-dev"
-	DEPS+=" libXi-dev"
-	DEPS+=" libxrender-dev"
-	DEPS+=" libXrender-dev"
 	DEPS+=" libxshmfence-dev"
-	DEPS+=" libXtst-dev"
-	DEPS+=" libXxf86vm-dev"
 	
 
+	# Qt5 dev deps (TODO: TEST)
+#	DEPS+=" ^libqt.*5-dev"
+#	DEPS+=" ^qt.*5-dev"
+		
 	# GLX
 #	DEPS+=" glx-alternative-mesa"
 	DEPS+=" libdrm-dev"
@@ -790,11 +955,11 @@ function do_ubuntu_deps(){
 	DEPS+=" libgles2-mesa-dev"
 	DEPS+=" mesa-common-dev"
 
+
 	# Compression
 	DEPS+=" pigz"
 	DEPS+=" liblzma-dev"
 	DEPS+=" libz-dev"
-
 
 	# Network
 	DEPS+=" libasyncns-dev"
@@ -820,9 +985,7 @@ function do_ubuntu_deps(){
 	# Security
 	DEPS+=" gnutls-dev"
 	DEPS+=" libexpat-dev"
-	DEPS+=" libgnutls-dev"
 	DEPS+=" libnss3-dev"
-	DEPS+=" libsslcommon2-dev" #Not in Debian
 	DEPS+=" libssl-dev"
 	
 	# Database/sqlite	
@@ -836,28 +999,22 @@ function do_ubuntu_deps(){
 #	DEPS+=" libgstreamer-plugins-good1.0-dev"	# GStreamer development files for libraries from the "go (UBUNTU)
 	
 	DEPS+=" libgstreamer1.0-dev"
-	DEPS+=" libgstbuzztard-dev"					# Buzztard - Support plugins for GStreamer (UBUNTU)
-	DEPS+=" libgstreamer1.0-vaapi-dev"			# VA-API stuff for Gstreamer (interface for hardware acceleration of media encoding/decoding)
+
 
 	# For qtmultimedia
 	DEPS+=" libasound2-dev"
 	DEPS+=" libffi-dev"
-	DEPS+=" libFLAC-dev"
 	DEPS+=" libflac-dev"
-	DEPS+=" libFLAC-dev"
 	DEPS+=" libgbm-dev"
 	DEPS+=" libgstreamer1.0-dev"
 	DEPS+=" libgstreamer-plugins-base1.0-dev"
-	DEPS+=" libICE-dev"
 	DEPS+=" libogg-dev"
-	DEPS+=" libpng12-dev"
 	DEPS+=" libpng-dev"
 	DEPS+=" libpulse-dev"
-	DEPS+=" libSM-dev"
 	DEPS+=" libsndfile-dev"
 	DEPS+=" libvorbis-dev"
-	DEPS+=" libxml2-dev"
 
+# /msg chanserv op #octomy
 
 	DEPS+=" libxshmfence-dev"
 	DEPS+=" libxslt-dev"
@@ -867,11 +1024,10 @@ function do_ubuntu_deps(){
 	DEPS+=" libassimp-dev"						# Asset management (loading/saving of 3D content) library
 	
 	# Module spesific for qtconnectivity (bluetooth++)
-#	DEPS+=" libbluez-dev"						# Bluetooth support (UBUNTU)
-	DEPS+=" libbluetooth-dev"						# Bluetooth support (DEBIAN)
+	DEPS+=" bluez"						# Bluetooth support (UBUNTU)
+	DEPS+=" libbluetooth-dev"
 	
 	# Module spesific for qtimageformats 
-#	DEPS+=" libjasper-dev"						# Jpeg2000 image support
 	DEPS+=" libmng-dev"							# mng image support
 	DEPS+=" libtiff-dev"						# tiff image support
 	DEPS+=" libwebp-dev"						# webp image support
@@ -885,76 +1041,30 @@ function do_ubuntu_deps(){
 	DEPS+=" libopenal-dev"						# OpenAL portable hardware accelerated autio library
 	DEPS+=" libasound2-dev"						# ALSA2 low level sound library for Linux 
 
-
-	# Module spesific for qtwayland
-	#DEPS+=" libwayland-dev"						# Wayland compositor infrastructure - development files
-	#DEPS+=" libxkbcommon-dev"					# Library interface to the XKB compiler
-	#DEPS+=" libxcomposite-dev"					# X11 Composite extension library (development headers)
-	
-	# Module spesific for qtlinuxfb
-	#DEPS+=" libdirectfb-dev"					# direct framebuffer stuff 
-	
-	# Module spesific for qtwebengine
-	#DEPS+=" libcap-dev" # Development and header files for libcap
-	#DEPS+=" libsnappy-dev" # Fast compression/decompression library
-	#DEPS+=" libsrtp-dev" # Secure RTP (SRTP) and UST Reference Implementations
-	
-
-	
-	
-	# Module spesific for qt3d
-	DEPS+=" libassimp-dev"						# Asset management (loading/saving of 3D content) library
-	
-	# Module spesific for qtconnectivity (bluetooth++)
-	DEPS+=" bluez"						# Bluetooth support (UBUNTU)
-	DEPS+=" libbluetooth-dev"
-	
-	# Module spesific for qtimageformats 
-	DEPS+=" libjasper-dev"						# Jpeg2000 image support
-	DEPS+=" libmng-dev"							# mng image support
-	DEPS+=" libtiff-dev"						# tiff image support
-	DEPS+=" libwebp-dev"						# webp image support
-	DEPS+=" libwebp-dev"						# webp image support
-
-	# Module spesific for qtlocation
-	DEPS+=" libgypsy-dev"						# libgypsy GPS multiplexing daemon (UBUNTU)
-#		DEPS+=" libgps-dev"						# libgypsy GPS multiplexing daemon (DEBIAN)
-
-	# Module spesific for qtmultimedia
-	DEPS+=" libopenal-dev"						# OpenAL portable hardware accelerated autio library
-	DEPS+=" libasound2-dev"						# ALSA2 low level sound library for Linux 
-
 	#NOTE: one of these might provide "gst/interfaces/photography.h
 	DEPS+=" libgstreamer-plugins-bad1.0-dev"	# GStreamer development files for libraries from the "ba
 	DEPS+=" libgstreamer-plugins-base1.0-dev"	# GStreamer development files for libraries from the "ba
 	DEPS+=" libgstreamer-plugins-good1.0-dev"	# GStreamer development files for libraries from the "go (UBUNTU)
-	
-	DEPS+=" libgstreamer0.10-dev"
+
 	DEPS+=" libgstreamer1.0-dev"
-	DEPS+=" libgstreamer-plugins-base0.10-dev"
 
 	
-	DEPS+=" libgstbuzztard-dev"					# Buzztard - Support plugins for GStreamer (UBUNTU)
-	DEPS+=" libgstreamer-vaapi1.0-dev"			# VA-API stuff for Gstreamer (interface for hardware acceleration of media encoding/decoding)
+#	DEPS+=" libgstbuzztard-dev"					# Buzztard - Support plugins for GStreamer (UBUNTU)
+#	DEPS+=" libgstreamer-vaapi1.0-dev"			# VA-API stuff for Gstreamer (interface for hardware acceleration of media encoding/decoding)
 
 	# Module spesific for qtwayland
-	DEPS+=" libwayland-dev"						# Wayland compositor infrastructure - development files
-	DEPS+=" libxkbcommon-dev"					# Library interface to the XKB compiler
-	DEPS+=" libxcomposite-dev"					# X11 Composite extension library (development headers)
+#	DEPS+=" libwayland-dev"						# Wayland compositor infrastructure - development files
+#	DEPS+=" libxkbcommon-dev"					# Library interface to the XKB compiler
+#	DEPS+=" libxcomposite-dev"					# X11 Composite extension library (development headers)
 	
 	# Module spesific for qtlinuxfb
-	DEPS+=" libdirectfb-dev"					# direct framebuffer stuff 
-	
-	DEPS+=" libgles2-mesa-dev"
-	DEPS+=" mesa-common-dev"
-	DEPS+=" libgl1-mesa-dev"
-	DEPS+=" libegl1-mesa-dev"
+#	DEPS+=" libdirectfb-dev"					# direct framebuffer stuff 
 	
 
 	# Module spesific for qtwebengine
-	DEPS+=" libcap-dev" # Development and header files for libcap
-	DEPS+=" libsnappy-dev" # Fast compression/decompression library
-	DEPS+=" libsrtp-dev" # Secure RTP (SRTP) and UST Reference Implementations
+#	DEPS+=" libcap-dev" # Development and header files for libcap
+#	DEPS+=" libsnappy-dev" # Fast compression/decompression library
+#	DEPS+=" libsrtp-dev" # Secure RTP (SRTP) and UST Reference Implementations
 	
 	
 
