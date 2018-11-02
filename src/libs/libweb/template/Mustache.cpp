@@ -71,12 +71,15 @@ PartialResolver* Context::partialResolver() const
 	return m_partialResolver;
 }
 
-QString Context::partialValue(const QString& key) const
+QString Context::partialValue(const QString& key, QString *error) const
 {
 	if (!m_partialResolver) {
+		if(nullptr!=error){
+			*error="No partial resolver set while processing key '"+key+"'";
+		}
 		return QString();
 	}
-	return m_partialResolver->getPartial(key);
+	return m_partialResolver->getPartial(key, error);
 }
 
 bool Context::canEval(const QString&) const
@@ -210,8 +213,12 @@ PartialMap::PartialMap(const QHash<QString, QString>& partials)
 	: m_partials(partials)
 {}
 
-QString PartialMap::getPartial(const QString& name)
+QString PartialMap::getPartial(const QString& name, QString * error)
 {
+	if(!m_partials.contains(name) && nullptr!= error){
+		(*error)="Key not found in map '"+name+"'";
+		return "";
+	}
 	return m_partials.value(name);
 }
 
@@ -219,14 +226,19 @@ PartialFileLoader::PartialFileLoader(const QString& basePath)
 	: m_basePath(basePath)
 {}
 
-QString PartialFileLoader::getPartial(const QString& name)
+QString PartialFileLoader::getPartial(const QString& name, QString *error)
 {
+	//qDebug()<<"PartialFileLoader::getPartial('"<<name<<"')";
 	if (!m_cache.contains(name)) {
 		QString path = m_basePath + '/' + name + ".mustache";
 		QFile file(path);
 		if (file.open(QIODevice::ReadOnly)) {
 			QTextStream stream(&file);
 			m_cache.insert(name, stream.readAll());
+		}
+		else if(nullptr != error){
+			(*error)="Could not open file '"+path+"' for reading";
+			return QString();
 		}
 	}
 	return m_cache.value(name);
@@ -279,8 +291,7 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 		}
 		output += _template.midRef(lastTagEnd, tag.start - lastTagEnd);
 		switch (tag.type) {
-		case Tag::Value:
-		{
+		case Tag::Value: {
 			QString value = context->stringValue(tag.key);
 			if (tag.escapeMode == Tag::Escape) {
 				value = escapeHtml(value);
@@ -291,8 +302,7 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 			lastTagEnd = tag.end;
 		}
 		break;
-		case Tag::SectionStart:
-		{
+		case Tag::SectionStart: {
 			Tag endTag = findEndTag(_template, tag, endPos);
 			if (endTag.type == Tag::Null) {
 				if (m_errorPos == -1) {
@@ -317,8 +327,7 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 			}
 		}
 		break;
-		case Tag::InvertedSectionStart:
-		{
+		case Tag::InvertedSectionStart: {
 			Tag endTag = findEndTag(_template, tag, endPos);
 			if (endTag.type == Tag::Null) {
 				if (m_errorPos == -1) {
@@ -336,8 +345,7 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 			setError("Unexpected end tag", tag.start);
 			lastTagEnd = tag.end;
 			break;
-		case Tag::Partial:
-		{
+		case Tag::Partial: {
 			QString tagStartMarker = m_tagStartMarker;
 			QString tagEndMarker = m_tagEndMarker;
 
@@ -346,7 +354,13 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 
 			m_partialStack.push(tag.key);
 
-			QString partial = context->partialValue(tag.key);
+
+			QString error="";
+			QString partial = context->partialValue(tag.key, &error);
+			if(!error.isEmpty()){
+				setError(error, tag.start);
+			}
+
 			output += render(partial, 0, partial.length(), context);
 			lastTagEnd = tag.end;
 
@@ -378,8 +392,7 @@ void Renderer::setError(const QString& error, int pos)
 	m_error = error;
 	m_errorPos = pos;
 
-	if (!m_partialStack.isEmpty())
-	{
+	if (!m_partialStack.isEmpty()) {
 		m_errorPartial = m_partialStack.top();
 	}
 }
@@ -522,7 +535,7 @@ Tag Renderer::findEndTag(const QString& content, const Tag& startTag, int endPos
 		pos = nextTag.end;
 	}
 
-	return Tag();
+	// return Tag();
 }
 
 void Renderer::setTagMarkers(const QString& startMarker, const QString& endMarker)

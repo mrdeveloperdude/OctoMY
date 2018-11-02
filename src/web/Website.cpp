@@ -2,6 +2,7 @@
 
 #include "utility/Standard.hpp"
 #include "utility/Utility.hpp"
+#include "utility/ScopedTimer.hpp"
 #include "markdown/Markdown.hpp"
 
 #include "template/Mustache.cpp"
@@ -21,9 +22,11 @@ Website::Website( AppContext * appContext)
 	OC_METHODGATE();
 }
 
+
 void Website::run()
 {
 	OC_METHODGATE();
+	ScopedTimer st("Website generation");
 
 	if(nullptr==mAppContext) {
 		qDebug()<<"ERROR: no app context, quitting...";
@@ -41,6 +44,7 @@ void Website::run()
 		qDebug()<<"ERROR: output dir '"<< outputDir<< "' did not exist or could not be created, quitting...";
 		return;
 	}
+
 	outputDir=QDir::cleanPath(outputDir);
 	qDebug()<<"Using output dir '"<< outputDir<< "'";
 
@@ -48,6 +52,7 @@ void Website::run()
 	if(opts.isSet("input-dir")) {
 		inputDir=opts.value("input-dir");
 	}
+
 	inputDir=QDir::cleanPath(inputDir);
 	qDebug()<<"Using input dir '"<< inputDir<< "'";
 
@@ -60,26 +65,40 @@ void Website::run()
 	QVariantHash mustacheData;
 	mustacheData["name"] = "John Smith";
 	mustacheData["email"] = "john.smith@gmail.com";
+	mustacheData["title"] = "Ready-to-run robot software";
+	mustacheData["webroot"] = "/";
 
 	QFuture<void> future = QtConcurrent::map(mSources, [=](QString source) {
 		if(source.startsWith(inputDir)) {
 			QString baseFile=source;
-			baseFile.remove(0, idsz).replace(".md", ".html");
+			QString sourceDir=QFileInfo(source).absolutePath();
+			baseFile.remove(0, idsz).replace(".mustache", "");
 			const QString outFile=outputDir+baseFile;
 			auto outFilePath=QFileInfo (outFile).dir();
-			if(QDir().mkpath(outFilePath.absolutePath())){
-				qDebug()<< "SAVING '"<< outFile << "' From '"<<source<<"'";
-				Markdown markdown;
-
+			if(QDir().mkpath(outFilePath.absolutePath())) {
+				qDebug()<< "SAVING '"<< outFile << "' From '"<<source<<"'" << " ('"<<sourceDir <<"')";
+				//Markdown markdown;
+				PartialFileLoader partialLoader(sourceDir);
 				Mustache::Renderer renderer;
-				Mustache::QtVariantContext context(mustacheData);
-				utility::stringToFile(outFile, markdown.process(renderer.render(utility::fileToString(source), &context)));
-			}
-			else{
-				qDebug()<<"ERROR: Outpuf file path '"<<outFilePath<<"' did not exist or could not be created";
+				Mustache::QtVariantContext context(mustacheData
+												   //);
+												   , &partialLoader);
+				//markdown.process(
+				QString raw = utility::fileToString(source);
+				QString processed=renderer.render(raw, &context);
+				if(renderer.errorPos()>=0){
+					qWarning()<<"MUSTACHE ERROR: "<< renderer.errorPartial()<<": "<<renderer.error();
+				}
+				else{
+					utility::stringToFile(outFile, processed);
+				}
+			} else {
+				qDebug()<<"ERROR: Output file path '"<<outFilePath<<"' did not exist or could not be created";
 			}
 
-
+		}
+		else{
+			qDebug()<<"Skipping "<<source;
 		}
 	});
 	future .waitForFinished();
@@ -88,7 +107,7 @@ void Website::run()
 
 void Website::updateSourcesList(QDir dir)
 {
-	dir.setNameFilters(QStringList("*.md"));
+	dir.setNameFilters(QStringList("*.mustache"));
 	dir.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
 
 	qDebug() << "Scanning: " << dir.path();
@@ -97,9 +116,11 @@ void Website::updateSourcesList(QDir dir)
 	bool foundIndex=false;
 	for (int i=0; i<fileList.count(); i++) {
 		QString file=fileList[i];
-		const bool isIndex=(file=="index.md");
+		const bool isIndex=(file.startsWith("index."));
 		qDebug() << " + Found "<< (isIndex?"index:":"file: ") << file;
-		mSources << dir.absoluteFilePath(file);
+		if(isIndex) {
+			mSources << dir.absoluteFilePath(file);
+		}
 		foundIndex= foundIndex || isIndex;
 	}
 	if(!foundIndex) {

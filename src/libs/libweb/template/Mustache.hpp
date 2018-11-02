@@ -36,7 +36,7 @@ public:
 	/** Create a context.  @p resolver is used to fetch the expansions for any {{>partial}} tags
 	  * which appear in a template.
 	  */
-	explicit Context(PartialResolver* resolver = 0);
+	explicit Context(PartialResolver* resolver = nullptr);
 	virtual ~Context() {}
 
 	/** Returns a string representation of the value for @p key in the current context.
@@ -68,7 +68,7 @@ public:
 	virtual void pop() = 0;
 
 	/** Returns the partial template for a given @p key. */
-	QString partialValue(const QString& key) const;
+	QString partialValue(const QString& key, QString *error=nullptr) const;
 
 	/** Returns the partial resolver passed to the constructor. */
 	PartialResolver* partialResolver() const;
@@ -130,7 +130,7 @@ public:
 	virtual ~PartialResolver() {}
 
 	/** Returns the partial template with a given @p name. */
-	virtual QString getPartial(const QString& name) = 0;
+	virtual QString getPartial(const QString& name, QString *error=nullptr) = 0;
 };
 
 /** A simple partial fetcher which returns templates from a map of (partial name -> template)
@@ -140,7 +140,7 @@ class PartialMap : public PartialResolver
 public:
 	explicit PartialMap(const QHash<QString,QString>& partials);
 
-	virtual QString getPartial(const QString& name);
+	virtual QString getPartial(const QString& name, QString *error=nullptr);
 
 private:
 	QHash<QString, QString> m_partials;
@@ -156,7 +156,7 @@ class PartialFileLoader : public PartialResolver
 public:
 	explicit PartialFileLoader(const QString& basePath);
 
-	virtual QString getPartial(const QString& name);
+	virtual QString getPartial(const QString& name, QString *error=nullptr);
 
 private:
 	QString m_basePath;
@@ -164,10 +164,8 @@ private:
 };
 
 /** Holds properties of a tag in a mustache template. */
-struct Tag
-{
-	enum Type
-	{
+struct Tag {
+	enum Type {
 		Null,
 		Value, /// A {{key}} or {{{key}}} tag
 		SectionStart, /// A {{#section}} tag
@@ -178,8 +176,7 @@ struct Tag
 		SetDelimiter /// A {{=<% %>=}} tag
 	};
 
-	enum EscapeMode
-	{
+	enum EscapeMode {
 		Escape,
 		Unescape,
 		Raw
