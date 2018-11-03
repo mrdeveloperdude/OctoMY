@@ -15,7 +15,7 @@
    viewBox="0 0 4687.5001 2812.4998"
    id="svg28761"
    version="1.1"
-   inkscape:version="0.92.2 (unknown)"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    sodipodi:docname="ux.svg">
   <defs
      id="defs28763">
@@ -1284,6 +1284,54 @@
        y1="-1415.0074"
        x2="7327.9194"
        y2="-1425.6566" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient6383"
+       id="linearGradient7415"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-0.71891597,-9.364605e-5)"
+       x1="7324.1416"
+       y1="-1413.723"
+       x2="7324.1416"
+       y2="-1424.9033" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient6383"
+       id="linearGradient7417"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-0.71891597,-9.364605e-5)"
+       x1="7324.1416"
+       y1="-1413.723"
+       x2="7324.1416"
+       y2="-1424.9033" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient6383"
+       id="linearGradient7419"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-0.71891597,-9.364605e-5)"
+       x1="7324.1416"
+       y1="-1413.723"
+       x2="7324.1416"
+       y2="-1424.9033" />
+    <clipPath
+       id="clipPath8644-8-9"
+       clipPathUnits="userSpaceOnUse">
+      <path
+         inkscape:connector-curvature="0"
+         id="path8646-3-0-0"
+         d="m -189.48752,-3488.6876 -178.18555,178.1856 220.46094,220.459 178.183589,-178.1836 -70.330079,-70.3321 -96.33203,96.3321 -57.7539,-57.7539 96.332028,-96.3321 z"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#8b8d46;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:24.47636795;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    </clipPath>
+    <clipPath
+       id="clipPath8644-8-9-9"
+       clipPathUnits="userSpaceOnUse">
+      <path
+         inkscape:connector-curvature="0"
+         id="path8646-3-0-0-6"
+         d="m -189.48752,-3488.6876 -178.18555,178.1856 220.46094,220.459 178.183589,-178.1836 -70.330079,-70.3321 -96.33203,96.3321 -57.7539,-57.7539 96.332028,-96.3321 z"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#8b8d46;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:24.47636795;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    </clipPath>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -1292,20 +1340,20 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.6560036"
-     inkscape:cx="823.24226"
-     inkscape:cy="1142.2102"
+     inkscape:zoom="1.8780782"
+     inkscape:cx="544.81266"
+     inkscape:cy="1579.358"
      inkscape:document-units="px"
-     inkscape:current-layer="g9312"
+     inkscape:current-layer="layer1"
      showgrid="false"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="3799"
-     inkscape:window-height="2136"
-     inkscape:window-x="41"
-     inkscape:window-y="24"
+     inkscape:window-width="3789"
+     inkscape:window-height="2130"
+     inkscape:window-x="51"
+     inkscape:window-y="30"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -3037,7 +3085,7 @@
          y="1809.3052"
          x="2187.866"
          id="tspan10609"
-         sodipodi:role="line">Agent pairing:</tspan></text>
+         sodipodi:role="line">Pairing:</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:37.5px;line-height:9.375px;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:end;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -3047,7 +3095,7 @@
          sodipodi:role="line"
          id="tspan10613"
          x="2187.866"
-         y="2056.1802">Agent running:</tspan></text>
+         y="2056.1802">Running:</tspan></text>
     <path
        inkscape:connector-curvature="0"
        d="m 2265.8738,400.3199 c -0.8388,0 -2.1424,0.01 -2.3896,0.017 -0.3654,0.02 -0.6103,0.2847 -0.6265,0.6265 -0.017,0.3387 -0.023,6.6408 0,6.9838 0.022,0.3396 0.281,0.5959 0.6265,0.6162 0.3815,0.023 1.6166,0.027 1.9719,0.027 -0.6339,-0.4375 -0.7212,-1.2621 -0.7806,-2.7935 -0.036,-0.9072 -0.01,-4.0863 0,-4.221 l 0.017,-0.8662 3.3344,3.3344 v 1.0442 l -2.6532,-2.6531 c -0.01,0.5243 -0.013,1.2096 -0.013,1.8349 0,0.6092 0.01,1.1609 0.027,1.4515 0.1,1.6689 0.2554,2.4528 1.1263,2.7592 0.2664,0.094 0.5131,0.1146 0.9278,0.1198 0.3418,0.01 2.7268,0.01 3.0708,-0.017 0.3653,-0.019 0.6094,-0.2853 0.6264,-0.6265 0.017,-0.3382 0.022,-6.6234 0,-6.9667 -0.023,-0.3392 -0.2807,-0.5954 -0.6264,-0.6162 -0.3814,-0.023 -1.6168,-0.041 -1.9719,-0.041 0.6338,0.438 0.7212,1.2591 0.7806,2.7901 0.035,0.9072 0.01,4.0863 0,4.221 l -0.017,0.8696 -3.3344,-3.3344 v -1.0442 l 2.6532,2.6497 c 0.01,-0.5241 0.013,-1.2095 0.013,-1.835 0,-0.6097 -0.01,-1.1604 -0.027,-1.4514 -0.1,-1.6685 -0.2556,-2.4495 -1.1263,-2.7559 -0.2665,-0.094 -0.5139,-0.1179 -0.9278,-0.1233 h -0.6812 z"
@@ -3554,7 +3602,7 @@
          y="2669.0803"
          x="2187.866"
          id="tspan11788"
-         sodipodi:role="line">Remote setup:</tspan></text>
+         sodipodi:role="line">Setup:</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:37.5px;line-height:9.375px;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:end;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -3564,7 +3612,7 @@
          sodipodi:role="line"
          id="tspan12150"
          x="2187.866"
-         y="2964.7053">Remote running:</tspan></text>
+         y="2964.7053">Running:</tspan></text>
     <rect
        transform="rotate(90)"
        y="-2350.3201"
@@ -8168,7 +8216,7 @@
          sodipodi:role="line"
          id="tspan8347"
          x="2187.866"
-         y="1510.2803">Agent delivery:</tspan></text>
+         y="1510.2803">Delivery:</tspan></text>
     <rect
        transform="rotate(90)"
        y="-2350.3201"
@@ -10361,7 +10409,7 @@
          sodipodi:role="line"
          id="tspan11743"
          x="3978.491"
-         y="2669.0803">Hub setup:</tspan></text>
+         y="2669.0803">Setup:</tspan></text>
     <text
        id="text11749"
        y="2964.7053"
@@ -10371,7 +10419,7 @@
          y="2964.7053"
          x="3978.491"
          id="tspan11747"
-         sodipodi:role="line">Hub running:</tspan></text>
+         sodipodi:role="line">Running:</tspan></text>
     <g
        id="g12354">
       <rect
@@ -16241,6 +16289,280 @@
            sodipodi:role="line"
            id="tspan8916-7"
            style="fill:#000000;fill-opacity:1">HogWatul</tspan></text>
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:37.5px;line-height:9.375px;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:end;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="2024.3477"
+       y="1507.8002"
+       id="text7345"><tspan
+         sodipodi:role="line"
+         id="tspan7343"
+         x="2024.3477"
+         y="1507.8002"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:37.5px;font-family:Dosis;-inkscape-font-specification:'Dosis, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:end;writing-mode:lr-tb;text-anchor:end">Agent</tspan></text>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot7347"
+       style="fill:black;stroke:none;stroke-opacity:1;stroke-width:1px;stroke-linejoin:miter;stroke-linecap:butt;fill-opacity:1;font-family:Dosis;font-style:normal;font-weight:normal;font-size:10.80512524px;line-height:25px;letter-spacing:0px;word-spacing:0px;-inkscape-font-specification:'Dosis, Normal';font-stretch:normal;font-variant:normal;text-anchor:start;text-align:start;writing-mode:lr"><flowRegion
+         id="flowRegion7349"><rect
+           id="rect7351"
+           width="323.7352"
+           height="423.83752"
+           x="2353.4697"
+           y="1178.9895" /></flowRegion><flowPara
+         id="flowPara7353"></flowPara></flowRoot>    <text
+       id="text7357"
+       y="2660.925"
+       x="2024.3477"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:37.5px;line-height:9.375px;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:end;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:37.5px;font-family:Dosis;-inkscape-font-specification:'Dosis, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:end;writing-mode:lr-tb;text-anchor:end"
+         y="2660.925"
+         x="2024.3477"
+         id="tspan7355"
+         sodipodi:role="line">Remote</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:37.5px;line-height:9.375px;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:end;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="3805.5977"
+       y="2660.925"
+       id="text7361"><tspan
+         sodipodi:role="line"
+         id="tspan7359"
+         x="3805.5977"
+         y="2660.925"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:37.5px;font-family:Dosis;-inkscape-font-specification:'Dosis, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:end;writing-mode:lr-tb;text-anchor:end">Hub</tspan></text>
+    <rect
+       transform="rotate(90)"
+       y="-3049.5703"
+       x="1481.6677"
+       height="108"
+       width="192"
+       id="rect7363"
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#6fb5ff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    <text
+       id="text7367"
+       y="1501.5374"
+       x="2947.5723"
+       style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-size:18.93000031px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis Light';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13.75px;font-family:Dosis;-inkscape-font-specification:'Dosis Bold';text-align:start;text-anchor:start"
+         id="tspan7365"
+         y="1501.5374"
+         x="2947.5723"
+         sodipodi:role="line">Done</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.5px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="2947.1704"
+       y="1520.1638"
+       id="text7379"><tspan
+         id="tspan7369"
+         sodipodi:role="line"
+         x="2947.1704"
+         y="1520.1638"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.5px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start">This agent was sucesfully delivered!</tspan><tspan
+         id="tspan7371"
+         sodipodi:role="line"
+         x="2947.1704"
+         y="1529.5388"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.5px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start" /><tspan
+         id="tspan7377"
+         sodipodi:role="line"
+         x="2947.1704"
+         y="1538.9138"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.5px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start">Control this agent with a remote</tspan><tspan
+         sodipodi:role="line"
+         x="2947.1704"
+         y="1548.2888"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.5px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start"
+         id="tspan7426">or hub.</tspan></text>
+    <g
+       transform="translate(-4359.0286,3072.2874)"
+       id="g7387">
+      <rect
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:url(#linearGradient7415);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         id="rect7381"
+         width="79.982086"
+         height="26.660694"
+         x="7314.6079"
+         y="-1431.5686"
+         rx="8.6002235"
+         ry="8.6002235" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.80512524px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="7354.4966"
+         y="-1414.127"
+         id="text7385"><tspan
+           sodipodi:role="line"
+           id="tspan7383"
+           x="7354.4966"
+           y="-1414.127">Done!</tspan></text>
+    </g>
+    <circle
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffb905;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       id="circle7389"
+       cx="2941.2051"
+       cy="1578.5559"
+       r="2.3650615" />
+    <g
+       id="g7405"
+       transform="translate(-4359.0286,3037.6577)">
+      <rect
+         ry="8.6002235"
+         rx="8.6002235"
+         y="-1431.5686"
+         x="7367.3774"
+         height="26.660645"
+         width="27.212334"
+         id="rect7399"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:url(#linearGradient7417);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+      <text
+         id="text7403"
+         y="-1409.9142"
+         x="7381.1416"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:35.60869598px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3.29553771px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="-1409.9142"
+           x="7381.1416"
+           id="tspan7401"
+           sodipodi:role="line"
+           style="stroke-width:3.29553771px">+</tspan></text>
+    </g>
+    <g
+       transform="translate(-4358.779,2983.7001)"
+       id="g7413">
+      <rect
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:url(#linearGradient7419);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         id="rect7407"
+         width="27.068802"
+         height="26.660645"
+         x="7367.521"
+         y="-1431.5686"
+         rx="8.6002235"
+         ry="8.6002235" />
+      <g
+         id="g8654-0"
+         transform="matrix(0.05351229,0,0,0.05351229,7389.1673,-1242.4456)">
+        <rect
+           clip-path="url(#clipPath8644-8-9-9)"
+           ry="30.793785"
+           rx="30.793785"
+           y="-3364.2131"
+           x="-245.62236"
+           height="170.30847"
+           width="170.30847"
+           id="rect8611-3-4"
+           style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#020202;stroke-width:23.12749672;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+        <g
+           transform="rotate(-45,-189.92414,-3250.9559)"
+           id="g8650-0">
+          <path
+             sodipodi:type="star"
+             style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#020202;stroke-width:24;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+             id="path8615-9"
+             sodipodi:sides="3"
+             sodipodi:cx="190.87405"
+             sodipodi:cy="3246.0962"
+             sodipodi:r1="20.180769"
+             sodipodi:r2="10.090385"
+             sodipodi:arg1="0"
+             sodipodi:arg2="1.0471976"
+             inkscape:flatsided="true"
+             inkscape:rounded="0"
+             inkscape:randomized="0"
+             d="m 211.05482,3246.0962 -30.27115,17.477 v -34.9541 z"
+             inkscape:transform-center-x="5.1710645"
+             inkscape:transform-center-y="3.5674906"
+             transform="scale(-1)" />
+          <rect
+             style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#020202;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:24;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+             id="rect8648-1"
+             width="147.18839"
+             height="56.761478"
+             x="-157.19322"
+             y="-3274.4771"
+             rx="10.808715"
+             ry="10.808715" />
+        </g>
+      </g>
+    </g>
+    <text
+       id="text7436"
+       y="1597.9763"
+       x="2947.1704"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.5px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         id="tspan7434"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.5px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start"
+         y="1597.9763"
+         x="2947.1704"
+         sodipodi:role="line">Paired contols:</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.5px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start"
+         y="1607.3513"
+         x="2947.1704"
+         sodipodi:role="line"
+         id="tspan7457" /><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.5px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start"
+         y="1616.7263"
+         x="2947.1704"
+         sodipodi:role="line"
+         id="tspan7448"><tspan
+   style="font-weight:bold"
+   id="tspan7452">    1</tspan>  remote(s)</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.5px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start"
+         y="1626.1013"
+         x="2947.1704"
+         sodipodi:role="line"
+         id="tspan7450"><tspan
+   style="font-weight:bold"
+   id="tspan7454">    0</tspan> hub(s)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.5px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="2947.1704"
+       y="1567.0388"
+       id="text7471"><tspan
+         id="tspan7469"
+         sodipodi:role="line"
+         x="2947.1704"
+         y="1567.0388"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.5px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start">Hardware: <tspan
+   style="font-weight:bold"
+   id="tspan7480">ardumy</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-size:18.93000031px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis Light';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="2951.5657"
+       y="1472.5848"
+       id="text7610"><tspan
+         sodipodi:role="line"
+         x="2951.5657"
+         y="1472.5848"
+         id="tspan7608"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13.75px;font-family:Dosis;-inkscape-font-specification:'Dosis Bold';text-align:start;text-anchor:start">Suggested:</tspan></text>
+    <g
+       transform="matrix(0.48361177,0,0,0.48361177,857.41696,1615.5988)"
+       id="g7618">
+      <circle
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffb515;fill-opacity:1;fill-rule:evenodd;stroke:#533900;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         id="circle7612"
+         cx="4531.6875"
+         cy="-206.59006"
+         r="40.136425" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:41.37644196px;line-height:125%;font-family:Dosis;-inkscape-font-specification:'Dosis, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#533800;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="4502.3857"
+         y="-191.59109"
+         id="text7616"><tspan
+           sodipodi:role="line"
+           id="tspan7614"
+           x="4502.3857"
+           y="-191.59109"
+           style="font-style:normal;font-variant:normal;font-weight:800;font-stretch:normal;font-family:Dosis;-inkscape-font-specification:'Dosis Ultra-Bold';fill:#533800;fill-opacity:1">Sug</tspan></text>
     </g>
   </g>
 </svg>
