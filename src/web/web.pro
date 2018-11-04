@@ -15,16 +15,19 @@ include($$PRIS/app.pri)
 include($$PRIS/lib_headers.pri)
 
 QT -= gui
+QT += network
 CONFIG += console
 
 
 SOURCES += \
 		Website.cpp \
-		WebsiteMain.cpp
+		WebsiteMain.cpp \
+		GoogleSitesClassicTool.cpp
 
 HEADERS += \
 		Website.hpp \
-		WebsiteMain.hpp
+		WebsiteMain.hpp \
+		GoogleSitesClassicTool.hpp
 
 
 

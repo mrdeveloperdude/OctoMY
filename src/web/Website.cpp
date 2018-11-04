@@ -10,10 +10,7 @@
 
 #include <QDir>
 
-//#include <QtConcurrent/QtConcurrentMap>
 #include <QtConcurrent/QtConcurrent>
-
-
 
 
 Website::Website( AppContext * appContext)

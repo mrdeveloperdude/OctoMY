@@ -7,6 +7,8 @@
 #include "basic/TopicGenerator.hpp"
 #include "node/AppContext.hpp"
 
+#include "GoogleSitesClassicTool.hpp"
+
 
 #include <QCoreApplication>
 
@@ -43,14 +45,18 @@ int main(int argc, char *argv[])
 	}
 	opts.process(arguments);
 
+	GoogleSitesClassicTool gsct;
+	gsct.scavenge();
 
+	/*
 	TopicGenerator tg;
 	QString out;
 	for(int i=0;i<1000;++i)out.append(tg.generate()+"\n");
 	utility::stringToFile("/tmp/topics.txt", out);
 	Website website(OC_NEW AppContext(opts, env, "website", nullptr));
 	website.run();
-	QTimer::singleShot(0, [=]() {
+	*/
+	QTimer::singleShot(10000, [=]() {
 		papp->exit(0);
 	});
 
