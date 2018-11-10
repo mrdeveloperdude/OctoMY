@@ -23,6 +23,9 @@
 #include <QThread>
 #include <QWaitCondition>
 
+#include <QMutex>
+#include <QMutexLocker>
+
 /*
 
   DataStore is used to persist data in form of variant maps.
@@ -104,6 +107,8 @@ protected:
 
 	QFuture<void> mCompleteFuture;
 
+	QMutex mJournalMutex;
+	QStringList mJournal;
 
 public:
 	explicit AsyncStore(AsyncBackend<T> &backend, AsyncFrontend<T> &frontend, QObject *parent = nullptr);
@@ -120,6 +125,7 @@ public:
 	QString filename() const;
 	bool fileExists() const;
 	bool ready();
+	QStringList journal();
 
 
 private:
@@ -128,10 +134,11 @@ private:
 	void processEvents();
 
 	void processEvent(ASEvent<T> &event);
-
-
 	quint64 autoIncrement();
 
+	void addJournal(QString);
+
+	// The asynchronous api
 public:
 	ASEvent<T> status();
 	ASEvent<T> clear();
@@ -147,6 +154,7 @@ private:
 	ASEvent<T> complete();
 	void runCallbacksForEvent(ASEvent<T> event);
 
+	// The synchronous actions
 private:
 
 	// Get current status
@@ -254,6 +262,17 @@ bool AsyncStore<T>::ready()
 
 
 template <typename T>
+QStringList AsyncStore<T>::journal()
+{
+	OC_METHODGATE();
+	QMutexLocker ml(&mJournalMutex);
+	return mJournal;
+}
+
+
+
+
+template <typename T>
 ASEvent<T> AsyncStore<T>::enqueueTransaction(ASEvent<T> trans)
 {
 	OC_METHODGATE();
@@ -291,6 +310,20 @@ quint64 AsyncStore<T>::autoIncrement()
 	OC_METHODGATE();
 	return ++mAutoIncrement;
 }
+
+
+
+
+template <typename T>
+void AsyncStore<T>::addJournal(QString entry)
+{
+	OC_METHODGATE();
+	QMutexLocker ml(&mJournalMutex);
+	mJournal << entry;
+}
+
+
+
 
 
 template <typename T>
@@ -377,6 +410,7 @@ template <typename T>
 AsyncStoreStatus AsyncStore<T>::statusSync()
 {
 	OC_METHODGATE();
+	mJournal << "status";
 	return AsyncStoreStatus(mDiskCounter, mMemoryCounter);
 }
 
@@ -387,6 +421,7 @@ template <typename T>
 bool AsyncStore<T>::clearSync()
 {
 	OC_METHODGATE();
+	mJournal << "clear";
 	const bool backendOK=mBackend.clearBackend();
 	//const auto oldD=mDiskCounter;
 	//const auto oldM=mMemoryCounter;
@@ -408,6 +443,7 @@ template <typename T>
 T AsyncStore<T>::getSync(bool &ok)
 {
 	OC_METHODGATE();
+	mJournal << "get";
 	//qDebug()<<"Entering Sync Get from "<<utility::currentThreadID();
 	ok=false;
 	T data = mFrontend.getFrontend(ok);
@@ -420,6 +456,7 @@ template <typename T>
 bool AsyncStore<T>::setSync(T data)
 {
 	OC_METHODGATE();
+	mJournal << "set";
 	//qDebug()<<"Entering Sync Set with data="<<data<<" from "<<utility::currentThreadID();
 	const  bool ok=mFrontend.setFrontend(data);
 	//const auto old=mMemoryCounter;
@@ -435,6 +472,7 @@ template <typename T>
 bool AsyncStore<T>::loadSync()
 {
 	OC_METHODGATE();
+	mJournal << "load";
 	//qDebug()<<"Entering Sync Load from "<<utility::currentThreadID();
 	bool ok=false;
 	T data = mBackend.loadBackend(ok);
@@ -452,6 +490,7 @@ template <typename T>
 bool AsyncStore<T>::saveSync()
 {
 	OC_METHODGATE();
+	mJournal << "save";
 	//qDebug()<<"Entering Sync Save from "<<utility::currentThreadID();
 	bool ok=false;
 	T data = mFrontend.getFrontend(ok);
@@ -471,6 +510,7 @@ template <typename T>
 bool AsyncStore<T>::generateSync()
 {
 	OC_METHODGATE();
+	mJournal << "generate";
 	//qDebug()<<"Entering Sync Generate from "<<utility::currentThreadID();
 	const bool ok=mFrontend.generateFrontend();
 	//const auto old=mMemoryCounter;
@@ -486,6 +526,7 @@ template <typename T>
 bool AsyncStore<T>::synchronizeSync()
 {
 	OC_METHODGATE();
+	mJournal << "sync";
 	//qDebug()<<"Entering Sync Synchronize";
 	bool ok=false;
 	const quint64 disk=mDiskCounter;
@@ -513,6 +554,7 @@ template <typename T>
 bool AsyncStore<T>::completeSync()
 {
 	OC_METHODGATE();
+	mJournal << "complete";
 	//qDebug()<<"Entering Sync Completion";
 	bool ok=true;
 	mDone=true;

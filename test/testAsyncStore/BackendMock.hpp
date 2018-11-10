@@ -4,6 +4,8 @@
 
 #include "node/AsyncStore.hpp"
 
+#include <QDebug>
+
 template<typename T>
 class BackendMock: public AsyncBackend<T>
 {
@@ -16,18 +18,33 @@ public:
 	bool doFailSave;
 	bool doFailLoad;
 
+	static int sid;
+	int id=sid++;
+	bool doLog;
+
 public:
 
-	explicit BackendMock(QString f="", bool exists=false, T savedData=T(), bool doFailClear=false, bool doFailSave=false, bool doFailLoad=false)
+	explicit BackendMock(QString f="", bool exists=false, T savedData=T(), bool doFailClear=false, bool doFailSave=false, bool doFailLoad=false, bool doLog=false)
 		: filename(f)
 		, exists(exists)
 		, diskData(savedData)
 		, doFailClear(doFailClear)
 		, doFailSave(doFailSave)
 		, doFailLoad(doFailLoad)
+		, doLog(doLog)
 	{
-		qDebug().nospace().noquote()<<"BackendMock::BackendMock(filename='"<<filename<<"', exists="<<exists<<", savedData="<<savedData<<", doFailClear="<<doFailClear<<", doFailSave="<<doFailSave<<", doFailLoad="<<doFailLoad<<") @ "<<utility::currentThreadID();
+		if(doLog) {
+			qDebug().nospace().noquote()<<"BackendMock::BackendMock(#"<<id<<"/"<<sid<<", filename='"<<filename<<"', exists="<<exists<<", savedData="<<savedData<<", doFailClear="<<doFailClear<<", doFailSave="<<doFailSave<<", doFailLoad="<<doFailLoad<<") @ "<<utility::currentThreadID();
+		}
 	}
+
+	virtual ~BackendMock()
+	{
+		if(doLog) {
+			qDebug().nospace().noquote()<<"BackendMock::~BackendMock(#"<<id<<"/"<<sid<<") @ "<<utility::currentThreadID();
+		}
+	}
+
 	// AsyncBackend interface
 public:
 	void setFilenameBackend(QString f) Q_DECL_OVERRIDE{
@@ -53,7 +70,10 @@ public:
 			exists = false;
 			diskData = T();
 		}
-		qDebug().nospace().noquote()<<"clearBackend() with doFailClear="<<doFailClear<<" returned "<<ret<< " @ "<<utility::currentThreadID();
+		if(doLog)
+		{
+			qDebug().nospace().noquote()<<"BackendMock::clearBackend(#"<<id<<"/"<<sid<<") with doFailClear="<<doFailClear<<" returned "<<ret<< " @ "<<utility::currentThreadID();
+		}
 		return ret;
 	}
 
@@ -67,7 +87,10 @@ public:
 			this->diskData=data;
 			this->exists=true;
 		}
-		qDebug().nospace().noquote()<<"saveBackend() with doFailSave="<<doFailSave<<" returned "<<ret<< " @ "<<utility::currentThreadID();
+		if(doLog)
+		{
+			qDebug().nospace().noquote()<<"BackendMock::saveBackend(#"<<id<<"/"<<sid<<") with doFailSave="<<doFailSave<<" returned "<<ret<< " @ "<<utility::currentThreadID();
+		}
 		return ret;
 	}
 
@@ -76,24 +99,32 @@ public:
 		{
 			ok=false;
 			T data=T();
-			qDebug().nospace().noquote()<<"loadBackend("<<ok<<") with doFailLoad="<<doFailLoad<<" returned "<<data<< " @ "<<utility::currentThreadID();
+			if(doLog) {
+				qDebug().nospace().noquote()<<"BackendMock::loadBackend(#"<<id<<"/"<<sid<<", ok="<<ok<<") with doFailLoad="<<doFailLoad<<" returned "<<data<< " @ "<<utility::currentThreadID();
+			}
 			return data;
 		} else
 		{
 			if(exists) {
 				ok=true;
-				qDebug().nospace().noquote()<<"loadBackend("<<ok<<") with doFailLoad="<<doFailLoad<<" returned "<<diskData<< " @ "<<utility::currentThreadID();
+				if(doLog) {
+					qDebug().nospace().noquote()<<"BackendMock::loadBackend(#"<<id<<"/"<<sid<<", ok="<<ok<<") with doFailLoad="<<doFailLoad<<" returned "<<diskData<< " @ "<<utility::currentThreadID();
+				}
 				return diskData;
 			} else {
 				ok=false;
 				T data=T();
-				qDebug().nospace().noquote()<<"loadBackend("<<ok<<") with doFailLoad="<<doFailLoad<<" returned "<<data<< " @ "<<utility::currentThreadID();
+				if(doLog) {
+					qDebug().nospace().noquote()<<"BackendMock::loadBackend(#"<<id<<"/"<<sid<<", ok="<<ok<<") with doFailLoad="<<doFailLoad<<" returned "<<data<< " @ "<<utility::currentThreadID();
+				}
 				return data;
 			}
 		}
 	}
 };
 
+template<typename T>
+int BackendMock<T>::sid=0;
 
 
 #endif // BACKENDMOCK_HPP

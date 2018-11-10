@@ -98,7 +98,7 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testAgentStateCourier \
 #		testArduMY \
 #		testAssociate \
-#		testAsyncStore \
+		testAsyncStore \
 #		testBlob \
 #		testCarSteeringWidget \
 #		testCommsCarrier \
@@ -116,11 +116,11 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testIdenticon \
 #		testIrisRendrer \
 #		testKey \
-#		testKeyStore \
+		testKeyStore \
 #		testMapEditor\
 #		testNetworkAddress \
 #		testNetworkSettingsWidget \
-		testNameGenerator \
+#		testNameGenerator \
 #		testParser \
 #		testPortableID \
 #		testPoseMappingWidget \

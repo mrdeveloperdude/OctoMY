@@ -114,8 +114,7 @@ public:
 public:
 
 
-	//private:
-		inline ASEvent() Q_DECL_NOTHROW;
+	inline ASEvent() Q_DECL_NOTHROW;
 
 
 	explicit ASEvent(AsyncStore<T> &store, const ASEventType type, T data=T());
@@ -215,15 +214,14 @@ ASEventPrivate<T>::ASEventPrivate(AsyncStore<T> & store, const ASEventType type,
 	//qDebug()<<"ASEventPrivate created ( store=" << mStore.filename() << ", type=" << mType << " ) from thread " << utility::currentThreadID() << " and P:" << privCounterString(this);
 }
 
-/*
+
+template <typename T>
+ASEventPrivate<T>::ASEventPrivate()
 	: mType(AS_EVENT_NONE)
 	, mStarted(false)
 	, mFinished(false)
 	, mSuccessfull(false)
 	, mStatus(mStore.statusSync())
-	*/
-template <typename T>
-ASEventPrivate<T>::ASEventPrivate()
 {
 	OC_METHODGATE();
 	//qDebug()<<"ASEventPrivate created ( defaults ) from thread " << utility::currentThreadID() << " and P:" << privCounterString(this);
@@ -238,6 +236,10 @@ template <typename F>
 void ASEvent<T>::onFinished(F callBack)
 {
 	OC_METHODGATE();
+	if(p_ptr.isNull()) {
+		qWarning().nospace().noquote()<<"ERROR: No p";
+		return;
+	}
 	ASEventPrivate<T> *p=p_ptr.data();
 
 	if(nullptr==p) {
@@ -309,9 +311,9 @@ ASEvent<T>::ASEvent() Q_DECL_NOTHROW
 :
 p_ptr(nullptr)
 , mT(utility::currentThreadID())
-, mAllocation("default ctor ERROR")
+, mAllocation("default ctor")
 {
-	qWarning()<<"ERROR: default ctor called. Should never happen";
+	//qWarning()<<"ERROR: default ctor called. Should never happen";
 	tTest();
 }
 
@@ -324,7 +326,6 @@ ASEvent<T>::ASEvent(AsyncStore<T> & store, const ASEventType type, T data)
 	, mAllocation("parameter ctor")
 {
 	tTest();
-
 }
 
 

@@ -2,11 +2,14 @@
 
 #include "utility/Standard.hpp"
 
-QDebug operator<< (QDebug d, ASEventType tt)
+
+
+QString ASEventTypeToString(ASEventType tt)
 {
 	OC_FUNCTIONGATE();
-	switch(tt) {
-#define ASEventType_case_stanza(A) case(A):{ d.nospace() << #A; }break
+	switch(static_cast<quint8>(tt)) {
+#define ASEventType_case_stanza(A) case(A):{ return #A; }break
+		ASEventType_case_stanza(AS_EVENT_NONE);
 		ASEventType_case_stanza(AS_EVENT_STATUS);
 		ASEventType_case_stanza(AS_EVENT_CLEAR);
 		ASEventType_case_stanza(AS_EVENT_GET);
@@ -18,13 +21,17 @@ QDebug operator<< (QDebug d, ASEventType tt)
 		ASEventType_case_stanza(AS_EVENT_EXISTS);
 		ASEventType_case_stanza(AS_EVENT_DONE);
 	default: {
-		d.nospace() << "AS_EVENT_UNKNOWN";
+		return  QString("AS_EVENT_UNKNOWN(%1)").arg(tt);
 	}
-	break;
 #undef TransactionType_case_stanza
 	}
-
-	return d.space();
 }
 
 
+
+QDebug operator<< (QDebug d, ASEventType tt)
+{
+	OC_FUNCTIONGATE();
+	QDebugStateSaver stateSaver(d);
+	return d.noquote().nospace() << ASEventTypeToString(tt);
+}
