@@ -21,7 +21,7 @@ private:
 
 
 public:
-	explicit WheeledMtlobeWidget(QWidget *parent = 0);
+	explicit WheeledMtlobeWidget(QWidget *parent = nullptr);
 	~WheeledMtlobeWidget();
 
 public:

@@ -11,7 +11,7 @@ class EnumEntry : public QComboBox{
 		QString k;
 		Settings *settings;
 	public:
-		explicit EnumEntry(QWidget *parent = 0);
+		explicit EnumEntry(QWidget *parent = nullptr);
 		virtual ~EnumEntry();
 	public:
 		void configure(Settings &settings, QString val, QString key="", QString tooltip="");

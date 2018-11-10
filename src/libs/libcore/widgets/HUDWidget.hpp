@@ -18,7 +18,7 @@ class HUDWidget : public QWidget
 		quint64 startTime;
 
 	public:
-		explicit HUDWidget(QWidget *parent = 0);
+		explicit HUDWidget(QWidget *parent = nullptr);
 		virtual ~HUDWidget();
 
 	protected:

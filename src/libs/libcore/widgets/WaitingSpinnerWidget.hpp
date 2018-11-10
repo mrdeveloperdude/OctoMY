@@ -129,7 +129,7 @@ class WaitingSpinnerWidget : public QWidget {
 	public:
 		/*! Constructor for "standard" widget behaviour - use this
    * constructor if you wish to, e.g. embed your widget in another. */
-		WaitingSpinnerWidget(QWidget *parent = 0,
+		WaitingSpinnerWidget(QWidget *parent = nullptr,
 							 bool centerOnParent = false,
 							 bool disableParentWhenSpinning = false);
 
@@ -141,7 +141,7 @@ class WaitingSpinnerWidget : public QWidget {
 
 		/*
 		WaitingSpinnerWidget(Qt::WindowModality modality,
-							 QWidget *parent = 0,
+							 QWidget *parent = nullptr,
 							 bool centerOnParent = false,
 							 bool disableParentWhenSpinning = false);
 */

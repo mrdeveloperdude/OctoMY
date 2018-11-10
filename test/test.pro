@@ -15,6 +15,8 @@ contains(DEFINES, USE_TESTS_BASIC){
 
 	message(ADDING BASIC TESTS TO BUILD)
 	TEST_PROJECTS+= \
+		testHardwareWidgetgit \
+		testHardwareWidget \
 		testNameGenerator \
 		testAddressBook \
 		testAddressList \
@@ -98,43 +100,45 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testAgentStateCourier \
 #		testArduMY \
 #		testAssociate \
-		testAsyncStore \
+#		testAsyncStore \
 #		testBlob \
-#		testCarSteeringWidget \
+		testCarSteeringWidget \
 #		testCommsCarrier \
 #		testCommsChannel \
 #		testCommsSession \
 #		testConcurrentQueue \
 #		testDataStore \
-#		testDeliveryWizard \
-#		testDiscovery \
+		testDeliveryWizard \
+		testDiscovery \
 #		testEventSourcing \
-#		testEyesWidget \
+		testEyesWidget \
 #		testFivePhase \
+		testHardwareWidget \
 #		testHashstore \
 #		testIDDuel \
 #		testIdenticon \
 #		testIrisRendrer \
 #		testKey \
-		testKeyStore \
+#		testKeyStore \
 #		testMapEditor\
-#		testNetworkAddress \
-#		testNetworkSettingsWidget \
 #		testNameGenerator \
+#		testNetworkAddress \
+		testNetworkSettingsWidget \
 #		testParser \
 #		testPortableID \
-#		testPoseMappingWidget \
+		testPoseMappingWidget \
 #		testRateCalculator \
 #		testRNG \
 #		testServotor32Controller \
 #		testSimpleDataStore \
-#		testStreamCodec \
+		testStreamCodec \
 #		testSyncParameter \
 #		testTaskQueue \
 #		testTetraGPSEncoder \
-#		testTryToggle \
+		testTryToggle \
 #		testUtility \
 #		testZooComms \
+
 
 	STRESS_PROJECTS+= \
 	#	stressCapabilities \

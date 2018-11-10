@@ -71,7 +71,7 @@ class WidgetALT : public QWidget
 		Q_PROPERTY(QString theme READ theme WRITE setTheme )
 	public:
 
-		explicit WidgetALT( QWidget *parent = 0 );
+		explicit WidgetALT( QWidget *parent = nullptr );
 
 		~WidgetALT();
 

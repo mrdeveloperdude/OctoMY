@@ -71,7 +71,7 @@ class WidgetASI : public QWidget
 		Q_PROPERTY(QString theme READ theme WRITE setTheme )
 	public:
 
-		explicit WidgetASI( QWidget *parent = 0 );
+		explicit WidgetASI( QWidget *parent = nullptr );
 
 		~WidgetASI();
 

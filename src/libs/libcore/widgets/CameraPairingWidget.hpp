@@ -45,7 +45,7 @@ class CameraPairingWidget : public QWidget
 
 
 	public:
-		explicit CameraPairingWidget(QWidget *parent = 0);
+		explicit CameraPairingWidget(QWidget *parent = nullptr);
 		~CameraPairingWidget();
 
 

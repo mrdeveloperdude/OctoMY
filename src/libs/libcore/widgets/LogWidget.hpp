@@ -17,7 +17,7 @@ class LogWidget : public QPlainTextEdit
 		bool mScrollDirDown;
 
 	public:
-		explicit LogWidget(QWidget *parent = 0);
+		explicit LogWidget(QWidget *parent = nullptr);
 		~LogWidget();
 
 	public:

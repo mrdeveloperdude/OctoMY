@@ -29,7 +29,7 @@ private:
 	ArduMYActuator *mActuator;
 
 public:
-	explicit ArduMYActuatorWidget(QWidget *parent = 0);
+	explicit ArduMYActuatorWidget(QWidget *parent = nullptr);
 	virtual ~ArduMYActuatorWidget();
 
 private:

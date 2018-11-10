@@ -14,7 +14,7 @@ class TrackedMtlobeWidget : public MtlobeWidget
 	Q_OBJECT
 
 public:
-	explicit TrackedMtlobeWidget(QWidget *parent = 0);
+	explicit TrackedMtlobeWidget(QWidget *parent = nullptr);
 	~TrackedMtlobeWidget();
 
 private:

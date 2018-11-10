@@ -9,7 +9,7 @@ class ImageLabel : public QLabel
 {
 	Q_OBJECT
 public:
-	explicit ImageLabel(QWidget *parent = 0);
+	explicit ImageLabel(QWidget *parent = nullptr);
 	virtual int heightForWidth( int width ) const;
 	virtual QSize sizeHint() const;
 signals:

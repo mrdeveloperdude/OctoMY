@@ -43,7 +43,7 @@ public:
 	static const quint64 MINIMUM_BIRTH_TIME;
 
 public:
-	explicit ControlDeliveryWizard(QWidget *parent = 0);
+	explicit ControlDeliveryWizard(QWidget *parent = nullptr);
 	~ControlDeliveryWizard();
 
 public:

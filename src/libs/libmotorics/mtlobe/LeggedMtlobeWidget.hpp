@@ -16,7 +16,7 @@ private:
 	Ui::LeggedMtlobeWidget *ui;
 
 public:
-	explicit LeggedMtlobeWidget(QWidget *parent = 0);
+	explicit LeggedMtlobeWidget(QWidget *parent = nullptr);
 	~LeggedMtlobeWidget();
 
 private slots:

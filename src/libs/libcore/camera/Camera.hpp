@@ -48,7 +48,7 @@ class Camera : public QWidget{
 
 
 	public:
-		Camera(QWidget *parent = 0);
+		Camera(QWidget *parent = nullptr);
 		~Camera();
 
 	private slots:

@@ -36,7 +36,7 @@ private:
 
 	QTimer mPulsatingTrustTimer;
 public:
-	explicit PairingWizard(QWidget *parent = 0);
+	explicit PairingWizard(QWidget *parent = nullptr);
 	virtual ~PairingWizard();
 public:
 

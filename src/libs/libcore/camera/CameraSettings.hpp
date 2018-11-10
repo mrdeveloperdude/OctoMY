@@ -57,7 +57,7 @@ class CameraSettings : public QDialog
 		Q_OBJECT
 
 	public:
-		CameraSettings(QMediaRecorder *mediaRecorder, QCameraImageCapture *imagecapture, QWidget *parent = 0);
+		CameraSettings(QMediaRecorder *mediaRecorder, QCameraImageCapture *imagecapture, QWidget *parent = nullptr);
 		~CameraSettings();
 
 		QAudioEncoderSettings audioSettings() const;

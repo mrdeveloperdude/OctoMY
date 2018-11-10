@@ -61,7 +61,7 @@ private:
 	bool mWasEverUndelivered;
 
 public:
-	explicit AgentWindow(QSharedPointer<Agent> agent, QWidget *parent = 0);
+	explicit AgentWindow(QSharedPointer<Agent> agent, QWidget *parent = nullptr);
 	virtual ~AgentWindow();
 
 

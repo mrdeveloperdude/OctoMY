@@ -11,7 +11,7 @@ class ImageLabel2 : public QLabel
 		QPixmap _qpCurrent;
 		QPixmap _qpSource;
 	public:
-		explicit ImageLabel2(QWidget *parent = 0);
+		explicit ImageLabel2(QWidget *parent = nullptr);
 
 	private:
 		void render();

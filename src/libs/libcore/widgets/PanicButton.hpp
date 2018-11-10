@@ -19,7 +19,7 @@ private:
 	QPalette mPaletteBlink;
 	bool mFlipFlop;
 public:
-	explicit PanicButton(QWidget *parent = 0);
+	explicit PanicButton(QWidget *parent = nullptr);
 	virtual ~PanicButton();
 
 

@@ -71,7 +71,7 @@ class WidgetPFD : public QWidget
 		Q_PROPERTY(QString theme READ theme WRITE setTheme )
 	public:
 
-		explicit WidgetPFD( QWidget *parent = 0 );
+		explicit WidgetPFD( QWidget *parent = nullptr );
 
 		virtual ~WidgetPFD();
 

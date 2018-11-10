@@ -17,7 +17,7 @@ private:
 	Identicon mIdenticon;
 
 public:
-	explicit IdenticonWidget(QWidget *parent = 0);
+	explicit IdenticonWidget(QWidget *parent = nullptr);
 
 protected:
 	void regenerateIdenticon();

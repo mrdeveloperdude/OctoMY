@@ -66,7 +66,7 @@ class GLStressWidget : public QOpenGLWidget, protected OCTOMY_QT_OGL_FUNCTIONS_C
 		GLBox *boxes[NUM_BOX];
 
 	public:
-		explicit GLStressWidget(QWidget *parent = 0);
+		explicit GLStressWidget(QWidget *parent = nullptr);
 		virtual ~GLStressWidget();
 
 	public:

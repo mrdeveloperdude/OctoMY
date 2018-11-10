@@ -71,7 +71,7 @@ class WidgetHSI : public QWidget
 		Q_PROPERTY(QString theme READ theme WRITE setTheme )
 	public:
 
-		explicit WidgetHSI( QWidget *parent = 0 );
+		explicit WidgetHSI( QWidget *parent = nullptr );
 
 		~WidgetHSI();
 

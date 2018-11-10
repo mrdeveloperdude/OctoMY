@@ -11,7 +11,7 @@ class MtlobeWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit MtlobeWidget(QWidget *parent = 0);
+	explicit MtlobeWidget(QWidget *parent = nullptr);
 
 signals:
 

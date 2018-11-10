@@ -16,7 +16,7 @@ private:
 	Ui::SpeechControlWidget *ui;
 
 public:
-	explicit SpeechControlWidget(QWidget *parent = 0);
+	explicit SpeechControlWidget(QWidget *parent = nullptr);
 	~SpeechControlWidget();
 
 private slots:

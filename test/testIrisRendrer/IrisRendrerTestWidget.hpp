@@ -20,7 +20,7 @@ private:
 	Ui::IrisRendrerTestWidget *ui;
 	QList<QSlider *> mSliders;
 public:
-	explicit IrisRendrerTestWidget(QWidget *parent = 0, QString name="IrisRendrerTestWidget");
+	explicit IrisRendrerTestWidget(QWidget *parent = nullptr, QString name="IrisRendrerTestWidget");
 	~IrisRendrerTestWidget();
 
 public:

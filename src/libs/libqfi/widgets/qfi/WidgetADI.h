@@ -71,7 +71,7 @@ class WidgetADI : public QWidget
 		Q_PROPERTY(QString theme READ theme WRITE setTheme )
 	public:
 
-		explicit WidgetADI( QWidget *parent = 0 );
+		explicit WidgetADI( QWidget *parent = nullptr );
 
 		~WidgetADI();
 

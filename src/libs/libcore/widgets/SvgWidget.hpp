@@ -25,7 +25,7 @@ protected:
 	bool mDirty;
 
 public:
-	explicit SvgWidget(QWidget *parent = 0);
+	explicit SvgWidget(QWidget *parent = nullptr);
 	virtual ~SvgWidget();
 
 	void configure(bool doSilhouette=true, QColor silhouetteForeground=QColor("White"), QColor silhouetteBackground=QColor("#00000000"));

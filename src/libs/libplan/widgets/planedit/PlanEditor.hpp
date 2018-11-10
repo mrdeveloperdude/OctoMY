@@ -47,7 +47,7 @@ class PlanEditor : public QWidget{
 		QTimer saveTimer;
 
 	public:
-		explicit PlanEditor(QWidget *parent = 0);
+		explicit PlanEditor(QWidget *parent = nullptr);
 		virtual ~PlanEditor();
 
 		void configure(QString plan_fn);

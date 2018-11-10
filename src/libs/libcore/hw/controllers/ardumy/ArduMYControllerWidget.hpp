@@ -21,7 +21,7 @@ private:
 	ArduMYController *mController;
 
 public:
-	explicit ArduMYControllerWidget(QWidget *parent = 0);
+	explicit ArduMYControllerWidget(QWidget *parent = nullptr);
 	~ArduMYControllerWidget();
 
 public:

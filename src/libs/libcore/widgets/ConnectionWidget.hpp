@@ -25,7 +25,7 @@ class ConnectionWidget : public QWidget
 		NetworkAddress mRemoteAddress;
 
 	public:
-		explicit ConnectionWidget(QWidget *parent = 0);
+		explicit ConnectionWidget(QWidget *parent = nullptr);
 		virtual ~ConnectionWidget();
 
 	public:

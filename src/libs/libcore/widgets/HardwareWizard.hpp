@@ -86,7 +86,7 @@ private:
 	MtlobeController mMtlobeController;
 
 public:
-	explicit HardwareWizard(QWidget *parent = 0);
+	explicit HardwareWizard(QWidget *parent = nullptr);
 	virtual ~HardwareWizard();
 
 private:

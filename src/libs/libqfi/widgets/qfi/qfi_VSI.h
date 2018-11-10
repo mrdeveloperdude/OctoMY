@@ -65,7 +65,7 @@ class qfi_VSI : public QGraphicsView
 	public:
 
 		/** Constructor. */
-		qfi_VSI( QWidget *parent = 0 );
+		qfi_VSI( QWidget *parent = nullptr );
 
 		/** Destructor. */
 		virtual ~qfi_VSI();

@@ -12,7 +12,7 @@ class ConnectionManager : public QWidget
 		Q_OBJECT
 
 	public:
-		explicit ConnectionManager(QWidget *parent = 0);
+		explicit ConnectionManager(QWidget *parent = nullptr);
 		~ConnectionManager();
 
 	private slots:

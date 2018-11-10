@@ -15,7 +15,7 @@ class QHexEditPrivate : public QWidget
 	Q_OBJECT
 
 	public:
-		explicit QHexEditPrivate(QScrollArea* scrollarea, QScrollBar* vscrollbar, QWidget *parent = 0);
+		explicit QHexEditPrivate(QScrollArea* scrollarea, QScrollBar* vscrollbar, QWidget *parent = nullptr);
 		void undo();
 		void redo();
 		void cut();

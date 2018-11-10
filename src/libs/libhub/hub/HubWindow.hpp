@@ -44,7 +44,7 @@ private:
 
 
 public:
-	explicit HubWindow(QSharedPointer<Hub> hub, QWidget *parent = 0);
+	explicit HubWindow(QSharedPointer<Hub> hub, QWidget *parent = nullptr);
 	virtual ~HubWindow();
 
 public:

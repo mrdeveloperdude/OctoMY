@@ -21,7 +21,7 @@ class CodeEditor : public QPlainTextEdit
         QVector<ParseError> errors;
 
     public:
-        CodeEditor(QWidget *parent = 0);
+        CodeEditor(QWidget *parent = nullptr);
 
         void lineNumberAreaPaintEvent(QPaintEvent *event);
         int lineNumberAreaWidth();

@@ -25,7 +25,7 @@ private:
 	QSharedPointer<Agent> mAgent;
 
 public:
-	explicit RealtimeValuesWidget(QWidget *parent = 0);
+	explicit RealtimeValuesWidget(QWidget *parent = nullptr);
 	~RealtimeValuesWidget();
 
 public:

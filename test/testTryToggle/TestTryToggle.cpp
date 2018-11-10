@@ -4,6 +4,9 @@
 
 #include "TryToggleTestUI.hpp"
 
+
+#include "Utilities.hpp"
+
 #include <QWidget>
 #include <QLayout>
 #include <QGridLayout>
@@ -19,11 +22,7 @@ void TestTryToggle::test()
 	auto l=w->layout();
 	l->addWidget(tt);
 	w->show();
-	QSignalSpy spy(w, SIGNAL(close()));
-
-	while(0==spy.count()) {
-		spy.wait(100);
-	}
+	waitForUIEnd(w);
 }
 
 
@@ -31,11 +30,7 @@ void TestTryToggle::testUI()
 {
 	TryToggleTestUI ttui;
 	ttui.show();
-	QSignalSpy spy(&ttui, SIGNAL(close()));
-
-	while(0==spy.count()) {
-		spy.wait(100);
-	}
+	waitForUIEnd(&ttui);
 }
 
 OC_TEST_MAIN(test, TestTryToggle)

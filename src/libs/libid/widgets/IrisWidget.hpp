@@ -23,7 +23,7 @@ private:
 	quint32 mIndex;
 
 public:
-	explicit IrisWidget(QWidget *parent = 0);
+	explicit IrisWidget(QWidget *parent = nullptr);
 
 protected:
 	void regenerateWidget();

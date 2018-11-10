@@ -13,7 +13,7 @@ class LimbIKWidget : public QWidget
 
 		IKLimb *limb;
 	public:
-		explicit LimbIKWidget(QWidget *parent = 0);
+		explicit LimbIKWidget(QWidget *parent = nullptr);
 
 	public:
 

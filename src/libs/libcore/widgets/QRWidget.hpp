@@ -14,7 +14,7 @@ private:
 	bool mDirty;
 
 public:
-	explicit QRWidget(QWidget *parent = 0);
+	explicit QRWidget(QWidget *parent = nullptr);
 	void setQRData(QString mData);
 
 public:

@@ -7,6 +7,9 @@
 #include "utility/Utility.hpp"
 #include "utility/widgets/PixViewer.hpp"
 
+#include "TestCommon.hpp"
+#include "Utilities.hpp"
+
 #include <QSignalSpy>
 #include <QVector2D>
 #include <QPainter>
@@ -52,11 +55,7 @@ void TestEyesWidget::testRendrer()
 
 	}, OC_CONTYPE);
 
-	QSignalSpy spy(&pix, SIGNAL(close()));
-	while(0==spy.count()) {
-		spy.wait(100);
-	}
-
+	waitForUIEnd(&pix);
 }
 
 void TestEyesWidget::testWidget()
@@ -72,11 +71,7 @@ void TestEyesWidget::testWidget()
 		ewp->setPortableID(*pidp);
 	}, OC_CONTYPE);
 
-	QSignalSpy spy(&ew, SIGNAL(close()));
-	while(0==spy.count()) {
-		spy.wait(100);
-	}
-
+	waitForUIEnd(&ew);
 
 }
 

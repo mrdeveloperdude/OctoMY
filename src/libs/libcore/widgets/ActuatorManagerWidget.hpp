@@ -20,7 +20,7 @@ private:
 	ArduMYController *mController;
 
 public:
-	explicit ActuatorManagerWidget(QWidget *parent = 0);
+	explicit ActuatorManagerWidget(QWidget *parent = nullptr);
 	~ActuatorManagerWidget();
 
 

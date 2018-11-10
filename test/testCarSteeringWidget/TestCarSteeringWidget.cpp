@@ -4,6 +4,8 @@
 
 #include "utility/Standard.hpp"
 
+#include "Utilities.hpp"
+
 #include <QPixmap>
 #include <QImage>
 
@@ -26,13 +28,10 @@ void TestWindow::on_pushButtonClose_clicked()
 }
 
 
-
-// YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
 void TestCarSteeringWidget::test(){
 	TestWindow tw(nullptr, "Car Steering Widget Test");
 	tw.show();
-	qApp->processEvents();
-	QTest::qWait(100000);
+	waitForUIEnd(&tw);
 }
 
 

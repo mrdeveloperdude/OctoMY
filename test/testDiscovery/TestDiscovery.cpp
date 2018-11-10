@@ -16,7 +16,6 @@
 #include <QCommandLineParser>
 #include <QStandardPaths>
 
-// YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
 void TestDiscovery::test()
 {
 	qDebug()<<"INIT -----------------------";
@@ -67,7 +66,8 @@ void TestDiscovery::test()
 	qDebug()<<"REMOTE APP DIR: "<<QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 
 	qDebug()<<"DE-INIT -----------------------";
-	quint64 spyWait=20000;//20 sec
+
+	qint64 spyWait=20000;//20 sec
 	qDebug()<<"SPYTIME: "<<spyWait;
 	QTest::qSleep(spyWait);
 	if(nullptr!=agentContext) {

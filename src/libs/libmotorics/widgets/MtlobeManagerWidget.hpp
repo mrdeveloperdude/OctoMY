@@ -19,7 +19,7 @@ private:
 	MtlobeController *mController;
 
 public:
-	explicit MtlobeManagerWidget(QWidget *parent = 0);
+	explicit MtlobeManagerWidget(QWidget *parent = nullptr);
 	~MtlobeManagerWidget();
 
 

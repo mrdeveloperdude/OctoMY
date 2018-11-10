@@ -34,7 +34,7 @@ private:
 
 public:
 
-	explicit SerialSettingsWidget(QWidget *parent = 0);
+	explicit SerialSettingsWidget(QWidget *parent = nullptr);
 	~SerialSettingsWidget();
 
 	void configure(bool manualSaveMode=true, SerialSettings defaults=SerialSettings());

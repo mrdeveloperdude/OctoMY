@@ -14,7 +14,7 @@ class MapLocationEditor : public QWidget
 private:
 	Ui::MapLocationEditor *ui;
 public:
-	explicit MapLocationEditor(QWidget *parent = 0);
+	explicit MapLocationEditor(QWidget *parent = nullptr);
 	~MapLocationEditor();
 
 private slots:

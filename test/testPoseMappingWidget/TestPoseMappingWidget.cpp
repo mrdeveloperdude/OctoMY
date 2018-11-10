@@ -6,6 +6,8 @@
 
 #include "utility/Standard.hpp"
 
+#include "Utilities.hpp"
+
 #include <QPixmap>
 #include <QImage>
 
@@ -74,8 +76,7 @@ void TestPoseMappingWidget::testWidget()
 	pm.setName(1, "Steering");
 	pm.setName(2, "CameraAngle");
 	tw.configure(pm);
-	qApp->processEvents();
-	QTest::qWait(100000);
+	waitForUIEnd(&tw);
 }
 
 

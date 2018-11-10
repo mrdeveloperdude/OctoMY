@@ -24,7 +24,7 @@ private:
 	Settings *settings;
 
 public:
-	explicit Servotor32ActuatorWidget(QWidget *parent = 0);
+	explicit Servotor32ActuatorWidget(QWidget *parent = nullptr);
 	virtual ~Servotor32ActuatorWidget();
 
 public:

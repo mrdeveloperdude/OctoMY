@@ -15,7 +15,7 @@ class HoveringMtlobeWidget : public MtlobeWidget
 	Q_OBJECT
 
 public:
-	explicit HoveringMtlobeWidget(QWidget *parent = 0);
+	explicit HoveringMtlobeWidget(QWidget *parent = nullptr);
 	~HoveringMtlobeWidget();
 
 private:

@@ -16,7 +16,7 @@ class NumberEntry : public QWidget{
 		QString k;
 		Settings *settings;
 	public:
-		explicit NumberEntry(QWidget *parent = 0);
+		explicit NumberEntry(QWidget *parent = nullptr);
 		~NumberEntry();
 
 	public:

@@ -44,7 +44,7 @@ public:
 	static const quint64 MINIMUM_BIRTH_TIME;
 
 public:
-	explicit AgentDeliveryWizard(QWidget *parent = 0);
+	explicit AgentDeliveryWizard(QWidget *parent = nullptr);
 	virtual ~AgentDeliveryWizard();
 
 

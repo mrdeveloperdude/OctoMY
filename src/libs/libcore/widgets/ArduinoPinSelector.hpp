@@ -23,7 +23,7 @@ private:
 	ArduinoPinMap mPinMap;
 
 public:
-	explicit ArduinoPinSelector(QWidget *parent = 0);
+	explicit ArduinoPinSelector(QWidget *parent = nullptr);
 	~ArduinoPinSelector();
 
 public:

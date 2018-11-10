@@ -14,7 +14,7 @@ class QHexEdit : public QFrame
 	Q_OBJECT
 
 	public:
-		explicit QHexEdit(QWidget *parent = 0);
+		explicit QHexEdit(QWidget *parent = nullptr);
 		bool readOnly();
 		int addressWidth();
 		int visibleLinesCount();

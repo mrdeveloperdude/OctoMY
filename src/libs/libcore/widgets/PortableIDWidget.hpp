@@ -18,7 +18,7 @@ private:
 
 
 public:
-	explicit PortableIDWidget(QWidget *parent = 0);
+	explicit PortableIDWidget(QWidget *parent = nullptr);
 	virtual ~PortableIDWidget();
 
 public:

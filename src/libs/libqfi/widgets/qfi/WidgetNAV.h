@@ -71,7 +71,7 @@ class WidgetNAV : public QWidget
 		Q_PROPERTY(QString theme READ theme WRITE setTheme )
 	public:
 
-		explicit WidgetNAV( QWidget *parent = 0 );
+		explicit WidgetNAV( QWidget *parent = nullptr );
 
 		virtual ~WidgetNAV();
 

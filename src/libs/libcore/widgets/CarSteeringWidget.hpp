@@ -30,7 +30,7 @@ private:
 
 
 public:
-	explicit CarSteeringWidget(QWidget *parent = 0);
+	explicit CarSteeringWidget(QWidget *parent = nullptr);
 	virtual ~CarSteeringWidget();
 
 private:

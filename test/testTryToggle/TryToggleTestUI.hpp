@@ -19,7 +19,7 @@ private:
 	Ui::TryToggleTestUI *ui;
 
 public:
-	explicit TryToggleTestUI(QWidget *parent = 0);
+	explicit TryToggleTestUI(QWidget *parent = nullptr);
 	~TryToggleTestUI();
 
 private slots:

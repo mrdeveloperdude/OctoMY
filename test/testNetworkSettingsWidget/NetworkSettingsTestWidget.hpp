@@ -18,7 +18,7 @@ private:
 	LocalAddressList mAddresslist;
 
 public:
-	explicit NetworkSettingsTestWidget(QWidget *parent = 0);
+	explicit NetworkSettingsTestWidget(QWidget *parent = nullptr);
 	~NetworkSettingsTestWidget();
 
 private slots:

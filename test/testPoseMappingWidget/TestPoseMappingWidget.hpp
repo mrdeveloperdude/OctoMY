@@ -20,7 +20,7 @@ class TestWindow : public QWidget
 private:
 	Ui::TestWindow *ui;
 public:
-	explicit TestWindow(QWidget *parent = 0, QString name="TestWindow");
+	explicit TestWindow(QWidget *parent = nullptr, QString name="TestWindow");
 	virtual ~TestWindow();
 
 public:

@@ -71,7 +71,7 @@ class WidgetTC : public QWidget
 		Q_PROPERTY(QString theme READ theme WRITE setTheme )
 	public:
 
-		explicit WidgetTC( QWidget *parent = 0 );
+		explicit WidgetTC( QWidget *parent = nullptr );
 
 		~WidgetTC();
 

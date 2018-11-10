@@ -22,7 +22,7 @@ private:
 	Settings *settings;
 
 public:
-	explicit MultiView(QWidget *parent = 0);
+	explicit MultiView(QWidget *parent = nullptr);
 	~MultiView();
 
 public:

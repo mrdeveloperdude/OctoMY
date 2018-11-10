@@ -69,7 +69,7 @@ void TestDeliveryWizard::test()
 		QVERIFY(!file.exists());
 		// At this point we sleep to let async init complete
 		// TODO: We might want to perform synchronization instead
-		QThread::msleep(1000);
+		QTest::qWait(1000);
 
 		AgentDeliveryWizardTest *delWiz=OC_NEW AgentDeliveryWizardTest();
 		QVERIFY(nullptr!=delWiz);
@@ -104,7 +104,7 @@ void TestDeliveryWizard::test()
 		delete delWiz;
 		delWiz=nullptr;
 	}
-	QThread::msleep(1000);
+	QTest::qWait(1000);
 }
 
 

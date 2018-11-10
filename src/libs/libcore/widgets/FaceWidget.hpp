@@ -31,7 +31,7 @@ private:
 	QSharedPointer<Agent> mAgent;
 
 public:
-	explicit FaceWidget(QWidget *parent = 0);
+	explicit FaceWidget(QWidget *parent = nullptr);
 	~FaceWidget();
 
 protected:

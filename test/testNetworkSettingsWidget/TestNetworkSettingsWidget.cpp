@@ -2,6 +2,8 @@
 
 #include "NetworkSettingsTestWidget.hpp"
 
+#include "Utilities.hpp"
+
 #include <QSignalSpy>
 #include <QWidget>
 
@@ -13,6 +15,8 @@ void TestNetworkSettingsWidget::test()
 	nstw->show();
 	QSignalSpy spy(nstw, &NetworkSettingsTestWidget::destroyed);
 	spy.wait(1000000);
+	//
+	//waitForUiEnd(&tw);
 }
 
 

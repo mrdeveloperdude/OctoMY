@@ -73,7 +73,7 @@ class WidgetVSI : public QWidget
 
 	public:
 
-		explicit WidgetVSI( QWidget *parent = 0 );
+		explicit WidgetVSI( QWidget *parent = nullptr );
 
 		~WidgetVSI();
 

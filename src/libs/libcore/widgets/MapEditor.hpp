@@ -76,7 +76,7 @@ private:
 	QSharedPointer<qmapcontrol::Layer> mMapLayer;
 
 public:
-	explicit MapEditor(QWidget *parent = 0);
+	explicit MapEditor(QWidget *parent = nullptr);
 	~MapEditor();
 
 

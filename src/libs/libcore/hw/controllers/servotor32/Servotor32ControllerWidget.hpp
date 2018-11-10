@@ -27,7 +27,7 @@ class Servotor32ControllerWidget : public QWidget
 		Servotor32Controller *mController;
 
 	public:
-		explicit Servotor32ControllerWidget(QWidget *parent = 0);
+		explicit Servotor32ControllerWidget(QWidget *parent = nullptr);
 		~Servotor32ControllerWidget();
 
 	public:

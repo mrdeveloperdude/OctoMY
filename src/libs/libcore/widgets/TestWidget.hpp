@@ -12,7 +12,7 @@ class TestWidget : public QWidget
 		Q_OBJECT
 
 	public:
-		explicit TestWidget(QWidget *parent = 0);
+		explicit TestWidget(QWidget *parent = nullptr);
 		~TestWidget();
 
 	private:

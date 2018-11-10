@@ -74,7 +74,7 @@ class WidgetSix : public QWidget
 		Q_PROPERTY(QString theme READ theme WRITE setTheme )
 	public:
 
-		explicit WidgetSix( QWidget *parent = 0 );
+		explicit WidgetSix( QWidget *parent = nullptr );
 
 		~WidgetSix();
 

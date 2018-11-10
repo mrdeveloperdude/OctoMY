@@ -12,7 +12,7 @@ class TextEntry : public QLineEdit{
 		QString k;
 		Settings *settings;
 	public:
-		explicit TextEntry(QWidget *parent = 0);
+		explicit TextEntry(QWidget *parent = nullptr);
 		virtual ~TextEntry();
 	public:
 		void configure(Settings *settings, QString val, QString key="", QString tooltip="");

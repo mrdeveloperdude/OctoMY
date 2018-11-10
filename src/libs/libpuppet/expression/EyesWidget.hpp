@@ -41,7 +41,7 @@ private:
 	bool mHideEyes;
 
 public:
-	explicit EyesWidget(QWidget *parent = 0);
+	explicit EyesWidget(QWidget *parent = nullptr);
 
 public:
 	void updateIris();
