@@ -3,7 +3,7 @@
 
 #include "utility/Utility.hpp"
 
-#include "ardumy/ArduMYActuator.hpp"
+#include "ardumy_arduino/ArduMYActuator.hpp"
 #include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 

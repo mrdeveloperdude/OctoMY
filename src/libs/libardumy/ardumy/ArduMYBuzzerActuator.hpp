@@ -1,7 +1,10 @@
 #ifndef BUZZERACTUATOR_HPP
 #define BUZZERACTUATOR_HPP
 
-#include "ardumy/ArduMY.hpp"
+// Only build when we are targeting actual Arduino hardware
+#ifdef ARDUINO_ARCH_AVR
+
+#include "ardumy_arduino/ArduMY.hpp"
 
 struct BuzzerActuator {
 
@@ -95,5 +98,7 @@ struct BuzzerActuator {
 	}
   }
 };
+
+#endif // ARDUINO_ARCH_AVR
 
 #endif // BUZZERACTUATOR_HPP

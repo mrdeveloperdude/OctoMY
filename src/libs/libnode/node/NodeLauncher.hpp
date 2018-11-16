@@ -64,6 +64,8 @@ public:
 	void start();
 	void stop();
 
+	QSharedPointer<T> node();
+
 	virtual void nodeDone() Q_DECL_OVERRIDE;
 
 	QCommandLineParser &options();
@@ -199,8 +201,16 @@ void NodeLauncher<T>::stop()
 }
 
 template <typename T>
+QSharedPointer<T> NodeLauncher<T>::node()
+{
+	OC_METHODGATE();
+	return mNode;
+}
+
+template <typename T>
 void NodeLauncher<T>::nodeDone()
 {
+	OC_METHODGATE();
 	//qDebug()<<"NODELAUNCHER DONE";
 	if(nullptr!=mApp) {
 		mApp->quit();

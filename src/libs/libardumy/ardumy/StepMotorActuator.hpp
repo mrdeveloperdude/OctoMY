@@ -1,7 +1,11 @@
 #ifndef STEPMOTORACTUATOR_HPP
 #define STEPMOTORACTUATOR_HPP
 
-#include "ardumy/ArduMY.hpp"
+
+// Only build when we are targeting actual Arduino hardware
+#ifdef ARDUINO_ARCH_AVR
+
+#include "ardumy_arduino/ArduMY.hpp"
 
 
 #include <AccelStepper.h>
@@ -94,5 +98,6 @@ struct StepMotorActuator {
 	}
 };
 
+#endif // ARDUINO_ARCH_AVR
 
 #endif // STEPMOTORACTUATOR_HPP

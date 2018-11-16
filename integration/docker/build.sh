@@ -66,10 +66,15 @@ deb_dir=${deb_name}_${deb_ver}
 tmp_dir="/tmp/$deb_dir"
 
 
-
+# Early dependencies (for bootstrapping)
 EDEPS=""
+# Build dependencies (for compiling software)
 BDEPS=""
+# Arduino dependencies (for building arduino code)
+ADEPS=""
+# Qt dependencies (for building Qt)
 DEPS=""
+# Qt configuration options
 OPTS=""
 
 acmd="apt-get"
@@ -96,10 +101,7 @@ function do_build(){
 	echo "--------------------------------------------------------"
 	echo "--------------------------------------------------------"
 	echo ""
-	build_with_dockers
-}
-
-function build_with_dockers(){
+	
 	#
 	#   image naming convention:
 	#
@@ -144,8 +146,28 @@ function build_with_dockers(){
 #	build_with_docker "osx-10.5-x86-$qt_version-$linkage-$checkout"
 #	build_with_docker "ios-10-arm7-$qt_version-$linkage-$checkout"
 #	build_with_docker "ios-11-arm7-$qt_version-$linkage-$checkout"
-	
 }
+
+
+function do_arduino(){
+	echo ""
+	echo ""
+	echo ""
+	echo ""
+	echo "--------------------------------------------------------"
+	echo "--------------------------------------------------------"
+	echo "--------------------------------------------------------"
+	echo "--------------------------------------------------------"
+	echo ""
+
+	checkout="master"
+	linkage="static"
+
+	build_with_docker "arduino-1.8.7-avr-$qt_version-$linkage-$checkout"
+
+}
+
+
 
 function infer_host_os(){
 	local target_os="$1"
@@ -157,7 +179,7 @@ function infer_host_os(){
 		# Use actual target OS for building
 		echo "$target_os" "$target_version" "$target_arch"
 		return
-	elif [ "android" == "$target_os" ]
+	elif [ "android" == "$target_os" ] || [ "arduino" == "$target_os" ]
 	then
 		# Our trusty old horse
 		echo "debian" "stretch" "amd64"
@@ -178,6 +200,8 @@ function infer_host_os(){
 	echo "Unable" "to" "infer"
 }
 
+
+
 function build_with_docker(){
 	local spec="$1"
 	IFS='-' read -r target_os target_os_version target_os_arch qt_version qt_linkage checkout <<<"$spec"	
@@ -192,6 +216,16 @@ function build_with_docker(){
 	read host_os host_os_version host_os_arch < <(infer_host_os "$target_os" "$target_os_version" "$target_os_arch")	
 	local sources="/etc/apt/sources.list"
 	local temp_sources="/etc/apt/sources.list_tmp"
+	local ardumy_makefile="Ardumy.Makefile"
+	local use_jdk=false
+	local use_qt_source=false
+	local use_octomy_source=false
+	local use_qt_build=false
+	local use_octomy_build=false
+	local use_octomy_upx=false
+	local use_octomy_artefacts=false
+	local use_octomy_deb=false
+	local use_ardumy_build=true
 
 	mkdir -p "$dir"
 	pushd "$dir"
@@ -217,13 +251,6 @@ function build_with_docker(){
 
 	git describe --tags --long --dirty --always > "$octomy_git_version"
 	
-	echo "###################################################"
-	echo "  HOST-OS: $host_os-$host_os_version[$host_os_arch]"
-	echo "TARGET-OS: $target_os-$target_os_version[$target_os_arch]"
-	echo "      PWD: $(pwd)"
-	echo "LS GITVER: $(ls -halt "$octomy_git_version")"
-	echo "   GITVER: $(cat "$octomy_git_version")"
-	echo "###################################################"
 	
 #	clean_deps $DEPS
 
@@ -237,13 +264,24 @@ function build_with_docker(){
 #
 # Spec: $spec
 #
+
+
+####################################################
+#   HOST-OS: $host_os-$host_os_version[$host_os_arch]
+# TARGET-OS: $target_os-$target_os_version[$target_os_arch]
+#       PWD: $(pwd)"
+# LS GITVER: $(ls -halt "$octomy_git_version")
+#    GITVER: $(cat "$octomy_git_version")
+####################################################
+
+
 FROM  $host_os:$host_os_version
 LABEL maintainer="$maintainer"
 
 EOF
 
 
-	if [ "debian" == "$target_os" ] || [ "ubuntu" == "$target_os" ]
+	if [ "debian" == "$target_os" ] || [ "ubuntu" == "$target_os" ] || [ "arduino" == "$target_os" ]
 	then
 		cat << EOF >> "$doc"
 
@@ -274,7 +312,19 @@ RUN	>&2 printf "\n\n---- RECORD INITIAL DEPENDENCIES ------\n" && \
 
 RUN	>&2 printf "\n\n---- INSTALL EARLY DEPENDENCIES -------\n" && \
 	$acmd install $aptgetops $EDEPS
+EOF
 
+	if [ "$use_jdk" != "false" ]
+	then	
+	
+		cat << EOF >> "$doc"
+RUN	>&2 printf "\n\n---- INSTALL JDK PPA ------------------\n" && \
+	add-apt-repository ppa:openjdk-r/ppa
+EOF
+	fi
+	
+	cat << EOF >> "$doc"
+	
 RUN	>&2 printf "\n\n---- RECORD EARLY DEPENDENCIES --------\n" && \	
 	$lacmd | sort | uniq -u > "/OctoMY/apt_early.txt" && \
 	comm -2 -3 "/OctoMY/$apt_early" "/OctoMY/$apt_initial" > "/OctoMY/$apt_early_new"
@@ -292,19 +342,31 @@ EOF
 	fi
 
 
-	cat << EOF >> "$doc"
+	if [ "$use_qt_source" != "false" ]
+	then
 	
+	cat << EOF >> "$doc"
 WORKDIR /src
-
-RUN >&2 printf "\n\n---- CLONE QT -------------------------\n" && \
-	git clone https://github.com/qt/qt5.git -j\$(nproc) --recurse-submodules -b $qt_version /src/qt_$qt_version
 
 RUN	>&2 printf "\n\n---- CLONE OCTOMY ---------------------\n" && \
 	git clone https://github.com/mrdeveloperdude/OctoMY.git -j\$(nproc) --recurse-submodules -b "$checkout" /src/octomy_$checkout
 
 EOF
+	fi
 
-	if [ "debian" == "$target_os" ] || [ "ubuntu" == "$target_os" ]
+	if [ "$use_octomy_source" != "false" ]
+	then
+	cat << EOF >> "$doc"
+WORKDIR /src
+
+RUN >&2 printf "\n\n---- CLONE QT -------------------------\n" && \
+	git clone https://github.com/qt/qt5.git -j\$(nproc) --recurse-submodules -b $qt_version /src/qt_$qt_version
+
+EOF
+	fi
+
+
+	if [ "debian" == "$target_os" ] || [ "ubuntu" == "$target_os" ] || [ "arduino" == "$target_os" ]
 	then
 		cat << EOF >> "$doc"
 
@@ -347,9 +409,9 @@ EOF
 		exit 1
 	fi
 
-	cat << EOF >> "$doc"
-
-
+	if [ "$use_qt_build" != "false" ]
+	then
+		cat << EOF >> "$doc"
 WORKDIR /qt_$qt_version
 
 RUN >&2 printf "\n\n---- HELP QT --------------------------\n" && \
@@ -371,6 +433,14 @@ RUN >&2 printf "\n\n---- INSTALL QT -----------------------\n" && \
 
 RUN >&2 printf "\n\n---- SHOW QMAKE VERSION ---------------\n" && \
 	"$qt_qmake" --version
+
+EOF
+
+	fi
+
+	if [ "$use_octomy_build" != "false" ]
+	then
+		cat << EOF >> "$doc"
 
 WORKDIR /src/octomy_$checkout
 
@@ -409,7 +479,12 @@ RUN	>&2 printf "\n\n---- COLLECT OCTOMY ARTEFACTS ---------\n" && \
 	cp -a "/OctoMY/src/zoo/zoo" ./ && \
 	ls -halt
 
+EOF
+	fi
 
+	if [ "$use_octomy_upx" != "false" ]
+	then
+		cat << EOF >> "$doc"
 
 WORKDIR /src/upx
 
@@ -420,19 +495,35 @@ RUN >&2 printf "\n\n---- BUILD UPX ------------------------\n" && \
 	$acmd build-dep $aptgetops upx-ucl && \
 	MAKEFLAGS=-j\$(nproc) make -k -j \$(nproc) >  upx_build_log.txt
 
+EOF
+
+	fi
+
+	if [ "$use_octomy_artefacts" != "false" ]
+	then
+		artefacts=()
+		for artefact in agent remote hub zoo
+		do
+			artefacts=("${artefacts[@]}" "/OctoMY/src/$artefact/$artefact")
+		done
+		extract_artefacts "$tag" ${artefacts[@]}
+	fi
 	
-WORKDIR /OctoMY/deb
+	if [ "$use_octomy_deb" != "false" ]
+	then	
+		cat << EOF >> "$doc"
+#####################################################
+#      Using deb package:'$deb_file' from '$deb_path'"
+#      Using deb version:'$deb_ver'"
+# Using deb dependencies:'$deb_deps'"
+#      Using deb tmp dir:'$tmp_dir'"
+#     Using deb base dir:'$deb_base'"
+# Using deb control file:'$deb_control'"
+#####################################################
 
-echo "###################################################"
-echo "     Using deb package:'$deb_file' from '$deb_path'"
-echo "     Using deb version:'$deb_ver'"
-echo "Using deb dependencies:'$deb_deps'"
-echo "     Using deb tmp dir:'$tmp_dir'"
-echo "    Using deb base dir:'$deb_base'"
-echo "###################################################"
+EOF
 
-
-cat << EOF > "$deb_control"
+		cat << EOF > "$deb_control"
 Package: $deb_name-$deb_base
 Version: $deb_ver
 Section: base
@@ -441,10 +532,17 @@ Architecture: amd64
 Depends: $deb_deps
 Maintainer: Lennart Rolland <lennartrolland@gmail.com>
 Description: OctoMY™ $deb_name
- Part of a suite of programs for controlling robots of all sizes and shapes.
+ Part of a suite of programs \for controlling robots of all sizes and shapes.
  Official website: http://octomy.org
-
+ 
 EOF
+
+		cat << EOF >> "$doc"
+
+WORKDIR /OctoMY/deb
+
+RUN >&2 printf "\n\n---- ADD DEB CONTROL FILE -------------\n" \
+ADD "$deb_control"
 
 RUN >&2 printf "\n\n---- INSPECT DEB CONTROL FILE ---------\n" && \
 	echo "$deb_control"
@@ -470,23 +568,128 @@ RUN >&2 printf "\n\n---- CREATE DEB PACKAGE ---------------\n" && \
 
 EOF
 
+	fi
+
+	if [ "$use_ardumy_build" != "false" ]
+	then
+		cat << EOF >> "$doc"
+
+WORKDIR /OctoMY/ardumy
+
+
+
+RUN curl https://downloads.arduino.cc/arduino-1.8.5-linux64.tar.xz > ./arduino-1.8.5-linux64.tar.xz \
+ && tar -xvJf arduino-1.8.5-linux64.tar.xz \
+ && mv ./arduino-1.8.5 /opt/arduino \
+ && cd /opt/arduino \
+ && ls -la \
+ && ./install.sh
+
+RUN mkdir /opt/workspace
+
+RUN mkdir -p /opt/arduino/hardware/espressif \
+ && cd /opt/arduino/hardware/espressif \
+ && git clone https://github.com/espressif/arduino-esp32.git esp32 \
+ && cd esp32 \
+ && git submodule update --init --recursive \
+ && cd tools \
+ && python get.py
+
+RUN cd /opt/arduino/hardware/espressif \
+  && git clone https://github.com/esp8266/Arduino.git esp8266 \
+  && cd esp8266/tools \
+  && python get.py \
+  && echo "d1_mini.build.flash_ld=eagle.flash.4m1m.ld" >> "/opt/arduino/hardware/espressif/esp8266/boards.txt" \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+EOF
+
+
+		cat << EOF > "$ardumy_makefile"
+
+# Parameters for compiling
+ARDUINO_DIR     = /opt/arduino
+AVR_TOOLS_DIR	= \$(ARDUINO_DIR)/hardware/tools/avr
+TARGET          = output
+# NOTE: Make sure to keep this up to date!
+ARDUINO_LIBS = Servo AccelStepper Stepper
+
+BOARD_TAG	= mega
+BOARD_SUB	= atmega2560
+# If you found problem on compile, you can uncomment and change MCU and F_CPU
+# To know what MCU you can use check board.txt on end of this file
+#MCU		# atmega2560
+#F_CPU		= 16000000
+MONITOR_PORT = /dev/ttyACM0
+
+# Avrdude code for programming
+AVRDUDE		= \$(ARDUINO_DIR)/hardware/tools/avr/bin/avrdude
+AVRDUDE_CONF	= \$(ARDUINO_DIR)/hardware/tools/avr/etc/avrdude.conf
+#AVRDUDE_ARD_PROGRAMMER	= wiring
+#AVRDUDE_ARD_BAUDRATE	= 115200
+
+
+# Arduino makefile
+include \$(ARDUINO_DIR)/../Arduino-Makefile/Arduino.mk
+
+# Bellow you found MCU values extracted from board.txt file. Added just to reference
+# MCU data is the info after .menu.cpu.
+# Example: #atmegang.menu.cpu.atmega168.build.mcu=atmega168 => MCU = atmega168
+#
+#atmegang.build.mcu=atmegang
+#atmegang.menu.cpu.atmega168.build.mcu=atmega168
+#atmegang.menu.cpu.atmega8.build.mcu=atmega8
+#bt.menu.cpu.atmega328.build.mcu=atmega328p
+#bt.menu.cpu.atmega168.build.mcu=atmega168
+#diecimila.menu.cpu.atmega328.build.mcu=atmega328p
+#diecimila.menu.cpu.atmega168.build.mcu=atmega168
+#esplora.build.mcu=atmega32u4
+#ethernet.build.mcu=atmega328p
+#fio.build.mcu=atmega328p
+#leonardo.build.mcu=atmega32u4
+#lilypad.menu.cpu.atmega328.build.mcu=atmega328p
+#lilypad.menu.cpu.atmega168.build.mcu=atmega168
+#LilyPadUSB.build.mcu=atmega32u4
+#megaADK.build.mcu=atmega2560
+#mega.menu.cpu.atmega2560.build.mcu=atmega2560
+#mega.menu.cpu.atmega1280.build.mcu=atmega1280
+#megaADK.build.mcu=atmega2560
+#micro.build.mcu=atmega32u4
+#mini.menu.cpu.atmega328.build.mcu=atmega328p
+#mini.menu.cpu.atmega168.build.mcu=atmega168
+#nano.menu.cpu.atmega328.build.mcu=atmega328p
+#nano.menu.cpu.atmega168.build.mcu=atmega168
+#pro.menu.cpu.16MHzatmega328.build.mcu=atmega328p
+#pro.menu.cpu.8MHzatmega328.build.mcu=atmega328p
+#pro.menu.cpu.16MHzatmega168.build.mcu=atmega168
+#pro.menu.cpu.8MHzatmega168.build.mcu=atmega168
+#robotControl.build.mcu=atmega32u4
+#robotMotor.build.mcu=atmega32u4
+#uno.build.mcu=atmega328p
+#yun.build.mcu=atmega32u4
+
+EOF
+
+		cat << EOF >> "$doc"
+		
+ADD "$ardumy_makefile" "Makefile"
+
+EOF
+
+
+	fi
+	
+
 	local tag="octomy:${spec}"
 	echo "_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-="
 	cat "$doc"
 	echo "_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-=_=-="
 	# build
-	docker build . -t "$tag"
+	docker build . -t "$tag" --rm
 
 	popd
 	
-	artefacts=()
-	for artefact in agent remote hub zoo
-	do
-		artefacts=("${artefacts[@]}" "/OctoMY/src/$artefact/$artefact")
-	done
-
-	extract_artefacts "$tag" ${artefacts[@]}
-	
+		
 
 }
 
@@ -672,6 +875,8 @@ function do_debian_deps(){
 	EDEPS+=" curl"
 	EDEPS+=" software-properties-common"
 	EDEPS+=" git"
+	EDEPS+=" dirmngr"
+	
 
 	# Build dependencies
 	BDEPS+=" perl"
@@ -679,9 +884,20 @@ function do_debian_deps(){
 	BDEPS+=" build-essential"
 	BDEPS+=" clang"
 	
+
+	# Arduino deps
+	ADEPS+=" make"
+	ADEPS+=" srecord"
+	ADEPS+=" bc"
+	ADEPS+=" xz-utils"
+	ADEPS+=" xvfb"
+	ADEPS+=" python python-pip python-dev"
+	ADEPS+=" libncurses-dev flex bison gperf python-serial"
+	ADEPS+=" libxrender1 libxtst6 libxi6 openjdk-7-jdk"
+
 	
-		DEPS+=" libclang-dev"
-		DEPS+=" libc-dev"
+	DEPS+=" libclang-dev"
+	DEPS+=" libc-dev"
 
 	# Window system
 	DEPS+=" ^libxcb.*-dev"
@@ -923,6 +1139,7 @@ function do_ubuntu_deps(){
 	EDEPS+=" curl"
 	EDEPS+=" software-properties-common"
 	EDEPS+=" git"
+	EDEPS+=" dirmngr"
 
 	# Build dependencies
 	BDEPS+=" perl"
@@ -930,6 +1147,17 @@ function do_ubuntu_deps(){
 	BDEPS+=" build-essential"
 	BDEPS+=" clang"
 	
+	# Arduino deps
+	ADEPS+=" make"
+	ADEPS+=" srecord"
+	ADEPS+=" bc"
+	ADEPS+=" xz-utils"
+	ADEPS+=" xvfb"
+	ADEPS+=" python python-pip python-dev"
+	ADEPS+=" libncurses-dev flex bison gperf python-serial"
+	ADEPS+=" libxrender1 libxtst6 libxi6 openjdk-7-jdk"
+
+
 	DEPS+=" libc-dev"
 	DEPS+=" libclang-dev"
 	
@@ -1473,6 +1701,7 @@ do
         -v* )	shift; qt_version_long="$1"; qt_version="${qt_version_long%.*}" ;;
         -c* )	CACHE=" --no-cache" ;;
         build )		do_build ;;
+        arduino )	do_arduino ;;
         test)		do_test ;;
         prep)		do_prep ;;
         provision)	do_provision ;;

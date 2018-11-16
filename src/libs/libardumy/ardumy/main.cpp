@@ -1,8 +1,12 @@
-#include "ardumy/ArduMY.hpp"
+
+// Only build when we are targeting actual Arduino hardware
+#ifdef ARDUINO_ARCH_AVR
+
+#include "ardumy_arduino/ArduMY.hpp"
 
 
-#include "ardumy/ArduMYCommandParser.hpp"
-#include "ardumy/ArduMYMain.hpp"
+#include "ardumy_arduino/ArduMYCommandParser.hpp"
+#include "ardumy_arduino/ArduMYMain.hpp"
 
 
 ArduMYCommandParser parser;
@@ -44,3 +48,5 @@ void loop()
 	}
 	hwServos.update(unow);
 }
+
+#endif // ARDUINO_ARCH_AVR

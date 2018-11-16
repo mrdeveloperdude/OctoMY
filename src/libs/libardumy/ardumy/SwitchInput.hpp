@@ -1,7 +1,11 @@
 #ifndef SWITCHINPUT_HPP
 #define SWITCHINPUT_HPP
 
-#include "ardumy/ArduMY.hpp"
+
+// Only build when we are targeting actual Arduino hardware
+#ifdef ARDUINO_ARCH_AVR
+
+#include "ardumy_arduino/ArduMY.hpp"
 
 
 struct SwitchInput {
@@ -69,5 +73,8 @@ struct SwitchInput {
   }
 
 };
+
+
+#endif // ARDUINO_ARCH_AVR
 
 #endif // SWITCHINPUT_HPP

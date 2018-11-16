@@ -1,6 +1,6 @@
 #include "ardumy/ArduMYActuatorEnableBits.hpp"
 
-#include "ardumy/ArduMY.hpp"
+#include "ardumy_arduino/ArduMY.hpp"
 
 ArduMYActuatorEnableBits::ArduMYActuatorEnableBits()
 {

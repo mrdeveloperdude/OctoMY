@@ -1,16 +1,16 @@
 #include "ArduMYController.hpp"
 
 #include "hw/serial/SerialSettingsWidget.hpp"
-#include "ardumy/ArduMYParserState.hpp"
+#include "ardumy_arduino/ArduMYParserState.hpp"
 #include "utility/Standard.hpp"
 #include "ArduMYControllerWidget.hpp"
-#include "ArduMYTypeConversions.hpp"
+#include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 #include <QBuffer>
 #include <QDebug>
 
 
-ArduMYControllerWidget *mWidget;
+static ArduMYControllerWidget *mWidget;
 
 
 ArduMYController::ArduMYController(QObject *parent)

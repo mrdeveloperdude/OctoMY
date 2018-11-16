@@ -29,7 +29,7 @@ private:
 
 public:
 	explicit AgentConfigStore(QString filename="", QObject *parent = nullptr);
-	virtual ~AgentConfigStore();
+	virtual ~AgentConfigStore() Q_DECL_OVERRIDE;
 
 public:
 	QSharedPointer<AgentConfig> agentConfig() const;

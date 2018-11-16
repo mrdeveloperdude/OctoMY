@@ -33,7 +33,7 @@ HardwareWizard::HardwareWizard(QWidget *parent)
 	//qDebug()<<"Setting model";
 	ui->listViewSerialInterface->setModel(mSerialDevicesModel);
 	ui->listViewTemplate->setModel(mHardwareTemplateModel);
-	ui->widgetLociManager->configure(nullptr);
+	ui->widgetMotorLobeManager->configure(nullptr);
 	moveTo(0);
 }
 
@@ -354,6 +354,6 @@ void HardwareWizard::on_comboBoxAddMtlobe_currentIndexChanged(int index)
 	}
 	break;
 	}
-	ui->widgetLociManager->configure(&mMtlobeController);
+	ui->widgetMotorLobeManager->configure(&mMtlobeController);
 	ui->comboBoxAddMtlobe->setCurrentIndex(0);
 }

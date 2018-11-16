@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>435</width>
-    <height>276</height>
+    <height>277</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,7 +39,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>9</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="pageDelivery">
       <layout class="QGridLayout" name="gridLayout_5">
@@ -222,7 +222,7 @@
           <item>
            <widget class="QStackedWidget" name="stackedWidgetFaceOrConfig">
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="pageFace">
              <layout class="QGridLayout" name="gridLayout_7">
@@ -294,7 +294,7 @@
               <item row="2" column="2">
                <widget class="QPushButton" name="pushButtonConfigureHardware">
                 <property name="toolTip">
-                 <string>Configure controller, actuators and loci of this Agent.</string>
+                 <string>Configure controller, actuators and motor lobes of this Agent.</string>
                 </property>
                 <property name="text">
                  <string>Configure Hardware</string>

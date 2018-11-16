@@ -3,7 +3,7 @@
 
 #include "utility/Standard.hpp"
 #include "hw/controllers/ardumy/ArduMYActuatorWidget.hpp"
-#include "ardumy/ArduMYActuatorSet.hpp"
+#include "ardumy_arduino/ArduMYActuatorSet.hpp"
 #include "hw/controllers/ardumy/ArduMYController.hpp"
 
 

@@ -1,20 +1,20 @@
 #include "TestArduMY.hpp"
 #include "utility/Utility.hpp"
 
-#include "ardumy/ArduMYActuatorConfigParser.hpp"
-#include "ardumy/ArduMYActuatorConfigSerializer.hpp"
+#include "ardumy_arduino/ArduMYActuatorConfigParser.hpp"
+#include "ardumy_arduino/ArduMYActuatorConfigSerializer.hpp"
 
 
-#include "ardumy/ArduMYActuatorValueParser.hpp"
-#include "ardumy/ArduMYActuatorValueSerializer.hpp"
+#include "ardumy_arduino/ArduMYActuatorValueParser.hpp"
+#include "ardumy_arduino/ArduMYActuatorValueSerializer.hpp"
 
-#include "ardumy/MagicDetector.hpp"
+#include "ardumy_arduino/MagicDetector.hpp"
 
 
-#include "ardumy/ArduMYCommandParser.hpp"
-#include "ardumy/ArduMYCommandSerializer.hpp"
+#include "ardumy_arduino/ArduMYCommandParser.hpp"
+#include "ardumy_arduino/ArduMYCommandSerializer.hpp"
 
-#include "ardumy/ArduMYParserState.hpp"
+#include "ardumy_arduino/ArduMYParserState.hpp"
 
 #include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 

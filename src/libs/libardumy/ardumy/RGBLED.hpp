@@ -1,9 +1,11 @@
 #ifndef RGBLED_HPP
 #define RGBLED_HPP
 
+// Only build when we are targeting actual Arduino hardware
+#ifdef ARDUINO_ARCH_AVR
 
 
-#include "ardumy/ArduMY.hpp"
+#include "ardumy_arduino/ArduMY.hpp"
 
 
 struct RGBLEDPins {
@@ -97,5 +99,6 @@ public:
 
 };
 
+#endif // ARDUINO_ARCH_AVR
 
 #endif // RGBLED_HPP

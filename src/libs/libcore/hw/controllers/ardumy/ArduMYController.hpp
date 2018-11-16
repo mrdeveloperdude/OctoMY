@@ -3,8 +3,8 @@
 
 #include "hw/controllers/IActuatorController.hpp"
 
-#include "ardumy/ArduMYCommandSerializer.hpp"
-#include "ardumy/ArduMYActuatorSet.hpp"
+#include "ardumy_arduino/ArduMYCommandSerializer.hpp"
+#include "ardumy_arduino/ArduMYActuatorSet.hpp"
 
 #include "hw/serial/SerialSettings.hpp"
 
