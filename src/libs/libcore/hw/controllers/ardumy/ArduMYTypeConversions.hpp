@@ -10,9 +10,9 @@
   */
 
 
-#ifdef ARDUINO_ARCH_AVR
+#ifdef OCTOMY_ARDUINO_TARGET
 #error "WE ARE TRYING TO COMPILE ArdumyTypeConversions on AVR!"
-#endif
+#endif  // OCTOMY_ARDUINO_TARGET
 
 #include "ardumy_arduino/ArduMYActuatorType.hpp"
 #include "ardumy_arduino/ArduMYActuatorValueRepresentation.hpp"

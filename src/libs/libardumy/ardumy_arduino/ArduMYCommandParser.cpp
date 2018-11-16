@@ -1,6 +1,7 @@
 #include "ardumy_arduino/ArduMYCommandParser.hpp"
 #include "ardumy_arduino/ArduMYParserState.hpp"
 
+//#include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 ArduMYCommandParser::ArduMYCommandParser()
 	: currentCommand(ArduMYParserState::OCTOMY_SYNC)
@@ -60,7 +61,6 @@ void ArduMYCommandParser::setup()
 
 }
 
-#include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 void ArduMYCommandParser::parse(const uint8_t in)
 {

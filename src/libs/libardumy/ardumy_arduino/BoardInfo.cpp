@@ -1,7 +1,7 @@
 #include "BoardInfo.hpp"
 
 // Only build when we are targeting actual Arduino hardware
-#ifdef ARDUINO_ARCH_AVR
+#ifdef OCTOMY_ARDUINO_TARGET
 
 
 BoardInfo::BoardInfo() {
@@ -94,4 +94,4 @@ bool BoardInfo::featureExists(uint8_t feature) {
 }
 
 
-#endif // ARDUINO_ARCH_AVR
+#endif // OCTOMY_ARDUINO_TARGET

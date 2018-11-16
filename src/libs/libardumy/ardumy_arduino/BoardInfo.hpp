@@ -2,7 +2,7 @@
 #define BOARDINFO_HPP
 
 // Only build when we are targeting actual Arduino hardware
-#ifdef ARDUINO_ARCH_AVR
+#ifdef OCTOMY_ARDUINO_TARGET
 
 
 
@@ -193,6 +193,6 @@ public:
 };
 
 
-#endif // ARDUINO_ARCH_AVR
+#endif // OCTOMY_ARDUINO_TARGET
 
 #endif // BOARDINFO_HPP

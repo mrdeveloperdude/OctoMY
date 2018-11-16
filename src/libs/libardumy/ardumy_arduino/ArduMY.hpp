@@ -9,8 +9,8 @@
 // Why? Because building for Qt makes it possible to write all sorts of advanced and resource hungry instrumentation and testing code and debugging output not limited by Serial.print*
 // While Arduino is the target platform
 
-#ifdef ARDUINO_ARCH_AVR
-
+#ifdef OCTOMY_ARDUINO_TARGET
+#warning Compiling for ARDUINO
 #if ARDUINO >= 100
 #include <Arduino.h>
 #elif ARDUINO < 100
@@ -52,6 +52,9 @@ QDebugOutput &operator<<(QDebugOutput &d, const char *str);
 
 
 #else
+
+#warning Compiling for Qt5
+
 #include <inttypes.h>
 #include <cstring>
 #include <iostream>
@@ -60,7 +63,8 @@ using namespace std;
 #include <QDebug>
 
 
-#endif
+
+#endif // OCTOMY_ARDUINO_TARGET
 
 
 #endif // ARDUMY_HPP

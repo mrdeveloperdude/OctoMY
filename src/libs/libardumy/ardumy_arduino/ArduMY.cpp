@@ -1,6 +1,6 @@
 #include "ardumy_arduino/ArduMY.hpp"
 
-#ifdef ARDUINO_ARCH_AVR
+#ifdef OCTOMY_ARDUINO_TARGET
 
 
 
@@ -14,4 +14,4 @@ QDebugOutput &operator<<(QDebugOutput &d, const char *str)
 QDebugOutput *QDebugOutput::d=nullptr;
 QDebugOutput *QDebugOutput::w=nullptr;
 
-#endif
+#endif // OCTOMY_ARDUINO_TARGET

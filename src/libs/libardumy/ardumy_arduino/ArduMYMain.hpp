@@ -2,7 +2,7 @@
 #define ARDUMYMAIN_HPP
 
 // Only build when we are targeting actual Arduino hardware
-#ifdef ARDUINO_ARCH_AVR
+#ifdef OCTOMY_ARDUINO_TARGET
 
 #include "ardumy_arduino/ArduMY.hpp"
 #include "ardumy_arduino/DynamicArray.hpp"
@@ -31,6 +31,6 @@ struct ArduMYMain {
 
 };
 
-#endif
+#endif // OCTOMY_ARDUINO_TARGET
 
 #endif // ARDUMYMAIN_HPP

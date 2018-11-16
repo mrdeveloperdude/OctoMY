@@ -2,7 +2,7 @@
 #define RCSERVOACTUATOR_HPP
 
 // Only build when we are targeting actual Arduino hardware
-#ifdef ARDUINO_ARCH_AVR
+#ifdef OCTOMY_ARDUINO_TARGET
 
 #include "ardumy_arduino/ArduMY.hpp"
 
@@ -14,6 +14,6 @@ class RCServoActuator
 		RCServoActuator();
 };
 
-#endif // ARDUINO_ARCH_AVR
+#endif // OCTOMY_ARDUINO_TARGET
 
 #endif // RCSERVOACTUATOR_HPP

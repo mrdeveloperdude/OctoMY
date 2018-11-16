@@ -1,6 +1,6 @@
 
 // Only build when we are targeting actual Arduino hardware
-#ifdef ARDUINO_ARCH_AVR
+#ifdef OCTOMY_ARDUINO_TARGET
 
 #include "ardumy_arduino/ArduMY.hpp"
 
@@ -49,4 +49,4 @@ void loop()
 	hwServos.update(unow);
 }
 
-#endif // ARDUINO_ARCH_AVR
+#endif // OCTOMY_ARDUINO_TARGET

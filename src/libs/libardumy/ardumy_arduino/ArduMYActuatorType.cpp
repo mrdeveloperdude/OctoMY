@@ -1,1 +1,1 @@
-#include "ardumy/ArduMYActuatorType.hpp"
+#include "ardumy_arduino/ArduMYActuatorType.hpp"

@@ -3,7 +3,7 @@
 
 
 // Only build when we are targeting actual Arduino hardware
-#ifdef ARDUINO_ARCH_AVR
+#ifdef OCTOMY_ARDUINO_TARGET
 
 #include "ardumy_arduino/ArduMY.hpp"
 
@@ -75,6 +75,6 @@ struct SwitchInput {
 };
 
 
-#endif // ARDUINO_ARCH_AVR
+#endif // OCTOMY_ARDUINO_TARGET
 
 #endif // SWITCHINPUT_HPP

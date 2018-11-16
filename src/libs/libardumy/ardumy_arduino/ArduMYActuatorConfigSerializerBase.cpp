@@ -1,5 +1,7 @@
 #include "ardumy_arduino/ArduMYActuatorConfigSerializerBase.hpp"
 
+// #include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
+
 ArduMYActuatorConfigSerializerBase::ArduMYActuatorConfigSerializerBase()
 	: config(nullptr)
 	, step(END_OF_OPERATION)
@@ -21,8 +23,6 @@ void ArduMYActuatorConfigSerializerBase::reset()
 	step=FLAGS;
 	byteIndex=0;
 }
-
-#include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 
 // Look at flags & type and go from the current step to the next enabled one
