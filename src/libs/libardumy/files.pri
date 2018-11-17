@@ -72,7 +72,6 @@ ARDUMY_SOURCES += \
 	$$ARDUMY_TOP/ArduMYActuatorEnableBits.cpp \
 	$$ARDUMY_TOP/ArduMYBuzzerActuator.cpp \
 	$$ARDUMY_TOP/FivePhase.cpp \
-	$$ARDUMY_TOP/main.cpp \
 	$$ARDUMY_TOP/RCServoActuator.cpp \
 	$$ARDUMY_TOP/RGBLED.cpp \
 	$$ARDUMY_TOP/StepMotorActuator.cpp \
