@@ -66,7 +66,7 @@ ARDUMY_HEADERS += \
 	$$ARDUMY_TOP/RCServoActuator.hpp \
 	$$ARDUMY_TOP/RGBLED.hpp \
 	$$ARDUMY_TOP/StepMotorActuator.hpp \
-	$$ARDUMY_TOP/SwitchInput.hpp \
+	$$ARDUMY_TOP/SwitchInput.hpp \0
 
 ARDUMY_SOURCES += \
 	$$ARDUMY_TOP/ArduMYActuatorEnableBits.cpp \

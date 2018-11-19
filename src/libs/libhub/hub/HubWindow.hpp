@@ -27,6 +27,8 @@ template<typename T>
 class GaitController;
 
 class ZBarScanner;
+class IdenticonWidget;
+class IrisWidget;
 
 class HubWindow : public QMainWindow, public LogDestination
 {
@@ -43,6 +45,13 @@ private:
 	//QStandardItemModel simClients;
 
 
+	const QDir topDir;
+	QDir lastDir;
+
+	QDir widgetIllustrationOutputDir;
+
+
+
 public:
 	explicit HubWindow(QSharedPointer<Hub> hub, QWidget *parent = nullptr);
 	virtual ~HubWindow();
@@ -57,14 +66,17 @@ public:
 private:
 
 	void updateIdentityWidgets();
-
 	void startProcess(QString base);
+
 #ifdef EXTERNAL_LIB_OPENCL
 
 private slots:
 	void onGLWidgetInitialized();
 #endif // EXTERNAL_LIB_OPENCL
 
+
+	QString saveIdenticonWidget(IdenticonWidget *iw, QString base="identicon");
+	QString saveIrisWidget(IrisWidget *iw, quint32 irisIndex=0, QString base="iris");
 
 	// CommsChannel slots
 public slots:
@@ -98,6 +110,8 @@ private slots:
 	void on_pushButtonSaveIdenticonIris_clicked();
 	void on_pushButtonSaveIdenticonRemote_clicked();
 	void on_pushButtonSaveIdenticonHub_clicked();
+	void on_pushButtonWidgetIllustrationBrowse_clicked();
+	void on_pushButtonWidgetIllustrationSaveAll_clicked();
 };
 
 #endif // HUBWINDOW_HPP

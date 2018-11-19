@@ -23,6 +23,7 @@
 #include "utility/ScopedTimer.hpp"
 #include "utility/Standard.hpp"
 #include "utility/Utility.hpp"
+#include "utility/WidgetCaptureTool.hpp"
 #include "widgets/HardwareTemplate.hpp"
 #include "widgets/hexedit/QHexEditData.hpp"
 #include "widgets/hexedit/QHexEdit.hpp"
@@ -46,6 +47,9 @@ HubWindow::HubWindow(QSharedPointer<Hub> hub, QWidget *parent) :
 	, mHub(hub)
 	, mGait(nullptr)
 	, mScanner(nullptr)
+	, topDir("/")
+	, lastDir(topDir)
+	, widgetIllustrationOutputDir(topDir)
 {
 	OC_METHODGATE();
 	setObjectName("HubWindow");
@@ -155,7 +159,7 @@ HubWindow::HubWindow(QSharedPointer<Hub> hub, QWidget *parent) :
 		}
 
 
-
+		ui->lineEditWidgetIlilustrationPath->setText(widgetIllustrationOutputDir.absolutePath());
 
 		appendLog("SETTING UP PLAN EDITOR");
 		ui->widgetPlanEditor->configure("hub.plan");
@@ -345,6 +349,8 @@ void HubWindow::startProcess(QString base)
 }
 
 
+
+
 #ifdef EXTERNAL_LIB_OPENCL
 
 void HubWindow::onGLWidgetInitialized()
@@ -367,6 +373,88 @@ void HubWindow::onGLWidgetInitialized()
 }
 
 #endif // EXTERNAL_LIB_OPENCL
+
+
+QString HubWindow::saveIdenticonWidget(IdenticonWidget *iw, QString base)
+{
+	QFileDialog fd;
+	QStringList filters;
+	QString filePath="";
+	if(topDir == lastDir) {
+		lastDir=QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+	}
+	fd.setDirectory(lastDir);
+	filters << "PNG (*.png)";
+	filters << "SVG (*.svg)";
+	fd.setNameFilters(filters);
+	fd.selectFile(base);
+	fd.setFileMode(QFileDialog::AnyFile);
+	fd.setAcceptMode(QFileDialog::AcceptSave);
+	if (fd.exec()) {
+		lastDir=fd.directory();
+		QStringList  fileNames = fd.selectedFiles();
+		if(fileNames.size()>0) {
+			QString fileName=fileNames.first();
+			QFileInfo fileInfo(fileName);
+
+			if(fileInfo.fileName().endsWith(".svg")) {
+				QByteArray xml=iw->svgXML();
+				filePath=fileInfo.absoluteFilePath();
+				QFile file(filePath);
+				file.open(QIODevice::WriteOnly);
+				file.write(xml);
+				file.close();
+			} else if(fileInfo.fileName().endsWith(".png")) {
+				Identicon identicon=iw->identicon();
+				const quint32 sz=1024;
+				QImage image=identicon.image(sz, sz);
+				filePath=fileInfo.absoluteFilePath();
+				image.save(filePath);
+			}
+		}
+	}
+	return filePath;
+}
+
+
+
+QString HubWindow::saveIrisWidget(IrisWidget *iw, quint32 irisIndex, QString base)
+{
+	QFileDialog fd;
+	QStringList filters;
+	QString filePath="";
+	if(topDir == lastDir) {
+		lastDir=QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+	}
+	fd.setDirectory(lastDir);
+	filters << "PNG (*.png)";
+	fd.setNameFilters(filters);
+	fd.selectFile(base);
+	fd.setFileMode(QFileDialog::AnyFile);
+	fd.setAcceptMode(QFileDialog::AcceptSave);
+	if (fd.exec()) {
+		lastDir=fd.directory();
+		QStringList  fileNames = fd.selectedFiles();
+		if(fileNames.size()>0) {
+			QString fileName=fileNames.first();
+			QFileInfo fileInfo(fileName);
+			if(fileInfo.fileName().endsWith(".png")) {
+				PortableID pid=iw->portableID();
+				const quint32 sz=1024;
+				QImage irisImage(sz,sz, QImage::Format_ARGB32);
+				irisImage.fill(Qt::transparent);
+				QPainter painter(&irisImage);
+				IrisRendrer ir;
+				ir.setPortableID(pid);
+				QRect r(0,0,sz,sz);
+				ir.draw(r, painter, irisIndex);
+				filePath=fileInfo.absoluteFilePath();
+				irisImage.save(filePath);
+			}
+		}
+	}
+	return filePath;
+}
 
 void HubWindow::on_comboBoxAddLocal_currentIndexChanged(const QString &arg1)
 {
@@ -478,88 +566,6 @@ void HubWindow::on_horizontalSliderIrisIndex_valueChanged(int value)
 
 
 
-static const QDir topDir("/");
-static QDir lastDir = topDir;
-
-static QString saveIdenticonWidget(IdenticonWidget *iw, QString base="identicon")
-{
-	QFileDialog fd;
-	QStringList filters;
-	QString filePath="";
-	if(topDir == lastDir) {
-		lastDir=QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-	}
-	fd.setDirectory(lastDir);
-	filters << "PNG (*.png)";
-	filters << "SVG (*.svg)";
-	fd.setNameFilters(filters);
-	fd.selectFile(base);
-	fd.setFileMode(QFileDialog::AnyFile);
-	fd.setAcceptMode(QFileDialog::AcceptSave);
-	if (fd.exec()) {
-		lastDir=fd.directory();
-		QStringList  fileNames = fd.selectedFiles();
-		if(fileNames.size()>0) {
-			QString fileName=fileNames.first();
-			QFileInfo fileInfo(fileName);
-
-			if(fileInfo.fileName().endsWith(".svg")) {
-				QByteArray xml=iw->svgXML();
-				filePath=fileInfo.absoluteFilePath();
-				QFile file(filePath);
-				file.open(QIODevice::WriteOnly);
-				file.write(xml);
-				file.close();
-			} else if(fileInfo.fileName().endsWith(".png")) {
-				Identicon identicon=iw->identicon();
-				const quint32 sz=1024;
-				QImage image=identicon.image(sz, sz);
-				filePath=fileInfo.absoluteFilePath();
-				image.save(filePath);
-			}
-		}
-	}
-	return filePath;
-}
-
-static QString saveIrisWidget(IrisWidget *iw, quint32 irisIndex=0, QString base="iris")
-{
-	QFileDialog fd;
-	QStringList filters;
-	QString filePath="";
-	if(topDir == lastDir) {
-		lastDir=QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-	}
-	fd.setDirectory(lastDir);
-	filters << "PNG (*.png)";
-	fd.setNameFilters(filters);
-	fd.selectFile(base);
-	fd.setFileMode(QFileDialog::AnyFile);
-	fd.setAcceptMode(QFileDialog::AcceptSave);
-	if (fd.exec()) {
-		lastDir=fd.directory();
-		QStringList  fileNames = fd.selectedFiles();
-		if(fileNames.size()>0) {
-			QString fileName=fileNames.first();
-			QFileInfo fileInfo(fileName);
-			if(fileInfo.fileName().endsWith(".png")) {
-				PortableID pid=iw->portableID();
-				const quint32 sz=1024;
-				QImage irisImage(sz,sz, QImage::Format_ARGB32);
-				irisImage.fill(Qt::transparent);
-				QPainter painter(&irisImage);
-				IrisRendrer ir;
-				ir.setPortableID(pid);
-				QRect r(0,0,sz,sz);
-				ir.draw(r, painter, irisIndex);
-				filePath=fileInfo.absoluteFilePath();
-				irisImage.save(filePath);
-			}
-		}
-	}
-	return filePath;
-}
-
 void HubWindow::on_pushButtonSaveIdenticonAgent_clicked()
 {
 	const QString filePath=saveIdenticonWidget(ui->widgetIdenticonAgent, "agent_"+ui->widgetIdenticonAgent->identicon().id().id()+".svg");
@@ -596,11 +602,39 @@ void HubWindow::on_pushButtonSaveIdenticonHub_clicked()
 
 void HubWindow::on_pushButtonSaveIdenticonIris_clicked()
 {
-	const quint32 irisIndex = ui->horizontalSliderIrisIndex->value();
+	const quint32 irisIndex = static_cast<quint32>(ui->horizontalSliderIrisIndex->value());
 	const QString filePath=saveIrisWidget(ui->widgetIris, irisIndex, "iris_"+QString::number(irisIndex)+"_"+ui->widgetIris->portableID().id()+".png");
 	if(!filePath.isEmpty()) {
 		ui->logScroll->appendPlainText("Saved "+filePath);
 	} else {
 		ui->logScroll->appendPlainText("Iris image save aborted");
+	}
+}
+
+void HubWindow::on_pushButtonWidgetIllustrationBrowse_clicked()
+{
+	if(topDir == widgetIllustrationOutputDir) {
+		widgetIllustrationOutputDir=QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+	}
+	QString dir=widgetIllustrationOutputDir.absolutePath();
+	QString selectedDir = QFileDialog::getExistingDirectory(this, tr("Select Widget Illustration output dir"), dir, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+	if (selectedDir!=dir) {
+		widgetIllustrationOutputDir=QDir(selectedDir);
+		ui->lineEditWidgetIlilustrationPath->setText(widgetIllustrationOutputDir.absolutePath());
+	}
+}
+
+
+
+void HubWindow::on_pushButtonWidgetIllustrationSaveAll_clicked()
+{
+	if(widgetIllustrationOutputDir.exists()) {
+		WidgetCaptureTool wct(palette().color(QPalette::WindowText), palette().color(QPalette::Window), QColor(0x00, 0x00, 0x00, 0x08), QColor(0x00, 0x00, 0x00, 0x00));
+		wct.captureWidget(ui->widgetWidgetIllustrationIdenticon, widgetIllustrationOutputDir, "identicon", "Identicon widget shows rendering of the 'personality' of your agent");
+		wct.captureWidget(ui->widgetWidgetIllustrationGait, widgetIllustrationOutputDir, "gait", "Gait widget shows a 2D graphical representation of the current gait as it progresses");
+		wct.captureWidget(ui->widgetWidgetIllustrationMapEditor, widgetIllustrationOutputDir, "map", "Map editor widget allows user top view or edit a feature on a map such as position, area or path.");
+		wct.captureWidget(ui->widgetWidgetIllustrationPairing, widgetIllustrationOutputDir, "pairing", "Pairing wizard allows user to pair with discovered peers on the network");
+	} else {
+		qWarning()<<"ERROR: Output dir for widget illustration did not exist, aborting...";
 	}
 }

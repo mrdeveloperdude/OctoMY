@@ -102,7 +102,7 @@ void MapNetwork::requestFinished(QNetworkReply *reply)
 	}
 
 	QVariant fromCache = reply->attribute(QNetworkRequest::SourceIsFromCacheAttribute);
-	qDebug() << "page from cache?" << fromCache.toBool();
+	//qDebug() << "page from cache?" << fromCache.toBool();
 
 	//qDebug() << "MapNetwork::requestFinished" << reply->url().toString();
 	if (reply->error() == QNetworkReply::NoError) {

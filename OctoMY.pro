@@ -74,3 +74,4 @@ OTHER_FILES+= $$files(integration/docker/*, false)
 OTHER_FILES+= $$files(content/doc/*, false)
 OTHER_FILES+= $$files(content/design/*, false)
 OTHER_FILES+= $$files(content/website/*, false)
+
