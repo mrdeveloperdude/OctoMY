@@ -19,7 +19,8 @@ SOURCES+= \
     MEMTrasher.cpp \
     Stress.cpp \
     Utilities.cpp \
-    UDPTester.cpp
+    UDPTester.cpp \
+    TestKeys.cpp
 
 HEADERS+= \
 	CourierTester.hpp \
@@ -31,7 +32,8 @@ HEADERS+= \
     MEMTrasher.hpp \
     Stress.hpp \
     Utilities.hpp \
-    UDPTester.hpp
+    UDPTester.hpp \
+    TestKeys.hpp
 
 
 common.depends=		$${SRCS}/libs
