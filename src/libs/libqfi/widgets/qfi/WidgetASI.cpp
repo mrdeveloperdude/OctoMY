@@ -60,8 +60,8 @@
 WidgetASI::WidgetASI( QWidget *parent ) :
 	QWidget( parent ),
 	m_ui( OC_NEW Ui::WidgetASI ),
-	m_asi ( 0 ),
-	m_layoutSq ( 0 )
+	m_asi ( nullptr ),
+	m_layoutSq ( nullptr )
 {
 	Q_INIT_RESOURCE(qfi);
 	m_ui->setupUi( this );
@@ -75,9 +75,13 @@ WidgetASI::WidgetASI( QWidget *parent ) :
 
 WidgetASI::~WidgetASI()
 {
-	if ( m_layoutSq ) delete m_layoutSq; m_layoutSq = 0;
+	if ( nullptr != m_layoutSq ){
+		delete m_layoutSq; m_layoutSq = 0;
+	}
 
-	if ( m_ui ) delete m_ui; m_ui = 0;
+	if ( nullptr != m_ui ){
+		delete m_ui; m_ui = 0;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////

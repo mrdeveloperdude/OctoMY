@@ -75,9 +75,15 @@ WidgetADI::WidgetADI( QWidget *parent ) :
 
 WidgetADI::~WidgetADI()
 {
-	if ( m_layoutSq ) delete m_layoutSq; m_layoutSq = 0;
+	if ( m_layoutSq ) {
+		delete m_layoutSq;
+	}
+	m_layoutSq = nullptr;
 
-	if ( m_ui ) delete m_ui; m_ui = 0;
+	if ( m_ui ) {
+		delete m_ui;
+	}
+	m_ui = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
