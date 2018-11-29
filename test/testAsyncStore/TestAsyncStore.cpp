@@ -20,7 +20,7 @@
 
 //typedef int EventDataType;
 
-// Type made toemulate non-trivial tempalte parameter
+// Type made to emulate non-trivial template parameter
 struct EventDataType {
 	int a;
 	int b;
@@ -63,7 +63,7 @@ QDebug operator<<(QDebug &d, const EventDataType &ev)
 
 static ASEventType indexedASEventType(int index)
 {
-	return static_cast<ASEventType>(static_cast<int>(AS_EVENT_NONE) + (index%static_cast<int>(AS_EVENT_DONE - AS_EVENT_NONE)));
+	return static_cast<ASEventType>(static_cast<int>(AS_EVENT_NONE) + (index%static_cast<int>(AS_EVENT_COMPLETE - AS_EVENT_NONE)));
 }
 
 
@@ -154,7 +154,7 @@ void TestAsyncStore::testConcurrent()
 		}
 	};
 
-	const int operationCount = 1000;
+	const int operationCount = 100000;
 
 	// Create a list containing test operations
 	QList<AsyncTestOperation> operations;
@@ -233,7 +233,7 @@ void TestAsyncStore::testConcurrent()
 			//qDebug().nospace().noquote()<<"AsyncStoreTest:: NOOP @"<<utility::currentThreadID();
 		}
 		break;
-		case(AS_EVENT_DONE):
+		case(AS_EVENT_COMPLETE):
 
 		default: {
 			qDebug()<<" MOVE ALONG NOTHING TO SEE HERE: "<<ASEventTypeToString(op.type);
@@ -246,7 +246,7 @@ void TestAsyncStore::testConcurrent()
 
 	QtConcurrent::blockingMap(operations, applyOperation);
 
-	ast.store.synchronize().waitForFinished();
+	//ast.store.synchronize().waitForFinished();
 	qDebug()<<"JOURNAL: "<<ast.store.journal();
 }
 

@@ -1,11 +1,16 @@
 #ifndef TESTKEYS_HPP
 #define TESTKEYS_HPP
 
+#include <QString>
 
-class TestKeys
-{
-	public:
-		TestKeys();
+struct TestKeys {
+	QString privKeyPEM;
+	QString pubKeyPEM;
+	QString keyID;
+	QString keyID_bad;
+
+
+	TestKeys();
 };
 
 #endif // TESTKEYS_HPP
