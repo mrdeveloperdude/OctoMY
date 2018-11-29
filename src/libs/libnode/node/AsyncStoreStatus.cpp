@@ -10,51 +10,80 @@ AsyncStoreStatus::AsyncStoreStatus(quint64 diskCounter, quint64 memoryCounter)
 }
 
 
-bool AsyncStoreStatus::isVirgin(){
+bool AsyncStoreStatus::isVirgin()
+{
 	OC_METHODGATE();
 	return (0 == mMemoryCounter) && (0 == mDiskCounter);
 }
 
 
-bool AsyncStoreStatus::isReady(){
+bool AsyncStoreStatus::isReady()
+{
 	OC_METHODGATE();
 	return (mMemoryCounter > 0);
 }
 
 
-bool AsyncStoreStatus::needsGenerate(){
+bool AsyncStoreStatus::needsGenerate()
+{
 	OC_METHODGATE();
 	return ( mMemoryCounter ==  mDiskCounter) && ( 0 == mDiskCounter);
 }
 
 
-bool AsyncStoreStatus::needsLoad(){
+bool AsyncStoreStatus::needsLoad()
+{
 	OC_METHODGATE();
 	return ( mMemoryCounter < mDiskCounter) && ( 0 != mDiskCounter);
 }
 
 
-bool AsyncStoreStatus::diskIsMostRecent(){
+bool AsyncStoreStatus::diskIsMostRecent()
+{
 	OC_METHODGATE();
 	return mDiskCounter > mMemoryCounter;
 }
 
 
-bool AsyncStoreStatus::memoryIsMostRecent(){
+bool AsyncStoreStatus::memoryIsMostRecent()
+{
 	OC_METHODGATE();
 	return mDiskCounter < mMemoryCounter;
 }
 
 
-bool AsyncStoreStatus::existsOnDisk(){
+bool AsyncStoreStatus::existsOnDisk()
+{
 	OC_METHODGATE();
 	return mDiskCounter > 0;
 }
 
 
 
-bool AsyncStoreStatus::existsInMemory(){
+bool AsyncStoreStatus::existsInMemory()
+{
 	OC_METHODGATE();
 	return mMemoryCounter > 0;
 }
+
+
+
+
+QString AsyncStoreStatus::toString() const
+{
+	return QString("AsyncStoreStatus(disk=%1, mem=%2)").arg(mDiskCounter).arg(mMemoryCounter);
+}
+
+
+AsyncStoreStatus::operator QString() const
+{
+	return toString();
+}
+
+
+AsyncStoreStatus::operator QString()
+{
+	return toString();
+}
+
 

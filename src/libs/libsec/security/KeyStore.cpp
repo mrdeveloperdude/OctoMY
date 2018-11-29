@@ -48,7 +48,6 @@ bool KeyStore::setFrontend(QVariantMap map)
 	OC_METHODGATE();
 	//qDebug()<<"KEYSTORE FROM MAP";
 	mDirty=true;
-	QSharedPointer<Key> localKey;
 	bool ok=true;
 	mLocalKey=nullptr;
 	mAssociates.clear();
@@ -67,7 +66,7 @@ bool KeyStore::setFrontend(QVariantMap map)
 			QVariantMap remote=(*b).toMap();
 			if(remote.contains("key")) {
 				QVariantMap  keyMap=remote["key"].toMap();
-				QSharedPointer<Key> peerKey= QSharedPointer<Key>(OC_NEW Key(keyMap,true));
+				QSharedPointer<Key> peerKey= QSharedPointer<Key>(OC_NEW Key(keyMap, true));
 				if(!peerKey->isValid(true)) {
 					qWarning()<<"ERROR: peer key was not valid";
 					ok=false;
@@ -122,12 +121,13 @@ bool KeyStore::generateFrontend()
 	mAssociates.clear();
 	mLocalKey.clear();
 	if(mDoBootstrap) {
-		ScopedTimer st("local key generation");
+		//ScopedTimer st("local key generation");
 		const auto bits=mPolicy.bits();
-		//qDebug()<<"KeyStore: bootstrapping started with "<<bits<<"bits";
+		qDebug()<<"KeyStore: bootstrapping started with "<<bits<<"bits";
 		mLocalKey=QSharedPointer<Key>(OC_NEW Key(bits));
 	}
-	return true;
+	// We only return true if we actually generated, or else asyncstore will be confused
+	return mDoBootstrap;
 }
 
 
@@ -218,6 +218,11 @@ void KeyStore::dump()
 		//b.value();
 		qDebug().nospace()<<"    x " <<key;
 	}
+}
+
+AsyncStore<QVariantMap> &KeyStore::store(){
+	OC_METHODGATE();
+	return mStore;
 }
 
 QString KeyStore::toString()

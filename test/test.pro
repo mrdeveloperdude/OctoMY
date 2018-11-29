@@ -98,7 +98,7 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testAddressBook \
 #		testAddressList \
 #		testAgentStateCourier \
-		testArduMY \
+#		testArduMY \
 #		testAssociate \
 #		testAsyncStore \
 #		testBlob \
@@ -119,7 +119,7 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testIdenticon \
 #		testIrisRendrer \
 #		testKey \
-#		testKeyStore \
+		testKeyStore \
 #		testMapEditor\
 #		testNameGenerator \
 #		testNetworkAddress \

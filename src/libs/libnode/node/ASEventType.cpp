@@ -19,7 +19,7 @@ QString ASEventTypeToString(ASEventType tt)
 		ASEventType_case_stanza(AS_EVENT_GENERATE);
 		ASEventType_case_stanza(AS_EVENT_SYNCHRONIZE);
 		ASEventType_case_stanza(AS_EVENT_EXISTS);
-		ASEventType_case_stanza(AS_EVENT_DONE);
+		ASEventType_case_stanza(AS_EVENT_COMPLETE);
 	default: {
 		return  QString("AS_EVENT_UNKNOWN(%1)").arg(tt);
 	}

@@ -9,10 +9,15 @@ class TestKeyStore:public QObject
 	Q_OBJECT
 
 private:
-	const QString fn="test_keystore.json";
+	const QString fileName="test_keystore.json";
+
+
+private:
+
+
 private slots:
 	void testInit();
-	//void testBootstrap();
+
 	void testInsertRemove();
 
 };

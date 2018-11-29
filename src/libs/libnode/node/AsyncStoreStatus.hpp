@@ -21,6 +21,13 @@ public:
 	bool existsOnDisk();
 	bool existsInMemory();
 
+public:
+
+	QString toString() const;
+	operator QString() const;
+	operator QString();
+
+
 };
 
 #endif // ASYNCSTORESTATUS_HPP

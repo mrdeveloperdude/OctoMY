@@ -27,11 +27,13 @@
 #include <QSharedPointer>
 #include <QString>
 
+/*
 template <typename T>
 static void noop(ASEvent<T> &)
 {
 
 }
+*/
 
 struct nop {
 	void operator()(...) const volatile {}
@@ -54,7 +56,7 @@ private:
 	friend class GenerateRunnable<KeyStore>;
 
 public:
-	explicit KeyStore(QString filename="", bool doBootstrap=false, KeySecurityPolicy policy=KeySecurityPolicy(), QObject *parent=nullptr);
+	explicit KeyStore(QString filename = "", bool doBootstrap = false, KeySecurityPolicy policy = KeySecurityPolicy(), QObject *parent = nullptr);
 	virtual ~KeyStore() Q_DECL_OVERRIDE;
 
 
@@ -90,7 +92,7 @@ public:
 	QSharedPointer<Key> pubKeyForID(const QString &id);
 
 
-
+	AsyncStore<QVariantMap> &store();
 	void dump();
 	QString toString();
 

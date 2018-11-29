@@ -103,40 +103,51 @@ protected:
 	QAtomicInteger<quint64> mAutoIncrement;
 	QAtomicInteger<quint64> mDiskCounter;
 	QAtomicInteger<quint64> mMemoryCounter;
-	AtomicBoolean mDone;
+	AtomicBoolean mCompleted;
 
 	QFuture<void> mCompleteFuture;
 
 	QMutex mJournalMutex;
 	QStringList mJournal;
 
+
+	AtomicBoolean mSynchronousMode;
+
 public:
 	explicit AsyncStore(AsyncBackend<T> &backend, AsyncFrontend<T> &frontend, QObject *parent = nullptr);
 	virtual ~AsyncStore();
+
+
+private:
+	void addJournal(QString);
+
+public:
+	QStringList journal();
+
+	void setSynchronousMode(bool isSync);
 
 public:
 
 	AsyncBackend<T> &backend();
 	AsyncFrontend<T> &frontend();
 
-
 public:
 
 	QString filename() const;
 	bool fileExists() const;
 	bool ready();
-	QStringList journal();
 
 
 private:
 
-	ASEvent<T> enqueueTransaction(ASEvent<T> trans);
+	ASEvent<T> enqueueEvent(ASEvent<T> trans);
 	void processEvents();
 
 	void processEvent(ASEvent<T> &event);
 	quint64 autoIncrement();
 
-	void addJournal(QString);
+	void runCallbacksForEvent(ASEvent<T> event);
+
 
 	// The asynchronous api
 public:
@@ -152,7 +163,6 @@ public:
 private:
 
 	ASEvent<T> complete();
-	void runCallbacksForEvent(ASEvent<T> event);
 
 	// The synchronous actions
 private:
@@ -202,7 +212,8 @@ AsyncStore<T>::AsyncStore(AsyncBackend<T> &backend, AsyncFrontend<T> &frontend, 
 	, mAutoIncrement(0)
 	, mDiskCounter(0)
 	, mMemoryCounter(0)
-	, mDone(false)
+	, mCompleted(false)
+	, mSynchronousMode(false)
 {
 	OC_METHODGATE();
 	Q_UNUSED(parent);
@@ -229,14 +240,39 @@ AsyncStore<T>::~AsyncStore()
 	OC_METHODGATE();
 	//qDebug()<<"Entered AsyncStore::~AsyncStore() from thread "<<utility::currentThreadID();
 	// TODO: Look at how to avoid the possibility of an unecessary load during this final sync
+	qDebug()<<"D-TOR";
 	synchronize();
 	complete();
 	mCompleteFuture.waitForFinished();
 	mSignallingObject->deleteLater();
 	mSignallingObject=nullptr;
+	qDebug()<<"D-TOR JOURNAL: "<<journal();
 	//qDebug()<<"Exiting AsyncStore::~AsyncStore() from thread "<<utility::currentThreadID();
 }
 
+
+template <typename T>
+void AsyncStore<T>::addJournal(QString entry)
+{
+	OC_METHODGATE();
+	QMutexLocker ml(&mJournalMutex);
+	mJournal << entry;
+}
+
+template <typename T>
+QStringList AsyncStore<T>::journal()
+{
+	OC_METHODGATE();
+	QMutexLocker ml(&mJournalMutex);
+	return mJournal;
+}
+
+template <typename T>
+void AsyncStore<T>::setSynchronousMode(bool isSync)
+{
+	OC_METHODGATE();
+	mSynchronousMode.set(isSync);
+}
 
 
 template <typename T>
@@ -257,29 +293,25 @@ template <typename T>
 bool AsyncStore<T>::ready()
 {
 	OC_METHODGATE();
-	return mMemoryCounter > 0;
+	const quint64 value=mMemoryCounter;
+	return value > 0;
 }
 
-
 template <typename T>
-QStringList AsyncStore<T>::journal()
+ASEvent<T> AsyncStore<T>::enqueueEvent(ASEvent<T> event)
 {
 	OC_METHODGATE();
-	QMutexLocker ml(&mJournalMutex);
-	return mJournal;
-}
-
-
-
-
-template <typename T>
-ASEvent<T> AsyncStore<T>::enqueueTransaction(ASEvent<T> trans)
-{
-	OC_METHODGATE();
-	//qDebug()<<"Entered AsyncStore::enqueueTransaction() from thread "<<utility::currentThreadID();
-	mTransactions.put(trans);
-	//qDebug()<<"Exiting AsyncStore::enqueueTransaction() from thread "<<utility::currentThreadID();
-	return trans;
+	// We are not asynchronous, do events as they occur
+	if(mSynchronousMode) {
+		processEvent(event);
+	}
+	// We are asynchronous, post events to log and return
+	else {
+		//qDebug()<<"Entered AsyncStore::enqueueTransaction() from thread "<<utility::currentThreadID();
+		mTransactions.put(event);
+		//qDebug()<<"Exiting AsyncStore::enqueueTransaction() from thread "<<utility::currentThreadID();
+	}
+	return event;
 }
 
 template <typename T>
@@ -288,7 +320,7 @@ void AsyncStore<T>::processEvents()
 	OC_METHODGATE();
 	//QThread::msleep(2000);
 	//qDebug()<<"Entered AsyncStore::processTransactions() from thread "<<utility::currentThreadID();
-	while(!mDone) {
+	while(!mCompleted && !mSynchronousMode) {
 		ASEvent<T> event=mTransactions.get();
 		//qDebug()<<" + AsyncStore::processTransactions() running transaction with type="<<trans.type()<<"	from thread "<<utility::currentThreadID();
 		processEvent(event);
@@ -301,6 +333,7 @@ template <typename T>
 void AsyncStore<T>::processEvent(ASEvent<T> &event)
 {
 	OC_METHODGATE();
+	qDebug()<<"Processing event "<<event;
 	event.run();
 }
 
@@ -309,86 +342,6 @@ quint64 AsyncStore<T>::autoIncrement()
 {
 	OC_METHODGATE();
 	return ++mAutoIncrement;
-}
-
-
-
-
-template <typename T>
-void AsyncStore<T>::addJournal(QString entry)
-{
-	OC_METHODGATE();
-	QMutexLocker ml(&mJournalMutex);
-	mJournal << entry;
-}
-
-
-
-
-
-template <typename T>
-ASEvent<T> AsyncStore<T>::status()
-{
-	OC_METHODGATE();
-	return enqueueTransaction(ASEvent<T>(*this, AS_EVENT_STATUS));
-}
-
-
-template <typename T>
-ASEvent<T> AsyncStore<T>::clear()
-{
-	OC_METHODGATE();
-	return enqueueTransaction(ASEvent<T>(*this, AS_EVENT_CLEAR));
-}
-
-
-template <typename T>
-ASEvent<T> AsyncStore<T>::get()
-{
-	OC_METHODGATE();
-	return enqueueTransaction(ASEvent<T>(*this, AS_EVENT_GET));
-}
-
-template <typename T>
-ASEvent<T> AsyncStore<T>::set(T data)
-{
-	OC_METHODGATE();
-	return enqueueTransaction(ASEvent<T>(*this, AS_EVENT_SET, data));
-}
-
-template <typename T>
-ASEvent<T> AsyncStore<T>::load()
-{
-	OC_METHODGATE();
-	return enqueueTransaction(ASEvent<T>(*this, AS_EVENT_LOAD));
-}
-
-template <typename T>
-ASEvent<T> AsyncStore<T>::save()
-{
-	OC_METHODGATE();
-	return enqueueTransaction(ASEvent<T>(*this, AS_EVENT_SAVE));
-}
-
-template <typename T>
-ASEvent<T> AsyncStore<T>::generate()
-{
-	OC_METHODGATE();
-	return enqueueTransaction(ASEvent<T>(*this, AS_EVENT_GENERATE));
-}
-
-template <typename T>
-ASEvent<T> AsyncStore<T>::synchronize()
-{
-	OC_METHODGATE();
-	return enqueueTransaction(ASEvent<T>(*this, AS_EVENT_SYNCHRONIZE));
-}
-
-template <typename T>
-ASEvent<T> AsyncStore<T>::complete()
-{
-	OC_METHODGATE();
-	return enqueueTransaction(ASEvent<T>(*this, AS_EVENT_DONE));
 }
 
 
@@ -406,22 +359,106 @@ void AsyncStore<T>::runCallbacksForEvent(ASEvent<T> event)
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Asynchronous actions
+//
+
+
+template <typename T>
+ASEvent<T> AsyncStore<T>::status()
+{
+	OC_METHODGATE();
+	addJournal("add-status");
+	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_STATUS));
+}
+
+
+template <typename T>
+ASEvent<T> AsyncStore<T>::clear()
+{
+	OC_METHODGATE();
+	addJournal("add-clear");
+	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_CLEAR));
+}
+
+
+template <typename T>
+ASEvent<T> AsyncStore<T>::get()
+{
+	OC_METHODGATE();
+	addJournal("add-get");
+	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_GET));
+}
+
+template <typename T>
+ASEvent<T> AsyncStore<T>::set(T data)
+{
+	OC_METHODGATE();
+	addJournal("add-set");
+	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_SET, data));
+}
+
+template <typename T>
+ASEvent<T> AsyncStore<T>::load()
+{
+	OC_METHODGATE();
+	addJournal("add-load");
+	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_LOAD));
+}
+
+template <typename T>
+ASEvent<T> AsyncStore<T>::save()
+{
+	OC_METHODGATE();
+	addJournal("add-save");
+	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_SAVE));
+}
+
+template <typename T>
+ASEvent<T> AsyncStore<T>::generate()
+{
+	OC_METHODGATE();
+	addJournal("add-generate");
+	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_GENERATE));
+}
+
+template <typename T>
+ASEvent<T> AsyncStore<T>::synchronize()
+{
+	OC_METHODGATE();
+	addJournal("add-sync");
+	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_SYNCHRONIZE));
+}
+
+template <typename T>
+ASEvent<T> AsyncStore<T>::complete()
+{
+	OC_METHODGATE();
+	addJournal("add-complete");
+	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_COMPLETE));
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Synchronous actions
+//
+
+
 template <typename T>
 AsyncStoreStatus AsyncStore<T>::statusSync()
 {
 	OC_METHODGATE();
-	mJournal << "status";
+	addJournal("status");
 	return AsyncStoreStatus(mDiskCounter, mMemoryCounter);
 }
-
-
 
 
 template <typename T>
 bool AsyncStore<T>::clearSync()
 {
 	OC_METHODGATE();
-	mJournal << "clear";
 	const bool backendOK=mBackend.clearBackend();
 	//const auto oldD=mDiskCounter;
 	//const auto oldM=mMemoryCounter;
@@ -434,6 +471,7 @@ bool AsyncStore<T>::clearSync()
 	}
 	//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<oldM<<" to " <<mMemoryCounter<< " VIA CLEAR";
 	//qDebug()<<"DISK COUNTER FOR "<<mFilename<<" WENT FROM "<<oldD<<" to " <<mDiskCounter<< " VIA CLEAR";
+	addJournal("clear");
 	return backendOK && frontendOK;
 }
 
@@ -443,11 +481,11 @@ template <typename T>
 T AsyncStore<T>::getSync(bool &ok)
 {
 	OC_METHODGATE();
-	mJournal << "get";
 	//qDebug()<<"Entering Sync Get from "<<utility::currentThreadID();
 	ok=false;
 	T data = mFrontend.getFrontend(ok);
 	//qDebug()<<"Exiting Sync Get with ok="<<ok<<" and data="<<data<<" from "<<utility::currentThreadID();
+	addJournal("get");
 	return data;
 }
 
@@ -456,7 +494,6 @@ template <typename T>
 bool AsyncStore<T>::setSync(T data)
 {
 	OC_METHODGATE();
-	mJournal << "set";
 	//qDebug()<<"Entering Sync Set with data="<<data<<" from "<<utility::currentThreadID();
 	const  bool ok=mFrontend.setFrontend(data);
 	//const auto old=mMemoryCounter;
@@ -465,6 +502,7 @@ bool AsyncStore<T>::setSync(T data)
 	}
 	//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT";
 	//qDebug()<<"Exiting Sync Set with ok="<<ok<<" from "<<utility::currentThreadID();
+	addJournal("set");
 	return ok;
 }
 
@@ -472,7 +510,6 @@ template <typename T>
 bool AsyncStore<T>::loadSync()
 {
 	OC_METHODGATE();
-	mJournal << "load";
 	//qDebug()<<"Entering Sync Load from "<<utility::currentThreadID();
 	bool ok=false;
 	T data = mBackend.loadBackend(ok);
@@ -483,6 +520,7 @@ bool AsyncStore<T>::loadSync()
 		}
 	}
 	//qDebug()<<"Exiting Sync Load with ok="<<ok<<"  from "<<utility::currentThreadID();
+	addJournal("load");
 	return ok;
 }
 
@@ -490,7 +528,6 @@ template <typename T>
 bool AsyncStore<T>::saveSync()
 {
 	OC_METHODGATE();
-	mJournal << "save";
 	//qDebug()<<"Entering Sync Save from "<<utility::currentThreadID();
 	bool ok=false;
 	T data = mFrontend.getFrontend(ok);
@@ -501,6 +538,7 @@ bool AsyncStore<T>::saveSync()
 		}
 	}
 	//qDebug()<<"Exiting Sync Save with ok="<<ok<<"  from "<<utility::currentThreadID();
+	addJournal("save");
 	return ok;
 }
 
@@ -510,7 +548,6 @@ template <typename T>
 bool AsyncStore<T>::generateSync()
 {
 	OC_METHODGATE();
-	mJournal << "generate";
 	//qDebug()<<"Entering Sync Generate from "<<utility::currentThreadID();
 	const bool ok=mFrontend.generateFrontend();
 	//const auto old=mMemoryCounter;
@@ -519,6 +556,7 @@ bool AsyncStore<T>::generateSync()
 	}
 	//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT";
 	//qDebug()<<"Exiting Sync Generate with ok="<<ok<<"  from "<<utility::currentThreadID();
+	addJournal("generate");
 	return ok;
 }
 
@@ -526,27 +564,30 @@ template <typename T>
 bool AsyncStore<T>::synchronizeSync()
 {
 	OC_METHODGATE();
-	mJournal << "sync";
 	//qDebug()<<"Entering Sync Synchronize";
 	bool ok=false;
 	const quint64 disk=mDiskCounter;
 	const quint64 mem= mMemoryCounter;
 	//qDebug()<<"AsyncStore::synchronizeSync("<<filename()<<"): disk("<<disk<<") == mem("<<mem<<")  from "<<utility::currentThreadID();
-	if(disk == mem) {
-		if(0 == disk) {
-			ok=generateSync();
-			//qDebug()<<" + generate:"<<ok<<"  from "<<utility::currentThreadID();
-		} else {
-			ok=true;
-			//qDebug()<<" + no-op:"<<ok<<"  from "<<utility::currentThreadID();
-		}
-	} else if(disk > mem) {
+
+	if(disk > mem) {
 		ok=loadSync();
 		//qDebug()<<" + load:"<<ok<<"  from "<<utility::currentThreadID();
 	} else if(disk < mem) {
 		ok=saveSync();
 		//qDebug()<<" + save:"<<ok<<"  from "<<utility::currentThreadID();
 	}
+	// equal
+	else {
+		if(0 == disk) {
+			ok=generateSync() && saveSync();
+			//qDebug()<<" + generate:"<<ok<<"  from "<<utility::currentThreadID();
+		} else {
+			ok=true;
+			//qDebug()<<" + no-op:"<<ok<<"  from "<<utility::currentThreadID();
+		}
+	}
+	addJournal("sync");
 	return ok;
 }
 
@@ -554,11 +595,11 @@ template <typename T>
 bool AsyncStore<T>::completeSync()
 {
 	OC_METHODGATE();
-	mJournal << "complete";
 	//qDebug()<<"Entering Sync Completion";
 	bool ok=true;
-	mDone=true;
+	mCompleted=true;
 	//qDebug()<<"Exiting Sync Completion with ok="<<ok;
+	addJournal("complete");
 	return ok;
 }
 

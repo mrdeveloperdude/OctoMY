@@ -83,6 +83,11 @@ public:
 	explicit ASEventPrivate();
 	virtual ~ASEventPrivate() { }
 
+
+	QString toString() const;
+	operator QString() const;
+	operator QString();
+
 public:
 
 	friend class ASEvent<T>;
@@ -134,6 +139,9 @@ public:
 	bool operator!=(const ASEvent<T> &other) const;
 
 
+	QString toString() const;
+	operator QString() const;
+	operator QString();
 
 public:
 	bool isNull() const;
@@ -175,6 +183,35 @@ bool operator!=(const ASEvent<T> &a, const ASEvent<T> &b)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+
+template <typename T>
+QString ASEventPrivate<T>::toString() const
+{
+	return QString("ASEventPrivate(type='%1', "
+				   "data='%2', "
+				   "started='%3', "
+				   "finished='%4', "
+				   "sucessful='%5', "
+				   "status='%6', "
+				   "message='%7')")
+		   .arg(mType)
+		   .arg(mData)
+		   .arg(mStarted)
+		   .arg(mFinished)
+		   .arg(mSuccessfull)
+		   .arg(mStatus)
+		   .arg(mMessage);
+}
+template <typename T>
+ASEventPrivate<T>::operator QString() const
+{
+	return toString();
+}
+template <typename T>
+ASEventPrivate<T>::operator QString()
+{
+	return toString();
+}
 
 
 template <typename T>
@@ -230,6 +267,44 @@ ASEventPrivate<T>::ASEventPrivate()
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
+
+template <typename T>
+QString ASEvent<T>::toString() const
+{
+	return QString("ASEvent(T='%1'"
+				   ", Allocation='%2'"
+				   ", %3")
+		   .arg(mT)
+		   .arg(mAllocation)
+		   .arg(nullptr==p_ptr?"p=null": QString("type='%1'"
+			//							   ", data='%?'"
+										   ", started='%2'"
+										   ", finish='%3'"
+										   ", sucessful='%4'"
+										   ", status='%5'"
+										   ", message='%6'")
+				.arg(ASEventTypeToString(p_ptr->mType))
+			//	.arg(p_ptr->mData)
+				.arg(p_ptr->mStarted?"true":"false")
+				.arg(p_ptr->mFinished?"true":"false")
+				.arg(p_ptr->mSuccessfull?"true":"false")
+				.arg(p_ptr->mStatus)
+				.arg(p_ptr->mMessage));
+}
+
+template <typename T>
+ASEvent<T>::operator QString() const
+{
+	return toString();
+}
+template <typename T>
+ASEvent<T>::operator QString()
+{
+	return toString();
+}
+
+
 
 template <typename T>
 template <typename F>
@@ -624,7 +699,7 @@ bool ASEvent<T>::run()
 			p->mMessage=p->mSuccessfull?"exists succeeded":"exists failed";
 		}
 		break;
-		case(AS_EVENT_DONE): {
+		case(AS_EVENT_COMPLETE): {
 			p->mMessage="completion started";
 			p->mSuccessfull=p->mStore.completeSync();
 			p->mMessage=p->mSuccessfull?"complete succeeded":"complete failed";
@@ -646,6 +721,7 @@ bool ASEvent<T>::run()
 	//qDebug().noquote().nospace()<<"Exiting Event::run() with return value "<<ret<< " from thread "<<utility::currentThreadID();
 	return ret;
 }
+
 
 
 #endif // ASEVENT_HPP
