@@ -49,7 +49,7 @@ static const quint16 ZOO_MINIMAL_ADMIN_ID_LENGTH=10;
 ZooServer::ZooServer(AppContext *context, QObject *parent)
 	: QHttpServer(parent)
 	, mContext(context)
-	, mKeyStore (mContext->baseDir() + "/keystore.json")
+	, mKeyStore (mContext->baseDir() + "/keystore.json", true)
 	, mStorage(QDir::current())
 
 {
@@ -421,8 +421,12 @@ void ZooServer::onBackgroundTimer()
 void ZooServer::onKeystoreReady(bool ok)
 {
 	OC_METHODGATE();
-	auto key=mKeyStore.localKey();
-	auto id=key.isNull()?"NULL":key->id().left(ZOO_MINIMAL_ADMIN_ID_LENGTH);
-	mAdminURL="/"+id;
-	qDebug()<<"KEYSTORE READY! ADMIN ADRESS IS: "<<mAdminURL;
+	if(!ok) {
+		qWarning()<<"KEYSTORE FAILED";
+	} else {
+		auto key=mKeyStore.localKey();
+		auto id=key.isNull()?"NULL":key->id().left(ZOO_MINIMAL_ADMIN_ID_LENGTH);
+		mAdminURL="/"+id;
+		qDebug()<<"KEYSTORE READY! ADMIN ADRESS IS: "<<mAdminURL;
+	}
 }

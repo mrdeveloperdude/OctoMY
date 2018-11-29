@@ -60,7 +60,7 @@ private:
 	QWaitCondition mFinishedCond;
 	//QMutex mSuccessfullMutex;
 	//QMutex mMessageMutex;
-	//QMutex mCallbackMutex;
+	QMutex mCallbackMutex;
 
 	bool mStarted;
 	bool mFinished;
@@ -278,14 +278,14 @@ QString ASEvent<T>::toString() const
 		   .arg(mT)
 		   .arg(mAllocation)
 		   .arg(nullptr==p_ptr?"p=null": QString("type='%1'"
-			//							   ", data='%?'"
-										   ", started='%2'"
-										   ", finish='%3'"
-										   ", sucessful='%4'"
-										   ", status='%5'"
-										   ", message='%6'")
+				   //							   ", data='%?'"
+				   ", started='%2'"
+				   ", finish='%3'"
+				   ", sucessful='%4'"
+				   ", status='%5'"
+				   ", message='%6'")
 				.arg(ASEventTypeToString(p_ptr->mType))
-			//	.arg(p_ptr->mData)
+				//	.arg(p_ptr->mData)
 				.arg(p_ptr->mStarted?"true":"false")
 				.arg(p_ptr->mFinished?"true":"false")
 				.arg(p_ptr->mSuccessfull?"true":"false")
@@ -312,27 +312,38 @@ void ASEvent<T>::onFinished(F callBack)
 {
 	OC_METHODGATE();
 	if(p_ptr.isNull()) {
-		qWarning().nospace().noquote()<<"ERROR: No p";
+		qWarning().nospace().noquote()<<"ERROR: No p_ptr";
 		return;
 	}
 	ASEventPrivate<T> *p=p_ptr.data();
 
-	if(nullptr==p) {
+	if(nullptr == p) {
 		qWarning().nospace().noquote()<<"ERROR: No p";
 		return;
 	}
 	//std::function<void(ASEvent<T> &)>
-	//auto f = [this, callBack](ASEvent<T> &ase) { callBack(ase); };
+	auto f = [this, callBack](ASEvent<T> &ase) {
+		callBack(ase);
+	};
 
 	//ASEventPrivate::CallbackType
 	//qDebug().nospace().noquote()<<"P:"<<ASEventPrivate<T>::privCounterString(p) <<" from "<<utility::currentThreadID();
 	{
 		//qDebug()<<"IS RECURSIVE: "<< p->mCallbackMutex.isRecursive();
-//		QMutexLocker callbackLock(&p->mCallbackMutex);
+		QMutexLocker callbackLock(&p->mCallbackMutex);
 		//qDebug().nospace().noquote()<<" onFinished callbakc mutex locked from "<<utility::currentThreadID();
 		//auto pcallBack=&callBack;
+		ASEvent<T> *copy=OC_NEW ASEvent<T>(*this);
 		// TODO: Commented out to pass build
-//		p->mCallbacks.put( [this, callBack] { callBack( *this); } );
+		if(nullptr!= copy) {
+			p->mCallbacks.put( [copy, callBack] {
+				if(nullptr!= copy)
+				{
+					callBack( *copy );
+					delete copy;
+				}
+			} );
+		}
 	}
 
 }
@@ -356,7 +367,7 @@ void ASEvent<T>::runCallbacks()
 		//p->mCallbackMutex.unlock();
 		//p->mCallbackMutex.unlock();
 		//p->mCallbackMutex.unlock();
-//		QMutexLocker callbackLock(&p->mCallbackMutex);
+		QMutexLocker callbackLock(&p->mCallbackMutex);
 		//qDebug().nospace().noquote()<<"runCallbacks callbakc mutex locked from "<<utility::currentThreadID();
 		//copy=p->mCallbacks;
 
@@ -475,10 +486,13 @@ bool ASEvent<T>::operator!=(const ASEvent &other) const
 template <typename T>
 void ASEvent<T>::tTest() const
 {
+	OC_METHODGATE();
 	QString cT=utility::currentThreadID();
+	//qDebug()<<"CALL THREAD: '"<<cT <<"'"; 	qDebug()<<" RUN THREAD: '"<<mT <<"'";
 	//qDebug()<<"ALLOCATION: "<<mAllocation;
 	if(mT!=cT) {
-		qDebug()<<"WARNING: THEAD THAT CREATED ASEVENT: '"<<mT<<"' WAS NOT THE ONE THAT CALLED TTEST: '"<<cT <<"'";
+		//qDebug()<<"WARNING: THEAD THAT CREATED ASEVENT: '"<<mT<<"' WAS NOT THE ONE THAT CALLED TTEST: '"<<cT <<"'";
+		qWarning()<<"ERROR: creator thread not same as executor thread";
 	}
 }
 

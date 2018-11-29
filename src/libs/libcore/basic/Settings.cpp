@@ -77,12 +77,12 @@ void Settings::sync()
 {
 	OC_METHODGATE();
 	if(nullptr!=mSettings)	{
-		const qint64 now=utility::currentMsecsSinceEpoch<quint64>();
+		const qint64 now=utility::currentMsecsSinceEpoch<qint64>();
 		const qint64 timeSinceLastSync=now-mLastSync;
 		if(timeSinceLastSync>MAX_SYNC_INTERVAL) {
 			delayedSync();
 		} else {
-			syncTimer.start(MAX_SYNC_INTERVAL-timeSinceLastSync);
+			syncTimer.start(static_cast<int>(MAX_SYNC_INTERVAL-timeSinceLastSync));
 		}
 	}
 }
@@ -97,7 +97,7 @@ void Settings::delayedSync()
 	if(nullptr!=mSettings)	{
 		//qDebug()<<"SETTINGS SYNC PERFORMED";
 		mSettings->sync();
-		mLastSync=utility::currentMsecsSinceEpoch<quint64>();
+		mLastSync=utility::currentMsecsSinceEpoch<qint64>();
 	}
 }
 
@@ -110,7 +110,7 @@ void Settings::delayedSync()
 QByteArray Settings::getCustomSettingByteArray(const QString &sub, QByteArray def)
 {
 	OC_METHODGATE();
-	if(0==mSettings) {
+	if(nullptr==mSettings) {
 		return def;
 	}
 	return mSettings->value(KEY_CUSTOM_SETTING_BASE+sub, def).toByteArray();
@@ -137,7 +137,7 @@ void Settings::setCustomSettingByteArray(const QString &sub, QByteArray val)
 QString Settings::getCustomSetting(const QString &sub, QString def)
 {
 	OC_METHODGATE();
-	if(0==mSettings) {
+	if(nullptr==mSettings) {
 		return def;
 	}
 	return mSettings->value(KEY_CUSTOM_SETTING_BASE+sub, def).toString();

@@ -28,11 +28,6 @@ class ZooServer : public qhttp::server::QHttpServer
 	Q_OBJECT
 private:
 
-	//QString base;
-	//QCommandLineParser &opts;
-	//QProcessEnvironment &env;
-	//Settings settings;
-	//QString baseDir;
 	AppContext *mContext;
 	KeyStore mKeyStore;
 

@@ -119,7 +119,7 @@ void Node::init()
 	mKeyStore.synchronize([](ASEvent<QVariantMap> &se) {
 
 		const bool ok=se.isSuccessfull();
-		//qDebug()<<"Keystore synchronized with ok="<<ok;
+		qDebug()<<"Keystore synchronized with ok="<<ok;
 	});
 
 	mLocalIdentity.synchronize([this](SimpleDataStore &sms, bool ok) {

@@ -54,6 +54,7 @@ void NodeWindow::loadWindowGeometry()
 
 void NodeWindow::saveWindowGeometry()
 {
+	OC_METHODGATE();
 	//qDebug()<<"#*#*#*#*#*#*#*#* SAVING GEOMETRY REACHED IN NODEWIN";
 	if(!mNode.isNull()) {
 		Settings &s=mNode->settings();

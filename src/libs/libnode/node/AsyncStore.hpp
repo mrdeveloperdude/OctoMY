@@ -349,13 +349,22 @@ template <typename T>
 void AsyncStore<T>::runCallbacksForEvent(ASEvent<T> event)
 {
 	OC_METHODGATE();
-	auto p=event.p();
+	ASEvent<T> *copy=OC_NEW ASEvent<T>(event);
+	//auto p=event.p();
 	//qDebug()<<"runCallbacksForEvent() from "<<utility::currentThreadID();
-	utility::postToThread([p] {
-		//qDebug()<<"CALLBACKS SINGLESHOT from "<<utility::currentThreadID();
-		ASEvent<T> e(p);
-		e.runCallbacks();
-	});
+	if(nullptr!=copy) {
+		utility::postToThread([copy] {
+			//qDebug()<<"CALLBACKS SINGLESHOT from "<<utility::currentThreadID();
+			//ASEvent<T> e(p);
+			//e.runCallbacks();
+			if(nullptr!=copy)
+			{
+				copy->runCallbacks();
+				delete copy;
+				//copy=nullptr;
+			}
+		});
+	}
 }
 
 

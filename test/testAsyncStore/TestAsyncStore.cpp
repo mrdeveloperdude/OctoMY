@@ -154,7 +154,7 @@ void TestAsyncStore::testConcurrent()
 		}
 	};
 
-	const int operationCount = 100000;
+	const int operationCount = 1000;
 
 	// Create a list containing test operations
 	QList<AsyncTestOperation> operations;
@@ -248,6 +248,7 @@ void TestAsyncStore::testConcurrent()
 
 	//ast.store.synchronize().waitForFinished();
 	qDebug()<<"JOURNAL: "<<ast.store.journal();
+	qDebug()<<"testConcurrent() done @"<<utility::currentThreadID();
 }
 
 void TestAsyncStore::testFileExists()
