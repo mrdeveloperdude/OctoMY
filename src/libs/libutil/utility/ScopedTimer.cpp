@@ -7,18 +7,22 @@
 #include <QDebug>
 #include <QString>
 
+//explicit ScopedTimer(QString mName = "", bool log = true, ScopedTimerFormat format = AUTO, QString mFormatString="yyyy-MM-dd hh:mm:ss.zzz");
+//explicit ScopedTimer(QString mName, qint64 mTimeout, ScopedTimerFormat format = AUTO, QString mFormatString="yyyy-MM-dd hh:mm:ss.zzz");
 
-ScopedTimer::ScopedTimer(QString name, bool doLog, bool, QString fmt)
-	: startTime(utility::currentMsecsSinceEpoch<quint64>())
-	, now(startTime)
-	, interval(0)
-	, doLog(doLog)
-	//, human(human)
-	, name(name)
-	, fmt(fmt)
-	, timeout(-1)
+
+ScopedTimer::ScopedTimer(QString name, bool doLog, ScopedTimerFormat format, QString formatString)
+	: mStartTime(utility::currentMsecsSinceEpoch<qint64>())
+	, mNow(mStartTime)
+	, mInterval(0)
+	, mDoLog(doLog)
+	, mName(name)
+	, mFormatString(formatString)
+	, mTimeout(-1)
+	, mFormat(format)
 {
 	OC_METHODGATE();
+	doAutoFormat();
 	/*
 	if(doLog){
 		qDebug() << getIntervalCompleteString(SCOPED_TIMER_SYMBOL " START   : ",false);
@@ -28,82 +32,116 @@ ScopedTimer::ScopedTimer(QString name, bool doLog, bool, QString fmt)
 
 
 
-ScopedTimer::ScopedTimer(QString name, qint64 timeout, bool ,QString fmt)
-	: startTime(utility::currentMsecsSinceEpoch<quint64>())
-	, now(startTime)
-	, interval(0)
-	, doLog(false)
-	//, human(human)
-	, name(name)
-	, fmt(fmt)
-	, timeout(timeout)
+ScopedTimer::ScopedTimer(QString name, qint64 timeout, ScopedTimerFormat format, QString formatString)
+	: mStartTime(utility::currentMsecsSinceEpoch<qint64>())
+	, mNow(mStartTime)
+	, mInterval(0)
+	, mDoLog(false)
+	, mName(name)
+	, mFormatString(formatString)
+	, mTimeout(timeout)
+	, mFormat(format)
 {
 	OC_METHODGATE();
 }
 
-ScopedTimer::~ScopedTimer(){
+ScopedTimer::~ScopedTimer()
+{
 	OC_METHODGATE();
+	doAutoFormat();
 	update();
-	if(interval<=0){
-		interval=1;
+	if(mInterval<=0) {
+		mInterval=1;
 	}
-	if(timeout>0 && interval>timeout){
-		qWarning() << "WARNING: " << name<< " TIMED OUT WITH " << utility::humanReadableElapsedSeconds(((long double)interval)/1000.0f,true,true,0.001) << " > " << utility::humanReadableElapsedSeconds(((long double)timeout)/1000.0f,true,true,0.001);
-	}
-	else if(doLog){
-		qDebug() << getIntervalCompleteString(SCOPED_TIMER_SYMBOL " END     : ",false);
+	if(mTimeout>0 && mInterval>mTimeout) {
+		qWarning().noquote().nospace() << "WARNING: " << mName<< " TIMED OUT WITH " << utility::humanReadableElapsedSeconds((static_cast<long double>(mInterval))/1000.0l, true, true, 0.001l) << " > " << utility::humanReadableElapsedSeconds((static_cast<long double>(mTimeout))/1000.0l, true, true, 0.001l);
+	} else if(mDoLog) {
+		qDebug().noquote().nospace() << getIntervalCompleteString( "     " SCOPED_TIMER_SYMBOL " END: ", false);
 	}
 }
 
-void ScopedTimer::update(){
+
+void ScopedTimer::doAutoFormat()
+{
 	OC_METHODGATE();
-	now=utility::currentMsecsSinceEpoch<quint64>();
-	interval=now-startTime;
+	if(STF_AUTO == mFormat) {
+		mFormat = STF_ELAPSED;
+		if("" == mName) {
+			mFormat = static_cast<ScopedTimerFormat>(STF_NAME | mFormat);
+		}
+		if("" == mFormatString) {
+			mFormat = static_cast<ScopedTimerFormat>(STF_TIME | mFormat);
+		}
+	}
 }
 
-qint64 ScopedTimer::getInterval(bool up){
+void ScopedTimer::update()
+{
 	OC_METHODGATE();
-	if(up){
+	mNow = utility::currentMsecsSinceEpoch<qint64>();
+	mInterval = mNow - mStartTime;
+}
+
+qint64 ScopedTimer::getInterval(bool up)
+{
+	OC_METHODGATE();
+	if(up) {
 		update();
 	}
-	if(doLog){
-		qDebug() << getIntervalCompleteString(SCOPED_TIMER_SYMBOL " INTERVAL: ",false);
+	if(mDoLog) {
+		qDebug() << getIntervalCompleteString(SCOPED_TIMER_SYMBOL " INTERVAL: ", false);
 	}
-	return interval;
+	return mInterval;
 }
 
-QString ScopedTimer::getIntervalCompleteString(QString prefix, bool up){
+QString ScopedTimer::getIntervalCompleteString(QString prefix, bool up)
+{
 	OC_METHODGATE();
-	if(up){
+	if(up) {
 		update();
 	}
 	QString s="";
-	s+=prefix;
-	s+=name;
-	s+=" - ";
-	s+=getTimeFormated(fmt,false);
-	if(interval>0){
-		s+=" - ";
-		s+=getIntervalHuman(2,true, false);
-		s+=" (";
-		s+=QString::number(interval);
-		s+=" ms) ";
+	s += prefix;
+	if(mFormat & STF_NAME) {
+		s += mName;
+	}
+	if(mFormat & STF_TIME) {
+		s += " - ";
+		s += getTimeFormated(mFormatString, false);
+	}
+	if(mInterval > 0) {
+		if(mFormat & STF_HUMAN_ELAPSED) {
+			s += " - ";
+			s += getIntervalHuman(2, true, false);
+		}
+		if(mFormat & STF_ELAPSED) {
+			s += " (";
+		}
+		if(mFormat & STF_MILLIS_ELAPSED) {
+			s += QString::number(mInterval);
+			s += " ms";
+		}
+		if(mFormat & STF_ELAPSED) {
+			s += ") ";
+		}
 	}
 	return s;
 }
 
-QString ScopedTimer::getIntervalHuman(int prec,bool prep, bool up){
+QString ScopedTimer::getIntervalHuman(int prec,bool prep, bool up)
+{
 	OC_METHODGATE();
-	if(up){
+	if(up) {
 		update();
 	}
-	QString ret=utility::humanReadableElapsedSeconds(((long double)interval)/1000.0f,prec,prep,0.001);
+	QString ret=utility::humanReadableElapsedSeconds((static_cast<long double>(mInterval))/1000.0l, prec, prep, 0.001l);
 	return ret;
 }
 
-QString ScopedTimer::getTimeFormated(QString fmt, bool up){
+QString ScopedTimer::getTimeFormated(QString fmt, bool up)
+{
 	OC_METHODGATE();
-	if(up){
+	if(up) {
 		update();
 	}
 	QString ret=QDateTime::currentDateTime().toString(fmt) ;
