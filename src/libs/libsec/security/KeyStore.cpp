@@ -41,6 +41,23 @@ KeyStore::~KeyStore()
 	OC_METHODGATE();
 }
 
+void KeyStore::clear()
+{
+	OC_METHODGATE();
+	clear([](ASEvent<QVariantMap> &ase){Q_UNUSED(ase);});
+}
+
+void KeyStore::save()
+{
+	OC_METHODGATE();
+	save([](ASEvent<QVariantMap> &ase){Q_UNUSED(ase);});
+}
+
+void KeyStore::load()
+{
+	OC_METHODGATE();
+	load([](ASEvent<QVariantMap> &ase){Q_UNUSED(ase);});
+}
 
 
 bool KeyStore::setFrontend(QVariantMap map)

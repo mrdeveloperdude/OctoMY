@@ -109,29 +109,17 @@ public:
 	void status(F callBack);
 	template <typename F>
 	void clear(F callBack);
+	void clear();
 	template <typename F>
 	void save(F callBack);
+	void save();
 	template <typename F>
 	void load(F callBack);
+	void load();
 	template <typename F>
 	void synchronize(F callBack);
 
 	void waitForSync();
-
-public:
-	void clear()
-	{
-		clear([](ASEvent<QVariantMap> &ase){Q_UNUSED(ase);});
-	}
-	void save()
-	{
-		save([](ASEvent<QVariantMap> &ase){Q_UNUSED(ase);});
-	}
-	void load()
-	{
-		load([](ASEvent<QVariantMap> &ase){Q_UNUSED(ase);});
-	}
-
 
 public:
 
@@ -173,16 +161,12 @@ void KeyStore::save(F callBack)
 	mStore.save().onFinished(callBack);
 }
 
-
-
 template <typename F>
 void KeyStore::load(F callBack)
 {
 	OC_METHODGATE();
 	mStore.load().onFinished(callBack);
 }
-
-
 
 template <typename F>
 void KeyStore::synchronize(F callBack)
