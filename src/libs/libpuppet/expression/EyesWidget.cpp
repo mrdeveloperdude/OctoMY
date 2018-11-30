@@ -56,7 +56,8 @@ EyesWidget::EyesWidget(QWidget *parent)
 void EyesWidget::updateIris()
 {
 	const qreal sLeft=mLeftEye.irisRadius()*width()*2.0;
-	QRect rectLeft(0,0, sLeft, sLeft);
+	const int sLefti=static_cast<int>(qFloor(sLeft));
+	QRect rectLeft(0,0, sLefti, sLefti);
 	QSize sizeLeft=rectLeft.size();
 	if(sizeLeft.width() > 0 && sizeLeft.height() > 0 ) {
 		QImage img(sizeLeft, QImage::Format_ARGB32);
@@ -66,7 +67,8 @@ void EyesWidget::updateIris()
 	}
 
 	const qreal sRight=mRightEye.irisRadius()*width()*2.0;
-	QRect rectRight(0,0, sRight, sRight);
+	const int sRighti=static_cast<int>(qFloor(sRight));
+	QRect rectRight(0,0, sRighti, sRighti);
 	QSize sizeRight=rectRight.size();
 	if(sizeRight.width() > 0 && sizeRight.height() > 0 ) {
 		QImage img(sizeRight,QImage::Format_ARGB32);
@@ -81,7 +83,7 @@ void EyesWidget::updateIris()
 
 void EyesWidget::setPortableID(PortableID &pid)
 {
-	qDebug()<<"Setting eye colors from PID: "<<pid;
+	// qDebug()<<"Setting eye colors from PID: "<<pid;
 	QString id=pid.id();
 	const bool oldHideEyes=mHideEyes;
 	mHideEyes=!id.isEmpty();
@@ -111,13 +113,13 @@ void EyesWidget::paintEvent(QPaintEvent *)
 	if(mHideEyes) {
 		// Eyes denied!
 		QPen pen(QColor(192, 64, 32, 128));
-		const int b=5, b2=b*2, b4=b2*2;
+		const int b=5, b2=b*2, b4=b2*2, wi=qFloor(w), hi=qFloor(h);
 		pen.setStyle(Qt::DotLine);
 		pen.setCapStyle(Qt::RoundCap);
 		pen.setWidth(b);
 		painter.setPen(pen);
-		painter.drawRoundedRect(QRect(b2, b2, w-b4, h-b4), b4, b4);
-		painter.drawLine(QPoint(b4, b4), QPoint(w-b4, h-b4));
+		painter.drawRoundedRect(QRect(b2, b2, wi-b4, hi-b4), b4, b4);
+		painter.drawLine(QPoint(b4, b4), QPoint(wi-b4, hi-b4));
 		//painter.drawLine(QPoint(b4, h-b4), QPoint(w-b4, b4));
 	} else {
 		painter.setPen(Qt::NoPen);
@@ -140,11 +142,11 @@ void EyesWidget::paintEvent(QPaintEvent *)
 
 void EyesWidget::onUpdateTimer()
 {
-	const qreal alpha=0.8, beta=1.0f-alpha;
+	const qreal alpha=0.8, beta=1.0-alpha;
 	const QVector2D lastEyeSteerSmooth=mEyeSteerSmooth;
-	mEyeSteerSmooth=(mEyeSteerSmooth*alpha)+(mEyeSteer*beta);
+	mEyeSteerSmooth=(mEyeSteerSmooth*static_cast<float>(alpha))+(mEyeSteer*static_cast<float>(beta));
 	QVector2D dif=(mEyeSteerSmooth-mEyeSteer);
-	if(dif.length()<0.001) {
+	if(dif.length()<0.001f) {
 		mEyeSteerSmooth=mEyeSteer;
 	}
 
@@ -158,7 +160,7 @@ void EyesWidget::onUpdateTimer()
 	const quint64 sinceLastTime=now-mLastTime;
 	mLastTime=now;
 	const qreal cycleTime=7.0;
-	mCycle+=((qreal)sinceLastTime)/1000.0;
+	mCycle+=(static_cast<qreal>(sinceLastTime))/1000.0;
 	mCycle=fmod(mCycle,cycleTime);
 	qreal lastBlink=mBlink;
 	const qreal blinkTime=0.2;
@@ -167,12 +169,10 @@ void EyesWidget::onUpdateTimer()
 	} else {
 		mBlink=0.0;
 	}
-	if(mBlink!=lastBlink) {
+	if(qFuzzyCompare(mBlink, lastBlink)) {
 		mLeftEye.setBlink(mBlink);
 		mRightEye.setBlink(mBlink);
 	}
-
-
 	if(mLeftEye.isDirty() || mRightEye.isDirty()) {
 		update();
 	}
@@ -216,7 +216,7 @@ void EyesWidget::mouseMoveEvent(QMouseEvent *e)
 	} else if(but & Qt::RightButton) {
 		upperLidSteer=m;
 	}
-	mEyeSteer=m*0.1;
+	mEyeSteer=m * 0.1f;
 
 
 	//	qDebug()<<"BUT: "<<but<<" squint "<< squint;
