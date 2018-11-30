@@ -9,6 +9,7 @@ class SimpleDataStore
 {
 private:
 	DataStore mDataStore;
+	bool mLog;
 
 public:
 
@@ -55,7 +56,9 @@ void SimpleDataStore::clear(F callBack)
 		fromMap(QVariantMap());
 		const bool clear_ok=clear_t.isSuccessfull();
 		if(clear_ok) {
-			//qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" clear SUCCEEDED";
+			if(mLog){
+				qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" clear SUCCEEDED";
+			}
 		} else {
 			qWarning()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" clear FAILED";
 		}
@@ -71,7 +74,9 @@ void SimpleDataStore::save(F callBack)
 	mDataStore.save().onFinished([=](StorageEvent save_t) {
 		const bool save_ok=save_t.isSuccessfull();
 		if(save_ok) {
-			//qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" save SUCCEEDED";
+			if(mLog){
+				qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" save SUCCEEDED";
+			}
 		} else {
 			qWarning()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" save FAILED";
 		}
@@ -87,13 +92,17 @@ void SimpleDataStore::load(F callBack)
 	OC_METHODGATE();
 	mDataStore.load().onFinished([=](StorageEvent load_t) {
 		const bool load_ok=load_t.isSuccessfull();
-		//qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" load finished with ok="<<load_ok;
+		if(mLog){
+			qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" load finished with ok="<<load_ok;
+		}
 		if(load_ok) {
 			mDataStore.get().onFinished([=](StorageEvent get_t) {
 				const bool get_ok=get_t.isSuccessfull();
 				if(get_ok) {
 					auto data=get_t.data();
-					//qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" load-get SUCCEEDED with data="<<data;
+					if(mLog){
+						qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" load-get SUCCEEDED with data="<<data;
+					}
 					fromMap(data);
 				} else {
 					qWarning()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" load-get FAILED";
@@ -115,13 +124,17 @@ void SimpleDataStore::synchronize(F callBack)
 	OC_METHODGATE();
 	mDataStore.synchronize().onFinished([=](StorageEvent sync_t) {
 		const bool sync_ok=sync_t.isSuccessfull();
-		//qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" sync finished with ok="<<sync_ok;
+		if(mLog){
+			qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" sync finished with ok="<<sync_ok;
+		}
 		if(sync_ok) {
 			mDataStore.get().onFinished([=](StorageEvent get_t) {
 				const bool get_ok=get_t.isSuccessfull();
 				if(get_ok) {
 					auto data=get_t.data();
-					//qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" sync-get SUCCEEDED with data="<<data;
+					if(mLog){
+						qDebug()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" sync-get SUCCEEDED with data="<<data;
+					}
 					fromMap(data);
 				} else {
 					qWarning()<<"datastore="<<mDataStore.filename()<<", exists="<<mDataStore.fileExists()<<" sync-get FAILED";

@@ -9,8 +9,12 @@
 
 SimpleDataStore::SimpleDataStore(QString filename)
 	: mDataStore(filename)
+	, mLog(true)
 {
 	OC_METHODGATE();
+	if(mLog){
+		qDebug()<<"SimpleDataStore created with logging enabled";
+	}
 }
 
 SimpleDataStore::~SimpleDataStore()
