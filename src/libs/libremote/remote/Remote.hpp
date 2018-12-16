@@ -38,15 +38,15 @@ private:
 
 public:
 	explicit Remote(NodeLauncher<Remote> &launcher, QObject *parent = nullptr);
-	virtual ~Remote();
+	virtual ~Remote() Q_DECL_OVERRIDE;
 
 public:
-	virtual void init();
-	virtual void deInit();
+	virtual void init() Q_DECL_OVERRIDE;
+	virtual void deInit() Q_DECL_OVERRIDE;
 
 	//void startComms(const NetworkAddress &localAddress, const NetworkAddress &partnerAddress);
 
-	virtual QSharedPointer<QWidget> showWindow();
+	virtual QSharedPointer<QWidget> showWindow() Q_DECL_OVERRIDE;
 
 public:
 

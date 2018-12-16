@@ -56,6 +56,7 @@ PairingWizard::PairingWizard(QWidget *parent)
 		QPushButton*onward=(*it);
 		//qDebug()<<" + ONWARD: "<<onward->objectName();
 		connect(onward, &QPushButton::clicked,this,[=](bool b) {
+			Q_UNUSED(b);
 			// Skip pages that are not relevant to the selection made in "basic" page
 			int next = (ui->stackedWidget->currentIndex() + 1) % ui->stackedWidget->count();
 			ui->stackedWidget->setCurrentIndex(next);
@@ -141,12 +142,12 @@ void PairingWizard::onPulsatingTrustTimer()
 		,0x7869c4
 		,0x9f9f9f
 	};
-	static const auto paletteSz = sizeof(palette) / sizeof(QRgb);
+	static const auto paletteSz = static_cast<int>(sizeof(palette) / sizeof(QRgb));
 	const auto lastColor=ui->widgetTrustLevel->silhouetteForeground();
 	QColor color=lastColor;
 	size_t index=0;
 	while(lastColor == color) {
-		index=qrand()%paletteSz;
+		index=static_cast<size_t>(qrand()%paletteSz);
 		color=QColor(palette[index]);
 	}
 	//qDebug()<<"INDEX: "<<index<<", COLOR: "<<color;
@@ -211,18 +212,24 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 				}
 				ui->listViewNodes->setItemDelegate(mDelegate);
 			}
-			if(!connect(discovery, &DiscoveryClient::nodeDiscovered, [=](QString partID) {
-			//qDebug()<<"PAIRING WIZARD partID: "<<partID;
-			ui->listViewNodes->update();
-			}
-					   )) {
-				qWarning()<<"ERROR: Could not connect";
+			if(nullptr != discovery) {
+				if(!connect(discovery, &DiscoveryClient::nodeDiscovered, [=](QString partID) {
+				Q_UNUSED(partID);
+					//qDebug()<<"PAIRING WIZARD partID: "<<partID;
+					ui->listViewNodes->update();
+				}
+						   )) {
+					qWarning()<<"ERROR: Could not connect "<<discovery->objectName();
+				}
+			} else {
+				qWarning()<<"ERROR: discovery was null";
+				return;
 			}
 
 
 			switch(type) {
 			case(TYPE_ZOO):
-			default:
+//			default:
 			case(TYPE_UNKNOWN):
 			case(TYPE_AGENT): {
 				ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Agent").replace(QRegularExpression("\\[DEST\\]"), "Control"));
@@ -241,8 +248,8 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 			break;
 			}
 
-			if(!connect(ui->widgetNetworkSettings, &NetworkSettingsWidget::addressChanged, this, &PairingWizard::updateNetworkSettings, OC_CONTYPE)) {
-				qWarning()<<"ERROR: Could not connect";
+			if(!connect(ui->widgetNetworkSettings, &NetworkSettingsWidget::addressChanged, this, &PairingWizard::onNetworkSettingsChange, OC_CONTYPE)) {
+				qWarning()<<"ERROR: Could not connect "<<ui->widgetNetworkSettings->objectName();
 			}
 
 
@@ -298,7 +305,7 @@ void PairingWizard::startEdit(int row)
 					index=2;
 				} else {
 					switch(type) {
-					default:
+//					default:
 					case(TYPE_ZOO):
 					case(TYPE_UNKNOWN):
 					case(TYPE_AGENT): {
@@ -413,7 +420,7 @@ void PairingWizard::on_pushButtonSaveEdits_clicked()
 				peer->addTrust("block");
 			} else if(1==mTrustIndex) {
 				switch(type) {
-				default:
+//				default:
 				case(TYPE_ZOO):
 				case(TYPE_UNKNOWN):
 				case(TYPE_AGENT): {

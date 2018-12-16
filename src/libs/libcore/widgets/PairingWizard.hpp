@@ -64,6 +64,7 @@ protected:
 private slots:
 
 	void onNetworkSettingsChange(QHostAddress address, quint16 port, bool valid);
+
 	void onTrustButtonClicked(QAbstractButton *);
 	void onPulsatingTrustTimer();
 

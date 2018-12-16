@@ -48,7 +48,15 @@ class BlobFuture;
 
 class INodeLauncher;
 
-
+/*!
+ * \brief The Node class is the base class for agents, remotes and hubs.
+ *
+ * It holds all functionality that is common among them, including mechanisms
+ * for discovering, pairing, communicating with other nodes, storage of vital
+ * state such as the identity of associates, communication with OctoMY zoo and
+ * more
+ *
+ */
 
 class Node : public QObject, public IConnectionStatus//, public QEnableSharedFromThis<Node>
 {
@@ -83,7 +91,7 @@ protected:
 
 public:
 	explicit Node(INodeLauncher &laucher, AppContext *context, NodeRole mRole, NodeType mType, QObject *parent = nullptr);
-	virtual ~Node();
+	virtual ~Node() Q_DECL_OVERRIDE;
 
 public:
 

@@ -14,7 +14,10 @@
 #include <QTimer>
 
 /**
- * @brief The Client class represents the state of an associate at runtime. It is what enables many-to-many in comms .
+ * @brief The Client class is the base class of clients. Clients represent the
+ * state of an associate at runtime. It is what enables many-to-many in comms .
+ *
+ * Subclasses include RemoteClient and AgentClient.
  */
 
 class Node;

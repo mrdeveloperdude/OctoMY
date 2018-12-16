@@ -118,12 +118,6 @@ QString humanReadableElapsedSeconds(long double seconds,int prec,bool prep,long 
 	return ret;
 }
 
-
-QString humanReadableElapsedMS(qint64 ms,int prec,bool prep,long double resolution)
-{
-	return humanReadableElapsedSeconds(static_cast<long double>(ms) / 1000.0l, prec, prep, resolution);
-}
-
 QString formattedDateFromSeconds(long double seconds)
 {
 	qint64 ms=static_cast<qint64>(seconds*1000.0l);
@@ -135,6 +129,10 @@ QString formattedDateFromMS(qint64 ms)
 	return QDateTime::fromMSecsSinceEpoch(ms).toString("yyyy-MM-dd hh:mm:ss.zzz t") ;
 }
 
+QString formattedDateFromMS(quint64 ms)
+{
+	return formattedDateFromMS(static_cast<qint64>(ms));
+}
 
 QString humanReadableSize(qint64 bytes,int prec)
 {

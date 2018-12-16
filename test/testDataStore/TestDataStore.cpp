@@ -2,6 +2,7 @@
 
 #include "node/DataStore.hpp"
 
+#ifdef  USE_OLD_STORE
 #include "utility/Utility.hpp"
 
 #include <QVariantMap>
@@ -190,5 +191,29 @@ void TestDataStore::testStressDataStore()
 		testDataStore();
 	}
 }
+#else
+
+void TestDataStore::testConcurrentQueue()
+{
+
+}
+
+void TestDataStore::testStressDataStore()
+{
+
+}
+
+void TestDataStore::testDataStore()
+{
+
+}
+
+void TestDataStore::testDataStoreSyncEmpty()
+{
+
+}
+
+#endif
+
 OC_TEST_MAIN(test, TestDataStore)
 

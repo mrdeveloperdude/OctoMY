@@ -30,6 +30,8 @@
 #include <QScrollBar>
 #include <QComboBox>
 
+#include <QMessageBox>
+
 #ifdef Q_OS_ANDROID
 #include <QAndroidJniObject>
 #endif
@@ -38,6 +40,11 @@ RemoteWindow::RemoteWindow(QSharedPointer<Remote> remote, QWidget *parent)
 	: NodeWindow(remote, parent)
 	, ui(OC_NEW Ui::RemoteWindow)
 	, mRemote(nullptr)
+	, mPairingAction(OC_NEW QAction(tr("Pair"), this))
+	, mShowBirthCertificateAction(OC_NEW QAction(tr("Show My ID"), this))
+	, mUnbirthAction(OC_NEW QAction(tr("Unbirth!"), this))
+	, mQuitAction(OC_NEW QAction(tr("Exit"), this))
+	, mWasEverUndelivered(false)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
@@ -48,7 +55,7 @@ RemoteWindow::RemoteWindow(QSharedPointer<Remote> remote, QWidget *parent)
 
 
 	if(!connect(ui->widgetPairing, &PairingWizard::done, [=]() {
-		qDebug()<<"GOING NEXT PAGE FROM PAIRING WIZARD";
+	qDebug()<<"GOING NEXT PAGE FROM PAIRING WIZARD";
 		setCurrentPage(ui->pageRunning);
 	})) {
 		qWarning()<<"ERROR: Could not connect ";
@@ -56,6 +63,9 @@ RemoteWindow::RemoteWindow(QSharedPointer<Remote> remote, QWidget *parent)
 
 
 	if(!mRemote.isNull()) {
+
+		mWasEverUndelivered=!mRemote->keyStore().fileExists();
+
 		mRemote->keyStore().synchronize([this](ASEvent<QVariantMap> &se) {
 			const bool ok=se.isSuccessfull();
 			qDebug()<<"REMOTEWIN keystore load compelte: "<<(ok?"OK":"ERROR");
@@ -176,18 +186,35 @@ void RemoteWindow::prepareControlLevelList()
 void RemoteWindow::prepareMenu()
 {
 	OC_METHODGATE();
-	//qDebug()<<"REMOTEWIN PREPARE MENU";
-	QAction *pairingAction = OC_NEW QAction(tr("Pair"), this);
-	pairingAction->setStatusTip(tr("Do the pairing dance"));
-	pairingAction->setIcon(QIcon(":/icons/pair.svg"));
-	connect(pairingAction, &QAction::triggered, this, &RemoteWindow::onStartPairing);
-	mMenu.addAction(pairingAction);
 
-	QAction *certAction = OC_NEW QAction(tr("Show My ID"), this);
-	certAction->setStatusTip(tr("Show the identification of this remote"));
-	certAction->setIcon(QIcon(":/icons/certificate.svg"));
-	connect(certAction, &QAction::triggered, this, &RemoteWindow::onStartShowBirthCertificate);
-	mMenu.addAction(certAction);
+	// Pairing wizard
+	//////////////////
+	mPairingAction->setStatusTip(tr("Do the pairing dance"));
+	mPairingAction->setIcon(QIcon(":/icons/pair.svg"));
+	connect(mPairingAction, &QAction::triggered, this, &RemoteWindow::onStartPairing);
+	mMenu.addAction(mPairingAction);
+
+	// Show birth certificate
+	///////////////////////////
+	mShowBirthCertificateAction->setStatusTip(tr("Show the identification of this remote"));
+	mShowBirthCertificateAction->setIcon(QIcon(":/icons/certificate.svg"));
+	connect(mShowBirthCertificateAction, &QAction::triggered, this, &RemoteWindow::onStartShowBirthCertificate);
+	mMenu.addAction(mShowBirthCertificateAction);
+
+	// Unbirth
+	//////////////////
+	mUnbirthAction->setStatusTip(tr("Delete the identity of this agent to restart birth"));
+	mUnbirthAction->setIcon(QIcon(":/icons/kill.svg"));
+	connect(mUnbirthAction, &QAction::triggered, this, &RemoteWindow::onStartUnbirth);
+	mMenu.addAction(mUnbirthAction);
+
+	// Quit application
+	///////////////////////////
+	mQuitAction->setStatusTip(tr("Terminate execution of this remote"));
+	mQuitAction->setIcon(QIcon(":/icons/no.svg"));
+	connect(mQuitAction, &QAction::triggered, this, &RemoteWindow::onStartQuitApplication);
+	mMenu.addAction(mQuitAction);
+
 }
 
 
@@ -419,22 +446,9 @@ void RemoteWindow::keyReleaseEvent(QKeyEvent *e)
 {
 	OC_METHODGATE();
 	if(Qt::Key_Back==e->key()) {
-		/*
-		if(ui->pageConnect==ui->stackedWidgetScreen->currentWidget()){
-			appendLog("EXITING APP ON BACK BUTTON");
-			setCurrentPage(ui->pageConfirmQuit);
-		}
-		else if(ui->pageStatus==ui->stackedWidgetScreen->currentWidget()){
-			appendLog("GOING TO CONNECTION SCREEN ON BACK BUTTON");
-			setCurrentPage(ui->pageConnect);
-		}
-		else
-		*/
-
-
 		if(ui->pageRunning==ui->stackedWidgetScreen->currentWidget()) {
 			appendLog("GOING TO CONFIRM QUIT SCREEN ON BACK BUTTON");
-			setCurrentPage(ui->pageConfirmQuit);
+			onStartQuitApplication();
 		} else if(ui->pageConfirmQuit==ui->stackedWidgetScreen->currentWidget()) {
 			appendLog("GOING TO RUNNING SCREEN ON BACK BUTTON");
 			setCurrentPage(ui->pageRunning);
@@ -486,6 +500,29 @@ void RemoteWindow::onStartPlanEditor()
 	setCurrentPage(ui->pagePlan);
 }
 
+
+void RemoteWindow::onStartUnbirth()
+{
+	OC_METHODGATE();
+	if(!mRemote.isNull()) {
+		QMessageBox::StandardButton reply = QMessageBox::question(this, "Unbirth", "Are you sure you want to DELETE the personality of this remote forever?", QMessageBox::No|QMessageBox::Yes);
+		if (QMessageBox::Yes==reply) {
+			mWasEverUndelivered=true;
+			mRemote->unbirth();
+			setCurrentPage(ui->pageDelivery);
+			qDebug()<<"UNBIRTHED!";
+		}
+	}
+}
+
+
+void RemoteWindow::onStartQuitApplication()
+{
+	OC_METHODGATE();
+	if(!mRemote.isNull()) {
+		setCurrentPage(ui->pageConfirmQuit);
+	}
+}
 
 
 
@@ -588,7 +625,14 @@ void RemoteWindow::on_comboBoxControlLevel_activated(const QString &cLevel)
 void RemoteWindow::on_pushButtonConfirmQuit_clicked()
 {
 	OC_METHODGATE();
-	exit(0);
+	setCurrentPage(ui->pageQuitting);
+	if(!mRemote.isNull()) {
+		emit mRemote->appClose();
+		qDebug()<<"QUIT NICE!";
+	} else {
+		qDebug()<<"QUIT UGLY!";
+		exit(0);
+	}
 }
 
 
@@ -615,4 +659,9 @@ void RemoteWindow::on_pushButtonUpdateStuff_clicked()
 {
 	OC_METHODGATE();
 	configure(mRemote);
+}
+
+void RemoteWindow::on_label_3_linkActivated(const QString &link)
+{
+
 }

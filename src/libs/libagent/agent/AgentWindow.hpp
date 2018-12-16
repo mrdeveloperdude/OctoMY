@@ -33,7 +33,8 @@ class AgentWindow;
  * it is required, but the long term goal is for agent to be able to run in
  * head-less mode, and in that mode the UI part will not be used.
  *
- * This is useful for when your robots has no screen and/or is low on resources.
+ * This is useful for when your robots has no screen and/or is running on
+ * resource constrained hardware.
  */
 class AgentWindow : public NodeWindow, public LogDestination
 {
@@ -62,14 +63,14 @@ private:
 
 public:
 	explicit AgentWindow(QSharedPointer<Agent> agent, QWidget *parent = nullptr);
-	virtual ~AgentWindow();
+	virtual ~AgentWindow() Q_DECL_OVERRIDE;
 
 
 public:
 
 	void configure(QSharedPointer<Agent> agent);
 public:
-	void appendLog(const QString& text);
+	void appendLog(const QString& text) Q_DECL_OVERRIDE;
 	void updateFaceVisibility();
 
 private:

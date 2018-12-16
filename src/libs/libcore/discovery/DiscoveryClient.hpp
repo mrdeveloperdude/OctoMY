@@ -28,22 +28,11 @@ class QHttpClient;
 
 
 /**
-  The discovery and pairing for OctoMY™ nodes are as follows:
+  The discovery and pairing for OctoMY™ nodes works as follows:
 
-	1. Establish physical proximity (in order of preference from security standpoint):
-		a. NFC: by having NFC range physical proximity is implied
-		b. Cam/QR: by having scanning QR with camera, physical proximity is implied
-		c. Bluetooth: by having bluetooth range physical proximity is implied
-		d. Zoo: posting expiring gps coords together with pairing signature
-		e. LAN: Identify common gateway
-	2. Exchange pairing signatures and pubkeys
-	3. Exchange pairing challenge/responses to verify legitimity of signature/pubkeys
-	4. Show identicon for signatures in list on nodes for user to verify
-	5. Rack up multifactors and update list to show the "security level"
-
-	As soon as a node is verified all the way into the list of another
-	(aka "discovered"), it's then up to the user to verify that the signatures
-	match by inspecting the	respective identicons closely.
+	Discovery is the mechanism in which nodes seek out and establish secure
+	connections with eachother. Pairing is the mechanism in which the user will
+	assign a level of trust to already discovered nodes.
 
 	Discovery is done separately from pairing. This means that signatures that
 	has been discovered previously will remain discovered regardless if the user
@@ -54,6 +43,25 @@ class QHttpClient;
 	Removing discovery records is considered an advanced operation that users
 	will not need to conduct unless they are in fact debugging the pairing protocol.
 
+	Discovery proceeds as follows:
+
+	1. Physical proximity is established (in order of preference from security standpoint):
+		a. NFC: by having NFC range physical proximity is implied
+		b. Cam/QR: by having scanning QR with camera, physical proximity is implied
+		c. Bluetooth: by having bluetooth range physical proximity is implied
+		d. Zoo: posting expiring gps coords together with pairing signature
+		e. LAN: Identify common gateway
+	2. Pairing signatures and pubkeys are exchanged
+	3. Pairing challenge/responses are exchanged to verify legitimity of signature/pubkeys
+	4. Identicon for signatures is shown in list on each node for user to verify
+	5. Optionally: multifactor authentications are conducted to improve security further
+	6. The list of nodes is updated to show the "security level" of each node
+
+	Pairing proceeds as follows:
+
+	As soon as a node is discovered (secure communication is established), it's
+	then up to the user to verify that the signatures match her expectations by
+	inspecting the respective identity information closely.
 
 	Glossary:
 
@@ -87,6 +95,7 @@ private:
 	qhttp::client::QHttpClient     *mClient;
 	Node &mNode;
 	QSharedPointer<Key> mKey;
+	bool mLog;
 
 private:
 	void registerPossibleAssociate(QVariantMap map);

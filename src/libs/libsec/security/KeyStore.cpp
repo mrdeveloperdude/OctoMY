@@ -228,12 +228,21 @@ void KeyStore::dump()
 	qDebug().nospace() <<" + fn="<<ks.filename();
 	qDebug().nospace() <<" + fexists="<<ks.fileExists();
 	qDebug().nospace() <<" + local-key:";
-	qDebug().nospace()<<"    x " <<mLocalKey;
+	if(mLocalKey.isNull()){
+		qDebug().nospace()<<"    x null";
+	}
+	else{
+		qDebug().nospace()<<"    x " << mLocalKey->key()<< ": "<<mLocalKey->pubKey();
+	}
 	qDebug().nospace() <<" + peer-keys:";
 	for(QMap<QString, QSharedPointer<Key> >::iterator b=ks.mAssociates.begin(), e=ks.mAssociates.end(); b!=e; ++b) {
-		QString key=b.key();
-		//b.value();
-		qDebug().nospace()<<"    x " <<key;
+		QSharedPointer<Key> remoteKey=b.value();
+		if(remoteKey.isNull()){
+			qDebug().nospace()<<"    x null";
+		}
+		else{
+			qDebug().nospace()<<"    x " << remoteKey->key()<< ": "<<remoteKey->pubKey();
+		}
 	}
 }
 
@@ -246,7 +255,7 @@ QString KeyStore::toString()
 {
 	OC_METHODGATE();
 
-	QString out="KeyStore{ fn="+filename()+", fexists="+fileExists()+", ready=" + static_cast<const bool>(ready())+ ", peer-keys:[";
+	QString out="KeyStore{ fn="+filename()+", fexists="+(fileExists()?"true":"false")+", ready=" + (static_cast<const bool>(ready())?"true":"false")+ ", peer-keys:[";
 	for(QMap<QString, QSharedPointer<Key> >::iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
 		QString key=b.key();
 		//b.value();

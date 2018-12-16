@@ -29,7 +29,7 @@ private:
 
 public:
 	explicit AddressBook(QString filename="", QObject *parent=nullptr);
-	virtual ~AddressBook();
+	virtual ~AddressBook() Q_DECL_OVERRIDE;
 
 
 	// SimpleDataStore interface

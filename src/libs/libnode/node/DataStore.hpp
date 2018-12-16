@@ -1,6 +1,7 @@
 #ifndef DATASTORE_HPP
 #define DATASTORE_HPP
 
+#ifdef USE_OLD_STORE
 
 #include "utility/Standard.hpp"
 #include "utility/ConcurrentQueue.hpp"
@@ -130,6 +131,6 @@ public:
 
 
 
-
+#endif
 
 #endif // DATASTORE_HPP

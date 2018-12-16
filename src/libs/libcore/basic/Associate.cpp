@@ -101,21 +101,27 @@ QString Associate::name() const
 	return mName;
 }
 
-//Unlike name() this always returns something. For agent it i sname, for remote it is remote:id etc.
+//Unlike name() this always returns something. For agent it is name, for remote it is name if existing or id if not etc.
 QString Associate::identifier()
 {
 	OC_METHODGATE();
+	if(!mName.isEmpty()) {
+		return mName;
+	}
+	const QString left(id().left(8));
 	switch(mType) {
 	case(TYPE_AGENT):
-		return mName;
+		return QStringLiteral("REMOTE-")+left;
 	case(TYPE_REMOTE):
-		return QStringLiteral("REMOTE-")+id().left(8);
+		return QStringLiteral("REMOTE-")+left;
 	case(TYPE_HUB):
-		return QStringLiteral("HUB-")+id().left(8);
+		return QStringLiteral("HUB-")+left;
 	case(TYPE_ZOO):
-		return QStringLiteral("ZOO-")+id().left(8);
+		return QStringLiteral("ZOO-")+left;
+	default:
+		return QStringLiteral("UNKNOWN-")+left;
 	}
-	return QStringLiteral("UNKNOWN-")+id().left(8);
+
 }
 
 
@@ -375,8 +381,8 @@ QString Associate::toString()
 		   +", birthDate:"+utility::formattedDateFromMS(mBirthDate)
 		   +", role:"+nodeRoleToString(mRole)
 		   +", type:"+nodeTypeToString(mType)
-		   +", pins:"+mPins.join(";");
-	+", trusts:"+mTrusts.join(";");
+		   +", pins:"+mPins.join(";")
+		   +", trusts:"+mTrusts.join(";");
 }
 
 
@@ -389,6 +395,8 @@ QSharedPointer<Client> Associate::toClient(QSharedPointer<Node> node)
 		return QSharedPointer<RemoteClient>(OC_NEW RemoteClient(node, sharedFromThis()));
 	case(TYPE_HUB):
 		return QSharedPointer<HubClient>(OC_NEW HubClient(node, sharedFromThis()));
+	default:
+		qWarning()<<"ERROR: unknown node type";
 	}
 	return nullptr;
 

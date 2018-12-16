@@ -53,6 +53,7 @@ static QByteArray handshakeSynAckPacket(QSharedPointer<CommsSession> sessA, QStr
 
 static QByteArray handshakeAckPacket(QSharedPointer<CommsSession> sessA, QString idB, SESSION_ID_TYPE localSessionID, SESSION_NONCE_TYPE ackNonce)
 {
+	Q_UNUSED(localSessionID);
 	PacketSendState state;
 	state.setSession(sessA);
 	state.writeMultimagic(MULTIMAGIC_ACK);
@@ -189,8 +190,8 @@ void TestCommsChannel::testCommsMock()
 	QByteArray garbledPacket=QString("This is garbled").toUtf8();
 	const SESSION_ID_TYPE localSessionID=1337;
 	const SESSION_NONCE_TYPE synNonce=1111;
-	const SESSION_NONCE_TYPE synAckNonce=2222;
-	const SESSION_NONCE_TYPE ackNonce=3333;
+	//const SESSION_NONCE_TYPE synAckNonce=2222;
+	//const SESSION_NONCE_TYPE ackNonce=3333;
 	QByteArray idlePacket;
 	{
 		PacketSendState state;
@@ -233,7 +234,7 @@ void TestCommsChannel::testCommsMock()
 		PacketReadState rstate(data, addrB.ip(), addrB.port());
 		// MULTIMAGIC
 		rstate.readMultimagic();
-		Multimagic mm=(Multimagic)rstate.multimagic;
+		Multimagic mm=static_cast<Multimagic>(rstate.multimagic);
 		qDebug()<<" MM= "<<MultimagicToString(mm);
 		if(MULTIMAGIC_SYNACK== mm) {
 
@@ -254,6 +255,7 @@ void TestCommsChannel::testCommsMock()
 	carrierA.mockWriteMock(handshakeAckPacket(sessA, idB, localSessionID, ackReturnNonce), addrB);
 
 
+	Q_UNUSED(handshakeSynAckPacket);
 	/*TODO implement the return trip
 
 

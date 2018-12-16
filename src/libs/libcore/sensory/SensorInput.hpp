@@ -17,16 +17,31 @@ class QGyroscope;
 class QGyroscopeReading;
 class QSensor;
 
+/*!
+ * \brief The SensorInput class wraps all sensor I/O that is available
+ * through Qt5 API in one manager class.
+ * TODO: There are other sensors to incorporate:
+
+	"QOrientationSensor"
+	"QLightSensor"
+	"QMagnetometer"
+	"QAmbientLightSensor"
+	"QRotationSensor"
+	"QGyroscope"
+	"QTiltSensor"
+	"QProximitySensor"
+*/
+
 class SensorInput : public QObject,  public QCompassFilter
 {
 	Q_OBJECT
 private:
 
-	QList<QSensor*> m_availableSensors;
-	QGeoPositionInfoSource *source;
-	QAccelerometer *accelerometer;
-	QCompass*compass;
-	QGyroscope *gyroscope;
+	QList<QSensor*> mAvailableSensors;
+	QGeoPositionInfoSource *mGeoPositionSource;
+	QAccelerometer *mAccelerometer;
+	QCompass *mCompass;
+	QGyroscope *mGyroscope;
 
 private:
 
@@ -38,9 +53,7 @@ public:
 	explicit SensorInput(QObject *parent = nullptr);
 
 
-	void hookSignals(QObject &);
-	void unHookSignals(QObject &);
-
+	void hookSignals(QObject &object, bool hook=true);
 
 	QString toSpecStanzas(QString space="");
 

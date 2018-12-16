@@ -84,7 +84,6 @@ T ConcurrentQueue<T>::get()
 {
 	OC_METHODGATE();
 	unsigned long rtto=1000;
-	T item;
 	QMutexLocker ml(&mMutex);
 	int count=mItems.count();
 	//qDebug()<<"Waiting for not-empty with count="<<count;
@@ -96,11 +95,11 @@ T ConcurrentQueue<T>::get()
 		count=mItems.count();
 	}
 	if(mDone) {
-		return item;
+		return T();
 	}
 	//qDebug()<<"Got not-empty with count="<<count;
 	const bool wasFull=(count >= mCapacity);
-	item=mItems.takeLast();
+	T item=mItems.takeLast();
 	count=mItems.count();
 	const bool isFull=(count < mCapacity);
 	//qDebug()<<"State mCapacity="<<mCapacity<<", wasFull="<<wasFull<<", isFull="<<isFull<<", count="<<count;
@@ -121,16 +120,15 @@ template <typename T>
 T ConcurrentQueue<T>::tryGet(bool &got)
 {
 	OC_METHODGATE();
-	T item;
 	QMutexLocker ml(&mMutex);
 	int count=mItems.count();
 	if(count<=0){
 		got=false;
-		return item;
+		return T();
 	}
 	//qDebug()<<"Got not-empty with count="<<count;
 	const bool wasFull=(count >= mCapacity);
-	item=mItems.takeLast();
+	T item=mItems.takeLast();
 	got=true;
 	count=mItems.count();
 	const bool isFull=(count < mCapacity);

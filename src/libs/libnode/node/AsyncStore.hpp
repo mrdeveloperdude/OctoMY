@@ -28,7 +28,7 @@
 
 /*
 
-  DataStore is used to persist data in form of variant maps.
+  AsyncStore is used to persist data in form of variant maps.
 
   The long term goal of the API is to ensure compliance with ACID requirements as far as
   possible while also being asynchronous.
@@ -36,7 +36,7 @@
   The API should also be as transparent as possible, meaning that using it should
   require the least possible amount of boilerplate.
 
-  ACID is an acronym for the following 4 requirements:
+  ACID is an acronym for the following 4 traits:
 
   + Atomicity    - The operation is indivisible, all-or-nothing. A transaction can be "committed" or "rolled back"; if it is committed all of its effects must complete fully, otherwise if it is rolled back it must have no effect.
   + Consistency  - The transaction transforms the database from one consistent state to another consistent state. Here "consistent" implies obeying not just relational integrity constraints but also business rules and semantics, such as that a given Customer record's Address and ZIP fields must not specify inconsistent information (e.g., an address in New York and a ZIP code in Alabama).
@@ -140,10 +140,10 @@ public:
 
 private:
 
-	ASEvent<T> enqueueEvent(ASEvent<T> trans);
-	void processEvents();
+	virtual ASEvent<T> enqueueEvent(ASEvent<T> trans);
+	virtual void processEvents();
 
-	void processEvent(ASEvent<T> &event);
+	virtual void processEvent(ASEvent<T> &event);
 	quint64 autoIncrement();
 
 	void runCallbacksForEvent(ASEvent<T> event);
@@ -333,7 +333,7 @@ template <typename T>
 void AsyncStore<T>::processEvent(ASEvent<T> &event)
 {
 	OC_METHODGATE();
-	qDebug()<<"Processing event "<<event;
+	//qDebug()<<"Processing event "<<event;
 	event.run();
 }
 

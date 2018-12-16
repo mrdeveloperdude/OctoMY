@@ -1,5 +1,7 @@
 #include "node/LocalIdentityStore.hpp"
 
+#include "utility/Standard.hpp"
+
 LocalIdentityStore::LocalIdentityStore(QString filename)
 	: SimpleMapStore(filename)
 {

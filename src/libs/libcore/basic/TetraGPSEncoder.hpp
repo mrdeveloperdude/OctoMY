@@ -10,7 +10,7 @@ class TetraGPSEncoder{
 	private:
 		TGPSReal planetRadiusMeters;
 	public:
-		explicit TetraGPSEncoder(TGPSReal planetRadiusMeters=6371000.0);
+		explicit TetraGPSEncoder(TGPSReal planetRadiusMeters=6371000.0l);
 		QString generate(TGPSReal lat, TGPSReal lon, TGPSReal precMeters);
 
 };

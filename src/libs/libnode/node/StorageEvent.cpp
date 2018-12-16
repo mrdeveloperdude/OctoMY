@@ -1,5 +1,7 @@
 #include "StorageEvent.hpp"
 
+#ifdef USE_OLD_STORE
+
 #include "utility/Standard.hpp"
 #include "node/DataStore.hpp"
 
@@ -92,7 +94,9 @@ StorageEvent::StorageEvent(StorageEventPrivate &pp)
 {
 }
 
+StorageEvent::~StorageEvent() {
 
+}
 
 StorageEvent & StorageEvent::operator=(StorageEvent other)
 {
@@ -283,3 +287,4 @@ bool StorageEvent::run()
 	return ret;
 }
 
+#endif

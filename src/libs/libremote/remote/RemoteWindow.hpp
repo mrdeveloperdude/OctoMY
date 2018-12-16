@@ -45,9 +45,16 @@ private:
 	QSharedPointer<Remote> mRemote;
 	QMenu mMenu;
 
+	QAction *mPairingAction;
+	QAction *mShowBirthCertificateAction;
+	QAction *mUnbirthAction;
+	QAction *mQuitAction;
+
+	bool mWasEverUndelivered;
+
 public:
 	explicit RemoteWindow(QSharedPointer<Remote> mRemote, QWidget *parent = nullptr);
-	virtual ~RemoteWindow();
+	virtual ~RemoteWindow() Q_DECL_OVERRIDE;
 
 public: //IContextProvider interface
 
@@ -87,6 +94,8 @@ private slots:
 	void onStartPairing();
 	void onStartPlanEditor();
 	void onStartShowBirthCertificate();
+	void onStartUnbirth();
+	void onStartQuitApplication();
 
 
 	// Peer Store slots
@@ -119,6 +128,7 @@ private slots:
 
 	void on_pushButtonStartPairing_clicked();
 	void on_pushButtonUpdateStuff_clicked();
+	void on_label_3_linkActivated(const QString &link);
 };
 
 #endif // REMOTEWINDOW_HPP

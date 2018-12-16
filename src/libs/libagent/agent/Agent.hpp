@@ -48,15 +48,15 @@ private:
 
 public:
 	explicit Agent(NodeLauncher<Agent> &launcher, QObject *parent = nullptr);
-	virtual ~Agent();
+	virtual ~Agent() Q_DECL_OVERRIDE;
 
-	virtual QSharedPointer<QWidget> showWindow();
+	virtual QSharedPointer<QWidget> showWindow() Q_DECL_OVERRIDE;
 
 
 public:
 
-	virtual void init();
-	virtual void deInit();
+	virtual void init() Q_DECL_OVERRIDE;
+	virtual void deInit() Q_DECL_OVERRIDE;
 
 	void setPanic(bool);
 
@@ -65,6 +65,8 @@ public:
 	QSharedPointer<PoseMapping> poseMapping();
 
 	IActuatorController *actuatorController();
+
+	void unloadController();
 	void reloadController();
 
 

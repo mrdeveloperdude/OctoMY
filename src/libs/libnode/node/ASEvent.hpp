@@ -322,9 +322,7 @@ void ASEvent<T>::onFinished(F callBack)
 		return;
 	}
 	//std::function<void(ASEvent<T> &)>
-	auto f = [this, callBack](ASEvent<T> &ase) {
-		callBack(ase);
-	};
+	//auto f = [this, callBack](ASEvent<T> &ase) { 		callBack(ase);  	};
 
 	//ASEventPrivate::CallbackType
 	//qDebug().nospace().noquote()<<"P:"<<ASEventPrivate<T>::privCounterString(p) <<" from "<<utility::currentThreadID();

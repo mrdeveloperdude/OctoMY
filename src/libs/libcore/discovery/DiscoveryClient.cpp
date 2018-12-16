@@ -37,8 +37,11 @@ DiscoveryClient::DiscoveryClient(Node &node)
 	  //, ourPubKey(node.getKeyStore().getLocalPublicKey())
 	  //, ourID(utility::toHash(ourPubKey))
 	  //, zeroID(utility::toHash(""))
+	, mLog(true)
 {
-	if(nullptr==&mNode) {
+	OC_METHODGATE();
+	auto nodeptr=&mNode;
+	if(nullptr==nodeptr) {
 		qWarning()<<"ERROR: node was nullreference";
 	}
 	mTimer.setInterval(500);
@@ -50,12 +53,16 @@ DiscoveryClient::DiscoveryClient(Node &node)
 
 bool DiscoveryClient::isStarted()
 {
+	OC_METHODGATE();
 	return mTimer.isActive();
 }
 
 void DiscoveryClient::setStart(bool start)
 {
-	qDebug()<<"DISCOVERY CLIENT "<<QString(start?"STARTED":"STOPPED");
+	OC_METHODGATE();
+	if(mLog) {
+		qDebug().noquote().nospace()<<"DISCOVERY CLIENT "<<QString(start?"STARTED":"STOPPED");
+	}
 	if(!mTimer.isActive()) {
 		onTimer();
 	}
@@ -69,16 +76,22 @@ void DiscoveryClient::setStart(bool start)
 
 void DiscoveryClient::setURL(const QUrl& serverURL)
 {
+	OC_METHODGATE();
 	//TODO: Investigate why this gets called twice
 	mServerURL  = serverURL;
-	//qDebug()<<"Setting new URL: "<<mServerURL;
+	if(mLog) {
+		qDebug().noquote().nospace()<<"Setting new URL: "<<mServerURL;
+	}
 }
 
 
 
 void DiscoveryClient::discover()
 {
-	//qDebug()<<"DISCOVERY CLIENT RUN "<<mServerURL;
+	OC_METHODGATE();
+	if(mLog) {
+		qDebug().noquote().nospace()<<"DISCOVERY CLIENT RUN "<<mServerURL;
+	}
 	qhttp::client::TRequstHandler reqHandler= [this](qhttp::client::QHttpRequest* req) {
 
 		auto key=mNode.keyStore().localKey();
@@ -101,11 +114,17 @@ void DiscoveryClient::discover()
 				cmd["addressList"]=alist;
 			}
 
-			//qDebug()<<"SENDING VAR: "<<cmd;
+			if(mLog) {
+				qDebug().noquote().nospace()<<"SENDING VAR: "<<cmd;
+			}
 			QJsonDocument jdoc=QJsonDocument::fromVariant(cmd);
-			//qDebug()<<"SENDING JDOC: "<<jdoc;
+			if(mLog) {
+				qDebug().noquote().nospace()<<"SENDING JDOC: "<<jdoc;
+			}
 			QByteArray body  = jdoc.toJson(QJsonDocument::Indented);
-			//qDebug()<<"SENDING RAW JSON: "<<body;
+			if(mLog) {
+				qDebug().noquote().nospace()<<"SENDING RAW JSON: "<<body;
+			}
 			req->addHeader("user-agent",			ZooConstants::OCTOMY_USER_AGENT);
 			req->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
 			req->addHeader("accept",				"application/json");
@@ -113,15 +132,15 @@ void DiscoveryClient::discover()
 			req->addHeader("connection",			"keep-alive");
 			req->addHeaderValue("content-length", 	body.length());
 			req->end(body);
-			//qDebug()<<"Getting node by OCID:"<<OCID << " REQ END";
 		} else {
-
 			qWarning()<<"ERROR: no key";
 		}
 	};
 
 	qhttp::client::TResponseHandler resHandler=	[this](qhttp::client::QHttpResponse* res) {
-		//qDebug()<<"RES";
+		if(mLog) {
+			qDebug().noquote().nospace()<<"RES";
+		}
 		res->collectData(20000);
 		res->onEnd([this, res]() {
 			//qDebug()<<"RES to "<<m_serverURL;
@@ -173,12 +192,18 @@ void DiscoveryClient::discover()
 				}
 			}
 			if(!ok) {
-				//qDebug()<<"RETURNED STATUS ("<<ok<<"):"<<message;
+				if(mLog){
+					qDebug().noquote().nospace()<<"RETURNED STATUS ("<<ok<<"):"<<message;
+				}
 			}
 		});
-		//qDebug()<<"Getting node by OCID:"<<OCID << " RES DONE";
+		if(mLog){
+			qDebug().noquote().nospace()<<"Getting node: RES DONE";
+		}
 	};
-	//qDebug()<<"DISCOVERY CLIENT OUTREACH TO "<<mServerURL;
+	if(mLog){
+		qDebug().noquote().nospace()<<"DISCOVERY CLIENT OUTREACH TO "<<mServerURL;
+	}
 	mClient->request(qhttp::EHTTP_POST, mServerURL, reqHandler, resHandler);
 }
 
@@ -188,7 +213,10 @@ void DiscoveryClient::discover()
 
 void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 {
-	//qDebug()<<"REG";
+	OC_METHODGATE();
+	if(mLog) {
+		qDebug().noquote().nospace()<<"REG";
+	}
 	QSharedPointer<Key> key=QSharedPointer<Key>(OC_NEW Key(map["key"].toMap(), true));
 	if(!key.isNull()) {
 		KeyStore  &keyStore=mNode.keyStore();
@@ -250,6 +278,7 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 
 Node &DiscoveryClient::getNode()
 {
+	OC_METHODGATE();
 	return mNode;
 }
 
@@ -258,7 +287,7 @@ const quint64 ZOO_PAIR_INTERVAL=20000;
 
 void DiscoveryClient::onTimer()
 {
-	//qDebug()<<"PING";
+	OC_METHODGATE();
 	const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 	if(now>ZOO_PAIR_INTERVAL+mLastZooPair) {
 		//qDebug()<<"ZOO PAIR TIME!";

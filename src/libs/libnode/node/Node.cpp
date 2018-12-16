@@ -116,23 +116,27 @@ void Node::init()
 		mCarrier->setListenAddress(listenAddress);
 	}
 
-	mKeyStore.synchronize([](ASEvent<QVariantMap> &se) {
-
+	mKeyStore.synchronize([this](ASEvent<QVariantMap> &se) {
 		const bool ok=se.isSuccessfull();
+		qDebug()<<"------------------------------------------------";
 		qDebug()<<"Keystore synchronized with ok="<<ok;
+		mKeyStore.dump();
+		qDebug()<<"------------------------------------------------";
 	});
 
+	mLocalIdentity.setInitialized(&mLocalIdentity);
 	mLocalIdentity.synchronize([this](SimpleDataStore &sms, bool ok) {
 		auto map=sms.toMap();
 		//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
 		if(ok && !map.isEmpty()) {
-			//qDebug()<<"Enabling newly loaded identity from map: "<<map;
-			setNodeIdentity(map);
+			identityChanged();
 		}
 	});
 
+	mAddressBook.setInitialized(&mAddressBook);
 	mAddressBook.synchronize([=](SimpleDataStore &ab, bool ok) {
 		Q_UNUSED(ab);
+		Q_UNUSED(ok);
 		//qDebug()<<"Address book synchronized with ok="<<ok;
 		mClients.syncToAddressBook(mAddressBook, sharedThis());
 	});
@@ -172,6 +176,10 @@ void Node::deInit()
 	setHookSensorSignals(*this, false);
 	setHookCommsSignals(*this,false);
 	mContext=nullptr;
+
+	mAddressBook.setInitialized<AddressBook>(nullptr);
+	mLocalIdentity.setInitialized<LocalIdentityStore>(nullptr);
+
 	if(nullptr!=mCarrier) {
 		mCarrier->deleteLater();
 		mCarrier=nullptr;
@@ -720,17 +728,15 @@ BlobFuture Node::submitBlobForSending(QByteArray data, QString name)
 ////////////////////////////////
 
 
-void Node::setHookColorSignals(QObject &ob, bool set)
+void Node::setHookColorSignals(QObject &ob, bool hook)
 {
 	OC_METHODGATE();
-	if(set) {
-		if(!mSensorsCourier.isNull()) {
+	if(!mSensorsCourier.isNull()) {
+		if(hook) {
 			if(!connect(&ob, SIGNAL(colorChanged(QColor)), mSensorsCourier.data(), SLOT(onColorUpdated(QColor)), OC_CONTYPE)) {
 				qWarning()<<"ERROR: Could not connect " << ob.objectName();
 			}
-		}
-	} else {
-		if(!mSensorsCourier.isNull()) {
+		} else {
 			if(!disconnect(&ob, SIGNAL(colorChanged(QColor)), mSensorsCourier.data(), SLOT(onColorUpdated(QColor)))) {
 				qWarning()<<"ERROR: Could not disconnect " << ob.objectName();
 			}
@@ -744,17 +750,11 @@ void Node::setHookColorSignals(QObject &ob, bool set)
 ////////////////////////////////
 
 
-void Node::setHookSensorSignals(QObject &o, bool set)
+void Node::setHookSensorSignals(QObject &o, bool hook)
 {
 	OC_METHODGATE();
-	if(set) {
-		if(nullptr!=mSensors) {
-			mSensors->hookSignals(o);
-		}
-	} else {
-		if(nullptr!=mSensors) {
-			mSensors->unHookSignals(o);
-		}
+	if(nullptr!=mSensors) {
+		mSensors->hookSignals(o, hook);
 	}
 }
 
@@ -766,8 +766,6 @@ void Node::setHookCommsSignals(QObject &o, bool hook)
 		mComms->setHookCommsSignals(o, hook);
 	}
 }
-
-
 
 
 void Node::updateDiscoveryClient()

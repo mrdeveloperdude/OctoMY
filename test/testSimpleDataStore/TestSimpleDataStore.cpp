@@ -7,53 +7,57 @@
 #include "utility/Utility.hpp"
 
 
-class MySimpleDataStore: public SimpleDataStore
+class SimpleDataStoreTester: public SimpleDataStore
 {
 private:
 	QVariantMap mMyMap;
 
 public:
-	explicit MySimpleDataStore(QString filename="");
-	virtual ~MySimpleDataStore() Q_DECL_OVERRIDE;
+	explicit SimpleDataStoreTester(QString filename="");
+	virtual ~SimpleDataStoreTester() Q_DECL_OVERRIDE;
 
 	// SimpleDataStore interface
 public:
-	bool fromMap(QVariantMap data) Q_DECL_OVERRIDE;
-	QVariantMap toMap() Q_DECL_OVERRIDE;
+	virtual bool fromMap(QVariantMap data) Q_DECL_OVERRIDE;
+	virtual QVariantMap toMap() Q_DECL_OVERRIDE;
+	virtual bool fromDefault() Q_DECL_OVERRIDE;
 
-	bool fromDefault()Q_DECL_OVERRIDE;
 };
 
+////////////////////////////////////////////////////////////////////////////////
 
-MySimpleDataStore::MySimpleDataStore(QString filename)
+SimpleDataStoreTester::SimpleDataStoreTester(QString filename)
 	: SimpleDataStore(filename)
 {
 	OC_METHODGATE();
 }
 
-MySimpleDataStore::~MySimpleDataStore()
+SimpleDataStoreTester::~SimpleDataStoreTester()
 {
 	OC_METHODGATE();
 }
 
-bool MySimpleDataStore::fromMap(QVariantMap data)
+bool SimpleDataStoreTester::fromMap(QVariantMap data)
 {
 	OC_METHODGATE();
 	mMyMap=data;
 	return true;
 }
 
-QVariantMap MySimpleDataStore::toMap()
+QVariantMap SimpleDataStoreTester::toMap()
 {
 	OC_METHODGATE();
-	return mMyMap;
+	QVariantMap data=mMyMap;
+	return data;
 }
 
 
-bool MySimpleDataStore::fromDefault()
+bool SimpleDataStoreTester::fromDefault()
 {
 	OC_METHODGATE();
-	return false;
+	mMyMap=QVariantMap();
+	mMyMap["default"]="generated";
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -71,8 +75,8 @@ void TestSimpleDataStore::test()
 	qDebug()<<" -- Create some dummy data";
 	QVariantMap data;
 	{
-		data["myInt"]=(quint32)123;
-		data["myFloat"]=(double)123.4;
+		data["myInt"]=static_cast<quint32>(123);
+		data["myFloat"]=static_cast<double>(123.4);
 		data["myString"]="Abc";
 		QVariantMap map;
 		map["A"]="A";
@@ -82,20 +86,28 @@ void TestSimpleDataStore::test()
 
 	qDebug()<<" -- Create data store on disk, saving the dummy data";
 	{
-		MySimpleDataStore sds(fn), *sdsp=&sds;
+		SimpleDataStoreTester sds(fn), *sdsp=&sds;
+		sdsp->setInitialized(sdsp);
+		sds.fromDefault();
 		QCOMPARE(sds.filename(), fn);
 		QCOMPARE(sds.fileExists(), false);
 		sds.fromMap(data);
-		sds.save([=](SimpleDataStore &msds, bool ok) {
+		/*
+		sds.save([=](SimpleDataStoreTester &msds, bool ok) {
 			qDebug()<<"Save callback called for store=" <<msds.filename()<<" with ok="<<ok;
 			QCOMPARE(sdsp, &msds);
 			QCOMPARE(sdsp->fileExists(), true);
 		});
+		*/
+		sds.setInitialized<SimpleDataStoreTester>(nullptr);
+		qDebug()<<"Waiting for dtor;";
 	}
+	qDebug()<<"Dtor should have run by now.";
 
 	qDebug()<<" -- Load data store and verify that the data is loaded correctly";
 	{
-		MySimpleDataStore sds(fn), *sdsp=&sds;
+		SimpleDataStoreTester sds(fn), *sdsp=&sds;
+		sdsp->setInitialized(sdsp);
 		QCOMPARE(sds.filename(), fn);
 		QCOMPARE(sds.fileExists(), true);
 		auto preMap=sds.toMap();
@@ -107,6 +119,7 @@ void TestSimpleDataStore::test()
 			auto postMap=sdsp->toMap();
 			QVERIFY(utility::mapIsIn(postMap, data));
 		});
+		sds.setInitialized<SimpleDataStoreTester>(nullptr);
 	}
 	qDebug()<<" -- Done";
 }

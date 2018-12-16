@@ -10,6 +10,12 @@ class DiscoveryServer
 {
 private:
 	QMap<QString, DiscoveryServerSession *> mRegistry;
+	bool mLog;
+
+public:
+
+	explicit DiscoveryServer(bool log = false);
+	virtual ~DiscoveryServer();
 public:
 
 	DiscoveryServerSession *request(QSharedPointer<Associate> part);

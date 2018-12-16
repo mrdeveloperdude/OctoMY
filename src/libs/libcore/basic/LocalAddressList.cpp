@@ -18,7 +18,7 @@ LocalAddressList::LocalAddressList(quint16 port, bool startTimer)
 	// We don't need precision, slop is fine
 	mTimer.setTimerType(Qt::CoarseTimer);
 	if(!QObject::connect(&mTimer, &QTimer::timeout, mObj, [this]() {
-		updateIfNeeded(false);
+	updateIfNeeded(false);
 	}, OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect ";
 	}
@@ -27,6 +27,7 @@ LocalAddressList::LocalAddressList(quint16 port, bool startTimer)
 
 LocalAddressList::~LocalAddressList()
 {
+	OC_METHODGATE();
 	delete mObj;
 	mObj=nullptr;
 }
@@ -56,11 +57,13 @@ void LocalAddressList::setCurrent(QHostAddress address, quint16 port)
 
 void LocalAddressList::setTimerEnabled(bool enabled)
 {
+	OC_METHODGATE();
 	enabled?mTimer.start():mTimer.stop();
 }
 
 bool LocalAddressList::timerEnabled() const
 {
+	OC_METHODGATE();
 	return mTimer.isActive();
 }
 
@@ -68,6 +71,7 @@ bool LocalAddressList::timerEnabled() const
 
 NetworkAddress LocalAddressList::currentNetworkAddress() const
 {
+	OC_METHODGATE();
 	return NetworkAddress(currentAddress(), port());
 }
 
@@ -83,6 +87,7 @@ QHostAddress LocalAddressList::currentAddress() const
 
 bool LocalAddressList::isUpdateNeeded()
 {
+	OC_METHODGATE();
 	QList<QHostAddress> local=utility::allLocalNetworkAddresses();
 	bool updateNeeded=false;
 	if(local.size() != size()) {
@@ -109,6 +114,7 @@ bool LocalAddressList::isUpdateNeeded()
 
 bool LocalAddressList::updateIfNeeded(bool keepCurrent)
 {
+	OC_METHODGATE();
 	const bool updateNeeded=isUpdateNeeded();
 	//qDebug()<<"LOCAL ADDRESS UPDATE NEEDED: "<<updateNeeded;
 	if(updateNeeded) {
@@ -121,14 +127,14 @@ bool LocalAddressList::updateIfNeeded(bool keepCurrent)
 // Should be called uppon detection of changes in network configuration (via timer + updateIfNeeded())
 // Will set the address that matches the current selection closest when parameter keepCurrent is set
 // Otherwize it will set the address that matches default gateway closest
-// (default gateway == the ip of the router that allows access to the internet)
+// (default gateway == the ip of the router that gives us access to the internet)
 void LocalAddressList::updateAddresses(bool keepCurrent)
 {
 	OC_METHODGATE();
 	QHostAddress last=currentAddress();
 	const bool lastIsGood=!last.isNull();
 	clear();
-	const QHostAddress dgw=utility::defaultGatewayAddress();
+	const QHostAddress defaultGateway=utility::defaultGatewayAddress();
 	QList<QHostAddress> local=utility::allLocalNetworkAddresses();
 	//qDebug().noquote().nospace()<<"UPDATING LOCAL ADDRESSES: ";
 	//qDebug().noquote().nospace()<<" + last: "<<last;
@@ -137,7 +143,7 @@ void LocalAddressList::updateAddresses(bool keepCurrent)
 		//qDebug().noquote().nospace()<<" + addr: "<<addr<<" (dgw closeness= "<< utility::addressCloseness(addr, dgw)<< ")";
 		*this <<addr;
 	}
-	const QHostAddress closest=utility::closestAddress(*this, (keepCurrent && lastIsGood)?last:dgw);
+	const QHostAddress closest=utility::closestAddress(*this, (keepCurrent && lastIsGood)?last:defaultGateway);
 	//qDebug().noquote().nospace()<<" + closest: "<<closest<<" (keepCurrent="<< keepCurrent<<")";
 	setCurrent(closest, port());
 }

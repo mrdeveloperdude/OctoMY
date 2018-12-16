@@ -8,7 +8,8 @@ RemoteClient::RemoteClient(QSharedPointer<Node> controller, QSharedPointer<Assoc
 	, mWidget(nullptr)
 {
 	OC_METHODGATE();
-	updateCourierRegistration();
+	// Not needed?
+	//updateCourierRegistration();
 }
 
 

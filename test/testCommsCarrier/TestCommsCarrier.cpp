@@ -63,13 +63,13 @@ void TestCommsCarrier::testBasic()
 	QCOMPARE(true, coca.isStarted());
 	QCOMPARE(true, coca.hasPendingData());
 
-	const quint64 supposedRxBytes=coca.pendingDataSize();
+	const qint64 supposedRxBytes=coca.pendingDataSize();
 	QVERIFY(supposedRxBytes > 0);
 	QCOMPARE(supposedRxBytes, txDatagram.size());
 
 	// Try to receive the data
 	QByteArray rxDatagram;
-	rxDatagram.resize(coca.pendingDataSize());
+	rxDatagram.resize(static_cast<int>(coca.pendingDataSize()));
 	QHostAddress rxHost;
 	quint16 rxPort=0;
 	const qint64 rxBytes=coca.readData(rxDatagram.data(), rxDatagram.size(), &rxHost, &rxPort);

@@ -4,6 +4,7 @@
 #include "SimpleDataStore.hpp"
 
 
+
 class SimpleMapStore: public SimpleDataStore
 {
 
@@ -11,7 +12,7 @@ private:
 	QVariantMap mMap;
 public:
 	explicit SimpleMapStore(QString filename="");
-	virtual ~SimpleMapStore();
+	virtual ~SimpleMapStore() Q_DECL_OVERRIDE;
 
 	// SimpleDataStore interface
 public:
@@ -22,4 +23,6 @@ public:
 };
 
 
+
 #endif // SIMPLEMAPSTORE_HPP
+

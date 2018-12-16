@@ -1,6 +1,8 @@
 #ifndef STORAGEEVENT_HPP
 #define STORAGEEVENT_HPP
 
+#ifdef USE_OLD_STORE
+
 #include "utility/Standard.hpp"
 
 #include <QSharedDataPointer>
@@ -70,7 +72,7 @@ private:
 
 public:
 	inline StorageEvent() Q_DECL_NOTHROW{}
-	virtual ~StorageEvent() {}
+	virtual ~StorageEvent();
 public:
 	explicit StorageEvent(DataStore & store, const StorageEventType type, QVariantMap data=QVariantMap());
 	explicit StorageEvent(StorageEventPrivate &pp);
@@ -105,6 +107,7 @@ public:
 };
 
 
+
 // NOTE: Will block, which may not be what you expect or want
 template <typename F>
 void StorageEvent::onFinished(F callBack)
@@ -117,5 +120,7 @@ void StorageEvent::onFinished(F callBack)
 
 
 const QDebug &operator<<(QDebug &d, DataStore &ks);
+
+#endif
 
 #endif // STORAGEEVENT_HPP

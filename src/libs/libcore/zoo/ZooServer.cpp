@@ -51,7 +51,7 @@ ZooServer::ZooServer(AppContext *context, QObject *parent)
 	, mContext(context)
 	, mKeyStore (mContext->baseDir() + "/keystore.json", true)
 	, mStorage(QDir::current())
-
+	, mDiscovery (true)
 {
 	OC_METHODGATE();
 	Q_ASSERT(nullptr!=mContext);
@@ -60,7 +60,7 @@ ZooServer::ZooServer(AppContext *context, QObject *parent)
 
 	mKeyStore.synchronize([this](ASEvent<QVariantMap> &se) {
 		const bool ok=se.isSuccessfull();
-		qDebug()<<"Keystore synchronized: "<<ok;
+		qDebug()<<"Keystore synchronized: "<<ok << " with " <<mKeyStore.store().journal();
 		onKeystoreReady(ok);
 	});
 
@@ -121,10 +121,24 @@ NetworkAddress ZooServer::serverAddress()
 	return (nullptr!=tc)?NetworkAddress (QHostAddress(tc->serverAddress().toString()), tc->serverPort()): NetworkAddress();
 }
 
+
+void ZooServer::logUsefullStuff()
+{
+	OC_METHODGATE();
+	const QHostAddress defaultGateway=utility::defaultGatewayAddress();
+	QList<QHostAddress> local=utility::allLocalNetworkAddresses();
+	const QHostAddress closest=utility::closestAddress(local, defaultGateway);
+	qDebug().noquote().nospace()<<"ADDRESSES";
+	qDebug().noquote().nospace()<<" + gateway: "<<defaultGateway;
+	for(QHostAddress addr:local) {
+		qDebug().noquote().nospace()<<" + addr: "<<addr<<(closest==addr?" (close)":"");
+	}
+}
+
 bool ZooServer::start(const QString pathOrPortNumber)
 {
 	OC_METHODGATE();
-	if(!connect(this,  &QHttpServer::newConnection, [this](qhttp::server::QHttpConnection*) {
+	if(!connect(this,  &QHttpServer::newConnection, [](qhttp::server::QHttpConnection*) {
 	//qDebug()<<"a new connection was made!\n";
 })) {
 		Q_UNUSED(this);
@@ -134,7 +148,7 @@ bool ZooServer::start(const QString pathOrPortNumber)
 	qhttp::server::TServerHandler conHandler=[this](qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res) {
 		req->collectData(OC_COLLECT_AT_MOST);
 		req->onEnd([this, req, res]() {
-			//qDebug()<<req;
+			qDebug()<<req;
 			QString path=req->url().path();
 			//qDebug()<<"URL: "<<path;
 			if("/"==path) {
@@ -146,7 +160,7 @@ bool ZooServer::start(const QString pathOrPortNumber)
 			} else if(path.startsWith("/api")) {
 				serveAPI(req,res);
 				return;
-			} else if( mAdminURL.length()>0 && path.startsWith(mAdminURL)) {
+			} else if( !mAdminURLPath.isEmpty() && path.startsWith(mAdminURLPath)) {
 				serveAdmin(req,res);
 				return;
 			} else {
@@ -414,19 +428,24 @@ void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp
 void ZooServer::onBackgroundTimer()
 {
 	OC_METHODGATE();
-	mDiscovery.prune(utility::currentMsecsSinceEpoch<quint64>()-PRUNE_DEADLINE);//Prune all not seen for some time
+	mDiscovery.prune(utility::currentMsecsSinceEpoch<quint64>() - PRUNE_DEADLINE);//Prune all associates that have not been seen for some time
 }
 
 
 void ZooServer::onKeystoreReady(bool ok)
 {
 	OC_METHODGATE();
-	if(!ok) {
-		qWarning()<<"KEYSTORE FAILED";
-	} else {
+	if(ok) {
 		auto key=mKeyStore.localKey();
-		auto id=key.isNull()?"NULL":key->id().left(ZOO_MINIMAL_ADMIN_ID_LENGTH);
-		mAdminURL="/"+id;
-		qDebug()<<"KEYSTORE READY! ADMIN ADRESS IS: "<<mAdminURL;
+		if(!key.isNull()) {
+			auto id=key->id().left(ZOO_MINIMAL_ADMIN_ID_LENGTH);
+			mAdminURLPath="/"+id;
+			qDebug()<<"KEYSTORE READY! ADMIN URL PATH IS: 'http://"<<serverAddress().toString() <<mAdminURLPath<<"'";
+			logUsefullStuff();
+		} else {
+			qWarning()<<"KEYSTORE HAD NO LOCAL KEY";
+		}
+	} else {
+		qWarning()<<"KEYSTORE FAILED";
 	}
 }

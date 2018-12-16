@@ -65,10 +65,13 @@ void pack(T *stacked);
 
 // String
 
-QString humanReadableElapsedSeconds(long double seconds,int prec=2, bool prep=true,long double resolution=0.000001);
-QString humanReadableElapsedMS(qint64 ms,int prec=2, bool prep=true,long double resolution=0.000001);
+QString humanReadableElapsedSeconds(long double seconds,int prec=2, bool prep=true,long double resolution=0.000001L);
+
+template <typename T>
+QString humanReadableElapsedMS(T ms,int prec=2, bool prep=true,long double resolution=0.000001L);
 QString formattedDateFromSeconds(long double seconds);
 QString formattedDateFromMS(qint64 ms);
+QString formattedDateFromMS(quint64 ms);
 QString humanReadableSize(qint64 bytes,int prec=2);
 size_t snprint_hex(char *dst, size_t size, const uint8_t *pbtData, const size_t szBytes);
 QString toHEX(const uint8_t *pbtData, const size_t szBytes);
@@ -260,6 +263,13 @@ public:
 
 };
 
+
+
+template <typename T>
+QString humanReadableElapsedMS(T ms,int prec,bool prep,long double resolution)
+{
+	return humanReadableElapsedSeconds(static_cast<long double>(ms) / 1000.0l, prec, prep, resolution);
+}
 
 ///////////////////////////////////////////
 

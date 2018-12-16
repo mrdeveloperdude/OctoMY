@@ -62,8 +62,13 @@ void ClientList::syncToAddressBook(AddressBook &ab, QSharedPointer<Node> node)
 		if(!existingMap.contains(key)) {
 			QSharedPointer<Associate> ass=all[key];
 			if(!ass.isNull()) {
-				qDebug()<<" + Adding client "<<ass->toPortableID();
-				existingMap[key]=ass->toClient(node);
+				QSharedPointer<Client> cl=ass->toClient(node);
+				if(!cl.isNull()) {
+					qDebug()<<" + Adding client "<<ass->toPortableID();
+					existingMap[key]=cl;
+				} else {
+					qDebug()<<" + Adding client ERROR: "<<ass->toPortableID();
+				}
 			}
 		}
 	}

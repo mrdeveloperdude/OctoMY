@@ -11,66 +11,63 @@
 
 SensorInput::SensorInput(QObject *parent):
 	QObject(parent)
-  , source(QGeoPositionInfoSource::createDefaultSource(this))
-  , accelerometer(0)
-  , compass(0)
-  , lastCompassFilterValue(0)
-  , lastCompassSmoothValue(0)
+	, mGeoPositionSource(QGeoPositionInfoSource::createDefaultSource(this))
+	, mAccelerometer(nullptr)
+	, mCompass(nullptr)
+	, lastCompassFilterValue(0)
+	, lastCompassSmoothValue(0)
 {
 
 	//qDebug()<<"SENSOR INPUT STARTING";
 	load();
-	if (nullptr != source) {
-		source->setPreferredPositioningMethods(QGeoPositionInfoSource::AllPositioningMethods);
-		source->startUpdates();
+	if (nullptr != mGeoPositionSource) {
+		mGeoPositionSource->setPreferredPositioningMethods(QGeoPositionInfoSource::AllPositioningMethods);
+		mGeoPositionSource->startUpdates();
 	}
 
 	QAccelerometer *a=OC_NEW QAccelerometer(this);
-	if(nullptr != a){
-		if(!a->connectToBackend()){
+	if(nullptr != a) {
+		if(!a->connectToBackend()) {
 			delete a;
 			a=nullptr;
-		}
-		else{
-			accelerometer=a;
+		} else {
+			mAccelerometer=a;
 			//accelerometer->addFilter(this);
-			accelerometer->setSkipDuplicates(true);
-			accelerometer->start();
-			if(!connect(accelerometer, SIGNAL(readingChanged()),this,SLOT(onAccelerometerReadingChanged()),OC_CONTYPE)){
+			mAccelerometer->setSkipDuplicates(true);
+			mAccelerometer->start();
+			if(!connect(mAccelerometer, SIGNAL(readingChanged()),this,SLOT(onAccelerometerReadingChanged()),OC_CONTYPE)) {
 				qWarning()<<"ERROR: Could not connect";
 			}
 		}
 	}
 
 	QCompass *c=OC_NEW QCompass(this);
-	if(nullptr != c){
-		if(!c->connectToBackend()){
+	if(nullptr != c) {
+		if(!c->connectToBackend()) {
 			delete c;
 			c=nullptr;
-		}
-		else{
-			compass=c;
-			compass->addFilter(this);
-			compass->setSkipDuplicates(true);
-			compass->start();
-			if(!connect(compass, SIGNAL(readingChanged()),this,SLOT(onCompassReadingChanged()),OC_CONTYPE)){
+		} else {
+			mCompass=c;
+			mCompass->addFilter(this);
+			mCompass->setSkipDuplicates(true);
+			mCompass->start();
+			if(!connect(mCompass, SIGNAL(readingChanged()),this,SLOT(onCompassReadingChanged()),OC_CONTYPE)) {
 				qWarning()<<"ERROR: Could not connect";
 			}
 		}
 	}
 
 	QGyroscope*g=OC_NEW QGyroscope(this);
-	if(nullptr != g){
-		if(!g->connectToBackend()){
+	if(nullptr != g) {
+		if(!g->connectToBackend()) {
 			delete g;
 			g=nullptr;
-		}
-		else{
-			gyroscope=g;
+		} else {
+			mGyroscope=g;
 			//gyroscpe->addFilter(this);
-			gyroscope->setSkipDuplicates(true);
-			gyroscope->start();
-			if(!connect(gyroscope, SIGNAL(readingChanged()),this,SLOT(onGyroscopeReadingChanged()),OC_CONTYPE)){
+			mGyroscope->setSkipDuplicates(true);
+			mGyroscope->start();
+			if(!connect(mGyroscope, SIGNAL(readingChanged()),this,SLOT(onGyroscopeReadingChanged()),OC_CONTYPE)) {
 				qWarning()<<"ERROR: Could not connect";
 			}
 		}
@@ -80,9 +77,9 @@ SensorInput::SensorInput(QObject *parent):
 
 void SensorInput::onAccelerometerReadingChanged()
 {
-	if(nullptr!=accelerometer){
-		QAccelerometerReading *r=accelerometer->reading();
-		if(nullptr!=r){
+	if(nullptr!=mAccelerometer) {
+		QAccelerometerReading *r=mAccelerometer->reading();
+		if(nullptr!=r) {
 			emit accelerometerUpdated(r);
 		}
 	}
@@ -90,9 +87,9 @@ void SensorInput::onAccelerometerReadingChanged()
 
 void SensorInput::onCompassReadingChanged()
 {
-	if(nullptr!=compass){
-		QCompassReading *r=compass->reading();
-		if(nullptr!=r){
+	if(nullptr!=mCompass) {
+		QCompassReading *r=mCompass->reading();
+		if(nullptr!=r) {
 			emit compassUpdated(r);
 		}
 	}
@@ -101,77 +98,61 @@ void SensorInput::onCompassReadingChanged()
 
 void SensorInput::onGyroscopeReadingChanged()
 {
-	if(nullptr!=gyroscope){
-		QGyroscopeReading *r=gyroscope->reading();
-		if(nullptr!=r){
+	if(nullptr!=mGyroscope) {
+		QGyroscopeReading *r=mGyroscope->reading();
+		if(nullptr!=r) {
 			emit gyroscopeUpdated(r);
 		}
 	}
 }
 
-/*
-	"QOrientationSensor"
-	"QLightSensor"
-	"QMagnetometer"
-	"QAmbientLightSensor"
-	"QRotationSensor"
-	"QGyroscope"
-	"QTiltSensor"
-	"QProximitySensor"
-*/
 
 
-void SensorInput::hookSignals(QObject &o)
+void SensorInput::hookSignals(QObject &o, bool hook)
 {
-
-	if(nullptr!=source){
-		if(!connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)),&o,SLOT(onPositionUpdated(QGeoPositionInfo)),OC_CONTYPE)){
-			qWarning()<<"ERROR: Could not connect";
+	if(hook) {
+		if(nullptr!=mGeoPositionSource) {
+			if(!connect(mGeoPositionSource, SIGNAL(positionUpdated(QGeoPositionInfo)), &o, SLOT(onPositionUpdated(QGeoPositionInfo)),OC_CONTYPE)) {
+				qWarning()<<"ERROR: Could not connect QGeoPositionInfo for "<<o.objectName();
+			}
+		}
+		if(!connect(this, SIGNAL(compassUpdated(QCompassReading*)), &o, SLOT(onCompassUpdated(QCompassReading *)),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect QCompassReading for "<<o.objectName();
+		}
+		if(!connect(this, SIGNAL(accelerometerUpdated(QAccelerometerReading*)), &o, SLOT(onAccelerometerUpdated(QAccelerometerReading *)),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect QAccelerometerReading for "<<o.objectName();
+		}
+		if(!connect(this, SIGNAL(gyroscopeUpdated(QGyroscopeReading*)), &o, SLOT(onGyroscopeUpdated(QGyroscopeReading *)),OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect QGyroscopeReading for "<<o.objectName();
+		}
+	} else {
+		if(nullptr!=mGeoPositionSource) {
+			if(!disconnect(mGeoPositionSource, SIGNAL(positionUpdated(QGeoPositionInfo)), &o, SLOT(onPositionUpdated(QGeoPositionInfo)))) {
+				qWarning()<<"ERROR: Could not disconnect QGeoPositionInfo for "<<o.objectName();
+			}
+		}
+		if(!disconnect(this, SIGNAL(compassUpdated(QCompassReading*)), &o, SLOT(onCompassUpdated(QCompassReading *)))) {
+			qWarning()<<"ERROR: Could not disconnect QCompassReading for "<<o.objectName();
+		}
+		if(!disconnect(this, SIGNAL(accelerometerUpdated(QAccelerometerReading*)), &o, SLOT(onAccelerometerUpdated(QAccelerometerReading *)))) {
+			qWarning()<<"ERROR: Could not disconnect QAccelerometerReading for "<<o.objectName();
+		}
+		if(!disconnect(this, SIGNAL(gyroscopeUpdated(QGyroscopeReading*)), &o, SLOT(onGyroscopeUpdated(QGyroscopeReading *)))) {
+			qWarning()<<"ERROR: Could not disconnect QGyroscopeReading for "<<o.objectName();
 		}
 	}
-
-	if(!connect(this, SIGNAL(compassUpdated(QCompassReading*)),&o,SLOT(onCompassUpdated(QCompassReading *)),OC_CONTYPE)){
-		qWarning()<<"ERROR: Could not connect";
-	}
-	if(!connect(this, SIGNAL(accelerometerUpdated(QAccelerometerReading*)),&o,SLOT(onAccelerometerUpdated(QAccelerometerReading *)),OC_CONTYPE)){
-		qWarning()<<"ERROR: Could not connect";
-	}
-	if(!connect(this, SIGNAL(gyroscopeUpdated(QGyroscopeReading*)),&o,SLOT(onGyroscopeUpdated(QGyroscopeReading *)),OC_CONTYPE)){
-		qWarning()<<"ERROR: Could not connect";
-	}
 }
-
-
-
-void SensorInput::unHookSignals(QObject &o)
-{
-	if(nullptr!=source){
-		if(!disconnect(source, SIGNAL(positionUpdated(QGeoPositionInfo)), &o, SLOT(onPositionUpdated(QGeoPositionInfo)))){
-			qWarning()<<"ERROR: Could not disconnect";
-		}
-	}
-	if(!disconnect(this, SIGNAL(compassUpdated(QCompassReading*)),&o,SLOT(onCompassUpdated(QCompassReading *)))){
-		qWarning()<<"ERROR: Could not disconnect";
-	}
-	if(!disconnect(this, SIGNAL(accelerometerUpdated(QAccelerometerReading*)),&o,SLOT(onAccelerometerUpdated(QAccelerometerReading *)))){
-		qWarning()<<"ERROR: Could not disconnect";
-	}
-	if(!disconnect(this, SIGNAL(gyroscopeUpdated(QGyroscopeReading*)),&o,SLOT(onGyroscopeUpdated(QGyroscopeReading *)))){
-		qWarning()<<"ERROR: Could not disconnect";
-	}
-}
-
 
 
 void SensorInput::load()
 {
-	m_availableSensors.clear();
+	mAvailableSensors.clear();
 	QList<QByteArray> sensorTypes=QSensor::sensorTypes();
-	for(QList<QByteArray> ::iterator it=sensorTypes.begin(),e=sensorTypes.end();it!=e;++it){
+	for(QList<QByteArray> ::iterator it=sensorTypes.begin(),e=sensorTypes.end(); it!=e; ++it) {
 		QByteArray &type=*it;
 		//qDebug() << " + Found type" << type;
 		QList<QByteArray> sensorsForTypes=QSensor::sensorsForType(type);
-		for(QList<QByteArray> ::iterator it2=sensorsForTypes.begin(),e2=sensorsForTypes.end();it2!=e2;++it2){
+		for(QList<QByteArray> ::iterator it2=sensorsForTypes.begin(),e2=sensorsForTypes.end(); it2!=e2; ++it2) {
 			QByteArray &identifier=*it2;
 			QSensor* sensor = OC_NEW QSensor(type, this);
 			sensor->setIdentifier(identifier);
@@ -180,14 +161,15 @@ void SensorInput::load()
 				continue;
 			}
 			//qDebug() << "    * Adding identifier" << identifier;
-			m_availableSensors.append(sensor);
+			mAvailableSensors.append(sensor);
 		}
 	}
 }
 
-QString SensorInput::toSpecStanzas(QString space){
+QString SensorInput::toSpecStanzas(QString space)
+{
 	QString out="";
-	for(QList<QSensor*>::iterator i=m_availableSensors.begin(), e=m_availableSensors.end();i!=e;++i){
+	for(QList<QSensor*>::iterator i=mAvailableSensors.begin(), e=mAvailableSensors.end(); i!=e; ++i) {
 		out+=space+"sensor {\n";
 		out+=space+"\ttype="+(*i)->type()+"\n";
 		out+=space+"\tid="+(*i)->identifier()+"\n";
@@ -203,7 +185,7 @@ bool SensorInput::filter(QCompassReading *reading)
 {
 	lastCompassSmoothValue=lastCompassSmoothValue*0.95+reading->azimuth()*0.05;
 	const qreal minDelta=1.0;
-	if(lastCompassSmoothValue-minDelta > lastCompassFilterValue || lastCompassSmoothValue+minDelta < lastCompassFilterValue ){
+	if(lastCompassSmoothValue-minDelta > lastCompassFilterValue || lastCompassSmoothValue+minDelta < lastCompassFilterValue ) {
 		lastCompassFilterValue=lastCompassSmoothValue;
 		return true;
 	}

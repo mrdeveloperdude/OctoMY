@@ -42,9 +42,6 @@ public:
 	QVariantMap toMap() Q_DECL_OVERRIDE;
 	bool fromDefault()  Q_DECL_OVERRIDE;
 
-
-
-
 signals:
 
 	void agentConfigStoreReady(bool);

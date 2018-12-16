@@ -1,10 +1,8 @@
 #include "SimpleMapStore.hpp"
 
+#include "utility/Standard.hpp"
 
-
-
-
-
+#include <QVariantMap>
 
 
 SimpleMapStore::SimpleMapStore(QString filename)

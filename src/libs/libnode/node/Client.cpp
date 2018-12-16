@@ -223,6 +223,7 @@ void Client::updateOnlineStatus()
 
 void Client::onSyncParameterChanged(ISyncParameter *sp)
 {
+	Q_UNUSED(sp);
 	//TODO: Refactor so this plays nice with client class
 	/*
 	OC_METHODGATE();
@@ -248,6 +249,7 @@ void Client::onCommsError(QString e)
 void Client::onCommsClientAdded(CommsSession *c)
 {
 	OC_METHODGATE();
+	Q_UNUSED(c);
 	//qDebug()<<"ClientWidget UNIMP Client added: "<<c->toString();
 }
 

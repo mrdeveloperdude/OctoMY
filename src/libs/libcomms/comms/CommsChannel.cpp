@@ -26,7 +26,7 @@
 #include <QDateTime>
 #include <QSharedPointer>
 
-#define FIRST_STATE_ID ((SESSION_ID_TYPE)MULTIMAGIC_LAST)
+#define FIRST_STATE_ID (static_cast<SESSION_ID_TYPE>(MULTIMAGIC_LAST))
 #define MAX_CONCURRENT_COURIERS (100)
 
 Q_DECLARE_METATYPE(QHostAddress)
@@ -127,7 +127,7 @@ bool CommsChannel::recieveMagicAndVersion(PacketReadState &state)
 	OC_METHODGATE();
 	state.readProtocolMagic();
 	if(OCTOMY_PROTOCOL_MAGIC!=state.octomyProtocolMagic) {
-		QString es="ERROR: OctoMY Protocol Magic mismatch: "+QString::number(state.octomyProtocolMagic,16)+ " vs. "+QString::number((quint32)OCTOMY_PROTOCOL_MAGIC,16);
+		QString es="ERROR: OctoMY Protocol Magic mismatch: "+QString::number(state.octomyProtocolMagic,16)+ " vs. "+QString::number(static_cast<quint32>(OCTOMY_PROTOCOL_MAGIC), 16);
 		qWarning()<<es;
 		emit commsError(es); //TODO: Handle this by making a few retries before requiering user to aprove further retries (to avoid endless hammering)
 		return false;
@@ -146,7 +146,7 @@ bool CommsChannel::recieveMagicAndVersion(PacketReadState &state)
 		emit commsError(es);
 		return false;
 	}
-	break;
+
 	}
 	return true;
 }
@@ -252,6 +252,7 @@ QSharedPointer<CommsSession> CommsChannel::lookUpSession(QString id)
 void CommsChannel::recieveIdle(PacketReadState &state)
 {
 	OC_METHODGATE();
+	Q_UNUSED(state);
 	qDebug()<<"RECEIVED IDLE PACKET";
 }
 
@@ -262,7 +263,7 @@ void CommsChannel::recieveHandshake(PacketReadState &state)
 	OC_METHODGATE();
 	if(recieveEncryptedBody(state)) {
 
-		const auto multimagic=(Multimagic)state.multimagic;
+		const auto multimagic=static_cast<Multimagic>(state.multimagic);
 		const bool remoteWantsToBeInitiator=( ( MULTIMAGIC_SYN == multimagic ) ||  ( MULTIMAGIC_ACK == multimagic )  );
 
 
@@ -341,6 +342,10 @@ void CommsChannel::recieveHandshake(PacketReadState &state)
 				case(MULTIMAGIC_ACK): {
 					// We received SYN
 					rxOK=recieveAck(state, session);
+				}
+				break;
+				default: {
+					qWarning()<<"ERROR: Unhandled multimagic of type "<<MultimagicToString(multimagic);
 				}
 				break;
 				}
@@ -523,7 +528,7 @@ void CommsChannel::recieveData(PacketReadState &state)
 {
 	OC_METHODGATE();
 	qDebug()<<"RX DATA";
-	SESSION_ID_TYPE sessionID = (SESSION_ID_TYPE)state.multimagic;
+	SESSION_ID_TYPE sessionID = static_cast<SESSION_ID_TYPE>(state.multimagic);
 	if(sessionID < FIRST_STATE_ID) {
 		QString es="ERROR: invalid multimagic specified";
 		qWarning()<<es;
@@ -575,7 +580,7 @@ void CommsChannel::recieveData(PacketReadState &state)
 		// Is this an internal part?
 		if(state.partMessageTypeID < Courier::FIRST_USER_ID) {
 			//Use message type enum for built in messages
-			const MessageType partMessageType=(MessageType)state.partMessageTypeID;
+			const MessageType partMessageType=static_cast<MessageType>(state.partMessageTypeID);
 			//qDebug()<<totalRecCount<<"MESSAGE TYPE WAS"<<partMessageType<<"("<<QString::number(partMessageTypeID)<<")";
 			switch(partMessageType) {
 			case(IDLE): {
@@ -583,14 +588,13 @@ void CommsChannel::recieveData(PacketReadState &state)
 				// Idle packet does not contain any data, so we are done here :)
 			}
 			break;
-			default:
+//			default:
 			case(INVALID): {
-				QString es=" ERROR: OctoMY message type invalid: "+QString::number((quint32)partMessageType,16);
+				QString es=" ERROR: OctoMY message type invalid: "+QString::number(static_cast<quint32>(partMessageType), 16);
 				qWarning()<<es;
 				emit commsError(es);
 				return;
 			}
-			break;
 			}
 		} else {
 			//Use courier id for extendable messages
@@ -638,7 +642,7 @@ void CommsChannel::recieveData(PacketReadState &state)
 
 
 // Main packet reception
-void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHostS , quint16 remotePortS )
+void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHostS, quint16 remotePortS )
 {
 	OC_METHODGATE();
 	qDebug()<<"";
@@ -648,7 +652,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHo
 	//QSharedPointer<CommsSession> session;
 	state.readMultimagic();
 	qDebug()<<"RX Multimagic: "<<MultimagicToString(state.multimagic);
-	switch((Multimagic)state.multimagic) {
+	switch(static_cast<Multimagic>(state.multimagic)) {
 	case(MULTIMAGIC_IDLE): {
 		// We are keeping the UDP connection alive with idle packet
 		recieveIdle(state);
@@ -683,7 +687,7 @@ void CommsChannel::doSendWithSession(PacketSendState &state)
 		qWarning()<<"ERROR: invalid address: "	<<na;
 		return;
 	}
-	const quint32 sz=state.datagram.size();
+	const quint32 sz=static_cast<quint32>(state.datagram.size());
 	if(sz<=0) {
 		qWarning()<<"ERROR: datagram is <= 0 bytes ("<<state.datagram.size() <<")";
 		return;
@@ -709,6 +713,7 @@ void CommsChannel::doSendWithSession(PacketSendState &state)
 void CommsChannel::sendHandshake(const quint64 &now, const QString handShakeID)
 {
 	OC_METHODGATE();
+	Q_UNUSED(now);
 	QSharedPointer<CommsSession> session=mSessions.byFullID(handShakeID);
 	if(nullptr==session) {
 		qDebug()<<"CREATING NEW SESSION FOR ID "<< handShakeID<< " IN SEND HANDSHAKE";
@@ -881,6 +886,7 @@ void CommsChannel::sendAck(PacketSendState &state)
 void CommsChannel::sendIdle(const quint64 &now, QSharedPointer<CommsSession> session)
 {
 	OC_METHODGATE();
+	Q_UNUSED(now);
 	// NOTE: Session is needed because session holds the destination address
 	if(nullptr==session) {
 		qWarning()<<"ERROR: session was null";
@@ -900,6 +906,7 @@ void CommsChannel::sendIdle(const quint64 &now, QSharedPointer<CommsSession> ses
 void CommsChannel::sendCourierData(const quint64 &now, Courier &courier)
 {
 	OC_METHODGATE();
+	Q_UNUSED(now);
 	QString toID=courier.destination();
 	if(toID.isEmpty()) {
 		QString es="ERROR: Invalid courier destination when sending data";
@@ -967,11 +974,16 @@ void CommsChannel::sendCourierData(const quint64 &now, Courier &courier)
 quint64 CommsChannel::rescheduleSending(quint64 now)
 {
 	OC_METHODGATE();
+	const qint64 nows=static_cast<qint64>(now);
 	mTXScheduleRate.countPacket(0);
 	const auto MINIMAL_PACKET_RATE=mCarrier.minimalPacketInterval();
-	const auto MAXIMAL_PACKET_RATE=mCarrier.maximalPacketInterval();
-	qDebug()<<" ... R E S C H E D U L E ... "<<utility::formattedDateFromMS(now)<< " with "<<mCouriers.count()<<" couriers and honemyoon= "<<honeymoon(now);
-	mMostUrgentSendingTime=MINIMAL_PACKET_RATE;
+	//const auto MAXIMAL_PACKET_RATE=mCarrier.maximalPacketInterval();
+	qDebug()<<" ... R E S C H E D U L E ... "
+		   <<utility::formattedDateFromMS(nows)
+		  << " with "<<mCouriers.count()
+		  <<" couriers and honemyoon= "
+		  <<honeymoon(now);
+	mMostUrgentSendingTime=static_cast<qint64>(MINIMAL_PACKET_RATE);
 	mSchedule.clear();
 	// Update first
 	for(QSharedPointer<Courier> courier:mCouriers) {
@@ -992,16 +1004,16 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 				QSharedPointer<CommsSession> session=mSessions.byFullID(id);
 				if(nullptr!=session) {
 					if(session->established()) {
-						const qint64 timeLeft = cm.nextSend - now;
+						const qint64 timeLeft = static_cast<qint64>(cm.nextSend) - nows;
 						// Update most-urgent time
 						if(timeLeft < mMostUrgentSendingTime) {
-							const quint64 lastUrgent=mMostUrgentSendingTime;
+							const qint64 lastUrgent=mMostUrgentSendingTime;
 							mMostUrgentSendingTime=qMax(timeLeft, 0LL);
 							qDebug()<<courier->name()<<courier->id()<<courier->serial()<<" WITH TIME LEFT " << timeLeft<< " BUMPED URGENT FROM "<<lastUrgent<<" -> "<<mMostUrgentSendingTime;
 						}
 						// Actual sending is due, schedule a packet to associate of client
 						if(timeLeft < 0) {
-							const quint64 score=(cm.priority * -timeLeft );
+							const quint64 score=static_cast<quint64>(cm.priority * -timeLeft );
 							mSchedule.insert(score, courier); //TODO: make this broadcast somehow (use ClientDirectory::getByLastActive() and ClientSignature::isValid() in combination or similar).
 							qDebug()<<courier->name()<<courier->id()<<courier->serial()<<" SCHEDULED WITH TIMELEFT "<<timeLeft<<" AND SCORE "<<score;
 						}
@@ -1040,7 +1052,7 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 		mMostUrgentSendingTime=qMin(mMostUrgentSendingTime, 0LL);
 	}
 	// Prepare for next sending opportunity
-	const quint64 actualInterval = mCarrier.setDesiredOpportunityInterval(mMostUrgentSendingTime);
+	const quint64 actualInterval = mCarrier.setDesiredOpportunityInterval(static_cast<quint64>(mMostUrgentSendingTime));
 	return actualInterval;
 }
 
@@ -1138,7 +1150,7 @@ QString CommsChannel::getSummary()
 }
 
 
-//Slot called when data arrives on socket
+// Slot called when data arrives on socket
 void CommsChannel::onCarrierReadyRead()
 {
 	OC_METHODGATE();
@@ -1146,7 +1158,7 @@ void CommsChannel::onCarrierReadyRead()
 	while (mCarrier.hasPendingData()) {
 		qDebug()<<"      + UDP PACKET";
 		QByteArray datagram;
-		datagram.resize(mCarrier.pendingDataSize());
+		datagram.resize(static_cast<int>(mCarrier.pendingDataSize()));
 		QHostAddress host;
 		quint16 port=0;
 		qint64 ret=mCarrier.readData(datagram.data(), datagram.size(), &host, &port);

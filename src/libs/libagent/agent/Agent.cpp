@@ -66,14 +66,18 @@ void Agent::init()
 		checkLoadCompleted();
 	});
 
-	mLocalIdentity.synchronize([this](SimpleDataStore &sms, bool ok) {
+	// INITIIALIZED IN NODE mLocalIdentity.setInitialized(&mLocalIdentity);
+	mLocalIdentity.synchronize([this](SimpleDataStore &store, bool ok) {
+		Q_UNUSED(store);
 		//qDebug()<<"Local identity synchronized with ok="<<ok;
 		mLocalIdentityStoreReady=ok;
 		// TODO: Don't wait for sync here. Make truely async
 		checkLoadCompleted();
 	});
 
-	mAgentConfigStore.synchronize([this](SimpleDataStore &sms, bool ok) {
+	mAgentConfigStore.setInitialized(&mAgentConfigStore);
+	mAgentConfigStore.synchronize([this](SimpleDataStore &store, bool ok) {
+		Q_UNUSED(store);
 		//qDebug()<<"Agent Config Store synchronized with ok="<<ok;
 		mAgentConfigStoreReady=ok;
 		checkLoadCompleted();
@@ -86,6 +90,8 @@ void Agent::init()
 void Agent::deInit()
 {
 	OC_METHODGATE();
+	mAgentConfigStore.setInitialized<AgentConfigStore>(nullptr);
+	// DE-INITIIALIZED IN NODE mLocalIdentity.setInitialized<LocalIdentityStore>(nullptr);
 	Node::deInit();
 }
 
@@ -112,6 +118,9 @@ QSharedPointer<QWidget> Agent::showWindow()
 void Agent::setPanic(bool panic)
 {
 	OC_METHODGATE();
+	Q_UNUSED(panic);
+	qWarning()<<"Panic set to: "<<panic;
+
 }
 
 
@@ -134,16 +143,23 @@ IActuatorController *Agent::actuatorController()
 	return mActuatorController;
 }
 
-void Agent::reloadController()
+void Agent::unloadController()
 {
 	OC_METHODGATE();
 	// Unload old controller
-	if(nullptr!=mActuatorController) {
+	if(nullptr != mActuatorController) {
 		//qDebug()<<"Unloading old actuator controller";
 		mActuatorController->setConnected(false);
 		mActuatorController->deleteLater();
 		mActuatorController=nullptr;
 	}
+
+}
+
+void Agent::reloadController()
+{
+	OC_METHODGATE();
+	unloadController();
 	QSharedPointer<AgentConfig> configp=mAgentConfigStore.agentConfig();
 	if(!configp.isNull()) {
 		AgentConfig &config=*configp;

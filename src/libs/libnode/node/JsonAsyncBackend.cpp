@@ -75,7 +75,8 @@ QVariantMap JsonAsyncBackend::loadBackend(bool &ok)
 
 	// TODO: Will this ever occur?
 	if(!existsBackend()){
-
+		qWarning()<<"ERROR: NO Backend while loading json";
+		return data;
 	}
 
 	QJsonParseError jsonError;

@@ -39,7 +39,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="pageDelivery">
       <layout class="QGridLayout" name="gridLayout_5">
@@ -523,6 +523,26 @@
           <size>
            <width>20</width>
            <height>256</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>When you quit, all state is saved and your remotes and hubs will be disconnected. You can reconnect after starting the application again.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>18</height>
           </size>
          </property>
         </spacer>
@@ -1054,7 +1074,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="pageQuit">
+     <widget class="QWidget" name="pageQuitting">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <spacer name="verticalSpacer_5">
@@ -1112,6 +1132,12 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>PortableIDWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/PortableIDWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>GaitWidget</class>
    <extends>QWidget</extends>
    <header location="global">gait/GaitWidget.hpp</header>
@@ -1127,12 +1153,6 @@
    <class>Camera</class>
    <extends>QWidget</extends>
    <header location="global">camera/Camera.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>PortableIDWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/PortableIDWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

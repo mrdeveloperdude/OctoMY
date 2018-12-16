@@ -35,8 +35,8 @@ private:
 	Hashstore mStorage;
 	PunchRegistry mPunches;
 	DiscoveryServer mDiscovery;
-
-	QString mAdminURL;
+	// Absolute URL path of admin functions
+	QString mAdminURLPath;
 
 	QTimer mBackgroundTimer;
 
@@ -59,6 +59,7 @@ public:
 private:
 
 	NetworkAddress serverAddress();
+	void logUsefullStuff();
 
 public:
 	bool start(const QString pathOrPortNumber);

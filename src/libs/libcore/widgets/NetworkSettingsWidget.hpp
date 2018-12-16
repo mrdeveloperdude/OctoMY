@@ -55,7 +55,7 @@ private slots:
 
 	void on_lineEditLocalPort_editingFinished();
 
-	signals:
+signals:
 
 	void addressChanged(QHostAddress address, quint16 port, bool valid);
 

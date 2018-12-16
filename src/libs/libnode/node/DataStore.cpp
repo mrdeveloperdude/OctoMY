@@ -1,5 +1,7 @@
 #include "DataStore.hpp"
 
+#ifdef USE_OLD_STORE
+
 #include "pose/PoseMapping.hpp"
 #include "utility/Standard.hpp"
 #include "utility/Utility.hpp"
@@ -304,4 +306,4 @@ const QDebug &operator<<(QDebug &d, DataStore &ks)
 	return d.maybeSpace();
 }
 
-
+#endif

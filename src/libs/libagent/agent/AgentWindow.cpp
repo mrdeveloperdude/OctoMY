@@ -363,6 +363,7 @@ void AgentWindow::onConnectionStateChanged(const TryToggleState last, const TryT
 void AgentWindow::onColorChanged(QColor c)
 {
 	OC_METHODGATE();
+	Q_UNUSED(c);
 //	mAgent->onC
 }
 
@@ -461,15 +462,10 @@ void AgentWindow::onStartUnbirth()
 void AgentWindow::onStartQuitApplication()
 {
 	OC_METHODGATE();
-
 	if(!mAgent.isNull()) {
-		QMessageBox::StandardButton reply = QMessageBox::question(this, "Quit", "Are you sure you want to quit?", QMessageBox::No|QMessageBox::Yes);
-		if (QMessageBox::Yes==reply) {
-			setCurrentPage(ui->pageQuit);
-			emit mAgent->appClose();
-			qDebug()<<"QUIT!";
-		}
+		setCurrentPage(ui->pageConfirmQuit);
 	}
+
 }
 
 
@@ -524,21 +520,15 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 {
 	OC_METHODGATE();
 	if(Qt::Key_Back==e->key()) {
-		/*
-		 * // TODO: Make useful and working again
-		if(ui->pageConnect==ui->stackedWidget->currentWidget()) {
-			appendLog("EXITING APP ON BACK BUTTON");
-			setCurrentPage(ui->pageConfirmQuit);
-		} else if(ui->pageRunning==ui->stackedWidget->currentWidget()) {
-			appendLog("GOING TO CONNECTION SCREEN ON BACK BUTTON");
-			setCurrentPage(ui->pageConnect);
+		if(ui->pageRunning==ui->stackedWidget->currentWidget()) {
+			appendLog("GOING TO CONFIRM QUIT SCREEN ON BACK BUTTON");
+			onStartQuitApplication();
 		} else if(ui->pageConfirmQuit==ui->stackedWidget->currentWidget()) {
-			appendLog("GOING TO CONNECTION SCREEN ON BACK BUTTON");
-			setCurrentPage(ui->pageConnect);
+			appendLog("GOING TO RUNNING SCREEN ON BACK BUTTON");
+			setCurrentPage(ui->pageRunning);
 		} else {
 			appendLog("ERROR ON BACK BUTTON");
 		}
-		*/
 		e->accept();
 	} else {
 		//appendLog("UNKNOWN BUTTON: "+QString::number(e->key()));
@@ -548,6 +538,7 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 void AgentWindow::closeEvent(QCloseEvent *event)
 {
 	OC_METHODGATE();
+	Q_UNUSED(event);
 	if(!mAgent.isNull()) {
 		emit mAgent->appClose();
 	}
@@ -622,12 +613,14 @@ void AgentWindow::onSyncParameterChanged(ISyncParameter *sp)
 void AgentWindow::onCommsError(QString e)
 {
 	OC_METHODGATE();
+	Q_UNUSED(e);
 	//qDebug()<<"AgentWindow UNIMP Comms error: "<<e;
 }
 
 void AgentWindow::onCommsClientAdded(CommsSession *c)
 {
 	OC_METHODGATE();
+	Q_UNUSED(c);
 	//qDebug()<<"AgentWindow UNIMP Client added: "<<c->toString();
 }
 
@@ -645,7 +638,14 @@ void AgentWindow::onCommsConnectionStatusChanged(const bool isConnected, const b
 void AgentWindow::on_pushButtonConfirmQuit_clicked()
 {
 	OC_METHODGATE();
-	exit(0);
+	setCurrentPage(ui->pageQuitting);
+	if(!mAgent.isNull()) {
+		emit mAgent->appClose();
+		qDebug()<<"QUIT NICE!";
+	} else {
+		qDebug()<<"QUIT UGLY!";
+		exit(0);
+	}
 }
 
 void AgentWindow::on_pushButtonBack_2_clicked()
