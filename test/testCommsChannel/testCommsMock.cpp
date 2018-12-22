@@ -272,7 +272,7 @@ void TestCommsChannel::testCommsMock()
 	chanA.carrier().setStarted(false);
 
 	testHeading("DELETING");
-	QTest::waitForEvents();
+	testWaitForEvents();
 
 }
 

@@ -84,9 +84,9 @@ void TestMapEditor::test()
 		QComboBox *comboBoxMapType=ui->findChild<QComboBox *>("comboBoxMapType");
 		QVERIFY(nullptr != comboBoxMapType);
 		comboBoxMapType->setCurrentIndex(0);
-		QTest::waitForEvents();
+		testWaitForEvents();
 		comboBoxMapType->setCurrentIndex(1);
-		QTest::waitForEvents();
+		testWaitForEvents();
 		waitForWidgetToClose(ui);
 
 		/*

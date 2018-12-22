@@ -59,20 +59,17 @@ void FaceWidget::updateEyeColor()
 			if(pid.id()!=mLastPID.id()) {
 				mLastPID=pid;
 				doUpdate=true;
-			}
-			else{
+			} else {
 				qWarning()<<"ERROR: no change in ID while updating eye color of face widget: '"<<pid.id()<<"'";
 			}
-		}
-		else{
+		} else {
 			qWarning()<<"ERROR: no associate while updating eye color of face widget";
 		}
-	}
-	else{
+	} else {
 		qWarning()<<"ERROR: no agent while updating eye color of face widget";
 	}
-	if(doUpdate){
-		if(!mLastPID.id().isEmpty()){
+	if(doUpdate) {
+		if(!mLastPID.id().isEmpty()) {
 			ui->widgetEyes->setPortableID(mLastPID);
 		}
 	}
@@ -113,17 +110,17 @@ void FaceWidget::setAgent(QSharedPointer<Agent> a)
 			ui->splitterMiddle->restoreState(s.getCustomSettingByteArray(AgentConstants::AGENT_FACE_SPLITTER_MIDDLE_STATE));
 		} else {
 			//qDebug()<<"DEFAULT SETTING FOR "<<AgentConstants::AGENT_FACE_SPLITTER_MIDDLE_STATE;
-			utility::moveSplitter(*ui->splitterMiddle,0.75f);
+			utility::moveSplitter(*ui->splitterMiddle, 0.75);
 		}
 		if(s.hasCustomSetting(AgentConstants::AGENT_FACE_SPLITTER_TOP_STATE)) {
 			ui->splitterTop->restoreState(s.getCustomSettingByteArray(AgentConstants::AGENT_FACE_SPLITTER_TOP_STATE));
 		} else {
-			utility::moveSplitter(*ui->splitterTop,0.8f);
+			utility::moveSplitter(*ui->splitterTop, 0.8);
 		}
 		if(s.hasCustomSetting(AgentConstants::AGENT_FACE_SPLITTER_BOTTOM_STATE)) {
 			ui->splitterBottom->restoreState(s.getCustomSettingByteArray(AgentConstants::AGENT_FACE_SPLITTER_BOTTOM_STATE));
 		} else {
-			utility::moveSplitter(*ui->splitterBottom,0.5f);
+			utility::moveSplitter(*ui->splitterBottom, 0.5);
 		}
 	}
 	updateEyeColor();

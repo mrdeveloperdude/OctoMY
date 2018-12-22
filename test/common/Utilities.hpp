@@ -29,9 +29,8 @@ signals:
 
 
 void testSleep(quint64 ms, QString occation="");
-
+void testWaitForEvents();
 void testHeading(QString msg, QString ch="_");
-
 bool waitForUIEnd(QObject *object, qint64 timeOutMillis=0, const char *customSignal=nullptr);
 
 

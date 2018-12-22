@@ -58,7 +58,7 @@ void TestCommsCarrier::testBasic()
 	dataSender.send(txDatagram);
 
 	// Wait for the receive to happen
-	QTest::waitForEvents();
+	testWaitForEvents();
 //	QCOMPARE(true, coca.isConnected());
 	QCOMPARE(true, coca.isStarted());
 	QCOMPARE(true, coca.hasPendingData());

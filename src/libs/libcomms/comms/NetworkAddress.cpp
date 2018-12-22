@@ -33,7 +33,7 @@ NetworkAddress::NetworkAddress(QHostAddress ip, quint16 port)
 
 NetworkAddress::NetworkAddress(QVariantMap map)
 	: mIP(map["ip"].toString())
-	, mPort(map["port"].toInt())
+	, mPort(static_cast<quint16>(map["port"].toInt()))
 {
 	OC_METHODGATE();
 	//qDebug()<<"CREATING NetworkAddress from map: "<<map<<" results in ip="<<mIP<<", port="<<mPort;
@@ -118,7 +118,7 @@ void NetworkAddress::fromString(QString str, bool allowOnlyAddress)
 		mIP=QHostAddress(list[0]);
 		// Take port if it is there
 		if(2==sz) {
-			mPort=list[1].toInt();
+			mPort=static_cast<quint16>(list[1].toInt());
 		}
 	}
 }
@@ -126,7 +126,7 @@ void NetworkAddress::fromString(QString str, bool allowOnlyAddress)
 bool NetworkAddress::isValid(bool allowLoopback, bool allowMulticast, bool allowIPv6) const
 {
 	OC_METHODGATE();
-	if(((quint16)0) == mPort) {
+	if((static_cast<quint16>(0)) == mPort) {
 		return false;
 	}
 	if(mIP.isNull()) {

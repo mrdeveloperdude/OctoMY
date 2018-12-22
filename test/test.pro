@@ -104,8 +104,8 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testBlob \
 #		testCarSteeringWidget \
 #		testCommsCarrier \
-#		testCommsChannel \
-#		testCommsSession \
+		testCommsChannel \
+		testCommsSession \
 #		testConcurrentQueue \
 #		testDataStore \
 #		testDeliveryWizard \
@@ -119,7 +119,7 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testIdenticon \
 #		testIrisRendrer \
 #		testKey \
-#		testKeyStore \
+		testKeyStore \
 #		testMapEditor\
 #		testNameGenerator \
 #		testNetworkAddress \
@@ -130,7 +130,7 @@ contains(DEFINES, USE_TESTS_SELECTED){
 #		testRateCalculator \
 #		testRNG \
 #		testServotor32Controller \
-		testSimpleDataStore \
+#		testSimpleDataStore \
 #		testStreamCodec \
 #		testSyncParameter \
 #		testTaskQueue \

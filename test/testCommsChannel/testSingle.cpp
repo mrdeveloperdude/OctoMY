@@ -4,6 +4,8 @@
 
 #include "../common/Utilities.hpp"
 
+
+#include <QTest>
 /*
 Basic test that sets up two CommsChannels ( A & B ) and have them sending data via couriers to eachother.
 
@@ -21,7 +23,7 @@ void TestCommsChannel::testSingle()
 	const qint32 maxRecs=10;
 	const qint16 keyBits=128;
 	const QCryptographicHash::Algorithm hashAlgo=QCryptographicHash::Md5;
-	const KeySecurityPolicy policy(keyBits, hashAlgo);
+	const KeySecurityPolicy quickAndInsecurePolicy(keyBits, hashAlgo);
 	const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
 
 
@@ -42,7 +44,13 @@ void TestCommsChannel::testSingle()
 	}
 	QVERIFY(!keyStoreFileA.exists());
 
-	KeyStore keyStoreA(keyStoreFilenameA, true, policy);
+	KeyStore keyStoreA(keyStoreFilenameA, true, quickAndInsecurePolicy);
+
+
+	QVERIFY(!keyStoreFileA.exists());
+
+	keyStoreA.waitForSync();
+	QVERIFY(keyStoreFileA.exists());
 
 	auto keyA=keyStoreA.localKey();
 	QVERIFY(!keyA.isNull());
@@ -72,7 +80,13 @@ void TestCommsChannel::testSingle()
 		QVERIFY(keyStoreFileB.remove());
 	}
 	QVERIFY(!keyStoreFileB.exists());
-	KeyStore keyStoreB(keyStoreFilenameB, true, policy);
+	KeyStore keyStoreB(keyStoreFilenameB, true, quickAndInsecurePolicy);
+
+
+	QVERIFY(!keyStoreFileB.exists());
+
+	keyStoreB.waitForSync();
+	QVERIFY(keyStoreFileB.exists());
 
 	auto keyB=keyStoreB.localKey();
 	QVERIFY(nullptr!=keyB);
@@ -160,30 +174,41 @@ void TestCommsChannel::testSingle()
 	chanA.carrier().setStarted(false);
 	chanB.carrier().setStarted(false);
 
-
-	/*
 	CommsSessionDirectory & sessDirA=chanA.sessions();
 	CommsSessionDirectory & sessDirB=chanB.sessions();
 
 	QSharedPointer<CommsSession> sessA=QSharedPointer<CommsSession> (OC_NEW CommsSession(keyStoreA.localKey()));
 	QSharedPointer<CommsSession> sessB=QSharedPointer<CommsSession> (OC_NEW CommsSession(keyStoreB.localKey()));
 
+	QVERIFY(nullptr != sessA);
+	QVERIFY(nullptr != sessB);
+
+	sessA->setAddress(addrA);
+	sessB->setAddress(addrB);
+
 	sessA->setLocalSessionID(sessDirA.generateUnusedSessionID());
 	sessB->setLocalSessionID(sessDirB.generateUnusedSessionID());
+
+	QVERIFY(sessA->address().isValid());
+	QVERIFY(sessB->address().isValid());
 
 	sessDirA.insert(sessB);
 	sessDirB.insert(sessA);
 
-	heading("SESSION SUMMARIES");/////////////////////////////////////////////////////
+	testHeading("SESSION SUMMARIES");/////////////////////////////////////////////////////
 	qDebug()<<"SUM A: "<<sessDirA.summary();
 	qDebug()<<"SUM B: "<<sessDirB.summary();
 
 
-	heading("STARTING 2nd time with sessions","#");///////////////////////////////////////////
+	testHeading("STARTING 2nd time with sessions","#");///////////////////////////////////////////
 	chanA.rescheduleSending(now);
-	chanA.start(addrA);
+	chanA.carrier().setListenAddress(addrA);
+	QVERIFY(chanA.carrier().setStarted(true));
+
 	chanB.rescheduleSending(now);
-	chanB.start(addrB);
+	chanB.carrier().setListenAddress(addrB);
+	QVERIFY(chanB.carrier().setStarted(true));
+
 	qDebug()<<"";
 	qDebug()<<"####################################### WAITING 2nd time with sessions";
 	{
@@ -195,11 +220,11 @@ void TestCommsChannel::testSingle()
 		}
 	}
 
-	heading("SUMMARIES 2nd time with sessions");////////////////////////////////////////////
-	courA1.writeSummary();
-	courB1.writeSummary();
+	testHeading("SUMMARIES 2nd time with sessions");////////////////////////////////////////////
+	courA1->writeSummary();
+	courB1->writeSummary();
 
-	*/
+
 	testHeading("DELETING");///////////////////////////////////////////////////////////
 
 }

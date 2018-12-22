@@ -26,13 +26,22 @@ void testSleep(quint64 ms, QString occation)
 }
 
 
+void testWaitForEvents()
+	{
+#ifdef Q_OS_MAC
+		QTest::qWait(20);
+#else
+		qApp->processEvents();
+#endif
+	}
+
 void testHeading(QString msg, QString ch)
 {
 	auto sz=msg.size();
 	auto full=80-4;
 	auto half=(full-sz)/2;
 	auto second=full-sz-half;
-	//QTest::waitForEvents();
+	testWaitForEvents();
 	qDebug()<<"";
 	qDebug()<<"";
 	qDebug().nospace().noquote()<<QString(ch).repeated(half)<< " # "<<msg << " # "<<QString(ch).repeated(second);

@@ -19,7 +19,7 @@ private:
 
 public:
 	explicit CommsCarrierUDP(QObject *parent=nullptr);
-	virtual ~CommsCarrierUDP();
+	virtual ~CommsCarrierUDP() Q_DECL_OVERRIDE;
 
 
 private slots:

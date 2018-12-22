@@ -41,6 +41,7 @@ CommsCarrierUDP::CommsCarrierUDP(QObject *parent)
 CommsCarrierUDP::~CommsCarrierUDP()
 {
 	OC_METHODGATE();
+	mUDPSocket.waitForDisconnected();
 }
 
 
