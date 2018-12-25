@@ -54,12 +54,24 @@ contains(AUTOLIBS, $$LIBBASE ){
 		else{
 			#message("== INC: $$lo)")
 			# NOTE: 'true' means recursive:
-			SOURCES   += $$files($$LIBDIR/*.cpp, true)
-			SOURCES   += $$files($$LIBDIR/*.c, true)
-			HEADERS   += $$files($$LIBDIR/*.hpp, true)
-			HEADERS   += $$files($$LIBDIR/*.h, true)
-			FORMS     += $$files($$LIBDIR/*.ui, true)
-			RESOURCES += $$files($$LIBDIR/*.qrc, true)
+			LOCAL_LIB_SOURCES_CPP =	   $$files($$LIBDIR/*.cpp, true)
+			LOCAL_LIB_SOURCES_C +=     $$files($$LIBDIR/*.c, true)
+			LOCAL_LIB_HEADERS_HPP =    $$files($$LIBDIR/*.hpp, true)
+			LOCAL_LIB_HEADERS_H +=     $$files($$LIBDIR/*.h, true)
+			LOCAL_LIB_FORMS_UI =	   $$files($$LIBDIR/*.ui, true)
+			LOCAL_LIB_RESOURCES_QRC += $$files($$LIBDIR/*.qrc, true)
+
+			#message("CPP SOURCES FOUND FOR $${LIBNAME} WAS $${LOCAL_LIB_SOURCES_CPP}")
+			#¤message("C SOURCES FOUND FOR $${LIBNAME} WAS $${LOCAL_LIB_SOURCES_C}")
+			#message("HPP HEADERS FOUND FOR $${LIBNAME} WAS $${LOCAL_LIB_HEADERS_HPP}")
+			#message("H SOURCES FOUND FOR $${LIBNAME} WAS $${LOCAL_LIB_HEADERS_H}")
+			#message("UI FORMS FOUND FOR $${LIBNAME} WAS $${LOCAL_LIB_FORMS_UI}")
+			message("QRC RESOURCES FOUND FOR $${LIBNAME} WAS $${LOCAL_LIB_RESOURCES_QRC}")
+
+			SOURCES   += $$LOCAL_LIB_SOURCES_CPP $$LOCAL_LIB_SOURCES_C
+			HEADERS   += $$LOCAL_LIB_HEADERS_HPP $$LOCAL_LIB_HEADERS_H
+			FORMS     += $$LOCAL_LIB_FORMS_UI
+			RESOURCES += $$LOCAL_LIB_RESOURCES_QRC
 		}
 
 		SOURCES=   $$unique(SOURCES)

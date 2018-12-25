@@ -5,6 +5,7 @@
 #  \____//_/   /_/
 #
 
+# Here are C++ spesific optimization flags for different compilers
 
 REMOVE_FLAGS += -O
 REMOVE_FLAGS += -O2
@@ -102,4 +103,4 @@ QMAKE_LFLAGS += $$QMAKE_CXXFLAGS
 
 
 
-# TODO: No optimization flags for pure C yet
+# TODO: Add optimization flags for pure C

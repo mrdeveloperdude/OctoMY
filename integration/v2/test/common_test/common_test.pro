@@ -1,5 +1,5 @@
 TEMPLATE=lib
-TARGET=test_common
+TARGET=common_test
 
 # Make this library behave like the others
 include($$PRIS/common.pri)
@@ -12,29 +12,30 @@ CONFIG += staticlib
 
 SOURCES+= \
 #	CourierTester.cpp \
+	Common_test.cpp \
 	Corruptifier.cpp \
-	TestCommon.cpp \
 	CPUBurner.cpp \
 	GeometryEngine.cpp \
 	GLStressWidget.cpp \
+	Keys_test.cpp \
 	MEMTrasher.cpp \
 	Stress.cpp \
 	UDPTester.cpp \
-	TestKeys.cpp \
-	TestUtilities.cpp
+	Utility_test.cpp \
+
 
 HEADERS+= \
 #	CourierTester.hpp \
+	Common_test.hpp \
 	Corruptifier.hpp \
-	TestCommon.hpp \
 	CPUBurner.hpp \
 	GeometryEngine.hpp \
 	GLStressWidget.hpp \
+	Keys_test.hpp \
 	MEMTrasher.hpp \
 	Stress.hpp \
 	UDPTester.hpp \
-	TestKeys.hpp \
-	TestUtilities.hpp
+	Utility_test.hpp \
 
 
 test_common.depends=		$${SRCS}/libs

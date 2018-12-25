@@ -39,8 +39,8 @@ contains(DEFINES, USE_DOCS){
 }
 
 
-RESOURCES += \
-	$${SRCS}/libs/libcore/resources/icons.qrc
+#RESOURCES += \
+#	$${SRCS}/libs/libcore/resources/icons.qrc
 
 
 

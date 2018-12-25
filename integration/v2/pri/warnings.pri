@@ -1,14 +1,20 @@
+
+# ASCII FONT GENERATE WITH http://patorjk.com/software/taag/#p=display&f=Slant&t=C%2B%2B%20GCC
+
+
+# We try to use the most comprehensive and strict set of compiler checks available and feasible
+
+#     ______              __________________
+#    / ____/__    __     / ____/ ____/ ____/
+#   / /  __/ /___/ /_   / / __/ /   / /
+#  / /__/_  __/_  __/  / /_/ / /___/ /___
+#  \____//_/   /_/     \____/\____/\____/
+
+
+# Here are C++ spesific warning flags for GCC
+
 gcc{
 
-#     ______
-#    / ____/__    __
-#   / /  __/ /___/ /_
-#  / /__/_  __/_  __/
-#  \____//_/   /_/
-#
-
-
-	# The most comprehensive and strict set of checks available
 	QMAKE_CXXFLAGS += -pedantic -Wall -Wextra
 	QMAKE_CXXFLAGS += -Wredundant-decls
 	#QMAKE_CXXFLAGS += -Wsign-promo
@@ -22,9 +28,7 @@ gcc{
 	# Mark no return in function returning non-void an ERROR
 	QMAKE_CXXFLAGS += -Werror=return-type
 
-
-
-	#Only relevant in GPP
+	# Only relevant in GPP
 	g++ {
 			 QMAKE_CXXFLAGS += -Wstrict-null-sentinel
 			 QMAKE_CXXFLAGS += -Wnoexcept
@@ -50,15 +54,16 @@ gcc{
 	# Stop whining about missing include dirs. It IS useful, but in our current system we add too many and there is no easy way to mend that.
 	QMAKE_CXXFLAGS += -Wno-missing-include-dirs
 
+}
 
-#     ______
-#    / ____/
-#   / /
-#  / /___
-#  \____/
+#     ______   __________________
+#    / ____/  / ____/ ____/ ____/
+#   / /      / / __/ /   / /
+#  / /___   / /_/ / /___/ /___
+#  \____/   \____/\____/\____/
 #
 
-
+gcc{
 	# NOTE: Only for pure C, since that are external dependencies only (which we don't want to change and so the warnings become nuicanses)
 	QMAKE_CFLAGS += -Wno-parentheses
 	QMAKE_CFLAGS += -Wno-int-conversion

@@ -1,4 +1,4 @@
-#include "TestUtilities.hpp"
+#include "Utility_test.hpp"
 
 #include "utility/time/HumanTime.hpp"
 
@@ -6,16 +6,23 @@
 #include <QCoreApplication>
 #include <QTest>
 #include <QSignalSpy>
+/*
+namespace test
+{
 
-void testSleep(quint64 ms, QString occation)
+namespace utility
+{
+*/
+
+void test::utility::testSleep(quint64 ms, QString occation)
 {
 	if(!occation.isEmpty()) {
 		qDebug()<<"Sleeping, waiting for "+occation;
 	}
-	const quint64 start=utility::time::currentMsecsSinceEpoch<quint64>();
+	const quint64 start=::utility::time::currentMsecsSinceEpoch<quint64>();
 	quint64 now=start;
 	while(now<start+ms) {
-		now=utility::time::currentMsecsSinceEpoch<quint64>();
+		now=::utility::time::currentMsecsSinceEpoch<quint64>();
 		QCoreApplication::processEvents();
 	}
 	if(!occation.isEmpty()) {
@@ -25,16 +32,16 @@ void testSleep(quint64 ms, QString occation)
 }
 
 
-void testWaitForEvents()
-	{
+void test::utility::testWaitForEvents()
+{
 #ifdef Q_OS_MAC
-		QTest::qWait(20);
+	QTest::qWait(20);
 #else
-		qApp->processEvents();
+	qApp->processEvents();
 #endif
-	}
+}
 
-void testHeading(QString msg, QString ch)
+void test::utility::testHeading(QString msg, QString ch)
 {
 	auto sz=msg.size();
 	auto full=80-4;
@@ -48,19 +55,19 @@ void testHeading(QString msg, QString ch)
 }
 
 
-UICloseFilter::UICloseFilter(QObject &ob)
+test::utility::UICloseFilter::UICloseFilter(QObject &ob)
 	: QObject(nullptr)
 	, target(ob)
 {
 	target.installEventFilter(this);
 }
 
-UICloseFilter::~UICloseFilter()
+test::utility::UICloseFilter::~UICloseFilter()
 {
 
 }
 
-bool UICloseFilter::eventFilter(QObject *object, QEvent *event)
+bool test::utility::UICloseFilter::eventFilter(QObject *object, QEvent *event)
 {
 	if (object == &target && event->type() == QEvent::Close) {
 		emit close();
@@ -72,7 +79,7 @@ bool UICloseFilter::eventFilter(QObject *object, QEvent *event)
 
 
 
-bool waitForUIEnd(QObject *obj, qint64 timeOutMillis, const char * customSignal)
+bool test::utility::waitForUIEnd(QObject *obj, qint64 timeOutMillis, const char * customSignal)
 {
 	const qint64 start=QDateTime::currentMSecsSinceEpoch();
 	qDebug()<<"Waiting for UI to end with timeout="<<timeOutMillis<<" ("<< (timeOutMillis>0?"ENABLED":"DISABLED")<<")";
@@ -119,3 +126,4 @@ bool waitForUIEnd(QObject *obj, qint64 timeOutMillis, const char * customSignal)
 	return ret;
 }
 
+//}}

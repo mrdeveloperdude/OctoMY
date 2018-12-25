@@ -1,10 +1,17 @@
-#ifndef TESTUTILITIES_HPP
-#define TESTUTILITIES_HPP
+#ifndef UTILITY_TEST_HPP
+#define UTILITY_TEST_HPP
 
 #include <QString>
 #include <QObject>
 
 class QWidget;
+
+namespace test
+{
+
+namespace utility
+{
+
 
 
 class UICloseFilter: public QObject
@@ -32,6 +39,8 @@ void testWaitForEvents();
 void testHeading(QString msg, QString ch="_");
 bool waitForUIEnd(QObject *object, qint64 timeOutMillis=0, const char *customSignal=nullptr);
 
+}
+}
 
-
-#endif // TESTUTILITIES_HPP
+#endif
+// UTILITY_TEST_HPP

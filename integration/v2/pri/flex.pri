@@ -1,9 +1,9 @@
 ########################## FLEX EXTRA COMPILERS
 
-#NOTE: Why not just use LEXSOURCES and leverage qmake's built-in support for
-#      flex? Because by using the approach below we get more explisit control
-#      over the process (for example which flex binary/version to use and
-#      optional arguments about which filenames to use etc).
+# NOTE: Why not just use LEXSOURCES and leverage qmake's built-in support for
+#       flex? Because by using the approach below we get more explisit control
+#       over the process (for example which flex binary/version to use and
+#       optional arguments about which filenames to use etc).
 
 
 # Inspiration from https://github.com/openwebos/qt/blob/master/mkspecs/features/lex.prf

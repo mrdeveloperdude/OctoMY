@@ -47,3 +47,4 @@ qlalr_table_p_h.variable_out = GENERATED_HEADERS
 qlalr_table_p_h.CONFIG += target_predeps no_link
 
 QMAKE_EXTRA_COMPILERS += qlalr_table_p_h
+

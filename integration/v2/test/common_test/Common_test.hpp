@@ -4,6 +4,9 @@
 #include <QTest>
 #include <QApplication>
 
+
+#define TEST_RESOURCES_BASE ":/resources/icons/"
+
 #ifdef EXTERNAL_LIB_OPENCL
 
 #include "glt/IncludeOpenGL.hpp"
@@ -16,7 +19,6 @@ QTEST_ADD_GPU_BLACKLIST_SUPPORT_DEFS \
 QT_END_NAMESPACE \
 int main(int argc, char *argv[]) \
 { \
-	Q_INIT_RESOURCE(icons); \
 	QSurfaceFormat defFormat=QSurfaceFormat::defaultFormat(); \
 	QSurfaceFormat format = defFormat; \
 	format.setVersion( OCTOMY_QT_OGL_VERSION_MAJOR, OCTOMY_QT_OGL_VERSION_MINOR ); \
@@ -38,7 +40,7 @@ int main(int argc, char *argv[]) \
 	qDebug()<<"Starting " #testType " for " #objectType; \
 	app.setAttribute(Qt::AA_Use96Dpi, true); \
 	QIcon icon; \
-	icon.addFile(QStringLiteral(":/icons/" #testType ".svg"), QSize(), QIcon::Normal, QIcon::Off); \
+	icon.addFile(QStringLiteral(TEST_RESOURCES_BASE #testType ".svg"), QSize(), QIcon::Normal, QIcon::Off); \
 	app.setWindowIcon(icon); \
 	QTEST_ADD_GPU_BLACKLIST_SUPPORT \
 	QTEST_DISABLE_KEYPAD_NAVIGATION \
@@ -78,12 +80,11 @@ QTEST_ADD_GPU_BLACKLIST_SUPPORT_DEFS \
 QT_END_NAMESPACE \
 int main(int argc, char *argv[]) \
 { \
-	Q_INIT_RESOURCE(icons); \
 	QApplication app(argc, argv); \
 	qDebug()<<"Starting " #testType " for " #objectType; \
 	app.setAttribute(Qt::AA_Use96Dpi, true); \
 	QIcon icon; \
-	icon.addFile(QStringLiteral(":/icons/" #testType ".svg"), QSize(), QIcon::Normal, QIcon::Off); \
+	icon.addFile(QStringLiteral(TEST_RESOURCES_BASE #testType ".svg"), QSize(), QIcon::Normal, QIcon::Off); \
 	app.setWindowIcon(icon); \
 	QTEST_DISABLE_KEYPAD_NAVIGATION \
 	QTEST_ADD_GPU_BLACKLIST_SUPPORT \
@@ -99,12 +100,11 @@ int main(int argc, char *argv[]) \
 #define OC_TEST_MAIN_GUILESS(testType, objectType) \
 int main(int argc, char *argv[]) \
 { \
-	Q_INIT_RESOURCE(icons); \
 	QCoreApplication app(argc, argv); \
 	qDebug()<<"Starting " #testType " for " #objectType; \
 	app.setAttribute(Qt::AA_Use96Dpi, true); \
 	QIcon icon; \
-	icon.addFile(QStringLiteral(":/icons/" #testType ".svg"), QSize(), QIcon::Normal, QIcon::Off); \
+	icon.addFile(QStringLiteral(TEST_RESOURCES_BASE #testType ".svg"), QSize(), QIcon::Normal, QIcon::Off); \
 	app.setWindowIcon(icon); \
 	objectType ob; \
 	QTEST_SET_MAIN_SOURCE_PATH \
