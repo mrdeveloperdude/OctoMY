@@ -1,11 +1,13 @@
-
+# This defined AUTOLIBS and AUTOLINKS variables
 include(lib_list.pri)
 
-AUTOLIBS2= rest
+# We synthesize the "libcombined" since it does not exist on disk
+AUTOLIBS2= combined
 
+# We add the actual libs to be combined
 AUTOLIBS2 += $$AUTOLIBS
 
-
+# Automatically set up each lib to build into libcombined
 for(A, AUTOLIBS2) {
 	LIBS +=				-L$$clean_path($${BUILD_SRCS}/libs/lib$${A}/$${OC_LIB_PREFIX_DIR}) -l$${A}
 	INCLUDEPATH +=		$$clean_path($${SRCS}/libs/lib$${A})
@@ -15,11 +17,12 @@ for(A, AUTOLIBS2) {
 }
 
 
-# Even if code is linked via librest we still need full include paths for all sub libraries
+# Even if code is linked via libcombined we still need full include paths for all sub libraries
 for(A, AUTOLINKS) {
 	INCLUDEPATH +=$$clean_path($${SRCS}/libs/lib$${A})
 }
 
+# CLean each variable by removing duplicates
 LIBS= $$unique(LIBS)
 INCLUDEPATH= $$unique(INCLUDEPATH)
 DEPENDPATH= $$unique(DEPENDPATH)

@@ -1,3 +1,6 @@
+# This file is intended to be included in each library's .pro file as the only line.
+# It will automate all the boilerplate needed to have library building and linking set up
+
 LIBDIR=$$_PRO_FILE_PWD_
 LIBNAME=$$basename(_PRO_FILE_PWD_)
 LIBBASE=$$str_member($$LIBNAME, 3, -1)
@@ -11,8 +14,8 @@ contains(AUTOLIBS, $$LIBBASE ){
 		error(" * * * " $$LIBNAME "WAS IN BOTH AUTOLIBS & AUTOLINKS AT THE SAME TIME (pro)")
 	}
 	else{
-		#message("-----------------------------------------------------------------")
-		#message("AUTOLIB  for '" $$LIBNAME "'" )
+		message("-----------------------------------------------------------------")
+		message("AUTOLIB  for '" $$LIBNAME "'" )
 
 		TARGET = $$LIBBASE
 		CONFIG += staticlib

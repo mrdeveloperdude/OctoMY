@@ -12,11 +12,12 @@ include($$PRIS/common.pri)
 # The executables
 SUBDIRS += \
 	$${SRCS}/libs \
-	$${SRCS}/agent \
-	$${SRCS}/remote \
-	$${SRCS}/hub \
-	$${SRCS}/zoo \
-	$${SRCS}/web \
+
+#	$${SRCS}/agent \
+#	$${SRCS}/remote \
+#	$${SRCS}/hub \
+#	$${SRCS}/zoo \
+#	$${SRCS}/web \
 
 
 # NOTE: USE_TESTS_* is enabled when useful in local_override.pri

@@ -1,9 +1,13 @@
 #include "app/Settings.hpp"
+#include "utility/time/HumanTime.hpp"
+
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+#include "uptime/ConnectionType.hpp"
 
 
-#include "utility/Standard.hpp"
-#include "utility/Utility.hpp"
-#include "app/UniquePlatformFingerprint.hpp"
+
+//#include "app/UniquePlatformFingerprint.hpp"
 
 
 #include <QCoreApplication>
@@ -14,7 +18,7 @@
 
 
 
-const qint64  Settings::MAX_SYNC_INTERVAL =		(1000 * 10); //Never sync more often than once every 10 sec
+const qint64  Settings::MAX_SYNC_INTERVAL =		(1000 * 10); // Never sync settings to disk more often than once every 10 sec
 const QString Settings::ORGANIZATION_NAME =		"OctoMY™";
 const QString Settings::DOMAIN_NAME =			"octomy.org™";
 const QString Settings::BRAND_NAME =			"OctoMY™";
@@ -80,7 +84,7 @@ void Settings::sync()
 {
 	OC_METHODGATE();
 	if(nullptr!=mSettings)	{
-		const qint64 now=utility::currentMsecsSinceEpoch<qint64>();
+		const qint64 now=utility::time::currentMsecsSinceEpoch<qint64>();
 		const qint64 timeSinceLastSync=now-mLastSync;
 		if(timeSinceLastSync>MAX_SYNC_INTERVAL) {
 			delayedSync();
@@ -100,7 +104,7 @@ void Settings::delayedSync()
 	if(nullptr!=mSettings)	{
 		//qDebug()<<"SETTINGS SYNC PERFORMED";
 		mSettings->sync();
-		mLastSync=utility::currentMsecsSinceEpoch<qint64>();
+		mLastSync=utility::time::currentMsecsSinceEpoch<qint64>();
 	}
 }
 
