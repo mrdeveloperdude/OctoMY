@@ -4,14 +4,16 @@
 
 # The libraries in this list will be built as separate projects and linked in at the end. This is suitable for 3rd party code and stand-alone external projects
 AUTOLIBS += \
-
+	markdown \
 
 #	parser \
 #	zbar \
 #	qpolarssl \
 #	mbedtls \
 #	qfi \
-#	markdown \
+
+
+
 
 
 # The libraries in this list will be built into one big library called libcombined
@@ -19,7 +21,7 @@ AUTOLINKS += \
 	util \
 	uptime \
 	app \
-
+	web \
 
 #	clt \
 #	glt \
@@ -31,7 +33,6 @@ AUTOLINKS += \
 #	plan \
 #	map \
 #	qr \
-#	web \
 #	style \
 #	vid \
 #	rng \
@@ -44,5 +45,4 @@ AUTOLINKS += \
 #	comms \
 #	ardumy \
 #	core \
-#	util \
 

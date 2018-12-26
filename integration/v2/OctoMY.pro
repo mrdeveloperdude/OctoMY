@@ -12,12 +12,12 @@ include($$PRIS/common.pri)
 # The executables
 SUBDIRS += \
 	$${SRCS}/libs \
+	$${SRCS}/web \
 
 #	$${SRCS}/agent \
 #	$${SRCS}/remote \
 #	$${SRCS}/hub \
 #	$${SRCS}/zoo \
-#	$${SRCS}/web \
 
 
 # NOTE: USE_TESTS_* is enabled when useful in local_override.pri
@@ -37,11 +37,6 @@ contains(DEFINES, USE_DOCS){
 	SUBDIRS += \
 		$${DOCS}
 }
-
-
-#RESOURCES += \
-#	$${SRCS}/libs/libcore/resources/icons.qrc
-
 
 
 # Dependency stuff adapted from https://vilimpoc.org/blog/2014/02/21/qmake-subdirs-project-automatic-dependencies/
