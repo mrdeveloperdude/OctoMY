@@ -46,21 +46,21 @@ private:
 
 public:
 	Corruptifier(
-		qreal none=1.0f,
-		qreal scrambleBits=0.0f,
-		qreal unsetBits=0.0f,
-		qreal setBits=0.0f,
-		qreal toggleBits=0.0f,
-		qreal chopLeft=0.0f,
-		qreal chopRight=0.0f,
-		qreal chopMid=0.0f,
-		qreal scrambleByteRanges=0.0f,
-		qreal setByteRanges=0.0f,
-		qreal unsetByteRanges=0.0f,
-		qreal swapByteRanges=0.0f,
-		qreal reorderPackets=0.0f,
-		qreal mixPacketFragments=0.0f,
-		qreal splitPackets=0.0f
+		qreal none=1.0,
+		qreal scrambleBits=0.0,
+		qreal unsetBits=0.0,
+		qreal setBits=0.0,
+		qreal toggleBits=0.0,
+		qreal chopLeft=0.0,
+		qreal chopRight=0.0,
+		qreal chopMid=0.0,
+		qreal scrambleByteRanges=0.0,
+		qreal setByteRanges=0.0,
+		qreal unsetByteRanges=0.0,
+		qreal swapByteRanges=0.0,
+		qreal reorderPackets=0.0,
+		qreal mixPacketFragments=0.0,
+		qreal splitPackets=0.0
 	);
 
 public:
@@ -72,6 +72,12 @@ public:
 
 	QByteArray corruptify(QByteArray in);
 
+
+
 };
+
+QByteArray bitsToBytes(QBitArray &in);
+
+QBitArray bytesToBits(QByteArray &in);
 
 #endif // CORRUPTIFIER_HPP

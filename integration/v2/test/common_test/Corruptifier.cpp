@@ -55,7 +55,7 @@ qreal Corruptifier::get(CorruptionType type)
 }
 
 
-static QByteArray bitsToBytes(QBitArray &in)
+QByteArray bitsToBytes(QBitArray &in)
 {
 	QByteArray out;
 	const int sz=in.data_ptr()->size;
@@ -69,7 +69,7 @@ static QByteArray bitsToBytes(QBitArray &in)
 }
 
 
-static QBitArray bytesToBits(QByteArray &in)
+QBitArray bytesToBits(QByteArray &in)
 {
 	QBitArray out;
 	const int sz=in.data_ptr()->size;
