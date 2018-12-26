@@ -1,7 +1,7 @@
 #ifndef MEMTRASHER_HPP
 #define MEMTRASHER_HPP
 
-#include "utility/time/HumanTime.hpp"
+#include "utility/string/String.hpp"
 
 #include <QDateTime>
 #include <QDebug>
@@ -52,7 +52,7 @@ public:
 				}
 				//qDebug() <<"STRESS-ALLOC "<<amt << " bytes";
 			} else {
-				qWarning() <<"ERROR: STRESS-ALLOC "<<utility::time::humanReadableSize(bytes) << " failed";
+				qWarning() <<"ERROR: STRESS-ALLOC "<<utility::string::humanReadableSize(bytes) << " failed";
 			}
 		}
 	}

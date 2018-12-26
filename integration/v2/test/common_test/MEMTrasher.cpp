@@ -6,13 +6,13 @@
 //Adaptively find available memory to trash, and return 90% of that to leave a margin.
 qint64 MEMTrasher::findAvailableMem(quint64 MINREQ, quint64 required)
 {
-	qDebug()<<"LOOKING FOR AVAILABLE MEMORY WITH " <<utility::time::humanReadableSize(MINREQ)<<utility::time::humanReadableSize(required);
+	qDebug()<<"LOOKING FOR AVAILABLE MEMORY WITH " <<utility::string::humanReadableSize(MINREQ)<<utility::string::humanReadableSize(required);
 	void *mem = nullptr;
 	while (nullptr == mem) {
 		if (required < MINREQ) {
 			return 0;
 		}
-		qDebug()<<"Trying " <<utility::time::humanReadableSize(required);
+		qDebug()<<"Trying " <<utility::string::humanReadableSize(required);
 		mem = malloc (required);
 		required=(required*900)/1000;
 	}
@@ -24,7 +24,7 @@ qint64 MEMTrasher::findAvailableMem(quint64 MINREQ, quint64 required)
 		return 0;
 	}
 	free (mem);
-	qDebug()<<"FOUND AVAILABLE MEMORY TO BE " <<utility::time::humanReadableSize(required);
+	qDebug()<<"FOUND AVAILABLE MEMORY TO BE " <<utility::string::humanReadableSize(required);
 	return static_cast<qint64>(required);
 }
 
