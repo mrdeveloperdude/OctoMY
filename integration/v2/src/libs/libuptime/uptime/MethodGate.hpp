@@ -10,8 +10,8 @@
 
 #define OC_LOWEST_POSSIBLE_ADDRESS (0xd0000)
 
-#define OC_METHODGATE()  MethodGate ocMethodGate(this) BUFFER_HONEYPOT
-#define OC_FUNCTIONGATE()  { } BUFFER_HONEYPOT
+#define OC_METHODGATE()  MethodGate ocMethodGate(this); (void)(ocMethodGate); BUFFER_HONEYPOT
+#define OC_FUNCTIONGATE()  FunctionGate ocFunctionGate; (void)(ocFunctionGate); BUFFER_HONEYPOT
 
 
 
@@ -19,7 +19,7 @@ class MethodGate{
 
 public:
 
-	MethodGate(void *parentThis);
+	MethodGate(const void *parentThis);
 };
 
 

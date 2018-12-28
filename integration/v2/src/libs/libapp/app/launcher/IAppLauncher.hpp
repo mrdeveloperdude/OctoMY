@@ -10,7 +10,7 @@ public:
 	// IAppLauncher interface
 
 	// Called when app execution is done
-	virtual void appDone() =0;
+	virtual void appDeInitDone() =0;
 };
 
 #endif

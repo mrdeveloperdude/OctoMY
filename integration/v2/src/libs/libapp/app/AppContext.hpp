@@ -13,8 +13,8 @@ class AppContext: public QObject
 		Q_OBJECT
 	private:
 
-		QCommandLineParser &mOpts;
-		QProcessEnvironment &mEnv;
+		QCommandLineParser &mCommandlineOptions;
+		QProcessEnvironment &mEnvironment;
 		Settings mSettings;
 		QString mBase;
 		QString mBaseDir;
@@ -40,15 +40,15 @@ class AppContext: public QObject
 			return mSettings;
 		}
 
-		inline const QCommandLineParser &options() const
+		inline const QCommandLineParser &commandLine() const
 		{
-			return mOpts;
+			return mCommandlineOptions;
 		}
 
 
 		inline const QProcessEnvironment &environment() const
 		{
-			return mEnv;
+			return mEnvironment;
 		}
 
 };

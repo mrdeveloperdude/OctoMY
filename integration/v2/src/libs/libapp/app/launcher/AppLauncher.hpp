@@ -2,31 +2,27 @@
 #define NODELAUNCHER_HPP
 
 #include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 #include "IAppLauncher.hpp"
 
-/*
-#include "basic/StyleManager.hpp"
-#include "glt/IncludeOpenGL.hpp"
-#include "basic/Settings.hpp"
-#include "security/KeyStore.hpp"
+#include "app/style/StyleManager.hpp"
+#include "app/Settings.hpp"
+#include "app/log/LogHandler.hpp"
+#include "app/launcher/AppRenderingSettingsProvider.hpp"
+#include "app/launcher/AppCommandLineParser.hpp"
 
-#include "comms/CommsChannel.hpp"
-#include "basic/LogHandler.hpp"
-*/
+#include "utility/time/HumanTime.hpp"
 
 #include <QApplication>
+#include <QCoreApplication>
 #include <QSharedPointer>
-/*
-#include <QObject>
-
 #include <QCommandLineParser>
 #include <QProcessEnvironment>
-#include <QDebug>
-#include <QTimer>
-#include <QApplication>
-#include <QFileInfo>
+#include <QLoggingCategory>
 #include <QSurfaceFormat>
-*/
+#include <QFileInfo>
+#include <QWidget>
+
 
 class Settings;
 
@@ -63,23 +59,33 @@ protected:
 	QProcessEnvironment mEnvironment;
 	bool mIsHeadless;
 
+
 public:
 	explicit AppLauncher(int argc=0, char *argv[]=nullptr);
 	virtual ~AppLauncher();
 
+
+public:
+	// The entry point. This is what gets called to use this app launcher after it has been created
 	int run();
 
-	void start();
-	void stop();
 
+protected:
+
+	// Internal helper to start app
+	void appStart();
+
+	// Internal helper to stop app
+	void appStop();
+
+	// Internal helper to handle termination of launcher after app completes
+	void appDeInitDone() Q_DECL_OVERRIDE;
+
+public:
 	QSharedPointer<T> app();
 
-	// IAppLauncher interface
-	virtual void appDone() Q_DECL_OVERRIDE;
-
-	QCommandLineParser commandLine();
-
-	QProcessEnvironment environment();
+	QCommandLineParser commandLine() const;
+	QProcessEnvironment environment() const;
 
 };
 
@@ -96,6 +102,7 @@ AppLauncher<T>::AppLauncher(int argc, char *argv[])
 	OC_METHODGATE();
 }
 
+
 template <typename T>
 int AppLauncher<T>::run()
 {
@@ -105,108 +112,109 @@ int AppLauncher<T>::run()
 
 	QLoggingCategory::setFilterRules("qt.network.ssl.warning=false");
 
-	qsrand(utility::currentMsecsSinceEpoch<quint64>());
+	qsrand(static_cast<uint>(utility::time::currentMsecsSinceEpoch<quint64>()));
 
 #ifndef Q_OS_ANDROID
 	LogHandler::setLogging(true);
 #endif
 
-	mCommandlineOptions.setApplicationDescription("Robust real-time communication and control software for robots");
-	mCommandlineOptions.addHelpOption();
-	mCommandlineOptions.addVersionOption();
-
-	QCommandLineOption localHostOption(QStringList() <<  "l" << "local-host", QCoreApplication::translate("main", "Select server host to listen."), QCoreApplication::translate("main", "local-host"));
-	mCommandlineOptions.addOption(localHostOption);
-
-	QCommandLineOption localPortOption(QStringList() <<  "p" << "local-port", QCoreApplication::translate("main", "Select server port to listen."), QCoreApplication::translate("main", "local-port"));
-	mCommandlineOptions.addOption(localPortOption);
-
-	QCommandLineOption remoteHostOption(QStringList() <<  "r" << "remote-host", QCoreApplication::translate("main", "Select remote host to target."), QCoreApplication::translate("main", "remote-host"));
-	mCommandlineOptions.addOption(remoteHostOption);
-
-	QCommandLineOption remotePortOption(QStringList() <<  "o" << "remote-port", QCoreApplication::translate("main", "Select remote port to target."), QCoreApplication::translate("main", "remote-port"));
-	mCommandlineOptions.addOption(remotePortOption);
-
-	QCommandLineOption headlessOption(QStringList() <<  "h" << "head-less", QCoreApplication::translate("main", "Don't display GUI"), QCoreApplication::translate("main", "head-less"));
-	mCommandlineOptions.addOption(headlessOption);
-
 	// Process the actual command line arguments given by the user
-	QStringList arguments;
-	for(int i=0; i<mArgc; ++i) {
-		arguments<<mArgv[i];
-	}
-	mCommandlineOptions.process(arguments);
-	mIsHeadless=mCommandlineOptions.isSet(headlessOption);
-
-	QSurfaceFormat format=QSurfaceFormat::defaultFormat();
-	format.setVersion( OCTOMY_QT_OGL_VERSION_MAJOR, OCTOMY_QT_OGL_VERSION_MINOR );
-	format.setProfile( QSurfaceFormat::OCTOMY_QT_OGL_SURFACE_PROFILE );
-	format.setOption(QSurfaceFormat::DebugContext);
-	format.setDepthBufferSize(OCTOMY_QT_OGL_DEPTH_BUFFER);
-	format.setStencilBufferSize(OCTOMY_QT_OGL_STENSIL_BUFFER);
-	format.setSwapBehavior(QSurfaceFormat::OCTOMY_QT_OGL_SWAP_BEHAVIOUR);
-	format.setSwapInterval(OCTOMY_QT_OGL_SWAP_INTERVAL);
-	format.setRenderableType(QSurfaceFormat::OCTOMY_QT_OGL_RENDERABLE_TYPE);
-	QSurfaceFormat::setDefaultFormat(format);
-	QApplication::setAttribute(Qt::OCTOMY_QT_OGL_APP_ATTRIBUTE);
+	AppCommandLineParser clp;
+	clp.process(mArgc, mArgv);
+	mIsHeadless=clp.isHeadless();
+	AppRenderingSettingsProvider asfp;
+	QSurfaceFormat::setDefaultFormat(asfp.surfaceFormat());
+	QApplication::setAttribute(asfp.applicationAttributes());
 	QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
 	mQApp=(mIsHeadless?(OC_NEW QCoreApplication(mArgc, mArgv)):(OC_NEW QApplication(mArgc, mArgv)));
 	//qDebug()<<(mIsHeadless?"HEADLESS":"GUI ENABLED");
 
 	if(nullptr!=mQApp) {
+		// We need full control of when application quits
 		QApplication::setQuitOnLastWindowClosed(false);
-		start();
+		appStart();
+		// Initialize resources here
+
+		/*
 		Q_INIT_RESOURCE(icons);
 		Q_INIT_RESOURCE(images);
 		Q_INIT_RESOURCE(3d);
+		*/
 
+		// Start Qt event loop for application.
+		// NOTE: This call will block until mQApp::quit() is called and the eventloop is terminated
 		mReturnValue=mQApp->exec();
 
 		qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done, quitting";
 	} else {
 		qWarning()<<"ERROR: no app, quitting";
+		mReturnValue=1;
 	}
 	return mReturnValue;
 }
 
 
 template <typename T>
-void AppLauncher<T>::start()
+void AppLauncher<T>::appStart()
 {
 	OC_METHODGATE();
-	//qDebug()<<"NODE LAUNCHER: START";
+	qDebug()<<"appStart";
 	mApp=QSharedPointer<T>(OC_NEW T(*this, nullptr));
 	if(!mApp.isNull()) {
+		T *appPtr=mApp.data();
 		if(!mIsHeadless) {
-			QObject::connect(mApp.data(), &T::appClose, mApp.data(), [=]() {
-				//qDebug()<<"QUIT WELL RECIEVED";
-				stop();
+			// Handle when initialization of this app (which is starte below) is completed
+			QObject::connect(appPtr, &T::appInitDone, appPtr, [=]() {
+				mWindow=mApp->appWindow();
+				if(!mWindow.isNull()) {
+					mWindow->show();
+				}
 			});
-			QObject::connect(mApp.data(), &T::appLoaded, mApp.data(), [=]() {
-				//qDebug()<<"LOAD WELL RECIEVED";
-				mWindow=mApp->showWindow();
+			// Handle when de-initialization of this app is completed
+			QObject::connect(appPtr, &T::appDeInitDone, appPtr, [=]() {
+				appDeInitDone();
+			});
+			// Handle when someone wants the app to stop
+			QObject::connect(appPtr, &T::appRequestClose, appPtr, [=]() {
+				appStop();
 			});
 		}
-	}
-	else{
+		mApp->appInit();
+	} else {
 		qWarning()<<"ERROR: No node could be created";
 	}
 }
 
 
 template <typename T>
-void AppLauncher<T>::stop()
+void AppLauncher<T>::appStop()
 {
 	OC_METHODGATE();
-	//qDebug()<<"NODE LAUNCHER: STOP";
+	qDebug()<<"appStop";
 	if(!mApp.isNull()) {
-		//mNode.reset();
-		mApp->deInit();
-		mApp->deleteLater();
-		mApp=nullptr;
+		mApp->appDeInit();
 	}
 }
+
+
+template <typename T>
+void AppLauncher<T>::appDeInitDone()
+{
+	OC_METHODGATE();
+	qDebug()<<"appDeInitDone";
+	if(nullptr!=mQApp) {
+		mQApp->quit();
+	}
+}
+
+template <typename T>
+AppLauncher<T>::~AppLauncher()
+{
+	OC_METHODGATE();
+	qDebug()<<"AppLauncher d-tor";
+}
+
 
 template <typename T>
 QSharedPointer<T> AppLauncher<T>::app()
@@ -215,32 +223,17 @@ QSharedPointer<T> AppLauncher<T>::app()
 	return mApp;
 }
 
-template <typename T>
-void AppLauncher<T>::appDone()
-{
-	OC_METHODGATE();
-	//qDebug()<<"NODELAUNCHER DONE";
-	if(nullptr!=mQApp) {
-		mQApp->quit();
-	}
-}
 
 
 template <typename T>
-AppLauncher<T>::~AppLauncher()
-{
-	OC_METHODGATE();
-}
-
-template <typename T>
-QCommandLineParser AppLauncher<T>::commandLine()
+QCommandLineParser AppLauncher<T>::commandLine() const
 {
 	OC_METHODGATE();
 	return mCommandlineOptions;
 }
 
 template <typename T>
-QProcessEnvironment AppLauncher<T>::environment()
+QProcessEnvironment AppLauncher<T>::environment() const
 {
 	OC_METHODGATE();
 	return mEnvironment;
