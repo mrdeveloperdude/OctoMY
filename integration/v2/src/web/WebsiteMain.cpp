@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 	TopicGenerator tg;
 	QString out;
 	for(int i=0;i<1000;++i)out.append(tg.generate()+"\n");
-	utility::stringToFile("/tmp/topics.txt", out);
+	utility::file::stringToFile("/tmp/topics.txt", out);
 	Website website(OC_NEW AppContext(opts, env, "website", nullptr));
 	website.run();
 	*/

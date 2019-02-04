@@ -3,54 +3,39 @@
 
 #include "app/Settings.hpp"
 
+#include "uptime/SharedPointerWrapper.hpp"
+
 #include <QCommandLineParser>
 #include <QProcessEnvironment>
 #include <QString>
 
 
-class AppContext: public QObject
+class AppCommandLineParser;
+
+class AppContext //: public QObject
 {
-		Q_OBJECT
-	private:
+	//Q_OBJECT
+private:
+	QSharedPointer<AppCommandLineParser> mCommandlineOptions;
+	QProcessEnvironment mEnvironment;
+	QSharedPointer<Settings> mSettings;
+	QString mBase;
+	QString mBaseDir;
+	bool mIsHeadless;
 
-		QCommandLineParser &mCommandlineOptions;
-		QProcessEnvironment &mEnvironment;
-		Settings mSettings;
-		QString mBase;
-		QString mBaseDir;
+public:
+	explicit AppContext(QSharedPointer<AppCommandLineParser> commandlineOptions, QProcessEnvironment env, QString base, bool headless/*, QObject *parent=nullptr*/);
+	virtual ~AppContext();
 
-	public:
-		explicit AppContext(QCommandLineParser &opts, QProcessEnvironment &env, QString base, QObject *parent=nullptr);
-
-	public:
-
-		inline const QString base() const
-		{
-			return mBase;
-		}
-
-
-		inline const QString baseDir() const
-		{
-			return mBaseDir;
-		}
-
-		inline Settings &settings()
-		{
-			return mSettings;
-		}
-
-		inline const QCommandLineParser &commandLine() const
-		{
-			return mCommandlineOptions;
-		}
-
-
-		inline const QProcessEnvironment &environment() const
-		{
-			return mEnvironment;
-		}
+public:
+	const QString base() const;
+	const QString baseDir() const;
+	QSharedPointer<Settings> settings();
+	const QSharedPointer<AppCommandLineParser> commandLine() const;
+	const QProcessEnvironment environment() const;
+	bool isHeadless() const;
 
 };
 
-#endif // APPCONTEXT_HPP
+#endif
+// APPCONTEXT_HPP

@@ -1,8 +1,7 @@
-#ifndef NODELAUNCHER_HPP
-#define NODELAUNCHER_HPP
+#ifndef APPLAUNCHER_HPP
+#define APPLAUNCHER_HPP
 
-#include "uptime/MethodGate.hpp"
-#include "uptime/New.hpp"
+
 #include "IAppLauncher.hpp"
 
 #include "app/style/StyleManager.hpp"
@@ -10,12 +9,18 @@
 #include "app/log/LogHandler.hpp"
 #include "app/launcher/AppRenderingSettingsProvider.hpp"
 #include "app/launcher/AppCommandLineParser.hpp"
+#include "app/AppContext.hpp"
+
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+#include "uptime/ConnectionType.hpp"
 
 #include "utility/time/HumanTime.hpp"
 
+#include "uptime/SharedPointerWrapper.hpp"
+
 #include <QApplication>
 #include <QCoreApplication>
-#include <QSharedPointer>
 #include <QCommandLineParser>
 #include <QProcessEnvironment>
 #include <QLoggingCategory>
@@ -40,30 +45,58 @@ class Settings;
  *  + Capturing and cleanup in case of exceptions and OS level lifecycle events such as sleep/termination etc.
  *  + API for graceful termination
  *
- */
+A common application launch looks roughly like this:
+
+
+AppLauncher constructed
+AppLauncher configure
+AppLauncher run
+AppLauncher appStart()
+Node constructed
+Agent constructed
+Node appConfigure()
+Agent nodeConfigure()
+Node appInit()
+Agent nodeInit()
+AppLauncher nodeInitDone()
+Node appWindow()
+Agent nodeWindow()
+
+
+... Application is running!
+
+
+AppLauncher nodeRequestClose()
+AppLauncher appStop()
+Node appDeInit()
+Agent nodeDeInit()
+AppLauncher nodeDeInitDone()
+AppLauncher appDeInitDone()
+AgentWindow closeEvent()
+AppLauncher<T>::run()
+
+... Application returns to OS
+*/
+
 
 template <typename T>
-class AppLauncher: public IAppLauncher
+class AppLauncher: public IAppLauncher, public QEnableSharedFromThis<AppLauncher<T> >
 {
 private:
+	QSharedPointer<AppContext> mContext;
 	QSharedPointer<T> mApp;
 	QSharedPointer<QWidget> mWindow;
-	StyleManager *mStyleManager;
+	QSharedPointer<StyleManager> mStyleManager;
 	int mReturnValue;
-	int mArgc;
-	char **mArgv;
 	QCoreApplication *mQApp;
 
-protected:
-	QCommandLineParser mCommandlineOptions;
-	QProcessEnvironment mEnvironment;
-	bool mIsHeadless;
-
+public:
+	explicit AppLauncher();
+	virtual ~AppLauncher() Q_DECL_OVERRIDE;
 
 public:
-	explicit AppLauncher(int argc=0, char *argv[]=nullptr);
-	virtual ~AppLauncher();
-
+	// Configure this app launcher before it is started
+	void configure(int argc, char *argv[], QString base);
 
 public:
 	// The entry point. This is what gets called to use this app launcher after it has been created
@@ -71,7 +104,6 @@ public:
 
 
 protected:
-
 	// Internal helper to start app
 	void appStart();
 
@@ -82,74 +114,92 @@ protected:
 	void appDeInitDone() Q_DECL_OVERRIDE;
 
 public:
+	// Provide the application instance
 	QSharedPointer<T> app();
 
-	QCommandLineParser commandLine() const;
-	QProcessEnvironment environment() const;
+	// Provide the application context
+	QSharedPointer<AppContext> context();
 
 };
 
 
 template <typename T>
-AppLauncher<T>::AppLauncher(int argc, char *argv[])
-	: mReturnValue(EXIT_SUCCESS)
-	, mArgc(argc)
-	, mArgv(argv)
+AppLauncher<T>::AppLauncher()
+// Default to exit with failure as a means to detect if something happens before we manage to exit cleanly
+	: mReturnValue(EXIT_FAILURE)
 	, mQApp(nullptr)
-	, mEnvironment(QProcessEnvironment::systemEnvironment())
-	, mIsHeadless(true)
 {
 	OC_METHODGATE();
+	qDebug()<<"AppLauncher()";
+#ifndef Q_OS_ANDROID
+	LogHandler::setLogging(true);
+#endif
+
 }
+
+template <typename T>
+AppLauncher<T>::~AppLauncher()
+{
+	OC_METHODGATE();
+	qDebug()<<"~AppLauncher()";
+}
+
+
+template <typename T>
+void AppLauncher<T>::configure(int argc, char *argv[], QString base)
+{
+	qDebug()<<"configure()";
+	OC_METHODGATE();
+	QSharedPointer <AppCommandLineParser> clp(OC_NEW AppCommandLineParser());
+	if(!clp.isNull()) {
+		clp->process(argc, argv);
+		QProcessEnvironment env=QProcessEnvironment::systemEnvironment();
+		mContext=QSharedPointer<AppContext>(OC_NEW AppContext(clp, env, base, clp->isHeadless()));
+	}
+}
+
 
 
 template <typename T>
 int AppLauncher<T>::run()
 {
 	OC_METHODGATE();
+	qDebug()<<"run()";
 	QCoreApplication::setOrganizationName(Settings::ORGANIZATION_NAME);
 	QCoreApplication::setOrganizationDomain(Settings::DOMAIN_NAME);
 
-	QLoggingCategory::setFilterRules("qt.network.ssl.warning=false");
-
 	qsrand(static_cast<uint>(utility::time::currentMsecsSinceEpoch<quint64>()));
 
-#ifndef Q_OS_ANDROID
-	LogHandler::setLogging(true);
-#endif
+	if(!mContext.isNull()) {
 
-	// Process the actual command line arguments given by the user
-	AppCommandLineParser clp;
-	clp.process(mArgc, mArgv);
-	mIsHeadless=clp.isHeadless();
-	AppRenderingSettingsProvider asfp;
-	QSurfaceFormat::setDefaultFormat(asfp.surfaceFormat());
-	QApplication::setAttribute(asfp.applicationAttributes());
-	QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+		AppRenderingSettingsProvider asfp;
+		QSurfaceFormat::setDefaultFormat(asfp.surfaceFormat());
+		asfp.applyApplicationAttributes();
+		int argc=mContext->commandLine()->argc();
+		char **argv=mContext->commandLine()->argv();
+		qDebug()<<(mContext->isHeadless()?"HEADLESS":"HEADFULL");
+		mQApp=(mContext->isHeadless()?(OC_NEW QCoreApplication(argc, argv)):(OC_NEW QApplication(argc, argv)));
+		if(nullptr!=mQApp) {
+			// We need full control of when application quits
+			QApplication::setQuitOnLastWindowClosed(false);
+			appStart();
+			// Initialize resources here
 
-	mQApp=(mIsHeadless?(OC_NEW QCoreApplication(mArgc, mArgv)):(OC_NEW QApplication(mArgc, mArgv)));
-	//qDebug()<<(mIsHeadless?"HEADLESS":"GUI ENABLED");
+			/*
+			Q_INIT_RESOURCE(icons);
+			Q_INIT_RESOURCE(images);
+			Q_INIT_RESOURCE(3d);
+			*/
 
-	if(nullptr!=mQApp) {
-		// We need full control of when application quits
-		QApplication::setQuitOnLastWindowClosed(false);
-		appStart();
-		// Initialize resources here
+			// Start Qt event loop for application.
+			// NOTE: This call will block until mQApp::quit() is called and the eventloop is terminated
+			mReturnValue=mQApp->exec();
 
-		/*
-		Q_INIT_RESOURCE(icons);
-		Q_INIT_RESOURCE(images);
-		Q_INIT_RESOURCE(3d);
-		*/
-
-		// Start Qt event loop for application.
-		// NOTE: This call will block until mQApp::quit() is called and the eventloop is terminated
-		mReturnValue=mQApp->exec();
-
-		qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done, quitting";
-	} else {
-		qWarning()<<"ERROR: no app, quitting";
-		mReturnValue=1;
+			qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done, quitting";
+		} else {
+			qWarning()<<"ERROR: no app, quitting";
+			mReturnValue=EXIT_FAILURE;
+		}
 	}
 	return mReturnValue;
 }
@@ -159,28 +209,53 @@ template <typename T>
 void AppLauncher<T>::appStart()
 {
 	OC_METHODGATE();
-	qDebug()<<"appStart";
-	mApp=QSharedPointer<T>(OC_NEW T(*this, nullptr));
+	qDebug()<<"appStart()";
+	mApp=QSharedPointer<T>(OC_NEW T(nullptr));
 	if(!mApp.isNull()) {
 		T *appPtr=mApp.data();
-		if(!mIsHeadless) {
-			// Handle when initialization of this app (which is starte below) is completed
-			QObject::connect(appPtr, &T::appInitDone, appPtr, [=]() {
-				mWindow=mApp->appWindow();
-				if(!mWindow.isNull()) {
-					mWindow->show();
+		Q_ASSERT(nullptr!=appPtr);
+		auto sharedThis=AppLauncher<T>::sharedFromThis();
+		if(!sharedThis.isNull()) {
+			mApp->appConfigure(sharedThis);
+
+			if(!mContext.isNull()) {
+				// Handle when initialization of this app is completed
+				if(!QObject::connect(appPtr, &T::nodeInitDone, appPtr, [=]() {
+				qDebug()<<"nodeInitDone()";
+					if(!mContext->isHeadless()) {
+
+						mWindow=mApp->appWindow();
+						if(!mWindow.isNull()) {
+							mWindow->show();
+						} else {
+							qWarning()<<"ERROR: No window to show";
+						}
+					}
+				}, OC_CONTYPE)) {
+					qWarning()<<"ERROR: Could not connect";
 				}
+				// Handle when someone wants the app to stop
+				if(!QObject::connect(appPtr, &T::nodeRequestClose, appPtr, [=]() {
+				qDebug()<<"nodeRequestClose()";
+					appStop();
+				}, OC_CONTYPE)) {
+					qWarning()<<"ERROR: Could not connect";
+				}
+				// Handle when de-initialization of this app is completed
+				if(!QObject::connect(appPtr, &T::nodeDeInitDone, appPtr, [=]() {
+				qDebug()<<"nodeDeInitDone()";
+					appDeInitDone();
+				}, OC_CONTYPE)) {
+					qWarning()<<"ERROR: Could not connect";
+				}
+			}
+			// Run init() from eventloop since it will call pure virtual members (which as you know are NOT allowed to be run from ctor in C++)
+			QTimer::singleShot(0, Qt::VeryCoarseTimer, [appPtr]() {
+				appPtr->appInit();
 			});
-			// Handle when de-initialization of this app is completed
-			QObject::connect(appPtr, &T::appDeInitDone, appPtr, [=]() {
-				appDeInitDone();
-			});
-			// Handle when someone wants the app to stop
-			QObject::connect(appPtr, &T::appRequestClose, appPtr, [=]() {
-				appStop();
-			});
+		} else {
+			qWarning()<<"ERROR: No launcher";
 		}
-		mApp->appInit();
 	} else {
 		qWarning()<<"ERROR: No node could be created";
 	}
@@ -191,7 +266,7 @@ template <typename T>
 void AppLauncher<T>::appStop()
 {
 	OC_METHODGATE();
-	qDebug()<<"appStop";
+	qDebug()<<"appStop()";
 	if(!mApp.isNull()) {
 		mApp->appDeInit();
 	}
@@ -202,19 +277,15 @@ template <typename T>
 void AppLauncher<T>::appDeInitDone()
 {
 	OC_METHODGATE();
-	qDebug()<<"appDeInitDone";
+	qDebug()<<"appDeInitDone()";
+	if(!mWindow.isNull()) {
+		mWindow->close();
+		mWindow.clear();
+	}
 	if(nullptr!=mQApp) {
 		mQApp->quit();
 	}
 }
-
-template <typename T>
-AppLauncher<T>::~AppLauncher()
-{
-	OC_METHODGATE();
-	qDebug()<<"AppLauncher d-tor";
-}
-
 
 template <typename T>
 QSharedPointer<T> AppLauncher<T>::app()
@@ -223,22 +294,14 @@ QSharedPointer<T> AppLauncher<T>::app()
 	return mApp;
 }
 
-
-
 template <typename T>
-QCommandLineParser AppLauncher<T>::commandLine() const
+QSharedPointer<AppContext> AppLauncher<T>::context()
 {
 	OC_METHODGATE();
-	return mCommandlineOptions;
-}
-
-template <typename T>
-QProcessEnvironment AppLauncher<T>::environment() const
-{
-	OC_METHODGATE();
-	return mEnvironment;
+	return mContext;
 }
 
 
-#endif // NODELAUNCHER_HPP
+#endif
+// APPLAUNCHER_HPP
 

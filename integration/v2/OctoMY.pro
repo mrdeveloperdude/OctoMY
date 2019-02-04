@@ -12,16 +12,16 @@ include($$PRIS/common.pri)
 # The executables
 SUBDIRS += \
 	$${SRCS}/libs \
-	$${SRCS}/web \
+	$${SRCS}/agent \
 
-#	$${SRCS}/agent \
+#$${SRCS}/web \
 #	$${SRCS}/remote \
 #	$${SRCS}/hub \
 #	$${SRCS}/zoo \
 
 
 # NOTE: USE_TESTS_* is enabled when useful in local_override.pri
-if( contains(DEFINES, USE_TESTS_BASIC) | contains(DEFINES, USE_TESTS_WEB) | contains(DEFINES, USE_TESTS_STRESS) | contains(DEFINES, USE_TESTS_SELECTED)  ){
+if( contains(DEFINES, OC_USE_TESTS_BASIC) | contains(DEFINES, OC_USE_TESTS_WEB) | contains(DEFINES, OC_USE_TESTS_STRESS) | contains(DEFINES, OC_USE_TESTS_SELECTED)  ){
 
 	message(ONE OR MORE TEST PROJECTS WERE ADDED TO OCTOMY BUILD)
 
@@ -32,7 +32,7 @@ if( contains(DEFINES, USE_TESTS_BASIC) | contains(DEFINES, USE_TESTS_WEB) | cont
 
 
 
-contains(DEFINES, USE_DOCS){
+contains(DEFINES, OC_USE_FEATURE_DOCS){
 	message(DOCUMENTATION PROJECT WAS ADDED TO OCTOMY BUILD)
 	SUBDIRS += \
 		$${DOCS}
@@ -71,3 +71,5 @@ OTHER_FILES+= $$files(content/doc/*, false)
 OTHER_FILES+= $$files(content/design/*, false)
 OTHER_FILES+= $$files(content/website/*, false)
 
+# While transitioning to new agent we want to view but not compile old agent sources
+OTHER_FILES+= $$files(src/libs/libagent_old/*, true);

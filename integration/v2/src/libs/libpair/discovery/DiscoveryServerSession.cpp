@@ -1,6 +1,6 @@
 #include "DiscoveryServerSession.hpp"
 
-#include "basic/Associate.hpp"
+#include "uptime/MethodGate.hpp"
 
 #include <QDebug>
 

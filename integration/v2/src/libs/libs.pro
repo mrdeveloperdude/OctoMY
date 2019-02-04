@@ -24,14 +24,17 @@ CONFIG +=	ordered
 # This is common variables and functions that may come in handy
 include($$PRIS/common.pri)
 
-# This is the list of projects. It defines AUTOLIBS and AUTLINKS variables for spearate libs and combined libs respectively
+# This is the list of projects. It defines AUTOLIBS_SEPARATE and AUTLINKS variables for spearate libs and combined libs respectively
 include($$PRIS/lib_list.pri)
+
+# This aligns selected libraries with the the defined "USE" variables
+include($$PRIS/use.pri)
 
 # Start with no subdirectories
 unset(SUBDIRS)
 
 # Go through all the library folders defined in lib_list.pri and add them as subdirectories
-for(A, AUTOLIBS) {
+for(A, AUTOLIBS_SEPARATE) {
 	SUBDIRS += lib$$A
 }
 

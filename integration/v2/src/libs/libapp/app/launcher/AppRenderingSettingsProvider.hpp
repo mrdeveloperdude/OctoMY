@@ -3,12 +3,20 @@
 
 #include <QSurfaceFormat>
 
+#include <QMap>
+
+class QApplication;
+
 class AppRenderingSettingsProvider
 {
 public:
 	QSurfaceFormat surfaceFormat();
-	Qt::ApplicationAttribute applicationAttributes();
+	QMap<Qt::ApplicationAttribute, bool>  applicationAttributes();
+	void applyApplicationAttributes();
 };
 
 
-#endif // APPRENDERINGSETTINGSPROVIDER_HPP
+#endif
+// APPRENDERINGSETTINGSPROVIDER_HPP
+
+

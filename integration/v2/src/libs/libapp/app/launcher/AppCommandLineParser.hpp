@@ -8,6 +8,11 @@ class AppCommandLineParser
 {
 private:
 	QCommandLineParser mCommandlineOptions;
+	int mArgc;
+	char **mArgv;
+
+	bool mParseDone;
+	bool mParseResult;
 
 public:
 	QCommandLineOption localHostOption;
@@ -17,14 +22,28 @@ public:
 	QCommandLineOption headlessOption;
 
 public:
-	AppCommandLineParser();
-public:
+	explicit AppCommandLineParser();
+	virtual ~AppCommandLineParser();
 
-	// Process the actual command line arguments given by the user
+public:
+	// Process the actual command line arguments given by the user.
 	void process(int argc, char **argv);
 
+	// Has the parsing of commandline parameters completed (i.e. was process() called)?
+	bool isParseDone();
+	// Was the parsing of commandline parameters successful (i.e. no parsing errors)?
+	bool isParseOK();
 
+	// Did the parameters say we are headless or not? Will return false if parameters were not parsed yet.
 	bool isHeadless();
+
+	// Provide original argument count
+	int argc();
+
+	// Provide original argument array
+	char **argv();
+
+
 };
 
 #endif

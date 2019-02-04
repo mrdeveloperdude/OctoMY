@@ -2,9 +2,9 @@
 #define MOCKAPP_HPP
 
 #include "app/launcher/AppLauncher.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QObject>
-#include <QSharedPointer>
 
 class MockApp: public QObject
 {
@@ -16,11 +16,11 @@ public:
 
 	explicit MockApp(AppLauncher<MockApp> &launcher, QObject *parent = nullptr);
 
-	virtual ~MockApp();
+	virtual ~MockApp() Q_DECL_OVERRIDE;
 
 public:
 	// Called by launcher to give the app a chance to initialize
-	// After calling this, the launcher will pause further initialization and showing of windows until app emits an "appLoaded" signal
+	// After calling this, the launcher will pause further initialization and showing of windows until app emits an "appInitDone" signal
 	virtual void appInit();
 
 	// Called by launcher as a response to an appRequestClose event being emitted by anyone that wants the app to close.

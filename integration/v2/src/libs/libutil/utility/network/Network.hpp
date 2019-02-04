@@ -19,6 +19,8 @@ QList<QHostAddress> allLocalNetworkAddresses();
 QString localAddress();
 bool checkUDPAddress(QHostAddress address, quint16 port);
 quint16	freeUDPPortForAddress(QHostAddress adr);
+
+// NOTE: "QHostAddress defaultGatewayAddress()" is in its separate file "DefaultGatewayUtil.cpp"
 QHostAddress defaultGatewayAddress();
 
 quint32 addressCloseness(QHostAddress a, QHostAddress b);

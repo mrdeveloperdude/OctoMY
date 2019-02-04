@@ -1,0 +1,18 @@
+#ifndef ASEVENTTYPE_HPP
+#define ASEVENTTYPE_HPP
+
+#include <QDebug>
+
+enum ASEventType: quint8 {
+	AS_EVENT_NONE=0, AS_EVENT_STATUS, AS_EVENT_CLEAR, AS_EVENT_GET, AS_EVENT_SET, AS_EVENT_LOAD, AS_EVENT_SAVE, AS_EVENT_GENERATE, AS_EVENT_SYNCHRONIZE, AS_EVENT_EXISTS, AS_EVENT_COMPLETE
+};
+
+
+QString ASEventTypeToString(ASEventType tt);
+
+
+
+QDebug operator<< (QDebug d, ASEventType tt);
+
+
+#endif // ASEVENTTYPE_HPP

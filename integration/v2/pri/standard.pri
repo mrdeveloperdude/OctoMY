@@ -96,6 +96,3 @@ QMAKE_CFLAGS -= -std=gnu1x
 
 gcc:QMAKE_CFLAGS += -std=c11
 
-
-#PRECOMPILED_HEADER = $${SRCS}/libs/precompiled_headers.pch
-#CONFIG += precompile_header

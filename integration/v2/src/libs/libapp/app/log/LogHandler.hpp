@@ -6,6 +6,7 @@ class LogHandler
 public:
 	LogHandler();
 
+public:
 	static void setLogging(bool log);
 
 };

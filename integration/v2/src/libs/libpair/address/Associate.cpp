@@ -4,16 +4,18 @@
  * permission from original author and owner "Lennart Rolland".
  */
 
-#include "basic/Associate.hpp"
-#include "utility/Utility.hpp"
+#include "Associate.hpp"
 
+#include "client/Client.hpp"
+#include "client/agent/AgentClient.hpp"
+#include "client/remote/RemoteClient.hpp"
+#include "client/hub/HubClient.hpp"
 
+#include "utility/time/HumanTime.hpp"
+#include "utility/string/String.hpp"
 
-#include "node/Client.hpp"
-#include "node/AgentClient.hpp"
-#include "node/RemoteClient.hpp"
-#include "node/HubClient.hpp"
-
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 
 #include <QRegularExpression>
 
@@ -25,10 +27,10 @@ Associate::Associate(const QVariantMap map, bool isPublic)
 	, mRole( nodeRoleFromString( map["role"].toString() ) )
 	, mType( nodeTypeFromString( map["type"].toString() ) )
 	, mTrusts( map["trusts"].toStringList())
-	, mLastSeenMS( utility::variantToMs(map["lastSeenMS"]) )
-	, mLastInitiatedHandshakeMS( utility::variantToMs(map["lastInitiatedHandshakeMS"]) )
-	, mLastAdherentHandshakeMS( utility::variantToMs(map["lastAdherentHandshakeMS"]) )
-	, mBirthDate( utility::variantToMs(map["birthDate"]) )
+	, mLastSeenMS( utility::time::variantToMs(map["lastSeenMS"]) )
+	, mLastInitiatedHandshakeMS( utility::time::variantToMs(map["lastInitiatedHandshakeMS"]) )
+	, mLastAdherentHandshakeMS( utility::time::variantToMs(map["lastAdherentHandshakeMS"]) )
+	, mBirthDate( utility::time::variantToMs(map["birthDate"]) )
 	, mAddressList( map["addressList"].toList() )
 	  //	, mPins( map["pins"].toStringList())// DONT STORE PINS THEY ARE EPHEMERAL
 
@@ -74,10 +76,10 @@ bool Associate::update(const QVariantMap map, bool trustedSource)
 		mGender=( map["gender"].toString() );
 		mRole=( nodeRoleFromString( map["role"].toString() ) );
 		mType=( nodeTypeFromString( map["type"].toString() ) );
-		mLastSeenMS=utility::variantToMs(map["lastSeenMS"]);
-		mLastInitiatedHandshakeMS=utility::variantToMs( map["lastInitiatedHandshakeMS"] );
-		mLastAdherentHandshakeMS=utility::variantToMs( map["lastAdherentHandshakeMS"]);
-		mBirthDate=utility::variantToMs( map["birthDate"]);
+		mLastSeenMS=utility::time::variantToMs(map["lastSeenMS"]);
+		mLastInitiatedHandshakeMS=utility::time::variantToMs( map["lastInitiatedHandshakeMS"] );
+		mLastAdherentHandshakeMS=utility::time::variantToMs( map["lastAdherentHandshakeMS"]);
+		mBirthDate=utility::time::variantToMs( map["birthDate"]);
 		mAddressList=AddressList( map["addressList"].toList() );
 		//NOTE: We don't just use fromVariantMap here for security reasons. See "trustedSource" parameter
 		//fromVariantMap(map);
@@ -211,7 +213,7 @@ void Associate::setLastSeen(quint64 when)
 {
 	OC_METHODGATE();
 	if(0 == when) {
-		when=utility::currentMsecsSinceEpoch<quint64>();
+		when=utility::time::currentMsecsSinceEpoch<quint64>();
 	}
 	mLastSeenMS=when;
 }
@@ -333,11 +335,11 @@ QVariantMap Associate::toVariantMap()
 	OC_METHODGATE();
 	QVariantMap map;
 	map["addressList"]=mAddressList.toVariantList();
-	map["lastSeenMS"]=utility::msToVariant(mLastSeenMS);
-	map["lastInitiatedHandshakeMS"]=utility::msToVariant(mLastInitiatedHandshakeMS);
+	map["lastSeenMS"]=utility::time::msToVariant(mLastSeenMS);
+	map["lastInitiatedHandshakeMS"]=utility::time::msToVariant(mLastInitiatedHandshakeMS);
 
-	map["lastAdherentHandshakeMS"]=utility::msToVariant(mLastAdherentHandshakeMS);
-	map["birthDate"]=utility::msToVariant(mBirthDate);
+	map["lastAdherentHandshakeMS"]=utility::time::msToVariant(mLastAdherentHandshakeMS);
+	map["birthDate"]=utility::time::msToVariant(mBirthDate);
 	map["key"]=mKey.toVariantMap(true);
 	map["role"]=nodeRoleToString(mRole);
 	map["type"]=nodeTypeToString(mType);
@@ -356,12 +358,12 @@ void Associate::fromVariantMap(const QVariantMap map)
 	mKey=Key( map["key"].toMap(), true);
 	mName=( map["name"].toString() );
 	mGender=( map["gender"].toString() );
-	mBirthDate= utility::variantToMs( map["birthDate"]);
+	mBirthDate= utility::time::variantToMs( map["birthDate"]);
 	mRole=( nodeRoleFromString( map["role"].toString() ) );
 	mType=( nodeTypeFromString( map["type"].toString() ) );
-	mLastSeenMS=utility::variantToMs( map["lastSeenMS"]);
-	mLastInitiatedHandshakeMS=utility::variantToMs( map["lastInitiatedHandshakeMS"]);
-	mLastAdherentHandshakeMS=utility::variantToMs( map["lastAdherentHandshakeMS"]);
+	mLastSeenMS=utility::time::variantToMs( map["lastSeenMS"]);
+	mLastInitiatedHandshakeMS=utility::time::variantToMs( map["lastInitiatedHandshakeMS"]);
+	mLastAdherentHandshakeMS=utility::time::variantToMs( map["lastAdherentHandshakeMS"]);
 	mAddressList=AddressList( map["addressList"].toList() );
 	mTrusts=map["trusts"].toStringList();
 }
@@ -375,10 +377,10 @@ QString Associate::toString()
 		   +", name: "+mName
 		   +", gender: "+mGender
 		   +", addressList:"+mAddressList.toString()
-		   +", lastSeenMS:"+utility::formattedDateFromMS(mLastSeenMS)
-		   +", lastInitiatedHandshakeMS:"+utility::formattedDateFromMS(mLastInitiatedHandshakeMS)
-		   +", lastAdherentHandshakeMS:"+utility::formattedDateFromMS(mLastAdherentHandshakeMS)
-		   +", birthDate:"+utility::formattedDateFromMS(mBirthDate)
+		   +", lastSeenMS:"+utility::string::formattedDateFromMS(mLastSeenMS)
+		   +", lastInitiatedHandshakeMS:"+utility::string::formattedDateFromMS(mLastInitiatedHandshakeMS)
+		   +", lastAdherentHandshakeMS:"+utility::string::formattedDateFromMS(mLastAdherentHandshakeMS)
+		   +", birthDate:"+utility::string::formattedDateFromMS(mBirthDate)
 		   +", role:"+nodeRoleToString(mRole)
 		   +", type:"+nodeTypeToString(mType)
 		   +", pins:"+mPins.join(";")
@@ -388,17 +390,24 @@ QString Associate::toString()
 
 QSharedPointer<Client> Associate::toClient(QSharedPointer<Node> node)
 {
+	QSharedPointer<Client> ret;
 	switch(mType) {
 	case(TYPE_AGENT):
-		return QSharedPointer<AgentClient>(OC_NEW AgentClient(node, sharedFromThis()));
+		ret=QSharedPointer<AgentClient>(OC_NEW AgentClient());
+		break;
 	case(TYPE_REMOTE):
-		return QSharedPointer<RemoteClient>(OC_NEW RemoteClient(node, sharedFromThis()));
+		ret=QSharedPointer<RemoteClient>(OC_NEW RemoteClient());
+		break;
 	case(TYPE_HUB):
-		return QSharedPointer<HubClient>(OC_NEW HubClient(node, sharedFromThis()));
+		ret=QSharedPointer<HubClient>(OC_NEW HubClient());
+		break;
 	default:
 		qWarning()<<"ERROR: unknown node type";
 	}
-	return nullptr;
+	if(!ret.isNull()) {
+		ret->configure(node, sharedFromThis());
+	}
+	return ret;
 
 }
 

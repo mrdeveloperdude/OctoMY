@@ -3,9 +3,7 @@
 
 #include "comms/NetworkAddress.hpp"
 
-
-#include <QSharedPointer>
-
+#include "uptime/SharedPointerWrapper.hpp"
 
 struct AddressEntry {
 public:

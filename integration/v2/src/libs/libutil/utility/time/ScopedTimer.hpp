@@ -44,4 +44,5 @@ public:
 };
 
 
-#endif // SCOPEDTIMER_HPP
+#endif
+// SCOPEDTIMER_HPP

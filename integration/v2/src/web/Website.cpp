@@ -32,7 +32,7 @@ void Website::run()
 		return;
 	}
 	//auto &env=mAppContext->environment();
-	auto &opts=mAppContext->options();
+	auto &opts=mAppContext->commandLine();
 
 	QString outputDir=QDir::currentPath();
 	if(opts.isSet("output-dir")) {

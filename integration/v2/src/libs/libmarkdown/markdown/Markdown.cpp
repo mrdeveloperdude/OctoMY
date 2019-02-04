@@ -1,7 +1,7 @@
 #include "Markdown.hpp"
 
 
-#ifdef USE_MARKDOWN
+#ifdef OC_USE_FEATURE_MARKDOWN
 
 //extern "C" {
 	#include "markdown/document.h"

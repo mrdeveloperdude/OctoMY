@@ -1,4 +1,4 @@
-# This is the special purpose library that combines all libraries named in variable AUTOLINKS (defined in lib_list.pri) into one single library called libcombined
+# This is the special purpose library that combines all libraries named in variable AUTOLIBS_COMBINED (defined in lib_list.pri) into one single library called libcombined
 TARGET =	combined
 TEMPLATE =	lib
 CONFIG +=	staticlib
@@ -14,9 +14,9 @@ DEFINES -= INCLUDER_LINK
 
 INCLUDEPATH =
 
-#message("1.AUTOLINKS:" $$AUTOLINKS)
-#message("2.AUTOLIBS:" $$AUTOLIBS)
-AUTOALL=$$AUTOLINKS $$AUTOLIBS
+#message("1.AUTOLIBS_COMBINED:" $$AUTOLIBS_COMBINED)
+#message("2.AUTOLIBS_SEPARATE:" $$AUTOLIBS_SEPARATE)
+AUTOALL=$$AUTOLIBS_COMBINED $$AUTOLIBS_SEPARATE
 #message("3.AUTOALL:" $$AUTOALL)
 
 #AUTOALL -= $$LIBBASE
@@ -31,10 +31,10 @@ for(INCLIBBASE, AUTOALL) {
 #message("INCPATH COMBINED FOR " $$LIBBASE " WAS: " $$INCLUDEPATH)
 
 
-for(LIBBASE, AUTOLINKS) {
+for(LIBBASE, AUTOLIBS_COMBINED) {
 	LIBNAME=$$OC_LIB_PREFIX$${LIBBASE}
 	contains(AUTOLIB, $$LIBBASE){
-		error(" * * * " $$LIBNAME "WAS IN BOTH AUTOLIBS & AUTOLINKS AT THE SAME TIME (combined)")
+		error(" * * * " $$LIBNAME "WAS IN BOTH AUTOLIBS_SEPARATE & AUTOLIBS_COMBINED AT THE SAME TIME (combined)")
 	}
 	else{
 		#message("-----------------------------------------------------------------")
@@ -87,7 +87,7 @@ for(LIBBASE, AUTOLINKS) {
 	}
 }
 
-#for(A, AUTOLIBS) { INCLUDEPATH +=$$clean_path($$SRCS/libs/lib$$A)}
+#for(A, AUTOLIBS_SEPARATE) { INCLUDEPATH +=$$clean_path($$SRCS/libs/lib$$A)}
 
 # HACK: This is needed because some of the source files in libparse are generated during build
 #INCLUDEPATH += $$clean_path($$BUILD_SRCS/libs/libparser/)

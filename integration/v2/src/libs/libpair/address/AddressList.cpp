@@ -1,15 +1,14 @@
 #include "AddressList.hpp"
 
 #include "AddressEntry.hpp"
-#include "utility/Utility.hpp"
+#include "uptime/MethodGate.hpp"
+#include "utility/time/HumanTime.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QDateTime>
-#include<QList>
+#include <QList>
 #include <QMap>
-#include <QSharedPointer>
 
-
-//QSharedPointer<AddressEntry> >
 
 AddressList::AddressList()
 {
@@ -45,7 +44,7 @@ void AddressList::merge(NetworkAddress adr, QString description, quint64 now)
 		return;
 	}
 	if(0==now) {
-		now=utility::currentMsecsSinceEpoch<quint64>();
+		now=utility::time::currentMsecsSinceEpoch<quint64>();
 	}
 	for(QSharedPointer<AddressEntry> entry:*this) {
 		if(!entry.isNull()) {

@@ -9,6 +9,7 @@ const QString Constants::APPLICATION_VERSION =	"1.0";
 const QString Constants::USERAGENT =				"OctoMY/"+APPLICATION_VERSION;
 
 
+const qint64 Constants::OCTOMY_WEB_TIMEOUT=4000;
 
 
 const QByteArray Constants::OCTOMY_USER_AGENT=				"OctoMY™ Zoo Client";
@@ -25,13 +26,17 @@ const quint16 Constants::OCTOMY_UDP_DEFAULT_PORT_HUB=	OCTOMY_UDP_BASE_PORT+3;
 const quint16 Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO=	OCTOMY_UDP_BASE_PORT+0;
 
 
+const qint32 Constants::OCTOMY_WEB_COLLECT_AT_MOST=(1024*100);
+
+
 const QByteArray Constants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW="doDiscoveryEscrow";
 
 
 
 
 
-
+const QString Constants::ACCEPT_HEADER="Accept";
+const QString Constants::APPLICATION_JSON_MIME="application/json";
 
 
 

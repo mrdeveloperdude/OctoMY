@@ -1,48 +1,60 @@
 
-
-
-
 # The libraries in this list will be built as separate projects and linked in at the end. This is suitable for 3rd party code and stand-alone external projects
-AUTOLIBS += \
+AUTOLIBS_SEPARATE += \
 	markdown \
+	qpolarssl \
+	mbedtls \
+	parser \
 
-#	parser \
 #	zbar \
-#	qpolarssl \
-#	mbedtls \
 #	qfi \
 
 
 
-
-
 # The libraries in this list will be built into one big library called libcombined
-AUTOLINKS += \
+AUTOLIBS_COMBINED += \
 	util \
 	uptime \
+	rng \
+	style \
+	glt \
+	widgets \
+	client \
+	agentclient \
+	remoteclient \
+	hubclient \
+	zooclient \
+	qr \
+	zbar \
+	store \
+	sec \
+	id \
+	pair \
+	comms \
+	ardumy \
+	hardware \
+	puppet \
+#	motorics \
+	video \
+	audio \
+	map \
+	plan \
+	node \
 	app \
+	agent \
 	web \
 
 #	clt \
-#	glt \
-#	node \
-#	agent \
+
 #	remote \
 #	hub \
 #	zoo \
-#	plan \
-#	map \
-#	qr \
-#	style \
-#	vid \
-#	rng \
-#	audio \
-#	motorics \
 #	dynamics \
-#	puppet \
-#	id \
 #	sec \
-#	comms \
-#	ardumy \
-#	core \
 
+
+
+AUTOLIBS_SEPARATE=   $$unique(AUTOLIBS_SEPARATE)
+AUTOLIBS_COMBINED=   $$unique(AUTOLIBS_COMBINED)
+AUTOLIBS_BOTH=       $$AUTOLIBS_SEPARATE $$AUTOLIBS_COMBINED
+AUTOLIBS_BOTH=       $$unique(AUTOLIBS_BOTH)

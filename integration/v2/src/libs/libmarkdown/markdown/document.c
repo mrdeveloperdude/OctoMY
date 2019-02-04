@@ -1111,7 +1111,7 @@ char_entity(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t off
 	return end;
 }
 
-/* char_langle_tag • '<' when tags or autolinks are allowed */
+/* char_langle_tag • '<' when tags or XXXXX_TEMP are allowed */
 static size_t
 char_langle_tag(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
 {

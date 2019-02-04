@@ -4,7 +4,7 @@
 
 #include "node/NodeRole.hpp"
 #include "AddressBook.hpp"
-#include "basic/Associate.hpp"
+#include "address/Associate.hpp"
 
 
 #include <QTimer>
@@ -89,38 +89,42 @@ class DiscoveryClient: public QObject
 {
 	Q_OBJECT
 private:
-	QTimer mTimer;
-	quint64 mLastZooPair;
-	QUrl  mServerURL;
-	qhttp::client::QHttpClient     *mClient;
-	Node &mNode;
-	QSharedPointer<Key> mKey;
-	bool mLog;
+	QTimer										mTimer;
+	quint64										mLastZooPair;
+	QUrl										mServerURL;
+	QSharedPointer<qhttp::client::QHttpClient>	mClient;
+	QSharedPointer<Node>						mNode;
+	QSharedPointer<Key>							mKey;
+	bool										mLog;
 
 private:
 	void registerPossibleAssociate(QVariantMap map);
 
 public:
-	DiscoveryClient(Node &node);
+	explicit DiscoveryClient();
+	virtual ~DiscoveryClient();
 
 public:
+	void configure(QSharedPointer<Node> node);
 
+	// Convenience selectors
+private:
+	QSharedPointer<Key> localKey();
+
+public:
 	void setURL(const QUrl&);
-
 	bool isStarted();
 	void setStart(bool start);
-
 	void discover();
-
-	Node &getNode();
+	QSharedPointer<Node> node();
 
 private slots:
-
 	void onTimer();
 
 signals:
-
 	void nodeDiscovered(QString id);
+
 };
 
-#endif // DISCOVERYCLIENT_HPP
+#endif
+// DISCOVERYCLIENT_HPP

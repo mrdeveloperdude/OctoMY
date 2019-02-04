@@ -16,7 +16,7 @@
 
 #include "security/PortableID.hpp"
 
-#include "basic/AddressList.hpp"
+#include "address/AddressList.hpp"
 
 #include <QBluetoothAddress>
 

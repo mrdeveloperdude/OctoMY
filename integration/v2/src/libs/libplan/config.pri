@@ -1,0 +1,2 @@
+
+libplan.depends = libparser

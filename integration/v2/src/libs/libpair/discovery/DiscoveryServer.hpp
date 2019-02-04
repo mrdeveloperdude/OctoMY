@@ -1,10 +1,11 @@
 #ifndef DISCOVERYSERVER_HPP
 #define DISCOVERYSERVER_HPP
 
-#include "basic/Associate.hpp"
+#include "address/Associate.hpp"
 #include "DiscoveryServerSession.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
-#include <QSharedPointer>
+#include <QMap>
 
 class DiscoveryServer
 {
@@ -13,16 +14,14 @@ private:
 	bool mLog;
 
 public:
-
 	explicit DiscoveryServer(bool log = false);
 	virtual ~DiscoveryServer();
+
 public:
-
 	DiscoveryServerSession *request(QSharedPointer<Associate> part);
-
 	void prune(quint64 deadline);
-
 	QVariantList toVariantList();
 
 };
-#endif // DISCOVERYSERVER_HPP
+#endif
+// DISCOVERYSERVER_HPP

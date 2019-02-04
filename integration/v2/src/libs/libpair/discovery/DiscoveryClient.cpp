@@ -1,15 +1,22 @@
 #include "DiscoveryClient.hpp"
 
-#include "utility/Standard.hpp"
-#include "utility/Utility.hpp"
-#include "basic/Associate.hpp"
-#include "zoo/ZooClient.hpp"
-#include "zoo/ZooConstants.hpp"
+#include "utility/string/String.hpp"
+#include "utility/data/Data.hpp"
+#include "utility/time/HumanTime.hpp"
+
+#include "address/Associate.hpp"
+#include "client/zoo/ZooClient.hpp"
+
 #include "security/KeyStore.hpp"
 #include "comms/couriers/DiscoveryCourier.hpp"
 #include "node/Node.hpp"
 #include "comms/CommsChannel.hpp"
 
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+#include "uptime/ConnectionType.hpp"
+
+#include "app/Constants.hpp"
 
 #include "qhttp/qhttpclient.hpp"
 #include "qhttp/qhttpclientrequest.hpp"
@@ -17,6 +24,7 @@
 
 #include "security/SecurityConstants.hpp"
 
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QDebug>
 #include <QDateTime>
@@ -25,31 +33,53 @@
 #include <functional>
 
 
-static const QString zeroID=utility::toHash("", OCTOMY_KEY_HASH);
+static const QString zeroID=utility::string::toHash("", OCTOMY_KEY_HASH);
+
+static const quint64 ZOO_PAIR_INTERVAL=20000;
 
 
-DiscoveryClient::DiscoveryClient(Node &node)
-	: QObject(&node)
+DiscoveryClient::DiscoveryClient()
+	: QObject(nullptr)
 	, mLastZooPair(0)
 	, mClient(OC_NEW qhttp::client::QHttpClient(this))
-	, mNode(node)
-	, mKey(mNode.keyStore().localKey())
-	  //, ourPubKey(node.getKeyStore().getLocalPublicKey())
-	  //, ourID(utility::toHash(ourPubKey))
-	  //, zeroID(utility::toHash(""))
 	, mLog(true)
 {
 	OC_METHODGATE();
-	auto nodeptr=&mNode;
-	if(nullptr==nodeptr) {
+}
+
+
+DiscoveryClient::~DiscoveryClient()
+{
+	OC_METHODGATE();
+}
+
+
+void DiscoveryClient::configure(QSharedPointer<Node> node)
+{
+	OC_METHODGATE();
+	mNode=node;
+	if(mNode.isNull()) {
 		qWarning()<<"ERROR: node was nullreference";
 	}
 	mTimer.setInterval(500);
 	mTimer.setTimerType(Qt::VeryCoarseTimer);
-	if(!connect(&mTimer,SIGNAL(timeout()),this,SLOT(onTimer()),OC_CONTYPE)) {
+	if(!connect(&mTimer, SIGNAL(timeout()), this, SLOT(onTimer()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 }
+
+QSharedPointer<Key> DiscoveryClient::localKey()
+{
+	OC_METHODGATE();
+	if(!mNode.isNull()) {
+		QSharedPointer<KeyStore> ks=mNode->keyStore();
+		if(!ks.isNull()) {
+			return ks->localKey();
+		}
+	}
+	return nullptr;
+}
+
 
 bool DiscoveryClient::isStarted()
 {
@@ -85,7 +115,6 @@ void DiscoveryClient::setURL(const QUrl& serverURL)
 }
 
 
-
 void DiscoveryClient::discover()
 {
 	OC_METHODGATE();
@@ -93,25 +122,34 @@ void DiscoveryClient::discover()
 		qDebug().noquote().nospace()<<"DISCOVERY CLIENT RUN "<<mServerURL;
 	}
 	qhttp::client::TRequstHandler reqHandler= [this](qhttp::client::QHttpRequest* req) {
-
-		auto key=mNode.keyStore().localKey();
-		if(nullptr!=key) {
+		QSharedPointer<Key> key=localKey();
+		if(!key.isNull()) {
 			QVariantMap cmd;
-			cmd["action"] = ZooConstants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
+			cmd["action"] = Constants::OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
 			cmd["key"] = key->toVariantMap(true);
 			cmd["manualPin"] ="12345";
-			QSharedPointer<Associate>  me=mNode.nodeIdentity();
-			if(!me.isNull()) {
-				QVariantMap map=me->toVariantMap();
-				utility::merge(cmd, map);
-			} else {
-				qWarning()<<"ERROR: no me";
-			}
+			if(!mNode.isNull()) {
+				QSharedPointer<Associate> me=mNode->nodeIdentity();
+				if(!me.isNull()) {
+					QVariantMap map=me->toVariantMap();
+					utility::data::merge(cmd, map);
+				} else {
+					qWarning()<<"ERROR: no me";
+				}
 
-			{
-				QVariantList alist;
-				alist<<mNode.localAddressList().currentNetworkAddress().toVariantMap();
-				cmd["addressList"]=alist;
+				{
+					QSharedPointer<LocalAddressList> al=mNode->localAddressList();
+					if(!al.isNull()) {
+						QVariantList alist;
+						alist<<al->currentNetworkAddress().toVariantMap();
+						cmd["addressList"]=alist;
+					} else {
+						qWarning()<<"ERROR: no al";
+					}
+				}
+
+			} else {
+				qWarning()<<"ERROR: no mNode";
 			}
 
 			if(mLog) {
@@ -125,8 +163,8 @@ void DiscoveryClient::discover()
 			if(mLog) {
 				qDebug().noquote().nospace()<<"SENDING RAW JSON: "<<body;
 			}
-			req->addHeader("user-agent",			ZooConstants::OCTOMY_USER_AGENT);
-			req->addHeader(ZooConstants::OCTOMY_API_VERSION_HEADER,		ZooConstants::OCTOMY_API_VERSION_CURRENT);
+			req->addHeader("user-agent",			Constants::OCTOMY_USER_AGENT);
+			req->addHeader(Constants::OCTOMY_API_VERSION_HEADER,		Constants::OCTOMY_API_VERSION_CURRENT);
 			req->addHeader("accept",				"application/json");
 			req->addHeader("content-type",			"application/json");
 			req->addHeader("connection",			"keep-alive");
@@ -192,23 +230,20 @@ void DiscoveryClient::discover()
 				}
 			}
 			if(!ok) {
-				if(mLog){
+				if(mLog) {
 					qDebug().noquote().nospace()<<"RETURNED STATUS ("<<ok<<"):"<<message;
 				}
 			}
 		});
-		if(mLog){
+		if(mLog) {
 			qDebug().noquote().nospace()<<"Getting node: RES DONE";
 		}
 	};
-	if(mLog){
+	if(mLog) {
 		qDebug().noquote().nospace()<<"DISCOVERY CLIENT OUTREACH TO "<<mServerURL;
 	}
 	mClient->request(qhttp::EHTTP_POST, mServerURL, reqHandler, resHandler);
 }
-
-
-
 
 
 void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
@@ -217,10 +252,14 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 	if(mLog) {
 		qDebug().noquote().nospace()<<"REG";
 	}
+	if(mNode.isNull()) {
+		qWarning()<<"ERROR: no mNode";
+		return;
+	}
 	QSharedPointer<Key> key=QSharedPointer<Key>(OC_NEW Key(map["key"].toMap(), true));
 	if(!key.isNull()) {
-		KeyStore  &keyStore=mNode.keyStore();
-		auto ourKey=keyStore.localKey();
+		QSharedPointer<KeyStore> keyStore=mNode->keyStore();
+		auto ourKey=keyStore->localKey();
 		if(!ourKey.isNull()) {
 			const QString partID=key->id();
 			const QString ourID=ourKey->id();
@@ -229,44 +268,49 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 			} else if(partID==ourID) {
 				//qDebug()<<" + Skipping new participant with our ID: "<<partID;
 			} else {
-				AddressBook &peers=mNode.addressBook();
-				QSharedPointer<Associate> part;
-				if(peers.hasAssociate(partID)) {
-					qDebug()<<" + Updating participant with ID: "<<partID;
-					part=peers.associateByID(partID);
-					part->update(map, false);
-					emit peers.associatesChanged();
-					emit nodeDiscovered(partID);
-				} else {
-					part=QSharedPointer<Associate>(OC_NEW Associate(map));
-					if(!part.isNull()) {
-						if(part->isValidForClient()) {
-							CommsChannel *comms=mNode.comms();
-							if(nullptr!=comms) {
-								QSharedPointer<DiscoveryCourier> courier(OC_NEW DiscoveryCourier(part, *comms));
-								if(!courier.isNull()) {
-									//TODO: Security issue. what if the current associate has lots of important data? we need a smart merge instead of this.
-									peers.upsertAssociate(part);
-									courier->setDestination(part->id());
-									comms->setCourierRegistered(courier, true);
-									qDebug()<<" + Adding new participant with ID: "<<partID;
-									emit nodeDiscovered(partID);
+				QSharedPointer<AddressBook> peers=mNode->addressBook();
+				if(!peers.isNull()) {
+					QSharedPointer<Associate> part;
+					if(peers->hasAssociate(partID)) {
+						qDebug()<<" + Updating participant with ID: "<<partID;
+						part=peers->associateByID(partID);
+						part->update(map, false);
+						emit peers->associatesChanged();
+						emit nodeDiscovered(partID);
+					} else {
+						part=QSharedPointer<Associate>(OC_NEW Associate(map));
+						if(!part.isNull()) {
+							if(part->isValidForClient()) {
+								QSharedPointer<CommsChannel> comms=mNode->comms();
+								if(!comms.isNull()) {
+									QSharedPointer<DiscoveryCourier> courier(OC_NEW DiscoveryCourier(part, comms));
+									if(!courier.isNull()) {
+										//TODO: Security issue. what if the current associate has lots of important data? we need a smart merge instead of this.
+										peers->upsertAssociate(part);
+										courier->setDestination(part->id());
+										comms->setCourierRegistered(courier, true);
+										qDebug()<<" + Adding new participant with ID: "<<partID;
+										emit nodeDiscovered(partID);
+									} else {
+										qWarning()<<"ERROR: Could not create courier for part with ID "<<partID;
+									}
 								} else {
-									qWarning()<<"ERROR: Could not create courier for part with ID "<<partID;
+									qWarning()<<"ERROR: Node had no comms";
 								}
 							} else {
-								qWarning()<<"ERROR: Node had no comms";
+								qDebug()<<" + Skipping invalid new participant:"<<partID;
 							}
 						} else {
-							qDebug()<<" + Skipping invalid new participant:"<<partID;
+							qWarning()<<"ERROR: Could not allocate participant: "<<partID;
 						}
-					} else {
-						qWarning()<<"ERROR: Could not allocate participant: "<<partID;
 					}
+					// Update the key while we are at it...
+					//TODO: Check for security implications
+					keyStore->setPubKeyForID(map["key"].toMap()["publicKey"].toString());
+				} else {
+					qWarning()<<"ERROR: no mpeers";
+					return;
 				}
-				// Update the key while we are at it...
-				//TODO: Check for security implications
-				keyStore.setPubKeyForID(map["key"].toMap()["publicKey"].toString());
 			}
 		} else {
 			qWarning()<<"ERROR: no ourKey";
@@ -276,19 +320,18 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 	}
 }
 
-Node &DiscoveryClient::getNode()
+
+QSharedPointer<Node> DiscoveryClient::node()
 {
 	OC_METHODGATE();
 	return mNode;
 }
 
 
-const quint64 ZOO_PAIR_INTERVAL=20000;
-
 void DiscoveryClient::onTimer()
 {
 	OC_METHODGATE();
-	const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
+	const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
 	if(now>ZOO_PAIR_INTERVAL+mLastZooPair) {
 		//qDebug()<<"ZOO PAIR TIME!";
 		mLastZooPair=now;

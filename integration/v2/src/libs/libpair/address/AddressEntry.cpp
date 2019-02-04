@@ -1,7 +1,10 @@
 #include "AddressEntry.hpp"
 
-#include "utility/Standard.hpp"
-#include "utility/Utility.hpp"
+#include "uptime/MethodGate.hpp"
+#include "utility/network/Network.hpp"
+#include "utility/time/HumanTime.hpp"
+#include "utility/string/String.hpp"
+
 
 #include <QDateTime>
 #include <QVariantMap>
@@ -16,24 +19,25 @@ AddressEntry::AddressEntry(NetworkAddress address, QString description, quint64 
 	, numSuccessful(numSuccessful)
 	, numErraneous(numErraneous)
 {
-
+	OC_METHODGATE();
 }
 AddressEntry::AddressEntry(QVariantMap map)
 	: address( map["address"].toMap() )
 	, description(map["description"].toString())
-	, created(utility::variantToMs(map["createdMS"]))
-	, lastSuccess(utility::variantToMs(map["lastSuccessMS"]))
-	, lastError(utility::variantToMs(map["lastErrorMS"]))
+	, created(utility::time::variantToMs(map["createdMS"]))
+	, lastSuccess(utility::time::variantToMs(map["lastSuccessMS"]))
+	, lastError(utility::time::variantToMs(map["lastErrorMS"]))
 	, numSuccessful(map["numSuccessful"].toULongLong())
 	, numErraneous(map["numErraneous"].toULongLong())
 {
-
+	OC_METHODGATE();
 }
 
 //TODO: Implement this compeltel,y and write test for it, lazy basterd
 
 quint64 AddressEntry::score(QHostAddress dgw) const
 {
+	OC_METHODGATE();
 	// Trivial reject for useless entries
 	if(!address.isValid()) {
 		return 0;
@@ -45,7 +49,7 @@ quint64 AddressEntry::score(QHostAddress dgw) const
 	}
 	// Prefer addresses on same network as supplied address (meant to be default gateway or other network you like)
 	if(!dgw.isNull()) {
-		out+=utility::addressCloseness(dgw, address.ip());
+		out+=utility::network::addressCloseness(dgw, address.ip());
 	}
 	// Prefer non-loopback addresses
 	if(!address.ip().isLoopback()) {
@@ -68,14 +72,16 @@ quint64 AddressEntry::score(QHostAddress dgw) const
 
 quint64 AddressEntry::last() const
 {
+	OC_METHODGATE();
 	return qMax(created, qMax(lastSuccess, lastError));
 }
 
 
 void AddressEntry::tried(bool successful, quint64 now)
 {
+	OC_METHODGATE();
 	if(0==now) {
-		now = utility::currentMsecsSinceEpoch<quint64>();
+		now = utility::time::currentMsecsSinceEpoch<quint64>();
 	}
 	if(successful) {
 		lastSuccess = now;
@@ -89,12 +95,13 @@ void AddressEntry::tried(bool successful, quint64 now)
 
 QVariantMap AddressEntry::toVariantMap() const
 {
+	OC_METHODGATE();
 	QVariantMap map;
 	map["address"]=address.toVariantMap();
 	map["description"]=description;
-	map["createdMS"]=utility::msToVariant(created);
-	map["lastSuccessMS"]=utility::msToVariant(lastSuccess);
-	map["lastErrorMS"]=utility::msToVariant(lastError);
+	map["createdMS"]=utility::time::msToVariant(created);
+	map["lastSuccessMS"]=utility::time::msToVariant(lastSuccess);
+	map["lastErrorMS"]=utility::time::msToVariant(lastError);
 	map["numSuccessful"]=numSuccessful;
 	map["numErraneous"]=numErraneous;
 	return map;
@@ -107,12 +114,12 @@ QString AddressEntry::toString()
 	OC_METHODGATE();
 	return address.toString()
 		   +", description: "+description
-		   +", createdMS: "+utility::formattedDateFromMS(created)
-		   +", lastSuccessMS: "+utility::formattedDateFromMS(lastSuccess)
-		   +", lastErrorMS: "+utility::formattedDateFromMS(lastError)
-		   +", createdMS: "+utility::formattedDateFromMS(created)
-		   +", numSuccessful: "+utility::formattedDateFromMS(numSuccessful)
-		   +", numErraneous: "+utility::formattedDateFromMS(numErraneous)
+		   +", createdMS: "+utility::string::formattedDateFromMS(created)
+		   +", lastSuccessMS: "+utility::string::formattedDateFromMS(lastSuccess)
+		   +", lastErrorMS: "+utility::string::formattedDateFromMS(lastError)
+		   +", createdMS: "+utility::string::formattedDateFromMS(created)
+		   +", numSuccessful: "+utility::string::formattedDateFromMS(numSuccessful)
+		   +", numErraneous: "+utility::string::formattedDateFromMS(numErraneous)
 		   ;
 }
 

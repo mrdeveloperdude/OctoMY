@@ -4,7 +4,7 @@
 # the values given to important parameters
 # for the build at the point of inclusion
 
-#contains(DEFINES, USE_STATUS){
+#contains(DEFINES, OC_USE_FEATURE_STATUS){
 message("")
 message("")
 message("===============================================")

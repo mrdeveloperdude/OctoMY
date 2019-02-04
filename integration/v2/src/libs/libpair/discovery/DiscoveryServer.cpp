@@ -1,6 +1,9 @@
 #include "DiscoveryServer.hpp"
-#include <QCryptographicHash>
 
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+
+#include <QCryptographicHash>
 #include <QRegularExpression>
 #include <QDebug>
 

@@ -1,23 +1,18 @@
 #ifndef ADDRESSBOOK_HPP
 #define ADDRESSBOOK_HPP
 
-#include "basic/AtomicBoolean.hpp"
-#include "basic/GenerateRunnable.hpp"
-#include "basic/Associate.hpp"
-#include "node/SimpleDataStore.hpp"
+#include "utility/concurrent/AtomicBoolean.hpp"
+#include "utility/concurrent/GenerateRunnable.hpp"
+#include "address/Associate.hpp"
+#include "store/SimpleDataStore.hpp"
 
 #include <QObject>
 
-
-/*
-
-  AddressBook is used to keep track of and persist the information a
+/** The AddressBook class is used to keep track of and persist the information a
   Node has on its associates. Think of it as a fully automated "contact list".
 
   The store supports loading and saving of the list asynchrounusly.
-
 */
-
 
 class AddressBook: public QObject, public SimpleDataStore
 {
@@ -28,9 +23,11 @@ private:
 	friend class GenerateRunnable<AddressBook>;
 
 public:
-	explicit AddressBook(QString filename="", QObject *parent=nullptr);
+	explicit AddressBook(QObject *parent=nullptr);
 	virtual ~AddressBook() Q_DECL_OVERRIDE;
 
+public:
+	void configure(QString filename);
 
 	// SimpleDataStore interface
 public:
@@ -51,16 +48,13 @@ public:
 	void setHookSignals(QObject &ob, bool hook);
 
 signals:
-
 	void associateAdded(QString id);
 	void associateRemoved(QString id);
 	void associatesChanged();
 
 
 public:
-
 	friend const QDebug &operator<<(QDebug &d, AddressBook &ks);
-
 
 };
 
@@ -69,4 +63,5 @@ public:
 const QDebug &operator<<(QDebug &d, AddressBook &ks);
 
 
-#endif // ADDRESSBOOK_HPP
+#endif
+// ADDRESSBOOK_HPP

@@ -13,21 +13,21 @@
 #define OC_METHODGATE()  MethodGate ocMethodGate(this); (void)(ocMethodGate); BUFFER_HONEYPOT
 #define OC_FUNCTIONGATE()  FunctionGate ocFunctionGate; (void)(ocFunctionGate); BUFFER_HONEYPOT
 
-
-
-class MethodGate{
+class MethodGate
+{
 
 public:
-
 	MethodGate(const void *parentThis);
+
 };
 
 
-class FunctionGate{
+class FunctionGate
+{
 
 public:
-
 	FunctionGate();
+
 };
 
 #endif

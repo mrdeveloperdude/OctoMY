@@ -1,0 +1,7 @@
+<RCC version="1.0">
+	<qresource>
+		<file>icons/arrow.png</file>
+		<file>icons/groupbox.png</file>
+		<file>data/keys.json</file>
+	</qresource>
+</RCC>

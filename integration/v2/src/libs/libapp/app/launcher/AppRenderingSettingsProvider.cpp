@@ -3,6 +3,9 @@
 #include "uptime/MethodGate.hpp"
 #include "glt/IncludeOpenGL.hpp"
 
+#include <QtGlobal>
+#include <QApplication>
+
 
 QSurfaceFormat AppRenderingSettingsProvider::surfaceFormat()
 {
@@ -19,8 +22,23 @@ QSurfaceFormat AppRenderingSettingsProvider::surfaceFormat()
 	return format;
 }
 
-Qt::ApplicationAttribute AppRenderingSettingsProvider::applicationAttributes()
+QMap<Qt::ApplicationAttribute, bool> AppRenderingSettingsProvider::applicationAttributes()
 {
 	OC_METHODGATE();
-	return Qt::OCTOMY_QT_OGL_APP_ATTRIBUTE;
+	QMap<Qt::ApplicationAttribute, bool> out;
+	out[Qt::OCTOMY_QT_OGL_APP_ATTRIBUTE]=true;
+	out[Qt::AA_ShareOpenGLContexts]=true;
+	return out;
+}
+
+
+
+
+void AppRenderingSettingsProvider::applyApplicationAttributes()
+{
+	OC_METHODGATE();
+	QMap<Qt::ApplicationAttribute, bool> atr=applicationAttributes();
+	for(QMap<Qt::ApplicationAttribute, bool>::const_iterator it = atr.constBegin(), end=atr.constEnd(); it!=end; ++it){
+		QApplication::setAttribute(it.key(), it.value());
+	}
 }

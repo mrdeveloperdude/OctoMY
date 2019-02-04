@@ -12,12 +12,11 @@ CONFIG += ordered
 
 TEST_PROJECTS+= \
 
-# NOTE: USE_TESTS_BASIC is enabled in local_override.pri on the build server as default to include all the safe-to-run automatic tests
-contains(DEFINES, USE_TESTS_BASIC){
+# NOTE: OC_USE_TESTS_BASIC is enabled in local_override.pri on the build server as default to include all the safe-to-run automatic tests
+contains(DEFINES, OC_USE_TESTS_BASIC){
 
 	message(ADDING BASIC TESTS TO BUILD)
 	TEST_PROJECTS+= \
-		testHardwareWidgetgit \
 		testHardwareWidget \
 		testNameGenerator \
 		testAddressBook \
@@ -65,8 +64,8 @@ contains(DEFINES, USE_TESTS_BASIC){
 
 
 
-	# NOTE: EXTERNAL_LIB_OPENCL is enabled when useful in local_override.pri
-	contains(DEFINES, EXTERNAL_LIB_OPENCL){
+	# NOTE: OC_USE_LIB_EXT_OPENCL is enabled when useful in local_override.pri
+	contains(DEFINES, OC_USE_LIB_EXT_OPENCL){
 	message(ADDING 'OPENCL' TESTS TO BUILD)
 	TEST_PROJECTS+= \
 		testOpenCL \
@@ -74,8 +73,8 @@ contains(DEFINES, USE_TESTS_BASIC){
 	}
 
 
-	# NOTE: EXTERNAL_LIB_ESPEAK is enabled when useful in local_override.pri
-	contains(DEFINES, EXTERNAL_LIB_ESPEAK){
+	# NOTE: OC_USE_LIB_EXT_ESPEAK is enabled when useful in local_override.pri
+	contains(DEFINES, OC_USE_LIB_EXT_ESPEAK){
 	message(ADDING 'ESPEAK' TESTS TO BUILD)
 	TEST_PROJECTS+= \
 		testESpeak \
@@ -85,16 +84,16 @@ contains(DEFINES, USE_TESTS_BASIC){
 }
 
 
-# NOTE: USE_TESTS_WEB can enabled in local_override.pri when the build server is connected to the internet
-contains(DEFINES, USE_TESTS_WEB){
+# NOTE: OC_USE_TESTS_WEB can enabled in local_override.pri when the build server is connected to the internet
+contains(DEFINES, OC_USE_TESTS_WEB){
 	message(ADDING 'WEB' TESTS TO BUILD)
 	TEST_PROJECTS+= \
 	# TODO: Add the tests here that require web-connection to work here
 }
 
 
-# NOTE: USE_TESTS_SELECTED can enabled in local_override.pri to build a few tests that you are working on (as a developer)
-contains(DEFINES, USE_TESTS_SELECTED){
+# NOTE: OC_USE_TESTS_SELECTED can enabled in local_override.pri to build a few tests that you are working on (as a developer)
+contains(DEFINES, OC_USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
 #		testAddressBook \
@@ -151,9 +150,9 @@ contains(DEFINES, USE_TESTS_SELECTED){
 
 }
 
-# NOTE: USE_TESTS_STRESS is enabled in local_overrides.pri when you want to build/run stress tests.
+# NOTE: OC_USE_TESTS_STRESS is enabled in local_overrides.pri when you want to build/run stress tests.
 # NOTE: Stress tests are usually interactive and require manual intervention so they are not suitable for "automated" running.
-contains(DEFINES, USE_TESTS_STRESS){
+contains(DEFINES, OC_USE_TESTS_STRESS){
 	message(ADDING 'STRESS' TESTS TO BUILD)
 
 	STRESS_PROJECTS+= \

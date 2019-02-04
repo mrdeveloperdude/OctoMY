@@ -1,6 +1,11 @@
 #include "LocalAddressList.hpp"
 
-#include "utility/Utility.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/ConnectionType.hpp"
+
+#include "utility/network/Network.hpp"
+
+
 #include "comms/NetworkAddress.hpp"
 
 
@@ -88,7 +93,7 @@ QHostAddress LocalAddressList::currentAddress() const
 bool LocalAddressList::isUpdateNeeded()
 {
 	OC_METHODGATE();
-	QList<QHostAddress> local=utility::allLocalNetworkAddresses();
+	QList<QHostAddress> local=utility::network::allLocalNetworkAddresses();
 	bool updateNeeded=false;
 	if(local.size() != size()) {
 		updateNeeded=true;
@@ -134,8 +139,8 @@ void LocalAddressList::updateAddresses(bool keepCurrent)
 	QHostAddress last=currentAddress();
 	const bool lastIsGood=!last.isNull();
 	clear();
-	const QHostAddress defaultGateway=utility::defaultGatewayAddress();
-	QList<QHostAddress> local=utility::allLocalNetworkAddresses();
+	const QHostAddress defaultGateway=utility::network::defaultGatewayAddress();
+	QList<QHostAddress> local=utility::network::allLocalNetworkAddresses();
 	//qDebug().noquote().nospace()<<"UPDATING LOCAL ADDRESSES: ";
 	//qDebug().noquote().nospace()<<" + last: "<<last;
 	//qDebug().noquote().nospace()<<" + gateway: "<<dgw;
@@ -143,7 +148,7 @@ void LocalAddressList::updateAddresses(bool keepCurrent)
 		//qDebug().noquote().nospace()<<" + addr: "<<addr<<" (dgw closeness= "<< utility::addressCloseness(addr, dgw)<< ")";
 		*this <<addr;
 	}
-	const QHostAddress closest=utility::closestAddress(*this, (keepCurrent && lastIsGood)?last:defaultGateway);
+	const QHostAddress closest=utility::network::closestAddress(*this, (keepCurrent && lastIsGood)?last:defaultGateway);
 	//qDebug().noquote().nospace()<<" + closest: "<<closest<<" (keepCurrent="<< keepCurrent<<")";
 	setCurrent(closest, port());
 }

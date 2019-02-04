@@ -1,6 +1,7 @@
 #include "AddressBook.hpp"
 
-#include "utility/Utility.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/ConnectionType.hpp"
 
 #include <QFile>
 #include <QThreadPool>
@@ -11,9 +12,8 @@
 #include <QVariantMap>
 #include <QVariantList>
 
-AddressBook::AddressBook(QString filename, QObject *parent)
+AddressBook::AddressBook(QObject *parent)
 	: QObject(parent)
-	, SimpleDataStore(filename)
 {
 	OC_METHODGATE();
 	setObjectName("AddressBook");
@@ -25,6 +25,15 @@ AddressBook::~AddressBook()
 {
 	OC_METHODGATE();
 }
+
+
+
+void AddressBook::configure(QString filename)
+{
+	OC_METHODGATE();
+	SimpleDataStore::configure(filename);
+}
+
 
 
 bool AddressBook::fromMap(QVariantMap data)
@@ -157,7 +166,7 @@ void AddressBook::setHookSignals(QObject &ob, bool hook)
 const QDebug &operator<<(QDebug &d, AddressBook &ab)
 {
 	OC_FUNCTIONGATE();
-	d.nospace() <<"AddressBook{ fn="<<ab.filename()<<", fexists="<<ab.fileExists()<<", ready="<<(const bool)ab.ready()<<", peers:[";
+	d.nospace() << "AddressBook{ fn=" << ab.filename() << ", fexists=" << ab.fileExists() << ", ready=" << static_cast<const bool>(ab.ready()) << ", peers:[";
 	for(QMap<QString, QSharedPointer<Associate> >::iterator b=ab.mAssociates.begin(), e=ab.mAssociates.end(); b!=e; ++b) {
 		QString key=b.key();
 		//b.value();

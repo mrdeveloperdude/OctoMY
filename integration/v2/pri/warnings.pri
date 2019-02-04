@@ -40,10 +40,16 @@ gcc{
 	#QMAKE_CXXFLAGS += -Weffc++
 
 	# Remove redundant/annoying warnings
+
+	QMAKE_CXXFLAGS += -Wno-covered-switch-defaults
 	QMAKE_CXXFLAGS += -Wno-padded
 	QMAKE_CXXFLAGS -= -Wold-style-cast -Wctor-dtor-privacy -Wshadow -Wswitch-default
 	QMAKE_CXXFLAGS -= -Wsign-conversion -Wno-gnu-array-member-paren-init
 	QMAKE_CXXFLAGS += -Wno-unused-parameter -Wno-format-contains-nul  -Wno-format-security -Wno-vla
+
+	# Mark c++17 extensions to be welcome (no warnings or errors)
+	QMAKE_CXXFLAGS += -Wno-c++17-extensions
+
 	# Brave...
 	#QMAKE_CXXFLAGS += -Werror
 

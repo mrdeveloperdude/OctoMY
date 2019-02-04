@@ -7,7 +7,7 @@
 
 #define TEST_RESOURCES_BASE ":/resources/icons/"
 
-#ifdef EXTERNAL_LIB_OPENCL
+#ifdef OC_USE_LIB_EXT_OPENCL
 
 #include "glt/IncludeOpenGL.hpp"
 
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) \
 
 
 #else
-// EXTERNAL_LIB_OPENCL
+// OC_USE_LIB_EXT_OPENCL
 
 
 #define OC_TEST_MAIN_OGL(testType, objectType) \
@@ -63,14 +63,14 @@ QTEST_ADD_GPU_BLACKLIST_SUPPORT_DEFS \
 QT_END_NAMESPACE \
 int main(int argc, char *argv[]) \
 { \
-	qDebug() << " ### OC_TEST_MAIN_OGL disabled beacuse no EXTERNAL_LIB_OPENCL, aborting...";  \
+	qDebug() << " ### OC_TEST_MAIN_OGL disabled beacuse no OC_USE_LIB_EXT_OPENCL, aborting...";  \
 	return 0; \
 }
 
 
 
 #endif
-// EXTERNAL_LIB_OPENCL
+// OC_USE_LIB_EXT_OPENCL
 
 
 // this is the equivalent of the QTEST_MAIN macro supplied by QTest

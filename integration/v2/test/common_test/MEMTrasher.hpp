@@ -40,7 +40,7 @@ public:
 		}
 		const qint64 bytes=((static_cast<quint64>(pct)*available)/100L);
 		if(bytes>0) {
-			//qDebug()<<"Trying stress mem "<<utility::humanReadableSize(available)<< " for pct="<<pct<< " for 100L="<<100L <<" for sizeof(char)="<<sizeof(char) <<" for available="<<available <<" for bytes="<<bytes ;
+			//qDebug()<<"Trying stress mem "<<utility::string::humanReadableSize(available)<< " for pct="<<pct<< " for 100L="<<100L <<" for sizeof(char)="<<sizeof(char) <<" for available="<<available <<" for bytes="<<bytes ;
 			stressMEM=static_cast<char *>(malloc(static_cast<size_t>(bytes)));
 			int seed=rand();
 			if(nullptr != stressMEM) {

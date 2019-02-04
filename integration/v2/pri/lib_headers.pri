@@ -1,14 +1,14 @@
-# This defined AUTOLIBS and AUTOLINKS variables
+# This defines AUTOLIBS_SEPARATE and AUTOLIBS_COMBINED variables
 include(lib_list.pri)
 
 # We synthesize the "libcombined" since it does not exist on disk
-AUTOLIBS2= combined
+AUTOLIBS_SEPARATE2= combined
 
 # We add the actual libs to be combined
-AUTOLIBS2 += $$AUTOLIBS
+AUTOLIBS_SEPARATE2 += $$AUTOLIBS_SEPARATE
 
 # Automatically set up each lib to build into libcombined
-for(A, AUTOLIBS2) {
+for(A, AUTOLIBS_SEPARATE2) {
 	LIBS +=				-L$$clean_path($${BUILD_SRCS}/libs/lib$${A}/$${OC_LIB_PREFIX_DIR}) -l$${A}
 	INCLUDEPATH +=		$$clean_path($${SRCS}/libs/lib$${A})
 #	INCLUDEPATH +=		$$clean_path($${BUILD_SRCS}/libs/lib$${A})
@@ -18,7 +18,7 @@ for(A, AUTOLIBS2) {
 
 
 # Even if code is linked via libcombined we still need full include paths for all sub libraries
-for(A, AUTOLINKS) {
+for(A, AUTOLIBS_COMBINED) {
 	INCLUDEPATH +=$$clean_path($${SRCS}/libs/lib$${A})
 }
 

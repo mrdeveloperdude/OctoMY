@@ -1,11 +1,9 @@
 #ifndef ADDRESSLIST_HPP
 #define ADDRESSLIST_HPP
 
-
-
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QString>
-#include <QSharedPointer>
 #include <QHostAddress>
 
 class NetworkAddress;
@@ -32,7 +30,6 @@ public:
 	explicit AddressList(QVariantList list);
 
 public:
-
 	void add(QSharedPointer<AddressEntry> address);
 	void merge(NetworkAddress adr, QString description="", quint64 now=0);
 	QSharedPointer<AddressEntry> highestScore(QHostAddress dgw=QHostAddress())  const;
@@ -47,7 +44,7 @@ public:
 	bool isValid(bool allMustBeValid=false, bool allowLoopback=true, bool allowMulticast=false, bool allowIPv6=true);
 
 
-
+public:
 	bool operator== (const AddressList &b) const;
 	bool operator!= (const AddressList &b) const;
 
@@ -55,10 +52,8 @@ public:
 };
 
 
-
-
-
-
 const QDebug &operator<<(QDebug &d, AddressList &a);
 
-#endif // ADDRESSLIST_HPP
+
+#endif
+// ADDRESSLIST_HPP

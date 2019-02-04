@@ -6,6 +6,11 @@
 class Constants
 {
 public:
+
+
+		// TODO: Integrate constants from settings
+
+
 	static const qint64 MAX_SYNC_INTERVAL;
 
 	static const QString ORGANIZATION_NAME;
@@ -17,6 +22,7 @@ public:
 
 
 
+	static const qint64 OCTOMY_WEB_TIMEOUT;
 
 
 	static const QByteArray OCTOMY_USER_AGENT;
@@ -30,6 +36,13 @@ public:
 
 	static const QByteArray OCTOMY_ZOO_API_DO_DISCOVERY_ESCROW;
 
+
+	static const QString ACCEPT_HEADER;
+	static const QString APPLICATION_JSON_MIME;
+
+
+
+
 	static const quint16 OCTOMY_UDP_BASE_PORT;
 	static const quint16 OCTOMY_UDP_DEFAULT_PORT_AGENT;
 	static const quint16 OCTOMY_UDP_DEFAULT_PORT_REMOTE;
@@ -37,8 +50,7 @@ public:
 	static const quint16 OCTOMY_UDP_DEFAULT_PORT_ZOO;
 
 
-
-
+	static const qint32 OCTOMY_WEB_COLLECT_AT_MOST;
 
 	static const QString AGENT_FACE_SPLITTER_MIDDLE_STATE;
 	static const QString AGENT_FACE_SPLITTER_TOP_STATE;

@@ -5,6 +5,11 @@
 #include <QVariant>
 #include <QDateTime>
 
+#include <QCryptographicHash>
+#include <QNetworkReply>
+#include <QAbstractSocket>
+#include <QMutex>
+
 namespace utility
 {
 
@@ -33,6 +38,43 @@ QString humanReadableSize(T bytes, int prec=2)
 {
 	return humanReadableSize(static_cast<qint64>(bytes), prec);
 }
+
+
+
+
+class HandleCounter
+{
+private:
+	quint64 handleCounter;
+	QMap<Qt::HANDLE, quint64> handleMap;
+	QMutex handleMutex;
+
+public:
+
+	HandleCounter();
+	QString handleCounterString(Qt::HANDLE h);
+
+};
+
+
+
+
+size_t snprint_hex(char *dst, size_t size, const uint8_t *pbtData, const size_t szBytes);
+QString toHEX(const uint8_t *pbtData, const size_t szBytes);
+QString hexdump(void *mem, unsigned int len, QString topic="");
+QString humanReadablize(QString orig, int space=4, QString sep="-");
+bool isPositiveInteger(QString s);
+QString perror();
+qint64 parseDate(QString str,QString fmt="yyyy-MM-ddThh:mm:ss");
+QString toHash(QString input, QCryptographicHash::Algorithm algo=QCryptographicHash::Sha1, bool upperCase=true);
+QString nameToNormalForm(QString name);
+QString networkErrorToString( QNetworkReply::NetworkError ne);
+QString socketErrorToString( QAbstractSocket::SocketError se);
+QString padstring(int level, QString base=" ");
+QString toSoundex(QString in);
+int levenshtein_distance(const QString &s1, const QString  &s2);
+QString handleCounterString(Qt::HANDLE h);
+QString currentThreadID();
 
 
 
