@@ -671,7 +671,7 @@ template <typename T>
 bool ASEvent<T>::run()
 {
 	OC_METHODGATE();
-	qDebug()<<"Entered Event::run() from thread "<<utility::concurrent::currentThreadID();
+	//qDebug()<<"Entered Event::run() from thread "<<utility::concurrent::currentThreadID();
 	ASEventPrivate<T> *p=p_ptr.data();
 	if(nullptr == p) {
 		qWarning().nospace().noquote()<<"ERROR: No p";

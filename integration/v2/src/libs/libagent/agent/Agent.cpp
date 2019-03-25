@@ -14,25 +14,25 @@
 #include <QDebug>
 
 Agent::Agent()
-	: mNodeConfigureHelper("app", true, true, false, true, true)
+	: mNodeConfigureHelper("app", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 	, mAgentConfigStore(OC_NEW AgentConfigStore())
 {
 	OC_METHODGATE();
-	qDebug()<<"Agent()";
+	//qDebug()<<"Agent()";
 	// NOTE: Please do not put code here that generates events. Instead put them in *configure*() or *activate*()
 }
 
 Agent::~Agent()
 {
 	OC_METHODGATE();
-	qDebug()<<"~Agent()";
+	//qDebug()<<"~Agent()";
 }
 
 
 void Agent::nodeConfigure()
 {
 	OC_METHODGATE();
-	qDebug()<<"nodeConfigure()";
+	//qDebug()<<"nodeConfigure()";
 	if(mNodeConfigureHelper.configure()){
 		//
 	}
@@ -44,7 +44,7 @@ void Agent::nodeActivate(const bool on)
 {
 	OC_METHODGATE();
 	if(mNodeConfigureHelper.activate(on)) {
-		qDebug()<<"nodeActivate(on="<<on<<")";
+		//qDebug()<<"nodeActivate(on="<<on<<")";
 		if(on) {
 			auto ctx=context();
 			if(!ctx.isNull()) {
@@ -52,7 +52,7 @@ void Agent::nodeActivate(const bool on)
 				mAgentConfigStore->configure(ctx->baseDir()+ "/agent_config.json");
 				mAgentConfigStore->activate(on);
 				mAgentConfigStore->synchronize([](QSharedPointer<SimpleDataStore> store, bool ok) {
-					qDebug()<<"mAgentConfigStore synced";
+					//qDebug()<<"mAgentConfigStore synced";
 					Q_UNUSED(store);
 					Q_UNUSED(ok);
 				});
@@ -74,12 +74,12 @@ void Agent::nodeActivate(const bool on)
 QSharedPointer<QWidget> Agent::nodeWindow()
 {
 	OC_METHODGATE();
-	qDebug()<<"nodeWindow()";
+	//qDebug()<<"nodeWindow()";
 	if(mWindow.isNull()) {
 		QSharedPointer<Agent> sp=this->QEnableSharedFromThis<Agent>::sharedFromThis();
 		if(sp.isNull()) {
 			volatile int ba=0;
-			qWarning()<<"SHARED POINTER TO THIS WAS NULL!"<<ba;
+			qWarning()<<"ERROR: SHARED POINTER TO THIS WAS NULL!"<<ba;
 		}
 		mWindow=QSharedPointer<AgentWindow>(OC_NEW AgentWindow(nullptr));
 		if(!mWindow.isNull()) {
@@ -119,7 +119,7 @@ void Agent::setPanic(bool panic)
 	OC_METHODGATE();
 	if(mPanic!=panic) {
 		mPanic=panic;
-		qWarning()<<"Panic set to: "<<mPanic;
+		//qWarning()<<"Panic set to: "<<mPanic;
 	}
 }
 

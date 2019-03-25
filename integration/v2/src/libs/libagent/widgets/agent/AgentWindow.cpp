@@ -102,7 +102,7 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 void AgentWindow::closeEvent(QCloseEvent *event)
 {
 	OC_METHODGATE();
-	qDebug()<<"closeEvent()";
+	//qDebug()<<"closeEvent()";
 	Q_UNUSED(event);
 	//shutDown();
 }
@@ -112,6 +112,6 @@ void AgentWindow::closeEvent(QCloseEvent *event)
 void AgentWindow::on_pushButtonTestQuit_clicked()
 {
 	OC_METHODGATE();
-	qDebug()<<"close button clicked ()";
+	// qDebug()<<"close button clicked ()";
 	nodeWindowRequestExit(EXIT_SUCCESS);
 }

@@ -37,7 +37,7 @@ void NodeWindow::nodeWindowConfigure(QSharedPointer<Node> node)
 
 	}
 	// Set new node
-	qDebug()<<"SETTING NODE TO "<<node;
+	// qDebug()<<"SETTING NODE TO "<<node;
 	mNode=node;
 	// Connect new agent
 	if(!mNode.isNull()) {
@@ -62,7 +62,7 @@ QSharedPointer<Node> NodeWindow::node()
 void NodeWindow::nodeWindowRequestExit(const int returnValue)
 {
 	OC_METHODGATE();
-	qDebug()<<"nodeWindowRequestExit(returnValue="<<returnValue<<")";
+	//qDebug()<<"nodeWindowRequestExit(returnValue="<<returnValue<<")";
 	auto n=node();
 	if(!n.isNull()) {
 		emit n->nodeRequestExit(returnValue);

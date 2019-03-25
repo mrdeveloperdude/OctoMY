@@ -9,7 +9,7 @@
 #include "uptime/SharedPointerWrapper.hpp"
 //#include "node/DataStoreInterface.hpp"
 #include "uptime/ConfigureHelper.hpp"
-
+#include "app/Constants.hpp"
 
 #include <QByteArray>
 #include <QDebug>
@@ -211,7 +211,7 @@ AsyncStore<T>::AsyncStore()
 	, mMemoryCounter(0)
 	, mCompleted(false)
 	, mSynchronousMode(false)
-	, mConfigureHelper("AsyncStore", true, true, false, true, true)
+	, mConfigureHelper("AsyncStore", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 {
 	OC_METHODGATE();
 }
@@ -273,9 +273,9 @@ void AsyncStore<T>::activate(const bool on)
 	} else {
 		synchronize();
 		complete();
-		qWarning()<<"Waiting for asyncstore future finish...";
+		//qWarning()<<"Waiting for asyncstore future finish...";
 		mCompleteFuture.waitForFinished();
-		qWarning()<<"Got for asyncstore future finish :)";
+		//qWarning()<<"Got for asyncstore future finish :)";
 		// NOTE: synchronize and complete both need store to be activated, so we deactivate last
 		mConfigureHelper.activate(on);
 	}
@@ -287,7 +287,7 @@ void AsyncStore<T>::addJournal(QString entry)
 {
 	OC_METHODGATE();
 	QMutexLocker ml(&mJournalMutex);
-	qDebug()<<"Adding to journal: "<<entry;
+	//qDebug()<<"Adding to journal: "<<entry;
 	mJournal << entry;
 }
 
@@ -345,7 +345,7 @@ template <typename T>
 ASEvent<T> AsyncStore<T>::enqueueEvent(ASEvent<T> event)
 {
 	OC_METHODGATE();
-	qDebug()<<"Enqueuing event "<<event;
+	//qDebug()<<"Enqueuing event "<<event;
 	// We are not asynchronous, do events as they occur
 	if(mSynchronousMode) {
 		processEvent(event);
@@ -378,7 +378,7 @@ template <typename T>
 void AsyncStore<T>::processEvent(ASEvent<T> &event)
 {
 	OC_METHODGATE();
-	qDebug()<<"Processing event "<<event;
+	//qDebug()<<"Processing event "<<event;
 	if(!event.isNull()) {
 		event.run();
 	}

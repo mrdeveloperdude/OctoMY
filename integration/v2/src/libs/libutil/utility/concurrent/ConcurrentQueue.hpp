@@ -4,7 +4,7 @@
 #include "utility/concurrent/AtomicBoolean.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/ConfigureHelper.hpp"
-
+#include "app/Constants.hpp"
 
 #include <QMutex>
 #include <QWaitCondition>
@@ -72,7 +72,7 @@ template <typename T>
 ConcurrentQueue<T>::ConcurrentQueue(int capacity)
 	: mCapacity(capacity)
 	, mDone(false)
-	, mConfigureHelper("ConcurrentQueue", false, true, false, true, true)
+	, mConfigureHelper("ConcurrentQueue", false, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 {
 	OC_METHODGATE();
 }
@@ -142,7 +142,7 @@ T ConcurrentQueue<T>::get()
 		while((count<=0) && (!mDone)) {
 			const bool didTimeOut=mNotEmpty.wait(&mMutex, timeOutMillis);
 			count=mItems.count();
-			qDebug()<<" NOT EMPTY WAIT LOOP: ... done="<<mDone <<" count="<<count<<" didTimeOut="<<didTimeOut<<"("<<timeOutMillis<<" ms)";
+			//qDebug()<<" NOT EMPTY WAIT LOOP: ... done="<<mDone <<" count="<<count<<" didTimeOut="<<didTimeOut<<"("<<timeOutMillis<<" ms)";
 		}
 		if(mDone) {
 			return T();

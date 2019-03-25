@@ -54,4 +54,8 @@ const QString Constants::AGENT_CONNECT_BUTTON_COLOR="green";
 const QString Constants::AGENT_DISCONNECT_COLOR="#1a3a52";
 
 
-const QString Constants::AGENT_CONNECTION_STATUS="agent.connection.status";
+const QString Constants::AGENT_CONNECTION_STATUS("agent.connection.status");
+
+
+const bool Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS(true);
+const bool Constants::OC_LOG_CONFIGURE_HELPER_CHANGES(false);

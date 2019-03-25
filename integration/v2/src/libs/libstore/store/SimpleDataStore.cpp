@@ -1,7 +1,6 @@
 #include "SimpleDataStore.hpp"
 
-
-
+#include "app/Constants.hpp"
 
 
 SimpleDataStoreFrontend::SimpleDataStoreFrontend(QSharedPointer<SimpleDataStore> dataStore)
@@ -21,7 +20,7 @@ SimpleDataStoreFrontend::~SimpleDataStoreFrontend()
 
 
 SimpleDataStore::SimpleDataStore()
-	: mConfigureHelper("SimpleDataStore", true, true, true, true, true)
+	: mConfigureHelper("SimpleDataStore", true, true, true, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 {
 	OC_METHODGATE();
 }

@@ -67,6 +67,10 @@ public:
 
 	static const QString AGENT_CONNECTION_STATUS;
 
+
+	static const bool OC_LOG_CONFIGURE_HELPER_WARNINGS;
+	static const bool OC_LOG_CONFIGURE_HELPER_CHANGES;
+
 };
 
 #endif // CONSTANTS_HPP

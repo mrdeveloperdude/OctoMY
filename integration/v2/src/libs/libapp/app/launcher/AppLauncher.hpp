@@ -10,6 +10,7 @@
 #include "app/launcher/AppRenderingSettingsProvider.hpp"
 #include "app/launcher/AppCommandLineParser.hpp"
 #include "app/AppContext.hpp"
+#include "app/Constants.hpp"
 
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
@@ -134,13 +135,13 @@ public:
 
 template <typename T>
 AppLauncher<T>::AppLauncher()
-	: mAppConfigureHelper("launcher", true, true, false, true, true)
+	: mAppConfigureHelper("launcher", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 	  // Default to exit with failure as a means to detect if something happens before we manage to exit cleanly
 	, mReturnValue(EXIT_FAILURE)
 	, mQApp(nullptr)
 {
 	OC_METHODGATE();
-	qDebug()<<"AppLauncher()";
+	//qDebug()<<"AppLauncher()";
 #ifndef Q_OS_ANDROID
 	LogHandler::setLogging(true);
 #endif
@@ -151,14 +152,14 @@ template <typename T>
 AppLauncher<T>::~AppLauncher()
 {
 	OC_METHODGATE();
-	qDebug()<<"~AppLauncher()";
+	//qDebug()<<"~AppLauncher()";
 }
 
 
 template <typename T>
 void AppLauncher<T>::configure(int argc, char *argv[], QString base)
 {
-	qDebug()<<"configure()";
+	//qDebug()<<"configure()";
 	OC_METHODGATE();
 	if(mAppConfigureHelper.configure()) {
 		QSharedPointer <AppCommandLineParser> clp(OC_NEW AppCommandLineParser());
@@ -176,7 +177,7 @@ template <typename T>
 int AppLauncher<T>::run()
 {
 	OC_METHODGATE();
-	qDebug()<<"run()";
+	//qDebug()<<"run()";
 	QCoreApplication::setOrganizationName(Settings::ORGANIZATION_NAME);
 	QCoreApplication::setOrganizationDomain(Settings::DOMAIN_NAME);
 
@@ -189,7 +190,7 @@ int AppLauncher<T>::run()
 		asfp.applyApplicationAttributes();
 		int argc=mContext->commandLine()->argc();
 		char **argv=mContext->commandLine()->argv();
-		qDebug()<<(mContext->isHeadless()?"HEADLESS":"HEADFULL");
+		//qDebug()<<(mContext->isHeadless()?"HEADLESS":"HEADFULL");
 		mQApp=(mContext->isHeadless()?(OC_NEW QCoreApplication(argc, argv)):(OC_NEW QApplication(argc, argv)));
 		if(nullptr!=mQApp) {
 			// We need full control of when application quits
@@ -207,7 +208,7 @@ int AppLauncher<T>::run()
 			// NOTE: This call will block until mQApp::quit()  mQApp::exit() is called and the eventloop is terminated
 			mReturnValue = mQApp->exec();
 
-			qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done with "<< mReturnValue << ", quitting";
+			//qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done with "<< mReturnValue << ", quitting";
 		} else {
 			qWarning()<<"ERROR: no app, quitting";
 			mReturnValue=EXIT_FAILURE;
@@ -223,7 +224,7 @@ template <typename T>
 void AppLauncher<T>::appActivate(const bool on)
 {
 	OC_METHODGATE();
-	qDebug()<<"appActivate(on="<<on<<")";
+	//qDebug()<<"appActivate(on="<<on<<")";
 	if(mAppConfigureHelper.activate(on)) {
 		if(on) {
 			if(!mContext.isNull()) {
@@ -236,14 +237,14 @@ void AppLauncher<T>::appActivate(const bool on)
 						mApp->appConfigure(sharedThis);
 						// Handle when (de)activation of this app is completed
 						if(!QObject::connect(appPtr, &T::nodeActivateChanged, appPtr, [=](const bool on) {
-						qDebug()<<"nodeActivationChanged(on="<<on<<")";
+						//qDebug()<<"nodeActivationChanged(on="<<on<<")";
 							appActivateDone(on);
 						}, OC_CONTYPE)) {
 							qWarning()<<"ERROR: Could not connect";
 						}
 						// Handle when someone wants the app to stop
 						if(!QObject::connect(appPtr, &T::nodeRequestExit, appPtr, [=](const int returnValue) {
-						qDebug()<<"nodeRequestExit("<<returnValue<<")";
+						//qDebug()<<"nodeRequestExit("<<returnValue<<")";
 							mReturnValue=returnValue;
 							appActivate(false);
 						}, OC_CONTYPE)) {
@@ -284,10 +285,10 @@ template <typename T>
 void AppLauncher<T>::appActivateDone(const bool on)
 {
 	OC_METHODGATE();
-	qDebug()<<"appActivateDone(on="<<on<<")";
+	//qDebug()<<"appActivateDone(on="<<on<<")";
 	if(!mContext.isNull()) {
 		if(on) {
-			qDebug()<<"Opening window";
+			//qDebug()<<"Opening window";
 			if(!mContext->isHeadless()) {
 				mWindow=mApp->appWindow();
 				if(!mWindow.isNull()) {
@@ -297,17 +298,17 @@ void AppLauncher<T>::appActivateDone(const bool on)
 				}
 			}
 		} else {
-			qDebug()<<"Closing window";
+			//qDebug()<<"Closing window";
 			if(!mWindow.isNull()) {
 				mWindow->close();
 				mWindow.clear();
 			}
-			qDebug()<<"Closing app";
+			//qDebug()<<"Closing app";
 			if(!mApp.isNull()) {
 				mApp.clear();
 			}
 			if(nullptr!=mQApp) {
-				qDebug()<<"CALLING EXIT WITH "<<mReturnValue;
+				//qDebug()<<"CALLING EXIT WITH "<<mReturnValue;
 				mQApp->exit(mReturnValue);
 			} else {
 				qWarning()<<"ERROR: No mQApp to exit";

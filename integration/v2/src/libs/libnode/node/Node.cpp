@@ -70,7 +70,7 @@ quint16 defaultPortForNodeType(NodeType type)
 
 Node::Node()
 	: QObject(nullptr)
-	, mAppConfigureHelper("node", true, true, false, true, true)
+	, mAppConfigureHelper("node", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 	, mAddresses(OC_NEW LocalAddressList())
 	, mLocalIdentity(OC_NEW LocalIdentityStore())
 	, mAddressBook(OC_NEW AddressBook())
@@ -78,14 +78,14 @@ Node::Node()
 	, mServerURL("http://zoo.octomy.org:"+QString::number(Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
 {
 	OC_METHODGATE();
-	qDebug()<<"Node()";
+	//qDebug()<<"Node()";
 }
 
 
 Node::~Node()
 {
 	OC_METHODGATE();
-	qDebug()<<"~Node()";
+	//qDebug()<<"~Node()";
 }
 
 // TODO: Look at simplifying init system by combining appInit and appConfigure
@@ -96,7 +96,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 {
 	OC_METHODGATE();
 	if(mAppConfigureHelper.configure()) {
-		qDebug()<<"appConfigure()";
+		//qDebug()<<"appConfigure()";
 		mLauncher=launcher;
 		auto ctx=context();
 		if(!ctx.isNull()) {
@@ -130,7 +130,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 void Node::appActivate(const bool on)
 {
 	OC_METHODGATE();
-	qDebug()<<"appActivate()";
+	//qDebug()<<"appActivate()";
 
 	if(mAppConfigureHelper.activate(on)) {
 		if(on) {
@@ -278,7 +278,7 @@ void Node::appActivate(const bool on)
 QSharedPointer<QWidget> Node::appWindow()
 {
 	OC_METHODGATE();
-	qDebug()<<"appWindow()";
+	//qDebug()<<"appWindow()";
 	return nodeWindow();
 }
 
