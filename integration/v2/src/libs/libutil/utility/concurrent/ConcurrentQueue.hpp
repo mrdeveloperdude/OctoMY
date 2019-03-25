@@ -3,10 +3,26 @@
 
 #include "utility/concurrent/AtomicBoolean.hpp"
 #include "uptime/MethodGate.hpp"
+#include "uptime/ConfigureHelper.hpp"
+
 
 #include <QMutex>
 #include <QWaitCondition>
 #include <QLinkedList>
+#include <QAtomicInteger>
+#include <QDebug>
+
+class ConcurrentQueueSignalEmitter: public QObject
+{
+	Q_OBJECT
+public:
+	ConcurrentQueueSignalEmitter(QObject *parent=nullptr);
+
+signals:
+	void contentChanged();
+};
+
+
 
 template <typename T>
 class ConcurrentQueue
@@ -23,9 +39,19 @@ private:
 
 	AtomicBoolean mDone;
 
+	ConfigureHelper mConfigureHelper;
+
+public:
+	ConcurrentQueueSignalEmitter mSignalEmitter;
+
 public:
 	explicit ConcurrentQueue(int capacity=0);
 	virtual ~ConcurrentQueue();
+
+
+public:
+	void activate(const bool on);
+
 
 public:
 	void put(T item);
@@ -33,6 +59,8 @@ public:
 	T tryGet(bool &got);
 	int count();
 	bool isEmpty();
+	bool isDone();
+
 };
 
 
@@ -44,6 +72,7 @@ template <typename T>
 ConcurrentQueue<T>::ConcurrentQueue(int capacity)
 	: mCapacity(capacity)
 	, mDone(false)
+	, mConfigureHelper("ConcurrentQueue", false, true, false, true, true)
 {
 	OC_METHODGATE();
 }
@@ -57,23 +86,46 @@ ConcurrentQueue<T>::~ConcurrentQueue()
 }
 
 template <typename T>
+void ConcurrentQueue<T>::activate(const bool on)
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.activate(on)) {
+		if(on) {
+
+		} else {
+			mDone=true;
+			mNotFull.wakeAll();
+			mNotEmpty.wakeAll();
+			emit mSignalEmitter.contentChanged();
+		}
+	}
+}
+
+
+
+template <typename T>
 void ConcurrentQueue<T>::put(T item)
 {
 	OC_METHODGATE();
-	{
-		QMutexLocker ml(&mMutex);
-		int count=mItems.count();
-		if ((mCapacity > 0) && (count >= mCapacity)) {
-			//qDebug()<<"Waiting for not-full with count="<<count;
-			mNotFull.wait(&mMutex);
-			count=mItems.count();
-			//qDebug()<<"Got for not-full with count="<<count;
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		if(!mDone) {
+			QMutexLocker ml(&mMutex);
+			int count=mItems.count();
+			if ((mCapacity > 0) && (count >= mCapacity)) {
+				//qDebug()<<"Waiting for not-full with count="<<count;
+				mNotFull.wait(&mMutex);
+				count=mItems.count();
+				//qDebug()<<"Got for not-full with count="<<count;
+			}
+			mItems.push_front(item);
+			//qDebug()<<" + DataStore::enqueueTransaction() appended transaction giving total of "<<mTransactionLog.count();
+			//qDebug()<<"Signaling not-empty";
+			mNotEmpty.wakeAll();
+			emit mSignalEmitter.contentChanged();
+			//qDebug()<<"'PUT' DONE";
+		} else {
+			qWarning()<<"WARNING: Trying to put item when done";
 		}
-		mItems.push_front(item);
-		//qDebug()<<" + DataStore::enqueueTransaction() appended transaction giving total of "<<mTransactionLog.count();
-		//qDebug()<<"Signaling not-empty";
-		mNotEmpty.wakeAll();
-		//qDebug()<<"'PUT' DONE";
 	}
 }
 
@@ -82,34 +134,36 @@ template <typename T>
 T ConcurrentQueue<T>::get()
 {
 	OC_METHODGATE();
-	unsigned long rtto=1000;
-	QMutexLocker ml(&mMutex);
-	int count=mItems.count();
-	//qDebug()<<"Waiting for not-empty with count="<<count;
-	while((count<=0) && (!mDone)) {
-		const bool wok=mNotEmpty.wait(&mMutex, rtto);
-		if(!wok) {
-			//qDebug()<<" ... done="<<mDone <<" count="<<count;
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		unsigned long timeOutMillis=1000;
+		QMutexLocker ml(&mMutex);
+		int count=mItems.count();
+		//qDebug()<<"Waiting for not-empty with count="<<count;
+		while((count<=0) && (!mDone)) {
+			const bool didTimeOut=mNotEmpty.wait(&mMutex, timeOutMillis);
+			count=mItems.count();
+			qDebug()<<" NOT EMPTY WAIT LOOP: ... done="<<mDone <<" count="<<count<<" didTimeOut="<<didTimeOut<<"("<<timeOutMillis<<" ms)";
 		}
+		if(mDone) {
+			return T();
+		}
+		//qDebug()<<"Got not-empty with count="<<count;
+		const bool wasFull=(count >= mCapacity);
+		T item=mItems.takeLast();
 		count=mItems.count();
+		const bool isFull=(count < mCapacity);
+		//qDebug()<<"State mCapacity="<<mCapacity<<", wasFull="<<wasFull<<", isFull="<<isFull<<", count="<<count;
+		if((mCapacity>0) && (wasFull) && (!isFull)) {
+			//qDebug()<<"Signaling not-full";
+			ml.unlock();
+			mNotFull.wakeAll();
+			ml.relock();
+			emit mSignalEmitter.contentChanged();
+		}
+		//qDebug()<<"'GET' DONE";
+		return item;
 	}
-	if(mDone) {
-		return T();
-	}
-	//qDebug()<<"Got not-empty with count="<<count;
-	const bool wasFull=(count >= mCapacity);
-	T item=mItems.takeLast();
-	count=mItems.count();
-	const bool isFull=(count < mCapacity);
-	//qDebug()<<"State mCapacity="<<mCapacity<<", wasFull="<<wasFull<<", isFull="<<isFull<<", count="<<count;
-	if((mCapacity>0) && (wasFull) && (!isFull)) {
-		//qDebug()<<"Signaling not-full";
-		ml.unlock();
-		mNotFull.wakeAll();
-		ml.relock();
-	}
-	//qDebug()<<"'GET' DONE";
-	return item;
+	return T();
 }
 
 
@@ -119,27 +173,31 @@ template <typename T>
 T ConcurrentQueue<T>::tryGet(bool &got)
 {
 	OC_METHODGATE();
-	QMutexLocker ml(&mMutex);
-	int count=mItems.count();
-	if(count<=0){
-		got=false;
-		return T();
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		QMutexLocker ml(&mMutex);
+		int count=mItems.count();
+		if(count<=0) {
+			got=false;
+			return T();
+		}
+		//qDebug()<<"Got not-empty with count="<<count;
+		const bool wasFull=(count >= mCapacity);
+		T item=mItems.takeLast();
+		got=true;
+		count=mItems.count();
+		const bool isFull=(count < mCapacity);
+		//qDebug()<<"State mCapacity="<<mCapacity<<", wasFull="<<wasFull<<", isFull="<<isFull<<", count="<<count;
+		if((mCapacity>0) && (wasFull) && (!isFull)) {
+			//qDebug()<<"Signaling not-full";
+			ml.unlock();
+			mNotFull.wakeAll();
+			ml.relock();
+			emit mSignalEmitter.contentChanged();
+		}
+		//qDebug()<<"'GET' DONE";
+		return item;
 	}
-	//qDebug()<<"Got not-empty with count="<<count;
-	const bool wasFull=(count >= mCapacity);
-	T item=mItems.takeLast();
-	got=true;
-	count=mItems.count();
-	const bool isFull=(count < mCapacity);
-	//qDebug()<<"State mCapacity="<<mCapacity<<", wasFull="<<wasFull<<", isFull="<<isFull<<", count="<<count;
-	if((mCapacity>0) && (wasFull) && (!isFull)) {
-		//qDebug()<<"Signaling not-full";
-		ml.unlock();
-		mNotFull.wakeAll();
-		ml.relock();
-	}
-	//qDebug()<<"'GET' DONE";
-	return item;
+	return T();
 }
 
 
@@ -150,9 +208,12 @@ template <typename T>
 int ConcurrentQueue<T>::count()
 {
 	OC_METHODGATE();
-	QMutexLocker ml(&mMutex);
-	const int count=mItems.count();
-	return count;
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		QMutexLocker ml(&mMutex);
+		const int count=mItems.count();
+		return count;
+	}
+	return 0;
 }
 
 
@@ -164,25 +225,16 @@ bool ConcurrentQueue<T>::isEmpty()
 }
 
 
-/*
-		{
-			QMutexLocker ml(&mTransactionLogMutex);
-			const int count=mTransactionLog.count();
-			if (count >0) {
-				trans=mTransactionLog.takeLast();
-				gotOne=true;
-				//qDebug()<<" + DataStore::processTransactions() fetched transaction leaving behind "<<mTransactionLog.count();
-				mTransactionLogNotFull.wakeAll();
-			}
-		}
-		if(gotOne) {
-			qDebug()<<" + DataStore::processTransactions() running transaction with type="<<trans.type()<<"	from thread "<<utility::concurrent::currentThreadID();
-			trans.run();
-			qDebug()<<" + DataStore::processTransactions() done running transaction with type="<<trans.type()<<" from thread "<<utility::concurrent::currentThreadID();
-		} else {
-			qDebug()<<" + DataStore::processTransactions() no transaction fetched, looping from thread "<<utility::concurrent::currentThreadID();
-		}
-		return trans;
+template <typename T>
+bool ConcurrentQueue<T>::isDone()
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		return mDone;
+	}
+	return true;
+}
 
-*/
-#endif // CONCURRENTQUEUE_HPP
+
+#endif
+// CONCURRENTQUEUE_HPP

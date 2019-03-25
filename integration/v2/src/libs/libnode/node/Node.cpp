@@ -68,11 +68,12 @@ quint16 defaultPortForNodeType(NodeType type)
 }
 
 
-Node::Node(QObject *parent)
-	: QObject (parent)
+Node::Node()
+	: QObject(nullptr)
+	, mAppConfigureHelper("node", true, true, false, true, true)
+	, mAddresses(OC_NEW LocalAddressList())
 	, mLocalIdentity(OC_NEW LocalIdentityStore())
 	, mAddressBook(OC_NEW AddressBook())
-	, mAddresses(OC_NEW LocalAddressList())
 	, mLastStatusSend (0)
 	, mServerURL("http://zoo.octomy.org:"+QString::number(Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
 {
@@ -87,181 +88,190 @@ Node::~Node()
 	qDebug()<<"~Node()";
 }
 
+// TODO: Look at simplifying init system by combining appInit and appConfigure
+//  , renaming appDeInit to appDeConfigure, and maybe removing one layer so there
+//	is not appXXX + nodeXXX but just one of them.
 
 void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 {
 	OC_METHODGATE();
-	qDebug()<<"appConfigure()";
-	mLauncher=launcher;
-	auto ctx=context();
-	if(!ctx.isNull()) {
-		//	, mKeyStore (context()->baseDir() + "/keystore.json", true)
-		mLocalIdentity->configure(ctx->baseDir() + "/local_identity.json");
-		mAddressBook->configure(ctx->baseDir() + "/addressbook.json");
-		//	, mAddresses(defaultPortForNodeType(mType), true)
-		//	, mCarrier(OC_NEW CommsCarrierUDP( static_cast<QObject *>(this)) )
-		//	, mComms (OC_NEW CommsChannel(*mCarrier, mKeyStore, mAddressBook, static_cast<QObject *>(this)))
-		//	, mDiscovery (OC_NEW DiscoveryClient(*this))
-		//	, mZooClient (OC_NEW ZooClient(this))
-		//	, mSensors (OC_NEW SensorInput(this))
-		//	, mSensorsCourier(QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*mComms, this)))
-		//	, mBlobCourier(QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*mComms, this)))
-		//	, mCameras (OC_NEW CameraList(this))
-
-		// ScopedTimer nodeBootTimer(context()->base()+"-boot");
-		setObjectName(ctx->base());
-		nodeConfigure();
-	} else {
-		qWarning()<<"ERROR: No context";
-	}
-}
+	if(mAppConfigureHelper.configure()) {
+		qDebug()<<"appConfigure()";
+		mLauncher=launcher;
+		auto ctx=context();
+		if(!ctx.isNull()) {
+			//	, mKeyStore (context()->baseDir() + "/keystore.json", true)
 
 
-void Node::appInit()
-{
-	OC_METHODGATE();
-	qDebug()<<"appInit()";
+			//mAddresses->configure();
+			//mLocalIdentity->configure(ctx->baseDir() + "/local_identity.json");
+			//mAddressBook->configure(ctx->baseDir() + "/addressbook.json");
 
-	/*
-	if(nullptr!= mCarrier) {
-		const NetworkAddress listenAddress(QHostAddress::Any, mAddresses.port());
-		mCarrier->setListenAddress(listenAddress);
-	}
-	*/
+			//	, mAddresses(defaultPortForNodeType(mType), true)
+			//	, mCarrier(OC_NEW CommsCarrierUDP( static_cast<QObject *>(this)) )
+			//	, mComms (OC_NEW CommsChannel(*mCarrier, mKeyStore, mAddressBook, static_cast<QObject *>(this)))
+			//	, mDiscovery (OC_NEW DiscoveryClient(*this))
+			//	, mZooClient (OC_NEW ZooClient(this))
+			//	, mSensors (OC_NEW SensorInput(this))
+			//	, mSensorsCourier(QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*mComms, this)))
+			//	, mBlobCourier(QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*mComms, this)))
+			//	, mCameras (OC_NEW CameraList(this))
 
-	/*
-	mKeyStore.synchronize([this](ASEvent<QVariantMap> &se) {
-		const bool ok=se.isSuccessfull();
-		qDebug()<<"------------------------------------------------";
-		qDebug()<<"Keystore synchronized with ok="<<ok;
-		mKeyStore.dump();
-		qDebug()<<"------------------------------------------------";
-	});
-	*/
-
-	/*
-	mLocalIdentity.setInitialized(&mLocalIdentity);
-	mLocalIdentity.synchronize([this](SimpleDataStore &sms, bool ok) {
-		auto map=sms.toMap();
-		//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
-		if(ok && !map.isEmpty()) {
-			identityChanged();
+			// ScopedTimer nodeBootTimer(context()->base()+"-boot");
+			setObjectName(ctx->base());
+			nodeConfigure();
+		} else {
+			qWarning()<<"ERROR: No context";
 		}
-	});
-	*/
-
-
-	mAddressBook->setInitialized(mAddressBook.data());
-	mAddressBook->synchronize([this](SimpleDataStore &ab, bool ok) {
-		Q_UNUSED(ab);
-		Q_UNUSED(ok);
-		//qDebug()<<"Address book synchronized with ok="<<ok;
-		mClients.syncToAddressBook(mAddressBook, sharedThis());
-	});
-
-
-	/*
-	StyleManager *style=OC_NEW StyleManager(QColor(TYPE_AGENT==mType?"#e83636":TYPE_REMOTE==mType?"#36bee8":"#36e843"));
-	if(nullptr!=style) {
-		style->apply();
 	}
-	*/
-
-	/*
-	if(!QDir().mkpath(context()->baseDir())) {
-		qWarning()<<"ERROR: Could not create basedir for node";
-	}
-	*/
-
-
-	//setHookSensorSignals(*this, true);
-	//setHookSensorSignals(*mSensorsCourier, true);
-
-	//setHookCommsSignals(*this,true);
-
-	/*
-	if(nullptr!=mZooClient) {
-		mZooClient->setURL(mServerURL);
-	}
-	*/
-
-	/*
-	if(nullptr!=mDiscovery) {
-		mDiscovery->setURL(mServerURL);
-	}
-	*/
-
-	// Bootstrap connection
-	/*
-	const bool last=needsConnection();
-	setNeedsConnection(false);
-	setNeedsConnection(last);
-	*/
-	// NOTE: It is expected that this emits nodeInitDone() at some point
-	nodeInit();
 }
 
 
-void Node::appDeInit()
+void Node::appActivate(const bool on)
 {
 	OC_METHODGATE();
-	qDebug()<<"appDeInit()";
-	setHookSensorSignals(*this, false);
-	setHookCommsSignals(*this,false);
+	qDebug()<<"appActivate()";
 
-	//mAddressBook.setInitialized<AddressBook>(nullptr);
-	//mLocalIdentity.setInitialized<LocalIdentityStore>(nullptr);
-	/*
-	if(nullptr!=mCarrier) {
-		mCarrier->deleteLater();
-		mCarrier=nullptr;
+	if(mAppConfigureHelper.activate(on)) {
+		if(on) {
+			/*
+			if(nullptr!= mCarrier) {
+				const NetworkAddress listenAddress(QHostAddress::Any, mAddresses.port());
+				mCarrier->setListenAddress(listenAddress);
+			}
+			*/
+
+			/*
+			mKeyStore.synchronize([this](ASEvent<QVariantMap> &se) {
+				const bool ok=se.isSuccessfull();
+				qDebug()<<"------------------------------------------------";
+				qDebug()<<"Keystore synchronized with ok="<<ok;
+				mKeyStore.dump();
+				qDebug()<<"------------------------------------------------";
+			});
+			*/
+
+			/*
+			mLocalIdentity.setInitialized(&mLocalIdentity);
+			mLocalIdentity.synchronize([this](SimpleDataStore &sms, bool ok) {
+				auto map=sms.toMap();
+				//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
+				if(ok && !map.isEmpty()) {
+					identityChanged();
+				}
+			});
+			*/
+
+			/*
+				mAddressBook->setInitialized(mAddressBook.data());
+				mAddressBook->synchronize([this](SimpleDataStore &ab, bool ok) {
+					Q_UNUSED(ab);
+					Q_UNUSED(ok);
+					//qDebug()<<"Address book synchronized with ok="<<ok;
+					mClients.syncToAddressBook(mAddressBook, sharedThis());
+				});
+				*/
+
+
+			/*
+			StyleManager *style=OC_NEW StyleManager(QColor(TYPE_AGENT==mType?"#e83636":TYPE_REMOTE==mType?"#36bee8":"#36e843"));
+			if(nullptr!=style) {
+				style->apply();
+			}
+			*/
+
+			/*
+			if(!QDir().mkpath(context()->baseDir())) {
+				qWarning()<<"ERROR: Could not create basedir for node";
+			}
+			*/
+
+
+			//setHookSensorSignals(*this, true);
+			//setHookSensorSignals(*mSensorsCourier, true);
+
+			//setHookCommsSignals(*this,true);
+
+			/*
+			if(nullptr!=mZooClient) {
+				mZooClient->setURL(mServerURL);
+			}
+			*/
+
+			/*
+			if(nullptr!=mDiscovery) {
+				mDiscovery->setURL(mServerURL);
+			}
+			*/
+
+			// Bootstrap connection
+			/*
+			const bool last=needsConnection();
+			setNeedsConnection(false);
+			setNeedsConnection(last);
+			*/
+		} else {
+			setHookSensorSignals(*this, false);
+			setHookCommsSignals(*this,false);
+
+			//mAddressBook.setInitialized<AddressBook>(nullptr);
+			//mLocalIdentity.setInitialized<LocalIdentityStore>(nullptr);
+			/*
+			if(nullptr!=mCarrier) {
+				mCarrier->deleteLater();
+				mCarrier=nullptr;
+			}
+			*/
+			/*
+			if(nullptr!=mComms) {
+				mComms->deleteLater();
+				mComms=nullptr;
+			}
+			*/
+			/*
+			if(nullptr!=mDiscovery) {
+				mDiscovery->deleteLater();
+				mDiscovery=nullptr;
+			}
+			*/
+			/*
+			if(nullptr!=mZooClient) {
+				mZooClient->deleteLater();
+				mZooClient=nullptr;
+			}
+			*/
+			/*
+			if(nullptr!=mSensors) {
+				mSensors->deleteLater();
+				mSensors=nullptr;
+			}
+			*/
+			/*
+			if(nullptr!=mSensorsCourier) {
+				mSensorsCourier->deleteLater();
+				mSensorsCourier=nullptr;
+			}
+			*/
+			/*
+			if(nullptr!=mBlobCourier) {
+				mBlobCourier->deleteLater();
+				mBlobCourier=nullptr;
+			}
+			*/
+			/*
+			if(nullptr!=mCameras) {
+				mCameras->deleteLater();
+				mCameras=nullptr;
+			}
+			*/
+
+		}
+		// NOTE: It is expected that this emits nodeActivateChanged() at some point
+		nodeActivate(on);
 	}
-	*/
-	/*
-	if(nullptr!=mComms) {
-		mComms->deleteLater();
-		mComms=nullptr;
-	}
-	*/
-	/*
-	if(nullptr!=mDiscovery) {
-		mDiscovery->deleteLater();
-		mDiscovery=nullptr;
-	}
-	*/
-	/*
-	if(nullptr!=mZooClient) {
-		mZooClient->deleteLater();
-		mZooClient=nullptr;
-	}
-	*/
-	/*
-	if(nullptr!=mSensors) {
-		mSensors->deleteLater();
-		mSensors=nullptr;
-	}
-	*/
-	/*
-	if(nullptr!=mSensorsCourier) {
-		mSensorsCourier->deleteLater();
-		mSensorsCourier=nullptr;
-	}
-	*/
-	/*
-	if(nullptr!=mBlobCourier) {
-		mBlobCourier->deleteLater();
-		mBlobCourier=nullptr;
-	}
-	*/
-	/*
-	if(nullptr!=mCameras) {
-		mCameras->deleteLater();
-		mCameras=nullptr;
-	}
-	*/
-	// NOTE: It is expected that this emits nodeDeInitDone() at some point
-	nodeDeInit();
 }
+
+
 
 
 

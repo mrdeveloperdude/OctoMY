@@ -13,13 +13,13 @@
 
 #include <QDebug>
 
-Agent::Agent(QObject *parent)
-	: Node(parent)
+Agent::Agent()
+	: mNodeConfigureHelper("app", true, true, false, true, true)
 	, mAgentConfigStore(OC_NEW AgentConfigStore())
 {
 	OC_METHODGATE();
 	qDebug()<<"Agent()";
-	// NOTE: Please do not put code here that generates events. Instead put them in init()
+	// NOTE: Please do not put code here that generates events. Instead put them in *configure*() or *activate*()
 }
 
 Agent::~Agent()
@@ -33,38 +33,42 @@ void Agent::nodeConfigure()
 {
 	OC_METHODGATE();
 	qDebug()<<"nodeConfigure()";
-}
-
-
-
-void Agent::nodeInit()
-{
-	OC_METHODGATE();
-	qDebug()<<"nodeInit()";
-	auto ctx=context();
-	if(!ctx.isNull()) {
-		// Initialize Agent Configuration Store
-		mAgentConfigStore->configure(ctx->baseDir()+ "/agent_config.json");
-
-		mAgentConfigStore->setInitialized(mAgentConfigStore.data());
-		mAgentConfigStore->synchronize([](SimpleDataStore &store, bool ok) {
-			Q_UNUSED(store);
-			Q_UNUSED(ok);
-		});
-		emit nodeInitDone();
-	} else {
-		qDebug()<<"ERROR: No context, closing";
-		emit nodeRequestClose();
+	if(mNodeConfigureHelper.configure()){
+		//
 	}
 }
 
 
-void Agent::nodeDeInit()
+
+void Agent::nodeActivate(const bool on)
 {
 	OC_METHODGATE();
-	qDebug()<<"nodeDeInit()";
-	emit nodeDeInitDone();
+	if(mNodeConfigureHelper.activate(on)) {
+		qDebug()<<"nodeActivate(on="<<on<<")";
+		if(on) {
+			auto ctx=context();
+			if(!ctx.isNull()) {
+				// Initialize Agent Configuration Store
+				mAgentConfigStore->configure(ctx->baseDir()+ "/agent_config.json");
+				mAgentConfigStore->activate(on);
+				mAgentConfigStore->synchronize([](QSharedPointer<SimpleDataStore> store, bool ok) {
+					qDebug()<<"mAgentConfigStore synced";
+					Q_UNUSED(store);
+					Q_UNUSED(ok);
+				});
+				emit nodeActivateChanged(on);
+			} else {
+				qDebug()<<"ERROR: No context, closing";
+				emit nodeRequestExit(EXIT_FAILURE);
+			}
+		} else {
+			mAgentConfigStore->activate(on);
+			emit nodeActivateChanged(on);
+		}
+	}
 }
+
+
 
 
 QSharedPointer<QWidget> Agent::nodeWindow()
@@ -80,8 +84,7 @@ QSharedPointer<QWidget> Agent::nodeWindow()
 		mWindow=QSharedPointer<AgentWindow>(OC_NEW AgentWindow(nullptr));
 		if(!mWindow.isNull()) {
 			mWindow->nodeWindowConfigure(sp);
-		}
-		else{
+		} else {
 			qWarning()<<"ERROR: Could not allpcate AgentWindow";
 		}
 	}

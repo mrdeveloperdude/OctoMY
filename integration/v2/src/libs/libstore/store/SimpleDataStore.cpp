@@ -4,7 +4,7 @@
 
 
 
-SimpleDataStoreFrontend::SimpleDataStoreFrontend(SimpleDataStore &dataStore)
+SimpleDataStoreFrontend::SimpleDataStoreFrontend(QSharedPointer<SimpleDataStore> dataStore)
 	: mDataStore(dataStore)
 {
 
@@ -21,6 +21,7 @@ SimpleDataStoreFrontend::~SimpleDataStoreFrontend()
 
 
 SimpleDataStore::SimpleDataStore()
+	: mConfigureHelper("SimpleDataStore", true, true, true, true, true)
 {
 	OC_METHODGATE();
 }
@@ -36,15 +37,48 @@ SimpleDataStore::~SimpleDataStore()
 void SimpleDataStore::configure(QString filename)
 {
 	OC_METHODGATE();
-	// TODO: Check and prevent double calling this method
-	mJsonBackend=QSharedPointer<JsonAsyncBackend>(OC_NEW JsonAsyncBackend());
-	if(!mJsonBackend.isNull()) {
-		mJsonBackend->configure(filename);
+	if(mConfigureHelper.configure()) {
+		if(!mStore.isNull()) {
+			mStore=nullptr;
+		}
+		if(!mSimpleFrontend.isNull()) {
+			mSimpleFrontend=nullptr;
+		}
+		if(!mJsonBackend.isNull()) {
+			mJsonBackend=nullptr;
+		}
+		auto f=sharedFromThis();
+		mSimpleFrontend=QSharedPointer<SimpleDataStoreFrontend>(OC_NEW SimpleDataStoreFrontend(f));
+		// TODO: Check and prevent double calling this method
+		mJsonBackend=QSharedPointer<JsonAsyncBackend>(OC_NEW JsonAsyncBackend());
+		if(!mJsonBackend.isNull()) {
+			mJsonBackend->configure(filename);
+		}
+		mStore=QSharedPointer<AsyncStore<QVariantMap> >(OC_NEW AsyncStore<QVariantMap>());
+		if(!mStore.isNull()) {
+			mStore->configure(mJsonBackend, mSimpleFrontend);
+		}
 	}
 }
 
+
+void SimpleDataStore::activate(const bool on)
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.activate(on)) {
+		if(!mStore.isNull()) {
+			mStore->activate(on);
+		}
+	}
+}
+
+
+
+
+
 bool SimpleDataStore::fromDefault()
 {
+	OC_METHODGATE();
 	qWarning()<<"PURE VIRTUAL FROM DEF CALLED ON SimpleDataStore";
 	return false;
 }
@@ -53,63 +87,40 @@ bool SimpleDataStore::fromDefault()
 void SimpleDataStore::clear()
 {
 	OC_METHODGATE();
-	clear([](SimpleDataStore &, bool) {});
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		clear([](QSharedPointer<SimpleDataStore>, bool) {});
+	}
 }
 
 void SimpleDataStore::save()
 {
 	OC_METHODGATE();
-	save([](SimpleDataStore &, bool) {});
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		save([](QSharedPointer<SimpleDataStore>, bool) {});
+	}
 }
 
 void SimpleDataStore::load()
 {
 	OC_METHODGATE();
-	load([](SimpleDataStore &, bool) {});
-}
-
-
-
-
-bool SimpleDataStoreFrontend::setFrontend(QVariantMap map)
-{
-	OC_METHODGATE();
-	return mDataStore.fromMap(map);
-}
-
-QVariantMap SimpleDataStoreFrontend::getFrontend(bool &ok)
-{
-	OC_METHODGATE();
-	ok=true;
-	return mDataStore.toMap();
-}
-
-
-
-bool SimpleDataStoreFrontend::generateFrontend()
-{
-	OC_METHODGATE();
-	bool def=mDataStore.fromDefault();
-	qDebug()<<"Default generated was "<<def;
-	return def;
-}
-
-
-bool SimpleDataStoreFrontend::clearFrontend()
-{
-	OC_METHODGATE();
-	return mDataStore.fromMap(QVariantMap());
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		load([](QSharedPointer<SimpleDataStore>, bool) {});
+	}
 }
 
 
 bool SimpleDataStore::ensureStore() const
 {
 	OC_METHODGATE();
-	const bool ok=(nullptr!=mStore);
-	if(!ok) {
-		qWarning()<<"WARNING: Store not present";
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		const bool ok=(nullptr!=mStore);
+		if(!ok) {
+			qWarning()<<"WARNING: Store not present";
+		}
+		return ok;
+	} else {
+		return false;
 	}
-	return ok;
 }
 
 
@@ -144,71 +155,40 @@ bool SimpleDataStore::ready()
 }
 
 
-
-#ifdef USE_OLD_STORE
-
 ////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-SimpleDataStore::SimpleDataStore(QString filename)
-	: mDataStore(filename)
-	, mLog(false)
+bool SimpleDataStoreFrontend::setFrontend(QVariantMap map)
 {
 	OC_METHODGATE();
-	if(mLog) {
-		qDebug()<<"SimpleDataStore created for '"<<filename<<"'";
-	}
+	return mDataStore->fromMap(map);
+
 }
 
-SimpleDataStore::~SimpleDataStore()
+QVariantMap SimpleDataStoreFrontend::getFrontend(bool &ok)
 {
 	OC_METHODGATE();
+
+	ok=true;
+	return mDataStore->toMap();
+
 }
 
 
 
-QString SimpleDataStore::filename() const
+bool SimpleDataStoreFrontend::generateFrontend()
 {
 	OC_METHODGATE();
-	return mDataStore.filename();
-}
 
-bool SimpleDataStore::fileExists() const
-{
-	OC_METHODGATE();
-	return mDataStore.fileExists();
-}
+	bool def=mDataStore->fromDefault();
+	qDebug()<<"Default generated was "<<def;
+	return def;
 
-bool SimpleDataStore::ready()
-{
-	OC_METHODGATE();
-	return mDataStore.ready();
 }
 
 
-void SimpleDataStore::clear()
+bool SimpleDataStoreFrontend::clearFrontend()
 {
 	OC_METHODGATE();
-	clear([](SimpleDataStore &, bool) {});
-}
-void SimpleDataStore::save()
-{
-	OC_METHODGATE();
-	save([](SimpleDataStore &, bool) {});
-}
-void SimpleDataStore::load()
-{
-	OC_METHODGATE();
-	load([](SimpleDataStore &, bool) {});
-}
-void SimpleDataStore::synchronize()
-{
-	OC_METHODGATE();
-	synchronize([](SimpleDataStore &, bool) {});
+	return mDataStore->fromMap(QVariantMap());
 }
 
-
-#endif

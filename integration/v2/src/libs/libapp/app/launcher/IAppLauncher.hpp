@@ -14,7 +14,7 @@ public:
 	// IAppLauncher interface
 public:
 	// Called when app execution is done
-	virtual void appDeInitDone() =0;
+	virtual void appActivateDone(const bool on) =0;
 
 	// Provide application context
 	virtual QSharedPointer<AppContext> context() =0;

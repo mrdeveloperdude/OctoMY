@@ -58,6 +58,8 @@ libzeroconf*
 
 *~
 
+/content/build/*
+
 
 /content/design/*
 !/content/design/favicon.ico

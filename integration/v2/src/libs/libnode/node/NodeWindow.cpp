@@ -59,6 +59,19 @@ QSharedPointer<Node> NodeWindow::node()
 }
 
 
+void NodeWindow::nodeWindowRequestExit(const int returnValue)
+{
+	OC_METHODGATE();
+	qDebug()<<"nodeWindowRequestExit(returnValue="<<returnValue<<")";
+	auto n=node();
+	if(!n.isNull()) {
+		emit n->nodeRequestExit(returnValue);
+	} else {
+		qWarning()<<"ERROR: No node";
+	}
+
+}
+
 void NodeWindow::loadWindowGeometry()
 {
 	OC_METHODGATE();

@@ -10,10 +10,25 @@
 
 
 
-LocalAddressList::LocalAddressList(quint16 port, bool startTimer)
+LocalAddressList::LocalAddressList()
 	: mPort(0)
 	, mSelectedAddress(-1)
 	, mObj(new QObject)
+{
+	OC_METHODGATE();
+
+}
+
+LocalAddressList::~LocalAddressList()
+{
+	OC_METHODGATE();
+	delete mObj;
+	mObj=nullptr;
+}
+
+
+
+void LocalAddressList::configure(quint16 port, bool startTimer)
 {
 	OC_METHODGATE();
 	setPort(port);
@@ -29,14 +44,6 @@ LocalAddressList::LocalAddressList(quint16 port, bool startTimer)
 	}
 	setTimerEnabled(startTimer);
 }
-
-LocalAddressList::~LocalAddressList()
-{
-	OC_METHODGATE();
-	delete mObj;
-	mObj=nullptr;
-}
-
 
 void LocalAddressList::setPort(quint16 port)
 {

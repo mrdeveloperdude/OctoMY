@@ -31,6 +31,8 @@
 
 #include "comms/IConnectionStatus.hpp"
 
+#include "uptime/ConfigureHelper.hpp"
+
 #include <QObject>
 #include <QHostAddress>
 #include <QUrl>
@@ -75,7 +77,13 @@ class Node : public QObject, public IConnectionStatus//, public QEnableSharedFro
 	Q_OBJECT
 
 private:
+	// Helper to keep track of appConfigure() and appActivate() state
+	ConfigureHelper mAppConfigureHelper;
+	// Our local network addresses
+	QSharedPointer<LocalAddressList> mAddresses;
+	// The application launcher that launched us
 	QSharedPointer<IAppLauncher> mLauncher;
+	// Our key store
 	QSharedPointer<KeyStore> mKeyStore;
 	// Our local ID
 	QSharedPointer<LocalIdentityStore> mLocalIdentity;
@@ -83,8 +91,6 @@ private:
 	QSharedPointer<AddressBook> mAddressBook;
 	// Client instances
 	ClientList mClients;
-	// Our local network addresses
-	QSharedPointer<LocalAddressList> mAddresses;
 	//Our identity
 	QSharedPointer<Associate> mNodeIdentity;
 	// Copmms channel carrier the underlying carrier such as udb/bluetooth etc for comms
@@ -93,7 +99,7 @@ private:
 	QSharedPointer<CommsChannel> mComms;
 	// Discovery client to help in automaitc discovery of other nodes
 	QSharedPointer<DiscoveryClient> mDiscovery;
-	// Zoo client used to exchange data via the zoo (central repository server)
+	// The zoo client is used to exchange data via the central repository server (zoo)
 	QSharedPointer<ZooClient> mZooClient;
 	// Helper to access all sensors available via Qt's sensor API
 	QSharedPointer<SensorInput> mSensors;
@@ -103,14 +109,14 @@ private:
 	QSharedPointer<BlobCourier> mBlobCourier;
 	// Camera list manages attached cameras adapting to dis- and re- connections
 	QSharedPointer<CameraList> mCameras;
-	// Unix ms timestamp of last status send
+	// Unix ms timestamp of last sending time of status
 	qint64 mLastStatusSend;
 	// The URL of the zoo server
 	QUrl mServerURL;
 
 
 public:
-	explicit Node(QObject *parent = nullptr);
+	explicit Node();
 	virtual ~Node() Q_DECL_OVERRIDE;
 
 	// AppLauncher interface
@@ -119,18 +125,17 @@ public:
 	// Called by launcher to give the app a chance to allocate data before initialization
 	virtual void appConfigure(QSharedPointer<IAppLauncher> launcher);
 
-	// Called by launcher to give the app a chance to initialize
-	// After calling this, the launcher will pause further initialization and showing of windows until app emits an "appInitDone" signal
-	virtual void appInit();
+	// Called with on=true by launcher to give the app a chance to initialize
+	// After calling this with on=true, the launcher will pause further initialization and showing of windows until app emits an "appInitDone" signal
 
-	// Called by launcher as a response to an appRequestClose event being emitted by anyone that wants the app to close.
-	// After calling this, the launcher will complete termination and return to OS
-	virtual void appDeInit();
+	// Called with on=false by launcher as a response to an appRequestClose event being emitted by anyone that wants the app to close.
+	// After calling this with on=false, the launcher will complete termination and return to OS
+	virtual void appActivate(const bool on);
 
 
 	// Called by launcher to get a handle to the app's main window
 	// Will be called when launcher wants to show window during initialization
-	// NOTE: Launcher will NOT hide the window, as it is expected that app should do this by itself upon de-initialization / destruction
+	// NOTE: Launcher will NOT hide the window, as it is expected that app should do this by itself upon de-initialization and/or destruction
 	virtual QSharedPointer<QWidget> appWindow();
 
 	// Node interface
@@ -138,11 +143,8 @@ public:
 	// Called by Node::appConfigure();
 	virtual void nodeConfigure()=0;
 
-	// Called by Node::appInit()
-	virtual void nodeInit()=0;
-
-	// Called by Node::appDeInit()
-	virtual void nodeDeInit()=0;
+	// Called by Node::appActivate()
+	virtual void nodeActivate(const bool on)=0;
 
 	// Called by Node::appWindow()
 	virtual QSharedPointer<QWidget> nodeWindow()=0;
@@ -302,20 +304,11 @@ private slots:
 signals:
 	// Expected to be emitted when someone wants node to terminate.
 	// Will be caught by app launcher and app launcher will subsequently call appDeInit() to bring termination to fruition
-	void nodeRequestClose();
+	void nodeRequestExit(const int returnValue);
 
-	// Expected to be emitted by node as soon as initialization is done in appInit();
-	void nodeInitDone();
-
-	// Expected to be emitted by node during termination as soon as it no longer needs the eventloop in appDeInit().
-	void nodeDeInitDone();
-
-	/*
-	// General signals
-signals:
-	void appClose();
-	void appInitDone();
-	*/
+	// Expected to be emitted with on=true by node as soon as initialization is done in appInit();
+	// Expected to be emitted with on=false by node during termination as soon as it no longer needs the eventloop in appDeInit().
+	void nodeActivateChanged(const bool on);
 
 };
 

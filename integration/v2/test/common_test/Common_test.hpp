@@ -3,9 +3,29 @@
 
 #include <QTest>
 #include <QApplication>
+#include <QDirIterator>
+
+#define OC_TEST_RESOURCES_BASE ":/icons/"
+
+#define OC_TEST_ICON(testType, objectType) \
+	Q_INIT_RESOURCE(test_resources); \
+	QDirIterator it(":", QDirIterator::Subdirectories); \
+	qDebug()<<"RESOURCES: "; \
+	while (it.hasNext()) { \
+		qDebug()<<" + " << it.next(); \
+	} \
+	QIcon icon; \
+	icon.addFile(QStringLiteral(OC_TEST_RESOURCES_BASE #testType ".svg"), QSize(), QIcon::Normal, QIcon::Off); \
+	app.setWindowIcon(icon); \
 
 
-#define TEST_RESOURCES_BASE ":/resources/icons/"
+
+#define OC_TEST_END(testType, objectType) \
+	objectType ob; \
+	QTEST_SET_MAIN_SOURCE_PATH \
+	const auto ret=QTest::qExec(&ob, argc, argv);	\
+	qDebug()<<"Stopping " #testType " for " #objectType; \
+	return ret; \
 
 #ifdef OC_USE_LIB_EXT_OPENCL
 
@@ -39,16 +59,10 @@ int main(int argc, char *argv[]) \
 	QApplication app(argc, argv); \
 	qDebug()<<"Starting " #testType " for " #objectType; \
 	app.setAttribute(Qt::AA_Use96Dpi, true); \
-	QIcon icon; \
-	icon.addFile(QStringLiteral(TEST_RESOURCES_BASE #testType ".svg"), QSize(), QIcon::Normal, QIcon::Off); \
-	app.setWindowIcon(icon); \
+	OC_TEST_ICON(testType, objectType) \
 	QTEST_ADD_GPU_BLACKLIST_SUPPORT \
 	QTEST_DISABLE_KEYPAD_NAVIGATION \
-	objectType ob; \
-	QTEST_SET_MAIN_SOURCE_PATH \
-	const auto ret=QTest::qExec(&ob, argc, argv);	\
-	qDebug()<<"Stopping " #testType " for " #objectType; \
-	return ret; \
+	OC_TEST_END(testType, objectType) \
 }
 
 
@@ -83,16 +97,10 @@ int main(int argc, char *argv[]) \
 	QApplication app(argc, argv); \
 	qDebug()<<"Starting " #testType " for " #objectType; \
 	app.setAttribute(Qt::AA_Use96Dpi, true); \
-	QIcon icon; \
-	icon.addFile(QStringLiteral(TEST_RESOURCES_BASE #testType ".svg"), QSize(), QIcon::Normal, QIcon::Off); \
-	app.setWindowIcon(icon); \
+	OC_TEST_ICON(testType, objectType) \
 	QTEST_DISABLE_KEYPAD_NAVIGATION \
 	QTEST_ADD_GPU_BLACKLIST_SUPPORT \
-	objectType ob; \
-	QTEST_SET_MAIN_SOURCE_PATH \
-	const auto ret=QTest::qExec(&ob, argc, argv);	\
-	qDebug()<<"Stopping " #testType " for " #objectType; \
-	return ret; \
+	OC_TEST_END(testType, objectType) \
 }
 
 
@@ -103,14 +111,8 @@ int main(int argc, char *argv[]) \
 	QCoreApplication app(argc, argv); \
 	qDebug()<<"Starting " #testType " for " #objectType; \
 	app.setAttribute(Qt::AA_Use96Dpi, true); \
-	QIcon icon; \
-	icon.addFile(QStringLiteral(TEST_RESOURCES_BASE #testType ".svg"), QSize(), QIcon::Normal, QIcon::Off); \
-	app.setWindowIcon(icon); \
-	objectType ob; \
-	QTEST_SET_MAIN_SOURCE_PATH \
-	const auto ret=QTest::qExec(&ob, argc, argv);	\
-	qDebug()<<"Stopping " #testType " for " #objectType; \
-	return ret; \
+	OC_TEST_ICON(testType, objectType) \
+	OC_TEST_END(testType, objectType) \
 }
 
 

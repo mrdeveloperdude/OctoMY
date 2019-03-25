@@ -23,6 +23,10 @@ public:
 
 	QSharedPointer<Node> node();
 
+	// Lifecycle stuff
+protected:
+	void nodeWindowRequestExit(const int returnValue=EXIT_SUCCESS);
+
 	// Desktop stuff
 protected:
 	// Load position of window on screen

@@ -6,6 +6,7 @@
 #include "app/launcher/AppLauncher.hpp"
 
 #include "uptime/SharedPointerWrapper.hpp"
+#include "uptime/ConfigureHelper.hpp"
 
 #include <QObject>
 
@@ -20,6 +21,10 @@ class Agent : public Node, public QEnableSharedFromThis<Agent>
 	Q_OBJECT
 
 private:
+
+	// Helper to keep track of nodeConfigure() and nodeActivate() state
+	ConfigureHelper mNodeConfigureHelper;
+
 	// The window that represents this agent
 	QSharedPointer<AgentWindow> mWindow;
 
@@ -33,14 +38,14 @@ private:
 	QSharedPointer<IActuatorController> mActuatorController;
 
 public:
-	explicit Agent(QObject *parent = nullptr);
+	explicit Agent();
 	virtual ~Agent() Q_DECL_OVERRIDE;
 
 	// Node interface
 public:
 	void nodeConfigure() Q_DECL_OVERRIDE;
-	void nodeInit() Q_DECL_OVERRIDE;
-	void nodeDeInit() Q_DECL_OVERRIDE;
+	void nodeActivate(const bool on) Q_DECL_OVERRIDE;
+
 	QSharedPointer<QWidget> nodeWindow() Q_DECL_OVERRIDE;
 	NodeRole nodeRole() Q_DECL_OVERRIDE;
 	NodeType nodeType() Q_DECL_OVERRIDE;

@@ -83,7 +83,7 @@ public:
 public:
 	explicit ASEventPrivate(AsyncStore<T> & store, const ASEventType type, T data=T());
 	explicit ASEventPrivate();
-	virtual ~ASEventPrivate() { }
+	virtual ~ASEventPrivate();
 
 
 	QString toString() const;
@@ -113,11 +113,7 @@ private:
 	QString mAllocation="Unallocated";
 
 public:
-
-	virtual ~ASEvent()
-	{
-		mAllocation="Deallocated";
-	}
+	virtual ~ASEvent();
 public:
 
 
@@ -132,6 +128,8 @@ public:
 
 	ASEvent(const ASEvent<T> & other);
 	ASEvent(ASEvent<T> && other);
+
+
 
 	ASEvent<T> & operator=(ASEvent<T> other);
 
@@ -174,12 +172,14 @@ public:
 template <typename T>
 bool operator==(const ASEvent<T> &a, const ASEvent<T> &b)
 {
+	OC_FUNCTIONGATE();
 	return a.operator ==(b);
 }
 
 template <typename T>
 bool operator!=(const ASEvent<T> &a, const ASEvent<T> &b)
 {
+	OC_FUNCTIONGATE();
 	return a.operator !=(b);
 }
 
@@ -189,6 +189,7 @@ bool operator!=(const ASEvent<T> &a, const ASEvent<T> &b)
 template <typename T>
 QString ASEventPrivate<T>::toString() const
 {
+	OC_METHODGATE();
 	return QString("ASEventPrivate(type='%1', "
 				   "data='%2', "
 				   "started='%3', "
@@ -207,11 +208,13 @@ QString ASEventPrivate<T>::toString() const
 template <typename T>
 ASEventPrivate<T>::operator QString() const
 {
+	OC_METHODGATE();
 	return toString();
 }
 template <typename T>
 ASEventPrivate<T>::operator QString()
 {
+	OC_METHODGATE();
 	return toString();
 }
 
@@ -250,6 +253,7 @@ ASEventPrivate<T>::ASEventPrivate(AsyncStore<T> & store, const ASEventType type,
 {
 
 	OC_METHODGATE();
+	mCallbacks.activate(true);
 	//qDebug()<<"ASEventPrivate created ( store=" << mStore.filename() << ", type=" << mType << " ) from thread " << utility::concurrent::currentThreadID() << " and P:" << privCounterString(this);
 }
 
@@ -268,12 +272,25 @@ ASEventPrivate<T>::ASEventPrivate()
 
 
 
+
+template <typename T>
+ASEventPrivate<T>::~ASEventPrivate()
+{
+	OC_METHODGATE();
+	mCallbacks.activate(false);
+}
+
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 
 
 template <typename T>
 QString ASEvent<T>::toString() const
 {
+	OC_METHODGATE();
 	return QString("ASEvent(T='%1'"
 				   ", Allocation='%2'"
 				   ", %3")
@@ -298,11 +315,13 @@ QString ASEvent<T>::toString() const
 template <typename T>
 ASEvent<T>::operator QString() const
 {
+	OC_METHODGATE();
 	return toString();
 }
 template <typename T>
 ASEvent<T>::operator QString()
 {
+	OC_METHODGATE();
 	return toString();
 }
 
@@ -331,7 +350,7 @@ void ASEvent<T>::onFinished(F callBack)
 	{
 		//qDebug()<<"IS RECURSIVE: "<< p->mCallbackMutex.isRecursive();
 		QMutexLocker callbackLock(&p->mCallbackMutex);
-		//qDebug().nospace().noquote()<<" onFinished callbakc mutex locked from "<<utility::concurrent::currentThreadID();
+		//qDebug().nospace().noquote()<<" onFinished callback mutex locked from "<<utility::concurrent::currentThreadID();
 		//auto pcallBack=&callBack;
 		ASEvent<T> *copy=OC_NEW ASEvent<T>(*this);
 		// TODO: Commented out to pass build
@@ -399,6 +418,7 @@ p_ptr(nullptr)
 , mT(utility::concurrent::currentThreadID())
 , mAllocation("default ctor")
 {
+	OC_METHODGATE();
 	//qWarning()<<"ERROR: default ctor called. Should never happen";
 	tTest();
 }
@@ -411,6 +431,7 @@ ASEvent<T>::ASEvent(AsyncStore<T> & store, const ASEventType type, T data)
 	, mT(utility::concurrent::currentThreadID())
 	, mAllocation("parameter ctor")
 {
+	OC_METHODGATE();
 	tTest();
 }
 
@@ -421,10 +442,9 @@ ASEvent<T>::ASEvent(ASEvent<T> && other)
 	, mT(utility::concurrent::currentThreadID())
 	, mAllocation("ref move ctor")
 {
+	OC_METHODGATE();
 	tTest();
-
 	//swap(*this, other);
-
 }
 
 template <typename T>
@@ -434,9 +454,8 @@ ASEvent<T>::ASEvent(const ASEvent<T> & other)
 	, mT(utility::concurrent::currentThreadID())
 	, mAllocation("ref copy ctor")
 {
+	OC_METHODGATE();
 	tTest();
-
-
 }
 
 template <typename T>
@@ -445,8 +464,8 @@ ASEvent<T>::ASEvent(ASEventPrivate<T> &pp)
 	, mT(utility::concurrent::currentThreadID())
 	, mAllocation("ref copy private ctor")
 {
+	OC_METHODGATE();
 	tTest();
-
 }
 
 template <typename T>
@@ -455,9 +474,19 @@ ASEvent<T>::ASEvent(QSharedPointer<ASEventPrivate<T> > pp)
 	, mT(utility::concurrent::currentThreadID())
 	, mAllocation("shared ptr copy private ctor")
 {
+	OC_METHODGATE();
 	tTest();
 }
 
+
+template <typename T>
+ASEvent<T>::~ASEvent()
+{
+	OC_METHODGATE();
+
+
+	mAllocation="Deallocated";
+}
 
 template <typename T>
 ASEvent<T> & ASEvent<T>::operator=(ASEvent<T> other)
@@ -642,7 +671,7 @@ template <typename T>
 bool ASEvent<T>::run()
 {
 	OC_METHODGATE();
-	//qDebug()<<"Entered Event::run() from thread "<<utility::concurrent::currentThreadID();
+	qDebug()<<"Entered Event::run() from thread "<<utility::concurrent::currentThreadID();
 	ASEventPrivate<T> *p=p_ptr.data();
 	if(nullptr == p) {
 		qWarning().nospace().noquote()<<"ERROR: No p";

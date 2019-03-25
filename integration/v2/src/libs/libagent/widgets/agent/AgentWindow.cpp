@@ -46,7 +46,7 @@ QSharedPointer<Agent> AgentWindow::agent()
 {
 	OC_METHODGATE();
 	QSharedPointer<Node> n=node();
-	if(n.isNull()){
+	if(n.isNull()) {
 		qWarning()<<"WARNING: No node in agent()";
 	}
 
@@ -98,18 +98,13 @@ void AgentWindow::keyReleaseEvent(QKeyEvent *e)
 	}
 }
 
+
 void AgentWindow::closeEvent(QCloseEvent *event)
 {
 	OC_METHODGATE();
 	qDebug()<<"closeEvent()";
 	Q_UNUSED(event);
-	auto a=agent();
-	if(!a.isNull()) {
-		emit a->nodeRequestClose();
-	}
-	else{
-		qWarning()<<"ERROR: No agent";
-	}
+	//shutDown();
 }
 
 
@@ -117,11 +112,6 @@ void AgentWindow::closeEvent(QCloseEvent *event)
 void AgentWindow::on_pushButtonTestQuit_clicked()
 {
 	OC_METHODGATE();
-	auto a=agent();
-	if(!a.isNull()) {
-		emit a->nodeRequestClose();
-	}
-	else{
-		qWarning()<<"ERROR: No agent";
-	}
+	qDebug()<<"close button clicked ()";
+	nodeWindowRequestExit(EXIT_SUCCESS);
 }

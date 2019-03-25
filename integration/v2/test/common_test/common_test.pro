@@ -38,4 +38,8 @@ HEADERS+= \
 	Utility_test.hpp \
 
 
+RESOURCES += \
+	resources/test_resources.qrc
+
+
 test_common.depends=		$${SRCS}/libs

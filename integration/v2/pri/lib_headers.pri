@@ -22,11 +22,12 @@ for(A, AUTOLIBS_COMBINED) {
 	INCLUDEPATH +=$$clean_path($${SRCS}/libs/lib$${A})
 }
 
-# CLean each variable by removing duplicates
+# Clean each variable by removing duplicates
 LIBS= $$unique(LIBS)
 INCLUDEPATH= $$unique(INCLUDEPATH)
 DEPENDPATH= $$unique(DEPENDPATH)
 PRE_TARGETDEPS= $$unique(PRE_TARGETDEPS)
+
 
 #message("----------- libs_inc incpath -------------------")
 #message("| " $${INCLUDEPATH})

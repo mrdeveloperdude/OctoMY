@@ -8,6 +8,7 @@
 #include "ASEvent.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
 //#include "node/DataStoreInterface.hpp"
+#include "uptime/ConfigureHelper.hpp"
 
 
 #include <QByteArray>
@@ -94,7 +95,6 @@ protected:
 	QSharedPointer<AsyncBackend<T> > mBackend;
 	QSharedPointer<AsyncFrontend<T> > mFrontend;
 
-	//T mData;
 	ConcurrentQueue<ASEvent<T> > mTransactions;
 
 	QAtomicInteger<quint64> mAutoIncrement;
@@ -109,19 +109,21 @@ protected:
 
 	AtomicBoolean mSynchronousMode;
 
+	ConfigureHelper mConfigureHelper;
+
 public:
-	explicit AsyncStore(QObject *parent = nullptr);
+	explicit AsyncStore();
 	virtual ~AsyncStore();
 
 public:
 	void configure(QSharedPointer<AsyncBackend<T> > backend, QSharedPointer<AsyncFrontend<T> > frontend);
+	void activate(const bool on);
 
 private:
 	void addJournal(QString);
 
 public:
 	QStringList journal();
-
 	void setSynchronousMode(bool isSync);
 
 public:
@@ -137,11 +139,10 @@ public:
 
 
 private:
+	ASEvent<T> enqueueEvent(ASEvent<T> trans);
+	void processEvents();
 
-	virtual ASEvent<T> enqueueEvent(ASEvent<T> trans);
-	virtual void processEvents();
-
-	virtual void processEvent(ASEvent<T> &event);
+	void processEvent(ASEvent<T> &event);
 	quint64 autoIncrement();
 
 	void runCallbacksForEvent(ASEvent<T> event);
@@ -203,18 +204,16 @@ public:
 
 
 template <typename T>
-AsyncStore<T>::AsyncStore(QObject *parent)
-//: QObject(parent)
+AsyncStore<T>::AsyncStore()
 	: mSignallingObject(OC_NEW QObject())
 	, mAutoIncrement(0)
 	, mDiskCounter(0)
 	, mMemoryCounter(0)
 	, mCompleted(false)
 	, mSynchronousMode(false)
+	, mConfigureHelper("AsyncStore", true, true, false, true, true)
 {
 	OC_METHODGATE();
-	// TODO: Remove the parent parameter as it is not in use
-	Q_UNUSED(parent);
 }
 
 template <typename T>
@@ -224,9 +223,6 @@ AsyncStore<T>::~AsyncStore()
 	//qDebug()<<"Entered AsyncStore::~AsyncStore() from thread "<<utility::concurrent::currentThreadID();
 	// TODO: Look at how to avoid the possibility of an unecessary load during this final sync
 	qDebug()<<"D-TOR";
-	synchronize();
-	complete();
-	mCompleteFuture.waitForFinished();
 	mSignallingObject->deleteLater();
 	mSignallingObject=nullptr;
 	qDebug()<<"D-TOR JOURNAL: "<<journal();
@@ -238,27 +234,52 @@ template <typename T>
 void AsyncStore<T>::configure(QSharedPointer<AsyncBackend<T> > backend, QSharedPointer<AsyncFrontend<T> > frontend)
 {
 	OC_METHODGATE();
-	mBackend=backend;
-	mFrontend=frontend;
-
-	if(!mBackend.isNull()) {
-		const QString filename=mBackend->filenameBackend();
-		const bool exists=mBackend->existsBackend();
-		//qDebug().noquote().nospace()<<"AsyncStore created () with filename="<< filename <<" (exists="<<exists<<") from "<<utility::concurrent::currentThreadID();
-		if(exists) {
-			// Make sure that a sync from initial state will perform a load if there is data on disk
-			mDiskCounter=autoIncrement();
+	addJournal("CONFIG");
+	if(mConfigureHelper.configure()) {
+		mBackend=backend;
+		mFrontend=frontend;
+		if(!mBackend.isNull()) {
+			const QString filename=mBackend->filenameBackend();
+			const bool exists=mBackend->existsBackend();
+			//qDebug().noquote().nospace()<<"AsyncStore created () with filename="<< filename <<" (exists="<<exists<<") from "<<utility::concurrent::currentThreadID();
+			if(exists) {
+				// Make sure that a sync from initial state will perform a load if there is data on disk
+				mDiskCounter=autoIncrement();
+			}
+		} else {
+			qWarning()<<"ERROR: no backend";
 		}
-		// Start transaction processing in separate thread
-		mCompleteFuture=QtConcurrent::run([this]() {
-			OC_METHODGATE();
-			//qDebug()<<"Entered AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
-			processEvents();
-			//qDebug()<<"Exiting AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
-		});
-	} else {
-		qWarning()<<"ERROR: no backend";
 	}
+}
+
+
+template <typename T>
+void AsyncStore<T>::activate(const bool on)
+{
+	OC_METHODGATE();
+	on?addJournal("ACTIVATE ON"):addJournal("ACTIVATE OFF");
+	if(on) {
+		if(mConfigureHelper.activate(on)) {
+			// NOTE: We activate the transactions queue here, but we don't deactivate it until the "completed" operation is received
+			mTransactions.activate(on);
+			// Start transaction processing in separate thread
+			mCompleteFuture=QtConcurrent::run([this]() {
+				OC_METHODGATE();
+				//qDebug()<<"Entered AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
+				processEvents();
+				//qDebug()<<"Exiting AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
+			});
+		}
+	} else {
+		synchronize();
+		complete();
+		qWarning()<<"Waiting for asyncstore future finish...";
+		mCompleteFuture.waitForFinished();
+		qWarning()<<"Got for asyncstore future finish :)";
+		// NOTE: synchronize and complete both need store to be activated, so we deactivate last
+		mConfigureHelper.activate(on);
+	}
+
 }
 
 template <typename T>
@@ -266,6 +287,7 @@ void AsyncStore<T>::addJournal(QString entry)
 {
 	OC_METHODGATE();
 	QMutexLocker ml(&mJournalMutex);
+	qDebug()<<"Adding to journal: "<<entry;
 	mJournal << entry;
 }
 
@@ -289,37 +311,50 @@ template <typename T>
 QString AsyncStore<T>::filename() const
 {
 	OC_METHODGATE();
-	return (mBackend.isNull())?"":mBackend->filenameBackend();
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		return (mBackend.isNull())?"":mBackend->filenameBackend();
+	} else {
+		return "";
+	}
 }
 
 template <typename T>
 bool AsyncStore<T>::fileExists() const
 {
 	OC_METHODGATE();
-	return (mBackend.isNull())?false:mBackend->existsBackend();
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		return (mBackend.isNull())?false:mBackend->existsBackend();
+	} else {
+		return false;
+	}
 }
 
 template <typename T>
 bool AsyncStore<T>::ready()
 {
 	OC_METHODGATE();
-	const quint64 value=mMemoryCounter;
-	return value > 0;
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		const quint64 value=mMemoryCounter;
+		return value > 0;
+	} else {
+		return false;
+	}
 }
 
 template <typename T>
 ASEvent<T> AsyncStore<T>::enqueueEvent(ASEvent<T> event)
 {
 	OC_METHODGATE();
+	qDebug()<<"Enqueuing event "<<event;
 	// We are not asynchronous, do events as they occur
 	if(mSynchronousMode) {
 		processEvent(event);
 	}
 	// We are asynchronous, post events to log and return
 	else {
-		//qDebug()<<"Entered AsyncStore::enqueueTransaction() from thread "<<utility::concurrent::currentThreadID();
+		// qDebug()<<"Entered AsyncStore::enqueueTransaction() from thread "<<utility::concurrent::currentThreadID();
 		mTransactions.put(event);
-		//qDebug()<<"Exiting AsyncStore::enqueueTransaction() from thread "<<utility::concurrent::currentThreadID();
+		// qDebug()<<"Exiting AsyncStore::enqueueTransaction() from thread "<<utility::concurrent::currentThreadID();
 	}
 	return event;
 }
@@ -343,8 +378,10 @@ template <typename T>
 void AsyncStore<T>::processEvent(ASEvent<T> &event)
 {
 	OC_METHODGATE();
-	//qDebug()<<"Processing event "<<event;
-	event.run();
+	qDebug()<<"Processing event "<<event;
+	if(!event.isNull()) {
+		event.run();
+	}
 }
 
 template <typename T>
@@ -388,8 +425,12 @@ template <typename T>
 ASEvent<T> AsyncStore<T>::status()
 {
 	OC_METHODGATE();
-	addJournal("add-status");
-	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_STATUS));
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		addJournal("add-status");
+		return enqueueEvent(ASEvent<T>(*this, AS_EVENT_STATUS));
+	} else {
+		return ASEvent<T>(*this, AS_EVENT_NONE);
+	}
 }
 
 
@@ -397,8 +438,12 @@ template <typename T>
 ASEvent<T> AsyncStore<T>::clear()
 {
 	OC_METHODGATE();
-	addJournal("add-clear");
-	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_CLEAR));
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		addJournal("add-clear");
+		return enqueueEvent(ASEvent<T>(*this, AS_EVENT_CLEAR));
+	} else {
+		return ASEvent<T>(*this, AS_EVENT_NONE);
+	}
 }
 
 
@@ -406,56 +451,84 @@ template <typename T>
 ASEvent<T> AsyncStore<T>::get()
 {
 	OC_METHODGATE();
-	addJournal("add-get");
-	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_GET));
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		addJournal("add-get");
+		return enqueueEvent(ASEvent<T>(*this, AS_EVENT_GET));
+	} else {
+		return ASEvent<T>(*this, AS_EVENT_NONE);
+	}
 }
 
 template <typename T>
 ASEvent<T> AsyncStore<T>::set(T data)
 {
 	OC_METHODGATE();
-	addJournal("add-set");
-	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_SET, data));
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		addJournal("add-set");
+		return enqueueEvent(ASEvent<T>(*this, AS_EVENT_SET, data));
+	} else {
+		return ASEvent<T>(*this, AS_EVENT_NONE);
+	}
 }
 
 template <typename T>
 ASEvent<T> AsyncStore<T>::load()
 {
 	OC_METHODGATE();
-	addJournal("add-load");
-	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_LOAD));
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		addJournal("add-load");
+		return enqueueEvent(ASEvent<T>(*this, AS_EVENT_LOAD));
+	} else {
+		return ASEvent<T>(*this, AS_EVENT_NONE);
+	}
 }
 
 template <typename T>
 ASEvent<T> AsyncStore<T>::save()
 {
 	OC_METHODGATE();
-	addJournal("add-save");
-	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_SAVE));
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		addJournal("add-save");
+		return enqueueEvent(ASEvent<T>(*this, AS_EVENT_SAVE));
+	} else {
+		return ASEvent<T>(*this, AS_EVENT_NONE);
+	}
 }
 
 template <typename T>
 ASEvent<T> AsyncStore<T>::generate()
 {
 	OC_METHODGATE();
-	addJournal("add-generate");
-	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_GENERATE));
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		addJournal("add-generate");
+		return enqueueEvent(ASEvent<T>(*this, AS_EVENT_GENERATE));
+	} else {
+		return ASEvent<T>(*this, AS_EVENT_NONE);
+	}
 }
 
 template <typename T>
 ASEvent<T> AsyncStore<T>::synchronize()
 {
 	OC_METHODGATE();
-	addJournal("add-sync");
-	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_SYNCHRONIZE));
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		addJournal("add-sync");
+		return enqueueEvent(ASEvent<T>(*this, AS_EVENT_SYNCHRONIZE));
+	} else {
+		return ASEvent<T>(*this, AS_EVENT_NONE);
+	}
 }
 
 template <typename T>
 ASEvent<T> AsyncStore<T>::complete()
 {
 	OC_METHODGATE();
-	addJournal("add-complete");
-	return enqueueEvent(ASEvent<T>(*this, AS_EVENT_COMPLETE));
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		addJournal("add-complete");
+		return enqueueEvent(ASEvent<T>(*this, AS_EVENT_COMPLETE));
+	} else {
+		return ASEvent<T>(*this, AS_EVENT_NONE);
+	}
 }
 
 
@@ -469,8 +542,13 @@ template <typename T>
 AsyncStoreStatus AsyncStore<T>::statusSync()
 {
 	OC_METHODGATE();
-	addJournal("status");
-	return AsyncStoreStatus(mDiskCounter, mMemoryCounter);
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		addJournal("status");
+		return AsyncStoreStatus(mDiskCounter, mMemoryCounter);
+	} else {
+		return AsyncStoreStatus(0,0);
+	}
+
 }
 
 
@@ -478,20 +556,24 @@ template <typename T>
 bool AsyncStore<T>::clearSync()
 {
 	OC_METHODGATE();
-	const bool backendOK=mBackend.isNull()?false:mBackend->clearBackend();
-	//const auto oldD=mDiskCounter;
-	//const auto oldM=mMemoryCounter;
-	if(backendOK) {
-		mDiskCounter=0;
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		const bool backendOK=mBackend.isNull()?false:mBackend->clearBackend();
+		//const auto oldD=mDiskCounter;
+		//const auto oldM=mMemoryCounter;
+		if(backendOK) {
+			mDiskCounter=0;
+		}
+		const bool frontendOK=mFrontend.isNull()?false:mFrontend->clearFrontend();
+		if(frontendOK) {
+			mMemoryCounter=0;
+		}
+		//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<oldM<<" to " <<mMemoryCounter<< " VIA CLEAR";
+		//qDebug()<<"DISK COUNTER FOR "<<mFilename<<" WENT FROM "<<oldD<<" to " <<mDiskCounter<< " VIA CLEAR";
+		addJournal("clear");
+		return backendOK && frontendOK;
+	} else {
+		return false;
 	}
-	const bool frontendOK=mFrontend.isNull()?false:mFrontend->clearFrontend();
-	if(frontendOK) {
-		mMemoryCounter=0;
-	}
-	//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<oldM<<" to " <<mMemoryCounter<< " VIA CLEAR";
-	//qDebug()<<"DISK COUNTER FOR "<<mFilename<<" WENT FROM "<<oldD<<" to " <<mDiskCounter<< " VIA CLEAR";
-	addJournal("clear");
-	return backendOK && frontendOK;
 }
 
 
@@ -500,12 +582,16 @@ template <typename T>
 T AsyncStore<T>::getSync(bool &ok)
 {
 	OC_METHODGATE();
-	//qDebug()<<"Entering Sync Get from "<<utility::concurrent::currentThreadID();
-	ok=false;
-	T data = mFrontend.isNull()?T():mFrontend->getFrontend(ok);
-	//qDebug()<<"Exiting Sync Get with ok="<<ok<<" and data="<<data<<" from "<<utility::concurrent::currentThreadID();
-	addJournal("get");
-	return data;
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		//qDebug()<<"Entering Sync Get from "<<utility::concurrent::currentThreadID();
+		ok=false;
+		T data = mFrontend.isNull()?T():mFrontend->getFrontend(ok);
+		//qDebug()<<"Exiting Sync Get with ok="<<ok<<" and data="<<data<<" from "<<utility::concurrent::currentThreadID();
+		addJournal("get");
+		return data;
+	} else {
+		return T();
+	}
 }
 
 
@@ -513,52 +599,64 @@ template <typename T>
 bool AsyncStore<T>::setSync(T data)
 {
 	OC_METHODGATE();
-	//qDebug()<<"Entering Sync Set with data="<<data<<" from "<<utility::concurrent::currentThreadID();
-	const  bool ok=mFrontend.isNull()?false:mFrontend->setFrontend(data);
-	//const auto old=mMemoryCounter;
-	if(ok) {
-		mMemoryCounter=autoIncrement();
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		//qDebug()<<"Entering Sync Set with data="<<data<<" from "<<utility::concurrent::currentThreadID();
+		const  bool ok=mFrontend.isNull()?false:mFrontend->setFrontend(data);
+		//const auto old=mMemoryCounter;
+		if(ok) {
+			mMemoryCounter=autoIncrement();
+		}
+		//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT";
+		//qDebug()<<"Exiting Sync Set with ok="<<ok<<" from "<<utility::concurrent::currentThreadID();
+		addJournal("set");
+		return ok;
+	} else {
+		return false;
 	}
-	//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT";
-	//qDebug()<<"Exiting Sync Set with ok="<<ok<<" from "<<utility::concurrent::currentThreadID();
-	addJournal("set");
-	return ok;
 }
 
 template <typename T>
 bool AsyncStore<T>::loadSync()
 {
 	OC_METHODGATE();
-	//qDebug()<<"Entering Sync Load from "<<utility::concurrent::currentThreadID();
-	bool ok=false;
-	T data = mBackend.isNull()?T():mBackend->loadBackend(ok);
-	if(ok) {
-		ok = mFrontend.isNull()?false:mFrontend->setFrontend(data);
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		//qDebug()<<"Entering Sync Load from "<<utility::concurrent::currentThreadID();
+		bool ok=false;
+		T data = mBackend.isNull()?T():mBackend->loadBackend(ok);
 		if(ok) {
-			mMemoryCounter = mDiskCounter;
+			ok = mFrontend.isNull()?false:mFrontend->setFrontend(data);
+			if(ok) {
+				mMemoryCounter = mDiskCounter;
+			}
 		}
+		//qDebug()<<"Exiting Sync Load with ok="<<ok<<"  from "<<utility::concurrent::currentThreadID();
+		addJournal("load");
+		return ok;
+	} else {
+		return false;
 	}
-	//qDebug()<<"Exiting Sync Load with ok="<<ok<<"  from "<<utility::concurrent::currentThreadID();
-	addJournal("load");
-	return ok;
 }
 
 template <typename T>
 bool AsyncStore<T>::saveSync()
 {
 	OC_METHODGATE();
-	//qDebug()<<"Entering Sync Save from "<<utility::concurrent::currentThreadID();
-	bool ok=false;
-	T data = mFrontend.isNull()?T():mFrontend->getFrontend(ok);
-	if(ok) {
-		ok = mBackend->saveBackend(data);
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		//qDebug()<<"Entering Sync Save from "<<utility::concurrent::currentThreadID();
+		bool ok=false;
+		T data = mFrontend.isNull()?T():mFrontend->getFrontend(ok);
 		if(ok) {
-			mDiskCounter = mMemoryCounter;
+			ok = mBackend->saveBackend(data);
+			if(ok) {
+				mDiskCounter = mMemoryCounter;
+			}
 		}
+		//qDebug()<<"Exiting Sync Save with ok="<<ok<<"  from "<<utility::concurrent::currentThreadID();
+		addJournal("save");
+		return ok;
+	} else {
+		return false;
 	}
-	//qDebug()<<"Exiting Sync Save with ok="<<ok<<"  from "<<utility::concurrent::currentThreadID();
-	addJournal("save");
-	return ok;
 }
 
 
@@ -567,59 +665,72 @@ template <typename T>
 bool AsyncStore<T>::generateSync()
 {
 	OC_METHODGATE();
-	//qDebug()<<"Entering Sync Generate from "<<utility::concurrent::currentThreadID();
-	const bool ok=mFrontend.isNull()?false:mFrontend->generateFrontend();
-	//const auto old=mMemoryCounter;
-	if(ok) {
-		mMemoryCounter=autoIncrement();
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		//qDebug()<<"Entering Sync Generate from "<<utility::concurrent::currentThreadID();
+		const bool ok=mFrontend.isNull()?false:mFrontend->generateFrontend();
+		//const auto old=mMemoryCounter;
+		if(ok) {
+			mMemoryCounter=autoIncrement();
+		}
+		//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT";
+		//qDebug()<<"Exiting Sync Generate with ok="<<ok<<"  from "<<utility::concurrent::currentThreadID();
+		addJournal("generate");
+		return ok;
+	} else {
+		return false;
 	}
-	//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT";
-	//qDebug()<<"Exiting Sync Generate with ok="<<ok<<"  from "<<utility::concurrent::currentThreadID();
-	addJournal("generate");
-	return ok;
 }
 
 template <typename T>
 bool AsyncStore<T>::synchronizeSync()
 {
 	OC_METHODGATE();
-	//qDebug()<<"Entering Sync Synchronize";
-	bool ok=false;
-	const quint64 disk=mDiskCounter;
-	const quint64 mem= mMemoryCounter;
-	//qDebug()<<"AsyncStore::synchronizeSync("<<filename()<<"): disk("<<disk<<") == mem("<<mem<<")  from "<<utility::concurrent::currentThreadID();
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		//qDebug()<<"Entering Sync Synchronize";
+		bool ok=false;
+		const quint64 disk=mDiskCounter;
+		const quint64 mem= mMemoryCounter;
+		//qDebug()<<"AsyncStore::synchronizeSync("<<filename()<<"): disk("<<disk<<") == mem("<<mem<<")  from "<<utility::concurrent::currentThreadID();
 
-	if(disk > mem) {
-		ok=loadSync();
-		//qDebug()<<" + load:"<<ok<<"  from "<<utility::concurrent::currentThreadID();
-	} else if(disk < mem) {
-		ok=saveSync();
-		//qDebug()<<" + save:"<<ok<<"  from "<<utility::concurrent::currentThreadID();
-	}
-	// equal
-	else {
-		if(0 == disk) {
-			ok=generateSync() && saveSync();
-			//qDebug()<<" + generate:"<<ok<<"  from "<<utility::concurrent::currentThreadID();
-		} else {
-			ok=true;
-			//qDebug()<<" + no-op:"<<ok<<"  from "<<utility::concurrent::currentThreadID();
+		if(disk > mem) {
+			ok=loadSync();
+			//qDebug()<<" + load:"<<ok<<"  from "<<utility::concurrent::currentThreadID();
+		} else if(disk < mem) {
+			ok=saveSync();
+			//qDebug()<<" + save:"<<ok<<"  from "<<utility::concurrent::currentThreadID();
 		}
+		// equal
+		else {
+			if(0 == disk) {
+				ok=generateSync() && saveSync();
+				//qDebug()<<" + generate:"<<ok<<"  from "<<utility::concurrent::currentThreadID();
+			} else {
+				ok=true;
+				//qDebug()<<" + no-op:"<<ok<<"  from "<<utility::concurrent::currentThreadID();
+			}
+		}
+		addJournal("sync");
+		return ok;
+	} else {
+		return false;
 	}
-	addJournal("sync");
-	return ok;
 }
 
 template <typename T>
 bool AsyncStore<T>::completeSync()
 {
 	OC_METHODGATE();
-	//qDebug()<<"Entering Sync Completion";
-	bool ok=true;
-	mCompleted=true;
-	//qDebug()<<"Exiting Sync Completion with ok="<<ok;
-	addJournal("complete");
-	return ok;
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		//qDebug()<<"Entering Sync Completion";
+		bool ok=true;
+		mCompleted=true;
+		//qDebug()<<"Exiting Sync Completion with ok="<<ok;
+		addJournal("complete");
+		mTransactions.activate(false);
+		return ok;
+	} else {
+		return false;
+	}
 }
 
 

@@ -46,4 +46,5 @@ void TaskQueue<T>::runAll()
 }
 
 
-#endif // TASKQUEUE_HPP
+#endif
+// TASKQUEUE_HPP

@@ -1,15 +1,17 @@
 #ifndef SIMPLEDATASTORE_HPP
 #define SIMPLEDATASTORE_HPP
 
+#include "AsyncStore.hpp"
+
+#include "JsonAsyncBackend.hpp"
+#include "uptime/ConfigureHelper.hpp"
+
 
 #include <QDebug>
 #include <QVariantMap>
 #include <QString>
-
-#include "AsyncStore.hpp"
-
-#include "JsonAsyncBackend.hpp"
-
+#include <QSharedPointer>
+#include <QEnableSharedFromThis>
 
 class SimpleDataStore;
 
@@ -17,17 +19,14 @@ class SimpleDataStoreFrontend: public AsyncFrontend<QVariantMap>
 {
 
 private:
-
-	SimpleDataStore &mDataStore;
+	QSharedPointer<SimpleDataStore> mDataStore;
 
 public:
-
-	SimpleDataStoreFrontend(SimpleDataStore &dataStore);
+	SimpleDataStoreFrontend(QSharedPointer<SimpleDataStore> dataStore);
 	virtual ~SimpleDataStoreFrontend();
 
 	// AsyncFrontend interface
 public:
-
 	virtual bool clearFrontend() Q_DECL_OVERRIDE;
 	virtual bool setFrontend(QVariantMap data) Q_DECL_OVERRIDE;
 	virtual QVariantMap getFrontend(bool &ok) Q_DECL_OVERRIDE;
@@ -36,13 +35,14 @@ public:
 };
 
 
-class SimpleDataStore
+class SimpleDataStore: public QEnableSharedFromThis<SimpleDataStore>
 {
 
 private:
 	QSharedPointer<JsonAsyncBackend> mJsonBackend;
 	QSharedPointer<SimpleDataStoreFrontend > mSimpleFrontend;
 	QSharedPointer<AsyncStore<QVariantMap> > mStore;
+	ConfigureHelper mConfigureHelper;
 
 public:
 	explicit SimpleDataStore();
@@ -50,11 +50,7 @@ public:
 
 public:
 	void configure(QString filename);
-
-public:
-	template <typename F>
-	void setInitialized(F *f);
-
+	void activate(const bool on);
 
 	// SimpleDataStore interface
 public:
@@ -91,24 +87,6 @@ public:
 
 };
 
-template <typename F>
-void SimpleDataStore::setInitialized(F *f)
-{
-	if(!mStore.isNull()) {
-		mStore=nullptr;
-	}
-	if(!mSimpleFrontend.isNull()) {
-		mSimpleFrontend=nullptr;
-	}
-	if(nullptr!=f) {
-		mSimpleFrontend=QSharedPointer<SimpleDataStoreFrontend>(OC_NEW SimpleDataStoreFrontend(*f));
-		mStore=QSharedPointer<AsyncStore<QVariantMap> >(OC_NEW AsyncStore<QVariantMap>());
-		if(!mStore.isNull()) {
-			mStore->configure(mJsonBackend, mSimpleFrontend);
-		}
-	}
-}
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -121,7 +99,7 @@ void SimpleDataStore::status(F callBack)
 		mStore->status().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
 			const bool ok=ase.isSuccessfull();
-			callBack(*this, ok);
+			callBack(sharedFromThis(), ok);
 		}
 		);
 	}
@@ -135,7 +113,7 @@ void SimpleDataStore::clear(F callBack)
 		mStore->clear().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
 			const bool ok=ase.isSuccessfull();
-			callBack(*this, ok);
+			callBack(sharedFromThis(), ok);
 		}
 		);
 	}
@@ -149,7 +127,7 @@ void SimpleDataStore::save(F callBack)
 		mStore->save().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
 			const bool ok=ase.isSuccessfull();
-			callBack(*this, ok);
+			callBack(sharedFromThis(), ok);
 		}
 		);
 	}
@@ -163,7 +141,7 @@ void SimpleDataStore::load(F callBack)
 		mStore->load().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
 			const bool ok=ase.isSuccessfull();
-			callBack(*this, ok);
+			callBack(sharedFromThis(), ok);
 		}
 		);
 	}
@@ -177,7 +155,7 @@ void SimpleDataStore::synchronize(F callBack)
 		mStore->synchronize().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
 			const bool ok=ase.isSuccessfull();
-			callBack(*this, ok);
+			callBack(sharedFromThis(), ok);
 		}
 		);
 	}

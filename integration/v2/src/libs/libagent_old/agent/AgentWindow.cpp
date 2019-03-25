@@ -648,7 +648,7 @@ void AgentWindow::on_pushButtonConfirmQuit_clicked()
 		qDebug()<<"QUIT NICE!";
 	} else {
 		qDebug()<<"QUIT UGLY!";
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 }
 

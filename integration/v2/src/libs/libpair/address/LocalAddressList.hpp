@@ -25,11 +25,14 @@ private:
 	QObject *mObj;
 	QTimer mTimer;
 public:
-	explicit LocalAddressList(quint16 port=0, bool startTimer=false);
+	explicit LocalAddressList();
 	virtual ~LocalAddressList();
 
 public:
+	void configure(quint16 port=0, bool startTimer=false);
 
+
+public:
 	void setPort(quint16 port);
 	quint16 port() const;
 

@@ -101,13 +101,13 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testAgentStateCourier \
 #		testArduMY \
 #		testAssociate \
-#		testAsyncStore \
+		testAsyncStore \
 #		testBlob \
 #		testCarSteeringWidget \
 #		testCommsCarrier \
 #		testCommsChannel \
 #		testCommsSession \
-#		testConcurrentQueue \
+		testConcurrentQueue \
 #		testDataStore \
 #		testDeliveryWizard \
 #		testDiscovery \
@@ -131,7 +131,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testRateCalculator \
 #		testRNG \
 #		testServotor32Controller \
-#		testSimpleDataStore \
+		testSimpleDataStore \
 #		testStreamCodec \
 #		testSyncParameter \
 #		testTaskQueue \
