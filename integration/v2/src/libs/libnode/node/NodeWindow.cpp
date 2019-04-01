@@ -115,6 +115,42 @@ void NodeWindow::saveWindowGeometry()
 
 
 
+
+
+
+
+void NodeWindow::keyReleaseEvent(QKeyEvent *e)
+{
+	OC_METHODGATE();
+	if(Qt::Key_Back==e->key()) {
+		/*
+		if(ui->pageRunning==ui->stackedWidget->currentWidget()) {
+			appendLog("GOING TO CONFIRM QUIT SCREEN ON BACK BUTTON");
+			onStartQuitApplication();
+		} else if(ui->pageConfirmQuit==ui->stackedWidget->currentWidget()) {
+			appendLog("GOING TO RUNNING SCREEN ON BACK BUTTON");
+			setCurrentPage(ui->pageRunning);
+		} else {
+			appendLog("ERROR ON BACK BUTTON");
+		}
+		*/
+		e->accept();
+	} else {
+		//appendLog("UNKNOWN BUTTON: "+QString::number(e->key()));
+	}
+}
+
+
+
+void NodeWindow::closeEvent(QCloseEvent *event)
+{
+	OC_METHODGATE();
+	Q_UNUSED(event);
+	nodeWindowRequestExit(EXIT_SUCCESS);
+}
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 
 void NodeWindow::notifyAndroid(QString s)

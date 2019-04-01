@@ -60,6 +60,7 @@ void AgentWindow::configure()
 	if(!a.isNull()) {
 // [...]
 		loadWindowGeometry();
+		ui->widgetDebugger->configure(node());
 	} else {
 		qWarning()<<"WARNING: No Agent in agent window configure";
 	}
@@ -77,35 +78,6 @@ void AgentWindow::appendLog(const QString& text)
 
 
 
-void AgentWindow::keyReleaseEvent(QKeyEvent *e)
-{
-	OC_METHODGATE();
-	if(Qt::Key_Back==e->key()) {
-		/*
-		if(ui->pageRunning==ui->stackedWidget->currentWidget()) {
-			appendLog("GOING TO CONFIRM QUIT SCREEN ON BACK BUTTON");
-			onStartQuitApplication();
-		} else if(ui->pageConfirmQuit==ui->stackedWidget->currentWidget()) {
-			appendLog("GOING TO RUNNING SCREEN ON BACK BUTTON");
-			setCurrentPage(ui->pageRunning);
-		} else {
-			appendLog("ERROR ON BACK BUTTON");
-		}
-		*/
-		e->accept();
-	} else {
-		//appendLog("UNKNOWN BUTTON: "+QString::number(e->key()));
-	}
-}
-
-
-void AgentWindow::closeEvent(QCloseEvent *event)
-{
-	OC_METHODGATE();
-	//qDebug()<<"closeEvent()";
-	Q_UNUSED(event);
-	//shutDown();
-}
 
 
 

@@ -45,10 +45,6 @@ public:
 public:
 	void appendLog(const QString& text) Q_DECL_OVERRIDE;
 
-	// QWidget interface
-public:
-	virtual void keyReleaseEvent(QKeyEvent *) Q_DECL_OVERRIDE;
-	virtual	void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 
 private slots:
 	void on_pushButtonTestQuit_clicked();

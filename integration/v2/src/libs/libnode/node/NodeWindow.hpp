@@ -34,6 +34,11 @@ protected:
 	// Save position of window on screen
 	void saveWindowGeometry();
 
+	// QWidget interface
+public:
+	virtual void keyReleaseEvent(QKeyEvent *) Q_DECL_OVERRIDE;
+	virtual	void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
+
 
 	// Android stuff
 protected:
