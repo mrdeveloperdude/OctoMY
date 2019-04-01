@@ -30,7 +30,6 @@ AgentWindow::AgentWindow(QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
-	loadWindowGeometry();
 }
 
 AgentWindow::~AgentWindow()
@@ -60,6 +59,7 @@ void AgentWindow::configure()
 	auto a=agent();
 	if(!a.isNull()) {
 // [...]
+		loadWindowGeometry();
 	} else {
 		qWarning()<<"WARNING: No Agent in agent window configure";
 	}

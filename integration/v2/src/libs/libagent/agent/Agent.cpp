@@ -62,6 +62,9 @@ void Agent::nodeActivate(const bool on)
 				emit nodeRequestExit(EXIT_FAILURE);
 			}
 		} else {
+			if(!mWindow.isNull()) {
+				mWindow.clear();
+			}
 			mAgentConfigStore->activate(on);
 			emit nodeActivateChanged(on);
 		}
@@ -78,8 +81,7 @@ QSharedPointer<QWidget> Agent::nodeWindow()
 	if(mWindow.isNull()) {
 		QSharedPointer<Agent> sp=this->QEnableSharedFromThis<Agent>::sharedFromThis();
 		if(sp.isNull()) {
-			volatile int ba=0;
-			qWarning()<<"ERROR: SHARED POINTER TO THIS WAS NULL!"<<ba;
+			qWarning()<<"ERROR: SHARED POINTER TO THIS WAS NULL!";
 		}
 		mWindow=QSharedPointer<AgentWindow>(OC_NEW AgentWindow(nullptr));
 		if(!mWindow.isNull()) {

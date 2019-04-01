@@ -12,6 +12,8 @@
 #include <QDesktopWidget>
 #include <QVariant>
 
+static const QString GEOMETRY_SETTINGS_KEY("window.geometry");
+
 NodeWindow::NodeWindow(QWidget *parent)
 	: QWidget(parent)
 	, mNode(nullptr)
@@ -23,6 +25,7 @@ NodeWindow::NodeWindow(QWidget *parent)
 NodeWindow::~NodeWindow()
 {
 	OC_METHODGATE();
+	mNode.clear();
 }
 
 
@@ -33,7 +36,7 @@ void NodeWindow::nodeWindowConfigure(QSharedPointer<Node> node)
 	// Dissconnect old node
 	if(!mNode.isNull()) {
 // [...]
-
+		mNode.clear();
 
 	}
 	// Set new node
@@ -81,32 +84,32 @@ void NodeWindow::loadWindowGeometry()
 	QByteArray geometry;
 	if(!mNode.isNull()) {
 		QSharedPointer<Settings> s=mNode->settings();
-		geometry = s->getCustomSettingByteArray("geometry", QByteArray());
-	}
-	//qDebug()<<"#*#*#*#*#*#*#*#* LOADED GEOMETRY WAS "<<geometry;
-	if (geometry.isEmpty()) {
-		qDebug()<<"WARNING: No window geometry found in settings";
-		const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
-		resize(availableGeometry.width() / 3, availableGeometry.height() / 2);
-		move((availableGeometry.width() - width()) / 2,
-			 (availableGeometry.height() - height()) / 2);
+		geometry = s->getCustomSettingByteArray(GEOMETRY_SETTINGS_KEY, QByteArray());
+		//qDebug()<<"#*#*#*#*#*#*#*#* LOADED GEOMETRY WAS "<<geometry;
+		if (geometry.isEmpty()) {
+			qDebug()<<"WARNING: No window geometry found in settings";
+			const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
+			resize(availableGeometry.width() / 3, availableGeometry.height() / 2);
+			move((availableGeometry.width() - width()) / 2,
+				 (availableGeometry.height() - height()) / 2);
+		} else {
+			//qDebug()<<"Window geometry found in settings, restoring.";
+			restoreGeometry(geometry);
+		}
 	} else {
-		//qDebug()<<"Window geometry found in settings, restoring.";
-		restoreGeometry(geometry);
+		qWarning()<<"ERROR: No node while loading window geometry from settings";
 	}
-
 #endif
 }
 
 void NodeWindow::saveWindowGeometry()
 {
 	OC_METHODGATE();
-	//qDebug()<<"#*#*#*#*#*#*#*#* SAVING GEOMETRY REACHED IN NODEWIN";
 	if(!mNode.isNull()) {
 		QSharedPointer<Settings> s=mNode->settings();
 		QByteArray geometry = saveGeometry();
 		//qDebug()<<"#*#*#*#*#*#*#*#* SAVING GEOMETRY "<<geometry;
-		s->setCustomSettingByteArray("geometry", geometry);
+		s->setCustomSettingByteArray(GEOMETRY_SETTINGS_KEY, geometry);
 	}
 }
 

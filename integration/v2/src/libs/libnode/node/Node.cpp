@@ -7,20 +7,18 @@
 #include "Node.hpp"
 
 
-
-
 #include "camera/CameraList.hpp"
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsSession.hpp"
 #include "comms/couriers/blob/BlobCourier.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
 
+
 #include "address/Associate.hpp"
 #include "discovery/AddressBook.hpp"
 #include "discovery/DiscoveryClient.hpp"
 #include "hardware/sensors/SensorInput.hpp"
 #include "client/zoo/ZooClient.hpp"
-
 
 
 #include "uptime/ConnectionType.hpp"
@@ -212,7 +210,7 @@ void Node::appActivate(const bool on)
 			*/
 		} else {
 			setHookSensorSignals(*this, false);
-			setHookCommsSignals(*this,false);
+			setHookCommsSignals(*this, false);
 
 			//mAddressBook.setInitialized<AddressBook>(nullptr);
 			//mLocalIdentity.setInitialized<LocalIdentityStore>(nullptr);

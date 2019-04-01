@@ -33,7 +33,11 @@ public:
 	virtual ~Settings();
 
 public:
+	void resetConfiguration();
+	void sync();
+	QString toString();
 
+public:
 	QByteArray getCustomSettingByteArray(const QString &sub, QByteArray def=QByteArray());
 	void setCustomSettingByteArray(const QString &sub, QByteArray val);
 
@@ -45,14 +49,6 @@ public:
 	void setCustomSettingLong(const QString &sub,qint64  val);
 	void setCustomSettingBool(const QString &sub,bool val);
 	bool hasCustomSetting(const QString &sub);
-
-
-
-public:
-
-	void resetConfiguration();
-
-	void sync();
 
 private slots:
 	void delayedSync();

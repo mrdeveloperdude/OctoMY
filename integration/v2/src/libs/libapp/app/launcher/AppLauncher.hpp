@@ -152,6 +152,7 @@ template <typename T>
 AppLauncher<T>::~AppLauncher()
 {
 	OC_METHODGATE();
+	mQApp=nullptr;
 	//qDebug()<<"~AppLauncher()";
 }
 

@@ -5,11 +5,6 @@
 #include "uptime/New.hpp"
 #include "uptime/ConnectionType.hpp"
 
-
-
-//#include "app/UniquePlatformFingerprint.hpp"
-
-
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QDebug>
@@ -33,7 +28,7 @@ const QString Settings::KEY_CUSTOM_SETTING_BASE="";  // SET TO EMPTY STRING TO A
 Settings::Settings(QString group, QString appName, QString appVersion, QObject *parent)
 	: QObject(parent)
 	, mGroup(group.trimmed())
-	, mSettings(OC_NEW QSettings)
+	, mSettings(nullptr)
 	, mLastSync(0)
 {
 	OC_METHODGATE();
@@ -45,14 +40,22 @@ Settings::Settings(QString group, QString appName, QString appVersion, QObject *
 	if(""!=appName) {
 		QCoreApplication::setApplicationName(appName);
 	}
-	if(""!=mGroup) {
-		mSettings->beginGroup(mGroup);
+	// Construct settings now that application details have been set
+
+	mSettings=OC_NEW QSettings(this);
+	if(nullptr!=mSettings) {
+		//qDebug()<<"Created Settings for "<<group<<appName<<appVersion<<" in " << mSettings->fileName();
+		if(""!=mGroup) {
+			mSettings->beginGroup(mGroup);
+		}
+		syncTimer.setTimerType(Qt::VeryCoarseTimer);
+		if(!connect(&syncTimer, SIGNAL(timeout()), this, SLOT(delayedSync()), OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect settings sync timer";
+		}
+	} else {
+		qWarning()<<"ERROR: Could not create Settings for "<<group<<appName<<appVersion;
+
 	}
-	syncTimer.setTimerType(Qt::VeryCoarseTimer);
-	if(!connect(&syncTimer, SIGNAL(timeout()), this, SLOT(delayedSync()), OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect settings sync timer";
-	}
-	//qDebug()<<"CREATING Settings: "<<group<<appName<<appVersion;
 }
 
 
@@ -63,7 +66,7 @@ Settings::~Settings()
 	if(""!=mGroup) {
 		mSettings->endGroup();
 	}
-	delete mSettings;
+	mSettings->deleteLater();
 	mSettings=nullptr;
 }
 
@@ -94,6 +97,24 @@ void Settings::sync()
 	}
 }
 
+QString Settings::toString()
+{
+	QString allGroupsString;
+	if(nullptr!=mSettings) {
+		foreach (const QString &group, mSettings->childGroups()) {
+			QString groupString = QString("==== %1\n").arg(group);
+			mSettings->beginGroup(group);
+			foreach (const QString &key, mSettings->childKeys()) {
+				groupString.append(QString(" + %1 = %2\n").arg(key, mSettings->value(key).toString()));
+			}
+			mSettings->endGroup();
+			allGroupsString.append(groupString);
+		}
+	} else {
+		allGroupsString="null";
+	}
+	return allGroupsString;
+}
 
 
 
@@ -102,7 +123,7 @@ void Settings::delayedSync()
 	OC_METHODGATE();
 	syncTimer.stop();
 	if(nullptr!=mSettings)	{
-		//qDebug()<<"SETTINGS SYNC PERFORMED";
+		//qDebug()<<"SETTINGS SYNC PERFORMED TO "<<mSettings->fileName();
 		mSettings->sync();
 		mLastSync=utility::time::currentMsecsSinceEpoch<qint64>();
 	}
@@ -219,5 +240,3 @@ bool Settings::hasCustomSetting(const QString &sub)
 	const QString bad="THIS_SETTING_WILL_NEVER_OCCUR_NATURALLY";
 	return bad!=mSettings->value(KEY_CUSTOM_SETTING_BASE+sub, bad).toString();
 }
-
-///
