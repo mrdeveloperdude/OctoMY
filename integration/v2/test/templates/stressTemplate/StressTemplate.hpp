@@ -1,8 +1,7 @@
 #ifndef STRESSTEMPLATE_HPP
 #define STRESSTEMPLATE_HPP
 
-#include "../common/TestCommon.hpp"
-
+#include "Common_test.hpp"
 
 class StressTemplate:public QObject
 {
@@ -16,4 +15,3 @@ private slots:
 
 #endif
 // STRESSTEMPLATE_HPP
-

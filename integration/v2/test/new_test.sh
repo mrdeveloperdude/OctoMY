@@ -37,11 +37,12 @@ LOWER=$(echo "$ORIGINAL" | tr '[:upper:]' '[:lower:]')
 UPPER=$(echo "$ORIGINAL" | tr '[:lower:]' '[:upper:]')
 NEW="$TYPE$ORIGINAL"
 TEMPLATE="${TYPE}Template"
+TEMPLATE_DIR="templates/${TEMPLATE}"
 echo "TYPE=$TYPE"
 echo "NEW=$NEW"
 echo "TEMPLATE=$TEMPLATE"
 echo "NAME=$ORIGINAL ($UPPER, $LOWER)"
-cp -a "$TEMPLATE"  "$NEW"
+cp -a "$TEMPLATE_DIR"  "$NEW"
 
 rename "s/Template/$ORIGINAL/" "$NEW"/*
 

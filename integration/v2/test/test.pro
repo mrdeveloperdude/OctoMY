@@ -17,10 +17,6 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 
 	message(ADDING BASIC TESTS TO BUILD)
 	TEST_PROJECTS+= \
-		testHoneymoonScheduler \
-		testHoneymoonScheduler \
-		testHardwareWidget \
-		testNameGenerator \
 		testAddressBook \
 		testAddressList \
 		testAgentStateCourier \
@@ -39,13 +35,16 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testEventSourcing \
 		testEyesWidget \
 		testFivePhase \
+		testHardwareWidget \
 		testHashstore \
+		testHoneymoonScheduler \
 		testIDDuel \
 		testIdenticon \
 		testIrisRendrer \
 		testKey \
 		testKeyStore \
 		testMapEditor\
+		testNameGenerator \
 		testNetworkAddress \
 		testNetworkSettingsWidget\
 		testParser \
@@ -103,13 +102,13 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testAgentStateCourier \
 #		testArduMY \
 #		testAssociate \
-		testAsyncStore \
+#		testAsyncStore \
 #		testBlob \
 #		testCarSteeringWidget \
 #		testCommsCarrier \
 #		testCommsChannel \
 #		testCommsSession \
-		testConcurrentQueue \
+#		testConcurrentQueue \
 #		testDataStore \
 #		testDeliveryWizard \
 #		testDiscovery \
@@ -118,6 +117,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testFivePhase \
 #		testHardwareWidget \
 #		testHashstore \
+		testHoneymoonScheduler \
 #		testIDDuel \
 #		testIdenticon \
 #		testIrisRendrer \
@@ -133,13 +133,13 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testRateCalculator \
 #		testRNG \
 #		testServotor32Controller \
-		testSimpleDataStore \
+#		testSimpleDataStore \
 #		testStreamCodec \
 #		testSyncParameter \
 #		testTaskQueue \
 #		testTetraGPSEncoder \
 #		testTryToggle \
-		testUtility \
+#		testUtility \
 #		testZooComms \
 
 

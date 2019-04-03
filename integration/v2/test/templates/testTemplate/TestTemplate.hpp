@@ -1,7 +1,7 @@
 #ifndef TESTTEMPLATE_HPP
 #define TESTTEMPLATE_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 class TestTemplate:public QObject
 {
@@ -12,4 +12,5 @@ private slots:
 };
 
 
-#endif // TESTTEMPLATE_HPP
+#endif
+// TESTTEMPLATE_HPP

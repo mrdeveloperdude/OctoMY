@@ -18,8 +18,5 @@ PRE_TARGETDEPS +=      $$COMMON_TEST_OUT_DIR/libcommon_test.a
 # NOTE: This must come last to get correct linking order
 include($$PRIS/lib_headers.pri)
 
-message("----------- COKCOCKOCKOCKOCKOKCOKCOKCOKCOKCOKCOKCOKOKCOKOCKOKCOKCOK ")
-message("----------- COKCOCKOCKOCKOCKOKCOKCOKCOKCOKCOKCOKCOKOKCOKOCKOKCOKCOK ")
-message("----------- COKCOCKOCKOCKOCKOKCOKCOKCOKCOKCOKCOKCOKOKCOKOCKOKCOKCOK ")
-message("----------- COKCOCKOCKOCKOCKOKCOKCOKCOKCOKCOKCOKCOKOKCOKOCKOKCOKCOK ")
+message("----------- TEST ")
 include($$PRIS/status.pri)
