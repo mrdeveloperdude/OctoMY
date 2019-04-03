@@ -9,10 +9,13 @@ class TestHoneymoonScheduler:public QObject
 private:
 	void generateTestCase(const int minV, const int maxV , const quint64 graceP , const quint64 decayP , const quint64 interval );
 
+	void testHelper(const int minV, const int maxV , const quint64 graceP , const quint64 decayP);
+
+
 private slots:
 	void testActivation();
 	void testNormalUse();
-	void testaAbuse();
+	void testReverseScale();
 
 };
 

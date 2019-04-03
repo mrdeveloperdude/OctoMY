@@ -22,8 +22,8 @@ class HoneymoonScheduler
 {
 protected:
 	// Parameters
-	T mMaxOutput;
-	T mMinOutput;
+	T mTriggeredOutput;
+	T mIdleOutput;
 	quint64 mGracePeriod;
 	quint64 mDecayPeriod;
 
@@ -71,8 +71,8 @@ public:
 template <typename T>
 HoneymoonScheduler<T>::HoneymoonScheduler()
 // Default to sane values with a freshly triggered honeymoon
-	: mMaxOutput(1)
-	, mMinOutput(0)
+	: mTriggeredOutput(1)
+	, mIdleOutput(0)
 	, mGracePeriod(10000) // 10 seconds
 	, mDecayPeriod(20000) // 20 seconds
 	, mLastTrigger(utility::time::currentMsecsSinceEpoch<quint64>())
@@ -95,10 +95,10 @@ void HoneymoonScheduler<T>::configure(T maxOutput, quint64 gracePeriod, quint64 
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		mMaxOutput=maxOutput;
+		mTriggeredOutput=maxOutput;
 		mGracePeriod=gracePeriod;
 		mDecayPeriod=decayPeriod;
-		mMinOutput=minOutput;
+		mIdleOutput=minOutput;
 	}
 }
 
@@ -141,24 +141,29 @@ T HoneymoonScheduler<T>::currentValue(quint64 now)
 		}
 		// Last trigger is in the future, preten everything is fine
 		if(mLastTrigger>=now) {
-			return mMaxOutput;
+			return mTriggeredOutput;
 		}
 		// Calcualte time since last trigger
 		quint64 iv=now-mLastTrigger;
 		// We are in the honeymoon phase
 		if(iv<mGracePeriod) {
-			return mMaxOutput;
+			return mTriggeredOutput;
 		}
 		// No skip past grace period
 		iv-=mGracePeriod;
 		// We are past the decay period
 		if(iv>mDecayPeriod) {
-			return mMinOutput;
+			return mIdleOutput;
 		}
 		// We are in the decay period, so calculate linear decay value
-		iv=mDecayPeriod-iv;
-		const T range=(mMaxOutput-mMinOutput);
-		return (((iv * range) / static_cast<T>(mDecayPeriod)))+mMinOutput;
+		//iv=mDecayPeriod-iv;
+		const T range=(mIdleOutput-mTriggeredOutput);
+		T ret=mTriggeredOutput;
+		const T dp=static_cast<T>(mDecayPeriod);
+		T t=(iv * range);
+		t/=dp;
+		ret += t;
+		return ret;
 	}
 	return 0;
 }

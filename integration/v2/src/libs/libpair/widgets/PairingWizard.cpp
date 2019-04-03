@@ -174,7 +174,7 @@ void PairingWizard::updateNetworkSettings()
 			const bool visible=this->isVisible();
 			//TODO: Only attemt to start discovery client when address is valid
 			//const bool valid=true;//mNode->localAddresses().currentAddress().isValid()
-			client->setStart(visible);
+			client->activate(visible);
 			ui->progressBarSearching->setVisible(visible);
 		}
 	}

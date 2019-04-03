@@ -7,13 +7,13 @@ class HoneymoonSchedulerInfiltrator: public HoneymoonScheduler<T>
 {
 public:
 	// Parameters
-	T maxOutput()
+	T triggeredOutput()
 	{
-		return HoneymoonScheduler<T>::mMaxOutput;
+		return HoneymoonScheduler<T>::mTriggeredOutput;
 	}
-	T minOutput()
+	T idleOutput()
 	{
-		return HoneymoonScheduler<T>::mMinOutput;
+		return HoneymoonScheduler<T>::mIdleOutput;
 	}
 	quint64 gracePeriod()
 	{
@@ -41,68 +41,85 @@ public:
 
 
 void TestHoneymoonScheduler::generateTestCase(
-	const int minV
-	, const int maxV
+	const int idleV
+	, const int triggeredV
 	, const quint64 graceP
 	, const quint64 decayP
 	, const quint64 interval)
 {
 	HoneymoonSchedulerInfiltrator<int> hmsi;
-	hmsi.configure(maxV, graceP, decayP, minV);
+	hmsi.configure(triggeredV, graceP, decayP, idleV);
 	const quint64 now=10000;
 	const quint64 start=now-3000;
 	const quint64 end=now+graceP+decayP+3000;
+	const int m=qMax(idleV, triggeredV);
 	hmsi.trigger(now);
 	qDebug().noquote().nospace()<<"    HoneymoonSchedulerInfiltrator<int> hmsi;";
-	qDebug().noquote().nospace()<<QString("    hmsi.configure(%1, %2, %3, %4);").arg(maxV).arg(graceP).arg(decayP).arg(minV);
+	qDebug().noquote().nospace()<<QString("    hmsi.configure(%1, %2, %3, %4);").arg(triggeredV).arg(graceP).arg(decayP).arg(idleV);
 	qDebug().noquote().nospace()<<QString("    hmsi.trigger(%1);").arg(now);
 	for(quint64 t=start; t<end; t+=interval) {
 		const int v=hmsi.currentValue(t);
-		const int d=(v*20)/maxV;
+		const int d=(v*20)/m;
 		qDebug().noquote().nospace()<<QString("    QCOMPARE(hmsi.currentValue(%1), %2); // %3").arg(t).arg(v).arg(QString("#").repeated(d));
 
 	}
 
 }
 
-void TestHoneymoonScheduler::testActivation( )
+
+void TestHoneymoonScheduler::testHelper(const int idleV, const int triggeredV, const quint64 graceP, const quint64 decayP)
 {
-	HoneymoonSchedulerInfiltrator<float> hmsi;
-	const float minV=20;
-	const float maxV=30;
-	const quint64 graceP=1337;
-	const quint64 decayP=graceP*2;
-	QCOMPARE(0, hmsi.minOutput());
-	QCOMPARE(1, hmsi.maxOutput());
+	HoneymoonSchedulerInfiltrator<int> hmsi;
+	QCOMPARE(0, hmsi.idleOutput());
+	QCOMPARE(1, hmsi.triggeredOutput());
 	QCOMPARE(10000, hmsi.gracePeriod());
 	QCOMPARE(20000, hmsi.decayPeriod());
-	hmsi.configure(maxV, graceP, decayP, minV);
-	QCOMPARE(minV, hmsi.minOutput());
-	QCOMPARE(maxV, hmsi.maxOutput());
+	hmsi.configure(triggeredV, graceP, decayP, idleV);
+	QCOMPARE(idleV, hmsi.idleOutput());
+	QCOMPARE(triggeredV, hmsi.triggeredOutput());
 	QCOMPARE(graceP, hmsi.gracePeriod());
 	QCOMPARE(decayP, hmsi.decayPeriod());
 	const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
 	{
 		float v=hmsi.currentValue(now);
-		QCOMPARE(v, hmsi.maxOutput());
+		QCOMPARE(v, hmsi.triggeredOutput());
 	}
 	hmsi.reset();
 	{
 		float v=hmsi.currentValue(now);
-		QCOMPARE(v, hmsi.minOutput());
+		QCOMPARE(v, hmsi.idleOutput());
 	}
 	hmsi.trigger();
 	{
 		float v=hmsi.currentValue(now);
-		QCOMPARE(v, hmsi.maxOutput());
+		QCOMPARE(v, hmsi.triggeredOutput());
 	}
 	{
-		float v=hmsi.currentValue(now+graceP+decayP/2);
-		QVERIFY(v < hmsi.maxOutput());
-		QVERIFY(v > hmsi.minOutput());
+		// Calculate value in the middle of the slope
+		int v=hmsi.currentValue(now+graceP+decayP/2);
+		int bigger=hmsi.triggeredOutput();
+		int smaller=hmsi.idleOutput();
+		if(smaller>bigger){
+			int tmp=smaller;
+			smaller=bigger;
+			bigger=tmp;
+		}
+		QVERIFY(v < bigger);
+		QVERIFY(v > smaller);
 	}
+}
+
+
+
+void TestHoneymoonScheduler::testActivation( )
+{
+	const int idleV=20;
+	const int triggeredV=30;
+	const quint64 graceP=1337;
+	const quint64 decayP=graceP * 2;
+	testHelper(idleV, triggeredV, graceP, decayP);
 	// Uncomment this to generate new test cases for testNormalUse()
-	// generateTestCase(1000, 5000, 1000, 2000, 100);
+	//generateTestCase(1000, 5000, 1000, 2000, 100);
 }
 
 void TestHoneymoonScheduler::testNormalUse()
@@ -204,9 +221,16 @@ void TestHoneymoonScheduler::testNormalUse()
 
 }
 
-void TestHoneymoonScheduler::testaAbuse()
+void TestHoneymoonScheduler::testReverseScale()
 {
-	// TODO: Implement
+	// We reverse idle and triggered values to see that it still works
+	const int idleV=30;
+	const int triggeredV=20;
+	const quint64 graceP=1337;
+	const quint64 decayP=graceP*2;
+	testHelper(idleV, triggeredV,graceP, decayP);
+	HoneymoonSchedulerInfiltrator<float> hmsi;
+	//generateTestCase(5000, 1000, 1000, 2000, 100);
 }
 
 
