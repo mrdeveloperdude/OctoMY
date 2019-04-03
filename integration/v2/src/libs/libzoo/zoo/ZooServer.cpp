@@ -52,6 +52,7 @@ ZooServer::ZooServer(QObject *parent)
 	, mContext(nullptr)
 	, mStorage(QDir::current())
 	, mDiscovery (true)
+	, mConfigureHelper("ZooServer", true, false, false, true, false)
 {
 	OC_METHODGATE();
 }
@@ -63,39 +64,41 @@ ZooServer::~ZooServer()
 }
 
 
-void ZooServer::configure(AppContext *context)
+void ZooServer::configure(QSharedPointer<AppContext> context)
 {
 	OC_METHODGATE();
-	mContext=(context);
-	Q_ASSERT(nullptr!=mContext);
+	if(mConfigureHelper.configure()) {
+		mContext=(context);
+		Q_ASSERT(nullptr!=mContext);
 
-	mKeyStore.configure(mContext->baseDir() + "/keystore.json", true);
+		mKeyStore.configure(mContext->baseDir() + "/keystore.json", true);
 
-	//ScopedTimer zooBootTimer(mContext->base()+"-boot");
-	setObjectName(mContext->base());
+		//ScopedTimer zooBootTimer(mContext->base()+"-boot");
+		setObjectName(mContext->base());
 
-	mKeyStore.synchronize([this](ASEvent<QVariantMap> &se) {
-		const bool ok=se.isSuccessfull();
-		qDebug()<<"Keystore synchronized: "<<ok << " with " <<mKeyStore.store().journal();
-		onKeystoreReady(ok);
-	});
+		mKeyStore.synchronize([this](ASEvent<QVariantMap> &se) {
+			const bool ok=se.isSuccessfull();
+			qDebug()<<"Keystore synchronized: "<<ok << " with " <<mKeyStore.store().journal();
+			onKeystoreReady(ok);
+		});
 
 
-	if(!QDir().mkpath(mContext->baseDir())) {
-		qWarning()<<"ERROR: Could not create basedir for zoo";
+		if(!QDir().mkpath(mContext->baseDir())) {
+			qWarning()<<"ERROR: Could not create basedir for zoo";
+		}
+
+		qDebug()<<"Current dir for zoo storage is: "<<mStorage.dir().absolutePath();
+
+		if(!connect(&mBackgroundTimer, &QTimer::timeout, this, &ZooServer::onBackgroundTimer, OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect";
+		}
+
+		mBackgroundTimer.setInterval(BACKGROUND_TIMER_INTERVAL);
+		mBackgroundTimer.setTimerType(Qt::CoarseTimer);
+
+//		Q_INIT_RESOURCE(zootpl);
+		mAdminIndexTPL=utility::file::fileToString("://zootpl/admin_index.mtpl");
 	}
-
-	qDebug()<<"Current dir for zoo storage is: "<<mStorage.dir().absolutePath();
-
-	if(!connect(&mBackgroundTimer, &QTimer::timeout, this, &ZooServer::onBackgroundTimer, OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect";
-	}
-
-	mBackgroundTimer.setInterval(BACKGROUND_TIMER_INTERVAL);
-	mBackgroundTimer.setTimerType(Qt::CoarseTimer);
-
-	Q_INIT_RESOURCE(zootpl);
-	mAdminIndexTPL=utility::file::fileToString("://zootpl/admin_index.mtpl");
 }
 
 
@@ -123,59 +126,64 @@ void ZooServer::logUsefullStuff()
 
 bool ZooServer::start(const QString pathOrPortNumber)
 {
-	OC_METHODGATE();
-	if(!connect(this,  &QHttpServer::newConnection, [](qhttp::server::QHttpConnection*) {
-	//qDebug()<<"a new connection was made!\n";
-})) {
-		Q_UNUSED(this);
-		qWarning()<<"ERROR: Could not connect";
-	}
-	mBackgroundTimer.start();
-	qhttp::server::TServerHandler conHandler=[this](qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res) {
-		req->collectData(Constants::OCTOMY_WEB_COLLECT_AT_MOST);
-		req->onEnd([this, req, res]() {
-			qDebug()<<req;
-			QString path=req->url().path();
-			//qDebug()<<"URL: "<<path;
-			if("/"==path) {
-				serveIndex(req,res);
-				return;
-			} else if(path.startsWith("/identicon") || path.startsWith("/favicon.ico")) {
-				serveIdenticon(req,res);
-				return;
-			} else if(path.startsWith("/api")) {
-				serveAPI(req,res);
-				return;
-			} else if( !mAdminURLPath.isEmpty() && path.startsWith(mAdminURLPath)) {
-				serveAdmin(req,res);
-				return;
-			} else {
-				serveFallback(req,res);
-			}
-		});
-	};
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		OC_METHODGATE();
+		if(!connect(this,  &QHttpServer::newConnection, [](qhttp::server::QHttpConnection*) {
+		//qDebug()<<"a new connection was made!\n";
+	})) {
+			Q_UNUSED(this);
+			qWarning()<<"ERROR: Could not connect";
+		}
+		mBackgroundTimer.start();
+		qhttp::server::TServerHandler conHandler=[this](qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res) {
+			req->collectData(Constants::OCTOMY_WEB_COLLECT_AT_MOST);
+			req->onEnd([this, req, res]() {
+				qDebug()<<req;
+				QString path=req->url().path();
+				//qDebug()<<"URL: "<<path;
+				if("/"==path) {
+					serveIndex(req,res);
+					return;
+				} else if(path.startsWith("/identicon") || path.startsWith("/favicon.ico")) {
+					serveIdenticon(req,res);
+					return;
+				} else if(path.startsWith("/api")) {
+					serveAPI(req,res);
+					return;
+				} else if( !mAdminURLPath.isEmpty() && path.startsWith(mAdminURLPath)) {
+					serveAdmin(req,res);
+					return;
+				} else {
+					serveFallback(req,res);
+				}
+			});
+		};
 
-	const bool isListening = listen(pathOrPortNumber, conHandler);
+		const bool isListening = listen(pathOrPortNumber, conHandler);
 
-	if ( !isListening ) {
-		qWarning()<<"ERROR: Could not listen to "<<qPrintable(pathOrPortNumber);
-		//QCoreApplication::quit();
-		return false;
-	} else {
-		qDebug()<<"Listening to "<<qPrintable(pathOrPortNumber);
+		if ( !isListening ) {
+			qWarning()<<"ERROR: Could not listen to "<<qPrintable(pathOrPortNumber);
+			//QCoreApplication::quit();
+			return false;
+		} else {
+			qDebug()<<"Listening to "<<qPrintable(pathOrPortNumber);
+		}
+		return true;
 	}
-	return true;
+	return false;
 }
 
 
 void ZooServer::stop()
 {
 	OC_METHODGATE();
-	if ( !isListening() ) {
-		qWarning()<<"ERROR: Trying to stop server while not listeining";
-	} else {
-		qDebug()<<"Stopping server";
-		stopListening();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		if ( !isListening() ) {
+			qWarning()<<"ERROR: Trying to stop server while not listeining";
+		} else {
+			qDebug()<<"Stopping server";
+			stopListening();
+		}
 	}
 }
 

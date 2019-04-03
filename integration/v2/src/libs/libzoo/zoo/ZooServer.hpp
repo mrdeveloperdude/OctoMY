@@ -11,6 +11,8 @@
 #include "security/KeyStore.hpp"
 #include "client/zoo/PunchRegistry.hpp"
 
+#include "uptime/ConfigureHelper.hpp"
+
 #include <QString>
 #include <QTimer>
 
@@ -28,7 +30,7 @@ class ZooServer : public qhttp::server::QHttpServer
 	Q_OBJECT
 
 private:
-	AppContext *mContext;
+	QSharedPointer<AppContext> mContext;
 	KeyStore mKeyStore;
 
 	Identicon mIdenticon;
@@ -41,6 +43,10 @@ private:
 	QTimer mBackgroundTimer;
 
 	QString mAdminIndexTPL;
+
+
+	ConfigureHelper mConfigureHelper;
+
 	static const quint64 BACKGROUND_TIMER_INTERVAL;
 	static const quint64 PRUNE_DEADLINE;
 
@@ -52,7 +58,7 @@ public:
 	virtual~ZooServer();
 
 public:
-	void configure(AppContext *context);
+	void configure(QSharedPointer<AppContext> context);
 
 private:
 	NetworkAddress serverAddress();
