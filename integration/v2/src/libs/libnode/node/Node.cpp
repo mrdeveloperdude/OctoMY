@@ -72,6 +72,7 @@ Node::Node()
 	, mAddresses(OC_NEW LocalAddressList())
 	, mLocalIdentity(OC_NEW LocalIdentityStore())
 	, mAddressBook(OC_NEW AddressBook())
+	, mDiscovery(OC_NEW DiscoveryClient())
 	, mLastStatusSend (0)
 	, mServerURL("http://zoo.octomy.org:"+QString::number(Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
 {
@@ -98,22 +99,27 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 		mLauncher=launcher;
 		auto ctx=context();
 		if(!ctx.isNull()) {
+
+			mAddresses->configure(defaultPortForNodeType(nodeType()), true);
+			//mCarrier.configure(OC_NEW CommsCarrierUDP( static_cast<QObject *>(this)) );
+			//mComms.configure(OC_NEW CommsChannel(*mCarrier, mKeyStore, mAddressBook, static_cast<QObject *>(this)));
+
+			mDiscovery->configure(sharedThis(), 1000, 60000, 20000, 40000);
+
+
+			//mZooClient->configure();
+			//mSensors->configure(OC_NEW SensorInput(this))
+			//mSensorsCourier->configure(QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*mComms, this)))
+			//mBlobCourier->configure(QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*mComms, this)))
+			//mCameras->configure(OC_NEW CameraList(this))
+
+
 			//	, mKeyStore (context()->baseDir() + "/keystore.json", true)
 
 
 			//mAddresses->configure();
 			//mLocalIdentity->configure(ctx->baseDir() + "/local_identity.json");
 			//mAddressBook->configure(ctx->baseDir() + "/addressbook.json");
-
-			//	, mAddresses(defaultPortForNodeType(mType), true)
-			//	, mCarrier(OC_NEW CommsCarrierUDP( static_cast<QObject *>(this)) )
-			//	, mComms (OC_NEW CommsChannel(*mCarrier, mKeyStore, mAddressBook, static_cast<QObject *>(this)))
-			//	, mDiscovery (OC_NEW DiscoveryClient(*this))
-			//	, mZooClient (OC_NEW ZooClient(this))
-			//	, mSensors (OC_NEW SensorInput(this))
-			//	, mSensorsCourier(QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*mComms, this)))
-			//	, mBlobCourier(QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*mComms, this)))
-			//	, mCameras (OC_NEW CameraList(this))
 
 			// ScopedTimer nodeBootTimer(context()->base()+"-boot");
 			setObjectName(ctx->base());
@@ -132,6 +138,11 @@ void Node::appActivate(const bool on)
 
 	if(mAppConfigureHelper.activate(on)) {
 		if(on) {
+			if(!mDiscovery.isNull()) {
+				mDiscovery->activate(on);
+				mDiscovery->setURL(mServerURL);
+			}
+
 			/*
 			if(nullptr!= mCarrier) {
 				const NetworkAddress listenAddress(QHostAddress::Any, mAddresses.port());
@@ -196,11 +207,6 @@ void Node::appActivate(const bool on)
 			}
 			*/
 
-			/*
-			if(nullptr!=mDiscovery) {
-				mDiscovery->setURL(mServerURL);
-			}
-			*/
 
 			// Bootstrap connection
 			/*
@@ -885,17 +891,6 @@ void Node::setHookCommsSignals(QObject &o, bool hook)
 	if(nullptr!=mComms) {
 		mComms->setHookCommsSignals(o, hook);
 	}
-}
-
-
-
-
-void Node::updateDiscoveryClient()
-{
-	OC_METHODGATE();
-	mDiscovery=QSharedPointer<DiscoveryClient>(OC_NEW DiscoveryClient());
-	mDiscovery->configure(sharedThis());
-	mDiscovery->setURL(mServerURL);
 }
 
 

@@ -207,8 +207,6 @@ public:
 
 	void unbirth();
 
-	void updateDiscoveryClient();
-
 	void setHookColorSignals(QObject &o, bool hook);
 	void setHookSensorSignals(QObject &o, bool hook);
 	void setHookCommsSignals(QObject &o, bool hook);

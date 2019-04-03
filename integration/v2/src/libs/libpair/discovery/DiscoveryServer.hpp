@@ -7,6 +7,11 @@
 
 #include <QMap>
 
+/**
+ * DiscoveryServer is part fo the discovery process. Please see full description
+ * in DiscoveryClient.hpp
+ */
+
 class DiscoveryServer
 {
 private:

@@ -5,7 +5,8 @@
 #include "node/NodeRole.hpp"
 #include "AddressBook.hpp"
 #include "address/Associate.hpp"
-
+#include "uptime/ConfigureHelper.hpp"
+#include "utility/time/HoneymoonScheduler.hpp"
 
 #include <QTimer>
 #include <QObject>
@@ -49,7 +50,7 @@ class QHttpClient;
 		a. NFC: by having NFC range physical proximity is implied
 		b. Cam/QR: by having scanning QR with camera, physical proximity is implied
 		c. Bluetooth: by having bluetooth range physical proximity is implied
-		d. Zoo: posting expiring gps coords together with pairing signature
+		d. Zoo: posting expiring gps coordinates together with pairing signature
 		e. LAN: Identify common gateway
 	2. Pairing signatures and pubkeys are exchanged
 	3. Pairing challenge/responses are exchanged to verify legitimity of signature/pubkeys
@@ -96,6 +97,9 @@ private:
 	QSharedPointer<Node>						mNode;
 	QSharedPointer<Key>							mKey;
 	bool										mLog;
+	HoneymoonScheduler<quint64>					mHoneymoonScheduler;
+	ConfigureHelper								mConfigureHelper;
+
 
 private:
 	void registerPossibleAssociate(QVariantMap map);
@@ -105,7 +109,13 @@ public:
 	virtual ~DiscoveryClient();
 
 public:
-	void configure(QSharedPointer<Node> node);
+
+	void configure(QSharedPointer<Node> node
+				   , quint64 triggeredInterval = 1000 // When triggered we want to make a discovery call every second
+				   , quint64 idleInterval = 60000 // When not triggered we conduct a discovery once per minute
+				   , quint64 triggeredTime = 20000 // Stay triggered for 20 seconds
+				   , quint64 decayTime = 40000 // Decay triggering over 40 second period
+				  );
 
 	// Convenience selectors
 private:
@@ -113,9 +123,13 @@ private:
 
 public:
 	void setURL(const QUrl&);
-	bool isStarted();
-	void setStart(bool start);
+	bool isActive();
+	void activate(bool start);
+
+	// Perform one shot discovery by invoking discovery request to discovery server
+	// NOTE: This should only be invoked from internal timer.
 	void discover();
+
 	QSharedPointer<Node> node();
 
 private slots:
