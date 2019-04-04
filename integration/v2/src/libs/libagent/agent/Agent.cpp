@@ -33,10 +33,21 @@ void Agent::nodeConfigure()
 {
 	OC_METHODGATE();
 	//qDebug()<<"nodeConfigure()";
-	if(mNodeConfigureHelper.configure()){
-		//
+	if(mNodeConfigureHelper.configure()) {
+		auto ctx=context();
+		if(!ctx.isNull()) {
+			//QSharedPointer<AgentWindow> mWindow;
+			mAgentConfigStore->configure(ctx->baseDir()+ "/agent_config.json");
+
+			//QSharedPointer<IActuatorController> mActuatorController;
+
+		}
+	} else {
+		qDebug()<<"ERROR: No context, closing";
+		emit nodeRequestExit(EXIT_FAILURE);
 	}
 }
+
 
 
 
@@ -46,21 +57,15 @@ void Agent::nodeActivate(const bool on)
 	if(mNodeConfigureHelper.activate(on)) {
 		//qDebug()<<"nodeActivate(on="<<on<<")";
 		if(on) {
-			auto ctx=context();
-			if(!ctx.isNull()) {
-				// Initialize Agent Configuration Store
-				mAgentConfigStore->configure(ctx->baseDir()+ "/agent_config.json");
-				mAgentConfigStore->activate(on);
-				mAgentConfigStore->synchronize([](QSharedPointer<SimpleDataStore> store, bool ok) {
-					//qDebug()<<"mAgentConfigStore synced";
-					Q_UNUSED(store);
-					Q_UNUSED(ok);
-				});
-				emit nodeActivateChanged(on);
-			} else {
-				qDebug()<<"ERROR: No context, closing";
-				emit nodeRequestExit(EXIT_FAILURE);
-			}
+			// Initialize Agent Configuration Store
+
+			mAgentConfigStore->activate(on);
+			mAgentConfigStore->synchronize([](QSharedPointer<SimpleDataStore> store, bool ok) {
+				//qDebug()<<"mAgentConfigStore synced";
+				Q_UNUSED(store);
+				Q_UNUSED(ok);
+			});
+			emit nodeActivateChanged(on);
 		} else {
 			if(!mWindow.isNull()) {
 				mWindow.clear();

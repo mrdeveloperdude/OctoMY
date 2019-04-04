@@ -69,8 +69,9 @@ quint16 defaultPortForNodeType(NodeType type)
 Node::Node()
 	: QObject(nullptr)
 	, mAppConfigureHelper("node", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
-	, mAddresses(OC_NEW LocalAddressList())
+	, mKeyStore(OC_NEW KeyStore())
 	, mLocalIdentity(OC_NEW LocalIdentityStore())
+	, mLocalAddresses(OC_NEW LocalAddressList())
 	, mAddressBook(OC_NEW AddressBook())
 	, mDiscovery(OC_NEW DiscoveryClient())
 	, mLastStatusSend (0)
@@ -90,7 +91,6 @@ Node::~Node()
 // TODO: Look at simplifying init system by combining appInit and appConfigure
 //  , renaming appDeInit to appDeConfigure, and maybe removing one layer so there
 //	is not appXXX + nodeXXX but just one of them.
-
 void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 {
 	OC_METHODGATE();
@@ -99,8 +99,12 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 		mLauncher=launcher;
 		auto ctx=context();
 		if(!ctx.isNull()) {
+			setObjectName(ctx->base());
 
-			mAddresses->configure(defaultPortForNodeType(nodeType()), true);
+			mKeyStore->configure(ctx->baseDir() + "/keystore.json", true);
+			mLocalIdentity->configure(ctx->baseDir() + "/local_identity.json");
+			mLocalAddresses->configure(defaultPortForNodeType(nodeType()), true);
+			mAddressBook->configure(ctx->baseDir() + "/addressbook.json");
 			//mCarrier.configure(OC_NEW CommsCarrierUDP( static_cast<QObject *>(this)) );
 			//mComms.configure(OC_NEW CommsChannel(*mCarrier, mKeyStore, mAddressBook, static_cast<QObject *>(this)));
 
@@ -114,15 +118,9 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 			//mCameras->configure(OC_NEW CameraList(this))
 
 
-			//	, mKeyStore (context()->baseDir() + "/keystore.json", true)
-
-
-			//mAddresses->configure();
-			//mLocalIdentity->configure(ctx->baseDir() + "/local_identity.json");
-			//mAddressBook->configure(ctx->baseDir() + "/addressbook.json");
 
 			// ScopedTimer nodeBootTimer(context()->base()+"-boot");
-			setObjectName(ctx->base());
+
 			nodeConfigure();
 		} else {
 			qWarning()<<"ERROR: No context";
@@ -131,44 +129,101 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 }
 
 
+void Node::stepActivation(const bool on)
+{
+	OC_METHODGATE();
+	if(on) {
+		if(!mNodeActivationState.keyStoreOK) {
+			if(!mKeyStore.isNull()) {
+				mKeyStore->synchronize([this, on](ASEvent<QVariantMap> &se) {
+					const bool ok=se.isSuccessfull();
+					qDebug()<<"Keystore synchronized with ok="<<ok;
+					// mKeyStore->dump();
+					mNodeActivationState.keyStoreOK=ok;
+					stepActivation(on);
+				});
+			} else {
+				qWarning()<<"ERROR: No KeyStore";
+			}
+		} else if (!mNodeActivationState.localIdentityOK) {
+			if(!mLocalIdentity.isNull()) {
+				//mLocalIdentity.setInitialized(&mLocalIdentity);
+				mLocalIdentity->synchronize([this, on](QSharedPointer<SimpleDataStore> sms, bool ok) {
+					if(!sms.isNull()) {
+						qDebug()<<"LocalIdentity synchronized with ok="<<ok;
+						auto map=sms->toMap();
+						//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
+						mNodeActivationState.localIdentityOK=ok;
+						stepActivation(on);
+					}
+				});
+			} else {
+				qWarning()<<"ERROR: No LocalIdentity";
+			}
+		} else if (!mNodeActivationState.localAddressesOK) {
+			if(!mLocalAddresses.isNull()) {
+				qDebug()<<"LocalAddresses synchronized with ok="<<true;
+				mNodeActivationState.localAddressesOK=true;
+				stepActivation(on);
+			} else {
+				qWarning()<<"ERROR: No Addresses";
+			}
+
+		} else if (!mNodeActivationState.addressBookOK) {
+			if(!mAddressBook.isNull()) {
+
+
+				mAddressBook->synchronize([this, on](QSharedPointer<SimpleDataStore> sms, bool ok) {
+					if(!sms.isNull()) {
+						qDebug()<<"AddressBook synchronized with ok="<<ok;
+						auto map=sms->toMap();
+						//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
+						mNodeActivationState.addressBookOK=ok;
+						stepActivation(on);
+					}
+				});
+
+			} else {
+				qWarning()<<"ERROR: No AddressBook";
+			}
+
+		} else if (!mNodeActivationState.discoveryClientOK) {
+			if(!mDiscovery.isNull()) {
+				qDebug()<<"Discovery synchronized with ok="<<true;
+				mDiscovery->setURL(mServerURL);
+				mNodeActivationState.discoveryClientOK=true;
+				// stepActivation(on);
+			} else {
+				qWarning()<<"ERROR: No DiscoveryClient";
+			}
+		}
+
+	} else {
+
+	}
+}
+
+
 void Node::appActivate(const bool on)
 {
 	OC_METHODGATE();
 	//qDebug()<<"appActivate()";
-
 	if(mAppConfigureHelper.activate(on)) {
 		if(on) {
-			if(!mDiscovery.isNull()) {
-				mDiscovery->activate(on);
-				mDiscovery->setURL(mServerURL);
-			}
+			// mKeyStore->activate(on);
+			mLocalIdentity->activate(on);
+			//mAddresses->activate(on);
+			mAddressBook->activate(on);
+			mDiscovery->activate(on);
+
+			stepActivation(on);
+
 
 			/*
 			if(nullptr!= mCarrier) {
 				const NetworkAddress listenAddress(QHostAddress::Any, mAddresses.port());
 				mCarrier->setListenAddress(listenAddress);
 			}
-			*/
-
-			/*
-			mKeyStore.synchronize([this](ASEvent<QVariantMap> &se) {
-				const bool ok=se.isSuccessfull();
-				qDebug()<<"------------------------------------------------";
-				qDebug()<<"Keystore synchronized with ok="<<ok;
-				mKeyStore.dump();
-				qDebug()<<"------------------------------------------------";
-			});
-			*/
-
-			/*
-			mLocalIdentity.setInitialized(&mLocalIdentity);
-			mLocalIdentity.synchronize([this](SimpleDataStore &sms, bool ok) {
-				auto map=sms.toMap();
-				//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
-				if(ok && !map.isEmpty()) {
-					identityChanged();
-				}
-			});
 			*/
 
 			/*
@@ -341,7 +396,7 @@ QSharedPointer<ClientList> Node::clientList()
 QSharedPointer<LocalAddressList> Node::localAddressList()
 {
 	OC_METHODGATE();
-	return mAddresses;
+	return mLocalAddresses;
 }
 
 
@@ -387,10 +442,10 @@ QSharedPointer<Associate> Node::nodeIdentity()
 void Node::unbirth()
 {
 	OC_METHODGATE();
-	//mKeyStore.clear();
-	//mLocalIdentity.clear();
-	//mAddressBook.clear();
-	//mClients.clear();
+	mKeyStore->clear();
+	mLocalIdentity->clear();
+	mAddressBook->clear();
+	//mClients->clear();
 }
 
 

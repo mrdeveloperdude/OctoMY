@@ -62,6 +62,15 @@ class IAppLauncher;
 
 class Associate;
 
+
+struct NodeActivationState {
+	bool keyStoreOK=false;
+	bool localIdentityOK=false;
+	bool localAddressesOK=false;
+	bool addressBookOK=false;
+	bool discoveryClientOK=false;
+};
+
 /*!
  * \brief The Node class is the base class for agents, remotes and hubs.
  *
@@ -77,23 +86,23 @@ class Node : public QObject, public IConnectionStatus//, public QEnableSharedFro
 	Q_OBJECT
 
 private:
-	// Helper to keep track of appConfigure() and appActivate() state
-	ConfigureHelper mAppConfigureHelper;
-	// Our local network addresses
-	QSharedPointer<LocalAddressList> mAddresses;
 	// The application launcher that launched us
 	QSharedPointer<IAppLauncher> mLauncher;
+	// Helper to keep track of appConfigure() and appActivate() state
+	ConfigureHelper mAppConfigureHelper;
 	// Our key store
 	QSharedPointer<KeyStore> mKeyStore;
 	// Our local ID
 	QSharedPointer<LocalIdentityStore> mLocalIdentity;
+	// Our local network addresses
+	QSharedPointer<LocalAddressList> mLocalAddresses;
 	// Clients address book (clients are nodes we communicate with)
 	QSharedPointer<AddressBook> mAddressBook;
 	// Client instances
 	ClientList mClients;
-	//Our identity
+	// Our identity
 	QSharedPointer<Associate> mNodeIdentity;
-	// Copmms channel carrier the underlying carrier such as udb/bluetooth etc for comms
+	// Comms channel carrier the underlying carrier such as udb/bluetooth etc for comms
 	QSharedPointer<CommsCarrier> mCarrier;
 	// Comms channel used to communicate with other nodes
 	QSharedPointer<CommsChannel> mComms;
@@ -114,6 +123,8 @@ private:
 	// The URL of the zoo server
 	QUrl mServerURL;
 
+	NodeActivationState mNodeActivationState;
+
 
 public:
 	explicit Node();
@@ -132,6 +143,8 @@ public:
 	// After calling this with on=false, the launcher will complete termination and return to OS
 	virtual void appActivate(const bool on);
 
+
+	void stepActivation(const bool on);
 
 	// Called by launcher to get a handle to the app's main window
 	// Will be called when launcher wants to show window during initialization
@@ -165,23 +178,24 @@ public:
 	// Provide current context (adapter for context in app launcher instance)
 	QSharedPointer<AppContext> context();
 
+	// Provide the key store
+	QSharedPointer<KeyStore> keyStore();
+
+	// Provide the local address list (network addresses)
+	QSharedPointer<LocalAddressList> localAddressList();
+
 	// Convenience wrapper to get context's settings
 	QSharedPointer<Settings> settings();
 
 	// Provide local identity
 	QSharedPointer<LocalIdentityStore> localIdentityStore();
 
-	// Provide the key store
-	QSharedPointer<KeyStore> keyStore();
 
 	// Provide the address book
 	QSharedPointer<AddressBook> addressBook();
 
 	//Provide the client list
 	// QSharedPointer<ClientList> clientList();
-
-	// Provide the local address list (network addresses)
-	QSharedPointer<LocalAddressList> localAddressList();
 
 	// Provide the comms channel
 	QSharedPointer<CommsChannel> comms();

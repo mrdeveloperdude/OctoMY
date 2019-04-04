@@ -40,7 +40,7 @@ DiscoveryClient::DiscoveryClient()
 	: QObject(nullptr)
 	, mLastZooPair(0)
 	, mClient(OC_NEW qhttp::client::QHttpClient(this))
-	, mLog(true)
+	, mLog(false)
 	, mConfigureHelper("DiscoveryClient", true, true, false, true, true)
 {
 	OC_METHODGATE();

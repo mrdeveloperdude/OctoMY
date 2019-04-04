@@ -47,6 +47,8 @@ void KeyStore::configure(QString filename, bool doBootstrap, KeySecurityPolicy p
 	mDoBootstrap=(doBootstrap);
 	mPolicy=(policy);
 
+	mStore.activate(true);
+
 	synchronize([](ASEvent<QVariantMap> &se) {
 		Q_UNUSED(se);
 		//qDebug()<<"KeyStore::KeyStore() SELF ASSESMENT: SYNC WAS OK=";

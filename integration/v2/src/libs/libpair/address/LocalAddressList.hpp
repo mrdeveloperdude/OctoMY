@@ -49,4 +49,5 @@ public:
 	void updateAddresses(bool keepCurrent=false);
 };
 
-#endif // LOCALADDRESSLIST_HPP
+#endif
+// LOCALADDRESSLIST_HPP
