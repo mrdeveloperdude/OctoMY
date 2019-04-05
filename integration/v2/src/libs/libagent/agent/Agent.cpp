@@ -14,7 +14,7 @@
 #include <QDebug>
 
 Agent::Agent()
-	: mNodeConfigureHelper("app", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
+	: mNodeConfigureHelper("Agent", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 	, mAgentConfigStore(OC_NEW AgentConfigStore())
 {
 	OC_METHODGATE();

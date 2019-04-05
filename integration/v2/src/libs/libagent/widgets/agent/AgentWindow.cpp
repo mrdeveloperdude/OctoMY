@@ -12,8 +12,6 @@
 
 
 #include <QDebug>
-#include <QMessageBox>
-#include <QMap>
 
 #ifdef Q_OS_ANDROID
 #include <QAndroidJniObject>
@@ -75,15 +73,3 @@ void AgentWindow::appendLog(const QString& text)
 	//ui->widgetFace->appendLog(text);
 }
 
-
-
-
-
-
-
-void AgentWindow::on_pushButtonTestQuit_clicked()
-{
-	OC_METHODGATE();
-	// qDebug()<<"close button clicked ()";
-	nodeWindowRequestExit(EXIT_SUCCESS);
-}

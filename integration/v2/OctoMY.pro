@@ -14,11 +14,9 @@ SUBDIRS += \
 	$${SRCS}/libs \
 	$${SRCS}/agent \
 	$${SRCS}/zoo \
-
+	$${SRCS}/remote \
 #$${SRCS}/web \
-#	$${SRCS}/remote \
 #	$${SRCS}/hub \
-
 
 
 # NOTE: USE_TESTS_* is enabled when useful in local_override.pri
@@ -72,5 +70,6 @@ OTHER_FILES+= $$files(content/doc/*, false)
 OTHER_FILES+= $$files(content/design/*, false)
 OTHER_FILES+= $$files(content/website/*, false)
 
-# While transitioning to new agent we want to view but not compile old agent sources
+# While transitioning to new nodes we want to view but not compile old node sources
 OTHER_FILES+= $$files(src/libs/libagent_old/*, true);
+OTHER_FILES+= $$files(src/libs/libremote_old/*, true);

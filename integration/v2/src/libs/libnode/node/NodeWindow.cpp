@@ -2,15 +2,16 @@
 
 #include "uptime/MethodGate.hpp"
 #include "app/Settings.hpp"
-
-
 #include "node/Node.hpp"
+
+#include "identity/Identicon.hpp"
 
 #include <QDebug>
 #include <QRect>
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QVariant>
+#include <QIcon>
 
 static const QString GEOMETRY_SETTINGS_KEY("window.geometry");
 
@@ -114,6 +115,25 @@ void NodeWindow::saveWindowGeometry()
 }
 
 
+
+
+
+void NodeWindow::updateWindowIcon()
+{
+	OC_METHODGATE();
+	PortableID pid;
+	if(!mNode.isNull()) {
+		QSharedPointer<Associate>nid=mNode->nodeIdentity();
+		if(!nid.isNull()) {
+			pid=nid->toPortableID();
+		}
+	}
+	//Set our custom identicon as window icon
+	Identicon id(pid);
+	QIcon icon;
+	icon.addPixmap(id.pixmap(512,512));
+	setWindowIcon(icon);
+}
 
 
 

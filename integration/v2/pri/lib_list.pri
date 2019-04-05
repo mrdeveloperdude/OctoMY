@@ -42,12 +42,13 @@ AUTOLIBS_COMBINED += \
 	node \
 	app \
 	agent \
+	remote \
 	zoo \
 	web \
 
 #	clt \
 
-#	remote \
+
 #	hub \
 #	dynamics \
 #	sec \

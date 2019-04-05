@@ -3,7 +3,6 @@
 TEMPLATE = app
 TARGET = agent
 
-
 include($$PRIS/common.pri)
 include($$PRIS/app.pri)
 include($$PRIS/lib_headers.pri)
@@ -28,6 +27,8 @@ DISTFILES += \
 	$$ANDROID_PACKAGE_SOURCE_DIR/gradle/wrapper/gradle-wrapper.properties \
 	$$ANDROID_PACKAGE_SOURCE_DIR/res/values/libs.xml \
 	$$ANDROID_PACKAGE_SOURCE_DIR/src/org/octomy/agent/Agent.java
+
+
 
 }
 

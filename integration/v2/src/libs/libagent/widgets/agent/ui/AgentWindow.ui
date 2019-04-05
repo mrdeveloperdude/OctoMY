@@ -19,15 +19,15 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="Debugger" name="widgetDebugger" native="true"/>
+    <widget class="DebuggerWidget" name="widgetDebugger" native="true"/>
    </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Debugger</class>
+   <class>DebuggerWidget</class>
    <extends>QWidget</extends>
-   <header location="global">uptime/Debugger.hpp</header>
+   <header location="global">widgets/uptime/DebuggerWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

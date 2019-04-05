@@ -45,9 +45,6 @@ public:
 public:
 	void appendLog(const QString& text) Q_DECL_OVERRIDE;
 
-
-private slots:
-	void on_pushButtonTestQuit_clicked();
 };
 
 

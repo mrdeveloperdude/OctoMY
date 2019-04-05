@@ -34,6 +34,8 @@ protected:
 	// Save position of window on screen
 	void saveWindowGeometry();
 
+	void updateWindowIcon();
+
 	// QWidget interface
 public:
 	virtual void keyReleaseEvent(QKeyEvent *) Q_DECL_OVERRIDE;
