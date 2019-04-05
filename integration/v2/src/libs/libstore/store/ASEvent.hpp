@@ -644,6 +644,9 @@ bool ASEvent<T>::isSuccessfull()
 //		QMutexLocker ml(&p->mSuccessfullMutex);
 		return p->mSuccessfull;
 	}
+	else{
+		qWarning()<<"NO P";
+	}
 	return false;
 }
 

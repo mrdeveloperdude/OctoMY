@@ -38,21 +38,30 @@ KeyStore::~KeyStore()
 void KeyStore::configure(QString filename, bool doBootstrap, KeySecurityPolicy policy)
 {
 	OC_METHODGATE();
-	mBackend=QSharedPointer<JsonAsyncBackend>(OC_NEW JsonAsyncBackend());
-	if(!mBackend.isNull()) {
-		mBackend->configure(filename);
+	auto me=sharedFromThis();
+	if(!me.isNull()) {
+		mBackend=QSharedPointer<JsonAsyncBackend>(OC_NEW JsonAsyncBackend());
+		if(!mBackend.isNull()) {
+			mBackend->configure(filename);
+
+
+			mStore.configure(mBackend, me);
+			mDirty=(true);
+			mDoBootstrap=(doBootstrap);
+			mPolicy=(policy);
+
+			mStore.activate(true);
+
+			synchronize([](ASEvent<QVariantMap> &se) {
+				Q_UNUSED(se);
+				//qDebug()<<"KeyStore::KeyStore() SELF ASSESMENT: SYNC WAS OK=";
+			});
+		} else {
+			qDebug()<<"ERROR: Backend was null";
+		}
+	} else {
+		qDebug()<<"ERROR: Frontend was null";
 	}
-	mStore.configure(mBackend, sharedFromThis());
-	mDirty=(true);
-	mDoBootstrap=(doBootstrap);
-	mPolicy=(policy);
-
-	mStore.activate(true);
-
-	synchronize([](ASEvent<QVariantMap> &se) {
-		Q_UNUSED(se);
-		//qDebug()<<"KeyStore::KeyStore() SELF ASSESMENT: SYNC WAS OK=";
-	});
 }
 
 

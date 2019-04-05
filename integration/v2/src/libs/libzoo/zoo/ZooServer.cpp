@@ -50,6 +50,7 @@ static const quint16 ZOO_MINIMAL_ADMIN_ID_LENGTH=10;
 ZooServer::ZooServer(QObject *parent)
 	: QHttpServer(parent)
 	, mContext(nullptr)
+	, mKeyStore(OC_NEW KeyStore())
 	, mStorage(QDir::current())
 	, mDiscovery (true)
 	, mConfigureHelper("ZooServer", true, false, false, true, false)
@@ -70,15 +71,14 @@ void ZooServer::configure(QSharedPointer<AppContext> context)
 	if(mConfigureHelper.configure()) {
 		mContext=(context);
 		Q_ASSERT(nullptr!=mContext);
-
-		mKeyStore.configure(mContext->baseDir() + "/keystore.json", true);
-
 		//ScopedTimer zooBootTimer(mContext->base()+"-boot");
 		setObjectName(mContext->base());
+		//mKeyStore->store().setSynchronousMode(true);
+		mKeyStore->configure(mContext->baseDir() + "/keystore.json", true);
 
-		mKeyStore.synchronize([this](ASEvent<QVariantMap> &se) {
+		mKeyStore->synchronize([this](ASEvent<QVariantMap> &se) {
 			const bool ok=se.isSuccessfull();
-			qDebug()<<"Keystore synchronized: "<<ok << " with " <<mKeyStore.store().journal();
+			qDebug()<<"Keystore synchronized: "<<ok << " with " <<mKeyStore->store().journal();
 			onKeystoreReady(ok);
 		});
 
@@ -430,7 +430,7 @@ void ZooServer::onKeystoreReady(bool ok)
 {
 	OC_METHODGATE();
 	if(ok) {
-		auto key=mKeyStore.localKey();
+		auto key=mKeyStore->localKey();
 		if(!key.isNull()) {
 			auto id=key->id().left(ZOO_MINIMAL_ADMIN_ID_LENGTH);
 			mAdminURLPath="/"+id;

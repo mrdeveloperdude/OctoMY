@@ -23,12 +23,14 @@ Remote::Remote()
 	//: Node(launcher, OC_NEW AppContext(launcher.options(), launcher.environment(), "remote", parent), ROLE_CONTROL, TYPE_REMOTE, parent)
 {
 	OC_METHODGATE();
-	// NOTE: Please do not put code here that generates events. Instead put them in init()
+	//qDebug()<<"Remote()";
+	// NOTE: Please do not put code here that generates events. Instead put them in *configure*() or *activate*()
 }
 
 Remote::~Remote()
 {
 	OC_METHODGATE();
+	//qDebug()<<"~Remote()";
 }
 
 

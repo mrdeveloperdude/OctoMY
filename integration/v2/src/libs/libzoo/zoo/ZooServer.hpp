@@ -31,7 +31,7 @@ class ZooServer : public qhttp::server::QHttpServer
 
 private:
 	QSharedPointer<AppContext> mContext;
-	KeyStore mKeyStore;
+	QSharedPointer<KeyStore> mKeyStore;
 
 	Identicon mIdenticon;
 	Hashstore mStorage;

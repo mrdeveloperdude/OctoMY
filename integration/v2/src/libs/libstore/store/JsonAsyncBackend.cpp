@@ -73,7 +73,9 @@ bool JsonAsyncBackend::saveBackend(QVariantMap data)
 	}
 	data["modifiedTimeStamp"]=t;
 	QJsonDocument doc=QJsonDocument::fromVariant(data);
-	succeeded=utility::file::stringToFile(mFilename, doc.toJson());
+	if(utility::file::ensureDirExistsForFile(mFilename)) {
+		succeeded=utility::file::stringToFile(mFilename, doc.toJson());
+	}
 	//qDebug()<<"Exiting Sync Save with succeeded="<<succeeded;
 	return succeeded;
 }

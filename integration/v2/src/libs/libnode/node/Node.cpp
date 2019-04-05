@@ -140,7 +140,7 @@ void Node::stepActivation(const bool on)
 					qDebug()<<"Keystore synchronized with ok="<<ok;
 					// mKeyStore->dump();
 					mNodeActivationState.keyStoreOK=ok;
-					stepActivation(on);
+					if(ok)stepActivation(on);
 				});
 			} else {
 				qWarning()<<"ERROR: No KeyStore";

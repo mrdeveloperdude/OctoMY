@@ -543,8 +543,9 @@ AsyncStoreStatus AsyncStore<T>::statusSync()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
-		addJournal("status");
-		return AsyncStoreStatus(mDiskCounter, mMemoryCounter);
+		auto status=AsyncStoreStatus(mDiskCounter, mMemoryCounter);
+		addJournal(QString("status=%1").arg(status.toString()));
+		return status;
 	} else {
 		return AsyncStoreStatus(0,0);
 	}
@@ -569,7 +570,7 @@ bool AsyncStore<T>::clearSync()
 		}
 		//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<oldM<<" to " <<mMemoryCounter<< " VIA CLEAR";
 		//qDebug()<<"DISK COUNTER FOR "<<mFilename<<" WENT FROM "<<oldD<<" to " <<mDiskCounter<< " VIA CLEAR";
-		addJournal("clear");
+		addJournal(QString("clear_B=%1_F=%2").arg(backendOK?"ok":"fail").arg(frontendOK?"ok":"fail"));
 		return backendOK && frontendOK;
 	} else {
 		return false;
@@ -587,7 +588,7 @@ T AsyncStore<T>::getSync(bool &ok)
 		ok=false;
 		T data = mFrontend.isNull()?T():mFrontend->getFrontend(ok);
 		//qDebug()<<"Exiting Sync Get with ok="<<ok<<" and data="<<data<<" from "<<utility::concurrent::currentThreadID();
-		addJournal("get");
+		addJournal(QString("get=%1").arg(ok?"ok":"fail"));
 		return data;
 	} else {
 		return T();
@@ -608,7 +609,7 @@ bool AsyncStore<T>::setSync(T data)
 		}
 		//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT";
 		//qDebug()<<"Exiting Sync Set with ok="<<ok<<" from "<<utility::concurrent::currentThreadID();
-		addJournal("set");
+		addJournal(QString("set=%1").arg(ok?"ok":"fail"));
 		return ok;
 	} else {
 		return false;
@@ -630,7 +631,7 @@ bool AsyncStore<T>::loadSync()
 			}
 		}
 		//qDebug()<<"Exiting Sync Load with ok="<<ok<<"  from "<<utility::concurrent::currentThreadID();
-		addJournal("load");
+		addJournal(QString("load=%1").arg(ok?"ok":"fail"));
 		return ok;
 	} else {
 		return false;
@@ -652,7 +653,7 @@ bool AsyncStore<T>::saveSync()
 			}
 		}
 		//qDebug()<<"Exiting Sync Save with ok="<<ok<<"  from "<<utility::concurrent::currentThreadID();
-		addJournal("save");
+		addJournal(QString("save=%1").arg(ok?"ok":"fail"));
 		return ok;
 	} else {
 		return false;
@@ -674,7 +675,7 @@ bool AsyncStore<T>::generateSync()
 		}
 		//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT";
 		//qDebug()<<"Exiting Sync Generate with ok="<<ok<<"  from "<<utility::concurrent::currentThreadID();
-		addJournal("generate");
+		addJournal(QString("generate=%1").arg(ok?"ok":"fail"));
 		return ok;
 	} else {
 		return false;
@@ -702,14 +703,15 @@ bool AsyncStore<T>::synchronizeSync()
 		// equal
 		else {
 			if(0 == disk) {
-				ok=generateSync() && saveSync();
+				ok=generateSync();
+				ok=ok && saveSync();
 				//qDebug()<<" + generate:"<<ok<<"  from "<<utility::concurrent::currentThreadID();
 			} else {
 				ok=true;
 				//qDebug()<<" + no-op:"<<ok<<"  from "<<utility::concurrent::currentThreadID();
 			}
 		}
-		addJournal("sync");
+		addJournal(QString("sync=%1").arg(ok?"ok":"fail"));
 		return ok;
 	} else {
 		return false;
@@ -725,7 +727,7 @@ bool AsyncStore<T>::completeSync()
 		bool ok=true;
 		mCompleted=true;
 		//qDebug()<<"Exiting Sync Completion with ok="<<ok;
-		addJournal("complete");
+		addJournal(QString("complete=%1").arg(ok?"ok":"fail"));
 		mTransactions.activate(false);
 		return ok;
 	} else {

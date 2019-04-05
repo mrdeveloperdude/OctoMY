@@ -63,7 +63,7 @@ int main(int argc, char *argv[]){
 	}
 	opts.process(arguments);
 
-	QString base="zoo";
+	const QString base="zoo";
 	QSharedPointer<AppContext> ctx;
 
 	QSharedPointer <AppCommandLineParser> clp(OC_NEW AppCommandLineParser());
