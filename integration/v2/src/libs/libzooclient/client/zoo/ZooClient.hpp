@@ -47,4 +47,5 @@ signals:
 
 
 
-#endif // ZOOCLIENT_HPP
+#endif
+// ZOOCLIENT_HPP

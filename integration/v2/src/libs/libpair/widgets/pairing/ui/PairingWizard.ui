@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>437</width>
-    <height>638</height>
+    <height>639</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -44,7 +44,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="pagePairWithPeers">
       <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -101,7 +101,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
+            <iconset>
              <normaloff>:/icons/qrcode.svg</normaloff>:/icons/qrcode.svg</iconset>
            </property>
           </widget>
@@ -290,7 +290,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
+            <iconset>
              <normaloff>:/icons/trash.svg</normaloff>:/icons/trash.svg</iconset>
            </property>
           </widget>
@@ -401,7 +401,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../resources/icons.qrc">:/icons/warning.svg</pixmap>
+            <pixmap>:/icons/warning.svg</pixmap>
            </property>
           </widget>
          </item>
@@ -479,19 +479,19 @@
   <customwidget>
    <class>PortableIDWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/PortableIDWidget.hpp</header>
+   <header location="global">widgets/PortableIDWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>NetworkSettingsWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/NetworkSettingsWidget.hpp</header>
+   <header location="global">widgets/NetworkSettingsWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>CameraPairingWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/CameraPairingWidget.hpp</header>
+   <header location="global">widgets/pairing/CameraPairingWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -501,10 +501,7 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../resources/icons.qrc"/>
-  <include location="../resources/icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
  <buttongroups>
   <buttongroup name="buttonGroupTrust"/>

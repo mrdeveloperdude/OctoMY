@@ -69,6 +69,7 @@ struct NodeActivationState {
 	bool localAddressesOK=false;
 	bool addressBookOK=false;
 	bool discoveryClientOK=false;
+	bool commsCarrierOK=false;
 };
 
 /*!
@@ -102,12 +103,12 @@ private:
 	ClientList mClients;
 	// Our identity
 	QSharedPointer<Associate> mNodeIdentity;
+	// Discovery client to help in automaitc discovery of other nodes
+	QSharedPointer<DiscoveryClient> mDiscovery;
 	// Comms channel carrier the underlying carrier such as udb/bluetooth etc for comms
 	QSharedPointer<CommsCarrier> mCarrier;
 	// Comms channel used to communicate with other nodes
 	QSharedPointer<CommsChannel> mComms;
-	// Discovery client to help in automaitc discovery of other nodes
-	QSharedPointer<DiscoveryClient> mDiscovery;
 	// The zoo client is used to exchange data via the central repository server (zoo)
 	QSharedPointer<ZooClient> mZooClient;
 	// Helper to access all sensors available via Qt's sensor API

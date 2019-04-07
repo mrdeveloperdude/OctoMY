@@ -17,6 +17,7 @@ public:
 
 public:
 	void configure(QString filename);
+	void activate(const bool on);
 
 	// SimpleDataStore interface
 public:

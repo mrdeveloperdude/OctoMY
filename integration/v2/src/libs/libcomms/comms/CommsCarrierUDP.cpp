@@ -67,17 +67,16 @@ void CommsCarrierUDP::onError(QAbstractSocket::SocketError errorCode)
 //////////////////////////////////////////////////
 
 
-void CommsCarrierUDP::setAddressImp(NetworkAddress address)
+void CommsCarrierUDP::configureImp()
 {
 	OC_METHODGATE();
-	mLocalAddress=address;
 }
 
-bool CommsCarrierUDP::setStartImp(const bool start)
+bool CommsCarrierUDP::activateImp(const bool on)
 {
 	OC_METHODGATE();
 	bool success=true;
-	if(start) {
+	if(on) {
 		success = mUDPSocket.bind(mLocalAddress.ip(), mLocalAddress.port());
 		qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< " with interval "<<utility::string::humanReadableElapsedMS(mSendingTimer.interval()) <<(success?" succeeded": (" failed with '"+mUDPSocket.errorString()+"'") );
 
@@ -88,7 +87,14 @@ bool CommsCarrierUDP::setStartImp(const bool start)
 	return success;
 }
 
-bool CommsCarrierUDP::isStartedImp() const
+
+void CommsCarrierUDP::setAddressImp(NetworkAddress address)
+{
+	OC_METHODGATE();
+	mLocalAddress=address;
+}
+
+bool CommsCarrierUDP::isActiveImp() const
 {
 	OC_METHODGATE();
 	return (QAbstractSocket::BoundState == mUDPSocket.state());
@@ -154,4 +160,3 @@ quint64	CommsCarrierUDP::maximalPacketIntervalImp()
 	OC_METHODGATE();
 	return OCTOMY_UDP_MAXIMAL_PACKET_RATE;
 }
-

@@ -1,6 +1,6 @@
 #include "PairingListModel.hpp"
 
-#include "widgets/PairingWizard.hpp"
+#include "widgets/pairing/PairingWizard.hpp"
 #include "app/Settings.hpp"
 #include "node/Node.hpp"
 #include "identity/Identicon.hpp"

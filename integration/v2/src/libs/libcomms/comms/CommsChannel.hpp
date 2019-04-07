@@ -66,41 +66,55 @@ class CommsChannel : public QObject
 	Q_OBJECT
 
 protected:
+	// The carrier such as udp or bluetooth used by this cc to communicate with the other side
+	QSharedPointer<CommsCarrier> mCarrier;
 
-	CommsCarrier &mCarrier; // The carrier such as udp or bluetooth used by this cc to communicate with the other side
-	KeyStore &mKeystore;   // The keystore which is used for encryption (the local key pair is used, as looked up with mLocalID)
-	AddressBook &mAssociates; // The store wich is used to find network addresses to use when creating new sessions
-	CommsSessionDirectory mSessions; // The directory of sessions for this cc
-	CourierSet mCouriers; // The couriers that are in use by this cc. Only active couriers are in this list for performance reasons.
-	QMap<quint32, QSharedPointer<Courier> > mCouriersByID; // Map for quickly finding a particular courier by it's unique ID
+	// The keystore which is used for encryption (the local key pair is used, as looked up with mLocalID)
+	QSharedPointer<KeyStore> mKeystore;
+
+	// The store wich is used to find network addresses to use when creating new sessions
+	QSharedPointer<AddressBook> mAssociates;
+
+	// The directory of sessions for this cc
+	CommsSessionDirectory mSessions;
+
+	// The couriers that are in use by this cc. Only active couriers are in this list for performance reasons.
+	CourierSet mCouriers;
+
+	// Map for quickly finding a particular courier by it's unique ID
+	QMap<quint32, QSharedPointer<Courier> > mCouriersByID;
+
 	quint64 mLocalSessionID;
 	RateCalculator mTXScheduleRate;
 
 	// When honeymoon mode is enabled, all inactive associates are pinged continuously in an effort to start new connections
 	quint64 mHoneyMoonEnd;
 
-	QMap<quint64, QSharedPointer<Courier> > mSchedule; // Couriers with priority at next sending oportunity as calculated by rescheduleSending()
+	// Couriers with priority at next sending oportunity as calculated by rescheduleSending()
+	QMap<quint64, QSharedPointer<Courier> > mSchedule;
 	QSet<QString> mPendingHandshakes;
-	qint64 mMostUrgentSendingTime; // The number of milliseconds until next sending opportunity as calculated by rescheduleSending()
+
+	// The number of milliseconds until next sending opportunity as calculated by rescheduleSending()
+	qint64 mMostUrgentSendingTime;
+
+	ConfigureHelper mConfigureHelper;
 
 public:
-
-	explicit CommsChannel(CommsCarrier &carrier, KeyStore &keystore, AddressBook &peers, QObject *parent=nullptr);
-	//TODO: Remove once nobody refers to it any more
-	//explicit CommsChannel(CommsCarrier &carrier, KeyStore &keystore, QObject *parent=nullptr);
+	explicit CommsChannel(QObject *parent=nullptr);
 	virtual ~CommsChannel();
 
-protected:
+public:
+	void configure(QSharedPointer<CommsCarrier> carrier, QSharedPointer<KeyStore> keystore, QSharedPointer<AddressBook> peers);
+	void activate(const bool on);
 
+protected:
 	//void detectConnectionChanges(const quint64 now);
 	QSharedPointer<CommsSession>  createSession(QString id, bool initiator);
 	QSharedPointer<CommsSession>  lookUpSession(QString id);
 
 
 public:
-
-
-	CommsCarrier &carrier();
+	QSharedPointer<CommsCarrier> carrier();
 	CommsSessionDirectory &sessions();
 	NetworkAddress localAddress();
 	QString localID();
@@ -108,7 +122,7 @@ public:
 	QString getSummary();
 	//void setID(const QString &id);
 	void setHookCommsSignals(QObject &ob, bool hook);
-	void setHookCourierSignals(QSharedPointer<Courier> , bool hook);
+	void setHookCourierSignals(QSharedPointer<Courier>, bool hook);
 
 	void setCourierRegistered(QSharedPointer<Courier>, bool);
 	CourierSet couriers();
@@ -122,8 +136,9 @@ public:
 	bool needConnection();
 	// [Dis]connect based on our needConnection()
 	void updateConnect();
-protected:
 
+
+protected:
 	void appendLog(QString);
 	void doSendWithSession( PacketSendState &state);
 	void sendHandshake(const quint64 &now, const QString handShakeID);

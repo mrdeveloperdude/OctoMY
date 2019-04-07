@@ -76,7 +76,7 @@ HoneymoonScheduler<T>::HoneymoonScheduler()
 	, mGracePeriod(10000) // 10 seconds
 	, mDecayPeriod(20000) // 20 seconds
 	, mLastTrigger(utility::time::currentMsecsSinceEpoch<quint64>())
-	, mConfigureHelper("HoneymoonScheduler", true, false, true, true, true)
+	, mConfigureHelper("HoneymoonScheduler", true, false, true, true, false)
 {
 	OC_METHODGATE();
 

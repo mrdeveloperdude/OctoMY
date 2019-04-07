@@ -6,6 +6,7 @@
 #include "random/RNG.hpp"
 
 #include "uptime/SharedPointerWrapper.hpp"
+#include "uptime/ConfigureHelper.hpp"
 
 #include <QObject>
 #include <QHash>
@@ -25,7 +26,7 @@ class CommsSessionDirectory: public QObject
 	Q_OBJECT
 private:
 	// TODO: Maybe this dependency on keystore could be dropped?
-	KeyStore &mKeyStore;
+	QSharedPointer<KeyStore> mKeyStore;
 	QHash<SESSION_ID_TYPE, QSharedPointer<CommsSession> > mBySessionID;
 	QHash<QString, QSharedPointer<CommsSession> > mByFullID;
 	QHash<QString, QSharedPointer<CommsSession> > mByAddress;
@@ -33,12 +34,16 @@ private:
 	QSharedPointer<RNG> mRng;
 	SESSION_ID_TYPE mUnusedIndex;
 
-public:
+	ConfigureHelper mConfigureHelper;
 
-	explicit CommsSessionDirectory(KeyStore &keyStore);
+public:
+	explicit CommsSessionDirectory();
 	virtual ~CommsSessionDirectory();
-public:
 
+public:
+	void configure(QSharedPointer<KeyStore> keyStore);
+
+public:
 	void insert(QSharedPointer<CommsSession> c);
 	void remove(QSharedPointer<CommsSession> c);
 	QSharedPointer<CommsSession> bySessionID(const SESSION_ID_TYPE id) const;

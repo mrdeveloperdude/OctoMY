@@ -135,7 +135,7 @@ bool ConfigureHelper::activate(const bool on)
 			}
 		} else {
 			if(mLogWarnings) {
-				qWarning()<<"WARNING: "<<mName<<" had activation set to "<<on<<" twice.";
+				qWarning().noquote().nospace()<<"WARNING: "<<mName<<" had activation set to "<<on<<" twice.";
 			}
 		}
 	} else {

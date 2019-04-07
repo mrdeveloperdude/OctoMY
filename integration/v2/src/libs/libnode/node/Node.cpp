@@ -10,6 +10,7 @@
 #include "camera/CameraList.hpp"
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsSession.hpp"
+#include "comms/CommsCarrierUDP.hpp"
 #include "comms/couriers/blob/BlobCourier.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
 
@@ -74,6 +75,8 @@ Node::Node()
 	, mLocalAddresses(OC_NEW LocalAddressList())
 	, mAddressBook(OC_NEW AddressBook())
 	, mDiscovery(OC_NEW DiscoveryClient())
+	, mCarrier(OC_NEW CommsCarrierUDP())
+	, mComms(OC_NEW CommsChannel())
 	, mLastStatusSend (0)
 	, mServerURL("http://zoo.octomy.org:"+QString::number(Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
 {
@@ -103,12 +106,17 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 
 			mKeyStore->configure(ctx->baseDir() + "/keystore.json", true);
 			mLocalIdentity->configure(ctx->baseDir() + "/local_identity.json");
+
+
+
 			mLocalAddresses->configure(defaultPortForNodeType(nodeType()), true);
 			mAddressBook->configure(ctx->baseDir() + "/addressbook.json");
-			//mCarrier.configure(OC_NEW CommsCarrierUDP( static_cast<QObject *>(this)) );
-			//mComms.configure(OC_NEW CommsChannel(*mCarrier, mKeyStore, mAddressBook, static_cast<QObject *>(this)));
-
 			mDiscovery->configure(sharedThis(), 1000, 60000, 20000, 40000);
+
+			mCarrier->configure();
+			mComms->configure(mCarrier, mKeyStore, mAddressBook);
+
+
 
 
 			//mZooClient->configure();
@@ -137,24 +145,29 @@ void Node::stepActivation(const bool on)
 			if(!mKeyStore.isNull()) {
 				mKeyStore->synchronize([this, on](ASEvent<QVariantMap> &se) {
 					const bool ok=se.isSuccessfull();
-					qDebug()<<"Keystore synchronized with ok="<<ok;
+					//qDebug()<<"Keystore synchronized with ok="<<ok;
 					// mKeyStore->dump();
 					mNodeActivationState.keyStoreOK=ok;
-					if(ok)stepActivation(on);
+					if(ok) {
+						stepActivation(on);
+					} else {
+						qWarning()<<"ERROR: keystore not ok";
+					}
 				});
 			} else {
 				qWarning()<<"ERROR: No KeyStore";
 			}
 		} else if (!mNodeActivationState.localIdentityOK) {
 			if(!mLocalIdentity.isNull()) {
-				//mLocalIdentity.setInitialized(&mLocalIdentity);
 				mLocalIdentity->synchronize([this, on](QSharedPointer<SimpleDataStore> sms, bool ok) {
 					if(!sms.isNull()) {
-						qDebug()<<"LocalIdentity synchronized with ok="<<ok;
+						//qDebug()<<"LocalIdentity synchronized with ok="<<ok;
 						auto map=sms->toMap();
 						//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
 						mNodeActivationState.localIdentityOK=ok;
 						stepActivation(on);
+					} else {
+						qWarning()<<"ERROR: local identity sync sms not ok";
 					}
 				});
 			} else {
@@ -162,7 +175,7 @@ void Node::stepActivation(const bool on)
 			}
 		} else if (!mNodeActivationState.localAddressesOK) {
 			if(!mLocalAddresses.isNull()) {
-				qDebug()<<"LocalAddresses synchronized with ok="<<true;
+				//qDebug()<<"LocalAddresses synchronized with ok="<<true;
 				mNodeActivationState.localAddressesOK=true;
 				stepActivation(on);
 			} else {
@@ -171,33 +184,41 @@ void Node::stepActivation(const bool on)
 
 		} else if (!mNodeActivationState.addressBookOK) {
 			if(!mAddressBook.isNull()) {
-
-
 				mAddressBook->synchronize([this, on](QSharedPointer<SimpleDataStore> sms, bool ok) {
 					if(!sms.isNull()) {
-						qDebug()<<"AddressBook synchronized with ok="<<ok;
+						//qDebug()<<"AddressBook synchronized with ok="<<ok;
 						auto map=sms->toMap();
 						//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
 						mNodeActivationState.addressBookOK=ok;
 						stepActivation(on);
+					} else {
+						qWarning()<<"ERROR: address book sync sms not ok";
 					}
 				});
 
 			} else {
 				qWarning()<<"ERROR: No AddressBook";
 			}
-
 		} else if (!mNodeActivationState.discoveryClientOK) {
 			if(!mDiscovery.isNull()) {
-				qDebug()<<"Discovery synchronized with ok="<<true;
+				//qDebug()<<"Discovery ok="<<true;
 				mDiscovery->setURL(mServerURL);
 				mNodeActivationState.discoveryClientOK=true;
-				// stepActivation(on);
+				stepActivation(on);
 			} else {
 				qWarning()<<"ERROR: No DiscoveryClient";
 			}
+		} else if (!mNodeActivationState.commsCarrierOK) {
+			if(!mCarrier.isNull()) {
+				const NetworkAddress listenAddress(QHostAddress::Any, mLocalAddresses->port());
+				//qDebug()<<"CommsCarrier ok="<<true<<" with "<<listenAddress;
+				mCarrier->setListenAddress(listenAddress);
+				mNodeActivationState.commsCarrierOK=true;
+				// stepActivation(on);
+			} else {
+				qWarning()<<"ERROR: No CommsCarrier";
+			}
 		}
-
 	} else {
 
 	}
@@ -215,6 +236,9 @@ void Node::appActivate(const bool on)
 			//mAddresses->activate(on);
 			mAddressBook->activate(on);
 			mDiscovery->activate(on);
+
+			mCarrier->activate(on);
+			mComms->activate(on);
 
 			stepActivation(on);
 
@@ -282,7 +306,7 @@ void Node::appActivate(const bool on)
 			}
 			*/
 			/*
-			if(nullptr!=mComms) {
+			if(!mComms.isNull()) {
 				mComms->deleteLater();
 				mComms=nullptr;
 			}
@@ -802,8 +826,8 @@ void Node::setNeedsConnection(const bool current)
 bool Node::isConnected()
 {
 	OC_METHODGATE();
-	if(nullptr!=mComms) {
-		return mComms->carrier().isConnected();
+	if(!mComms.isNull()) {
+		return mComms->carrier()->isConnected();
 	} else {
 		qWarning()<<"ERROR: No comms";
 	}
@@ -827,7 +851,7 @@ void Node::setConnected(bool val)
 void Node::setNodeCouriersRegistration(const bool reg)
 {
 	OC_METHODGATE();
-	if(nullptr!=mComms) {
+	if(!mComms.isNull()) {
 		if(nullptr!=mSensorsCourier) {
 			mComms->setCourierRegistered(mSensorsCourier, reg);
 		}
@@ -943,7 +967,7 @@ void Node::setHookSensorSignals(QObject &o, bool hook)
 void Node::setHookCommsSignals(QObject &o, bool hook)
 {
 	OC_METHODGATE();
-	if(nullptr!=mComms) {
+	if(!mComms.isNull()) {
 		mComms->setHookCommsSignals(o, hook);
 	}
 }

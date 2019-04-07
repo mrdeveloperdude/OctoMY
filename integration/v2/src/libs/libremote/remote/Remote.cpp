@@ -112,7 +112,7 @@ void Remote::setNodeCouriersRegistration(bool reg)
 	Node::setNodeCouriersRegistration(reg);
 	// When we get a new remote specific courier, put it here
 	/*
-	if(nullptr!=mComms){
+	if(!mComms.isNull()){
 		if(nullptr!=mRemoteCourierX){
 			mComms->setCourierRegistered(*mRemoteCourierX, reg);
 		}

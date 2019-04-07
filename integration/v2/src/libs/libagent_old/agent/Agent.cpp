@@ -229,7 +229,7 @@ void Agent::setNodeCouriersRegistration(bool reg)
 	Node::setNodeCouriersRegistration(reg);
 	// TODO: When we get a new agent specific courier, put it here
 	/*
-	if(nullptr!=mComms){
+	if(!mComms.isNull()){
 		if(nullptr!=mAgentCourierX){
 			mComms->setCourierRegistered(*mAgentCourierX, reg);
 		}

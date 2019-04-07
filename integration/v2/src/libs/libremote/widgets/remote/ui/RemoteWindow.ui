@@ -34,13 +34,16 @@
     <number>0</number>
    </property>
    <property name="bottomMargin">
-    <number>0</number>
+    <number>9</number>
    </property>
    <property name="spacing">
     <number>0</number>
    </property>
    <item row="0" column="0">
     <widget class="DebuggerWidget" name="widgetDebugger" native="true"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="PairingWizard" name="widgetPairingWizard" native="true"/>
    </item>
   </layout>
  </widget>
@@ -49,6 +52,12 @@
    <class>DebuggerWidget</class>
    <extends>QWidget</extends>
    <header location="global">widgets/uptime/DebuggerWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PairingWizard</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/pairing/PairingWizard.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

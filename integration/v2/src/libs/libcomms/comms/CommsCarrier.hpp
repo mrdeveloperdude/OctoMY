@@ -5,6 +5,8 @@
 
 #include "RateCalculator.hpp"
 
+#include "uptime/ConfigureHelper.hpp"
+
 #include <QObject>
 #include <QTimer>
 
@@ -31,9 +33,11 @@ private:
 
 	bool mConnected;
 
-protected:
-	QTimer mSendingTimer;  // The timer used to schedule when packets are sent to the other side
+	ConfigureHelper mConfigureHelper;
 
+protected:
+	// The timer used to schedule when packets are sent to the other side
+	QTimer mSendingTimer;
 
 	RateCalculator mRXRate;
 	RateCalculator mTXRate;
@@ -43,7 +47,9 @@ public:
 	explicit CommsCarrier(QObject *parent=nullptr);
 	virtual ~CommsCarrier();
 
-
+public:
+	void configure();
+	bool activate(bool on);
 
 private:
 	void detectConnectionChanges(const quint64 now);
@@ -55,13 +61,11 @@ private slots:
 
 	// CommsCarrier external interface methods
 public slots:
-
 	quint64 connectionTimeout();
 
 	void setHookCarrierSignals(QObject &ob, bool hook);
 
-	virtual void setListenAddress(NetworkAddress address);
-	virtual bool setStarted(bool start);
+	void setListenAddress(NetworkAddress address);
 
 	bool isStarted() const;
 	bool isConnected() const;
@@ -86,11 +90,12 @@ public slots:
 
 // CommsCarrier internal interface methods
 protected:
+	virtual void configureImp() =0;
+	virtual bool activateImp(const bool on) =0;
 
 	virtual void setAddressImp(NetworkAddress address) =0;
-	virtual bool setStartImp(const bool) =0;
 
-	virtual bool isStartedImp() const =0 ;
+	virtual bool isActiveImp() const =0 ;
 
 	virtual qint64 writeDataImp(const QByteArray &datagram, const NetworkAddress &address) =0 ;
 	virtual qint64 readDataImp(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr) =0 ;
@@ -103,7 +108,7 @@ protected:
 	virtual NetworkAddress addressImp() =0;
 
 	virtual quint64 minimalPacketIntervalImp() =0;
-	virtual quint64  maximalPacketIntervalImp() =0;
+	virtual quint64 maximalPacketIntervalImp() =0;
 
 	// CommsCarrier interface signals
 signals:
@@ -116,4 +121,5 @@ signals:
 
 };
 
-#endif // COMMSCARRIER_HPP
+#endif
+// COMMSCARRIER_HPP

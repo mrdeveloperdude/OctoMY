@@ -22,6 +22,12 @@ void SimpleMapStore::configure(QString filename)
 }
 
 
+void SimpleMapStore::activate(const bool on)
+{
+	OC_METHODGATE();
+	SimpleDataStore::activate(on);
+}
+
 bool SimpleMapStore::fromMap(QVariantMap data)
 {
 	OC_METHODGATE();

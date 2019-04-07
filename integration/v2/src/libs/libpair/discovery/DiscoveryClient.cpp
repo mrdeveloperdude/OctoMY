@@ -41,7 +41,7 @@ DiscoveryClient::DiscoveryClient()
 	, mLastZooPair(0)
 	, mClient(OC_NEW qhttp::client::QHttpClient(this))
 	, mLog(false)
-	, mConfigureHelper("DiscoveryClient", true, true, false, true, true)
+	, mConfigureHelper("DiscoveryClient", true, true, false, true, false)
 {
 	OC_METHODGATE();
 }
@@ -138,12 +138,12 @@ void DiscoveryClient::discover()
 				cmd["key"] = key->toVariantMap(true);
 				cmd["manualPin"] ="12345";
 				if(!mNode.isNull()) {
-					QSharedPointer<Associate> me=mNode->nodeIdentity();
-					if(!me.isNull()) {
-						QVariantMap map=me->toVariantMap();
+					QSharedPointer<Associate> nodeIdentity=mNode->nodeIdentity();
+					if(!nodeIdentity.isNull()) {
+						QVariantMap map=nodeIdentity->toVariantMap();
 						utility::data::merge(cmd, map);
 					} else {
-						qWarning()<<"ERROR: no me";
+						qWarning()<<"ERROR: no nodeIdentity";
 					}
 
 					{
@@ -346,7 +346,7 @@ void DiscoveryClient::onTimer()
 	const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
 	const quint64 interval=mHoneymoonScheduler.currentValue(now);
 	if(now>(interval+mLastZooPair)) {
-		qDebug()<<"ZOO PAIR TIME WITH INTERVAL "<<interval;
+		//qDebug()<<"ZOO PAIR TIME WITH INTERVAL "<<interval;
 		mLastZooPair=now;
 		discover();
 		//TODO: node.getComms()->unregisterCourier(courier); <-- remove old unused and timed out couriers
