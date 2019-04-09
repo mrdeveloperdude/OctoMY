@@ -4,7 +4,11 @@
 #include "uptime/MethodGate.hpp"
 
 #include <QVariantMap>
+#include <QVector>
+#include <QPair>
+#include <QMap>
 #include <QDebug>
+
 
 
 namespace utility
@@ -50,9 +54,6 @@ void merge( QVariantMap  &c, QVariantMap  &b)
 	}
 	//return c;
 }
-
-
-
 
 }
 }
