@@ -37,6 +37,8 @@ void DebuggerWidget::on_pushButtonQuitSuccess_clicked()
 	OC_METHODGATE();
 	if(!mNode.isNull()) {
 		emit mNode->nodeRequestExit(EXIT_SUCCESS);
+	} else {
+		qWarning()<<"WARNING: Could not emit successfull quit, no node";
 	}
 }
 
@@ -45,6 +47,8 @@ void DebuggerWidget::on_pushButtonQuitFail_clicked()
 	OC_METHODGATE();
 	if(!mNode.isNull()) {
 		emit mNode->nodeRequestExit(EXIT_FAILURE);
+	} else {
+		qWarning()<<"WARNING: Could not emit failure quit, no node";
 	}
 }
 
@@ -53,6 +57,8 @@ void DebuggerWidget::on_pushButtonUnbirth_clicked()
 	OC_METHODGATE();
 	if(!mNode.isNull()) {
 		mNode->unbirth();
+	} else {
+		qWarning()<<"WARNING: Could not unbirth, no node";
 	}
 }
 
@@ -89,6 +95,7 @@ void DebuggerWidget::on_pushButtonBirth_clicked()
 			});
 
 		}
+	} else {
+		qWarning()<<"WARNING: Could not birth, no node";
 	}
-
 }
