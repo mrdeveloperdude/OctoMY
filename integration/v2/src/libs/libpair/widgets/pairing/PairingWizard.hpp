@@ -68,6 +68,10 @@ private:
 	QSharedPointer<AddressBook> addressBook();
 	QSharedPointer<LocalAddressList> localAddressList();
 
+	// Helpers
+private:
+	void replaceText(NodeType type);
+
 public:
 	void setCurrentPage(QWidget *cur);
 	void reset();

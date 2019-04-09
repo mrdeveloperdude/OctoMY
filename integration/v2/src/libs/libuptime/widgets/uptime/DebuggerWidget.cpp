@@ -30,6 +30,7 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 	mNode=node;
 	setEnabled(!mNode.isNull());
 	ui->widgetLocalIdentityDebug->configure(mNode);
+	ui->widgetPairingList->configure(mNode);
 }
 
 void DebuggerWidget::on_pushButtonQuitSuccess_clicked()
@@ -85,8 +86,8 @@ void DebuggerWidget::on_pushButtonBirth_clicked()
 						map["key"]=key->toVariantMap(true);
 						map["name"]=ang.generate();
 						map["gender"]=gg.generate();
-						map["role"]=nodeRoleToString(ROLE_AGENT);
-						map["type"]=nodeTypeToString(TYPE_AGENT);
+						map["role"]=nodeRoleToString(mNode->nodeRole());
+						map["type"]=nodeTypeToString(mNode->nodeType());
 						map["birthDate"]=utility::time::msToVariant(now);
 						qDebug()<<"Creating new identity: "<<map;
 						mNode->setNodeIdentity(map);

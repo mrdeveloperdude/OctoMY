@@ -1,6 +1,5 @@
 #include "PairingListModel.hpp"
 
-#include "widgets/pairing/PairingWizard.hpp"
 #include "app/Settings.hpp"
 #include "node/Node.hpp"
 #include "identity/Identicon.hpp"
@@ -15,11 +14,10 @@
 
 
 
-PairingListModel::PairingListModel(QSharedPointer<AddressBook> store, NodeType typeFilter, PairingWizard &pwiz)
-	: QAbstractListModel(&pwiz)
+PairingListModel::PairingListModel(QSharedPointer<AddressBook> store, NodeType typeFilter)
+	: QAbstractListModel()
 	, mStore(store)
 	, mTypeFilter(typeFilter)
-	, mPwiz(pwiz)
 {
 	OC_METHODGATE();
 	if(!mStore.isNull()) {

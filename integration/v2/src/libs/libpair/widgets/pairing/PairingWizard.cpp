@@ -66,7 +66,7 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
 
-		ui->widgetMyCertificate->configure(false,true);
+		ui->widgetMyCertificate->configure(false, true);
 		mTemplate=ui->labelBodyPair->text();
 		ui->labelBodyPair->setText("<h1>Please wait...<h1>");
 
@@ -92,7 +92,8 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 		}
 
 		mPulsatingTrustTimer.setTimerType(Qt::PreciseTimer);
-		mPulsatingTrustTimer.setInterval(1000/30); // Somewhat conservative FPS
+		// Somewhat conservative FPS
+		mPulsatingTrustTimer.setInterval(1000/30);
 		mPulsatingTrustTimer.setSingleShot(false);
 
 		if(!QObject::connect(&mPulsatingTrustTimer, SIGNAL(timeout()), this, SLOT(onPulsatingTrustTimer()),OC_CONTYPE)) {
@@ -110,11 +111,11 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 				ui->widgetMyCertificate->setPortableID(pid);
 				if(nullptr==ui->listViewNodes->model()) {
 
-					mList=OC_NEW PairingListModel(addressBook(), type, *this);
+					mList=OC_NEW PairingListModel(addressBook(), type);
 					ui->listViewNodes->setModel(mList);
 
 					if(nullptr==mDelegate) {
-						mDelegate=OC_NEW PairingEditButtonDelegate(*this);
+						mDelegate=OC_NEW PairingEditButtonDelegate(this);
 					}
 					ui->listViewNodes->setItemDelegate(mDelegate);
 				}
@@ -133,32 +134,11 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 					return;
 				}
 
-
-				switch(type) {
-				case(TYPE_ZOO):
-//			default:
-				case(TYPE_UNKNOWN):
-				case(TYPE_AGENT): {
-					ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Agent").replace(QRegularExpression("\\[DEST\\]"), "Control"));
-					ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageAgent);
-				}
-				break;
-				case(TYPE_REMOTE): {
-					ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Remote").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
-					ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
-				}
-				break;
-				case(TYPE_HUB): {
-					ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Hub").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
-					ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
-				}
-				break;
-				}
+				replaceText(type);
 
 				if(!connect(ui->widgetNetworkSettings, &NetworkSettingsWidget::addressChanged, this, &PairingWizard::onNetworkSettingsChange, OC_CONTYPE)) {
 					qWarning()<<"ERROR: Could not connect "<<ui->widgetNetworkSettings->objectName();
 				}
-
 
 
 				const auto nadr=lal->currentNetworkAddress();
@@ -176,7 +156,31 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 }
 
 
+void PairingWizard::replaceText(NodeType type)
+{
 
+	switch(type) {
+	case(TYPE_ZOO):
+//			default:
+	case(TYPE_UNKNOWN):
+	case(TYPE_AGENT): {
+		ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Agent").replace(QRegularExpression("\\[DEST\\]"), "Control"));
+		ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageAgent);
+	}
+	break;
+	case(TYPE_REMOTE): {
+		ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Remote").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
+		ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
+	}
+	break;
+	case(TYPE_HUB): {
+		ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Hub").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
+		ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
+	}
+	break;
+	}
+
+}
 
 void PairingWizard::onNetworkSettingsChange(QHostAddress address, quint16 port, bool valid)
 {

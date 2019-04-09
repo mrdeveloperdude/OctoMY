@@ -89,6 +89,16 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="PairingListWidget" name="widgetPairingList" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -96,6 +106,12 @@
    <class>LocalIdentityDebugWidget</class>
    <extends>QWidget</extends>
    <header location="global">widgets/debug/LocalIdentityDebugWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PairingListWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/pairing/PairingListWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

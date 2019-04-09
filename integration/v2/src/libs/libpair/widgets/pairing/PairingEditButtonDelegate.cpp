@@ -15,9 +15,8 @@
 
 
 
-PairingEditButtonDelegate::PairingEditButtonDelegate(PairingWizard &pwiz)
-	: QItemDelegate(&pwiz)
-	, pwiz(pwiz)
+PairingEditButtonDelegate::PairingEditButtonDelegate(QObject *parent)
+	: QItemDelegate(parent)
 {
 	OC_METHODGATE();
 }
@@ -191,7 +190,10 @@ void PairingEditButtonDelegate::paint(QPainter *painter, const QStyleOptionViewI
 			identifier=data["type"].toString().trimmed().mid(5)+"-"+id.id().left(10)+"...";
 		}
 		// Draw the identifier
-		painter->setPen(pwiz.palette().color(QPalette::ButtonText));
+		auto widg=qobject_cast<QWidget *>(parent());
+		if(nullptr!=widg) {
+			painter->setPen(widg->palette().color(QPalette::ButtonText));
+		}
 		auto font=painter->font();
 		font.setPixelSize(buttonSize/2);
 		painter->setFont(font);
@@ -222,7 +224,7 @@ bool PairingEditButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *m
 	Q_UNUSED(model);
 
 	if( 0==index.column() && event->type() == QEvent::MouseButtonRelease) {
-		QMouseEvent * e = (QMouseEvent *)event;
+		QMouseEvent * e = static_cast<QMouseEvent *>(event);
 		int clickX = e->x();
 		int clickY = e->y();
 		QRect r = option.rect;//getting the rect of the cell
@@ -241,7 +243,8 @@ bool PairingEditButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *m
 		*/
 		if(( clickX > x && clickX < x + w ) && ( clickY > y && clickY < y + h )) {
 			qDebug()<<"CLICK";
-			pwiz.startEdit(index.row());
+			emit startEdit(index.row());
+			//pwiz.startEdit(index.row());
 			return true;
 		}
 	}

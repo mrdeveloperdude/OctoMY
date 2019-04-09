@@ -7,7 +7,6 @@
 #include <QDebug>
 #include <QAbstractListModel>
 
-class PairingWizard;
 class AddressBook;
 
 class PairingListModel: public QAbstractListModel
@@ -16,10 +15,9 @@ class PairingListModel: public QAbstractListModel
 private:
 	QSharedPointer<AddressBook> mStore;
 	NodeType mTypeFilter;
-	PairingWizard &mPwiz;
 
 public:
-	explicit PairingListModel(QSharedPointer<AddressBook> addressBook, NodeType type, PairingWizard &pairingWizard);
+	explicit PairingListModel(QSharedPointer<AddressBook> addressBook, NodeType type);
 	virtual ~PairingListModel();
 
 private:

@@ -129,6 +129,16 @@
         </widget>
        </item>
        <item>
+        <widget class="PairingListWidget" name="widgetPairingList" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QListView" name="listViewNodes">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -498,6 +508,12 @@
    <class>SvgWidget</class>
    <extends>QWidget</extends>
    <header location="global">widgets/SvgWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PairingListWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/pairing/PairingListWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
