@@ -87,8 +87,8 @@ void SimpleTableDebugWidget::onTimerWrapper()
 		const QColor c=utility::color::mix(o, Qt::red, f);
 		//qDebug()<<"COLOR: "<<c<< ", f="<<f<< ", raw="<<raw<< ", time="<<time;
 		p.setColor(QPalette::Background, c);
+		ui->widgetSimpleTable->setPalette(p);
 	}
-	ui->widgetSimpleTable->setPalette(p);
 	onTimer();
 }
 

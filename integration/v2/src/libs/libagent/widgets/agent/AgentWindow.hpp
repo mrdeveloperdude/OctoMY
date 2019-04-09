@@ -36,10 +36,8 @@ public:
 public:
 	void configure() Q_DECL_OVERRIDE;
 
-
+public:
 	QSharedPointer<Agent> agent();
-
-
 
 	// LogDestination interface
 public:
