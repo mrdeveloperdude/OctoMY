@@ -29,6 +29,7 @@ private slots:
 	void on_pushButtonQuitSuccess_clicked();
 	void on_pushButtonQuitFail_clicked();
 	void on_pushButtonUnbirth_clicked();
+	void on_pushButtonBirth_clicked();
 };
 
 #endif
