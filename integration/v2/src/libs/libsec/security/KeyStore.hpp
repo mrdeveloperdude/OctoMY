@@ -96,6 +96,7 @@ public:
 	AsyncStore<QVariantMap> &store();
 	void dump();
 	QString toString();
+	QMap<QString, QString> toMap();
 
 
 public:

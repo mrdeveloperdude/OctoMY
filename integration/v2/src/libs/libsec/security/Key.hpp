@@ -71,6 +71,7 @@ public:
 	int kct() const;
 
 	QVariantMap toVariantMap(bool onlyPublic);
+	QMap<QString, QString> toMap(bool onlyPublic);
 
 	QString toString();
 	bool isValid(bool onlyPublic);

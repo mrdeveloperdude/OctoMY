@@ -99,6 +99,16 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="KeyStoreDebugWidget" name="widgetKeyStore" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -112,6 +122,12 @@
    <class>PairingListWidget</class>
    <extends>QWidget</extends>
    <header location="global">widgets/pairing/PairingListWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>KeyStoreDebugWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/debug/KeyStoreDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

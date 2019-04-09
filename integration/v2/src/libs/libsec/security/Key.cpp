@@ -266,6 +266,17 @@ QVariantMap Key::toVariantMap(bool onlyPublic)
 	return map;
 }
 
+QMap<QString, QString> Key::toMap(bool onlyPublic){
+	OC_METHODGATE();
+	QMap<QString, QString> map;
+	if(!onlyPublic) {
+		map["privateKey"]=key();
+	}
+	map["publicKey"]=pubKey();
+	map["id"]=id();
+	return map;
+}
+
 QString Key::toString()
 {
 	OC_METHODGATE();

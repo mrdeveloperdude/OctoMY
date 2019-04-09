@@ -1,5 +1,5 @@
-#ifndef LOCALIDENTITYDEBUGWIDGET_HPP
-#define LOCALIDENTITYDEBUGWIDGET_HPP
+#ifndef KEYSTOREDEBUGWIDGET_HPP
+#define KEYSTOREDEBUGWIDGET_HPP
 
 #include "widgets/debug/SimpleTableDebugWidget.hpp"
 
@@ -11,7 +11,7 @@
 class Node;
 
 
-class LocalIdentityDebugWidget : public SimpleTableDebugWidget
+class KeyStoreDebugWidget : public SimpleTableDebugWidget
 {
 	Q_OBJECT
 
@@ -19,11 +19,11 @@ private:
 	ConfigureHelper mConfigureHelper;
 
 	QSharedPointer <Node> mNode;
-	QString mLastAssString;
+	QString mLastKsString;
 
 public:
-	explicit LocalIdentityDebugWidget(QWidget *parent = nullptr);
-	virtual ~LocalIdentityDebugWidget() Q_DECL_OVERRIDE;
+	explicit KeyStoreDebugWidget(QWidget *parent = nullptr);
+	virtual ~KeyStoreDebugWidget() Q_DECL_OVERRIDE;
 
 public:
 	void configure(QSharedPointer <Node> node);
@@ -35,4 +35,4 @@ public slots:
 };
 
 #endif
-// LOCALIDENTITYDEBUGWIDGET_HPP
+// KEYSTOREDEBUGWIDGET_HPP

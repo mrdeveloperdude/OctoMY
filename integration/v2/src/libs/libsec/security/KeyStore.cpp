@@ -296,6 +296,28 @@ QString KeyStore::toString()
 
 
 
+QMap<QString, QString> KeyStore::toMap()
+{
+	OC_METHODGATE();
+	//qDebug()<<"KEYSTORE TO MAP";
+	QMap<QString, QString> map;
+	if(!mLocalKey.isNull()) {
+		map["localKey"]=mLocalKey->toString();
+	} else {
+		map["localKey"]="null";
+	}
+	int i=0;
+	for(QMap<QString, QSharedPointer<Key> >::const_iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
+		QVariantMap remote;
+		QString id=b.key();
+		auto key=b.value();
+		map[QString("remoteKey_%1").arg(i)]=(nullptr!=key)?key->toString():"null";
+		++i;
+	}
+	return map;
+}
+
+
 QString KeyStore::filename() const
 {
 	OC_METHODGATE();

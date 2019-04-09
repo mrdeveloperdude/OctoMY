@@ -28,15 +28,6 @@ void LocalIdentityDebugWidget::configure(QSharedPointer <Node> node)
 }
 
 
-void LocalIdentityDebugWidget::setData(QMap<QString, QString> data)
-{
-	OC_METHODGATE();
-	if(mConfigureHelper.isConfiguredAsExpected()) {
-		SimpleTableDebugWidget::setData(data);
-	}
-}
-
-
 void LocalIdentityDebugWidget::onRealtimeChanged(bool realtime)
 {
 	OC_METHODGATE();
