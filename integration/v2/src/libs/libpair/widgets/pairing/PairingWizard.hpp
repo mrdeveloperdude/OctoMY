@@ -2,7 +2,7 @@
 #define PAIRINGWIZARD_HPP
 
 #include "discovery/DiscoveryClient.hpp"
-
+#include "uptime/ConfigureHelper.hpp"
 #include <QWidget>
 
 
@@ -53,6 +53,8 @@ private:
 	QString mCurrentlyEditingID;
 	int mTrustIndex;
 	QTimer mPulsatingTrustTimer;
+	ConfigureHelper mConfigureHelper;
+
 
 public:
 	explicit PairingWizard(QWidget *parent = nullptr);

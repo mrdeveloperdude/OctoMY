@@ -1,9 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <author/>
- <comment/>
- <exportmacro/>
  <class>PairingListWidget</class>
- <widget name="PairingListWidget" class="QWidget">
+ <widget class="QWidget" name="PairingListWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -15,7 +13,50 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0">
+    <widget class="QListView" name="listViewNodes">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>70</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <property name="showDropIndicator" stdset="0">
+      <bool>false</bool>
+     </property>
+     <property name="dragDropMode">
+      <enum>QAbstractItemView::DragOnly</enum>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+     <property name="textElideMode">
+      <enum>Qt::ElideMiddle</enum>
+     </property>
+     <property name="movement">
+      <enum>QListView::Snap</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Pairing List</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
- <pixmapfunction/>
+ <resources/>
  <connections/>
 </ui>

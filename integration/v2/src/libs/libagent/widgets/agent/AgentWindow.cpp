@@ -39,6 +39,7 @@ AgentWindow::~AgentWindow()
 }
 
 
+
 QSharedPointer<Agent> AgentWindow::agent()
 {
 	OC_METHODGATE();
