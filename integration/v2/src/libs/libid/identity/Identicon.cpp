@@ -52,7 +52,13 @@ static QString colorToSvgString(const QColor &c)
 
 float Identicon::frand()
 {
-	return mPersonality.rng().generateReal1();
+	return static_cast<float>(mPersonality.rng().generateReal1());
+}
+
+
+double Identicon::dfrand()
+{
+	return static_cast<double>(mPersonality.rng().generateReal1());
 }
 
 
@@ -69,8 +75,8 @@ static QSizeF calcSize(QSizeF ds,qint32 w,qint32 h,qreal zoom)
 	}
 	const qreal da=ds.width()/ds.height();
 	//	const qreal ca=((qreal)(w<1?1:w)/(qreal)(h<1?1:h));
-	QSizeF low(w,(qreal)h/da);
-	QSizeF high((qreal)w*da,h);
+	QSizeF low(w, static_cast<qreal>(h/da));
+	QSizeF high(static_cast<qreal>(w*da), h);
 	//qDebug()<<"ORIG: "<<ds<<" ASPECT: "<<da<<" LOW: "<<low<<" HIGH: "<<high;
 	zoom=(zoom<0)?0:(zoom>1)?1:zoom;
 	qreal izoom=1.0-zoom;
@@ -110,28 +116,29 @@ void Identicon::erectLimb(QDomElement &o, QString limbStyle, bool top, bool left
 {
 	const QString name=QString("agent_limb_")+(left?"left_":"right_")+(top?"top_":"bot_")+(mid?"mid":(top?"top":"bot"));
 	QString m= "m ";
-	const float dirAngle=((top?p1:p3)-0.75)*0.5*M_PI_2;
-	const float spreadAngle=(top?p2:p4)*0.5*M_PI_2;
-	const float startAngle=dirAngle+spreadAngle*(mid?1.0:-1.0);
-	const float centerx=-882.65796;
-	const float centery=top?601.55292:622.47913;
-	const float startofx=16.92954;
+	const float M_PI_2_F=static_cast<float>(M_PI_2);
+	const float dirAngle=((top?p1:p3)-0.75f)*0.5f*M_PI_2_F;
+	const float spreadAngle=(top?p2:p4)*0.5f*M_PI_2_F;
+	const float startAngle=dirAngle+spreadAngle*(mid?1.0f:-1.0f);
+	const float centerx=-882.65796f;
+	const float centery=top?601.55292f:622.47913f;
+	const float startofx=16.92954f;
 
-	const float startx=centerx+cos(startAngle)*startofx*(left?-1:1);
-	const float starty=centery+sin(startAngle)*startofx*(top?1:-1);
+	const float startx=centerx+static_cast<float>(qCos(static_cast<double>(startAngle)))*startofx*(left?-1.f:1.f);
+	const float starty=centery+static_cast<float>(qSin(static_cast<double>(startAngle)))*startofx*(top?1.f:-1.f);
 
 	const int limbSteps=2;
 	const float limbSize=7.5;
 	const float limbStepSize=limbSize/limbSteps;
 
 	//First step
-	m+=QString::number(startx)+", "+QString::number(starty)+" ";
+	m+=QString::number(static_cast<double>(startx))+", "+QString::number(static_cast<double>(starty))+" ";
 	float angle=startAngle;
 	for(int step=0; step<limbSteps; ++step) {
-		angle+=(((top?p5:p6)-0.5)*2 *M_PI_2)/limbSteps;
-		const float stepX=cos(angle)*limbStepSize*(left?-1:1);
-		const float stepY=sin(angle)*limbStepSize*(top?1:-1);
-		m+=QString::number(stepX)+", "+QString::number(stepY)+" ";
+		angle+=(((top?p5:p6)-0.5f)*2.f *M_PI_2_F)/limbSteps;
+		const float stepX=static_cast<float>(qCos(static_cast<double>(angle)))*limbStepSize*(left?-1.f:1.f);
+		const float stepY=static_cast<float>(qSin(static_cast<double>(angle)))*limbStepSize*(top?1.f:-1.f);
+		m+=QString::number(static_cast<double>(stepX))+", "+QString::number(static_cast<double>(stepY))+" ";
 	}
 	//qDebug()<<"LIMB: "<<name<<m << " dirAngle="<<dirAngle<<" spreadAngle=" << spreadAngle<<" startAngle=" << startAngle;
 	setAttrRecur(o, "path", name, "d", m);
@@ -171,12 +178,12 @@ void Identicon::regenerateIdenticon()
 						if(""!=mID.id()) {
 							mPersonality.reset();
 							//qreal p1=frand();						qreal p2=frand();						qreal p3=frand();
-							qreal p4=frand();
-							qreal p5=frand();
-							qreal p6=frand();
-							qreal p7=frand();
-							qreal p8=frand();
-							qreal p9=frand();
+							float p4=frand();
+							float p5=frand();
+							float p6=frand();
+							float p7=frand();
+							float p8=frand();
+							float p9=frand();
 							//qreal p10=frand();
 
 							//qDebug()<<"Identicon params: "<<mID.id()<<p1<<p2<<p3<<p4<<p5<<p6<<p7;
@@ -215,11 +222,11 @@ void Identicon::regenerateIdenticon()
 								setAttrRecur(o, "stop", "remote_background_color_stop2", "style", "stop-color:"+backgroundColorLowStr+";stop-opacity:1");
 								setAttrRecur(o, "path", "remote_face", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:1.70119631;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
 
-								setAttrRecur(o, "circle", "remote_outer_ring", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:" + QString::number(0.25+p4*3)+ ";stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
-								setAttrRecur(o, "circle", "remote_middle_ring", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:" + QString::number(0.20+p5*3.5)+ ";stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
-								setAttrRecur(o, "circle", "remote_inner_ring", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:" + QString::number(0.25+p6*3)+ ";stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
+								setAttrRecur(o, "circle", "remote_outer_ring", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:" + QString::number(static_cast<double>(0.25f+p4*3.f))+ ";stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
+								setAttrRecur(o, "circle", "remote_middle_ring", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:" + QString::number(static_cast<double>(0.20f+p5*3.5f))+ ";stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
+								setAttrRecur(o, "circle", "remote_inner_ring", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:" + QString::number(static_cast<double>(0.25f+p6*3.f))+ ";stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
 
-								setAttrRecur(o, "circle", "remote_middle_ring", "r", QString::number(11+ p7*6.0));
+								setAttrRecur(o, "circle", "remote_middle_ring", "r", QString::number(static_cast<double>(11.f+ p7*6.0f)));
 
 								setAttrRecur(o, "circle", "remote_ball", "style", "stroke:none; fill:"+limbColorStr+";");
 							} else if(TYPE_HUB==type) {
@@ -229,7 +236,7 @@ void Identicon::regenerateIdenticon()
 								setAttrRecur(o, "stop", "hub_background_color_stop2", "style", "stop-color:"+backgroundColorLowStr+";stop-opacity:1");
 								setAttrRecur(o, "path", "hub_face", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:1.70119631;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
 								setAttrRecur(o, "path", "hub_brain", "style", "fill:none;stroke:"+limbColorStr+";stroke-width:1.70119631;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1");
-								setAttrRecur(o, "path", "hub_brain", "transform", "rotate("+QString::number(p4*360.0)+", -860.79895, 612.97186)");
+								setAttrRecur(o, "path", "hub_brain", "transform", "rotate("+QString::number(static_cast<double>(p4*360.0f))+", -860.79895, 612.97186)");
 							}
 						}
 						mDirty=false;

@@ -71,7 +71,7 @@ Node::Node()
 	: QObject(nullptr)
 	, mAppConfigureHelper("node", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 	, mKeyStore(OC_NEW KeyStore())
-	, mLocalIdentity(OC_NEW LocalIdentityStore())
+	, mLocalIdentityStore(OC_NEW LocalIdentityStore())
 	, mLocalAddresses(OC_NEW LocalAddressList())
 	, mAddressBook(OC_NEW AddressBook())
 	, mDiscovery(OC_NEW DiscoveryClient())
@@ -105,7 +105,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 			setObjectName(ctx->base());
 
 			mKeyStore->configure(ctx->baseDir() + "/keystore.json", true);
-			mLocalIdentity->configure(ctx->baseDir() + "/local_identity.json");
+			mLocalIdentityStore->configure(ctx->baseDir() + "/local_identity.json");
 
 
 
@@ -158,12 +158,12 @@ void Node::stepActivation(const bool on)
 				qWarning()<<"ERROR: No KeyStore";
 			}
 		} else if (!mNodeActivationState.localIdentityOK) {
-			if(!mLocalIdentity.isNull()) {
-				mLocalIdentity->synchronize([this, on](QSharedPointer<SimpleDataStore> sms, bool ok) {
+			if(!mLocalIdentityStore.isNull()) {
+				mLocalIdentityStore->synchronize([this, on](QSharedPointer<SimpleDataStore> sms, bool ok) {
 					if(!sms.isNull()) {
-						//qDebug()<<"LocalIdentity synchronized with ok="<<ok;
 						auto map=sms->toMap();
-						//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
+						qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
+						setNodeIdentity(map);
 						mNodeActivationState.localIdentityOK=ok;
 						stepActivation(on);
 					} else {
@@ -232,7 +232,7 @@ void Node::appActivate(const bool on)
 	if(mAppConfigureHelper.activate(on)) {
 		if(on) {
 			// mKeyStore->activate(on);
-			mLocalIdentity->activate(on);
+			mLocalIdentityStore->activate(on);
 			//mAddresses->activate(on);
 			mAddressBook->activate(on);
 			mDiscovery->activate(on);
@@ -391,7 +391,7 @@ QSharedPointer<Settings> Node::settings()
 QSharedPointer<LocalIdentityStore> Node::localIdentityStore()
 {
 	OC_METHODGATE();
-	return mLocalIdentity;
+	return mLocalIdentityStore;
 }
 
 
@@ -467,9 +467,21 @@ void Node::unbirth()
 {
 	OC_METHODGATE();
 	mKeyStore->clear();
-	mLocalIdentity->clear();
+	mLocalIdentityStore->clear();
 	mAddressBook->clear();
 	//mClients->clear();
+
+
+	setNodeIdentity(QVariantMap());
+	/*
+	mLocalIdentityStore->synchronize([this](QSharedPointer<LocalIdentityStore> lis, bool ok) {
+		Q_UNUSED(lis);
+		if(ok) {
+			setNodeIdentity(mLocalIdentityStore->toMap());
+		}
+	});
+	*/
+
 }
 
 
@@ -517,8 +529,8 @@ void Node::setNodeIdentity(QVariantMap map)
 	OC_METHODGATE();
 	mNodeIdentity=QSharedPointer<Associate>(OC_NEW Associate(map, true));
 	//qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED BY MAP: "<<map;
-	mLocalIdentity->fromMap(map);
-	mLocalIdentity->save();
+	mLocalIdentityStore->fromMap(map);
+	mLocalIdentityStore->save();
 	identityChanged();
 }
 
@@ -531,8 +543,8 @@ void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 		map=mNodeIdentity->toVariantMap();
 	}
 	//qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED: "<<map<< " FROM nodeID="<<*mNodeIdentity;
-	mLocalIdentity->fromMap(map);
-	mLocalIdentity->save();
+	mLocalIdentityStore->fromMap(map);
+	mLocalIdentityStore->save();
 	identityChanged();
 }
 

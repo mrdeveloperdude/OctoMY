@@ -122,6 +122,7 @@ public:// to/from
 	QVariantMap toVariantMap();
 	void fromVariantMap(const QVariantMap map);
 	QString toString();
+	QMap<QString, QString> toMap();
 	QSharedPointer<Client> toClient(QSharedPointer<Node> node);
 
 public: // Operators

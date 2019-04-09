@@ -45,6 +45,7 @@ AUTOLIBS_COMBINED += \
 	remote \
 	zoo \
 	web \
+	debug \
 
 #	clt \
 

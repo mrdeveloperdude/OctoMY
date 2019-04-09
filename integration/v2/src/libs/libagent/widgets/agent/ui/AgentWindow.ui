@@ -22,6 +22,9 @@
     <widget class="DebuggerWidget" name="widgetDebugger" native="true"/>
    </item>
    <item>
+    <widget class="LocalIdentityDebugWidget" name="widgetLocalIdentityDebug" native="true"/>
+   </item>
+   <item>
     <widget class="PairingWizard" name="widgetPairing" native="true"/>
    </item>
   </layout>
@@ -37,6 +40,12 @@
    <class>PairingWizard</class>
    <extends>QWidget</extends>
    <header location="global">widgets/pairing/PairingWizard.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LocalIdentityDebugWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/debug/LocalIdentityDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

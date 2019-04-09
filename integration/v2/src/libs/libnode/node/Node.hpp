@@ -94,7 +94,7 @@ private:
 	// Our key store
 	QSharedPointer<KeyStore> mKeyStore;
 	// Our local ID
-	QSharedPointer<LocalIdentityStore> mLocalIdentity;
+	QSharedPointer<LocalIdentityStore> mLocalIdentityStore;
 	// Our local network addresses
 	QSharedPointer<LocalAddressList> mLocalAddresses;
 	// Clients address book (clients are nodes we communicate with)

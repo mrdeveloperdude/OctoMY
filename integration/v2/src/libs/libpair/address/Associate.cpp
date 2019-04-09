@@ -375,6 +375,7 @@ QString Associate::toString()
 	OC_METHODGATE();
 	return mKey.toString()
 		   +", name: "+mName
+		   +", id: "+mKey.id()
 		   +", gender: "+mGender
 		   +", addressList:"+mAddressList.toString()
 		   +", lastSeenMS:"+utility::string::formattedDateFromMS(mLastSeenMS)
@@ -387,9 +388,28 @@ QString Associate::toString()
 		   +", trusts:"+mTrusts.join(";");
 }
 
+QMap<QString, QString> Associate::toMap()
+{
+	OC_METHODGATE();
+	QMap<QString, QString> map;
+	map["name"]=mName;
+	map["id"]=mKey.id();
+	map["gender"]=mGender;
+	map["addressList"]=mAddressList.toString();
+	map["lastSeenMS"]=utility::string::formattedDateFromMS(mLastSeenMS);
+	map["lastInitiatedHandshakeMS"]=utility::string::formattedDateFromMS(mLastInitiatedHandshakeMS);
+	map["lastAdherentHandshakeMS"]=utility::string::formattedDateFromMS(mLastAdherentHandshakeMS);
+	map["birthDate"]=utility::string::formattedDateFromMS(mBirthDate);
+	map["role"]=nodeRoleToString(mRole);
+	map["type"]=nodeTypeToString(mType);
+	map["pins"]=mPins.join(";");
+	map["trusts"]=mTrusts.join(";");
+	return map;
+}
 
 QSharedPointer<Client> Associate::toClient(QSharedPointer<Node> node)
 {
+	OC_METHODGATE();
 	QSharedPointer<Client> ret;
 	switch(mType) {
 	case(TYPE_AGENT):
