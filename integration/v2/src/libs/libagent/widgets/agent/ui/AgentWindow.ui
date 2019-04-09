@@ -21,9 +21,6 @@
    <item>
     <widget class="DebuggerWidget" name="widgetDebugger" native="true"/>
    </item>
-   <item>
-    <widget class="PairingWizard" name="widgetPairing" native="true"/>
-   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -31,12 +28,6 @@
    <class>DebuggerWidget</class>
    <extends>QWidget</extends>
    <header location="global">widgets/uptime/DebuggerWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>PairingWizard</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/pairing/PairingWizard.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

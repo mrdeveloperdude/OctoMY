@@ -162,7 +162,7 @@ void Node::stepActivation(const bool on)
 				mLocalIdentityStore->synchronize([this, on](QSharedPointer<SimpleDataStore> sms, bool ok) {
 					if(!sms.isNull()) {
 						auto map=sms->toMap();
-						qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
+						//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
 						setNodeIdentity(map);
 						mNodeActivationState.localIdentityOK=ok;
 						stepActivation(on);
@@ -188,7 +188,6 @@ void Node::stepActivation(const bool on)
 					if(!sms.isNull()) {
 						//qDebug()<<"AddressBook synchronized with ok="<<ok;
 						auto map=sms->toMap();
-						//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
 						mNodeActivationState.addressBookOK=ok;
 						stepActivation(on);
 					} else {
