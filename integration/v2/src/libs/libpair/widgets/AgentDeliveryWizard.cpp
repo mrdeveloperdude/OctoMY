@@ -11,7 +11,8 @@
 
 #include "widgets/WaitingSpinnerWidget.hpp"
 #include "node/Node.hpp"
-#include "random/RNG.hpp"
+
+#include "name/GenderGenerator.hpp"
 
 #include "audio/OneOffSpeech.hpp"
 #include "app/Constants.hpp"
@@ -112,21 +113,6 @@ Settings *AgentDeliveryWizard::settings()
 }
 
 
-static QString generateRandomGender()
-{
-	OC_FUNCTIONGATE();
-	RNG *rng=RNG::sourceFactory("devu");
-	QString gender="Genderless";
-	if(nullptr!=rng) {
-		QStringList alternatives;
-		alternatives<<"Male"<<"Female"<<"Genderless";
-		gender=alternatives[static_cast<int>(rng->generateInt32())%alternatives.size()];
-		delete rng;
-		rng=nullptr;
-	}
-	return gender;
-}
-
 
 
 void AgentDeliveryWizard::startBirth()
@@ -136,7 +122,8 @@ void AgentDeliveryWizard::startBirth()
 		QString name=ui->lineEditName->text();
 		name[0]=name[0].toUpper();
 		mID.setName(name);
-		QString gender=0>ui->comboBoxGender->currentIndex()?ui->comboBoxGender->currentText():generateRandomGender();
+		GenderGenerator gg;
+		QString gender=0>ui->comboBoxGender->currentIndex()?ui->comboBoxGender->currentText():gg.generate();
 		mID.setGender(gender);
 		qDebug()<<"XXX - Started birth of agent with NAME: "<<name<<", GENDER: "<<gender;
 		mSpinner->start();
@@ -198,7 +185,8 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 						map["key"]=key->toVariantMap(true);
 						map["name"]=ui->lineEditName->text();
 						if(0==ui->comboBoxGender->currentIndex()) {
-							ui->comboBoxGender->setCurrentText(generateRandomGender());
+							GenderGenerator gg;
+							ui->comboBoxGender->setCurrentText(gg.generate());
 						}
 						map["gender"]=ui->comboBoxGender->currentText();
 						map["type"]=nodeTypeToString(TYPE_AGENT);
