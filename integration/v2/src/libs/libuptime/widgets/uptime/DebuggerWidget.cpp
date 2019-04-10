@@ -32,7 +32,9 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 	ui->widgetKeyStore->configure(mNode);
 	ui->widgetLocalIdentityDebug->configure(mNode);
 	ui->widgetPairingList->configure(mNode);
+	ui->widgetLocalAddresses->configure(mNode);
 }
+
 
 void DebuggerWidget::on_pushButtonQuitSuccess_clicked()
 {
@@ -44,6 +46,7 @@ void DebuggerWidget::on_pushButtonQuitSuccess_clicked()
 	}
 }
 
+
 void DebuggerWidget::on_pushButtonQuitFail_clicked()
 {
 	OC_METHODGATE();
@@ -54,6 +57,7 @@ void DebuggerWidget::on_pushButtonQuitFail_clicked()
 	}
 }
 
+
 void DebuggerWidget::on_pushButtonUnbirth_clicked()
 {
 	OC_METHODGATE();
@@ -63,8 +67,6 @@ void DebuggerWidget::on_pushButtonUnbirth_clicked()
 		qWarning()<<"WARNING: Could not unbirth, no node";
 	}
 }
-
-
 
 
 void DebuggerWidget::on_pushButtonBirth_clicked()

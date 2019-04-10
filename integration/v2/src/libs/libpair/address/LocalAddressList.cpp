@@ -160,3 +160,34 @@ void LocalAddressList::updateAddresses(bool keepCurrent)
 	setCurrent(closest, port());
 }
 
+
+
+
+QString LocalAddressList::toString()
+{
+	OC_METHODGATE();
+	QString ret("LocalAddressList{");
+	bool first=true;
+	for(QHostAddress addr:*this) {
+		if(first) {
+			first=false;
+		} else {
+			ret+=", ";
+		}
+		ret+=addr.toString();
+	}
+	ret+="}";
+	return ret;
+}
+
+
+QMap<QString, QString> LocalAddressList::toMap()
+{
+	OC_METHODGATE();
+	QMap<QString, QString>  map;
+	int i=0;
+	for(QHostAddress addr:*this) {
+		map[QString("address_%1").arg(i++)]=addr.toString();
+	}
+	return map;
+}

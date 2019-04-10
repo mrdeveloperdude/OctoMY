@@ -109,6 +109,9 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="LocalAddressesDebugWidget" name="widgetLocalAddresses" native="true"/>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -128,6 +131,12 @@
    <class>KeyStoreDebugWidget</class>
    <extends>QWidget</extends>
    <header location="global">widgets/debug/KeyStoreDebugWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LocalAddressesDebugWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/debug/LocalAddressesDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

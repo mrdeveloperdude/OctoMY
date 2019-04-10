@@ -7,7 +7,7 @@
 
 KeyStoreDebugWidget::KeyStoreDebugWidget(QWidget *parent)
 	: SimpleTableDebugWidget(parent)
-	, mConfigureHelper("LocalIdentityDebugWidget", true, false, false, true, false)
+	, mConfigureHelper("KeyStoreDebugWidget", true, false, false, true, false)
 {
 	OC_METHODGATE();
 }
@@ -22,7 +22,7 @@ void KeyStoreDebugWidget::configure(QSharedPointer <Node> node)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		SimpleTableDebugWidget::configure("Local Identity");
+		SimpleTableDebugWidget::configure("Key Store");
 		mNode=node;
 	}
 }

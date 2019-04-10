@@ -4,6 +4,8 @@
 #include <QList>
 #include <QHostAddress>
 #include <QTimer>
+#include <QMap>
+#include <QString>
 
 /**
  * @brief The LocalAddressList class keeps track of the local addresses of a node.
@@ -47,6 +49,9 @@ public:
 	bool isUpdateNeeded();
 	bool updateIfNeeded(bool keepCurrent=false);
 	void updateAddresses(bool keepCurrent=false);
+
+	QString toString();
+	QMap<QString, QString> toMap();
 };
 
 #endif
