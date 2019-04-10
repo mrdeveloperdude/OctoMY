@@ -53,7 +53,7 @@ void RemoteWindow::configure()
 	if(!r.isNull()) {
 // [...]
 		loadWindowGeometry();
-		ui->widgetDebugButton->configure(node());
+		ui->widgetDebugButton->configure(node(), true);
 	} else {
 		qWarning()<<"WARNING: No Remote in remote window configure";
 	}

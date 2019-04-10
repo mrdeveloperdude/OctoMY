@@ -28,7 +28,7 @@ public:
 	virtual ~DebuggerButton();
 
 public:
-	void configure(QSharedPointer<Node> node);
+	void configure(QSharedPointer<Node> node, const bool startOpened=false);
 
 private slots:
 	void on_pushButtonShowDebugger_toggled(bool checked);
