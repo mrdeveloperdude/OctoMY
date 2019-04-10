@@ -132,6 +132,8 @@ public:
 
 	QSharedPointer<Node> node();
 
+
+
 private slots:
 	void onTimer();
 
