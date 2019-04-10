@@ -35,6 +35,18 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 	ui->widgetLocalAddresses->configure(mNode);
 }
 
+void DebuggerWidget::showEvent(QShowEvent *event)
+{
+	OC_METHODGATE();
+	emit visibilityChanged(true);
+}
+
+void DebuggerWidget::hideEvent(QHideEvent *event)
+{
+	OC_METHODGATE();
+	emit visibilityChanged(false);
+}
+
 
 void DebuggerWidget::on_pushButtonQuitSuccess_clicked()
 {

@@ -25,11 +25,19 @@ public:
 public:
 	void configure(QSharedPointer <Node> node);
 
+	// QWidget interface
+public:
+	void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
+	void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
+
 private slots:
 	void on_pushButtonQuitSuccess_clicked();
 	void on_pushButtonQuitFail_clicked();
 	void on_pushButtonUnbirth_clicked();
 	void on_pushButtonBirth_clicked();
+
+signals:
+	void visibilityChanged(bool visible);
 };
 
 #endif
