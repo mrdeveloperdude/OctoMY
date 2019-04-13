@@ -37,6 +37,8 @@ public:
 	explicit ScopedTimer(QString mName = "", bool log = true, ScopedTimerFormat format = STF_AUTO, QString mFormatString="yyyy-MM-dd hh:mm:ss.zzz");
 	explicit ScopedTimer(QString mName, qint64 mTimeout, ScopedTimerFormat format = STF_AUTO, QString mFormatString="yyyy-MM-dd hh:mm:ss.zzz");
 	virtual ~ScopedTimer();
+
+public:
 	qint64 getInterval(bool up = true);
 	QString getIntervalCompleteString(QString prefix = SCOPED_TIMER_SYMBOL " INTERVAL: ",  bool up=true);
 	QString getIntervalHuman(int prec = 2, bool prep = true, bool up = true);

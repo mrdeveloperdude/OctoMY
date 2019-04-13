@@ -67,10 +67,10 @@ void ScopedTimer::doAutoFormat()
 	OC_METHODGATE();
 	if(STF_AUTO == mFormat) {
 		mFormat = STF_ELAPSED;
-		if("" == mName) {
+		if("" != mName) {
 			mFormat = static_cast<ScopedTimerFormat>(STF_NAME | mFormat);
 		}
-		if("" == mFormatString) {
+		if("" != mFormatString) {
 			mFormat = static_cast<ScopedTimerFormat>(STF_TIME | mFormat);
 		}
 	}
@@ -148,6 +148,3 @@ QString ScopedTimer::getTimeFormated(QString fmt, bool up)
 	QString ret=QDateTime::currentDateTime().toString(fmt) ;
 	return ret;
 }
-
-
-

@@ -62,6 +62,8 @@ class IAppLauncher;
 
 class Associate;
 
+class ScopedTimer;
+
 
 struct NodeActivationState {
 	bool keyStoreOK=false;
@@ -123,8 +125,10 @@ private:
 	qint64 mLastStatusSend;
 	// The URL of the zoo server
 	QUrl mServerURL;
-
+	// The current state during activation
 	NodeActivationState mNodeActivationState;
+	// Timer used to log how long activation takes from start to finish
+	ScopedTimer *mNodeStepActivationTimer;
 
 
 public:

@@ -57,6 +57,7 @@ Node::Node()
 	, mComms(OC_NEW CommsChannel())
 	, mLastStatusSend (0)
 	, mServerURL("http://zoo.octomy.org:"+QString::number(Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
+	, mNodeStepActivationTimer(nullptr)
 {
 	OC_METHODGATE();
 	//qDebug()<<"Node()";
@@ -81,6 +82,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 		mLauncher=launcher;
 		auto ctx=context();
 		if(!ctx.isNull()) {
+			ScopedTimer nodeConfigureTimer(context()->base()+"-configure");
 			setObjectName(ctx->base());
 			applyStyle();
 			const bool basedirOK=createBaseDir();
@@ -104,7 +106,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 
 
 
-				// ScopedTimer nodeBootTimer(context()->base()+"-boot");
+
 
 				nodeConfigure();
 
@@ -124,6 +126,9 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 void Node::stepActivation(const bool on)
 {
 	OC_METHODGATE();
+	if(nullptr == mNodeStepActivationTimer) {
+		mNodeStepActivationTimer=OC_NEW ScopedTimer(context()->base()+"-activate-"+(on?"on":"off"));
+	}
 	if(on) {
 		if(!mNodeActivationState.keyStoreOK) {
 			if(!mKeyStore.isNull()) {
@@ -198,13 +203,15 @@ void Node::stepActivation(const bool on)
 				//qDebug()<<"CommsCarrier ok="<<true<<" with "<<listenAddress;
 				mCarrier->setListenAddress(listenAddress);
 				mNodeActivationState.commsCarrierOK=true;
+				delete mNodeStepActivationTimer;
+				mNodeStepActivationTimer=nullptr;
 				// stepActivation(on);
 			} else {
 				qWarning()<<"ERROR: No CommsCarrier";
 			}
 		}
 	} else {
-
+		qWarning()<<"WARNING: No attempt is done at deactication at this point. This means that resources will be left flying in the wind upon termination.";
 	}
 }
 
