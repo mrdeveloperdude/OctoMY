@@ -24,14 +24,15 @@ AppStyle::AppStyle(QColor tinge)
 	, ":/fonts/Dosis/Dosis-Medium.otf"
 	, ":/fonts/Dosis/Dosis-SemiBold.otf"
 	// LCD
-	, ":/fonts/Other/digital-7 (mono).ttf"
-	, ":/fonts/Other/code128.ttf"
+	, ":/fonts/Digital-7/digital-7 (mono).ttf"
+	// Barcode
+	, ":/fonts/Code128/code128.ttf"
 }
 , mDefaultFont("Dosis")
 
 , mStyleSheet(""
-			  // NOTE: This is disabled for now (it looks butt ugly)
-			  // utility::file::fileToString(":/style/style.qss")
+			  // NOTE: This is disabled for now because it looks butt ugly
+			  // utility::file::fileToString(":/stylesheet/stylesheet.qss")
 			 )
 , mCursorFlashTime(500)
 {
