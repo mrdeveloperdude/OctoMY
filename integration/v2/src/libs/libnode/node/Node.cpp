@@ -82,34 +82,38 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 		auto ctx=context();
 		if(!ctx.isNull()) {
 			setObjectName(ctx->base());
-
 			applyStyle();
+			const bool basedirOK=createBaseDir();
+			if(basedirOK) {
+				QString baseDir=ctx->baseDir();
+				mKeyStore->configure(baseDir + "/keystore.json", true);
+				mLocalIdentityStore->configure(baseDir + "/local_identity.json");
+				mLocalAddresses->configure(defaultPortForNodeType(nodeType()), true);
+				mAddressBook->configure(baseDir + "/addressbook.json");
+				mDiscovery->configure(sharedThis(), 1000, 60000, 20000, 40000);
+
+				mCarrier->configure();
+				mComms->configure(mCarrier, mKeyStore, mAddressBook);
+
+
+				//mZooClient->configure();
+				//mSensors->configure(OC_NEW SensorInput(this))
+				//mSensorsCourier->configure(QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*mComms, this)))
+				//mBlobCourier->configure(QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*mComms, this)))
+				//mCameras->configure(OC_NEW CameraList(this))
 
 
 
-			mKeyStore->configure(ctx->baseDir() + "/keystore.json", true);
-			mLocalIdentityStore->configure(ctx->baseDir() + "/local_identity.json");
-			mLocalAddresses->configure(defaultPortForNodeType(nodeType()), true);
-			mAddressBook->configure(ctx->baseDir() + "/addressbook.json");
-			mDiscovery->configure(sharedThis(), 1000, 60000, 20000, 40000);
+				// ScopedTimer nodeBootTimer(context()->base()+"-boot");
 
-			mCarrier->configure();
-			mComms->configure(mCarrier, mKeyStore, mAddressBook);
+				nodeConfigure();
 
+			} else {
+				mAppConfigureHelper.configureFailed("Could not create base dir");
+			}
 
 
 
-			//mZooClient->configure();
-			//mSensors->configure(OC_NEW SensorInput(this))
-			//mSensorsCourier->configure(QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*mComms, this)))
-			//mBlobCourier->configure(QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*mComms, this)))
-			//mCameras->configure(OC_NEW CameraList(this))
-
-
-
-			// ScopedTimer nodeBootTimer(context()->base()+"-boot");
-
-			nodeConfigure();
 		} else {
 			qWarning()<<"ERROR: No context";
 		}
@@ -221,16 +225,6 @@ void Node::appActivate(const bool on)
 			mComms->activate(on);
 
 			stepActivation(on);
-
-
-
-
-
-			/*
-			if(!QDir().mkpath(context()->baseDir())) {
-				qWarning()<<"ERROR: Could not create basedir for node";
-			}
-			*/
 
 
 			//setHookSensorSignals(*this, true);
@@ -449,6 +443,16 @@ void Node::applyStyle()
 }
 
 
+bool Node::createBaseDir()
+{
+	OC_METHODGATE();
+	const auto dir=context()->baseDir();
+	const bool ok=QDir().mkpath(dir);
+	if(!ok) {
+		qWarning()<<"ERROR: Could not create basedir '"<<dir<<"' for node";
+	}
+	return ok;
+}
 
 // Below this line is unrefined
 ////////////////////////////////////////////////////////////////////////////////

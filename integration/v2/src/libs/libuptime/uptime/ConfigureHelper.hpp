@@ -47,7 +47,8 @@ private:
 	bool mIsConfigured;
 	bool mIsActive;
 	bool mIsConstructed;
-
+	bool mDidConfigureFail;
+	QString mConfigureFailureReason;
 public:
 	explicit ConfigureHelper(
 		const QString name
@@ -63,6 +64,8 @@ public:
 public:
 	bool isConfigured()  const;
 	bool isActivated()  const;
+	bool didConfigureFail()  const;
+	QString configureFailureReason()  const;
 
 	// Expecting test for configured and active
 public:
@@ -74,6 +77,8 @@ public:
 	bool configure();
 	// Check and return if an activation change is ok under current state. If it is ok, also changes activation state to parameter passed
 	bool activate(const bool on);
+	// Explicitly notify helper that the configuration failed supplying the reason as a string
+	void configureFailed(QString reason);
 };
 
 #endif

@@ -219,6 +219,9 @@ public:
 	// Set the OctoMY™ styling to the UI of the application
 	void applyStyle();
 
+	// Create the dir in which this node keeps it's data
+	bool createBaseDir();
+
 
 	// Below this line is unrefined
 	////////////////////////////////////////////////////////////////////////////////

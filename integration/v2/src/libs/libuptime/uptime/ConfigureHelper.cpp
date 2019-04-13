@@ -20,6 +20,7 @@ ConfigureHelper::ConfigureHelper(
 	, mIsConfigured(false)
 	, mIsActive(false)
 	, mIsConstructed(true)
+	, mDidConfigureFail(false)
 {
 	OC_METHODGATE();
 	if(mLogChanges) {
@@ -31,7 +32,7 @@ ConfigureHelper::ConfigureHelper(
 ConfigureHelper::~ConfigureHelper()
 {
 	OC_METHODGATE();
-	if(!mIsConstructed){
+	if(!mIsConstructed) {
 		qWarning()<<"ERROR: "<<mName<<" was destructed while not constructed.";
 	}
 	if(isActivated()) {
@@ -56,6 +57,18 @@ bool ConfigureHelper::isActivated() const
 {
 	OC_METHODGATE();
 	return mIsActive;
+}
+
+bool ConfigureHelper::didConfigureFail()  const
+{
+	OC_METHODGATE();
+	return mDidConfigureFail;
+}
+
+QString ConfigureHelper::configureFailureReason()  const
+{
+	OC_METHODGATE();
+	return mConfigureFailureReason;
 }
 
 bool ConfigureHelper::isConfiguredAsExpected() const
@@ -147,4 +160,14 @@ bool ConfigureHelper::activate(const bool on)
 		mIsActive=on;
 	}
 	return ok;
+}
+
+
+
+void ConfigureHelper::configureFailed(QString reason)
+{
+	OC_METHODGATE();
+	mIsConfigured=false;
+	mDidConfigureFail=true;
+	mConfigureFailureReason=reason;
 }
