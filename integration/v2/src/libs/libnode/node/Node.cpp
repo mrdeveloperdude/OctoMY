@@ -418,19 +418,8 @@ void Node::unbirth()
 	mKeyStore->clear();
 	mLocalIdentityStore->clear();
 	mAddressBook->clear();
-	//mClients->clear();
-
-
+	mClients.clear();
 	setNodeIdentity(QVariantMap());
-	/*
-	mLocalIdentityStore->synchronize([this](QSharedPointer<LocalIdentityStore> lis, bool ok) {
-		Q_UNUSED(lis);
-		if(ok) {
-			setNodeIdentity(mLocalIdentityStore->toMap());
-		}
-	});
-	*/
-
 }
 
 
