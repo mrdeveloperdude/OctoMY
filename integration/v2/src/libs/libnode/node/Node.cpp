@@ -98,15 +98,14 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				mComms->configure(mCarrier, mKeyStore, mAddressBook);
 
 
+				// TODO: It is notentirely clear what zoo client provides beyond what discovery client does. Until that has been resolved, we avoid it
 				//mZooClient->configure();
+
+				// TODO: This is the good stuff. It will be handled as soon as the boring stuff is finished and working xD
 				//mSensors->configure(OC_NEW SensorInput(this))
 				//mSensorsCourier->configure(QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*mComms, this)))
 				//mBlobCourier->configure(QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*mComms, this)))
 				//mCameras->configure(OC_NEW CameraList(this))
-
-
-
-
 
 				nodeConfigure();
 
