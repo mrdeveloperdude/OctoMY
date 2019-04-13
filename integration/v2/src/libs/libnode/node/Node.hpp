@@ -213,6 +213,12 @@ public:
 	// Provide the node identity
 	QSharedPointer<Associate> nodeIdentity();
 
+	// Reset the identity and settings for this node. WARNING: This is destructive and only useful when debugging
+	void unbirth();
+
+	// Set the OctoMY™ styling to the UI of the application
+	void applyStyle();
+
 
 	// Below this line is unrefined
 	////////////////////////////////////////////////////////////////////////////////
@@ -220,7 +226,6 @@ public:
 
 public:
 
-	void unbirth();
 
 	void setHookColorSignals(QObject &o, bool hook);
 	void setHookSensorSignals(QObject &o, bool hook);
@@ -327,8 +332,6 @@ signals:
 
 typedef Node Nodee;
 
-
-quint16 defaultPortForNodeType(NodeType type);
 
 #endif
 // NODE_HPP

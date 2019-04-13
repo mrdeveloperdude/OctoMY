@@ -43,28 +43,6 @@
 
 static const QString NODE_ONLINE_STATUS_BASE_KEY("octomy.node.online.");
 
-quint16 defaultPortForNodeType(NodeType type)
-{
-	quint16 defaultPort=0;
-	switch(type) {
-	case(TYPE_ZOO):
-	//default:
-	case(TYPE_UNKNOWN):
-	case(TYPE_AGENT): {
-		defaultPort=Constants::OCTOMY_UDP_DEFAULT_PORT_AGENT;
-	}
-	break;
-	case(TYPE_REMOTE): {
-		defaultPort=Constants::OCTOMY_UDP_DEFAULT_PORT_REMOTE;
-	}
-	break;
-	case(TYPE_HUB): {
-		defaultPort=Constants::OCTOMY_UDP_DEFAULT_PORT_HUB;
-	}
-	break;
-	}
-	return defaultPort;
-}
 
 
 Node::Node()
@@ -91,6 +69,7 @@ Node::~Node()
 	//qDebug()<<"~Node()";
 }
 
+
 // TODO: Look at simplifying init system by combining appInit and appConfigure
 //  , renaming appDeInit to appDeConfigure, and maybe removing one layer so there
 //	is not appXXX + nodeXXX but just one of them.
@@ -104,11 +83,12 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 		if(!ctx.isNull()) {
 			setObjectName(ctx->base());
 
+			applyStyle();
+
+
+
 			mKeyStore->configure(ctx->baseDir() + "/keystore.json", true);
 			mLocalIdentityStore->configure(ctx->baseDir() + "/local_identity.json");
-
-
-
 			mLocalAddresses->configure(defaultPortForNodeType(nodeType()), true);
 			mAddressBook->configure(ctx->baseDir() + "/addressbook.json");
 			mDiscovery->configure(sharedThis(), 1000, 60000, 20000, 40000);
@@ -437,9 +417,6 @@ QSharedPointer<Associate> Node::nodeIdentity()
 }
 
 
-// Below this line is unrefined
-////////////////////////////////////////////////////////////////////////////////
-
 
 void Node::unbirth()
 {
@@ -461,6 +438,22 @@ void Node::unbirth()
 	*/
 
 }
+
+
+void Node::applyStyle()
+{
+	OC_METHODGATE();
+	StyleManager styleManager;
+	AppStyle style(nodeType());
+	styleManager.apply(style);
+}
+
+
+
+// Below this line is unrefined
+////////////////////////////////////////////////////////////////////////////////
+
+
 
 
 

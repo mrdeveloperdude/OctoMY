@@ -38,6 +38,12 @@ AppStyle::AppStyle(QColor tinge)
 	OC_METHODGATE();
 }
 
+
+AppStyle::AppStyle(NodeType nodeType)
+	: AppStyle(defaultColorForNodeType(nodeType))
+{
+	OC_METHODGATE();
+}
 AppStyle::~AppStyle()
 {
 	OC_METHODGATE();
@@ -46,9 +52,9 @@ AppStyle::~AppStyle()
 void AppStyle::initializeResources()
 {
 	OC_METHODGATE();
-	Q_INIT_RESOURCE(style);
+	Q_INIT_RESOURCE(stylesheet);
 	Q_INIT_RESOURCE(fonts);
-	Q_INIT_RESOURCE(OctoStyle);
+	// Q_INIT_RESOURCE(OctoStyle);
 }
 
 
