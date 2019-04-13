@@ -61,6 +61,7 @@ void AgentWindow::configure()
 		loadWindowGeometry();
 		ui->widgetDebuggerButton->configure(node(), true);
 		//ui->widgetPairing->configure(node());
+		//ui->wi
 	} else {
 		qWarning()<<"WARNING: No Agent in agent window configure";
 	}

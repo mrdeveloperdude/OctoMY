@@ -36,6 +36,9 @@
     </widget>
    </item>
    <item>
+    <widget class="NetworkSettingsWidget" name="widgetNetworkSettings" native="true"/>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -55,6 +58,12 @@
    <class>DebuggerButton</class>
    <extends>QWidget</extends>
    <header location="global">widgets/uptime/DebuggerButton.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>NetworkSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/NetworkSettingsWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

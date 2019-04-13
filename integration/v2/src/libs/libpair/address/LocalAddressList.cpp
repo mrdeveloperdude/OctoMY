@@ -189,5 +189,6 @@ QMap<QString, QString> LocalAddressList::toMap()
 	for(QHostAddress addr:*this) {
 		map[QString("address_%1").arg(i++)]=addr.toString();
 	}
+
 	return map;
 }

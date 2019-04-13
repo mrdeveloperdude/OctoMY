@@ -41,8 +41,8 @@ void DebuggerButton::configure(QSharedPointer<Node> node, const bool startOpened
 			mDebuggerWidget->show();
 		}
 	}
-
 }
+
 void DebuggerButton::on_pushButtonShowDebugger_toggled(bool checked)
 {
 	OC_METHODGATE();

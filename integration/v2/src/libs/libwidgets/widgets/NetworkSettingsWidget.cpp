@@ -23,8 +23,8 @@ NetworkSettingsWidget::NetworkSettingsWidget(QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
-	ui->lineEditLocalPort->setValidator( new QIntValidator(0, 0xFFFF, this) );
 	ui->stackedWidget->setCurrentWidget(ui->pageView);
+	ui->lineEditLocalPort->setValidator( new QIntValidator(0, 0xFFFF, this) );
 	verifyAndSet(false);
 	qRegisterMetaType<QHostAddress>("QHostAddress");
 }

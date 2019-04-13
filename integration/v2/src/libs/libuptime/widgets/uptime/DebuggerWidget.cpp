@@ -33,17 +33,20 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 	ui->widgetLocalIdentityDebug->configure(mNode);
 	ui->widgetPairingList->configure(mNode);
 	ui->widgetLocalAddresses->configure(mNode);
+	ui->widgetNetworkSettings->configure(mNode?mNode->localAddressList():nullptr);
 }
 
 void DebuggerWidget::showEvent(QShowEvent *event)
 {
 	OC_METHODGATE();
+	Q_UNUSED(event);
 	emit visibilityChanged(true);
 }
 
 void DebuggerWidget::hideEvent(QHideEvent *event)
 {
 	OC_METHODGATE();
+	Q_UNUSED(event);
 	emit visibilityChanged(false);
 }
 

@@ -188,6 +188,7 @@ void Node::stepActivation(const bool on)
 					if(!sms.isNull()) {
 						//qDebug()<<"AddressBook synchronized with ok="<<ok;
 						auto map=sms->toMap();
+						mClients.syncToAddressBook(mAddressBook, sharedThis());
 						mNodeActivationState.addressBookOK=ok;
 						stepActivation(on);
 					} else {
@@ -242,30 +243,8 @@ void Node::appActivate(const bool on)
 			stepActivation(on);
 
 
-			/*
-			if(nullptr!= mCarrier) {
-				const NetworkAddress listenAddress(QHostAddress::Any, mAddresses.port());
-				mCarrier->setListenAddress(listenAddress);
-			}
-			*/
-
-			/*
-				mAddressBook->setInitialized(mAddressBook.data());
-				mAddressBook->synchronize([this](SimpleDataStore &ab, bool ok) {
-					Q_UNUSED(ab);
-					Q_UNUSED(ok);
-					//qDebug()<<"Address book synchronized with ok="<<ok;
-					mClients.syncToAddressBook(mAddressBook, sharedThis());
-				});
-				*/
 
 
-			/*
-			StyleManager *style=OC_NEW StyleManager(QColor(TYPE_AGENT==mType?"#e83636":TYPE_REMOTE==mType?"#36bee8":"#36e843"));
-			if(nullptr!=style) {
-				style->apply();
-			}
-			*/
 
 			/*
 			if(!QDir().mkpath(context()->baseDir())) {

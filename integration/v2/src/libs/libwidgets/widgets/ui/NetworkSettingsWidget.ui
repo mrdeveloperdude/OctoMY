@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>318</width>
+    <width>338</width>
     <height>34</height>
    </rect>
   </property>
@@ -46,7 +46,7 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="pageEdit">
         <property name="sizePolicy">
@@ -135,7 +135,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons.qrc">
+            <iconset>
              <normaloff>:/icons/yes.svg</normaloff>:/icons/yes.svg</iconset>
            </property>
            <property name="checkable">
@@ -216,9 +216,6 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../resources/icons.qrc"/>
-  <include location="../resources/icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
