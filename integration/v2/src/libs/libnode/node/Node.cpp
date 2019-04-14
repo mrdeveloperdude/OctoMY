@@ -122,6 +122,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 }
 
 
+
 void Node::stepActivation(const bool on)
 {
 	OC_METHODGATE();

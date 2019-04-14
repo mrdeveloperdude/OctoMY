@@ -52,6 +52,7 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testPoseMappingWidget \
 		testRateCalculator \
 		testRNG \
+		testServiceManager \
 		testServotor32Controller \
 		testSimpleDataStore \
 		testStreamCodec \
@@ -117,7 +118,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testFivePhase \
 #		testHardwareWidget \
 #		testHashstore \
-		testHoneymoonScheduler \
+#		testHoneymoonScheduler \
 #		testIDDuel \
 #		testIdenticon \
 #		testIrisRendrer \
@@ -132,6 +133,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testPoseMappingWidget \
 #		testRateCalculator \
 #		testRNG \
+		testServiceManager \
 #		testServotor32Controller \
 #		testSimpleDataStore \
 #		testStreamCodec \

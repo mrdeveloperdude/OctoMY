@@ -26,6 +26,7 @@ AUTOLIBS_COMBINED += \
 	zooclient \
 	qr \
 	zbar \
+	service \
 	store \
 	sec \
 	id \
