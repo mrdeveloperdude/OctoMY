@@ -17,7 +17,6 @@ LocalAddressList::LocalAddressList()
 	, mConfigureHelper("LocalAddressList", true, true, false, true, false)
 {
 	OC_METHODGATE();
-
 }
 
 LocalAddressList::~LocalAddressList()

@@ -66,7 +66,7 @@ void ClientList::syncToAddressBook(QSharedPointer<AddressBook> ab, QSharedPointe
 			}
 		}
 		// Add what's missing
-		QMap<QString, QSharedPointer<Associate> > &all=ab->all();
+		QMap<QString, QSharedPointer<Associate> > all=ab->all();
 		QList<QString> keys=all.keys();
 		for(QString key: keys) {
 			if(!existingMap.contains(key)) {

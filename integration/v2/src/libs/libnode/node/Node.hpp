@@ -60,6 +60,7 @@ class ServiceManager;
 class KeyStoreService;
 class LocalIdentityStoreService;
 class LocalAddressListService;
+class AddressBookService;
 
 
 struct NodeActivationState {
@@ -136,7 +137,8 @@ private:
 	QSharedPointer<LocalIdentityStoreService> mLocalIdentityStoreService;
 	// Service wrapper for LocalAddressList
 	QSharedPointer<LocalAddressListService> mLocalAddressListService;
-
+	// Service wrapper for AddressBook
+	QSharedPointer<AddressBookService> mAddressBookService;
 
 
 public:

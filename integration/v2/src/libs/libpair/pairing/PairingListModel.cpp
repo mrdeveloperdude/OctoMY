@@ -100,7 +100,7 @@ QVariant PairingListModel::data(const QModelIndex &index, int role) const
 	OC_METHODGATE();
 	QSharedPointer<Associate> part;
 	if(!mStore.isNull()) {
-		QMap<QString, QSharedPointer<Associate> > &participants=mStore->all();
+		QMap<QString, QSharedPointer<Associate> > participants=mStore->all();
 		int targetRow=index.row();
 		int rowCounter=0;
 		for(QMap<QString, QSharedPointer<Associate> >::const_iterator it=participants.begin(), e=participants.end(); it!=e; ++it) {

@@ -35,6 +35,7 @@
 #include "service/services/KeyStoreService.hpp"
 #include "service/services/LocalIdentityStoreService.hpp"
 #include "service/services/LocalAddressListService.hpp"
+#include "service/services/AddressBookService.hpp"
 
 
 #include <QCommandLineParser>
@@ -63,9 +64,10 @@ Node::Node()
 	, mServerURL("http://zoo.octomy.org:"+QString::number(Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
 	, mNodeStepActivationTimer(nullptr)
 	, mServiceManager(OC_NEW ServiceManager())
-	, mKeyStoreService(OC_NEW KeyStoreService(mKeyStore, {}))
-	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore, {"KeyStore"}))
-	, mLocalAddressListService(OC_NEW LocalAddressListService(mLocalAddressList, {}))
+	, mKeyStoreService(OC_NEW KeyStoreService(mKeyStore, QStringList{}))
+	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore, QStringList{"KeyStore"}))
+	, mLocalAddressListService(OC_NEW LocalAddressListService(mLocalAddressList, QStringList{}))
+	, mAddressBookService(OC_NEW AddressBookService(mAddressBook, QStringList{}))
 {
 	OC_METHODGATE();
 	//qDebug()<<"Node()";
@@ -118,9 +120,9 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				mServiceManager->registerService(mKeyStoreService);
 				mServiceManager->registerService(mLocalIdentityStoreService);
 				mServiceManager->registerService(mLocalAddressListService);
+				mServiceManager->registerService(mAddressBookService);
 				/*
-					mServiceManager->registerService(mLocalAddressesService);
-					mServiceManager->registerService(mAddressBookService);
+
 					mServiceManager->registerService(mDiscoveryService);
 					mServiceManager->registerService(mCarrierService);
 					mServiceManager->registerService(mCommsService);

@@ -17,17 +17,23 @@
 class AddressBook: public QObject, public SimpleDataStore
 {
 	Q_OBJECT
-
 private:
 	QMap<QString, QSharedPointer<Associate> > mAssociates;
+	ConfigureHelper mConfigureHelper;
+
+private:
 	friend class GenerateRunnable<AddressBook>;
 
 public:
 	explicit AddressBook(QObject *parent=nullptr);
 	virtual ~AddressBook() Q_DECL_OVERRIDE;
 
+	// ConfigureHelper interface
 public:
 	void configure(QString filename);
+	void activate(const bool on);
+	bool isActivated() const;
+
 
 	// SimpleDataStore interface
 public:
@@ -43,7 +49,7 @@ public:
 	QSharedPointer<Associate> removeAssociate(const QString &id);
 	void upsertAssociate(QSharedPointer<Associate> associate);
 
-	QMap<QString, QSharedPointer<Associate> > &all();
+	QMap<QString, QSharedPointer<Associate> > all();
 
 	void setHookSignals(QObject &ob, bool hook);
 
