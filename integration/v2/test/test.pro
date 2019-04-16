@@ -99,7 +99,7 @@ contains(DEFINES, OC_USE_TESTS_WEB){
 contains(DEFINES, OC_USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
-#		testAddressBook \
+		testAddressBook \
 #		testAddressList \
 #		testAgentStateCourier \
 #		testArduMY \
@@ -125,7 +125,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testIrisRendrer \
 #		testKey \
 #		testKeyStore \
-		testLocalAddressList \
+#		testLocalAddressList \
 #		testMapEditor\
 #		testNameGenerator \
 #		testNetworkAddress \
@@ -135,7 +135,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testPoseMappingWidget \
 #		testRateCalculator \
 #		testRNG \
-		testServiceManager \
+#		testServiceManager \
 #		testServotor32Controller \
 #		testSimpleDataStore \
 #		testStreamCodec \
