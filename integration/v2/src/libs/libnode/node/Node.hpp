@@ -58,6 +58,7 @@ class ScopedTimer;
 
 class ServiceManager;
 class KeyStoreService;
+class LocalIdentityStoreService;
 
 
 struct NodeActivationState {
@@ -130,6 +131,8 @@ private:
 	QSharedPointer<ServiceManager> mServiceManager;
 	// Service wrapper for KeyStore
 	QSharedPointer<KeyStoreService> mKeyStoreService;
+	// Service wrapper for LocalIdentityStore
+	QSharedPointer<LocalIdentityStoreService> mLocalIdentityStoreService;
 
 
 

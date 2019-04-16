@@ -33,6 +33,7 @@
 
 #include "service/ServiceManager.hpp"
 #include "service/services/KeyStoreService.hpp"
+#include "service/services/LocalIdentityStoreService.hpp"
 
 
 #include <QCommandLineParser>
@@ -62,6 +63,7 @@ Node::Node()
 	, mNodeStepActivationTimer(nullptr)
 	, mServiceManager(OC_NEW ServiceManager())
 	, mKeyStoreService(OC_NEW KeyStoreService(mKeyStore))
+	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore))
 {
 	OC_METHODGATE();
 	//qDebug()<<"Node()";
@@ -112,9 +114,10 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				//mBlobCourier->configure(QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*mComms, this)))
 				//mCameras->configure(OC_NEW CameraList(this))
 				mServiceManager->registerService(mKeyStoreService);
+				mServiceManager->registerService(mLocalIdentityStoreService);
 				/*
 
-								mServiceManager->registerService(mLocalIdentityStoreService);
+
 								mServiceManager->registerService(mLocalAddressesService);
 								mServiceManager->registerService(mAddressBookService);
 								mServiceManager->registerService(mDiscoveryService);
