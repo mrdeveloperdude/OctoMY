@@ -43,6 +43,7 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testIrisRendrer \
 		testKey \
 		testKeyStore \
+		testLocalAddressList \
 		testMapEditor\
 		testNameGenerator \
 		testNetworkAddress \
@@ -124,6 +125,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testIrisRendrer \
 #		testKey \
 #		testKeyStore \
+		testLocalAddressList \
 #		testMapEditor\
 #		testNameGenerator \
 #		testNetworkAddress \

@@ -102,7 +102,7 @@ QString NetworkAddress::toString() const
 	return mIP.toString()+":"+QString::number(mPort);
 }
 
-
+// TODO: Add support for IPv6
 void NetworkAddress::fromString(QString str, bool allowOnlyAddress)
 {
 	OC_METHODGATE();
@@ -189,7 +189,14 @@ void NetworkAddress::fromStream(QDataStream &ds)
 const QDebug &operator<<(QDebug &d, const NetworkAddress &na)
 {
 	OC_FUNCTIONGATE();
-	d.nospace() << na.toString();
+	d.nospace().noquote() << na.toString();
+	return d.maybeSpace();
+}
+
+QDebug &operator<<(QDebug &d, NetworkAddress &na)
+{
+	OC_FUNCTIONGATE();
+	d.nospace().noquote() << na.toString();
 	return d.maybeSpace();
 }
 
@@ -206,4 +213,18 @@ QDataStream &operator>>(QDataStream &ds, NetworkAddress &addr)
 	OC_FUNCTIONGATE();
 	addr.fromStream(ds);
 	return ds;
+}
+
+
+
+NetworkAddress::operator QString() const
+{
+	OC_METHODGATE();
+	return toString();
+}
+
+NetworkAddress::operator QString()
+{
+	OC_METHODGATE();
+	return toString();
 }
