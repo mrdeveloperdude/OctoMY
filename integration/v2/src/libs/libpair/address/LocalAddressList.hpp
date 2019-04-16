@@ -1,6 +1,9 @@
 #ifndef LOCALADDRESSLIST_HPP
 #define LOCALADDRESSLIST_HPP
 
+
+#include "uptime/ConfigureHelper.hpp"
+
 #include <QList>
 #include <QHostAddress>
 #include <QTimer>
@@ -26,13 +29,17 @@ private:
 	int mSelectedAddress;
 	QObject *mObj;
 	QTimer mTimer;
+	ConfigureHelper mConfigureHelper;
+
 public:
 	explicit LocalAddressList();
 	virtual ~LocalAddressList();
 
+	// ConfigureHelper interface
 public:
-	void configure(quint16 port=0, bool startTimer=false);
-
+	void configure(quint16 port=0);
+	void activate(const bool on);
+	bool isActivated() const;
 
 public:
 	void setPort(quint16 port);
@@ -40,8 +47,7 @@ public:
 
 	void setCurrent(QHostAddress address, quint16 port=0);
 
-	void setTimerEnabled(bool enabled);
-	bool timerEnabled() const;
+
 
 	NetworkAddress currentNetworkAddress() const;
 	QHostAddress currentAddress() const;

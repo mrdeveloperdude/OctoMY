@@ -63,7 +63,7 @@ Node::Node()
 	, mNodeStepActivationTimer(nullptr)
 	, mServiceManager(OC_NEW ServiceManager())
 	, mKeyStoreService(OC_NEW KeyStoreService(mKeyStore))
-	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore))
+	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore, {"KeyStore"}))
 {
 	OC_METHODGATE();
 	//qDebug()<<"Node()";
@@ -97,7 +97,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 
 				mKeyStore->configure(baseDir + "/keystore.json", true);
 				mLocalIdentityStore->configure(baseDir + "/local_identity.json");
-				mLocalAddresses->configure(defaultPortForNodeType(nodeType()), true);
+				mLocalAddresses->configure(defaultPortForNodeType(nodeType()));
 				mAddressBook->configure(baseDir + "/addressbook.json");
 				mDiscovery->configure(sharedThis(), 1000, 60000, 20000, 40000);
 

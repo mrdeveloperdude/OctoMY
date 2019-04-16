@@ -14,6 +14,7 @@ LocalAddressList::LocalAddressList()
 	: mPort(0)
 	, mSelectedAddress(-1)
 	, mObj(new QObject)
+	, mConfigureHelper("LocalAddressList", true, true, false, true, false)
 {
 	OC_METHODGATE();
 
@@ -28,55 +29,67 @@ LocalAddressList::~LocalAddressList()
 
 
 
-void LocalAddressList::configure(quint16 port, bool startTimer)
+void LocalAddressList::configure(quint16 port)
 {
 	OC_METHODGATE();
-	setPort(port);
-	updateAddresses(false);
-	// Look for changes in network config every XXX ms
-	mTimer.setInterval(5000);
-	// We don't need precision, slop is fine
-	mTimer.setTimerType(Qt::CoarseTimer);
-	if(!QObject::connect(&mTimer, &QTimer::timeout, mObj, [this]() {
-	updateIfNeeded(false);
-	}, OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect ";
+	if(mConfigureHelper.configure()) {
+		setPort(port);
+		updateAddresses(false);
+		// Look for changes in network config every XXX ms
+		mTimer.setInterval(5000);
+		// We don't need precision, a sloppy timer is fine
+		mTimer.setTimerType(Qt::CoarseTimer);
+		if(!QObject::connect(&mTimer, &QTimer::timeout, mObj, [this]() {
+		updateIfNeeded(false);
+		}, OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect ";
+		}
 	}
-	setTimerEnabled(startTimer);
 }
+
+void LocalAddressList::activate(const bool on)
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.activate(on)) {
+		on?mTimer.start():mTimer.stop();
+	}
+}
+
+
+bool LocalAddressList::isActivated() const
+{
+	OC_METHODGATE();
+	return mConfigureHelper.isActivated();
+}
+
 
 void LocalAddressList::setPort(quint16 port)
 {
 	OC_METHODGATE();
-	mPort=port;
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		mPort=port;
+	}
 }
 quint16 LocalAddressList::port() const
 {
 	OC_METHODGATE();
-	return mPort;
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		return mPort;
+	}
+	return 0;
 }
 
 void LocalAddressList::setCurrent(QHostAddress address, quint16 port)
 {
 	OC_METHODGATE();
-	if(contains(address)) {
-		mSelectedAddress=indexOf(address);
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		if(contains(address)) {
+			mSelectedAddress=indexOf(address);
+		}
+		if(0!=port) {
+			setPort(port);
+		}
 	}
-	if(0!=port) {
-		setPort(port);
-	}
-}
-
-void LocalAddressList::setTimerEnabled(bool enabled)
-{
-	OC_METHODGATE();
-	enabled?mTimer.start():mTimer.stop();
-}
-
-bool LocalAddressList::timerEnabled() const
-{
-	OC_METHODGATE();
-	return mTimer.isActive();
 }
 
 
@@ -84,15 +97,20 @@ bool LocalAddressList::timerEnabled() const
 NetworkAddress LocalAddressList::currentNetworkAddress() const
 {
 	OC_METHODGATE();
-	return NetworkAddress(currentAddress(), port());
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		return NetworkAddress(currentAddress(), port());
+	}
+	return NetworkAddress();
 }
 
 QHostAddress LocalAddressList::currentAddress() const
 {
 	OC_METHODGATE();
-	const auto sz=size();
-	if( (mSelectedAddress >= 0) && (mSelectedAddress < sz) ) {
-		return operator[](mSelectedAddress);
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		const auto sz=size();
+		if( (mSelectedAddress >= 0) && (mSelectedAddress < sz) ) {
+			return operator[](mSelectedAddress);
+		}
 	}
 	return QHostAddress();
 }
@@ -100,24 +118,26 @@ QHostAddress LocalAddressList::currentAddress() const
 bool LocalAddressList::isUpdateNeeded()
 {
 	OC_METHODGATE();
-	QList<QHostAddress> local=utility::network::allLocalNetworkAddresses();
 	bool updateNeeded=false;
-	if(local.size() != size()) {
-		updateNeeded=true;
-	}
-	if(!updateNeeded) {
-		for(QHostAddress addr:local) {
-			if(!contains(addr)) {
-				updateNeeded=true;
-				break;
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		QList<QHostAddress> local=utility::network::allLocalNetworkAddresses();
+		if(local.size() != size()) {
+			updateNeeded=true;
+		}
+		if(!updateNeeded) {
+			for(QHostAddress addr:local) {
+				if(!contains(addr)) {
+					updateNeeded=true;
+					break;
+				}
 			}
 		}
-	}
-	if(!updateNeeded) {
-		for(QHostAddress addr:*this) {
-			if(!local.contains(addr)) {
-				updateNeeded=true;
-				break;
+		if(!updateNeeded) {
+			for(QHostAddress addr:*this) {
+				if(!local.contains(addr)) {
+					updateNeeded=true;
+					break;
+				}
 			}
 		}
 	}
@@ -127,10 +147,13 @@ bool LocalAddressList::isUpdateNeeded()
 bool LocalAddressList::updateIfNeeded(bool keepCurrent)
 {
 	OC_METHODGATE();
-	const bool updateNeeded=isUpdateNeeded();
-	//qDebug()<<"LOCAL ADDRESS UPDATE NEEDED: "<<updateNeeded;
-	if(updateNeeded) {
-		updateAddresses(keepCurrent);
+	bool updateNeeded=false;
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		updateNeeded=isUpdateNeeded();
+		//qDebug()<<"LOCAL ADDRESS UPDATE NEEDED: "<<updateNeeded;
+		if(updateNeeded) {
+			updateAddresses(keepCurrent);
+		}
 	}
 	return updateNeeded;
 }
@@ -143,21 +166,23 @@ bool LocalAddressList::updateIfNeeded(bool keepCurrent)
 void LocalAddressList::updateAddresses(bool keepCurrent)
 {
 	OC_METHODGATE();
-	QHostAddress last=currentAddress();
-	const bool lastIsGood=!last.isNull();
-	clear();
-	const QHostAddress defaultGateway=utility::network::defaultGatewayAddress();
-	QList<QHostAddress> local=utility::network::allLocalNetworkAddresses();
-	//qDebug().noquote().nospace()<<"UPDATING LOCAL ADDRESSES: ";
-	//qDebug().noquote().nospace()<<" + last: "<<last;
-	//qDebug().noquote().nospace()<<" + gateway: "<<dgw;
-	for(QHostAddress addr:local) {
-		//qDebug().noquote().nospace()<<" + addr: "<<addr<<" (dgw closeness= "<< utility::addressCloseness(addr, dgw)<< ")";
-		*this <<addr;
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		QHostAddress last=currentAddress();
+		const bool lastIsGood=!last.isNull();
+		clear();
+		const QHostAddress defaultGateway=utility::network::defaultGatewayAddress();
+		QList<QHostAddress> local=utility::network::allLocalNetworkAddresses();
+		//qDebug().noquote().nospace()<<"UPDATING LOCAL ADDRESSES: ";
+		//qDebug().noquote().nospace()<<" + last: "<<last;
+		//qDebug().noquote().nospace()<<" + gateway: "<<dgw;
+		for(QHostAddress addr:local) {
+			//qDebug().noquote().nospace()<<" + addr: "<<addr<<" (dgw closeness= "<< utility::addressCloseness(addr, dgw)<< ")";
+			*this <<addr;
+		}
+		const QHostAddress closest=utility::network::closestAddress(*this, (keepCurrent && lastIsGood)?last:defaultGateway);
+		//qDebug().noquote().nospace()<<" + closest: "<<closest<<" (keepCurrent="<< keepCurrent<<")";
+		setCurrent(closest, port());
 	}
-	const QHostAddress closest=utility::network::closestAddress(*this, (keepCurrent && lastIsGood)?last:defaultGateway);
-	//qDebug().noquote().nospace()<<" + closest: "<<closest<<" (keepCurrent="<< keepCurrent<<")";
-	setCurrent(closest, port());
 }
 
 
@@ -167,14 +192,18 @@ QString LocalAddressList::toString()
 {
 	OC_METHODGATE();
 	QString ret("LocalAddressList{");
-	bool first=true;
-	for(QHostAddress addr:*this) {
-		if(first) {
-			first=false;
-		} else {
-			ret+=", ";
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		bool first=true;
+		for(QHostAddress addr:*this) {
+			if(first) {
+				first=false;
+			} else {
+				ret+=", ";
+			}
+			ret+=addr.toString();
 		}
-		ret+=addr.toString();
+	} else {
+		ret+="NOT CONFIGURED";
 	}
 	ret+="}";
 	return ret;
@@ -185,10 +214,13 @@ QMap<QString, QString> LocalAddressList::toMap()
 {
 	OC_METHODGATE();
 	QMap<QString, QString>  map;
-	int i=0;
-	for(QHostAddress addr:*this) {
-		map[QString("address_%1").arg(i++)]=addr.toString();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		int i=0;
+		for(QHostAddress addr:*this) {
+			map[QString("address_%1").arg(i++)]=addr.toString();
+		}
+	} else {
+		map[QString("NOT CONFIGURED")]="NOT CONFIGURED";
 	}
-
 	return map;
 }

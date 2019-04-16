@@ -22,6 +22,7 @@ class Service
 {
 private:
 	QString mName;
+	// TODO: Should dependencies be determined when registering service with manager rather than in service constructor?
 	QStringList mDependencies;
 
 public:
