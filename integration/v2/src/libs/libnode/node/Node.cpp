@@ -6,7 +6,7 @@
 
 #include "Node.hpp"
 
-
+#include "service/ServiceManager.hpp"
 #include "camera/CameraList.hpp"
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsSession.hpp"
@@ -48,6 +48,7 @@ static const QString NODE_ONLINE_STATUS_BASE_KEY("octomy.node.online.");
 Node::Node()
 	: QObject(nullptr)
 	, mAppConfigureHelper("node", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
+	, mServiceManager(OC_NEW ServiceManager())
 	, mKeyStore(OC_NEW KeyStore())
 	, mLocalIdentityStore(OC_NEW LocalIdentityStore())
 	, mLocalAddresses(OC_NEW LocalAddressList())
@@ -88,6 +89,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 			const bool basedirOK=createBaseDir();
 			if(basedirOK) {
 				QString baseDir=ctx->baseDir();
+
 				mKeyStore->configure(baseDir + "/keystore.json", true);
 				mLocalIdentityStore->configure(baseDir + "/local_identity.json");
 				mLocalAddresses->configure(defaultPortForNodeType(nodeType()), true);
@@ -98,7 +100,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				mComms->configure(mCarrier, mKeyStore, mAddressBook);
 
 
-				// TODO: It is notentirely clear what zoo client provides beyond what discovery client does. Until that has been resolved, we avoid it
+				// TODO: It is not entirely clear what zoo client provides beyond what discovery client does. Until that has been resolved, we avoid it
 				//mZooClient->configure();
 
 				// TODO: This is the good stuff. It will be handled as soon as the boring stuff is finished and working xD
@@ -106,7 +108,15 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				//mSensorsCourier->configure(QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*mComms, this)))
 				//mBlobCourier->configure(QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*mComms, this)))
 				//mCameras->configure(OC_NEW CameraList(this))
-
+/*
+				mServiceManager->registerService(mKeyStore);
+				mServiceManager->registerService(mLocalIdentityStore);
+				mServiceManager->registerService(mLocalAddresses);
+				mServiceManager->registerService(mAddressBook);
+				mServiceManager->registerService(mDiscovery);
+				mServiceManager->registerService(mCarrier);
+				mServiceManager->registerService(mComms);
+*/
 				nodeConfigure();
 
 			} else {

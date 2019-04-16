@@ -18,8 +18,8 @@ public:
 	explicit MockService(QString name, QStringList dependencies=QStringList());
 	virtual ~MockService() Q_DECL_OVERRIDE;
 public:
-	void activate(bool on, ServiceActivatedCallback callBack) Q_DECL_OVERRIDE;
-	bool activated() Q_DECL_OVERRIDE;
+	void serviceActivate(bool on, ServiceActivatedCallback callBack) Q_DECL_OVERRIDE;
+	bool serviceActivated() Q_DECL_OVERRIDE;
 
 
 public:
@@ -46,7 +46,7 @@ MockService::~MockService()
 }
 
 
-void MockService::activate(bool on, ServiceActivatedCallback callBack)
+void MockService::serviceActivate(bool on, ServiceActivatedCallback callBack)
 {
 	qDebug()<<"ACTIVATE("<<on<<" with async="<<mAsync<<") for "<<name();
 
@@ -60,7 +60,7 @@ void MockService::activate(bool on, ServiceActivatedCallback callBack)
 
 
 
-bool MockService::activated()
+bool MockService::serviceActivated()
 {
 	return mActivated;
 }
@@ -315,7 +315,7 @@ void TestServiceManager::test()
 	QCOMPARE(man->dependenciesMet("Service-D"), true);
 	QCOMPARE(man->dependenciesMet(d), true);
 
-	a->activate(true, [](bool ok) {
+	a->serviceActivate(true, [](bool ok) {
 		qDebug()<<"YAY CALLBACK!"<<ok;
 	});
 	QCOMPARE(a->mockSetActivated(true), true);
@@ -337,7 +337,7 @@ void TestServiceManager::test()
 	QCOMPARE(man->dependenciesMet("Service-D"), true);
 	QCOMPARE(man->dependenciesMet(d), true);
 
-	b->activate(true, [](bool ok) {
+	b->serviceActivate(true, [](bool ok) {
 		qDebug()<<"YAY CALLBACK!"<<ok;
 	});
 	QCOMPARE(b->mockSetActivated(true), true);
@@ -359,7 +359,7 @@ void TestServiceManager::test()
 	QCOMPARE(man->dependenciesMet("Service-D"), true);
 	QCOMPARE(man->dependenciesMet(d), true);
 
-	d->activate(true, [](bool ok) {
+	d->serviceActivate(true, [](bool ok) {
 		qDebug()<<"YAY CALLBACK!"<<ok;
 	});
 	QCOMPARE(d->mockSetActivated(true), true);
@@ -408,7 +408,7 @@ void TestServiceManager::test()
 	QCOMPARE(man->dependents("Service-D"), expectedDDependents);
 
 
-	a->activate(false, [](bool ok) {
+	a->serviceActivate(false, [](bool ok) {
 		qDebug()<<"YAY CALLBACK!"<<ok;
 	});
 	QCOMPARE(a->mockSetActivated(true), false);
@@ -454,16 +454,16 @@ void TestServiceManager::test()
 	});
 
 	qDebug()<<"#############################################################";
-	a->activate(false, [](bool ok) {
+	a->serviceActivate(false, [](bool ok) {
 		qDebug()<<"Deactivated A: "<<ok;
 	});
-	b->activate(false, [](bool ok) {
+	b->serviceActivate(false, [](bool ok) {
 		qDebug()<<"Deactivated B: "<<ok;
 	});
-	c->activate(false, [](bool ok) {
+	c->serviceActivate(false, [](bool ok) {
 		qDebug()<<"Deactivated C: "<<ok;
 	});
-	d->activate(false, [](bool ok) {
+	d->serviceActivate(false, [](bool ok) {
 		qDebug()<<"Deactivated D: "<<ok;
 	});
 
@@ -472,10 +472,10 @@ void TestServiceManager::test()
 	QCOMPARE(c->mockSetActivated(true), false);
 	QCOMPARE(d->mockSetActivated(true), false);
 
-	QCOMPARE(a->activated(), false);
-	QCOMPARE(b->activated(), false);
-	QCOMPARE(c->activated(), false);
-	QCOMPARE(d->activated(), false);
+	QCOMPARE(a->serviceActivated(), false);
+	QCOMPARE(b->serviceActivated(), false);
+	QCOMPARE(c->serviceActivated(), false);
+	QCOMPARE(d->serviceActivated(), false);
 
 	/*
 	QCOMPARE(man->activated("Service-A"), false);
@@ -517,10 +517,10 @@ void TestServiceManager::test()
 	});
 	*/
 
-	QCOMPARE(a->activated(), true);
-	QCOMPARE(b->activated(), true);
-	QCOMPARE(c->activated(), true);
-	QCOMPARE(d->activated(), true);
+	QCOMPARE(a->serviceActivated(), true);
+	QCOMPARE(b->serviceActivated(), true);
+	QCOMPARE(c->serviceActivated(), true);
+	QCOMPARE(d->serviceActivated(), true);
 
 	QCOMPARE(man->activated("Service-A"), true);
 	QCOMPARE(man->activated("Service-B"), true);

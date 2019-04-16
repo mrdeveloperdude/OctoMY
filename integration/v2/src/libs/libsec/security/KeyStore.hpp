@@ -69,14 +69,11 @@ public:
 	QVariantMap getFrontend(bool &ok) Q_DECL_OVERRIDE;
 	bool generateFrontend() Q_DECL_OVERRIDE;
 
-
-
 private:
-
 	// To have this called, make sure to set boostrapping to true and then call synchronize()
 	void bootstrap();
-public:
 
+public:
 	bool bootstrapEnabled();
 	void setBootstrapEnabled(bool doBootstrap);
 

@@ -32,10 +32,10 @@ public:
 	QString name();
 	QStringList dependencies();
 
-	// Service interface. Should be used by ServiceManager to activate this service when it is needed, and to check if it is activated
+	// Service interface.
 public:
-	virtual void activate(bool on, ServiceActivatedCallback callBack) =0;
-	virtual bool activated() =0;
+	virtual void serviceActivate(bool on, ServiceActivatedCallback callBack) =0;
+	virtual bool serviceActivated() =0;
 
 };
 

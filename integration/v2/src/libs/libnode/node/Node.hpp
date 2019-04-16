@@ -37,6 +37,7 @@
 #include <QHostAddress>
 #include <QUrl>
 
+class ServiceManager;
 class CommsCarrier;
 class CommsChannel;
 class ZooClient;
@@ -63,6 +64,7 @@ class IAppLauncher;
 class Associate;
 
 class ScopedTimer;
+
 
 
 struct NodeActivationState {
@@ -93,6 +95,8 @@ private:
 	QSharedPointer<IAppLauncher> mLauncher;
 	// Helper to keep track of appConfigure() and appActivate() state
 	ConfigureHelper mAppConfigureHelper;
+	// Manager for maintaining the lifecycle and interdependencies of services
+	QSharedPointer<ServiceManager> mServiceManager;
 	// Our key store
 	QSharedPointer<KeyStore> mKeyStore;
 	// Our local ID

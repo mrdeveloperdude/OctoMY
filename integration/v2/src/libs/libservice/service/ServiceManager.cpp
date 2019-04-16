@@ -48,7 +48,7 @@ bool ServiceManager::activated(const QString name)
 	OC_METHODGATE();
 	auto service=serviceByName(name);
 	if(!service.isNull()) {
-		return service->activated();
+		return service->serviceActivated();
 	}
 	return false;
 }
@@ -145,7 +145,7 @@ QSet<QString> ServiceManager::metDependencies(const QString name, const bool met
 	for(auto dep:all) {
 		auto service = serviceByName(dep);
 		if(!service.isNull()) {
-			if(met==service->activated()) {
+			if(met==service->serviceActivated()) {
 				ret+=dep;
 			}
 		} else {
@@ -164,7 +164,7 @@ QSet<QString> ServiceManager::metDependents(const QString name, const bool met)
 	for(auto dep:all) {
 		auto service = serviceByName(dep);
 		if(!service.isNull()) {
-			if(met==service->activated()) {
+			if(met==service->serviceActivated()) {
 				ret+=dep;
 			}
 		} else {
@@ -187,7 +187,7 @@ void ServiceManager::dump()
 	OC_METHODGATE();
 	qDebug()<<"SERVICES ";
 	for(auto service:mServicesList) {
-		qDebug()<<" + SERVICE: name="<<service->name()<<", activated="<<service->activated()<<", dependencies="<<service->dependencies();
+		qDebug()<<" + SERVICE: name="<<service->name()<<", activated="<<service->serviceActivated()<<", dependencies="<<service->dependencies();
 	}
 }
 
@@ -377,7 +377,7 @@ void ServiceManager::activate(const QSet<QString> set, const bool active, Servic
 		for(auto name:working) {
 			auto service = serviceByName(name);
 			if(!service.isNull()) {
-				if(active!=service->activated()) {
+				if(active!=service->serviceActivated()) {
 					s->start();
 				}
 			} else {
@@ -388,9 +388,9 @@ void ServiceManager::activate(const QSet<QString> set, const bool active, Servic
 		for(auto name:working) {
 			auto service = serviceByName(name);
 			if(!service.isNull()) {
-				if(active!=service->activated()) {
+				if(active!=service->serviceActivated()) {
 					// Recurse asynchronously
-					service->activate(active, [=](bool ok) {
+					service->serviceActivate(active, [=](bool ok) {
 						qDebug()<<" ---- Activating service : "<<name<<" with "<<active;
 						if(s->end(ok)) {
 							qDebug()<<" ------ Recursing at end: "<<name<<" with "<<active;
