@@ -13,7 +13,7 @@
 class LocalIdentityStoreService: public ServiceWrapper<LocalIdentityStore>
 {
 public:
-	LocalIdentityStoreService(QSharedPointer<LocalIdentityStore> localIdentityStore);
+	LocalIdentityStoreService(QSharedPointer<LocalIdentityStore> localIdentityStore, QStringList dependencies={"KeyStore"});
 
 	// ServiceWapper interface.
 public:

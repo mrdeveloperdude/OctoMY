@@ -1,8 +1,8 @@
 #include "LocalIdentityStoreService.hpp"
 
 
-LocalIdentityStoreService::LocalIdentityStoreService(QSharedPointer<LocalIdentityStore> localIdentityStore)
-	: ServiceWrapper<LocalIdentityStore>(localIdentityStore, "LocalIdentityStore", QStringList{"KeyStore"})
+LocalIdentityStoreService::LocalIdentityStoreService(QSharedPointer<LocalIdentityStore> localIdentityStore, QStringList dependencies)
+	: ServiceWrapper<LocalIdentityStore>(localIdentityStore, "LocalIdentityStore", dependencies)
 {
 	OC_METHODGATE();
 }
