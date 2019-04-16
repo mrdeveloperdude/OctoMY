@@ -156,8 +156,12 @@ void TestAddressBook::test()
 	{
 		AddressBook *store=OC_NEW AddressBook();
 		QVERIFY(nullptr!=store);
-
+		QCOMPARE(store->isActivated(), false);
 		store->configure(filename);
+		QCOMPARE(store->isActivated(), false);
+		store->activate(true);
+		QCOMPARE(store->isActivated(), true);
+
 		/*
 		store->bootstrap(false, false); // Leave async test to TestKeyStore and TestAsyncStore
 
@@ -207,7 +211,11 @@ void TestAddressBook::test()
 	{
 		AddressBook *store2=OC_NEW AddressBook();
 		QVERIFY(nullptr!=store2);
+		QCOMPARE(store2->isActivated(), false);
 		store2->configure(filename);
+		QCOMPARE(store2->isActivated(), false);
+		store2->activate(true);
+		QCOMPARE(store2->isActivated(), true);
 
 		/*
 		store2->bootstrap(true, false); // Leave async test to TestKeyStore and TestAsyncStore
