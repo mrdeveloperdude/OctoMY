@@ -6,7 +6,6 @@
 
 #include "Node.hpp"
 
-#include "service/ServiceManager.hpp"
 #include "camera/CameraList.hpp"
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsSession.hpp"
@@ -32,6 +31,9 @@
 #include "uptime/New.hpp"
 #include "utility/time/ScopedTimer.hpp"
 
+#include "service/ServiceManager.hpp"
+#include "service/services/KeyStoreService.hpp"
+
 
 #include <QCommandLineParser>
 #include <QAccelerometerReading>
@@ -48,7 +50,6 @@ static const QString NODE_ONLINE_STATUS_BASE_KEY("octomy.node.online.");
 Node::Node()
 	: QObject(nullptr)
 	, mAppConfigureHelper("node", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
-	, mServiceManager(OC_NEW ServiceManager())
 	, mKeyStore(OC_NEW KeyStore())
 	, mLocalIdentityStore(OC_NEW LocalIdentityStore())
 	, mLocalAddresses(OC_NEW LocalAddressList())
@@ -59,6 +60,8 @@ Node::Node()
 	, mLastStatusSend (0)
 	, mServerURL("http://zoo.octomy.org:"+QString::number(Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
 	, mNodeStepActivationTimer(nullptr)
+	, mServiceManager(OC_NEW ServiceManager())
+	, mKeyStoreService(OC_NEW KeyStoreService(mKeyStore))
 {
 	OC_METHODGATE();
 	//qDebug()<<"Node()";
@@ -108,15 +111,16 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				//mSensorsCourier->configure(QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*mComms, this)))
 				//mBlobCourier->configure(QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*mComms, this)))
 				//mCameras->configure(OC_NEW CameraList(this))
-/*
-				mServiceManager->registerService(mKeyStore);
-				mServiceManager->registerService(mLocalIdentityStore);
-				mServiceManager->registerService(mLocalAddresses);
-				mServiceManager->registerService(mAddressBook);
-				mServiceManager->registerService(mDiscovery);
-				mServiceManager->registerService(mCarrier);
-				mServiceManager->registerService(mComms);
-*/
+				mServiceManager->registerService(mKeyStoreService);
+				/*
+
+								mServiceManager->registerService(mLocalIdentityStoreService);
+								mServiceManager->registerService(mLocalAddressesService);
+								mServiceManager->registerService(mAddressBookService);
+								mServiceManager->registerService(mDiscoveryService);
+								mServiceManager->registerService(mCarrierService);
+								mServiceManager->registerService(mCommsService);
+				*/
 				nodeConfigure();
 
 			} else {
@@ -131,7 +135,15 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 	}
 }
 
+void Node::serviceActivation(const bool on)
+{
+	OC_METHODGATE();
+	qDebug()<<"SERVICE ACTIVATION("<<on<<") STARTED";
+	mServiceManager->activate(mServiceManager->all(), on, [on](bool ok) {
+		qDebug()<<"SERVICE ACTIVATION("<<on<<") RESULTED IN "<<ok;
+	});
 
+}
 
 void Node::stepActivation(const bool on)
 {
@@ -241,7 +253,8 @@ void Node::appActivate(const bool on)
 			mCarrier->activate(on);
 			mComms->activate(on);
 
-			stepActivation(on);
+			serviceActivation(on);
+			// stepActivation(on);
 
 
 			//setHookSensorSignals(*this, true);

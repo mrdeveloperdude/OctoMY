@@ -22,12 +22,6 @@
 
 #include "address/LocalAddressList.hpp"
 #include "client/ClientList.hpp"
-/*
-
-#include "widgets/TryToggleState.hpp"
-
-#include "comms/CommsCarrierUDP.hpp"
-*/
 
 #include "comms/IConnectionStatus.hpp"
 
@@ -37,7 +31,6 @@
 #include <QHostAddress>
 #include <QUrl>
 
-class ServiceManager;
 class CommsCarrier;
 class CommsChannel;
 class ZooClient;
@@ -60,11 +53,11 @@ class BlobCourier;
 class BlobFuture;
 
 class IAppLauncher;
-
 class Associate;
-
 class ScopedTimer;
 
+class ServiceManager;
+class KeyStoreService;
 
 
 struct NodeActivationState {
@@ -95,8 +88,6 @@ private:
 	QSharedPointer<IAppLauncher> mLauncher;
 	// Helper to keep track of appConfigure() and appActivate() state
 	ConfigureHelper mAppConfigureHelper;
-	// Manager for maintaining the lifecycle and interdependencies of services
-	QSharedPointer<ServiceManager> mServiceManager;
 	// Our key store
 	QSharedPointer<KeyStore> mKeyStore;
 	// Our local ID
@@ -135,6 +126,13 @@ private:
 	ScopedTimer *mNodeStepActivationTimer;
 
 
+	// Manager for maintaining the lifecycle and interdependencies of services
+	QSharedPointer<ServiceManager> mServiceManager;
+	// Service wrapper for KeyStore
+	QSharedPointer<KeyStoreService> mKeyStoreService;
+
+
+
 public:
 	explicit Node();
 	virtual ~Node() Q_DECL_OVERRIDE;
@@ -152,7 +150,11 @@ public:
 	// After calling this with on=false, the launcher will complete termination and return to OS
 	virtual void appActivate(const bool on);
 
+	// Use the servicemanager subsystem to enable/disable services in correct order
+	void serviceActivation(const bool on);
 
+	// Use step activation "hack" to enable/disable services in correc order
+	// DEPRECATED: in favor of serviceActivation()
 	void stepActivation(const bool on);
 
 	// Called by launcher to get a handle to the app's main window

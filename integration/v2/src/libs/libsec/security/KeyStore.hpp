@@ -16,6 +16,7 @@
 #include "store/AsyncStore.hpp"
 #include "KeySecurityPolicy.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
+#include "uptime/ConfigureHelper.hpp"
 
 #include <QByteArray>
 #include <QCryptographicHash>
@@ -51,6 +52,7 @@ private:
 	KeySecurityPolicy mPolicy;
 	QSharedPointer<Key> mLocalKey;
 	QMap<QString, QSharedPointer<Key> > mAssociates;
+	ConfigureHelper mConfigureHelper;
 
 	friend class GenerateRunnable<KeyStore>;
 
@@ -60,10 +62,10 @@ public:
 
 public:
 	void configure(QString filename = "", bool doBootstrap = false, KeySecurityPolicy policy = KeySecurityPolicy() );
+	void activate(bool on, std::function<void(bool)> callBack=nullptr);
 
 	// AsyncFrontend interface
 public:
-
 	bool clearFrontend() Q_DECL_OVERRIDE;
 	bool setFrontend(QVariantMap data) Q_DECL_OVERRIDE;
 	QVariantMap getFrontend(bool &ok) Q_DECL_OVERRIDE;
@@ -79,7 +81,6 @@ public:
 
 	QSharedPointer<Key> localKey();
 
-
 	// Check if we have pub-key for node identified by give fingerprint ID
 	bool hasPubKeyForID(const QString &id);
 
@@ -88,7 +89,6 @@ public:
 
 	// return pub-key for node identified by give fingerprint ID
 	QSharedPointer<Key> pubKeyForID(const QString &id);
-
 
 	AsyncStore<QVariantMap> &store();
 	void dump();
@@ -143,35 +143,45 @@ template <typename F>
 void KeyStore::status(F callBack)
 {
 	OC_METHODGATE();
-	mStore.status().onFinished(callBack);
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		mStore.status().onFinished(callBack);
+	}
 }
 
 template <typename F>
 void KeyStore::clear(F callBack)
 {
 	OC_METHODGATE();
-	mStore.clear().onFinished(callBack);
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		mStore.clear().onFinished(callBack);
+	}
 }
 
 template <typename F>
 void KeyStore::save(F callBack)
 {
 	OC_METHODGATE();
-	mStore.save().onFinished(callBack);
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		mStore.save().onFinished(callBack);
+	}
 }
 
 template <typename F>
 void KeyStore::load(F callBack)
 {
 	OC_METHODGATE();
-	mStore.load().onFinished(callBack);
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		mStore.load().onFinished(callBack);
+	}
 }
 
 template <typename F>
 void KeyStore::synchronize(F callBack)
 {
 	OC_METHODGATE();
-	mStore.synchronize().onFinished(callBack);
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		mStore.synchronize().onFinished(callBack);
+	}
 }
 
 

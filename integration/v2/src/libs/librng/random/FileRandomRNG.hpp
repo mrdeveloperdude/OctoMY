@@ -6,32 +6,33 @@
 #include <QFile>
 /*
 NOTE: This is not meant to be used directly, but rather as a subclass for /dev/xx
-      style random number sources.
+	  style random number sources.
 */
 
 class FileRandomRNG : public RNG
 {
 private:
-    QFile file;
+	QFile file;
 
 public:
-    FileRandomRNG(QString name, QString filename);
+	FileRandomRNG(QString name, QString filename);
 
 public:
 
-    //Return true if this source is dependant on any pseudo rng
-    virtual inline bool hasPseudo() Q_DECL_OVERRIDE {
-        return false;
-    }
+	// Return true if this source is dependant on any pseudo rng
+	inline bool hasPseudo() Q_DECL_OVERRIDE {
+		return false;
+	}
 
-    //Generates a random number on [0,0xffffffff]-interval
-    //This is the main generator function that all the others are based on
-    quint32 generateInt32(void) Q_DECL_OVERRIDE;
+	// Generates a random number on [0,0xffffffff]-interval
+	// This is the main generator function that all the others are based on
+	quint32 generateInt32(void) Q_DECL_OVERRIDE;
 
 
-    // Does nothing, this source has no seed
-    virtual void init(quint32 s) Q_DECL_OVERRIDE;
+	// Does nothing, this source has no seed
+	void init(quint32 s) Q_DECL_OVERRIDE;
 
 };
 
-#endif // FILERANDOMRNG_HPP
+#endif
+// FILERANDOMRNG_HPP

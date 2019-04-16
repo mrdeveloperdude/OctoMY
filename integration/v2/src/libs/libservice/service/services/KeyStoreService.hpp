@@ -4,6 +4,8 @@
 #include "security/KeyStore.hpp"
 #include "service/ServiceWrapper.hpp"
 
+#include <QSharedPointer>
+
 /**
  * @brief The KeyStoreService class is what it says on the tin; basically a wrapper to make KeyStore appear as a service.
  * Basically KeyStore is not really well suited to be a service since it will never "unload", but that is ok as having it

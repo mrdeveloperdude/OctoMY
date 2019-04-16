@@ -12,8 +12,8 @@ void KeyStoreService::serviceWrapperActivate(QSharedPointer<KeyStore> keystore, 
 	OC_METHODGATE();
 	// NOTE: This will only load and not unload (i.e. the value of the 'on' boolean does not matter).
 	//       Unloading is never necessary so this is fine.
-	keystore->synchronize([this, on, callBack](ASEvent<QVariantMap> &se) {
-		const bool ok=se.isSuccessfull();
+	keystore->activate(on, [callBack](bool ok) {
 		callBack(ok);
 	});
+
 }
