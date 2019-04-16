@@ -16,7 +16,7 @@
 class KeyStoreService: public ServiceWrapper<KeyStore>
 {
 public:
-	KeyStoreService(QSharedPointer<KeyStore> keystore);
+		KeyStoreService(QSharedPointer<KeyStore> keystorem, QStringList dependencies={});
 
 	// ServiceWapper interface.
 public:

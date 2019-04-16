@@ -1,8 +1,8 @@
 #include "KeyStoreService.hpp"
 
 
-KeyStoreService::KeyStoreService(QSharedPointer<KeyStore> keystore)
-	: ServiceWrapper<KeyStore>(keystore, "KeyStore")
+KeyStoreService::KeyStoreService(QSharedPointer<KeyStore> keystore, QStringList dependencies)
+	: ServiceWrapper<KeyStore>(keystore, "KeyStore", dependencies)
 {
 	OC_METHODGATE();
 }

@@ -59,6 +59,7 @@ class ScopedTimer;
 class ServiceManager;
 class KeyStoreService;
 class LocalIdentityStoreService;
+class LocalAddressListService;
 
 
 struct NodeActivationState {
@@ -94,7 +95,7 @@ private:
 	// Our local ID
 	QSharedPointer<LocalIdentityStore> mLocalIdentityStore;
 	// Our local network addresses
-	QSharedPointer<LocalAddressList> mLocalAddresses;
+	QSharedPointer<LocalAddressList> mLocalAddressList;
 	// Clients address book (clients are nodes we communicate with)
 	QSharedPointer<AddressBook> mAddressBook;
 	// Client instances
@@ -133,6 +134,8 @@ private:
 	QSharedPointer<KeyStoreService> mKeyStoreService;
 	// Service wrapper for LocalIdentityStore
 	QSharedPointer<LocalIdentityStoreService> mLocalIdentityStoreService;
+	// Service wrapper for LocalAddressList
+	QSharedPointer<LocalAddressListService> mLocalAddressListService;
 
 
 

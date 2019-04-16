@@ -34,6 +34,7 @@
 #include "service/ServiceManager.hpp"
 #include "service/services/KeyStoreService.hpp"
 #include "service/services/LocalIdentityStoreService.hpp"
+#include "service/services/LocalAddressListService.hpp"
 
 
 #include <QCommandLineParser>
@@ -53,7 +54,7 @@ Node::Node()
 	, mAppConfigureHelper("node", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 	, mKeyStore(OC_NEW KeyStore())
 	, mLocalIdentityStore(OC_NEW LocalIdentityStore())
-	, mLocalAddresses(OC_NEW LocalAddressList())
+	, mLocalAddressList(OC_NEW LocalAddressList())
 	, mAddressBook(OC_NEW AddressBook())
 	, mDiscovery(OC_NEW DiscoveryClient())
 	, mCarrier(OC_NEW CommsCarrierUDP())
@@ -62,8 +63,9 @@ Node::Node()
 	, mServerURL("http://zoo.octomy.org:"+QString::number(Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
 	, mNodeStepActivationTimer(nullptr)
 	, mServiceManager(OC_NEW ServiceManager())
-	, mKeyStoreService(OC_NEW KeyStoreService(mKeyStore))
+	, mKeyStoreService(OC_NEW KeyStoreService(mKeyStore, {}))
 	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore, {"KeyStore"}))
+	, mLocalAddressListService(OC_NEW LocalAddressListService(mLocalAddressList, {}))
 {
 	OC_METHODGATE();
 	//qDebug()<<"Node()";
@@ -97,7 +99,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 
 				mKeyStore->configure(baseDir + "/keystore.json", true);
 				mLocalIdentityStore->configure(baseDir + "/local_identity.json");
-				mLocalAddresses->configure(defaultPortForNodeType(nodeType()));
+				mLocalAddressList->configure(defaultPortForNodeType(nodeType()));
 				mAddressBook->configure(baseDir + "/addressbook.json");
 				mDiscovery->configure(sharedThis(), 1000, 60000, 20000, 40000);
 
@@ -105,7 +107,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				mComms->configure(mCarrier, mKeyStore, mAddressBook);
 
 
-				// TODO: It is not entirely clear what zoo client provides beyond what discovery client does. Until that has been resolved, we avoid it
+				// TODO: It is not entirely clear what zoo client provides beyond that which discovery client provides. Until that has been resolved, we avoid it
 				//mZooClient->configure();
 
 				// TODO: This is the good stuff. It will be handled as soon as the boring stuff is finished and working xD
@@ -115,14 +117,13 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				//mCameras->configure(OC_NEW CameraList(this))
 				mServiceManager->registerService(mKeyStoreService);
 				mServiceManager->registerService(mLocalIdentityStoreService);
+				mServiceManager->registerService(mLocalAddressListService);
 				/*
-
-
-								mServiceManager->registerService(mLocalAddressesService);
-								mServiceManager->registerService(mAddressBookService);
-								mServiceManager->registerService(mDiscoveryService);
-								mServiceManager->registerService(mCarrierService);
-								mServiceManager->registerService(mCommsService);
+					mServiceManager->registerService(mLocalAddressesService);
+					mServiceManager->registerService(mAddressBookService);
+					mServiceManager->registerService(mDiscoveryService);
+					mServiceManager->registerService(mCarrierService);
+					mServiceManager->registerService(mCommsService);
 				*/
 				nodeConfigure();
 
@@ -188,7 +189,7 @@ void Node::stepActivation(const bool on)
 				qWarning()<<"ERROR: No LocalIdentity";
 			}
 		} else if (!mNodeActivationState.localAddressesOK) {
-			if(!mLocalAddresses.isNull()) {
+			if(!mLocalAddressList.isNull()) {
 				//qDebug()<<"LocalAddresses synchronized with ok="<<true;
 				mNodeActivationState.localAddressesOK=true;
 				stepActivation(on);
@@ -224,7 +225,7 @@ void Node::stepActivation(const bool on)
 			}
 		} else if (!mNodeActivationState.commsCarrierOK) {
 			if(!mCarrier.isNull()) {
-				const NetworkAddress listenAddress(QHostAddress::Any, mLocalAddresses->port());
+				const NetworkAddress listenAddress(QHostAddress::Any, mLocalAddressList->port());
 				//qDebug()<<"CommsCarrier ok="<<true<<" with "<<listenAddress;
 				mCarrier->setListenAddress(listenAddress);
 				mNodeActivationState.commsCarrierOK=true;
@@ -405,7 +406,7 @@ QSharedPointer<ClientList> Node::clientList()
 QSharedPointer<LocalAddressList> Node::localAddressList()
 {
 	OC_METHODGATE();
-	return mLocalAddresses;
+	return mLocalAddressList;
 }
 
 
