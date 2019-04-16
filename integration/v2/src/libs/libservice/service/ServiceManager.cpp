@@ -310,35 +310,35 @@ bool ServiceManager::dependentsMet(const QString name)
 QSet<QString> ServiceManager::nextActivatableInSet(const QSet<QString> set, const bool active)
 {
 	OC_METHODGATE();
-	qDebug()<<"nextActivatableInSet: set="<<set<<", active="<<active;
+	//qDebug()<<"nextActivatableInSet: set="<<set<<", active="<<active;
 	QSet<QString> ret;
 	for(auto name:set) {
-		qDebug()<<" + NAME: "<<name;
+		//qDebug()<<" + NAME: "<<name;
 		if(active!=activated(name)) {
 			if(active) {
 				auto dependenciesSet=dependencies(name);
-				qDebug()<<"   + DEPENDENCIES: "<<dependenciesSet;
+				//qDebug()<<"   + DEPENDENCIES: "<<dependenciesSet;
 				if(dependenciesMet(name)) {
-					qDebug()<<"     + MET";
+					//qDebug()<<"     + MET";
 					ret+=name;
 				} else {
-					qDebug()<<"     + UNMET";
+					//qDebug()<<"     + UNMET";
 					ret+=nextActivatableInSet(dependenciesSet, active);
 				}
 			} else {
 				auto dependentsSet=dependents(name);
-				qDebug()<<"   + DEPENDENTS: "<<dependentsSet;
+				//qDebug()<<"   + DEPENDENTS: "<<dependentsSet;
 				if(dependentsMet(name)) {
-					qDebug()<<"     + MET";
+					//qDebug()<<"     + MET";
 					ret+=name;
 				} else {
-					qDebug()<<"     + UNMET";
+					//qDebug()<<"     + UNMET";
 					ret+=nextActivatableInSet(dependentsSet, active);
 				}
 			}
 		}
 	}
-	qDebug()<<"   + RET: "<<ret;
+	//qDebug()<<"   + RET: "<<ret;
 	return ret;
 }
 
@@ -369,11 +369,11 @@ struct synchronizer {
 void ServiceManager::activate(const QSet<QString> set, const bool active, ServiceActivatedCallback callBack)
 {
 	OC_METHODGATE();
-	qDebug()<<"Activate called with: "<<set<<" and "<<active;
+	// qDebug()<<"Activate called with: "<<set<<" and "<<active;
 	QSet<QString> working=nextActivatableInSet(set, active);
 	synchronizer *s=OC_NEW synchronizer;
 	if(!working.isEmpty()) {
-		qDebug()<<" -- Activating set: "<<working<<" with "<<active;
+		qDebug()<<" -- Activating service set: "<<working<<" with "<<active;
 		for(auto name:working) {
 			auto service = serviceByName(name);
 			if(!service.isNull()) {
@@ -393,7 +393,7 @@ void ServiceManager::activate(const QSet<QString> set, const bool active, Servic
 					service->serviceActivate(active, [=](bool ok) {
 						qDebug()<<" ---- Activating service : "<<name<<" with "<<active;
 						if(s->end(ok)) {
-							qDebug()<<" ------ Recursing at end: "<<name<<" with "<<active;
+							// qDebug()<<" ------ Recursing at end: "<<name<<" with "<<active;
 							delete s;
 							activate(set, active, callBack);
 						}
@@ -407,7 +407,7 @@ void ServiceManager::activate(const QSet<QString> set, const bool active, Servic
 
 	} else {
 //		const bool gok=s->gok;
-		qDebug()<<"Closing the hatch";
+		qDebug()<<"Service activation with "<<active<<" complete";
 		callBack(true);
 	}
 }
