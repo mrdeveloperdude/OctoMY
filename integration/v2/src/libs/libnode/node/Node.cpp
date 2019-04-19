@@ -99,24 +99,20 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 			if(basedirOK) {
 				QString baseDir=ctx->baseDir();
 
+				// First we configure all services
+				//////////////////////////////////
+
 				mKeyStore->configure(baseDir + "/keystore.json", true);
 				mLocalIdentityStore->configure(baseDir + "/local_identity.json");
 				mLocalAddressList->configure(defaultPortForNodeType(nodeType()));
 				mAddressBook->configure(baseDir + "/addressbook.json");
 				mDiscovery->configure(sharedThis(), 1000, 60000, 20000, 40000);
-
 				mCarrier->configure();
 				mComms->configure(mCarrier, mKeyStore, mAddressBook);
 
+				// Next we register services with the service manager
+				/////////////////////////////////////////////////////
 
-				// TODO: It is not entirely clear what zoo client provides beyond that which discovery client provides. Until that has been resolved, we avoid it
-				//mZooClient->configure();
-
-				// TODO: This is the good stuff. It will be handled as soon as the boring stuff is finished and working xD
-				//mSensors->configure(OC_NEW SensorInput(this))
-				//mSensorsCourier->configure(QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*mComms, this)))
-				//mBlobCourier->configure(QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*mComms, this)))
-				//mCameras->configure(OC_NEW CameraList(this))
 				mServiceManager->registerService(mKeyStoreService);
 				mServiceManager->registerService(mLocalIdentityStoreService);
 				mServiceManager->registerService(mLocalAddressListService);
@@ -127,6 +123,17 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 					mServiceManager->registerService(mCarrierService);
 					mServiceManager->registerService(mCommsService);
 				*/
+
+
+
+				// TODO: It is not entirely clear what zoo client provides beyond that which discovery client provides. Until that has been resolved, we avoid it
+				//mZooClient->configure();
+
+				// TODO: This is the good stuff. It will be handled as soon as the boring stuff is finished and working xD
+				//mSensors->configure(OC_NEW SensorInput(this))
+				//mSensorsCourier->configure(QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*mComms, this)))
+				//mBlobCourier->configure(QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*mComms, this)))
+				//mCameras->configure(OC_NEW CameraList(this))
 				nodeConfigure();
 
 			} else {
@@ -250,11 +257,11 @@ void Node::appActivate(const bool on)
 	//qDebug()<<"appActivate()";
 	if(mAppConfigureHelper.activate(on)) {
 		if(on) {
-			// mKeyStore->activate(on);
-			mLocalIdentityStore->activate(on);
+			//mKeyStore->activate(on);
+			//mLocalIdentityStore->activate(on);
 			//mAddresses->activate(on);
-			mAddressBook->activate(on);
-			mDiscovery->activate(on);
+			//mAddressBook->activate(on);
+			//mDiscovery->activate(on);
 
 			mCarrier->activate(on);
 			mComms->activate(on);
@@ -446,6 +453,12 @@ QSharedPointer<Associate> Node::nodeIdentity()
 	return mNodeIdentity;
 }
 
+
+QSharedPointer<ServiceManager> Node::serviceManager()
+{
+	OC_METHODGATE();
+	return mServiceManager;
+}
 
 
 void Node::unbirth()

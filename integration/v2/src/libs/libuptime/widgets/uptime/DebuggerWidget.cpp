@@ -4,6 +4,8 @@
 #include "uptime/MethodGate.hpp"
 #include "utility/time/HumanTime.hpp"
 
+#include "service/ServiceManager.hpp"
+
 
 #include "name/AgentNameGenerator.hpp"
 #include "name/GenderGenerator.hpp"
@@ -116,5 +118,26 @@ void DebuggerWidget::on_pushButtonBirth_clicked()
 		}
 	} else {
 		qWarning()<<"WARNING: Could not birth, no node";
+	}
+}
+
+// NOTE: This is experimental at best.
+void DebuggerWidget::on_pushButtonDiscoveryService_toggled(bool checked)
+{
+	OC_METHODGATE();
+	if(!mNode.isNull()) {
+		auto sm=mNode->serviceManager();
+		if(!sm.isNull()) {
+			qDebug()<<"Switching discovery to "<< (checked?"ON":"OFF");
+			sm->activate(QSet<QString>{"discovery"}, checked, [this, sm](bool ok){
+				Q_UNUSED(ok);
+				ui->pushButtonBirth->setChecked(sm->activated("discovery"));
+			});
+		} else {
+			qWarning()<<"WARNING: Could not switch discovery service, no service manager";
+		}
+
+	} else {
+		qWarning()<<"WARNING: Could not switch discovery service, no node";
 	}
 }

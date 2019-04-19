@@ -115,9 +115,10 @@ public:
 	explicit AsyncStore();
 	virtual ~AsyncStore();
 
+	// ConfigureHelper interface
 public:
 	void configure(QSharedPointer<AsyncBackend<T> > backend, QSharedPointer<AsyncFrontend<T> > frontend);
-	void activate(const bool on);
+	void activate(const bool on, std::function<void(bool)> callBack=nullptr);
 
 private:
 	void addJournal(QString);
@@ -254,12 +255,14 @@ void AsyncStore<T>::configure(QSharedPointer<AsyncBackend<T> > backend, QSharedP
 
 
 template <typename T>
-void AsyncStore<T>::activate(const bool on)
+void AsyncStore<T>::activate(const bool on, std::function<void(bool)> callBack)
 {
 	OC_METHODGATE();
 	on?addJournal("ACTIVATE ON"):addJournal("ACTIVATE OFF");
-	if(on) {
-		if(mConfigureHelper.activate(on)) {
+	bool ok=false;
+	if(mConfigureHelper.activate(on)) {
+		if(on) {
+
 			// NOTE: We activate the transactions queue here, but we don't deactivate it until the "completed" operation is received
 			mTransactions.activate(on);
 			// Start transaction processing in separate thread
@@ -269,17 +272,19 @@ void AsyncStore<T>::activate(const bool on)
 				processEvents();
 				//qDebug()<<"Exiting AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
 			});
+		} else {
+			synchronize();
+			complete();
+			//qWarning()<<"Waiting for asyncstore future finish...";
+			mCompleteFuture.waitForFinished();
+			//qWarning()<<"Got for asyncstore future finish :)";
+			// NOTE: synchronize and complete both need store to be activated, so we deactivate last
 		}
-	} else {
-		synchronize();
-		complete();
-		//qWarning()<<"Waiting for asyncstore future finish...";
-		mCompleteFuture.waitForFinished();
-		//qWarning()<<"Got for asyncstore future finish :)";
-		// NOTE: synchronize and complete both need store to be activated, so we deactivate last
-		mConfigureHelper.activate(on);
+		ok=true;
 	}
-
+	if(nullptr!=callBack){
+		callBack(ok);
+	}
 }
 
 template <typename T>

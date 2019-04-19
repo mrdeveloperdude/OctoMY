@@ -36,7 +36,9 @@ private slots:
 	void on_pushButtonUnbirth_clicked();
 	void on_pushButtonBirth_clicked();
 
-signals:
+	void on_pushButtonDiscoveryService_toggled(bool checked);
+
+	signals:
 	void visibilityChanged(bool visible);
 };
 

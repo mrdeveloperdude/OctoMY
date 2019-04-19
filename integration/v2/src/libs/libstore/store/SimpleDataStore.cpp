@@ -61,13 +61,17 @@ void SimpleDataStore::configure(QString filename)
 }
 
 
-void SimpleDataStore::activate(const bool on)
+void SimpleDataStore::activate(const bool on, std::function<void(bool)> callBack)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.activate(on)) {
 		if(!mStore.isNull()) {
-			mStore->activate(on);
+			mStore->activate(on, callBack);
+			return;
 		}
+	}
+	if(nullptr!=callBack){
+		callBack(false);
 	}
 }
 

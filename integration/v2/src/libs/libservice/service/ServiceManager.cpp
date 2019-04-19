@@ -411,3 +411,10 @@ void ServiceManager::activate(const QSet<QString> set, const bool active, Servic
 		callBack(true);
 	}
 }
+
+
+void ServiceManager::activate(const QString service, const bool active, ServiceActivatedCallback callBack)
+{
+	OC_METHODGATE();
+	activate(QSet<QString>{service}, active, callBack);
+}

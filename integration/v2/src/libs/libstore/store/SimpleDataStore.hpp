@@ -35,6 +35,9 @@ public:
 };
 
 
+////////////////////////////////////////////////////////////////////////////////
+
+
 class SimpleDataStore: public QEnableSharedFromThis<SimpleDataStore>
 {
 
@@ -48,9 +51,10 @@ public:
 	explicit SimpleDataStore();
 	virtual ~SimpleDataStore();
 
+// ConfigureHelper interface
 public:
 	void configure(QString filename);
-	void activate(const bool on);
+	void activate(const bool on, std::function<void(bool)> callBack=nullptr);
 
 	// SimpleDataStore interface
 public:

@@ -231,6 +231,9 @@ public:
 	// Provide the node identity
 	QSharedPointer<Associate> nodeIdentity();
 
+	// Provide the service manager
+	QSharedPointer<ServiceManager> serviceManager();
+
 	// Reset the identity and settings for this node. WARNING: This is destructive and only useful when debugging
 	void unbirth();
 

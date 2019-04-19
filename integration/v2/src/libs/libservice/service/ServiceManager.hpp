@@ -78,6 +78,8 @@ public:
 	// (de)activate the services in the provided set, calling provided callback upon completion
 	// NOTE: This will recursively (de)activate dependencies and resolve the correct activation order.
 	void activate(const QSet<QString> set, const bool active, ServiceActivatedCallback callBack);
+	// Convenience overload
+	void activate(const QString service, const bool active, ServiceActivatedCallback callBack);
 
 };
 
