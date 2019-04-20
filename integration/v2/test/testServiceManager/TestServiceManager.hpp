@@ -6,8 +6,12 @@
 class TestServiceManager:public QObject
 {
 	Q_OBJECT
+
+
 private slots:
-	void test();
+	void testHelpers();
+	void testDirectRegistrationAndActivation();
+	void testServiceLevels();
 
 };
 

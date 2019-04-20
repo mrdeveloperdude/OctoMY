@@ -8,7 +8,7 @@
 #include <QDebug>
 #include <QSharedPointer>
 
-bool ServiceManager::nameIsWellformed(const QString name)
+bool ServiceManager::nameIsWellformed(const QString name) const
 {
 	OC_METHODGATE();
 	const auto trimmed=name.trimmed();
@@ -24,7 +24,7 @@ bool ServiceManager::nameIsWellformed(const QString name)
 }
 
 
-bool ServiceManager::registered(const QString name)
+bool ServiceManager::registered(const QString name) const
 {
 	OC_METHODGATE();
 	auto it=mServicesMap.find(name);
@@ -32,7 +32,7 @@ bool ServiceManager::registered(const QString name)
 }
 
 
-bool ServiceManager::registered(const QSharedPointer <Service> service)
+bool ServiceManager::registered(const QSharedPointer <Service> service) const
 {
 	OC_METHODGATE();
 	if(service.isNull()) {
@@ -43,24 +43,36 @@ bool ServiceManager::registered(const QSharedPointer <Service> service)
 }
 
 
-bool ServiceManager::activated(const QString name)
+bool ServiceManager::activatedWanted(const QString name) const
 {
 	OC_METHODGATE();
 	auto service=serviceByName(name);
 	if(!service.isNull()) {
-		return service->serviceActivated();
+		return service->serviceActiveWanted();
 	}
 	return false;
 }
 
-int ServiceManager::count()
+
+
+bool ServiceManager::activatedActual(const QString name) const
+{
+	OC_METHODGATE();
+	auto service=serviceByName(name);
+	if(!service.isNull()) {
+		return service->serviceActiveActual();
+	}
+	return false;
+}
+
+int ServiceManager::count() const
 {
 	OC_METHODGATE();
 	return mServicesMap.count();
 }
 
 
-QSharedPointer <Service> ServiceManager::serviceByName(const QString name)
+QSharedPointer <Service> ServiceManager::serviceByName(const QString name) const
 {
 	OC_METHODGATE();
 	auto it=mServicesMap.find(name);
@@ -71,7 +83,7 @@ QSharedPointer <Service> ServiceManager::serviceByName(const QString name)
 }
 
 
-QSet<QString> ServiceManager::dependencies(const QString name)
+QSet<QString> ServiceManager::dependencies(const QString name) const
 {
 	OC_METHODGATE();
 	QSet<QString> ret;
@@ -89,7 +101,7 @@ QSet<QString> ServiceManager::dependencies(const QString name)
 }
 
 
-QSet<QString> ServiceManager::dependencies(const QSharedPointer <Service> service)
+QSet<QString> ServiceManager::dependencies(const QSharedPointer <Service> service) const
 {
 	OC_METHODGATE();
 	if(registered(service)) {
@@ -105,7 +117,7 @@ QSet<QString> ServiceManager::dependencies(const QSharedPointer <Service> servic
 
 
 
-QSet<QString> ServiceManager::dependents(const QString name)
+QSet<QString> ServiceManager::dependents(const QString name) const
 {
 	OC_METHODGATE();
 	QSet<QString> ret;
@@ -123,7 +135,7 @@ QSet<QString> ServiceManager::dependents(const QString name)
 }
 
 
-QSet<QString> ServiceManager::dependents(const QSharedPointer <Service> service)
+QSet<QString> ServiceManager::dependents(const QSharedPointer <Service> service) const
 {
 	OC_METHODGATE();
 	if(registered(service)) {
@@ -137,57 +149,60 @@ QSet<QString> ServiceManager::dependents(const QSharedPointer <Service> service)
 }
 
 
-QSet<QString> ServiceManager::metDependencies(const QString name, const bool met)
+bool ServiceManager::met(QSet<QString> set, const bool met, const bool actual) const
 {
 	OC_METHODGATE();
-	QSet<QString> all=dependencies(name);
+	for(auto dep:set) {
+		if((actual?activatedActual(dep):activatedWanted(dep))!=met) {
+			return false;
+		}
+	}
+	return true;
+}
+
+
+QSet<QString> ServiceManager::metSet(QSet<QString> set, const bool met, const bool actual) const
+{
+	OC_METHODGATE();
 	QSet<QString> ret;
-	for(auto dep:all) {
-		auto service = serviceByName(dep);
-		if(!service.isNull()) {
-			if(met==service->serviceActivated()) {
-				ret+=dep;
-			}
-		} else {
-			qWarning()<<"WARNING: Found invalid dependency: "<<dep;
+	for(auto dep:set) {
+		if((actual?activatedActual(dep):activatedWanted(dep))!=met) {
 			ret+=dep;
 		}
 	}
 	return ret;
 }
 
-QSet<QString> ServiceManager::metDependents(const QString name, const bool met)
-{
-	OC_METHODGATE();
-	QSet<QString> all=dependents(name);
-	QSet<QString> ret;
-	for(auto dep:all) {
-		auto service = serviceByName(dep);
-		if(!service.isNull()) {
-			if(met==service->serviceActivated()) {
-				ret+=dep;
-			}
-		} else {
-			qWarning()<<"WARNING: Found invalid dependent: "<<dep;
-			ret+=dep;
-		}
-	}
-	return ret;
-}
 
-QSet<QString> ServiceManager::all()
+QSet<QString> ServiceManager::all() const
 {
 	OC_METHODGATE();
 	return mServicesMap.keys().toSet();
 }
 
+
+
+QSet<QString> ServiceManager::all(const bool on, const bool  actual) const
+{
+	OC_METHODGATE();
+	QSet<QString> ret;
+	auto all=mServicesMap.keys().toSet();
+	for(auto name:all) {
+		if((actual?activatedActual(name):activatedWanted(name))==on) {
+			ret+=name;
+		}
+	}
+	return ret;
+}
+
+
 // Show internal state
-void ServiceManager::dump()
+void ServiceManager::dump() const
 {
 	OC_METHODGATE();
 	qDebug()<<"SERVICES ";
 	for(auto service:mServicesList) {
-		qDebug()<<" + SERVICE: name="<<service->name()<<", activated="<<service->serviceActivated()<<", dependencies="<<service->dependencies();
+		qDebug()<<" + SERVICE: name="<<service->name()<<", activated=("<<service->serviceActiveWanted()<<","<<service->serviceActiveActual()<<"), dependencies="<<service->dependencies();
 	}
 }
 
@@ -197,7 +212,6 @@ bool ServiceManager::registerService(const QSharedPointer <Service> service)
 	OC_METHODGATE();
 	if(!service.isNull()) {
 		const auto name=service->name();
-		const auto trimmed=name.trimmed();
 		if(nameIsWellformed(name)) {
 			if(!registered(service)) {
 				mServicesMap[name]=service;
@@ -245,7 +259,7 @@ bool ServiceManager::unRegisterService(const QString name)
 }
 
 
-bool ServiceManager::dependenciesMet(const QSharedPointer <Service> service)
+bool ServiceManager::dependenciesMet(const QSharedPointer <Service> service) const
 {
 	OC_METHODGATE();
 	if(registered(service)) {
@@ -258,7 +272,7 @@ bool ServiceManager::dependenciesMet(const QSharedPointer <Service> service)
 }
 
 
-bool ServiceManager::dependenciesMet(const QString name)
+bool ServiceManager::dependenciesMet(const QString name) const
 {
 	OC_METHODGATE();
 	bool ret(false);
@@ -266,7 +280,7 @@ bool ServiceManager::dependenciesMet(const QString name)
 		ret=true;
 		QSet<QString> deps=dependencies(name);
 		for(auto dep:deps) {
-			if(!activated(dep)) {
+			if(!activatedWanted(dep)) {
 				ret=false;
 				break;
 			}
@@ -276,7 +290,7 @@ bool ServiceManager::dependenciesMet(const QString name)
 }
 
 
-bool ServiceManager::dependentsMet(const QSharedPointer <Service> service)
+bool ServiceManager::dependentsMet(const QSharedPointer <Service> service) const
 {
 	OC_METHODGATE();
 	if(registered(service)) {
@@ -289,7 +303,7 @@ bool ServiceManager::dependentsMet(const QSharedPointer <Service> service)
 }
 
 
-bool ServiceManager::dependentsMet(const QString name)
+bool ServiceManager::dependentsMet(const QString name) const
 {
 	OC_METHODGATE();
 	bool ret(false);
@@ -297,7 +311,7 @@ bool ServiceManager::dependentsMet(const QString name)
 		ret=true;
 		QSet<QString> deps=dependents(name);
 		for(auto dep:deps) {
-			if(!activated(dep)) {
+			if(!activatedWanted(dep)) {
 				ret=false;
 				break;
 			}
@@ -307,14 +321,14 @@ bool ServiceManager::dependentsMet(const QString name)
 }
 
 
-QSet<QString> ServiceManager::nextActivatableInSet(const QSet<QString> set, const bool active)
+QSet<QString> ServiceManager::nextActivatableInSet(const QSet<QString> set, const bool active) const
 {
 	OC_METHODGATE();
 	//qDebug()<<"nextActivatableInSet: set="<<set<<", active="<<active;
 	QSet<QString> ret;
 	for(auto name:set) {
 		//qDebug()<<" + NAME: "<<name;
-		if(active!=activated(name)) {
+		if(active!=activatedWanted(name)) {
 			if(active) {
 				auto dependenciesSet=dependencies(name);
 				//qDebug()<<"   + DEPENDENCIES: "<<dependenciesSet;
@@ -345,20 +359,21 @@ QSet<QString> ServiceManager::nextActivatableInSet(const QSet<QString> set, cons
 struct synchronizer {
 	int total;
 	int left;
-	bool gok;
+	//bool gok;
 
-	synchronizer():total(0), left(0), gok(true)
+	synchronizer():total(0), left(0)//, gok(true)
 	{
 
 	}
-	void start()
+	void inc()
 	{
 		total++;
 		left++;
 	}
 	bool end(bool ok)
 	{
-		gok=gok&ok;
+		Q_UNUSED(ok);
+		//gok=gok&ok;
 		left--;
 		return left<=0;
 	}
@@ -366,7 +381,71 @@ struct synchronizer {
 };
 
 
-void ServiceManager::activate(const QSet<QString> set, const bool active, ServiceActivatedCallback callBack)
+void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSet<QString> deactivateSet, ServiceActivatedCallback callBack)
+{
+	OC_METHODGATE();
+	qDebug()<<"changeActivation called with activate="<<activateSet<<" deactivate="<<deactivateSet;
+	QSet<QString> workingActivate=nextActivatableInSet(activateSet, true);
+	QSet<QString> workingDeactivate=nextActivatableInSet(deactivateSet, false);
+	// Make sure that we don't accidentally deactivate services we actually need.
+	workingDeactivate -= workingActivate;
+	// Create one big set of all serviecs that will possibly change
+	QSet<QString> changing=workingDeactivate + workingActivate;
+
+	synchronizer *sync=OC_NEW synchronizer;
+	if(!changing.isEmpty()) {
+		qDebug()<<" -- Changing service set: "<<changing;
+		for(auto name:changing) {
+			auto service = serviceByName(name);
+			if(!service.isNull()) {
+				const bool currentlyWanted=service->serviceActiveWanted();
+				const bool wanted=workingActivate.contains(name);
+				// Is there a change?
+				if(currentlyWanted != wanted) {
+					qDebug()<<" --- In change set: "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION");
+					sync->inc();
+				}
+			} else {
+				qWarning()<<"WARNING: Found invalid service: "<<name;
+			}
+		}
+		for(auto name:changing) {
+			auto service = serviceByName(name);
+			if(!service.isNull()) {
+				const bool currentlyWanted=service->serviceActiveWanted();
+				const bool wanted=workingActivate.contains(name);
+				// Is there a change?
+				if(currentlyWanted != wanted) {
+					// Recurse asynchronously
+					qDebug()<<" --- Starting change set: "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION");
+					service->serviceChangeActivation(wanted, [=](bool ok) {
+						qDebug()<<" ---- Changing service : "<<name<<" from "<<(currentlyWanted?"ACTIVE":"INACTIVE")<<" to "<<(wanted?"ACTIVE":"INACTIVE");
+						if(sync->end(ok)) {
+							// qDebug()<<" ------ Recursing at end: "<<name<<" with "<<active;
+							delete sync;
+							changeActivation(activateSet, deactivateSet, callBack);
+						}
+					});
+				}
+			} else {
+				qWarning()<<"WARNING: Found invalid service: "<<name;
+			}
+		}
+	} else {
+//		const bool gok=s->gok;
+		qDebug()<<"Service change complete";
+		if(nullptr!=callBack) {
+			callBack(true);
+		}
+	}
+}
+
+
+
+
+
+
+void ServiceManager::changeActivation(const QSet<QString> set, const bool active, ServiceActivatedCallback callBack)
 {
 	OC_METHODGATE();
 	// qDebug()<<"Activate called with: "<<set<<" and "<<active;
@@ -377,8 +456,8 @@ void ServiceManager::activate(const QSet<QString> set, const bool active, Servic
 		for(auto name:working) {
 			auto service = serviceByName(name);
 			if(!service.isNull()) {
-				if(active!=service->serviceActivated()) {
-					s->start();
+				if(active!=service->serviceActiveWanted()) {
+					s->inc();
 				}
 			} else {
 				qWarning()<<"WARNING: Found invalid service: "<<name;
@@ -388,14 +467,14 @@ void ServiceManager::activate(const QSet<QString> set, const bool active, Servic
 		for(auto name:working) {
 			auto service = serviceByName(name);
 			if(!service.isNull()) {
-				if(active!=service->serviceActivated()) {
+				if(active!=service->serviceActiveWanted()) {
 					// Recurse asynchronously
-					service->serviceActivate(active, [=](bool ok) {
+					service->serviceChangeActivation(active, [=](bool ok) {
 						qDebug()<<" ---- Activating service : "<<name<<" with "<<active;
 						if(s->end(ok)) {
 							// qDebug()<<" ------ Recursing at end: "<<name<<" with "<<active;
 							delete s;
-							activate(set, active, callBack);
+							changeActivation(set, active, callBack);
 						}
 					});
 				}
@@ -408,13 +487,15 @@ void ServiceManager::activate(const QSet<QString> set, const bool active, Servic
 	} else {
 //		const bool gok=s->gok;
 		qDebug()<<"Service activation with "<<active<<" complete";
-		callBack(true);
+		if(nullptr!=callBack) {
+			callBack(true);
+		}
 	}
 }
 
 
-void ServiceManager::activate(const QString service, const bool active, ServiceActivatedCallback callBack)
+void ServiceManager::changeActivation(const QString service, const bool active, ServiceActivatedCallback callBack)
 {
 	OC_METHODGATE();
-	activate(QSet<QString>{service}, active, callBack);
+	changeActivation(QSet<QString> {service}, active, callBack);
 }

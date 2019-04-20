@@ -129,9 +129,9 @@ void DebuggerWidget::on_pushButtonDiscoveryService_toggled(bool checked)
 		auto sm=mNode->serviceManager();
 		if(!sm.isNull()) {
 			qDebug()<<"Switching discovery to "<< (checked?"ON":"OFF");
-			sm->activate(QSet<QString>{"discovery"}, checked, [this, sm](bool ok){
+			sm->changeActivation(QSet<QString>{"discovery"}, checked, [this, sm](bool ok){
 				Q_UNUSED(ok);
-				ui->pushButtonBirth->setChecked(sm->activated("discovery"));
+				ui->pushButtonBirth->setChecked(sm->activatedWanted("discovery"));
 			});
 		} else {
 			qWarning()<<"WARNING: Could not switch discovery service, no service manager";

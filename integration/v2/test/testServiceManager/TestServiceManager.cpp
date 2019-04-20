@@ -4,22 +4,28 @@
 
 #include "service/ServiceManager.hpp"
 #include "service/Service.hpp"
+#include "service/ServiceLevel.hpp"
+#include "service/ServiceLevelManager.hpp"
+
 
 class MockService: public Service
 {
 private:
+	quint8 pad[7];
 	ServiceActivatedCallback mCallBack;
+
 	bool mActivated;
 	bool mWantActivated;
 	bool mDirty;
 	bool mAsync;
+	quint8 pad2[4];
 
 public:
 	explicit MockService(QString name, QStringList dependencies=QStringList());
 	virtual ~MockService() Q_DECL_OVERRIDE;
 public:
-	void serviceActivate(bool on, ServiceActivatedCallback callBack) Q_DECL_OVERRIDE;
-	bool serviceActivated() Q_DECL_OVERRIDE;
+	void serviceActivateImp(bool on, ServiceActivatedCallback callBack) Q_DECL_OVERRIDE;
+	bool serviceActivatedImp() const Q_DECL_OVERRIDE;
 
 
 public:
@@ -31,13 +37,16 @@ public:
 
 MockService::MockService(QString name, QStringList dependencies)
 	: Service(name, dependencies)
+	, pad{0}
 	, mCallBack(nullptr)
 	, mActivated(false)
 	, mWantActivated(false)
 	, mDirty(false)
 	, mAsync(true)
+	, pad2{0}
 {
-
+	Q_UNUSED(pad);
+	Q_UNUSED(pad2);
 }
 
 MockService::~MockService()
@@ -46,7 +55,7 @@ MockService::~MockService()
 }
 
 
-void MockService::serviceActivate(bool on, ServiceActivatedCallback callBack)
+void MockService::serviceActivateImp(bool on, ServiceActivatedCallback callBack)
 {
 	qDebug()<<"ACTIVATE("<<on<<" with async="<<mAsync<<") for "<<name();
 
@@ -60,7 +69,7 @@ void MockService::serviceActivate(bool on, ServiceActivatedCallback callBack)
 
 
 
-bool MockService::serviceActivated()
+bool MockService::serviceActivatedImp() const
 {
 	return mActivated;
 }
@@ -92,7 +101,54 @@ void MockService::mockSetAsyncActivation(const bool on)
 }
 
 
-void TestServiceManager::test()
+
+void TestServiceManager::testHelpers()
+{
+	QSharedPointer<ServiceManager> man(OC_NEW ServiceManager());
+	// Empty
+	QCOMPARE(man->nameIsWellformed(""), false);
+	QCOMPARE(man->nameIsWellformed(" "), false);
+	QCOMPARE(man->nameIsWellformed("\n"), false);
+	QCOMPARE(man->nameIsWellformed("\t"), false);
+	QCOMPARE(man->nameIsWellformed("\n\t"), false);
+	QCOMPARE(man->nameIsWellformed("\n\t "), false);
+	QCOMPARE(man->nameIsWellformed("  "), false);
+
+	// Space in start
+	QCOMPARE(man->nameIsWellformed(" NAME"), false);
+	QCOMPARE(man->nameIsWellformed("\nNAME"), false);
+	QCOMPARE(man->nameIsWellformed("\tNAME"), false);
+	QCOMPARE(man->nameIsWellformed("\n\tNAME"), false);
+	QCOMPARE(man->nameIsWellformed("\n\t NAME"), false);
+	QCOMPARE(man->nameIsWellformed("  NAME"), false);
+
+	// Space in end
+	QCOMPARE(man->nameIsWellformed("NAME "), false);
+	QCOMPARE(man->nameIsWellformed("NAME\n"), false);
+	QCOMPARE(man->nameIsWellformed("NAME\t"), false);
+	QCOMPARE(man->nameIsWellformed("NAME\n\t"), false);
+	QCOMPARE(man->nameIsWellformed("NAME\n\t "), false);
+	QCOMPARE(man->nameIsWellformed("NAME  "), false);
+
+	// Space in both ends
+	QCOMPARE(man->nameIsWellformed(" NAME "), false);
+	QCOMPARE(man->nameIsWellformed("\nNAME\n"), false);
+	QCOMPARE(man->nameIsWellformed("\tNAME\t"), false);
+	QCOMPARE(man->nameIsWellformed("\n\tNAME\n\t"), false);
+	QCOMPARE(man->nameIsWellformed("\n\t NAME\n\t "), false);
+	QCOMPARE(man->nameIsWellformed("  NAME  "), false);
+
+	// No space in ends
+	QCOMPARE(man->nameIsWellformed("NAME"), true);
+	QCOMPARE(man->nameIsWellformed("NAME NAME"), true);
+	QCOMPARE(man->nameIsWellformed("NAME\tNAME"), true);
+	QCOMPARE(man->nameIsWellformed("NAME\nNAME"), true);
+	QCOMPARE(man->nameIsWellformed("NAME\t\nNAME"), true);
+	QCOMPARE(man->nameIsWellformed("NAME\t\n NAME"), true);
+	QCOMPARE(man->nameIsWellformed("NAME  NAME"), true);
+
+}
+void TestServiceManager::testDirectRegistrationAndActivation()
 {
 	QSharedPointer<MockService> a(OC_NEW MockService("Service-A"));
 	QSharedPointer<MockService> b(OC_NEW MockService("Service-B", QStringList{"Service-A"}));
@@ -315,7 +371,7 @@ void TestServiceManager::test()
 	QCOMPARE(man->dependenciesMet("Service-D"), true);
 	QCOMPARE(man->dependenciesMet(d), true);
 
-	a->serviceActivate(true, [](bool ok) {
+	a->serviceChangeActivation(true, [](bool ok) {
 		qDebug()<<"YAY CALLBACK!"<<ok;
 	});
 	QCOMPARE(a->mockSetActivated(true), true);
@@ -337,7 +393,7 @@ void TestServiceManager::test()
 	QCOMPARE(man->dependenciesMet("Service-D"), true);
 	QCOMPARE(man->dependenciesMet(d), true);
 
-	b->serviceActivate(true, [](bool ok) {
+	b->serviceChangeActivation(true, [](bool ok) {
 		qDebug()<<"YAY CALLBACK!"<<ok;
 	});
 	QCOMPARE(b->mockSetActivated(true), true);
@@ -359,7 +415,7 @@ void TestServiceManager::test()
 	QCOMPARE(man->dependenciesMet("Service-D"), true);
 	QCOMPARE(man->dependenciesMet(d), true);
 
-	d->serviceActivate(true, [](bool ok) {
+	d->serviceChangeActivation(true, [](bool ok) {
 		qDebug()<<"YAY CALLBACK!"<<ok;
 	});
 	QCOMPARE(d->mockSetActivated(true), true);
@@ -408,7 +464,7 @@ void TestServiceManager::test()
 	QCOMPARE(man->dependents("Service-D"), expectedDDependents);
 
 
-	a->serviceActivate(false, [](bool ok) {
+	a->serviceChangeActivation(false, [](bool ok) {
 		qDebug()<<"YAY CALLBACK!"<<ok;
 	});
 	QCOMPARE(a->mockSetActivated(true), false);
@@ -431,8 +487,10 @@ void TestServiceManager::test()
 	QCOMPARE(man->dependenciesMet(d), true);
 
 	QSet<QString> setC{"Service-C"};
-	QSet<QString> setA=man->metDependents("Service-A", false);
-	man->activate(setA, true, [=](bool ok) {
+	//QSet<QString> setA=man->metDependents("Service-A", false);
+	QSet<QString> setA=man->metSet(man->dependents("Service-A"), false);
+
+	man->changeActivation(setA, true, [=](bool ok) {
 		qDebug()<<"Totally called back: "<<ok;
 		QCOMPARE(man->count(), 4);
 		QCOMPARE(man->registered("Service-A"), true);
@@ -454,16 +512,16 @@ void TestServiceManager::test()
 	});
 
 	qDebug()<<"#############################################################";
-	a->serviceActivate(false, [](bool ok) {
+	a->serviceChangeActivation(false, [](bool ok) {
 		qDebug()<<"Deactivated A: "<<ok;
 	});
-	b->serviceActivate(false, [](bool ok) {
+	b->serviceChangeActivation(false, [](bool ok) {
 		qDebug()<<"Deactivated B: "<<ok;
 	});
-	c->serviceActivate(false, [](bool ok) {
+	c->serviceChangeActivation(false, [](bool ok) {
 		qDebug()<<"Deactivated C: "<<ok;
 	});
-	d->serviceActivate(false, [](bool ok) {
+	d->serviceChangeActivation(false, [](bool ok) {
 		qDebug()<<"Deactivated D: "<<ok;
 	});
 
@@ -472,10 +530,16 @@ void TestServiceManager::test()
 	QCOMPARE(c->mockSetActivated(true), false);
 	QCOMPARE(d->mockSetActivated(true), false);
 
-	QCOMPARE(a->serviceActivated(), false);
-	QCOMPARE(b->serviceActivated(), false);
-	QCOMPARE(c->serviceActivated(), false);
-	QCOMPARE(d->serviceActivated(), false);
+	QCOMPARE(a->serviceActiveActual(), false);
+	QCOMPARE(b->serviceActiveActual(), false);
+	QCOMPARE(c->serviceActiveActual(), false);
+	QCOMPARE(d->serviceActiveActual(), false);
+
+
+	QCOMPARE(a->serviceActiveWanted(), false);
+	QCOMPARE(b->serviceActiveWanted(), false);
+	QCOMPARE(c->serviceActiveWanted(), false);
+	QCOMPARE(d->serviceActiveWanted(), false);
 
 	/*
 	QCOMPARE(man->activated("Service-A"), false);
@@ -494,7 +558,7 @@ void TestServiceManager::test()
 	c->mockSetAsyncActivation(false);
 	d->mockSetAsyncActivation(false);
 
-	man->activate(man->all(), true, [](bool ok) {
+	man->changeActivation(man->all(), true, [](bool ok) {
 		qDebug()<<"ALL ACTIVATED DONE: "<<ok;
 	});
 	qDebug()<<"=============================================================";
@@ -517,17 +581,145 @@ void TestServiceManager::test()
 	});
 	*/
 
-	QCOMPARE(a->serviceActivated(), true);
-	QCOMPARE(b->serviceActivated(), true);
-	QCOMPARE(c->serviceActivated(), true);
-	QCOMPARE(d->serviceActivated(), true);
+	QCOMPARE(a->serviceActiveActual(), true);
+	QCOMPARE(b->serviceActiveActual(), true);
+	QCOMPARE(c->serviceActiveActual(), true);
+	QCOMPARE(d->serviceActiveActual(), true);
 
-	QCOMPARE(man->activated("Service-A"), true);
-	QCOMPARE(man->activated("Service-B"), true);
-	QCOMPARE(man->activated("Service-C"), true);
-	QCOMPARE(man->activated("Service-D"), true);
+	QCOMPARE(a->serviceActiveWanted(), true);
+	QCOMPARE(b->serviceActiveWanted(), true);
+	QCOMPARE(c->serviceActiveWanted(), true);
+	QCOMPARE(d->serviceActiveWanted(), true);
 
+	QCOMPARE(man->activatedWanted("Service-A"), true);
+	QCOMPARE(man->activatedWanted("Service-B"), true);
+	QCOMPARE(man->activatedWanted("Service-C"), true);
+	QCOMPARE(man->activatedWanted("Service-D"), true);
+
+	QCOMPARE(man->activatedActual("Service-A"), true);
+	QCOMPARE(man->activatedActual("Service-B"), true);
+	QCOMPARE(man->activatedActual("Service-C"), true);
+	QCOMPARE(man->activatedActual("Service-D"), true);
 
 }
 
+
+
+void TestServiceManager::testServiceLevels()
+{
+	qDebug()<<"";
+	qDebug()<<"";
+	qDebug()<<"";
+	qDebug()<<"=============================================================";
+	qDebug()<<"=============================================================";
+	qDebug()<<"=============================================================";
+	qDebug()<<"";
+	QSharedPointer<MockService> a(OC_NEW MockService("Service-A"));
+	QSharedPointer<MockService> b(OC_NEW MockService("Service-B", QStringList{"Service-A"}));
+	QSharedPointer<MockService> c(OC_NEW MockService("Service-C", QStringList{"Service-B", "Service-D"}));
+	QSharedPointer<MockService> d(OC_NEW MockService("Service-D"));
+	QSharedPointer<MockService> impostor_a(OC_NEW MockService("Service-A"));
+	QSharedPointer<MockService> impostor_null;
+	QSharedPointer<ServiceLevelManager> levelMan(OC_NEW ServiceLevelManager());
+	QCOMPARE(levelMan->serviceManager().isNull(), true);
+	levelMan->configure();
+	QSharedPointer<ServiceManager> serviceMan=levelMan->serviceManager();
+	QCOMPARE(serviceMan.isNull(), false);
+
+	qDebug()<<"=============================================================";
+	qDebug()<<"REGISTERING SERVICES";
+	QCOMPARE(serviceMan->registered(a), false);
+	QCOMPARE(levelMan->isServiceRegistered(a), false);
+	QCOMPARE(levelMan->registerService(a), true);
+	QCOMPARE(levelMan->isServiceRegistered(a), true);
+	QCOMPARE(serviceMan->registered(a), true);
+
+	QCOMPARE(serviceMan->registered(b), false);
+	QCOMPARE(levelMan->isServiceRegistered(b), false);
+	QCOMPARE(levelMan->registerService(b), true);
+	QCOMPARE(levelMan->isServiceRegistered(b), true);
+	QCOMPARE(serviceMan->registered(b), true);
+
+	QCOMPARE(serviceMan->registered(c), false);
+	QCOMPARE(levelMan->isServiceRegistered(c), false);
+	QCOMPARE(levelMan->registerService(c), true);
+	QCOMPARE(levelMan->isServiceRegistered(c), true);
+	QCOMPARE(serviceMan->registered(c), true);
+
+	QCOMPARE(serviceMan->registered(d), false);
+	QCOMPARE(levelMan->isServiceRegistered(d), false);
+	QCOMPARE(levelMan->registerService(d), true);
+	QCOMPARE(levelMan->isServiceRegistered(d), true);
+	QCOMPARE(serviceMan->registered(d), true);
+
+	qDebug()<<"=============================================================";
+	qDebug()<<"REGISTERING SERVICE LEVELS";
+	QSharedPointer<ServiceLevel> sl1(OC_NEW ServiceLevel("Level-1", {c->name(), d->name()}));
+	QCOMPARE(levelMan->isServiceLevelRegistered(sl1), false);
+	QCOMPARE(levelMan->isServiceLevelRegistered(sl1->name()), false);
+	levelMan->registerServiceLevel(sl1);
+	QCOMPARE(levelMan->isServiceLevelRegistered(sl1), true);
+	QCOMPARE(levelMan->isServiceLevelRegistered(sl1->name()), true);
+
+	qDebug()<<"=============================================================";
+	qDebug()<<"VERIFY NO ACTIVATED SERVICES";
+
+	// Start with no levels enabled
+	QCOMPARE(serviceMan->activatedWanted(a->name()), false);
+	QCOMPARE(serviceMan->activatedWanted(b->name()), false);
+	QCOMPARE(serviceMan->activatedWanted(c->name()), false);
+	QCOMPARE(serviceMan->activatedWanted(d->name()), false);
+
+	QCOMPARE(serviceMan->activatedActual(a->name()), false);
+	QCOMPARE(serviceMan->activatedActual(b->name()), false);
+	QCOMPARE(serviceMan->activatedActual(c->name()), false);
+	QCOMPARE(serviceMan->activatedActual(d->name()), false);
+
+
+	qDebug()<<"=============================================================";
+	qDebug()<<"ENABLE SERVICE LEVEL";
+	// Enable level 1
+	levelMan->enableLevel(sl1->name(), true, [=](const bool ok) {
+		qDebug()<<"=============================================================";
+		qDebug()<<"LEVEL ENABLED";
+		QCOMPARE(ok,true);
+		// Check enabled services at completion
+		QCOMPARE(serviceMan->activatedWanted(a->name()), true);
+		QCOMPARE(serviceMan->activatedWanted(b->name()), true);
+		QCOMPARE(serviceMan->activatedWanted(c->name()), true);
+		QCOMPARE(serviceMan->activatedWanted(d->name()), true);
+	});
+
+	// Check enabled services before completion
+	qDebug()<<"=============================================================";
+	qDebug()<<"VERIFY NEW ACTIVATED SERVICES";
+	QCOMPARE(serviceMan->activatedWanted(a->name()), true);
+	QCOMPARE(serviceMan->activatedWanted(b->name()), false);
+	QCOMPARE(serviceMan->activatedWanted(c->name()), false);
+	QCOMPARE(serviceMan->activatedWanted(d->name()), true);
+
+	// Step closer to completion by running async code
+	qDebug()<<"=============================================================";
+	qDebug()<<"STEP MOCK ACTIVATION";
+	a->mockSetActivated(true);
+	d->mockSetActivated(true);
+	b->mockSetActivated(true);
+	c->mockSetActivated(true);
+
+	// Check enabled services after completion
+	qDebug()<<"=============================================================";
+	qDebug()<<"VERIFY ALL ACTIVATED SERVICES";
+	QCOMPARE(serviceMan->activatedWanted(a->name()), true);
+	QCOMPARE(serviceMan->activatedWanted(b->name()), true);
+	QCOMPARE(serviceMan->activatedWanted(c->name()), true);
+	QCOMPARE(serviceMan->activatedWanted(d->name()), true);
+
+
+	qDebug()<<"=============================================================";
+	qDebug()<<"Haxta lavixta baxby";
+}
+
+
 OC_TEST_MAIN(test, TestServiceManager)
+
+

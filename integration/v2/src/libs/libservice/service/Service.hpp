@@ -24,19 +24,26 @@ private:
 	QString mName;
 	// TODO: Should dependencies be determined when registering service with manager rather than in service constructor?
 	QStringList mDependencies;
+	bool mActiveWanted;
 
 public:
 	explicit Service(QString name, QStringList dependencies=QStringList());
 	virtual ~Service();
 
 public:
-	QString name();
-	QStringList dependencies();
+	QString name() const;
+	QStringList dependencies() const;
 
-	// Service interface.
+	// Service interface external.
 public:
-	virtual void serviceActivate(bool on, ServiceActivatedCallback callBack) =0;
-	virtual bool serviceActivated() =0;
+	void serviceChangeActivation(bool on, ServiceActivatedCallback callBack);
+	bool serviceActiveWanted() const;
+	bool serviceActiveActual() const;
+
+	// Service interface internal.
+protected:
+	virtual void serviceActivateImp(bool on, ServiceActivatedCallback callBack) =0;
+	virtual bool serviceActivatedImp() const =0 ;
 
 };
 

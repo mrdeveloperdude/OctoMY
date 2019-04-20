@@ -27,8 +27,8 @@ public:
 
 	// Service interface.
 public:
-	void serviceActivate(bool on, ServiceActivatedCallback callBack) Q_DECL_OVERRIDE;
-	bool serviceActivated() Q_DECL_OVERRIDE;
+	void serviceActivateImp(bool on, ServiceActivatedCallback callBack) Q_DECL_OVERRIDE;
+	bool serviceActivatedImp() const Q_DECL_OVERRIDE;
 
 	// ServiceWapper interface.
 public:
@@ -47,7 +47,7 @@ ServiceWrapper<T>::ServiceWrapper(QSharedPointer<T> wrapee, QString name, QStrin
 
 
 template <class T>
-void ServiceWrapper<T>::serviceActivate(bool on, ServiceActivatedCallback callBack)
+void ServiceWrapper<T>::serviceActivateImp(bool on, ServiceActivatedCallback callBack)
 {
 	OC_METHODGATE();
 	if(!mWrapee.isNull()) {
@@ -62,7 +62,7 @@ void ServiceWrapper<T>::serviceActivate(bool on, ServiceActivatedCallback callBa
 }
 
 template <class T>
-bool ServiceWrapper<T>::serviceActivated()
+bool ServiceWrapper<T>::serviceActivatedImp() const
 {
 	OC_METHODGATE();
 	return mActivated;

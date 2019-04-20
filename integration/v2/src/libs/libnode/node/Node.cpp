@@ -152,7 +152,7 @@ void Node::serviceActivation(const bool on)
 {
 	OC_METHODGATE();
 	qDebug()<<"SERVICE ACTIVATION("<<on<<") STARTED";
-	mServiceManager->activate(mServiceManager->all(), on, [on](bool ok) {
+	mServiceManager->changeActivation(mServiceManager->all(), on, [on](bool ok) {
 		qDebug()<<"SERVICE ACTIVATION("<<on<<") RESULTED IN "<<ok;
 	});
 
