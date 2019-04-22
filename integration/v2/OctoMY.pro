@@ -2,7 +2,7 @@ TEMPLATE = subdirs
 
 CONFIG += ordered
 
-message("")
+message(" ")
 message("New OctoMY™ qmake run started...")
 message("________________________________")
 

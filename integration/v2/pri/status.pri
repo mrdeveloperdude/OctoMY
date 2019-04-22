@@ -5,8 +5,8 @@
 # for the build at the point of inclusion
 
 #contains(DEFINES, OC_USE_FEATURE_STATUS){
-message("")
-message("")
+message(" ")
+message(" ")
 message("===============================================")
 message("====== " $${TARGET} " " $${DEFINES} " ======")
 message("| Qt: " $$[QT_VERSION] " @ " $$[QT_INSTALL_PREFIX])
@@ -58,8 +58,8 @@ message("| QLALRSOURCES:   " $${QLALRSOURCES})
 message("| GENERATED_HEADERS:   " $${GENERATED_HEADERS})
 message("| GENERATED_SOURCES:    " $${GENERATED_SOURCES})
 message("-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_")
-message("")
-message("")
+message(" ")
+message(" ")
 
 #}
 
