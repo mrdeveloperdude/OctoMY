@@ -40,6 +40,7 @@ AUTOLIBS_COMBINED += \
 	audio \
 	map \
 	plan \
+	plot \
 	node \
 	app \
 	agent \
