@@ -37,6 +37,7 @@ public:
 	// Return the service level for a name, if any
 	QSharedPointer <ServiceLevel> serviceLevelByName(const QString name) const;
 	// Return the service manager
+	// NOTE: Please beware that changes you make directly on this internal serive manager may interfere destructively with service level manager operation
 	QSharedPointer<ServiceManager> serviceManager();
 	// Is there a service registered for the given name?
 	bool isServiceRegistered(const QString name) const;

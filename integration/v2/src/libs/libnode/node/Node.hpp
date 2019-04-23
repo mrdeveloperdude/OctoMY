@@ -56,7 +56,8 @@ class IAppLauncher;
 class Associate;
 class ScopedTimer;
 
-class ServiceManager;
+class ServiceLevelManager;
+class ServiceLevel;
 class KeyStoreService;
 class LocalIdentityStoreService;
 class LocalAddressListService;
@@ -130,7 +131,7 @@ private:
 
 
 	// Manager for maintaining the lifecycle and interdependencies of services
-	QSharedPointer<ServiceManager> mServiceManager;
+	QSharedPointer<ServiceLevelManager> mServiceLevelManager;
 	// Service wrapper for KeyStore
 	QSharedPointer<KeyStoreService> mKeyStoreService;
 	// Service wrapper for LocalIdentityStore
@@ -139,6 +140,9 @@ private:
 	QSharedPointer<LocalAddressListService> mLocalAddressListService;
 	// Service wrapper for AddressBook
 	QSharedPointer<AddressBookService> mAddressBookService;
+
+	// Service Level that will always be active aws long as node is running
+	QSharedPointer<ServiceLevel> mAlwaysServiceLevel;
 
 
 public:
@@ -231,8 +235,8 @@ public:
 	// Provide the node identity
 	QSharedPointer<Associate> nodeIdentity();
 
-	// Provide the service manager
-	QSharedPointer<ServiceManager> serviceManager();
+	// Provide the service level manager
+	QSharedPointer<ServiceLevelManager> serviceLevelManager();
 
 	// Reset the identity and settings for this node. WARNING: This is destructive and only useful when debugging
 	void unbirth();

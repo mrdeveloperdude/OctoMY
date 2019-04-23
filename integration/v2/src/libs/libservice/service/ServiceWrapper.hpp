@@ -27,12 +27,12 @@ public:
 
 	// Service interface.
 public:
-	void serviceActivateImp(bool on, ServiceActivatedCallback callBack) Q_DECL_OVERRIDE;
+	void serviceActivateImp(bool on, ServiceActivatedCallback callBack=nullptr) Q_DECL_OVERRIDE;
 	bool serviceActivatedImp() const Q_DECL_OVERRIDE;
 
 	// ServiceWapper interface.
 public:
-	virtual void serviceWrapperActivate(QSharedPointer<T> wrapee, bool on, ServiceActivatedCallback callBack) =0;
+	virtual void serviceWrapperActivate(QSharedPointer<T> wrapee, bool on, ServiceActivatedCallback callBack=nullptr) =0;
 
 };
 
@@ -54,7 +54,9 @@ void ServiceWrapper<T>::serviceActivateImp(bool on, ServiceActivatedCallback cal
 		serviceWrapperActivate(mWrapee, on, [this, on, callBack](bool ok) {
 			// Siphon of the value of "activated"
 			mActivated=ok?on:mActivated;
-			callBack(ok);
+			if(nullptr!=callBack) {
+				callBack(ok);
+			}
 		});
 	} else {
 		qWarning()<<"ERROR: Could not activate service because it was null";

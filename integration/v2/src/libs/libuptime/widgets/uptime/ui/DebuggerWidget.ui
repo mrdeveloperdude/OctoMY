@@ -146,6 +146,19 @@
         </property>
        </spacer>
       </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="pushButtonActivate">
+        <property name="text">
+         <string>Activate</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

@@ -36,13 +36,13 @@ public:
 
 	// Service interface external.
 public:
-	void serviceChangeActivation(bool on, ServiceActivatedCallback callBack);
+	void serviceChangeActivation(bool on, ServiceActivatedCallback callBack=nullptr);
 	bool serviceActiveWanted() const;
 	bool serviceActiveActual() const;
 
 	// Service interface internal.
 protected:
-	virtual void serviceActivateImp(bool on, ServiceActivatedCallback callBack) =0;
+	virtual void serviceActivateImp(bool on, ServiceActivatedCallback callBack=nullptr) =0;
 	virtual bool serviceActivatedImp() const =0 ;
 
 };

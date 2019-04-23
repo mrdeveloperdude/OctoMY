@@ -38,7 +38,9 @@ private slots:
 
 	void on_pushButtonDiscoveryService_toggled(bool checked);
 
-	signals:
+	void on_pushButtonActivate_toggled(bool checked);
+
+signals:
 	void visibilityChanged(bool visible);
 };
 

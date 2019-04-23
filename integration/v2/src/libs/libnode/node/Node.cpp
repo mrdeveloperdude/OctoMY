@@ -31,7 +31,8 @@
 #include "uptime/New.hpp"
 #include "utility/time/ScopedTimer.hpp"
 
-#include "service/ServiceManager.hpp"
+#include "service/ServiceLevelManager.hpp"
+#include "service/ServiceLevel.hpp"
 #include "service/services/KeyStoreService.hpp"
 #include "service/services/LocalIdentityStoreService.hpp"
 #include "service/services/LocalAddressListService.hpp"
@@ -63,11 +64,15 @@ Node::Node()
 	, mLastStatusSend (0)
 	, mServerURL("http://zoo.octomy.org:"+QString::number(Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
 	, mNodeStepActivationTimer(nullptr)
-	, mServiceManager(OC_NEW ServiceManager())
+	, mServiceLevelManager(OC_NEW ServiceLevelManager())
 	, mKeyStoreService(OC_NEW KeyStoreService(mKeyStore, QStringList{}))
 	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore, QStringList{"KeyStore"}))
 	, mLocalAddressListService(OC_NEW LocalAddressListService(mLocalAddressList, QStringList{}))
 	, mAddressBookService(OC_NEW AddressBookService(mAddressBook, QStringList{}))
+	, mAlwaysServiceLevel(OC_NEW ServiceLevel("Always",
+{
+	mKeyStoreService->name(), mLocalIdentityStoreService->name(), mLocalAddressListService->name(), mAddressBookService->name()
+}))
 {
 	OC_METHODGATE();
 	//qDebug()<<"Node()";
@@ -110,13 +115,21 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				mCarrier->configure();
 				mComms->configure(mCarrier, mKeyStore, mAddressBook);
 
-				// Next we register services with the service manager
+				// Register services with the service manager
 				/////////////////////////////////////////////////////
 
-				mServiceManager->registerService(mKeyStoreService);
-				mServiceManager->registerService(mLocalIdentityStoreService);
-				mServiceManager->registerService(mLocalAddressListService);
-				mServiceManager->registerService(mAddressBookService);
+				mServiceLevelManager->configure();
+
+				mServiceLevelManager->registerService(mKeyStoreService);
+				mServiceLevelManager->registerService(mLocalIdentityStoreService);
+				mServiceLevelManager->registerService(mLocalAddressListService);
+				mServiceLevelManager->registerService(mAddressBookService);
+
+				// Register the "Always" service level
+				//////////////////////////////////////
+				mServiceLevelManager->registerServiceLevel(mAlwaysServiceLevel);
+
+
 				/*
 
 					mServiceManager->registerService(mDiscoveryService);
@@ -140,23 +153,28 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				mAppConfigureHelper.configureFailed("Could not create base dir");
 			}
 
-
-
 		} else {
 			qWarning()<<"ERROR: No context";
 		}
 	}
 }
 
+
 void Node::serviceActivation(const bool on)
 {
 	OC_METHODGATE();
+	mServiceLevelManager->enableLevel(mAlwaysServiceLevel->name(), on, [](bool ok) {
+		Q_UNUSED(ok);
+		qDebug()<<"Eureka: "<<ok;
+	});
+	/*
 	qDebug()<<"SERVICE ACTIVATION("<<on<<") STARTED";
-	mServiceManager->changeActivation(mServiceManager->all(), on, [on](bool ok) {
+	mServiceLevelManager->changeActivation(mServiceLevelManager->all(), on, [on](bool ok) {
 		qDebug()<<"SERVICE ACTIVATION("<<on<<") RESULTED IN "<<ok;
 	});
-
+	*/
 }
+
 
 void Node::stepActivation(const bool on)
 {
@@ -257,6 +275,7 @@ void Node::appActivate(const bool on)
 	//qDebug()<<"appActivate()";
 	if(mAppConfigureHelper.activate(on)) {
 		if(on) {
+			mKeyStoreService->serviceChangeActivation(on);
 			//mKeyStore->activate(on);
 			//mLocalIdentityStore->activate(on);
 			//mAddresses->activate(on);
@@ -454,10 +473,10 @@ QSharedPointer<Associate> Node::nodeIdentity()
 }
 
 
-QSharedPointer<ServiceManager> Node::serviceManager()
+QSharedPointer<ServiceLevelManager> Node::serviceLevelManager()
 {
 	OC_METHODGATE();
-	return mServiceManager;
+	return mServiceLevelManager;
 }
 
 

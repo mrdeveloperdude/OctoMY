@@ -207,10 +207,10 @@ void ServiceLevelManager::synchronizeServiceManager(const std::function<void(con
 			QSet<QString> wanted=wantedServices();
 			// Get the existing services
 			QSet<QString> currentlyWanted=mServiceManager->all(true, false);
-			// Cull all services that are already wanted
-			wanted-=currentlyWanted;
 			// Get the services we want to disable
 			QSet<QString> unwanted=currentlyWanted-wanted;
+			// Cull all services that are already wanted
+			wanted-=currentlyWanted;
 			// Apply the new recommendation
 			mServiceManager->changeActivation(wanted, unwanted, [callBack](bool ok) {
 				qDebug()<<"POLKA=" << ok;

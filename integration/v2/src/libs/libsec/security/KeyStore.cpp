@@ -71,6 +71,7 @@ void KeyStore::activate(bool on, std::function<void(bool)> callBack)
 				}
 			});
 		} else {
+			// THIS IS CALLED AFTER ACTIVATE FALSE WHICH OF COURSE WILL PRODUCE ERROR
 			synchronize([callBack](ASEvent<QVariantMap> &se) {
 				if(nullptr!=callBack) {
 					callBack(se.isSuccessfull());
