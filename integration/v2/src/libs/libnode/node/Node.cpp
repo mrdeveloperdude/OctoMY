@@ -37,6 +37,7 @@
 #include "service/services/LocalIdentityStoreService.hpp"
 #include "service/services/LocalAddressListService.hpp"
 #include "service/services/AddressBookService.hpp"
+#include "service/services/DiscoveryClientService.hpp"
 
 
 #include <QCommandLineParser>
@@ -69,9 +70,13 @@ Node::Node()
 	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore, QStringList{"KeyStore"}))
 	, mLocalAddressListService(OC_NEW LocalAddressListService(mLocalAddressList, QStringList{}))
 	, mAddressBookService(OC_NEW AddressBookService(mAddressBook, QStringList{}))
+	, mDiscoveryService(OC_NEW DiscoveryClientService(mDiscovery, QStringList{}))
 	, mAlwaysServiceLevel(OC_NEW ServiceLevel("Always",
 {
 	mKeyStoreService->name(), mLocalIdentityStoreService->name(), mLocalAddressListService->name(), mAddressBookService->name()
+}))
+, mDiscoveryServiceLevel(OC_NEW ServiceLevel("Discovery", {
+	mDiscoveryService->name()
 }))
 {
 	OC_METHODGATE();
@@ -128,6 +133,11 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				// Register the "Always" service level
 				//////////////////////////////////////
 				mServiceLevelManager->registerServiceLevel(mAlwaysServiceLevel);
+
+
+				// Register the "Discovery" service level
+				//////////////////////////////////////
+				mServiceLevelManager->registerServiceLevel(mDiscoveryServiceLevel);
 
 
 				/*

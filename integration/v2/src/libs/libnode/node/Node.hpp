@@ -62,6 +62,7 @@ class KeyStoreService;
 class LocalIdentityStoreService;
 class LocalAddressListService;
 class AddressBookService;
+class DiscoveryClientService;
 
 
 struct NodeActivationState {
@@ -140,9 +141,16 @@ private:
 	QSharedPointer<LocalAddressListService> mLocalAddressListService;
 	// Service wrapper for AddressBook
 	QSharedPointer<AddressBookService> mAddressBookService;
+	// Service wrapper f Discovery
 
-	// Service Level that will always be active aws long as node is running
+	QSharedPointer<DiscoveryClientService> mDiscoveryService;
+
+
+	// Service Level that will always be active as long as node is running
 	QSharedPointer<ServiceLevel> mAlwaysServiceLevel;
+
+	// Service Level that will be active as long as node is in discovery mode
+	QSharedPointer<ServiceLevel> mDiscoveryServiceLevel;
 
 
 public:

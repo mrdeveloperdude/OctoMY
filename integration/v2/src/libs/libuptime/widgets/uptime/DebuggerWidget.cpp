@@ -4,7 +4,7 @@
 #include "uptime/MethodGate.hpp"
 #include "utility/time/HumanTime.hpp"
 
-#include "service/ServiceManager.hpp"
+#include "service/ServiceLevelManager.hpp"
 
 
 #include "name/AgentNameGenerator.hpp"
@@ -128,13 +128,7 @@ void DebuggerWidget::on_pushButtonDiscoveryService_toggled(bool checked)
 	if(!mNode.isNull()) {
 		auto slm=mNode->serviceLevelManager();
 		if(!slm.isNull()) {
-			/*
-			qDebug()<<"Switching discovery to "<< (checked?"ON":"OFF");
-			slm->changeActivation(QSet<QString>{"discovery"}, checked, [this, slm](bool ok){
-				Q_UNUSED(ok);
-				ui->pushButtonBirth->setChecked(sm->activatedWanted("discovery"));
-			});
-			*/
+			slm->enableLevel("Discovery", checked);
 		} else {
 			qWarning()<<"WARNING: Could not switch discovery service, no service manager";
 		}
@@ -149,6 +143,22 @@ void DebuggerWidget::on_pushButtonActivate_toggled(bool checked)
 	OC_METHODGATE();
 	if(!mNode.isNull()) {
 		mNode->appActivate(checked);
+	} else {
+		qWarning()<<"WARNING: Could not switch discovery service, no node";
+	}
+}
+
+void DebuggerWidget::on_pushButtonAlwaysServices_toggled(bool checked)
+{
+	OC_METHODGATE();
+	if(!mNode.isNull()) {
+		auto slm=mNode->serviceLevelManager();
+		if(!slm.isNull()) {
+			slm->enableLevel("Always", checked);
+		} else {
+			qWarning()<<"WARNING: Could not switch discovery service, no service manager";
+		}
+
 	} else {
 		qWarning()<<"WARNING: Could not switch discovery service, no node";
 	}
