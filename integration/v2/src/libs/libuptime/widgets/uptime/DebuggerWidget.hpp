@@ -6,6 +6,8 @@
 #include <QWidget>
 #include <QSharedPointer>
 
+class QTableWidgetItem;
+
 namespace Ui
 {
 class Debugger;
@@ -25,6 +27,12 @@ public:
 public:
 	void configure(QSharedPointer <Node> node);
 
+private:
+	void setServiceTableItem(const int index, const QString serviceName, const bool expected, const bool actual);
+	QTableWidgetItem *tableItem(const bool s);
+	QTableWidgetItem *tableItem(const QString s);
+	void updateServiceTable();
+
 	// QWidget interface
 public:
 	void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
@@ -37,7 +45,7 @@ private slots:
 	void on_pushButtonBirth_clicked();
 	void on_pushButtonActivate_toggled(bool checked);
 
-	signals:
+signals:
 	void visibilityChanged(bool visible);
 };
 

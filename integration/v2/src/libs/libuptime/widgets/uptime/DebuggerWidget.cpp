@@ -11,6 +11,10 @@
 #include "name/AgentNameGenerator.hpp"
 #include "name/GenderGenerator.hpp"
 
+
+#include <QTableWidgetItem>
+
+
 DebuggerWidget::DebuggerWidget(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::Debugger)
@@ -52,6 +56,8 @@ static void configTryToggleForServiceLevel(TryToggle *tt, const QString serviceL
 	}
 }
 
+
+
 void DebuggerWidget::configure(QSharedPointer <Node> node)
 {
 	OC_METHODGATE();
@@ -66,6 +72,48 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 	configTryToggleForServiceLevel(ui->tryToggleDiscovery, "Discovery", mNode, "Activate disovery", "Discovery activating", "Deactivate discovery", "Discovery deactivating");
 
 	configTryToggleForServiceLevel(ui->tryToggleAlways, "Always", mNode, "Activate", "Activating", "Deactivate", "Deactivating");
+	auto ipt=new QTableWidgetItem();
+	ipt->setFlags( (ipt->flags()) & (~(Qt::ItemIsUserCheckable| Qt::ItemIsEditable)) );
+	ui->tableWidgetServices->setItemPrototype(ipt);
+
+	updateServiceTable();
+}
+
+QTableWidgetItem *DebuggerWidget::tableItem(const bool s)
+{
+	OC_METHODGATE();
+	auto i=ui->tableWidgetServices->itemPrototype()->clone();
+	i->setCheckState(s?Qt::Checked:Qt::Unchecked);
+	return i;
+}
+
+QTableWidgetItem *DebuggerWidget::tableItem(const QString s)
+{
+	OC_METHODGATE();
+	auto i=ui->tableWidgetServices->itemPrototype()->clone();
+	i->setText(s);
+	return i;
+}
+
+void DebuggerWidget::setServiceTableItem(const int index, const QString serviceName, const bool expected, const bool actual)
+{
+	OC_METHODGATE();
+
+	ui->tableWidgetServices->setItem(index, 0, tableItem(serviceName));
+	ui->tableWidgetServices->setItem(index, 1, tableItem(expected));
+	ui->tableWidgetServices->setItem(index, 2, tableItem(actual));
+}
+
+void DebuggerWidget::updateServiceTable()
+{
+	OC_METHODGATE();
+	if(!mNode.isNull()) {
+		ui->tableWidgetServices->setRowCount(1);
+		setServiceTableItem(0, "CORRECT: NODE", true, true);
+	} else {
+		ui->tableWidgetServices->setRowCount(1);
+		setServiceTableItem(0, "ERROR: NO NODE", false, false);
+	}
 }
 
 void DebuggerWidget::showEvent(QShowEvent *event)
