@@ -37,7 +37,7 @@ static void configTryToggleForServiceLevel(TryToggle *tt, const QString serviceL
 				auto slm=node->serviceLevelManager();
 				if(!slm.isNull()) {
 					slm->enableLevel(serviceLevel, positive(current), [=](bool ok) {
-							tt->setState(saturate(ok?current:last), false);
+						tt->setState(saturate(ok?current:last), false);
 					});
 				} else {
 					qWarning()<<"WARNING: Could not switch discovery service, no service manager";
@@ -63,7 +63,9 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 	ui->widgetLocalAddresses->configure(mNode);
 	ui->widgetNetworkSettings->configure(mNode?mNode->localAddressList():nullptr);
 
-	configTryToggleForServiceLevel(ui->tryToggleDiscovery, "Discovery", mNode, "Activate disovery", "Discovery activating", "Deactivate discovery", "Discovery terminating");
+	configTryToggleForServiceLevel(ui->tryToggleDiscovery, "Discovery", mNode, "Activate disovery", "Discovery activating", "Deactivate discovery", "Discovery deactivating");
+
+	configTryToggleForServiceLevel(ui->tryToggleAlways, "Always", mNode, "Activate", "Activating", "Deactivate", "Deactivating");
 }
 
 void DebuggerWidget::showEvent(QShowEvent *event)
@@ -150,23 +152,6 @@ void DebuggerWidget::on_pushButtonBirth_clicked()
 }
 
 
-// NOTE: This is experimental at best.
-void DebuggerWidget::on_pushButtonDiscoveryService_toggled(bool checked)
-{
-	OC_METHODGATE();
-	if(!mNode.isNull()) {
-		auto slm=mNode->serviceLevelManager();
-		if(!slm.isNull()) {
-			slm->enableLevel("Discovery", checked);
-		} else {
-			qWarning()<<"WARNING: Could not switch discovery service, no service manager";
-		}
-
-	} else {
-		qWarning()<<"WARNING: Could not switch discovery service, no node";
-	}
-}
-
 
 void DebuggerWidget::on_pushButtonActivate_toggled(bool checked)
 {
@@ -178,19 +163,3 @@ void DebuggerWidget::on_pushButtonActivate_toggled(bool checked)
 	}
 }
 
-
-void DebuggerWidget::on_pushButtonAlwaysServices_toggled(bool checked)
-{
-	OC_METHODGATE();
-	if(!mNode.isNull()) {
-		auto slm=mNode->serviceLevelManager();
-		if(!slm.isNull()) {
-			slm->enableLevel("Always", checked);
-		} else {
-			qWarning()<<"WARNING: Could not switch discovery service, no service manager";
-		}
-
-	} else {
-		qWarning()<<"WARNING: Could not switch discovery service, no node";
-	}
-}
