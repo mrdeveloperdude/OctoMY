@@ -20,12 +20,12 @@ TryToggle::TryToggle(QWidget *parent) :
 	ui->setupUi(this);
 	mTimer.setInterval(1000/5); //Multiple of 60Hz gives stutter free animation
 	mTimer.setTimerType(Qt::PreciseTimer);
-	connect(&mTimer,SIGNAL(timeout()),this,SLOT(onTimeout()));
+	connect(&mTimer,SIGNAL(timeout()), this, SLOT(onTimeout()));
 	qRegisterMetaType<TryToggleState>("TryToggleState");
 	// Leave off-palette unchanged
 	mOffPalette=this->palette();
 	// Set default on palette to white text on green color
-	setColor(QColor("green"), QColor("blue"));
+	setColor(Qt::green, Qt::darkRed);
 }
 
 TryToggle::~TryToggle()
@@ -35,7 +35,7 @@ TryToggle::~TryToggle()
 	ui=nullptr;
 }
 
-void TryToggle::configure(const QString &offText, const QString &goingOnText, const QString &onText, const QString &goingOffText, const QColor &onColor, const QColor &goingOffColor)
+void TryToggle::configure(const QString offText, const QString goingOnText, const QString onText, const QString goingOffText, const QColor onColor, const QColor goingOffColor, const quint32 blinkInterval)
 {
 	OC_METHODGATE();
 	mOffText=offText;
@@ -45,16 +45,12 @@ void TryToggle::configure(const QString &offText, const QString &goingOnText, co
 	if(onColor.isValid()) {
 		setColor(onColor, goingOffColor);
 	}
+	mTimer.setInterval(static_cast<int>(blinkInterval)); //Multiple of 60Hz gives stutter free animation
 	updateText();
 }
 
-TryToggleState TryToggle::state() const
-{
-	OC_METHODGATE();
-	return mState;
-}
 
-void TryToggle::setColor(const QColor &onColor, const QColor &goingOffColor)
+void TryToggle::setColor(const QColor onColor, const QColor goingOffColor)
 {
 	OC_METHODGATE();
 	mOnPalette=mOffPalette;
@@ -67,18 +63,28 @@ void TryToggle::setColor(const QColor &onColor, const QColor &goingOffColor)
 	ui->pushButtonToggle->setPalette(ON==mState?mOnPalette:mOffPalette);
 }
 
+
+TryToggleState TryToggle::state() const
+{
+	OC_METHODGATE();
+	return mState;
+}
+
+
 bool TryToggle::isPositive()
 {
 	OC_METHODGATE();
-	return ((GOING_ON==mState) || (ON==mState));
+	return ::positive(mState);
 }
 
 
-bool TryToggle::isTransitioning()
+bool TryToggle::isTransitive()
 {
 	OC_METHODGATE();
-	return ((GOING_ON==mState) || (GOING_OFF==mState));
+	return ::transient(mState);
+
 }
+
 
 void TryToggle::updateText()
 {
@@ -105,6 +111,7 @@ void TryToggle::updateText()
 	ui->pushButtonToggle->setText(t);
 }
 
+
 void TryToggle::setState(const TryToggleState nextState, const bool doEmit)
 {
 	OC_METHODGATE();
@@ -113,10 +120,10 @@ void TryToggle::setState(const TryToggleState nextState, const bool doEmit)
 	if(nextState != mState) {
 		//qDebug()<<" + DIFFERENT FROM LAST: "<<state;
 		// Classify new state
-		const bool isPositive=(ON==nextState || GOING_ON==nextState ) ;
-		const bool isTransitioning=(GOING_ON==nextState || GOING_OFF==nextState);
+		const bool isPositive=::positive(nextState) ;
+		const bool isTransient=::transient(nextState);
 		// Enable blinking if this is a transitioning state
-		if(isTransitioning) {
+		if(isTransient) {
 			//qDebug()<<"TRYTOGGLE TRYSTATE TIMER START"<<" AND THIS="<<this;
 			mTimer.start();
 		} else {
@@ -135,16 +142,17 @@ void TryToggle::setState(const TryToggleState nextState, const bool doEmit)
 		const TryToggleState last = mState;
 		mState = nextState;
 		updateText();
-		if(!isTransitioning) {
+		if(!isTransient) {
 			ui->pushButtonToggle->setPalette(isPositive?mOnPalette:mOffPalette);
 		}
 		//qDebug()<<"TRYTOGGLE TRYSTATE CHANGED ACTUAL FROM "<<last<<" TO "<<mState <<" WITH EMIT="<<doEmit << " AND WITH TEXT= "<<ui->pushButtonToggle->text()<<" AND THIS="<<this;
 		if(doEmit) {
 			//qDebug()<<"Emitting " <<state;
-			emit stateChanged(last,mState);
+			emit stateChanged(last, mState);
 		}
 	}
 }
+
 
 void TryToggle::animateClick()
 {
@@ -153,16 +161,18 @@ void TryToggle::animateClick()
 	ui->pushButtonToggle->animateClick();
 }
 
+
 void TryToggle::on_pushButtonToggle_toggled(bool checked)
 {
 	OC_METHODGATE();
 	// Classify state
-	const bool isPositive=(ON==mState || GOING_ON==mState ) ;
+	const bool isPositive=::positive(mState) ;
 	//qDebug()<<" X X X X  Clicked " <<checked;
 	if(checked != isPositive) {
 		setState(checked ? GOING_ON:GOING_OFF);
 	}
 }
+
 
 void TryToggle::onTimeout()
 {

@@ -20,7 +20,7 @@ private:
 
 public:
 	explicit DebuggerWidget(QWidget *parent = nullptr);
-	~DebuggerWidget();
+	virtual ~DebuggerWidget() Q_DECL_OVERRIDE;
 
 public:
 	void configure(QSharedPointer <Node> node);
@@ -35,11 +35,8 @@ private slots:
 	void on_pushButtonQuitFail_clicked();
 	void on_pushButtonUnbirth_clicked();
 	void on_pushButtonBirth_clicked();
-
 	void on_pushButtonDiscoveryService_toggled(bool checked);
-
 	void on_pushButtonActivate_toggled(bool checked);
-
 	void on_pushButtonAlwaysServices_toggled(bool checked);
 
 	signals:

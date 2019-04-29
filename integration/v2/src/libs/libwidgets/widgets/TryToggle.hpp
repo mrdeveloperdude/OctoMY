@@ -33,28 +33,25 @@ private:
 
 public:
 	explicit TryToggle(QWidget *parent = nullptr);
-	~TryToggle();
+	virtual ~TryToggle();
 
 public:
-	void configure(const QString &,    const QString &,    const QString &,    const QString &,     const QColor &onColor=QColor(), const QColor &goingOffColor=QColor());
-	TryToggleState state() const;
-	void setColor(const QColor &onColor, const QColor &goingOffColor=QColor());
+	void configure(const QString offText, const QString goingOnText, const QString onText, const QString goingOffText, const QColor onColor=QColor(), const QColor goingOffColor=QColor(), const quint32 blinkInterval=1000/10);
+	void setColor(const QColor onColor, const QColor goingOffColor=QColor());
 
+	TryToggleState state() const;
 	bool isPositive();
-	bool isTransitioning();
+	bool isTransitive();
 
 private:
 	void updateText();
 
-
 public slots:
 	void setState(const TryToggleState s, const bool doEmit=true);
-
-
 	void animateClick();
+
 private slots:
 	void onTimeout();
-
 	void on_pushButtonToggle_toggled(bool checked);
 
 signals:

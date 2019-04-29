@@ -208,6 +208,7 @@ QDataStream &operator<<(QDataStream &ds, const NetworkAddress &addr)
 	return ds;
 }
 
+
 QDataStream &operator>>(QDataStream &ds, NetworkAddress &addr)
 {
 	OC_FUNCTIONGATE();
@@ -216,12 +217,12 @@ QDataStream &operator>>(QDataStream &ds, NetworkAddress &addr)
 }
 
 
-
 NetworkAddress::operator QString() const
 {
 	OC_METHODGATE();
 	return toString();
 }
+
 
 NetworkAddress::operator QString()
 {

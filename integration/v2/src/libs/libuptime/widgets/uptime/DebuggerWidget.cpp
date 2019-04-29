@@ -2,6 +2,7 @@
 #include "ui_DebuggerWidget.h"
 
 #include "uptime/MethodGate.hpp"
+#include "uptime/ConnectionType.hpp"
 #include "utility/time/HumanTime.hpp"
 
 #include "service/ServiceLevelManager.hpp"
@@ -25,6 +26,31 @@ DebuggerWidget::~DebuggerWidget()
 	delete ui;
 }
 
+static void configTryToggleForServiceLevel(TryToggle *tt, const QString serviceLevel, const QSharedPointer<Node> node, const QString offText, const QString goingOnText, const QString onText, const QString goingOffText)
+{
+	OC_FUNCTIONGATE();
+	if(nullptr != tt) {
+		if(!node.isNull()) {
+			tt->configure(offText, goingOnText, onText, goingOffText);
+			if(!QObject::connect(tt, &TryToggle::stateChanged, node.data(), [=](const TryToggleState last, const TryToggleState current) {
+			Q_UNUSED(last);
+				auto slm=node->serviceLevelManager();
+				if(!slm.isNull()) {
+					slm->enableLevel(serviceLevel, positive(current), [=](bool ok) {
+							tt->setState(saturate(ok?current:last), false);
+					});
+				} else {
+					qWarning()<<"WARNING: Could not switch discovery service, no service manager";
+				}
+			}, OC_CONTYPE)) {
+			}
+		} else {
+			qWarning()<<"WARNING: Could not switch discovery service, no node";
+		}
+	} else {
+		qWarning()<<"WARNING: No try toggle in configTryToggleForServiceLevel()";
+	}
+}
 
 void DebuggerWidget::configure(QSharedPointer <Node> node)
 {
@@ -36,6 +62,8 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 	ui->widgetPairingList->configure(mNode);
 	ui->widgetLocalAddresses->configure(mNode);
 	ui->widgetNetworkSettings->configure(mNode?mNode->localAddressList():nullptr);
+
+	configTryToggleForServiceLevel(ui->tryToggleDiscovery, "Discovery", mNode, "Activate disovery", "Discovery activating", "Deactivate discovery", "Discovery terminating");
 }
 
 void DebuggerWidget::showEvent(QShowEvent *event)
@@ -121,6 +149,7 @@ void DebuggerWidget::on_pushButtonBirth_clicked()
 	}
 }
 
+
 // NOTE: This is experimental at best.
 void DebuggerWidget::on_pushButtonDiscoveryService_toggled(bool checked)
 {
@@ -138,6 +167,7 @@ void DebuggerWidget::on_pushButtonDiscoveryService_toggled(bool checked)
 	}
 }
 
+
 void DebuggerWidget::on_pushButtonActivate_toggled(bool checked)
 {
 	OC_METHODGATE();
@@ -147,6 +177,7 @@ void DebuggerWidget::on_pushButtonActivate_toggled(bool checked)
 		qWarning()<<"WARNING: Could not switch discovery service, no node";
 	}
 }
+
 
 void DebuggerWidget::on_pushButtonAlwaysServices_toggled(bool checked)
 {

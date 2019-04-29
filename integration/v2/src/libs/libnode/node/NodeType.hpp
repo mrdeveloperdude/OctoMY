@@ -22,4 +22,6 @@ quint16 defaultPortForNodeType(NodeType nodeType);
 
 QColor defaultColorForNodeType(NodeType nodeType);
 
-#endif // NODETYPE_HPP
+
+#endif
+// NODETYPE_HPP

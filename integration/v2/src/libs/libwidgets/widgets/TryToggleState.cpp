@@ -33,3 +33,30 @@ QDebug operator<<(QDebug d, const TryToggleState &s)
 
 
 
+bool positive(TryToggleState s)
+{
+	OC_FUNCTIONGATE();
+	return ((GOING_ON==s) || (ON==s));
+}
+
+
+bool transient(TryToggleState s)
+{
+	OC_FUNCTIONGATE();
+	return ((GOING_ON==s) || (GOING_OFF==s));
+}
+
+
+TryToggleState saturate(TryToggleState s)
+{
+	OC_FUNCTIONGATE();
+	return positive(s)?ON:OFF;
+}
+
+
+TryToggleState desaturate(TryToggleState s)
+{
+	OC_FUNCTIONGATE();
+	return positive(s)?GOING_ON:GOING_OFF;
+}
+
