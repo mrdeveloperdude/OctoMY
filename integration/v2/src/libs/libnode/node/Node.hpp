@@ -221,7 +221,6 @@ public:
 	// Provide local identity
 	QSharedPointer<LocalIdentityStore> localIdentityStore();
 
-
 	// Provide the address book
 	QSharedPointer<AddressBook> addressBook();
 

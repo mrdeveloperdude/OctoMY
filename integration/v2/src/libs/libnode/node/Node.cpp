@@ -129,6 +129,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				mServiceLevelManager->registerService(mLocalIdentityStoreService);
 				mServiceLevelManager->registerService(mLocalAddressListService);
 				mServiceLevelManager->registerService(mAddressBookService);
+				mServiceLevelManager->registerService(mDiscoveryService);
 
 				// Register the "Always" service level
 				//////////////////////////////////////
