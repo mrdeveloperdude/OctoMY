@@ -27,7 +27,10 @@ public:
 	void configure(QSharedPointer <Node> node);
 	void updateServiceTable();
 
-private:
+	private slots:
+	void on_pushButtonUpdate_clicked();
+
+	private:
 	void setServiceTableItem(const int index, const QString serviceName, const bool expected, const bool actual);
 	QTableWidgetItem *tableItem(const bool s);
 	QTableWidgetItem *tableItem(const QString s);

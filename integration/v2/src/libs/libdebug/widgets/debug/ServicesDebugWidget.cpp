@@ -92,3 +92,9 @@ void ServicesDebugWidget::updateServiceTable()
 		setServiceTableItem(0, "ERROR: NO NODE", false, false);
 	}
 }
+
+void ServicesDebugWidget::on_pushButtonUpdate_clicked()
+{
+	OC_METHODGATE();
+	updateServiceTable();
+}
