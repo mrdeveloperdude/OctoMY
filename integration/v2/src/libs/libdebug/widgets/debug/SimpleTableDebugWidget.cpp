@@ -52,7 +52,7 @@ void SimpleTableDebugWidget::setData(QMap<QString, QString> data)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		ui->widgetSimpleTable->setData(data);
+		ui->tableView->setData(data);
 		triggerUpdate();
 	}
 }
@@ -95,7 +95,7 @@ void SimpleTableDebugWidget::onTimerWrapper()
 		const QColor c=utility::color::mix(o, Qt::red, f);
 		//qDebug()<<"COLOR: "<<c<< ", f="<<f<< ", raw="<<raw<< ", time="<<time;
 		p.setColor(QPalette::Background, c);
-		ui->widgetSimpleTable->setPalette(p);
+		ui->tableView->setPalette(p);
 	}
 	onTimer();
 }

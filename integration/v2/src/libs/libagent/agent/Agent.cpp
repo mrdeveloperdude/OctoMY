@@ -79,7 +79,7 @@ void Agent::nodeActivate(const bool on)
 
 
 
-QSharedPointer<QWidget> Agent::nodeWindow()
+QSharedPointer<NodeWindow> Agent::nodeWindow()
 {
 	OC_METHODGATE();
 	//qDebug()<<"nodeWindow()";

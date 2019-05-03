@@ -7,7 +7,7 @@
 
 class Node;
 
-class NodeWindow : public QWidget
+class NodeWindow : public QWidget, public QEnableSharedFromThis<NodeWindow>
 {
 	Q_OBJECT
 private:
@@ -22,6 +22,8 @@ public:
 	virtual void configure()=0;
 
 	QSharedPointer<Node> node();
+
+	void focus();
 
 	// Lifecycle stuff
 protected:
@@ -40,7 +42,7 @@ protected:
 public:
 	virtual void keyReleaseEvent(QKeyEvent *) Q_DECL_OVERRIDE;
 	virtual	void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
-
+	virtual	void moveEvent(QMoveEvent *) Q_DECL_OVERRIDE;
 
 	// Android stuff
 protected:
@@ -48,6 +50,9 @@ protected:
 	void notifyAndroid(QString);
 	// Make a "toast" notification
 	void toastAndroid(QString);
+
+signals:
+	void nodeWindowMoved(QSharedPointer <NodeWindow> window);
 };
 
 #endif

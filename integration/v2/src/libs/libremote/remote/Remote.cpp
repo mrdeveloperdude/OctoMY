@@ -1,5 +1,7 @@
 #include "Remote.hpp"
 
+#include "node/NodeWindow.hpp"
+
 #include "widgets/remote/RemoteWindow.hpp"
 
 #include "uptime/MethodGate.hpp"
@@ -72,7 +74,7 @@ void Remote::nodeActivate(const bool on)
 
 
 
-QSharedPointer<QWidget> Remote::nodeWindow()
+QSharedPointer<NodeWindow> Remote::nodeWindow()
 {
 	OC_METHODGATE();
 	//qDebug()<<"nodeWindow()";

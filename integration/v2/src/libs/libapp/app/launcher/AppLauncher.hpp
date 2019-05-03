@@ -291,7 +291,7 @@ void AppLauncher<T>::appActivateDone(const bool on)
 		if(on) {
 			//qDebug()<<"Opening window";
 			if(!mContext->isHeadless()) {
-				mWindow=mApp->appWindow();
+				mWindow=qSharedPointerCast<QWidget>(mApp->appWindow());
 				if(!mWindow.isNull()) {
 					mWindow->show();
 				} else {

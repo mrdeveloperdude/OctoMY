@@ -98,7 +98,14 @@ SimpleTableWidget::SimpleTableWidget(QWidget *parent)
 	setModel(model);
 	horizontalHeader()->setStretchLastSection(true);
 	horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-			//setResizeMode(QHeaderView::Stretch);
+	//setResizeMode(QHeaderView::Stretch);
+	/*
+	QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	sizePolicy.setHorizontalStretch(0);
+	sizePolicy.setVerticalStretch(0);
+	setSizePolicy(sizePolicy);
+	setMinimumSize(QSize(0, 100));
+	*/
 }
 
 

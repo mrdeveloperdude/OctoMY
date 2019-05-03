@@ -62,6 +62,14 @@ QSharedPointer<Node> NodeWindow::node()
 	return mNode;
 }
 
+void NodeWindow::focus()
+{
+	OC_METHODGATE();
+	setWindowState( (windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
+	raise();  // for MacOS
+	activateWindow(); // for Windows
+}
+
 
 void NodeWindow::nodeWindowRequestExit(const int returnValue)
 {
@@ -170,6 +178,13 @@ void NodeWindow::closeEvent(QCloseEvent *event)
 }
 
 
+void NodeWindow::moveEvent(QMoveEvent *event)
+{
+	OC_METHODGATE();
+	if(nullptr!= event) {
+		emit nodeWindowMoved(sharedFromThis());
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 

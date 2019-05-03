@@ -77,9 +77,6 @@ void pack(T *stacked)
 	stacked->setUpdatesEnabled(true);
 }
 
-
-
-
 }
 }
 

@@ -46,7 +46,7 @@ public:
 	void nodeConfigure() Q_DECL_OVERRIDE;
 	void nodeActivate(const bool on) Q_DECL_OVERRIDE;
 
-	QSharedPointer<QWidget> nodeWindow() Q_DECL_OVERRIDE;
+	QSharedPointer<NodeWindow> nodeWindow() Q_DECL_OVERRIDE;
 	NodeRole nodeRole() Q_DECL_OVERRIDE;
 	NodeType nodeType() Q_DECL_OVERRIDE;
 

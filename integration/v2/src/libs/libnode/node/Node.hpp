@@ -64,6 +64,8 @@ class LocalAddressListService;
 class AddressBookService;
 class DiscoveryClientService;
 
+class NodeWindow;
+
 
 struct NodeActivationState {
 	bool keyStoreOK=false;
@@ -180,7 +182,7 @@ public:
 	// Called by launcher to get a handle to the app's main window
 	// Will be called when launcher wants to show window during initialization
 	// NOTE: Launcher will NOT hide the window, as it is expected that app should do this by itself upon de-initialization and/or destruction
-	virtual QSharedPointer<QWidget> appWindow();
+	virtual QSharedPointer<NodeWindow> appWindow();
 
 	// Node interface
 public:
@@ -191,7 +193,7 @@ public:
 	virtual void nodeActivate(const bool on)=0;
 
 	// Called by Node::appWindow()
-	virtual QSharedPointer<QWidget> nodeWindow()=0;
+	virtual QSharedPointer<NodeWindow> nodeWindow()=0;
 
 	// Provide role
 	virtual NodeRole nodeRole()=0;

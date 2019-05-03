@@ -1,6 +1,8 @@
 #include "DebuggerWidget.hpp"
 #include "ui_DebuggerWidget.h"
 
+#include "node/NodeWindow.hpp"
+
 #include "uptime/MethodGate.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "utility/time/HumanTime.hpp"
@@ -12,7 +14,7 @@
 #include "name/GenderGenerator.hpp"
 
 #include <QTableWidgetItem>
-
+#include <QWidget>
 
 DebuggerWidget::DebuggerWidget(QWidget *parent) :
 	QWidget(parent),
@@ -21,6 +23,7 @@ DebuggerWidget::DebuggerWidget(QWidget *parent) :
 	OC_METHODGATE();
 	ui->setupUi(this);
 	setEnabled(false);
+	qRegisterMetaType<QSharedPointer <NodeWindow>> ("QSharedPointer <NodeWindow>");
 }
 
 
@@ -58,27 +61,120 @@ static void configTryToggleForServiceLevel(TryToggle *tt, const QString serviceL
 }
 
 
+
+
+
 void DebuggerWidget::configure(QSharedPointer <Node> node)
 {
 	OC_METHODGATE();
 	mNode=node;
 	setEnabled(!mNode.isNull());
-	ui->widgetKeyStore->configure(mNode);
-	ui->widgetLocalIdentityDebug->configure(mNode);
-	ui->widgetPairingList->configure(mNode);
-	ui->widgetLocalAddresses->configure(mNode);
+	ui->widgetHeaderKeyStore->configure(mNode);
+	ui->widgetHeaderLocalIdentity->configure(mNode);
+	ui->widgetHeaderPairing->configure(mNode);
+	ui->widgetHeaderLocalAddresses->configure(mNode);
 	ui->widgetNetworkSettings->configure(mNode?mNode->localAddressList():nullptr);
-	ui->servicesDebugWidget->configure(mNode);
+	ui->widgetHeaderServices->configure(mNode);
 	configTryToggleForServiceLevel(ui->tryToggleDiscovery, "Discovery", mNode, "Activate disovery", "Discovery activating", "Deactivate discovery", "Discovery deactivating");
 	configTryToggleForServiceLevel(ui->tryToggleAlways, "Always", mNode, "Activate", "Activating", "Deactivate", "Deactivating");
+	configureUi();
 }
 
 
 void DebuggerWidget::updateServiceTable()
 {
 	OC_METHODGATE();
-	ui->servicesDebugWidget->updateServiceTable();
+	ui->widgetHeaderServices->updateServiceTable();
 }
+
+
+
+void DebuggerWidget::configureUi()
+{
+	OC_METHODGATE();
+	QList<QWidget *> allWidgets= this->findChildren<QWidget *>();
+	const QString widgetBaseName("widgetHeader");
+	const auto widgetBaseNameSize=widgetBaseName.size();
+	for(QWidget *widget: allWidgets) {
+		if((nullptr!= widget) && (widget->objectName().startsWith(widgetBaseName))) {
+			QString name=widget->objectName().remove(0, widgetBaseNameSize);
+			mHeaderWidgets[name]=widget;
+			widget->setVisible(false);
+			qDebug()<<"Preparing widget for "<<name;
+		}
+	}
+	QList<QPushButton *> allButtons= this->findChildren<QPushButton *>();
+	const QString buttonBaseName("pushButtonHeader");
+	const auto buttonBaseNameSize=buttonBaseName.size();
+	for(QPushButton *button: allButtons) {
+		if((nullptr!= button) && (button->objectName().startsWith(buttonBaseName))) {
+			QString name=button->objectName().remove(0, buttonBaseNameSize);
+			qDebug()<<"Connecting widget to button for "<<name;
+			mHeaderButtons+=button;
+			button->setCheckable(true);
+			button->setChecked(false);
+			if(!connect(button, &QPushButton::toggled, this, [=](bool checked) {
+			QWidget *widget=mHeaderWidgets.contains(name)?mHeaderWidgets[name]:nullptr;
+				if(nullptr!=widget) {
+					widget->setVisible(checked);
+					pack();
+				}
+			}, OC_CONTYPE)) {
+				qWarning()<<"ERROR: Could not connect";
+			}
+		}
+	}
+	Qt::WindowFlags flags = nullptr;
+//flags |= Qt::MSWindowsFixedSizeDialogHint;
+//flags |= Qt::X11BypassWindowManagerHint;
+//flags |= Qt::FramelessWindowHint;
+	flags |= Qt::WindowTitleHint;
+//flags |= Qt::WindowSystemMenuHint;
+	flags |= Qt::WindowMinimizeButtonHint;
+//flags |= Qt::WindowMaximizeButtonHint;
+//flags |= Qt::WindowCloseButtonHint;
+//flags |= Qt::WindowContextHelpButtonHint;
+//flags |= Qt::WindowShadeButtonHint;
+	flags |= Qt::WindowStaysOnTopHint;
+//flags |= Qt::WindowStaysOnBottomHint;
+//flags |= Qt::CustomizeWindowHint;
+	setWindowFlags(flags);
+	pack();
+	tuck();
+}
+
+
+void DebuggerWidget::tuck()
+{
+	OC_METHODGATE();
+	if(!mNode.isNull()) {
+		//Place us to the right of main window
+		auto window=mNode->nodeWindow();
+		if(!window.isNull()) {
+			QRect amg=window->geometry();
+			QRect simg=geometry();
+			simg.moveTopLeft(amg.topRight()+QPoint(10,0));
+			setGeometry(simg);
+			window->focus();
+		} else {
+			qWarning()<<"ERROR: No node window";
+		}
+	} else {
+		qWarning()<<"ERROR: No node";
+	}
+}
+
+
+
+void DebuggerWidget::pack()
+{
+	OC_METHODGATE();
+	QTimer::singleShot(0, this, [this]() {
+		resize(0,0);
+	});
+}
+
+
 
 
 void DebuggerWidget::showEvent(QShowEvent *event)
@@ -175,3 +271,32 @@ void DebuggerWidget::on_pushButtonActivate_toggled(bool checked)
 	}
 }
 
+
+void DebuggerWidget::on_pushButtonTuckWindow_toggled(bool checked)
+{
+	OC_METHODGATE();
+	if(checked) {
+		tuck();
+	}
+
+	if(!mNode.isNull()) {
+		//Place us to the right of main window
+		auto window=mNode->nodeWindow();
+		if(!window.isNull()) {
+			if(checked) {
+
+				if(connect(window.data(), &NodeWindow::nodeWindowMoved, this, &DebuggerWidget::tuck, OC_CONTYPE)) {
+					qWarning()<<"ERROR: Could not connect";
+				}
+			} else {
+				if(disconnect(window.data(), &NodeWindow::nodeWindowMoved, this, &DebuggerWidget::tuck)) {
+					qWarning()<<"ERROR: Could not disconnect";
+				}
+			}
+		} else {
+			qWarning()<<"ERROR: No node window";
+		}
+	} else {
+		qWarning()<<"ERROR: No node";
+	}
+}

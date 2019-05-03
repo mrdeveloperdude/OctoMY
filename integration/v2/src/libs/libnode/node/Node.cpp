@@ -6,6 +6,8 @@
 
 #include "Node.hpp"
 
+#include "NodeWindow.hpp"
+
 #include "camera/CameraList.hpp"
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsSession.hpp"
@@ -383,7 +385,7 @@ void Node::appActivate(const bool on)
 
 
 
-QSharedPointer<QWidget> Node::appWindow()
+QSharedPointer<NodeWindow> Node::appWindow()
 {
 	OC_METHODGATE();
 	//qDebug()<<"appWindow()";

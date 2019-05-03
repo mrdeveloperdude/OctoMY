@@ -6,6 +6,8 @@
 #include <QWidget>
 #include <QSharedPointer>
 
+class QPushButton;
+
 namespace Ui
 {
 class Debugger;
@@ -17,6 +19,8 @@ class DebuggerWidget : public QWidget
 private:
 	Ui::Debugger *ui;
 	QSharedPointer<Node> mNode;
+	QMap<QString, QWidget *> mHeaderWidgets;
+	QList<QPushButton *> mHeaderButtons;
 
 public:
 	explicit DebuggerWidget(QWidget *parent = nullptr);
@@ -26,10 +30,21 @@ public:
 	void configure(QSharedPointer <Node> node);
 	void updateServiceTable();
 
+private:
+	void configureUi();
+
+
+
 	// QWidget interface
 public:
 	void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
 	void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
+
+private slots:
+	// Place directly to the right of nodewindow
+	void tuck();
+	// Compact to minimize size
+	void pack();
 
 private slots:
 	void on_pushButtonQuitSuccess_clicked();
@@ -37,6 +52,8 @@ private slots:
 	void on_pushButtonUnbirth_clicked();
 	void on_pushButtonBirth_clicked();
 	void on_pushButtonActivate_toggled(bool checked);
+
+	void on_pushButtonTuckWindow_toggled(bool checked);
 
 signals:
 	void visibilityChanged(bool visible);
