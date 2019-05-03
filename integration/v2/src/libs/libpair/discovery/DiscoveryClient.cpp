@@ -250,7 +250,7 @@ void DiscoveryClient::discover()
 		};
 		const bool ret=mClient->request(qhttp::EHTTP_POST, mServerURL, reqHandler, resHandler);
 		if(!ret) {
-			qWarning()<<"ERROR: Could not execute request";
+			qWarning().noquote().nospace()<<"ERROR: Could not execute discovery request to '"<<mServerURL<<"'";
 		}
 	}
 }

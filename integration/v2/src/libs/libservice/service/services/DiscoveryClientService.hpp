@@ -23,5 +23,5 @@ public:
 };
 
 
-
-#endif // DISCOVERYCLIENTSERVICE_HPP
+#endif
+// DISCOVERYCLIENTSERVICE_HPP

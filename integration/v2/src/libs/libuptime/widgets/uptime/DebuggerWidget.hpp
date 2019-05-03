@@ -55,7 +55,9 @@ private slots:
 
 	void on_pushButtonTuckWindow_toggled(bool checked);
 
-signals:
+	void on_pushButtonRestart_clicked();
+
+	signals:
 	void visibilityChanged(bool visible);
 };
 

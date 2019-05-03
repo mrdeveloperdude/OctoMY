@@ -40,7 +40,8 @@
 #include "service/services/LocalAddressListService.hpp"
 #include "service/services/AddressBookService.hpp"
 #include "service/services/DiscoveryClientService.hpp"
-
+#include "service/services/CarrierService.hpp"
+#include "service/services/CommsService.hpp"
 
 #include <QCommandLineParser>
 #include <QAccelerometerReading>
@@ -69,13 +70,15 @@ Node::Node()
 	, mNodeStepActivationTimer(nullptr)
 	, mServiceLevelManager(OC_NEW ServiceLevelManager())
 	, mKeyStoreService(OC_NEW KeyStoreService(mKeyStore, QStringList{}))
-	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore, QStringList{"KeyStore"}))
+	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore, QStringList{mKeyStoreService->name()}))
 	, mLocalAddressListService(OC_NEW LocalAddressListService(mLocalAddressList, QStringList{}))
 	, mAddressBookService(OC_NEW AddressBookService(mAddressBook, QStringList{}))
 	, mDiscoveryService(OC_NEW DiscoveryClientService(mDiscovery, QStringList{}))
+	, mCarrierService(OC_NEW CarrierService(mCarrier, QStringList{}))
+	, mCommsService(OC_NEW CommsService(mComms, QStringList{mCarrierService->name(), mKeyStoreService->name(), mAddressBookService->name()}))
 	, mAlwaysServiceLevel(OC_NEW ServiceLevel("Always",
 {
-	mKeyStoreService->name(), mLocalIdentityStoreService->name(), mLocalAddressListService->name(), mAddressBookService->name()
+	mKeyStoreService->name(), mLocalIdentityStoreService->name(), mLocalAddressListService->name(), mAddressBookService->name(), mCommsService->name()
 }))
 , mDiscoveryServiceLevel(OC_NEW ServiceLevel("Discovery", {
 	mDiscoveryService->name()
@@ -132,6 +135,8 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				mServiceLevelManager->registerService(mLocalAddressListService);
 				mServiceLevelManager->registerService(mAddressBookService);
 				mServiceLevelManager->registerService(mDiscoveryService);
+				mServiceLevelManager->registerService(mCarrierService);
+				mServiceLevelManager->registerService(mCommsService);
 
 				// Register the "Always" service level
 				//////////////////////////////////////
@@ -141,16 +146,6 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				// Register the "Discovery" service level
 				//////////////////////////////////////
 				mServiceLevelManager->registerServiceLevel(mDiscoveryServiceLevel);
-
-
-				/*
-
-					mServiceManager->registerService(mDiscoveryService);
-					mServiceManager->registerService(mCarrierService);
-					mServiceManager->registerService(mCommsService);
-				*/
-
-
 
 				// TODO: It is not entirely clear what zoo client provides beyond that which discovery client provides. Until that has been resolved, we avoid it
 				//mZooClient->configure();
@@ -178,7 +173,7 @@ void Node::serviceActivation(const bool on)
 	OC_METHODGATE();
 	mServiceLevelManager->enableLevel(mAlwaysServiceLevel->name(), on, [](bool ok) {
 		Q_UNUSED(ok);
-		qDebug()<<"Eureka: "<<ok;
+		qDebug()<<"EUREKA ServiceActivation returned: "<<ok;
 	});
 	/*
 	qDebug()<<"SERVICE ACTIVATION("<<on<<") STARTED";
@@ -288,15 +283,15 @@ void Node::appActivate(const bool on)
 	//qDebug()<<"appActivate()";
 	if(mAppConfigureHelper.activate(on)) {
 		if(on) {
-			mKeyStoreService->serviceChangeActivation(on);
+			//mKeyStoreService->serviceChangeActivation(on);
 			//mKeyStore->activate(on);
 			//mLocalIdentityStore->activate(on);
 			//mAddresses->activate(on);
 			//mAddressBook->activate(on);
 			//mDiscovery->activate(on);
 
-			mCarrier->activate(on);
-			mComms->activate(on);
+			//mCarrier->activate(on);
+			//mComms->activate(on);
 
 			serviceActivation(on);
 			// stepActivation(on);
@@ -321,8 +316,13 @@ void Node::appActivate(const bool on)
 			setNeedsConnection(last);
 			*/
 		} else {
+
+			serviceActivation(on);
+
 			setHookSensorSignals(*this, false);
 			setHookCommsSignals(*this, false);
+
+
 
 			//mAddressBook.setInitialized<AddressBook>(nullptr);
 			//mLocalIdentity.setInitialized<LocalIdentityStore>(nullptr);

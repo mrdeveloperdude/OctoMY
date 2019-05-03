@@ -100,7 +100,7 @@ void DebuggerWidget::configureUi()
 			QString name=widget->objectName().remove(0, widgetBaseNameSize);
 			mHeaderWidgets[name]=widget;
 			widget->setVisible(false);
-			qDebug()<<"Preparing widget for "<<name;
+			// qDebug()<<"Preparing widget for "<<name;
 		}
 	}
 	QList<QPushButton *> allButtons= this->findChildren<QPushButton *>();
@@ -109,7 +109,7 @@ void DebuggerWidget::configureUi()
 	for(QPushButton *button: allButtons) {
 		if((nullptr!= button) && (button->objectName().startsWith(buttonBaseName))) {
 			QString name=button->objectName().remove(0, buttonBaseNameSize);
-			qDebug()<<"Connecting widget to button for "<<name;
+			// qDebug()<<"Connecting widget to button for "<<name;
 			mHeaderButtons+=button;
 			button->setCheckable(true);
 			button->setChecked(false);
@@ -117,7 +117,9 @@ void DebuggerWidget::configureUi()
 			QWidget *widget=mHeaderWidgets.contains(name)?mHeaderWidgets[name]:nullptr;
 				if(nullptr!=widget) {
 					widget->setVisible(checked);
-					pack();
+					if(checked) {
+						pack();
+					}
 				}
 			}, OC_CONTYPE)) {
 				qWarning()<<"ERROR: Could not connect";
@@ -298,5 +300,15 @@ void DebuggerWidget::on_pushButtonTuckWindow_toggled(bool checked)
 		}
 	} else {
 		qWarning()<<"ERROR: No node";
+	}
+}
+
+void DebuggerWidget::on_pushButtonRestart_clicked()
+{
+	OC_METHODGATE();
+	if(!mNode.isNull()) {
+		emit mNode->nodeRequestRestart();
+	} else {
+		qWarning()<<"WARNING: Could not emit restart, no node";
 	}
 }
