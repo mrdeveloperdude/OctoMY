@@ -53,7 +53,16 @@ void SimpleTableDebugWidget::setData(QMap<QString, QString> data)
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		ui->widgetSimpleTable->setData(data);
-		mLastUpdate=utility::time::currentMsecsSinceEpoch<quint64>();
+		triggerUpdate();
+	}
+}
+
+
+void SimpleTableDebugWidget::triggerUpdate()
+{
+	OC_METHODGATE();
+	mLastUpdate=utility::time::currentMsecsSinceEpoch<quint64>();
+	if(ui->checkBoxUpdateRealtime->isChecked()) {
 		mTimer.start();
 	}
 }
@@ -64,8 +73,7 @@ void SimpleTableDebugWidget::onRealtimeChangedWrapper(bool realtime)
 	OC_METHODGATE();
 	Q_UNUSED(realtime);
 	if(realtime) {
-		mLastUpdate=utility::time::currentMsecsSinceEpoch<quint64>();
-		mTimer.start();
+		triggerUpdate();
 	} else {
 		mTimer.stop();
 	}

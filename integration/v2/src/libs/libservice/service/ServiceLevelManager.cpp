@@ -4,6 +4,7 @@
 #include "ServiceManager.hpp"
 
 #include "uptime/MethodGate.hpp"
+#include "uptime/ConnectionType.hpp"
 #include "uptime/New.hpp"
 
 #include <QDebug>
@@ -27,6 +28,15 @@ void ServiceLevelManager::configure()
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
 		mServiceManager=QSharedPointer<ServiceManager>(OC_NEW ServiceManager());
+		if(!mServiceManager.isNull()) {
+			// Forward servicvesChanged signal
+			ServiceManager *sm=mServiceManager.data();
+			if(!connect(sm, &ServiceManager::servicesChanged, this, &ServiceLevelManager::servicesChanged, OC_CONTYPE)) {
+				qWarning()<<"ERROR: Could not connect";
+			}
+		} else {
+			qWarning()<<"ERROR: No mServiceManager";
+		}
 	}
 }
 
@@ -212,11 +222,12 @@ void ServiceLevelManager::synchronizeServiceManager(const std::function<void(con
 			// Cull all services that are already wanted
 			wanted-=currentlyWanted;
 			// Apply the new recommendation
-			mServiceManager->changeActivation(wanted, unwanted, [callBack](bool ok) {
+			mServiceManager->changeActivation(wanted, unwanted, [this, callBack](bool ok) {
 				qDebug()<<"POLKA=" << ok;
 				if(nullptr!= callBack) {
 					callBack(ok);
 				}
+				emit servicesChanged();
 			});
 		} else {
 			qWarning()<<"ERROR: No service manager while synchronizing service manager";

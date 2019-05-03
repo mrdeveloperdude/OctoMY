@@ -8,6 +8,18 @@
 #include <QDebug>
 #include <QSharedPointer>
 
+ServiceManager::ServiceManager()
+	: QObject (nullptr)
+{
+	OC_METHODGATE();
+}
+
+
+ServiceManager::~ServiceManager()
+{
+	OC_METHODGATE();
+}
+
 bool ServiceManager::nameIsWellformed(const QString name) const
 {
 	OC_METHODGATE();
@@ -216,6 +228,7 @@ bool ServiceManager::registerService(const QSharedPointer <Service> service)
 			if(!registered(service)) {
 				mServicesMap[name]=service;
 				mServicesList << service;
+				emit servicesChanged();
 				return true;
 			} else {
 				qWarning()<<"ERROR: Trying to double register service with name '"<<name<<"'";
@@ -251,6 +264,7 @@ bool ServiceManager::unRegisterService(const QString name)
 	if(mServicesMap.constEnd() != it) {
 		mServicesMap.remove(name);
 		mServicesList.removeAll(it.value());
+		emit servicesChanged();
 		return true;
 	} else {
 		qWarning()<<"ERROR: Trying to un-register non-registered service with name '"<<name<<"'";
@@ -436,6 +450,7 @@ void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSe
 		qDebug()<<"Service change complete";
 		if(nullptr!=callBack) {
 			callBack(true);
+			emit servicesChanged();
 		}
 	}
 }
@@ -489,6 +504,7 @@ void ServiceManager::changeActivation(const QSet<QString> set, const bool active
 		qDebug()<<"Service activation with "<<active<<" complete";
 		if(nullptr!=callBack) {
 			callBack(true);
+			emit servicesChanged();
 		}
 	}
 }

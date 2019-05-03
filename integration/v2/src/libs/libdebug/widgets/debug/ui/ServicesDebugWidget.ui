@@ -30,6 +30,13 @@
       </spacer>
      </item>
      <item>
+      <widget class="QCheckBox" name="checkBoxUpdateRealtime">
+       <property name="text">
+        <string>Realtime</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="pushButtonUpdate">
        <property name="text">
         <string>Update</string>

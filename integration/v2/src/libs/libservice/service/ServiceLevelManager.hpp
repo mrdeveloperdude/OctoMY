@@ -82,6 +82,10 @@ public:
 public slots:
 	void onServiceLevelChanged();
 
+signals:
+	void servicesChanged();
+
+
 };
 
 #endif

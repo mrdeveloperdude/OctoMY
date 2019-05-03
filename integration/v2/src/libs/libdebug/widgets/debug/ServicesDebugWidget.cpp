@@ -4,13 +4,18 @@
 #include "uptime/MethodGate.hpp"
 #include "uptime/ConnectionType.hpp"
 
+#include "utility/time/HumanTime.hpp"
+#include "utility/color/Color.hpp"
+
 #include "node/Node.hpp"
 #include "service/ServiceLevelManager.hpp"
 #include "service/ServiceManager.hpp"
 
-ServicesDebugWidget::ServicesDebugWidget(QWidget *parent) :
-	QWidget(parent),
-	ui(new Ui::ServicesDebugWidget)
+ServicesDebugWidget::ServicesDebugWidget(QWidget *parent)
+	: QWidget(parent)
+	, ui(new Ui::ServicesDebugWidget)
+	, mConfigureHelper("ServicesDebugWidget", true, false, false, true, false)
+	, mLastUpdate(0)
 {
 	ui->setupUi(this);
 	auto ipt=new QTableWidgetItem();
@@ -31,8 +36,28 @@ ServicesDebugWidget::~ServicesDebugWidget()
 void ServicesDebugWidget::configure(QSharedPointer <Node> node)
 {
 	OC_METHODGATE();
-	mNode=node;
-	updateServiceTable();
+	if(mConfigureHelper.configure()) {
+		mNode=node;
+		if(!mNode.isNull()) {
+			ui->tableWidgetServices->setRowCount(1);
+			auto slm=mNode->serviceLevelManager();
+			if(!slm.isNull()) {
+				if(!connect(slm.data(), &ServiceLevelManager::servicesChanged, this, &ServicesDebugWidget::onServicesChanged, OC_CONTYPE )) {
+					qWarning()<<"ERROR: Could not connect";
+				}
+			}
+		}
+		if(!connect(ui->checkBoxUpdateRealtime, &QCheckBox::toggled, this, &ServicesDebugWidget::onRealtimeChanged, OC_CONTYPE )) {
+			qWarning()<<"ERROR: Could not connect";
+		}
+		// We sacrifice quality since this is for debugging purpose onle and we want this to have the least impact on the runtime of non-debug code
+		mTimer.setTimerType(Qt::VeryCoarseTimer);
+		mTimer.setInterval(1000/15);// 15 FPS
+		if(!connect(&mTimer, &QTimer::timeout, this, &ServicesDebugWidget::onTimer, OC_CONTYPE )) {
+			qWarning()<<"ERROR: Could not connect";
+		}
+		onRealtimeChanged(ui->checkBoxUpdateRealtime->isChecked());
+	}
 }
 
 
@@ -53,6 +78,14 @@ QTableWidgetItem *ServicesDebugWidget::tableItem(const QString s)
 	return i;
 }
 
+void ServicesDebugWidget::triggerUpdate(){
+	OC_METHODGATE();
+	mLastUpdate=utility::time::currentMsecsSinceEpoch<quint64>();
+	if(ui->checkBoxUpdateRealtime->isChecked()) {
+		mTimer.start();
+	}
+}
+
 
 void ServicesDebugWidget::setServiceTableItem(const int index, const QString serviceName, const bool expected, const bool actual)
 {
@@ -67,6 +100,7 @@ void ServicesDebugWidget::setServiceTableItem(const int index, const QString ser
 void ServicesDebugWidget::updateServiceTable()
 {
 	OC_METHODGATE();
+	QString sig="";
 	if(!mNode.isNull()) {
 		ui->tableWidgetServices->setRowCount(1);
 		auto slm=mNode->serviceLevelManager();
@@ -77,7 +111,10 @@ void ServicesDebugWidget::updateServiceTable()
 				ui->tableWidgetServices->setRowCount(services.count());
 				int i=0;
 				for(QString service:services) {
-					setServiceTableItem(i++, service, sm->activatedWanted(service), sm->activatedActual(service));
+					const bool expected=sm->activatedWanted(service);
+					const bool actual=sm->activatedActual(service);
+					sig+=QString("%1-%2-%3-%4").arg(i).arg(service).arg(expected).arg(actual);
+					setServiceTableItem(i++, service, expected, actual);
 				}
 			} else {
 				ui->tableWidgetServices->setRowCount(1);
@@ -91,10 +128,54 @@ void ServicesDebugWidget::updateServiceTable()
 		ui->tableWidgetServices->setRowCount(1);
 		setServiceTableItem(0, "ERROR: NO NODE", false, false);
 	}
+	if(sig!=mLastSig){
+		mLastSig=sig;
+		triggerUpdate();
+	}
 }
 
 void ServicesDebugWidget::on_pushButtonUpdate_clicked()
 {
 	OC_METHODGATE();
 	updateServiceTable();
+	onTimer();
 }
+
+void ServicesDebugWidget::onServicesChanged()
+{
+	OC_METHODGATE();
+	qDebug()<<"SERVICES CHANGED";
+	updateServiceTable();
+}
+
+
+void ServicesDebugWidget::onRealtimeChanged(bool realtime)
+{
+	OC_METHODGATE();
+	Q_UNUSED(realtime);
+	if(realtime) {
+		triggerUpdate();
+	} else {
+		mTimer.stop();
+	}
+}
+
+
+void ServicesDebugWidget::onTimer()
+{
+	OC_METHODGATE();
+	const quint64 blinkSize=1000;
+	auto p=palette();
+	auto o=p.color(QPalette::Background);
+	const auto now=utility::time::currentMsecsSinceEpoch<quint64>();
+	const quint64 time=qBound<quint64>(0, (now-mLastUpdate), blinkSize);
+	const qreal raw=static_cast<qreal>(blinkSize-time)/ static_cast<qreal>(blinkSize);
+	const qreal f=qBound(0.0, raw, 1.0);
+	if(f>=0.0) {
+		const QColor c=utility::color::mix(o, Qt::red, f);
+		//qDebug()<<"COLOR: "<<c<< ", f="<<f<< ", raw="<<raw<< ", time="<<time;
+		p.setColor(QPalette::Background, c);
+		ui->tableWidgetServices->setPalette(p);
+	}
+}
+

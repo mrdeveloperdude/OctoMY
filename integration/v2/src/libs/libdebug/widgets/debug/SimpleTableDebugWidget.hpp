@@ -32,11 +32,13 @@ public:
 
 public:
 	void setData(QMap<QString, QString> data);
+	void triggerUpdate();
 
 private slots:
 	void onRealtimeChangedWrapper(bool realtime);
 	void onTimerWrapper();
 
+private slots:
 	void on_pushButtonUpdate_clicked();
 
 public slots:

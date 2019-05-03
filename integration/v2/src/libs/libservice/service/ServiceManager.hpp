@@ -10,11 +10,17 @@
 
 class Service;
 
-class ServiceManager
+class ServiceManager: public QObject
 {
+	Q_OBJECT
 private:
 	QMap <QString, QSharedPointer<Service> > mServicesMap;
 	QList <QSharedPointer<Service> > mServicesList;
+
+public:
+	explicit ServiceManager();
+	virtual~ServiceManager();
+
 
 	// Internal helpers
 private:
@@ -86,6 +92,10 @@ public:
 	void changeActivation(const QSet<QString> set, const bool active, ServiceActivatedCallback callBack=nullptr);
 	// Convenience overload
 	void changeActivation(const QString service, const bool active, ServiceActivatedCallback callBack=nullptr);
+
+signals:
+	void servicesChanged();
+
 
 };
 
