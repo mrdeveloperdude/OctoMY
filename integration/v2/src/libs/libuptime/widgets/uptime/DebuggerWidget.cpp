@@ -69,12 +69,13 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 	OC_METHODGATE();
 	mNode=node;
 	setEnabled(!mNode.isNull());
+	ui->widgetHeaderComms->configure(mNode);
+	ui->widgetHeaderServices->configure(mNode);
 	ui->widgetHeaderKeyStore->configure(mNode);
 	ui->widgetHeaderLocalIdentity->configure(mNode);
 	ui->widgetHeaderPairing->configure(mNode);
 	ui->widgetHeaderLocalAddresses->configure(mNode);
 	ui->widgetNetworkSettings->configure(mNode?mNode->localAddressList():nullptr);
-	ui->widgetHeaderServices->configure(mNode);
 	configTryToggleForServiceLevel(ui->tryToggleDiscovery, "Discovery", mNode, "Activate disovery", "Discovery activating", "Deactivate discovery", "Discovery deactivating");
 	configTryToggleForServiceLevel(ui->tryToggleAlways, "Always", mNode, "Activate", "Activating", "Deactivate", "Deactivating");
 	configureUi();

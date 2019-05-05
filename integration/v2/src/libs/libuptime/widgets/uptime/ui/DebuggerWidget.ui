@@ -353,7 +353,7 @@
     </widget>
    </item>
    <item>
-    <widget class="ServicesDebugWidget" name="widgetHeaderComms" native="true">
+    <widget class="CommsDebugWidget" name="widgetHeaderComms" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
@@ -712,6 +712,12 @@
    <class>ServicesDebugWidget</class>
    <extends>QWidget</extends>
    <header location="global">widgets/debug/ServicesDebugWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CommsDebugWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/debug/CommsDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

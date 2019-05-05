@@ -1,22 +1,34 @@
 #ifndef COMMSDEBUGWIDGET_HPP
 #define COMMSDEBUGWIDGET_HPP
 
-#include <QWidget>
+#include "uptime/ConfigureHelper.hpp"
 
-namespace Ui {
-	class CommsDebugWidget;
-	}
+
+#include <QWidget>
+#include <QSharedPointer>
+
+class Node;
+namespace Ui
+{
+class CommsDebugWidget;
+}
 
 class CommsDebugWidget : public QWidget
 {
-		Q_OBJECT
+	Q_OBJECT
+private:
+	Ui::CommsDebugWidget *ui;
+	ConfigureHelper mConfigureHelper;
+	QSharedPointer <Node> mNode;
 
-	public:
-		explicit CommsDebugWidget(QWidget *parent = nullptr);
-		~CommsDebugWidget();
+public:
+	explicit CommsDebugWidget(QWidget *parent = nullptr);
+	~CommsDebugWidget();
 
-	private:
-		Ui::CommsDebugWidget *ui;
+public:
+	void configure(QSharedPointer <Node> node);
+
 };
 
-#endif // COMMSDEBUGWIDGET_HPP
+#endif
+// COMMSDEBUGWIDGET_HPP
