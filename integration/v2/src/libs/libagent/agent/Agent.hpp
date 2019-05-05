@@ -16,7 +16,7 @@ class AgentConfigStore;
 class IActuatorController;
 class IAppLauncher;
 
-class Agent : public Node, public QEnableSharedFromThis<Agent>
+class Agent : public Node//, public QEnableSharedFromThis<Agent>
 {
 	Q_OBJECT
 

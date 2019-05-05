@@ -3,6 +3,7 @@
 
 #include "node/LocalIdentityStore.hpp"
 #include "service/ServiceWrapper.hpp"
+#include "uptime/ConfigureHelper.hpp"
 
 #include <QSharedPointer>
 #include <QVariantMap>
@@ -17,8 +18,13 @@ class LocalIdentityStoreService: public ServiceWrapper<LocalIdentityStore>
 {
 private:
 	QSharedPointer<Node> mNode;
+	ConfigureHelper mConfigureHelper;
+
 public:
-	LocalIdentityStoreService(QSharedPointer<Node> node, QStringList dependencies= {"KeyStore"});
+	LocalIdentityStoreService(QSharedPointer<LocalIdentityStore> localIdentityStore, QStringList dependencies= {"KeyStore"});
+
+public:
+	void configure(QSharedPointer<Node> node);
 
 	// ServiceWapper interface.
 public:

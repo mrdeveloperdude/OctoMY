@@ -296,7 +296,7 @@ public:
 
 
 	virtual QSharedPointer<Node> sharedThis();
-	QSharedPointer<Node> sharedThisNode();
+	//QSharedPointer<Node> sharedThisNode();
 
 
 

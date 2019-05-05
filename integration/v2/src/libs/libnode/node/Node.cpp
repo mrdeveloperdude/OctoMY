@@ -70,7 +70,7 @@ Node::Node()
 	, mNodeStepActivationTimer(nullptr)
 	, mServiceLevelManager(OC_NEW ServiceLevelManager())
 	, mKeyStoreService(OC_NEW KeyStoreService(mKeyStore, QStringList{}))
-	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(sharedThisNode(), QStringList{mKeyStoreService->name()}))
+	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore, QStringList{mKeyStoreService->name()}))
 	, mLocalAddressListService(OC_NEW LocalAddressListService(mLocalAddressList, QStringList{}))
 	, mAddressBookService(OC_NEW AddressBookService(mAddressBook, QStringList{}))
 	, mDiscoveryService(OC_NEW DiscoveryClientService(mDiscovery, QStringList{}))
@@ -114,10 +114,11 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 			if(basedirOK) {
 				QString baseDir=ctx->baseDir();
 
-				// First we configure all services
+				// Configure all services
 				//////////////////////////////////
 
 				mKeyStore->configure(baseDir + "/keystore.json", true);
+				mLocalIdentityStoreService->configure(sharedThis());
 				mLocalIdentityStore->configure(baseDir + "/local_identity.json");
 				mLocalAddressList->configure(defaultPortForNodeType(nodeType()));
 				mAddressBook->configure(baseDir + "/addressbook.json");
@@ -674,12 +675,13 @@ QSharedPointer<Node> Node::sharedThis()
 }
 
 
+/*
 QSharedPointer<Node> Node::sharedThisNode()
 {
 	OC_METHODGATE();
 	return QEnableSharedFromThis<Node>::sharedFromThis();
 }
-
+*/
 
 
 

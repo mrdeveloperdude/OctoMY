@@ -31,7 +31,7 @@ class NodeWindow;
 
 */
 
-class Remote : public Node, public QEnableSharedFromThis<Remote>
+class Remote : public Node//, public QEnableSharedFromThis<Remote>
 {
 	Q_OBJECT
 private:

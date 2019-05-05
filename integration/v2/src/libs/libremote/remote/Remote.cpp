@@ -21,20 +21,20 @@
 */
 
 Remote::Remote()
-		: mNodeConfigureHelper("Remote", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
-	//: Node(launcher, OC_NEW AppContext(launcher.options(), launcher.environment(), "remote", parent), ROLE_CONTROL, TYPE_REMOTE, parent)
+	: mNodeConfigureHelper("Remote", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
+	  //: Node(launcher, OC_NEW AppContext(launcher.options(), launcher.environment(), "remote", parent), ROLE_CONTROL, TYPE_REMOTE, parent)
 {
 	OC_METHODGATE();
 	//qDebug()<<"Remote()";
 	// NOTE: Please do not put code here that generates events. Instead put them in *configure*() or *activate*()
 }
 
+
 Remote::~Remote()
 {
 	OC_METHODGATE();
 	//qDebug()<<"~Remote()";
 }
-
 
 
 void Remote::nodeConfigure()
@@ -51,8 +51,6 @@ void Remote::nodeConfigure()
 		emit nodeRequestExit(EXIT_FAILURE);
 	}
 }
-
-
 
 
 void Remote::nodeActivate(const bool on)
@@ -72,27 +70,25 @@ void Remote::nodeActivate(const bool on)
 }
 
 
-
-
 QSharedPointer<NodeWindow> Remote::nodeWindow()
 {
 	OC_METHODGATE();
 	//qDebug()<<"nodeWindow()";
 	if(mWindow.isNull()) {
-		QSharedPointer<Remote> sp=this->QEnableSharedFromThis<Remote>::sharedFromThis();
-		if(sp.isNull()) {
-			qWarning()<<"ERROR: SHARED POINTER TO THIS WAS NULL!";
-		}
-		mWindow=QSharedPointer<RemoteWindow>(OC_NEW RemoteWindow(nullptr));
-		if(!mWindow.isNull()) {
-			mWindow->nodeWindowConfigure(sp);
+		QSharedPointer<Remote> sp=qSharedPointerCast<Remote>(sharedThis());
+		if(!sp.isNull()) {
+			mWindow=QSharedPointer<RemoteWindow>(OC_NEW RemoteWindow(nullptr));
+			if(!mWindow.isNull()) {
+				mWindow->nodeWindowConfigure(sp);
+			} else {
+				qWarning()<<"ERROR: Could not allocate RemoteWindow";
+			}
 		} else {
-			qWarning()<<"ERROR: Could not allpcate AgentWindow";
+			qWarning()<<"ERROR: Shared pointer to this was null for remote";
 		}
 	}
 	return mWindow;
 }
-
 
 
 NodeRole Remote::nodeRole()
@@ -107,6 +103,7 @@ NodeType Remote::nodeType()
 	OC_METHODGATE();
 	return TYPE_REMOTE;
 }
+
 
 void Remote::setNodeCouriersRegistration(bool reg)
 {
@@ -126,5 +123,6 @@ void Remote::setNodeCouriersRegistration(bool reg)
 QSharedPointer<Node> Remote::sharedThis()
 {
 	OC_METHODGATE();
-	return QEnableSharedFromThis<Remote>::sharedFromThis();
+	//return QEnableSharedFromThis<Remote>::sharedFromThis();
+	return sharedFromThis();
 }

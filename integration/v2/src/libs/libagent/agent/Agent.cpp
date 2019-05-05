@@ -13,6 +13,7 @@
 
 #include <QDebug>
 
+
 Agent::Agent()
 	: mNodeConfigureHelper("Agent", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 	, mAgentConfigStore(OC_NEW AgentConfigStore())
@@ -21,6 +22,7 @@ Agent::Agent()
 	//qDebug()<<"Agent()";
 	// NOTE: Please do not put code here that generates events. Instead put them in *configure*() or *activate*()
 }
+
 
 Agent::~Agent()
 {
@@ -49,8 +51,6 @@ void Agent::nodeConfigure()
 }
 
 
-
-
 void Agent::nodeActivate(const bool on)
 {
 	OC_METHODGATE();
@@ -77,27 +77,25 @@ void Agent::nodeActivate(const bool on)
 }
 
 
-
-
 QSharedPointer<NodeWindow> Agent::nodeWindow()
 {
 	OC_METHODGATE();
 	//qDebug()<<"nodeWindow()";
 	if(mWindow.isNull()) {
-		QSharedPointer<Agent> sp=this->QEnableSharedFromThis<Agent>::sharedFromThis();
-		if(sp.isNull()) {
-			qWarning()<<"ERROR: SHARED POINTER TO THIS WAS NULL!";
-		}
-		mWindow=QSharedPointer<AgentWindow>(OC_NEW AgentWindow(nullptr));
-		if(!mWindow.isNull()) {
-			mWindow->nodeWindowConfigure(sp);
+		QSharedPointer<Agent> sp=qSharedPointerCast<Agent>(sharedThis());
+		if(!sp.isNull()) {
+			mWindow=QSharedPointer<AgentWindow>(OC_NEW AgentWindow(nullptr));
+			if(!mWindow.isNull()) {
+				mWindow->nodeWindowConfigure(sp);
+			} else {
+				qWarning()<<"ERROR: Could not allocate AgentWindow";
+			}
 		} else {
-			qWarning()<<"ERROR: Could not allpcate AgentWindow";
+			qWarning()<<"ERROR: Shared pointer to this was null for agent";
 		}
 	}
 	return mWindow;
 }
-
 
 
 NodeRole Agent::nodeRole()
@@ -117,7 +115,8 @@ NodeType Agent::nodeType()
 QSharedPointer<Node> Agent::sharedThis()
 {
 	OC_METHODGATE();
-	return QEnableSharedFromThis<Agent>::sharedFromThis();
+	//return QEnableSharedFromThis<Agent>::sharedFromThis();
+	return sharedFromThis();
 }
 
 
@@ -138,7 +137,6 @@ bool Agent::panic()
 }
 
 
-
 QSharedPointer<AgentConfigStore> Agent::configurationStore()
 {
 	OC_METHODGATE();
@@ -146,12 +144,12 @@ QSharedPointer<AgentConfigStore> Agent::configurationStore()
 }
 
 
-
 QSharedPointer<IActuatorController> Agent::actuatorController()
 {
 	OC_METHODGATE();
 	return mActuatorController;
 }
+
 
 void Agent::unloadController()
 {
@@ -165,6 +163,7 @@ void Agent::unloadController()
 	}
 
 }
+
 
 void Agent::reloadController()
 {

@@ -22,6 +22,7 @@ RemoteWindow::RemoteWindow(QWidget *parent)
 	ui->setupUi(this);
 }
 
+
 RemoteWindow::~RemoteWindow()
 {
 	OC_METHODGATE();
@@ -29,7 +30,6 @@ RemoteWindow::~RemoteWindow()
 	delete ui;
 	ui=nullptr;
 }
-
 
 
 QSharedPointer<Remote> RemoteWindow::remote()
@@ -42,8 +42,6 @@ QSharedPointer<Remote> RemoteWindow::remote()
 
 	return qSharedPointerCast<Remote> (n);
 }
-
-
 
 
 void RemoteWindow::configure()
@@ -60,14 +58,9 @@ void RemoteWindow::configure()
 }
 
 
-
-
 void RemoteWindow::appendLog(const QString& text)
 {
 	OC_METHODGATE();
 	qDebug()<<"REMOTE-LOG-APPEND: "<<text;
 }
-
-
-
 
