@@ -22,19 +22,21 @@ void DiscoveryClientService::configure(QSharedPointer<Node> node)
 void DiscoveryClientService::serviceWrapperActivate(QSharedPointer<DiscoveryClient> discoveryClient, bool on, ServiceActivatedCallback callBack)
 {
 	OC_METHODGATE();
+	bool ok=false;
 	if(mConfigureHelper.activate(on)) {
 		discoveryClient->activate(on);
 		if(on) {
 			if(!mNode.isNull()) {
 				discoveryClient->setURL(mNode->serverURL());
 				qDebug()<<"SET URL: "<<discoveryClient->URL();
+				ok=true;
 			} else {
 				qWarning()<<"ERROR: No node";
 			}
 		}
-		if(nullptr!=callBack) {
-			callBack(true);
-		}
+	}
+	if(nullptr!=callBack) {
+		callBack(ok);
 	}
 }
 

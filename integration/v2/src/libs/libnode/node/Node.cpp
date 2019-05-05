@@ -125,6 +125,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				mAddressBook->configure(baseDir + "/addressbook.json");
 				mDiscoveryService->configure(sharedThis());
 				mDiscovery->configure(sharedThis(), 1000, 60000, 20000, 40000);
+				mCarrierService->configure(sharedThis());
 				mCarrier->configure();
 				mComms->configure(mCarrier, mKeyStore, mAddressBook);
 

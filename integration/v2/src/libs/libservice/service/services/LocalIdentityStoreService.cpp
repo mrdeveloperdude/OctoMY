@@ -43,4 +43,9 @@ void LocalIdentityStoreService::serviceWrapperActivate(QSharedPointer<LocalIdent
 			}
 		});
 	}
+	else{
+		if(nullptr!=callBack) {
+			callBack(false);
+		}
+	}
 }
