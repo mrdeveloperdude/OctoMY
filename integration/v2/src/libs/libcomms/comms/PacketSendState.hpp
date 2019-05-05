@@ -3,6 +3,8 @@
 
 #include "CommsChannel.hpp"
 
+#include "Multimagic.hpp"
+
 #include "uptime/SharedPointerWrapper.hpp"
 
 #include <QString>

@@ -5,6 +5,9 @@
 #include "service/ServiceWrapper.hpp"
 
 #include <QSharedPointer>
+#include <QVariantMap>
+
+class Node;
 
 /**
  * @brief The LocalIdentityStoreService class is what it says on the tin; basically a wrapper to make LocalIdentityStore appear as a service.
@@ -12,8 +15,10 @@
 
 class LocalIdentityStoreService: public ServiceWrapper<LocalIdentityStore>
 {
+private:
+	QSharedPointer<Node> mNode;
 public:
-	LocalIdentityStoreService(QSharedPointer<LocalIdentityStore> localIdentityStore, QStringList dependencies={"KeyStore"});
+	LocalIdentityStoreService(QSharedPointer<Node> node, QStringList dependencies= {"KeyStore"});
 
 	// ServiceWapper interface.
 public:

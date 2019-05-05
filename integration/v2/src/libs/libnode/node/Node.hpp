@@ -88,7 +88,7 @@ struct NodeActivationState {
  *
  */
 
-class Node : public QObject, public IConnectionStatus//, public QEnableSharedFromThis<Node>
+class Node : public QObject, public IConnectionStatus, public QEnableSharedFromThis<Node>
 {
 	Q_OBJECT
 
@@ -296,6 +296,7 @@ public:
 
 
 	virtual QSharedPointer<Node> sharedThis();
+	QSharedPointer<Node> sharedThisNode();
 
 
 

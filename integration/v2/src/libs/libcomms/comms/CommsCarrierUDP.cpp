@@ -26,11 +26,11 @@ CommsCarrierUDP::CommsCarrierUDP(QObject *parent)
 	OC_METHODGATE();
 	setObjectName("CommsCarrierUDP");
 
-	if(!connect(&mUDPSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()), OC_CONTYPE)) {
+	if(!QObject::connect(&mUDPSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()), OC_CONTYPE)) {
 		qWarning()<<"Could not connect UDP readyRead";
 	}
 	qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
-	if(!connect(&mUDPSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)), OC_CONTYPE)) {
+	if(!QObject::connect(&mUDPSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)), OC_CONTYPE)) {
 		qWarning()<<"Could not connect UDP error";
 	}
 

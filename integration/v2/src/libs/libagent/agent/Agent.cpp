@@ -117,7 +117,7 @@ NodeType Agent::nodeType()
 QSharedPointer<Node> Agent::sharedThis()
 {
 	OC_METHODGATE();
-	return sharedFromThis();
+	return QEnableSharedFromThis<Agent>::sharedFromThis();
 }
 
 

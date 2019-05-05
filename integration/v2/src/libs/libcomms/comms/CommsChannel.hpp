@@ -8,26 +8,16 @@
 #define COMMSCHANNEL_HPP
 
 
-#include "ReliabilitySystem.hpp"
-#include "FlowControl.hpp"
-
+#include "uptime/SharedPointerWrapper.hpp"
 #include "app/log/LogDestination.hpp"
-
 #include "security/Key.hpp"
 
-#include "couriers/Courier.hpp"
-#include "CommsSessionDirectory.hpp"
-
-
-#include "CommsCarrier.hpp"
-
-#include "Multimagic.hpp"
 
 #include "RateCalculator.hpp"
-
+#include "CommsSessionDirectory.hpp"
+#include "CommsCarrier.hpp"
+#include "couriers/Courier.hpp"
 #include "couriers/CourierSet.hpp"
-
-#include "uptime/SharedPointerWrapper.hpp"
 
 
 #include <QObject>
@@ -46,10 +36,8 @@
 #define OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT (QDataStream::Qt_5_7)
 
 /*
- * Documentation moved here: https://sites.google.com/site/octomyproject/documentation/development/architectual-overview/communications
+ * Documentation is here: https://sites.google.com/site/octomyproject/documentation/development/architectual-overview/communications
 */
-
-
 
 class HubWindow;
 class CommsSession;
@@ -66,7 +54,7 @@ class CommsChannel : public QObject
 	Q_OBJECT
 
 protected:
-	// The carrier such as udp or bluetooth used by this cc to communicate with the other side
+	// The carrier such as udp or bluetooth used by this comms channel to communicate with the other side
 	QSharedPointer<CommsCarrier> mCarrier;
 
 	// The keystore which is used for encryption (the local key pair is used, as looked up with mLocalID)

@@ -126,5 +126,5 @@ void Remote::setNodeCouriersRegistration(bool reg)
 QSharedPointer<Node> Remote::sharedThis()
 {
 	OC_METHODGATE();
-	return sharedFromThis();
+	return QEnableSharedFromThis<Remote>::sharedFromThis();
 }

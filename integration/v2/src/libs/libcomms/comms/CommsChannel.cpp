@@ -9,6 +9,10 @@
 #include "CommsCarrier.hpp"
 #include "CommsSessionDirectory.hpp"
 
+#include "Multimagic.hpp"
+#include "ReliabilitySystem.hpp"
+#include "FlowControl.hpp"
+
 #include "uptime/MethodGate.hpp"
 #include "uptime/Assert.hpp"
 #include "uptime/ConnectionType.hpp"
@@ -57,6 +61,7 @@ CommsChannel::CommsChannel(QObject *parent)
 	setObjectName("CommsChannel");
 }
 
+
 CommsChannel::~CommsChannel()
 {
 	OC_METHODGATE();
@@ -80,6 +85,7 @@ void CommsChannel::configure(QSharedPointer<CommsCarrier> carrier, QSharedPointe
 	}
 }
 
+
 void CommsChannel::activate(const bool on)
 {
 	OC_METHODGATE();
@@ -88,10 +94,7 @@ void CommsChannel::activate(const bool on)
 	}
 }
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
-
 
 
 QSharedPointer<CommsCarrier> CommsChannel::carrier()
@@ -100,12 +103,12 @@ QSharedPointer<CommsCarrier> CommsChannel::carrier()
 	return mCarrier;
 }
 
+
 CommsSessionDirectory &CommsChannel::sessions()
 {
 	OC_METHODGATE();
 	return mSessions;
 }
-
 
 
 bool CommsChannel::recieveEncryptedBody(PacketReadState &state)
@@ -152,6 +155,7 @@ bool CommsChannel::recieveEncryptedBody(PacketReadState &state)
 	}
 	return false;
 }
+
 
 bool CommsChannel::recieveMagicAndVersion(PacketReadState &state)
 {
@@ -285,7 +289,6 @@ QSharedPointer<CommsSession> CommsChannel::lookUpSession(QString id)
 }
 
 
-
 void CommsChannel::recieveIdle(PacketReadState &state)
 {
 	OC_METHODGATE();
@@ -294,7 +297,6 @@ void CommsChannel::recieveIdle(PacketReadState &state)
 		qDebug()<<"RECEIVED IDLE PACKET";
 	}
 }
-
 
 
 void CommsChannel::recieveHandshake(PacketReadState &state)
@@ -571,7 +573,6 @@ bool CommsChannel::recieveAck(PacketReadState &state, QSharedPointer<CommsSessio
 }
 
 
-
 void CommsChannel::recieveData(PacketReadState &state)
 {
 	OC_METHODGATE();
@@ -688,9 +689,6 @@ void CommsChannel::recieveData(PacketReadState &state)
 }
 
 
-
-
-
 // Main packet reception
 void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHostS, quint16 remotePortS )
 {
@@ -724,6 +722,7 @@ void CommsChannel::receivePacketRaw( QByteArray datagramS, QHostAddress remoteHo
 		}
 	}
 }
+
 
 void CommsChannel::doSendWithSession(PacketSendState &state)
 {
@@ -1192,11 +1191,11 @@ void CommsChannel::updateConnect()
 		const bool needsConnection = needConnection();
 		//qDebug()<<"Comms channel update isConnected="<<isConencted<<", needsConnection="<<needsConnection;
 		if(needsConnection != isConencted) {
-			//qDebug()<<"Comms channel update decided to " << (needsConnection?"start":"stop")<< " carrier";
-			if(needsConnection) {
+			const bool ok=mCarrier->connect(needsConnection);
+			qDebug()<<"Comms channel update decided to " << (needsConnection?"start":"stop")<< " carrier"<<" with result "<<ok;
+			if(needsConnection && ok) {
 				setHoneymoonEnd(utility::time::currentMsecsSinceEpoch<quint64>()+60*1000);
 			}
-			mCarrier->activate(needsConnection);
 		}
 	}
 }
@@ -1211,6 +1210,7 @@ NetworkAddress CommsChannel::localAddress()
 	return NetworkAddress();
 }
 
+
 QString CommsChannel::localID()
 {
 	OC_METHODGATE();
@@ -1223,6 +1223,7 @@ QString CommsChannel::localID()
 	}
 	return "";
 }
+
 
 QString CommsChannel::getSummary()
 {
@@ -1327,6 +1328,7 @@ void CommsChannel::onCarrierSendingOpportunity(const quint64 now)
 	}
 }
 
+
 void CommsChannel::onCarrierConnectionStatusChanged(const bool connected)
 {
 	OC_METHODGATE();
@@ -1343,6 +1345,7 @@ void CommsChannel::appendLog(QString msg)
 		qDebug()<<"COMMS_CHANNEL_LOG: "<<msg;
 	}
 }
+
 
 void CommsChannel::setHookCommsSignals(QObject &ob, bool hook)
 {
@@ -1372,8 +1375,6 @@ void CommsChannel::setHookCommsSignals(QObject &ob, bool hook)
 		}
 	}
 }
-
-
 
 
 void CommsChannel::setHookCourierSignals(QSharedPointer<Courier> courier, bool hook)
@@ -1445,6 +1446,7 @@ void CommsChannel::setCourierRegistered(QSharedPointer<Courier> courier, bool re
 		}
 	}
 }
+
 
 CourierSet CommsChannel::couriers()
 {

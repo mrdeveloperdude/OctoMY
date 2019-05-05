@@ -70,7 +70,7 @@ Node::Node()
 	, mNodeStepActivationTimer(nullptr)
 	, mServiceLevelManager(OC_NEW ServiceLevelManager())
 	, mKeyStoreService(OC_NEW KeyStoreService(mKeyStore, QStringList{}))
-	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore, QStringList{mKeyStoreService->name()}))
+	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(sharedThisNode(), QStringList{mKeyStoreService->name()}))
 	, mLocalAddressListService(OC_NEW LocalAddressListService(mLocalAddressList, QStringList{}))
 	, mAddressBookService(OC_NEW AddressBookService(mAddressBook, QStringList{}))
 	, mDiscoveryService(OC_NEW DiscoveryClientService(mDiscovery, QStringList{}))
@@ -669,9 +669,18 @@ void Node::identityChanged()
 QSharedPointer<Node> Node::sharedThis()
 {
 	OC_METHODGATE();
-	qWarning()<<"ERROR: Trying to get shared this from base class Node";
+	qWarning()<<"ERROR: Trying to get shared this from base class Node. Use sharedThisNode() if you really want this.";
 	return  QSharedPointer<Node>(nullptr);
 }
+
+
+QSharedPointer<Node> Node::sharedThisNode()
+{
+	OC_METHODGATE();
+	return QEnableSharedFromThis<Node>::sharedFromThis();
+}
+
+
 
 
 //////////////////////////////////////////////////////////////

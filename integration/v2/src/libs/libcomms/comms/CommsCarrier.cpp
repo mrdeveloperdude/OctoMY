@@ -34,13 +34,14 @@ CommsCarrier::~CommsCarrier()
 	OC_METHODGATE();
 }
 
+
 void CommsCarrier::configure()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
 		mSendingTimer.setSingleShot(false);
 		mSendingTimer.setTimerType(Qt::PreciseTimer);
-		if(!connect(&mSendingTimer, SIGNAL(timeout()), this, SLOT(onOpportunityTimer()), OC_CONTYPE)) {
+		if(!QObject::connect(&mSendingTimer, SIGNAL(timeout()), this, SLOT(onOpportunityTimer()), OC_CONTYPE)) {
 			qWarning()<<"Could not connect sending timer";
 		}
 		configureImp();
@@ -48,34 +49,45 @@ void CommsCarrier::configure()
 }
 
 
-bool CommsCarrier::activate(bool start)
+bool CommsCarrier::connect(bool activated)
 {
 	OC_METHODGATE();
 	bool success=true;
-	if(mConfigureHelper.activate(start)) {
-		if(start) {
+	if(activated) {
+		if(mConfigureHelper.isActivated()) {
 			if(isStarted()) {
-				activate(false);
+				connect(false);
 			}
 			success=activateImp(true);
 			if(success) {
 				mSendingTimer.start();
 			} else {
-				activate(false);
+				connect(false);
 			}
-		} else {
-			mSendingTimer.stop();
-			activateImp(false);
-			mConnected=false;
-			emit carrierConnectionStatusChanged(false);
+		}
+	} else {
+		mSendingTimer.stop();
+		activateImp(false);
+		mConnected=false;
+		emit carrierConnectionStatusChanged(false);
+	}
+	return success;
+}
+
+bool CommsCarrier::activate(bool activeWanted)
+{
+	OC_METHODGATE();
+	bool success=true;
+	if(mConfigureHelper.activate(activeWanted)) {
+		if(!activeWanted) {
+			// Make sure to initiate the termination of any ongoing connections if we deactivate
+			connect(false);
 		}
 	} else {
 		success=false;
 	}
 	return success;
-
 }
-
 
 
 void CommsCarrier::setListenAddress(NetworkAddress address)
@@ -85,7 +97,6 @@ void CommsCarrier::setListenAddress(NetworkAddress address)
 		setAddressImp(address);
 	}
 }
-
 
 
 void CommsCarrier::detectConnectionChanges(const quint64 now)
@@ -123,7 +134,6 @@ void CommsCarrier::detectConnectionChanges(const quint64 now)
 }
 
 
-
 void CommsCarrier::onOpportunityTimer()
 {
 	OC_METHODGATE();
@@ -154,16 +164,16 @@ void CommsCarrier::setHookCarrierSignals(QObject &ob, bool hook)
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		//qRegisterMetaType<CommsSession *>("Client *");
 		if(hook) {
-			if(!connect(this,SIGNAL(carrierReadyRead()),&ob,SLOT(onCarrierReadyRead()),OC_CONTYPE)) {
+			if(!QObject::connect(this,SIGNAL(carrierReadyRead()),&ob,SLOT(onCarrierReadyRead()),OC_CONTYPE)) {
 				qWarning()<<"ERROR: Could not connect "<<ob.objectName();
 			}
-			if(!connect(this,SIGNAL(carrierError(QString)),&ob,SLOT(onCarrierError(QString)),OC_CONTYPE)) {
+			if(!QObject::connect(this,SIGNAL(carrierError(QString)),&ob,SLOT(onCarrierError(QString)),OC_CONTYPE)) {
 				qWarning()<<"ERROR: Could not connect "<<ob.objectName();
 			}
-			if(!connect(this,SIGNAL(carrierSendingOpportunity(quint64)),&ob,SLOT(onCarrierSendingOpportunity(quint64)),OC_CONTYPE)) {
+			if(!QObject::connect(this,SIGNAL(carrierSendingOpportunity(quint64)),&ob,SLOT(onCarrierSendingOpportunity(quint64)),OC_CONTYPE)) {
 				qWarning()<<"ERROR: Could not connect "<<ob.objectName();
 			}
-			if(!connect(this,SIGNAL(carrierConnectionStatusChanged(bool)),&ob,SLOT(onCarrierConnectionStatusChanged(bool)),OC_CONTYPE)) {
+			if(!QObject::connect(this,SIGNAL(carrierConnectionStatusChanged(bool)),&ob,SLOT(onCarrierConnectionStatusChanged(bool)),OC_CONTYPE)) {
 				qWarning()<<"ERROR: Could not connect "<<ob.objectName();
 			}
 		} else {
@@ -184,10 +194,8 @@ void CommsCarrier::setHookCarrierSignals(QObject &ob, bool hook)
 }
 
 
-
 // CommsCarrier internal interface methods
 ///////////////////////////////////////////////////////////
-
 
 
 
@@ -197,6 +205,7 @@ bool CommsCarrier::isStarted() const
 	const bool isToo=isActiveImp();
 	return (mSendingTimer.isActive() && isToo);
 }
+
 
 bool CommsCarrier::isConnected() const
 {
@@ -217,6 +226,7 @@ qint64 CommsCarrier::writeData(const QByteArray &datagram, const NetworkAddress 
 	return 0;
 }
 
+
 qint64 CommsCarrier::readData(char *data, qint64 maxlen, QHostAddress *host, quint16 *port)
 {
 	OC_METHODGATE();
@@ -229,6 +239,7 @@ qint64 CommsCarrier::readData(char *data, qint64 maxlen, QHostAddress *host, qui
 	return 0;
 }
 
+
 bool CommsCarrier::hasPendingData()
 {
 	OC_METHODGATE();
@@ -237,6 +248,7 @@ bool CommsCarrier::hasPendingData()
 	}
 	return false;
 }
+
 
 qint64 CommsCarrier::pendingDataSize()
 {
@@ -299,6 +311,7 @@ quint64 CommsCarrier::setDesiredOpportunityInterval(quint64 desiredInterval)
 	}
 	return 0;
 }
+
 
 quint64 CommsCarrier::opportunityInterval()
 {

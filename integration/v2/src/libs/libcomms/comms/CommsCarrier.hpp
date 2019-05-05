@@ -25,12 +25,12 @@ class CommsCarrier: public QObject
 {
 	Q_OBJECT
 private:
-
 	//Receive counter used in debug messages to make sense of the order of things
 	static quint64 sTotalRxCount;
 	static quint64 sTotalTxCount;
 
-
+	// Are we connected?
+	// NOTE: Connected is a relative term. It simply means "a package was successfully transmitted within some time limit"
 	bool mConnected;
 
 	ConfigureHelper mConfigureHelper;
@@ -50,6 +50,7 @@ public:
 public:
 	void configure();
 	bool activate(bool on);
+	bool connect(bool on);
 
 private:
 	void detectConnectionChanges(const quint64 now);

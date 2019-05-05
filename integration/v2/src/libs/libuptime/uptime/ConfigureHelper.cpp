@@ -127,17 +127,17 @@ bool ConfigureHelper::configure()
 	return ok;
 }
 
-bool ConfigureHelper::activate(const bool on)
+bool ConfigureHelper::activate(const bool wantActive)
 {
 	OC_METHODGATE();
 	if(mLogChanges) {
-		qDebug()<<"NOTE: "<<mName<<" activation went from "<<mIsActive<< " to "<<on;
+		qDebug()<<"NOTE: "<<mName<<" activation went from "<<mIsActive<< " to "<<wantActive;
 	}
 	bool ok=false;
 	// Require that we have activation at all
 	if(mNeedsActivate) {
 		// Require deactivation before activation
-		if(mIsActive != on) {
+		if(mIsActive != wantActive) {
 			// Require configuration if enabled
 			if(mNeedsConfigure == mIsConfigured) {
 				ok=true;
@@ -148,7 +148,7 @@ bool ConfigureHelper::activate(const bool on)
 			}
 		} else {
 			if(mLogWarnings) {
-				qWarning().noquote().nospace()<<"WARNING: "<<mName<<" had activation set to "<<on<<" twice.";
+				qWarning().noquote().nospace()<<"WARNING: "<<mName<<" had activation set to "<<wantActive<<" twice.";
 			}
 		}
 	} else {
@@ -157,7 +157,7 @@ bool ConfigureHelper::activate(const bool on)
 		}
 	}
 	if(ok) {
-		mIsActive=on;
+		mIsActive=wantActive;
 	}
 	return ok;
 }
