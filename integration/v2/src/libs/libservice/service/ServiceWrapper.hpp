@@ -20,10 +20,13 @@ template <class T>
 class ServiceWrapper: public Service
 {
 private:
-	QSharedPointer<T> mWrapee;
+	QSharedPointer<T> mService;
 	bool mActivated;
 public:
-	explicit ServiceWrapper(QSharedPointer<T> wrapee, QString name, QStringList dependencies=QStringList());
+	explicit ServiceWrapper(QSharedPointer<T> service, QString name, QStringList dependencies=QStringList());
+
+public:
+	QSharedPointer<T> service();
 
 	// Service interface.
 public:
@@ -36,10 +39,11 @@ public:
 
 };
 
+
 template <class T>
-ServiceWrapper<T>::ServiceWrapper(QSharedPointer<T> wrapee, QString name, QStringList dependencies)
+ServiceWrapper<T>::ServiceWrapper(QSharedPointer<T> service, QString name, QStringList dependencies)
 	: Service(name, dependencies)
-	, mWrapee(wrapee)
+	, mService(service)
 	, mActivated(false)
 {
 	OC_METHODGATE();
@@ -47,11 +51,19 @@ ServiceWrapper<T>::ServiceWrapper(QSharedPointer<T> wrapee, QString name, QStrin
 
 
 template <class T>
+QSharedPointer<T> ServiceWrapper<T>::service()
+{
+	OC_METHODGATE();
+	return mService;
+}
+
+
+template <class T>
 void ServiceWrapper<T>::serviceActivateImp(bool on, ServiceActivatedCallback callBack)
 {
 	OC_METHODGATE();
-	if(!mWrapee.isNull()) {
-		serviceWrapperActivate(mWrapee, on, [this, on, callBack](bool ok) {
+	if(!mService.isNull()) {
+		serviceWrapperActivate(mService, on, [this, on, callBack](bool ok) {
 			// Siphon of the value of "activated"
 			mActivated=ok?on:mActivated;
 			if(nullptr!=callBack) {
@@ -62,6 +74,7 @@ void ServiceWrapper<T>::serviceActivateImp(bool on, ServiceActivatedCallback cal
 		qWarning()<<"ERROR: Could not activate service because it was null";
 	}
 }
+
 
 template <class T>
 bool ServiceWrapper<T>::serviceActivatedImp() const

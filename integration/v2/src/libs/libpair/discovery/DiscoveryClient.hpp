@@ -123,6 +123,7 @@ private:
 
 public:
 	void setURL(const QUrl&);
+	QUrl URL();
 	bool isActive();
 	void activate(bool start);
 

@@ -25,25 +25,22 @@ void LocalIdentityStoreService::serviceWrapperActivate(QSharedPointer<LocalIdent
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.activate(on)) {
-		localIdentityStore->activate(on);
-		if(on) {
-			localIdentityStore->synchronize([this, localIdentityStore, callBack](QSharedPointer<SimpleDataStore> sms, bool ok) {
-				if(!sms.isNull()) {
-					auto map=sms->toMap();
-					//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
-					//QSharedPointer<Node> mNode;
-					if(!mNode.isNull()) {
-						mNode->setNodeIdentity(map);
-					} else {
-						qWarning()<<"ERROR: No node";
-					}
-					if(nullptr!=callBack) {
-						callBack(ok);
-					}
+		localIdentityStore->activate(on, [this, localIdentityStore, callBack](bool ok) {
+			if(!localIdentityStore.isNull()) {
+				auto map=localIdentityStore->toMap();
+				//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
+				//QSharedPointer<Node> mNode;
+				if(!mNode.isNull()) {
+					mNode->setNodeIdentity(map);
 				} else {
-					qWarning()<<"ERROR: local identity sync sms not ok";
+					qWarning()<<"ERROR: No node";
 				}
-			});
-		}
+			} else {
+				qWarning()<<"ERROR: local identity not ok";
+			}
+			if(nullptr!=callBack) {
+				callBack(ok);
+			}
+		});
 	}
 }

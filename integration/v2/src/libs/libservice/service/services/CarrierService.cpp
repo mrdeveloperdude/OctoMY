@@ -11,6 +11,6 @@ CarrierService::CarrierService(QSharedPointer<CommsCarrier> carrier, QStringList
 void CarrierService::serviceWrapperActivate(QSharedPointer<CommsCarrier> carrier, bool on, ServiceActivatedCallback callBack)
 {
 	OC_METHODGATE();
-	carrier->activate(on);
-	callBack(true);
+	const bool ok=carrier->activate(on);
+	callBack(ok);
 }

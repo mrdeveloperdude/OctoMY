@@ -122,6 +122,13 @@ void DiscoveryClient::setURL(const QUrl& serverURL)
 }
 
 
+QUrl DiscoveryClient::URL()
+{
+	OC_METHODGATE();
+	return mServerURL;
+}
+
+
 void DiscoveryClient::discover()
 {
 	OC_METHODGATE();

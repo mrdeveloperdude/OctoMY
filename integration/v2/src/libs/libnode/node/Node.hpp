@@ -106,7 +106,7 @@ private:
 	// Clients address book (clients are nodes we communicate with)
 	QSharedPointer<AddressBook> mAddressBook;
 	// Client instances
-	ClientList mClients;
+	QSharedPointer<ClientList> mClients;
 	// Our identity
 	QSharedPointer<Associate> mNodeIdentity;
 	// Discovery client to help in automaitc discovery of other nodes
@@ -232,7 +232,7 @@ public:
 	QSharedPointer<AddressBook> addressBook();
 
 	//Provide the client list
-	// QSharedPointer<ClientList> clientList();
+	QSharedPointer<ClientList> clientList();
 
 	// Provide the comms channel
 	QSharedPointer<CommsChannel> comms();
@@ -252,7 +252,7 @@ public:
 	// Provide the service level manager
 	QSharedPointer<ServiceLevelManager> serviceLevelManager();
 
-	// Provide the server URL
+	// Provide the URL of the Zoo server
 	QUrl serverURL();
 
 

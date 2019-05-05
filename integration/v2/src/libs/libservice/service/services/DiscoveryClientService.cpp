@@ -27,13 +27,13 @@ void DiscoveryClientService::serviceWrapperActivate(QSharedPointer<DiscoveryClie
 		if(on) {
 			if(!mNode.isNull()) {
 				discoveryClient->setURL(mNode->serverURL());
+				qDebug()<<"SET URL: "<<discoveryClient->URL();
 			} else {
 				qWarning()<<"ERROR: No node";
 			}
-			if(nullptr!=callBack) {
-				callBack(true);
-			}
-
+		}
+		if(nullptr!=callBack) {
+			callBack(true);
 		}
 	}
 }

@@ -21,7 +21,7 @@
 #include "discovery/DiscoveryClient.hpp"
 #include "hardware/sensors/SensorInput.hpp"
 #include "client/zoo/ZooClient.hpp"
-
+#include "client/ClientList.hpp"
 
 #include "uptime/ConnectionType.hpp"
 #include "agent/AgentConstants.hpp"
@@ -62,6 +62,7 @@ Node::Node()
 	, mLocalIdentityStore(OC_NEW LocalIdentityStore())
 	, mLocalAddressList(OC_NEW LocalAddressList())
 	, mAddressBook(OC_NEW AddressBook())
+	, mClients(OC_NEW ClientList())
 	, mDiscovery(OC_NEW DiscoveryClient())
 	, mCarrier(OC_NEW CommsCarrierUDP())
 	, mComms(OC_NEW CommsChannel())
@@ -240,7 +241,7 @@ void Node::stepActivation(const bool on)
 					if(!sms.isNull()) {
 						//qDebug()<<"AddressBook synchronized with ok="<<ok;
 						auto map=sms->toMap();
-						mClients.syncToAddressBook(mAddressBook, sharedThis());
+						mClients->syncToAddressBook(mAddressBook, sharedThis());
 						mNodeActivationState.addressBookOK=ok;
 						stepActivation(on);
 					} else {
@@ -438,13 +439,13 @@ QSharedPointer<AddressBook> Node::addressBook()
 }
 
 
-/*
+
 QSharedPointer<ClientList> Node::clientList()
 {
 	OC_METHODGATE();
 	return mClients;
 }
-*/
+
 
 QSharedPointer<LocalAddressList> Node::localAddressList()
 {
@@ -943,7 +944,11 @@ void Node::setNodeCouriersRegistration(const bool reg)
 void Node::setClientCouriersRegistration(const bool reg)
 {
 	OC_METHODGATE();
-	mClients.setAllCouriersRegistered(reg);
+	if(!mClients.isNull()) {
+		mClients->setAllCouriersRegistered(reg);
+	} else {
+		qWarning()<<"ERROR: No clientList";
+	}
 }
 
 
@@ -964,7 +969,11 @@ void Node::setCouriersRegistration(const bool reg)
 void Node::updateClientCouriersRegistration()
 {
 	OC_METHODGATE();
-	mClients.updateCourierRegistration();
+	if(!mClients.isNull()) {
+		mClients->updateCourierRegistration();
+	} else {
+		qWarning()<<"ERROR: No clientList";
+	}
 }
 
 

@@ -39,11 +39,15 @@ void AddressBook::configure(QString filename)
 }
 
 
-void AddressBook::activate(const bool on)
+void AddressBook::activate(const bool on, std::function<void(bool)> callBack)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.activate(on)) {
-		SimpleDataStore::activate(on);
+		SimpleDataStore::activate(on, callBack);
+	} else {
+		if(nullptr!=callBack) {
+			callBack(false);
+		}
 	}
 }
 

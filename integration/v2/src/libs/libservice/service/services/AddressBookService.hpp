@@ -4,6 +4,7 @@
 
 #include "discovery/AddressBook.hpp"
 #include "service/ServiceWrapper.hpp"
+#include "uptime/ConfigureHelper.hpp"
 
 #include <QSharedPointer>
 
@@ -13,8 +14,15 @@
 
 class AddressBookService: public ServiceWrapper<AddressBook>
 {
+private:
+	QSharedPointer<Node> mNode;
+	ConfigureHelper mConfigureHelper;
+
 public:
 	AddressBookService(QSharedPointer<AddressBook> addressBook, QStringList dependencies= {});
+
+public:
+	void configure(QSharedPointer<Node> node);
 
 	// ServiceWapper interface.
 public:
