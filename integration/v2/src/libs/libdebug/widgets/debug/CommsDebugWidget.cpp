@@ -34,7 +34,8 @@ void CommsDebugWidget::configure(QSharedPointer <Node> node)
 			auto cc=mNode->comms();
 			if(!cc.isNull()) {
 				if(!connect(cc.data(), &CommsChannel::commsConnectionStatusChanged, this, [this](const bool isConnected, const bool needsConnection) {
-				ui->widgetStatusConnectionActual->setLightOn(isConnected);
+				qDebug().noquote().nospace()<<"Connection status changed: isConnected="<<isConnected<<", isConnected="<<needsConnection;
+					ui->widgetStatusConnectionActual->setLightOn(isConnected);
 					ui->widgetStatusConnectionWanted->setLightOn(needsConnection);
 				}, OC_CONTYPE )) {
 					qWarning()<<"ERROR: Could not connect";

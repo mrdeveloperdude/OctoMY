@@ -252,6 +252,13 @@ public:
 	// Provide the service level manager
 	QSharedPointer<ServiceLevelManager> serviceLevelManager();
 
+	// Provide the server URL
+	QUrl serverURL();
+
+
+	// Actions
+public:
+
 	// Reset the identity and settings for this node. WARNING: This is destructive and only useful when debugging
 	void unbirth();
 

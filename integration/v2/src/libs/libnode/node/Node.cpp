@@ -122,6 +122,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				mLocalIdentityStore->configure(baseDir + "/local_identity.json");
 				mLocalAddressList->configure(defaultPortForNodeType(nodeType()));
 				mAddressBook->configure(baseDir + "/addressbook.json");
+				mDiscoveryService->configure(sharedThis());
 				mDiscovery->configure(sharedThis(), 1000, 60000, 20000, 40000);
 				mCarrier->configure();
 				mComms->configure(mCarrier, mKeyStore, mAddressBook);
@@ -491,6 +492,13 @@ QSharedPointer<ServiceLevelManager> Node::serviceLevelManager()
 {
 	OC_METHODGATE();
 	return mServiceLevelManager;
+}
+
+
+QUrl Node::serverURL()
+{
+	OC_METHODGATE();
+	return mServerURL;
 }
 
 

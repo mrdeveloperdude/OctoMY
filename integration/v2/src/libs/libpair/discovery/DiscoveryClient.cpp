@@ -98,6 +98,7 @@ bool DiscoveryClient::isActive()
 	return mTimer.isActive();
 }
 
+
 QSharedPointer<Key> DiscoveryClient::localKey()
 {
 	OC_METHODGATE();
@@ -109,8 +110,6 @@ QSharedPointer<Key> DiscoveryClient::localKey()
 	}
 	return nullptr;
 }
-
-
 
 
 void DiscoveryClient::setURL(const QUrl& serverURL)
