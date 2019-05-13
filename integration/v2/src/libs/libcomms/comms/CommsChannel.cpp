@@ -1073,7 +1073,7 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 							const qint64 timeLeft = static_cast<qint64>(cm.nextSend) - nows;
 							// Update most-urgent time
 							if(timeLeft < mMostUrgentSendingTime) {
-								const qint64 lastUrgent=mMostUrgentSendingTime;
+								//const qint64 lastUrgent=mMostUrgentSendingTime;
 								mMostUrgentSendingTime=qMax(timeLeft, 0LL);
 								//qDebug()<<courier->name()<<courier->id()<<courier->serial()<<" WITH TIME LEFT " << timeLeft<< " BUMPED URGENT FROM "<<lastUrgent<<" -> "<<mMostUrgentSendingTime;
 							}
@@ -1287,8 +1287,8 @@ void CommsChannel::onCarrierSendingOpportunity(const quint64 now)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		const auto ctHandshake =mPendingHandshakes.size();
-		const auto ctScheduled=mSchedule.size();
+		//const auto ctHandshake =mPendingHandshakes.size();
+		//const auto ctScheduled=mSchedule.size();
 		const auto rate=mCarrier->minimalPacketInterval();
 		const auto lastActive= now-rate;
 		const auto idles=mSessions.byIdleTime(lastActive);
