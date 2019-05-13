@@ -10,8 +10,6 @@ class Courier;
 
 class CourierSet: public QSet<QSharedPointer<Courier> >
 {
-private:
-
 public:
 	explicit CourierSet();
 	virtual ~CourierSet();

@@ -18,8 +18,8 @@ RateCalculator::RateCalculator(QString name, const quint64 logInterval)
 	, mLogInterval(logInterval)
 {
 	OC_METHODGATE();
-
 }
+
 
 void RateCalculator::countPacket(quint32 bytes, quint64 now)
 {
@@ -46,12 +46,6 @@ void RateCalculator::countPacket(quint32 bytes, quint64 now)
 		mBytesLog=0;
 	}
 }
-
-
-
-
-
-
 
 
 QString RateCalculator::operator()(RateCalculator &rc)

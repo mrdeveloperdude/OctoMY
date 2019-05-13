@@ -1191,12 +1191,22 @@ void CommsChannel::updateConnect()
 		const bool needsConnection = needConnection();
 		//qDebug()<<"Comms channel update isConnected="<<isConencted<<", needsConnection="<<needsConnection;
 		if(needsConnection != isConencted) {
-			const bool ok=mCarrier->connect(needsConnection);
+			const bool ok=mCarrier->startConnection(needsConnection);
 			qDebug()<<"Comms channel update decided to " << (needsConnection?"start":"stop")<< " carrier"<<" with result "<<ok;
 			if(needsConnection && ok) {
 				setHoneymoonEnd(utility::time::currentMsecsSinceEpoch<quint64>()+60*1000);
 			}
 		}
+	}
+}
+
+
+void CommsChannel::updateMaintainConnection()
+{
+	OC_METHODGATE();
+	if(!mCarrier.isNull()) {
+		const bool on=mConfigureHelper.isActivated() || (mCouriers.count()>0);
+		mCarrier->maintainConnection(on);
 	}
 }
 
@@ -1410,27 +1420,6 @@ void CommsChannel::setCourierRegistered(QSharedPointer<Courier> courier, bool re
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 
-		/*
-			//qDebug()<<"COMMS LEFT WITH "<<ct<<" COURIERS";
-			//qDebug()<< cc->getSummary();
-			// Adaptively start commschannel when there are couriers registered
-			const int ct=courierCount();
-
-			if(ct>0 && mWantToConnect) {
-				startComms();
-			} else {
-				if( isCommsStarted() )  {
-					//qDebug()<<"STOPPING COMMS ";
-					stopComms();
-				} else {
-					//qDebug()<<"COMMS ALREADY STOPPED";
-				}
-			}
-			*/
-
-
-
-
 		//qDebug()<<"SETTING COURIER "<<courier->toString()<<" TO "<<(reg?"REGISTERED":"UNREGISTERED");
 		if(!courier.isNull()) {
 			const bool ok=mCouriers.setRegistered(courier, reg);
@@ -1444,6 +1433,9 @@ void CommsChannel::setCourierRegistered(QSharedPointer<Courier> courier, bool re
 			}
 			setHookCourierSignals(courier, (ok || !reg));
 		}
+
+		// Make sure connection status is updated after courrier count changed
+		updateMaintainConnection();
 	}
 }
 

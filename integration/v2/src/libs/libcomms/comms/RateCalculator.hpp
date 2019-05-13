@@ -5,7 +5,6 @@
 
 class RateCalculator
 {
-
 public:
 	QString mName;
 	quint64 mLast; // Last time data passed
@@ -17,12 +16,10 @@ public:
 	quint64 mLogInterval; // Interval for logging. 0 means no logging
 
 public:
-
 	RateCalculator(QString name="Unnamed", const quint64 logInterval=0);
-
 	void countPacket(quint32 bytes=0, quint64 now=0);
-
 	QString operator()(RateCalculator &rc);
+
 };
 
 const QDebug &operator<<(QDebug &d, const RateCalculator &rc);

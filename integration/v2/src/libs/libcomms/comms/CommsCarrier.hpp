@@ -33,6 +33,9 @@ private:
 	// NOTE: Connected is a relative term. It simply means "a package was successfully transmitted within some time limit"
 	bool mConnected;
 
+	// Do we want to be enabled?
+	bool mConnectionWanted;
+
 	ConfigureHelper mConfigureHelper;
 
 protected:
@@ -48,13 +51,27 @@ public:
 	virtual ~CommsCarrier();
 
 public:
+	// ConfigureHelper style configure
 	void configure();
+	// ConfigureHelper style activate
 	bool activate(bool on);
-	bool connect(bool on);
+	// Comms spesific method to set wether or not we wish to maintain a connection
+	bool startConnection(bool on);
+
+
+	// Return if we are currently actively trying to maintain a connection
+	bool isStarted() const;
+
+	// Return the very loose notion we have about actually being connected
+	bool isConnected() const;
+
+
+public:
+	void maintainConnection(bool on);
 
 private:
+	void updateMaintainConnection();
 	void detectConnectionChanges(const quint64 now);
-
 
 private slots:
 	void onOpportunityTimer();
@@ -68,8 +85,6 @@ public slots:
 
 	void setListenAddress(NetworkAddress address);
 
-	bool isStarted() const;
-	bool isConnected() const;
 
 	qint64 writeData(const QByteArray &datagram, const NetworkAddress &address);
 	qint64 readData(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr);
@@ -77,6 +92,7 @@ public slots:
 	bool hasPendingData();
 	qint64 pendingDataSize();
 
+	// Return the last error string, if any
 	QString errorString();
 
 	NetworkAddress address();
@@ -87,7 +103,6 @@ public slots:
 	quint64 setDesiredOpportunityInterval(quint64 interval);
 
 	quint64 opportunityInterval();
-
 
 // CommsCarrier internal interface methods
 protected:

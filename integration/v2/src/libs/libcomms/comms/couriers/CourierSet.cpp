@@ -14,6 +14,7 @@ CourierSet::CourierSet()
 	OC_METHODGATE();
 }
 
+
 CourierSet::~CourierSet()
 {
 	OC_METHODGATE();
@@ -32,6 +33,7 @@ void CourierSet::setCommsEnabled(bool enable)
 		}
 	}
 }
+
 
 bool CourierSet::commsEnabled(bool conservative)
 {
@@ -53,6 +55,7 @@ bool CourierSet::commsEnabled(bool conservative)
 		return activeCount>0;
 	}
 }
+
 
 bool  CourierSet::setRegistered(QSharedPointer<Courier> courier, bool reg)
 {

@@ -20,6 +20,7 @@ quint64 CommsCarrier::sTotalTxCount = 0;
 CommsCarrier::CommsCarrier(QObject *parent)
 	: QObject(parent)
 	, mConnected(false)
+	, mConnectionWanted(false)
 	, mConfigureHelper("CommsCarrier", true, true, false, true, false)
 	, mRXRate("RX RATE", 10000)
 	, mTXRate("TX RATE", 10000)
@@ -49,20 +50,36 @@ void CommsCarrier::configure()
 }
 
 
-bool CommsCarrier::connect(bool activated)
+bool CommsCarrier::activate(bool activeWanted)
+{
+	OC_METHODGATE();
+	bool success=true;
+	if(mConfigureHelper.activate(activeWanted)) {
+		if(!activeWanted) {
+			// Make sure to initiate the termination of any ongoing connections if we deactivate
+			startConnection(false);
+		}
+	} else {
+		success=false;
+	}
+	return success;
+}
+
+
+bool CommsCarrier::startConnection(bool activated)
 {
 	OC_METHODGATE();
 	bool success=true;
 	if(activated) {
 		if(mConfigureHelper.isActivated()) {
 			if(isStarted()) {
-				connect(false);
+				startConnection(false);
 			}
 			success=activateImp(true);
 			if(success) {
 				mSendingTimer.start();
 			} else {
-				connect(false);
+				startConnection(false);
 			}
 		}
 	} else {
@@ -74,19 +91,20 @@ bool CommsCarrier::connect(bool activated)
 	return success;
 }
 
-bool CommsCarrier::activate(bool activeWanted)
+
+
+bool CommsCarrier::isStarted() const
 {
 	OC_METHODGATE();
-	bool success=true;
-	if(mConfigureHelper.activate(activeWanted)) {
-		if(!activeWanted) {
-			// Make sure to initiate the termination of any ongoing connections if we deactivate
-			connect(false);
-		}
-	} else {
-		success=false;
-	}
-	return success;
+	const bool isToo=isActiveImp();
+	return (mSendingTimer.isActive() && isToo);
+}
+
+
+bool CommsCarrier::isConnected() const
+{
+	OC_METHODGATE();
+	return mConnected;
 }
 
 
@@ -97,6 +115,26 @@ void CommsCarrier::setListenAddress(NetworkAddress address)
 		setAddressImp(address);
 	}
 }
+
+
+void CommsCarrier::maintainConnection(bool on)
+{
+	OC_METHODGATE();
+	mConnectionWanted=on;
+	updateMaintainConnection();
+}
+
+
+void CommsCarrier::updateMaintainConnection()
+{
+	OC_METHODGATE();
+	const bool wasOn=isStarted();
+	const bool wantOn=mConfigureHelper.isActivated() || (mConnectionWanted);
+	if(wasOn!=wantOn) {
+		startConnection(wantOn);
+	}
+}
+
 
 
 void CommsCarrier::detectConnectionChanges(const quint64 now)
@@ -198,20 +236,6 @@ void CommsCarrier::setHookCarrierSignals(QObject &ob, bool hook)
 ///////////////////////////////////////////////////////////
 
 
-
-bool CommsCarrier::isStarted() const
-{
-	OC_METHODGATE();
-	const bool isToo=isActiveImp();
-	return (mSendingTimer.isActive() && isToo);
-}
-
-
-bool CommsCarrier::isConnected() const
-{
-	OC_METHODGATE();
-	return mConnected;
-}
 
 
 qint64 CommsCarrier::writeData(const QByteArray &datagram, const NetworkAddress &address)

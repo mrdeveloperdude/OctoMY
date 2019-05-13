@@ -125,6 +125,8 @@ public:
 	// [Dis]connect based on our needConnection()
 	void updateConnect();
 
+protected:
+	void updateMaintainConnection();
 
 protected:
 	void appendLog(QString);
