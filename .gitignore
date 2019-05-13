@@ -74,3 +74,13 @@ libzeroconf*
 src/libs/.qmake.stash
 
 /src/zoo/www/*
+
+
+
+# Temporary
+content/website/style.css.mustache
+content/website/style.css.mustache.mustache
+integration/release_management/DOCKER_PREP_OK
+integration/v2/compile_commands.json
+integration/v2/junk/*
+integration/v2/src/libs/*_old/*
