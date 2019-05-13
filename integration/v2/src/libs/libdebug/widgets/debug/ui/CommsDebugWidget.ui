@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>222</width>
+    <width>247</width>
     <height>115</height>
    </rect>
   </property>
@@ -124,6 +124,16 @@
      </property>
     </spacer>
    </item>
+   <item row="2" column="0" colspan="3">
+    <widget class="CouriersDebugWidget" name="widget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -131,6 +141,12 @@
    <class>LightWidget</class>
    <extends>QWidget</extends>
    <header location="global">widgets/LightWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CouriersDebugWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/debug/CouriersDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
