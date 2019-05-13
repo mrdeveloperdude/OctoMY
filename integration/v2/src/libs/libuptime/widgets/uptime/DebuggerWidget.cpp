@@ -69,7 +69,8 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 	OC_METHODGATE();
 	mNode=node;
 	setEnabled(!mNode.isNull());
-	ui->widgetHeaderComms->configure(mNode);
+	ui->widgetHeaderCommsChannel->configure(mNode);
+	ui->widgetHeaderCommsCarrier->configure(mNode);
 	ui->widgetHeaderServices->configure(mNode);
 	ui->widgetHeaderKeyStore->configure(mNode);
 	ui->widgetHeaderLocalIdentity->configure(mNode);
