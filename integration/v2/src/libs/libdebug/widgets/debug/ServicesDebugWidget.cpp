@@ -17,6 +17,7 @@ ServicesDebugWidget::ServicesDebugWidget(QWidget *parent)
 	, mConfigureHelper("ServicesDebugWidget", true, false, false, true, false)
 	, mLastUpdate(0)
 {
+	OC_METHODGATE();
 	ui->setupUi(this);
 	auto ipt=new QTableWidgetItem();
 	ipt->setFlags( (ipt->flags()) & (~(Qt::ItemIsUserCheckable| Qt::ItemIsEditable)) );
@@ -29,6 +30,7 @@ ServicesDebugWidget::ServicesDebugWidget(QWidget *parent)
 
 ServicesDebugWidget::~ServicesDebugWidget()
 {
+	OC_METHODGATE();
 	delete ui;
 }
 
@@ -78,7 +80,8 @@ QTableWidgetItem *ServicesDebugWidget::tableItem(const QString s)
 	return i;
 }
 
-void ServicesDebugWidget::triggerUpdate(){
+void ServicesDebugWidget::triggerUpdate()
+{
 	OC_METHODGATE();
 	mLastUpdate=utility::time::currentMsecsSinceEpoch<quint64>();
 	if(ui->checkBoxUpdateRealtime->isChecked()) {
@@ -128,7 +131,7 @@ void ServicesDebugWidget::updateServiceTable()
 		ui->tableWidgetServices->setRowCount(1);
 		setServiceTableItem(0, "ERROR: NO NODE", false, false);
 	}
-	if(sig!=mLastSig){
+	if(sig!=mLastSig) {
 		mLastSig=sig;
 		triggerUpdate();
 	}

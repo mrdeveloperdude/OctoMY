@@ -431,9 +431,9 @@ void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSe
 				// Is there a change?
 				if(currentlyWanted != wanted) {
 					// Recurse asynchronously
-					qDebug()<<" --- Starting change set: "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION");
+					qDebug()<<" --- Change set: "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION")<<" STARTED";
 					service->serviceChangeActivation(wanted, [=](bool ok) {
-						qDebug()<<" ---- Changing service : "<<name<<" from "<<(currentlyWanted?"ACTIVE":"INACTIVE")<<" to "<<(wanted?"ACTIVE":"INACTIVE");
+						qDebug()<<" ---- Change set "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION")<<" "<<(ok?"SUCCEEDED":"FAILED");
 						if(sync->end(ok)) {
 							// qDebug()<<" ------ Recursing at end: "<<name<<" with "<<active;
 							delete sync;

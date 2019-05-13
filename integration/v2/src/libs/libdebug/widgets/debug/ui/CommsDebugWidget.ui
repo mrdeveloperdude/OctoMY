@@ -125,7 +125,7 @@
     </spacer>
    </item>
    <item row="2" column="0" colspan="3">
-    <widget class="CouriersDebugWidget" name="widget" native="true">
+    <widget class="CouriersDebugWidget" name="widgetCouriersDebug" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>

@@ -6,7 +6,7 @@
 
 AddressBookService::AddressBookService(QSharedPointer<AddressBook> addressBook, QStringList dependencies)
 	: ServiceWrapper<AddressBook>(addressBook, "AddressBook", dependencies)
-	, mConfigureHelper("AddressBookService", true, true, false, true, false)
+	, mConfigureHelper("AddressBookService", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 {
 	OC_METHODGATE();
 }

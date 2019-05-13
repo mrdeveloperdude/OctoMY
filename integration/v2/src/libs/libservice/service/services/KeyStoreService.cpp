@@ -14,10 +14,15 @@ void KeyStoreService::serviceWrapperActivate(QSharedPointer<KeyStore> keystore, 
 	//       Unloading is never necessary so this is fine.
 	if(!keystore.isNull()) {
 		keystore->activate(on, [callBack](bool ok) {
-			callBack(ok);
+			if(nullptr!=callBack) {
+				callBack(ok);
+			}
 		});
 	} else {
 		qWarning()<<"ERROR: No keystore";
+		if(nullptr!=callBack) {
+			callBack(false);
+		}
 	}
 
 }

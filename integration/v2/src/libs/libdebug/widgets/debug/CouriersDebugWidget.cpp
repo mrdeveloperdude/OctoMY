@@ -19,6 +19,7 @@ CouriersDebugWidget::CouriersDebugWidget(QWidget *parent)
 	, mConfigureHelper("CouriersDebugWidget", true, false, false, true, false)
 	, mLastUpdate(0)
 {
+	OC_METHODGATE();
 	ui->setupUi(this);
 	auto ipt=new QTableWidgetItem();
 	ipt->setFlags( (ipt->flags()) & (~(Qt::ItemIsUserCheckable| Qt::ItemIsEditable)) );
@@ -31,6 +32,7 @@ CouriersDebugWidget::CouriersDebugWidget(QWidget *parent)
 
 CouriersDebugWidget::~CouriersDebugWidget()
 {
+	OC_METHODGATE();
 	delete ui;
 }
 
@@ -134,23 +136,26 @@ void CouriersDebugWidget::updateServiceTable()
 {
 	OC_METHODGATE();
 	QString sig="";
+	ui->tableWidgetCouriers->setRowCount(1);
 	if(!mNode.isNull()) {
-		ui->tableWidgetCouriers->setRowCount(1);
 		auto cc=mNode->comms();
 		if(!cc.isNull()) {
 			auto couriers=cc->couriers();
-			ui->tableWidgetCouriers->setRowCount(couriers.count());
-			int i=0;
-			for(auto courier:couriers) {
-				sig+=setCourierTableItem(i++, courier);
+			auto ct=couriers.count();
+			if(ct>0) {
+				ui->tableWidgetCouriers->setRowCount(ct);
+				int i=0;
+				for(auto courier:couriers) {
+					sig+=setCourierTableItem(i++, courier);
+				}
+			} else {
+				sig+=setCourierTableItem(0, "No couriers");
 			}
 		} else {
-			ui->tableWidgetCouriers->setRowCount(1);
-			setCourierTableItem(0, "ERROR: NO CC");
+			sig+=setCourierTableItem(0, "ERROR: NO CC");
 		}
 	} else {
-		ui->tableWidgetCouriers->setRowCount(1);
-		setCourierTableItem(0, "ERROR: NO NODE");
+		sig+=setCourierTableItem(0, "ERROR: NO NODE");
 	}
 	if(sig!=mLastSig) {
 		mLastSig=sig;

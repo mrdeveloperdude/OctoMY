@@ -1,7 +1,6 @@
 #ifndef DISCOVERYCLIENT_HPP
 #define DISCOVERYCLIENT_HPP
 
-
 #include "node/NodeRole.hpp"
 #include "AddressBook.hpp"
 #include "address/Associate.hpp"
@@ -12,8 +11,6 @@
 #include <QObject>
 #include <QDateTime>
 #include <QUrl>
-
-
 
 
 class Node;
@@ -109,7 +106,6 @@ public:
 	virtual ~DiscoveryClient();
 
 public:
-
 	void configure(QSharedPointer<Node> node
 				   , quint64 triggeredInterval = 1000 // When triggered we want to make a discovery call every second
 				   , quint64 idleInterval = 60000 // When not triggered we conduct a discovery once per minute
@@ -132,8 +128,6 @@ public:
 	void discover();
 
 	QSharedPointer<Node> node();
-
-
 
 private slots:
 	void onTimer();

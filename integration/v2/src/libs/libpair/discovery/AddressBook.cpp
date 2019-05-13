@@ -22,12 +22,10 @@ AddressBook::AddressBook(QObject *parent)
 }
 
 
-
 AddressBook::~AddressBook()
 {
 	OC_METHODGATE();
 }
-
 
 
 void AddressBook::configure(QString filename)
@@ -59,8 +57,6 @@ bool AddressBook::isActivated() const
 }
 
 
-
-
 bool AddressBook::fromMap(QVariantMap data)
 {
 	OC_METHODGATE();
@@ -75,6 +71,7 @@ bool AddressBook::fromMap(QVariantMap data)
 	}
 	return false;
 }
+
 
 QVariantMap AddressBook::toMap()
 {
@@ -121,6 +118,7 @@ int AddressBook::associateCount() const
 	return 0;
 }
 
+
 QSharedPointer<Associate> AddressBook::associateByID(const QString &id)
 {
 	OC_METHODGATE();
@@ -148,7 +146,6 @@ QSharedPointer<Associate> AddressBook::removeAssociate(const QString &id)
 	}
 	return ret;
 }
-
 
 
 void AddressBook::upsertAssociate(QSharedPointer<Associate> associate)
@@ -209,7 +206,6 @@ void AddressBook::setHookSignals(QObject &ob, bool hook)
 		}
 	}
 }
-
 
 
 // TODO: Look at converting this to use toStrting() and adding cast operators for QString like is common in many other classes

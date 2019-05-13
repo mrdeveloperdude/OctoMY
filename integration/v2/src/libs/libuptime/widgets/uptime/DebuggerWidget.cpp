@@ -45,7 +45,9 @@ static void configTryToggleForServiceLevel(TryToggle *tt, const QString serviceL
 				auto slm=node->serviceLevelManager();
 				if(!slm.isNull()) {
 					slm->enableLevel(serviceLevel, positive(current), [=](bool ok) {
-						tt->setState(saturate(ok?current:last), false);
+						auto res=saturate(ok?current:last);
+						qDebug()<<"TRY TOGGLE '"<<serviceLevel<<"' OK: "<<ok<<" RESULTED IN: "<<res;
+						tt->setState(res, false);
 					});
 				} else {
 					qWarning()<<"WARNING: Could not switch discovery service, no service manager";
@@ -282,13 +284,11 @@ void DebuggerWidget::on_pushButtonTuckWindow_toggled(bool checked)
 	if(checked) {
 		tuck();
 	}
-
 	if(!mNode.isNull()) {
 		//Place us to the right of main window
 		auto window=mNode->nodeWindow();
 		if(!window.isNull()) {
 			if(checked) {
-
 				if(connect(window.data(), &NodeWindow::nodeWindowMoved, this, &DebuggerWidget::tuck, OC_CONTYPE)) {
 					qWarning()<<"ERROR: Could not connect";
 				}

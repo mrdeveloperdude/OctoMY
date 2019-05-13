@@ -35,7 +35,6 @@ public:
 
 // Courier interface
 public:
-
 	//Let the CommChannel know what we want
 	CourierMandate mandate() const Q_DECL_OVERRIDE;
 
@@ -48,7 +47,6 @@ public:
 	quint16 dataReceived(QDataStream &ds, quint16 availableBytes) Q_DECL_OVERRIDE;
 
 signals:
-
 	void authenticationUpdate();
 
 };

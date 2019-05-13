@@ -118,15 +118,25 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				// Configure all services
 				//////////////////////////////////
 
+				//mKeyStoreService->configure();
 				mKeyStore->configure(baseDir + "/keystore.json", true);
+
 				mLocalIdentityStoreService->configure(sharedThis());
 				mLocalIdentityStore->configure(baseDir + "/local_identity.json");
+
+				//mLocalAddressListService->configure();
 				mLocalAddressList->configure(defaultPortForNodeType(nodeType()));
+
+				mAddressBookService->configure(sharedThis());
 				mAddressBook->configure(baseDir + "/addressbook.json");
+
 				mDiscoveryService->configure(sharedThis());
 				mDiscovery->configure(sharedThis(), 1000, 60000, 20000, 40000);
+
 				mCarrierService->configure(sharedThis());
 				mCarrier->configure();
+
+				//mCommsService->configure();
 				mComms->configure(mCarrier, mKeyStore, mAddressBook);
 
 				// Register services with the service manager
@@ -539,9 +549,6 @@ bool Node::createBaseDir()
 ////////////////////////////////////////////////////////////////////////////////
 
 
-
-
-
 QString Node::name()
 {
 	OC_METHODGATE();
@@ -579,7 +586,6 @@ QString Node::name()
 }
 
 
-
 void Node::setNodeIdentity(QVariantMap map)
 {
 	OC_METHODGATE();
@@ -589,6 +595,7 @@ void Node::setNodeIdentity(QVariantMap map)
 	mLocalIdentityStore->save();
 	identityChanged();
 }
+
 
 void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 {
@@ -676,6 +683,7 @@ void Node::identityChanged()
 {
 	OC_METHODGATE();
 }
+
 
 QSharedPointer<Node> Node::sharedThis()
 {
@@ -864,9 +872,6 @@ TryToggleState Node::updateOnlineStatus(const TryToggleState currentTryState)
 */
 
 
-
-
-
 bool Node::needsConnection()
 {
 	OC_METHODGATE();
@@ -913,16 +918,12 @@ bool Node::isConnected()
 }
 
 
-
-
 void Node::setConnected(bool val)
 {
 	OC_METHODGATE();
 	//TODO: Implement
 	(void)val;
 }
-
-
 
 // [Un]register node specific couriers with comms
 
@@ -938,7 +939,6 @@ void Node::setNodeCouriersRegistration(const bool reg)
 		}
 	}
 }
-
 
 
 // [Un]register client specific couriers with comms
@@ -965,7 +965,6 @@ void Node::setCouriersRegistration(const bool reg)
 */
 
 
-
 // Update client specific courier registration with comms depending on need
 void Node::updateClientCouriersRegistration()
 {
@@ -976,8 +975,6 @@ void Node::updateClientCouriersRegistration()
 		qWarning()<<"ERROR: No clientList";
 	}
 }
-
-
 
 
 // Update node specific courier registration with comms depending on need
@@ -1049,7 +1046,6 @@ void Node::setHookSensorSignals(QObject &o, bool hook)
 }
 
 
-
 void Node::setHookCommsSignals(QObject &o, bool hook)
 {
 	OC_METHODGATE();
@@ -1083,12 +1079,14 @@ void Node::onCommsError(QString e)
 	//qDebug()<<"NODE UNIMP Comms error: "<<e;
 }
 
+
 void Node::onCommsClientAdded(CommsSession *c)
 {
 	Q_UNUSED(c);
 	OC_METHODGATE();
 	//qDebug()<<"NODE UNIMP Client added: "<<c->toString();
 }
+
 
 void Node::onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection)
 {
@@ -1116,11 +1114,13 @@ void Node::onCompassUpdated(QCompassReading *r)
 	OC_METHODGATE();
 }
 
+
 void Node::onAccelerometerUpdated(QAccelerometerReading *r)
 {
 	Q_UNUSED(r);
 	OC_METHODGATE();
 }
+
 
 void Node::onGyroscopeUpdated(QGyroscopeReading *r)
 {

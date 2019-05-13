@@ -64,7 +64,6 @@ public:
 };
 
 
-
 const QDebug &operator<<(QDebug &d, AddressBook &ks);
 
 

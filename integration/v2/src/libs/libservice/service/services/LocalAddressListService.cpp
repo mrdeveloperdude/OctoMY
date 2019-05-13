@@ -10,5 +10,7 @@ void LocalAddressListService::serviceWrapperActivate(QSharedPointer<LocalAddress
 {
 	OC_METHODGATE();
 	localAddressList->activate(on);
-	callBack(true);
+	if(nullptr!= callBack){
+		callBack(true);
+	}
 }

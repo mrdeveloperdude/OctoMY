@@ -24,11 +24,13 @@ DiscoveryCourier::DiscoveryCourier(QSharedPointer<Associate> ass, QSharedPointer
 	qDebug()<<"CREATED DiscoveryCourier with PART="<<mAss->toString();
 }
 
+
 DiscoveryCourier::~DiscoveryCourier()
 {
 	OC_METHODGATE();
 	qDebug()<<"DELETED DiscoveryCourier with PART="<<mAss->toString();
 }
+
 
 //Let the CommChannel know what we want
 CourierMandate DiscoveryCourier::mandate() const
@@ -36,7 +38,6 @@ CourierMandate DiscoveryCourier::mandate() const
 	OC_METHODGATE();
 	return CourierMandate(sizeof(quint32)+sizeof(quint16)+sizeof(quint64), 10, mLastSend+1000, true, true);
 }
-
 
 
 //Override to act on sending opportunity.
@@ -70,10 +71,7 @@ quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 	<< btAddr
 	<< ")";
 	return static_cast<quint16>(bytes);
-
-
 }
-
 
 
 quint16 DiscoveryCourier::dataReceived(QDataStream &ds, quint16 availableBytes)

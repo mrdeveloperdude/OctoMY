@@ -73,7 +73,7 @@
       <bool>false</bool>
      </property>
      <property name="columnCount">
-      <number>5</number>
+      <number>8</number>
      </property>
      <attribute name="horizontalHeaderStretchLastSection">
       <bool>true</bool>
@@ -93,12 +93,27 @@
      </column>
      <column>
       <property name="text">
-       <string>Expected</string>
+       <string>Destination</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>Actual</string>
+       <string>ID</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Serial</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Last oppertunity</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Mandate</string>
       </property>
      </column>
      <column>
