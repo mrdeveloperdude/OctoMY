@@ -10,6 +10,7 @@
 
 class QTableWidgetItem;
 class Node;
+class Courier;
 
 namespace Ui
 {
@@ -38,7 +39,8 @@ public:
 	void updateServiceTable();
 
 private:
-	void setServiceTableItem(const int index, const QString serviceName, const bool expected, const bool actual);
+	QString setCourierTableItem(const int index, const QSharedPointer<Courier> courier);
+	QString setCourierTableItem(const int index, const QString serviceName);
 	QTableWidgetItem *tableItem(const bool s);
 	QTableWidgetItem *tableItem(const QString s);
 	void triggerUpdate();

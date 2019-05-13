@@ -9,8 +9,9 @@
 #include "utility/color/Color.hpp"
 
 #include "node/Node.hpp"
-#include "service/ServiceLevelManager.hpp"
-#include "service/ServiceManager.hpp"
+
+#include "comms/CommsChannel.hpp"
+#include "comms/couriers/Courier.hpp"
 
 CouriersDebugWidget::CouriersDebugWidget(QWidget *parent)
 	: QWidget(parent)
@@ -41,8 +42,10 @@ void CouriersDebugWidget::configure(QSharedPointer <Node> node)
 		mNode=node;
 		if(!mNode.isNull()) {
 			ui->tableWidgetCouriers->setRowCount(1);
-			auto slm=mNode->serviceLevelManager();
-			if(!slm.isNull()) {
+			auto cc=mNode->comms();
+			if(!cc.isNull()) {
+				auto couriers=cc->couriers();
+
 				/*
 				if(!connect(slm.data(), &ServiceLevelManager::CouriersChanged, this, &CouriersDebugWidget::onCouriersChanged, OC_CONTYPE )) {
 					qWarning()<<"ERROR: Could not connect";
@@ -81,7 +84,8 @@ QTableWidgetItem *CouriersDebugWidget::tableItem(const QString s)
 	return i;
 }
 
-void CouriersDebugWidget::triggerUpdate(){
+void CouriersDebugWidget::triggerUpdate()
+{
 	OC_METHODGATE();
 	mLastUpdate=utility::time::currentMsecsSinceEpoch<quint64>();
 	if(ui->checkBoxUpdateRealtime->isChecked()) {
@@ -89,14 +93,40 @@ void CouriersDebugWidget::triggerUpdate(){
 	}
 }
 
+QString	CouriersDebugWidget::setCourierTableItem(const int index, const QSharedPointer<Courier> courier)
+{
+	OC_METHODGATE();
+	QString ret;
+	if(!courier.isNull()) {
+		const auto name=courier->name();
+		const auto dest=courier->destination();
+		const auto id=courier->id();
+		const auto serial=courier->serial();
+		const auto lastOpportunity=courier->lastOpportunity();
+		const auto mandate=courier->mandate();
+		ret=QString("%1-%2-%3-%4-%5-%6-%7").arg(index).arg(name).arg(dest).arg(id).arg(serial).arg(lastOpportunity).arg(mandate.toString());
+		ui->tableWidgetCouriers->setItem(index, 0, tableItem(QString::number(index)));
+		ui->tableWidgetCouriers->setItem(index, 1, tableItem(name));
+		ui->tableWidgetCouriers->setItem(index, 2, tableItem(dest));
+		ui->tableWidgetCouriers->setItem(index, 3, tableItem(id));
+		ui->tableWidgetCouriers->setItem(index, 4, tableItem(serial));
+		ui->tableWidgetCouriers->setItem(index, 5, tableItem(lastOpportunity));
+		ui->tableWidgetCouriers->setItem(index, 6, tableItem(mandate.toString()));
+	} else {
+		ui->tableWidgetCouriers->setItem(index, 0, tableItem(QString::number(index)));
+		ret="NO Courier";
+		ui->tableWidgetCouriers->setItem(index, 1, tableItem(ret));
+	}
+	return ret;
+}
 
-void CouriersDebugWidget::setServiceTableItem(const int index, const QString serviceName, const bool expected, const bool actual)
+
+QString CouriersDebugWidget::setCourierTableItem(const int index, const QString string)
 {
 	OC_METHODGATE();
 	ui->tableWidgetCouriers->setItem(index, 0, tableItem(QString::number(index)));
-	ui->tableWidgetCouriers->setItem(index, 1, tableItem(serviceName));
-	ui->tableWidgetCouriers->setItem(index, 2, tableItem(expected));
-	ui->tableWidgetCouriers->setItem(index, 3, tableItem(actual));
+	ui->tableWidgetCouriers->setItem(index, 1, tableItem(string));
+	return string;
 }
 
 
@@ -106,32 +136,23 @@ void CouriersDebugWidget::updateServiceTable()
 	QString sig="";
 	if(!mNode.isNull()) {
 		ui->tableWidgetCouriers->setRowCount(1);
-		auto slm=mNode->serviceLevelManager();
-		if(!slm.isNull()) {
-			auto sm=slm->serviceManager();
-			if(!sm.isNull()) {
-				auto Couriers=sm->all();
-				ui->tableWidgetCouriers->setRowCount(Couriers.count());
-				int i=0;
-				for(QString service:Couriers) {
-					const bool expected=sm->activatedWanted(service);
-					const bool actual=sm->activatedActual(service);
-					sig+=QString("%1-%2-%3-%4").arg(i).arg(service).arg(expected).arg(actual);
-					setServiceTableItem(i++, service, expected, actual);
-				}
-			} else {
-				ui->tableWidgetCouriers->setRowCount(1);
-				setServiceTableItem(0, "ERROR: NO SM", false, false);
+		auto cc=mNode->comms();
+		if(!cc.isNull()) {
+			auto couriers=cc->couriers();
+			ui->tableWidgetCouriers->setRowCount(couriers.count());
+			int i=0;
+			for(auto courier:couriers) {
+				sig+=setCourierTableItem(i++, courier);
 			}
 		} else {
 			ui->tableWidgetCouriers->setRowCount(1);
-			setServiceTableItem(0, "ERROR: NO SLM", false, false);
+			setCourierTableItem(0, "ERROR: NO CC");
 		}
 	} else {
 		ui->tableWidgetCouriers->setRowCount(1);
-		setServiceTableItem(0, "ERROR: NO NODE", false, false);
+		setCourierTableItem(0, "ERROR: NO NODE");
 	}
-	if(sig!=mLastSig){
+	if(sig!=mLastSig) {
 		mLastSig=sig;
 		triggerUpdate();
 	}

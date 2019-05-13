@@ -28,16 +28,19 @@ Courier::Courier(QString name, quint32 id, QSharedPointer<CommsChannel> cc, QObj
 	OC_METHODGATE();
 }
 
+
 Courier::~Courier()
 {
 	OC_METHODGATE();
 }
+
 
 void Courier::setDestination(const QString sig)
 {
 	OC_METHODGATE();
 	mDestination=sig;
 }
+
 
 const QString  &Courier::destination() const
 {
@@ -51,6 +54,7 @@ QSharedPointer<CommsChannel> Courier::comms() const
 	OC_METHODGATE();
 	return mComms;
 }
+
 
 void Courier::setForwardRescheduleSignal(QObject &ob, bool fwd)
 {
@@ -66,11 +70,13 @@ void Courier::setForwardRescheduleSignal(QObject &ob, bool fwd)
 	}
 }
 
+
 quint64 Courier::lastOpportunity() const
 {
 	OC_METHODGATE();
 	return mLastOpportunity;
 }
+
 
 void  Courier::setLastOpportunity(quint64 now)
 {
@@ -78,11 +84,13 @@ void  Courier::setLastOpportunity(quint64 now)
 	mLastOpportunity=now;
 }
 
+
 quint32 Courier::id()const
 {
 	OC_METHODGATE();
 	return mID;
 }
+
 
 QString Courier::name() const
 {
@@ -90,11 +98,13 @@ QString Courier::name() const
 	return mName;
 }
 
+
 quint32 Courier::serial()const
 {
 	OC_METHODGATE();
 	return mSerial;
 }
+
 
 QString Courier::toString() const
 {
@@ -102,6 +112,7 @@ QString Courier::toString() const
 	QString out="Courier{name="+mName+", id="+QString::number(mID)+", dest= "+mDestination+", serial="+QString::number(mSerial)+", RX="+(mandate().receiveActive?"ON":"OFF")+", TX="+(mandate().sendActive?"ON":"OFF")+"}";
 	return out;
 }
+
 
 // Update courier state when channel has opportunity
 void Courier::update(quint64 now)
