@@ -33,22 +33,24 @@
 
 class Settings;
 
-/** The AppLauncher class wraps a an app main class providing it with all the necessary services that are important before and after the main eventloop of the application runs
- *  which is to say before and after qApp.exec()
+/** The AppLauncher class wraps an app main class providing it with all the
+ *  necessary services that are important before and after the main eventloop
+ *  of the application runs which is to say before and after qApp.exec()
  *
  *  This includes:
  *  + Parsing of commandline parameters
  *  + Maintaining environment variables
- *  + Selecting QCodeApplication or QApplication for headless or gui application respectively
+ *  + Selecting QCodeApplication or QApplication for headless or gui application
+ *    respectively
  *  + Any OS level signal/event handling
  *  + Any OS level privilege stuff
  *  + Any OS Level watchdog stuff
  *  + Ant OS level whatever!
- *  + Capturing and cleanup in case of exceptions and OS level lifecycle events such as sleep/termination etc.
+ *  + Capturing and cleanup in case of exceptions and OS level lifecycle events
+ *    such as sleep/termination etc.
  *  + API for graceful termination
  *
 A common application launch looks roughly like this:
-
 
 AppLauncher constructed
 AppLauncher configure
@@ -64,9 +66,9 @@ AppLauncher nodeActivateDone(on)
 Node appWindow()
 Agent nodeWindow()
 
+... And application is running!
 
-... Application is running!
-
+A common application shutdown looks roughly like this:
 
 AppLauncher nodeRequestClose()
 AppLauncher appActivate(false)
@@ -76,7 +78,7 @@ AppLauncher nodeActivateChanged(false)
 AgentWindow closeEvent()
 AppLauncher<T>::run()
 
-... Application returns to OS
+... And application returns to O/S
 */
 
 

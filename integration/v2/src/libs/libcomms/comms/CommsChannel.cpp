@@ -54,7 +54,6 @@ CommsChannel::CommsChannel(QObject *parent)
 	, mLocalSessionID(0)
 	, mTXScheduleRate("CC TX SCHED")
 	, mHoneyMoonEnd(0)
-//	, mConnected(false)
 	, mConfigureHelper("CommsChannel", true, true, false, true, false)
 {
 	OC_METHODGATE();
@@ -65,7 +64,6 @@ CommsChannel::CommsChannel(QObject *parent)
 CommsChannel::~CommsChannel()
 {
 	OC_METHODGATE();
-	//mCarrier.setHookCarrierSignals(*this, false);
 }
 
 

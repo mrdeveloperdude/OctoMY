@@ -3,6 +3,7 @@
 
 #include "security/KeyStore.hpp"
 #include "service/ServiceWrapper.hpp"
+#include "uptime/ConfigureHelper.hpp"
 
 #include <QSharedPointer>
 
@@ -15,8 +16,14 @@
 
 class KeyStoreService: public ServiceWrapper<KeyStore>
 {
+private:
+	ConfigureHelper mConfigureHelper;
+
 public:
-		KeyStoreService(QSharedPointer<KeyStore> keystorem, QStringList dependencies={});
+	KeyStoreService(QSharedPointer<KeyStore> keystorem, QStringList dependencies= {});
+
+public:
+	void configure();
 
 	// ServiceWapper interface.
 public:

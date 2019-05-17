@@ -3,6 +3,7 @@
 
 #include "address/LocalAddressList.hpp"
 #include "service/ServiceWrapper.hpp"
+#include "uptime/ConfigureHelper.hpp"
 
 #include <QSharedPointer>
 
@@ -12,8 +13,14 @@
 
 class LocalAddressListService: public ServiceWrapper<LocalAddressList>
 {
-public:
+private:
+	ConfigureHelper mConfigureHelper;
+
+	public:
 	LocalAddressListService(QSharedPointer<LocalAddressList> localAddressList, QStringList dependencies=QStringList());
+
+public:
+	void configure();
 
 	// ServiceWapper interface.
 public:

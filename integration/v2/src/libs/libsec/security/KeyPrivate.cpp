@@ -97,12 +97,16 @@ void KeyPrivate::parse(bool publicOnly)
 	mID="";
 	if(publicOnly) {
 		QByteArray raw=mPubKey.toUtf8();
-		int ret=mPKI.parsePublicKey(raw);
-		if(0==ret) {
-			mValidPublic=true;
+		if(mPubKey.size()>0) {
+			int ret=mPKI.parsePublicKey(raw);
+			if(0==ret) {
+				mValidPublic=true;
+			} else {
+				qDebug()<<"ERROR: "<<ret<<"="<<qPolarDescribeError(ret);
+				qWarning()<<"ERROR: Could not parse pubkey: "<<raw;
+			}
 		} else {
-			qDebug()<<"ERROR: "<<ret<<"="<<qPolarDescribeError(ret);
-			qWarning()<<"ERROR: Could not parse pubkey: "<<raw;
+			qWarning()<<"WARNING: Public key text was empty while attempting to parse it";
 		}
 	} else {
 		QByteArray raw=mKey.toUtf8();
@@ -119,13 +123,13 @@ void KeyPrivate::parse(bool publicOnly)
 				qWarning()<<"ERROR: Could not parse key: "<<raw;
 			}
 		} else {
-			qWarning()<<"ERROR: Private key text was empty";
+			qWarning()<<"WARNING: Private key text was empty while attempting to parse it";
 		}
 	}
 	if(mPKI.isValid()) {
 		mID=hash(mPubKey);
 	} else {
-		qWarning()<<"ERROR: key was not valid after parsing";
+		qWarning()<<"WARNING: Key was not valid after parsing";
 	}
 	mInitialized=true;
 }

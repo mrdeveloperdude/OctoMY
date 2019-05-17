@@ -5,6 +5,7 @@
 #include "uptime/MethodGate.hpp"
 #include "uptime/ConnectionType.hpp"
 
+#include "utility/string/String.hpp"
 
 #include "comms/CommsChannel.hpp"
 
@@ -32,14 +33,37 @@ void CarrierDebugWidget::configure(QSharedPointer <Node> node)
 			ui->widgetCouriersDebug->configure(mNode);
 			auto cc=mNode->comms();
 			if(!cc.isNull()) {
-				if(!connect(cc.data(), &CommsChannel::commsConnectionStatusChanged, this, [this](const bool isConnected, const bool needsConnection) {
-				qDebug().noquote().nospace()<<"Connection status changed: isConnected="<<isConnected<<", isConnected="<<needsConnection;
-					ui->widgetStatusConnectionStarted->setLightOn(needsConnection);
-					ui->widgetStatusConnectionConnected->setLightOn(isConnected);
+				auto car=cc->carrier();
+				if(!car.isNull()) {
+					if(!connect(car.data(), &CommsCarrier::carrierConnectionStatusChanged, this, [this, car](const bool conn) {
+					Q_UNUSED(conn);
+						ui->widgetStatusConnectionStarted->setLightOn(car->isConnectionStarted());
+						ui->widgetStatusConnectionConnected->setLightOn(car->isConnected());
+						ui->widgetStatusConnectionMaintained->setLightOn(car->isConnectionMaintained());
+					}, OC_CONTYPE )) {
+						qWarning()<<"ERROR: Could not connect";
+					}
 
-				}, OC_CONTYPE )) {
-					qWarning()<<"ERROR: Could not connect";
+					if(!connect(car.data(), &CommsCarrier::carrierError, this, [this, car](const QString errorStr) {
+					qDebug().noquote().nospace()<<"CommsCarrier error: errorStr="<<errorStr;
+						ui->labelCarrierType->setText(errorStr);
+					}, OC_CONTYPE )) {
+						qWarning()<<"ERROR: Could not connect";
+					}
+
+					if(!connect(car.data(), &CommsCarrier::carrierSendingOpportunity, this, [this, car](const quint64 now) {
+					qDebug().noquote().nospace()<<"CommsCarrier sending oportunity: now="<<now;
+						ui->labelLastSendingOpportunity->setText(utility::string::humanReadableElapsedMS(now));
+					}, OC_CONTYPE )) {
+						qWarning()<<"ERROR: Could not connect";
+					}
+
+
+				} else {
+					qWarning()<<"ERROR: No car";
 				}
+			} else {
+				qWarning()<<"ERROR: No comms";
 			}
 		}
 		/*

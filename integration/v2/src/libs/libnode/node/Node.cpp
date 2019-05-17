@@ -118,26 +118,27 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				// Configure all services
 				//////////////////////////////////
 
-				//mKeyStoreService->configure();
 				mKeyStore->configure(baseDir + "/keystore.json", true);
+				mKeyStoreService->configure();
 
-				mLocalIdentityStoreService->configure(sharedThis());
 				mLocalIdentityStore->configure(baseDir + "/local_identity.json");
+				mLocalIdentityStoreService->configure(sharedThis());
 
-				//mLocalAddressListService->configure();
 				mLocalAddressList->configure(defaultPortForNodeType(nodeType()));
+				mLocalAddressListService->configure();
 
-				mAddressBookService->configure(sharedThis());
 				mAddressBook->configure(baseDir + "/addressbook.json");
+				mAddressBookService->configure(sharedThis());
 
-				mDiscoveryService->configure(sharedThis());
 				mDiscovery->configure(sharedThis(), 1000, 60000, 20000, 40000);
+				mDiscoveryService->configure(sharedThis());
 
-				mCarrierService->configure(sharedThis());
 				mCarrier->configure();
+				mCarrierService->configure(sharedThis());
 
-				//mCommsService->configure();
 				mComms->configure(mCarrier, mKeyStore, mAddressBook);
+				mCommsService->configure();
+
 
 				// Register services with the service manager
 				/////////////////////////////////////////////////////
