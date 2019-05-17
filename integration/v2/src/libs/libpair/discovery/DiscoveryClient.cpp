@@ -305,7 +305,7 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 											//TODO: Security issue. what if the current associate has lots of important data? we need a smart merge instead of this.
 											peers->upsertAssociate(part);
 											courier->setDestination(part->id());
-											comms->setCourierRegistered(courier, true);
+											comms->registerCourier(courier, true);
 											qDebug()<<" + Adding new participant with ID: "<<partID;
 											emit nodeDiscovered(partID);
 										} else {

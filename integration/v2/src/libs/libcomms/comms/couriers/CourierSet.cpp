@@ -21,14 +21,14 @@ CourierSet::~CourierSet()
 }
 
 
-void CourierSet::setCommsEnabled(bool enable)
+void CourierSet::enableComms(bool enable)
 {
 	OC_METHODGATE();
 	for(QSharedPointer<Courier> courier: *this) {
 		if(!courier.isNull()) {
 			QSharedPointer<CommsChannel> cc=courier->comms();
 			if(!cc.isNull()) {
-				cc->setCourierRegistered(courier, enable);
+				cc->registerCourier(courier, enable);
 			}
 		}
 	}
@@ -57,7 +57,7 @@ bool CourierSet::commsEnabled(bool conservative)
 }
 
 
-bool  CourierSet::setRegistered(QSharedPointer<Courier> courier, bool reg)
+bool  CourierSet::registerCourier(QSharedPointer<Courier> courier, bool reg)
 {
 	OC_METHODGATE();
 	if(!courier.isNull()) {

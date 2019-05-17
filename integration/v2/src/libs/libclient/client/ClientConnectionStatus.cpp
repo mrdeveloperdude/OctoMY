@@ -18,13 +18,11 @@ bool ClientConnectionStatus::needsConnection()
 }
 
 
-
 bool ClientConnectionStatus::isConnected()
 {
 	OC_METHODGATE();
 	return (!mClient.isNull())?mClient->isConnected():false;
 }
-
 
 
 void ClientConnectionStatus::setNeedsConnection(bool val)
@@ -34,8 +32,6 @@ void ClientConnectionStatus::setNeedsConnection(bool val)
 		mClient->setNeedsConnection(val);
 	}
 }
-
-
 
 
 void ClientConnectionStatus::setConnected(bool val)

@@ -20,7 +20,7 @@ quint64 CommsCarrier::sTotalTxCount = 0;
 CommsCarrier::CommsCarrier(QObject *parent)
 	: QObject(parent)
 	, mConnected(false)
-	, mConnectionWanted(false)
+	, mMaintainConnection(false)
 	, mConfigureHelper("CommsCarrier", true, true, false, true, false)
 	, mRXRate("RX RATE", 10000)
 	, mTXRate("TX RATE", 10000)
@@ -66,70 +66,81 @@ bool CommsCarrier::activate(bool activeWanted)
 }
 
 
-bool CommsCarrier::startConnection(bool activated)
+void CommsCarrier::maintainConnection(bool on)
 {
 	OC_METHODGATE();
-	bool success=true;
-	if(activated) {
-		if(mConfigureHelper.isActivated()) {
-			if(isStarted()) {
-				startConnection(false);
-			}
-			success=activateImp(true);
-			if(success) {
-				mSendingTimer.start();
-			} else {
-				startConnection(false);
-			}
-		}
-	} else {
-		mSendingTimer.stop();
-		activateImp(false);
-		mConnected=false;
-		emit carrierConnectionStatusChanged(false);
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		mMaintainConnection=on;
+		updateConnection();
 	}
-	return success;
 }
 
 
-
-bool CommsCarrier::isStarted() const
+bool CommsCarrier::isConnectionMaintained() const
 {
 	OC_METHODGATE();
-	const bool isToo=isActiveImp();
-	return (mSendingTimer.isActive() && isToo);
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		return mMaintainConnection;
+	}
+	return false;
+}
+
+
+bool CommsCarrier::isConnectionStarted() const
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		const bool isToo=isActiveImp();
+		return (mSendingTimer.isActive() && isToo);
+	}
+	return false;
 }
 
 
 bool CommsCarrier::isConnected() const
 {
 	OC_METHODGATE();
-	return mConnected;
-}
-
-
-void CommsCarrier::setListenAddress(NetworkAddress address)
-{
-	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		setAddressImp(address);
+		return mConnected;
 	}
+	return false;
 }
 
 
-void CommsCarrier::maintainConnection(bool on)
+bool CommsCarrier::startConnection(bool start)
 {
 	OC_METHODGATE();
-	mConnectionWanted=on;
-	updateMaintainConnection();
+	bool success=false;
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		success=true;
+		if(start) {
+			if(mConfigureHelper.isActivated()) {
+				if(isConnectionStarted()) {
+					startConnection(false);
+				}
+				success=activateImp(true);
+				if(success) {
+					mSendingTimer.start();
+				} else {
+					startConnection(false);
+				}
+			}
+		} else {
+			mSendingTimer.stop();
+			activateImp(false);
+			mConnected=false;
+			emit carrierConnectionStatusChanged(false);
+		}
+	}
+	return success;
 }
 
 
-void CommsCarrier::updateMaintainConnection()
+void CommsCarrier::updateConnection()
 {
 	OC_METHODGATE();
-	const bool wasOn=isStarted();
-	const bool wantOn=mConfigureHelper.isActivated() || (mConnectionWanted);
+	const bool wasOn=isConnectionStarted();
+	const bool wantOn=mConfigureHelper.isActivated() && (mMaintainConnection);
 	if(wasOn!=wantOn) {
 		startConnection(wantOn);
 	}
@@ -231,6 +242,14 @@ void CommsCarrier::setHookCarrierSignals(QObject &ob, bool hook)
 	}
 }
 
+
+void CommsCarrier::setListenAddress(NetworkAddress address)
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		setAddressImp(address);
+	}
+}
 
 // CommsCarrier internal interface methods
 ///////////////////////////////////////////////////////////

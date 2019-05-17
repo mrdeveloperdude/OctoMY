@@ -40,7 +40,7 @@ public:
 	int count() const;
 
 	// [Un]register the couriers of all clients in this list
-	void setAllCouriersRegistered(const bool reg);
+	void registerAllCouriers(const bool reg);
 
 	// Update the registrations of all clients in this list looking at their individual "needsConnection()" output
 	void updateCourierRegistration();

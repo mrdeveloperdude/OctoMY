@@ -182,115 +182,6 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 }
 
 
-void Node::serviceActivation(const bool on)
-{
-	OC_METHODGATE();
-	mServiceLevelManager->enableLevel(mAlwaysServiceLevel->name(), on, [](bool ok) {
-		Q_UNUSED(ok);
-		qDebug()<<"EUREKA ServiceActivation returned: "<<ok;
-	});
-	/*
-	qDebug()<<"SERVICE ACTIVATION("<<on<<") STARTED";
-	mServiceLevelManager->changeActivation(mServiceLevelManager->all(), on, [on](bool ok) {
-		qDebug()<<"SERVICE ACTIVATION("<<on<<") RESULTED IN "<<ok;
-	});
-	*/
-}
-
-
-void Node::stepActivation(const bool on)
-{
-	OC_METHODGATE();
-	if(nullptr == mNodeStepActivationTimer) {
-		mNodeStepActivationTimer=OC_NEW ScopedTimer(context()->base()+"-activate-"+(on?"on":"off"));
-	}
-	if(on) {
-		if(!mNodeActivationState.keyStoreOK) {
-			if(!mKeyStore.isNull()) {
-				mKeyStore->synchronize([this, on](ASEvent<QVariantMap> &se) {
-					const bool ok=se.isSuccessfull();
-					//qDebug()<<"Keystore synchronized with ok="<<ok;
-					// mKeyStore->dump();
-					mNodeActivationState.keyStoreOK=ok;
-					if(ok) {
-						stepActivation(on);
-					} else {
-						qWarning()<<"ERROR: keystore not ok";
-					}
-				});
-			} else {
-				qWarning()<<"ERROR: No KeyStore";
-			}
-		} else if (!mNodeActivationState.localIdentityOK) {
-			if(!mLocalIdentityStore.isNull()) {
-				mLocalIdentityStore->synchronize([this, on](QSharedPointer<SimpleDataStore> sms, bool ok) {
-					if(!sms.isNull()) {
-						auto map=sms->toMap();
-						//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
-						setNodeIdentity(map);
-						mNodeActivationState.localIdentityOK=ok;
-						stepActivation(on);
-					} else {
-						qWarning()<<"ERROR: local identity sync sms not ok";
-					}
-				});
-			} else {
-				qWarning()<<"ERROR: No LocalIdentity";
-			}
-		} else if (!mNodeActivationState.localAddressesOK) {
-			if(!mLocalAddressList.isNull()) {
-				//qDebug()<<"LocalAddresses synchronized with ok="<<true;
-				mNodeActivationState.localAddressesOK=true;
-				stepActivation(on);
-			} else {
-				qWarning()<<"ERROR: No Addresses";
-			}
-
-		} else if (!mNodeActivationState.addressBookOK) {
-			if(!mAddressBook.isNull()) {
-				mAddressBook->synchronize([this, on](QSharedPointer<SimpleDataStore> sms, bool ok) {
-					if(!sms.isNull()) {
-						//qDebug()<<"AddressBook synchronized with ok="<<ok;
-						auto map=sms->toMap();
-						mClients->syncToAddressBook(mAddressBook, sharedThis());
-						mNodeActivationState.addressBookOK=ok;
-						stepActivation(on);
-					} else {
-						qWarning()<<"ERROR: address book sync sms not ok";
-					}
-				});
-
-			} else {
-				qWarning()<<"ERROR: No AddressBook";
-			}
-		} else if (!mNodeActivationState.discoveryClientOK) {
-			if(!mDiscovery.isNull()) {
-				//qDebug()<<"Discovery ok="<<true;
-				mDiscovery->setURL(mServerURL);
-				mNodeActivationState.discoveryClientOK=true;
-				stepActivation(on);
-			} else {
-				qWarning()<<"ERROR: No DiscoveryClient";
-			}
-		} else if (!mNodeActivationState.commsCarrierOK) {
-			if(!mCarrier.isNull()) {
-				const NetworkAddress listenAddress(QHostAddress::Any, mLocalAddressList->port());
-				//qDebug()<<"CommsCarrier ok="<<true<<" with "<<listenAddress;
-				mCarrier->setListenAddress(listenAddress);
-				mNodeActivationState.commsCarrierOK=true;
-				delete mNodeStepActivationTimer;
-				mNodeStepActivationTimer=nullptr;
-				// stepActivation(on);
-			} else {
-				qWarning()<<"ERROR: No CommsCarrier";
-			}
-		}
-	} else {
-		qWarning()<<"WARNING: No attempt is done at deactication at this point. This means that resources will be left flying in the wind upon termination.";
-	}
-}
-
-
 void Node::appActivate(const bool on)
 {
 	OC_METHODGATE();
@@ -396,153 +287,317 @@ void Node::appActivate(const bool on)
 }
 
 
+void Node::serviceActivation(const bool on)
+{
+	OC_METHODGATE();
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		mServiceLevelManager->enableLevel(mAlwaysServiceLevel->name(), on, [](bool ok) {
+			Q_UNUSED(ok);
+			qDebug()<<"EUREKA ServiceActivation returned: "<<ok;
+		});
+		/*
+		qDebug()<<"SERVICE ACTIVATION("<<on<<") STARTED";
+		mServiceLevelManager->changeActivation(mServiceLevelManager->all(), on, [on](bool ok) {
+			qDebug()<<"SERVICE ACTIVATION("<<on<<") RESULTED IN "<<ok;
+		});
+		*/
+	}
+}
 
+
+void Node::stepActivation(const bool on)
+{
+	OC_METHODGATE();
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		if(nullptr == mNodeStepActivationTimer) {
+			mNodeStepActivationTimer=OC_NEW ScopedTimer(context()->base()+"-activate-"+(on?"on":"off"));
+		}
+		if(on) {
+			if(!mNodeActivationState.keyStoreOK) {
+				if(!mKeyStore.isNull()) {
+					mKeyStore->synchronize([this, on](ASEvent<QVariantMap> &se) {
+						const bool ok=se.isSuccessfull();
+						//qDebug()<<"Keystore synchronized with ok="<<ok;
+						// mKeyStore->dump();
+						mNodeActivationState.keyStoreOK=ok;
+						if(ok) {
+							stepActivation(on);
+						} else {
+							qWarning()<<"ERROR: keystore not ok";
+						}
+					});
+				} else {
+					qWarning()<<"ERROR: No KeyStore";
+				}
+			} else if (!mNodeActivationState.localIdentityOK) {
+				if(!mLocalIdentityStore.isNull()) {
+					mLocalIdentityStore->synchronize([this, on](QSharedPointer<SimpleDataStore> sms, bool ok) {
+						if(!sms.isNull()) {
+							auto map=sms->toMap();
+							//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
+							setNodeIdentity(map);
+							mNodeActivationState.localIdentityOK=ok;
+							stepActivation(on);
+						} else {
+							qWarning()<<"ERROR: local identity sync sms not ok";
+						}
+					});
+				} else {
+					qWarning()<<"ERROR: No LocalIdentity";
+				}
+			} else if (!mNodeActivationState.localAddressesOK) {
+				if(!mLocalAddressList.isNull()) {
+					//qDebug()<<"LocalAddresses synchronized with ok="<<true;
+					mNodeActivationState.localAddressesOK=true;
+					stepActivation(on);
+				} else {
+					qWarning()<<"ERROR: No Addresses";
+				}
+
+			} else if (!mNodeActivationState.addressBookOK) {
+				if(!mAddressBook.isNull()) {
+					mAddressBook->synchronize([this, on](QSharedPointer<SimpleDataStore> sms, bool ok) {
+						if(!sms.isNull()) {
+							//qDebug()<<"AddressBook synchronized with ok="<<ok;
+							auto map=sms->toMap();
+							mClients->syncToAddressBook(mAddressBook, sharedThis());
+							mNodeActivationState.addressBookOK=ok;
+							stepActivation(on);
+						} else {
+							qWarning()<<"ERROR: address book sync sms not ok";
+						}
+					});
+
+				} else {
+					qWarning()<<"ERROR: No AddressBook";
+				}
+			} else if (!mNodeActivationState.discoveryClientOK) {
+				if(!mDiscovery.isNull()) {
+					//qDebug()<<"Discovery ok="<<true;
+					mDiscovery->setURL(mServerURL);
+					mNodeActivationState.discoveryClientOK=true;
+					stepActivation(on);
+				} else {
+					qWarning()<<"ERROR: No DiscoveryClient";
+				}
+			} else if (!mNodeActivationState.commsCarrierOK) {
+				if(!mCarrier.isNull()) {
+					const NetworkAddress listenAddress(QHostAddress::Any, mLocalAddressList->port());
+					//qDebug()<<"CommsCarrier ok="<<true<<" with "<<listenAddress;
+					mCarrier->setListenAddress(listenAddress);
+					mNodeActivationState.commsCarrierOK=true;
+					delete mNodeStepActivationTimer;
+					mNodeStepActivationTimer=nullptr;
+					// stepActivation(on);
+				} else {
+					qWarning()<<"ERROR: No CommsCarrier";
+				}
+			}
+		} else {
+			qWarning()<<"WARNING: No attempt is done at deactication at this point. This means that resources will be left flying in the wind upon termination.";
+		}
+	}
+}
 
 
 QSharedPointer<NodeWindow> Node::appWindow()
 {
 	OC_METHODGATE();
-	//qDebug()<<"appWindow()";
-	return nodeWindow();
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		//qDebug()<<"appWindow()";
+		return nodeWindow();
+	}
+	return nullptr;
 }
 
 
 QSharedPointer<IAppLauncher> Node::launcher()
 {
 	OC_METHODGATE();
-	return mLauncher;
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return mLauncher;
+	}
+	return nullptr;
 }
-
 
 
 QSharedPointer<AppContext> Node::context()
 {
 	OC_METHODGATE();
-	return mLauncher.isNull()?nullptr:mLauncher->context();
-}
-
-
-QSharedPointer<Settings> Node::settings()
-{
-	OC_METHODGATE();
-	auto c=this->context();
-	return c.isNull()?nullptr:c->settings();
-}
-
-QSharedPointer<LocalIdentityStore> Node::localIdentityStore()
-{
-	OC_METHODGATE();
-	return mLocalIdentityStore;
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return mLauncher.isNull()?nullptr:mLauncher->context();
+	}
+	return nullptr;
 }
 
 
 QSharedPointer<KeyStore> Node::keyStore()
 {
 	OC_METHODGATE();
-	return mKeyStore;
-}
-
-
-QSharedPointer<AddressBook> Node::addressBook()
-{
-	OC_METHODGATE();
-	return  mAddressBook;
-}
-
-
-
-QSharedPointer<ClientList> Node::clientList()
-{
-	OC_METHODGATE();
-	return mClients;
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return mKeyStore;
+	}
+	return nullptr;
 }
 
 
 QSharedPointer<LocalAddressList> Node::localAddressList()
 {
 	OC_METHODGATE();
-	return mLocalAddressList;
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return mLocalAddressList;
+	}
+	return nullptr;
+}
+
+
+QSharedPointer<Settings> Node::settings()
+{
+	OC_METHODGATE();
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		auto c=this->context();
+		return c.isNull()?nullptr:c->settings();
+	}
+	return nullptr;
+}
+
+
+QSharedPointer<LocalIdentityStore> Node::localIdentityStore()
+{
+	OC_METHODGATE();
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return mLocalIdentityStore;
+	}
+	return nullptr;
+}
+
+
+QSharedPointer<AddressBook> Node::addressBook()
+{
+	OC_METHODGATE();
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return  mAddressBook;
+	}
+	return nullptr;
+}
+
+
+QSharedPointer<ClientList> Node::clientList()
+{
+	OC_METHODGATE();
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return mClients;
+	}
+	return nullptr;
 }
 
 
 QSharedPointer<CommsChannel> Node::comms()
 {
 	OC_METHODGATE();
-	return mComms;
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return mComms;
+	}
+	return nullptr;
 }
 
 
 QSharedPointer<DiscoveryClient> Node::discoveryClient()
 {
 	OC_METHODGATE();
-	return mDiscovery;
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return mDiscovery;
+	}
+	return nullptr;
 }
 
 
 QSharedPointer<ZooClient> Node::zooClient()
 {
 	OC_METHODGATE();
-	return mZooClient;
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return mZooClient;
+	}
+	return nullptr;
 }
 
 
 QSharedPointer<SensorInput> Node::sensorInput()
 {
 	OC_METHODGATE();
-	return mSensors;
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return mSensors;
+	}
+	return nullptr;
 }
 
 
 QSharedPointer<Associate> Node::nodeIdentity()
 {
 	OC_METHODGATE();
-	return mNodeIdentity;
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return mNodeIdentity;
+	}
+	return nullptr;
 }
 
 
 QSharedPointer<ServiceLevelManager> Node::serviceLevelManager()
 {
 	OC_METHODGATE();
-	return mServiceLevelManager;
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return mServiceLevelManager;
+	}
+	return nullptr;
 }
 
 
 QUrl Node::serverURL()
 {
 	OC_METHODGATE();
-	return mServerURL;
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return mServerURL;
+	}
+	return QUrl();
 }
 
 
 void Node::unbirth()
 {
 	OC_METHODGATE();
-	mKeyStore->clear();
-	mLocalIdentityStore->clear();
-	mAddressBook->clear();
-	mClients.clear();
-	setNodeIdentity(QVariantMap());
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		mKeyStore->clear();
+		mLocalIdentityStore->clear();
+		mAddressBook->clear();
+		mClients.clear();
+		setNodeIdentity(QVariantMap());
+	}
 }
 
 
 void Node::applyStyle()
 {
 	OC_METHODGATE();
-	StyleManager styleManager;
-	AppStyle style(nodeType());
-	styleManager.apply(style);
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		StyleManager styleManager;
+		AppStyle style(nodeType());
+		styleManager.apply(style);
+	}
 }
 
 
 bool Node::createBaseDir()
 {
 	OC_METHODGATE();
-	const auto dir=context()->baseDir();
-	const bool ok=QDir().mkpath(dir);
-	if(!ok) {
-		qWarning()<<"ERROR: Could not create basedir '"<<dir<<"' for node";
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		const auto dir=context()->baseDir();
+		const bool ok=QDir().mkpath(dir);
+		if(!ok) {
+			qWarning()<<"ERROR: Could not create basedir '"<<dir<<"' for node";
+		}
+		return ok;
 	}
-	return ok;
+	return false;
 }
 
 // Below this line is unrefined
@@ -552,36 +607,38 @@ bool Node::createBaseDir()
 QString Node::name()
 {
 	OC_METHODGATE();
-	/*
-	QSharedPointer<Associate>  me=nodeIdentity();
-	QString name;
-	if(nullptr!=me) {
-		name=me->name().trimmed();
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		/*
+		QSharedPointer<Associate>  me=nodeIdentity();
+		QString name;
+		if(nullptr!=me) {
+			name=me->name().trimmed();
+		}
+		if(""!=name) {
+			switch(mType) {
+			case(TYPE_AGENT): {
+				name="Agent ";
+			}
+			break;
+			case(TYPE_HUB): {
+				name="Hub ";
+			}
+			break;
+			case(TYPE_REMOTE): {
+				name="Remote ";
+			}
+			break;
+			case(TYPE_ZOO): {
+				name="Zoo ";
+			}
+			break;
+			default:
+				name="Unknown ";
+			};
+			name+=me->id().mid(0,8);
+		}
+		*/
 	}
-	if(""!=name) {
-		switch(mType) {
-		case(TYPE_AGENT): {
-			name="Agent ";
-		}
-		break;
-		case(TYPE_HUB): {
-			name="Hub ";
-		}
-		break;
-		case(TYPE_REMOTE): {
-			name="Remote ";
-		}
-		break;
-		case(TYPE_ZOO): {
-			name="Zoo ";
-		}
-		break;
-		default:
-			name="Unknown ";
-		};
-		name+=me->id().mid(0,8);
-	}
-	*/
 	return "";
 }
 
@@ -589,27 +646,310 @@ QString Node::name()
 void Node::setNodeIdentity(QVariantMap map)
 {
 	OC_METHODGATE();
-	mNodeIdentity=QSharedPointer<Associate>(OC_NEW Associate(map, true));
-	//qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED BY MAP: "<<map;
-	mLocalIdentityStore->fromMap(map);
-	mLocalIdentityStore->save();
-	identityChanged();
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		mNodeIdentity=QSharedPointer<Associate>(OC_NEW Associate(map, true));
+		//qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED BY MAP: "<<map;
+		mLocalIdentityStore->fromMap(map);
+		mLocalIdentityStore->save();
+		identityChanged();
+	}
 }
 
 
 void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 {
 	OC_METHODGATE();
-	mNodeIdentity=nodeID;
-	QVariantMap map;
-	if(!mNodeIdentity.isNull()) {
-		map=mNodeIdentity->toVariantMap();
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		mNodeIdentity=nodeID;
+		QVariantMap map;
+		if(!mNodeIdentity.isNull()) {
+			map=mNodeIdentity->toVariantMap();
+		}
+		//qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED: "<<map<< " FROM nodeID="<<*mNodeIdentity;
+		mLocalIdentityStore->fromMap(map);
+		mLocalIdentityStore->save();
+		identityChanged();
 	}
-	//qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED: "<<map<< " FROM nodeID="<<*mNodeIdentity;
-	mLocalIdentityStore->fromMap(map);
-	mLocalIdentityStore->save();
-	identityChanged();
 }
+
+
+void Node::identityChanged()
+{
+	OC_METHODGATE();
+	if(mAppConfigureHelper.isConfiguredAsExpected()){
+		// TODO: Implement?
+	}
+}
+
+
+QSharedPointer<Node> Node::sharedThis()
+{
+	OC_METHODGATE();
+	qWarning()<<"ERROR: Trying to get shared this from base class Node. Use sharedThisNode() if you really want this.";
+	return  QSharedPointer<Node>(nullptr);
+}
+
+
+/*
+bool Node::needsConnection()
+{
+	OC_METHODGATE();
+	bool out=false;
+	QSharedPointer<Associate> ni=nodeIdentity();
+	if(!ni.isNull()) {
+		const QString key=NODE_ONLINE_STATUS_BASE_KEY + ni->id();
+		QSharedPointer<Settings> s=settings();
+		if(!s.isNull()) {
+			out=s->getCustomSettingBool(key, out);
+		}
+	}
+	return out;
+}
+*/
+
+/*
+void Node::setNeedsConnection(const bool current)
+{
+	OC_METHODGATE();
+	//qDebug()<<"NODE::set needs connection: "<<current;
+	QSharedPointer<Associate> ni=nodeIdentity();
+	QSharedPointer<Settings> s=settings();
+	if(!ni.isNull() && !s.isNull()) {
+		const QString key=NODE_ONLINE_STATUS_BASE_KEY + ni->id();
+		const bool last=s->getCustomSettingBool(key, false);
+		if(current!=last) {
+			s->setCustomSettingBool(key, current);
+			updateCouriersRegistration();
+			mComms->updateConnection();
+		}
+	}
+}
+*/
+
+/*
+bool Node::isConnected()
+{
+	OC_METHODGATE();
+	if(!mComms.isNull()) {
+		return mComms->carrier()->isConnected();
+	} else {
+		qWarning()<<"ERROR: No comms";
+	}
+	return false;
+}
+
+
+void Node::setConnected(bool val)
+{
+	OC_METHODGATE();
+	//TODO: Implement
+	(void)val;
+}
+*/
+
+
+// [Un]register node specific couriers with comms
+void Node::registerNodeCouriers(const bool reg)
+{
+	OC_METHODGATE();
+	if(!mComms.isNull()) {
+		if(nullptr!=mSensorsCourier) {
+			mComms->registerCourier(mSensorsCourier, reg);
+		}
+		if(nullptr!=mBlobCourier) {
+			mComms->registerCourier(mBlobCourier, reg);
+		}
+	}
+}
+
+
+// [Un]register client specific couriers with comms
+void Node::registerClientCouriers(const bool reg)
+{
+	OC_METHODGATE();
+	if(!mClients.isNull()) {
+		mClients->registerAllCouriers(reg);
+	} else {
+		qWarning()<<"ERROR: No clientList";
+	}
+}
+
+
+// [Un]register both node and client couriers with comms
+void Node::registerCouriers(const bool reg)
+{
+	OC_METHODGATE();
+	registerNodeCouriers(reg);
+	registerClientCouriers(reg);
+}
+
+
+// Update client specific courier registration with comms depending on need
+void Node::updateClientCouriersRegistration()
+{
+	OC_METHODGATE();
+	if(!mClients.isNull()) {
+		mClients->updateCourierRegistration();
+	} else {
+		qWarning()<<"ERROR: No clientList";
+	}
+}
+
+
+// Update node specific courier registration with comms depending on need
+void Node::updateNodeCouriersRegistration()
+{
+	OC_METHODGATE();
+	// No longer the way to do it as all "needs connection" stuff no resides in carrier:
+	//setNodeCouriersRegistration(needsConnection());
+
+}
+
+
+
+// Update courier registration with comms depending on need
+void Node::updateCouriersRegistration()
+{
+	OC_METHODGATE();
+	updateClientCouriersRegistration();
+	updateNodeCouriersRegistration();
+}
+
+
+
+
+/*
+BlobFuture Node::submitBlobForSending(QByteArray data, QString name)
+{
+	OC_METHODGATE();
+	if(nullptr!=mBlobCourier) {
+		BlobFuture future=mBlobCourier->submitSendingBlob(name,data);
+		future.connect(*this);
+		return future;
+	}
+	BlobFuture future(name);
+	future.fail("No BLobCourier");
+	return future;
+}
+*/
+
+////////////////////////////////
+
+
+
+void Node::setHookColorSignals(QObject &ob, bool hook)
+{
+	OC_METHODGATE();
+	if(!mSensorsCourier.isNull()) {
+		if(hook) {
+			if(!connect(&ob, SIGNAL(colorChanged(QColor)), mSensorsCourier.data(), SLOT(onColorUpdated(QColor)), OC_CONTYPE)) {
+				qWarning()<<"ERROR: Could not connect " << ob.objectName();
+			}
+		} else {
+			if(!disconnect(&ob, SIGNAL(colorChanged(QColor)), mSensorsCourier.data(), SLOT(onColorUpdated(QColor)))) {
+				qWarning()<<"ERROR: Could not disconnect " << ob.objectName();
+			}
+		}
+	}
+}
+
+
+
+
+////////////////////////////////
+
+
+void Node::setHookSensorSignals(QObject &o, bool hook)
+{
+	OC_METHODGATE();
+	if(nullptr!=mSensors) {
+		mSensors->hookSignals(o, hook);
+	}
+}
+
+
+void Node::setHookCommsSignals(QObject &o, bool hook)
+{
+	OC_METHODGATE();
+	if(!mComms.isNull()) {
+		mComms->hookCommsSignals(o, hook);
+	}
+}
+
+
+//////////////////////////////////////////////////
+// Key Store slots
+
+/*
+void Node::onKeystoreReady(bool ok)
+{
+	OC_METHODGATE();
+	//qDebug()<<"Key Store READY="<<mKeystore.isReady()<<", ERROR="<<mKeystore.hasError();
+}
+*/
+
+
+
+//////////////////////////////////////////////////
+// CommsChannel slots
+
+
+void Node::onCommsError(QString e)
+{
+	Q_UNUSED(e);
+	OC_METHODGATE();
+	//qDebug()<<"NODE UNIMP Comms error: "<<e;
+}
+
+
+void Node::onCommsClientAdded(CommsSession *c)
+{
+	Q_UNUSED(c);
+	OC_METHODGATE();
+	//qDebug()<<"NODE UNIMP Client added: "<<c->toString();
+}
+
+
+void Node::onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection)
+{
+	Q_UNUSED(isConnected);
+	Q_UNUSED(needsConnection);
+	OC_METHODGATE();
+	//qDebug() <<"NODE UNIMP New connection status: "<<(s?"ONLINE":"OFFLINE");
+}
+
+
+
+//////////////////////////////////////////////////
+// Internal sensor slots
+
+void Node::onPositionUpdated(const QGeoPositionInfo &info)
+{
+	Q_UNUSED(info);
+	OC_METHODGATE();
+}
+
+
+void Node::onCompassUpdated(QCompassReading *r)
+{
+	Q_UNUSED(r);
+	OC_METHODGATE();
+}
+
+
+void Node::onAccelerometerUpdated(QAccelerometerReading *r)
+{
+	Q_UNUSED(r);
+	OC_METHODGATE();
+}
+
+
+void Node::onGyroscopeUpdated(QGyroscopeReading *r)
+{
+	Q_UNUSED(r);
+	OC_METHODGATE();
+}
+
 
 
 /*
@@ -678,19 +1018,6 @@ QSet<QSharedPointer<Associate> > Node::controlsWithActiveSessions(quint64 now)
 	return out;
 }
 */
-
-void Node::identityChanged()
-{
-	OC_METHODGATE();
-}
-
-
-QSharedPointer<Node> Node::sharedThis()
-{
-	OC_METHODGATE();
-	qWarning()<<"ERROR: Trying to get shared this from base class Node. Use sharedThisNode() if you really want this.";
-	return  QSharedPointer<Node>(nullptr);
-}
 
 
 /*
@@ -870,261 +1197,3 @@ TryToggleState Node::updateOnlineStatus(const TryToggleState currentTryState)
 
 }
 */
-
-
-bool Node::needsConnection()
-{
-	OC_METHODGATE();
-	bool out=false;
-	QSharedPointer<Associate> ni=nodeIdentity();
-	if(!ni.isNull()) {
-		const QString key=NODE_ONLINE_STATUS_BASE_KEY + ni->id();
-		QSharedPointer<Settings> s=settings();
-		if(!s.isNull()) {
-			out=s->getCustomSettingBool(key, out);
-		}
-	}
-	return out;
-}
-
-
-void Node::setNeedsConnection(const bool current)
-{
-	OC_METHODGATE();
-	//qDebug()<<"NODE::set needs connection: "<<current;
-	QSharedPointer<Associate> ni=nodeIdentity();
-	QSharedPointer<Settings> s=settings();
-	if(!ni.isNull() && !s.isNull()) {
-		const QString key=NODE_ONLINE_STATUS_BASE_KEY + ni->id();
-		const bool last=s->getCustomSettingBool(key, false);
-		if(current!=last) {
-			s->setCustomSettingBool(key, current);
-			updateCouriersRegistration();
-			mComms->updateConnect();
-		}
-	}
-}
-
-
-bool Node::isConnected()
-{
-	OC_METHODGATE();
-	if(!mComms.isNull()) {
-		return mComms->carrier()->isConnected();
-	} else {
-		qWarning()<<"ERROR: No comms";
-	}
-	return false;
-}
-
-
-void Node::setConnected(bool val)
-{
-	OC_METHODGATE();
-	//TODO: Implement
-	(void)val;
-}
-
-// [Un]register node specific couriers with comms
-
-void Node::setNodeCouriersRegistration(const bool reg)
-{
-	OC_METHODGATE();
-	if(!mComms.isNull()) {
-		if(nullptr!=mSensorsCourier) {
-			mComms->setCourierRegistered(mSensorsCourier, reg);
-		}
-		if(nullptr!=mBlobCourier) {
-			mComms->setCourierRegistered(mBlobCourier, reg);
-		}
-	}
-}
-
-
-// [Un]register client specific couriers with comms
-void Node::setClientCouriersRegistration(const bool reg)
-{
-	OC_METHODGATE();
-	if(!mClients.isNull()) {
-		mClients->setAllCouriersRegistered(reg);
-	} else {
-		qWarning()<<"ERROR: No clientList";
-	}
-}
-
-
-
-/*
-// [Un]register couriers with comms
-void Node::setCouriersRegistration(const bool reg)
-{
-	OC_METHODGATE();
-	setNodeCouriersRegistration(reg);
-	setClientCouriersRegistration(reg);
-}
-*/
-
-
-// Update client specific courier registration with comms depending on need
-void Node::updateClientCouriersRegistration()
-{
-	OC_METHODGATE();
-	if(!mClients.isNull()) {
-		mClients->updateCourierRegistration();
-	} else {
-		qWarning()<<"ERROR: No clientList";
-	}
-}
-
-
-// Update node specific courier registration with comms depending on need
-void Node::updateNodeCouriersRegistration()
-{
-	OC_METHODGATE();
-	setNodeCouriersRegistration(needsConnection());
-}
-
-
-// Update courier registration with comms depending on need
-void Node::updateCouriersRegistration()
-{
-	OC_METHODGATE();
-	updateClientCouriersRegistration();
-	updateNodeCouriersRegistration();
-}
-
-
-
-
-/*
-BlobFuture Node::submitBlobForSending(QByteArray data, QString name)
-{
-	OC_METHODGATE();
-	if(nullptr!=mBlobCourier) {
-		BlobFuture future=mBlobCourier->submitSendingBlob(name,data);
-		future.connect(*this);
-		return future;
-	}
-	BlobFuture future(name);
-	future.fail("No BLobCourier");
-	return future;
-}
-*/
-
-////////////////////////////////
-
-
-
-void Node::setHookColorSignals(QObject &ob, bool hook)
-{
-	OC_METHODGATE();
-	if(!mSensorsCourier.isNull()) {
-		if(hook) {
-			if(!connect(&ob, SIGNAL(colorChanged(QColor)), mSensorsCourier.data(), SLOT(onColorUpdated(QColor)), OC_CONTYPE)) {
-				qWarning()<<"ERROR: Could not connect " << ob.objectName();
-			}
-		} else {
-			if(!disconnect(&ob, SIGNAL(colorChanged(QColor)), mSensorsCourier.data(), SLOT(onColorUpdated(QColor)))) {
-				qWarning()<<"ERROR: Could not disconnect " << ob.objectName();
-			}
-		}
-	}
-}
-
-
-
-
-////////////////////////////////
-
-
-void Node::setHookSensorSignals(QObject &o, bool hook)
-{
-	OC_METHODGATE();
-	if(nullptr!=mSensors) {
-		mSensors->hookSignals(o, hook);
-	}
-}
-
-
-void Node::setHookCommsSignals(QObject &o, bool hook)
-{
-	OC_METHODGATE();
-	if(!mComms.isNull()) {
-		mComms->setHookCommsSignals(o, hook);
-	}
-}
-
-
-//////////////////////////////////////////////////
-// Key Store slots
-
-/*
-void Node::onKeystoreReady(bool ok)
-{
-	OC_METHODGATE();
-	//qDebug()<<"Key Store READY="<<mKeystore.isReady()<<", ERROR="<<mKeystore.hasError();
-}
-*/
-
-
-
-//////////////////////////////////////////////////
-// CommsChannel slots
-
-
-void Node::onCommsError(QString e)
-{
-	Q_UNUSED(e);
-	OC_METHODGATE();
-	//qDebug()<<"NODE UNIMP Comms error: "<<e;
-}
-
-
-void Node::onCommsClientAdded(CommsSession *c)
-{
-	Q_UNUSED(c);
-	OC_METHODGATE();
-	//qDebug()<<"NODE UNIMP Client added: "<<c->toString();
-}
-
-
-void Node::onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection)
-{
-	Q_UNUSED(isConnected);
-	Q_UNUSED(needsConnection);
-	OC_METHODGATE();
-	//qDebug() <<"NODE UNIMP New connection status: "<<(s?"ONLINE":"OFFLINE");
-}
-
-
-
-//////////////////////////////////////////////////
-// Internal sensor slots
-
-void Node::onPositionUpdated(const QGeoPositionInfo &info)
-{
-	Q_UNUSED(info);
-	OC_METHODGATE();
-}
-
-
-void Node::onCompassUpdated(QCompassReading *r)
-{
-	Q_UNUSED(r);
-	OC_METHODGATE();
-}
-
-
-void Node::onAccelerometerUpdated(QAccelerometerReading *r)
-{
-	Q_UNUSED(r);
-	OC_METHODGATE();
-}
-
-
-void Node::onGyroscopeUpdated(QGyroscopeReading *r)
-{
-	Q_UNUSED(r);
-	OC_METHODGATE();
-}
-

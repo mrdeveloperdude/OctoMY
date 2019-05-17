@@ -76,7 +76,7 @@ public:
 	QSharedPointer<Associate> associate();
 
 	bool courierRegistration();
-	void setCourierRegistration(bool reg);
+	void registerCouriers(bool reg);
 	void updateCourierRegistration();
 	void updateOnlineStatus();
 

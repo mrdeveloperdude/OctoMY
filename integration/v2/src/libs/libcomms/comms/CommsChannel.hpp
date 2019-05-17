@@ -109,10 +109,10 @@ public:
 
 	QString getSummary();
 	//void setID(const QString &id);
-	void setHookCommsSignals(QObject &ob, bool hook);
-	void setHookCourierSignals(QSharedPointer<Courier>, bool hook);
+	void hookCommsSignals(QObject &ob, bool hook);
+	void hookCourierSignals(QSharedPointer<Courier>, bool hook);
 
-	void setCourierRegistered(QSharedPointer<Courier>, bool);
+	void registerCourier(QSharedPointer<Courier>, bool);
 	CourierSet couriers();
 
 	qint64 sendRawData(QByteArray datagram, NetworkAddress address);
@@ -120,13 +120,11 @@ public:
 	void setHoneymoonEnd(quint64 hEndMS);
 	bool honeymoon(quint64 now=0);
 
-	// Report if this commschannel would rather be connected or not (registered couriers > 0)
+	// Report if this CommsChannel would rather be connected or not (registered couriers > 0 and activated)
 	bool needConnection();
 	// [Dis]connect based on our needConnection()
-	void updateConnect();
+	void updateConnection();
 
-protected:
-	void updateMaintainConnection();
 
 protected:
 	void appendLog(QString);

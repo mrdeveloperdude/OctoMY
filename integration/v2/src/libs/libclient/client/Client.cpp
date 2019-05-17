@@ -75,7 +75,7 @@ void Client::setNeedsConnection(const bool current)
 			updateCourierRegistration();
 			QSharedPointer<CommsChannel> comms=mNode->comms();
 			if(!comms.isNull()) {
-				comms->updateConnect();
+				comms->updateConnection();
 			}
 		}
 	}
@@ -141,12 +141,12 @@ bool Client::courierRegistration()
 	return false;
 }
 
-void Client::setCourierRegistration(bool reg)
+void Client::registerCouriers(bool reg)
 {
 	OC_METHODGATE();
 	QSharedPointer<CourierSet> set=courierSet();
 	if(!set.isNull()) {
-		set->setCommsEnabled(reg);
+		set->enableComms(reg);
 	}
 }
 
@@ -157,7 +157,7 @@ void Client::updateCourierRegistration()
 	OC_METHODGATE();
 	const bool needs=needsConnection();
 	qDebug()<<"update courier reg with needs="<<needs;
-	setCourierRegistration(needs);
+	registerCouriers(needs);
 }
 
 

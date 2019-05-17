@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>555</width>
-    <height>1242</height>
+    <height>1264</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -410,7 +410,7 @@
     </widget>
    </item>
    <item>
-    <widget class="CommsDebugWidget" name="widgetHeaderCommsCarrier" native="true">
+    <widget class="CarrierDebugWidget" name="widgetHeaderCommsCarrier" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
@@ -775,6 +775,12 @@
    <class>CommsDebugWidget</class>
    <extends>QWidget</extends>
    <header location="global">widgets/debug/CommsDebugWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CarrierDebugWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/debug/CarrierDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

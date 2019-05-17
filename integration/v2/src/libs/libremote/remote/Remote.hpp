@@ -61,7 +61,7 @@ public:
 	QSharedPointer<Node> sharedThis() Q_DECL_OVERRIDE;
 
 
-	void setNodeCouriersRegistration(bool reg) Q_DECL_OVERRIDE;
+	void registerNodeCouriers(bool reg) Q_DECL_OVERRIDE;
 
 };
 

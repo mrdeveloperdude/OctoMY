@@ -1142,6 +1142,7 @@ qint64 CommsChannel::sendRawData(QByteArray datagram, NetworkAddress address)
 	return -1;
 }
 
+// TODO: Replace manual honeymoon timer with HoneymoonScheduler
 void CommsChannel::setHoneymoonEnd(quint64 hEndMS)
 {
 	OC_METHODGATE();
@@ -1156,6 +1157,8 @@ void CommsChannel::setHoneymoonEnd(quint64 hEndMS)
 	}
 }
 
+
+// TODO: Replace manual honeymoon timer with HoneymoonScheduler
 bool CommsChannel::honeymoon(quint64 now)
 {
 	OC_METHODGATE();
@@ -1171,18 +1174,18 @@ bool CommsChannel::honeymoon(quint64 now)
 }
 
 
-
-// Report if this commschannel would rather be connected or not (registered couriers > 0)
+// Report if this commschannel would rather be connected or not (registered couriers > 0 and activated)
 bool CommsChannel::needConnection()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		return mCouriers.count()>0;
+		return ( (mCouriers.count()>0) && (mConfigureHelper.isActivated()) );
 	}
 	return false;
 }
 
-// [Dis]connect based on our needConnection()
+/*
+
 void CommsChannel::updateConnect()
 {
 	OC_METHODGATE();
@@ -1194,19 +1197,23 @@ void CommsChannel::updateConnect()
 			const bool ok=mCarrier->startConnection(needsConnection);
 			qDebug()<<"Comms channel update decided to " << (needsConnection?"start":"stop")<< " carrier"<<" with result "<<ok;
 			if(needsConnection && ok) {
+				// TODO: Replace manual honeymoon timer with HoneymoonScheduler
 				setHoneymoonEnd(utility::time::currentMsecsSinceEpoch<quint64>()+60*1000);
 			}
 		}
 	}
 }
+*/
 
-
-void CommsChannel::updateMaintainConnection()
+// [Dis]connect based on our needConnection()
+void CommsChannel::updateConnection()
 {
 	OC_METHODGATE();
-	if(!mCarrier.isNull()) {
-		const bool on=mConfigureHelper.isActivated() || (mCouriers.count()>0);
-		mCarrier->maintainConnection(on);
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		if(!mCarrier.isNull()) {
+			const bool needsConnection=needConnection();
+			mCarrier->maintainConnection(needsConnection);
+		}
 	}
 }
 
@@ -1357,7 +1364,7 @@ void CommsChannel::appendLog(QString msg)
 }
 
 
-void CommsChannel::setHookCommsSignals(QObject &ob, bool hook)
+void CommsChannel::hookCommsSignals(QObject &ob, bool hook)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
@@ -1387,7 +1394,7 @@ void CommsChannel::setHookCommsSignals(QObject &ob, bool hook)
 }
 
 
-void CommsChannel::setHookCourierSignals(QSharedPointer<Courier> courier, bool hook)
+void CommsChannel::hookCourierSignals(QSharedPointer<Courier> courier, bool hook)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
@@ -1415,14 +1422,14 @@ bool CommsChannel::courierRegistration()
 */
 
 // [Un]register courier to NODE
-void CommsChannel::setCourierRegistered(QSharedPointer<Courier> courier, bool reg)
+void CommsChannel::registerCourier(QSharedPointer<Courier> courier, bool reg)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 
 		//qDebug()<<"SETTING COURIER "<<courier->toString()<<" TO "<<(reg?"REGISTERED":"UNREGISTERED");
 		if(!courier.isNull()) {
-			const bool ok=mCouriers.setRegistered(courier, reg);
+			const bool ok=mCouriers.registerCourier(courier, reg);
 			if(ok) {
 				const quint32 id=courier->id();
 				if(reg) {
@@ -1431,11 +1438,11 @@ void CommsChannel::setCourierRegistered(QSharedPointer<Courier> courier, bool re
 					mCouriersByID.remove(id);
 				}
 			}
-			setHookCourierSignals(courier, (ok || !reg));
+			hookCourierSignals(courier, (ok || !reg));
 		}
 
 		// Make sure connection status is updated after courrier count changed
-		updateMaintainConnection();
+		updateConnection();
 	}
 }
 

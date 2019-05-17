@@ -13,6 +13,7 @@ private:
 	QSharedPointer<Client> mClient;
 public:
 	ClientConnectionStatus(QSharedPointer<Client>);
+	virtual ~ClientConnectionStatus() Q_DECL_OVERRIDE {}
 
 
 	// IConnectionStatus interface

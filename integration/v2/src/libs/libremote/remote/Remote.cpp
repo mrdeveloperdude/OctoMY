@@ -105,10 +105,10 @@ NodeType Remote::nodeType()
 }
 
 
-void Remote::setNodeCouriersRegistration(bool reg)
+void Remote::registerNodeCouriers(bool reg)
 {
 	OC_METHODGATE();
-	Node::setNodeCouriersRegistration(reg);
+	Node::registerNodeCouriers(reg);
 	// When we get a new remote specific courier, put it here
 	/*
 	if(!mComms.isNull()){

@@ -1,22 +1,36 @@
 #ifndef CARRIERDEBUGWIDGET_HPP
 #define CARRIERDEBUGWIDGET_HPP
 
-#include <QWidget>
+#include "uptime/ConfigureHelper.hpp"
 
-namespace Ui {
-	class CarrierDebugWidget;
-	}
+
+#include <QWidget>
+#include <QSharedPointer>
+
+class Node;
+
+namespace Ui
+{
+class CarrierDebugWidget;
+}
 
 class CarrierDebugWidget : public QWidget
 {
-		Q_OBJECT
+	Q_OBJECT
+private:
+	Ui::CarrierDebugWidget *ui;
+	ConfigureHelper mConfigureHelper;
+	QSharedPointer <Node> mNode;
 
-	public:
-		explicit CarrierDebugWidget(QWidget *parent = nullptr);
-		~CarrierDebugWidget();
+public:
+	explicit CarrierDebugWidget(QWidget *parent = nullptr);
+	~CarrierDebugWidget();
 
-	private:
-		Ui::CarrierDebugWidget *ui;
+public:
+	void configure(QSharedPointer <Node> node);
+
+
 };
 
-#endif // CARRIERDEBUGWIDGET_HPP
+#endif
+// CARRIERDEBUGWIDGET_HPP

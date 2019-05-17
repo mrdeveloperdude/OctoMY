@@ -21,6 +21,7 @@ ClientList::ClientList()
 	OC_METHODGATE();
 }
 
+
 ClientList::~ClientList()
 {
 	OC_METHODGATE();
@@ -45,6 +46,7 @@ QMap<QString, QSharedPointer<Client> > ClientList::toMapByID()
 	}
 	return map;
 }
+
 
 void ClientList::syncToAddressBook(QSharedPointer<AddressBook> ab, QSharedPointer<Node> node)
 {
@@ -88,6 +90,7 @@ void ClientList::syncToAddressBook(QSharedPointer<AddressBook> ab, QSharedPointe
 	mClients.append(existingMap.values());
 }
 
+
 QSharedPointer<Client> ClientList::byID(QString id)
 {
 	OC_METHODGATE();
@@ -104,6 +107,7 @@ QSharedPointer<Client> ClientList::byID(QString id)
 	}
 	return nullptr;
 }
+
 
 QSet<QSharedPointer<Client> > ClientList::withActiveSessions(CommsSessionDirectory &sessionDirectory, AddressBook &ab, quint64 now, const bool honeyMoon)
 {
@@ -137,14 +141,11 @@ QSet<QSharedPointer<Client> > ClientList::withActiveSessions(CommsSessionDirecto
 }
 
 
-
-
 void ClientList::clear()
 {
 	OC_METHODGATE();
 	mClients.clear();
 }
-
 
 
 QList< QSharedPointer<ClientWidget> > ClientList::widgets()
@@ -177,12 +178,12 @@ int ClientList::count() const
 }
 
 
-void ClientList::setAllCouriersRegistered(const bool reg)
+void ClientList::registerAllCouriers(const bool reg)
 {
 	OC_METHODGATE();
 	for(QSharedPointer<Client> client: mClients) {
 		if(!client.isNull()) {
-			client->setCourierRegistration(reg);
+			client->registerCouriers(reg);
 		}
 	}
 }

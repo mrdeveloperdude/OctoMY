@@ -33,8 +33,8 @@ private:
 	// NOTE: Connected is a relative term. It simply means "a package was successfully transmitted within some time limit"
 	bool mConnected;
 
-	// Do we want to be enabled?
-	bool mConnectionWanted;
+	// Do we want to be connected?
+	bool mMaintainConnection;
 
 	ConfigureHelper mConfigureHelper;
 
@@ -55,22 +55,27 @@ public:
 	void configure();
 	// ConfigureHelper style activate
 	bool activate(bool on);
-	// Comms spesific method to set wether or not we wish to maintain a connection
-	bool startConnection(bool on);
-
-
-	// Return if we are currently actively trying to maintain a connection
-	bool isStarted() const;
-
-	// Return the very loose notion we have about actually being connected
-	bool isConnected() const;
 
 
 public:
+	// Set if we want to maintain a connected or not
 	void maintainConnection(bool on);
 
+public:
+	// Return if we are actively maintaining a connection (My boss wants me to be active)
+	bool isConnectionMaintained() const;
+	// Return if connection is presumed to be active (I want to be active)
+	bool isConnectionStarted() const;
+	// Return if we have actually been successfull at being connected lately (I think I am active)
+	bool isConnected() const;
+
 private:
-	void updateMaintainConnection();
+	// Actually start/stop the connection
+	// NOTE: This is internal, please use maintainConnection() and updateConnection() to influence connection status
+	bool startConnection(bool on);
+	// Apply current wish for connection as set via maintainConnection()
+	void updateConnection();
+	// Detect and act on changes in connection status
 	void detectConnectionChanges(const quint64 now);
 
 private slots:

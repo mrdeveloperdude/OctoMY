@@ -5,17 +5,18 @@
 class IConnectionStatus
 {
 public:
-	IConnectionStatus();
-
+	virtual ~IConnectionStatus() {}
 
 	// IConnectionStatus interface
 public:
-	// We want to go online. We might not be online and we might
+	// Regardless of current online status, do we want to be online?
 	virtual bool needsConnection()=0;
+	// Regardless of current online status, we (do not) want to be online
 	virtual void setNeedsConnection(bool)=0;
 
-	// We are currently online. We might not need to be online
+	// Regardless of our need to be online, are we actually online?
 	virtual bool isConnected()=0;
+	// Regardless of our need to be online, set us to (not) be online.
 	virtual void setConnected(bool)=0;
 
 };

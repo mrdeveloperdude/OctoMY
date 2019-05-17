@@ -88,7 +88,7 @@ struct NodeActivationState {
  *
  */
 
-class Node : public QObject, public IConnectionStatus, public QEnableSharedFromThis<Node>
+class Node : public QObject/*, public IConnectionStatus*/, public QEnableSharedFromThis<Node>
 {
 	Q_OBJECT
 
@@ -310,11 +310,11 @@ public:
 	// Couriers
 public:
 	// [Un]register local couriers with comms
-	virtual void setNodeCouriersRegistration(const bool reg);
+	virtual void registerNodeCouriers(const bool reg);
 	// [Un]register client specific couriers with comms
-	void setClientCouriersRegistration(const bool reg);
-	// [Un]register couriers with comms
-	void setCouriersRegistration(const bool reg);
+	void registerClientCouriers(const bool reg);
+	// [Un]register both local and client couriers with comms
+	void registerCouriers(const bool reg);
 
 	// Update client specific courier registration with comms depending on need
 	void updateClientCouriersRegistration();
@@ -324,21 +324,21 @@ public:
 	void updateCouriersRegistration();
 
 
-
+/*
 	// Actions
 public:
 	bool isCommsStarted();
 	bool isCommsConnected();
-
+*/
 
 	// IConnectionStatus interface
 public:
 	// We want to go online. We might not be online and we might
-	bool needsConnection() Q_DECL_OVERRIDE;
-	void setNeedsConnection(const bool) Q_DECL_OVERRIDE;
+	//bool needsConnection() ;
+	//void setNeedsConnection(const bool) ;
 	// We are currently online. We might not need to be online
-	bool isConnected() Q_DECL_OVERRIDE;
-	void setConnected(const bool) Q_DECL_OVERRIDE;
+	//bool isConnected() Q_DECL_OVERRIDE;
+	//void setConnected(const bool) Q_DECL_OVERRIDE;
 
 	// Blob courier
 	BlobFuture submitBlobForSending(QByteArray data, QString name);
