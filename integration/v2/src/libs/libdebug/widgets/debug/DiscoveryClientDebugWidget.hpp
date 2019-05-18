@@ -6,6 +6,7 @@
 
 #include <QWidget>
 #include <QSharedPointer>
+#include <QTimer>
 
 class Node;
 
@@ -21,6 +22,7 @@ private:
 	Ui::DiscoveryClientDebugWidget *ui;
 	ConfigureHelper mConfigureHelper;
 	QSharedPointer <Node> mNode;
+	QTimer mTimer;
 
 public:
 	explicit DiscoveryClientDebugWidget(QWidget *parent = nullptr);

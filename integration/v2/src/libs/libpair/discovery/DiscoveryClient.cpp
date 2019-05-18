@@ -92,14 +92,9 @@ void DiscoveryClient::activate(bool on)
 }
 
 
-bool DiscoveryClient::isActive()
-{
-	OC_METHODGATE();
-	return mTimer.isActive();
-}
 
 
-QSharedPointer<Key> DiscoveryClient::localKey()
+QSharedPointer<Key> DiscoveryClient::localKey() const
 {
 	OC_METHODGATE();
 	if(!mNode.isNull()) {
@@ -122,10 +117,17 @@ void DiscoveryClient::setURL(const QUrl& serverURL)
 }
 
 
-QUrl DiscoveryClient::URL()
+QUrl DiscoveryClient::URL() const
 {
 	OC_METHODGATE();
 	return mServerURL;
+}
+
+
+bool DiscoveryClient::isActive() const
+{
+	OC_METHODGATE();
+	return mTimer.isActive();
 }
 
 
@@ -339,12 +341,17 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 }
 
 
-QSharedPointer<Node> DiscoveryClient::node()
+QSharedPointer<Node> DiscoveryClient::node() const
 {
 	OC_METHODGATE();
 	return mNode;
 }
 
+quint64 DiscoveryClient::lastZooPairTime() const
+{
+	OC_METHODGATE();
+	return mLastZooPair;
+}
 
 void DiscoveryClient::onTimer()
 {

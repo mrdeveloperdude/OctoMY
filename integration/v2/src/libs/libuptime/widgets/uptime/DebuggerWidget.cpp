@@ -79,6 +79,7 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 	ui->widgetHeaderPairing->configure(mNode);
 	ui->widgetHeaderLocalAddresses->configure(mNode);
 	ui->widgetNetworkSettings->configure(mNode?mNode->localAddressList():nullptr);
+	ui->widgetHeaderDiscoveryClient->configure(mNode);
 	configTryToggleForServiceLevel(ui->tryToggleDiscovery, "Discovery", mNode, "Activate disovery", "Discovery activating", "Deactivate discovery", "Discovery deactivating");
 	configTryToggleForServiceLevel(ui->tryToggleAlways, "Always", mNode, "Activate", "Activating", "Deactivate", "Deactivating");
 	configureUi();

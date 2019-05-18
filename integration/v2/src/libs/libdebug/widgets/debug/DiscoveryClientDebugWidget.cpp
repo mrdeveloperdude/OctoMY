@@ -7,7 +7,7 @@
 
 #include "utility/string/String.hpp"
 
-#include "comms/CommsChannel.hpp"
+#include "discovery/DiscoveryClient.hpp"
 
 
 DiscoveryClientDebugWidget::DiscoveryClientDebugWidget(QWidget *parent)
@@ -18,6 +18,7 @@ DiscoveryClientDebugWidget::DiscoveryClientDebugWidget(QWidget *parent)
 	OC_METHODGATE();
 	ui->setupUi(this);
 }
+
 
 DiscoveryClientDebugWidget::~DiscoveryClientDebugWidget()
 {
@@ -32,54 +33,23 @@ void DiscoveryClientDebugWidget::configure(QSharedPointer <Node> node)
 	if(mConfigureHelper.configure()) {
 		mNode=node;
 		if(!mNode.isNull()) {
-			/*
-			auto cc=mNode->comms();
-			if(!cc.isNull()) {
-				auto car=cc->carrier();
-				if(!car.isNull()) {
+			auto dc=mNode->discoveryClient();
+			if(!dc.isNull()) {
+				update();
 
-					ui->widgetRateCalculatorRX->configure(&car->mRXRate);
-					ui->widgetRateCalculatorTX->configure(&car->mTXRate);
-					ui->labelCarrierType->setText(car->objectName());
-
-					if(!connect(car.data(), &CommsCarrier::carrierReadyRead, this, [this, car]() {
-					qDebug().noquote().nospace()<<"CommsCarrier read ready";
-						onUpdate();
-					}, OC_CONTYPE )) {
-						qWarning()<<"ERROR: Could not connect";
-					}
-
-					if(!connect(car.data(), &CommsCarrier::carrierConnectionStatusChanged, this, [this, car](const bool conn) {
-					Q_UNUSED(conn);
-						ui->widgetStatusConnectionStarted->setLightOn(car->isConnectionStarted());
-						ui->widgetStatusConnectionConnected->setLightOn(car->isConnected());
-						ui->widgetStatusConnectionMaintained->setLightOn(car->isConnectionMaintained());
-					}, OC_CONTYPE )) {
-						qWarning()<<"ERROR: Could not connect";
-					}
-
-					if(!connect(car.data(), &CommsCarrier::carrierError, this, [this, car](const QString errorStr) {
-					qDebug().noquote().nospace()<<"CommsCarrier error: errorStr="<<errorStr;
-						ui->labelCarrierType->setText(errorStr);
-					}, OC_CONTYPE )) {
-						qWarning()<<"ERROR: Could not connect";
-					}
-
-					if(!connect(car.data(), &CommsCarrier::carrierSendingOpportunity, this, [this, car](const quint64 now) {
-					qDebug().noquote().nospace()<<"CommsCarrier sending oportunity: now="<<now;
-						ui->labelLastSendingOpportunity->setText(utility::string::humanReadableElapsedMS(now));
-						onUpdate();
-					}, OC_CONTYPE )) {
-						qWarning()<<"ERROR: Could not connect";
-					}
-				} else {
-					qWarning()<<"ERROR: No car";
-				}
 			} else {
-				qWarning()<<"ERROR: No comms";
+				qWarning()<<"ERROR: No discovery client";
 			}
-			*/
+
 		}
+		// We sacrifice quality since this is for debugging purpose onle and we want this to have the least impact on the runtime of non-debug code
+		mTimer.setTimerType(Qt::VeryCoarseTimer);
+		mTimer.setInterval(1000/15);// 15 FPS
+		mTimer.setSingleShot(false);
+		if(!connect(&mTimer, &QTimer::timeout, this, &DiscoveryClientDebugWidget::onUpdate, OC_CONTYPE )) {
+			qWarning()<<"ERROR: Could not connect";
+		}
+		mTimer.start();
 	}
 }
 
@@ -87,6 +57,17 @@ void DiscoveryClientDebugWidget::configure(QSharedPointer <Node> node)
 void  DiscoveryClientDebugWidget::onUpdate()
 {
 	OC_METHODGATE();
-	//ui->widgetRateCalculatorRX->update();
-	//ui->widgetRateCalculatorTX->update();
+	if(!mNode.isNull()) {
+		auto dc=mNode->discoveryClient();
+		if(!dc.isNull()) {
+			ui->labelActive->setText(dc->isActive()?"ACTIVE":"INACTIVE");
+			ui->labelServerURL->setText(dc->URL().toString());
+			ui->labelLastZooPairing->setText(utility::string::humanReadableElapsedMS(dc->lastZooPairTime()));
+		} else {
+			ui->labelActive->setText("N/A");
+			ui->labelServerURL->setText("N/A");
+			ui->labelLastZooPairing->setText("N/A");
+			qWarning()<<"ERROR: No discovery client";
+		}
+	}
 }

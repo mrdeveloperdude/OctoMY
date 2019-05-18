@@ -115,19 +115,21 @@ public:
 
 	// Convenience selectors
 private:
-	QSharedPointer<Key> localKey();
+	QSharedPointer<Key> localKey() const;
 
 public:
 	void setURL(const QUrl&);
-	QUrl URL();
-	bool isActive();
+	QUrl URL() const;
+	bool isActive() const;
 	void activate(bool start);
 
 	// Perform one shot discovery by invoking discovery request to discovery server
 	// NOTE: This should only be invoked from internal timer.
 	void discover();
 
-	QSharedPointer<Node> node();
+	QSharedPointer<Node> node() const;
+
+	quint64 lastZooPairTime() const;
 
 private slots:
 	void onTimer();
