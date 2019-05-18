@@ -24,7 +24,6 @@ void DiscoveryClientService::serviceWrapperActivate(QSharedPointer<DiscoveryClie
 	OC_METHODGATE();
 	bool ok=false;
 	if(mConfigureHelper.activate(on)) {
-		discoveryClient->activate(on);
 		if(on) {
 			if(!mNode.isNull()) {
 				discoveryClient->setURL(mNode->serverURL());
@@ -34,6 +33,7 @@ void DiscoveryClientService::serviceWrapperActivate(QSharedPointer<DiscoveryClie
 				qWarning()<<"ERROR: No node";
 			}
 		}
+		discoveryClient->activate(on);
 	}
 	if(nullptr!=callBack) {
 		callBack(ok);

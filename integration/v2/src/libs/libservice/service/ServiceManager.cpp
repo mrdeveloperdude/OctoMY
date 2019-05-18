@@ -126,9 +126,7 @@ QSet<QString> ServiceManager::dependencies(const QSharedPointer <Service> servic
 		qWarning()<<"ERROR: Trying to dependencies of unregistered service";
 		return QSet<QString>();
 	}
-
 }
-
 
 
 QSet<QString> ServiceManager::dependents(const QString name) const
