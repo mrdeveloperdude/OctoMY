@@ -25,6 +25,7 @@ PairingListWidget::PairingListWidget(QWidget *parent)
 	ui->setupUi(this);
 }
 
+
 PairingListWidget::~PairingListWidget()
 {
 	OC_METHODGATE();

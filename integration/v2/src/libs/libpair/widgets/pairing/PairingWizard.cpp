@@ -34,9 +34,6 @@
 // QDesktopServices::openUrl(QUrl("https://www.youtube.com/watch?v=mTiqZm-Ea70", QUrl::TolerantMode));
 
 
-
-
-
 PairingWizard::PairingWizard(QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::PairingWizard)
@@ -50,7 +47,6 @@ PairingWizard::PairingWizard(QWidget *parent)
 	OC_METHODGATE();
 	ui->setupUi(this);
 }
-
 
 
 PairingWizard::~PairingWizard()
@@ -179,8 +175,8 @@ void PairingWizard::replaceText(NodeType type)
 	}
 	break;
 	}
-
 }
+
 
 void PairingWizard::onNetworkSettingsChange(QHostAddress address, quint16 port, bool valid)
 {
@@ -195,6 +191,7 @@ void PairingWizard::onNetworkSettingsChange(QHostAddress address, quint16 port, 
 		updateNetworkSettings();
 	}
 }
+
 
 void PairingWizard::onTrustButtonClicked(QAbstractButton *button)
 {
@@ -258,7 +255,6 @@ void PairingWizard::onPulsatingTrustTimer()
 }
 
 
-
 void PairingWizard::updateNetworkSettings()
 {
 	OC_METHODGATE();
@@ -294,9 +290,6 @@ void PairingWizard::updatePulsating()
 }
 
 
-
-
-
 QSharedPointer<AddressBook> PairingWizard::addressBook()
 {
 	OC_METHODGATE();
@@ -307,6 +300,7 @@ QSharedPointer<AddressBook> PairingWizard::addressBook()
 	}
 	return nullptr;
 }
+
 
 QSharedPointer<LocalAddressList> PairingWizard::localAddressList()
 {
@@ -320,7 +314,6 @@ QSharedPointer<LocalAddressList> PairingWizard::localAddressList()
 }
 
 
-
 void PairingWizard::setCurrentPage(QWidget *cur)
 {
 	OC_METHODGATE();
@@ -328,6 +321,7 @@ void PairingWizard::setCurrentPage(QWidget *cur)
 		ui->stackedWidget->setCurrentWidget(cur);
 	}
 }
+
 
 void PairingWizard::reset()
 {
@@ -412,6 +406,7 @@ void PairingWizard::startEdit(int row)
 	}
 }
 
+
 QSharedPointer<Node> PairingWizard::node()
 {
 	OC_METHODGATE();
@@ -420,6 +415,7 @@ QSharedPointer<Node> PairingWizard::node()
 	}
 	return nullptr;
 }
+
 
 void PairingWizard::showEvent(QShowEvent *)
 {
@@ -430,6 +426,7 @@ void PairingWizard::showEvent(QShowEvent *)
 	}
 }
 
+
 void PairingWizard::hideEvent(QHideEvent *)
 {
 	OC_METHODGATE();
@@ -438,6 +435,7 @@ void PairingWizard::hideEvent(QHideEvent *)
 		updatePulsating();
 	}
 }
+
 
 void PairingWizard::on_pushButtonMaybeOnward_clicked()
 {
@@ -462,6 +460,7 @@ void PairingWizard::on_pushButtonTryAgain_clicked()
 		setCurrentPage(ui->pagePairWithPeers);
 	}
 }
+
 
 void PairingWizard::on_pushButtonDone_clicked()
 {

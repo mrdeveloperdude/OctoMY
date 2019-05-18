@@ -88,6 +88,7 @@ void  DiscoveryClientDebugWidget::onUpdate()
 	}
 }
 
+
 void DiscoveryClientDebugWidget::on_pushButtonLogging_toggled(bool logging)
 {
 	OC_METHODGATE();
@@ -98,6 +99,7 @@ void DiscoveryClientDebugWidget::on_pushButtonLogging_toggled(bool logging)
 		}
 	}
 }
+
 
 void DiscoveryClientDebugWidget::on_pushButtonDiscover_clicked()
 {

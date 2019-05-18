@@ -30,6 +30,7 @@ PairingListModel::PairingListModel(QSharedPointer<AddressBook> store, NodeType t
 	}
 }
 
+
 PairingListModel::~PairingListModel()
 {
 	OC_METHODGATE();
@@ -56,7 +57,6 @@ bool PairingListModel::filter(NodeType &t) const
 }
 
 
-
 void PairingListModel::onAssociateChanged()
 {
 	qDebug()<<"FORWARDING UPDATE SIGNAL";
@@ -66,6 +66,7 @@ void PairingListModel::onAssociateChanged()
 		qWarning()<<"ERROR: No store";
 	}
 }
+
 
 int PairingListModel::rowCount(const QModelIndex &) const
 {
@@ -89,11 +90,13 @@ int PairingListModel::rowCount(const QModelIndex &) const
 	return ret;
 }
 
+
 int PairingListModel::columnCount(const QModelIndex &) const
 {
 	OC_METHODGATE();
 	return 1;
 }
+
 
 QVariant PairingListModel::data(const QModelIndex &index, int role) const
 {

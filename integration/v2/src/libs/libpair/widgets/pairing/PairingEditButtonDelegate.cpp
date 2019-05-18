@@ -14,18 +14,18 @@
 #include <QMouseEvent>
 
 
-
 PairingEditButtonDelegate::PairingEditButtonDelegate(QObject *parent)
 	: QItemDelegate(parent)
 {
 	OC_METHODGATE();
+	//Q_INIT_RESOURCE(icons);
 }
+
 
 PairingEditButtonDelegate::~PairingEditButtonDelegate()
 {
 	OC_METHODGATE();
 }
-
 
 
 QSizeF PairingEditButtonDelegate::calcSize(QSizeF ds, const qint32 w, const qint32 h, qreal const z)
@@ -45,7 +45,6 @@ QSizeF PairingEditButtonDelegate::calcSize(QSizeF ds, const qint32 w, const qint
 }
 
 
-
 QPixmap PairingEditButtonDelegate::svgToPixmap(QString fn, const  qint32 w, const qint32 h, const qreal zoom) const
 {
 	OC_METHODGATE();
@@ -59,7 +58,6 @@ QPixmap PairingEditButtonDelegate::svgToPixmap(QString fn, const  qint32 w, cons
 	//px.save("/tmp/px.png");
 	return px;
 }
-
 
 
 static QSizeF calcSize(QSizeF ds,qint32 w,qint32 h,qreal zoom)
@@ -77,6 +75,7 @@ static QSizeF calcSize(QSizeF ds,qint32 w,qint32 h,qreal zoom)
 	qreal izoom=1.0-zoom;
 	return low*izoom+high*zoom;
 }
+
 
 static void drawSVG(QPainter *p, QString url, qint32 x,qint32 y, qint32 w,qint32 h, qreal zoom=0.0)
 {
@@ -218,6 +217,7 @@ void PairingEditButtonDelegate::paint(QPainter *painter, const QStyleOptionViewI
 	}
 }
 
+
 bool PairingEditButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
 	OC_METHODGATE();
@@ -244,12 +244,12 @@ bool PairingEditButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *m
 		if(( clickX > x && clickX < x + w ) && ( clickY > y && clickY < y + h )) {
 			qDebug()<<"CLICK";
 			emit startEdit(index.row());
-			//pwiz.startEdit(index.row());
 			return true;
 		}
 	}
 	return false;
 }
+
 
 QSize PairingEditButtonDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -257,6 +257,3 @@ QSize PairingEditButtonDelegate::sizeHint(const QStyleOptionViewItem &option, co
 	Q_UNUSED(index);
 	return QSize(option.widget->size().width(),option.widget->size().height()*2/7);
 }
-
-
-
