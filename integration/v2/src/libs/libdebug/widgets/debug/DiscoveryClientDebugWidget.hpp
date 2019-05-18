@@ -1,0 +1,39 @@
+#ifndef DISCOVERYCLIENTDEBUGWIDGET_HPP
+#define DISCOVERYCLIENTDEBUGWIDGET_HPP
+
+#include "uptime/ConfigureHelper.hpp"
+
+
+#include <QWidget>
+#include <QSharedPointer>
+
+class Node;
+
+namespace Ui
+{
+class DiscoveryClientDebugWidget;
+}
+
+class DiscoveryClientDebugWidget : public QWidget
+{
+	Q_OBJECT
+private:
+	Ui::DiscoveryClientDebugWidget *ui;
+	ConfigureHelper mConfigureHelper;
+	QSharedPointer <Node> mNode;
+
+public:
+	explicit DiscoveryClientDebugWidget(QWidget *parent = nullptr);
+	~DiscoveryClientDebugWidget();
+
+public:
+	void configure(QSharedPointer <Node> node);
+
+public slots:
+	void onUpdate();
+
+
+};
+
+#endif
+// DISCOVERYCLIENTDEBUGWIDGET_HPP
