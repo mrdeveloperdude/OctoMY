@@ -131,6 +131,9 @@ public:
 
 	quint64 lastZooPairTime() const;
 
+	void setLogging(const bool logging);
+	bool isLogging() const;
+
 private slots:
 	void onTimer();
 

@@ -130,7 +130,6 @@ bool DiscoveryClient::isActive() const
 	return mTimer.isActive();
 }
 
-
 void DiscoveryClient::discover()
 {
 	OC_METHODGATE();
@@ -347,11 +346,27 @@ QSharedPointer<Node> DiscoveryClient::node() const
 	return mNode;
 }
 
+
 quint64 DiscoveryClient::lastZooPairTime() const
 {
 	OC_METHODGATE();
 	return mLastZooPair;
 }
+
+
+void DiscoveryClient::setLogging(const bool logging)
+{
+	OC_METHODGATE();
+	mLog=logging;
+}
+
+
+bool DiscoveryClient::isLogging() const
+{
+	OC_METHODGATE();
+	return mLog;
+}
+
 
 void DiscoveryClient::onTimer()
 {

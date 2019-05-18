@@ -36,7 +36,6 @@ void DiscoveryClientDebugWidget::configure(QSharedPointer <Node> node)
 			auto dc=mNode->discoveryClient();
 			if(!dc.isNull()) {
 				update();
-
 			} else {
 				qWarning()<<"ERROR: No discovery client";
 			}
@@ -63,11 +62,23 @@ void  DiscoveryClientDebugWidget::onUpdate()
 			ui->labelActive->setText(dc->isActive()?"ACTIVE":"INACTIVE");
 			ui->labelServerURL->setText(dc->URL().toString());
 			ui->labelLastZooPairing->setText(utility::string::humanReadableElapsedMS(dc->lastZooPairTime()));
+			ui->pushButtonLogging->setChecked(dc->isLogging());
 		} else {
 			ui->labelActive->setText("N/A");
 			ui->labelServerURL->setText("N/A");
 			ui->labelLastZooPairing->setText("N/A");
 			qWarning()<<"ERROR: No discovery client";
+		}
+	}
+}
+
+void DiscoveryClientDebugWidget::on_pushButtonLogging_toggled(bool logging)
+{
+	OC_METHODGATE();
+	if(!mNode.isNull()) {
+		auto dc=mNode->discoveryClient();
+		if(!dc.isNull()) {
+			dc->setLogging(logging);
 		}
 	}
 }

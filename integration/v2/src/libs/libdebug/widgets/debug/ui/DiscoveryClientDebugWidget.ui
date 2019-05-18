@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>208</width>
+    <width>213</width>
     <height>112</height>
    </rect>
   </property>
@@ -78,6 +78,9 @@
     <widget class="QPushButton" name="pushButtonLogging">
      <property name="text">
       <string>Logging</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

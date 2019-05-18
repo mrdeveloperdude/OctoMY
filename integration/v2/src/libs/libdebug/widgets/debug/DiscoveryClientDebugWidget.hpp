@@ -35,6 +35,8 @@ public slots:
 	void onUpdate();
 
 
+	private slots:
+	void on_pushButtonLogging_toggled(bool checked);
 };
 
 #endif
