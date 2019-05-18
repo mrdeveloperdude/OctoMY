@@ -35,6 +35,8 @@ void DiscoveryClientDebugWidget::configure(QSharedPointer <Node> node)
 		if(!mNode.isNull()) {
 			auto dc=mNode->discoveryClient();
 			if(!dc.isNull()) {
+				ui->widgetRateCalculatorRX->configure(&dc->mRXRate);
+				ui->widgetRateCalculatorTX->configure(&dc->mTXRate);
 				update();
 			} else {
 				qWarning()<<"ERROR: No discovery client";
@@ -57,14 +59,16 @@ void  DiscoveryClientDebugWidget::onUpdate()
 {
 	OC_METHODGATE();
 	if(!mNode.isNull()) {
+		ui->widgetRateCalculatorRX->update();
+		ui->widgetRateCalculatorTX->update();
 		auto dc=mNode->discoveryClient();
 		if(!dc.isNull()) {
-			ui->labelActive->setText(dc->isActive()?"ACTIVE":"INACTIVE");
+			ui->widgetStatusActive->setLightOn(dc->isActive());
 			ui->labelServerURL->setText(dc->URL().toString());
 			ui->labelLastZooPairing->setText(utility::string::humanReadableElapsedMS(dc->lastZooPairTime()));
 			ui->pushButtonLogging->setChecked(dc->isLogging());
 		} else {
-			ui->labelActive->setText("N/A");
+			ui->widgetStatusActive->setLightOn(false);
 			ui->labelServerURL->setText("N/A");
 			ui->labelLastZooPairing->setText("N/A");
 			qWarning()<<"ERROR: No discovery client";

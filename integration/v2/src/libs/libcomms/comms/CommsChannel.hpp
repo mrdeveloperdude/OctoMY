@@ -13,7 +13,7 @@
 #include "security/Key.hpp"
 
 
-#include "RateCalculator.hpp"
+#include "utility/time/RateCalculator.hpp"
 #include "CommsSessionDirectory.hpp"
 #include "CommsCarrier.hpp"
 #include "couriers/Courier.hpp"

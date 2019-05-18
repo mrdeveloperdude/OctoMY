@@ -6,6 +6,7 @@
 #include "address/Associate.hpp"
 #include "uptime/ConfigureHelper.hpp"
 #include "utility/time/HoneymoonScheduler.hpp"
+#include "utility/time/RateCalculator.hpp"
 
 #include <QTimer>
 #include <QObject>
@@ -96,6 +97,11 @@ private:
 	bool										mLog;
 	HoneymoonScheduler<quint64>					mHoneymoonScheduler;
 	ConfigureHelper								mConfigureHelper;
+
+	// TODO: Encapsulate
+public:
+	RateCalculator mRXRate;
+	RateCalculator mTXRate;
 
 
 private:

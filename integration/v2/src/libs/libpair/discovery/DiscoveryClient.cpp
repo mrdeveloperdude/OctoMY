@@ -42,6 +42,8 @@ DiscoveryClient::DiscoveryClient()
 	, mClient(OC_NEW qhttp::client::QHttpClient(this))
 	, mLog(false)
 	, mConfigureHelper("DiscoveryClient", true, true, false, true, false)
+	, mRXRate("RX")
+	, mTXRate("TX")
 {
 	OC_METHODGATE();
 }
@@ -186,6 +188,7 @@ void DiscoveryClient::discover()
 				req->addHeader("connection",			"keep-alive");
 				req->addHeaderValue("content-length", 	body.length());
 				req->end(body);
+				mTXRate.countPacket(static_cast<quint32>(body.size()));
 			} else {
 				qWarning()<<"ERROR: no key";
 			}
@@ -206,7 +209,9 @@ void DiscoveryClient::discover()
 					ok=false;
 					message="ERROR: HTTP Code was "+QString::number(status)+" instead of 200 OK";
 				} else {
-					QJsonDocument doc = QJsonDocument::fromJson(res->collectedData());
+					auto raw=res->collectedData();
+					QJsonDocument doc = QJsonDocument::fromJson(raw);
+					mRXRate.countPacket(static_cast<quint32>(raw.size()));
 					QByteArray data=doc.toJson();
 					QVariantMap root = QJsonDocument::fromJson(data).toVariant().toMap();
 					if ( root.isEmpty() ) {

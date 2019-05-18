@@ -3,7 +3,7 @@
 
 #include "NetworkAddress.hpp"
 
-#include "RateCalculator.hpp"
+#include "utility/time/RateCalculator.hpp"
 
 #include "uptime/ConfigureHelper.hpp"
 

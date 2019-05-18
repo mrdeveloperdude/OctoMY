@@ -1,7 +1,7 @@
 #include "RateCalculatorWidget.hpp"
 #include "ui_RateCalculatorWidget.h"
 
-#include "comms/RateCalculator.hpp"
+#include "utility/time/RateCalculator.hpp"
 #include "utility/string/String.hpp"
 
 #include "uptime/MethodGate.hpp"
@@ -48,7 +48,7 @@ void RateCalculatorWidget::update()
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		if(nullptr!=mRateCalculator) {
 			ui->labelTotalBytes->setText(QString("%1 (%2)").arg(mRateCalculator->mBytes).arg(utility::string::humanReadableSize(mRateCalculator->mBytes)));
-			ui->labelTotalCount->setText(QString("%1 (%2)").arg(mRateCalculator->mCount).arg(utility::string::humanReadableSize(mRateCalculator->mCount)));
+			ui->labelTotalCount->setText(QString("%1").arg(mRateCalculator->mCount));
 		}
 	}
 }
