@@ -79,3 +79,12 @@ const QDebug &operator<<(QDebug &d, const RateCalculator &rc)
 	return d.maybeSpace();
 	//return d;
 }
+
+
+
+void RateCalculator::log(RateCalculatorLogger &logger)
+{
+	OC_METHODGATE();
+	Q_UNUSED(logger);
+	// TODO: Implement
+}

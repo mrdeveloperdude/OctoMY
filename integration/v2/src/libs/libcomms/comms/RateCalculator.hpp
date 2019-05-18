@@ -3,6 +3,18 @@
 
 #include <QString>
 
+/**
+ * @brief The RateCalculatorLogger class is used to allow multiple loggings occur for a rate calculator without getting in it's way
+ */
+struct RateCalculatorLogger
+{
+	quint64 mLastLog;
+	quint64 mLogInterval;
+	quint64 mCountLog;
+	quint64 mPacketRate;
+	quint64 mByteRate;
+};
+
 class RateCalculator
 {
 public:
@@ -19,6 +31,9 @@ public:
 	RateCalculator(QString name="Unnamed", const quint64 logInterval=0);
 	void countPacket(quint32 bytes=0, quint64 now=0);
 	QString operator()(RateCalculator &rc);
+
+private:
+	void log(RateCalculatorLogger &logger);
 
 };
 

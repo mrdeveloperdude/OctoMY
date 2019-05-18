@@ -207,14 +207,10 @@
     </layout>
    </item>
    <item>
-    <widget class="CouriersDebugWidget" name="widgetCouriersDebug" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
+    <widget class="RateCalculatorWidget" name="widgetRateCalculatorRX" native="true"/>
+   </item>
+   <item>
+    <widget class="RateCalculatorWidget" name="widgetRateCalculatorTX" native="true"/>
    </item>
   </layout>
  </widget>
@@ -226,9 +222,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>CouriersDebugWidget</class>
+   <class>RateCalculatorWidget</class>
    <extends>QWidget</extends>
-   <header location="global">widgets/debug/CouriersDebugWidget.hpp</header>
+   <header location="global">widgets/debug/RateCalculatorWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

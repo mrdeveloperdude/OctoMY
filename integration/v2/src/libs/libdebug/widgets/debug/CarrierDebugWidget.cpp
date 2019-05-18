@@ -18,11 +18,13 @@ CarrierDebugWidget::CarrierDebugWidget(QWidget *parent)
 	ui->setupUi(this);
 }
 
+
 CarrierDebugWidget::~CarrierDebugWidget()
 {
 	OC_METHODGATE();
 	delete ui;
 }
+
 
 void CarrierDebugWidget::configure(QSharedPointer <Node> node)
 {
@@ -30,11 +32,22 @@ void CarrierDebugWidget::configure(QSharedPointer <Node> node)
 	if(mConfigureHelper.configure()) {
 		mNode=node;
 		if(!mNode.isNull()) {
-			ui->widgetCouriersDebug->configure(mNode);
 			auto cc=mNode->comms();
 			if(!cc.isNull()) {
 				auto car=cc->carrier();
 				if(!car.isNull()) {
+
+					ui->widgetRateCalculatorRX->configure(&car->mRXRate);
+					ui->widgetRateCalculatorTX->configure(&car->mTXRate);
+					ui->labelCarrierType->setText(car->objectName());
+
+					if(!connect(car.data(), &CommsCarrier::carrierReadyRead, this, [this, car]() {
+					qDebug().noquote().nospace()<<"CommsCarrier read ready";
+						onUpdate();
+					}, OC_CONTYPE )) {
+						qWarning()<<"ERROR: Could not connect";
+					}
+
 					if(!connect(car.data(), &CommsCarrier::carrierConnectionStatusChanged, this, [this, car](const bool conn) {
 					Q_UNUSED(conn);
 						ui->widgetStatusConnectionStarted->setLightOn(car->isConnectionStarted());
@@ -54,11 +67,10 @@ void CarrierDebugWidget::configure(QSharedPointer <Node> node)
 					if(!connect(car.data(), &CommsCarrier::carrierSendingOpportunity, this, [this, car](const quint64 now) {
 					qDebug().noquote().nospace()<<"CommsCarrier sending oportunity: now="<<now;
 						ui->labelLastSendingOpportunity->setText(utility::string::humanReadableElapsedMS(now));
+						onUpdate();
 					}, OC_CONTYPE )) {
 						qWarning()<<"ERROR: Could not connect";
 					}
-
-
 				} else {
 					qWarning()<<"ERROR: No car";
 				}
@@ -66,18 +78,13 @@ void CarrierDebugWidget::configure(QSharedPointer <Node> node)
 				qWarning()<<"ERROR: No comms";
 			}
 		}
-		/*
-		if(!connect(ui->checkBoxUpdateRealtime, &QCheckBox::toggled, this, &ServicesDebugWidget::onRealtimeChanged, OC_CONTYPE )) {
-			qWarning()<<"ERROR: Could not connect";
-		}
-		// We sacrifice quality since this is for debugging purpose onle and we want this to have the least impact on the runtime of non-debug code
-		mTimer.setTimerType(Qt::VeryCoarseTimer);
-		mTimer.setInterval(1000/15);// 15 FPS
-		if(!connect(&mTimer, &QTimer::timeout, this, &ServicesDebugWidget::onTimer, OC_CONTYPE )) {
-			qWarning()<<"ERROR: Could not connect";
-		}
-		onRealtimeChanged(ui->checkBoxUpdateRealtime->isChecked());
-		*/
 	}
 }
 
+
+void  CarrierDebugWidget::onUpdate()
+{
+	OC_METHODGATE();
+	ui->widgetRateCalculatorRX->update();
+	ui->widgetRateCalculatorTX->update();
+}

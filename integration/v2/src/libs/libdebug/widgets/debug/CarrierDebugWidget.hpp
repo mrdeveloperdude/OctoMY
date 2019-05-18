@@ -29,6 +29,8 @@ public:
 public:
 	void configure(QSharedPointer <Node> node);
 
+public slots:
+	void onUpdate();
 
 };
 

@@ -38,7 +38,8 @@ private:
 
 	ConfigureHelper mConfigureHelper;
 
-protected:
+	// TODO: Better protect the rate calculators. Maybe through use of logging facility?
+public:
 	// The timer used to schedule when packets are sent to the other side
 	QTimer mSendingTimer;
 
