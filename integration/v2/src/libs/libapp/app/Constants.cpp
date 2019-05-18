@@ -59,3 +59,6 @@ const QString Constants::AGENT_CONNECTION_STATUS("agent.connection.status");
 
 const bool Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS(true);
 const bool Constants::OC_LOG_CONFIGURE_HELPER_CHANGES(false);
+
+
+const int Constants::OC_STATUS_BLINK_TIME(1000/10);

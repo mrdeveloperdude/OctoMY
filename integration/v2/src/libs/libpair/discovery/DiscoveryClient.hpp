@@ -144,6 +144,8 @@ private slots:
 	void onTimer();
 
 signals:
+	void discoverRequest();
+	void discoverResponse(const bool ok);
 	void nodeDiscovered(QString id);
 
 };

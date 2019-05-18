@@ -54,7 +54,7 @@ void ServicesDebugWidget::configure(QSharedPointer <Node> node)
 		}
 		// We sacrifice quality since this is for debugging purpose onle and we want this to have the least impact on the runtime of non-debug code
 		mTimer.setTimerType(Qt::VeryCoarseTimer);
-		mTimer.setInterval(1000/15);// 15 FPS
+		mTimer.setInterval(1000);// 1 FPS
 		if(!connect(&mTimer, &QTimer::timeout, this, &ServicesDebugWidget::onTimer, OC_CONTYPE )) {
 			qWarning()<<"ERROR: Could not connect";
 		}
@@ -85,7 +85,7 @@ void ServicesDebugWidget::triggerUpdate()
 	OC_METHODGATE();
 	mLastUpdate=utility::time::currentMsecsSinceEpoch<quint64>();
 	if(ui->checkBoxUpdateRealtime->isChecked()) {
-		mTimer.start();
+		//mTimer.start();
 	}
 }
 

@@ -71,6 +71,9 @@ public:
 	static const bool OC_LOG_CONFIGURE_HELPER_WARNINGS;
 	static const bool OC_LOG_CONFIGURE_HELPER_CHANGES;
 
+
+	static const int OC_STATUS_BLINK_TIME;
+
 };
 
 #endif // CONSTANTS_HPP

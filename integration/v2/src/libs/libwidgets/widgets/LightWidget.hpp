@@ -25,6 +25,7 @@ private:
 	bool mOn;
 	QRadialGradient mLightGradient;
 	QTimer mBlinkTimer;
+	//quint64 mBlinkStart;
 
 public:
 	LightWidget(QWidget *parent = nullptr,const QColor &mLightColorInner=sDefaultOKColor);

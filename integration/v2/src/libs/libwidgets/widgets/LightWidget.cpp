@@ -2,6 +2,7 @@
 
 #include "uptime/MethodGate.hpp"
 #include "uptime/ConnectionType.hpp"
+#include "utility/time/HumanTime.hpp"
 
 #include <QPainter>
 #include <QtMath>
@@ -18,11 +19,17 @@ const QColor LightWidget::sDefaultErrorColor("#c07c43");
 LightWidget::LightWidget(QWidget *parent, const QColor &color)
 	: QWidget(parent)
 	, mOn(false)
+	, mBlinkTimer(this)
+//	, mBlinkStart(0)
 {
 	OC_METHODGATE();
 	mBlinkTimer.setSingleShot(true);
 	mBlinkTimer.setTimerType(Qt::PreciseTimer);
-	if(!connect(&mBlinkTimer,SIGNAL(timout),this,SLOT(turnLightOff), OC_CONTYPE)) {
+	if(!connect(&mBlinkTimer, &QTimer::timeout, this, [this]() {
+	//auto actual=utility::time::currentMsecsSinceEpoch<quint64>()-mBlinkStart;
+	//qDebug()<<"BLINK ENDED FOR " << this << " WITH "<<mBlinkTimer.interval()<< "ms TOOK "<<actual<<"ms";
+	turnLightOff();
+	}, OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 	setLightColor(color);
@@ -50,6 +57,9 @@ void LightWidget::setLightOn(bool o)
 void LightWidget::setLightColor(QColor c)
 {
 	OC_METHODGATE();
+	if(mLightColor==c) {
+		return;
+	}
 	mLightColor=c;
 	mLightColorDarker=mLightColor.darker(300);
 	QColor saturated=QColor::fromHslF(mLightColor.toHsv().hslHueF(), 1.0,0.5,1.0);
@@ -95,8 +105,10 @@ void LightWidget::turnLightOn()
 void LightWidget::blink(int ms)
 {
 	OC_METHODGATE();
-	setLightOn(false);
+	setLightOn(true);
+	//mBlinkStart=utility::time::currentMsecsSinceEpoch<quint64>();
 	mBlinkTimer.start(ms);
+	//qDebug()<<"BLINK STARTED FOR "<< this<< " WITH "<<mBlinkTimer.interval()<< "ms";
 }
 
 
@@ -106,7 +118,6 @@ void LightWidget::paintEvent(QPaintEvent *)
 	QPainter painter(this);
 	painter.setPen(Qt::NoPen);
 	painter.setRenderHint(QPainter::Antialiasing);
-
 	const int border=2;
 	const int border2=border*2;
 	const int w=width()-1;

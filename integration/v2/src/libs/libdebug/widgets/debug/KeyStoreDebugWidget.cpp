@@ -12,6 +12,7 @@ KeyStoreDebugWidget::KeyStoreDebugWidget(QWidget *parent)
 	OC_METHODGATE();
 }
 
+
 KeyStoreDebugWidget::~KeyStoreDebugWidget()
 {
 	OC_METHODGATE();

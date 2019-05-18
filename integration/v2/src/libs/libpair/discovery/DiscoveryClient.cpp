@@ -255,14 +255,17 @@ void DiscoveryClient::discover()
 						qDebug().noquote().nospace()<<"RETURNED STATUS ("<<ok<<"):"<<message;
 					}
 				}
+				emit discoverResponse(ok);
 			});
 			if(mLog) {
 				qDebug().noquote().nospace()<<"Getting node: RES DONE";
 			}
 		};
 		const bool ret=mClient->request(qhttp::EHTTP_POST, mServerURL, reqHandler, resHandler);
+		emit discoverRequest();
 		if(!ret) {
 			qWarning().noquote().nospace()<<"ERROR: Could not execute discovery request to '"<<mServerURL<<"'";
+			emit discoverResponse(false);
 		}
 	}
 }

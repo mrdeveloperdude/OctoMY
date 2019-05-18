@@ -39,7 +39,7 @@ void SimpleTableDebugWidget::configure(QString name)
 		}
 		// We sacrifice quality since this is for debugging purpose onle and we want this to have the least impact on the runtime of non-debug code
 		mTimer.setTimerType(Qt::VeryCoarseTimer);
-		mTimer.setInterval(1000/15);// 15 FPS
+		mTimer.setInterval(1000);// 1 FPS
 		if(!connect(&mTimer, &QTimer::timeout, this, &SimpleTableDebugWidget::onTimerWrapper, OC_CONTYPE )) {
 			qWarning()<<"ERROR: Could not connect ";
 		}
@@ -63,7 +63,7 @@ void SimpleTableDebugWidget::triggerUpdate()
 	OC_METHODGATE();
 	mLastUpdate=utility::time::currentMsecsSinceEpoch<quint64>();
 	if(ui->checkBoxUpdateRealtime->isChecked()) {
-		mTimer.start();
+		//mTimer.start();
 	}
 }
 
@@ -71,7 +71,6 @@ void SimpleTableDebugWidget::triggerUpdate()
 void SimpleTableDebugWidget::onRealtimeChangedWrapper(bool realtime)
 {
 	OC_METHODGATE();
-	Q_UNUSED(realtime);
 	if(realtime) {
 		triggerUpdate();
 	} else {
@@ -83,6 +82,7 @@ void SimpleTableDebugWidget::onRealtimeChangedWrapper(bool realtime)
 
 void SimpleTableDebugWidget::onTimerWrapper()
 {
+	qDebug()<<"BLINKY";
 	OC_METHODGATE();
 	const quint64 blinkSize=1000;
 	auto p=palette();
