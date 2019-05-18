@@ -37,6 +37,7 @@ public slots:
 
 	private slots:
 	void on_pushButtonLogging_toggled(bool checked);
+	void on_pushButtonDiscover_clicked();
 };
 
 #endif

@@ -98,3 +98,14 @@ void DiscoveryClientDebugWidget::on_pushButtonLogging_toggled(bool logging)
 		}
 	}
 }
+
+void DiscoveryClientDebugWidget::on_pushButtonDiscover_clicked()
+{
+	OC_METHODGATE();
+	if(!mNode.isNull()) {
+		auto dc=mNode->discoveryClient();
+		if(!dc.isNull()) {
+			dc->discover();
+		}
+	}
+}
