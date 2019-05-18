@@ -213,14 +213,23 @@ void ServiceLevelManager::synchronizeServiceManager(const std::function<void(con
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		if(!mServiceManager.isNull()) {
+			qDebug().noquote().nospace()<<"**** synchronizeServiceManager ****";
 			// Get the services we want to enable
-			QSet<QString> wanted=wantedServices();
+			QSet<QString> wantedRaw=wantedServices();
+			qDebug().noquote().nospace()<<"**** synchronizeServiceManager new wantedRaw="<<wantedRaw;
+			// Expand to include dependencies
+			QSet<QString> wanted=mServiceManager->expand(wantedRaw);
+			qDebug().noquote().nospace()<<"**** synchronizeServiceManager new wanted="<<wanted;
 			// Get the existing services
 			QSet<QString> currentlyWanted=mServiceManager->all(true, false);
+			qDebug().noquote().nospace()<<"**** synchronizeServiceManager currentlyWanted="<<currentlyWanted;
 			// Get the services we want to disable
 			QSet<QString> unwanted=currentlyWanted-wanted;
+			qDebug().noquote().nospace()<<"**** synchronizeServiceManager unwanted="<<unwanted;
 			// Cull all services that are already wanted
 			wanted-=currentlyWanted;
+
+			qDebug().noquote().nospace()<<"**** synchronizeServiceManager wanted="<<wanted<<" unwanted="<<unwanted;
 			// Apply the new recommendation
 			mServiceManager->changeActivation(wanted, unwanted, [this, callBack](bool ok) {
 				qDebug()<<"POLKA=" << ok;

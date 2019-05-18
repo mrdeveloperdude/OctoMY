@@ -95,7 +95,7 @@ QSharedPointer <Service> ServiceManager::serviceByName(const QString name) const
 }
 
 
-QSet<QString> ServiceManager::dependencies(const QString name) const
+QSet<QString> ServiceManager::dependencies(const QString name, const bool recurse) const
 {
 	OC_METHODGATE();
 	QSet<QString> ret;
@@ -104,8 +104,10 @@ QSet<QString> ServiceManager::dependencies(const QString name) const
 		QStringList deps=service->dependencies();
 		for(auto dep:deps) {
 			//qDebug()<<name<<"-DEP: "<<dep;
-			auto sub=dependencies(dep);
-			ret+=sub;
+			if(recurse) {
+				auto sub=dependencies(dep, recurse);
+				ret+=sub;
+			}
 			ret+=dep;
 		}
 	}
@@ -193,7 +195,6 @@ QSet<QString> ServiceManager::all() const
 }
 
 
-
 QSet<QString> ServiceManager::all(const bool on, const bool  actual) const
 {
 	OC_METHODGATE();
@@ -208,7 +209,6 @@ QSet<QString> ServiceManager::all(const bool on, const bool  actual) const
 }
 
 
-// Show internal state
 void ServiceManager::dump() const
 {
 	OC_METHODGATE();
@@ -216,6 +216,18 @@ void ServiceManager::dump() const
 	for(auto service:mServicesList) {
 		qDebug()<<" + SERVICE: name="<<service->name()<<", activated=("<<service->serviceActiveWanted()<<","<<service->serviceActiveActual()<<"), dependencies="<<service->dependencies();
 	}
+}
+
+QSet<QString> ServiceManager::expand(const QSet<QString> set) const
+{
+	OC_METHODGATE();
+	QSet<QString> ret;
+	for(auto name:set) {
+		ret+=name;
+		auto deps=dependencies(name);
+		ret+=deps;
+	}
+	return ret;
 }
 
 
@@ -398,7 +410,7 @@ struct synchronizer {
 void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSet<QString> deactivateSet, ServiceActivatedCallback callBack)
 {
 	OC_METHODGATE();
-	qDebug()<<"changeActivation called with activate="<<activateSet<<" deactivate="<<deactivateSet;
+	//qDebug().noquote().nospace()<<"changeActivation called with activate="<<activateSet<<" deactivate="<<deactivateSet;
 	QSet<QString> workingActivate=nextActivatableInSet(activateSet, true);
 	QSet<QString> workingDeactivate=nextActivatableInSet(deactivateSet, false);
 	// Make sure that we don't accidentally deactivate services we actually need.
@@ -408,7 +420,7 @@ void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSe
 
 	synchronizer *sync=OC_NEW synchronizer;
 	if(!changing.isEmpty()) {
-		qDebug()<<" -- Changing service set: "<<changing;
+		// qDebug()<<" -- Changing service set: "<<changing;
 		for(auto name:changing) {
 			auto service = serviceByName(name);
 			if(!service.isNull()) {
@@ -416,7 +428,7 @@ void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSe
 				const bool wanted=workingActivate.contains(name);
 				// Is there a change?
 				if(currentlyWanted != wanted) {
-					qDebug()<<" --- In change set: "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION");
+					// qDebug().noquote().nospace()<<" --- In change set: "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION");
 					sync->inc();
 				}
 			} else {
@@ -431,11 +443,11 @@ void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSe
 				// Is there a change?
 				if(currentlyWanted != wanted) {
 					// Recurse asynchronously
-					qDebug()<<" --- Change set: "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION")<<" STARTED";
+					qDebug().noquote().nospace()<<" --- Change set: "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION")<<" STARTED";
 					service->serviceChangeActivation(wanted, [=](bool ok) {
-						qDebug()<<" ---- Change set "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION")<<" "<<(ok?"SUCCEEDED":"FAILED");
+						qDebug().noquote().nospace()<<" ---- Change set "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION")<<" "<<(ok?"SUCCEEDED":"FAILED");
 						if(sync->end(ok)) {
-							// qDebug()<<" ------ Recursing at end: "<<name<<" with "<<active;
+							// qDebug().noquote().nospace()<<" ------ Recursing at end: "<<name<<" with "<<active;
 							delete sync;
 							changeActivation(activateSet, deactivateSet, callBack);
 						}

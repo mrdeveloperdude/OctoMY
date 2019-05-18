@@ -48,7 +48,7 @@ public:
 	// Return the service for a name, if any
 	QSharedPointer <Service> serviceByName(const QString name) const;
 	// Return set of all dependencies for a named service
-	QSet<QString> dependencies(const QString name) const;
+	QSet<QString> dependencies(const QString name, const bool recurse=true) const;
 	// Return set of all dependencies for a provided service
 	QSet<QString> dependencies(const QSharedPointer <Service> service) const;
 	// Return the set of all dependents for a named service
@@ -61,6 +61,9 @@ public:
 	QSet<QString> all(const bool on, const bool actual=false) const;
 	// Show internal state
 	void dump() const;
+	// Expand the given set to include all dependencies recursively
+	QSet<QString> expand(const QSet<QString> set) const;
+
 
 	// Registering and unregistering of services
 public:
