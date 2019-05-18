@@ -1,10 +1,12 @@
 #include "widgets/LightWidget.hpp"
 
 #include "uptime/MethodGate.hpp"
+#include "uptime/ConnectionType.hpp"
 
 #include <QPainter>
-
 #include <QtMath>
+#include <QDebug>
+
 
 const QColor LightWidget::sBgColor("black");
 const QColor LightWidget::sHighlightColor(255,255,255,192);
@@ -18,14 +20,21 @@ LightWidget::LightWidget(QWidget *parent, const QColor &color)
 	, mOn(false)
 {
 	OC_METHODGATE();
+	mBlinkTimer.setSingleShot(true);
+	mBlinkTimer.setTimerType(Qt::PreciseTimer);
+	if(!connect(&mBlinkTimer,SIGNAL(timout),this,SLOT(turnLightOff), OC_CONTYPE)) {
+		qWarning()<<"ERROR: Could not connect";
+	}
 	setLightColor(color);
 }
+
 
 bool LightWidget::isLightOn() const
 {
 	OC_METHODGATE();
 	return mOn;
 }
+
 
 void LightWidget::setLightOn(bool o)
 {
@@ -36,6 +45,7 @@ void LightWidget::setLightOn(bool o)
 	mOn = o;
 	update();
 }
+
 
 void LightWidget::setLightColor(QColor c)
 {
@@ -49,7 +59,7 @@ void LightWidget::setLightColor(QColor c)
 	QGradientStops gs;
 	qreal step=0.0;
 	const qreal ofs=1.01;
-	for(int i=0;i<11;++i){
+	for(int i=0; i<11; ++i) {
 		const qreal istep=1.0-step;
 		const qreal p=qPow(1.2,step*10.0)-0.2;
 		const qreal a=qMin(1.0, step*10.0);
@@ -60,21 +70,33 @@ void LightWidget::setLightColor(QColor c)
 	update();
 }
 
+
 void LightWidget::toggleLight()
 {
 	mOn=!mOn;
 	update();
 }
 
+
 void LightWidget::turnLightOff()
 {
 	OC_METHODGATE();
 	setLightOn(false);
 }
+
+
 void LightWidget::turnLightOn()
 {
 	OC_METHODGATE();
 	setLightOn(true);
+}
+
+
+void LightWidget::blink(int ms)
+{
+	OC_METHODGATE();
+	setLightOn(false);
+	mBlinkTimer.start(ms);
 }
 
 
