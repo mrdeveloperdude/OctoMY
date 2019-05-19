@@ -61,10 +61,12 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-
+		mNode=n;
 		ui->widgetMyCertificate->configure(false, true);
 		mTemplate=ui->labelBodyPair->text();
 		ui->labelBodyPair->setText("<h1>Please wait...<h1>");
+
+		ui->widgetPairingTrust->configure(mNode);
 
 		reset();
 
@@ -82,21 +84,6 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 			}, OC_CONTYPE);
 		}
 
-
-		if(!QObject::connect(ui->buttonGroupTrust, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(onTrustButtonClicked(QAbstractButton *)),OC_CONTYPE)) {
-			qWarning()<<"ERROR: Could not connect ";
-		}
-
-		mPulsatingTrustTimer.setTimerType(Qt::PreciseTimer);
-		// Somewhat conservative FPS
-		mPulsatingTrustTimer.setInterval(1000/30);
-		mPulsatingTrustTimer.setSingleShot(false);
-
-		if(!QObject::connect(&mPulsatingTrustTimer, SIGNAL(timeout()), this, SLOT(onPulsatingTrustTimer()),OC_CONTYPE)) {
-			qWarning()<<"ERROR: Could not connect ";
-		}
-
-		mNode=n;
 		QSharedPointer<LocalAddressList> lal=localAddressList();
 		if(!mNode.isNull() && !lal.isNull()) {
 			NodeType type=mNode->nodeType();
@@ -193,66 +180,7 @@ void PairingWizard::onNetworkSettingsChange(QHostAddress address, quint16 port, 
 }
 
 
-void PairingWizard::onTrustButtonClicked(QAbstractButton *button)
-{
-	OC_METHODGATE();
-	if(mConfigureHelper.isConfiguredAsExpected()) {
-		if (ui->radioButtonTrustUnset == button) {
-			mTrustIndex=0;
-			ui->widgetTrustLevel->setSvgURL(":/icons/ignore.svg");
-		}
-		if(ui->radioButtonTrustSet == button) {
-			mTrustIndex=1;
-			ui->widgetTrustLevel->setSvgURL(":/icons/trust.svg");
-		}
-		if(ui->radioButtonTrustBlock == button) {
-			mTrustIndex=2;
-			ui->widgetTrustLevel->setSvgURL(":/icons/block.svg");
-		}
-		//mTrustIndex=utility::getSelectedButtonIndex(ui->buttonGroupTrust, -1);
-		updatePulsating();
-		ui->widgetTrustLevel->update();
-		qDebug()<<"TRUST CHANGED TO index "<<mTrustIndex;
-	}
-}
 
-
-void PairingWizard::onPulsatingTrustTimer()
-{
-	OC_METHODGATE();
-	if(mConfigureHelper.isConfiguredAsExpected()) {
-		static const QRgb palette[]= {
-			0x000000
-			,0xffffff
-			,0x883932
-			,0x67b6bd
-			,0x8b5429
-			,0x574200
-			,0xb86962
-			,0x505050
-			,0x8b3f96
-			,0x55a049
-			,0x40318d
-			,0xbfce72
-			,0x787878
-			,0x94e089
-			,0x7869c4
-			,0x9f9f9f
-		};
-		static const auto paletteSz = static_cast<int>(sizeof(palette) / sizeof(QRgb));
-		const auto lastColor=ui->widgetTrustLevel->silhouetteForeground();
-		QColor color=lastColor;
-		size_t index=0;
-		while(lastColor == color) {
-			index=static_cast<size_t>(qrand()%paletteSz);
-			color=QColor(palette[index]);
-		}
-		//qDebug()<<"INDEX: "<<index<<", COLOR: "<<color;
-		ui->widgetTrustLevel->setSilhouetteForeground(color);
-		ui->widgetTrustLevel->setSilhouetteEnabled(true);
-		ui->widgetTrustLevel->update();
-	}
-}
 
 
 void PairingWizard::updateNetworkSettings()
@@ -273,21 +201,6 @@ void PairingWizard::updateNetworkSettings()
 	}
 }
 
-
-void PairingWizard::updatePulsating()
-{
-	OC_METHODGATE();
-	if(mConfigureHelper.isConfiguredAsExpected()) {
-		const bool pulsating=(isVisible() && ui->buttonGroupTrust->checkedButton() == ui->radioButtonTrustSet);
-		//qDebug()<<"PULSATING="<<pulsating;
-		ui->widgetTrustLevel->setSilhouetteEnabled(pulsating);
-		if(pulsating) {
-			mPulsatingTrustTimer.start();
-		} else {
-			mPulsatingTrustTimer.stop();
-		}
-	}
-}
 
 
 QSharedPointer<AddressBook> PairingWizard::addressBook()
@@ -383,19 +296,12 @@ void PairingWizard::startEdit(int row)
 						}
 					}
 					mTrustIndex=index;
-					utility::ui::setSelectedButtonIndex(ui->buttonGroupTrust, mTrustIndex);
-					onTrustButtonClicked(ui->buttonGroupTrust->checkedButton());
-					auto addresses=peer->addressList();
-					QStringList list;
-					for(auto address:addresses) {
-						list << address->description+"="+address->address.toString();
-					}
-					ui->labelStats->setText("Addresses for '"+peer->identifier()+"': [ "+list.join(", ")+" ]");
+					//utility::ui::setSelectedButtonIndex(ui->buttonGroupTrust, mTrustIndex);
+					//onTrustButtonClicked(ui->buttonGroupTrust->checkedButton());
 
 					qDebug()<<"EDITING STARTS WITH trusts: "<<peer->trusts();
 					qDebug()<<"EDITING STARTS WITH name: "<<peer->name();
-					ui->widgetParticipantCertificate->configure(false,true);
-					ui->widgetParticipantCertificate->setPortableID(peer->toPortableID());
+
 				}
 			}
 			setCurrentPage(ui->pagePeerDetail);
@@ -422,7 +328,6 @@ void PairingWizard::showEvent(QShowEvent *)
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		updateNetworkSettings();
-		updatePulsating();
 	}
 }
 
@@ -432,7 +337,6 @@ void PairingWizard::hideEvent(QHideEvent *)
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		updateNetworkSettings();
-		updatePulsating();
 	}
 }
 
@@ -479,7 +383,7 @@ void PairingWizard::on_pushButtonCameraPair_clicked()
 	}
 }
 
-
+/*
 void PairingWizard::on_pushButtonSaveEdits_clicked()
 {
 	OC_METHODGATE();
@@ -528,8 +432,9 @@ void PairingWizard::on_pushButtonSaveEdits_clicked()
 		mCurrentlyEditingID="";
 	}
 }
+*/
 
-
+/*
 void PairingWizard::on_pushButtonRemove_clicked()
 {
 	OC_METHODGATE();
@@ -546,7 +451,7 @@ void PairingWizard::on_pushButtonRemove_clicked()
 		}
 	}
 }
-
+*/
 
 void PairingWizard::on_pushButtonRefresh_clicked()
 {

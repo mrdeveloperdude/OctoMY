@@ -27,6 +27,7 @@ public:
 
 signals:
 	void startEdit(int row);
+
 };
 
 

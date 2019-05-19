@@ -49,6 +49,16 @@ void PairingListWidget::configure(QSharedPointer<Node> node)
 						mDelegate=OC_NEW PairingEditButtonDelegate(this);
 					}
 					ui->listViewNodes->setItemDelegate(mDelegate);
+					if(nullptr!=mDelegate) {
+						if(!connect(mDelegate, &PairingEditButtonDelegate::startEdit, [this](int row) {
+						//qDebug()<<"EDIT "<<row;
+							emit startEdit(row);
+						}
+								   )) {
+							qWarning()<<"ERROR: Could not connect "<<mDelegate->objectName();
+						}
+
+					}
 				}
 				QSharedPointer<DiscoveryClient> client=mNode->discoveryClient();
 				if(!client.isNull()) {
@@ -65,8 +75,7 @@ void PairingListWidget::configure(QSharedPointer<Node> node)
 					return;
 				}
 			}
-		}
-		else{
+		} else {
 			qWarning()<<"WARNING: No node";
 		}
 	}

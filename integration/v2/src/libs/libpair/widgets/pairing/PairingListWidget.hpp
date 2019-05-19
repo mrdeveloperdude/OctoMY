@@ -23,7 +23,6 @@ private:
 	QSharedPointer<Node> mNode;
 	PairingListModel *mList;
 	PairingEditButtonDelegate *mDelegate;
-
 	ConfigureHelper mConfigureHelper;
 
 public:
@@ -32,6 +31,9 @@ public:
 
 public:
 	void configure(QSharedPointer<Node> node);
+
+signals:
+	void startEdit(int row);
 
 };
 

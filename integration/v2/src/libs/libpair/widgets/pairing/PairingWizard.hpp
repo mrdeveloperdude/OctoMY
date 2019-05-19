@@ -52,7 +52,7 @@ private:
 	QString mTemplate;
 	QString mCurrentlyEditingID;
 	int mTrustIndex;
-	QTimer mPulsatingTrustTimer;
+
 	ConfigureHelper mConfigureHelper;
 
 
@@ -78,7 +78,6 @@ public:
 	void startEdit(int row);
 	QSharedPointer<Node> node();
 	void updateNetworkSettings();
-	void updatePulsating();
 
 protected:
 	void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
@@ -87,15 +86,12 @@ protected:
 private slots:
 	void onNetworkSettingsChange(QHostAddress address, quint16 port, bool valid);
 	void onTrustButtonClicked(QAbstractButton *);
-	void onPulsatingTrustTimer();
 
 private slots:
 	void on_pushButtonMaybeOnward_clicked();
 	void on_pushButtonTryAgain_clicked();
 	void on_pushButtonDone_clicked();
 	void on_pushButtonCameraPair_clicked();
-	void on_pushButtonSaveEdits_clicked();
-	void on_pushButtonRemove_clicked();
 	void on_pushButtonRefresh_clicked();
 
 signals:
