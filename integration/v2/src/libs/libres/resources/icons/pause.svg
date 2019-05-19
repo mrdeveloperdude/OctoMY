@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="64"
+   height="64"
+   viewBox="0 0 64 64"
+   version="1.1"
+   id="svg9407"
+   inkscape:version="0.92.1 unknown"
+   sodipodi:docname="pause.svg">
+  <defs
+     id="defs9401" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="3.959798"
+     inkscape:cx="117.08695"
+     inkscape:cy="-22.606652"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="3799"
+     inkscape:window-height="2136"
+     inkscape:window-x="41"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata9404">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(406.09763,-110.88452)">
+    <g
+       id="g9389"
+       transform="matrix(0.53704845,0,0,0.53704845,-300.91748,513.83999)"
+       inkscape:transform-center-x="-8.4666059"
+       inkscape:transform-center-y="-770.46696">
+      <path
+         inkscape:connector-curvature="0"
+         inkscape:export-ydpi="300"
+         inkscape:export-xdpi="300"
+         inkscape:export-filename="/home/lennart/waterwell/client/graphics/pause.png"
+         id="rect9489"
+         d="m -157.52532,-717.23375 c -1.3161,0 -2.6307,0.548 -3.5613,1.478 -0.9307,0.931 -1.4659,2.234 -1.4672,3.549 v 42.95 c 0,1.316 0.5365,2.631 1.4672,3.562 0.9306,0.93 2.2452,1.466 3.5613,1.468 h 12.8375 c 1.318,0 2.6282,-0.538 3.5614,-1.468 0.9331,-0.932 1.4776,-2.244 1.4789,-3.562 v -42.95 c 0,-1.319 -0.5458,-2.618 -1.4789,-3.549 -0.9332,-0.93 -2.2434,-1.481 -3.5614,-1.478 z m 29.6741,0 c -1.3161,0 -2.6308,0.548 -3.5614,1.478 -0.9306,0.931 -1.4658,2.234 -1.4671,3.549 v 42.95 c 0,1.316 0.5365,2.631 1.4671,3.562 0.9307,0.93 2.2453,1.466 3.5614,1.468 h 12.8374 c 1.3162,0 2.6308,-0.538 3.5614,-1.468 0.9307,-0.931 1.4777,-2.246 1.479,-3.562 v -42.95 c 0,-1.315 -0.5484,-2.618 -1.479,-3.549 -0.9306,-0.93 -2.2452,-1.478 -3.5614,-1.478 z"
+         style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:Sans;-inkscape-font-specification:Sans;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;baseline-shift:baseline;text-anchor:start;display:inline;overflow:visible;visibility:visible;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:26.58559227;marker:none;enable-background:accumulate" />
+    </g>
+  </g>
+</svg>

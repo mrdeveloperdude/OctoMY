@@ -268,17 +268,6 @@ void DebuggerWidget::on_pushButtonBirth_clicked()
 }
 
 
-void DebuggerWidget::on_pushButtonActivate_toggled(bool checked)
-{
-	OC_METHODGATE();
-	if(!mNode.isNull()) {
-		mNode->appActivate(checked);
-	} else {
-		qWarning()<<"WARNING: Could not switch discovery service, no node";
-	}
-}
-
-
 void DebuggerWidget::on_pushButtonTuckWindow_toggled(bool checked)
 {
 	OC_METHODGATE();

@@ -111,7 +111,7 @@ QString	CouriersDebugWidget::setCourierTableItem(const int index, const QSharedP
 		ui->tableWidgetCouriers->setItem(index, 1, tableItem(name));
 		ui->tableWidgetCouriers->setItem(index, 2, tableItem(dest));
 		ui->tableWidgetCouriers->setItem(index, 3, tableItem(id));
-		ui->tableWidgetCouriers->setItem(index, 4, tableItem(serial));
+		ui->tableWidgetCouriers->setItem(index, 4, tableItem(QString::number(serial)));
 		ui->tableWidgetCouriers->setItem(index, 5, tableItem(lastOpportunity));
 		ui->tableWidgetCouriers->setItem(index, 6, tableItem(mandate.toString()));
 	} else {

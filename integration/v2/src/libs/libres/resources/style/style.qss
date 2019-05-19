@@ -1,0 +1,432 @@
+/* http://qt-project.org/doc/qt-4.8/stylesheet-syntax.html */
+/* OctomMY styles */
+
+/* BUTTONS */
+
+.QPushButton,
+.QComboBox,
+.QTableWidget,
+.QComboBox QAbstractItemView
+{
+margin:0;
+padding: 0;
+border:0;
+border-image: url(:/graphics/button_up.png) 12 12 12 12 stretch stretch;
+border-top: 12px transparent;
+border-bottom: 12px transparent;
+border-right: 12px transparent;
+border-left: 12px transparent;
+color:#000;
+font-size:20px;
+}
+
+.QPushButton:checked
+{
+border-image: url(:/graphics/button_sel.png) 12 12 12 12 stretch stretch;
+}
+
+
+.QPushButton:pressed
+{
+border-image: url(:/graphics/button_dn.png) 12 12 12 12 stretch stretch;
+}
+
+
+.QPushButton:disabled,
+.QComboBox:disabled
+{
+border-image: url(:/graphics/button_dn.png) 12 12 12 12 stretch stretch;
+}
+
+*:disabled{
+color:#888!important;
+}
+
+
+/* LABELS */
+
+.QLabel{
+margin-top:0.1em;
+color:#3d5078;
+}
+
+
+/* INPUTS */
+.QComboBox:item,
+.QLineEdit,
+.QRadioButton,
+.QSpinBox,
+.QDateEdit,
+.QToolTip
+{
+
+	min-height: 1.75em!important;
+	height: 1.75em!important;
+	min-width:5em!important;
+	font-size: 18px !important;
+	color:#222;
+	padding:0;
+	margin:0;
+	padding-left:0.5em;
+	text-align:center;
+
+}
+
+.QCheckBox,
+.BooleanEntry
+{
+min-height: 1.75em!important;
+font-size: 18px !important;
+color:#222;
+padding:0;
+margin:0;
+text-align:center;
+}
+
+
+.QToolTip
+{
+vertical-align:center;
+text-align:center;
+}
+
+
+
+
+
+.QSlider::handle  {
+padding:2px;
+margin: -2px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
+}
+
+
+
+
+/* get rid of annoying check in combo list*/
+.QComboBox::indicator
+{
+border:none;
+image:none;
+}
+
+
+/* check + radio native indicator size */
+.QCheckBox::indicator,
+.BooleanEntry::indicator,
+.QRadioButton::indicator
+{
+width:1.5em;
+height:1.5em;
+}
+
+
+.QSpinBox::down-button
+{
+subcontrol-position: left;
+width: 2.5em;
+height: 2em;
+}
+
+.QSpinBox::up-button
+{
+subcontrol-position: right;
+width: 2.5em;
+height: 2em;
+}
+
+
+.QSpinBox
+{
+width:8em;
+height:2em;
+}
+
+.QTableWidget::items
+{
+height:4em;
+}
+
+/* LINK BUTTONS */
+
+.QPushButton[objectName|="pushButtonLink"]
+{
+color:#323ca6;
+text-decoration:underline;
+background:transparent;
+border:0;
+border-image:none;
+}
+
+
+
+/* TITLE & BODY */
+
+.QLabel[objectName|="labelTitleSettings"]
+{
+margin:0;
+padding:0;
+font-size:30px;
+font-weight:bold;
+color:black;
+}
+
+
+/* PROGRESSBAR */
+
+
+.QProgressBar:horizontal
+{
+min-height:3em;
+text-align:right;
+}
+
+.QProgressBar:horizontal:chunk
+{
+background-color:green;
+}
+
+/* HEADINGS */
+
+ .QLabel[objectName|="labelHeading"]
+{
+font-size:30px;
+}
+
+.QTabBar::tab {
+background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,
+stop: 0.0 #666,
+stop: 1.0 #aaa );
+color: white;
+padding: 0.4em;
+margin:0;
+height:1em;
+min-width:5.7em;
+max-width:5.7em;
+width:5.7em;
+border:0px;
+border-top-left-radius:8px;
+border-top-right-radius:8px;
+}
+
+.QTabBar::tab:selected {
+background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,
+stop: 0.0 #bbb,
+stop: 1.0 #ddd);
+font-weight:bold;
+color:black;
+}
+
+/*
+.QTabWidget::tab-bar {
+width:1024px;
+}
+*/
+
+.QTabWidget::pane {
+border-top: 8px solid #ddd;
+}
+
+
+
+.QLabel[objectName|=labelSectionHeader]{
+font-weight:bold;
+text-align:left;
+font-weight:bold;
+padding:0;
+border-bottom:3px solid #3d5078;
+margin-top:10px;
+margin-bottom:0;
+}
+
+
+
+.QLabel[objectName|="labelError"]
+{
+font-size:15px;
+color:red;
+}
+
+
+#labelLocalTime
+{
+color: #034;
+font-size: 24pt;
+font-weight: bold;
+font-family: Digital-7 Mono;
+}
+
+
+
+
+ #pushButtonPanicButton{
+color:white;
+font-size:40;
+font-weight:bold;
+border-image: url(:/graphics/panic_button_up.png) 12 12 12 12  stretch stretch;
+}
+
+
+#pushButtonPanicButton:checked{
+border-image: url(:/graphics/panic_button_sel.png) 12 12 12 12  stretch stretch;
+}
+
+#pushButtonPanicButton:pressed{
+border-image: url(:/graphics/panic_button_dn.png) 12 12 12 12  stretch stretch;
+}
+
+
+#pushButtonPanicButton:disabled{
+border-image: url(:/graphics/panic_button_off.png) 12 12 12 12  stretch stretch;
+}
+
+
+
+
+/*****************************************************************************/
+/* USER INPUT BUTTONS */
+
+
+
+#widgetUserInput .QPushButton,
+#widgetUserInput .QTableWidget,
+#widgetUserInput .QComboBox,
+#widgetUserInput .QComboBox QAbstractItemView
+{
+margin:0;
+padding: 0;
+border:0;
+border-image: url(:/graphics/button_up.png) 12 12 12 12 stretch stretch;
+border-top: 12px transparent;
+border-bottom: 12px transparent;
+border-right: 12px transparent;
+border-left: 12px transparent;
+color:#000;
+font-size:20px;
+}
+
+#widgetUserInput .QPushButton:checked
+{
+border-image: url(:/graphics/button_sel.png) 12 12 12 12 stretch stretch;
+}
+
+
+#widgetUserInput .QPushButton:pressed
+{
+border-image: url(:/graphics/button_dn.png) 12 12 12 12 stretch stretch;
+}
+
+
+#widgetUserInput .QPushButton:disabled,
+#widgetUserInput .QComboBox:disabled
+{
+border-image: url(:/graphics/button_dn.png) 12 12 12 12 stretch stretch;
+}
+
+
+
+/* VIRTUAL KEYBOARD  WIDGETS */
+
+
+.VirtualKeyboardWidget,
+.VirtualKeyboardWidget *{
+margin:0 !important;
+padding:0 !important;
+selection-background-color: #3d5078 !important;
+selection-color: #fff !important;
+outline: 0px !important;
+}
+
+
+
+.VirtualKeyboardWidget{
+border-image:none !important;
+background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,
+stop: 0 #c7c7cf,
+stop: 0.01 #c7c7cf,
+stop: 0.02 #94949f,
+stop: 1 #47484f) !important;
+}
+
+
+
+.VirtualKeyboardWidget .VirtualKeyWidget
+{
+margin: 0 !important;
+padding: -8px !important;
+border: 2px solid #444 !important;
+border-radius:8px;
+min-height:60px !important;
+min-width:60px !important;
+color:#000;
+font-size:20px;
+font-family: "Montserrat";
+background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,
+stop: 0 #fff,
+stop: 0.03 #fff,
+stop: 0.05 #ededef,
+stop: 1 #d3d3d9) !important;
+}
+
+.VirtualKeyboardWidget .VirtualKeyWidget:checked,
+.VirtualKeyboardWidget .VirtualKeyWidget:disabled
+{
+}
+
+.VirtualKeyboardWidget .VirtualKeyWidget:pressed
+{
+background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1,
+stop: 0 #c7c7cf,
+stop: 0.03 #c7c7cf,
+stop: 0.05 #94979e,
+stop: 1 #626369) !important;
+}
+
+
+
+/* USER INPUT */
+
+
+
+#UserInputWActivity QLabel
+{
+color:white;
+}
+
+
+
+/*
+#UserInputWActivity #labelInput,
+#UserInputWActivity #lineEditInput,454b93
+#UserInputWActivity #pushButtonBackspace,
+#UserInputWActivity #pushButtonBack,
+#UserInputWActivity #pushButtonNext,
+#UserInputWActivity #comboBoxYear,
+#UserInputWActivity #comboBoxMonth,
+#UserInputWActivity #comboBoxDay,
+#UserInputWActivity #radioButtonMale,
+#UserInputWActivity #radioButtonFemale
+*/
+#UserInputWActivity *
+{
+font-size:25px;
+}
+
+
+/* LOG scroll */
+
+.LogScroll{
+font-family: "Montserrat";
+}
+
+
+
+QTabWidget::tab:disabled {
+width: 0;
+height: 0;
+margin: 0;
+padding: 0;
+border: none;
+}
+
+
+

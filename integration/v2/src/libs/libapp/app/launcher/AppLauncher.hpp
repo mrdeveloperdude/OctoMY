@@ -201,11 +201,11 @@ int AppLauncher<T>::run()
 			appActivate(true);
 			// Initialize resources here
 
-			/* TODO: Look at how to distribute this initialization wizely
+			//TODO: Look at how to distribute this initialization wizely
 			Q_INIT_RESOURCE(icons);
 			Q_INIT_RESOURCE(images);
 			Q_INIT_RESOURCE(3d);
-			*/
+
 
 			// Start Qt event loop for application.
 			// NOTE: This call will block until mQApp::quit()  mQApp::exit() is called and the eventloop is terminated

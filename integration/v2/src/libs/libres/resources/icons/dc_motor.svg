@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="14.111111mm"
+   height="14.111111mm"
+   viewBox="0 0 49.999998 49.999998"
+   id="svg7752"
+   version="1.1"
+   inkscape:version="0.91 r"
+   sodipodi:docname="dc_motor.svg">
+  <defs
+     id="defs7754" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7.9195959"
+     inkscape:cx="101.41063"
+     inkscape:cy="-19.754659"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="3799"
+     inkscape:window-height="2136"
+     inkscape:window-x="41"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7757">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(1699.2858,181.20923)">
+    <g
+       id="g7023"
+       transform="matrix(0.28243768,0,0,0.28140766,-1629.5013,1201.79)">
+      <path
+         sodipodi:nodetypes="ccccc"
+         inkscape:connector-curvature="0"
+         id="path6908"
+         d="m -214.03472,-4799.1526 c -38.03437,-22.4213 4.6124,-105.793 44.1942,-86.6206 l 67.06713,32.4523 c 37.004298,16.7427 -4.17994,105.0534 -41.54732,88.2341 z"
+         style="fill:#3d974d;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:3.54707789px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <ellipse
+         ry="40.68224"
+         rx="37.054802"
+         cy="-4878.9541"
+         cx="-140.31229"
+         id="ellipse6910"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:3.81849313;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         transform="matrix(0.86289393,-0.50538506,0,1,0,0)" />
+      <path
+         style="fill:#3d974d;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:3.54707789px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m -122.38772,-4796.3459 c -5.05659,-3.3476 2.52652,-18.7874 8.54826,-16.6694 l 18.601952,8.6026 c 7.15756,3.222 -0.808506,20.2167 -8.036292,16.9799 z"
+         id="path6961"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccccc" />
+      <ellipse
+         transform="matrix(0.83404221,-0.55170064,0,1,0,0)"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:3.88397765;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         id="ellipse6912"
+         cx="-117.04601"
+         cy="-4860.1543"
+         rx="6.3226995"
+         ry="7.5778141" />
+    </g>
+  </g>
+</svg>

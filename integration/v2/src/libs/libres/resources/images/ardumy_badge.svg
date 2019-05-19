@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="131.35899mm"
+   height="163.69609mm"
+   viewBox="0 0 131.35899 163.69609"
+   version="1.1"
+   id="svg10128"
+   inkscape:version="0.92.1 unknown"
+   sodipodi:docname="ardumy_badge.svg">
+  <defs
+     id="defs10122">
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient9191"
+       id="linearGradient9193"
+       x1="-606.80365"
+       y1="-5029.7344"
+       x2="-606.80365"
+       y2="-5038.5117"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient9191">
+      <stop
+         style="stop-color:#e5e5e5;stop-opacity:1"
+         offset="0"
+         id="stop9187" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1"
+         offset="1"
+         id="stop9189" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient9109"
+       id="linearGradient9154"
+       gradientUnits="userSpaceOnUse"
+       x1="-614.29919"
+       y1="-5029.0215"
+       x2="-614.29919"
+       y2="-5038.4678" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient9109">
+      <stop
+         style="stop-color:#00878f;stop-opacity:1;"
+         offset="0"
+         id="stop9105" />
+      <stop
+         style="stop-color:#62aeb2;stop-opacity:1"
+         offset="1"
+         id="stop9107" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient9127"
+       id="linearGradient9156"
+       gradientUnits="userSpaceOnUse"
+       x1="-597.45087"
+       y1="-5038.8057"
+       x2="-591.11847"
+       y2="-5038.8057" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient9127">
+      <stop
+         style="stop-color:#e47128;stop-opacity:1;"
+         offset="0"
+         id="stop9123" />
+      <stop
+         style="stop-color:#e5ad24;stop-opacity:1"
+         offset="1"
+         id="stop9125" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="1705.3804"
+     inkscape:cy="309.34695"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="3799"
+     inkscape:window-height="2136"
+     inkscape:window-x="41"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata10125">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(461.79855,-66.985291)">
+    <rect
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#f4f4f5;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       id="rect9168"
+       width="131.35899"
+       height="163.69609"
+       x="-461.79855"
+       y="66.985291"
+       rx="12.7"
+       ry="12.7"
+       inkscape:export-filename="/home/lennart/Desktop/ArduMY™ Logo badge.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <g
+       id="g9152"
+       transform="matrix(2.3233033,0,0,2.3233033,984.10966,11829.328)"
+       inkscape:export-filename="/home/lennart/Desktop/ArduMY™ Logo badge.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:url(#linearGradient9193);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:8.60843277;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         id="rect9170"
+         width="31.083426"
+         height="32.13028"
+         x="-609.13892"
+         y="-5049.8662"
+         rx="5.4663548"
+         ry="5.4663548" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path9140"
+         style="opacity:1;fill:url(#linearGradient9154);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:7.18306494;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         d="m -579.15183,-5034.3246 a 14.928589,14.928589 0 0 0 -14.92834,-14.9285 14.928589,14.928589 0 0 0 -14.92873,14.9285 14.928589,14.928589 0 0 0 14.92873,14.9285 14.928589,14.928589 0 0 0 14.92834,-14.9285 z m 9.17844,0 a 24.106991,24.106991 0 0 1 -24.10699,24.107 24.106991,24.106991 0 0 1 -24.10699,-24.107 24.106991,24.106991 0 0 1 24.10699,-24.107 24.106991,24.106991 0 0 1 24.10699,24.107 z" />
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:none;fill-rule:evenodd;stroke:#e47128;stroke-width:3.13768077;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m -603.93176,-5030.1319 c 1.63651,3.8045 5.41865,6.4685 9.823,6.4685 4.35983,-10e-5 8.10992,-2.6106 9.77259,-6.3538"
+         id="path9142"
+         sodipodi:nodetypes="ccc" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path9144"
+         d="m -589.53161,-5038.8059 h 2.96371"
+         style="fill:#00878f;fill-opacity:1;fill-rule:evenodd;stroke:#00878f;stroke-width:1.60993171;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         style="fill:#00878f;fill-opacity:1;fill-rule:evenodd;stroke:#00878f;stroke-width:1.60993171;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m -588.04975,-5040.2349 v 2.858"
+         id="path9146"
+         inkscape:connector-curvature="0" />
+      <path
+         style="opacity:1;fill:#00878f;fill-opacity:1;fill-rule:evenodd;stroke:#00878f;stroke-width:1.60993159;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m -601.65424,-5038.8058 h 2.96371"
+         id="path9148"
+         inkscape:connector-curvature="0" />
+      <path
+         sodipodi:nodetypes="csssccccsssccc"
+         inkscape:connector-curvature="0"
+         d="m -590.96968,-5041.7867 c 0.8035,-0.763 1.8957,-1.2493 3.11245,-1.2493 2.42268,0 4.38664,1.8939 4.38664,4.2302 0,2.3363 -1.96396,4.2302 -4.38664,4.2302 -1.21675,0 -2.30895,-0.4863 -3.11245,-1.2494 l -3.13921,-2.9808 z m -6.27842,0 c -0.8035,-0.763 -1.8957,-1.2493 -3.11245,-1.2493 -2.42269,0 -4.38665,1.8939 -4.38665,4.2302 0,2.3363 1.96396,4.2302 4.38665,4.2302 1.21675,0 2.30895,-0.4863 3.11245,-1.2494 l 3.13921,-2.9808 z"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:url(#linearGradient9156);stroke-width:3.21986318;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         id="path9150" />
+    </g>
+    <text
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/lennart/Desktop/ArduMY™ Logo badge.png"
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.4849987px;line-height:125%;font-family:Dosis;-inkscape-font-specification:Dosis;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.49227622px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-385.51889"
+       y="217.93268"
+       id="text9166"><tspan
+         sodipodi:role="line"
+         id="tspan9164"
+         x="-385.51889"
+         y="217.93268"
+         style="stroke-width:0.49227622px">ArduMY™</tspan></text>
+  </g>
+</svg>

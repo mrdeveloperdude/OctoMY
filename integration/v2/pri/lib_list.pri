@@ -35,6 +35,7 @@ AUTOLIBS_COMBINED += \
 	ardumy \
 	hardware \
 	puppet \
+	res \
 #	motorics \
 	video \
 	audio \

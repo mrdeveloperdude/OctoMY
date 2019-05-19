@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="14.111111mm"
+   height="14.111111mm"
+   viewBox="0 0 49.999998 49.999998"
+   id="svg5848"
+   version="1.1"
+   inkscape:version="0.91 r"
+   sodipodi:docname="settings.svg">
+  <defs
+     id="defs5850" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="3.959798"
+     inkscape:cx="125.13667"
+     inkscape:cy="19.00158"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1879"
+     inkscape:window-height="1056"
+     inkscape:window-x="41"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5853">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(790.71429,-573.07648)">
+    <path
+       inkscape:connector-curvature="0"
+       id="circle7733-8"
+       d="m -768.66882,575.11926 -0.99382,6.3928 c -1.75787,0.4171 -3.43828,1.1109 -4.97828,2.0555 l -5.21759,-3.8134 -0.0845,0.084 -4.00893,4.009 -0.0848,0.085 3.81866,5.2245 c -0.94598,1.5374 -1.64177,3.2155 -2.06138,4.9712 l -6.39198,0.9939 0,0.1196 0,5.6694 0,0.1199 6.39274,0.9938 c 0.417,1.7579 1.11085,3.4383 2.05547,4.9784 l -3.81343,5.2174 0.0847,0.085 4.00894,4.0088 0.0847,0.085 5.2245,-3.8187 c 1.53747,0.946 3.21544,1.6418 4.9712,2.0613 l 0.99381,6.3922 0.11965,0 5.66952,0 0.11982,0 0.99382,-6.393 c 1.75778,-0.417 3.43819,-1.1108 4.97811,-2.0554 l 5.21759,3.8136 0.0847,-0.085 4.00885,-4.0088 0.0847,-0.085 -3.81866,-5.2245 c 0.94606,-1.5376 1.64193,-3.2156 2.06155,-4.9715 l 6.39206,-0.9936 0,-0.1199 0,-5.6694 0,-0.1196 -6.39291,-0.9939 c -0.417,-1.7578 -1.11085,-3.4382 -2.05547,-4.9783 l 3.81343,-5.2174 -0.0847,-0.085 -4.00885,-4.009 -0.0846,-0.084 -5.22451,3.8185 c -1.53755,-0.946 -3.21568,-1.6418 -4.97153,-2.0613 l -0.99365,-6.3921 -0.11982,0 -5.66952,0 z m 2.95445,9.6575 c 7.34512,0 13.29959,5.9544 13.29975,13.2996 0,7.3452 -5.95455,13.2998 -13.29975,13.2998 -7.3452,-10e-5 -13.29967,-5.9546 -13.29967,-13.2998 8e-5,-7.3451 5.95447,-13.2995 13.29967,-13.2996 z m 0,3.8374 c -5.22585,0 -9.46228,4.2364 -9.46228,9.4622 -8e-5,5.226 4.23634,9.4624 9.46228,9.4625 5.22594,0 9.46244,-4.2365 9.46236,-9.4625 0,-5.2258 -4.23651,-9.4622 -9.46236,-9.4622 z m 0,4.4544 c 2.76578,-1e-4 5.0079,2.242 5.0079,5.0078 9e-5,2.7659 -2.24204,5.0081 -5.0079,5.008 -2.76586,0 -5.0079,-2.2421 -5.00782,-5.008 0,-2.7657 2.24204,-5.0078 5.00782,-5.0078 z"
+       style="display:inline;opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.5574713"
+       sodipodi:nodetypes="cccccccccccccccccccccccccccccccccccccccccccccccccssssssssssccccc"
+       inkscape:export-filename="/home/lennart/Desktop/waterwell/waterwell-dispenser-client/client/lib/data/graphics/cog_icon.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+  </g>
+</svg>
