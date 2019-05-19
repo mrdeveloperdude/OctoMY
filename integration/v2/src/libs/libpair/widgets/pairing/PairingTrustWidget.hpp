@@ -2,15 +2,20 @@
 #define PAIRINGTRUSTWIDGET_HPP
 
 #include "uptime/ConfigureHelper.hpp"
+#include "TrustLevel.hpp"
 
 #include <QWidget>
+#include <QTimer>
 
+class Node;
 class QAbstractButton;
+class Associate;
 
 namespace Ui
 {
 class PairingTrustWidget;
 }
+
 
 class PairingTrustWidget : public QWidget
 {
@@ -18,6 +23,7 @@ class PairingTrustWidget : public QWidget
 private:
 	Ui::PairingTrustWidget *ui;
 	QTimer mPulsatingTrustTimer;
+	QSharedPointer<Node> mNode;
 	ConfigureHelper mConfigureHelper;
 
 public:
@@ -29,11 +35,12 @@ public:
 
 public:
 	void updatePulsating();
-	void startEdit();
+	void startEdit(QSharedPointer<Associate> peer);
+	TrustLevel selectedTrustLevel() const;
 
-	protected:
-		void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
-		void hideEvent(QHideEvent *) Q_DECL_OVERRIDE;
+protected:
+	void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
+	void hideEvent(QHideEvent *) Q_DECL_OVERRIDE;
 
 
 private slots:
@@ -43,6 +50,10 @@ private slots:
 private slots:
 	void on_pushButtonSaveEdits_clicked();
 	void on_pushButtonRemove_clicked();
+
+signals:
+	void editComplete(TrustLevel level, bool save);
+	void remove();
 
 };
 

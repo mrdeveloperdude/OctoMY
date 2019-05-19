@@ -37,10 +37,8 @@
 PairingWizard::PairingWizard(QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::PairingWizard)
-	, mNode(nullptr)
 	, mList(nullptr)
 	, mDelegate (nullptr)
-	, mTrustIndex(-1)
 	, mConfigureHelper("PairingWizard",true,false,false,true,false)
 
 {
@@ -262,46 +260,7 @@ void PairingWizard::startEdit(int row)
 				qDebug()<<"CURRENTLY EDITING ID "<<mCurrentlyEditingID;
 				QSharedPointer<Associate> peer=peerStore->associateByID(mCurrentlyEditingID);
 				if(nullptr!=peer) {
-					const QStringList trusts=peer->trusts();
-					const NodeType type=peer->type();
-					const bool take=trusts.contains("take-control");
-					const bool give=trusts.contains("give-control");
-					const bool block=trusts.contains("block");
-					int index=0;
-					if(block) {
-						index=2;
-					} else {
-						switch(type) {
-//					default:
-						case(TYPE_ZOO):
-						case(TYPE_UNKNOWN):
-						case(TYPE_AGENT): {
-							if(give) {
-								index=1;
-							}
-						}
-						break;
-						case(TYPE_REMOTE): {
-							if(take) {
-								index=1;
-							}
-						}
-						break;
-						case(TYPE_HUB): {
-							if(give || take) {
-								index=1;
-							}
-						}
-						break;
-						}
-					}
-					mTrustIndex=index;
-					//utility::ui::setSelectedButtonIndex(ui->buttonGroupTrust, mTrustIndex);
-					//onTrustButtonClicked(ui->buttonGroupTrust->checkedButton());
-
-					qDebug()<<"EDITING STARTS WITH trusts: "<<peer->trusts();
-					qDebug()<<"EDITING STARTS WITH name: "<<peer->name();
-
+					ui->widgetPairingTrust->startEdit(peer);
 				}
 			}
 			setCurrentPage(ui->pagePeerDetail);

@@ -44,7 +44,7 @@
     </widget>
    </item>
    <item>
-    <widget class="SvgWidget" name="widgetTrustLevel" native="true">
+    <widget class="TrustSymbolWidget" name="widgetTrustLevel" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -70,6 +70,9 @@
        <property name="text">
         <string>Unset</string>
        </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroupTrust</string>
+       </attribute>
       </widget>
      </item>
      <item>
@@ -77,6 +80,9 @@
        <property name="text">
         <string>Trust</string>
        </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroupTrust</string>
+       </attribute>
       </widget>
      </item>
      <item>
@@ -84,6 +90,9 @@
        <property name="text">
         <string>Block</string>
        </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroupTrust</string>
+       </attribute>
       </widget>
      </item>
     </layout>
@@ -138,9 +147,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>SvgWidget</class>
+   <class>TrustSymbolWidget</class>
    <extends>QWidget</extends>
-   <header location="global">widgets/SvgWidget.hpp</header>
+   <header location="global">widgets/pairing/TrustSymbolWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
@@ -148,4 +157,7 @@
   <include location="../../../../libres/resources/icons.qrc"/>
  </resources>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroupTrust"/>
+ </buttongroups>
 </ui>

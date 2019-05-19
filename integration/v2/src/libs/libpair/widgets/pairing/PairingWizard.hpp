@@ -51,7 +51,6 @@ private:
 	PairingEditButtonDelegate *mDelegate;
 	QString mTemplate;
 	QString mCurrentlyEditingID;
-	int mTrustIndex;
 
 	ConfigureHelper mConfigureHelper;
 

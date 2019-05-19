@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>146</width>
+    <height>72</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -29,7 +29,17 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Show Debugger</string>
+      <string>Debugger</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../../../libdebug/resources/debug_icons.qrc">
+       <normaloff>:/debug/icons/debug.svg</normaloff>:/debug/icons/debug.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -38,6 +48,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../../libdebug/resources/debug_icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -24,6 +24,7 @@ DebuggerWidget::DebuggerWidget(QWidget *parent) :
 	ui->setupUi(this);
 	setEnabled(false);
 	qRegisterMetaType<QSharedPointer <NodeWindow>> ("QSharedPointer <NodeWindow>");
+	Q_INIT_RESOURCE(debug_icons);
 }
 
 
@@ -63,16 +64,12 @@ static void configTryToggleForServiceLevel(TryToggle *tt, const QString serviceL
 }
 
 
-
-
-
 void DebuggerWidget::configure(QSharedPointer <Node> node)
 {
 	OC_METHODGATE();
 	mNode=node;
 	setEnabled(!mNode.isNull());
 	updateIdentity();
-
 	ui->widgetHeaderCommsChannel->configure(mNode);
 	ui->widgetHeaderCommsCarrier->configure(mNode);
 	ui->widgetHeaderServices->configure(mNode);
@@ -94,6 +91,7 @@ void DebuggerWidget::updateServiceTable()
 	ui->widgetHeaderServices->updateServiceTable();
 }
 
+
 void DebuggerWidget::updateIdentity()
 {
 	OC_METHODGATE();
@@ -107,6 +105,7 @@ void DebuggerWidget::updateIdentity()
 	}
 }
 
+
 void DebuggerWidget::configureUi()
 {
 	OC_METHODGATE();
@@ -118,7 +117,7 @@ void DebuggerWidget::configureUi()
 			QString name=widget->objectName().remove(0, widgetBaseNameSize);
 			mHeaderWidgets[name]=widget;
 			widget->setVisible(false);
-			// qDebug()<<"Preparing widget for "<<name;
+			// qDebug().noquote().nospace()<<"Preparing widget for "<<name;
 		}
 	}
 	QList<QPushButton *> allButtons= this->findChildren<QPushButton *>();
@@ -127,7 +126,7 @@ void DebuggerWidget::configureUi()
 	for(QPushButton *button: allButtons) {
 		if((nullptr!= button) && (button->objectName().startsWith(buttonBaseName))) {
 			QString name=button->objectName().remove(0, buttonBaseNameSize);
-			// qDebug()<<"Connecting widget to button for "<<name;
+			// qDebug().noquote().nospace()<<"Connecting widget to button for "<<name;
 			mHeaderButtons+=button;
 			button->setCheckable(true);
 			button->setChecked(false);
@@ -185,7 +184,6 @@ void DebuggerWidget::tuck()
 }
 
 
-
 void DebuggerWidget::pack()
 {
 	OC_METHODGATE();
@@ -193,8 +191,6 @@ void DebuggerWidget::pack()
 		resize(0,0);
 	});
 }
-
-
 
 
 void DebuggerWidget::showEvent(QShowEvent *event)
@@ -307,6 +303,7 @@ void DebuggerWidget::on_pushButtonTuckWindow_toggled(bool checked)
 		qWarning()<<"ERROR: No node";
 	}
 }
+
 
 void DebuggerWidget::on_pushButtonRestart_clicked()
 {

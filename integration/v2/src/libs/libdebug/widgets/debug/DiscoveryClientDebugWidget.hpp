@@ -26,7 +26,7 @@ private:
 
 public:
 	explicit DiscoveryClientDebugWidget(QWidget *parent = nullptr);
-	~DiscoveryClientDebugWidget();
+	virtual ~DiscoveryClientDebugWidget() Q_DECL_OVERRIDE;
 
 public:
 	void configure(QSharedPointer <Node> node);
@@ -34,8 +34,7 @@ public:
 public slots:
 	void onUpdate();
 
-
-	private slots:
+private slots:
 	void on_pushButtonLogging_toggled(bool checked);
 	void on_pushButtonDiscover_clicked();
 };
