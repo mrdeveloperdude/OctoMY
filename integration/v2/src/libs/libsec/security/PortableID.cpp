@@ -5,8 +5,6 @@
 #include <QStringList>
 #include <QDateTime>
 
-
-
 const QString PortableID::SEP(".");
 const QString PortableID::SEP_RE(QRegularExpression::escape(SEP));
 const QRegularExpression PortableID::sepRE("("+SEP_RE+")");
@@ -31,11 +29,11 @@ PortableID::PortableID(QVariantMap &data)
 	OC_METHODGATE();
 }
 
+
 PortableID::~PortableID()
 {
 	OC_METHODGATE();
 }
-
 
 
 void PortableID::setName(QString name)
@@ -44,11 +42,13 @@ void PortableID::setName(QString name)
 	mName=name;
 }
 
+
 void PortableID::setGender(QString gender)
 {
 	OC_METHODGATE();
 	mGender=gender;
 }
+
 
 void PortableID::setID(QString id)
 {
@@ -71,13 +71,12 @@ void PortableID::setType(NodeType type)
 }
 
 
-
-
 QString PortableID::name() const
 {
 	OC_METHODGATE();
 	return mName;
 }
+
 
 QString PortableID::identifier() const
 {
@@ -96,11 +95,13 @@ QString PortableID::identifier() const
 	}
 }
 
+
 QString PortableID::gender() const
 {
 	OC_METHODGATE();
 	return mGender;
 }
+
 
 QString PortableID::id() const
 {
@@ -132,6 +133,7 @@ bool PortableID::fromPortableString(QString s)
 	return true;
 }
 
+
 QString PortableID::toPortableString() const
 {
 	OC_METHODGATE();
@@ -141,13 +143,11 @@ QString PortableID::toPortableString() const
 }
 
 
-
 NodeType PortableID::type() const
 {
 	OC_METHODGATE();
 	return mType;
 }
-
 
 
 const QDebug &operator<<(QDebug &d, const PortableID &pid)

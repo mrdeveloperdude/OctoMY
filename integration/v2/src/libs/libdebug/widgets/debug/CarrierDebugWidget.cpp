@@ -78,6 +78,9 @@ void CarrierDebugWidget::configure(QSharedPointer <Node> node)
 				qWarning()<<"ERROR: No comms";
 			}
 		}
+		else{
+			qWarning()<<"WARNING: No node";
+		}
 	}
 }
 

@@ -4,6 +4,9 @@
 #include "uptime/New.hpp"
 
 #include "security/PortableID.hpp"
+#include "node/NodeRole.hpp"
+#include "node/NodeType.hpp"
+#include "utility/string/String.hpp"
 
 #include <QPainter>
 #include <QFile>
@@ -11,7 +14,6 @@
 #include <QDebug>
 #include <QSvgRenderer>
 
-///////////////////////////////////////////////////////////////////////////
 
 IdenticonWidget::IdenticonWidget(QWidget *parent)
 	: SvgWidget(parent)
@@ -20,6 +22,7 @@ IdenticonWidget::IdenticonWidget(QWidget *parent)
 	PortableID pid;
 	setPortableID(pid);
 }
+
 
 void IdenticonWidget::regenerateIdenticon()
 {
@@ -36,18 +39,22 @@ void IdenticonWidget::regenerateIdenticon()
 	update();
 }
 
+
 void IdenticonWidget::setPortableID(PortableID &id)
 {
 	OC_METHODGATE();
 	mIdenticon.setPortableID(id);
+	setToolTip("ID="+id.id()+"\nNAME="+id.name()+"\nTYPE="+nodeTypeToString(id.type())+"\nBIRTH="+utility::string::formattedDateFromMS(id.birthDate())+"\n");
 	regenerateIdenticon();
 }
+
 
 Identicon IdenticonWidget::identicon()
 {
 	OC_METHODGATE();
 	return mIdenticon;
 }
+
 
 void IdenticonWidget::mouseDoubleClickEvent(QMouseEvent *)
 {
@@ -61,6 +68,7 @@ QDomDocument IdenticonWidget::svgDOM()
 	OC_METHODGATE();
 	return mIdenticon.domDocument();
 }
+
 
 QByteArray IdenticonWidget::svgXML()
 {

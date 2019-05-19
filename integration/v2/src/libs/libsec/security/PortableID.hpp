@@ -21,7 +21,6 @@
 
 class PortableID
 {
-
 private:
 	QString mName;
 	QString mGender;
@@ -32,6 +31,7 @@ private:
 	static const QString SEP;
 	static const QString SEP_RE;
 	static const QRegularExpression sepRE;
+
 public:
 	static const QString dateFMT;
 
@@ -40,15 +40,14 @@ public:
 	explicit PortableID(QVariantMap &data);
 	virtual ~PortableID();
 
-
 public:
-
 	void setName(QString name);
 	void setGender(QString gender);
 	void setID(QString id);
 	void setBirthDate(quint64 birthDate);
 	void setType(NodeType type);
 
+public:
 	QString name() const;
 	QString identifier() const;
 	QString gender() const;
@@ -57,14 +56,13 @@ public:
 	NodeType type() const;
 
 public:
-
 	bool fromPortableString(QString);
 	QString toPortableString() const;
-
 
 };
 
 const QDebug &operator<<(QDebug &d, const PortableID &ass);
 
 
-#endif // PORTABLEID_HPP
+#endif
+// PORTABLEID_HPP

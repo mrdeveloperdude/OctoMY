@@ -14,12 +14,9 @@ class Node;
 class LocalIdentityDebugWidget : public SimpleTableDebugWidget
 {
 	Q_OBJECT
-
 private:
-	ConfigureHelper mConfigureHelper;
-
 	QSharedPointer <Node> mNode;
-	QString mLastAssString;
+	ConfigureHelper mConfigureHelper;
 
 public:
 	explicit LocalIdentityDebugWidget(QWidget *parent = nullptr);

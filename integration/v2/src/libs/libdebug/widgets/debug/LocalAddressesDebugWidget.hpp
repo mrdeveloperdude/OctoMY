@@ -16,10 +16,8 @@ class LocalAddressesDebugWidget : public SimpleTableDebugWidget
 	Q_OBJECT
 
 private:
-	ConfigureHelper mConfigureHelper;
-
 	QSharedPointer <Node> mNode;
-	QString mLastLalString;
+	ConfigureHelper mConfigureHelper;
 
 public:
 	explicit LocalAddressesDebugWidget(QWidget *parent = nullptr);

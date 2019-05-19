@@ -39,25 +39,16 @@ void KeyStoreDebugWidget::onRealtimeChanged(bool realtime)
 void KeyStoreDebugWidget::onTimer()
 {
 	OC_METHODGATE();
-	QString ksString;
 	QMap<QString, QString> map;
 	if(!mNode.isNull()) {
 		QSharedPointer<KeyStore> ks=mNode->keyStore();
 		if(!ks.isNull()) {
-			ksString=ks->toString();
-			if(ksString!=mLastKsString) {
-				map=ks->toMap();
-			}
+			map=ks->toMap();
 		} else {
-			ksString="ks-null";
 			map["Assoicate"]="null";
 		}
 	} else {
-		ksString="node-null";
 		map["Node"]="null";
 	}
-	if(ksString!=mLastKsString) {
-		mLastKsString=ksString;
-		setData(map);
-	}
+	setData(map);
 }

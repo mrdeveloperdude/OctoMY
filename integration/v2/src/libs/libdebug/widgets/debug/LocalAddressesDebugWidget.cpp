@@ -12,6 +12,7 @@ LocalAddressesDebugWidget::LocalAddressesDebugWidget(QWidget *parent)
 	OC_METHODGATE();
 }
 
+
 LocalAddressesDebugWidget::~LocalAddressesDebugWidget()
 {
 	OC_METHODGATE();
@@ -38,25 +39,16 @@ void LocalAddressesDebugWidget::onRealtimeChanged(bool realtime)
 void LocalAddressesDebugWidget::onTimer()
 {
 	OC_METHODGATE();
-	QString lalString;
 	QMap<QString, QString> map;
 	if(!mNode.isNull()) {
 		QSharedPointer<LocalAddressList> lal=mNode->localAddressList();
 		if(!lal.isNull()) {
-			lalString=lal->toString();
-			if(lalString!=mLastLalString) {
-				map=lal->toMap();
-			}
+			map=lal->toMap();
 		} else {
-			lalString="lal-null";
-			map["Assoicate"]="null";
+			map["Local Address List"]="null";
 		}
 	} else {
-		lalString="node-null";
 		map["Node"]="null";
 	}
-	if(lalString!=mLastLalString) {
-		mLastLalString=lalString;
-		setData(map);
-	}
+	setData(map);
 }

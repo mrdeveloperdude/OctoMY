@@ -19,24 +19,29 @@ protected:
 	Ui::SimpleTableDebugWidget *ui;
 private:
 	ConfigureHelper mConfigureHelper;
-	QTimer mTimer;
-	quint64 mLastUpdate;
+	QTimer mTimerUI;
+	QTimer mTimerData;
+	quint64 mBlinkStartTime;
 	QPalette mPalette;
+	int mUiUpdateInterval;
+	int mDataUpdateInterval;
+	QString mLastDataSignature;
 
 public:
 	explicit SimpleTableDebugWidget(QWidget *parent = nullptr);
 	virtual ~SimpleTableDebugWidget();
 
 public:
-	void configure(QString name);
+	void configure(QString name, int uiUpdateInterval = (1000/10) /* 10 fps */, int dataUpdateInterval= (2000) /* 0.5 FPS */);
 
 public:
 	void setData(QMap<QString, QString> data);
-	void triggerUpdate();
+	void triggerUIBlink();
 
 private slots:
 	void onRealtimeChangedWrapper(bool realtime);
-	void onTimerWrapper();
+	void onUITimerWrapper();
+	void onDataTimerWrapper();
 
 private slots:
 	void on_pushButtonUpdate_clicked();

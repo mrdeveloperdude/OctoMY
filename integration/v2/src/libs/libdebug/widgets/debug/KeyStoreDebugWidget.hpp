@@ -16,10 +16,8 @@ class KeyStoreDebugWidget : public SimpleTableDebugWidget
 	Q_OBJECT
 
 private:
-	ConfigureHelper mConfigureHelper;
-
 	QSharedPointer <Node> mNode;
-	QString mLastKsString;
+	ConfigureHelper mConfigureHelper;
 
 public:
 	explicit KeyStoreDebugWidget(QWidget *parent = nullptr);

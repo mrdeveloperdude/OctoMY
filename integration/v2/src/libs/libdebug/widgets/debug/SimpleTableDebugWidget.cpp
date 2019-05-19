@@ -14,7 +14,9 @@ SimpleTableDebugWidget::SimpleTableDebugWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::SimpleTableDebugWidget)
 	, mConfigureHelper("SimpleTableDebugWidget", true, false, false, true, false)
-	, mLastUpdate(0)
+	, mBlinkStartTime(0)
+	, mUiUpdateInterval(0)
+	, mDataUpdateInterval(0)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
@@ -29,18 +31,27 @@ SimpleTableDebugWidget::~SimpleTableDebugWidget()
 
 
 
-void SimpleTableDebugWidget::configure(QString name)
+void SimpleTableDebugWidget::configure(QString name, int uiUpdateInterval, int dataUpdateInterval)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
+		mUiUpdateInterval=uiUpdateInterval;
+		mDataUpdateInterval=dataUpdateInterval;
 		ui->labelName->setText(name);
 		if(!connect(ui->checkBoxUpdateRealtime, &QCheckBox::toggled, this, &SimpleTableDebugWidget::onRealtimeChangedWrapper, OC_CONTYPE )) {
 			qWarning()<<"ERROR: Could not connect ";
 		}
 		// We sacrifice quality since this is for debugging purpose onle and we want this to have the least impact on the runtime of non-debug code
-		mTimer.setTimerType(Qt::VeryCoarseTimer);
-		mTimer.setInterval(1000);// 1 FPS
-		if(!connect(&mTimer, &QTimer::timeout, this, &SimpleTableDebugWidget::onTimerWrapper, OC_CONTYPE )) {
+		mTimerUI.setTimerType(Qt::PreciseTimer);
+		mTimerUI.setInterval(mUiUpdateInterval);
+		mTimerUI.setSingleShot(false);
+		if(!connect(&mTimerUI, &QTimer::timeout, this, &SimpleTableDebugWidget::onUITimerWrapper, OC_CONTYPE )) {
+			qWarning()<<"ERROR: Could not connect ";
+		}
+		mTimerData.setTimerType(Qt::VeryCoarseTimer);
+		mTimerData.setInterval(mDataUpdateInterval);
+		mTimerData.setSingleShot(true);
+		if(!connect(&mTimerData, &QTimer::timeout, this, &SimpleTableDebugWidget::onDataTimerWrapper, OC_CONTYPE )) {
 			qWarning()<<"ERROR: Could not connect ";
 		}
 		onRealtimeChangedWrapper(ui->checkBoxUpdateRealtime->isChecked());
@@ -48,56 +59,76 @@ void SimpleTableDebugWidget::configure(QString name)
 }
 
 
+static QString mapToString(QMap<QString, QString> map)
+{
+	QString out;
+	for(auto it=map.constBegin(), end=map.constEnd(); it!=end; ++it) {
+		out+=it.key()+"="+it.value()+"\n";
+	}
+	return out;
+}
+
+
 void SimpleTableDebugWidget::setData(QMap<QString, QString> data)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		ui->tableView->setData(data);
-		triggerUpdate();
+		QString signature=mapToString(data);
+		if(signature!=mLastDataSignature) {
+			mLastDataSignature=signature;
+			ui->tableView->setData(data);
+			triggerUIBlink();
+		}
 	}
 }
 
 
-void SimpleTableDebugWidget::triggerUpdate()
+void SimpleTableDebugWidget::triggerUIBlink()
 {
 	OC_METHODGATE();
-	mLastUpdate=utility::time::currentMsecsSinceEpoch<quint64>();
-	if(ui->checkBoxUpdateRealtime->isChecked()) {
-		//mTimer.start();
-	}
+	mBlinkStartTime=utility::time::currentMsecsSinceEpoch<quint64>();
+	mTimerUI.start();
 }
 
 
 void SimpleTableDebugWidget::onRealtimeChangedWrapper(bool realtime)
 {
 	OC_METHODGATE();
-	if(realtime) {
-		triggerUpdate();
-	} else {
-		mTimer.stop();
-	}
 	onRealtimeChanged(realtime);
 }
 
 
-void SimpleTableDebugWidget::onTimerWrapper()
+void SimpleTableDebugWidget::onDataTimerWrapper()
 {
-	qDebug()<<"BLINKY";
 	OC_METHODGATE();
+	qDebug()<<"DATA";
+	onTimer();
+	if(ui->checkBoxUpdateRealtime->isChecked()) {
+		mTimerData.start();
+	}
+}
+
+
+void SimpleTableDebugWidget::onUITimerWrapper()
+{
+	OC_METHODGATE();
+
 	const quint64 blinkSize=1000;
 	auto p=palette();
 	auto o=p.color(QPalette::Background);
 	const auto now=utility::time::currentMsecsSinceEpoch<quint64>();
-	const quint64 time=qBound<quint64>(0, (now-mLastUpdate), blinkSize);
+	const quint64 time=qBound<quint64>(0, (now-mBlinkStartTime), blinkSize);
 	const qreal raw=static_cast<qreal>(blinkSize-time)/ static_cast<qreal>(blinkSize);
 	const qreal f=qBound(0.0, raw, 1.0);
-	if(f>=0.0) {
+	qDebug()<<"UI "<<f;
+	if(f>0.0) {
 		const QColor c=utility::color::mix(o, Qt::red, f);
 		//qDebug()<<"COLOR: "<<c<< ", f="<<f<< ", raw="<<raw<< ", time="<<time;
 		p.setColor(QPalette::Background, c);
 		ui->tableView->setPalette(p);
+	} else {
+		mTimerUI.stop();
 	}
-	onTimer();
 }
 
 
@@ -116,5 +147,4 @@ void SimpleTableDebugWidget::onTimer()
 void SimpleTableDebugWidget::on_pushButtonUpdate_clicked()
 {
 	OC_METHODGATE();
-	onTimer();
 }

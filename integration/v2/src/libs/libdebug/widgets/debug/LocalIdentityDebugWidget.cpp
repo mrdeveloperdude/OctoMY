@@ -12,6 +12,7 @@ LocalIdentityDebugWidget::LocalIdentityDebugWidget(QWidget *parent)
 	OC_METHODGATE();
 }
 
+
 LocalIdentityDebugWidget::~LocalIdentityDebugWidget()
 {
 	OC_METHODGATE();
@@ -38,25 +39,17 @@ void LocalIdentityDebugWidget::onRealtimeChanged(bool realtime)
 void LocalIdentityDebugWidget::onTimer()
 {
 	OC_METHODGATE();
-	QString assString;
 	QMap<QString, QString> map;
 	if(!mNode.isNull()) {
 		QSharedPointer<Associate> ass=mNode->nodeIdentity();
 		if(!ass.isNull()) {
-			assString=ass->toString();
-			if(assString!=mLastAssString) {
-				map=ass->toMap();
-			}
+			map=ass->toMap();
 		} else {
-			assString="ass-null";
 			map["Assoicate"]="null";
 		}
 	} else {
-		assString="node-null";
 		map["Node"]="null";
 	}
-	if(assString!=mLastAssString) {
-		mLastAssString=assString;
-		setData(map);
-	}
+	setData(map);
+
 }

@@ -12,7 +12,6 @@ class PortableI;
 class IdenticonWidget : public SvgWidget
 {
 	Q_OBJECT
-
 private:
 	Identicon mIdenticon;
 
@@ -24,12 +23,10 @@ protected:
 
 public:
 	void setPortableID(PortableID &id);
-
 	QDomDocument svgDOM();
-
 	QByteArray svgXML();
-
 	Identicon identicon();
+
 signals:
 	void doubleClicked();
 

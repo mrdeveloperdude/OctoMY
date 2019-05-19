@@ -92,7 +92,18 @@ void DebuggerWidget::updateServiceTable()
 	ui->widgetHeaderServices->updateServiceTable();
 }
 
-
+void DebuggerWidget::updateIdentity()
+{
+	OC_METHODGATE();
+	if(!mNode.isNull()) {
+		auto identity=mNode->nodeIdentity();
+		if(!identity.isNull()) {
+			auto pid=identity->toPortableID();
+			qDebug()<<"IDENTITY "<<pid.toPortableString();
+			ui->widgetIdenticon->setPortableID(pid);
+		}
+	}
+}
 
 void DebuggerWidget::configureUi()
 {

@@ -49,6 +49,10 @@ void ServicesDebugWidget::configure(QSharedPointer <Node> node)
 				}
 			}
 		}
+		else{
+			qWarning()<<"WARNING: No node";
+		}
+
 		if(!connect(ui->checkBoxUpdateRealtime, &QCheckBox::toggled, this, &ServicesDebugWidget::onRealtimeChanged, OC_CONTYPE )) {
 			qWarning()<<"ERROR: Could not connect";
 		}

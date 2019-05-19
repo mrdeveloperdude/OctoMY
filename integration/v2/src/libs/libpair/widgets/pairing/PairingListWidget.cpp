@@ -38,31 +38,36 @@ void PairingListWidget::configure(QSharedPointer<Node> node)
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
 		mNode=node;
-		QSharedPointer<LocalAddressList> lal= mNode->localAddressList();
-		if(!mNode.isNull() && !lal.isNull()) {
-			NodeType type=mNode->nodeType();
-			if(nullptr==ui->listViewNodes->model()) {
-				mList=OC_NEW PairingListModel(mNode->addressBook(), type);
-				ui->listViewNodes->setModel(mList);
-				if(nullptr==mDelegate) {
-					mDelegate=OC_NEW PairingEditButtonDelegate(this);
+		if(!mNode.isNull() ) {
+			QSharedPointer<LocalAddressList> lal= mNode->localAddressList();
+			if( !lal.isNull()) {
+				NodeType type=mNode->nodeType();
+				if(nullptr==ui->listViewNodes->model()) {
+					mList=OC_NEW PairingListModel(mNode->addressBook(), type);
+					ui->listViewNodes->setModel(mList);
+					if(nullptr==mDelegate) {
+						mDelegate=OC_NEW PairingEditButtonDelegate(this);
+					}
+					ui->listViewNodes->setItemDelegate(mDelegate);
 				}
-				ui->listViewNodes->setItemDelegate(mDelegate);
+				QSharedPointer<DiscoveryClient> client=mNode->discoveryClient();
+				if(!client.isNull()) {
+					if(!connect(client.data(), &DiscoveryClient::nodeDiscovered, [=](QString partID) {
+					Q_UNUSED(partID);
+						//qDebug()<<"PAIRING WIZARD partID: "<<partID;
+						ui->listViewNodes->update();
+					}
+							   )) {
+						qWarning()<<"ERROR: Could not connect "<<client->objectName();
+					}
+				} else {
+					qWarning()<<"ERROR: discovery was null";
+					return;
+				}
 			}
-			QSharedPointer<DiscoveryClient> client=mNode->discoveryClient();
-			if(!client.isNull()) {
-				if(!connect(client.data(), &DiscoveryClient::nodeDiscovered, [=](QString partID) {
-				Q_UNUSED(partID);
-					//qDebug()<<"PAIRING WIZARD partID: "<<partID;
-					ui->listViewNodes->update();
-				}
-						   )) {
-					qWarning()<<"ERROR: Could not connect "<<client->objectName();
-				}
-			} else {
-				qWarning()<<"ERROR: discovery was null";
-				return;
-			}
+		}
+		else{
+			qWarning()<<"WARNING: No node";
 		}
 	}
 }
