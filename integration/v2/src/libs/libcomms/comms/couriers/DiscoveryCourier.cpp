@@ -87,7 +87,7 @@ quint16 DiscoveryCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 	QByteArray ba;
 	ds >> ba;
 	auto bytes=ba.size();
-	//Hide adrresses by XORing them with a "random" number to counter bad gateway firmware
+	// Hide addresses by XORing them with a "random" number to counter bad gateway firmware
 	sLooper.doXor(ba);
 	{
 		QDataStream xds(ba);

@@ -95,6 +95,7 @@ void SimpleTableDebugWidget::onRealtimeChangedWrapper(bool realtime)
 {
 	OC_METHODGATE();
 	onRealtimeChanged(realtime);
+	onDataTimerWrapper();
 }
 
 
@@ -136,15 +137,18 @@ void SimpleTableDebugWidget::onRealtimeChanged(bool realtime)
 {
 	OC_METHODGATE();
 	Q_UNUSED(realtime);
+	// This is a no-op placeholder that will be overriden to be useful
 }
 
 
 void SimpleTableDebugWidget::onTimer()
 {
 	OC_METHODGATE();
+	// This is a no-op placeholder that will be overriden to be useful
 }
 
 void SimpleTableDebugWidget::on_pushButtonUpdate_clicked()
 {
 	OC_METHODGATE();
+	onDataTimerWrapper();
 }

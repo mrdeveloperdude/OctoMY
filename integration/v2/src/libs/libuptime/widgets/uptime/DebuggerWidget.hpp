@@ -32,6 +32,7 @@ public:
 
 private:
 	void configureUi();
+	void updateIdentity();
 
 	// QWidget interface
 public:
