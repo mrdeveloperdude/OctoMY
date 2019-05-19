@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/debug">
         <file>icons/debug.svg</file>
+        <file>icons/tuck.svg</file>
     </qresource>
 </RCC>
