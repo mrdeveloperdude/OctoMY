@@ -314,3 +314,25 @@ void DebuggerWidget::on_pushButtonRestart_clicked()
 		qWarning()<<"WARNING: Could not emit restart, no node";
 	}
 }
+
+void DebuggerWidget::on_pushButtonExpandAll_clicked()
+{
+	OC_METHODGATE();
+	pack();
+	for(auto button: mHeaderButtons) {
+		if(nullptr!=button) {
+			button->setChecked(true);
+		}
+	}
+}
+
+void DebuggerWidget::on_pushButtonCollapseAll_clicked()
+{
+	OC_METHODGATE();
+	for(auto button: mHeaderButtons) {
+		if(nullptr!=button) {
+			button->setChecked(false);
+		}
+	}
+	pack();
+}

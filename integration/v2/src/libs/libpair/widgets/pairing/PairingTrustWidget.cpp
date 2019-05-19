@@ -281,6 +281,7 @@ void PairingTrustWidget::on_pushButtonSaveEdits_clicked()
 		}
 		mCurrentlyEditingID="";
 		*/
+		qDebug()<<"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEDIT COMPLETE";
 		emit editComplete(selectedTrustLevel(), true);
 	}
 }

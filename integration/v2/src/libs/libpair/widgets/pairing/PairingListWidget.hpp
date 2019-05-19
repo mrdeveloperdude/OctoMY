@@ -33,7 +33,7 @@ public:
 	void configure(QSharedPointer<Node> node);
 
 signals:
-	void startEdit(int row);
+	void startEdit(const QString id);
 
 };
 

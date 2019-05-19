@@ -75,6 +75,40 @@
       </spacer>
      </item>
      <item>
+      <widget class="QPushButton" name="pushButtonCollapseAll">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../../../libres/resources/icons.qrc">
+         <normaloff>:/icons/collapse_all.svg</normaloff>:/icons/collapse_all.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonExpandAll">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../../../libres/resources/icons.qrc">
+         <normaloff>:/icons/expand_all.svg</normaloff>:/icons/expand_all.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="pushButtonTuckWindow">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -92,7 +126,17 @@
         <string>Place windows neatly beside eachother. Will use secondary screen if available.</string>
        </property>
        <property name="text">
-        <string>Tuck</string>
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../../../libdebug/resources/debug_icons.qrc">
+         <normaloff>:/debug/icons/tuck.svg</normaloff>:/debug/icons/tuck.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -407,7 +451,7 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>180</height>
+       <height>200</height>
       </size>
      </property>
     </widget>
@@ -899,6 +943,7 @@
  </customwidgets>
  <resources>
   <include location="../../../../libdebug/resources/debug_icons.qrc"/>
+  <include location="../../../../libres/resources/icons.qrc"/>
  </resources>
  <connections/>
 </ui>

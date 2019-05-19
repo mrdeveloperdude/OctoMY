@@ -50,9 +50,9 @@ void PairingListWidget::configure(QSharedPointer<Node> node)
 					}
 					ui->listViewNodes->setItemDelegate(mDelegate);
 					if(nullptr!=mDelegate) {
-						if(!connect(mDelegate, &PairingEditButtonDelegate::startEdit, [this](int row) {
-						//qDebug()<<"EDIT "<<row;
-							emit startEdit(row);
+						if(!connect(mDelegate, &PairingEditButtonDelegate::startEdit, [this](const QString id) {
+						//qDebug()<<"EDIT "<<id;
+							emit startEdit(id);
 						}
 								   )) {
 							qWarning()<<"ERROR: Could not connect "<<mDelegate->objectName();

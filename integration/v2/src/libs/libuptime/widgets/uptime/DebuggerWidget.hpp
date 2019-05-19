@@ -55,6 +55,10 @@ private slots:
 
 	void on_pushButtonRestart_clicked();
 
+	void on_pushButtonExpandAll_clicked();
+
+	void on_pushButtonCollapseAll_clicked();
+
 	signals:
 	void visibilityChanged(bool visible);
 };

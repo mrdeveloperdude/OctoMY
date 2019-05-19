@@ -243,7 +243,9 @@ bool PairingEditButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *m
 		*/
 		if(( clickX > x && clickX < x + w ) && ( clickY > y && clickY < y + h )) {
 			qDebug()<<"CLICK";
-			emit startEdit(index.row());
+			QVariantMap data=index.data(Qt::DisplayRole).toMap();
+			PortableID id(data);
+			emit startEdit(id.id());
 			return true;
 		}
 	}

@@ -9,6 +9,7 @@
 #include <QTimer>
 
 class Node;
+class PairingTrustWidget;
 
 namespace Ui
 {
@@ -22,6 +23,7 @@ private:
 	Ui::PairingDebugWidget *ui;
 	ConfigureHelper mConfigureHelper;
 	QSharedPointer <Node> mNode;
+	QSharedPointer <PairingTrustWidget> mTrustWidget;
 
 public:
 	explicit PairingDebugWidget(QWidget *parent = nullptr);
