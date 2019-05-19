@@ -32,19 +32,14 @@ class ZooServer : public qhttp::server::QHttpServer
 private:
 	QSharedPointer<AppContext> mContext;
 	QSharedPointer<KeyStore> mKeyStore;
-
 	Identicon mIdenticon;
 	Hashstore mStorage;
 	PunchRegistry mPunches;
 	DiscoveryServer mDiscovery;
 	// Absolute URL path of admin functions
 	QString mAdminURLPath;
-
 	QTimer mBackgroundTimer;
-
 	QString mAdminIndexTPL;
-
-
 	ConfigureHelper mConfigureHelper;
 
 	static const quint64 BACKGROUND_TIMER_INTERVAL;
@@ -61,8 +56,9 @@ public:
 	void configure(QSharedPointer<AppContext> context);
 
 private:
-	NetworkAddress serverAddress();
-	void logUsefullStuff();
+	NetworkAddress serverAddress() const;
+	quint16 serverPort() const;
+	void logUsefullStuff() const;
 
 public:
 	bool start(const QString pathOrPortNumber);

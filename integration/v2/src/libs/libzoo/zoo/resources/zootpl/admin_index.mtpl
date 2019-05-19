@@ -1,12 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+<!--
+
+Welcome to
+ ___       _        __  ____   __
+/ _ \  ___| |_ ___ |  \/  \ \ / /
+| | | |/ __| __/ _ \| |\/| |\ V /
+| |_| | (__| || (_) | |  | | | |
+\___/ \___|\__\___/|_|  |_| |_|
+
+Zoo!
+
+We are looking for developers like you to join our effort.
+Please see the following link on how to colaborate:
+
+http://www.octomy.org/contribute
+
+-->
 <head>
 	<meta charset="utf-8">
 	<title>{{title}}</title>
 	<link href="https://fonts.googleapis.com/css?family=Dosis:400,700" rel="stylesheet">
 	<style>
-	/*------------------------------------*\
-	RESET
+/*------------------------------------*\
+  CSS RESET
 \*------------------------------------*/
 html,body,div,span,applet,object,iframe,
 h1,h2,h3,h4,h5,h6,p,blockquote,pre,
@@ -82,6 +99,7 @@ h6 { font-size: 0.7em; font-weight:bold; }
 <body>
 
 	<h1><img src="/identicon" alt="Identicon"/>&nbsp;{{title}}</h1>
+	<p>Visit <a herf="https://octomy.org">OctoMY™ website</a>.</p>
 	<h2>Sessions</h2>
 	<table>
 	{{#sessions}}
