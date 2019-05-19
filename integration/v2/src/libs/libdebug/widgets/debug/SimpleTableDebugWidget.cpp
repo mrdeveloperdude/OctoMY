@@ -102,7 +102,7 @@ void SimpleTableDebugWidget::onRealtimeChangedWrapper(bool realtime)
 void SimpleTableDebugWidget::onDataTimerWrapper()
 {
 	OC_METHODGATE();
-	qDebug()<<"DATA";
+	//qDebug()<<"DATA";
 	onTimer();
 	if(ui->checkBoxUpdateRealtime->isChecked()) {
 		mTimerData.start();
@@ -113,7 +113,6 @@ void SimpleTableDebugWidget::onDataTimerWrapper()
 void SimpleTableDebugWidget::onUITimerWrapper()
 {
 	OC_METHODGATE();
-
 	const quint64 blinkSize=1000;
 	auto p=palette();
 	auto o=p.color(QPalette::Background);
@@ -121,7 +120,7 @@ void SimpleTableDebugWidget::onUITimerWrapper()
 	const quint64 time=qBound<quint64>(0, (now-mBlinkStartTime), blinkSize);
 	const qreal raw=static_cast<qreal>(blinkSize-time)/ static_cast<qreal>(blinkSize);
 	const qreal f=qBound(0.0, raw, 1.0);
-	qDebug()<<"UI "<<f;
+	//qDebug()<<"UI "<<f;
 	if(f>0.0) {
 		const QColor c=utility::color::mix(o, Qt::red, f);
 		//qDebug()<<"COLOR: "<<c<< ", f="<<f<< ", raw="<<raw<< ", time="<<time;
