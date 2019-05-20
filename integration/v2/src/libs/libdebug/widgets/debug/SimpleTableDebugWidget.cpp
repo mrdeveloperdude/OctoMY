@@ -55,6 +55,7 @@ void SimpleTableDebugWidget::configure(QString name, int uiUpdateInterval, int d
 			qWarning()<<"ERROR: Could not connect ";
 		}
 		onRealtimeChangedWrapper(ui->checkBoxUpdateRealtime->isChecked());
+		ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	}
 }
 

@@ -22,10 +22,7 @@ ServicesDebugWidget::ServicesDebugWidget(QWidget *parent)
 	auto ipt=new QTableWidgetItem();
 	ipt->setFlags( (ipt->flags()) & (~(Qt::ItemIsUserCheckable| Qt::ItemIsEditable)) );
 	ui->tableWidgetServices->setItemPrototype(ipt);
-
-	ui->tableWidgetServices->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-	//ui->tableWidgetServices->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-
+	ui->tableWidgetServices->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 ServicesDebugWidget::~ServicesDebugWidget()

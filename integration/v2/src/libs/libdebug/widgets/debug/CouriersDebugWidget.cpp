@@ -24,10 +24,7 @@ CouriersDebugWidget::CouriersDebugWidget(QWidget *parent)
 	auto ipt=new QTableWidgetItem();
 	ipt->setFlags( (ipt->flags()) & (~(Qt::ItemIsUserCheckable| Qt::ItemIsEditable)) );
 	ui->tableWidgetCouriers->setItemPrototype(ipt);
-
-	ui->tableWidgetCouriers->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-	//ui->tableWidgetCouriers->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-
+	ui->tableWidgetCouriers->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 CouriersDebugWidget::~CouriersDebugWidget()
