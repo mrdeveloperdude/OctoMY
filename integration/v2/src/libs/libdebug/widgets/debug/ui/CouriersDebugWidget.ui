@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>362</width>
-    <height>210</height>
+    <width>1118</width>
+    <height>626</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,6 +20,18 @@
    <string>Form</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QTableWidget" name="tableWidgetCouriers">
      <property name="enabled">
@@ -97,29 +109,39 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QLabel" name="label">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Couriers</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="pushButtonUpdate">
        <property name="text">
-        <string>Update</string>
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../../../libres/resources/icons.qrc">
+         <normaloff>:/icons/update_once.svg</normaloff>:/icons/update_once.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="checkBoxUpdateRealtime">
+      <widget class="QPushButton" name="pushButtonUpdateRealtime">
        <property name="text">
-        <string>Auto</string>
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../../../libres/resources/icons.qrc">
+         <normaloff>:/icons/update_auto.svg</normaloff>:/icons/update_auto.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -143,6 +165,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../../../libres/resources/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

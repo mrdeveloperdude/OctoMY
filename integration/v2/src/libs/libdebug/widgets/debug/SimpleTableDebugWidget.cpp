@@ -34,11 +34,11 @@ SimpleTableDebugWidget::~SimpleTableDebugWidget()
 void SimpleTableDebugWidget::configure(QString name, int uiUpdateInterval, int dataUpdateInterval)
 {
 	OC_METHODGATE();
+	Q_UNUSED(name);
 	if(mConfigureHelper.configure()) {
 		mUiUpdateInterval=uiUpdateInterval;
 		mDataUpdateInterval=dataUpdateInterval;
-		ui->labelName->setText(name);
-		if(!connect(ui->checkBoxUpdateRealtime, &QCheckBox::toggled, this, &SimpleTableDebugWidget::onRealtimeChangedWrapper, OC_CONTYPE )) {
+		if(!connect(ui->pushButtonUpdateRealtime, &QPushButton::toggled, this, &SimpleTableDebugWidget::onRealtimeChangedWrapper, OC_CONTYPE )) {
 			qWarning()<<"ERROR: Could not connect ";
 		}
 		// We sacrifice quality since this is for debugging purpose onle and we want this to have the least impact on the runtime of non-debug code
@@ -54,7 +54,7 @@ void SimpleTableDebugWidget::configure(QString name, int uiUpdateInterval, int d
 		if(!connect(&mTimerData, &QTimer::timeout, this, &SimpleTableDebugWidget::onDataTimerWrapper, OC_CONTYPE )) {
 			qWarning()<<"ERROR: Could not connect ";
 		}
-		onRealtimeChangedWrapper(ui->checkBoxUpdateRealtime->isChecked());
+		onRealtimeChangedWrapper(ui->pushButtonUpdateRealtime->isChecked());
 		ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	}
 }
@@ -105,7 +105,7 @@ void SimpleTableDebugWidget::onDataTimerWrapper()
 	OC_METHODGATE();
 	//qDebug()<<"DATA";
 	onTimer();
-	if(ui->checkBoxUpdateRealtime->isChecked()) {
+	if(ui->pushButtonUpdateRealtime->isChecked()) {
 		mTimerData.start();
 	}
 }

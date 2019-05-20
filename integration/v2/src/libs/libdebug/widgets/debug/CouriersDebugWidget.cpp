@@ -52,7 +52,7 @@ void CouriersDebugWidget::configure(QSharedPointer <Node> node)
 				*/
 			}
 		}
-		if(!connect(ui->checkBoxUpdateRealtime, &QCheckBox::toggled, this, &CouriersDebugWidget::onRealtimeChanged, OC_CONTYPE )) {
+		if(!connect(ui->pushButtonUpdateRealtime, &QPushButton::toggled, this, &CouriersDebugWidget::onRealtimeChanged, OC_CONTYPE )) {
 			qWarning()<<"ERROR: Could not connect";
 		}
 		// We sacrifice quality since this is for debugging purpose onle and we want this to have the least impact on the runtime of non-debug code
@@ -61,7 +61,7 @@ void CouriersDebugWidget::configure(QSharedPointer <Node> node)
 		if(!connect(&mTimer, &QTimer::timeout, this, &CouriersDebugWidget::onTimer, OC_CONTYPE )) {
 			qWarning()<<"ERROR: Could not connect";
 		}
-		onRealtimeChanged(ui->checkBoxUpdateRealtime->isChecked());
+		onRealtimeChanged(ui->pushButtonUpdateRealtime->isChecked());
 	}
 }
 
@@ -87,7 +87,7 @@ void CouriersDebugWidget::triggerUpdate()
 {
 	OC_METHODGATE();
 	mLastUpdate=utility::time::currentMsecsSinceEpoch<quint64>();
-	if(ui->checkBoxUpdateRealtime->isChecked()) {
+	if(ui->pushButtonUpdateRealtime->isChecked()) {
 		// mTimer.start();
 	}
 }
