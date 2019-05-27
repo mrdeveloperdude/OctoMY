@@ -438,46 +438,18 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QPushButton" name="pushButtonUnbirth">
+         <widget class="TryToggle" name="tryToggleBirth" native="true">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="maximumSize">
+          <property name="minimumSize">
            <size>
-            <width>9999</width>
-            <height>16777215</height>
+            <width>10</width>
+            <height>10</height>
            </size>
-          </property>
-          <property name="toolTip">
-           <string>Invoke app quit using internal shutdown routines</string>
-          </property>
-          <property name="text">
-           <string>Unbirth</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButtonBirth">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>9999</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Invoke app quit using internal shutdown routines</string>
-          </property>
-          <property name="text">
-           <string>Birth</string>
           </property>
          </widget>
         </item>

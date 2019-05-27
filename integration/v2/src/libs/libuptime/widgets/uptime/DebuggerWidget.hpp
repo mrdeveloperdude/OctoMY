@@ -36,6 +36,10 @@ private:
 	void configureUi();
 	void updateIdentity();
 
+private:
+	void birth();
+	void unBirth();
+
 	// QWidget interface
 public:
 	void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
@@ -50,8 +54,6 @@ private slots:
 private slots:
 	void on_pushButtonQuitSuccess_clicked();
 	void on_pushButtonQuitFail_clicked();
-	void on_pushButtonUnbirth_clicked();
-	void on_pushButtonBirth_clicked();
 	void on_pushButtonTuckWindow_toggled(bool checked);
 	void on_pushButtonRestart_clicked();
 	void on_pushButtonExpandAll_clicked();

@@ -57,7 +57,7 @@ static void configTryToggleForServiceLevel(TryToggle *tt, const QString serviceL
 			}, OC_CONTYPE)) {
 			}
 		} else {
-			qWarning()<<"WARNING: Could not switch discovery service, no node";
+			qWarning()<<"WARNING: Could not switch service, no node";
 		}
 	} else {
 		qWarning()<<"WARNING: No try toggle in configTryToggleForServiceLevel()";
@@ -92,6 +92,22 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 		ui->widgetHeaderDiscoveryClient->configure(mNode);
 		configTryToggleForServiceLevel(ui->tryToggleDiscovery, "Discovery", mNode, "Activate disovery", "Discovery activating", "Deactivate discovery", "Discovery deactivating");
 		configTryToggleForServiceLevel(ui->tryToggleAlways, "Always", mNode, "Activate", "Activating", "Deactivate", "Deactivating");
+		if(nullptr != ui->tryToggleBirth) {
+			if(!node.isNull()) {
+				ui->tryToggleBirth->configure("Birth", "Delivering", "Unbirth", "Killing");
+				if(!QObject::connect(ui->tryToggleBirth, &TryToggle::stateChanged, mNode.data(), [=](const TryToggleState last, const TryToggleState current) {
+				Q_UNUSED(last);
+					if(transient(current)) {
+						positive(current)?birth():unBirth();
+					}
+				}, OC_CONTYPE)) {
+				}
+			} else {
+				qWarning()<<"WARNING: Could not switch birth, no node";
+			}
+		} else {
+			qWarning()<<"WARNING: No try birth try toggle";
+		}
 		configureUi();
 	}
 }
@@ -117,10 +133,62 @@ void DebuggerWidget::updateIdentity()
 				qDebug()<<"IDENTITY "<<pid.toPortableString();
 				ui->widgetIdenticon->setPortableID(pid);
 				ui->widgetBirthCertificate->setPortableID(pid);
+				ui->tryToggleBirth->setState(pid.id().isEmpty()?TryToggleState::OFF:TryToggleState::ON, false);
 			}
 		}
 	}
 }
+
+
+void DebuggerWidget::birth()
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		if(!mNode.isNull()) {
+			QSharedPointer<KeyStore> keystore=mNode->keyStore();
+			if(!keystore.isNull()) {
+				keystore->clear([=](ASEvent<QVariantMap> &ase1) {
+					Q_UNUSED(ase1);
+					keystore->setBootstrapEnabled(true);
+					keystore->synchronize([=](ASEvent<QVariantMap> &ase2) {
+						Q_UNUSED(ase2);
+						QSharedPointer<Key> key=keystore->localKey();
+						if(!key.isNull()) {
+							QVariantMap map;
+							const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
+							AgentNameGenerator ang;
+							GenderGenerator gg;
+							map["id"]=key->id();
+							map["name"]=ang.generate();
+							map["gender"]=gg.generate();
+							map["role"]=nodeRoleToString(mNode->nodeRole());
+							map["type"]=nodeTypeToString(mNode->nodeType());
+							map["birthDate"]=utility::time::msToVariant(now);
+							qDebug()<<"Creating new identity: "<<map;
+							mNode->setNodeIdentity(map);
+						}
+					});
+				});
+			}
+		} else {
+			qWarning()<<"WARNING: Could not birth, no node";
+		}
+	}
+}
+
+
+void DebuggerWidget::unBirth()
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		if(!mNode.isNull()) {
+			mNode->unbirth();
+		} else {
+			qWarning()<<"WARNING: Could not unbirth, no node";
+		}
+	}
+}
+
 
 
 void DebuggerWidget::configureUi()
@@ -257,56 +325,6 @@ void DebuggerWidget::on_pushButtonQuitFail_clicked()
 			emit mNode->nodeRequestExit(EXIT_FAILURE);
 		} else {
 			qWarning()<<"WARNING: Could not emit failure quit, no node";
-		}
-	}
-}
-
-
-void DebuggerWidget::on_pushButtonUnbirth_clicked()
-{
-	OC_METHODGATE();
-	if(mConfigureHelper.isConfiguredAsExpected()) {
-		if(!mNode.isNull()) {
-			mNode->unbirth();
-		} else {
-			qWarning()<<"WARNING: Could not unbirth, no node";
-		}
-	}
-}
-
-
-void DebuggerWidget::on_pushButtonBirth_clicked()
-{
-	OC_METHODGATE();
-	if(mConfigureHelper.isConfiguredAsExpected()) {
-		if(!mNode.isNull()) {
-			QSharedPointer<KeyStore> keystore=mNode->keyStore();
-			if(!keystore.isNull()) {
-				keystore->clear([=](ASEvent<QVariantMap> &ase1) {
-					Q_UNUSED(ase1);
-					keystore->setBootstrapEnabled(true);
-					keystore->synchronize([=](ASEvent<QVariantMap> &ase2) {
-						Q_UNUSED(ase2);
-						QSharedPointer<Key> key=keystore->localKey();
-						if(!key.isNull()) {
-							QVariantMap map;
-							const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
-							AgentNameGenerator ang;
-							GenderGenerator gg;
-							map["id"]=key->id();
-							map["name"]=ang.generate();
-							map["gender"]=gg.generate();
-							map["role"]=nodeRoleToString(mNode->nodeRole());
-							map["type"]=nodeTypeToString(mNode->nodeType());
-							map["birthDate"]=utility::time::msToVariant(now);
-							qDebug()<<"Creating new identity: "<<map;
-							mNode->setNodeIdentity(map);
-						}
-					});
-				});
-			}
-		} else {
-			qWarning()<<"WARNING: Could not birth, no node";
 		}
 	}
 }
