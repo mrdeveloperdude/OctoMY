@@ -68,7 +68,7 @@ Node::Node()
 	, mComms(OC_NEW CommsChannel())
 	, mLastStatusSend (0)
 	, mServerURL("http://zoo.octomy.org:"+QString::number(Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
-	, mNodeStepActivationTimer(nullptr)
+	, mActivationTimer(nullptr)
 	, mServiceLevelManager(OC_NEW ServiceLevelManager())
 	, mKeyStoreService(OC_NEW KeyStoreService(mKeyStore, QStringList{}))
 	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore, QStringList{mKeyStoreService->name()}))
@@ -119,6 +119,15 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				//////////////////////////////////
 
 				mKeyStore->configure(baseDir + "/keystore.json", true);
+				/*
+				if(!connect(mKeyStore.data(), &KeyStore::keystoreReady, this, [this](const bool on, const bool ok) {
+				if(ok && on) {
+						identityChanged();
+					}
+				}, OC_CONTYPE)) {
+					qWarning()<<"ERROR: Could not connect";
+				}
+*/
 				mKeyStoreService->configure();
 
 				mLocalIdentityStore->configure(baseDir + "/local_identity.json");
@@ -189,32 +198,15 @@ void Node::appActivate(const bool on)
 	//qDebug()<<"appActivate()";
 	if(mAppConfigureHelper.activate(on)) {
 		if(on) {
-			//mKeyStoreService->serviceChangeActivation(on);
-			//mKeyStore->activate(on);
-			//mLocalIdentityStore->activate(on);
-			//mAddresses->activate(on);
-			//mAddressBook->activate(on);
-			//mDiscovery->activate(on);
-
-			//mCarrier->activate(on);
-			//mComms->activate(on);
-
 			serviceActivation(on);
-			// stepActivation(on);
-
-
 			//setHookSensorSignals(*this, true);
 			//setHookSensorSignals(*mSensorsCourier, true);
-
 			//setHookCommsSignals(*this,true);
-
 			/*
 			if(nullptr!=mZooClient) {
 				mZooClient->setURL(mServerURL);
 			}
 			*/
-
-
 			// Bootstrap connection
 			/*
 			const bool last=needsConnection();
@@ -222,65 +214,11 @@ void Node::appActivate(const bool on)
 			setNeedsConnection(last);
 			*/
 		} else {
-
 			serviceActivation(on);
-
 			setHookSensorSignals(*this, false);
 			setHookCommsSignals(*this, false);
-
-
-
 			//mAddressBook.setInitialized<AddressBook>(nullptr);
 			//mLocalIdentity.setInitialized<LocalIdentityStore>(nullptr);
-			/*
-			if(nullptr!=mCarrier) {
-				mCarrier->deleteLater();
-				mCarrier=nullptr;
-			}
-			*/
-			/*
-			if(!mComms.isNull()) {
-				mComms->deleteLater();
-				mComms=nullptr;
-			}
-			*/
-			/*
-			if(nullptr!=mDiscovery) {
-				mDiscovery->deleteLater();
-				mDiscovery=nullptr;
-			}
-			*/
-			/*
-			if(nullptr!=mZooClient) {
-				mZooClient->deleteLater();
-				mZooClient=nullptr;
-			}
-			*/
-			/*
-			if(nullptr!=mSensors) {
-				mSensors->deleteLater();
-				mSensors=nullptr;
-			}
-			*/
-			/*
-			if(nullptr!=mSensorsCourier) {
-				mSensorsCourier->deleteLater();
-				mSensorsCourier=nullptr;
-			}
-			*/
-			/*
-			if(nullptr!=mBlobCourier) {
-				mBlobCourier->deleteLater();
-				mBlobCourier=nullptr;
-			}
-			*/
-			/*
-			if(nullptr!=mCameras) {
-				mCameras->deleteLater();
-				mCameras=nullptr;
-			}
-			*/
-
 		}
 		// NOTE: It is expected that this emits nodeActivateChanged() at some point
 		nodeActivate(on);
@@ -296,109 +234,10 @@ void Node::serviceActivation(const bool on)
 			Q_UNUSED(ok);
 			qDebug()<<"EUREKA ServiceActivation returned: "<<ok;
 		});
-		/*
-		qDebug()<<"SERVICE ACTIVATION("<<on<<") STARTED";
-		mServiceLevelManager->changeActivation(mServiceLevelManager->all(), on, [on](bool ok) {
-			qDebug()<<"SERVICE ACTIVATION("<<on<<") RESULTED IN "<<ok;
-		});
-		*/
 	}
 }
 
 
-void Node::stepActivation(const bool on)
-{
-	OC_METHODGATE();
-	if(mAppConfigureHelper.isConfiguredAsExpected()) {
-		if(nullptr == mNodeStepActivationTimer) {
-			mNodeStepActivationTimer=OC_NEW ScopedTimer(context()->base()+"-activate-"+(on?"on":"off"));
-		}
-		if(on) {
-			if(!mNodeActivationState.keyStoreOK) {
-				if(!mKeyStore.isNull()) {
-					mKeyStore->synchronize([this, on](ASEvent<QVariantMap> &se) {
-						const bool ok=se.isSuccessfull();
-						//qDebug()<<"Keystore synchronized with ok="<<ok;
-						// mKeyStore->dump();
-						mNodeActivationState.keyStoreOK=ok;
-						if(ok) {
-							stepActivation(on);
-						} else {
-							qWarning()<<"ERROR: keystore not ok";
-						}
-					});
-				} else {
-					qWarning()<<"ERROR: No KeyStore";
-				}
-			} else if (!mNodeActivationState.localIdentityOK) {
-				if(!mLocalIdentityStore.isNull()) {
-					mLocalIdentityStore->synchronize([this, on](QSharedPointer<SimpleDataStore> sms, bool ok) {
-						if(!sms.isNull()) {
-							auto map=sms->toMap();
-							//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
-							setNodeIdentity(map);
-							mNodeActivationState.localIdentityOK=ok;
-							stepActivation(on);
-						} else {
-							qWarning()<<"ERROR: local identity sync sms not ok";
-						}
-					});
-				} else {
-					qWarning()<<"ERROR: No LocalIdentity";
-				}
-			} else if (!mNodeActivationState.localAddressesOK) {
-				if(!mLocalAddressList.isNull()) {
-					//qDebug()<<"LocalAddresses synchronized with ok="<<true;
-					mNodeActivationState.localAddressesOK=true;
-					stepActivation(on);
-				} else {
-					qWarning()<<"ERROR: No Addresses";
-				}
-
-			} else if (!mNodeActivationState.addressBookOK) {
-				if(!mAddressBook.isNull()) {
-					mAddressBook->synchronize([this, on](QSharedPointer<SimpleDataStore> sms, bool ok) {
-						if(!sms.isNull()) {
-							//qDebug()<<"AddressBook synchronized with ok="<<ok;
-							auto map=sms->toMap();
-							mClients->syncToAddressBook(mAddressBook, sharedThis());
-							mNodeActivationState.addressBookOK=ok;
-							stepActivation(on);
-						} else {
-							qWarning()<<"ERROR: address book sync sms not ok";
-						}
-					});
-
-				} else {
-					qWarning()<<"ERROR: No AddressBook";
-				}
-			} else if (!mNodeActivationState.discoveryClientOK) {
-				if(!mDiscovery.isNull()) {
-					//qDebug()<<"Discovery ok="<<true;
-					mDiscovery->setURL(mServerURL);
-					mNodeActivationState.discoveryClientOK=true;
-					stepActivation(on);
-				} else {
-					qWarning()<<"ERROR: No DiscoveryClient";
-				}
-			} else if (!mNodeActivationState.commsCarrierOK) {
-				if(!mCarrier.isNull()) {
-					const NetworkAddress listenAddress(QHostAddress::Any, mLocalAddressList->port());
-					//qDebug()<<"CommsCarrier ok="<<true<<" with "<<listenAddress;
-					mCarrier->setListenAddress(listenAddress);
-					mNodeActivationState.commsCarrierOK=true;
-					delete mNodeStepActivationTimer;
-					mNodeStepActivationTimer=nullptr;
-					// stepActivation(on);
-				} else {
-					qWarning()<<"ERROR: No CommsCarrier";
-				}
-			}
-		} else {
-			qWarning()<<"WARNING: No attempt is done at deactication at this point. This means that resources will be left flying in the wind upon termination.";
-		}
-	}
-}
 
 
 QSharedPointer<NodeWindow> Node::appWindow()
@@ -648,11 +487,7 @@ void Node::setNodeIdentity(QVariantMap map)
 {
 	OC_METHODGATE();
 	if(mAppConfigureHelper.isConfiguredAsExpected()) {
-		mNodeIdentity=QSharedPointer<Associate>(OC_NEW Associate(map, true));
-		//qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED BY MAP: "<<map;
-		mLocalIdentityStore->fromMap(map);
-		mLocalIdentityStore->save();
-		identityChanged();
+		setNodeIdentity(QSharedPointer<Associate>(OC_NEW Associate(map)));
 	}
 }
 
@@ -662,25 +497,16 @@ void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 	OC_METHODGATE();
 	if(mAppConfigureHelper.isConfiguredAsExpected()) {
 		mNodeIdentity=nodeID;
-		QVariantMap map;
 		if(!mNodeIdentity.isNull()) {
-			map=mNodeIdentity->toVariantMap();
+			auto map=mNodeIdentity->toVariantMap();
+			qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED: "<<map<< " FROM nodeID="<<*mNodeIdentity;
+			mLocalIdentityStore->fromMap(map);
+			mLocalIdentityStore->save();
+			emit identityChanged();
 		}
-		//qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED: "<<map<< " FROM nodeID="<<*mNodeIdentity;
-		mLocalIdentityStore->fromMap(map);
-		mLocalIdentityStore->save();
-		identityChanged();
 	}
 }
 
-
-void Node::identityChanged()
-{
-	OC_METHODGATE();
-	if(mAppConfigureHelper.isConfiguredAsExpected()){
-		// TODO: Implement?
-	}
-}
 
 
 QSharedPointer<Node> Node::sharedThis()

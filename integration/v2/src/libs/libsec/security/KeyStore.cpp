@@ -18,7 +18,6 @@
 #include <QThreadPool>
 
 
-/////////////////////////////////////////////////////////////////////////////
 
 KeyStore::KeyStore(QObject *parent)
 	: QObject(parent)
@@ -35,6 +34,7 @@ KeyStore::~KeyStore()
 {
 	OC_METHODGATE();
 }
+
 
 void KeyStore::configure(QString filename, bool doBootstrap, KeySecurityPolicy policy)
 {
@@ -65,22 +65,26 @@ void KeyStore::activate(bool on, std::function<void(bool)> callBack)
 	if(mConfigureHelper.activate(on)) {
 		if(on) {
 			mStore.activate(on);
-			synchronize([callBack](ASEvent<QVariantMap> &se) {
+			synchronize([this, callBack, on](ASEvent<QVariantMap> &se) {
+				const bool ok=se.isSuccessfull();
 				if(nullptr!=callBack) {
-					callBack(se.isSuccessfull());
+					callBack(ok);
 				}
+				emit keystoreReady(on, ok);
 			});
 		} else {
-			// THIS IS CALLED AFTER ACTIVATE FALSE WHICH OF COURSE WILL PRODUCE ERROR
-			synchronize([callBack](ASEvent<QVariantMap> &se) {
+			synchronize([this, callBack, on](ASEvent<QVariantMap> &se) {
+				const bool ok=se.isSuccessfull();
 				if(nullptr!=callBack) {
-					callBack(se.isSuccessfull());
+					callBack(ok);
 				}
+				emit keystoreReady(on, ok);
+				mStore.activate(on);
 			});
-			mStore.activate(on);
 		}
 	}
 }
+
 
 void KeyStore::clear()
 {
@@ -92,6 +96,7 @@ void KeyStore::clear()
 	}
 }
 
+
 void KeyStore::save()
 {
 	OC_METHODGATE();
@@ -101,6 +106,7 @@ void KeyStore::save()
 		});
 	}
 }
+
 
 void KeyStore::load()
 {
@@ -156,6 +162,7 @@ bool KeyStore::setFrontend(QVariantMap map)
 	return ok;
 }
 
+
 QVariantMap KeyStore::getFrontend(bool &ok)
 {
 	OC_METHODGATE();
@@ -187,7 +194,6 @@ QVariantMap KeyStore::getFrontend(bool &ok)
 	}
 	return QVariantMap();
 }
-
 
 
 bool KeyStore::generateFrontend()
@@ -222,6 +228,7 @@ bool KeyStore::clearFrontend()
 	return false;
 }
 
+
 bool KeyStore::bootstrapEnabled()
 {
 	OC_METHODGATE();
@@ -230,6 +237,7 @@ bool KeyStore::bootstrapEnabled()
 	}
 	return false;
 }
+
 
 void KeyStore::setBootstrapEnabled(bool doBootstrap)
 {
@@ -250,8 +258,6 @@ QSharedPointer<Key> KeyStore::localKey()
 }
 
 
-
-
 bool KeyStore::hasPubKeyForID(const QString &id)
 {
 	OC_METHODGATE();
@@ -263,6 +269,7 @@ bool KeyStore::hasPubKeyForID(const QString &id)
 	}
 	return false;
 }
+
 
 void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
 {
@@ -282,6 +289,7 @@ void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
 	}
 }
 
+
 QSharedPointer<Key> KeyStore::pubKeyForID(const QString &id)
 {
 	OC_METHODGATE();
@@ -298,7 +306,6 @@ QSharedPointer<Key> KeyStore::pubKeyForID(const QString &id)
 	}
 	return nullptr;
 }
-
 
 
 void KeyStore::dump()
@@ -325,6 +332,7 @@ void KeyStore::dump()
 	}
 }
 
+
 AsyncStore<QVariantMap> &KeyStore::store()
 {
 	OC_METHODGATE();
@@ -333,6 +341,7 @@ AsyncStore<QVariantMap> &KeyStore::store()
 	}
 	return mStore;
 }
+
 
 QString KeyStore::toString()
 {
@@ -349,7 +358,6 @@ QString KeyStore::toString()
 	}
 	return "";
 }
-
 
 
 QMap<QString, QString> KeyStore::toMap()
@@ -385,6 +393,7 @@ QString KeyStore::filename() const
 	return "";
 }
 
+
 bool KeyStore::fileExists() const
 {
 	OC_METHODGATE();
@@ -394,6 +403,7 @@ bool KeyStore::fileExists() const
 	return false;
 }
 
+
 bool KeyStore::ready()
 {
 	OC_METHODGATE();
@@ -402,8 +412,6 @@ bool KeyStore::ready()
 	}
 	return false;
 }
-
-
 
 
 void KeyStore::waitForSync()

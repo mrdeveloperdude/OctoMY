@@ -3,7 +3,7 @@
 
 #include "widgets/SvgWidget.hpp"
 #include "identity/Identicon.hpp"
-
+#include "uptime/ConfigureHelper.hpp"
 
 #include <QDomDocument>
 
@@ -14,9 +14,13 @@ class IdenticonWidget : public SvgWidget
 	Q_OBJECT
 private:
 	Identicon mIdenticon;
+	ConfigureHelper mConfigureHelperIdenticonWidget;
 
 public:
 	explicit IdenticonWidget(QWidget *parent = nullptr);
+
+public:
+	void configure();
 
 protected:
 	void regenerateIdenticon();

@@ -2,6 +2,7 @@
 #define DEBUGGER_HPP
 
 #include "node/Node.hpp"
+#include "uptime/ConfigureHelper.hpp"
 
 #include <QWidget>
 #include <QSharedPointer>
@@ -21,6 +22,7 @@ private:
 	QSharedPointer<Node> mNode;
 	QMap<QString, QWidget *> mHeaderWidgets;
 	QList<QPushButton *> mHeaderButtons;
+	ConfigureHelper mConfigureHelper;
 
 public:
 	explicit DebuggerWidget(QWidget *parent = nullptr);
@@ -50,16 +52,12 @@ private slots:
 	void on_pushButtonQuitFail_clicked();
 	void on_pushButtonUnbirth_clicked();
 	void on_pushButtonBirth_clicked();
-
 	void on_pushButtonTuckWindow_toggled(bool checked);
-
 	void on_pushButtonRestart_clicked();
-
 	void on_pushButtonExpandAll_clicked();
-
 	void on_pushButtonCollapseAll_clicked();
 
-	signals:
+signals:
 	void visibilityChanged(bool visible);
 };
 

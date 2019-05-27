@@ -19,7 +19,7 @@
 
 #include <QRegularExpression>
 
-
+/*
 Associate::Associate(const QVariantMap map, bool isPublic)
 	: mKey( map["key"].toMap(), isPublic)
 	, mName( map["name"].toString() )
@@ -38,7 +38,26 @@ Associate::Associate(const QVariantMap map, bool isPublic)
 	OC_METHODGATE();
 	//qDebug()<<"CREATE NodeAssociate(map, isPublic)"<<map<<isPublic;
 }
+*/
 
+Associate::Associate(const QVariantMap map/*, bool isPublic*/)
+	: mID ( map["id"].toString())
+	, mName( map["name"].toString() )
+	, mGender( map["gender"].toString() )
+	, mRole( nodeRoleFromString( map["role"].toString() ) )
+	, mType( nodeTypeFromString( map["type"].toString() ) )
+	, mTrusts( map["trusts"].toStringList())
+	, mLastSeenMS( utility::time::variantToMs(map["lastSeenMS"]) )
+	, mLastInitiatedHandshakeMS( utility::time::variantToMs(map["lastInitiatedHandshakeMS"]) )
+	, mLastAdherentHandshakeMS( utility::time::variantToMs(map["lastAdherentHandshakeMS"]) )
+	, mBirthDate( utility::time::variantToMs(map["birthDate"]) )
+	, mAddressList( map["addressList"].toList() )
+	  //	, mPins( map["pins"].toStringList())// DONT STORE PINS THEY ARE EPHEMERAL
+
+{
+	OC_METHODGATE();
+	//qDebug()<<"CREATE NodeAssociate(map, isPublic)"<<map<<isPublic;
+}
 
 
 Associate::Associate()
@@ -65,10 +84,18 @@ bool Associate::update(const QVariantMap map, bool trustedSource)
 {
 	OC_METHODGATE();
 	bool passesSecurityCheck=false;
+	/*
 	if(map["key"].toMap()["publicKey"].toString()==mKey.pubKey() && map["key"].toMap()["privateKey"].toString()==mKey.key()) {
 		passesSecurityCheck=true;
-		//TODO: Intensify this security check and make tests that can verify it well
+		// TODO: Intensify this security check and make tests that can verify it well
 	}
+	*/
+
+	// TODO: Look at how we can implement this test now that key is no longer part of associate
+	if(map["id"].toString() == mID) {
+		passesSecurityCheck=true;
+	}
+
 	if(trustedSource || passesSecurityCheck) {
 
 		//mKey=Key( map["key"].toMap(), true);
@@ -94,7 +121,7 @@ bool Associate::update(const QVariantMap map, bool trustedSource)
 QString Associate::id() //NOTE no const please
 {
 	OC_METHODGATE();
-	return mKey.id();
+	return mID;
 }
 
 QString Associate::name() const
@@ -103,7 +130,7 @@ QString Associate::name() const
 	return mName;
 }
 
-//Unlike name() this always returns something. For agent it is name, for remote it is name if existing or id if not etc.
+
 QString Associate::identifier()
 {
 	OC_METHODGATE();
@@ -134,12 +161,13 @@ QString Associate::gender() const
 	return mGender;
 }
 
-
+/*
 Key Associate::key()
 {
 	OC_METHODGATE();
 	return mKey;
 }
+*/
 
 NodeType Associate::type() const
 {
@@ -159,11 +187,12 @@ NodeRole Associate::role() const
 bool Associate::isValidForClient(bool onlyPublic)
 {
 	OC_METHODGATE();
-	const bool keyValid=mKey.isValid(onlyPublic);
+	//const bool keyValid=mKey.isValid(onlyPublic);
+	// TODO: Look at this if the check is good enough
 	const bool listValid=mAddressList.isValid(false);
-	const bool out=( keyValid &&  listValid );
+	const bool out=( /*keyValid && */ listValid );
 	if(!out) {
-		qDebug()<<"keyValid(onlyPublic="<<onlyPublic<< ")="<<keyValid<<", listValid()="<<listValid;
+		qDebug()<<"keyValid(onlyPublic="<<onlyPublic<< ")=" /*<<keyValid<<*/ ", listValid()="<<listValid;
 	}
 	return out;
 }
@@ -173,11 +202,12 @@ bool Associate::isValidForClient(bool onlyPublic)
 bool Associate::isValidForLocalIdentity(bool onlyPublic)
 {
 	OC_METHODGATE();
-	const bool keyValid=mKey.isValid(onlyPublic);
+	//const bool keyValid=mKey.isValid(onlyPublic);
+	// TODO: Look at this if the check is good enough
 	const bool listValid=true;
-	const bool out=( keyValid &&  listValid );
+	const bool out=( /* keyValid &&  */ listValid );
 	if(!out) {
-		qDebug()<<"keyValid(onlyPublic="<<onlyPublic<< ")="<<keyValid<<", listValid()="<<listValid;
+		qDebug()<<"keyValid(onlyPublic="<<onlyPublic<< ")=" /*<<keyValid<<*/ ", listValid()="<<listValid;
 	}
 	return out;
 }
@@ -323,7 +353,7 @@ PortableID Associate::toPortableID()
 	PortableID pid;
 	pid.setName(mName);
 	pid.setGender(mGender);
-	pid.setID(mKey.id());
+	pid.setID(id());
 	pid.setType(mType);
 	pid.setBirthDate(mBirthDate);
 	return pid;
@@ -340,7 +370,8 @@ QVariantMap Associate::toVariantMap()
 
 	map["lastAdherentHandshakeMS"]=utility::time::msToVariant(mLastAdherentHandshakeMS);
 	map["birthDate"]=utility::time::msToVariant(mBirthDate);
-	map["key"]=mKey.toVariantMap(true);
+	//map["key"]=mKey.toVariantMap(true);
+	map["id"]=mID;
 	map["role"]=nodeRoleToString(mRole);
 	map["type"]=nodeTypeToString(mType);
 	map["name"]=mName;
@@ -355,7 +386,8 @@ QVariantMap Associate::toVariantMap()
 void Associate::fromVariantMap(const QVariantMap map)
 {
 	OC_METHODGATE();
-	mKey=Key( map["key"].toMap(), true);
+	//mKey=Key( map["key"].toMap(), true);
+	mID="TODO: FIX ME#1";
 	mName=( map["name"].toString() );
 	mGender=( map["gender"].toString() );
 	mBirthDate= utility::time::variantToMs( map["birthDate"]);
@@ -373,9 +405,9 @@ void Associate::fromVariantMap(const QVariantMap map)
 QString Associate::toString()
 {
 	OC_METHODGATE();
-	return mKey.toString()
+	return QString() //mKey.toString()
 		   +", name: "+mName
-		   +", id: "+mKey.id()
+		   +", id: "+id()
 		   +", gender: "+mGender
 		   +", addressList:"+mAddressList.toString()
 		   +", lastSeenMS:"+utility::string::formattedDateFromMS(mLastSeenMS)
@@ -393,7 +425,7 @@ QMap<QString, QString> Associate::toMap()
 	OC_METHODGATE();
 	QMap<QString, QString> map;
 	map["name"]=mName;
-	map["id"]=mKey.id();
+	map["id"]=id();
 	map["gender"]=mGender;
 	map["addressList"]=mAddressList.toString();
 	map["lastSeenMS"]=utility::string::formattedDateFromMS(mLastSeenMS);
@@ -436,7 +468,7 @@ QSharedPointer<Client> Associate::toClient(QSharedPointer<Node> node)
 bool Associate::operator==(Associate &o)
 {
 	OC_METHODGATE();
-	return mKey.id() == o.mKey.id();
+	return id() == o.id();
 }
 
 

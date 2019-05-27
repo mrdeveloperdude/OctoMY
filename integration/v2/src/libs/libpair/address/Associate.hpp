@@ -29,77 +29,97 @@ class PortableID;
 class Client;
 class Node;
 
-/*
 
-  Associate is a means to store the address info and trust level
+
+/**
+ * @brief The Associate class is a means to store the address info and trust level
   for one of Node's friends in a manner suitable for persistence via
-  AddressBook.
+  the AddressBook class.
 
-*/
+  It is also used to store our own identity via the LocalIdentityStore
 
+ */
 
 class Associate: public QEnableSharedFromThis<Associate>
 {
 private:
-	Key mKey;
-
+	// The public key of this associate
+//	Key mKey;
+	QString mID;
+	// The name of this associate
 	QString mName;
+	// The gender of this associate
 	QString mGender;
-	// The most updated trusted type and role for this associate
+	// The role of this associate
 	NodeRole mRole;
+	// The type of this associate
 	NodeType mType;
 	// A list of the trusts assigned to this associate
 	QStringList mTrusts;
-
-	// When was the last trusted sighting of this associate?
+	// The last trusted sighting of this associate
 	quint64 mLastSeenMS;
-	// When was the last time this associate initiated a handshake?
+	// The last time this associate initiated a handshake
 	quint64 mLastInitiatedHandshakeMS;
-	// When was the last time this associate received a handshake initiated on the other end?
+	// The last time this associate received a handshake initiated on the other end
 	quint64 mLastAdherentHandshakeMS;
-
+	// The birthdate of this associate
 	quint64 mBirthDate;
-
-	//NetworkAddress mPublicNetworkAddress;
-	//NetworkAddress mLocalNetworkAddress;
-
+	// The network addresses this associate has been known to be reachable by
 	AddressList mAddressList;
+	// The bluetooth address this associate has been known to use
 	QBluetoothAddress mBluetoothAddress;
+	// The NFC address this associate has been known to use
 	QByteArray mNFCAddress;
-
+	// The pins this associate knows (for multi factor auth)
 	QStringList mPins;
 
 public:
 	explicit Associate();
-	explicit Associate(const QVariantMap map, bool isPublic=true);
+	explicit Associate(const QVariantMap map/*, bool isPublic=true*/);
 	virtual ~Associate();
-
 
 public:
 	bool update(const QVariantMap map, bool trustedSource=false);
 
 public:
-	QString id();//NOTE no const please;
+	// Return the ID string
+	QString id(); //NOTE no const please;
+	// Provide the name
 	QString name() const;
+	// Provide a unique human readible identifier string
+	// Unlike name() this always returns something. For agent it is name, for remote it is name if existing or id if not etc.
 	QString identifier();
+	// Provide gender
 	QString gender() const;
-	Key key();
+	// Provide the private key
+	//Key key();
+	// Provide the node type
 	NodeType type() const;
+	// Provide the node role
 	NodeRole role() const;
 
-	bool isValidForClient(bool onlyPublic=true);
-	bool isValidForLocalIdentity(bool onlyPublic=true);
+	// Determine is this associate is valid when creating a client
+	bool isValidForClient(bool onlyPublic = true);
+	// Determine if this associate is valid when createing a local identity
+	bool isValidForLocalIdentity(bool onlyPublic = true);
+	// Determine if this associate is valid for use with zoo server
 	bool isValidForServer();
 
+	// Provide the list of network addresses used by this associate
 	AddressList &addressList();
+
+	// Provide the bluetooth address used by this associate
 	// TODO: Merge into NetworkAddress?
-	QBluetoothAddress bluetoothAddress()const;
+	QBluetoothAddress bluetoothAddress() const;
 
+	// Update the last seen timestamp. If when is 0 then current timestamp will be used
 	void setLastSeen(quint64 when=0);
+	// Provide the last seen timestamp
 	quint64 lastSeen() const;
+	// Provide the last initiated handshake timestamp
 	quint64 lastInitiatedHandshake() const;
+	// Provide the last adherent handshake timestamp
 	quint64 lastAdherentHandshake() const;
-
 
 public: // Pins management
 	void clearPins();
@@ -107,17 +127,14 @@ public: // Pins management
 	bool hasPin(QString pin);
 	const QStringList &pins();
 
-
 public: // Trusts management
-
 	void clearTrust();
 	void addTrust(QString trust);
 	void removeTrust(QString trust);
 	bool hasTrust(QString trust);
 	const QStringList &trusts();
 
-public:// to/from
-
+public: // Converting selectors to/from different formats
 	PortableID toPortableID();
 	QVariantMap toVariantMap();
 	void fromVariantMap(const QVariantMap map);
@@ -134,4 +151,5 @@ public: // Operators
 
 const QDebug &operator<<(QDebug &d, Associate &ass);
 
-#endif // ASSOCIATE_HPP
+#endif
+// ASSOCIATE_HPP

@@ -36,7 +36,7 @@ void DiscoveryClientService::serviceWrapperActivate(QSharedPointer<DiscoveryClie
 		discoveryClient->activate(on);
 	}
 	if(nullptr!=callBack) {
-		callBack(ok);
+		callBack(on, ok);
 	}
 }
 

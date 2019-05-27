@@ -1,15 +1,16 @@
 #ifndef SIMPLEMAPSTORE_HPP
 #define SIMPLEMAPSTORE_HPP
 
+#include "uptime/ConfigureHelper.hpp"
+
 #include "SimpleDataStore.hpp"
-
-
 
 class SimpleMapStore: public SimpleDataStore
 {
 
 private:
 	QVariantMap mMap;
+	ConfigureHelper mConfigureHelper;
 
 public:
 	explicit SimpleMapStore();
@@ -26,7 +27,6 @@ public:
 	bool fromDefault()  Q_DECL_OVERRIDE;
 
 };
-
 
 
 #endif

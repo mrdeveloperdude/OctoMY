@@ -1,6 +1,8 @@
 #ifndef SVGWIDGET_HPP
 #define SVGWIDGET_HPP
 
+#include "uptime/ConfigureHelper.hpp"
+
 #include <QtWidgets/QWidget>
 #include <QtSvg/QSvgRenderer>
 
@@ -21,14 +23,16 @@ protected:
 	QColor mSilhouetteForeground;
 	QColor mSilhouetteBackground;
 	const QColor mFailColor;
-
 	bool mDirty;
+private:
+	ConfigureHelper mConfigureHelperSvg;
 
 public:
 	explicit SvgWidget(QWidget *parent = nullptr);
 	virtual ~SvgWidget();
 
-	void configure(bool doSilhouette=true, QColor silhouetteForeground=QColor("White"), QColor silhouetteBackground=QColor("#00000000"));
+public:
+	void configure(bool doSilhouette, QColor silhouetteForeground=QColor("White"), QColor silhouetteBackground=QColor("#00000000"));
 
 	void setSvg(QSvgRenderer &mSVG);
 
@@ -43,7 +47,6 @@ public:
 
 	void setSilhouetteBackground(QColor);
 	QColor silhouetteBackground() const;
-
 
 protected:
 	void paintEvent(QPaintEvent *);

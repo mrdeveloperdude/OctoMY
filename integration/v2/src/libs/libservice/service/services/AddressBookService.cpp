@@ -25,7 +25,7 @@ void AddressBookService::serviceWrapperActivate(QSharedPointer<AddressBook> addr
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.activate(on)) {
-		addressBook->activate(on, [this, addressBook, callBack](bool ok) {
+		addressBook->activate(on, [this, addressBook, callBack, on](bool ok) {
 			if(!addressBook.isNull()) {
 				//qDebug()<<"AddressBook synchronized with ok="<<ok;
 				auto map=addressBook->toMap();
@@ -40,7 +40,7 @@ void AddressBookService::serviceWrapperActivate(QSharedPointer<AddressBook> addr
 				qWarning()<<"ERROR: address book not ok";
 			}
 			if(nullptr!=callBack) {
-				callBack(ok);
+				callBack(on, ok);
 			}
 		});
 	}

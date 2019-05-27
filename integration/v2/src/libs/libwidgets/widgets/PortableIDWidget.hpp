@@ -2,6 +2,8 @@
 #define PORTABLEIDWIDGET_HPP
 
 #include "security/PortableID.hpp"
+#include "uptime/ConfigureHelper.hpp"
+
 #include <QWidget>
 
 namespace Ui
@@ -15,14 +17,13 @@ class PortableIDWidget : public QWidget
 private:
 	Ui::PortableIDWidget *ui;
 	PortableID mID;
-
+	ConfigureHelper mConfigureHelper;
 
 public:
 	explicit PortableIDWidget(QWidget *parent = nullptr);
 	virtual ~PortableIDWidget();
 
 public:
-
 	void configure(bool showCertificateFirst=true, bool userCanChange=true);
 	void setPortableID(PortableID id);
 	PortableID getPortableID();

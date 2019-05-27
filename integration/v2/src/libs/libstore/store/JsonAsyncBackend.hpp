@@ -2,6 +2,7 @@
 #define JSONASYNCBACKEND_HPP
 
 #include "AsyncStore.hpp"
+#include "uptime/ConfigureHelper.hpp"
 
 #include <QVariantMap>
 
@@ -9,6 +10,7 @@ class JsonAsyncBackend : public AsyncBackend<QVariantMap>
 {
 private:
 	QString mFilename;
+	ConfigureHelper mConfigureHelper;
 
 public:
 	explicit JsonAsyncBackend();

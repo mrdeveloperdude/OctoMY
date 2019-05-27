@@ -7,16 +7,27 @@
 #include <QCryptographicHash>
 #include <QDebug>
 
-/*
-  Key represents a key as part of Public Key Infrastructure based on RSA
-  It has a QtStyle private class so it can easily be copied by value
-  ( http://stackoverflow.com/questions/25250171/how-to-use-the-qts-pimpl-idiom )
-*/
-
 
 
 class KeyPrivate;
 
+/**
+ * @brief The Key class represents a key as part of Public Key Infrastructure based on RSA
+ * It has a QtStyle private class so it can easily be copied by value
+ * ( http://stackoverflow.com/questions/25250171/how-to-use-the-qts-pimpl-idiom )
+ *
+ * It provides the following features:
+ * + Generation of new key
+ * + Loading of existing key from string or map
+ * + Saving of key to string or map
+ * + using key for encryption
+ * + using key for decryption
+ * + using key for signing
+ * + using key for verifying signatures
+ * + using key for encryption
+ *
+ * See also KeyStore.hpp, Associate.hpp, Client.hpp, Node.hpp
+ */
 class Key
 {
 

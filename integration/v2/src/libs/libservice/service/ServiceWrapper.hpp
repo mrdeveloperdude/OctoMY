@@ -21,7 +21,7 @@ class ServiceWrapper: public Service
 {
 private:
 	QSharedPointer<T> mService;
-	bool mActivated;
+
 public:
 	explicit ServiceWrapper(QSharedPointer<T> service, QString name, QStringList dependencies=QStringList());
 
@@ -31,7 +31,7 @@ public:
 	// Service interface.
 public:
 	void serviceActivateImp(bool on, ServiceActivatedCallback callBack=nullptr) Q_DECL_OVERRIDE;
-	bool serviceActivatedImp() const Q_DECL_OVERRIDE;
+//	bool serviceActivatedImp() const Q_DECL_OVERRIDE;
 
 	// ServiceWapper interface.
 public:
@@ -44,7 +44,7 @@ template <class T>
 ServiceWrapper<T>::ServiceWrapper(QSharedPointer<T> service, QString name, QStringList dependencies)
 	: Service(name, dependencies)
 	, mService(service)
-	, mActivated(false)
+
 {
 	OC_METHODGATE();
 }
@@ -63,11 +63,10 @@ void ServiceWrapper<T>::serviceActivateImp(bool on, ServiceActivatedCallback cal
 {
 	OC_METHODGATE();
 	if(!mService.isNull()) {
-		serviceWrapperActivate(mService, on, [this, on, callBack](bool ok) {
+		serviceWrapperActivate(mService, on, [this, callBack](bool on, bool ok) {
 			// Siphon of the value of "activated"
-			mActivated=ok?on:mActivated;
 			if(nullptr!=callBack) {
-				callBack(ok);
+				callBack(on, ok);
 			}
 		});
 	} else {
@@ -75,14 +74,14 @@ void ServiceWrapper<T>::serviceActivateImp(bool on, ServiceActivatedCallback cal
 	}
 }
 
-
+/*
 template <class T>
 bool ServiceWrapper<T>::serviceActivatedImp() const
 {
 	OC_METHODGATE();
 	return mActivated;
 }
-
+*/
 
 #endif
 // SERVICEWRAPPER_HPP

@@ -6,6 +6,7 @@ Service::Service(QString name, QStringList dependencies)
 	: mName(name)
 	, mDependencies(dependencies)
 	, mActiveWanted(false)
+	, mActive(false)
 {
 	OC_METHODGATE();
 }
@@ -35,7 +36,12 @@ void Service::serviceChangeActivation(bool on, ServiceActivatedCallback callBack
 {
 	OC_METHODGATE();
 	mActiveWanted=on;
-	serviceActivateImp(on, callBack);
+	serviceActivateImp(on, [this, callBack](bool on, bool ok) {
+		mActive=ok?on:mActive;
+		if(nullptr!=callBack) {
+			callBack(on, ok);
+		}
+	});
 }
 
 
@@ -49,7 +55,7 @@ bool Service::serviceActiveWanted() const
 bool Service::serviceActiveActual() const
 {
 	OC_METHODGATE();
-	return serviceActivatedImp();
+	return mActive;
 }
 
 

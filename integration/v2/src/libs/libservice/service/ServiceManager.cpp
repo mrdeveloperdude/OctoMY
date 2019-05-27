@@ -380,6 +380,7 @@ QSet<QString> ServiceManager::nextActivatableInSet(const QSet<QString> set, cons
 	return ret;
 }
 
+
 struct synchronizer {
 	int total;
 	int left;
@@ -405,7 +406,7 @@ struct synchronizer {
 };
 
 
-void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSet<QString> deactivateSet, ServiceActivatedCallback callBack)
+void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSet<QString> deactivateSet, ServiceManagerCallback callBack)
 {
 	OC_METHODGATE();
 	//qDebug().noquote().nospace()<<"changeActivation called with activate="<<activateSet<<" deactivate="<<deactivateSet;
@@ -442,7 +443,8 @@ void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSe
 				if(currentlyWanted != wanted) {
 					// Recurse asynchronously
 					qDebug().noquote().nospace()<<" --- Change set: "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION")<<" STARTED";
-					service->serviceChangeActivation(wanted, [=](bool ok) {
+					service->serviceChangeActivation(wanted, [=](bool on, bool ok) {
+						Q_UNUSED(on);
 						qDebug().noquote().nospace()<<" ---- Change set "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION")<<" "<<(ok?"SUCCEEDED":"FAILED");
 						if(sync->end(ok)) {
 							// qDebug().noquote().nospace()<<" ------ Recursing at end: "<<name<<" with "<<active;
@@ -470,7 +472,7 @@ void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSe
 
 
 
-void ServiceManager::changeActivation(const QSet<QString> set, const bool active, ServiceActivatedCallback callBack)
+void ServiceManager::changeActivation(const QSet<QString> set, const bool active, ServiceManagerCallback callBack)
 {
 	OC_METHODGATE();
 	// qDebug()<<"Activate called with: "<<set<<" and "<<active;
@@ -494,7 +496,8 @@ void ServiceManager::changeActivation(const QSet<QString> set, const bool active
 			if(!service.isNull()) {
 				if(active!=service->serviceActiveWanted()) {
 					// Recurse asynchronously
-					service->serviceChangeActivation(active, [=](bool ok) {
+					service->serviceChangeActivation(active, [=](bool on, bool ok) {
+						Q_UNUSED(on);
 						qDebug()<<" ---- Activating service : "<<name<<" with "<<active;
 						if(s->end(ok)) {
 							// qDebug()<<" ------ Recursing at end: "<<name<<" with "<<active;
@@ -520,7 +523,7 @@ void ServiceManager::changeActivation(const QSet<QString> set, const bool active
 }
 
 
-void ServiceManager::changeActivation(const QString service, const bool active, ServiceActivatedCallback callBack)
+void ServiceManager::changeActivation(const QString service, const bool active, ServiceManagerCallback callBack)
 {
 	OC_METHODGATE();
 	changeActivation(QSet<QString> {service}, active, callBack);

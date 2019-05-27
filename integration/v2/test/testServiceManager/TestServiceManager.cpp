@@ -25,7 +25,7 @@ public:
 	virtual ~MockService() Q_DECL_OVERRIDE;
 public:
 	void serviceActivateImp(bool on, ServiceActivatedCallback callBack) Q_DECL_OVERRIDE;
-	bool serviceActivatedImp() const Q_DECL_OVERRIDE;
+//	bool serviceActivatedImp() const Q_DECL_OVERRIDE;
 
 
 public:
@@ -68,11 +68,12 @@ void MockService::serviceActivateImp(bool on, ServiceActivatedCallback callBack)
 }
 
 
-
+/*
 bool MockService::serviceActivatedImp() const
 {
 	return mActivated;
 }
+*/
 
 // Simulate async activation
 bool MockService::mockSetActivated(const bool runCallback)
@@ -83,7 +84,7 @@ bool MockService::mockSetActivated(const bool runCallback)
 		mActivated=mWantActivated;
 		if(runCallback) {
 			if(nullptr!=mCallBack) {
-				mCallBack(mActivated);
+				mCallBack(mActivated, true);
 				mCallBack=nullptr;
 			} else {
 				qDebug()<<"ERROR: No callback registered";
@@ -371,8 +372,8 @@ void TestServiceManager::testDirectRegistrationAndActivation()
 	QCOMPARE(man->dependenciesMet("Service-D"), true);
 	QCOMPARE(man->dependenciesMet(d), true);
 
-	a->serviceChangeActivation(true, [](bool ok) {
-		qDebug()<<"YAY CALLBACK!"<<ok;
+	a->serviceChangeActivation(true, [](bool on, bool ok) {
+		qDebug()<<"YAY CALLBACK! ON="<<on<<", OK="<<ok;
 	});
 	QCOMPARE(a->mockSetActivated(true), true);
 	QCOMPARE(man->count(), 4);
@@ -393,8 +394,8 @@ void TestServiceManager::testDirectRegistrationAndActivation()
 	QCOMPARE(man->dependenciesMet("Service-D"), true);
 	QCOMPARE(man->dependenciesMet(d), true);
 
-	b->serviceChangeActivation(true, [](bool ok) {
-		qDebug()<<"YAY CALLBACK!"<<ok;
+	b->serviceChangeActivation(true, [](bool on, bool ok) {
+		qDebug()<<"YAY CALLBACK! ON="<<on<<", OK="<<ok;
 	});
 	QCOMPARE(b->mockSetActivated(true), true);
 	QCOMPARE(man->count(), 4);
@@ -415,8 +416,8 @@ void TestServiceManager::testDirectRegistrationAndActivation()
 	QCOMPARE(man->dependenciesMet("Service-D"), true);
 	QCOMPARE(man->dependenciesMet(d), true);
 
-	d->serviceChangeActivation(true, [](bool ok) {
-		qDebug()<<"YAY CALLBACK!"<<ok;
+	d->serviceChangeActivation(true, [](bool on, bool ok) {
+		qDebug()<<"YAY CALLBACK! ON="<<on<<", OK="<<ok;
 	});
 	QCOMPARE(d->mockSetActivated(true), true);
 	QCOMPARE(man->count(), 4);
@@ -464,8 +465,8 @@ void TestServiceManager::testDirectRegistrationAndActivation()
 	QCOMPARE(man->dependents("Service-D"), expectedDDependents);
 
 
-	a->serviceChangeActivation(false, [](bool ok) {
-		qDebug()<<"YAY CALLBACK!"<<ok;
+	a->serviceChangeActivation(true, [](bool on, bool ok) {
+		qDebug()<<"YAY CALLBACK! ON="<<on<<", OK="<<ok;
 	});
 	QCOMPARE(a->mockSetActivated(true), false);
 	QCOMPARE(man->count(), 4);
@@ -512,17 +513,17 @@ void TestServiceManager::testDirectRegistrationAndActivation()
 	});
 
 	qDebug()<<"#############################################################";
-	a->serviceChangeActivation(false, [](bool ok) {
-		qDebug()<<"Deactivated A: "<<ok;
+	a->serviceChangeActivation(false, [](bool on, bool ok) {
+		qDebug()<<"Deactivated A: ON="<<on<<", OK="<<ok;
 	});
-	b->serviceChangeActivation(false, [](bool ok) {
-		qDebug()<<"Deactivated B: "<<ok;
+	b->serviceChangeActivation(false, [](bool on, bool ok) {
+		qDebug()<<"Deactivated B: ON="<<on<<", OK="<<ok;
 	});
-	c->serviceChangeActivation(false, [](bool ok) {
-		qDebug()<<"Deactivated C: "<<ok;
+	c->serviceChangeActivation(false, [](bool on, bool ok) {
+		qDebug()<<"Deactivated C: ON="<<on<<", OK="<<ok;
 	});
-	d->serviceChangeActivation(false, [](bool ok) {
-		qDebug()<<"Deactivated D: "<<ok;
+	d->serviceChangeActivation(false, [](bool on, bool ok) {
+		qDebug()<<"Deactivated D: ON="<<on<<", OK="<<ok;
 	});
 
 	QCOMPARE(a->mockSetActivated(true), false);

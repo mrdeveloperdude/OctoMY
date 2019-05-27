@@ -1,13 +1,14 @@
 #ifndef SERVICE_HPP
 #define SERVICE_HPP
 
+#include <QObject>
 #include <QString>
 #include <QStringList>
 
 #include <functional>
 
 
-typedef std::function<void(bool)> ServiceActivatedCallback;
+typedef std::function<void(bool on, bool ok)> ServiceActivatedCallback;
 
 /**
  * @brief The Service class represents one running part of the program that may be switched on or off. As long as it is on, it will do it's work quietly in the background
@@ -25,6 +26,7 @@ private:
 	// TODO: Should dependencies be determined when registering service with manager rather than in service constructor?
 	QStringList mDependencies;
 	bool mActiveWanted;
+	bool mActive;
 
 public:
 	explicit Service(QString name, QStringList dependencies=QStringList());
@@ -43,7 +45,7 @@ public:
 	// Service interface internal.
 protected:
 	virtual void serviceActivateImp(bool on, ServiceActivatedCallback callBack=nullptr) =0;
-	virtual bool serviceActivatedImp() const =0 ;
+//	virtual bool serviceActivatedImp() const =0 ;
 
 };
 

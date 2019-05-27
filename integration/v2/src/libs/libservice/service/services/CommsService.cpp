@@ -25,6 +25,6 @@ void CommsService::serviceWrapperActivate(QSharedPointer<CommsChannel> comms, bo
 	OC_METHODGATE();
 	if(mConfigureHelper.activate(on)) {
 		comms->activate(on);
-		callBack(true);
+		callBack(on, true);
 	}
 }

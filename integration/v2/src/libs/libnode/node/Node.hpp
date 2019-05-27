@@ -132,7 +132,7 @@ private:
 	// The current state during activation
 	NodeActivationState mNodeActivationState;
 	// Timer used to log how long activation takes from start to finish
-	ScopedTimer *mNodeStepActivationTimer;
+	ScopedTimer *mActivationTimer;
 
 
 	// Manager for maintaining the lifecycle and interdependencies of services
@@ -179,10 +179,6 @@ public:
 
 	// Use the servicemanager subsystem to enable/disable services in correct order
 	void serviceActivation(const bool on);
-
-	// Use step activation "hack" to enable/disable services in correc order
-	// DEPRECATED: in favor of serviceActivation()
-	void stepActivation(const bool on);
 
 	// Called by launcher to get a handle to the app's main window
 	// Will be called when launcher wants to show window during initialization
@@ -283,7 +279,10 @@ public:
 
 
 	QString name();
+
+	// Convenience wrapper for setNodeIdentity( QSharedPointer<Associate> nodeID)
 	void setNodeIdentity(QVariantMap map);
+	// Invoked by Delivery wizards when we are born, and by LocalIdentityStore on startup as soon as our identity is ready
 	void setNodeIdentity(QSharedPointer<Associate> nodeID);
 	CameraList *cameraList();
 
@@ -299,13 +298,14 @@ public:
 
 	//TryToggleState updateOnlineStatus(const TryToggleState currentTryState);
 
-	virtual void identityChanged();
+
 
 
 	virtual QSharedPointer<Node> sharedThis();
 	//QSharedPointer<Node> sharedThisNode();
 
-
+signals:
+	void identityChanged();
 
 	// Couriers
 public:
@@ -324,12 +324,12 @@ public:
 	void updateCouriersRegistration();
 
 
-/*
-	// Actions
-public:
-	bool isCommsStarted();
-	bool isCommsConnected();
-*/
+	/*
+		// Actions
+	public:
+		bool isCommsStarted();
+		bool isCommsConnected();
+	*/
 
 	// IConnectionStatus interface
 public:

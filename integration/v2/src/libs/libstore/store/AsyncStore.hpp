@@ -259,7 +259,6 @@ void AsyncStore<T>::activate(const bool on, std::function<void(bool)> callBack)
 {
 	OC_METHODGATE();
 	on?addJournal("ACTIVATE ON"):addJournal("ACTIVATE OFF");
-	bool ok=false;
 	if(mConfigureHelper.activate(on)) {
 		if(on) {
 
@@ -272,6 +271,12 @@ void AsyncStore<T>::activate(const bool on, std::function<void(bool)> callBack)
 				processEvents();
 				//qDebug()<<"Exiting AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
 			});
+			// Synchronize to get started
+			synchronize().onFinished([callBack](ASEvent<T> &ase) {
+				if(nullptr!=callBack) {
+					callBack(ase.isSuccessfull());
+				}
+			});
 		} else {
 			synchronize();
 			complete();
@@ -279,11 +284,10 @@ void AsyncStore<T>::activate(const bool on, std::function<void(bool)> callBack)
 			mCompleteFuture.waitForFinished();
 			//qWarning()<<"Got for asyncstore future finish :)";
 			// NOTE: synchronize and complete both need store to be activated, so we deactivate last
+			if(nullptr!=callBack) {
+				callBack(true);
+			}
 		}
-		ok=true;
-	}
-	if(nullptr!=callBack){
-		callBack(ok);
 	}
 }
 
@@ -552,7 +556,7 @@ AsyncStoreStatus AsyncStore<T>::statusSync()
 		addJournal(QString("status=%1").arg(status.toString()));
 		return status;
 	} else {
-		return AsyncStoreStatus(0,0);
+		return AsyncStoreStatus(0, 0);
 	}
 
 }

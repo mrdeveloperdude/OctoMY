@@ -27,19 +27,19 @@
 #include <QMutex>
 #include <QString>
 
-/*
-template <typename T>
-static void noop(ASEvent<T> &)
-{
-
-}
-*/
-
 struct nop {
 	void operator()(...) const volatile {}
 };
 
-
+/**
+ * @brief The KeyStore class has the following tasks:
+ * + asynchronous loading and storing of our local private key key plus the publik key of associates
+ * + asynchronoous generation of our local private key
+ * + Look-up of keys by ID
+ *
+ * See also Key.hpp, LocalIdentityStore.hpp
+ *
+ */
 class KeyStore: public QObject, public AsyncFrontend<QVariantMap>, public QEnableSharedFromThis<KeyStore>
 {
 	Q_OBJECT
@@ -97,8 +97,6 @@ public:
 
 
 public:
-
-
 	QString filename() const;
 	bool fileExists() const;
 	bool ready();
@@ -121,14 +119,10 @@ public:
 	void waitForSync();
 
 public:
-
 	friend const QDebug &operator<<(QDebug &d, KeyStore &ks);
 
-
 signals:
-
-	void keystoreReady(bool);
-	//storeReady(!mError);
+	void keystoreReady(bool on, bool ok);
 
 };
 
@@ -148,6 +142,7 @@ void KeyStore::status(F callBack)
 	}
 }
 
+
 template <typename F>
 void KeyStore::clear(F callBack)
 {
@@ -156,6 +151,7 @@ void KeyStore::clear(F callBack)
 		mStore.clear().onFinished(callBack);
 	}
 }
+
 
 template <typename F>
 void KeyStore::save(F callBack)
@@ -166,6 +162,7 @@ void KeyStore::save(F callBack)
 	}
 }
 
+
 template <typename F>
 void KeyStore::load(F callBack)
 {
@@ -174,6 +171,7 @@ void KeyStore::load(F callBack)
 		mStore.load().onFinished(callBack);
 	}
 }
+
 
 template <typename F>
 void KeyStore::synchronize(F callBack)
@@ -184,12 +182,7 @@ void KeyStore::synchronize(F callBack)
 	}
 }
 
-
-
-
 const QDebug &operator<<(QDebug &d, KeyStore &ks);
-
-
 
 
 #endif

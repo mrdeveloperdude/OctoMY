@@ -8,10 +8,12 @@
 
 #include <QObject>
 
-/** The AddressBook class is used to keep track of and persist the information a
+/** @brief The AddressBook class is used to keep track of and persist the information a
   Node has on its associates. Think of it as a fully automated "contact list".
 
   The store supports loading and saving of the list asynchrounusly.
+
+ * See also Associate.hpp, KeyStore.hpp, LocalIdentityStore.hpp
 */
 
 class AddressBook: public QObject, public SimpleDataStore

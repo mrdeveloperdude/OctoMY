@@ -3,6 +3,7 @@
 #include "uptime/MethodGate.hpp"
 
 LocalIdentityStore::LocalIdentityStore()
+	: mConfigureHelper("LocalIdentityStore", true, false, false, true, false)
 {
 	OC_METHODGATE();
 }
@@ -17,5 +18,7 @@ LocalIdentityStore::~LocalIdentityStore()
 void LocalIdentityStore::configure(QString filename)
 {
 	OC_METHODGATE();
-	SimpleMapStore::configure(filename);
+	if(mConfigureHelper.configure()) {
+		SimpleMapStore::configure(filename);
+	}
 }
