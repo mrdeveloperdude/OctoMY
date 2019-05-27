@@ -368,7 +368,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pushButtonHeaderIdentification">
+    <widget class="QPushButton" name="pushButtonHeaderIdentity">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
        <horstretch>0</horstretch>
@@ -398,7 +398,7 @@
       <string>Toggle application options</string>
      </property>
      <property name="text">
-      <string>Identification</string>
+      <string>Identity</string>
      </property>
      <property name="checkable">
       <bool>true</bool>

@@ -29,6 +29,7 @@ void PortableIDWidget::configure(bool showCertificateFirst, bool userCanChange)
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
 		ui->pushButtonToggleView->setVisible(userCanChange);
+		ui->pushButtonToggleView->setChecked(showCertificateFirst);
 		ui->stackedWidget->setCurrentWidget(showCertificateFirst?ui->pageCertificate:ui->pageNameplate);
 	}
 }

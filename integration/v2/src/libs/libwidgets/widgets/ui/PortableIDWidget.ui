@@ -375,7 +375,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../resources/icons.qrc">
+        <iconset resource="../../../libres/resources/icons.qrc">
          <normaloff>:/icons/identity.svg</normaloff>:/icons/identity.svg</iconset>
        </property>
        <property name="checkable">
@@ -391,7 +391,7 @@
   <customwidget>
    <class>IdenticonWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/IdenticonWidget.hpp</header>
+   <header location="global">widgets/IdenticonWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -402,7 +402,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../resources/icons.qrc"/>
+  <include location="../../../libres/resources/icons.qrc"/>
  </resources>
  <connections/>
 </ui>

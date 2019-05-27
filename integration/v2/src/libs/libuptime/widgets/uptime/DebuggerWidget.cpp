@@ -293,7 +293,7 @@ void DebuggerWidget::on_pushButtonBirth_clicked()
 							const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
 							AgentNameGenerator ang;
 							GenderGenerator gg;
-							map["key"]=key->toVariantMap(true);
+							map["id"]=key->id();
 							map["name"]=ang.generate();
 							map["gender"]=gg.generate();
 							map["role"]=nodeRoleToString(mNode->nodeRole());
@@ -359,12 +359,12 @@ void DebuggerWidget::on_pushButtonExpandAll_clicked()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		pack();
 		for(auto button: mHeaderButtons) {
 			if(nullptr!=button) {
 				button->setChecked(true);
 			}
 		}
+		pack();
 	}
 }
 
