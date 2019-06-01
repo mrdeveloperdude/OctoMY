@@ -141,8 +141,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testNetworkSettingsWidget \
 #		testOpenCL \
 #		testParser \
-		testPortableID \
-#		testPoseMappingWidget \
+#		testPortableID \
+		testPoseMappingWidget \
 #		testRateCalculator \
 #		testRNG \
 #		testServiceManager \
