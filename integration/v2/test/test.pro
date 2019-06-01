@@ -121,9 +121,9 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testDiscovery \
 #		testESpeak \
 #		testEventSourcing \
-		testEyesWidget \
+#		testEyesWidget \
 #		testFivePhase \
-#		testHardwareWidget \
+		testHardwareWidget \
 #		testHashstore \
 #		testHoneymoonScheduler \
 #		testIDDuel \
