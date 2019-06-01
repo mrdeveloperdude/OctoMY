@@ -45,6 +45,7 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testIrisRendrer \
 		testKey \
 		testKeyStore \
+		testLightWidget \
 		testLocalAddressList \
 		testMapEditor\
 		testNameGenerator \
@@ -130,7 +131,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testIdenticon \
 #		testIrisRendrer \
 #		testKey \
-		testKeyStore \
+#		testKeyStore \
+		testLightWidget \
 #		testLocalAddressList \
 #		testMapEditor\
 #		testNameGenerator \
