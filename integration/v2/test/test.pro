@@ -120,8 +120,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testDeliveryWizard \
 #		testDiscovery \
 #		testESpeak \
-		testEventSourcing \
-#		testEyesWidget \
+#		testEventSourcing \
+		testEyesWidget \
 #		testFivePhase \
 #		testHardwareWidget \
 #		testHashstore \
