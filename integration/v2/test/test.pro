@@ -34,6 +34,7 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testDataStore \
 		testDeliveryWizard \
 		testDiscovery \
+		testESpeak \
 		testEventSourcing \
 		testEyesWidget \
 		testFivePhase \
@@ -117,7 +118,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testCreepyVoice \
 #		testDataStore \
 #		testDeliveryWizard \
-		testDiscovery \
+#		testDiscovery \
+		testESpeak \
 #		testEventSourcing \
 #		testEyesWidget \
 #		testFivePhase \
