@@ -128,8 +128,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testHoneymoonScheduler \
 #		testIDDuel \
 #		testIdenticon \
-		testIrisRendrer \
-#		testKey \
+#		testIrisRendrer \
+		testKey \
 #		testKeyStore \
 #		testLocalAddressList \
 #		testMapEditor\
