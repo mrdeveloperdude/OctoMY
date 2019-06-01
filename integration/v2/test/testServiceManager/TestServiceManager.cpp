@@ -102,7 +102,6 @@ void MockService::mockSetAsyncActivation(const bool on)
 }
 
 
-
 void TestServiceManager::testHelpers()
 {
 	QSharedPointer<ServiceManager> man(OC_NEW ServiceManager());
@@ -149,6 +148,8 @@ void TestServiceManager::testHelpers()
 	QCOMPARE(man->nameIsWellformed("NAME  NAME"), true);
 
 }
+
+
 void TestServiceManager::testDirectRegistrationAndActivation()
 {
 	QSharedPointer<MockService> a(OC_NEW MockService("Service-A"));
@@ -601,9 +602,7 @@ void TestServiceManager::testDirectRegistrationAndActivation()
 	QCOMPARE(man->activatedActual("Service-B"), true);
 	QCOMPARE(man->activatedActual("Service-C"), true);
 	QCOMPARE(man->activatedActual("Service-D"), true);
-
 }
-
 
 
 void TestServiceManager::testServiceLevels()
@@ -715,12 +714,9 @@ void TestServiceManager::testServiceLevels()
 	QCOMPARE(serviceMan->activatedWanted(c->name()), true);
 	QCOMPARE(serviceMan->activatedWanted(d->name()), true);
 
-
 	qDebug()<<"=============================================================";
 	qDebug()<<"Haxta lavixta baxby";
 }
 
 
 OC_TEST_MAIN(test, TestServiceManager)
-
-

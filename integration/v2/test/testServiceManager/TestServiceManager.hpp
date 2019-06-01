@@ -7,7 +7,6 @@ class TestServiceManager:public QObject
 {
 	Q_OBJECT
 
-
 private slots:
 	void testHelpers();
 	void testDirectRegistrationAndActivation();

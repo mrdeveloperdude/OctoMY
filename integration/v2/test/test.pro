@@ -144,8 +144,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testPortableID \
 #		testPoseMappingWidget \
 #		testRateCalculator \
-		testRandom \
-#		testServiceManager \
+#		testRandom \
+		testServiceManager \
 #		testServotor32Controller \
 #		testSimpleDataStore \
 #		testStreamCodec \
