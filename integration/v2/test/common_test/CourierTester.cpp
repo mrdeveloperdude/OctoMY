@@ -1,17 +1,19 @@
 #include "CourierTester.hpp"
 
-//#include "comms/couriers/Courier.hpp"
+#include "comms/couriers/Courier.hpp"
 
 #include "utility/random/Random.hpp"
 #include "utility/time/HumanTime.hpp"
+#include "utility/string/String.hpp"
+
+#include "uptime/New.hpp"
 
 #include <QByteArray>
 #include <QBuffer>
 #include <QDataStream>
+#include <QDebug>
 
-//#include "../common_test/TestCommon.hpp"
-
-
+#include "../common_test/Common_test.hpp"
 
 
 CourierTester::CourierTester(Courier *fromCourier, Courier *toCourier, QString fromName, QString toName)
@@ -35,19 +37,22 @@ CourierTester::CourierTester(Courier *fromCourier, Courier *toCourier, QString f
 				;
 }
 
+
 void CourierTester::setProfile(CourierTesterProfile &p)
 {
 	mProfile=p;
 }
 
+
 void CourierTester::sleepRandom()
 {
 	const quint64 ms=(mProfile.sleepTimeMin())+(qrand()%mProfile.sleepTimeRange());
 	if(ms>0) {
-		qDebug()<<"WAITING "<<utility::time::humanReadableElapsedMS(ms);
+		qDebug()<<"WAITING "<<utility::string::humanReadableElapsedMS(ms);
 		QTest::qWait(ms);
 	}
 }
+
 
 void CourierTester::onTestInit()
 {
@@ -70,6 +75,7 @@ void CourierTester::onTestDeInit()
 	onTestDeInitImp();
 }
 
+
 void CourierTester::onTestRoundStart()
 {
 	mRoundCounter++;
@@ -82,14 +88,13 @@ void CourierTester::onTestRoundEnd()
 {
 	qDebug()<<"--- ROUND END -----------";
 	qDebug()<<"--- UPDATE "<<mFromName;
-	quint64 now=utility::currentMsecsSinceEpoch<quint64>();
+	quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
 	mFromCourier->update(now);
 	qDebug()<<"--- UPDATE "<<mToName;
 	mToCourier->update(now);
 	qDebug()<< "CourierTester stats: mFromStreams="<<mFromStreams.size()<<", mToStreams="<<mToStreams.size()<<"";
 	onTestRoundEndImp();
 }
-
 
 
 QByteArray *CourierTester::fetchFromStream()
@@ -142,6 +147,7 @@ QByteArray *CourierTester::fetchToStream()
 	//QVERIFY(nullptr!=ba);
 	return ba;
 }
+
 
 void CourierTester::onToReceiving()
 {
@@ -198,10 +204,12 @@ void CourierTester::onToDrop()
 	qDebug()<<"TODO: Implement onToDrop";
 }
 
+
 void CourierTester::onToCorrupt()
 {
 	qDebug()<<"TODO: Implement onToCorrupt";
 }
+
 
 void CourierTester::onFromReceiving()
 {
@@ -230,6 +238,7 @@ void CourierTester::onFromReceiving()
 	}
 }
 
+
 void CourierTester::onFromSend()
 {
 	if( mProfile.betrayMandateSendActive() || mFromCourier->mandate().sendActive ) {
@@ -257,11 +266,11 @@ void CourierTester::onFromDrop()
 	qDebug()<<"TODO: Implement onFromDrop";
 }
 
+
 void CourierTester::onFromCorrupt()
 {
 	qDebug()<<"TODO: Implement onFromCorrupt";
 }
-
 
 
 void CourierTester::putTitle(int chance)
@@ -282,6 +291,7 @@ int CourierTester::randomStep()
 {
 	return mProfile.randomStep();
 }
+
 
 void CourierTester::testStep(int step)
 {
@@ -328,6 +338,7 @@ void CourierTester::testStep(int step)
 	}
 	onTestRoundEnd();
 }
+
 
 void CourierTester::testRandomSteps(int steps)
 {

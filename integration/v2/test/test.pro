@@ -102,9 +102,9 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 	TEST_PROJECTS+= \
 #		testTrustSymbolWidget \
 		testAddressBook \
-		testAddressList \
+#		testAddressList \
 #		testAgentStateCourier \
-#		testArduMY \
+		testArduMY \
 #		testAssociate \
 #		testAsyncStore \
 #		testBlob \
