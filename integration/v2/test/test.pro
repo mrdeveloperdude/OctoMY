@@ -116,8 +116,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testConcurrentQueue \
 #		testCreepyVoice \
 #		testDataStore \
-		testDeliveryWizard \
-#		testDiscovery \
+#		testDeliveryWizard \
+		testDiscovery \
 #		testEventSourcing \
 #		testEyesWidget \
 #		testFivePhase \
