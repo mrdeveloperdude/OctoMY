@@ -135,8 +135,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testLightWidget \
 #		testLocalAddressList \
 #		testMapEditor\
-		testNameGenerator \
-#		testNetworkAddress \
+#		testNameGenerator \
+		testNetworkAddress \
 #		testNetworkSettingsWidget \
 #		testParser \
 #		testPortableID \
