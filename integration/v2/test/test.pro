@@ -127,8 +127,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testHashstore \
 #		testHoneymoonScheduler \
 #		testIDDuel \
-		testIdenticon \
-#		testIrisRendrer \
+#		testIdenticon \
+		testIrisRendrer \
 #		testKey \
 #		testKeyStore \
 #		testLocalAddressList \
