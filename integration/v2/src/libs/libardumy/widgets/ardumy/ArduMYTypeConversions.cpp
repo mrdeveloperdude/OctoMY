@@ -12,8 +12,6 @@
 /*
 
 
-
-
 QString ArduMYActuatorValueRepresentationToString(ArduMYActuatorValueRepresentation s)
 {
 #define  ArduMYActuatorTypeToStringCASE(A) case (A):return #A
@@ -32,8 +30,6 @@ QString ArduMYActuatorValueRepresentationToString(ArduMYActuatorValueRepresentat
 	}
 #undef ArduMYActuatorTypeToStringCASE
 }
-
-
 
 
 QString ArduMYActuatorValueToString(ArduMYActuatorValue val, ArduMYActuatorValueRepresentation representation)
@@ -75,20 +71,18 @@ QString ArduMYActuatorValueToString(ArduMYActuatorValue val, ArduMYActuatorValue
 }
 
 
-
 QString ArduMYActuatorStateToString(ArduMYActuatorState &state, ArduMYActuatorValueRepresentation representation)
 {
 	QString out="ArdumyActuatorState{ flags="+QString::number(state.flags,2)+", value="+ArduMYActuatorValueToString(state.value, representation)+ " }";
 	return out;
 }
 
+
 QString ArduMYActuatorConfigToString(ArduMYActuatorConfig &config)
 {
 	QString out;
 	return out;
 }
-
-
 
 */
 
@@ -101,7 +95,6 @@ const ArduMYActuatorValueRepresentation DEFAULT_REPRESENTATION=VALREP_REPRESENTA
 
 
 const ArduMYActuatorValuesParserStep DEFAULT_VALUE_PARSER_STEP=END_OF_OP;
-
 
 
 QString ardumyActuatorValueParserStepToString(const ArduMYActuatorValuesParserStep &s)
@@ -129,15 +122,10 @@ ArduMYActuatorValuesParserStep ardumyActuatorValueParserStepFromString(const QSt
 }
 
 
-
-
-
 /////////////////////////////////////////////
 
 
-
 const ArduMYActuatorConfigParserStep DEFAULT_CONFIG_PARSER_STEP=END_OF_OPERATION;
-
 
 
 QString ardumyActuatorConfigParserStepToString(const ArduMYActuatorConfigParserStep &s)
@@ -199,9 +187,8 @@ ArduMYActuatorConfigParserStep ardumyActuatorConfigParserStepFromString(const QS
 }
 
 
-
-
 /////////////////////////////////////////////
+
 
 const ArduMYActuatorType DEFAULT_ACTUATOR_TYPE=TYPE_COUNT;
 
@@ -232,6 +219,7 @@ ArduMYActuatorType ardumyActuatorTypeFromString(const QString &s)
 #undef ardumyArduMYActuatorTypeFromStringCASE
 	return DEFAULT_ACTUATOR_TYPE;
 }
+
 
 /////////////////////////////////////////////
 
@@ -275,13 +263,14 @@ ArduMYParserState ardumyParserStateFromString(const QString &s)
 	return DEFAULT_PARSER_STATE;
 }
 
-/////////////////////////////////////////////
 
+/////////////////////////////////////////////
 
 
 QString ardumyParserStateToString(const ArduMYParserState &ps);
 
 /////////////////////////////////////////////
+
 
 void ardumyActuatorValueFromVariant(ArduMYActuatorValue &val, const QVariant &variant, const ArduMYActuatorValueRepresentation &representation)
 {
@@ -360,8 +349,6 @@ QVariant ardumyActuatorValueToVariant(const ArduMYActuatorValue &val, const Ardu
 }
 
 
-
-
 ArduMYActuatorValueRepresentation ardumyActuatorValueRepresentationFromString(const QString &s)
 {
 #define  ardumyActuatorTypeFromStringCASE(A) if (#A == s)return A
@@ -377,8 +364,6 @@ ArduMYActuatorValueRepresentation ardumyActuatorValueRepresentationFromString(co
 #undef ardumyActuatorTypeFromStringCASE
 	return VALREP_REPRESENTATION_COUNT;
 }
-
-
 
 
 QString ardumyActuatorValueRepresentationToString(const ArduMYActuatorValueRepresentation &rep)
@@ -399,9 +384,6 @@ QString ardumyActuatorValueRepresentationToString(const ArduMYActuatorValueRepre
 	}
 #undef ArduMYActuatorTypeToStringCASE
 }
-
-
-
 
 
 QString ardumyActuatorValueToString(const ArduMYActuatorValue &v, const ArduMYActuatorValueRepresentation &rep)
@@ -457,6 +439,7 @@ QString ardumyActuatorConfigFlagsToString(const ArduMYActuatorConfig &c)
 
 	return list.join(", ");
 }
+
 
 QString ardumyActuatorConfigToString(const ArduMYActuatorConfig &c)
 {
@@ -515,7 +498,6 @@ QString ardumyActuatorSetToString(const ArduMYActuatorSet &set)
 }
 
 
-
 QString ardumyActuatorNameToString(const ArduMYActuatorConfig &c)
 {
 	QString name;
@@ -531,6 +513,7 @@ QString ardumyActuatorNameToString(const ArduMYActuatorConfig &c)
 	}
 	return name;
 }
+
 
 void ardumyActuatorNameFromString(ArduMYActuatorConfig &config ,const QString &name)
 {
@@ -556,11 +539,13 @@ int16_t actuatorConfigIndex;
 ArduMYActuatorValueSerializer actuatorValuesSerializer;
 */
 
+
 QString ardumyCommandSerializerToString(const ArduMYCommandSerializer &cs)
 {
 	QString out="CommandSerializer{ actuators="+QString::number(cs.actuators.size())+", currentCommand="+ardumyParserStateToString(cs.currentCommand)+", actuators="+QString::number(cs.actuators.size())+", }";
 	return out;
 }
+
 
 QString ardumyCommandParserToString(const ArduMYCommandParser &cp)
 {
@@ -568,6 +553,7 @@ QString ardumyCommandParserToString(const ArduMYCommandParser &cp)
 	return out;
 
 }
+
 
 void diffArdumyActuatorState(const ArduMYActuatorState &a, const ArduMYActuatorState &b, const ArduMYActuatorValueRepresentation &rep)
 {
@@ -586,6 +572,7 @@ void diffArdumyActuatorState(const ArduMYActuatorState &a, const ArduMYActuatorS
 		qDebug()<<"A value "<<ardumyActuatorValueToString(a.value,rep) <<" are different than B value "<<ardumyActuatorValueToString(b.value,rep);
 	}
 }
+
 
 void diffArdumyActuatorConfig(const ArduMYActuatorConfig &a, const ArduMYActuatorConfig &b)
 {
@@ -676,6 +663,7 @@ void diffArdumyActuatorConfig(const ArduMYActuatorConfig &a, const ArduMYActuato
 	}
 }
 
+
 void diffArdumyActuator(const ArduMYActuator &a, const ArduMYActuator &b)
 {
 	if(!a.config.isEqual(b.config)) {
@@ -685,6 +673,7 @@ void diffArdumyActuator(const ArduMYActuator &a, const ArduMYActuator &b)
 		diffArdumyActuatorState(a.state, b.state, a.config.representation);
 	}
 }
+
 
 void diffArdumyActuatorSet(const ArduMYActuatorSet &setA, const ArduMYActuatorSet &setB)
 {

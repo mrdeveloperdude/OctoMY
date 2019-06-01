@@ -95,4 +95,5 @@ void diffArdumyActuatorConfig(const ArduMYActuatorConfig &a, const ArduMYActuato
 void diffArdumyActuator(const ArduMYActuator &a, const ArduMYActuator &b);
 void diffArdumyActuatorSet(const ArduMYActuatorSet &setA, const ArduMYActuatorSet &setB);
 
-#endif // ARDUMYTYPECONVERSIONS_HPP
+#endif
+// ARDUMYTYPECONVERSIONS_HPP
