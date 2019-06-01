@@ -40,6 +40,7 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testFivePhase \
 		testHardwareWidget \
 		testHashstore \
+		testIDDuel \
 		testHoneymoonScheduler \
 		testIDDuel \
 		testIdenticon \
@@ -124,7 +125,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testEyesWidget \
 #		testFivePhase \
 #		testHardwareWidget \
-		testHashstore \
+#		testHashstore \
+		testIDDuel \
 #		testHoneymoonScheduler \
 #		testIDDuel \
 #		testIdenticon \
