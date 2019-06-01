@@ -133,8 +133,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testKey \
 #		testKeyStore \
 #		testLightWidget \
-		testLocalAddressList \
-#		testMapEditor\
+#		testLocalAddressList \
+		testMapEditor\
 #		testNameGenerator \
 #		testNetworkAddress \
 #		testNetworkSettingsWidget \
