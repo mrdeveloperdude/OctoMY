@@ -56,7 +56,7 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testPortableID \
 		testPoseMappingWidget \
 		testRateCalculator \
-		testRNG \
+		testRandom \
 		testServiceManager \
 		testServotor32Controller \
 		testSimpleDataStore \
@@ -143,8 +143,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testParser \
 #		testPortableID \
 #		testPoseMappingWidget \
-		testRateCalculator \
-#		testRNG \
+#		testRateCalculator \
+		testRandom \
 #		testServiceManager \
 #		testServotor32Controller \
 #		testSimpleDataStore \
