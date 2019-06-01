@@ -145,9 +145,9 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testPoseMappingWidget \
 #		testRateCalculator \
 #		testRandom \
-		testServiceManager \
+#		testServiceManager \
 #		testServotor32Controller \
-#		testSimpleDataStore \
+		testSimpleDataStore \
 #		testStreamCodec \
 #		testSyncParameter \
 #		testTaskQueue \

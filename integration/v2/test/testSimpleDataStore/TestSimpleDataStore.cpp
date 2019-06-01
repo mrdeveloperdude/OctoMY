@@ -22,7 +22,9 @@ public:
 
 };
 
+
 ////////////////////////////////////////////////////////////////////////////////
+
 
 SimpleDataStoreTester::SimpleDataStoreTester()
 	: SimpleDataStore()
@@ -30,10 +32,12 @@ SimpleDataStoreTester::SimpleDataStoreTester()
 	OC_METHODGATE();
 }
 
+
 SimpleDataStoreTester::~SimpleDataStoreTester()
 {
 	OC_METHODGATE();
 }
+
 
 bool SimpleDataStoreTester::fromMap(QVariantMap data)
 {
@@ -41,6 +45,7 @@ bool SimpleDataStoreTester::fromMap(QVariantMap data)
 	mMyMap=data;
 	return true;
 }
+
 
 QVariantMap SimpleDataStoreTester::toMap()
 {
@@ -130,5 +135,5 @@ void TestSimpleDataStore::test()
 	qDebug()<<" -- Done";
 }
 
-OC_TEST_MAIN(test, TestSimpleDataStore)
 
+OC_TEST_MAIN(test, TestSimpleDataStore)

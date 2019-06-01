@@ -7,7 +7,6 @@ class TestSimpleDataStore:public QObject
 {
 	Q_OBJECT
 
-
 private slots:
 	void test();
 
