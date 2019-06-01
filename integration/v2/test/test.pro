@@ -142,8 +142,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testOpenCL \
 #		testParser \
 #		testPortableID \
-		testPoseMappingWidget \
-#		testRateCalculator \
+#		testPoseMappingWidget \
+		testRateCalculator \
 #		testRNG \
 #		testServiceManager \
 #		testServotor32Controller \
