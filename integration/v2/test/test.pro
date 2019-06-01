@@ -129,8 +129,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testIDDuel \
 #		testIdenticon \
 #		testIrisRendrer \
-		testKey \
-#		testKeyStore \
+#		testKey \
+		testKeyStore \
 #		testLocalAddressList \
 #		testMapEditor\
 #		testNameGenerator \
