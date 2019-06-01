@@ -147,8 +147,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testRandom \
 #		testServiceManager \
 #		testServotor32Controller \
-		testSimpleDataStore \
-#		testStreamCodec \
+#		testSimpleDataStore \
+		testStreamCodec \
 #		testSyncParameter \
 #		testTaskQueue \
 #		testTetraGPSEncoder \
