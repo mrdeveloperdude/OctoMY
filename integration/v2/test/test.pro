@@ -148,8 +148,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testServiceManager \
 #		testServotor32Controller \
 #		testSimpleDataStore \
-		testStreamCodec \
-#		testSyncParameter \
+#		testStreamCodec \
+		testSyncParameter \
 #		testTaskQueue \
 #		testTetraGPSEncoder \
 #		testTrustSymbolWidget \
