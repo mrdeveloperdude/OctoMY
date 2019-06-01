@@ -149,8 +149,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testServotor32Controller \
 #		testSimpleDataStore \
 #		testStreamCodec \
-		testSyncParameter \
-#		testTaskQueue \
+#		testSyncParameter \
+		testTaskQueue \
 #		testTetraGPSEncoder \
 #		testTrustSymbolWidget \
 #		testTryToggle \
