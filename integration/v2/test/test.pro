@@ -30,6 +30,7 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testCommsChannel \
 		testCommsSession \
 		testConcurrentQueue \
+		testCreepyVoice \
 		testDataStore \
 		testDeliveryWizard \
 		testDiscovery \
@@ -112,7 +113,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testCommsCarrier \
 #		testCommsChannel \
 #		testCommsSession \
-		testConcurrentQueue \
+#		testConcurrentQueue \
+		testCreepyVoice \
 #		testDataStore \
 #		testDeliveryWizard \
 #		testDiscovery \
