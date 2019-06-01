@@ -119,8 +119,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testDataStore \
 #		testDeliveryWizard \
 #		testDiscovery \
-		testESpeak \
-#		testEventSourcing \
+#		testESpeak \
+		testEventSourcing \
 #		testEyesWidget \
 #		testFivePhase \
 #		testHardwareWidget \
