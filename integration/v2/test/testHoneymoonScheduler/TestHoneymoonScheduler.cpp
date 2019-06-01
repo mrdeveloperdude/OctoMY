@@ -11,18 +11,25 @@ public:
 	{
 		return HoneymoonScheduler<T>::mTriggeredOutput;
 	}
+
+
 	T idleOutput()
 	{
 		return HoneymoonScheduler<T>::mIdleOutput;
 	}
+
+
 	quint64 gracePeriod()
 	{
 		return HoneymoonScheduler<T>::mGracePeriod;
 	}
+
+
 	quint64 decayPeriod()
 	{
 		return HoneymoonScheduler<T>::mDecayPeriod;
 	}
+
 
 	// State
 	T lastTrigger()
@@ -30,14 +37,12 @@ public:
 		return HoneymoonScheduler<T>::mLastTrigger;
 	}
 
+
 	ConfigureHelper &configureHelper()
 	{
 		return HoneymoonScheduler<T>::mConfigureHelper;
 	}
-
-
 };
-
 
 
 void TestHoneymoonScheduler::generateTestCase(
@@ -110,7 +115,6 @@ void TestHoneymoonScheduler::testHelper(const int idleV, const int triggeredV, c
 }
 
 
-
 void TestHoneymoonScheduler::testActivation( )
 {
 	const int idleV=20;
@@ -121,6 +125,7 @@ void TestHoneymoonScheduler::testActivation( )
 	// Uncomment this to generate new test cases for testNormalUse()
 	//generateTestCase(1000, 5000, 1000, 2000, 100);
 }
+
 
 void TestHoneymoonScheduler::testNormalUse()
 {
@@ -221,6 +226,7 @@ void TestHoneymoonScheduler::testNormalUse()
 
 }
 
+
 void TestHoneymoonScheduler::testReverseScale()
 {
 	// We reverse idle and triggered values to see that it still works
@@ -235,4 +241,3 @@ void TestHoneymoonScheduler::testReverseScale()
 
 
 OC_TEST_MAIN(test, TestHoneymoonScheduler)
-

@@ -17,7 +17,6 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 
 	message(ADDING BASIC TESTS TO BUILD)
 	TEST_PROJECTS+= \
-		testTrustSymbolWidget \
 		testAddressBook \
 		testAddressList \
 		testAgentStateCourier \
@@ -40,7 +39,6 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testFivePhase \
 		testHardwareWidget \
 		testHashstore \
-		testIDDuel \
 		testHoneymoonScheduler \
 		testIDDuel \
 		testIdenticon \
@@ -64,9 +62,11 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testSyncParameter \
 		testTaskQueue \
 		testTetraGPSEncoder \
+		testTrustSymbolWidget \
 		testTryToggle \
 		testUtility \
 		testZooComms \
+
 
 
 
@@ -103,8 +103,7 @@ contains(DEFINES, OC_USE_TESTS_WEB){
 contains(DEFINES, OC_USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
-#		testTrustSymbolWidget \
-		testAddressBook \
+#		testAddressBook \
 #		testAddressList \
 #		testAgentStateCourier \
 #		testArduMY \
@@ -126,8 +125,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testFivePhase \
 #		testHardwareWidget \
 #		testHashstore \
-		testIDDuel \
-#		testHoneymoonScheduler \
+		testHoneymoonScheduler \
 #		testIDDuel \
 #		testIdenticon \
 #		testIrisRendrer \
@@ -150,9 +148,11 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testSyncParameter \
 #		testTaskQueue \
 #		testTetraGPSEncoder \
+#		testTrustSymbolWidget \
 #		testTryToggle \
 #		testUtility \
 #		testZooComms \
+
 
 	STRESS_PROJECTS+= \
 	#	stressCapabilities \
