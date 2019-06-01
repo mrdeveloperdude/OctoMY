@@ -33,10 +33,12 @@ static void ensureLALState(LocalAddressList &lal
 	}
 }
 
+
 static void ensureLALIsDumb(LocalAddressList &lal)
 {
 	ensureLALState(lal, 0, QHostAddress(), NetworkAddress(), false, false, "LocalAddressList{NOT CONFIGURED}", dumbMap);
 }
+
 
 void TestLocalAddressList::test()
 {
@@ -93,4 +95,3 @@ void TestLocalAddressList::test()
 
 
 OC_TEST_MAIN(test, TestLocalAddressList)
-

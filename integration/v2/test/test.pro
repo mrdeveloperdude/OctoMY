@@ -132,8 +132,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testIrisRendrer \
 #		testKey \
 #		testKeyStore \
-		testLightWidget \
-#		testLocalAddressList \
+#		testLightWidget \
+		testLocalAddressList \
 #		testMapEditor\
 #		testNameGenerator \
 #		testNetworkAddress \
