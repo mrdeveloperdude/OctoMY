@@ -105,10 +105,10 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testAddressList \
 #		testAgentStateCourier \
 #		testArduMY \
-		testAssociate \
+#		testAssociate \
 #		testAsyncStore \
 #		testBlob \
-#		testCarSteeringWidget \
+		testCarSteeringWidget \
 #		testCommsCarrier \
 #		testCommsChannel \
 #		testCommsSession \

@@ -13,7 +13,6 @@ namespace utility
 {
 
 
-
 class UICloseFilter: public QObject
 {
 	Q_OBJECT
@@ -27,9 +26,7 @@ public:
 	virtual bool eventFilter(QObject *object, QEvent *event) Q_DECL_OVERRIDE ;
 
 signals:
-
 	void close();
-
 
 };
 

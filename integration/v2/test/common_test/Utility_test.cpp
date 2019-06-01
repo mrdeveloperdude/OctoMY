@@ -41,6 +41,7 @@ void test::utility::testWaitForEvents()
 #endif
 }
 
+
 void test::utility::testHeading(QString msg, QString ch)
 {
 	auto sz=msg.size();
@@ -62,10 +63,12 @@ test::utility::UICloseFilter::UICloseFilter(QObject &ob)
 	target.installEventFilter(this);
 }
 
+
 test::utility::UICloseFilter::~UICloseFilter()
 {
 
 }
+
 
 bool test::utility::UICloseFilter::eventFilter(QObject *object, QEvent *event)
 {
@@ -75,8 +78,6 @@ bool test::utility::UICloseFilter::eventFilter(QObject *object, QEvent *event)
 	}
 	return false;
 }
-
-
 
 
 bool test::utility::waitForUIEnd(QObject *obj, qint64 timeOutMillis, const char * customSignal)
