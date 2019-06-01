@@ -92,6 +92,51 @@ static void drawSVG(QPainter *p, QString url, qint32 x,qint32 y, qint32 w,qint32
 }
 
 
+static QString connectionStrengthToSymbol(int s)
+{
+	QString onlineSymbol="";
+	switch(s) {
+	case(0):
+		onlineSymbol=":/icons/connection_full.svg";
+		break;
+	case(1):
+		onlineSymbol=":/icons/connection_high.svg";
+		break;
+	case(2):
+		onlineSymbol=":/icons/connection_medium.svg";
+		break;
+	case(3):
+		onlineSymbol=":/icons/connection_low.svg";
+		break;
+	default:
+	case(4):
+		onlineSymbol=":/icons/connection_off.svg";
+		break;
+	}
+	return onlineSymbol;
+}
+
+
+
+static int calculateConnectionStrength(qint64 lastSeen)
+{
+	const qint64 now=utility::time::currentMsecsSinceEpoch<qint64>();
+
+	const qint64 off=60*1000; //After a minute means M.I.A
+	const qint64 full=10*1000; //Less than  10 sec means full-on
+	const qint64 timeSinceLastSeen=now-lastSeen;
+
+	qint64 t=timeSinceLastSeen-full;
+	const qint64 step=(off-full)/5;
+	int s=0;
+	while(t>0.0 && s<5) {
+		t-=step;
+		s++;
+	}
+	// qDebug().noquote().nospace()<<"NOW="<<now<<", LastSeen="<<lastSeen<<", timeSinceLastSeen="<<timeSinceLastSeen<<", step="<<step<<", s="<<s<<", t="<<t;
+	return s;
+}
+
 void PairingEditButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	OC_METHODGATE();
@@ -106,65 +151,19 @@ void PairingEditButtonDelegate::paint(QPainter *painter, const QStyleOptionViewI
 		// Draw identicon to the far left
 		PortableID id(data);
 		//qDebug()<<"ID: "<<id.id()<< " FROM DATA: "<<data;
-		/*
 
-		FROM DATA:  QMap(("birthDate", QVariant(qulonglong, 1471476138556))
-		("createDate", QVariant(Invalid))
-		("gender", QVariant(QString, ""))
-		("key", QVariant(QVariantMap, QMap(("id", QVariant(QString, "53CD98E1996608801F960D46D86B15976FCB311B437142D943D2BDC65ACAD89C"))
-		("publicKey", QVariant(QString, "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAmVMIHQMoZ1TIuyYOBfVO\n4PwvR/Gc233ADpGezhCTKZ14zFl2MxxR167E0lVI4Qnl3L3LhKQgdRFEd2DiAoN+\nFId6fQuocGh/1PlV6tOBK7d2vVmuUrmHLoXi1gv8ZSN1BVTn64mBxWB7n57kDND9\nzoTqqICKsQ+7z2LTBryblOdisMcVVOY5a9ALokg/pgnpe0vDhX+342lhMYAaZfJP\nwxgCKJAcSTKhtAvdnnQXwkA1BjElvoq0UCB8SKo+oQ33h5w7unlyCsaJ07Q+U54g\nhZ5HvPKuDzZ/65wfB93MimJwM6Ew98FAqy73U9UZiLs3VrJ37x3EJAe39uIAMHKW\nlOx5Mu8yN9WWtzKqSX5F0k7Gs+c1MKk9lAcenJcsAqHNS9ND0x0NmAJVzanShan5\nsDx2V6J8cB5FssdAz301WxhnOi1sbfDJcy9dEpAHPs6g6FSYFBNAx1/9N4Yck1cR\n8M7JMxkCN9mo1BYbs8ON0leMGm/BtozgHpDGrDnTZ13fwNnODh9uSaZZeFvzQgDm\nHInb9+Wv8BoeSahlOKjsQV6Gqycb9qwZX3sJ/OK7X+hIDtc1yQ7Pdc5WN0zRuQvb\nu1uwlox6JAVXDhcrejweQgYI4garuRjfua0PEAqNk94v8bTvG+VPEYBdPRKiIDLp\ngEvoK4UpZOLXXmp1ao2lki8CAwEAAQ==\n-----END PUBLIC KEY-----\n")))))
-		("lastSeenMS", QVariant(qulonglong, 1471548235026))
-		("name", QVariant(QString, ""))
-		("port", QVariant(int, 8123)))))
-		("role", QVariant(QString, "ROLE_CONTROL"))
-		("trusts", QVariant(QStringList, ("take-control")))
-		("type", QVariant(QString, "TYPE_REMOTE")))
-		*/
 		Identicon ic(id);
 		QPixmap px=ic.pixmap(buttonSize,buttonSize);
 
 		// Draw state symbols in the middle
 		quint32 icX=static_cast<quint32>(buttonSize+border*2);
-		const qint64 now=utility::time::currentMsecsSinceEpoch<qint64>();
 
-		const qint64 off=60*1000; //After a minute means M.I.A
-		const qint64 full=10*1000; //Less than  10 sec means full-on
-		const qint64 lastSeen=data["lastSeenMS"].toLongLong();
-		const qint64 timeSinceLastSeen=now-lastSeen;
-
-		qint64 t=timeSinceLastSeen-full;
-		const qint64 step=(off-full)/5;
-		int s=0;
-		while(t>0.0 && s<5) {
-			t-=step;
-			s++;
-		}
-		QString onlineSymbol="";
-		switch(s) {
-		case(0):
-			onlineSymbol=":/icons/connection_full.svg";
-			break;
-		case(1):
-			onlineSymbol=":/icons/connection_high.svg";
-			break;
-		case(2):
-			onlineSymbol=":/icons/connection_medium.svg";
-			break;
-		case(3):
-			onlineSymbol=":/icons/connection_low.svg";
-			break;
-		default:
-		case(4):
-			onlineSymbol=":/icons/connection_off.svg";
-			break;
-		}
-
-		//qDebug()<<"NOW="<<now<<", LastSeen="<<lastSeen<<", timeSinceLastSeen="<<timeSinceLastSeen<<", step="<<step<<", s="<<s<<", t="<<t<<", onlineSymbol="<<onlineSymbol;
+		qint64 lastSeenMS=static_cast<qint64>(utility::time::variantToMs(data["lastSeenMS"]));
+		//qDebug().noquote().nospace()<<"data[\"lastSeenMS\"]="<<data["lastSeenMS"]<<" converted to "<<lastSeenMS;
+		QString onlineSymbol=connectionStrengthToSymbol(calculateConnectionStrength(lastSeenMS));
 
 
-		//Seen less than 20 sec ago means online
-		//const QString onlineSymbol="";
-		//(()<off) ?":/icons/connected.svg":":/icons/disconnected.svg";
+
 		//Trust or not
 		auto list=data["trusts"].toList();
 		const QString trustSymbol=

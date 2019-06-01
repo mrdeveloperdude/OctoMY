@@ -118,8 +118,8 @@ QString AddressEntry::toString()
 		   +", lastSuccessMS: "+utility::string::formattedDateFromMS(lastSuccess)
 		   +", lastErrorMS: "+utility::string::formattedDateFromMS(lastError)
 		   +", createdMS: "+utility::string::formattedDateFromMS(created)
-		   +", numSuccessful: "+utility::string::formattedDateFromMS(numSuccessful)
-		   +", numErraneous: "+utility::string::formattedDateFromMS(numErraneous)
+		   +", numSuccessful: "+QString::number(numSuccessful)
+		   +", numErraneous: "+QString::number(numErraneous)
 		   ;
 }
 

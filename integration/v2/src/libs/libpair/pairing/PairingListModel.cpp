@@ -59,7 +59,7 @@ bool PairingListModel::filter(NodeType &t) const
 
 void PairingListModel::onAssociateChanged()
 {
-	qDebug()<<"FORWARDING UPDATE SIGNAL";
+	// qDebug()<<"FORWARDING UPDATE SIGNAL";
 	if(!mStore.isNull()) {
 		emit dataChanged(index(0, 0), index(mStore->associateCount(), 0));
 	} else {
@@ -124,7 +124,7 @@ QVariant PairingListModel::data(const QModelIndex &index, int role) const
 		qWarning()<<"ERROR: No store";
 	}
 
-	if (nullptr!=part) {
+	if (!part.isNull()) {
 		NodeType t=part->type();
 		if(filter(t)) {
 			if(Qt::DisplayRole == role ) {

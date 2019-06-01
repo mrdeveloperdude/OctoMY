@@ -220,10 +220,9 @@ void DebuggerWidget::configureUi()
 				if(!connect(button, &QPushButton::toggled, this, [=](bool checked) {
 				QWidget *widget=mHeaderWidgets.contains(name)?mHeaderWidgets[name]:nullptr;
 					if(nullptr!=widget) {
+						qDebug()<<"TOGGLING BUTTON "<<widget->objectName()<<" for "<<name;
 						widget->setVisible(checked);
-						if(checked) {
-							pack();
-						}
+						pack();
 					}
 				}, OC_CONTYPE)) {
 					qWarning()<<"ERROR: Could not connect";
@@ -286,6 +285,7 @@ void DebuggerWidget::pack()
 			for(auto widget:mHeaderWidgets) {
 				if(widget->isVisible()) {
 					auto sz=widget->minimumSize();
+					//qDebug()<<"HEADER WIDGET HEIGHT: "<<sz.height()<<" FOR "<<widget->objectName();
 					w=qMax(w, sz.width());
 					h+=sz.height()+layoutSpacing;
 				}
@@ -293,11 +293,13 @@ void DebuggerWidget::pack()
 			for(auto widget:mHeaderButtons) {
 				if(widget->isVisible()) {
 					auto sz=widget->minimumSize();
+					//qDebug()<<"HEADER BUTTON HEIGHT: "<<sz.height()<<" FOR "<<widget->objectName();
 					w=qMax(w, sz.width());
 					h+=sz.height()+layoutSpacing;
 				}
 			}
 			// Apply minimum size
+			//qDebug()<<"TOTAL: "<<w<<"x"<<h;
 			resize(QSize(w,h));
 		});
 	}
@@ -393,16 +395,35 @@ void DebuggerWidget::on_pushButtonRestart_clicked()
 }
 
 
-void DebuggerWidget::on_pushButtonExpandAll_clicked()
+void DebuggerWidget::allEnable(bool enable)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		for(auto button: mHeaderButtons) {
 			if(nullptr!=button) {
-				button->setChecked(true);
+				auto old=button->blockSignals(true);
+				button->setChecked(enable);
+				button->blockSignals(old);
+			}
+		}
+		for(auto widget: mHeaderWidgets) {
+			if(nullptr!=widget) {
+				auto old=widget->blockSignals(true);
+				widget->setVisible(enable);
+				widget->blockSignals(old);
 			}
 		}
 		pack();
+	}
+}
+
+
+
+void DebuggerWidget::on_pushButtonExpandAll_clicked()
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		allEnable(true);
 	}
 }
 
@@ -411,11 +432,6 @@ void DebuggerWidget::on_pushButtonCollapseAll_clicked()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		for(auto button: mHeaderButtons) {
-			if(nullptr!=button) {
-				button->setChecked(false);
-			}
-		}
-		pack();
+		allEnable(false);
 	}
 }

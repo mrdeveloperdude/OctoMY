@@ -48,11 +48,12 @@ public:
 	int associateCount() const ;
 	QSharedPointer<Associate> associateByID(const QString &id);
 	QSharedPointer<Associate> removeAssociate(const QString &id);
-	void upsertAssociate(QSharedPointer<Associate> associate);
+
+	void upsertAssociate(QSharedPointer<Associate> associate, std::function<void(bool)> callBack=nullptr);
 
 	QMap<QString, QSharedPointer<Associate> > all();
 
-	void setHookSignals(QObject &ob, bool hook);
+	void hookSignals(QObject &ob, bool hook);
 
 signals:
 	void associateAdded(QString id);

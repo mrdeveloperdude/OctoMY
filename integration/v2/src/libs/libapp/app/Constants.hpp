@@ -74,6 +74,16 @@ public:
 
 	static const int OC_STATUS_BLINK_TIME;
 
+
+	static const QString dateFMTYear;
+	static const QString dateFMTMonth;
+	static const QString dateFMTDay;
+	static const QString dateFMTHour;
+	static const QString dateFMTMinute;
+	static const QString dateFMTSecond;
+	static const QString dateFMTMillisecond;
+
+
 };
 
 #endif // CONSTANTS_HPP

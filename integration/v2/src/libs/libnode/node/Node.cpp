@@ -159,8 +159,8 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				mServiceLevelManager->registerService(mLocalAddressListService);
 				mServiceLevelManager->registerService(mAddressBookService);
 				mServiceLevelManager->registerService(mDiscoveryService);
-				mServiceLevelManager->registerService(mCarrierService);
-				mServiceLevelManager->registerService(mCommsService);
+				//mServiceLevelManager->registerService(mCarrierService);
+				//mServiceLevelManager->registerService(mCommsService);
 
 				// Register the "Always" service level
 				//////////////////////////////////////
@@ -501,7 +501,7 @@ void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 			auto map=mNodeIdentity->toVariantMap();
 			qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED: "<<map<< " FROM nodeID="<<*mNodeIdentity;
 			mLocalIdentityStore->fromMap(map);
-			mLocalIdentityStore->save();
+			mLocalIdentityStore->synchronize();
 			emit identityChanged();
 		}
 	}

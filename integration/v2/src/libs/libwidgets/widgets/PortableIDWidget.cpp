@@ -3,6 +3,7 @@
 
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
+#include "app/Constants.hpp"
 
 #include <QDateTime>
 
@@ -66,7 +67,8 @@ void PortableIDWidget::setPortableID(PortableID id)
 		if(ts>0) {
 			ui->labelBirthdate->setVisible(true);
 			ui->labelBirthdateCaption->setVisible(true);
-			ui->labelBirthdate->setText(QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(ts)).toString(PortableID::dateFMT));
+			ui->labelBirthdate->setText(QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(ts)).toString(Constants::dateFMTDay));
+			ui->labelBirthdate->setToolTip(QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(ts)).toString(Constants::dateFMTMillisecond));
 			ui->labelBirthdateCaption->setText(isAgent?"Birth date": "Create date");
 		} else {
 			ui->labelBirthdate->setVisible(false);
@@ -93,10 +95,19 @@ PortableID PortableIDWidget::getPortableID()
 }
 
 
-void PortableIDWidget::on_pushButtonToggleView_toggled(bool checked)
+void PortableIDWidget::on_pushButtonToggleViewNameplate_clicked()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		ui->stackedWidget->setCurrentWidget(checked?ui->pageCertificate:ui->pageNameplate);
+		ui->stackedWidget->setCurrentWidget(ui->pageCertificate);
+	}
+}
+
+
+void PortableIDWidget::on_pushButtonToggleView_clicked()
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		ui->stackedWidget->setCurrentWidget(ui->pageNameplate);
 	}
 }

@@ -32,7 +32,7 @@ void AddressBook::configure(QString filename)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		SimpleDataStore::configure(filename);
+		SimpleDataStore::configure(filename, 10*1000);
 	}
 }
 
@@ -65,7 +65,7 @@ bool AddressBook::fromMap(QVariantMap data)
 		QVariantList peers=data["peers"].toList();
 		for(QVariantList::iterator b=peers.begin(), e=peers.end(); b!=e; ++b) {
 			QSharedPointer<Associate> peer=QSharedPointer<Associate>(OC_NEW Associate((*b).toMap()));
-			upsertAssociate(peer);
+			upsertAssociate(peer, nullptr);
 		}
 		return true;
 	}
@@ -142,25 +142,35 @@ QSharedPointer<Associate> AddressBook::removeAssociate(const QString &id)
 			mAssociates.remove(id);
 			emit associateRemoved(id);
 			emit associatesChanged();
+			synchronize();
 		}
 	}
 	return ret;
 }
 
 
-void AddressBook::upsertAssociate(QSharedPointer<Associate> associate)
+void AddressBook::upsertAssociate(QSharedPointer<Associate> associate, std::function<void(bool)> callBack)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		if(nullptr!=associate) {
-			auto id=associate->id();
+		if(!associate.isNull()) {
+			const auto id=associate->id();
 			const bool isNew=!hasAssociate(id);
-			//qDebug().noquote().nospace()<<(isNew?"REGISTERING NEW":"UPDATING EXISTING")<< " ASSOCIATE WITH ID: "<<id;
+			qDebug().noquote().nospace()<<(isNew?"REGISTERING NEW":"UPDATING EXISTING")<< " ASSOCIATE WITH ID: "<<id;
 			mAssociates[id]=associate;
-			if(isNew) {
-				emit associateAdded(id);
-				emit associatesChanged();
-			}
+			synchronize([this, id, isNew, callBack](QSharedPointer<SimpleDataStore>, bool ok) {
+				qDebug()<<" upsertAssociate COMPLETED WITH "<<ok;
+				if(ok) {
+					if(isNew) {
+						emit associateAdded(id);
+						// TODO: Should we detect changes here?
+						emit associatesChanged();
+						if(nullptr!=callBack) {
+							callBack(ok);
+						}
+					}
+				}
+			});
 		} else {
 			qWarning()<<"ASSOCIATE WAS NULL";
 		}
@@ -179,7 +189,7 @@ QMap<QString, QSharedPointer<Associate> > AddressBook::all()
 
 
 // Forward the async storeReady signal
-void AddressBook::setHookSignals(QObject &ob, bool hook)
+void AddressBook::hookSignals(QObject &ob, bool hook)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {

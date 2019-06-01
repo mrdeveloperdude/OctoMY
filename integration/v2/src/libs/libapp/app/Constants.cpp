@@ -62,3 +62,11 @@ const bool Constants::OC_LOG_CONFIGURE_HELPER_CHANGES(false);
 
 
 const int Constants::OC_STATUS_BLINK_TIME(1000/10);
+
+const QString Constants::dateFMTYear("yyyy");
+const QString Constants::dateFMTMonth(dateFMTYear+"-MM");
+const QString Constants::dateFMTDay(dateFMTMonth+"-dd");
+const QString Constants::dateFMTHour(dateFMTDay+" hh");
+const QString Constants::dateFMTMinute(dateFMTHour+":mm");
+const QString Constants::dateFMTSecond(dateFMTMinute+":ss");
+const QString Constants::dateFMTMillisecond(dateFMTSecond+".zzz");

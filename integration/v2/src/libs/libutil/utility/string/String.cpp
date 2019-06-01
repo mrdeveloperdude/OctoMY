@@ -198,15 +198,11 @@ QString  hexdump(void *mem, unsigned int len, QString topic)
 }
 
 
-
-
 bool isPositiveInteger(QString s)
 {
 	QString p=s.replace(QRegExp("[^0-9]"),"");
 	return p.length()==s.length();
 }
-
-
 
 
 QString perror()
@@ -215,9 +211,7 @@ QString perror()
 }
 
 
-
-
-qint64 parseDate(QString str,QString fmt)  //2013-08-14T20:26:01.7526+02:00
+qint64 parseDate(QString str, QString fmt)  //2013-08-14T20:26:01.7526+02:00
 {
 	QDateTime d = QDateTime::fromString(str,fmt);
 	qint64 ts= d.toMSecsSinceEpoch();
@@ -245,7 +239,6 @@ QString toHash(QString input, QCryptographicHash::Algorithm algo, bool upperCase
 }
 
 
-
 QString nameToNormalForm(QString name)
 {
 	OC_FUNCTIONGATE();
@@ -261,8 +254,6 @@ QString nameToNormalForm(QString name)
 	}
 	return name;
 }
-
-
 
 
 QString networkErrorToString( QNetworkReply::NetworkError ne)
@@ -310,7 +301,6 @@ QString networkErrorToString( QNetworkReply::NetworkError ne)
 }
 
 
-
 QString socketErrorToString( QAbstractSocket::SocketError se)
 {
 	OC_FUNCTIONGATE();
@@ -346,10 +336,6 @@ QString socketErrorToString( QAbstractSocket::SocketError se)
 }
 
 
-
-
-
-
 QString padstring(int level, QString base)
 {
 	QString out="";
@@ -362,7 +348,6 @@ QString padstring(int level, QString base)
 	}
 	return out;
 }
-
 
 
 QString toSoundex(QString in)
@@ -444,6 +429,7 @@ HandleCounter::HandleCounter()
 
 }
 
+
 QString HandleCounter::handleCounterString(Qt::HANDLE h)
 {
 	if(nullptr==h) {
@@ -458,8 +444,8 @@ QString HandleCounter::handleCounterString(Qt::HANDLE h)
 }
 
 
-
 static HandleCounter hc;
+
 
 int levenshtein_distance(const QString &s1, const QString  &s2)
 {

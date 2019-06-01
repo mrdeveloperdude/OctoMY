@@ -23,11 +23,11 @@ void delay( int millisecondsToWait )
 }
 
 
-
 quint64 variantToMs(QVariant v)
 {
 	return static_cast<quint64>(v.toDateTime().toMSecsSinceEpoch());
 }
+
 
 QVariant msToVariant(quint64 ms)
 {

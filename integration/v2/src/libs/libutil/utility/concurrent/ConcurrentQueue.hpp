@@ -11,6 +11,7 @@
 #include <QLinkedList>
 #include <QAtomicInteger>
 #include <QDebug>
+#include <QString>
 
 class ConcurrentQueueSignalEmitter: public QObject
 {
@@ -52,6 +53,7 @@ public:
 public:
 	void activate(const bool on);
 
+	void list();
 
 public:
 	void put(T item);
@@ -76,6 +78,8 @@ ConcurrentQueue<T>::ConcurrentQueue(int capacity)
 {
 	OC_METHODGATE();
 }
+
+
 template <typename T>
 ConcurrentQueue<T>::~ConcurrentQueue()
 {
@@ -84,6 +88,7 @@ ConcurrentQueue<T>::~ConcurrentQueue()
 	mNotFull.wakeAll();
 	mNotEmpty.wakeAll();
 }
+
 
 template <typename T>
 void ConcurrentQueue<T>::activate(const bool on)
@@ -102,6 +107,15 @@ void ConcurrentQueue<T>::activate(const bool on)
 }
 
 
+template <typename T>
+void ConcurrentQueue<T>::list()
+{
+	OC_METHODGATE();
+	//if(mConfigureHelper.isActivatedAsExpected()) {
+		QMutexLocker ml(&mMutex);
+		qDebug()<<"LISTING "<<mItems.count()<<" ITEMS ";
+	//}
+}
 
 template <typename T>
 void ConcurrentQueue<T>::put(T item)
@@ -127,13 +141,16 @@ void ConcurrentQueue<T>::put(T item)
 			qWarning()<<"WARNING: Trying to put item when done";
 		}
 	}
+	list();
 }
+
 
 // Block until queue actually contains something before fetching the first item
 template <typename T>
 T ConcurrentQueue<T>::get()
 {
 	OC_METHODGATE();
+	list();
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		unsigned long timeOutMillis=1000;
 		QMutexLocker ml(&mMutex);
@@ -165,8 +182,6 @@ T ConcurrentQueue<T>::get()
 	}
 	return T();
 }
-
-
 
 // Only get if there is something to be got
 template <typename T>
@@ -201,9 +216,6 @@ T ConcurrentQueue<T>::tryGet(bool &got)
 }
 
 
-
-
-
 template <typename T>
 int ConcurrentQueue<T>::count()
 {
@@ -234,7 +246,6 @@ bool ConcurrentQueue<T>::isDone()
 	}
 	return true;
 }
-
 
 #endif
 // CONCURRENTQUEUE_HPP

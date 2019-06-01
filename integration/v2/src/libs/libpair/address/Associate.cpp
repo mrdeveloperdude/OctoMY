@@ -346,7 +346,7 @@ void Associate::fromVariantMap(const QVariantMap map)
 {
 	OC_METHODGATE();
 	//mKey=Key( map["key"].toMap(), true);
-	mID="TODO: FIX ME#1";
+	mID=( map["id"].toString() );
 	mName=( map["name"].toString() );
 	mGender=( map["gender"].toString() );
 	mBirthDate= utility::time::variantToMs( map["birthDate"]);
@@ -364,7 +364,7 @@ QString Associate::toString()
 {
 	OC_METHODGATE();
 	return QString() //mKey.toString()
-		   +", name: "+mName
+		   +"name: "+mName
 		   +", id: "+id()
 		   +", gender: "+mGender
 		   +", addressList:"+mAddressList.toString()

@@ -33,9 +33,6 @@ private:
 	static const QRegularExpression sepRE;
 
 public:
-	static const QString dateFMT;
-
-public:
 	explicit PortableID();
 	explicit PortableID(QVariantMap &data);
 	virtual ~PortableID();

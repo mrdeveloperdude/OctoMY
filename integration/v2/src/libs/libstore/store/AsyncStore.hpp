@@ -142,6 +142,7 @@ public:
 private:
 	ASEvent<T> enqueueEvent(ASEvent<T> trans);
 	void processEvents();
+	void listEvents();
 
 	void processEvent(ASEvent<T> &event);
 	quint64 autoIncrement();
@@ -259,17 +260,18 @@ void AsyncStore<T>::activate(const bool on, std::function<void(bool)> callBack)
 {
 	OC_METHODGATE();
 	on?addJournal("ACTIVATE ON"):addJournal("ACTIVATE OFF");
-	if(mConfigureHelper.activate(on)) {
-		if(on) {
 
+	if(on) {
+		if(mConfigureHelper.activate(on)) {
 			// NOTE: We activate the transactions queue here, but we don't deactivate it until the "completed" operation is received
 			mTransactions.activate(on);
 			// Start transaction processing in separate thread
 			mCompleteFuture=QtConcurrent::run([this]() {
 				OC_METHODGATE();
-				//qDebug()<<"Entered AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
+				qDebug()<<"Entered AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
 				processEvents();
-				//qDebug()<<"Exiting AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
+				qDebug()<<"Exiting AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
+				listEvents();
 			});
 			// Synchronize to get started
 			synchronize().onFinished([callBack](ASEvent<T> &ase) {
@@ -277,17 +279,19 @@ void AsyncStore<T>::activate(const bool on, std::function<void(bool)> callBack)
 					callBack(ase.isSuccessfull());
 				}
 			});
-		} else {
-			synchronize();
-			complete();
-			//qWarning()<<"Waiting for asyncstore future finish...";
-			mCompleteFuture.waitForFinished();
-			//qWarning()<<"Got for asyncstore future finish :)";
-			// NOTE: synchronize and complete both need store to be activated, so we deactivate last
-			if(nullptr!=callBack) {
-				callBack(true);
-			}
 		}
+	} else {
+		synchronize();
+		complete();
+		qWarning()<<" #-#-# Waiting for asyncstore future finish...";
+		mCompleteFuture.waitForFinished();
+		qWarning()<<" #-#-# Got asyncstore future finish :)";
+
+		if(nullptr!=callBack) {
+			callBack(true);
+		}
+		// NOTE: synchronize and complete both need store to be activated, so we deactivate last
+		mConfigureHelper.activate(on);
 	}
 }
 
@@ -382,6 +386,15 @@ void AsyncStore<T>::processEvents()
 	}
 	//qDebug()<<"Exiting AsyncStore::processTransactions() from thread "<<utility::concurrent::currentThreadID();
 }
+
+
+template <typename T>
+void AsyncStore<T>::listEvents()
+{
+	OC_METHODGATE();
+	mTransactions.list();
+}
+
 
 template <typename T>
 void AsyncStore<T>::processEvent(ASEvent<T> &event)

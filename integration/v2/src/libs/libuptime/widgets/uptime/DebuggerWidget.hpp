@@ -50,6 +50,8 @@ private slots:
 	void tuck();
 	// Compact to minimize size
 	void pack();
+	// Collapse/expand all
+	void allEnable(bool enable);
 
 private slots:
 	void on_pushButtonQuitSuccess_clicked();
