@@ -114,9 +114,9 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testCommsChannel \
 #		testCommsSession \
 #		testConcurrentQueue \
-		testCreepyVoice \
+#		testCreepyVoice \
 #		testDataStore \
-#		testDeliveryWizard \
+		testDeliveryWizard \
 #		testDiscovery \
 #		testEventSourcing \
 #		testEyesWidget \
