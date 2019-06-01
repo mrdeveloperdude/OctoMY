@@ -2,6 +2,7 @@
 
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
+#include "uptime/ConnectionType.hpp"
 
 #include "security/PortableID.hpp"
 #include "node/NodeRole.hpp"
@@ -15,33 +16,61 @@
 #include <QSvgRenderer>
 
 
+const QRgb TrustSymbolWidget::palette[]= {
+	0x000000
+	,0xffffff
+	,0x883932
+	,0x67b6bd
+	,0x8b5429
+	,0x574200
+	,0xb86962
+	,0x505050
+	,0x8b3f96
+	,0x55a049
+	,0x40318d
+	,0xbfce72
+	,0x787878
+	,0x94e089
+	,0x7869c4
+	,0x9f9f9f
+};
+
+const int TrustSymbolWidget::paletteSz(static_cast<int>(sizeof(palette) / sizeof(QRgb)));
+
+
 TrustSymbolWidget::TrustSymbolWidget(QWidget *parent)
 	: SvgWidget(parent)
+	, mLevel(IGNORE)
+	, mConfigureHelper("TrustSymbolWidget",true,false,false,true,false)
 {
 	OC_METHODGATE();
 	Q_INIT_RESOURCE(icons);
+	setWindowTitle("Trust Symbol");
 }
 
 
-void TrustSymbolWidget::regenerateIdenticon()
+void TrustSymbolWidget::configure()
 {
 	OC_METHODGATE();
-	//TODO: This is a gaping hole if someone tried to set the SVG and did not expect us to delete it (not recommended way to use this class but still)
-	if(nullptr!=mSVG) {
-		delete mSVG;
-		mSVG=nullptr;
+	if(mConfigureHelper.configure()) {
+		SvgWidget::configure(true);
+
+		mPulsatingTrustTimer.setTimerType(Qt::PreciseTimer);
+
+		// Somewhat conservative FPS
+		mPulsatingTrustTimer.setInterval(1000/30);
+		mPulsatingTrustTimer.setSingleShot(false);
+		if(!QObject::connect(&mPulsatingTrustTimer, SIGNAL(timeout()), this, SLOT(onPulsatingTrustTimer()), OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect ";
+		}
 	}
-//	QDomDocument doc=mIdenticon.domDocument();
-//	mSVG=OC_NEW QSvgRenderer (doc.toByteArray());
-	mLastURL="";
-	mDirty=true;
-	update();
 }
 
 
 void TrustSymbolWidget::setTrustLevel(TrustLevel level)
 {
 	OC_METHODGATE();
+	mLevel=level;
 	QString file;
 	switch(level) {
 	case(TRUST): {
@@ -59,32 +88,69 @@ void TrustSymbolWidget::setTrustLevel(TrustLevel level)
 	break;
 
 	}
-
 	setSvgURL(file);
+	updatePulsating();
+}
 
-	//mIdenticon.setPortableID(id);
-	//setToolTip("ID="+id.id()+"\nNAME="+id.name()+"\nTYPE="+nodeTypeToString(id.type())+"\nBIRTH="+utility::string::formattedDateFromMS(id.birthDate())+"\n");
-	regenerateIdenticon();
+
+void TrustSymbolWidget::updatePulsating()
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		const bool pulsating=QWidget::isVisible() && (TRUST==mLevel);
+		//qDebug()<<"PULSATING="<<pulsating;
+		setSilhouetteEnabled(pulsating);
+		if(pulsating) {
+			mPulsatingTrustTimer.start();
+		} else {
+			mPulsatingTrustTimer.stop();
+		}
+		update();
+	}
 }
 
 
 void TrustSymbolWidget::mouseDoubleClickEvent(QMouseEvent *)
 {
 	OC_METHODGATE();
-	emit doubleClicked();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		emit doubleClicked();
+	}
 }
 
-/*
-QDomDocument TrustSymbolWidget::svgDOM()
+
+void TrustSymbolWidget::showEvent(QShowEvent *)
 {
 	OC_METHODGATE();
-	return QDomDocument();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		updatePulsating();
+	}
 }
 
 
-QByteArray TrustSymbolWidget::svgXML()
+void TrustSymbolWidget::hideEvent(QHideEvent *)
 {
 	OC_METHODGATE();
-	return mIdenticon.domDocument().toByteArray();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		updatePulsating();
+	}
 }
-*/
+
+
+void TrustSymbolWidget::onPulsatingTrustTimer()
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		const auto lastColor=silhouetteForeground();
+		QColor color=lastColor;
+		size_t index=0;
+		while(lastColor == color) {
+			index=static_cast<size_t>(qrand()%paletteSz);
+			color=QColor(palette[index]);
+		}
+		// qDebug()<<"INDEX: "<<index<<", COLOR: "<<color;
+		setSilhouetteForeground(color);
+		setSilhouetteEnabled(true);
+		update();
+	}
+}

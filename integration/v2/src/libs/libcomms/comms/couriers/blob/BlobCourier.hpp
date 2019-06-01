@@ -19,7 +19,10 @@ class CommsChannel;
 
 /*!
  * \brief The BlobCourier class is a courier that works with commschannel to
- * send and receive Blobs.
+ * send and receive Blobs (Binary Large OBjects).
+ *
+ * This is used among other things to transfer files and camera images.
+ *
  */
 
 class BlobCourier: public Courier

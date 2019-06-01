@@ -100,6 +100,7 @@ contains(DEFINES, OC_USE_TESTS_WEB){
 contains(DEFINES, OC_USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
+		testTrustSymbolWidget \
 #		testAddressBook \
 #		testAddressList \
 #		testAgentStateCourier \
@@ -136,7 +137,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testPoseMappingWidget \
 #		testRateCalculator \
 #		testRNG \
-		testServiceManager \
+#		testServiceManager \
 #		testServotor32Controller \
 #		testSimpleDataStore \
 #		testStreamCodec \

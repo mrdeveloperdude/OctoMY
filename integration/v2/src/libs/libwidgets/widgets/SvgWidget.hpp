@@ -32,7 +32,7 @@ public:
 	virtual ~SvgWidget();
 
 public:
-	void configure(bool doSilhouette, QColor silhouetteForeground=QColor("White"), QColor silhouetteBackground=QColor("#00000000"));
+	virtual void configure(bool doSilhouette, QColor silhouetteForeground=QColor("White"), QColor silhouetteBackground=QColor("#00000000"));
 
 	void setSvg(QSvgRenderer &svg);
 

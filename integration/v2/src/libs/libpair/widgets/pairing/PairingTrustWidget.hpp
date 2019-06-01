@@ -22,7 +22,6 @@ class PairingTrustWidget : public QWidget
 	Q_OBJECT
 private:
 	Ui::PairingTrustWidget *ui;
-	QTimer mPulsatingTrustTimer;
 	QSharedPointer<Node> mNode;
 	ConfigureHelper mConfigureHelper;
 	QString mCurrentID;
@@ -36,19 +35,11 @@ public:
 	void configure(QSharedPointer<Node> node);
 
 public:
-	void updatePulsating();
-
 	void startEdit(QSharedPointer<Associate> peer);
 	TrustLevel selectedTrustLevel() const;
 	void selectTrustLevel(TrustLevel level);
 
-protected:
-	void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
-	void hideEvent(QHideEvent *) Q_DECL_OVERRIDE;
-
-
 private slots:
-	void onPulsatingTrustTimer();
 	void onTrustButtonClicked(QAbstractButton *);
 
 private slots:
