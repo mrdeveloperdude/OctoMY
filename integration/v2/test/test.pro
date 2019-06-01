@@ -125,9 +125,9 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testFivePhase \
 #		testHardwareWidget \
 #		testHashstore \
-		testHoneymoonScheduler \
+#		testHoneymoonScheduler \
 #		testIDDuel \
-#		testIdenticon \
+		testIdenticon \
 #		testIrisRendrer \
 #		testKey \
 #		testKeyStore \
