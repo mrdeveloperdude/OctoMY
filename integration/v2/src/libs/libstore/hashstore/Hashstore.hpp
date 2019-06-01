@@ -23,20 +23,18 @@ private:
 	QHash<QString, HashstoreRecord> index;
 
 public:
-
 	static const quint8 DIR_LEVELS;
 
 public:
 	explicit Hashstore(QDir dir);
 	virtual ~Hashstore();
-public:
 
+public:
 	const  QDir dir() const ;
 	HashstoreRecord resolve(const QString &key);
 	QString generatePathFromKey(const QString &key) const;
 
 };
-
 
 
 #endif

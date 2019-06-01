@@ -1,5 +1,6 @@
 #include "Hashstore.hpp"
 
+#include "uptime/MethodGate.hpp"
 
 #include <QLockFile>
 
@@ -15,6 +16,7 @@ Hashstore::Hashstore(QDir dir)
 	, lockFilename(dir.absoluteFilePath(QStringLiteral("zoo_storage.lock")))
 	, lock(lockFilename)
 {
+	OC_METHODGATE();
 	if(!lock.tryLock(1000)){
 		qint64 pid=0;
 		QString hostname;
@@ -24,16 +26,21 @@ Hashstore::Hashstore(QDir dir)
 	}
 }
 
+
 Hashstore::~Hashstore(){
+	OC_METHODGATE();
 	lock.unlock();
 }
 
+
 const QDir Hashstore::dir() const {
+	OC_METHODGATE();
 	return m_dir;
 }
 
 
 HashstoreRecord Hashstore::resolve(const QString &key){
+	OC_METHODGATE();
 	if(index.contains(key)){
 		return index[key];
 	}
@@ -46,8 +53,8 @@ HashstoreRecord Hashstore::resolve(const QString &key){
 }
 
 
-
 QString Hashstore::generatePathFromKey(const QString &key) const{
+	OC_METHODGATE();
 	if(key.size()<DIR_LEVELS){
 		qWarning()<<"ERROR: key was invalid";
 		return "";

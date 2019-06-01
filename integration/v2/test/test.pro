@@ -123,8 +123,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testEventSourcing \
 #		testEyesWidget \
 #		testFivePhase \
-		testHardwareWidget \
-#		testHashstore \
+#		testHardwareWidget \
+		testHashstore \
 #		testHoneymoonScheduler \
 #		testIDDuel \
 #		testIdenticon \
