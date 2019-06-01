@@ -10,20 +10,24 @@ MockCommsCarrierLog::MockCommsCarrierLog(QObject *parent)
 
 }
 
+
 MockCommsCarrierLog::~MockCommsCarrierLog()
 {
 
 }
+
 
 void MockCommsCarrierLog::onCarrierReadyRead()
 {
 	qDebug()<<"MOCA::onCarrierReadyRead()";
 }
 
+
 void MockCommsCarrierLog::onCarrierError(const QString err)
 {
 	qDebug()<<"MOCA::onCarrierError(err="<<err<<")";
 }
+
 
 void MockCommsCarrierLog::onCarrierSendingOpportunity(const quint64 now)
 {
@@ -34,6 +38,7 @@ void MockCommsCarrierLog::onCarrierSendingOpportunity(const quint64 now)
 	}
 	mOpportunityCount++;
 }
+
 
 void MockCommsCarrierLog::onCarrierConnectionStatusChanged(const bool connected)
 {

@@ -15,7 +15,6 @@ public:
 	explicit MockCommsCarrierLog(QObject *parent=nullptr);
 	virtual ~MockCommsCarrierLog();
 
-
 public slots:
 	void onCarrierReadyRead();
 	void onCarrierError(const QString err);
@@ -24,4 +23,5 @@ public slots:
 };
 
 
-#endif // MOCKCOMMSCARRIERLOG_HPP
+#endif
+// MOCKCOMMSCARRIERLOG_HPP
