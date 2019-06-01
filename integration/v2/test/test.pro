@@ -139,8 +139,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testNameGenerator \
 #		testNetworkAddress \
 #		testNetworkSettingsWidget \
-		testOpenCL \
-#		testParser \
+#		testOpenCL \
+		testParser \
 #		testPortableID \
 #		testPoseMappingWidget \
 #		testRateCalculator \
