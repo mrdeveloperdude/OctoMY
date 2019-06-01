@@ -100,9 +100,9 @@ contains(DEFINES, OC_USE_TESTS_WEB){
 contains(DEFINES, OC_USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
-		testTrustSymbolWidget \
-#		testAddressBook \
-#		testAddressList \
+#		testTrustSymbolWidget \
+		testAddressBook \
+		testAddressList \
 #		testAgentStateCourier \
 #		testArduMY \
 #		testAssociate \
@@ -147,7 +147,6 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testTryToggle \
 #		testUtility \
 #		testZooComms \
-
 
 	STRESS_PROJECTS+= \
 	#	stressCapabilities \
