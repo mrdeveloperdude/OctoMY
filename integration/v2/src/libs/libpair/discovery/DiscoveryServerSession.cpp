@@ -2,6 +2,9 @@
 
 #include "uptime/MethodGate.hpp"
 
+#include "DiscoveryServerEntry.hpp"
+#include "address/Associate.hpp"
+
 #include <QDebug>
 
 DiscoveryServerSession::DiscoveryServerSession()
@@ -10,28 +13,30 @@ DiscoveryServerSession::DiscoveryServerSession()
 }
 
 
-bool DiscoveryServerSession::set(QSharedPointer<Associate> part)
+bool DiscoveryServerSession::set(DiscoveryServerEntry part)
 {
 	OC_METHODGATE();
 	if(part.isNull()) {
-		qWarning()<<"ERROR: participant was 0";
+		qWarning()<<"ERROR: participant was null";
 		return false;
 	}
-	// Allready there
-	if(has(part->id())) {
+	auto id=part.id();
+	// Participant allready ni session
+	if(has(id)) {
 		//qDebug()<<"Participant " << part->ID << "already in session";
 		return true;
 	}
 	// This session is overcrowded, bounce
 	if(mParticipantsByID.size()>100)	{
-		qWarning()<<"ERROR: Session was full, participant "<<part->id()<<" bounced";
+		qWarning()<<"ERROR: Session was full, participant "<<part.id()<<" bounced";
 		return false;
 	}
 	// There is room, insert us
 	//qDebug()<<"Session had room for participant "<< part->ID;
-	mParticipantsByID[part->id()]=part;
+	mParticipantsByID[id]=part;
 	return true;
 }
+
 
 bool DiscoveryServerSession::has(QString id)
 {
@@ -44,8 +49,8 @@ QVariantList DiscoveryServerSession::toVariantMap()
 {
 	OC_METHODGATE();
 	QVariantList list;
-	for(QSharedPointer<Associate> part:mParticipantsByID) {
-		list.append(part->toVariantMap());
+	for(DiscoveryServerEntry part:mParticipantsByID) {
+		list.append(part.toVariantMap());
 	}
 	return list;
 }
@@ -55,10 +60,10 @@ quint64 DiscoveryServerSession::prune(quint64 deadline)
 {
 	OC_METHODGATE();
 	quint64 ct=0;
-	for (QMap<QString, QSharedPointer<Associate>>::iterator  it = mParticipantsByID.begin(); it != mParticipantsByID.end() /* not hoisted */; /* no increment */) {
+	for (auto it = mParticipantsByID.begin(), e = mParticipantsByID.end() ; it != e/* not hoisted */; /* no increment */) {
 		QString key=it.key();
-		QSharedPointer<Associate> part=it.value();
-		if(part->lastSeen()<=deadline) {
+		DiscoveryServerEntry part=it.value();
+		if(part.lastSeen()<=deadline) {
 			mParticipantsByID.erase(it++);
 			ct++;
 		} else {
@@ -72,5 +77,5 @@ quint64 DiscoveryServerSession::prune(quint64 deadline)
 quint64 DiscoveryServerSession::count()
 {
 	OC_METHODGATE();
-	return mParticipantsByID.size();
+	return static_cast<quint64>(mParticipantsByID.size());
 }

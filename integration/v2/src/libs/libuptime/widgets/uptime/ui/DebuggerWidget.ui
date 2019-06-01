@@ -43,7 +43,7 @@
     <number>3</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayoutTop">
      <item>
       <widget class="IdenticonWidget" name="widgetIdenticon" native="true">
        <property name="sizePolicy">
@@ -419,7 +419,7 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>150</height>
+       <height>200</height>
       </size>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -461,7 +461,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
-            <height>20</height>
+            <height>10</height>
            </size>
           </property>
          </spacer>
@@ -479,7 +479,7 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>130</height>
+          <height>150</height>
          </size>
         </property>
        </widget>

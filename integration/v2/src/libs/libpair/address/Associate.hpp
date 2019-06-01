@@ -18,6 +18,8 @@
 
 #include "address/AddressList.hpp"
 
+#include "TrustList.hpp"
+
 #include <QBluetoothAddress>
 
 #include <QByteArray>
@@ -55,7 +57,7 @@ private:
 	// The type of this associate
 	NodeType mType;
 	// A list of the trusts assigned to this associate
-	QStringList mTrusts;
+	TrustList mTrusts;
 	// The last trusted sighting of this associate
 	quint64 mLastSeenMS;
 	// The last time this associate initiated a handshake
@@ -127,12 +129,9 @@ public: // Pins management
 	bool hasPin(QString pin);
 	const QStringList &pins();
 
-public: // Trusts management
-	void clearTrust();
-	void addTrust(QString trust);
-	void removeTrust(QString trust);
-	bool hasTrust(QString trust);
-	const QStringList &trusts();
+	// Trusts management
+public:
+	TrustList &trusts();
 
 public: // Converting selectors to/from different formats
 	PortableID toPortableID();

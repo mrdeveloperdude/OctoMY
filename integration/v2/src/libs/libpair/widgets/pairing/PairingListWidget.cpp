@@ -51,7 +51,7 @@ void PairingListWidget::configure(QSharedPointer<Node> node)
 					ui->listViewNodes->setItemDelegate(mDelegate);
 					if(nullptr!=mDelegate) {
 						if(!connect(mDelegate, &PairingEditButtonDelegate::startEdit, [this](const QString id) {
-						//qDebug()<<"EDIT "<<id;
+						qDebug()<<"EDIT STARTED FOR "<<id;
 							emit startEdit(id);
 						}
 								   )) {

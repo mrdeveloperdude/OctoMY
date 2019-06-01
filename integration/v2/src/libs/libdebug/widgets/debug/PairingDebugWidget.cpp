@@ -35,14 +35,25 @@ void PairingDebugWidget::configure(QSharedPointer <Node> node)
 		if(!mNode.isNull()) {
 			if(!mTrustWidget.isNull()) {
 				mTrustWidget->configure(mNode);
-				if(!connect(mTrustWidget.data(), &PairingTrustWidget::editComplete, this, [this](TrustLevel level, bool save) {
-				qDebug()<<"EDIT COMPLETE!!!!!!!!!!!!!!!!!!!!!!!!!";
+				if(!connect(mTrustWidget.data(), &PairingTrustWidget::editComplete, this, [this](QString id, TrustLevel level, bool save) {
+				qDebug()<<"EDIT COMPLETE FOR "<<id <<" with level="<<trustLevelToString(level)<<" and save="<<save;
+					mTrustWidget->hide();
+					auto addressBook=mNode->addressBook();
+					if(!addressBook.isNull()) {
+						auto ass=addressBook->associateByID(id);
+						if(!ass.isNull()) {
+							ass->trusts().applyTrustLevel(level, ass->type());
+						} else {
+							qWarning()<<"ERROR: Could not apply edited trusts to associate";
+						}
+					}
 				}, OC_CONTYPE)) {
 					qWarning()<<"ERROR: Could not connect";
 				}
 
-				if(!connect(mTrustWidget.data(), &PairingTrustWidget::remove, this, [this]() {
-				qDebug()<<"REMOVE!!!!!!!!!!!!!!!!!!!!!!!!!";
+				if(!connect(mTrustWidget.data(), &PairingTrustWidget::remove, this, [this](QString id) {
+				qDebug()<<"EDITING COMPLETE FOR " <<id<<" with REMOVE";
+					mTrustWidget->hide();
 				}, OC_CONTYPE)) {
 					qWarning()<<"ERROR: Could not connect";
 				}

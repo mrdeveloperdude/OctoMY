@@ -430,23 +430,37 @@ void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp
 			}
 		}
 		const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
-		QSharedPointer<Associate> part(OC_NEW Associate(root));
-		qDebug()<<"GOT PARTICIPANT "<<part->name()<<"(type="<<nodeTypeToString(part->type())<<", gender="<<part->gender()<<", id="<<part->id()<<", addresses="<<part->addressList().toString()<<")";
-		NetworkAddress na(QHostAddress(req->remoteAddress()), req->remotePort());
-		qDebug()<<"Attaching visible address "<<na.toString() <<" to participant";
-		part->addressList().add(QSharedPointer<AddressEntry>(new AddressEntry(na, "public", now)));
-		for(auto nad:addresses) {
-			part->addressList().add(QSharedPointer<AddressEntry>(new AddressEntry(nad, "local", now)));
-		}
-		part->addPin(root.value("manualPin").toString());
-		part->addPin(root.value("geoPin").toString());
-		DiscoveryServerSession *ses=mDiscovery.request(part);
-		if(nullptr!=ses) {
-			map["peers"]=ses->toVariantMap();
+		QSharedPointer<Associate> associate(OC_NEW Associate(root));
+		if(!associate.isNull()) {
+			QSharedPointer<Key> key(OC_NEW Key(root.value("key").toMap(), true));
+			if(!key.isNull()) {
+				if(key->id()==associate->id()) {
+					qDebug()<<"GOT PARTICIPANT "<<associate->name()<<"(type="<<nodeTypeToString(associate->type())<<", gender="<<associate->gender()<<", id="<<associate->id()<<", id2="<<key->id()<<", addresses="<<associate->addressList().toString()<<")";
+					NetworkAddress na(QHostAddress(req->remoteAddress()), req->remotePort());
+					qDebug()<<"Attaching visible address "<<na.toString() <<" to participant";
+					associate->addressList().add(QSharedPointer<AddressEntry>(new AddressEntry(na, "public", now)));
+					for(auto nad:addresses) {
+						associate->addressList().add(QSharedPointer<AddressEntry>(new AddressEntry(nad, "local", now)));
+					}
+					associate->addPin(root.value("manualPin").toString());
+					associate->addPin(root.value("geoPin").toString());
+					DiscoveryServerEntry part(associate, key);
+					DiscoveryServerSession *ses=mDiscovery.request(part);
+					if(nullptr!=ses) {
+						map["peers"]=ses->toVariantMap();
+					} else {
+						res->setStatusCode(qhttp::ESTATUS_INTERNAL_SERVER_ERROR);
+						map["status"] = "error";
+						map["message"] = "ERROR: No session";
+					}
+				} else {
+					qWarning().noquote().nospace()<<"ERROR: key id '"<<key->id()<<"' different from associate id '"<<associate->id()<<"'";
+				}
+			} else {
+				qWarning()<<"ERROR: key was null";
+			}
 		} else {
-			res->setStatusCode(qhttp::ESTATUS_INTERNAL_SERVER_ERROR);
-			map["status"] = "error";
-			map["message"] = "ERROR: No session";
+			qWarning()<<"ERROR: associate was null";
 		}
 	}
 }
@@ -456,7 +470,8 @@ void ZooServer::onBackgroundTimer()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		mDiscovery.prune(utility::time::currentMsecsSinceEpoch<quint64>() - PRUNE_DEADLINE);//Prune all associates that have not been seen for some time
+		//Prune all associates that have not been seen for some time
+		mDiscovery.prune(utility::time::currentMsecsSinceEpoch<quint64>() - PRUNE_DEADLINE);
 	}
 }
 

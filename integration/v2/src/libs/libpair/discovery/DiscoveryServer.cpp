@@ -3,6 +3,7 @@
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 
+
 #include <QCryptographicHash>
 #include <QRegularExpression>
 #include <QDebug>
@@ -23,21 +24,19 @@ DiscoveryServer::~DiscoveryServer()
 	OC_METHODGATE();
 }
 
-DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<Associate> part)
+
+DiscoveryServerSession * DiscoveryServer::request(DiscoveryServerEntry part)
 {
 	OC_METHODGATE();
 	quint32 participantAddCount=0;
 	quint32 sessionAddCount=0;
-	if(part.isNull()) {
-		qWarning()<<"ERROR: participant was nullptr";
-		return nullptr;
-	}
-	if(!part->isValidForServer()) {
-		qWarning()<<"ERROR: participant was invalid for server: "<<part->toString();
+
+	if(!part.isValidForServer()) {
+		qWarning()<<"ERROR: participant was invalid for server: "<<part.toString();
 		return nullptr;
 	}
 	DiscoveryServerSession *ses=nullptr;
-	const QStringList &pins=part->pins();
+	const QStringList &pins=part.pins();
 	if(!pins.isEmpty()) {
 		QString pin;
 		for(QString p: pins) {
@@ -76,7 +75,7 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<Associate> part
 					participantAddCount++;
 				}
 			} else {
-				if(!ses->has(part->id())) {
+				if(!ses->has(part.id())) {
 					if(!ses->set(part)) {
 						qWarning()<<"ERROR: participant was not welcome in existing session";
 						ses=nullptr;
@@ -100,8 +99,6 @@ DiscoveryServerSession * DiscoveryServer::request(QSharedPointer<Associate> part
 	}
 	return ses;
 }
-
-
 
 
 void DiscoveryServer::prune(quint64 deadline)

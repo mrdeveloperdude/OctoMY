@@ -22,7 +22,7 @@ PortableID::PortableID()
 PortableID::PortableID(QVariantMap &data)
 	: mName(data["name"].toString())
 	, mGender(data["gender"].toString())
-	, mID(data["key"].toMap()["id"].toString())
+	, mID(data["id"].toString())
 	, mBirthDate(static_cast<quint64>(QDateTime::fromString(data["createDate"].toString(), dateFMT).toMSecsSinceEpoch()))
 	, mType(nodeTypeFromString(data["type"].toString()))
 {

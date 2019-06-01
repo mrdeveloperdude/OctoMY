@@ -19,6 +19,9 @@
 
 #include <QRegularExpression>
 
+
+const QRegularExpression rePin("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
+
 /*
 Associate::Associate(const QVariantMap map, bool isPublic)
 	: mKey( map["key"].toMap(), isPublic)
@@ -73,7 +76,6 @@ Associate::Associate()
 }
 
 
-
 Associate::~Associate()
 {
 	OC_METHODGATE();
@@ -116,13 +118,12 @@ bool Associate::update(const QVariantMap map, bool trustedSource)
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-
 QString Associate::id() //NOTE no const please
 {
 	OC_METHODGATE();
 	return mID;
 }
+
 
 QString Associate::name() const
 {
@@ -154,7 +155,6 @@ QString Associate::identifier()
 }
 
 
-
 QString Associate::gender() const
 {
 	OC_METHODGATE();
@@ -175,13 +175,12 @@ NodeType Associate::type() const
 	return mType;
 }
 
+
 NodeRole Associate::role() const
 {
 	OC_METHODGATE();
 	return mRole;
 }
-
-
 
 
 bool Associate::isValidForClient(bool onlyPublic)
@@ -196,7 +195,6 @@ bool Associate::isValidForClient(bool onlyPublic)
 	}
 	return out;
 }
-
 
 
 bool Associate::isValidForLocalIdentity(bool onlyPublic)
@@ -232,6 +230,7 @@ AddressList &Associate::addressList()
 	return mAddressList;
 }
 
+
 QBluetoothAddress Associate::bluetoothAddress() const
 {
 	OC_METHODGATE();
@@ -247,6 +246,7 @@ void Associate::setLastSeen(quint64 when)
 	}
 	mLastSeenMS=when;
 }
+
 
 quint64 Associate::lastSeen() const
 {
@@ -269,47 +269,11 @@ quint64 Associate::lastAdherentHandshake() const
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-
-
-void Associate::clearTrust()
-{
-	OC_METHODGATE();
-	mTrusts.clear();
-}
-
-void Associate::addTrust(QString trust)
-{
-	OC_METHODGATE();
-	mTrusts.push_back(trust);
-}
-
-
-void Associate::removeTrust(QString trust)
-{
-	OC_METHODGATE();
-	if(mTrusts.contains(trust)) {
-		mTrusts.removeAll(trust);
-	}
-}
-
-bool Associate::hasTrust(QString trust)
-{
-	return mTrusts.contains(trust);
-}
-
-const QStringList &Associate::trusts()
+TrustList &Associate::trusts()
 {
 	OC_METHODGATE();
 	return mTrusts;
 }
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-
-const QRegularExpression rePin("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
 
 
 void Associate::clearPins()
@@ -331,7 +295,6 @@ void Associate::addPin(QString pin)
 }
 
 
-
 bool Associate::hasPin(QString pin)
 {
 	return mPins.contains(pin);
@@ -343,9 +306,6 @@ const QStringList &Associate::pins()
 	return mPins;
 }
 
-
-
-////////////////////////////////////////////////////////////////////////////////
 
 PortableID Associate::toPortableID()
 {
@@ -377,10 +337,9 @@ QVariantMap Associate::toVariantMap()
 	map["name"]=mName;
 	map["gender"]=mGender;
 	//map["pins"]=mPins;//DONT STORE PINS THEY ARE EPHEMERAL
-	map["trusts"]=mTrusts;
+	map["trusts"]=QStringList(mTrusts.toList());
 	return map;
 }
-
 
 
 void Associate::fromVariantMap(const QVariantMap map)
@@ -401,7 +360,6 @@ void Associate::fromVariantMap(const QVariantMap map)
 }
 
 
-
 QString Associate::toString()
 {
 	OC_METHODGATE();
@@ -417,8 +375,9 @@ QString Associate::toString()
 		   +", role:"+nodeRoleToString(mRole)
 		   +", type:"+nodeTypeToString(mType)
 		   +", pins:"+mPins.join(";")
-		   +", trusts:"+mTrusts.join(";");
+		   +", trusts:"+QStringList(mTrusts.toList()).join(";");
 }
+
 
 QMap<QString, QString> Associate::toMap()
 {
@@ -435,9 +394,10 @@ QMap<QString, QString> Associate::toMap()
 	map["role"]=nodeRoleToString(mRole);
 	map["type"]=nodeTypeToString(mType);
 	map["pins"]=mPins.join(";");
-	map["trusts"]=mTrusts.join(";");
+	map["trusts"]=QStringList(mTrusts.toList()).join(";");
 	return map;
 }
+
 
 QSharedPointer<Client> Associate::toClient(QSharedPointer<Node> node)
 {
@@ -460,10 +420,8 @@ QSharedPointer<Client> Associate::toClient(QSharedPointer<Node> node)
 		ret->configure(node, sharedFromThis());
 	}
 	return ret;
-
 }
 
-////////////////////////////////////////////////////////////////////////////////
 
 bool Associate::operator==(Associate &o)
 {

@@ -92,7 +92,7 @@ void SvgWidget::paintEvent(QPaintEvent *)
 	} else {
 		QPainter oPainter;
 		oPainter.begin( this );
-		oPainter.fillRect(rect(),Qt::red);
+		oPainter.fillRect(rect(), mFailColor);
 		oPainter.end();
 	}
 }
@@ -128,7 +128,7 @@ QString SvgWidget::svgURL() const
 	if(true /*mConfigureHelperSvg.isConfiguredAsExpected()*/) {
 		return mLastURL;
 	}
-	return "";
+	return QString();
 }
 
 

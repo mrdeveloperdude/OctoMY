@@ -34,7 +34,7 @@ public:
 public:
 	void configure(bool doSilhouette, QColor silhouetteForeground=QColor("White"), QColor silhouetteBackground=QColor("#00000000"));
 
-	void setSvg(QSvgRenderer &mSVG);
+	void setSvg(QSvgRenderer &svg);
 
 	void setSvgURL(QString url);
 	QString svgURL() const;

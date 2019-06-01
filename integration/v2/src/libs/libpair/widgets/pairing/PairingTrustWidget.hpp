@@ -25,18 +25,22 @@ private:
 	QTimer mPulsatingTrustTimer;
 	QSharedPointer<Node> mNode;
 	ConfigureHelper mConfigureHelper;
+	QString mCurrentID;
 
 public:
 	explicit PairingTrustWidget(QWidget *parent = nullptr);
 	virtual ~PairingTrustWidget() Q_DECL_OVERRIDE;
+
 
 public:
 	void configure(QSharedPointer<Node> node);
 
 public:
 	void updatePulsating();
+
 	void startEdit(QSharedPointer<Associate> peer);
 	TrustLevel selectedTrustLevel() const;
+	void selectTrustLevel(TrustLevel level);
 
 protected:
 	void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
@@ -52,8 +56,8 @@ private slots:
 	void on_pushButtonRemove_clicked();
 
 signals:
-	void editComplete(TrustLevel level, bool save);
-	void remove();
+	void editComplete(QString id, TrustLevel level, bool save);
+	void remove(QString id);
 
 };
 

@@ -39,7 +39,7 @@ void PortableIDWidget::setPortableID(PortableID id)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		//qDebug()<<"portable id widget was updated with "<<id;
+		//qDebug()<<"-----------###==== PortableIDWidget was updated with "<<id;
 		mID=id;
 		const NodeType type=mID.type();
 		const bool isAgent=TYPE_AGENT==type;
@@ -60,7 +60,7 @@ void PortableIDWidget::setPortableID(PortableID id)
 		ui->labelIDCaption->setText(isAgent?"Soul ID": "ID");
 		ui->labelID->setText(mID.id());
 
-		ui->widgetIdenticon->setPortableID(id);
+		ui->widgetIdenticon->setPortableID(mID);
 		ui->widgetQR->setQRData(mID.id());
 		const quint64 ts=mID.birthDate();
 		if(ts>0) {

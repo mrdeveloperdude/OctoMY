@@ -94,6 +94,11 @@ void DiscoveryClient::activate(bool on)
 }
 
 
+bool DiscoveryClient::isActive() const
+{
+	OC_METHODGATE();
+	return mTimer.isActive();
+}
 
 
 QSharedPointer<Key> DiscoveryClient::localKey() const
@@ -125,12 +130,6 @@ QUrl DiscoveryClient::URL() const
 	return mServerURL;
 }
 
-
-bool DiscoveryClient::isActive() const
-{
-	OC_METHODGATE();
-	return mTimer.isActive();
-}
 
 void DiscoveryClient::discover()
 {
@@ -287,11 +286,13 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 			QSharedPointer<KeyStore> keyStore=mNode->keyStore();
 			auto ourKey=keyStore->localKey();
 			if(!ourKey.isNull()) {
-				const QString partID=key->id();
+				const QString partID=key->id().trimmed();
 				const QString ourID=ourKey->id();
-				if(partID==zeroID) {
+				if(""==partID) {
+					qWarning()<<"ERROR: Skipping new participant with empty ID: "<<partID;
+				} else if(zeroID == partID) {
 					qWarning()<<"ERROR: Skipping new participant with zero ID: "<<partID;
-				} else if(partID==ourID) {
+				} else if(ourID == partID) {
 					//qDebug()<<" + Skipping new participant with our ID: "<<partID;
 				} else {
 					QSharedPointer<AddressBook> peers=mNode->addressBook();
@@ -300,11 +301,12 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 						if(peers->hasAssociate(partID)) {
 							qDebug()<<" + Updating participant with ID: "<<partID;
 							part=peers->associateByID(partID);
-							part->update(map, false);
-							emit peers->associatesChanged();
-							emit nodeDiscovered(partID);
+							if(part->update(map.value("associate").toMap(), false)) {
+								emit peers->associatesChanged();
+								emit nodeDiscovered(partID);
+							}
 						} else {
-							part=QSharedPointer<Associate>(OC_NEW Associate(map));
+							part=QSharedPointer<Associate>(OC_NEW Associate(map.value("associate").toMap()));
 							if(!part.isNull()) {
 								if(part->isValidForClient()) {
 									QSharedPointer<CommsChannel> comms=mNode->comms();

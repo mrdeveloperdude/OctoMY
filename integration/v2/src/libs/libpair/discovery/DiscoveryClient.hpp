@@ -124,13 +124,15 @@ private:
 	QSharedPointer<Key> localKey() const;
 
 public:
+	void activate(bool start);
+	bool isActive() const;
+
 	void setURL(const QUrl&);
 	QUrl URL() const;
-	bool isActive() const;
-	void activate(bool start);
+
 
 	// Perform one shot discovery by invoking discovery request to discovery server
-	// NOTE: This should only be invoked from internal timer.
+	// NOTE: This should only be invoked from internal timer for normal operation.
 	void discover();
 
 	QSharedPointer<Node> node() const;

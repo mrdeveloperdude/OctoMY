@@ -13,7 +13,10 @@
 
 #include "node/Node.hpp"
 
+#include "address/TrustList.hpp"
+
 #include <QMessageBox>
+
 
 PairingTrustWidget::PairingTrustWidget(QWidget *parent)
 	: QWidget(parent)
@@ -21,6 +24,7 @@ PairingTrustWidget::PairingTrustWidget(QWidget *parent)
 	, mConfigureHelper("PairingTrustWidget", true, false, true, true, false)
 {
 	OC_METHODGATE();
+	qRegisterMetaType<TrustLevel>("TrustLevel");
 	ui->setupUi(this);
 }
 
@@ -38,37 +42,18 @@ void PairingTrustWidget::configure(QSharedPointer<Node> n)
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
 		mNode=n;
+		ui->widgetTrustLevel->configure(true);
+		ui->widgetParticipantCertificate->configure(false, true);
 		mPulsatingTrustTimer.setTimerType(Qt::PreciseTimer);
+
 		// Somewhat conservative FPS
 		mPulsatingTrustTimer.setInterval(1000/30);
 		mPulsatingTrustTimer.setSingleShot(false);
-
 		if(!QObject::connect(&mPulsatingTrustTimer, SIGNAL(timeout()), this, SLOT(onPulsatingTrustTimer()), OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect ";
 		}
 		if(!QObject::connect(ui->buttonGroupTrust, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(onTrustButtonClicked(QAbstractButton *)), OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect ";
-		}
-
-		if(!mNode.isNull()) {
-			auto addressBook=mNode->addressBook();
-			if(!addressBook.isNull()) {
-				QSharedPointer<Associate> peer=addressBook->associateByID("REPLACE ME");
-				if(!peer.isNull()) {
-					//NodeType type=peer->type();
-					ui->widgetParticipantCertificate->configure(false, true);
-					ui->widgetParticipantCertificate->setPortableID(peer->toPortableID());
-
-					auto addresses=peer->addressList();
-					QStringList list;
-					for(auto address:addresses) {
-						list << address->description+"="+address->address.toString();
-					}
-					ui->labelStats->setText("Addresses for '"+peer->identifier()+"': [ "+list.join(", ")+" ]");
-
-
-				}
-			}
 		}
 	}
 }
@@ -94,45 +79,21 @@ void PairingTrustWidget::startEdit(QSharedPointer<Associate> peer)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		qDebug()<<"STARTING EDIT FOR "<<peer;
+		qDebug()<<"STARTING EDIT FOR "<<peer->toPortableID();
 		if(!peer.isNull()) {
-			const QStringList trusts=peer->trusts();
-			const NodeType type=peer->type();
-			const bool take=trusts.contains("take-control");
-			const bool give=trusts.contains("give-control");
-			const bool block=trusts.contains("block");
-			int index=0;
-			if(block) {
-				index=2;
-			} else {
-				switch(type) {
-//					default:
-				case(TYPE_ZOO):
-				case(TYPE_UNKNOWN):
-				case(TYPE_AGENT): {
-					if(give) {
-						index=1;
-					}
-				}
-				break;
-				case(TYPE_REMOTE): {
-					if(take) {
-						index=1;
-					}
-				}
-				break;
-				case(TYPE_HUB): {
-					if(give || take) {
-						index=1;
-					}
-				}
-				break;
-				}
+			ui->widgetParticipantCertificate->setPortableID(peer->toPortableID());
+			auto addresses=peer->addressList();
+			QStringList list;
+			for(auto address:addresses) {
+				list << address->description+"="+address->address.toString();
 			}
-			utility::ui::setSelectedButtonIndex(ui->buttonGroupTrust, index);
-			onTrustButtonClicked(ui->buttonGroupTrust->checkedButton());
-			qDebug()<<"EDITING STARTS WITH trusts: "<<peer->trusts();
-			qDebug()<<"EDITING STARTS WITH name: "<<peer->name();
+			ui->labelStats->setText("Addresses for '"+peer->identifier()+"': [ "+list.join(", ")+" ]");
+			TrustLevel level=peer->trusts().toTrustLevel(peer->type());
+			qDebug()<<"EDITING STARTS WITH id: "<<peer->id();
+			//onTrustButtonClicked(ui->buttonGroupTrust->checkedButton());
+			selectTrustLevel(level);
+			mCurrentID=peer->id();
+			setEnabled(true);
 		}
 	}
 }
@@ -159,6 +120,34 @@ TrustLevel PairingTrustWidget::selectedTrustLevel() const
 }
 
 
+void PairingTrustWidget::selectTrustLevel(TrustLevel level)
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		int index=0;
+		switch(level) {
+		case(TrustLevel::BLOCK): {
+			index=2;
+		}
+		break;
+		case(TrustLevel::TRUST): {
+			index=1;
+		}
+		break;
+		case(TrustLevel::IGNORE): {
+			index=0;
+		}
+		break;
+		}
+		utility::ui::setSelectedButtonIndex(ui->buttonGroupTrust, index);
+		ui->widgetTrustLevel->setTrustLevel(level);
+		updatePulsating();
+		ui->widgetTrustLevel->update();
+		qDebug()<<"TRUST CHANGED TO "<<trustLevelToString(level);
+	}
+}
+
+
 void PairingTrustWidget::showEvent(QShowEvent *)
 {
 	OC_METHODGATE();
@@ -182,12 +171,7 @@ void PairingTrustWidget::onTrustButtonClicked(QAbstractButton *button)
 	OC_METHODGATE();
 	Q_UNUSED(button);
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		TrustLevel level=selectedTrustLevel();
-		ui->widgetTrustLevel->setTrustLevel(level);
-		//mTrustIndex=utility::getSelectedButtonIndex(ui->buttonGroupTrust, -1);
-		updatePulsating();
-		ui->widgetTrustLevel->update();
-		qDebug()<<"TRUST CHANGED TO "<<trustLevelToString(level);
+		selectTrustLevel(selectedTrustLevel());
 	}
 }
 
@@ -282,7 +266,9 @@ void PairingTrustWidget::on_pushButtonSaveEdits_clicked()
 		mCurrentlyEditingID="";
 		*/
 		qDebug()<<"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEDIT COMPLETE";
-		emit editComplete(selectedTrustLevel(), true);
+		setEnabled(false);
+		emit editComplete(mCurrentID, selectedTrustLevel(), true);
+		mCurrentID="";
 	}
 }
 
@@ -292,7 +278,9 @@ void PairingTrustWidget::on_pushButtonRemove_clicked()
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		if (QMessageBox::Yes == QMessageBox::question(this, "Warning", "Are you sure you want to permanently DELETE this peer?", QMessageBox::Yes|QMessageBox::No)) {
-			emit remove();
+			setEnabled(false);
+			emit remove(mCurrentID);
+			mCurrentID="";
 		}
 	}
 }

@@ -19,6 +19,7 @@ TrustSymbolWidget::TrustSymbolWidget(QWidget *parent)
 	: SvgWidget(parent)
 {
 	OC_METHODGATE();
+	Q_INIT_RESOURCE(icons);
 }
 
 

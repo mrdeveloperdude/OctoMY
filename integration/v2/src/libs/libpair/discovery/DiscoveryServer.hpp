@@ -5,7 +5,11 @@
 #include "DiscoveryServerSession.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
 
+#include "DiscoveryServerEntry.hpp"
+
 #include <QMap>
+
+
 
 /**
  * DiscoveryServer is part fo the discovery process. Please see full description
@@ -15,7 +19,9 @@
 class DiscoveryServer
 {
 private:
+	// The active sessions
 	QMap<QString, DiscoveryServerSession *> mRegistry;
+	// Flag to determine if we are logging or not
 	bool mLog;
 
 public:
@@ -23,8 +29,11 @@ public:
 	virtual ~DiscoveryServer();
 
 public:
-	DiscoveryServerSession *request(QSharedPointer<Associate> part);
+	// Handle incomming request
+	DiscoveryServerSession *request(DiscoveryServerEntry part);
+	// Remove inactive sessions
 	void prune(quint64 deadline);
+	// Export full state to map
 	QVariantList toVariantList();
 
 };

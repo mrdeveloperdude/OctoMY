@@ -78,7 +78,8 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 				qWarning()<<"ERROR: Could not connect";
 			}
 		}
-		ui->widgetIdenticon->configure();
+		// Not necessary
+		//ui->widgetIdenticon->configure();
 		ui->widgetBirthCertificate->configure();
 		updateIdentity();
 		ui->widgetHeaderCommsChannel->configure(mNode);
@@ -278,7 +279,26 @@ void DebuggerWidget::pack()
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		QTimer::singleShot(0, this, [this]() {
-			resize(0,0);
+			// Calculate minimum size
+			int h=ui->horizontalLayoutTop->minimumSize().height();
+			int w=0;
+			const int layoutSpacing = ui->horizontalLayoutTop->spacing();
+			for(auto widget:mHeaderWidgets) {
+				if(widget->isVisible()) {
+					auto sz=widget->minimumSize();
+					w=qMax(w, sz.width());
+					h+=sz.height()+layoutSpacing;
+				}
+			}
+			for(auto widget:mHeaderButtons) {
+				if(widget->isVisible()) {
+					auto sz=widget->minimumSize();
+					w=qMax(w, sz.width());
+					h+=sz.height()+layoutSpacing;
+				}
+			}
+			// Apply minimum size
+			resize(QSize(w,h));
 		});
 	}
 }
