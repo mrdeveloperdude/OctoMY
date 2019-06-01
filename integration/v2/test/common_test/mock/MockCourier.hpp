@@ -11,7 +11,6 @@ class MockCourier:public Courier
 	Q_OBJECT
 
 public:
-
 	CommsTester *mCt;
 	quint16 mSoFar;
 
@@ -27,7 +26,6 @@ public:
 	virtual ~MockCourier();
 
 public:
-
 	//Let the CommChannel know what we want
 	CourierMandate mandate() const Q_DECL_OVERRIDE;
 
@@ -43,4 +41,5 @@ public:
 };
 
 
-#endif // MOCKCOURIER_HPP
+#endif
+// MOCKCOURIER_HPP

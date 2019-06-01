@@ -1,7 +1,6 @@
 #ifndef MOCKCOMMSCARRIER_HPP
 #define MOCKCOMMSCARRIER_HPP
 
-
 #include "comms/CommsCarrier.hpp"
 
 #include <QObject>
@@ -33,7 +32,6 @@ public:
 
 	////////////////////////// Mock interface
 public:
-
 	void mockWriteMock(QByteArray data, const NetworkAddress &address, bool sendReadyReadSignal=true);
 	QByteArray mockReadMock(const NetworkAddress &address);
 	void mockSetHasPendingData(bool hasPendingData);
@@ -55,15 +53,12 @@ public:
 
 	// CommsCarrier overrides to take countrol over sending opportunity timer
 public slots:
-
-
 	bool start(NetworkAddress address);
 	void stop();
 
 
 	//////////////////////////  CommsCarrier internal interface methods
 protected:
-
 	void setAddressImp(NetworkAddress address) Q_DECL_OVERRIDE;
 	bool setStartImp(bool) Q_DECL_OVERRIDE;
 
@@ -97,5 +92,5 @@ protected:
 };
 
 
-
-#endif // MOCKCOMMSCARRIER_HPP
+#endif
+// MOCKCOMMSCARRIER_HPP

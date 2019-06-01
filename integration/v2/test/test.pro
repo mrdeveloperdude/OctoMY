@@ -109,8 +109,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testAsyncStore \
 #		testBlob \
 #		testCarSteeringWidget \
-		testCommsCarrier \
-#		testCommsChannel \
+#		testCommsCarrier \
+		testCommsChannel \
 #		testCommsSession \
 #		testConcurrentQueue \
 #		testDataStore \

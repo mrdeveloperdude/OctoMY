@@ -25,11 +25,11 @@ MockCourier::MockCourier(QString name, QString  dest, QByteArray datagram, Comms
 	setDestination(dest);
 }
 
+
 MockCourier::~MockCourier()
 {
 
 }
-
 
 
 // Let the CommChannel know what we want
@@ -37,6 +37,7 @@ CourierMandate MockCourier::mandate() const
 {
 	return mMandate;
 }
+
 
 // Override to act on sending opportunity.
 // Return number of bytes sent ( >0 ) if you took advantage of the opportunity
@@ -58,6 +59,7 @@ quint16 MockCourier::sendingOpportunity(QDataStream &ds )
 	return mMandate.payloadSize;
 }
 
+
 // Override to act on data received
 // Return number of bytes actually read.
 quint16 MockCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
@@ -75,6 +77,7 @@ quint16 MockCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 	qDebug()<<"DATA BYTES RECEIVED="<<availableBytes<<" ("<<in<<")";
 	return in.size()+4;
 }
+
 
 void MockCourier::writeSummary()
 {

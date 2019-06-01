@@ -25,7 +25,9 @@ MockCommsCarrier::~MockCommsCarrier()
 	qDebug()<<"Mock-dtor";
 }
 
+
 ////////////////////////// Mock interface
+
 
 void MockCommsCarrier::mockWriteMock(QByteArray data, const NetworkAddress &address, bool sendReadyReadSignal)
 {
@@ -38,6 +40,7 @@ void MockCommsCarrier::mockWriteMock(QByteArray data, const NetworkAddress &addr
 	}
 }
 
+
 QByteArray MockCommsCarrier::mockReadMock(const NetworkAddress &address)
 {
 	const QString key=address.toString();
@@ -49,11 +52,13 @@ QByteArray MockCommsCarrier::mockReadMock(const NetworkAddress &address)
 	return QByteArray();
 }
 
+
 void MockCommsCarrier::mockSetHasPendingData(bool hasPendingData)
 {
 	qDebug()<<"Mock-Setting HasPendingData to "<< hasPendingData;
 	mHasPendingData=hasPendingData;
 }
+
 
 void MockCommsCarrier::mockSetWriteBatchSize(qint64 writeBatchSize)
 {
@@ -61,11 +66,13 @@ void MockCommsCarrier::mockSetWriteBatchSize(qint64 writeBatchSize)
 	mWriteBatchSize=writeBatchSize;
 }
 
+
 void MockCommsCarrier::mockSetStartFail(bool startFail)
 {
 	qDebug()<<"Mock-Setting StartFail to "<< startFail;
 	mStartFail=	startFail;
 }
+
 
 void MockCommsCarrier::mockSetMinimalPacketInterval(quint64 size)
 {
@@ -73,11 +80,13 @@ void MockCommsCarrier::mockSetMinimalPacketInterval(quint64 size)
 	mMinimalPacketInterval=size;
 }
 
+
 void MockCommsCarrier::mockSetMaximalPacketIntervalImp(quint64 size)
 {
 	qDebug()<<"Mock-Setting MaximalPacketInterval to "<< size;
 	mMaximalPacketInterval=size;
 }
+
 
 void MockCommsCarrier::mockSetAddress(NetworkAddress addr)
 {
@@ -85,17 +94,20 @@ void MockCommsCarrier::mockSetAddress(NetworkAddress addr)
 	mOurAddress=addr;
 }
 
+
 void MockCommsCarrier::mockSetOverrideSendingtimer(bool override)
 {
 	qDebug()<<"Mock-Setting override sending timer from "<<mOverrideStartStop<<" to "<<override;
 	mOverrideStartStop=override;
 }
 
+
 void MockCommsCarrier::mockStartSendingTimer()
 {
 	qDebug()<<"Mock-StartSendingTimer";
 	mSendingTimer.start();
 }
+
 
 void MockCommsCarrier::mockStopSendingTimer()
 {
@@ -125,14 +137,15 @@ void MockCommsCarrier::mockTriggerSendingOpportunity(quint64 now)
 	emit carrierSendingOpportunity(now);
 }
 
+
 void MockCommsCarrier::mockTriggerConnectionStatusChanged(bool connected)
 {
 	qDebug()<<"Mock-Triggering connection status changed signal with new status='"<<connected<<"'";
 	emit carrierConnectionStatusChanged(connected);
 }
 
-////////////////////////// CommsCarrier overrides to take countrol over sending opportunity timer
 
+////////////////////////// CommsCarrier overrides to take countrol over sending opportunity timer
 
 
 bool MockCommsCarrier::start(NetworkAddress address)
@@ -145,6 +158,7 @@ bool MockCommsCarrier::start(NetworkAddress address)
 	}
 }
 
+
 void MockCommsCarrier::stop()
 {
 	if(mOverrideStartStop) {
@@ -155,15 +169,15 @@ void MockCommsCarrier::stop()
 }
 
 
-
-
 //////////////////////////  CommsCarrier internal interface methods
+
 
 void MockCommsCarrier::setAddressImp(NetworkAddress address)
 {
 	qDebug() << "setAddress() called for address "<< address.toString();
 	mOurAddress=address;
 }
+
 
 bool MockCommsCarrier::setStartImp(bool start)
 {
@@ -198,6 +212,7 @@ qint64 MockCommsCarrier::writeDataImp(const QByteArray &datagram, const NetworkA
 	qDebug() << "write() called. wrote "<<written << " of "<< sz <<"bytes to address="<<address.toString()<<" (mock batch size=" << ( (mWriteBatchSize<0)?"no batch":QString::number(mWriteBatchSize)) << ")";
 	return written;
 }
+
 
 qint64 MockCommsCarrier::readDataImp(char *data, qint64 maxlen, QHostAddress *host, quint16 *port)
 {
@@ -243,6 +258,7 @@ bool MockCommsCarrier::hasPendingDataImp()
 	return (!mMockReadData.isEmpty());
 }
 
+
 qint64 MockCommsCarrier::pendingDataSizeImp()
 {
 	if(mMockReadData.isEmpty()) {
@@ -266,11 +282,11 @@ NetworkAddress MockCommsCarrier::addressImp()
 }
 
 
-
 quint64 MockCommsCarrier::minimalPacketIntervalImp()
 {
 	return mMinimalPacketInterval;
 }
+
 
 quint64	MockCommsCarrier::maximalPacketIntervalImp()
 {
