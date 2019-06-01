@@ -42,7 +42,7 @@ void CarrierDebugWidget::configure(QSharedPointer <Node> node)
 					ui->labelCarrierType->setText(car->objectName());
 
 					if(!connect(car.data(), &CommsCarrier::carrierReadyRead, this, [this, car]() {
-					qDebug().noquote().nospace()<<"CommsCarrier read ready";
+					//qDebug().noquote().nospace()<<"CommsCarrier read ready";
 						onUpdate();
 					}, OC_CONTYPE )) {
 						qWarning()<<"ERROR: Could not connect";
@@ -65,7 +65,7 @@ void CarrierDebugWidget::configure(QSharedPointer <Node> node)
 					}
 
 					if(!connect(car.data(), &CommsCarrier::carrierSendingOpportunity, this, [this, car](const quint64 now) {
-					qDebug().noquote().nospace()<<"CommsCarrier sending oportunity: now="<<now;
+					//qDebug().noquote().nospace()<<"CommsCarrier sending opportunity: now="<<now;
 						ui->labelLastSendingOpportunity->setText(utility::string::humanReadableElapsedMS(now));
 						onUpdate();
 					}, OC_CONTYPE )) {

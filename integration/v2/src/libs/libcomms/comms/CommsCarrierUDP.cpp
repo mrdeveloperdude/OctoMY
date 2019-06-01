@@ -78,11 +78,11 @@ bool CommsCarrierUDP::activateImp(const bool on)
 	bool success=true;
 	if(on) {
 		success = mUDPSocket.bind(mLocalAddress.ip(), mLocalAddress.port());
-		qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< " with interval "<<utility::string::humanReadableElapsedMS(mSendingTimer.interval()) <<(success?" succeeded": (" failed with '"+mUDPSocket.errorString()+"'") );
+		//qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< " with interval "<<utility::string::humanReadableElapsedMS(mSendingTimer.interval()) <<(success?" succeeded": (" failed with '"+mUDPSocket.errorString()+"'") );
 
 	} else {
 		mUDPSocket.close();
-		qDebug()<<"----- comms unbind "<< mLocalAddress.toString();
+		//qDebug()<<"----- comms unbind "<< mLocalAddress.toString();
 	}
 	return success;
 }

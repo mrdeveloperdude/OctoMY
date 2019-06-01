@@ -21,14 +21,14 @@ DiscoveryCourier::DiscoveryCourier(QSharedPointer<Associate> ass, QSharedPointer
 	, mLastSend(0)
 {
 	OC_METHODGATE();
-	qDebug()<<"CREATED DiscoveryCourier with PART="<<mAss->toString();
+	//qDebug()<<"CREATED DiscoveryCourier with PART="<<mAss->toString();
 }
 
 
 DiscoveryCourier::~DiscoveryCourier()
 {
 	OC_METHODGATE();
-	qDebug()<<"DELETED DiscoveryCourier with PART="<<mAss->toString();
+	//qDebug()<<"DELETED DiscoveryCourier with PART="<<mAss->toString();
 }
 
 
@@ -45,7 +45,7 @@ CourierMandate DiscoveryCourier::mandate() const
 quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 {
 	OC_METHODGATE();
-	qDebug()<<"Sending opportunity for "<<name();
+	//qDebug()<<"Sending opportunity for "<<name();
 	NetworkAddress nAddr;
 	const quint64 btAddr=mAss->bluetoothAddress().toUInt64();
 	QByteArray ba;
@@ -63,6 +63,7 @@ quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 	ds << ba;
 	const auto bytes=ba.size();
 	mLastSend=utility::time::currentMsecsSinceEpoch<quint64>();
+	/*
 	qDebug().noquote().nospace()<<" **DISCOVERY** TX bytes="
 	<< QString::number(bytes)
 	<< " ( n="
@@ -70,6 +71,7 @@ quint16 DiscoveryCourier::sendingOpportunity(QDataStream &ds)
 	<< ", bt="
 	<< btAddr
 	<< ")";
+	*/
 	return static_cast<quint16>(bytes);
 }
 
@@ -95,6 +97,6 @@ quint16 DiscoveryCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 		xds>>btAddrInt;
 	}
 	const QBluetoothAddress btAddr(btAddrInt);
-	qDebug() << " **DISCOVERY** RX bytes=" << bytes << " ( n=" << nAddr.toString() << ", bt=" << btAddr << ")";
+	//qDebug() << " **DISCOVERY** RX bytes=" << bytes << " ( n=" << nAddr.toString() << ", bt=" << btAddr << ")";
 	return static_cast<quint16>(bytes);
 }
