@@ -9,8 +9,8 @@ struct TestKeys {
 	QString keyID;
 	QString keyID_bad;
 
-
 	TestKeys();
 };
 
-#endif // TESTKEYS_HPP
+#endif
+// TESTKEYS_HPP

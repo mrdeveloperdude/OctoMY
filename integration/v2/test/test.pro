@@ -104,8 +104,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 		testAddressBook \
 #		testAddressList \
 #		testAgentStateCourier \
-		testArduMY \
-#		testAssociate \
+#		testArduMY \
+		testAssociate \
 #		testAsyncStore \
 #		testBlob \
 #		testCarSteeringWidget \
