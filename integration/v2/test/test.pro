@@ -110,9 +110,9 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testBlob \
 #		testCarSteeringWidget \
 #		testCommsCarrier \
-		testCommsChannel \
+#		testCommsChannel \
 #		testCommsSession \
-#		testConcurrentQueue \
+		testConcurrentQueue \
 #		testDataStore \
 #		testDeliveryWizard \
 #		testDiscovery \
