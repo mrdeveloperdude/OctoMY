@@ -47,10 +47,11 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testKeyStore \
 		testLightWidget \
 		testLocalAddressList \
-		testMapEditor\
+		testMapEditor \
 		testNameGenerator \
 		testNetworkAddress \
-		testNetworkSettingsWidget\
+		testNetworkSettingsWidget \
+		testOpenCL \
 		testParser \
 		testPortableID \
 		testPoseMappingWidget \
@@ -134,10 +135,11 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testKeyStore \
 #		testLightWidget \
 #		testLocalAddressList \
-#		testMapEditor\
+#		testMapEditor \
 #		testNameGenerator \
 #		testNetworkAddress \
-		testNetworkSettingsWidget \
+#		testNetworkSettingsWidget \
+		testOpenCL \
 #		testParser \
 #		testPortableID \
 #		testPoseMappingWidget \
