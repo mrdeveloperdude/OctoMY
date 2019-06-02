@@ -150,8 +150,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testSimpleDataStore \
 #		testStreamCodec \
 #		testSyncParameter \
-		testTaskQueue \
-#		testTetraGPSEncoder \
+#		testTaskQueue \
+		testTetraGPSEncoder \
 #		testTrustSymbolWidget \
 #		testTryToggle \
 #		testUtility \

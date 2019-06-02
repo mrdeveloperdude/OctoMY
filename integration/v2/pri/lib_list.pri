@@ -39,6 +39,7 @@ AUTOLIBS_COMBINED += \
 #	motorics \
 	video \
 	audio \
+	gps \
 	map \
 	plan \
 	plot \
