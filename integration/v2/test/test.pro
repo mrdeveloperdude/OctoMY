@@ -151,8 +151,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testStreamCodec \
 #		testSyncParameter \
 #		testTaskQueue \
-		testTetraGPSEncoder \
-#		testTrustSymbolWidget \
+#		testTetraGPSEncoder \
+		testTrustSymbolWidget \
 #		testTryToggle \
 #		testUtility \
 #		testZooComms \

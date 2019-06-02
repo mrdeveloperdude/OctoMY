@@ -4,13 +4,13 @@
 
 #include "utility/time/HumanTime.hpp"
 
+
 void TestTrustSymbolWidget::test()
 {
 	const quint64 stress_time = 1000 * 1; //Loop at X seconds
 	TrustSymbolWidget *tsw=new TrustSymbolWidget();
 	tsw->configure();
 	tsw->show();
-
 
 	for(int i=0; i<1000; ++i) {
 		{
@@ -35,9 +35,7 @@ void TestTrustSymbolWidget::test()
 			}
 		}
 	}
-
 }
 
 
 OC_TEST_MAIN(test, TestTrustSymbolWidget)
-

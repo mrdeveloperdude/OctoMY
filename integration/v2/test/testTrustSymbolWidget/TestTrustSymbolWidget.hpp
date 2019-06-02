@@ -6,6 +6,7 @@
 class TestTrustSymbolWidget:public QObject
 {
 	Q_OBJECT
+
 private slots:
 	void test();
 
