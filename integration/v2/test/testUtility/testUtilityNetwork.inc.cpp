@@ -1,9 +1,6 @@
 #include "TestUtility.hpp"
 
-
-
 #include "utility/network/Network.hpp"
-
 
 #include <QHostAddress>
 #include <QStringList>
@@ -12,6 +9,7 @@ void TestUtility::testIPv4()
 {
 
 }
+
 
 void TestUtility::testIPv6()
 {
@@ -291,7 +289,6 @@ void TestUtility::testIPv6()
 			}
 			++num;
 		}
-
 	}
 }
 

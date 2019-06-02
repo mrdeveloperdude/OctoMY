@@ -5,7 +5,6 @@
 
 void TestUtility::testString()
 {
-
 	// QString humanReadableSize(qint64 bytes,int prec=2);
 
 	//template <typename T> QString humanReadableSize(T bytes,int prec=2);

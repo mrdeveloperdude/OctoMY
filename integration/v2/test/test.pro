@@ -153,8 +153,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testTaskQueue \
 #		testTetraGPSEncoder \
 #		testTrustSymbolWidget \
-		testTryToggle \
-#		testUtility \
+#		testTryToggle \
+		testUtility \
 #		testZooComms \
 
 

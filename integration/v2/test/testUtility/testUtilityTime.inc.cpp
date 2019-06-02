@@ -20,9 +20,9 @@ void testTemplatedCurrentMsec(bool shouldSucceed=true)
 	}
 }
 
+
 void TestUtility::testTime()
 {
-
 	// void delay( int millisecondsToWait );
 	qint64 accumulator=0;
 	for(int expected=0; expected<100; ++expected) {
@@ -62,6 +62,4 @@ void TestUtility::testTime()
 
 
 	//template<typename T> T currentMsecsSinceEpoch()
-
-
 }
