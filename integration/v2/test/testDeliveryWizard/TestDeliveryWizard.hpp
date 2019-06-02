@@ -1,7 +1,7 @@
 #ifndef TESTDELIVERYWIZARD_HPP
 #define TESTDELIVERYWIZARD_HPP
 
-#include "../common_test/Common_test.hpp"
+#include "Common_test.hpp"
 
 
 class TestDeliveryWizard:public QObject

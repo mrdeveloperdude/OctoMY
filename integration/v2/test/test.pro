@@ -155,7 +155,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testTrustSymbolWidget \
 #		testTryToggle \
 #		testUtility \
-		testZooComms \
+#		testZooComms \
 
 
 	STRESS_PROJECTS+= \

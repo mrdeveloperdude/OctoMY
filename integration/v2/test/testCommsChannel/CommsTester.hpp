@@ -1,6 +1,8 @@
 #ifndef COMMSTESTER_HPP
 #define COMMSTESTER_HPP
 
+#include "Common_test.hpp"
+
 #include "security/KeyStore.hpp"
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsCarrierUDP.hpp"
@@ -8,7 +10,7 @@
 #include <QObject>
 #include <QHostAddress>
 
-#include "../common_test/Common_test.hpp"
+
 
 class RNG;
 

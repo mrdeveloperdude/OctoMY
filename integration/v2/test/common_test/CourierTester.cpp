@@ -1,5 +1,7 @@
 #include "CourierTester.hpp"
 
+#include "Common_test.hpp"
+
 #include "comms/couriers/Courier.hpp"
 
 #include "utility/random/Random.hpp"
@@ -13,7 +15,7 @@
 #include <QDataStream>
 #include <QDebug>
 
-#include "../common_test/Common_test.hpp"
+
 
 
 CourierTester::CourierTester(Courier *fromCourier, Courier *toCourier, QString fromName, QString toName)

@@ -1,8 +1,6 @@
 #include "TestCommsChannel.hpp"
 
-#include "../common_test/Common_test.hpp"
 #include <QString>
-
 
 
 OC_TEST_MAIN(test, TestCommsChannel)

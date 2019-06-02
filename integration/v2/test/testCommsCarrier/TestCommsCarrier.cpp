@@ -1,12 +1,7 @@
 #include "TestCommsCarrier.hpp"
 
-
-
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsCarrierUDP.hpp"
-
-
-
 
 #include "comms/messages/MessageType.hpp"
 
@@ -16,11 +11,10 @@
 #include "address/Associate.hpp"
 #include "discovery/AddressBook.hpp"
 
-#include "../common_test/Common_test.hpp"
-#include "../common_test/Utility_test.hpp"
-#include "../common_test/UDPTester.hpp"
 
-#include "../common_test/mock/MockCommsCarrierLog.hpp"
+#include "Utility_test.hpp"
+#include "UDPTester.hpp"
+#include "mock/MockCommsCarrierLog.hpp"
 
 #include <QHostAddress>
 #include <QSignalSpy>

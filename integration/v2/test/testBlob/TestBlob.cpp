@@ -1,6 +1,7 @@
 #include "TestBlob.hpp"
 
-#include "../common_test/CourierTester.hpp"
+#include "CourierTester.hpp"
+
 #include "comms/couriers/blob/BlobCourier.hpp"
 #include "comms/couriers/blob/Blob.hpp"
 #include "comms/couriers/blob/BlobChunk.hpp"

@@ -1,12 +1,12 @@
 #include "TestCommsChannel.hpp"
 
-#include "../common_test/mock/MockCommsCarrier.hpp"
-#include "../common_test/Utility_test.hpp"
+#include "mock/MockCommsCarrier.hpp"
+#include "mock/MockCourier.hpp"
+
+#include "Utility_test.hpp"
 
 #include "comms/PacketSendState.hpp"
 #include "comms/PacketReadState.hpp"
-
-#include "../common_test/mock/MockCourier.hpp"
 
 
 static QByteArray handshakeSynPacket(QSharedPointer<CommsSession> sessA, QString idB, SESSION_ID_TYPE localSessionID, SESSION_NONCE_TYPE synNonce)

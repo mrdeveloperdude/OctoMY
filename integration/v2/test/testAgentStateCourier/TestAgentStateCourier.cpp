@@ -8,12 +8,9 @@
 
 #include "security/KeyStore.hpp"
 
-
-#include "../common_test/CourierTester.hpp"
-
-
 #include <QDebug>
 #include <QSharedPointer>
+
 
 class AgentStateCourierTester: public CourierTester
 {
@@ -99,9 +96,7 @@ public:
 	void onFromSendImp() Q_DECL_OVERRIDE {
 		putState();
 	}
-
 };
-
 
 
 void TestAgentStateCourier::test()
@@ -132,9 +127,6 @@ void TestAgentStateCourier::test()
 	// Done
 	agentStateTest.onTestDeInit();
 }
-
-
-
 
 
 OC_TEST_MAIN(test, TestAgentStateCourier)

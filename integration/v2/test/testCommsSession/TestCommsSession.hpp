@@ -1,7 +1,7 @@
 #ifndef TESTCOMMSSESSION_HPP
 #define TESTCOMMSSESSION_HPP
 
-#include "../common_test/Common_test.hpp"
+#include "Common_test.hpp"
 
 
 class TestCommsSession:public QObject

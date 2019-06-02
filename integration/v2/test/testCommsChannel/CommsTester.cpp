@@ -1,7 +1,7 @@
 #include "CommsTester.hpp"
 
 #include "random/RNG.hpp"
-#include "../common_test/mock/MockCourier.hpp"
+#include "mock/MockCourier.hpp"
 
 
 CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, quint16 basePort, quint16 portRange, quint16 testCount, KeyStore &keyStore, AddressBook &peers, QObject *parent)

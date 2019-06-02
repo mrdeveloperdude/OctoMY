@@ -6,7 +6,7 @@
 #include "utility/time/HumanTime.hpp"
 #include "uptime/New.hpp"
 
-#include "../common_test/Keys_test.hpp"
+#include "Keys_test.hpp"
 
 static const TestKeys tk;
 static const QString ip="127.0.0.1";
@@ -18,6 +18,7 @@ static const QString pin="12345";
 static const QString pin2="54321";
 
 const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
+
 
 static QStringList trusts= {
 	"trust-one", "trust-two"
@@ -35,7 +36,6 @@ static QVariantMap generateMap()
 	QVariantMap assMap;
 	assMap["key"]=keyMap;
 
-
 	/*
 	QVariantMap localAddrMap;
 	localAddrMap["ip"]=ip;
@@ -47,8 +47,6 @@ static QVariantMap generateMap()
 	publicAddrMap["port"]=port;
 	assMap["publicAddress"]=publicAddrMap;
 	*/
-
-
 
 
 	assMap["name"]="hogboll";
@@ -68,7 +66,6 @@ static QVariantMap generateMap()
 	adrMap["address"]=nadrMap;
 	adrMap["description"]="Description of address";
 
-
 	adrMap["createdMS"]=utility::time::msToVariant(now);
 	adrMap["lastSuccessMS"]=utility::time::msToVariant(now);
 	adrMap["lastErrorMS"]=utility::time::msToVariant(now);
@@ -77,7 +74,6 @@ static QVariantMap generateMap()
 
 	adrList<<adrMap;
 	assMap["addressList"]=adrList;
-
 
 	assMap["lastSeenMS"]=utility::time::msToVariant(now-9000);
 	assMap["lastInitiatedHandshakeMS"]=utility::time::msToVariant(now-6000);
@@ -152,7 +148,6 @@ void TestAssociate::testMapConversions()
 
 	QSharedPointer<Associate> ass1(OC_NEW Associate(assMap1));
 
-
 	QCOMPARE(ass1->id(), tk.keyID);
 	QCOMPARE(ass1->type(), type);
 	QCOMPARE(ass1->role(), role);
@@ -201,7 +196,6 @@ void TestAssociate::testMapConversions()
 	//map["pins"]=mPins;//DONT STORE PINS THEY ARE EPHEMERAL
 	map["trusts"]=mTrusts;
 	*/
-
 }
 
 

@@ -2,7 +2,7 @@
 #define TESTARDUMY_HPP
 
 
-#include "../common_test/Common_test.hpp"
+#include "Common_test.hpp"
 
 class ArduMYActuatorConfig;
 class ArduMYActuatorState;

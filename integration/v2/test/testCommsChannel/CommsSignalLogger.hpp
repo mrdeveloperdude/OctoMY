@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QObject>
-#include "../common_test/Common_test.hpp"
+#include "Common_test.hpp"
 
 
 class CommsSession;

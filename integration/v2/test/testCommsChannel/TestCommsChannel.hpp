@@ -1,7 +1,11 @@
 #ifndef TESTCOMMSCHANNEL_HPP
 #define TESTCOMMSCHANNEL_HPP
 
+#include "Common_test.hpp"
+
+
 #include "comms/CommsChannel.hpp"
+
 #include "comms/CommsCarrierUDP.hpp"
 
 #include "CommsSignalLogger.hpp"
@@ -15,7 +19,7 @@
 #include "discovery/AddressBook.hpp"
 
 
-#include "../common_test/Common_test.hpp"
+
 #include <QHostAddress>
 #include <QSignalSpy>
 #include <QFileInfo>
