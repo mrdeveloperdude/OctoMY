@@ -152,8 +152,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testSyncParameter \
 #		testTaskQueue \
 #		testTetraGPSEncoder \
-		testTrustSymbolWidget \
-#		testTryToggle \
+#		testTrustSymbolWidget \
+		testTryToggle \
 #		testUtility \
 #		testZooComms \
 

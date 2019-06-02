@@ -33,5 +33,4 @@ void TestTryToggle::testUI()
 }
 
 
-
 OC_TEST_MAIN(test, TestTryToggle)
