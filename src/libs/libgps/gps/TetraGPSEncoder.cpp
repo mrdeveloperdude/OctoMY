@@ -348,6 +348,7 @@ struct Tri {
 	Vec c;
 	Vec center;
 	int id;
+	quint8 pad [12];
 	explicit Tri(Vec a=Vec(), Vec b=Vec(), Vec c=Vec(), int id=0)
 		: a(a)
 		, b(b)

@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>OctoMY™</string>
+   <string>Debugger</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../../../../libdebug/resources/debug_icons.qrc">
@@ -87,24 +87,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonCollapseAll">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../../../../libres/resources/icons.qrc">
-         <normaloff>:/icons/collapse_all.svg</normaloff>:/icons/collapse_all.svg</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonExpandAll">
+      <widget class="QPushButton" name="pushButtonExpandOrCollapseAll">
        <property name="text">
         <string/>
        </property>
@@ -1038,8 +1021,8 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../../../../libres/resources/icons.qrc"/>
   <include location="../../../../libdebug/resources/debug_icons.qrc"/>
+  <include location="../../../../libres/resources/icons.qrc"/>
  </resources>
  <connections/>
 </ui>

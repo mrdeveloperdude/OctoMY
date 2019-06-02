@@ -16,6 +16,7 @@
 #include <QTableWidgetItem>
 #include <QWidget>
 
+
 DebuggerWidget::DebuggerWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::Debugger)
@@ -25,6 +26,7 @@ DebuggerWidget::DebuggerWidget(QWidget *parent)
 	ui->setupUi(this);
 	setEnabled(false);
 	qRegisterMetaType<QSharedPointer <NodeWindow>> ("QSharedPointer <NodeWindow>");
+	qRegisterMetaType<QSharedPointer <DebuggerWidget>> ("QSharedPointer <DebuggerWidget>");
 	Q_INIT_RESOURCE(debug_icons);
 }
 
@@ -110,6 +112,7 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 			qWarning()<<"WARNING: No try birth try toggle";
 		}
 		configureUi();
+		updateExpandButton();
 	}
 }
 
@@ -191,7 +194,6 @@ void DebuggerWidget::unBirth()
 }
 
 
-
 void DebuggerWidget::configureUi()
 {
 	OC_METHODGATE();
@@ -223,6 +225,7 @@ void DebuggerWidget::configureUi()
 						qDebug()<<"TOGGLING BUTTON "<<widget->objectName()<<" for "<<name;
 						widget->setVisible(checked);
 						pack();
+						updateExpandButton();
 					}
 				}, OC_CONTYPE)) {
 					qWarning()<<"ERROR: Could not connect";
@@ -250,19 +253,47 @@ void DebuggerWidget::configureUi()
 }
 
 
-void DebuggerWidget::tuck()
+static void placeRelative(QWidget *a, QWidget *b, QPoint p, bool right=true)
+{
+	OC_FUNCTIONGATE();
+	if(nullptr==a) {
+		return;
+	}
+	if(nullptr==b) {
+		return;
+	}
+	QRect geoA=a->geometry();
+	QRect geoB=b->geometry();
+	QRect geoNew(geoB);
+	right?geoNew.moveTopLeft(geoA.topRight()+p):geoNew.moveTopRight(geoA.topLeft()-p);
+	if(geoB != geoNew) {
+		QTimer::singleShot(0, [b, geoNew]() {
+			//const auto old=b->blockSignals(true);
+			b->setGeometry(geoNew);
+			//b->blockSignals(old);
+		});
+	}
+}
+
+
+void DebuggerWidget::tuck(bool attach, QWidget *movedWindow)
 {
 	OC_METHODGATE();
+	// qDebug()<<"TUCK CALLED WITH :" << attach<< movedWindow;
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		if(!mNode.isNull()) {
 			//Place us to the right of main window
-			auto window=mNode->nodeWindow();
-			if(!window.isNull()) {
-				QRect amg=window->geometry();
-				QRect simg=geometry();
-				simg.moveTopLeft(amg.topRight()+QPoint(10,0));
-				setGeometry(simg);
-				window->focus();
+			auto nodeWindow=mNode->nodeWindow();
+			if(!nodeWindow.isNull()) {
+				if(nullptr==movedWindow){
+					movedWindow=this;
+				}
+				if(movedWindow==this) {
+					placeRelative(this, nodeWindow.data(), attach?QPoint(5,0):QPoint(20,((qrand()%30)-15)), false);
+				} else {
+					// TODO: Figure out how to circumvent the buggy movement when this is enabled
+					// placeRelative(nodeWindow.data(), this, attach?QPoint(5,0):QPoint(20,((qrand()%30)-15)), true);
+				}
 			} else {
 				qWarning()<<"ERROR: No node window";
 			}
@@ -352,23 +383,43 @@ void DebuggerWidget::on_pushButtonQuitFail_clicked()
 }
 
 
+void DebuggerWidget::moveEvent(QMoveEvent *event)
+{
+	OC_METHODGATE();
+	if(nullptr!= event) {
+		emit debuggerWindowMoved(sharedFromThis());
+	}
+}
+
+
 void DebuggerWidget::on_pushButtonTuckWindow_toggled(bool checked)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		if(checked) {
-			tuck();
-		}
+		// Make a gesture to show the effect (UX)
+		tuck(checked);
 		if(!mNode.isNull()) {
 			//Place us to the right of main window
-			auto window=mNode->nodeWindow();
-			if(!window.isNull()) {
+			auto nodeWindow=mNode->nodeWindow();
+			if(!nodeWindow.isNull()) {
 				if(checked) {
-					if(connect(window.data(), &NodeWindow::nodeWindowMoved, this, &DebuggerWidget::tuck, OC_CONTYPE)) {
+					mTuckNodeWindowConnection=connect(nodeWindow.data(), &NodeWindow::nodeWindowMoved, this, [=](QSharedPointer <NodeWindow> nodeWindow) {
+						tuck(true, nodeWindow.data());
+					}, OC_CONTYPE);
+					if(!mTuckNodeWindowConnection) {
+						qWarning()<<"ERROR: Could not connect";
+					}
+					mTuckDebuggerWindowConnection=connect(this, &DebuggerWidget::debuggerWindowMoved, this, [=](QSharedPointer <DebuggerWidget> debuggerWindow) {
+						tuck(true, debuggerWindow.data());
+					}, OC_CONTYPE);
+					if(!mTuckDebuggerWindowConnection) {
 						qWarning()<<"ERROR: Could not connect";
 					}
 				} else {
-					if(disconnect(window.data(), &NodeWindow::nodeWindowMoved, this, &DebuggerWidget::tuck)) {
+					if(mTuckNodeWindowConnection && !disconnect(mTuckNodeWindowConnection)) {
+						qWarning()<<"ERROR: Could not disconnect";
+					}
+					if(mTuckDebuggerWindowConnection && !disconnect(mTuckDebuggerWindowConnection)) {
 						qWarning()<<"ERROR: Could not disconnect";
 					}
 				}
@@ -414,24 +465,46 @@ void DebuggerWidget::allEnable(bool enable)
 			}
 		}
 		pack();
+		updateExpandButton();
 	}
 }
 
 
+EnabledCount DebuggerWidget::numEnabled()
+{
+	OC_METHODGATE();
+	EnabledCount count;
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		for(auto widget: mHeaderWidgets) {
+			if(nullptr!=widget) {
+				count.count(widget->isVisible());
+			}
+		}
+	}
+	return count;
+}
 
-void DebuggerWidget::on_pushButtonExpandAll_clicked()
+
+void DebuggerWidget::updateExpandButton()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		allEnable(true);
+		const EnabledCount count=numEnabled();
+		const bool allOn=count.allIs(true);
+		QIcon icon;
+		icon.addFile(allOn?QStringLiteral(":/icons/collapse_all.svg"):QStringLiteral(":/icons/expand_all.svg"), QSize(), QIcon::Normal, QIcon::Off);
+		ui->pushButtonExpandOrCollapseAll->setIcon(icon);
+		ui->pushButtonExpandOrCollapseAll->setToolTip(allOn?"Collapse all":"Expand all");
 	}
 }
 
 
-void DebuggerWidget::on_pushButtonCollapseAll_clicked()
+void DebuggerWidget::on_pushButtonExpandOrCollapseAll_clicked()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		allEnable(false);
+		const EnabledCount count=numEnabled();
+		const bool allOn=count.allIs(true);
+		allEnable(!allOn);
 	}
 }
