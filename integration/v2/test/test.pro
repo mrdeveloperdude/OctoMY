@@ -154,8 +154,8 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testTetraGPSEncoder \
 #		testTrustSymbolWidget \
 #		testTryToggle \
-		testUtility \
-#		testZooComms \
+#		testUtility \
+		testZooComms \
 
 
 	STRESS_PROJECTS+= \
