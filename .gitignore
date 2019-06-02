@@ -84,3 +84,4 @@ integration/release_management/DOCKER_PREP_OK
 integration/v2/compile_commands.json
 integration/v2/junk/*
 integration/v2/src/libs/*_old/*
+integration/v1/*
