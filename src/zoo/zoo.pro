@@ -1,17 +1,17 @@
+# The zoo represents the web community. Yes this is a webap made with Qt.
+# You won't need this, but if you really want you can start your own zoo.
+# Please note that interfering with the official instance of the OctoMY zoo
+# is strongly frowned uppon by tje OctoMY community. Be nice!
+
 TEMPLATE = app
 TARGET = zoo
-
-# ZOO REPRESENTS THE WEB COMUNITY. YES, IT IS A WEBAPP MADE IN QT!
-# YOU DONT NEED THIS BUT IF YOU WANT TO START YOUR OWN ZOO YOU CAN
-# PLEASE NOTE THAT INTERFERING WITH THE OFFICIAL INSTANCE OF OCTOMY ZOO
-# IS STRONGLY FROWNED UPPON BY THE COMUNITY. BE NICE!
 
 # Start with common for project...
 include($$PRIS/common.pri)
 include($$PRIS/app.pri)
 include($$PRIS/lib_headers.pri)
 
-# ... but ZOO is a server app, so better start acting like one!
+# Zoo is a server app, it has no GUI.
 CONFIG += console
 
 
@@ -21,7 +21,7 @@ HEADERS += \
 SOURCES += \
 	ZooMain.cpp
 
-contains(DEFINES, USE_STATUS){
+contains(DEFINES, OC_USE_FEATURE_STATUS){
 message("FROM zoo.pro:")
 include($$PRIS/status.pri)
 }

@@ -228,5 +228,3 @@ void TestCommsChannel::testSingle()
 	testHeading("DELETING");///////////////////////////////////////////////////////////
 
 }
-
-

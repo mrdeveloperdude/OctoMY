@@ -1,4 +1,4 @@
-include($$TESTS/test.pri)
+include($$TESTS/pris/test.pri)
 
 TARGET = test_agentstatecourier
 

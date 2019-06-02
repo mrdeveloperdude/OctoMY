@@ -1,11 +1,9 @@
 #include "TestSimpleDataStore.hpp"
 
-#include "node/DataStore.hpp"
+#include "store/DataStore.hpp"
+#include "store/SimpleDataStore.hpp"
 
-#include "node/SimpleDataStore.hpp"
-
-#include "utility/Utility.hpp"
-
+#include "utility/data/Data.hpp"
 
 class SimpleDataStoreTester: public SimpleDataStore
 {
@@ -13,7 +11,7 @@ private:
 	QVariantMap mMyMap;
 
 public:
-	explicit SimpleDataStoreTester(QString filename="");
+	explicit SimpleDataStoreTester();
 	virtual ~SimpleDataStoreTester() Q_DECL_OVERRIDE;
 
 	// SimpleDataStore interface
@@ -24,18 +22,22 @@ public:
 
 };
 
+
 ////////////////////////////////////////////////////////////////////////////////
 
-SimpleDataStoreTester::SimpleDataStoreTester(QString filename)
-	: SimpleDataStore(filename)
+
+SimpleDataStoreTester::SimpleDataStoreTester()
+	: SimpleDataStore()
 {
 	OC_METHODGATE();
 }
+
 
 SimpleDataStoreTester::~SimpleDataStoreTester()
 {
 	OC_METHODGATE();
 }
+
 
 bool SimpleDataStoreTester::fromMap(QVariantMap data)
 {
@@ -43,6 +45,7 @@ bool SimpleDataStoreTester::fromMap(QVariantMap data)
 	mMyMap=data;
 	return true;
 }
+
 
 QVariantMap SimpleDataStoreTester::toMap()
 {
@@ -59,6 +62,7 @@ bool SimpleDataStoreTester::fromDefault()
 	mMyMap["default"]="generated";
 	return true;
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -86,42 +90,50 @@ void TestSimpleDataStore::test()
 
 	qDebug()<<" -- Create data store on disk, saving the dummy data";
 	{
-		SimpleDataStoreTester sds(fn), *sdsp=&sds;
-		sdsp->setInitialized(sdsp);
+		QSharedPointer<SimpleDataStoreTester> sdsp(OC_NEW SimpleDataStoreTester);
+		SimpleDataStoreTester &sds(*sdsp);
+		Q_ASSERT(nullptr!=sdsp);
+		sds.configure(fn);
+		sdsp->activate(true);
 		sds.fromDefault();
 		QCOMPARE(sds.filename(), fn);
 		QCOMPARE(sds.fileExists(), false);
 		sds.fromMap(data);
-		/*
-		sds.save([=](SimpleDataStoreTester &msds, bool ok) {
-			qDebug()<<"Save callback called for store=" <<msds.filename()<<" with ok="<<ok;
-			QCOMPARE(sdsp, &msds);
-			QCOMPARE(sdsp->fileExists(), true);
+		sds.save([=](QSharedPointer<SimpleDataStore> msds, bool ok) {
+			qDebug()<<"Save callback called for store=" <<fn<<" with ok="<<ok;
+			QCOMPARE(sdsp, msds);
+			// This will happen AFTER event processing so we can't do it
+			// QCOMPARE(sdsp->fileExists(), true);
 		});
-		*/
-		sds.setInitialized<SimpleDataStoreTester>(nullptr);
+		sds.activate(false);
 		qDebug()<<"Waiting for dtor;";
 	}
 	qDebug()<<"Dtor should have run by now.";
 
 	qDebug()<<" -- Load data store and verify that the data is loaded correctly";
 	{
-		SimpleDataStoreTester sds(fn), *sdsp=&sds;
-		sdsp->setInitialized(sdsp);
+		//SimpleDataStoreTester sds, *sdsp=&sds;
+		QSharedPointer<SimpleDataStoreTester> sdsp(OC_NEW SimpleDataStoreTester);
+		SimpleDataStoreTester &sds(*sdsp);
+		Q_ASSERT(nullptr!=sdsp);
+		sds.configure(fn);
+		sdsp->activate(true);
 		QCOMPARE(sds.filename(), fn);
 		QCOMPARE(sds.fileExists(), true);
 		auto preMap=sds.toMap();
-		QVERIFY(!utility::mapIsIn(preMap, data));
-		sds.load([=](SimpleDataStore &msds, bool ok) {
-			qDebug()<<"Load callback called for store=" <<msds.filename()<<" with ok="<<ok;
-			QCOMPARE(sdsp, &msds);
-			QCOMPARE(sdsp->fileExists(), true);
+		QVERIFY(!utility::data::mapIsIn(preMap, data));
+		sds.load([=](QSharedPointer<SimpleDataStore> msds, bool ok) {
+			qDebug()<<"Load callback called for store=" <<fn<<" with ok="<<ok;
+			QCOMPARE(sdsp, msds);
+			// This will happen AFTER event processing so we can't do it
+			// QCOMPARE(sdsp->fileExists(), true);
 			auto postMap=sdsp->toMap();
-			QVERIFY(utility::mapIsIn(postMap, data));
+			QVERIFY(utility::data::mapIsIn(postMap, data));
 		});
-		sds.setInitialized<SimpleDataStoreTester>(nullptr);
+		sds.activate(false);
 	}
 	qDebug()<<" -- Done";
 }
+
 
 OC_TEST_MAIN(test, TestSimpleDataStore)

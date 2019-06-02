@@ -76,4 +76,5 @@ QDataStream &operator<<(QDataStream &ds, ISyncParameter &sp);
 QDataStream &operator>>(QDataStream &ds, ISyncParameter &sp);
 
 
-#endif // ISYNCPARAMETER_HPP
+#endif
+// ISYNCPARAMETER_HPP

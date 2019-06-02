@@ -1,8 +1,7 @@
 #ifndef TESTSTREAMCODEC_HPP
 #define TESTSTREAMCODEC_HPP
 
-#include "../common/TestCommon.hpp"
-
+#include "Common_test.hpp"
 
 class TestStreamCodec:public QObject
 {
@@ -14,4 +13,5 @@ private slots:
 };
 
 
-#endif // TESTSTREAMCODEC_HPP
+#endif
+// TESTSTREAMCODEC_HPP

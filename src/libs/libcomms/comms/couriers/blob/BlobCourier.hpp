@@ -19,7 +19,10 @@ class CommsChannel;
 
 /*!
  * \brief The BlobCourier class is a courier that works with commschannel to
- * send and receive Blobs.
+ * send and receive Blobs (Binary Large OBjects).
+ *
+ * This is used among other things to transfer files and camera images.
+ *
  */
 
 class BlobCourier: public Courier
@@ -106,7 +109,7 @@ public:
 	quint64 mLastSend;
 
 public:
-	explicit BlobCourier(CommsChannel &comms, QObject *parent=nullptr);
+	explicit BlobCourier(QSharedPointer<CommsChannel> comms, QObject *parent=nullptr);
 
 private:
 
@@ -158,4 +161,5 @@ public:
 const QDataStream &operator<<(QDataStream &d, const BlobCourier::Ack &a);
 const QDataStream &operator>>(QDataStream &d, const BlobCourier::Ack &a);
 
-#endif // BLOBCOURIER_HPP
+#endif
+// BLOBCOURIER_HPP

@@ -1,6 +1,8 @@
 #include "TestMapEditor.hpp"
 
 #include "widgets/MapEditor.hpp"
+#include "uptime/New.hpp"
+#include "Utility_test.hpp"
 
 #include <QComboBox>
 #include <QNetworkReply>
@@ -39,6 +41,7 @@ static bool waitForWidgetToClose(QWidget *widget, qint64 ms=-1)
 	return false;
 }
 
+
 void TestMapEditor::testNetworkCache()
 {
 	QNetworkAccessManager *manager = new QNetworkAccessManager(this);
@@ -74,6 +77,7 @@ void TestMapEditor::testNetworkCache()
 	}
 }
 
+
 void TestMapEditor::test()
 {
 	MapEditor *ui=OC_NEW MapEditor();
@@ -84,9 +88,9 @@ void TestMapEditor::test()
 		QComboBox *comboBoxMapType=ui->findChild<QComboBox *>("comboBoxMapType");
 		QVERIFY(nullptr != comboBoxMapType);
 		comboBoxMapType->setCurrentIndex(0);
-		testWaitForEvents();
+		test::utility::testWaitForEvents();
 		comboBoxMapType->setCurrentIndex(1);
-		testWaitForEvents();
+		test::utility::testWaitForEvents();
 		waitForWidgetToClose(ui);
 
 		/*
@@ -120,7 +124,3 @@ void TestMapEditor::test()
 
 
 OC_TEST_MAIN(test, TestMapEditor)
-
-
-
-

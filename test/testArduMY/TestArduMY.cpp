@@ -1,23 +1,15 @@
 #include "TestArduMY.hpp"
-#include "utility/Utility.hpp"
 
 #include "ardumy_arduino/ArduMYActuatorConfigParser.hpp"
 #include "ardumy_arduino/ArduMYActuatorConfigSerializer.hpp"
-
-
 #include "ardumy_arduino/ArduMYActuatorValueParser.hpp"
 #include "ardumy_arduino/ArduMYActuatorValueSerializer.hpp"
-
 #include "ardumy_arduino/MagicDetector.hpp"
-
-
 #include "ardumy_arduino/ArduMYCommandParser.hpp"
 #include "ardumy_arduino/ArduMYCommandSerializer.hpp"
-
 #include "ardumy_arduino/ArduMYParserState.hpp"
 
-#include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
-
+#include "widgets/ardumy/ArduMYTypeConversions.hpp"
 
 #include <QDebug>
 #include <QtGlobal>
@@ -45,7 +37,6 @@ static bool percentChance(quint8 pct)
 }
 
 
-
 static QString randomString(int sz)
 {
 	static const QString alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!\"#¤%&/()= _-.,:;^æøåÆÅØ";
@@ -56,6 +47,7 @@ static QString randomString(int sz)
 	}
 	return out;
 }
+
 
 static float frand()
 {
@@ -68,6 +60,7 @@ static float frand()
 	}
 	return v;
 }
+
 
 static double dfrand()
 {
@@ -82,16 +75,13 @@ static double dfrand()
 }
 
 
-
 static QString byteToStr(uint8_t byte)
 {
 	return QString("%1").arg(byte, 8, 2, QLatin1Char('0'))+QString(" ( 0x%1").arg(byte, 2, 16, QLatin1Char('0'))+ QString(", %1").arg(byte, 3, 10, QLatin1Char(' '))+ QStringLiteral(" )");
 }
 
 
-
-
-void logLines(const QString ret)
+static void logLines(const QString ret)
 {
 	QStringList list=ret.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
 	for(QString str:list) {
@@ -99,8 +89,8 @@ void logLines(const QString ret)
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////
 
 
 static void randomValue(ArduMYActuatorValue &v, ArduMYActuatorValueRepresentation rep)
@@ -136,7 +126,6 @@ static void randomValue(ArduMYActuatorValue &v, ArduMYActuatorValueRepresentatio
 		break;
 	}
 }
-
 
 
 ArduMYActuatorConfig TestArduMY::randomConfig() const
@@ -286,7 +275,6 @@ ArduMYActuator TestArduMY::randomActuator() const
 }
 
 
-
 ArduMYActuatorSet TestArduMY::randomActuatorSet()
 {
 	ArduMYActuatorSet set;
@@ -304,7 +292,6 @@ ArduMYActuatorSet TestArduMY::randomActuatorSet()
 	}
 	return set;
 }
-
 
 
 ArduMYActuatorSet TestArduMY::fixedActuatorSet()
@@ -366,13 +353,13 @@ union Fuzzer {
 
 };
 
+
 ArduMYActuatorConfig TestArduMY::fuzzConfig() const
 {
 	Fuzzer<ArduMYActuatorConfig> fuzzer;
 	// Return resulting fuzzed config
 	return fuzzer.object;
 }
-
 
 
 ArduMYActuatorState TestArduMY::fuzzState() const
@@ -383,15 +370,12 @@ ArduMYActuatorState TestArduMY::fuzzState() const
 }
 
 
-
-
 ArduMYActuator TestArduMY::fuzzActuator() const
 {
 	Fuzzer<ArduMYActuator> fuzzer;
 	// Return resulting fuzzed actuator
 	return fuzzer.object;
 }
-
 
 
 ArduMYActuatorSet TestArduMY::fuzzActuatorSet()
@@ -406,9 +390,7 @@ ArduMYActuatorSet TestArduMY::fuzzActuatorSet()
 }
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
-
 
 
 void TestArduMY::testToFromString()
@@ -467,8 +449,8 @@ void TestArduMY::testToFromString()
 		QString ardumyActuatorSetToString(const ArduMYActuatorSet &set);
 		*/
 
-
 }
+
 
 void TestArduMY::testMagicDetector()
 {
@@ -524,6 +506,7 @@ void TestArduMY::testMagicDetector()
 	DO_LOOPS_END
 }
 
+
 void TestArduMY::testDynamicArrayFundamental()
 {
 	DO_LOOPS_START("DynamicArrayFundamental", LOOPS)
@@ -571,6 +554,7 @@ void TestArduMY::testDynamicArrayFundamental()
 	}
 	DO_LOOPS_END
 }
+
 
 void TestArduMY::testDynamicArrayPOD()
 {
@@ -644,6 +628,7 @@ void TestArduMY::testDynamicArrayPOD()
 	}
 	DO_LOOPS_END
 }
+
 
 void TestArduMY::testActuatorValue()
 {
@@ -795,7 +780,6 @@ void TestArduMY::testValueConverter()
 }
 
 
-
 void TestArduMY::testActuatorRandomConfigParser()
 {
 	DO_LOOPS_START("ActuatorConfigEquals Random", LOOPS)
@@ -804,8 +788,8 @@ void TestArduMY::testActuatorRandomConfigParser()
 #		include "testActuatorConfigEquals.inc.hpp"
 
 	DO_LOOPS_END
-
 }
+
 
 void TestArduMY::testActuatorRandomConfigSerializer()
 {
@@ -828,8 +812,6 @@ void TestArduMY::testActuatorRandomConfigEquals()
 }
 
 
-
-
 void TestArduMY::testActuatorRandomValueParser()
 {
 	DO_LOOPS_START("ActuatorValueParser Random", LOOPS)
@@ -842,8 +824,6 @@ void TestArduMY::testActuatorRandomValueParser()
 }
 
 
-
-
 void TestArduMY::testActuatorRandomValueEquals()
 {
 	DO_LOOPS_START("ActuatorValueEquals Random", LOOPS)
@@ -852,7 +832,6 @@ void TestArduMY::testActuatorRandomValueEquals()
 #		include "testActuatorValueEquals.inc.hpp"
 	DO_LOOPS_END
 }
-
 
 
 void TestArduMY::testActuatorRandomValueSerializer()
@@ -866,7 +845,6 @@ void TestArduMY::testActuatorRandomValueSerializer()
 	}
 	DO_LOOPS_END
 }
-
 
 
 void TestArduMY::testActuatorFuzzConfigSerializer()
@@ -900,6 +878,7 @@ void TestArduMY::testActuatorFuzzConfigEquals()
 	DO_LOOPS_END
 }
 
+
 void TestArduMY::testActuatorFuzzValueParser()
 {
 	DO_LOOPS_START("ActuatorValueParser Fuzz", LOOPS)
@@ -923,6 +902,7 @@ void TestArduMY::testActuatorFuzzValueSerializer()
 	}
 	DO_LOOPS_END
 }
+
 
 void TestArduMY::testActuatorFuzzValueEquals()
 {
@@ -1129,7 +1109,6 @@ void TestArduMY::testCommandParser()
 }
 
 
-
 void TestArduMY::testCommandSerializerSimple()
 {
 	ArduMYActuatorSet actuatorsFrom;
@@ -1196,7 +1175,6 @@ void TestArduMY::testCommandSerializerSimple()
 }
 
 
-
 void TestArduMY::testCommandSerializerFull()
 {
 	ArduMYActuatorSet actuatorsFrom;
@@ -1249,7 +1227,5 @@ void TestArduMY::testCommandSerializerFull()
 
 }
 
+
 OC_TEST_MAIN(test, TestArduMY)
-
-
-

@@ -1,7 +1,8 @@
 #ifndef GAITCONTROLLER_HPP
 #define GAITCONTROLLER_HPP
 
-#include "utility/Standard.hpp"
+#include "uptime/New.hpp"
+#include "utility/time/HumanTime.hpp"
 
 #include <QtGlobal>
 #include <QDateTime>
@@ -10,7 +11,7 @@
 
 #include <QtMath>
 
-#include "utility/Utility.hpp"
+
 
 template <typename T>
 class GaitController;
@@ -37,7 +38,7 @@ public:
 			T a=0;
 			T b=0;
 			//Alternate odd/even limbs
-		  //  T L2=L/2;
+			//  T L2=L/2;
 			for(i=0; i<L; ++i) {
 				a|=(1<<(i*2));
 				b|=(2<<(i*2));
@@ -357,7 +358,7 @@ public:
 	void update()
 	{
 		// Update time-keeping
-		const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
+		const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
 		if(0==lastUpdate) {
 			lastUpdate=now-1;
 		}
@@ -716,4 +717,6 @@ public:
 
 
 
-#endif // GAITCONTROLLER_HPP
+#endif
+// GAITCONTROLLER_HPP
+

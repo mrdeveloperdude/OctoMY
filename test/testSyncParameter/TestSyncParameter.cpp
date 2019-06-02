@@ -1,23 +1,19 @@
 #include "TestSyncParameter.hpp"
 
 
-
 #include "comms/SyncParameter.hpp"
-
 
 
 template <typename T>
 class SyncTester
 {
 private:
-
 	quint64 mNow;
 	const quint64 mRTT;
 	SyncContext mCTX;
 	bool mUseFakeTime;
 
 public:
-
 	SyncTester(quint64 now, quint64 rtt)
 		: mNow(now)
 		, mRTT(rtt)
@@ -28,6 +24,7 @@ public:
 		mNow=mCTX.now();
 		qDebug()<<"STARTED SYNC TESTER WITH now="<<mNow<<" and rtt="<<mRTT<<" ("<< (mUseFakeTime?"FAKE":"CLOCK")<< ")";
 	}
+
 
 	//Pass some time
 	void passTime(quint64 ms)
@@ -43,8 +40,8 @@ public:
 			//TODO: IS this cheating?
 			mNow=mCTX.now();
 		}
-
 	}
+
 
 	void doTest()
 	{
@@ -191,7 +188,6 @@ public:
 
 void TestSyncParameter::test()
 {
-
 	SyncTester<qreal> syncTestRealClock(0,100);
 	syncTestRealClock.doTest();
 	SyncTester<qreal> syncTestRealFake(1000,100);

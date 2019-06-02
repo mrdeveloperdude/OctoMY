@@ -1,12 +1,12 @@
 #include "PlanParser.hpp"
 
-#ifdef USE_PARSER
+#ifdef OC_USE_LIB_PARSER
 #include "octomy_parser.hpp"
 #endif
 
 
 
-#ifdef USE_PARSER
+#ifdef OC_USE_LIB_PARSER
 
 
 PlanParser::PlanParser()

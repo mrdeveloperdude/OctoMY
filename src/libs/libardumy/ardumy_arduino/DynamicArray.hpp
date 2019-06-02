@@ -32,8 +32,10 @@ public:
 public:
 
 	DynamicArray& operator = (const DynamicArray &a);
-	T& operator [] (uint32_t index);
-	const T& operator [] (uint32_t index) const;
+	template <typename I>
+	T& operator [] (I index);
+	template <typename I>
+	const T& operator [] (I index) const;
 
 public:
 
@@ -172,15 +174,17 @@ T* DynamicArray<T>::data()
 }
 
 template <class T>
-T& DynamicArray<T>::operator [] (uint32_t index)
+template <typename I>
+T& DynamicArray<T>::operator [] (I index)
 {
-	return mData[index];
+	return mData[static_cast<uint32_t>(index)];
 }
 
 template <class T>
-const T& DynamicArray<T>::operator [] (uint32_t index) const
+template <typename I>
+const T& DynamicArray<T>::operator [] ( I index) const
 {
-	return mData[index];
+	return mData[static_cast<uint32_t>(index)];
 }
 
 #endif // DYNAMICARRAY_HPP

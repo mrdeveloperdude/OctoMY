@@ -1,7 +1,7 @@
 #ifndef TESTSYNCPARAMETER_HPP
 #define TESTSYNCPARAMETER_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
 class TestSyncParameter:public QObject
@@ -14,4 +14,5 @@ private slots:
 };
 
 
-#endif // TESTSYNCPARAMETER_HPP
+#endif
+// TESTSYNCPARAMETER_HPP

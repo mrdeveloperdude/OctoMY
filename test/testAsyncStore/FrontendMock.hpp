@@ -1,8 +1,10 @@
 #ifndef FRONTENDMOCK_HPP
 #define FRONTENDMOCK_HPP
 
+#include "Common_test.hpp"
 
-#include "node/AsyncStore.hpp"
+#include "store/AsyncStore.hpp"
+
 
 #include <QDebug>
 
@@ -35,7 +37,7 @@ public:
 		, doLog(doLog)
 	{
 		if(doLog) {
-			qDebug().nospace().noquote()<<"FrontendMock::FrontendMock(#"<<id<<"/"<<sid<<", exists="<<exists<<", openData="<<openData<<", generateData="<<generateData<<", doFailClear="<<doFailClear<<", doFailSet="<<doFailSet<<", doFailGet="<<doFailGet<<", doFailGenerate="<<doFailGenerate<<") @ "<<utility::currentThreadID();
+			qDebug().nospace().noquote()<<"FrontendMock::FrontendMock(#"<<id<<"/"<<sid<<", exists="<<exists<<", openData="<<openData<<", generateData="<<generateData<<", doFailClear="<<doFailClear<<", doFailSet="<<doFailSet<<", doFailGet="<<doFailGet<<", doFailGenerate="<<doFailGenerate<<") @ "<<utility::concurrent::currentThreadID();
 		}
 	}
 
@@ -43,7 +45,7 @@ public:
 	virtual ~FrontendMock()
 	{
 		if(doLog) {
-			qDebug().nospace().noquote()<<"FrontendMock::~FrontendMock(#"<<id<<"/"<<sid<<") @ "<<utility::currentThreadID();
+			qDebug().nospace().noquote()<<"FrontendMock::~FrontendMock(#"<<id<<"/"<<sid<<") @ "<<utility::concurrent::currentThreadID();
 		}
 
 	}
@@ -63,7 +65,7 @@ public:
 		}
 		if(doLog)
 		{
-			qDebug().nospace().noquote()<<"FrontendMock::clearFrontend(#"<<id<<"/"<<sid<<") with doFailClear="<<doFailClear<<" returned "<<ret<< " @ "<<utility::currentThreadID();
+			qDebug().nospace().noquote()<<"FrontendMock::clearFrontend(#"<<id<<"/"<<sid<<") with doFailClear="<<doFailClear<<" returned "<<ret<< " @ "<<utility::concurrent::currentThreadID();
 		}
 		return ret;
 	}
@@ -80,8 +82,8 @@ public:
 		}
 		if(doLog)
 		{
-			//qDebug()<<"setFrontend("<<memData;//<<") with doFailSet="<<doFailSet<<" returned "<<ret<< " @ "<<utility::currentThreadID();
-			qDebug().nospace().noquote()<<"FrontendMock::setFrontend(#"<<id<<"/"<<sid<<", data="<<memData<<") with doFailSet="<<doFailSet<<" returned "<<ret<< " @ "<<utility::currentThreadID();
+			//qDebug()<<"setFrontend("<<memData;//<<") with doFailSet="<<doFailSet<<" returned "<<ret<< " @ "<<utility::concurrent::currentThreadID();
+			qDebug().nospace().noquote()<<"FrontendMock::setFrontend(#"<<id<<"/"<<sid<<", data="<<memData<<") with doFailSet="<<doFailSet<<" returned "<<ret<< " @ "<<utility::concurrent::currentThreadID();
 		}
 		return ret;
 	}
@@ -92,7 +94,7 @@ public:
 			ok=false;
 			T data=T();
 			if(doLog) {
-				qDebug().nospace().noquote()<<"FrontendMock::getFrontend(#"<<id<<"/"<<sid<<", ok="<<ok<<") with doFailGet="<<doFailGet<<" returned "<<data<< " @ "<<utility::currentThreadID();
+				qDebug().nospace().noquote()<<"FrontendMock::getFrontend(#"<<id<<"/"<<sid<<", ok="<<ok<<") with doFailGet="<<doFailGet<<" returned "<<data<< " @ "<<utility::concurrent::currentThreadID();
 			}
 			return data;
 		} else
@@ -100,14 +102,14 @@ public:
 			if(exists) {
 				ok=true;
 				if(doLog) {
-					qDebug().nospace().noquote()<<"FrontendMock::getFrontend(#"<<id<<"/"<<sid<<", ok="<<ok<<") with doFailGet="<<doFailGet<<" returned "<<memData<< " @ "<<utility::currentThreadID();
+					qDebug().nospace().noquote()<<"FrontendMock::getFrontend(#"<<id<<"/"<<sid<<", ok="<<ok<<") with doFailGet="<<doFailGet<<" returned "<<memData<< " @ "<<utility::concurrent::currentThreadID();
 				}
 				return memData;
 			} else {
 				ok=false;
 				T data=T();
 				if(doLog) {
-					qDebug().nospace().noquote()<<"FrontendMock::getFrontend(#"<<id<<"/"<<sid<<", ok="<<ok<<") with doFailGet="<<doFailGet<<" returned "<<data<< " @ "<<utility::currentThreadID();
+					qDebug().nospace().noquote()<<"FrontendMock::getFrontend(#"<<id<<"/"<<sid<<", ok="<<ok<<") with doFailGet="<<doFailGet<<" returned "<<data<< " @ "<<utility::concurrent::currentThreadID();
 				}
 				return data;
 			}
@@ -127,7 +129,7 @@ public:
 		}
 		if(doLog)
 		{
-			qDebug().nospace().noquote()<<"FrontendMock::generateFrontend(#"<<id<<"/"<<sid<<", ) with doFailGenerate="<<doFailGenerate<<" returned "<<ret<< " @ "<<utility::currentThreadID();
+			qDebug().nospace().noquote()<<"FrontendMock::generateFrontend(#"<<id<<"/"<<sid<<", ) with doFailGenerate="<<doFailGenerate<<" returned "<<ret<< " @ "<<utility::concurrent::currentThreadID();
 		}
 		return ret;
 	}

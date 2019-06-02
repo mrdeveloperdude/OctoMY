@@ -25,6 +25,11 @@
 
 #include "comms/NetworkOptimizer.hpp"
 
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+#include "uptime/ConnectionType.hpp"
+
+
 #include "MapNetwork.hpp"
 #include <QNetworkRequest>
 #include <QUrl>
@@ -44,13 +49,16 @@ MapNetwork::MapNetwork(ImageManager* parent)
 	, mNetworkActive( false )
 	, mCacheEnabled(false)
 {
-	connect(mNetworkMan, SIGNAL(finished(QNetworkReply *)), this, SLOT(requestFinished(QNetworkReply *)));
+	OC_METHODGATE();
+	if(!connect(mNetworkMan, SIGNAL(finished(QNetworkReply *)), this, SLOT(requestFinished(QNetworkReply *)), OC_CONTYPE)){
+		qWarning()<<"ERROR: Could not connect";
+	}
 	mNetworkMan->setCookieJar(OC_NEW QNetworkCookieJar(mNetworkMan));
-
 }
 
 MapNetwork::~MapNetwork()
 {
+	OC_METHODGATE();
 	foreach(QNetworkReply *reply, mReplyList) {
 		if(reply->isRunning()) {
 			reply->abort();
@@ -65,6 +73,7 @@ MapNetwork::~MapNetwork()
 
 void MapNetwork::loadImage(const QString& host, const QString& url)
 {
+	OC_METHODGATE();
 	QString hostName = host;
 	QString portNumber = QString("80");
 
@@ -96,6 +105,7 @@ void MapNetwork::loadImage(const QString& host, const QString& url)
 
 void MapNetwork::requestFinished(QNetworkReply *reply)
 {
+	OC_METHODGATE();
 	if (!reply) {
 		//qDebug() << "MapNetwork::requestFinished - reply no longer valid";
 		return;
@@ -147,11 +157,12 @@ void MapNetwork::requestFinished(QNetworkReply *reply)
 	mReplyList.removeAll(reply);
 
 	reply->deleteLater();
-	reply = 0;
+	reply = nullptr;
 }
 
 int MapNetwork::loadQueueSize() const
 {
+	OC_METHODGATE();
 	QMutexLocker lock(&mVectorMutex);
 	return mLoadingMap.size();
 }
@@ -159,6 +170,7 @@ int MapNetwork::loadQueueSize() const
 
 void MapNetwork::setDiskCache(QNetworkDiskCache *qCache)
 {
+	OC_METHODGATE();
 	mCacheEnabled = (nullptr != qCache);
 	if (nullptr!=mNetworkMan) {
 		mNetworkMan->setCache(qCache);
@@ -168,6 +180,7 @@ void MapNetwork::setDiskCache(QNetworkDiskCache *qCache)
 
 void MapNetwork::abortLoading()
 {
+	OC_METHODGATE();
 	//qDebug() << "MapNetwork::abortLoading";
 	// be sure that replyList is copied in case it's modified in another thread
 	QListIterator<QNetworkReply *> iter(mReplyList);
@@ -178,7 +191,7 @@ void MapNetwork::abortLoading()
 				reply->abort();
 			}
 			reply->deleteLater();
-			reply = 0;
+			reply = nullptr;
 		}
 	}
 	QMutexLocker lock(&mVectorMutex);
@@ -188,12 +201,14 @@ void MapNetwork::abortLoading()
 
 bool MapNetwork::imageIsLoading(QString url)
 {
+	OC_METHODGATE();
 	QMutexLocker lock(&mVectorMutex);
 	return mLoadingMap.values().contains(url);
 }
 
-void MapNetwork::setProxy(const QString host, const int port, const QString username, const QString password)
+void MapNetwork::setProxy(const QString host, const quint16 port, const QString username, const QString password)
 {
+	OC_METHODGATE();
 	// do not set proxy on qt/extended
 #ifndef Q_WS_QWS
 	if (mNetworkMan) {

@@ -1,7 +1,5 @@
 
-# This file contains the helper functions
-# that support the "liquid" build system of OctoMY™
-
+# This file contains helper functions that support the "liquid" build system of OctoMY™
 
 defineReplace(camel) {
 	fi = $$upper($$str_member($$1, 0, 0))

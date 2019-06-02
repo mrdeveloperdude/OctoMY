@@ -1,14 +1,16 @@
 #include "BlobFuture.hpp"
 #include "BlobCourier.hpp"
 
-#include "utility/Standard.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/ConnectionType.hpp"
+
 #include <QObject>
 
-BlobFuture::BlobFuture(QString name="", BlobCourier *courier)
-	: mCourier(courier)
-	, mName(name)
-	, mReason("No reason")
-	, mWin(false)
+BlobFuture::BlobFuture(QString name="", BlobCourier *courier=nullptr)
+: mCourier(courier)
+, mName(name)
+, mReason("No reason")
+, mWin(false)
 {
 	OC_METHODGATE();
 }

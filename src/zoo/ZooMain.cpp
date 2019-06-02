@@ -1,9 +1,14 @@
 #include "ZooMain.hpp"
 #include "zoo/ZooServer.hpp"
-#include "basic/LogHandler.hpp"
-#include "basic/Settings.hpp"
-#include "node/AppContext.hpp"
-#include "zoo/ZooConstants.hpp"
+
+#include "utility/time/HumanTime.hpp"
+
+#include "app/log/LogHandler.hpp"
+
+
+#include "app/AppContext.hpp"
+#include "app/Constants.hpp"
+#include "app/launcher/AppCommandLineParser.hpp"
 
 #include <QCoreApplication>
 
@@ -12,20 +17,20 @@
 
 
 int main(int argc, char *argv[]){
-	qsrand(utility::currentMsecsSinceEpoch<quint64>());
+	qsrand(utility::time::currentMsecsSinceEpoch<uint>());
 	LogHandler::setLogging(true);
 
 	QCoreApplication app(argc, argv);
 
 	//Q_INIT_RESOURCE(style);
 	//Q_INIT_RESOURCE(fonts);
-	Q_INIT_RESOURCE(icons);
+	//Q_INIT_RESOURCE(icons);
 	//Q_INIT_RESOURCE(qfi);
 	//Q_INIT_RESOURCE(3d);
 
 	QProcessEnvironment env=QProcessEnvironment::systemEnvironment();
 	const QString OCTOMY_ZOO_WEB_PORT=QStringLiteral("OCTOMY_ZOO_WEB_PORT");
-	QString port=QString::number(ZooConstants::OCTOMY_UDP_DEFAULT_PORT_ZOO);
+	QString port=QString::number(Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO);
 	if(env.contains(OCTOMY_ZOO_WEB_PORT)){
 		port=env.value(OCTOMY_ZOO_WEB_PORT);
 	}
@@ -58,7 +63,18 @@ int main(int argc, char *argv[]){
 	}
 	opts.process(arguments);
 
-	ZooServer server(OC_NEW AppContext(opts, env, "zoo", nullptr), nullptr);
+	const QString base="zoo";
+	QSharedPointer<AppContext> ctx;
+
+	QSharedPointer <AppCommandLineParser> clp(OC_NEW AppCommandLineParser());
+	if(!clp.isNull()) {
+		clp->process(argc, argv);
+		QProcessEnvironment env=QProcessEnvironment::systemEnvironment();
+		ctx=QSharedPointer<AppContext>(OC_NEW AppContext(clp, env, base, clp->isHeadless()));
+	}
+
+	ZooServer server(nullptr);
+	server.configure(ctx);
 	server.start(port);
 
 	return app.exec();

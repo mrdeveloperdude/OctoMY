@@ -1,12 +1,15 @@
 #ifndef AGENTCONFIG_HPP
 #define AGENTCONFIG_HPP
 
-#include "ardumy_arduino/ArduMYActuator.hpp"
+//#include "ardumy_arduino/ArduMYActuator.hpp"
 
 #include "pose/PoseMapping.hpp"
 
-#include <QVector>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
+
+#include <QVariantList>
+#include <QVariantMap>
+
 
 class AgentConfig
 {
@@ -35,4 +38,5 @@ public:
 
 };
 
-#endif // AGENTCONFIG_HPP
+#endif
+// AGENTCONFIG_HPP

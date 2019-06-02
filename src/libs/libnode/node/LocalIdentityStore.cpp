@@ -1,9 +1,9 @@
-#include "node/LocalIdentityStore.hpp"
+#include "LocalIdentityStore.hpp"
 
-#include "utility/Standard.hpp"
+#include "uptime/MethodGate.hpp"
 
-LocalIdentityStore::LocalIdentityStore(QString filename)
-	: SimpleMapStore(filename)
+LocalIdentityStore::LocalIdentityStore()
+	: mConfigureHelper("LocalIdentityStore", true, false, false, true, false)
 {
 	OC_METHODGATE();
 }
@@ -12,4 +12,13 @@ LocalIdentityStore::LocalIdentityStore(QString filename)
 LocalIdentityStore::~LocalIdentityStore()
 {
 	OC_METHODGATE();
+}
+
+
+void LocalIdentityStore::configure(QString filename)
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.configure()) {
+		SimpleMapStore::configure(filename);
+	}
 }

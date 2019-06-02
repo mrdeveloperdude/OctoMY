@@ -1,19 +1,18 @@
 #ifndef TESTEYESWIDGET_HPP
 #define TESTEYESWIDGET_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
+class TestEyesWidget:public QObject
+{
+	Q_OBJECT
 
-class TestEyesWidget:public QObject{
-		Q_OBJECT
-
-
-	private slots:
-		void testWidget();
-		void testRendrer();
-
+private slots:
+	void testWidget();
+	void testRendrer();
 
 };
 
 
-#endif // TESTEYESWIDGET_HPP
+#endif
+// TESTEYESWIDGET_HPP

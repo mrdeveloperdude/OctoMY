@@ -20,5 +20,4 @@ void TestNetworkSettingsWidget::test()
 }
 
 
-
 OC_TEST_MAIN(test, TestNetworkSettingsWidget)

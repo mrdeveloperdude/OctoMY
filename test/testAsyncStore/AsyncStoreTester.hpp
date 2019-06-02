@@ -10,8 +10,8 @@ template<typename T>
 class AsyncStoreTester
 {
 public:
-	BackendMock<T> backend;
-	FrontendMock<T> frontend;
+	QSharedPointer<BackendMock<T> > backend;
+	QSharedPointer<FrontendMock<T> >frontend;
 	AsyncStore<T> store;
 
 public:
@@ -31,6 +31,10 @@ public:
 
 
 	virtual ~AsyncStoreTester<T>();
+
+
+	void configure();
+	void activate(bool on);
 };
 
 
@@ -48,9 +52,8 @@ AsyncStoreTester<T>::AsyncStoreTester(QString backendFilename
 									  , bool frontendDoFailSet
 									  , bool frontendDoFailGet
 									  , bool frontendDoFailGenerate )
-	: backend(backendFilename, backendExists, backendData, backendDoFailClear, backendDoFailSave, backendDoFailLoad)
-	, frontend(frontendExists, frontendData, frontendGeneratorData, frontendDoFailClear, frontendDoFailSet, frontendDoFailGet, frontendDoFailGenerate)
-	, store(backend, frontend)
+	: backend( new BackendMock<T>(backendFilename, backendExists, backendData, backendDoFailClear, backendDoFailSave, backendDoFailLoad))
+	, frontend( new FrontendMock<T>(frontendExists, frontendData, frontendGeneratorData, frontendDoFailClear, frontendDoFailSet, frontendDoFailGet, frontendDoFailGenerate))
 {
 	qDebug().nospace().noquote()<<"AsyncStoreTester::AsyncStoreTester()";
 }
@@ -63,4 +66,22 @@ AsyncStoreTester<T>::~AsyncStoreTester<T>()
 
 
 
-#endif // ASYNCSTORETESTER_HPP
+template<typename T>
+void AsyncStoreTester<T>::configure()
+{
+	qDebug().nospace().noquote()<<"AsyncStoreTester::configure()";
+	store.configure(backend, frontend);
+}
+
+
+template<typename T>
+void AsyncStoreTester<T>::activate(bool on)
+{
+	qDebug().nospace().noquote()<<"AsyncStoreTester::activate("<<on<<")";
+	store.activate(on);
+}
+
+
+
+#endif
+// ASYNCSTORETESTER_HPP

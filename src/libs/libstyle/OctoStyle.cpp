@@ -16,8 +16,7 @@
  */
 
 #include "OctoStylePrivate.hpp"
-
-#include "utility/Standard.hpp"
+#include "uptime/New.hpp"
 
 #include <QtCore/qmath.h>
 #include <QtCore/QStringBuilder>
@@ -412,12 +411,12 @@ static QPixmap colorizedImage(const QString &fileName, const QColor &color, int 
 			QRgb *data = reinterpret_cast<QRgb *>(image.scanLine(y));
 			for (int x = 0 ; x < width ; ++x) {
 				QRgb col = data[x];
-				unsigned int colorDiff = (qBlue(col) - qRed(col));
-				unsigned char gray = qGreen(col);
-				unsigned char red = gray + qt_div_255(sourceRed * colorDiff);
-				unsigned char green = gray + qt_div_255(sourceGreen * colorDiff);
-				unsigned char blue = gray + qt_div_255(sourceBlue * colorDiff);
-				unsigned char alpha = qt_div_255(qAlpha(col) * qAlpha(source));
+				unsigned int colorDiff = static_cast<unsigned int>((qBlue(col) - qRed(col)));
+				unsigned char gray = static_cast<unsigned char>(qGreen(col));
+				unsigned char red = static_cast<unsigned char>(gray + qt_div_255(static_cast<int>(sourceRed * colorDiff)));
+				unsigned char green = static_cast<unsigned char>(gray + qt_div_255(static_cast<int>(sourceGreen * colorDiff)));
+				unsigned char blue = static_cast<unsigned char>(gray + qt_div_255(static_cast<int>(sourceBlue * colorDiff)));
+				unsigned char alpha = static_cast<unsigned char>(qt_div_255(static_cast<int>(qAlpha(col) * qAlpha(source))));
 				data[x] = qRgba(red, green, blue, alpha);
 			}
 		}
@@ -451,7 +450,7 @@ static QLinearGradient qt_fusion_gradient(const QRect &rect, const QBrush &baseC
 	case BottomUp:
 		gradient = QLinearGradient(x, rect.bottom(), x, rect.top());
 		break;
-	case TopDown:
+	// case TopDown:
 	default:
 		gradient = QLinearGradient(x, rect.top(), x, rect.bottom());
 		break;
@@ -476,8 +475,8 @@ static void qt_fusion_draw_mdibutton(QPainter *painter, const QStyleOptionTitleB
 {
 	QColor dark;
 	dark.setHsv(option->palette.button().color().hue(),
-				qMin(255, (int)(option->palette.button().color().saturation())),
-				qMin(255, (int)(option->palette.button().color().value()*0.7)));
+				qMin(255, static_cast<int>((option->palette.button().color().saturation()))),
+				qMin(255, static_cast<int>((option->palette.button().color().value()*0.7))));
 
 	QColor highlight = option->palette.highlight().color();
 
@@ -527,12 +526,12 @@ static void qt_fusion_draw_mdibutton(QPainter *painter, const QStyleOptionTitleB
 
 	painter->setPen(QPen(gradient, 1));
 	painter->drawLine(tmp.right() + 1, tmp.top() + 2, tmp.right() + 1, tmp.bottom() - 2);
-	painter->drawPoint(tmp.right() , tmp.top() + 1);
+	painter->drawPoint(tmp.right(), tmp.top() + 1);
 
 	painter->drawLine(tmp.left() + 2, tmp.bottom() + 1, tmp.right() - 2, tmp.bottom() + 1);
 	painter->drawPoint(tmp.left() + 1, tmp.bottom());
 	painter->drawPoint(tmp.right() - 1, tmp.bottom());
-	painter->drawPoint(tmp.right() , tmp.bottom() - 1);
+	painter->drawPoint(tmp.right(), tmp.bottom() - 1);
 }
 
 
@@ -609,7 +608,7 @@ OctoStyle::~OctoStyle()
 	delete d;
 	//d=nullptr;
 }
-
+/*
 static void printPalette(const QPalette& pal)
 {
 #define PAL "fPalBlue"
@@ -646,7 +645,7 @@ static void printPalette(const QPalette& pal)
 
 #undef PAL
 }
-
+*/
 /*!
 	\fn void OctoStyle::drawItemText(QPainter *painter, const QRect &rectangle, int alignment, const QPalette &palette,
 									bool enabled, const QString& text, QPalette::ColorRole textRole) const
@@ -694,7 +693,7 @@ void OctoStyle::drawPrimitive(PrimitiveElement elem,
 	Q_ASSERT(option);
 
 	QRect rect = option->rect;
-	int state = option->state;
+	const int state = static_cast<int>(option->state);
 
 	QColor outline = d->outline(option->palette);
 	QColor highlightedOutline = d->highlightedOutline(option->palette);
@@ -861,12 +860,12 @@ void OctoStyle::drawPrimitive(PrimitiveElement elem,
 		} else { //Draw vertical separator
 			const int offset = rect.height()/2;
 			painter->setPen(QPen(highlightedOutline));
-			painter->drawLine(rect.topLeft().x() + margin ,
+			painter->drawLine(rect.topLeft().x() + margin,
 							  rect.topLeft().y() + offset,
 							  rect.topRight().x() - margin,
 							  rect.topRight().y() + offset);
 			painter->setPen(QPen(option->palette.background().color().lighter(110)));
-			painter->drawLine(rect.topLeft().x() + margin ,
+			painter->drawLine(rect.topLeft().x() + margin,
 							  rect.topLeft().y() + offset + 1,
 							  rect.topRight().x() - margin,
 							  rect.topRight().y() + offset + 1);
@@ -1136,13 +1135,13 @@ void OctoStyle::drawPrimitive(PrimitiveElement elem,
 				painter->setPen(QPen(Qt::black, 0));
 				const QLine lines[4] = {
 					QLine(QPoint(r.left() + 2, r.top()),
-					QPoint(r.right() - 2, r.top())),
+						  QPoint(r.right() - 2, r.top())),
 					QLine(QPoint(r.left(), r.top() + 2),
-					QPoint(r.left(), r.bottom() - 2)),
+						  QPoint(r.left(), r.bottom() - 2)),
 					QLine(QPoint(r.right(), r.top() + 2),
-					QPoint(r.right(), r.bottom() - 2)),
+						  QPoint(r.right(), r.bottom() - 2)),
 					QLine(QPoint(r.left() + 2, r.bottom()),
-					QPoint(r.right() - 2, r.bottom()))
+						  QPoint(r.right() - 2, r.bottom()))
 				};
 				painter->drawLines(lines, 4);
 				const QPoint points[4] = {
@@ -1289,7 +1288,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 			}
 			if (!cb->currentText.isEmpty() && !cb->editable) {
 				proxy()->drawItemText(painter, editRect.adjusted(1, 0, -1, 0),
-									  visualAlignment(cb->direction, Qt::AlignLeft | Qt::AlignVCenter),
+									  static_cast<int>(visualAlignment(cb->direction, Qt::AlignLeft | Qt::AlignVCenter)),
 									  cb->palette, cb->state & State_Enabled, cb->currentText,
 									  cb->editable ? QPalette::Text : QPalette::ButtonText);
 			}
@@ -1339,6 +1338,9 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 			painter->restore();
 			return;
 		}
+		// NOTE!!!! WAS THIS SUPPOSED TO FALL THROUGH?
+	break;
+
 	case CE_SizeGrip:
 		painter->save();
 		{
@@ -1592,7 +1594,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 		painter->save();
 		painter->setRenderHint(QPainter::Antialiasing, true);
 		painter->translate(0.5, 0.5);
-		if (const QStyleOptionProgressBarV2 *bar = qstyleoption_cast<const QStyleOptionProgressBarV2 *>(option)) {
+		if (const QStyleOptionProgressBar *bar = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
 			bool vertical = false;
 			bool inverted = false;
 			bool indeterminate = (bar->minimum == 0 && bar->maximum == 0);
@@ -1612,11 +1614,11 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 				painter->setTransform(m, true);
 			}
 
-			int maxWidth = rect.width();
-			int minWidth = 0;
-			qreal progress = qMax(bar->progress, bar->minimum); // workaround for bug in QProgressBar
-			int progressBarWidth = (progress - bar->minimum) * qreal(maxWidth) / qMax(qreal(1.0), qreal(bar->maximum) - bar->minimum);
-			int width = indeterminate ? maxWidth : qMax(minWidth, progressBarWidth);
+			const int maxWidth = rect.width();
+			const int minWidth = 0;
+			const qreal progress = qMax(bar->progress, bar->minimum); // workaround for bug in QProgressBar
+			const int progressBarWidth = static_cast<int>((progress - bar->minimum) * qreal(maxWidth) / qMax(qreal(1.0), qreal(bar->maximum) - bar->minimum));
+			const int width = indeterminate ? maxWidth : qMax(minWidth, progressBarWidth);
 
 			bool reverse = (!vertical && (bar->direction == Qt::RightToLeft)) || vertical;
 			if (inverted) {
@@ -1761,7 +1763,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 
 				//draw text
 				QPalette::ColorRole textRole = dis ? QPalette::Text : QPalette::HighlightedText;
-				uint alignment = Qt::AlignCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine;
+				int alignment = Qt::AlignCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine;
 				if (!styleHint(SH_UnderlineShortcut, mbi, widget)) {
 					alignment |= Qt::TextHideMnemonic;
 				}
@@ -1806,7 +1808,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 					QLine(QPoint(r.left() + 1, r.bottom()), QPoint(r.right() - 1, r.bottom())),
 					QLine(QPoint(r.left() + 1, r.top()), QPoint(r.right() - 1, r.top())),
 					QLine(QPoint(r.left(), r.top()), QPoint(r.left(), r.bottom())),
-					QLine(QPoint(r.right() , r.top()), QPoint(r.right(), r.bottom())),
+					QLine(QPoint(r.right(), r.top()), QPoint(r.right(), r.bottom())),
 				};
 				painter->drawLines(lines, 4);
 			}
@@ -2001,7 +2003,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 	case CE_PushButtonLabel:
 		if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
 			QRect ir = button->rect;
-			uint tf = Qt::AlignVCenter;
+			int tf = Qt::AlignVCenter;
 			if (styleHint(SH_UnderlineShortcut, button, widget)) {
 				tf |= Qt::TextShowMnemonic;
 			} else {
@@ -2267,7 +2269,7 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 			QRect checkBoxRect = proxy()->subControlRect(CC_GroupBox, option, SC_GroupBoxCheckBox, widget);
 
 			if (groupBox->subControls & QStyle::SC_GroupBoxFrame) {
-				QStyleOptionFrameV3 frame;
+				QStyleOptionFrame frame;
 				frame.QStyleOption::operator=(*groupBox);
 				frame.features = groupBox->features;
 				frame.lineWidth = groupBox->lineWidth;
@@ -2533,7 +2535,7 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 					bool hover = (titleBar->activeSubControls & SC_TitleBarMinButton) && (titleBar->state & State_MouseOver);
 					bool sunken = (titleBar->activeSubControls & SC_TitleBarMinButton) && (titleBar->state & State_Sunken);
 					qt_fusion_draw_mdibutton(painter, titleBar, minButtonRect, hover, sunken);
-					QRect minButtonIconRect = minButtonRect.adjusted(buttonMargin ,buttonMargin , -buttonMargin, -buttonMargin);
+					QRect minButtonIconRect = minButtonRect.adjusted(buttonMargin,buttonMargin, -buttonMargin, -buttonMargin);
 					painter->setPen(textColor);
 					painter->drawLine(minButtonIconRect.center().x() - 2, minButtonIconRect.center().y() + 3,
 									  minButtonIconRect.center().x() + 3, minButtonIconRect.center().y() + 3);
@@ -2583,13 +2585,13 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 					painter->setPen(textAlphaColor);
 					const QLine lines[4] = {
 						QLine(closeIconRect.left() + 1, closeIconRect.top(),
-						closeIconRect.right(), closeIconRect.bottom() - 1),
+							  closeIconRect.right(), closeIconRect.bottom() - 1),
 						QLine(closeIconRect.left(), closeIconRect.top() + 1,
-						closeIconRect.right() - 1, closeIconRect.bottom()),
+							  closeIconRect.right() - 1, closeIconRect.bottom()),
 						QLine(closeIconRect.right() - 1, closeIconRect.top(),
-						closeIconRect.left(), closeIconRect.bottom() - 1),
+							  closeIconRect.left(), closeIconRect.bottom() - 1),
 						QLine(closeIconRect.right(), closeIconRect.top() + 1,
-						closeIconRect.left() + 1, closeIconRect.bottom())
+							  closeIconRect.left() + 1, closeIconRect.bottom())
 					};
 					painter->drawLines(lines, 4);
 					const QPoint points[4] = {
@@ -2839,7 +2841,7 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 
 				painter->setBrush(Qt::NoBrush);
 				painter->setPen(d->innerContrastLine());
-				painter->drawRect(scrollBarSubLine.adjusted(horizontal ? 0 : 1, horizontal ? 1 : 0 ,  horizontal ? -2 : -1, horizontal ? -1 : -2));
+				painter->drawRect(scrollBarSubLine.adjusted(horizontal ? 0 : 1, horizontal ? 1 : 0,  horizontal ? -2 : -1, horizontal ? -1 : -2));
 
 				// Arrows
 				int rotation = 0;
@@ -2956,8 +2958,8 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 							cachePainter.drawLine(QPoint(downArrowRect.right() - 1, downArrowRect.top() + borderSize ),
 												  QPoint(downArrowRect.right() - 1, downArrowRect.bottom() - borderSize));
 						} else {
-							cachePainter.drawLine(QPoint(downArrowRect.left() , downArrowRect.top() + borderSize),
-												  QPoint(downArrowRect.left() , downArrowRect.bottom() - borderSize));
+							cachePainter.drawLine(QPoint(downArrowRect.left(), downArrowRect.top() + borderSize),
+												  QPoint(downArrowRect.left(), downArrowRect.bottom() - borderSize));
 						}
 					} else {
 						if (comboBox->direction == Qt::RightToLeft) {
@@ -3018,8 +3020,8 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 			if ((option->subControls & SC_SliderGroove) && groove.isValid()) {
 				QColor grooveColor;
 				grooveColor.setHsv(buttonColor.hue(),
-								   qMin(255, (int)(buttonColor.saturation())),
-								   qMin(255, (int)(buttonColor.value()*0.9)));
+								   qMin(255, static_cast<int>(buttonColor.saturation())),
+								   qMin(255, static_cast<int>(buttonColor.value()*0.9)));
 				QString groovePixmapName = uniqueName(QLatin1String("slider_groove"), option, groove.size());
 				QRect pixmapRect(0, 0, groove.width(), groove.height());
 
@@ -3590,6 +3592,7 @@ QRect OctoStyle::subControlRect(ComplexControl control, const QStyleOptionComple
 				break;
 			case SC_SpinBoxFrame:
 				rect = spinbox->rect;
+				break;
 			default:
 				break;
 			}
@@ -3830,7 +3833,7 @@ int OctoStyle::styleHint(StyleHint hint, const QStyleOption* option, const QWidg
 			mask->region -= QRect(option->rect.right() - 4, option->rect.top(), 5, 1);
 			mask->region -= QRect(option->rect.right() - 2, option->rect.top() + 1, 3, 1);
 			mask->region -= QRect(option->rect.right() - 1, option->rect.top() + 2, 2, 1);
-			mask->region -= QRect(option->rect.right() , option->rect.top() + 3, 1, 2);
+			mask->region -= QRect(option->rect.right(), option->rect.top() + 3, 1, 2);
 			return 1;
 		}
 		break;

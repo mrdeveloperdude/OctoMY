@@ -31,19 +31,16 @@ public:
 	virtual ~PoseMappingWidget();
 
 public:
-
 	void configure(PoseMapping &mapping);
-
 	PoseMapping *mapping();
+
 private:
-
 	void addButtonPair(quint32 index, QVBoxLayout *hLayout, QString from,QString to, QButtonGroup *butGroupFrom, QButtonGroup *butGroupTo);
-
 	void makeConnection();
 
-	private slots:
-
+private slots:
 	void onSpinValueChanged(int);
 };
 
-#endif // POSEMAPPINGWIDGET_HPP
+#endif
+// POSEMAPPINGWIDGET_HPP

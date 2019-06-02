@@ -574,6 +574,7 @@ void TestOpenCL::testCLGLView()
 	qWarning()<<"CL DISABLED IN THIS BUILD";
 }
 
+
 void TestOpenCL::testWithoutGLInterop()
 {
 	qWarning()<<"CL DISABLED IN THIS BUILD";
@@ -590,6 +591,7 @@ void TestOpenCL::testWithGLInterop()
 {
 	qWarning()<<"CL DISABLED IN THIS BUILD";
 }
+
 
 void TestOpenCL::cleanupTestCase()
 {

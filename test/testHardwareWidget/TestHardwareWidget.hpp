@@ -1,15 +1,17 @@
 #ifndef TESTHARDWAREWIDGET_HPP
 #define TESTHARDWAREWIDGET_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 class TestHardwareWidget:public QObject
 {
 	Q_OBJECT
+
 private slots:
 	void test();
 
 };
 
 
-#endif // TESTHARDWAREWIDGET_HPP
+#endif
+// TESTHARDWAREWIDGET_HPP

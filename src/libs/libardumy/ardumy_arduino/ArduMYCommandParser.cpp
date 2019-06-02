@@ -1,7 +1,7 @@
 #include "ardumy_arduino/ArduMYCommandParser.hpp"
 #include "ardumy_arduino/ArduMYParserState.hpp"
 
-//#include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
+//#include "hardware/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 ArduMYCommandParser::ArduMYCommandParser()
 	: currentCommand(ArduMYParserState::OCTOMY_SYNC)

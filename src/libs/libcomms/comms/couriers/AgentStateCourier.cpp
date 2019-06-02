@@ -9,8 +9,10 @@
 #include "comms/SyncParameter.hpp"
 #include "comms/couriers/CourierMandate.hpp"
 
-#include "utility/Standard.hpp"
-#include "utility/Utility.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/ConnectionType.hpp"
+
+#include "utility/time/HumanTime.hpp"
 
 #include <QDebug>
 #include <QDataStream>
@@ -21,7 +23,7 @@
 const quint32 AgentStateCourier::AGENT_STATE_COURIER_ID=(Courier::FIRST_USER_ID + 5);
 
 // Agent side constructor
-AgentStateCourier::AgentStateCourier(QDataStream *initialization, CommsChannel &comms, QObject *parent)
+AgentStateCourier::AgentStateCourier(QDataStream *initialization, QSharedPointer<CommsChannel> comms, QObject *parent)
 	: Courier("AgentState", AGENT_STATE_COURIER_ID, comms, parent)
 	, mAgentSide(nullptr!=initialization)
 	, mParams(100)
@@ -35,8 +37,8 @@ AgentStateCourier::AgentStateCourier(QDataStream *initialization, CommsChannel &
 {
 	OC_METHODGATE();
 	initParams(initialization);
-	//mParams.forceSync(utility::currentMsecsSinceEpoch<quint64>());
-	mParams.update(utility::currentMsecsSinceEpoch<quint64>());
+	//mParams.forceSync(utility::time::currentMsecsSinceEpoch<quint64>());
+	mParams.update(utility::time::currentMsecsSinceEpoch<quint64>());
 
 	//setForwardRescheduleSignal(mParams, true);
 
@@ -47,6 +49,10 @@ AgentStateCourier::AgentStateCourier(QDataStream *initialization, CommsChannel &
 
 }
 
+AgentStateCourier::~AgentStateCourier()
+{
+	OC_METHODGATE();
+}
 
 
 void AgentStateCourier::setPanic(bool panic)
@@ -222,7 +228,7 @@ void AgentStateCourier::update(quint64 now)
 CourierMandate AgentStateCourier::mandate() const
 {
 	OC_METHODGATE();
-	CourierMandate mandate(mParams.bytesSentIdeal() , 10, mLastSendTime + 50, true, (mParams.hasPendingSyncs() || mParams.hasPendingAcks()) );
+	CourierMandate mandate(mParams.bytesSentIdeal(), 10, mLastSendTime + 50, true, (mParams.hasPendingSyncs() || mParams.hasPendingAcks()) );
 	return mandate;
 }
 
@@ -235,7 +241,7 @@ quint16 AgentStateCourier::sendingOpportunity(QDataStream &ds)
 		ds << mParams;
 		quint16 bytes=mParams.bytesSent();
 		qDebug()<<"Spent sending opportunity for agent status data with "<<bytes<<" bytes";
-		mLastSendTime=utility::currentMsecsSinceEpoch<quint64>();
+		mLastSendTime=utility::time::currentMsecsSinceEpoch<quint64>();
 		return  bytes;
 	} else {
 		qWarning()<<"ERROR: sendingOpportunity while sendActive=false";

@@ -6,8 +6,9 @@
 
 #include "qpolarssl/qpolarsslpki.hpp"
 
-#include "utility/Standard.hpp"
-#include "utility/Utility.hpp"
+#include "uptime/New.hpp"
+#include "utility/random/Random.hpp"
+
 
 #include <QByteArray>
 
@@ -16,27 +17,24 @@ class ContainerClass
 {
 private:
 	//CommsSignature mSignature;
-
 	Key &mKey;
-
 
 	public:
 
 		//Client(QHostAddress host, quint16 port, LogDestination *log=0);
 		explicit ContainerClass(Key &key);
 		virtual ~ContainerClass();
-
-
 };
+
 
 ContainerClass::ContainerClass(Key &key)
 	: mKey(key)
 {
-
 	if(nullptr == &key){
 		qWarning()<<"ERROR: key was nullptr";
 	}
 }
+
 
 ContainerClass::~ContainerClass()
 {
@@ -44,20 +42,16 @@ ContainerClass::~ContainerClass()
 }
 
 
-
-
 void TestKey::testAllocation()
 {
 	QSharedPointer<ContainerClass> cc(nullptr);
 	Key key;
 	cc=QSharedPointer<ContainerClass>(OC_NEW ContainerClass(key));
-
 }
+
 
 void TestKey::testBasicIntegrity()
 {
-
-
 	// ############################# #############################
 	// ############################# explicit Key(QVariantMap map, bool isPublic);
 
@@ -292,7 +286,6 @@ void TestKey::testBasicIntegrity()
 	QVERIFY(!k6b.hasPrivate());
 	QVERIFY(!k6b.hasPrivate(false));
 	QVERIFY(!k6b.hasPrivate(true));
-
 }
 
 
@@ -352,8 +345,6 @@ void TestKey::testSignature()
 }
 
 
-
-
 void TestKey::testEncryption()
 {
 	// ############################# #############################
@@ -401,7 +392,7 @@ void TestKey::testEncryption()
 				qDebug()<<"";
 				qDebug()<<"####################################################################";
 				qDebug()<<"----- BITSIZE: "<<bitsize<<", DATASIZE: "<<datasize;
-				QByteArray orig1=utility::randomByteArray(datasize);
+				QByteArray orig1=utility::random::randomByteArray(datasize);
 
 				const QByteArray encrypted1= k1.encrypt(orig1);
 				const QByteArray decrypted1= k1.decrypt(encrypted1);
@@ -413,7 +404,7 @@ void TestKey::testEncryption()
 				//QCOMPARE(orig1,decrypted1);
 			}
 			{
-				QByteArray orig2=utility::randomByteArray(datasize);
+				QByteArray orig2=utility::random::randomByteArray(datasize);
 				const QByteArray encrypted2 = k2.encrypt(orig2);
 				const QByteArray decrypted2= k1.decrypt(encrypted2);
 
@@ -426,8 +417,6 @@ void TestKey::testEncryption()
 		}
 	}
 }
-
-
 
 
 OC_TEST_MAIN(test, TestKey)

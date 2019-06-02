@@ -1,6 +1,7 @@
 #include "AgentControls.hpp"
 
 #include "comms/couriers/sets/AgentCourierSet.hpp"
+#include "uptime/MethodGate.hpp"
 
 #include "Agent.hpp"
 
@@ -42,7 +43,7 @@ void AgentControls::setCommsEnabled(bool enable)
 {
 	OC_METHODGATE();
 	for(AgentCourierSet *set:mCouriers) {
-		set->setCommsEnabled(enable);
+		set->enableComms(enable);
 	}
 }
 

@@ -1,10 +1,12 @@
 #include "TestAssociate.hpp"
 
-#include "basic/Associate.hpp"
-#include "basic/AddressEntry.hpp"
-#include "utility/Utility.hpp"
+#include "address/Associate.hpp"
+#include "address/AddressEntry.hpp"
 
-#include "TestKeys.hpp"
+#include "utility/time/HumanTime.hpp"
+#include "uptime/New.hpp"
+
+#include "Keys_test.hpp"
 
 static const TestKeys tk;
 static const QString ip="127.0.0.1";
@@ -15,15 +17,16 @@ static const NodeRole role=ROLE_AGENT;
 static const QString pin="12345";
 static const QString pin2="54321";
 
-const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
+const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
+
 
 static QStringList trusts= {
 	"trust-one", "trust-two"
 };
 
+
 static QVariantMap generateMap()
 {
-
 	QVariantMap keyMap;
 
 	//keyMap["privateKey"]="";//Use empty private key on purpose, as associates will not have it (it is included above for completeness only)
@@ -32,7 +35,6 @@ static QVariantMap generateMap()
 
 	QVariantMap assMap;
 	assMap["key"]=keyMap;
-
 
 	/*
 	QVariantMap localAddrMap;
@@ -47,11 +49,9 @@ static QVariantMap generateMap()
 	*/
 
 
-
-
 	assMap["name"]="hogboll";
 	assMap["gender"]="Male";
-	assMap["birthDate"]=utility::msToVariant(now-(1000*60*60*24*10));
+	assMap["birthDate"]=utility::time::msToVariant(now-(1000*60*60*24*10));
 
 	assMap["role"]=nodeRoleToString(role);
 	assMap["type"]=nodeTypeToString(type);
@@ -66,28 +66,25 @@ static QVariantMap generateMap()
 	adrMap["address"]=nadrMap;
 	adrMap["description"]="Description of address";
 
-
-	adrMap["createdMS"]=utility::msToVariant(now);
-	adrMap["lastSuccessMS"]=utility::msToVariant(now);
-	adrMap["lastErrorMS"]=utility::msToVariant(now);
-	adrMap["numSuccessful"]=(quint64)3;
-	adrMap["numErraneous"]=(quint64)3;
+	adrMap["createdMS"]=utility::time::msToVariant(now);
+	adrMap["lastSuccessMS"]=utility::time::msToVariant(now);
+	adrMap["lastErrorMS"]=utility::time::msToVariant(now);
+	adrMap["numSuccessful"]=static_cast<quint64>(3);
+	adrMap["numErraneous"]=static_cast<quint64>(3);
 
 	adrList<<adrMap;
 	assMap["addressList"]=adrList;
 
-
-	assMap["lastSeenMS"]=utility::msToVariant(now-9000);
-	assMap["lastInitiatedHandshakeMS"]=utility::msToVariant(now-6000);
-	assMap["lastAdherentHandshakeMS"]=utility::msToVariant(now-10000);
-
+	assMap["lastSeenMS"]=utility::time::msToVariant(now-9000);
+	assMap["lastInitiatedHandshakeMS"]=utility::time::msToVariant(now-6000);
+	assMap["lastAdherentHandshakeMS"]=utility::time::msToVariant(now-10000);
 
 	return assMap;
 }
 
+
 void TestAssociate::test()
 {
-
 	QVariantMap assMap=generateMap();
 
 	QSharedPointer<Associate> ass(OC_NEW Associate(assMap));
@@ -124,7 +121,6 @@ void TestAssociate::test()
 	QVERIFY(!ass->isValidForClient(false));
 	QVERIFY(!ass->isValidForServer());
 
-
 	const QStringList &pins=ass->pins();
 	QCOMPARE(pins.size(),0);
 	ass->addPin(pin);
@@ -150,9 +146,7 @@ void TestAssociate::testMapConversions()
 {
 	QVariantMap assMap1=generateMap();
 
-
 	QSharedPointer<Associate> ass1(OC_NEW Associate(assMap1));
-
 
 	QCOMPARE(ass1->id(), tk.keyID);
 	QCOMPARE(ass1->type(), type);
@@ -202,14 +196,13 @@ void TestAssociate::testMapConversions()
 	//map["pins"]=mPins;//DONT STORE PINS THEY ARE EPHEMERAL
 	map["trusts"]=mTrusts;
 	*/
-
 }
 
 
 void TestAssociate::testTimeConversions()
 {
 	QDateTime dtNow=QDateTime::currentDateTimeUtc();
-	quint64 tsNow=utility::currentMsecsSinceEpoch<quint64>();
+	quint64 tsNow=utility::time::currentMsecsSinceEpoch<quint64>();
 	QVariant vNow;
 	vNow=dtNow;
 	QVariant vNow2;
@@ -217,14 +210,13 @@ void TestAssociate::testTimeConversions()
 	quint64 tsNow2=vNow.toDateTime().toMSecsSinceEpoch();
 	qDebug()<<"dtNow="<<dtNow<<", vNow="<<vNow<<", tsNow="<<tsNow<<", vNow2="<<vNow2<<", tsNow2="<<tsNow2;
 
-	quint64 ms1=utility::variantToMs(dtNow);
-	QVariant v1=utility::msToVariant(ms1);
+	quint64 ms1=utility::time::variantToMs(dtNow);
+	QVariant v1=utility::time::msToVariant(ms1);
 	QCOMPARE(v1.toDateTime(), dtNow);
-	quint64 ms2=utility::variantToMs(v1);
+	quint64 ms2=utility::time::variantToMs(v1);
 	QCOMPARE(ms2, ms2);
 
 }
-
 
 
 OC_TEST_MAIN(test, TestAssociate)

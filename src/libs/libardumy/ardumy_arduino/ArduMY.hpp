@@ -53,7 +53,7 @@ QDebugOutput &operator<<(QDebugOutput &d, const char *str);
 
 #else
 
-#warning Compiling for Qt5
+//#warning Compiling for Qt5
 
 #include <inttypes.h>
 #include <cstring>

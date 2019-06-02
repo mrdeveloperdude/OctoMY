@@ -9,10 +9,12 @@ TryToggleTestUI::TryToggleTestUI(QWidget *parent) :
 	connect(ui->widgetTryToggle, SIGNAL(stateChanged(TryToggleState,TryToggleState)), this, SLOT(onStateChanged(TryToggleState,TryToggleState)));
 }
 
+
 TryToggleTestUI::~TryToggleTestUI()
 {
 	delete ui;
 }
+
 
 void TryToggleTestUI::on_pushButtonOff_clicked()
 {
@@ -20,11 +22,13 @@ void TryToggleTestUI::on_pushButtonOff_clicked()
 	ui->widgetTryToggle->setState(TryToggleState::OFF);
 }
 
+
 void TryToggleTestUI::on_pushButtonGoingOn_clicked()
 {
 	qDebug()<<"GOING ON BUTTON CLICKED";
 	ui->widgetTryToggle->setState(TryToggleState::GOING_ON);
 }
+
 
 void TryToggleTestUI::on_pushButtonOn_clicked()
 {
@@ -32,13 +36,12 @@ void TryToggleTestUI::on_pushButtonOn_clicked()
 	ui->widgetTryToggle->setState(TryToggleState::ON);
 }
 
+
 void TryToggleTestUI::on_pushButtonGoingOff_clicked()
 {
 	qDebug()<<"GOING OFF BUTTON CLICKED";
 	ui->widgetTryToggle->setState(TryToggleState::GOING_OFF);
 }
-
-
 
 
 void TryToggleTestUI::onStateChanged(TryToggleState from,TryToggleState to)

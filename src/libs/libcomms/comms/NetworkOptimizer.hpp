@@ -13,14 +13,14 @@
 
 class NetworkOptimizer
 {
-	private:
-		static QNetworkAccessManager *nam;
-	public:
-		NetworkOptimizer();
+private:
+	static QNetworkAccessManager *nam;
+public:
+	NetworkOptimizer();
 
-	public:
+public:
 
-		static QNetworkAccessManager &instance(QString host="http://zoo.octomy.org");
+	static QNetworkAccessManager &instance(QString host="http://zoo.octomy.org");
 };
 
 #endif // NETWORKOPTIMIZER_HPP

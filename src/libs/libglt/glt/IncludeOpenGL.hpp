@@ -5,15 +5,21 @@
 // This file is used to maintain DRY principle while using OpenGL in Qt
 // This is done through macro MAGIC outright!
 
-// This is the only place where you get to fiddle my friend!
-#define OCTOMY_QT_OGL_VERSION_MAJOR   2
-#define OCTOMY_QT_OGL_VERSION_MINOR   0
-#define OCTOMY_QT_OGL_PROFILE         Core
-#define OCTOMY_QT_OGL_DEPTH_BUFFER    24
-#define OCTOMY_QT_OGL_STENSIL_BUFFER  0
-#define OCTOMY_QT_OGL_SWAP_INTERVAL	  1
-#define OCTOMY_QT_OGL_SWAP_BEHAVIOUR  DefaultSwapBehavior
-#define OCTOMY_QT_OGL_USE_DESKTOP     1
+// Between these lines is the only place where you get to fiddle my friend!
+////////////////////////////////////////////////////////////////////////////////
+//
+# define OCTOMY_QT_OGL_VERSION_MAJOR   2
+# define OCTOMY_QT_OGL_VERSION_MINOR   0
+# define OCTOMY_QT_OGL_PROFILE         Core
+# define OCTOMY_QT_OGL_DEPTH_BUFFER    24
+# define OCTOMY_QT_OGL_STENSIL_BUFFER  0
+# define OCTOMY_QT_OGL_SWAP_INTERVAL	  1
+# define OCTOMY_QT_OGL_SWAP_BEHAVIOUR  DefaultSwapBehavior
+# define OCTOMY_QT_OGL_USE_DESKTOP     1
+//
+////////////////////////////////////////////////////////////////////////////////
+
+
 
 #if OCTOMY_QT_OGL_USE_DESKTOP == 1
 #define OCTOMY_QT_OGL_APP_ATTRIBUTE AA_UseDesktopOpenGL

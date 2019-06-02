@@ -1,7 +1,7 @@
 #include "TestRateCalculator.hpp"
 
+#include "utility/time/RateCalculator.hpp"
 
-#include "comms/RateCalculator.hpp"
 
 void TestRateCalculator::test()
 {
@@ -86,13 +86,8 @@ void TestRateCalculator::test()
 			QCOMPARE(rc.mBytesLog,		(quint64)0); // Number of bytes passed since last log
 			QCOMPARE(rc.mLogInterval,	interval); // Interval for logging. 0 means no logging
 		}
-
-
-
 	}
-
 }
 
 
 OC_TEST_MAIN(test, TestRateCalculator)
-

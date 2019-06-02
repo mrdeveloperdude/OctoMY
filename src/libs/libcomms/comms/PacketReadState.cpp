@@ -1,11 +1,13 @@
 #include "PacketReadState.hpp"
 
-#include <QDataStream>
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 
 #include "security/Key.hpp"
-#include "utility/Standard.hpp"
-
 #include "Multimagic.hpp"
+
+#include <QDataStream>
+
 
 const int PacketReadState::OCTOMY_SENDER_ID_SIZE=32;
 const int PacketReadState::OCTOMY_ENCRYPTED_MESSAGE_SIZE=36;
@@ -33,12 +35,12 @@ PacketReadState::PacketReadState(QByteArray datagram, QHostAddress remoteHost , 
 	, octomyProtocolReturnNonce(INVALID_NONCE)
 	, octomyProtocolDesiredRemoteSessionID(INVALID_SESSION_ID)
 {
-
+	OC_METHODGATE();
 }
 
 
 QString PacketReadState::toString()
-{
+{OC_METHODGATE();
 	QString out;
 	{
 		QTextStream ts(&out);
@@ -50,14 +52,14 @@ QString PacketReadState::toString()
 
 // Read multimagic
 void PacketReadState::readMultimagic()
-{
+{OC_METHODGATE();
 	*stream >> multimagic;
 	totalAvailable-=sizeof(multimagic);
 }
 
 // Read protocol MAGIC
 void PacketReadState::readProtocolMagic()
-{
+{OC_METHODGATE();
 	*stream >> octomyProtocolMagic;
 	totalAvailable-=sizeof(octomyProtocolMagic);
 }
@@ -66,6 +68,7 @@ void PacketReadState::readProtocolMagic()
 // Read protocol FLAGS
 void PacketReadState::readProtocolFlags()
 {
+	OC_METHODGATE();
 	*stream >> octomyProtocolFlags;
 	totalAvailable-=sizeof(octomyProtocolFlags);
 }
@@ -73,7 +76,7 @@ void PacketReadState::readProtocolFlags()
 
 // Read protocol VERSION
 void PacketReadState::readProtocolVersion()
-{
+{OC_METHODGATE();
 	*stream >> octomyProtocolVersion;
 	totalAvailable-=sizeof(octomyProtocolVersion);
 }
@@ -81,14 +84,14 @@ void PacketReadState::readProtocolVersion()
 
 
 void PacketReadState::readPartMessageTypeID()
-{
+{OC_METHODGATE();
 	partMessageTypeID=0;
 	*stream >> partMessageTypeID;
 	totalAvailable-=sizeof(partMessageTypeID);
 }
 
 void PacketReadState::readPartBytesAvailable()
-{
+{OC_METHODGATE();
 	partBytesAvailable=0;
 	*stream >> partBytesAvailable;
 	totalAvailable-=sizeof(partBytesAvailable);
@@ -99,7 +102,7 @@ void PacketReadState::readPartBytesAvailable()
 
 
 void PacketReadState::decrypt(Key &k)
-{
+{OC_METHODGATE();
 	if(k.isValid(true)) {
 		if(octomyProtocolEncryptedMessageSize>0) {
 #ifdef DO_CC_ENC
@@ -129,7 +132,7 @@ void PacketReadState::decrypt(Key &k)
 
 // Read Pub-key encrypted message body
 void PacketReadState::readProtocolEncryptedMessage()
-{
+{OC_METHODGATE();
 	*stream >> octomyProtocolEncryptedMessage;
 	qWarning()<<"RX CIPHERTEXT WAS: "<<octomyProtocolEncryptedMessage;
 	octomyProtocolEncryptedMessageSize=octomyProtocolEncryptedMessage.size();
@@ -154,7 +157,7 @@ void PacketReadState::readEncSenderID()
 
 // Extract remote nonce
 void PacketReadState::readEncRemoteNonce()
-{
+{OC_METHODGATE();
 	if(!encStream.isNull()) {
 		octomyProtocolRemoteNonce=INVALID_NONCE;
 		*encStream >> octomyProtocolRemoteNonce;
@@ -168,7 +171,7 @@ void PacketReadState::readEncRemoteNonce()
 
 // Extract return nonce
 void PacketReadState::readEncReturnNonce()
-{
+{OC_METHODGATE();
 	if(!encStream.isNull()) {
 		octomyProtocolReturnNonce=INVALID_NONCE;
 		*encStream >> octomyProtocolReturnNonce;
@@ -181,7 +184,7 @@ void PacketReadState::readEncReturnNonce()
 
 // Extract desired remote session ID
 void PacketReadState::readEncDesiredRemoteSessionID()
-{
+{OC_METHODGATE();
 	if(!encStream.isNull()) {
 		octomyProtocolDesiredRemoteSessionID=INVALID_SESSION_ID;
 		*encStream >> octomyProtocolDesiredRemoteSessionID;

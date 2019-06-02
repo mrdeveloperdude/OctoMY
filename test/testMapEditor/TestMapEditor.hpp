@@ -1,11 +1,12 @@
 #ifndef TESTMAPEDITOR_HPP
 #define TESTMAPEDITOR_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 class TestMapEditor:public QObject
 {
 	Q_OBJECT
+
 private slots:
 	void testNetworkCache();
 	void test();
@@ -13,4 +14,5 @@ private slots:
 };
 
 
-#endif // TESTMAPEDITOR_HPP
+#endif
+// TESTMAPEDITOR_HPP

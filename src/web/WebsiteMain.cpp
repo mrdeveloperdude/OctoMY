@@ -2,10 +2,11 @@
 
 #include "Website.hpp"
 
-#include "utility/Utility.hpp"
-#include "basic/LogHandler.hpp"
-#include "basic/TopicGenerator.hpp"
-#include "node/AppContext.hpp"
+#include "utility/time/HumanTime.hpp"
+#include "uptime/MethodGate.hpp"
+#include "app/LogHandler.hpp"
+//#include "basic/TopicGenerator.hpp"
+#include "app/AppContext.hpp"
 
 #include "GoogleSitesClassicTool.hpp"
 
@@ -18,7 +19,8 @@
 
 int main(int argc, char *argv[])
 {
-	qsrand(utility::currentMsecsSinceEpoch<quint32>());
+	OC_FUNCTIONGATE();
+	qsrand(utility::time::currentMsecsSinceEpoch<quint32>());
 	LogHandler::setLogging(true);
 
 	QCoreApplication app(argc, argv), *papp=&app;
@@ -52,7 +54,7 @@ int main(int argc, char *argv[])
 	TopicGenerator tg;
 	QString out;
 	for(int i=0;i<1000;++i)out.append(tg.generate()+"\n");
-	utility::stringToFile("/tmp/topics.txt", out);
+	utility::file::stringToFile("/tmp/topics.txt", out);
 	Website website(OC_NEW AppContext(opts, env, "website", nullptr));
 	website.run();
 	*/

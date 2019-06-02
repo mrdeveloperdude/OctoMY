@@ -3,7 +3,7 @@
 
 #include "ardumy_arduino/ArduMY.hpp"
 
-//#include "hw/controllers/ardumy/ArdumyTypeConversions.hpp"
+//#include "hardware/controllers/ardumy/ArdumyTypeConversions.hpp"
 
 ArduMYActuatorValueSerializer::ArduMYActuatorValueSerializer()
 	: ArduMYActuatorValueSerializerBase()

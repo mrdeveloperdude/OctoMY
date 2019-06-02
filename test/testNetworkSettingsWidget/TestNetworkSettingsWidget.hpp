@@ -1,15 +1,17 @@
 #ifndef TESTNETWORKSETTINGSWIDGET_HPP
 #define TESTNETWORKSETTINGSWIDGET_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
-class TestNetworkSettingsWidget:public QObject{
-		Q_OBJECT
+class TestNetworkSettingsWidget:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void test();
+private slots:
+	void test();
 
 };
 
 
-#endif // TESTNETWORKSETTINGSWIDGET_HPP
+#endif
+// TESTNETWORKSETTINGSWIDGET_HPP

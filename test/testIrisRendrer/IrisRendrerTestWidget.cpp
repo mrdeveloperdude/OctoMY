@@ -1,14 +1,16 @@
 #include "IrisRendrerTestWidget.hpp"
 #include "ui_IrisRendrerTestWidget.h"
 
-#include "basic/Settings.hpp"
-#include "utility/Standard.hpp"
-#include "utility/Utility.hpp"
+#include "app/Settings.hpp"
+
+#include "uptime/New.hpp"
+#include "utility/time/HumanTime.hpp"
 
 #include <QPixmap>
 #include <QImage>
 
 #include <QDateTime>
+#include <QSlider>
 
 IrisRendrerTestWidget::IrisRendrerTestWidget(QWidget *parent, QString name) :
 	QWidget(parent),
@@ -42,16 +44,15 @@ IrisRendrerTestWidget::IrisRendrerTestWidget(QWidget *parent, QString name) :
 			   );
 
 		horizontalSlider->setValue(s->getCustomSettingLong(*namep,0));
-/*
-		QTimer::singleShot(100, [=]() {
-			long val=s->getCustomSettingLong(*namep,0);
-			horizontalSlider->setValue(val);
-		} );
-		*/
-
+		/*
+				QTimer::singleShot(100, [=]() {
+					long val=s->getCustomSettingLong(*namep,0);
+					horizontalSlider->setValue(val);
+				} );
+				*/
 	}
-
 }
+
 
 IrisRendrerTestWidget::~IrisRendrerTestWidget()
 {
@@ -59,10 +60,12 @@ IrisRendrerTestWidget::~IrisRendrerTestWidget()
 	ui=nullptr;
 }
 
+
 void IrisRendrerTestWidget::setImage(const QImage &im)
 {
 	setPixmap(QPixmap ::fromImage(im));
 }
+
 
 void IrisRendrerTestWidget::setPixmap(const QPixmap &px)
 {
@@ -76,9 +79,10 @@ void IrisRendrerTestWidget::on_pushButtonClose_clicked()
 	emit closeClicked();
 }
 
+
 void IrisRendrerTestWidget::on_pushButtonRandom_clicked()
 {
-	qsrand(utility::currentMsecsSinceEpoch<quint64>());
+	qsrand(utility::time::currentMsecsSinceEpoch<quint64>());
 	auto l=mSliders.size();
 	for(int row=0; row<l; ++row) {
 		QSlider *horizontalSlider = mSliders[row];

@@ -1,13 +1,19 @@
-include($$TESTS/test.pri)
+include($$TESTS/pris/test.pri)
 
 TARGET = test_utility
 
+QT += network
+
 HEADERS += \
 	TestUtility.hpp
+	testUtilityNetwork.inc.hpp
 
 SOURCES += \
-	TestUtility.cpp
+	TestUtility.cpp \
+	testUtilityNetwork.inc.cpp \
+	testUtilityRandom.inc.cpp \
+	testUtilityTime.inc.cpp \
+	testUtilityString.inc.cpp
 
 include($$PRIS/status.pri)
-include($$TESTS/test_autorun.pri)
-
+include($$TESTS/pris/test_autorun.pri)

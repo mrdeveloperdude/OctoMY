@@ -23,8 +23,8 @@
 *
 */
 
-#ifndef MAPCONTROL_H
-#define MAPCONTROL_H
+#ifndef MAPCONTROL_HPP
+#define MAPCONTROL_HPP
 
 #include "map/qMapControlGlobal.hpp"
 #include "LayerManager.hpp"
@@ -451,5 +451,8 @@ signals:
 	 */
 	void viewChanged ( const QPointF &coordinate, int zoom ) const;
 };
+
 }
+
 #endif
+// MAPCONTROL_HPP

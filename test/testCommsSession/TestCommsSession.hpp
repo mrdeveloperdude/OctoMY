@@ -1,16 +1,18 @@
 #ifndef TESTCOMMSSESSION_HPP
 #define TESTCOMMSSESSION_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
-class TestCommsSession:public QObject{
-		Q_OBJECT
+class TestCommsSession:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void test();
+private slots:
+	void test();
 
 };
 
 
-#endif // TESTCOMMSSESSION_HPP
+#endif
+// TESTCOMMSSESSION_HPP

@@ -1,87 +1,117 @@
 #include "Remote.hpp"
 
-#include "utility/Standard.hpp"
+#include "node/NodeWindow.hpp"
+
+#include "widgets/remote/RemoteWindow.hpp"
+
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+#include "app/AppContext.hpp"
+
 #include "comms/CommsSession.hpp"
 #include "comms/CommsSessionDirectory.hpp"
-#include "RemoteWindow.hpp"
-#include "node/AppContext.hpp"
-
-
 
 #include <QDebug>
+/*
 #include <QDataStream>
 #include <QSharedPointer>
 #include <QAccelerometerReading>
 #include <QGyroscopeReading>
 #include <QGeoPositionInfo>
+*/
 
-
-Remote::Remote(NodeLauncher<Remote> &launcher, QObject *parent)
-	: Node(launcher, OC_NEW AppContext(launcher.options(), launcher.environment(), "remote", parent), ROLE_CONTROL, TYPE_REMOTE, parent)
+Remote::Remote()
+	: mNodeConfigureHelper("Remote", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
+	  //: Node(launcher, OC_NEW AppContext(launcher.options(), launcher.environment(), "remote", parent), ROLE_CONTROL, TYPE_REMOTE, parent)
 {
 	OC_METHODGATE();
-	// NOTE: Please do not put code here that generates events. Instead put them in init()
+	//qDebug()<<"Remote()";
+	// NOTE: Please do not put code here that generates events. Instead put them in *configure*() or *activate*()
 }
+
 
 Remote::~Remote()
 {
 	OC_METHODGATE();
+	//qDebug()<<"~Remote()";
 }
 
 
-void Remote::init()
+void Remote::nodeConfigure()
 {
 	OC_METHODGATE();
-	Node::init();
+	//qDebug()<<"nodeConfigure()";
+	if(mNodeConfigureHelper.configure()) {
+		auto ctx=context();
+		if(!ctx.isNull()) {
 
-	//qDebug()<<"EMITTING LOAD COMLPETE";
-	emit appLoaded();
-}
-
-
-void Remote::deInit()
-{
-	OC_METHODGATE();
-	Node::deInit();
-}
-
-
-QSharedPointer<QWidget> Remote::showWindow()
-{
-	OC_METHODGATE();
-	if(mWindow.isNull()) {
-		mWindow=QSharedPointer<RemoteWindow>(OC_NEW RemoteWindow(QEnableSharedFromThis<Remote>::sharedFromThis(), nullptr));
+		}
+	} else {
+		qDebug()<<"ERROR: No context, closing";
+		emit nodeRequestExit(EXIT_FAILURE);
 	}
-	if(!mWindow.isNull()) {
-		mWindow->show();
+}
+
+
+void Remote::nodeActivate(const bool on)
+{
+	OC_METHODGATE();
+	if(mNodeConfigureHelper.activate(on)) {
+		//qDebug()<<"nodeActivate(on="<<on<<")";
+		if(on) {
+			emit nodeActivateChanged(on);
+		} else {
+			if(!mWindow.isNull()) {
+				mWindow.clear();
+			}
+			emit nodeActivateChanged(on);
+		}
+	}
+}
+
+
+QSharedPointer<NodeWindow> Remote::nodeWindow()
+{
+	OC_METHODGATE();
+	//qDebug()<<"nodeWindow()";
+	if(mWindow.isNull()) {
+		QSharedPointer<Remote> sp=qSharedPointerCast<Remote>(sharedThis());
+		if(!sp.isNull()) {
+			mWindow=QSharedPointer<RemoteWindow>(OC_NEW RemoteWindow(nullptr));
+			if(!mWindow.isNull()) {
+				mWindow->nodeWindowConfigure(sp);
+			} else {
+				qWarning()<<"ERROR: Could not allocate RemoteWindow";
+			}
+		} else {
+			qWarning()<<"ERROR: Shared pointer to this was null for remote";
+		}
 	}
 	return mWindow;
 }
 
 
-
-void Remote::identityChanged()
+NodeRole Remote::nodeRole()
 {
 	OC_METHODGATE();
-
-	if(!mWindow.isNull()) {
-		QSharedPointer<Remote> sp=this->QEnableSharedFromThis<Remote>::sharedFromThis();
-		if(sp.isNull()) {
-			volatile int ba=0;
-			qWarning()<<"SHARED POINTER TO THIS WAS NULL!"<<ba;
-		}
-		mWindow->configure(sp);
-	}
+	return ROLE_CONTROL;
 }
 
 
-void Remote::setNodeCouriersRegistration(bool reg)
+NodeType Remote::nodeType()
 {
 	OC_METHODGATE();
-	Node::setNodeCouriersRegistration(reg);
+	return TYPE_REMOTE;
+}
+
+
+void Remote::registerNodeCouriers(bool reg)
+{
+	OC_METHODGATE();
+	Node::registerNodeCouriers(reg);
 	// When we get a new remote specific courier, put it here
 	/*
-	if(nullptr!=mComms){
+	if(!mComms.isNull()){
 		if(nullptr!=mRemoteCourierX){
 			mComms->setCourierRegistered(*mRemoteCourierX, reg);
 		}
@@ -93,5 +123,6 @@ void Remote::setNodeCouriersRegistration(bool reg)
 QSharedPointer<Node> Remote::sharedThis()
 {
 	OC_METHODGATE();
+	//return QEnableSharedFromThis<Remote>::sharedFromThis();
 	return sharedFromThis();
 }

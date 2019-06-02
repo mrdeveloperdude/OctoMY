@@ -29,11 +29,12 @@ private slots:
 
 	// CommsCarrier internal interface methods
 protected:
+	void configureImp() Q_DECL_OVERRIDE;
+	bool activateImp(const bool on) Q_DECL_OVERRIDE;
 
 	void setAddressImp(NetworkAddress address) Q_DECL_OVERRIDE;
-	bool setStartImp(const bool) Q_DECL_OVERRIDE;
 
-	bool isStartedImp() const Q_DECL_OVERRIDE;
+	bool isActiveImp() const Q_DECL_OVERRIDE;
 
 	qint64 writeDataImp(const QByteArray &datagram, const NetworkAddress &address) Q_DECL_OVERRIDE;
 	qint64 readDataImp(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr) Q_DECL_OVERRIDE;
@@ -49,6 +50,9 @@ protected:
 	quint64 minimalPacketIntervalImp() Q_DECL_OVERRIDE ;
 	quint64	maximalPacketIntervalImp() Q_DECL_OVERRIDE ;
 
+
+
 };
 
-#endif // COMMSCARRIERUDP_HPP
+#endif
+// COMMSCARRIERUDP_HPP

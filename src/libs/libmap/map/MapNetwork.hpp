@@ -23,8 +23,8 @@
 *
 */
 
-#ifndef MAPNETWORK_H
-#define MAPNETWORK_H
+#ifndef MAPNETWORK_HPP
+#define MAPNETWORK_HPP
 
 #include "map/qMapControlGlobal.hpp"
 #include <QObject>
@@ -37,7 +37,7 @@
 #include <QPixmap>
 #include <QMutex>
 #include "ImageManager.hpp"
-#include "utility/Standard.hpp"
+
 
 /**
 		@author Kai Winter <kaiwinter@gmx.de>
@@ -79,7 +79,7 @@ public:
 	* This is useful when changing the zoom-factor, though newly needed images loads faster
 	*/
 	void abortLoading();
-	void setProxy(QString host, int port, const QString username = QString(), const QString password = QString());
+	void setProxy(QString host, quint16 port, const QString username = QString(), const QString password = QString());
 
 	/*!
 	*
@@ -100,14 +100,16 @@ public:
 	void setDiskCache( QNetworkDiskCache* qCache );
 
 private:
-
 	void heatUp(QString host);
-
 
 
 private slots:
 	void requestFinished(QNetworkReply *reply);
-};
-}
-#endif
 
+
+};
+
+}
+
+#endif
+// MAPNETWORK_HPP

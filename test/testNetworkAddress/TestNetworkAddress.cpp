@@ -1,13 +1,11 @@
 #include "TestNetworkAddress.hpp"
 
+#include "Common_test.hpp"
 
 #include "comms/NetworkAddress.hpp"
-#include "utility/Standard.hpp"
+#include "uptime/New.hpp"
 
 #include <QVariantMap>
-
-
-#include "../common/TestCommon.hpp"
 
 
 #define scrutinize(na, expectedValid, expectedAddress, expectedPort) \
@@ -24,12 +22,12 @@
 	(na)->setPort(expectedEmptyPort); \
 	scrutinize((na), false, expectedEmptyAddress, expectedEmptyPort)
 
+
 #define ASCEND(na) \
 	(na)->setIP(expectedValidAddress); \
 	scrutinize((na), false, expectedValidAddress, expectedEmptyPort); \
 	(na)->setPort(expectedValidPort); \
 	scrutinize((na), true, expectedValidAddress, expectedValidPort)
-
 
 /*
 void scrutinize(NetworkAddress *na, bool expectedValid, QHostAddress expectedAddress, quint16 expectedPort)
@@ -55,7 +53,7 @@ void TestNetworkAddress::initTestCase()
 {
 }
 
-// YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
+
 void TestNetworkAddress::testInitial()
 {
 	QVERIFY(expectedEmptyAddress.isNull());
@@ -172,6 +170,7 @@ void TestNetworkAddress::testInvalidDirectConstructorArguments()
 	delete naHeap;
 }
 
+
 void TestNetworkAddress::testValidDirectConstructorArguments()
 {
 	quint16 validPort=8128;
@@ -217,7 +216,6 @@ void TestNetworkAddress::testAssignment1()
 
 	delete naHeap;
 }
-
 
 
 void TestNetworkAddress::testAssignment2()
@@ -301,5 +299,6 @@ void TestNetworkAddress::testToFromString()
 	QCOMPARE(onlyPort, onlyPortCheck);
 
 }
+
 
 OC_TEST_MAIN(test, TestNetworkAddress)

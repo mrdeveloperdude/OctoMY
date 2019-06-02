@@ -1,14 +1,13 @@
 #include "CreepyVoice.hpp"
 
-
-#include "utility/Utility.hpp"
-
-#include "rng/RNG.hpp"
-
+#include "random/RNG.hpp"
 #include "security/PortableID.hpp"
 
-#include <QDebug>
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+#include "utility/random/Random.hpp"
 
+#include <QDebug>
 #include <QtMath>
 
 struct CreepyBuffer {
@@ -61,7 +60,7 @@ CreepyVoice::~CreepyVoice()
 	mBuffersFree.clear();
 	for(CreepyBuffer *buffer:mBuffersInUse) {
 		delete buffer;
-		buffer==nullptr;
+		buffer=nullptr;
 	}
 	mBuffersInUse.clear();
 }
@@ -116,7 +115,7 @@ CreepyBuffer *CreepyVoice::getFreeBuffer(int numsamples)
 	return ret;
 }
 
-#ifdef EXTERNAL_LIB_ESPEAK
+#ifdef OC_USE_LIB_EXT_ESPEAK
 void CreepyVoice::feed(short *wav, int numsamples, espeak_EVENT *events)
 {
 	const int numsamples2 = (numsamples * af.sampleRate()) / (mHz == 0 ? 1 : mHz);
@@ -143,7 +142,7 @@ void CreepyVoice::speak(QString sentence)
 {
 	OC_METHODGATE();
 	if (isInitialized()) {
-#ifdef EXTERNAL_LIB_ESPEAK
+#ifdef OC_USE_LIB_EXT_ESPEAK
 		qDebug().noquote().nospace() << "Speaking \"" << sentence << "\"\n";
 		espeak_Synth(word.toStdString().c_str(), word.size() + 1, 0, POS_CHARACTER, 0, espeakCHARS_AUTO, nullptr, (void *)this);
 		//espeak_Synchronize();
@@ -157,7 +156,7 @@ void CreepyVoice::deinit()
 {
 	OC_METHODGATE();
 	if (isInitialized()) {
-#ifdef EXTERNAL_LIB_ESPEAK
+#ifdef OC_USE_LIB_EXT_ESPEAK
 		espeak_Terminate();
 #endif
 	}
@@ -166,7 +165,7 @@ void CreepyVoice::deinit()
 bool CreepyVoice::voiceIsAvailable()
 {
 	OC_FUNCTIONGATE();
-#ifdef EXTERNAL_LIB_ESPEAK
+#ifdef OC_USE_LIB_EXT_ESPEAK
 	return true;
 #else
 	return false;
@@ -175,7 +174,7 @@ bool CreepyVoice::voiceIsAvailable()
 }
 
 
-#ifdef EXTERNAL_LIB_ESPEAK
+#ifdef OC_USE_LIB_EXT_ESPEAK
 static int synthCallback(short *wav, int numsamples, espeak_EVENT *events)
 {
 	if (0 != wav) {
@@ -205,7 +204,7 @@ void CreepyVoice::init(QAudioFormat f)
 	rng->init(seed.toUtf8());
 	qDebug()<<"INITIALIZING VOICE WITH SEED: "<<seed;
 
-#ifdef EXTERNAL_LIB_ESPEAK
+#ifdef OC_USE_LIB_EXT_ESPEAK
 	mHz = espeak_Initialize(AUDIO_OUTPUT_RETRIEVAL, 10, 0, 0);
 	if(mHz >0) {
 		espeak_SetSynthCallback(synthCallback);
@@ -235,40 +234,41 @@ void CreepyVoice::init(QAudioFormat f)
 	tremolo.init(af);
 	tremolo.set(frandGaussAbs()*25.0, 0.00001+frandGaussAbs()*0.00018);
 
-	comp.set(0.5+frandGauss()*0.2, 0.5+frandGauss()*0.2 , (3.0+frandGauss()*0.2)/1000.0 , (1.0+frandGauss()*0.2)/1000.0 , (0.1+frandGauss()*0.2)/1000.0 , (300.0+frandGauss()*50.0)/1000.0);
+	comp.set(0.5+frandGauss()*0.2, 0.5+frandGauss()*0.2, (3.0+frandGauss()*0.2)/1000.0, (1.0+frandGauss()*0.2)/1000.0, (0.1+frandGauss()*0.2)/1000.0, (300.0+frandGauss()*50.0)/1000.0);
 	comp.init(af);
 	int rsr=af.sampleRate()*OUTPUT_CHANNELS;
 	reverb.init(rsr);;
 	reverb.
 	//Castle
 
-	LoadPreset(25.0f+frandGauss()*100,
-			   8.3f+frandGauss()*20.0,
-			   0.890f+frandGauss()*0.3,
-			   -1000.0f+frandGauss()*100.0,
-			   -200.0f-frandGauss()*100.0,
-			   -2000.0f+frandGauss()*600.0,
-			   1.22f+frandGauss()*0.2,
-			   0.83f+frandGauss()*0.1,
-			   0.31f+frandGauss()*0.1,
-			   -100.0f-frandGauss()*10.0,
-			   0.022f+frandGauss()*0.002,
-			   0.0f+frandGaussAbs(),
-			   0.0f+frandGaussAbs(),
-			   0.0f+frandGaussAbs(),
-			   600.0f+frandGauss()*100.0,
-			   0.011f+frandGauss()*0.001,
-			   0.0f+frandGaussAbs(),
-			   0.0f+frandGaussAbs(),
-			   0.0f+frandGaussAbs(),
-			   0.138f+frandGauss()*0.01,
-			   0.080f+frandGauss()*0.01,
-			   0.250f+frandGauss()*0.1,
-			   0.0f+frandGaussAbs(),
-			   -5.0f-frandGauss()*0.1,
-			   5168.6f+frandGauss()*500,
-			   139.5f+frandGauss()*13.0,
-			   0.0f+frandGaussAbs(), 0x20);
+	LoadPreset(static_cast<int>(25.0+frandGauss()*100)
+			   , 8.3+frandGauss()*20.0
+			   , 0.890+frandGauss()*0.3
+			   , static_cast<int>(-1000.0+frandGauss()*100.0)
+			   , static_cast<int>(-200.0-frandGauss()*100.0)
+			   , static_cast<int>(-2000.0+frandGauss()*600.0)
+			   , 1.22+frandGauss()*0.2
+			   , 0.83+frandGauss()*0.1
+			   , 0.31+frandGauss()*0.1
+			   , static_cast<int>(-100.0-frandGauss()*10.0)
+			   , 0.022+frandGauss()*0.002
+			   , 0.0+frandGaussAbs()
+			   , 0.0+frandGaussAbs()
+			   , 0.0+frandGaussAbs()
+			   , static_cast<int>(600.0+frandGauss()*100.0)
+			   , 0.011+frandGauss()*0.001
+			   , 0.0+frandGaussAbs()
+			   , 0.0+frandGaussAbs()
+			   , 0.0+frandGaussAbs()
+			   , 0.138+frandGauss()*0.01
+			   , 0.080+frandGauss()*0.01
+			   , 0.250+frandGauss()*0.1
+			   , 0.0+frandGaussAbs()
+			   , -5.0-frandGauss()*0.1
+			   , 5168.6+frandGauss()*500
+			   , 139.5+frandGauss()*13.0
+			   , 0.0+frandGaussAbs()
+			   , 0x20);
 
 	//LoadPreset(26.0f, 8.3f, 0.890f, -1000.0f, -800.0f, -2000.0f, 1.22f, 0.83f, 0.31f, -100.0f, 0.022f, 0.0f, 0.0f, 0.0f, 600.0f, 0.011f, 0.0f, 0.0f, 0.0f, 0.138f, 0.080f, 0.250f, 0.0f, -5.0f, 5168.6f, 139.5f, 0.0f, 0x20);
 	//stadium
@@ -301,7 +301,7 @@ void CreepyVoice::generate(qint64 num, double *out)
 			double sam=0.0;
 			if(nullptr!=cur) {
 				sam=cur->mBuffer[bac];
-				sam/=(double)0xFFFF;
+				sam/=static_cast<double>(0xFFFF);
 
 				bac++;
 				if(bac>=cur->mSize) {
@@ -311,7 +311,7 @@ void CreepyVoice::generate(qint64 num, double *out)
 				periodCounter=0;
 			} else {
 				//Leave 3 buffers worth of pause at the end to make sure the audio output system gets throug all the buffers before we shut it down.
-				const int LIMIT=3*num;
+				const int LIMIT=3*static_cast<int>(num);
 				if(periodCounter<LIMIT) {
 					//qDebug()<<"Countind down " <<periodCounter;
 					periodCounter++;
@@ -320,7 +320,8 @@ void CreepyVoice::generate(qint64 num, double *out)
 					periodCounter++;
 					emit periodComplete();
 				}
-				sam=utility::frand()*0.02;
+				// TODO: Add real PRNG
+				sam=utility::random::dfrand()*0.02;
 			}
 
 			if (sam > 0) {
@@ -333,7 +334,7 @@ void CreepyVoice::generate(qint64 num, double *out)
 			out[i]=sam;
 		}
 
-		reverb.Process(num,out,floatSamplesOut);
+		reverb.Process(static_cast<quint32>(num),out,floatSamplesOut);
 		for(int i=0; i<num; ++i) {
 			out[i]=(out[i]+floatSamplesOut[i])*0.8;
 		}

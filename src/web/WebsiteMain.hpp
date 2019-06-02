@@ -3,4 +3,5 @@
 
 int main(int argc, char *argv[]);
 
-#endif // WEBSITEMAIN_HPP
+#endif
+// WEBSITEMAIN_HPP

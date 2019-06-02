@@ -1,3 +1,11 @@
+#     ______
+#    / ____/__    __
+#   / /  __/ /___/ /_
+#  / /__/_  __/_  __/
+#  \____//_/   /_/
+#
+
+# Here are C++ spesific protection flags for different compilers
 
 
 # Build in all available bug protection
@@ -43,3 +51,17 @@ QMAKE_CXXFLAGS +=    -fsanitize=returns-nonnull-attribute
 #        This option enables instrumentation of return statements in functions marked with returns_nonnull function attribute, to detect returning of null values from such functions.
 
 }
+
+
+
+
+#     ______
+#    / ____/
+#   / /
+#  / /___
+#  \____/
+#
+
+
+
+# TODO: Add protection flags for pure C

@@ -2,13 +2,17 @@
 
 #include  "Pose.hpp"
 
+#include "uptime/MethodGate.hpp"
+
 #include <QDataStream>
 #include <QDebug>
+#include <QVariantMap>
 
 PoseMapping::PoseMapping(quint32 size)
-	: mMapping(size)
-	, mNames(size)
+	: mMapping(static_cast<int>(size))
+	, mNames(static_cast<int>(size))
 {
+	OC_METHODGATE();
 	for(quint32 i=0; i<size; ++i) {
 		mMapping[i]=i;
 		mNames[i]="";
@@ -18,12 +22,14 @@ PoseMapping::PoseMapping(quint32 size)
 
 PoseMapping::~PoseMapping()
 {
+	OC_METHODGATE();
 
 }
 
 
 void PoseMapping::setMapping(quint32 from, quint32 to, bool swap)
 {
+	OC_METHODGATE();
 	const quint32 l=mMapping.size();
 	if(l<=from) {
 		return;
@@ -43,6 +49,7 @@ void PoseMapping::setMapping(quint32 from, quint32 to, bool swap)
 
 void PoseMapping::setName(quint32 from, QString name)
 {
+	OC_METHODGATE();
 	const quint32 l=mNames.size();
 	if(l<=from) {
 		return;
@@ -52,6 +59,7 @@ void PoseMapping::setName(quint32 from, QString name)
 
 QString PoseMapping::name(quint32 from) const
 {
+	OC_METHODGATE();
 	const quint32 l=mNames.size();
 	if(l<=from) {
 		return "";
@@ -60,11 +68,13 @@ QString PoseMapping::name(quint32 from) const
 }
 quint32 PoseMapping::size() const
 {
+	OC_METHODGATE();
 	return mMapping.size();
 }
 
 quint32 PoseMapping::map(quint32 from) const
 {
+	OC_METHODGATE();
 	const quint32 l=mMapping.size();
 	if(l<=from) {
 		return 0;
@@ -75,6 +85,7 @@ quint32 PoseMapping::map(quint32 from) const
 
 qreal PoseMapping::value(Pose &pose, quint32 from) const
 {
+	OC_METHODGATE();
 	const quint32 to=map(from);
 	if(to>pose.size()) {
 		return 0.0;
@@ -85,6 +96,7 @@ qreal PoseMapping::value(Pose &pose, quint32 from) const
 
 QString PoseMapping::toString() const
 {
+	OC_METHODGATE();
 	QString out="PoseMapping( ";
 	quint32 index=0;
 	for(quint32 val:mMapping) {
@@ -99,7 +111,8 @@ QString PoseMapping::toString() const
 
 void PoseMapping::resize(quint32 nusz)
 {
-	quint32 sz=mMapping.size();
+	OC_METHODGATE();
+	quint32 sz=static_cast<quint32>(mMapping.size());
 	if(sz==nusz) {
 		qDebug()<<"SAME SIZE SKIPPING: "<<sz;
 		return;
@@ -107,18 +120,21 @@ void PoseMapping::resize(quint32 nusz)
 	if(nusz<sz) {
 		qDebug()<<"SMALLER SIZE FIXING: "<<sz;
 		for(quint32 i=0; i<sz; ++i) {
-			if(mMapping[i]>=nusz) {
-				mMapping[i]=nusz-1;
+			const int ii=static_cast<int>(i);
+			if(mMapping[ii]>=nusz) {
+				mMapping[ii]=nusz-1;
 			}
 		}
 	}
-	mMapping.resize(nusz);
-	mNames.resize(nusz);
+	const int nuszi=static_cast<int>(nusz);
+	mMapping.resize(nuszi);
+	mNames.resize(nuszi);
 	if(nusz>sz) {
 		qDebug()<<"BIGGER SIZE GENERATING: "<<nusz;
 		for(quint32 i=sz; i<nusz; ++i) {
-			mMapping[i]=i;
-			mNames[i]="";
+			const int ii=static_cast<int>(i);
+			mMapping[ii]=i;
+			mNames[ii]="";
 		}
 	}
 
@@ -127,6 +143,7 @@ void PoseMapping::resize(quint32 nusz)
 
 QDataStream &PoseMapping::receive(QDataStream &ds)
 {
+	OC_METHODGATE();
 	QVector<quint32> mapping;
 	ds >> mapping;
 	mMapping=mapping;
@@ -136,14 +153,16 @@ QDataStream &PoseMapping::receive(QDataStream &ds)
 
 QDataStream &PoseMapping::send(QDataStream &ds) const
 {
+	OC_METHODGATE();
 	ds << mMapping;
 	return ds;
 }
 
-#include <QVariantMap>
+
 
 QVariantList PoseMapping::toMap() const
 {
+	OC_METHODGATE();
 	QVariantList list;
 	quint32 from=0;
 	for(quint32 to:mMapping) {
@@ -158,6 +177,7 @@ QVariantList PoseMapping::toMap() const
 }
 void PoseMapping::fromMap( QVariantList map)
 {
+	OC_METHODGATE();
 	QVector<quint32> tos;
 	QVector<QString> names;
 	quint32 ct=0;
@@ -191,12 +211,14 @@ void PoseMapping::fromMap( QVariantList map)
 
 void PoseMapping::set(const PoseMapping &other)
 {
+	OC_METHODGATE();
 	mMapping=other.mMapping;
 	mNames=other.mNames;
 }
 
 QDataStream &operator>>(QDataStream &ds, PoseMapping &p)
 {
+	OC_FUNCTIONGATE();
 	p.receive(ds);
 	return ds;
 }
@@ -204,6 +226,7 @@ QDataStream &operator>>(QDataStream &ds, PoseMapping &p)
 
 QDataStream &operator<<(QDataStream &ds, const PoseMapping &p)
 {
+	OC_FUNCTIONGATE();
 	p.send(ds);
 	return ds;
 }

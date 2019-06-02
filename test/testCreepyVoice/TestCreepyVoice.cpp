@@ -13,9 +13,7 @@ void TestCreepyVoice::test()
 	quint32 num=100;
 	double buf[num];
 	cv.generate(num,buf);
-
 }
-
 
 
 OC_TEST_MAIN(test, TestCreepyVoice)

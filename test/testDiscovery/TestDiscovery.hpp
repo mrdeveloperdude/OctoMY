@@ -1,16 +1,18 @@
 #ifndef TESTDISCOVERY_HPP
 #define TESTDISCOVERY_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
-class TestDiscovery:public QObject{
-		Q_OBJECT
+class TestDiscovery:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void test();
+private slots:
+	void test();
 
 };
 
 
-#endif // TESTDISCOVERY_HPP
+#endif
+// TESTDISCOVERY_HPP

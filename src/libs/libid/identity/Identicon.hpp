@@ -31,6 +31,7 @@ public:
 private:
 
 	float frand();
+	double dfrand();
 
 	void erectLimb(QDomElement &o, QString limbStyle, bool top, bool left, bool mid,float p1,float p2,float p3,float p4,float p5,float p6);
 

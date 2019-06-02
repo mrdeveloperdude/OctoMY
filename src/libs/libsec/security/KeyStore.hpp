@@ -10,12 +10,13 @@
 
 #include "Key.hpp"
 #include "PortableID.hpp"
-#include "basic/GenerateRunnable.hpp"
-#include "basic/AtomicBoolean.hpp"
-#include "node/JsonAsyncBackend.hpp"
-#include "node/AsyncStore.hpp"
+#include "utility/concurrent/GenerateRunnable.hpp"
+#include "utility/concurrent/AtomicBoolean.hpp"
+#include "store/JsonAsyncBackend.hpp"
+#include "store/AsyncStore.hpp"
 #include "KeySecurityPolicy.hpp"
-
+#include "uptime/SharedPointerWrapper.hpp"
+#include "uptime/ConfigureHelper.hpp"
 
 #include <QByteArray>
 #include <QCryptographicHash>
@@ -24,27 +25,26 @@
 #include <QFileInfo>
 #include <QMap>
 #include <QMutex>
-#include <QSharedPointer>
 #include <QString>
-
-/*
-template <typename T>
-static void noop(ASEvent<T> &)
-{
-
-}
-*/
 
 struct nop {
 	void operator()(...) const volatile {}
 };
 
-
-class KeyStore: public QObject, public AsyncFrontend<QVariantMap>
+/**
+ * @brief The KeyStore class has the following tasks:
+ * + asynchronous loading and storing of our local private key key plus the publik key of associates
+ * + asynchronoous generation of our local private key
+ * + Look-up of keys by ID
+ *
+ * See also Key.hpp, LocalIdentityStore.hpp
+ *
+ */
+class KeyStore: public QObject, public AsyncFrontend<QVariantMap>, public QEnableSharedFromThis<KeyStore>
 {
 	Q_OBJECT
 private:
-	JsonAsyncBackend mBackend;
+	QSharedPointer<JsonAsyncBackend> mBackend;
 	AsyncStore<QVariantMap> mStore;
 	QVariantMap mCache;
 	bool mDirty;
@@ -52,35 +52,34 @@ private:
 	KeySecurityPolicy mPolicy;
 	QSharedPointer<Key> mLocalKey;
 	QMap<QString, QSharedPointer<Key> > mAssociates;
+	ConfigureHelper mConfigureHelper;
 
 	friend class GenerateRunnable<KeyStore>;
 
 public:
-	explicit KeyStore(QString filename = "", bool doBootstrap = false, KeySecurityPolicy policy = KeySecurityPolicy(), QObject *parent = nullptr);
+	explicit KeyStore(QObject *parent = nullptr);
 	virtual ~KeyStore() Q_DECL_OVERRIDE;
 
+public:
+	void configure(QString filename = "", bool doBootstrap = false, KeySecurityPolicy policy = KeySecurityPolicy() );
+	void activate(bool on, std::function<void(bool)> callBack=nullptr);
 
 	// AsyncFrontend interface
 public:
-
 	bool clearFrontend() Q_DECL_OVERRIDE;
 	bool setFrontend(QVariantMap data) Q_DECL_OVERRIDE;
 	QVariantMap getFrontend(bool &ok) Q_DECL_OVERRIDE;
 	bool generateFrontend() Q_DECL_OVERRIDE;
 
-
-
 private:
-
 	// To have this called, make sure to set boostrapping to true and then call synchronize()
 	void bootstrap();
-public:
 
+public:
 	bool bootstrapEnabled();
 	void setBootstrapEnabled(bool doBootstrap);
 
 	QSharedPointer<Key> localKey();
-
 
 	// Check if we have pub-key for node identified by give fingerprint ID
 	bool hasPubKeyForID(const QString &id);
@@ -91,15 +90,13 @@ public:
 	// return pub-key for node identified by give fingerprint ID
 	QSharedPointer<Key> pubKeyForID(const QString &id);
 
-
 	AsyncStore<QVariantMap> &store();
 	void dump();
 	QString toString();
+	QMap<QString, QString> toMap();
 
 
 public:
-
-
 	QString filename() const;
 	bool fileExists() const;
 	bool ready();
@@ -122,14 +119,10 @@ public:
 	void waitForSync();
 
 public:
-
 	friend const QDebug &operator<<(QDebug &d, KeyStore &ks);
 
-
 signals:
-
-	void keystoreReady(bool);
-	//storeReady(!mError);
+	void keystoreReady(bool on, bool ok);
 
 };
 
@@ -144,43 +137,53 @@ template <typename F>
 void KeyStore::status(F callBack)
 {
 	OC_METHODGATE();
-	mStore.status().onFinished(callBack);
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		mStore.status().onFinished(callBack);
+	}
 }
+
 
 template <typename F>
 void KeyStore::clear(F callBack)
 {
 	OC_METHODGATE();
-	mStore.clear().onFinished(callBack);
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		mStore.clear().onFinished(callBack);
+	}
 }
+
 
 template <typename F>
 void KeyStore::save(F callBack)
 {
 	OC_METHODGATE();
-	mStore.save().onFinished(callBack);
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		mStore.save().onFinished(callBack);
+	}
 }
+
 
 template <typename F>
 void KeyStore::load(F callBack)
 {
 	OC_METHODGATE();
-	mStore.load().onFinished(callBack);
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		mStore.load().onFinished(callBack);
+	}
 }
+
 
 template <typename F>
 void KeyStore::synchronize(F callBack)
 {
 	OC_METHODGATE();
-	mStore.synchronize().onFinished(callBack);
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		mStore.synchronize().onFinished(callBack);
+	}
 }
-
-
-
 
 const QDebug &operator<<(QDebug &d, KeyStore &ks);
 
 
-
-
-#endif // KEYSTORE_HPP
+#endif
+// KEYSTORE_HPP

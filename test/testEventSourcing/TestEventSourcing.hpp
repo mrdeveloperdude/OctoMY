@@ -1,7 +1,7 @@
 #ifndef TESTEVENTSOURCING_HPP
 #define TESTEVENTSOURCING_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
 class TestEventSourcing:public QObject
@@ -14,4 +14,5 @@ private slots:
 };
 
 
-#endif // TESTEVENTSOURCING_HPP
+#endif
+// TESTEVENTSOURCING_HPP

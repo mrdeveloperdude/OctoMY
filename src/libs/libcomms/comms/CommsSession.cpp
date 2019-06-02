@@ -1,14 +1,16 @@
 #include "CommsSession.hpp"
 
-#include "basic/LogDestination.hpp"
+#include "uptime/MethodGate.hpp"
+#include "utility/time/HumanTime.hpp"
+
+#include "app/log/LogDestination.hpp"
 #include "CommsChannel.hpp"
 #include "security/Key.hpp"
-#include "utility/Standard.hpp"
-#include "utility/Utility.hpp"
 
 
 #include <QDateTime>
 
+#include <QtGlobal>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -36,7 +38,7 @@ CommsSession::CommsSession(QSharedPointer<Key> key)
 	, mOurAckNonce(0)
 	, mTheirLastNonce(0)
 {
-
+	OC_METHODGATE();
 	if(nullptr == key) {
 		qWarning()<<"ERROR: key was nullptr";
 	}
@@ -50,73 +52,87 @@ CommsSession::CommsSession(QSharedPointer<Key> key)
 
 CommsSession::~CommsSession()
 {
-
+	OC_METHODGATE();
 }
 
 
 ReliabilitySystem &CommsSession::reliabilitySystem()
 {
+	OC_METHODGATE();
 	return mReliabilitySystem;
 }
 
 FlowControl &CommsSession::flowControl()
 {
+	OC_METHODGATE();
 	return mFlowControl;
 }
 
 qint64 CommsSession::lastSendTime() const
 {
+	OC_METHODGATE();
 	return mLastSendTime;
 }
 
 qint64 CommsSession::lastRecieveTime() const
 {
+	OC_METHODGATE();
 	return mLastReceiveTime;
 }
 
 float CommsSession::timeoutAccumulator() const
 {
-	return mDisconnectTimeoutAccumulator;
+	OC_METHODGATE();
+	// TODO: Normalize types
+	return static_cast<float>(mDisconnectTimeoutAccumulator);
 }
 
 float CommsSession::deltaTime() const
 {
+	OC_METHODGATE();
 	return mDeltaTime;
 }
 
 float CommsSession::idleAccumulator() const
 {
+	OC_METHODGATE();
 	return mIdleAccumulator;
 }
 
 quint32 CommsSession::idlePacksSent() const
 {
+	OC_METHODGATE();
 	return mIdlePacketsSent;
 }
 
 QSharedPointer<Key> CommsSession::key() const
 {
+	OC_METHODGATE();
 	return mKey;
 }
 
 bool CommsSession::connected() const
 {
+	OC_METHODGATE();
 	return mConnected;
 }
 
 bool CommsSession::lastConnected() const
 {
+	OC_METHODGATE();
 	return mLastConnected;
 }
 
 
 HandshakeState &CommsSession::handshakeState()
 {
+	OC_METHODGATE();
 	return mHandshakeState;
 }
 
 bool CommsSession::established() const
 {
+	OC_METHODGATE();
 	return mHandshakeState.isDone();
 }
 
@@ -124,24 +140,28 @@ bool CommsSession::established() const
 
 bool CommsSession::expired() const
 {
+	OC_METHODGATE();
 	return mExpired;
 }
 
 
 SESSION_ID_TYPE CommsSession::localSessionID() const
 {
+	OC_METHODGATE();
 	return mLocalSessionID;
 }
 
 
 SESSION_ID_TYPE CommsSession::remoteSessionID() const
 {
+	OC_METHODGATE();
 	return mRemoteSessionID;
 }
 
 
 QString CommsSession::fullID() const
 {
+	OC_METHODGATE();
 	if(!mInitialized) {
 		qWarning()<<"ERROR: !mInitialized in fullID()";
 		return "";
@@ -156,17 +176,20 @@ QString CommsSession::fullID() const
 
 NetworkAddress CommsSession::address() const
 {
+	OC_METHODGATE();
 	return mAddress;
 }
 
 
 void CommsSession::setLocalSessionID(SESSION_ID_TYPE s)
 {
+	OC_METHODGATE();
 	mLocalSessionID=s;
 }
 
 void CommsSession::setRemoteSessionID(SESSION_ID_TYPE s)
 {
+	OC_METHODGATE();
 	mRemoteSessionID=s;
 }
 
@@ -174,45 +197,53 @@ void CommsSession::setRemoteSessionID(SESSION_ID_TYPE s)
 
 SESSION_NONCE_TYPE CommsSession::createOurSynNonce()
 {
-	mOurSynNonce=((qrand()>>(1<<sizeof(int)))|qrand());
+	OC_METHODGATE();
+	mOurSynNonce=static_cast<SESSION_NONCE_TYPE>((qrand()>>(1<<sizeof(int)))|qrand());
 	return mOurSynNonce;
 }
 
 SESSION_NONCE_TYPE CommsSession::createOurSynAckNonce()
 {
-	mOurSynAckNonce=((qrand()>>(1<<sizeof(int)))|qrand());
+	OC_METHODGATE();
+	mOurSynAckNonce=static_cast<SESSION_NONCE_TYPE>((qrand()>>(1<<sizeof(int)))|qrand());
 	return mOurSynAckNonce;
 }
 
 
 SESSION_NONCE_TYPE CommsSession::createOurAckNonce()
 {
-	mOurAckNonce=((qrand()>>(1<<sizeof(int)))|qrand());
+	OC_METHODGATE();
+	mOurAckNonce=static_cast<SESSION_NONCE_TYPE>((qrand()>>(1<<sizeof(int)))|qrand());
 	return mOurAckNonce;
 }
 
 SESSION_NONCE_TYPE CommsSession::ourSynNonce() const
 {
+	OC_METHODGATE();
 	return mOurSynNonce;
 }
 
 SESSION_NONCE_TYPE CommsSession::ourSynAckNonce() const
 {
+	OC_METHODGATE();
 	return mOurSynAckNonce;
 }
 
 SESSION_NONCE_TYPE CommsSession::ourAckNonce() const
 {
+	OC_METHODGATE();
 	return mOurAckNonce;
 }
 
 void CommsSession::setTheirLastNonce(SESSION_NONCE_TYPE theirNonce)
 {
+	OC_METHODGATE();
 	mTheirLastNonce=theirNonce;
 }
 
 SESSION_NONCE_TYPE CommsSession::theirLastNonce() const
 {
+	OC_METHODGATE();
 	return mTheirLastNonce;
 }
 
@@ -220,11 +251,13 @@ SESSION_NONCE_TYPE CommsSession::theirLastNonce() const
 
 void CommsSession::setAddress(const NetworkAddress &address)
 {
+	OC_METHODGATE();
 	mAddress=address;
 }
 
 void CommsSession::setExpired()
 {
+	OC_METHODGATE();
 	mExpired=true;
 }
 
@@ -232,15 +265,17 @@ void CommsSession::setExpired()
 
 void CommsSession::countSend(qint64 written)
 {
-	const qint64 now=utility::currentMsecsSinceEpoch<quint64>();
+	OC_METHODGATE();
+	const qint64 now=utility::time::currentMsecsSinceEpoch<qint64>();
 	if(mLastSendTime<=0) {
 		mLastSendTime=now-1;
 	}
 	const qint64 delta=now-mLastSendTime;
 	mLastSendTime=now;
 	mDeltaTime=delta/1000.0f;
-	mDisconnectTimeoutAccumulator += mDeltaTime;
-	mExpireTimeoutAccumulator+=(qint64)qMax((qint64)0, delta);
+	// TODO: Normalize qreal vs float vs all the types
+	mDisconnectTimeoutAccumulator += static_cast<qreal>(mDeltaTime);
+	mExpireTimeoutAccumulator+=static_cast<quint64>(qMax(0LL, delta));
 	if (mConnected && ( mDisconnectTimeoutAccumulator > mDisconnectTimeout )) {
 		qDebug()<<"SESSION "<< signatureToString() <<" disconnected";
 		mConnected=false;
@@ -251,26 +286,28 @@ void CommsSession::countSend(qint64 written)
 	}
 	if(mConnected) {
 		mReliabilitySystem.update(mDeltaTime);
-		mFlowControl.update( mDeltaTime, mReliabilitySystem.roundTripTime() * 1000.0f );
+		mFlowControl.update( static_cast<quint64>(mDeltaTime), static_cast<quint64>(mReliabilitySystem.roundTripTime() * 1000.0f) );
 	}
 	if(mConnected!=mLastConnected) {
 		mLastConnected=mConnected;
 		mFlowControl.reset();
 		qDebug()<<"SESSION: New flow state: " <<(mConnected?"CONNECTED":"DISCONNECTED")<< " for "<<signatureToString();
 	}
-	mReliabilitySystem.packetSent(written);
+	mReliabilitySystem.packetSent( static_cast<qint32>(written));
 }
 
 void CommsSession::receive()
 {
-	mLastReceiveTime=utility::currentMsecsSinceEpoch<quint64>();
+	OC_METHODGATE();
+	mLastReceiveTime=utility::time::currentMsecsSinceEpoch<qint64>();
 	mConnected=true;
-	mDisconnectTimeoutAccumulator = 0.0f;
+	mDisconnectTimeoutAccumulator = 0.0;
 	mExpireTimeoutAccumulator=0;
 }
 
 bool CommsSession::idle()
 {
+	OC_METHODGATE();
 	const float sendRate = mFlowControl.sendRate();
 	if( mDeltaTime > (1.0f / sendRate) ) {
 		qDebug()<<"SENDING IDLE PACKET "<<mIdlePacketsSent;
@@ -286,11 +323,13 @@ bool CommsSession::idle()
 
 const QString CommsSession::signatureToString() const
 {
+	OC_METHODGATE();
 	return QString::number(mLocalSessionID,16)+"-"+mAddress.toString()+"("+fullID()+")";
 }
 
 QString CommsSession::summary(QString sep) const
 {
+	OC_METHODGATE();
 	QString out;
 	QTextStream ts(&out);
 	ts << "ID: "<< signatureToString();
@@ -303,6 +342,7 @@ QString CommsSession::summary(QString sep) const
 
 QString CommsSession::toString() const
 {
+	OC_METHODGATE();
 	QString out;
 	QTextStream ts(&out);
 	ts << "sig="<< QString::number(mLocalSessionID,16)<<"-"<<mAddress.toString()<<"("<<fullID()<<")"<<", delta: "<<mDeltaTime<<", TOA: "<<mDisconnectTimeoutAccumulator;
@@ -312,14 +352,16 @@ QString CommsSession::toString() const
 
 const QString CommsSession::listText() const
 {
+	OC_METHODGATE();
 	QString name=summary(" - ");
 	return name;
 }
 
 quint64 CommsSession::lastActiveTime() const
 {
+	OC_METHODGATE();
 	// TODO: See if sending should count, since we may be sending to deaf ears
-	return qMax(mLastSendTime, mLastReceiveTime);
+	return static_cast<quint64>(qMax(mLastSendTime, mLastReceiveTime));
 	//return mLastReceiveTime;
 }
 

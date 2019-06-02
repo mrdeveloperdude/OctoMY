@@ -3,9 +3,9 @@
 
 #include "comms/couriers/CourierSet.hpp"
 
-#include <QDataStream>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
+#include <QDataStream>
 
 class Agent;
 
@@ -32,4 +32,5 @@ public:
 	QSharedPointer<AgentStateCourier> agentStateCourier();
 };
 
-#endif // AGENTCOURIERSET_HPP
+#endif
+// AGENTCOURIERSET_HPP

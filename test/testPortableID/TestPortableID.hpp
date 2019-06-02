@@ -1,16 +1,18 @@
 #ifndef TESTPORTABLEID_HPP
 #define TESTPORTABLEID_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
-class TestPortableID:public QObject{
-		Q_OBJECT
+class TestPortableID:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void test();
+private slots:
+	void test();
 
 };
 
 
-#endif // TESTPORTABLEID_HPP
+#endif
+// TESTPORTABLEID_HPP

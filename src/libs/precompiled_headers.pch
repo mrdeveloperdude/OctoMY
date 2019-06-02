@@ -1,6 +1,8 @@
 
 // NOTE: This file is NOTto be explicitly included in project!
 
+#include <QtGlobal>
+/*
 #include <QFileDialog>
 #include <QPushButton>
 #include <QLabel>
@@ -59,3 +61,4 @@
 #include <mutex>
 #include <thread>
 #include <condition_variable>
+*/

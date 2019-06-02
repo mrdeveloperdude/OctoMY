@@ -38,13 +38,19 @@ public:
 	void toStream(QDataStream &)const;
 	void fromStream(QDataStream &);
 
+	operator QString() const;
+	operator QString();
+
 };
 
 const QDebug &operator<<(QDebug &d, const NetworkAddress &na);
+QDebug &operator<<(QDebug &d, NetworkAddress &na);
 
 
 QDataStream &operator<<(QDataStream &, const NetworkAddress &);
 QDataStream &operator>>(QDataStream &, NetworkAddress &);
 
 
-#endif // NETWORKADDRESS_HPP
+#endif
+// NETWORKADDRESS_HPP
+

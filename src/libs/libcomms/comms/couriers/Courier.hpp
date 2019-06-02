@@ -2,21 +2,14 @@
 #define COURIER
 
 #include "comms/CommsSession.hpp"
-
-
+#include "CourierMandate.hpp"
 
 #include <QObject>
 #include <QDataStream>
 
 class CommsChannel;
 
-
-
-#include "CourierMandate.hpp"
-
-
 /////////////////////////////////////////////////////////////////////////////
-
 
 
 class Courier : public QObject
@@ -26,7 +19,7 @@ private:
 	//Destination
 	QString mDestination;
 	//Channel
-	CommsChannel &mComms;
+	QSharedPointer<CommsChannel> mComms;
 	//Identification
 	QString mName;
 	quint32 mID;
@@ -39,16 +32,15 @@ public:
 	static const quint32 FIRST_USER_ID;
 
 public:
-	explicit Courier(QString name, quint32 id, CommsChannel &comms, QObject *parent=0);
+	explicit Courier(QString name, quint32 id, QSharedPointer<CommsChannel> comms, QObject *parent=nullptr);
+	virtual	~Courier() Q_DECL_OVERRIDE;
 
 public:
-
 	void setDestination(const QString );
 	const QString  &destination() const;
 
 public:
-
-	CommsChannel &comms() const;
+	QSharedPointer<CommsChannel> comms() const;
 	void setForwardRescheduleSignal(QObject &ob, bool fwd);
 	quint64 lastOpportunity() const;
 	void  setLastOpportunity(quint64 now);
@@ -79,8 +71,5 @@ public:
 
 };
 
-
-
-
-
-#endif // COURIER
+#endif
+// COURIER

@@ -2,7 +2,7 @@
 #define TESTOPENCL_HPP
 
 #include "utility/CrashHelp.hpp"
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
 class TestOpenCL:public QObject
@@ -12,18 +12,16 @@ class TestOpenCL:public QObject
 private:
 	CrashHelp mCrashHelper;
 //	QSurfaceFormat testFormat;
-
 	void testCLGLView();
 	void testWithoutGLInterop();
 
 private slots:
 	void initTestCase();
-
-
 	void testWithGLInterop();
 	void cleanupTestCase();
 
 };
 
 
-#endif // TESTOPENCL_HPP
+#endif
+// TESTOPENCL_HPP

@@ -1,10 +1,9 @@
 #ifndef COMMSSIGNALLOGGER_HPP
 #define COMMSSIGNALLOGGER_HPP
 
-
-#include  <QString>
+#include <QString>
 #include <QObject>
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
 class CommsSession;
@@ -27,4 +26,5 @@ public slots:
 };
 
 
-#endif // COMMSSIGNALLOGGER_HPP
+#endif
+// COMMSSIGNALLOGGER_HPP

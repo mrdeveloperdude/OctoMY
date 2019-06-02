@@ -1,9 +1,9 @@
 #include "TestHardwareWidget.hpp"
 
 #include "widgets/HardwareWizard.hpp"
-#include "Utilities.hpp"
+
 #include "agent/Agent.hpp"
-#include "node/NodeLauncher.hpp"
+#include "app/launcher/AppLauncher.hpp"
 
 void TestHardwareWidget::test()
 {
@@ -20,4 +20,3 @@ void TestHardwareWidget::test()
 
 
 OC_TEST_MAIN(test, TestHardwareWidget)
-

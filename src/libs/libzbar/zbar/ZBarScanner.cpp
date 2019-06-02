@@ -1,6 +1,6 @@
 #include "ZBarScanner.hpp"
 
-#ifdef USE_ZBAR
+#ifdef OC_USE_LIB_ZBAR
 //#include "utility/widgets/PixViewer.hpp"
 #include "utility/Standard.hpp"
 

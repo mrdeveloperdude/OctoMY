@@ -1,6 +1,6 @@
 #include "TestConcurrentQueue.hpp"
 
-#include "utility/ConcurrentQueue.hpp"
+#include "utility/concurrent/ConcurrentQueue.hpp"
 
 #include <QtConcurrent/QtConcurrent>
 
@@ -8,12 +8,10 @@
 class TestItem
 {
 private:
-
 	quint32 mIndex, mNoise, mCarry, mSeed, mAcc, mInvocations;
 
 
 public:
-
 	TestItem(quint32 index=0, quint32 seed=0)
 		: mIndex(index)
 		, mNoise(0)
@@ -29,7 +27,6 @@ public:
 
 
 private:
-
 	// Deterministic PRNG
 	quint32 makeNoise()
 	{
@@ -46,8 +43,6 @@ private:
 
 
 public:
-
-
 	quint32 index() const
 	{
 		return mIndex;
@@ -102,14 +97,59 @@ static QDebug &operator<< (QDebug &d, TestItem &ti )
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void TestConcurrentQueue::test()
+void TestConcurrentQueue::testActivation()
 {
-	const int itemsPerQueue=2000, maxThreadCount=10, timesToRepeatTest=200000;
+	{
+		ConcurrentQueue<TestItem> itemQueue;
+		// Since we did not activate, done will return true and put a warning
+		QCOMPARE(itemQueue.isDone(), true);
+		TestItem ti;
+		itemQueue.put(ti);
+		// Since we did not activate, the put would put a warning and not go through leaving the list empty
+		QCOMPARE(itemQueue.isEmpty(), true);
+		QCOMPARE(itemQueue.count(), 0);
+	}
+
+	{
+		ConcurrentQueue<TestItem> itemQueue;
+		itemQueue.activate(true);
+		// Since we did activate, done will return false
+		QCOMPARE(itemQueue.isDone(), false);
+		TestItem ti;
+		itemQueue.put(ti);
+		// Since we did activate, the put would succeed and leave the list with one item
+		QCOMPARE(itemQueue.isEmpty(), false);
+		QCOMPARE(itemQueue.count(), 1);
+		TestItem g1=itemQueue.get();
+		// Since we did activate, the get would succeed and leave the list empty
+		QCOMPARE(g1, ti);
+		QCOMPARE(itemQueue.isEmpty(), true);
+		QCOMPARE(itemQueue.count(), 0);
+
+		// Now deactivate
+		itemQueue.activate(false);
+
+		// Since we are not active, done will return true and put a warning
+		QCOMPARE(itemQueue.isDone(), true);
+		TestItem ti2;
+		itemQueue.put(ti2);
+		// Since we are not active, the put would put a warning and not go through leaving the list empty
+		QCOMPARE(itemQueue.isEmpty(), true);
+		QCOMPARE(itemQueue.count(), 0);
+	}
+}
+
+void TestConcurrentQueue::testExecution()
+{
+	const int itemsPerQueue=200, maxThreadCount=10, timesToRepeatTest=2000;
 	quint32 start_seed=0;
 	for(int j=0; j < timesToRepeatTest; ++j) {
 		//qDebug()<<"DOING BATCH " << j << " of " << times;
 
 		ConcurrentQueue<TestItem> itemQueue, itemQueFacit, *itemQueuePtr=&itemQueue, *itemQueFacitPtr=&itemQueFacit;
+
+		itemQueue.activate(true);
+		itemQueFacit.activate(true);
 
 		for(quint32 i=0; i<itemsPerQueue; ++i) {
 			TestItem ti(i, start_seed);
@@ -157,6 +197,9 @@ void TestConcurrentQueue::test()
 			}
 			QCOMPARE(fasit[i], result[i]);
 		}
+
+		itemQueue.activate(false);
+		itemQueFacit.activate(false);
 
 	}
 }

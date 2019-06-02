@@ -1,4 +1,4 @@
-include($$TESTS/test.pri)
+include($$TESTS/pris/test.pri)
 
 TARGET = test_streamcodec
 
@@ -10,4 +10,3 @@ SOURCES += \
 
 include($$PRIS/status.pri)
 include($$TESTS/test_autorun.pri)
-

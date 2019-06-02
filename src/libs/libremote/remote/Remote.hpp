@@ -1,7 +1,7 @@
 #ifndef REMOTE_HPP
 #define REMOTE_HPP
 
-#include "sensory/SensorInput.hpp"
+#include "hardware/sensors/SensorInput.hpp"
 #include "comms/CommsChannel.hpp"
 #include "comms/messages/SensorsMessage.hpp"
 
@@ -10,7 +10,7 @@
 #include "node/Node.hpp"
 #include "comms/NetworkAddress.hpp"
 
-#include "node/NodeLauncher.hpp"
+#include "app/launcher/AppLauncher.hpp"
 
 #include <QObject>
 #include <QVector2D>
@@ -18,6 +18,7 @@
 
 class DirectPoseCourier;
 class RemoteWindow;
+class NodeWindow;
 
 
 /*
@@ -30,33 +31,39 @@ class RemoteWindow;
 
 */
 
-class Remote : public Node, public QEnableSharedFromThis<Remote>
+class Remote : public Node//, public QEnableSharedFromThis<Remote>
 {
 	Q_OBJECT
 private:
+
+	// Helper to keep track of nodeConfigure() and nodeActivate() state
+	ConfigureHelper mNodeConfigureHelper;
+
+	// The window that represents this remote
 	QSharedPointer<RemoteWindow> mWindow;
 
 public:
-	explicit Remote(NodeLauncher<Remote> &launcher, QObject *parent = nullptr);
+	explicit Remote();
 	virtual ~Remote() Q_DECL_OVERRIDE;
 
+
+	// Node interface
 public:
-	virtual void init() Q_DECL_OVERRIDE;
-	virtual void deInit() Q_DECL_OVERRIDE;
+	void nodeConfigure() Q_DECL_OVERRIDE;
+	void nodeActivate(const bool on) Q_DECL_OVERRIDE;
 
-	//void startComms(const NetworkAddress &localAddress, const NetworkAddress &partnerAddress);
+	QSharedPointer<NodeWindow> nodeWindow() Q_DECL_OVERRIDE;
+	NodeRole nodeRole() Q_DECL_OVERRIDE;
+	NodeType nodeType() Q_DECL_OVERRIDE;
 
-	virtual QSharedPointer<QWidget> showWindow() Q_DECL_OVERRIDE;
-
+	// QEnableSharedFromThis<Agent> interface
 public:
-
-	void identityChanged() Q_DECL_OVERRIDE;
-
-
-	void setNodeCouriersRegistration(bool reg) Q_DECL_OVERRIDE;
-
 	QSharedPointer<Node> sharedThis() Q_DECL_OVERRIDE;
+
+
+	void registerNodeCouriers(bool reg) Q_DECL_OVERRIDE;
 
 };
 
-#endif // REMOTE_HPP
+#endif
+// REMOTE_HPP

@@ -10,9 +10,11 @@ namespace Ui
 class LightTestWidget;
 }
 
+
 class LightTestWidget : public QWidget
 {
 	Q_OBJECT
+
 private:
 	Ui::LightTestWidget *ui;
 	QColor mColor;
@@ -20,18 +22,19 @@ private:
 	QTimer mTimer;
 
 public:
-	explicit LightTestWidget(QWidget *parent = 0);
+	explicit LightTestWidget(QWidget *parent = nullptr);
 	~LightTestWidget();
+
 private:
 	void addLight(int x, int y,int w=0, int h=0);
+
 private slots:
 	void on_pushButtonSelectColor_clicked();
-
-
 	void on_pushButtonLightOn_clicked();
 	void on_pushButtonLightOff_clicked();
 	void on_pushButtonToggleLight_clicked();
 	void on_pushButtonBlink_toggled(bool checked);
 };
 
-#endif // LIGHTTESTWIDGET_HPP
+#endif
+// LIGHTTESTWIDGET_HPP

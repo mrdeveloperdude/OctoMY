@@ -8,14 +8,18 @@
 class KeySecurityPolicy
 {
 private:
-	const quint32 mBits;
-	const QCryptographicHash::Algorithm mHashAlgo;
+	quint32 mBits;
+	QCryptographicHash::Algorithm mHashAlgo;
+
 public:
-	KeySecurityPolicy(quint32 bits=OCTOMY_KEY_BITS, QCryptographicHash::Algorithm=QCryptographicHash::Sha256);
+	explicit KeySecurityPolicy(quint32 bits=OCTOMY_KEY_BITS, QCryptographicHash::Algorithm=QCryptographicHash::Sha256);
+	virtual ~KeySecurityPolicy();
 
-	quint32 bits() const;
+public:
+	quint32 bits();
+	QCryptographicHash::Algorithm hashAlgo();
 
-	QCryptographicHash::Algorithm hashAlgo() const;
 };
 
-#endif // KEYSECURITYPOLICY_HPP
+#endif
+// KEYSECURITYPOLICY_HPP

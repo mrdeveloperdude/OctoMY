@@ -1,8 +1,9 @@
 #ifndef EYERENDRER_HPP
 #define EYERENDRER_HPP
 
+#include "uptime/SharedPointerWrapper.hpp"
+
 #include <QVector2D>
-#include <QSharedPointer>
 #include <QImage>
 #include <QBrush>
 
@@ -21,8 +22,8 @@ private:
 	QVector2D mUpperLidSteer;
 	QVector2D mLowerLidSteer;
 	QVector2D mSquintSteer;
-	qreal mBlink;
-	qreal mSlant;
+	float mBlink;
+	float mSlant;
 
 	QVector2D mSpecPos1;
 	QVector2D mSpecPos2;
@@ -32,30 +33,31 @@ private:
 	QBrush mPupilBrush;
 	QBrush mSpecularBrush;
 
-	qreal mIrisRadius;
-	qreal mPupilRadius;
+	float mIrisRadius;
+	float mPupilRadius;
 
 	QImage mIrisImage;
 
 public:
-
-	explicit EyeRendrer(QVector2D mCenter, qreal mSlant, QColor irisColor=QColor("#2d8ac9"));
+	explicit EyeRendrer(QVector2D mCenter, float mSlant, QColor irisColor=QColor("#2d8ac9"));
 	virtual ~EyeRendrer();
+
+public:
 	void update();
-	void setBlink(qreal);
+	void setBlink(float);
 	void setExpression(QVector2D, QVector2D, QVector2D);
 	void setColor(QColor irisColor=QColor("#2d8ac9"));
 	void setIrisImage(QImage);
 	void setSteer(QVector2D);
 	void paint(QPainter &painter);
 
-
-	qreal irisRadius();
-	qreal pupilRadius();
+	float irisRadius();
+	float pupilRadius();
 
 	bool isDirty();
 
 };
 
 
-#endif // EYERENDRER_HPP
+#endif
+// EYERENDRER_HPP

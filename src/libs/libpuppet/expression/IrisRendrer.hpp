@@ -50,4 +50,5 @@ public:
 	void setParameter(quint32 id, qreal value);
 };
 
-#endif // IRISRENDRER_HPP
+#endif
+// IRISRENDRER_HPP

@@ -55,7 +55,7 @@ public:
 	static const int OCTOMY_ENCRYPTED_MESSAGE_SIZE;
 
 public:
-	PacketReadState(QByteArray datagram, QHostAddress remoteHost , quint16 remotePort);
+	PacketReadState(QByteArray datagram, QHostAddress remoteHost, quint16 remotePort);
 
 
 public:
@@ -112,4 +112,5 @@ public:
 
 
 
-#endif // PACKETREADSTATE_HPP
+#endif
+// PACKETREADSTATE_HPP

@@ -1,8 +1,8 @@
 #ifndef BLOB_HPP
 #define BLOB_HPP
 
+#include "uptime/SharedPointerWrapper.hpp"
 
-#include <QSharedPointer>
 #include <QBitArray>
 
 
@@ -184,4 +184,5 @@ public:
 
 };
 
-#endif // BLOB_HPP
+#endif
+// BLOB_HPP

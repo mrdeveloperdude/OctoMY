@@ -1,5 +1,7 @@
 #include "Tremolo.hpp"
-#include "utility/Standard.hpp"
+
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 
 #include <QDebug>
 #include <QtMath>
@@ -16,10 +18,12 @@ Tremolo::Tremolo()
 	, index(0)
 	, isInited(false)
 {
+	OC_METHODGATE();
 }
 
 Tremolo::~Tremolo()
 {
+	OC_METHODGATE();
 	isInited=false;
 	if(nullptr!=buf) {
 		delete[] buf;
@@ -29,17 +33,18 @@ Tremolo::~Tremolo()
 
 void Tremolo::set(double freq,double amp)
 {
-	double sr=(double)af.sampleRate();
+	OC_METHODGATE();
+	double sr=static_cast<double>(af.sampleRate());
 	step=freq/(sr*M_PI*2.0);
 	ampSR=amp*sr;
-	size=((int)floor(ampSR))+1;
+	size=(static_cast<size_t>(std::floor(ampSR)))+1;
 	qDebug()<<"TREM SIZE:"<<size<<" AMP:"<<amp<<" AMP-SR:"<<ampSR<<" STEP:"<<step<<" SR:"<<sr;
 	index=0;
 	delete[] buf;
 	buf=nullptr;
 	if(size>0) {
 		buf=OC_NEW double[size];
-		for(int i=0; i<size; ++i) {
+		for(size_t i=0; i<size; ++i) {
 			buf[i]=0.0;
 		}
 	}
@@ -48,27 +53,30 @@ void Tremolo::set(double freq,double amp)
 
 void Tremolo::init(QAudioFormat f)
 {
+	OC_METHODGATE();
 	af=f;
 	set(freq,amp);
 }
 
 void Tremolo::process(qint64 num, double *in, double *out)
 {
+	OC_METHODGATE();
 	if(isInited) {
 		for(int i=0; i<num; ++i) {
 			buf[index]=in[i];
-			index=(index+1)%size;
+			index=(index+1)%static_cast<int>(size);
 			angle+=step;
 			while(angle>M_PI*2.0) {
 				angle-=M_PI*2.0;
 			}
 			const double displacement=(cos(angle)*0.5+0.5)*ampSR;
-			const int a=(int)floor(displacement);
-			const int b=b+1;
-			const double c=displacement-(double)a;
+			const int a=static_cast<int>(std::floor(displacement));
+			//TODO: Was b=b+1 here a typo?
+			const int b=a+1;
+			const double c=displacement-static_cast<double>(a);
 			const double d=1.0-c;
-			const int ai=(index+a)%size;
-			const int bi=(index+b)%size;
+			const int ai=(index+a)%static_cast<int>(size);
+			const int bi=(index+b)%static_cast<int>(size);
 			out[i]=(buf[ai]*d+buf[bi]*c)*0.9+(in[ai]*d+in[bi]*c)*0.1;//Some character :D
 		}
 	}

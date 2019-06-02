@@ -1,6 +1,7 @@
 #include "SensorsCourier.hpp"
 
-#include "utility/SerialSize.hpp"
+#include "utility/network/SerialSize.hpp"
+#include "uptime/MethodGate.hpp"
 
 #include <QDebug>
 #include <QSensor>
@@ -14,12 +15,13 @@
 #include <QGyroscopeReading>
 
 
-SensorsCourier::SensorsCourier(CommsChannel &comms, QObject *parent)
+SensorsCourier::SensorsCourier(QSharedPointer<CommsChannel> comms, QObject *parent)
 	: Courier("Sensors", Courier::FIRST_USER_ID+3, comms, parent)
 	, mMandate(400)
 
 	  //const quint16 payloadSize , const quint8 priority=10, const quint64 interval=1000, const bool receiveActive=true, const bool sendActive=true);
 {
+	OC_METHODGATE();
 	SerialSize size;
 	mMandate.payloadSize=static_cast<quint16>(size(mMessage));
 }
@@ -27,6 +29,7 @@ SensorsCourier::SensorsCourier(CommsChannel &comms, QObject *parent)
 //Let the CommChannel know what we want
 CourierMandate SensorsCourier::mandate() const
 {
+	OC_METHODGATE();
 	return mMandate;
 }
 
@@ -34,7 +37,8 @@ CourierMandate SensorsCourier::mandate() const
 //Return number of bytes that we wrote (0> means we took advantage of the opportunity)
 quint16 SensorsCourier::sendingOpportunity(QDataStream &ds)
 {
-	(void)ds;
+	OC_METHODGATE();
+	Q_UNUSED(ds);
 	if(mMandate.sendActive) {
 		qDebug()<<"Spending sending opportunity for sensors data";
 		const quint16 bytes=static_cast<quint16>(mMessage.bytes());
@@ -54,8 +58,9 @@ quint16 SensorsCourier::sendingOpportunity(QDataStream &ds)
 //Return number of bytes actually read.
 quint16 SensorsCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 {
-	(void)ds;
-	(void)availableBytes;
+	OC_METHODGATE();
+	Q_UNUSED(ds);
+	Q_UNUSED(availableBytes);
 	// TODO: Implement
 	return 0;
 }
@@ -65,6 +70,7 @@ quint16 SensorsCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 template <typename T>
 static QVector3D readingToVector(T *r)
 {
+	OC_FUNCTIONGATE();
 	if(nullptr==r){
 		return QVector3D();
 	}
@@ -75,6 +81,7 @@ static QVector3D readingToVector(T *r)
 
 void SensorsCourier::onPositionUpdated(const QGeoPositionInfo &info)
 {
+	OC_METHODGATE();
 	mMessage.gps=info.coordinate();
 	mMandate.sendActive=true;
 }
@@ -82,6 +89,7 @@ void SensorsCourier::onPositionUpdated(const QGeoPositionInfo &info)
 
 void SensorsCourier::onCompassUpdated(QCompassReading *r)
 {
+	OC_METHODGATE();
 	if(nullptr!=r) {
 		mMessage.compassAzimuth=r->azimuth();
 		mMessage.compassAccuracy=r->calibrationLevel();
@@ -91,6 +99,7 @@ void SensorsCourier::onCompassUpdated(QCompassReading *r)
 
 void SensorsCourier::onAccelerometerUpdated(QAccelerometerReading *r)
 {
+	OC_METHODGATE();
 	if(nullptr!=r) {
 		mMessage.accellerometer=readingToVector(r);
 		mMandate.sendActive=true;
@@ -100,6 +109,7 @@ void SensorsCourier::onAccelerometerUpdated(QAccelerometerReading *r)
 
 void SensorsCourier::onGyroscopeUpdated(QGyroscopeReading *r)
 {
+	OC_METHODGATE();
 	if(nullptr!=r) {
 		mMessage.gyroscope=readingToVector(r);
 		mMandate.sendActive=true;
@@ -110,6 +120,7 @@ void SensorsCourier::onGyroscopeUpdated(QGyroscopeReading *r)
 
 void SensorsCourier::onColorUpdated(QColor c)
 {
+	OC_METHODGATE();
 	qDebug()<<"COLOR UPDATATE RECEIVED :"<<c;
 	mMessage.color=c;
 	mMandate.sendActive=true;

@@ -10,9 +10,11 @@ namespace Ui
 class NetworkSettingsTestWidget;
 }
 
+
 class NetworkSettingsTestWidget : public QWidget
 {
 	Q_OBJECT
+
 private:
 	Ui::NetworkSettingsTestWidget *ui;
 	LocalAddressList mAddresslist;
@@ -27,4 +29,5 @@ private slots:
 
 };
 
-#endif // NETWORKSETTINGSTESTWIDGET_HPP
+#endif
+// NETWORKSETTINGSTESTWIDGET_HPP

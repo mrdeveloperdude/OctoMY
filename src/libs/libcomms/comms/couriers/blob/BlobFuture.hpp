@@ -15,7 +15,7 @@ private:
 	QString mReason;
 	bool mWin;
 public:
-	BlobFuture(QString name, BlobCourier *courier=nullptr);
+	BlobFuture(QString name, BlobCourier *courier);
 
 
 	void fail(QString reason);
@@ -28,4 +28,5 @@ public:
 	bool connect(QObject &recepient);
 };
 
-#endif // BLOBFUTURE_HPP
+#endif
+// BLOBFUTURE_HPP

@@ -1,22 +1,23 @@
 #include "Reverb.hpp"
 
-#include "utility/Standard.hpp"
+#include "uptime/New.hpp"
 
-#include <cmath>
+#include <QtMath>
+#include <algorithm>
 
 
 const qreal ReverbEffect::EARLY_LINE_LENGTH[] = {
-	0.0015f, 0.0045f, 0.0135f, 0.0405f
+	0.0015, 0.0045, 0.0135, 0.0405
 };
 
 // The lengths of the late all-pass delay lines.
 const qreal ReverbEffect::ALLPASS_LINE_LENGTH[] = {
-	0.0151f, 0.0167f, 0.0183f, 0.0200f,
+	0.0151, 0.0167, 0.0183, 0.0200,
 };
 
 // The lengths of the late cyclical delay lines.
 const qreal ReverbEffect::LATE_LINE_LENGTH[] = {
-	0.0211f, 0.0311f, 0.0461f, 0.0680f
+	0.0211, 0.0311, 0.0461, 0.0680
 };
 
 
@@ -31,7 +32,7 @@ void ReverbEffect::computeAmbientGains(qreal ingain, qreal gains[OUTPUT_CHANNELS
 		// scaling the W channel input by sqrt(0.5). The square root of the
 		// base average provides for a more perceptual average volume, better
 		// suited to non-directional gains.
-		gains[i] = sqrtf(ambiCoeffs[i][0]/1.4142f) * ingain;
+		gains[i] = std::sqrt(ambiCoeffs[i][0]/1.4142) * ingain;
 	}
 }
 
@@ -40,20 +41,20 @@ void ReverbEffect::computeDirectionalGains(const qreal dir[3], qreal ingain, qre
 	OC_METHODGATE();
 	qreal coeffs[MAX_AMBI_COEFFS];
 	quint32 i, j;
-	/* Convert from OpenAL coords to Ambisonics. */
+	// Convert from OpenAL coords to Ambisonics.
 	qreal x = -dir[2];
 	qreal y = -dir[0];
 	qreal z =  dir[1];
 
-	/* Zeroth-order */
-	coeffs[0] = 0.7071f; /* W = sqrt(1.0 / 2.0) */
-	/* First-order */
-	coeffs[1] = y; /* Y = Y */
-	coeffs[2] = z; /* Z = Z */
-	coeffs[3] = x; /* X = X */
+	// Zeroth-order
+	coeffs[0] = 0.7071; // W = sqrt(1.0 / 2.0)
+	// First-order
+	coeffs[1] = y; // Y = Y
+	coeffs[2] = z; // Z = Z
+	coeffs[3] = x; // X = X
 
 	for(i = 0; i < OUTPUT_CHANNELS; i++) {
-		qreal gain = 0.0f;
+		qreal gain = 0.0;
 		for(j = 0; j < MAX_AMBI_COEFFS; j++) {
 			gain += ambiCoeffs[i][j]*coeffs[j];
 		}
@@ -65,6 +66,7 @@ void ReverbEffect::computeDirectionalGains(const qreal dir[3], qreal ingain, qre
 // Given an input sample, this function produces modulation for the late reverb.
 inline qreal ReverbEffect::EAXModulation(qreal in)
 {
+	OC_METHODGATE();
 	qreal sinus, frac;
 	quint32 offset;
 	qreal out0, out1;
@@ -72,7 +74,7 @@ inline qreal ReverbEffect::EAXModulation(qreal in)
 	// Calculate the sinus rythm (dependent on modulation time and the
 	// sampling rate).  The center of the sinus is moved to reduce the delay
 	// of the effect when the time or depth are low.
-	sinus = 1.0f - cosf(F_2PI * mModulator.mIndex / mModulator.mRange);
+	sinus = 1.0 - std::cos(F_2PI * mModulator.mIndex / mModulator.mRange);
 
 	// The depth determines the range over which to read the input samples
 	// from, so it must be filtered to reduce the distortion caused by even
@@ -80,7 +82,7 @@ inline qreal ReverbEffect::EAXModulation(qreal in)
 	mModulator.mFilter = lerp(mModulator.mFilter, mModulator.mDepth, mModulator.mCoeff);
 
 	// Calculate the read offset and fraction between it and the next sample.
-	frac   = (1.0f + (mModulator.mFilter * sinus));
+	frac   = (1.0 + (mModulator.mFilter * sinus));
 	offset = Truncate(frac);
 	frac  -= offset;
 
@@ -99,14 +101,16 @@ inline qreal ReverbEffect::EAXModulation(qreal in)
 }
 
 // Delay line output routine for early reflections.
-inline qreal ReverbEffect::earlyDelayLineOut(quint32 index)
+inline qreal ReverbEffect::earlyDelayLineOut(int index)
 {
+	OC_METHODGATE();
 	return mEarly.mDelay[index].attenuatedDelayLineOut(mOffset - mEarly.mOffset[index], mEarly.mCoeff[index]);
 }
 
 // Given an input sample, this function produces four-channel output for the  early reflections.
 inline void ReverbEffect::earlyReflection(qreal in, qreal *out)
 {
+	OC_METHODGATE();
 	qreal d[4], v, f[4];
 
 	// Obtain the decayed results of each early delay line.
@@ -114,18 +118,18 @@ inline void ReverbEffect::earlyReflection(qreal in, qreal *out)
 		d[i] = earlyDelayLineOut(i);
 	}
 
-	/* The following uses a lossless scattering junction from waveguide
-	 * theory.  It actually amounts to a householder mixing matrix, which
-	 * will produce a maximally diffuse response, and means this can probably
-	 * be considered a simple feed-back delay network (FDN).
-	 *          N
-	 *         ---
-	 *         \
-	 * v = 2/N /   d_i
-	 *         ---
-	 *         i=1
-	 */
-	v = (d[0] + d[1] + d[2] + d[3]) * 0.5f;
+	// The following uses a lossless scattering junction from waveguide
+	// theory.  It actually amounts to a householder mixing matrix, which
+	// will produce a maximally diffuse response, and means this can probably
+	// be considered a simple feed-back delay network (FDN).
+	//          N
+	//         ---
+	//         |
+	// v = 2/N /   d_i
+	//         ---
+	//         i=1
+
+	v = (d[0] + d[1] + d[2] + d[3]) * 0.5;
 	// The junction is loaded with the input here.
 	v += in;
 
@@ -150,18 +154,21 @@ inline void ReverbEffect::earlyReflection(qreal in, qreal *out)
 // All-pass input/output routine for late reverb.
 inline qreal ReverbEffect::lateAllPassInOut(quint32 index, qreal in)
 {
+	OC_METHODGATE();
 	return mLate.mApDelay[index].allpassInOut(mOffset - mLate.mApOffset[index], mOffset, in, mLate.mApFeedCoeff, mLate.mApCoeff[index]);
 }
 
 // Delay line output routine for late reverb.
 inline qreal ReverbEffect::lateDelayLineOut(quint32 index)
 {
+	OC_METHODGATE();
 	return mLate.mDelay[index].attenuatedDelayLineOut(mOffset - mLate.mOffset[index], mLate.mCoeff[index]);
 }
 
 // Low-pass filter input/output routine for late reverb.
 inline qreal ReverbEffect::lateLowPassInOut(quint32 index, qreal in)
 {
+	OC_METHODGATE();
 	in = lerp(in, mLate.mLpSample[index], mLate.mLpCoeff[index]);
 	mLate.mLpSample[index] = in;
 	return in;
@@ -170,6 +177,7 @@ inline qreal ReverbEffect::lateLowPassInOut(quint32 index, qreal in)
 // Given four decorrelated input samples, this function produces four-channel output for the late reverb.
 inline void ReverbEffect::lateReverb(const qreal *in, qreal *out)
 {
+	OC_METHODGATE();
 	qreal d[4], f[4];
 
 	// Obtain the decayed results of the cyclical delay lines, and add the
@@ -186,38 +194,38 @@ inline void ReverbEffect::lateReverb(const qreal *in, qreal *out)
 	// To help increase diffusion, run each line through an all-pass filter.
 	// When there is no diffusion, the shortest all-pass filter will feed the
 	// shortest delay line.
-	for(int i=0; i<4; ++i) {
+	for(quint32 i=0; i<4; ++i) {
 		d[i] = lateAllPassInOut(i, d[i]);
 	}
 
 
-	/* Late reverb is done with a modified feed-back delay network (FDN)
-	 * topology.  Four input lines are each fed through their own all-pass
-	 * filter and then into the mixing matrix.  The four outputs of the
-	 * mixing matrix are then cycled back to the inputs.  Each output feeds
-	 * a different input to form a circlular feed cycle.
-	 *
-	 * The mixing matrix used is a 4D skew-symmetric rotation matrix derived
-	 * using a single unitary rotational parameter:
-	 *
-	 *  [  d,  a,  b,  c ]          1 = a^2 + b^2 + c^2 + d^2
-	 *  [ -a,  d,  c, -b ]
-	 *  [ -b, -c,  d,  a ]
-	 *  [ -c,  b, -a,  d ]
-	 *
-	 * The rotation is constructed from the effect's diffusion parameter,
-	 * yielding:  1 = x^2 + 3 y^2; where a, b, and c are the coefficient y
-	 * with differing signs, and d is the coefficient x.  The matrix is thus:
-	 *
-	 *  [  x,  y, -y,  y ]          n = sqrt(matrix_order - 1)
-	 *  [ -y,  x,  y,  y ]          t = diffusion_parameter * atan(n)
-	 *  [  y, -y,  x,  y ]          x = cos(t)
-	 *  [ -y, -y, -y,  x ]          y = sin(t) / n
-	 *
-	 * To reduce the number of multiplies, the x coefficient is applied with
-	 * the cyclical delay line coefficients.  Thus only the y coefficient is
-	 * applied when mixing, and is modified to be:  y / x.
-	 */
+	// Late reverb is done with a modified feed-back delay network (FDN)
+	// topology.  Four input lines are each fed through their own all-pass
+	// filter and then into the mixing matrix.  The four outputs of the
+	// mixing matrix are then cycled back to the inputs.  Each output feeds
+	// a different input to form a circlular feed cycle.
+	//
+	// The mixing matrix used is a 4D skew-symmetric rotation matrix derived
+	// using a single unitary rotational parameter:
+	//
+	//  [  d,  a,  b,  c ]          1 = a^2 + b^2 + c^2 + d^2
+	//  [ -a,  d,  c, -b ]
+	//  [ -b, -c,  d,  a ]
+	//  [ -c,  b, -a,  d ]
+	//
+	// The rotation is constructed from the effect's diffusion parameter,
+	// yielding:  1 = x^2 + 3 y^2; where a, b, and c are the coefficient y
+	// with differing signs, and d is the coefficient x.  The matrix is thus:
+	//
+	//  [  x,  y, -y,  y ]          n = sqrt(matrix_order - 1)
+	//  [ -y,  x,  y,  y ]          t = diffusion_parameter * atan(n)
+	//  [  y, -y,  x,  y ]          x = cos(t)
+	//  [ -y, -y, -y,  x ]          y = sin(t) / n
+	//
+	// To reduce the number of multiplies, the x coefficient is applied with
+	// the cyclical delay line coefficients.  Thus only the y coefficient is
+	// applied when mixing, and is modified to be:  y / x.
+
 	f[0] = d[0] + (mLate.mMixCoeff * (         d[1] + -d[2] + d[3]));
 	f[1] = d[1] + (mLate.mMixCoeff * (-d[0]         +  d[2] + d[3]));
 	f[2] = d[2] + (mLate.mMixCoeff * ( d[0] + -d[1]         + d[3]));
@@ -240,6 +248,7 @@ inline void ReverbEffect::lateReverb(const qreal *in, qreal *out)
 // reverb.
 inline void ReverbEffect::EAXEcho(qreal in, qreal *late)
 {
+	OC_METHODGATE();
 	qreal out, feed;
 
 	// Get the latest attenuated echo sample for output.
@@ -322,7 +331,7 @@ void ReverbEffect::Process(quint32 SamplesToDo, const qreal *SamplesIn, qreal *S
 		qreal earlyGain, lateGain;
 
 		earlyGain = mEarly.mPanGain[c];
-		if(fabsf(earlyGain) > GAIN_SILENCE_THRESHOLD) {
+		if(std::abs(earlyGain) > GAIN_SILENCE_THRESHOLD) {
 			for(index = 0; index < SamplesToDo; index++) {
 				SamplesOut[index * OUTPUT_CHANNELS + c] = earlyGain*early[index][c&3];
 			}
@@ -330,7 +339,7 @@ void ReverbEffect::Process(quint32 SamplesToDo, const qreal *SamplesIn, qreal *S
 
 
 		lateGain = mLate.mPanGain[c];
-		if(fabsf(lateGain) > GAIN_SILENCE_THRESHOLD) {
+		if(std::abs(lateGain) > GAIN_SILENCE_THRESHOLD) {
 			for(index = 0; index < SamplesToDo; index++) {
 				SamplesOut[index * OUTPUT_CHANNELS + c] = lateGain*late[index][c&3];
 			}
@@ -341,12 +350,14 @@ void ReverbEffect::Process(quint32 SamplesToDo, const qreal *SamplesIn, qreal *S
 // Given the allocated sample buffer, this function updates each delay line offset.
 static inline void RealizeLineOffset(qreal *sampleBuffer, DelayLine *Delay)
 {
-	Delay->mLine = &sampleBuffer[(ptrdiff_t)Delay->mLine];
+	OC_FUNCTIONGATE();
+	Delay->mLine = &sampleBuffer[reinterpret_cast<ptrdiff_t>(Delay->mLine)];
 }
 
 // Calculate the length of a delay line and store its mask and offset.
 static quint32 CalcLineLength(qreal length, ptrdiff_t offset, quint32 frequency, DelayLine *Delay)
 {
+	OC_FUNCTIONGATE();
 	quint32 samples;
 
 	// All line lengths are powers of 2, calculated from their lengths, with
@@ -354,7 +365,7 @@ static quint32 CalcLineLength(qreal length, ptrdiff_t offset, quint32 frequency,
 	samples = NextPowerOf2(Truncate(length * frequency) + 1);
 	// All lines share a single sample buffer.
 	Delay->mMask = samples - 1;
-	Delay->mLine = (qreal*)offset;
+	Delay->mLine = reinterpret_cast<qreal* >(offset);
 	// Return the sample count for accumulation.
 	return samples;
 }
@@ -362,17 +373,18 @@ static quint32 CalcLineLength(qreal length, ptrdiff_t offset, quint32 frequency,
 // Calculates the delay line metrics and allocates the shared sample buffer for all lines given the sample rate (frequency).
 void ReverbEffect::allocLines(quint32 frequency)
 {
+	OC_METHODGATE();
 	quint32 totalSamples, index;
 	qreal length;
 
 	// All delay line lengths are calculated to accomodate the full range of lengths given their respective paramters.
 	totalSamples = 0;
 
-	/* The modulator's line length is calculated from the maximum modulation
-	 * time and depth coefficient, and halfed for the low-to-high frequency
-	 * swing.  An additional sample is added to keep it stable when there is no modulation.
-	 */
-	length = (EAXREVERB_MAX_MODULATION_TIME*MODULATION_DEPTH_COEFF/2.0f) + (1.0f / frequency);
+	// The modulator's line length is calculated from the maximum modulation
+	// time and depth coefficient, and halfed for the low-to-high frequency
+	// swing.  An additional sample is added to keep it stable when there is no modulation.
+
+	length = (EAXREVERB_MAX_MODULATION_TIME*MODULATION_DEPTH_COEFF/2.0) + (1.0 / frequency);
 	totalSamples += CalcLineLength(length, totalSamples, frequency, &mModulator.mDelay);
 
 	// The initial delay is the sum of the reflections and late reverb delays.
@@ -386,7 +398,7 @@ void ReverbEffect::allocLines(quint32 frequency)
 
 	// The decorrelator line is calculated from the lowest reverb density (a
 	// parameter value of 1).
-	length = (DECO_FRACTION * DECO_MULTIPLIER * DECO_MULTIPLIER) * LATE_LINE_LENGTH[0] * (1.0f + LATE_LINE_MULTIPLIER);
+	length = (DECO_FRACTION * DECO_MULTIPLIER * DECO_MULTIPLIER) * LATE_LINE_LENGTH[0] * (1.0 + LATE_LINE_MULTIPLIER);
 	totalSamples += CalcLineLength(length, totalSamples, frequency, &mDecorrelator);
 
 	// The late all-pass lines.
@@ -396,7 +408,7 @@ void ReverbEffect::allocLines(quint32 frequency)
 
 	// The late delay lines are calculated from the lowest reverb density.
 	for(index = 0; index < 4; index++) {
-		length = LATE_LINE_LENGTH[index] * (1.0f + LATE_LINE_MULTIPLIER);
+		length = LATE_LINE_LENGTH[index] * (1.0 + LATE_LINE_MULTIPLIER);
 		totalSamples += CalcLineLength(length, totalSamples, frequency, &mLate.mDelay[index]);
 	}
 
@@ -422,100 +434,107 @@ void ReverbEffect::allocLines(quint32 frequency)
 
 	// Clear the sample buffer.
 	for(index = 0; index < mTotalSamples; index++) {
-		mSampleBuffer[index] = 0.0f;
+		mSampleBuffer[index] = 0.0;
 	}
 }
 
 // Calculate a decay coefficient given the length of each cycle and the time until the decay reaches -60 dB.
 static inline qreal CalcDecayCoeff(qreal length, qreal decayTime)
 {
-	return powf(0.001f/*-60 dB*/, length/decayTime);
+	OC_FUNCTIONGATE();
+	//-60 dB
+	return std::pow(0.001, length/decayTime);
 }
 
 // Calculate a decay length from a coefficient and the time until the decay reaches -60 dB.
 static inline qreal CalcDecayLength(qreal coeff, qreal decayTime)
 {
-	return log10f(coeff) * decayTime / log10f(0.001f)/*-60 dB*/;
+	OC_FUNCTIONGATE();
+	//-60 dB
+	return std::log10(coeff) * decayTime / std::log10(0.001);
 }
 
 // Calculate an attenuation to be applied to the input of any echo models to
 // compensate for modal density and decay time.
 static inline qreal CalcDensityGain(qreal a)
 {
-	/* The energy of a signal can be obtained by finding the area under the
-	 * squared signal.  This takes the form of Sum(x_n^2), where x is the
-	 * amplitude for the sample n.
-	 *
-	 * Decaying feedback matches exponential decay of the form Sum(a^n),
-	 * where a is the attenuation coefficient, and n is the sample.  The area
-	 * under this decay curve can be calculated as:  1 / (1 - a).
-	 *
-	 * Modifying the above equation to find the squared area under the curve
-	 * (for energy) yields:  1 / (1 - a^2).  Input attenuation can then be
-	 * calculated by inverting the square root of this approximation,
-	 * yielding:  1 / sqrt(1 / (1 - a^2)), simplified to: sqrt(1 - a^2).
-	 */
-	return sqrtf(1.0f - (a * a));
+	OC_FUNCTIONGATE();
+	// The energy of a signal can be obtained by finding the area under the
+	// squared signal.  This takes the form of Sum(x_n^2), where x is the
+	// amplitude for the sample n.
+	//
+	// Decaying feedback matches exponential decay of the form Sum(a^n),
+	// where a is the attenuation coefficient, and n is the sample.  The area
+	// under this decay curve can be calculated as:  1 / (1 - a).
+	//
+	// Modifying the above equation to find the squared area under the curve
+	// (for energy) yields:  1 / (1 - a^2).  Input attenuation can then be
+	// calculated by inverting the square root of this approximation,
+	// yielding:  1 / sqrt(1 / (1 - a^2)), simplified to: sqrt(1 - a^2).
+
+	return std::sqrt(1.0 - (a * a));
 }
 
 // Calculate the mixing matrix coefficients given a diffusion factor.
 static inline void CalcMatrixCoeffs(qreal diffusion, qreal *x, qreal *y)
 {
+	OC_FUNCTIONGATE();
 	qreal n, t;
 
 	// The matrix is of order 4, so n is sqrt (4 - 1).
-	n = sqrtf(3.0f);
-	t = diffusion * atanf(n);
+	n = std::sqrt(3.0);
+	t = diffusion * std::atan(n);
 
 	// Calculate the first mixing matrix coefficient.
-	*x = cosf(t);
+	*x = std::cos(t);
 	// Calculate the second mixing matrix coefficient.
-	*y = sinf(t) / n;
+	*y = std::sin(t) / n;
 }
 
 // Calculate the limited HF ratio for use with the late reverb low-pass filters.
 static qreal CalcLimitedHfRatio(qreal hfRatio, qreal airAbsorptionGainHF, qreal decayTime)
 {
+	OC_FUNCTIONGATE();
 	qreal limitRatio;
 
-	/* Find the attenuation due to air absorption in dB (converting delay
-	 * time to meters using the speed of sound).  Then reversing the decay
-	 * equation, solve for HF ratio.  The delay length is cancelled out of
-	 * the equation, so it can be calculated once for all lines.
-	 */
-	limitRatio = 1.0f / (CalcDecayLength(airAbsorptionGainHF, decayTime) * SPEEDOFSOUNDMETRESPERSEC);
-	/* Using the limit calculated above, apply the upper bound to the HF
-	 * ratio. Also need to limit the result to a minimum of 0.1, just like the
-	 * HF ratio parameter. */
-	return clampf(limitRatio, 0.1f, hfRatio);
+	// Find the attenuation due to air absorption in dB (converting delay
+	// time to meters using the speed of sound).  Then reversing the decay
+	// equation, solve for HF ratio.  The delay length is cancelled out of
+	// the equation, so it can be calculated once for all lines.
+	limitRatio = 1.0 / (CalcDecayLength(airAbsorptionGainHF, decayTime) * SPEEDOFSOUNDMETRESPERSEC);
+	// Using the limit calculated above, apply the upper bound to the HF
+	// ratio. Also need to limit the result to a minimum of 0.1, just like the
+	// HF ratio parameter.
+	return qBound(0.1, limitRatio, hfRatio);
 }
 
 // Calculate the coefficient for a HF (and eventually LF) decay damping filter.
 static inline qreal CalcDampingCoeff(qreal hfRatio, qreal length, qreal decayTime, qreal decayCoeff, qreal cw)
 {
+	OC_FUNCTIONGATE();
 	qreal coeff, g;
 
 	// Eventually this should boost the high frequencies when the ratio
 	// exceeds 1.
-	coeff = 0.0f;
-	if (hfRatio < 1.0f) {
+	coeff = 0.0;
+	if (hfRatio < 1.0) {
 		// Calculate the low-pass coefficient by dividing the HF decay
 		// coefficient by the full decay coefficient.
 		g = CalcDecayCoeff(length, decayTime * hfRatio) / decayCoeff;
 
 		// Damping is done with a 1-pole filter, so g needs to be squared.
 		g *= g;
-		if(g < 0.9999f) { /* 1-epsilon */
-			/* Be careful with gains < 0.001, as that causes the coefficient
-			 * head towards 1, which will flatten the signal. */
-			g = maxf(g, 0.001f);
-			coeff = (1 - g*cw - sqrtf(2*g*(1-cw) - g*g*(1 - cw*cw))) /
+		if(g < 0.9999) { // 1-epsilon
+			// Be careful with gains < 0.001, as that causes the coefficient
+			// head towards 1, which will flatten the signal.
+			g = maxf(g, 0.001);
+			coeff = (1 - g*cw - std::sqrt(2*g*(1-cw) - g*g*(1 - cw*cw))) /
 					(1 - g);
 		}
 
 		// Very low decay times will produce minimal output, so apply an
 		// upper bound to the coefficient.
-		coeff = minf(coeff, 0.98f);
+		coeff = std::min(coeff, 0.98);
 	}
 	return coeff;
 }
@@ -525,35 +544,36 @@ static inline qreal CalcDampingCoeff(qreal hfRatio, qreal length, qreal decayTim
 // The downswing will sound stronger than the upswing.
 void ReverbEffect::updateModulator(qreal modTime, qreal modDepth, quint32 frequency)
 {
+	OC_METHODGATE();
 	quint32 range;
 
-	/* Modulation is calculated in two parts.
-	 *
-	 * The modulation time effects the sinus applied to the change in
-	 * frequency.  An index out of the current time range (both in samples)
-	 * is incremented each sample.  The range is bound to a reasonable
-	 * minimum (1 sample) and when the timing changes, the index is rescaled
-	 * to the new range (to keep the sinus consistent).
-	 */
+	// Modulation is calculated in two parts.
+	//
+	// The modulation time effects the sinus applied to the change in
+	// frequency.  An index out of the current time range (both in samples)
+	// is incremented each sample.  The range is bound to a reasonable
+	// minimum (1 sample) and when the timing changes, the index is rescaled
+	// to the new range (to keep the sinus consistent).
+
 	range = maxu(Truncate(modTime*frequency), 1);
-	mModulator.mIndex = (quint32)(mModulator.mIndex * (uint64_t)range / mModulator.mRange);
+	mModulator.mIndex = static_cast<quint32>(mModulator.mIndex * static_cast<uint64_t>(range) / mModulator.mRange);
 	mModulator.mRange = range;
 
-	/* The modulation depth effects the amount of frequency change over the
-	 * range of the sinus.  It needs to be scaled by the modulation time so
-	 * that a given depth produces a consistent change in frequency over all
-	 * ranges of time.  Since the depth is applied to a sinus value, it needs
-	 * to be halfed once for the sinus range and again for the sinus swing
-	 * in time (half of it is spent decreasing the frequency, half is spent
-	 * increasing it).
-	 */
-	mModulator.mDepth = modDepth * MODULATION_DEPTH_COEFF * modTime / 2.0f /
-						2.0f * frequency;
+	// The modulation depth effects the amount of frequency change over the
+	// range of the sinus.  It needs to be scaled by the modulation time so
+	// that a given depth produces a consistent change in frequency over all
+	// ranges of time.  Since the depth is applied to a sinus value, it needs
+	// to be halfed once for the sinus range and again for the sinus swing
+	// in time (half of it is spent decreasing the frequency, half is spent
+	// increasing it).
+
+	mModulator.mDepth = modDepth * MODULATION_DEPTH_COEFF * modTime / 2.0 / 2.0 * frequency;
 }
 
 // Update the offsets for the initial effect delay line.
 void ReverbEffect::updateDelayLine(qreal earlyDelay, qreal lateDelay, quint32 frequency)
 {
+	OC_METHODGATE();
 	// Calculate the initial delay taps.
 	mDelayTap[0] = Truncate(earlyDelay * frequency);
 	mDelayTap[1] = Truncate((earlyDelay + lateDelay) * frequency);
@@ -562,36 +582,37 @@ void ReverbEffect::updateDelayLine(qreal earlyDelay, qreal lateDelay, quint32 fr
 // Update the early reflections gain and line coefficients.
 void ReverbEffect::updateEarlyLines(qreal reverbGain, qreal earlyGain, qreal lateDelay)
 {
+	OC_METHODGATE();
 	quint32 index;
 
 	// Calculate the early reflections gain (from the master effect gain, and
 	// reflections gain parameters) with a constant attenuation of 0.5.
-	mEarly.mGain = 0.5f * reverbGain * earlyGain;
+	mEarly.mGain = 0.5 * reverbGain * earlyGain;
 
 	// Calculate the gain (coefficient) for each early delay line using the
 	// late delay time.  This expands the early reflections to the start of
 	// the late reverb.
-	for(index = 0; index < 4; index++)
-		mEarly.mCoeff[index] = CalcDecayCoeff(EARLY_LINE_LENGTH[index],
-											  lateDelay);
+	for(index = 0; index < 4; index++) {
+		mEarly.mCoeff[index] = CalcDecayCoeff(EARLY_LINE_LENGTH[index], lateDelay);
+	}
 }
 
 // Update the offsets for the decorrelator line.
 void ReverbEffect::updateDecorrelator(qreal density, quint32 frequency)
 {
+	OC_METHODGATE();
 	quint32 index;
 	qreal length;
 
-	/* The late reverb inputs are decorrelated to smooth the reverb tail and
-	 * reduce harsh echos.  The first tap occurs immediately, while the
-	 * remaining taps are delayed by multiples of a fraction of the smallest
-	 * cyclical delay time.
-	 *
-	 * offset[index] = (FRACTION (MULTIPLIER^index)) smallest_delay
-	 */
+	// The late reverb inputs are decorrelated to smooth the reverb tail and
+	// reduce harsh echos.  The first tap occurs immediately, while the
+	// remaining taps are delayed by multiples of a fraction of the smallest
+	// cyclical delay time.
+	//
+	// offset[index] = (FRACTION (MULTIPLIER^index)) smallest_delay
+
 	for(index = 0; index < 3; index++) {
-		length = (DECO_FRACTION * powf(DECO_MULTIPLIER, (qreal)index)) *
-				 LATE_LINE_LENGTH[0] * (1.0f + (density * LATE_LINE_MULTIPLIER));
+		length = (DECO_FRACTION * std::pow(DECO_MULTIPLIER, static_cast<qreal>(index))) * LATE_LINE_LENGTH[0] * (1.0 + (density * LATE_LINE_MULTIPLIER));
 		mDecoTap[index] = Truncate(length * frequency);
 	}
 }
@@ -599,38 +620,38 @@ void ReverbEffect::updateDecorrelator(qreal density, quint32 frequency)
 // Update the late reverb gains, line lengths, and line coefficients.
 void ReverbEffect::updateLateLines(qreal reverbGain, qreal lateGain, qreal xMix, qreal density, qreal decayTime, qreal diffusion, qreal hfRatio, qreal cw, quint32 frequency)
 {
+	OC_METHODGATE();
 	qreal length;
 	quint32 index;
 
-	/* Calculate the late reverb gain (from the master effect gain, and late
-	 * reverb gain parameters).  Since the output is tapped prior to the
-	 * application of the next delay line coefficients, this gain needs to be
-	 * attenuated by the 'x' mixing matrix coefficient as well.
-	 */
+	// Calculate the late reverb gain (from the master effect gain, and late
+	// reverb gain parameters).  Since the output is tapped prior to the
+	// application of the next delay line coefficients, this gain needs to be
+	// attenuated by the 'x' mixing matrix coefficient as well.
+
 	mLate.mGain = reverbGain * lateGain * xMix;
 
-	/* To compensate for changes in modal density and decay time of the late
-	 * reverb signal, the input is attenuated based on the maximal energy of
-	 * the outgoing signal.  This approximation is used to keep the apparent
-	 * energy of the signal equal for all ranges of density and decay time.
-	 *
-	 * The average length of the cyclcical delay lines is used to calculate
-	 * the attenuation coefficient.
-	 */
-	length = (LATE_LINE_LENGTH[0] + LATE_LINE_LENGTH[1] +
-			  LATE_LINE_LENGTH[2] + LATE_LINE_LENGTH[3]) / 4.0f;
-	length *= 1.0f + (density * LATE_LINE_MULTIPLIER);
+	// To compensate for changes in modal density and decay time of the late
+	// reverb signal, the input is attenuated based on the maximal energy of
+	// the outgoing signal.  This approximation is used to keep the apparent
+	// energy of the signal equal for all ranges of density and decay time.
+	//
+	// The average length of the cyclcical delay lines is used to calculate
+	// the attenuation coefficient.
+
+	length = (LATE_LINE_LENGTH[0] + LATE_LINE_LENGTH[1] + LATE_LINE_LENGTH[2] + LATE_LINE_LENGTH[3]) / 4.0;
+	length *= 1.0 + (density * LATE_LINE_MULTIPLIER);
 	mLate.mDensityGain = CalcDensityGain(CalcDecayCoeff(length, decayTime));
 
 	// Calculate the all-pass feed-back and feed-forward coefficient.
-	mLate.mApFeedCoeff = 0.5f * powf(diffusion, 2.0f);
+	mLate.mApFeedCoeff = 0.5 * std::pow(diffusion, 2.0);
 
 	for(index = 0; index < 4; index++) {
 		// Calculate the gain (coefficient) for each all-pass line.
 		mLate.mApCoeff[index] = CalcDecayCoeff(ALLPASS_LINE_LENGTH[index], decayTime);
 
 		// Calculate the length (in seconds) of each cyclical delay line.
-		length = LATE_LINE_LENGTH[index] * (1.0f + (density * LATE_LINE_MULTIPLIER));
+		length = LATE_LINE_LENGTH[index] * (1.0 + (density * LATE_LINE_MULTIPLIER));
 
 		// Calculate the delay offset for each cyclical delay line.
 		mLate.mOffset[index] = Truncate(length * frequency);
@@ -639,9 +660,7 @@ void ReverbEffect::updateLateLines(qreal reverbGain, qreal lateGain, qreal xMix,
 		mLate.mCoeff[index] = CalcDecayCoeff(length, decayTime);
 
 		// Calculate the damping coefficient for each low-pass filter.
-		mLate.mLpCoeff[index] =
-			CalcDampingCoeff(hfRatio, length, decayTime,
-							 mLate.mCoeff[index], cw);
+		mLate.mLpCoeff[index] = CalcDampingCoeff(hfRatio, length, decayTime, mLate.mCoeff[index], cw);
 
 		// Attenuate the cyclical line coefficients by the mixing coefficient
 		// (x).
@@ -652,6 +671,7 @@ void ReverbEffect::updateLateLines(qreal reverbGain, qreal lateGain, qreal xMix,
 // Update the echo gain, line offset, line coefficients, and mixing coefficients.
 void ReverbEffect::updateEchoLine(qreal reverbGain, qreal lateGain, qreal echoTime, qreal decayTime, qreal diffusion, qreal echoDepth, qreal hfRatio, qreal cw, quint32 frequency)
 {
+	OC_METHODGATE();
 	// Update the offset and coefficient for the echo delay line.
 	mEcho.mOffset = Truncate(echoTime * frequency);
 
@@ -663,7 +683,7 @@ void ReverbEffect::updateEchoLine(qreal reverbGain, qreal lateGain, qreal echoTi
 	mEcho.mDensityGain = CalcDensityGain(mEcho.mCoeff);
 
 	// Calculate the echo all-pass feed coefficient.
-	mEcho.mApFeedCoeff = 0.5f * powf(diffusion, 2.0f);
+	mEcho.mApFeedCoeff = 0.5 * std::pow(diffusion, 2.0);
 
 	// Calculate the echo all-pass attenuation coefficient.
 	mEcho.mApCoeff = CalcDecayCoeff(ECHO_ALLPASS_LENGTH, decayTime);
@@ -671,18 +691,19 @@ void ReverbEffect::updateEchoLine(qreal reverbGain, qreal lateGain, qreal echoTi
 	// Calculate the damping coefficient for each low-pass filter.
 	mEcho.mLpCoeff = CalcDampingCoeff(hfRatio, echoTime, decayTime, mEcho.mCoeff, cw);
 
-	/* Calculate the echo mixing coefficients.  The first is applied to the
-	 * echo itself.  The second is used to attenuate the late reverb when
-	 * echo depth is high and diffusion is low, so the echo is slightly
-	 * stronger than the decorrelated echos in the reverb tail.
-	 */
+	// Calculate the echo mixing coefficients.  The first is applied to the
+	// echo itself.  The second is used to attenuate the late reverb when
+	// echo depth is high and diffusion is low, so the echo is slightly
+	// stronger than the decorrelated echos in the reverb tail.
+
 	mEcho.mMixCoeff[0] = reverbGain * lateGain * echoDepth;
-	mEcho.mMixCoeff[1] = 1.0f - (echoDepth * 0.5f * (1.0f - diffusion));
+	mEcho.mMixCoeff[1] = 1.0 - (echoDepth * 0.5 * (1.0 - diffusion));
 }
 
 // Update the early and late 3D panning gains.
 void ReverbEffect::update3DPanning(const qreal *ReflectionsPan, const qreal *LateReverbPan, qreal Gain)
 {
+	OC_METHODGATE();
 	qreal earlyPan[3] = { ReflectionsPan[0], ReflectionsPan[1], -ReflectionsPan[2] };
 	qreal latePan[3] = { LateReverbPan[0], LateReverbPan[1], -LateReverbPan[2] };
 	qreal AmbientGains[OUTPUT_CHANNELS];
@@ -690,7 +711,7 @@ void ReverbEffect::update3DPanning(const qreal *ReflectionsPan, const qreal *Lat
 	qreal length, invlen;
 	quint32 i;
 
-	computeAmbientGains(1.4142f, AmbientGains);
+	computeAmbientGains(1.4142, AmbientGains);
 
 	length = earlyPan[0]*earlyPan[0] + earlyPan[1]*earlyPan[1] + earlyPan[2]*earlyPan[2];
 	if(!(length > FLT_EPSILON)) {
@@ -698,13 +719,13 @@ void ReverbEffect::update3DPanning(const qreal *ReflectionsPan, const qreal *Lat
 			mEarly.mPanGain[i] = AmbientGains[i] * Gain;
 		}
 	} else {
-		invlen = 1.0f / sqrtf(length);
+		invlen = 1.0 / std::sqrt(length);
 		earlyPan[0] *= invlen;
 		earlyPan[1] *= invlen;
 		earlyPan[2] *= invlen;
 
-		length = minf(length, 1.0f);
-		computeDirectionalGains(earlyPan, 1.4142f, DirGains);
+		length = std::min(length, 1.0);
+		computeDirectionalGains(earlyPan, 1.4142, DirGains);
 		for(i = 0; i < OUTPUT_CHANNELS; i++) {
 			mEarly.mPanGain[i] = lerp(AmbientGains[i], DirGains[i], length) * Gain;
 		}
@@ -716,13 +737,13 @@ void ReverbEffect::update3DPanning(const qreal *ReflectionsPan, const qreal *Lat
 			mLate.mPanGain[i] = AmbientGains[i] * Gain;
 		}
 	} else {
-		invlen = 1.0f / sqrtf(length);
+		invlen = 1.0 / std::sqrt(length);
 		latePan[0] *= invlen;
 		latePan[1] *= invlen;
 		latePan[2] *= invlen;
 
-		length = minf(length, 1.0f);
-		computeDirectionalGains(latePan, 1.4142f, DirGains);
+		length = std::min(length, 1.0);
+		computeDirectionalGains(latePan, 1.4142, DirGains);
 		for(i = 0; i < OUTPUT_CHANNELS; i++) {
 			mLate.mPanGain[i] = lerp(AmbientGains[i], DirGains[i], length) * Gain;
 		}
@@ -732,27 +753,30 @@ void ReverbEffect::update3DPanning(const qreal *ReflectionsPan, const qreal *Lat
 
 void ReverbEffect::Update(int frequency)
 {
+	OC_METHODGATE();
 	qreal lfscale, hfscale, hfRatio;
 	qreal cw, x, y;
 
+	quint32 freq=static_cast<quint32>(frequency);
+
 	// Calculate the master low-pass filter (from the master effect HF gain).
 	hfscale = settings.HFReference / frequency;
-	mLpFilter.setParams(Filter_HighShelf, settings.GainHF, hfscale, 0.0f);
+	mLpFilter.setParams(Filter_HighShelf, settings.GainHF, hfscale, 0.0);
 
 	lfscale = settings.LFReference / frequency;
-	mHpFilter.setParams(Filter_LowShelf, settings.GainLF, lfscale, 0.0f);
+	mHpFilter.setParams(Filter_LowShelf, settings.GainLF, lfscale, 0.0);
 
 	// Update the modulator line.
-	updateModulator(settings.ModulationTime, settings.ModulationDepth, frequency);
+	updateModulator(settings.ModulationTime, settings.ModulationDepth, freq);
 
 	// Update the initial effect delay.
-	updateDelayLine(settings.ReflectionsDelay, settings.LateReverbDelay, frequency);
+	updateDelayLine(settings.ReflectionsDelay, settings.LateReverbDelay, freq);
 
 	// Update the early lines.
 	updateEarlyLines(settings.Gain, settings.ReflectionsGain, settings.LateReverbDelay);
 
 	// Update the decorrelator.
-	updateDecorrelator(settings.Density, frequency);
+	updateDecorrelator(settings.Density, freq);
 
 	// Get the mixing matrix coefficients (x and y).
 	CalcMatrixCoeffs(settings.Diffusion, &x, &y);
@@ -763,16 +787,16 @@ void ReverbEffect::Update(int frequency)
 	// based on the air absorption parameter.
 	hfRatio = settings.DecayHFRatio;
 
-	if(settings.DecayHFLimit && settings.AirAbsorptionGainHF < 1.0f) {
+	if(settings.DecayHFLimit && settings.AirAbsorptionGainHF < 1.0) {
 		hfRatio = CalcLimitedHfRatio(hfRatio, settings.AirAbsorptionGainHF, settings.DecayTime);
 	}
 
-	cw = cosf(F_2PI * hfscale);
+	cw = std::cos(F_2PI * hfscale);
 	// Update the late lines.
-	updateLateLines(settings.Gain, settings.LateReverbGain, x, settings.Density, settings.DecayTime, settings.Diffusion, hfRatio, cw, frequency);
+	updateLateLines(settings.Gain, settings.LateReverbGain, x, settings.Density, settings.DecayTime, settings.Diffusion, hfRatio, cw, freq);
 
 	// Update the echo line.
-	updateEchoLine(settings.Gain, settings.LateReverbGain, settings.EchoTime, settings.DecayTime, settings.Diffusion, settings.EchoDepth, hfRatio, cw, frequency);
+	updateEchoLine(settings.Gain, settings.LateReverbGain, settings.EchoTime, settings.DecayTime, settings.Diffusion, settings.EchoDepth, hfRatio, cw, freq);
 
 	// Update early and late 3D panning.
 	update3DPanning(settings.ReflectionsPan, settings.LateReverbPan, ReverbBoost);
@@ -781,13 +805,47 @@ void ReverbEffect::Update(int frequency)
 
 static qreal eaxDbToAmp(qreal eaxDb)
 {
-	qreal dB = eaxDb / 2000.0f;
-	return pow(10.0f, dB);
+	OC_FUNCTIONGATE();
+	qreal dB = eaxDb / 2000.0;
+	return std::pow(10.0, dB);
 }
 
 
-void ReverbEffect::LoadPreset(int environment, qreal environmentSize, qreal environmentDiffusion, int room, int roomHF, int roomLF, qreal decayTime, qreal decayHFRatio, qreal decayLFRatio, int reflections, qreal reflectionsDelay, qreal reflectionsPanX, qreal reflectionsPanY, qreal reflectionsPanZ, int reverb, qreal reverbDelay, qreal reverbPanX, qreal reverbPanY, qreal reverbPanZ, qreal echoTime, qreal echoDepth, qreal modulationTime, qreal modulationDepth, qreal airAbsorptionHF, qreal hfReference, qreal lfReference, qreal roomRolloffFactor, int flags)
+void ReverbEffect::LoadPreset(
+	int environment
+	, qreal environmentSize
+	, qreal environmentDiffusion
+	, int room
+	, int roomHF
+	, int roomLF
+	, qreal decayTime
+	, qreal decayHFRatio
+	, qreal decayLFRatio
+	, int reflections
+	, qreal reflectionsDelay
+	, qreal reflectionsPanX
+	, qreal reflectionsPanY
+	, qreal reflectionsPanZ
+	, int reverb
+	, qreal reverbDelay
+	, qreal reverbPanX
+	, qreal reverbPanY
+	, qreal reverbPanZ
+	, qreal echoTime
+	, qreal echoDepth
+	, qreal modulationTime
+	, qreal modulationDepth
+	, qreal airAbsorptionHF
+	, qreal hfReference
+	, qreal lfReference
+	, qreal roomRolloffFactor
+	, int flags)
+
 {
+	OC_METHODGATE();
+	Q_UNUSED(environment);
+	Q_UNUSED(environmentSize);
+	Q_UNUSED(flags);
 	ReverbSettings set;
 	set.Density = 1.0f; // todo, currently default
 	set.Diffusion = environmentDiffusion;
@@ -823,6 +881,7 @@ void ReverbEffect::LoadPreset(int environment, qreal environmentSize, qreal envi
 
 void ReverbEffect::LoadPreset(ReverbSettings set)
 {
+	OC_METHODGATE();
 	settings=set;
 	settings.correct();
 }
@@ -834,94 +893,96 @@ ReverbEffect::ReverbEffect()
 	, mDecoTap{0,0,0}
 	, mOffset(0)
 {
+	OC_METHODGATE();
 
 }
 
-void ReverbEffect::init(quint32 frequency)
+void ReverbEffect::init(int frequency)
 {
-	ambiCoeffs[0][0] = 0.7071f;
-	ambiCoeffs[0][1] = 0.5f;
-	ambiCoeffs[0][2] = 0.0f;
-	ambiCoeffs[0][3] = 0.0f;
+	OC_METHODGATE();
+	ambiCoeffs[0][0] = 0.7071;
+	ambiCoeffs[0][1] = 0.5;
+	ambiCoeffs[0][2] = 0.0;
+	ambiCoeffs[0][3] = 0.0;
 
-	ambiCoeffs[1][0] = 0.7071f;
-	ambiCoeffs[1][1] = -0.5f;
-	ambiCoeffs[2][2] = 0.0f;
-	ambiCoeffs[3][3] = 0.0f;
+	ambiCoeffs[1][0] = 0.7071;
+	ambiCoeffs[1][1] = -0.5;
+	ambiCoeffs[2][2] = 0.0;
+	ambiCoeffs[3][3] = 0.0;
 
 	quint32 index=0;
 
 	mTotalSamples = 0;
-	mSampleBuffer = NULL;
+	mSampleBuffer = nullptr;
 
 	mLpFilter.clear();
 	mHpFilter.clear();
 
 	mModulator.mDelay.mMask = 0;
-	mModulator.mDelay.mLine = NULL;
+	mModulator.mDelay.mLine = nullptr;
 	mModulator.mIndex = 0;
 	mModulator.mRange = 1;
-	mModulator.mDepth = 0.0f;
-	mModulator.mCoeff = 0.0f;
-	mModulator.mFilter = 0.0f;
+	mModulator.mDepth = 0.0;
+	mModulator.mCoeff = 0.0;
+	mModulator.mFilter = 0.0;
 
 	mDelay.mMask = 0;
-	mDelay.mLine = NULL;
+	mDelay.mLine = nullptr;
 	mDelayTap[0] = 0;
 	mDelayTap[1] = 0;
 
-	mEarly.mGain = 0.0f;
+	mEarly.mGain = 0.0;
 	for(index = 0; index < 4; index++) {
-		mEarly.mCoeff[index] = 0.0f;
+		mEarly.mCoeff[index] = 0.0;
 		mEarly.mDelay[index].mMask = 0;
-		mEarly.mDelay[index].mLine = NULL;
+		mEarly.mDelay[index].mLine = nullptr;
 		mEarly.mOffset[index] = 0;
 	}
 
 	mDecorrelator.mMask = 0;
-	mDecorrelator.mLine = NULL;
+	mDecorrelator.mLine = nullptr;
 	mDecoTap[0] = 0;
 	mDecoTap[1] = 0;
 	mDecoTap[2] = 0;
 
-	mLate.mGain = 0.0f;
-	mLate.mDensityGain = 0.0f;
-	mLate.mApFeedCoeff = 0.0f;
-	mLate.mMixCoeff = 0.0f;
+	mLate.mGain = 0.0;
+	mLate.mDensityGain = 0.0;
+	mLate.mApFeedCoeff = 0.0;
+	mLate.mMixCoeff = 0.0;
 	for(index = 0; index < 4; index++) {
-		mLate.mApCoeff[index] = 0.0f;
+		mLate.mApCoeff[index] = 0.0;
 		mLate.mApDelay[index].mMask = 0;
-		mLate.mApDelay[index].mLine = NULL;
+		mLate.mApDelay[index].mLine = nullptr;
 		mLate.mApOffset[index] = 0;
 
-		mLate.mCoeff[index] = 0.0f;
+		mLate.mCoeff[index] = 0.0;
 		mLate.mDelay[index].mMask = 0;
-		mLate.mDelay[index].mLine = NULL;
+		mLate.mDelay[index].mLine = nullptr;
 		mLate.mOffset[index] = 0;
 
-		mLate.mLpCoeff[index] = 0.0f;
-		mLate.mLpSample[index] = 0.0f;
+		mLate.mLpCoeff[index] = 0.0;
+		mLate.mLpSample[index] = 0.0;
 	}
 
 	for(index = 0; index < OUTPUT_CHANNELS; index++) {
-		mEarly.mPanGain[index] = 0.0f;
-		mLate.mPanGain[index] = 0.0f;
+		mEarly.mPanGain[index] = 0.0;
+		mLate.mPanGain[index] = 0.0;
 	}
 
-	mEcho.mDensityGain = 0.0f;
+	mEcho.mDensityGain = 0.0;
 	mEcho.mDelay.mMask = 0;
-	mEcho.mDelay.mLine = NULL;
+	mEcho.mDelay.mLine = nullptr;
 	mEcho.mApDelay.mMask = 0;
-	mEcho.mApDelay.mLine = NULL;
-	mEcho.mCoeff = 0.0f;
-	mEcho.mApFeedCoeff = 0.0f;
-	mEcho.mApCoeff = 0.0f;
+	mEcho.mApDelay.mLine = nullptr;
+	mEcho.mCoeff = 0.0;
+	mEcho.mApFeedCoeff = 0.0;
+	mEcho.mApCoeff = 0.0;
 	mEcho.mOffset = 0;
 	mEcho.mApOffset = 0;
-	mEcho.mLpCoeff = 0.0f;
-	mEcho.mLpSample = 0.0f;
-	mEcho.mMixCoeff[0] = 0.0f;
-	mEcho.mMixCoeff[1] = 0.0f;
+	mEcho.mLpCoeff = 0.0;
+	mEcho.mLpSample = 0.0;
+	mEcho.mMixCoeff[0] = 0.0;
+	mEcho.mMixCoeff[1] = 0.0;
 
 	mOffset = 0;
 
@@ -954,14 +1015,13 @@ void ReverbEffect::init(quint32 frequency)
 	settings.DecayHFLimit = EAXREVERB_DEFAULT_DECAY_HFLIMIT;
 
 	// Allocate the delay lines.
-	allocLines(frequency);
+	allocLines(static_cast<quint32>(frequency));
 
 	// Calculate the modulation filter coefficient.  Notice that the exponent
 	// is calculated given the current sample rate.  This ensures that the
 	// resulting filter response over time is consistent across all sample
 	// rates.
-	mModulator.mCoeff = powf(MODULATION_FILTER_COEFF,
-							 MODULATION_FILTER_CONST / frequency);
+	mModulator.mCoeff = std::pow(MODULATION_FILTER_COEFF, MODULATION_FILTER_CONST / frequency);
 
 	// The early reflection and late all-pass filter line lengths are static,
 	// so their offsets only need to be calculated once.
@@ -978,6 +1038,7 @@ void ReverbEffect::init(quint32 frequency)
 
 ReverbEffect::~ReverbEffect()
 {
+	OC_METHODGATE();
 	delete[] mSampleBuffer;
 	mSampleBuffer =nullptr;
 }

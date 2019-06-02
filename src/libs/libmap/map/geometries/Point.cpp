@@ -24,6 +24,9 @@
 */
 
 #include "map/geometries/Point.hpp"
+
+#include <QWidget>
+
 namespace qmapcontrol
 {
 Point::Point()
@@ -32,7 +35,7 @@ Point::Point(const Point& point)
 	:Geometry(point.name()), X(point.longitude()), Y(point.latitude())
 {
 	visible = point.isVisible();
-	mywidget = 0;
+	mywidget = nullptr;
 	mypixmap = QPixmap();
 	mypen = point.mypen;
 	homelevel = -1;
@@ -44,7 +47,7 @@ Point::Point(qreal x, qreal y, QString name, enum Alignment alignment)
 	: Geometry(name), X(x), Y(y), myalignment(alignment)
 {
 	GeometryType = "Point";
-	mywidget = 0;
+	mywidget = nullptr;
 	mypixmap = QPixmap();
 	visible = true;
 	homelevel = -1;
@@ -64,7 +67,7 @@ Point::Point(qreal x, qreal y, QWidget* widget, QString name, enum Alignment ali
 	minsize = QSize(-1,-1);
 	maxsize = QSize(-1,-1);
 
-	if(mywidget!=0) {
+	if(nullptr!=mywidget) {
 		mywidget->show();
 	}
 }
@@ -72,7 +75,7 @@ Point::Point(qreal x, qreal y, QPixmap pixmap, QString name, enum Alignment alig
 	: Geometry(name), X(x), Y(y), mypixmap(pixmap), myalignment(alignment)
 {
 	GeometryType = "Point";
-	mywidget = 0;
+	mywidget = nullptr;
 	visible = true;
 	size = pixmap.size();
 	homelevel = -1;
@@ -120,7 +123,7 @@ void Point::setPixmap( QPixmap qPixmap )
 void Point::setVisible(bool visible)
 {
 	this->visible = visible;
-	if (mywidget !=0) {
+	if (nullptr!=mywidget) {
 		mywidget->setVisible(visible);
 	}
 }
@@ -211,7 +214,7 @@ void Point::draw(QPainter* painter, const QSharedPointer<MapAdapter> mapadapter,
 			painter->drawPixmap(alignedtopleft.x(), alignedtopleft.y(), displaysize.width(), displaysize.height(), mypixmap);
 		}
 
-	} else if (mywidget!=0) {
+	} else if (nullptr != mywidget) {
 		drawWidget(mapadapter, offset);
 	}
 
@@ -225,7 +228,7 @@ void Point::drawWidget(const QSharedPointer<MapAdapter> mapadapter, const QPoint
 
 	QPoint alignedtopleft = alignedPoint(point);
 
-	if (mywidget!=0) {
+	if (nullptr != mywidget) {
 		mywidget->setGeometry(alignedtopleft.x(), alignedtopleft.y(), displaysize.width(), displaysize.height());
 	}
 }
@@ -308,8 +311,7 @@ bool Point::Touches(Point* click, const QSharedPointer<MapAdapter> mapadapter)
 
 void Point::setCoordinate(QPointF point)
 {
-	if ( X == point.x() &&
-			Y == point.y() ) {
+	if ( qFuzzyCompare(X, point.x()) && qFuzzyCompare(Y, point.y()) ) {
 		//no change, prevent unessessary update/redraw
 		return;
 	}

@@ -1,6 +1,6 @@
 ZBAR_TOP= $${SRCS}/libs/libzbar
 
-contains(DEFINES, USE_ZBAR){
+contains(DEFINES, OC_USE_LIB_ZBAR){
 
 HEADERS	+= \
 	$$ZBAR_TOP/zbar/c++/Decoder.h

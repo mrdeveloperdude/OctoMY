@@ -1,13 +1,11 @@
 #ifndef REMOTECOURIERSET_HPP
 #define REMOTECOURIERSET_HPP
 
-
-
 #include "comms/couriers/CourierSet.hpp"
-
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QDataStream>
-#include <QSharedPointer>
+
 
 class RemoteClient;
 
@@ -22,11 +20,15 @@ private:
 	QSharedPointer<AgentStateCourier> mAgentStateCourier;
 	QSharedPointer<SensorsCourier> mSensorsCourier;
 	QSharedPointer<BlobCourier> mBlobCourier;
-	RemoteClient & mRemoteClient;
+	QSharedPointer<RemoteClient> mRemoteClient;
 
 public:
-	explicit RemoteCourierSet(QString fullID, RemoteClient &cl);
+	explicit RemoteCourierSet();
 	virtual ~RemoteCourierSet();
+
+public:
+	void configure(QString fullID, QSharedPointer<RemoteClient> cl);
+
 
 public:
 
@@ -34,10 +36,5 @@ public:
 };
 
 
-#endif // REMOTECOURIERSET_HPP
-
-
-
-
-
-
+#endif
+// REMOTECOURIERSET_HPP

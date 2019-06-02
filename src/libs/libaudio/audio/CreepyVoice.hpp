@@ -8,7 +8,7 @@
 #include "Tremolo.hpp"
 
 
-#ifdef EXTERNAL_LIB_ESPEAK
+#ifdef OC_USE_LIB_EXT_ESPEAK
 #include "espeak/speak_lib.h"
 #endif
 
@@ -54,7 +54,7 @@ private:
 	void freeBuffer(CreepyBuffer *buf);
 	CreepyBuffer *getFreeBuffer(int numsamples);
 public:
-#ifdef EXTERNAL_LIB_ESPEAK
+#ifdef OC_USE_LIB_EXT_ESPEAK
 	void feed(short *wav, int numsamples, espeak_EVENT *events);
 #endif
 	bool isInitialized();

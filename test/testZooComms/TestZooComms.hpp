@@ -1,16 +1,18 @@
 #ifndef TESTZOOCOMMS_HPP
 #define TESTZOOCOMMS_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
-class TestZooComms:public QObject{
-		Q_OBJECT
+class TestZooComms:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void test();
+private slots:
+	void test();
 
 };
 
 
-#endif // TESTZOOCOMMS_HPP
+#endif
+// TESTZOOCOMMS_HPP

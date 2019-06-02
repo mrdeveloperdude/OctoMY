@@ -1,5 +1,6 @@
 include( standard.pri )
 include( optimization.pri )
+include( build_optimization.pri )
 include( warnings.pri )
 include( linkage.pri )
 include( protection.pri )
@@ -68,7 +69,7 @@ QT += concurrent
 QT += printsupport
 QT += openglextensions
 
-contains(DEFINES, USE_QT3D){
+contains(DEFINES, OC_USE_FEATURE_QT3D){
 	QT += 3dcore
 	QT += 3drenderer
 	QT += 3dinput
@@ -78,9 +79,9 @@ android{
 	QT += androidextras
 	#NOTE: Each individual project will look for her own android config (making it possible for each node to have separate adaptations
 	ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
-	contains(DEFINES, EXTERNAL_LIB_OPENCL){
+	contains(DEFINES, OC_USE_LIB_EXT_OPENCL){
 		warning("OpenCL support was enabled but is not supported in Android, so disabling it for now")
-		DEFINES -= EXTERNAL_LIB_OPENCL
+		DEFINES -= OC_USE_LIB_EXT_OPENCL
 	}
 }
 

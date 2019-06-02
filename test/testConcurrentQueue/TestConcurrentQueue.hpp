@@ -1,16 +1,20 @@
 #ifndef TESTCONCURRENTQUEUE_HPP
 #define TESTCONCURRENTQUEUE_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
+
 
 
 class TestConcurrentQueue:public QObject
 {
 	Q_OBJECT
+
 private slots:
-	void test();
+	void testActivation();
+	void testExecution();
 
 };
 
 
-#endif // TESTCONCURRENTQUEUE_HPP
+#endif
+// TESTCONCURRENTQUEUE_HPP

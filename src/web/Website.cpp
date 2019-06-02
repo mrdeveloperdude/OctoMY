@@ -1,15 +1,17 @@
 #include "Website.hpp"
 
-#include "utility/Standard.hpp"
-#include "utility/Utility.hpp"
-#include "utility/ScopedTimer.hpp"
+
+#include "uptime/MethodGate.hpp"
+#include "utility/time/ScopedTimer.hpp"
+#include "utility/string/String.hpp"
+#include "utility/file/File.hpp"
 #include "markdown/Markdown.hpp"
 
 #include "template/Mustache.cpp"
 
 
 #include <QDir>
-
+#include <QDebug>
 #include <QtConcurrent/QtConcurrent>
 
 
@@ -30,7 +32,7 @@ void Website::run()
 		return;
 	}
 	//auto &env=mAppContext->environment();
-	auto &opts=mAppContext->options();
+	auto &opts=mAppContext->commandLine();
 
 	QString outputDir=QDir::currentPath();
 	if(opts.isSet("output-dir")) {
@@ -81,13 +83,13 @@ void Website::run()
 												   //);
 												   , &partialLoader);
 				//markdown.process(
-				QString raw = utility::fileToString(source);
+				QString raw = utility::file::fileToString(source);
 				QString processed=renderer.render(raw, &context);
 				if(renderer.errorPos()>=0){
 					qWarning()<<"MUSTACHE ERROR: "<< renderer.errorPartial()<<": "<<renderer.error();
 				}
 				else{
-					utility::stringToFile(outFile, processed);
+					utility::file::stringToFile(outFile, processed);
 				}
 			} else {
 				qDebug()<<"ERROR: Output file path '"<<outFilePath<<"' did not exist or could not be created";

@@ -1,6 +1,6 @@
 #include "TestHashstore.hpp"
 
-#include "storage/Hashstore.hpp"
+#include "hashstore/Hashstore.hpp"
 
 // YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
 
@@ -31,16 +31,12 @@ void TestHashstore::test(){
 		qDebug()<<"BAT BEFORE: "<<QString::fromLatin1(ba_truth);
 		qDebug()<<"BA BEFORE:  "<<QString::fromLatin1(ba);
 		ba+=m;
-
 		ba_truth+=m;
 		rec0.put(ba);
 		QString trut="["+QString::fromLatin1(ba)+QStringLiteral("] vs. [")+QString::fromLatin1(ba_truth)+"]";
 		QVERIFY2(ba==ba_truth,trut.toStdString().c_str());
 	}
-
-
 }
-
 
 
 OC_TEST_MAIN(test, TestHashstore)

@@ -25,35 +25,42 @@
 
 #include "Layer.hpp"
 
+#include "uptime/MethodGate.hpp"
 
 namespace qmapcontrol
 {
+
 Layer::Layer()
-	:   visible(true),
-		mylayertype(MapLayer),
-		mapAdapter(nullptr),
-		takeevents(true),
-		myoffscreenViewport(QRect(0,0,0,0)),
-		m_ImageManager(0)
+	:   visible(true)
+	, mylayertype(MapLayer)
+	, mapAdapter(nullptr)
+	, takeevents(true)
+	, myoffscreenViewport(QRect(0,0,0,0))
+	, m_ImageManager(nullptr)
 {
+	OC_METHODGATE();
 }
+
 Layer::Layer(QString layername, QSharedPointer<MapAdapter> mapadapter, enum LayerType layertype, bool takeevents)
-	:   visible(true),
-		mylayername(layername),
-		mylayertype(layertype),
-		mapAdapter(mapadapter),
-		takeevents(takeevents),
-		myoffscreenViewport(QRect(0,0,0,0)),
-		m_ImageManager(0)
+	:   visible(true)
+	, mylayername(layername)
+	, mylayertype(layertype)
+	, mapAdapter(mapadapter)
+	, takeevents(takeevents)
+	, myoffscreenViewport(QRect(0,0,0,0))
+	, m_ImageManager(nullptr)
 {
+	OC_METHODGATE();
 }
 
 Layer::~Layer()
 {
+	OC_METHODGATE();
 }
 
 void Layer::setSize(QSize size)
 {
+	OC_METHODGATE();
 	this->size = size;
 	screenmiddle = QPoint(size.width()/2, size.height()/2);
 	emit(updateRequest());
@@ -61,32 +68,38 @@ void Layer::setSize(QSize size)
 
 QString Layer::layername() const
 {
+	OC_METHODGATE();
 	return mylayername;
 }
 
 QSharedPointer<MapAdapter> Layer::mapadapter()
 {
+	OC_METHODGATE();
 	return mapAdapter;
 }
 
 void Layer::setVisible(bool visible)
 {
+	OC_METHODGATE();
 	this->visible = visible;
 	emit(updateRequest());
 }
 
 QList<Geometry*>& Layer::getGeometries()
 {
+	OC_METHODGATE();
 	return geometries;
 }
 
 bool Layer::containsGeometry( Geometry* geometry )
 {
+	OC_METHODGATE();
 	return geometry && geometries.contains( geometry );
 }
 
 void Layer::sendGeometryToFront(Geometry *geometry)
 {
+	OC_METHODGATE();
 	if ( !geometry || !geometries.contains( geometry ) ) {
 		return;
 	}
@@ -97,6 +110,7 @@ void Layer::sendGeometryToFront(Geometry *geometry)
 
 void Layer::sendGeometryToBack(Geometry *geometry)
 {
+	OC_METHODGATE();
 	if ( !geometry || !geometries.contains( geometry ) ) {
 		return;
 	}
@@ -107,6 +121,7 @@ void Layer::sendGeometryToBack(Geometry *geometry)
 
 void Layer::addGeometry(Geometry* geom)
 {
+	OC_METHODGATE();
 	if ( !geom || containsGeometry( geom ) ) {
 		return;
 	}
@@ -120,6 +135,7 @@ void Layer::addGeometry(Geometry* geom)
 
 void Layer::removeGeometry(Geometry* geometry, bool qDeleteObject)
 {
+	OC_METHODGATE();
 	if ( !geometry ) {
 		return;
 	}
@@ -132,7 +148,7 @@ void Layer::removeGeometry(Geometry* geometry, bool qDeleteObject)
 			geometries.removeAll( geometry );
 			if (qDeleteObject) {
 				delete geo;
-				geo = 0;
+				geo = nullptr;
 			}
 		}
 	}
@@ -141,11 +157,12 @@ void Layer::removeGeometry(Geometry* geometry, bool qDeleteObject)
 
 void Layer::clearGeometries( bool qDeleteObject )
 {
+	OC_METHODGATE();
 	foreach(Geometry *geometry, geometries) {
 		disconnect(geometry);
 		if ( qDeleteObject ) {
 			delete geometry;
-			geometry = 0;
+			geometry = nullptr;
 		}
 	}
 	geometries.clear();
@@ -153,10 +170,12 @@ void Layer::clearGeometries( bool qDeleteObject )
 
 bool Layer::isVisible() const
 {
+	OC_METHODGATE();
 	return visible;
 }
 void Layer::zoomIn() const
 {
+	OC_METHODGATE();
 	if(!mapAdapter.isNull()) {
 		mapAdapter->zoom_in();
 	}
@@ -164,6 +183,7 @@ void Layer::zoomIn() const
 
 void Layer::zoomOut() const
 {
+	OC_METHODGATE();
 	if(!mapAdapter.isNull()) {
 		mapAdapter->zoom_out();
 	}
@@ -171,6 +191,7 @@ void Layer::zoomOut() const
 
 void Layer::mouseEvent(const QMouseEvent* evnt, const QPoint mapmiddle_px)
 {
+	OC_METHODGATE();
 	if (takesMouseEvents()) {
 		if ( geometries.size() > 0 &&
 				evnt->button() == Qt::LeftButton &&
@@ -194,19 +215,23 @@ void Layer::mouseEvent(const QMouseEvent* evnt, const QPoint mapmiddle_px)
 
 bool Layer::takesMouseEvents() const
 {
+	OC_METHODGATE();
 	return takeevents;
 }
 
 void Layer::drawYourImage(QPainter* painter, const QPoint mapmiddle_px) const
 {
+	OC_METHODGATE();
 	if (mylayertype == MapLayer) {
 		_draw(painter, mapmiddle_px);
 	}
 
 	drawYourGeometries(painter, QPoint(mapmiddle_px.x()-screenmiddle.x(), mapmiddle_px.y()-screenmiddle.y()), myoffscreenViewport);
 }
+
 void Layer::drawYourGeometries(QPainter* painter, const QPoint mapmiddle_px, QRect viewport) const
 {
+	OC_METHODGATE();
 	QPoint offset;
 	if (mylayertype == MapLayer) {
 		offset = mapmiddle_px;
@@ -226,11 +251,12 @@ void Layer::drawYourGeometries(QPainter* painter, const QPoint mapmiddle_px, QRe
 
 void Layer::_draw(QPainter* painter, const QPoint mapmiddle_px) const
 {
-	if ( m_ImageManager == 0 ) {
+	OC_METHODGATE();
+	if ( nullptr == m_ImageManager) {
 		return;
 	}
 
-	if(mapAdapter.isNull()){
+	if(mapAdapter.isNull()) {
 		return;
 	}
 
@@ -329,15 +355,17 @@ void Layer::_draw(QPainter* painter, const QPoint mapmiddle_px) const
 
 QRect Layer::offscreenViewport() const
 {
+	OC_METHODGATE();
 	return myoffscreenViewport;
 }
 
 void Layer::moveWidgets(const QPoint mapmiddle_px) const
 {
-	foreach( Geometry* geometry, geometries ) {
+	OC_METHODGATE();
+	for( Geometry* geometry: geometries ) {
 		if (geometry->GeometryType == "Point") {
 			Point* point = dynamic_cast<Point*>(geometry);
-			if (point !=0) {
+			if (nullptr!=point) {
 				QPoint topleft_relative = QPoint(mapmiddle_px-screenmiddle);
 				point->drawWidget(mapAdapter, topleft_relative);
 			}
@@ -347,17 +375,21 @@ void Layer::moveWidgets(const QPoint mapmiddle_px) const
 
 Layer::LayerType Layer::layertype() const
 {
+	OC_METHODGATE();
 	return mylayertype;
 }
 
 void Layer::setMapAdapter(QSharedPointer<MapAdapter> mapadapter)
 {
+	OC_METHODGATE();
 	mapAdapter = mapadapter;
 	emit(updateRequest());
 }
 
 void Layer::setImageManager(ImageManager *qImageManager)
 {
+	OC_METHODGATE();
 	m_ImageManager = qImageManager;
 }
+
 }

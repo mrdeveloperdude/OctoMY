@@ -1,14 +1,15 @@
 #include "TestStreamCodec.hpp"
 
 #include "video/codec/StreamCodec.hpp"
-#include "video/codec/widgets/StreamCodecWidget.hpp"
+#include "widgets/video/codec/StreamCodecWidget.hpp"
 
 #include "video/codec/ExpLUT.hpp"
-#include "utility/Utility.hpp"
 
+#include "utility/graphics/Graphics.hpp"
 
 #include <QPainter>
 #include <QRect>
+
 
 void TestStreamCodec::test()
 {
@@ -37,7 +38,7 @@ void TestStreamCodec::test()
 	connect(&stream, &StreamCodecWidget::trigger, this, [=]() {
 
 		qDebug()<<"TRIGGER";
-		QImage src=utility::randomImage(w,h);
+		QImage src=utility::graphics::randomImage(w,h);
 
 		QImage dst=codec_p->decode(codec_p->encode(src));
 		stream_p->setImage(src,0);
@@ -47,7 +48,6 @@ void TestStreamCodec::test()
 	while(stream.isVisible()) {
 		qApp->processEvents();
 	}
-
 }
 
 

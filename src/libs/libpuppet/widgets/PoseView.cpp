@@ -1,8 +1,6 @@
 #include "PoseView.hpp"
 
-#include "utility/Standard.hpp"
-
-
+#include "uptime/MethodGate.hpp"
 
 #include <QPen>
 #include <QPainter>
@@ -15,16 +13,17 @@ PoseView::PoseView(QWidget *parent)
 	: QWidget(parent)
 	, mPose(nullptr)
 {
-
+	OC_METHODGATE();
 }
 
 PoseView::~PoseView()
 {
-
+	OC_METHODGATE();
 }
 
 void PoseView::poseChanged(const Pose &pose)
 {
+	OC_METHODGATE();
 	mPose=&pose;
 	update();
 }
@@ -35,9 +34,9 @@ void PoseView::paintEvent(QPaintEvent *)
 
 	if(nullptr!=mPose) {
 		const QRectF r=rect();
-		const quint32 sz= mPose->size();
-		const qreal step=r.width()/(qreal)sz;
-		const qreal hueStep=1.0/(qreal)sz;
+		const quint32 sz= static_cast<quint32>(mPose->size());
+		const qreal step=r.width()/static_cast<qreal>(sz);
+		const qreal hueStep=1.0/static_cast<qreal>(sz);
 		const qreal margin=6.0;
 		QPainter painter(this);
 		painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);

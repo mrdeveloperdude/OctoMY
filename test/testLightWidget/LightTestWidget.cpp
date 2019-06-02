@@ -7,8 +7,6 @@
 #include <QDebug>
 
 
-
-
 LightTestWidget::LightTestWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::LightTestWidget)
@@ -31,8 +29,8 @@ LightTestWidget::LightTestWidget(QWidget *parent)
 			light->toggleLight();
 		}
 	});
-
 }
+
 
 void LightTestWidget::addLight(int x, int y,int w, int h)
 {
@@ -49,10 +47,12 @@ void LightTestWidget::addLight(int x, int y,int w, int h)
 	mLights << light;
 }
 
+
 LightTestWidget::~LightTestWidget()
 {
 	delete ui;
 }
+
 
 void LightTestWidget::on_pushButtonSelectColor_clicked()
 {
@@ -62,12 +62,14 @@ void LightTestWidget::on_pushButtonSelectColor_clicked()
 	}
 }
 
+
 void LightTestWidget::on_pushButtonLightOn_clicked()
 {
 	for(LightWidget *light: mLights) {
 		light->setLightOn(true);
 	}
 }
+
 
 void LightTestWidget::on_pushButtonLightOff_clicked()
 {
@@ -76,12 +78,14 @@ void LightTestWidget::on_pushButtonLightOff_clicked()
 	}
 }
 
+
 void LightTestWidget::on_pushButtonToggleLight_clicked()
 {
 	for(LightWidget *light: mLights) {
 		light->toggleLight();
 	}
 }
+
 
 void LightTestWidget::on_pushButtonBlink_toggled(bool checked)
 {

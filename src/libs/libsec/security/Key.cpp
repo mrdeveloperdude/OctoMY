@@ -2,7 +2,12 @@
 
 #include "KeyPrivate.hpp"
 
-#include "utility/Standard.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+#include "uptime/Assert.hpp"
+
+#include "utility/string/String.hpp"
+
 #include "SecurityConstantsPrivate.hpp"
 
 
@@ -20,7 +25,6 @@ d_ptr(OC_NEW KeyPrivate())
 	OC_ASSERT(nullptr!=d);
 	// NOTE: This is NOT initialized since this is default ctor with no data to go on
 }
-
 
 
 Key::Key( QVariantMap map, bool isPublic )
@@ -50,7 +54,6 @@ Key::Key( QString key, bool isPublic )
 	OC_ASSERT(nullptr!=d);
 	mInitialized=true;
 }
-
 
 
 Key::Key( quint32 bits )
@@ -84,7 +87,6 @@ Key::Key(KeyPrivate &dd)
 */
 
 
-
 Key::Key(const Key &other)
 	: d_ptr(OC_NEW KeyPrivate(
 				(!other.d_func()->mKey.isEmpty())
@@ -107,7 +109,6 @@ Key::Key(const Key &other)
 	mInitialized=true;
 }
 
-
 // NOTE: Used by swap()
 Key::Key(Key && other) : Key()
 {
@@ -120,6 +121,7 @@ Key::Key(Key && other) : Key()
 	}
 	OC_ASSERT(nullptr!=d);
 }
+
 
 Key::~Key()
 {
@@ -136,6 +138,7 @@ Key::~Key()
 	//qDebug()<<"virtual ~Key()";
 }
 
+
 Key & Key::operator=(Key other)
 {
 	OC_METHODGATE();
@@ -147,6 +150,7 @@ Key & Key::operator=(Key other)
 	swap(*this, other);
 	return *this;
 }
+
 
 bool Key::operator==(const Key &other) const
 {
@@ -173,8 +177,6 @@ void swap(Key& first, Key& second) //nothrow
 }
 
 
-
-
 QString Key::hash(QString input)
 {
 	return KeyPrivate::hash(input);
@@ -198,6 +200,7 @@ QString Key::key() const
 	return d->mKey;
 }
 
+
 QString Key::pubKey() const
 {
 	OC_METHODGATE();
@@ -205,6 +208,7 @@ QString Key::pubKey() const
 	OC_ASSERT(nullptr!=d);
 	return d->mPubKey;
 }
+
 
 QString Key::id()//NOTE no const please
 {
@@ -227,6 +231,7 @@ QString Key::id()//NOTE no const please
 	}
 }
 
+
 QString Key::describe()
 {
 	OC_METHODGATE();
@@ -242,12 +247,14 @@ int Key::kid() const
 	return d->mKID;
 }
 
+
 int Key::kct() const
 {
 	OC_METHODGATE();
 	const Q_D(Key);
 	return d->mKCT;
 }
+
 
 QVariantMap Key::toVariantMap(bool onlyPublic)
 {
@@ -261,6 +268,19 @@ QVariantMap Key::toVariantMap(bool onlyPublic)
 	return map;
 }
 
+
+QMap<QString, QString> Key::toMap(bool onlyPublic){
+	OC_METHODGATE();
+	QMap<QString, QString> map;
+	if(!onlyPublic) {
+		map["privateKey"]=key();
+	}
+	map["publicKey"]=pubKey();
+	map["id"]=id();
+	return map;
+}
+
+
 QString Key::toString()
 {
 	OC_METHODGATE();
@@ -268,6 +288,7 @@ QString Key::toString()
 	OC_ASSERT(nullptr!=d);
 	return "Key: "+id()+" priv="+(key().isEmpty()?"UNSET":"SET")+ (d->mValidPrivate?"(VALID)":"(INVALID)") +" pub="+(pubKey().isEmpty()?"UNSET":"SET")+ (d->mValidPublic?"(VALID)":"(INVALID)");
 }
+
 
 bool Key::isValid(bool onlyPublic)
 {
@@ -307,7 +328,6 @@ bool Key::hasPublic(bool thatIsValid)
 	return true;
 }
 
-
 // Sign message with our private key
 QByteArray Key::sign(const QByteArray &source)
 {
@@ -317,7 +337,6 @@ QByteArray Key::sign(const QByteArray &source)
 	return d->mPKI.sign(source, OCTOMY_KEY_HASH_POLAR);
 }
 
-
 // Verify signature with our pub-key
 bool Key::verify(const QByteArray &message, const QByteArray &signature)
 {
@@ -326,7 +345,6 @@ bool Key::verify(const QByteArray &message, const QByteArray &signature)
 	OC_ASSERT(nullptr!=d);
 	return (0==d->mPKI.verify(message, signature, OCTOMY_KEY_HASH_POLAR));
 }
-
 
 // Encrypt a message with out pub-key. Returns empty array as failure.
 // NOTE: This method is expensive, and is only intended for the purpose of processing small amounts of data. If you need to process larger amounts of data, consider using in conjunction with faster symetric encryption (pass the keys to use using RSA encryption and the text using symetric encryption)

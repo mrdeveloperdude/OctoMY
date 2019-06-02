@@ -1,13 +1,12 @@
 #include "TestCommsChannel.hpp"
 
-#include "../common/mock/MockCommsCarrier.hpp"
-#include "../common/Utilities.hpp"
+#include "mock/MockCommsCarrier.hpp"
+#include "mock/MockCourier.hpp"
+
+#include "Utility_test.hpp"
 
 #include "comms/PacketSendState.hpp"
 #include "comms/PacketReadState.hpp"
-
-#include "../common/mock/MockCourier.hpp"
-
 
 
 static QByteArray handshakeSynPacket(QSharedPointer<CommsSession> sessA, QString idB, SESSION_ID_TYPE localSessionID, SESSION_NONCE_TYPE synNonce)
@@ -30,6 +29,7 @@ static QByteArray handshakeSynPacket(QSharedPointer<CommsSession> sessA, QString
 	return handshakeSynPacket;
 }
 
+
 static QByteArray handshakeSynAckPacket(QSharedPointer<CommsSession> sessA, QString idB, SESSION_ID_TYPE localSessionID, SESSION_NONCE_TYPE synAckNonce, SESSION_NONCE_TYPE ackNonce)
 {
 	PacketSendState state;
@@ -51,6 +51,7 @@ static QByteArray handshakeSynAckPacket(QSharedPointer<CommsSession> sessA, QStr
 	return handshakeSynAckPacket;
 }
 
+
 static QByteArray handshakeAckPacket(QSharedPointer<CommsSession> sessA, QString idB, SESSION_ID_TYPE localSessionID, SESSION_NONCE_TYPE ackNonce)
 {
 	Q_UNUSED(localSessionID);
@@ -71,16 +72,12 @@ static QByteArray handshakeAckPacket(QSharedPointer<CommsSession> sessA, QString
 	return handshakeAckPacket;
 }
 
-
-
 /*
 Test CommsChannel with a mock carrier
 
 Allowes fine-grained control over when each event occurs which in turn allows for fine grained validity checks
 
 */
-
-
 
 
 void TestCommsChannel::testCommsMock()
@@ -273,8 +270,4 @@ void TestCommsChannel::testCommsMock()
 
 	testHeading("DELETING");
 	testWaitForEvents();
-
 }
-
-
-

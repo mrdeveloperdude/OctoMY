@@ -71,7 +71,11 @@ private:
 //TODO: Somehow encode desired speed, direction and more
 
 public:
-	AgentStateCourier(QDataStream *initialization, CommsChannel &comms, QObject *parent = nullptr);
+	explicit AgentStateCourier(QDataStream *initialization, QSharedPointer<CommsChannel> comms, QObject *parent = nullptr);
+	virtual	~AgentStateCourier() Q_DECL_OVERRIDE;
+
+public:
+
 
 
 
@@ -125,4 +129,5 @@ public:
 const QDebug &operator<<(QDebug &d, const AgentStateCourier &);
 
 
-#endif // AGENTSTATECOURIER_HPP
+#endif
+// AGENTSTATECOURIER_HPP

@@ -1,38 +1,40 @@
 #ifndef TESTNETWORKADDRESS_HPP
 #define TESTNETWORKADDRESS_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
-class TestNetworkAddress:public QObject{
-		Q_OBJECT
-	public:
-		explicit TestNetworkAddress();
-	private:
+class TestNetworkAddress:public QObject
+{
+	Q_OBJECT
 
-		const QHostAddress expectedEmptyAddress;
-		const quint16 expectedEmptyPort;
+public:
+	explicit TestNetworkAddress();
 
-		const QHostAddress expectedValidAddress;
-		const quint16 expectedValidPort;
+private:
+	const QHostAddress expectedEmptyAddress;
+	const quint16 expectedEmptyPort;
 
+	const QHostAddress expectedValidAddress;
+	const quint16 expectedValidPort;
 
-	private slots:
-		void initTestCase();
-		void testInitial();
-		void testWithoutConstructorArguments();
-		void testEmptyMapConstructorArguments();
-		void testInvalidMapConstructorArguments();
-		void testValidMapConstructorArguments();
-		void testEmptyDirectConstructorArguments();
-		void testInvalidDirectConstructorArguments();
-		void testValidDirectConstructorArguments();
-		void testAssignment1();
-		void testAssignment2();
-		void testIsValid();
-		void testToFromString();
+private slots:
+	void initTestCase();
+	void testInitial();
+	void testWithoutConstructorArguments();
+	void testEmptyMapConstructorArguments();
+	void testInvalidMapConstructorArguments();
+	void testValidMapConstructorArguments();
+	void testEmptyDirectConstructorArguments();
+	void testInvalidDirectConstructorArguments();
+	void testValidDirectConstructorArguments();
+	void testAssignment1();
+	void testAssignment2();
+	void testIsValid();
+	void testToFromString();
 
 };
 
 
-#endif // TESTNETWORKADDRESS_HPP
+#endif
+// TESTNETWORKADDRESS_HPP

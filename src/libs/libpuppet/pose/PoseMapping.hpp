@@ -46,4 +46,5 @@ QDataStream &operator<<(QDataStream &, const PoseMapping &);
 QDataStream &operator>>(QDataStream &, PoseMapping &);
 
 
-#endif // POSEMAPPING_HPP
+#endif
+// POSEMAPPING_HPP

@@ -2,10 +2,13 @@
 
 #include "BlobChunk.hpp"
 
+#include "uptime/MethodGate.hpp"
 
-#include "utility/Utility.hpp"
+#include "utility/string/String.hpp"
+#include "utility/time/HumanTime.hpp"
 
 #include <QDateTime>
+#include <QDebug>
 
 
 Blob::Blob(const QString name, const quint16 id, const QByteArray data, const quint32 chunkSize)
@@ -13,40 +16,46 @@ Blob::Blob(const QString name, const quint16 id, const QByteArray data, const qu
 	, mID(id)
 	, mData(data)
 	, mChunkSize(chunkSize)
-	, mTotalIndecies(  (mData.size()/mChunkSize) + ((mData.size()%mChunkSize)>0?1:0))
+	, mTotalIndecies(  static_cast<int> ( (static_cast<unsigned int>(mData.size())/mChunkSize) + ((static_cast<unsigned int>(mData.size())%mChunkSize)>0?1:0) ) )
 {
-	qDebug()<<"Created blob with name='"<<mName<<"', id="<<mID<<" dataSize="<<utility::humanReadableSize(mData.size())<<" chunkSize="<<utility::humanReadableSize(mChunkSize)<<", totalIndecies="<<mTotalIndecies;
+	OC_METHODGATE();
+	qDebug()<<"Created blob with name='"<<mName<<"', id="<<mID<<" dataSize="<<utility::string::humanReadableSize(mData.size())<<" chunkSize="<<utility::string::humanReadableSize(mChunkSize)<<", totalIndecies="<<mTotalIndecies;
 }
 
 
 Blob::~Blob()
 {
+	OC_METHODGATE();
 }
 
 
 
 QString Blob::name()const
 {
+	OC_METHODGATE();
 	return mName;
 }
 
 quint16 Blob::id()const
 {
+	OC_METHODGATE();
 	return mID;
 }
 
 QByteArray Blob::data(int index)const
 {
-	QByteArray out=mData.mid(index*mChunkSize, mChunkSize);
+	OC_METHODGATE();
+	QByteArray out=mData.mid( index* static_cast<int>(mChunkSize) , static_cast<int>(mChunkSize) );
 	return out;
 }
 
 
 char *Blob::dataRef(int index)
 {
+	OC_METHODGATE();
 	char *out=mData.data();
 	if(nullptr!=out) {
-		char *ret=(out+index*mChunkSize);
+		char *ret=(out+static_cast<unsigned int>(index)*mChunkSize);
 		return ret;
 	}
 	return nullptr;
@@ -57,30 +66,34 @@ char *Blob::dataRef(int index)
 
 QByteArray Blob::data()const
 {
+	OC_METHODGATE();
 	return mData;
-
 }
 
 
 quint64 Blob::dataSize()const
 {
-	return mData.size();
+	OC_METHODGATE();
+	return static_cast<quint64>(mData.size());
 }
 
 quint32 Blob::chunkSize() const
 {
+	OC_METHODGATE();
 	return mChunkSize;
 }
 
 
 void Blob::setName(QString name)
 {
+	OC_METHODGATE();
 	//TODO: Scrutinize name
 	mName=name;
 }
 
 int Blob::numTotal() const
 {
+	OC_METHODGATE();
 	return mTotalIndecies;
 }
 
@@ -104,6 +117,7 @@ SendingBlob::SendingBlob(const QString name, const quint16 id, const quint32 chu
 	, mIsSent(mTotalIndecies)
 	, mIsAcknowleged(mTotalIndecies)
 {
+	OC_METHODGATE();
 	qDebug()<<" This is a sending blob with additional parameters priority="<<mPriority<<", maxInTransit="<<mMaxInTransit;
 }
 
@@ -111,12 +125,14 @@ SendingBlob::SendingBlob(const QString name, const quint16 id, const quint32 chu
 
 SendingBlob::~SendingBlob()
 {
+	OC_METHODGATE();
 }
 
 
 
 bool SendingBlob::isDone()const
 {
+	OC_METHODGATE();
 	return (mIsAcknowleged.count(true)>=mTotalIndecies ) && mNameAcknowleged;
 }
 
@@ -124,6 +140,7 @@ bool SendingBlob::isDone()const
 
 qreal SendingBlob::sendProgress()const
 {
+	OC_METHODGATE();
 	if(isDone()) {
 		return 1.0;
 	}
@@ -145,11 +162,13 @@ qreal SendingBlob::sendProgress()const
 
 int SendingBlob::numSent() const
 {
+	OC_METHODGATE();
 	return mIsSent.count(true);
 }
 
 int SendingBlob::numAcknowleged() const
 {
+	OC_METHODGATE();
 	return mIsAcknowleged.count(true);
 }
 
@@ -158,6 +177,7 @@ int SendingBlob::numAcknowleged() const
 
 int SendingBlob::firstUnsent() const
 {
+	OC_METHODGATE();
 	int i=0;
 	for(const int sz=mIsSent.size(); (i<sz) && mIsSent.testBit(i); ++i);
 	return i-1;
@@ -167,6 +187,7 @@ int SendingBlob::firstUnsent() const
 
 int SendingBlob::firstUnacknowleged() const
 {
+	OC_METHODGATE();
 	int i=0;
 	for(const int sz=mIsAcknowleged.size(); (i<sz) && mIsAcknowleged.testBit(i); ++i);
 	return i-1;
@@ -176,6 +197,7 @@ int SendingBlob::firstUnacknowleged() const
 
 SendingBlobChunk SendingBlob::findNextSendingChunk()
 {
+	OC_METHODGATE();
 	const int inTransit=numSent();
 	const int acknowleged=numAcknowleged();
 	//qDebug()<<"NEXT SEND CHUNK: inTransit="<<inTransit<<", acknowleged"<<acknowleged<<", mTotalIndecies"<<mTotalIndecies<<", mMaxInTransit"<<mMaxInTransit<<", mUnsentIndex"<<mUnsentIndex<<", mUnacknowlegedIndex"<<mUnacknowlegedIndex;
@@ -189,10 +211,10 @@ SendingBlobChunk SendingBlob::findNextSendingChunk()
 			//qDebug()<<"SUGGESTING TO SEND "<<nextInTransit;
 			mUnsentIndex++;
 		} else {
-			const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
+			const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
 			const quint64 BLOB_CHUNK_TIMEOUT=10;//TTL
 			//Time for resend?
-			qint64 diff=(now-BLOB_CHUNK_TIMEOUT)-mLastResendTime;
+			qint64 diff=static_cast<qint64>(now-BLOB_CHUNK_TIMEOUT)-static_cast<qint64>(mLastResendTime);
 			if(diff>0) {
 				//Resend last
 				mUnacknowlegedIndex++;
@@ -207,7 +229,7 @@ SendingBlobChunk SendingBlob::findNextSendingChunk()
 		}
 		if(nextInTransit > -1) {
 			//qDebug()<<"RETURNING WITH "<<nextInTransit;
-			return SendingBlobChunk(this, nextInTransit);
+			return SendingBlobChunk(this, static_cast<quint32>(nextInTransit));
 		}
 	}
 	// Default: Go away
@@ -219,6 +241,7 @@ SendingBlobChunk SendingBlob::findNextSendingChunk()
 
 bool SendingBlob::isSent(int index)const
 {
+	OC_METHODGATE();
 	if(index<0) {
 		return false;
 	}
@@ -231,6 +254,7 @@ bool SendingBlob::isSent(int index)const
 
 bool SendingBlob::isAcknowleged(int index)const
 {
+	OC_METHODGATE();
 	if(index<0) {
 		return false;
 	}
@@ -243,6 +267,7 @@ bool SendingBlob::isAcknowleged(int index)const
 
 void SendingBlob::setSent(int index)
 {
+	OC_METHODGATE();
 	if(index<0) {
 		qWarning()<<"ERROR: trying to set send for index < 0: "<<index;
 		return;
@@ -252,12 +277,13 @@ void SendingBlob::setSent(int index)
 		return;
 	}
 	mIsSent.setBit(index);
-	mLastResendTime=utility::currentMsecsSinceEpoch<quint64>();
+	mLastResendTime=utility::time::currentMsecsSinceEpoch<quint64>();
 }
 
 
 void SendingBlob::setAcknowleged(int index)
 {
+	OC_METHODGATE();
 	if(index<0) {
 		qWarning()<<"ERROR: trying to set ack for index < 0: "<<index;
 		return;
@@ -271,25 +297,28 @@ void SendingBlob::setAcknowleged(int index)
 
 QBitArray SendingBlob::isSent()
 {
+	OC_METHODGATE();
 	return mIsSent;
 }
 
 
 QBitArray SendingBlob::isAcknowleged()
 {
+	OC_METHODGATE();
 	return mIsAcknowleged;
 }
 
 
 SendingBlobChunk SendingBlob::chunk(int index)
 {
+	OC_METHODGATE();
 	if(index<0) {
 		return SendingBlobChunk();
 	}
 	if(index>=mTotalIndecies) {
 		return SendingBlobChunk();
 	}
-	return SendingBlobChunk(this,index);
+	return SendingBlobChunk(this, static_cast<quint32>(index));
 }
 
 
@@ -299,6 +328,7 @@ SendingBlobChunk SendingBlob::chunk(int index)
 
 bool SendingBlob::isNameSent()
 {
+	OC_METHODGATE();
 	return mNameSent;
 
 }
@@ -306,13 +336,14 @@ bool SendingBlob::isNameSent()
 
 bool SendingBlob::isNameAcknowleged()
 {
+	OC_METHODGATE();
 	return mNameAcknowleged;
-
 }
 
 
 void SendingBlob::setNameSent(bool v)
 {
+	OC_METHODGATE();
 	mNameSent=v;
 }
 
@@ -321,6 +352,7 @@ void SendingBlob::setNameSent(bool v)
 
 void SendingBlob::setNameAcknowleged(bool v)
 {
+	OC_METHODGATE();
 	mNameAcknowleged=v;
 }
 
@@ -332,12 +364,13 @@ void SendingBlob::setNameAcknowleged(bool v)
 
 
 ReceivingBlob::ReceivingBlob(const QString name, const quint16 id, const quint32 chunkSize, const quint32 byteSize)
-	: Blob(name, id, QByteArray(byteSize, 0x00), chunkSize)
+	: Blob(name, id, QByteArray( static_cast<int>(byteSize), 0x00), chunkSize)
 	, mIsReceived(mTotalIndecies)
 	, mLastReceivedTime(0)
 	, mNameReceived(false)
 
 {
+	OC_METHODGATE();
 	qDebug()<<"Created receiving blob with mName='"<<mName<<"' with mChunkSize="<<mChunkSize<< ", mData.size="<<mData.size()<< "("<<byteSize<<")";
 }
 
@@ -346,6 +379,7 @@ ReceivingBlob::ReceivingBlob(const QString name, const quint16 id, const quint32
 
 ReceivingBlob::~ReceivingBlob()
 {
+	OC_METHODGATE();
 }
 
 
@@ -353,19 +387,21 @@ ReceivingBlob::~ReceivingBlob()
 
 ReceivingBlobChunk ReceivingBlob::chunk(int index)
 {
+	OC_METHODGATE();
 	if(index<0) {
 		return ReceivingBlobChunk();
 	}
 	if(index>=mTotalIndecies) {
 		return ReceivingBlobChunk();
 	}
-	return ReceivingBlobChunk(this,index);
+	return ReceivingBlobChunk(this, static_cast<quint32>(index) );
 }
 
 
 
 bool ReceivingBlob::isDone()const
 {
+	OC_METHODGATE();
 	return (mIsReceived.count(true)>=mTotalIndecies ) && mNameReceived;
 }
 
@@ -373,6 +409,7 @@ bool ReceivingBlob::isDone()const
 
 bool ReceivingBlob::isReceived(int index)const
 {
+	OC_METHODGATE();
 	if(index<0) {
 		return false;
 	}
@@ -386,6 +423,7 @@ bool ReceivingBlob::isReceived(int index)const
 
 void ReceivingBlob::setReceived(int index)
 {
+	OC_METHODGATE();
 	if(index<0) {
 		qWarning()<<"ERROR: trying to set received for index < 0: "<<index;
 		return;
@@ -395,17 +433,14 @@ void ReceivingBlob::setReceived(int index)
 		return;
 	}
 	mIsReceived.setBit(index);
-	mLastReceivedTime=utility::currentMsecsSinceEpoch<quint64>();
+	mLastReceivedTime=utility::time::currentMsecsSinceEpoch<quint64>();
 }
 
 QBitArray ReceivingBlob::isReceived() const
 {
+	OC_METHODGATE();
 	return mIsReceived;
 }
-
-
-
-
 
 
 
@@ -414,22 +449,20 @@ QBitArray ReceivingBlob::isReceived() const
 
 bool ReceivingBlob::isNameReceived()
 {
+	OC_METHODGATE();
 	return mNameReceived;
-
 }
-
-
 
 
 void ReceivingBlob::setNameReceived(bool v)
 {
+	OC_METHODGATE();
 	mNameReceived=v;
 }
 
 
-
-
 int ReceivingBlob::numReceived() const
 {
+	OC_METHODGATE();
 	return mIsReceived.count(true);
 }

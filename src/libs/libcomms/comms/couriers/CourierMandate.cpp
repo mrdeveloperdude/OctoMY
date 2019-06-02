@@ -1,6 +1,11 @@
 #include "CourierMandate.hpp"
 
-#include "utility/Utility.hpp"
+#include "utility/string/String.hpp"
+
+#include "uptime/MethodGate.hpp"
+
+
+
 
 CourierMandate::CourierMandate(
 	const quint16 payloadSize
@@ -15,14 +20,15 @@ CourierMandate::CourierMandate(
 	, receiveActive(receiveActive)
 	, sendActive(sendActive)
 {
-
+	OC_METHODGATE();
 }
 
 
 
 QString CourierMandate::toString()const
 {
-	return QString("CourierMandate(size=")+utility::humanReadableSize(payloadSize)+", pri="+QString::number(priority)+", nxt="+utility::humanReadableElapsedMS(nextSend)+", rx="+(receiveActive?"YES":"NO") +", tx="+(sendActive?"YES":"NO")+" )";
+	OC_METHODGATE();
+	return QString("CourierMandate(size=")+utility::string::humanReadableSize(payloadSize)+", pri="+QString::number(priority)+", nxt="+utility::string::humanReadableElapsedMS(nextSend)+", rx="+(receiveActive?"YES":"NO") +", tx="+(sendActive?"YES":"NO")+" )";
 }
 
 

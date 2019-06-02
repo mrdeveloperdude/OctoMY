@@ -2,12 +2,11 @@
 
 #include "comms/CommsSession.hpp"
 #include "security/Key.hpp"
-#include "utility/Standard.hpp"
+#include "uptime/New.hpp"
 
 
 void TestCommsSession::test()
 {
-
 	QSharedPointer<Key> key(OC_NEW Key(128));
 	QVERIFY(nullptr!=key);
 
@@ -21,7 +20,6 @@ void TestCommsSession::test()
 		// virtual ~CommsSession();
 
 	}
-
 
 	CommsSession sess(key);
 
@@ -247,17 +245,14 @@ void TestCommsSession::test()
 		wannaMap["lastReceiveTime"]=321;
 		sess.fromVariantMap(wannaMap);
 		QVariantMap map2=sess.toVariantMap();
-		if(map2 != wannaMap){
+		if(map2 != wannaMap) {
 			qDebug()<<"map1="<<map1;
 			qDebug()<<"map2="<<map2;
 			qDebug()<<"wannaMap="<<wannaMap;
 		}
 		QCOMPARE(map2, wannaMap);
 	}
-
-
 }
-
 
 
 OC_TEST_MAIN(test, TestCommsSession)

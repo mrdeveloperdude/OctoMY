@@ -1,7 +1,6 @@
 #ifndef COURIERMANDATE_HPP
 #define COURIERMANDATE_HPP
 
-#include <QDebug>
 #include <QString>
 
 /*!
@@ -41,5 +40,5 @@ struct CourierMandate {
 };
 
 
-
-#endif // COURIERMANDATE_HPP
+#endif
+// COURIERMANDATE_HPP

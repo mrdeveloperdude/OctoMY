@@ -1,4 +1,4 @@
-include($$TESTS/test.pri)
+include($$TESTS/pris/test.pri)
 
 TARGET = test_addressbook
 
@@ -8,5 +8,5 @@ HEADERS += \
 SOURCES += \
 	TestAddressBook.cpp
 
+include($$PRIS/status.pri)
 include($$TESTS/test_autorun.pri)
-

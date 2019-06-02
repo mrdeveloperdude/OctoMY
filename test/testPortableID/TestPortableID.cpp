@@ -1,12 +1,14 @@
 #include "TestPortableID.hpp"
 
 #include "security/PortableID.hpp"
-#include "utility/Utility.hpp"
+#include "utility/random/Random.hpp"
+#include "utility/time/HumanTime.hpp"
 
 #include <QDateTime>
 
-// YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
-void TestPortableID::test(){
+
+void TestPortableID::test()
+{
 	PortableID pid;
 
 	const QString gender="Male";
@@ -14,17 +16,17 @@ void TestPortableID::test(){
 	pid.setGender(gender);
 	QCOMPARE(pid.gender(), gender);
 
-	const quint64 birthDate=utility::currentMsecsSinceEpoch<quint64>()-1000;
+	const quint64 birthDate=utility::time::currentMsecsSinceEpoch<quint64>()-1000;
 	QVERIFY(pid.birthDate() != birthDate);
 	pid.setBirthDate(birthDate);
 	QCOMPARE(pid.birthDate(), birthDate);
 
-	const QString id=utility::randomByteArray(20).toHex().toUpper();
+	const QString id=utility::random::randomByteArray(20).toHex().toUpper();
 	QVERIFY(pid.id() != id);
 	pid.setID(id);
 	QCOMPARE(pid.id(), id);
 
-	const QString name=utility::randomByteArray(20).toBase64();
+	const QString name=utility::random::randomByteArray(20).toBase64();
 	QVERIFY(pid.name() != name);
 	pid.setName(name);
 	QCOMPARE(pid.name(), name);
@@ -68,10 +70,7 @@ void TestPortableID::test(){
 	QCOMPARE(pid.id(), pid2.id());
 	QCOMPARE(pid.name(), pid2.name());
 	QCOMPARE(pid.type(), pid2.type());
-
-
 }
-
 
 
 OC_TEST_MAIN(test, TestPortableID)

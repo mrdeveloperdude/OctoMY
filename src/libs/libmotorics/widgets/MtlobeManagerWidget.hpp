@@ -13,6 +13,7 @@ class MtlobeManagerWidget;
 class MtlobeManagerWidget : public QWidget
 {
 	Q_OBJECT
+
 private:
 	Ui::MtlobeManagerWidget *ui;
 	QList<QWidget *> mWidgets;
@@ -22,21 +23,16 @@ public:
 	explicit MtlobeManagerWidget(QWidget *parent = nullptr);
 	~MtlobeManagerWidget();
 
-
 private:
 	void addWidget(QWidget &w);
 	void removeWidget(QWidget &w);
-public:
 
+public:
 	void configure(MtlobeController *);
 
 public slots:
-
 	void mtlobeManagerChanged();
-
-
-
-
 };
 
-#endif // MTLOBEMANAGERWIDGET_HPP
+#endif
+// MTLOBEMANAGERWIDGET_HPP

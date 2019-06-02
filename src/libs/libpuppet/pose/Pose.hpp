@@ -54,4 +54,5 @@ QDataStream &operator>>(QDataStream &, Pose &);
 QString ardumyActuatorValueToString (const Pose &v);
 
 
-#endif // POSE_HPP
+#endif
+// POSE_HPP

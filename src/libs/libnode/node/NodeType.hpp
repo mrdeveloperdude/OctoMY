@@ -3,7 +3,7 @@
 
 #include <QDebug>
 
-enum NodeType: quint8{
+enum NodeType: quint8 {
 	TYPE_AGENT
 	, TYPE_REMOTE
 	, TYPE_HUB
@@ -11,10 +11,17 @@ enum NodeType: quint8{
 	, TYPE_UNKNOWN
 };
 
-const QDebug &operator<<(QDebug &d, const NodeType &type);
+const QDebug &operator<<(QDebug &d, const NodeType nodeType);
 
-QString nodeTypeToString(NodeType s);
+QString nodeTypeToString(NodeType nodeType);
 
-NodeType nodeTypeFromString(QString s);
+NodeType nodeTypeFromString(QString string);
 
-#endif // NODETYPE_HPP
+
+quint16 defaultPortForNodeType(NodeType nodeType);
+
+QColor defaultColorForNodeType(NodeType nodeType);
+
+
+#endif
+// NODETYPE_HPP

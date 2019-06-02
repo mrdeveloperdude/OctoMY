@@ -7,6 +7,19 @@
 #ifndef COMMSCHANNEL_HPP
 #define COMMSCHANNEL_HPP
 
+
+#include "uptime/SharedPointerWrapper.hpp"
+#include "app/log/LogDestination.hpp"
+#include "security/Key.hpp"
+
+
+#include "utility/time/RateCalculator.hpp"
+#include "CommsSessionDirectory.hpp"
+#include "CommsCarrier.hpp"
+#include "couriers/Courier.hpp"
+#include "couriers/CourierSet.hpp"
+
+
 #include <QObject>
 #include <QHostAddress>
 #include <QUdpSocket>
@@ -14,27 +27,8 @@
 #include <QMap>
 #include <QTimer>
 #include <QDateTime>
-#include <QSharedPointer>
 #include <QSet>
 
-#include "ReliabilitySystem.hpp"
-#include "FlowControl.hpp"
-
-#include "../../libcore/basic/LogDestination.hpp"
-
-#include "security/Key.hpp"
-
-#include "couriers/Courier.hpp"
-#include "CommsSessionDirectory.hpp"
-
-
-#include "CommsCarrier.hpp"
-
-#include "Multimagic.hpp"
-
-#include "RateCalculator.hpp"
-
-#include "couriers/CourierSet.hpp"
 
 #define OCTOMY_PROTOCOL_MAGIC (0x0C701111)
 //#define OCTOMY_PROTOCOL_MAGIC_IDLE (OCTOMY_PROTOCOL_MAGIC+1)
@@ -42,18 +36,16 @@
 #define OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT (QDataStream::Qt_5_7)
 
 /*
- * Documentation moved here: https://sites.google.com/site/octomyproject/documentation/development/architectual-overview/communications
+ * Documentation is here: https://sites.google.com/site/octomyproject/documentation/development/architectual-overview/communications
 */
-
-
 
 class HubWindow;
 class CommsSession;
 class CommsSessionDirectory;
 class KeyStore;
 class AddressList;
-class PacketReadState;
-class PacketSendState;
+struct PacketReadState;
+struct PacketSendState;
 class AddressBook;
 
 
@@ -62,51 +54,65 @@ class CommsChannel : public QObject
 	Q_OBJECT
 
 protected:
+	// The carrier such as udp or bluetooth used by this comms channel to communicate with the other side
+	QSharedPointer<CommsCarrier> mCarrier;
 
-	CommsCarrier &mCarrier; // The carrier such as udp or bluetooth used by this cc to communicate with the other side
-	KeyStore &mKeystore;   // The keystore which is used for encryption (the local key pair is used, as looked up with mLocalID)
-	AddressBook &mAssociates; // The store wich is used to find network addresses to use when creating new sessions
-	CommsSessionDirectory mSessions; // The directory of sessions for this cc
-	CourierSet mCouriers; // The couriers that are in use by this cc. Only active couriers are in this list for performance reasons.
-	QMap<quint32, QSharedPointer<Courier> > mCouriersByID; // Map for quickly finding a particular courier by it's unique ID
+	// The keystore which is used for encryption (the local key pair is used, as looked up with mLocalID)
+	QSharedPointer<KeyStore> mKeystore;
+
+	// The store wich is used to find network addresses to use when creating new sessions
+	QSharedPointer<AddressBook> mAssociates;
+
+	// The directory of sessions for this cc
+	CommsSessionDirectory mSessions;
+
+	// The couriers that are in use by this cc. Only active couriers are in this list for performance reasons.
+	CourierSet mCouriers;
+
+	// Map for quickly finding a particular courier by it's unique ID
+	QMap<quint32, QSharedPointer<Courier> > mCouriersByID;
+
 	quint64 mLocalSessionID;
 	RateCalculator mTXScheduleRate;
 
 	// When honeymoon mode is enabled, all inactive associates are pinged continuously in an effort to start new connections
 	quint64 mHoneyMoonEnd;
 
-	QMap<quint64, QSharedPointer<Courier> > mSchedule; // Couriers with priority at next sending oportunity as calculated by rescheduleSending()
+	// Couriers with priority at next sending oportunity as calculated by rescheduleSending()
+	QMap<quint64, QSharedPointer<Courier> > mSchedule;
 	QSet<QString> mPendingHandshakes;
-	qint64 mMostUrgentSendingTime; // The number of milliseconds until next sending opportunity as calculated by rescheduleSending()
+
+	// The number of milliseconds until next sending opportunity as calculated by rescheduleSending()
+	qint64 mMostUrgentSendingTime;
+
+	ConfigureHelper mConfigureHelper;
 
 public:
-
-	explicit CommsChannel(CommsCarrier &carrier, KeyStore &keystore, AddressBook &peers, QObject *parent=nullptr);
-	//TODO: Remove once nobody refers to it any more
-	//explicit CommsChannel(CommsCarrier &carrier, KeyStore &keystore, QObject *parent=nullptr);
+	explicit CommsChannel(QObject *parent=nullptr);
 	virtual ~CommsChannel();
 
-protected:
+public:
+	void configure(QSharedPointer<CommsCarrier> carrier, QSharedPointer<KeyStore> keystore, QSharedPointer<AddressBook> peers);
+	void activate(const bool on);
 
+protected:
 	//void detectConnectionChanges(const quint64 now);
 	QSharedPointer<CommsSession>  createSession(QString id, bool initiator);
 	QSharedPointer<CommsSession>  lookUpSession(QString id);
 
 
 public:
-
-
-	CommsCarrier &carrier();
+	QSharedPointer<CommsCarrier> carrier();
 	CommsSessionDirectory &sessions();
 	NetworkAddress localAddress();
 	QString localID();
 
 	QString getSummary();
 	//void setID(const QString &id);
-	void setHookCommsSignals(QObject &ob, bool hook);
-	void setHookCourierSignals(QSharedPointer<Courier> , bool hook);
+	void hookCommsSignals(QObject &ob, bool hook);
+	void hookCourierSignals(QSharedPointer<Courier>, bool hook);
 
-	void setCourierRegistered(QSharedPointer<Courier>, bool);
+	void registerCourier(QSharedPointer<Courier>, bool);
 	CourierSet couriers();
 
 	qint64 sendRawData(QByteArray datagram, NetworkAddress address);
@@ -114,12 +120,13 @@ public:
 	void setHoneymoonEnd(quint64 hEndMS);
 	bool honeymoon(quint64 now=0);
 
-	// Report if this commschannel would rather be connected or not (registered couriers > 0)
+	// Report if this CommsChannel would rather be connected or not (registered couriers > 0 and activated)
 	bool needConnection();
 	// [Dis]connect based on our needConnection()
-	void updateConnect();
-protected:
+	void updateConnection();
 
+
+protected:
 	void appendLog(QString);
 	void doSendWithSession( PacketSendState &state);
 	void sendHandshake(const quint64 &now, const QString handShakeID);
@@ -170,5 +177,5 @@ public slots:
 };
 
 
-
-#endif // COMMSCHANNEL_HPP
+#endif
+// COMMSCHANNEL_HPP

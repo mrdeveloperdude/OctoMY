@@ -1,17 +1,16 @@
 #ifndef TESTADDRESSBOOK_HPP
 #define TESTADDRESSBOOK_HPP
 
+#include "Common_test.hpp"
 
-#include "../common/TestCommon.hpp"
+class TestAddressBook:public QObject
+{
+	Q_OBJECT
 
-
-class TestAddressBook:public QObject{
-		Q_OBJECT
-
-	private slots:
-		void test();
+private slots:
+	void test();
 
 };
 
-
-#endif // TESTADDRESSBOOK_HPP
+#endif
+// TESTADDRESSBOOK_HPP

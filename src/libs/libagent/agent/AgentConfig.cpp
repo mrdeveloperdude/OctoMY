@@ -1,7 +1,8 @@
 #include "AgentConfig.hpp"
-#include "utility/Standard.hpp"
 
-#include <QSharedPointer>
+#include "uptime/New.hpp"
+
+#include "uptime/SharedPointerWrapper.hpp"
 
 AgentConfig::AgentConfig()
 {

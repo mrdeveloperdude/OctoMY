@@ -1,6 +1,10 @@
 #include "IrisRendrer.hpp"
 
-#include "rng/RNG.hpp"
+#include "random/RNG.hpp"
+
+
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 
 #include <QRect>
 #include <QPainter>
@@ -25,21 +29,24 @@ IrisRendrer::IrisRendrer()
 	, psz(0)
 	, mDebugMode(false)
 {
+	OC_METHODGATE();
 }
 
 
 PortableID IrisRendrer::portableID()
 {
+	OC_METHODGATE();
 	return mPid;
 }
 void IrisRendrer::setPortableID(PortableID pid)
 {
+	OC_METHODGATE();
 	mPid=pid;
 	mPersonality.setID(pid.id(), Personality::IRIS);
 	mPersonality.reset();
 	mColors.setID(pid.id());
-	for(int i=0; i<20; ++i) {
-		setParameter(i,mPersonality.rng().generateReal1());
+	for(quint32 i=0; i<20; ++i) {
+		setParameter(i, mPersonality.rng().generateReal1());
 	}
 	mColor1=mColors.backgroundColorLow().rgb();
 	mColor2=mColors.bodyColorLow().rgb();
@@ -48,9 +55,10 @@ void IrisRendrer::setPortableID(PortableID pid)
 
 static inline qreal filmic2(qreal v, qreal cutoff, qreal exposure)
 {
+	OC_FUNCTIONGATE();
 	qreal value = exposure * v;
-	value += (cutoff * 2.0 - value) * qBound(0.0 , cutoff * 2.0 - value, 1.0) * (0.25 / cutoff) - cutoff;
-	return (value * (6.2f * value + 0.5f)) / (value * (6.2f * value + 1.7f) + 0.06f);
+	value += (cutoff * 2.0 - value) * qBound(0.0, cutoff * 2.0 - value, 1.0) * (0.25 / cutoff) - cutoff;
+	return (value * (6.2 * value + 0.5)) / (value * (6.2 * value + 1.7) + 0.06);
 }
 
 
@@ -60,6 +68,7 @@ static inline qreal filmic2(qreal v, qreal cutoff, qreal exposure)
 // TODO: figure out an elegant way to pass around identicon colors
 void IrisRendrer::draw(QRect &rect, QPainter &painter, quint32 eyeIndex)
 {
+	OC_METHODGATE();
 	const int w=rect.width();
 	const int h=rect.height();
 	const int w2=w/2;
@@ -82,17 +91,17 @@ void IrisRendrer::draw(QRect &rect, QPainter &painter, quint32 eyeIndex)
 			mScratchBuffer=nullptr;
 		}
 		if(nullptr==mScratchBuffer) {
-			mScratchBuffer = OC_NEW QRgb[psz];
+			mScratchBuffer = OC_NEW QRgb[static_cast<unsigned long>(psz)];
 		}//
-		const qreal c1r=(qreal)qRed(mColor1)/255.0;
-		const qreal c1g=(qreal)qGreen(mColor1)/255.0;
-		const qreal c1b=(qreal)qBlue(mColor1)/255.0;
-		const qreal c2r=(qreal)qRed(mColor2)/255.0;
-		const qreal c2g=(qreal)qGreen(mColor2)/255.0;
-		const qreal c2b=(qreal)qBlue(mColor2)/255.0;
+		const qreal c1r=static_cast<qreal>(qRed(mColor1)/255.0);
+		const qreal c1g=static_cast<qreal>(qGreen(mColor1)/255.0);
+		const qreal c1b=static_cast<qreal>(qBlue(mColor1)/255.0);
+		const qreal c2r=static_cast<qreal>(qRed(mColor2)/255.0);
+		const qreal c2g=static_cast<qreal>(qGreen(mColor2)/255.0);
+		const qreal c2b=static_cast<qreal>(qBlue(mColor2)/255.0);
 		const qreal indexX=eyeIndex*1337.0+mBaseX;
 		const qreal indexY=eyeIndex*1337.0+mBaseY;
-		QImage scratchImage((uchar*)mScratchBuffer, w,h, QImage::Format_ARGB32);
+		QImage scratchImage(reinterpret_cast<uchar*>(mScratchBuffer), w,h, QImage::Format_ARGB32);
 		const unsigned int inColor=qRgba(21,17,13, 0);
 		const unsigned int outColor=qRgba(217,209,225,0);
 		for (int y = 0; y < h; ++y) {
@@ -109,7 +118,7 @@ void IrisRendrer::draw(QRect &rect, QPainter &painter, quint32 eyeIndex)
 					mScratchBuffer[y * h + x] = outColor;
 					continue;
 				}
-				d=0==d?0.01:sqrt(d);
+				d=qFuzzyCompare(0, d)?0.01: std::sqrt(d);
 				const qreal a = atan2(dy, dx);
 				dx/=d;
 				dy/=d;
@@ -122,10 +131,10 @@ void IrisRendrer::draw(QRect &rect, QPainter &painter, quint32 eyeIndex)
 				const qreal rr=filmic2((((c1r*cv+c2r*cvi)*s)*mContrast),mToneCutoff,mToneExposure);
 				const qreal gg=filmic2((((c1g*cv+c2g*cvi)*s)*mContrast),mToneCutoff,mToneExposure);
 				const qreal bb= filmic2((((c1b*cv+c2b*cvi)*s)*mContrast),mToneCutoff,mToneExposure);
-				const int r=qBound(0,(int)(rr*255.0),255);
-				const int g=qBound(0,(int)(gg*255.0),255);
-				const int b=qBound(0,(int)(bb*255.0),255);
-				mScratchBuffer[y * h + x] = qRgba(r,g,b,(int)(al*255.0));
+				const int r=qBound(0, static_cast<int>(rr*255.0), 255);
+				const int g=qBound(0, static_cast<int>(gg*255.0), 255);
+				const int b=qBound(0, static_cast<int>(bb*255.0), 255);
+				mScratchBuffer[y * h + x] = qRgba(r, g, b, static_cast<int>(al*255.0));
 			}
 		}
 		painter.drawImage(0, 0, scratchImage);
@@ -142,9 +151,10 @@ void IrisRendrer::draw(QRect &rect, QPainter &painter, quint32 eyeIndex)
 
 void IrisRendrer::setParameter(quint32 id, qreal value)
 {
+	OC_METHODGATE();
 	switch(id) {
 	case(0): {
-		mSimplexStreaks.setOctaves(1+(int)floor(value*20));
+		mSimplexStreaks.setOctaves(1+static_cast<int>(std::floor(value*20)));
 	}
 	break;
 
@@ -157,7 +167,7 @@ void IrisRendrer::setParameter(quint32 id, qreal value)
 	}
 	break;
 	case(3): {
-		mSimplexRipples.setOctaves(1+(int)floor(value*5));
+		mSimplexRipples.setOctaves(1+static_cast<int>(std::floor(value*5)));
 	}
 	break;
 	case(4): {

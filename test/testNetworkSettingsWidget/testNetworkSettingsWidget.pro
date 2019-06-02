@@ -1,18 +1,17 @@
-include($$TESTS/test.pri)
+include($$TESTS/pris/test.pri)
 
 TARGET = test_networksettingswidget
 
 HEADERS += \
 	TestNetworkSettingsWidget.hpp \
-    NetworkSettingsTestWidget.hpp
+	NetworkSettingsTestWidget.hpp
 
 SOURCES += \
 	TestNetworkSettingsWidget.cpp \
-    NetworkSettingsTestWidget.cpp
+	NetworkSettingsTestWidget.cpp
+
+FORMS += \
+	NetworkSettingsTestWidget.ui
 
 include($$PRIS/status.pri)
 include($$TESTS/test_autorun.pri)
-
-FORMS += \
-    NetworkSettingsTestWidget.ui
-

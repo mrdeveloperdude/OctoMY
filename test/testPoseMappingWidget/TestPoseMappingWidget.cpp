@@ -1,15 +1,12 @@
 #include "TestPoseMappingWidget.hpp"
-
 #include "ui_TestWindow.h"
-
 #include "pose/PoseMapping.hpp"
-
-#include "utility/Standard.hpp"
-
-#include "Utilities.hpp"
+#include "uptime/New.hpp"
+#include "Utility_test.hpp"
 
 #include <QPixmap>
 #include <QImage>
+
 
 TestWindow::TestWindow(QWidget *parent, QString name) :
 	QWidget(parent),
@@ -19,20 +16,24 @@ TestWindow::TestWindow(QWidget *parent, QString name) :
 	setWindowTitle(name);
 }
 
+
 TestWindow::~TestWindow()
 {
 	delete ui;
 }
+
 
 void TestWindow::on_pushButtonClose_clicked()
 {
 	close();
 }
 
+
 void TestWindow::configure(PoseMapping &pm)
 {
 	ui->widgetPoseMapping->configure(pm);
 }
+
 
 void TestPoseMappingWidget::testBasics()
 {
@@ -62,7 +63,7 @@ void TestPoseMappingWidget::testBasics()
 	qDebug()<<"PM2 AFTER: "<<pm2.toString();
 }
 
-// YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
+
 void TestPoseMappingWidget::testWidget()
 {
 	return;//Skip for now
@@ -76,9 +77,8 @@ void TestPoseMappingWidget::testWidget()
 	pm.setName(1, "Steering");
 	pm.setName(2, "CameraAngle");
 	tw.configure(pm);
-	waitForUIEnd(&tw);
+	test::utility::waitForUIEnd(&tw);
 }
-
 
 
 OC_TEST_MAIN(test, TestPoseMappingWidget)

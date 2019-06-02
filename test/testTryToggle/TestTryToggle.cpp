@@ -4,17 +4,16 @@
 
 #include "TryToggleTestUI.hpp"
 
-
-#include "Utilities.hpp"
+#include "Utility_test.hpp"
 
 #include <QWidget>
 #include <QLayout>
 #include <QGridLayout>
 #include <QSignalSpy>
 
+
 void TestTryToggle::test()
 {
-
 	TryToggle *tt=new TryToggle();
 	QWidget *w=new QWidget();
 	tt->configure("OFF", "GOING_ON", "ON", "GOING_OFF", QColor("green"), QColor("white"));
@@ -22,7 +21,7 @@ void TestTryToggle::test()
 	auto l=w->layout();
 	l->addWidget(tt);
 	w->show();
-	waitForUIEnd(w);
+	test::utility::waitForUIEnd(w);
 }
 
 
@@ -30,7 +29,8 @@ void TestTryToggle::testUI()
 {
 	TryToggleTestUI ttui;
 	ttui.show();
-	waitForUIEnd(&ttui);
+	test::utility::waitForUIEnd(&ttui);
 }
+
 
 OC_TEST_MAIN(test, TestTryToggle)

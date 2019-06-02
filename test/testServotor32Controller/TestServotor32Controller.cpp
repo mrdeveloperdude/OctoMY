@@ -1,6 +1,6 @@
 #include "TestServotor32Controller.hpp"
 
-#include "hw/controllers/servotor32/Servotor32Controller.hpp"
+#include "hardware/controllers/servotor32/Servotor32Controller.hpp"
 
 
 void TestServotor32Controller::test()
@@ -30,7 +30,6 @@ void TestServotor32Controller::test()
 	ctl.centerAll();
 	QTest::qWait(1000);
 }
-
 
 
 OC_TEST_MAIN(test, TestServotor32Controller)

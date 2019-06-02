@@ -7,27 +7,28 @@ struct IKLimb;
 
 class LimbIKWidget : public QWidget
 {
-		Q_OBJECT
+	Q_OBJECT
 
-	private:
+private:
 
-		IKLimb *limb;
-	public:
-		explicit LimbIKWidget(QWidget *parent = nullptr);
+	IKLimb *limb;
+public:
+	explicit LimbIKWidget(QWidget *parent = nullptr);
 
-	public:
+public:
 
-		void getLimbVars(qreal &cox, qreal &fem, qreal &tib );
+	void getLimbVars(qreal &cox, qreal &fem, qreal &tib );
 
-	protected:
-		void paintEvent(QPaintEvent *);
-		void mousePressEvent ( QMouseEvent * event ) ;
-		void mouseReleaseEvent ( QMouseEvent * event ) ;
-		void mouseMoveEvent(QMouseEvent *event);
-		void keyPressEvent(QKeyEvent *event);
-	signals:
+protected:
+	void paintEvent(QPaintEvent *);
+	void mousePressEvent ( QMouseEvent * event ) ;
+	void mouseReleaseEvent ( QMouseEvent * event ) ;
+	void mouseMoveEvent(QMouseEvent *event);
+	void keyPressEvent(QKeyEvent *event);
+signals:
 
-		void IKUpadted();
+	void IKUpadted();
 };
 
-#endif // LIMBIKWIDGET_HPP
+#endif
+// LIMBIKWIDGET_HPP

@@ -154,7 +154,7 @@ int mbedtls_platform_entropy_poll( void *data,
 		if( ( ret = getrandom_wrapper( output, len, 0 ) ) < 0 )
 			return( MBEDTLS_ERR_ENTROPY_SOURCE_FAILED );
 
-		*olen = ret;
+		*olen = (size_t)(ret);
 		return( 0 );
 	}
 #endif /* HAVE_GETRANDOM */

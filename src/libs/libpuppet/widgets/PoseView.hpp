@@ -12,17 +12,17 @@ class PoseView: public QWidget
 
 private:
 	const Pose *mPose;
+
 public:
 	explicit PoseView(QWidget *parent=nullptr);
 	virtual ~PoseView();
 
 public slots:
-
-
 	void poseChanged(const Pose &);
-protected:
 
+protected:
 	void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 };
 
-#endif // POSEVIEW_HPP
+#endif
+// POSEVIEW_HPP

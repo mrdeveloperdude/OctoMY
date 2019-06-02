@@ -6,4 +6,5 @@
 int main(int argc, char *argv[]);
 
 
-#endif // ZOOMAIN_HPP
+#endif
+// ZOOMAIN_HPP

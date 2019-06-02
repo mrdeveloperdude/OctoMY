@@ -1,24 +1,25 @@
 #ifndef TESTASYNCSTORE_HPP
 #define TESTASYNCSTORE_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 class TestAsyncStore:public QObject
 {
 	Q_OBJECT
 private :
-	void testEvents();
 
+private slots:
+
+	void testEvents();
 	void testFileExists();
 	void testGenerate();
 	void testSaveChange();
 	void testFails();
 
 
-private slots:
-
 	void testConcurrent();
 };
 
 
-#endif // TESTASYNCSTORE_HPP
+#endif
+// TESTASYNCSTORE_HPP

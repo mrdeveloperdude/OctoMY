@@ -1,11 +1,10 @@
-
 #include "Courier.hpp"
-
 
 #include "comms/CommsChannel.hpp"
 
+#include "uptime/MethodGate.hpp"
+#include "uptime/ConnectionType.hpp"
 
-#include "utility/Standard.hpp"
 
 #include <QString>
 
@@ -18,7 +17,7 @@ const quint32 Courier::FIRST_USER_ID=1024;
 quint32 Courier::mCt=0;
 
 
-Courier::Courier(QString name, quint32 id, CommsChannel &cc, QObject *parent)
+Courier::Courier(QString name, quint32 id, QSharedPointer<CommsChannel> cc, QObject *parent)
 	: QObject(parent)
 	, mComms(cc)
 	, mName(name)
@@ -29,11 +28,19 @@ Courier::Courier(QString name, quint32 id, CommsChannel &cc, QObject *parent)
 	OC_METHODGATE();
 }
 
+
+Courier::~Courier()
+{
+	OC_METHODGATE();
+}
+
+
 void Courier::setDestination(const QString sig)
 {
 	OC_METHODGATE();
 	mDestination=sig;
 }
+
 
 const QString  &Courier::destination() const
 {
@@ -42,25 +49,27 @@ const QString  &Courier::destination() const
 }
 
 
-CommsChannel &Courier::comms() const
+QSharedPointer<CommsChannel> Courier::comms() const
 {
 	OC_METHODGATE();
 	return mComms;
 }
 
+
 void Courier::setForwardRescheduleSignal(QObject &ob, bool fwd)
 {
 	OC_METHODGATE();
 	if(fwd) {
-		if(!connect(&ob,SIGNAL(reschedule(quint64)),this,SIGNAL(reschedule(quint64)),OC_CONTYPE)) {
+		if(!connect(&ob, SIGNAL(reschedule(quint64)), this,SIGNAL(reschedule(quint64)), OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
 		}
 	} else {
-		if(!disconnect(&ob,SIGNAL(reschedule(quint64)),this,SIGNAL(reschedule(quint64)))) {
+		if(!disconnect(&ob, SIGNAL(reschedule(quint64)), this, SIGNAL(reschedule(quint64)))) {
 			qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
 		}
 	}
 }
+
 
 quint64 Courier::lastOpportunity() const
 {
@@ -68,11 +77,13 @@ quint64 Courier::lastOpportunity() const
 	return mLastOpportunity;
 }
 
+
 void  Courier::setLastOpportunity(quint64 now)
 {
 	OC_METHODGATE();
 	mLastOpportunity=now;
 }
+
 
 quint32 Courier::id()const
 {
@@ -80,11 +91,13 @@ quint32 Courier::id()const
 	return mID;
 }
 
+
 QString Courier::name() const
 {
 	OC_METHODGATE();
 	return mName;
 }
+
 
 quint32 Courier::serial()const
 {
@@ -92,18 +105,21 @@ quint32 Courier::serial()const
 	return mSerial;
 }
 
+
 QString Courier::toString() const
 {
 	OC_METHODGATE();
-	QString out="Courier{name="+mName+", id="+mID+", dest= "+mDestination+", serial="+QString::number(mSerial)+", RX="+(mandate().receiveActive?"ON":"OFF")+", TX="+(mandate().sendActive?"ON":"OFF")+"}";
+	QString out="Courier{name="+mName+", id="+QString::number(mID)+", dest= "+mDestination+", serial="+QString::number(mSerial)+", RX="+(mandate().receiveActive?"ON":"OFF")+", TX="+(mandate().sendActive?"ON":"OFF")+"}";
 	return out;
 }
+
 
 // Update courier state when channel has opportunity
 void Courier::update(quint64 now)
 {
 	OC_METHODGATE();
-	//It is perfectly fine to skip on this
+	Q_UNUSED(now);
+	// NOTE: It is perfectly fine to skip on this
 	//qWarning()<<"WARNING: Unimplemented update() in "<<mName<<"("<<mID<<")";
 }
 

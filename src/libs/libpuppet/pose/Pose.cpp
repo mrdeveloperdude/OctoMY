@@ -8,19 +8,20 @@
 
 #include "comms/messages/MessageType.hpp"
 
-#include "utility/Standard.hpp"
+#include "uptime/MethodGate.hpp"
+
 
 #include <QDataStream>
 #include <QDebug>
 
-//We support up to 32 servos per agent for now
+// We support up to 32 servos per agent for now
 const quint32 Pose::MAX_SIZE=32;
 
 Pose::Pose(quint32 size)
-	: mValues(qMin(MAX_SIZE,size))
+	: mValues(static_cast<int>(std::min(MAX_SIZE, size)))
 {
 	OC_METHODGATE();
-	if((quint32)mValues.size()!=size) {
+	if(static_cast<quint32>(mValues.size())!=size) {
 		qWarning()<<"ERROR: wanted Pose size "<< size << " was beyond the limit "<<MAX_SIZE;
 	}
 }
@@ -29,40 +30,42 @@ Pose::Pose(quint32 size)
 quint64 Pose::size() const
 {
 	OC_METHODGATE();
-	return mValues.size();
+	return static_cast<quint64>(mValues.size());
 }
 
 qreal Pose::value(quint32 index) const
 {
 	OC_METHODGATE();
-	if( index>=mValues.size()) {
+	if( index>= static_cast<quint32>(mValues.size())) {
 		return 0.0;
 	}
-	return mValues[index];
+	return mValues[static_cast<int>(index)];
 }
 
 void Pose::setValue(quint32 index, qreal value)
 {
 	OC_METHODGATE();
-	if( index>=mValues.size()) {
+	if( index>= static_cast<quint32>(mValues.size())) {
 		return;
 	}
-	mValues[index]=value;
+	mValues[static_cast<int>(index)]=value;
 }
 
 
 
 void Pose::setValues(QVector<qreal> values)
 {
-	quint32 sz=qMin(values.size(), mValues.size());
-	for(quint32 i=0; i<sz; ++i) {
+	OC_METHODGATE();
+	const int sz=qMin(values.size(), mValues.size());
+	for(int i=0; i<sz; ++i) {
 		mValues[i]=values[i];
 	}
 }
 void Pose::setValues(qreal *values, int n)
 {
-	quint32 sz=qMin(n, mValues.size());
-	for(quint32 i=0; i<sz; ++i) {
+	OC_METHODGATE();
+	const int sz=qMin(n, mValues.size());
+	for(int i=0; i<sz; ++i) {
 		mValues[i]=values[i];
 	}
 }
@@ -70,9 +73,9 @@ void Pose::setValues(qreal *values, int n)
 void Pose::mix(const Pose &other,qreal alpha)
 {
 	OC_METHODGATE();
-	const quint64 sz=qMin(mValues.size(), other.mValues.size());
+	const int sz=qMin(mValues.size(), other.mValues.size());
 	const qreal ialpha=1.0-alpha;
-	for(quint64  i=0; i<sz; ++i) {
+	for(int i=0; i<sz; ++i) {
 		mValues[i]=mValues[i]*ialpha+other.mValues[i]*alpha;
 	}
 }
@@ -94,7 +97,6 @@ QDataStream &Pose::send(QDataStream &ds) const
 }
 
 
-
 QDataStream &operator>>(QDataStream &ds, Pose &p)
 {
 	OC_FUNCTIONGATE();
@@ -103,16 +105,12 @@ QDataStream &operator>>(QDataStream &ds, Pose &p)
 }
 
 
-
-
 QDataStream &operator<<(QDataStream &ds, const Pose &p)
 {
 	OC_FUNCTIONGATE();
 	p.send(ds);
 	return ds;
 }
-
-
 
 
 QString Pose::toString() const
@@ -127,8 +125,8 @@ QString Pose::toString() const
 }
 
 
-
 QString ardumyActuatorValueToString (const Pose &v)
 {
+	OC_FUNCTIONGATE();
 	return v.toString();
 }

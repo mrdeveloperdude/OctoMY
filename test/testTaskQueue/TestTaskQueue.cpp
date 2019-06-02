@@ -1,8 +1,6 @@
 #include "TestTaskQueue.hpp"
 
-#include "utility/TaskQueue.hpp"
-#include "utility/Utility.hpp"
-
+#include "utility/concurrent/TaskQueue.hpp"
 
 #include <QtConcurrent/QtConcurrent>
 
@@ -17,7 +15,6 @@ static quint32 testWorkload(TQ_TEST_TYPE type, quint32 seed, quint32 num)
 	switch (type) {
 	case TQTT_NOISE: {
 		quint32 mNoise=0, mCarry=0, mSeed=seed, mAcc=0;
-
 
 		for(quint32 i=0; i<num; ++i) {
 			mNoise = mSeed;
@@ -49,11 +46,10 @@ static quint32 testWorkload(TQ_TEST_TYPE type, quint32 seed, quint32 num)
 	return 0;
 }
 
+
 void TestTaskQueue::test()
 {
-
 	const int taskCount=10000, maxThreadCount=taskCount/10, timesToRepeatTest=100;
-
 	for(TQ_TEST_TYPE testType=TQTT_NOISE; testType < TQTT_CT; testType=static_cast<TQ_TEST_TYPE>(testType + 1)) {
 		QVector<int> doneStatuses(taskCount), *doneStatusesPtr=&doneStatuses;
 		for(int j=0; j<timesToRepeatTest; ++j) {
@@ -92,11 +88,9 @@ void TestTaskQueue::test()
 			for(int v:doneStatuses) {
 				QVERIFY(v==(j+1));
 			}
-
 		}
 	}
 }
 
 
 OC_TEST_MAIN(test, TestTaskQueue)
-

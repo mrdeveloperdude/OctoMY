@@ -3,7 +3,7 @@
 #include "IrisRendrerTestWidget.hpp"
 
 #include "expression/IrisRendrer.hpp"
-#include "utility/Utility.hpp"
+#include "utility/time/HumanTime.hpp"
 
 #include <QPainter>
 #include <QImage>
@@ -13,7 +13,6 @@
 #include <QSignalSpy>
 #include <QTimer>
 #include <QDateTime>
-
 
 
 void TestIrisRendrer::testUI()
@@ -52,12 +51,12 @@ void TestIrisRendrer::testUI()
 	while(0==spy.count()) {
 		spy.wait(100);
 	}
-
 }
+
 
 void TestIrisRendrer::testSave()
 {
-	qsrand(utility::currentMsecsSinceEpoch<quint64>());
+	qsrand(utility::time::currentMsecsSinceEpoch<quint64>());
 	const QImage::Format fmt=QImage::Format_ARGB32;
 	const QSize sz(512,512);
 	QImage im(sz,fmt);
@@ -72,16 +71,12 @@ void TestIrisRendrer::testSave()
 		ir.draw(r,p);
 		im.save("/tmp/iris"+QString::number(i)+".png");
 	}
-
-
-
 }
-
 
 
 void TestIrisRendrer::testHuge()
 {
-	qsrand(utility::currentMsecsSinceEpoch<quint64>());
+	qsrand(utility::time::currentMsecsSinceEpoch<quint64>());
 	const QImage::Format fmt=QImage::Format_ARGB32;
 	int s=2160;
 	const QSize sz(s,s);
@@ -94,9 +89,7 @@ void TestIrisRendrer::testHuge()
 	ir.setPortableID(pid);
 	ir.draw(r,p);
 	im.save("/tmp/iris_huge.png");
-
 }
-
 
 
 OC_TEST_MAIN(test, TestIrisRendrer)

@@ -2,14 +2,15 @@
 #define DISCOVERYCOURIER_HPP
 
 #include "Courier.hpp"
-#include "basic/Associate.hpp"
-#include "basic/LoopingBuffer.hpp"
+#include "address/Associate.hpp"
+#include "utility/data/LoopingBuffer.hpp"
+
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QList>
 #include <QMap>
 #include <QString>
 #include <QVariantMap>
-#include <QSharedPointer>
 
 /*!
  * \brief The DiscoveryCourier class is used by DiscoveryClient to test direct
@@ -29,12 +30,11 @@ private:
 	static const LoopingBuffer sLooper;
 
 public:
-	explicit DiscoveryCourier(QSharedPointer<Associate> ass, CommsChannel &comms, QObject *parent = nullptr);
-	virtual ~DiscoveryCourier();
+	explicit DiscoveryCourier(QSharedPointer<Associate> ass, QSharedPointer<CommsChannel> comms, QObject *parent = nullptr);
+	virtual ~DiscoveryCourier() Q_DECL_OVERRIDE;
 
 // Courier interface
 public:
-
 	//Let the CommChannel know what we want
 	CourierMandate mandate() const Q_DECL_OVERRIDE;
 
@@ -47,9 +47,9 @@ public:
 	quint16 dataReceived(QDataStream &ds, quint16 availableBytes) Q_DECL_OVERRIDE;
 
 signals:
-
 	void authenticationUpdate();
 
 };
 
-#endif // DISCOVERYCOURIER_HPP
+#endif
+// DISCOVERYCOURIER_HPP

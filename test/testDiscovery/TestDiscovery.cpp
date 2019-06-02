@@ -1,12 +1,12 @@
 #include "TestDiscovery.hpp"
 
 #include "zoo/ZooServer.hpp"
-#include "zoo/ZooClient.hpp"
+#include "client/zoo/ZooClient.hpp"
 #include "discovery/DiscoveryClient.hpp"
 #include "node/NodeRole.hpp"
 #include "node/Node.hpp"
-#include "node/NodeLauncher.hpp"
-#include "node/AppContext.hpp"
+#include "app/NodeLauncher.hpp"
+#include "app/AppContext.hpp"
 #include "agent/Agent.hpp"
 #include "remote/Remote.hpp"
 
@@ -15,6 +15,7 @@
 #include <QProcessEnvironment>
 #include <QCommandLineParser>
 #include <QStandardPaths>
+
 
 void TestDiscovery::test()
 {
@@ -77,8 +78,6 @@ void TestDiscovery::test()
 		testRemote->discoveryClient()->setStart(false);
 	}
 }
-
-
 
 
 OC_TEST_MAIN(test, TestDiscovery)

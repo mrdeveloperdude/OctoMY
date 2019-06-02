@@ -5,9 +5,10 @@
 #include "identity/Identicon.hpp"
 #include "security/PortableID.hpp"
 
-#include "utility/Utility.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/ConnectionType.hpp"
 
-
+#include "utility/time/HumanTime.hpp"
 
 #include <QDateTime>
 #include <QPainter>
@@ -29,16 +30,17 @@
 
 EyesWidget::EyesWidget(QWidget *parent)
 	: QWidget(parent)
-	, mStartTime(utility::currentMsecsSinceEpoch<quint64>())
+	, mStartTime(utility::time::currentMsecsSinceEpoch<quint64>())
 	, mLastTime(0)
 	, mBlink(0.0)
 	, mCycle(0.0)
-	, mLeftEye(QVector2D(-0.2f, 0.0f), -0.1*M_PI)
-	, mRightEye(QVector2D(0.2f, 0.0f), 0.1*M_PI)
+	, mLeftEye(QVector2D(-0.2f, 0.0f), static_cast<float>(-0.1*M_PI) )
+	, mRightEye(QVector2D(0.2f, 0.0f), static_cast<float>(0.1*M_PI) )
 	, mBgBrush("black")
 	, mEyeSteer(0,0)
 	, mHideEyes(true)
 {
+	OC_METHODGATE();
 	mTimer.setTimerType(Qt::PreciseTimer);
 	if(!connect(&mTimer,SIGNAL(timeout()),this,SLOT(onUpdateTimer()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
@@ -55,8 +57,9 @@ EyesWidget::EyesWidget(QWidget *parent)
 
 void EyesWidget::updateIris()
 {
-	const qreal sLeft=mLeftEye.irisRadius()*width()*2.0;
-	const int sLefti=static_cast<int>(qFloor(sLeft));
+	OC_METHODGATE();
+	const float sLeft=mLeftEye.irisRadius() * width() * 2.0f;
+	const int sLefti=static_cast<int>(std::floor(sLeft));
 	QRect rectLeft(0,0, sLefti, sLefti);
 	QSize sizeLeft=rectLeft.size();
 	if(sizeLeft.width() > 0 && sizeLeft.height() > 0 ) {
@@ -66,8 +69,8 @@ void EyesWidget::updateIris()
 		mLeftEye.setIrisImage(img);
 	}
 
-	const qreal sRight=mRightEye.irisRadius()*width()*2.0;
-	const int sRighti=static_cast<int>(qFloor(sRight));
+	const float sRight=mRightEye.irisRadius()*width()*2.0f;
+	const int sRighti=static_cast<int>(std::floor(sRight));
 	QRect rectRight(0,0, sRighti, sRighti);
 	QSize sizeRight=rectRight.size();
 	if(sizeRight.width() > 0 && sizeRight.height() > 0 ) {
@@ -83,6 +86,7 @@ void EyesWidget::updateIris()
 
 void EyesWidget::setPortableID(PortableID &pid)
 {
+	OC_METHODGATE();
 	// qDebug()<<"Setting eye colors from PID: "<<pid;
 	QString id=pid.id();
 	const bool oldHideEyes=mHideEyes;
@@ -102,18 +106,19 @@ void EyesWidget::setPortableID(PortableID &pid)
 
 void EyesWidget::paintEvent(QPaintEvent *)
 {
+	OC_METHODGATE();
 	mLeftEye.update();
 	mRightEye.update();
 
 	QPainter painter(this);
-	const qreal w=painter.device()->width();
-	const qreal h=painter.device()->height();
+	const float w=painter.device()->width();
+	const float h=painter.device()->height();
 	painter.setRenderHint(QPainter::Antialiasing, true);
 
 	if(mHideEyes) {
 		// Eyes denied!
 		QPen pen(QColor(192, 64, 32, 128));
-		const int b=5, b2=b*2, b4=b2*2, wi=qFloor(w), hi=qFloor(h);
+		const int b=5, b2=b*2, b4=b2*2, wi=static_cast<int>(std::floor(w)), hi=static_cast<int>(std::floor(h));
 		pen.setStyle(Qt::DotLine);
 		pen.setCapStyle(Qt::RoundCap);
 		pen.setWidth(b);
@@ -123,11 +128,11 @@ void EyesWidget::paintEvent(QPaintEvent *)
 		//painter.drawLine(QPoint(b4, h-b4), QPoint(w-b4, b4));
 	} else {
 		painter.setPen(Qt::NoPen);
-		painter.translate(w/2,h/2);
-		const qreal s=w;// Width is most important.
-		//const qreal fh=h/w;// wee need to know face height
+		painter.translate(static_cast<qreal>(w/2), static_cast<qreal>(h/2));
+		const qreal s=static_cast<qreal>(w);// Width is most important.
+		//const float fh=h/w;// wee need to know face height
 		painter.scale(s,s);
-		//const qreal angle=(cycle*M_PI*2.0f)/cycleTime;
+		//const float angle=(cycle*M_PI*2.0f)/cycleTime;
 		//painter.drawRect(0,sin(angle)/2,1,0.1);
 
 
@@ -142,7 +147,8 @@ void EyesWidget::paintEvent(QPaintEvent *)
 
 void EyesWidget::onUpdateTimer()
 {
-	const qreal alpha=0.8, beta=1.0-alpha;
+	OC_METHODGATE();
+	const float alpha=0.8f, beta=1.0f-alpha;
 	const QVector2D lastEyeSteerSmooth=mEyeSteerSmooth;
 	mEyeSteerSmooth=(mEyeSteerSmooth*static_cast<float>(alpha))+(mEyeSteer*static_cast<float>(beta));
 	QVector2D dif=(mEyeSteerSmooth-mEyeSteer);
@@ -155,15 +161,15 @@ void EyesWidget::onUpdateTimer()
 		mLeftEye.setSteer(mEyeSteerSmooth);
 		mRightEye.setSteer(mEyeSteerSmooth);
 	}
-	const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
+	const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
 	//const quint64 sinceStart=now-startTime;
 	const quint64 sinceLastTime=now-mLastTime;
 	mLastTime=now;
-	const qreal cycleTime=7.0;
-	mCycle+=(static_cast<qreal>(sinceLastTime))/1000.0;
-	mCycle=fmod(mCycle,cycleTime);
-	qreal lastBlink=mBlink;
-	const qreal blinkTime=0.2;
+	const float cycleTime=7.0;
+	mCycle+=(static_cast<float>(sinceLastTime))/1000.0f;
+	mCycle=std::fmod(mCycle,cycleTime);
+	float lastBlink=mBlink;
+	const float blinkTime=0.2f;
 	if(mCycle<blinkTime) {
 		mBlink=mCycle/blinkTime;
 	} else {
@@ -182,13 +188,14 @@ void EyesWidget::onUpdateTimer()
 
 void EyesWidget::hideEvent(QHideEvent *)
 {
+	OC_METHODGATE();
 	mTimer.stop();
 	setMouseTracking(false);
-
 }
 
 void EyesWidget::showEvent(QShowEvent *)
 {
+	OC_METHODGATE();
 	mTimer.start(1000/60);
 	setMouseTracking(true);
 }
@@ -196,6 +203,7 @@ void EyesWidget::showEvent(QShowEvent *)
 
 void EyesWidget::mousePressEvent(QMouseEvent *e)
 {
+	OC_METHODGATE();
 	QVector2D p=QVector2D(e->pos());
 	QSize sz=size();
 	QVector2D s=QVector2D(sz.width(),sz.height());
@@ -204,6 +212,7 @@ void EyesWidget::mousePressEvent(QMouseEvent *e)
 
 void EyesWidget::mouseMoveEvent(QMouseEvent *e)
 {
+	OC_METHODGATE();
 	QVector2D p=QVector2D(e->pos());
 	QSize sz=size();
 	QVector2D s=QVector2D(sz.width(),sz.height());
@@ -231,12 +240,14 @@ void EyesWidget::mouseMoveEvent(QMouseEvent *e)
 
 void EyesWidget::leaveEvent(QEvent *)
 {
+	OC_METHODGATE();
 	mEyeSteer=QVector2D(0,0);
 }
 
 
 void EyesWidget::resizeEvent(QResizeEvent *)
 {
+	OC_METHODGATE();
 	// TODO: Limit frequency in a smart way
 	updateIris();
 }

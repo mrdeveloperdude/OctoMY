@@ -1,22 +1,17 @@
 #ifndef SYNCPARAMETER_HPP
 #define SYNCPARAMETER_HPP
 
-#include "utility/Standard.hpp"
+#include "uptime/MethodGate.hpp"
+#include "utility/network/SerialSize.hpp"
 #include "ISyncParameter.hpp"
-#include "utility/SerialSize.hpp"
 #include "pose/Pose.hpp"
-
 #include "ardumyGeoCoordinate.hpp"
 
 #include <QObject>
 #include <QGeoCoordinate>
 
 
-
-
-
 class SyncContext;
-
 
 
 template <typename T>
@@ -89,11 +84,13 @@ SyncParameter<T>::SyncParameter(const QString &name, const T &val, SyncContext &
 	, mNeedToSendAck(false)
 	, mNeedToSendDataAndReceiveAck(false)
 {
+	OC_METHODGATE();
 }
 
 template <typename T>
 void SyncParameter<T>::setLocalValue(const T &val)
 {
+	OC_METHODGATE();
 	mLocalValue=val;
 	markLocalValueAsUpdated();
 }
@@ -101,6 +98,7 @@ void SyncParameter<T>::setLocalValue(const T &val)
 template <typename T>
 void SyncParameter<T>::setLocalNoChange()
 {
+	OC_METHODGATE();
 	markLocalValueAsUpdated();
 }
 
@@ -108,6 +106,7 @@ void SyncParameter<T>::setLocalNoChange()
 template <typename T>
 void SyncParameter<T>::setRemoteValue(const T &val)
 {
+	OC_METHODGATE();
 	mRemoteValue=val;
 	markRemoteValueAsUpdated();
 }
@@ -116,6 +115,7 @@ void SyncParameter<T>::setRemoteValue(const T &val)
 template <typename T>
 void SyncParameter<T>::setRemoteNoChange()
 {
+	OC_METHODGATE();
 	markRemoteValueAsUpdated();
 }
 
@@ -123,6 +123,7 @@ void SyncParameter<T>::setRemoteNoChange()
 template <typename T>
 void SyncParameter<T>::markLocalValueAsUpdated()
 {
+	OC_METHODGATE();
 	mLocalTimestamp=mCTX.now();
 	mNeedToSendDataAndReceiveAck=true;
 	signalValueChanged();
@@ -132,6 +133,7 @@ void SyncParameter<T>::markLocalValueAsUpdated()
 template <typename T>
 void SyncParameter<T>::markRemoteValueAsUpdated()
 {
+	OC_METHODGATE();
 	mRemoteTimestamp=mCTX.now();
 	mNeedToSendAck=true;
 	signalValueChanged();
@@ -141,12 +143,14 @@ void SyncParameter<T>::markRemoteValueAsUpdated()
 template <typename T>
 T SyncParameter<T>::localValue() const
 {
+	OC_METHODGATE();
 	return mLocalValue;
 }
 
 template <typename T>
 T SyncParameter<T>::remoteValue() const
 {
+	OC_METHODGATE();
 	return mRemoteValue;
 }
 
@@ -154,24 +158,28 @@ T SyncParameter<T>::remoteValue() const
 template <typename T>
 T &SyncParameter<T>::localValueRef()
 {
+	OC_METHODGATE();
 	return mLocalValue;
 }
 
 template <typename T>
 T &SyncParameter<T>::remoteValueRef()
 {
+	OC_METHODGATE();
 	return mRemoteValue;
 }
 
 template <typename T>
 quint64 SyncParameter<T>::localTimestamp() const
 {
+	OC_METHODGATE();
 	return mLocalTimestamp;
 }
 
 template <typename T>
 quint64 SyncParameter<T>::remoteTimestamp() const
 {
+	OC_METHODGATE();
 	return mRemoteTimestamp;
 }
 
@@ -179,6 +187,7 @@ quint64 SyncParameter<T>::remoteTimestamp() const
 template <typename T>
 T SyncParameter<T>::bestValue(bool isLocal) const
 {
+	OC_METHODGATE();
 	if(mLocalTimestamp==mRemoteTimestamp) {
 		return isLocal?mLocalValue:mRemoteValue;
 	} else {
@@ -199,6 +208,7 @@ T SyncParameter<T>::bestValue(bool isLocal) const
 template<typename T>
 QString valueToString (const T v)
 {
+	OC_FUNCTIONGATE();
 	return QString::number(v);
 }
 
@@ -210,10 +220,11 @@ QString valueToString (const T v)
 template <typename T>
 quint16 SyncParameter<T>::bytes() const
 {
+	OC_METHODGATE();
 	SerialSize size;
 	T t=localValue();
 	quint64 s=size(t);
-	return (quint16)s;
+	return static_cast<quint16>(s);
 }
 
 
@@ -222,6 +233,7 @@ quint16 SyncParameter<T>::bytes() const
 template <typename T>
 QString SyncParameter<T>::toString() const
 {
+	OC_METHODGATE();
 	const QString localValueString=ardumyActuatorValueToString(mLocalValue);
 	const QString remoteValueString=ardumyActuatorValueToString(mRemoteValue);
 	return QString("SyncParameter ")+mName+" [ localValue="+localValueString+" ("+QString::number(mLocalTimestamp)+QString("), remoteValue=")+remoteValueString+" ("+QString::number(mRemoteTimestamp)+"), needToSendAck="+(needToSendAck()?"true":"false")+", needToSendDataAndReceiveAck="+(needToSendDataAndReceiveAck()?"true":"false")+"]";//, ctx(now="+QString::number(mCTX.now())+", rtt="+QString::number(mCTX.roundTripTime())+")]";
@@ -231,6 +243,7 @@ QString SyncParameter<T>::toString() const
 template <typename T>
 QString SyncParameter<T>::name() const
 {
+	OC_METHODGATE();
 	return mName;
 }
 
@@ -239,6 +252,7 @@ QString SyncParameter<T>::name() const
 template <typename T>
 QDebug &SyncParameter<T>::toDebug(QDebug &d) const
 {
+	OC_METHODGATE();
 	const QString localValueString=ardumyActuatorValueToString(mLocalValue);
 	const QString remoteValueString=ardumyActuatorValueToString(mRemoteValue);
 	d.nospace() << "SyncParameter "<< mName <<" [ localValue=" << localValueString << " (" << mLocalTimestamp << "), remoteValue=" << remoteValueString << " (" << mRemoteTimestamp << "), needToSendAck=" << (needToSendAck()?"true":"false")  << ", needToSendDataAndReceiveAck=" << (needToSendDataAndReceiveAck()?"true":"false") <<"]";//, ctx(now=" << (mCTX.now()) << ", rtt=" << mCTX.roundTripTime() << ")]";
@@ -249,6 +263,7 @@ QDebug &SyncParameter<T>::toDebug(QDebug &d) const
 template <typename T>
 void SyncParameter<T>::forceSync()
 {
+	OC_METHODGATE();
 	//qDebug()<<" --==## %% % FORCE SYNC";
 	mNeedToSendAck=true;
 	mNeedToSendDataAndReceiveAck=true;
@@ -257,6 +272,7 @@ void SyncParameter<T>::forceSync()
 template <typename T>
 QDataStream &SyncParameter<T>::send(QDataStream &ds)
 {
+	OC_METHODGATE();
 	//qDebug()<<"TX "<<valueToString(bestValue(false));
 	ds << bestValue(false);
 	return ds;
@@ -265,6 +281,7 @@ QDataStream &SyncParameter<T>::send(QDataStream &ds)
 template <typename T>
 QDataStream &SyncParameter<T>::receive(QDataStream &ds)
 {
+	OC_METHODGATE();
 	T value;//=(T)0;
 	ds >> value;
 	//qDebug()<<"RX "<<valueToString(value);
@@ -275,12 +292,14 @@ QDataStream &SyncParameter<T>::receive(QDataStream &ds)
 template <typename T>
 bool SyncParameter<T>::needToSendAck() const
 {
+	OC_METHODGATE();
 	return mNeedToSendAck;
 }
 
 template <typename T>
 bool SyncParameter<T>::needToSendDataAndReceiveAck() const
 {
+	OC_METHODGATE();
 	return mNeedToSendDataAndReceiveAck;
 }
 
@@ -288,6 +307,7 @@ bool SyncParameter<T>::needToSendDataAndReceiveAck() const
 template <typename T>
 void SyncParameter<T>::ackSent()
 {
+	OC_METHODGATE();
 	if(!mNeedToSendAck) {
 		qWarning()<<"WARNING: sent ack when not expecting it";
 	}
@@ -298,10 +318,12 @@ void SyncParameter<T>::ackSent()
 template <typename T>
 void SyncParameter<T>::ack()
 {
+	OC_METHODGATE();
 	if(!mNeedToSendDataAndReceiveAck) {
 		qWarning()<<"WARNING: received ack when not expecting it";
 	}
 	mNeedToSendDataAndReceiveAck=false;
 }
 
-#endif // SYNCPARAMETER_HPP
+#endif
+// SYNCPARAMETER_HPP

@@ -3,9 +3,9 @@
 
 #include "comms/couriers/CourierSet.hpp"
 
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QDataStream>
-#include <QSharedPointer>
 
 class HubClient;
 
@@ -27,15 +27,10 @@ public:
 	virtual ~HubCourierSet();
 
 public:
-
 	QSharedPointer<AgentStateCourier> agentStateCourier();
+
 };
 
 
-#endif // HUBCOURIERSET_HPP
-
-
-
-
-
-
+#endif
+// HUBCOURIERSET_HPP

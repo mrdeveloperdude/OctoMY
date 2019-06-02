@@ -2,8 +2,11 @@
 
 #include "CreepyVoice.hpp"
 #include "AudioStream.hpp"
-#include "utility/Standard.hpp"
 #include "security/PortableID.hpp"
+
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+#include "uptime/ConnectionType.hpp"
 
 
 

@@ -1,7 +1,7 @@
+# The remote represents a handheld remote control. Any code linked into this executable will be executed on your smarphone as part of the remote control app.
+
 TEMPLATE = app
 TARGET = remote
-
-# REMOTE REPRESENTS THE DEVICE USED TO CONTROL THE ROBOT SUCH AS A HANHELD REMOTE CONTROL OR PHONE WITH REMOTE CONTROL APP
 
 include($$PRIS/common.pri)
 include($$PRIS/app.pri)
@@ -13,6 +13,7 @@ HEADERS += \
 SOURCES += \
 	RemoteMain.cpp
 
+# We support android as a target with the following files that are spesific to the android build system (ADK/NDK)
 android {
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
@@ -31,8 +32,7 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 }
 
-
-contains(DEFINES, USE_STATUS){
-message("FROM remote.pro:")
+contains(DEFINES, OC_USE_FEATURE_STATUS){
+message("FROM remote.pro:" $$ANDROID_PACKAGE_SOURCE_DIR)
 include($$PRIS/status.pri)
 }

@@ -1,12 +1,11 @@
-include($$TESTS/test.pri)
+include($$TESTS/pris/test.pri)
 
 TARGET = test_nodeassociate
 
 HEADERS += \
-    TestAssociate.hpp
+	TestAssociate.hpp
 
 SOURCES += \
-    TestAssociate.cpp
+	TestAssociate.cpp
 
 include($$TESTS/test_autorun.pri)
-

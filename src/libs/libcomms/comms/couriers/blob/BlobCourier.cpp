@@ -1,6 +1,8 @@
 #include "BlobCourier.hpp"
 
-#include "utility/Utility.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+#include "utility/time/HumanTime.hpp"
 
 #include "Blob.hpp"
 #include "BlobChunk.hpp"
@@ -16,6 +18,7 @@ const quint16 BlobCourier::BLOB_CHUNK_SIZE=400;
 
 const QDebug &operator<<(QDebug &d, const BlobCourier::Ack &a)
 {
+	OC_FUNCTIONGATE();
 	d.nospace().noquote()<<"ack.blobID="<<a.blobID()<< (a.isNameAck()?", ack.isNameAck=TRUE":(", ack.chunkID="+QString::number(a.chunkID())));
 	return d.space();
 }
@@ -24,6 +27,7 @@ const QDebug &operator<<(QDebug &d, const BlobCourier::Ack &a)
 
 const QDataStream &operator<<(QDataStream &d, const BlobCourier::Ack &a)
 {
+	OC_FUNCTIONGATE();
 	d<<a.mBlobID;
 	d<<a.mChunkID;
 	return d;
@@ -33,6 +37,7 @@ const QDataStream &operator<<(QDataStream &d, const BlobCourier::Ack &a)
 
 const QDataStream &operator>>(QDataStream &d, BlobCourier::Ack &a)
 {
+	OC_FUNCTIONGATE();
 	quint16 b=0;
 	d>>b;
 	a.mBlobID=b;
@@ -43,17 +48,18 @@ const QDataStream &operator>>(QDataStream &d, BlobCourier::Ack &a)
 }
 
 
-BlobCourier::BlobCourier(CommsChannel &comms, QObject *parent)
+BlobCourier::BlobCourier(QSharedPointer<CommsChannel> comms, QObject *parent)
 	: Courier("Blob",(Courier::FIRST_USER_ID+4), comms, parent)
 	, mTotalSendingBlobDataSize(0)
 	, mTotalReceivingBlobDataSize(0)
 	, mLastSend(0)
 {
-
+	OC_METHODGATE();
 }
 
 quint16 BlobCourier::findFreeSendingBlobID()
 {
+	OC_METHODGATE();
 	quint16 out=0;
 	const quint16 M=0xFFFF;
 	do {
@@ -65,6 +71,7 @@ quint16 BlobCourier::findFreeSendingBlobID()
 
 quint16 BlobCourier::findNextSendingBlobID()
 {
+	OC_METHODGATE();
 	quint16 out=0;
 	//Avoid FPE
 	if(mTotalSendingBlobDataSize<=0) {
@@ -72,7 +79,7 @@ quint16 BlobCourier::findNextSendingBlobID()
 		return out;
 	}
 	// Select a random spot
-	quint64 spot=(qrand()%mTotalSendingBlobDataSize);
+	quint64 spot=(static_cast<quint64>(qrand())%mTotalSendingBlobDataSize);
 	quint64 acc=0;
 	// Accumulate size until accumulator exceeds said spot
 	for(QHash<quint16, SendingBlob *>::iterator it=mSendingBlobsById.begin(), e=mSendingBlobsById.end(); it!=e; ++it) {
@@ -89,6 +96,8 @@ quint16 BlobCourier::findNextSendingBlobID()
 
 BlobFuture BlobCourier::submitSendingBlob(QString name, QByteArray data, qreal probability)
 {
+	OC_METHODGATE();
+	Q_UNUSED(probability);
 	static const quint64 MAX_BLOB_SIZE=2LL*1024*1024*1024;
 	BlobFuture future(name, this);
 	if(name.size()<=0) {
@@ -104,12 +113,12 @@ BlobFuture BlobCourier::submitSendingBlob(QString name, QByteArray data, qreal p
 		if(0==id) {
 			future.fail("Could not generate blob ID");
 		} else {
-			const quint64 newTotalBlobSize=mTotalSendingBlobDataSize+data.size();
+			const quint64 newTotalBlobSize=mTotalSendingBlobDataSize + static_cast<quint64>(data.size());
 			// TODO: make this limit adapt to available application memory (or config limitation)
 			if(newTotalBlobSize>=MAX_BLOB_SIZE) {
 				future.fail("Too much data in transit");
 			} else {
-				SendingBlob *blob=OC_NEW SendingBlob(name, id, BLOB_CHUNK_SIZE, data, qBound(0.1,probability,0.9));
+				SendingBlob *blob=OC_NEW SendingBlob(name, id, BLOB_CHUNK_SIZE, data, static_cast<quint8>(0xFF * qBound(0.1, probability, 0.9)));
 				if(nullptr==blob) {
 					future.fail("Could not allocate blob");
 				} else {
@@ -129,6 +138,7 @@ BlobFuture BlobCourier::submitSendingBlob(QString name, QByteArray data, qreal p
 
 QByteArray BlobCourier::dataForSendingBlob(QString name)
 {
+	OC_METHODGATE();
 	if(mSendingBlobsByName.contains(name)) {
 		Blob *blob=mSendingBlobsByName[name];
 		if(nullptr!=blob) {
@@ -141,6 +151,7 @@ QByteArray BlobCourier::dataForSendingBlob(QString name)
 
 QByteArray BlobCourier::dataForReceivingBlob(QString name)
 {
+	OC_METHODGATE();
 	if(mReceivingBlobsByName.contains(name)) {
 		Blob *blob=mReceivingBlobsByName[name];
 		if(nullptr!=blob) {
@@ -153,22 +164,27 @@ QByteArray BlobCourier::dataForReceivingBlob(QString name)
 
 void BlobCourier::freeSendingBlob(QString name)
 {
+	OC_METHODGATE();
+	Q_UNUSED(name);
 	qWarning()<<"ERROR: NOT IMPLEMENTED YET! ";
 }
 
 quint64 BlobCourier::totalSendingDataSize()
 {
+	OC_METHODGATE();
 	return mTotalSendingBlobDataSize;
 }
 
 quint64 BlobCourier::totalReceivingDataSize()
 {
+	OC_METHODGATE();
 	return mTotalReceivingBlobDataSize;
 }
 
 
 void BlobCourier::printSendingSummary(QString title)
 {
+	OC_METHODGATE();
 	int tot=0;
 	int sent=0;
 	int acked=0;
@@ -213,12 +229,14 @@ void BlobCourier::printSendingSummary(QString title)
 
 CourierMandate BlobCourier::mandate() const
 {
+	OC_METHODGATE();
 	const bool hasUnsentBlobs=(!mSendingBlobsById.isEmpty()) || (!mReceivingBlobsById.isEmpty());
 	return CourierMandate(BLOB_CHUNK_SIZE, 1, mLastSend + 10, true, hasUnsentBlobs);
 }
 
 quint16 BlobCourier::sendingOpportunity(QDataStream &ds)
 {
+	OC_METHODGATE();
 	quint16 bytes=0;
 	// Get blob to send if any
 	const quint16 blobID=findNextSendingBlobID();
@@ -243,7 +261,7 @@ quint16 BlobCourier::sendingOpportunity(QDataStream &ds)
 			if(!blob->isNameAcknowleged()) {
 				const QString name=blob->name().left(10);
 				const QByteArray nameArray=name.toUtf8();
-				const quint8 nameSize=nameArray.size();
+				const quint8 nameSize=static_cast<quint8>(nameArray.size());
 				// Send Blob Name Size
 				ds << nameSize;
 				bytes+=sizeof(quint8);
@@ -251,7 +269,7 @@ quint16 BlobCourier::sendingOpportunity(QDataStream &ds)
 
 				// Send Blob Name Characters
 				for(quint8 i=0; i<nameSize; ++i) {
-					const quint8 ch=nameArray.at(i);
+					const quint8 ch=static_cast<quint8>(nameArray.at(i));
 					ds<<ch;
 					bytes+=sizeof(quint8);
 				}
@@ -281,7 +299,7 @@ quint16 BlobCourier::sendingOpportunity(QDataStream &ds)
 
 				// Send Chunk Size
 				QByteArray data=chunk.data();
-				const quint16 chunkSize=(quint16)data.size();
+				const quint16 chunkSize=static_cast<quint16>(data.size());
 				ds << chunkSize;
 				bytes+=sizeof(quint16);
 				//qDebug()<<"BLOB TX chunkSize="<<chunkSize;
@@ -315,8 +333,8 @@ quint16 BlobCourier::sendingOpportunity(QDataStream &ds)
 	}
 	// Send Ack Count
 	const quint16 MAX_ACKS=(BLOB_CHUNK_SIZE-bytes-4+8)/4;
-	const quint16 numAcks=mPendingAcks.size();
-	const quint8 ackCount=qMin(numAcks,MAX_ACKS);
+	const quint16 numAcks=static_cast<quint16>(mPendingAcks.size());
+	const quint8 ackCount=static_cast<quint8>(qMin(numAcks,MAX_ACKS));
 	ds << ackCount;
 	bytes+=sizeof(quint8);
 	//qDebug()<<"BLOB TX ackCount="<<ackCount<<numAcks<<MAX_ACKS;
@@ -331,7 +349,7 @@ quint16 BlobCourier::sendingOpportunity(QDataStream &ds)
 
 	}
 
-	mLastSend=utility::currentMsecsSinceEpoch<quint64>();
+	mLastSend=utility::time::currentMsecsSinceEpoch<quint64>();
 	//Return number of bytes sent
 	return bytes;
 }
@@ -339,6 +357,8 @@ quint16 BlobCourier::sendingOpportunity(QDataStream &ds)
 
 quint16 BlobCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 {
+	OC_METHODGATE();
+	Q_UNUSED(availableBytes);
 	quint16 bytes=0;
 
 	// Read blob ID
@@ -366,7 +386,7 @@ quint16 BlobCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 				quint8 ch=0;
 				ds  >> ch;
 				bytes+=sizeof(quint8);
-				nameArray[i]=ch;
+				nameArray[i]=static_cast<char>(ch);
 			}
 
 			// Read Blob Size
@@ -380,7 +400,7 @@ quint16 BlobCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 
 			// Register new blob with newly received name and size
 			if(!mReceivingBlobsByName.contains(name)) {
-				blob=OC_NEW ReceivingBlob(name, blobId, BLOB_CHUNK_SIZE, blobSize );
+				blob=OC_NEW ReceivingBlob(name, blobId, BLOB_CHUNK_SIZE, static_cast<quint32>(blobSize) );
 				mReceivingBlobsByName.insert(name, blob);
 				mReceivingBlobsById.insert(blobId, blob);
 				//qDebug()<<"BLOB RX new rx blob registered: "<<name<<"="<<blobId;
@@ -440,12 +460,12 @@ quint16 BlobCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 
 		if(checksumOK) {
 			if(nullptr!=blob) {
-				ReceivingBlobChunk chunk=blob->chunk(chunkId);
+				ReceivingBlobChunk chunk=blob->chunk(static_cast<int>(chunkId));
 				if(chunk.isValid()) {
 					// Mark Chunk as read
 					chunk.setReceived(chunkBytesIn.data(), chunkSize);
 					// Append pending ack for this chunk
-					Ack *ack=OC_NEW Ack(blobId, chunkId);
+					Ack *ack=OC_NEW Ack(blobId, static_cast<quint16>(chunkId) );
 					if(nullptr!=ack) {
 						//qDebug()<<"BLOB RX appending pending ack for chunk";
 						mPendingAcks.append(ack);

@@ -2,8 +2,6 @@
 #include "ui_NetworkSettingsTestWidget.h"
 
 
-
-
 NetworkSettingsTestWidget::NetworkSettingsTestWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::NetworkSettingsTestWidget)
@@ -12,16 +10,19 @@ NetworkSettingsTestWidget::NetworkSettingsTestWidget(QWidget *parent)
 	ui->setupUi(this);
 }
 
+
 NetworkSettingsTestWidget::~NetworkSettingsTestWidget()
 {
 	delete ui;
 }
+
 
 void NetworkSettingsTestWidget::on_pushButtonConfigure_clicked()
 {
 	NetworkSettingsWidget *nsw=ui->widgetNetworkSettingsWidget;
 	nsw->configure(mAddresslist);
 }
+
 
 void NetworkSettingsTestWidget::on_pushButtonToggleTimer_toggled(bool checked)
 {

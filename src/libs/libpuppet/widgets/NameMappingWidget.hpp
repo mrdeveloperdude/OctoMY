@@ -59,4 +59,5 @@ private:
 
 };
 
-#endif // NAMEMAPPINGWIDGET_HPP
+#endif
+// NAMEMAPPINGWIDGET_HPP

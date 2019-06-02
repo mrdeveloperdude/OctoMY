@@ -7,6 +7,8 @@ CommsSignalLogger::CommsSignalLogger(QString name, QObject *parent)
 {
 
 }
+
+
 CommsSignalLogger::~CommsSignalLogger()
 {
 
@@ -18,10 +20,12 @@ void CommsSignalLogger::onCommsError(QString message)
 	qDebug()<<mName<<": onCommsError("<<message<<")";
 }
 
+
 void CommsSignalLogger::onCommsClientAdded(CommsSession *c)
 {
 	qDebug()<<mName<<": onCommsClientAdded("<<c<<")";
 }
+
 
 void CommsSignalLogger::onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection)
 {

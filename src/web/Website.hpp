@@ -1,7 +1,7 @@
 #ifndef WEBSITE_HPP
 #define WEBSITE_HPP
 
-#include "node/AppContext.hpp"
+#include "app/AppContext.hpp"
 
 #include <QDir>
 

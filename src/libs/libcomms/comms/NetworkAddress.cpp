@@ -1,6 +1,6 @@
 #include "NetworkAddress.hpp"
 
-#include "utility/Standard.hpp"
+#include "uptime/MethodGate.hpp"
 
 #include <QDataStream>
 
@@ -102,7 +102,7 @@ QString NetworkAddress::toString() const
 	return mIP.toString()+":"+QString::number(mPort);
 }
 
-
+// TODO: Add support for IPv6
 void NetworkAddress::fromString(QString str, bool allowOnlyAddress)
 {
 	OC_METHODGATE();
@@ -147,11 +147,13 @@ bool NetworkAddress::isValid(bool allowLoopback, bool allowMulticast, bool allow
 
 bool NetworkAddress::isIPv4() const
 {
+	OC_METHODGATE();
 	return QAbstractSocket::IPv4Protocol==mIP.protocol();
 }
 
 bool NetworkAddress::isIPv6() const
 {
+	OC_METHODGATE();
 	return QAbstractSocket::IPv6Protocol==mIP.protocol();
 }
 
@@ -171,6 +173,7 @@ bool NetworkAddress::operator!=(const NetworkAddress &o) const
 
 void NetworkAddress::toStream(QDataStream &ds) const
 {
+	OC_METHODGATE();
 	ds<<mPort;
 	ds<<mIP;
 }
@@ -178,25 +181,51 @@ void NetworkAddress::toStream(QDataStream &ds) const
 
 void NetworkAddress::fromStream(QDataStream &ds)
 {
+	OC_METHODGATE();
 	ds>>mPort;
 	ds>>mIP;
 }
 
 const QDebug &operator<<(QDebug &d, const NetworkAddress &na)
 {
-	d.nospace() << na.toString();
+	OC_FUNCTIONGATE();
+	d.nospace().noquote() << na.toString();
+	return d.maybeSpace();
+}
+
+QDebug &operator<<(QDebug &d, NetworkAddress &na)
+{
+	OC_FUNCTIONGATE();
+	d.nospace().noquote() << na.toString();
 	return d.maybeSpace();
 }
 
 
 QDataStream &operator<<(QDataStream &ds, const NetworkAddress &addr)
 {
+	OC_FUNCTIONGATE();
 	addr.toStream(ds);
 	return ds;
 }
 
+
 QDataStream &operator>>(QDataStream &ds, NetworkAddress &addr)
 {
+	OC_FUNCTIONGATE();
 	addr.fromStream(ds);
 	return ds;
+}
+
+
+NetworkAddress::operator QString() const
+{
+	OC_METHODGATE();
+	return toString();
+}
+
+
+NetworkAddress::operator QString()
+{
+	OC_METHODGATE();
+	return toString();
 }

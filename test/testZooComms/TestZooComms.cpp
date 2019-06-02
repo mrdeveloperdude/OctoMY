@@ -1,25 +1,32 @@
 #include "TestZooComms.hpp"
 #include "zoo/ZooServer.hpp"
-#include "zoo/ZooClient.hpp"
-#include "node/AppContext.hpp"
+#include "client/zoo/ZooClient.hpp"
+#include "app/AppContext.hpp"
+#include "app/launcher/AppCommandLineParser.hpp"
+#include "uptime/New.hpp"
 
 #include <QSignalSpy>
 
 #include <QProcessEnvironment>
 #include <QCommandLineParser>
 
-// YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
-void TestZooComms::test(){
+
+void TestZooComms::test()
+{
 	QString port="8123";
 
 	QProcessEnvironment env=QProcessEnvironment::systemEnvironment();
 
-	QCommandLineParser opts;
+	QSharedPointer<AppCommandLineParser> opts(OC_NEW AppCommandLineParser());
 
-	opts.setApplicationDescription("Robust real-time communication and control software for robots");
-	opts.addHelpOption();
+	// opts->setApplicationDescription("Robust real-time communication and control software for robots");
+	// opts->addHelpOption();
 
-	ZooServer server(OC_NEW AppContext(opts, env, "zoo"), nullptr);
+	QSharedPointer<AppContext> ctx(OC_NEW AppContext(opts, env, "zoo", true));
+
+	ZooServer server;
+
+	server.configure(ctx);
 	server.start(port);
 
 	ZooClient *client=OC_NEW ZooClient(this);
@@ -59,13 +66,10 @@ void TestZooComms::test(){
 	if(!spyGet.wait(1000)){
 		qWarning()<<"spyGet-2 wait timed out";
 	}
-*/
+	*/
 	QCOMPARE(spyPut.count(), 2);
 	QCOMPARE(spyGet.count(), 2);
-
-
 }
-
 
 
 OC_TEST_MAIN(test, TestZooComms)

@@ -2,7 +2,7 @@ MARKDOWN_TOP= $${SRCS}/libs/libmarkdown
 
 # From https://github.com/hoedown/hoedown
 
-contains(DEFINES, USE_MARKDOWN){
+contains(DEFINES, OC_USE_FEATURE_MARKDOWN){
 
 HEADERS	+= \
 	$$MARKDOWN_TOP/markdown/autolink.h \

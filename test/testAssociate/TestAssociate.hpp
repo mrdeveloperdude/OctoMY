@@ -1,8 +1,7 @@
 #ifndef TESTASSOCIATE_HPP
 #define TESTASSOCIATE_HPP
 
-#include "../common/TestCommon.hpp"
-
+#include "Common_test.hpp"
 
 class TestAssociate:public QObject
 {
@@ -10,12 +9,10 @@ class TestAssociate:public QObject
 
 private slots:
 	void test();
-
 	void testMapConversions();
-
 	void testTimeConversions();
 
 };
 
-
-#endif // TESTASSOCIATE_HPP
+#endif
+// TESTASSOCIATE_HPP

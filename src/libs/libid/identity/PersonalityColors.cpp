@@ -1,8 +1,8 @@
 #include "PersonalityColors.hpp"
 
-#include "utility/Standard.hpp"
+#include "uptime/MethodGate.hpp"
 
-#include "rng/RNG.hpp"
+#include "random/RNG.hpp"
 
 PersonalityColors::PersonalityColors(QString id)
 {
@@ -29,11 +29,11 @@ void PersonalityColors::setID(QString id)
 		mP1=(rng.generateReal1());
 		mP2=(rng.generateReal1());
 		mP3=(rng.generateReal1());
-		mBodyColorHigh=(QColor::fromHslF(mP1,0.75f,0.55f));
-		mBodyColorLow=(QColor::fromHslF(mP1,0.75f,0.425f));
-		mBackgroundColorHigh=(QColor::fromHslF(mP2,0.75f,0.25f));
-		mBackgroundColorLow=(QColor::fromHslF(mP2,0.75f,0.20f));
-		mLimbColor=(QColor::fromHslF(mP3,0.75f,0.55f));
+		mBodyColorHigh=(QColor::fromHslF(mP1,0.75,0.55));
+		mBodyColorLow=(QColor::fromHslF(mP1,0.75,0.425));
+		mBackgroundColorHigh=(QColor::fromHslF(mP2,0.75,0.25));
+		mBackgroundColorLow=(QColor::fromHslF(mP2,0.75,0.20));
+		mLimbColor=(QColor::fromHslF(mP3,0.75,0.55));
 	}
 }
 

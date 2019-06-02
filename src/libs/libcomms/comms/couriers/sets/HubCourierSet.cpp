@@ -5,7 +5,7 @@
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/blob/BlobCourier.hpp"
 
-#include "node/HubClient.hpp"
+#include "client/hub/HubClient.hpp"
 #include "node/Node.hpp"
 
 
@@ -20,13 +20,13 @@ HubCourierSet::HubCourierSet(QString fullID, HubClient &client)
 
 	auto ctl=mHubClient.node();
 
-	CommsChannel *cc=nullptr;
+	QSharedPointer<CommsChannel> cc=nullptr;
 	if(!ctl.isNull()) {
-		//cc=ctl->com
+		cc=ctl->comms();
 	}
 
-	if(nullptr!=cc) {
-		mAgentStateCourier=QSharedPointer<AgentStateCourier>(OC_NEW AgentStateCourier(nullptr , *cc, &mHubClient));
+	if(!cc.isNull()) {
+		mAgentStateCourier=QSharedPointer<AgentStateCourier>(OC_NEW AgentStateCourier(nullptr , cc, &mHubClient));
 		if(!mAgentStateCourier.isNull()) {
 			mAgentStateCourier->setHookSignals(mHubClient, true);
 			mAgentStateCourier->setDestination(fullID);
@@ -34,14 +34,14 @@ HubCourierSet::HubCourierSet(QString fullID, HubClient &client)
 		} else {
 			qWarning()<<"ERROR: Could not allocate AgentStateCourier";
 		}
-		mSensorsCourier=QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*cc, &mHubClient));
+		mSensorsCourier=QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(cc, &mHubClient));
 		if(!mSensorsCourier.isNull()) {
 			mSensorsCourier->setDestination(fullID);
 			insert(mSensorsCourier);
 		} else {
 			qWarning()<<"ERROR: Could not allocate SensorsCourier";
 		}
-		mBlobCourier=QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*cc, &mHubClient));
+		mBlobCourier=QSharedPointer<BlobCourier>(OC_NEW BlobCourier(cc, &mHubClient));
 		if(!mBlobCourier.isNull()) {
 			mBlobCourier->setDestination(fullID);
 			insert(mBlobCourier);

@@ -1,5 +1,9 @@
 #include "PacketSendState.hpp"
 
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+
+
 const int PacketSendState::OCTOMY_SENDER_ID_SIZE=20;
 const int PacketSendState::OCTOMY_ENCRYPTED_MESSAGE_SIZE=20;
 
@@ -11,34 +15,39 @@ PacketSendState::PacketSendState()
 	, encStream(OC_NEW QDataStream(&this->octomyProtocolUnencryptedMessage, QIODevice::WriteOnly))
 	, encBytesUsed(0)
 {
-
+	OC_METHODGATE();
 }
 
 void PacketSendState::setRemoteID(QString toID)
 {
+	OC_METHODGATE();
 	mRemoteID=toID;
 }
 
 void PacketSendState::setSession( QSharedPointer<CommsSession> session)
 {
+	OC_METHODGATE();
 	this->session=session;
 }
 
 void PacketSendState::writeMultimagic(Multimagic multimagic)
 {
-	const SESSION_ID_TYPE multimagicInt=(SESSION_ID_TYPE)multimagic;
+	OC_METHODGATE();
+	const SESSION_ID_TYPE multimagicInt=static_cast<SESSION_ID_TYPE>(multimagic);
 	writeMultimagic(multimagicInt);
 }
 
 void PacketSendState::writeMultimagic(SESSION_ID_TYPE multimagic)
 {
+	OC_METHODGATE();
 	*stream << multimagic;
 	bytesUsed += sizeof(multimagic);
 }
 
 void PacketSendState::writeMagic()
 {
-	const quint32 magic=(quint32)OCTOMY_PROTOCOL_MAGIC;//Protocol MAGIC identifier
+	OC_METHODGATE();
+	const quint32 magic=static_cast<quint32>(OCTOMY_PROTOCOL_MAGIC);//Protocol MAGIC identifier
 	*stream << magic;
 	bytesUsed += sizeof(magic);
 }
@@ -46,7 +55,8 @@ void PacketSendState::writeMagic()
 // Write a header with protocol "magic number" and a version
 void PacketSendState::writeProtocolVersion()
 {
-	const quint32 version=(qint32)OCTOMY_PROTOCOL_VERSION_CURRENT;//Protocol version
+	OC_METHODGATE();
+	const quint32 version=static_cast<qint32>(OCTOMY_PROTOCOL_VERSION_CURRENT);//Protocol version
 	*stream << version;
 	bytesUsed += sizeof(version);
 	stream->setVersion(version); //Qt Datastream version
@@ -54,18 +64,21 @@ void PacketSendState::writeProtocolVersion()
 
 void PacketSendState::writeSessionID(SESSION_ID_TYPE sessionID)
 {
+	OC_METHODGATE();
 	*stream << sessionID;
 	bytesUsed += sizeof(sessionID);
 }
 
 void PacketSendState::writeCourierID(quint32 courierID)
 {
+	OC_METHODGATE();
 	*stream << courierID;
 	bytesUsed += sizeof(courierID);
 }
 
 void PacketSendState::writePayloadSize(quint16 payloadSize)
 {
+	OC_METHODGATE();
 	*stream << payloadSize;
 	bytesUsed += sizeof(payloadSize);
 }
@@ -73,6 +86,8 @@ void PacketSendState::writePayloadSize(quint16 payloadSize)
 
 void PacketSendState::writeReliabilityData(ReliabilitySystem &rs)
 {
+	OC_METHODGATE();
+	Q_UNUSED(rs);
 #ifdef USE_RELIBABILITY_SYSTEM
 	// Write reliability data
 	// TODO: incorporate writing logic better into reliability class
@@ -101,6 +116,7 @@ void PacketSendState::writeReliabilityData(ReliabilitySystem &rs)
 
 void PacketSendState::encrypt()
 {
+	OC_METHODGATE();
 	if(nullptr==session) {
 		qWarning()<<"ERROR: No session while encrypting";
 		return;
@@ -129,6 +145,7 @@ void PacketSendState::encrypt()
 // Write Pub-key encrypted message body
 void PacketSendState::writeProtocolEncryptedMessage()
 {
+	OC_METHODGATE();
 	auto size=octomyProtocolEncryptedMessage.size();
 	qWarning()<<"TX CIPHERTEXT WAS: "<<octomyProtocolEncryptedMessage;
 	*stream << octomyProtocolEncryptedMessage;
@@ -138,6 +155,7 @@ void PacketSendState::writeProtocolEncryptedMessage()
 // Write full ID of sender
 void PacketSendState::writeEncSenderID(QString senderID)
 {
+	OC_METHODGATE();
 	const auto raw=QByteArray::fromHex(senderID.toUtf8());
 	const auto size=raw.size();
 	*encStream << raw;
@@ -147,6 +165,7 @@ void PacketSendState::writeEncSenderID(QString senderID)
 // Write nonce
 void PacketSendState::writeEncNonce(SESSION_NONCE_TYPE nonce)
 {
+	OC_METHODGATE();
 	*encStream << nonce;
 	encBytesUsed+=sizeof(nonce);
 }
@@ -154,6 +173,7 @@ void PacketSendState::writeEncNonce(SESSION_NONCE_TYPE nonce)
 // Write desired remote session ID
 void PacketSendState::writeEncSessionID(SESSION_ID_TYPE sessionID)
 {
+	OC_METHODGATE();
 	*encStream << sessionID;
 	encBytesUsed+=sizeof(sessionID);
 }

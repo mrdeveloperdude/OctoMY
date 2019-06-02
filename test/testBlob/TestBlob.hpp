@@ -1,7 +1,7 @@
 #ifndef TESTBLOB_HPP
 #define TESTBLOB_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
 class TestBlob:public QObject
@@ -15,4 +15,5 @@ private slots:
 };
 
 
-#endif // TESTBLOB_HPP
+#endif
+// TESTBLOB_HPP

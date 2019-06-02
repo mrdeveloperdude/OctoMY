@@ -3,7 +3,9 @@
 
 #include "NetworkAddress.hpp"
 
-#include "RateCalculator.hpp"
+#include "utility/time/RateCalculator.hpp"
+
+#include "uptime/ConfigureHelper.hpp"
 
 #include <QObject>
 #include <QTimer>
@@ -23,17 +25,23 @@ class CommsCarrier: public QObject
 {
 	Q_OBJECT
 private:
-
 	//Receive counter used in debug messages to make sense of the order of things
 	static quint64 sTotalRxCount;
 	static quint64 sTotalTxCount;
 
-
+	// Are we connected?
+	// NOTE: Connected is a relative term. It simply means "a package was successfully transmitted within some time limit"
 	bool mConnected;
 
-protected:
-	QTimer mSendingTimer;  // The timer used to schedule when packets are sent to the other side
+	// Do we want to be connected?
+	bool mMaintainConnection;
 
+	ConfigureHelper mConfigureHelper;
+
+	// TODO: Better protect the rate calculators. Maybe through use of logging facility?
+public:
+	// The timer used to schedule when packets are sent to the other side
+	QTimer mSendingTimer;
 
 	RateCalculator mRXRate;
 	RateCalculator mTXRate;
@@ -43,11 +51,33 @@ public:
 	explicit CommsCarrier(QObject *parent=nullptr);
 	virtual ~CommsCarrier();
 
+public:
+	// ConfigureHelper style configure
+	void configure();
+	// ConfigureHelper style activate
+	bool activate(bool on);
 
+
+public:
+	// Set if we want to maintain a connected or not
+	void maintainConnection(bool on);
+
+public:
+	// Return if we are actively maintaining a connection (My boss wants me to be active)
+	bool isConnectionMaintained() const;
+	// Return if connection is presumed to be active (I want to be active)
+	bool isConnectionStarted() const;
+	// Return if we have actually been successfull at being connected lately (I think I am active)
+	bool isConnected() const;
 
 private:
+	// Actually start/stop the connection
+	// NOTE: This is internal, please use maintainConnection() and updateConnection() to influence connection status
+	bool startConnection(bool on);
+	// Apply current wish for connection as set via maintainConnection()
+	void updateConnection();
+	// Detect and act on changes in connection status
 	void detectConnectionChanges(const quint64 now);
-
 
 private slots:
 	void onOpportunityTimer();
@@ -55,16 +85,12 @@ private slots:
 
 	// CommsCarrier external interface methods
 public slots:
-
 	quint64 connectionTimeout();
 
 	void setHookCarrierSignals(QObject &ob, bool hook);
 
-	virtual void setListenAddress(NetworkAddress address);
-	virtual bool setStarted(bool start);
+	void setListenAddress(NetworkAddress address);
 
-	bool isStarted() const;
-	bool isConnected() const;
 
 	qint64 writeData(const QByteArray &datagram, const NetworkAddress &address);
 	qint64 readData(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr);
@@ -72,6 +98,7 @@ public slots:
 	bool hasPendingData();
 	qint64 pendingDataSize();
 
+	// Return the last error string, if any
 	QString errorString();
 
 	NetworkAddress address();
@@ -83,14 +110,14 @@ public slots:
 
 	quint64 opportunityInterval();
 
-
 // CommsCarrier internal interface methods
 protected:
+	virtual void configureImp() =0;
+	virtual bool activateImp(const bool on) =0;
 
 	virtual void setAddressImp(NetworkAddress address) =0;
-	virtual bool setStartImp(const bool) =0;
 
-	virtual bool isStartedImp() const =0 ;
+	virtual bool isActiveImp() const =0 ;
 
 	virtual qint64 writeDataImp(const QByteArray &datagram, const NetworkAddress &address) =0 ;
 	virtual qint64 readDataImp(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr) =0 ;
@@ -103,7 +130,7 @@ protected:
 	virtual NetworkAddress addressImp() =0;
 
 	virtual quint64 minimalPacketIntervalImp() =0;
-	virtual quint64  maximalPacketIntervalImp() =0;
+	virtual quint64 maximalPacketIntervalImp() =0;
 
 	// CommsCarrier interface signals
 signals:
@@ -116,4 +143,5 @@ signals:
 
 };
 
-#endif // COMMSCARRIER_HPP
+#endif
+// COMMSCARRIER_HPP

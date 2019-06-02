@@ -1,16 +1,18 @@
 #ifndef TESTIDDUEL_HPP
 #define TESTIDDUEL_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
-class TestIDDuel:public QObject{
-		Q_OBJECT
+class TestIDDuel:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void test();
+private slots:
+	void test();
 
 };
 
 
-#endif // TESTIDDUEL_HPP
+#endif
+// TESTIDDUEL_HPP

@@ -1,26 +1,20 @@
 #include "TestCommsCarrier.hpp"
 
-
-
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsCarrierUDP.hpp"
 
-
-
-#include "utility/Standard.hpp"
 #include "comms/messages/MessageType.hpp"
 
-#include "rng/RNG.hpp"
+#include "random/RNG.hpp"
 
 #include "security/KeyStore.hpp"
-#include "basic/Associate.hpp"
+#include "address/Associate.hpp"
 #include "discovery/AddressBook.hpp"
 
-#include "../common/TestCommon.hpp"
-#include "../common/Utilities.hpp"
-#include "../common/UDPTester.hpp"
 
-#include "../common/mock/MockCommsCarrierLog.hpp"
+#include "Utility_test.hpp"
+#include "UDPTester.hpp"
+#include "mock/MockCommsCarrierLog.hpp"
 
 #include <QHostAddress>
 #include <QSignalSpy>

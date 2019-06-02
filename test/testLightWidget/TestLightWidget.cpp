@@ -15,4 +15,3 @@ void TestLightWidget::test()
 
 
 OC_TEST_MAIN(test, TestLightWidget)
-

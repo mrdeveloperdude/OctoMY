@@ -2,11 +2,10 @@
 
 #include "agent/Agent.hpp"
 #include "node/Node.hpp"
-#include "node/NodeLauncher.hpp"
-#include "node/AppContext.hpp"
+#include "app/NodeLauncher.hpp"
+#include "app/AppContext.hpp"
 
 #include "widgets/AgentDeliveryWizard.hpp"
-
 
 #include <QProcessEnvironment>
 #include <QCommandLineParser>
@@ -14,7 +13,6 @@
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QSignalSpy>
-
 
 
 class AgentDeliveryWizardTest: public AgentDeliveryWizard
@@ -27,8 +25,8 @@ public:
 	{
 
 	}
-
 };
+
 
 static void testLineEdit(QLineEdit *lineEdit, QString in, QString out, const int delay=-1)
 {
@@ -41,6 +39,7 @@ static void testLineEdit(QLineEdit *lineEdit, QString in, QString out, const int
 	QTest::keyClicks(lineEdit, in, Qt::NoModifier, delay);
 	QCOMPARE(lineEdit->text(), QString(out));
 }
+
 
 // http://stackoverflow.com/questions/38421981/how-can-i-test-a-full-qt5-gui-using-qtestlib
 void TestDeliveryWizard::test()
@@ -57,13 +56,13 @@ void TestDeliveryWizard::test()
 	Q_INIT_RESOURCE(qfi);
 	Q_INIT_RESOURCE(3d);
 
-	for( int i=0;i<100;++i){
+	for( int i=0; i<100; ++i) {
 		NodeLauncher<Agent> nodeLauncher(0, nullptr);
 
 		QSharedPointer<Node> testAgent(OC_NEW Node(nodeLauncher, agentContext, NodeRole::ROLE_AGENT, NodeType::TYPE_AGENT, this));
 		QVERIFY(nullptr!=testAgent);
 		QFile file(testAgent->keyStore().filename());
-		if(file.exists()){
+		if(file.exists()) {
 			file.remove();
 		}
 		QVERIFY(!file.exists());
@@ -90,7 +89,7 @@ void TestDeliveryWizard::test()
 		QVERIFY(pushButtonOnward->isEnabled());
 		QVERIFY(pushButtonOnward->isVisible());
 		QCOMPARE(stackedWidget->currentWidget()->objectName(), QString("pageDelivery"));
-		QSignalSpy spyStackedWidget(stackedWidget , SIGNAL(currentChanged(int)));
+		QSignalSpy spyStackedWidget(stackedWidget, SIGNAL(currentChanged(int)));
 		QCOMPARE(spyStackedWidget.count(), 0);
 		//QSignalSpy spyPushButtonOnward(pushButtonOnward , SIGNAL(clicked(bool)));
 		QTest::mouseClick(pushButtonOnward, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), delay);
@@ -108,6 +107,4 @@ void TestDeliveryWizard::test()
 }
 
 
-
 OC_TEST_MAIN(test, TestDeliveryWizard)
-

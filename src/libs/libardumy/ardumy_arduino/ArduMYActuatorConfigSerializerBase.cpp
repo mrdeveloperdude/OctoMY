@@ -1,6 +1,6 @@
 #include "ardumy_arduino/ArduMYActuatorConfigSerializerBase.hpp"
 
-// #include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
+// #include "hardware/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 ArduMYActuatorConfigSerializerBase::ArduMYActuatorConfigSerializerBase()
 	: config(nullptr)
@@ -28,7 +28,7 @@ void ArduMYActuatorConfigSerializerBase::reset()
 // Look at flags & type and go from the current step to the next enabled one
 void ArduMYActuatorConfigSerializerBase::nextStep()
 {
-	auto oldStep=step;
+	//auto oldStep=step;
 	switch(step) {
 	case(FLAGS): {
 		step=TYPE;

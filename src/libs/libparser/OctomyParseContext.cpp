@@ -1,15 +1,55 @@
 #include "OctomyParseContext.hpp"
 
-#include "utility/Standard.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 
 OctomyParseContext::OctomyParseContext()
-	: m_plan(0)
+	: m_plan(nullptr)
 	, m_ok(true)
 {
-
+	OC_METHODGATE();
 }
 
-//Convenience base class for validating and parsing ParseTreeNodes into differnet targets (as subclasses)
+void OctomyParseContext::fail(QString msg)
+{
+	OC_METHODGATE();
+	qWarning()<<"E:" <<msg;
+	m_ok=false;
+	m_errors.append("ERROR:   " + msg);
+}
+
+void OctomyParseContext::warn(QString msg)
+{
+	OC_METHODGATE();
+	qWarning()<<"W:" <<msg;
+	m_errors.append("WARNING: " + msg);
+}
+
+void OctomyParseContext::info (QString msg)
+{
+	OC_METHODGATE();
+	qDebug()<<"I:" <<msg;
+	m_errors.append("INFO   : " + msg);
+}
+
+
+bool OctomyParseContext::isOK()
+{
+	OC_METHODGATE();
+	return m_ok;
+}
+
+QString OctomyParseContext::getErrorText()
+{
+	OC_METHODGATE();
+	QString out="";
+	for(QVector<QString>::iterator i=m_errors.begin(), e=m_errors.end(); e!=i; ++i) {
+		out+=(*i)+"\n";
+	}
+	return out;
+}
+
+// Convenience base class for validating and parsing ParseTreeNodes into differnet targets (as subclasses)
 class Node
 {
 protected:
@@ -25,17 +65,20 @@ protected:
 
 	void fail(QString msg)
 	{
+		OC_METHODGATE();
 		m_plan.fail(msg);
 		m_ok=false;
 	}
 
 	void warn(QString msg)
 	{
+		OC_METHODGATE();
 		m_plan.warn(msg);
 	}
 
 	void info (QString msg)
 	{
+		OC_METHODGATE();
 		m_plan.info(msg);
 	}
 
@@ -47,6 +90,7 @@ public:
 		, m_id(node.hasVariable("id")?node.getVariable("id").toString():"")
 		, m_ok(true)
 	{
+		OC_METHODGATE();
 		if(expectedName != m_name) {
 			fail("Trying to parse "+expectedName+" with "+m_name);
 		} else if(""==m_id) {
@@ -59,12 +103,14 @@ public:
 
 	bool hasVariable(QString identifier)
 	{
+		OC_METHODGATE();
 		return m_variables.end()!=m_variables.find(identifier);
 	}
 
 
 	QVariant getVariable(QString identifier)
 	{
+		OC_METHODGATE();
 		if(hasVariable(identifier)) {
 			return *(m_variables.find(identifier));
 		}
@@ -74,16 +120,19 @@ public:
 
 	void addVariable(QString identifier, QVariant value)
 	{
+		OC_METHODGATE();
 		m_variables.insert(identifier, value);
 	}
 
 	bool isOK()
 	{
+		OC_METHODGATE();
 		return m_ok;
 	}
 
 	QString id()
 	{
+		OC_METHODGATE();
 		return m_id;
 	}
 };
@@ -95,6 +144,7 @@ class NodeFactory
 public:
 	Node *	getNodeForParse(ParseTreeNode &node, OctomyParseContext &plan)
 	{
+		OC_METHODGATE();
 		Q_UNUSED(node);
 		Q_UNUSED(plan);
 		return nullptr;
@@ -111,6 +161,7 @@ public:
 	DescriptorNode(ParseTreeNode &node, OctomyParseContext &plan, QString name)
 		: Node(node, name, plan)
 	{
+		OC_METHODGATE();
 		if(m_ok) {
 
 		}
@@ -133,6 +184,7 @@ public:
 		: DescriptorNode(node, plan, "controller")
 		, m_type(node.hasVariable("type")?node.getVariable("type").toString():"")
 	{
+		OC_METHODGATE();
 		if(m_ok) {
 			if(""==m_type) {
 				fail(""+m_name+" did not have a type");
@@ -155,29 +207,30 @@ public:
 	MemberNode(ParseTreeNode &node, OctomyParseContext &plan,  QString name="member")
 		: Node(node, name, plan)
 	{
+		OC_METHODGATE();
 		if(m_ok) {
 			QVector<ParseTreeNode *> &subnodes=m_node.getChildren();
 			for(QVector<ParseTreeNode *>::iterator i=subnodes.begin(), e=subnodes.end(); i!=e; ++i) {
 				ParseTreeNode *subnode=(*i);
-				if(0!=subnode) {
+				if(nullptr != subnode) {
 					const QString name=node.name();
 					if ("member"==name) {
 						MemberNode *member=OC_NEW MemberNode(*subnode, m_plan, name);
-						if(0!=member) {
+						if(nullptr != member) {
 							registerSubMember(member);
 						} else {
 							fail("Could not allocate submemeber");
 						}
 					} else if ("camera"==name || "serial"==name || "bluetooth"==name || "nfc"==name ) {
 						DescriptorNode *desc=OC_NEW DescriptorNode(*subnode, m_plan, name);
-						if(0!=desc) {
+						if(nullptr != desc) {
 							m_descriptors[name]=desc;
 						} else {
 							fail("Could not allocate descriptor");
 						}
 					} else if ("controller"==name) {
 						DescriptorNode *controller=OC_NEW ControllerNode(*subnode, m_plan);
-						if(0!=controller) {
+						if(nullptr != controller) {
 							m_descriptors[name]=controller;
 						} else {
 							fail("Could not allocate controller");
@@ -194,7 +247,8 @@ public:
 public:
 	void registerSubMember(MemberNode *ms)
 	{
-		if(0!=ms) {
+		OC_METHODGATE();
+		if(nullptr!=ms) {
 			m_members.append(ms);
 		}
 	}
@@ -211,6 +265,7 @@ public:
 	PuppetNode(ParseTreeNode &node, OctomyParseContext &plan, QString name="puppet")
 		: MemberNode(node, plan, name)
 	{
+		OC_METHODGATE();
 		if(m_ok) {
 
 		}
@@ -233,8 +288,9 @@ protected:
 public:
 	SpecNode(ParseTreeNode &node, OctomyParseContext &plan, QString name="spec")
 		: Node(node, name, plan)
-		, m_puppet(0)
+		, m_puppet(nullptr)
 	{
+		OC_METHODGATE();
 		if(m_ok) {
 			QVector<ParseTreeNode *> &subnodes=m_node.getChildren();
 			for(QVector<ParseTreeNode *>::iterator i=subnodes.begin(), e=subnodes.end(); i!=e; ++i) {
@@ -246,14 +302,14 @@ public:
 				unsupported.append("member");
 				unsupported.append("controller");
 				unsupported.append("serial");
-				if(0!=subnode) {
+				if(nullptr != subnode) {
 					const QString name=node.name();
 					if("puppet"==name) {
-						if(0!=m_puppet) {
+						if(nullptr != m_puppet) {
 							fail("Trying to add second puppet to "+m_id);
 						} else {
 							m_puppet=OC_NEW PuppetNode(*subnode, m_plan);
-							if(0==m_puppet) {
+							if(nullptr == m_puppet) {
 								fail("Could not allocate puppet");
 							}
 						}
@@ -280,7 +336,7 @@ public:
 	AgentNode(ParseTreeNode &node, OctomyParseContext &plan)
 		: SpecNode(node, plan, "agent")
 	{
-
+		OC_METHODGATE();
 	}
 };
 
@@ -293,7 +349,7 @@ public:
 	RemoteNode(ParseTreeNode &node, OctomyParseContext &plan)
 		: SpecNode(node, plan, "remote")
 	{
-
+		OC_METHODGATE();
 	}
 };
 
@@ -306,7 +362,7 @@ public:
 	HubNode(ParseTreeNode &node, OctomyParseContext &plan)
 		: SpecNode(node, plan, "hub")
 	{
-
+		OC_METHODGATE();
 	}
 };
 
@@ -323,22 +379,23 @@ public:
 	PlanNode(ParseTreeNode &node, OctomyParseContext &plan)
 		: Node(node, "plan", plan)
 	{
+		OC_METHODGATE();
 		if(m_ok) {
 			QVector<ParseTreeNode *> &subnodes=m_node.getChildren();
 			for(QVector<ParseTreeNode *>::iterator i=subnodes.begin(), e=subnodes.end(); i!=e; ++i) {
 				ParseTreeNode *subnode=(*i);
-				if(0!=subnode) {
+				if(nullptr != subnode) {
 					const QString name=subnode->name();
 					if("agent"==name) {
 						AgentNode *agent=OC_NEW AgentNode(*subnode,m_plan);
-						if(0!=agent) {
+						if(nullptr != agent) {
 
 						} else {
 							fail("Could not allocate agent");
 						}
 					} else if ("remote"==name) {
 						RemoteNode *remote=OC_NEW RemoteNode(*subnode,m_plan);
-						if(0!=remote) {
+						if(nullptr != remote) {
 
 						} else {
 							fail("Could not allocate remote");
@@ -346,7 +403,7 @@ public:
 
 					} else if ("hub"==name) {
 						HubNode *hub=OC_NEW HubNode(*subnode,m_plan);
-						if(0!=hub) {
+						if(nullptr != hub) {
 
 						} else {
 							fail("Could not allocate hub");
@@ -383,17 +440,17 @@ public:
 bool OctomyParseContext::fromParseTrees(QVector<ParseTreeNode *> trees)
 {
 	//errors.clear();
-	ParseTreeNode *planTree=0;
+	ParseTreeNode *planTree=nullptr;
 	//QStack<MemberSpec *> memberStack;
 	for(QVector<ParseTreeNode *>::iterator i=trees.begin(), e=trees.end(); i!=e; ++i) {
 		ParseTreeNode *node=(*i);
-		if(0!=node) {
+		if(nullptr != node) {
 			const QString name=node->name();
 			if("plan"==name) {
-				if(0==planTree) {
+				if(nullptr == planTree) {
 					planTree=node;
 					m_plan=OC_NEW PlanNode(*node,*this);
-					if(0!=m_plan) {
+					if(nullptr != m_plan) {
 						if(!m_plan->isOK()) {
 							fail("Could not parse plan");
 						}
@@ -404,11 +461,11 @@ bool OctomyParseContext::fromParseTrees(QVector<ParseTreeNode *> trees)
 					fail("Found more than one plan in trees");
 				}
 			} else if ("spec"==name) {
-				if(0!=planTree) {
+				if(nullptr != planTree) {
 					fail("Found spec occurance after plan");
 				} else {
 					SpecNode *spec=OC_NEW SpecNode(*node, *this);
-					if(0!=spec) {
+					if(nullptr != spec) {
 						if(!spec->isOK()) {
 							fail("Could not parse spec");
 						}

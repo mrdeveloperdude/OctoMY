@@ -15,11 +15,11 @@ AgentCourierSet::AgentCourierSet(QString &fullID, Agent &agent)
 {
 	OC_METHODGATE();
 
-	CommsChannel *cc=mAgent.comms();
+	QSharedPointer<CommsChannel> cc=mAgent.comms();
 	if(nullptr!=cc) {
-		mAgentStateCourier=QSharedPointer<AgentStateCourier>(OC_NEW AgentStateCourier(nullptr , *cc, &mAgent));
-		mSensorsCourier=QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*cc, &mAgent));
-		mBlobCourier=QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*cc, &mAgent));
+		mAgentStateCourier=QSharedPointer<AgentStateCourier>(OC_NEW AgentStateCourier(nullptr, cc, &mAgent));
+		mSensorsCourier=QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(cc, &mAgent));
+		mBlobCourier=QSharedPointer<BlobCourier>(OC_NEW BlobCourier(cc, &mAgent));
 	} else {
 		qWarning()<<"ERROR: AgentCourierSet did not have commschannel";
 	}

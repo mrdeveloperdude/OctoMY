@@ -2,12 +2,13 @@
 
 #include "ui_TestWindow.h"
 
-#include "utility/Standard.hpp"
+#include "Utility_test.hpp"
 
-#include "Utilities.hpp"
+#include "uptime/New.hpp"
 
 #include <QPixmap>
 #include <QImage>
+
 
 TestWindow::TestWindow(QWidget *parent, QString name) :
 	QWidget(parent),
@@ -17,10 +18,12 @@ TestWindow::TestWindow(QWidget *parent, QString name) :
 	setWindowTitle(name);
 }
 
+
 TestWindow::~TestWindow()
 {
 	delete ui;
 }
+
 
 void TestWindow::on_pushButtonClose_clicked()
 {
@@ -28,12 +31,11 @@ void TestWindow::on_pushButtonClose_clicked()
 }
 
 
-void TestCarSteeringWidget::test(){
+void TestCarSteeringWidget::test()
+{
 	TestWindow tw(nullptr, "Car Steering Widget Test");
 	tw.show();
-	waitForUIEnd(&tw);
+	test::utility::waitForUIEnd(&tw);
 }
-
-
 
 OC_TEST_MAIN(test, TestCarSteeringWidget)

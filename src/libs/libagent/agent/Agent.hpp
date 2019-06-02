@@ -1,117 +1,81 @@
 #ifndef AGENT_HPP
 #define AGENT_HPP
 
-#include "sensory/SensorInput.hpp"
-#include "comms/CommsChannel.hpp"
-
-#include "widgets/TryToggle.hpp"
-#include "camera/CameraList.hpp"
 
 #include "node/Node.hpp"
-#include "node/NodeLauncher.hpp"
+#include "app/launcher/AppLauncher.hpp"
 
-#include "AgentConfigStore.hpp"
-#include "hw/controllers/IActuatorController.hpp"
-
+#include "uptime/SharedPointerWrapper.hpp"
+#include "uptime/ConfigureHelper.hpp"
 
 #include <QObject>
-#include <QList>
 
-#include <QCommandLineParser>
 
-class ZooClient;
-class DiscoveryClient;
 class AgentWindow;
-class AgentStateCourier;
-class ISyncParameter;
-class Agent;
+class AgentConfigStore;
+class IActuatorController;
+class IAppLauncher;
 
-class AgentCourierSet;
-
-
-
-
-class Agent : public Node, public QEnableSharedFromThis<Agent>
+class Agent : public Node//, public QEnableSharedFromThis<Agent>
 {
 	Q_OBJECT
-private:
-	AgentConfigStore mAgentConfigStore;
-	IActuatorController *mActuatorController;
 
+private:
+
+	// Helper to keep track of nodeConfigure() and nodeActivate() state
+	ConfigureHelper mNodeConfigureHelper;
+
+	// The window that represents this agent
 	QSharedPointer<AgentWindow> mWindow;
 
+	// The current state of panic mode. If enabled the agent will engage safety meqasures such as limping all actuators and blinking warning lights
+	bool mPanic;
 
-	bool mKeyStoreReady;
-	bool mLocalIdentityStoreReady;
-	bool mAgentConfigStoreReady;
+	// The configuration store for this agent. Contains all configuration data in secure asynchronous storage.
+	QSharedPointer<AgentConfigStore> mAgentConfigStore;
 
+	// The currently active actuator controller
+	QSharedPointer<IActuatorController> mActuatorController;
 
 public:
-	explicit Agent(NodeLauncher<Agent> &launcher, QObject *parent = nullptr);
+	explicit Agent();
 	virtual ~Agent() Q_DECL_OVERRIDE;
 
-	virtual QSharedPointer<QWidget> showWindow() Q_DECL_OVERRIDE;
-
-
+	// Node interface
 public:
+	void nodeConfigure() Q_DECL_OVERRIDE;
+	void nodeActivate(const bool on) Q_DECL_OVERRIDE;
 
-	virtual void init() Q_DECL_OVERRIDE;
-	virtual void deInit() Q_DECL_OVERRIDE;
+	QSharedPointer<NodeWindow> nodeWindow() Q_DECL_OVERRIDE;
+	NodeRole nodeRole() Q_DECL_OVERRIDE;
+	NodeType nodeType() Q_DECL_OVERRIDE;
 
-	void setPanic(bool);
-
-	AgentConfigStore &configurationStore();
-
-	QSharedPointer<PoseMapping> poseMapping();
-
-	IActuatorController *actuatorController();
-
-	void unloadController();
-	void reloadController();
-
-
+	// QEnableSharedFromThis<Agent> interface
 public:
-
-	void identityChanged() Q_DECL_OVERRIDE;
-
-	void setNodeCouriersRegistration(bool reg) Q_DECL_OVERRIDE;
-
 	QSharedPointer<Node> sharedThis() Q_DECL_OVERRIDE;
 
-
+public:
+	// Accept triggering or un-triggering of panic state
+	void setPanic(bool panic);
+	// Get panic state
+	bool panic();
 
 
 public:
-
-	template <typename F>
-	void synchronizeLocalIdentity(F callBack);
-
-
-private:
-
-	bool checkLoadCompleted();
+	// Provide the currently active configuration store for this agent
+	QSharedPointer<AgentConfigStore> configurationStore();
 
 
-	//Agent State Courier slots
-public slots:
-	void onSyncParameterChanged(ISyncParameter *);
+public:
+	// Provide the currently active actuator controller. Options include ardumy, servotor32 etc.
+	QSharedPointer<IActuatorController> actuatorController();
+	// Unload the currently active actuator controller
+	void unloadController();
+	// Unload and reload the currently active actuator controller from the stored configuration
+	void reloadController();
 
 };
 
 
-#include <QVariantMap>
-
-template <typename F>
-void Agent::synchronizeLocalIdentity(F callBack)
-{
-	mLocalIdentity.synchronize([=](SimpleDataStore &sms, bool ok) {
-		QVariantMap map=sms.toMap();
-		qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
-		//callBack(ok);
-		callBack(map, ok);
-	});
-}
-
-
-
-#endif // AGENT_HPP
+#endif
+// AGENT_HPP

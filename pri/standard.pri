@@ -20,17 +20,16 @@ CONFIG += x86 x86_64
 }
 
 
-
-
-
-# Strive towards the most modern standard of C++ language available that is compatible with our target
-# From https://gcc.gnu.org/onlinedocs/gcc-5.1.0/gcc/C-Dialect-Options.html#C-Dialect-Options
 #     ______
 #    / ____/__    __
 #   / /  __/ /___/ /_
 #  / /__/_  __/_  __/
 #  \____//_/   /_/
 #
+
+# Strive towards the most modern standard of C++ language available that is compatible with our target
+# From https://gcc.gnu.org/onlinedocs/gcc-5.1.0/gcc/C-Dialect-Options.html#C-Dialect-Options
+
 QMAKE_CXXFLAGS -= -std=*
 QMAKE_CXXFLAGS -= -std=c++98
 QMAKE_CXXFLAGS -= -std=c++03
@@ -66,13 +65,15 @@ contains(CONFIG, c++11){
 }
 
 
-# Strive towards the most modern standard of pure C language available that is compatible with our target
 #     ______
 #    / ____/
 #   / /
 #  / /___
 #  \____/
 #
+
+# Strive towards the most modern standard of pure C language available that is compatible with our target
+
 QMAKE_CFLAGS -= -std=*
 QMAKE_CFLAGS -= -std=c90
 QMAKE_CFLAGS -= -std=c89
@@ -95,6 +96,3 @@ QMAKE_CFLAGS -= -std=gnu1x
 
 gcc:QMAKE_CFLAGS += -std=c11
 
-
-#PRECOMPILED_HEADER = $${SRCS}/libs/precompiled_headers.pch
-#CONFIG += precompile_header

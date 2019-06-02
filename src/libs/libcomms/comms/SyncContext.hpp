@@ -1,10 +1,10 @@
 #ifndef SYNCCONTEXT_HPP
 #define SYNCCONTEXT_HPP
 
-#include "utility/Standard.hpp"
 
 #include <QVector>
 #include <QBitArray>
+#include <QObject>
 
 class QDataStream;
 
@@ -85,6 +85,7 @@ inline QDataStream &operator>>(QDataStream &ds, SyncContext &sc)
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "SyncParameter.hpp"
+#include "uptime/New.hpp"
 
 template <typename T>
 SyncParameter<T> * SyncContext::registerParameter(const QString &name, const T &val)
@@ -105,9 +106,5 @@ SyncParameter<T> * SyncContext::registerParameter(const QString &name, const T &
 	return param;
 }
 
-
-
-
-
-
-#endif // SYNCCONTEXT_HPP
+#endif
+// SYNCCONTEXT_HPP

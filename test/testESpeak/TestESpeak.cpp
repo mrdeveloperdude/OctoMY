@@ -4,10 +4,9 @@
 #include "audio/AudioStream.hpp"
 #include "security/PortableID.hpp"
 
-// YOU NEED THIS: http://doc.qt.io/qt-5/qtest.html
+
 void TestESpeak::test()
 {
-
 	PortableID id;
 	CreepyVoice voice(id);
 
@@ -21,9 +20,7 @@ void TestESpeak::test()
 	QTest::qWait(1000);
 	voice.speak("There really isn't any doubt about that.");
 	QTest::qWait(10000);
-
 }
-
 
 
 OC_TEST_MAIN(test, TestESpeak)

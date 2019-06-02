@@ -23,8 +23,8 @@
 *
 */
 
-#ifndef IMAGEMANAGER_H
-#define IMAGEMANAGER_H
+#ifndef IMAGEMANAGER_HPP
+#define IMAGEMANAGER_HPP
 
 #include "map/qMapControlGlobal.hpp"
 #include <QObject>
@@ -40,85 +40,90 @@
 
 namespace qmapcontrol
 {
-	class MapNetwork;
-	/**
-	@author Kai Winter <kaiwinter@gmx.de>
+
+
+class MapNetwork;
+/**
+@author Kai Winter <kaiwinter@gmx.de>
+ */
+class QMAPCONTROL_EXPORT ImageManager : public QObject
+{
+	Q_OBJECT
+
+private:
+	Q_DISABLE_COPY( ImageManager )
+
+	QPixmap emptyPixmap;
+	QPixmap loadingPixmap;
+
+	MapNetwork* net;
+	QNetworkDiskCache* diskCache;
+	QVector<QString> prefetch;
+
+	QHash<QString,QDateTime> failedFetches;
+
+
+public:
+	ImageManager(QObject* parent = nullptr);
+	virtual ~ImageManager();
+
+public:
+	//! returns a QPixmap of the asked image
+	/*!
+	 * If this component doesn´t have the image a network query gets started to load it.
+	 * @param host the host of the image
+	 * @param path the path to the image
+	 * @return the pixmap of the asked image
 	 */
-	class QMAPCONTROL_EXPORT ImageManager : public QObject
-	{
-		Q_OBJECT
+	QPixmap getImage(const QString& host, const QString& path);
+	QPixmap prefetchImage(const QString& host, const QString& path);
+	void receivedImage(const QPixmap pixmap, const QString& url);
+	void fetchFailed(const QString &url);
 
-	public:
-		ImageManager(QObject* parent = nullptr);
-		virtual ~ImageManager();
+	/*!
+	 * This method is called by MapNetwork, after all images in its queue were loaded.
+	 * The ImageManager emits a signal, which is used in MapControl to remove the zoom image.
+	 * The zoom image should be removed on Tile Images with transparency.
+	 * Else the zoom image stay visible behind the newly loaded tiles.
+	 */
+	void loadingQueueEmpty();
 
-		//! returns a QPixmap of the asked image
-		/*!
-		 * If this component doesn´t have the image a network query gets started to load it.
-		 * @param host the host of the image
-		 * @param path the path to the image
-		 * @return the pixmap of the asked image
-		 */
-		QPixmap getImage(const QString& host, const QString& path);
+	/*!
+	 * Aborts all current loading threads.
+	 * This is useful when changing the zoom-factor, though newly needed images loads faster
+	 */
+	void abortLoading();
 
-		QPixmap prefetchImage(const QString& host, const QString& path);
+	//! sets the proxy for HTTP connections
+	/*!
+	 * This method sets the proxy for HTTP connections.
+	 * This is not provided by the current Qtopia version!
+	 * @param host the proxy´s hostname or ip
+	 * @param port the proxy´s port
+	 * @param username the proxy´s username
+	 * @param password the proxy´s password
+	 */
+	void setProxy(QString host, quint16 port, const QString username = QString(), const QString password = QString());
 
-		void receivedImage(const QPixmap pixmap, const QString& url);
-		void fetchFailed(const QString &url);
+	//! sets the cache directory for persistently saving map tiles
+	/*!
+	 *
+	 * @param path the path where map tiles should be stored
+	 * @param qDiskSizeMB the about of disk space to use for caching. Default is 250MB
+	 */
+	void setCacheDir(const QDir& path, const int qDiskSizeMiB = 250);
 
-		/*!
-		 * This method is called by MapNetwork, after all images in its queue were loaded.
-		 * The ImageManager emits a signal, which is used in MapControl to remove the zoom image.
-		 * The zoom image should be removed on Tile Images with transparency.
-		 * Else the zoom image stay visible behind the newly loaded tiles.
-		 */
-		void loadingQueueEmpty();
+	/*!
+	 * @return Number of images pending in the load queue
+	 */
+	int loadQueueSize() const;
 
-		/*!
-		 * Aborts all current loading threads.
-		 * This is useful when changing the zoom-factor, though newly needed images loads faster
-		 */
-		void abortLoading();
+signals:
+	void imageReceived();
+	void loadingFinished();
+};
 
-		//! sets the proxy for HTTP connections
-		/*!
-		 * This method sets the proxy for HTTP connections.
-		 * This is not provided by the current Qtopia version!
-		 * @param host the proxy´s hostname or ip
-		 * @param port the proxy´s port
-		 * @param username the proxy´s username
-		 * @param password the proxy´s password
-		 */
-		void setProxy(QString host, int port, const QString username = QString(), const QString password = QString());
-
-		//! sets the cache directory for persistently saving map tiles
-		/*!
-		 *
-		 * @param path the path where map tiles should be stored
-		 * @param qDiskSizeMB the about of disk space to use for caching. Default is 250MB
-		 */
-		void setCacheDir(const QDir& path, const int qDiskSizeMiB = 250);
-
-		/*!
-		 * @return Number of images pending in the load queue
-		 */
-		int loadQueueSize() const;
-
-	private:
-		Q_DISABLE_COPY( ImageManager )
-
-		QPixmap emptyPixmap;
-		QPixmap loadingPixmap;
-
-		MapNetwork* net;
-		QNetworkDiskCache* diskCache;
-		QVector<QString> prefetch;
-
-		QHash<QString,QDateTime> failedFetches;
-
-	signals:
-		void imageReceived();
-		void loadingFinished();
-	};
 }
+
 #endif
+// IMAGEMANAGER_HPP

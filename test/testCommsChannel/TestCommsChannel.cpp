@@ -1,15 +1,9 @@
 #include "TestCommsChannel.hpp"
 
-#include "../common/TestCommon.hpp"
 #include <QString>
 
 
-
 OC_TEST_MAIN(test, TestCommsChannel)
-
-
-
-
 
 
 QSharedPointer<Associate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, NodeRole role, NodeType type )
@@ -28,7 +22,5 @@ QSharedPointer<Associate> generatePart(QString name, QSharedPointer<Key> key, Ne
 	QSharedPointer<Associate> part(OC_NEW Associate(peerMap));
 	return part;
 }
-
-
 
 // NOTE: The rest of the test code is distributed in other files.

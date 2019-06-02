@@ -24,64 +24,69 @@
 */
 
 #include "Geometry.hpp"
+
 namespace qmapcontrol
 {
-    Geometry::Geometry(QString name)
-            : GeometryType("Geometry"), myparentGeometry(0), mypen(0), visible(true), myname(name)
-    {
-    }
+Geometry::Geometry(QString name)
+	: myparentGeometry(nullptr)
+	, mypen(nullptr)
+	, visible(true)
+	, myname(name)
+	, GeometryType("Geometry")
+{
+}
 
-    Geometry::~Geometry()
-    {
-    }
+Geometry::~Geometry()
+{
+}
 
-    QString Geometry::name() const
-    {
-        return myname;
-    }
-    Geometry* Geometry::parentGeometry() const
-    {
-        return myparentGeometry;
-    }
-    void Geometry::setParentGeometry(Geometry* geom)
-    {
-        myparentGeometry = geom;
-    }
-    bool Geometry::hasPoints() const
-    {
-        return false;
-    }
-    bool Geometry::hasClickedPoints() const
-    {
-        return false;
-    }
+QString Geometry::name() const
+{
+	return myname;
+}
+Geometry* Geometry::parentGeometry() const
+{
+	return myparentGeometry;
+}
+void Geometry::setParentGeometry(Geometry* geom)
+{
+	myparentGeometry = geom;
+}
+bool Geometry::hasPoints() const
+{
+	return false;
+}
+bool Geometry::hasClickedPoints() const
+{
+	return false;
+}
 
-    QList<Geometry*>& Geometry::clickedPoints()
-    {
-        return touchedPoints;
-    }
+QList<Geometry*>& Geometry::clickedPoints()
+{
+	return touchedPoints;
+}
 
-    bool Geometry::isVisible() const
-    {
-        return visible;
-    }
-    void Geometry::setVisible(bool visible)
-    {
-        this->visible = visible;
-        emit(updateRequest(boundingBox()));
-    }
+bool Geometry::isVisible() const
+{
+	return visible;
+}
+void Geometry::setVisible(bool visible)
+{
+	this->visible = visible;
+	emit(updateRequest(boundingBox()));
+}
 
-    void Geometry::setName(QString name)
-    {
-        myname = name;
-    }
+void Geometry::setName(QString name)
+{
+	myname = name;
+}
 
-    void Geometry::setPen(QPen* pen)
-    {
-        mypen = pen;
-    }
-    QPen* Geometry::pen() const
-    {
-        return mypen;
-    }
+void Geometry::setPen(QPen* pen)
+{
+	mypen = pen;
+}
+QPen* Geometry::pen() const
+{
+	return mypen;
+}
 }

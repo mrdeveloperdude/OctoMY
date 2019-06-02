@@ -30,12 +30,13 @@
 #include "Layer.hpp"
 #include "adapters/MapAdapter.hpp"
 #include "MapControl.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QObject>
 #include <QMap>
 #include <QListIterator>
 #include <QRectF>
-#include <QSharedPointer>
+
 
 namespace qmapcontrol
 {

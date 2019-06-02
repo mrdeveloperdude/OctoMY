@@ -1,6 +1,6 @@
 #include "NameMappingView.hpp"
 
-#include "utility/Standard.hpp"
+#include "uptime/MethodGate.hpp"
 
 #include "NameMappingWidget.hpp"
 #include "pose/PoseMapping.hpp"
@@ -42,7 +42,7 @@ void NameMappingView::paintEvent(QPaintEvent *)
 					for(QPushButton *but:fromButtons) {
 						qDebug()<<"FROM BUTTON: "<<but->objectName()<<but->geometry();
 					}
-			//		/*
+			//
 					for(QPushButton *but:toButtons) {
 						qDebug()<<"TO BUTTON: "<<but->objectName()<<but->geometry();
 					}
@@ -56,11 +56,11 @@ void NameMappingView::paintEvent(QPaintEvent *)
 			painter.setBrush(Qt::NoBrush);
 			painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
 
-			const quint32 w=size().width();
-			const quint32 h=size().height();
+			//const quint32 w=static_cast<quint32>(size().width());
+			//const quint32 h=static_cast<quint32>(size().height());
 
 
-			const quint32 sz=mapping->size();
+			const quint32 sz=static_cast<quint32>(mapping->size());
 
 			const qreal step=(1.0)/((qreal)sz);
 			qreal hue=step;

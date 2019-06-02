@@ -1,18 +1,17 @@
-include($$TESTS/test.pri)
+include($$TESTS/pris/test.pri)
 
 TARGET = test_trytoggle
 
 HEADERS += \
 	TestTryToggle.hpp \
-    TryToggleTestUI.hpp
+	TryToggleTestUI.hpp
 
 SOURCES += \
 	TestTryToggle.cpp \
-    TryToggleTestUI.cpp
+	TryToggleTestUI.cpp
+
+FORMS += \
+	TryToggleTestUI.ui
 
 include($$PRIS/status.pri)
 include($$TESTS/test_autorun.pri)
-
-FORMS += \
-    TryToggleTestUI.ui
-

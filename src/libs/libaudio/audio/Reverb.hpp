@@ -1,7 +1,9 @@
 #ifndef REVERB_HPP
 #define REVERB_HPP
 
-#include "rng/RNG.hpp"
+#include "uptime/MethodGate.hpp"
+
+#include "random/RNG.hpp"
 #include <QtGlobal>
 #include <stdint.h>
 
@@ -9,19 +11,19 @@
 
 #define OUTPUT_CHANNELS 2
 #define REVERB_BUFFERSIZE (2048u)
-#define F_2PI (6.28318530717958647692f)
-#define FLT_EPSILON 1.19209290E-07F
+#define F_2PI (6.28318530717958647692)
+#define FLT_EPSILON 1.19209290E-07
 
-#define  MAX_AMBI_COEFFS 4
+#define  MAX_AMBI_COEFFS (4)
 
-#define SPEEDOFSOUNDMETRESPERSEC 343.3f
+#define SPEEDOFSOUNDMETRESPERSEC (343.3)
 
-#define GAIN_SILENCE_THRESHOLD  0.00001f
+#define GAIN_SILENCE_THRESHOLD  (0.00001)
 
-/* This is a user config option for modifying the overall output of the reverb effect. */
-#define ReverbBoost 1.0f
+// This is a user config option for modifying the overall output of the reverb effect.
+#define ReverbBoost (1.0)
 
-/* Effect parameter ranges and defaults. */
+// Effect parameter ranges and defaults.
 #define EAXREVERB_MIN_DENSITY                 (0.0)
 #define EAXREVERB_MAX_DENSITY                 (1.0)
 #define EAXREVERB_DEFAULT_DENSITY             (1.0)
@@ -124,7 +126,7 @@ inline qreal lerp(qreal val1, qreal val2, qreal mu)
 	return val1 + (val2-val1)*mu;
 }
 
-/* Find the next power-of-2 for non-power-of-2 numbers. */
+// Find the next power-of-2 for non-power-of-2 numbers.
 inline quint32 NextPowerOf2(quint32 value)
 {
 	if(value > 0) {
@@ -167,9 +169,9 @@ inline quint32 maxu(quint32 a, quint32 b)
 
 
 enum FilterType {
-	/** EFX-style low-pass filter, specifying a gain and reference frequency. */
+	// EFX-style low-pass filter, specifying a gain and reference frequency.
 	Filter_HighShelf,
-	/** EFX-style high-pass filter, specifying a gain and reference frequency. */
+	// EFX-style high-pass filter, specifying a gain and reference frequency.
 	Filter_LowShelf,
 };
 
@@ -234,10 +236,10 @@ public:
 class FilterState
 {
 public:
-	qreal x[2]; /* History of two last input samples  */
-	qreal y[2]; /* History of two last output samples */
-	qreal a[3]; /* Transfer function coefficients "a" */
-	qreal b[3]; /* Transfer function coefficients "b" */
+	qreal x[2]; // History of two last input samples
+	qreal y[2]; // History of two last output samples
+	qreal a[3]; // Transfer function coefficients "a"
+	qreal b[3]; // Transfer function coefficients "b"
 
 public:
 
@@ -283,15 +285,16 @@ public:
 	void setParams(FilterType type, qreal gain, qreal freq_mult, qreal bandwidth)
 	{
 		OC_METHODGATE();
+		Q_UNUSED(bandwidth);
 		qreal alpha;
 		qreal w0;
 
 		// Limit gain to -100dB
-		gain = maxf(gain, 0.00001f);
+		gain = std::max(gain, 0.00001);
 
 		w0 = F_2PI * freq_mult;
 
-		/* Calculate filter coefficients depending on filter type */
+		// Calculate filter coefficients depending on filter type
 		switch(type) {
 		case Filter_HighShelf:
 			alpha = sinf(w0)/2.0f*sqrtf((gain + 1.0f/gain)*(1.0f/0.75f - 1.0f) + 2.0f);
@@ -448,6 +451,10 @@ public:
 
 	qreal frandParam(RNG *rng, qreal min, qreal def, qreal max)
 	{
+		Q_UNUSED(rng);
+		Q_UNUSED(min);
+		Q_UNUSED(max);
+		// TODO: Implement this
 		return def;
 	}
 
@@ -647,31 +654,30 @@ public:
 
 
 
-	/* This coefficient is used to define the maximum frequency range controlled
-	 * by the modulation depth.  The current value of 0.1 will allow it to swing
-	 * from 0.9x to 1.1x.  This value must be below 1.  At 1 it will cause the
-	 * sampler to stall on the downswing, and above 1 it will cause it to sample
-	 * backwards.
-	 */
-	static constexpr qreal MODULATION_DEPTH_COEFF = 0.1f;
+	// This coefficient is used to define the maximum frequency range controlled
+	// by the modulation depth.  The current value of 0.1 will allow it to swing
+	// from 0.9x to 1.1x.  This value must be below 1.  At 1 it will cause the
+	// sampler to stall on the downswing, and above 1 it will cause it to sample
+	// backwards.
+	static constexpr qreal MODULATION_DEPTH_COEFF = 0.1;
 
-	/* A filter is used to avoid the terrible distortion caused by changing
-	 * modulation time and/or depth.  To be consistent across different sample
-	 * rates, the coefficient must be raised to a constant divided by the sample
-	 * rate:  coeff^(constant / rate).
-	 */
-	static constexpr qreal MODULATION_FILTER_COEFF = 0.048f;
-	static constexpr qreal MODULATION_FILTER_CONST = 100000.0f;
+	// A filter is used to avoid the terrible distortion caused by changing
+	// modulation time and/or depth.  To be consistent across different sample
+	// rates, the coefficient must be raised to a constant divided by the sample
+	// rate:  coeff^(constant / rate).
+
+	static constexpr qreal MODULATION_FILTER_COEFF = 0.048;
+	static constexpr qreal MODULATION_FILTER_CONST = 100000.0;
 
 	// When diffusion is above 0, an all-pass filter is used to take the edge off
 	// the echo effect.  It uses the following line length (in seconds).
-	static constexpr qreal ECHO_ALLPASS_LENGTH = 0.0133f;
+	static constexpr qreal ECHO_ALLPASS_LENGTH = 0.0133;
 
 	// Input into the late reverb is decorrelated between four channels.  Their
 	// timings are dependent on a fraction and multiplier.  See the
 	// UpdateDecorrelator() routine for the calculations involved.
-	static constexpr qreal DECO_FRACTION = 0.15f;
-	static constexpr qreal DECO_MULTIPLIER = 2.0f;
+	static constexpr qreal DECO_FRACTION = 0.15;
+	static constexpr qreal DECO_MULTIPLIER = 2.0;
 
 	// All delay line lengths are specified in seconds.
 
@@ -685,7 +691,7 @@ public:
 
 	// The late cyclical delay lines have a variable length dependent on the
 	// effect's density parameter (inverted for some reason) and this multiplier.
-	static constexpr qreal LATE_LINE_MULTIPLIER = 4.0f;
+	static constexpr qreal LATE_LINE_MULTIPLIER = 4.0;
 
 
 private:
@@ -728,7 +734,7 @@ public:
 	virtual ~ReverbEffect();
 
 public:
-	void init(quint32 frequency);
+	void init(int frequency);
 
 	void Process(quint32 SamplesToDo, const qreal *SamplesIn, qreal *SamplesOut);
 	void Update(int frequency);
@@ -737,7 +743,7 @@ public:
 
 private:
 
-	/* Temporary storage used when processing, before deinterlacing. */
+	// Temporary storage used when processing, before deinterlacing.
 	qreal reverbSamples[REVERB_BUFFERSIZE][4];
 	qreal earlySamples[REVERB_BUFFERSIZE][4];
 
@@ -750,7 +756,7 @@ private:
 
 	inline qreal EAXModulation(qreal in);
 
-	inline qreal earlyDelayLineOut(quint32 index);
+	inline qreal earlyDelayLineOut(int index);
 	inline void earlyReflection(qreal in, qreal *out);
 
 	inline qreal lateAllPassInOut(quint32 index, qreal in);
@@ -773,4 +779,5 @@ private:
 
 };
 
-#endif // REVERB_HPP
+#endif
+// REVERB_HPP

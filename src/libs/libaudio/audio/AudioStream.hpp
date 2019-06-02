@@ -11,8 +11,8 @@
 class AudioStream: public QIODevice
 {
 	Q_OBJECT
-private:
 
+private:
 	QAudioFormat format;
 	QAudioOutput *out;
 
@@ -34,12 +34,12 @@ public:
 public:
 	void init();
 
-	void ok()
+	inline void ok()
 	{
 		okTriggered=true;
 	}
 
-	void error()
+	inline void error()
 	{
 		errorTriggered=true;
 	}

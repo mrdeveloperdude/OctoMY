@@ -1,14 +1,13 @@
 #include "TestKeyStore.hpp"
 
-
 #include "security/KeyStore.hpp"
 #include "security/Key.hpp"
-#include "TestKeys.hpp"
+#include "Keys_test.hpp"
 #include <QSignalSpy>
+
 
 void TestKeyStore::testInit()
 {
-
 	QFile file(fileName), *filep=&file;
 	// Make sure we don't have an existing file already
 	if(filep->exists()) {
@@ -18,7 +17,8 @@ void TestKeyStore::testInit()
 	QVERIFY(!filep->exists());
 	{
 		KeySecurityPolicy quickAndInsecurePolicy(128, QCryptographicHash::Md5);
-		KeyStore keystoreA(fileName, false, quickAndInsecurePolicy), *keystorep=&keystoreA;
+		KeyStore keystoreA, *keystorep=&keystoreA;
+		keystoreA.configure(fileName, false, quickAndInsecurePolicy);
 		QVERIFY(nullptr!=keystorep);
 		//keystore.store().setSynchronousMode(true);
 		qDebug()<<"A-1. "<< keystoreA.store().journal();
@@ -43,7 +43,8 @@ void TestKeyStore::testInit()
 	// Now we expect the file to exist and the store to load it on initialization
 	QVERIFY(filep->exists());
 	{
-		KeyStore keystoreB(fileName);
+		KeyStore keystoreB;
+		keystoreB.configure(fileName);
 		qDebug()<<"B-1. "<< keystoreB.store().journal();
 		QVERIFY(filep->exists());
 		QVERIFY(!keystoreB.ready());
@@ -57,15 +58,14 @@ void TestKeyStore::testInit()
 	QVERIFY(filep->remove());
 	QVERIFY(!filep->exists());
 	{
-		KeyStore keystoreC(fileName);
+		KeyStore keystoreC;
+		keystoreC.configure(fileName);
 		qDebug()<<"C-1. "<< keystoreC.store().journal();
 		QVERIFY(!filep->exists());
 		QVERIFY(!keystoreC.fileExists());
 		qDebug()<<"C-2. "<< keystoreC.store().journal();
 	}
 }
-
-
 
 
 void TestKeyStore::testInsertRemove()
@@ -84,7 +84,8 @@ void TestKeyStore::testInsertRemove()
 	}
 	QVERIFY(!filep->exists());
 	//KeySecurityPolicy quickAndInsecurePolicy(128, QCryptographicHash::Md5);
-	KeyStore keystore(fileName, true), *keystorep=&keystore;
+	KeyStore keystore, *keystorep=&keystore;
+	keystore.configure(fileName, true);
 	QVERIFY(nullptr!=keystorep);
 	QVERIFY(!filep->exists());
 	keystore.waitForSync();
@@ -99,7 +100,6 @@ void TestKeyStore::testInsertRemove()
 
 	const QByteArray raw="This is some text to be signed and verified";
 	const QByteArray bad="This is some text that will fail verification";
-
 
 	auto lkey=keystore.localKey();
 	QVERIFY(!lkey.isNull());
@@ -116,7 +116,4 @@ void TestKeyStore::testInsertRemove()
 }
 
 
-
 OC_TEST_MAIN(test, TestKeyStore)
-
-

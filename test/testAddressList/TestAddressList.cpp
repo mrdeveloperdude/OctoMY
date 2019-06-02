@@ -1,12 +1,12 @@
 #include "TestAddressList.hpp"
 
 
-#include "basic/AddressList.hpp"
-#include "basic/AddressEntry.hpp"
+#include "address/AddressList.hpp"
+#include "address/AddressEntry.hpp"
 
 #include "comms/NetworkAddress.hpp"
 
-#include "utility/Utility.hpp"
+#include "utility/time/HumanTime.hpp"
 
 void TestAddressList::testAddressEntry()
 {
@@ -23,9 +23,9 @@ void TestAddressList::testAddressEntry()
 	QVariantMap map=ae1.toVariantMap();
 	QCOMPARE(map["address"].toMap(), NetworkAddress(ha,port).toVariantMap());
 	QCOMPARE(map["description"].toString(), description);
-	QCOMPARE(map["createdMS"].toDateTime(), utility::msToVariant(created));
-	QCOMPARE(map["lastSuccessMS"].toDateTime(), utility::msToVariant(lastSuccess));
-	QCOMPARE(map["lastErrorMS"].toDateTime(), utility::msToVariant(lastError));
+	QCOMPARE(map["createdMS"].toDateTime(), utility::time::msToVariant(created));
+	QCOMPARE(map["lastSuccessMS"].toDateTime(), utility::time::msToVariant(lastSuccess));
+	QCOMPARE(map["lastErrorMS"].toDateTime(), utility::time::msToVariant(lastError));
 	QCOMPARE(map["numSuccessful"].toULongLong(), numSuccessful);
 	QCOMPARE(map["numErraneous"].toULongLong(), numErraneous);
 	AddressEntry ae1copy(map);
@@ -83,10 +83,6 @@ void TestAddressList::testAddressList()
 	QCOMPARE(listcopy.toString(), list.toString());
 
 	QCOMPARE(vlistcopy,vlist);
-
-
-
-
 }
 
 
@@ -113,9 +109,8 @@ void TestAddressList::testAddressListScore()
 	QCOMPARE(ae2.isNull(), false);
 	QCOMPARE(ae3.isNull(), false);
 	QCOMPARE(ae4.isNull(), false);
-
-
 }
+
 
 void TestAddressList::testAddressListHighscore()
 {
@@ -144,32 +139,31 @@ void TestAddressList::testAddressListHighscore()
 	QCOMPARE(ae4.isNull(), false);
 
 
-	QCOMPARE(list.size(), (int)0);
+	QCOMPARE(list.size(), static_cast<int>(0));
 	list.add(ae00);
-	QCOMPARE(list.size(), (int)0);
+	QCOMPARE(list.size(), static_cast<int>(0));
 	QCOMPARE(list.isValid(true), false);
 	QCOMPARE(list.isValid(false), false);
 
 	list.add(ae1);
-	QCOMPARE(list.size(), (int)1);
+	QCOMPARE(list.size(), static_cast<int>(1));
 	QCOMPARE(list.isValid(true), true);
 	QCOMPARE(list.isValid(false), true);
 
 	list.add(ae2);
-	QCOMPARE(list.size(), (int)2);
+	QCOMPARE(list.size(), static_cast<int>(2));
 	QCOMPARE(list.isValid(true), true);
 	QCOMPARE(list.isValid(false), true);
 
 	list.add(ae3);
-	QCOMPARE(list.size(), (int)3);
+	QCOMPARE(list.size(), static_cast<int>(3));
 	QCOMPARE(list.isValid(true), true);
 	QCOMPARE(list.isValid(false), true);
 
 	list.add(ae4);
-	QCOMPARE(list.size(), (int)4);
+	QCOMPARE(list.size(), static_cast<int>(4));
 	QCOMPARE(list.isValid(true), false);
 	QCOMPARE(list.isValid(false), true);
-
 
 	//NOTE: ae4 is invalid thus we shanln't get a good result here
 	ae4->lastSuccess=2;
@@ -191,8 +185,6 @@ void TestAddressList::testAddressListHighscore()
 }
 
 
-
-
 void TestAddressList::testAddressListStorage()
 {
 	AddressList list;
@@ -211,7 +203,7 @@ void TestAddressList::testAddressListStorage()
 		NetworkAddress addr1(QHostAddress("10.0.0."+QString::number(i)), 8123);
 		QCOMPARE(addr1.isValid(), true);
 		list.merge(addr1);
-		QCOMPARE(list.size(), (int)(i+1));
+		QCOMPARE(list.size(), static_cast<int>(i+1));
 		QCOMPARE(list.isValid(true), true);
 		QCOMPARE(list.isValid(false), true);
 	}

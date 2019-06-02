@@ -1,7 +1,8 @@
 #include "SyncContext.hpp"
 #include "ISyncParameter.hpp"
 
-#include "utility/Utility.hpp"
+#include "uptime/MethodGate.hpp"
+#include "utility/time/HumanTime.hpp"
 
 #include <QDateTime>
 #include <QDataStream>
@@ -18,11 +19,13 @@ SyncContext::SyncContext(quint64 rtt, quint64 now)
 	, mAverageRoundTripTime(0)
 
 {
+	OC_METHODGATE();
 }
 
 
 void SyncContext::forceSync(quint64 ts)
 {
+	OC_METHODGATE();
 	for(QVector<ISyncParameter *>::const_iterator it=mParams.begin(), e=mParams.end(); it!=e; ++it) {
 		(*it)->forceSync();
 	}
@@ -34,6 +37,7 @@ void SyncContext::forceSync(quint64 ts)
 // TODO: Look at architectual changes that will improve this interface , as it might be considered a flaw
 void SyncContext::update(quint64 ts)
 {
+	OC_METHODGATE();
 	//qDebug()<<" UPDATE SYNC CTX";
 	if(mAckBits.size()<1) {
 		qWarning()<<"ERROR: ack bits missing";
@@ -44,7 +48,7 @@ void SyncContext::update(quint64 ts)
 		return;
 	}
 	if(0==ts) {
-		ts=utility::currentMsecsSinceEpoch<quint64>();
+		ts=utility::time::currentMsecsSinceEpoch<quint64>();
 	}
 	mNow=ts;
 	// Recalculate state
@@ -91,6 +95,7 @@ void SyncContext::update(quint64 ts)
 
 quint64 SyncContext::roundTripTime() const
 {
+	OC_METHODGATE();
 	return mRTT;
 }
 
@@ -101,11 +106,13 @@ void SyncContext::setRoundTripTime(quint64 rtt)
 
 quint64 SyncContext::now() const
 {
+	OC_METHODGATE();
 	return mNow;
 }
 
 QString SyncContext::toString() const
 {
+	OC_METHODGATE();
 	QString out="SyncContext(avgRTT="+QString::number(mAverageRoundTripTime)+", RTT="+QString::number(mRTT)+"):\n";
 	for(QVector<ISyncParameter *>::const_iterator it=mParams.begin(), e=mParams.end(); it!=e; ++it) {
 		out+=(*it)->toString()+"\n";
@@ -115,6 +122,7 @@ QString SyncContext::toString() const
 
 QDebug &SyncContext::toDebug(QDebug &d) const
 {
+	OC_METHODGATE();
 	d.nospace() << "SyncContext(avgRTT="<<QString::number(mAverageRoundTripTime)<<", RTT="<<QString::number(mRTT)<<", syncBits="<<mSyncBits<<", ackBits="<<mAckBits<<"):\n";
 	for(QVector<ISyncParameter *>::const_iterator it=mParams.begin(), e=mParams.end(); it!=e; ++it) {
 		ISyncParameter &sp=*(*it);
@@ -128,18 +136,21 @@ QDebug &SyncContext::toDebug(QDebug &d) const
 
 quint16 SyncContext::bytesSent() const
 {
+	OC_METHODGATE();
 	return mLastSendingPayloadSize;
 }
 
 
 quint16 SyncContext::bytesSentIdeal() const
 {
+	OC_METHODGATE();
 	return mIdealSendingPayloadSize;
 }
 
 
 quint16 SyncContext::bytesRead() const
 {
+	OC_METHODGATE();
 	return mLastReceivingPayloadSize;
 }
 
@@ -147,16 +158,18 @@ quint16 SyncContext::bytesRead() const
 
 bool SyncContext::hasPendingSyncs() const
 {
+	OC_METHODGATE();
 	return (mSyncBits.count(true) > 0);
-	return false;
+	//return false;
 }
 
 
 
 bool SyncContext::hasPendingAcks() const
 {
+	OC_METHODGATE();
 	return (mAckBits.count(true) > 0);
-	return false;
+	//return false;
 }
 
 
@@ -164,6 +177,7 @@ bool SyncContext::hasPendingAcks() const
 
 QDebug &operator<<(QDebug &d, const SyncContext &sc)
 {
+	OC_FUNCTIONGATE();
 	return sc.toDebug(d);
 }
 
@@ -171,6 +185,8 @@ QDebug &operator<<(QDebug &d, const SyncContext &sc)
 
 void SyncContext::onSyncParameterChanged(ISyncParameter *sp)
 {
+	OC_METHODGATE();
+	Q_UNUSED(sp);
 	//qDebug()<<"CTX onValueChanged"<< sp->name();
 	emit reschedule(mNow);
 }
@@ -178,6 +194,7 @@ void SyncContext::onSyncParameterChanged(ISyncParameter *sp)
 
 QDataStream &SyncContext::receive(QDataStream &ds)
 {
+	OC_METHODGATE();
 	//qDebug()<<" RECEIVE SYNC CTX";
 	int bytes=0;
 	//Current clock for estimating RTT
@@ -187,7 +204,7 @@ QDataStream &SyncContext::receive(QDataStream &ds)
 	QBitArray syncs;
 	ds >> syncs;
 	const int numSyncs=syncs.size();
-	bytes+=(sizeof(quint32)+((numSyncs+7)/8));
+	bytes+=static_cast<int>(sizeof(quint32)+ static_cast<size_t>((numSyncs+7)/8));
 	for(int i=0; i<numSyncs; ++i) {
 		if(syncs.testBit(i)) {
 			ISyncParameter *param=mParams.at(i);
@@ -205,7 +222,7 @@ QDataStream &SyncContext::receive(QDataStream &ds)
 	QBitArray acks;
 	ds >> acks;
 	const int numAcks=acks.size();
-	bytes+=(sizeof(quint32)+((numAcks+7)/8));
+	bytes+=static_cast<int>(sizeof(quint32)+static_cast<size_t>((numAcks+7)/8));
 	//qDebug()<<"RX ACK "<<numAcks<<acks;
 	for(int i=0; i<numAcks; ++i) {
 		if(acks.testBit(i)) {
@@ -220,7 +237,7 @@ QDataStream &SyncContext::receive(QDataStream &ds)
 			}
 		}
 	}
-	mLastReceivingPayloadSize=bytes;
+	mLastReceivingPayloadSize=static_cast<quint16>(bytes);
 	return ds;
 }
 
@@ -228,18 +245,21 @@ QDataStream &SyncContext::receive(QDataStream &ds)
 
 QDataStream &SyncContext::send(QDataStream &ds)
 {
+	OC_METHODGATE();
 	//qDebug()<<" SEND SYNC CTX";
 	int bytes=0;
 	//Current clock for estimating RTT
+
+	// TODO: Is 'now' realy  supposed to be '0' here ?
 	quint64 now=0;
-	const qint64 rttSample=mNow-now;
+	const qint64 rttSample=static_cast<qint64>(mNow-now);
 	mAverageRoundTripTime=(mAverageRoundTripTime*9+rttSample)/10;
 	ds << mNow;
 	bytes+=sizeof(mNow);
 	// Sync bits
 	ds << mSyncBits;
 	const int numSyncs=mSyncBits.size();
-	bytes+=(sizeof(quint32)+((numSyncs+7)/8));
+	bytes+=static_cast<int>(sizeof(quint32)+ static_cast<size_t>((numSyncs+7)/8));
 	for(int i=0; i<numSyncs; ++i) {
 		if(mSyncBits.testBit(i)) {
 			ISyncParameter *param=mParams.at(i);
@@ -264,7 +284,7 @@ QDataStream &SyncContext::send(QDataStream &ds)
 	ds << mAckBits;
 	const int numAcks=mAckBits.size();
 	//qDebug()<<"TX ACK "<<numAcks<<mAckBits;
-	bytes+=(sizeof(quint32)+((numAcks+7)/8));
+	bytes+=static_cast<int>(sizeof(quint32)+ static_cast<size_t>((numAcks+7)/8));
 	//Acks away, clear it for next round
 	for(int i=0; i<numAcks; ++i) {
 		if(mAckBits.testBit(i)) {
@@ -283,7 +303,6 @@ QDataStream &SyncContext::send(QDataStream &ds)
 	if(bytes!=mIdealSendingPayloadSize) {
 		qWarning()<<"ERROR: actual="<<bytes<<" vs. ideal="<<mIdealSendingPayloadSize<<" bytes sent";
 	}
-	mLastSendingPayloadSize=bytes;
+	mLastSendingPayloadSize=static_cast<quint16>(bytes);
 	return ds;
-
 }

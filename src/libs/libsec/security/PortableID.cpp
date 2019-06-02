@@ -1,17 +1,15 @@
 #include "PortableID.hpp"
-#include "utility/Utility.hpp"
 
+#include "uptime/MethodGate.hpp"
+
+#include "app/Constants.hpp"
 
 #include <QStringList>
 #include <QDateTime>
 
-
-
 const QString PortableID::SEP(".");
 const QString PortableID::SEP_RE(QRegularExpression::escape(SEP));
 const QRegularExpression PortableID::sepRE("("+SEP_RE+")");
-const QString PortableID::dateFMT("yyyy-MM-dd_hh:mm:ss:zzz");
-
 
 PortableID::PortableID()
 	: mBirthDate(0)
@@ -24,18 +22,18 @@ PortableID::PortableID()
 PortableID::PortableID(QVariantMap &data)
 	: mName(data["name"].toString())
 	, mGender(data["gender"].toString())
-	, mID(data["key"].toMap()["id"].toString())
-	, mBirthDate(QDateTime::fromString(data["createDate"].toString(), dateFMT).toMSecsSinceEpoch())
+	, mID(data["id"].toString())
+	, mBirthDate(static_cast<quint64>(QDateTime::fromString(data["createDate"].toString(), Constants::dateFMTMillisecond).toMSecsSinceEpoch()))
 	, mType(nodeTypeFromString(data["type"].toString()))
 {
 	OC_METHODGATE();
 }
 
+
 PortableID::~PortableID()
 {
 	OC_METHODGATE();
 }
-
 
 
 void PortableID::setName(QString name)
@@ -44,11 +42,13 @@ void PortableID::setName(QString name)
 	mName=name;
 }
 
+
 void PortableID::setGender(QString gender)
 {
 	OC_METHODGATE();
 	mGender=gender;
 }
+
 
 void PortableID::setID(QString id)
 {
@@ -71,13 +71,12 @@ void PortableID::setType(NodeType type)
 }
 
 
-
-
 QString PortableID::name() const
 {
 	OC_METHODGATE();
 	return mName;
 }
+
 
 QString PortableID::identifier() const
 {
@@ -91,15 +90,18 @@ QString PortableID::identifier() const
 		return QStringLiteral("HUB-")+mID.left(8);
 	case(TYPE_ZOO):
 		return QStringLiteral("ZOO-")+mID.left(8);
+	default:
+		return QStringLiteral("UNKNOWN-")+mID.left(8);
 	}
-	return QStringLiteral("UNKNOWN-")+mID.left(8);
 }
+
 
 QString PortableID::gender() const
 {
 	OC_METHODGATE();
 	return mGender;
 }
+
 
 QString PortableID::id() const
 {
@@ -125,20 +127,20 @@ bool PortableID::fromPortableString(QString s)
 	mName=parts.at(0).trimmed();
 	mGender=parts.at(1).trimmed();
 	mID=parts.at(2).trimmed();
-	mBirthDate=QDateTime::fromString(parts.at(3).trimmed(), dateFMT).toMSecsSinceEpoch();
+	mBirthDate=static_cast<quint64>(QDateTime::fromString(parts.at(3).trimmed(), Constants::dateFMTMillisecond).toMSecsSinceEpoch());
 	mType=nodeTypeFromString(parts.at(4).trimmed());
 	//qDebug()<<"from "<<s<<" gave birth="<<mBirthDate;
 	return true;
 }
 
+
 QString PortableID::toPortableString() const
 {
 	OC_METHODGATE();
-	QString dateString=QDateTime::fromMSecsSinceEpoch(mBirthDate).toString(dateFMT);
+	QString dateString=QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(mBirthDate)).toString(Constants::dateFMTMillisecond);
 	//qDebug()<<"birth="<<mBirthDate<<" to str="<<dateString;
 	return mName + SEP + mGender + SEP + mID + SEP + dateString + SEP + nodeTypeToString(mType);
 }
-
 
 
 NodeType PortableID::type() const
@@ -146,7 +148,6 @@ NodeType PortableID::type() const
 	OC_METHODGATE();
 	return mType;
 }
-
 
 
 const QDebug &operator<<(QDebug &d, const PortableID &pid)

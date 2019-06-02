@@ -4,10 +4,11 @@
 #include "expression/IrisRendrer.hpp"
 #include "expression/EyeRendrer.hpp"
 
+#include "uptime/SharedPointerWrapper.hpp"
+
 #include <QWidget>
 #include <QTimer>
 #include <QVector2D>
-#include <QSharedPointer>
 #include <QImage>
 
 
@@ -22,8 +23,8 @@ private:
 	QTimer mTimer;
 	quint64 mStartTime;
 	quint64 mLastTime;
-	qreal mBlink;
-	qreal mCycle;
+	float mBlink;
+	float mCycle;
 	EyeRendrer mLeftEye;
 	EyeRendrer mRightEye;
 	QBrush mBgBrush;
@@ -60,4 +61,5 @@ public slots:
 	void onUpdateTimer();
 };
 
-#endif // EYESWIDGET_HPP
+#endif
+// EYESWIDGET_HPP

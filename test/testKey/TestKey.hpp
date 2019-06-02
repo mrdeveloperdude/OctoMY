@@ -1,7 +1,7 @@
 #ifndef TESTKEY_HPP
 #define TESTKEY_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
 class TestKey:public QObject
@@ -16,4 +16,5 @@ private slots:
 };
 
 
-#endif // TESTKEY_HPP
+#endif
+// TESTKEY_HPP

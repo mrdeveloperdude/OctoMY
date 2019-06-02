@@ -2,8 +2,6 @@
 #define PLANEDITOR_HPP
 
 
-
-
 #include <QWidget>
 #include <QTimer>
 #include <QKeyEvent>
@@ -33,41 +31,46 @@ class OctomyParse;
 
 class PlanHighlighter;
 
-namespace Ui {
-	class PlanEditor;
+namespace Ui
+{
+class PlanEditor;
 }
 
-class PlanEditor : public QWidget{
-		Q_OBJECT
+class PlanEditor : public QWidget
+{
+	Q_OBJECT
 
-	private:
-		Ui::PlanEditor *ui;
-		PlanHighlighter *highlighter;
-		QString plan_fn;
-		QTimer saveTimer;
+private:
+	Ui::PlanEditor *ui;
+	PlanHighlighter *highlighter;
+	QString plan_fn;
+	QTimer saveTimer;
 
-	public:
-		explicit PlanEditor(QWidget *parent = nullptr);
-		virtual ~PlanEditor();
+public:
+	explicit PlanEditor(QWidget *parent = nullptr);
+	virtual ~PlanEditor() Q_DECL_OVERRIDE;
 
-		void configure(QString plan_fn);
+	void configure(QString plan_fn);
 
-		void setText(QString);
-		void appendText(QString);
+	void setText(QString);
+	void appendText(QString);
 
-	protected:
-		void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
-	public slots:
-		void onTextChanged();
-		void save();
-		void tidy();
-		void enableSaveButton();
-		void on_pushButtonTidy_clicked();
-		void on_pushButtonParse_clicked();
+protected:
+	void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
 
-	private slots:
-		void on_pushButtonSave_clicked();
-		void on_pushButtonTest_clicked();
+public slots:
+	void onTextChanged();
+	void save();
+	void tidy();
+	void enableSaveButton();
+	void on_pushButtonTidy_clicked();
+	void on_pushButtonParse_clicked();
+
+private slots:
+	void on_pushButtonSave_clicked();
+	void on_pushButtonTest_clicked();
 };
 
-#endif // PLANEDITOR_HPP
+#endif
+// PLANEDITOR_HPP
+

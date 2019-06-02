@@ -1,5 +1,7 @@
 #include "TestBlob.hpp"
-#include "../common/CourierTester.hpp"
+
+#include "CourierTester.hpp"
+
 #include "comms/couriers/blob/BlobCourier.hpp"
 #include "comms/couriers/blob/Blob.hpp"
 #include "comms/couriers/blob/BlobChunk.hpp"
@@ -8,14 +10,14 @@
 
 #include "comms/couriers/CourierMandate.hpp"
 
-#include "utility/widgets/PixViewer.hpp"
-#include "utility/Utility.hpp"
-
+#include "utility/graphics/widgets/PixViewer.hpp"
+#include "utility/graphics/Graphics.hpp"
 
 #include "comms/CommsCarrierUDP.hpp"
 
 
-
+#include <QByteArray>
+#include <QSharedPointer>
 
 void TestBlob::testBlob()
 {
@@ -25,7 +27,7 @@ void TestBlob::testBlob()
 	QList<SendingBlob *> sendingBlobs;
 	for(int i=0; i<numBlob; ++i) {
 		//QByteArray aData=randomByteArray(qrand()%200000);
-		QByteArray aData=utility::randomJPEGByteArray(512,512,90);
+		QByteArray aData=utility::graphics::randomJPEGByteArray(512,512,90);
 		SendingBlob *blob=OC_NEW SendingBlob("blob_"+QString::number(i), i+1, chunkSize, aData, qrand()%30);
 		sendingBlobs<<blob;
 	}
@@ -126,7 +128,7 @@ private:
 	const QString blobName;
 
 public:
-	explicit CourierTesterBlob(CommsChannel &comms)
+	explicit CourierTesterBlob(QSharedPointer<CommsChannel> comms)
 		: CourierTester(OC_NEW BlobCourier(comms),OC_NEW BlobCourier(comms), "FROM", "TO  ")
 		, pixA(nullptr,"Original image")
 		, pixB(nullptr,"Transport image")
@@ -140,8 +142,8 @@ public:
 	void onTestInitImp() Q_DECL_OVERRIDE {
 		pixA.show();
 		pixB.show();
-		rimgA=utility::randomImage(imageSize, imageSize);
-		ridA=utility::imageToByteArray(rimgA);
+		rimgA=utility::graphics::randomImage(imageSize, imageSize);
+		ridA=utility::graphics::imageToByteArray(rimgA);
 		pixA.setImage(rimgA);
 		CourierMandate beforeMandate=mFromCourier->mandate();
 		//qDebug()<<"before="<<beforeMandate.toString();
@@ -200,11 +202,15 @@ public:
 
 void TestBlob::testBlobCourier2()
 {
-	KeyStore keystore;
-	AddressBook peers;
+	QSharedPointer<AddressBook> peers(OC_NEW AddressBook());
+	peers->configure("test_blob_address_book.json");
+	QSharedPointer<KeyStore> keystore(OC_NEW KeyStore());
+	keystore->configure("test_blob_keystore.json");
 	//CommsCarrier &carrier, KeyStore &keystore, NodeAssociateStore &peers, QObject *parent=nullptr);
-	CommsCarrierUDP carrier;
-	CommsChannel comms(carrier, keystore, peers);
+	QSharedPointer<CommsCarrierUDP> carrier(OC_NEW CommsCarrierUDP());
+	carrier->configure();
+	QSharedPointer<CommsChannel> comms(OC_NEW CommsChannel());
+	comms->configure(carrier, keystore, peers);
 	CourierTesterBlob blobTest(comms);
 	blobTest.testRandomSteps(100);
 }

@@ -1,7 +1,8 @@
 #include "CommsTester.hpp"
 
-#include "rng/RNG.hpp"
-#include "../common/mock/MockCourier.hpp"
+#include "random/RNG.hpp"
+#include "mock/MockCourier.hpp"
+
 
 CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, quint16 basePort, quint16 portRange, quint16 testCount, KeyStore &keyStore, AddressBook &peers, QObject *parent)
 	: QObject(parent)
@@ -44,7 +45,6 @@ void CommsTester::onError(QString e)
 {
 	qWarning()<<toString()<<"::onError(): "<<e;
 }
-
 
 
 void CommsTester::onReadyRead()

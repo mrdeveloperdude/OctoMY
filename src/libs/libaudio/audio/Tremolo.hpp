@@ -13,13 +13,15 @@ private:
 	double step;
 	double ampSR;
 	double *buf;
-	int size;
+	size_t size;
 	int index;
 	bool isInited;
+
 public:
 	explicit Tremolo();
-	virtual ~Tremolo();
+	virtual ~Tremolo() Q_DECL_OVERRIDE;
 
+public:
 	void set(double freq,double amp);
 
 	//IAudioProcessor interface
@@ -28,4 +30,6 @@ public:
 	void process(qint64 num, double *in, double *out) Q_DECL_OVERRIDE;
 };
 
-#endif // TREMOLO_HPP
+#endif
+// TREMOLO_HPP
+

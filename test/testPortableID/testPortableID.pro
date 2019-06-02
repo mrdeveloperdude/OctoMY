@@ -1,4 +1,4 @@
-include($$TESTS/test.pri)
+include($$TESTS/pris/test.pri)
 
 TARGET = test_portableid
 
@@ -9,4 +9,3 @@ SOURCES += \
 	TestPortableID.cpp
 
 include($$TESTS/test_autorun.pri)
-

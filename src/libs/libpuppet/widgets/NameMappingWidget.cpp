@@ -1,7 +1,12 @@
 #include "NameMappingWidget.hpp"
 #include "ui_NameMappingWidget.h"
 
-#include "utility/Utility.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+#include "uptime/ConnectionType.hpp"
+
+#include "utility/ui/Ui.hpp"
+
 #include "pose/PoseMapping.hpp"
 #include "widgets/PoseMappingView.hpp"
 
@@ -33,17 +38,21 @@ NameMappingWidget::NameMappingWidget(QWidget *parent)
 	mButGroupFrom=OC_NEW QButtonGroup(ui->widgetNames);
 	mButGroupTo=OC_NEW QButtonGroup(ui->widgetNames);
 
-	connect(mButGroupFrom, static_cast<void(QButtonGroup::*)(QAbstractButton *, bool)>(&QButtonGroup::buttonToggled),
+	if(!connect(mButGroupFrom, static_cast<void(QButtonGroup::*)(QAbstractButton *, bool)>(&QButtonGroup::buttonToggled),
 	[=](QAbstractButton *button, bool) {
-		mCurrentFromButton=button;
-		makeConnection();
-	});
+	mCurrentFromButton=button;
+	makeConnection();
+	})) {
+		qDebug()<<"ERROR: could not connect";
+	};
 
-	connect(mButGroupTo, static_cast<void(QButtonGroup::*)(QAbstractButton *, bool)>(&QButtonGroup::buttonToggled),
+	if(!connect(mButGroupTo, static_cast<void(QButtonGroup::*)(QAbstractButton *, bool)>(&QButtonGroup::buttonToggled),
 	[=](QAbstractButton *button, bool) {
-		mCurrentToButton=button;
-		makeConnection();
-	});
+	mCurrentToButton=button;
+	makeConnection();
+	})) {
+		qDebug()<<"ERROR: could not connect";
+	};
 
 }
 
@@ -56,7 +65,7 @@ NameMappingWidget::~NameMappingWidget()
 /*
 void bubba()
 {
-
+OC_FUNCTIONGATE();
 
 	scrollArea = OC_NEW QScrollArea(NameMappingWidget);
 	scrollArea->setObjectName(QStringLiteral("scrollArea"));
@@ -175,18 +184,18 @@ void NameMappingWidget::configure(NameMapping &mapping, QStringList fromList,QSt
 	QVBoxLayout *hLayout = OC_NEW QVBoxLayout();
 
 
-	const quint32 fromSZ=mFromList.size();
-	const quint32 toSZ=mToList.size();
+	const quint32 fromSZ=static_cast<quint32>(mFromList.size());
+	const quint32 toSZ=static_cast<quint32>(mToList.size());
 	const quint32 sz=qMax(fromSZ, toSZ);
 
 	qDebug()<<"---- From SZ:"<<fromSZ<<", ToSZ:"<<toSZ<<", end SZ:"<<sz<<"";
-/*
-	for(QHBoxLayout *row:mRows) {
-		if(nullptr!=row) {
-			row->deleteLater();
+	/*
+		for(QHBoxLayout *row:mRows) {
+			if(nullptr!=row) {
+				row->deleteLater();
+			}
 		}
-	}
-	*/
+		*/
 	mRows.clear();
 
 
@@ -293,16 +302,19 @@ NameMapping *NameMappingWidget::mapping()
 
 QStringList &NameMappingWidget::fromList()
 {
+	OC_METHODGATE();
 	return mFromList;
 }
 
 QStringList &NameMappingWidget::toList()
 {
+	OC_METHODGATE();
 	return mToList;
 }
 
 QHBoxLayout *NameMappingWidget::row(quint32 r)
 {
+	OC_METHODGATE();
 	if(r>=mRows.size()) {
 		return nullptr;
 	}
@@ -311,6 +323,7 @@ QHBoxLayout *NameMappingWidget::row(quint32 r)
 
 void NameMappingWidget::addFromButton(QString from, quint32 r)
 {
+	OC_METHODGATE();
 	QHBoxLayout *rh=row(r);
 	if(nullptr!=rh) {
 		auto it=rh->itemAt(1);
@@ -327,6 +340,7 @@ void NameMappingWidget::addFromButton(QString from, quint32 r)
 
 void NameMappingWidget::addToButton(QString to, quint32 r)
 {
+	OC_METHODGATE();
 	QHBoxLayout *rh=row(r);
 	if(nullptr!=rh) {
 		auto it=rh->itemAt(3);
@@ -361,8 +375,8 @@ void NameMappingWidget::makeConnection()
 			mMapping->setMapping(fromIndex,toIndex, true);
 		}
 		*/
-		utility::clearButtonGroupSelection(mButGroupFrom);
-		utility::clearButtonGroupSelection(mButGroupTo);
+		utility::ui::clearButtonGroupSelection(mButGroupFrom);
+		utility::ui::clearButtonGroupSelection(mButGroupTo);
 		mCurrentFromButton=nullptr;
 		mCurrentToButton=nullptr;
 		update();

@@ -23,16 +23,23 @@
 *
 */
 
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+#include "uptime/ConnectionType.hpp"
+
 #include "MapControl.hpp"
 #include <QTimer>
 #include <QBitmap>
+
+
+
 namespace qmapcontrol
 {
 MapControl::MapControl (QWidget * parent, Qt::WindowFlags windowFlags)
 	:   QWidget( parent, windowFlags ),
-		mLayerManager(0),
-		mImageManager(0),
-		mSize(100,100),
+		mLayerManager(nullptr),
+		mImageManager(nullptr),
+		mSize(100, 100),
 		mMouseWheelEvents(true),
 		mMousePressed(false),
 		mMouseMode(Panning),
@@ -40,7 +47,7 @@ MapControl::MapControl (QWidget * parent, Qt::WindowFlags windowFlags)
 		mCrosshairsVisible(true),
 		mLoadingFlag(false),
 		mSteps(0),
-		m_doubleBuffer(0)
+		m_doubleBuffer(nullptr)
 {
 	OC_METHODGATE();
 	__init();
@@ -48,8 +55,8 @@ MapControl::MapControl (QWidget * parent, Qt::WindowFlags windowFlags)
 
 MapControl::MapControl(QSize size, MouseMode mousemode, bool showScale, bool showCrosshairs, QWidget * parent, Qt::WindowFlags windowFlags)
 	:   QWidget( parent, windowFlags ),
-		mLayerManager(0),
-		mImageManager(0),
+		mLayerManager(nullptr),
+		mImageManager(nullptr),
 		mSize(size),
 		mMouseWheelEvents(true),
 		mMousePressed(false),
@@ -58,7 +65,7 @@ MapControl::MapControl(QSize size, MouseMode mousemode, bool showScale, bool sho
 		mCrosshairsVisible(showCrosshairs),
 		mLoadingFlag(false),
 		mSteps(0),
-		m_doubleBuffer(0)
+		m_doubleBuffer(nullptr)
 {
 	OC_METHODGATE();
 	__init();
@@ -69,12 +76,12 @@ MapControl::~MapControl()
 	OC_METHODGATE();
 	if ( mLayerManager ) {
 		mLayerManager->deleteLater();
-		mLayerManager = 0;
+		mLayerManager = nullptr;
 	}
 
 	if ( mImageManager ) {
 		mImageManager->deleteLater();
-		mImageManager = 0;
+		mImageManager = nullptr;
 	}
 }
 
@@ -87,11 +94,13 @@ void MapControl::__init()
 
 	mMousePressed = false;
 
-	connect(mImageManager, SIGNAL(imageReceived()),
-			this, SLOT(updateRequestNew()));
+	if(!connect(mImageManager, SIGNAL(imageReceived()), this, SLOT(updateRequestNew()), OC_CONTYPE)) {
+		qWarning()<<"ERRROR: Could not connect";
+	}
 
-	connect(mImageManager, SIGNAL(loadingFinished()),
-			this, SLOT(loadingFinished()));
+	if(!connect(mImageManager, SIGNAL(loadingFinished()), this, SLOT(loadingFinished()), OC_CONTYPE)) {
+		qWarning()<<"ERRROR: Could not connect";
+	}
 
 	//this->setMaximumSize(size.width(), size.height());
 	setMouseTracking(true);
@@ -156,7 +165,7 @@ void MapControl::positionChanged(Geometry* geom)
 	}
 
 	Point* point = dynamic_cast<Point*>(geom);
-	if (point!=0) {
+	if (nullptr!=point) {
 		QPoint start = mLayerManager->layer()->mapadapter()->coordinateToDisplay(currentCoordinate());
 		QPoint dest = mLayerManager->layer()->mapadapter()->coordinateToDisplay(point->coordinate());
 		QPoint step = (dest-start);
@@ -235,11 +244,11 @@ void MapControl::paintEvent(QPaintEvent* evnt)
 			// draw the scale
 			dbPainter.setPen(Qt::black);
 			QPoint p1(10,mSize.height()-20);
-			QPoint p2((int)line,mSize.height()-20);
+			QPoint p2(static_cast<int>(line), mSize.height()-20);
 			dbPainter.drawLine(p1,p2);
 
 			dbPainter.drawLine(10,mSize.height()-15, 10,mSize.height()-25);
-			dbPainter.drawLine((int)line,mSize.height()-15, (int)line,mSize.height()-25);
+			dbPainter.drawLine(static_cast<int>(line), mSize.height()-15, static_cast<int>(line), mSize.height()-25);
 
 			QString distance;
 			if (distanceList.at(currentZoom()) >= 1000) {
@@ -248,7 +257,7 @@ void MapControl::paintEvent(QPaintEvent* evnt)
 				distance = QVariant( distanceList.at(currentZoom()) ).toString() + " m";
 			}
 
-			dbPainter.drawText(QPoint((int)line+10,mSize.height()-15), distance);
+			dbPainter.drawText(QPoint(static_cast<int>(line) + 10, mSize.height()-15), distance);
 		}
 	}
 
@@ -539,7 +548,7 @@ void MapControl::addLayer(QSharedPointer<Layer> layer)
 void MapControl::removeLayer( QSharedPointer<Layer> layer )
 {
 	OC_METHODGATE();
-	disconnect(layer.data(), 0, 0, 0);
+	disconnect(layer.data(), nullptr, nullptr, nullptr);
 	mLayerManager->removeLayer( layer );
 	update();
 }

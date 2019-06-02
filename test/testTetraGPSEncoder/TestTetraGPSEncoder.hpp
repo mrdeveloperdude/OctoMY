@@ -1,16 +1,18 @@
 #ifndef TESTTETRAGPSENCODER_HPP
 #define TESTTETRAGPSENCODER_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
-class TestTetraGPSEncoder:public QObject{
-		Q_OBJECT
+class TestTetraGPSEncoder:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void test();
+private slots:
+	void test();
 
 };
 
 
-#endif // TESTTETRAGPSENCODER_HPP
+#endif
+// TESTTETRAGPSENCODER_HPP

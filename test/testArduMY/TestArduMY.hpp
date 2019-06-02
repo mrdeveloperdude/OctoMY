@@ -2,9 +2,7 @@
 #define TESTARDUMY_HPP
 
 
-
-
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 class ArduMYActuatorConfig;
 class ArduMYActuatorState;
@@ -16,7 +14,6 @@ class TestArduMY:public QObject
 {
 	Q_OBJECT
 private:
-
 	ArduMYActuatorConfig randomConfig() const ;
 	ArduMYActuatorConfig fuzzConfig() const ;
 
@@ -56,13 +53,12 @@ private:
 	void testCommandParser();
 
 	void testCommandSerializerSimple();
+
 private slots:
-
-
-void testCommandSerializerFull();
-
+	void testCommandSerializerFull();
 
 };
 
 
-#endif // TESTARDUMY_HPP
+#endif
+// TESTARDUMY_HPP

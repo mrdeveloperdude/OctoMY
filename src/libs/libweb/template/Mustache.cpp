@@ -74,7 +74,7 @@ PartialResolver* Context::partialResolver() const
 QString Context::partialValue(const QString& key, QString *error) const
 {
 	if (!m_partialResolver) {
-		if(nullptr!=error){
+		if(nullptr!=error) {
 			*error="No partial resolver set while processing key '"+key+"'";
 		}
 		return QString();
@@ -102,7 +102,7 @@ QtVariantContext::QtVariantContext(const QVariant& root, PartialResolver* resolv
 	m_contextStack << root;
 }
 
-QVariant variantMapValue(const QVariant& value, const QString& key)
+static QVariant variantMapValue(const QVariant& value, const QString& key)
 {
 	if (value.userType() == QVariant::Map) {
 		return value.toMap().value(key);
@@ -111,7 +111,7 @@ QVariant variantMapValue(const QVariant& value, const QString& key)
 	}
 }
 
-QVariant variantMapValueForKeyPath(const QVariant& value, const QStringList keyPath)
+static QVariant variantMapValueForKeyPath(const QVariant& value, const QStringList keyPath)
 {
 	if (keyPath.count() > 1) {
 		QVariant firstValue = variantMapValue(value, keyPath.first());
@@ -215,7 +215,7 @@ PartialMap::PartialMap(const QHash<QString, QString>& partials)
 
 QString PartialMap::getPartial(const QString& name, QString * error)
 {
-	if(!m_partials.contains(name) && nullptr!= error){
+	if(!m_partials.contains(name) && nullptr!= error) {
 		(*error)="Key not found in map '"+name+"'";
 		return "";
 	}
@@ -235,8 +235,7 @@ QString PartialFileLoader::getPartial(const QString& name, QString *error)
 		if (file.open(QIODevice::ReadOnly)) {
 			QTextStream stream(&file);
 			m_cache.insert(name, stream.readAll());
-		}
-		else if(nullptr != error){
+		} else if(nullptr != error) {
 			(*error)="Could not open file '"+path+"' for reading";
 			return QString();
 		}
@@ -357,7 +356,7 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 
 			QString error="";
 			QString partial = context->partialValue(tag.key, &error);
-			if(!error.isEmpty()){
+			if(!error.isEmpty()) {
 				setError(error, tag.start);
 			}
 

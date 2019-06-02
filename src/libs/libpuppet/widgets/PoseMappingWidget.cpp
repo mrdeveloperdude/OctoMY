@@ -1,7 +1,12 @@
 #include "PoseMappingWidget.hpp"
 #include "ui_PoseMappingWidget.h"
 
-#include "utility/Utility.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+#include "uptime/ConnectionType.hpp"
+
+#include "utility/ui/Ui.hpp"
+
 #include "pose/PoseMapping.hpp"
 #include "widgets/PoseMappingView.hpp"
 
@@ -52,12 +57,14 @@ void PoseMappingWidget::configure(PoseMapping &mapping)
 
 	connect(butGroupFrom, static_cast<void(QButtonGroup::*)(QAbstractButton *, bool)>(&QButtonGroup::buttonToggled),
 	[=](QAbstractButton *button, bool checked) {
+		Q_UNUSED(checked);
 		fromButton=button;
 		makeConnection();
 	});
 
 	connect(butGroupTo, static_cast<void(QButtonGroup::*)(QAbstractButton *, bool)>(&QButtonGroup::buttonToggled),
 	[=](QAbstractButton *button, bool checked) {
+		Q_UNUSED(checked);
 		toButton=button;
 		makeConnection();
 	});
@@ -70,7 +77,7 @@ void PoseMappingWidget::configure(PoseMapping &mapping)
 
 	if(nullptr!=mMapping) {
 		const quint32 sz=mMapping->size();
-		ui->spinBoxActuatorCount->setValue(sz);
+		ui->spinBoxActuatorCount->setValue(static_cast<int>(sz));
 		for(quint32 i=0; i<sz; ++i) {
 			//addButtonPair(hLayout, "Anna","Jeanette", butGroupFrom, butGroupTo);
 			addButtonPair(i,hLayout, mMapping->name(i), QString("Servo_%1").arg(i), butGroupFrom, butGroupTo);
@@ -139,14 +146,14 @@ void PoseMappingWidget::makeConnection()
 {
 	OC_METHODGATE();
 	if(nullptr!=fromButton && nullptr!=toButton) {
-		qint32 fromIndex=utility::selectedButtonIndex(butGroupFrom,-1);
-		qint32 toIndex=utility::selectedButtonIndex(butGroupTo,-1);
+		const qint32 fromIndex=utility::ui::selectedButtonIndex(butGroupFrom,-1);
+		const qint32 toIndex=utility::ui::selectedButtonIndex(butGroupTo,-1);
 		if(fromIndex>=0 && toIndex >=0) {
 			//qDebug()<<"SETTING MAPPING from "<<fromIndex<<" to "<<toIndex;
-			mMapping->setMapping(fromIndex,toIndex, true);
+			mMapping->setMapping(static_cast<quint32>(fromIndex), static_cast<quint32>(toIndex), true);
 		}
-		utility::clearButtonGroupSelection(butGroupFrom);
-		utility::clearButtonGroupSelection(butGroupTo);
+		utility::ui::clearButtonGroupSelection(butGroupFrom);
+		utility::ui::clearButtonGroupSelection(butGroupTo);
 		fromButton=nullptr;
 		toButton=nullptr;
 		update();
@@ -157,9 +164,10 @@ void PoseMappingWidget::makeConnection()
 
 void PoseMappingWidget::onSpinValueChanged(int size)
 {
+	OC_METHODGATE();
 	if(nullptr!=mMapping) {
 		qDebug()<<"RESIZING TO: "<<size;
-		mMapping->resize(size);
+		mMapping->resize(static_cast<quint32>(size));
 		configure(*mMapping);
 	}
 }

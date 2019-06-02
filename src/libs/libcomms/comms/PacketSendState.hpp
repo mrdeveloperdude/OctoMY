@@ -3,9 +3,11 @@
 
 #include "CommsChannel.hpp"
 
-#include <QString>
-#include <QSharedPointer>
+#include "Multimagic.hpp"
 
+#include "uptime/SharedPointerWrapper.hpp"
+
+#include <QString>
 
 struct PacketSendState {
 public:
@@ -67,4 +69,5 @@ public:
 };
 
 
-#endif // PACKETSENDSTATE_HPP
+#endif
+// PACKETSENDSTATE_HPP

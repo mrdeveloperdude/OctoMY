@@ -1,8 +1,9 @@
 #include "Personality.hpp"
 
-#include "utility/Standard.hpp"
 #include "security/SecurityConstants.hpp"
-#include "rng/RNG.hpp"
+#include "random/RNG.hpp"
+
+#include "uptime/MethodGate.hpp"
 
 #include <QCryptographicHash>
 

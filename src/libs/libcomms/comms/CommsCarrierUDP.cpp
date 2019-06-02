@@ -6,9 +6,9 @@
 
 #include "CommsCarrierUDP.hpp"
 
-#include "utility/Standard.hpp"
-#include "utility/Utility.hpp"
-
+#include "uptime/MethodGate.hpp"
+#include "uptime/ConnectionType.hpp"
+#include "utility/string/String.hpp"
 
 // It seems that 30 seconds would be a "safe" minimal UDP rate to avoid routers closing our "connection"
 #define OCTOMY_UDP_MAXIMAL_PACKET_RATE (1000)
@@ -26,11 +26,11 @@ CommsCarrierUDP::CommsCarrierUDP(QObject *parent)
 	OC_METHODGATE();
 	setObjectName("CommsCarrierUDP");
 
-	if(!connect(&mUDPSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()), OC_CONTYPE)) {
+	if(!QObject::connect(&mUDPSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()), OC_CONTYPE)) {
 		qWarning()<<"Could not connect UDP readyRead";
 	}
 	qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
-	if(!connect(&mUDPSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)), OC_CONTYPE)) {
+	if(!QObject::connect(&mUDPSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)), OC_CONTYPE)) {
 		qWarning()<<"Could not connect UDP error";
 	}
 
@@ -57,7 +57,7 @@ void CommsCarrierUDP::onReadyRead()
 void CommsCarrierUDP::onError(QAbstractSocket::SocketError errorCode)
 {
 	OC_METHODGATE();
-	emit carrierError(utility::socketErrorToString(errorCode));
+	emit carrierError(utility::string::socketErrorToString(errorCode));
 }
 
 
@@ -67,28 +67,34 @@ void CommsCarrierUDP::onError(QAbstractSocket::SocketError errorCode)
 //////////////////////////////////////////////////
 
 
+void CommsCarrierUDP::configureImp()
+{
+	OC_METHODGATE();
+}
+
+bool CommsCarrierUDP::activateImp(const bool on)
+{
+	OC_METHODGATE();
+	bool success=true;
+	if(on) {
+		success = mUDPSocket.bind(mLocalAddress.ip(), mLocalAddress.port());
+		//qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< " with interval "<<utility::string::humanReadableElapsedMS(mSendingTimer.interval()) <<(success?" succeeded": (" failed with '"+mUDPSocket.errorString()+"'") );
+
+	} else {
+		mUDPSocket.close();
+		//qDebug()<<"----- comms unbind "<< mLocalAddress.toString();
+	}
+	return success;
+}
+
+
 void CommsCarrierUDP::setAddressImp(NetworkAddress address)
 {
 	OC_METHODGATE();
 	mLocalAddress=address;
 }
 
-bool CommsCarrierUDP::setStartImp(const bool start)
-{
-	OC_METHODGATE();
-	bool success=true;
-	if(start) {
-		success = mUDPSocket.bind(mLocalAddress.ip(), mLocalAddress.port());
-		qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< " with interval "<<utility::humanReadableElapsedMS(mSendingTimer.interval()) <<(success?" succeeded": (" failed with '"+mUDPSocket.errorString()+"'") );
-
-	} else {
-		mUDPSocket.close();
-		qDebug()<<"----- comms unbind "<< mLocalAddress.toString();
-	}
-	return success;
-}
-
-bool CommsCarrierUDP::isStartedImp() const
+bool CommsCarrierUDP::isActiveImp() const
 {
 	OC_METHODGATE();
 	return (QAbstractSocket::BoundState == mUDPSocket.state());
@@ -154,4 +160,3 @@ quint64	CommsCarrierUDP::maximalPacketIntervalImp()
 	OC_METHODGATE();
 	return OCTOMY_UDP_MAXIMAL_PACKET_RATE;
 }
-

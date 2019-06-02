@@ -8,11 +8,9 @@
 
 #include "security/KeyStore.hpp"
 
-
-#include "../common/CourierTester.hpp"
-
-
 #include <QDebug>
+#include <QSharedPointer>
+
 
 class AgentStateCourierTester: public CourierTester
 {
@@ -22,13 +20,12 @@ private:
 	AgentStateCourier *mFromAgentStateCourier;
 	AgentStateCourier *mToAgentStateCourier;
 
-
 public:
-	explicit AgentStateCourierTester(QDataStream &stream, CommsChannel &comms)
+	explicit AgentStateCourierTester(QDataStream &stream, QSharedPointer<CommsChannel> comms)
 		: CourierTester(OC_NEW AgentStateCourier(&stream, comms), OC_NEW AgentStateCourier(nullptr, comms), "AGENT ", "REMOTE")
 		, ctr(0)
-		, mFromAgentStateCourier((AgentStateCourier *)mFromCourier)
-		, mToAgentStateCourier((AgentStateCourier *)mToCourier)
+		, mFromAgentStateCourier(static_cast<AgentStateCourier *>(mFromCourier))
+		, mToAgentStateCourier(static_cast<AgentStateCourier *>(mToCourier))
 	{
 
 	}
@@ -36,14 +33,12 @@ public:
 public:
 	void putState()
 	{
-
 		if(ctr++>10) {
 			//	mDone=true;
 		}
-		qDebug()<<mFromName<<*((AgentStateCourier *)mFromCourier);
-		qDebug()<<mToName<<*((AgentStateCourier *)mToCourier);
+		qDebug()<<mFromName<<*(static_cast<AgentStateCourier *>(mFromCourier));
+		qDebug()<<mToName<<*(static_cast<AgentStateCourier *>(mToCourier));
 	}
-
 
 public:
 
@@ -73,9 +68,9 @@ public:
 		putState();
 	}
 
+
 	void onTestRoundStartImp() Q_DECL_OVERRIDE {
 	}
-
 
 
 	void onTestRoundEndImp() Q_DECL_OVERRIDE {
@@ -85,50 +80,53 @@ public:
 
 	void onToReceivingImp() Q_DECL_OVERRIDE {
 		putState();
-
 	}
+
 
 	void onFromReceivingImp() Q_DECL_OVERRIDE {
 		putState();
 	}
 
+
 	void onToSendImp() Q_DECL_OVERRIDE {
 		putState();
 	}
 
+
 	void onFromSendImp() Q_DECL_OVERRIDE {
 		putState();
 	}
-
 };
-
 
 
 void TestAgentStateCourier::test()
 {
 	QDataStream stream;
-	KeyStore keystore;
-	CommsCarrierUDP carrier;
-	AddressBook peers;
-	CommsChannel comms(carrier, keystore, peers);
-	AgentStateCourierTester agetnStateTest(stream, comms);
+	//KeyStore keystore;
+	//CommsCarrierUDP carrier;
+	//AddressBook peers;
+
+	QSharedPointer<CommsCarrierUDP> carrier(OC_NEW CommsCarrierUDP());
+	QSharedPointer<KeyStore> keystore(OC_NEW KeyStore());
+	QSharedPointer<AddressBook> peers(OC_NEW AddressBook());
+
+	QSharedPointer<CommsChannel> comms(OC_NEW CommsChannel());
+	comms->configure(carrier, keystore, peers);
+	AgentStateCourierTester agentStateTest(stream, comms);
 	// Start
-	agetnStateTest.onTestInit();
-	agetnStateTest.testStep(0);
+	agentStateTest.onTestInit();
+	agentStateTest.testStep(0);
 	qDebug()<< "#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=";
-	agetnStateTest.setAgentRandomFlags();
-	agetnStateTest.setAgentMode(COMPLETE_AUTONOMY);
-	agetnStateTest.onTestRoundEnd();
+	agentStateTest.setAgentRandomFlags();
+	agentStateTest.setAgentMode(COMPLETE_AUTONOMY);
+	agentStateTest.onTestRoundEnd();
 	qDebug()<< "#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=#-#=";
-	agetnStateTest.testStep(0);
-	agetnStateTest.testStep(5);
-	agetnStateTest.testStep(5);
+	agentStateTest.testStep(0);
+	agentStateTest.testStep(5);
+	agentStateTest.testStep(5);
 	// Done
-	agetnStateTest.onTestDeInit();
+	agentStateTest.onTestDeInit();
 }
-
-
-
 
 
 OC_TEST_MAIN(test, TestAgentStateCourier)

@@ -1,6 +1,7 @@
 #include "PoseMappingView.hpp"
 
-#include "utility/Standard.hpp"
+
+#include "uptime/MethodGate.hpp"
 
 #include "PoseMappingWidget.hpp"
 #include "pose/PoseMapping.hpp"
@@ -55,13 +56,13 @@ void PoseMappingView::paintEvent(QPaintEvent *)
 			painter.setBrush(Qt::NoBrush);
 			painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
 
-			const quint32 w=size().width();
-			const quint32 h=size().height();
+			//const quint32 w=static_cast<quint32>(size().width());
+			//const quint32 h=static_cast<quint32>(size().height());
 
 
 			const quint32 sz=mapping->size();
 
-			const qreal step=(1.0)/((qreal)sz);
+			const qreal step=(1.0)/(static_cast<qreal>(sz));
 			qreal hue=step;
 			QColor col;
 			for(quint32 i=0; i<sz; ++i) {
@@ -75,8 +76,8 @@ void PoseMappingView::paintEvent(QPaintEvent *)
 				painter.setPen(pen);
 
 				//qDebug()<<"GOT MAP FROM "<<i<<" TO " <<m;
-				QPushButton *fromButton=(i<fromButtons.size())?fromButtons.at(i):nullptr;
-				QPushButton *toButton=(m<toButtons.size())?toButtons.at(m):nullptr;
+				QPushButton *fromButton=(i<static_cast<quint32>(fromButtons.size()))?fromButtons.at(static_cast<int>(i)):nullptr;
+				QPushButton *toButton=(m<static_cast<quint32>(toButtons.size()))?toButtons.at(static_cast<int>(m)):nullptr;
 				if((nullptr!=fromButton) &&(nullptr!=toButton) ) {
 					QRect fromRect=fromButton->geometry();
 					QRect toRect=toButton->geometry();

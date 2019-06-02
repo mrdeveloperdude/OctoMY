@@ -1,16 +1,18 @@
 #ifndef TESTCREEPYVOICE_HPP
 #define TESTCREEPYVOICE_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
-class TestCreepyVoice:public QObject{
-		Q_OBJECT
+class TestCreepyVoice:public QObject
+{
+	Q_OBJECT
 
-	private slots:
-		void test();
+private slots:
+	void test();
 
 };
 
 
-#endif // TESTCREEPYVOICE_HPP
+#endif
+// TESTCREEPYVOICE_HPP

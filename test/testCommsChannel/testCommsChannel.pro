@@ -1,4 +1,4 @@
-include($$TESTS/test.pri)
+include($$TESTS/pris/test.pri)
 
 TARGET = test_commschannel
 
@@ -6,15 +6,15 @@ HEADERS += \
 	CommsSignalLogger.hpp \
 	CommsTester.hpp \
 	TestCommsChannel.hpp \
-	../common/mock/MockCommsCarrierLog.hpp \
-	../common/mock/MockCommsCarrier.hpp \
-	../common/mock/MockCourier.hpp
+	../common_test/mock/MockCommsCarrierLog.hpp \
+	../common_test/mock/MockCommsCarrier.hpp \
+	../common_test/mock/MockCourier.hpp
 
 SOURCES += \
 	TestCommsChannel.cpp \
-	../common/mock/MockCommsCarrierLog.cpp \
-	../common/mock/MockCommsCarrier.cpp \
-	../common/mock/MockCourier.cpp \
+	../common_test/mock/MockCommsCarrierLog.cpp \
+	../common_test/mock/MockCommsCarrier.cpp \
+	../common_test/mock/MockCourier.cpp \
 	CommsSignalLogger.cpp \
 	CommsTester.cpp \
 	testMultiple.cpp \

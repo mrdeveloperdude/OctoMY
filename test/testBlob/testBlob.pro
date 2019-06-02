@@ -1,4 +1,4 @@
-include($$TESTS/test.pri)
+include($$TESTS/pris/test.pri)
 
 TARGET = test_blob
 
@@ -8,4 +8,6 @@ HEADERS += \
 SOURCES += \
 	TestBlob.cpp \
 
-include($$TESTS/test_autorun.pri)
+include($$PRIS/status.pri)
+include($$TESTS/pris/test_autorun.pri)
+

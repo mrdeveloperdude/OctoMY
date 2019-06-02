@@ -2,7 +2,7 @@ TEMPLATE = subdirs
 
 CONFIG += ordered
 
-message("")
+message(" ")
 message("New OctoMY™ qmake run started...")
 message("________________________________")
 
@@ -13,14 +13,14 @@ include($$PRIS/common.pri)
 SUBDIRS += \
 	$${SRCS}/libs \
 	$${SRCS}/agent \
-	$${SRCS}/remote \
-	$${SRCS}/hub \
 	$${SRCS}/zoo \
-	$${SRCS}/web \
+	$${SRCS}/remote \
+#$${SRCS}/web \
+#	$${SRCS}/hub \
 
 
 # NOTE: USE_TESTS_* is enabled when useful in local_override.pri
-if( contains(DEFINES, USE_TESTS_BASIC) | contains(DEFINES, USE_TESTS_WEB) | contains(DEFINES, USE_TESTS_STRESS) | contains(DEFINES, USE_TESTS_SELECTED)  ){
+if( contains(DEFINES, OC_USE_TESTS_BASIC) | contains(DEFINES, OC_USE_TESTS_WEB) | contains(DEFINES, OC_USE_TESTS_STRESS) | contains(DEFINES, OC_USE_TESTS_SELECTED)  ){
 
 	message(ONE OR MORE TEST PROJECTS WERE ADDED TO OCTOMY BUILD)
 
@@ -31,16 +31,11 @@ if( contains(DEFINES, USE_TESTS_BASIC) | contains(DEFINES, USE_TESTS_WEB) | cont
 
 
 
-contains(DEFINES, USE_DOCS){
+contains(DEFINES, OC_USE_FEATURE_DOCS){
 	message(DOCUMENTATION PROJECT WAS ADDED TO OCTOMY BUILD)
 	SUBDIRS += \
 		$${DOCS}
 }
-
-
-RESOURCES += \
-	$${SRCS}/libs/libcore/resources/icons.qrc
-
 
 
 # Dependency stuff adapted from https://vilimpoc.org/blog/2014/02/21/qmake-subdirs-project-automatic-dependencies/
@@ -75,3 +70,6 @@ OTHER_FILES+= $$files(content/doc/*, false)
 OTHER_FILES+= $$files(content/design/*, false)
 OTHER_FILES+= $$files(content/website/*, false)
 
+# While transitioning to new nodes we want to view but not compile old node sources
+OTHER_FILES+= $$files(src/libs/libagent_old/*, true);
+OTHER_FILES+= $$files(src/libs/libremote_old/*, true);

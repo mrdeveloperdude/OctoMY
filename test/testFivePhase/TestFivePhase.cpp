@@ -3,6 +3,7 @@
 #include "ardumy/FivePhase.hpp"
 
 #include <QtGlobal>
+#include <iostream>
 
 template<typename T>
 static QString intToStr(T value)
@@ -14,8 +15,6 @@ static QString intToStr(T value)
 }
 
 
-#include <iostream>
-
 template<typename T>
 void printTable(T *table, size_t size)
 {
@@ -25,9 +24,6 @@ void printTable(T *table, size_t size)
 	}
 	qDebug() << "}";
 }
-
-
-
 
 
 void TestFivePhase::test()
@@ -50,4 +46,3 @@ void TestFivePhase::test()
 
 
 OC_TEST_MAIN(test, TestFivePhase)
-
