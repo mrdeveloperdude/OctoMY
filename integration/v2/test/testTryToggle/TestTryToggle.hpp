@@ -1,22 +1,20 @@
 #ifndef TESTTRYTOGGLE_HPP
 #define TESTTRYTOGGLE_HPP
 
-#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
 
 class TestTryToggle:public QObject
 {
-
 	Q_OBJECT
 
+private:
 	void test();
 
 private slots:
-
-
 	void testUI();
 
 };
 
-
-#endif // TESTTRYTOGGLE_HPP
+#endif
+// TESTTRYTOGGLE_HPP
