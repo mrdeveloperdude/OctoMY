@@ -9,6 +9,8 @@
 #include <QString>
 #include <QSharedPointer>
 
+#include <functional>
+
 class ServiceLevel;
 class ServiceManager;
 class Service;
