@@ -59,7 +59,7 @@ Q_REQUIRED_RESULT Q_DECL_CONSTEXPR static inline Q_DECL_UNUSED TGPSReal atan2(TG
 
 Q_REQUIRED_RESULT Q_DECL_CONSTEXPR static inline Q_DECL_UNUSED bool fuzzy_compare(TGPSReal a, TGPSReal b)
 {
-	return (abs(a - b) * 1000000000000.L <= min(abs(a), abs(b)));
+	return (std::abs(a - b) * 1000000000000.L <= std::min(std::abs(a), std::abs(b)));
 }
 
 
