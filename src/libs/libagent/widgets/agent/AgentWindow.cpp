@@ -60,6 +60,7 @@ void AgentWindow::configure()
 // [...]
 		loadWindowGeometry();
 		ui->widgetDebuggerButton->configure(node(), true);
+		updateWindowIcon();
 		//ui->widgetPairing->configure(node());
 		//ui->wi
 	} else {

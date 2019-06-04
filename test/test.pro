@@ -140,7 +140,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testNameGenerator \
 #		testNetworkAddress \
 #		testNetworkSettingsWidget \
-		testNodeTypeRole \
+#		testNodeTypeRole \
 #		testOpenCL \
 #		testParser \
 #		testPortableID \

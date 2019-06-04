@@ -46,12 +46,12 @@ void PortableIDWidget::setPortableID(PortableID id)
 		const bool isAgent=TYPE_AGENT==type;
 		ui->groupBoxBirthCertificate->setTitle(isAgent?"Birth Certificate": "Identification");
 
-		ui->labelType->setVisible(!isAgent);
-		ui->labelTypeCaption->setVisible(!isAgent);
+		ui->labelType->setVisible(true);
+		ui->labelTypeCaption->setVisible(true);
 		ui->labelType->setText(nodeTypeToString(type));
 
-		ui->labelName->setVisible(isAgent && !mID.name().isEmpty());
-		ui->labelNameCaption->setVisible(isAgent && !mID.name().isEmpty());
+		ui->labelName->setVisible(!mID.name().isEmpty());
+		ui->labelNameCaption->setVisible(!mID.name().isEmpty());
 		ui->labelName->setText(mID.name());
 
 		ui->labelGender->setVisible(isAgent && !mID.gender().isEmpty());
