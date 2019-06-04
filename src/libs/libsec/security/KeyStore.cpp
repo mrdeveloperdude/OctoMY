@@ -62,8 +62,8 @@ void KeyStore::configure(QString filename, bool doBootstrap, KeySecurityPolicy p
 void KeyStore::activate(bool on, std::function<void(bool)> callBack)
 {
 	OC_METHODGATE();
-	if(mConfigureHelper.activate(on)) {
-		if(on) {
+	if(on) {
+		if(mConfigureHelper.activate(on)) {
 			mStore.activate(on);
 			synchronize([this, callBack, on](ASEvent<QVariantMap> &se) {
 				const bool ok=se.isSuccessfull();
@@ -72,7 +72,9 @@ void KeyStore::activate(bool on, std::function<void(bool)> callBack)
 				}
 				emit keystoreReady(on, ok);
 			});
-		} else {
+		}
+	} else {
+		if(mConfigureHelper.isActivatedAsExpected()) {
 			synchronize([this, callBack, on](ASEvent<QVariantMap> &se) {
 				const bool ok=se.isSuccessfull();
 				if(nullptr!=callBack) {
@@ -80,6 +82,7 @@ void KeyStore::activate(bool on, std::function<void(bool)> callBack)
 				}
 				emit keystoreReady(on, ok);
 				mStore.activate(on);
+				mConfigureHelper.activate(on);
 			});
 		}
 	}

@@ -1,8 +1,9 @@
 # This is the global commons, not to be copnfused with common_test
 include($$PRIS/common.pri)
 
-CONFIG += testcase
-QT += testlib
+CONFIG += qt warn_on depend_includepath testcase
+TEMPLATE = app
+QT += testlib gui
 
 
 # We link to common_test which hold globally useful utilities for testing

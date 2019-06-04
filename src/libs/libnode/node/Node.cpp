@@ -127,7 +127,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				}, OC_CONTYPE)) {
 					qWarning()<<"ERROR: Could not connect";
 				}
-*/
+				*/
 				mKeyStoreService->configure();
 
 				mLocalIdentityStore->configure(baseDir + "/local_identity.json");
@@ -501,10 +501,18 @@ void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 			auto map=mNodeIdentity->toVariantMap();
 			qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED: "<<map<< " FROM nodeID="<<*mNodeIdentity;
 			mLocalIdentityStore->fromMap(map);
-			mLocalIdentityStore->synchronize([this](QSharedPointer<SimpleDataStore>, bool) {
-				qDebug()<<" HOPEFULL WE SYNCHRONIZED IDE TO DISK: "<<mNodeIdentity->toString();
+			/*
+			mLocalIdentityStore->synchronize([=](ASEvent<QVariantMap> &ase2) {
+				Q_UNUSED(ase2);
 			});
-			emit identityChanged();
+*/
+			mLocalIdentityStore->save([this](QSharedPointer<SimpleDataStore>, bool ok) {
+				qDebug()<<" HOPEFULLY WE SAVED IDENTITY TO DISK: "<<mNodeIdentity->toString()<<" OK="<<ok;
+				if(ok) {
+					emit identityChanged();
+				}
+			});
+
 		}
 	}
 }

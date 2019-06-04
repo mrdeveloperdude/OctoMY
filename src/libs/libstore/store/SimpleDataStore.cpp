@@ -23,9 +23,6 @@ SimpleDataStoreFrontend::~SimpleDataStoreFrontend()
 }
 
 
-const qint64 SimpleDataStore::TIMED_SYNC_OFF(0);
-
-
 SimpleDataStore::SimpleDataStore()
 	: mConfigureHelper("SimpleDataStore", true, true, true, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 	  //, mMaxSyncInterval(TIMED_SYNC_OFF)
@@ -41,7 +38,7 @@ SimpleDataStore::~SimpleDataStore()
 
 
 
-void SimpleDataStore::configure(QString filename, qint64 maxSyncInterval)
+void SimpleDataStore::configure(QString filename)
 {
 	OC_METHODGATE();
 	auto f=sharedFromThis();
@@ -68,56 +65,12 @@ void SimpleDataStore::configure(QString filename, qint64 maxSyncInterval)
 				mStore->configure(mJsonBackend, mSimpleFrontend);
 			}
 
-			/*
-			// Never sync data to disk more often than maxSyncInterval
-			mMaxSyncInterval=maxSyncInterval;
-			if(mMaxSyncInterval>0) {
-				mSyncTimer.setTimerType(Qt::VeryCoarseTimer);
-				if(!QObject::connect(&mSyncTimer, &QTimer::timeout, [this]() {
-				delayedSync();
-				})) {
-					qWarning()<<"ERROR: Could not connect settings sync timer";
-				}
-			}
-			*/
 		}
 	} else {
 		qWarning()<<"ERROR: sharedThis returned null. You should allocate SimpleDataStore as a QSharedPointer for it to work";
 	}
 }
 
-/*
-void SimpleDataStore::timerSync()
-{
-	OC_METHODGATE();
-	if(mConfigureHelper.isActivatedAsExpected()) {
-		const qint64 now=utility::time::currentMsecsSinceEpoch<qint64>();
-		const qint64 timeSinceLastSync=now-mLastSync;
-		if(timeSinceLastSync>mMaxSyncInterval) {
-			delayedSync();
-		} else {
-			mSyncTimer.start(static_cast<int>(mMaxSyncInterval-timeSinceLastSync));
-		}
-	}
-}
-
-
-void SimpleDataStore::delayedSync()
-{
-	OC_METHODGATE();
-	mSyncTimer.stop();
-	if(mConfigureHelper.isActivatedAsExpected()) {
-		//qDebug()<<"SETTINGS SYNC PERFORMED TO "<<mSettings->fileName();
-		synchronize([this](QSharedPointer<SimpleDataStore> sds, bool ok) {
-			Q_UNUSED(sds);
-			qDebug().noquote().nospace()<<"timed synchronization performed for '"<<mStore->filename()<<"' completed with "<<(ok?"OK":"ERROR");
-			if(ok){
-				mLastSync=utility::time::currentMsecsSinceEpoch<qint64>();
-			}
-		});
-	}
-}
-*/
 
 void SimpleDataStore::activate(const bool on, std::function<void(bool)> callBack)
 {
@@ -125,16 +78,32 @@ void SimpleDataStore::activate(const bool on, std::function<void(bool)> callBack
 	if(on) {
 		if(mConfigureHelper.activate(on)) {
 			if(!mStore.isNull()) {
-				mStore->activate(on, callBack);
+				mStore->activate(on);
+				synchronize([callBack](QSharedPointer<SimpleDataStore> s, bool ok) {
+					Q_UNUSED(s);
+					if(nullptr!=callBack) {
+						callBack(ok);
+					}
+				});
 				return;
 			}
 		}
 	} else {
-		if(!mStore.isNull()) {
-			mStore->activate(on, callBack);
+		if(mConfigureHelper.isActivatedAsExpected()) {
+			if(!mStore.isNull()) {
+				synchronize([this, callBack, on](QSharedPointer<SimpleDataStore> s,bool ok) {
+					Q_UNUSED(s);
+					if(nullptr!=callBack) {
+						callBack(ok);
+					}
+					mStore->activate(on);
+					//mStore->activate(on, callBack);
+					mConfigureHelper.activate(on);
+				});
+			}
+			mConfigureHelper.activate(on);
+			return;
 		}
-		mConfigureHelper.activate(on);
-		return;
 	}
 	if(nullptr!=callBack) {
 		callBack(false);
@@ -182,6 +151,15 @@ void SimpleDataStore::synchronize()
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		synchronize([](QSharedPointer<SimpleDataStore>, bool) {});
+	}
+}
+
+
+void SimpleDataStore::setSynchronousMode(bool s)
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		mStore->setSynchronousMode(s);
 	}
 }
 

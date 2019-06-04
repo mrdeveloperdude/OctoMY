@@ -112,8 +112,8 @@ void ConcurrentQueue<T>::list()
 {
 	OC_METHODGATE();
 	//if(mConfigureHelper.isActivatedAsExpected()) {
-		QMutexLocker ml(&mMutex);
-		qDebug()<<"LISTING "<<mItems.count()<<" ITEMS ";
+		//QMutexLocker ml(&mMutex);
+		//qDebug()<<"LISTING "<<mItems.count()<<" ITEMS ";
 	//}
 }
 

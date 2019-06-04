@@ -278,12 +278,17 @@ void AsyncStore<T>::activate(const bool on, std::function<void(bool)> callBack)
 				qDebug()<<"Exiting AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
 				listEvents();
 			});
+			/*
 			// Synchronize to get started
 			synchronize().onFinished([callBack](ASEvent<T> &ase) {
 				if(nullptr!=callBack) {
 					callBack(ase.isSuccessfull());
 				}
 			});
+			*/
+			if(nullptr!=callBack) {
+				callBack(true);
+			}
 		}
 	} else {
 		synchronize();
@@ -425,10 +430,13 @@ void AsyncStore<T>::setDiskCounter(quint64 newValue)
 	OC_METHODGATE();
 	const auto oldValue=mDiskCounter;
 	mDiskCounter=newValue;
+	addJournal("set-disk="+QString::number(mDiskCounter));
 	qDebug()<<"COUNTERS FOR "<<filename()<<":";
 	qDebug()<<" MEM COUNTER IS  " <<mMemoryCounter;
 	qDebug()<<"DISK COUNTER IS  " <<mDiskCounter<<" (FROM "<<oldValue<<")";
 	qDebug()<<"AUTO COUNTER IS  " <<mAutoIncrement;
+	qDebug()<<"	    JOURNAL IS  "<<journal();
+
 }
 
 
@@ -438,10 +446,12 @@ void AsyncStore<T>::setMemoryCounter(quint64 newValue)
 	OC_METHODGATE();
 	const auto oldValue=mMemoryCounter;
 	mMemoryCounter=newValue;
+	addJournal("set-mem="+QString::number(mMemoryCounter));
 	qDebug()<<"COUNTERS FOR "<<filename()<<":";
 	qDebug()<<" MEM COUNTER IS  " <<mMemoryCounter<<" (FROM "<<oldValue<<")";
 	qDebug()<<"DISK COUNTER IS  " <<mDiskCounter;
 	qDebug()<<"AUTO COUNTER IS  " <<mAutoIncrement;
+	qDebug()<<"	    JOURNAL IS  "<<journal();
 }
 
 

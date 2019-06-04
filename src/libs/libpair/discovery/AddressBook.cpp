@@ -32,7 +32,7 @@ void AddressBook::configure(QString filename)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		SimpleDataStore::configure(filename, 10*1000);
+		SimpleDataStore::configure(filename);
 	}
 }
 

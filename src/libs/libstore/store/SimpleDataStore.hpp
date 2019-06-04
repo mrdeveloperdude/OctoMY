@@ -47,31 +47,15 @@ private:
 	QSharedPointer<AsyncStore<QVariantMap> > mStore;
 	ConfigureHelper mConfigureHelper;
 
-	/*
-	qint64 mLastSync;
-	qint64 mMaxSyncInterval;
-	QTimer mSyncTimer;
-*/
-
-private:
-	static const qint64 TIMED_SYNC_OFF;
-
-
 public:
 	explicit SimpleDataStore();
 	virtual ~SimpleDataStore();
 
 // ConfigureHelper interface
 public:
-	void configure(QString filename, qint64 maxSyncInterval=TIMED_SYNC_OFF);
+	void configure(QString filename);
 	void activate(const bool on, std::function<void(bool)> callBack=nullptr);
 
-	/*
-	// Timed sync interface
-private:
-	void timerSync();
-	void delayedSync();
-*/
 	// SimpleDataStore interface
 public:
 	// NOTE: Must accept empty map, beacuse calling fromMap with empty map is the semantic for clearing
@@ -81,12 +65,12 @@ public:
 	virtual bool fromDefault();
 
 public:
+	void setSynchronousMode(bool s);
 	bool ensureStore() const;
 
 	QString filename()  const;
 	bool fileExists()  const;
 	bool ready();
-
 
 	template <typename F>
 	void status(F callBack);
@@ -102,8 +86,6 @@ public:
 	template <typename F>
 	void synchronize(F callBack);
 	void synchronize();
-
-
 };
 
 ////////////////////////////////////////////////////////////////////////////////

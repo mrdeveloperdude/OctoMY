@@ -67,7 +67,7 @@ bool SimpleDataStoreTester::fromDefault()
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void TestSimpleDataStore::test()
+static void test(const bool synchronous)
 {
 	qDebug()<<" -- Make sure file does not already exist";
 	const QString fn("test_simpledatastore.json");
@@ -75,6 +75,7 @@ void TestSimpleDataStore::test()
 	if(f.exists()) {
 		QCOMPARE(f.remove(), true);
 	}
+	QCOMPARE(f.exists(),false);
 
 	qDebug()<<" -- Create some dummy data";
 	QVariantMap data;
@@ -94,16 +95,20 @@ void TestSimpleDataStore::test()
 		SimpleDataStoreTester &sds(*sdsp);
 		Q_ASSERT(nullptr!=sdsp);
 		sds.configure(fn);
+		sdsp->setSynchronousMode(synchronous);
 		sdsp->activate(true);
-		sds.fromDefault();
 		QCOMPARE(sds.filename(), fn);
 		QCOMPARE(sds.fileExists(), false);
-		sds.fromMap(data);
+		sds.fromDefault();
 		sds.save([=](QSharedPointer<SimpleDataStore> msds, bool ok) {
 			qDebug()<<"Save callback called for store=" <<fn<<" with ok="<<ok;
 			QCOMPARE(sdsp, msds);
 			// This will happen AFTER event processing so we can't do it
 			// QCOMPARE(sdsp->fileExists(), true);
+
+
+			sdsp->fromMap(data);
+
 		});
 		sds.activate(false);
 		qDebug()<<"Waiting for dtor;";
@@ -117,6 +122,7 @@ void TestSimpleDataStore::test()
 		SimpleDataStoreTester &sds(*sdsp);
 		Q_ASSERT(nullptr!=sdsp);
 		sds.configure(fn);
+		sdsp->setSynchronousMode(synchronous);
 		sdsp->activate(true);
 		QCOMPARE(sds.filename(), fn);
 		QCOMPARE(sds.fileExists(), true);
@@ -133,6 +139,18 @@ void TestSimpleDataStore::test()
 		sds.activate(false);
 	}
 	qDebug()<<" -- Done";
+}
+
+
+void TestSimpleDataStore::testSynchronous()
+{
+	test(true);
+}
+
+
+void TestSimpleDataStore::testAsynchronous()
+{
+	test(false);
 }
 
 
