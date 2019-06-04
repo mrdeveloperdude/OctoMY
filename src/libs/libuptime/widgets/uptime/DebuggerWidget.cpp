@@ -136,6 +136,7 @@ void DebuggerWidget::updateIdentity()
 				auto pid=identity->toPortableID();
 				qDebug()<<"IDENTITY "<<pid.toPortableString();
 				ui->widgetIdenticon->setPortableID(pid);
+				ui->labelName->setText(pid.name());
 				ui->widgetBirthCertificate->setPortableID(pid);
 				ui->tryToggleBirth->setState(pid.id().isEmpty()?TryToggleState::OFF:TryToggleState::ON, false);
 			}

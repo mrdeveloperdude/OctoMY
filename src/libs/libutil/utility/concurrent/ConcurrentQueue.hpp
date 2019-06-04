@@ -157,7 +157,8 @@ T ConcurrentQueue<T>::get()
 		int count=mItems.count();
 		//qDebug()<<"Waiting for not-empty with count="<<count;
 		while((count<=0) && (!mDone)) {
-			const bool didTimeOut=mNotEmpty.wait(&mMutex, timeOutMillis);
+//			const bool didTimeOut=
+			mNotEmpty.wait(&mMutex, timeOutMillis);
 			count=mItems.count();
 			//qDebug()<<" NOT EMPTY WAIT LOOP: ... done="<<mDone <<" count="<<count<<" didTimeOut="<<didTimeOut<<"("<<timeOutMillis<<" ms)";
 		}
