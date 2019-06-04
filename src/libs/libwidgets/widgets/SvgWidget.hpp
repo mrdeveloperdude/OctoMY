@@ -14,6 +14,7 @@ class SvgWidget : public QWidget
 	Q_PROPERTY(bool silhouette READ  silhouetteEnabled WRITE setSilhouetteEnabled DESIGNABLE true)
 	Q_PROPERTY(QColor silhouetteForeground READ silhouetteForeground WRITE setSilhouetteForeground DESIGNABLE true)
 	Q_PROPERTY(QColor silhouetteBackground READ silhouetteBackground WRITE setSilhouetteBackground DESIGNABLE true)
+
 protected:
 	QSvgRenderer *mSVG;
 	QString mLastURL;
@@ -24,6 +25,7 @@ protected:
 	QColor mSilhouetteBackground;
 	const QColor mFailColor;
 	bool mDirty;
+
 private:
 	ConfigureHelper mConfigureHelperSvg;
 
@@ -32,8 +34,9 @@ public:
 	virtual ~SvgWidget();
 
 public:
-	virtual void configure(bool doSilhouette, QColor silhouetteForeground=QColor("White"), QColor silhouetteBackground=QColor("#00000000"));
+	void configure(bool doSilhouette, QColor silhouetteForeground=QColor("White"), QColor silhouetteBackground=QColor("#00000000"));
 
+public:
 	void setSvg(QSvgRenderer &svg);
 
 	void setSvgURL(QString url);

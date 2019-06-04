@@ -4,7 +4,7 @@
 #include <QDebug>
 
 
-enum NodeRole: quint8{
+enum NodeRole: quint8 {
 	ROLE_AGENT
 	, ROLE_CONTROL
 	, ROLE_UNKNOWN
@@ -16,4 +16,5 @@ QString nodeRoleToString(NodeRole s);
 
 NodeRole nodeRoleFromString(QString s);
 
-#endif // NODEROLE_HPP
+#endif
+// NODEROLE_HPP

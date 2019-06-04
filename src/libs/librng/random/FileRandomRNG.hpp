@@ -30,7 +30,7 @@ public:
 
 
 	// Does nothing, this source has no seed
-	void init(quint32 s) Q_DECL_OVERRIDE;
+	virtual void init(quint32 s) Q_DECL_OVERRIDE;
 
 };
 

@@ -39,13 +39,14 @@ struct route_info {
 static int readNlSock(int sockFd, char *bufPtr, unsigned int seqNum, int pId)
 {
 	struct nlmsghdr *nlHdr;
-	int readLen = 0, msgLen = 0;
+	ssize_t readLen = 0;
+	size_t msgLen = 0;
 	do {
 		if ((readLen = recv(sockFd, bufPtr, BUFSIZE - msgLen, 0)) < 0) {
 			::perror("SOCK READ: ");
 			return -1;
 		}
-		nlHdr = (struct nlmsghdr *)bufPtr;
+		nlHdr = reinterpret_cast<struct nlmsghdr *>(bufPtr);
 		if ((NLMSG_OK(nlHdr, readLen) == 0) || (nlHdr->nlmsg_type == NLMSG_ERROR)) {
 			::perror("Error in received packet");
 			return -1;
@@ -55,25 +56,26 @@ static int readNlSock(int sockFd, char *bufPtr, unsigned int seqNum, int pId)
 		}
 
 		bufPtr += readLen;
-		msgLen += readLen;
+		msgLen += static_cast<size_t>(readLen);
 
 		if ((nlHdr->nlmsg_flags & NLM_F_MULTI) == 0) {
 			break;
 		}
 
-	} while ((nlHdr->nlmsg_seq != seqNum) || (nlHdr->nlmsg_pid != (unsigned)pId));
-	return msgLen;
+	} while ((nlHdr->nlmsg_seq != seqNum) || (nlHdr->nlmsg_pid != static_cast<unsigned int>(pId)));
+	return static_cast<int>(msgLen);
 }
 
 static void parseRoutes(struct nlmsghdr *nlHdr, struct route_info *rtInfo)
 {
-	struct rtmsg *rtMsg = (struct rtmsg *)NLMSG_DATA(nlHdr);
+	struct rtmsg *rtMsg = static_cast<struct rtmsg *>(NLMSG_DATA(nlHdr));
 
 	if ((rtMsg->rtm_family != AF_INET) || (rtMsg->rtm_table != RT_TABLE_MAIN)) {
 		return;
 	}
 
-	struct rtattr *rtAttr = (struct rtattr *)RTM_RTA(rtMsg);
+	auto tmp=RTM_RTA(rtMsg);
+	struct rtattr *rtAttr = reinterpret_cast<struct rtattr *>(tmp);
 	int rtLen = RTM_PAYLOAD(nlHdr);
 	for (; RTA_OK(rtAttr, rtLen); rtAttr = RTA_NEXT(rtAttr, rtLen)) {
 		switch (rtAttr->rta_type) {
@@ -175,31 +177,32 @@ QHostAddress defaultGatewayAddress()
 
 	char msgBuf[BUFSIZE];
 	memset(msgBuf, 0, BUFSIZE);
-	struct nlmsghdr *nlMsg = (struct nlmsghdr *)msgBuf;
+	struct nlmsghdr *nlMsg = reinterpret_cast<struct nlmsghdr *>(msgBuf);
 
 	nlMsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg));
 	nlMsg->nlmsg_type = RTM_GETROUTE;
 
 	nlMsg->nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST;
-	nlMsg->nlmsg_seq = msgSeq++;
-	nlMsg->nlmsg_pid = getpid();
+	nlMsg->nlmsg_seq = static_cast<__u32>(msgSeq);
+	msgSeq++;
+	nlMsg->nlmsg_pid = static_cast<__u32>(getpid());
 
 	if (send(sock, nlMsg, nlMsg->nlmsg_len, 0) < 0) {
 		return QHostAddress(ret);
 	}
 
 	int len;
-	if ((len = readNlSock(sock, msgBuf, msgSeq, getpid())) < 0) {
+	if ((len = readNlSock(sock, msgBuf, static_cast<unsigned int>(msgSeq), getpid())) < 0) {
 		return QHostAddress(ret);
 	}
 
-	struct route_info *rtInfo = (struct route_info *)malloc(sizeof(struct route_info));
+	struct route_info *rtInfo = static_cast<struct route_info *>(malloc(sizeof(struct route_info)));
 
 	for (; NLMSG_OK(nlMsg, len); nlMsg = NLMSG_NEXT(nlMsg, len)) {
 		memset(rtInfo, 0, sizeof(struct route_info));
 		parseRoutes(nlMsg, rtInfo);
 
-		if (strstr((char *)inet_ntoa(rtInfo->dstAddr), "0.0.0.0") && !strstr((char *)inet_ntoa(rtInfo->gateWay), "0.0.0.0")) {
+		if (strstr(static_cast<char *>(inet_ntoa(rtInfo->dstAddr)), "0.0.0.0") && !strstr(static_cast<char *>(inet_ntoa(rtInfo->gateWay)), "0.0.0.0")) {
 			char buf[64];
 			inet_ntop(AF_INET, &rtInfo->gateWay, buf, sizeof(buf));
 			ret = QString(buf);

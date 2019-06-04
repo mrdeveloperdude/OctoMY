@@ -2,13 +2,15 @@
 #define CONSTANTS_HPP
 
 #include <QString>
+#include <QColor>
+
 
 class Constants
 {
 public:
 
 
-		// TODO: Integrate constants from settings
+	// TODO: Integrate constants from settings
 
 
 	static const qint64 MAX_SYNC_INTERVAL;
@@ -48,6 +50,7 @@ public:
 	static const quint16 OCTOMY_UDP_DEFAULT_PORT_REMOTE;
 	static const quint16 OCTOMY_UDP_DEFAULT_PORT_HUB;
 	static const quint16 OCTOMY_UDP_DEFAULT_PORT_ZOO;
+	static const quint16 OCTOMY_UDP_DEFAULT_PORT_UNKNOWN;
 
 
 	static const qint32 OCTOMY_WEB_COLLECT_AT_MOST;
@@ -83,7 +86,23 @@ public:
 	static const QString dateFMTSecond;
 	static const QString dateFMTMillisecond;
 
+	static const QString OC_NODE_TYPE_AGENT_NAME;
+	static const QString OC_NODE_TYPE_REMOTE_NAME;
+	static const QString OC_NODE_TYPE_HUB_NAME;
+	static const QString OC_NODE_TYPE_ZOO_NAME;
+	static const QString OC_NODE_TYPE_UNKNOWN_NAME;
+
+	static const QString OC_NODE_ROLE_AGENT_NAME;
+	static const QString OC_NODE_ROLE_CONTROL_NAME;
+	static const QString OC_NODE_ROLE_UNKNOWN_NAME;
+
+	static const QColor OC_NODE_TYPE_AGENT_COLOR;
+	static const QColor OC_NODE_TYPE_REMOTE_COLOR;
+	static const QColor OC_NODE_TYPE_HUB_COLOR;
+	static const QColor OC_NODE_TYPE_ZOO_COLOR;
+	static const QColor OC_NODE_TYPE_UNKNOWN_COLOR;
 
 };
 
 #endif // CONSTANTS_HPP
+

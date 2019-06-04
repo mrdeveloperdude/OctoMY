@@ -24,6 +24,7 @@ const quint16 Constants::OCTOMY_UDP_DEFAULT_PORT_AGENT=	OCTOMY_UDP_BASE_PORT+1;
 const quint16 Constants::OCTOMY_UDP_DEFAULT_PORT_REMOTE=	OCTOMY_UDP_BASE_PORT+2;
 const quint16 Constants::OCTOMY_UDP_DEFAULT_PORT_HUB=	OCTOMY_UDP_BASE_PORT+3;
 const quint16 Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO=	OCTOMY_UDP_BASE_PORT+0;
+const quint16 Constants::OCTOMY_UDP_DEFAULT_PORT_UNKNOWN=	OCTOMY_UDP_BASE_PORT+4;
 
 
 const qint32 Constants::OCTOMY_WEB_COLLECT_AT_MOST=(1024*100);
@@ -70,3 +71,21 @@ const QString Constants::dateFMTHour(dateFMTDay+" hh");
 const QString Constants::dateFMTMinute(dateFMTHour+":mm");
 const QString Constants::dateFMTSecond(dateFMTMinute+":ss");
 const QString Constants::dateFMTMillisecond(dateFMTSecond+".zzz");
+
+
+const QString Constants::OC_NODE_TYPE_AGENT_NAME("Agent");
+const QString Constants::OC_NODE_TYPE_REMOTE_NAME("Remote");
+const QString Constants::OC_NODE_TYPE_HUB_NAME("Hub");
+const QString Constants::OC_NODE_TYPE_ZOO_NAME("Zoo");
+const QString Constants::OC_NODE_TYPE_UNKNOWN_NAME("Unknown");
+
+const QString Constants::OC_NODE_ROLE_AGENT_NAME("Agent");
+const QString Constants::OC_NODE_ROLE_CONTROL_NAME("Control");
+const QString Constants::OC_NODE_ROLE_UNKNOWN_NAME("Unknown");
+
+
+const QColor Constants::OC_NODE_TYPE_AGENT_COLOR("#e83636");
+const QColor Constants::OC_NODE_TYPE_REMOTE_COLOR("#36bee8");
+const QColor Constants::OC_NODE_TYPE_HUB_COLOR("#36e843");
+const QColor Constants::OC_NODE_TYPE_ZOO_COLOR("orange");
+const QColor Constants::OC_NODE_TYPE_UNKNOWN_COLOR("yellow");

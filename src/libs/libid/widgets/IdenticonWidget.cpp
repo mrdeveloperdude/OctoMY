@@ -21,10 +21,10 @@ IdenticonWidget::IdenticonWidget(QWidget *parent)
 {
 	OC_METHODGATE();
 	// NOTE: We need configure here because of how decendents of QWidget are initialized
-	configure();
+	configureIdenticon();
 }
 
-void IdenticonWidget::configure()
+void IdenticonWidget::configureIdenticon()
 {
 	OC_METHODGATE();
 	if(mConfigureHelperIdenticonWidget.configure()) {

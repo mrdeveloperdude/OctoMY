@@ -17,7 +17,6 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 
 	message(ADDING BASIC TESTS TO BUILD)
 	TEST_PROJECTS+= \
-		testNodeTypeRole \
 		testAddressBook \
 		testAddressList \
 		testAgentStateCourier \
@@ -52,12 +51,13 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testNameGenerator \
 		testNetworkAddress \
 		testNetworkSettingsWidget \
+		testNodeTypeRole \
 		testOpenCL \
 		testParser \
 		testPortableID \
 		testPoseMappingWidget \
-		testRateCalculator \
 		testRandom \
+		testRateCalculator \
 		testServiceManager \
 		testServotor32Controller \
 		testSimpleDataStore \
@@ -140,6 +140,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testNameGenerator \
 #		testNetworkAddress \
 #		testNetworkSettingsWidget \
+		testNodeTypeRole \
 #		testOpenCL \
 #		testParser \
 #		testPortableID \

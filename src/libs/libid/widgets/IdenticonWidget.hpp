@@ -20,7 +20,7 @@ public:
 	explicit IdenticonWidget(QWidget *parent = nullptr);
 
 public:
-	void configure();
+	void configureIdenticon();
 
 protected:
 	void regenerateIdenticon();

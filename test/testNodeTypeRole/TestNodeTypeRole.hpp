@@ -6,11 +6,19 @@
 class TestNodeTypeRole:public QObject
 {
 	Q_OBJECT
+
 private slots:
-	void test();
+	void testNodeTypeQDebugStreamOperator();
+	void testNodeTypeToString();
+	void testNodeTypeFromString();
+	void testDefaultPortForNodeType();
+	void testDefaultColorForNodeType();
+
+	void testNodeRoleQDebugStreamOperator();
+	void testNodeRoleNodeRoleToString();
+	void testNodeRoleNodeRoleFromString();
 
 };
-
 
 #endif
 // TESTNODETYPEROLE_HPP

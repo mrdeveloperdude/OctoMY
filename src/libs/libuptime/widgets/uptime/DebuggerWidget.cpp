@@ -135,6 +135,7 @@ void DebuggerWidget::updateIdentity()
 			if(!identity.isNull()) {
 				auto pid=identity->toPortableID();
 				qDebug()<<"IDENTITY "<<pid.toPortableString();
+				setWindowTitle(nodeTypeToString(pid.type()));
 				ui->widgetIdenticon->setPortableID(pid);
 				ui->labelName->setText(pid.name());
 				ui->widgetBirthCertificate->setPortableID(pid);

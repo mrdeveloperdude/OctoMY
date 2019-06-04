@@ -107,7 +107,7 @@ QString humanReadableSize(qint64 bytes,int prec)
 	if(bytes<0) {
 		bytes=-bytes;
 	}
-	if(0==bytes) {
+	if(0ll==bytes) {
 		bytes=0;
 		i=0;
 	} else {

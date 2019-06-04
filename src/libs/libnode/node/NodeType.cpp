@@ -1,6 +1,5 @@
 #include "NodeType.hpp"
 
-
 #include "app/Constants.hpp"
 
 #include <QColor>
@@ -10,23 +9,23 @@ const QDebug &operator<<(QDebug &d, const NodeType nodeType)
 {
 	switch(nodeType) {
 	case(TYPE_AGENT): {
-		d.nospace() << "TYPE_AGENT";
+		d.nospace() << Constants::OC_NODE_TYPE_AGENT_NAME;
 	}
 	break;
 	case(TYPE_REMOTE): {
-		d.nospace() << "TYPE_REMOTE";
+		d.nospace() << Constants::OC_NODE_TYPE_REMOTE_NAME;
 	}
 	break;
 	case(TYPE_HUB): {
-		d.nospace() << "TYPE_HUB";
+		d.nospace() << Constants::OC_NODE_TYPE_HUB_NAME;
 	}
 	break;
 	case(TYPE_ZOO): {
-		d.nospace() << "TYPE_ZOO";
+		d.nospace() << Constants::OC_NODE_TYPE_ZOO_NAME;
 	}
 	break;
 	default:
-		d.nospace() << "TYPE_UNKNOWN";
+		d.nospace() << Constants::OC_NODE_TYPE_UNKNOWN_NAME;
 	}
 	return d.maybeSpace();
 }
@@ -34,48 +33,47 @@ const QDebug &operator<<(QDebug &d, const NodeType nodeType)
 
 QString nodeTypeToString(NodeType nodeType)
 {
-#define  NodeTypeToStringCASE(A) case (A):return #A
 	switch(nodeType) {
-		NodeTypeToStringCASE(TYPE_AGENT);
-		NodeTypeToStringCASE(TYPE_REMOTE);
-		NodeTypeToStringCASE(TYPE_HUB);
-		NodeTypeToStringCASE(TYPE_ZOO);
-	//default:
-//        return "UNKNOWN";
-		NodeTypeToStringCASE(TYPE_UNKNOWN);
+	case (TYPE_AGENT):
+		return Constants::OC_NODE_TYPE_AGENT_NAME;
+	case (TYPE_REMOTE):
+		return Constants::OC_NODE_TYPE_REMOTE_NAME;
+	case (TYPE_HUB):
+		return Constants::OC_NODE_TYPE_HUB_NAME;
+	case (TYPE_ZOO):
+		return Constants::OC_NODE_TYPE_ZOO_NAME;
+	default:
+		return Constants::OC_NODE_TYPE_UNKNOWN_NAME;
 	}
-#undef NodeTypeToStringCASE
-	return "UNKNOWN";
 }
-
 
 
 NodeType nodeTypeFromString(QString string)
 {
-	if("TYPE_AGENT"==string) {
+	if(Constants::OC_NODE_TYPE_AGENT_NAME==string) {
 		return TYPE_AGENT;
 	}
-	if("TYPE_REMOTE"==string) {
+	if(Constants::OC_NODE_TYPE_REMOTE_NAME==string) {
 		return TYPE_REMOTE;
 	}
-	if("TYPE_HUB"==string) {
+	if(Constants::OC_NODE_TYPE_HUB_NAME==string) {
 		return TYPE_HUB;
 	}
-	if("TYPE_ZOO"==string) {
+	if(Constants::OC_NODE_TYPE_ZOO_NAME==string) {
 		return TYPE_ZOO;
 	}
 	return TYPE_UNKNOWN;
 }
 
 
-
 quint16 defaultPortForNodeType(NodeType nodeType)
 {
 	quint16 defaultPort=0;
 	switch(nodeType) {
-	case(TYPE_ZOO):
-	//default:
-	case(TYPE_UNKNOWN):
+	case(TYPE_ZOO): {
+		defaultPort=Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO;
+	}
+	break;
 	case(TYPE_AGENT): {
 		defaultPort=Constants::OCTOMY_UDP_DEFAULT_PORT_AGENT;
 	}
@@ -86,6 +84,11 @@ quint16 defaultPortForNodeType(NodeType nodeType)
 	break;
 	case(TYPE_HUB): {
 		defaultPort=Constants::OCTOMY_UDP_DEFAULT_PORT_HUB;
+	}
+	break;
+	//case(TYPE_UNKNOWN):
+	default: {
+		defaultPort=Constants::OCTOMY_UDP_DEFAULT_PORT_UNKNOWN;
 	}
 	break;
 	}
