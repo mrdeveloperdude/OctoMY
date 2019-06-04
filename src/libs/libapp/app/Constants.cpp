@@ -71,6 +71,7 @@ const QString Constants::dateFMTHour(dateFMTDay+" hh");
 const QString Constants::dateFMTMinute(dateFMTHour+":mm");
 const QString Constants::dateFMTSecond(dateFMTMinute+":ss");
 const QString Constants::dateFMTMillisecond(dateFMTSecond+".zzz");
+const QString Constants::dateFMTPortable("yyy-MM-dd_hh:mm:ss.zzz");
 
 
 const QString Constants::OC_NODE_TYPE_AGENT_NAME("Agent");

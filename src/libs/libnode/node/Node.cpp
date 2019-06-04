@@ -501,7 +501,9 @@ void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 			auto map=mNodeIdentity->toVariantMap();
 			qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED: "<<map<< " FROM nodeID="<<*mNodeIdentity;
 			mLocalIdentityStore->fromMap(map);
-			mLocalIdentityStore->synchronize();
+			mLocalIdentityStore->synchronize([this](QSharedPointer<SimpleDataStore>, bool) {
+				qDebug()<<" HOPEFULL WE SYNCHRONIZED IDE TO DISK: "<<mNodeIdentity->toString();
+			});
 			emit identityChanged();
 		}
 	}

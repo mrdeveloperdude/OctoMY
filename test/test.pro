@@ -149,7 +149,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testRandom \
 #		testServiceManager \
 #		testServotor32Controller \
-#		testSimpleDataStore \
+		testSimpleDataStore \
 #		testStreamCodec \
 #		testSyncParameter \
 #		testTaskQueue \

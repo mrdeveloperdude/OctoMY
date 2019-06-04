@@ -127,7 +127,7 @@ bool PortableID::fromPortableString(QString s)
 	mName=parts.at(0).trimmed();
 	mGender=parts.at(1).trimmed();
 	mID=parts.at(2).trimmed();
-	mBirthDate=static_cast<quint64>(QDateTime::fromString(parts.at(3).trimmed(), Constants::dateFMTMillisecond).toMSecsSinceEpoch());
+	mBirthDate=static_cast<quint64>(QDateTime::fromString(parts.at(3).trimmed(), Constants::dateFMTPortable).toMSecsSinceEpoch());
 	mType=nodeTypeFromString(parts.at(4).trimmed());
 	//qDebug()<<"from "<<s<<" gave birth="<<mBirthDate;
 	return true;
@@ -137,7 +137,7 @@ bool PortableID::fromPortableString(QString s)
 QString PortableID::toPortableString() const
 {
 	OC_METHODGATE();
-	QString dateString=QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(mBirthDate)).toString(Constants::dateFMTMillisecond);
+	QString dateString=QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(mBirthDate)).toString(Constants::dateFMTPortable);
 	//qDebug()<<"birth="<<mBirthDate<<" to str="<<dateString;
 	return mName + SEP + mGender + SEP + mID + SEP + dateString + SEP + nodeTypeToString(mType);
 }

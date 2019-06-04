@@ -147,6 +147,10 @@ private:
 	void processEvent(ASEvent<T> &event);
 	quint64 autoIncrement();
 
+	void setMemoryCounter(quint64 newValue);
+	void setDiskCounter(quint64 newValue);
+
+
 	void runCallbacksForEvent(ASEvent<T> event);
 
 
@@ -240,17 +244,6 @@ void AsyncStore<T>::configure(QSharedPointer<AsyncBackend<T> > backend, QSharedP
 	if(mConfigureHelper.configure()) {
 		mBackend=backend;
 		mFrontend=frontend;
-		if(!mBackend.isNull()) {
-			const QString filename=mBackend->filenameBackend();
-			const bool exists=mBackend->existsBackend();
-			//qDebug().noquote().nospace()<<"AsyncStore created () with filename="<< filename <<" (exists="<<exists<<") from "<<utility::concurrent::currentThreadID();
-			if(exists) {
-				// Make sure that a sync from initial state will perform a load if there is data on disk
-				mDiskCounter=autoIncrement();
-			}
-		} else {
-			qWarning()<<"ERROR: no backend";
-		}
 	}
 }
 
@@ -263,6 +256,18 @@ void AsyncStore<T>::activate(const bool on, std::function<void(bool)> callBack)
 
 	if(on) {
 		if(mConfigureHelper.activate(on)) {
+			if(!mBackend.isNull()) {
+				//const QString filename=mBackend->filenameBackend();
+				const bool exists=mBackend->existsBackend();
+				//qDebug().noquote().nospace()<<"AsyncStore created () with filename="<< filename <<" (exists="<<exists<<") from "<<utility::concurrent::currentThreadID();
+				if(exists) {
+					// Make sure that a sync from initial state will perform a load if there is data on disk
+					//mDiskCounter=autoIncrement();
+					setDiskCounter(autoIncrement());
+				}
+			} else {
+				qWarning()<<"ERROR: no backend";
+			}
 			// NOTE: We activate the transactions queue here, but we don't deactivate it until the "completed" operation is received
 			mTransactions.activate(on);
 			// Start transaction processing in separate thread
@@ -411,6 +416,32 @@ quint64 AsyncStore<T>::autoIncrement()
 {
 	OC_METHODGATE();
 	return ++mAutoIncrement;
+}
+
+
+template <typename T>
+void AsyncStore<T>::setDiskCounter(quint64 newValue)
+{
+	OC_METHODGATE();
+	const auto oldValue=mDiskCounter;
+	mDiskCounter=newValue;
+	qDebug()<<"COUNTERS FOR "<<filename()<<":";
+	qDebug()<<" MEM COUNTER IS  " <<mMemoryCounter;
+	qDebug()<<"DISK COUNTER IS  " <<mDiskCounter<<" (FROM "<<oldValue<<")";
+	qDebug()<<"AUTO COUNTER IS  " <<mAutoIncrement;
+}
+
+
+template <typename T>
+void AsyncStore<T>::setMemoryCounter(quint64 newValue)
+{
+	OC_METHODGATE();
+	const auto oldValue=mMemoryCounter;
+	mMemoryCounter=newValue;
+	qDebug()<<"COUNTERS FOR "<<filename()<<":";
+	qDebug()<<" MEM COUNTER IS  " <<mMemoryCounter<<" (FROM "<<oldValue<<")";
+	qDebug()<<"DISK COUNTER IS  " <<mDiskCounter;
+	qDebug()<<"AUTO COUNTER IS  " <<mAutoIncrement;
 }
 
 
@@ -584,11 +615,13 @@ bool AsyncStore<T>::clearSync()
 		//const auto oldD=mDiskCounter;
 		//const auto oldM=mMemoryCounter;
 		if(backendOK) {
-			mDiskCounter=0;
+			//mDiskCounter=0;
+			setDiskCounter(0);
 		}
 		const bool frontendOK=mFrontend.isNull()?false:mFrontend->clearFrontend();
 		if(frontendOK) {
-			mMemoryCounter=0;
+			//mMemoryCounter=0;
+			setMemoryCounter(0);
 		}
 		//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<oldM<<" to " <<mMemoryCounter<< " VIA CLEAR";
 		//qDebug()<<"DISK COUNTER FOR "<<mFilename<<" WENT FROM "<<oldD<<" to " <<mDiskCounter<< " VIA CLEAR";
@@ -627,7 +660,8 @@ bool AsyncStore<T>::setSync(T data)
 		const  bool ok=mFrontend.isNull()?false:mFrontend->setFrontend(data);
 		//const auto old=mMemoryCounter;
 		if(ok) {
-			mMemoryCounter=autoIncrement();
+			//mMemoryCounter=autoIncrement();
+			setMemoryCounter(autoIncrement());
 		}
 		//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT";
 		//qDebug()<<"Exiting Sync Set with ok="<<ok<<" from "<<utility::concurrent::currentThreadID();
@@ -649,7 +683,8 @@ bool AsyncStore<T>::loadSync()
 		if(ok) {
 			ok = mFrontend.isNull()?false:mFrontend->setFrontend(data);
 			if(ok) {
-				mMemoryCounter = mDiskCounter;
+				//mMemoryCounter = mDiskCounter;
+				setMemoryCounter(mDiskCounter);
 			}
 		}
 		//qDebug()<<"Exiting Sync Load with ok="<<ok<<"  from "<<utility::concurrent::currentThreadID();
@@ -671,7 +706,8 @@ bool AsyncStore<T>::saveSync()
 		if(ok) {
 			ok = mBackend->saveBackend(data);
 			if(ok) {
-				mDiskCounter = mMemoryCounter;
+				//mDiskCounter = mMemoryCounter;
+				setDiskCounter(mMemoryCounter);
 			}
 		}
 		//qDebug()<<"Exiting Sync Save with ok="<<ok<<"  from "<<utility::concurrent::currentThreadID();
@@ -691,11 +727,12 @@ bool AsyncStore<T>::generateSync()
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		//qDebug()<<"Entering Sync Generate from "<<utility::concurrent::currentThreadID();
 		const bool ok=mFrontend.isNull()?false:mFrontend->generateFrontend();
-		//const auto old=mMemoryCounter;
+		const auto old=mMemoryCounter;
 		if(ok) {
-			mMemoryCounter=autoIncrement();
+			//mMemoryCounter=autoIncrement();
+			setMemoryCounter(autoIncrement());
 		}
-		//qDebug()<<"MEMORY COUNTER FOR "<<mFilename<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT";
+		qDebug()<<"MEMORY COUNTER FOR "<<filename()<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT ("<<(ok?"ok":"fail")<<")";
 		//qDebug()<<"Exiting Sync Generate with ok="<<ok<<"  from "<<utility::concurrent::currentThreadID();
 		addJournal(QString("generate=%1").arg(ok?"ok":"fail"));
 		return ok;
