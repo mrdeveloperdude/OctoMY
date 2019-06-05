@@ -279,6 +279,7 @@ void AsyncStore<T>::activate(const bool on, std::function<void(bool)> callBack)
 				listEvents();
 			});
 			/*
+			 * NOTE: This was moved to SimpleDataStore and KeyStore as that is more appropriate location
 			// Synchronize to get started
 			synchronize().onFinished([callBack](ASEvent<T> &ase) {
 				if(nullptr!=callBack) {
@@ -742,7 +743,7 @@ bool AsyncStore<T>::generateSync()
 			//mMemoryCounter=autoIncrement();
 			setMemoryCounter(autoIncrement());
 		}
-		qDebug()<<"MEMORY COUNTER FOR "<<filename()<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT ("<<(ok?"ok":"fail")<<")";
+		//qDebug()<<"MEMORY COUNTER FOR "<<filename()<<" WENT FROM "<<old<<" to " <<mMemoryCounter<< " VIA AUTOINCREMENT ("<<(ok?"ok":"fail")<<")";
 		//qDebug()<<"Exiting Sync Generate with ok="<<ok<<"  from "<<utility::concurrent::currentThreadID();
 		addJournal(QString("generate=%1").arg(ok?"ok":"fail"));
 		return ok;

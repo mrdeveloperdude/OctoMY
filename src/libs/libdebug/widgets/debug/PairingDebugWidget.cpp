@@ -43,6 +43,10 @@ void PairingDebugWidget::configure(QSharedPointer <Node> node)
 						auto ass=addressBook->associateByID(id);
 						if(!ass.isNull()) {
 							ass->trusts().applyTrustLevel(level, ass->type());
+							addressBook->synchronize([=](QSharedPointer<SimpleDataStore> s, bool ok) {
+								Q_UNUSED(s);
+								qDebug()<<"SYNCHRONIZIATION OF ADDRESSBOOK COMPLETE WITH OK="<<ok;
+							});
 						} else {
 							qWarning()<<"ERROR: Could not apply edited trusts to associate";
 						}

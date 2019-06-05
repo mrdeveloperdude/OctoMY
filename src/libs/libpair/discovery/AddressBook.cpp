@@ -40,13 +40,46 @@ void AddressBook::configure(QString filename)
 void AddressBook::activate(const bool on, std::function<void(bool)> callBack)
 {
 	OC_METHODGATE();
-	if(mConfigureHelper.activate(on)) {
-		SimpleDataStore::activate(on, callBack);
+	/*
+	if(on) {
+		if(mConfigureHelper.activate(on)) {
+			SimpleDataStore::activate(on, callBack);
+		} else {
+			if(nullptr!=callBack) {
+				callBack(false);
+			}
+		}
 	} else {
-		if(nullptr!=callBack) {
-			callBack(false);
+
+		mConfigureHelper.activate(on);
+			SimpleDataStore::activate(on, callBack);
+
+	}
+	*/
+
+	if(on) {
+		if(mConfigureHelper.activate(on)) {
+			SimpleDataStore::activate(on);
+			synchronize([callBack](QSharedPointer<SimpleDataStore>, bool ok) {
+				if(nullptr!=callBack) {
+					callBack(ok);
+				}
+			});
+		}
+	} else {
+		if(mConfigureHelper.isActivatedAsExpected()) {
+			synchronize([this, callBack, on](QSharedPointer<SimpleDataStore>, bool ok) {
+				if(nullptr!=callBack) {
+					callBack(ok);
+				}
+				SimpleDataStore::activate(on);
+				mConfigureHelper.activate(on);
+			});
 		}
 	}
+
+
+
 }
 
 
