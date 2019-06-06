@@ -54,9 +54,9 @@ void Agent::nodeConfigure()
 void Agent::nodeActivate(const bool on)
 {
 	OC_METHODGATE();
-	if(mNodeConfigureHelper.activate(on)) {
-		//qDebug()<<"nodeActivate(on="<<on<<")";
-		if(on) {
+	//qDebug()<<"nodeActivate(on="<<on<<")";
+	if(on) {
+		if(mNodeConfigureHelper.activate(on)) {
 			// Initialize Agent Configuration Store
 
 			mAgentConfigStore->activate(on);
@@ -66,7 +66,9 @@ void Agent::nodeActivate(const bool on)
 				Q_UNUSED(ok);
 			});
 			emit nodeActivateChanged(on);
-		} else {
+		}
+	} else {
+		if(mNodeConfigureHelper.isActivatedAsExpected()) {
 			if(!mWindow.isNull()) {
 				mWindow.clear();
 			}
@@ -75,6 +77,7 @@ void Agent::nodeActivate(const bool on)
 		}
 	}
 }
+
 
 
 QSharedPointer<NodeWindow> Agent::nodeWindow()

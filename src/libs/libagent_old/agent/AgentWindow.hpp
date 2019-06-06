@@ -44,7 +44,7 @@ class AgentWindow;
  * This is useful for when your robots has no screen and/or is running on
  * resource constrained hardware.
  */
-class AgentWindow : public NodeWindow, public LogDestination
+class AgentWindow: public NodeWindow, public LogDestination
 {
 	Q_OBJECT
 

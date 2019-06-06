@@ -56,17 +56,21 @@ void Remote::nodeConfigure()
 void Remote::nodeActivate(const bool on)
 {
 	OC_METHODGATE();
-	if(mNodeConfigureHelper.activate(on)) {
-		//qDebug()<<"nodeActivate(on="<<on<<")";
-		if(on) {
+
+	//qDebug()<<"nodeActivate(on="<<on<<")";
+	if(on) {
+		if(mNodeConfigureHelper.activate(on)) {
 			emit nodeActivateChanged(on);
-		} else {
+		}
+	} else {
+		if(mNodeConfigureHelper.isActivatedAsExpected()) {
 			if(!mWindow.isNull()) {
 				mWindow.clear();
 			}
 			emit nodeActivateChanged(on);
 		}
 	}
+
 }
 
 

@@ -11,9 +11,10 @@
 
 // Inspired by http://doc.qt.io/qt-5/qtwidgets-itemviews-interview-example.html
 
-MultiView::MultiView(QWidget *parent) :
-	QWidget(parent),
-	ui(OC_NEW Ui::MultiView)
+MultiView::MultiView(QWidget *parent)
+	: QWidget(parent)
+	, ui(OC_NEW Ui::MultiView)
+	, settings(nullptr)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
@@ -131,10 +132,10 @@ void MultiView::onViewButtonClicked(QAbstractButton*but)
 
 
 
-void MultiView::configure(Settings &s, QString val, QString key)
+void MultiView::configure(Settings *settings, QString val, QString key)
 {
 	OC_METHODGATE();
-	settings=&s;
+
 	k=key.trimmed();
 	if(""!=k && nullptr!=settings) {
 		val=settings->getCustomSetting(k,val);

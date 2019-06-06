@@ -84,7 +84,6 @@ protected:
 
 private slots:
 	void onNetworkSettingsChange(QHostAddress address, quint16 port, bool valid);
-	void onTrustButtonClicked(QAbstractButton *);
 
 private slots:
 	void on_pushButtonMaybeOnward_clicked();

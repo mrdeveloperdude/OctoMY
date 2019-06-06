@@ -178,9 +178,6 @@ void PairingWizard::onNetworkSettingsChange(QHostAddress address, quint16 port, 
 }
 
 
-
-
-
 void PairingWizard::updateNetworkSettings()
 {
 	OC_METHODGATE();
@@ -198,7 +195,6 @@ void PairingWizard::updateNetworkSettings()
 		}
 	}
 }
-
 
 
 QSharedPointer<AddressBook> PairingWizard::addressBook()

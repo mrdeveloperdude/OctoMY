@@ -47,16 +47,13 @@ AUTOLIBS_COMBINED += \
 	app \
 	agent \
 	remote \
+	hub \
 	zoo \
 	web \
 	debug \
-
-#	clt \
-
-
-#	hub \
+	clt \
 #	dynamics \
-#	sec \
+
 
 
 

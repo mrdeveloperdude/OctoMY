@@ -81,15 +81,15 @@ public:
 	virtual ~WidgetNAV();
 
 public:
-	inline void update();
-	inline void setHeading( float heading );
-	inline void setHeadingBug( float headingBug );
-	inline void setCourse( float course );
-	inline void setBearing( float bearing, bool visible = false );
-	inline void setDeviation( float deviation, bool visible = false );
-	inline void setDistance( float distance, bool visible = false );
-	inline void setTheme(QString theme);
-	inline QString theme();
+	void update();
+	void setHeading( float heading );
+	void setHeadingBug( float headingBug );
+	void setCourse( float course );
+	void setBearing( float bearing, bool visible = false );
+	void setDeviation( float deviation, bool visible = false );
+	void setDistance( float distance, bool visible = false );
+	void setTheme(QString theme);
+	QString theme();
 
 private:
 	void setupUi();
@@ -97,4 +97,5 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif // WIDGETNAV_H
+#endif
+// WIDGETNAV_H

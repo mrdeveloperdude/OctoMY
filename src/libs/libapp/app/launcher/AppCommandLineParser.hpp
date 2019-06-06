@@ -1,7 +1,6 @@
 #ifndef APPCOMMANDLINEPARSER_HPP
 #define APPCOMMANDLINEPARSER_HPP
 
-
 #include <QCommandLineParser>
 
 class AppCommandLineParser
@@ -42,7 +41,6 @@ public:
 
 	// Provide original argument array
 	char **argv();
-
 
 };
 

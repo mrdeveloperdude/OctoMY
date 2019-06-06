@@ -5,29 +5,31 @@
 #include <QTimer>
 
 
-namespace Ui {
-	class HUDWidget;
+namespace Ui
+{
+class HUDWidget;
 }
 
 class HUDWidget : public QWidget
 {
-		Q_OBJECT
-	private:
-		Ui::HUDWidget *ui;
-		QTimer gaugeTimer;
-		quint64 startTime;
+	Q_OBJECT
+private:
+	Ui::HUDWidget *ui;
+	QTimer gaugeTimer;
+	quint64 startTime;
 
-	public:
-		explicit HUDWidget(QWidget *parent = nullptr);
-		virtual ~HUDWidget();
+public:
+	explicit HUDWidget(QWidget *parent = nullptr);
+	virtual ~HUDWidget();
 
-	protected:
+protected:
 
-		virtual void showEvent(QShowEvent *);
-		virtual void hideEvent(QHideEvent *);
+	virtual void showEvent(QShowEvent *);
+	virtual void hideEvent(QHideEvent *);
 
-	private slots:
-		void onGaugeTimer();
+private slots:
+	void onGaugeTimer();
 };
 
-#endif // HUDWIDGET_HPP
+#endif
+// HUDWIDGET_HPP

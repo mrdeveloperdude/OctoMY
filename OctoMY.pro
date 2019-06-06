@@ -15,8 +15,8 @@ SUBDIRS += \
 	$${SRCS}/agent \
 	$${SRCS}/zoo \
 	$${SRCS}/remote \
-#$${SRCS}/web \
-#	$${SRCS}/hub \
+	$${SRCS}/hub \
+	#$${SRCS}/web \
 
 
 # NOTE: USE_TESTS_* is enabled when useful in local_override.pri
@@ -39,18 +39,18 @@ contains(DEFINES, OC_USE_FEATURE_DOCS){
 
 # Dependency stuff adapted from https://vilimpoc.org/blog/2014/02/21/qmake-subdirs-project-automatic-dependencies/
 libs.subdir=		$${SRCS}/libs
-hub.subdir=			$${SRCS}/hub
 agent.subdir=		$${SRCS}/agent
 remote.subdir=		$${SRCS}/remote
+hub.subdir=			$${SRCS}/hub
 zoo.subdir=			$${SRCS}/zoo
 web.subdir=			$${SRCS}/web
 test.subdir=		$${TESTS}
 doc.subdir=			$${DOCS}
 
 
-hub.depends=		$${SRCS}/libs
 agent.depends=		$${SRCS}/libs
 remote.depends=		$${SRCS}/libs
+hub.depends=		$${SRCS}/libs
 zoo.depends=		$${SRCS}/libs
 web.depends=		$${SRCS}/libs
 test.depends=		$${SRCS}/libs
