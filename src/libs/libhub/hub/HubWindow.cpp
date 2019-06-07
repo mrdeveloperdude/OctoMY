@@ -74,7 +74,6 @@ HubWindow::~HubWindow()
 }
 
 
-
 void HubWindow::configure()
 {
 	OC_METHODGATE();
@@ -128,7 +127,6 @@ void HubWindow::configure()
 
 		{
 			generateTriggers();
-
 		}
 
 		//TODO: WOW we need to update this
@@ -136,11 +134,12 @@ void HubWindow::configure()
 		PoseMapping *pm=OC_NEW PoseMapping(5);
 		ui->widgetPoseMapping->configure(*pm);
 
-#ifdef EXTERNAL_LIB_OPENCL
+#ifdef OC_USE_LIB_EXT_OPENCL
 		if(!connect(ui->openGLWidgetCLGLView, SIGNAL(glInitialized()), this, SLOT(onGLWidgetInitialized()), OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
-#endif // EXTERNAL_LIB_OPENCL
+#endif
+// OC_USE_LIB_EXT_OPENCL
 
 
 		auto cmd=h->context()->commandLine();
@@ -181,13 +180,10 @@ void HubWindow::configure()
 		splash=nullptr;
 		updateIdentityWidgets();
 
-
-
 	} else {
 		qWarning()<<"WARNING: No Agent in agent window configure";
 	}
 }
-
 
 
 QSharedPointer<Hub> HubWindow::hub()
@@ -199,8 +195,6 @@ QSharedPointer<Hub> HubWindow::hub()
 	}
 	return qSharedPointerCast<Hub> (n);
 }
-
-
 
 
 void HubWindow::onSummaryTimer()
@@ -250,6 +244,7 @@ void HubWindow::onQRRedraw()
 	}
 }
 
+
 void HubWindow::appendLog(const QString& text)
 {
 	OC_METHODGATE();
@@ -277,8 +272,6 @@ void HubWindow::onListenStateChanged(const TryToggleState last, const TryToggleS
 		// TODO: Implement needConnection mechanism as in Remote/ClientWindow
 //		mHub->startComms();
 		ui->tryToggleListen->setState(ON);
-
-
 
 	} else if(OFF==current) {
 		/*
@@ -326,9 +319,6 @@ void HubWindow::on_pushButtonSendData_clicked()
 	OC_METHODGATE();
 	//TODO: Implement or remove
 }
-
-
-
 
 
 void HubWindow::startProcess(QString base)
@@ -380,10 +370,9 @@ void HubWindow::generateTriggers()
 		*ts<<t;
 	}
 	ui->widgetTriggerManager->configure(*ts);
-
 }
 
-#ifdef EXTERNAL_LIB_OPENCL
+#ifdef OC_USE_LIB_EXT_OPENCL
 
 void HubWindow::onGLWidgetInitialized()
 {
@@ -404,7 +393,8 @@ void HubWindow::onGLWidgetInitialized()
 	}
 }
 
-#endif // EXTERNAL_LIB_OPENCL
+#endif
+// OC_USE_LIB_EXT_OPENCL
 
 
 QString HubWindow::saveIdenticonWidget(IdenticonWidget *iw, QString base)
@@ -449,7 +439,6 @@ QString HubWindow::saveIdenticonWidget(IdenticonWidget *iw, QString base)
 }
 
 
-
 QString HubWindow::saveIrisWidget(IrisWidget *iw, quint32 irisIndex, QString base)
 {
 	QFileDialog fd;
@@ -488,6 +477,7 @@ QString HubWindow::saveIrisWidget(IrisWidget *iw, quint32 irisIndex, QString bas
 	return filePath;
 }
 
+
 void HubWindow::on_comboBoxAddLocal_currentIndexChanged(const QString &arg1)
 {
 	OC_METHODGATE();
@@ -501,6 +491,7 @@ void HubWindow::on_comboBoxAddLocal_currentIndexChanged(const QString &arg1)
 	}
 	ui->comboBoxAddLocal->setCurrentIndex(0);
 }
+
 
 void HubWindow::on_tabWidget_currentChanged(int)
 {
@@ -519,7 +510,6 @@ void HubWindow::onCommsError(QString msg)
 		appendLog("GOT ERROR: "+msg);
 	}
 }
-
 
 
 void HubWindow::onCommsClientAdded(CommsSession *c)
@@ -544,7 +534,6 @@ void HubWindow::on_pushButtonTest_clicked()
 	OC_METHODGATE();
 	qDebug()<<"TEST BUTTON PRESSED";
 }
-
 
 
 void HubWindow::on_lineEditQR_textChanged(const QString &text)
@@ -584,6 +573,7 @@ void HubWindow::updateIdentityWidgets()
 	ui->widgetIdenticonHub->setPortableID(pid);
 }
 
+
 void HubWindow::on_lineEditIdenticonID_textChanged(const QString &)
 {
 	OC_METHODGATE();
@@ -597,7 +587,6 @@ void HubWindow::on_horizontalSliderIrisIndex_valueChanged(int value)
 }
 
 
-
 void HubWindow::on_pushButtonSaveIdenticonAgent_clicked()
 {
 	const QString filePath=saveIdenticonWidget(ui->widgetIdenticonAgent, "agent_"+ui->widgetIdenticonAgent->identicon().id().id()+".svg");
@@ -607,7 +596,6 @@ void HubWindow::on_pushButtonSaveIdenticonAgent_clicked()
 		ui->logScroll->appendPlainText("Agent identicon save aborted");
 	}
 }
-
 
 
 void HubWindow::on_pushButtonSaveIdenticonRemote_clicked()
@@ -620,6 +608,7 @@ void HubWindow::on_pushButtonSaveIdenticonRemote_clicked()
 	}
 }
 
+
 void HubWindow::on_pushButtonSaveIdenticonHub_clicked()
 {
 	const QString filePath=saveIdenticonWidget(ui->widgetIdenticonHub, "hub_"+ui->widgetIdenticonHub->identicon().id().id()+".svg");
@@ -629,7 +618,6 @@ void HubWindow::on_pushButtonSaveIdenticonHub_clicked()
 		ui->logScroll->appendPlainText("Hub identicon save aborted");
 	}
 }
-
 
 
 void HubWindow::on_pushButtonSaveIdenticonIris_clicked()
@@ -643,6 +631,7 @@ void HubWindow::on_pushButtonSaveIdenticonIris_clicked()
 	}
 }
 
+
 void HubWindow::on_pushButtonWidgetIllustrationBrowse_clicked()
 {
 	if(topDir == widgetIllustrationOutputDir) {
@@ -655,7 +644,6 @@ void HubWindow::on_pushButtonWidgetIllustrationBrowse_clicked()
 		ui->lineEditWidgetIlilustrationPath->setText(widgetIllustrationOutputDir.absolutePath());
 	}
 }
-
 
 
 void HubWindow::on_pushButtonWidgetIllustrationSaveAll_clicked()

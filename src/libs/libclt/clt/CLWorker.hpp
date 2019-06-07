@@ -13,7 +13,6 @@ class QThread;
 class CLThreadManager;
 
 
-
 /*!
  * \brief The CLWorker class is a companion class to CLThreadManager that is
  * meant to be inherited from by implementations that wish to carry out work in
@@ -43,6 +42,7 @@ class CLThreadManager;
 class CLWorker : public QObject, protected OCTOMY_QT_OGL_FUNCTIONS_CLASS
 {
 	Q_OBJECT
+
 private:
 	CLThreadManager &mManager;
 	int mIndex;
@@ -53,16 +53,13 @@ private:
 	cl::BufferGL *mPboBuff;
 	cl::Context *mCtx;
 	bool mIsInited;
-
 	CLTool mCL;
-
 
 public:
 	explicit CLWorker(CLThreadManager &man, int index, QObject *parent = nullptr);
 	virtual	~CLWorker();
 
 public:
-
 	void setRunning(const bool running);
 	bool isRunning() const;
 	bool isGLInteropWorker() const;
@@ -77,14 +74,11 @@ public:
 
 
 protected:
-
 	void setInitPBO(const bool init);
 	void setInitCLContext(const bool init);
 	void setInitCLContextOld(const bool init);
 
 	void setInit(const bool init);
-
-
 
 	// CLWorker interface wrappers
 	//////////////////////////////////////////
@@ -103,9 +97,9 @@ public:
 	virtual void postProcessImp()=0;
 
 signals:
-
 	void processFinished();
 
 };
 
-#endif // CLWORKER_HPP
+#endif
+// CLWORKER_HPP

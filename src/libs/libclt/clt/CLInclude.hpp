@@ -1,9 +1,11 @@
 #ifndef CLINCLUDE_HPP
 #define CLINCLUDE_HPP
 
-#ifdef EXTERNAL_LIB_OPENCL
+#ifdef OC_USE_LIB_EXT_OPENCL
 #undef __CL_ENABLE_EXCEPTIONS
 #include <CL/cl.hpp>
-#endif // EXTERNAL_LIB_OPENCL
+#endif
+// OC_USE_LIB_EXT_OPENCL
 
-#endif //CLINCLUDE_HPP
+#endif
+//CLINCLUDE_HPP

@@ -1,15 +1,16 @@
 #include "CLWorker.hpp"
 #include "CLThreadManager.hpp"
 
+#include "uptime/New.hpp"
+#include "utility/string/String.hpp"
+
 #include "glt/GLErrors.hpp"
-#include "utility/Utility.hpp"
 #include "clt/CLUtils.hpp"
 
 #include <QThread>
 #include <qpa/qplatformnativeinterface.h>
 
 #include "glt/IncludeOpenGLIntegration.hpp"
-
 
 
 CLWorker::CLWorker(CLThreadManager &man, int index, QObject *parent)
@@ -31,6 +32,7 @@ CLWorker::~CLWorker()
 {
 	setInitPBO(false);
 }
+
 
 void CLWorker::setInitPBO(const bool init)
 {
@@ -54,7 +56,7 @@ void CLWorker::setInitPBO(const bool init)
 								GLsizeiptr sz=width * height * sizeof(GLubyte) * 4;
 								glBufferData(GL_ARRAY_BUFFER, sz, nullptr, GL_STREAM_DRAW);
 								if(!GLSPEWERROR) {
-									qDebug().noquote().nospace()<<"CLWORKER! Prepared CL buffer data ("<<width<<"x"<<height <<") x 4 = "<<utility::humanReadableSize(sz,2);
+									qDebug().noquote().nospace()<<"CLWORKER! Prepared CL buffer data ("<<width<<"x"<<height <<") x 4 = "<<utility::string::humanReadableSize(sz,2);
 									if(nullptr!=mCtx) {
 										mPboBuff = OC_NEW cl::BufferGL(*mCtx, CL_MEM_WRITE_ONLY, mPbo);
 										if(!GLSPEWERROR) {
@@ -71,7 +73,7 @@ void CLWorker::setInitPBO(const bool init)
 										qWarning()<<"ERROR: ctx == null";
 									}
 								} else {
-									qWarning().noquote().nospace()<<"ERROR: Failed to prepare CL buffer data ("<<width<<"x"<<height <<") x 4 = "<<utility::humanReadableSize(sz,2);
+									qWarning().noquote().nospace()<<"ERROR: Failed to prepare CL buffer data ("<<width<<"x"<<height <<") x 4 = "<<utility::string::humanReadableSize(sz,2);
 								}
 							} else {
 								qWarning()<<"ERROR: Failed to bind PBO";
@@ -85,7 +87,7 @@ void CLWorker::setInitPBO(const bool init)
 				}
 			}
 		} else {
-			if(nullptr!=mPbo) {
+			if(0!=mPbo) {
 				qDebug()<<"Trying to free PBO "<<QString::number(mPbo);
 				glDeleteBuffers(1, &mPbo);
 				mPbo=0;
@@ -176,10 +178,12 @@ void CLWorker::setRunning(const bool running)
 	mRunning=running;
 }
 
+
 bool CLWorker::isRunning() const
 {
 	return mRunning;
 }
+
 
 bool CLWorker::isGLInteropWorker() const
 {
@@ -187,26 +191,32 @@ bool CLWorker::isGLInteropWorker() const
 	const bool doInterop=mManager.interopConfig().doGLInterop();
 	return doInterop&&(0==mIndex);
 }
+
+
 QThread *CLWorker::thread() const
 {
 	return mThread;
 }
+
 
 int CLWorker::index() const
 {
 	return mIndex;
 }
 
+
 GLuint CLWorker::pbo() const
 {
 	return mPbo;
 }
+
 
 cl::BufferGL *CLWorker::pboBuff() const
 {
 	return mPboBuff;
 
 }
+
 
 CLThreadManager &CLWorker::manager() const
 {
@@ -219,10 +229,12 @@ cl::Context *CLWorker::clContext() const
 	return mCtx;
 }
 
+
 const cl::Device *CLWorker::clDevice() const
 {
 	return mDev;
 }
+
 
 GLContext *CLWorker::sharingGLContext() const
 {
@@ -264,6 +276,7 @@ void CLWorker::preProcess(QThread &th)
 	qDebug()<<"CLWORKER! PRE end in thread " <<QThread::currentThreadId();
 }
 
+
 void CLWorker::process()
 {
 	qDebug()<<"CLWORKER! PROC start in thread " <<QThread::currentThreadId();
@@ -273,6 +286,7 @@ void CLWorker::process()
 	qDebug()<<"CLWORKER! PROC end in thread " <<QThread::currentThreadId();
 	emit processFinished();
 }
+
 
 void CLWorker::postProcess()
 {

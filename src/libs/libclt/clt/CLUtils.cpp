@@ -5,7 +5,7 @@
 #include "CLUtils.hpp"
 #include "glt/IncludeOpenGL.hpp"
 
-#include "utility/Utility.hpp"
+#include "utility/string/String.hpp"
 
 #include <QMap>
 #include <QString>
@@ -23,7 +23,7 @@ QString OCLLocalMemoryTypeString(cl_device_local_mem_type type)
 	default: {
 		return "Unknwon local memory type "+QString::number(type);
 	}
-	break;
+//	break;
 	}
 #undef CL_LOCAL_MEMORY_TYPE_CASE
 }
@@ -41,7 +41,7 @@ QString OCLDeviceTypeString(cl_device_type type)
 	default: {
 		return "Unknwon device type string "+QString::number(type);
 	}
-	break;
+//	break;
 	}
 #undef CL_DEVICE_TYPE_CASE
 }
@@ -127,7 +127,7 @@ QString OCLErrorString(cl_int code)
 	default: {
 		return "Unknwon errorcode "+QString::number(code);
 	}
-	break;
+//	break;
 	}
 #undef CL_ERROR_CODE_CASE
 }
@@ -165,9 +165,9 @@ QString CLDeviceToString(const cl::Device *dev)
 	return name //Device name
 		   + " ( "+OCLDeviceTypeString(dev->getInfo<CL_DEVICE_TYPE>()) +" x " //Type
 		   + QString::number(dev->getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>())+" ) Memory: " // Number of cores
-		   + utility::humanReadableSize(dev->getInfo<CL_DEVICE_GLOBAL_MEM_SIZE>(), 2) + " Global, "
-		   + utility::humanReadableSize(dev->getInfo<CL_DEVICE_LOCAL_MEM_SIZE>(), 2) + (CL_GLOBAL==dev->getInfo<CL_DEVICE_LOCAL_MEM_TYPE>()?" Global, ":" Local, ")
-		   + utility::humanReadableSize(dev->getInfo<CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE>(), 2) +" Constant"
+		   + utility::string::humanReadableSize(dev->getInfo<CL_DEVICE_GLOBAL_MEM_SIZE>(), 2) + " Global, "
+		   + utility::string::humanReadableSize(dev->getInfo<CL_DEVICE_LOCAL_MEM_SIZE>(), 2) + (CL_GLOBAL==dev->getInfo<CL_DEVICE_LOCAL_MEM_TYPE>()?" Global, ":" Local, ")
+		   + utility::string::humanReadableSize(dev->getInfo<CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE>(), 2) +" Constant"
 		   + " FLAGS["+(available?"Available, ":" --------, ")+(compailerAvailable?"Compiler, ":" -------, ")+(errorCorrection?"ErrCorr, ":" ------, ")+ endianess+(interopAvailable?"Interop":" ------")+"]"
 		   + " profile= "+profileName;
 }
@@ -195,8 +195,6 @@ QString CLDeviceToString(const cl::Device *dev)
 		for (size_t& st : d)
 		  std::cout << st << " ";
 		std::cout << "\x08)" << std::endl;
-
-
 */
 
 QDebug &operator<<(QDebug &d, cl::Device &dev)
@@ -213,8 +211,6 @@ QDebug &operator<<(QDebug &d, cl::Device *dev)
 	d.noquote().operator<<(s);
 	return d;
 }
-
-
 
 
 QSurfaceFormat properOctomyDefaultFormat()

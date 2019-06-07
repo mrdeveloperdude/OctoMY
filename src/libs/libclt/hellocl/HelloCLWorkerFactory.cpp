@@ -1,6 +1,6 @@
 #include "HelloCLWorkerFactory.hpp"
 
-#include "utility/Standard.hpp"
+#include "uptime/New.hpp"
 
 #include "HelloCLWorker.hpp"
 

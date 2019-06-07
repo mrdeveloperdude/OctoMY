@@ -14,4 +14,4 @@ HEADERS += \
 SOURCES += \
 	TestArduMY.cpp \
 
-include($$TESTS/test_autorun.pri)
+include($$TESTS/pris/test_autorun.pri)

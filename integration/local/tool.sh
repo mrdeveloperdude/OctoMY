@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $EUID -ne 0 ]]; then
-	echo "This script must be run as root" 
+	echo "This script must be run as root"
 	exit 1
 fi
 
@@ -15,7 +15,7 @@ then
 	echo "prep     :   Run package manager to install all dependencies (for recent Ubuntu/Debian based distros only)"
 	echo "debug    :   Select debug build"
 	echo "rebuild  :   Rebuild executables for test-rig"
-	echo "exe      :   Distribute last set of executables to local test rig"	
+	echo "exe      :   Distribute last set of executables to local test rig"
 	echo "bg       :   Distribute wallpaper images to local test rig"
 	echo "hubsyn   :   Send HUP signal to synegy client in local test-rig"
 	echo "reboot   :   Reboot nodes of local test-rig"
@@ -67,14 +67,14 @@ do_prep(){
 	 # G-Streamer support
 if [ "USE_OLD" == "" ]
 then
-        DEPS+=" libgstreamer0.10-dev"
-        DEPS+=" libgstreamer-plugins-base0.10-dev"
-        DEPS+=" libgstreamer-plugins-bad0.10-dev"
-        DEPS+=" libgstreamer0.10-dev"
+		DEPS+=" libgstreamer0.10-dev"
+		DEPS+=" libgstreamer-plugins-base0.10-dev"
+		DEPS+=" libgstreamer-plugins-bad0.10-dev"
+		DEPS+=" libgstreamer0.10-dev"
 else
-        DEPS+=" libgstreamer1.0-dev"
-        DEPS+=" libgstreamer-plugins-base1.0-dev"
-        DEPS+=" gstreamer1.0-plugins-good"
+		DEPS+=" libgstreamer1.0-dev"
+		DEPS+=" libgstreamer-plugins-base1.0-dev"
+		DEPS+=" gstreamer1.0-plugins-good"
 fi
 	# XKB fixes for Qt5.4x
 	DEPS+=" libxkbfile1"
@@ -107,13 +107,18 @@ then
 	DEPS+=" libopencv-objdetect-dev"
 	DEPS+=" libopencv-video-dev"
 fi
+
+if [ "USE_OPENCL" == "" ]
+then
+	DEPS+=" opencl-headers"
+fi
 	DEPS+=" flex"
 	DEPS+=" libpulse-dev"
 	DEPS+=" libpulse-mainloop-gtk0"
 
 	sudo DEBIAN_FRONTEND=noninteractive dpkg --configure -a
 	sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes --fix-missing
-	sudo DEBIAN_FRONTEND=noninteractive apt-get update -y --force-yes 
+	sudo DEBIAN_FRONTEND=noninteractive apt-get update -y --force-yes
 	sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --force-yes --fix-missing
 	sudo DEBIAN_FRONTEND=noninteractive apt-get install $DEPS -y --force-yes --fix-missing
 }
@@ -130,7 +135,7 @@ function send_one_exe(){
 	then
 		echo "mtime updated to $mtime for $tag"
 		echo "$mtime" > "$mtime_fn";
-		
+
 		ssh "$target" "[ -e ~/$tag ] && unlink ~/$tag"
 		scp "$src" "$target:~/$tag"
 		ssh "$target" "pgrep $tag && killall $tag"

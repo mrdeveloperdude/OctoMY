@@ -66,14 +66,14 @@ private:
 	void updateIdentityWidgets();
 	void startProcess(QString base);
 
-
 	void generateTriggers();
 
-#ifdef EXTERNAL_LIB_OPENCL
+#ifdef OC_USE_LIB_EXT_OPENCL
 
 private slots:
 	void onGLWidgetInitialized();
-#endif // EXTERNAL_LIB_OPENCL
+#endif
+// OC_USE_LIB_EXT_OPENCL
 
 	QString saveIdenticonWidget(IdenticonWidget *iw, QString base="identicon");
 	QString saveIrisWidget(IrisWidget *iw, quint32 irisIndex=0, QString base="iris");

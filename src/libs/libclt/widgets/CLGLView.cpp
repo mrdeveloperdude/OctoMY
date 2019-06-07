@@ -2,8 +2,7 @@
 
 #include <QtMath>
 
-#ifndef EXTERNAL_LIB_OPENCL
-
+#ifndef OC_USE_LIB_EXT_OPENCL
 
 
 CLGLView::CLGLView(QWidget *parent)
@@ -12,16 +11,17 @@ CLGLView::CLGLView(QWidget *parent)
 }
 
 
-
 CLGLView::~CLGLView()
 {
 }
 
 #else
 
-#include "utility/Utility.hpp"
 
 #include "clt/CLGLViewRenderer.hpp"
+
+#include "uptime/New.hpp"
+#include "utility/random/Random.hpp"
 
 #include <QSurfaceFormat>
 #include <QDebug>
@@ -33,7 +33,6 @@ CLGLView::~CLGLView()
 
 #define PROGRAM_VERTEX_ATTRIBUTE 0
 #define PROGRAM_TEXCOORD_ATTRIBUTE 1
-
 
 
 CLGLView::CLGLView(QWidget *parent)
@@ -53,7 +52,6 @@ CLGLView::CLGLView(QWidget *parent)
 	connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
 	timer.setInterval(1000/25);
 }
-
 
 
 CLGLView::~CLGLView()
@@ -84,9 +82,12 @@ CLGLView::~CLGLView()
 	qDebug()<<"Dtor for glveiw end";
 }
 
-void clglviewFail(QString message){
+
+void clglviewFail(QString message)
+{
 	qWarning().noquote().nospace()<<"CLGLVIEW-FAIL: "<<message;
 }
+
 
 void CLGLView::setRenderer(CLGLViewRenderer * renderer)
 {
@@ -100,10 +101,12 @@ void CLGLView::setRenderer(CLGLViewRenderer * renderer)
 	mRenderer=renderer;
 }
 
+
 GLContext &CLGLView::sharingGLContext()
 {
 	return mSharingGLContext;
 }
+
 
 void CLGLView::initializeGL()
 {
@@ -132,6 +135,7 @@ void CLGLView::initializeGL()
 	emit glInitialized();
 }
 
+
 void CLGLView::resizeGL(int w, int h)
 {
 	mLastResize=QSize(w,h);
@@ -146,14 +150,13 @@ void CLGLView::resizeGL(int w, int h)
 }
 
 
-
 void CLGLView::paintGL()
 {
 	fps.update();
 	makeCurrent();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	if(timer.isActive()) {
-		glClearColor(utility::frand(), utility::frand(), utility::frand(), 0.5f);
+		glClearColor(utility::random::frand(), utility::random::frand(), utility::random::frand(), 0.5f);
 		if(nullptr!=mRenderer && mRenderer->isRendering()) {
 
 
@@ -179,8 +182,8 @@ void CLGLView::paintGL()
 		canvasProgram->setUniformValue("matrix", canvasMatrix);
 		glDrawArrays(GL_TRIANGLE_FAN, 0,4);
 	}
-
 }
+
 
 QVector2D CLGLView::eventToNormalizedVector(QMouseEvent *event)
 {
@@ -195,13 +198,13 @@ QVector2D CLGLView::eventToNormalizedVector(QMouseEvent *event)
 }
 
 
-
 void CLGLView::mousePressEvent(QMouseEvent *event)
 {
 	arcBall.pressed(true, eventToNormalizedVector(event));
 	updateCamera();
 	event->accept();
 }
+
 
 void CLGLView::mouseMoveEvent(QMouseEvent *event)
 {
@@ -212,6 +215,7 @@ void CLGLView::mouseMoveEvent(QMouseEvent *event)
 	}
 	event->accept();
 }
+
 
 void CLGLView::mouseReleaseEvent(QMouseEvent *event)
 {
@@ -241,6 +245,7 @@ void CLGLView::wheelEvent(QWheelEvent *event)
 	update();
 }
 
+
 void CLGLView::initLogging()
 {
 	qDebug()<<"%%%% INIT LOG";
@@ -254,6 +259,7 @@ void CLGLView::initLogging()
 	});
 	logger->startLogging( QOpenGLDebugLogger::SynchronousLogging );
 }
+
 
 static void drawTestPattern(QImage &img, const QString &msg="")
 {
@@ -304,7 +310,6 @@ static void drawTestPattern(QImage &img, const QString &msg="")
 		p.drawText(img.rect(),Qt::AlignCenter,msg);
 	}
 }
-
 
 
 void CLGLView::initCanvas()
@@ -455,8 +460,6 @@ void CLGLView::initCanvas()
 }
 
 
-
-
 //TODO: read this https://software.intel.com/en-us/articles/opencl-and-opengl-interoperability-tutorial
 //	  about setting up cl context for GL devcie etc. using clGetGLContextInfoKHR
 
@@ -502,8 +505,6 @@ void CLGLView::initCTX()
 }
 
 
-
-
 void CLGLView::updateCamera()
 {
 	QMatrix4x4 relmat=arcBall.getRelativeMatrix();
@@ -521,6 +522,7 @@ void CLGLView::onRenderToggle(bool v)
 	}
 }
 
+
 void CLGLView::onDisplayToggle(bool v)
 {
 	displayEnabled=v;
@@ -531,4 +533,5 @@ void CLGLView::onDisplayToggle(bool v)
 	}
 }
 
-#endif // EXTERNAL_LIB_OPENCL
+#endif
+// OC_USE_LIB_EXT_OPENCL

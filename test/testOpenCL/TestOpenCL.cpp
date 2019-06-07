@@ -1,6 +1,6 @@
 #include "TestOpenCL.hpp"
 
-#ifdef EXTERNAL_LIB_OPENCL
+#ifdef OC_USE_LIB_EXT_OPENCL
 
 #include "clt/CLThreadManager.hpp"
 #include "clt/CLWorkerFactory.hpp"
@@ -11,17 +11,16 @@
 
 #include "clt/CLUtils.hpp"
 
-#include "utility/Standard.hpp"
+#include "utility/time/HumanTime.hpp"
 
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QPushButton>
 
-
 #include <iostream>
-////////////////////////////////////////////////////////////////////////////////
-
 
 
 static float map(float x, float xmin, float xmax, float ymin, float ymax)
@@ -37,7 +36,6 @@ static QPoint map(QPoint X, QRect input, QRect output)
 	res.setY(map(X.y(), input.bottom(), input.top(), output.bottom(), output.top()));
 	return res;
 }
-
 
 
 static void clBuildCallback(cl_program program, void *user_data)
@@ -70,8 +68,7 @@ public:
 		qDebug()<<"TCLW Ctor INDEX "<<index;
 	}
 
-	virtual	~TestCLWorker()
-	{
+	virtual	~TestCLWorker() Q_DECL_OVERRIDE {
 		qDebug()<<"TCLW Dtor";
 	}
 
@@ -386,7 +383,8 @@ public:
 				mDone=true;
 			}
 			mThreadManager->setRunning(running, block);
-		} else {
+		} else
+		{
 			qWarning()<<"TCLGLVR ERROR: No CL thread manager while set running to: "<<running;
 		}
 		qDebug()<<"TCLGLVR Setting running to: "<<running;
@@ -440,7 +438,7 @@ public:
 
 void TestOpenCL::initTestCase()
 {
-	mCrashHelper.setEnabled(true);
+	//mCrashHelper.setEnabled(true);
 }
 
 
@@ -452,10 +450,10 @@ void TestOpenCL::testWithoutGLInterop()
 	// Just do CPU for maximum portability/availability/debugability
 	CLThreadManager tm(twf, ic, "", true, true); // CLWorkerFactory &factory, CLGLInteropConfig config=CLGLInteropConfig(), QString deviceSelectionString="", bool allowGPU=true, bool allowCPU=false, QObject *parent = nullptr
 	tm.setRunning(true);
-	const quint64 start=utility::currentMsecsSinceEpoch<quint64>();
+	const quint64 start=utility::time::currentMsecsSinceEpoch<quint64>();
 	quint64 now=start;
 	while(now<start+10000) {
-		now=utility::currentMsecsSinceEpoch<quint64>();
+		now=utility::time::currentMsecsSinceEpoch<quint64>();
 		qApp->processEvents();
 	}
 	tm.setRunning(false,true);
@@ -506,10 +504,10 @@ void TestOpenCL::testWithGLInterop()
 
 	testCLGLViewRendrer_p->setRendering(true);
 	qDebug()<<"--- WAITING ---";
-	const quint64 start=utility::currentMsecsSinceEpoch<quint64>();
+	const quint64 start=utility::time::currentMsecsSinceEpoch<quint64>();
 	quint64 now=start;
 	while(now<start+20000) {
-		now=utility::currentMsecsSinceEpoch<quint64>();
+		now=utility::time::currentMsecsSinceEpoch<quint64>();
 		qApp->processEvents();
 	}
 	qDebug()<<"--- DONE ---";
@@ -529,7 +527,7 @@ void TestOpenCL::testCLGLView()
 
 void TestOpenCL::cleanupTestCase()
 {
-	mCrashHelper.setEnabled(false);
+	//mCrashHelper.setEnabled(false);
 	qDebug()<<"CLEANUP";
 }
 
@@ -599,3 +597,4 @@ void TestOpenCL::cleanupTestCase()
 }
 
 #endif
+// OC_USE_LIB_EXT_OPENCL

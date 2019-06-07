@@ -9,5 +9,5 @@ SOURCES += \
 	TestFivePhase.cpp
 
 include($$PRIS/status.pri)
-include($$TESTS/test_autorun.pri)
+include($$TESTS/pris/test_autorun.pri)
 

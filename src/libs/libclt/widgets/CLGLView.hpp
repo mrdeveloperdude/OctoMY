@@ -2,10 +2,9 @@
 #define CLGLVIEW_HPP
 
 #include <QtGlobal>
-
 #include <QWidget>
 
-#ifndef EXTERNAL_LIB_OPENCL
+#ifndef OC_USE_LIB_EXT_OPENCL
 
 #include "glt/IncludeOpenGL.hpp"
 #include "glt/GLContext.hpp"
@@ -26,20 +25,17 @@ public:
 #else
 
 #include "glt/IncludeOpenGL.hpp"
-#include "utility/FPSCalculator.hpp"
-#include "utility/ArcBall.hpp"
+#include "utility/graphics/FPSCalculator.hpp"
+#include "utility/ui/ArcBall.hpp"
 #include "glt/GLContext.hpp"
 
-
 #include <QMatrix4x4>
-
 
 class QOpenGLDebugLogger;
 class QOpenGLContext;
 class QOpenGLBuffer;
 class QOpenGLVertexArrayObject;
 class CLGLViewRenderer;
-
 
 /*!
  * \brief The GLCLView class extends QOpenGLWidget in a way that allows display of
@@ -73,9 +69,7 @@ public:
 	virtual ~CLGLView();
 
 public:
-
 	void setRenderer(CLGLViewRenderer * mRenderer);
-
 	GLContext &sharingGLContext();
 
 	//QOpenGLWidget interface
@@ -99,21 +93,19 @@ private:
 	void initCTX();
 
 private:
-
 	void updateCamera();
 
 public slots:
-
 	void onRenderToggle(bool);
 	void onDisplayToggle(bool);
 
 signals:
-
 	void arcBallChange(QMatrix4x4 mat);
-
 	void glInitialized();
 };
 
-#endif // EXTERNAL_LIB_OPENCL
+#endif
+// OC_USE_LIB_EXT_OPENCL
 
-#endif // CLGLVIEW_HPP
+#endif
+// CLGLVIEW_HPP

@@ -1,8 +1,9 @@
 #include "HelloGLCLViewRenderer.hpp"
 
-#ifdef EXTERNAL_LIB_OPENCL
+#ifdef OC_USE_LIB_EXT_OPENCL
 
-#include "utility/Standard.hpp"
+#include "uptime/New.hpp"
+
 
 #include "HelloCLWorkerFactory.hpp"
 #include "clt/CLThreadManager.hpp"
@@ -15,11 +16,13 @@ HelloGLCLViewRenderer::HelloGLCLViewRenderer()
 
 }
 
+
 HelloGLCLViewRenderer::~HelloGLCLViewRenderer()
 {
 	delete mThreadManager;
 	mThreadManager=nullptr;
 }
+
 
 void HelloGLCLViewRenderer::initialize(GLContext &ctx)
 {
@@ -49,6 +52,7 @@ void HelloGLCLViewRenderer::resize(QSize sz)
 	qDebug()<<"Resizing to: "<<sz;
 }
 
+
 bool HelloGLCLViewRenderer::setRendering(bool running, bool block)
 {
 	if(nullptr!=mThreadManager) {
@@ -72,10 +76,13 @@ bool HelloGLCLViewRenderer::isRendering() const
 	qDebug()<<"Returning "<<ret;
 	return ret;
 }
+
+
 void HelloGLCLViewRenderer::renderFrame()
 {
 	qDebug()<<"Rendering frame :-)";
 }
+
 
 GLuint HelloGLCLViewRenderer::pbo()
 {
@@ -89,4 +96,5 @@ QString HelloGLCLViewRenderer::getRendererSpec()
 	return "HelloGLCLViewRenderer";
 }
 
-#endif // EXTERNAL_LIB_OPENCL
+#endif
+// OC_USE_LIB_EXT_OPENCL

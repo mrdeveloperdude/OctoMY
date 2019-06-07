@@ -1,6 +1,9 @@
 #include "CLThreadManager.hpp"
 
-#include "utility/Standard.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+#include "uptime/ConnectionType.hpp"
+
 #include "CLWorker.hpp"
 #include "CLWorkerFactory.hpp"
 
@@ -16,10 +19,10 @@ CLThreadManager::CLThreadManager(CLWorkerFactory &factory, CLGLInteropConfig con
 {
 	OC_METHODGATE();
 	if(haveDevice()) {
-		const size_t sz=mDeviceSelection.size();
+		const auto sz=mDeviceSelection.size();
 		mWorkers.reserve(sz);
 		mThreads.reserve(sz);
-		for (size_t i = 0; i < sz; ++i) {
+		for (int i = 0; i < sz; ++i) {
 			CLWorker *worker=mFactory.createInstance(*this, i);
 			QThread *thread=OC_NEW QThread(this);
 			if(nullptr==thread) {
@@ -60,10 +63,8 @@ CLThreadManager::CLThreadManager(CLWorkerFactory &factory, CLGLInteropConfig con
 }
 
 
-
 CLThreadManager::~CLThreadManager()
 {
-	OC_METHODGATE();
 	OC_METHODGATE();
 	setRunning(false,true);
 	for(QThread *thread:mThreads) {
@@ -78,6 +79,7 @@ CLThreadManager::~CLThreadManager()
 	mWorkers.clear();
 }
 
+
 bool CLThreadManager::haveDevice()
 {
 	OC_METHODGATE();
@@ -88,8 +90,8 @@ bool CLThreadManager::haveDevice()
 bool CLThreadManager::isRunning() const
 {
 	OC_METHODGATE();
-	const size_t sz=mThreads.size();
-	for (size_t i = 0; i < sz; ++i) {
+	const auto sz=mThreads.size();
+	for (int i = 0; i < sz; ++i) {
 		QThread *thread=mThreads[i];
 		if(nullptr==thread) {
 			qWarning()<<"ERROR: Thread was null";
@@ -102,11 +104,12 @@ bool CLThreadManager::isRunning() const
 	return false;
 }
 
+
 void CLThreadManager::setRunning(bool running, bool block)
 {
 	OC_METHODGATE();
 	if(haveDevice()) {
-		const size_t sz=mDeviceSelection.size();
+		const auto sz=mDeviceSelection.size();
 		const bool isAlreadyuRunning=isRunning();
 		qDebug()<<(running?"STARTING ":"STOPPING ")<<sz<<" CL Thread(s)------------------------";
 		if(running && block) {
@@ -119,7 +122,7 @@ void CLThreadManager::setRunning(bool running, bool block)
 				qWarning()<<"ERROR: setRunning not called from same thread as CTOR 1";
 			}
 			if(running) {
-				for (size_t i = 0; i < sz; ++i) {
+				for (int i = 0; i < sz; ++i) {
 					CLWorker *worker=mWorkers[i];
 					QThread *thread=mThreads[i];
 					if(nullptr==thread) {
@@ -140,7 +143,7 @@ void CLThreadManager::setRunning(bool running, bool block)
 					}
 
 				}
-				for (size_t i = 0; i < sz; ++i) {
+				for (int i = 0; i < sz; ++i) {
 					CLWorker *worker=mWorkers[i];
 					QThread *thread=mThreads[i];
 					if(nullptr==thread) {
@@ -156,14 +159,14 @@ void CLThreadManager::setRunning(bool running, bool block)
 				}
 
 			} else {
-				for (size_t i = 0; i < sz; ++i) {
+				for (int i = 0; i < sz; ++i) {
 					mWorkers[i]->setRunning(false);
 				}
 				if(block) {
 					if(running) {
 					} else {
 						qDebug()<<" + Blocking while waiting for threads to complete...";
-						for (size_t i = 0; i < sz; ++i) {
+						for (int i = 0; i < sz; ++i) {
 							QThread *thread=mThreads[i];
 							if(nullptr==thread) {
 								qWarning()<<"ERROR: Thread was null";
@@ -192,6 +195,7 @@ const cl::Device *CLThreadManager::device(int index) const
 	return &mDeviceSelection.at(index);
 }
 
+
 CLWorker *CLThreadManager::renderWorker()
 {
 	OC_METHODGATE();
@@ -211,6 +215,7 @@ CLWorker *CLThreadManager::renderWorker()
 	}
 	return worker;
 }
+
 
 CLGLInteropConfig CLThreadManager::interopConfig()  const
 {

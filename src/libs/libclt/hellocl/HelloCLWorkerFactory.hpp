@@ -20,4 +20,5 @@ public:
 
 };
 
-#endif // HELLOCLWORKERFACTORY_HPP
+#endif
+// HELLOCLWORKERFACTORY_HPP

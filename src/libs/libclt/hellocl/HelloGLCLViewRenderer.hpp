@@ -4,15 +4,13 @@
 #include "clt/CLGLViewRenderer.hpp"
 #include "glt/IncludeOpenGL.hpp"
 
-
 #include <QtGlobal>
 
-#ifndef EXTERNAL_LIB_OPENCL
+#ifndef OC_USE_LIB_EXT_OPENCL
 
 class HelloGLCLViewRenderer : public CLGLViewRenderer
 {
 private:
-
 
 public:
 	explicit HelloGLCLViewRenderer() {}
@@ -25,24 +23,33 @@ public:
 	void resize(QSize) Q_DECL_OVERRIDE{
 
 	}
+
+
 	bool setRendering(bool running, bool block=false) Q_DECL_OVERRIDE{
 		return false;
 	}
+
+
 	virtual bool isRendering() const  Q_DECL_OVERRIDE
 	{
 		return false;
 	}
-	void renderFrame()  Q_DECL_OVERRIDE
-	{
+
+
+	void renderFrame()  Q_DECL_OVERRIDE {
 
 	}
-	GLuint pbo() Q_DECL_OVERRIDE
-	{
+
+
+	GLuint pbo() Q_DECL_OVERRIDE {
 		return 0;
 	}
+
+
 	QString getRendererSpec() Q_DECL_OVERRIDE{
 		return "NOT_IMPLEMENTED";
 	}
+
 };
 
 
@@ -73,7 +80,6 @@ public:
 
 	// GLCLViewRenderer Interface
 public:
-
 	void resize(QSize sz) Q_DECL_OVERRIDE;
 	bool setRendering(bool running, bool block=false) Q_DECL_OVERRIDE;
 	bool isRendering() const  Q_DECL_OVERRIDE;
@@ -83,6 +89,8 @@ public:
 
 };
 
-#endif // EXTERNAL_LIB_OPENCL
+#endif
+// OC_USE_LIB_EXT_OPENCL
 
-#endif // HELLOGLCLVIEWRENDERER_HPP
+#endif
+// HELLOGLCLVIEWRENDERER_HPP

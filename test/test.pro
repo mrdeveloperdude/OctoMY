@@ -106,7 +106,7 @@ contains(DEFINES, OC_USE_TESTS_WEB){
 contains(DEFINES, OC_USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
-		testAddressBook \
+#		testAddressBook \
 #		testAddressList \
 #		testAgentStateCourier \
 #		testArduMY \
@@ -141,7 +141,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testNetworkAddress \
 #		testNetworkSettingsWidget \
 #		testNodeTypeRole \
-#		testOpenCL \
+		testOpenCL \
 #		testParser \
 #		testPortableID \
 #		testPoseMappingWidget \

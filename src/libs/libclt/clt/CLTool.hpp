@@ -3,7 +3,6 @@
 
 #include "CLInclude.hpp"
 
-
 class QOpenGLContext;
 /**
  * @brief The CLTool class is a tool class that contains a collection of all
@@ -22,13 +21,13 @@ class QOpenGLContext;
  */
 class CLTool
 {
-	public:
-		CLTool();
+public:
+	CLTool();
 
-	public:
-
-		cl_context_properties *generateProperties( const cl_platform_id platformID, QOpenGLContext *ctx );
+public:
+	cl_context_properties *generateProperties( const cl_platform_id platformID, QOpenGLContext *ctx );
 	//	cl::Context *createContext( void (CL_CALLBACK * notifyFptr)( const char *, const void *, ::size_t, void *) = nullptr);
 };
 
-#endif // CLTOOL_HPP
+#endif
+// CLTOOL_HPP

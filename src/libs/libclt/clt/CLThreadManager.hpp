@@ -25,6 +25,7 @@ class CLWorkerFactory;
 class CLThreadManager : public QObject
 {
 	Q_OBJECT
+
 private:
 	CLWorkerFactory &mFactory;
 	CLDeviceSelection mDeviceSelection;
@@ -33,14 +34,11 @@ private:
 	QVector<QThread *> mThreads;
 	QThread *mDesiredCurrent;
 
-
 public:
 	explicit CLThreadManager(CLWorkerFactory &factory, CLGLInteropConfig config=CLGLInteropConfig(), QString deviceSelectionString="", bool allowGPU=true, bool allowCPU=false, QObject *parent = nullptr);
-
 	virtual ~CLThreadManager();
 
 public:
-
 	// Returns true if we have an OpenCL device
 	bool haveDevice();
 
@@ -61,4 +59,5 @@ public:
 	CLGLInteropConfig interopConfig() const;
 };
 
-#endif // CLTHREADMANAGER_HPP
+#endif
+// CLTHREADMANAGER_HPP
