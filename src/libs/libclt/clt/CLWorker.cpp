@@ -2,6 +2,7 @@
 #include "CLThreadManager.hpp"
 
 #include "uptime/New.hpp"
+#include "uptime/MethodGate.hpp"
 #include "utility/string/String.hpp"
 
 #include "glt/GLErrors.hpp"
@@ -25,17 +26,20 @@ CLWorker::CLWorker(CLThreadManager &man, int index, QObject *parent)
 	, mCtx(nullptr)
 	, mIsInited(false)
 {
+	OC_METHODGATE();
 }
 
 
 CLWorker::~CLWorker()
 {
+	OC_METHODGATE();
 	setInitPBO(false);
 }
 
 
 void CLWorker::setInitPBO(const bool init)
 {
+	OC_METHODGATE();
 	const bool doInterop=isGLInteropWorker();
 	qDebug().nospace()<<"CLWORKER! "<<(init?"INITIALIZING":"DE-INITIALIZING")<<" PBO FOR INDEX "<<mIndex<<"( INTEROP=" << doInterop << " )";
 	if (doInterop) {
@@ -101,6 +105,7 @@ void CLWorker::setInitPBO(const bool init)
 
 static void CL_CALLBACK clCallback( const char *a, const void *b, ::size_t c, void *d)
 {
+	OC_FUNCTIONGATE();
 	qDebug()<<"CLWORKER! .oOo. clCallback: "<<a<<b<<c<<d;
 
 }
@@ -108,6 +113,7 @@ static void CL_CALLBACK clCallback( const char *a, const void *b, ::size_t c, vo
 
 void CLWorker::setInitCLContext(const bool init)
 {
+	OC_METHODGATE();
 	qDebug().nospace()<<"CLWORKER! "<<(init?"INITIALIZING":"DE-INITIALIZING")<<" CL CONTEXT FOR INDEX "<<mIndex;
 	if(init) {
 		if(nullptr!=mDev) {
@@ -130,7 +136,7 @@ void CLWorker::setInitCLContext(const bool init)
 							if(nullptr==mCtx) {
 								qWarning()<<"CLWORKER! ERROR: Could not create CL context";
 							}
-										initializeOpenGLFunctions();
+							initializeOpenGLFunctions();
 						} else {
 							qWarning()<<"CLWORKER! ERROR: no sharing QOpenGLContext";
 						}
@@ -157,6 +163,7 @@ void CLWorker::setInitCLContext(const bool init)
 
 void CLWorker::setInit(const bool init)
 {
+	OC_METHODGATE();
 	if(mIsInited!=init) {
 		qDebug().nospace()<<"CLWORKER! "<<(init?"INITIALIZING":"DE-INITIALIZING")<<" FOR INDEX "<<mIndex;
 		if(!mIsInited) {
@@ -175,18 +182,21 @@ void CLWorker::setInit(const bool init)
 
 void CLWorker::setRunning(const bool running)
 {
+	OC_METHODGATE();
 	mRunning=running;
 }
 
 
 bool CLWorker::isRunning() const
 {
+	OC_METHODGATE();
 	return mRunning;
 }
 
 
 bool CLWorker::isGLInteropWorker() const
 {
+	OC_METHODGATE();
 	//If OpenGL interop is enabled, and we are the first worker (index=0) that means we have the responsibility of rendering our results to PBO
 	const bool doInterop=mManager.interopConfig().doGLInterop();
 	return doInterop&&(0==mIndex);
@@ -195,49 +205,56 @@ bool CLWorker::isGLInteropWorker() const
 
 QThread *CLWorker::thread() const
 {
+	OC_METHODGATE();
 	return mThread;
 }
 
 
 int CLWorker::index() const
 {
+	OC_METHODGATE();
 	return mIndex;
 }
 
 
 GLuint CLWorker::pbo() const
 {
+	OC_METHODGATE();
 	return mPbo;
 }
 
 
 cl::BufferGL *CLWorker::pboBuff() const
 {
+	OC_METHODGATE();
 	return mPboBuff;
-
 }
 
 
 CLThreadManager &CLWorker::manager() const
 {
+	OC_METHODGATE();
 	return mManager;
 }
 
 
 cl::Context *CLWorker::clContext() const
 {
+	OC_METHODGATE();
 	return mCtx;
 }
 
 
 const cl::Device *CLWorker::clDevice() const
 {
+	OC_METHODGATE();
 	return mDev;
 }
 
 
 GLContext *CLWorker::sharingGLContext() const
 {
+	OC_METHODGATE();
 	return mManager.interopConfig().sharingContext();
 }
 
@@ -248,6 +265,7 @@ GLContext *CLWorker::sharingGLContext() const
 
 void CLWorker::preProcess(QThread &th)
 {
+	OC_METHODGATE();
 	mThread=&th;
 	GLContext *sharingContext=manager().interopConfig().sharingContext();
 	const bool doInterop=isGLInteropWorker();
@@ -258,11 +276,11 @@ void CLWorker::preProcess(QThread &th)
 			if(nullptr!=mThread) {
 				qDebug()<<"CLWORKER! Moving sharing context to worker thread";
 				const bool currentOK=sharingContext->setCurrent(false);
-				if(!currentOK){
+				if(!currentOK) {
 					qWarning()<<"ERROR: Could not set sharing context to un-current";
 				}
 				const bool moveOK=sharingContext->moveToThread(*mThread);
-				if(!moveOK){
+				if(!moveOK) {
 					qWarning()<<"ERROR: Could not move worker to thread";
 				}
 			} else {
@@ -279,6 +297,7 @@ void CLWorker::preProcess(QThread &th)
 
 void CLWorker::process()
 {
+	OC_METHODGATE();
 	qDebug()<<"CLWORKER! PROC start in thread " <<QThread::currentThreadId();
 	setInit(true);
 	processImp();
@@ -290,6 +309,7 @@ void CLWorker::process()
 
 void CLWorker::postProcess()
 {
+	OC_METHODGATE();
 	const bool doInterop=mManager.interopConfig().doGLInterop();
 	const bool doRender=isGLInteropWorker();
 	qDebug()<<"CLWORKER! POST start in thread " <<QThread::currentThreadId()<< " with GL-INTEROP="<<doInterop<<" AND doRender="<<doRender;

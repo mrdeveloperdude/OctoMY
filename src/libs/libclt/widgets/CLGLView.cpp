@@ -21,6 +21,7 @@ CLGLView::~CLGLView()
 #include "clt/CLGLViewRenderer.hpp"
 
 #include "uptime/New.hpp"
+#include "uptime/MethodGate.hpp"
 #include "utility/random/Random.hpp"
 
 #include <QSurfaceFormat>
@@ -49,6 +50,7 @@ CLGLView::CLGLView(QWidget *parent)
 	, displayEnabled(false)
 	, mRenderer(nullptr)
 {
+	OC_METHODGATE();
 	connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
 	timer.setInterval(1000/25);
 }
@@ -56,6 +58,7 @@ CLGLView::CLGLView(QWidget *parent)
 
 CLGLView::~CLGLView()
 {
+	OC_METHODGATE();
 	qDebug()<<"Dtor for glveiw start";
 	if(nullptr!=canvasVAO) {
 		qDebug()<<" + canvas VAO delete";
@@ -83,14 +86,16 @@ CLGLView::~CLGLView()
 }
 
 
-void clglviewFail(QString message)
+static void clglviewFail(QString message)
 {
+	OC_FUNCTIONGATE();
 	qWarning().noquote().nospace()<<"CLGLVIEW-FAIL: "<<message;
 }
 
 
 void CLGLView::setRenderer(CLGLViewRenderer * renderer)
 {
+	OC_METHODGATE();
 	const QString oldSpec=(nullptr!=mRenderer)?mRenderer->getRendererSpec():"NONE";
 	const QString newSpec=(nullptr!=renderer)?renderer->getRendererSpec():"NONE";
 	qDebug()<<"CHANGING ACTIVE RENDERER FROM "<<oldSpec<<" --> "<<newSpec;
@@ -104,12 +109,14 @@ void CLGLView::setRenderer(CLGLViewRenderer * renderer)
 
 GLContext &CLGLView::sharingGLContext()
 {
+	OC_METHODGATE();
 	return mSharingGLContext;
 }
 
 
 void CLGLView::initializeGL()
 {
+	OC_METHODGATE();
 	qDebug()<<"%%%% INIT GL";
 	makeCurrent();
 	QOpenGLContext *ctx = QOpenGLContext::currentContext();
@@ -138,6 +145,7 @@ void CLGLView::initializeGL()
 
 void CLGLView::resizeGL(int w, int h)
 {
+	OC_METHODGATE();
 	mLastResize=QSize(w,h);
 	qDebug()<<"%%%% RESIZE GL "<<mLastResize;
 	makeCurrent();
@@ -152,6 +160,7 @@ void CLGLView::resizeGL(int w, int h)
 
 void CLGLView::paintGL()
 {
+	OC_METHODGATE();
 	fps.update();
 	makeCurrent();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -170,7 +179,7 @@ void CLGLView::paintGL()
 				//glPixelStorei(GL_UNPACK_ALIGNMENT, 4); // default, works for BGRA8 and RGBA32F.
 				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
 				canvasTexture->bind();
-				glTexSubImage2D(canvasTexture->target(), 0, 0, 0, canvasTexture->width(), canvasTexture->height(), GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+				glTexSubImage2D(canvasTexture->target(), 0, 0, 0, canvasTexture->width(), canvasTexture->height(), GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 			}
 		}
@@ -187,11 +196,12 @@ void CLGLView::paintGL()
 
 QVector2D CLGLView::eventToNormalizedVector(QMouseEvent *event)
 {
+	OC_METHODGATE();
 	QVector2D out;
 	if(nullptr!=event) {
 		QPointF p=event->localPos();
-		out.setX(((p.x()/width())-0.5)*2.0);
-		out.setY(((p.y()/height())-0.5)*2.0);
+		out.setX(static_cast<float>(((p.x()/static_cast<qreal>(width()))-0.5)*2.0));
+		out.setY(static_cast<float>(((p.y()/static_cast<qreal>(height()))-0.5)*2.0));
 		//	qDebug()<<"Normal pos: "<<out;
 	}
 	return out;
@@ -200,6 +210,7 @@ QVector2D CLGLView::eventToNormalizedVector(QMouseEvent *event)
 
 void CLGLView::mousePressEvent(QMouseEvent *event)
 {
+	OC_METHODGATE();
 	arcBall.pressed(true, eventToNormalizedVector(event));
 	updateCamera();
 	event->accept();
@@ -208,6 +219,7 @@ void CLGLView::mousePressEvent(QMouseEvent *event)
 
 void CLGLView::mouseMoveEvent(QMouseEvent *event)
 {
+	OC_METHODGATE();
 	arcBall.move(eventToNormalizedVector(event));
 	updateCamera();
 	if(arcBall.isDown()) {
@@ -219,6 +231,7 @@ void CLGLView::mouseMoveEvent(QMouseEvent *event)
 
 void CLGLView::mouseReleaseEvent(QMouseEvent *event)
 {
+	OC_METHODGATE();
 	arcBall.pressed(false, eventToNormalizedVector(event));
 	updateCamera();
 	event->accept();
@@ -227,6 +240,7 @@ void CLGLView::mouseReleaseEvent(QMouseEvent *event)
 
 void CLGLView::wheelEvent(QWheelEvent *event)
 {
+	OC_METHODGATE();
 	QPoint numPixels = event->pixelDelta();
 	QPoint numDegrees = event->angleDelta() / 8;
 
@@ -248,6 +262,7 @@ void CLGLView::wheelEvent(QWheelEvent *event)
 
 void CLGLView::initLogging()
 {
+	OC_METHODGATE();
 	qDebug()<<"%%%% INIT LOG";
 	QOpenGLContext *ctx=context();
 	makeCurrent();
@@ -263,6 +278,7 @@ void CLGLView::initLogging()
 
 static void drawTestPattern(QImage &img, const QString &msg="")
 {
+	OC_FUNCTIONGATE();
 	img.fill(Qt::green);
 	QPainter p(&img);
 	p.setPen(Qt::NoPen);
@@ -276,12 +292,19 @@ static void drawTestPattern(QImage &img, const QString &msg="")
 	const qreal lo=qMin(w,h);
 
 	p.setBrush(Qt::gray);
-	p.drawEllipse(QRect((w-hi)/2,(h-hi)/2,hi,hi));
+	p.drawEllipse(
+		QRect(
+			static_cast<int>((w-hi)/2.0),
+			static_cast<int>((h-hi)/2.0),
+			static_cast<int>(hi),
+			static_cast<int>(hi)
+		)
+	);
 
 	p.setBrush(Qt::red);
-	p.drawEllipse(QRect(0,0,w,h));
+	p.drawEllipse(QRect(0, 0, static_cast<int>(w), static_cast<int>(h)));
 	p.setBrush(Qt::blue);
-	p.drawEllipse(QRect((w-lo)/2,(h-lo)/2,lo,lo));
+	p.drawEllipse(QRect(static_cast<int>((w-lo)/2), static_cast<int>((h-lo)/2), static_cast<int>(lo), static_cast<int>(lo)));
 
 	const QPointF center((w * 30.0) / 100.0,(h*30.0)/100.0);
 	const qreal radius=(qMin(w,h) * 10.0) / 100.0;
@@ -300,7 +323,7 @@ static void drawTestPattern(QImage &img, const QString &msg="")
 	if(msg.length()>0) {
 		QFont f=p.font();
 		f.setBold(true);
-		f.setPixelSize((w*30.0)/1000.0);
+		f.setPixelSize(static_cast<int>((w*30.0)/1000.0));
 		p.setFont(f);
 		QPen e;
 		e.setWidthF(1.0);
@@ -314,6 +337,7 @@ static void drawTestPattern(QImage &img, const QString &msg="")
 
 void CLGLView::initCanvas()
 {
+	OC_METHODGATE();
 	const GLfloat w=width();
 	const GLfloat h=height();
 
@@ -372,7 +396,7 @@ void CLGLView::initCanvas()
 
 		//vbo->setUsagePattern(QOpenGLBuffer::StaticDraw);
 
-		canvasVBO->allocate(vertData.constData(), vertData.count() * sizeof(GLfloat));
+		canvasVBO->allocate(vertData.constData(), static_cast<int>(vertData.count() * static_cast<int>(sizeof(GLfloat))));
 		qDebug().noquote().nospace()<<"CREATED VBO WITH ID "<<canvasVBO->bufferId()<< " AND SIZE "<<w<<"x"<<h;
 	}
 
@@ -386,9 +410,9 @@ void CLGLView::initCanvas()
 		canvasTexture->setWrapMode(QOpenGLTexture::ClampToEdge);
 		canvasTexture->setAutoMipMapGenerationEnabled(false);
 
-		canvasTexture->setSize(w,h);
+		canvasTexture->setSize(static_cast<int>(w), static_cast<int>(h));
 		if(!canvasTexture->create()) {
-			clglviewFail("ERROR Creating tex of size "+QString::number(w)+"x"+QString::number(h));
+			clglviewFail("ERROR Creating tex of size "+QString::number(static_cast<int>(w))+"x"+QString::number(static_cast<int>(h)));
 		}
 		qDebug()<<"CREATED TEX WITH ID "<<canvasTexture->textureId()<< " AND SIZE "<<w<<"x"<<h;
 
@@ -465,6 +489,7 @@ void CLGLView::initCanvas()
 
 void CLGLView::initCTX()
 {
+	OC_METHODGATE();
 	qDebug()<<"%%%% INIT CTX";
 	makeCurrent();
 	QOpenGLContext *ctx=context();
@@ -507,6 +532,7 @@ void CLGLView::initCTX()
 
 void CLGLView::updateCamera()
 {
+	OC_METHODGATE();
 	QMatrix4x4 relmat=arcBall.getRelativeMatrix();
 	emit this->arcBallChange(relmat);
 }
@@ -514,6 +540,7 @@ void CLGLView::updateCamera()
 
 void CLGLView::onRenderToggle(bool v)
 {
+	OC_METHODGATE();
 	renderEnabled=v;
 	if(nullptr!=mRenderer) {
 		mRenderer->setRendering(renderEnabled,false);
@@ -525,6 +552,7 @@ void CLGLView::onRenderToggle(bool v)
 
 void CLGLView::onDisplayToggle(bool v)
 {
+	OC_METHODGATE();
 	displayEnabled=v;
 	if(v) {
 		timer.start();

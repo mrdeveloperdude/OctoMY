@@ -30,10 +30,10 @@ class CLThreadManager;
  *    This function is called when the worker is in it's proper thread.
  *    It is expected that the worker carry out all OpenCL related processing here
  *    and loop until running is set to false, -or- until processing is complete
- *    in which case it is expected that running is set to false.
+ *    in which case it is expected that mRunning is set to false.
  * 4. postProcess: This is called just after processing is done. It is called when
- *    the worker is in the main/calling thread and is a chance to perform deinitializations
- *    that need to be carried out from this thread.
+ *    the worker is back in the main/calling thread again and it is a chance to
+ *    perform deinitializations that need to be carried out from this thread.
  *
  * Depending on the worker, it may or may not reset to be reused without having to
  * re-allocate it.

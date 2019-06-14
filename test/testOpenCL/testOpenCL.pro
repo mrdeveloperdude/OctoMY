@@ -6,10 +6,16 @@ QT += core gui opengl widgets
 TARGET = test_opencl
 
 HEADERS += \
-	TestOpenCL.hpp
+	TestCLGLViewRenderer.hpp \
+	TestCLWorker.hpp \
+	TestCLWorkerFactory.hpp \
+	TestOpenCL.hpp \
 
 SOURCES += \
-	TestOpenCL.cpp
+	TestCLGLViewRenderer.cpp \
+	TestCLWorker.cpp \
+	TestCLWorkerFactory.cpp \
+	TestOpenCL.cpp \
 
 RESOURCES += \
 	resources/kernels.qrc \

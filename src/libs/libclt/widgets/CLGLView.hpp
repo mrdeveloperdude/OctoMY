@@ -66,7 +66,7 @@ private:
 
 public:
 	explicit CLGLView(QWidget *parent = nullptr);
-	virtual ~CLGLView();
+	virtual ~CLGLView() Q_DECL_OVERRIDE;
 
 public:
 	void setRenderer(CLGLViewRenderer * mRenderer);

@@ -36,4 +36,5 @@ public:
 	GLContext *sharingContext() const;
 };
 
-#endif // CLGLINTEROPCONFIG_HPP
+#endif
+// CLGLINTEROPCONFIG_HPP

@@ -13,21 +13,17 @@
 
 class CLGLViewRenderer
 {
+
 public:
-
 	explicit CLGLViewRenderer();
-
-
 	virtual ~CLGLViewRenderer();
-
 
 	// CLGLViewRenderer Interface
 public:
 
 	// Called by CLGLView to set the new size of openGL viewport
 	virtual void resize(QSize sz)=0;
-	// Called by CLGLView to set wether or not we are in a rendering loop and
-	// can expect renderFrame to be called
+	// Called by CLGLView to set wether or not we are in a rendering loop and can expect renderFrame to be called
 	virtual bool setRendering(bool running, bool block=false)=0;
 	// Called by CLGLView and others to probe wether or not we are in a rendering loop
 	virtual bool isRendering() const =0;
@@ -40,4 +36,5 @@ public:
 
 };
 
-#endif // CLGLVIEWRENDERER_HPP
+#endif
+// CLGLVIEWRENDERER_HPP

@@ -35,7 +35,7 @@ CLDeviceSelection::CLDeviceSelection(const QString selectString, bool allowGPU, 
 			}
 
 			if(interop_ok) {
-				if ((allowGPU && (type == CL_DEVICE_TYPE_GPU)) || (allowCPU && (type == CL_DEVICE_TYPE_CPU))) {
+				if ((allowGPU && (CL_DEVICE_TYPE_GPU == type)) || (allowCPU && (CL_DEVICE_TYPE_CPU == type))) {
 					if (selectString.length() == 0) {
 						selected = true;
 					} else {
@@ -55,9 +55,8 @@ CLDeviceSelection::CLDeviceSelection(const QString selectString, bool allowGPU, 
 				push_back(devices[j]);
 			}
 
-			qDebug().nospace()<< " |-- Device-"<<i <<"."<<j <<": "<< devices[j]<<(selected?" [SEL]":" [---]");
+			qDebug().nospace()<< " |-- Device-"<<i <<"."<<j <<": "<< devices[j]<<(selected?" [ SELECTED ]":" [UNSELECTED]");
 			++selectIndex;
-
 		}
 	}
 
