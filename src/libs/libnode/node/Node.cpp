@@ -196,8 +196,9 @@ void Node::appActivate(const bool on)
 {
 	OC_METHODGATE();
 	//qDebug()<<"appActivate()";
-	if(mAppConfigureHelper.activate(on)) {
-		if(on) {
+
+	if(on) {
+		if(mAppConfigureHelper.activate(on)) {
 			serviceActivation(on);
 			//setHookSensorSignals(*this, true);
 			//setHookSensorSignals(*mSensorsCourier, true);
@@ -213,15 +214,19 @@ void Node::appActivate(const bool on)
 			setNeedsConnection(false);
 			setNeedsConnection(last);
 			*/
-		} else {
+			// NOTE: It is expected that this emits nodeActivateChanged() at some point
+			nodeActivate(on);
+		}
+	} else {
+		if(mAppConfigureHelper.isActivatedAsExpected()) {
+			// NOTE: It is expected that this emits nodeActivateChanged() at some point
+			nodeActivate(on);
 			serviceActivation(on);
 			setHookSensorSignals(*this, false);
 			setHookCommsSignals(*this, false);
 			//mAddressBook.setInitialized<AddressBook>(nullptr);
 			//mLocalIdentity.setInitialized<LocalIdentityStore>(nullptr);
 		}
-		// NOTE: It is expected that this emits nodeActivateChanged() at some point
-		nodeActivate(on);
 	}
 }
 
@@ -505,7 +510,7 @@ void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 			mLocalIdentityStore->synchronize([=](ASEvent<QVariantMap> &ase2) {
 				Q_UNUSED(ase2);
 			});
-*/
+			*/
 			mLocalIdentityStore->save([this](QSharedPointer<SimpleDataStore>, bool ok) {
 				qDebug()<<" HOPEFULLY WE SAVED IDENTITY TO DISK: "<<mNodeIdentity->toString()<<" OK="<<ok;
 				if(ok) {

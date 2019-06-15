@@ -228,8 +228,8 @@ void AppLauncher<T>::appActivate(const bool on)
 {
 	OC_METHODGATE();
 	//qDebug()<<"appActivate(on="<<on<<")";
-	if(mAppConfigureHelper.activate(on)) {
-		if(on) {
+	if(on) {
+		if(mAppConfigureHelper.activate(on)) {
 			if(!mContext.isNull()) {
 				mApp=QSharedPointer<T>(OC_NEW T());
 				if(!mApp.isNull()) {
@@ -241,15 +241,15 @@ void AppLauncher<T>::appActivate(const bool on)
 						// Handle when (de)activation of this app is completed
 						if(!QObject::connect(appPtr, &T::nodeActivateChanged, appPtr, [=](const bool on) {
 						//qDebug()<<"nodeActivationChanged(on="<<on<<")";
-							appActivateDone(on);
+						appActivateDone(on);
 						}, OC_CONTYPE)) {
 							qWarning()<<"ERROR: Could not connect";
 						}
 						// Handle when someone wants the app to stop
 						if(!QObject::connect(appPtr, &T::nodeRequestExit, appPtr, [=](const int returnValue) {
 						//qDebug()<<"nodeRequestExit("<<returnValue<<")";
-							mReturnValue=returnValue;
-							appActivate(false);
+						mReturnValue=returnValue;
+						appActivate(false);
 						}, OC_CONTYPE)) {
 							qWarning()<<"ERROR: Could not connect";
 						}
@@ -267,7 +267,9 @@ void AppLauncher<T>::appActivate(const bool on)
 			} else {
 				qWarning()<<"ERROR: No context";
 			}
-		} else {
+		}
+	} else {
+		if(mAppConfigureHelper.isActivatedAsExpected()) {
 			if(!mApp.isNull()) {
 				mApp->appActivate(on);
 			}
@@ -288,10 +290,10 @@ template <typename T>
 void AppLauncher<T>::appActivateDone(const bool on)
 {
 	OC_METHODGATE();
-	//qDebug()<<"appActivateDone(on="<<on<<")";
+	qDebug()<<"appActivateDone(on="<<on<<")";
 	if(!mContext.isNull()) {
 		if(on) {
-			//qDebug()<<"Opening window";
+			qDebug()<<"Opening window";
 			if(!mContext->isHeadless()) {
 				mWindow=qSharedPointerCast<QWidget>(mApp->appWindow());
 				if(!mWindow.isNull()) {
@@ -301,17 +303,17 @@ void AppLauncher<T>::appActivateDone(const bool on)
 				}
 			}
 		} else {
-			//qDebug()<<"Closing window";
+			qDebug()<<"Closing window";
 			if(!mWindow.isNull()) {
 				mWindow->close();
 				mWindow.clear();
 			}
-			//qDebug()<<"Closing app";
+			qDebug()<<"Closing app";
 			if(!mApp.isNull()) {
 				mApp.clear();
 			}
 			if(nullptr!=mQApp) {
-				//qDebug()<<"CALLING EXIT WITH "<<mReturnValue;
+				qDebug()<<"CALLING EXIT WITH "<<mReturnValue;
 				mQApp->exit(mReturnValue);
 			} else {
 				qWarning()<<"ERROR: No mQApp to exit";

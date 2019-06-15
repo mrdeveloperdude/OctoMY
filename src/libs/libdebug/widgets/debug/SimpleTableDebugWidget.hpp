@@ -46,10 +46,23 @@ private slots:
 private slots:
 	void on_pushButtonUpdate_clicked();
 
-public slots:
+	void on_pushButtonSave_clicked();
+
+	void on_pushButtonLoad_clicked();
+
+	void on_pushButtonSync_clicked();
+
+	void on_pushButtonClear_clicked();
+
+	public slots:
 	virtual void onRealtimeChanged(bool realtime);
 	virtual void onTimer();
 
+signals:
+	void saveButtonPressed();
+	void loadButtonPressed();
+	void syncButtonPressed();
+	void clearButtonPressed();
 };
 
 #endif

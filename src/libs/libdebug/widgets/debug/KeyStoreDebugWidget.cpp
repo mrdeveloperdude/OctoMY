@@ -1,6 +1,7 @@
 #include "KeyStoreDebugWidget.hpp"
 
 #include "uptime/MethodGate.hpp"
+#include "uptime/ConnectionType.hpp"
 #include "node/Node.hpp"
 
 #include <QDebug>
@@ -10,6 +11,7 @@ KeyStoreDebugWidget::KeyStoreDebugWidget(QWidget *parent)
 	, mConfigureHelper("KeyStoreDebugWidget", true, false, false, true, false)
 {
 	OC_METHODGATE();
+	setObjectName("KeyStoreDebugWidget");
 }
 
 
@@ -25,6 +27,50 @@ void KeyStoreDebugWidget::configure(QSharedPointer <Node> node)
 	if(mConfigureHelper.configure()) {
 		SimpleTableDebugWidget::configure("Key Store");
 		mNode=node;
+		if(!connect(this, &SimpleTableDebugWidget::saveButtonPressed, this, [this]() {
+		qDebug()<<"SAVE PRESSED FOR "<<objectName();
+			if(!mNode.isNull()) {
+				QSharedPointer<KeyStore> ks=mNode->keyStore();
+				if(!ks.isNull()) {
+					ks->save();
+				}
+			}
+		},OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect";
+		}
+		if(!connect(this, &SimpleTableDebugWidget::loadButtonPressed, this, [this]() {
+		qDebug()<<"LOAD PRESSED FOR "<<objectName();
+			if(!mNode.isNull()) {
+				QSharedPointer<KeyStore> ks=mNode->keyStore();
+				if(!ks.isNull()) {
+					ks->load();
+				}
+			}
+		},OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect";
+		}
+		if(!connect(this, &SimpleTableDebugWidget::syncButtonPressed, this, [this]() {
+		qDebug()<<"SYNC PRESSED FOR "<<objectName();
+			if(!mNode.isNull()) {
+				QSharedPointer<KeyStore> ks=mNode->keyStore();
+				if(!ks.isNull()) {
+					ks->synchronize();
+				}
+			}
+		},OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect";
+		}
+		if(!connect(this, &SimpleTableDebugWidget::clearButtonPressed, this, [this]() {
+		qDebug()<<"CLEAR PRESSED FOR "<<objectName();
+			if(!mNode.isNull()) {
+				QSharedPointer<KeyStore> ks=mNode->keyStore();
+				if(!ks.isNull()) {
+					ks->clear();
+				}
+			}
+		},OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect";
+		}
 	}
 }
 

@@ -135,5 +135,7 @@
         <file>icons/update_auto.svg</file>
         <file>icons/update_once.svg</file>
         <file>icons/update.svg</file>
+        <file>icons/synchronize.svg</file>
+        <file>icons/clear.svg</file>
     </qresource>
 </RCC>

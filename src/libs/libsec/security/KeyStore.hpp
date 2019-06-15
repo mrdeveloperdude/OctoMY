@@ -115,6 +115,7 @@ public:
 	void load();
 	template <typename F>
 	void synchronize(F callBack);
+	void synchronize();
 
 	void waitForSync();
 

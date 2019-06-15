@@ -371,17 +371,17 @@ private slots:
 
 signals:
 	// Expected to be emitted when someone wants node to terminate.
-	// Will be caught by app launcher and app launcher will subsequently call appDeInit() to bring termination to fruition
+	// Will be caught by app launcher and app launcher will subsequently call appActivate(false) to bring termination to fruition
 	void nodeRequestExit(const int returnValue);
 
 	// Expected to be emitted when someone wants node to restart.
-	// Will be caught by app launcher and app launcher will subsequently call appDeInit() to bring termination to fruition
+	// Will be caught by app launcher and app launcher will subsequently call appActivate(false) to bring termination to fruition
 	// before starting the process again afresh
 	// TODO Implement
 	void nodeRequestRestart();
 
-	// Expected to be emitted with on=true by node as soon as initialization is done in appInit();
-	// Expected to be emitted with on=false by node during termination as soon as it no longer needs the eventloop in appDeInit().
+	// Expected to be emitted with on=true by node as soon as initialization is done in appActivate(true);
+	// Expected to be emitted with on=false by node during termination as soon as it no longer needs the eventloop in appActivate(false).
 	void nodeActivateChanged(const bool on);
 
 };

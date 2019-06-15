@@ -122,6 +122,17 @@ void KeyStore::load()
 }
 
 
+void KeyStore::synchronize()
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		synchronize([](ASEvent<QVariantMap> &ase) {
+			Q_UNUSED(ase);
+		});
+	}
+}
+
+
 bool KeyStore::setFrontend(QVariantMap map)
 {
 	OC_METHODGATE();

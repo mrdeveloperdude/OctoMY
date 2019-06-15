@@ -29,15 +29,16 @@
  */
 class LocalIdentityStore: public SimpleMapStore
 {
-	private:
+private:
+	ConfigureHelper mConfigureHelper;
 
-		ConfigureHelper mConfigureHelper;
 public:
 	explicit LocalIdentityStore();
 	virtual ~LocalIdentityStore();
 
 public:
 	void configure(QString filename);
+
 };
 
 #endif

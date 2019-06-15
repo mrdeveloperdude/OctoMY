@@ -40,6 +40,9 @@ void AddressBook::configure(QString filename)
 void AddressBook::activate(const bool on, std::function<void(bool)> callBack)
 {
 	OC_METHODGATE();
+	if(mConfigureHelper.activate(on)) {
+		SimpleDataStore::activate(on, callBack);
+	}
 	/*
 	if(on) {
 		if(mConfigureHelper.activate(on)) {
@@ -56,7 +59,7 @@ void AddressBook::activate(const bool on, std::function<void(bool)> callBack)
 
 	}
 	*/
-
+/*
 	if(on) {
 		if(mConfigureHelper.activate(on)) {
 			SimpleDataStore::activate(on);
@@ -77,9 +80,7 @@ void AddressBook::activate(const bool on, std::function<void(bool)> callBack)
 			});
 		}
 	}
-
-
-
+*/
 }
 
 
@@ -109,15 +110,16 @@ bool AddressBook::fromMap(QVariantMap data)
 QVariantMap AddressBook::toMap()
 {
 	OC_METHODGATE();
-	QVariantMap map;
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		QVariantList remotes;
 		for(QMap<QString, QSharedPointer<Associate> >::const_iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
 			remotes.push_back(b.value()->toVariantMap());
 		}
+		QVariantMap map;
 		map["peers"]=remotes;
+		return map;
 	}
-	return map;
+	return QVariantMap();
 }
 
 
@@ -126,6 +128,7 @@ bool AddressBook::fromDefault()
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		mAssociates.clear();
+		synchronize();
 		return true;
 	}
 	return false;

@@ -19,6 +19,7 @@ public:
 public:
 	void configure(QString filename);
 	void activate(const bool on, std::function<void(bool)> callBack=nullptr);
+	bool isActivated() const;
 
 	// SimpleDataStore interface
 public:

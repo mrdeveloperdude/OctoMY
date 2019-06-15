@@ -36,6 +36,13 @@ void SimpleMapStore::activate(const bool on, std::function<void(bool)> callBack)
 }
 
 
+bool SimpleMapStore::isActivated() const
+{
+	OC_METHODGATE();
+	return mConfigureHelper.isActivated();
+}
+
+
 bool SimpleMapStore::fromMap(QVariantMap data)
 {
 	OC_METHODGATE();

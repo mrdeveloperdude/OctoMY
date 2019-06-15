@@ -152,3 +152,27 @@ void SimpleTableDebugWidget::on_pushButtonUpdate_clicked()
 	OC_METHODGATE();
 	onDataTimerWrapper();
 }
+
+void SimpleTableDebugWidget::on_pushButtonSave_clicked()
+{
+	OC_METHODGATE();
+	emit saveButtonPressed();
+}
+
+void SimpleTableDebugWidget::on_pushButtonLoad_clicked()
+{
+	OC_METHODGATE();
+	emit loadButtonPressed();
+}
+
+void SimpleTableDebugWidget::on_pushButtonSync_clicked()
+{
+	OC_METHODGATE();
+	syncButtonPressed();
+}
+
+void SimpleTableDebugWidget::on_pushButtonClear_clicked()
+{
+	OC_METHODGATE();
+	clearButtonPressed();
+}
