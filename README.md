@@ -3,6 +3,7 @@
 [![OctoMY™ Build status](https://travis-ci.org/mrdeveloperdude/OctoMY.svg?branch=master)](https://travis-ci.org/mrdeveloperdude/OctoMY)
 
 [Go to official project-page](http://www.octomy.org)
+
 NOTE: official repo is on gitlab, github is just a mirror
 
 What is OctoMY™?
