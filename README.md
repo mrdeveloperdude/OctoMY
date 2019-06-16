@@ -4,7 +4,7 @@
 
 [Go to official project-page](http://www.octomy.org)
 
-NOTE: The official git-repo is on gitlab, github is just a mirror from this point on.
+NOTE: The official git-repo is on [gitlab](https://gitlab.com/octomy/octomy), [github](https://github.com/mrdeveloperdude/OctoMY) is just a mirror from this point on.
 
 What is OctoMY™?
 ----------------
