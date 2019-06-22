@@ -206,6 +206,9 @@ int AppLauncher<T>::run()
 			Q_INIT_RESOURCE(images);
 			Q_INIT_RESOURCE(3d);
 
+			// Signal that we are fully DPI aware. See http://www.octomy.org/documentation/development/architectual-overview/ui-scaling for details
+			mQApp->setAttribute(Qt::AA_DisableHighDpiScaling, true);
+			mQApp->setAttribute(Qt::AA_EnableHighDpiScaling, false);
 
 			// Start Qt event loop for application.
 			// NOTE: This call will block until mQApp::quit()  mQApp::exit() is called and the eventloop is terminated
