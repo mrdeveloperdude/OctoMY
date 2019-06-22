@@ -107,7 +107,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
 		testAddressBook \
-#		testAddressList \
+		testAddressList \
 #		testAgentStateCourier \
 #		testArduMY \
 #		testAssociate \
