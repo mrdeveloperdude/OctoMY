@@ -133,8 +133,11 @@ static QString surfaceTypeToString(QSurface::SurfaceType c)
 		SURFACE_TYPE_TO_STRING_STANZA(RasterSurface);
 		SURFACE_TYPE_TO_STRING_STANZA(OpenGLSurface);
 		SURFACE_TYPE_TO_STRING_STANZA(RasterGLSurface);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 		SURFACE_TYPE_TO_STRING_STANZA(OpenVGSurface);
 		SURFACE_TYPE_TO_STRING_STANZA(VulkanSurface);
+#endif
+
 //	default:
 
 	}
