@@ -106,20 +106,20 @@ contains(DEFINES, OC_USE_TESTS_WEB){
 contains(DEFINES, OC_USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
-		testAddressBook \
-#		testAddressList \
-#		testAgentStateCourier \
-#		testArduMY \
-#		testAssociate \
+#		testAddressBook \
+		testAddressList \
+		testAgentStateCourier \
+		testArduMY \
+		testAssociate \
 		testAsyncStore \
-#		testBlob \
-#		testCarSteeringWidget \
-#		testCommsCarrier \
-#		testCommsChannel \
-#		testCommsSession \
-#		testConcurrentQueue \
-#		testCreepyVoice \
-#		testDataStore \
+		testBlob \
+		testCarSteeringWidget \
+		testCommsCarrier \
+		testCommsChannel \
+		testCommsSession \
+		testConcurrentQueue \
+		testCreepyVoice \
+		testDataStore \
 #		testDeliveryWizard \
 #		testDiscovery \
 #		testESpeak \
