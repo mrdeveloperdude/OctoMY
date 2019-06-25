@@ -6,7 +6,8 @@
 
 #include <QSet>
 #include <QString>
-
+#include <QList>
+#include <QStringList>
 
 class TrustList:public QSet<QString>
 {
@@ -19,6 +20,9 @@ public:
 	TrustList();
 	TrustList(const QSet<QString> &l);
 	TrustList(const QStringList &l);
+#ifdef Q_COMPILER_INITIALIZER_LISTS
+	inline TrustList(std::initializer_list<QString> args) : QSet<QString>(args) { }
+#endif
 
 	// Basic trusts management
 public:
@@ -32,6 +36,12 @@ public:
 public:
 	void applyTrustLevel(TrustLevel level, NodeType type);
 	TrustLevel toTrustLevel(NodeType type);
+
+	//Helpers
+public:
+	QStringList toStringList() const;
+
+
 };
 
 #endif

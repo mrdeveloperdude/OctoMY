@@ -107,11 +107,11 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
 		testAddressBook \
-		testAddressList \
+#		testAddressList \
 #		testAgentStateCourier \
 #		testArduMY \
 #		testAssociate \
-#		testAsyncStore \
+		testAsyncStore \
 #		testBlob \
 #		testCarSteeringWidget \
 #		testCommsCarrier \
@@ -149,7 +149,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testRandom \
 #		testServiceManager \
 #		testServotor32Controller \
-#		testSimpleDataStore \
+		testSimpleDataStore \
 #		testStreamCodec \
 #		testSyncParameter \
 #		testTaskQueue \

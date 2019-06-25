@@ -8,7 +8,13 @@ class TestAddressBook:public QObject
 	Q_OBJECT
 
 private slots:
-	void test();
+	void testToFromGenerateMap();
+	void testAss();
+	void testPins();
+	void testTrusts();
+	void testOperators();
+	void testCreate();
+	void testLoad();
 
 };
 

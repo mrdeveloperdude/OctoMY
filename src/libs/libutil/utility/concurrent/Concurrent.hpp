@@ -31,6 +31,7 @@ struct FunctorEvent : public QEvent {
 	}
 };
 
+
 template <typename F>
 void postToObject(F && functor, QObject * obj = qApp)
 {
@@ -39,6 +40,7 @@ void postToObject(F && functor, QObject * obj = qApp)
 	}
 	QCoreApplication::postEvent(obj, OC_NEW FunctorEvent<F>(std::forward<F>(functor)));
 }
+
 
 template <typename F>
 void postToThread(F && functor, QThread * thread = qApp->thread())
@@ -49,15 +51,13 @@ void postToThread(F && functor, QThread * thread = qApp->thread())
 }
 
 
-
-
 class Q_CORE_EXPORT MutexTryLocker
 {
 private:
 	Q_DISABLE_COPY(MutexTryLocker)
 	quintptr val;
-public:
 
+public:
 	inline explicit MutexTryLocker(QBasicMutex *m) QT_MUTEX_LOCK_NOEXCEPT {
 		Q_ASSERT_X((reinterpret_cast<quintptr>(m) & quintptr(1u)) == quintptr(0), "MutexTryLocker", "QMutex pointer is misaligned");
 		val = quintptr(m);
@@ -70,10 +70,13 @@ public:
 			}
 		}
 	}
+
+
 	inline ~MutexTryLocker()
 	{
 		unlock();
 	}
+
 
 	inline void unlock() Q_DECL_NOTHROW {
 		if ((val & quintptr(1u)) == quintptr(1u))
@@ -82,6 +85,7 @@ public:
 			mutex()->unlock();
 		}
 	}
+
 
 	inline void relock() QT_MUTEX_LOCK_NOEXCEPT {
 		if (val)
@@ -100,8 +104,6 @@ public:
 	}
 
 };
-
-
 
 
 class HandleCounter

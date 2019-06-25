@@ -8,6 +8,7 @@
 
 #include "utility/time/HumanTime.hpp"
 
+
 void TestAddressList::testAddressEntry()
 {
 	const QString ip="10.1.2.3";

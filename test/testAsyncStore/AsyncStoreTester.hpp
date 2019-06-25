@@ -2,7 +2,6 @@
 #define ASYNCSTORETESTER_HPP
 
 #include "BackendMock.hpp"
-
 #include "FrontendMock.hpp"
 
 
