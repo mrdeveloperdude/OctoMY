@@ -730,7 +730,7 @@ bool AsyncStore<T>::generateSync()
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		//qDebug()<<"Entering Sync Generate from "<<utility::concurrent::currentThreadID();
 		const bool ok=mFrontend.isNull()?false:mFrontend->generateFrontend();
-		const auto old=mMemoryCounter;
+		//const auto old=mMemoryCounter;
 		if(ok) {
 			setMemoryCounter(autoIncrement());
 		}

@@ -86,11 +86,8 @@ private slots:
 	// CommsCarrier external interface methods
 public slots:
 	quint64 connectionTimeout();
-
 	void setHookCarrierSignals(QObject &ob, bool hook);
-
 	void setListenAddress(NetworkAddress address);
-
 
 	qint64 writeData(const QByteArray &datagram, const NetworkAddress &address);
 	qint64 readData(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr);
@@ -100,14 +97,12 @@ public slots:
 
 	// Return the last error string, if any
 	QString errorString();
-
 	NetworkAddress address();
 
 	quint64 minimalPacketInterval();
 	quint64 maximalPacketInterval();
 
 	quint64 setDesiredOpportunityInterval(quint64 interval);
-
 	quint64 opportunityInterval();
 
 // CommsCarrier internal interface methods

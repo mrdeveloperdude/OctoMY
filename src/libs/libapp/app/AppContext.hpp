@@ -12,9 +12,9 @@
 
 class AppCommandLineParser;
 
-class AppContext //: public QObject
+class AppContext
 {
-	//Q_OBJECT
+
 private:
 	QSharedPointer<AppCommandLineParser> mCommandlineOptions;
 	QProcessEnvironment mEnvironment;

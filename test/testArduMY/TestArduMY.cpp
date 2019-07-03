@@ -9,7 +9,7 @@
 #include "ardumy_arduino/ArduMYCommandSerializer.hpp"
 #include "ardumy_arduino/ArduMYParserState.hpp"
 
-#include "widgets/ardumy/ArduMYTypeConversions.hpp"
+#include "ardumy/ArduMYTypeConversions.hpp"
 
 #include <QDebug>
 #include <QtGlobal>
@@ -220,9 +220,9 @@ ArduMYActuatorConfig TestArduMY::randomConfig() const
 	break;
 	case(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
 		// Naive attempt at making 64bit random numbers using qrand()
-		uint64_t r1=((uint64_t)(qrand()%(0xFFFFFFFF)))<<32 | ((uint64_t)(qrand()%(0xFFFFFFFF)));
-		uint64_t r2=((uint64_t)(qrand()%(0xFFFFFFFF)))<<32 | ((uint64_t)(qrand()%(0xFFFFFFFF)));
-		uint64_t r3=((uint64_t)(qrand()%(0xFFFFFFFF)))<<32 | ((uint64_t)(qrand()%(0xFFFFFFFF)));
+		uint64_t r1=(static_cast<uint64_t>(qrand()%(0xFFFFFFFF)))<<32 | (static_cast<uint64_t>(qrand()%(0xFFFFFFFF)));
+		uint64_t r2=(static_cast<uint64_t>(qrand()%(0xFFFFFFFF)))<<32 | (static_cast<uint64_t>(qrand()%(0xFFFFFFFF)));
+		uint64_t r3=(static_cast<uint64_t>(qrand()%(0xFFFFFFFF)))<<32 | (static_cast<uint64_t>(qrand()%(0xFFFFFFFF)));
 		c.rangeStart.quadWord=r1%r2%(0xFFFFFFFFFFFFFFFF);
 		c.rangeSpan.quadWord=r3%((0xFFFFFFFFFFFFFFFF)-c.rangeStart.quadWord);
 	}
@@ -243,7 +243,7 @@ ArduMYActuatorConfig TestArduMY::randomConfig() const
 		c.rangeSpan.doublePrecision=r3-c.rangeStart.doublePrecision;
 	}
 	break;
-	default:
+	// default:
 	case(ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT): {
 		qWarning()<<"bad representation";
 	}
@@ -347,7 +347,7 @@ union Fuzzer {
 	uint8_t bytes[sizeof(T)];
 	explicit Fuzzer() {
 		for(size_t i=0; i<sizeof(bytes); ++i)	{
-			bytes[i]=qrand();
+			bytes[i]=(qrand()%0xFF);
 		}
 	}
 
@@ -382,7 +382,7 @@ ArduMYActuatorSet TestArduMY::fuzzActuatorSet()
 {
 	ArduMYActuatorSet set;
 	const auto setSize=qrand()%0xFF;
-	set.setSize(setSize);
+	set.setSize(static_cast<uint32_t>(setSize));
 	for(auto i=0; i<setSize; ++i) {
 		set[i]=fuzzActuator();
 	}
@@ -403,8 +403,8 @@ void TestArduMY::testToFromString()
 	QCOMPARE(QString("SINGLE_FLOAT"), ardumyActuatorValueRepresentationToString(VALREP_SINGLE_FLOAT) );
 	QCOMPARE(QString("DOUBLE_FLOAT"), ardumyActuatorValueRepresentationToString(VALREP_DOUBLE_FLOAT) );
 	QCOMPARE(QString("REPRESENTATION_COUNT"), ardumyActuatorValueRepresentationToString(VALREP_REPRESENTATION_COUNT) );
-	QCOMPARE(QString("UNKNOWN"), ardumyActuatorValueRepresentationToString((ArduMYActuatorValueRepresentation)(VALREP_REPRESENTATION_COUNT+1)) );
-	QCOMPARE(QString("UNKNOWN"), ardumyActuatorValueRepresentationToString((ArduMYActuatorValueRepresentation)(VALREP_BIT-1)) );
+	QCOMPARE(QString("UNKNOWN"), ardumyActuatorValueRepresentationToString(static_cast<ArduMYActuatorValueRepresentation>(VALREP_REPRESENTATION_COUNT+1)) );
+	QCOMPARE(QString("UNKNOWN"), ardumyActuatorValueRepresentationToString(static_cast<ArduMYActuatorValueRepresentation>(VALREP_BIT-1)) );
 
 	QCOMPARE(VALREP_BIT, ardumyActuatorValueRepresentationFromString("BIT") );
 	QCOMPARE(VALREP_BYTE, ardumyActuatorValueRepresentationFromString("BYTE") );
@@ -423,8 +423,8 @@ void TestArduMY::testToFromString()
 	QCOMPARE(QString("RC_SERVO"), ardumyActuatorTypeToString(RC_SERVO) );
 	QCOMPARE(QString("RELAY"), ardumyActuatorTypeToString(RELAY) );
 	QCOMPARE(QString("TYPE_COUNT"), ardumyActuatorTypeToString(TYPE_COUNT) );
-	QCOMPARE(QString("UNKNOWN"), ardumyActuatorTypeToString((ArduMYActuatorType)(TYPE_COUNT+1)) );
-	QCOMPARE(QString("UNKNOWN"), ardumyActuatorTypeToString((ArduMYActuatorType)(DC_MOTOR-1)) );
+	QCOMPARE(QString("UNKNOWN"), ardumyActuatorTypeToString(static_cast<ArduMYActuatorType>(TYPE_COUNT+1)) );
+	QCOMPARE(QString("UNKNOWN"), ardumyActuatorTypeToString(static_cast<ArduMYActuatorType>(DC_MOTOR-1)) );
 
 	QCOMPARE(DC_MOTOR, ardumyActuatorTypeFromString("DC_MOTOR") );
 	QCOMPARE(STEP_MOTOR, ardumyActuatorTypeFromString("STEP_MOTOR") );

@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	{
 		QSharedPointer<AppLauncher<Agent> > agentMain=QSharedPointer<AppLauncher<Agent> >(OC_NEW AppLauncher<Agent>());
 		if(!agentMain.isNull()) {
-			agentMain->configure(argc, argv, "agent");
+			agentMain->configure("agent", argc, argv);
 			ret=agentMain->run();
 			agentMain.clear();
 		} else {

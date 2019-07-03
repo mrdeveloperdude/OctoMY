@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	{
 		QSharedPointer<AppLauncher<Remote> > remoteMain=QSharedPointer<AppLauncher<Remote> >(OC_NEW AppLauncher<Remote>());
 		if(!remoteMain.isNull()) {
-			remoteMain->configure(argc, argv, "remote");
+			remoteMain->configure("remote", argc, argv);
 			ret=remoteMain->run();
 			remoteMain.clear();
 		} else {

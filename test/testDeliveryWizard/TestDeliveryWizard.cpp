@@ -2,10 +2,11 @@
 
 #include "agent/Agent.hpp"
 #include "node/Node.hpp"
-#include "app/NodeLauncher.hpp"
+#include "app/launcher/AppLauncher.hpp"
 #include "app/AppContext.hpp"
 
 #include "widgets/AgentDeliveryWizard.hpp"
+#include "uptime/New.hpp"
 
 #include <QProcessEnvironment>
 #include <QCommandLineParser>
@@ -17,14 +18,15 @@
 
 class AgentDeliveryWizardTest: public AgentDeliveryWizard
 {
-
+private:
 public:
-
 	explicit AgentDeliveryWizardTest()
 		: AgentDeliveryWizard(nullptr)
 	{
 
 	}
+
+	virtual ~AgentDeliveryWizardTest() {}
 };
 
 
@@ -45,11 +47,11 @@ static void testLineEdit(QLineEdit *lineEdit, QString in, QString out, const int
 void TestDeliveryWizard::test()
 {
 	QProcessEnvironment env=QProcessEnvironment::systemEnvironment();
-	QCommandLineParser opts;
-	opts.setApplicationDescription("Test DeliveryWizard");
-	opts.addHelpOption();
-	AppContext *agentContext=OC_NEW AppContext(opts, env, "testDeliveryWizard", this);
-	QVERIFY(nullptr!=agentContext);
+	QSharedPointer<AppCommandLineParser> opts(OC_NEW AppCommandLineParser());
+
+
+	QSharedPointer<AppContext> agentContext(OC_NEW AppContext(opts, env, "testDeliveryWizard", false));
+	QVERIFY(!agentContext.isNull());
 
 	Q_INIT_RESOURCE(icons);
 	Q_INIT_RESOURCE(images);
@@ -57,11 +59,13 @@ void TestDeliveryWizard::test()
 	Q_INIT_RESOURCE(3d);
 
 	for( int i=0; i<100; ++i) {
-		NodeLauncher<Agent> nodeLauncher(0, nullptr);
+		QSharedPointer<AppLauncher<Agent> > nodeLauncher(OC_NEW AppLauncher<Agent>);
+		nodeLauncher->configure("TestAgent", 0, nullptr);
 
-		QSharedPointer<Node> testAgent(OC_NEW Node(nodeLauncher, agentContext, NodeRole::ROLE_AGENT, NodeType::TYPE_AGENT, this));
+		QSharedPointer<Node> testAgent(OC_NEW Agent);
+		testAgent->appConfigure(nodeLauncher);
 		QVERIFY(nullptr!=testAgent);
-		QFile file(testAgent->keyStore().filename());
+		QFile file(testAgent->keyStore()->filename());
 		if(file.exists()) {
 			file.remove();
 		}
@@ -95,7 +99,7 @@ void TestDeliveryWizard::test()
 		QTest::mouseClick(pushButtonOnward, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), delay);
 		QCOMPARE(stackedWidget->currentWidget()->objectName(), QString("pageBirthInProgress"));
 		QCOMPARE(spyStackedWidget.count(), 1);
-		if(!spyStackedWidget.wait(AgentDeliveryWizard::MINIMUM_BIRTH_TIME*20)) {
+		if(!spyStackedWidget.wait(static_cast<int>(AgentDeliveryWizard::MINIMUM_BIRTH_TIME*20))){
 			qWarning()<<"WAIT #1 FAILED";
 		}
 		QCOMPARE(spyStackedWidget.count(), 2);

@@ -4,7 +4,7 @@
 
 #include "QTest"
 
-MockCourier::MockCourier(QString name, QString  dest, QByteArray datagram, CommsChannel &comms, const qint32 maxSends , const qint32 maxRecs, CommsTester *parent)
+MockCourier::MockCourier(QString name, QString  dest, QByteArray datagram, QSharedPointer<CommsChannel> comms, const qint32 maxSends , const qint32 maxRecs, CommsTester *parent)
 	: Courier(name, Courier::FIRST_USER_ID+313, comms, parent)
 	, mCt(parent)
 	, mSoFar(0)
@@ -13,8 +13,7 @@ MockCourier::MockCourier(QString name, QString  dest, QByteArray datagram, Comms
 	, mMaxRecs(maxRecs)
 	, mSendCount(0)
 	, mRecCount(0)
-
-	, mMandate(mDatagram.size()+4 // payloadSize
+	, mMandate(static_cast<quint16>(mDatagram.size()+4) // payloadSize
 			   ,10 // priority
 			   ,0 // nextSend. We set nextSend to 0. Basically this meaens "always overdue, send at every opportunity"
 			   ,true // receiveActive
@@ -44,7 +43,7 @@ CourierMandate MockCourier::mandate() const
 quint16 MockCourier::sendingOpportunity(QDataStream &ds )
 {
 	mSendCount++;
-	const qint16 sendsLeft=mMaxSends-mSendCount;
+	const qint16 sendsLeft=static_cast<qint16>(mMaxSends-mSendCount);
 	const bool done=(sendsLeft<=0);
 	if(done) {
 		qDebug()<<"MAX SENDS ("<<mMaxSends<<") RECEIVED FOR "<<destination()<<" STOPPING";
@@ -65,7 +64,7 @@ quint16 MockCourier::sendingOpportunity(QDataStream &ds )
 quint16 MockCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 {
 	mRecCount++;
-	const qint16 recLeft=mMaxRecs-mRecCount;
+	const qint16 recLeft=static_cast<qint16>(mMaxRecs-mRecCount);
 	const bool done=(recLeft<=0);
 	if(done) {
 		qDebug()<<"MAX RECS ("<<mMaxRecs<<") RECEIVED FOR "<<destination()<<" STOPPING";
@@ -75,13 +74,12 @@ quint16 MockCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 	QByteArray in;
 	ds>>in;
 	qDebug()<<"DATA BYTES RECEIVED="<<availableBytes<<" ("<<in<<")";
-	return in.size()+4;
+	return static_cast<quint16>(in.size()+4);
 }
 
 
 void MockCourier::writeSummary()
 {
-
 	qDebug()<<"";
 	qDebug()<<" Test Courier Summary for "<<name();
 	qDebug()<<"  + SoFar:                "<<mSoFar;

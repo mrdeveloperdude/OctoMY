@@ -60,6 +60,7 @@ void testActuatorValueSerializerInclude(ArduMYActuatorSet &inSet)
 			}
 		}
 		const bool res=parser.parse(byte);
+		Q_UNUSED(res);
 
 		//    QCOMPARE(res,false);
 
@@ -100,6 +101,7 @@ void testActuatorValueSerializerInclude(ArduMYActuatorSet &inSet)
 			baOut[ix++]=byte;
 
 			auto lca=parser.currentActuatorIndex;
+			Q_UNUSED(lca);
 			const bool res=parser.parse(byte);
 			//qDebug()<<" + Value-Byte: "<<byte<<" SERIALIZER:"<<serializer.currentActuatorIndex<<" PARSER:"<<parser.currentActuatorIndex;
 			if(res) {

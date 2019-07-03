@@ -16,41 +16,24 @@
 #include <QDebug>
 
 
-
-
-CourierTester::CourierTester(Courier *fromCourier, Courier *toCourier, QString fromName, QString toName)
-	: QObject(nullptr)
-	, mFromCourier(fromCourier)
-	, mToCourier(toCourier)
-	, mFromName(fromName)
-	, mToName(toName)
-	, mDone(false)
-	, mRoundCounter(0)
+CourierTester::CourierTester(Courier *fromCourier, Courier *toCourier, QString fromName, QString toName) : QObject(nullptr), mFromCourier(fromCourier), mToCourier(toCourier), mFromName(fromName), mToName(toName), mDone(false), mRoundCounter(0)
 {
 
-	mChanceNames<<mFromName+" - SEND   "
-				<<mFromName+" - RECEIVE"
-				<<mFromName+" - DROP   "
-				<<mFromName+" - CORRUPT"
-				<<mToName+" - SEND   "
-				<<mToName+" - RECEIVE"
-				<<mToName+" - DROP   "
-				<<mToName+" - CORRUPT"
-				;
+	mChanceNames << mFromName + " - SEND   " << mFromName + " - RECEIVE" << mFromName + " - DROP   " << mFromName + " - CORRUPT" << mToName + " - SEND   " << mToName + " - RECEIVE" << mToName + " - DROP   " << mToName + " - CORRUPT";
 }
 
 
 void CourierTester::setProfile(CourierTesterProfile &p)
 {
-	mProfile=p;
+	mProfile = p;
 }
 
 
 void CourierTester::sleepRandom()
 {
-	const quint64 ms=(mProfile.sleepTimeMin())+(qrand()%mProfile.sleepTimeRange());
-	if(ms>0) {
-		qDebug()<<"WAITING "<<utility::string::humanReadableElapsedMS(ms);
+	const quint64 ms = (mProfile.sleepTimeMin()) + (qrand() % mProfile.sleepTimeRange());
+	if (ms > 0) {
+		qDebug() << "WAITING " << utility::string::humanReadableElapsedMS(ms);
 		QTest::qWait(ms);
 	}
 }
@@ -58,22 +41,22 @@ void CourierTester::sleepRandom()
 
 void CourierTester::onTestInit()
 {
-	qDebug()<<"STARTING TEST ------------------------";
-	QVERIFY(nullptr!=mFromCourier);
-	QVERIFY(nullptr!=mToCourier);
+	qDebug() << "STARTING TEST ------------------------";
+	QVERIFY(nullptr != mFromCourier);
+	QVERIFY(nullptr != mToCourier);
 	onTestInitImp();
-	quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
-	qDebug()<<"--- INITIAL UPDATE "<<mFromName;
+	quint64 now = utility::time::currentMsecsSinceEpoch<quint64>();
+	qDebug() << "--- INITIAL UPDATE " << mFromName;
 	mFromCourier->update(now);
-	qDebug()<<"--- INITIAL UPDATE "<<mToName;
+	qDebug() << "--- INITIAL UPDATE " << mToName;
 	mToCourier->update(now);
-	mRoundCounter=0;
+	mRoundCounter = 0;
 }
 
 
 void CourierTester::onTestDeInit()
 {
-	qDebug()<<"ENDING TEST ------------------------";
+	qDebug() << "ENDING TEST ------------------------";
 	onTestDeInitImp();
 }
 
@@ -88,204 +71,195 @@ void CourierTester::onTestRoundStart()
 
 void CourierTester::onTestRoundEnd()
 {
-	qDebug()<<"--- ROUND END -----------";
-	qDebug()<<"--- UPDATE "<<mFromName;
-	quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
+	qDebug() << "--- ROUND END -----------";
+	qDebug() << "--- UPDATE " << mFromName;
+	quint64 now = utility::time::currentMsecsSinceEpoch<quint64>();
 	mFromCourier->update(now);
-	qDebug()<<"--- UPDATE "<<mToName;
+	qDebug() << "--- UPDATE " << mToName;
 	mToCourier->update(now);
-	qDebug()<< "CourierTester stats: mFromStreams="<<mFromStreams.size()<<", mToStreams="<<mToStreams.size()<<"";
+	qDebug() << "CourierTester stats: mFromStreams=" << mFromStreams.size() << ", mToStreams=" << mToStreams.size() << "";
 	onTestRoundEndImp();
 }
 
 
 QByteArray *CourierTester::fetchFromStream()
 {
-	const int count=mFromStreams.size();
-	//QVERIFY(count>0);
-	int index=0;
-	switch(mProfile.order()) {
+	const int count = mFromStreams.size();
+	// QVERIFY(count>0);
+	int index = 0;
+	switch (mProfile.order()) {
 	default:
-	case(FIFO): {
-		index=0;
+	case (FIFO): {
+		index = 0;
+	} break;
+	case (LIFO): {
+		index = count - 1;
+	} break;
+	case (RANDOM): {
+		index = (qrand() % count);
+	} break;
 	}
-	break;
-	case(LIFO): {
-		index=count-1;
-	}
-	break;
-	case(RANDOM): {
-		index=(qrand()%count);
-	}
-	break;
-	}
-	QByteArray *ba=mFromStreams.takeAt(index);
-	//QVERIFY(nullptr!=ba);
+	QByteArray *ba = mFromStreams.takeAt(index);
+	// QVERIFY(nullptr!=ba);
 	return ba;
 }
 
 
 QByteArray *CourierTester::fetchToStream()
 {
-	const int count=mToStreams.size();
-	//QVERIFY(count>0);
-	int index=0;
-	switch(mProfile.order()) {
+	const int count = mToStreams.size();
+	// QVERIFY(count>0);
+	int index = 0;
+	switch (mProfile.order()) {
 	default:
-	case(FIFO): {
-		index=0;
+	case (FIFO): {
+		index = 0;
+	} break;
+	case (LIFO): {
+		index = count - 1;
+	} break;
+	case (RANDOM): {
+		index = (qrand() % count);
+	} break;
 	}
-	break;
-	case(LIFO): {
-		index=count-1;
-	}
-	break;
-	case(RANDOM): {
-		index=(qrand()%count);
-	}
-	break;
-	}
-	QByteArray *ba=mToStreams.takeAt(index);
-	//QVERIFY(nullptr!=ba);
+	QByteArray *ba = mToStreams.takeAt(index);
+	// QVERIFY(nullptr!=ba);
 	return ba;
 }
 
 
 void CourierTester::onToReceiving()
 {
-	if( mProfile.betrayMandateReceiveActive() || mToCourier->mandate().receiveActive ) {
-		if(!mFromStreams.isEmpty()) {
-			QByteArray *ba=fetchFromStream();
-			QVERIFY(nullptr!=ba);
-			const qint64 sz=ba->size();
-			quint16 received=0;
+	if (mProfile.betrayMandateReceiveActive() || mToCourier->mandate().receiveActive) {
+		if (!mFromStreams.isEmpty()) {
+			QByteArray *ba = fetchFromStream();
+			QVERIFY(nullptr != ba);
+			const qint64 sz = ba->size();
+			quint16 received = 0;
 			{
 				QBuffer buf(ba);
 				buf.open(QBuffer::ReadOnly);
 				QDataStream stream(&buf);
-				received=mToCourier->dataReceived(stream, sz);
+				received = mToCourier->dataReceived(stream, sz);
 				buf.close();
 			}
 			onToReceivingImp();
-			qDebug()<<mToName<<" RECEIVED  "<<received<<" bytes vs "<<sz << " via buffer "<<ba;
+			qDebug() << mToName << " RECEIVED  " << received << " bytes vs " << sz << " via buffer " << ba;
 			delete ba;
-			ba=nullptr;
+			ba = nullptr;
 		} else {
-			qDebug()<<"NO DATA TO RECEIVE FOR " << mToName<< ", SKIPPING";
+			qDebug() << "NO DATA TO RECEIVE FOR " << mToName << ", SKIPPING";
 		}
 	} else {
-		qDebug()<<"No betrayal or no send active";
+		qDebug() << "No betrayal or no send active";
 	}
 }
 
 
 void CourierTester::onToSend()
 {
-	if(  mProfile.betrayMandateSendActive() || mToCourier->mandate().sendActive  )  {
-		QByteArray *ba=OC_NEW QByteArray;
-		QVERIFY(nullptr!=ba);
-		quint16 sent=0;
+	if (mProfile.betrayMandateSendActive() || mToCourier->mandate().sendActive) {
+		QByteArray *ba = OC_NEW QByteArray;
+		QVERIFY(nullptr != ba);
+		quint16 sent = 0;
 		{
 			QBuffer buf(ba);
 			buf.open(QBuffer::WriteOnly);
 			QDataStream stream(&buf);
-			sent=mToCourier->sendingOpportunity(stream);
+			sent = mToCourier->sendingOpportunity(stream);
 			buf.close();
 		}
 		onToSendImp();
-		qDebug()<<mToName<<" SENT "<<sent<<" bytes ("<<ba->size()<<") via buffer "<<ba;
-		mToStreams<<ba;
+		qDebug() << mToName << " SENT " << sent << " bytes (" << ba->size() << ") via buffer " << ba;
+		mToStreams << ba;
 	} else {
-		qDebug()<<"No betrayal or no send active";
+		qDebug() << "No betrayal or no send active";
 	}
 }
 
 
 void CourierTester::onToDrop()
 {
-	qDebug()<<"TODO: Implement onToDrop";
+	qDebug() << "TODO: Implement onToDrop";
 }
 
 
 void CourierTester::onToCorrupt()
 {
-	qDebug()<<"TODO: Implement onToCorrupt";
+	qDebug() << "TODO: Implement onToCorrupt";
 }
 
 
 void CourierTester::onFromReceiving()
 {
-	if( mProfile.betrayMandateReceiveActive() || mFromCourier->mandate().receiveActive ) {
-		if(!mToStreams.isEmpty()) {
-			QByteArray *ba=fetchToStream();
-			QVERIFY(nullptr!=ba);
-			const qint64 sz=ba->size();
-			quint16 received=0;
+	if (mProfile.betrayMandateReceiveActive() || mFromCourier->mandate().receiveActive) {
+		if (!mToStreams.isEmpty()) {
+			QByteArray *ba = fetchToStream();
+			QVERIFY(nullptr != ba);
+			const qint64 sz = ba->size();
+			quint16 received = 0;
 			{
 				QBuffer buf(ba);
 				buf.open(QBuffer::ReadOnly);
 				QDataStream stream(&buf);
-				received=mFromCourier->dataReceived(stream, sz);
+				received = mFromCourier->dataReceived(stream, sz);
 				buf.close();
 			}
 			onFromReceivingImp();
-			qDebug()<<mFromName<<" RECEIVED "<<received<<" bytes vs "<<sz << " via buffer "<<ba;
+			qDebug() << mFromName << " RECEIVED " << received << " bytes vs " << sz << " via buffer " << ba;
 			delete ba;
-			ba=nullptr;
+			ba = nullptr;
 		} else {
-			qDebug()<<"NO DATA TO RECEIVE FOR " << mFromName<< ", SKIPPING";
+			qDebug() << "NO DATA TO RECEIVE FOR " << mFromName << ", SKIPPING";
 		}
 	} else {
-		qDebug()<<"No betrayal or no send active";
+		qDebug() << "No betrayal or no send active";
 	}
 }
 
 
 void CourierTester::onFromSend()
 {
-	if( mProfile.betrayMandateSendActive() || mFromCourier->mandate().sendActive ) {
-		QByteArray *ba=OC_NEW QByteArray;
-		QVERIFY(nullptr!=ba);
-		quint16 sent=0;
+	if (mProfile.betrayMandateSendActive() || mFromCourier->mandate().sendActive) {
+		QByteArray *ba = OC_NEW QByteArray;
+		QVERIFY(nullptr != ba);
+		quint16 sent = 0;
 		{
 			QBuffer buf(ba);
 			buf.open(QBuffer::WriteOnly);
 			QDataStream stream(&buf);
-			sent=mFromCourier->sendingOpportunity(stream);
+			sent = mFromCourier->sendingOpportunity(stream);
 			buf.close();
 		}
 		onFromSendImp();
-		qDebug()<<mFromName<<" SENT  "<<sent<<" bytes ("<<ba->size()<<") via buffer "<<ba;
-		mFromStreams<<ba;
+		qDebug() << mFromName << " SENT  " << sent << " bytes (" << ba->size() << ") via buffer " << ba;
+		mFromStreams << ba;
 	} else {
-		qDebug()<<"No betrayal or no send active";
+		qDebug() << "No betrayal or no send active";
 	}
 }
 
 
 void CourierTester::onFromDrop()
 {
-	qDebug()<<"TODO: Implement onFromDrop";
+	qDebug() << "TODO: Implement onFromDrop";
 }
 
 
 void CourierTester::onFromCorrupt()
 {
-	qDebug()<<"TODO: Implement onFromCorrupt";
+	qDebug() << "TODO: Implement onFromCorrupt";
 }
 
 
 void CourierTester::putTitle(int chance)
 {
-	qDebug()<<"";
-	if(mChanceNames.size()<=chance || chance<0) {
-		qDebug().noquote()<<"---------------------- ROUND ERROR: NUMBER UNKNOWN: "<<chance;
+	qDebug() << "";
+	if (mChanceNames.size() <= chance || chance < 0) {
+		qDebug().noquote() << "---------------------- ROUND ERROR: NUMBER UNKNOWN: " << chance;
 	} else {
-		qDebug().noquote()<<"---------------------- ROUND "<<mRoundCounter<<": " << mChanceNames[chance]<< " ------------------ ";
+		qDebug().noquote() << "---------------------- ROUND " << mRoundCounter << ": " << mChanceNames[chance] << " ------------------ ";
 	}
-
-
-
 }
 
 
@@ -299,44 +273,36 @@ void CourierTester::testStep(int step)
 {
 	putTitle(step);
 	onTestRoundStart();
-	switch(step) {
-	case(0): {
+	switch (step) {
+	case (0): {
 		onFromSend();
-	}
-	break;
-	case(1): {
+	} break;
+	case (1): {
 		onFromReceiving();
-	}
-	break;
-	case(2): {
+	} break;
+	case (2): {
 		onFromDrop();
-	}
-	break;
-	case(3): {
+	} break;
+	case (3): {
 		onFromCorrupt();
 	}
 
-	case(4): {
+	case (4): {
 		onToSend();
-	}
-	break;
-	case(5): {
+	} break;
+	case (5): {
 		onToReceiving();
-	}
-	break;
-	case(6): {
+	} break;
+	case (6): {
 		onToDrop();
-	}
-	break;
-	case(7): {
+	} break;
+	case (7): {
 		onToCorrupt();
-	}
-	break;
-	break;
+	} break;
+		break;
 	default: {
-		qWarning()<<"ERROR: Unknown step: "<<step;
-	}
-	break;
+		qWarning() << "ERROR: Unknown step: " << step;
+	} break;
 	}
 	onTestRoundEnd();
 }
@@ -344,10 +310,50 @@ void CourierTester::testStep(int step)
 
 void CourierTester::testRandomSteps(int steps)
 {
-	for(int step=0; step<steps; ++step) {
-		if(mDone) {
+	for (int step = 0; step < steps; ++step) {
+		if (mDone) {
 			break;
 		}
 		testStep(randomStep());
 	}
+}
+
+
+void CourierTester::onTestInitImp()
+{
+}
+
+
+void CourierTester::onTestDeInitImp()
+{
+}
+
+
+void CourierTester::onTestRoundStartImp()
+{
+}
+
+
+void CourierTester::onTestRoundEndImp()
+{
+}
+
+
+void CourierTester::onToReceivingImp()
+{
+}
+
+
+void CourierTester::onFromReceivingImp()
+{
+}
+
+
+void CourierTester::onToSendImp()
+{
+}
+
+
+void CourierTester::onFromSendImp()
+{
 }

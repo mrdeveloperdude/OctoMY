@@ -7,6 +7,12 @@
 #include "uptime/New.hpp"
 #include "utility/random/Random.hpp"
 
+
+#ifdef OC_USE_LIB_EXT_ESPEAK
+#include "espeak/speak_lib.h"
+#endif
+
+
 #include <QDebug>
 #include <QtMath>
 
@@ -16,7 +22,7 @@ struct CreepyBuffer {
 
 	CreepyBuffer(int size)
 		: mSize(size)
-		, mBuffer(OC_NEW short[mSize])
+		, mBuffer(OC_NEW short[static_cast<unsigned long>(mSize)])
 	{
 		OC_METHODGATE();
 	}
@@ -30,7 +36,6 @@ struct CreepyBuffer {
 	}
 
 };
-
 
 
 CreepyVoice::CreepyVoice(PortableID &id, QObject *parent)
@@ -49,6 +54,7 @@ CreepyVoice::CreepyVoice(PortableID &id, QObject *parent)
 	OC_METHODGATE();
 }
 
+
 CreepyVoice::~CreepyVoice()
 {
 	OC_METHODGATE();
@@ -66,7 +72,6 @@ CreepyVoice::~CreepyVoice()
 }
 
 
-
 double CreepyVoice::frandGauss()
 {
 	OC_METHODGATE();
@@ -74,13 +79,12 @@ double CreepyVoice::frandGauss()
 }
 
 
-
-
 double CreepyVoice::frandGaussAbs()
 {
 	OC_METHODGATE();
 	return qAbs(rng->generateGauss());
 }
+
 
 void CreepyVoice::freeBuffer(CreepyBuffer *buf)
 {
@@ -90,6 +94,7 @@ void CreepyVoice::freeBuffer(CreepyBuffer *buf)
 		mBuffersFree.append(buf);
 	}
 }
+
 
 CreepyBuffer *CreepyVoice::getFreeBuffer(int numsamples)
 {
@@ -115,22 +120,29 @@ CreepyBuffer *CreepyVoice::getFreeBuffer(int numsamples)
 	return ret;
 }
 
-#ifdef OC_USE_LIB_EXT_ESPEAK
-void CreepyVoice::feed(short *wav, int numsamples, espeak_EVENT *events)
+
+
+void CreepyVoice::feed(short *wav, int numsamples)
 {
+	#ifdef OC_USE_LIB_EXT_ESPEAK
 	const int numsamples2 = (numsamples * af.sampleRate()) / (mHz == 0 ? 1 : mHz);
 	CreepyBuffer *buffer=getFreeBuffer(numsamples2);
 	if(nullptr!=buffer) {
 		short * dp = buffer->mBuffer;
-		if (0 != dp) {
+		if (nullptr != dp) {
 			for (int i = 0; i < numsamples2; i++) {
 				const int j = (i * numsamples) / numsamples2;
 				dp[i] = wav[j];
 			}
 		}
 	}
+#else
+	Q_UNUSED(wav);
+	Q_UNUSED(numsamples);
+	#endif
 }
-#endif
+
+
 
 bool CreepyVoice::isInitialized()
 {
@@ -138,19 +150,21 @@ bool CreepyVoice::isInitialized()
 	return mInited;
 }
 
+
 void CreepyVoice::speak(QString sentence)
 {
 	OC_METHODGATE();
 	if (isInitialized()) {
 #ifdef OC_USE_LIB_EXT_ESPEAK
 		qDebug().noquote().nospace() << "Speaking \"" << sentence << "\"\n";
-		espeak_Synth(word.toStdString().c_str(), word.size() + 1, 0, POS_CHARACTER, 0, espeakCHARS_AUTO, nullptr, (void *)this);
+		espeak_Synth(sentence.toStdString().c_str(), static_cast<size_t>(sentence.size() + 1), 0, POS_CHARACTER, 0, espeakCHARS_AUTO, nullptr, static_cast<void *>(this));
 		//espeak_Synchronize();
 #else
 		qDebug().noquote().nospace() << "I am mute, not speaking \"" << sentence << "\"\n";
 #endif
 	}
 }
+
 
 void CreepyVoice::deinit()
 {
@@ -161,6 +175,7 @@ void CreepyVoice::deinit()
 #endif
 	}
 }
+
 
 bool CreepyVoice::voiceIsAvailable()
 {
@@ -177,10 +192,10 @@ bool CreepyVoice::voiceIsAvailable()
 #ifdef OC_USE_LIB_EXT_ESPEAK
 static int synthCallback(short *wav, int numsamples, espeak_EVENT *events)
 {
-	if (0 != wav) {
+	if (nullptr != wav) {
 		CreepyVoice *es = static_cast<CreepyVoice *>(events->user_data);
 		if(nullptr!=es) {
-			es->feed(wav, numsamples, events);
+			es->feed(wav, numsamples);
 		} else {
 			qWarning()<<"ERROR: no espeak instance in synth callback";
 		}
@@ -190,9 +205,7 @@ static int synthCallback(short *wav, int numsamples, espeak_EVENT *events)
 #endif
 
 
-
 //IAudioSource interface
-
 void CreepyVoice::init(QAudioFormat f)
 {
 	OC_METHODGATE();
@@ -205,7 +218,7 @@ void CreepyVoice::init(QAudioFormat f)
 	qDebug()<<"INITIALIZING VOICE WITH SEED: "<<seed;
 
 #ifdef OC_USE_LIB_EXT_ESPEAK
-	mHz = espeak_Initialize(AUDIO_OUTPUT_RETRIEVAL, 10, 0, 0);
+	mHz = espeak_Initialize(AUDIO_OUTPUT_RETRIEVAL, 10, nullptr, 0);
 	if(mHz >0) {
 		espeak_SetSynthCallback(synthCallback);
 		espeak_SetVoiceByName("en");
@@ -217,8 +230,8 @@ void CreepyVoice::init(QAudioFormat f)
 		espeak_SetParameter(espeakVOLUME, 100, 0);
 		espeak_SetParameter(espeakRANGE, 0, 0);
 		*/
-		espeak_SetParameter(espeakRATE, (int)(frandGauss()*50.0+90), 0);
-		espeak_SetParameter(espeakPITCH, (int)(frandGauss()*40.0+50), 0);
+		espeak_SetParameter(espeakRATE, static_cast<int>(frandGauss()*50.0+90), 0);
+		espeak_SetParameter(espeakPITCH, static_cast<int>(frandGauss()*40.0+50), 0);
 		espeak_SetParameter(espeakVOLUME, 150, 0);
 		espeak_SetParameter(espeakRANGE, 0, 0);
 		espeak_VOICE *voice_spec = espeak_GetCurrentVoice();
@@ -284,7 +297,6 @@ void CreepyVoice::init(QAudioFormat f)
 	mInited=true;
 
 }
-
 
 
 void CreepyVoice::generate(qint64 num, double *out)
