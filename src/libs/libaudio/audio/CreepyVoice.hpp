@@ -6,6 +6,7 @@
 #include "Reverb.hpp"
 #include "Compressor.hpp"
 #include "Tremolo.hpp"
+#include "Ding.hpp"
 
 #include <QList>
 #include <QAudioFormat>
@@ -33,6 +34,7 @@ private:
 	PortableID &mID;
 	RNG *rng;
 	const double distAmount=1.1;
+	Ding d;
 
 
 public:

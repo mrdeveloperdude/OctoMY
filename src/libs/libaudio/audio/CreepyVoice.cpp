@@ -9,7 +9,8 @@
 
 
 #ifdef OC_USE_LIB_EXT_ESPEAK
-#include "espeak/speak_lib.h"
+#include <espeak-ng/speak_lib.h>
+//#include "espeak/speak_lib.h"
 #endif
 
 
@@ -18,6 +19,7 @@
 
 struct CreepyBuffer {
 	int mSize;
+	quint8 pad[4];
 	short *mBuffer;
 
 	CreepyBuffer(int size)
@@ -49,6 +51,7 @@ CreepyVoice::CreepyVoice(PortableID &id, QObject *parent)
 	, reverb()
 	, mID(id)
 	, rng(RNG::sourceFactory("mt"))
+	, d(440)
 
 {
 	OC_METHODGATE();
@@ -124,7 +127,7 @@ CreepyBuffer *CreepyVoice::getFreeBuffer(int numsamples)
 
 void CreepyVoice::feed(short *wav, int numsamples)
 {
-	#ifdef OC_USE_LIB_EXT_ESPEAK
+#ifdef OC_USE_LIB_EXT_ESPEAK
 	const int numsamples2 = (numsamples * af.sampleRate()) / (mHz == 0 ? 1 : mHz);
 	CreepyBuffer *buffer=getFreeBuffer(numsamples2);
 	if(nullptr!=buffer) {
@@ -139,7 +142,7 @@ void CreepyVoice::feed(short *wav, int numsamples)
 #else
 	Q_UNUSED(wav);
 	Q_UNUSED(numsamples);
-	#endif
+#endif
 }
 
 
@@ -204,6 +207,44 @@ static int synthCallback(short *wav, int numsamples, espeak_EVENT *events)
 }
 #endif
 
+static QString espeakErrorToString(const espeak_ERROR err){
+	switch(err){
+#define espeakErrorToStringStanza(A) case(A):return QStringLiteral(#A); break
+		espeakErrorToStringStanza(EE_OK);
+		espeakErrorToStringStanza(EE_INTERNAL_ERROR);
+		espeakErrorToStringStanza(EE_BUFFER_FULL);
+		espeakErrorToStringStanza(EE_NOT_FOUND);
+#undef espeakErrorToStringStanza
+	};
+	return "UNKNOWN";
+}
+
+
+static QString espeakVoiceToString(const espeak_VOICE *voice){
+	static char genders[4] = {' ','M','F',' '};
+	if(nullptr!=voice){
+		return QString("espeak_VOICE{age=%1, name=%2, gender=%3, variant=%4, languages=%5, identifier=%6}").arg(voice->age).arg(voice->name).arg(genders[voice->gender]).arg(voice->variant).arg(voice->languages).arg(voice->identifier);
+	}else{
+		return QString("espeak_VOICE{NULL}");
+	}
+}
+
+
+static void listVoices(){
+	auto voices=espeak_ListVoices(nullptr);
+	int ct=0;
+	if(nullptr!=voices){
+		const espeak_VOICE *v;
+		for(int ix=0; (v = voices[ix]) != nullptr; ix++){
+			//qDebug()<<espeakVoiceToString(v);
+			ct++;
+		}
+		qDebug()<<"GOT "<<ct<<" voices";
+	}
+	else{
+		qWarning()<<"ERROR: Error fetching list of voices";
+	}
+}
 
 //IAudioSource interface
 void CreepyVoice::init(QAudioFormat f)
@@ -220,24 +261,29 @@ void CreepyVoice::init(QAudioFormat f)
 #ifdef OC_USE_LIB_EXT_ESPEAK
 	mHz = espeak_Initialize(AUDIO_OUTPUT_RETRIEVAL, 10, nullptr, 0);
 	if(mHz >0) {
+		listVoices();
 		espeak_SetSynthCallback(synthCallback);
-		espeak_SetVoiceByName("en");
-
-		/*
+		const unsigned char age=39;
+		espeak_VOICE idealVoice{nullptr, "en-us", nullptr, static_cast<unsigned char>("Male"==mID.gender()?1:0), age, 0, 0, 0, nullptr }, *idealVoiceP=&idealVoice;
+		const espeak_ERROR err=espeak_SetVoiceByProperties(idealVoiceP);
+		if(EE_OK==err){
+			/*
 		 * cool
 		espeak_SetParameter(espeakRATE, 100, 0);
 		espeak_SetParameter(espeakPITCH, 20, 0);
 		espeak_SetParameter(espeakVOLUME, 100, 0);
 		espeak_SetParameter(espeakRANGE, 0, 0);
 		*/
-		espeak_SetParameter(espeakRATE, static_cast<int>(frandGauss()*50.0+90), 0);
-		espeak_SetParameter(espeakPITCH, static_cast<int>(frandGauss()*40.0+50), 0);
-		espeak_SetParameter(espeakVOLUME, 150, 0);
-		espeak_SetParameter(espeakRANGE, 0, 0);
-		espeak_VOICE *voice_spec = espeak_GetCurrentVoice();
-		voice_spec->gender = "Male"==mID.gender()?1:0; //male
-		voice_spec->age = 32; //age in years
-		espeak_SetVoiceByProperties(voice_spec);
+			espeak_SetParameter(espeakRATE, static_cast<int>(frandGauss()*50.0+90), 0);
+			espeak_SetParameter(espeakPITCH, static_cast<int>(frandGauss()*40.0+50), 0);
+			espeak_SetParameter(espeakVOLUME, 150, 0);
+			espeak_SetParameter(espeakRANGE, 0, 0);
+			auto actualVoiceP=espeak_GetCurrentVoice();
+			qDebug()<<"Set espeak voice by spec: "<<  espeakVoiceToString(idealVoiceP)<<", actual="<<espeakVoiceToString(actualVoiceP);
+		}
+		else{
+			qWarning()<<"ERROR: Could not set espeak voice by spec: "<<espeakErrorToString(err)<<" ("<<  espeakVoiceToString(idealVoiceP) <<")";
+		}
 	} else {
 		qWarning()<<"ERROR: Could not initialize espeak";
 	}
@@ -252,36 +298,36 @@ void CreepyVoice::init(QAudioFormat f)
 	int rsr=af.sampleRate()*OUTPUT_CHANNELS;
 	reverb.init(rsr);;
 	reverb.
-	//Castle
+			//Castle
 
-	LoadPreset(static_cast<int>(25.0+frandGauss()*100)
-			   , 8.3+frandGauss()*20.0
-			   , 0.890+frandGauss()*0.3
-			   , static_cast<int>(-1000.0+frandGauss()*100.0)
-			   , static_cast<int>(-200.0-frandGauss()*100.0)
-			   , static_cast<int>(-2000.0+frandGauss()*600.0)
-			   , 1.22+frandGauss()*0.2
-			   , 0.83+frandGauss()*0.1
-			   , 0.31+frandGauss()*0.1
-			   , static_cast<int>(-100.0-frandGauss()*10.0)
-			   , 0.022+frandGauss()*0.002
-			   , 0.0+frandGaussAbs()
-			   , 0.0+frandGaussAbs()
-			   , 0.0+frandGaussAbs()
-			   , static_cast<int>(600.0+frandGauss()*100.0)
-			   , 0.011+frandGauss()*0.001
-			   , 0.0+frandGaussAbs()
-			   , 0.0+frandGaussAbs()
-			   , 0.0+frandGaussAbs()
-			   , 0.138+frandGauss()*0.01
-			   , 0.080+frandGauss()*0.01
-			   , 0.250+frandGauss()*0.1
-			   , 0.0+frandGaussAbs()
-			   , -5.0-frandGauss()*0.1
-			   , 5168.6+frandGauss()*500
-			   , 139.5+frandGauss()*13.0
-			   , 0.0+frandGaussAbs()
-			   , 0x20);
+			LoadPreset(static_cast<int>(25.0+frandGauss()*100)
+					   , 8.3+frandGauss()*20.0
+					   , 0.890+frandGauss()*0.3
+					   , static_cast<int>(-1000.0+frandGauss()*100.0)
+					   , static_cast<int>(-200.0-frandGauss()*100.0)
+					   , static_cast<int>(-2000.0+frandGauss()*600.0)
+					   , 1.22+frandGauss()*0.2
+					   , 0.83+frandGauss()*0.1
+					   , 0.31+frandGauss()*0.1
+					   , static_cast<int>(-100.0-frandGauss()*10.0)
+					   , 0.022+frandGauss()*0.002
+					   , 0.0+frandGaussAbs()
+					   , 0.0+frandGaussAbs()
+					   , 0.0+frandGaussAbs()
+					   , static_cast<int>(600.0+frandGauss()*100.0)
+					   , 0.011+frandGauss()*0.001
+					   , 0.0+frandGaussAbs()
+					   , 0.0+frandGaussAbs()
+					   , 0.0+frandGaussAbs()
+					   , 0.138+frandGauss()*0.01
+					   , 0.080+frandGauss()*0.01
+					   , 0.250+frandGauss()*0.1
+					   , 0.0+frandGaussAbs()
+					   , -5.0-frandGauss()*0.1
+					   , 5168.6+frandGauss()*500
+					   , 139.5+frandGauss()*13.0
+					   , 0.0+frandGaussAbs()
+					   , 0x20);
 
 	//LoadPreset(26.0f, 8.3f, 0.890f, -1000.0f, -800.0f, -2000.0f, 1.22f, 0.83f, 0.31f, -100.0f, 0.022f, 0.0f, 0.0f, 0.0f, 600.0f, 0.011f, 0.0f, 0.0f, 0.0f, 0.138f, 0.080f, 0.250f, 0.0f, -5.0f, 5168.6f, 139.5f, 0.0f, 0x20);
 	//stadium
@@ -290,10 +336,11 @@ void CreepyVoice::init(QAudioFormat f)
 	//LoadPreset(26, 19.6f, 0.940f, -1000, -200, -700, 5.04f, 1.12f, 0.56f, -1230, 0.020f, 0.0f, 0.0f, 0.0f, 200, 0.029f, 0.0f, 0.0f, 0.0f, 0.250f, 0.080f, 2.742f, 0.050f, -2.0f, 5000.0f, 250.0f, 0.0f, 0x3f);
 	//sewer
 	//LoadPreset(21, 1.7f, 0.800f, -1000, -1000, 0, 2.81f, 0.14f, 1.0f, 429, 0.014f, 0.0f, 0.0f, 0.0f, 1023, 0.021f, 0.0f, 0.0f, 0.0f, 0.250f, 0.0f, 0.250f, 0.0f, -5.0f, 5000.0f, 250.0f, 0.0f, 0x3f);
-//Crazy
-//		LoadPreset(25, 1.0f, 0.500f, -1000, -151, 0, 7.56f, 0.91f, 1.0f, -626, 0.020f, 0.0f, 0.0f, 0.0f, 774, 0.030f, 0.0f, 0.0f, 0.0f, 0.250f, 0.0f, 4.0f, 1.0f, -5.0f, 5000.0f, 250.0f, 0.0f, 0x1f);
+	//Crazy
+	//		LoadPreset(25, 1.0f, 0.500f, -1000, -151, 0, 7.56f, 0.91f, 1.0f, -626, 0.020f, 0.0f, 0.0f, 0.0f, 774, 0.030f, 0.0f, 0.0f, 0.0f, 0.250f, 0.0f, 4.0f, 1.0f, -5.0f, 5000.0f, 250.0f, 0.0f, 0x1f);
 	reverb.Update(rsr);
 
+	d.trigger();
 	mInited=true;
 
 }
@@ -310,7 +357,7 @@ void CreepyVoice::generate(qint64 num, double *out)
 					bac=0;
 				}
 			}
-			double sam=0.0;
+			double sam=d.process();
 			if(nullptr!=cur) {
 				sam=cur->mBuffer[bac];
 				sam/=static_cast<double>(0xFFFF);
@@ -346,15 +393,15 @@ void CreepyVoice::generate(qint64 num, double *out)
 			out[i]=sam;
 		}
 
-		reverb.Process(static_cast<quint32>(num),out,floatSamplesOut);
+		reverb.Process(static_cast<quint32>(num), out, floatSamplesOut);
 		for(int i=0; i<num; ++i) {
 			out[i]=(out[i]+floatSamplesOut[i])*0.8;
 		}
 
-		tremolo.process(num,out,floatSamplesOut);
+		tremolo.process(num, out, floatSamplesOut);
 
 
-		comp.process(num,floatSamplesOut,out);
+		comp.process(num, floatSamplesOut,out);
 	}
 
 }
