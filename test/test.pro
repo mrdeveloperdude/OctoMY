@@ -17,6 +17,8 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 
 	message(ADDING BASIC TESTS TO BUILD)
 	TEST_PROJECTS+= \
+		testStore \
+		testStore \
 		testAddressBook \
 		testAddressList \
 		testAgentStateCourier \
