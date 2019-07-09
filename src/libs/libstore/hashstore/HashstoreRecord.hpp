@@ -35,6 +35,7 @@ private:
 public:
 	inline HashstoreRecord() Q_DECL_NOTHROW{}
 	virtual ~HashstoreRecord() {}
+
 public:
 	explicit HashstoreRecord(Hashstore &storage, const QString key);
 	explicit HashstoreRecord(HashstoreRecordPrivate &dd);
@@ -48,6 +49,7 @@ public:
 
 	friend void swap(HashstoreRecord& first, HashstoreRecord& second) /* nothrow */;
 
+public:
 	inline bool keyExists();
 	inline bool inMemory();
 	inline bool onDisk();
@@ -57,11 +59,13 @@ private:
 	void allocateOnDisk();
 	void loadFromDisk();
 	void saveToDisk();
+
 public:
 	Hashstore &storage();
 	const QString key();
 	HashstoreRecordState state();
 
+public:
 	bool put(const QByteArray &value);
 	QByteArray get();
 

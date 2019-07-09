@@ -27,4 +27,5 @@ class HashstoreRecordState{
 		inline bool diskSynced()const {return (flags&8)>0;} // Has disk been synchronized since latest incarnation of data for this record was stored safely on disk?
 };
 
-#endif // HASHSTORERECORDSTATE_HPP
+#endif
+// HASHSTORERECORDSTATE_HPP
