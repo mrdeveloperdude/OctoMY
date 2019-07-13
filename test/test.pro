@@ -17,8 +17,6 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 
 	message(ADDING BASIC TESTS TO BUILD)
 	TEST_PROJECTS+= \
-		testStore \
-		testStore \
 		testAddressBook \
 		testAddressList \
 		testAgentStateCourier \
@@ -62,6 +60,7 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testServiceManager \
 		testServotor32Controller \
 		testSimpleDataStore \
+		testStore \
 		testStreamCodec \
 		testSyncParameter \
 		testTaskQueue \
@@ -118,7 +117,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 ##		testCreepyVoice ## CONDITONAL \
 #		testDeliveryWizard \
 #		testDiscovery \
-		testESpeak ## CONDITONAL \
+#		testESpeak ## CONDITONAL \
 #		testEventSourcing \
 #		testEyesWidget \
 #		testFivePhase \
@@ -146,6 +145,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testServiceManager \
 #		testServotor32Controller \
 #		testSimpleDataStore \
+		testStore \
 #		testStreamCodec \
 #		testSyncParameter \
 #		testTaskQueue \

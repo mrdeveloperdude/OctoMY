@@ -36,4 +36,5 @@ AgentMobilityType AgentMobilityTypeFromString(QString s);
 
 
 
-#endif // AGENTMOBILITYTYPE_HPP
+#endif
+// AGENTMOBILITYTYPE_HPP
