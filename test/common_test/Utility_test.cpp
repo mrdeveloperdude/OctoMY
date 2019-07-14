@@ -48,7 +48,7 @@ void test::utility::testHeading(QString msg, QString ch)
 	auto full=80-4;
 	auto half=(full-sz)/2;
 	auto second=full-sz-half;
-	testWaitForEvents();
+	test::utility::testWaitForEvents();
 	qDebug()<<"";
 	qDebug()<<"";
 	qDebug().nospace().noquote()<<QString(ch).repeated(half)<< " # "<<msg << " # "<<QString(ch).repeated(second);

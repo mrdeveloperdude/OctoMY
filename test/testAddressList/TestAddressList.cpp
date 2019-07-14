@@ -8,6 +8,7 @@
 
 #include "utility/time/HumanTime.hpp"
 
+
 void TestAddressList::testAddressEntry()
 {
 	const QString ip="10.1.2.3";
@@ -160,15 +161,15 @@ void TestAddressList::testAddressListHighscore()
 	QCOMPARE(list.isValid(true), true);
 	QCOMPARE(list.isValid(false), true);
 
+	// NOTE: ae4 is invalid thus we shanln't get a good result here
 	list.add(ae4);
-	QCOMPARE(list.size(), static_cast<int>(4));
-	QCOMPARE(list.isValid(true), false);
+	QCOMPARE(list.size(), static_cast<int>(3));
+	QCOMPARE(list.isValid(true), true);
 	QCOMPARE(list.isValid(false), true);
 
-	//NOTE: ae4 is invalid thus we shanln't get a good result here
 	ae4->lastSuccess=2;
 	auto hs=list.highestScore();
-	QCOMPARE(hs.isNull(), true);
+	QCOMPARE(hs.isNull(), false);
 
 	ae3->lastSuccess=3;
 	QCOMPARE(list.highestScore().isNull(), false);

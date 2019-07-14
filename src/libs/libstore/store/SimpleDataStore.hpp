@@ -66,7 +66,8 @@ public:
 
 public:
 	void setSynchronousMode(bool s);
-	bool ensureStore() const;
+	bool ensureStoreConfigured() const;
+	bool ensureStoreActive() const;
 
 	QString filename()  const;
 	bool fileExists()  const;
@@ -94,7 +95,7 @@ template <typename F>
 void SimpleDataStore::status(F callBack)
 {
 	OC_METHODGATE();
-	if(ensureStore()) {
+	if(ensureStoreActive()) {
 		mStore->status().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
 			const bool ok=ase.isSuccessfull();
@@ -109,7 +110,7 @@ template <typename F>
 void SimpleDataStore::clear(F callBack)
 {
 	OC_METHODGATE();
-	if(ensureStore()) {
+	if(ensureStoreActive()) {
 		mStore->clear().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
 			const bool ok=ase.isSuccessfull();
@@ -129,7 +130,7 @@ template <typename F>
 void SimpleDataStore::save(F callBack)
 {
 	OC_METHODGATE();
-	if(ensureStore()) {
+	if(ensureStoreActive()) {
 		mStore->save().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
 			const bool ok=ase.isSuccessfull();
@@ -144,7 +145,7 @@ template <typename F>
 void SimpleDataStore::load(F callBack)
 {
 	OC_METHODGATE();
-	if(ensureStore()) {
+	if(ensureStoreActive()) {
 		mStore->load().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
 			const bool ok=ase.isSuccessfull();
@@ -159,7 +160,7 @@ template <typename F>
 void SimpleDataStore::synchronize(F callBack)
 {
 	OC_METHODGATE();
-	if(ensureStore()) {
+	if(ensureStoreActive()) {
 		mStore->synchronize().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
 			const bool ok=ase.isSuccessfull();

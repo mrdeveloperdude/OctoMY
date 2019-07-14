@@ -182,8 +182,7 @@ NodeRole Associate::role() const
 	return mRole;
 }
 
-
-bool Associate::isValidForClient(bool onlyPublic)
+bool Associate::isValidForClient()
 {
 	OC_METHODGATE();
 	//const bool keyValid=mKey.isValid(onlyPublic);
@@ -191,13 +190,13 @@ bool Associate::isValidForClient(bool onlyPublic)
 	const bool listValid=mAddressList.isValid(false);
 	const bool out=( /*keyValid && */ listValid );
 	if(!out) {
-		qDebug()<<"keyValid(onlyPublic="<<onlyPublic<< ")=" /*<<keyValid<<*/ ", listValid()="<<listValid;
+		qDebug()<<"keyValid()=" /*<<keyValid<<*/ ", listValid()="<<listValid;
 	}
 	return out;
 }
 
 
-bool Associate::isValidForLocalIdentity(bool onlyPublic)
+bool Associate::isValidForLocalIdentity()
 {
 	OC_METHODGATE();
 	//const bool keyValid=mKey.isValid(onlyPublic);
@@ -205,7 +204,7 @@ bool Associate::isValidForLocalIdentity(bool onlyPublic)
 	const bool listValid=true;
 	const bool out=( /* keyValid &&  */ listValid );
 	if(!out) {
-		qDebug()<<"keyValid(onlyPublic="<<onlyPublic<< ")=" /*<<keyValid<<*/ ", listValid()="<<listValid;
+		qDebug()<<"keyValid()=" /*<<keyValid<<*/ ", listValid()="<<listValid;
 	}
 	return out;
 }
@@ -215,7 +214,7 @@ bool Associate::isValidForServer()
 {
 	OC_METHODGATE();
 	const bool pinsEmpty=mPins.isEmpty();
-	const bool validForClient=isValidForClient(true);
+	const bool validForClient=isValidForClient();
 	const bool out= (!pinsEmpty) && validForClient;
 	if(!out) {
 		qDebug()<<"pinsEmpty()="<<pinsEmpty<<", validForClient()="<<validForClient;

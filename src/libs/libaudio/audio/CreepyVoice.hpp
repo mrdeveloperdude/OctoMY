@@ -6,20 +6,14 @@
 #include "Reverb.hpp"
 #include "Compressor.hpp"
 #include "Tremolo.hpp"
-
-
-#ifdef OC_USE_LIB_EXT_ESPEAK
-#include "espeak/speak_lib.h"
-#endif
+#include "Ding.hpp"
 
 #include <QList>
 #include <QAudioFormat>
 
-
 struct CreepyBuffer;
 class RNG;
 class PortableID;
-
 
 class CreepyVoice: public QObject, public IAudioSource
 {
@@ -40,29 +34,26 @@ private:
 	PortableID &mID;
 	RNG *rng;
 	const double distAmount=1.1;
+	Ding d;
 
 
 public:
 	explicit CreepyVoice(PortableID &id, QObject *parent=nullptr);
-	virtual ~CreepyVoice();
+	virtual ~CreepyVoice() Q_DECL_OVERRIDE;
 
 private:
-
 	double frandGauss();
 	double frandGaussAbs();
-
 	void freeBuffer(CreepyBuffer *buf);
 	CreepyBuffer *getFreeBuffer(int numsamples);
+
 public:
-#ifdef OC_USE_LIB_EXT_ESPEAK
-	void feed(short *wav, int numsamples, espeak_EVENT *events);
-#endif
+	void feed(short *wav, int numsamples);
 	bool isInitialized();
 	void speak(QString word);
 	void deinit();
 
 	static bool voiceIsAvailable();
-
 
 	//IAudioSource interface
 public:
@@ -70,9 +61,9 @@ public:
 	void generate(qint64 num, double *out)  Q_DECL_OVERRIDE;
 
 signals:
-
 	void periodComplete();
 };
 
 
-#endif // CREEPYVOICE_HPP
+#endif
+// CREEPYVOICE_HPP

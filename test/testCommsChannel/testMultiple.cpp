@@ -2,6 +2,9 @@
 
 #include "CommsTester.hpp"
 
+#include "utility/time/HumanTime.hpp"
+
+#include <QSharedPointer>
 /*
 Sets up X commchannels and have them sending data
 via courier to a random but deterministically selected subset of X.
@@ -17,18 +20,19 @@ void TestCommsChannel::testMultiple()
 	qRegisterMetaType<QHostAddress>("QHostAddress");
 	qRegisterMetaType<QByteArray>("QByteArray");
 	const QHostAddress local("127.0.0.1");
-	const quint16 basePort=54345;
+	//const quint16 basePort=54345;
 	const quint16 portRange=2;
-	const quint16 testCount=2;
+	//const quint16 testCount=2;
 	QList<CommsTester *> senders;
 	CommsCarrierUDP carrier;
 	KeyStore keyStore;
 	qDebug()<<"####################################### INITIALIZING";
 	for(quint16 i=0; i<portRange; ++i) {
-		const quint16 tport=basePort+i;
+		//const quint16 tport=basePort+i;
 		QString peersFilenameB;
 		Key keyB;
-		AddressBook peersB(peersFilenameB);
+		QSharedPointer<AddressBook> peersB(OC_NEW AddressBook());
+		peersB->configure(peersFilenameB);
 //		peersB.bootstrap(false,false);
 		QVariantMap peerMapB;
 		QString nameB="PARTY B";
@@ -70,10 +74,10 @@ void TestCommsChannel::testMultiple()
 		qApp->processEvents();
 		qDebug()<<" + WAIT OVER FOR CourierTester "<<senders[i]->toString()<<" * * * * * * << GOT "<<spy.count()<<" FINISH SIGNALS";
 	}
-	const quint64 start=utility::currentMsecsSinceEpoch<quint64>();
+	const quint64 start=utility::time::currentMsecsSinceEpoch<quint64>();
 	quint64 now=start;
 	while(now<start+3000) {
-		now=utility::currentMsecsSinceEpoch<quint64>();
+		now=utility::time::currentMsecsSinceEpoch<quint64>();
 		QCoreApplication::processEvents();
 	}
 	qDebug()<<"####################################### DELETING";

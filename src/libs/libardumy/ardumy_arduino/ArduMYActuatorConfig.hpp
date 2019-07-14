@@ -253,4 +253,5 @@ bool operator!= (const ArduMYActuatorConfig &a, const ArduMYActuatorConfig &b);
 
 
 
-#endif // ACTUATORCONFIG_HPP
+#endif
+// ACTUATORCONFIG_HPP

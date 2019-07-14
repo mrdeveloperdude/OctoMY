@@ -29,11 +29,10 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testCommsChannel \
 		testCommsSession \
 		testConcurrentQueue \
-		testCreepyVoice \
-		testDataStore \
+#		testCreepyVoice ## CONDITONAL \
 		testDeliveryWizard \
 		testDiscovery \
-		testESpeak \
+#		testESpeak ## CONDITONAL \
 		testEventSourcing \
 		testEyesWidget \
 		testFivePhase \
@@ -52,7 +51,7 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testNetworkAddress \
 		testNetworkSettingsWidget \
 		testNodeTypeRole \
-		testOpenCL \
+#		testOpenCL ## CONDITONAL \
 		testParser \
 		testPortableID \
 		testPoseMappingWidget \
@@ -61,6 +60,7 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testServiceManager \
 		testServotor32Controller \
 		testSimpleDataStore \
+		testStore \
 		testStreamCodec \
 		testSyncParameter \
 		testTaskQueue \
@@ -71,15 +71,11 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 		testZooComms \
 
 
-
-
-
 	# NOTE: OC_USE_LIB_EXT_OPENCL is enabled when useful in local_override.pri
 	contains(DEFINES, OC_USE_LIB_EXT_OPENCL){
 	message(ADDING 'OPENCL' TESTS TO BUILD)
 	TEST_PROJECTS+= \
 		testOpenCL \
-
 	}
 
 
@@ -106,7 +102,7 @@ contains(DEFINES, OC_USE_TESTS_WEB){
 contains(DEFINES, OC_USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
-		testAddressBook \
+#		testAddressBook \
 #		testAddressList \
 #		testAgentStateCourier \
 #		testArduMY \
@@ -118,11 +114,10 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testCommsChannel \
 #		testCommsSession \
 #		testConcurrentQueue \
-#		testCreepyVoice \
-#		testDataStore \
+##		testCreepyVoice ## CONDITONAL \
 #		testDeliveryWizard \
 #		testDiscovery \
-#		testESpeak \
+#		testESpeak ## CONDITONAL \
 #		testEventSourcing \
 #		testEyesWidget \
 #		testFivePhase \
@@ -130,7 +125,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testHashstore \
 #		testHoneymoonScheduler \
 #		testIDDuel \
-#		testIdenticon \
+##		testIdenticon \
 #		testIrisRendrer \
 #		testKey \
 #		testKeyStore \
@@ -141,7 +136,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testNetworkAddress \
 #		testNetworkSettingsWidget \
 #		testNodeTypeRole \
-#		testOpenCL \
+#		testOpenCL ## CONDITONAL \
 #		testParser \
 #		testPortableID \
 #		testPoseMappingWidget \
@@ -150,6 +145,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testServiceManager \
 #		testServotor32Controller \
 #		testSimpleDataStore \
+		testStore \
 #		testStreamCodec \
 #		testSyncParameter \
 #		testTaskQueue \

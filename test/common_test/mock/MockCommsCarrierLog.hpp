@@ -20,6 +20,7 @@ public slots:
 	void onCarrierError(const QString err);
 	void onCarrierSendingOpportunity(const quint64 now);
 	void onCarrierConnectionStatusChanged(const bool connected);
+
 };
 
 

@@ -1,9 +1,10 @@
  #include "TestCommsChannel.hpp"
 
-#include "../common/mock/MockCourier.hpp"
+#include "../common_test/mock/MockCourier.hpp"
 
-#include "../common/Utilities.hpp"
+#include "../common_test/Utility_test.hpp"
 
+#include "utility/time/HumanTime.hpp"
 
 #include <QTest>
 /*
@@ -24,10 +25,10 @@ void TestCommsChannel::testSingle()
 	const qint16 keyBits=128;
 	const QCryptographicHash::Algorithm hashAlgo=QCryptographicHash::Md5;
 	const KeySecurityPolicy quickAndInsecurePolicy(keyBits, hashAlgo);
-	const quint64 now=utility::currentMsecsSinceEpoch<quint64>();
+	const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
 
 
-	testHeading("PARAMETER SUMMARY");
+	test::utility::testHeading("PARAMETER SUMMARY");
 	qDebug()<<"  + localhost: "<<local;
 	qDebug()<<"  + basePort:  "<<basePort;
 	qDebug()<<"  + maxSends:  "<<maxSends;
@@ -36,7 +37,7 @@ void TestCommsChannel::testSingle()
 	qDebug()<<"  + hashAlgo:  "<<hashAlgo;
 	qDebug()<<"  + now:       "<<now;
 
-	testHeading("INITIALIZING ID FOR PARTY A");/////////////////////////////////////////////
+	test::utility::testHeading("INITIALIZING ID FOR PARTY A");/////////////////////////////////////////////
 	QString keyStoreFilenameA="keyFileA.json";
 	QFile keyStoreFileA(keyStoreFilenameA);
 	if(keyStoreFileA.exists()) {
@@ -44,15 +45,16 @@ void TestCommsChannel::testSingle()
 	}
 	QVERIFY(!keyStoreFileA.exists());
 
-	KeyStore keyStoreA(keyStoreFilenameA, true, quickAndInsecurePolicy);
+	QSharedPointer<KeyStore> keyStoreA(OC_NEW KeyStore());
+	keyStoreA->configure(keyStoreFilenameA, true, quickAndInsecurePolicy);
 
 
 	QVERIFY(!keyStoreFileA.exists());
 
-	keyStoreA.waitForSync();
+	keyStoreA->waitForSync();
 	QVERIFY(keyStoreFileA.exists());
 
-	auto keyA=keyStoreA.localKey();
+	auto keyA=keyStoreA->localKey();
 	QVERIFY(!keyA.isNull());
 	qDebug() << keyA->toString();
 	QVERIFY(keyA->isValid(true));
@@ -60,7 +62,7 @@ void TestCommsChannel::testSingle()
 	QVERIFY(keyA->hasPublic(true));
 
 	QString idA=keyA->id();
-	qDebug()<<"Keystore A :"<<idA<<QFileInfo(keyStoreA.filename()).absoluteFilePath();
+	qDebug()<<"Keystore A :"<<idA<<QFileInfo(keyStoreA->filename()).absoluteFilePath();
 	NetworkAddress addrA(local, basePort + 0);
 	QString peersFilenameA="peersFileA.json";
 	QFile peersFileA(peersFilenameA);
@@ -68,27 +70,29 @@ void TestCommsChannel::testSingle()
 		QVERIFY(peersFileA.remove());
 	}
 	QVERIFY(!peersFileA.exists());
-	AddressBook peersA(peersFilenameA);
+	QSharedPointer<AddressBook> peersA(OC_NEW AddressBook());
+	peersA->configure(peersFilenameA);
 
 	QString nameA="PARTY A";
 	QSharedPointer<Associate> partA=generatePart(nameA, keyA, addrA, ROLE_AGENT, TYPE_AGENT);
 
-	testHeading("INITIALIZING ID FOR PARTY B");////////////////////////////////////////////////
+	test::utility::testHeading("INITIALIZING ID FOR PARTY B");////////////////////////////////////////////////
 	QString keyStoreFilenameB="keyFileB.json";
 	QFile keyStoreFileB(keyStoreFilenameB);
 	if(keyStoreFileB.exists()) {
 		QVERIFY(keyStoreFileB.remove());
 	}
 	QVERIFY(!keyStoreFileB.exists());
-	KeyStore keyStoreB(keyStoreFilenameB, true, quickAndInsecurePolicy);
+	QSharedPointer<KeyStore> keyStoreB(OC_NEW KeyStore());
+	keyStoreB->configure(keyStoreFilenameB, true, quickAndInsecurePolicy);
 
 
 	QVERIFY(!keyStoreFileB.exists());
 
-	keyStoreB.waitForSync();
+	keyStoreB->waitForSync();
 	QVERIFY(keyStoreFileB.exists());
 
-	auto keyB=keyStoreB.localKey();
+	auto keyB=keyStoreB->localKey();
 	QVERIFY(nullptr!=keyB);
 	qDebug() << keyB->toString();
 	QVERIFY(keyB->isValid(true));
@@ -96,7 +100,7 @@ void TestCommsChannel::testSingle()
 	QVERIFY(keyB->hasPublic(true));
 
 	QString idB=keyB->id();
-	qDebug()<<"Keystore B :"<<idB<<QFileInfo(keyStoreB.filename()).absoluteFilePath();
+	qDebug()<<"Keystore B :"<<idB<<QFileInfo(keyStoreB->filename()).absoluteFilePath();
 	NetworkAddress addrB(local, basePort + 1);
 	QString peersFilenameB="peersFileB.json";
 	QFile peersFileB(peersFilenameB);
@@ -105,7 +109,8 @@ void TestCommsChannel::testSingle()
 	}
 	QVERIFY(!peersFileB.exists());
 
-	AddressBook peersB(peersFilenameB);
+	QSharedPointer<AddressBook> peersB(OC_NEW AddressBook());
+	peersB->configure(peersFilenameB);
 
 	QString nameB="PARTY B";
 	QVariantMap addrBMap=addrB.toVariantMap();
@@ -113,72 +118,76 @@ void TestCommsChannel::testSingle()
 	QSharedPointer<Associate> partB=generatePart(nameB, keyB, addrB, ROLE_CONTROL, TYPE_REMOTE);
 
 
-	testHeading("BIND PARTY A to B");////////////////////////////////////////////////
-	partA->addTrust(idB);
-	peersA.upsertAssociate(partB);
+	test::utility::testHeading("BIND PARTY A to B");////////////////////////////////////////////////
+	partA->trusts().addTrust(idB);
+	peersA->upsertAssociate(partB);
 	qDebug()<<"IDB="<<idB;
-	keyStoreA.setPubKeyForID(keyB->pubKey());
+	keyStoreA->setPubKeyForID(keyB->pubKey());
 
 
-	testHeading("BIND PARTY B to A");/////////////////////////////////////////////////
-	partB->addTrust(idA);
-	peersB.upsertAssociate(partA);
-	keyStoreB.setPubKeyForID(keyA->pubKey());
+	test::utility::testHeading("BIND PARTY B to A");/////////////////////////////////////////////////
+	partB->trusts().addTrust(idA);
+	peersB->upsertAssociate(partA);
+	keyStoreB->setPubKeyForID(keyA->pubKey());
 
 
-	testHeading("INITIALIZING COMMS FOR PARTY A");///////////////////////////////////
-	CommsCarrierUDP carrierA;
-	CommsChannel chanA(carrierA,keyStoreA, peersA);
+	test::utility::testHeading("INITIALIZING COMMS FOR PARTY A");///////////////////////////////////
+	QSharedPointer<CommsCarrierUDP> carrierA(OC_NEW CommsCarrierUDP());
+	carrierA->configure();
+	QSharedPointer<CommsChannel> chanA(OC_NEW CommsChannel());
+	chanA->configure(carrierA,keyStoreA, peersA);
 	CommsSignalLogger sigLogA("LOG-A");
-	chanA.setHookCommsSignals(sigLogA, true);
+	chanA->hookCommsSignals(sigLogA, true);
 	QSharedPointer<MockCourier> courA1(OC_NEW MockCourier("Courier A1",idB, "This is datagram A1 123", chanA, maxSends, maxRecs));
-	chanA.setCourierRegistered(courA1, true);
+	chanA->registerCourier(courA1, true);
 
 	//TestCourier courA2("Courier A2", commSigB, "This is datagram A2 uvw xyz", maxSends, maxRecs); chanA.setCourierRegistered(courA2, true);
-	qDebug()<<"SUMMARY: "<<chanA.getSummary();
+	qDebug()<<"SUMMARY: "<<chanA->getSummary();
 
-	testHeading("INITIALIZING COMMS FOR PARTY B");//////////////////////////////////
-	CommsCarrierUDP carrierB;
-	CommsChannel chanB(carrierB, keyStoreB, peersB);
+	test::utility::testHeading ("INITIALIZING COMMS FOR PARTY B");//////////////////////////////////
+	QSharedPointer<CommsCarrierUDP> carrierB(OC_NEW CommsCarrierUDP());
+	carrierB->configure();
+	QSharedPointer<CommsChannel> chanB(OC_NEW CommsChannel());
+	chanB->configure(carrierB, keyStoreB, peersB);
 	CommsSignalLogger sigLogB("LOG-B");
-	chanA.setHookCommsSignals(sigLogB, true);
+	chanA->hookCommsSignals(sigLogB, true);
 	QSharedPointer<MockCourier> courB1(OC_NEW MockCourier("Courier B1", idA, "This is datagram B1 æøåä", chanB, maxSends, maxRecs));
-	chanB.setCourierRegistered(courB1, true);
+	chanB->registerCourier(courB1, true);
 	//TestCourier courB2("Courier B2", commSigA, "This is datagram B2 Q", maxSends, maxRecs); chanB.setCourierRegistered(courB2, true);
-	qDebug()<<"SUMMARY: "<<chanB.getSummary();
+	qDebug()<<"SUMMARY: "<<chanB->getSummary();
 
-	testHeading("STARTING 1st time with no sessions","#");//////////////////////////////////
-	chanA.rescheduleSending(now);
-	chanA.carrier().setListenAddress(addrA);
-	chanA.carrier().setStarted(true);
-	chanB.rescheduleSending(now+1000);
-	chanB.carrier().setListenAddress(addrB);
-	chanB.carrier().setStarted(true);
+	test::utility::testHeading("STARTING 1st time with no sessions","#");//////////////////////////////////
+	chanA->rescheduleSending(now);
+	chanA->carrier()->setListenAddress(addrA);
+	chanA->carrier()->maintainConnection(true);
+	chanB->rescheduleSending(now+1000);
+	chanB->carrier()->setListenAddress(addrB);
+	chanB->carrier()->maintainConnection(true);
 
-	testHeading("WAITING 1st time with no sessions");///////////////////////////////
+	test::utility::testHeading("WAITING 1st time with no sessions");///////////////////////////////
 	{
-		quint64 now=utility::currentMsecsSinceEpoch<quint64>();
+		quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
 		const quint64 end=now+15000;
 		while(now<end) {
 			//qDebug()<<" * * * Tick Tock.....................";
-			now=utility::currentMsecsSinceEpoch<quint64>();
+			now=utility::time::currentMsecsSinceEpoch<quint64>();
 			QCoreApplication::processEvents();
 		}
 	}
 
-	testHeading("SUMMARIES 1st time with no sessions");//////////////////////////////
+	test::utility::testHeading("SUMMARIES 1st time with no sessions");//////////////////////////////
 	courA1->writeSummary();
 	courB1->writeSummary();
 
-	testHeading("STOP 1st time with no sessions");///////////////////////////////////
-	chanA.carrier().setStarted(false);
-	chanB.carrier().setStarted(false);
+	test::utility::testHeading("STOP 1st time with no sessions");///////////////////////////////////
+	chanA->carrier()->maintainConnection(false);
+	chanB->carrier()->maintainConnection(false);
 
-	CommsSessionDirectory & sessDirA=chanA.sessions();
-	CommsSessionDirectory & sessDirB=chanB.sessions();
+	CommsSessionDirectory & sessDirA=chanA->sessions();
+	CommsSessionDirectory & sessDirB=chanB->sessions();
 
-	QSharedPointer<CommsSession> sessA=QSharedPointer<CommsSession> (OC_NEW CommsSession(keyStoreA.localKey()));
-	QSharedPointer<CommsSession> sessB=QSharedPointer<CommsSession> (OC_NEW CommsSession(keyStoreB.localKey()));
+	QSharedPointer<CommsSession> sessA=QSharedPointer<CommsSession> (OC_NEW CommsSession(keyStoreA->localKey()));
+	QSharedPointer<CommsSession> sessB=QSharedPointer<CommsSession> (OC_NEW CommsSession(keyStoreB->localKey()));
 
 	QVERIFY(nullptr != sessA);
 	QVERIFY(nullptr != sessB);
@@ -195,36 +204,38 @@ void TestCommsChannel::testSingle()
 	sessDirA.insert(sessB);
 	sessDirB.insert(sessA);
 
-	testHeading("SESSION SUMMARIES");/////////////////////////////////////////////////////
+	test::utility::testHeading("SESSION SUMMARIES");/////////////////////////////////////////////////////
 	qDebug()<<"SUM A: "<<sessDirA.summary();
 	qDebug()<<"SUM B: "<<sessDirB.summary();
 
 
-	testHeading("STARTING 2nd time with sessions","#");///////////////////////////////////////////
-	chanA.rescheduleSending(now);
-	chanA.carrier().setListenAddress(addrA);
-	QVERIFY(chanA.carrier().setStarted(true));
+	test::utility::testHeading("STARTING 2nd time with sessions","#");///////////////////////////////////////////
+	chanA->rescheduleSending(now);
+	chanA->carrier()->setListenAddress(addrA);
+	chanA->carrier()->maintainConnection(true);
+	QVERIFY(chanA->carrier()->isConnectionMaintained());
 
-	chanB.rescheduleSending(now);
-	chanB.carrier().setListenAddress(addrB);
-	QVERIFY(chanB.carrier().setStarted(true));
+	chanB->rescheduleSending(now);
+	chanB->carrier()->setListenAddress(addrB);
+	chanB->carrier()->maintainConnection(true);
+	QVERIFY(chanB->carrier()->isConnectionMaintained());
 
 	qDebug()<<"";
 	qDebug()<<"####################################### WAITING 2nd time with sessions";
 	{
-		const quint64 start=utility::currentMsecsSinceEpoch<quint64>();
+		const quint64 start=utility::time::currentMsecsSinceEpoch<quint64>();
 		quint64 now=start;
 		while(now<start+10000) {
-			now=utility::currentMsecsSinceEpoch<quint64>();
+			now=utility::time::currentMsecsSinceEpoch<quint64>();
 			QCoreApplication::processEvents();
 		}
 	}
 
-	testHeading("SUMMARIES 2nd time with sessions");////////////////////////////////////////////
+	test::utility::testHeading("SUMMARIES 2nd time with sessions");////////////////////////////////////////////
 	courA1->writeSummary();
 	courB1->writeSummary();
 
 
-	testHeading("DELETING");///////////////////////////////////////////////////////////
+	test::utility::testHeading("DELETING");///////////////////////////////////////////////////////////
 
 }

@@ -10,7 +10,6 @@
 
 
 AppContext::AppContext(QSharedPointer<AppCommandLineParser> commandlineOptions, QProcessEnvironment environment, QString base, bool headless/*, QObject *parent*/)
-	//: QObject				(parent)
 	: mCommandlineOptions	(commandlineOptions)
 	, mEnvironment			(environment)
 	, mSettings				(OC_NEW Settings(base, Settings::APPLICATION_NAME_BASE+" "+base, Settings::APPLICATION_VERSION))

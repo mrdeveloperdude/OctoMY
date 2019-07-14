@@ -73,6 +73,7 @@ private:
 	// The NFC address this associate has been known to use
 	QByteArray mNFCAddress;
 	// The pins this associate knows (for multi factor auth)
+	// NOTE: pins are not stored, they should be ephemeral
 	QStringList mPins;
 
 public:
@@ -100,11 +101,11 @@ public:
 	// Provide the node role
 	NodeRole role() const;
 
-	// Determine is this associate is valid when creating a client
-	bool isValidForClient(bool onlyPublic = true);
-	// Determine if this associate is valid when createing a local identity
-	bool isValidForLocalIdentity(bool onlyPublic = true);
-	// Determine if this associate is valid for use with zoo server
+	// Determine is this associate is usable for storing details for a client
+	bool isValidForClient();
+	// Determine if this associate is usable for storing details for our local identity
+	bool isValidForLocalIdentity();
+	// Determine if this associate is is usable for storing details for the zoo server
 	bool isValidForServer();
 
 	// Provide the list of network addresses used by this associate

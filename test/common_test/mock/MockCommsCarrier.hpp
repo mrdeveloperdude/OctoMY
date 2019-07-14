@@ -28,7 +28,7 @@ private:
 
 public:
 	explicit MockCommsCarrier(QObject *parent=nullptr);
-	virtual ~MockCommsCarrier();
+	virtual ~MockCommsCarrier() Q_DECL_OVERRIDE;
 
 	////////////////////////// Mock interface
 public:
@@ -59,10 +59,14 @@ public slots:
 
 	//////////////////////////  CommsCarrier internal interface methods
 protected:
-	void setAddressImp(NetworkAddress address) Q_DECL_OVERRIDE;
-	bool setStartImp(bool) Q_DECL_OVERRIDE;
 
-	bool isStartedImp() const Q_DECL_OVERRIDE;
+	void configureImp() Q_DECL_OVERRIDE;
+	bool activateImp(bool) Q_DECL_OVERRIDE;
+
+	void setAddressImp(NetworkAddress address) Q_DECL_OVERRIDE;
+
+
+	bool isActiveImp() const Q_DECL_OVERRIDE;
 
 	qint64 writeDataImp(const QByteArray &datagram, const NetworkAddress &address) Q_DECL_OVERRIDE;
 	qint64 readDataImp(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr) Q_DECL_OVERRIDE;

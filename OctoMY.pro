@@ -57,8 +57,6 @@ test.depends=		$${SRCS}/libs
 doc.depends=		$${SRCS}/libs $${SRCS}/hub $${SRCS}/remote $${SRCS}/agent $${TESTS}
 
 
-include($$PRIS/status.pri)
-
 OTHER_FILES+= $$files(pri/*, true)
 OTHER_FILES+= $$files(integration/local/*, true)
 OTHER_FILES+= $$files(integration/multidocker/*, true)
@@ -72,3 +70,5 @@ OTHER_FILES+= $$files(content/website/*, false)
 # While transitioning to new nodes we want to view but not compile old node sources
 OTHER_FILES+= $$files(src/libs/libagent_old/*, true);
 OTHER_FILES+= $$files(src/libs/libremote_old/*, true);
+
+include($$PRIS/status.pri)

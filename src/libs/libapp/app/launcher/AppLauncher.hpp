@@ -11,6 +11,7 @@
 #include "app/launcher/AppCommandLineParser.hpp"
 #include "app/AppContext.hpp"
 #include "app/Constants.hpp"
+#include "node/NodeWindow.hpp"
 
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
@@ -108,8 +109,12 @@ public:
 	virtual ~AppLauncher() Q_DECL_OVERRIDE;
 
 public:
-	// Configure this app launcher before it is started
-	void configure(int argc, char *argv[], QString base);
+	// Configure this app launcher before it is started. This version has no arguments
+	void configure(QString base);
+	// Configure this app launcher before it is started. This version accepts classic arguments
+	void configure(QString base, int argc, char *argv[]);
+	// Configure this app launcher before it is started. This version accepts context object directly
+	void configure(QSharedPointer<AppContext> context);
 
 public:
 	// The entry point. This is what gets called to use this app launcher after it has been created
@@ -160,7 +165,16 @@ AppLauncher<T>::~AppLauncher()
 
 
 template <typename T>
-void AppLauncher<T>::configure(int argc, char *argv[], QString base)
+void AppLauncher<T>::configure(QString base)
+{
+	//qDebug()<<"configure()";
+	OC_METHODGATE();
+	configure(base, 0, nullptr);
+}
+
+
+template <typename T>
+void AppLauncher<T>::configure(QString base, int argc, char *argv[])
 {
 	//qDebug()<<"configure()";
 	OC_METHODGATE();
@@ -174,6 +188,16 @@ void AppLauncher<T>::configure(int argc, char *argv[], QString base)
 	}
 }
 
+
+template <typename T>
+void AppLauncher<T>::configure(QSharedPointer<AppContext> context)
+{
+	//qDebug()<<"configure()";
+	OC_METHODGATE();
+	if(mAppConfigureHelper.configure()) {
+		mContext=context;
+	}
+}
 
 
 template <typename T>
@@ -298,7 +322,7 @@ void AppLauncher<T>::appActivateDone(const bool on)
 		if(on) {
 			qDebug()<<"Opening window";
 			if(!mContext->isHeadless()) {
-				mWindow=qSharedPointerCast<QWidget>(mApp->appWindow());
+				mWindow=qSharedPointerCast<NodeWindow>(mApp->appWindow());
 				if(!mWindow.isNull()) {
 					mWindow->show();
 				} else {

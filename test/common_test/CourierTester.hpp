@@ -5,17 +5,16 @@
 
 #include <QObject>
 #include <QList>
+#include <QDebug>
 
 class Courier;
 class QByteArray;
 
-enum CourierTesterProfileOrder {
-	FIFO,LIFO,RANDOM
-};
+enum CourierTesterProfileOrder { FIFO, LIFO, RANDOM };
 
 struct CourierTesterProfile {
 
-private:
+	private:
 	qreal mToSendProbability;
 	qreal mToReceiveProbability;
 	qreal mToDropProbability;
@@ -31,41 +30,34 @@ private:
 	bool mBetrayMandateReceiveActive;
 	CourierTesterProfileOrder mOrder;
 
-public:
-	explicit CourierTesterProfile( const qreal toSendProbability=0.25 , const qreal toReceiveProbability=0.25 , const qreal toDropProbability=0.0 , const qreal toCorruptProbability=0.0 , const qreal fromSendProbability=0.25 , const qreal fromReceiveProbability=0.25 , const qreal fromDropProbability=0.0 , const qreal fromCorruptProbability=0.0 , const quint64 sleepTimeMin =1 , const quint64 sleepTimeRange =99 , const bool betrayMandateSendActive=false , const bool betrayMandateReceiveActive=false, const CourierTesterProfileOrder order=FIFO)
-		: mToSendProbability(qBound(0.0, toSendProbability, 1.0))
-		, mToReceiveProbability(qBound(0.0, toReceiveProbability, 1.0))
-		, mToDropProbability(qBound(0.0, toDropProbability, 1.0))
-		, mToCorruptProbability(qBound(0.0, toCorruptProbability, 1.0))
-		, mFromSendProbability(qBound(0.0, fromSendProbability, 1.0))
-		, mFromReceiveProbability(qBound(0.0, fromReceiveProbability, 1.0))
-		, mFromDropProbability(qBound(0.0, fromDropProbability, 1.0))
-		, mFromCorruptProbability(qBound(0.0, fromCorruptProbability, 1.0))
-		, mTotal(0.0)
-		, mSleepTimeMin(sleepTimeMin)
-		, mSleepTimeRange(sleepTimeRange)
-		, mBetrayMandateSendActive(betrayMandateSendActive)
-		, mBetrayMandateReceiveActive(betrayMandateReceiveActive)
-		, mOrder(order)
+	public:
+	explicit CourierTesterProfile(const qreal toSendProbability = 0.25, const qreal toReceiveProbability = 0.25, const qreal toDropProbability = 0.0, const qreal toCorruptProbability = 0.0, const qreal fromSendProbability = 0.25, const qreal fromReceiveProbability = 0.25, const qreal fromDropProbability = 0.0, const qreal fromCorruptProbability = 0.0, const quint64 sleepTimeMin = 1, const quint64 sleepTimeRange = 99, const bool betrayMandateSendActive = false, const bool betrayMandateReceiveActive = false, const CourierTesterProfileOrder order = FIFO)
+	: mToSendProbability(qBound(0.0, toSendProbability, 1.0)), mToReceiveProbability(qBound(0.0, toReceiveProbability, 1.0)), mToDropProbability(qBound(0.0, toDropProbability, 1.0)), mToCorruptProbability(qBound(0.0, toCorruptProbability, 1.0)), mFromSendProbability(qBound(0.0, fromSendProbability, 1.0)), mFromReceiveProbability(qBound(0.0, fromReceiveProbability, 1.0)), mFromDropProbability(qBound(0.0, fromDropProbability, 1.0)), mFromCorruptProbability(qBound(0.0, fromCorruptProbability, 1.0)), mTotal(0.0), mSleepTimeMin(sleepTimeMin), mSleepTimeRange(sleepTimeRange), mBetrayMandateSendActive(betrayMandateSendActive), mBetrayMandateReceiveActive(betrayMandateReceiveActive), mOrder(order)
 
 	{
-		mTotal=0.0;
-		mTotal+=mToSendProbability;
-		mTotal+=mToReceiveProbability;
-		mTotal+=mToDropProbability;
-		mTotal+=mToCorruptProbability;
-		mTotal+=mFromSendProbability;
-		mTotal+=mFromReceiveProbability;
-		mTotal+=mFromDropProbability;
-		mTotal+=mFromCorruptProbability;
+		mTotal = 0.0;
+		mTotal += mToSendProbability;
+		mTotal += mToReceiveProbability;
+		mTotal += mToDropProbability;
+		mTotal += mToCorruptProbability;
+		mTotal += mFromSendProbability;
+		mTotal += mFromReceiveProbability;
+		mTotal += mFromDropProbability;
+		mTotal += mFromCorruptProbability;
 	}
-// Generators
-public:
+	// Generators
+	public:
 	int randomStep()
 	{
-		qreal chance=utility::random::frand()*mTotal;
-		int step=0;
-#define STEP_CHANCE(A) if(chance<(A)){chance-=(A); step++;}else{return step;}
+		qreal chance = utility::random::frand() * mTotal;
+		int step = 0;
+#define STEP_CHANCE(A)  \
+	if (chance < (A)) { \
+		chance -= (A);  \
+		step++;         \
+	} else {            \
+		return step;    \
+	}
 		STEP_CHANCE(mToSendProbability);
 		STEP_CHANCE(mToReceiveProbability);
 		STEP_CHANCE(mToDropProbability);
@@ -75,13 +67,12 @@ public:
 		STEP_CHANCE(mFromDropProbability);
 		STEP_CHANCE(mFromCorruptProbability);
 #undef STEP_CHANCE
-		qWarning()<<"ERROR: Could not generate random step, defaulting to "<< step;
+		qWarning() << "ERROR: Could not generate random step, defaulting to " << step;
 		return step;
 	}
 
 	// Selectors
-public:
-
+	public:
 	qreal toSendProbability()
 	{
 		return mToSendProbability;
@@ -151,8 +142,10 @@ public:
 	{
 		return mOrder;
 	}
-
 };
+
+
+
 
 /*!
  * \brief The CourierTester class allows us to test pairs of Couriers without
@@ -168,10 +161,10 @@ public:
  *
  */
 
-class CourierTester: public QObject
+class CourierTester : public QObject
 {
 	Q_OBJECT
-protected:
+	protected:
 	Courier *mFromCourier;
 	Courier *mToCourier;
 	QString mFromName;
@@ -184,17 +177,13 @@ protected:
 	QStringList mChanceNames;
 	int mRoundCounter;
 
-private:
-
+	private:
 	void putTitle(int chance);
-public:
 
+	public:
 	explicit CourierTester(Courier *mFromCourier, Courier *mToCourier, QString fromName, QString toName);
-
 	void setProfile(CourierTesterProfile &p);
-
 	void sleepRandom();
-
 
 	QByteArray *fetchFromStream();
 	QByteArray *fetchToStream();
@@ -217,17 +206,16 @@ public:
 	void onFromDrop();
 	void onFromCorrupt();
 
-public:
-
-	virtual void onTestInitImp() {}
-	virtual void onTestDeInitImp() {}
-	virtual void onTestRoundStartImp() {}
-	virtual void onTestRoundEndImp() {}
-	virtual void onToReceivingImp() {}
-	virtual void onFromReceivingImp() {}
-	virtual void onToSendImp() {}
-	virtual void onFromSendImp() {}
-
+	public:
+	virtual void onTestInitImp();
+	virtual void onTestDeInitImp();
+	virtual void onTestRoundStartImp();
+	virtual void onTestRoundEndImp();
+	virtual void onToReceivingImp();
+	virtual void onFromReceivingImp();
+	virtual void onToSendImp();
+	virtual void onFromSendImp();
 };
 
-#endif // COURIERTESTER_HPP
+#endif
+// COURIERTESTER_HPP

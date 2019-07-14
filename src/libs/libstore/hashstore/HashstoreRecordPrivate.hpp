@@ -25,9 +25,7 @@ class Hashstore;
 */
 class HashstoreRecordPrivate
 {
-
 private:
-
 	Hashstore &m_storage;
 	const QString m_key;
 	const QString m_path;
@@ -35,18 +33,16 @@ private:
 	const quint16 m_flags;
 
 public:
-
 	explicit HashstoreRecordPrivate(Hashstore &storage, const QString key);
 	virtual ~HashstoreRecordPrivate() {}
+
 public:
-
-
 	HashstoreRecordState state();
-
 	bool put(const QByteArray &value);
 	QByteArray get();
 
 	friend class HashstoreRecord;
+
 };
 
 #endif

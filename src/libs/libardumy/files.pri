@@ -62,6 +62,7 @@ ARDUMY_TOP=$${SRCS}/libs/libardumy/ardumy
 ARDUMY_HEADERS += \
 	$$ARDUMY_TOP/ArduMYActuatorEnableBits.hpp \
 	$$ARDUMY_TOP/ArduMYBuzzerActuator.hpp \
+	$$ARDUMY_TOP/ArduMYTypeConversions.hpp \
 	$$ARDUMY_TOP/FivePhase.hpp \
 	$$ARDUMY_TOP/RCServoActuator.hpp \
 	$$ARDUMY_TOP/RGBLED.hpp \
@@ -71,6 +72,7 @@ ARDUMY_HEADERS += \
 ARDUMY_SOURCES += \
 	$$ARDUMY_TOP/ArduMYActuatorEnableBits.cpp \
 	$$ARDUMY_TOP/ArduMYBuzzerActuator.cpp \
+	$$ARDUMY_TOP/ArduMYTypeConversions.cpp \
 	$$ARDUMY_TOP/FivePhase.cpp \
 	$$ARDUMY_TOP/RCServoActuator.cpp \
 	$$ARDUMY_TOP/RGBLED.cpp \

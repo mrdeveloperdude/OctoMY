@@ -147,3 +147,11 @@ TrustLevel TrustList::toTrustLevel(NodeType type)
 	}
 	return TrustLevel::IGNORE;
 }
+
+
+
+QStringList TrustList::toStringList() const
+{
+	OC_METHODGATE();
+	return QStringList(toList());
+}

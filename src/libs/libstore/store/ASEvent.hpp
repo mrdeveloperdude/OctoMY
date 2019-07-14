@@ -27,7 +27,6 @@
 */
 
 
-
 template <typename T>
 class AsyncBackend;
 
@@ -114,30 +113,22 @@ private:
 
 public:
 	virtual ~ASEvent();
+
 public:
-
-
 	inline ASEvent() Q_DECL_NOTHROW;
-
 
 	explicit ASEvent(AsyncStore<T> &store, const ASEventType type, T data=T());
 	explicit ASEvent(ASEventPrivate<T> &pp);
 	explicit ASEvent(QSharedPointer<ASEventPrivate<T> > pp);
 
-
-
 	ASEvent(const ASEvent<T> & other);
 	ASEvent(ASEvent<T> && other);
 
-
-
 	ASEvent<T> & operator=(ASEvent<T> other);
-
 
 	//friend void swap(ASEvent<T>& first, ASEvent<T>& second) Q_DECL_NOTHROW;
 	bool operator==(const ASEvent<T> &other) const;
 	bool operator!=(const ASEvent<T> &other) const;
-
 
 	QString toString() const;
 	operator QString() const;
@@ -205,12 +196,16 @@ QString ASEventPrivate<T>::toString() const
 		   .arg(mStatus)
 		   .arg(mMessage);
 }
+
+
 template <typename T>
 ASEventPrivate<T>::operator QString() const
 {
 	OC_METHODGATE();
 	return toString();
 }
+
+
 template <typename T>
 ASEventPrivate<T>::operator QString()
 {
@@ -222,8 +217,10 @@ ASEventPrivate<T>::operator QString()
 template <typename T>
 quint64 ASEventPrivate<T>::privCounter=0;
 
+
 template <typename T>
 QMap<const ASEventPrivate<T> *, quint64> ASEventPrivate<T>::privMap;
+
 
 template <typename T>
 QString ASEventPrivate<T>::privCounterString(const ASEventPrivate<T> *p)
@@ -271,17 +268,12 @@ ASEventPrivate<T>::ASEventPrivate()
 }
 
 
-
-
 template <typename T>
 ASEventPrivate<T>::~ASEventPrivate()
 {
 	OC_METHODGATE();
 	mCallbacks.activate(false);
 }
-
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -312,19 +304,21 @@ QString ASEvent<T>::toString() const
 				.arg(p_ptr->mMessage));
 }
 
+
 template <typename T>
 ASEvent<T>::operator QString() const
 {
 	OC_METHODGATE();
 	return toString();
 }
+
+
 template <typename T>
 ASEvent<T>::operator QString()
 {
 	OC_METHODGATE();
 	return toString();
 }
-
 
 
 template <typename T>
@@ -364,7 +358,6 @@ void ASEvent<T>::onFinished(F callBack)
 			} );
 		}
 	}
-
 }
 
 
@@ -410,7 +403,6 @@ void ASEvent<T>::runCallbacks()
 ////////////////////////////////////////////////////////////////////////////////
 
 
-
 template <typename T>
 ASEvent<T>::ASEvent() Q_DECL_NOTHROW
 :
@@ -422,7 +414,6 @@ p_ptr(nullptr)
 	//qWarning()<<"ERROR: default ctor called. Should never happen";
 	tTest();
 }
-
 
 
 template <typename T>
@@ -447,6 +438,7 @@ ASEvent<T>::ASEvent(ASEvent<T> && other)
 	//swap(*this, other);
 }
 
+
 template <typename T>
 ASEvent<T>::ASEvent(const ASEvent<T> & other)
 //	: d_ptr(OC_NEW TransactionPrivate(other.d_func()->mStore, other.d_func()->mType, other.d_func()->mData))
@@ -458,6 +450,7 @@ ASEvent<T>::ASEvent(const ASEvent<T> & other)
 	tTest();
 }
 
+
 template <typename T>
 ASEvent<T>::ASEvent(ASEventPrivate<T> &pp)
 	: p_ptr(&pp)
@@ -467,6 +460,7 @@ ASEvent<T>::ASEvent(ASEventPrivate<T> &pp)
 	OC_METHODGATE();
 	tTest();
 }
+
 
 template <typename T>
 ASEvent<T>::ASEvent(QSharedPointer<ASEventPrivate<T> > pp)
@@ -483,8 +477,6 @@ template <typename T>
 ASEvent<T>::~ASEvent()
 {
 	OC_METHODGATE();
-
-
 	mAllocation="Deallocated";
 }
 
@@ -498,18 +490,19 @@ ASEvent<T> & ASEvent<T>::operator=(ASEvent<T> other)
 	return *this;
 }
 
+
 template <typename T>
 bool ASEvent<T>::operator==(const ASEvent &other) const
 {
 	return ( other.p_ptr == p_ptr );
 }
 
+
 template <typename T>
 bool ASEvent<T>::operator!=(const ASEvent &other) const
 {
 	return !operator==(other);
 }
-
 
 
 template <typename T>
@@ -524,7 +517,6 @@ void ASEvent<T>::tTest() const
 		qWarning()<<"ERROR: creator thread not same as executor thread";
 	}
 }
-
 
 
 template <typename T>
@@ -542,6 +534,7 @@ QSharedPointer<ASEventPrivate<T> > ASEvent<T>::p()
 	return p_ptr;
 }
 
+
 template <typename T>
 AsyncStore<T> & ASEvent<T>::store() const
 {
@@ -550,6 +543,7 @@ AsyncStore<T> & ASEvent<T>::store() const
 	const ASEventPrivate<T> *p=p_ptr.data();
 	return p->mStore;
 }
+
 
 template <typename T>
 ASEventType ASEvent<T>::type() const
@@ -769,6 +763,6 @@ bool ASEvent<T>::run()
 }
 
 
-
-#endif // ASEVENT_HPP
+#endif
+// ASEVENT_HPP
 

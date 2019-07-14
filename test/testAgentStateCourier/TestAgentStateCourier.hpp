@@ -3,12 +3,12 @@
 
 #include "Common_test.hpp"
 
-class TestAgentStateCourier:public QObject
+class TestAgentStateCourier : public QObject
 {
 	Q_OBJECT
+
 private slots:
 	void test();
-
 };
 
 

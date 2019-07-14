@@ -23,50 +23,50 @@
 
 void TestCommsCarrier::testBasic()
 {
-	CommsCarrierUDP coca;
+	CommsCarrierUDP commsCarrier;
 	MockCommsCarrierLog mocalo;
-	coca.setHookCarrierSignals(mocalo, true);
+	commsCarrier.setHookCarrierSignals(mocalo, true);
 
 	NetworkAddress fromAddress(QHostAddress::Any, 8124);
 	NetworkAddress address(QHostAddress::Any, 8123);
 	UDPTester dataSender(fromAddress, address);
 
-	QCOMPARE(false, coca.isStarted());
-	coca.setListenAddress(address);
-	NetworkAddress addressCopy=coca.address();
+	QCOMPARE(false, commsCarrier.isConnectionMaintained());
+	commsCarrier.setListenAddress(address);
+	NetworkAddress addressCopy=commsCarrier.address();
 	QCOMPARE(address, addressCopy);
 
-	QCOMPARE(true, coca.setStarted(true));
-	QCOMPARE(true, coca.isStarted());
-	QCOMPARE(false, coca.isConnected());
+	commsCarrier.maintainConnection(true);
+	QCOMPARE(true, commsCarrier.isConnectionMaintained());
+	QCOMPARE(false, commsCarrier.isConnected());
 
-	auto actualInterval=coca.setDesiredOpportunityInterval(100);
-	auto tempInterval=coca.opportunityInterval();
+	auto actualInterval=commsCarrier.setDesiredOpportunityInterval(100);
+	auto tempInterval=commsCarrier.opportunityInterval();
 	qDebug()<<"actualInterval="<<actualInterval<<", tempInterval="<<tempInterval<<"";
 	QCOMPARE(actualInterval, tempInterval);
 
-	QCOMPARE(false, coca.hasPendingData());
+	QCOMPARE(false, commsCarrier.hasPendingData());
 
 	// Send some data to the carrier
 	const QByteArray txDatagram="Hello there";
 	dataSender.send(txDatagram);
 
 	// Wait for the receive to happen
-	testWaitForEvents();
+	test::utility::testWaitForEvents();
 //	QCOMPARE(true, coca.isConnected());
-	QCOMPARE(true, coca.isStarted());
-	QCOMPARE(true, coca.hasPendingData());
+	QCOMPARE(true, commsCarrier.isConnectionMaintained());
+	QCOMPARE(true, commsCarrier.hasPendingData());
 
-	const qint64 supposedRxBytes=coca.pendingDataSize();
+	const qint64 supposedRxBytes=commsCarrier.pendingDataSize();
 	QVERIFY(supposedRxBytes > 0);
 	QCOMPARE(supposedRxBytes, txDatagram.size());
 
 	// Try to receive the data
 	QByteArray rxDatagram;
-	rxDatagram.resize(static_cast<int>(coca.pendingDataSize()));
+	rxDatagram.resize(static_cast<int>(commsCarrier.pendingDataSize()));
 	QHostAddress rxHost;
 	quint16 rxPort=0;
-	const qint64 rxBytes=coca.readData(rxDatagram.data(), rxDatagram.size(), &rxHost, &rxPort);
+	const qint64 rxBytes=commsCarrier.readData(rxDatagram.data(), rxDatagram.size(), &rxHost, &rxPort);
 
 	qDebug()<<"supposedRxBytes="<<supposedRxBytes<<", txDatagram.size()="<<txDatagram.size()<<", rxBytes="<<rxBytes<<", rxDatagram.size()="<<rxDatagram.size();
 
@@ -76,23 +76,23 @@ void TestCommsCarrier::testBasic()
 	QCOMPARE(rxDatagram.size(), rxBytes);
 	QCOMPARE(supposedRxBytes, rxBytes);
 
-	testSleep(actualInterval*2, "Connection to be registered");
+	test::utility::testSleep(actualInterval*2, "Connection to be registered");
 
 	// Check that this received data triggered the connection to be complete
-	QCOMPARE(true, coca.isStarted());
-	QCOMPARE(true, coca.isConnected());
+	QCOMPARE(true, commsCarrier.isConnectionMaintained());
+	QCOMPARE(true, commsCarrier.isConnected());
 
 	//Wait for connection to time out
-	const auto timeout=coca.connectionTimeout();
-	testSleep(timeout+1000, "Connection to time out");
+	const auto timeout=commsCarrier.connectionTimeout();
+	test::utility::testSleep(timeout+1000, "Connection to time out");
 
 	// Check that connection actually timed out
-	QCOMPARE(false, coca.isConnected());
+	QCOMPARE(false, commsCarrier.isConnected());
 
 	// Switch off connection and verify that it actually is off
-	QCOMPARE(true, coca.isStarted());
-	coca.setStarted(false);
-	QCOMPARE(false, coca.isStarted());
+	QCOMPARE(true, commsCarrier.isConnectionMaintained());
+	commsCarrier.maintainConnection(false);
+	QCOMPARE(false, commsCarrier.isConnectionMaintained());
 
 	/*
 		qint64 writeData(const QByteArray &datagram, const NetworkAddress &address);

@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	{
 		QSharedPointer<AppLauncher<Hub> > hubMain=QSharedPointer<AppLauncher<Hub> >(OC_NEW AppLauncher<Hub>());
 		if(!hubMain.isNull()) {
-			hubMain->configure(argc, argv, "hub");
+			hubMain->configure("hub", argc, argv);
 			ret=hubMain->run();
 			hubMain.clear();
 		} else {

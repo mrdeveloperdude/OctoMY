@@ -151,10 +151,11 @@ void MockCommsCarrier::mockTriggerConnectionStatusChanged(bool connected)
 bool MockCommsCarrier::start(NetworkAddress address)
 {
 	if(mOverrideStartStop) {
-		return isStarted();
+		return isConnectionMaintained();
 	} else {
 		CommsCarrier::setListenAddress(address);
-		return  CommsCarrier::setStarted(true);
+		CommsCarrier::maintainConnection(true);
+		return true;
 	}
 }
 
@@ -164,22 +165,18 @@ void MockCommsCarrier::stop()
 	if(mOverrideStartStop) {
 		return;
 	} else {
-		CommsCarrier::setStarted(false);
+		CommsCarrier::maintainConnection(false);
 	}
 }
 
 
 //////////////////////////  CommsCarrier internal interface methods
 
-
-void MockCommsCarrier::setAddressImp(NetworkAddress address)
-{
-	qDebug() << "setAddress() called for address "<< address.toString();
-	mOurAddress=address;
+void MockCommsCarrier::configureImp(){
+	qDebug() << "configure() called";
 }
 
-
-bool MockCommsCarrier::setStartImp(bool start)
+bool MockCommsCarrier::activateImp(bool start)
 {
 	const bool oldIsStarted=mIsStarted;
 	if(start) {
@@ -189,12 +186,20 @@ bool MockCommsCarrier::setStartImp(bool start)
 	} else {
 		mIsStarted=false;
 	}
-	qDebug() << "setStart() called with start= "<<start<<" for address "<< mOurAddress.toString() << " with mock-fail=" << mStartFail << " and isStarted " << oldIsStarted << " --> " << mIsStarted;
+	qDebug() << "activate() called with start= "<<start<<" for address "<< mOurAddress.toString() << " with mock-fail=" << mStartFail << " and isStarted " << oldIsStarted << " --> " << mIsStarted;
 	return mIsStarted;
 }
 
 
-bool MockCommsCarrier::isStartedImp() const
+void MockCommsCarrier::setAddressImp(NetworkAddress address)
+{
+	qDebug() << "setAddress() called for address "<< address.toString();
+	mOurAddress=address;
+}
+
+
+
+bool MockCommsCarrier::isActiveImp() const
 {
 	return mIsStarted;
 }
@@ -205,9 +210,9 @@ qint64 MockCommsCarrier::writeDataImp(const QByteArray &datagram, const NetworkA
 	const qint64 sz=datagram.size();
 	const qint64 written=(mWriteBatchSize>=0)?qMin(mWriteBatchSize, sz):sz;
 	if(written > 0) {
-		datagram.left(written);
+		auto l=datagram.left(static_cast<int>(written));
 		QString key=address.toString();
-		mMockWriteData[key].append(datagram);
+		mMockWriteData[key].append(l);
 	}
 	qDebug() << "write() called. wrote "<<written << " of "<< sz <<"bytes to address="<<address.toString()<<" (mock batch size=" << ( (mWriteBatchSize<0)?"no batch":QString::number(mWriteBatchSize)) << ")";
 	return written;
@@ -227,10 +232,10 @@ qint64 MockCommsCarrier::readDataImp(char *data, qint64 maxlen, QHostAddress *ho
 	na.fromString(key);
 	QByteArray all=pair.second;
 	const qint64 sz=all.size();
-	const quint64 bytesRead=qMin(maxlen, sz);
-	QByteArray send=all.left(bytesRead);
+	const quint64 bytesRead=static_cast<quint64>(qMin(maxlen, sz));
+	QByteArray send=all.left(static_cast<int>(bytesRead));
 	// Toss back the remaining data if any
-	QByteArray keep=all.right(sz-bytesRead);
+	QByteArray keep=all.right(static_cast<qint64>(sz-bytesRead));
 	if(keep.size()>0) {
 		pair.second=keep;
 		qDebug()<<"PREPENDING REST";
@@ -249,7 +254,7 @@ qint64 MockCommsCarrier::readDataImp(char *data, qint64 maxlen, QHostAddress *ho
 		*port=na.port();
 	}
 	qDebug() << "read() returning bytesRead="<<bytesRead<<", host="<<(nullptr!=host?host->toString():"nullptr")<<" and port="<<(nullptr!=port?QString::number(*port):"nullptr");
-	return bytesRead;
+	return static_cast<qint64>(bytesRead);
 }
 
 

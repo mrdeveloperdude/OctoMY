@@ -1,8 +1,5 @@
 #include "UDPTester.hpp"
 
-#ifdef USE_UDP_TESTER
-
-
 UDPTester::UDPTester(NetworkAddress fromAddr, NetworkAddress toAddr)
 	: mFromAddr(fromAddr)
 	, mToAddr(toAddr)
@@ -42,6 +39,3 @@ QByteArray UDPTester::receive()
 	return rxDatagram;
 
 }
-
-#endif
-// USE_UDP_TESTER

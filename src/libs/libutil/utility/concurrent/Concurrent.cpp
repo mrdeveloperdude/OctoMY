@@ -19,6 +19,7 @@ HandleCounter::HandleCounter()
 
 }
 
+
 QString HandleCounter::handleCounterString(Qt::HANDLE h)
 {
 	if(nullptr==h) {
@@ -31,7 +32,6 @@ QString HandleCounter::handleCounterString(Qt::HANDLE h)
 	}
 	return "H-"+QString::number(handleMap[h]);
 }
-
 
 
 static HandleCounter hc;
