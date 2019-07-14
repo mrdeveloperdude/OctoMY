@@ -73,7 +73,7 @@ public:
 
 
 /**
- * @brief The StyleManager class is a convenience wrapper around Qt's owhn style managent classes.
+ * @brief The StyleManager class is a convenience wrapper around Qt's own style managent classes.
  * It is used to manage the style of an app.
  * It has facilities for loading custom fonts and applying custom style sets.
  */
