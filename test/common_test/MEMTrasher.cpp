@@ -2,6 +2,9 @@
 
 #include <QProcess>
 
+#if (defined (Q_OS_WIN) || defined (Q_OS_WIN32) || defined (Q_OS_WIN64))
+#include <windows.h>
+#endif
 
 //Adaptively find available memory to trash, and return 90% of that to leave a margin.
 qint64 MEMTrasher::findAvailableMem(quint64 MINREQ, quint64 required)

@@ -205,7 +205,7 @@ static int synthCallback(short *wav, int numsamples, espeak_EVENT *events)
 	}
 	return 0;
 }
-#endif
+
 
 static QString espeakErrorToString(const espeak_ERROR err){
 	switch(err){
@@ -245,6 +245,8 @@ static void listVoices(){
 		qWarning()<<"ERROR: Error fetching list of voices";
 	}
 }
+
+#endif
 
 //IAudioSource interface
 void CreepyVoice::init(QAudioFormat f)

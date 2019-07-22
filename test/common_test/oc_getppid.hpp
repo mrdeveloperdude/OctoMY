@@ -1,11 +1,7 @@
-#ifndef GETPPID_HPP
-#define GETPPID_HPP
+#ifndef OC_GETPPID_HPP
+#define OC_GETPPID_HPP
 
+qint32 oc_getppid();
 
-class getppid
-{
-public:
-    getppid();
-};
-
-#endif // GETPPID_HPP
+#endif
+// OC_GETPPID_HPP

@@ -2,13 +2,13 @@
 #define CPUBURNER_HPP
 
 #include "utility/time/HumanTime.hpp"
+#include "oc_getppid.hpp"
 
 #include <QDateTime>
 #include <QDebug>
 #include <QThread>
 #include <QtMath>
 
-#include <unistd.h>
 
 
 class CPUBurner
@@ -45,7 +45,7 @@ public:
 		mwc_z = (now/1000)^ now;
 		//mwc_z += ~((unsigned char *)&mwc_z - (unsigned char *)&tv);
 		mwc_z += ~(reinterpret_cast<unsigned char *>(&mwc_z) - reinterpret_cast<unsigned char *>(&tv));
-		mwc_w = static_cast<qint64>(getpid()) ^ static_cast<qint64>(getppid())<<12;
+        mwc_w = static_cast<qint64>(getpid()) ^ static_cast<qint64>(oc_getppid())<<12;
 		n = static_cast<int>(mwc_z) % 1733;
 		for (i = 0; i < n; i++) {
 			(void)mwc();
@@ -101,4 +101,5 @@ public:
 
 
 
-#endif // CPUBURNER_HPP
+#endif
+// CPUBURNER_HPP

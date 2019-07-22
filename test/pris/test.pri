@@ -8,7 +8,8 @@ QT += testlib gui
 
 # We link to common_test which hold globally useful utilities for testing
 COMMON_TEST_IN_DIR =   $$clean_path($$TESTS/common_test)
-COMMON_TEST_OUT_DIR =  $$clean_path($$TOP_BUILD/test/common_test)
+COMMON_TEST_OUT_DIR =  $$clean_path($$TOP_BUILD/test/common_test/$${OC_LIB_PREFIX_DIR})
+
 LIBS +=			       -L$$COMMON_TEST_OUT_DIR -lcommon_test
 INCLUDEPATH +=         $$COMMON_TEST_IN_DIR
 DEPENDPATH +=          $$COMMON_TEST_IN_DIR

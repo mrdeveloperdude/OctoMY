@@ -86,7 +86,12 @@ class GLStressWidget : public QOpenGLWidget, protected OCTOMY_QT_OGL_FUNCTIONS_C
 		void initShaders();
 
 };
+#else
 
+// To satisfy build
+struct DummyClass{
+
+};
 
 #endif
 // USE_GL_STRESS_WIDGET
