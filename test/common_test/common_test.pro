@@ -26,7 +26,8 @@ SOURCES+= \
 	mock/MockCourier.cpp \
 	Stress.cpp \
 	UDPTester.cpp \
-	Utility_test.cpp \
+        Utility_test.cpp \
+        oc_getppid.cpp \
 
 HEADERS+= \
 	Common_test.hpp \
@@ -44,7 +45,8 @@ HEADERS+= \
 	mock/MockCourier.hpp \
 	Stress.hpp \
 	UDPTester.hpp \
-	Utility_test.hpp \
+        Utility_test.hpp \
+        oc_getppid.hpp \
 
 RESOURCES += \
 	resources/test_resources.qrc
