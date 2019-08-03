@@ -3,10 +3,25 @@
 #include <QDebug>
 #include <QStack>
 #include <QVariant>
-
+#include <QJsonDocument>
+#include <QJsonObject>
 
 
 namespace  store{
+
+QString KeyTokenTypeToString(KeyTokenType type)
+{
+#define KEYTOKENTYPETOSTRING_CASE(A) case(A): return #A
+    switch(type){
+    KEYTOKENTYPETOSTRING_CASE(NONE);
+    KEYTOKENTYPETOSTRING_CASE(ERROR);
+    KEYTOKENTYPETOSTRING_CASE(DIRECTORY);
+    KEYTOKENTYPETOSTRING_CASE(ITEM);
+    KEYTOKENTYPETOSTRING_CASE(PROPERTY);
+    }
+#undef KEYTOKENTYPETOSTRING_CASE
+    return "UNKNOWN";
+}
 
 QString Status::toString() const
 {
@@ -47,8 +62,10 @@ bool KeyToken::valid() const{
 
 QString KeyToken::toString() const
 {
-    return "LOL";
+    return QString("KeyToken{type=%1, name=%2, nameIndex=%3, itemIndex=%4}")
+            .arg(KeyTokenTypeToString(type)).arg(name).arg(nameIndex).arg(itemIndex);
 }
+
 
 KeyToken::operator QString() const
 {
@@ -60,6 +77,7 @@ KeyToken::operator QString()
 {
     return toString();
 }
+
 
 KeyParser::KeyParser(QString str)
     : last(NONE, "", 0)
@@ -138,7 +156,7 @@ private:
 
 public:
     bool lookUp(QString part){
-/*
+        /*
         switch(mIndex.type()){
         case(QVariant::Map):{
             auto map=qvariant_cast<QVariantMap &>(mIndex);
@@ -172,52 +190,153 @@ public:
 };
 
 
-
-QVariant Key::lookUp(QVariantMap root) const
+QVariant Key::lookUp(QVariant &root) const
 {
-    QVariantMap &pointer=root;
-    auto w=mPath.mid(0,mPath.size()-1);
-    auto l=mPath.last();
-    for(auto part:w){
-        qDebug()<<"Looking up part "<<part;
-        if(!pointer.contains(part)){
-            pointer[part]=QVariantMap();
+    QVariant &pointer=root;
+    for(auto part:mPath){
+        qDebug().nospace().noquote()<<"Looking up part "<<part.name<<"("<<KeyTokenTypeToString(part.type)<<")";
+        const auto ptype=pointer.type();
+        switch(part.type){
+        case(PROPERTY):{
+            if(QVariant::Map == ptype){
+                /*
+                QVariantMap &map=qvariant_cast<QVariantMap &>(pointer);
+                auto it=map.find(part.name);
+                if(map.end()!=it){
+                    pointer=it.value();
+                }
+                else{
+                    // We lost track, no data here
+                    return QVariant();
+                }
+                */
+            }
+            else{
+                // return Status(QString("At traversal; Key type mismatch; %1 vs. %2 ").arg(QString::number(ptype)).arg(QString::number(QVariant::Map)));
+                return QVariant();
+            }
+        }break;
         }
-        QVariant &v=pointer[part];
-        if(QVariant::Map!=v.type()){
-            return QVariant();
-        }
-        pointer=v.toMap();
     }
-    return pointer[l];
+    return pointer;
 }
 
 
-Status Key::put(QVariantMap &root, QVariant data)
+/*
+if (variant.canConvert<QVariantList>()) {
+    QSequentialIterable iterable = variant.value<QSequentialIterable>();
+    // Can use foreach:
+    foreach (const QVariant &v, iterable) {
+        qDebug() << v;
+    }
+    // Can use C++11 range-for:
+    for (const QVariant &v : iterable) {
+        qDebug() << v;
+    }
+    // Can use iterators:
+    QSequentialIterable::const_iterator it = iterable.begin();
+    const QSequentialIterable::const_iterator end = iterable.end();
+    for ( ; it != end; ++it) {
+        qDebug() << *it;
+    }
+}
+
+
+
+
+                QAssociativeIterable map = pointer->value<QAssociativeIterable>();
+                QAssociativeIterable::const_iterator it=map.find(part.name);
+                if(map.end()!=it){
+                    auto lol=*it;
+                    pointer=lol;
+                }
+                else{
+                    map[part.name]=QVariantMap();
+                    it=map.find(part.name);
+                    if(map.end()!=it){
+                        pointer=it.value();
+                    }
+                    else{
+                        return Status(QString("Failed to insert default for key %1").arg(part.name));
+                    }
+                }
+
+*/
+
+/*
+QVariantMap *map=qvariant_cast<QVariantMap *>(pointer);
+auto it=map->find(part.name);
+if(map->end()!=it){
+    pointer=&it.value();
+}
+else{
+    map[part.name]=QVariantMap();
+    it=map.find(part.name);
+    if(map.end()!=it){
+        pointer=it.value();
+    }
+    else{
+        return Status(QString("Failed to insert default for key %1").arg(part.name));
+    }
+}
+
+
+ QVariant &v = map["some key"]; Q_ASSERT(!v.isNull()); Q_ASSERT(v.userType() == QMetaType::VariantMap); QVariantMap &innerMap = *reinterpret_cast<QVariantMap *>(v.data()); innerMap.mutate();
+
+
+*/
+
+Status Key::put(QVariant &root, QVariant data)
 {
-    QVariantMap &pointer=root;
-    auto w=mPath.mid(0,mPath.size()-1);
+    QVariant *pointer=&root;
+    auto w=mPath.mid(0, mPath.size()-1);
     auto l=mPath.last();
     qDebug()<<"W="<<w;
     qDebug()<<"L="<<l;
-
-    //QStack<QString> stack;
-    for(QString part:w){
-        qDebug()<<"Traversing part "<<part;
+    for(auto part:w){
+        qDebug()<<"STEP: "<<vtos(root);
+        qDebug().nospace().noquote()<<"Traversing part "<<part.name<<"("<<KeyTokenTypeToString(part.type)<<")";
         QVariant v;
-        if(pointer.contains(part)){
-            v=pointer[part];
+        const auto ptype=pointer->type();
+        switch(part.type){
+        case(PROPERTY):{
+            if(QVariant::Map == ptype){
+                QVariantMap &map = *reinterpret_cast<QVariantMap *>(pointer->data());
+                auto it=map.find(part.name);
+                if(map.end()!=it){
+                    pointer=&*it;
+                }
+                else{
+                    map[part.name]=QVariantMap();
+                    auto it=map.find(part.name);
+                    if(map.end()!=it){
+                        pointer=&*it;
+                    }
+                    else{
+                        return Status(QString("Failed to insert default for key %1").arg(part.name));
+                    }
+                }
+            }
+            else{
+                return Status(QString("At traversal; Key type mismatch; %1 vs. %2 ").arg(QString::number(ptype)).arg(QString::number(QVariant::Map)));
+            }
+        }break;
         }
-        else{
-            v=QVariantMap();
-        }
-        qDebug()<<"PART: "<<vtos(v);
-        if(QVariant::Map!=v.type()){
-            return Status("Resolution mismatch for '"+part+"'");
-        }
-        pointer[part]=v;
     }
-    pointer[l]=data;
+
+    const auto ptype=pointer->type();
+    if(QVariant::Map == ptype){
+        QVariantMap &map = *reinterpret_cast<QVariantMap *>(pointer->data());
+        switch(l.type){
+        case(PROPERTY):{
+            map[l.name]=data;
+        }break;
+        }
+    }
+    else{
+        return Status(QString("At insertion; Key type mismatch; %1 vs. %2 ").arg(QString::number(ptype)).arg(QString::number(QVariant::Map)));
+    }
+    qDebug()<<"DONE: "<<vtos(root);
     return Status();
 }
 
@@ -262,29 +381,34 @@ void Context::put(Key key, std::function<void (Status status)> cb, QVariant data
 
 QString vtos(QVariant v){
     QString ret;
+    auto j=QJsonDocument::fromVariant(v);
+    ret=j.toJson(QJsonDocument::Indented);
+    /*
     switch(v.type()){
     case(QVariant::Map):{
         auto m=v.toMap();
-        ret+="map("+QString::number(m.size())+"){\n";
+        ret+="map("+QString::number(m.size())+"){";
         for(auto it= m.cbegin(), e=m.cend(); it != e; ++it) {
             ret+=QString("'%1': %2,").arg(it.key()).arg(vtos(it.value()));
         }
-        ret+="}\n";
+        ret+="}";
     }break;
     case(QVariant::List):{
         auto l=v.toList();
         const auto sz=l.size();
-        ret+="list("+QString::number(sz)+"){\n";
+        ret+="list("+QString::number(sz)+"){";
         for(int i=0;i<sz;++i) {
             ret+=QString("[%1]=%2,").arg(i).arg(vtos(l[i]));
         }
-        ret+="}\n";
+        ret+="}";
     }break;
     default:
         ret+=v.toString();
     }
+    */
     return ret;
 }
+
 
 QString Context::toString() const
 {

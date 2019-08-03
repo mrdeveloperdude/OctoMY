@@ -8,6 +8,7 @@ class TestStore:public QObject
     Q_OBJECT
 
 private slots:
+    void testVariantToString();
     void test();
 
 };

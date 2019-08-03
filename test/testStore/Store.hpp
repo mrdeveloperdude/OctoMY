@@ -18,6 +18,8 @@ enum KeyTokenType: quint8{
     , PROPERTY // Corresponding to a property in a map
 };
 
+QString KeyTokenTypeToString(KeyTokenType type);
+
 struct KeyToken{
     KeyTokenType type;
     QString name;
@@ -82,8 +84,8 @@ private:
     void parse();
 
 public:
-    QVariant lookUp(QVariantMap root) const;
-    Status put (QVariantMap &root, QVariant data);
+    QVariant lookUp(QVariant &root) const;
+    Status put (QVariant &root, QVariant data);
 
 public:
     QString toString() const;
@@ -95,7 +97,7 @@ public:
 class Context
 {
 private:
-    QVariantMap mData;
+    QVariant mData;
 
 public:
     Context();
