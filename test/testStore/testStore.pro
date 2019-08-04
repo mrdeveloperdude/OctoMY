@@ -4,11 +4,12 @@ TARGET = test_store
 
 HEADERS += \
 	Store.hpp \
-        TestStore.hpp \
+	TestStore.hpp \
 
 SOURCES += \
 	Store.cpp \
-        TestStore.cpp \
+	TestStore.cpp \
+
 
 include($$PRIS/status.pri)
 include($$TESTS/pris/test_autorun.pri)

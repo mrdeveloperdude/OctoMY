@@ -8,29 +8,29 @@
 
 qint32 oc_getppid()
 {
-    HANDLE hSnapshot = INVALID_HANDLE_VALUE;
-    PROCESSENTRY32 pe32;
-    DWORD ppid = 0, pid = GetCurrentProcessId();
+	HANDLE hSnapshot = INVALID_HANDLE_VALUE;
+	PROCESSENTRY32 pe32;
+	DWORD ppid = 0, pid = GetCurrentProcessId();
 
-    hSnapshot = CreateToolhelp32Snapshot( TH32CS_SNAPPROCESS, 0 );
+	hSnapshot = CreateToolhelp32Snapshot( TH32CS_SNAPPROCESS, 0 );
 
-    if( hSnapshot == INVALID_HANDLE_VALUE ) return static_cast<quint32>(ppid);
+	if( hSnapshot == INVALID_HANDLE_VALUE ) return static_cast<quint32>(ppid);
 
-    ZeroMemory( &pe32, sizeof( pe32 ) );
-    pe32.dwSize = sizeof( pe32 );
-    if( !Process32First( hSnapshot, &pe32 ) ) return static_cast<quint32>(ppid);
+	ZeroMemory( &pe32, sizeof( pe32 ) );
+	pe32.dwSize = sizeof( pe32 );
+	if( !Process32First( hSnapshot, &pe32 ) ) return static_cast<quint32>(ppid);
 
-    do{
-        if( pe32.th32ProcessID == pid ){
-            ppid = pe32.th32ParentProcessID;
-            break;
-        }
-    }while( Process32Next( hSnapshot, &pe32 ) );
+	do{
+		if( pe32.th32ProcessID == pid ){
+			ppid = pe32.th32ParentProcessID;
+			break;
+		}
+	}while( Process32Next( hSnapshot, &pe32 ) );
 
 
-    if( hSnapshot != INVALID_HANDLE_VALUE ) CloseHandle( hSnapshot );
+	if( hSnapshot != INVALID_HANDLE_VALUE ) CloseHandle( hSnapshot );
 
-    return static_cast<quint32>(ppid);
+	return static_cast<quint32>(ppid);
 }
 
 #else
@@ -39,7 +39,12 @@ qint32 oc_getppid()
 
 
 qint32 oc_getppid(){
-    return getppid();
+	return getppid();
 }
 
 #endif
+
+
+qint32 oc_getpid(){
+	return getpid();
+}
