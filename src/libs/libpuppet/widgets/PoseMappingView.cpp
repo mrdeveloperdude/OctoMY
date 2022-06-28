@@ -11,6 +11,7 @@
 #include <QPushButton>
 #include <QList>
 #include <QRegularExpression>
+#include <QPainterPath>
 #include <QDebug>
 
 

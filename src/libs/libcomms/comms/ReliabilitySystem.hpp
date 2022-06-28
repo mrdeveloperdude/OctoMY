@@ -1,7 +1,7 @@
 #ifndef RELIABILITYSYSTEM_HPP
 #define RELIABILITYSYSTEM_HPP
 
-#include <QVector>
+#include <QList>
 
 struct PacketData {
 	quint32 sequence;			// packet sequence number

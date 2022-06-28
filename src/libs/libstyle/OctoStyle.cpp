@@ -23,6 +23,8 @@
 
 #include <QtGui/QPainter>
 #include <QtGui/QPixmapCache>
+#include <QPainterPath>
+
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 # include <QtWidgets/qdrawutil.h>
@@ -64,8 +66,8 @@
 	QString unique = uniqueName((a), option, option->rect.size()); \
 	int txType = painter->deviceTransform().type() | painter->worldTransform().type(); \
 	bool doPixmapCache = txType <= QTransform::TxTranslate; \
-	if (doPixmapCache && QPixmapCache::find(unique, internalPixmapCache)) { \
-		painter->drawPixmap(option->rect.topLeft(), internalPixmapCache); \
+    if (doPixmapCache && QPixmapCache::find(unique, &internalPixmapCache)) { \
+        painter->drawPixmap(option->rect.topLeft(), internalPixmapCache); \
 	} else { \
 		if (doPixmapCache) { \
 			rect.setRect(0, 0, option->rect.width(), option->rect.height()); \
@@ -80,8 +82,8 @@
 			delete p; \
 			p = nullptr; \
 			internalPixmapCache = QPixmap::fromImage(imageCache); \
-			painter->drawPixmap(option->rect.topLeft(), internalPixmapCache); \
-			QPixmapCache::insert(unique, internalPixmapCache); \
+            painter->drawPixmap(option->rect.topLeft(), internalPixmapCache); \
+            QPixmapCache::insert(unique, internalPixmapCache); \
 		} \
 	}
 

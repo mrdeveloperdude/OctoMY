@@ -88,7 +88,7 @@ public:
 	{
 		if (! pal.window().texture().isNull())
 			return QColor(0, 0, 0, 160);
-		return pal.background().color().darker(140);
+        return pal.window().color().darker(140);
 	}
 
 	QColor highlightedOutline(const QPalette &pal) const

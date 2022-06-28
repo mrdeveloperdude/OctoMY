@@ -11,6 +11,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QVariant>
+#include <QKeyEvent>
 #include <QIcon>
 
 static const QString GEOMETRY_SETTINGS_KEY("window.geometry");
