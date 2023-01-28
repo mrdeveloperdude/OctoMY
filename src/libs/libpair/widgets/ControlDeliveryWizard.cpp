@@ -53,14 +53,14 @@ ControlDeliveryWizard::ControlDeliveryWizard(QWidget *parent)
 	if(!connect(&mBirthTimer, &QTimer::timeout, this, [=]() {
 	qDebug()<<"Birth timer timed out, calling birth done";
 		onBirthComplete(true);
-	}, OC_CONTYPE)) {
+	}, OC_CONTYPE_NON_UNIQUE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
 
 	if(!connect(ui->lineEditName, &QLineEdit::textEdited, this, [=](QString s) {
 	ui->pushButtonOnward->setEnabled(s.length()>=minLetters);
-	},OC_CONTYPE)) {
+	}, OC_CONTYPE_NON_UNIQUE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 

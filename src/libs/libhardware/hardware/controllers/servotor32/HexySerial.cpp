@@ -214,7 +214,7 @@ void HexySerial::kill(quint32 flags)
 			quint32 f=1;
 			for(quint32 i=0; i<SERVO_COUNT; ++i) {
 				if((flags & f)>0) {
-					data += QLatin1Literal("#") +  QString::number(i) + QLatin1String("L\n");
+					data += QString::fromLatin1("#") +  QString::number(i) + QString::fromLatin1("L\n");
 				} else {
 					//data+="LOL";
 				}

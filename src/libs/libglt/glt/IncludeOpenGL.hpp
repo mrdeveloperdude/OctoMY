@@ -60,7 +60,8 @@
 #include STRINGIFY(OCTOMY_QT_OGL_FUNCTIONS_CLASS)
 
 //#include <QOpenGLFunctions>
-#include <QtOpenGLExtensions/QtOpenGLExtensions>
+//#include <QtOpenGLExtensions/QtOpenGLExtensions>
+#include <QtOpenGL>
 
 
 #endif //INCLUDEOPENGL_HPP

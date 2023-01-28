@@ -82,14 +82,14 @@ fi
 	DEPS+=" xkb-data"
 	DEPS+=" libxkbfile-dev"
 	# SQLite 3 support
-	DEPS+=" libsqlite-dev"
 	DEPS+=" libsqlite3-dev"
 	# SSL/TLS Support
-	DEPS+=" libssl-dev"
 	DEPS+=" gnutls-dev"
 #	DEPS+=" libgnutls-dev"
 #	DEPS+=" libgnutls-openssl-dev" # Not available on debian
-	DEPS+=" libsslcommon2-dev"
+#	DEPS+=" libsslcommon2-dev"
+	# E-Speack suppoart
+	DEPS+=" libespeak-ng-dev"
 	# OpenCV support
 if [ "USE_OPENCV" == "" ]
 then
@@ -114,13 +114,12 @@ then
 fi
 	DEPS+=" flex"
 	DEPS+=" libpulse-dev"
-	DEPS+=" libpulse-mainloop-gtk0"
 
 	sudo DEBIAN_FRONTEND=noninteractive dpkg --configure -a
-	sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes --fix-missing
-	sudo DEBIAN_FRONTEND=noninteractive apt-get update -y --force-yes
-	sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --force-yes --fix-missing
-	sudo DEBIAN_FRONTEND=noninteractive apt-get install $DEPS -y --force-yes --fix-missing
+	sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes --fix-missing
+	sudo DEBIAN_FRONTEND=noninteractive apt-get update --yes
+	sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes --fix-missing
+	sudo DEBIAN_FRONTEND=noninteractive apt-get install $DEPS --yes --fix-missing
 }
 
 

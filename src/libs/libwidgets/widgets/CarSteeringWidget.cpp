@@ -75,7 +75,7 @@ void CarSteeringWidget::paintEvent(QPaintEvent *)
 	pen.setColor(Qt::black);
 	painter.setPen(pen);
 	painter.setBrush(Qt::NoBrush);
-	painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
+	painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
 	//Draw wheel itself
 	const qreal diameter=mWheelRadius*2;
 	QRectF r1(static_cast<qreal>(mWheelCenter.x())-mWheelRadius, static_cast<qreal>(mWheelCenter.y())-mWheelRadius, diameter, diameter);

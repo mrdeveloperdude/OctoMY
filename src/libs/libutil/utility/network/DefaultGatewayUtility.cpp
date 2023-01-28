@@ -16,6 +16,7 @@
 #include <sys/socket.h>
 #include <linux/rtnetlink.h>
 #include <unistd.h>
+#include <cstring>
 
 #endif
 
@@ -43,12 +44,14 @@ static int readNlSock(int sockFd, char *bufPtr, unsigned int seqNum, int pId)
 	size_t msgLen = 0;
 	do {
 		if ((readLen = recv(sockFd, bufPtr, BUFSIZE - msgLen, 0)) < 0) {
-			::perror("SOCK READ: ");
+			qWarning()<<"SOCK READ: "<<QString(::strerror(errno));
+			//::perror("SOCK READ: ");
 			return -1;
 		}
 		nlHdr = reinterpret_cast<struct nlmsghdr *>(bufPtr);
 		if ((NLMSG_OK(nlHdr, readLen) == 0) || (nlHdr->nlmsg_type == NLMSG_ERROR)) {
-			::perror("Error in received packet");
+			qWarning()<<"Error in received packet: "<<QString(::strerror(errno));
+			//::perror("Error in received packet");
 			return -1;
 		}
 		if (nlHdr->nlmsg_type == NLMSG_DONE) {
@@ -171,7 +174,8 @@ QHostAddress defaultGatewayAddress()
 #elif defined(Q_OS_LINUX)
 	int sock, msgSeq = 0;
 	if ((sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE)) < 0) {
-		::perror("Socket Creation: ");
+		qWarning()<<"Socket Creation: "<<QString(::strerror(errno));
+		//::perror("Socket Creation: ");
 		return QHostAddress(ret);
 	}
 

@@ -296,13 +296,14 @@ QSize LayoutSquare::calculateProperSize( QSize fromSize ) const
 {
 	OC_METHODGATE();
 	QSize resultSize;
-
+	int l=0, t=0, r=0, b=0;
+	getContentsMargins(&l, &t, &r, &b);
 	if ( fromSize.height() < fromSize.width() ) {
-		resultSize.setHeight ( fromSize.height() - margin() );
-		resultSize.setWidth  ( fromSize.height() - margin() );
+		resultSize.setHeight ( fromSize.height() - (t+b) );
+		resultSize.setWidth  ( fromSize.height() - (l+r) );
 	} else {
-		resultSize.setHeight ( fromSize.width() - margin() );
-		resultSize.setWidth  ( fromSize.width() - margin() );
+		resultSize.setHeight ( fromSize.width() - (t+b) );
+		resultSize.setWidth  ( fromSize.width() - (l+r) );
 	}
 
 	return resultSize;

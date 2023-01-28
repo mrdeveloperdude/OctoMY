@@ -149,7 +149,7 @@ Qt::ItemFlags ClientModel::flags(const QModelIndex &index) const
 {
 	OC_METHODGATE();
 	if (!index.isValid()) {
-		return nullptr;
+		return Qt::ItemFlag::NoItemFlags;
 	}
 	return Qt::ItemIsDragEnabled|QAbstractItemModel::flags(index);
 }

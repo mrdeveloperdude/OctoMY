@@ -341,18 +341,23 @@ void MapControl::mouseMoveEvent(QMouseEvent* evnt)
 	update();
 }
 
-void MapControl::wheelEvent(QWheelEvent *evnt)
+void MapControl::wheelEvent(QWheelEvent *event)
 {
 	OC_METHODGATE();
-	if(mMouseWheelEvents && evnt->orientation() == Qt::Vertical) {
-		QPointF pz=clickToWorldCoordinate(evnt->pos());
+	if(mMouseWheelEvents) {
+		
+		auto degrees=event->angleDelta();
+		auto pixels=event->pixelDelta();
+		
+		
+		QPointF pz=clickToWorldCoordinate(pixels);
 		QPointF pzo=currentCoordinate();
 		QPointF pzd=pzo-pz;
-		int d=evnt->delta();
+		//int d=evnt->delta();
 		//	qDebug()<<"BEFORE: mouse="<<pz<<", map="<<pzo<<", delta="<<d;
 
 		//QCursor::pos().
-		if(d > 0) {
+		if(degrees.y() > 0) {
 			if( currentZoom() == mLayerManager->maxZoom() ) {
 				return;
 			}
@@ -370,11 +375,11 @@ void MapControl::wheelEvent(QWheelEvent *evnt)
 			setView(pzd); //zoom in under mouse cursor
 
 		}
-		evnt->accept();
+		event->accept();
 		pzo=currentCoordinate();
 		//	qDebug()<<"AFTER: mouse="<<pz<<", map="<<pzo<<", delta="<<d;
 	} else {
-		evnt->ignore();
+		event->ignore();
 	}
 
 }

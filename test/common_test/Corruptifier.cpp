@@ -89,7 +89,7 @@ QByteArray Corruptifier::corruptify(CorruptionType type, QByteArray bytes)
 {
 	const auto numBytes=bytes.size();
 	const auto numBits=numBytes*8;
-	const auto bitIndex=qrand()%numBits;
+	const auto bitIndex=utility::random::qrand()%numBits;
 	const auto byteIndex=bitIndex/8;
 	const auto byteRemainder=bitIndex%8;
 	const quint8 mask=static_cast<quint8>(1<<byteRemainder);
@@ -111,31 +111,31 @@ QByteArray Corruptifier::corruptify(CorruptionType type, QByteArray bytes)
 		newBit=!oldBit;
 		break;
 	case(ChopLeft): {
-		const auto left=(qrand()%numBytes)-1;
+		const auto left=(utility::random::qrand()%numBytes)-1;
 		return bytes.left(left);
 	}
 	case(ChopRight): {
-		const auto right=(qrand()%numBytes)-1;
+		const auto right=(utility::random::qrand()%numBytes)-1;
 		return bytes.right(right);
 	}
 	case(ChopMid): {
-		const auto num=(qrand()%numBytes)-1;
-		const auto start=(qrand()%numBytes)-1-num/2;
+		const auto num=(utility::random::qrand()%numBytes)-1;
+		const auto start=(utility::random::qrand()%numBytes)-1-num/2;
 		return bytes.mid(start, num);
 	}
 	case(ScrambleByteRange): {
-		const auto num=(qrand()%numBytes)-1;
-		const auto start=(qrand()%numBytes)-1-num/2;
+		const auto num=(utility::random::qrand()%numBytes)-1;
+		const auto start=(utility::random::qrand()%numBytes)-1-num/2;
 		for(auto i=0; i<numBytes; ++i) {
 			if(i>=start && i< (start+num)) {
-				bytes[i]=static_cast<qint8>(qrand()%0xFF);
+				bytes[i]=static_cast<qint8>(utility::random::qrand()%0xFF);
 			}
 		}
 		return bytes;
 	}
 	case(SetByteRange): {
-		const auto num=(qrand()%numBytes)-1;
-		const auto start=(qrand()%numBytes)-1-num/2;
+		const auto num=(utility::random::qrand()%numBytes)-1;
+		const auto start=(utility::random::qrand()%numBytes)-1-num/2;
 		for(auto i=0; i<numBytes; ++i) {
 			if(i>=start && i< (start+num)) {
 				bytes[i]=static_cast<qint8>(0xFF);
@@ -144,8 +144,8 @@ QByteArray Corruptifier::corruptify(CorruptionType type, QByteArray bytes)
 		return bytes;
 	}
 	case(UnsetByteRange): {
-		const auto num=(qrand()%numBytes)-1;
-		const auto start=(qrand()%numBytes)-1-num/2;
+		const auto num=(utility::random::qrand()%numBytes)-1;
+		const auto start=(utility::random::qrand()%numBytes)-1-num/2;
 		for(auto i=0; i<numBytes; ++i) {
 			if(i>=start && i< (start+num)) {
 				bytes[i]=0x00;

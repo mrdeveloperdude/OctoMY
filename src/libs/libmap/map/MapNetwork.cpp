@@ -31,14 +31,17 @@
 
 
 #include "MapNetwork.hpp"
-#include <QNetworkRequest>
 #include <QUrl>
+#include <QRegularExpression>
+#include <QNetworkRequest>
 #include <QMapIterator>
 #include <QWaitCondition>
 
 #include <QMutexLocker>
 #include <QNetworkCookieJar>
 #include <QHostInfo>
+
+static const QRegularExpression re(".:.");
 
 namespace qmapcontrol
 {
@@ -71,15 +74,18 @@ MapNetwork::~MapNetwork()
 	mNetworkMan = nullptr;
 }
 
+
+
+
+
 void MapNetwork::loadImage(const QString& host, const QString& url)
 {
 	OC_METHODGATE();
 	QString hostName = host;
 	QString portNumber = QString("80");
-
-	QRegExp r(".:.");
-
-	if(r.indexIn(host) >= 0) {
+	//TODO: See if this regex conversion was successfull
+	//OLD:	if(r.indexIn(host) >= 0) {
+	if(host.indexOf(re) >= 0) {
 		QStringList s = host.split(":");
 
 		hostName = s.at(0);
@@ -88,7 +94,7 @@ void MapNetwork::loadImage(const QString& host, const QString& url)
 	QString finalUrl = QString("http://%1:%2%3").arg(hostName).arg(portNumber).arg(url);
 	QNetworkRequest request = QNetworkRequest(QUrl(finalUrl));
 	request.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute,true);
-	request.setAttribute(QNetworkRequest::SpdyAllowedAttribute,true);
+	request.setAttribute(QNetworkRequest::Http2AllowedAttribute,true);
 	if( mCacheEnabled ) {
 		// prefer our cached version (if enabled) over fresh network query
 		request.setAttribute( QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache );

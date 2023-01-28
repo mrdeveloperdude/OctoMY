@@ -2,6 +2,7 @@
 
 #include "uptime/MethodGate.hpp"
 #include "utility/time/HumanTime.hpp"
+#include "utility/random/Random.hpp"
 
 #include "app/log/LogDestination.hpp"
 #include "CommsChannel.hpp"
@@ -198,14 +199,16 @@ void CommsSession::setRemoteSessionID(SESSION_ID_TYPE s)
 SESSION_NONCE_TYPE CommsSession::createOurSynNonce()
 {
 	OC_METHODGATE();
-	mOurSynNonce=static_cast<SESSION_NONCE_TYPE>((qrand()>>(1<<sizeof(int)))|qrand());
+	// TODO: Use proper secure prng here
+	mOurSynNonce=static_cast<SESSION_NONCE_TYPE>((utility::random::qrand()>>(1<<sizeof(int)))|utility::random::qrand());
 	return mOurSynNonce;
 }
 
 SESSION_NONCE_TYPE CommsSession::createOurSynAckNonce()
 {
 	OC_METHODGATE();
-	mOurSynAckNonce=static_cast<SESSION_NONCE_TYPE>((qrand()>>(1<<sizeof(int)))|qrand());
+	// TODO: Use proper secure prng here
+	mOurSynAckNonce=static_cast<SESSION_NONCE_TYPE>((utility::random::qrand()>>(1<<sizeof(int)))|utility::random::qrand());
 	return mOurSynAckNonce;
 }
 
@@ -213,7 +216,8 @@ SESSION_NONCE_TYPE CommsSession::createOurSynAckNonce()
 SESSION_NONCE_TYPE CommsSession::createOurAckNonce()
 {
 	OC_METHODGATE();
-	mOurAckNonce=static_cast<SESSION_NONCE_TYPE>((qrand()>>(1<<sizeof(int)))|qrand());
+	// TODO: Use proper secure prng here
+	mOurAckNonce=static_cast<SESSION_NONCE_TYPE>((utility::random::qrand()>>(1<<sizeof(int)))|utility::random::qrand());
 	return mOurAckNonce;
 }
 

@@ -8,6 +8,7 @@
 #include "node/NodeRole.hpp"
 #include "node/NodeType.hpp"
 #include "utility/string/String.hpp"
+#include "utility/random/Random.hpp"
 
 #include <QPainter>
 #include <QFile>
@@ -145,7 +146,7 @@ void TrustSymbolWidget::onPulsatingTrustTimer()
 		QColor color=lastColor;
 		size_t index=0;
 		while(lastColor == color) {
-			index=static_cast<size_t>(qrand()%paletteSz);
+			index=static_cast<size_t>(utility::random::qrand()%paletteSz);
 			color=QColor(palette[index]);
 		}
 		// qDebug()<<"INDEX: "<<index<<", COLOR: "<<color;

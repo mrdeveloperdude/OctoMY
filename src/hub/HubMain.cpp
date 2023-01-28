@@ -1,14 +1,8 @@
 #include "HubMain.hpp"
 
-// Needed to facilitate cast in AppLauncer
-#include "node/NodeWindow.hpp"
-
 #include "app/launcher/AppLauncher.hpp"
 
-//#include "app/launcher/MockApp.hpp"
 #include "hub/Hub.hpp"
-
-#include "uptime/SharedPointerWrapper.hpp"
 
 int main(int argc, char *argv[])
 {

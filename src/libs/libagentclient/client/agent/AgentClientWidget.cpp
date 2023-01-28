@@ -4,11 +4,9 @@
 #include "uptime/MethodGate.hpp"
 #include "uptime/ConnectionType.hpp"
 
-#include "utility/ui/GenericKeyEventHandler.hpp"
 #include "app/Settings.hpp"
 
 #include "widgets/WaitingSpinnerWidget.hpp"
-#include "audio/OneOffSpeech.hpp"
 
 #include "security/PortableID.hpp"
 

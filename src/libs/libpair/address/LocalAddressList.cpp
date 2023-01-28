@@ -38,10 +38,15 @@ void LocalAddressList::configure(quint16 port)
 		mTimer.setInterval(5000);
 		// We don't need precision, a sloppy timer is fine
 		mTimer.setTimerType(Qt::CoarseTimer);
-		if(!QObject::connect(&mTimer, &QTimer::timeout, mObj, [this]() {
-		updateIfNeeded(false);
-		}, OC_CONTYPE)) {
-			qWarning()<<"ERROR: Could not connect ";
+		if(!mTimeoutConnection){
+			mTimeoutConnection = QObject::connect(&mTimer, &QTimer::timeout, mObj, [this]() {
+				updateIfNeeded(false);
+			}, OC_CONTYPE_NON_UNIQUE);
+			if(! mTimeoutConnection){
+				qWarning()<<"ERROR: Could not connect ";
+			}	
+		}else{
+			qWarning()<<"ERROR: Already connected";
 		}
 	}
 }

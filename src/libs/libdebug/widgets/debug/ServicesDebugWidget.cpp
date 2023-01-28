@@ -41,7 +41,7 @@ void ServicesDebugWidget::configure(QSharedPointer <Node> node)
 			ui->tableWidgetServices->setRowCount(1);
 			auto slm=mNode->serviceLevelManager();
 			if(!slm.isNull()) {
-				if(!connect(slm.data(), &ServiceLevelManager::servicesChanged, this, &ServicesDebugWidget::onServicesChanged, OC_CONTYPE )) {
+				if(!connect(slm.data(), &ServiceLevelManager::servicesChanged, this, &ServicesDebugWidget::onServicesChanged, OC_CONTYPE)) {
 					qWarning()<<"ERROR: Could not connect";
 				}
 			}
@@ -50,13 +50,13 @@ void ServicesDebugWidget::configure(QSharedPointer <Node> node)
 			qWarning()<<"WARNING: No node";
 		}
 
-		if(!connect(ui->pushButtonUpdateRealtime, &QPushButton::toggled, this, &ServicesDebugWidget::onRealtimeChanged, OC_CONTYPE )) {
+		if(!connect(ui->pushButtonUpdateRealtime, &QPushButton::toggled, this, &ServicesDebugWidget::onRealtimeChanged, OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
 		// We sacrifice quality since this is for debugging purpose onle and we want this to have the least impact on the runtime of non-debug code
 		mTimer.setTimerType(Qt::VeryCoarseTimer);
 		mTimer.setInterval(1000);// 1 FPS
-		if(!connect(&mTimer, &QTimer::timeout, this, &ServicesDebugWidget::onTimer, OC_CONTYPE )) {
+		if(!connect(&mTimer, &QTimer::timeout, this, &ServicesDebugWidget::onTimer, OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
 		onRealtimeChanged(ui->pushButtonUpdateRealtime->isChecked());
@@ -148,7 +148,7 @@ void ServicesDebugWidget::on_pushButtonUpdate_clicked()
 void ServicesDebugWidget::onServicesChanged()
 {
 	OC_METHODGATE();
-	qDebug()<<"SERVICES CHANGED";
+	//qDebug()<<"SERVICES CHANGED";
 	updateServiceTable();
 }
 
@@ -170,7 +170,7 @@ void ServicesDebugWidget::onTimer()
 	OC_METHODGATE();
 	const quint64 blinkSize=1000;
 	auto p=palette();
-	auto o=p.color(QPalette::Background);
+	auto o=p.color(QPalette::Window);
 	const auto now=utility::time::currentMsecsSinceEpoch<quint64>();
 	const quint64 time=qBound<quint64>(0, (now-mLastUpdate), blinkSize);
 	const qreal raw=static_cast<qreal>(blinkSize-time)/ static_cast<qreal>(blinkSize);
@@ -178,7 +178,7 @@ void ServicesDebugWidget::onTimer()
 	if(f>=0.0) {
 		const QColor c=utility::color::mix(o, Qt::red, f);
 		//qDebug()<<"COLOR: "<<c<< ", f="<<f<< ", raw="<<raw<< ", time="<<time;
-		p.setColor(QPalette::Background, c);
+		p.setColor(QPalette::Window, c);
 		ui->tableWidgetServices->setPalette(p);
 	}
 }

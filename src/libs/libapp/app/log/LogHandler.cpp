@@ -15,8 +15,7 @@ LogHandler::LogHandler()
 }
 
 
-static void octomyLogMessageHandler(QtMsgType type, const QMessageLogContext &ctx, const QString &msg)
-{
+QString LogHandler::formatLogLine(QDateTime now, QtMsgType type, const QMessageLogContext &ctx, const QString &msg){
 	QString severity;
 	//std::cerr<<"bob"<<std::endl;
 	switch (type) {
@@ -36,50 +35,61 @@ static void octomyLogMessageHandler(QtMsgType type, const QMessageLogContext &ct
 		severity="I";
 		break;
 	}
-	const QDateTime now=QDateTime::currentDateTimeUtc();
-	const QString line=QString::number(ctx.line);
-	const QString file=QString::fromLocal8Bit(ctx.file);
-	const QString fun=QString::fromLocal8Bit(ctx.function);
-	const QString exe=QFileInfo( QCoreApplication::applicationFilePath()).fileName();
-	QStringList list=msg.split("[\n\r]", QString::SkipEmptyParts);
-	for(QString str:list) {
-		QString out;
-		if(str=="link  hasn't been detected!") {
-			//
-			//out="LOLBOB";
-		}
-		if(str.startsWith("   Loc: [")) {
-			out=str;
-		} else {
-			out=QString("%1: [%2] %3 - @%5:%4 - %6 - %7")
-				.arg(severity,now.toString("hh:mm:ss.zzz"), exe, line,file,fun, str);
-		}
-		bool filter=false;
-		if(str.contains("hasn't been detected!")) {
-			volatile QString old=str;
-			filter=true;
-		}
-		if(str.contains("Cannot queue argument")) {
-			volatile QString old=str;
-			//filter=true;
-		}
-		if(!filter) {
-			std::cerr << out.toStdString() <<std::endl;
-		}
-		if(false) {
-			QFile outFile("log.txt");
-			outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-			QTextStream ts(&outFile);
-			ts << out << endl;
-		}
-
+	const QString line = QString::number(ctx.line);
+	const QString file = QString::fromLocal8Bit(ctx.file);
+	const QString fun = QString::fromLocal8Bit(ctx.function);
+	//std::cout<<"AAAA\n";
+	const QString exe = QFileInfo( QCoreApplication::applicationFilePath()).fileName();
+	//std::cout<<"BBBB\n";
+	bool filter = false;
+	if(msg.startsWith("OC_RECUSTION_BREAKER")){
+		filter = true;
 	}
+	if(msg == "link  hasn't been detected!") {
+		//filter = true;
+	}
+	if(msg.contains("hasn't been detected!")) {
+		filter = true;
+	}
+	if(msg.contains("Cannot queue argument")) {
+		//filter=true;
+	}
+	QString out;
+	if(!filter) {
+		if(msg.startsWith("   Loc: [")) {
+			out = msg;
+		}
+		else{
+			out = QString("%1: [%2] %3 - @%5:%4 - %6 - %7").arg(severity, now.toString("hh:mm:ss.zzz"), exe, line, file, fun, msg);
+		}
+	}
+	return out;
+}
 
+
+void LogHandler::octomyLogMessageHandler(QtMsgType type, const QMessageLogContext &ctx, const QString &msg)
+{
+	const QDateTime now = QDateTime::currentDateTimeUtc();
+	QStringList list = msg.split("[\n\r]", Qt::SkipEmptyParts);
+	QString out;
+	auto &output = type == QtWarningMsg || type == QtCriticalMsg || type == QtFatalMsg? std::cerr:std::cout;
+	for(auto &str:list) {
+		auto line = LogHandler::formatLogLine(now, type, ctx, str).toStdString();
+		if(line!=""){
+			output << line << std::endl;
+		}
+	}
+	if(false) {
+		QFile outFile("log.txt");
+		outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+		QTextStream ts(&outFile);
+		ts << out << "\n";
+	}
 }
 
 
 
 void LogHandler::setLogging(bool log)
 {
-	qInstallMessageHandler(log?octomyLogMessageHandler:0);
+	qInstallMessageHandler(log?LogHandler::octomyLogMessageHandler:nullptr);
 }

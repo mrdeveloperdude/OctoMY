@@ -17,6 +17,13 @@ contains(DEFINES, OC_USE_TESTS_BASIC){
 
 	message(ADDING BASIC TESTS TO BUILD)
 	TEST_PROJECTS+= \
+		testVoice \
+		testAudioStream \
+		testAppLauncher \
+		testLogHandler \
+		testMarkdownParser \
+		testMarkdownEditor \
+		testPlanEditor \
 		testAddressBook \
 		testAddressList \
 		testAgentStateCourier \
@@ -102,6 +109,8 @@ contains(DEFINES, OC_USE_TESTS_WEB){
 contains(DEFINES, OC_USE_TESTS_SELECTED){
 	message(ADDING 'SELECTED' TESTS TO BUILD)
 	TEST_PROJECTS+= \
+#		testAudioStream \
+#		testAppLauncher \
 #		testAddressBook \
 #		testAddressList \
 #		testAgentStateCourier \
@@ -130,22 +139,26 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testKey \
 #		testKeyStore \
 #		testLightWidget \
+#		testLogHandler \
 #		testLocalAddressList \
+#		testMarkdownParser \
+#		testMarkdownEditor \
 #		testMapEditor \
 #		testNameGenerator \
-#		testNetworkAddress \
-#		testNetworkSettingsWidget \
+		testNetworkAddress \
+		testNetworkSettingsWidget \
 #		testNodeTypeRole \
 #		testOpenCL ## CONDITONAL \
 #		testParser \
-#		testPortableID \
+		testPortableID \
 #		testPoseMappingWidget \
+#		testPlanEditor \
 #		testRateCalculator \
 #		testRandom \
 #		testServiceManager \
 #		testServotor32Controller \
 #		testSimpleDataStore \
-		testStore \
+#		testStore \
 #		testStreamCodec \
 #		testSyncParameter \
 #		testTaskQueue \
@@ -153,6 +166,7 @@ contains(DEFINES, OC_USE_TESTS_SELECTED){
 #		testTrustSymbolWidget \
 #		testTryToggle \
 #		testUtility \
+#		testVoice \
 #		testZooComms \
 
 

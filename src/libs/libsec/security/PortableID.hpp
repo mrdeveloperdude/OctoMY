@@ -1,7 +1,6 @@
 #ifndef PORTABLEID_HPP
 #define PORTABLEID_HPP
 
-#include "node/NodeRole.hpp"
 #include "node/NodeType.hpp"
 
 #include <QString>

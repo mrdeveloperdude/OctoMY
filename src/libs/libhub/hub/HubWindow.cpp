@@ -2,39 +2,26 @@
 
 #include "ui_HubWindow.h"
 
-#include "agent/Agent.hpp"
-#include "widgets/agent/AgentWindow.hpp"
+
+#include "Hub.hpp"
+#include "agent/AgentConstants.hpp"
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsSession.hpp"
-#include "comms/messages/MessageType.hpp"
 #include "gait/GaitController.hpp"
-#include "hellocl/HelloGLCLViewRenderer.hpp"
-#include "Hub.hpp"
-#include "hardware/controllers/servotor32/Servotor32ControllerWidget.hpp"
-#include "client/ClientModel.hpp"
-
-#include "client/remote/RemoteClientWidget.hpp"
-#include "remote/Remote.hpp"
-#include "widgets/remote/RemoteWindow.hpp"
+#include "pose/PoseMapping.hpp"
 #include "security/Key.hpp"
 #include "trigger/Action.hpp"
 #include "trigger/Condition.hpp"
-#include "trigger/TriggerSet.hpp"
 #include "trigger/Trigger.hpp"
-#include "utility/time/ScopedTimer.hpp"
-
+#include "trigger/TriggerSet.hpp"
 #include "uptime/ConnectionType.hpp"
-#include "uptime/New.hpp"
 #include "uptime/MethodGate.hpp"
-
-
+#include "uptime/New.hpp"
 #include "utility/graphics/WidgetCaptureTool.hpp"
-#include "widgets/hardware/HardwareTemplate.hpp"
-#include "widgets/hexedit/QHexEditData.hpp"
+#include "utility/random/Random.hpp"
 #include "widgets/hexedit/QHexEdit.hpp"
+#include "widgets/hexedit/QHexEditData.hpp"
 #include "zbar/ZBarScanner.hpp"
-#include "client/zoo/ZooClient.hpp"
-#include "agent/AgentConstants.hpp"
 
 
 #include <QScrollBar>
@@ -44,6 +31,7 @@
 #include <QStringList>
 #include <QTextStream>
 #include <QProcess>
+#include <QSplashScreen>
 
 
 HubWindow::HubWindow(QWidget *parent)
@@ -90,7 +78,7 @@ void HubWindow::configure()
 		auto settings=s.data();
 
 		restoreGeometry(settings->getCustomSettingByteArray("window.geometry"));
-		QSplashScreen *splash=OC_NEW QSplashScreen(this, QPixmap(":/images/hub_butterfly.svg"), Qt::WindowStaysOnTopHint);
+		QSplashScreen *splash=OC_NEW QSplashScreen(this->screen(), QPixmap(":/images/hub_butterfly.svg"), Qt::WindowStaysOnTopHint);
 		splash->show();
 		mSummaryTimer.setInterval(100);
 		ui->widgetPairing->configure(h);
@@ -550,7 +538,7 @@ void HubWindow::on_lineEditQR_textChanged(const QString &text)
 void HubWindow::on_pushButtonRandomIdenticonID_clicked()
 {
 	OC_METHODGATE();
-	QString id=Key::hash(QString::number(qrand()));
+	QString id=Key::hash(QString::number(utility::random::qrand()));
 	ui->lineEditIdenticonID->setText(id);
 }
 

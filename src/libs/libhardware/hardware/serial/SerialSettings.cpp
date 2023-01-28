@@ -166,7 +166,7 @@ QSerialPort::Parity parityFromString(QString string)
 	parityFromStringCASE(OddParity,"Odd");
 	parityFromStringCASE(SpaceParity,"Space");
 	parityFromStringCASE(MarkParity,"Mark");
-	return QSerialPort::UnknownParity;
+	return QSerialPort::NoParity;
 
 #undef parityFromStringCASE
 }
@@ -191,7 +191,7 @@ QSerialPort::StopBits stopBitsFromString(QString string)
 	stopBitsFromStringCASE(OneStop,"1");
 	//stopBitsFromStringCASE(OneAndHalfStop,"1.5");
 	stopBitsFromStringCASE(TwoStop,"2");
-	return QSerialPort::UnknownStopBits;
+	return QSerialPort::OneStop;
 #undef stopBitsFromStringCASE
 }
 
@@ -216,6 +216,6 @@ QSerialPort::FlowControl flowControlFromString(QString string)
 	flowControlFromStringCASE(NoFlowControl,"None");
 	flowControlFromStringCASE(HardwareControl,"RTS/CTS");
 	flowControlFromStringCASE(SoftwareControl,"XON/XOFF");
-	return QSerialPort::UnknownFlowControl;
+	return QSerialPort::NoFlowControl;
 #undef flowControlFromStringCASE
 }

@@ -5,9 +5,10 @@
 NetworkSettingsTestWidget::NetworkSettingsTestWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::NetworkSettingsTestWidget)
-	, mAddresslist(1337)
+	, mAddresslist(new LocalAddressList)
 {
 	ui->setupUi(this);
+	mAddresslist->configure(1337);
 }
 
 
@@ -26,5 +27,5 @@ void NetworkSettingsTestWidget::on_pushButtonConfigure_clicked()
 
 void NetworkSettingsTestWidget::on_pushButtonToggleTimer_toggled(bool checked)
 {
-	mAddresslist.setTimerEnabled(checked);
+	mAddresslist->activate(checked);
 }

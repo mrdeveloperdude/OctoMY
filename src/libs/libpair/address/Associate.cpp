@@ -336,7 +336,7 @@ QVariantMap Associate::toVariantMap()
 	map["name"]=mName;
 	map["gender"]=mGender;
 	//map["pins"]=mPins;//DONT STORE PINS THEY ARE EPHEMERAL
-	map["trusts"]=QStringList(mTrusts.toList());
+	map["trusts"]=QStringList(mTrusts.begin(), mTrusts.end());
 	return map;
 }
 
@@ -374,7 +374,7 @@ QString Associate::toString()
 		   +", role:"+nodeRoleToString(mRole)
 		   +", type:"+nodeTypeToString(mType)
 		   +", pins:"+mPins.join(";")
-		   +", trusts:"+QStringList(mTrusts.toList()).join(";");
+		   +", trusts:"+QStringList(mTrusts.begin(), mTrusts.end()).join(";");
 }
 
 
@@ -393,7 +393,7 @@ QMap<QString, QString> Associate::toMap()
 	map["role"]=nodeRoleToString(mRole);
 	map["type"]=nodeTypeToString(mType);
 	map["pins"]=mPins.join(";");
-	map["trusts"]=QStringList(mTrusts.toList()).join(";");
+	map["trusts"]=QStringList(mTrusts.begin(), mTrusts.end()).join(";");
 	return map;
 }
 

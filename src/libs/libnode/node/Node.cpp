@@ -8,13 +8,11 @@
 
 #include "NodeWindow.hpp"
 
-#include "camera/CameraList.hpp"
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsSession.hpp"
 #include "comms/CommsCarrierUDP.hpp"
 #include "comms/couriers/blob/BlobCourier.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
-
 
 #include "address/Associate.hpp"
 #include "discovery/AddressBook.hpp"
@@ -24,7 +22,6 @@
 #include "client/ClientList.hpp"
 
 #include "uptime/ConnectionType.hpp"
-#include "agent/AgentConstants.hpp"
 #include "app/AppContext.hpp"
 #include "app/Constants.hpp"
 #include "app/launcher/IAppLauncher.hpp"
@@ -237,7 +234,7 @@ void Node::serviceActivation(const bool on)
 	if(mAppConfigureHelper.isConfiguredAsExpected()) {
 		mServiceLevelManager->enableLevel(mAlwaysServiceLevel->name(), on, [](bool ok) {
 			Q_UNUSED(ok);
-			qDebug()<<"EUREKA ServiceActivation returned: "<<ok;
+			//qDebug()<<"EUREKA ServiceActivation returned: "<<ok;
 		});
 	}
 }
@@ -504,7 +501,7 @@ void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 		mNodeIdentity=nodeID;
 		if(!mNodeIdentity.isNull()) {
 			auto map=mNodeIdentity->toVariantMap();
-			qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED: "<<map<< " FROM nodeID="<<*mNodeIdentity;
+			//qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED: "<<map<< " FROM nodeID="<<*mNodeIdentity;
 			mLocalIdentityStore->fromMap(map);
 			/*
 			mLocalIdentityStore->synchronize([=](ASEvent<QVariantMap> &ase2) {
@@ -512,7 +509,7 @@ void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 			});
 			*/
 			mLocalIdentityStore->save([this](QSharedPointer<SimpleDataStore>, bool ok) {
-				qDebug()<<" HOPEFULLY WE SAVED IDENTITY TO DISK: "<<mNodeIdentity->toString()<<" OK="<<ok;
+				//qDebug()<<" HOPEFULLY WE SAVED IDENTITY TO DISK: "<<mNodeIdentity->toString()<<" OK="<<ok;
 				if(ok) {
 					emit identityChanged();
 				}

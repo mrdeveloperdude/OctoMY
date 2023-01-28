@@ -342,7 +342,6 @@
              <widget class="QLabel" name="label_8">
               <property name="font">
                <font>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -355,7 +354,6 @@
              <widget class="QLabel" name="label_9">
               <property name="font">
                <font>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -561,7 +559,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidgetDevelopment">
           <property name="currentIndex">
-           <number>0</number>
+           <number>9</number>
           </property>
           <widget class="QWidget" name="tabTriggers">
            <attribute name="title">
@@ -1305,6 +1303,35 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
+   <class>LogWidget</class>
+   <extends>QPlainTextEdit</extends>
+   <header location="global">widgets/LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>TryToggle</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/TryToggle.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ActuatorManagerWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/hardware/actuator/ActuatorManagerWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MapEditor</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/MapEditor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SpeechControlWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/voice/SpeechControlWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>PlanEditor</class>
    <extends>QWidget</extends>
    <header location="global">widgets/planedit/PlanEditor.hpp</header>
@@ -1341,38 +1368,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>TryToggle</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/TryToggle.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ActuatorManagerWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/hardware/actuator/ActuatorManagerWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>SerialSettingsWidget</class>
    <extends>QWidget</extends>
    <header location="global">hardware/serial/SerialSettingsWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LogWidget</class>
-   <extends>QPlainTextEdit</extends>
-   <header location="global">widgets/LogWidget.hpp</header>
-  </customwidget>
-  <customwidget>
-   <class>MapEditor</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/MapEditor.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SpeechControlWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">widgets/audio/SpeechControlWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

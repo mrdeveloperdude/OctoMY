@@ -44,7 +44,7 @@ void CarrierDebugWidget::configure(QSharedPointer <Node> node)
 					if(!connect(car.data(), &CommsCarrier::carrierReadyRead, this, [this, car]() {
 					//qDebug().noquote().nospace()<<"CommsCarrier read ready";
 						onUpdate();
-					}, OC_CONTYPE )) {
+					}, OC_CONTYPE_NON_UNIQUE)) {
 						qWarning()<<"ERROR: Could not connect";
 					}
 
@@ -53,14 +53,14 @@ void CarrierDebugWidget::configure(QSharedPointer <Node> node)
 						ui->widgetStatusConnectionStarted->setLightOn(car->isConnectionStarted());
 						ui->widgetStatusConnectionConnected->setLightOn(car->isConnected());
 						ui->widgetStatusConnectionMaintained->setLightOn(car->isConnectionMaintained());
-					}, OC_CONTYPE )) {
+					}, OC_CONTYPE_NON_UNIQUE)) {
 						qWarning()<<"ERROR: Could not connect";
 					}
 
 					if(!connect(car.data(), &CommsCarrier::carrierError, this, [this, car](const QString errorStr) {
 					qDebug().noquote().nospace()<<"CommsCarrier error: errorStr="<<errorStr;
 						ui->labelCarrierType->setText(errorStr);
-					}, OC_CONTYPE )) {
+					}, OC_CONTYPE_NON_UNIQUE)) {
 						qWarning()<<"ERROR: Could not connect";
 					}
 
@@ -68,7 +68,7 @@ void CarrierDebugWidget::configure(QSharedPointer <Node> node)
 					//qDebug().noquote().nospace()<<"CommsCarrier sending opportunity: now="<<now;
 						ui->labelLastSendingOpportunity->setText(utility::string::humanReadableElapsedMS(now));
 						onUpdate();
-					}, OC_CONTYPE )) {
+					}, OC_CONTYPE_NON_UNIQUE)) {
 						qWarning()<<"ERROR: Could not connect";
 					}
 				} else {

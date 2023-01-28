@@ -29,10 +29,13 @@ CommsCarrierUDP::CommsCarrierUDP(QObject *parent)
 	if(!QObject::connect(&mUDPSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()), OC_CONTYPE)) {
 		qWarning()<<"Could not connect UDP readyRead";
 	}
+	
+	// TODO: Handle missing error signal
 	qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
-	if(!QObject::connect(&mUDPSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)), OC_CONTYPE)) {
+	if(!QObject::connect(&mUDPSocket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)), OC_CONTYPE)) {
 		qWarning()<<"Could not connect UDP error";
 	}
+	
 
 }
 

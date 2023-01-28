@@ -6,7 +6,7 @@
 
 #include <QCoreApplication>
 
-#include <QMutex>
+#include <QRecursiveMutex>
 #include <QDebug>
 #include <QAbstractEventDispatcher>
 
@@ -98,9 +98,9 @@ public:
 	}
 
 
-	inline QMutex *mutex() const
+	inline QRecursiveMutex *mutex() const
 	{
-		return reinterpret_cast<QMutex *>(val & ~quintptr(1u));
+		return reinterpret_cast<QRecursiveMutex *>(val & ~quintptr(1u));
 	}
 
 };
@@ -111,7 +111,7 @@ class HandleCounter
 private:
 	quint64 handleCounter;
 	QMap<Qt::HANDLE, quint64> handleMap;
-	QMutex handleMutex;
+	QRecursiveMutex handleMutex;
 
 public:
 

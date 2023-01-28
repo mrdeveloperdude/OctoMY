@@ -14,7 +14,7 @@ namespace concurrent
 HandleCounter::HandleCounter()
 	: handleCounter(0)
 	, handleMap()
-	, handleMutex(QMutex::Recursive)
+	//, handleMutex
 {
 
 }

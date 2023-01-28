@@ -1,10 +1,7 @@
 #include "ZooMain.hpp"
 #include "zoo/ZooServer.hpp"
 
-#include "utility/time/HumanTime.hpp"
-
 #include "app/log/LogHandler.hpp"
-
 
 #include "app/AppContext.hpp"
 #include "app/Constants.hpp"
@@ -17,7 +14,6 @@
 
 
 int main(int argc, char *argv[]){
-	qsrand(utility::time::currentMsecsSinceEpoch<uint>());
 	LogHandler::setLogging(true);
 
 	QCoreApplication app(argc, argv);
@@ -53,7 +49,7 @@ int main(int argc, char *argv[]){
 	QCommandLineOption remotePortOption(QStringList() <<  "o" << "remote-port", QCoreApplication::translate("main", "Select remote port to target."), QCoreApplication::translate("main", "remote-port"));
 	opts.addOption(remotePortOption);
 
-	QCommandLineOption headlessOption(QStringList() <<  "h" << "head-less", QCoreApplication::translate("main", "Don't display GUI"), QCoreApplication::translate("main", "head-less"));
+	QCommandLineOption headlessOption(QStringList() <<  "e" << "head-less", QCoreApplication::translate("main", "Run in GUI-less environment"), QCoreApplication::translate("main", "head-less"));
 	opts.addOption(headlessOption);
 
 	// Process the actual command line arguments given by the user

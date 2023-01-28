@@ -7,6 +7,12 @@
 
 #define OC_TEST_RESOURCES_BASE ":/icons/"
 
+
+#define QTEST_ADD_GPU_BLACKLIST_SUPPORT_DEFS
+#define QTEST_ADD_GPU_BLACKLIST_SUPPORT
+
+
+
 #define OC_TEST_ICON(testType, objectType) \
 	Q_INIT_RESOURCE(test_resources); \
 	QDirIterator it(":", QDirIterator::Subdirectories); \
@@ -39,6 +45,8 @@ QTEST_ADD_GPU_BLACKLIST_SUPPORT_DEFS \
 QT_END_NAMESPACE \
 int main(int argc, char *argv[]) \
 { \
+	//QApplication::setAttribute(Qt::OCTOMY_QT_OGL_APP_ATTRIBUTE); \
+	//QApplication::setAttribute(Qt::AA_ShareOpenGLContexts); \
 	QSurfaceFormat defFormat=QSurfaceFormat::defaultFormat(); \
 	QSurfaceFormat format = defFormat; \
 	format.setVersion( OCTOMY_QT_OGL_VERSION_MAJOR, OCTOMY_QT_OGL_VERSION_MINOR ); \
@@ -54,8 +62,6 @@ int main(int argc, char *argv[]) \
 	qDebug() << defFormat<<", renderableType=" << defFormat.renderableType(); \
 	qDebug() << " ###                               to: "; \
 	qDebug() << format<<", renderableType=" << format.renderableType(); \
-	QApplication::setAttribute(Qt::OCTOMY_QT_OGL_APP_ATTRIBUTE); \
-	QApplication::setAttribute(Qt::AA_ShareOpenGLContexts); \
 	QApplication app(argc, argv); \
 	qDebug()<<"Starting " #testType " for " #objectType; \
 	app.setAttribute(Qt::AA_Use96Dpi, true); \
@@ -94,9 +100,9 @@ QTEST_ADD_GPU_BLACKLIST_SUPPORT_DEFS \
 QT_END_NAMESPACE \
 int main(int argc, char *argv[]) \
 { \
+	QApplication::setAttribute(Qt::AA_Use96Dpi, true); \
 	QApplication app(argc, argv); \
 	qDebug()<<"Starting " #testType " for " #objectType; \
-	app.setAttribute(Qt::AA_Use96Dpi, true); \
 	OC_TEST_ICON(testType, objectType) \
 	QTEST_DISABLE_KEYPAD_NAVIGATION \
 	QTEST_ADD_GPU_BLACKLIST_SUPPORT \
@@ -108,9 +114,9 @@ int main(int argc, char *argv[]) \
 #define OC_TEST_MAIN_GUILESS(testType, objectType) \
 int main(int argc, char *argv[]) \
 { \
+	QApplication::setAttribute(Qt::AA_Use96Dpi, true); \
 	QCoreApplication app(argc, argv); \
 	qDebug()<<"Starting " #testType " for " #objectType; \
-	app.setAttribute(Qt::AA_Use96Dpi, true); \
 	OC_TEST_ICON(testType, objectType) \
 	OC_TEST_END(testType, objectType) \
 }

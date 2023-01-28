@@ -39,13 +39,13 @@ void DiscoveryClientDebugWidget::configure(QSharedPointer <Node> node)
 				ui->widgetRateCalculatorTX->configure(&dc->mTXRate);
 				if(!connect(dc.data(), &DiscoveryClient::discoverRequest, ui->widgetStatusTX, [this]() {
 				ui->widgetStatusTX->blink(Constants::OC_STATUS_BLINK_TIME);
-				}, OC_CONTYPE )) {
+				}, OC_CONTYPE_NON_UNIQUE)) {
 					qWarning()<<"ERROR: Could not connect";
 				}
 				if(!connect(dc.data(), &DiscoveryClient::discoverResponse, ui->widgetStatusRX, [this](const bool ok) {
 				ui->widgetStatusRX->setLightColor(ok?LightWidget::sDefaultOKColor:LightWidget::sDefaultErrorColor);
 					ui->widgetStatusRX->blink(Constants::OC_STATUS_BLINK_TIME);
-				}, OC_CONTYPE )) {
+				}, OC_CONTYPE_NON_UNIQUE)) {
 					qWarning()<<"ERROR: Could not connect";
 				}
 				update();
@@ -58,7 +58,7 @@ void DiscoveryClientDebugWidget::configure(QSharedPointer <Node> node)
 		mTimer.setTimerType(Qt::VeryCoarseTimer);
 		mTimer.setInterval(1000);// 1 FPS
 		mTimer.setSingleShot(false);
-		if(!connect(&mTimer, &QTimer::timeout, this, &DiscoveryClientDebugWidget::onUpdate, OC_CONTYPE )) {
+		if(!connect(&mTimer, &QTimer::timeout, this, &DiscoveryClientDebugWidget::onUpdate, OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
 		//mTimer.start();

@@ -26,7 +26,7 @@ QHexEdit::QHexEdit(QWidget *parent): QFrame(parent)
 
 	this->_hlayout = OC_NEW QHBoxLayout();
 	this->_hlayout->setSpacing(0);
-	this->_hlayout->setMargin(0);
+	this->_hlayout->setContentsMargins(0,0,0,0);
 	this->_hlayout->addWidget(this->_scrollarea);
 	this->_hlayout->addWidget(this->_vscrollbar);
 

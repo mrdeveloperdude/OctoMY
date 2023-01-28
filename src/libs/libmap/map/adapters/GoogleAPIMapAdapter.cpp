@@ -236,7 +236,7 @@ namespace qmapcontrol
 
 		// convert the bytes to string and make url-safe by replacing '+' and '/' characters
 		QByteArray base64signature;
-		base64signature.append(rawSignature);
+		base64signature.append(rawSignature.toLatin1());
 
 		// base 64 encode the binary signature
 		QString result = base64signature.toBase64();

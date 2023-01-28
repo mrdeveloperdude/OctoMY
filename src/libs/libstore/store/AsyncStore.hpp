@@ -128,16 +128,16 @@ public:
 	void setSynchronousMode(bool isSync);
 
 public:
-
 	AsyncBackend<T> &backend();
 	AsyncFrontend<T> &frontend();
 
 public:
-
 	QString filename() const;
 	bool fileExists() const;
 	bool ready();
 
+private:
+	void logCounters(quint64 oldDiskCount);
 
 private:
 	ASEvent<T> enqueueEvent(ASEvent<T> trans);
@@ -270,9 +270,9 @@ void AsyncStore<T>::activate(const bool on, std::function<void(bool)> callBack)
 			// Start transaction processing in separate thread
 			mCompleteFuture=QtConcurrent::run([this]() {
 				OC_METHODGATE();
-				qDebug()<<"Entered AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
+				//qDebug()<<"Entered AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
 				processEvents();
-				qDebug()<<"Exiting AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
+				//qDebug()<<"Exiting AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
 				listEvents();
 			});
 			/*
@@ -291,9 +291,9 @@ void AsyncStore<T>::activate(const bool on, std::function<void(bool)> callBack)
 	} else {
 		synchronize();
 		complete();
-		qDebug()<<" #-#-# Waiting for asyncstore future finish: running="<< mCompleteFuture.isRunning() << ", started="<< mCompleteFuture.isStarted() << ", paused="<< mCompleteFuture.isPaused() << ", canceled="<< mCompleteFuture.isCanceled();
+		///qDebug()<<" #-#-# Waiting for asyncstore future finish: running="<< mCompleteFuture.isRunning() << ", started="<< mCompleteFuture.isStarted() << ", paused="<< mCompleteFuture.isPaused() << ", canceled="<< mCompleteFuture.isCanceled();
 		mCompleteFuture.waitForFinished();
-		qDebug()<<" #-#-# Got asyncstore future finish: running="<< mCompleteFuture.isRunning() << ", started="<< mCompleteFuture.isStarted() << ", paused="<< mCompleteFuture.isPaused() << ", canceled="<< mCompleteFuture.isCanceled();
+		//qDebug()<<" #-#-# Got asyncstore future finish: running="<< mCompleteFuture.isRunning() << ", started="<< mCompleteFuture.isStarted() << ", paused="<< mCompleteFuture.isPaused() << ", canceled="<< mCompleteFuture.isCanceled();
 
 		if(nullptr!=callBack) {
 			callBack(true);
@@ -421,20 +421,24 @@ quint64 AsyncStore<T>::autoIncrement()
 	return ++mAutoIncrement;
 }
 
+template <typename T>
+void AsyncStore<T>::logCounters(quint64 oldDiskCount){
+	qDebug()<<"COUNTERS FOR "<<filename()<<":";
+	qDebug()<<" MEM COUNTER IS  " <<mMemoryCounter;
+	qDebug()<<"DISK COUNTER IS  " <<mDiskCounter<<" (FROM "<<oldDiskCount<<")";
+	qDebug()<<"AUTO COUNTER IS  " <<mAutoIncrement;
+	qDebug()<<"	    JOURNAL IS  "<<journal();
+}
+
 
 template <typename T>
 void AsyncStore<T>::setDiskCounter(quint64 newValue)
 {
 	OC_METHODGATE();
-	const auto oldValue=mDiskCounter;
+	const auto oldDiskCount=mDiskCounter;
 	mDiskCounter=newValue;
 	addJournal("set-disk="+QString::number(mDiskCounter));
-	qDebug()<<"COUNTERS FOR "<<filename()<<":";
-	qDebug()<<" MEM COUNTER IS  " <<mMemoryCounter;
-	qDebug()<<"DISK COUNTER IS  " <<mDiskCounter<<" (FROM "<<oldValue<<")";
-	qDebug()<<"AUTO COUNTER IS  " <<mAutoIncrement;
-	qDebug()<<"	    JOURNAL IS  "<<journal();
-
+	if(false)logCounters(oldDiskCount);
 }
 
 
@@ -442,14 +446,10 @@ template <typename T>
 void AsyncStore<T>::setMemoryCounter(quint64 newValue)
 {
 	OC_METHODGATE();
-	const auto oldValue=mMemoryCounter;
+	const auto oldDiskCount=mMemoryCounter;
 	mMemoryCounter=newValue;
 	addJournal("set-mem="+QString::number(mMemoryCounter));
-	qDebug()<<"COUNTERS FOR "<<filename()<<":";
-	qDebug()<<" MEM COUNTER IS  " <<mMemoryCounter<<" (FROM "<<oldValue<<")";
-	qDebug()<<"DISK COUNTER IS  " <<mDiskCounter;
-	qDebug()<<"AUTO COUNTER IS  " <<mAutoIncrement;
-	qDebug()<<"	    JOURNAL IS  "<<journal();
+	if(false)logCounters(oldDiskCount);
 }
 
 
@@ -784,10 +784,11 @@ bool AsyncStore<T>::completeSync()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
-		qDebug()<<"Entering Sync Completion";
+		//qDebug()<<"Entering Sync Completion";
+		// TODO: IS THIS CORRECT? IT just sets ok and then pretends everything is ok
 		bool ok=true;
 		mCompleted=true;
-		qDebug()<<"Exiting Sync Completion with ok="<<ok;
+		//qDebug()<<"Exiting Sync Completion with ok="<<ok;
 		addJournal(QString("complete=%1").arg(ok?"ok":"fail"));
 		mTransactions.activate(false);
 		return ok;

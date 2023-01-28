@@ -40,7 +40,7 @@ void CommsDebugWidget::configure(QSharedPointer <Node> node)
 					ui->widgetStatusConnectionActual->setLightOn(isConnected);
 					ui->widgetStatusConnectionWanted->setLightOn(needsConnection);
 
-				}, OC_CONTYPE )) {
+				}, OC_CONTYPE_NON_UNIQUE)) {
 					qWarning()<<"ERROR: Could not connect";
 				}
 			}
@@ -49,13 +49,13 @@ void CommsDebugWidget::configure(QSharedPointer <Node> node)
 			qWarning()<<"WARNING: No node";
 		}
 		/*
-		if(!connect(ui->checkBoxUpdateRealtime, &QCheckBox::toggled, this, &ServicesDebugWidget::onRealtimeChanged, OC_CONTYPE )) {
+		if(!connect(ui->checkBoxUpdateRealtime, &QCheckBox::toggled, this, &ServicesDebugWidget::onRealtimeChanged, OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
 		// We sacrifice quality since this is for debugging purpose onle and we want this to have the least impact on the runtime of non-debug code
 		mTimer.setTimerType(Qt::VeryCoarseTimer);
 		mTimer.setInterval(1000/15);// 15 FPS
-		if(!connect(&mTimer, &QTimer::timeout, this, &ServicesDebugWidget::onTimer, OC_CONTYPE )) {
+		if(!connect(&mTimer, &QTimer::timeout, this, &ServicesDebugWidget::onTimer, OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
 		onRealtimeChanged(ui->checkBoxUpdateRealtime->isChecked());

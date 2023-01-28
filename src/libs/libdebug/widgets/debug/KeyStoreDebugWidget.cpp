@@ -35,7 +35,7 @@ void KeyStoreDebugWidget::configure(QSharedPointer <Node> node)
 					ks->save();
 				}
 			}
-		},OC_CONTYPE)) {
+		},OC_CONTYPE_NON_UNIQUE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
 		if(!connect(this, &SimpleTableDebugWidget::loadButtonPressed, this, [this]() {
@@ -46,7 +46,7 @@ void KeyStoreDebugWidget::configure(QSharedPointer <Node> node)
 					ks->load();
 				}
 			}
-		},OC_CONTYPE)) {
+		},OC_CONTYPE_NON_UNIQUE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
 		if(!connect(this, &SimpleTableDebugWidget::syncButtonPressed, this, [this]() {
@@ -57,7 +57,7 @@ void KeyStoreDebugWidget::configure(QSharedPointer <Node> node)
 					ks->synchronize();
 				}
 			}
-		},OC_CONTYPE)) {
+		},OC_CONTYPE_NON_UNIQUE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
 		if(!connect(this, &SimpleTableDebugWidget::clearButtonPressed, this, [this]() {
@@ -68,7 +68,7 @@ void KeyStoreDebugWidget::configure(QSharedPointer <Node> node)
 					ks->clear();
 				}
 			}
-		},OC_CONTYPE)) {
+		},OC_CONTYPE_NON_UNIQUE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
 	}

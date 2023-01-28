@@ -117,7 +117,7 @@ bool ServiceLevelManager::isServiceLevelRegistered(const QSharedPointer <Service
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		if(serviceLevelByName.isNull()) {
-			qDebug()<<"WARNING: Trying to see if null service level existed";
+			qWarning()<<"WARNING: Trying to see if null service level existed";
 			return false;
 		}
 		return mServiceLevelsList.contains(serviceLevelByName);
@@ -136,7 +136,7 @@ QSet<QString> ServiceLevelManager::wantedServices() const
 				ret+=serviceLevel->serviceNames();
 			}
 		} else {
-			qDebug()<<"WARNING: Invalid service level found while collecting wanted services";
+			qWarning()<<"WARNING: Invalid service level found while collecting wanted services";
 		}
 	}
 	return ret;
@@ -231,7 +231,7 @@ void ServiceLevelManager::synchronizeServiceManager(const std::function<void(con
 			// qDebug().noquote().nospace()<<"**** synchronizeServiceManager wanted="<<wanted<<" unwanted="<<unwanted;
 			// Apply the new recommendation
 			mServiceManager->changeActivation(wanted, unwanted, [this, callBack](bool ok) {
-				qDebug()<<"POLKA=" << ok;
+				//qDebug()<<"POLKA=" << ok;
 				if(nullptr!= callBack) {
 					callBack(ok);
 				}
@@ -262,7 +262,7 @@ void ServiceLevelManager::enableLevels(const QSet<QString> names, const bool on,
 		for(auto name:names) {
 			auto serviceLevel=serviceLevelByName(name);
 			if(!serviceLevel.isNull()) {
-				qDebug()<<"Setting service level "<<name<<" with"<<serviceLevel->serviceNames()<<" to "<<(on?"ACTIVE":"INACTIVE");
+				//qDebug()<<"Setting service level "<<name<<" with"<<serviceLevel->serviceNames()<<" to "<<(on?"ACTIVE":"INACTIVE");
 				serviceLevel->enable(on);
 				changed++;
 			} else {

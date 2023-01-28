@@ -1,7 +1,6 @@
 
 # The libraries in this list will be built as separate projects and linked in at the end. This is suitable for 3rd party code and stand-alone external projects
 AUTOLIBS_SEPARATE += \
-	markdown \
 	qpolarssl \
 	mbedtls \
 	parser \
@@ -13,6 +12,7 @@ AUTOLIBS_SEPARATE += \
 
 # The libraries in this list will be built into one big library called libcombined
 AUTOLIBS_COMBINED += \
+	markdown \
 	util \
 	uptime \
 	rng \
@@ -37,6 +37,7 @@ AUTOLIBS_COMBINED += \
 	puppet \
 	res \
 #	motorics \
+	voice \
 	video \
 	audio \
 	gps \

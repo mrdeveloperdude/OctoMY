@@ -1,11 +1,16 @@
 #include "AudioStream.hpp"
 
+#if USE_AUDIO_STREAM_NOOOOT
+
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 
 #include <QtCore>
-#include <QAudioDeviceInfo>
+
+//#include <QAudioDeviceInfo>
 #include <QAudioFormat>
+
+// TODO: Reimplement with Qt6 media classes
 
 AudioStream::AudioStream(IAudioSource &src, QObject *parent)
 	: QIODevice(parent)
@@ -28,10 +33,15 @@ void AudioStream::init()
 	OC_METHODGATE();
 	format.setSampleRate(44100);
 	format.setChannelCount(1);
+	format.setSampleFormat(QAudioFormat::SampleFormat::Int16);
+	/*
 	format.setSampleSize(16);
 	format.setCodec("audio/pcm");
 	format.setByteOrder(QAudioFormat::LittleEndian);
 	format.setSampleType(QAudioFormat::SignedInt);
+	*/
+	
+	/*
 	QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
 	if (!info.isFormatSupported(format)) {
 		qWarning() << "Default format not supported - trying to use nearest";
@@ -48,6 +58,7 @@ void AudioStream::init()
 	src.init(format);
 	start();
 	out->start(this);
+	*/
 	qDebug()<<"Started";
 }
 
@@ -90,3 +101,5 @@ qint64 AudioStream::bytesAvailable() const
 	OC_METHODGATE();
 	return bufsz;
 }
+
+#endif // USE_AUDIO_STREAM_NOOOOT

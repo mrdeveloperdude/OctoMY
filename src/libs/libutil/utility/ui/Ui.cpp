@@ -31,7 +31,7 @@
 
 
 #include <QKeyEvent>
-#include <QDesktopWidget>
+
 
 #include <QApplication>
 #include <QCoreApplication>
@@ -390,9 +390,11 @@ void fitContent(QTableView &tv)
 
 
 
-void placeInScreen(QWidget &w,QPointF gravity, int pref)
+void placeInScreen(QWidget &w, QPointF gravity, int pref)
 {
 	OC_FUNCTIONGATE();
+	//TODO: Update to support https://doc.qt.io/qt-6/qscreen.html operations instead
+	/*
 	QDesktopWidget *desktop=QApplication::desktop();
 	if(nullptr!=desktop) {
 		const int c=desktop->screenCount();
@@ -404,11 +406,14 @@ void placeInScreen(QWidget &w,QPointF gravity, int pref)
 		//qDebug()<<"GRAV="<<gravity<<", PREF="<<pref<<", WGEOM="<<wgeom<<", GEOM="<<geom<<", GOUT="<<gout;
 		w.move(gout.toPoint());
 	}
+	*/
 }
 
 int nonPrimaryScreen()
 {
 	OC_FUNCTIONGATE();
+	//TODO: Update to support https://doc.qt.io/qt-6/qscreen.html operations instead
+	/*
 	QDesktopWidget *desktop=QApplication::desktop();
 	int pref=0;
 	if(nullptr!=desktop) {
@@ -421,6 +426,8 @@ int nonPrimaryScreen()
 		}
 	}
 	return pref;
+	*/
+	return 0;
 }
 
 

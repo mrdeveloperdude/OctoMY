@@ -3,7 +3,6 @@
 
 
 #include "node/Node.hpp"
-#include "app/launcher/AppLauncher.hpp"
 
 #include "uptime/SharedPointerWrapper.hpp"
 #include "uptime/ConfigureHelper.hpp"
@@ -43,11 +42,19 @@ public:
 
 	// Node interface
 public:
+	// Called by Node::appConfigure();
 	void nodeConfigure() Q_DECL_OVERRIDE;
+
+	// Called by Node::appActivate()
 	void nodeActivate(const bool on) Q_DECL_OVERRIDE;
 
+	// Called by Node::appWindow()
 	QSharedPointer<NodeWindow> nodeWindow() Q_DECL_OVERRIDE;
+
+	// Provide role
 	NodeRole nodeRole() Q_DECL_OVERRIDE;
+
+	// Provide type
 	NodeType nodeType() Q_DECL_OVERRIDE;
 
 	// QEnableSharedFromThis<Agent> interface

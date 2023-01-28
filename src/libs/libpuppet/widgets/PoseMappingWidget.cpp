@@ -135,7 +135,7 @@ void PoseMappingWidget::addButtonPair(quint32 index, QVBoxLayout *hLayout, QStri
 			}
 		}
 
-	}, OC_CONTYPE)) {
+	}, OC_CONTYPE_NON_UNIQUE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 

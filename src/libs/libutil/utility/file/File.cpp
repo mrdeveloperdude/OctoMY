@@ -7,9 +7,6 @@
 #include <QDebug>
 #include <QJsonParseError>
 
-#include <QMediaContent>
-
-
 
 namespace utility
 {
@@ -135,12 +132,16 @@ bool verifyMedia(QString name)
 		} else if(!file.isReadable()) {
 			msg="media not readable";
 		} else {
+			/*
 			QMediaContent mc(name);
 			if(mc.isNull()) {
 				msg="media was null";
 			} else {
 				ret=true;
 			}
+			*/
+			//TODO: Re-implement the check above
+			ret = true;
 		}
 	}
 	if(!ret) {

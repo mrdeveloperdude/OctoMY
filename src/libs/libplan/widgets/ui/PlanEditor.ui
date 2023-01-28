@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Plan Editor</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
@@ -202,6 +202,15 @@
            </color>
           </brush>
          </colorrole>
+         <colorrole role="PlaceholderText">
+          <brush brushstyle="NoBrush">
+           <color alpha="128">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </colorrole>
         </active>
         <inactive>
          <colorrole role="WindowText">
@@ -336,6 +345,15 @@
             <red>0</red>
             <green>0</green>
             <blue>0</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="PlaceholderText">
+          <brush brushstyle="NoBrush">
+           <color alpha="128">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
            </color>
           </brush>
          </colorrole>
@@ -476,6 +494,15 @@
            </color>
           </brush>
          </colorrole>
+         <colorrole role="PlaceholderText">
+          <brush brushstyle="NoBrush">
+           <color alpha="128">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </colorrole>
         </disabled>
        </palette>
       </property>
@@ -494,8 +521,8 @@
       <property name="plainText">
        <string/>
       </property>
-      <property name="tabStopWidth">
-       <number>30</number>
+      <property name="tabStopDistance">
+       <double>30.000000000000000</double>
       </property>
      </widget>
      <widget class="QPlainTextEdit" name="plainTextEditParseErrors">
@@ -637,6 +664,15 @@
            </color>
           </brush>
          </colorrole>
+         <colorrole role="PlaceholderText">
+          <brush brushstyle="NoBrush">
+           <color alpha="128">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </colorrole>
         </active>
         <inactive>
          <colorrole role="WindowText">
@@ -771,6 +807,15 @@
             <red>0</red>
             <green>0</green>
             <blue>0</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="PlaceholderText">
+          <brush brushstyle="NoBrush">
+           <color alpha="128">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
            </color>
           </brush>
          </colorrole>
@@ -911,6 +956,15 @@
            </color>
           </brush>
          </colorrole>
+         <colorrole role="PlaceholderText">
+          <brush brushstyle="NoBrush">
+           <color alpha="128">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </colorrole>
         </disabled>
        </palette>
       </property>
@@ -938,7 +992,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../libcore/resources/icons.qrc">
+      <iconset resource="../../../libres/resources/icons.qrc">
        <normaloff>:/icons/save.svg</normaloff>:/icons/save.svg</iconset>
      </property>
     </widget>
@@ -952,7 +1006,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../libcore/resources/icons.qrc">
+      <iconset resource="../../../libres/resources/icons.qrc">
        <normaloff>:/icons/tidy.svg</normaloff>:/icons/tidy.svg</iconset>
      </property>
     </widget>
@@ -966,7 +1020,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../libcore/resources/icons.qrc">
+      <iconset resource="../../../libres/resources/icons.qrc">
        <normaloff>:/icons/parse.svg</normaloff>:/icons/parse.svg</iconset>
      </property>
     </widget>
@@ -977,11 +1031,11 @@
   <customwidget>
    <class>CodeEditor</class>
    <extends>QPlainTextEdit</extends>
-   <header location="global">widgets/planedit/CodeEditor.hpp</header>
+   <header location="global">widgets/markdown/CodeEditor.hpp</header>
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../../libcore/resources/icons.qrc"/>
+  <include location="../../../libres/resources/icons.qrc"/>
  </resources>
  <connections/>
 </ui>

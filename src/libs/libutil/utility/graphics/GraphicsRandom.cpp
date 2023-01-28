@@ -20,6 +20,8 @@ namespace graphics
 
 
 
+
+
 QRgb randomColor( )
 {
 	return QColor::fromHslF(utility::random::dfrand(), utility::random::dfrand(), utility::random::dfrand(), utility::random::dfrand() ).rgba();
@@ -37,10 +39,10 @@ QImage randomImage(int w, int h)
 		const int area=(w*h)/rr;
 
 		for(int i=0; i<area; ++i) {
-			const QColor c(qrand()%255, qrand()%255, qrand()%255,127);
-			const int r=qrand()%rr;
-			const int x=qrand()%w;
-			const int y=qrand()%h;
+			const QColor c(utility::random::qrand()%255, utility::random::qrand()%255, utility::random::qrand()%255,127);
+			const int r=utility::random::qrand()%rr;
+			const int x=utility::random::qrand()%w;
+			const int y=utility::random::qrand()%h;
 			painter.setBrush(c);
 			painter.drawEllipse(x-r,y-r,r*2,r*2);
 		}
@@ -52,7 +54,7 @@ QImage randomImage(int w, int h)
 QByteArray imageToByteArray(QImage &image )
 {
 	const uchar *bits=image.bits();
-	QByteArray ba(reinterpret_cast<const char *>(bits), image.byteCount());
+	QByteArray ba(reinterpret_cast<const char *>(bits), image.sizeInBytes());
 	return ba;
 }
 

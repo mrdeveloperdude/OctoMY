@@ -14,8 +14,7 @@
 
 #include "name/GenderGenerator.hpp"
 
-#include "audio/OneOffSpeech.hpp"
-#include "app/Constants.hpp"
+#include "voice/VoiceManager.hpp"
 
 #include <QDebug>
 #include <QRegularExpressionValidator>
@@ -61,13 +60,13 @@ AgentDeliveryWizard::AgentDeliveryWizard(QWidget *parent)
 	if(!connect(&mBirthTimer, &QTimer::timeout, this, [this]() {
 	qDebug()<<"Birth timer timed out, calling birth done";
 		onBirthComplete(true);
-	}, OC_CONTYPE)) {
+	}, OC_CONTYPE_NON_UNIQUE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
 	if(!connect(ui->lineEditName, &QLineEdit::textEdited, this, [this](QString s) {
 	ui->pushButtonOnward->setEnabled(s.length()>=minLetters);
-	}, OC_CONTYPE)) {
+	}, OC_CONTYPE_NON_UNIQUE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 	ui->widgetBirthCertificate->configure(false,true);
@@ -199,7 +198,7 @@ void AgentDeliveryWizard::onBirthComplete(bool ok)
 						ui->stackedWidget->setCurrentWidget(ui->pageDone);
 						//"+(mID.gender().toLower()==QStringLiteral("male")?QStringLiteral("Mr. "):(mID.gender().toLower()==QStringLiteral("female")?QStringLiteral("Mrs. "):QStringLiteral("")))+
 						QString text="My name is "+mID.name()+". I am an octomy agent. How do you do!";
-						OC_NEW OneOffSpeech(mID,text);
+						VoiceManager::speak(mID,text);
 					} else {
 						qWarning()<<"ERROR: No key";
 					}

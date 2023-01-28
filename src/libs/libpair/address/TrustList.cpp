@@ -153,5 +153,5 @@ TrustLevel TrustList::toTrustLevel(NodeType type)
 QStringList TrustList::toStringList() const
 {
 	OC_METHODGATE();
-	return QStringList(toList());
+	return QStringList(begin(), end());
 }

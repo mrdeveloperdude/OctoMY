@@ -34,7 +34,7 @@ void DebuggerButton::configure(QSharedPointer<Node> node, const bool startOpened
 		// Make sure to synchronize button state with actual window state
 		if(!connect(mDebuggerWidget.data(), &DebuggerWidget::visibilityChanged, this, [=](bool visible) {
 			ui->pushButtonShowDebugger->setChecked(visible);
-		}, OC_CONTYPE)) {
+		}, OC_CONTYPE_NON_UNIQUE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
 		if(startOpened) {

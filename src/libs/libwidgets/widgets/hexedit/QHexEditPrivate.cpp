@@ -252,7 +252,7 @@ void QHexEditPrivate::adjust()
 	OC_METHODGATE();
 	QFontMetrics fm = this->fontMetrics();
 
-	this->_charwidth = fm.width(" ");
+	this->_charwidth = fm.horizontalAdvance(" ");
 	this->_charheight = fm.height();
 
 	this->_xposhex =  this->_charwidth * (this->_addressWidth + 1);
@@ -623,8 +623,8 @@ void QHexEditPrivate::processHexPart(int key)
 	if(this->isTextSelected()) {
 		this->removeSelectedText();
 	}
-
-	uchar val = static_cast<uchar>(QString(key).toUInt(nullptr, 16));
+	//TODO: Contested, not tested
+	uchar val = static_cast<uchar>(QString::number(key).toUInt(nullptr, 16));
 
 	if((this->_insmode == QHexEditPrivate::Insert) && !this->_charidx) { /* Insert a new byte */
 		/* Insert Mode: Add one byte in current position */
@@ -975,7 +975,7 @@ void QHexEditPrivate::drawAddress(QPainter &painter, QFontMetrics &fm, qint64 li
 			painter.setPen(this->_addressforecolor);
 		}
 
-		painter.drawText(0, y, fm.width(addr), this->_charheight, Qt::AlignLeft | Qt::AlignTop, addr);
+		painter.drawText(0, y, fm.horizontalAdvance(addr), this->_charheight, Qt::AlignLeft | Qt::AlignTop, addr);
 	}
 }
 
@@ -983,7 +983,7 @@ void QHexEditPrivate::drawHex(QPainter &painter, QFontMetrics &fm, const QColor&
 {
 	OC_METHODGATE();
 	QString s = QString("%1").arg(b, 2, 16, QLatin1Char('0')).toUpper();
-	int w = fm.width(s);
+	int w = fm.horizontalAdvance(s);
 	QRect r(x, y, w, this->_charheight);
 
 	if(i < (QHexEditPrivate::BYTES_PER_LINE - 1)) {
@@ -996,18 +996,21 @@ void QHexEditPrivate::drawHex(QPainter &painter, QFontMetrics &fm, const QColor&
 
 	x += r.width();
 }
+#include <QChar>
+
 
 void QHexEditPrivate::drawAscii(QPainter &painter, QFontMetrics &fm, const QColor &bc, const QColor &fc, uchar b, int &x, int y)
 {
 	OC_METHODGATE();
 	int w;
 	QString s;
+	QChar qb(b);
 
-	if(QChar(b).isPrint()) {
-		w = fm.width(b);
-		s = QString(b);
+	if(QChar::isPrint(b)) {
+		w = fm.horizontalAdvance(qb);
+		s = QString(qb);
 	} else {
-		w = fm.width(QHexEditPrivate::UNPRINTABLE_CHAR);
+		w = fm.horizontalAdvance(QHexEditPrivate::UNPRINTABLE_CHAR);
 		s = QHexEditPrivate::UNPRINTABLE_CHAR;
 	}
 
@@ -1175,29 +1178,26 @@ void QHexEditPrivate::wheelEvent(QWheelEvent *event)
 {
 	OC_METHODGATE();
 	if(this->_hexeditdata->length()) {
-		int numDegrees = event->delta() / 8;
-		int numSteps = numDegrees / 15;
-
-		if(event->orientation() == Qt::Vertical) {
-			int pos = static_cast<int>(this->verticalSliderPosition64() - (numSteps * this->_whellscrolllines));
-			int maxlines = static_cast<int>(this->_hexeditdata->length() / QHexEditPrivate::BYTES_PER_LINE);
-
-			/* Bounds Check */
-			if(pos < 0) {
-				pos = 0;
-			} else if(pos > maxlines) {
-				pos = maxlines;
-			}
-
-			this->_vscrollbar->setSliderPosition(pos);
-			this->updateCursorXY(this->cursorPos(), this->_charidx);
-			this->update();
-
-			event->accept();
+		//auto degrees=event->angleDelta();
+		auto pixels=event->pixelDelta();
+		
+		int pos = static_cast<int>(this->verticalSliderPosition64() - (pixels.y() * this->_whellscrolllines));
+		int maxlines = static_cast<int>(this->_hexeditdata->length() / QHexEditPrivate::BYTES_PER_LINE);
+	
+		/* Bounds Check */
+		if(pos < 0) {
+			pos = 0;
+		} else if(pos > maxlines) {
+			pos = maxlines;
 		}
-	} else {
-		event->ignore();
+	
+		this->_vscrollbar->setSliderPosition(pos);
+		this->updateCursorXY(this->cursorPos(), this->_charidx);
+		this->update();
+	
+		event->accept();
 	}
+
 }
 
 void QHexEditPrivate::keyPressEvent(QKeyEvent* event)

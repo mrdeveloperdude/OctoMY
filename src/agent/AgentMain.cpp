@@ -1,8 +1,5 @@
 #include "AgentMain.hpp"
 
-// Needed to facilitate cast in AppLauncer
-#include "node/NodeWindow.hpp"
-
 #include "app/launcher/AppLauncher.hpp"
 
 //#include "app/launcher/MockApp.hpp"
@@ -25,5 +22,3 @@ int main(int argc, char *argv[])
 	}
 	exit(ret);
 }
-
-

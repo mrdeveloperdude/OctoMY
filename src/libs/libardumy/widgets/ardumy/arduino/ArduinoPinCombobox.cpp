@@ -25,6 +25,6 @@ ArduinoPinCombobox::ArduinoPinCombobox(QWidget *parent)
 		connect(this, &ArduinoPinSelector::currentIndexChanged, [=](int index){
 			emit arduinoPinChanged(index);
 
-		}, OC_CONTYPE);
+		}, OC_CONTYPE_NON_UNIQUE);
 		*/
 }

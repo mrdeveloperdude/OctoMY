@@ -115,7 +115,7 @@ void TryToggle::updateText()
 void TryToggle::setState(const TryToggleState nextState, const bool doEmit)
 {
 	OC_METHODGATE();
-	qDebug().nospace().noquote()<<"TRYTOGGLE TRYSTATE CHANGING FROM "<<mState<<" TO "<<nextState<<" WITH EMIT="<<doEmit;
+	//qDebug().nospace().noquote()<<"TRYTOGGLE TRYSTATE CHANGING FROM "<<mState<<" TO "<<nextState<<" WITH EMIT="<<doEmit;
 	//qDebug()<<"SET STATE: "<<s;
 	if(nextState != mState) {
 		//qDebug()<<" + DIFFERENT FROM LAST: "<<state;

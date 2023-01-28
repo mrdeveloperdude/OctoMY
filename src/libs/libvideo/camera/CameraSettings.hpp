@@ -2,8 +2,9 @@
 #define CAMERASETTINGS_H
 
 #include <QDialog>
-#include <QAudioEncoderSettings>
-#include <QVideoEncoderSettings>
+
+//#include <QAudioEncoderSettings>
+//#include <QVideoEncoderSettings>
 
 QT_BEGIN_NAMESPACE
 class QComboBox;
@@ -18,11 +19,17 @@ QT_END_NAMESPACE
 class CameraSettings : public QDialog
 {
 	Q_OBJECT
-
+private:
+	Ui::VideoSettingsUi *ui;
+	/*
+	QMediaRecorder *mediaRecorder;
+	QCameraImageCapture *imagecapture;
+	*/
+	
 public:
-	CameraSettings(QMediaRecorder *mediaRecorder, QCameraImageCapture *imagecapture, QWidget *parent = nullptr);
+	CameraSettings(/*QMediaRecorder *mediaRecorder, QCameraImageCapture *imagecapture, */ QWidget *parent = nullptr);
 	~CameraSettings();
-
+/*
 	QAudioEncoderSettings audioSettings() const;
 	void setAudioSettings(const QAudioEncoderSettings&);
 
@@ -31,7 +38,7 @@ public:
 
 	QImageEncoderSettings imageSettings() const;
 	void setImageSettings(const QImageEncoderSettings &settings);
-
+*/
 	QString format() const;
 	void setFormat(const QString &format);
 
@@ -42,9 +49,6 @@ private:
 	QVariant boxValue(const QComboBox*) const;
 	void selectComboBoxItem(QComboBox *box, const QVariant &value);
 
-	Ui::VideoSettingsUi *ui;
-	QMediaRecorder *mediaRecorder;
-	QCameraImageCapture *imagecapture;
 };
 
 #endif

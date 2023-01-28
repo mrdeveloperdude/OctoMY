@@ -8,6 +8,7 @@
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
 #include <QVector>
+#include <QRegularExpression>
 
 
 
@@ -18,9 +19,9 @@ class PlanHighlighter : public QSyntaxHighlighter
 		Q_OBJECT
 	private:
 		struct HighlightingRule{
-				QRegExp pattern;
+				QRegularExpression pattern;
 				QTextCharFormat format;
-				HighlightingRule(		QRegExp p,  QTextCharFormat f)
+				HighlightingRule(		QRegularExpression p,  QTextCharFormat f)
 					: pattern(p)
 					, format(f)
 				{
@@ -31,8 +32,8 @@ class PlanHighlighter : public QSyntaxHighlighter
 	private:
 		QVector<HighlightingRule> highlightingRules;
 
-		QRegExp commentStartExpression;
-		QRegExp commentEndExpression;
+		QRegularExpression commentStartExpression;
+		QRegularExpression commentEndExpression;
 
 		QTextCharFormat operatorFormat;
 		QTextCharFormat parenFormat;

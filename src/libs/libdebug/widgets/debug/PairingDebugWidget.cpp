@@ -51,14 +51,14 @@ void PairingDebugWidget::configure(QSharedPointer <Node> node)
 							qWarning()<<"ERROR: Could not apply edited trusts to associate";
 						}
 					}
-				}, OC_CONTYPE)) {
+				}, OC_CONTYPE_NON_UNIQUE)) {
 					qWarning()<<"ERROR: Could not connect";
 				}
 
 				if(!connect(mTrustWidget.data(), &PairingTrustWidget::remove, this, [this](QString id) {
 				qDebug()<<"EDITING COMPLETE FOR " <<id<<" with REMOVE";
 					mTrustWidget->hide();
-				}, OC_CONTYPE)) {
+				}, OC_CONTYPE_NON_UNIQUE)) {
 					qWarning()<<"ERROR: Could not connect";
 				}
 			}
@@ -74,7 +74,7 @@ void PairingDebugWidget::configure(QSharedPointer <Node> node)
 						qWarning()<<"ERROR: No ass";
 					}
 				}
-			}, OC_CONTYPE)) {
+			}, OC_CONTYPE_NON_UNIQUE)) {
 				qWarning()<<"ERROR: Could not connect";
 			}
 		}

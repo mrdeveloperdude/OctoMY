@@ -39,6 +39,7 @@ void AppRenderingSettingsProvider::applyApplicationAttributes()
 	OC_METHODGATE();
 	QMap<Qt::ApplicationAttribute, bool> atr=applicationAttributes();
 	for(QMap<Qt::ApplicationAttribute, bool>::const_iterator it = atr.constBegin(), end=atr.constEnd(); it!=end; ++it){
+		qDebug()<<"Setting rendering attribute:"<<it.key()<<" to "<< it.value();
 		QApplication::setAttribute(it.key(), it.value());
 	}
 }

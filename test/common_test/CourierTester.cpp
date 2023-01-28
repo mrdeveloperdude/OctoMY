@@ -31,7 +31,7 @@ void CourierTester::setProfile(CourierTesterProfile &p)
 
 void CourierTester::sleepRandom()
 {
-	const quint64 ms = (mProfile.sleepTimeMin()) + (qrand() % mProfile.sleepTimeRange());
+	const quint64 ms = (mProfile.sleepTimeMin()) + (utility::random::qrand() % mProfile.sleepTimeRange());
 	if (ms > 0) {
 		qDebug() << "WAITING " << utility::string::humanReadableElapsedMS(ms);
 		QTest::qWait(ms);
@@ -96,7 +96,7 @@ QByteArray *CourierTester::fetchFromStream()
 		index = count - 1;
 	} break;
 	case (RANDOM): {
-		index = (qrand() % count);
+		index = (utility::random::qrand() % count);
 	} break;
 	}
 	QByteArray *ba = mFromStreams.takeAt(index);
@@ -119,7 +119,7 @@ QByteArray *CourierTester::fetchToStream()
 		index = count - 1;
 	} break;
 	case (RANDOM): {
-		index = (qrand() % count);
+		index = (utility::random::qrand() % count);
 	} break;
 	}
 	QByteArray *ba = mToStreams.takeAt(index);

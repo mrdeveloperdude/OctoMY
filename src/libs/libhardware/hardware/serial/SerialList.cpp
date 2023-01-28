@@ -6,10 +6,6 @@
 #include "utility/string/String.hpp"
 
 #include <QList>
-#include <QMediaService>
-#include <QMediaRecorder>
-#include <QCamera>
-
 #include <QSerialPortInfo>
 
 

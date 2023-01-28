@@ -9,7 +9,7 @@
 #include "uptime/ConnectionType.hpp"
 
 #include "widgets/WaitingSpinnerWidget.hpp"
-#include "audio/OneOffSpeech.hpp"
+#include "voice/VoiceManager.hpp"
 
 #include "security/PortableID.hpp"
 
@@ -19,7 +19,6 @@
 #include "comms/ISyncParameter.hpp"
 
 #include "comms/couriers/AgentStateCourier.hpp"
-#include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/blob/BlobCourier.hpp"
 
 #include "agent/AgentConstants.hpp"

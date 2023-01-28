@@ -67,7 +67,7 @@ QT += testlib
 QT += concurrent
 #QT += quick
 QT += printsupport
-QT += openglextensions
+#QT += openglextensions
 
 contains(DEFINES, OC_USE_FEATURE_QT3D){
 	QT += 3dcore

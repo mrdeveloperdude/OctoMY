@@ -9,6 +9,7 @@
 
 #include "uptime/ConnectionType.hpp"
 #include "utility/ui/Ui.hpp"
+#include "utility/random/Random.hpp"
 #include "agent/Agent.hpp"
 #include "identity/Identicon.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"
@@ -208,7 +209,7 @@ void FaceWidget::on_pushButtonNewColor_clicked()
 	OC_METHODGATE();
 	QPalette p=ui->pushButtonNewColor->palette();
 	QColor col;
-	col.setHslF((static_cast<qreal>(qrand()))/(static_cast<qreal>(RAND_MAX)),1.0,0.5);
+	col.setHslF(utility::random::frand(), 1.0f, 0.5f);
 	p.setColor(QPalette::Button,col);
 	ui->pushButtonNewColor->setPalette(p);
 	emit colorChanged(col);

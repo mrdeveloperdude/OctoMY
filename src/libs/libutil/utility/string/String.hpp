@@ -8,7 +8,7 @@
 #include <QCryptographicHash>
 #include <QNetworkReply>
 #include <QAbstractSocket>
-#include <QMutex>
+#include <QRecursiveMutex>
 
 namespace utility
 {
@@ -47,7 +47,7 @@ class HandleCounter
 private:
 	quint64 handleCounter;
 	QMap<Qt::HANDLE, quint64> handleMap;
-	QMutex handleMutex;
+	QRecursiveMutex handleMutex;
 
 public:
 

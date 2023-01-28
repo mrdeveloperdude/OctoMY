@@ -55,12 +55,9 @@ void NameMappingView::paintEvent(QPaintEvent *)
 			pen.setColor(Qt::red);
 			pen.setWidthF(radius);
 			painter.setBrush(Qt::NoBrush);
-			painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
-
+			painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
 			//const quint32 w=static_cast<quint32>(size().width());
 			//const quint32 h=static_cast<quint32>(size().height());
-
-
 			const quint32 sz=static_cast<quint32>(mapping->size());
 
 			const qreal step=(1.0)/((qreal)sz);

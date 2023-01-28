@@ -16,10 +16,6 @@
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 #include "uptime/ConnectionType.hpp"
-
-#include "utility/time/HumanTime.hpp"
-
-#include "uptime/SharedPointerWrapper.hpp"
 #include "uptime/ConfigureHelper.hpp"
 
 #include <QApplication>
@@ -46,12 +42,12 @@ class Settings;
  *  + Any OS level signal/event handling
  *  + Any OS level privilege stuff
  *  + Any OS Level watchdog stuff
- *  + Ant OS level whatever!
+ *  + Any OS level whatever!
  *  + Capturing and cleanup in case of exceptions and OS level lifecycle events
  *    such as sleep/termination etc.
  *  + API for graceful termination
- *
-A common application launch looks roughly like this:
+ 
+A common application launch looks roughly like this (using Agent as example):
 
 AppLauncher constructed
 AppLauncher configure
@@ -69,7 +65,7 @@ Agent nodeWindow()
 
 ... And application is running!
 
-A common application shutdown looks roughly like this:
+A common application shutdown looks roughly like this (using Agent as example):
 
 AppLauncher nodeRequestClose()
 AppLauncher appActivate(false)
@@ -87,7 +83,7 @@ template <typename T>
 class AppLauncher: public IAppLauncher, public QEnableSharedFromThis<AppLauncher<T> >
 {
 private:
-
+	
 	// Helper to keep track of appConfigure() and appActivate() state
 	ConfigureHelper mAppConfigureHelper;
 	// The application context that contains such things as environment variables and command line arguments
@@ -96,18 +92,23 @@ private:
 	QSharedPointer<T> mApp;
 	// The UI window for the application if it is not headless
 	QSharedPointer<QWidget> mWindow;
-
+	
 	// The manager for UI styles
 	QSharedPointer<StyleManager> mStyleManager;
 	// The return value from main eventloop for application
 	int mReturnValue;
 	// The Qt application instance
 	QCoreApplication *mQApp;
-
+	
+	
+private:
+	QMetaObject::Connection nodeActivateChangedConnection;
+	QMetaObject::Connection nodeRequestedExitConnection;
+	
 public:
 	explicit AppLauncher();
 	virtual ~AppLauncher() Q_DECL_OVERRIDE;
-
+	
 public:
 	// Configure this app launcher before it is started. This version has no arguments
 	void configure(QString base);
@@ -115,35 +116,35 @@ public:
 	void configure(QString base, int argc, char *argv[]);
 	// Configure this app launcher before it is started. This version accepts context object directly
 	void configure(QSharedPointer<AppContext> context);
-
+	
 public:
 	// The entry point. This is what gets called to use this app launcher after it has been created
 	int run();
-
+	
 protected:
 	// Internal helper to start and stop app
 	void appActivate(const bool on);
-
+	
 public:
 	// Provide the application instance
 	QSharedPointer<T> app();
-
-
+	
+	
 	// IAppLauncher interface
 public:
 	// Called when app execution is done
 	void appActivateDone(const bool on) Q_DECL_OVERRIDE;
-
+	
 	// Provide application context
 	QSharedPointer<AppContext> context() Q_DECL_OVERRIDE;
-
+	
 };
 
 
 template <typename T>
 AppLauncher<T>::AppLauncher()
 	: mAppConfigureHelper("launcher", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
-	  // Default to exit with failure as a means to detect if something happens before we manage to exit cleanly
+	// Default to exit with failure as a means to detect if something happens before we manage to exit cleanly
 	, mReturnValue(EXIT_FAILURE)
 	, mQApp(nullptr)
 {
@@ -152,7 +153,7 @@ AppLauncher<T>::AppLauncher()
 #ifndef Q_OS_ANDROID
 	LogHandler::setLogging(true);
 #endif
-
+	
 }
 
 template <typename T>
@@ -207,11 +208,8 @@ int AppLauncher<T>::run()
 	//qDebug()<<"run()";
 	QCoreApplication::setOrganizationName(Settings::ORGANIZATION_NAME);
 	QCoreApplication::setOrganizationDomain(Settings::DOMAIN_NAME);
-
-	qsrand(static_cast<uint>(utility::time::currentMsecsSinceEpoch<quint64>()));
-
 	if(!mContext.isNull()) {
-
+		
 		AppRenderingSettingsProvider asfp;
 		QSurfaceFormat::setDefaultFormat(asfp.surfaceFormat());
 		asfp.applyApplicationAttributes();
@@ -224,20 +222,17 @@ int AppLauncher<T>::run()
 			QApplication::setQuitOnLastWindowClosed(false);
 			appActivate(true);
 			// Initialize resources here
-
+			
 			//TODO: Look at how to distribute this initialization wizely
 			Q_INIT_RESOURCE(icons);
 			Q_INIT_RESOURCE(images);
 			Q_INIT_RESOURCE(3d);
-
-			// Signal that we are fully DPI aware. See http://www.octomy.org/documentation/development/architectual-overview/ui-scaling for details
-			mQApp->setAttribute(Qt::AA_DisableHighDpiScaling, true);
-			mQApp->setAttribute(Qt::AA_EnableHighDpiScaling, false);
-
+			
+			
 			// Start Qt event loop for application.
 			// NOTE: This call will block until mQApp::quit()  mQApp::exit() is called and the eventloop is terminated
 			mReturnValue = mQApp->exec();
-
+			
 			//qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done with "<< mReturnValue << ", quitting";
 		} else {
 			qWarning()<<"ERROR: no app, quitting";
@@ -265,22 +260,51 @@ void AppLauncher<T>::appActivate(const bool on)
 					auto sharedThis=AppLauncher<T>::sharedFromThis();
 					if(!sharedThis.isNull()) {
 						mApp->appConfigure(sharedThis);
-						// Handle when (de)activation of this app is completed
+						
+						if(nodeActivateChangedConnection){
+							qWarning()<<"Trying to connect duplicate nodeActivateChangedConnection";
+						}
+						else{
+							// Handle when (de)activation of this app is completed
+							nodeActivateChangedConnection = QObject::connect(appPtr, &T::nodeActivateChanged, appPtr, [=](const bool on) {
+								qDebug()<<"nodeActivationChanged(on="<<on<<")";
+								appActivateDone(on);
+							});
+						}
+						
+						if(nodeRequestedExitConnection){
+							qWarning()<<"Trying to connect duplicate nodeRequestedExitConnection";
+						}
+						else{
+							// Handle when someone wants the app to stop
+							nodeRequestedExitConnection = QObject::connect(appPtr, &T::nodeRequestExit, appPtr, [=](const int returnValue) {
+								qDebug()<<"nodeRequestExit("<<returnValue<<")";
+								mReturnValue=returnValue;
+								appActivate(false);
+							});
+						}
+						
+						
+						
+						/*
 						if(!QObject::connect(appPtr, &T::nodeActivateChanged, appPtr, [=](const bool on) {
-						//qDebug()<<"nodeActivationChanged(on="<<on<<")";
-						appActivateDone(on);
-						}, OC_CONTYPE)) {
+											 //qDebug()<<"nodeActivationChanged(on="<<on<<")";
+											 appActivateDone(on);
+					}, OC_CONTYPE_NON_UNIQUE)) {
 							qWarning()<<"ERROR: Could not connect";
 						}
+						*/
+						
+						/*
 						// Handle when someone wants the app to stop
 						if(!QObject::connect(appPtr, &T::nodeRequestExit, appPtr, [=](const int returnValue) {
-						//qDebug()<<"nodeRequestExit("<<returnValue<<")";
-						mReturnValue=returnValue;
-						appActivate(false);
-						}, OC_CONTYPE)) {
+											 //qDebug()<<"nodeRequestExit("<<returnValue<<")";
+											 mReturnValue=returnValue;
+											 appActivate(false);
+					}, OC_CONTYPE_NON_UNIQUE)) {
 							qWarning()<<"ERROR: Could not connect";
 						}
-
+						*/
 						// Run the node's appActivate() from eventloop since it will call pure virtual members (which as you know are NOT allowed to be run from ctor in C++)
 						QTimer::singleShot(0, Qt::VeryCoarseTimer, [appPtr]() {
 							appPtr->appActivate(true);
@@ -317,10 +341,10 @@ template <typename T>
 void AppLauncher<T>::appActivateDone(const bool on)
 {
 	OC_METHODGATE();
-	qDebug()<<"appActivateDone(on="<<on<<")";
+	//qDebug()<<"appActivateDone(on="<<on<<")";
 	if(!mContext.isNull()) {
 		if(on) {
-			qDebug()<<"Opening window";
+			//qDebug()<<"Opening window";
 			if(!mContext->isHeadless()) {
 				mWindow=qSharedPointerCast<NodeWindow>(mApp->appWindow());
 				if(!mWindow.isNull()) {
@@ -330,7 +354,7 @@ void AppLauncher<T>::appActivateDone(const bool on)
 				}
 			}
 		} else {
-			qDebug()<<"Closing window";
+			//qDebug()<<"Closing window";
 			if(!mWindow.isNull()) {
 				mWindow->close();
 				mWindow.clear();

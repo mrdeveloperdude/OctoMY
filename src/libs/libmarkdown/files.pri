@@ -1,4 +1,5 @@
 MARKDOWN_TOP= $${SRCS}/libs/libmarkdown
+UPTIME_TOP= $${SRCS}/libs/libuptime
 
 # From https://github.com/hoedown/hoedown
 
@@ -26,14 +27,28 @@ SOURCES	+= \
 	$$MARKDOWN_TOP/markdown/version.c \
 
 
-RESOURCES += \
-
+FORMS += \
+	$$MARKDOWN_TOP/widgets/ui/MarkdownEditor.ui \
 }
 
-#NOTE: These are always included to keep the customers of this lib happy
+
+
+#NOTE: These are always included to keep the consumers of this lib happy
 
 HEADERS	+= \
-	$$MARKDOWN_TOP/markdown/Markdown.hpp
+	$$MARKDOWN_TOP/markdown/Markdown.hpp \
+	$$MARKDOWN_TOP/markdown/MarkdownHighlighter.hpp \
+	$$MARKDOWN_TOP/widgets/markdown/CodeEditor.hpp \
+	$$MARKDOWN_TOP/widgets/markdown/LineNumberArea.hpp \
+	$$MARKDOWN_TOP/widgets/markdown/MarkdownEditor.hpp \
+	$$UPTIME_TOP/uptime/MethodGate.hpp \
+
 
 SOURCES	+= \
-	$$MARKDOWN_TOP/markdown/Markdown.cpp
+	$$MARKDOWN_TOP/markdown/Markdown.cpp \
+	$$MARKDOWN_TOP/markdown/MarkdownHighlighter.cpp \
+	$$MARKDOWN_TOP/widgets/markdown/CodeEditor.cpp \
+	$$MARKDOWN_TOP/widgets/markdown/LineNumberArea.cpp \
+	$$MARKDOWN_TOP/widgets/markdown/MarkdownEditor.cpp \
+	$$UPTIME_TOP/uptime/MethodGate.cpp \
+

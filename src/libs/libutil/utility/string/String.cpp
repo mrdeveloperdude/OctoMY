@@ -6,6 +6,7 @@
 #include <QCoreApplication>
 
 #include <QThread>
+#include <QRegularExpression>
 
 #include <cmath>
 //#include <cfloat>
@@ -198,10 +199,14 @@ QString  hexdump(void *mem, unsigned int len, QString topic)
 }
 
 
+
+static const QRegularExpression reIpi("[^0-9]");
+
 bool isPositiveInteger(QString s)
 {
-	QString p=s.replace(QRegExp("[^0-9]"),"");
-	return p.length()==s.length();
+	//QString p=s.replace(QRegExp("[^0-9]"),"");
+	//return p.length()==s.length();
+	return s.replace(reIpi, "").length() == s.length();
 }
 
 
@@ -362,7 +367,7 @@ QString toSoundex(QString in)
 	QChar lastChar='0';
 	int ct=0;
 	for(int i=1; i<l; ++i) {
-		QCharRef ch=in[i];
+		QChar ch=in[i];
 		if(lastChar!=ch) {
 			switch(ch.toLatin1()) {
 			case('b'):
@@ -423,8 +428,6 @@ QString toSoundex(QString in)
 
 HandleCounter::HandleCounter()
 	: handleCounter(0)
-	, handleMap()
-	, handleMutex(QMutex::Recursive)
 {
 
 }

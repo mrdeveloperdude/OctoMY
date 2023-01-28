@@ -5,7 +5,8 @@
 
 #include <QWidget>
 #include <QTimer>
-#include <QCamera>
+
+//#include <QCamera>
 
 namespace Ui
 {
@@ -33,9 +34,11 @@ private:
 	qint64 scanDisableTime;
 	static const qint64 TIMEOUT;
 
-	QCamera *mCamera;
-	QVideoProbe *mVideoProbe;
-	PoorMansProbe *mPoorVideoProbe;
+	// TODO: Rework this with new qmultimedia primitives for Qt6
+	//QCamera *mCamera;
+	
+	//QVideoProbe *mVideoProbe;
+	//PoorMansProbe *mPoorVideoProbe;
 	ZBarScanner *mZbar;
 
 	QVideoWidget *mViewfinder;
@@ -51,7 +54,8 @@ private slots:
 	void onCountDownTimeout();
 	void detectBarcodes(const QVideoFrame &);
 	void onKeystoreReady(bool);
-	void cameraStatusUpdated(QCamera::Status);
+	// TODO: Rework this with new qmultimedia primitives for Qt6
+	//void cameraStatusUpdated(QCamera::Status);
 
 private slots:
 	void on_pushButtonBadge_toggled(bool checked);

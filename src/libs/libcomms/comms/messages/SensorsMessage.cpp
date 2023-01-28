@@ -1,6 +1,7 @@
 #include "SensorsMessage.hpp"
 
 #include <QDebug>
+#include <QIODevice>
 
 SensorsMessage::SensorsMessage(
 	const bool ok

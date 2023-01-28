@@ -1,22 +1,12 @@
 #ifndef REMOTE_HPP
 #define REMOTE_HPP
 
-#include "hardware/sensors/SensorInput.hpp"
-#include "comms/CommsChannel.hpp"
-#include "comms/messages/SensorsMessage.hpp"
-
-#include "pose/Pose.hpp"
-
 #include "node/Node.hpp"
-#include "comms/NetworkAddress.hpp"
-
-#include "app/launcher/AppLauncher.hpp"
 
 #include <QObject>
 #include <QVector2D>
 #include <QColor>
 
-class DirectPoseCourier;
 class RemoteWindow;
 class NodeWindow;
 

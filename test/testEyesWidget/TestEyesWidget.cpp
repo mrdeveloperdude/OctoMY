@@ -21,7 +21,7 @@ void TestEyesWidget::testRendrer()
 {
 	const quint32 sz=1024;
 	QVector2D center(0.5,0.5);
-	QVector2D nil;
+	//QVector2D nil;
 	qreal slant(0.1*M_PI);
 	QColor irisColor("#2d8ac9");
 	EyeRendrer er(center, slant, irisColor), *erp=&er;;
@@ -58,7 +58,7 @@ void TestEyesWidget::testRendrer()
 		}
 		pixp->setImage(*imp);
 
-	}, OC_CONTYPE);
+	}, OC_CONTYPE_NON_UNIQUE);
 
 	test::utility::waitForUIEnd(&pix);
 }
@@ -74,9 +74,9 @@ void TestEyesWidget::testWidget()
 	connect(&t,&QTimer::timeout, this, [=]() {
 		pidp->setID(utility::random::randomByteArray(10).toBase64());
 		ewp->setPortableID(*pidp);
-	}, OC_CONTYPE);
+	}, OC_CONTYPE_NON_UNIQUE);
 
-	test::utility::waitForUIEnd(&pix);
+	test::utility::waitForUIEnd(ewp);
 
 }
 

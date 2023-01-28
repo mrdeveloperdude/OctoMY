@@ -4,6 +4,7 @@
 #include "uptime/New.hpp"
 
 #include "utility/string/String.hpp"
+#include "utility/random/Random.hpp"
 
 #include <QDataStream>
 #include <QSize>
@@ -551,7 +552,7 @@ QByteArray StreamCodec::encode(QImage src)
 				QImage block = src.copy(rect);
 				//qDebug()<<"BLOCK: "<<block;
 				QPoint loc=rect.topLeft();
-				const quint8 type=qrand()%3;
+				const quint8 type=utility::random::qrand()%3;
 				BlockBlob bb(block, loc, static_cast<BlockType>(type));
 				stream << bb;
 			}
@@ -560,7 +561,7 @@ QByteArray StreamCodec::encode(QImage src)
 									<< sz
 									<< ", png-bytes="
 									<< utility::string::humanReadableSize(basz)
-									<< ", bytes="<< utility::string::humanReadableSize(src.byteCount())
+									<< ", bytes="<< utility::string::humanReadableSize(src.sizeInBytes())
 									<< ", compressed-bytes="
 									<< utility::string::humanReadableSize(out.size());
 	}

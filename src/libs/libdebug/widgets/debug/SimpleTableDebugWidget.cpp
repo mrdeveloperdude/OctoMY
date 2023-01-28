@@ -38,20 +38,20 @@ void SimpleTableDebugWidget::configure(QString name, int uiUpdateInterval, int d
 	if(mConfigureHelper.configure()) {
 		mUiUpdateInterval=uiUpdateInterval;
 		mDataUpdateInterval=dataUpdateInterval;
-		if(!connect(ui->pushButtonUpdateRealtime, &QPushButton::toggled, this, &SimpleTableDebugWidget::onRealtimeChangedWrapper, OC_CONTYPE )) {
+		if(!connect(ui->pushButtonUpdateRealtime, &QPushButton::toggled, this, &SimpleTableDebugWidget::onRealtimeChangedWrapper, OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect ";
 		}
 		// We sacrifice quality since this is for debugging purpose onle and we want this to have the least impact on the runtime of non-debug code
 		mTimerUI.setTimerType(Qt::PreciseTimer);
 		mTimerUI.setInterval(mUiUpdateInterval);
 		mTimerUI.setSingleShot(false);
-		if(!connect(&mTimerUI, &QTimer::timeout, this, &SimpleTableDebugWidget::onUITimerWrapper, OC_CONTYPE )) {
+		if(!connect(&mTimerUI, &QTimer::timeout, this, &SimpleTableDebugWidget::onUITimerWrapper, OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect ";
 		}
 		mTimerData.setTimerType(Qt::VeryCoarseTimer);
 		mTimerData.setInterval(mDataUpdateInterval);
 		mTimerData.setSingleShot(true);
-		if(!connect(&mTimerData, &QTimer::timeout, this, &SimpleTableDebugWidget::onDataTimerWrapper, OC_CONTYPE )) {
+		if(!connect(&mTimerData, &QTimer::timeout, this, &SimpleTableDebugWidget::onDataTimerWrapper, OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect ";
 		}
 		onRealtimeChangedWrapper(ui->pushButtonUpdateRealtime->isChecked());
@@ -116,7 +116,7 @@ void SimpleTableDebugWidget::onUITimerWrapper()
 	OC_METHODGATE();
 	const quint64 blinkSize=1000;
 	auto p=palette();
-	auto o=p.color(QPalette::Background);
+	auto o=p.color(QPalette::Window);
 	const auto now=utility::time::currentMsecsSinceEpoch<quint64>();
 	const quint64 time=qBound<quint64>(0, (now-mBlinkStartTime), blinkSize);
 	const qreal raw=static_cast<qreal>(blinkSize-time)/ static_cast<qreal>(blinkSize);
@@ -125,7 +125,7 @@ void SimpleTableDebugWidget::onUITimerWrapper()
 	if(f>0.0) {
 		const QColor c=utility::color::mix(o, Qt::red, f);
 		//qDebug()<<"COLOR: "<<c<< ", f="<<f<< ", raw="<<raw<< ", time="<<time;
-		p.setColor(QPalette::Background, c);
+		p.setColor(QPalette::Window, c);
 		ui->tableView->setPalette(p);
 	} else {
 		mTimerUI.stop();

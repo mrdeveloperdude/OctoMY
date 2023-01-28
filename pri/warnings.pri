@@ -22,9 +22,11 @@ gcc{
 	QMAKE_CXXFLAGS += -Wformat=2 -Winit-self  -Wmissing-declarations
 	QMAKE_CXXFLAGS += -Wcast-qual  -Wdisabled-optimization
 	#QMAKE_CXXFLAGS += -Wcast-align # Warn about alignment changes due to casts. Not really useful at this time so commented out
-	QMAKE_CXXFLAGS += -Wstrict-overflow=5
+	
+	#QMAKE_CXXFLAGS += -Wstrict-overflow=5 # Warn about tricky overflows. Not really useful at this time so commented out
+	QMAKE_CXXFLAGS += -Wno-strict-overflow
+	
 	#QMAKE_CXXFLAGS += -Wundef # Warn about referenced but undefined preprocessor defines
-
 	# Mark no return in function returning non-void an ERROR
 	QMAKE_CXXFLAGS += -Werror=return-type
 

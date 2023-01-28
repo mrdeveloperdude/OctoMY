@@ -9,6 +9,8 @@
 
 #include <QComboBox>
 #include <QMessageBox>
+#include <QWidget>
+#include <QIntValidator>
 
 Q_DECLARE_METATYPE(QHostAddress)
 
@@ -42,14 +44,25 @@ void NetworkSettingsWidget::configure(QSharedPointer<LocalAddressList> localAddr
 	OC_METHODGATE();
 	mMuteSignals=true;
 	ui->comboBoxLocalAddress->clear();
+	qDebug()<<"Configuring address list";
 	if(!localAddresses.isNull()) {
-		for(QHostAddress adr:*localAddresses) {
-			if((QAbstractSocket::IPv4Protocol==adr.protocol()) && (!adr.isLoopback()) ) {
+		for(QHostAddress &adr:*localAddresses) {
+			if(isAddrToBeAdded(adr)) {
 				ui->comboBoxLocalAddress->addItem(adr.toString());
+				qDebug()<<" + Adding "<<adr.toString();
+			}
+			else {
+				qDebug()<<" + Skipping "<<adr.toString();
 			}
 		}
-
+		
 		setHostAddress(localAddresses->currentAddress(), localAddresses->port(), true, false);
+		auto ct = ui->comboBoxLocalAddress->count();
+		qDebug()<<"THERE ARE" <<ct<<"ITEMS IN COMBOBOX:";
+		for(int i=0;i<ct;++i){
+			qDebug()<<" + " <<ui->comboBoxLocalAddress->itemText(i);
+		}
+		
 	}
 	else{
 		qWarning()<<"ERROR: No local addresses";
@@ -67,6 +80,12 @@ bool NetworkSettingsWidget::setHostAddress(QHostAddress naddr, quint16 nport, bo
 		ok=verifyAndSet(sendSignal);
 	}
 	return ok;
+}
+
+bool NetworkSettingsWidget::isAddrToBeAdded(QHostAddress adr)
+{
+	OC_METHODGATE();
+	return ((QAbstractSocket::IPv4Protocol==adr.protocol()) && (!adr.isLoopback()) );
 }
 
 
@@ -201,7 +220,7 @@ void NetworkSettingsWidget::on_pushButtonSave_clicked()
 	OC_METHODGATE();
 	bool go=false;
 	const bool ok=verifyAndSet(false, false);
-
+	
 	if(!ok) {
 		QMessageBox::StandardButton reply = QMessageBox::question(this, "The settings are invalid", "Would you like to automatically correct them?", QMessageBox::No|QMessageBox::Yes);
 		if (QMessageBox::Yes==reply) {
@@ -214,14 +233,6 @@ void NetworkSettingsWidget::on_pushButtonSave_clicked()
 	if(go) {
 		//qDebug()<<"Back to civ";
 		ui->stackedWidget->setCurrentWidget(ui->pageView);
-	}
-}
-
-void NetworkSettingsWidget::on_comboBoxLocalAddress_currentIndexChanged(int)
-{
-	OC_METHODGATE();
-	if(!mMuteSignals) {
-		verifyAndSet();
 	}
 }
 
@@ -238,5 +249,16 @@ void NetworkSettingsWidget::on_lineEditLocalPort_editingFinished()
 	OC_METHODGATE();
 	if(!mMuteSignals) {
 		verifyAndSet(false, false);
+	}
+}
+
+
+void NetworkSettingsWidget::on_comboBoxLocalAddress_currentIndexChanged(int index)
+{
+	OC_METHODGATE();
+	Q_UNUSED(index);
+	qDebug()<<"CHANGED TO "<<ui->comboBoxLocalAddress->currentText();
+	if(!mMuteSignals) {
+		verifyAndSet();
 	}
 }

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Camera Pairing</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="7" column="1" colspan="2">
@@ -45,7 +45,7 @@
       <string>Show Badge</string>
      </property>
      <property name="icon">
-      <iconset resource="../resources/icons.qrc">
+      <iconset resource="../../../../libres/resources/icons.qrc">
        <normaloff>:/icons/identity.svg</normaloff>:/icons/identity.svg</iconset>
      </property>
      <property name="checkable">
@@ -88,7 +88,7 @@
       <string>Start Scanner</string>
      </property>
      <property name="icon">
-      <iconset resource="../resources/icons.qrc">
+      <iconset resource="../../../../libres/resources/icons.qrc">
        <normaloff>:/icons/sensor_camera.svg</normaloff>:/icons/sensor_camera.svg</iconset>
      </property>
      <property name="checkable">
@@ -97,7 +97,7 @@
     </widget>
    </item>
    <item row="5" column="1" colspan="2">
-    <widget class="QCameraViewfinder" name="widgetCameraViewfinder" native="true">
+    <widget class="QWidget" name="widgetCameraViewfinder" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -154,12 +154,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QCameraViewfinder</class>
-   <extends>QWidget</extends>
-   <header>qcameraviewfinder.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>WaitingSpinnerWidget</class>
    <extends>QWidget</extends>
    <header>widgets/WaitingSpinnerWidget.hpp</header>
@@ -167,7 +161,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../resources/icons.qrc"/>
+  <include location="../../../../libres/resources/icons.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -11,8 +11,14 @@
 
 #include "ardumy/ArduMYTypeConversions.hpp"
 
+#include "utility/random/Random.hpp"
+
 #include <QDebug>
 #include <QtGlobal>
+#include <QRegularExpression>
+
+
+static const QRegularExpression reNewline("[\r\n]");
 
 #define LOOPS (10)
 
@@ -33,7 +39,7 @@ for(int lc=0; lc<LOOPS; ++lc) { \
 
 static bool percentChance(quint8 pct)
 {
-	return (pct>=(qrand()%100));
+	return (pct>=(utility::random::qrand()%100));
 }
 
 
@@ -43,7 +49,11 @@ static QString randomString(int sz)
 	static const int alphalen=alphabet.size();
 	QString out;
 	for(int i=0; i<sz; ++i) {
-		out.append(alphabet[ qrand()%alphalen ]);
+		auto index = utility::random::qrand() % alphalen;
+		Q_ASSERT(index <= alphalen);
+		Q_ASSERT(index >=0);
+		//qDebug()<<"GETTING"<<index<<" of " <<alphalen<<" letter from "<< alphabet;
+		out.append(alphabet[ index ]);
 	}
 	return out;
 }
@@ -53,9 +63,9 @@ static float frand()
 {
 	float v=0.0/0.0;
 	while(qIsNaN(v)) {
-		v=qrand();
-		v/=RAND_MAX;
-		float v2=qrand()-qrand();
+		v=utility::random::qrand();
+		v/=static_cast<float>(RAND_MAX);
+		float v2=utility::random::qrand()-utility::random::qrand();
 		v*=v2;
 	}
 	return v;
@@ -66,16 +76,16 @@ static double dfrand()
 {
 	double v=0.0/0.0;
 	while(qIsNaN(v)) {
-		v=qrand();
+		v=utility::random::qrand();
 		v/=RAND_MAX;
-		double v2=qrand()-qrand();
+		double v2=utility::random::qrand()-utility::random::qrand();
 		v*=v2;
 	}
 	return v;
 }
 
 
-static QString byteToStr(uint8_t byte)
+QString byteToStr(uint8_t byte)
 {
 	return QString("%1").arg(byte, 8, 2, QLatin1Char('0'))+QString(" ( 0x%1").arg(byte, 2, 16, QLatin1Char('0'))+ QString(", %1").arg(byte, 3, 10, QLatin1Char(' '))+ QStringLiteral(" )");
 }
@@ -83,8 +93,9 @@ static QString byteToStr(uint8_t byte)
 
 static void logLines(const QString ret)
 {
-	QStringList list=ret.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
-	for(QString str:list) {
+	
+	QStringList list=ret.split(reNewline, Qt::SkipEmptyParts);
+	for(const auto &str:list) {
 		qDebug().noquote().nospace()<<str;
 	}
 }
@@ -101,20 +112,20 @@ static void randomValue(ArduMYActuatorValue &v, ArduMYActuatorValueRepresentatio
 		v.bit=percentChance(50);
 		break;
 	case(VALREP_BYTE):
-		v.byte=qrand()%0xFF;
+		v.byte=utility::random::qrand()%0xFF;
 		break;
 	case(VALREP_WORD):
-		v.doubleWord=qrand()%0xFFFF;
+		v.doubleWord=utility::random::qrand()%0xFFFF;
 		break;
 	case(VALREP_DOUBLE_WORD):
-		v.doubleWord=qrand()%0xFFFFFFFF;
+		v.doubleWord=utility::random::qrand()%0xFFFFFFFF;
 		break;
 	default:// Just make sure its random m-kay?
 	case(VALREP_REPRESENTATION_COUNT):
 	case(VALREP_QUAD_WORD): {
-		uint64_t qw=(qrand()%0xFFFFFFFF);
+		uint64_t qw=(utility::random::qrand()%0xFFFFFFFF);
 		qw<<=32;
-		qw|=(qrand()%0xFFFFFFFF);
+		qw|=(utility::random::qrand()%0xFFFFFFFF);
 		v.quadWord=qw;
 	}
 	break;
@@ -145,24 +156,24 @@ ArduMYActuatorConfig TestArduMY::randomConfig() const
 	c.setDirty(percentChance(50));
 
 	// Set random type
-	c.type=(ArduMYActuatorType)(qrand() % ((quint8)ArduMYActuatorType::TYPE_COUNT));
+	c.type=(ArduMYActuatorType)(utility::random::qrand() % ((quint8)ArduMYActuatorType::TYPE_COUNT));
 
 	// Set random representation
 
-	c.representation=(ArduMYActuatorValueRepresentation)(qrand() % ((quint8)ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT));
+	c.representation=(ArduMYActuatorValueRepresentation)(utility::random::qrand() % ((quint8)ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT));
 
 	// All but BIT is ok
 	do {
-		c.representation=(ArduMYActuatorValueRepresentation)(qrand() % ((quint8)ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT)) ;
+		c.representation=(ArduMYActuatorValueRepresentation)(utility::random::qrand() % ((quint8)ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT)) ;
 	} while (ArduMYActuatorValueRepresentation::VALREP_BIT==c.representation);
 
 	// All BIT
 	//c.representation=ArduMYActuatorValueRepresentation::VALREP_BIT;
 
 	// Set random name
-	const quint8 nameSize=(qrand()%20);
-	QString name=randomString(nameSize);
-	auto name_cstr=name.toStdString().c_str();
+	const quint8 nameSize=(utility::random::qrand()%20);
+	auto const name=randomString(nameSize).toStdString();
+	auto name_cstr=name.c_str();
 	int i=0;
 	for(i=0; i<nameSize; ++i) {
 		c.nickName[i]=name_cstr[i];
@@ -172,27 +183,27 @@ ArduMYActuatorConfig TestArduMY::randomConfig() const
 		c.nickName[i]='\0';
 	}
 	// Set random gear ratio
-	c.gearRatioNumerator=1+(qrand()%100);
-	c.gearRatioDenominator=1+(qrand()%200);
+	c.gearRatioNumerator=1+(utility::random::qrand()%100);
+	c.gearRatioDenominator=1+(utility::random::qrand()%200);
 
 	// Set random debounce counts
-	c.incrementalencoderDebounceCount=qrand()%20;
-	c.limitSwitchDebounceCount=qrand()%20;
+	c.incrementalencoderDebounceCount=utility::random::qrand()%20;
+	c.limitSwitchDebounceCount=utility::random::qrand()%20;
 
 	// Set random hardware pins
-	c.incrementalEncoderPinA=qrand()%54;
-	c.incrementalEncoderPinB=qrand()%54;
-	c.limitSwitchPinStart=qrand()%54;
-	c.limitSwitchPinEnd=qrand()%54;
-	c.positionFeedbackPin=qrand()%54;
-	c.rcServoPin=qrand()%54;
-	c.tachometerPin=qrand()%54;
+	c.incrementalEncoderPinA=utility::random::qrand()%54;
+	c.incrementalEncoderPinB=utility::random::qrand()%54;
+	c.limitSwitchPinStart=utility::random::qrand()%54;
+	c.limitSwitchPinEnd=utility::random::qrand()%54;
+	c.positionFeedbackPin=utility::random::qrand()%54;
+	c.rcServoPin=utility::random::qrand()%54;
+	c.tachometerPin=utility::random::qrand()%54;
 
 	// Set random step motor phase count
-	c.stepMotorPhaseCount=1+(qrand()%4);
+	c.stepMotorPhaseCount=1+(utility::random::qrand()%4);
 
 	// Set random step motor steps per rotation
-	c.stepMotorPhaseCount=90+(qrand()%145);
+	c.stepMotorPhaseCount=90+(utility::random::qrand()%145);
 
 	// Set random range
 	switch(c.representation) {
@@ -204,25 +215,25 @@ ArduMYActuatorConfig TestArduMY::randomConfig() const
 	}
 	break;
 	case(ArduMYActuatorValueRepresentation::VALREP_BYTE): {
-		c.rangeStart.byte=qrand()%qrand()%(0xFF);
-		c.rangeSpan.byte=qrand()%((0xFF)-c.rangeStart.byte);
+		c.rangeStart.byte=utility::random::qrand()%utility::random::qrand()%(0xFF);
+		c.rangeSpan.byte=utility::random::qrand()%((0xFF)-c.rangeStart.byte);
 	}
 	break;
 	case(ArduMYActuatorValueRepresentation::VALREP_WORD): {
-		c.rangeStart.word=qrand()%qrand()%(0xFFFF);
-		c.rangeSpan.word=qrand()%((0xFFFF)-c.rangeStart.word);
+		c.rangeStart.word=utility::random::qrand()%utility::random::qrand()%(0xFFFF);
+		c.rangeSpan.word=utility::random::qrand()%((0xFFFF)-c.rangeStart.word);
 	}
 	break;
 	case(ArduMYActuatorValueRepresentation::VALREP_DOUBLE_WORD): {
-		c.rangeStart.doubleWord=qrand()%qrand()%(0xFFFFFFFF);
-		c.rangeSpan.doubleWord=qrand()%((0xFFFFFFFF)-c.rangeStart.doubleWord);
+		c.rangeStart.doubleWord=utility::random::qrand()%utility::random::qrand()%(0xFFFFFFFF);
+		c.rangeSpan.doubleWord=utility::random::qrand()%((0xFFFFFFFF)-c.rangeStart.doubleWord);
 	}
 	break;
 	case(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
-		// Naive attempt at making 64bit random numbers using qrand()
-		uint64_t r1=(static_cast<uint64_t>(qrand()%(0xFFFFFFFF)))<<32 | (static_cast<uint64_t>(qrand()%(0xFFFFFFFF)));
-		uint64_t r2=(static_cast<uint64_t>(qrand()%(0xFFFFFFFF)))<<32 | (static_cast<uint64_t>(qrand()%(0xFFFFFFFF)));
-		uint64_t r3=(static_cast<uint64_t>(qrand()%(0xFFFFFFFF)))<<32 | (static_cast<uint64_t>(qrand()%(0xFFFFFFFF)));
+		// Naive attempt at making 64bit random numbers using utility::random::qrand()
+		uint64_t r1=(static_cast<uint64_t>(utility::random::qrand()%(0xFFFFFFFF)))<<32 | (static_cast<uint64_t>(utility::random::qrand()%(0xFFFFFFFF)));
+		uint64_t r2=(static_cast<uint64_t>(utility::random::qrand()%(0xFFFFFFFF)))<<32 | (static_cast<uint64_t>(utility::random::qrand()%(0xFFFFFFFF)));
+		uint64_t r3=(static_cast<uint64_t>(utility::random::qrand()%(0xFFFFFFFF)))<<32 | (static_cast<uint64_t>(utility::random::qrand()%(0xFFFFFFFF)));
 		c.rangeStart.quadWord=r1%r2%(0xFFFFFFFFFFFFFFFF);
 		c.rangeSpan.quadWord=r3%((0xFFFFFFFFFFFFFFFF)-c.rangeStart.quadWord);
 	}
@@ -279,7 +290,7 @@ ArduMYActuatorSet TestArduMY::randomActuatorSet()
 {
 	ArduMYActuatorSet set;
 	//qsrand(2);
-	const auto setSize=qrand()%28;
+	const auto setSize=utility::random::qrand()%28;
 	set.setSize(setSize);
 	if((uint32_t)set.size() != (uint32_t)setSize) {
 		qWarning()<<"ERROR: set size was incorrect";
@@ -347,7 +358,7 @@ union Fuzzer {
 	uint8_t bytes[sizeof(T)];
 	explicit Fuzzer() {
 		for(size_t i=0; i<sizeof(bytes); ++i)	{
-			bytes[i]=(qrand()%0xFF);
+			bytes[i]=(utility::random::qrand()%0xFF);
 		}
 	}
 
@@ -381,7 +392,7 @@ ArduMYActuator TestArduMY::fuzzActuator() const
 ArduMYActuatorSet TestArduMY::fuzzActuatorSet()
 {
 	ArduMYActuatorSet set;
-	const auto setSize=qrand()%0xFF;
+	const auto setSize=utility::random::qrand()%0xFF;
 	set.setSize(static_cast<uint32_t>(setSize));
 	for(auto i=0; i<setSize; ++i) {
 		set[i]=fuzzActuator();
@@ -456,15 +467,15 @@ void TestArduMY::testMagicDetector()
 {
 	DO_LOOPS_START("MagicDetector", LOOPS)
 
-	const size_t magicSize=1+(qrand()%100);
+	const size_t magicSize=1+(utility::random::qrand()%100);
 	uint8_t magic[magicSize];
 	MagicDetector magicDetector(magic,magicSize);
 	for(int i=0; i<LOOPS; ++i) {
 		// Generate random sequence
-		const size_t testSequenceSize=magicSize+1+(qrand()%1000);
+		const size_t testSequenceSize=magicSize+1+(utility::random::qrand()%1000);
 		uint8_t testSequence[testSequenceSize];
 		for(size_t j=0; j<testSequenceSize; ++j) {
-			uint8_t byte=qrand()%0xFF;
+			uint8_t byte=utility::random::qrand()%0xFF;
 			// Ensure that the sequence does not contain magic by coincidence
 			if(byte==magic[magicSize-1]) {
 				byte^=1;
@@ -485,7 +496,7 @@ void TestArduMY::testMagicDetector()
 			QCOMPARE((uint32_t)ct, (uint32_t)(testSequenceSize));
 		}
 		// Insert the magic sequence
-		const size_t insertPoint=qrand()%(testSequenceSize - magicSize);
+		const size_t insertPoint=utility::random::qrand()%(testSequenceSize - magicSize);
 		for(size_t l=0; l<magicSize; ++l) {
 			testSequence[insertPoint + l]=magic[l];
 		}
@@ -514,7 +525,7 @@ void TestArduMY::testDynamicArrayFundamental()
 	QCOMPARE(array.size(), (uint32_t)0);
 	for(uint32_t i =0 ; i<100; ++i) {
 		const uint32_t oldSize=array.size();
-		const uint32_t size=qrand()%20;
+		const uint32_t size=utility::random::qrand()%20;
 		const uint32_t compareSize=((size<oldSize)?size:oldSize);
 		//qDebug().nospace().noquote()<<"["<<i<<"]- OLDSIZE: "<<oldSize<<", SIZE: "<<size<<", compareSize: "<<compareSize;
 		for(uint32_t j=0 ; j< oldSize; ++j) {
@@ -577,12 +588,12 @@ void TestArduMY::testDynamicArrayPOD()
 	QCOMPARE(array.size(), (uint32_t)0);
 	for(uint32_t i =0 ; i<100; ++i) {
 		const uint32_t oldSize=array.size();
-		const uint32_t size=qrand()%20;
+		const uint32_t size=utility::random::qrand()%20;
 		const uint32_t compareSize=((size<oldSize)?size:oldSize);
 		//qDebug().nospace().noquote()<<"["<<i<<"]- OLDSIZE: "<<oldSize<<", SIZE: "<<size<<", compareSize: "<<compareSize;
 		for(uint32_t j=0 ; j< oldSize; ++j) {
 			Test &t=array[j];
-			t.a=qrand();
+			t.a=utility::random::qrand();
 			t.b=dfrand();
 			t.c=percentChance(50);
 			//qDebug().nospace().noquote()<<"  +  "<<j<<": A="<<t.a<<" B="<<t.b<<" C="<<t.c;
@@ -637,7 +648,7 @@ void TestArduMY::testActuatorValue()
 		ArduMYActuatorValueRepresentation rep=(ArduMYActuatorValueRepresentation)i;
 		ArduMYActuatorValue a;
 		QCOMPARE(a.bit,false);
-		QCOMPARE(a.byte,(typeof(a.byte))0x00);
+		QCOMPARE(a.byte, static_cast <typeof(a.byte)>(0x00));
 		QCOMPARE(a.word,(typeof(a.word))0x00);
 		QCOMPARE(a.doubleWord,(typeof(a.doubleWord))0x00);
 		QCOMPARE(a.singlePrecision,(typeof(a.singlePrecision))0.0f);
@@ -1188,18 +1199,18 @@ void TestArduMY::testCommandSerializerFull()
 	//qDebug()<<"";
 	//qDebug()<<"##########################################################";
 
-	const quint8 newCount=qrand()%0xFF;
+	const quint8 newCount=utility::random::qrand()%0xFF;
 	if(actuatorsFrom.size()!=newCount) {
 		actuatorsFrom.setCountDirty(true);
 	}
 	actuatorsFrom.setSize(newCount);
 
-	const quint8 numUpdate=qrand()%newCount;
+	const quint8 numUpdate=utility::random::qrand()%newCount;
 	for(quint8 i=0; i<numUpdate; ++i) {
-		const quint8 indexUpdate=qrand()%newCount;
+		const quint8 indexUpdate=utility::random::qrand()%newCount;
 		ArduMYActuator &ac=actuatorsFrom[indexUpdate];
 		// Sometimes randomize config
-		if((qrand()%100)>50) {
+		if((utility::random::qrand()%100)>50) {
 			ArduMYActuatorConfig nac=randomConfig();
 			ac.config=nac;
 			ac.config.setDirty(true);

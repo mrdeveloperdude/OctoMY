@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <QRect>
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QVariant>
 #include <QKeyEvent>
 #include <QIcon>
@@ -35,7 +35,7 @@ NodeWindow::~NodeWindow()
 void NodeWindow::nodeWindowConfigure(QSharedPointer<Node> node)
 {
 	OC_METHODGATE();
-	// Dissconnect old node
+	// Disconnect old node
 	if(!mNode.isNull()) {
 // [...]
 		mNode.clear();
@@ -98,7 +98,10 @@ void NodeWindow::loadWindowGeometry()
 		//qDebug()<<"#*#*#*#*#*#*#*#* LOADED GEOMETRY WAS "<<geometry;
 		if (geometry.isEmpty()) {
 			qDebug()<<"WARNING: No window geometry found in settings";
-			const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
+			//TODO: Verify this Qt6 conversion
+			//const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
+			auto screen = QApplication::primaryScreen();
+			const QRect availableGeometry = screen->availableGeometry();
 			resize(availableGeometry.width() / 3, availableGeometry.height() / 2);
 			move((availableGeometry.width() - width()) / 2,
 				 (availableGeometry.height() - height()) / 2);

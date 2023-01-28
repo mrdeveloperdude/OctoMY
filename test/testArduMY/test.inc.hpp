@@ -2,25 +2,28 @@
 #define TEST_INC_HPP
 
 
-#include "ardumy/ArduMYActuatorConfigParser.hpp"
-#include "ardumy/ArduMYActuatorConfigSerializer.hpp"
+#include "ardumy_arduino/ArduMYActuatorConfigParser.hpp"
+#include "ardumy_arduino/ArduMYActuatorConfigSerializer.hpp"
 
 
-#include "ardumy/ArduMYActuatorValueParser.hpp"
-#include "ardumy/ArduMYActuatorValueSerializer.hpp"
+#include "ardumy_arduino/ArduMYActuatorValueParser.hpp"
+#include "ardumy_arduino/ArduMYActuatorValueSerializer.hpp"
 
-#include "ardumy/MagicDetector.hpp"
+#include "ardumy_arduino/MagicDetector.hpp"
 
-#include "ardumy/ArduMYActuatorValueRepresentation.hpp"
+#include "ardumy_arduino/ArduMYActuatorValueRepresentation.hpp"
 
 
-#include "ardumy/ArduMYCommandParser.hpp"
+#include "ardumy_arduino/ArduMYCommandParser.hpp"
 
-#include "ardumy/ArduMYParserState.hpp"
+#include "ardumy_arduino/ArduMYParserState.hpp"
 
-#include "../common/TestCommon.hpp"
+//#include "../common/TestCommon.hpp"
+#include "Common_test.hpp"
 
-#include "hw/controllers/ardumy/ArduMYTypeConversions.hpp"
+#include "ardumy/ArduMYTypeConversions.hpp"
+
+#include "utility/random/Random.hpp"
 
 void logLines(const QString ret);
 

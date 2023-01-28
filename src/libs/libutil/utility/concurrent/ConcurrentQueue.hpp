@@ -6,9 +6,9 @@
 #include "uptime/ConfigureHelper.hpp"
 #include "app/Constants.hpp"
 
+#include <QObject>
 #include <QMutex>
 #include <QWaitCondition>
-#include <QLinkedList>
 #include <QAtomicInteger>
 #include <QDebug>
 #include <QString>
@@ -29,14 +29,14 @@ template <typename T>
 class ConcurrentQueue
 {
 private:
-	const int mCapacity;
+	const size_t mCapacity;
 
 	// Concurrency primiteives to synchronize on queue
 	QMutex mMutex;
 	QWaitCondition mNotEmpty;
 	QWaitCondition mNotFull;
 
-	QLinkedList<T> mItems;
+	std::list<T> mItems;
 
 	AtomicBoolean mDone;
 
@@ -124,11 +124,11 @@ void ConcurrentQueue<T>::put(T item)
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		if(!mDone) {
 			QMutexLocker ml(&mMutex);
-			int count=mItems.count();
+			auto count=mItems.size();
 			if ((mCapacity > 0) && (count >= mCapacity)) {
 				//qDebug()<<"Waiting for not-full with count="<<count;
 				mNotFull.wait(&mMutex);
-				count=mItems.count();
+				count=mItems.size();
 				//qDebug()<<"Got for not-full with count="<<count;
 			}
 			mItems.push_front(item);
@@ -154,12 +154,12 @@ T ConcurrentQueue<T>::get()
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		unsigned long timeOutMillis=1000;
 		QMutexLocker ml(&mMutex);
-		int count=mItems.count();
+		auto count=mItems.size();
 		//qDebug()<<"Waiting for not-empty with count="<<count;
 		while((count<=0) && (!mDone)) {
 //			const bool didTimeOut=
 			mNotEmpty.wait(&mMutex, timeOutMillis);
-			count=mItems.count();
+			count=mItems.size();
 			//qDebug()<<" NOT EMPTY WAIT LOOP: ... done="<<mDone <<" count="<<count<<" didTimeOut="<<didTimeOut<<"("<<timeOutMillis<<" ms)";
 		}
 		if(mDone) {
@@ -167,8 +167,9 @@ T ConcurrentQueue<T>::get()
 		}
 		//qDebug()<<"Got not-empty with count="<<count;
 		const bool wasFull=(count >= mCapacity);
-		T item=mItems.takeLast();
-		count=mItems.count();
+		T item=mItems.back();
+		mItems.pop_back();
+		count=mItems.size();
 		const bool isFull=(count < mCapacity);
 		//qDebug()<<"State mCapacity="<<mCapacity<<", wasFull="<<wasFull<<", isFull="<<isFull<<", count="<<count;
 		if((mCapacity>0) && (wasFull) && (!isFull)) {
@@ -191,16 +192,17 @@ T ConcurrentQueue<T>::tryGet(bool &got)
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		QMutexLocker ml(&mMutex);
-		int count=mItems.count();
+		auto count=mItems.size();
 		if(count<=0) {
 			got=false;
 			return T();
 		}
 		//qDebug()<<"Got not-empty with count="<<count;
 		const bool wasFull=(count >= mCapacity);
-		T item=mItems.takeLast();
+		T item=mItems.back();
+		mItems.pop_back();
 		got=true;
-		count=mItems.count();
+		count=mItems.size();
 		const bool isFull=(count < mCapacity);
 		//qDebug()<<"State mCapacity="<<mCapacity<<", wasFull="<<wasFull<<", isFull="<<isFull<<", count="<<count;
 		if((mCapacity>0) && (wasFull) && (!isFull)) {

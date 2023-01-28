@@ -2,7 +2,6 @@
 
 #include "NetworkSettingsTestWidget.hpp"
 
-#include "Utilities.hpp"
 
 #include <QSignalSpy>
 #include <QWidget>

@@ -34,7 +34,7 @@ void Hub::nodeConfigure()
 
 		}
 	} else {
-		qDebug()<<"ERROR: No context, closing";
+		qWarning()<<"ERROR: No context, closing";
 		emit nodeRequestExit(EXIT_FAILURE);
 	}
 }

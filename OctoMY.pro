@@ -72,3 +72,6 @@ OTHER_FILES+= $$files(src/libs/libagent_old/*, true);
 OTHER_FILES+= $$files(src/libs/libremote_old/*, true);
 
 include($$PRIS/status.pri)
+
+FORMS += \
+	src/libs/libapp/app/launcher/MockAppWindow.ui

@@ -5,17 +5,11 @@
 #include "uptime/New.hpp"
 #include "uptime/ConnectionType.hpp"
 
-#include "app/Settings.hpp"
-#include "app/Constants.hpp"
-
-#include "utility/ui/Ui.hpp"
 
 #include "node/Node.hpp"
-#include "identity/Identicon.hpp"
 #include "address/Associate.hpp"
 #include "security/PortableID.hpp"
 
-#include "address/AddressEntry.hpp"
 #include "pairing/PairingListModel.hpp"
 #include "PairingEditButtonDelegate.hpp"
 
@@ -40,7 +34,7 @@ PairingWizard::PairingWizard(QWidget *parent)
 	, mList(nullptr)
 	, mDelegate (nullptr)
 	, mConfigureHelper("PairingWizard",true,false,false,true,false)
-
+	
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
@@ -63,25 +57,27 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 		ui->widgetMyCertificate->configure(false, true);
 		mTemplate=ui->labelBodyPair->text();
 		ui->labelBodyPair->setText("<h1>Please wait...<h1>");
-
+		
 		ui->widgetPairingTrust->configure(mNode);
-
+		
 		reset();
-
+		
 		// Hook onward buttons to go to the correct page in stack
 		QList<QPushButton *> onwardButtons = ui->stackedWidget->findChildren<QPushButton *>(QRegularExpression("pushButtonOnward.*"));
 		//qDebug()<<"FOUND "<<onwardButtons.size()<<" ONWARDs";
 		for (QList<QPushButton*>::iterator it = onwardButtons.begin(), e=onwardButtons.end(); it != e; ++it) {
 			QPushButton*onward=(*it);
 			//qDebug()<<" + ONWARD: "<<onward->objectName();
-			connect(onward, &QPushButton::clicked,this,[=](bool b) {
-				Q_UNUSED(b);
-				// Skip pages that are not relevant to the selection made in "basic" page
-				int next = (ui->stackedWidget->currentIndex() + 1) % ui->stackedWidget->count();
-				ui->stackedWidget->setCurrentIndex(next);
-			}, OC_CONTYPE);
+			if(!connect(onward, &QPushButton::clicked,this, [=](bool b) {
+						Q_UNUSED(b);
+						// Skip pages that are not relevant to the selection made in "basic" page
+						int next = (ui->stackedWidget->currentIndex() + 1) % ui->stackedWidget->count();
+						ui->stackedWidget->setCurrentIndex(next);
+		}, OC_CONTYPE_NON_UNIQUE)){
+				qWarning()<<"Could not connect";
+			}
 		}
-
+		
 		QSharedPointer<LocalAddressList> lal=localAddressList();
 		if(!mNode.isNull() && !lal.isNull()) {
 			NodeType type=mNode->nodeType();
@@ -91,10 +87,10 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 				//qDebug()<<"CONFIGURE PAIRING WIZ FOR "<<pid.toPortableString();
 				ui->widgetMyCertificate->setPortableID(pid);
 				if(nullptr==ui->listViewNodes->model()) {
-
+					
 					mList=OC_NEW PairingListModel(addressBook(), type);
 					ui->listViewNodes->setModel(mList);
-
+					
 					if(nullptr==mDelegate) {
 						mDelegate=OC_NEW PairingEditButtonDelegate(this);
 					}
@@ -103,33 +99,33 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 				QSharedPointer<DiscoveryClient> client=mNode->discoveryClient();
 				if(!client.isNull()) {
 					if(!connect(client.data(), &DiscoveryClient::nodeDiscovered, [=](QString partID) {
-					Q_UNUSED(partID);
-						//qDebug()<<"PAIRING WIZARD partID: "<<partID;
-						ui->listViewNodes->update();
-					}
-							   )) {
+								Q_UNUSED(partID);
+								//qDebug()<<"PAIRING WIZARD partID: "<<partID;
+								ui->listViewNodes->update();
+				}
+								)) {
 						qWarning()<<"ERROR: Could not connect "<<client->objectName();
 					}
 				} else {
 					qWarning()<<"ERROR: discovery was null";
 					return;
 				}
-
+				
 				replaceText(type);
-
+				
 				if(!connect(ui->widgetNetworkSettings, &NetworkSettingsWidget::addressChanged, this, &PairingWizard::onNetworkSettingsChange, OC_CONTYPE)) {
 					qWarning()<<"ERROR: Could not connect "<<ui->widgetNetworkSettings->objectName();
 				}
-
-
+				
+				
 				const auto nadr=lal->currentNetworkAddress();
-
+				
 				ui->widgetNetworkSettings->setHostAddress(nadr.ip(), nadr.port());
-
+				
 			} else {
 				qWarning()<<"ERROR: No local ass";
 			}
-
+			
 		} else {
 			qWarning()<<"ERROR: No node";
 		}
@@ -139,26 +135,25 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 
 void PairingWizard::replaceText(NodeType type)
 {
-
 	switch(type) {
 	case(TYPE_ZOO):
-//			default:
+		//			default:
 	case(TYPE_UNKNOWN):
 	case(TYPE_AGENT): {
 		ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Agent").replace(QRegularExpression("\\[DEST\\]"), "Control"));
 		ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageAgent);
 	}
-	break;
+		break;
 	case(TYPE_REMOTE): {
 		ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Remote").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
 		ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
 	}
-	break;
+		break;
 	case(TYPE_HUB): {
 		ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Hub").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
 		ui->stackedWidgetNoMessage->setCurrentWidget(ui->pageNoMessageControl);
 	}
-	break;
+		break;
 	}
 }
 
@@ -245,7 +240,7 @@ void PairingWizard::startEdit(int row)
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		qDebug()<<"STARTING EDIT FOR "<<row;
 		QModelIndex index=mList->index(row, 0);
-
+		
 		if(index.isValid()) {
 			//setUpdatesEnabled(false);
 			QVariantMap map=index.data(Qt::DisplayRole).toMap();

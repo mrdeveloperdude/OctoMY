@@ -23,7 +23,7 @@ fi
 
 if ! hash rename 2>/dev/null
 then
-	echo "Could not find rename command. Please install it with 'sudo apt install rename' or similar before using this script. Aborting..."
+	echo "$0: Could not find rename command. Please install it with 'sudo apt install rename' or similar before using this script. Aborting..."
 	exit 1
 fi
 

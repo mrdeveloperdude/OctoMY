@@ -177,10 +177,7 @@ QString KeyPrivate::describe()
 	ret+="\n pkiSizeBits="+QString::number(pkiSizeBits);
 	ret+="\npkiSizeBytes="+QString::number(pkiSizeBytes);
 
-
-
-
-	QStringList list=ret.split("\n",QString::SkipEmptyParts);
+	QStringList list=ret.split("\n", Qt::SkipEmptyParts);
 	for(QString str:list) {
 		qDebug()<<str;
 	}

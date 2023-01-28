@@ -152,6 +152,11 @@ void Servotor32Controller::writeData(const QByteArray &data)
 }
 
 
+static const QString sepStr("\n\r");
+static const size_t sepStrSz=sepStr.size();
+
+static const QByteArray sepBa(sepStr.toLatin1());
+static const size_t sepBaSz=sepBa.size();
 
 
 // Serial IO slots
@@ -163,21 +168,19 @@ void Servotor32Controller::onSerialReadData()
 	if(isConnected()) {
 		QByteArray data = mSerialInterface->readAll();
 		mInputBuffer.append(data);
-		static const QString sep("\n\r");
-		static const int sepSz=sep.size();
-		const int lio=mInputBuffer.indexOf(sep);
+		const int lio=mInputBuffer.indexOf(sepBa);
 		mReads++;
 		// Output non-empty lines
 		if(lio > 0) {
 			QByteArray part=mInputBuffer.left(lio);
-			mInputBuffer=mInputBuffer.mid(lio+sepSz);
+			mInputBuffer=mInputBuffer.mid(lio+sepBaSz);
 			qDebug()<<QString::fromLatin1(part)<< " (over "<<mReads<<" reads)";
 			mReads=0;
 		}
 		// Simply skip empty lines
 		else if(0 == lio) {
 			qDebug()<<"SKIPPING EMPTY SERIAL IO READ";
-			mInputBuffer=mInputBuffer.mid(sepSz);
+			mInputBuffer=mInputBuffer.mid(sepBaSz);
 		}
 		//TODO:parse and handle data
 	} else {
@@ -276,9 +279,9 @@ void Servotor32Controller::limp(QBitArray &flags)
 			QString data;
 			for(int i=0; i<sz; ++i) {
 				if(flags.testBit(i)) {
-					data += QLatin1Literal("#") +  QString::number(i) + QLatin1String("L\n");
+					data += QString::fromLatin1("#") +  QString::number(i) + QString::fromLatin1("L\n");
 				} else {
-					data += QLatin1Literal("#") +  QString::number(i) + QLatin1String("P") + QString::number(mAccumulatedPosition[i]) + QLatin1String("\n");
+					data += QString::fromLatin1("#") +  QString::number(i) + QString::fromLatin1("P") + QString::number(mAccumulatedPosition[i]) + QString::fromLatin1("\n");
 				}
 			}
 			qDebug()<<"LIMP: "<<data<<" for "<<flags;
@@ -300,9 +303,9 @@ void Servotor32Controller::limp(quint8 index, bool limp)
 		}
 		QString data;
 		if(limp) {
-			data += QLatin1Literal("#") +  QString::number(index) + QLatin1String("L\n");
+			data += QString::fromLatin1("#") +  QString::number(index) + QString::fromLatin1("L\n");
 		} else {
-			data += QLatin1Literal("#") +  QString::number(index) + QLatin1String("P") + QString::number(mAccumulatedPosition[index]) + QLatin1String("\n");
+			data += QString::fromLatin1("#") +  QString::number(index) + QString::fromLatin1("P") + QString::number(mAccumulatedPosition[index]) + QString::fromLatin1("\n");
 		}
 		qDebug()<<"LIMP SINGLE: "<<data;
 		writeData(data.toLatin1());

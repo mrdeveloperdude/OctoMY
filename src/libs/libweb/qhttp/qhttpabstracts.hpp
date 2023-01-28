@@ -178,6 +178,18 @@ QHttpAbstractOutput::addHeaderValue<int>(const QByteArray &field, int value) {
 }
 
 template<> inline void
+QHttpAbstractOutput::addHeaderValue<long>(const QByteArray &field, long value) {
+    addHeader(field, QString::number(value).toLatin1());
+}
+
+template<> inline void
+QHttpAbstractOutput::addHeaderValue<long long>(const QByteArray &field, long long value) {
+    addHeader(field, QString::number(value).toLatin1());
+}
+
+
+
+template<> inline void
 QHttpAbstractOutput::addHeaderValue<size_t>(const QByteArray &field, size_t value) {
     addHeader(field, QString::number(value).toLatin1());
 }

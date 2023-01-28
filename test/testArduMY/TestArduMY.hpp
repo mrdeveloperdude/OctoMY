@@ -10,6 +10,10 @@ class ArduMYActuator;
 class ArduMYActuatorSet;
 
 
+QString byteToStr(uint8_t byte);
+
+
+
 class TestArduMY:public QObject
 {
 	Q_OBJECT

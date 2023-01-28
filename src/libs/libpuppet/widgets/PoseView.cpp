@@ -39,7 +39,7 @@ void PoseView::paintEvent(QPaintEvent *)
 		const qreal hueStep=1.0/static_cast<qreal>(sz);
 		const qreal margin=6.0;
 		QPainter painter(this);
-		painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
+		painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
 
 		qreal hue=hueStep;
 		QColor col;

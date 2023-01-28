@@ -1356,6 +1356,7 @@ void CommsChannel::onCarrierConnectionStatusChanged(const bool connected)
 void CommsChannel::appendLog(QString msg)
 {
 	OC_METHODGATE();
+	Q_UNUSED(msg);
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		//qDebug()<<"COMMS_CHANNEL_LOG: "<<msg;
 	}

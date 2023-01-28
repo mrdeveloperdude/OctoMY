@@ -41,7 +41,7 @@ void testActuatorValueParserInclude(ArduMYActuatorSet &inSet)
 	uint8_t enabledCount=0;
 	const uint8_t enableBitsActualSize = ( inSize + 7 ) / 8;
 	for( size_t i = 0; i < enableBitsActualSize ; ++i ) {
-		const uint8_t bits = ( qrand() % 0xFF );
+		const uint8_t bits = ( utility::random::qrand() % 0xFF );
 		for( size_t j = 0 ; j < 8 ; ++j ) {
 			// Make sure to not enable bits outside the number of actuators in the set!
 			if( ( i * 8 + j ) >= inSize ) {

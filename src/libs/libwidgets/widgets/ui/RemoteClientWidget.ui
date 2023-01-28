@@ -32,7 +32,7 @@
    <item row="0" column="0">
     <widget class="QStackedWidget" name="stackedWidgetControl">
      <property name="currentIndex">
-      <number>0</number>
+      <number>7</number>
      </property>
      <widget class="QWidget" name="pageConnection">
       <property name="sizePolicy">
@@ -605,6 +605,11 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>LogWidget</class>
+   <extends>QPlainTextEdit</extends>
+   <header location="global">widgets/LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
    <class>TryToggle</class>
    <extends>QWidget</extends>
    <header location="global">widgets/TryToggle.hpp</header>
@@ -621,11 +626,6 @@
    <extends>QWidget</extends>
    <header location="global">widgets/PortableIDWidget.hpp</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LogWidget</class>
-   <extends>QPlainTextEdit</extends>
-   <header location="global">widgets/LogWidget.hpp</header>
   </customwidget>
   <customwidget>
    <class>FaceWidget</class>
@@ -648,7 +648,7 @@
   <customwidget>
    <class>SpeechControlWidget</class>
    <extends>QWidget</extends>
-   <header location="global">widgets/audio/SpeechControlWidget.hpp</header>
+   <header location="global">widgets/voice/SpeechControlWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

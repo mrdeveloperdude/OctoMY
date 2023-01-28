@@ -1,14 +1,10 @@
 #include "AgentWindow.hpp"
 #include "ui_AgentWindow.h"
 
-
 #include "agent/Agent.hpp"
 
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
-#include "uptime/ConnectionType.hpp"
-
-#include "app/Settings.hpp"
 
 
 #include <QDebug>
@@ -16,10 +12,6 @@
 #ifdef Q_OS_ANDROID
 #include <QAndroidJniObject>
 #endif
-
-
-#include "pose/NameMapping.hpp"
-#include "widgets/NameMappingWidget.hpp"
 
 
 AgentWindow::AgentWindow(QWidget *parent)
@@ -61,6 +53,9 @@ void AgentWindow::configure()
 		loadWindowGeometry();
 		ui->widgetDebuggerButton->configure(node(), true);
 		updateWindowIcon();
+		auto n=node();
+		ui->widgetNetworkSettings->configure(n?n->localAddressList():nullptr);
+
 		//ui->widgetPairing->configure(node());
 		//ui->wi
 	} else {

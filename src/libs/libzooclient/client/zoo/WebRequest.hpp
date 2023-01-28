@@ -119,8 +119,6 @@ private slots:
 	///////////////// MANAGER SLOTS (Mostly used for preemptive logging for debugging purposes)
 	void onManagerProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
 	void onManagerAuthenticationRequired(QNetworkReply * reply, QAuthenticator * authenticator);
-	void onManagerNetworkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accessible);
-
 };
 
 QDebug operator<<(QDebug d, Method m);

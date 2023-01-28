@@ -3,7 +3,9 @@
 
 
 #include <QTimer>
-#include <QCameraInfo>
+#include <QList>
+#include <QCameraDevice>
+
 
 
 
@@ -12,9 +14,9 @@ class CameraList: public QObject
 	Q_OBJECT
 
 private:
-	QTimer devChangeTimer;
-	QString deviceListHash;
-	QList<QCameraInfo>  deviceList;
+	QTimer mDevChangeTimer;
+	QString mDeviceListHash;
+	QList<QCameraDevice> mDeviceList;
 
 public:
 	CameraList(QObject *parent=0);
@@ -24,7 +26,7 @@ public:
 	QString toSpecStanzas(QString space="");
 
 private:
-	QString deviceListToHash(QList<QCameraInfo> devices);
+	QString deviceListToHash(QList<QCameraDevice> devices);
 
 private slots:
 	void onDevChangeTimer();

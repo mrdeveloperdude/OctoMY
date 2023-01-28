@@ -6,8 +6,7 @@
 #include <QNetworkInterface>
 #include <QList>
 #include <QHostAddress>
-#include <QNetworkConfiguration>
-#include <QNetworkConfigurationManager>
+#include <QNetworkInformation>
 #include <QFileInfo>
 #include <QCoreApplication>
 

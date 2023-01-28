@@ -94,9 +94,6 @@ void WebRequest::hookManagerSignals()
 	if(!connect(&nam, SIGNAL(authenticationRequired(QNetworkReply *, QAuthenticator *)),this, SLOT(onManagerAuthenticationRequired(QNetworkReply *, QAuthenticator *)),OC_CONTYPE)) {
 		qWarning()<< signature()<<"ERROR: Could not connect";
 	}
-	if(!connect(&nam, SIGNAL(networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility)),this, SLOT(onManagerNetworkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility)),OC_CONTYPE)) {
-		qWarning()<< signature()<<"ERROR: Could not connect";
-	}
 	if(!connect(&nam, SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)),this, SLOT(onManagerProxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)),OC_CONTYPE)) {
 		qWarning()<< signature()<<"ERROR: Could not connect";
 	}
@@ -436,10 +433,3 @@ void WebRequest::onManagerAuthenticationRequired(QNetworkReply *, QAuthenticator
 	//qDebug()<<Q_FUNC_INFO <<elapsed();
 }
 
-
-void WebRequest::onManagerNetworkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility na)
-{
-	OC_METHODGATE();
-	Q_UNUSED(na);
-	//qDebug()<<"ACCESSABILITY CHANGED TO: "<< (QNetworkAccessManager::Accessible==na?"ACCESSIBLE":(QNetworkAccessManager::NotAccessible==na?"INACCESSIBLE":"UNKNOWN"));
-}

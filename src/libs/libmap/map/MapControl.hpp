@@ -96,7 +96,7 @@ public:
 	 * @param qParent QWidget parent
 	 * @param windowFlags QWidget Window flags
 	 */
-	MapControl (QWidget * parent = 0, Qt::WindowFlags windowFlags = 0);
+	MapControl (QWidget * parent = 0, Qt::WindowFlags windowFlags = static_cast<Qt::WindowType>(0));
 
 	//! The constructor of MapControl
 	/*!
@@ -113,7 +113,7 @@ public:
 	 * @param parent QWidget parent
 	 * @param windowFlags QWidget Window flags
 	 */
-	MapControl ( QSize mSize, MouseMode mousemode = Panning, bool showScale = false, bool showCrosshairs = true, QWidget * parent = 0, Qt::WindowFlags windowFlags = 0);
+	MapControl ( QSize mSize, MouseMode mousemode = Panning, bool showScale = false, bool showCrosshairs = true, QWidget * parent = 0, Qt::WindowFlags windowFlags = static_cast<Qt::WindowType>(0));
 
 	~MapControl();
 

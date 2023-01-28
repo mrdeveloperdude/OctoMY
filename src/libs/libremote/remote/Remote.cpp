@@ -8,9 +8,6 @@
 #include "uptime/New.hpp"
 #include "app/AppContext.hpp"
 
-#include "comms/CommsSession.hpp"
-#include "comms/CommsSessionDirectory.hpp"
-
 #include <QDebug>
 /*
 #include <QDataStream>
@@ -47,7 +44,7 @@ void Remote::nodeConfigure()
 
 		}
 	} else {
-		qDebug()<<"ERROR: No context, closing";
+		qWarning()<<"ERROR: No context, closing";
 		emit nodeRequestExit(EXIT_FAILURE);
 	}
 }

@@ -1,35 +1,35 @@
 #include "Camera.hpp"
 #include "ui_Camera.h"
-#include "camera/CameraSettings.hpp"
+//#include "camera/CameraSettings.hpp"
 
-#include "camera/PoorMansProbe.hpp"
+//#include "camera/PoorMansProbe.hpp"
 #include "zbar/ZBarScanner.hpp"
 
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 #include "uptime/ConnectionType.hpp"
 
-#include <QMediaService>
+//#include <QMediaService>
 #include <QMediaRecorder>
 #include <QCamera>
-#include <QCameraViewfinder>
+//#include <QCameraViewfinder>
 #include <QMediaMetaData>
 #include <QMessageBox>
 #include <QPalette>
 
 #include <QtWidgets>
 
-Q_DECLARE_METATYPE(QCameraInfo)
+//Q_DECLARE_METATYPE(QCameraInfo)
 
 
 Camera::Camera(QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::Camera)
 	, camera(nullptr)
-	, imageCapture(nullptr)
+//	, imageCapture(nullptr)
 	, mediaRecorder(nullptr)
-	, videoProbe(nullptr)
-	, poorVideoProbe(nullptr)
+//	, videoProbe(nullptr)
+//	, poorVideoProbe(nullptr)
 	, zbar(nullptr)
 	, isCapturingImage(false)
 	, applicationExiting(false)
@@ -47,22 +47,22 @@ Camera::Camera(QWidget *parent)
 Camera::~Camera()
 {
 	OC_METHODGATE();
-	delete videoProbe;
-	videoProbe=nullptr;
-	delete poorVideoProbe;
-	poorVideoProbe=nullptr;
+//	delete videoProbe;
+//	videoProbe=nullptr;
+//	delete poorVideoProbe;
+//	poorVideoProbe=nullptr;
 	delete zbar;
 	zbar=nullptr;
 	delete videoDevicesGroup;
 	videoDevicesGroup=nullptr;
 	delete mediaRecorder;
 	mediaRecorder=nullptr;
-	delete imageCapture;
-	imageCapture=nullptr;
+//	delete imageCapture;
+//	imageCapture=nullptr;
 	delete camera;
 	camera=nullptr;
 }
-
+/*
 
 void Camera::setCamera(const QCameraInfo &ci)
 {
@@ -73,8 +73,8 @@ void Camera::setCamera(const QCameraInfo &ci)
 		camera=nullptr;
 		delete mediaRecorder;
 		mediaRecorder=nullptr;
-		delete imageCapture;
-		imageCapture=nullptr;
+//		delete imageCapture;
+//		imageCapture=nullptr;
 	}
 	if(ci.isNull()) {
 		ui->stackedWidgetScreens->setCurrentWidget(ui->pageCameraList);
@@ -235,6 +235,8 @@ void Camera::setCamera(const QCameraInfo &ci)
 		}
 	}
 }
+*/
+
 
 void Camera::keyPressEvent(QKeyEvent * event)
 {
@@ -246,10 +248,11 @@ void Camera::keyPressEvent(QKeyEvent * event)
 	switch (event->key()) {
 	case Qt::Key_CameraFocus:
 		displayViewfinder();
-		camera->searchAndLock();
+		//camera->searchAndLock();
 		event->accept();
 		break;
 	case Qt::Key_Camera:
+		/*
 		if (camera->captureMode() == QCamera::CaptureStillImage) {
 			captureImage();
 		} else {
@@ -259,6 +262,7 @@ void Camera::keyPressEvent(QKeyEvent * event)
 				record();
 			}
 		}
+		*/
 		event->accept();
 		break;
 	default:
@@ -275,7 +279,7 @@ void Camera::keyReleaseEvent(QKeyEvent *event)
 
 	switch (event->key()) {
 	case Qt::Key_CameraFocus:
-		camera->unlock();
+		//camera->unlock();
 		break;
 	default:
 		QWidget::keyReleaseEvent(event);
@@ -307,6 +311,7 @@ void Camera::processCapturedImage(int requestId, const QImage& img)
 void Camera::configureCaptureSettings()
 {
 	OC_METHODGATE();
+	/*
 	CameraSettings settingsDialog(mediaRecorder, imageCapture);
 
 	settingsDialog.setAudioSettings(audioSettings);
@@ -323,6 +328,7 @@ void Camera::configureCaptureSettings()
 		imageSettings = settingsDialog.imageSettings();
 		imageCapture->setEncodingSettings(imageSettings);
 	}
+	*/
 }
 
 
@@ -348,7 +354,7 @@ void Camera::stop()
 void Camera::setMuted(bool muted)
 {
 	OC_METHODGATE();
-	mediaRecorder->setMuted(muted);
+	//mediaRecorder->setMuted(muted);
 }
 
 void Camera::tryFocus()
@@ -365,10 +371,11 @@ void Camera::tryFocus()
 
 	}
 	*/
-	camera->searchAndLock();
+	//camera->searchAndLock();
 
 }
 
+/*
 void Camera::updateLockStatus(QCamera::LockStatus status, QCamera::LockChangeReason reason)
 {
 	OC_METHODGATE();
@@ -394,14 +401,17 @@ void Camera::updateLockStatus(QCamera::LockStatus status, QCamera::LockChangeRea
 	palette.setColor(QPalette::ButtonText, indicationColor);
 	ui->toolButtonFocus->setPalette(palette);
 }
+*/
 
 void Camera::captureImage()
 {
 	OC_METHODGATE();
 	isCapturingImage = true;
-	imageCapture->capture();
+	//imageCapture->capture();
 }
 
+
+/*
 void Camera::displayCaptureError(int id, const QCameraImageCapture::Error error, const QString &errorString)
 {
 	OC_METHODGATE();
@@ -410,6 +420,7 @@ void Camera::displayCaptureError(int id, const QCameraImageCapture::Error error,
 	QMessageBox::warning(this, tr("Image Capture Error"), errorString);
 	isCapturingImage = false;
 }
+*/
 
 void Camera::startCamera()
 {
@@ -425,19 +436,22 @@ void Camera::stopCamera()
 	camera->stop();
 }
 
+
 void Camera::updateCaptureMode()
 {
 	OC_METHODGATE();
 	int tabIndex = 1; //ui->tabWidgetCapture->currentIndex();
+	/*
 	QCamera::CaptureModes captureMode = tabIndex == 0 ? QCamera::CaptureStillImage : QCamera::CaptureVideo;
 
 	if (camera->isCaptureModeSupported(captureMode)) {
 		camera->setCaptureMode(captureMode);
 	}
+	*/
 }
 
 
-
+/*
 void Camera::updateCameraState(QCamera::State state)
 {
 	OC_METHODGATE();
@@ -453,7 +467,9 @@ void Camera::updateCameraState(QCamera::State state)
 		break;
 	};
 }
+*/
 
+/*
 void Camera::updateRecorderState(QMediaRecorder::State state)
 {
 	OC_METHODGATE();
@@ -484,11 +500,12 @@ void Camera::updateRecorderState(QMediaRecorder::State state)
 		break;
 	}
 }
+*/
 
 void Camera::setExposureCompensation(int index)
 {
 	OC_METHODGATE();
-	camera->exposure()->setExposureCompensation(index*0.5);
+	//camera->exposure()->setExposureCompensation(index*0.5);
 }
 
 void Camera::displayRecorderError()
@@ -508,7 +525,7 @@ void Camera::displayCameraError()
 void Camera::updateCameraDevice(QListWidgetItem *item)
 {
 	OC_METHODGATE();
-	setCamera(qvariant_cast<QCameraInfo>(item->data(Qt::UserRole)));
+	//setCamera(qvariant_cast<QCameraInfo>(item->data(Qt::UserRole)));
 }
 
 void Camera::displayViewfinder()
@@ -578,6 +595,7 @@ void Camera::detectBarcodes(const QVideoFrame &frame)
 void Camera::onCameraDevicesChanged()
 {
 	OC_METHODGATE();
+	/*
 	QList<QCameraInfo> cams=QCameraInfo::availableCameras();
 	//const int l=cams.size(); qDebug()<<"CAMS FOUND ON POLL: "<<l;
 	const QCameraInfo &def=QCameraInfo::defaultCamera();
@@ -597,15 +615,16 @@ void Camera::onCameraDevicesChanged()
 			item->setSelected(true);
 		}
 	}
-	/*
-	if(nullptr != camera){
-	setCamera(last);
-	}*/
+	
+	//if(nullptr != camera){
+	//setCamera(last);
+//	}
 	const int num=ui->listWidgetCameras->count();
 	const bool camsAvailable=num>0;
 	//qDebug()<<"CAMS AVAILABLE: num="<<num<<": "<<camsAvailable<<": "<<camListHashNew<<" vs. "<<camListHash;
 	ui->listWidgetCameras->setVisible(camsAvailable);
 	ui->labelNoCamerasAvailable->setVisible(!camsAvailable);
+	*/
 }
 
 
@@ -615,9 +634,7 @@ void Camera::onCameraDevicesChanged()
 //////
 
 
-
-
-
+/*
 QAudioEncoderSettings Camera::getAudioSettings() const
 {
 	OC_METHODGATE();
@@ -627,7 +644,10 @@ QAudioEncoderSettings Camera::getAudioSettings() const
 	settings.setSampleRate(boxValue(ui->audioSampleRateBox).toInt());
 	return settings;
 }
+*/
 
+
+/*
 void Camera::setAudioSettings(const QAudioEncoderSettings &audioSettings)
 {
 	OC_METHODGATE();
@@ -635,7 +655,10 @@ void Camera::setAudioSettings(const QAudioEncoderSettings &audioSettings)
 	selectComboBoxItem(ui->audioSampleRateBox, QVariant(audioSettings.sampleRate()));
 	ui->audioQualitySlider->setValue(audioSettings.quality());
 }
+*/
 
+
+/*
 QVideoEncoderSettings Camera::getVideoSettings() const
 {
 	OC_METHODGATE();
@@ -647,7 +670,10 @@ QVideoEncoderSettings Camera::getVideoSettings() const
 
 	return settings;
 }
+*/
 
+
+/*
 void Camera::setVideoSettings(const QVideoEncoderSettings &videoSettings)
 {
 	OC_METHODGATE();
@@ -664,6 +690,8 @@ void Camera::setVideoSettings(const QVideoEncoderSettings &videoSettings)
 		}
 	}
 }
+*/
+
 
 QString Camera::format() const
 {
@@ -678,7 +706,7 @@ void Camera::setFormat(const QString &format)
 
 
 
-
+/*
 QImageEncoderSettings Camera::getImageSettings() const
 {
 	OC_METHODGATE();
@@ -689,7 +717,9 @@ QImageEncoderSettings Camera::getImageSettings() const
 	//imageSettings=settings;
 	return settings;
 }
+*/
 
+/*
 void Camera::setImageSettings(const QImageEncoderSettings &imageSettings)
 {
 	OC_METHODGATE();
@@ -697,6 +727,8 @@ void Camera::setImageSettings(const QImageEncoderSettings &imageSettings)
 	selectComboBoxItem(ui->imageResolutionBox, QVariant(imageSettings.resolution()));
 	ui->imageQualitySlider->setValue(imageSettings.quality());
 }
+*/
+
 
 QVariant Camera::boxValue(const QComboBox *box) const
 {
@@ -736,6 +768,7 @@ void Camera::on_toolButtonRecordVideo_toggled(bool checked)
 void Camera::on_toolButtonBack_clicked()
 {
 	OC_METHODGATE();
+	/*
 	{
 		QImageEncoderSettings settings = imageCapture->encodingSettings();
 		settings.setCodec(boxValue(ui->imageCodecBox).toString());
@@ -761,12 +794,15 @@ void Camera::on_toolButtonBack_clicked()
 
 		videoSettings=settings;
 	}
+	*/
 	ui->stackedWidgetScreens->setCurrentWidget(ui->pageViewfinder);
+	
 }
 
 void Camera::on_toolButtonSettings_clicked()
 {
 	OC_METHODGATE();
+	/*
 	{
 		selectComboBoxItem(ui->audioCodecBox, QVariant(audioSettings.codec()));
 		selectComboBoxItem(ui->audioSampleRateBox, QVariant(audioSettings.sampleRate()));
@@ -792,7 +828,7 @@ void Camera::on_toolButtonSettings_clicked()
 		selectComboBoxItem(ui->imageResolutionBox, QVariant(imageSettings.resolution()));
 		ui->imageQualitySlider->setValue(imageSettings.quality());
 	}
-
+*/
 	ui->stackedWidgetScreens->setCurrentWidget(ui->pageSettings);
 }
 

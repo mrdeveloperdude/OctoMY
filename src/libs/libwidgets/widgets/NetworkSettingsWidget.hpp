@@ -2,12 +2,10 @@
 #define NETWORKSETTINGSWIDGET_HPP
 
 #include <QWidget>
-
-#include "comms/NetworkAddress.hpp"
+#include <QHostAddress>
 
 
 class LocalAddressList;
-class QHostAddress;
 
 namespace Ui
 {
@@ -34,12 +32,12 @@ public:
 	void configure(QSharedPointer<LocalAddressList> localAddresses);
 
 private:
+    bool isAddrToBeAdded(QHostAddress naddr);
 	bool isAddrOK(QHostAddress naddr);
 	bool isPortOK(QHostAddress naddr, quint16 nport);
 	bool verifyAndSet(bool sendSignal=true, bool doCorrection=true);
 
 public:
-
 	bool setHostAddress(QHostAddress naddr, quint16 nport, bool verify=true, bool sendSignal=true);
 	bool setAddress(QHostAddress address, bool verify=true, bool sendSignal=true);
 	bool setPort(quint16 port, bool verify=true, bool sendSignal=true);
@@ -50,10 +48,11 @@ public:
 private slots:
 	void on_pushButtonEdit_clicked();
 	void on_pushButtonSave_clicked();
-	void on_comboBoxLocalAddress_currentIndexChanged(int index);
 	void on_lineEditLocalPort_textChanged(const QString &arg1);
 	void on_lineEditLocalPort_editingFinished();
-
+	
+	void on_comboBoxLocalAddress_currentIndexChanged(int index);
+	
 signals:
 	void addressChanged(QHostAddress address, quint16 port, bool valid);
 

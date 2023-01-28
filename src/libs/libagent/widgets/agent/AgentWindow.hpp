@@ -33,6 +33,7 @@ public:
 	explicit AgentWindow(QWidget *parent = nullptr);
 	virtual ~AgentWindow() Q_DECL_OVERRIDE;
 
+	// NodeWindow interface
 public:
 	void configure() Q_DECL_OVERRIDE;
 

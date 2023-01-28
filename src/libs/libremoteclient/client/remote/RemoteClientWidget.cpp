@@ -4,22 +4,15 @@
 #include "uptime/MethodGate.hpp"
 #include "uptime/ConnectionType.hpp"
 
-#include "utility/ui/GenericKeyEventHandler.hpp"
 #include "app/Settings.hpp"
 
 #include "widgets/WaitingSpinnerWidget.hpp"
-#include "audio/OneOffSpeech.hpp"
 
 #include "security/PortableID.hpp"
 
 #include "widgets/CarSteeringWidget.hpp"
 
 #include "comms/CommsChannel.hpp"
-#include "comms/ISyncParameter.hpp"
-
-#include "comms/couriers/AgentStateCourier.hpp"
-#include "comms/couriers/SensorsCourier.hpp"
-#include "comms/couriers/blob/BlobCourier.hpp"
 
 #include "agent/AgentConstants.hpp"
 

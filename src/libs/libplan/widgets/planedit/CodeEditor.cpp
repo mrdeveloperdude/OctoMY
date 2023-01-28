@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QPainter>
 #include <QTimer>
+#include <QFile>
 
 #include <QCompleter>
 #include <QScrollBar>
@@ -89,7 +90,7 @@ int CodeEditor::lineNumberAreaWidth()
 		max /= 10;
 		++digits;
 	}
-	int space = 3 + fontMetrics().width(QLatin1Char('9')) * digits;
+	int space = 3 + fontMetrics().horizontalAdvance(QLatin1Char('9')) * digits;
 	return space;
 }
 

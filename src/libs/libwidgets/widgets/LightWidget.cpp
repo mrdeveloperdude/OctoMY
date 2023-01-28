@@ -2,7 +2,7 @@
 
 #include "uptime/MethodGate.hpp"
 #include "uptime/ConnectionType.hpp"
-#include "utility/time/HumanTime.hpp"
+//#include "utility/time/HumanTime.hpp"
 
 #include <QPainter>
 #include <QtMath>
@@ -12,24 +12,24 @@
 const QColor LightWidget::sBgColor("black");
 const QColor LightWidget::sHighlightColor(255,255,255,192);
 
-const QColor LightWidget::sDefaultOKColor("#7cc043");
-const QColor LightWidget::sDefaultErrorColor("#c07c43");
+const QColor LightWidget::sDefaultOKColor(0x7cc043);
+const QColor LightWidget::sDefaultErrorColor(0xc07c43);
 
 
 LightWidget::LightWidget(QWidget *parent, const QColor &color)
 	: QWidget(parent)
 	, mOn(false)
 	, mBlinkTimer(this)
-//	, mBlinkStart(0)
+	//	, mBlinkStart(0)
 {
 	OC_METHODGATE();
 	mBlinkTimer.setSingleShot(true);
 	mBlinkTimer.setTimerType(Qt::PreciseTimer);
 	if(!connect(&mBlinkTimer, &QTimer::timeout, this, [this]() {
-	//auto actual=utility::time::currentMsecsSinceEpoch<quint64>()-mBlinkStart;
-	//qDebug()<<"BLINK ENDED FOR " << this << " WITH "<<mBlinkTimer.interval()<< "ms TOOK "<<actual<<"ms";
-	turnLightOff();
-	}, OC_CONTYPE)) {
+				//auto actual=utility::time::currentMsecsSinceEpoch<quint64>()-mBlinkStart;
+				//qDebug()<<"BLINK ENDED FOR " << this << " WITH "<<mBlinkTimer.interval()<< "ms TOOK "<<actual<<"ms";
+				turnLightOff();
+}, OC_CONTYPE_NON_UNIQUE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 	setLightColor(color);

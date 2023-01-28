@@ -2,7 +2,7 @@
 #include "ui_CameraPairingWidget.h"
 
 #include "zbar/ZBarScanner.hpp"
-#include "camera/PoorMansProbe.hpp"
+//#include "camera/PoorMansProbe.hpp"
 #include "security/KeyStore.hpp"
 
 #include "identity/UniquePlatformFingerprint.hpp"
@@ -16,17 +16,19 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QCamera>
-#include <QCameraInfo>
+//#include <QCameraInfo>
 #include <QVideoWidget>
 
-#include <QVideoProbe>
+//#include <QVideoProbe>
 #include <QVideoFrame>
 
 
 const qint64 CameraPairingWidget::TIMEOUT=30000;
 
 
+// TODO: Rework this with new qmultimedia primitives for Qt6
 
+/*
 static QCameraInfo getBestCamera()
 {
 	OC_FUNCTIONGATE();
@@ -42,15 +44,17 @@ static QCameraInfo getBestCamera()
 	}
 	return ci;
 }
+*/
+
 
 CameraPairingWidget::CameraPairingWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::CameraPairingWidget)
 	, badgeDisableTime(0)
 	, scanDisableTime(0)
-	, mCamera(nullptr)
-	, mVideoProbe(nullptr)
-	, mPoorVideoProbe(nullptr)
+//	, mCamera(nullptr)
+//	, mVideoProbe(nullptr)
+//	, mPoorVideoProbe(nullptr)
 	, mZbar(nullptr)
 	, mViewfinder(nullptr)
 
@@ -66,10 +70,13 @@ CameraPairingWidget::CameraPairingWidget(QWidget *parent)
 	if(!connect(&countDownTimer,SIGNAL(timeout()),this,SLOT(onCountDownTimeout()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
+	// TODO: Rework this with new qmultimedia primitives for Qt6
+	/*
 	if(getBestCamera().isNull()) {
 		ui->pushButtonScanner->setEnabled(false);
 		ui->pushButtonScanner->setText("No cameras available for scanning");
 	}
+	*/
 
 }
 
@@ -79,12 +86,15 @@ CameraPairingWidget::~CameraPairingWidget()
 	delete ui;
 	ui=nullptr;
 
+	// TODO: Rework this with new qmultimedia primitives for Qt6
+	/*
 	delete mCamera;
 	mCamera=(nullptr);
 	delete mVideoProbe;
 	mVideoProbe=(nullptr);
 	delete mPoorVideoProbe;
 	mPoorVideoProbe=(nullptr);
+	*/
 	delete mZbar;
 	mZbar=(nullptr);
 	delete mViewfinder;
@@ -154,6 +164,9 @@ void CameraPairingWidget::detectBarcodes(const QVideoFrame &frame)
 	}
 }
 
+
+// TODO: Rework this with new qmultimedia primitives for Qt6
+/*
 void CameraPairingWidget::cameraStatusUpdated(QCamera::Status s)
 {
 	OC_METHODGATE();
@@ -165,7 +178,7 @@ void CameraPairingWidget::cameraStatusUpdated(QCamera::Status s)
 		ui->widgetCameraViewfinder->hide();
 	}
 }
-
+*/
 
 void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 {
@@ -173,6 +186,8 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 	qDebug()<<"Scan "<<(show?"on":"off");
 	ui->widgetCameraViewfinder->setVisible(show);
 	ui->pushButtonBadge->setVisible(!show);
+	
+#ifdef QT5_STUFF
 	if(show) {
 		ui->widgetCameraViewfinder->hide();
 		ui->widgetSpinnerScanner->start();
@@ -251,6 +266,7 @@ void CameraPairingWidget::on_pushButtonScanner_toggled(bool show)
 		ui->pushButtonScanner->setText("Start Scanner");
 		scanDisableTime=0;
 	}
+#endif
 }
 
 void CameraPairingWidget::onCountDownTimeout()

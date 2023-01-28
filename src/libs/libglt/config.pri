@@ -1,1 +1,1 @@
-QT         += core-private gui-private
+QT         += core-private gui-private openglwidgets

@@ -46,19 +46,19 @@ void CouriersDebugWidget::configure(QSharedPointer <Node> node)
 				auto couriers=cc->couriers();
 
 				/*
-				if(!connect(slm.data(), &ServiceLevelManager::CouriersChanged, this, &CouriersDebugWidget::onCouriersChanged, OC_CONTYPE )) {
+				if(!connect(slm.data(), &ServiceLevelManager::CouriersChanged, this, &CouriersDebugWidget::onCouriersChanged, OC_CONTYPE)) {
 					qWarning()<<"ERROR: Could not connect";
 				}
 				*/
 			}
 		}
-		if(!connect(ui->pushButtonUpdateRealtime, &QPushButton::toggled, this, &CouriersDebugWidget::onRealtimeChanged, OC_CONTYPE )) {
+		if(!connect(ui->pushButtonUpdateRealtime, &QPushButton::toggled, this, &CouriersDebugWidget::onRealtimeChanged, OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
 		// We sacrifice quality since this is for debugging purpose onle and we want this to have the least impact on the runtime of non-debug code
 		mTimer.setTimerType(Qt::VeryCoarseTimer);
 		mTimer.setInterval(1000);// 1 FPS
-		if(!connect(&mTimer, &QTimer::timeout, this, &CouriersDebugWidget::onTimer, OC_CONTYPE )) {
+		if(!connect(&mTimer, &QTimer::timeout, this, &CouriersDebugWidget::onTimer, OC_CONTYPE)) {
 			qWarning()<<"ERROR: Could not connect";
 		}
 		onRealtimeChanged(ui->pushButtonUpdateRealtime->isChecked());
@@ -192,7 +192,7 @@ void CouriersDebugWidget::onTimer()
 	OC_METHODGATE();
 	const quint64 blinkSize=1000;
 	auto p=palette();
-	auto o=p.color(QPalette::Background);
+	auto o=p.color(QPalette::Window);
 	const auto now=utility::time::currentMsecsSinceEpoch<quint64>();
 	const quint64 time=qBound<quint64>(0, (now-mLastUpdate), blinkSize);
 	const qreal raw=static_cast<qreal>(blinkSize-time)/ static_cast<qreal>(blinkSize);
@@ -200,7 +200,7 @@ void CouriersDebugWidget::onTimer()
 	if(f>=0.0) {
 		const QColor c=utility::color::mix(o, Qt::red, f);
 		//qDebug()<<"COLOR: "<<c<< ", f="<<f<< ", raw="<<raw<< ", time="<<time;
-		p.setColor(QPalette::Background, c);
+		p.setColor(QPalette::Window, c);
 		ui->tableWidgetCouriers->setPalette(p);
 	}
 }

@@ -189,7 +189,8 @@ QSet<QString> ServiceManager::metSet(QSet<QString> set, const bool met, const bo
 QSet<QString> ServiceManager::all() const
 {
 	OC_METHODGATE();
-	return mServicesMap.keys().toSet();
+	auto list=mServicesMap.keys();
+	return QSet<QString>(list.begin(), list.end());
 }
 
 
@@ -197,7 +198,8 @@ QSet<QString> ServiceManager::all(const bool on, const bool  actual) const
 {
 	OC_METHODGATE();
 	QSet<QString> ret;
-	auto all=mServicesMap.keys().toSet();
+	auto list=mServicesMap.keys();
+	QSet<QString> all(list.begin(), list.end());
 	for(auto name:all) {
 		if((actual?activatedActual(name):activatedWanted(name))==on) {
 			ret+=name;
@@ -442,10 +444,10 @@ void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSe
 				// Is there a change?
 				if(currentlyWanted != wanted) {
 					// Recurse asynchronously
-					qDebug().noquote().nospace()<<" --- Change set: "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION")<<" STARTED";
+					//qDebug().noquote().nospace()<<" --- Change set: "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION")<<" STARTED";
 					service->serviceChangeActivation(wanted, [=](bool on, bool ok) {
 						Q_UNUSED(on);
-						qDebug().noquote().nospace()<<" ---- Change set "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION")<<" "<<(ok?"SUCCEEDED":"FAILED");
+						//qDebug().noquote().nospace()<<" ---- Change set "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION")<<" "<<(ok?"SUCCEEDED":"FAILED");
 						if(sync->end(ok)) {
 							// qDebug().noquote().nospace()<<" ------ Recursing at end: "<<name<<" with "<<active;
 							delete sync;
@@ -459,7 +461,7 @@ void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSe
 		}
 	} else {
 //		const bool gok=s->gok;
-		qDebug()<<"Service change complete";
+		//qDebug()<<"Service change complete";
 		if(nullptr!=callBack) {
 			callBack(true);
 			emit servicesChanged();

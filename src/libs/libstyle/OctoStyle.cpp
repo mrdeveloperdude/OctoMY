@@ -394,7 +394,7 @@ static QPixmap colorizedImage(const QString &fileName, const QColor &color, int 
 {
 	QString pixmapName = QLatin1String("$qt_ia-") % fileName % HexString<uint>(color.rgba()) % QString::number(rotation);
 	QPixmap pixmap;
-	if (!QPixmapCache::find(pixmapName, pixmap)) {
+	if (!QPixmapCache::find(pixmapName, &pixmap)) {
 		QImage image(fileName);
 
 		if (image.format() != QImage::Format_ARGB32_Premultiplied) {
@@ -776,7 +776,7 @@ void OctoStyle::drawPrimitive(PrimitiveElement elem,
 		if (option->rect.width() <= 1 || option->rect.height() <= 1) {
 			break;
 		}
-		QColor arrowColor = option->palette.foreground().color();
+		QColor arrowColor = option->palette.windowText().color();
 		QPixmap arrow;
 		int rotation = 0;
 		switch (elem) {
@@ -825,7 +825,7 @@ void OctoStyle::drawPrimitive(PrimitiveElement elem,
 		if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
 			QRect r = header->rect;
 			QPixmap arrow;
-			QColor arrowColor = header->palette.foreground().color();
+			QColor arrowColor = header->palette.windowText().color();
 			QPoint offset = QPoint(0, -1);
 
 			if (header->sortIndicator & QStyleOptionHeader::SortUp) {
@@ -854,7 +854,7 @@ void OctoStyle::drawPrimitive(PrimitiveElement elem,
 							  rect.bottomLeft().y() - margin,
 							  rect.topLeft().x() + offset,
 							  rect.topLeft().y() + margin);
-			painter->setPen(QPen(option->palette.background().color().lighter(110)));
+			painter->setPen(QPen(option->palette.window().color().lighter(110)));
 			painter->drawLine(rect.bottomLeft().x() + offset + 1,
 							  rect.bottomLeft().y() - margin,
 							  rect.topLeft().x() + offset + 1,
@@ -866,7 +866,7 @@ void OctoStyle::drawPrimitive(PrimitiveElement elem,
 							  rect.topLeft().y() + offset,
 							  rect.topRight().x() - margin,
 							  rect.topRight().y() + offset);
-			painter->setPen(QPen(option->palette.background().color().lighter(110)));
+			painter->setPen(QPen(option->palette.window().color().lighter(110)));
 			painter->drawLine(rect.topLeft().x() + margin,
 							  rect.topLeft().y() + offset + 1,
 							  rect.topRight().x() - margin,
@@ -891,8 +891,8 @@ void OctoStyle::drawPrimitive(PrimitiveElement elem,
 		{
 			painter->setPen(QPen(outline, 1));
 			painter->drawRect(option->rect.adjusted(0, 0, -1, -1));
-			QColor frameLight = option->palette.background().color().lighter(160);
-			QColor frameShadow = option->palette.background().color().darker(110);
+			QColor frameLight = option->palette.window().color().lighter(160);
+			QColor frameShadow = option->palette.window().color().darker(110);
 
 			//paint beveleffect
 			QRect frame = option->rect.adjusted(1, 1, -1, -1);
@@ -910,14 +910,14 @@ void OctoStyle::drawPrimitive(PrimitiveElement elem,
 
 		painter->save();
 		{
-			QColor softshadow = option->palette.background().color().darker(120);
+			QColor softshadow = option->palette.window().color().darker(120);
 
 			QRect rect= option->rect;
 			painter->setPen(softshadow);
 			painter->drawRect(option->rect.adjusted(0, 0, -1, -1));
 			painter->setPen(QPen(option->palette.light(), 0));
 			painter->drawLine(QPoint(rect.left() + 1, rect.top() + 1), QPoint(rect.left() + 1, rect.bottom() - 1));
-			painter->setPen(QPen(option->palette.background().color().darker(120), 0));
+			painter->setPen(QPen(option->palette.window().color().darker(120), 0));
 			painter->drawLine(QPoint(rect.left() + 1, rect.bottom() - 1), QPoint(rect.right() - 2, rect.bottom() - 1));
 			painter->drawLine(QPoint(rect.right() - 1, rect.top() + 1), QPoint(rect.right() - 1, rect.bottom() - 1));
 
@@ -957,7 +957,7 @@ void OctoStyle::drawPrimitive(PrimitiveElement elem,
 			painter->setPen(QPen(option->palette.light(), 0));
 			painter->drawLine(QPoint(rect.left() + 1, rect.top() + 1),
 							  QPoint(rect.left() + 1, rect.bottom() - 1));
-			painter->setPen(QPen(option->palette.background().color().darker(120), 0));
+			painter->setPen(QPen(option->palette.window().color().darker(120), 0));
 			painter->drawLine(QPoint(rect.left() + 1, rect.bottom() - 1),
 							  QPoint(rect.right() - 2, rect.bottom() - 1));
 			painter->drawLine(QPoint(rect.right() - 1, rect.top() + 1),
@@ -1001,7 +1001,7 @@ void OctoStyle::drawPrimitive(PrimitiveElement elem,
 			painter->translate(0.5, 0.5);
 			rect = rect.adjusted(0, 0, -1, -1);
 
-			QColor pressedColor = mergedColors(option->palette.base().color(), option->palette.foreground().color(), 85);
+			QColor pressedColor = mergedColors(option->palette.base().color(), option->palette.windowText().color(), 85);
 			painter->setBrush(Qt::NoBrush);
 
 			// Gradient fill
@@ -1052,12 +1052,12 @@ void OctoStyle::drawPrimitive(PrimitiveElement elem,
 	case PE_IndicatorRadioButton:
 		painter->save();
 		{
-			QColor pressedColor = mergedColors(option->palette.base().color(), option->palette.foreground().color(), 85);
+			QColor pressedColor = mergedColors(option->palette.base().color(), option->palette.windowText().color(), 85);
 			painter->setBrush((state & State_Sunken) ? pressedColor : option->palette.base().color());
 			painter->setRenderHint(QPainter::Antialiasing, true);
 			QPainterPath circle;
 			circle.addEllipse(rect.center() + QPoint(1.0, 1.0), 6.5, 6.5);
-			painter->setPen(QPen(option->palette.background().color().darker(150), 1));
+			painter->setPen(QPen(option->palette.window().color().darker(150), 1));
 			if (option->state & State_HasFocus && option->state & State_KeyboardFocusChange) {
 				painter->setPen(QPen(highlightedOutline, 1));
 			}
@@ -1523,7 +1523,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 			pixmapName += QString::number(- int(header->orientation));
 
 			QPixmap cache;
-			if (!QPixmapCache::find(pixmapName, cache)) {
+			if (!QPixmapCache::find(pixmapName, &cache)) {
 				cache = styleCachePixmap(rect.size());
 				cache.fill(Qt::transparent);
 				QRect pixmapRect(0, 0, rect.width(), rect.height());
@@ -1534,8 +1534,8 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 				gradientStopColor = buttonColor.darker(102);
 				QLinearGradient gradient(pixmapRect.topLeft(), pixmapRect.bottomLeft());
 
-				if (option->palette.background().gradient()) {
-					gradient.setStops(option->palette.background().gradient()->stops());
+				if (option->palette.window().gradient()) {
+					gradient.setStops(option->palette.window().gradient()->stops());
 				} else {
 					QColor midColor1 = mergedColors(gradientStartColor, gradientStopColor, 60);
 					QColor midColor2 = mergedColors(gradientStartColor, gradientStopColor, 40);
@@ -1603,7 +1603,8 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 			bool complete = bar->progress == bar->maximum;
 
 			// Get extra style options if version 2
-			vertical = (bar->orientation == Qt::Vertical);
+			
+			vertical =   bar->state & QStyle::State_Horizontal ;//(bar->orientation == Qt::Vertical);
 			inverted = bar->invertedAppearance;
 
 			// If the orientation is vertical, we use a transform to rotate
@@ -1713,7 +1714,8 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 
 			painter->save();
 			bool vertical = false, inverted = false;
-			vertical = (bar->orientation == Qt::Vertical);
+			vertical =   ! (bar->state & QStyle::State_Horizontal);
+			//vertical = (bar->orientation == Qt::Vertical);
 			inverted = bar->invertedAppearance;
 			if (vertical) {
 				rect = QRect(rect.left(), rect.top(), rect.height(), rect.width());    // flip width and height
@@ -1771,7 +1773,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 				}
 				proxy()->drawItemText(painter, item.rect, alignment, mbi->palette, mbi->state & State_Enabled, mbi->text, textRole);
 			} else {
-				QColor shadow = mergedColors(option->palette.background().color().darker(120),
+				QColor shadow = mergedColors(option->palette.window().color().darker(120),
 											 outline.lighter(140), 60);
 				painter->setPen(QPen(shadow));
 				painter->drawLine(option->rect.bottomLeft(), option->rect.bottomRight());
@@ -1792,7 +1794,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 					proxy()->drawItemText(painter, menuItem->rect.adjusted(5, 0, -5, 0), Qt::AlignLeft | Qt::AlignVCenter,
 										  menuItem->palette, menuItem->state & State_Enabled, menuItem->text,
 										  QPalette::Text);
-					w = menuItem->fontMetrics.width(menuItem->text) + 5;
+					w = menuItem->fontMetrics.horizontalAdvance(menuItem->text) + 5;
 				}
 				painter->setPen(highlight);
 				bool reverse = menuItem->direction == Qt::RightToLeft;
@@ -1900,7 +1902,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 				if (checkable && checked) {
 					QStyleOption opt = *option;
 					if (act) {
-						QColor activeColor = mergedColors(option->palette.background().color(),
+						QColor activeColor = mergedColors(option->palette.window().color(),
 														  option->palette.highlight().color());
 						opt.palette.setBrush(QPalette::Button, activeColor);
 					}
@@ -1917,7 +1919,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 			}
 			int x, y, w, h;
 			menuitem->rect.getRect(&x, &y, &w, &h);
-			int tab = menuitem->tabWidth;
+			int tab = menuitem->reservedShortcutWidth;
 			QColor discol;
 			if (dis) {
 				discol = menuitem->palette.text().color();
@@ -1982,8 +1984,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 				newMI.rect = vSubMenuRect;
 				newMI.state = !enabled ? State_None : State_Enabled;
 				if (selected)
-					newMI.palette.setColor(QPalette::Foreground,
-										   newMI.palette.highlightedText().color());
+					newMI.palette.setColor(QPalette::WindowText, newMI.palette.highlightedText().color());
 				proxy()->drawPrimitive(arrow, &newMI, painter, widget);
 			}
 		}
@@ -2070,7 +2071,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 		{
 			painter->fillRect(rect, option->palette.window());
 			if (widget && qobject_cast<const QMainWindow *>(widget->parentWidget())) {
-				QColor shadow = mergedColors(option->palette.background().color().darker(120),
+				QColor shadow = mergedColors(option->palette.window().color().darker(120),
 											 outline.lighter(140), 60);
 				painter->setPen(QPen(shadow));
 				painter->drawLine(option->rect.bottomLeft(), option->rect.bottomRight());
@@ -2259,7 +2260,7 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 		// ### backgroundrole/foregroundrole should be part of the style option
 		alphaCornerColor = mergedColors(option->palette.color(widget->backgroundRole()), outline);
 	} else {
-		alphaCornerColor = mergedColors(option->palette.background().color(), outline);
+		alphaCornerColor = mergedColors(option->palette.window().color(), outline);
 	}
 
 	switch (control) {
@@ -2314,7 +2315,7 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 		if (const QStyleOptionSpinBox *spinBox = qstyleoption_cast<const QStyleOptionSpinBox *>(option)) {
 			QPixmap cache;
 			QString pixmapName = uniqueName(QLatin1String("spinbox"), spinBox, spinBox->rect.size());
-			if (!QPixmapCache::find(pixmapName, cache)) {
+			if (!QPixmapCache::find(pixmapName, &cache)) {
 
 				cache = styleCachePixmap(spinBox->rect.size());
 				cache.fill(Qt::transparent);
@@ -2323,7 +2324,7 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 				QRect rect = pixmapRect;
 				QRect r = rect.adjusted(0, 1, 0, -1);
 				QPainter cachePainter(&cache);
-				QColor arrowColor = spinBox->palette.foreground().color();
+				QColor arrowColor = spinBox->palette.windowText().color();
 				arrowColor.setAlpha(220);
 
 				bool isEnabled = (spinBox->state & State_Enabled);
@@ -2470,13 +2471,13 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 			QColor highlight = option->palette.highlight().color();
 
 			QColor titleBarFrameBorder(active ? highlight.darker(180): outline.darker(110));
-			QColor titleBarHighlight(active ? highlight.lighter(120): palette.background().color().lighter(120));
+			QColor titleBarHighlight(active ? highlight.lighter(120): palette.window().color().lighter(120));
 			QColor textColor(active ? 0xffffff : 0xff000000);
 			QColor textAlphaColor(active ? 0xffffff : 0xff000000 );
 
 			{
 				// Fill title bar gradient
-				QColor titlebarColor = QColor(active ? highlight: palette.background().color());
+				QColor titlebarColor = QColor(active ? highlight: palette.window().color());
 				QLinearGradient gradient(option->rect.center().x(), option->rect.top(),
 										 option->rect.center().x(), option->rect.bottom());
 
@@ -2737,7 +2738,7 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 			QColor alphaOutline = outline;
 			alphaOutline.setAlpha(180);
 
-			QColor arrowColor = option->palette.foreground().color();
+			QColor arrowColor = option->palette.windowText().color();
 			arrowColor.setAlpha(220);
 
 			// Paint groove
@@ -2919,7 +2920,7 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 				pixmapName += QLatin1String("-enabled");
 			}
 
-			if (!QPixmapCache::find(pixmapName, cache)) {
+			if (!QPixmapCache::find(pixmapName, &cache)) {
 				cache = styleCachePixmap(comboBox->rect.size());
 				cache.fill(Qt::transparent);
 				QPainter cachePainter(&cache);
@@ -3028,7 +3029,7 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 				QRect pixmapRect(0, 0, groove.width(), groove.height());
 
 				// draw background groove
-				if (!QPixmapCache::find(groovePixmapName, cache)) {
+				if (!QPixmapCache::find(groovePixmapName, &cache)) {
 					cache = styleCachePixmap(pixmapRect.size());
 					cache.fill(Qt::transparent);
 					QPainter groovePainter(&cache);
@@ -3055,7 +3056,7 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 				// draw blue groove highlight
 				QRect clipRect;
 				groovePixmapName += QLatin1String("_blue");
-				if (!QPixmapCache::find(groovePixmapName, cache)) {
+				if (!QPixmapCache::find(groovePixmapName, &cache)) {
 					cache = styleCachePixmap(pixmapRect.size());
 					cache.fill(Qt::transparent);
 					QPainter groovePainter(&cache);
@@ -3169,7 +3170,7 @@ void OctoStyle::drawComplexControl(ComplexControl control, const QStyleOptionCom
 			// draw handle
 			if ((option->subControls & SC_SliderHandle) ) {
 				QString handlePixmapName = uniqueName(QLatin1String("slider_handle"), option, handle.size());
-				if (!QPixmapCache::find(handlePixmapName, cache)) {
+				if (!QPixmapCache::find(handlePixmapName, &cache)) {
 					cache = styleCachePixmap(handle.size());
 					cache.fill(Qt::transparent);
 					QRect pixmapRect(0, 0, handle.width(), handle.height());
@@ -3389,7 +3390,7 @@ QSize OctoStyle::sizeFromContents(ContentsType type, const QStyleOption* option,
 				QFont fontBold = menuItem->font;
 				fontBold.setBold(true);
 				QFontMetrics fmBold(fontBold);
-				w += fmBold.width(menuItem->text) - fm.width(menuItem->text);
+				w += fmBold.horizontalAdvance(menuItem->text) - fm.horizontalAdvance(menuItem->text);
 			}
 			int checkcol = qMax<int>(maxpmw, OctoStylePrivate::menuCheckMarkWidth); // Windows always shows a check column
 			w += checkcol;
@@ -3783,7 +3784,7 @@ int OctoStyle::styleHint(StyleHint hint, const QStyleOption* option, const QWidg
 	case SH_FontDialog_SelectAssociatedText:
 	case SH_MenuBar_AltKeyNavigation:
 	case SH_ComboBox_ListMouseTracking:
-	case SH_ScrollBar_StopMouseOverSlider:
+	case SH_Slider_StopMouseOverSlider:
 	case SH_ScrollBar_MiddleClickAbsolutePosition:
 	case SH_EtchDisabledText:
 	case SH_TitleBar_AutoRaise:
@@ -3811,7 +3812,7 @@ int OctoStyle::styleHint(StyleHint hint, const QStyleOption* option, const QWidg
 		return 0;
 
 	case SH_Table_GridLineColor:
-		return option ? static_cast<int>(option->palette.background().color().darker(120).rgb()) : 0;
+		return option ? static_cast<int>(option->palette.window().color().darker(120).rgb()) : 0;
 
 	case SH_MessageBox_TextInteractionFlags:
 		return Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse;

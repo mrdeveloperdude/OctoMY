@@ -2,8 +2,9 @@
 #define NETWORKSETTINGSTESTWIDGET_HPP
 
 #include <QWidget>
+#include <QSharedPointer>
 
-#include "basic/LocalAddressList.hpp"
+#include "address/LocalAddressList.hpp"
 
 namespace Ui
 {
@@ -17,7 +18,7 @@ class NetworkSettingsTestWidget : public QWidget
 
 private:
 	Ui::NetworkSettingsTestWidget *ui;
-	LocalAddressList mAddresslist;
+	QSharedPointer<LocalAddressList> mAddresslist;
 
 public:
 	explicit NetworkSettingsTestWidget(QWidget *parent = nullptr);

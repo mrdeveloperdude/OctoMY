@@ -30,6 +30,7 @@ private:
 	QObject *mObj;
 	QTimer mTimer;
 	ConfigureHelper mConfigureHelper;
+	QMetaObject::Connection mTimeoutConnection;
 
 public:
 	explicit LocalAddressList();

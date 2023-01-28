@@ -6,6 +6,7 @@
 #include "uptime/MethodGate.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "utility/time/HumanTime.hpp"
+#include "utility/random/Random.hpp"
 
 #include "service/ServiceLevelManager.hpp"
 #include "service/ServiceManager.hpp"
@@ -56,7 +57,7 @@ static void configTryToggleForServiceLevel(TryToggle *tt, const QString serviceL
 				} else {
 					qWarning()<<"WARNING: Could not switch discovery service, no service manager";
 				}
-			}, OC_CONTYPE)) {
+			}, OC_CONTYPE_NON_UNIQUE)) {
 			}
 		} else {
 			qWarning()<<"WARNING: Could not switch service, no node";
@@ -76,7 +77,7 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 		if(!mNode.isNull()) {
 			if(!connect(mNode.data(), &Node::identityChanged, this, [this]() {
 			updateIdentity();
-			},OC_CONTYPE)) {
+			},OC_CONTYPE_NON_UNIQUE)) {
 				qWarning()<<"ERROR: Could not connect";
 			}
 		}
@@ -103,7 +104,7 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 					if(transient(current)) {
 						positive(current)?birth():unBirth();
 					}
-				}, OC_CONTYPE)) {
+				}, OC_CONTYPE_NON_UNIQUE)) {
 				}
 			} else {
 				qWarning()<<"WARNING: Could not switch birth, no node";
@@ -229,12 +230,12 @@ void DebuggerWidget::configureUi()
 						pack();
 						updateExpandButton();
 					}
-				}, OC_CONTYPE)) {
+				}, OC_CONTYPE_NON_UNIQUE)) {
 					qWarning()<<"ERROR: Could not connect";
 				}
 			}
 		}
-		Qt::WindowFlags flags = nullptr;
+		Qt::WindowFlags flags = static_cast<Qt::WindowType>(0);
 //flags |= Qt::MSWindowsFixedSizeDialogHint;
 //flags |= Qt::X11BypassWindowManagerHint;
 //flags |= Qt::FramelessWindowHint;
@@ -291,7 +292,7 @@ void DebuggerWidget::tuck(bool attach, QWidget *movedWindow)
 					movedWindow=this;
 				}
 				if(movedWindow==this) {
-					placeRelative(this, nodeWindow.data(), attach?QPoint(5,0):QPoint(20,((qrand()%30)-15)), false);
+					placeRelative(this, nodeWindow.data(), attach?QPoint(5,0):QPoint(20,((utility::random::qrand()%30)-15)), false);
 				} else {
 					// TODO: Figure out how to circumvent the buggy movement when this is enabled
 					// placeRelative(nodeWindow.data(), this, attach?QPoint(5,0):QPoint(20,((qrand()%30)-15)), true);
@@ -407,13 +408,13 @@ void DebuggerWidget::on_pushButtonTuckWindow_toggled(bool checked)
 				if(checked) {
 					mTuckNodeWindowConnection=connect(nodeWindow.data(), &NodeWindow::nodeWindowMoved, this, [=](QSharedPointer <NodeWindow> nodeWindow) {
 						tuck(true, nodeWindow.data());
-					}, OC_CONTYPE);
+					}, OC_CONTYPE_NON_UNIQUE);
 					if(!mTuckNodeWindowConnection) {
 						qWarning()<<"ERROR: Could not connect";
 					}
 					mTuckDebuggerWindowConnection=connect(this, &DebuggerWidget::debuggerWindowMoved, this, [=](QSharedPointer <DebuggerWidget> debuggerWindow) {
 						tuck(true, debuggerWindow.data());
-					}, OC_CONTYPE);
+					}, OC_CONTYPE_NON_UNIQUE);
 					if(!mTuckDebuggerWindowConnection) {
 						qWarning()<<"ERROR: Could not connect";
 					}

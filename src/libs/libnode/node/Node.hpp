@@ -14,16 +14,11 @@
 #include "node/NodeType.hpp"
 #include "node/LocalIdentityStore.hpp"
 
-#include "store/DataStore.hpp"
-
-
 #include "discovery/AddressBook.hpp"
 #include "security/KeyStore.hpp"
 
 #include "address/LocalAddressList.hpp"
 #include "client/ClientList.hpp"
-
-#include "comms/IConnectionStatus.hpp"
 
 #include "uptime/ConfigureHelper.hpp"
 

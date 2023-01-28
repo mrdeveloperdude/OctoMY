@@ -1,12 +1,15 @@
 #ifndef AUDIOSTREAM_HPP
 #define AUDIOSTREAM_HPP
 
-#include "IAudioSource.hpp"
+#if USE_AUDIO_STREAM_NOOOOT
+
+#include "IAudio.hpp"
 
 #include <QObject>
 #include <QAudioOutput>
 #include <QDebug>
 #include <QtEndian>
+#include <QIODevice>
 
 class AudioStream: public QIODevice
 {
@@ -49,6 +52,7 @@ private:
 	inline void f64_i16s(int num, double *in,char *out)
 	{
 		uchar *ptr=(uchar *)out;
+		/*
 		if (format.byteOrder() == QAudioFormat::LittleEndian) {
 			for(int i=0; i<num; ++i) {
 				const double x=in[i];
@@ -64,12 +68,14 @@ private:
 				ptr+=sampleBytes;
 			}
 		}
+		*/
 	}
 
 
 	inline void f64_i16u(int num, double *in,char *out)
 	{
 		uchar *ptr=(uchar *)out;
+		/*
 		if (format.byteOrder() == QAudioFormat::LittleEndian) {
 			for(int i=0; i<num; ++i) {
 				const double x=in[i];
@@ -85,6 +91,7 @@ private:
 				ptr+=sampleBytes;
 			}
 		}
+		*/
 	}
 
 
@@ -109,6 +116,7 @@ private:
 
 	inline void convertBuffer(qint64 num, double *in, char *out)
 	{
+		/*
 		const int sampleSize=format.sampleSize();
 		const QAudioFormat::SampleType sampleType=format.sampleType();
 		if (8==sampleSize ) {
@@ -130,6 +138,7 @@ private:
 		} else {
 			qWarning()<<"ERROR: unknown sampleSize: "<<sampleSize;
 		}
+		*/
 	}
 
 
@@ -163,3 +172,5 @@ public slots:
 
 
 #endif // AUDIOSTREAM_HPP
+
+#endif // USE_AUDIO_STREAM_NOOOOT

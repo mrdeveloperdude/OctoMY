@@ -3,6 +3,7 @@
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 #include "utility/time/HumanTime.hpp"
+#include "utility/random/Random.hpp"
 
 #include "Blob.hpp"
 #include "BlobChunk.hpp"
@@ -63,7 +64,7 @@ quint16 BlobCourier::findFreeSendingBlobID()
 	quint16 out=0;
 	const quint16 M=0xFFFF;
 	do {
-		out=qrand()%M;
+		out=utility::random::qrand()%M;
 	} while((0 == out) || (mSendingBlobsById.contains(out)) );
 	return out;
 }
@@ -79,7 +80,7 @@ quint16 BlobCourier::findNextSendingBlobID()
 		return out;
 	}
 	// Select a random spot
-	quint64 spot=(static_cast<quint64>(qrand())%mTotalSendingBlobDataSize);
+	quint64 spot=(static_cast<quint64>(utility::random::qrand())%mTotalSendingBlobDataSize);
 	quint64 acc=0;
 	// Accumulate size until accumulator exceeds said spot
 	for(QHash<quint16, SendingBlob *>::iterator it=mSendingBlobsById.begin(), e=mSendingBlobsById.end(); it!=e; ++it) {

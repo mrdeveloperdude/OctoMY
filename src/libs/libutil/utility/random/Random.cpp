@@ -1,6 +1,7 @@
 #include "utility/random/Random.hpp"
 
 #include <QtMath>
+#include <QRandomGenerator>
 
 namespace utility
 {
@@ -9,10 +10,16 @@ namespace random
 {
 
 
+quint32 qrand()
+{
+	return QRandomGenerator::global()->generate();
+}
+
+
 float frand()
 {
 	float v=qrand();
-	v/=RAND_MAX;
+	v/=static_cast<float>(RAND_MAX);
 	return v;
 }
 

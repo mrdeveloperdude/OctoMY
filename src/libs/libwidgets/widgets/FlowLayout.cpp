@@ -41,6 +41,11 @@
 #include <QtWidgets>
 
 #include "FlowLayout.hpp"
+
+
+
+// TODO: Write test for flow layout
+
 //! [1]
 FlowLayout::FlowLayout(QWidget *parent, int margin, int hSpacing, int vSpacing)
 	: QLayout(parent), m_hSpace(hSpacing), m_vSpace(vSpacing)
@@ -116,7 +121,7 @@ QLayoutItem *FlowLayout::takeAt(int index)
 //! [6]
 Qt::Orientations FlowLayout::expandingDirections() const
 {
-	return 0;
+	return static_cast<Qt::Orientations>(0);
 }
 //! [6]
 
@@ -149,10 +154,11 @@ QSize FlowLayout::minimumSize() const
 {
 	QSize size;
 	QLayoutItem *item;
-	foreach (item, itemList)
+	foreach (item, itemList){
 		size = size.expandedTo(item->minimumSize());
-
-	size += QSize(2*margin(), 2*margin());
+	}
+	auto m=contentsMargins();
+	size += QSize(m.left()+m.right(), m.top()+m.bottom());
 	return size;
 }
 //! [8]

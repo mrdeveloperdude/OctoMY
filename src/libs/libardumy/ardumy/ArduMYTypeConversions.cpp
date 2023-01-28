@@ -429,7 +429,7 @@ QString ardumyActuatorNameToString(const ArduMYActuatorConfig &c)
 		if ('\0' == ch) {
 			break;
 		}
-		name[i] = ch;
+		name[i] = QChar(ch);
 	}
 	return name;
 }

@@ -14,7 +14,7 @@ AppCommandLineParser::AppCommandLineParser()
 	, localPortOption(QStringList() <<  "p" << "local-port", QCoreApplication::translate("main", "Select server port to listen."), QCoreApplication::translate("main", "local-port"))
 	, remoteHostOption(QStringList() <<  "r" << "remote-host", QCoreApplication::translate("main", "Select remote host to target."), QCoreApplication::translate("main", "remote-host"))
 	, remotePortOption(QStringList() <<  "o" << "remote-port", QCoreApplication::translate("main", "Select remote port to target."), QCoreApplication::translate("main", "remote-port"))
-	, headlessOption(QStringList() <<  "h" << "head-less", QCoreApplication::translate("main", "Don't display GUI"), QCoreApplication::translate("main", "head-less"))
+	, headlessOption(QStringList() <<  "e" << "head-less", QCoreApplication::translate("main", "Run in GUI-less environment"), QCoreApplication::translate("main", "head-less"))
 {
 	OC_METHODGATE();
 	mCommandlineOptions.setApplicationDescription("OctoMY™ is the open-source, easy-to-use, state-of-the-art software that runs on your next robot.");
