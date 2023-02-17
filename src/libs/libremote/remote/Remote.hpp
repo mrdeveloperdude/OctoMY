@@ -25,7 +25,6 @@ class Remote : public Node//, public QEnableSharedFromThis<Remote>
 {
 	Q_OBJECT
 private:
-
 	// Helper to keep track of nodeConfigure() and nodeActivate() state
 	ConfigureHelper mNodeConfigureHelper;
 
@@ -36,12 +35,10 @@ public:
 	explicit Remote();
 	virtual ~Remote() Q_DECL_OVERRIDE;
 
-
 	// Node interface
 public:
 	void nodeConfigure() Q_DECL_OVERRIDE;
 	void nodeActivate(const bool on) Q_DECL_OVERRIDE;
-
 	QSharedPointer<NodeWindow> nodeWindow() Q_DECL_OVERRIDE;
 	NodeRole nodeRole() Q_DECL_OVERRIDE;
 	NodeType nodeType() Q_DECL_OVERRIDE;
@@ -49,8 +46,6 @@ public:
 	// QEnableSharedFromThis<Agent> interface
 public:
 	QSharedPointer<Node> sharedThis() Q_DECL_OVERRIDE;
-
-
 	void registerNodeCouriers(bool reg) Q_DECL_OVERRIDE;
 
 };

@@ -1,12 +1,10 @@
 #ifndef DISCOVERYCLIENT_HPP
 #define DISCOVERYCLIENT_HPP
 
-#include "node/NodeRole.hpp"
-#include "AddressBook.hpp"
-#include "address/Associate.hpp"
 #include "uptime/ConfigureHelper.hpp"
 #include "utility/time/HoneymoonScheduler.hpp"
 #include "utility/time/RateCalculator.hpp"
+#include "security/Key.hpp"
 
 #include <QTimer>
 #include <QObject>

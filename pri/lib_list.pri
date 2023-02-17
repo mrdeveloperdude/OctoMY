@@ -1,17 +1,14 @@
 
 # The libraries in this list will be built as separate projects and linked in at the end. This is suitable for 3rd party code and stand-alone external projects
-AUTOLIBS_SEPARATE += \
+AUTOLIBS_SEPARATE_BASE += \
 	qpolarssl \
 	mbedtls \
 	parser \
-
 #	zbar \
-#	qfi \
-
 
 
 # The libraries in this list will be built into one big library called libcombined
-AUTOLIBS_COMBINED += \
+AUTOLIBS_COMBINED_BASE += \
 	markdown \
 	util \
 	uptime \
@@ -55,6 +52,31 @@ AUTOLIBS_COMBINED += \
 	clt \
 #	dynamics \
 
+
+AUTOLIBS_OVERRIDE=false
+
+CONFIG(debug, (debug|release):$$AUTOLIBS_OVERRIDE){
+# DEBUG BUILD KEEPS ALL LIBS SEPARATE FOR BUILD SPEED
+################################################################################
+################################################################################
+
+	message("----------- AUTOLIBS SEPARATION MODE -------------------")
+	AUTOLIBS_SEPARATE += $$AUTOLIBS_SEPARATE_BASE $$AUTOLIBS_COMBINED_BASE
+
+	# The libraries in this list will be built into one big library called libcombined
+	AUTOLIBS_COMBINED += \
+
+
+} else {
+# RELEASE BUILDS EVERYTHING IT CAN IN LIBCOMBINED FOR PERFORMANCE AND SIZE
+################################################################################
+################################################################################
+	message("----------- AUTOLIBS COMBINATION MODE -------------------")
+	AUTOLIBS_SEPARATE += $$AUTOLIBS_SEPARATE_BASE
+	AUTOLIBS_COMBINED += $$AUTOLIBS_COMBINED_BASE
+
+
+}
 
 
 

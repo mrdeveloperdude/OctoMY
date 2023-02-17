@@ -13,7 +13,7 @@
 # define OCTOMY_QT_OGL_PROFILE         Core
 # define OCTOMY_QT_OGL_DEPTH_BUFFER    24
 # define OCTOMY_QT_OGL_STENSIL_BUFFER  0
-# define OCTOMY_QT_OGL_SWAP_INTERVAL	  1
+# define OCTOMY_QT_OGL_SWAP_INTERVAL   1
 # define OCTOMY_QT_OGL_SWAP_BEHAVIOUR  DefaultSwapBehavior
 # define OCTOMY_QT_OGL_USE_DESKTOP     1
 //
@@ -54,7 +54,7 @@
 //OCTOMY_QT_OGL_PROFILE_B(OCTOMY_QT_OGL_PROFILE)
 
 
-#include <QOpenGLWidget>
+//#include <QOpenGLWidget>
 
 // This right here is a result:
 #include STRINGIFY(OCTOMY_QT_OGL_FUNCTIONS_CLASS)

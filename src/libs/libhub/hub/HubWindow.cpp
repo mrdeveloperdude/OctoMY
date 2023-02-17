@@ -19,8 +19,8 @@
 #include "uptime/New.hpp"
 #include "utility/graphics/WidgetCaptureTool.hpp"
 #include "utility/random/Random.hpp"
-#include "widgets/hexedit/QHexEdit.hpp"
-#include "widgets/hexedit/QHexEditData.hpp"
+#include "hexedit/QHexEdit.hpp"
+#include "hexedit/QHexEditData.hpp"
 #include "zbar/ZBarScanner.hpp"
 
 

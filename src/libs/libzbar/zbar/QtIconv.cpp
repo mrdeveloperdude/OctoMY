@@ -18,11 +18,12 @@ thus make the dependence on iconv go away.
 */
 
 
-#include "utility/Standard.hpp"
+#include "uptime/New.hpp"
 
 #include <QString>
 #include <QByteArray>
-#include <QTextCodec>
+//#include <QTextCodec>
+#include <QStringConverter>
 #include <QDebug>
 
 
@@ -30,13 +31,18 @@ extern "C" typedef void *iconv_t;
 
 
 struct QtIconv{
-		QTextCodec *fromCodec = 0;
-		QTextCodec *toCodec = 0;
+		std::optional<QStringConverter::Encoding> fromCodec;
+		std::optional<QStringConverter::Encoding> toCodec;
 		QtIconv( const char *fromEncoding, const char *toEncoding)
-			: fromCodec(QTextCodec::codecForName(fromEncoding))
-			, toCodec(QTextCodec::codecForName(toEncoding))
+			: fromCodec(QStringConverter::encodingForName(fromEncoding))
+			, toCodec(QStringConverter::encodingForName(toEncoding))
 		{
 
+		}
+		
+		QByteArray convert(QByteArray in){
+			// TODO: Implement conversion
+			return in;
 		}
 
 };
@@ -102,7 +108,10 @@ extern "C" size_t iconv (iconv_t __cd, char **__restrict __inbuf, size_t *__rest
 		return 0;
 	}
 	QByteArray from_text(_inbuf, _inbytesleft);
-	QByteArray to_text= qt_iconv->toCodec->fromUnicode(qt_iconv->fromCodec->toUnicode(from_text));
+	//QByteArray to_text= qt_iconv->toCodec->fromUnicode(qt_iconv->fromCodec->toUnicode(from_text));
+	
+	QByteArray to_text= qt_iconv->convert(from_text);
+	
 	size_t outsize=to_text.size();
 	if(outsize>_outbytesleft){
 		outsize=_outbytesleft;

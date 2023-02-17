@@ -1,12 +1,22 @@
 #ifndef HASHSTORE_HPP
 #define HASHSTORE_HPP
 
-#include "HashstoreRecord.hpp"
-
 #include <QString>
 #include <QLockFile>
 #include <QHash>
 #include <QDir>
+
+//#include "HashstoreRecord.hpp"
+
+class Hashstore;
+
+class HashstoreRecord{
+public:
+	HashstoreRecord()=default;
+	HashstoreRecord(const Hashstore &, const QString key);
+};
+
+
 
 /**
   Hashstore is a storage manager class that is the starting point for the

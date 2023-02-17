@@ -1,14 +1,11 @@
 #include "ArduMYController.hpp"
 
-#include "hardware/serial/SerialSettingsWidget.hpp"
+#include "ardumy/ArduMYControllerWidget.hpp"
 #include "ardumy_arduino/ArduMYParserState.hpp"
-
+#include "ardumy/ArduMYTypeConversions.hpp"
+#include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
-#include "uptime/ConnectionType.hpp"
-
-#include "ArduMYControllerWidget.hpp"
-#include "hardware/controllers/ardumy/ArduMYTypeConversions.hpp"
 
 #include <QBuffer>
 #include <QDebug>

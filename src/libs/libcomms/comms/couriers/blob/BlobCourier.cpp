@@ -306,7 +306,7 @@ quint16 BlobCourier::sendingOpportunity(QDataStream &ds)
 				//qDebug()<<"BLOB TX chunkSize="<<chunkSize;
 
 				// Send Chunk Checksum
-				const quint16 chunkChecksumCalc=qChecksum(data.data(),chunkSize);
+				const quint16 chunkChecksumCalc=qChecksum(data);
 				ds << chunkChecksumCalc;
 				bytes+=sizeof(quint16);
 				//qDebug()<<"BLOB TX chunkChecksumCalc="<<chunkChecksumCalc;
@@ -452,7 +452,7 @@ quint16 BlobCourier::dataReceived(QDataStream &ds, quint16 availableBytes)
 		ds.readRawData(chunkBytesIn.data(), chunkSize);
 
 		// Calculate Checksum of received data
-		const quint16 chunkChecksumCalc=qChecksum(chunkBytesIn.data(), chunkSize);
+		const quint16 chunkChecksumCalc=qChecksum(chunkBytesIn);
 		//qDebug()<<"BLOB RX chunkChecksumCalc="<<chunkChecksumCalc;
 
 		// Compare Checksums

@@ -1,10 +1,9 @@
 #ifndef HUBCLIENTWIDGET_HPP
 #define HUBCLIENTWIDGET_HPP
 
-
 #include "comms/CommsSession.hpp"
 
-#include "widgets/TryToggle.hpp"
+#include "components/TryToggle.hpp"
 #include "node/Node.hpp"
 #include "comms/couriers/sets/RemoteCourierSet.hpp"
 #include "client/ClientWidget.hpp"

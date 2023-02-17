@@ -7,21 +7,12 @@
 #ifndef ASSOCIATE_HPP
 #define ASSOCIATE_HPP
 
-
+#include "TrustList.hpp"
+#include "address/AddressList.hpp"
 #include "node/NodeRole.hpp"
-#include "comms/NetworkAddress.hpp"
-#include "comms/CommsSignature.hpp"
-
-#include "security/Key.hpp"
-
 #include "security/PortableID.hpp"
 
-#include "address/AddressList.hpp"
-
-#include "TrustList.hpp"
-
 #include <QBluetoothAddress>
-
 #include <QByteArray>
 #include <QVariantMap>
 #include <QDateTime>

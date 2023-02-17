@@ -1,8 +1,7 @@
 #ifndef TRYTOGGLETESTUI_HPP
 #define TRYTOGGLETESTUI_HPP
 
-#include "widgets/TryToggleState.hpp"
-
+#include "widgets/components/TryToggleState.hpp"
 
 #include <QWidget>
 

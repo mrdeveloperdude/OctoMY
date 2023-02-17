@@ -1,3 +1,5 @@
+#ifdef OC_USE_LIB_EXT_OPENCL
+
 #ifndef CLDEVICESELECTION_HPP
 #define CLDEVICESELECTION_HPP
 
@@ -21,3 +23,6 @@ public:
 };
 
 #endif // CLDEVICESELECTION_HPP
+
+#endif 
+// OC_USE_LIB_EXT_OPENCL

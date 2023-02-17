@@ -1,6 +1,6 @@
 #include "Agent.hpp"
 
-#include "widgets/agent/AgentWindow.hpp"
+#include "agent/AgentWindow.hpp"
 
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
@@ -20,7 +20,7 @@ Agent::Agent()
 {
 	OC_METHODGATE();
 	//qDebug()<<"Agent()";
-	// NOTE: Please do not put code here that generates events. Instead put them in *configure*() or *activate*()
+	// NOTE: Please do not put code here that generates events. Instead put them in *Configure*() or *Activate*()
 }
 
 

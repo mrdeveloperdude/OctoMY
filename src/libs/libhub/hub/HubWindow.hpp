@@ -1,14 +1,10 @@
 #ifndef HUBWINDOW_HPP
 #define HUBWINDOW_HPP
 
-#include "node/NodeWindow.hpp"
-#include "app/log/LogDestination.hpp"
-
-#include "widgets/TryToggle.hpp"
-#include "comms/CommsChannel.hpp"
-
-
 #include "Hub.hpp"
+#include "app/log/LogDestination.hpp"
+#include "node/NodeWindow.hpp"
+#include "components/TryToggleState.hpp"
 
 #include <QMainWindow>
 #include <QHostInfo>

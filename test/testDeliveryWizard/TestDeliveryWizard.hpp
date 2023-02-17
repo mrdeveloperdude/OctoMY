@@ -3,7 +3,6 @@
 
 #include "Common_test.hpp"
 
-
 class TestDeliveryWizard:public QObject
 {
 	Q_OBJECT

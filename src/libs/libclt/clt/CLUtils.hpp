@@ -1,3 +1,5 @@
+#ifdef USE_OC_OCL_STUFF
+
 #ifndef CLUTILS_HPP
 #define	CLUTILS_HPP
 
@@ -22,3 +24,6 @@ extern QDebug &operator<<(QDebug &d, cl::Device *dev);
 extern QSurfaceFormat properOctomyDefaultFormat();
 
 #endif //CLUTILS_HPP
+
+#endif 
+//USE_OC_OCL_STUFF

@@ -1,6 +1,6 @@
 
 #include "HardwareTemplateModel.hpp"
-#include "widgets/hardware/HardwareTemplate.hpp"
+#include "hardware/HardwareTemplate.hpp"
 #include "uptime/MethodGate.hpp"
 
 #include <QIcon>

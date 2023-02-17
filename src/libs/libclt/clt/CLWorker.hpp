@@ -1,3 +1,5 @@
+#ifdef USE_OC_OCL_STUFF
+
 #ifndef CLWORKER_HPP
 #define CLWORKER_HPP
 
@@ -103,3 +105,7 @@ signals:
 
 #endif
 // CLWORKER_HPP
+
+
+#endif
+//USE_OC_OCL_STUFF

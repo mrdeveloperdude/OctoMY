@@ -2,7 +2,7 @@
 
 #include "uptime/New.hpp"
 
-#include "app/mockapp/widgets/MockAppWindow.hpp"
+#include "app/mockapp/MockAppWindow.hpp"
 
 #include <QObject>
 #include <QLayout>

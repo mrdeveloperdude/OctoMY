@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>609</width>
-    <height>81</height>
+    <width>605</width>
+    <height>79</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -144,7 +144,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset>
+      <iconset resource="../../libres/resources/icons.qrc">
        <normaloff>:/icons/trash.svg</normaloff>:/icons/trash.svg</iconset>
      </property>
     </widget>
@@ -155,9 +155,11 @@
   <customwidget>
    <class>ActuatorSelector</class>
    <extends>QComboBox</extends>
-   <header location="global">widgets/ardumy/ActuatorSelector.hpp</header>
+   <header location="global">hardware/actuator/ActuatorSelector.hpp</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../../libres/resources/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

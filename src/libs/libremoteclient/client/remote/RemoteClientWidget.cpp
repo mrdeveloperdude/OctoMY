@@ -1,22 +1,16 @@
 #include "RemoteClientWidget.hpp"
 #include "ui_RemoteClientWidget.h"
 
-#include "uptime/MethodGate.hpp"
-#include "uptime/ConnectionType.hpp"
-
-#include "app/Settings.hpp"
-
-#include "widgets/WaitingSpinnerWidget.hpp"
-
-#include "security/PortableID.hpp"
-
-#include "widgets/CarSteeringWidget.hpp"
-
-#include "comms/CommsChannel.hpp"
 
 #include "agent/AgentConstants.hpp"
-
+#include "app/Settings.hpp"
 #include "client/remote/RemoteClient.hpp"
+#include "comms/CommsChannel.hpp"
+#include "security/PortableID.hpp"
+#include "uptime/ConnectionType.hpp"
+#include "uptime/MethodGate.hpp"
+#include "node/CarSteeringWidget.hpp"
+#include "components/WaitingSpinnerWidget.hpp"
 
 #include <QScrollBar>
 
@@ -398,5 +392,4 @@ void RemoteClientWidget::on_widgetPanic_toggled(bool panic)
 		qWarning()<<"ERROR: no ASC when changing panic to "<<panic;
 	}
 	*/
-
 }

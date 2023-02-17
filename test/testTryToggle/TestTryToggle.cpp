@@ -1,6 +1,6 @@
 #include "TestTryToggle.hpp"
 
-#include "widgets/TryToggle.hpp"
+#include "widgets/components/TryToggle.hpp"
 
 #include "TryToggleTestUI.hpp"
 

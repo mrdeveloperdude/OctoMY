@@ -20,12 +20,10 @@ Client::Client(QObject *parent)
 }
 
 
-
 Client::~Client()
 {
 	OC_METHODGATE();
 }
-
 
 
 void Client::configure(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssoc)
@@ -47,7 +45,6 @@ bool Client::needsConnection()
 }
 
 
-
 bool Client::isConnected()
 {
 	OC_METHODGATE();
@@ -60,7 +57,6 @@ bool Client::isConnected()
 	*/
 	return false;
 }
-
 
 
 void Client::setNeedsConnection(const bool current)

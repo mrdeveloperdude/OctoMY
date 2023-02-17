@@ -2,16 +2,10 @@
 #define REMOTECLIENTWIDGET_HPP
 
 
-#include "comms/CommsSession.hpp"
-
-#include "widgets/TryToggle.hpp"
-#include "node/Node.hpp"
-#include "comms/couriers/sets/AgentCourierSet.hpp"
-#include "client/ClientWidget.hpp"
-
 #include "address/Associate.hpp"
-
-#include "uptime/SharedPointerWrapper.hpp"
+#include "client/ClientWidget.hpp"
+#include "node/Node.hpp"
+#include "components/TryToggleState.hpp"
 
 #include <QWidget>
 #include <QTimer>

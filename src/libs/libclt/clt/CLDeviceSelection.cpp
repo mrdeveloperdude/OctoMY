@@ -1,3 +1,5 @@
+#ifdef OC_USE_LIB_EXT_OPENCL
+
 #include "CLDeviceSelection.hpp"
 
 #include "CLUtils.hpp"
@@ -70,3 +72,6 @@ CLDeviceSelection::~CLDeviceSelection()
 {
 
 }
+
+#endif
+// OC_USE_LIB_EXT_OPENCL

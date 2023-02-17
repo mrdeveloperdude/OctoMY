@@ -1,7 +1,7 @@
 
-// NOTE: This file is NOTto be explicitly included in project!
+// NOTE: This file is NOT to be explicitly included in project!
 
-#include <QtGlobal>
+//#include <QtGlobal>
 /*
 #include <QFileDialog>
 #include <QPushButton>

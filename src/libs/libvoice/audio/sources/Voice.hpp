@@ -36,6 +36,7 @@ public:
 	explicit Voice(int hz=100);
 	virtual ~Voice();
 public:
+	
 	bool speak(PortableID &id, QString text);
 	bool voiceIsAvailable();
 	
@@ -330,11 +331,11 @@ void Voice<T, OUTPUT_CHANNELS>::feed(short *wav, int numsamples)
 
 
 template <typename T, int OUTPUT_CHANNELS>
-void Voice<T, OUTPUT_CHANNELS>::speak(QString sentence)
+bool Voice<T, OUTPUT_CHANNELS>::speak(PortableID &id, QString text)
 {
 	OC_METHODGATE();
 	if (isInitialized()) {
-		qDebug().noquote().nospace() << "I am mute, not speaking \"" << sentence << "\"\n";
+		qDebug().noquote().nospace() << "I am mute, not speaking \"" << text << "\"\n";
 	}
 }
 
@@ -367,6 +368,12 @@ void Voice<T, OUTPUT_CHANNELS>::init(QAudioFormat f)
 
 
 
+template <typename T, int OUTPUT_CHANNELS>
+void Voice<T, OUTPUT_CHANNELS>::freeBuffer(Buffer<short> *buf)
+{
+	OC_METHODGATE();
+	Q_UNUSED(buf);
+}
 
 
 #endif

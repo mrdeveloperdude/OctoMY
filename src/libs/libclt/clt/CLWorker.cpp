@@ -1,3 +1,5 @@
+#ifdef USE_OC_OCL_STUFF
+
 #include "CLWorker.hpp"
 #include "CLThreadManager.hpp"
 
@@ -9,7 +11,8 @@
 #include "clt/CLUtils.hpp"
 
 #include <QThread>
-#include <qpa/qplatformnativeinterface.h>
+//#include <qpa/qplatformnativeinterface.h>
+#include <qpa/
 
 #include "glt/IncludeOpenGLIntegration.hpp"
 
@@ -319,3 +322,8 @@ void CLWorker::postProcess()
 	}
 	qDebug()<<"CLWORKER! POST end in thread " <<QThread::currentThreadId();
 }
+#else
+
+#warning CL STUFF DISABLED BECAUSE... QT6
+
+#endif // USE_OC_OCL_STUFF

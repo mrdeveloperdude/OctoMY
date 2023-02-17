@@ -30,7 +30,7 @@ public:
 class ZBarScanner
 {
 private:
-#ifdef OC_USE_LIB_ZBAR
+#ifdef OC_USE_LIBZBAR_STUFF
     zbar::ImageScanner *sc;
 #endif
     //Debug viwer

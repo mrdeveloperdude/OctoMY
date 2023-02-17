@@ -9,6 +9,9 @@
 #include <QDebug>
 
 
+HashstoreRecord::HashstoreRecord(const Hashstore &hs, const QString key){
+}
+
 const quint8 Hashstore::DIR_LEVELS=4;
 
 Hashstore::Hashstore(QDir dir)

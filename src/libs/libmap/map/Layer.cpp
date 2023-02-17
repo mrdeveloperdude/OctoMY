@@ -198,15 +198,16 @@ void Layer::mouseEvent(const QMouseEvent* evnt, const QPoint mapmiddle_px)
 				evnt->type() == QEvent::MouseButtonPress) {
 			// check for collision
 			QPointF c;
+			auto pos=evnt->pos();
 			if(!mapAdapter.isNull()) {
-				c= mapAdapter->displayToCoordinate(QPoint(evnt->x()-screenmiddle.x()+mapmiddle_px.x(),
-												   evnt->y()-screenmiddle.y()+mapmiddle_px.y()));
+				c= mapAdapter->displayToCoordinate(QPoint(pos.x()-screenmiddle.x()+mapmiddle_px.x(),
+												   pos.y()-screenmiddle.y()+mapmiddle_px.y()));
 			}
 			Point tmppoint(c.x(), c.y());
 			for(QList<Geometry*>::const_iterator iter = geometries.begin(); iter != geometries.end(); ++iter) {
 				Geometry *geo = *iter;
 				if (geo && geo->isVisible() && geo->Touches(&tmppoint, mapAdapter)) {
-					emit(geometryClicked(geo, QPoint(evnt->x(), evnt->y())));
+					emit(geometryClicked(geo, pos));
 				}
 			}
 		}

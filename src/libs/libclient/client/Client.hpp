@@ -33,8 +33,8 @@ class ISyncParameter;
 class Client: public QObject, public QEnableSharedFromThis<Client>
 {
 	Q_OBJECT
-protected:
 
+protected:
 	QTimer mUpdateTimer;
 	QSharedPointer<Node> mNode;
 	QSharedPointer<Associate> mAssociate;
@@ -43,9 +43,7 @@ protected:
 	friend class ClientConnectionStatus;
 	friend class AgentClientWidget;
 
-
 public:
-
 	explicit Client(QObject *parent = nullptr);
 	virtual ~Client();
 
@@ -59,7 +57,6 @@ public:
 	virtual QSharedPointer<ClientWidget> widget() =0;
 
 protected:
-
 	bool needsConnection();
 	bool isConnected();
 	void setNeedsConnection(const bool);
@@ -70,11 +67,9 @@ public:
 
 public:
 	void initTimer();
-
 	QSharedPointer<Node> node();
 	QSharedPointer<CommsChannel> comms();
 	QSharedPointer<Associate> associate();
-
 	bool courierRegistration();
 	void registerCouriers(bool reg);
 	void updateCourierRegistration();
@@ -91,12 +86,10 @@ private slots:
 	void onCommsClientAdded(CommsSession *);
 	void onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection);
 
-
 	// Internal slots
 public slots:
 	void onUpdateTimer();
 	void appendLog(const QString& text);
-
 
 };
 

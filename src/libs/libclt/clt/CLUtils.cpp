@@ -1,3 +1,5 @@
+#ifdef USE_OC_OCL_STUFF
+
 #include <inttypes.h>
 #include <limits>
 
@@ -237,3 +239,6 @@ QSurfaceFormat properOctomyDefaultFormat()
 	qDebug()<<"PROPER OCTOMY FORMAT WAS: "<<format;
 	return format;
 }
+
+#endif
+// USE_OC_OCL_STUFF

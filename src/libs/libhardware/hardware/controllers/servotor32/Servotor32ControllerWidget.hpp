@@ -1,11 +1,11 @@
 #ifndef SERVOTOR32CONTROLLERWIDGET_HPP
 #define SERVOTOR32CONTROLLERWIDGET_HPP
 
-#include "widgets/TryToggle.hpp"
 #include "HexySerial.hpp"
 #include "gait/GaitController.hpp"
-#include <QWidget>
+#include "components/TryToggleState.hpp"
 
+#include <QWidget>
 
 namespace Ui
 {
@@ -20,6 +20,7 @@ class Servotor32Controller;
 class Servotor32ControllerWidget : public QWidget
 {
 	Q_OBJECT
+
 private:
 	Ui::Servotor32ControllerWidget *ui;
 	qreal pos[HexySerial::SERVO_COUNT]= {0.0};
@@ -32,11 +33,9 @@ public:
 	~Servotor32ControllerWidget();
 
 public:
-
 	void configure(Servotor32Controller *);
 
 private:
-
 	void setUILock(bool);
 
 private slots:
@@ -46,9 +45,7 @@ private slots:
 	void onHexySettingsChanged();
 	void onHexyConenctionChanged();
 	void on_pushButtonDisableAll_clicked();
-
 	void on_pushButtonGait_toggled(bool checked);
-
 	void on_dialFeedrate_valueChanged(int value);
 
 public slots:

@@ -1,3 +1,5 @@
+#ifdef OC_USE_LIB_EXT_OPENCL
+
 #include "CLThreadManager.hpp"
 
 #include "uptime/MethodGate.hpp"
@@ -222,3 +224,7 @@ CLGLInteropConfig CLThreadManager::interopConfig()  const
 	OC_METHODGATE();
 	return mInteropConfig;
 }
+
+
+#endif
+// OC_USE_LIB_EXT_OPENCL

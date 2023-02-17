@@ -1,7 +1,7 @@
 #include "LightTestWidget.hpp"
 #include "ui_LightTestWidget.h"
 
-#include "widgets/LightWidget.hpp"
+#include "widgets/components/LightWidget.hpp"
 
 #include <QColorDialog>
 #include <QDebug>

@@ -2,7 +2,6 @@
 
 #include "app/launcher/AppLauncher.hpp"
 
-//#include "app/launcher/MockApp.hpp"
 #include "agent/Agent.hpp"
 
 #include "uptime/SharedPointerWrapper.hpp"

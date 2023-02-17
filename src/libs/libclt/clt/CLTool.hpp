@@ -1,3 +1,5 @@
+#ifdef OC_USE_LIB_EXT_OPENCL
+
 #ifndef CLTOOL_HPP
 #define CLTOOL_HPP
 
@@ -31,3 +33,7 @@ public:
 
 #endif
 // CLTOOL_HPP
+
+
+#endif
+// OC_USE_LIB_EXT_OPENCL

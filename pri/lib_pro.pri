@@ -1,15 +1,24 @@
 # This file is intended to be included in each library's .pro file as the only line.
 # It will automate all the boilerplate needed to have library building and linking set up
 
+
+#in case individual settings are needed, we will look for the following:
+
+#projectdir/files.pri : When this file is present, it will be included and we expect it to override the file autodetection
+#projectdir/config.pri : When this file is present, it will be included and we expect it to contain any relevant additional configuration options
+
+
 LIBDIR=$$_PRO_FILE_PWD_
 LIBNAME=$$basename(_PRO_FILE_PWD_)
 LIBBASE=$$str_member($$LIBNAME, 3, -1)
 
+# This defines AUTOLIBS_SEPARATE and AUTOLIBS_COMBINED variables
 include(lib_list.pri)
 
 #message("ALIBS:  " $$AUTOLIBS_SEPARATE)message("ALINKS: " $$AUTOLIBS_COMBINED)
 
 contains(AUTOLIBS_SEPARATE, $$LIBBASE ){
+	# Detect and avoid duplicates
 	contains(AUTOLIBS_COMBINED, $$LIBBASE){
 		error(" * * * " $$LIBNAME "WAS IN BOTH AUTOLIBS_SEPARATE & AUTOLIBS_COMBINED AT THE SAME TIME (pro)")
 	}
@@ -76,10 +85,12 @@ contains(AUTOLIBS_SEPARATE, $$LIBBASE ){
 			DISTFILES += $$LOCAL_LIB_DISTFILES
 		}
 
+		# Remove duplicate files
 		SOURCES=   $$unique(SOURCES)
 		HEADERS=   $$unique(HEADERS)
 		FORMS=     $$unique(FORMS)
 		RESOURCES= $$unique(RESOURCES)
+		DISTFILES= $$unique(DISTFILES)
 
 		contains(DEFINES, OC_USE_FEATURE_STATUS){
 			message("FROM " $$LIBBASE ":")

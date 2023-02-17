@@ -1,9 +1,7 @@
 #include "Remote.hpp"
 
 #include "node/NodeWindow.hpp"
-
-#include "widgets/remote/RemoteWindow.hpp"
-
+#include "remote/RemoteWindow.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 #include "app/AppContext.hpp"

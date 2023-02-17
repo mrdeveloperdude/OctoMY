@@ -7,16 +7,13 @@
 #ifndef KEYSTORE_HPP
 #define KEYSTORE_HPP
 
-
 #include "Key.hpp"
-#include "PortableID.hpp"
-#include "utility/concurrent/GenerateRunnable.hpp"
-#include "utility/concurrent/AtomicBoolean.hpp"
-#include "store/JsonAsyncBackend.hpp"
-#include "store/AsyncStore.hpp"
 #include "KeySecurityPolicy.hpp"
-#include "uptime/SharedPointerWrapper.hpp"
+#include "store/AsyncStore.hpp"
+#include "store/JsonAsyncBackend.hpp"
 #include "uptime/ConfigureHelper.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
+#include "utility/concurrent/GenerateRunnable.hpp"
 
 #include <QByteArray>
 #include <QCryptographicHash>

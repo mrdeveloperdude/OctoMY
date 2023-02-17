@@ -1,29 +1,16 @@
 #include "HubClientWidget.hpp"
 #include "ui_HubClientWidget.h"
 
-#include "utility/ui/GenericKeyEventHandler.hpp"
+#include "agent/AgentConstants.hpp"
 #include "app/Settings.hpp"
-
+#include "client/hub/HubClient.hpp"
+#include "comms/CommsChannel.hpp"
+#include "security/PortableID.hpp"
+#include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
-#include "uptime/ConnectionType.hpp"
-
-#include "widgets/WaitingSpinnerWidget.hpp"
-#include "voice/VoiceManager.hpp"
-
-#include "security/PortableID.hpp"
-
-#include "widgets/CarSteeringWidget.hpp"
-
-#include "comms/CommsChannel.hpp"
-#include "comms/ISyncParameter.hpp"
-
-#include "comms/couriers/AgentStateCourier.hpp"
-#include "comms/couriers/blob/BlobCourier.hpp"
-
-#include "agent/AgentConstants.hpp"
-
-#include "client/hub/HubClient.hpp"
+#include "node/CarSteeringWidget.hpp"
+#include "components/WaitingSpinnerWidget.hpp"
 
 #include <QScrollBar>
 

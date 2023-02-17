@@ -1,3 +1,5 @@
+#ifdef OC_USE_LIB_EXT_OPENCL
+
 #ifndef CLTHREADMANAGER_HPP
 #define CLTHREADMANAGER_HPP
 
@@ -61,3 +63,6 @@ public:
 
 #endif
 // CLTHREADMANAGER_HPP
+
+#endif
+//OC_USE_LIB_EXT_OPENCL

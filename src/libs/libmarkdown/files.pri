@@ -1,5 +1,4 @@
 MARKDOWN_TOP= $${SRCS}/libs/libmarkdown
-UPTIME_TOP= $${SRCS}/libs/libuptime
 
 # From https://github.com/hoedown/hoedown
 
@@ -28,7 +27,7 @@ SOURCES	+= \
 
 
 FORMS += \
-	$$MARKDOWN_TOP/widgets/ui/MarkdownEditor.ui \
+	$$MARKDOWN_TOP/markdown/MarkdownEditor.ui \
 }
 
 
@@ -38,17 +37,16 @@ FORMS += \
 HEADERS	+= \
 	$$MARKDOWN_TOP/markdown/Markdown.hpp \
 	$$MARKDOWN_TOP/markdown/MarkdownHighlighter.hpp \
-	$$MARKDOWN_TOP/widgets/markdown/CodeEditor.hpp \
-	$$MARKDOWN_TOP/widgets/markdown/LineNumberArea.hpp \
-	$$MARKDOWN_TOP/widgets/markdown/MarkdownEditor.hpp \
-	$$UPTIME_TOP/uptime/MethodGate.hpp \
+	$$MARKDOWN_TOP/markdown/CodeEditor.hpp \
+	$$MARKDOWN_TOP/markdown/LineNumberArea.hpp \
+	$$MARKDOWN_TOP/markdown/MarkdownEditor.hpp \
 
 
 SOURCES	+= \
 	$$MARKDOWN_TOP/markdown/Markdown.cpp \
 	$$MARKDOWN_TOP/markdown/MarkdownHighlighter.cpp \
-	$$MARKDOWN_TOP/widgets/markdown/CodeEditor.cpp \
-	$$MARKDOWN_TOP/widgets/markdown/LineNumberArea.cpp \
-	$$MARKDOWN_TOP/widgets/markdown/MarkdownEditor.cpp \
-	$$UPTIME_TOP/uptime/MethodGate.cpp \
+	$$MARKDOWN_TOP/markdown/CodeEditor.cpp \
+	$$MARKDOWN_TOP/markdown/LineNumberArea.cpp \
+	$$MARKDOWN_TOP/markdown/MarkdownEditor.cpp \
+
 

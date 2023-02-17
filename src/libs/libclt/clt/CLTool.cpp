@@ -1,3 +1,5 @@
+#ifdef OC_USE_LIB_EXT_OPENCL
+
 #include "CLTool.hpp"
 
 #include "uptime/New.hpp"
@@ -88,6 +90,6 @@ cl_context_properties *CLTool::generateProperties( const cl_platform_id platform
 		qDebug()<<"CLWORKER! Put a total of "<<i <<" properties in the CL context";
 	*/
 	return contextProps;
-
-
 }
+
+#endif // OC_USE_LIB_EXT_OPENCL

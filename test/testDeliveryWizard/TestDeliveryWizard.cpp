@@ -1,12 +1,11 @@
 #include "TestDeliveryWizard.hpp"
 
 #include "agent/Agent.hpp"
-#include "node/Node.hpp"
-#include "app/launcher/AppLauncher.hpp"
 #include "app/AppContext.hpp"
-
-#include "widgets/AgentDeliveryWizard.hpp"
+#include "app/launcher/AppLauncher.hpp"
+#include "node/Node.hpp"
 #include "uptime/New.hpp"
+#include "widgets/AgentDeliveryWizard.hpp"
 
 #include <QProcessEnvironment>
 #include <QCommandLineParser>

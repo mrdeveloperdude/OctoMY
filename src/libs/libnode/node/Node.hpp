@@ -7,19 +7,14 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
-
+#include "address/LocalAddressList.hpp"
 #include "app/Settings.hpp"
-
+#include "client/ClientList.hpp"
+#include "discovery/AddressBook.hpp"
+#include "node/LocalIdentityStore.hpp"
 #include "node/NodeRole.hpp"
 #include "node/NodeType.hpp"
-#include "node/LocalIdentityStore.hpp"
-
-#include "discovery/AddressBook.hpp"
 #include "security/KeyStore.hpp"
-
-#include "address/LocalAddressList.hpp"
-#include "client/ClientList.hpp"
-
 #include "uptime/ConfigureHelper.hpp"
 
 #include <QObject>

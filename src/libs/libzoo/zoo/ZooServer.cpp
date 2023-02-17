@@ -7,7 +7,7 @@
 #include "qhttp/qhttpserverrequest.hpp"
 #include "qhttp/qhttpserverresponse.hpp"
 #include "qhttp/qhttpserverconnection.hpp"
-#include "widgets/IdenticonWidget.hpp"
+#include "identity/IdenticonWidget.hpp"
 #include "template/Mustache.hpp"
 
 #include "address/Associate.hpp"

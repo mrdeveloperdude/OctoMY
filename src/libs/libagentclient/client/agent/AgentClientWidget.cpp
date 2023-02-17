@@ -1,27 +1,16 @@
 #include "AgentClientWidget.hpp"
 #include "ui_AgentClientWidget.h"
 
-#include "uptime/MethodGate.hpp"
-#include "uptime/ConnectionType.hpp"
-
-#include "app/Settings.hpp"
-
-#include "widgets/WaitingSpinnerWidget.hpp"
-
-#include "security/PortableID.hpp"
-
-#include "widgets/CarSteeringWidget.hpp"
-
-#include "comms/CommsChannel.hpp"
-#include "comms/ISyncParameter.hpp"
-
-#include "comms/couriers/AgentStateCourier.hpp"
-#include "comms/couriers/SensorsCourier.hpp"
-#include "comms/couriers/blob/BlobCourier.hpp"
-
 #include "agent/AgentConstants.hpp"
-
+#include "app/Settings.hpp"
 #include "client/agent/AgentClient.hpp"
+#include "comms/CommsChannel.hpp"
+#include "security/PortableID.hpp"
+#include "uptime/ConnectionType.hpp"
+#include "uptime/MethodGate.hpp"
+#include "components/TryToggleState.hpp"
+#include "components/WaitingSpinnerWidget.hpp"
+#include "node/CarSteeringWidget.hpp"
 
 #include <QScrollBar>
 

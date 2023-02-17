@@ -20,14 +20,13 @@ class Agent : public Node//, public QEnableSharedFromThis<Agent>
 	Q_OBJECT
 
 private:
-
 	// Helper to keep track of nodeConfigure() and nodeActivate() state
 	ConfigureHelper mNodeConfigureHelper;
 
 	// The window that represents this agent
 	QSharedPointer<AgentWindow> mWindow;
 
-	// The current state of panic mode. If enabled the agent will engage safety meqasures such as limping all actuators and blinking warning lights
+	// The current state of panic mode. If enabled the agent will engage safety measures such as limping all actuators and blinking warning lights
 	bool mPanic;
 
 	// The configuration store for this agent. Contains all configuration data in secure asynchronous storage.
