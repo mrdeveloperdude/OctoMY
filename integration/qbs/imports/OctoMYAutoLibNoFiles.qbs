@@ -4,19 +4,8 @@ StaticLibrary {
     Depends { 
         name: "cpp"
     }
-    Depends {
-        name: "Qt"
-        submodules: [
-              "core"
-            , "gui"
-            , "multimedia"
-            , "multimediawidgets"
-            , "positioning"
-            , "serialport"
-            , "widgets"
-        ]
-    }
-    
+    OctoMYQtDepends {}
+
     property string libdir: FileInfo.relativePath(project.sourceDirectory, path2)+FileInfo.pathSeparator()
     property string fulldir: FileInfo.cleanPath(path2)+FileInfo.pathSeparator()
     

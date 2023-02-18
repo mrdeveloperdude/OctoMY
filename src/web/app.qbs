@@ -1,5 +1,5 @@
 OctoMYApp {
-    name: "Remote"
+    name: "Web"
     useCombined: true
     property string path2:path
 }

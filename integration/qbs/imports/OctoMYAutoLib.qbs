@@ -10,6 +10,6 @@ OctoMYAutoLibNoFiles {
             "**/*.ui",
             "**/*.qrc"
         ]
-    }    
+    }
 }
 

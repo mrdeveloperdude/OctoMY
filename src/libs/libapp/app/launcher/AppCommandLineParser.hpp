@@ -35,6 +35,12 @@ public:
 
 	// Did the parameters say we are headless or not? Will return false if parameters were not parsed yet.
 	bool isHeadless();
+	
+	// Did the parameters contain the given key?
+	bool isSet(const QString &key) const;
+	
+	// Return the value for the given key, assuming it exists
+	QString value(const QString &name) const;
 
 	// Provide original argument count
 	int argc();

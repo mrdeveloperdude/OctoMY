@@ -11,6 +11,7 @@ namespace utility
 namespace random
 {
 
+void qsrand(quint32 s);
 quint32 qrand();
 float frand();
 double dfrand();

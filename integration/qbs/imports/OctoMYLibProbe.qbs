@@ -36,6 +36,11 @@ Probe{
             return libDefinePrefix + libName.toUpperCase();
         })
         found = libNames.length > 0;
-        console.info("Probing returned searchPath="+searchPath+", libNames="+libNames+"\n, libFolders="+libFolders+"\n, libFiles="+libFiles+"\n, found="+found);
+        console.info("Probing returned;");
+        console.info(" + found="+found);
+        console.info(" + searchPath="+JSON.stringify(searchPath, null, "\t"));
+        console.info(" + libNames="+JSON.stringify(libNames, null, "\t"));
+        console.info(" + libFolders="+JSON.stringify(libFolders, null, "\t"));
+        console.info(" + libFiles="+JSON.stringify(libFiles, null, "\t"));
     }
 }

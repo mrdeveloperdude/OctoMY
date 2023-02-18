@@ -73,6 +73,19 @@ bool AppCommandLineParser::isHeadless()
 }
 
 
+bool AppCommandLineParser::isSet(const QString &key) const
+{
+	OC_METHODGATE();
+	return mCommandlineOptions.isSet(key);
+}
+
+
+QString AppCommandLineParser::value(const QString &key) const
+{
+	OC_METHODGATE();
+	return mCommandlineOptions.value(key);
+}
+
 int AppCommandLineParser::argc()
 {
 	OC_METHODGATE();

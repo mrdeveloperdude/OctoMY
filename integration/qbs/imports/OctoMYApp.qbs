@@ -1,30 +1,19 @@
 import qbs.FileInfo
 
 OctoMYAppNoFiles {
-    Group{
+    OctoMYFiles{
         name: "app_sources"
         prefix: appDir
-        files: [
-            "*.cpp",
-            "*.hpp",
-            "*.c",
-            "*.h",
-            "*.ui",
-            "*.qrc"
-        ]
     }
-
-    Group{
+    // We DON'T use combined libs, include all lib sources directly here
+    OctoMYFiles{
+        condition: !useCombined
         name: "lib_sources"
         prefix: libsDir
-        excludeFiles: "**/internal/**/*"
-        files: [
-            "**/*.cpp",
-            "**/*.hpp",
-            "**/*.c",
-            "**/*.h",
-            "**/*.ui",
-            "**/*.qrc"
-        ]
+    }
+    // We DO use combined libs, depend on combined lib here
+    Depends { 
+        condition: useCombined
+        name: "combined"
     }
 }

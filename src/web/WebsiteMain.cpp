@@ -1,26 +1,18 @@
 #include "WebsiteMain.hpp"
 
-#include "Website.hpp"
-
-#include "utility/time/HumanTime.hpp"
-#include "uptime/MethodGate.hpp"
-#include "app/LogHandler.hpp"
-//#include "basic/TopicGenerator.hpp"
-#include "app/AppContext.hpp"
-
 #include "GoogleSitesClassicTool.hpp"
-
-
-#include <QCoreApplication>
+#include "app/log/LogHandler.hpp"
+#include "uptime/MethodGate.hpp"
 
 #include <QCommandLineParser>
+#include <QCoreApplication>
 #include <QProcessEnvironment>
+#include <QTimer>
 
 
 int main(int argc, char *argv[])
 {
 	OC_FUNCTIONGATE();
-	qsrand(utility::time::currentMsecsSinceEpoch<quint32>());
 	LogHandler::setLogging(true);
 
 	QCoreApplication app(argc, argv), *papp=&app;

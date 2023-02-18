@@ -1,13 +1,11 @@
 #include "Website.hpp"
 
 
-#include "uptime/MethodGate.hpp"
-#include "utility/time/ScopedTimer.hpp"
-#include "utility/string/String.hpp"
-#include "utility/file/File.hpp"
-#include "markdown/Markdown.hpp"
-
+#include "app/launcher/AppCommandLineParser.hpp"
 #include "template/Mustache.cpp"
+#include "uptime/MethodGate.hpp"
+#include "utility/file/File.hpp"
+#include "utility/time/ScopedTimer.hpp"
 
 
 #include <QDir>
@@ -35,8 +33,8 @@ void Website::run()
 	auto &opts=mAppContext->commandLine();
 
 	QString outputDir=QDir::currentPath();
-	if(opts.isSet("output-dir")) {
-		outputDir=opts.value("output-dir");
+	if(opts->isSet("output-dir")) {
+		outputDir=opts->value("output-dir");
 	}
 
 	if(!QDir().mkpath(outputDir)) {
@@ -48,8 +46,8 @@ void Website::run()
 	qDebug()<<"Using output dir '"<< outputDir<< "'";
 
 	QString inputDir=QDir::currentPath();
-	if(opts.isSet("input-dir")) {
-		inputDir=opts.value("input-dir");
+	if(opts->isSet("input-dir")) {
+		inputDir=opts->value("input-dir");
 	}
 
 	inputDir=QDir::cleanPath(inputDir);

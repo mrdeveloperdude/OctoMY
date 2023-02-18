@@ -15,6 +15,9 @@ quint32 qrand()
 	return QRandomGenerator::global()->generate();
 }
 
+void qsrand(quint32 s){
+	QRandomGenerator::global()->seed(s);
+}
 
 float frand()
 {
