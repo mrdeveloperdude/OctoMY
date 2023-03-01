@@ -4,11 +4,11 @@
 #include "expression/EyeRendrer.hpp"
 
 #include "security/PortableID.hpp"
-#include "utility/graphics/widgets/PixViewer.hpp"
+#include "utility/graphics/PixViewerWidget.hpp"
 #include "utility/random/Random.hpp"
 #include "utility/graphics/Graphics.hpp"
 
-#include "Utility_test.hpp"
+#include "test/Utility.hpp"
 
 #include "uptime/ConnectionType.hpp"
 
@@ -23,13 +23,13 @@ void TestEyesWidget::testRendrer()
 	QVector2D center(0.5,0.5);
 	//QVector2D nil;
 	qreal slant(0.1*M_PI);
-	QColor irisColor("#2d8ac9");
+	QColor irisColor(0x2d8ac9);
 	EyeRendrer er(center, slant, irisColor), *erp=&er;;
 
 	er.update();
 	QImage im(sz,sz,QImage::Format_ARGB32), *imp=&im;
 
-	PixViewer pix(nullptr, "Test EyeRendrer"), *pixp=&pix;
+	PixViewerWidget pix(nullptr, "Test EyeRendrer"), *pixp=&pix;
 
 	pix.show();
 

@@ -1,9 +1,13 @@
  #include "TestCommsChannel.hpp"
 
-#include "../common_test/mock/MockCourier.hpp"
-
-#include "../common_test/Utility_test.hpp"
-
+#include "comms/CommsCarrierUDP.hpp"
+#include "comms/CommsChannel.hpp"
+#include "discovery/AddressBook.hpp"
+#include "security/KeySecurityPolicy.hpp"
+#include "security/KeyStore.hpp"
+#include "test/CommsSignalLogger.hpp"
+#include "test/Utility.hpp"
+#include "test/mock/MockCourier.hpp"
 #include "utility/time/HumanTime.hpp"
 
 #include <QTest>

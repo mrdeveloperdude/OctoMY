@@ -5,6 +5,7 @@
 
 #include "uptime/New.hpp"
 #include "utility/time/HumanTime.hpp"
+#include "utility/random/Random.hpp"
 
 #include <QPixmap>
 #include <QImage>
@@ -82,12 +83,12 @@ void IrisRendrerTestWidget::on_pushButtonClose_clicked()
 
 void IrisRendrerTestWidget::on_pushButtonRandom_clicked()
 {
-	qsrand(utility::time::currentMsecsSinceEpoch<quint64>());
+	utility::random::qsrand(utility::time::currentMsecsSinceEpoch<quint64>());
 	auto l=mSliders.size();
 	for(int row=0; row<l; ++row) {
 		QSlider *horizontalSlider = mSliders[row];
 		auto range=horizontalSlider->maximum()-horizontalSlider->minimum();
-		auto val=horizontalSlider->minimum()+qrand()%range;
+		auto val=horizontalSlider->minimum() + utility::random::qrand() % range;
 		horizontalSlider->setValue(val);
 	}
 }

@@ -1,8 +1,8 @@
 #include "TestMapEditor.hpp"
 
-#include "widgets/MapEditor.hpp"
+#include "map/MapEditor.hpp"
 #include "uptime/New.hpp"
-#include "Utility_test.hpp"
+#include "test/Utility.hpp"
 
 #include <QComboBox>
 #include <QNetworkReply>

@@ -1,7 +1,8 @@
 #ifndef TESTLOGHANDLER_HPP
 #define TESTLOGHANDLER_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
+
 
 class TestLogHandler:public QObject
 {

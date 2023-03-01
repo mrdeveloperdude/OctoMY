@@ -1,7 +1,7 @@
 #ifndef TESTSTREAMCODEC_HPP
 #define TESTSTREAMCODEC_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestStreamCodec:public QObject
 {

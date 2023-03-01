@@ -1,29 +1,16 @@
 #ifndef TESTCOMMSCHANNEL_HPP
 #define TESTCOMMSCHANNEL_HPP
 
-#include "Common_test.hpp"
-
-
-#include "comms/CommsChannel.hpp"
-
-#include "comms/CommsCarrierUDP.hpp"
-
-#include "CommsSignalLogger.hpp"
-
-#include "comms/messages/MessageType.hpp"
-
-#include "random/RNG.hpp"
-
-#include "security/KeyStore.hpp"
-#include "address/Associate.hpp"
-#include "discovery/AddressBook.hpp"
-
-
+#include "comms/NetworkAddress.hpp"
+#include "node/NodeRole.hpp"
+#include "node/NodeType.hpp"
+#include "security/Key.hpp"
 
 #include <QHostAddress>
 #include <QSignalSpy>
 #include <QFileInfo>
 
+class Associate;
 
 class TestCommsChannel:public QObject
 {

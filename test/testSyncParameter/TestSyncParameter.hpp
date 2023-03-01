@@ -1,7 +1,7 @@
 #ifndef TESTSYNCPARAMETER_HPP
 #define TESTSYNCPARAMETER_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 
 class TestSyncParameter:public QObject

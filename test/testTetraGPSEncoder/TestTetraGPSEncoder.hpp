@@ -1,7 +1,7 @@
 #ifndef TESTTETRAGPSENCODER_HPP
 #define TESTTETRAGPSENCODER_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 
 class TestTetraGPSEncoder:public QObject

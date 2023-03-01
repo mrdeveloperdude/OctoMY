@@ -88,7 +88,7 @@ template <typename T, int OUTPUT_CHANNELS>
 T Osc<T, OUTPUT_CHANNELS>::generate(){
 	ang+=(hz+offhz)/sr;
 	T ipart=0.0;
-	modf(ang,&ipart);
+	modf(ang, &ipart);
 	ang-=ipart;
 	const T s= wav(ang*M_PI*2.0)*amp;
 	return (T)s;

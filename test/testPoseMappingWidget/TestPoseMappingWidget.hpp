@@ -1,7 +1,7 @@
 #ifndef TESTPOSEMAPPINGWIDGET_HPP
 #define TESTPOSEMAPPINGWIDGET_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 
 #include <QWidget>

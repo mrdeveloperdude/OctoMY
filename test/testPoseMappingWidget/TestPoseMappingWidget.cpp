@@ -2,7 +2,7 @@
 #include "ui_TestWindow.h"
 #include "pose/PoseMapping.hpp"
 #include "uptime/New.hpp"
-#include "Utility_test.hpp"
+#include "test/Utility.hpp"
 
 #include <QPixmap>
 #include <QImage>

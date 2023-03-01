@@ -1,7 +1,7 @@
 #ifndef TESTEVENTSOURCING_HPP
 #define TESTEVENTSOURCING_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 
 class TestEventSourcing:public QObject

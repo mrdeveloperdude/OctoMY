@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1242</width>
-    <height>1020</height>
+    <width>395</width>
+    <height>416</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,7 +34,7 @@
   <customwidget>
    <class>PoseMappingWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/PoseMappingWidget.hpp</header>
+   <header location="global">pose/PoseMappingWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -1,13 +1,13 @@
 #include "TestPlanEditor.hpp"
 
-#include "widgets/planedit/PlanEditor.hpp"
+#include "plan/PlanEditor.hpp"
 #include "uptime/ConnectionType.hpp"
 
-#include "Utility_test.hpp"
+#include "test/Utility.hpp"
 
 void TestPlanEditor::test()
 {
-	PlanEditor w, *wp=&w;
+	plan::PlanEditor w, *wp=&w;
 	w.show();
 	QTimer t;
 	t.start(10);

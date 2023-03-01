@@ -1,6 +1,7 @@
 #include "TestHardwareWidget.hpp"
 
-#include "widgets/HardwareWizard.hpp"
+#include "hardware/HardwareWizard.hpp"
+#include "test/Utility.hpp"
 
 #include "agent/Agent.hpp"
 #include "app/launcher/AppLauncher.hpp"
@@ -9,11 +10,12 @@ void TestHardwareWidget::test()
 {
 	HardwareWizard *hw=new HardwareWizard(nullptr);
 	QVERIFY(nullptr!=hw);
-	NodeLauncher<Agent> agentLauncher;
-	agentLauncher.start();
-	hw->configure(agentLauncher.node());
+	QSharedPointer<AppLauncher<Agent> > agentMain=QSharedPointer<AppLauncher<Agent> >(OC_NEW AppLauncher<Agent>());
+	QVERIFY(!agentMain.isNull());
+	agentMain->run();
+	hw->configure(agentMain->app());
 	hw->show();
-	waitForUIEnd(hw);
+	test::utility::waitForUIEnd(hw);
 	hw->deleteLater();
 	hw=nullptr;
 }

@@ -1,15 +1,13 @@
 import qbs.FileInfo
 
 Project {
-    qbsSearchPaths: [ FileInfo.joinPaths(path, "integration", "qbs") + FileInfo.pathSeparator()]
-
+    name: "OctoMY™"
+    qbsSearchPaths: "integration/qbs"
+    //qbsModuleProviders: "integration/qbs"
     references: [
-          "src/combined/lib.qbs"
-        , "src/testapp/app.qbs"
-        , "src/agent/app.qbs"
-        , "src/remote/app.qbs"
-        , "src/hub/app.qbs"
-        , "src/zoo/app.qbs"
-        , "src/web/app.qbs"
+        "src/libs/libcombined/lib.qbs"
+        //        ,"src/libs.qbs"
+        , "test/tests.qbs"
+        , "src/apps.qbs"
     ]
 }

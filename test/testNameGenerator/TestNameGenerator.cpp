@@ -1,7 +1,7 @@
 #include "TestNameGenerator.hpp"
 
-#include "basic/RemoteNameGenerator.hpp"
-#include "basic/AgentNameGenerator.hpp"
+#include "name/RemoteNameGenerator.hpp"
+#include "name/AgentNameGenerator.hpp"
 
 
 void TestNameGenerator::testAgent()

@@ -1,7 +1,7 @@
 #ifndef TESTMARKDOWNPARSER_HPP
 #define TESTMARKDOWNPARSER_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestMarkdownParser:public QObject
 {

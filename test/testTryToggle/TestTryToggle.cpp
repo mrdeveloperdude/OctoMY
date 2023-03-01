@@ -1,10 +1,10 @@
 #include "TestTryToggle.hpp"
 
-#include "widgets/components/TryToggle.hpp"
+#include "components/TryToggle.hpp"
 
 #include "TryToggleTestUI.hpp"
 
-#include "Utility_test.hpp"
+#include "test/Utility.hpp"
 
 #include <QWidget>
 #include <QLayout>

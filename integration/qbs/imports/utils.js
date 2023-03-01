@@ -23,3 +23,13 @@ function printDebug(path)
 {
     console.info(path+" Debug@" + now());
 }
+
+
+function sortUnique(list){
+    list=list || [];
+    list = list.filter(function(value, index, array) {
+        return array.indexOf(value) === index;
+    });
+    list=list.sort();
+    return list;
+}

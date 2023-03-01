@@ -1,7 +1,8 @@
 #ifndef TESTMARKDOWNEDITOR_HPP
 #define TESTMARKDOWNEDITOR_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
+
 
 class TestMarkdownEditor:public QObject
 {

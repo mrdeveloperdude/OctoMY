@@ -2,7 +2,7 @@
 
 #include "security/KeyStore.hpp"
 #include "security/Key.hpp"
-#include "Keys_test.hpp"
+#include "test/Keys.hpp"
 #include <QSignalSpy>
 
 

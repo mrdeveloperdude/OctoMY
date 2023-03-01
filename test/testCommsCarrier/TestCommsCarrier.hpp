@@ -1,7 +1,7 @@
 #ifndef TESTCOMMSCARRIER_HPP
 #define TESTCOMMSCARRIER_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestCommsCarrier:public QObject
 {

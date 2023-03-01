@@ -1,6 +1,7 @@
 #include "TestTaskQueue.hpp"
 
 #include "utility/concurrent/TaskQueue.hpp"
+#include "utility/random/Random.hpp"
 
 #include <QtConcurrent/QtConcurrent>
 
@@ -33,7 +34,7 @@ static quint32 testWorkload(TQ_TEST_TYPE type, quint32 seed, quint32 num)
 
 
 	case TQTT_SLEEP: {
-		QThread::msleep(qrand()%3);
+		QThread::msleep(utility::random::qrand()%3);
 		//qDebug()<<"Running task: "<<i<<" from :"<<utility::currentThreadID();
 
 	}
@@ -65,7 +66,7 @@ void TestTaskQueue::test()
 
 			for(int i=0; i<taskCount; ++i) {
 				tq.put([i, doneStatusesPtr, testType] {
-					testWorkload(testType, (qrand()%100000)+1,(qrand()%100000)+1);
+					testWorkload(testType, (utility::random::qrand()%100000)+1,(utility::random::qrand()%100000)+1);
 					(*doneStatusesPtr)[i]++;
 				});
 			}

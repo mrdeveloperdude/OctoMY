@@ -1,7 +1,7 @@
 #ifndef TESTHONEYMOONSCHEDULER_HPP
 #define TESTHONEYMOONSCHEDULER_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestHoneymoonScheduler:public QObject
 {

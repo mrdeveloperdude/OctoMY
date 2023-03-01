@@ -15,11 +15,11 @@ void TestHashstore::test(){
 	HashstoreRecord rec1=store.resolve(key1);
 	HashstoreRecord rec2=store.resolve(key2);
 	HashstoreRecord rec3=store.resolve(key3);
-	QVERIFY(rec0==rec1);
-	QVERIFY(rec0!=rec2);
-	QVERIFY(rec1!=rec2);
-	QVERIFY(rec1!=rec3);
-	QVERIFY(rec2!=rec3);
+	QCOMPARE(rec0, rec1);
+	QCOMPARE_NE(rec0, rec2);
+	QCOMPARE_NE(rec1, rec2);
+	QCOMPARE_NE(rec1, rec3);
+	QCOMPARE_NE(rec2, rec3);
 	QByteArray ba_truth;
 	QByteArray ba;
 	qDebug()<<"BAT ORIG: "<<QString::fromLatin1(ba_truth);

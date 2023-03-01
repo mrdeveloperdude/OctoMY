@@ -1,6 +1,6 @@
 #include "TestESpeak.hpp"
 
-#include "audio/CreepyVoice.hpp"
+#include "audio/sources/CreepyVoice.hpp"
 #include "audio/AudioStream.hpp"
 #include "security/PortableID.hpp"
 
@@ -8,17 +8,17 @@
 void TestESpeak::test()
 {
 	PortableID id;
-	CreepyVoice voice(id);
-
+	CreepyVoice<double, 2> voice;
+/*
 	AudioStream as(voice);
 
 	as.init();
-
+*/
 	QTest::qWait(1000);
 
-	voice.speak("Octomy will surely take over the world of robotics.");
+	voice.speak(id, "Octomy will surely take over the world of robotics.");
 	QTest::qWait(1000);
-	voice.speak("There really isn't any doubt about that.");
+	voice.speak(id, "There really isn't any doubt about that.");
 	QTest::qWait(10000);
 }
 

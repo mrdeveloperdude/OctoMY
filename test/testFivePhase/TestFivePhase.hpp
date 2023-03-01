@@ -1,7 +1,7 @@
 #ifndef TESTFIVEPHASE_HPP
 #define TESTFIVEPHASE_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestFivePhase:public QObject
 {

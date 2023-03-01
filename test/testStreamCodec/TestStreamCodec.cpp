@@ -1,7 +1,7 @@
 #include "TestStreamCodec.hpp"
 
 #include "video/codec/StreamCodec.hpp"
-#include "widgets/video/codec/StreamCodecWidget.hpp"
+#include "video/codec/StreamCodecWidget.hpp"
 
 #include "video/codec/ExpLUT.hpp"
 
@@ -17,7 +17,7 @@ void TestStreamCodec::test()
 	StreamCodecWidget stream, *stream_p = &stream;
 	stream.setWindowTitle("Stream Codec Test Utility");
 	stream.show();
-	const int w=1024,h=w;
+	const int w = 1024, h = w;
 
 	const auto fmt=QImage::Format_ARGB32;
 

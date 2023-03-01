@@ -1,6 +1,6 @@
 #include "TestCreepyVoice.hpp"
 
-#include "audio/CreepyVoice.hpp"
+#include "audio/sources/CreepyVoice.hpp"
 #include "security/PortableID.hpp"
 
 
@@ -8,11 +8,12 @@
 void TestCreepyVoice::test()
 {
 	PortableID id;
-	CreepyVoice cv(id);
-	cv.speak("LOL");
+	
+	CreepyVoice<double, 2> cv;
+	cv.speak(id, "LOL");
 	quint32 num=100;
 	double buf[num];
-	cv.generate(num,buf);
+	cv.generate(num, buf);
 }
 
 

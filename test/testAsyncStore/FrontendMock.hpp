@@ -1,8 +1,9 @@
 #ifndef FRONTENDMOCK_HPP
 #define FRONTENDMOCK_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 #include "store/AsyncStore.hpp"
+#include "utility/random/Random.hpp"
 
 #include <QDebug>
 
@@ -137,7 +138,7 @@ bool FrontendMock<T>::generateFrontend()
 		ret=false;
 	} else {
 		memData=generateData;
-		QThread::msleep(10+qrand()%100);
+		QThread::msleep(10+utility::random::qrand()%100);
 		exists=true;
 	}
 	if(doLog) {

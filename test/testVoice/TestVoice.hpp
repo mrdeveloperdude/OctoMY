@@ -1,7 +1,8 @@
 #ifndef TESTVOICE_HPP
 #define TESTVOICE_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
+
 
 class TestVoice:public QObject
 {

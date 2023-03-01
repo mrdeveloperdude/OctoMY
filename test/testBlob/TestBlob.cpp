@@ -1,6 +1,6 @@
 #include "TestBlob.hpp"
 
-#include "CourierTester.hpp"
+#include "test/CourierTester.hpp"
 
 #include "comms/couriers/blob/BlobCourier.hpp"
 #include "comms/couriers/blob/Blob.hpp"
@@ -10,8 +10,9 @@
 
 #include "comms/couriers/CourierMandate.hpp"
 
-#include "utility/graphics/widgets/PixViewer.hpp"
+#include "utility/graphics/PixViewerWidget.hpp"
 #include "utility/graphics/Graphics.hpp"
+#include "utility/random/Random.hpp"
 
 #include "comms/CommsCarrierUDP.hpp"
 
@@ -26,9 +27,9 @@ void TestBlob::testBlob()
 	const quint32 chunkSize=480;
 	QList<SendingBlob *> sendingBlobs;
 	for(int i=0; i<numBlob; ++i) {
-		//QByteArray aData=randomByteArray(qrand()%200000);
+		//QByteArray aData=randomByteArray(utility::random::qrand()%200000);
 		QByteArray aData=utility::graphics::randomJPEGByteArray(512,512,90);
-		SendingBlob *blob=OC_NEW SendingBlob("blob_"+QString::number(i), i+1, chunkSize, aData, qrand()%30);
+		SendingBlob *blob=OC_NEW SendingBlob("blob_"+QString::number(i), i+1, chunkSize, aData, utility::random::qrand()%30);
 		sendingBlobs<<blob;
 	}
 
@@ -53,7 +54,7 @@ void TestBlob::testBlob()
 		//qDebug()<<"------------------------------------------------------";
 		//qDebug()<<"blobs "<<sendingBlobs.size()<<" total="<<tot<<",  sent="<<sent<<",  acked="<<acked<<", ";
 		//QVERIFY(false);
-		const quint32 index=qrand() % (sendingBlobs.count());
+		const quint32 index=utility::random::qrand() % (sendingBlobs.count());
 		SendingBlob *blob=sendingBlobs[index];
 		QVERIFY(nullptr!=blob);
 		//qDebug()<<"GO "<<(go++)<<" HAD INDEX "<<index;
@@ -71,7 +72,7 @@ void TestBlob::testBlob()
 			//qDebug()<<"CHUNK "<<chunk.id()<<" IS NEXT";
 			if(chunk.isValid()) {
 				//qDebug()<<"IT IS VALID";
-				if((qrand()%100) > 50) {
+				if((utility::random::qrand()%100) > 50) {
 					//qDebug()<<"IT HAS ITS TURN";
 					QByteArray data=chunk.data();
 					//qDebug()<<data.size() <<" BYTES OF DATA IS BEING "<<(chunk.isSent()?"RESENT":"SENT");
@@ -82,7 +83,7 @@ void TestBlob::testBlob()
 			}
 
 			//Progress name send with a set % probability
-			const int nameChance=(qrand()%100);
+			const int nameChance=(utility::random::qrand()%100);
 			//qDebug()<<"nameChance="<<nameChance;
 			if(nameChance>80) {
 				if(!blob->isNameSent()) {
@@ -92,10 +93,10 @@ void TestBlob::testBlob()
 				}
 			}
 			//Acknowlege chunk send with a set % probability
-			const int ackChance=(qrand()%100);
+			const int ackChance=(utility::random::qrand()%100);
 			//qDebug()<<"ackChance="<<ackChance;
 			if(ackChance>60) {
-				chunk=blob->chunk(qrand()%blob->numTotal());
+				chunk=blob->chunk(utility::random::qrand()%blob->numTotal());
 				//qDebug()<<"IN ACK WITH "<<chunk.id() << " SENT="<<chunk.isSent() << " ACKED="<<chunk.isAcknowleged();
 
 				if(chunk.isSent() && !chunk.isAcknowleged() ) {
@@ -120,8 +121,8 @@ class CourierTesterBlob: public CourierTester
 {
 //	Q_OBJECT;
 private:
-	PixViewer pixA;
-	PixViewer pixB;
+	PixViewerWidget pixA;
+	PixViewerWidget pixB;
 	int imageSize;
 	QImage rimgA;
 	QByteArray ridA;
@@ -178,7 +179,7 @@ public:
 			//qDebug()<<" X X X X X UPDATING IMAGE";
 			QImage img(imageSize, imageSize, QImage::Format_ARGB32);
 			char *bits=(char *)img.bits();
-			int bytes=img.byteCount();
+			auto bytes=img.sizeInBytes();
 			for(int i=0; i<bytes; ++i) {
 				bits[i]=intermediateData[i];
 			}

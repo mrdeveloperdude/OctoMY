@@ -1,7 +1,7 @@
 #ifndef TESTNODETYPEROLE_HPP
 #define TESTNODETYPEROLE_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestNodeTypeRole:public QObject
 {

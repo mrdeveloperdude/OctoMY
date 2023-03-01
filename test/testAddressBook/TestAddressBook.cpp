@@ -1,6 +1,6 @@
 #include "TestAddressBook.hpp"
 
-#include "Keys_test.hpp"
+#include "test/Keys.hpp"
 #include "address/AddressList.hpp"
 #include "discovery/AddressBook.hpp"
 #include "utility/file/File.hpp"

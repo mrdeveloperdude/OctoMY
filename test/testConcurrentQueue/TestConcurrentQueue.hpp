@@ -1,8 +1,7 @@
 #ifndef TESTCONCURRENTQUEUE_HPP
 #define TESTCONCURRENTQUEUE_HPP
 
-#include "Common_test.hpp"
-
+#include "test/Common.hpp"
 
 
 class TestConcurrentQueue:public QObject

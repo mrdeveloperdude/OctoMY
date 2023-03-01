@@ -1,15 +1,14 @@
 #include "TestMarkdownEditor.hpp"
 
-#include "widgets/markdown/MarkdownEditor.hpp"
-#include "utility/random/Random.hpp"
-#include "Utility_test.hpp"
+#include "markdown/MarkdownEditor.hpp"
+#include "test/Utility.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "MarkdownTestInput.hpp"
 
 
 void TestMarkdownEditor::test()
 {
-	MarkdownEditor w, *wp=&w;
+	markdown::MarkdownEditor w, *wp=&w;
 	w.setText(markdownTestInput);
 	w.show();
 	QTimer t;

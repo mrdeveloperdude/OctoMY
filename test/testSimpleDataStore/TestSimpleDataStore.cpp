@@ -93,7 +93,7 @@ static void test(const bool synchronous)
 	{
 		QSharedPointer<SimpleDataStoreTester> sdsp(OC_NEW SimpleDataStoreTester);
 		SimpleDataStoreTester &sds(*sdsp);
-		Q_ASSERT(nullptr!=sdsp);
+		QCOMPARE_NE(nullptr, sdsp);
 		sds.configure(fn);
 		sdsp->setSynchronousMode(synchronous);
 		sdsp->activate(true);
@@ -120,7 +120,7 @@ static void test(const bool synchronous)
 		//SimpleDataStoreTester sds, *sdsp=&sds;
 		QSharedPointer<SimpleDataStoreTester> sdsp(OC_NEW SimpleDataStoreTester);
 		SimpleDataStoreTester &sds(*sdsp);
-		Q_ASSERT(nullptr!=sdsp);
+		QCOMPARE_NE(nullptr, sdsp);
 		sds.configure(fn);
 		sdsp->setSynchronousMode(synchronous);
 		sdsp->activate(true);

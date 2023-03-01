@@ -1,7 +1,7 @@
 #ifndef TESTUTILITY_HPP
 #define TESTUTILITY_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 
 class TestUtility:public QObject

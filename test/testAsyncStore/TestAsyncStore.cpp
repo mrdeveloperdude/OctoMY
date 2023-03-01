@@ -54,7 +54,7 @@ static ASEventType indexedASEventType(int index)
 
 static ASEventType randomASEventType()
 {
-	return indexedASEventType(qrand());
+	return indexedASEventType(utility::random::qrand());
 }
 
 
@@ -70,10 +70,10 @@ void TestAsyncStore::testConcurrent()
 		int index;
 		ASEventType type;
 		EventDataType data;
-		AsyncTestOperation(int index=qrand())
+		AsyncTestOperation(int index=utility::random::qrand())
 			: index(index)
 			, type(indexedASEventType(index))
-			, data(qrand()%990+10, qrand()%990+10, QString::number(qrand()%990+10))
+			, data(utility::random::qrand()%990+10, utility::random::qrand()%990+10, QString::number(utility::random::qrand()%990+10))
 		{
 		}
 

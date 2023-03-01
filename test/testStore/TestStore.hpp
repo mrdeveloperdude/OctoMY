@@ -1,7 +1,7 @@
 #ifndef TESTSTORE_HPP
 #define TESTSTORE_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestStore:public QObject
 {

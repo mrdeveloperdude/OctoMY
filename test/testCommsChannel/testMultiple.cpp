@@ -1,8 +1,8 @@
 #include "TestCommsChannel.hpp"
 
-#include "CommsTester.hpp"
-
+#include "test/CommsTester.hpp"
 #include "utility/time/HumanTime.hpp"
+#include "discovery/AddressBook.hpp"
 
 #include <QSharedPointer>
 /*

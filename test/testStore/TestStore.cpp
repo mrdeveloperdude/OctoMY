@@ -91,7 +91,7 @@ else{
 }
 
 
- QVariant &v = map["some key"]; Q_ASSERT(!v.isNull()); Q_ASSERT(v.userType() == QMetaType::VariantMap); QVariantMap &innerMap = *reinterpret_cast<QVariantMap *>(v.data()); innerMap.mutate();
+ QVariant &v = map["some key"]; QVERIFY(!v.isNull()); QCOMPARE(v.userType(), QMetaType::VariantMap); QVariantMap &innerMap = *reinterpret_cast<QVariantMap *>(v.data()); innerMap.mutate();
 
 
 */

@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+#include "test/Common.hpp"
+
 class TestAppLauncher:public QObject
 {
 	Q_OBJECT

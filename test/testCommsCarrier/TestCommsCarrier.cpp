@@ -12,9 +12,9 @@
 #include "discovery/AddressBook.hpp"
 
 
-#include "Utility_test.hpp"
-#include "UDPTester.hpp"
-#include "mock/MockCommsCarrierLog.hpp"
+#include "test/Utility.hpp"
+#include "test/UDPTester.hpp"
+#include "test/mock/MockCommsCarrierLog.hpp"
 
 #include <QHostAddress>
 #include <QSignalSpy>

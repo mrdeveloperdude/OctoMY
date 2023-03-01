@@ -1,7 +1,8 @@
 #ifndef TESTASSOCIATE_HPP
 #define TESTASSOCIATE_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
+
 
 class TestAssociate:public QObject
 {

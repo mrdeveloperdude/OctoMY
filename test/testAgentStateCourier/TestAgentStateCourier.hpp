@@ -1,7 +1,7 @@
 #ifndef TESTAGENTSTATECOURIER_HPP
 #define TESTAGENTSTATECOURIER_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestAgentStateCourier : public QObject
 {

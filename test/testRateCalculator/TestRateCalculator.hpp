@@ -1,7 +1,7 @@
 #ifndef TESTRATECALCULATOR_HPP
 #define TESTRATECALCULATOR_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 
 class TestRateCalculator:public QObject

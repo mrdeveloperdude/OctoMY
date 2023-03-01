@@ -1,7 +1,7 @@
 #ifndef TESTHASHSTORE_HPP
 #define TESTHASHSTORE_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 
 class TestHashstore:public QObject

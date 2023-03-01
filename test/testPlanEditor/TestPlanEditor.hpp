@@ -1,7 +1,7 @@
 #ifndef TESTPLANEDITOR_HPP
 #define TESTPLANEDITOR_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestPlanEditor:public QObject
 {

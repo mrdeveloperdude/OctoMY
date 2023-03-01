@@ -1,7 +1,7 @@
 #ifndef TESTKEYSTORE_HPP
 #define TESTKEYSTORE_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 
 class TestKeyStore:public QObject

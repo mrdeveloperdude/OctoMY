@@ -1,7 +1,7 @@
 #ifndef TESTCARSTEERINGWIDGET_HPP
 #define TESTCARSTEERINGWIDGET_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 #include <QWidget>
 

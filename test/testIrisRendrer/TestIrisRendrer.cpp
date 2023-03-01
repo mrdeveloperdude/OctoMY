@@ -4,6 +4,7 @@
 
 #include "expression/IrisRendrer.hpp"
 #include "utility/time/HumanTime.hpp"
+#include "utility/random/Random.hpp"
 
 #include <QPainter>
 #include <QImage>
@@ -56,7 +57,7 @@ void TestIrisRendrer::testUI()
 
 void TestIrisRendrer::testSave()
 {
-	qsrand(utility::time::currentMsecsSinceEpoch<quint64>());
+	utility::random::qsrand(utility::time::currentMsecsSinceEpoch<quint64>());
 	const QImage::Format fmt=QImage::Format_ARGB32;
 	const QSize sz(512,512);
 	QImage im(sz,fmt);
@@ -65,7 +66,7 @@ void TestIrisRendrer::testSave()
 	QRect r(QPoint(0,0), sz);
 	for(int i=0; i<500; ++i) {
 		for(int p=0; p<20; ++p) {
-			ir.setParameter(p,(qreal)(qrand()%1000)/1000.0);
+			ir.setParameter(p,(qreal)(utility::random::qrand()%1000)/1000.0);
 		}
 
 		ir.draw(r,p);
@@ -76,7 +77,7 @@ void TestIrisRendrer::testSave()
 
 void TestIrisRendrer::testHuge()
 {
-	qsrand(utility::time::currentMsecsSinceEpoch<quint64>());
+	utility::random::qsrand(utility::time::currentMsecsSinceEpoch<quint64>());
 	const QImage::Format fmt=QImage::Format_ARGB32;
 	int s=2160;
 	const QSize sz(s,s);

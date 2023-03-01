@@ -1,7 +1,7 @@
 #ifndef TESTHARDWAREWIDGET_HPP
 #define TESTHARDWAREWIDGET_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestHardwareWidget:public QObject
 {

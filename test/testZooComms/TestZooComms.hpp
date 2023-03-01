@@ -1,7 +1,7 @@
 #ifndef TESTZOOCOMMS_HPP
 #define TESTZOOCOMMS_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 
 class TestZooComms:public QObject

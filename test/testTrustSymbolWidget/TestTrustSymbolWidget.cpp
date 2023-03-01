@@ -1,6 +1,6 @@
 #include "TestTrustSymbolWidget.hpp"
 
-#include "widgets/pairing/TrustSymbolWidget.hpp"
+#include "pairing/TrustSymbolWidget.hpp"
 
 #include "utility/time/HumanTime.hpp"
 

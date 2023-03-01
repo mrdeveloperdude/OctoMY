@@ -1,7 +1,7 @@
 #ifndef TESTASYNCSTORE_HPP
 #define TESTASYNCSTORE_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestAsyncStore:public QObject
 {

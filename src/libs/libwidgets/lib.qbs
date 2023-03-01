@@ -1,3 +1,3 @@
-OctoMYAutoLib {
-    property string path2:path
+Lib {
+    localPath: path
 }

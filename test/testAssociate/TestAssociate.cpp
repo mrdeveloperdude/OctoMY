@@ -6,7 +6,7 @@
 #include "utility/time/HumanTime.hpp"
 #include "uptime/New.hpp"
 
-#include "Keys_test.hpp"
+#include "test/Keys.hpp"
 
 static const TestKeys tk;
 static const QString ip="127.0.0.1";

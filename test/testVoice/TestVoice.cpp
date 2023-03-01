@@ -1,8 +1,8 @@
 #include "TestVoice.hpp"
 
-#include "widgets/voice/SpeechControlWidget.hpp"
+#include "voice/SpeechControlWidget.hpp"
 
-#include "Utility_test.hpp"
+#include "test/Utility.hpp"
 
 #include <QTimer>
 

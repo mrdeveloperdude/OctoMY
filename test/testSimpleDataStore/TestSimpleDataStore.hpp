@@ -1,7 +1,7 @@
 #ifndef TESTSIMPLEDATASTORE_HPP
 #define TESTSIMPLEDATASTORE_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestSimpleDataStore:public QObject
 {

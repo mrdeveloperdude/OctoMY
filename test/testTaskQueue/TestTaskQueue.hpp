@@ -1,7 +1,7 @@
 #ifndef TESTTASKQUEUE_HPP
 #define TESTTASKQUEUE_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 
 class TestTaskQueue:public QObject

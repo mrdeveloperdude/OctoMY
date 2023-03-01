@@ -1,7 +1,7 @@
 #ifndef TESTNETWORKSETTINGSWIDGET_HPP
 #define TESTNETWORKSETTINGSWIDGET_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestNetworkSettingsWidget:public QObject
 {

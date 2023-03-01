@@ -1,7 +1,7 @@
 #ifndef TESTSERVOTOR32CONTROLLER_HPP
 #define TESTSERVOTOR32CONTROLLER_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 
 class TestServotor32Controller:public QObject

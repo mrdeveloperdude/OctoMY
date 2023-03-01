@@ -1,10 +1,10 @@
 #include "TestAudioStream.hpp"
 
-#include "widgets/audio/AudioInputPreview.hpp"
-#include "widgets/audio/AudioSourceSelector.hpp"
+#include "audio/AudioInputPreview.hpp"
+#include "audio/AudioSourceSelector.hpp"
 #include "uptime/ConnectionType.hpp"
 
-#include "Utility_test.hpp"
+#include "test/Utility.hpp"
 
 #include <QTimer>
 
@@ -31,7 +31,7 @@ void TestAudioStream::testAudioSourceSelector(){
 	w.show();
 	QTimer t;
 	t.start(10);
-	connect(&t,&QTimer::timeout, this, [=]() {
+	connect(&t, &QTimer::timeout, this, [=]() {
 		
 	}, OC_CONTYPE_NON_UNIQUE);
 

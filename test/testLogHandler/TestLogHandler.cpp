@@ -26,9 +26,9 @@ void TestLogHandler::test()
 
 	qDebug()<<"DATE:"<<d<<" TIME:"<<t<<" DATETIME:"<<dt;
 	
-	for(auto &key:mts.keys()){
+	for(const auto &key:mts.keys()){
 		const auto res = LogHandler::formatLogLine(dt, key, ctx, msg);
-		Q_ASSERT(res == mts[key]);
+		QCOMPARE_EQ(res, mts[key]);
 	}
 }
 

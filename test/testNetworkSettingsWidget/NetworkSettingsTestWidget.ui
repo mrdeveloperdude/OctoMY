@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>408</width>
+    <height>311</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -72,7 +72,7 @@
   <customwidget>
    <class>NetworkSettingsWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/NetworkSettingsWidget.hpp</header>
+   <header location="global">node/NetworkSettingsWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

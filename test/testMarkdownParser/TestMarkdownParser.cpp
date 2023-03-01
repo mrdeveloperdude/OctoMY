@@ -25,7 +25,7 @@ body, *italic*, **bold** and stuff!
 	qWarning()<<"IN:\n"<<input;
 	qWarning()<<"EXPECTED:\n"<<expected;
 	qWarning()<<"OUT:\n"<<output;
-	Q_ASSERT(expected == output);
+	QCOMPARE(expected, output);
 }
 
 

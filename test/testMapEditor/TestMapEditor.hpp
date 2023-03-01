@@ -1,7 +1,7 @@
 #ifndef TESTMAPEDITOR_HPP
 #define TESTMAPEDITOR_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestMapEditor:public QObject
 {

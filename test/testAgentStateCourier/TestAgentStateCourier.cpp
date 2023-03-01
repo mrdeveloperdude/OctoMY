@@ -1,14 +1,12 @@
 #include "TestAgentStateCourier.hpp"
 
-#include "CourierTester.hpp"
-
-#include "comms/couriers/AgentStateCourier.hpp"
-#include "comms/CommsChannel.hpp"
 #include "comms/CommsCarrierUDP.hpp"
-
+#include "comms/CommsChannel.hpp"
+#include "comms/couriers/AgentStateCourier.hpp"
 #include "discovery/AddressBook.hpp"
-
 #include "security/KeyStore.hpp"
+#include "test/CourierTester.hpp"
+#include "utility/random/Random.hpp"
 
 #include <QDebug>
 #include <QSharedPointer>
@@ -66,7 +64,7 @@ void AgentStateCourierTester::putState()
 
 void AgentStateCourierTester::setAgentRandomFlags()
 {
-	quint8 rf = qrand() % 0xFF;
+	quint8 rf = utility::random::qrand() % 0xFF;
 	qDebug() << QString("Setting random flags: 0b%1 (0x%2, %3)").arg(rf, 0, 2).arg(rf, 0, 16).arg(rf);
 	mFromAgentStateCourier->setFlags(rf);
 }

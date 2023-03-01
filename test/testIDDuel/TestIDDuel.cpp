@@ -5,8 +5,8 @@
 
 void TestIDDuel::test(){
 	for(int i=0;i<1000;++i){
-		const auto a=qrand();
-		const auto b=qrand();
+		const auto a = utility::random::qrand();
+		const auto b = utility::random::qrand();
 		const auto strA=QString("%1").arg(a, 12, 10, QChar('0'));
 		const auto strB=QString("%1").arg(b, 12, 10, QChar('0'));
 		const bool expectAGreaterThanB=(a>b);

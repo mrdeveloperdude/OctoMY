@@ -1,6 +1,6 @@
 #include "TestNetworkAddress.hpp"
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 #include "comms/NetworkAddress.hpp"
 #include "uptime/New.hpp"

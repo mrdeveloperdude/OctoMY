@@ -1,7 +1,7 @@
 #ifndef TESTTRUSTSYMBOLWIDGET_HPP
 #define TESTTRUSTSYMBOLWIDGET_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestTrustSymbolWidget:public QObject
 {

@@ -5,7 +5,7 @@
 #include "app/launcher/AppLauncher.hpp"
 #include "node/Node.hpp"
 #include "uptime/New.hpp"
-#include "widgets/AgentDeliveryWizard.hpp"
+#include "delivery/AgentDeliveryWizard.hpp"
 
 #include <QProcessEnvironment>
 #include <QCommandLineParser>
@@ -31,7 +31,7 @@ public:
 
 static void testLineEdit(QLineEdit *lineEdit, QString in, QString out, const int delay=-1)
 {
-	QVERIFY(nullptr!=lineEdit);
+	QCOMPARE_NE(lineEdit, nullptr);
 	QVERIFY(lineEdit->isEnabled());
 	QVERIFY(lineEdit->isVisible());
 	QTest::keyClick(lineEdit, Qt::Key_A, Qt::ControlModifier, delay);

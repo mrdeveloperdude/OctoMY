@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1242</width>
-    <height>1020</height>
+    <width>433</width>
+    <height>403</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,7 +34,7 @@
   <customwidget>
    <class>CarSteeringWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/CarSteeringWidget.hpp</header>
+   <header location="global">node/CarSteeringWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

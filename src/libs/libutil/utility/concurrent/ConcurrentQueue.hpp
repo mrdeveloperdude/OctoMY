@@ -35,11 +35,8 @@ private:
 	QMutex mMutex;
 	QWaitCondition mNotEmpty;
 	QWaitCondition mNotFull;
-
 	std::list<T> mItems;
-
 	AtomicBoolean mDone;
-
 	ConfigureHelper mConfigureHelper;
 
 public:
@@ -49,10 +46,8 @@ public:
 	explicit ConcurrentQueue(int capacity=0);
 	virtual ~ConcurrentQueue();
 
-
 public:
 	void activate(const bool on);
-
 	void list();
 
 public:
@@ -225,7 +220,8 @@ int ConcurrentQueue<T>::count()
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		QMutexLocker ml(&mMutex);
-		const int count=mItems.count();
+		//const int count=mItems.count();
+		const int count=mItems.size();
 		return count;
 	}
 	return 0;

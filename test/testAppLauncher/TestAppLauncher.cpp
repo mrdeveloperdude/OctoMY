@@ -5,7 +5,7 @@
 #include "app/launcher/AppLauncher.hpp"
 #include "app/mockapp/MockApp.hpp"
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 void TestAppLauncher::test()
 {
@@ -13,7 +13,7 @@ void TestAppLauncher::test()
 	char mockExeName[] = "mockExecutableName";
 	char* argv[] = { static_cast <char *>(mockExeName) };
 	QSharedPointer<AppLauncher<MockApp> > mockMain=QSharedPointer<AppLauncher<MockApp> >(OC_NEW AppLauncher<MockApp>());
-	Q_ASSERT(!mockMain.isNull());
+	QVERIFY(!mockMain.isNull());
 	mockMain->configure("mock", argc, argv);
 	auto ret=mockMain->run();
 	mockMain.clear();

@@ -1,8 +1,7 @@
 #include "HashstoreRecordPrivate.hpp"
-#include "Hashstore.hpp"
+#include "../Hashstore.hpp"
 
 #include "uptime/MethodGate.hpp"
-#include "uptime/New.hpp"
 
 #include <QDebug>
 #include <QDir>

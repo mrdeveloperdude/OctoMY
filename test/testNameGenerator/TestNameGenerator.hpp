@@ -1,7 +1,7 @@
 #ifndef TESTNAMEGENERATOR_HPP
 #define TESTNAMEGENERATOR_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestNameGenerator:public QObject
 {

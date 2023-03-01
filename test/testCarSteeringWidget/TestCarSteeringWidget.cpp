@@ -2,7 +2,7 @@
 
 #include "ui_TestWindow.h"
 
-#include "Utility_test.hpp"
+#include "test/Utility.hpp"
 
 #include "uptime/New.hpp"
 

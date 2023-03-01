@@ -1,7 +1,7 @@
 #ifndef TESTIDDUEL_HPP
 #define TESTIDDUEL_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 
 class TestIDDuel:public QObject

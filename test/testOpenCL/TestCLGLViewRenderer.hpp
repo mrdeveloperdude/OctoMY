@@ -1,7 +1,7 @@
 #ifndef TESTCLGLVIEWRENDERER_HPP
 #define TESTCLGLVIEWRENDERER_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 #include "clt/CLGLViewRenderer.hpp"
 

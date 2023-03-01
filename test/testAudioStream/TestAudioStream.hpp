@@ -1,7 +1,7 @@
 #ifndef TESTAUDIOSTREAM_HPP
 #define TESTAUDIOSTREAM_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestAudioStream:public QObject
 {

@@ -1,7 +1,7 @@
 #ifndef TESTDISCOVERY_HPP
 #define TESTDISCOVERY_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 
 class TestDiscovery:public QObject

@@ -1,7 +1,7 @@
 #ifndef TESTSERVICEMANAGER_HPP
 #define TESTSERVICEMANAGER_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestServiceManager:public QObject
 {
