@@ -1,5 +1,6 @@
 #include "Markdown.hpp"
 
+#define OC_USE_FEATURE_MARKDOWN true
 
 #ifdef OC_USE_FEATURE_MARKDOWN
 

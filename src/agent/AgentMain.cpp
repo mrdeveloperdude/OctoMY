@@ -1,9 +1,7 @@
 #include "AgentMain.hpp"
 
-#include "app/launcher/AppLauncher.hpp"
-
 #include "agent/Agent.hpp"
-
+#include "app/launcher/AppLauncher.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
 
 int main(int argc, char *argv[])

@@ -8,7 +8,8 @@ Project{
         id: octomyTests
     }
     
-    references: octomyTests.files
+    //references: octomyTests.files
+    references: ["testMarkdownEditor/test.qbs", "testPlanEditor/test.qbs"]
     
     /*
     AutotestRunner { 

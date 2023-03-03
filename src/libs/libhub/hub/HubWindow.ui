@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1012</width>
-    <height>893</height>
+    <height>1058</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,8 +23,8 @@
    <iconset resource="../../libres/resources/icons.qrc">
     <normaloff>:/icons/hub.svg</normaloff>:/icons/hub.svg</iconset>
   </property>
-  <layout class="QGridLayout" name="gridLayout_8">
-   <item row="0" column="0">
+  <layout class="QVBoxLayout" name="verticalLayout_23">
+   <item>
     <widget class="QSplitter" name="splitterLog">
      <property name="lineWidth">
       <number>0</number>
@@ -52,7 +52,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <property name="documentMode">
        <bool>false</bool>
@@ -66,6 +66,20 @@
       <property name="tabBarAutoHide">
        <bool>true</bool>
       </property>
+      <widget class="QWidget" name="tabWeb">
+       <attribute name="icon">
+        <iconset resource="../../libres/resources/icons.qrc">
+         <normaloff>:/icons/edit.svg</normaloff>:/icons/edit.svg</iconset>
+       </attribute>
+       <attribute name="title">
+        <string>Web</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_24">
+        <item>
+         <widget class="markdown::MarkdownEditor" name="webEditor" native="true"/>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="tabPairing">
        <attribute name="title">
         <string>Pairing</string>
@@ -1440,6 +1454,12 @@
    <class>IrisWidget</class>
    <extends>QWidget</extends>
    <header location="global">identity/IrisWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>markdown::MarkdownEditor</class>
+   <extends>QWidget</extends>
+   <header location="global">markdown/MarkdownEditor.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

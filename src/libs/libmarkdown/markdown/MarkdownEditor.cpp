@@ -3,6 +3,10 @@
 
 #include "markdown/Markdown.hpp"
 #include "markdown/MarkdownHighlighter.hpp"
+
+//#include "markdown/HTMLHighlighter.hpp"
+//#include "markdown/UnionHighlighter.hpp"
+
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
@@ -21,18 +25,22 @@ namespace markdown{
 MarkdownEditor::MarkdownEditor(QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::MarkdownEditor)
-	, highlighter(nullptr)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
 	if(!connect(ui->plainTextEditMarkdown, SIGNAL(textChanged()), this, SLOT(onTextChanged()), OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect";
+		qWarning()<<"ERROR: Could not connect changed";
 	}
 	if(!connect(&saveTimer, SIGNAL(timeout()), this, SLOT(save()), OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect";
+		qWarning()<<"ERROR: Could not connect save";
 	}
-	
-	
+	/*
+	TODO: Fix this
+	auto uhl = OC_NEW UnionHighlighter(ui->plainTextEditMarkdown->document());
+	uhl->registerHighlighter(OC_NEW MarkdownHighlighter(nullptr));
+	uhl->registerHighlighter(OC_NEW HTMLHighlighter(nullptr));
+	highlighter = uhl;
+	*/
 	highlighter = OC_NEW MarkdownHighlighter(ui->plainTextEditMarkdown->document());
 	ui->plainTextEditMarkdown->setFocus();
 	QString css=R"END(
@@ -46,7 +54,6 @@ table{
 	saveTimer.setSingleShot(true);
 	saveTimer.setTimerType(Qt::PreciseTimer);
 	//ui->plainTextEditParseErrors->setVisible(false);
-	
 }
 
 MarkdownEditor::~MarkdownEditor()
@@ -67,6 +74,7 @@ void MarkdownEditor::configure(QString p)
 	QSignalBlocker sb(ui->plainTextEditMarkdown);
 	ui->plainTextEditMarkdown->setPlainText(utility::file::fileToString(plan_fn));
 }
+
 
 void MarkdownEditor::setText(QString txt)
 {
@@ -95,15 +103,11 @@ void MarkdownEditor::toPDF(const QString &filename)
 }
 
 
-
-
-
 void MarkdownEditor::appendText(QString txt)
 {
 	OC_METHODGATE();
 	ui->plainTextEditMarkdown->appendPlainText(txt);
 }
-
 
 
 void MarkdownEditor::onTextChanged()
@@ -114,12 +118,12 @@ void MarkdownEditor::onTextChanged()
 	Markdown md;
 	auto output = md.process(input);
 	
-	qWarning()<<"IN:\n"<<input;
-	
-	qWarning()<<"OUT:\n"<<output;
+	qWarning()<<"IN:\n"<<input.size();
+	qWarning()<<"OUT:\n"<<output.size();
 	
 	ui->textEditPreview->setHtml(output);
 }
+
 
 void MarkdownEditor::keyPressEvent(QKeyEvent *e)
 {
@@ -145,7 +149,6 @@ void MarkdownEditor::keyPressEvent(QKeyEvent *e)
 
 void MarkdownEditor::on_pushButtonExportPDF_clicked()
 {
-	
 	QFileDialog fd;
 	QStringList filters;
 	QString filePath="";

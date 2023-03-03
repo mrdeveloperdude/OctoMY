@@ -1,87 +1,89 @@
 #include "MarkdownHighlighter.hpp"
 
+#include "utility/ui/Style.hpp"
+#include "app/Constants.hpp"
 
 MarkdownHighlighter::MarkdownHighlighter(QTextDocument *parent)
 	: QSyntaxHighlighter(parent)
 {
+	//utility::color::textCharFormat(QColor foregroundColor, QColor backgroundColor, bool bold, bool underline, bool strikeout, bool italic);
+	utility::ui::HighlightingPalette palette(
+				// Base
+				utility::ui::textCharFormat(QColor(0x222222))
+				// Operator
+				, utility::ui::textCharFormat(QColor(0xd0e900), Qt::transparent, true)
+				// Paren
+				, utility::ui::textCharFormat(QColor(0xffffff))
+				// Keyword
+				, utility::ui::textCharFormat(QColor(0xe9d000))
+				// Hub
+				, utility::ui::textCharFormat(Constants::OC_NODE_TYPE_HUB_COLOR, Qt::transparent, true)
+				// Agent
+				, utility::ui::textCharFormat(Constants::OC_NODE_TYPE_AGENT_COLOR, Qt::transparent, true)
+				// Remote
+				, utility::ui::textCharFormat(Constants::OC_NODE_TYPE_REMOTE_COLOR, Qt::transparent, true)
+				// Class
+				, utility::ui::textCharFormat(QColor(0xd0e900), Qt::transparent, true)
+				// Single line comment
+				, utility::ui::textCharFormat(QColor(0x666666))
+				// Multi line comment
+				, utility::ui::textCharFormat(QColor(0x666666))
+				// String literal
+				, utility::ui::textCharFormat(QColor(0x00d0e9))
+				// Number literal
+				, utility::ui::textCharFormat(QColor(0x000001))
+				// Function
+				, utility::ui::textCharFormat(QColor(0x00e9d0), Qt::transparent, false, false, false, true)
+				
+				// Heading
+				, utility::ui::textCharFormat(QColor(0xff0000), Qt::transparent, true)
+				
+				// Quote
+				, utility::ui::textCharFormat(QColor(0xff8888), Qt::transparent, true)
+				
+				// Code
+				, utility::ui::textCharFormat(QColor(0xffff00), Qt::transparent, true)
+				
+				// Table
+				, utility::ui::textCharFormat(QColor(0x88ff88), Qt::transparent, true)
+
+				// List
+				, utility::ui::textCharFormat(QColor(0x0000ff), Qt::transparent, true)
+				
+				// Link
+				, utility::ui::textCharFormat(QColor(0x8800ff), Qt::transparent, true)
+				);
 
 
-	//Operator
-	/*
-	operatorFormat.setForeground(QColor("green"));
-	operatorFormat.setFontItalic(true);
-	QStringList operatorPatterns;
-	operatorPatterns << "\\b+\\b" ; //<< "\\b\\-\\b" << "\\b\\*\\b" << "\\b\\!\\b"<< "\\b\\%\\b"<< "\\b\\&\\b" << "\\b\\/\\b";
-	foreach (const QString &pattern, operatorPatterns) {
-		rule.pattern = QRegularExpression(pattern);
-		rule.format = operatorFormat;
-		highlightingRules.append(rule);
-	}
-	*/
-
-	//Paren
-	parenFormat.setForeground(QColor("#ffffff"));
-	QStringList parenPatterns;
-	parenPatterns << "\\b\\{\\b" << "\\b\\}\\b"  << "\\b\\[\\b" << "\\b\\]\\b" << "\\b\\(\\b" << "\\b\\)\\b";
-	foreach (const QString &pattern, parenPatterns) {
-		highlightingRules.append(HighlightingRule (QRegularExpression(pattern), parenFormat));
-	}
-
-	//Keyword
-	keywordFormat.setForeground(QColor("#e9d000"));
-	keywordFormat.setFontWeight(QFont::Bold);
-	QStringList keywordPatterns;
-	keywordPatterns << "\\bplan\\b" << "\\bpuppet\\b" << "\\bmember\\b" << "\\blimb\\b";
-	foreach (const QString &pattern, keywordPatterns) {
-		highlightingRules.append(HighlightingRule (QRegularExpression(pattern), keywordFormat));
-	}
-
-
-
-
-	//Hub
-	hubFormat.setForeground(QColor("#45de47"));
-	hubFormat.setFontWeight(QFont::Bold);
-	highlightingRules.append(HighlightingRule (QRegularExpression("\\bhub\\b"), hubFormat));
-
-	//Remote
-	remoteFormat.setForeground(QColor("#2faad0"));
-	remoteFormat.setFontWeight(QFont::Bold);
-	highlightingRules.append(HighlightingRule (QRegularExpression("\\bremote\\b"), remoteFormat));
-
-	//Agent
-	agentFormat.setForeground(QColor("#da3333"));
-	agentFormat.setFontWeight(QFont::Bold);
-	highlightingRules.append(HighlightingRule (QRegularExpression("\\bagent\\b"), agentFormat));
-
-	operatorFormat.setFontWeight(QFont::Bold);
-	operatorFormat.setForeground(QColor("#d0e900"));
-	highlightingRules.append(HighlightingRule (QRegularExpression("\\b[\\\\+" + QRegularExpression::escape("e+-*/!=<>")+ "]+\\b"), operatorFormat));
-
-	classFormat.setFontWeight(QFont::Bold);
-	classFormat.setForeground(QColor("#d0e900"));
-	highlightingRules.append(HighlightingRule (QRegularExpression("\\bQ[A-Za-z]+\\b"), classFormat));
-
-	singleLineCommentFormat.setForeground(QColor("#666666"));
-	highlightingRules.append(HighlightingRule (QRegularExpression("//[^\n]*"), singleLineCommentFormat));
-	commentStartExpression = QRegularExpression("/\\*");
-	commentEndExpression = QRegularExpression("\\*/");
-	multiLineCommentFormat.setForeground(QColor("#666666"));
-
-	stringFormat.setForeground(QColor("#00d0e9"));
-	highlightingRules.append(HighlightingRule (QRegularExpression("\".*\""), stringFormat));
-
-	functionFormat.setFontItalic(true);
-	functionFormat.setForeground(QColor("#00e9d0"));
-	highlightingRules.append(HighlightingRule (QRegularExpression("\\b[A-Za-z0-9_]+(?=\\()"), functionFormat));
-
-
+	// Heading
+	highlightingRules.append(HighlightingRule (QRegularExpression("^[#]+ [^\n]*"), palette.headingColor ));
+	highlightingRules.append(HighlightingRule (QRegularExpression("^[=]+\n"), palette.headingColor ));
+	highlightingRules.append(HighlightingRule (QRegularExpression("^[\\-]+\n"), palette.headingColor ));
+	
+	// Tables
+	highlightingRules.append(HighlightingRule (QRegularExpression("^\\|[^\n]*"), palette.tableColor ));
+	
+	// Block quotes
+	highlightingRules.append(HighlightingRule (QRegularExpression("^\\> [^\n]*"), palette.quoteColor ));
+	
+	// Lists
+	highlightingRules.append(HighlightingRule (QRegularExpression("^[ ]?[\\*\\+\\-] [^\n]*"), palette.listColor ));
+	highlightingRules.append(HighlightingRule (QRegularExpression("^[ ]?\\.[0-9]* [^\n]*"), palette.listColor ));
+	
+	// Links
+	highlightingRules.append(HighlightingRule (QRegularExpression("\\[.*\\]\\w*\\(.*\\)"), palette.linkColor ));
+	highlightingRules.append(HighlightingRule (QRegularExpression("^\\[[1-9][0-9]*\\]: [^\"]*\\w*\"[^\"]*\"\n "), palette.linkColor ));
+	highlightingRules.append(HighlightingRule (QRegularExpression("\\[[^\\]]*\\][\\w]*\\[[1-9][0-9]*\\]" ), palette.linkColor ));
+	
+	// Code
+	highlightingRules.append(HighlightingRule (QRegularExpression("(?<!\\)`.*`"), palette.codeColor ));
+	highlightingRules.append(HighlightingRule (QRegularExpression("^\t[^\n]*"), palette.codeColor ));
+	
+	
 	// Optimize
 	foreach (const HighlightingRule &rule, highlightingRules) {
 		rule.pattern.optimize();
 	}
-
-
 }
 
 void MarkdownHighlighter::highlightBlock(const QString &text){
@@ -90,25 +92,6 @@ void MarkdownHighlighter::highlightBlock(const QString &text){
 		while (matchIterator.hasNext()) {
 			QRegularExpressionMatch match = matchIterator.next();
 			setFormat(match.capturedStart(), match.capturedLength(), rule.format);
-		}
-	}
-	setCurrentBlockState(0);
-
-	int startIndex = 0;
-	if (previousBlockState() != 1){
-		startIndex = text.indexOf(commentStartExpression);
-		while (startIndex >= 0) {
-			QRegularExpressionMatch match = commentEndExpression.match(text, startIndex);
-			int endIndex = match.capturedStart();
-			int commentLength = 0;
-			if (endIndex == -1) {
-				setCurrentBlockState(1);
-				commentLength = text.length() - startIndex;
-			} else {
-				commentLength = endIndex - startIndex + match.capturedLength();
-			}
-			setFormat(startIndex, commentLength, multiLineCommentFormat);
-			startIndex = text.indexOf(commentStartExpression, startIndex + commentLength);
 		}
 	}
 }

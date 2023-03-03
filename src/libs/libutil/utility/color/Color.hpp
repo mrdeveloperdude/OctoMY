@@ -4,7 +4,6 @@
 #include <QColor>
 
 
-
 class QPainter;
 class QRectF;
 class QPointF;

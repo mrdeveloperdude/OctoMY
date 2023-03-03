@@ -85,8 +85,8 @@ const QString Constants::OC_NODE_ROLE_CONTROL_NAME("Control");
 const QString Constants::OC_NODE_ROLE_UNKNOWN_NAME("Unknown");
 
 
-const QColor Constants::OC_NODE_TYPE_AGENT_COLOR("#e83636");
-const QColor Constants::OC_NODE_TYPE_REMOTE_COLOR("#36bee8");
-const QColor Constants::OC_NODE_TYPE_HUB_COLOR("#36e843");
-const QColor Constants::OC_NODE_TYPE_ZOO_COLOR("orange");
+const QColor Constants::OC_NODE_TYPE_AGENT_COLOR(0xe83636);
+const QColor Constants::OC_NODE_TYPE_REMOTE_COLOR(0x36bee8);
+const QColor Constants::OC_NODE_TYPE_HUB_COLOR(0x36e843);
+const QColor Constants::OC_NODE_TYPE_ZOO_COLOR(0xd18000);
 const QColor Constants::OC_NODE_TYPE_UNKNOWN_COLOR("yellow");

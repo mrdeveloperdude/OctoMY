@@ -1,7 +1,6 @@
 #include "HubMain.hpp"
 
 #include "app/launcher/AppLauncher.hpp"
-
 #include "hub/Hub.hpp"
 
 int main(int argc, char *argv[])

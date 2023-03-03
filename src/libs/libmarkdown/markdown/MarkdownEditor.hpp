@@ -9,7 +9,7 @@
 
 class OctomyParse;
 
-class MarkdownHighlighter;
+class QSyntaxHighlighter;
 
 namespace Ui
 {
@@ -25,7 +25,7 @@ class MarkdownEditor : public QWidget
 	
 private:
 	Ui::MarkdownEditor *ui;
-	MarkdownHighlighter *highlighter;
+	QSyntaxHighlighter *highlighter;
 	QString plan_fn;
 	QTimer saveTimer;
 	QDir const topDir;

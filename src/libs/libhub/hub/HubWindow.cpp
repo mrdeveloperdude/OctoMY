@@ -88,7 +88,7 @@ void HubWindow::configure()
 		ui->widgetIncommingNodes->setModel(data);
 		*/
 		ui->tabWidget->setEnabled(true);
-		ui->tabWidget->setCurrentWidget(ui->tabPairing);
+		ui->tabWidget->setCurrentWidget(ui->tabWeb);
 
 		ui->tabWidgetDevelopment->setCurrentIndex(0);
 		ui->tabWidgetUtilities->setCurrentIndex(0);
@@ -167,6 +167,7 @@ void HubWindow::configure()
 		QTimer::singleShot(1500,splash,SLOT(deleteLater()));
 		splash=nullptr;
 		updateIdentityWidgets();
+		
 
 	} else {
 		qWarning()<<"WARNING: No Agent in agent window configure";
