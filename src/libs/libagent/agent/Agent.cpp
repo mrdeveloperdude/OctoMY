@@ -14,6 +14,18 @@
 #include <QDebug>
 
 
+/*!
+	\class Agent
+	\brief The Agent application
+	\since 1.0
+	\ingroup app
+	
+	Agent represents the robot. It is a possibly autonomous entity that roams
+	this world together with us.
+	
+	\sa AgentMain, Remote, Hub, Zoo
+*/
+
 Agent::Agent()
 	: mNodeConfigureHelper("Agent", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 	, mAgentConfigStore(OC_NEW AgentConfigStore())
@@ -23,14 +35,14 @@ Agent::Agent()
 	// NOTE: Please do not put code here that generates events. Instead put them in *Configure*() or *Activate*()
 }
 
-
+//! \fn
 Agent::~Agent()
 {
 	OC_METHODGATE();
 	//qDebug()<<"~Agent()";
 }
 
-
+//! \fn void Agent::nodeConfigure()
 void Agent::nodeConfigure()
 {
 	OC_METHODGATE();

@@ -26,7 +26,6 @@
 #include <QPainterPath>
 
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 # include <QtWidgets/qdrawutil.h>
 # include <QtWidgets/QApplication>
 # include <QtWidgets/QComboBox>
@@ -39,19 +38,7 @@
 # include <QtWidgets/QSpinBox>
 # include <QtWidgets/QSplitter>
 # include <QtWidgets/QWizard>
-#else
-# include <QtGui/QApplication>
-# include <QtGui/QComboBox>
-# include <QtGui/QGroupBox>
-# include <QtGui/QMainWindow>
-# include <QtGui/QProgressBar>
-# include <QtGui/QPushButton>
-# include <QtGui/QScrollBar>
-# include <QtGui/QSlider>
-# include <QtGui/QSpinBox>
-# include <QtGui/QSplitter>
-# include <QtGui/QWizard>
-#endif
+
 
 #include <cstdio>
 

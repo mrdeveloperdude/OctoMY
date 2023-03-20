@@ -76,7 +76,8 @@ MarkdownHighlighter::MarkdownHighlighter(QTextDocument *parent)
 	highlightingRules.append(HighlightingRule (QRegularExpression("\\[[^\\]]*\\][\\w]*\\[[1-9][0-9]*\\]" ), palette.linkColor ));
 	
 	// Code
-	highlightingRules.append(HighlightingRule (QRegularExpression("(?<!\\)`.*`"), palette.codeColor ));
+	// '(?<!\)`.*`'
+	//highlightingRules.append(HighlightingRule (QRegularExpression("(?<!\ \)`.*`"), palette.codeColor ));
 	highlightingRules.append(HighlightingRule (QRegularExpression("^\t[^\n]*"), palette.codeColor ));
 	
 	

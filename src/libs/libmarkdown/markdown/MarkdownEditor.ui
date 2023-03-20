@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>758</width>
-    <height>381</height>
+    <width>683</width>
+    <height>491</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,6 +29,19 @@
    <property name="spacing">
     <number>0</number>
    </property>
+   <item row="0" column="2">
+    <widget class="QPushButton" name="pushButtonToggleHTML">
+     <property name="text">
+      <string>HTML</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QPushButton" name="pushButtonExportPDF">
      <property name="toolTip">
@@ -43,7 +56,33 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
+   <item row="0" column="1">
+    <widget class="QPushButton" name="pushButtonToggleTree">
+     <property name="text">
+      <string>Tree</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QPushButton" name="pushButtonTogglePreview">
+     <property name="text">
+      <string>Preview</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="5">
     <widget class="QSplitter" name="splitter">
      <property name="lineWidth">
       <number>0</number>
@@ -51,6 +90,14 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
+     <widget class="QTreeView" name="treeViewFilesystem">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
      <widget class="markdown::CodeEditor" name="plainTextEditMarkdown">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -519,6 +566,8 @@
        <double>30.000000000000000</double>
       </property>
      </widget>
+     <widget class="QTextEdit" name="textEditHTML">
+     </widget>
      <widget class="QTextEdit" name="textEditPreview">
       <property name="palette">
        <palette>
@@ -974,7 +1023,7 @@
      </widget>
     </widget>
    </item>
-   <item row="0" column="1">
+   <item row="0" column="4">
     <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>

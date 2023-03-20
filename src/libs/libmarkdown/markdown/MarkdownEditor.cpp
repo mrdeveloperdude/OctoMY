@@ -3,6 +3,7 @@
 
 #include "markdown/Markdown.hpp"
 #include "markdown/MarkdownHighlighter.hpp"
+#include "markdown/HTMLHighlighter.hpp"
 
 //#include "markdown/HTMLHighlighter.hpp"
 //#include "markdown/UnionHighlighter.hpp"
@@ -12,15 +13,31 @@
 #include "uptime/New.hpp"
 #include "utility/file/File.hpp"
 
+
 #include <QDebug>
 #include <QFileDialog>
 #include <QPainter>
 #include <QPrinter>
+#include <QScroller>
 #include <QStandardPaths>
 #include <QTextDocument>
+#include <QScrollBar>
 #include <QTextEdit>
 
 namespace markdown{
+
+
+void MarkdownEditor::connectScrollbars(){
+	auto sb=ui->plainTextEditMarkdown->verticalScrollBar();
+	if(nullptr!=sb){
+		connect(sb, &QScrollBar::valueChanged, this, [=](int v){
+			const auto m=sb->maximum();
+			ui->textEditPreview->verticalScrollBar()->setValue( (ui->textEditPreview->verticalScrollBar()->maximum() * v) / m );
+			ui->textEditHTML->verticalScrollBar()->setValue( (ui->textEditHTML->verticalScrollBar()->maximum() * v) / m );
+			
+		}, Qt::AutoConnection);
+	}
+}
 
 MarkdownEditor::MarkdownEditor(QWidget *parent)
 	: QWidget(parent)
@@ -28,6 +45,9 @@ MarkdownEditor::MarkdownEditor(QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
+	ui->textEditHTML->setReadOnly(true);
+	ui->textEditPreview->setReadOnly(true);
+	connectScrollbars();
 	if(!connect(ui->plainTextEditMarkdown, SIGNAL(textChanged()), this, SLOT(onTextChanged()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect changed";
 	}
@@ -42,18 +62,21 @@ MarkdownEditor::MarkdownEditor(QWidget *parent)
 	highlighter = uhl;
 	*/
 	highlighter = OC_NEW MarkdownHighlighter(ui->plainTextEditMarkdown->document());
+	auto h2 = OC_NEW HTMLHighlighter(ui->textEditHTML->document());
 	ui->plainTextEditMarkdown->setFocus();
+	/* TODO: Load and apply CSS
 	QString css=R"END(
 table{
 	background:red;
 	border: 1px solid black;
 }
 )END";
-	//ui->textEditPreview
 	ui->textEditPreview->document()->setDefaultStyleSheet(css);
+*/
 	saveTimer.setSingleShot(true);
 	saveTimer.setTimerType(Qt::PreciseTimer);
 	//ui->plainTextEditParseErrors->setVisible(false);
+	hookUpFileSelector();
 }
 
 MarkdownEditor::~MarkdownEditor()
@@ -110,6 +133,34 @@ void MarkdownEditor::appendText(QString txt)
 }
 
 
+
+void MarkdownEditor::hookUpFileSelector(){
+	QString rootPath("/");
+	filesystemModel.setIconProvider(&iconProvider);
+	filesystemModel.setRootPath(rootPath);
+	//model.setOption(QFileSystemModel::DontUseCustomDirectoryIcons);
+	filesystemModel.setOption(QFileSystemModel::DontWatchForChanges);
+	auto tree=ui->treeViewFilesystem;
+	tree->setModel(&filesystemModel);
+	if (!rootPath.isEmpty()) {
+		const QModelIndex rootIndex = filesystemModel.index(QDir::cleanPath(rootPath));
+		if (rootIndex.isValid()){
+			tree->setRootIndex(rootIndex);
+		}
+	}
+	// Demonstrating look and feel features
+	tree->setAnimated(false);
+	tree->setIndentation(20);
+	tree->setSortingEnabled(true);
+	const QSize availableSize = tree->screen()->availableGeometry().size();
+	tree->resize(availableSize / 2);
+	tree->setColumnWidth(0, tree->width() / 3);
+	
+	// Make it flickable on touchscreens
+	QScroller::grabGesture(tree, QScroller::TouchGesture);
+	
+}
+
 void MarkdownEditor::onTextChanged()
 {
 	OC_METHODGATE();
@@ -120,8 +171,11 @@ void MarkdownEditor::onTextChanged()
 	
 	qWarning()<<"IN:\n"<<input.size();
 	qWarning()<<"OUT:\n"<<output.size();
-	
-	ui->textEditPreview->setHtml(output);
+
+	ui->textEditHTML->setPlainText("HTML <b>BOLD</b>\n"+output);
+	ui->textEditPreview->setHtml("HTML <b>BOLD</b>\n"+output);
+	//QTextDocument td;td.setHtml(output);
+	//ui->textEditPreview->setDocument(&td);
 }
 
 
@@ -194,6 +248,30 @@ void MarkdownEditor::on_pushButtonExportPDF_clicked()
 		}
 	}
 	
+}
+
+
+void MarkdownEditor::on_pushButtonToggleTree_toggled(bool checked)
+{
+	ui->treeViewFilesystem->setVisible(checked);
+}
+
+
+void MarkdownEditor::on_pushButtonToggleSource_toggled(bool checked)
+{
+	ui->plainTextEditMarkdown->setVisible(checked);
+}
+
+
+void MarkdownEditor::on_pushButtonTogglePreview_toggled(bool checked)
+{
+	ui->textEditPreview->setVisible(checked);
+}
+
+
+void MarkdownEditor::on_pushButtonToggleHTML_toggled(bool checked)
+{
+	ui->textEditHTML->setVisible(checked);
 }
 
 }

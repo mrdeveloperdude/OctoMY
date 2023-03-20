@@ -15,6 +15,20 @@
 #include <QGeoPositionInfo>
 */
 
+
+/*!
+	\class Remote
+	\brief The Remote application
+	\since 1.0
+	\ingroup app
+	\inmodule remote
+	
+	Remote represents a remote control to control one or more agents
+	
+	\sa RemoteMain, Agent, Hub, Zoo
+*/
+
+
 Remote::Remote()
 	: mNodeConfigureHelper("Remote", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 	  //: Node(launcher, OC_NEW AppContext(launcher.options(), launcher.environment(), "remote", parent), ROLE_CONTROL, TYPE_REMOTE, parent)
@@ -24,13 +38,18 @@ Remote::Remote()
 	// NOTE: Please do not put code here that generates events. Instead put them in *configure*() or *activate*()
 }
 
-
+/*! 
+   Destructor
+ */
 Remote::~Remote()
 {
 	OC_METHODGATE();
 	//qDebug()<<"~Remote()";
 }
 
+/*! 
+   Called by your grandma
+ */
 
 void Remote::nodeConfigure()
 {
@@ -47,6 +66,9 @@ void Remote::nodeConfigure()
 	}
 }
 
+/*! 
+   NODE ACTIVATE LOL
+ */
 
 void Remote::nodeActivate(const bool on)
 {

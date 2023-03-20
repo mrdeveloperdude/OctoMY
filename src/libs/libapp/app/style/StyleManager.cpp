@@ -206,7 +206,7 @@ void StyleManager::loadFonts(QStringList fonts)
 {
 	OC_METHODGATE();
 	qputenv("QT_QPA_FONTDIR", "/");
-	for(QString font:fonts) {
+	for(const QString &font:fonts) {
 		loadFont(font);
 	}
 }

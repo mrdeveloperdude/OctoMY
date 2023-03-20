@@ -5,6 +5,8 @@
 #include <QTimer>
 #include <QKeyEvent>
 #include <QDir>
+#include <QFileIconProvider>
+#include <QFileSystemModel>
 
 
 class OctomyParse;
@@ -30,6 +32,8 @@ private:
 	QTimer saveTimer;
 	QDir const topDir;
 	QDir lastDir;
+	QFileSystemModel filesystemModel;
+	QFileIconProvider iconProvider;
 	
 public:
 	explicit MarkdownEditor(QWidget *parent = nullptr);
@@ -41,6 +45,11 @@ public:
 	void toPDF(const QString &filename);
 	void appendText(QString);
 	
+private:
+	void hookUpFileSelector();
+	void connectScrollbars();
+	
+
 protected:
 	void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
 	
@@ -50,6 +59,10 @@ public slots:
 private slots:
 	void on_pushButtonExportPDF_clicked();
 	
+	void on_pushButtonToggleTree_toggled(bool checked);
+	void on_pushButtonToggleSource_toggled(bool checked);
+	void on_pushButtonTogglePreview_toggled(bool checked);
+	void on_pushButtonToggleHTML_toggled(bool checked);
 };
 
 }

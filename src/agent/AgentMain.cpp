@@ -4,6 +4,15 @@
 #include "app/launcher/AppLauncher.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
 
+/*!
+    \fn int main(int argc, char *argv[])
+    \brief Main application entry point for OctoMY Agent.
+
+    \ingroup app
+
+    \sa RemoteMain, HubMain, ZooMain
+*/
+
 int main(int argc, char *argv[])
 {
 	int ret=EXIT_FAILURE;
