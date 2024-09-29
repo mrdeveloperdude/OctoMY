@@ -205,7 +205,7 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 							if(!ae.isNull()) {
 								NetworkAddress addr=ae->address;
 								if(addr.isValid()) {
-									session=QSharedPointer<CommsSession>(OC_NEW CommsSession(key));
+									session = QSharedPointer<CommsSession>::create(key);
 									OC_ASSERT(nullptr!=session);
 									if(nullptr!=session) {
 										//session->setRemoteSessionID(desiredRemoteSessionID);
@@ -222,7 +222,9 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 
 										mSessions.insert(session);
 										//qDebug()<< "NEW SESSION CREATED FOR ID "<<id<< " with local sessionID "<<QString::number(localSessionID)<< (initiator?"INITIATED":"");
-
+										
+										// TODO: Should we emit commsClientAdded here?
+										
 										//qDebug()<<"CREATE SESSION RETURNING VALUE: "<<session->summary();
 										/*
 										auto k=session->key();

@@ -3,13 +3,14 @@
 
 #include <QWidget>
 #include <QTimer>
+#include <QAbstractButton>
 
 namespace Ui
 {
 class PanicButton;
 }
 
-class PanicButton : public QWidget
+class PanicButton : public QAbstractButton
 {
 	Q_OBJECT
 private:
@@ -33,12 +34,16 @@ private slots:
 
 	void onToggled(bool checked);
 	void onTimeout();
-
+/*
 signals:
 	void pressed();
 	void released();
 	void clicked(bool checked = false);
 	void toggled(bool checked);
+*/
+protected:
+	
+	void paintEvent(QPaintEvent *) {};
 
 };
 

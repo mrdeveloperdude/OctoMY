@@ -72,7 +72,7 @@ private:
 
 public:
 	explicit AgentStateCourier(QDataStream *initialization, QSharedPointer<CommsChannel> comms, QObject *parent = nullptr);
-	virtual	~AgentStateCourier() Q_DECL_OVERRIDE;
+	virtual	~AgentStateCourier() override;
 
 public:
 
@@ -109,18 +109,18 @@ public:
 public:
 
 	// Update courier state when channel has opportunity
-	void update(quint64 now) Q_DECL_OVERRIDE;
+	void update(quint64 now) override;
 
 	// Let the CommChannel know what we want
-	CourierMandate mandate() const Q_DECL_OVERRIDE;
+	CourierMandate mandate() const override;
 
 	// Override to act on sending opportunity.
 	// Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
-	quint16 sendingOpportunity(QDataStream &ds) Q_DECL_OVERRIDE;
+	quint16 sendingOpportunity(QDataStream &ds) override;
 
 	// Override to act on data received
 	// Return number of bytes actually read.
-	quint16 dataReceived(QDataStream &ds, quint16 availableBytes) Q_DECL_OVERRIDE;
+	quint16 dataReceived(QDataStream &ds, quint16 availableBytes) override;
 
 
 };

@@ -30,8 +30,7 @@ public:
 
 	// Service interface.
 public:
-	void serviceActivateImp(bool on, ServiceActivatedCallback callBack=nullptr) Q_DECL_OVERRIDE;
-//	bool serviceActivatedImp() const Q_DECL_OVERRIDE;
+	void serviceActivateImp(bool on, ServiceActivatedCallback callBack=nullptr) override;
 
 	// ServiceWapper interface.
 public:
@@ -73,15 +72,6 @@ void ServiceWrapper<T>::serviceActivateImp(bool on, ServiceActivatedCallback cal
 		qWarning()<<"ERROR: Could not activate service because it was null";
 	}
 }
-
-/*
-template <class T>
-bool ServiceWrapper<T>::serviceActivatedImp() const
-{
-	OC_METHODGATE();
-	return mActivated;
-}
-*/
 
 #endif
 // SERVICEWRAPPER_HPP

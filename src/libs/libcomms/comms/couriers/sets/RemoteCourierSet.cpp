@@ -35,7 +35,7 @@ void RemoteCourierSet::configure(QString fullID, QSharedPointer<RemoteClient> cl
 
 		if(!cc.isNull()) {
 			auto remoteClientPtr=mRemoteClient.data();
-			mAgentStateCourier=QSharedPointer<AgentStateCourier>(OC_NEW AgentStateCourier(nullptr, cc, remoteClientPtr));
+			mAgentStateCourier = QSharedPointer<AgentStateCourier>::create(nullptr, cc, remoteClientPtr);
 			if(!mAgentStateCourier.isNull()) {
 				mAgentStateCourier->setHookSignals(*remoteClientPtr, true);
 				mAgentStateCourier->setDestination(fullID);
@@ -43,14 +43,14 @@ void RemoteCourierSet::configure(QString fullID, QSharedPointer<RemoteClient> cl
 			} else {
 				qWarning()<<"ERROR: Could not allocate AgentStateCourier";
 			}
-			mSensorsCourier=QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(cc, remoteClientPtr));
+			mSensorsCourier = QSharedPointer<SensorsCourier>::create(cc, remoteClientPtr);
 			if(!mSensorsCourier.isNull()) {
 				mSensorsCourier->setDestination(fullID);
 				insert(mSensorsCourier);
 			} else {
 				qWarning()<<"ERROR: Could not allocate SensorsCourier";
 			}
-			mBlobCourier=QSharedPointer<BlobCourier>(OC_NEW BlobCourier(cc, remoteClientPtr));
+			mBlobCourier = QSharedPointer<BlobCourier>::create(cc, remoteClientPtr);
 			if(!mBlobCourier.isNull()) {
 				mBlobCourier->setDestination(fullID);
 				insert(mBlobCourier);

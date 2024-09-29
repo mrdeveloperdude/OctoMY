@@ -53,7 +53,7 @@ bool AddressBook::fromMap(QVariantMap data)
 		mAssociates.clear();
 		QVariantList peers = data["peers"].toList();
 		for (QVariantList::iterator b = peers.begin(), e = peers.end(); b != e; ++b) {
-			QSharedPointer<Associate> peer = QSharedPointer<Associate>(OC_NEW Associate((*b).toMap()));
+			auto peer = QSharedPointer<Associate>::create((*b).toMap());
 			upsertAssociate(peer);
 		}
 		return true;
@@ -163,6 +163,53 @@ QMap<QString, QSharedPointer<Associate>> AddressBook::all()
 	}
 	return QMap<QString, QSharedPointer<Associate>>();
 }
+
+
+
+
+QMap<QString, QSharedPointer<Associate>> AddressBook::filter(QVector<QueryRule> rules)
+{
+	OC_METHODGATE();
+	QMap<QString, QSharedPointer<Associate>> ret;
+	if (mConfigureHelper.isConfiguredAsExpected()) {
+		
+		for (auto it = mAssociates.begin(); it != mAssociates.end(); ++it) {
+			auto associate = it.value();
+			bool include = true;
+			for (const auto &rule : rules) {
+				if (associate->type() != rule.type) {
+					include = false;
+					break;
+				}
+				if (rule.trustUs) {
+					if (!associate->trusts().hasTrust(TrustList::giveControl)) {
+						include = false;
+						break;
+					}
+				}
+				if (rule.trustThem) {
+					if (!associate->trusts().hasTrust(TrustList::takeControl)) {
+						include = false;
+						break;
+					}
+				}
+				if (!rule.include) {
+					include = false;
+					break;
+				}
+			}
+			
+			if (include) {
+				ret.insert(it.key(), associate);
+			}
+		}
+	}
+	return ret;
+}
+
+
+
+
 
 // Forward the async storeReady signal
 void AddressBook::hookSignals(QObject &ob, bool hook)

@@ -15,12 +15,11 @@ private:
 
 public:
 	SerialList(QObject *parent=0);
+
 public:
 	void setUpDeviceTimer(const quint64 ms=5000);
 	QString toSpecStanzas(QString space="");
-
 	int count();
-
 	QSerialPortInfo device(int index);
 
 private:

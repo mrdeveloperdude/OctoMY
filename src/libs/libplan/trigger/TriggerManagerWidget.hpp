@@ -33,6 +33,7 @@ private:
 
 };
 
+TriggerSet *mockTriggers();
 
 #endif
 // TRIGGERMANAGERWIDGET_HPP

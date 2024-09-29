@@ -8,6 +8,22 @@
 
 #include <QObject>
 
+
+struct QueryRule{
+	NodeType type;
+	bool trustUs;
+	bool trustThem;
+	bool include;
+	QueryRule(NodeType type, bool trustUs=true, bool trustThem=true, bool include=true):
+		  type(type)
+		, trustUs(trustUs)
+		, trustThem(trustThem)
+		, include(include)
+	{
+	}
+};
+
+
 /** @brief The AddressBook class is used to keep track of and persist the information a
   Node has on its associates. Think of it as a fully automated "contact list".
 
@@ -28,7 +44,7 @@ private:
 
 public:
 	explicit AddressBook(QObject *parent = nullptr);
-	virtual ~AddressBook() Q_DECL_OVERRIDE;
+	virtual ~AddressBook() override;
 
 	// ConfigureHelper interface
 public:
@@ -38,9 +54,9 @@ public:
 
 	// SimpleDataStore interface
 public:
-	bool fromMap(QVariantMap data) Q_DECL_OVERRIDE;
-	QVariantMap toMap() Q_DECL_OVERRIDE;
-	bool fromDefault() Q_DECL_OVERRIDE;
+	bool fromMap(QVariantMap data) override;
+	QVariantMap toMap() override;
+	bool fromDefault() override;
 
 public:
 	bool hasAssociate(const QString &id);
@@ -49,6 +65,7 @@ public:
 	QSharedPointer<Associate> removeAssociate(const QString &id);
 	void upsertAssociate(QSharedPointer<Associate> associate);
 	QMap<QString, QSharedPointer<Associate>> all();
+	QMap<QString, QSharedPointer<Associate>> filter(QVector<QueryRule> rules);
 	void hookSignals(QObject &ob, bool hook);
 
 signals:

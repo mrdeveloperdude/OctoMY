@@ -60,3 +60,13 @@ void SerialDeviceListModel::onSerialDevicesChanged()
 	//qDebug()<<"DEVICES CHANGED"	<< from << " -> " << to<< "( " << mList->count() << ")";
 	emit dataChanged(from, to);
 }
+
+
+
+QSerialPortInfo SerialDeviceListModel::deviceInfo(const QModelIndex &index) const
+{
+	if (index.isValid() && index.row() < mList->count()){
+		return mList->device(index.row());
+	}
+	return QSerialPortInfo();
+}

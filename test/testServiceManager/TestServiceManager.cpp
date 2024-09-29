@@ -22,10 +22,10 @@ private:
 
 public:
 	explicit MockService(QString name, QStringList dependencies=QStringList());
-	virtual ~MockService() Q_DECL_OVERRIDE;
+	virtual ~MockService() override;
 public:
-	void serviceActivateImp(bool on, ServiceActivatedCallback callBack) Q_DECL_OVERRIDE;
-//	bool serviceActivatedImp() const Q_DECL_OVERRIDE;
+	void serviceActivateImp(bool on, ServiceActivatedCallback callBack) override;
+//	bool serviceActivatedImp() const override;
 
 
 public:

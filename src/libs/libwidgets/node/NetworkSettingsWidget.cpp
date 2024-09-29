@@ -44,23 +44,32 @@ void NetworkSettingsWidget::configure(QSharedPointer<LocalAddressList> localAddr
 	OC_METHODGATE();
 	mMuteSignals=true;
 	ui->comboBoxLocalAddress->clear();
-	qDebug()<<"Configuring address list";
+	const auto doDebug{false};
+	if(doDebug){
+		qDebug()<<"Configuring address list";
+	}
 	if(!localAddresses.isNull()) {
 		for(QHostAddress &adr:*localAddresses) {
 			if(isAddrToBeAdded(adr)) {
 				ui->comboBoxLocalAddress->addItem(adr.toString());
-				qDebug()<<" + Adding "<<adr.toString();
+				if(doDebug){
+					qDebug()<<" + Adding "<<adr.toString();
+				}
 			}
 			else {
-				qDebug()<<" + Skipping "<<adr.toString();
+				if(doDebug){
+					qDebug()<<" + Skipping "<<adr.toString();
+				}
 			}
 		}
 		
 		setHostAddress(localAddresses->currentAddress(), localAddresses->port(), true, false);
 		auto ct = ui->comboBoxLocalAddress->count();
-		qDebug()<<"THERE ARE" <<ct<<"ITEMS IN COMBOBOX:";
-		for(int i=0;i<ct;++i){
-			qDebug()<<" + " <<ui->comboBoxLocalAddress->itemText(i);
+		if(doDebug){
+			qDebug()<<"THERE ARE" <<ct<<"ITEMS IN COMBOBOX:";
+			for(int i=0;i<ct;++i){
+				qDebug()<<" + " <<ui->comboBoxLocalAddress->itemText(i);
+			}
 		}
 		
 	}
@@ -209,13 +218,13 @@ quint16 NetworkSettingsWidget::port() const
 }
 
 
-void NetworkSettingsWidget::on_pushButtonEdit_clicked()
+void NetworkSettingsWidget::edit()
 {
 	OC_METHODGATE();
 	ui->stackedWidget->setCurrentWidget(ui->pageEdit);
 }
 
-void NetworkSettingsWidget::on_pushButtonSave_clicked()
+void NetworkSettingsWidget::save()
 {
 	OC_METHODGATE();
 	bool go=false;
@@ -236,7 +245,7 @@ void NetworkSettingsWidget::on_pushButtonSave_clicked()
 	}
 }
 
-void NetworkSettingsWidget::on_lineEditLocalPort_textChanged(const QString &)
+void NetworkSettingsWidget::localPortTextChanged(const QString &)
 {
 	OC_METHODGATE();
 	if(!mMuteSignals) {
@@ -244,7 +253,7 @@ void NetworkSettingsWidget::on_lineEditLocalPort_textChanged(const QString &)
 	}
 }
 
-void NetworkSettingsWidget::on_lineEditLocalPort_editingFinished()
+void NetworkSettingsWidget::localPortEditingFinished()
 {
 	OC_METHODGATE();
 	if(!mMuteSignals) {
@@ -253,7 +262,7 @@ void NetworkSettingsWidget::on_lineEditLocalPort_editingFinished()
 }
 
 
-void NetworkSettingsWidget::on_comboBoxLocalAddress_currentIndexChanged(int index)
+void NetworkSettingsWidget::localAddressIndexChanged(int index)
 {
 	OC_METHODGATE();
 	Q_UNUSED(index);

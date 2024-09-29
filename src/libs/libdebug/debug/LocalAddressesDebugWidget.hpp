@@ -21,14 +21,14 @@ private:
 
 public:
 	explicit LocalAddressesDebugWidget(QWidget *parent = nullptr);
-	virtual ~LocalAddressesDebugWidget() Q_DECL_OVERRIDE;
+	virtual ~LocalAddressesDebugWidget() override;
 
 public:
 	void configure(QSharedPointer <Node> node);
 
 public slots:
-	void onRealtimeChanged(bool realtime) Q_DECL_OVERRIDE;
-	void onTimer() Q_DECL_OVERRIDE;
+	void onRealtimeChanged(bool realtime) override;
+	void onTimer() override;
 
 };
 

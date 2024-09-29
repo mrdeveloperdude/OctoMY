@@ -38,14 +38,14 @@ private:
 	void updateState();
 protected:
 
-	void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
-	void hideEvent(QHideEvent *) Q_DECL_OVERRIDE;
-	void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
-	void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-	void mouseReleaseEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-	void mouseMoveEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-	void leaveEvent(QEvent *) Q_DECL_OVERRIDE;
-	void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+	void paintEvent(QPaintEvent *event) override;
+	void hideEvent(QHideEvent *) override;
+	void showEvent(QShowEvent *) override;
+	void mousePressEvent(QMouseEvent *) override;
+	void mouseReleaseEvent(QMouseEvent *) override;
+	void mouseMoveEvent(QMouseEvent *) override;
+	void leaveEvent(QEvent *) override;
+	void resizeEvent(QResizeEvent *event) override;
 
 signals:
 

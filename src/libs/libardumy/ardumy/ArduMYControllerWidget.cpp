@@ -1,13 +1,13 @@
 #include "ArduMYControllerWidget.hpp"
 #include "ui_ArduMYControllerWidget.h"
 
+#include "ArduMYController.hpp"
+#include "app/Constants.hpp"
+#include "hardware/serial/SerialSettings.hpp"
+#include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
-#include "uptime/ConnectionType.hpp"
-
-#include "ArduMYController.hpp"
-#include "agent/AgentConstants.hpp"
-#include "hardware/serial/SerialSettings.hpp"
+//#include "agent/AgentConstants.hpp"
 
 #include <QMetaObject>
 
@@ -26,7 +26,7 @@ ArduMYControllerWidget::ArduMYControllerWidget(QWidget *parent)
 
 	ui->widgetSerialSettings->configure(false, defaults);
 
-	ui->tryToggleConnect->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_DISCONNECT_COLOR);
+	ui->tryToggleConnect->configure("Connect","Connecting...","Connected", "Disconnecting...", Constants::AGENT_CONNECT_BUTTON_COLOR, Constants::AGENT_DISCONNECT_COLOR);
 
 	if(!connect(ui->widgetSerialSettings, &SerialSettingsWidget::settingsChanged, this, &ArduMYControllerWidget::onSerialSettingsChanged, OC_CONTYPE) ) {
 		qWarning()<<"ERROR: Could not connect";

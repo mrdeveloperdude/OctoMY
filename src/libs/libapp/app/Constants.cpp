@@ -41,10 +41,7 @@ const QString Constants::APPLICATION_JSON_MIME="application/json";
 
 
 
-const QString Constants::AGENT_FACE_SPLITTER_MIDDLE_STATE="agent.face.splitter.middle.state";
-const QString Constants::AGENT_FACE_SPLITTER_TOP_STATE="agent.face.splitter.top.state";
-const QString Constants::AGENT_FACE_SPLITTER_BOTTOM_STATE="agent.face.splitter.bottom.state";
-
+const QString Constants::AGENT_FACE_SPLITTER="agent.face.splitter.state";
 
 const QString Constants::AGENT_FACE_EYES_SHOW="agent.face.eyes.show";
 const QString Constants::AGENT_FACE_LOG_SHOW="agent.face.log.show";

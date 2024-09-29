@@ -20,10 +20,10 @@ private:
 	QObject &target;
 public:
 	explicit UICloseFilter(QObject &ob);
-	virtual ~UICloseFilter() Q_DECL_OVERRIDE;
+	virtual ~UICloseFilter() override;
 
 public:
-	virtual bool eventFilter(QObject *object, QEvent *event) Q_DECL_OVERRIDE ;
+	virtual bool eventFilter(QObject *object, QEvent *event) override ;
 
 signals:
 	void close();

@@ -33,10 +33,10 @@ private:
 
 public:
 	explicit RemoteWindow(QWidget *parent = nullptr);
-	virtual ~RemoteWindow() Q_DECL_OVERRIDE;
+	virtual ~RemoteWindow() override;
 
 public:
-	void configure() Q_DECL_OVERRIDE;
+	void configure() override;
 
 
 	QSharedPointer<Remote> remote();
@@ -44,7 +44,7 @@ public:
 
 	// LogDestination interface
 public:
-	void appendLog(const QString& text) Q_DECL_OVERRIDE;
+	void appendLog(const QString& text) override;
 
 
 

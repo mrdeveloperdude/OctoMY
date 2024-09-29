@@ -90,9 +90,17 @@ private:
 	void applyPalette(QPalette palette, QApplication &app);
 	void applyStyleSheet(QString styleSheet, QApplication &app);
 	void applyCursorFlashTime(int flashTime, QApplication &app);
+	
+	void setDefaultFont(QString font, QWidget &widget);
+	void applyStyle(QProxyStyle *style, QWidget &widget);
+	void applyPalette(QPalette palette, QWidget &widget);
+	void applyStyleSheet(QString styleSheet, QWidget &widget);
 
 public:
+	// Apply style application wide
 	void apply(AppStyle &appStyle);
+	// Apply style for single window/widget
+	void apply(AppStyle &appStyle, QWidget &widget);
 	void listStyles();
 };
 

@@ -6,7 +6,7 @@
 
 This is meant to be a dead simple, MCU friendly dynamic array.
 
-It's main traits are:
+Its main traits are:
  1. Works correctly and as epxected
  2. As greedy on memory as possible
 

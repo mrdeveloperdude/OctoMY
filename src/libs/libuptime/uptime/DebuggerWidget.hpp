@@ -1,14 +1,15 @@
 #ifndef DEBUGGER_HPP
 #define DEBUGGER_HPP
 
-#include "node/Node.hpp"
-#include "uptime/ConfigureHelper.hpp"
 
+#include "uptime/ConfigureHelper.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QWidget>
-#include <QSharedPointer>
+
 #include <QEnableSharedFromThis>
 
 class QPushButton;
+class Node;
 
 namespace Ui
 {
@@ -49,7 +50,7 @@ private:
 
 public:
 	explicit DebuggerWidget(QWidget *parent = nullptr);
-	virtual ~DebuggerWidget() Q_DECL_OVERRIDE;
+	virtual ~DebuggerWidget() override;
 
 public:
 	void configure(QSharedPointer <Node> node);
@@ -65,9 +66,9 @@ private:
 
 	// QWidget interface
 public:
-	void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
-	void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
-	void moveEvent(QMoveEvent *event) Q_DECL_OVERRIDE;
+	void showEvent(QShowEvent *event) override;
+	void hideEvent(QHideEvent *event) override;
+	void moveEvent(QMoveEvent *event) override;
 
 private slots:
 	// Place directly to the right of nodewindow

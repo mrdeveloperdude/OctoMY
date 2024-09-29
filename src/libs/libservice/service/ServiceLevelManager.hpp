@@ -23,6 +23,7 @@ private:
 	QList <QSharedPointer<ServiceLevel> > mServiceLevelsList;
 	QSharedPointer<ServiceManager> mServiceManager;
 	ConfigureHelper mConfigureHelper;
+	int mRegistrationOrderCounter{0};
 
 public:
 	explicit ServiceLevelManager();

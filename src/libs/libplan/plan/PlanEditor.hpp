@@ -31,7 +31,7 @@ private:
 	
 public:
 	explicit PlanEditor(QWidget *parent = nullptr);
-	virtual ~PlanEditor() Q_DECL_OVERRIDE;
+	virtual ~PlanEditor() override;
 	
 public:
 	void configure(QString plan_fn);
@@ -39,7 +39,7 @@ public:
 	void appendText(QString);
 	
 protected:
-	void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
+	void keyPressEvent(QKeyEvent *e) override;
 	
 public slots:
 	void onTextChanged();

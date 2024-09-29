@@ -1,7 +1,7 @@
 #ifndef TESTTEMPLATE_HPP
 #define TESTTEMPLATE_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class TestTemplate:public QObject
 {

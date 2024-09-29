@@ -34,7 +34,7 @@ ControlDeliveryWizard::ControlDeliveryWizard(QWidget *parent)
 		qWarning()<<"ERROR: Name validator regex was invalid: "<<re.errorString();
 	}
 	{
-		mSpinner=OC_NEW WaitingSpinnerWidget(ui->labelBirthImage, true, false);
+		mSpinner = OC_NEW WaitingSpinnerWidget(ui->labelBirthImage, true, false);
 		SpinnerStyle style;
 		style.setColor(QColor("white"));
 		style.setRelatveSize(true);
@@ -159,12 +159,12 @@ void ControlDeliveryWizard::onBirthComplete(bool ok)
 					QVariantMap map;
 					auto key=keystore->localKey();
 					if(!key.isNull()) {
-						map["key"]=key->toVariantMap(true);
-						map["name"]=ui->lineEditName->text();
-						map["type"]=nodeTypeToString(TYPE_REMOTE);
-						map["role"]=nodeRoleToString(ROLE_CONTROL);
-						map["birthDate"]=utility::time::msToVariant(mBirthDate);
-						mNodeIdentity= QSharedPointer<Associate> (OC_NEW Associate(map));
+						map["key"] = key->toVariantMap(true);
+						map["name"] = ui->lineEditName->text();
+						map["type"] = nodeTypeToString(TYPE_REMOTE);
+						map["role"] = nodeRoleToString(ROLE_CONTROL);
+						map["birthDate"] = utility::time::msToVariant(mBirthDate);
+						mNodeIdentity = QSharedPointer<Associate>::create(map);
 						mNode->setNodeIdentity(mNodeIdentity);
 						mID=mNodeIdentity->toPortableID();
 						ui->widgetBirthCertificate->setPortableID(mID);

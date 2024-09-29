@@ -1,3 +1,3 @@
 App {
-    localPath: path
+	localPath: path
 }

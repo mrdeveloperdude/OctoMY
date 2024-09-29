@@ -33,6 +33,7 @@ void LogWidget::setDirection(bool down)
 void LogWidget::appendLog(const QString& text)
 {
 	OC_METHODGATE();
+	qDebug()<<"GOT LOG MESSAGE"<<text;
 	QString t=text.trimmed()+"\n";
 	if(mScrollDirDown) {
 		appendPlainText(t);

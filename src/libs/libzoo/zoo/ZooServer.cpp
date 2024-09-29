@@ -430,9 +430,9 @@ void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp
 			}
 		}
 		const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
-		QSharedPointer<Associate> associate(OC_NEW Associate(root));
+		auto associate = QSharedPointer<Associate>::create(root);
 		if(!associate.isNull()) {
-			QSharedPointer<Key> key(OC_NEW Key(root.value("key").toMap(), true));
+			auto key = QSharedPointer<Key> ::create(root.value("key").toMap(), true);
 			if(!key.isNull()) {
 				if(key->id()==associate->id()) {
 					qDebug()<<"GOT PARTICIPANT "<<associate->name()<<"(type="<<nodeTypeToString(associate->type())<<", gender="<<associate->gender()<<", id="<<associate->id()<<", id2="<<key->id()<<", addresses="<<associate->addressList().toString()<<")";

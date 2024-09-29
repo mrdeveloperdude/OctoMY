@@ -64,27 +64,27 @@ private slots:
 	// IActuatorController interface
 public:
 
-	void setConnected(bool) Q_DECL_OVERRIDE;
-	bool isConnected() Q_DECL_OVERRIDE;
+	void setConnected(bool) override;
+	bool isConnected() override;
 
-	void limp(QBitArray &flags) Q_DECL_OVERRIDE;
-	void limp(quint8 index, bool limp) Q_DECL_OVERRIDE;
-	void move(Pose &pose) Q_DECL_OVERRIDE;
-	void move(quint8 index, qreal value) Q_DECL_OVERRIDE;
-	void limpAll() Q_DECL_OVERRIDE;
-	void centerAll() Q_DECL_OVERRIDE;
-	QString version() Q_DECL_OVERRIDE;
-	quint8 maxActuatorsSupported() Q_DECL_OVERRIDE;
+	void limp(QBitArray &flags) override;
+	void limp(quint8 index, bool limp) override;
+	void move(Pose &pose) override;
+	void move(quint8 index, qreal value) override;
+	void limpAll() override;
+	void centerAll() override;
+	QString version() override;
+	quint8 maxActuatorsSupported() override;
 
-	quint8 actuatorCount() Q_DECL_OVERRIDE;
-	QString actuatorName(quint8) Q_DECL_OVERRIDE;
-	qreal actuatorValue(quint8) Q_DECL_OVERRIDE;
-	qreal actuatorDefault(quint8) Q_DECL_OVERRIDE;
+	quint8 actuatorCount() override;
+	QString actuatorName(quint8) override;
+	qreal actuatorValue(quint8) override;
+	qreal actuatorDefault(quint8) override;
 
-	QWidget *configurationWidget() Q_DECL_OVERRIDE;
+	QWidget *configurationWidget() override;
 
-	QVariantMap configuration() Q_DECL_OVERRIDE;
-	void setConfiguration(QVariantMap &configuration) Q_DECL_OVERRIDE;
+	QVariantMap configuration() override;
+	void setConfiguration(QVariantMap &configuration) override;
 
 
 signals:

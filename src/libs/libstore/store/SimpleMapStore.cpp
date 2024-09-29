@@ -47,7 +47,7 @@ bool SimpleMapStore::fromMap(QVariantMap data)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
-		mMap=data;
+		mMap = data;
 		return true;
 	}
 	return false;
@@ -68,7 +68,7 @@ bool SimpleMapStore::fromDefault()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
-		mMap=QVariantMap();
+		mMap = QVariantMap();
 		return true;
 	}
 	return false;

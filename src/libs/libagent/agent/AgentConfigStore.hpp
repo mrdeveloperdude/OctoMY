@@ -24,7 +24,7 @@ private:
 
 public:
 	explicit AgentConfigStore(QObject *parent = nullptr);
-	virtual ~AgentConfigStore() Q_DECL_OVERRIDE;
+	virtual ~AgentConfigStore() override;
 
 public:
 	void configure(QString filename="");
@@ -35,9 +35,9 @@ public:
 
 	// SimpleDataStore interface
 public:
-	bool fromMap(QVariantMap data)  Q_DECL_OVERRIDE;
-	QVariantMap toMap() Q_DECL_OVERRIDE;
-	bool fromDefault()  Q_DECL_OVERRIDE;
+	bool fromMap(QVariantMap data)  override;
+	QVariantMap toMap() override;
+	bool fromDefault()  override;
 
 signals:
 	void agentConfigStoreReady(bool);

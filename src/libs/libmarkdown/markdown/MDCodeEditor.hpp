@@ -33,9 +33,9 @@ public:
 	QCompleter *completer() const;
 
 protected:
-	void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
-	void focusInEvent(QFocusEvent *e) Q_DECL_OVERRIDE;
-	void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+	void keyPressEvent(QKeyEvent *e) override;
+	void focusInEvent(QFocusEvent *e) override;
+	void resizeEvent(QResizeEvent *event) override;
 
 private slots:
 	void insertCompletion(const QString &completion);

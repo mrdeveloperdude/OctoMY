@@ -55,10 +55,7 @@ public:
 
 	static const qint32 OCTOMY_WEB_COLLECT_AT_MOST;
 
-	static const QString AGENT_FACE_SPLITTER_MIDDLE_STATE;
-	static const QString AGENT_FACE_SPLITTER_TOP_STATE;
-	static const QString AGENT_FACE_SPLITTER_BOTTOM_STATE;
-
+	static const QString AGENT_FACE_SPLITTER;
 
 	static const QString AGENT_FACE_EYES_SHOW;
 	static const QString AGENT_FACE_LOG_SHOW;

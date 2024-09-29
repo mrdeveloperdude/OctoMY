@@ -188,7 +188,7 @@ void MapNetwork::abortLoading()
 {
 	OC_METHODGATE();
 	//qDebug() << "MapNetwork::abortLoading";
-	// be sure that replyList is copied in case it's modified in another thread
+	// be sure that replyList is copied in case its modified in another thread
 	QListIterator<QNetworkReply *> iter(mReplyList);
 	while(iter.hasNext()) {
 		QNetworkReply *reply = iter.next();

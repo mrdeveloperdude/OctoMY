@@ -6,8 +6,8 @@
 
 enum AgentMode {
 	OFFLINE=0 // Robot is shut down
-	, COMPLETE_AUTONOMY // All decisions are made by robot on it's own
-	, AUTO_PILOT // Instructions are given as high-level objectives that the robot tries to follow on it's own
+	, COMPLETE_AUTONOMY // All decisions are made by robot on its own
+	, AUTO_PILOT // Instructions are given as high-level objectives that the robot tries to follow on its own
 	, MANUAL_PILOT // Instructions are given to drive the robot directly.
 };
 

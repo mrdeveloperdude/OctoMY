@@ -26,7 +26,7 @@ private:
 
 public:
 	explicit DiscoveryClientDebugWidget(QWidget *parent = nullptr);
-	virtual ~DiscoveryClientDebugWidget() Q_DECL_OVERRIDE;
+	virtual ~DiscoveryClientDebugWidget() override;
 
 public:
 	void configure(QSharedPointer <Node> node);

@@ -801,7 +801,7 @@ void OctoStyle::drawPrimitive(PrimitiveElement elem,
 		painter->restore();
 	}
 	break;
-	case PE_IndicatorViewItemCheck: {
+	case PE_IndicatorItemViewItemCheck: {
 		QStyleOptionButton button;
 		button.QStyleOption::operator=(*option);
 		button.state &= ~State_MouseOver;

@@ -120,8 +120,8 @@ public:
 	
 	// IAudioProcessor interface
 public:
-	void init(QAudioFormat af) Q_DECL_OVERRIDE;
-	void process(qint64 num, T *in, T *out)Q_DECL_OVERRIDE;
+	void init(QAudioFormat af) override;
+	void process(qint64 num, T *in, T *out)override;
 	
 public:
 	void update(QAudioFormat af);

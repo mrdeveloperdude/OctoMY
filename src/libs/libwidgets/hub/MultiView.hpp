@@ -26,7 +26,7 @@ public:
 	~MultiView();
 
 public:
-	void configure(Settings *settings, QString val, QString key);
+	void configure(QSharedPointer<Settings> settings, QString val, QString key);
 	void setModel(QAbstractItemModel *data);
 
 private:

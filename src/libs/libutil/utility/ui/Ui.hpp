@@ -51,8 +51,6 @@ int nonPrimaryScreen();
 void sendFakeKeyEvent(QWidget *target, Qt::Key k, QString ks);
 void populateComboboxWithLocalAdresses(QComboBox &cb);
 
-qreal moveSplitter(QSplitter &splitter, qreal pos);
-
 template <typename T>
 void pack(T *stacked);
 

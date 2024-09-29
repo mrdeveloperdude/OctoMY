@@ -218,5 +218,93 @@
  <resources>
   <include location="../../libres/resources/icons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>comboBoxLocalAddress</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>NetworkSettingsWidget</receiver>
+   <slot>localAddressIndexChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>97</x>
+     <y>18</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>238</x>
+     <y>18</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonEdit</sender>
+   <signal>clicked()</signal>
+   <receiver>NetworkSettingsWidget</receiver>
+   <slot>edit()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>50</x>
+     <y>15</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>238</x>
+     <y>18</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonSave</sender>
+   <signal>clicked()</signal>
+   <receiver>NetworkSettingsWidget</receiver>
+   <slot>save()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>423</x>
+     <y>18</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>238</x>
+     <y>18</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lineEditLocalPort</sender>
+   <signal>editingFinished()</signal>
+   <receiver>NetworkSettingsWidget</receiver>
+   <slot>localPortEditingFinished()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>307</x>
+     <y>18</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>238</x>
+     <y>18</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lineEditLocalPort</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>NetworkSettingsWidget</receiver>
+   <slot>localPortTextChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>307</x>
+     <y>18</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>238</x>
+     <y>18</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>edit()</slot>
+  <slot>save()</slot>
+  <slot>localPortTextChanged(QString)</slot>
+  <slot>localPortEditingFinished()</slot>
+  <slot>localAddressIndexChanged(int)</slot>
+ </slots>
 </ui>

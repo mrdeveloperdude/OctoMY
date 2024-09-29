@@ -14,16 +14,16 @@ class PairingEditButtonDelegate: public QItemDelegate
 
 public:
 	explicit PairingEditButtonDelegate(QObject *parent=nullptr);
-	virtual ~PairingEditButtonDelegate() Q_DECL_OVERRIDE;
+	virtual ~PairingEditButtonDelegate() override;
 
 public:
 	static QSizeF calcSize(QSizeF ds, const qint32 w, const qint32 h, qreal const z=0.0);
 
 public:
 	QPixmap svgToPixmap(QString fn, const  qint32 w, const qint32 h, const qreal zoom=0.0) const;
-	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const Q_DECL_OVERRIDE;
-	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) Q_DECL_OVERRIDE;
-	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const Q_DECL_OVERRIDE;
+	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
+	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
 signals:
 	void startEdit(const QString id);

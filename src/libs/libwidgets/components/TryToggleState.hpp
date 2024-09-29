@@ -23,5 +23,8 @@ bool transient(TryToggleState s);
 TryToggleState saturate(TryToggleState s);
 TryToggleState desaturate(TryToggleState s);
 
+
+TryToggleState createTryToggleState(bool on, bool wantsOn);
+
 #endif
 // TRYTOGGLESTATE_HPP

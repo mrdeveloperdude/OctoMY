@@ -58,16 +58,6 @@ class CommsService;
 
 class NodeWindow;
 
-
-struct NodeActivationState {
-	bool keyStoreOK=false;
-	bool localIdentityOK=false;
-	bool localAddressesOK=false;
-	bool addressBookOK=false;
-	bool discoveryClientOK=false;
-	bool commsCarrierOK=false;
-};
-
 /*!
  * \brief The Node class is the base class for agents, remotes and hubs.
  *
@@ -89,7 +79,7 @@ private:
 	ConfigureHelper mAppConfigureHelper;
 	// Our key store
 	QSharedPointer<KeyStore> mKeyStore;
-	// Our local ID
+	// Our local identity storage
 	QSharedPointer<LocalIdentityStore> mLocalIdentityStore;
 	// Our local network addresses
 	QSharedPointer<LocalAddressList> mLocalAddressList;
@@ -99,9 +89,9 @@ private:
 	QSharedPointer<ClientList> mClients;
 	// Our identity
 	QSharedPointer<Associate> mNodeIdentity;
-	// Discovery client to help in automaitc discovery of other nodes
+	// Discovery service to automatically discover other nodes
 	QSharedPointer<DiscoveryClient> mDiscovery;
-	// Comms channel carrier the underlying carrier such as udb/bluetooth etc for comms
+	// Comms channel carrier the underlying carrier such as udb/bluetooth/eth for comms
 	QSharedPointer<CommsCarrier> mCarrier;
 	// Comms channel used to communicate with other nodes
 	QSharedPointer<CommsChannel> mComms;
@@ -119,8 +109,6 @@ private:
 	qint64 mLastStatusSend;
 	// The URL of the zoo server
 	QUrl mServerURL;
-	// The current state during activation
-	NodeActivationState mNodeActivationState;
 	// Timer used to log how long activation takes from start to finish
 	ScopedTimer *mActivationTimer;
 
@@ -152,7 +140,7 @@ private:
 
 public:
 	explicit Node();
-	virtual ~Node() Q_DECL_OVERRIDE;
+	virtual ~Node() override;
 
 	// AppLauncher interface
 public:
@@ -166,9 +154,6 @@ public:
 	// Called with on=false by launcher as a response to an appRequestClose event being emitted by anyone that wants the app to close.
 	// After calling this with on=false, the launcher will complete termination and return to OS
 	virtual void appActivate(const bool on);
-
-	// Use the servicemanager subsystem to enable/disable services in correct order
-	void serviceActivation(const bool on);
 
 	// Called by launcher to get a handle to the app's main window
 	// Will be called when launcher wants to show window during initialization
@@ -210,72 +195,78 @@ public:
 
 	// Convenience wrapper to get context's settings
 	QSharedPointer<Settings> settings();
-
-	// Provide local identity
-	QSharedPointer<LocalIdentityStore> localIdentityStore();
-
+	
+	
 	// Provide the address book
 	QSharedPointer<AddressBook> addressBook();
-
+	
 	//Provide the client list
 	QSharedPointer<ClientList> clientList();
-
+	
 	// Provide the comms channel
 	QSharedPointer<CommsChannel> comms();
-
+	
 	// Provide the discovery client
 	QSharedPointer<DiscoveryClient> discoveryClient();
-
+	
 	// Provide the zoo client
 	QSharedPointer<ZooClient> zooClient();
-
+	
 	// Provide the sensor input
 	QSharedPointer<SensorInput> sensorInput();
-
+	
 	// Provide the node identity
 	QSharedPointer<Associate> nodeIdentity();
-
+	
 	// Provide the service level manager
 	QSharedPointer<ServiceLevelManager> serviceLevelManager();
-
+	
 	// Provide the URL of the Zoo server
 	QUrl serverURL();
+	
+	// This is internal to nodes
+protected:
+	// Provide local identity. Only for internal use, use nodeIdentity() as a user
+	QSharedPointer<LocalIdentityStore> localIdentityStore();
 
 
 	// Actions
 public:
 
-	// Reset the identity and settings for this node. WARNING: This is destructive and only useful when debugging
+	// Reset the identity and settings for this node. WARNING: This is destructive and mostly useful when debugging
 	void unbirth();
+	
+	// Reset the identity and settings for this node forcefully, deleting files etc. WARNING: This is destructive and mostly useful when debugging
+	void scrape();
 
 	// Set the OctoMY™ styling to the UI of the application
-	void applyStyle();
+	void applyAppStyle();
+	
+	// Set the OctoMY™ styling to the UI of the node window
+	void applyWindowStyle();
 
-	// Create the dir in which this node keeps it's data
+	// Create the dir in which this node keeps its data
 	bool createBaseDir();
 
 
 	// Below this line is unrefined
 	////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
 
 
 public:
-
-
 	void setHookColorSignals(QObject &o, bool hook);
 	void setHookSensorSignals(QObject &o, bool hook);
 	void setHookCommsSignals(QObject &o, bool hook);
-
-
-
-	QString name();
 
 	// Convenience wrapper for setNodeIdentity( QSharedPointer<Associate> nodeID)
 	void setNodeIdentity(QVariantMap map);
 	// Invoked by Delivery wizards when we are born, and by LocalIdentityStore on startup as soon as our identity is ready
 	void setNodeIdentity(QSharedPointer<Associate> nodeID);
 	CameraList *cameraList();
-
 
 	//QSet<QSharedPointer<Associate> > allControls();
 	//QSet<QSharedPointer<Associate> > controlsWithActiveSessions(quint64 now=0);
@@ -327,8 +318,8 @@ public:
 	//bool needsConnection() ;
 	//void setNeedsConnection(const bool) ;
 	// We are currently online. We might not need to be online
-	//bool isConnected() Q_DECL_OVERRIDE;
-	//void setConnected(const bool) Q_DECL_OVERRIDE;
+	//bool isConnected() override;
+	//void setConnected(const bool) override;
 
 	// Blob courier
 	BlobFuture submitBlobForSending(QByteArray data, QString name);

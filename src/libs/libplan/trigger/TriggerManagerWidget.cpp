@@ -89,3 +89,38 @@ void TriggerManagerWidget::removeWidget(QWidget &w)
 		w.setParent(nullptr);
 	}
 }
+
+
+
+#include "trigger/Action.hpp"
+#include "trigger/Condition.hpp"
+#include "trigger/Trigger.hpp"
+#include "trigger/TriggerSet.hpp"
+
+
+TriggerSet *mockTriggers(){
+	TriggerSet *ts=OC_NEW TriggerSet;
+	Trigger *t1=OC_NEW Trigger("Trigger #1");
+	Trigger *t2=OC_NEW Trigger("Trigger #2");
+	Trigger *t3=OC_NEW Trigger("Trigger #3");
+	t1->addCondition(*OC_NEW Condition("Condition #1", "Formula #1"));
+	t1->addCondition(*OC_NEW Condition("Condition #2", "Formula #2"));
+	t1->addAction(*OC_NEW Action("Action #1"));
+	t1->addAction(*OC_NEW Action("Action #2"));
+	
+	t2->addCondition(*OC_NEW Condition("Condition #3", "Formula #3"));
+	t2->addAction(*OC_NEW Action("Action #3"));
+	
+	t3->addCondition(*OC_NEW Condition("Condition #4", "Formula #4"));
+	t3->addAction(*OC_NEW Action("Action #4"));
+	
+	*ts<<t1<<t2<<t3;
+	
+	for(int i=0; i<10; ++i) {
+		Trigger *t=OC_NEW Trigger("Trigger #5");
+		t->addCondition(*OC_NEW Condition("Condition #5", "Formula #5"));
+		t->addAction(*OC_NEW Action("Action #5"));
+		*ts<<t;
+	}
+	return ts;
+}

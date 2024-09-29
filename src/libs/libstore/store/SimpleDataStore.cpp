@@ -40,14 +40,13 @@ void SimpleDataStore::configure(QString filename)
 			if (!mJsonBackend.isNull()) {
 				mJsonBackend = nullptr;
 			}
-
-			mSimpleFrontend = QSharedPointer<SimpleDataStoreFrontend>(OC_NEW SimpleDataStoreFrontend(f));
+			mSimpleFrontend = QSharedPointer<SimpleDataStoreFrontend>::create(f);
 			// TODO: Check and prevent double calling this method
-			mJsonBackend = QSharedPointer<JsonAsyncBackend>(OC_NEW JsonAsyncBackend());
+			mJsonBackend = QSharedPointer<JsonAsyncBackend>::create();
 			if (!mJsonBackend.isNull()) {
 				mJsonBackend->configure(filename);
 			}
-			mStore = QSharedPointer<AsyncStore<QVariantMap>>(OC_NEW AsyncStore<QVariantMap>());
+			mStore = QSharedPointer<AsyncStore<QVariantMap> >::create();
 			if (!mStore.isNull()) {
 				mStore->configure(mJsonBackend, mSimpleFrontend);
 			}

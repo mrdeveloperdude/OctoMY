@@ -62,7 +62,7 @@ void Agent::nodeConfigure()
 	}
 }
 
-
+//! \fn void Agent::nodeActivate()
 void Agent::nodeActivate(const bool on)
 {
 	OC_METHODGATE();
@@ -99,7 +99,7 @@ QSharedPointer<NodeWindow> Agent::nodeWindow()
 	if(mWindow.isNull()) {
 		QSharedPointer<Agent> sp=qSharedPointerCast<Agent>(sharedThis());
 		if(!sp.isNull()) {
-			mWindow=QSharedPointer<AgentWindow>(OC_NEW AgentWindow(nullptr));
+			mWindow = QSharedPointer<AgentWindow>::create(nullptr);
 			if(!mWindow.isNull()) {
 				mWindow->nodeWindowConfigure(sp);
 			} else {
@@ -138,8 +138,8 @@ QSharedPointer<Node> Agent::sharedThis()
 void Agent::setPanic(bool panic)
 {
 	OC_METHODGATE();
-	if(mPanic!=panic) {
-		mPanic=panic;
+	if(mPanic != panic) {
+		mPanic = panic;
 		//qWarning()<<"Panic set to: "<<mPanic;
 	}
 }
@@ -185,16 +185,16 @@ void Agent::reloadController()
 	OC_METHODGATE();
 	unloadController();
 	if(!mAgentConfigStore.isNull()) {
-		QSharedPointer<AgentConfig> config=mAgentConfigStore->agentConfig();
+		QSharedPointer<AgentConfig> config = mAgentConfigStore->agentConfig();
 		if(!config.isNull()) {
-			QString controllerName=config->controllerName().trimmed();
+			QString controllerName = config->controllerName().trimmed();
 			if(!controllerName.isEmpty()) {
 				//qDebug()<<"Attempting to generate actuator controller of type "<<controllerName;
 				ActuatorControllerFactory factory;
 				mActuatorController=factory.controllerFactory(controllerName);
 				if(!mActuatorController.isNull()) {
 					//qDebug()<<"Actuator controller created, configuring";
-					QVariantMap controllerConfig=config->controllerConfig();
+					QVariantMap controllerConfig = config->controllerConfig();
 					mActuatorController->setConfiguration(controllerConfig);
 					mActuatorController->setConnected(true);
 				}

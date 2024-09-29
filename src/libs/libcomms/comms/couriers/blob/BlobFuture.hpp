@@ -15,7 +15,7 @@ private:
 	QString mReason;
 	bool mWin;
 public:
-	BlobFuture(QString name, BlobCourier *courier);
+	BlobFuture(QString name="", BlobCourier *courier=nullptr);
 
 
 	void fail(QString reason);

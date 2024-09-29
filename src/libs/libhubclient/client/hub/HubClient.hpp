@@ -22,14 +22,14 @@ private:
 
 public:
 	explicit HubClient(QObject *parent = nullptr);
-	virtual ~HubClient() Q_DECL_OVERRIDE;
+	virtual ~HubClient() override;
 
 public:
 	void configure(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssoc);
 	// Client interface
 public:
-	QSharedPointer<CourierSet> courierSet() Q_DECL_OVERRIDE;
-	QSharedPointer<ClientWidget> widget() Q_DECL_OVERRIDE;
+	QSharedPointer<CourierSet> courierSet() override;
+	QSharedPointer<ClientWidget> widget() override;
 
 };
 

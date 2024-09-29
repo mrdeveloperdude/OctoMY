@@ -26,7 +26,7 @@ private:
 	
 public:
 	explicit Tremolo();
-	virtual ~Tremolo() Q_DECL_OVERRIDE;
+	virtual ~Tremolo() override;
 	
 public:
 	void set(T freq,T amp);
@@ -34,8 +34,8 @@ public:
 	
 	//IAudioProcessor interface
 public:
-	void init(QAudioFormat f) Q_DECL_OVERRIDE;
-	void process(qint64 num, T *in, T *out) Q_DECL_OVERRIDE;
+	void init(QAudioFormat f) override;
+	void process(qint64 num, T *in, T *out) override;
 };
 
 

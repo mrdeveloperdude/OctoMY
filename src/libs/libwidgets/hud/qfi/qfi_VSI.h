@@ -93,7 +93,7 @@ public:
 	qfi_VSI( QWidget *parent = nullptr );
 
 	/** Destructor. */
-	virtual ~qfi_VSI() Q_DECL_OVERRIDE;
+	virtual ~qfi_VSI() override;
 
 private:
 	void init();
@@ -119,7 +119,7 @@ public:
 
 protected:
 
-	void resizeEvent( QResizeEvent *event ) Q_DECL_OVERRIDE;
+	void resizeEvent( QResizeEvent *event ) override;
 
 };
 

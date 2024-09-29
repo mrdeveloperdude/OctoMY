@@ -7,14 +7,17 @@
 #ifndef FACEWIDGET_HPP
 #define FACEWIDGET_HPP
 
-#include "components/TryToggle.hpp"
+#include "app/log/LogDestination.hpp"
+#include "components/TryToggleState.hpp"
 #include "security/PortableID.hpp"
+#include "uptime/ConfigureHelper.hpp"
+#include "components/navigation/Activity.hpp"
 
 #include <QWidget>
 
-
-
+class CommsSession;
 class Agent;
+class Settings;
 class ISyncParameter;
 
 namespace Ui
@@ -22,50 +25,55 @@ namespace Ui
 class FaceWidget;
 }
 
-class FaceWidget : public QWidget
+class FaceWidget : public Activity, public LogDestination
 {
 	Q_OBJECT
 private:
 	Ui::FaceWidget *ui;
 	PortableID mLastPID;
 	QSharedPointer<Agent> mAgent;
+	ConfigureHelper mConfigureHelper;
 
 public:
 	explicit FaceWidget(QWidget *parent = nullptr);
 	~FaceWidget();
 
 protected:
-
 	QSharedPointer<Agent> agent();
+	QSharedPointer<Settings> settings();
 
-
+	// LogDestination interface
+public:
+	void appendLog(const QString& text) override;
 
 public:
 	void updateEyeColor();
 	void updateVisibility();
-	void appendLog(const QString&);
+	
 	void setAgent(QSharedPointer<Agent>);
-
-	void setConnectionState(const TryToggleState s, const bool doEmit=true);
-	TryToggleState  connectionState() const ;
-
 	void setHookSignals(QObject &ob, bool hook);
 	void setPanic(bool panic);
 
 signals:
 	void connectionStateChanged(const TryToggleState last, const TryToggleState current);
 	void colorChanged(QColor);
-	void panic();
 
 public slots:
 	void onSyncParameterChanged(ISyncParameter *);
 
 private slots:
-	void on_pushButtonNewColor_clicked();
-	void on_pushButtonPanic_toggled(bool checked);
-	void on_splitterTop_splitterMoved(int pos, int index);
-	void on_splitterBottom_splitterMoved(int pos, int index);
-	void on_splitterMiddle_splitterMoved(int pos, int index);
+	void onColorClicked();
+	void onPanicToggled(bool checked);
+	void onSplitterMoved(int pos, int index);
+
+	// CommsChannel slots (via setHookCommsSignals in AgentWindow)
+public slots:
+	// An error occurred in comms
+	void onCommsError(QString message);
+	// A new comms session was added
+	void onCommsClientAdded(CommsSession *c);
+	// The connection state changed for comms channel
+	void onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection);
 
 };
 

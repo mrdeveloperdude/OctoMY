@@ -36,16 +36,16 @@ private:
 	
 public:
 	explicit CreepyVoice();
-	virtual ~CreepyVoice() Q_DECL_OVERRIDE;
+	virtual ~CreepyVoice() override;
 	
 public:
-	bool speak(PortableID &id, QString sentence);
+	bool speak(const PortableID &id, const QString &sentence) const;
 	bool voiceIsAvailable();
 	
 	// IAudioProcessor interface
 public:
-	void init(QAudioFormat af) Q_DECL_OVERRIDE;
-	void generate(qint64 num, T *out)Q_DECL_OVERRIDE;
+	void init(QAudioFormat af) override;
+	void generate(qint64 num, T *out)override;
 	
 };
 
@@ -68,7 +68,7 @@ CreepyVoice<T, OUTPUT_CHANNELS>::~CreepyVoice(){
 
 
 template <typename T, int OUTPUT_CHANNELS>
-bool CreepyVoice<T, OUTPUT_CHANNELS>::speak(PortableID &id, QString text)
+bool CreepyVoice<T, OUTPUT_CHANNELS>::speak(const PortableID &id, const QString &text) const 
 {
 	OC_METHODGATE();
 	return voice.speak(id, text);

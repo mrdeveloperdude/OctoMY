@@ -24,7 +24,7 @@ void RemoteClient::configure(QSharedPointer<Node> node, QSharedPointer<Associate
 	if(!nodeAssoc.isNull()) {
 		QSharedPointer<RemoteClient> sharedThis = qSharedPointerCast<RemoteClient>(sharedFromThis());
 		if(!sharedThis.isNull()) {
-			mCouriers=QSharedPointer<RemoteCourierSet>(OC_NEW RemoteCourierSet());
+			mCouriers = QSharedPointer<RemoteCourierSet>::create();
 			if(!mCouriers.isNull()) {
 				mCouriers->configure(nodeAssoc->id(), sharedThis);
 			} else {
@@ -56,7 +56,7 @@ QSharedPointer<ClientWidget> RemoteClient::widget()
 	if(mWidget.isNull()) {
 		QSharedPointer<RemoteClient> sharedThis = qSharedPointerCast<RemoteClient>(sharedFromThis());
 		if(!sharedThis.isNull()) {
-			mWidget=QSharedPointer<RemoteClientWidget>(OC_NEW RemoteClientWidget(sharedThis, nullptr));
+			mWidget = QSharedPointer<RemoteClientWidget>::create(sharedThis, nullptr);
 			if(mWidget.isNull()) {
 				qWarning()<<"ERROR: could not create RemoteClientWidget for RemoteClient";
 			}

@@ -23,13 +23,13 @@ private:
 	
 public:
 	explicit RMSMin(T wsz=0.1);
-	virtual ~RMSMin() Q_DECL_OVERRIDE;
+	virtual ~RMSMin() override;
 	T  process(T s);
 	
 	//IAudioProcessor interface
 public:
-	void init(QAudioFormat f) Q_DECL_OVERRIDE;
-	void process(qint64 num, T *in, T *out) Q_DECL_OVERRIDE;
+	void init(QAudioFormat f) override;
+	void process(qint64 num, T *in, T *out) override;
 	
 };
 

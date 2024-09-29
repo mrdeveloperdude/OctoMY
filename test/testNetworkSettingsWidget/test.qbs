@@ -1,3 +1,3 @@
 Test {
-    localPath: path
+	localPath: path
 }

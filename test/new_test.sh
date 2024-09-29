@@ -6,7 +6,6 @@ then
 	echo "$0: Create a new test from template."
 	echo ""
 	echo "NOTE: Will add the generated files to git"
-	echo "NOTE: Will add reference to the new test to test.pro"
 	echo ""
 	echo "USAGE: $0 <name> <type>"
 	echo ""
@@ -74,6 +73,4 @@ done
 from="\tmessage(ADDING BASIC TESTS TO BUILD)\n\tTEST_PROJECTS+= \\\\\n"
 to="${from}\t\ttest$ORIGINAL \\\\\n"
 
-sed  -i -z  "s/$from/$to/g" 'test.pro'
-
-git add "$NEW"/* "test.pro"
+git add "$NEW"/*

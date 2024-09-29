@@ -39,7 +39,7 @@ public:
 	virtual ~RemoteClientWidget();
 
 private:
-	bool eventFilter(QObject *object, QEvent *event) Q_DECL_OVERRIDE;
+	bool eventFilter(QObject *object, QEvent *event) override;
 
 	// Spinner
 	void prepareSpinner();
@@ -63,7 +63,7 @@ public:
 
 	// ClientWidget interface
 public:
-	void updateControlLevel(int level) Q_DECL_OVERRIDE;
+	void updateControlLevel(int level) override;
 
 	// Internal custom UI slots
 private slots:

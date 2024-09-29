@@ -35,7 +35,7 @@ Remote::Remote()
 {
 	OC_METHODGATE();
 	//qDebug()<<"Remote()";
-	// NOTE: Please do not put code here that generates events. Instead put them in *configure*() or *activate*()
+	// NOTE: Please do not put code here that generates events. Instead put them in *nodeConfigure*() or *nodeActivate*()
 }
 
 /*! 
@@ -98,7 +98,7 @@ QSharedPointer<NodeWindow> Remote::nodeWindow()
 	if(mWindow.isNull()) {
 		QSharedPointer<Remote> sp=qSharedPointerCast<Remote>(sharedThis());
 		if(!sp.isNull()) {
-			mWindow=QSharedPointer<RemoteWindow>(OC_NEW RemoteWindow(nullptr));
+			mWindow = QSharedPointer<RemoteWindow>::create(nullptr);
 			if(!mWindow.isNull()) {
 				mWindow->nodeWindowConfigure(sp);
 			} else {

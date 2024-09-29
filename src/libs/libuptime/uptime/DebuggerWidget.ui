@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>315</width>
-    <height>621</height>
+    <width>673</width>
+    <height>1092</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -76,7 +76,7 @@
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -433,40 +433,7 @@
        <number>0</number>
       </property>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="TryToggle" name="tryToggleBirth" native="true">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>10</width>
-            <height>10</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>10</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="PortableIDWidget" name="widgetBirthCertificate" native="true">
+       <widget class="DeliveryDebugWidget" name="widgetDelivery" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
           <horstretch>0</horstretch>
@@ -942,21 +909,15 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PortableIDWidget</class>
+   <class>IdenticonWidget</class>
    <extends>QWidget</extends>
-   <header location="global">node/PortableIDWidget.hpp</header>
+   <header location="global">identity/IdenticonWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>NetworkSettingsWidget</class>
    <extends>QWidget</extends>
    <header location="global">node/NetworkSettingsWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>IdenticonWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">identity/IdenticonWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -1005,6 +966,12 @@
    <class>PairingDebugWidget</class>
    <extends>QWidget</extends>
    <header location="global">debug/PairingDebugWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DeliveryDebugWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">debug/DeliveryDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

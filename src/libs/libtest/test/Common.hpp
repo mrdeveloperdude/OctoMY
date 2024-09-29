@@ -13,16 +13,23 @@
 
 
 
-#define OC_TEST_ICON(testType, objectType) \
+struct OC_Test{
+	QApplication *app{nullptr};
+};
+
+
+#define OC_TEST_ICON(testType, objectType, doDebug) \
 	Q_INIT_RESOURCE(test_resources); \
 	QDirIterator it(":", QDirIterator::Subdirectories); \
-	qDebug()<<"RESOURCES: "; \
-	while (it.hasNext()) { \
-		qDebug()<<" + " << it.next(); \
+	if(doDebug){ \
+		qDebug()<<"RESOURCES: "; \
+		while (it.hasNext()) { \
+			qDebug()<<" + " << it.next(); \
+		} \
 	} \
 	QIcon icon; \
 	icon.addFile(QStringLiteral(OC_TEST_RESOURCES_BASE #testType ".svg"), QSize(), QIcon::Normal, QIcon::Off); \
-	app.setWindowIcon(icon); \
+	ocTest.app->setWindowIcon(icon); \
 
 
 
@@ -31,6 +38,8 @@
 	QTEST_SET_MAIN_SOURCE_PATH \
 	const auto ret=QTest::qExec(&ob, argc, argv);	\
 	qDebug()<<"Stopping " #testType " for " #objectType; \
+	delete ocTest.app; \
+	ocTest.app = nullptr; \
 	return ret; \
 
 #ifdef OC_USE_LIB_EXT_OPENCL
@@ -64,11 +73,12 @@ int main(int argc, char *argv[]) \
 	qDebug() << format<<", renderableType=" << format.renderableType(); \
 	QApplication app(argc, argv); \
 	qDebug()<<"Starting " #testType " for " #objectType; \
-	app.setAttribute(Qt::AA_Use96Dpi, true); \
-	OC_TEST_ICON(testType, objectType) \
+	ocTest.app->setAttribute(Qt::AA_Use96Dpi, true); \
+	OC_TEST_ICON(testType, objectType, false) \
 	QTEST_ADD_GPU_BLACKLIST_SUPPORT \
 	QTEST_DISABLE_KEYPAD_NAVIGATION \
 	OC_TEST_END(testType, objectType) \
+	qDebug()<<"Test over" #testType " for " #objectType; \
 }
 
 
@@ -101,9 +111,10 @@ QT_END_NAMESPACE \
 int main(int argc, char *argv[]) \
 { \
 	QApplication::setAttribute(Qt::AA_Use96Dpi, true); \
-	QApplication app(argc, argv); \
+	OC_Test ocTest; \
+	ocTest.app = new QApplication (argc, argv); \
 	qDebug()<<"Starting " #testType " for " #objectType; \
-	OC_TEST_ICON(testType, objectType) \
+	OC_TEST_ICON(testType, objectType, false) \
 	QTEST_DISABLE_KEYPAD_NAVIGATION \
 	QTEST_ADD_GPU_BLACKLIST_SUPPORT \
 	OC_TEST_END(testType, objectType) \
@@ -115,9 +126,10 @@ int main(int argc, char *argv[]) \
 int main(int argc, char *argv[]) \
 { \
 	QApplication::setAttribute(Qt::AA_Use96Dpi, true); \
-	QCoreApplication app(argc, argv); \
+	OC_Test ocTest; \
+	ocTest.app = new QApplication (argc, argv); \
 	qDebug()<<"Starting " #testType " for " #objectType; \
-	OC_TEST_ICON(testType, objectType) \
+	OC_TEST_ICON(testType, objectType, false) \
 	OC_TEST_END(testType, objectType) \
 }
 

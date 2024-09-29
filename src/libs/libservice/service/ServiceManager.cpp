@@ -354,26 +354,26 @@ QSet<QString> ServiceManager::nextActivatableInSet(const QSet<QString> set, cons
 	QSet<QString> ret;
 	for(auto name:set) {
 		//qDebug()<<" + NAME: "<<name;
-		if(active!=activatedWanted(name)) {
+		if(active != activatedWanted(name)) {
 			if(active) {
-				auto dependenciesSet=dependencies(name);
+				auto dependenciesSet = dependencies(name);
 				//qDebug()<<"   + DEPENDENCIES: "<<dependenciesSet;
 				if(dependenciesMet(name)) {
 					//qDebug()<<"     + MET";
-					ret+=name;
+					ret += name;
 				} else {
 					//qDebug()<<"     + UNMET";
-					ret+=nextActivatableInSet(dependenciesSet, active);
+					ret += nextActivatableInSet(dependenciesSet, active);
 				}
 			} else {
-				auto dependentsSet=dependents(name);
+				auto dependentsSet = dependents(name);
 				//qDebug()<<"   + DEPENDENTS: "<<dependentsSet;
 				if(dependentsMet(name)) {
 					//qDebug()<<"     + MET";
-					ret+=name;
+					ret += name;
 				} else {
 					//qDebug()<<"     + UNMET";
-					ret+=nextActivatableInSet(dependentsSet, active);
+					ret += nextActivatableInSet(dependentsSet, active);
 				}
 			}
 		}
@@ -412,35 +412,35 @@ void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSe
 {
 	OC_METHODGATE();
 	//qDebug().noquote().nospace()<<"changeActivation called with activate="<<activateSet<<" deactivate="<<deactivateSet;
-	QSet<QString> workingActivate=nextActivatableInSet(activateSet, true);
-	QSet<QString> workingDeactivate=nextActivatableInSet(deactivateSet, false);
+	auto workingActivate = nextActivatableInSet(activateSet, true);
+	auto workingDeactivate = nextActivatableInSet(deactivateSet, false);
 	// Make sure that we don't accidentally deactivate services we actually need.
 	workingDeactivate -= workingActivate;
 	// Create one big set of all serviecs that will possibly change
-	QSet<QString> changing=workingDeactivate + workingActivate;
+	auto changing = workingDeactivate + workingActivate;
 
-	synchronizer *sync=OC_NEW synchronizer;
+	auto sync = OC_NEW synchronizer;
 	if(!changing.isEmpty()) {
 		// qDebug()<<" -- Changing service set: "<<changing;
-		for(auto name:changing) {
+		for(const auto &name:changing) {
 			auto service = serviceByName(name);
 			if(!service.isNull()) {
-				const bool currentlyWanted=service->serviceActiveWanted();
-				const bool wanted=workingActivate.contains(name);
+				const bool currentlyWanted = service->serviceActiveWanted();
+				const bool wanted = workingActivate.contains(name);
 				// Is there a change?
 				if(currentlyWanted != wanted) {
 					// qDebug().noquote().nospace()<<" --- In change set: "<<name<<" for "<<(wanted?"ACTIVATION":"DEACTIVATION");
 					sync->inc();
 				}
 			} else {
-				qWarning()<<"WARNING: Found invalid service: "<<name;
+				qWarning() << "WARNING: Found invalid service: " << name;
 			}
 		}
-		for(auto name:changing) {
+		for(const auto &name:changing) {
 			auto service = serviceByName(name);
 			if(!service.isNull()) {
-				const bool currentlyWanted=service->serviceActiveWanted();
-				const bool wanted=workingActivate.contains(name);
+				const bool currentlyWanted = service->serviceActiveWanted();
+				const bool wanted = workingActivate.contains(name);
 				// Is there a change?
 				if(currentlyWanted != wanted) {
 					// Recurse asynchronously
@@ -456,7 +456,7 @@ void ServiceManager::changeActivation(const QSet<QString> activateSet, const QSe
 					});
 				}
 			} else {
-				qWarning()<<"WARNING: Found invalid service: "<<name;
+				qWarning() << "WARNING: Found invalid service: " << name;
 			}
 		}
 	} else {

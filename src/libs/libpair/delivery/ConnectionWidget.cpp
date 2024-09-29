@@ -1,12 +1,11 @@
 #include "ConnectionWidget.hpp"
 #include "ui_ConnectionWidget.h"
 
+#include "app/Constants.hpp"
+#include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
-#include "uptime/ConnectionType.hpp"
-
-
-#include "agent/AgentConstants.hpp"
+//#include "agent/AgentConstants.hpp"
 
 ConnectionWidget::ConnectionWidget(QWidget *parent)
 	: QWidget(parent)
@@ -14,7 +13,7 @@ ConnectionWidget::ConnectionWidget(QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
-	ui->tryToggleListen->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_DISCONNECT_COLOR);
+	ui->tryToggleListen->configure("Connect","Connecting...","Connected", "Disconnecting...", Constants::AGENT_CONNECT_BUTTON_COLOR, Constants::AGENT_DISCONNECT_COLOR);
 	setEditsEnabled(false);
 	if(!connect(ui->tryToggleListen,SIGNAL(stateChanged(TryToggleState)),this,SLOT(onConnectStateChanged(TryToggleState)),OC_CONTYPE)){
 		qWarning()<<"ERROR: could not connect";

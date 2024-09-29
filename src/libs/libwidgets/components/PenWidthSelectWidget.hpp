@@ -12,7 +12,7 @@ private:
 	QComboBox *combo;
 public:
 	explicit PenWidthSelectWidget(QWidget *parent = nullptr);
-	virtual ~PenWidthSelectWidget() Q_DECL_OVERRIDE;
+	virtual ~PenWidthSelectWidget() override;
 
 private:
 
@@ -27,7 +27,7 @@ public:
 
 	// From QWidget
 protected:
-	virtual void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+	virtual void resizeEvent(QResizeEvent *event) override;
 
 
 signals:

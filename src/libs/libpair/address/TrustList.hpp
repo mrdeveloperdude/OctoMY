@@ -11,7 +11,7 @@
 
 class TrustList:public QSet<QString>
 {
-private:
+public:
 	const static QString giveControl;
 	const static QString takeControl;
 	const static QString block;

@@ -36,8 +36,6 @@ class Node;
 class Associate: public QEnableSharedFromThis<Associate>
 {
 private:
-	// The public key of this associate
-//	Key mKey;
 	QString mID;
 	// The name of this associate
 	QString mName;
@@ -69,11 +67,11 @@ private:
 
 public:
 	explicit Associate();
-	explicit Associate(const QVariantMap map/*, bool isPublic=true*/);
+	explicit Associate(const QVariantMap map);
 	virtual ~Associate();
 
 public:
-	bool update(const QVariantMap map, bool trustedSource=false);
+	bool update(const QVariantMap map, bool trustedSource = false);
 
 public:
 	// Return the ID string

@@ -23,13 +23,13 @@ void KeyStoreService::serviceWrapperActivate(QSharedPointer<KeyStore> keystore, 
 	OC_METHODGATE();
 	if(!keystore.isNull()) {
 		keystore->activate(on, [callBack, on](bool ok) {
-			if(nullptr!=callBack) {
+			if(nullptr != callBack) {
 				callBack(on, ok);
 			}
 		});
 	} else {
 		qWarning()<<"ERROR: No keystore";
-		if(nullptr!=callBack) {
+		if(nullptr != callBack) {
 			callBack(on, false);
 		}
 	}

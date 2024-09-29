@@ -1,7 +1,7 @@
 #ifndef STRESSTEMPLATE_HPP
 #define STRESSTEMPLATE_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class StressTemplate:public QObject
 {

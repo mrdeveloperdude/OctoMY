@@ -28,10 +28,14 @@ public:
 	void setState(QString title, bool showBar=true, bool showBack=true, bool showMenu=true);
 	QPoint menuPos();
 	void configure(QSharedPointer<Node> node);
-
+	
+public slots:
+	void onNavigateBack();
+	void onOpenMenu();
+	
 signals:
-	void backClicked();
-	void menuClicked();
+	void navigateBack();
+	void openMenu();
 };
 
 #endif // NODENAVIGATION_HPP

@@ -281,7 +281,7 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 			qWarning()<<"ERROR: no mNode";
 			return;
 		}
-		QSharedPointer<Key> key=QSharedPointer<Key>(OC_NEW Key(map["key"].toMap(), true));
+		auto key = QSharedPointer<Key>::create(map["key"].toMap(), true);
 		if(!key.isNull()) {
 			QSharedPointer<KeyStore> keyStore=mNode->keyStore();
 			auto ourKey=keyStore->localKey();
@@ -306,12 +306,12 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 								emit nodeDiscovered(partID);
 							}
 						} else {
-							part=QSharedPointer<Associate>(OC_NEW Associate(map.value("associate").toMap()));
+							part = QSharedPointer<Associate>::create(map.value("associate").toMap());
 							if(!part.isNull()) {
 								if(part->isValidForClient()) {
 									QSharedPointer<CommsChannel> comms=mNode->comms();
 									if(!comms.isNull()) {
-										QSharedPointer<DiscoveryCourier> courier(OC_NEW DiscoveryCourier(part, comms));
+										auto courier = QSharedPointer<DiscoveryCourier>::create(part, comms);
 										if(!courier.isNull()) {
 											//TODO: Security issue. what if the current associate has lots of important data? we need a smart merge instead of this.
 											peers->upsertAssociate(part);

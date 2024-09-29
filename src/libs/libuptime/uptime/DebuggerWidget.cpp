@@ -1,6 +1,7 @@
 #include "DebuggerWidget.hpp"
 #include "ui_DebuggerWidget.h"
 
+#include "node/Node.hpp"
 #include "node/NodeWindow.hpp"
 
 #include "uptime/MethodGate.hpp"
@@ -83,7 +84,7 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 		}
 		// Not necessary
 		//ui->widgetIdenticon->configure();
-		ui->widgetBirthCertificate->configure();
+		ui->widgetDelivery->configure(node);
 		updateIdentity();
 		ui->widgetHeaderCommsChannel->configure(mNode);
 		ui->widgetHeaderCommsCarrier->configure(mNode);
@@ -96,22 +97,7 @@ void DebuggerWidget::configure(QSharedPointer <Node> node)
 		ui->widgetHeaderDiscoveryClient->configure(mNode);
 		configTryToggleForServiceLevel(ui->tryToggleDiscovery, "Discovery", mNode, "Activate disovery", "Discovery activating", "Deactivate discovery", "Discovery deactivating");
 		configTryToggleForServiceLevel(ui->tryToggleAlways, "Always", mNode, "Activate", "Activating", "Deactivate", "Deactivating");
-		if(nullptr != ui->tryToggleBirth) {
-			if(!node.isNull()) {
-				ui->tryToggleBirth->configure("Birth", "Delivering", "Unbirth", "Killing");
-				if(!QObject::connect(ui->tryToggleBirth, &TryToggle::stateChanged, mNode.data(), [=](const TryToggleState last, const TryToggleState current) {
-				Q_UNUSED(last);
-					if(transient(current)) {
-						positive(current)?birth():unBirth();
-					}
-				}, OC_CONTYPE_NON_UNIQUE)) {
-				}
-			} else {
-				qWarning()<<"WARNING: Could not switch birth, no node";
-			}
-		} else {
-			qWarning()<<"WARNING: No try birth try toggle";
-		}
+		
 		configureUi();
 		updateExpandButton();
 	}
@@ -131,16 +117,15 @@ void DebuggerWidget::updateIdentity()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
+		ui->widgetDelivery->updateUI();
 		if(!mNode.isNull()) {
-			auto identity=mNode->nodeIdentity();
+			auto identity = mNode->nodeIdentity();
 			if(!identity.isNull()) {
-				auto pid=identity->toPortableID();
+				auto pid = identity->toPortableID();
 				qDebug()<<"IDENTITY "<<pid.toPortableString();
 				setWindowTitle(nodeTypeToString(pid.type()));
 				ui->widgetIdenticon->setPortableID(pid);
 				ui->labelName->setText(pid.name());
-				ui->widgetBirthCertificate->setPortableID(pid);
-				ui->tryToggleBirth->setState(pid.id().isEmpty()?TryToggleState::OFF:TryToggleState::ON, false);
 			}
 		}
 	}
@@ -156,22 +141,22 @@ void DebuggerWidget::birth()
 			if(!keystore.isNull()) {
 				keystore->clear([=](ASEvent<QVariantMap> &ase1) {
 					Q_UNUSED(ase1);
-					keystore->setBootstrapEnabled(true);
+					keystore->setBootstrapEnabled(false);
 					keystore->synchronize([=](ASEvent<QVariantMap> &ase2) {
 						Q_UNUSED(ase2);
 						QSharedPointer<Key> key=keystore->localKey();
 						if(!key.isNull()) {
 							QVariantMap map;
-							const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
+							const quint64 now = utility::time::currentMsecsSinceEpoch<quint64>();
 							AgentNameGenerator ang;
 							GenderGenerator gg;
-							map["id"]=key->id();
-							map["name"]=ang.generate();
-							map["gender"]=gg.generate();
-							map["role"]=nodeRoleToString(mNode->nodeRole());
-							map["type"]=nodeTypeToString(mNode->nodeType());
-							map["birthDate"]=utility::time::msToVariant(now);
-							qDebug()<<"Creating new identity: "<<map;
+							map["id"] = key->id();
+							map["name"] = ang.generate();
+							map["gender"] = gg.generate();
+							map["role"] = nodeRoleToString(mNode->nodeRole());
+							map["type"] = nodeTypeToString(mNode->nodeType());
+							map["birthDate"] = utility::time::msToVariant(now);
+							qDebug() << "Creating new identity: " << map;
 							mNode->setNodeIdentity(map);
 						}
 					});

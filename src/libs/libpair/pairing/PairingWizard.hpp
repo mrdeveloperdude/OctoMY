@@ -3,6 +3,7 @@
 
 #include "uptime/ConfigureHelper.hpp"
 #include "node/NodeType.hpp"
+#include "components/navigation/Activity.hpp"
 
 #include <QWidget>
 #include <QHostAddress>
@@ -35,13 +36,12 @@ class LocalAddressList;
  * The widget has 3 main components:
  * + network settings - A widget to select address and port for communicating with associates
  * + associate list - A list of all associates found through discovery so far
- * + trust editor - A screen that allows user to tweak trust for one individual associate
+ * + trust editor - A screen that allows user to edit trust for one individual associate
  *
  * It also has a display of our current birth certificate and initiation of several 2-factor methods
- *
  */
 
-class PairingWizard : public QWidget
+class PairingWizard : public Activity
 {
 	Q_OBJECT
 
@@ -58,7 +58,7 @@ private:
 
 public:
 	explicit PairingWizard(QWidget *parent = nullptr);
-	virtual ~PairingWizard() Q_DECL_OVERRIDE;
+	virtual ~PairingWizard() override;
 
 public:
 	void configure(QSharedPointer<Node> node);
@@ -80,18 +80,18 @@ public:
 	void updateNetworkSettings();
 
 protected:
-	void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
-	void hideEvent(QHideEvent *) Q_DECL_OVERRIDE;
+	void showEvent(QShowEvent *) override;
+	void hideEvent(QHideEvent *) override;
 
 private slots:
 	void onNetworkSettingsChange(QHostAddress address, quint16 port, bool valid);
 
 private slots:
-	void on_pushButtonMaybeOnward_clicked();
-	void on_pushButtonTryAgain_clicked();
-	void on_pushButtonDone_clicked();
-	void on_pushButtonCameraPair_clicked();
-	void on_pushButtonRefresh_clicked();
+	void maybeOnward();
+	void tryAgain();
+	void complete();
+	void cameraPair();
+	void refresh();
 
 signals:
 	void done();

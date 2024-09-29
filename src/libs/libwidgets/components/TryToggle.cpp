@@ -20,7 +20,7 @@ TryToggle::TryToggle(QWidget *parent) :
 	ui->setupUi(this);
 	mTimer.setInterval(1000/5); //Multiple of 60Hz gives stutter free animation
 	mTimer.setTimerType(Qt::PreciseTimer);
-	connect(&mTimer,SIGNAL(timeout()), this, SLOT(onTimeout()));
+	connect(&mTimer, &QTimer::timeout, this, &TryToggle::onTimeout);
 	qRegisterMetaType<TryToggleState>("TryToggleState");
 	// Leave off-palette unchanged
 	mOffPalette=this->palette();
@@ -38,17 +38,29 @@ TryToggle::~TryToggle()
 void TryToggle::configure(const QString offText, const QString goingOnText, const QString onText, const QString goingOffText, const QColor onColor, const QColor goingOffColor, const quint32 blinkInterval)
 {
 	OC_METHODGATE();
-	mOffText=offText;
-	mGoingOnText=goingOnText;
-	mOnText=onText;
-	mGoingOffText=goingOffText;
+	mOffText = offText;
+	mGoingOnText = goingOnText;
+	mOnText = onText;
+	mGoingOffText = goingOffText;
 	if(onColor.isValid()) {
 		setColor(onColor, goingOffColor);
 	}
-	mTimer.setInterval(static_cast<int>(blinkInterval)); //Multiple of 60Hz gives stutter free animation
+	mTimer.setInterval(static_cast<int>(blinkInterval) ); //Multiple of 60Hz gives stutter free animation
 	updateText();
 }
 
+
+static float getColorIntensity(const QColor &color) {
+	int red = color.red();
+	int green = color.green();
+	int blue = color.blue();
+	float intensity = 0.299f * red + 0.587f * green + 0.114f * blue;
+	return intensity / 255.0f;
+}
+
+static bool isLightColor(const QColor &color){
+	return getColorIntensity(color)>0.5f;
+}
 
 void TryToggle::setColor(const QColor onColor, const QColor goingOffColor)
 {
@@ -56,11 +68,13 @@ void TryToggle::setColor(const QColor onColor, const QColor goingOffColor)
 	mOnPalette=mOffPalette;
 	if(onColor.isValid()) {
 		mOnPalette.setColor(QPalette::Button, onColor);
+		mOnPalette.setColor(QPalette::Text, isLightColor(onColor)?Qt::black:Qt::white);
 	}
 	if(goingOffColor.isValid()) {
 		mGoingOffPalette.setColor(QPalette::Button, goingOffColor);
+		mGoingOffPalette.setColor(QPalette::Text, isLightColor(goingOffColor)?Qt::black:Qt::white);
 	}
-	ui->pushButtonToggle->setPalette(ON==mState?mOnPalette:mOffPalette);
+	ui->pushButtonToggle->setPalette(ON == mState?mOnPalette:mOffPalette);
 }
 
 
@@ -162,7 +176,7 @@ void TryToggle::animateClick()
 }
 
 
-void TryToggle::on_pushButtonToggle_toggled(bool checked)
+void TryToggle::onToggled(bool checked)
 {
 	OC_METHODGATE();
 	// Classify state

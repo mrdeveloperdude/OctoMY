@@ -28,7 +28,7 @@ private:
 	
 public:
 	explicit Ding(T hz=100,T sr=44100,T amp=1,T trem=0.1,T trema=12,T damp=0.99998);
-	virtual ~Ding() Q_DECL_OVERRIDE;
+	virtual ~Ding() override;
 	
 public:
 	inline 	void trigger(T secOfs=0.0);
@@ -37,8 +37,8 @@ public:
 	
 	//IAudioSource interface
 public:
-	void init(QAudioFormat f) Q_DECL_OVERRIDE;
-	void generate(qint64 num, T *out) Q_DECL_OVERRIDE;
+	void init(QAudioFormat f) override;
+	void generate(qint64 num, T *out) override;
 };
 
 

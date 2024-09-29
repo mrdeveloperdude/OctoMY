@@ -59,7 +59,7 @@ QSharedPointer<NodeWindow> MockApp::nodeWindow(){
 	if(mWindow.isNull()) {
 		QSharedPointer<MockApp> sp=qSharedPointerCast<MockApp>(sharedThis());
 		if(!sp.isNull()) {
-			mWindow=QSharedPointer<MockAppWindow>(OC_NEW MockAppWindow(nullptr));
+			mWindow=QSharedPointer<MockAppWindow>::create(nullptr);
 			if(!mWindow.isNull()) {
 				mWindow->nodeWindowConfigure(sp);
 			} else {

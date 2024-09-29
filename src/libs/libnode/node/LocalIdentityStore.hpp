@@ -10,7 +10,7 @@
  * The identity is in associate format, please see Associate class for details.
  *
  * The relationship between KeyStore and LocalIdentityStore is such that:
- *  + KeyStore will only maintain the privatekey and no other data for node, LocalIdentityStore maintains all identity data such as name and gender.
+ *  + KeyStore will only maintain the private key and no other data for node, LocalIdentityStore maintains all identity data such as name and gender.
  *  + KeyStore will maintain the private key, only id is stored in LocalIdentityStore
  *  + KeyStore can create new keys and operate on them
  *  + It is node's job to listen for changes to local key in keystore and propegate them to localidentiy store

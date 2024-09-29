@@ -28,7 +28,7 @@ public:
 
 	// ServiceWapper interface.
 public:
-	void serviceWrapperActivate(QSharedPointer<LocalIdentityStore> wrapee, bool on, ServiceActivatedCallback callBack) Q_DECL_OVERRIDE;
+	void serviceWrapperActivate(QSharedPointer<LocalIdentityStore> wrapee, bool on, ServiceActivatedCallback callBack) override;
 
 };
 

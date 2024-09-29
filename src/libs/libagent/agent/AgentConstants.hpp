@@ -1,6 +1,9 @@
 #ifndef AGENTCONSTANTS_HPP
 #define AGENTCONSTANTS_HPP
-
+/*
+ * 
+ * 
+ * * SEE app/Constants.*
 #include <QString>
 
 struct AgentConstants {
@@ -21,5 +24,5 @@ struct AgentConstants {
 	static const QString AGENT_CONNECTION_STATUS;
 
 };
-
+*/
 #endif // AGENTCONSTANTS_HPP

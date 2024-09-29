@@ -39,8 +39,8 @@ signals:
 
 	// Widget events
 protected:
-	void mouseDoubleClickEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-	void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
+	void mouseDoubleClickEvent(QMouseEvent *) override;
+	void paintEvent(QPaintEvent *) override;
 
 };
 

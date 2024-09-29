@@ -15,7 +15,12 @@ private slots:
 	void testOperators();
 	void testCreate();
 	void testLoad();
-
+	
+	/*
+	void testFilterEmptyRules();
+	void testFilterSingleRule();
+	void testFilterMultipleRules();
+*/
 };
 
 #endif

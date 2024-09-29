@@ -105,7 +105,7 @@
    <item row="0" column="1">
     <spacer name="horizontalSpacer">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
@@ -121,7 +121,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../resources/icons.qrc">
+      <iconset resource="../../libres/resources/icons.qrc">
        <normaloff>:/icons/view_grid.png</normaloff>:/icons/view_grid.png</iconset>
      </property>
      <property name="checkable">
@@ -147,7 +147,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../resources/icons.qrc">
+      <iconset resource="../../libres/resources/icons.qrc">
        <normaloff>:/icons/view_list.png</normaloff>:/icons/view_list.png</iconset>
      </property>
      <property name="checkable">
@@ -167,7 +167,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../resources/icons.qrc">
+      <iconset resource="../../libres/resources/icons.qrc">
        <normaloff>:/icons/view_details.png</normaloff>:/icons/view_details.png</iconset>
      </property>
      <property name="checkable">
@@ -187,7 +187,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../resources/icons.qrc">
+      <iconset resource="../../libres/resources/icons.qrc">
        <normaloff>:/icons/view_tree.png</normaloff>:/icons/view_tree.png</iconset>
      </property>
      <property name="checkable">
@@ -204,7 +204,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../resources/icons.qrc"/>
+  <include location="../../libres/resources/icons.qrc"/>
  </resources>
  <connections/>
  <buttongroups>

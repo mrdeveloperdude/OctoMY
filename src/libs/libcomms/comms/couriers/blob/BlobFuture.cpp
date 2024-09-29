@@ -6,7 +6,7 @@
 
 #include <QObject>
 
-BlobFuture::BlobFuture(QString name="", BlobCourier *courier=nullptr)
+BlobFuture::BlobFuture(QString name, BlobCourier *courier)
 : mCourier(courier)
 , mName(name)
 , mReason("No reason")

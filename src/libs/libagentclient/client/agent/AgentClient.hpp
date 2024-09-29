@@ -22,7 +22,7 @@ private:
 
 public:
 	explicit AgentClient(QObject *parent = nullptr);
-	virtual ~AgentClient() Q_DECL_OVERRIDE;
+	virtual ~AgentClient() override;
 
 public:
 	void configure(QSharedPointer<Node> node, QSharedPointer<Associate> nodeAssoc);
@@ -30,8 +30,8 @@ public:
 
 	// Client interface
 public:
-	QSharedPointer<CourierSet> courierSet() Q_DECL_OVERRIDE;
-	QSharedPointer<ClientWidget> widget() Q_DECL_OVERRIDE;
+	QSharedPointer<CourierSet> courierSet() override;
+	QSharedPointer<ClientWidget> widget() override;
 
 
 

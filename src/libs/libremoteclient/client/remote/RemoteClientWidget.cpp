@@ -2,15 +2,16 @@
 #include "ui_RemoteClientWidget.h"
 
 
-#include "agent/AgentConstants.hpp"
+#include "app/Constants.hpp"
 #include "app/Settings.hpp"
 #include "client/remote/RemoteClient.hpp"
 #include "comms/CommsChannel.hpp"
-#include "security/PortableID.hpp"
+#include "components/WaitingSpinnerWidget.hpp"
+#include "node/CarSteeringWidget.hpp"
+//#include "security/PortableID.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
-#include "node/CarSteeringWidget.hpp"
-#include "components/WaitingSpinnerWidget.hpp"
+//#include "agent/AgentConstants.hpp"
 
 #include <QScrollBar>
 
@@ -23,7 +24,7 @@ RemoteClientWidget::RemoteClientWidget(QSharedPointer<RemoteClient> client, QWid
 	, mRemoteClient(client)
 {
 	OC_METHODGATE();
-	qDebug()<<"CREATING REMOTE CLIENT WIDGET RemoteClient="<<(!mRemoteClient.isNull()?mRemoteClient->node()->name():"NULL")<<", parent="<<parent;
+	qDebug()<<"CREATING REMOTE CLIENT WIDGET RemoteClient="<<(!mRemoteClient.isNull()?mRemoteClient->node()->nodeIdentity()->name():"NULL")<<", parent="<<parent;
 
 	ui->setupUi(this);
 
@@ -47,7 +48,7 @@ RemoteClientWidget::RemoteClientWidget(QSharedPointer<RemoteClient> client, QWid
 	}
 
 	ui->widgetFace->setDisabled(true);
-	ui->tryToggleListen->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_DISCONNECT_COLOR);
+	ui->tryToggleListen->configure("Connect","Connecting...","Connected", "Disconnecting...", Constants::AGENT_CONNECT_BUTTON_COLOR, Constants::AGENT_DISCONNECT_COLOR);
 	ui->tryToggleListen->setState(OFF,false);
 
 	if(!connect(ui->tryToggleListen, &TryToggle::stateChanged, this, &RemoteClientWidget::onConnectButtonStateChanged, OC_CONTYPE)) {

@@ -19,14 +19,14 @@
 #include "uptime/ConfigureHelper.hpp"
 
 #include <QApplication>
-#include <QCoreApplication>
 #include <QCommandLineParser>
-#include <QProcessEnvironment>
-#include <QLoggingCategory>
-#include <QSurfaceFormat>
+#include <QCoreApplication>
 #include <QFileInfo>
+#include <QLoggingCategory>
+#include <QProcessEnvironment>
+#include <QSurfaceFormat>
 #include <QWidget>
-
+#include <qabstracteventdispatcher.h>
 
 class Settings;
 
@@ -49,7 +49,7 @@ class Settings;
  
 A common application launch looks roughly like this (using Agent as example):
 
-AppLauncher constructed
+AppLauncher constructed in main()
 AppLauncher configure
 AppLauncher run
 AppLauncher appActivate(true)
@@ -73,7 +73,7 @@ Node appActivate(false)
 Agent nodeActivate(false)
 AppLauncher nodeActivateChanged(false)
 AgentWindow closeEvent()
-AppLauncher<T>::run()
+AppLauncher<T>::run() returns exit code to main()
 
 ... And application returns to O/S
 */
@@ -107,7 +107,7 @@ private:
 	
 public:
 	explicit AppLauncher();
-	virtual ~AppLauncher() Q_DECL_OVERRIDE;
+	virtual ~AppLauncher() override;
 	
 public:
 	// Configure this app launcher before it is started. This version has no arguments
@@ -133,10 +133,10 @@ public:
 	// IAppLauncher interface
 public:
 	// Called when app execution is done
-	void appActivateDone(const bool on) Q_DECL_OVERRIDE;
+	void appActivateDone(const bool on) override;
 	
 	// Provide application context
-	QSharedPointer<AppContext> context() Q_DECL_OVERRIDE;
+	QSharedPointer<AppContext> context() override;
 	
 };
 
@@ -180,11 +180,11 @@ void AppLauncher<T>::configure(QString base, int argc, char *argv[])
 	//qDebug()<<"configure()";
 	OC_METHODGATE();
 	if(mAppConfigureHelper.configure()) {
-		QSharedPointer <AppCommandLineParser> clp(OC_NEW AppCommandLineParser());
+		auto clp = QSharedPointer <AppCommandLineParser>::create();
 		if(!clp.isNull()) {
 			clp->process(argc, argv);
-			QProcessEnvironment env=QProcessEnvironment::systemEnvironment();
-			mContext=QSharedPointer<AppContext>(OC_NEW AppContext(clp, env, base, clp->isHeadless()));
+			QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+			mContext = QSharedPointer<AppContext>::create(clp, env, base, clp->isHeadless());
 		}
 	}
 }
@@ -209,37 +209,53 @@ int AppLauncher<T>::run()
 	QCoreApplication::setOrganizationName(Settings::ORGANIZATION_NAME);
 	QCoreApplication::setOrganizationDomain(Settings::DOMAIN_NAME);
 	if(!mContext.isNull()) {
-		
 		AppRenderingSettingsProvider asfp;
 		QSurfaceFormat::setDefaultFormat(asfp.surfaceFormat());
 		asfp.applyApplicationAttributes();
-		int argc=mContext->commandLine()->argc();
-		char **argv=mContext->commandLine()->argv();
+		int argc = mContext->commandLine()->argc();
+		char **argv = mContext->commandLine()->argv();
 		//qDebug()<<(mContext->isHeadless()?"HEADLESS":"HEADFULL");
-		mQApp=(mContext->isHeadless()?(OC_NEW QCoreApplication(argc, argv)):(OC_NEW QApplication(argc, argv)));
-		if(nullptr!=mQApp) {
+		const auto lastAppInstance = QCoreApplication::instance();
+		bool alreadyRunning{false};
+		if(lastAppInstance){
+			qDebug() << "Found existing app instance";
+			mQApp = lastAppInstance;
+			// We assume it is already running
+			alreadyRunning = true;
+		}
+		else {
+			qDebug() << "Allocating new app instance";
+			mQApp = (mContext->isHeadless()?(OC_NEW QCoreApplication(argc, argv)):(OC_NEW QApplication(argc, argv)));
+		}
+		if(nullptr != mQApp) {
 			// We need full control of when application quits
 			QApplication::setQuitOnLastWindowClosed(false);
 			appActivate(true);
 			// Initialize resources here
 			
-			//TODO: Look at how to distribute this initialization wizely
+			//TODO: Look at how to distribute this initialization wisely
 			Q_INIT_RESOURCE(icons);
 			Q_INIT_RESOURCE(images);
 			Q_INIT_RESOURCE(3d);
 			
 			
+			qDebug() << QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " starting ";
 			// Start Qt event loop for application.
 			// NOTE: This call will block until mQApp::quit()  mQApp::exit() is called and the eventloop is terminated
-			mReturnValue = mQApp->exec();
+			if(! alreadyRunning){
+				mReturnValue = mQApp->exec();
+			}
+			else{
+				mReturnValue = 0;
+			}
 			
-			//qDebug()<<QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done with "<< mReturnValue << ", quitting";
+			qDebug() << QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done with "<< mReturnValue << ", quitting";
 		} else {
-			qWarning()<<"ERROR: no app, quitting";
-			mReturnValue=EXIT_FAILURE;
+			qWarning() << "ERROR: no app, quitting";
+			mReturnValue = EXIT_FAILURE;
 		}
 	} else {
-		qWarning()<<"ERROR: No context";
+		qWarning() << "ERROR: No context";
 	}
 	return mReturnValue;
 }
@@ -253,58 +269,36 @@ void AppLauncher<T>::appActivate(const bool on)
 	if(on) {
 		if(mAppConfigureHelper.activate(on)) {
 			if(!mContext.isNull()) {
-				mApp=QSharedPointer<T>(OC_NEW T());
+				mApp = QSharedPointer<T>::create();
 				if(!mApp.isNull()) {
-					T *appPtr=mApp.data();
-					Q_ASSERT(nullptr!=appPtr);
-					auto sharedThis=AppLauncher<T>::sharedFromThis();
+					T *appPtr = mApp.data();
+					Q_ASSERT(nullptr != appPtr);
+					auto sharedThis = AppLauncher<T>::sharedFromThis();
 					if(!sharedThis.isNull()) {
 						mApp->appConfigure(sharedThis);
 						
 						if(nodeActivateChangedConnection){
-							qWarning()<<"Trying to connect duplicate nodeActivateChangedConnection";
+							qWarning() << "Trying to connect duplicate nodeActivateChangedConnection";
 						}
 						else{
 							// Handle when (de)activation of this app is completed
 							nodeActivateChangedConnection = QObject::connect(appPtr, &T::nodeActivateChanged, appPtr, [=](const bool on) {
-								qDebug()<<"nodeActivationChanged(on="<<on<<")";
+								qDebug() << "nodeActivationChanged(on=" << on << ")";
 								appActivateDone(on);
 							});
 						}
 						
 						if(nodeRequestedExitConnection){
-							qWarning()<<"Trying to connect duplicate nodeRequestedExitConnection";
+							qWarning() << "Trying to connect duplicate nodeRequestedExitConnection";
 						}
 						else{
 							// Handle when someone wants the app to stop
 							nodeRequestedExitConnection = QObject::connect(appPtr, &T::nodeRequestExit, appPtr, [=](const int returnValue) {
-								qDebug()<<"nodeRequestExit("<<returnValue<<")";
-								mReturnValue=returnValue;
+								qDebug() << "nodeRequestExit(" << returnValue << ")";
+								mReturnValue = returnValue;
 								appActivate(false);
 							});
 						}
-						
-						
-						
-						/*
-						if(!QObject::connect(appPtr, &T::nodeActivateChanged, appPtr, [=](const bool on) {
-											 //qDebug()<<"nodeActivationChanged(on="<<on<<")";
-											 appActivateDone(on);
-					}, OC_CONTYPE_NON_UNIQUE)) {
-							qWarning()<<"ERROR: Could not connect";
-						}
-						*/
-						
-						/*
-						// Handle when someone wants the app to stop
-						if(!QObject::connect(appPtr, &T::nodeRequestExit, appPtr, [=](const int returnValue) {
-											 //qDebug()<<"nodeRequestExit("<<returnValue<<")";
-											 mReturnValue=returnValue;
-											 appActivate(false);
-					}, OC_CONTYPE_NON_UNIQUE)) {
-							qWarning()<<"ERROR: Could not connect";
-						}
-						*/
 						// Run the node's appActivate() from eventloop since it will call pure virtual members (which as you know are NOT allowed to be run from ctor in C++)
 						QTimer::singleShot(0, Qt::VeryCoarseTimer, [appPtr]() {
 							appPtr->appActivate(true);

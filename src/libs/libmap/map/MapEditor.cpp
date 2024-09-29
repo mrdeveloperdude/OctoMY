@@ -71,12 +71,12 @@ void MapEditor::prepareMapTypes()
 {
 	OC_METHODGATE();
 	mMapTypes.clear();
-	registerMapType(MapType("google.roadmap", QSharedPointer<qmapcontrol::GoogleMapAdapter>(OC_NEW qmapcontrol::GoogleMapAdapter(qmapcontrol::GoogleMapAdapter::roadmap))));
-	registerMapType(MapType("google.satellite", QSharedPointer<qmapcontrol::GoogleMapAdapter>(OC_NEW qmapcontrol::GoogleMapAdapter(qmapcontrol::GoogleMapAdapter::satellite))));
-	registerMapType(MapType("google.terrain", QSharedPointer<qmapcontrol::GoogleMapAdapter>(OC_NEW qmapcontrol::GoogleMapAdapter(qmapcontrol::GoogleMapAdapter::terrain))));
-	registerMapType(MapType("google.hybrid", QSharedPointer<qmapcontrol::GoogleMapAdapter>(OC_NEW qmapcontrol::GoogleMapAdapter(qmapcontrol::GoogleMapAdapter::hybrid))));
-	registerMapType(MapType("openstreetmap.default", QSharedPointer<qmapcontrol::TileMapAdapter>(OC_NEW qmapcontrol::TileMapAdapter("tile.openstreetmap.org", "/%1/%2/%3.png", 256, 0, 17))));
-	registerMapType(MapType("kartverket.grunnkart", QSharedPointer<qmapcontrol::TileMapAdapter>(OC_NEW qmapcontrol::TileMapAdapter("cache.kartverket.no/grunnkart/wmts", "/%1/%2/%3.png", 256, 0, 17))));
+	registerMapType(MapType("google.roadmap", QSharedPointer<qmapcontrol::GoogleMapAdapter>::create(qmapcontrol::GoogleMapAdapter::roadmap)));
+	registerMapType(MapType("google.satellite", QSharedPointer<qmapcontrol::GoogleMapAdapter>::create(qmapcontrol::GoogleMapAdapter::satellite)));
+	registerMapType(MapType("google.terrain", QSharedPointer<qmapcontrol::GoogleMapAdapter>::create(qmapcontrol::GoogleMapAdapter::terrain)));
+	registerMapType(MapType("google.hybrid", QSharedPointer<qmapcontrol::GoogleMapAdapter>::create(qmapcontrol::GoogleMapAdapter::hybrid)));
+	registerMapType(MapType("openstreetmap.default", QSharedPointer<qmapcontrol::TileMapAdapter>::create("tile.openstreetmap.org", "/%1/%2/%3.png", 256, 0, 17)));
+	registerMapType(MapType("kartverket.grunnkart", QSharedPointer<qmapcontrol::TileMapAdapter>::create("cache.kartverket.no/grunnkart/wmts", "/%1/%2/%3.png", 256, 0, 17)));
 	//		qmapcontrol::MapAdapter* mapadapter = OC_NEW qmapcontrol::OSMMapAdapter();
 	//qmapcontrol::MapAdapter* mapadapter = OC_NEW qmapcontrol::OpenAerialMapAdapter();
 	//qmapcontrol::TileMapAdapter* mapadapter = OC_NEW qmapcontrol::TileMapAdapter("tile.openstreetmap.org", "/%1/%2/%3.png", 256, 0, 17);
@@ -129,7 +129,7 @@ void MapEditor::prepareMap()
 	if(nullptr!=mc) {
 		mc->showScale(true);
 		// Create a map layer with the mapadapter
-		mMapLayer = QSharedPointer<qmapcontrol::Layer>(OC_NEW qmapcontrol::MapLayer("Map Layer", nullptr));
+		mMapLayer = QSharedPointer<qmapcontrol::Layer>::create(QString("Map Layer"), nullptr);
 		if(nullptr!=mMapLayer) {
 			// Add Layer to the MapControl
 			mc->addLayer(mMapLayer);

@@ -619,13 +619,13 @@ bool AsyncStore<T>::clearSync()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
-		const bool backendOK=mBackend.isNull()?false:mBackend->clearBackend();
+		const bool backendOK = mBackend.isNull()?false:mBackend->clearBackend();
 		//const auto oldD=mDiskCounter;
 		//const auto oldM=mMemoryCounter;
 		if(backendOK) {
 			setDiskCounter(0);
 		}
-		const bool frontendOK=mFrontend.isNull()?false:mFrontend->clearFrontend();
+		const bool frontendOK = mFrontend.isNull()?false:mFrontend->clearFrontend();
 		if(frontendOK) {
 			setMemoryCounter(0);
 		}
@@ -646,7 +646,7 @@ T AsyncStore<T>::getSync(bool &ok)
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		//qDebug()<<"Entering Sync Get from "<<utility::concurrent::currentThreadID();
-		ok=false;
+		ok = false;
 		T data = mFrontend.isNull()?T():mFrontend->getFrontend(ok);
 		//qDebug()<<"Exiting Sync Get with ok="<<ok<<" and data="<<data<<" from "<<utility::concurrent::currentThreadID();
 		addJournal(QString("get=%1").arg(ok?"ok":"fail"));
@@ -663,7 +663,7 @@ bool AsyncStore<T>::setSync(T data)
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		//qDebug()<<"Entering Sync Set with data="<<data<<" from "<<utility::concurrent::currentThreadID();
-		const  bool ok=mFrontend.isNull()?false:mFrontend->setFrontend(data);
+		const  bool ok = mFrontend.isNull()?false:mFrontend->setFrontend(data);
 		//const auto old=mMemoryCounter;
 		if(ok) {
 			setMemoryCounter(autoIncrement());
@@ -729,7 +729,7 @@ bool AsyncStore<T>::generateSync()
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		//qDebug()<<"Entering Sync Generate from "<<utility::concurrent::currentThreadID();
-		const bool ok=mFrontend.isNull()?false:mFrontend->generateFrontend();
+		const bool ok = mFrontend.isNull()?false:mFrontend->generateFrontend();
 		//const auto old=mMemoryCounter;
 		if(ok) {
 			setMemoryCounter(autoIncrement());
@@ -755,20 +755,20 @@ bool AsyncStore<T>::synchronizeSync()
 		//qDebug()<<"AsyncStore::synchronizeSync("<<filename()<<"): disk("<<disk<<") == mem("<<mem<<")  from "<<utility::concurrent::currentThreadID();
 
 		if(disk > mem) {
-			ok=loadSync();
+			ok = loadSync();
 			//qDebug()<<" + load:"<<ok<<"  from "<<utility::concurrent::currentThreadID();
 		} else if(disk < mem) {
-			ok=saveSync();
+			ok = saveSync();
 			//qDebug()<<" + save:"<<ok<<"  from "<<utility::concurrent::currentThreadID();
 		}
 		// equal
 		else {
 			if(0 == disk) {
-				ok=generateSync();
-				ok=ok && saveSync();
+				ok = generateSync();
+				ok = ok && saveSync();
 				//qDebug()<<" + generate:"<<ok<<"  from "<<utility::concurrent::currentThreadID();
 			} else {
-				ok=true;
+				ok = true;
 				//qDebug()<<" + no-op:"<<ok<<"  from "<<utility::concurrent::currentThreadID();
 			}
 		}
@@ -786,8 +786,8 @@ bool AsyncStore<T>::completeSync()
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		//qDebug()<<"Entering Sync Completion";
 		// TODO: IS THIS CORRECT? IT just sets ok and then pretends everything is ok
-		bool ok=true;
-		mCompleted=true;
+		bool ok = true;
+		mCompleted = true;
 		//qDebug()<<"Exiting Sync Completion with ok="<<ok;
 		addJournal(QString("complete=%1").arg(ok?"ok":"fail"));
 		mTransactions.activate(false);

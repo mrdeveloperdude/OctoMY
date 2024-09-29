@@ -22,9 +22,9 @@ public:
 	// Events inherited from QWidget
 public:
 
-	void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
-	void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-	void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+	void paintEvent(QPaintEvent *) override;
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
 
 public:
 

@@ -59,5 +59,13 @@ bool Service::serviceActiveActual() const
 }
 
 
+void Service::setRegistrationOrder(int order){
+	OC_METHODGATE();
+	mRegistrationOrder = order;
+}
 
 
+int Service::registrationOrder(){
+	OC_METHODGATE();
+	return mRegistrationOrder;
+}

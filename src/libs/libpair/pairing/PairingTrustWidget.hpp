@@ -28,7 +28,7 @@ private:
 
 public:
 	explicit PairingTrustWidget(QWidget *parent = nullptr);
-	virtual ~PairingTrustWidget() Q_DECL_OVERRIDE;
+	virtual ~PairingTrustWidget() override;
 
 
 public:

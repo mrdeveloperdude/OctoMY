@@ -37,7 +37,7 @@ public:
 	virtual ~Voice();
 public:
 	
-	bool speak(PortableID &id, QString text);
+	bool speak(const PortableID &id, const QString &text) const ;
 	bool voiceIsAvailable();
 	
 protected:
@@ -48,15 +48,15 @@ protected:
 	
 private:
 	void deinit();
-	bool isInitialized();
+	bool isInitialized() const;
 	void freeBuffer(Buffer<short> *buf);
 	Buffer<short> *getFreeBuffer(size_t numsamples);
 	T generate();
 	
 	// IAudioSource interface
 public:
-	void init(QAudioFormat f) Q_DECL_OVERRIDE;
-	void generate(qint64 num, T *out) Q_DECL_OVERRIDE;
+	void init(QAudioFormat f) override;
+	void generate(qint64 num, T *out) override;
 	
 };
 
@@ -93,7 +93,7 @@ Voice<T, OUTPUT_CHANNELS>::~Voice()
 
 
 template <typename T, int OUTPUT_CHANNELS>
-bool Voice<T, OUTPUT_CHANNELS>::isInitialized()
+bool Voice<T, OUTPUT_CHANNELS>::isInitialized() const
 {
 	OC_METHODGATE();
 	return mInited;
@@ -331,7 +331,7 @@ void Voice<T, OUTPUT_CHANNELS>::feed(short *wav, int numsamples)
 
 
 template <typename T, int OUTPUT_CHANNELS>
-bool Voice<T, OUTPUT_CHANNELS>::speak(PortableID &id, QString text)
+bool Voice<T, OUTPUT_CHANNELS>::speak(const PortableID &id, const QString &text) const
 {
 	OC_METHODGATE();
 	if (isInitialized()) {

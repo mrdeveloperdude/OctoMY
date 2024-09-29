@@ -21,14 +21,14 @@ private:
 
 public:
 	explicit KeyStoreDebugWidget(QWidget *parent = nullptr);
-	virtual ~KeyStoreDebugWidget() Q_DECL_OVERRIDE;
+	virtual ~KeyStoreDebugWidget() override;
 
 public:
 	void configure(QSharedPointer <Node> node);
 
 public slots:
-	void onRealtimeChanged(bool realtime) Q_DECL_OVERRIDE;
-	void onTimer() Q_DECL_OVERRIDE;
+	void onRealtimeChanged(bool realtime) override;
+	void onTimer() override;
 
 };
 

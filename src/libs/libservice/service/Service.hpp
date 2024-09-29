@@ -27,6 +27,7 @@ private:
 	QStringList mDependencies;
 	bool mActiveWanted;
 	bool mActive;
+	int mRegistrationOrder{-1};
 
 public:
 	explicit Service(QString name, QStringList dependencies=QStringList());
@@ -41,6 +42,8 @@ public:
 	void serviceChangeActivation(bool on, ServiceActivatedCallback callBack=nullptr);
 	bool serviceActiveWanted() const;
 	bool serviceActiveActual() const;
+	void setRegistrationOrder(int order);
+	int registrationOrder();
 
 	// Service interface internal.
 protected:

@@ -4,9 +4,7 @@
 #include "uptime/New.hpp"
 
 #include "security/PortableID.hpp"
-#include "node/NodeRole.hpp"
-#include "node/NodeType.hpp"
-#include "utility/string/String.hpp"
+#include "identity/IdenticonTooltip.hpp"
 
 #include <QPainter>
 #include <QFile>
@@ -58,7 +56,7 @@ void IdenticonWidget::setPortableID(PortableID &id)
 	OC_METHODGATE();
 	if(mConfigureHelperIdenticonWidget.isConfiguredAsExpected()) {
 		mIdenticon.setPortableID(id);
-		setToolTip("ID="+id.id()+"\nNAME="+id.name()+"\nTYPE="+nodeTypeToString(id.type())+"\nBIRTH="+utility::string::formattedDateFromMS(id.birthDate())+"\n");
+		setToolTip(identiconTooltip(id));
 		regenerateIdenticon();
 	}
 }

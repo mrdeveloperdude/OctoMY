@@ -28,9 +28,9 @@ public:
 	void updatePulsating();
 
 protected:
-	void mouseDoubleClickEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-	void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
-	void hideEvent(QHideEvent *) Q_DECL_OVERRIDE;
+	void mouseDoubleClickEvent(QMouseEvent *) override;
+	void showEvent(QShowEvent *) override;
+	void hideEvent(QHideEvent *) override;
 
 private slots:
 	void onPulsatingTrustTimer();

@@ -24,14 +24,14 @@ private:
 	
 public:
 	explicit Compressor( T  threshold=0.5, T  slope=0.5 , int     sr=44100 , T  tla=3.0/1000.0 , T  twnd=1.0/1000.0 , T  tatt=0.1/1000.0 , T  trel=300.0/1000.0);
-	virtual ~Compressor() Q_DECL_OVERRIDE;
+	virtual ~Compressor() override;
 	
 	void set(T  threshold=0.5, T  slope=0.5 , T  tla=3.0/1000.0 , T  twnd=1.0/1000.0 , T  tatt=0.1/1000.0 , T  trel=300.0/1000.0);
 	
 	//IAudioProcessor interface
 public:
-	void init(QAudioFormat f) Q_DECL_OVERRIDE;
-	void process(qint64 num, T *in, T *out) Q_DECL_OVERRIDE;
+	void init(QAudioFormat f) override;
+	void process(qint64 num, T *in, T *out) override;
 };
 
 
@@ -187,8 +187,8 @@ public:
 	
 	//IAudioProcessor interface
 public:
-	void init(QAudioFormat f) Q_DECL_OVERRIDE;
-	void process(qint64 num, T *in, T *out) Q_DECL_OVERRIDE;
+	void init(QAudioFormat f) override;
+	void process(qint64 num, T *in, T *out) override;
 	
 	
 };

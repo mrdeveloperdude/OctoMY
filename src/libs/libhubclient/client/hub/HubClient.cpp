@@ -21,7 +21,7 @@ void HubClient::configure(QSharedPointer<Node> node, QSharedPointer<Associate> n
 	if(!nodeAssoc.isNull()) {
 		QSharedPointer<HubClient> sharedThis = qSharedPointerCast<HubClient>(sharedFromThis());
 		if(!sharedThis.isNull()) {
-			mCouriers=QSharedPointer<HubClientCourierSet>(OC_NEW HubClientCourierSet());
+			mCouriers = QSharedPointer<HubClientCourierSet>::create();
 			if(!mCouriers.isNull()) {
 				mCouriers->configure(nodeAssoc->id(), sharedThis);
 			} else {
@@ -55,7 +55,7 @@ QSharedPointer<ClientWidget> HubClient::widget()
 	if(mWidget.isNull()) {
 		QSharedPointer<HubClient> sharedThis = qSharedPointerCast<HubClient>(sharedFromThis());
 		if(!sharedThis.isNull()) {
-			mWidget=QSharedPointer<HubClientWidget>(OC_NEW HubClientWidget(sharedThis, nullptr));
+			mWidget = QSharedPointer<HubClientWidget>::create(sharedThis, nullptr);
 			if(mWidget.isNull()) {
 				qWarning()<<"ERROR: could not create RemoteClientWidget for HubClient";
 			}

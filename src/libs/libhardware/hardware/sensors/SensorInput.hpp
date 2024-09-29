@@ -54,7 +54,7 @@ public:
 	QString toSpecStanzas(QString space="");
 
 public:
-	bool filter(QCompassReading *reading) Q_DECL_OVERRIDE;
+	bool filter(QCompassReading *reading) override;
 
 private:
 	void load();

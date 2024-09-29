@@ -15,9 +15,9 @@ public:
 
 	// Mtlobe interface
 public:
-	QWidget *configurationWidget() Q_DECL_OVERRIDE;
-	QVariantMap configuration() Q_DECL_OVERRIDE;
-	void setConfiguration(QVariantMap &configuration) Q_DECL_OVERRIDE;
+	QWidget *configurationWidget() override;
+	QVariantMap configuration() override;
+	void setConfiguration(QVariantMap &configuration) override;
 
 };
 

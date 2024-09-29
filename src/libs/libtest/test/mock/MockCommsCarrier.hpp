@@ -28,7 +28,7 @@ private:
 
 public:
 	explicit MockCommsCarrier(QObject *parent=nullptr);
-	virtual ~MockCommsCarrier() Q_DECL_OVERRIDE;
+	virtual ~MockCommsCarrier() override;
 
 	////////////////////////// Mock interface
 public:
@@ -60,27 +60,27 @@ public slots:
 	//////////////////////////  CommsCarrier internal interface methods
 protected:
 
-	void configureImp() Q_DECL_OVERRIDE;
-	bool activateImp(bool) Q_DECL_OVERRIDE;
+	void configureImp() override;
+	bool activateImp(bool) override;
 
-	void setAddressImp(NetworkAddress address) Q_DECL_OVERRIDE;
-
-
-	bool isActiveImp() const Q_DECL_OVERRIDE;
-
-	qint64 writeDataImp(const QByteArray &datagram, const NetworkAddress &address) Q_DECL_OVERRIDE;
-	qint64 readDataImp(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr) Q_DECL_OVERRIDE;
-
-	bool hasPendingDataImp() Q_DECL_OVERRIDE ;
-	qint64 pendingDataSizeImp() Q_DECL_OVERRIDE ;
-
-	QString errorStringImp() Q_DECL_OVERRIDE ;
-
-	NetworkAddress addressImp() Q_DECL_OVERRIDE ;
+	void setAddressImp(NetworkAddress address) override;
 
 
-	quint64 minimalPacketIntervalImp() Q_DECL_OVERRIDE ;
-	quint64	maximalPacketIntervalImp() Q_DECL_OVERRIDE ;
+	bool isActiveImp() const override;
+
+	qint64 writeDataImp(const QByteArray &datagram, const NetworkAddress &address) override;
+	qint64 readDataImp(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr) override;
+
+	bool hasPendingDataImp() override ;
+	qint64 pendingDataSizeImp() override ;
+
+	QString errorStringImp() override ;
+
+	NetworkAddress addressImp() override ;
+
+
+	quint64 minimalPacketIntervalImp() override ;
+	quint64	maximalPacketIntervalImp() override ;
 
 
 	// FOR REFERENCE, CommsCarrier interface signals:

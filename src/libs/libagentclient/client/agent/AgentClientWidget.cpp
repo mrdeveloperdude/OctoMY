@@ -1,16 +1,16 @@
 #include "AgentClientWidget.hpp"
 #include "ui_AgentClientWidget.h"
 
-#include "agent/AgentConstants.hpp"
+#include "app/Constants.hpp".hpp"
 #include "app/Settings.hpp"
 #include "client/agent/AgentClient.hpp"
 #include "comms/CommsChannel.hpp"
-#include "security/PortableID.hpp"
-#include "uptime/ConnectionType.hpp"
-#include "uptime/MethodGate.hpp"
 #include "components/TryToggleState.hpp"
 #include "components/WaitingSpinnerWidget.hpp"
 #include "node/CarSteeringWidget.hpp"
+#include "uptime/ConnectionType.hpp"
+#include "uptime/MethodGate.hpp"
+//#include "agent/AgentConstants.hpp"
 
 #include <QScrollBar>
 
@@ -22,7 +22,7 @@ AgentClientWidget::AgentClientWidget(QSharedPointer<AgentClient> client, QWidget
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
-	qDebug()<<"CREATING AGENT CLIENT WIDGET AgentClient="<<(!mAgentClient.isNull()?mAgentClient->node()->name():"NULL")<<", parent="<<parent;
+	qDebug()<<"CREATING AGENT CLIENT WIDGET AgentClient="<<(!mAgentClient.isNull()?mAgentClient->node()->nodeIdentity()->name():"NULL")<<", parent="<<parent;
 	ui->widgetBirthCertificate->configure(false,true);
 	if(!mAgentClient.isNull()) {
 		QSharedPointer<Node> node=mAgentClient->node();
@@ -38,34 +38,35 @@ AgentClientWidget::AgentClientWidget(QSharedPointer<AgentClient> client, QWidget
 	} else {
 		qWarning()<<"ERROR: no client";
 	}
-
+	
 	ui->widgetFace->setDisabled(true);
-	ui->tryToggleListen->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_DISCONNECT_COLOR);
+	ui->tryToggleListen->configure("Connect","Connecting...","Connected", "Disconnecting...", Constants::AGENT_CONNECT_BUTTON_COLOR, Constants::AGENT_DISCONNECT_COLOR);
 	ui->tryToggleListen->setState(OFF,false);
-
-	if(!connect(ui->tryToggleListen, &TryToggle::stateChanged, this, &AgentClientWidget::onConnectButtonStateChanged,OC_CONTYPE)) {
+	
+	if(!connect(ui->tryToggleListen, &TryToggle::stateChanged, this, &AgentClientWidget::onConnectButtonStateChanged, OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
-
+	
 	//TODO: Handle this
 //	const QString fullID=mNodeAssoc->id();
 //	qDebug()<<"REMOTE CLIENT WIDGET DESTINATION SET TO "<<fullID;
 //	mAgentStateCourier->setDestination(fullID);
 //	mSensorsCourier->setDestination(fullID);
 //	mBlobCourier->setDestination(fullID);
-
-
+	
+	
 //	if(nullptr!=mAgentStateCourier) {
 //		mAgentStateCourier->setHookSignals(*this,true);
 //	} else {
 //		qWarning()<<"ERROR: Could not hook agent state courier events, no courier";
 //	}
-
-
+	
+	
 	//installEventFilter(this);
 	init();
-
+	
 	updateOnlineStatus();
+	ui->stackedWidgetControl->setCurrentWidget(ui->pageConnection);
 }
 
 AgentClientWidget::~AgentClientWidget()

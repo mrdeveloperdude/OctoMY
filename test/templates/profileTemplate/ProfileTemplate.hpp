@@ -1,7 +1,7 @@
 #ifndef PROFILETEMPLATE_HPP
 #define PROFILETEMPLATE_HPP
 
-#include "Common_test.hpp"
+#include "test/Common.hpp"
 
 class ProfileTemplate:public QObject
 {

@@ -52,7 +52,7 @@ public slots:
 
 private slots:
 	void onTimeout();
-	void on_pushButtonToggle_toggled(bool checked);
+	void onToggled(bool checked);
 
 signals:
 	void stateChanged(const TryToggleState last, const TryToggleState current);

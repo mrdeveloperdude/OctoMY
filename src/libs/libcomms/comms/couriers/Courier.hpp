@@ -33,7 +33,7 @@ public:
 
 public:
 	explicit Courier(QString name, quint32 id, QSharedPointer<CommsChannel> comms, QObject *parent=nullptr);
-	virtual	~Courier() Q_DECL_OVERRIDE;
+	virtual	~Courier() override;
 
 public:
 	void setDestination(const QString );

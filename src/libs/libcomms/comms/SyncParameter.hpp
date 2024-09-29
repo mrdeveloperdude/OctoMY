@@ -51,19 +51,19 @@ public:
 
 	// ISyncParameter interface
 public:
-	quint16 bytes() const Q_DECL_OVERRIDE;
-	QString toString() const Q_DECL_OVERRIDE;
-	QString name() const  Q_DECL_OVERRIDE;
-	void forceSync() Q_DECL_OVERRIDE;
-	QDataStream &send(QDataStream &ds) Q_DECL_OVERRIDE;
-	QDataStream &receive(QDataStream &ds) Q_DECL_OVERRIDE;
+	quint16 bytes() const override;
+	QString toString() const override;
+	QString name() const  override;
+	void forceSync() override;
+	QDataStream &send(QDataStream &ds) override;
+	QDataStream &receive(QDataStream &ds) override;
 
-	bool needToSendAck() const Q_DECL_OVERRIDE;
-	bool needToSendDataAndReceiveAck() const Q_DECL_OVERRIDE;
-	void ackSent() Q_DECL_OVERRIDE;
-	void ack() Q_DECL_OVERRIDE;
+	bool needToSendAck() const override;
+	bool needToSendDataAndReceiveAck() const override;
+	void ackSent() override;
+	void ack() override;
 
-	QDebug &toDebug(QDebug &d) const Q_DECL_OVERRIDE;
+	QDebug &toDebug(QDebug &d) const override;
 
 
 };

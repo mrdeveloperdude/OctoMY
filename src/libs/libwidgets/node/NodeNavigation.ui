@@ -46,7 +46,7 @@
       <string>NodeNavigation</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
     </widget>
    </item>
@@ -90,5 +90,42 @@
  <resources>
   <include location="../../libres/resources/icons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButtonBack</sender>
+   <signal>clicked()</signal>
+   <receiver>NodeNavigation</receiver>
+   <slot>onNavigateBack()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>22</x>
+     <y>198</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonMenu</sender>
+   <signal>clicked()</signal>
+   <receiver>NodeNavigation</receiver>
+   <slot>onOpenMenu()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>787</x>
+     <y>198</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onNavigateBack()</slot>
+  <slot>onOpenMenu()</slot>
+ </slots>
 </ui>

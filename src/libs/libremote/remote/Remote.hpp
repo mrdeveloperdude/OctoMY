@@ -33,20 +33,20 @@ private:
 
 public:
 	explicit Remote();
-	virtual ~Remote() Q_DECL_OVERRIDE;
+	virtual ~Remote() override;
 
 	// Node interface
 public:
-	void nodeConfigure() Q_DECL_OVERRIDE;
-	void nodeActivate(const bool on) Q_DECL_OVERRIDE;
-	QSharedPointer<NodeWindow> nodeWindow() Q_DECL_OVERRIDE;
-	NodeRole nodeRole() Q_DECL_OVERRIDE;
-	NodeType nodeType() Q_DECL_OVERRIDE;
+	void nodeConfigure() override;
+	void nodeActivate(const bool on) override;
+	QSharedPointer<NodeWindow> nodeWindow() override;
+	NodeRole nodeRole() override;
+	NodeType nodeType() override;
 
 	// QEnableSharedFromThis<Agent> interface
 public:
-	QSharedPointer<Node> sharedThis() Q_DECL_OVERRIDE;
-	void registerNodeCouriers(bool reg) Q_DECL_OVERRIDE;
+	QSharedPointer<Node> sharedThis() override;
+	void registerNodeCouriers(bool reg) override;
 
 };
 

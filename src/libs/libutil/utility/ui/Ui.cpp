@@ -469,27 +469,6 @@ void populateComboboxWithLocalAdresses(QComboBox &cb)
 }
 
 
-
-qreal moveSplitter(QSplitter &splitter, qreal pos)
-{
-	OC_FUNCTIONGATE();
-	//qDebug()<<"MOVING SPLITTER: "<<&splitter << " TO "<<pos;
-	QList<int> sz = splitter.sizes();
-	qreal tot=sz[0]+sz[1];
-	if(tot<=0.0) {
-		tot=1000.0l;
-	}
-	const qreal oldPos=(sz[0]+1.0)/(tot+1.0);
-	//qDebug()<<" + SZ: "<<sz;	qDebug()<<" + TOT: "<<tot;	qDebug()<<" + OLDPOS: "<<oldPos;
-	sz[0]=qFloor(pos*tot);
-	sz[1]=qFloor(tot-sz[0]);
-	splitter.setSizes(sz);
-	return oldPos;
-}
-
-
-
-
 }
 }
 

@@ -112,7 +112,7 @@ void PacketReadState::decrypt(Key &k)
 #endif
 			octomyProtocolDecryptedMessageSize=octomyProtocolDecryptedMessage.size();
 			if(octomyProtocolDecryptedMessageSize>0) {
-				encStream=QSharedPointer<QDataStream> (OC_NEW QDataStream(&this->octomyProtocolDecryptedMessage, QIODevice::ReadOnly));
+				encStream = QSharedPointer<QDataStream>::create(&this->octomyProtocolDecryptedMessage, QIODevice::ReadOnly);
 				if(encStream.isNull()) {
 					qWarning()<<"ERROR: Could not allocate encStream";
 				} else {

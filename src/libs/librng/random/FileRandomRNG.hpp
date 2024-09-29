@@ -20,17 +20,17 @@ public:
 public:
 
 	// Return true if this source is dependant on any pseudo rng
-	inline bool hasPseudo() Q_DECL_OVERRIDE {
+	inline bool hasPseudo() override {
 		return false;
 	}
 
 	// Generates a random number on [0,0xffffffff]-interval
 	// This is the main generator function that all the others are based on
-	quint32 generateInt32(void) Q_DECL_OVERRIDE;
+	quint32 generateInt32(void) override;
 
 
 	// Does nothing, this source has no seed
-	virtual void init(quint32 s) Q_DECL_OVERRIDE;
+	virtual void init(quint32 s) override;
 
 };
 

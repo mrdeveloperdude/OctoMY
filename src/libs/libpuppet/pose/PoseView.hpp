@@ -21,7 +21,7 @@ public slots:
 	void poseChanged(const Pose &);
 
 protected:
-	void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+	void paintEvent(QPaintEvent *event) override;
 };
 
 #endif

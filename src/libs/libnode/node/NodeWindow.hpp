@@ -15,7 +15,7 @@ private:
 
 public:
 	explicit NodeWindow(QWidget *parent = nullptr);
-	virtual ~NodeWindow() Q_DECL_OVERRIDE;
+	virtual ~NodeWindow() override;
 
 public:
 	void nodeWindowConfigure(QSharedPointer<Node> node);
@@ -40,9 +40,9 @@ protected:
 
 	// QWidget interface
 public:
-	virtual void keyReleaseEvent(QKeyEvent *) Q_DECL_OVERRIDE;
-	virtual	void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
-	virtual	void moveEvent(QMoveEvent *) Q_DECL_OVERRIDE;
+	virtual void keyReleaseEvent(QKeyEvent *) override;
+	virtual	void closeEvent(QCloseEvent *) override;
+	virtual	void moveEvent(QMoveEvent *) override;
 
 	// Android stuff
 protected:

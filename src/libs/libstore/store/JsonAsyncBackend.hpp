@@ -21,12 +21,12 @@ public:
 
 	// AsyncBackend interface
 public:
-	void setFilenameBackend(QString filename) Q_DECL_OVERRIDE;
-	QString filenameBackend() Q_DECL_OVERRIDE;
-	bool existsBackend() Q_DECL_OVERRIDE;
-	bool clearBackend() Q_DECL_OVERRIDE;
-	bool saveBackend(QVariantMap data) Q_DECL_OVERRIDE;
-	QVariantMap loadBackend(bool &ok) Q_DECL_OVERRIDE;
+	void setFilenameBackend(QString filename) override;
+	QString filenameBackend() override;
+	bool existsBackend() override;
+	bool clearBackend() override;
+	bool saveBackend(QVariantMap data) override;
+	QVariantMap loadBackend(bool &ok) override;
 
 };
 

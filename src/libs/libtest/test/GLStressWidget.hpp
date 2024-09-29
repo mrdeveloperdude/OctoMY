@@ -76,12 +76,12 @@ class GLStressWidget : public QOpenGLWidget, protected OCTOMY_QT_OGL_FUNCTIONS_C
 		void initTextures(bool f);
 
 	protected:
-		//void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
-		//void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+		//void mousePressEvent(QMouseEvent *e) override;
+		//void mouseReleaseEvent(QMouseEvent *e) override;
 
-		void initializeGL() Q_DECL_OVERRIDE;
-		void resizeGL(int w, int h) Q_DECL_OVERRIDE;
-		void paintGL() Q_DECL_OVERRIDE;
+		void initializeGL() override;
+		void resizeGL(int w, int h) override;
+		void paintGL() override;
 
 		void initShaders();
 

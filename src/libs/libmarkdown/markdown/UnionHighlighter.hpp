@@ -21,7 +21,7 @@ public:
 	virtual ~UnionHighlighter();
 	
 protected:
-	void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
+	void highlightBlock(const QString &text) override;
 	
 public:
 	void registerHighlighter(QSyntaxHighlighter *hl);

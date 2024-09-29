@@ -7,33 +7,32 @@
 #include "FaceWidget.hpp"
 #include "ui_FaceWidget.h"
 
-#include "uptime/ConnectionType.hpp"
-#include "utility/ui/Ui.hpp"
-#include "utility/random/Random.hpp"
-#include "agent/Agent.hpp"
-#include "identity/Identicon.hpp"
-#include "comms/couriers/AgentStateCourier.hpp"
-#include "app/Constants.hpp"
-#include "agent/AgentControls.hpp"
-#include "comms/couriers/sets/AgentCourierSet.hpp"
 #include "address/Associate.hpp"
+#include "agent/Agent.hpp"
+#include "agent/AgentControls.hpp"
+#include "app/Constants.hpp"
+#include "comms/CommsSession.hpp"
+#include "comms/couriers/sets/AgentCourierSet.hpp"
+#include "uptime/ConnectionType.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
+#include "utility/random/Random.hpp"
+#include "utility/ui/Ui.hpp"
 
 
 #include <QScrollBar>
 
 
 FaceWidget::FaceWidget(QWidget *parent)
-	: QWidget(parent)
+	: Activity(parent)
 	, ui(OC_NEW Ui::FaceWidget)
 	, mAgent(nullptr)
+	, mConfigureHelper("FaceWidget", true, false, true, true, false)
+
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
 	ui->tryToggleConnect->configure("Connect","Connecting...","Connected", "Disconnecting...", Constants::AGENT_CONNECT_BUTTON_COLOR, Constants::AGENT_DISCONNECT_COLOR);
-	if(!connect(ui->tryToggleConnect, SIGNAL(stateChanged(const TryToggleState, const TryToggleState)), this, SIGNAL(connectionStateChanged(const TryToggleState, const TryToggleState)), OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not forward connectionStateChanged signal";
-	}
+	appendLog("FACE-COMMS: CTOR");
 }
 
 FaceWidget::~FaceWidget()
@@ -50,45 +49,54 @@ QSharedPointer<Agent> FaceWidget::agent()
 	return mAgent;
 }
 
+QSharedPointer<Settings> FaceWidget::settings()
+{
+	OC_METHODGATE();
+	if(!mAgent.isNull()) {
+		return mAgent->settings();
+	}
+	return nullptr;
+}
 
 void FaceWidget::updateEyeColor()
 {
 	OC_METHODGATE();
-	bool doUpdate=false;
-	if(!mAgent.isNull()) {
-		QSharedPointer<Associate> ass=mAgent->nodeIdentity();
-		if(!ass.isNull()) {
-			const PortableID pid=ass->toPortableID();
-			if(pid.id()!=mLastPID.id()) {
-				mLastPID=pid;
-				doUpdate=true;
+	if(mConfigureHelper.isConfiguredAsExpected()){
+		auto doUpdate = false;
+		if(!mAgent.isNull()) {
+			const auto ass = mAgent->nodeIdentity();
+			if(!ass.isNull()) {
+				const PortableID pid = ass->toPortableID();
+				if(pid.id() != mLastPID.id()) {
+					mLastPID = pid;
+					doUpdate = true;
+				} else {
+					qWarning() << "ERROR: no change in ID while updating eye color of face widget: '" << pid.id() << "'";
+				}
 			} else {
-				qWarning()<<"ERROR: no change in ID while updating eye color of face widget: '"<<pid.id()<<"'";
+				qWarning() << "ERROR: no associate while updating eye color of face widget";
 			}
 		} else {
-			qWarning()<<"ERROR: no associate while updating eye color of face widget";
+			qWarning() <<"ERROR: no agent while updating eye color of face widget";
 		}
-	} else {
-		qWarning()<<"ERROR: no agent while updating eye color of face widget";
-	}
-	if(doUpdate) {
-		if(!mLastPID.id().isEmpty()) {
-			ui->widgetEyes->setPortableID(mLastPID);
+		if(doUpdate) {
+			if(!mLastPID.id().isEmpty()) {
+				ui->widgetEyes->setPortableID(mLastPID);
+			}
 		}
 	}
 }
 
+
 void FaceWidget::updateVisibility()
 {
 	OC_METHODGATE();
-	if(!mAgent.isNull()) {
-		QSharedPointer<Settings> s=mAgent->settings();
-		if(!s.isNull()) {
-			ui->widgetEyes->setVisible(s->getCustomSettingBool(Constants::AGENT_FACE_EYES_SHOW, true));
-			ui->logScroll->setVisible(s->getCustomSettingBool(Constants::AGENT_FACE_LOG_SHOW, true));
-			ui->widgetRealtimeValues->setVisible(s->getCustomSettingBool(Constants::AGENT_FACE_STATS_SHOW, true));
-			ui->widgetConnect->setVisible(s->getCustomSettingBool(Constants::AGENT_FACE_ONLINE_BUTTON_SHOW, true));
-		}
+	auto s = settings();
+	if(!s.isNull()) {
+		ui->widgetEyes->setVisible(s->getCustomSettingBool(Constants::AGENT_FACE_EYES_SHOW, true));
+		ui->logScroll->setVisible(s->getCustomSettingBool(Constants::AGENT_FACE_LOG_SHOW, true));
+		ui->widgetRealtimeValues->setVisible(s->getCustomSettingBool(Constants::AGENT_FACE_STATS_SHOW, true));
+		ui->widgetConnect->setVisible(s->getCustomSettingBool(Constants::AGENT_FACE_ONLINE_BUTTON_SHOW, true));
 	}
 }
 
@@ -104,51 +112,39 @@ void FaceWidget::appendLog(const QString& text)
 void FaceWidget::setAgent(QSharedPointer<Agent> a)
 {
 	OC_METHODGATE();
-	mAgent=a;
-	ui->widgetRealtimeValues->setAgent(mAgent);
-
-	if(!mAgent.isNull()) {
-		QSharedPointer<Settings> s=mAgent->settings();
+	if(mConfigureHelper.configure()){
+			
+		mAgent = a;
+			
+		if(!mAgent.isNull()){
+			mAgent->setHookCommsSignals(*this, true);
+			mAgent->setHookColorSignals(*this, true);
+		}
+		
+		ui->widgetRealtimeValues->setAgent(mAgent);
+		auto s = settings();
 		if(!s.isNull()) {
-			if(s->hasCustomSetting(Constants::AGENT_FACE_SPLITTER_MIDDLE_STATE)) {
-				//qDebug()<<"FOUND SETTING FOR "<<Constants::AGENT_FACE_SPLITTER_MIDDLE_STATE;
-				ui->splitterMiddle->restoreState(s->getCustomSettingByteArray(Constants::AGENT_FACE_SPLITTER_MIDDLE_STATE));
+			if(s->hasCustomSetting(Constants::AGENT_FACE_SPLITTER)) {
+				//qDebug()<<"FOUND SETTING FOR "<<Constants::AGENT_FACE_SPLITTER;
+				ui->splitter->restoreState(s->getCustomSettingByteArray(Constants::AGENT_FACE_SPLITTER));
 			} else {
 				//qDebug()<<"DEFAULT SETTING FOR "<<Constants::AGENT_FACE_SPLITTER_MIDDLE_STATE;
-				utility::ui::moveSplitter(*ui->splitterMiddle, 0.75);
-			}
-			if(s->hasCustomSetting(Constants::AGENT_FACE_SPLITTER_TOP_STATE)) {
-				ui->splitterTop->restoreState(s->getCustomSettingByteArray(Constants::AGENT_FACE_SPLITTER_TOP_STATE));
-			} else {
-				utility::ui::moveSplitter(*ui->splitterTop, 0.8);
-			}
-			if(s->hasCustomSetting(Constants::AGENT_FACE_SPLITTER_BOTTOM_STATE)) {
-				ui->splitterBottom->restoreState(s->getCustomSettingByteArray(Constants::AGENT_FACE_SPLITTER_BOTTOM_STATE));
-			} else {
-				utility::ui::moveSplitter(*ui->splitterBottom, 0.5);
+				QList<int> sz;
+				const auto ct = ui->splitter->count();
+				const auto s = (ui->splitter->height() - ui->splitter->handleWidth() * ct)/ct;
+				for(int i=0;i<ct;++i){
+					sz.append(s);
+				}
+				ui->splitter->setSizes(sz);
 			}
 		}
+		updateEyeColor();
+		updateVisibility();
 	}
-	updateEyeColor();
 }
+	
 
-
-void FaceWidget::setConnectionState(const TryToggleState s, const bool doEmit)
-{
-	OC_METHODGATE();
-	//qDebug()<<"FACE TRYSTATE CHANGED TO: "<<s<<" WITH EMIT="<<doEmit;
-	ui->tryToggleConnect->setState(s, doEmit);
-}
-
-
-TryToggleState FaceWidget::connectionState() const
-{
-	OC_METHODGATE();
-	return ui->tryToggleConnect->state();
-}
-
-
-
+// Hook face signals. Might go away since we handle most stuff internaly
 void FaceWidget::setHookSignals(QObject &ob, bool hook)
 {
 	OC_METHODGATE();
@@ -177,13 +173,6 @@ void FaceWidget::setHookSignals(QObject &ob, bool hook)
 
 
 
-void FaceWidget::setPanic(bool panic)
-{
-	OC_METHODGATE();
-	ui->pushButtonPanic->setPanic(panic);
-}
-
-
 
 void FaceWidget::onSyncParameterChanged(ISyncParameter *sp)
 {
@@ -204,72 +193,68 @@ void FaceWidget::onSyncParameterChanged(ISyncParameter *sp)
 	*/
 }
 
-void FaceWidget::on_pushButtonNewColor_clicked()
+void FaceWidget::onColorClicked()
 {
 	OC_METHODGATE();
-	QPalette p=ui->pushButtonNewColor->palette();
+	QPalette p = ui->pushButtonNewColor->palette();
 	QColor col;
 	col.setHslF(utility::random::frand(), 1.0f, 0.5f);
-	p.setColor(QPalette::Button,col);
+	p.setColor(QPalette::Button, col);
 	ui->pushButtonNewColor->setPalette(p);
+	appendLog(QString("New color: %1").arg(col.name()));
 	emit colorChanged(col);
 }
 
-void FaceWidget::on_pushButtonPanic_toggled(bool panic)
+void FaceWidget::onPanicToggled(bool panic)
 {
 	OC_METHODGATE();
-	if(panic) {
-		QString str="P A N I C !";
-		qWarning()<<str;
-		appendLog(str);
-	} else {
-		QString str="Panic averted";
-		qWarning()<<str;
-		appendLog(str);
-	}
-
-	if(!mAgent.isNull()) {
-		mAgent->setPanic(panic);
-	}
-
-}
-
-
-
-void FaceWidget::on_splitterTop_splitterMoved(int, int)
-{
-	OC_METHODGATE();
-	if(!mAgent.isNull()) {
-		QSharedPointer<Settings> s=mAgent->settings();
-		if(!s.isNull()) {
-			s->setCustomSettingByteArray(Constants::AGENT_FACE_SPLITTER_TOP_STATE, ui->splitterTop->saveState());
+	if(mConfigureHelper.isConfiguredAsExpected()){
+		if(!mAgent.isNull()) {
+			mAgent->setPanic(panic);
+			if(panic) {
+				QString str="P A N I C !";
+				qWarning()<<str;
+				appendLog(str);
+			} else {
+				QString str="Panic averted";
+				qWarning()<<str;
+				appendLog(str);
+			}
+		}
+		else{
+			QString str="Panic could not be propegated :-|";
+			qWarning()<<str;
+			appendLog(str);
 		}
 	}
 }
 
 
-void FaceWidget::on_splitterBottom_splitterMoved(int pos, int index)
+
+void FaceWidget::onSplitterMoved(int, int)
 {
 	OC_METHODGATE();
-	Q_UNUSED(pos);
-	Q_UNUSED(index);
-	if(!mAgent.isNull()) {
-		QSharedPointer<Settings> s=mAgent->settings();
-		if(!s.isNull()) {
-			s->setCustomSettingByteArray(Constants::AGENT_FACE_SPLITTER_BOTTOM_STATE, ui->splitterBottom->saveState());
-		}
+	auto s = settings();
+	if(!s.isNull()) {
+		s->setCustomSettingByteArray(Constants::AGENT_FACE_SPLITTER, ui->splitter->saveState());
 	}
 }
 
-void FaceWidget::on_splitterMiddle_splitterMoved(int pos, int index)
-{
-	OC_METHODGATE();
-	Q_UNUSED(pos);
-	Q_UNUSED(index);
-	if(!mAgent.isNull()) {
-		QSharedPointer<Settings> s=mAgent->settings();
-		if(!s.isNull()) {
-			s->setCustomSettingByteArray(Constants::AGENT_FACE_SPLITTER_MIDDLE_STATE, ui->splitterMiddle->saveState());
-		}
-	}
+
+// An error occurred in comms
+void FaceWidget::onCommsError(QString message){
+	appendLog("FACE-COMMS: " + message);
 }
+
+// A new comms session was added
+void FaceWidget::onCommsClientAdded(CommsSession *c){
+	appendLog("FACE-COMMS: session added" + c->address() );
+}
+
+// The connection state changed for comms channel
+void FaceWidget::onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection){
+	appendLog(QString("FACE-COMMS: connected=%1, wants connection=%2 ").arg(isConnected).arg(needsConnection) );
+	const auto tts = createTryToggleState(isConnected, needsConnection);
+	ui->tryToggleConnect->setState(tts);
+}
+

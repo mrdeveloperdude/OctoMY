@@ -109,7 +109,7 @@ private:
 	QSharedPointer<ASEventPrivate<T> >  p_ptr;
 
 	QString mT;
-	QString mAllocation="Unallocated";
+	QString mAllocation{"Unallocated"};
 
 public:
 	virtual ~ASEvent();
@@ -117,14 +117,14 @@ public:
 public:
 	inline ASEvent() Q_DECL_NOTHROW;
 
-	explicit ASEvent(AsyncStore<T> &store, const ASEventType type, T data=T());
+	explicit ASEvent(AsyncStore<T> &store, const ASEventType type, T data = T());
 	explicit ASEvent(ASEventPrivate<T> &pp);
 	explicit ASEvent(QSharedPointer<ASEventPrivate<T> > pp);
 
 	ASEvent(const ASEvent<T> & other);
 	ASEvent(ASEvent<T> && other);
 
-	ASEvent<T> & operator=(ASEvent<T> other);
+	ASEvent<T> & operator = (ASEvent<T> other);
 
 	//friend void swap(ASEvent<T>& first, ASEvent<T>& second) Q_DECL_NOTHROW;
 	bool operator==(const ASEvent<T> &other) const;
@@ -215,7 +215,7 @@ ASEventPrivate<T>::operator QString()
 
 
 template <typename T>
-quint64 ASEventPrivate<T>::privCounter=0;
+quint64 ASEventPrivate<T>::privCounter = 0;
 
 
 template <typename T>
@@ -330,7 +330,7 @@ void ASEvent<T>::onFinished(F callBack)
 		qWarning().nospace().noquote()<<"ERROR: No p_ptr";
 		return;
 	}
-	ASEventPrivate<T> *p=p_ptr.data();
+	ASEventPrivate<T> *p = p_ptr.data();
 
 	if(nullptr == p) {
 		qWarning().nospace().noquote()<<"ERROR: No p";
@@ -346,7 +346,7 @@ void ASEvent<T>::onFinished(F callBack)
 		QMutexLocker callbackLock(&p->mCallbackMutex);
 		//qDebug().nospace().noquote()<<" onFinished callback mutex locked from "<<utility::concurrent::currentThreadID();
 		//auto pcallBack=&callBack;
-		ASEvent<T> *copy=OC_NEW ASEvent<T>(*this);
+		ASEvent<T> *copy = OC_NEW ASEvent<T>(*this);
 		// TODO: Commented out to pass build
 		if(nullptr!= copy) {
 			p->mCallbacks.put( [copy, callBack] {
@@ -366,7 +366,7 @@ void ASEvent<T>::runCallbacks()
 {
 	OC_METHODGATE();
 	//qDebug()<<"runCallbacks() from "<<utility::concurrent::currentThreadID();
-	ASEventPrivate<T> *p=p_ptr.data();
+	ASEventPrivate<T> *p = p_ptr.data();
 	if(nullptr==p) {
 		qWarning().nospace().noquote()<<"ERROR: No p";
 		return;
@@ -477,15 +477,15 @@ template <typename T>
 ASEvent<T>::~ASEvent()
 {
 	OC_METHODGATE();
-	mAllocation="Deallocated";
+	mAllocation = "Deallocated";
 }
 
 template <typename T>
 ASEvent<T> & ASEvent<T>::operator=(ASEvent<T> other)
 {
 	//if(!p_ptr.isNull()){	p_ptr.reset();	}
-	p_ptr=other.p_ptr;
-	mAllocation=QString("operator= copy");
+	p_ptr = other.p_ptr;
+	mAllocation = QString("operator= copy");
 	tTest();
 	return *this;
 }
@@ -509,7 +509,7 @@ template <typename T>
 void ASEvent<T>::tTest() const
 {
 	OC_METHODGATE();
-	QString cT=utility::concurrent::currentThreadID();
+	QString cT = utility::concurrent::currentThreadID();
 	//qDebug()<<"CALL THREAD: '"<<cT <<"'"; 	qDebug()<<" RUN THREAD: '"<<mT <<"'";
 	//qDebug()<<"ALLOCATION: "<<mAllocation;
 	if(mT!=cT) {
@@ -540,7 +540,7 @@ AsyncStore<T> & ASEvent<T>::store() const
 {
 	OC_METHODGATE();
 	tTest();
-	const ASEventPrivate<T> *p=p_ptr.data();
+	const ASEventPrivate<T> *p = p_ptr.data();
 	return p->mStore;
 }
 
@@ -549,7 +549,7 @@ template <typename T>
 ASEventType ASEvent<T>::type() const
 {
 	OC_METHODGATE();
-	const ASEventPrivate<T> *p=p_ptr.data();
+	const ASEventPrivate<T> *p = p_ptr.data();
 	tTest();
 	return p->mType;
 }
@@ -559,7 +559,7 @@ template <typename T>
 T ASEvent<T>::data() const
 {
 	OC_METHODGATE();
-	const ASEventPrivate<T> *p=p_ptr.data();
+	const ASEventPrivate<T> *p = p_ptr.data();
 	tTest();
 	return p->mData;
 }
@@ -569,7 +569,7 @@ template <typename T>
 bool ASEvent<T>::isStarted()
 {
 	OC_METHODGATE();
-	ASEventPrivate<T> *p=p_ptr.data();
+	ASEventPrivate<T> *p = p_ptr.data();
 	tTest();
 	//QMutexLocker ml(&p->mStartedMutex);
 	return p->mStarted;
@@ -580,7 +580,7 @@ template <typename T>
 bool ASEvent<T>::isFinished()
 {
 	OC_METHODGATE();
-	ASEventPrivate<T> *p=p_ptr.data();
+	ASEventPrivate<T> *p = p_ptr.data();
 	tTest();
 	QMutexLocker ml(&p->mFinishedMutex);
 	return p->mFinished;
@@ -591,11 +591,11 @@ template <typename T>
 void ASEvent<T>::notifyFinished()
 {
 	OC_METHODGATE();
-	ASEventPrivate<T> *p=p_ptr.data();
+	ASEventPrivate<T> *p = p_ptr.data();
 	//qDebug()<<"Entered Transaction::notifyFinished() from thread "<<handleCounterString(QThread::currentThreadId())<< " and P="<<privCounterString(p);
 	QMutexLocker finishedLock(&p->mFinishedMutex);
 	//const bool oldFinished=p->mFinished;
-	p->mFinished=true;
+	p->mFinished = true;
 	//qDebug()<<"NOTIFY changed finished from "<<oldFinished << " to " <<p->mFinished;
 	// Get values while they are under lock for the return
 	// bool ret = p->mFinished && p->mSuccessfull;
@@ -610,7 +610,7 @@ template <typename T>
 void ASEvent<T>::waitForFinished()
 {
 	OC_METHODGATE();
-	ASEventPrivate<T> *p=p_ptr.data();
+	ASEventPrivate<T> *p = p_ptr.data();
 	//qDebug()<<"Entered Transaction::waitForFinished() from thread "<<handleCounterString(QThread::currentThreadId())<< " and P="<<privCounterString(p);
 	QMutexLocker ml(&p->mFinishedMutex);
 
@@ -632,7 +632,7 @@ template <typename T>
 bool ASEvent<T>::isSuccessfull()
 {
 	OC_METHODGATE();
-	ASEventPrivate<T> *p=p_ptr.data();
+	ASEventPrivate<T> *p = p_ptr.data();
 	tTest();
 	if(nullptr != p) {
 //		QMutexLocker ml(&p->mSuccessfullMutex);
@@ -649,7 +649,7 @@ template <typename T>
 QString ASEvent<T>::message()
 {
 	OC_METHODGATE();
-	ASEventPrivate<T> *p=p_ptr.data();
+	ASEventPrivate<T> *p = p_ptr.data();
 	QMutexLocker ml(&p->mMessageMutex);
 	return (nullptr==p)?"NULLPOINTER":p->mMessage;
 }
@@ -659,7 +659,7 @@ template <typename T>
 AsyncStoreStatus ASEvent<T>::status()
 {
 	OC_METHODGATE();
-	ASEventPrivate<T> *p=p_ptr.data();
+	ASEventPrivate<T> *p = p_ptr.data();
 	return (nullptr==p)?AsyncStoreStatus(0, 0):p->mStatus;
 }
 
@@ -669,85 +669,85 @@ bool ASEvent<T>::run()
 {
 	OC_METHODGATE();
 	//qDebug()<<"Entered Event::run() from thread "<<utility::concurrent::currentThreadID();
-	ASEventPrivate<T> *p=p_ptr.data();
+	ASEventPrivate<T> *p = p_ptr.data();
 	if(nullptr == p) {
 		qWarning().nospace().noquote()<<"ERROR: No p";
 		return false;
 	}
 //	QMutexLocker startedLock(&p->mStartedMutex);
-	bool ret=false;
+	bool ret = false;
 	// We only run once
 	if(! p->mStarted) {
-		p->mStarted=true;
+		p->mStarted = true;
 //		QMutexLocker messageLock(&p->mMessageMutex);
 //		QMutexLocker successfullLock(&p->mSuccessfullMutex);
 //		startedLock.unlock();
 		switch(p->mType) {
 		case(AS_EVENT_STATUS): {
-			p->mMessage="status started";
-			p->mStatus=p->mStore.statusSync();
-			p->mSuccessfull=true;
-			p->mMessage=p->mSuccessfull?"status succeeded":"status failed";
+			p->mMessage = "status started";
+			p->mStatus = p->mStore.statusSync();
+			p->mSuccessfull = true;
+			p->mMessage = p->mSuccessfull?"status succeeded":"status failed";
 		}
 		break;
 		case(AS_EVENT_CLEAR): {
-			p->mMessage="clear started";
-			p->mSuccessfull=p->mStore.clearSync();
-			p->mMessage=p->mSuccessfull?"clear succeeded":"clear failed";
+			p->mMessage = "clear started";
+			p->mSuccessfull = p->mStore.clearSync();
+			p->mMessage = p->mSuccessfull?"clear succeeded":"clear failed";
 		}
 		break;
 		case(AS_EVENT_GET): {
-			p->mMessage="get started";
-			p->mSuccessfull=false;;
-			p->mData=p->mStore.getSync(p->mSuccessfull);
-			p->mMessage=p->mSuccessfull?"get succeeded":"get failed";
+			p->mMessage = "get started";
+			p->mSuccessfull = false;;
+			p->mData = p->mStore.getSync(p->mSuccessfull);
+			p->mMessage = p->mSuccessfull?"get succeeded":"get failed";
 		}
 		break;
 		case(AS_EVENT_SET): {
-			p->mMessage="set started";
-			p->mSuccessfull=p->mStore.setSync(p->mData);
-			p->mMessage=p->mSuccessfull?"set succeeded":"set failed";
+			p->mMessage = "set started";
+			p->mSuccessfull = p->mStore.setSync(p->mData);
+			p->mMessage = p->mSuccessfull?"set succeeded":"set failed";
 		}
 		break;
 		case(AS_EVENT_LOAD): {
-			p->mMessage="load started";
-			p->mSuccessfull=p->mStore.loadSync();
-			p->mMessage=p->mSuccessfull?"load succeeded":"load failed";
+			p->mMessage = "load started";
+			p->mSuccessfull = p->mStore.loadSync();
+			p->mMessage = p->mSuccessfull?"load succeeded":"load failed";
 		}
 		break;
 		case(AS_EVENT_SAVE): {
-			p->mMessage="save started";
-			p->mSuccessfull=p->mStore.saveSync();
-			p->mMessage=p->mSuccessfull?"save succeeded":"save failed";
+			p->mMessage = "save started";
+			p->mSuccessfull = p->mStore.saveSync();
+			p->mMessage = p->mSuccessfull?"save succeeded":"save failed";
 		}
 		break;
 		case(AS_EVENT_GENERATE): {
-			p->mMessage="generate started";
-			p->mSuccessfull=p->mStore.generateSync();
-			p->mMessage=p->mSuccessfull?"generate succeeded":"generate failed";
+			p->mMessage = "generate started";
+			p->mSuccessfull = p->mStore.generateSync();
+			p->mMessage = p->mSuccessfull?"generate succeeded":"generate failed";
 		}
 		break;
 		case(AS_EVENT_SYNCHRONIZE): {
-			p->mMessage="synchronization started";
-			p->mSuccessfull=p->mStore.synchronizeSync();
-			p->mMessage=p->mSuccessfull?"synchronization succeeded":"synchronization failed";
+			p->mMessage = "synchronization started";
+			p->mSuccessfull = p->mStore.synchronizeSync();
+			p->mMessage = p->mSuccessfull?"synchronization succeeded":"synchronization failed";
 		}
 		break;
 		case(AS_EVENT_EXISTS): {
-			p->mMessage="exists started";
-			p->mSuccessfull=p->mStore.fileExists();
-			p->mMessage=p->mSuccessfull?"exists succeeded":"exists failed";
+			p->mMessage = "exists started";
+			p->mSuccessfull = p->mStore.fileExists();
+			p->mMessage = p->mSuccessfull?"exists succeeded":"exists failed";
 		}
 		break;
 		case(AS_EVENT_COMPLETE): {
-			p->mMessage="completion started";
-			p->mSuccessfull=p->mStore.completeSync();
-			p->mMessage=p->mSuccessfull?"complete succeeded":"complete failed";
+			p->mMessage = "completion started";
+			p->mSuccessfull = p->mStore.completeSync();
+			p->mMessage = p->mSuccessfull?"complete succeeded":"complete failed";
 		}
 		break;
 		default: {
-			p->mMessage="unknown transaction type";
-			p->mSuccessfull=false;
+			p->mMessage = "unknown transaction type";
+			p->mSuccessfull = false;
 		}
 		break;
 		}

@@ -19,7 +19,7 @@ void AgentClient::configure(QSharedPointer<Node> node, QSharedPointer<Associate>
 	if(!nodeAssoc.isNull()) {
 		QSharedPointer<AgentClient> sharedThis = qSharedPointerCast<AgentClient>(sharedFromThis());
 		if(!sharedThis.isNull()) {
-			mCouriers=QSharedPointer<AgentClientCourierSet>(OC_NEW AgentClientCourierSet());
+			mCouriers = QSharedPointer<AgentClientCourierSet>::create();
 			if(!mCouriers.isNull()) {
 				mCouriers->configure(nodeAssoc->id(), sharedThis);
 			} else {
@@ -54,7 +54,7 @@ QSharedPointer<ClientWidget> AgentClient::widget()
 	if(mWidget.isNull()) {
 		QSharedPointer<AgentClient> sharedThis = qSharedPointerCast<AgentClient>(sharedFromThis());
 		if(!sharedThis.isNull()) {
-			mWidget=QSharedPointer<AgentClientWidget>(OC_NEW AgentClientWidget(sharedThis, nullptr));
+			mWidget = QSharedPointer<AgentClientWidget>::create(sharedThis, nullptr);
 			if(mWidget.isNull()) {
 				qWarning()<<"ERROR: could not create AgentClientWidget for AgentClient";
 			}

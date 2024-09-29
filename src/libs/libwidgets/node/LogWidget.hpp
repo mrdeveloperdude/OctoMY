@@ -4,13 +4,14 @@
 #include <QWidget>
 #include <QPlainTextEdit>
 
+#include "LogDevice.hpp"
 
 namespace Ui
 {
 class LogWidget;
 }
 
-class LogWidget : public QPlainTextEdit
+class LogWidget : public QPlainTextEdit, public LogDevice
 {
 	Q_OBJECT
 private:
@@ -22,8 +23,8 @@ public:
 	~LogWidget();
 
 public:
-	void setDirection(bool down);
-	void appendLog(const QString& text);
+	void setDirection(bool down) override;
+	void appendLog(const QString& text) override;
 };
 
 #endif

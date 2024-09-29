@@ -27,7 +27,7 @@ private:
 
 public:
 	explicit PairingDebugWidget(QWidget *parent = nullptr);
-	virtual ~PairingDebugWidget() Q_DECL_OVERRIDE;
+	virtual ~PairingDebugWidget() override;
 
 public:
 	void configure(QSharedPointer <Node> node);

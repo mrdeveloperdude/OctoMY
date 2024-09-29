@@ -21,7 +21,7 @@ private:
 
 public:
 	explicit MockApp();
-	virtual ~MockApp() Q_DECL_OVERRIDE;
+	virtual ~MockApp() override;
 
 private:
 	void handleMock(QString event);
@@ -29,24 +29,24 @@ private:
 	// Node interface
 public:
 	// Called by Node::appConfigure();
-	void nodeConfigure() Q_DECL_OVERRIDE;
+	void nodeConfigure() override;
 
 	// Called by Node::appActivate()
-	void nodeActivate(const bool on) Q_DECL_OVERRIDE;
+	void nodeActivate(const bool on) override;
 
 	// Called by Node::appWindow()
-	QSharedPointer<NodeWindow> nodeWindow() Q_DECL_OVERRIDE;
+	QSharedPointer<NodeWindow> nodeWindow() override;
 
 	// Provide role
-	NodeRole nodeRole() Q_DECL_OVERRIDE;
+	NodeRole nodeRole() override;
 
 	// Provide type
-	NodeType nodeType() Q_DECL_OVERRIDE;
+	NodeType nodeType() override;
 	
 	
 	// QEnableSharedFromThis<Agent> interface
 public:
-	QSharedPointer<Node> sharedThis() Q_DECL_OVERRIDE;
+	QSharedPointer<Node> sharedThis() override;
 
 
 signals:

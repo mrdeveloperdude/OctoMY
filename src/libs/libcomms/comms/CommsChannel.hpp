@@ -60,7 +60,7 @@ protected:
 	// The keystore which is used for encryption (the local key pair is used, as looked up with mLocalID)
 	QSharedPointer<KeyStore> mKeystore;
 
-	// The store wich is used to find network addresses to use when creating new sessions
+	// The store which is used to find network addresses to use when creating new sessions
 	QSharedPointer<AddressBook> mAssociates;
 
 	// The directory of sessions for this cc
@@ -69,7 +69,7 @@ protected:
 	// The couriers that are in use by this cc. Only active couriers are in this list for performance reasons.
 	CourierSet mCouriers;
 
-	// Map for quickly finding a particular courier by it's unique ID
+	// Map for quickly finding a particular courier by its unique ID
 	QMap<quint32, QSharedPointer<Courier> > mCouriersByID;
 
 	quint64 mLocalSessionID;
@@ -140,8 +140,11 @@ protected:
 	// CommsChannel signals
 signals:
 	//		void receivePacket(QSharedPointer<QDataStream> data,QHostAddress host, quint16 port);
+	// An error occurred in comms
 	void commsError(QString message);
+	// A new comms session was added
 	void commsClientAdded(CommsSession *c);
+	// The connection state changed for comms channel
 	void commsConnectionStatusChanged(const bool isConnected, const bool needsConnection);
 
 public slots:

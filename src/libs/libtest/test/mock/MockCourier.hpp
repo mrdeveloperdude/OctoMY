@@ -23,19 +23,19 @@ public:
 
 public:
 	explicit MockCourier(QString name, QString dest, QByteArray datagram, QSharedPointer<CommsChannel> comms, const qint32 mMaxSends=1, const qint32 mMaxRecs=1, CommsTester *parent = nullptr);
-	virtual ~MockCourier() Q_DECL_OVERRIDE;
+	virtual ~MockCourier() override;
 
 public:
 	//Let the CommChannel know what we want
-	CourierMandate mandate() const Q_DECL_OVERRIDE;
+	CourierMandate mandate() const override;
 
 	//Override to act on sending opportunity.
 	//Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
-	quint16 sendingOpportunity(QDataStream &ds)	Q_DECL_OVERRIDE;
+	quint16 sendingOpportunity(QDataStream &ds)	override;
 
 	//Override to act on data received
 	//Return number of bytes actually read.
-	quint16 dataReceived(QDataStream &ds, quint16 availableBytes) Q_DECL_OVERRIDE;
+	quint16 dataReceived(QDataStream &ds, quint16 availableBytes) override;
 
 	void writeSummary();
 };

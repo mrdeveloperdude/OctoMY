@@ -15,11 +15,11 @@ private:
 	static QSharedPointer<CreepyVoice<qreal> > creepyVoice;
 public:
 	explicit VoiceManager(QObject *parent=nullptr);
-	virtual ~VoiceManager() Q_DECL_OVERRIDE;
+	virtual ~VoiceManager() override;
 
 public:
 	static QSharedPointer<CreepyVoice<qreal> > getCreepyVoice();
-	static bool speak(PortableID &id, QString text);
+	static bool speak(const PortableID &id, const QString text);
 	static bool voiceIsAvailable();
 
 };

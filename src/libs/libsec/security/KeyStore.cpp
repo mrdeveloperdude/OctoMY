@@ -40,15 +40,16 @@ void KeyStore::configure(QString filename, bool doBootstrap, KeySecurityPolicy p
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		auto me=sharedFromThis();
+		auto me = sharedFromThis();
 		if(!me.isNull()) {
-			mBackend=QSharedPointer<JsonAsyncBackend>(OC_NEW JsonAsyncBackend());
+			mBackend = QSharedPointer<JsonAsyncBackend>::create();
 			if(!mBackend.isNull()) {
 				mBackend->configure(filename);
 				mStore.configure(mBackend, me);
-				mDirty=true;
-				mDoBootstrap=doBootstrap;
-				mPolicy=policy;
+				mDirty = true;
+				mDoBootstrap = doBootstrap;
+				qDebug() << "Bootstrapping set to " << mDoBootstrap << "(config)";
+				mPolicy = policy;
 			} else {
 				qDebug()<<"ERROR: Backend was null";
 			}
@@ -139,35 +140,35 @@ bool KeyStore::setFrontend(QVariantMap map)
 	bool ok=false;
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		//qDebug()<<"KEYSTORE FROM MAP";
-		mDirty=true;
-		ok=true;
-		mLocalKey=nullptr;
+		mDirty = true;
+		ok = true;
+		mLocalKey = nullptr;
 		mAssociates.clear();
 		if(map.contains("localKey")) {
 			QVariantMap localMap=map["localKey"].toMap();
-			QSharedPointer<Key> localKey(OC_NEW Key(localMap, false));
+			auto localKey = QSharedPointer<Key>::create(localMap, false);
 			if(localKey->isValid(false)) {
-				mLocalKey=localKey;
+				mLocalKey = localKey;
 			} else {
-				ok=false;
+				ok = false;
 			}
 		}
 		if(ok) {
 			QVariantList remoteList=map["remoteKeys"].toList();
-			for(QVariantList::iterator b=remoteList.begin(), e=remoteList.end(); b!=e; ++b) {
+			for(QVariantList::iterator b = remoteList.begin(), e = remoteList.end(); b!=e; ++b) {
 				QVariantMap remote=(*b).toMap();
 				if(remote.contains("key")) {
-					QVariantMap  keyMap=remote["key"].toMap();
-					QSharedPointer<Key> peerKey= QSharedPointer<Key>(OC_NEW Key(keyMap, true));
+					QVariantMap  keyMap = remote["key"].toMap();
+					auto peerKey = QSharedPointer<Key>::create(keyMap, true);
 					if(!peerKey->isValid(true)) {
-						qWarning()<<"ERROR: peer key was not valid";
+						qWarning() << "ERROR: peer key was not valid";
 						ok=false;
 						break;
 					}
-					mAssociates[remote["id"].toString()]=peerKey;
+					mAssociates[remote["id"].toString()] = peerKey;
 				} else {
-					qWarning()<<"ERROR: no key in remote keys";
-					ok=false;
+					qWarning() << "ERROR: no key in remote keys";
+					ok = false;
 					break;
 				}
 			}
@@ -181,24 +182,24 @@ QVariantMap KeyStore::getFrontend(bool &ok)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		ok=true;
+		ok = true;
 		if(mDirty) {
-			mDirty=false;
+			mDirty = false;
 			//qDebug()<<"KEYSTORE TO MAP";
 			mCache = QVariantMap();
 			if(!mLocalKey.isNull()) {
-				mCache["localKey"]=mLocalKey->toVariantMap(false);
+				mCache["localKey"] = mLocalKey->toVariantMap(false);
 			}
 			QVariantList remotes;
 			for(QMap<QString, QSharedPointer<Key> >::const_iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
 				QVariantMap remote;
-				QString id=b.key();
-				auto key=b.value();
-				if(nullptr!=key) {
-					QVariantMap val=key->toVariantMap(true);
+				QString id = b.key();
+				auto key = b.value();
+				if(nullptr != key) {
+					QVariantMap map = key->toVariantMap(true);
 					//qDebug()<<"SAVING REMOTE KEYPAIR "<<id<<"="<<val;
-					remote["id"]=id;
-					remote["key"]=val;
+					remote["id"] = id;
+					remote["key"] = map;
 					remotes.push_back(remote);
 				}
 			}
@@ -214,14 +215,14 @@ bool KeyStore::generateFrontend()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		mDirty=true;
+		mDirty = true;
 		mAssociates.clear();
 		mLocalKey.clear();
 		if(mDoBootstrap) {
 			//ScopedTimer st("local key generation");
-			const auto bits=mPolicy.bits();
-			qDebug()<<"KeyStore: bootstrapping started with "<<bits<<"bits";
-			mLocalKey=QSharedPointer<Key>(OC_NEW Key(bits));
+			const auto bits = mPolicy.bits();
+			qDebug() << "KeyStore: bootstrapping started with " << bits << "bits";
+			mLocalKey = QSharedPointer<Key>::create(bits);
 		}
 		// We only return true if we actually generated, or else asyncstore will be confused
 		return mDoBootstrap;
@@ -234,7 +235,7 @@ bool KeyStore::clearFrontend()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		mDirty=true;
+		mDirty = true;
 		mAssociates.clear();
 		mLocalKey.clear();
 		return true;
@@ -258,6 +259,7 @@ void KeyStore::setBootstrapEnabled(bool doBootstrap)
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		mDoBootstrap = doBootstrap;
+		qDebug() << "Bootstrapping set to " << mDoBootstrap;
 	}
 }
 
@@ -292,11 +294,11 @@ void KeyStore::setPubKeyForID(const QString &pubkeyPEM)
 		if(!ready()) {
 			return;
 		}
-		QSharedPointer<Key> key(OC_NEW Key(pubkeyPEM, true));
+		auto key = QSharedPointer<Key> ::create(pubkeyPEM, true);
 		OC_ASSERT(!key.isNull());
 		if(!key.isNull() ) {
 			if( key->isValid(true) ) {
-				mDirty=true;
+				mDirty = true;
 				mAssociates.insert(key->id(), key);
 			}
 		}
@@ -325,11 +327,11 @@ QSharedPointer<Key> KeyStore::pubKeyForID(const QString &id)
 void KeyStore::dump()
 {
 	OC_METHODGATE();
-	KeyStore &ks=*this;
-	qDebug()<<"KEYSTORE DUMP:";
-	qDebug().nospace() <<" + fn="<<ks.filename();
-	qDebug().nospace() <<" + fexists="<<ks.fileExists();
-	qDebug().nospace() <<" + local-key:";
+	KeyStore &ks = *this;
+	qDebug() << "KEYSTORE DUMP:";
+	qDebug().nospace() << " + fn=" << ks.filename();
+	qDebug().nospace() << " + fexists=" << ks.fileExists();
+	qDebug().nospace() << " + local-key:";
 	if(mLocalKey.isNull()) {
 		qDebug().nospace()<<"    x null";
 	} else {
@@ -388,9 +390,9 @@ QMap<QString, QString> KeyStore::toMap()
 		int i=0;
 		for(QMap<QString, QSharedPointer<Key> >::const_iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
 			QVariantMap remote;
-			QString id=b.key();
-			auto key=b.value();
-			map[QString("remoteKey_%1").arg(i)]=(nullptr!=key)?key->toString():"null";
+			QString id = b.key();
+			auto key = b.value();
+			map[QString("remoteKey_%1").arg(i)] = (nullptr != key)?key->toString():"null";
 			++i;
 		}
 	}

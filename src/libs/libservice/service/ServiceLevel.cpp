@@ -42,7 +42,7 @@ QSet<QString> ServiceLevel::serviceNames() const
 void ServiceLevel::enable(const bool wanted)
 {
 	OC_METHODGATE();
-	mEnableWanted=wanted;
+	mEnableWanted = wanted;
 	emit managerChange(wanted);
 }
 

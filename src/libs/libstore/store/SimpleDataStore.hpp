@@ -27,10 +27,10 @@ public:
 
 	// AsyncFrontend interface
 public:
-	virtual bool clearFrontend() Q_DECL_OVERRIDE;
-	virtual bool setFrontend(QVariantMap data) Q_DECL_OVERRIDE;
-	virtual QVariantMap getFrontend(bool &ok) Q_DECL_OVERRIDE;
-	virtual bool generateFrontend() Q_DECL_OVERRIDE;
+	virtual bool clearFrontend() override;
+	virtual bool setFrontend(QVariantMap data) override;
+	virtual QVariantMap getFrontend(bool &ok) override;
+	virtual bool generateFrontend() override;
 
 };
 

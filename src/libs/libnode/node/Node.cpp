@@ -18,6 +18,7 @@
 #include "comms/CommsSession.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/blob/BlobCourier.hpp"
+#include "delivery/BirthControl.hpp"
 #include "discovery/AddressBook.hpp"
 #include "discovery/DiscoveryClient.hpp"
 #include "hardware/sensors/SensorInput.hpp"
@@ -65,10 +66,10 @@ Node::Node()
 	, mServiceLevelManager(OC_NEW ServiceLevelManager())
 	, mKeyStoreService(OC_NEW KeyStoreService(mKeyStore, QStringList{}))
 	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore, QStringList{mKeyStoreService->name()}))
-	, mLocalAddressListService(OC_NEW LocalAddressListService(mLocalAddressList, QStringList{}))
-	, mAddressBookService(OC_NEW AddressBookService(mAddressBook, QStringList{}))
-	, mDiscoveryService(OC_NEW DiscoveryClientService(mDiscovery, QStringList{}))
-	, mCarrierService(OC_NEW CarrierService(mCarrier, QStringList{}))
+	, mLocalAddressListService(OC_NEW LocalAddressListService(mLocalAddressList, QStringList{mLocalIdentityStoreService->name()}))
+	, mAddressBookService(OC_NEW AddressBookService(mAddressBook, QStringList{mLocalIdentityStoreService->name()}))
+	, mDiscoveryService(OC_NEW DiscoveryClientService(mDiscovery, QStringList{mLocalIdentityStoreService->name()}))
+	, mCarrierService(OC_NEW CarrierService(mCarrier, QStringList{mLocalIdentityStoreService->name()}))
 	, mCommsService(OC_NEW CommsService(mComms, QStringList{mCarrierService->name(), mKeyStoreService->name(), mAddressBookService->name()}))
 	, mAlwaysServiceLevel(OC_NEW ServiceLevel("Always",
 {
@@ -98,29 +99,20 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 	OC_METHODGATE();
 	if(mAppConfigureHelper.configure()) {
 		//qDebug()<<"appConfigure()";
-		mLauncher=launcher;
-		auto ctx=context();
+		mLauncher = launcher;
+		auto ctx = context();
 		if(!ctx.isNull()) {
-			ScopedTimer nodeConfigureTimer(context()->base()+"-configure");
+			ScopedTimer nodeConfigureTimer(context()->base() + "-configure");
 			setObjectName(ctx->base());
-			applyStyle();
-			const bool basedirOK=createBaseDir();
+			applyAppStyle();
+			const bool basedirOK = createBaseDir();
 			if(basedirOK) {
-				QString baseDir=ctx->baseDir();
+				auto baseDir = ctx->baseDir();
 
 				// Configure all services
 				//////////////////////////////////
 
-				mKeyStore->configure(baseDir + "/keystore.json", true);
-				/*
-				if(!connect(mKeyStore.data(), &KeyStore::keystoreReady, this, [this](const bool on, const bool ok) {
-				if(ok && on) {
-						identityChanged();
-					}
-				}, OC_CONTYPE)) {
-					qWarning()<<"ERROR: Could not connect";
-				}
-				*/
+				mKeyStore->configure(baseDir + "/keystore.json", false);
 				mKeyStoreService->configure();
 
 				mLocalIdentityStore->configure(baseDir + "/local_identity.json");
@@ -169,15 +161,14 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 
 				// TODO: This is the good stuff. It will be handled as soon as the boring stuff is finished and working xD
 				//mSensors->configure(OC_NEW SensorInput(this))
-				//mSensorsCourier->configure(QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(*mComms, this)))
-				//mBlobCourier->configure(QSharedPointer<BlobCourier>(OC_NEW BlobCourier(*mComms, this)))
+				//mSensorsCourier->configure(QSharedPointer<SensorsCourier>::create(*mComms, this))
+				//mBlobCourier->configure(QSharedPointer<BlobCourier>::create(*mComms, this))
 				//mCameras->configure(OC_NEW CameraList(this))
 				nodeConfigure();
 
 			} else {
 				mAppConfigureHelper.configureFailed("Could not create base dir");
 			}
-
 		} else {
 			qWarning()<<"ERROR: No context";
 		}
@@ -188,54 +179,43 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 void Node::appActivate(const bool on)
 {
 	OC_METHODGATE();
-	//qDebug()<<"appActivate()";
-
-	if(on) {
-		if(mAppConfigureHelper.activate(on)) {
-			serviceActivation(on);
-			//setHookSensorSignals(*this, true);
-			//setHookSensorSignals(*mSensorsCourier, true);
-			//setHookCommsSignals(*this,true);
-			/*
-			if(nullptr!=mZooClient) {
-				mZooClient->setURL(mServerURL);
-			}
-			*/
-			// Bootstrap connection
-			/*
-			const bool last=needsConnection();
-			setNeedsConnection(false);
-			setNeedsConnection(last);
-			*/
-			// NOTE: It is expected that this emits nodeActivateChanged() at some point
-			nodeActivate(on);
-		}
-	} else {
-		if(mAppConfigureHelper.isActivatedAsExpected()) {
-			// NOTE: It is expected that this emits nodeActivateChanged() at some point
-			nodeActivate(on);
-			serviceActivation(on);
-			setHookSensorSignals(*this, false);
-			setHookCommsSignals(*this, false);
-			//mAddressBook.setInitialized<AddressBook>(nullptr);
-			//mLocalIdentity.setInitialized<LocalIdentityStore>(nullptr);
-		}
-	}
-}
-
-
-void Node::serviceActivation(const bool on)
-{
-	OC_METHODGATE();
+	qDebug() << "EUREKA appActivate called: " << on;
 	if(mAppConfigureHelper.isConfiguredAsExpected()) {
-		mServiceLevelManager->enableLevel(mAlwaysServiceLevel->name(), on, [](bool ok) {
-			Q_UNUSED(ok);
+		mServiceLevelManager->enableLevel(mAlwaysServiceLevel->name(), on, [=](bool ok) {
+			qDebug() << "EUREKA appActivate returned: " << (on?"ON":"OFF") << ok;
+			if(on){
+				setHookSensorSignals(*this, on);
+				//setHookSensorSignals(*mSensorsCourier, true);
+				setHookCommsSignals(*this, on);
+				//if(nullptr!=mZooClient) {
+				//	mZooClient->setURL(mServerURL);
+				//}
+				// Bootstrap connection
+				//const bool last=needsConnection();
+				//setNeedsConnection(false);
+				//setNeedsConnection(last);
+				BirthControl bc;
+				bc.configure(sharedThis());
+				auto asessment = bc.statusAssesment();
+				qDebug()<< asessment.toString();
+				if(ok){
+					// TODO: Heed the OK status
+				}
+			}
+			// NOTE: It is expected that this emits nodeActivateChanged() at some point
+			nodeActivate(on);
+			if(!on){
+				setHookCommsSignals(*this, on);
+				setHookSensorSignals(*this, on);
+				if(ok){
+					
+				}
+			}
+			
 			//qDebug()<<"EUREKA ServiceActivation returned: "<<ok;
 		});
 	}
 }
-
-
 
 
 QSharedPointer<NodeWindow> Node::appWindow()
@@ -404,22 +384,47 @@ void Node::unbirth()
 {
 	OC_METHODGATE();
 	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		mNodeIdentity.clear();
 		mKeyStore->clear();
 		mLocalIdentityStore->clear();
 		mAddressBook->clear();
-		mClients.clear();
-		setNodeIdentity(QVariantMap());
+		mClients->clear();
+	}
+}
+
+void Node::scrape()
+{
+	OC_METHODGATE();
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		unbirth();
+		QFile(mKeyStore->store().filename()).remove();
+		QFile(mLocalIdentityStore->filename()).remove();
+		QFile(mAddressBook->filename()).remove();
 	}
 }
 
 
-void Node::applyStyle()
+void Node::applyAppStyle()
 {
 	OC_METHODGATE();
 	if(mAppConfigureHelper.isConfiguredAsExpected()) {
 		StyleManager styleManager;
 		AppStyle style(nodeType());
 		styleManager.apply(style);
+	}
+}
+
+
+void Node::applyWindowStyle()
+{
+	OC_METHODGATE();
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		StyleManager styleManager;
+		AppStyle style(nodeType());
+		auto window = appWindow();
+		if(window){
+			styleManager.apply(style, *window);
+		}
 	}
 }
 
@@ -442,50 +447,12 @@ bool Node::createBaseDir()
 ////////////////////////////////////////////////////////////////////////////////
 
 
-QString Node::name()
-{
-	OC_METHODGATE();
-	if(mAppConfigureHelper.isConfiguredAsExpected()) {
-		/*
-		QSharedPointer<Associate>  me=nodeIdentity();
-		QString name;
-		if(nullptr!=me) {
-			name=me->name().trimmed();
-		}
-		if(""!=name) {
-			switch(mType) {
-			case(TYPE_AGENT): {
-				name="Agent ";
-			}
-			break;
-			case(TYPE_HUB): {
-				name="Hub ";
-			}
-			break;
-			case(TYPE_REMOTE): {
-				name="Remote ";
-			}
-			break;
-			case(TYPE_ZOO): {
-				name="Zoo ";
-			}
-			break;
-			default:
-				name="Unknown ";
-			};
-			name+=me->id().mid(0,8);
-		}
-		*/
-	}
-	return "";
-}
-
 
 void Node::setNodeIdentity(QVariantMap map)
 {
 	OC_METHODGATE();
 	if(mAppConfigureHelper.isConfiguredAsExpected()) {
-		setNodeIdentity(QSharedPointer<Associate>(OC_NEW Associate(map)));
+		setNodeIdentity(map.isEmpty()?nullptr:QSharedPointer<Associate>::create(map));
 	}
 }
 
@@ -494,9 +461,9 @@ void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 {
 	OC_METHODGATE();
 	if(mAppConfigureHelper.isConfiguredAsExpected()) {
-		mNodeIdentity=nodeID;
+		mNodeIdentity = nodeID;
 		if(!mNodeIdentity.isNull()) {
-			auto map=mNodeIdentity->toVariantMap();
+			auto map = mNodeIdentity->toVariantMap();
 			//qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED: "<<map<< " FROM nodeID="<<*mNodeIdentity;
 			mLocalIdentityStore->fromMap(map);
 			/*
@@ -510,7 +477,9 @@ void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 					emit identityChanged();
 				}
 			});
-
+		}
+		else{
+			emit identityChanged();
 		}
 	}
 }
@@ -784,7 +753,6 @@ void Node::onGyroscopeUpdated(QGyroscopeReading *r)
 	Q_UNUSED(r);
 	OC_METHODGATE();
 }
-
 
 
 /*

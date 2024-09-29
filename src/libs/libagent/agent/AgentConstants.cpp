@@ -1,6 +1,8 @@
 #include "AgentConstants.hpp"
 
-
+/*
+ * 
+ * SEE app/Constants.*
 
 const QString AgentConstants::AGENT_FACE_SPLITTER_MIDDLE_STATE="agent.face.splitter.middle.state";
 const QString AgentConstants::AGENT_FACE_SPLITTER_TOP_STATE="agent.face.splitter.top.state";
@@ -17,3 +19,4 @@ const QString AgentConstants::AGENT_DISCONNECT_COLOR="#1a3a52";
 
 
 const QString AgentConstants::AGENT_CONNECTION_STATUS="agent.connection.status";
+*/

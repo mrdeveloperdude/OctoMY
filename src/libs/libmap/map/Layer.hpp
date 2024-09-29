@@ -91,7 +91,7 @@ public:
 	 * be something like a "speed up hint"
 	 */
 
-	Layer(QString layername, QSharedPointer<MapAdapter> mapadapter, enum LayerType layertype, bool takeevents=true);
+	Layer(QString layername, QSharedPointer<MapAdapter> mapadapter, enum LayerType layertype=MapLayer, bool takeevents=true);
 	virtual ~Layer();
 
 	//! returns the layer's name

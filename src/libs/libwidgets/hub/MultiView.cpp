@@ -132,7 +132,7 @@ void MultiView::onViewButtonClicked(QAbstractButton*but)
 
 
 
-void MultiView::configure(Settings *settings, QString val, QString key)
+void MultiView::configure(QSharedPointer<Settings> settings, QString val, QString key)
 {
 	OC_METHODGATE();
 

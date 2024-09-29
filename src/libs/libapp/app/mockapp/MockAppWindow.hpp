@@ -23,18 +23,18 @@ private:
 	
 public:
 	explicit MockAppWindow(QWidget *parent = nullptr);
-	virtual ~MockAppWindow() Q_DECL_OVERRIDE;
+	virtual ~MockAppWindow() override;
 	
 	// NodeWindow interface
 public:
-	void configure() Q_DECL_OVERRIDE;
+	void configure() override;
 
 public:
 	QSharedPointer<MockApp> mockApp();
 
 	// LogDestination interface
 public:
-	void appendLog(const QString& text) Q_DECL_OVERRIDE;
+	void appendLog(const QString& text) override;
 
 
 };

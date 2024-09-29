@@ -87,7 +87,7 @@ private:
 
 public:
 	explicit CLGLView(QWidget *parent = nullptr);
-	virtual ~CLGLView() Q_DECL_OVERRIDE;
+	virtual ~CLGLView() override;
 
 public:
 	void setRenderer(CLGLViewRenderer * mRenderer);
@@ -95,16 +95,16 @@ public:
 
 	//QOpenGLWidget interface
 public:
-	void initializeGL() Q_DECL_OVERRIDE;
-	void resizeGL(int w, int h) Q_DECL_OVERRIDE;
-	void paintGL() Q_DECL_OVERRIDE;
+	void initializeGL() override;
+	void resizeGL(int w, int h) override;
+	void paintGL() override;
 
 	//QWidget interface
 private:
-	void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-	void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-	void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-	void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
+	void wheelEvent(QWheelEvent *event) override;
 //Helper
 	QVector2D eventToNormalizedVector(QMouseEvent *event);
 

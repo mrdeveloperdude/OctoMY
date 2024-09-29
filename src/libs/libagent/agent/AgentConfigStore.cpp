@@ -40,7 +40,7 @@ QSharedPointer<AgentConfig> AgentConfigStore::agentConfig() const
 void AgentConfigStore::setAgentConfig(QSharedPointer<AgentConfig> config)
 {
 	OC_METHODGATE();
-	mAgentConfig=config;
+	mAgentConfig = config;
 }
 
 
@@ -48,7 +48,7 @@ bool AgentConfigStore::fromMap(QVariantMap data)
 {
 	OC_METHODGATE();
 	if(mAgentConfig.isNull()) {
-		mAgentConfig=QSharedPointer<AgentConfig>(OC_NEW AgentConfig());
+		mAgentConfig = QSharedPointer<AgentConfig>::create();
 	}
 	if(!mAgentConfig.isNull()) {
 		mAgentConfig->fromMap(data);
@@ -63,7 +63,7 @@ QVariantMap AgentConfigStore::toMap()
 	OC_METHODGATE();
 	QVariantMap map;
 	if(!mAgentConfig.isNull()) {
-		map=mAgentConfig->toMap();
+		map = mAgentConfig->toMap();
 	}
 	return map;
 }
@@ -72,6 +72,6 @@ QVariantMap AgentConfigStore::toMap()
 bool AgentConfigStore::fromDefault()
 {
 	OC_METHODGATE();
-	mAgentConfig=QSharedPointer<AgentConfig>(OC_NEW AgentConfig());
+	mAgentConfig = QSharedPointer<AgentConfig>::create();
 	return true;
 }

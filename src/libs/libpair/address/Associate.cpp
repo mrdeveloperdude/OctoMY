@@ -404,13 +404,13 @@ QSharedPointer<Client> Associate::toClient(QSharedPointer<Node> node)
 	QSharedPointer<Client> ret;
 	switch(mType) {
 	case(TYPE_AGENT):
-		ret=QSharedPointer<AgentClient>(OC_NEW AgentClient());
+		ret = QSharedPointer<AgentClient>::create();
 		break;
 	case(TYPE_REMOTE):
-		ret=QSharedPointer<RemoteClient>(OC_NEW RemoteClient());
+		ret=QSharedPointer<RemoteClient>::create();
 		break;
 	case(TYPE_HUB):
-		ret=QSharedPointer<HubClient>(OC_NEW HubClient());
+		ret=QSharedPointer<HubClient>::create();
 		break;
 	default:
 		qWarning()<<"ERROR: unknown node type";

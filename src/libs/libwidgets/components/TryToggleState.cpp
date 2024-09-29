@@ -60,3 +60,22 @@ TryToggleState desaturate(TryToggleState s)
 	return positive(s)?GOING_ON:GOING_OFF;
 }
 
+TryToggleState createTryToggleState(bool on, bool wantsOn)
+{
+	if(on){
+		if(wantsOn){
+			return ON;
+		}
+		else{
+			return GOING_OFF;
+		}
+	}
+	else{
+		if(wantsOn){
+			return GOING_ON;
+		}
+		else{
+			return OFF;
+		}
+	}
+}

@@ -36,7 +36,7 @@ public:
 	MarkdownHighlighter(QTextDocument *parent = 0);
 	
 protected:
-	void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
+	void highlightBlock(const QString &text) override;
 	
 };
 

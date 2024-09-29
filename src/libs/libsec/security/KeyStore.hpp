@@ -30,8 +30,9 @@ struct nop {
 
 /**
  * @brief The KeyStore class has the following tasks:
- * + asynchronous loading and storing of our local private key key plus the publik key of associates
- * + asynchronoous generation of our local private key
+ * + asynchronous loading and storing of our local key pair
+ * + asynchronous loading and storing of the public keys of associates
+ * + asynchronous generation of our local private key
  * + Look-up of keys by ID
  *
  * See also Key.hpp, LocalIdentityStore.hpp
@@ -44,8 +45,11 @@ private:
 	QSharedPointer<JsonAsyncBackend> mBackend;
 	AsyncStore<QVariantMap> mStore;
 	QVariantMap mCache;
+	// Changes happened in the keystore since last invocation of getFrontend()
 	bool mDirty;
+	// Enable generating a new key
 	bool mDoBootstrap;
+	// The settings that affect key generation such as algorithm, number of bits etc. collected in one policy
 	KeySecurityPolicy mPolicy;
 	QSharedPointer<Key> mLocalKey;
 	QMap<QString, QSharedPointer<Key> > mAssociates;
@@ -55,7 +59,7 @@ private:
 
 public:
 	explicit KeyStore(QObject *parent = nullptr);
-	virtual ~KeyStore() Q_DECL_OVERRIDE;
+	virtual ~KeyStore() override;
 
 public:
 	void configure(QString filename = "", bool doBootstrap = false, KeySecurityPolicy policy = KeySecurityPolicy() );
@@ -63,10 +67,10 @@ public:
 
 	// AsyncFrontend interface
 public:
-	bool clearFrontend() Q_DECL_OVERRIDE;
-	bool setFrontend(QVariantMap data) Q_DECL_OVERRIDE;
-	QVariantMap getFrontend(bool &ok) Q_DECL_OVERRIDE;
-	bool generateFrontend() Q_DECL_OVERRIDE;
+	bool clearFrontend() override;
+	bool setFrontend(QVariantMap data) override;
+	QVariantMap getFrontend(bool &ok) override;
+	bool generateFrontend() override;
 
 private:
 	// To have this called, make sure to set boostrapping to true and then call synchronize()

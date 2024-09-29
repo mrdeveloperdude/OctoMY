@@ -13,15 +13,15 @@ private:
 	QSharedPointer<Client> mClient;
 public:
 	ClientConnectionStatus(QSharedPointer<Client>);
-	virtual ~ClientConnectionStatus() Q_DECL_OVERRIDE {}
+	virtual ~ClientConnectionStatus() override {}
 
 
 	// IConnectionStatus interface
 public:
-	bool needsConnection() Q_DECL_OVERRIDE;
-	bool isConnected() Q_DECL_OVERRIDE;
-	void setNeedsConnection(bool) Q_DECL_OVERRIDE;
-	void setConnected(bool) Q_DECL_OVERRIDE;
+	bool needsConnection() override;
+	bool isConnected() override;
+	void setNeedsConnection(bool) override;
+	void setConnected(bool) override;
 
 };
 

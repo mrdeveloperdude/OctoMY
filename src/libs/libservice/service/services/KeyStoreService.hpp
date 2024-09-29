@@ -20,14 +20,14 @@ private:
 	ConfigureHelper mConfigureHelper;
 
 public:
-	KeyStoreService(QSharedPointer<KeyStore> keystorem, QStringList dependencies= {});
+	KeyStoreService(QSharedPointer<KeyStore> keystore, QStringList dependencies= {});
 
 public:
 	void configure();
 
 	// ServiceWapper interface.
 public:
-	void serviceWrapperActivate(QSharedPointer<KeyStore> wrapee, bool on, ServiceActivatedCallback callBack=nullptr) Q_DECL_OVERRIDE;
+	void serviceWrapperActivate(QSharedPointer<KeyStore> wrapee, bool on, ServiceActivatedCallback callBack=nullptr) override;
 
 };
 

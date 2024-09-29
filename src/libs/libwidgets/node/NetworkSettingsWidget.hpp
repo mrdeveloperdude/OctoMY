@@ -46,12 +46,11 @@ public:
 
 	// ui slots
 private slots:
-	void on_pushButtonEdit_clicked();
-	void on_pushButtonSave_clicked();
-	void on_lineEditLocalPort_textChanged(const QString &arg1);
-	void on_lineEditLocalPort_editingFinished();
-	
-	void on_comboBoxLocalAddress_currentIndexChanged(int index);
+	void edit();
+	void save();
+	void localPortTextChanged(const QString &string);
+	void localPortEditingFinished();
+	void localAddressIndexChanged(int index);
 	
 signals:
 	void addressChanged(QHostAddress address, quint16 port, bool valid);

@@ -1,9 +1,5 @@
 #include "AgentConfig.hpp"
 
-#include "uptime/New.hpp"
-
-#include "uptime/SharedPointerWrapper.hpp"
-
 AgentConfig::AgentConfig()
 {
 
@@ -17,11 +13,11 @@ AgentConfig::AgentConfig(const QVariantMap &map)
 
 void AgentConfig::fromMap(const QVariantMap &map)
 {
-	mControllerName=map["controllerName"].toString();
-	mControllerConfig=map["controllerConfig"].toMap();
-	QVariantList list=map["poseMapping"].toList();
+	mControllerName = map["controllerName"].toString();
+	mControllerConfig = map["controllerConfig"].toMap();
+	QVariantList list = map["poseMapping"].toList();
 	if(mPoseMapping.isNull()) {
-		mPoseMapping=QSharedPointer<PoseMapping>(OC_NEW PoseMapping(static_cast<quint32>(list.size())));
+		mPoseMapping=QSharedPointer<PoseMapping>::create(static_cast<quint32>(list.size()));
 	}
 	mPoseMapping->fromMap(list);
 }
@@ -29,11 +25,11 @@ void AgentConfig::fromMap(const QVariantMap &map)
 QVariantMap AgentConfig::toMap()
 {
 	QVariantMap map;
-	map["controllerName"]=mControllerName;
-	map["controllerConfig"]=mControllerConfig;
-	QVariantList list=map["poseMapping"].toList();
+	map["controllerName"] = mControllerName;
+	map["controllerConfig"] = mControllerConfig;
+	QVariantList list = map["poseMapping"].toList();
 	if(mPoseMapping.isNull()) {
-		mPoseMapping=QSharedPointer<PoseMapping>(OC_NEW PoseMapping(static_cast<quint32>(list.size())));
+		mPoseMapping=QSharedPointer<PoseMapping>::create(static_cast<quint32>(list.size()));
 	}
 	mPoseMapping->fromMap(list);
 	// TODO: Implement
@@ -51,7 +47,7 @@ QString AgentConfig::controllerName()
 
 void AgentConfig::setControllerName(const QString &n)
 {
-	mControllerName=n;
+	mControllerName = n;
 }
 
 QVariantMap AgentConfig::controllerConfig()
@@ -61,7 +57,7 @@ QVariantMap AgentConfig::controllerConfig()
 
 void AgentConfig::setControllerConfig(const QVariantMap &map)
 {
-	mControllerConfig=map;
+	mControllerConfig = map;
 }
 
 
@@ -74,5 +70,5 @@ QSharedPointer<PoseMapping> AgentConfig::poseMapping()
 
 void AgentConfig::setPoseMapping(QSharedPointer<PoseMapping> mapping)
 {
-	mPoseMapping=mapping;
+	mPoseMapping = mapping;
 }

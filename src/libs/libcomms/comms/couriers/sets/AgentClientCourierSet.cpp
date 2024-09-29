@@ -28,9 +28,9 @@ void AgentClientCourierSet::configure(QString fullID, QSharedPointer<AgentClient
 	if(!mClient.isNull()) {
 		QSharedPointer<CommsChannel> cc=mClient->comms();
 		if(!cc.isNull()) {
-			mAgentStateCourier=QSharedPointer<AgentStateCourier>(OC_NEW AgentStateCourier(&mDatastream, cc));
-			mSensorsCourier=QSharedPointer<SensorsCourier>(OC_NEW SensorsCourier(cc));
-			mBlobCourier=QSharedPointer<BlobCourier>(OC_NEW BlobCourier(cc));
+			mAgentStateCourier = QSharedPointer<AgentStateCourier>::create(&mDatastream, cc);
+			mSensorsCourier = QSharedPointer<SensorsCourier>::create(cc);
+			mBlobCourier = QSharedPointer<BlobCourier>::create(cc);
 		} else {
 			qWarning()<<"ERROR: AgentClientCourierSet did not have commschannel";
 		}

@@ -9,55 +9,56 @@
 #include <QtMath>
 
 
-Q_REQUIRED_RESULT Q_DECL_CONSTEXPR static inline Q_DECL_UNUSED bool fuzzy_is_null(TGPSReal d)
+
+Q_REQUIRED_RESULT constexpr static inline bool fuzzy_is_zero(TGPSReal d)
 {
 	return std::abs(d) <= std::numeric_limits<TGPSReal>::min();
 }
 
 
-Q_REQUIRED_RESULT Q_DECL_CONSTEXPR static inline Q_DECL_UNUSED TGPSReal sqrt(TGPSReal d)
+Q_REQUIRED_RESULT constexpr static inline TGPSReal sqrt(TGPSReal d)
 {
 	return std::sqrt(d);
 }
 
 
-Q_REQUIRED_RESULT Q_DECL_CONSTEXPR static inline Q_DECL_UNUSED TGPSReal sin(TGPSReal d)
+Q_REQUIRED_RESULT constexpr static inline TGPSReal sin(TGPSReal d)
 {
 	return std::sin(d);
 }
 
 
-Q_REQUIRED_RESULT Q_DECL_CONSTEXPR static inline Q_DECL_UNUSED TGPSReal cos(TGPSReal d)
+Q_REQUIRED_RESULT constexpr static inline TGPSReal cos(TGPSReal d)
 {
 	return std::cos(d);
 }
 
 
-Q_REQUIRED_RESULT Q_DECL_CONSTEXPR static inline Q_DECL_UNUSED TGPSReal tan(TGPSReal d)
+Q_REQUIRED_RESULT constexpr static inline TGPSReal tan(TGPSReal d)
 {
 	return std::tan(d);
 }
 
 
-Q_REQUIRED_RESULT Q_DECL_CONSTEXPR static inline Q_DECL_UNUSED TGPSReal min(TGPSReal a, TGPSReal b)
+Q_REQUIRED_RESULT constexpr static inline TGPSReal min(TGPSReal a, TGPSReal b)
 {
 	return std::min(a, b);
 }
 
 
-Q_REQUIRED_RESULT Q_DECL_CONSTEXPR static inline Q_DECL_UNUSED TGPSReal max(TGPSReal a, TGPSReal b)
+Q_REQUIRED_RESULT constexpr static inline TGPSReal max(TGPSReal a, TGPSReal b)
 {
 	return std::max(a, b);
 }
 
 
-Q_REQUIRED_RESULT Q_DECL_CONSTEXPR static inline Q_DECL_UNUSED TGPSReal atan2(TGPSReal a, TGPSReal b)
+Q_REQUIRED_RESULT constexpr static inline TGPSReal atan2(TGPSReal a, TGPSReal b)
 {
 	return std::atan2(a, b);
 }
 
 
-Q_REQUIRED_RESULT Q_DECL_CONSTEXPR static inline Q_DECL_UNUSED bool fuzzy_compare(TGPSReal a, TGPSReal b)
+Q_REQUIRED_RESULT constexpr static inline bool fuzzy_compare(TGPSReal a, TGPSReal b)
 {
 	return (std::abs(a - b) * 1000000000000.L <= std::min(std::abs(a), std::abs(b)));
 }
@@ -69,12 +70,12 @@ private:
 	TGPSReal xp, yp, zp;
 
 public:
-	Q_DECL_CONSTEXPR Vec();
-	Q_DECL_CONSTEXPR Vec(TGPSReal xpos, TGPSReal ypos, TGPSReal zpos) : xp(xpos), yp(ypos), zp(zpos) {}
+	constexpr Vec();
+	constexpr Vec(TGPSReal xpos, TGPSReal ypos, TGPSReal zpos) : xp(xpos), yp(ypos), zp(zpos) {}
 
-	Q_DECL_CONSTEXPR TGPSReal x() const;
-	Q_DECL_CONSTEXPR TGPSReal y() const;
-	Q_DECL_CONSTEXPR TGPSReal z() const;
+	constexpr TGPSReal x() const;
+	constexpr TGPSReal y() const;
+	constexpr TGPSReal z() const;
 
 	void setX(TGPSReal x);
 	void setY(TGPSReal y);
@@ -116,37 +117,37 @@ public:
 	inline Vec &operator/=(const Vec &vector);
 	static Vec normal(const Vec& v1, const Vec& v2);
 	static Vec normal(const Vec& v1, const Vec& v2, const Vec& v3);
-	Q_DECL_CONSTEXPR friend inline bool operator==(const Vec &v1, const Vec &v2);
-	Q_DECL_CONSTEXPR friend inline bool operator!=(const Vec &v1, const Vec &v2);
-	Q_DECL_CONSTEXPR friend inline const Vec operator+(const Vec &v1, const Vec &v2);
-	Q_DECL_CONSTEXPR friend inline const Vec operator-(const Vec &v1, const Vec &v2);
-	Q_DECL_CONSTEXPR friend inline const Vec operator*(TGPSReal factor, const Vec &vector);
-	Q_DECL_CONSTEXPR friend inline const Vec operator*(const Vec &vector, TGPSReal factor);
-	Q_DECL_CONSTEXPR friend const Vec operator*(const Vec &v1, const Vec& v2);
-	Q_DECL_CONSTEXPR friend inline const Vec operator-(const Vec &vector);
-	Q_DECL_CONSTEXPR friend inline const Vec operator/(const Vec &vector, TGPSReal divisor);
-	Q_DECL_CONSTEXPR friend inline const Vec operator/(const Vec &vector, const Vec &divisor);
+	constexpr friend inline bool operator==(const Vec &v1, const Vec &v2);
+	constexpr friend inline bool operator!=(const Vec &v1, const Vec &v2);
+	constexpr friend inline const Vec operator+(const Vec &v1, const Vec &v2);
+	constexpr friend inline const Vec operator-(const Vec &v1, const Vec &v2);
+	constexpr friend inline const Vec operator*(TGPSReal factor, const Vec &vector);
+	constexpr friend inline const Vec operator*(const Vec &vector, TGPSReal factor);
+	constexpr friend const Vec operator*(const Vec &v1, const Vec& v2);
+	constexpr friend inline const Vec operator-(const Vec &vector);
+	constexpr friend inline const Vec operator/(const Vec &vector, TGPSReal divisor);
+	constexpr friend inline const Vec operator/(const Vec &vector, const Vec &divisor);
 
 	//	friend inline const QDebug &operator<<(const QDebug &d, const Vec &vec);
 };
 
 
-Q_DECL_CONSTEXPR inline Vec::Vec() : xp(0.0l), yp(0.0l), zp(0.0l) {}
+constexpr inline Vec::Vec() : xp(0.0l), yp(0.0l), zp(0.0l) {}
 
 
-Q_DECL_CONSTEXPR inline TGPSReal Vec::x() const
+constexpr inline TGPSReal Vec::x() const
 {
 	return xp;
 }
 
 
-Q_DECL_CONSTEXPR inline TGPSReal Vec::y() const
+constexpr inline TGPSReal Vec::y() const
 {
 	return yp;
 }
 
 
-Q_DECL_CONSTEXPR inline TGPSReal Vec::z() const
+constexpr inline TGPSReal Vec::z() const
 {
 	return zp;
 }
@@ -238,61 +239,61 @@ inline Vec &Vec::operator/=(const Vec &vector)
 }
 
 
-Q_DECL_CONSTEXPR inline bool operator==(const Vec &v1, const Vec &v2)
+constexpr inline bool operator==(const Vec &v1, const Vec &v2)
 {
 	return fuzzy_compare(v1.xp, v2.xp) && fuzzy_compare(v1.yp, v2.yp) && fuzzy_compare(v1.zp, v2.zp);
 }
 
 
-Q_DECL_CONSTEXPR inline bool operator!=(const Vec &v1, const Vec &v2)
+constexpr inline bool operator!=(const Vec &v1, const Vec &v2)
 {
 	return !fuzzy_compare(v1.xp, v2.xp) || !fuzzy_compare(v1.yp, v2.yp) || fuzzy_compare(v1.zp, v2.zp);
 }
 
 
-Q_DECL_CONSTEXPR inline const Vec operator+(const Vec &v1, const Vec &v2)
+constexpr inline const Vec operator+(const Vec &v1, const Vec &v2)
 {
 	return Vec(v1.xp + v2.xp, v1.yp + v2.yp, v1.zp + v2.zp);
 }
 
 
-Q_DECL_CONSTEXPR inline const Vec operator-(const Vec &v1, const Vec &v2)
+constexpr inline const Vec operator-(const Vec &v1, const Vec &v2)
 {
 	return Vec(v1.xp - v2.xp, v1.yp - v2.yp, v1.zp - v2.zp);
 }
 
 
-Q_DECL_CONSTEXPR inline const Vec operator*(TGPSReal factor, const Vec &vector)
+constexpr inline const Vec operator*(TGPSReal factor, const Vec &vector)
 {
 	return Vec(vector.xp * factor, vector.yp * factor, vector.zp * factor);
 }
 
 
-Q_DECL_CONSTEXPR inline const Vec operator*(const Vec &vector, TGPSReal factor)
+constexpr inline const Vec operator*(const Vec &vector, TGPSReal factor)
 {
 	return Vec(vector.xp * factor, vector.yp * factor, vector.zp * factor);
 }
 
 
-Q_DECL_CONSTEXPR inline const Vec operator*(const Vec &v1, const Vec& v2)
+constexpr inline const Vec operator*(const Vec &v1, const Vec& v2)
 {
 	return Vec(v1.xp * v2.xp, v1.yp * v2.yp, v1.zp * v2.zp);
 }
 
 
-Q_DECL_CONSTEXPR inline const Vec operator-(const Vec &vector)
+constexpr inline const Vec operator-(const Vec &vector)
 {
 	return Vec(-vector.xp, -vector.yp, -vector.zp);
 }
 
 
-Q_DECL_CONSTEXPR inline const Vec operator/(const Vec &vector, TGPSReal divisor)
+constexpr inline const Vec operator/(const Vec &vector, TGPSReal divisor)
 {
 	return Vec(vector.xp / divisor, vector.yp / divisor, vector.zp / divisor);
 }
 
 
-Q_DECL_CONSTEXPR inline const Vec operator/(const Vec &vector, const Vec &divisor)
+constexpr inline const Vec operator/(const Vec &vector, const Vec &divisor)
 {
 	return Vec(vector.xp / divisor.xp, vector.yp / divisor.yp, vector.zp / divisor.zp);
 }
@@ -316,9 +317,9 @@ Vec Vec::normalized() const
 	TGPSReal len = TGPSReal(xp) * TGPSReal(xp) +
 				   TGPSReal(yp) * TGPSReal(yp) +
 				   TGPSReal(zp) * TGPSReal(zp);
-	if (fuzzy_is_null(len - 1.0L)) {
+	if (fuzzy_is_zero(len - 1.0L)) {
 		return *this;
-	} else if (!fuzzy_is_null(len)) {
+	} else if (!fuzzy_is_zero(len)) {
 		return *this / sqrt(len);
 	} else {
 		return Vec();
@@ -330,7 +331,7 @@ void Vec::normalize()
 {
 	// Need some extra precision if the length is very small.
 	TGPSReal len = TGPSReal(xp) * TGPSReal(xp) + TGPSReal(yp) * TGPSReal(yp) + TGPSReal(zp) * TGPSReal(zp);
-	if (fuzzy_is_null(len - 1.0L) || fuzzy_is_null(len)) {
+	if (fuzzy_is_zero(len - 1.0L) || fuzzy_is_zero(len)) {
 		return;
 	}
 
@@ -385,21 +386,21 @@ struct Tri {
 		return sqrt(qMax(qMax(d,e),f));
 	}
 
-	Q_DECL_CONSTEXPR friend inline bool operator==(const Tri &v1, const Tri &v2);
-	Q_DECL_CONSTEXPR friend inline bool operator!=(const Tri &v1, const Tri &v2);
+	constexpr friend inline bool operator==(const Tri &v1, const Tri &v2);
+	constexpr friend inline bool operator!=(const Tri &v1, const Tri &v2);
 
 
 	//	friend inline QDebug &operator<<(QDebug &d, Tri &tri);
 };
 
 
-Q_DECL_CONSTEXPR inline bool operator==(const Tri &v1, const Tri &v2)
+constexpr inline bool operator==(const Tri &v1, const Tri &v2)
 {
 	return v1.a == v2.a && v1.b == v2.b && v1.c == v2.c;
 }
 
 
-Q_DECL_CONSTEXPR inline bool operator!=(const Tri &v1, const Tri &v2)
+constexpr inline bool operator!=(const Tri &v1, const Tri &v2)
 {
 	return v1.a != v2.a || v1.b != v2.b || v1.c != v2.c;
 }

@@ -29,7 +29,7 @@ class CLThreadManager;
  *    the worker is in the main/calling thread and is the last chance to do
  *    initializations that needs to be done in this thread.
  * 3. process: This is the main method where the bulk of the work is carried out.
- *    This function is called when the worker is in it's proper thread.
+ *    This function is called when the worker is in its proper thread.
  *    It is expected that the worker carry out all OpenCL related processing here
  *    and loop until running is set to false, -or- until processing is complete
  *    in which case it is expected that mRunning is set to false.

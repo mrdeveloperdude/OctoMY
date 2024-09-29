@@ -28,7 +28,7 @@
 
 
 PairingWizard::PairingWizard(QWidget *parent)
-	: QWidget(parent)
+	: Activity(parent)
 	, ui(OC_NEW Ui::PairingWizard)
 	, mList(nullptr)
 	, mDelegate (nullptr)
@@ -52,20 +52,17 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		mNode=n;
+		mNode = n;
 		ui->widgetMyCertificate->configure(false, true);
-		mTemplate=ui->labelBodyPair->text();
-		ui->labelBodyPair->setText("<h1>Please wait...<h1>");
-		
+		mTemplate = ui->labelBodyPair->text();
+		ui->labelBodyPair->setText("<h1>Please wait...</h1>");
 		ui->widgetPairingTrust->configure(mNode);
-		
 		reset();
-		
 		// Hook onward buttons to go to the correct page in stack
-		QList<QPushButton *> onwardButtons = ui->stackedWidget->findChildren<QPushButton *>(QRegularExpression("pushButtonOnward.*"));
+		auto onwardButtons = ui->stackedWidget->findChildren<QPushButton *>(QRegularExpression("pushButtonOnward.*"));
 		//qDebug()<<"FOUND "<<onwardButtons.size()<<" ONWARDs";
 		for (QList<QPushButton*>::iterator it = onwardButtons.begin(), e=onwardButtons.end(); it != e; ++it) {
-			QPushButton*onward=(*it);
+			auto onward=(*it);
 			//qDebug()<<" + ONWARD: "<<onward->objectName();
 			if(!connect(onward, &QPushButton::clicked,this, [=](bool b) {
 						Q_UNUSED(b);
@@ -77,12 +74,12 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 			}
 		}
 		
-		QSharedPointer<LocalAddressList> lal=localAddressList();
+		auto lal=localAddressList();
 		if(!mNode.isNull() && !lal.isNull()) {
 			NodeType type=mNode->nodeType();
-			QSharedPointer<Associate>  ass=mNode->nodeIdentity();
+			auto ass = mNode->nodeIdentity();
 			if(!ass.isNull()) {
-				PortableID pid=ass->toPortableID();
+				auto pid = ass->toPortableID();
 				//qDebug()<<"CONFIGURE PAIRING WIZ FOR "<<pid.toPortableString();
 				ui->widgetMyCertificate->setPortableID(pid);
 				if(nullptr==ui->listViewNodes->model()) {
@@ -95,7 +92,7 @@ void PairingWizard::configure(QSharedPointer<Node> n)
 					}
 					ui->listViewNodes->setItemDelegate(mDelegate);
 				}
-				QSharedPointer<DiscoveryClient> client=mNode->discoveryClient();
+				auto client=mNode->discoveryClient();
 				if(!client.isNull()) {
 					if(!connect(client.data(), &DiscoveryClient::nodeDiscovered, [=](QString partID) {
 								Q_UNUSED(partID);
@@ -162,7 +159,7 @@ void PairingWizard::onNetworkSettingsChange(QHostAddress address, quint16 port, 
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		if(valid) {
-			QSharedPointer<LocalAddressList> lal=localAddressList();
+			auto lal=localAddressList();
 			if(!lal.isNull()) {
 				lal->setCurrent(address, port);
 			}
@@ -178,7 +175,7 @@ void PairingWizard::updateNetworkSettings()
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		if(!mNode.isNull()) {
 			ui->widgetNetworkSettings->configure(localAddressList());
-			QSharedPointer<DiscoveryClient> client=mNode->discoveryClient();
+			auto client=mNode->discoveryClient();
 			if(!client.isNull()) {
 				const bool visible=this->isVisible();
 				//TODO: Only attemt to start discovery client when address is valid
@@ -237,19 +234,19 @@ void PairingWizard::startEdit(int row)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		qDebug()<<"STARTING EDIT FOR "<<row;
-		QModelIndex index=mList->index(row, 0);
+		qDebug() << "STARTING EDIT FOR " << row;
+		auto index = mList->index(row, 0);
 		
 		if(index.isValid()) {
 			//setUpdatesEnabled(false);
-			QVariantMap map=index.data(Qt::DisplayRole).toMap();
+			auto map=index.data(Qt::DisplayRole).toMap();
 			qDebug()<<"DATA FOR "<<row<<" DURING EDIT IS: "<<map;
-			QSharedPointer<AddressBook> peerStore=addressBook();
+			auto peerStore=addressBook();
 			if(!mNode.isNull() && !peerStore.isNull() ) {
 				mCurrentlyEditingID=map["key"].toMap()["id"].toString();
 				qDebug()<<"CURRENTLY EDITING ID "<<mCurrentlyEditingID;
-				QSharedPointer<Associate> peer=peerStore->associateByID(mCurrentlyEditingID);
-				if(nullptr!=peer) {
+				auto peer=peerStore->associateByID(mCurrentlyEditingID);
+				if(nullptr != peer) {
 					ui->widgetPairingTrust->startEdit(peer);
 				}
 			}
@@ -290,12 +287,12 @@ void PairingWizard::hideEvent(QHideEvent *)
 }
 
 
-void PairingWizard::on_pushButtonMaybeOnward_clicked()
+void PairingWizard::maybeOnward()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		if(nullptr!=mNode) {
-			QSharedPointer<AddressBook> store=addressBook();
+			auto store=addressBook();
 			if(!store.isNull() && store->all().size() > 0) {
 				emit done();
 				return;
@@ -306,7 +303,7 @@ void PairingWizard::on_pushButtonMaybeOnward_clicked()
 }
 
 
-void PairingWizard::on_pushButtonTryAgain_clicked()
+void PairingWizard::tryAgain()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
@@ -315,7 +312,7 @@ void PairingWizard::on_pushButtonTryAgain_clicked()
 }
 
 
-void PairingWizard::on_pushButtonDone_clicked()
+void PairingWizard::complete()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
@@ -324,7 +321,7 @@ void PairingWizard::on_pushButtonDone_clicked()
 }
 
 
-void PairingWizard::on_pushButtonCameraPair_clicked()
+void PairingWizard::cameraPair()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
@@ -402,7 +399,7 @@ void PairingWizard::on_pushButtonRemove_clicked()
 }
 */
 
-void PairingWizard::on_pushButtonRefresh_clicked()
+void PairingWizard::refresh()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {

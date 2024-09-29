@@ -16,7 +16,7 @@ void LocalIdentityStoreService::configure(QSharedPointer<Node> node)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		mNode=node;
+		mNode = node;
 	}
 }
 
@@ -27,7 +27,8 @@ void LocalIdentityStoreService::serviceWrapperActivate(QSharedPointer<LocalIdent
 	if(mConfigureHelper.activate(on)) {
 		localIdentityStore->activate(on, [this, localIdentityStore, callBack, on](bool ok) {
 			if(!localIdentityStore.isNull()) {
-				auto map=localIdentityStore->toMap();
+				auto map = localIdentityStore->toMap();
+				qDebug() << "LOADED IDENTITY" << map;
 				//qDebug()<<"Local identity synchronized with ok="<<ok<<" and map="<<map;
 				//QSharedPointer<Node> mNode;
 				if(!mNode.isNull()) {
@@ -38,7 +39,7 @@ void LocalIdentityStoreService::serviceWrapperActivate(QSharedPointer<LocalIdent
 			} else {
 				qWarning()<<"ERROR: local identity not ok";
 			}
-			if(nullptr!=callBack) {
+			if(nullptr != callBack) {
 				callBack(on, ok);
 			}
 		});

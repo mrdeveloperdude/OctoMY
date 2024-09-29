@@ -398,4 +398,97 @@ void TestAddressBook::testLoad()
 	utility::time::delay(1000);
 }
 
+/*
+void TestAddressBook::testFilterEmptyRules()
+{
+	AddressBook addressBook;
+	
+	// Add some associates to the address book
+	auto associate1 = QSharedPointer<Associate>::create();
+	associate1->setType(NodeType::Client);
+	associate1->setTrusts(TrustList({"giveControl"}));
+	addressBook.addAssociate("associate1", associate1);
+	
+	auto associate2 = QSharedPointer<Associate>::create();
+	associate2->setType(NodeType::Server);
+	associate2->setTrusts(TrustList({"takeControl"}));
+	addressBook.addAssociate("associate2", associate2);
+	
+	QVector<QueryRule> rules;  // Empty rules
+	
+	// Since rules are empty, we expect all associates to be included
+	auto result = addressBook.filter(rules);
+	QCOMPARE(result.size(), 2);
+	QVERIFY(result.contains("associate1"));
+	QVERIFY(result.contains("associate2"));
+}
+
+void TestAddressBook::testFilterSingleRule()
+{
+	AddressBook addressBook;
+	
+	// Add some associates to the address book
+	auto associate1 = QSharedPointer<Associate>::create();
+	associate1->setType(NodeType::Client);
+	associate1->setTrusts(TrustList({"giveControl"}));
+	addressBook.addAssociate("associate1", associate1);
+	
+	auto associate2 = QSharedPointer<Associate>::create();
+	associate2->setType(NodeType::Server);
+	associate2->setTrusts(TrustList({"takeControl"}));
+	addressBook.addAssociate("associate2", associate2);
+	
+	QVector<QueryRule> rules;
+	QueryRule rule;
+	rule.type = NodeType::Client;
+	rule.trustUs = true;
+	rule.include = true;
+	rules.append(rule);
+	
+	// We expect only associate1 to match
+	auto result = addressBook.filter(rules);
+	QCOMPARE(result.size(), 1);
+	QVERIFY(result.contains("associate1"));
+	QVERIFY(!result.contains("associate2"));
+}
+
+void TestAddressBook::testFilterMultipleRules()
+{
+	AddressBook addressBook;
+	
+	// Add some associates to the address book
+	auto associate1 = QSharedPointer<Associate>::create();
+	associate1->setType(NodeType::Client);
+	associate1->setTrusts(TrustList({"giveControl"}));
+	addressBook.addAssociate("associate1", associate1);
+	
+	auto associate2 = QSharedPointer<Associate>::create();
+	associate2->setType(NodeType::Server);
+	associate2->setTrusts(TrustList({"takeControl"}));
+	addressBook.addAssociate("associate2", associate2);
+	
+	auto associate3 = QSharedPointer<Associate>::create();
+	associate3->setType(NodeType::Client);
+	associate3->setTrusts(TrustList({"takeControl"}));
+	addressBook.addAssociate("associate3", associate3);
+	
+	QVector<QueryRule> rules;
+	QueryRule rule1;
+	rule1.type = NodeType::Client;
+	rule1.trustUs = true;
+	rule1.include = true;
+	rules.append(rule1);
+	
+	QueryRule rule2;
+	rule2.type = NodeType::Server;
+	rule2.trustThem = true;
+	rule2.include = true;
+	rules.append(rule2);
+	
+	// We expect no associates to match both rules
+	auto result = addressBook.filter(rules);
+	QCOMPARE(result.size(), 0);
+}
+*/
+
 OC_TEST_MAIN(test, TestAddressBook)

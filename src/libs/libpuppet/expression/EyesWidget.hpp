@@ -49,13 +49,13 @@ public:
 	void setPortableID(PortableID &pid);
 
 protected:
-	void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
-	void hideEvent(QHideEvent *) Q_DECL_OVERRIDE;
-	void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
-	void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-	void mouseMoveEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-	void leaveEvent(QEvent *) Q_DECL_OVERRIDE;
-	void resizeEvent(QResizeEvent *) Q_DECL_OVERRIDE;
+	void paintEvent(QPaintEvent *) override;
+	void hideEvent(QHideEvent *) override;
+	void showEvent(QShowEvent *) override;
+	void mousePressEvent(QMouseEvent *) override;
+	void mouseMoveEvent(QMouseEvent *) override;
+	void leaveEvent(QEvent *) override;
+	void resizeEvent(QResizeEvent *) override;
 
 public slots:
 	void onUpdateTimer();

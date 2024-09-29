@@ -65,7 +65,7 @@ QSharedPointer<NodeWindow> Hub::nodeWindow()
 	if(mWindow.isNull()) {
 		QSharedPointer<Hub> sp=qSharedPointerCast<Hub>(sharedThis());
 		if(!sp.isNull()) {
-			mWindow=QSharedPointer<HubWindow>(OC_NEW HubWindow(nullptr));
+			mWindow = QSharedPointer<HubWindow>::create(nullptr);
 			if(!mWindow.isNull()) {
 				mWindow->nodeWindowConfigure(sp);
 			} else {

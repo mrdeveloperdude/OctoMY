@@ -27,7 +27,7 @@ void ServiceLevelManager::configure()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		mServiceManager=QSharedPointer<ServiceManager>(OC_NEW ServiceManager());
+		mServiceManager=QSharedPointer<ServiceManager>::create();
 		if(!mServiceManager.isNull()) {
 			// Forward servicvesChanged signal
 			ServiceManager *sm=mServiceManager.data();
@@ -148,6 +148,7 @@ bool ServiceLevelManager::registerService(const QSharedPointer <Service> service
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		if(!mServiceManager.isNull()) {
+			service->setRegistrationOrder(mRegistrationOrderCounter++);
 			return mServiceManager->registerService(service);
 		} else {
 			qWarning()<<"ERROR: No service manager while registering service";
@@ -180,7 +181,6 @@ bool ServiceLevelManager::unRegisterService(const QString name)
 		} else {
 			qWarning()<<"ERROR: No service manager while unregistering service by name";
 		}
-
 	}
 	return false;
 }
@@ -199,7 +199,6 @@ bool ServiceLevelManager::registerServiceLevel(QSharedPointer<ServiceLevel> serv
 			} else {
 				qWarning()<<"ERROR: Trying to double register service with name '"<<name<<"'";
 			}
-
 		} else {
 			qWarning()<<"ERROR: Trying to register null service";
 		}
@@ -215,19 +214,19 @@ void ServiceLevelManager::synchronizeServiceManager(const std::function<void(con
 		if(!mServiceManager.isNull()) {
 			// qDebug().noquote().nospace()<<"**** synchronizeServiceManager ****";
 			// Get the services we want to enable
-			QSet<QString> wantedRaw=wantedServices();
+			QSet<QString> wantedRaw = wantedServices();
 			// qDebug().noquote().nospace()<<"**** synchronizeServiceManager new wantedRaw="<<wantedRaw;
 			// Expand to include dependencies
-			QSet<QString> wanted=mServiceManager->expand(wantedRaw);
+			QSet<QString> wanted = mServiceManager->expand(wantedRaw);
 			// qDebug().noquote().nospace()<<"**** synchronizeServiceManager new wanted="<<wanted;
 			// Get the existing services
-			QSet<QString> currentlyWanted=mServiceManager->all(true, false);
+			QSet<QString> currentlyWanted = mServiceManager->all(true, false);
 			// qDebug().noquote().nospace()<<"**** synchronizeServiceManager currentlyWanted="<<currentlyWanted;
 			// Get the services we want to disable
-			QSet<QString> unwanted=currentlyWanted-wanted;
+			QSet<QString> unwanted = currentlyWanted - wanted;
 			// qDebug().noquote().nospace()<<"**** synchronizeServiceManager unwanted="<<unwanted;
 			// Cull all services that are already wanted
-			wanted-=currentlyWanted;
+			wanted -= currentlyWanted;
 			// qDebug().noquote().nospace()<<"**** synchronizeServiceManager wanted="<<wanted<<" unwanted="<<unwanted;
 			// Apply the new recommendation
 			mServiceManager->changeActivation(wanted, unwanted, [this, callBack](bool ok) {
@@ -260,7 +259,7 @@ void ServiceLevelManager::enableLevels(const QSet<QString> names, const bool on,
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		int changed=0;
 		for(auto name:names) {
-			auto serviceLevel=serviceLevelByName(name);
+			auto serviceLevel = serviceLevelByName(name);
 			if(!serviceLevel.isNull()) {
 				//qDebug()<<"Setting service level "<<name<<" with"<<serviceLevel->serviceNames()<<" to "<<(on?"ACTIVE":"INACTIVE");
 				serviceLevel->enable(on);
@@ -269,7 +268,7 @@ void ServiceLevelManager::enableLevels(const QSet<QString> names, const bool on,
 				qWarning()<<"ERROR: No service level for name '"<<name<<"'";
 			}
 		}
-		if(changed>0) {
+		if(changed > 0) {
 			synchronizeServiceManager(callBack);
 		}
 	}

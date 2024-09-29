@@ -250,9 +250,38 @@ void StyleManager::applyCursorFlashTime(int flashTime, QApplication &app)
 }
 
 
+void StyleManager::setDefaultFont(QString fontName, QWidget &widget){
+	OC_METHODGATE();
+	QFont font;
+	font.setFamily(fontName);
+	widget.setFont(font);
+}
+
+
+void StyleManager::applyStyle(QProxyStyle *style, QWidget &widget){
+	OC_METHODGATE();
+	widget.setStyle(style);
+}
+
+
+void StyleManager::applyPalette(QPalette palette, QWidget &widget){
+	OC_METHODGATE();
+	widget.setPalette(palette);
+}
+
+
+void StyleManager::applyStyleSheet(QString styleSheet, QWidget &widget){
+	OC_METHODGATE();
+	widget.setStyleSheet (styleSheet);
+}
+
+
+
+
 void StyleManager::apply(AppStyle &appStyle)
 {
 	OC_METHODGATE();
+	qDebug() << "Applying style app-wide";
 	QCoreApplication *capp=static_cast<QCoreApplication *>(QCoreApplication::instance());
 	QApplication *app=qobject_cast<QApplication *>(capp);
 	// GUI enabled
@@ -287,6 +316,21 @@ void StyleManager::apply(AppStyle &appStyle)
 	else {
 		qWarning()<<"ERROR: No application found while applying styles";
 	}
+}
+
+
+
+
+void StyleManager::apply(AppStyle &appStyle, QWidget &widget){
+	OC_METHODGATE();
+	qDebug() << "Applying style window-wide";
+	appStyle.initializeResources();
+	widget.setWindowIcon(appStyle.icon());
+	loadFonts(appStyle.fonts());
+	setDefaultFont(appStyle.defaultFont(), widget);
+	applyStyle(appStyle.style(), widget);
+	applyPalette(appStyle.palette(), widget);
+	applyStyleSheet(appStyle.styleSheet(), widget);
 }
 
 

@@ -1,14 +1,12 @@
 #ifndef AGENTDELIVERYWIZARD_HPP
 #define AGENTDELIVERYWIZARD_HPP
 
-#include "security/KeyStore.hpp"
-#include "security/PortableID.hpp"
-#include "name/AgentNameGenerator.hpp"
 #include "address/Associate.hpp"
+#include "components/navigation/Activity.hpp"
+#include "delivery/BirthControl.hpp"
+#include "name/AgentNameGenerator.hpp"
 
 #include <QWidget>
-#include <QTimer>
-
 
 class WaitingSpinnerWidget;
 
@@ -19,26 +17,23 @@ class AgentDeliveryWizard;
 
 class Settings;
 class Node;
-class AgentDeliveryWizard : public QWidget
+class PortableID;
+class AgentDeliveryWizard : public Activity
 {
 	Q_OBJECT
 
-protected:
+private:
 	Ui::AgentDeliveryWizard *ui;
-	QTimer mBirthTimer;
+	ConfigureHelper mConfigureHelper;
 	WaitingSpinnerWidget *mSpinner;
 	AgentNameGenerator mNameGenerator;
 	QSharedPointer<Node> mNode;
-	PortableID mID;
-	QSharedPointer<Associate> mNodeIdentity;
 	quint64 mBirthDate;
-
-	QMutex mTimeoutMutex;
+	BirthControl mBirthControl;
 	quint8 mCompleteCounter;
 	bool mCompleteOK;
-
-public:
-	static const quint64 MINIMUM_BIRTH_TIME;
+	bool mUseVoice{false};
+	bool mLastBootstrap{false};
 
 public:
 	explicit AgentDeliveryWizard(QWidget *parent = nullptr);
@@ -50,20 +45,23 @@ public:
 	void startBirth();
 
 private:
+	void configureSpinner();
+	void configureValidators();
 	Settings *settings();
-
+	void announceBirth(const PortableID &id);
 
 signals:
 	void done(bool);
 
 private slots:
-	void onBirthComplete(bool);
+	void onBirthProgress(const QString &step, int index, int total);
+	void onBirthComplete(bool success, const QString &message);
 
 private slots:
-	void on_pushButtonPairNow_clicked();
-	void on_pushButtonRandomName_clicked();
-	void on_pushButtonOnward_clicked();
-	void on_pushButtonRandomGender_clicked();
+	void randomizeName();
+	void randomizeGender();
+	void startDelivery();
+	void deliveryDone();
 
 };
 

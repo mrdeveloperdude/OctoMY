@@ -8,7 +8,7 @@
 #include <QDebug>
 
 PanicButton::PanicButton(QWidget *parent)
-	: QWidget(parent)
+	: QAbstractButton(parent)
 	, ui(OC_NEW Ui::PanicButton)
 	, mFlipFlop(false)
 {
@@ -21,10 +21,10 @@ PanicButton::PanicButton(QWidget *parent)
 
 	//Make panic button RED
 	QPalette p=ui->pushButtonPanic->palette();
-	p.setColor(QPalette::Button,"#5b0504");
+	p.setColor(QPalette::Button, 0x5b0504);
 	mPaletteNormal=p;
 	ui->pushButtonPanic->setPalette(p);
-	p.setColor(QPalette::ButtonText,"#FF0000");
+	p.setColor(QPalette::ButtonText, 0xFF0000);
 	mPaletteBlink=p;
 
 	// Forward all the button signals

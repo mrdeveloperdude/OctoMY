@@ -19,7 +19,7 @@ public:
 	void configure(NameMappingWidget &mapping);
 protected:
 
-	void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+	void paintEvent(QPaintEvent *event) override;
 
 
 };

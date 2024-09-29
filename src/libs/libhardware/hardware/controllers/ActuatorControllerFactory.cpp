@@ -22,11 +22,11 @@ QSharedPointer<IActuatorController> ActuatorControllerFactory::controllerFactory
 	QSharedPointer<IActuatorController>	ret;
 	type=type.trimmed().toLower();
 	if("servotor32"==type) {
-		ret=QSharedPointer<IActuatorController>(OC_NEW Servotor32Controller());
+		ret = QSharedPointer<Servotor32Controller>::create();
 	}
 #ifdef OC_USE_FEATURE_ARDUINO
 	else if("ardumy"==type) {
-		ret=QSharedPointer<IActuatorController> (OC_NEW ArduMYController());
+		ret = QSharedPointer<ArduMYController>::create();
 	}
 #endif
 	return ret;

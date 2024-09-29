@@ -2,13 +2,14 @@
 #include "Servotor32Controller.hpp"
 #include "ui_Servotor32ControllerWidget.h"
 
+#include "Servotor32ActuatorWidget.hpp"
+#include "app/Constants.hpp"
+#include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
-#include "uptime/ConnectionType.hpp"
 #include "utility/ui/Ui.hpp"
+//#include "agent/AgentConstants.hpp"
 
-#include "Servotor32ActuatorWidget.hpp"
-#include "agent/AgentConstants.hpp"
 #include <QSpacerItem>
 
 #include <QtMath>
@@ -20,7 +21,7 @@ Servotor32ControllerWidget::Servotor32ControllerWidget(QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
-	ui->tryToggleConnect->configure("Connect","Connecting...","Connected", "Disconnecting...", AgentConstants::AGENT_CONNECT_BUTTON_COLOR, AgentConstants::AGENT_DISCONNECT_COLOR);
+	ui->tryToggleConnect->configure("Connect","Connecting...","Connected", "Disconnecting...", Constants::AGENT_CONNECT_BUTTON_COLOR, Constants::AGENT_DISCONNECT_COLOR);
 
 	if(!connect(ui->tryToggleConnect, SIGNAL(stateChanged(const TryToggleState, const TryToggleState)), this, SLOT(onConnectChanged(const TryToggleState, const TryToggleState)), OC_CONTYPE)) {
 		qWarning()<<"ERROR: could not connect";

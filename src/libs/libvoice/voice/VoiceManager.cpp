@@ -27,7 +27,7 @@ QSharedPointer<CreepyVoice<qreal> > VoiceManager::creepyVoice{nullptr};
 QSharedPointer<CreepyVoice<qreal> > VoiceManager::getCreepyVoice(){
 	OC_FUNCTIONGATE();
 	if(VoiceManager::creepyVoice.isNull()){
-		VoiceManager::creepyVoice = QSharedPointer<CreepyVoice<qreal> > ( OC_NEW  CreepyVoice<qreal>() );
+		VoiceManager::creepyVoice = QSharedPointer<CreepyVoice<qreal> >::create();
 		QAudioFormat af;
 		qDebug()<<"AF"<<af;
 		VoiceManager::creepyVoice->init(af);
@@ -36,7 +36,7 @@ QSharedPointer<CreepyVoice<qreal> > VoiceManager::getCreepyVoice(){
 }
 
 
-bool VoiceManager::speak(PortableID &id, QString text)
+bool VoiceManager::speak(const PortableID &id, const QString text)
 {
 	OC_FUNCTIONGATE();
 	auto cv=getCreepyVoice();

@@ -62,11 +62,11 @@ int main(int argc, char *argv[]){
 	const QString base="zoo";
 	QSharedPointer<AppContext> ctx;
 
-	QSharedPointer <AppCommandLineParser> clp(OC_NEW AppCommandLineParser());
+	auto clp = QSharedPointer <AppCommandLineParser>::create();
 	if(!clp.isNull()) {
 		clp->process(argc, argv);
-		QProcessEnvironment env=QProcessEnvironment::systemEnvironment();
-		ctx=QSharedPointer<AppContext>(OC_NEW AppContext(clp, env, base, clp->isHeadless()));
+		auto env = QProcessEnvironment::systemEnvironment();
+		ctx = QSharedPointer<AppContext>::create(clp, env, base, clp->isHeadless());
 	}
 
 	ZooServer server(nullptr);

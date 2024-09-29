@@ -43,7 +43,7 @@ qint64 SensorsMessage::bytes()
 		QByteArray ba;
 		{
 			QDataStream ds(&ba,QIODevice::WriteOnly);
-			ds<<this;
+			ds<<*this;
 		}
 		sz=ba.size();
 		//qDebug()<<"Counted bytesize of StatusMessage to be "<<sz;
@@ -52,7 +52,6 @@ qint64 SensorsMessage::bytes()
 
 }
 
-#include "MessageType.hpp"
 
 QDataStream &operator>>(QDataStream &ds, SensorsMessage &sm)
 {

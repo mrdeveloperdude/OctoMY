@@ -20,14 +20,14 @@ private:
 
 public:
 	explicit LocalIdentityDebugWidget(QWidget *parent = nullptr);
-	virtual ~LocalIdentityDebugWidget() Q_DECL_OVERRIDE;
+	virtual ~LocalIdentityDebugWidget() override;
 
 public:
 	void configure(QSharedPointer <Node> node);
 
 public slots:
-	void onRealtimeChanged(bool realtime) Q_DECL_OVERRIDE;
-	void onTimer() Q_DECL_OVERRIDE;
+	void onRealtimeChanged(bool realtime) override;
+	void onTimer() override;
 
 };
 

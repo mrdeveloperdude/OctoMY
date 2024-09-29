@@ -37,7 +37,7 @@ private:
 	
 public:
 	explicit MarkdownEditor(QWidget *parent = nullptr);
-	virtual ~MarkdownEditor() Q_DECL_OVERRIDE;
+	virtual ~MarkdownEditor() override;
 	
 public:
 	void configure(QString plan_fn);
@@ -51,7 +51,7 @@ private:
 	
 
 protected:
-	void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
+	void keyPressEvent(QKeyEvent *e) override;
 	
 public slots:
 	void onTextChanged();
