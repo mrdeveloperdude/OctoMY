@@ -24,8 +24,8 @@ TrustList::TrustList(const QSet<QString> &l)
 TrustList::TrustList(const QStringList &l)
 {
 	OC_METHODGATE();
-	for(QString s:l) {
-		*this+=s;
+	for(const QString &s:l) {
+		*this += s;
 	}
 }
 
@@ -76,37 +76,36 @@ void TrustList::applyTrustLevel(TrustLevel level, NodeType type)
 	removeTrust(takeControl);
 	removeTrust(block);
 	switch(level) {
-	case(TrustLevel::BLOCK): {
-		addTrust(block);
-	}
-	break;
-	case(TrustLevel::TRUST): {
-
-		switch(type) {
-//				default:
-		case(TYPE_ZOO):
-		case(TYPE_UNKNOWN):
-		case(TYPE_AGENT): {
-			addTrust(giveControl);
-
+		case(TrustLevel::BLOCK): {
+			addTrust(block);
 		}
 		break;
-		case(TYPE_REMOTE): {
-			addTrust(takeControl);
+		case(TrustLevel::TRUST): {
+	
+			switch(type) {
+	//				default:
+			case(TYPE_ZOO):
+			case(TYPE_UNKNOWN):
+			case(TYPE_AGENT): {
+				addTrust(giveControl);
+			}
+			break;
+			case(TYPE_REMOTE): {
+				addTrust(takeControl);
+			}
+			break;
+			case(TYPE_HUB): {
+				addTrust(takeControl);
+				addTrust(giveControl);
+			}
+			break;
+			}
 		}
 		break;
-		case(TYPE_HUB): {
-			addTrust(takeControl);
-			addTrust(giveControl);
-		}
-		break;
-		}
-	}
-	break;
-//		default:
-	case(TrustLevel::IGNORE): {
-// No trusts will be added for ignore
-	} break;
+		default:
+		case(TrustLevel::IGNORE): {
+	// No trusts will be added for ignore
+		} break;
 
 	}
 }

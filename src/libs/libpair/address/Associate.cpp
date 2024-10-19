@@ -15,7 +15,6 @@
 #include "utility/string/String.hpp"
 
 #include "uptime/MethodGate.hpp"
-#include "uptime/New.hpp"
 
 #include <QRegularExpression>
 

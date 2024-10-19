@@ -29,6 +29,7 @@ HubWindow::HubWindow(QWidget *parent)
 	OC_METHODGATE();
 	setObjectName("HubWindow");
 	ui->setupUi(this);
+	mWaterMark.load(QString(":/images/hub_watermark.svg"));
 }
 
 
@@ -39,6 +40,7 @@ HubWindow::~HubWindow()
 	delete ui;
 	ui=nullptr;
 }
+
 
 
 void HubWindow::configure()

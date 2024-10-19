@@ -9,10 +9,14 @@ class QApplication;
 
 class AppRenderingSettingsProvider
 {
+private:
+	bool mDebug{false};
+
 public:
 	QSurfaceFormat surfaceFormat();
 	QMap<Qt::ApplicationAttribute, bool>  applicationAttributes();
 	void applyApplicationAttributes();
+
 };
 
 

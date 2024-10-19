@@ -31,6 +31,7 @@ public:
 private slots:
 	void on_pushButtonToggleViewNameplate_clicked();
 	void on_pushButtonToggleView_clicked();
+
 };
 
 #endif

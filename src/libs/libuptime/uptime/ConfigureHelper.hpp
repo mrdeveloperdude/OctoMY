@@ -69,8 +69,9 @@ public:
 
 	// Expecting test for configured and active
 public:
-	bool isConfiguredAsExpected() const;
-	bool isActivatedAsExpected()  const;
+	bool expectConstructed(const QString &optionalLocator = QString()) const;
+	bool isConfiguredAsExpected(const QString &optionalLocator = QString()) const;
+	bool isActivatedAsExpected(const QString &optionalLocator = QString())  const;
 
 public:
 	// Check and return if a configuration change is ok under current state. If it is ok, also changes configured state to true

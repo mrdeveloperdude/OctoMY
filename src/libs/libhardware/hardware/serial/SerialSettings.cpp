@@ -97,19 +97,6 @@ QString SerialSettings::stringFlowControl()const
 /////////////////////////////////////////////////////////////////
 
 
-QString serialSettingsToString (const SerialSettings &set)
-{
-	QString out;
-	out+="SerialSettings{name="+set.name;
-	out+=", baudRate="+set.stringBaudRate();
-	out+=", dataBits="+set.stringDataBits();
-	out+=", parity="+set.stringParity();
-	out+=", stopBits="+set.stringStopBits();
-	out+=", flowControl="+set.stringFlowControl();
-	out+="}";
-	return out;
-}
-
 
 
 QString baudRateToString( const QSerialPort::BaudRate baudRate)
@@ -218,4 +205,26 @@ QSerialPort::FlowControl flowControlFromString(QString string)
 	flowControlFromStringCASE(SoftwareControl,"XON/XOFF");
 	return QSerialPort::NoFlowControl;
 #undef flowControlFromStringCASE
+}
+
+
+
+QString serialSettingsToString (const SerialSettings &set)
+{
+	QString out;
+	out+="SerialSettings{name="+set.name;
+	out+=", baudRate="+set.stringBaudRate();
+	out+=", dataBits="+set.stringDataBits();
+	out+=", parity="+set.stringParity();
+	out+=", stopBits="+set.stringStopBits();
+	out+=", flowControl="+set.stringFlowControl();
+	out+="}";
+	return out;
+}
+
+// Overload the qDebug stream operator
+QDebug operator<<(QDebug dbg, const SerialSettings &set) {
+	// Use serialSettingsToString to format the SerialSettings as a string
+	dbg.nospace() << serialSettingsToString(set);
+	return dbg.space();
 }

@@ -64,5 +64,5 @@ void SerialDeviceSelector::selectController(){
 	OC_METHODGATE();
 	auto const index = ui->listViewSerialDevice->currentIndex();
 	auto const item = mSerialDevicesModel->deviceInfo(index);
-	emit done(item.serialNumber());
+	pop(QStringList() << item.serialNumber());
 }

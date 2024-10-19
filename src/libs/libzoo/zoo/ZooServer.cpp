@@ -1,27 +1,21 @@
 #include "ZooServer.hpp"
 
-#include "uptime/MethodGate.hpp"
-#include "uptime/ConnectionType.hpp"
-
+#include "address/AddressEntry.hpp"
+#include "address/Associate.hpp"
+#include "app/AppContext.hpp"
+#include "app/Constants.hpp"
 #include "qhttp/qhttpserver.hpp"
+#include "qhttp/qhttpserverconnection.hpp"
 #include "qhttp/qhttpserverrequest.hpp"
 #include "qhttp/qhttpserverresponse.hpp"
-#include "qhttp/qhttpserverconnection.hpp"
-#include "identity/IdenticonWidget.hpp"
+#include "security/PortableID.hpp"
 #include "template/Mustache.hpp"
-
-#include "address/Associate.hpp"
-#include "address/AddressEntry.hpp"
-#include "utility/time/ScopedTimer.hpp"
+#include "uptime/ConnectionType.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 #include "utility/file/File.hpp"
 #include "utility/network/Network.hpp"
 #include "utility/time/HumanTime.hpp"
-
-#include "security/PortableID.hpp"
-#include "app/Constants.hpp"
-#include "app/AppContext.hpp"
-
-#include "uptime/SharedPointerWrapper.hpp"
 
 
 #include <QtNetwork/QHostAddress>
@@ -384,7 +378,7 @@ void ZooServer::serveAdmin(qhttp::server::QHttpRequest* req, qhttp::server::QHtt
 
 
 		QVariantList out;
-		for(auto session:sessions)	{
+		for(const auto &session:sessions)	{
 			QVariantMap map;
 			map["row"]=session;
 			out << map;

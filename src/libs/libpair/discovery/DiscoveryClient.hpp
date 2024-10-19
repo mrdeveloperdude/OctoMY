@@ -92,7 +92,7 @@ private:
 	QSharedPointer<qhttp::client::QHttpClient>	mClient;
 	QSharedPointer<Node>						mNode;
 	QSharedPointer<Key>							mKey;
-	bool										mLog;
+	bool										mDebug;
 	HoneymoonScheduler<quint64>					mHoneymoonScheduler;
 	ConfigureHelper								mConfigureHelper;
 

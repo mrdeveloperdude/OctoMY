@@ -12,6 +12,7 @@ class PoseMapping
 private:
 	QVector<quint32> mMapping;
 	QVector<QString> mNames;
+	bool mDebug{false};
 
 public:
 	explicit PoseMapping(quint32 size=0);

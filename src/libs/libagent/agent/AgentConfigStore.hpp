@@ -21,6 +21,7 @@ class AgentConfigStore: public QObject, public SimpleDataStore
 
 private:
 	QSharedPointer<AgentConfig> mAgentConfig;
+	bool mDebug{false};
 
 public:
 	explicit AgentConfigStore(QObject *parent = nullptr);

@@ -35,16 +35,18 @@ quint32 NameGenerator::randomInt()
 	}
 }
 
-QString NameGenerator::generate ()
+QString NameGenerator::generate (bool capitalize)
 {
 	OC_METHODGATE();
 	QString out;
-	while(out.size()<=0) {
+	while(out.size() <= 0) {
 		out.append(mNamePrefix[static_cast<int>(randomInt()%static_cast<unsigned int>(mNamePrefix.size()))]);
 		out.append(mNameStem  [static_cast<int>(randomInt()%static_cast<unsigned int>(mNameStem.size()))]);
 		out.append(mNameSuffix[static_cast<int>(randomInt()%static_cast<unsigned int>(mNameSuffix.size()))]);
 	}
-	//out[0]=out[0].toUpper();
+	if(capitalize){
+		out[0]=out[0].toUpper();
+	}
 	return out;
 }
 

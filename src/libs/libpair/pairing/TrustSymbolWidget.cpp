@@ -36,7 +36,7 @@ const int TrustSymbolWidget::paletteSz(static_cast<int>(sizeof(palette) / sizeof
 TrustSymbolWidget::TrustSymbolWidget(QWidget *parent)
 	: SvgWidget(parent)
 	, mLevel(IGNORE)
-	, mConfigureHelper("TrustSymbolWidget",true,false,false,true,false)
+	, mConfigureHelper("TrustSymbolWidget", true, false, false, true, false)
 {
 	OC_METHODGATE();
 	Q_INIT_RESOURCE(icons);
@@ -65,26 +65,28 @@ void TrustSymbolWidget::configure()
 void TrustSymbolWidget::setTrustLevel(TrustLevel level)
 {
 	OC_METHODGATE();
-	mLevel=level;
-	QString file;
-	switch(level) {
-	case(TRUST): {
-		file=":/icons/trust.svg";
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		mLevel = level;
+		QString file;
+		switch(level) {
+		case(TRUST): {
+			file=":/icons/trust.svg";
+		}
+		break;
+		case(BLOCK): {
+			file=":/icons/block.svg";
+		}
+		break;
+		// default:
+		case(IGNORE): {
+			file=":/icons/ignore.svg";
+		}
+		break;
+	
+		}
+		setSvgURL(file);
+		updatePulsating();
 	}
-	break;
-	case(BLOCK): {
-		file=":/icons/block.svg";
-	}
-	break;
-	// default:
-	case(IGNORE): {
-		file=":/icons/ignore.svg";
-	}
-	break;
-
-	}
-	setSvgURL(file);
-	updatePulsating();
 }
 
 

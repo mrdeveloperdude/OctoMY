@@ -1,9 +1,9 @@
 #ifndef SERVOTOR32CONTROLLERWIDGET_HPP
 #define SERVOTOR32CONTROLLERWIDGET_HPP
 
-#include "HexySerial.hpp"
-#include "gait/GaitController.hpp"
+#include "Servotor32Controller.hpp"
 #include "components/TryToggleState.hpp"
+#include "gait/GaitController.hpp"
 
 #include <QWidget>
 
@@ -12,9 +12,8 @@ namespace Ui
 class Servotor32ControllerWidget;
 }
 
+
 class Servotor32Controller;
-
-
 
 
 class Servotor32ControllerWidget : public QWidget
@@ -23,9 +22,7 @@ class Servotor32ControllerWidget : public QWidget
 
 private:
 	Ui::Servotor32ControllerWidget *ui;
-	qreal pos[HexySerial::SERVO_COUNT]= {0.0};
-	GaitController<qreal> gait;
-	QTimer gaitTimer;
+	qreal mPos[32] = {0.0};
 	Servotor32Controller *mController;
 
 public:
@@ -37,20 +34,22 @@ public:
 
 private:
 	void setUILock(bool);
+	void setHookActuators(bool);
+	void setHookController(bool);
+	void setHookConnectButton(bool);
+	void setHookSerialSettings(bool);
 
 private slots:
-	void onUpdateGaitTimer();
 	void onConnectChanged(const TryToggleState, const TryToggleState);
-	void onLimbIKUpdated();
-	void onHexySettingsChanged();
-	void onHexyConenctionChanged();
-	void on_pushButtonDisableAll_clicked();
-	void on_pushButtonGait_toggled(bool checked);
-	void on_dialFeedrate_valueChanged(int value);
+	void onSettingsChanged();
+	void onSerialSettingsChanged();
+	void onConnectionChanged();
+
+	void limpAll();
 
 public slots:
 	void onServoMoved(quint32 id, qreal pos);
-	void onServoKilled(quint32 id);
+	void onServoLimped(quint32 id);
 
 };
 

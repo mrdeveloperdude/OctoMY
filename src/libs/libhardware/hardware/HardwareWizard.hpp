@@ -8,7 +8,7 @@
 
 class HardwareTemplate;
 class HardwareTemplateModel;
-class IActuatorController;
+class IController;
 class AgentConfigStore;
 class Agent;
 

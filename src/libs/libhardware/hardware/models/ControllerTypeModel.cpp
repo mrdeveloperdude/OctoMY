@@ -59,3 +59,11 @@ QString ControllerTypeModel::getNickName(const QModelIndex &index) const
 	}
 	return QString();
 }
+
+
+void ControllerTypeModel::clear()
+{
+	beginRemoveRows(QModelIndex(), 0, controllerTypes.count() - 1);
+	controllerTypes.clear();
+	endRemoveRows();
+}

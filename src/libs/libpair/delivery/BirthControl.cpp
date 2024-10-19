@@ -5,7 +5,7 @@
 #include "uptime/MethodGate.hpp"
 #include "utility/time/HumanTime.hpp"
 
-const quint64 BirthControl::MINIMUM_BIRTH_TIME=3000;
+const quint64 BirthControl::MINIMUM_BIRTH_TIME{3000};
 
 
 BirthControl::BirthControl(QObject *parent)
@@ -131,7 +131,7 @@ void BirthControl::onBirthComplete(bool ok, const QString &message){
 
 
 
-void AgentDeliveryWizard::startBirth()
+void AgentDeliveryActivity::startBirth()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
@@ -173,11 +173,11 @@ void AgentDeliveryWizard::startBirth()
 
 
 
-void AgentDeliveryWizard::onBirthComplete(bool ok, const QString &message)
+void AgentDeliveryActivity::onBirthComplete(bool ok, const QString &message)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		qDebug() << "AgentDeliveryWizard:onBirthProgress " << ok << message;
+		qDebug() << "AgentDeliveryActivity:onBirthProgress " << ok << message;
 		QMutexLocker timeoutLock(&mTimeoutMutex);
 		if(!mNode.isNull()) {
 			auto keystore = mNode->keyStore();

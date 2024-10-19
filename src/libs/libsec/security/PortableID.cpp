@@ -85,13 +85,13 @@ QString PortableID::identifier() const
 	case(TYPE_AGENT):
 		return mName;
 	case(TYPE_REMOTE):
-		return QStringLiteral("REMOTE-")+mID.left(8);
+		return QStringLiteral("REMOTE-") + mID.left(8);
 	case(TYPE_HUB):
-		return QStringLiteral("HUB-")+mID.left(8);
+		return QStringLiteral("HUB-") + mID.left(8);
 	case(TYPE_ZOO):
-		return QStringLiteral("ZOO-")+mID.left(8);
+		return QStringLiteral("ZOO-") + mID.left(8);
 	default:
-		return QStringLiteral("UNKNOWN-")+mID.left(8);
+		return QStringLiteral("UNKNOWN-") + mID.left(8);
 	}
 }
 

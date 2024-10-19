@@ -109,7 +109,7 @@ void FaceWidget::appendLog(const QString& text)
 
 
 
-void FaceWidget::setAgent(QSharedPointer<Agent> a)
+void FaceWidget::configure(QSharedPointer<Agent> a)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()){

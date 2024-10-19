@@ -23,6 +23,7 @@ private:
 	bool mLastPortOK;
 	bool mLastAddressOK;
 	bool mMuteSignals;
+	bool mDebug{false};
 
 public:
 	explicit NetworkSettingsWidget(QWidget *parent = nullptr);

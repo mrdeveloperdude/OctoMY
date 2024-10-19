@@ -37,6 +37,11 @@ private:
 	bool controllerIsSerial() const;
 	bool controllerNeedsConfig() const;
 
+	// Virtual activity mechanism
+protected:
+	void pushImpl(const QStringList arguments = QStringList()) override;
+	void popImpl(const QString &returnActivity, const QStringList returnArguments = QStringList()) override;
+
 public:
 	UnboxingStage unboxingStage();
 	bool unboxingDone();
@@ -46,10 +51,6 @@ public slots:
 	void updateStage();
 	void nextStageClicked();
 
-signals:
-	void nextUnboxingStage(UnboxingStage stage);
-	void unboxingStageChanged(UnboxingStage stage);
-	
 };
 
 #endif // AGENTUNBOXINGWIZARD_HPP

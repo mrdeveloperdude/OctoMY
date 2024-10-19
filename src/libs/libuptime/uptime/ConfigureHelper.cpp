@@ -24,7 +24,7 @@ ConfigureHelper::ConfigureHelper(
 {
 	OC_METHODGATE();
 	if(mLogChanges) {
-		qDebug()<<"NOTE: "<<mName<<" was created";
+		qDebug() << "NOTE: " << mName << " was created";
 	}
 }
 
@@ -33,15 +33,15 @@ ConfigureHelper::~ConfigureHelper()
 {
 	OC_METHODGATE();
 	if(!mIsConstructed) {
-		qWarning()<<"ERROR: "<<mName<<" was destructed while not constructed.";
+		qWarning() << "ERROR: " << mName << " was destructed while not constructed.";
 	}
 	if(isActivated()) {
 		if(mLogWarnings) {
-			qWarning()<<"WARNING: "<<mName<<" was destructed while active.";
+			qWarning() << "WARNING: " << mName << " was destructed while active.";
 		}
 	}
 	if(mLogChanges) {
-		qDebug()<<"NOTE: "<<mName<<" was destructed";
+		qDebug() << "NOTE: " << mName << " was destructed";
 	}
 }
 
@@ -59,11 +59,13 @@ bool ConfigureHelper::isActivated() const
 	return mIsActive;
 }
 
+
 bool ConfigureHelper::didConfigureFail()  const
 {
 	OC_METHODGATE();
 	return mDidConfigureFail;
 }
+
 
 QString ConfigureHelper::configureFailureReason()  const
 {
@@ -71,67 +73,92 @@ QString ConfigureHelper::configureFailureReason()  const
 	return mConfigureFailureReason;
 }
 
-bool ConfigureHelper::isConfiguredAsExpected() const
+
+bool ConfigureHelper::expectConstructed(const QString &optionalLocator) const{
+	OC_METHODGATE();
+	if(!mIsConstructed) {
+		qWarning() << "ERROR: " << mName << " was not constructed when expected." << optionalLocator;
+		return false;
+	}
+	return true;
+}
+
+bool ConfigureHelper::isConfiguredAsExpected(const QString &optionalLocator) const
 {
 	OC_METHODGATE();
+	if(!expectConstructed(optionalLocator)) {
+		return false;
+	}
 	if(!mIsConfigured) {
 		if(mLogWarnings) {
-			qWarning()<<"WARNING: "<<mName<<" was not configured when expected.";
+			qWarning() << "WARNING: " << mName << " was not configured when expected." << optionalLocator;
 		}
 	}
 	return mIsConfigured;
 }
 
-bool ConfigureHelper::isActivatedAsExpected()  const
+
+bool ConfigureHelper::isActivatedAsExpected(const QString &optionalLocator)  const
 {
 	OC_METHODGATE();
+	if(!expectConstructed(optionalLocator)) {
+		return false;
+	}
 	if(!mIsActive) {
 		if(mLogWarnings) {
-			qWarning()<<"WARNING: "<<mName<<" was not active when expected.";
+			qWarning() << "WARNING: " << mName << " was not active when expected." << optionalLocator;
 		}
 	}
 	return mIsActive;
 }
 
+
 bool ConfigureHelper::configure()
 {
 	OC_METHODGATE();
+	if(!expectConstructed()) {
+		return false;
+	}
 	if(mLogChanges) {
 		if(mIsConfigured) {
-			qDebug()<<"NOTE: "<<mName<<" was multi-configured";
+			qDebug() << "NOTE: " << mName << " was multi-configured";
 		} else {
-			qDebug()<<"NOTE: "<<mName<<" was configured";
+			qDebug() << "NOTE: " << mName << " was configured";
 		}
 	}
-	bool ok=false;
+	bool ok = false;
 	// Require that we have configuration at all
 	if(mNeedsConfigure) {
 		if(mIsConfigured) {
-			ok=mHasMultiConfigure;
+			ok = mHasMultiConfigure;
 			if(!ok) {
 				if(mLogWarnings) {
-					qWarning()<<"WARNING: "<<mName<<" was configured more than once when not set to be multiconfigure.";
+					qWarning() << "WARNING: " << mName << " was configured more than once when not set to be multiconfigure.";
 				}
 			}
 		} else {
-			ok=true;
+			ok = true;
 		}
 	} else {
 		if(mLogWarnings) {
-			qWarning()<<"WARNING: "<<mName<<" was configured when not set to need configuration.";
+			qWarning() << "WARNING: " << mName << " was configured when not set to need configuration.";
 		}
 	}
 	if(ok) {
-		mIsConfigured=true;
+		mIsConfigured = true;
 	}
 	return ok;
 }
 
+
 bool ConfigureHelper::activate(const bool wantActive)
 {
 	OC_METHODGATE();
+	if(!expectConstructed()) {
+		return false;
+	}	
 	if(mLogChanges) {
-		qDebug()<<"NOTE: "<<mName<<" activation went from "<<mIsActive<< " to "<<wantActive;
+		qDebug() << "NOTE: " << mName << " activation went from " << mIsActive << " to " << wantActive;
 	}
 	bool ok=false;
 	// Require that we have activation at all
@@ -143,17 +170,17 @@ bool ConfigureHelper::activate(const bool wantActive)
 				ok=true;
 			} else {
 				if(mLogWarnings) {
-					qWarning()<<"WARNING: "<<mName<<" had activation changed without being configured first when set to need configuration.";
+					qWarning() << "WARNING: " << mName << " had activation changed without being configured first when set to need configuration.";
 				}
 			}
 		} else {
 			if(mLogWarnings) {
-				qWarning().noquote().nospace()<<"WARNING: "<<mName<<" had activation set to "<<wantActive<<" twice.";
+				qWarning().noquote().nospace() << "WARNING: " << mName << " had activation set to " << wantActive << " twice.";
 			}
 		}
 	} else {
 		if(mLogWarnings) {
-			qWarning()<<"WARNING: "<<mName<<" had activation changed when not set to need activation.";
+			qWarning() << "WARNING: " << mName << " had activation changed when not set to need activation.";
 		}
 	}
 	if(ok) {
@@ -163,11 +190,10 @@ bool ConfigureHelper::activate(const bool wantActive)
 }
 
 
-
 void ConfigureHelper::configureFailed(QString reason)
 {
 	OC_METHODGATE();
-	mIsConfigured=false;
-	mDidConfigureFail=true;
-	mConfigureFailureReason=reason;
+	mIsConfigured = false;
+	mDidConfigureFail = true;
+	mConfigureFailureReason = reason;
 }

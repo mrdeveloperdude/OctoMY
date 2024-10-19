@@ -1,13 +1,9 @@
 #include "PairingListModel.hpp"
 
-#include "app/Settings.hpp"
-#include "node/Node.hpp"
-#include "identity/Identicon.hpp"
 #include "address/Associate.hpp"
-#include "security/PortableID.hpp"
-
-#include "uptime/MethodGate.hpp"
+#include "node/Node.hpp"
 #include "uptime/ConnectionType.hpp"
+#include "uptime/MethodGate.hpp"
 
 #include <QDebug>
 #include <QAbstractListModel>
@@ -42,11 +38,11 @@ bool PairingListModel::filter(NodeType &t) const
 	OC_METHODGATE();
 	switch(mTypeFilter) {
 	case(TYPE_AGENT):
-		return ((TYPE_REMOTE==t)||(TYPE_HUB==t));
+		return ((TYPE_REMOTE==t) || (TYPE_HUB==t));
 	case(TYPE_REMOTE):
-		return ((TYPE_HUB==t)||(TYPE_AGENT==t));
+		return ((TYPE_HUB==t) || (TYPE_AGENT==t));
 	case(TYPE_HUB):
-		return ((TYPE_AGENT==t)||(TYPE_REMOTE==t)||(TYPE_HUB==t)); //Hubs are onmnivorus
+		return ((TYPE_AGENT==t) || (TYPE_REMOTE==t)||(TYPE_HUB==t)); //Hubs are onmnivorus
 
 	//default:
 	case(TYPE_ZOO):
@@ -74,10 +70,9 @@ int PairingListModel::rowCount(const QModelIndex &) const
 	int ret=0;
 	if(!mStore.isNull()) {
 		QMap<QString, QSharedPointer<Associate> > participants=mStore->all();
-		for(QMap<QString, QSharedPointer<Associate> >::const_iterator it=participants.begin(), e=participants.end(); it!=e; ++it) {
-			QSharedPointer<Associate> p=it.value();
-			if(nullptr!=p) {
-				NodeType t=p->type();
+		for(auto &p:participants) {
+			if(nullptr != p) {
+				auto t = p->type();
 				if(filter(t)) {
 					ret++;
 				}
@@ -104,15 +99,14 @@ QVariant PairingListModel::data(const QModelIndex &index, int role) const
 	QSharedPointer<Associate> part;
 	if(!mStore.isNull()) {
 		QMap<QString, QSharedPointer<Associate> > participants=mStore->all();
-		int targetRow=index.row();
+		int targetRow = index.row();
 		int rowCounter=0;
-		for(QMap<QString, QSharedPointer<Associate> >::const_iterator it=participants.begin(), e=participants.end(); it!=e; ++it) {
-			QSharedPointer<Associate> p=it.value();
-			if(nullptr!=p) {
-				NodeType t=p->type();
+		for(auto &p:participants) {
+			if(nullptr != p) {
+				auto t = p->type();
 				if(filter(t)) {
-					if(rowCounter==targetRow) {
-						part=p;
+					if(rowCounter == targetRow) {
+						part = p;
 						break;
 					}
 					rowCounter++;
@@ -125,12 +119,12 @@ QVariant PairingListModel::data(const QModelIndex &index, int role) const
 	}
 
 	if (!part.isNull()) {
-		NodeType t=part->type();
+		NodeType t = part->type();
 		if(filter(t)) {
 			if(Qt::DisplayRole == role ) {
 				return part->toVariantMap();
 			} else if (Qt::ToolTipRole == role) {
-				return nodeTypeToString(t) +": " +part->id();
+				return nodeTypeToString(t) + ": " + part->id();
 			}
 		}
 	}
@@ -153,10 +147,10 @@ QString PairingListModel::status()
 	OC_METHODGATE();
 	QString out("STATUS: ");
 	if(!mStore.isNull()) {
-		out+=QString::number(mStore->associateCount());
+		out += QString::number(mStore->associateCount());
 	} else {
-		out+="no";
+		out += "no";
 	}
-	out+=" peers";
+	out += " peers";
 	return out;
 }

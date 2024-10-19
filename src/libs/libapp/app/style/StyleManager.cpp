@@ -1,5 +1,5 @@
 #include "app/style/StyleManager.hpp"
-//#include "octostyle/OctoStyle.hpp"
+
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 #include "utility/file/File.hpp"
@@ -11,12 +11,53 @@
 #include <QStyleFactory>
 #include <QtPlugin>
 
+
+
+OctoMYProxyStyle::OctoMYProxyStyle(QString key)
+	: QProxyStyle(key)
+	, OCTOMY_SLIDER_HANDLE_SIZE(35)
+	, OCTOMY_CURSOR_WSIZE(3)
+{
+	OC_METHODGATE();
+}
+
+
+OctoMYProxyStyle::~OctoMYProxyStyle()
+{
+	OC_METHODGATE();
+}
+
+
+int OctoMYProxyStyle::pixelMetric ( PixelMetric metric, const QStyleOption * option, const QWidget * widget) const
+{
+	OC_METHODGATE();
+	switch(metric) {
+	case PM_SliderLength :
+		return OCTOMY_SLIDER_HANDLE_SIZE;
+	case PM_SliderThickness:
+		return OCTOMY_SLIDER_HANDLE_SIZE;
+	case PM_ScrollBarExtent:
+		return OCTOMY_SLIDER_HANDLE_SIZE;
+	case PM_ScrollBarSliderMin:
+		return OCTOMY_SLIDER_HANDLE_SIZE;
+	case PM_TextCursorWidth:
+		return OCTOMY_CURSOR_WSIZE;
+	default :
+		return (QProxyStyle::pixelMetric(metric,option,widget));
+	}
+}
+
+
+
+///////////////////////////////////////
+
+
 AppStyle::AppStyle(QColor tinge)
 	: mStyle(OC_NEW OctoMYProxyStyle("fusion"))
 	, mPalette(palette(tinge))
 	, mFonts{
 	// App
-	":/fonts/Dosis/Dosis-Regular.otf"
+	  ":/fonts/Dosis/Dosis-Regular.otf"
 	, ":/fonts/Dosis/Dosis-Bold.otf"
 	, ":/fonts/Dosis/Dosis-ExtraBold.otf"
 	, ":/fonts/Dosis/Dosis-ExtraLight.otf"
@@ -29,10 +70,9 @@ AppStyle::AppStyle(QColor tinge)
 	, ":/fonts/Code128/code128.ttf"
 }
 , mDefaultFont("Dosis")
-
-, mStyleSheet(""
+, mStyleSheet(
 			  // NOTE: This is disabled for now because it looks butt ugly
-			  // utility::file::fileToString(":/stylesheet/stylesheet.qss")
+			   utility::file::fileToString(":/stylesheet/stylesheet.qss")
 			 )
 , mCursorFlashTime(500)
 {
@@ -45,19 +85,25 @@ AppStyle::AppStyle(NodeType nodeType)
 {
 	OC_METHODGATE();
 }
+
+
 AppStyle::~AppStyle()
 {
 	OC_METHODGATE();
 }
 
+
 void AppStyle::initializeResources()
 {
 	OC_METHODGATE();
-	Q_INIT_RESOURCE(stylesheet);
+	Q_INIT_RESOURCE(icons);
 	Q_INIT_RESOURCE(fonts);
-	// Q_INIT_RESOURCE(OctoStyle);
+	Q_INIT_RESOURCE(images);
+	Q_INIT_RESOURCE(3d);
+	Q_INIT_RESOURCE(style);
+	Q_INIT_RESOURCE(data);
+	mResourcesInitialized = true;
 }
-
 
 
 QStringList AppStyle::fonts()
@@ -65,6 +111,7 @@ QStringList AppStyle::fonts()
 	OC_METHODGATE();
 	return mFonts;
 }
+
 
 QString AppStyle::defaultFont()
 {
@@ -76,7 +123,10 @@ QString AppStyle::defaultFont()
 QIcon AppStyle::icon()
 {
 	OC_METHODGATE();
-	QIcon icon(":/icons/octomy_logo_bare.svg");
+	if(!mResourcesInitialized){
+		qWarning()<<"Potentially loading icon from resources before they are loaded";
+	}
+	QIcon icon(":/icons/agent.svg");
 	return icon;
 }
 
@@ -103,14 +153,12 @@ QString AppStyle::styleSheet()
 	return mStyleSheet;
 }
 
+
 int AppStyle::cursorFlashTime()
 {
 	OC_METHODGATE();
 	return mCursorFlashTime;
 }
-
-
-
 
 
 QPalette AppStyle::palette(QColor tinge)
@@ -148,41 +196,6 @@ QPalette AppStyle::palette(QColor tinge)
 
 ///////////////////////////////////////
 
-OctoMYProxyStyle::OctoMYProxyStyle(QString key)
-	: QProxyStyle(key)
-	, OCTOMY_SLIDER_HANDLE_SIZE(35)
-	, OCTOMY_CURSOR_WSIZE(3)
-{
-	OC_METHODGATE();
-}
-
-OctoMYProxyStyle::~OctoMYProxyStyle()
-{
-	OC_METHODGATE();
-}
-
-int OctoMYProxyStyle::pixelMetric ( PixelMetric metric, const QStyleOption * option, const QWidget * widget) const
-{
-	OC_METHODGATE();
-	switch(metric) {
-	case PM_SliderLength :
-		return OCTOMY_SLIDER_HANDLE_SIZE;
-	case PM_SliderThickness:
-		return OCTOMY_SLIDER_HANDLE_SIZE;
-	case PM_ScrollBarExtent:
-		return OCTOMY_SLIDER_HANDLE_SIZE;
-	case PM_ScrollBarSliderMin:
-		return OCTOMY_SLIDER_HANDLE_SIZE;
-	case PM_TextCursorWidth:
-		return OCTOMY_CURSOR_WSIZE;
-	default :
-		return (QProxyStyle::pixelMetric(metric,option,widget));
-	}
-}
-
-
-
-///////////////////////////////////////
 
 StyleManager::StyleManager()
 {
@@ -193,9 +206,9 @@ StyleManager::StyleManager()
 bool StyleManager::loadFont(QString name)
 {
 	OC_METHODGATE();
-	const int fontId =	QFontDatabase::addApplicationFont ( name);
-	if(fontId<0) {
-		qWarning() << "ERROR: Could not load font for "<<name<< "( "<<fontId<<" )";
+	const int fontId =	QFontDatabase::addApplicationFont (name);
+	if(fontId < 0) {
+		qWarning() << "ERROR: Could not load font for " << name << "( " << fontId << " )";
 		return false;
 	}
 	return true;
@@ -250,7 +263,8 @@ void StyleManager::applyCursorFlashTime(int flashTime, QApplication &app)
 }
 
 
-void StyleManager::setDefaultFont(QString fontName, QWidget &widget){
+void StyleManager::setDefaultFont(QString fontName, QWidget &widget)
+{
 	OC_METHODGATE();
 	QFont font;
 	font.setFamily(fontName);
@@ -258,40 +272,43 @@ void StyleManager::setDefaultFont(QString fontName, QWidget &widget){
 }
 
 
-void StyleManager::applyStyle(QProxyStyle *style, QWidget &widget){
+void StyleManager::applyStyle(QProxyStyle *style, QWidget &widget)
+{
 	OC_METHODGATE();
 	widget.setStyle(style);
 }
 
 
-void StyleManager::applyPalette(QPalette palette, QWidget &widget){
+void StyleManager::applyPalette(QPalette palette, QWidget &widget)
+{
 	OC_METHODGATE();
 	widget.setPalette(palette);
 }
 
 
-void StyleManager::applyStyleSheet(QString styleSheet, QWidget &widget){
+void StyleManager::applyStyleSheet(QString styleSheet, QWidget &widget)
+{
 	OC_METHODGATE();
 	widget.setStyleSheet (styleSheet);
 }
 
 
-
-
 void StyleManager::apply(AppStyle &appStyle)
 {
 	OC_METHODGATE();
-	qDebug() << "Applying style app-wide";
-	QCoreApplication *capp=static_cast<QCoreApplication *>(QCoreApplication::instance());
-	QApplication *app=qobject_cast<QApplication *>(capp);
+	if(mDebug){
+		qDebug() << "Applying style app-wide";
+	}
+	auto capp = static_cast<QCoreApplication *>(QCoreApplication::instance());
+	auto app = qobject_cast<QApplication *>(capp);
 	// GUI enabled
 	if (nullptr!=app) {
 
 		appStyle.initializeResources();
 
-		QWidget *activeWindow=app->activeWindow();
+		auto activeWindow = app->activeWindow();
 		// Disable updates on active window to save user from unpleasant artifacts while the style is being changed.
-		if(nullptr!=activeWindow) {
+		if(nullptr != activeWindow) {
 			activeWindow->setUpdatesEnabled(false);
 		}
 		app->setWindowIcon(appStyle.icon());
@@ -303,8 +320,7 @@ void StyleManager::apply(AppStyle &appStyle)
 
 		applyCursorFlashTime(appStyle.cursorFlashTime(), *app);
 
-
-		if(nullptr!=activeWindow) {
+		if(nullptr != activeWindow) {
 			activeWindow->setUpdatesEnabled(true);
 		}
 	}
@@ -319,11 +335,12 @@ void StyleManager::apply(AppStyle &appStyle)
 }
 
 
-
-
-void StyleManager::apply(AppStyle &appStyle, QWidget &widget){
+void StyleManager::apply(AppStyle &appStyle, QWidget &widget)
+{
 	OC_METHODGATE();
-	qDebug() << "Applying style window-wide";
+	if(mDebug){
+		qDebug() << "Applying style window-wide";
+	}
 	appStyle.initializeResources();
 	widget.setWindowIcon(appStyle.icon());
 	loadFonts(appStyle.fonts());

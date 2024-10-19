@@ -23,7 +23,7 @@ private:
 
 public:
 
-	QString generate ();
+	QString generate (bool capitalize = false);
 };
 
 #endif // NAMEGENERATOR_HPP

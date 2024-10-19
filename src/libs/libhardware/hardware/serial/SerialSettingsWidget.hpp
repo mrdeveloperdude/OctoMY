@@ -44,44 +44,35 @@ public:
 private:
 	// If in auto save mode, triggers save. If not does nothing
 	void registerChange();
-
-public Q_SLOTS:
-
-
+	void checkCustomBaudRatePolicy(int idx);
+	void checkCustomDevicePath(int idx);
+	void showPortInfo(int idx);
+	
 public slots:
 	void onSerialDevicesChanged();
-	void showPortInfo(int idx);
-	void apply();
-	void checkCustomBaudRatePolicy(int idx);
-	void checkCustomDevicePathPolicy(int idx);
-
-	void on_pushButtonApply_clicked();
-
-signals:
-
-	void settingsChanged();
-
-public slots:
-	void on_pushButtonSelectDefaults_clicked();
-
+	
 private slots:
-	void on_pushButtonAdvanced_toggled(bool checked);
-	void on_serialPortInfoListBox_currentIndexChanged(int index);
-	void on_baudRateBox_currentIndexChanged(int index);
-	void on_dataBitsBox_currentIndexChanged(int index);
-	void on_parityBox_currentIndexChanged(int index);
-	void on_stopBitsBox_currentIndexChanged(int index);
-	void on_flowControlBox_currentIndexChanged(int index);
-	void on_serialPortInfoListBox_editTextChanged(const QString &arg1);
-
+	void applySettings();
+	void baudRateChanged(int idx);
+	void serialPortChanged(int idx);
+	
+	void selectDefaults();
+	void toggleAdvanced(bool checked);
+	void dataBitsChanged(int index);
+	void parityChanged(int index);
+	void stopBitsChanged(int index);
+	void flowControlChanged(int index);
+	void serialPortTextChanged(const QString &arg1);
+	
 private:
 	void fillPortsParameters();
 	void fillPortsInfo();
 	void updateSettings();
-
 	void showAdvanced(bool checked);
-
-
+	
+signals:
+	void settingsChanged();
+	
 };
 
 #endif

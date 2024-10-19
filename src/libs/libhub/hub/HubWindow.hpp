@@ -35,7 +35,7 @@ private:
 public:
 	explicit HubWindow(QWidget *parent = nullptr);
 	virtual ~HubWindow();
-	
+
 	// NodeWindow
 public:
 	void configure() override;

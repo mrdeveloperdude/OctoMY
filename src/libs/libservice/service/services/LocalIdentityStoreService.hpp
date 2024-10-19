@@ -18,6 +18,7 @@ class LocalIdentityStoreService: public ServiceWrapper<LocalIdentityStore>
 {
 private:
 	QSharedPointer<Node> mNode;
+	bool mDebug{false};
 	ConfigureHelper mConfigureHelper;
 
 public:

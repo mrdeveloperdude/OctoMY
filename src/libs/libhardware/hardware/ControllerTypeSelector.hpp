@@ -26,14 +26,11 @@ public:
 	~ControllerTypeSelector();
 
 private:
-	void initControllerTypeList();
+	void updateControllerTypeList();
 
 public:
 	void configure(QSharedPointer<Agent> agent);
 	void reset();
-
-signals:
-	void done(const QString &controllerTypeName);
 
 private slots:
 	void selectController();

@@ -22,41 +22,36 @@ SerialSettingsWidget::SerialSettingsWidget(QWidget *parent)
 	ui->setupUi(this);
 
 	mIntValidator = OC_NEW QIntValidator(0, 4000000, this);
-
 	ui->baudRateBox->setInsertPolicy(QComboBox::NoInsert);
-
-	connect(ui->serialPortInfoListBox, SIGNAL(currentIndexChanged(int)), this, SLOT(showPortInfo(int)));
-	connect(ui->baudRateBox, SIGNAL(currentIndexChanged(int)), this, SLOT(checkCustomBaudRatePolicy(int)));
-	connect(ui->serialPortInfoListBox, SIGNAL(currentIndexChanged(int)), this, SLOT(checkCustomDevicePathPolicy(int)));
-
 	if(!connect(&mSerialList,SIGNAL(serialDevicesChanged()),this,SLOT(onSerialDevicesChanged()))) {
 		qWarning()<<"ERROR: could not connect";
 	}
-
 	fillPortsParameters();
 	fillPortsInfo();
-
 	updateSettings();
 	showAdvanced(false);
 }
+
 
 SerialSettingsWidget::~SerialSettingsWidget()
 {
 	OC_METHODGATE();
 	delete ui;
-	ui=nullptr;
+	ui = nullptr;
 	delete mIntValidator;
-	mIntValidator=nullptr;
+	mIntValidator = nullptr;
 }
 
 
 void SerialSettingsWidget::configure(bool manualSaveMode, SerialSettings defaults)
 {
 	OC_METHODGATE();
-	mManualSaveMode=manualSaveMode;
+	mManualSaveMode = manualSaveMode;
 	ui->pushButtonApply->setVisible(manualSaveMode);
-	mDefaultSettings=defaults;
+	mDefaultSettings = defaults;
+	setSettings(mDefaultSettings);
 }
+
 
 SerialSettings SerialSettingsWidget::settings() const
 {
@@ -64,14 +59,14 @@ SerialSettings SerialSettingsWidget::settings() const
 	return mCurrentSettings;
 }
 
-void SerialSettingsWidget::showPortInfo(int idx)
+
+void SerialSettingsWidget::showPortInfo(int index)
 {
 	OC_METHODGATE();
-	if (idx == -1) {
+	if (index == -1) {
 		return;
 	}
-
-	QStringList list = ui->serialPortInfoListBox->itemData(idx).toStringList();
+	QStringList list = ui->serialPortInfoListBox->itemData(index).toStringList();
 	ui->descriptionLabel->setText(tr("%1").arg(list.count() > 1 ? list.at(1) : tr(blankString)));
 	ui->manufacturerLabel->setText(tr("%1").arg(list.count() > 2 ? list.at(2) : tr(blankString)));
 	ui->serialNumberLabel->setText(tr("%1").arg(list.count() > 3 ? list.at(3) : tr(blankString)));
@@ -80,17 +75,11 @@ void SerialSettingsWidget::showPortInfo(int idx)
 	ui->pidLabel->setText(tr("%1").arg(list.count() > 6 ? list.at(6) : tr(blankString)));
 }
 
-void SerialSettingsWidget::apply()
-{
-	OC_METHODGATE();
-	updateSettings();
-	emit settingsChanged();
-}
 
-void SerialSettingsWidget::checkCustomBaudRatePolicy(int idx)
+void SerialSettingsWidget::checkCustomBaudRatePolicy(int index)
 {
 	OC_METHODGATE();
-	bool isCustomBaudRate = !ui->baudRateBox->itemData(idx).isValid();
+	bool isCustomBaudRate = !ui->baudRateBox->itemData(index).isValid();
 	ui->baudRateBox->setEditable(isCustomBaudRate);
 	if (isCustomBaudRate) {
 		ui->baudRateBox->clearEditText();
@@ -99,15 +88,40 @@ void SerialSettingsWidget::checkCustomBaudRatePolicy(int idx)
 	}
 }
 
-void SerialSettingsWidget::checkCustomDevicePathPolicy(int idx)
+
+void SerialSettingsWidget::checkCustomDevicePath(int index)
 {
 	OC_METHODGATE();
-	bool isCustomPath = !ui->serialPortInfoListBox->itemData(idx).isValid();
+	bool isCustomPath = !ui->serialPortInfoListBox->itemData(index).isValid();
 	ui->serialPortInfoListBox->setEditable(isCustomPath);
 	if (isCustomPath) {
 		ui->serialPortInfoListBox->clearEditText();
 	}
 }
+
+
+void SerialSettingsWidget::baudRateChanged(int index)
+{
+	checkCustomBaudRatePolicy(index);
+	registerChange();
+}
+
+
+void SerialSettingsWidget::serialPortChanged(int index)
+{
+	showPortInfo(index);
+	checkCustomDevicePath(index);
+	registerChange();
+}
+
+
+void SerialSettingsWidget::applySettings()
+{
+	OC_METHODGATE();
+	updateSettings();
+	emit settingsChanged();
+}
+
 
 void SerialSettingsWidget::fillPortsParameters()
 {
@@ -150,6 +164,7 @@ void SerialSettingsWidget::fillPortsParameters()
 
 }
 
+
 void SerialSettingsWidget::fillPortsInfo()
 {
 	OC_METHODGATE();
@@ -176,18 +191,14 @@ void SerialSettingsWidget::fillPortsInfo()
 
 		ui->serialPortInfoListBox->addItem(list.first(), list);
 	}
-
 	ui->serialPortInfoListBox->addItem(tr("Custom"));
 }
-
-
 
 
 void SerialSettingsWidget::updateSettings()
 {
 	OC_METHODGATE();
 	mCurrentSettings.name = ui->serialPortInfoListBox->currentText();
-
 	if (ui->baudRateBox->currentIndex() == 4) {
 		mCurrentSettings.setIntBaudRate(ui->baudRateBox->currentText().toInt());
 	} else {
@@ -198,7 +209,6 @@ void SerialSettingsWidget::updateSettings()
 	mCurrentSettings.stopBits = static_cast<QSerialPort::StopBits>( ui->stopBitsBox->itemData(ui->stopBitsBox->currentIndex()).toInt());
 	mCurrentSettings.flowControl = static_cast<QSerialPort::FlowControl>( ui->flowControlBox->itemData(ui->flowControlBox->currentIndex()).toInt());
 }
-
 
 
 void SerialSettingsWidget::setSettings(SerialSettings &settings)
@@ -214,14 +224,16 @@ void SerialSettingsWidget::setSettings(SerialSettings &settings)
 	updateSettings();
 }
 
+
 void SerialSettingsWidget::registerChange()
 {
 	OC_METHODGATE();
 	if(!mManualSaveMode) {
 		// qDebug()<<"AUTOSAVE!";
-		apply();
+		applySettings();
 	}
 }
+
 
 void SerialSettingsWidget::onSerialDevicesChanged()
 {
@@ -229,24 +241,19 @@ void SerialSettingsWidget::onSerialDevicesChanged()
 	fillPortsInfo();
 }
 
-void SerialSettingsWidget::on_pushButtonApply_clicked()
-{
-	OC_METHODGATE();
-	apply();
-}
 
-void SerialSettingsWidget::on_pushButtonSelectDefaults_clicked()
+void SerialSettingsWidget::selectDefaults()
 {
 	OC_METHODGATE();
 	setSettings(mDefaultSettings);
 }
 
-void SerialSettingsWidget::on_pushButtonAdvanced_toggled(bool checked)
+
+void SerialSettingsWidget::toggleAdvanced(bool checked)
 {
 	OC_METHODGATE();
 	showAdvanced(checked);
 }
-
 
 
 void SerialSettingsWidget::showAdvanced(bool show)
@@ -277,49 +284,40 @@ void SerialSettingsWidget::showAdvanced(bool show)
 	}
 }
 
-void SerialSettingsWidget::on_serialPortInfoListBox_currentIndexChanged(int index)
+
+void SerialSettingsWidget::dataBitsChanged(int index)
 {
 	OC_METHODGATE();
 	Q_UNUSED(index);
 	registerChange();
 }
 
-void SerialSettingsWidget::on_baudRateBox_currentIndexChanged(int index)
+
+void SerialSettingsWidget::parityChanged(int index)
 {
 	OC_METHODGATE();
 	Q_UNUSED(index);
 	registerChange();
 }
 
-void SerialSettingsWidget::on_dataBitsBox_currentIndexChanged(int index)
+
+void SerialSettingsWidget::stopBitsChanged(int index)
 {
 	OC_METHODGATE();
 	Q_UNUSED(index);
 	registerChange();
 }
 
-void SerialSettingsWidget::on_parityBox_currentIndexChanged(int index)
+
+void SerialSettingsWidget::flowControlChanged(int index)
 {
 	OC_METHODGATE();
 	Q_UNUSED(index);
 	registerChange();
 }
 
-void SerialSettingsWidget::on_stopBitsBox_currentIndexChanged(int index)
-{
-	OC_METHODGATE();
-	Q_UNUSED(index);
-	registerChange();
-}
 
-void SerialSettingsWidget::on_flowControlBox_currentIndexChanged(int index)
-{
-	OC_METHODGATE();
-	Q_UNUSED(index);
-	registerChange();
-}
-
-void SerialSettingsWidget::on_serialPortInfoListBox_editTextChanged(const QString &arg1)
+void SerialSettingsWidget::serialPortTextChanged(const QString &arg1)
 {
 	OC_METHODGATE();
 	Q_UNUSED(arg1);

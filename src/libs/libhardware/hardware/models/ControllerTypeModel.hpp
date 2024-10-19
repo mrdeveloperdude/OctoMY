@@ -32,6 +32,7 @@ public:
 	void registerControllerType(const QString &nickName, const QString &fullName, const QString &iconURL);
 	QString getFullName(const QModelIndex &index) const;
 	QString getNickName(const QModelIndex &index) const;
+	void clear();
 };
 
 

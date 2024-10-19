@@ -43,7 +43,7 @@ void PortableIDWidget::setPortableID(PortableID id)
 		//qDebug()<<"-----------###==== PortableIDWidget was updated with "<<id;
 		mID=id;
 		const NodeType type=mID.type();
-		const bool isAgent=TYPE_AGENT==type;
+		const bool isAgent = TYPE_AGENT == type;
 		ui->groupBoxBirthCertificate->setTitle(isAgent?"Birth Certificate": "Identification");
 
 		ui->labelType->setVisible(true);
@@ -63,7 +63,7 @@ void PortableIDWidget::setPortableID(PortableID id)
 
 		ui->widgetIdenticon->setPortableID(mID);
 		ui->widgetQR->setQRData(mID.id());
-		const quint64 ts=mID.birthDate();
+		const quint64 ts = mID.birthDate();
 		if(ts>0) {
 			ui->labelBirthdate->setVisible(true);
 			ui->labelBirthdateCaption->setVisible(true);

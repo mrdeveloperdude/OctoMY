@@ -52,7 +52,9 @@ static void configTryToggleForServiceLevel(TryToggle *tt, const QString serviceL
 				if(!slm.isNull()) {
 					slm->enableLevel(serviceLevel, positive(current), [=](bool ok) {
 						auto res=saturate(ok?current:last);
+						
 						qDebug()<<"TRY TOGGLE '"<<serviceLevel<<"' OK: "<<ok<<" RESULTED IN: "<<res;
+						
 						tt->setState(res, false);
 					});
 				} else {
@@ -122,7 +124,9 @@ void DebuggerWidget::updateIdentity()
 			auto identity = mNode->nodeIdentity();
 			if(!identity.isNull()) {
 				auto pid = identity->toPortableID();
-				qDebug()<<"IDENTITY "<<pid.toPortableString();
+				if(mDebug){
+					qDebug()<<"IDENTITY "<<pid.toPortableString();
+				}
 				setWindowTitle(nodeTypeToString(pid.type()));
 				ui->widgetIdenticon->setPortableID(pid);
 				ui->labelName->setText(pid.name());
@@ -156,7 +160,9 @@ void DebuggerWidget::birth()
 							map["role"] = nodeRoleToString(mNode->nodeRole());
 							map["type"] = nodeTypeToString(mNode->nodeType());
 							map["birthDate"] = utility::time::msToVariant(now);
-							qDebug() << "Creating new identity: " << map;
+							if(mDebug){
+								qDebug() << "Creating new identity: " << map;
+							}
 							mNode->setNodeIdentity(map);
 						}
 					});
@@ -210,7 +216,9 @@ void DebuggerWidget::configureUi()
 				if(!connect(button, &QPushButton::toggled, this, [=](bool checked) {
 				QWidget *widget=mHeaderWidgets.contains(name)?mHeaderWidgets[name]:nullptr;
 					if(nullptr!=widget) {
-						qDebug()<<"TOGGLING BUTTON "<<widget->objectName()<<" for "<<name;
+						if(mDebug){
+							qDebug() << "TOGGLING BUTTON " << widget->objectName() << " for " << name;
+						}
 						widget->setVisible(checked);
 						pack();
 						updateExpandButton();

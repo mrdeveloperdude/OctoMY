@@ -1,6 +1,6 @@
 #include "PairingEditButtonDelegate.hpp"
 
-#include "PairingWizard.hpp"
+#include "PairingActivity.hpp"
 #include "identity/Identicon.hpp"
 #include "security/PortableID.hpp"
 
@@ -117,14 +117,13 @@ static QString connectionStrengthToSymbol(int s)
 }
 
 
-
 static int calculateConnectionStrength(qint64 lastSeen)
 {
 	const qint64 now=utility::time::currentMsecsSinceEpoch<qint64>();
 
-	const qint64 off=60*1000; //After a minute means M.I.A
-	const qint64 full=10*1000; //Less than  10 sec means full-on
-	const qint64 timeSinceLastSeen=now-lastSeen;
+	const qint64 off = 60 * 1000;  // After a minute means M.I.A
+	const qint64 full = 10 * 1000; // Less than  10 sec means full-on
+	const qint64 timeSinceLastSeen = now - lastSeen;
 
 	qint64 t=timeSinceLastSeen-full;
 	const qint64 step=(off-full)/5;
@@ -137,11 +136,12 @@ static int calculateConnectionStrength(qint64 lastSeen)
 	return s;
 }
 
+
 void PairingEditButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	OC_METHODGATE();
-	QItemDelegate::paint(painter,option,index);
-	if(0==index.column()) {
+	QItemDelegate::paint(painter, option, index);
+	if(0 == index.column()) {
 		QRect r = option.rect;//getting the rect of the cell
 		const qint32 border=2;
 		const qint32 buttonSize=r.height()-border*2;
@@ -162,10 +162,8 @@ void PairingEditButtonDelegate::paint(QPainter *painter, const QStyleOptionViewI
 		//qDebug().noquote().nospace()<<"data[\"lastSeenMS\"]="<<data["lastSeenMS"]<<" converted to "<<lastSeenMS;
 		QString onlineSymbol=connectionStrengthToSymbol(calculateConnectionStrength(lastSeenMS));
 
-
-
 		//Trust or not
-		auto list=data["trusts"].toList();
+		auto list = data["trusts"].toList();
 		const QString trustSymbol=
 
 			(list.contains("take-control") || list.contains("give-control"))
@@ -182,20 +180,22 @@ void PairingEditButtonDelegate::paint(QPainter *painter, const QStyleOptionViewI
 		//drawSVG(painter, , icX,border,buttonSize,buttonSize);
 		//icX+=buttonSize+border*2;
 
-
+/*
 		QString identifier=data["name"].toString().trimmed();
 		if(identifier.isEmpty()) {
 			identifier=data["type"].toString().trimmed().mid(5)+"-"+id.id().left(10)+"...";
 		}
+		*/
+		
 		// Draw the identifier
-		auto widg=qobject_cast<QWidget *>(parent());
-		if(nullptr!=widg) {
+		auto widg = qobject_cast<QWidget *>(parent());
+		if(nullptr != widg) {
 			painter->setPen(widg->palette().color(QPalette::ButtonText));
 		}
-		auto font=painter->font();
+		auto font = painter->font();
 		font.setPixelSize(buttonSize/2);
 		painter->setFont(font);
-		utility::graphics::drawText(*painter, QPointF(icX, r.top()+r.height()/2), Qt::AlignVCenter, identifier);
+		utility::graphics::drawText(*painter, QPointF(icX, r.top()+r.height()/2), Qt::AlignVCenter, id.identifier());
 
 		// Draw the edit button to the far right
 		QStyleOptionButton button;
@@ -221,29 +221,25 @@ bool PairingEditButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *m
 {
 	OC_METHODGATE();
 	Q_UNUSED(model);
-
-	if( 0==index.column() && event->type() == QEvent::MouseButtonRelease) {
-		QMouseEvent * e = static_cast<QMouseEvent *>(event);
-		int clickX = e->x();
-		int clickY = e->y();
-		QRect r = option.rect;//getting the rect of the cell
-		const int border=2;
-		const int buttonSize=r.height()-border*2;
-		int w = buttonSize*2;//button width
-		int h = buttonSize;//button height
-		int x = r.left() + r.width() - w - border*2;//the X coordinate
-		int y = r.top()+border;//the Y coordinate
-
-		/*
-				int w = buttonSize*2;//button width
-				int h = buttonSize;//button height
-				int x = r.left() + r.width() - w;//the X coordinate
-				int y = r.top();//the Y coordinate
-		*/
-		if(( clickX > x && clickX < x + w ) && ( clickY > y && clickY < y + h )) {
-			qDebug()<<"CLICK";
-			QVariantMap data=index.data(Qt::DisplayRole).toMap();
+	//qDebug() << "EVENT" << event;
+	if(0 == index.column() && event->type() == QEvent::MouseButtonRelease) {
+		const auto e = static_cast<QMouseEvent *>(event);
+		const auto pos = e->position();
+		const auto clickX = pos.x();
+		const auto clickY = pos.y();
+		const auto r = option.rect; //getting the rect of the cell
+		static const int border = 2;
+		const int buttonSize = r.height() - border*2;
+		const auto buttonW = buttonSize * 2;
+		const auto buttonH = buttonSize;
+		const auto buttonX = r.left() + r.width() - buttonW - border * 2;
+		const auto buttonY = r.top() + border;
+		if(( clickX > buttonX && clickX < buttonX + buttonW ) && ( clickY > buttonY && clickY < buttonY + buttonH )) {
+			auto data = index.data(Qt::DisplayRole).toMap();
 			PortableID id(data);
+			if(mDebug){
+				qDebug() << "CLICK" << id;
+			}
 			emit startEdit(id.id());
 			return true;
 		}

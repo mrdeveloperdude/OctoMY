@@ -52,7 +52,9 @@ public:
 };
 
 
-
 QString serialSettingsToString (const SerialSettings &set);
+
+QDebug operator<<(QDebug dbg, const SerialSettings &set);
+
 
 #endif // SERIALSETTINGS_HPP

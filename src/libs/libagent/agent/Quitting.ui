@@ -29,80 +29,17 @@
       </font>
      </property>
      <property name="text">
-      <string>Really quit?</string>
+      <string>OctoMY shutting down...</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
     </widget>
    </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QPushButton" name="pushButtonCancelQuit">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>60</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Cancel</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonQuit">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>60</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Quit</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>pushButtonCancelQuit</sender>
-   <signal>clicked()</signal>
-   <receiver>Quitting</receiver>
-   <slot>cancel()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>179</x>
-     <y>847</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>351</x>
-     <y>443</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButtonQuit</sender>
-   <signal>clicked()</signal>
-   <receiver>Quitting</receiver>
-   <slot>doQuit()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>523</x>
-     <y>847</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>351</x>
-     <y>443</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>cancel()</slot>
   <slot>doQuit()</slot>

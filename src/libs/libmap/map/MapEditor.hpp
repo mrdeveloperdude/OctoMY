@@ -1,12 +1,17 @@
 #ifndef MAPEDITOR_HPP
 #define MAPEDITOR_HPP
 
-#include "map/layers/MapLayer.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
 
-#include <QWidget>
+#include <QDir>
 #include <QGeoPositionInfo>
 #include <QStandardPaths>
+#include <QWidget>
+
+namespace qmapcontrol{
+class TileMapAdapter;
+class Layer;
+}
 
 namespace Ui
 {
@@ -40,18 +45,22 @@ struct MapType {
 	QString cacheDir;
 	QSharedPointer<qmapcontrol::TileMapAdapter> mapAdapter;
 	quint64 persistentCacheMiB;
+	bool doDebug{false};
 
-	explicit MapType(QString name="", QSharedPointer<qmapcontrol::TileMapAdapter> mapAdapter=nullptr, quint64 persistentCacheMiB=48)
+	explicit MapType(QString name="", QSharedPointer<qmapcontrol::TileMapAdapter> mapAdapter=nullptr, quint64 persistentCacheMiB=48, bool doDebug=false)
 		: name(name)
 		, cacheDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)+"/map.cache."+name+"/")
 		, mapAdapter(mapAdapter)
 		, persistentCacheMiB(persistentCacheMiB)
+		, doDebug(doDebug)
 	{
 		QDir dir(cacheDir);
 		if (!dir.exists()) {
 			dir.mkpath(".");
 		}
-		qDebug()<<"Map tiles for "<<name<<" is kept in cache dir "<<dir.absolutePath();
+		if(doDebug){
+			qDebug()<<"Map tiles for "<<name<<" is kept in cache dir "<<dir.absolutePath();
+		}
 	}
 
 	virtual ~MapType()
@@ -66,42 +75,37 @@ class QGeoPositionInfoSource;
 class MapEditor : public QWidget
 {
 	Q_OBJECT
-
 private:
 	Ui::MapEditor *ui;
 	QGeoPositionInfoSource *mGps;
 	QMap<QString, MapType> mMapTypes;
 	QSharedPointer<qmapcontrol::Layer> mMapLayer;
+	bool mDebug{false};
 
 public:
 	explicit MapEditor(QWidget *parent = nullptr);
 	~MapEditor();
 
-
 private:
-
 	void registerMapType(MapType mapType);
 	void prepareMapTypes();
 	void selectMapType(QString name);
 	void prepareLocationEditor();
 
 public:
-
-
 	void prepareMap();
-
-	void homeMap();
-
+	
 private slots:
 	void onPositionUpdated(QGeoPositionInfo);
 	void onMapControlViewChanged(const QPointF &coordinate, int zoom );
 	void onLocationEditorDone(bool done);
+	
+public slots:
+	void homeMap();
+	void toggleCenter(bool checked);
+	void setMapType(int index);
+	void createLocation();
 
-private slots:
-	void on_toolButtonHome_clicked();
-	void on_toolButtonCenter_toggled(bool checked);
-	void on_comboBoxMapType_currentIndexChanged(int index);
-	void on_pushButtonCreateLocation_clicked();
 };
 
 #endif

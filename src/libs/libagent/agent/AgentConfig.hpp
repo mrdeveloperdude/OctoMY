@@ -17,6 +17,8 @@ private:
 	QString mControllerName;
 	QVariantMap mControllerConfig;
 	QSharedPointer<PoseMapping> mPoseMapping;
+	
+	bool mDebug{false};
 
 public:
 	AgentConfig();
@@ -35,7 +37,9 @@ public:
 
 	QSharedPointer<PoseMapping> poseMapping();
 	void setPoseMapping(QSharedPointer<PoseMapping> mapping);
-
+	
+public:
+	friend QDebug operator<<(QDebug debug, const AgentConfig &config);
 };
 
 #endif

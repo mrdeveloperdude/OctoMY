@@ -10,13 +10,12 @@ class LimbIKWidget : public QWidget
 	Q_OBJECT
 
 private:
+	IKLimb *limb{nullptr};
 
-	IKLimb *limb;
 public:
 	explicit LimbIKWidget(QWidget *parent = nullptr);
 
 public:
-
 	void getLimbVars(qreal &cox, qreal &fem, qreal &tib );
 
 protected:
@@ -25,9 +24,10 @@ protected:
 	void mouseReleaseEvent ( QMouseEvent * event ) ;
 	void mouseMoveEvent(QMouseEvent *event);
 	void keyPressEvent(QKeyEvent *event);
-signals:
 
-	void IKUpadted();
+signals:
+	void IKUpdated();
+
 };
 
 #endif

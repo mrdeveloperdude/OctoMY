@@ -10,18 +10,15 @@ class GaitWidget : public QWidget{
 		Q_OBJECT
 	private:
 		GaitController<qreal> *m_gait;
+
 	public:
 		explicit GaitWidget(QWidget *parent = nullptr);
 
 	public:
-
 		void setGait(GaitController <qreal> &gait);
 
-
 	public slots:
-
 		void onGaitUpdated();
-
 
 	protected:
 		void paintEvent(QPaintEvent *);

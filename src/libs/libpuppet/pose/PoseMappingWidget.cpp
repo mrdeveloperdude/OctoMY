@@ -27,9 +27,10 @@ PoseMappingWidget::PoseMappingWidget(QWidget *parent)
 	OC_METHODGATE();
 	ui->setupUi(this);
 	if(!connect(ui->spinBoxActuatorCount, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &PoseMappingWidget::onSpinValueChanged, OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect";
+		qWarning() << "ERROR: Could not connect";
 	}
 }
+
 
 PoseMappingWidget::~PoseMappingWidget()
 {
@@ -126,7 +127,9 @@ void PoseMappingWidget::addButtonPair(quint32 index, QVBoxLayout *hLayout, QStri
 	QString oldName=mMapping->name(index);
 		QString name= QInputDialog::getText(this, tr("Rename"), tr("Please enter new name:"), QLineEdit::Normal,oldName, &ok);
 		if (ok && !name.isEmpty()) {
-			qDebug()<<"RENAME SUCCESSFULL: "<<name;
+			if(mDebug){
+				qDebug() << "RENAME SUCCESSFULL: " << name;
+			}
 			mMapping->setName(index,name);
 			if(nullptr!=pushButtonFrom) {
 				pushButtonFrom->setText(name);
@@ -134,7 +137,7 @@ void PoseMappingWidget::addButtonPair(quint32 index, QVBoxLayout *hLayout, QStri
 		}
 
 	}, OC_CONTYPE_NON_UNIQUE)) {
-		qWarning()<<"ERROR: Could not connect";
+		qWarning() << "ERROR: Could not connect";
 	}
 
 }
@@ -147,7 +150,9 @@ void PoseMappingWidget::makeConnection()
 		const qint32 fromIndex=utility::ui::selectedButtonIndex(butGroupFrom,-1);
 		const qint32 toIndex=utility::ui::selectedButtonIndex(butGroupTo,-1);
 		if(fromIndex>=0 && toIndex >=0) {
-			//qDebug()<<"SETTING MAPPING from "<<fromIndex<<" to "<<toIndex;
+			if(mDebug){
+				qDebug() << "SETTING MAPPING from " << fromIndex << " to " << toIndex;
+			}
 			mMapping->setMapping(static_cast<quint32>(fromIndex), static_cast<quint32>(toIndex), true);
 		}
 		utility::ui::clearButtonGroupSelection(butGroupFrom);
@@ -164,7 +169,9 @@ void PoseMappingWidget::onSpinValueChanged(int size)
 {
 	OC_METHODGATE();
 	if(nullptr!=mMapping) {
-		qDebug()<<"RESIZING TO: "<<size;
+		if(mDebug){
+			qDebug() << "RESIZING TO: " << size;
+		}
 		mMapping->resize(static_cast<quint32>(size));
 		configure(*mMapping);
 	}

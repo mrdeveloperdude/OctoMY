@@ -30,7 +30,7 @@ void Hub::nodeConfigure()
 			//QSharedPointer<AgentWindow> mWindow;
 
 
-			//QSharedPointer<IActuatorController> mActuatorController;
+			//QSharedPointer<IController> mActuatorController;
 
 		}
 	} else {

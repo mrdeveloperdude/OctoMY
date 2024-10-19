@@ -1,7 +1,7 @@
 #ifndef ARDUMYCONTROLLER_HPP
 #define ARDUMYCONTROLLER_HPP
 
-#include "hardware/controllers/IActuatorController.hpp"
+#include "hardware/controllers/IController.hpp"
 
 #include "ardumy_arduino/ArduMYCommandSerializer.hpp"
 #include "ardumy_arduino/ArduMYActuatorSet.hpp"
@@ -19,7 +19,7 @@ class ArduMYControllerWidget;
 
 
 
-class ArduMYController : public IActuatorController
+class ArduMYController : public IController
 {
 	Q_OBJECT
 private:
@@ -76,41 +76,41 @@ private slots:
 	// TODO: Decide how to expose this outside this class. Should it become part of the IServoController interface somehow? What other options exists?
 public:
 	void configurePin(quint8 servoIndex, unsigned char pin);
-
 	ArduMYActuator *addActuator();
-
 	void deleteActuator(quint32 id);
-
 	void setActuatorCount(quint8);
-
 	ArduMYActuatorSet &actuators();
+	
+	QVariantMap ardumy_configuration();
+	void ardumy_setConfiguration(QVariantMap &configuration);
+	
 
-
-	// IActuatorController interface
+	// IController interface
 public:
-
+	// Version
+	QString version() override;
+	// UI
+	bool hasConfigurationWidget() const override;
+	QWidget *configurationWidget() override;
+	// Connection status
 	void setConnected(bool) override;
 	bool isConnected() override;
-
-
-	void limp(QBitArray &flags) override;
-	void limp(quint8 index, bool limp) override;
-	void move(Pose &pose) override;
-	void move(quint8 index, qreal value) override;
-	QString version() override;
+	// Actuator definition
 	quint8 maxActuatorsSupported() override;
-
 	quint8 actuatorCount() override;
 	QString actuatorName(quint8) override;
 	qreal actuatorValue(quint8) override;
 	qreal actuatorDefault(quint8) override;
-
-	QWidget *configurationWidget() override;
-
-	QVariantMap configuration() override;
-	void setConfiguration(QVariantMap &configuration) override;
-
-
+	// Mandatory actuator state
+	void limp(quint8 index, bool limp) override;
+	void move(quint8 index, qreal value) override;
+	// Optional actuator state
+	void limp(const QBitArray &flags) override;
+	void move(const Pose &pose) override;
+	void limpAll() override;
+	void centerAll() override;
+	
+	
 signals:
 	void settingsChanged();
 	void connectionChanged();

@@ -5,7 +5,7 @@
 #include "app/launcher/AppLauncher.hpp"
 #include "node/Node.hpp"
 #include "uptime/New.hpp"
-#include "delivery/AgentDeliveryWizard.hpp"
+#include "delivery/AgentDeliveryActivity.hpp"
 
 #include <QProcessEnvironment>
 #include <QCommandLineParser>

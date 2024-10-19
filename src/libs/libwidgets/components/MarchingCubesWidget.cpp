@@ -10,21 +10,18 @@
 
 
 MarchingCubesWidget::MarchingCubesWidget(QWidget *parent)
-	: QOpenGLWidget(parent),
-	ePolygonMode(GL_FILL),
-	iDataSetSize(32),
-	fStepSize(1.0 / iDataSetSize),
-	fTargetValue(48.0),
-	bSpin(true),
-	bMove(true),
-	bLight(true),
-	m_timer(new QTimer(this))
+	: QOpenGLWidget(parent)
+	, m_timer(new QTimer(this))
+	, mField( new Birth())
 {
+	/*
 	connect(m_timer, &QTimer::timeout, this, [=](){
 		update();
 	});
-	m_timer->start(1000/60);
+*/
+	//m_timer->start(1000/60);
 }
+
 
 void MarchingCubesWidget::initializeGL()
 {
@@ -45,10 +42,12 @@ void MarchingCubesWidget::initializeGL()
 	glEnable(GL_LIGHT0);
 }
 
+
 void MarchingCubesWidget::resizeGL(int w, int h)
 {
+	const GLfloat fWorldSize = 1.f;
+	const GLfloat fHalfWorldSize = 0.5f * fWorldSize;
 	GLfloat fAspect;
-	GLfloat fHalfWorldSize = 0.5f;
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -64,6 +63,29 @@ void MarchingCubesWidget::resizeGL(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 }
 
+/*
+void MarchingCubesWidget::resizeGL(int w, int h)
+{
+	const GLfloat fWorldSize = 1.f;  // Full size of the world
+	const GLfloat fHalfWorldSize = 0.5f * fWorldSize;  // Half size for centering around 0
+	GLfloat fAspect;
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	if (w > h){
+		// Landscape: Adjust the height to keep the aspect ratio
+		fAspect = (GLfloat)h / (GLfloat)w;
+		glOrtho(-fWorldSize, fWorldSize, -fWorldSize * fAspect, fWorldSize * fAspect, -10.f * fWorldSize, 10.f * fWorldSize);
+	}
+	else{
+		// Portrait: Adjust the width to keep the aspect ratio
+		fAspect = (GLfloat)w / (GLfloat)h;
+		glOrtho(-fWorldSize * fAspect, fWorldSize * fAspect, -fWorldSize, fWorldSize, -10.f * fWorldSize, 10.f * fWorldSize);
+	}
+	
+	glMatrixMode(GL_MODELVIEW);
+}
+*/
 void MarchingCubesWidget::paintGL()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -80,21 +102,22 @@ void MarchingCubesWidget::paintGL()
 	}
 	mField->setState(bSpin, bMove);
 	mField->update(fTime);
-	glTranslatef(0.0, 0.0, -1.0);
+	//glTranslatef(0.0, 0.0, 0.5f);
 	glRotatef(-fPitch, 1.0, 0.0, 0.0);
 	glRotatef(0.0, 0.0, 1.0, 0.0);
 	glRotatef(fYaw, 0.0, 0.0, 1.0);
 	
 	glPushMatrix();
-		glTranslatef(-0.5, -0.5, -0.5);
+		//glTranslatef(-0.5, -0.5, -0.5);
+		glTranslatef(0.0, 0.0, -0.5f);
 		glBegin(GL_TRIANGLES);
-			marchingCubes();
+		marchingCubes();
 		glEnd();
 	glPopMatrix();
 	
 	glPopMatrix();
+	update();
 }
-
 
 
 void MarchingCubesWidget::keyPressEvent(QKeyEvent *event)
@@ -144,6 +167,7 @@ void MarchingCubesWidget::keyPressEvent(QKeyEvent *event)
 	}
 }
 
+
 GLfloat fGetOffset(GLfloat fValue1, GLfloat fValue2, GLfloat fValueDesired)
 {
 	GLdouble fDelta = fValue2 - fValue1;
@@ -181,9 +205,6 @@ void vNormalizeVector(GLvector &rfVectorResult, GLvector &rfVectorSource)
 }
 
 
-
-//vGetNormal() finds the gradient of the scalar field at a point
-//This gradient can be used as a very accurate vertx normal for lighting calculations
 void MarchingCubesWidget::vGetNormal(GLvector &rfNormal, GLfloat fX, GLfloat fY, GLfloat fZ)
 {
 	static const float margin{0.01f};
@@ -194,7 +215,6 @@ void MarchingCubesWidget::vGetNormal(GLvector &rfNormal, GLfloat fX, GLfloat fY,
 }
 
 
-//vGetColor generates a color from a given position and normal of a point
 void vGetColor(GLvector &rfColor, GLvector &rfPosition, GLvector &rfNormal)
 {
 	GLfloat fX = rfNormal.fX;
@@ -206,7 +226,6 @@ void vGetColor(GLvector &rfColor, GLvector &rfPosition, GLvector &rfNormal)
 }
 
 
-//marchCube performs the Marching Cubes algorithm on a single cube
 void MarchingCubesWidget::marchCube(GLfloat fX, GLfloat fY, GLfloat fZ, GLfloat fScale)
 {
 	GLint iCorner, iVertex, iVertexTest, iEdge, iTriangle, iFlagIndex, iEdgeFlags;
@@ -257,9 +276,10 @@ void MarchingCubesWidget::marchCube(GLfloat fX, GLfloat fY, GLfloat fZ, GLfloat 
 void MarchingCubesWidget::marchingCubes()
 {
 	GLint iX, iY, iZ;
-	for(iX = 0; iX < iDataSetSize; iX++){
-		for(iY = 0; iY < iDataSetSize; iY++){
-			for(iZ = 0; iZ < iDataSetSize; iZ++){
+	const auto half = iDataSetSize / 2;
+	for(iX = -half; iX < half; iX++){
+		for(iY = -half; iY < half; iY++){
+			for(iZ = -half; iZ < half; iZ++){
 				marchCube(iX*fStepSize, iY*fStepSize, iZ*fStepSize, fStepSize);
 			}
 		}

@@ -1,5 +1,5 @@
 #include "LobeSelector.hpp"
-#include "hardware/controllers/IActuatorController.hpp"
+#include "hardware/controllers/IController.hpp"
 #include "ui_LobeSelector.h"
 
 #include "agent/Agent.hpp"
@@ -115,7 +115,7 @@ void LobeSelector::save()
 {
 	OC_METHODGATE();
 	/*
-	QSharedPointer<IActuatorController> ctl;
+	QSharedPointer<IController> ctl;
 	if(!mAgent.isNull()) {
 		QSharedPointer<AgentConfigStore> configStore=mAgent->configurationStore();
 		QSharedPointer<AgentConfig> config=configStore->agentConfig();
@@ -180,10 +180,10 @@ static void selectFirstIfNoneSelected(QListView *list)
 void LobeSelector::select(){
 	
 	
-	QSharedPointer<IActuatorController> ctl;
+	QSharedPointer<IController> ctl;
 	if(!mAgent.isNull()) {
 		mAgent->reloadController();
-		ctl=mAgent->actuatorController();
+		ctl=mAgent->controller();
 	}
 	QWidget *configurationWidget=nullptr;
 	if(!ctl.isNull()) {

@@ -19,10 +19,12 @@ AddressBook::AddressBook(QObject *parent) : QObject(parent), mConfigureHelper("A
 	setObjectName("AddressBook");
 }
 
+
 AddressBook::~AddressBook()
 {
 	OC_METHODGATE();
 }
+
 
 void AddressBook::configure(QString filename)
 {
@@ -32,6 +34,7 @@ void AddressBook::configure(QString filename)
 	}
 }
 
+
 void AddressBook::activate(const bool on, std::function<void(bool)> callBack)
 {
 	OC_METHODGATE();
@@ -40,11 +43,13 @@ void AddressBook::activate(const bool on, std::function<void(bool)> callBack)
 	}
 }
 
+
 bool AddressBook::isActivated() const
 {
 	OC_METHODGATE();
 	return mConfigureHelper.isActivated();
 }
+
 
 bool AddressBook::fromMap(QVariantMap data)
 {
@@ -61,6 +66,7 @@ bool AddressBook::fromMap(QVariantMap data)
 	return false;
 }
 
+
 QVariantMap AddressBook::toMap()
 {
 	OC_METHODGATE();
@@ -76,6 +82,7 @@ QVariantMap AddressBook::toMap()
 	return QVariantMap();
 }
 
+
 bool AddressBook::fromDefault()
 {
 	OC_METHODGATE();
@@ -87,6 +94,7 @@ bool AddressBook::fromDefault()
 	return false;
 }
 
+
 bool AddressBook::hasAssociate(const QString &id)
 {
 	OC_METHODGATE();
@@ -96,6 +104,7 @@ bool AddressBook::hasAssociate(const QString &id)
 	return false;
 }
 
+
 int AddressBook::associateCount() const
 {
 	OC_METHODGATE();
@@ -104,6 +113,7 @@ int AddressBook::associateCount() const
 	}
 	return 0;
 }
+
 
 QSharedPointer<Associate> AddressBook::associateByID(const QString &id)
 {
@@ -116,6 +126,7 @@ QSharedPointer<Associate> AddressBook::associateByID(const QString &id)
 	QSharedPointer<Associate> ret;
 	return ret;
 }
+
 
 QSharedPointer<Associate> AddressBook::removeAssociate(const QString &id)
 {
@@ -133,6 +144,7 @@ QSharedPointer<Associate> AddressBook::removeAssociate(const QString &id)
 	return ret;
 }
 
+
 void AddressBook::upsertAssociate(QSharedPointer<Associate> associate)
 {
 	OC_METHODGATE();
@@ -140,7 +152,9 @@ void AddressBook::upsertAssociate(QSharedPointer<Associate> associate)
 		if (!associate.isNull()) {
 			const auto id = associate->id();
 			const bool isNew = !hasAssociate(id);
-			qDebug().noquote().nospace() << (isNew ? "REGISTERING NEW" : "UPDATING EXISTING") << " ASSOCIATE WITH ID: " << id;
+			if(mDebug){
+				qDebug().noquote().nospace() << (isNew ? "REGISTERING NEW" : "UPDATING EXISTING") << " ASSOCIATE WITH ID: " << id;
+			}
 			mAssociates[id] = associate;
 			if (isNew) {
 				emit associateAdded(id);
@@ -155,6 +169,7 @@ void AddressBook::upsertAssociate(QSharedPointer<Associate> associate)
 	}
 }
 
+
 QMap<QString, QSharedPointer<Associate>> AddressBook::all()
 {
 	OC_METHODGATE();
@@ -163,8 +178,6 @@ QMap<QString, QSharedPointer<Associate>> AddressBook::all()
 	}
 	return QMap<QString, QSharedPointer<Associate>>();
 }
-
-
 
 
 QMap<QString, QSharedPointer<Associate>> AddressBook::filter(QVector<QueryRule> rules)
@@ -208,9 +221,6 @@ QMap<QString, QSharedPointer<Associate>> AddressBook::filter(QVector<QueryRule> 
 }
 
 
-
-
-
 // Forward the async storeReady signal
 void AddressBook::hookSignals(QObject &ob, bool hook)
 {
@@ -239,6 +249,7 @@ void AddressBook::hookSignals(QObject &ob, bool hook)
 		}
 	}
 }
+
 
 // TODO: Look at converting this to use toStrting() and adding cast operators for QString like is common in many other classes
 const QDebug &operator<<(QDebug &d, AddressBook &ab)

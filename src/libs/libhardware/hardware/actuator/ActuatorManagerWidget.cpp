@@ -8,7 +8,7 @@
 //#include "hardware/controllers/ardumy/ArduMYActuatorWidget.hpp"
 //#include "ardumy_arduino/ArduMYActuatorSet.hpp"
 //#include "hardware/controllers/ardumy/ArduMYController.hpp"
-#include "hardware/controllers/IActuatorController.hpp"
+#include "hardware/controllers/IController.hpp"
 
 #include <QSpacerItem>
 #include <QDebug>
@@ -71,7 +71,7 @@ void ActuatorManagerWidget::updateWidgetCount(quint32 num)
 	}
 }
 
-void ActuatorManagerWidget::configure(IActuatorController *controller)
+void ActuatorManagerWidget::configure(IController *controller)
 {
 	OC_METHODGATE();
 	if(nullptr!=mController) {

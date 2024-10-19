@@ -4,7 +4,7 @@
 
 
 ClientWidget::ClientWidget(QWidget *parent)
-	: QWidget(parent)
+	: Activity(parent)
 {
 	OC_METHODGATE();
 }

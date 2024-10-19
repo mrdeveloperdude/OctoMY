@@ -100,6 +100,5 @@ public:
 };
 
 
-
 #endif
 // CPUBURNER_HPP

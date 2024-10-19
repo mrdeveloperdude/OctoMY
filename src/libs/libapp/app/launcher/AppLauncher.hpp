@@ -99,6 +99,8 @@ private:
 	int mReturnValue;
 	// The Qt application instance
 	QCoreApplication *mQApp;
+	// Show debug output
+	bool mDebug{false};
 	
 	
 private:
@@ -218,28 +220,27 @@ int AppLauncher<T>::run()
 		const auto lastAppInstance = QCoreApplication::instance();
 		bool alreadyRunning{false};
 		if(lastAppInstance){
-			qDebug() << "Found existing app instance";
+			if(mDebug){
+				qDebug() << "Found existing app instance";
+			}
 			mQApp = lastAppInstance;
 			// We assume it is already running
 			alreadyRunning = true;
 		}
 		else {
-			qDebug() << "Allocating new app instance";
+			if(mDebug){
+				qDebug() << "Allocating new app instance";
+			}
 			mQApp = (mContext->isHeadless()?(OC_NEW QCoreApplication(argc, argv)):(OC_NEW QApplication(argc, argv)));
 		}
 		if(nullptr != mQApp) {
 			// We need full control of when application quits
 			QApplication::setQuitOnLastWindowClosed(false);
 			appActivate(true);
-			// Initialize resources here
-			
-			//TODO: Look at how to distribute this initialization wisely
-			Q_INIT_RESOURCE(icons);
-			Q_INIT_RESOURCE(images);
-			Q_INIT_RESOURCE(3d);
-			
-			
-			qDebug() << QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " starting ";
+			//RESOURCES HERE
+			if(mDebug){
+				qDebug() << QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " starting ";
+			}
 			// Start Qt event loop for application.
 			// NOTE: This call will block until mQApp::quit()  mQApp::exit() is called and the eventloop is terminated
 			if(! alreadyRunning){
@@ -248,8 +249,9 @@ int AppLauncher<T>::run()
 			else{
 				mReturnValue = 0;
 			}
-			
-			qDebug() << QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done with "<< mReturnValue << ", quitting";
+			if(mDebug){
+				qDebug() << QFileInfo( QCoreApplication::applicationFilePath()).fileName() << " done with "<< mReturnValue << ", quitting";
+			}
 		} else {
 			qWarning() << "ERROR: no app, quitting";
 			mReturnValue = EXIT_FAILURE;
@@ -283,7 +285,9 @@ void AppLauncher<T>::appActivate(const bool on)
 						else{
 							// Handle when (de)activation of this app is completed
 							nodeActivateChangedConnection = QObject::connect(appPtr, &T::nodeActivateChanged, appPtr, [=](const bool on) {
-								qDebug() << "nodeActivationChanged(on=" << on << ")";
+								if(mDebug){
+									qDebug() << "nodeActivationChanged(on=" << on << ")";
+								}
 								appActivateDone(on);
 							});
 						}
@@ -294,9 +298,11 @@ void AppLauncher<T>::appActivate(const bool on)
 						else{
 							// Handle when someone wants the app to stop
 							nodeRequestedExitConnection = QObject::connect(appPtr, &T::nodeRequestExit, appPtr, [=](const int returnValue) {
-								qDebug() << "nodeRequestExit(" << returnValue << ")";
+								if(mDebug){
+									qDebug() << "nodeRequestExit(" << returnValue << ")";
+								}
 								mReturnValue = returnValue;
-								appActivate(false);
+								appPtr->appActivate(false);
 							});
 						}
 						// Run the node's appActivate() from eventloop since it will call pure virtual members (which as you know are NOT allowed to be run from ctor in C++)
@@ -304,19 +310,19 @@ void AppLauncher<T>::appActivate(const bool on)
 							appPtr->appActivate(true);
 						});
 					} else {
-						qWarning()<<"ERROR: No launcher";
+						qWarning() << "ERROR: No launcher";
 					}
 				} else {
-					qWarning()<<"ERROR: No node could be created";
+					qWarning() << "ERROR: No node could be created";
 				}
 			} else {
-				qWarning()<<"ERROR: No context";
+				qWarning() << "ERROR: No context";
 			}
 		}
 	} else {
 		if(mAppConfigureHelper.isActivatedAsExpected()) {
 			if(!mApp.isNull()) {
-				mApp->appActivate(on);
+				//mApp->appActivate(on);
 			}
 		}
 	}
@@ -344,7 +350,7 @@ void AppLauncher<T>::appActivateDone(const bool on)
 				if(!mWindow.isNull()) {
 					mWindow->show();
 				} else {
-					qWarning()<<"ERROR: No window to show";
+					qWarning() <<"ERROR: No window to show";
 				}
 			}
 		} else {
@@ -353,20 +359,23 @@ void AppLauncher<T>::appActivateDone(const bool on)
 				mWindow->close();
 				mWindow.clear();
 			}
-			qDebug()<<"Closing app";
+			if(mDebug){
+				qDebug() << "Closing app";
+			}
 			if(!mApp.isNull()) {
 				mApp.clear();
 			}
 			if(nullptr!=mQApp) {
-				qDebug()<<"CALLING EXIT WITH "<<mReturnValue;
+				if(mDebug){
+					qDebug() << "CALLING EXIT WITH " << mReturnValue;
+				}
 				mQApp->exit(mReturnValue);
 			} else {
-				qWarning()<<"ERROR: No mQApp to exit";
+				qWarning() << "ERROR: No mQApp to exit";
 			}
 		}
 	}
 }
-
 
 
 template <typename T>
@@ -375,8 +384,6 @@ QSharedPointer<AppContext> AppLauncher<T>::context()
 	OC_METHODGATE();
 	return mContext;
 }
-
-
 
 
 #endif

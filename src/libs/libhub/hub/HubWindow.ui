@@ -20,7 +20,7 @@
    <string>OctoMY™ - Hub</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../libres/resources/icons.qrc">
+   <iconset>
     <normaloff>:/icons/hub.svg</normaloff>:/icons/hub.svg</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_23">
@@ -52,10 +52,10 @@
        <enum>QTabWidget::TabShape::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>6</number>
+       <number>5</number>
       </property>
       <property name="documentMode">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -71,7 +71,7 @@
         <string>Look for incomming / unauthenticated remotes and agents</string>
        </property>
        <attribute name="icon">
-        <iconset resource="../../libres/resources/icons.qrc">
+        <iconset>
          <normaloff>:/icons/agent.svg</normaloff>:/icons/agent.svg</iconset>
        </attribute>
        <attribute name="title">
@@ -102,7 +102,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="PairingWizard" name="widgetPairing" native="true"/>
+         <widget class="PairingActivity" name="widgetPairing" native="true"/>
         </item>
         <item>
          <spacer name="horizontalSpacer_4">
@@ -124,7 +124,7 @@
         <string>View agents and remotes in map</string>
        </property>
        <attribute name="icon">
-        <iconset resource="../../libres/resources/icons.qrc">
+        <iconset>
          <normaloff>:/icons/map.svg</normaloff>:/icons/map.svg</iconset>
        </attribute>
        <attribute name="title">
@@ -133,7 +133,7 @@
       </widget>
       <widget class="QWidget" name="tabPlan">
        <attribute name="icon">
-        <iconset resource="../../libres/resources/icons.qrc">
+        <iconset>
          <normaloff>:/icons/mandate.svg</normaloff>:/icons/mandate.svg</iconset>
        </attribute>
        <attribute name="title">
@@ -157,7 +157,7 @@
       </widget>
       <widget class="markdown::MarkdownEditor" name="tabWeb">
        <attribute name="icon">
-        <iconset resource="../../libres/resources/icons.qrc">
+        <iconset>
          <normaloff>:/icons/edit.svg</normaloff>:/icons/edit.svg</iconset>
        </attribute>
        <attribute name="title">
@@ -180,26 +180,26 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>LogWidget</class>
-   <extends>QPlainTextEdit</extends>
-   <header location="global">node/LogWidget.hpp</header>
-  </customwidget>
-  <customwidget>
    <class>MapEditor</class>
    <extends>QWidget</extends>
    <header location="global">map/MapEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>plan::PlanEditor</class>
+   <class>PairingActivity</class>
    <extends>QWidget</extends>
-   <header location="global">plan/PlanEditor.hpp</header>
+   <header location="global">pairing/PairingActivity.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PairingWizard</class>
+   <class>LogWidget</class>
+   <extends>QPlainTextEdit</extends>
+   <header location="global">node/LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>plan::PlanEditor</class>
    <extends>QWidget</extends>
-   <header location="global">pairing/PairingWizard.hpp</header>
+   <header location="global">plan/PlanEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -227,8 +227,6 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../../libres/resources/icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

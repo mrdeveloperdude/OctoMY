@@ -1,4 +1,6 @@
 #include "ControllerTypeSelector.hpp"
+#include "hardware/controllers/ControllerFactory.hpp"
+#include "hardware/controllers/IController.hpp"
 #include "ui_ControllerTypeSelector.h"
 
 #include "agent/Agent.hpp"
@@ -18,7 +20,7 @@ ControllerTypeSelector::ControllerTypeSelector(QWidget *parent)
 	, mControllerTypeModel(OC_NEW ControllerTypeModel())
 {
 	ui->setupUi(this);
-	initControllerTypeList();
+	updateControllerTypeList();
 }
 
 ControllerTypeSelector::~ControllerTypeSelector()
@@ -28,12 +30,24 @@ ControllerTypeSelector::~ControllerTypeSelector()
 
 
 
-void ControllerTypeSelector::initControllerTypeList()
+void ControllerTypeSelector::updateControllerTypeList()
 {
 	OC_METHODGATE();
-	mControllerTypeModel->registerControllerType("none", "None", ":/icons/unknown.svg");
-	mControllerTypeModel->registerControllerType("ardumy", "ArduMY™ native OctoMY™ <--> Arduino© binding", ":/icons/ardumy.svg");
-	mControllerTypeModel->registerControllerType("servotor32", "ArcBotics Servotor32 v2.1", ":/icons/arcbotics_logo.svg");
+	mControllerTypeModel->clear();
+	ControllerFactory factory;
+	const auto available = factory.availableControllers();
+	QString title("None");
+	QString description("No controller");
+	QString icon(":/icons/unknown.svg");
+	for(auto const &type:available){
+		auto controller = factory.controllerFactory(type);
+		if(controller){
+			title = controller->controllerTitle();
+			icon = controller->controllerIcon();
+			description = controller->controllerDescription();
+		}
+		mControllerTypeModel->registerControllerType(title, description, icon);
+	}
 	ui->listViewControllerType->setModel(mControllerTypeModel);
 }
 
@@ -75,5 +89,5 @@ void ControllerTypeSelector::selectController(){
 	OC_METHODGATE();
 	auto const index = ui->listViewControllerType->currentIndex();
 	auto const item = mControllerTypeModel->getNickName(index);
-	emit done(item);
+	pop(QStringList() << item);
 }

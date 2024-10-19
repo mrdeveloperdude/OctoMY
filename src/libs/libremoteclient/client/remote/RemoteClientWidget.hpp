@@ -3,8 +3,8 @@
 
 #include "client/ClientWidget.hpp"
 #include "comms/couriers/sets/RemoteCourierSet.hpp"
-#include "node/Node.hpp"
 #include "components/TryToggleState.hpp"
+#include "node/Node.hpp"
 
 #include <QWidget>
 #include <QTimer>

@@ -4,6 +4,7 @@
 #include "uptime/SharedPointerWrapper.hpp"
 
 #include <QWidget>
+#include <QSvgRenderer>
 
 class Node;
 
@@ -12,10 +13,18 @@ class NodeWindow : public QWidget, public QEnableSharedFromThis<NodeWindow>
 	Q_OBJECT
 private:
 	QSharedPointer<Node> mNode;
-
+protected:
+	QSvgRenderer mWaterMark;
+	QPixmap mWatermarkCache;
+	QSize mWatermarkLastSize;
+	
 public:
 	explicit NodeWindow(QWidget *parent = nullptr);
 	virtual ~NodeWindow() override;
+
+private:
+	bool shouldRedrawWatermark(const QSize& newSize);
+	void drawWatermark();
 
 public:
 	void nodeWindowConfigure(QSharedPointer<Node> node);
@@ -43,6 +52,7 @@ public:
 	virtual void keyReleaseEvent(QKeyEvent *) override;
 	virtual	void closeEvent(QCloseEvent *) override;
 	virtual	void moveEvent(QMoveEvent *) override;
+	virtual	void paintEvent(QPaintEvent *event) override;
 
 	// Android stuff
 protected:

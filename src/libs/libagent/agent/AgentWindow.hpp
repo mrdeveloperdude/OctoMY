@@ -9,18 +9,24 @@
 
 
 class Agent;
-class AgentDeliveryWizard;
+class AgentSipAndSeeActivity;
+class AgentBaptismActivity;
+class AgentDeliveryActivity;
+class AgentDeliveryActivity;
 class AgentUnboxingWizard;
+class CameraPairingActivity;
+class ControllerActivity;
+class ControllerTypeSelector;
 class FaceWidget;
-class Message;
-class PairingWizard;
+class MessageActivity;
+class PairingActivity;
+class PairingTrustActivity;
 class QAction;
 class QMenu;
 class QWidget;
-struct StackPage;
-class ControllerTypeSelector;
 class SerialDeviceSelector;
-class ControllerConfiguration;
+class TransitionActivity;
+struct StackPage;
 
 namespace Ui
 {
@@ -49,16 +55,23 @@ private:
 	QAction *mPlanEditorAction;
 	QAction *mToggleOnlineAction;
 	QAction *mShowFaceAction;
-	// Pages
-	AgentDeliveryWizard * mDelivery{nullptr};
+	// Activities
+	AgentSipAndSeeActivity * mSipAndSeeActivity{nullptr};
+	AgentBaptismActivity * mBaptismActivity{nullptr};
+	AgentDeliveryActivity * mDeliveryActivity{nullptr};
 	AgentUnboxingWizard *mUnboxingWizard{nullptr};
-	FaceWidget *mFaceWidget{nullptr};
-	//HardwareWizard *mHardware{nullptr};
+	CameraPairingActivity *mCameraPairingActivity{nullptr};
+	ControllerActivity * mControllerConfiguration{nullptr};
 	ControllerTypeSelector * mControllerTypeSelector{nullptr};
+	FaceWidget *mFaceWidget{nullptr};
+	MessageActivity * mMessageActivity{nullptr};
+	TransitionActivity * mTransitionActivity{nullptr};
+	PairingActivity *mPairingActivity{nullptr};
+	PairingTrustActivity *mPairingTrustActivity{nullptr};
 	SerialDeviceSelector * mSerialDeviceSelector{nullptr};
-	ControllerConfiguration * mControllerConfiguration{nullptr};
-	Message * mQuitting{nullptr};
-	PairingWizard *mPairing{nullptr};
+	const static QString mQuitApplicationText;
+
+	bool mDebug{true};
 
 	ConfigureHelper mConfigureHelper;
 
@@ -88,14 +101,16 @@ private:
 	
 public slots:
 	QString popPage();
-	bool pushPage(const QString &title);
+	bool pushPage(const QString &title, const QStringList arguments = QStringList());
 	QString swapPage(const QString &title);
 	
+public slots:
+	void quitApplication();
+
 private slots:
 	void navigateBack();
 	void openMenu();
 	void onStartQuitApplication();
-	void onQuitApplication(bool quitting);
 	void onNotImplementedYet();
 	void onStartCameraPairing();
 	void onStartNormalPairing();
@@ -103,14 +118,13 @@ private slots:
 	void onPlanEditor();
 	void onOnlineChanged();
 	void onFaceVisibilityChanged();
-	void onNextUnboxingStage(UnboxingStage stage);
 	void unboxingWizardDone();
-	
+
+public:
 	void controllerTypeSelected(const QString &type);
 	void serialControllerSelected(const QString &controller);
 	
 	void onPageChanged(const StackPage &page);
-
 
 };
 

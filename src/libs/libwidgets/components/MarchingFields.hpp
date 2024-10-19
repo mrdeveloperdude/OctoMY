@@ -13,6 +13,12 @@ struct GLvector
 	GLfloat fX;
 	GLfloat fY;
 	GLfloat fZ;
+	void random(GLfloat mi, GLfloat ma){
+		const auto r = (ma - mi);
+		fX = mi + frand() * r;
+		fY = mi + frand() * r;
+		fZ = mi + frand() * r;
+	}
 };
 
 
@@ -89,12 +95,15 @@ public:
 		fill(0.0f);
 		swap();
 		fill(0.0f);
-		//perturb(0.01);
+		perturb(0.01);
+	}
+	QSize size(){
+		return QSize(w, h);
 	}
 	inline void swap(){
 		back = (back == data1)?data2:data1;
 		front = (back == data1)?data2:data1;
-		qDebug() << QString((back==data1)?"DATA1":"DATA2");
+		//qDebug() << QString((back==data1)?"DATA1":"DATA2");
 	}
 	inline void fill(GLfloat v){
 		int i{0};
@@ -108,7 +117,7 @@ public:
 		int i{0};
 		for(auto y=0;y<h;++y){
 			for(auto x=0;x<w;++x){
-				back[i++] = frand()*frand()*frand()*frand()*v;
+				back[i++] = frand_s() * frand_s() * v;
 			}
 		}
 	}
@@ -131,13 +140,17 @@ public:
 	inline void waveStep(){
 		int i{0};
 		int kernelSize{1};
+		GLfloat ma{-9999999.0f}, mi{-ma};
 		for(auto y=kernelSize;y<h-kernelSize;++y){
 			for(auto x=kernelSize;x<w-kernelSize;++x){
-				back[i] = (front[i-1] + front[i+1] + front[i-w] + front[i+w]) / 2 - back[i];
+				back[i] = (front[i-1] + front[i+1] + front[i-w] + front[i+w]) / 4 - back[i];
+				mi=fmin(mi, back[i]);
+				ma=fmax(ma, back[i]);
 				i++;
 			}
 		}
-		scale(0.999);
+		scale(0.99999);
+		qDebug()<<"mima:"<<mi<<ma;
 		//print();
 		//back[(h/2)*w+w/2] = (frand()-0.5f)*0.05f;
 	}
@@ -198,21 +211,74 @@ public:
 };
 
 
-class Birth: public Field{
+class HeightWidget: public QWidget{
+	Q_OBJECT
 private:
-	HeightMap mMap;
-	GLfloat   fTime{0.0f};
+	HeightMap *mMap;
+
 public:
-	Birth()
-		: mMap(14, 14)
+	 HeightWidget(HeightMap *map)
+		: QWidget(nullptr)
+		, mMap(map)
 	{
 		
 	}
+	
+	void updateSize(){
+		auto last = rect();
+		auto now = mMap->size();
+		if(now!=last.size()){
+			setGeometry(QRect(last.topLeft(), now));
+		}
+	}
+	void paintEvent(QPaintEvent *) override{
+		QPainter painter(this);
+		painter.fillRect(rect(), Qt::green);
+		auto now = mMap->size();
+		const auto w = now.width();
+		const auto h = now.height();
+		for(int y=0;y<h;++y){
+			for(int x=0;x<w;++x){
+				auto fx = static_cast<float>(x) / w;
+				auto fy = static_cast<float>(y) / h;
+				int v = static_cast<int>(mMap->sampleTiling(fx, fy)*120+127);
+				painter.fillRect(x, y, 1, 1, QColor(v, v, v));
+			}
+		}
+	}
+};
+
+struct Shape{
+	GLvector position;
+	GLfloat magnitude{0.001f};
+	GLfloat radius{0.025f};
+	void update(){
+		position.fZ += 0.025f;
+		if(position.fZ > 1.0f){
+			position.fZ -= 2.0f;
+		}
+	}
+	GLfloat density(const GLvector &pt) const;
+};
+
+
+class Birth: public Field{
+private:
+	HeightMap mMap;
+	HeightWidget *mWidget;
+	GLfloat   fTime{0.0f};
+	GLfloat ma{-9999999.0f}, mi{-ma};
+	QVector <Shape> mShapes;
+
+public:
+	Birth();
+
 public:
 	void update(GLfloat fTime = 0.1f) override;
 	GLfloat density(const GLvector &pt) override;
 	GLfloat shine(const GLvector &pt) override;
 	void color(const GLvector &pt, GLvector &color) override;
+
 };
 
 

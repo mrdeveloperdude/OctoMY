@@ -47,6 +47,7 @@ private:
 	ConfigureHelper mConfigureHelper;
 	QMetaObject::Connection mTuckNodeWindowConnection;
 	QMetaObject::Connection mTuckDebuggerWindowConnection;
+	bool mDebug{false};
 
 public:
 	explicit DebuggerWidget(QWidget *parent = nullptr);

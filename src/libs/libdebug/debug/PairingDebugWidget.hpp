@@ -9,7 +9,7 @@
 #include <QTimer>
 
 class Node;
-class PairingTrustWidget;
+class PairingTrustActivity;
 
 namespace Ui
 {
@@ -21,9 +21,9 @@ class PairingDebugWidget : public QWidget
 	Q_OBJECT
 private:
 	Ui::PairingDebugWidget *ui;
-	ConfigureHelper mConfigureHelper;
 	QSharedPointer <Node> mNode;
-	QSharedPointer <PairingTrustWidget> mTrustWidget;
+	QSharedPointer <PairingTrustActivity> mTrustWidget;
+	ConfigureHelper mConfigureHelper;
 
 public:
 	explicit PairingDebugWidget(QWidget *parent = nullptr);

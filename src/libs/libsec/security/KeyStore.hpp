@@ -53,6 +53,7 @@ private:
 	KeySecurityPolicy mPolicy;
 	QSharedPointer<Key> mLocalKey;
 	QMap<QString, QSharedPointer<Key> > mAssociates;
+	bool mDebug{false};
 	ConfigureHelper mConfigureHelper;
 
 	friend class GenerateRunnable<KeyStore>;

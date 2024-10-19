@@ -50,7 +50,7 @@ public:
 	void updateEyeColor();
 	void updateVisibility();
 	
-	void setAgent(QSharedPointer<Agent>);
+	void configure(QSharedPointer<Agent>);
 	void setHookSignals(QObject &ob, bool hook);
 	void setPanic(bool panic);
 

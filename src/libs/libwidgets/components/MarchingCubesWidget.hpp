@@ -6,9 +6,7 @@
 #include <QKeyEvent>
 #include <QTimer>
 
-
 #include "MarchingFields.hpp"
-
 
 const static float FULL_CIRCLE{360.0f};
 
@@ -17,18 +15,18 @@ class MarchingCubesWidget : public QOpenGLWidget
 	Q_OBJECT
 private:
 	GLenum    ePolygonMode{GL_FILL};
-	GLint     iDataSetSize{16};
+	GLint     iDataSetSize{24};
 	GLfloat   fStepSize{1.0f/iDataSetSize};
 	GLfloat   fTime{0.0f};
-	GLfloat   fTargetValue{48.0f};
+	GLfloat   fTargetValue{0.5f};
 	GLboolean bSpin{true};
 	GLboolean bMove{true};
 	GLboolean bLight{true};
-	GLvector sSourcePoint[3];
-	QTimer *m_timer;
-	Field *mField = new Birth();
-	GLfloat fPitch{FULL_CIRCLE/8.0f};
-	GLfloat fYaw{FULL_CIRCLE/4.0f};
+	GLvector  sSourcePoint[3];
+	QTimer   *m_timer;
+	Field    *mField{nullptr};
+	GLfloat   fPitch{FULL_CIRCLE/8.0f};
+	GLfloat   fYaw{FULL_CIRCLE/4.0f};
 
 public:
 	explicit MarchingCubesWidget(QWidget *parent = nullptr);

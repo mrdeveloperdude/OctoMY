@@ -11,7 +11,7 @@
 
 
 /**
- * @brief The OctoMYProxyStyle class is a class that is used to extend the existing standard "fusion" style in Qt with some changes.
+ * @brief OctoMYProxyStyle is a class that is used to extend the existing standard "fusion" style in Qt with some changes.
  * Most notably it changes the slider handle size to be more useful for touch enabled applications.
  *
  */
@@ -46,10 +46,11 @@ private:
 	QStringList mFonts;
 	QString mDefaultFont;
 	QString mStyleSheet;
-	int mCursorFlashTime;
+	int mCursorFlashTime{500};
+	bool mResourcesInitialized{false};
 
 public:
-	explicit AppStyle(QColor tinge=QColor(142,45,197).lighter());
+	explicit AppStyle(QColor tinge = QColor(142, 45, 197).lighter());
 	explicit AppStyle(NodeType nodeType);
 	virtual ~AppStyle();
 
@@ -79,6 +80,9 @@ public:
  */
 class StyleManager
 {
+private:
+	bool mDebug{false};
+
 public:
 	StyleManager();
 

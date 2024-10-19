@@ -6,19 +6,21 @@
 
 #include "identity/Identicon.hpp"
 
-#include <QDebug>
-#include <QRect>
 #include <QApplication>
+#include <QDebug>
+#include <QIcon>
+#include <QKeyEvent>
+#include <QPainter>
+#include <QRect>
 #include <QScreen>
 #include <QVariant>
-#include <QKeyEvent>
-#include <QIcon>
 
 static const QString GEOMETRY_SETTINGS_KEY("window.geometry");
 
 NodeWindow::NodeWindow(QWidget *parent)
 	: QWidget(parent)
 	, mNode(nullptr)
+	, mWaterMark(QString(":/images/agent_watermark.svg"), this)
 {
 	OC_METHODGATE();
 }
@@ -30,6 +32,37 @@ NodeWindow::~NodeWindow()
 	mNode.clear();
 }
 
+
+bool NodeWindow::shouldRedrawWatermark(const QSize& newSize) {
+	if (mWatermarkLastSize.isEmpty()) {
+		return true;
+	}
+	double widthChange = std::abs(mWatermarkLastSize.width() - newSize.width()) / static_cast<double>(mWatermarkLastSize.width());
+	double heightChange = std::abs(mWatermarkLastSize.height() - newSize.height()) / static_cast<double>(mWatermarkLastSize.height());
+	return (widthChange > 0.1) || (heightChange > 0.1);
+}
+
+void NodeWindow::drawWatermark(){
+	QPainter painter(this);
+	QSize widgetSize = size();
+	if (!shouldRedrawWatermark(widgetSize)) {
+		painter.drawPixmap(0, 0, mWatermarkCache);
+		return;
+	}
+	QSize svgSize = mWaterMark.defaultSize();
+	double widthScale = static_cast<double>(widgetSize.width()) / svgSize.width();
+	double heightScale = static_cast<double>(widgetSize.height()) / svgSize.height();
+	double scale = qMin(widthScale, heightScale);
+	int watermarkWidth = static_cast<int>(svgSize.width() * scale);
+	int watermarkHeight = static_cast<int>(svgSize.height() * scale);
+	QRect targetRect(0, 0, watermarkWidth, watermarkHeight);
+	mWatermarkCache = QPixmap(widgetSize);
+	mWatermarkCache.fill(Qt::transparent);
+	QPainter cachePainter(&mWatermarkCache);
+	mWaterMark.render(&cachePainter, targetRect);
+	mWatermarkLastSize = widgetSize;
+	painter.drawPixmap(0, 0, mWatermarkCache);
+}
 
 
 void NodeWindow::nodeWindowConfigure(QSharedPointer<Node> node)
@@ -43,7 +76,7 @@ void NodeWindow::nodeWindowConfigure(QSharedPointer<Node> node)
 	}
 	// Set new node
 	// qDebug()<<"SETTING NODE TO "<<node;
-	mNode=node;
+	mNode = node;
 	// Connect new agent
 	if(!mNode.isNull()) {
 
@@ -188,6 +221,14 @@ void NodeWindow::moveEvent(QMoveEvent *event)
 	if(nullptr!= event) {
 		emit nodeWindowMoved(sharedFromThis());
 	}
+}
+
+
+
+void NodeWindow::paintEvent(QPaintEvent *event) {
+	OC_METHODGATE();
+	QWidget::paintEvent(event);
+	drawWatermark();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

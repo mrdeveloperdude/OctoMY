@@ -35,17 +35,18 @@ void PoseMapping::setMapping(quint32 from, quint32 to, bool swap)
 		return;
 	}
 	if(swap) {
-		quint32 oldFrom=0;
+		quint32 oldFrom = 0;
 		for(quint32 oldTo:mMapping) {
-			if(to==oldTo) {
+			if(to == oldTo) {
 				break;
 			}
 			oldFrom++;
 		}
-		mMapping[oldFrom]=mMapping[from];
+		mMapping[oldFrom] = mMapping[from];
 	}
-	mMapping[from]=qMin(to,l);
+	mMapping[from] = qMin(to,l);
 }
+
 
 void PoseMapping::setName(quint32 from, QString name)
 {
@@ -57,6 +58,7 @@ void PoseMapping::setName(quint32 from, QString name)
 	mNames[from]=name;
 }
 
+
 QString PoseMapping::name(quint32 from) const
 {
 	OC_METHODGATE();
@@ -66,11 +68,14 @@ QString PoseMapping::name(quint32 from) const
 	}
 	return mNames[from];
 }
+
+
 quint32 PoseMapping::size() const
 {
 	OC_METHODGATE();
 	return mMapping.size();
 }
+
 
 quint32 PoseMapping::map(quint32 from) const
 {
@@ -114,11 +119,15 @@ void PoseMapping::resize(quint32 nusz)
 	OC_METHODGATE();
 	quint32 sz=static_cast<quint32>(mMapping.size());
 	if(sz==nusz) {
-		qDebug()<<"SAME SIZE SKIPPING: "<<sz;
+		if(mDebug){
+			qDebug() << "SAME SIZE SKIPPING: " << sz;
+		}
 		return;
 	}
 	if(nusz<sz) {
-		qDebug()<<"SMALLER SIZE FIXING: "<<sz;
+		if(mDebug){
+			qDebug() << "SMALLER SIZE FIXING: " << sz;
+		}
 		for(quint32 i=0; i<sz; ++i) {
 			const int ii=static_cast<int>(i);
 			if(mMapping[ii]>=nusz) {
@@ -130,7 +139,9 @@ void PoseMapping::resize(quint32 nusz)
 	mMapping.resize(nuszi);
 	mNames.resize(nuszi);
 	if(nusz>sz) {
-		qDebug()<<"BIGGER SIZE GENERATING: "<<nusz;
+		if(mDebug){
+			qDebug() << "BIGGER SIZE GENERATING: " << nusz;
+		}
 		for(quint32 i=sz; i<nusz; ++i) {
 			const int ii=static_cast<int>(i);
 			mMapping[ii]=i;
@@ -159,22 +170,23 @@ QDataStream &PoseMapping::send(QDataStream &ds) const
 }
 
 
-
 QVariantList PoseMapping::toMap() const
 {
 	OC_METHODGATE();
 	QVariantList list;
 	quint32 from=0;
 	for(quint32 to:mMapping) {
-		QString name=mNames[from];
+		QString name = mNames[from];
 		QVariantMap entry;
-		entry["name"]=name;
-		entry["to"]=to;
-		list<<entry;
+		entry["name"] = name;
+		entry["to"] = to;
+		list << entry;
 		from++;
 	}
 	return list;
 }
+
+
 void PoseMapping::fromMap( QVariantList map)
 {
 	OC_METHODGATE();
@@ -215,6 +227,7 @@ void PoseMapping::set(const PoseMapping &other)
 	mMapping=other.mMapping;
 	mNames=other.mNames;
 }
+
 
 QDataStream &operator>>(QDataStream &ds, PoseMapping &p)
 {

@@ -14,13 +14,10 @@
 class LimbIKWidget;
 
 struct IKLimb {
-
-	LimbIKWidget *m_parent;
-	bool m_lift=false;
-
+	LimbIKWidget *m_parent{nullptr};
+	bool m_lift{false};
 	QPointF m_origin;
 	QPointF m_target;
-
 	qreal coxaAngle =0.0;
 	qreal femurAngle =0.0;
 	qreal tibiaAngle =0.0;
@@ -96,7 +93,7 @@ struct IKLimb {
 		painter.drawRect(QRectF(rw,0,rw,-femurAngle/PI2));
 		painter.drawRect(QRectF(rw*2,0,rw,-tibiaAngle/PI2));
 
-		emit m_parent->IKUpadted();
+		emit m_parent->IKUpdated();
 	}
 
 	//Inspired by https://github.com/TXBDan/BETH_Raspi/blob/master/ik.cpp
@@ -133,7 +130,7 @@ void LimbIKWidget::mousePressEvent ( QMouseEvent * event )
 {
 	OC_METHODGATE();
 	Q_UNUSED(event);
-	if(0!=limb) {
+	if(nullptr != limb) {
 		limb->toggleLift(true);
 		update();
 	}
@@ -145,7 +142,7 @@ void LimbIKWidget::mouseReleaseEvent ( QMouseEvent * event )
 {
 	OC_METHODGATE();
 	Q_UNUSED(event);
-	if(0!=limb) {
+	if(nullptr != limb) {
 		limb->toggleLift(false);
 		update();
 	}
@@ -157,7 +154,7 @@ void LimbIKWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	OC_METHODGATE();
 	Q_UNUSED(event);
-	if(0!=limb) {
+	if(nullptr != limb) {
 		QRectF r=rect();
 		QPointF pos=event->pos();
 		limb->setTarget((pos.x()-r.width()/2)/r.width(), (pos.y()-r.height()/2)/r.height());
@@ -166,42 +163,11 @@ void LimbIKWidget::mouseMoveEvent(QMouseEvent *event)
 }
 
 
-
 void  LimbIKWidget::keyPressEvent(QKeyEvent *event)
 {
 	OC_METHODGATE();
 	Q_UNUSED(event);
-	/*
-		const int key=event->key();
-		switch(key){
-			case(Qt::Key_P):{
-					m_gait->togglePause();
-					return;
-				}
-			case(Qt::Key_L):{
-					m_gait->toggleSingleLimb();
-					return;
-				}
-
-			case(Qt::Key_0):
-			case(Qt::Key_1):
-			case(Qt::Key_2):
-			case(Qt::Key_3):
-			case(Qt::Key_4):
-			case(Qt::Key_5):
-			case(Qt::Key_6):
-			case(Qt::Key_7):
-			case(Qt::Key_8):
-			case(Qt::Key_9):{
-
-					m_gait->toggleLimb(key-Qt::Key_0);
-					return;
-				}
-		}
-	*/
 }
-
-
 
 
 void LimbIKWidget::paintEvent(QPaintEvent *)
@@ -221,7 +187,7 @@ void LimbIKWidget::paintEvent(QPaintEvent *)
 	QPen base(QBrush(Qt::NoBrush),2);
 
 	QPen teal(base);
-	teal.setWidth(0.01);
+	teal.setWidth(1);
 	teal.setStyle(Qt::SolidLine);
 	teal.setColor(QColor("teal"));
 
@@ -230,7 +196,7 @@ void LimbIKWidget::paintEvent(QPaintEvent *)
 	qreal s=qMin(w,h);
 	painter.scale(s,s);
 
-	qreal step=0.08;
+	qreal step{0.08};
 	painter.setPen(teal);
 	for(qreal y=-h; y<h; y+=step) {
 		painter.drawLine(QPointF(-w,y),QPointF(w,y));
@@ -238,17 +204,16 @@ void LimbIKWidget::paintEvent(QPaintEvent *)
 	for(qreal x=-w; x<w; x+=step) {
 		painter.drawLine(QPointF(x,-h),QPointF(x,h));
 	}
-	if(0!=limb) {
+	if(nullptr != limb) {
 		limb->paint(painter);
 	}
-
 }
 
 
 void LimbIKWidget::getLimbVars(qreal &cox, qreal &fem, qreal &tib )
 {
 	OC_METHODGATE();
-	cox=limb->coxaAngle;
-	fem=limb->femurAngle;
-	tib=limb->tibiaAngle;
+	cox = limb->coxaAngle;
+	fem = limb->femurAngle;
+	tib = limb->tibiaAngle;
 }

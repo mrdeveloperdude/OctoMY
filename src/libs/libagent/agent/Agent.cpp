@@ -8,8 +8,8 @@
 
 #include "AgentConfigStore.hpp"
 
-#include "hardware/controllers/IActuatorController.hpp"
-#include "hardware/controllers/ActuatorControllerFactory.hpp"
+#include "hardware/controllers/IController.hpp"
+#include "hardware/controllers/ControllerFactory.hpp"
 
 #include <QDebug>
 
@@ -23,7 +23,7 @@
 	Agent represents the robot. It is a possibly autonomous entity that roams
 	this world together with us.
 	
-	\sa AgentMain, Remote, Hub, Zoo
+	\sa Node, AgentWindow, AgentMain, Remote, Hub, Zoo
 */
 
 Agent::Agent()
@@ -48,16 +48,12 @@ void Agent::nodeConfigure()
 	OC_METHODGATE();
 	//qDebug()<<"nodeConfigure()";
 	if(mNodeConfigureHelper.configure()) {
-		auto ctx=context();
+		auto ctx = context();
 		if(!ctx.isNull()) {
-			//QSharedPointer<AgentWindow> mWindow;
-			mAgentConfigStore->configure(ctx->baseDir()+ "/agent_config.json");
-
-			//QSharedPointer<IActuatorController> mActuatorController;
-
+			mAgentConfigStore->configure(ctx->baseDir() + "/agent_config.json");
 		}
 	} else {
-		qWarning()<<"ERROR: No context, closing";
+		qWarning() << "ERROR: No context, closing";
 		emit nodeRequestExit(EXIT_FAILURE);
 	}
 }
@@ -70,13 +66,8 @@ void Agent::nodeActivate(const bool on)
 	if(on) {
 		if(mNodeConfigureHelper.activate(on)) {
 			// Initialize Agent Configuration Store
-
 			mAgentConfigStore->activate(on);
-			mAgentConfigStore->synchronize([](QSharedPointer<SimpleDataStore> store, bool ok) {
-				//qDebug()<<"mAgentConfigStore synced";
-				Q_UNUSED(store);
-				Q_UNUSED(ok);
-			});
+			mAgentConfigStore->load();
 			emit nodeActivateChanged(on);
 		}
 	} else {
@@ -84,8 +75,10 @@ void Agent::nodeActivate(const bool on)
 			if(!mWindow.isNull()) {
 				mWindow.clear();
 			}
+			mAgentConfigStore->save();
 			mAgentConfigStore->activate(on);
 			emit nodeActivateChanged(on);
+			mNodeConfigureHelper.activate(on);
 		}
 	}
 }
@@ -97,16 +90,16 @@ QSharedPointer<NodeWindow> Agent::nodeWindow()
 	OC_METHODGATE();
 	//qDebug()<<"nodeWindow()";
 	if(mWindow.isNull()) {
-		QSharedPointer<Agent> sp=qSharedPointerCast<Agent>(sharedThis());
+		QSharedPointer<Agent> sp = qSharedPointerCast<Agent>(sharedThis());
 		if(!sp.isNull()) {
 			mWindow = QSharedPointer<AgentWindow>::create(nullptr);
 			if(!mWindow.isNull()) {
 				mWindow->nodeWindowConfigure(sp);
 			} else {
-				qWarning()<<"ERROR: Could not allocate AgentWindow";
+				qWarning() << "ERROR: Could not allocate AgentWindow";
 			}
 		} else {
-			qWarning()<<"ERROR: Shared pointer to this was null for agent";
+			qWarning() << "ERROR: Shared pointer to this was null for agent";
 		}
 	}
 	return mWindow;
@@ -159,10 +152,31 @@ QSharedPointer<AgentConfigStore> Agent::configurationStore()
 }
 
 
-QSharedPointer<IActuatorController> Agent::actuatorController()
+QSharedPointer<AgentConfig> Agent::configuration(){
+	auto configStore = configurationStore();
+	if(!configStore.isNull()) {
+		return configStore->agentConfig();
+	}
+	return nullptr;
+}
+
+
+QSharedPointer<IController> Agent::controller()
 {
 	OC_METHODGATE();
-	return mActuatorController;
+	return mController;
+}
+
+
+QString Agent::controllerName(){
+	auto configStore = configurationStore();
+	if(!configStore.isNull()) {
+		auto config = configStore->agentConfig();
+		if(!config.isNull()) {
+			return config->controllerName();
+		}
+	}
+	return QString();
 }
 
 
@@ -170,41 +184,74 @@ void Agent::unloadController()
 {
 	OC_METHODGATE();
 	// Unload old controller
-	if(nullptr != mActuatorController) {
+	if(nullptr != mController) {
 		//qDebug()<<"Unloading old actuator controller";
-		mActuatorController->setConnected(false);
-		mActuatorController->deleteLater();
-		mActuatorController=nullptr;
+		mController->setConnected(false);
+		mController->deleteLater();
+		mController = nullptr;
 	}
-
 }
 
+
+void Agent::loadController()
+{
+	OC_METHODGATE();
+	if(mController.isNull()) {
+		if(!mAgentConfigStore.isNull()) {
+			QSharedPointer<AgentConfig> config = mAgentConfigStore->agentConfig();
+			if(!config.isNull()) {
+				QString controllerName = config->controllerName().trimmed();
+				if(!controllerName.isEmpty()) {
+					ControllerFactory factory;
+					mController = factory.controllerFactory(controllerName);
+				} else {
+					qWarning() << "ERROR: No actuator controller named in agent config";
+				}
+			} else {
+				qWarning() << "ERROR: No agent config";
+			}
+		} else {
+			qWarning() << "ERROR: No agent config store";
+		}
+	}
+	setControllerConfig();
+}
+
+void Agent::setControllerConfig(){
+	if(!mController.isNull()) {
+		if(!mAgentConfigStore.isNull()) {
+			QSharedPointer<AgentConfig> config = mAgentConfigStore->agentConfig();
+			if(!config.isNull()) {
+				auto controllerConfig = config->controllerConfig();
+				mController->setConfiguration(controllerConfig);
+			} else {
+				qWarning() << "ERROR: No agent config";
+			}
+		} else {
+			qWarning() << "ERROR: No agent config store";
+		}
+	}
+}
+
+void Agent::getControllerConfig(){
+	if(!mController.isNull()) {
+		if(!mAgentConfigStore.isNull()) {
+			QSharedPointer<AgentConfig> config = mAgentConfigStore->agentConfig();
+			if(!config.isNull()) {
+				auto controllerConfig = mController->configuration();
+				config->setControllerConfig(controllerConfig);
+			} else {
+				qWarning() << "ERROR: No agent config";
+			}
+		} else {
+			qWarning() << "ERROR: No agent config store";
+		}
+	}
+}
 
 void Agent::reloadController()
 {
 	OC_METHODGATE();
 	unloadController();
-	if(!mAgentConfigStore.isNull()) {
-		QSharedPointer<AgentConfig> config = mAgentConfigStore->agentConfig();
-		if(!config.isNull()) {
-			QString controllerName = config->controllerName().trimmed();
-			if(!controllerName.isEmpty()) {
-				//qDebug()<<"Attempting to generate actuator controller of type "<<controllerName;
-				ActuatorControllerFactory factory;
-				mActuatorController=factory.controllerFactory(controllerName);
-				if(!mActuatorController.isNull()) {
-					//qDebug()<<"Actuator controller created, configuring";
-					QVariantMap controllerConfig = config->controllerConfig();
-					mActuatorController->setConfiguration(controllerConfig);
-					mActuatorController->setConnected(true);
-				}
-			} else {
-				qDebug()<<"ERROR: No actuator controller named in agent config";
-			}
-		} else {
-			qDebug()<<"ERROR: No agent config";
-		}
-	} else {
-		qDebug()<<"ERROR: No agent config store";
-	}
+	loadController();
 }

@@ -13,7 +13,19 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
+  <layout class="QGridLayout" name="gridLayout_2" rowstretch="5,1,1,10">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item row="1" column="2">
     <spacer name="horizontalSpacer_2">
      <property name="orientation">
@@ -132,13 +144,6 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
-      <widget class="IdenticonLabel" name="labelAgentName">
-       <property name="text">
-        <string>Agent name</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="1">
       <widget class="QLabel" name="labelDelivered">
        <property name="text">
@@ -154,14 +159,14 @@
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QLabel" name="labelPaired">
+      <widget class="QLabel" name="labelAllDone">
        <property name="text">
         <string>All done</string>
        </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QLabel" name="labelPaired_2">
+      <widget class="QLabel" name="labelPaired">
        <property name="text">
         <string>Paired</string>
        </property>
@@ -171,6 +176,16 @@
       <widget class="QLabel" name="labelControllerSet">
        <property name="text">
         <string>Controller set</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="IdenticonLabel" name="widgetDeliveredIdenticon" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -187,8 +202,9 @@
   </customwidget>
   <customwidget>
    <class>IdenticonLabel</class>
-   <extends>QLabel</extends>
+   <extends>QWidget</extends>
    <header location="global">identity/IdenticonLabel.hpp</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -15,15 +15,12 @@
 class Pose
 {
 public:
-
 	static const quint32 MAX_SIZE;
 
 private:
-
 	QVector<qreal> mValues;
 
 public:
-
 	Pose(quint32 size=0);
 
 public:

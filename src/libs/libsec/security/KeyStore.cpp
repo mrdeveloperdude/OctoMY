@@ -48,13 +48,15 @@ void KeyStore::configure(QString filename, bool doBootstrap, KeySecurityPolicy p
 				mStore.configure(mBackend, me);
 				mDirty = true;
 				mDoBootstrap = doBootstrap;
-				qDebug() << "Bootstrapping set to " << mDoBootstrap << "(config)";
+				if(mDebug){
+					qDebug() << "Bootstrapping set to " << mDoBootstrap << "(config)";
+				}
 				mPolicy = policy;
 			} else {
-				qDebug()<<"ERROR: Backend was null";
+				qWarning() << "ERROR: Backend was null";
 			}
 		} else {
-			qDebug()<<"ERROR: Frontend was null";
+			qWarning() << "ERROR: Frontend was null";
 		}
 	}
 }
@@ -221,7 +223,9 @@ bool KeyStore::generateFrontend()
 		if(mDoBootstrap) {
 			//ScopedTimer st("local key generation");
 			const auto bits = mPolicy.bits();
-			qDebug() << "KeyStore: bootstrapping started with " << bits << "bits";
+			if(mDebug){
+				qDebug() << "KeyStore: bootstrapping started with " << bits << "bits";
+			}
 			mLocalKey = QSharedPointer<Key>::create(bits);
 		}
 		// We only return true if we actually generated, or else asyncstore will be confused
@@ -259,7 +263,9 @@ void KeyStore::setBootstrapEnabled(bool doBootstrap)
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		mDoBootstrap = doBootstrap;
-		qDebug() << "Bootstrapping set to " << mDoBootstrap;
+		if(mDebug){
+			qDebug() << "Bootstrapping set to " << mDoBootstrap;
+		}
 	}
 }
 
@@ -311,11 +317,11 @@ QSharedPointer<Key> KeyStore::pubKeyForID(const QString &id)
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		if(!ready()) {
-			qWarning()<<"WARNING: returning empty key for id="<<id<<" because keystore not ready..";
+			qWarning() << "WARNING: returning empty key for id=" << id << " because keystore not ready..";
 			return nullptr;
 		}
-		QMap<QString, QSharedPointer<Key> >::iterator f=mAssociates.find(id);
-		if(mAssociates.end()==f) {
+		auto f = mAssociates.find(id);
+		if(mAssociates.end() == f) {
 			return nullptr;
 		}
 		return f.value();
@@ -363,7 +369,7 @@ QString KeyStore::toString()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
-		QString out="KeyStore{ fn="+filename()+", fexists="+(fileExists()?"true":"false")+", ready=" + (static_cast<const bool>(ready())?"true":"false")+ ", peer-keys:[";
+		QString out = "KeyStore{ fn="+filename()+", fexists="+(fileExists()?"true":"false")+", ready=" + (static_cast<const bool>(ready())?"true":"false")+ ", peer-keys:[";
 		for(QMap<QString, QSharedPointer<Key> >::iterator b=mAssociates.begin(), e=mAssociates.end(); b!=e; ++b) {
 			QString key=b.key();
 			//b.value();

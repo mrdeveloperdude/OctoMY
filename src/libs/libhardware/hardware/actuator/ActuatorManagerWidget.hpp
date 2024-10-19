@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QList>
 
-class IActuatorController;
+class IController;
 class QSpacerItem;
 namespace Ui
 {
@@ -17,7 +17,7 @@ class ActuatorManagerWidget : public QWidget
 private:
 	Ui::ActuatorManagerWidget *ui;
 	QList<QWidget *> mWidgets;
-	IActuatorController *mController;
+	IController *mController;
 
 public:
 	explicit ActuatorManagerWidget(QWidget *parent = nullptr);
@@ -27,7 +27,7 @@ private:
 	void updateWidgetCount(quint32 num);
 
 public:
-	void configure(IActuatorController *);
+	void configure(IController *);
 
 public slots:
 	void controllerSettingsChanged();

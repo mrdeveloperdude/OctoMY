@@ -15,7 +15,7 @@
 
 
 ArduMYController::ArduMYController(QObject *parent)
-	: IActuatorController("ArduMY", parent)
+	: IController("ArduMY", "ArduMY™ native OctoMY™ <--> Arduino© binding", ":/icons/ardumy.svg", parent)
 	, mSerialInterface(OC_NEW QSerialPort(this))
 	, mCommandSerializer(mActuators)
 	, mLimpDirty(true)
@@ -270,23 +270,6 @@ void ArduMYController::onSerialSettingsChanged()
 //////////////////////////////////////////////
 
 
-void ArduMYController::setConnected(bool open)
-{
-	OC_METHODGATE();
-	if(open) {
-		openSerialPort();
-		qDebug()<<"Opened ArduMY controller version "<<version();
-	} else {
-		closeSerialPort();
-	}
-}
-
-bool ArduMYController::isConnected()
-{
-	OC_METHODGATE();
-	return mSerialInterface->isOpen();
-}
-
 
 ArduMYActuator *ArduMYController::addActuator()
 {
@@ -299,7 +282,7 @@ ArduMYActuator *ArduMYController::addActuator()
 	} else {
 		mActuators.setSize(ct+1);
 		mCountDirty=true;
-		emit actuatorConfigurationChanged();
+		emit configurationChanged();
 	}
 	ret=&mActuators[ct];
 	return ret;
@@ -311,7 +294,7 @@ void ArduMYController::deleteActuator(quint32 id)
 	qDebug()<<"SIZE BEFORE DELETE: "<<mActuators.size();
 	mActuators.remove(id);
 	qDebug()<<"SIZE AFTER DELETE: "<<mActuators.size();
-	emit actuatorConfigurationChanged();
+	emit configurationChanged();
 }
 
 void ArduMYController::setActuatorCount(quint8 ct)
@@ -339,153 +322,11 @@ ArduMYActuatorSet &ArduMYController::actuators()
 }
 
 
-void ArduMYController::limp(QBitArray &flags)
-{
-	OC_METHODGATE();
-	if(isConnected()) {
-		//for(ArduMYActuator &actuator:mActuators) {
-		for(uint32_t e=mActuators.size(),i=0; i<e; ++i) {
-			ArduMYActuator &actuator=mActuators[i];
-			const bool k=flags.testBit(static_cast<int>(i));
-			if(k!=actuator.state.isLimp()) {
-				mLimpDirty=true;
-				actuator.state.setLimp(k);
-			}
-		}
-	} else {
-		qWarning()<<"ERROR: Trying to limp subset of actuators via serial when not connected";
-	}
-}
-
-void ArduMYController::limp(quint8 index, bool limp)
-{
-	OC_METHODGATE();
-	if(isConnected()) {
-		if(index>mActuators.size()) {
-			return;
-		}
-		ArduMYActuator &actuator=mActuators[index];
-		if(limp!=actuator.state.isLimp()) {
-			mLimpDirty=true;
-			actuator.state.setLimp(limp);
-		}
-	} else {
-		qWarning()<<"ERROR: Trying to limp single atuator via serial when not connected";
-	}
-}
-
-// NOTE: This will simply collect the latest data. The actual writing is done in syncMove when serial signals there is an opportunity.
-// TODO: look at binary extension introduced in 2.1 version of hexy firmware to improve performance
-void ArduMYController::move(Pose &pose)
-{
-	OC_METHODGATE();
-	Q_UNUSED(pose);
-	//qreal pos[1]= {0.0};	quint32 flags;
-	if(isConnected()) {
-		/*
-		const quint32 sz=pose.size();
-		if(mAccumulatedPosition.size()<sz) {
-			mAccumulatedPosition.resize(sz);
-			mDirtyMoveFlags.resize(sz);
-		}
-		for(quint32 i=0; i<sz; ++i) {
-			const quint32 p=(quint32)(qBound(-1.0, pose.value(i), 1.0)*1000.0+1500.0);
-			//Skip unecessary communication if value did not change
-			if(mAccumulatedPosition[i]!=p) {
-				mAccumulatedPosition[i]=p;
-				mDirtyMoveFlags.setBit(i);
-			}
-		}
-		//qDebug()<<"MOVE: flags="<< QString("%1").arg( flags, 16, 2, QChar('0'))<< ", dirtyMoveFlags="<<QString("%1").arg( dirtyMoveFlags, 16, 2, QChar('0'));
-		if(mDirtyMoveFlags.count(true)>0 && 0==mSerialInterface->bytesToWrite()) {
-			syncData();
-		}
-		*/
-	} else {
-		qWarning()<<"ERROR: Trying to move actuators with serial when not connected";
-	}
-}
 
 
 
-void ArduMYController::move(quint8 i, qreal value)
-{
-	OC_METHODGATE();
-	Q_UNUSED(i);
-	Q_UNUSED(value);
-	//qDebug()<<"ARDUMY MOVE: "<<i<<value;
-	/*
-	const quint32 p=(quint32)(qBound(-1.0, value, 1.0)*1000.0+1500.0);
-	//Skip unecessary communication if value did not change
-	if(mAccumulatedPosition[i]!=p) {
-		mAccumulatedPosition[i]=p;
-		if(0==mSerialInterface->bytesToWrite()) {
-			syncMove();
-		}
-	}
-	*/
-}
 
-
-QString ArduMYController::version()
-{
-	OC_METHODGATE();
-	return "VERSION: IMPLEMENT ME";
-}
-
-
-
-quint8 ArduMYController::maxActuatorsSupported()
-{
-	OC_METHODGATE();
-	return 0xFF;
-}
-
-
-quint8 ArduMYController::actuatorCount()
-{
-	OC_METHODGATE();
-	return static_cast<quint8>(mActuators.size());
-}
-
-QString ArduMYController::actuatorName(quint8)
-{
-	OC_METHODGATE();
-	return "IMPLEMENT ME";
-}
-
-qreal ArduMYController::actuatorValue(quint8 index)
-{
-	OC_METHODGATE();
-	if(index>=mActuators.size()) {
-		return 0.0;
-	}
-	return mActuators[index].state.value.toFloat(mActuators[index].config.representation);
-}
-
-
-qreal ArduMYController::actuatorDefault(quint8)
-{
-	OC_METHODGATE();
-	return 0.0;
-}
-
-
-QWidget *ArduMYController::configurationWidget()
-{
-	OC_METHODGATE();
-	if(nullptr==mWidget) {
-		mWidget=OC_NEW ArduMYControllerWidget(nullptr);
-		if(nullptr!=mWidget) {
-			mWidget->configure(this);
-		}
-	}
-	return mWidget;
-}
-
-
-
-QVariantMap ArduMYController::configuration()
+QVariantMap ArduMYController::ardumy_configuration()
 {
 	OC_METHODGATE();
 	QVariantMap map;
@@ -559,12 +400,11 @@ QVariantMap ArduMYController::configuration()
 	{
 		map["serial"]=mSerialSettings.toMap();
 	}
-
 	return map;
-
 }
 
-void ArduMYController::setConfiguration(QVariantMap &configuration)
+
+void ArduMYController::ardumy_setConfiguration(QVariantMap &configuration)
 {
 	OC_METHODGATE();
 	qDebug()<<"Loading ArduMY configuration version '"<<configuration["version"]<<"'";
@@ -613,3 +453,177 @@ void ArduMYController::setConfiguration(QVariantMap &configuration)
 		mWidget->configure(this);
 	}
 }
+
+
+QString ArduMYController::version()
+{
+	OC_METHODGATE();
+	return "VERSION: IMPLEMENT ME";
+}
+
+
+bool ArduMYController::hasConfigurationWidget() const{
+	OC_METHODGATE();
+	return true;
+}
+
+
+QWidget *ArduMYController::configurationWidget()
+{
+	OC_METHODGATE();
+	if(nullptr==mWidget) {
+		mWidget=OC_NEW ArduMYControllerWidget(nullptr);
+		if(nullptr!=mWidget) {
+			mWidget->configure(this);
+		}
+	}
+	return mWidget;
+}
+
+
+void ArduMYController::setConnected(bool open)
+{
+	OC_METHODGATE();
+	if(open) {
+		openSerialPort();
+		qDebug()<<"Opened ArduMY controller version "<<version();
+	} else {
+		closeSerialPort();
+	}
+}
+
+
+bool ArduMYController::isConnected()
+{
+	OC_METHODGATE();
+	return mSerialInterface->isOpen();
+}
+
+
+quint8 ArduMYController::maxActuatorsSupported()
+{
+	OC_METHODGATE();
+	return 0xFF;
+}
+
+
+quint8 ArduMYController::actuatorCount()
+{
+	OC_METHODGATE();
+	return static_cast<quint8>(mActuators.size());
+}
+
+
+QString ArduMYController::actuatorName(quint8)
+{
+	OC_METHODGATE();
+	return "IMPLEMENT ME";
+}
+
+
+qreal ArduMYController::actuatorValue(quint8 index)
+{
+	OC_METHODGATE();
+	if(index>=mActuators.size()) {
+		return 0.0;
+	}
+	return mActuators[index].state.value.toFloat(mActuators[index].config.representation);
+}
+
+
+qreal ArduMYController::actuatorDefault(quint8)
+{
+	OC_METHODGATE();
+	return 0.0;
+}
+
+
+void ArduMYController::limp(quint8 index, bool limp)
+{
+	OC_METHODGATE();
+	if(isConnected()) {
+		if(index>mActuators.size()) {
+			return;
+		}
+		ArduMYActuator &actuator=mActuators[index];
+		if(limp!=actuator.state.isLimp()) {
+			mLimpDirty=true;
+			actuator.state.setLimp(limp);
+		}
+	} else {
+		qWarning()<<"ERROR: Trying to limp single atuator via serial when not connected";
+	}
+}
+
+
+void ArduMYController::move(quint8 i, qreal value)
+{
+	OC_METHODGATE();
+	Q_UNUSED(i);
+	Q_UNUSED(value);
+	//qDebug()<<"ARDUMY MOVE: "<<i<<value;
+	// TODO: Implement
+	/*
+	const quint32 p=(quint32)(qBound(-1.0, value, 1.0)*1000.0+1500.0);
+	//Skip unecessary communication if value did not change
+	if(mAccumulatedPosition[i]!=p) {
+		mAccumulatedPosition[i]=p;
+		if(0==mSerialInterface->bytesToWrite()) {
+			syncMove();
+		}
+	}
+	*/
+}
+
+
+void ArduMYController::limp(const QBitArray &flags)
+{
+	OC_METHODGATE();
+	if(isConnected()) {
+		//for(ArduMYActuator &actuator:mActuators) {
+		for(uint32_t e=mActuators.size(),i=0; i<e; ++i) {
+			ArduMYActuator &actuator=mActuators[i];
+			const bool k=flags.testBit(static_cast<int>(i));
+			if(k!=actuator.state.isLimp()) {
+				mLimpDirty=true;
+				actuator.state.setLimp(k);
+			}
+		}
+	} else {
+		qWarning()<<"ERROR: Trying to limp subset of actuators via serial when not connected";
+	}
+}
+
+
+// NOTE: This will simply collect the latest data. The actual writing is done in syncMove when serial signals there is an opportunity.
+// TODO: look at binary extension introduced in 2.1 version of hexy firmware to improve performance
+void ArduMYController::move(const Pose &pose)
+{
+	OC_METHODGATE();
+	Q_UNUSED(pose);
+	//qreal pos[1]= {0.0};	quint32 flags;
+	if(isConnected()) {
+		/*
+		const quint32 sz=pose.size();
+		if(mAccumulatedPosition.size()<sz) {
+			mAccumulatedPosition.resize(sz);
+			mDirtyMoveFlags.resize(sz);
+		}
+		for(quint32 i=0; i<sz; ++i) {
+			const quint32 p=(quint32)(qBound(-1.0, pose.value(i), 1.0)*1000.0+1500.0);
+			//Skip unecessary communication if value did not change
+			if(mAccumulatedPosition[i]!=p) {
+				mAccumulatedPosition[i]=p;
+				mDirtyMoveFlags.setBit(i);
+			}
+		}
+		//qDebug()<<"MOVE: flags="<< QString("%1").arg( flags, 16, 2, QChar('0'))<< ", dirtyMoveFlags="<<QString("%1").arg( dirtyMoveFlags, 16, 2, QChar('0'));
+		if(mDirtyMoveFlags.count(true)>0 && 0==mSerialInterface->bytesToWrite()) {
+			syncData();
+		}
+		*/
+	} else {
+		qWarning()<<"ERROR: Trying to move actuators with serial when not connected";
+	}
+}
+

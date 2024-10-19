@@ -4,7 +4,7 @@
 #include "HardwareTemplate.hpp"
 
 
-#include "hardware/controllers/IActuatorController.hpp"
+#include "hardware/controllers/IController.hpp"
 #include "hardware/HardwareTemplateModel.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"

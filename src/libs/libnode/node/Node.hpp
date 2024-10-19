@@ -136,6 +136,9 @@ private:
 
 	// Service Level that will be active as long as node is in discovery mode
 	QSharedPointer<ServiceLevel> mDiscoveryServiceLevel;
+	
+	// Output debug log
+	bool mDebug{false};
 
 
 public:
@@ -247,7 +250,9 @@ public:
 
 	// Create the dir in which this node keeps its data
 	bool createBaseDir();
-
+	
+	// Toggle discovery active
+	void discoveryActivate(const bool on);
 
 	// Below this line is unrefined
 	////////////////////////////////////////////////////////////////////////////////

@@ -95,9 +95,9 @@ void Pond::update(GLfloat t) {
 
 
 GLfloat Pond::density(const GLvector &pt) {
-	GLfloat fHeight = 20.0*(fTime + sqrt((0.5-pt.fX)*(0.5-pt.fX) + (0.5-pt.fY)*(0.5-pt.fY)));
-	fHeight = 1.5 + 0.1*(sinf(fHeight) + cosf(fHeight));
-	GLdouble fResult = (fHeight - pt.fZ)*50.0;
+	const auto raidus = 40.0*(fTime + sqrt((0.5-pt.fX)*(0.5-pt.fX) + (0.5-pt.fY)*(0.5-pt.fY)));
+	GLfloat fHeight = 0.01*(sinf(raidus) + cosf(raidus));
+	GLdouble fResult = 0.5f + (fHeight - pt.fZ);
 	
 	return fResult;
 }
@@ -118,15 +118,65 @@ void Pond::color(const GLvector &pt, GLvector &color) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+
+GLfloat Shape::density(const GLvector &pt) const{
+	const auto fDx = pt.fX - position.fX;
+	const auto fDy = pt.fY - position.fY;
+	const auto fDz = pt.fZ - position.fZ;
+	const auto d = (fDx*fDx + fDy*fDy + fDz*fDz + 0.0000001);
+	/*
+	if(d>radius){
+		return 0.0f;
+	}
+*/
+	return magnitude / d;
+}
+
+
+Birth::Birth()
+	: mMap(14, 14)
+{
+	mWidget = OC_NEW HeightWidget(&mMap);
+	const int NUM_SHAPES{20};
+	mShapes.resize(NUM_SHAPES);
+	GLfloat s{0.5f};
+	for(int i=0;i<NUM_SHAPES;++i){
+		mShapes[i].position.random(-s, +s);
+	}
+}
+
 void Birth::update(GLfloat t) {
 	fTime = t;
+	
+	for(auto &shape:mShapes){
+		shape.update();
+	}
+	
 	mMap.waveStep();
 	mMap.swap();
+	
+	qDebug()<<"update mima:"<<mi<<ma;
+	ma=-9999999.0f;
+	mi=-ma;
+	
+	
+	mWidget->show();
+	mWidget->updateSize();
+	mWidget->update();
 }
 
 
 GLfloat Birth::density(const GLvector &pt) {
-	return (1.5f - pt.fZ + mMap.sampleTiling(pt.fX, pt.fY))*50.0f;
+	GLfloat fHeight = 0.5f;//mMap.sampleTiling(pt.fX, pt.fY);
+	GLdouble fDensity = 0.5f + (fHeight - pt.fZ);
+	const auto sz = mShapes.size();
+	for(const auto &shape:mShapes){
+		fDensity += shape.density(pt) / sz;
+	}
+	
+	mi=fmin(mi, fDensity);
+	ma=fmax(ma, fDensity);
+	return fDensity;
 }
 
 

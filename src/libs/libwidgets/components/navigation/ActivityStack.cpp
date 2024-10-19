@@ -24,20 +24,25 @@ ActivityStack::ActivityStack(QWidget *parent)
 	verticalLayout->addWidget(mStackedWidget);
 }
 
+
 ActivityStack::~ActivityStack()
 {
 	OC_METHODGATE();
 }
 
 
-QString ActivityStack::pop(){
+QString ActivityStack::pop(const QStringList returnArguments)
+{
+	OC_METHODGATE();
 	if(mStack.size() > 1){
 		auto back = mStack.back();
 		mStack.pop_back();
 		auto title = mStack.back();
 		if(mPageMap.contains(title)){
 			auto page = mPageMap[title];
+			auto lastPage = mStackedWidget->currentWidget();
 			mStackedWidget->setCurrentWidget(page.widget);
+			page.widget->popImpl_(lastPage->objectName(), returnArguments);
 			return back;
 		}
 		else{
@@ -51,12 +56,16 @@ QString ActivityStack::pop(){
 	return "";
 }
 
-bool ActivityStack::push(const QString &title){
+
+bool ActivityStack::push(const QString &title, const QStringList arguments)
+{
+	OC_METHODGATE();
 	if(mPageMap.contains(title)){
 		auto page = mPageMap[title];
 		if(nullptr != page.widget){
 			mStack.push_back(title);
 			mStackedWidget->setCurrentWidget(page.widget);
+			page.widget->pushImpl_(arguments);
 			return true;
 		}
 		else{
@@ -70,11 +79,12 @@ bool ActivityStack::push(const QString &title){
 }
 
 
-
-QString ActivityStack::swap(const QString &title){
-	auto back = pop();
+QString ActivityStack::swap(const QString &title, const QStringList returnArguments, const QStringList arguments)
+{
+	OC_METHODGATE();
+	auto back = pop(returnArguments);
 	if("" != back){
-		if(push(title)){
+		if(push(title, arguments)){
 			return back;
 		}
 	}
@@ -86,5 +96,6 @@ void ActivityStack::registerPage(Activity *page, bool headerEnabled, bool backEn
 	OC_METHODGATE();
 	auto title = page->objectName();
 	mPageMap[title] = StackPage(page, headerEnabled, backEnabled, menuEnabled);
+	page->setActivityStack(this);
 	mStackedWidget->addWidget(page);
 }

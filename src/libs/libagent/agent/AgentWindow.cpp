@@ -1,20 +1,23 @@
 #include "AgentWindow.hpp"
-#include "agent/AgentConfigStore.hpp"
-#include "agent/Message.hpp"
-#include "agent/Quitting.hpp"
+#include "agent/TransitionActivity.hpp"
+#include "delivery/AgentBaptismActivity.hpp"
+#include "delivery/AgentSipAndSeeActivity.hpp"
+#include "pairing/PairingTrustActivity.hpp"
 #include "ui_AgentWindow.h"
 
 #include "agent/Agent.hpp"
+#include "agent/AgentConfigStore.hpp"
 #include "agent/AgentUnboxingWizard.hpp"
 #include "agent/FaceWidget.hpp"
+#include "agent/MessageActivity.hpp"
 #include "app/Constants.hpp"
-#include "delivery/AgentDeliveryWizard.hpp"
-#include "hardware/HardwareWizard.hpp"
+#include "delivery/AgentDeliveryActivity.hpp"
+#include "hardware/ControllerActivity.hpp"
 #include "hardware/ControllerTypeSelector.hpp"
 #include "hardware/SerialDeviceSelector.hpp"
-#include "hardware/ControllerConfiguration.hpp"
 #include "node/NodeNavigation.hpp"
-#include "pairing/PairingWizard.hpp"
+#include "pairing/PairingActivity.hpp"
+#include "pairing/CameraPairingActivity.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
@@ -45,6 +48,7 @@ AgentWindow::AgentWindow(QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
+	mWaterMark.load(QString(":/images/agent_watermark.svg"));
 	prepareMenu();
 	prepareNavigation();
 }
@@ -70,42 +74,61 @@ QSharedPointer<Agent> AgentWindow::agent()
 }
 
 
-
 void AgentWindow::prepareActivities(){
-	auto pageReallyQuit = OC_NEW Quitting();
-	if(!connect(pageReallyQuit, &Quitting::done, this, &AgentWindow::onQuitApplication, OC_CONTYPE)){
-		qWarning()<<"Could not connect to Quitting::done";
+	OC_METHODGATE();
+	auto a = agent();
+	if(!a.isNull()) {
+		mMessageActivity = OC_NEW MessageActivity();
+		ui->widgetActivityStack->registerPage(mMessageActivity, false, false, false);
+		
+		mTransitionActivity = OC_NEW TransitionActivity();
+		ui->widgetActivityStack->registerPage(mTransitionActivity, false, false, false);
+		
+		mSipAndSeeActivity = OC_NEW AgentSipAndSeeActivity();
+		mSipAndSeeActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mSipAndSeeActivity, false, false, false);
+		
+		mBaptismActivity = OC_NEW AgentBaptismActivity();
+		mBaptismActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mBaptismActivity, false, false, false);
+		
+		mDeliveryActivity = OC_NEW AgentDeliveryActivity();
+		mDeliveryActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mDeliveryActivity, false, false, false);
+		
+		mControllerTypeSelector = OC_NEW ControllerTypeSelector();
+		mControllerTypeSelector->configure(a);
+		ui->widgetActivityStack->registerPage(mControllerTypeSelector, false, false, false);
+		
+		mSerialDeviceSelector = OC_NEW SerialDeviceSelector();
+		mSerialDeviceSelector->configure(a);
+		ui->widgetActivityStack->registerPage(mSerialDeviceSelector, false, false, false);
+		
+		mControllerConfiguration = OC_NEW ControllerActivity();
+		mControllerConfiguration->configure(a);
+		ui->widgetActivityStack->registerPage(mControllerConfiguration, false, false, false);
+		
+		mPairingActivity = OC_NEW PairingActivity();
+		mPairingActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mPairingActivity, false, false, false);
+		
+		mPairingTrustActivity = OC_NEW PairingTrustActivity();
+		mPairingTrustActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mPairingTrustActivity, true, true, false);
+		
+		
+		mCameraPairingActivity = OC_NEW CameraPairingActivity();
+		mCameraPairingActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mCameraPairingActivity, true, true, false);
+		
+		mFaceWidget = OC_NEW FaceWidget();
+		mFaceWidget->configure(a);
+		ui->widgetActivityStack->registerPage(mFaceWidget, true, true, true);
+		
+		mUnboxingWizard = OC_NEW AgentUnboxingWizard();
+		mUnboxingWizard->configure(a);
+		ui->widgetActivityStack->registerPage(mUnboxingWizard, true, true, true);
 	}
-	ui->widgetActivityStack->registerPage(pageReallyQuit, true, true, true);
-	
-	mQuitting = OC_NEW Message();
-	mQuitting->setMesasge("Quitting...");
-	ui->widgetActivityStack->registerPage(mQuitting, false, false, false);
-	
-	mDelivery = OC_NEW AgentDeliveryWizard();
-	ui->widgetActivityStack->registerPage(mDelivery, false, false, false);
-	
-	//mHardware = OC_NEW HardwareWizard();
-	//ui->widgetActivityStack->registerPage(mHardware, false, false, false);
-	
-	mControllerTypeSelector = OC_NEW ControllerTypeSelector();
-	ui->widgetActivityStack->registerPage(mControllerTypeSelector, false, false, false);
-	
-	mSerialDeviceSelector = OC_NEW SerialDeviceSelector();
-	ui->widgetActivityStack->registerPage(mSerialDeviceSelector, false, false, false);
-	
-	mControllerConfiguration = OC_NEW ControllerConfiguration();
-	ui->widgetActivityStack->registerPage(mControllerConfiguration, false, false, false);
-
-	mPairing = OC_NEW PairingWizard();
-	ui->widgetActivityStack->registerPage(mPairing, false, false, false);
-	
-	mFaceWidget = OC_NEW FaceWidget();
-	ui->widgetActivityStack->registerPage(mFaceWidget, true, true, true);
-	
-	mUnboxingWizard = OC_NEW AgentUnboxingWizard();
-	ui->widgetActivityStack->registerPage(mUnboxingWizard, true, true, true);
-	
 	if(!connect(ui->widgetActivityStack, &ActivityStack::currentPageChanged, this, &AgentWindow::onPageChanged, OC_CONTYPE)){
 		qWarning()<<"Could not connect to ActivityStack::currentPageChanged";
 	}
@@ -123,13 +146,6 @@ void AgentWindow::configure()
 			loadWindowGeometry();
 			
 			prepareActivities();
-			mControllerConfiguration->configure(a);
-			mControllerTypeSelector->configure(a);
-			mDelivery->configure(a);
-			mFaceWidget->setAgent(a);
-			mPairing->configure(a);
-			mSerialDeviceSelector->configure(a);
-			mUnboxingWizard->configure(a);
 			ui->widgetNavigation->configure(node());
 			
 			updateWindowIcon();
@@ -144,22 +160,7 @@ void AgentWindow::configure()
 			}
 			//updateOnlineStatus();
 			updateWindowIcon();
-			//ui->widgetPairing->configure(node());
-			if(!connect(mUnboxingWizard, &AgentUnboxingWizard::nextUnboxingStage, this, &AgentWindow::onNextUnboxingStage, OC_CONTYPE)){
-				qWarning()<<"Could not connect to AgentUnboxingWizard::nextUnboxingStage";
-			}
-			if(!connect(mPairing, &PairingWizard::done, this, &AgentWindow::unboxingWizardDone, OC_CONTYPE)){
-				qWarning()<<"Could not connect to PairingWizard::done";
-			}
-			if(!connect(mControllerTypeSelector, &ControllerTypeSelector::done, this, &AgentWindow::controllerTypeSelected, OC_CONTYPE)){
-				qWarning()<<"Could not connect to ControllerTypeSelector::done";
-			}
-			if(!connect(mSerialDeviceSelector, &SerialDeviceSelector::done, this, &AgentWindow::serialControllerSelected, OC_CONTYPE)){
-				qWarning()<<"Could not connect to SerialDeviceSelector::done";
-			}
-			if(!connect(mControllerConfiguration, &ControllerConfiguration::done, this, &AgentWindow::unboxingWizardDone, OC_CONTYPE)){
-				qWarning()<<"Could not connect to ControllerConfiguration::done";
-			}
+
 			unboxingWizardDone();
 
 		} else {
@@ -171,27 +172,14 @@ void AgentWindow::configure()
 
 void AgentWindow::unboxingWizardDone(){
 	OC_METHODGATE();
-	if(mUnboxingWizard->unboxingDone()){
-		swapPage(mFaceWidget->objectName());
-	}
-	else{
-		mUnboxingWizard->updateStage();
-		swapPage(mUnboxingWizard->objectName());
-	}
-}
-
-
-void AgentWindow::onNextUnboxingStage(UnboxingStage stage){
-	OC_METHODGATE();
-	switch(stage){
-		case CONTROLLER_CONFIGURATION_STAGE: swapPage(mControllerConfiguration->objectName()); break;
-		case CONTROLLER_TYPE_STAGE: swapPage(mControllerTypeSelector->objectName()); break;
-		case DELIVERY_STAGE: swapPage(mDelivery->objectName()); break;
-		case PAIRING_STAGE: swapPage(mPairing->objectName()); break;
-		case SERIAL_DEVICE_STAGE: swapPage(mSerialDeviceSelector->objectName()); break;
-		case UNBOXING_COMPLETE: swapPage(mFaceWidget->objectName()); break;
-		default:
-		case UNKNOWN_STAGE: swapPage(mUnboxingWizard->objectName()); break;
+	if(mConfigureHelper.isConfiguredAsExpected()){
+		if(mUnboxingWizard->unboxingDone()){
+			swapPage(mFaceWidget->objectName());
+		}
+		else{
+			mUnboxingWizard->updateStage();
+			swapPage(mUnboxingWizard->objectName());
+		}
 	}
 }
 
@@ -206,7 +194,9 @@ void AgentWindow::updateFaceVisibility()
 void AgentWindow::appendLog(const QString& text)
 {
 	OC_METHODGATE();
-	qDebug()<<"AGENT-LOG-APPEND: "<<text;
+	if(mDebug){
+		qDebug()<<"AGENT-LOG-APPEND: "<<text;
+	}
 	mFaceWidget->appendLog(text);
 }
 
@@ -236,19 +226,22 @@ void AgentWindow::prepareNavigation(){
 }
 
 
-
 QString AgentWindow::popPage(){
 	OC_METHODGATE();
 	const auto ret = ui->widgetActivityStack->pop();
-	qWarning()<<"POP PAGE " << ret;
+	if(mDebug){
+		qDebug()<<"POP PAGE " << ret;
+	}
 	return ret;
 }
 
 
-bool AgentWindow::pushPage(const QString &title){
+bool AgentWindow::pushPage(const QString &title, const QStringList arguments){
 	OC_METHODGATE();
-	const auto ret = ui->widgetActivityStack->push(title);
-	qWarning()<<"PUSH PAGE " << title << ret;
+	const auto ret = ui->widgetActivityStack->push(title, arguments);
+	if(mDebug){
+		qDebug()<<"PUSH PAGE " << title << arguments << ret;
+	}
 	return ret;
 }
 
@@ -256,21 +249,27 @@ bool AgentWindow::pushPage(const QString &title){
 QString AgentWindow::swapPage(const QString &title){
 	OC_METHODGATE();
 	const auto ret = ui->widgetActivityStack->swap(title);
-	qWarning()<<"SWAP PAGE " << ret << "-->" << title;
+	if(mDebug){
+		qDebug()<<"SWAP PAGE " << ret << "-->" << title;
+	}
 	return ret;
 }
 
 
 void AgentWindow::navigateBack(){
 	OC_METHODGATE();
-	qDebug() << "BACK";
+	if(mDebug){
+		qDebug() << "BACK";
+	}
 	popPage();
 }
 
 
 void AgentWindow::openMenu(){
 	OC_METHODGATE();
-	qWarning()<<"MENU";
+	if(mDebug){
+		qDebug()<<"MENU";
+	}
 	mMenu->exec(mapToGlobal(ui->widgetNavigation->menuPos()));
 }
 
@@ -281,24 +280,28 @@ void AgentWindow::onNotImplementedYet(){
 }
 
 
+const QString AgentWindow::mQuitApplicationText{R"(
+Would you like to quit?
+)"};
+
+
+
 void AgentWindow::onStartQuitApplication(){
 	OC_METHODGATE();
-	qWarning()<<"QUIT ASK";
-	pushPage("Quitting");
+	if(mDebug){
+		qDebug()<<"QUIT ASK";
+	}
+	pushPage("MessageActivity", QStringList() << "quit" << "Quit" << mQuitApplicationText << ":/icons/warning.svg" << "true");
 }
 
 
-void AgentWindow::onQuitApplication(bool quitting){
+void AgentWindow::quitApplication(){
 	OC_METHODGATE();
-	if(quitting){
-		qWarning()<<"QUIT CONFIRM";
-		pushPage("Quitting");
-		emit node()->nodeRequestExit(EXIT_SUCCESS);
+	if(mDebug){
+		qDebug()<<"QUIT CONFIRM";
 	}
-	else{
-		qWarning()<<"QUIT CANCEL";
-		popPage();
-	}
+	pushPage("TransitionActivity", QStringList() << "quit");
+	emit node()->nodeRequestExit(EXIT_SUCCESS);
 }
 
 
@@ -310,13 +313,13 @@ void AgentWindow::onStartCameraPairing(){
 
 void AgentWindow::onStartNormalPairing(){
 	OC_METHODGATE();
-	pushPage("PairingWizard");
+	pushPage("PairingActivity");
 }
 
 
 void AgentWindow::onConfigureHardware(){
 	OC_METHODGATE();
-	pushPage("HardwareWizard");
+	pushPage("ControllerActivity");
 }
 
 
@@ -348,7 +351,7 @@ QAction *AgentWindow::addMenuItem(QString title, QString icon, QString toolTip, 
 	QAction *action=OC_NEW QAction(title, this);
 	action->setCheckable(checkable);
 	if(!(connect(action, &QAction::triggered, this, method, OC_CONTYPE))){
-		qWarning()<<"Could not connect action method for"<<action->text()<<"to menu";
+		qWarning() << "Could not connect action method for" << action->text() << "to menu";
 	}else{
 		action->setStatusTip(toolTip);
 		action->setIcon(QIcon(icon));
@@ -416,14 +419,22 @@ void AgentWindow::onPageChanged(const StackPage &page){
 
 
 void AgentWindow::controllerTypeSelected(const QString &type){
-	qDebug()<<"Controller type selected" << type;
+	if(mDebug){
+		qDebug() << "Controller type selected" << type;
+	}
 	auto a = agent();
 	auto configStore = a->configurationStore();
 	if(!configStore.isNull()) {
 		auto config = configStore->agentConfig();
 		if(!config.isNull()) {
 			config->setControllerName(type);
-			qDebug() << "Stored controller type" << type;
+			configStore->synchronize([=](QSharedPointer<SimpleDataStore> store, bool status){
+				Q_UNUSED(store);
+				if(mDebug){
+					qDebug() << "Stored controller type" << type << status;
+				}
+			});
+
 		}
 		else{
 			qWarning() << "Could not stire controller type, no config";
@@ -437,6 +448,8 @@ void AgentWindow::controllerTypeSelected(const QString &type){
 
 
 void AgentWindow::serialControllerSelected(const QString &controller){
-	qDebug()<<"Serial Controller selected" << controller;
+	if(mDebug){
+		qDebug()<<"Serial Controller selected" << controller;
+	}
 	unboxingWizardDone();
 }

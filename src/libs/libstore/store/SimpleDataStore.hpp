@@ -45,6 +45,7 @@ private:
 	QSharedPointer<JsonAsyncBackend> mJsonBackend;
 	QSharedPointer<SimpleDataStoreFrontend > mSimpleFrontend;
 	QSharedPointer<AsyncStore<QVariantMap> > mStore;
+	bool mDebug{false};
 	ConfigureHelper mConfigureHelper;
 
 public:
@@ -59,8 +60,8 @@ public:
 	// SimpleDataStore interface
 public:
 	// NOTE: Must accept empty map, beacuse calling fromMap with empty map is the semantic for clearing
-	virtual bool fromMap(QVariantMap data) =0;
-	virtual QVariantMap toMap() =0;
+	virtual bool fromMap(QVariantMap data) = 0;
+	virtual QVariantMap toMap() = 0;
 	// This is the "bootstrapping alibi", that is this is called when there is no data on disk at load time to initialize the first time.
 	virtual bool fromDefault();
 
@@ -98,7 +99,10 @@ void SimpleDataStore::status(F callBack)
 	if(ensureStoreActive()) {
 		mStore->status().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
-			const bool ok=ase.isSuccessfull();
+			const bool ok = ase.isSuccessfull();
+				if(mDebug){
+					qDebug() << "SimpleDataStore::status():" << ok;
+				}
 			callBack(sharedFromThis(), ok);
 		}
 		);
@@ -113,7 +117,11 @@ void SimpleDataStore::clear(F callBack)
 	if(ensureStoreActive()) {
 		mStore->clear().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
-			const bool ok=ase.isSuccessfull();
+			const bool ok = ase.isSuccessfull();
+				if(mDebug){
+					qDebug() << "SimpleDataStore::clear():" << ok;
+				}
+				
 			/*
 			if(ok){
 				timerSync();
@@ -133,7 +141,10 @@ void SimpleDataStore::save(F callBack)
 	if(ensureStoreActive()) {
 		mStore->save().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
-			const bool ok=ase.isSuccessfull();
+			const bool ok = ase.isSuccessfull();
+			if(mDebug){
+				qDebug() << "SimpleDataStore::save():" << ok;
+			}
 			callBack(sharedFromThis(), ok);
 		}
 		);
@@ -148,7 +159,10 @@ void SimpleDataStore::load(F callBack)
 	if(ensureStoreActive()) {
 		mStore->load().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
-			const bool ok=ase.isSuccessfull();
+			const bool ok = ase.isSuccessfull();
+			if(mDebug){
+				qDebug() << "SimpleDataStore::load():" << ok;
+			}
 			callBack(sharedFromThis(), ok);
 		}
 		);
@@ -164,6 +178,9 @@ void SimpleDataStore::synchronize(F callBack)
 		mStore->synchronize().onFinished(
 		[this, callBack](ASEvent<QVariantMap> &ase) {
 			const bool ok=ase.isSuccessfull();
+			if(mDebug){
+				qDebug() << "SimpleDataStore::synchronize():" << ok;
+			}
 			callBack(sharedFromThis(), ok);
 		}
 		);

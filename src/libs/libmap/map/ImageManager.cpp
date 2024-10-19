@@ -76,7 +76,9 @@ ImageManager::~ImageManager()
 QPixmap ImageManager::getImage(const QString& host, const QString& url)
 {
 	OC_METHODGATE();
-	//qDebug() << "ImageManager::getImage";
+	if(mDebug){
+		qDebug() << "ImageManager::getImage";
+	}
 	QPixmap pm;
 
 	if ( net->imageIsLoading(url) ) {
@@ -94,7 +96,9 @@ QPixmap ImageManager::getImage(const QString& host, const QString& url)
 	} else if ( failedFetches.contains(url) &&
 				failedFetches[url].secsTo(QDateTime::currentDateTime()) < kDefaultTimeoutDelaySecs ) {
 		//prevents spamming public servers when requests fail to return an image or server returns error code (busy/ivalid useragent etc)
-		qDebug() << "Ignored: " << url << " - last request failed less than 30 seconds ago";
+		if(mDebug){
+			qDebug() << "Ignored: " << url << " - last request failed less than 30 seconds ago";
+		}
 	} else {
 		//load from net, add empty image
 		net->loadImage(host, url);
@@ -118,7 +122,9 @@ QPixmap ImageManager::prefetchImage(const QString& host, const QString& url)
 void ImageManager::receivedImage(const QPixmap pixmap, const QString& url)
 {
 	OC_METHODGATE();
-	//qDebug() << "ImageManager::receivedImage";
+	if(mDebug){
+		qDebug() << "ImageManager::receivedImage";
+	}
 	QPixmapCache::insert(url, pixmap);
 
 	//remove from failed list (if exists) as it has now come good
@@ -162,12 +168,16 @@ void ImageManager::setCacheDir(const QDir& path, const int qDiskSizeMiB)
 		if (!cacheDir.exists()) {
 			cacheDir.mkpath( cacheDir.absolutePath() );
 		}
-		qDebug()<<"Map Disk Cache: "<<cacheDir.absolutePath()<< " with max size "<<qDiskSizeMiB<<"MiB";
+		if(mDebug){
+			qDebug()<<"Map Disk Cache: "<<cacheDir.absolutePath()<< " with max size "<<qDiskSizeMiB<<"MiB";
+		}
 		diskCache->setCacheDirectory( cacheDir.absolutePath() );
 		diskCache->setMaximumCacheSize( qDiskSizeMiB *1024*1024 ); //Megabytes to bytes
 		net->setDiskCache(diskCache);
 	} else {
-		qDebug()<<"Map Disk Cache: DISABLED ";
+		if(mDebug){
+			qDebug()<<"Map Disk Cache: DISABLED ";
+		}
 		net->setDiskCache(nullptr);
 	}
 }
@@ -182,8 +192,9 @@ int ImageManager::loadQueueSize() const
 void qmapcontrol::ImageManager::fetchFailed(const QString &url)
 {
 	OC_METHODGATE();
-	qDebug() << "ImageManager::fetchFailed" << url;
-
+	if(mDebug){
+		qDebug() << "ImageManager::fetchFailed" << url;
+	}
 	//store current time for this failed image to prevent loading it again until
 	failedFetches.insert(url, QDateTime::currentDateTime());
 }

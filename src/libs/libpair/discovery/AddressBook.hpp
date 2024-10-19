@@ -37,6 +37,7 @@ class AddressBook : public QObject, public SimpleDataStore
 	Q_OBJECT
 private:
 	QMap<QString, QSharedPointer<Associate>> mAssociates;
+	bool mDebug{false};
 	ConfigureHelper mConfigureHelper;
 
 private:
@@ -75,6 +76,7 @@ signals:
 
 public:
 	friend const QDebug &operator<<(QDebug &d, AddressBook &ks);
+
 };
 
 const QDebug &operator<<(QDebug &d, AddressBook &ks);

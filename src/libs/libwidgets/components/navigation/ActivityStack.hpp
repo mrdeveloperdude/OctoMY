@@ -39,9 +39,9 @@ public:
 	void registerPage(Activity *page, bool headerEnabled = true, bool backEnabled = true, bool menuEnabled = true);
 
 public slots:
-	QString pop();
-	bool push(const QString &title);
-	QString swap(const QString &title);
+	QString pop(const QStringList returnArguments = QStringList());
+	bool push(const QString &title, const QStringList arguments = QStringList());
+	QString swap(const QString &title, const QStringList returnArguments = QStringList(), const QStringList arguments = QStringList());
 
 signals:
 	void done();

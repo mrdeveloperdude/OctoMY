@@ -61,7 +61,7 @@ Node::Node()
 	, mCarrier(OC_NEW CommsCarrierUDP())
 	, mComms(OC_NEW CommsChannel())
 	, mLastStatusSend (0)
-	, mServerURL("http://zoo.octomy.org:"+QString::number(Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO)+"/api") //pointed to localhost using /etc/hosts
+	, mServerURL(QString("http://zoo.octomy.org:%1/api").arg(Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO)) //pointed to localhost using /etc/hosts
 	, mActivationTimer(nullptr)
 	, mServiceLevelManager(OC_NEW ServiceLevelManager())
 	, mKeyStoreService(OC_NEW KeyStoreService(mKeyStore, QStringList{}))
@@ -80,14 +80,18 @@ Node::Node()
 }))
 {
 	OC_METHODGATE();
-	//qDebug()<<"Node()";
+	if(mDebug){
+		qDebug()<<"Node()";
+	}
 }
 
 
 Node::~Node()
 {
 	OC_METHODGATE();
-	//qDebug()<<"~Node()";
+	if(mDebug){
+		qDebug()<<"~Node()";
+	}
 }
 
 
@@ -98,11 +102,13 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 {
 	OC_METHODGATE();
 	if(mAppConfigureHelper.configure()) {
-		//qDebug()<<"appConfigure()";
+		if(mDebug){
+			qDebug()<<"appConfigure()";
+		}
 		mLauncher = launcher;
 		auto ctx = context();
 		if(!ctx.isNull()) {
-			ScopedTimer nodeConfigureTimer(context()->base() + "-configure");
+			ScopedTimer nodeConfigureTimer(context()->base() + "-configure", mDebug);
 			setObjectName(ctx->base());
 			applyAppStyle();
 			const bool basedirOK = createBaseDir();
@@ -179,10 +185,14 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 void Node::appActivate(const bool on)
 {
 	OC_METHODGATE();
-	qDebug() << "EUREKA appActivate called: " << on;
+	if(mDebug){
+		qDebug() << "EUREKA appActivate called: " << on;
+	}
 	if(mAppConfigureHelper.isConfiguredAsExpected()) {
 		mServiceLevelManager->enableLevel(mAlwaysServiceLevel->name(), on, [=](bool ok) {
-			qDebug() << "EUREKA appActivate returned: " << (on?"ON":"OFF") << ok;
+			if(mDebug){
+				qDebug() << "EUREKA appActivate returned: " << (on?"ON":"OFF") << ok;
+			}
 			if(on){
 				setHookSensorSignals(*this, on);
 				//setHookSensorSignals(*mSensorsCourier, true);
@@ -197,7 +207,9 @@ void Node::appActivate(const bool on)
 				BirthControl bc;
 				bc.configure(sharedThis());
 				auto asessment = bc.statusAssesment();
-				qDebug()<< asessment.toString();
+				if(mDebug){
+					qDebug() << asessment.toString();
+				}
 				if(ok){
 					// TODO: Heed the OK status
 				}
@@ -211,8 +223,9 @@ void Node::appActivate(const bool on)
 					
 				}
 			}
-			
-			//qDebug()<<"EUREKA ServiceActivation returned: "<<ok;
+			if(mDebug){
+				qDebug() << "EUREKA ServiceActivation returned: " << ok;
+			}
 		});
 	}
 }
@@ -222,7 +235,9 @@ QSharedPointer<NodeWindow> Node::appWindow()
 {
 	OC_METHODGATE();
 	if(mAppConfigureHelper.isConfiguredAsExpected()) {
-		//qDebug()<<"appWindow()";
+		if(mDebug){
+			qDebug()<<"appWindow()";
+		}
 		return nodeWindow();
 	}
 	return nullptr;
@@ -443,6 +458,22 @@ bool Node::createBaseDir()
 	return false;
 }
 
+
+void Node::discoveryActivate(const bool on)
+{
+	OC_METHODGATE();
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		mServiceLevelManager->enableLevel(mDiscoveryServiceLevel->name(), true, [=](bool ok) {
+			if(mDebug){
+				qDebug() << "discoveryActivate returned: " << (on?"ON":"OFF") << ok;
+			}
+			if(on){}
+		});
+	}
+}
+
+
+
 // Below this line is unrefined
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -464,7 +495,9 @@ void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 		mNodeIdentity = nodeID;
 		if(!mNodeIdentity.isNull()) {
 			auto map = mNodeIdentity->toVariantMap();
-			//qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED: "<<map<< " FROM nodeID="<<*mNodeIdentity;
+			if(mDebug){
+				qDebug()<<" * * * NEW LOCAL IDENTITY PROVIDED: "<<map<< " FROM nodeID="<<*mNodeIdentity;
+			}
 			mLocalIdentityStore->fromMap(map);
 			/*
 			mLocalIdentityStore->synchronize([=](ASEvent<QVariantMap> &ase2) {
@@ -472,7 +505,9 @@ void Node::setNodeIdentity(QSharedPointer<Associate> nodeID)
 			});
 			*/
 			mLocalIdentityStore->save([this](QSharedPointer<SimpleDataStore>, bool ok) {
-				//qDebug()<<" HOPEFULLY WE SAVED IDENTITY TO DISK: "<<mNodeIdentity->toString()<<" OK="<<ok;
+				if(mDebug){
+					qDebug()<<" HOPEFULLY WE SAVED IDENTITY TO DISK: "<<mNodeIdentity->toString()<<" OK="<<ok;
+				}
 				if(ok) {
 					emit identityChanged();
 				}
@@ -515,7 +550,9 @@ bool Node::needsConnection()
 void Node::setNeedsConnection(const bool current)
 {
 	OC_METHODGATE();
-	//qDebug()<<"NODE::set needs connection: "<<current;
+	if(mDebug){
+		qDebug()<<"NODE::set needs connection: "<<current;
+	}
 	QSharedPointer<Associate> ni=nodeIdentity();
 	QSharedPointer<Settings> s=settings();
 	if(!ni.isNull() && !s.isNull()) {
@@ -702,7 +739,9 @@ void Node::onCommsError(QString e)
 {
 	Q_UNUSED(e);
 	OC_METHODGATE();
-	//qDebug()<<"NODE UNIMP Comms error: "<<e;
+	if(mDebug){
+		qWarning()<<"NODE UNIMP Comms error: "<<e;
+	}
 }
 
 
@@ -710,7 +749,9 @@ void Node::onCommsClientAdded(CommsSession *c)
 {
 	Q_UNUSED(c);
 	OC_METHODGATE();
-	//qDebug()<<"NODE UNIMP Client added: "<<c->toString();
+	if(mDebug){
+		qDebug()<<"NODE UNIMP Client added: "<<c->toString();
+	}
 }
 
 
@@ -719,7 +760,9 @@ void Node::onCommsConnectionStatusChanged(const bool isConnected, const bool nee
 	Q_UNUSED(isConnected);
 	Q_UNUSED(needsConnection);
 	OC_METHODGATE();
-	//qDebug() <<"NODE UNIMP New connection status: "<<(s?"ONLINE":"OFFLINE");
+	if(mDebug){
+		qDebug() << "NODE UNIMP New connection status: " << (isConnected?"ONLINE":"OFFLINE");
+	}
 }
 
 

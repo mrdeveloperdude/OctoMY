@@ -4,7 +4,6 @@
 
 #include "Servotor32ActuatorWidget.hpp"
 #include "app/Constants.hpp"
-#include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 #include "utility/ui/Ui.hpp"
@@ -21,60 +20,17 @@ Servotor32ControllerWidget::Servotor32ControllerWidget(QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
-	ui->tryToggleConnect->configure("Connect","Connecting...","Connected", "Disconnecting...", Constants::AGENT_CONNECT_BUTTON_COLOR, Constants::AGENT_DISCONNECT_COLOR);
-
-	if(!connect(ui->tryToggleConnect, SIGNAL(stateChanged(const TryToggleState, const TryToggleState)), this, SLOT(onConnectChanged(const TryToggleState, const TryToggleState)), OC_CONTYPE)) {
-		qWarning()<<"ERROR: could not connect";
-	}
-
-	if(!connect(ui->widgetLimbIK, SIGNAL(IKUpadted()), this, SLOT(onLimbIKUpdated()), OC_CONTYPE)) {
-		qWarning()<<"ERROR: could not connect";
-	}
-
-
+	ui->tryToggleConnect->configure("Connect", "Connecting...", "Connected", "Disconnecting...", Constants::AGENT_CONNECT_BUTTON_COLOR, Constants::AGENT_DISCONNECT_COLOR);
+	
+	setHookConnectButton(true);
+	setHookSerialSettings(true);
 	QSpacerItem *vs = OC_NEW QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 	ui->verticalLayoutServos->addItem(vs);
 	ui->scrollAreaServos->setEnabled(false);
-	ui->widgetGait->setGait(gait);
-
-	gaitTimer.setTimerType(Qt::PreciseTimer);
-	gaitTimer.setInterval(40);
-	if(!connect(&gaitTimer,SIGNAL(timeout()),this, SLOT(onUpdateGaitTimer()), OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect";
-	}
-	gait.setDirection(0.5,0.5);
-
 	ui->tabWidget->setCurrentWidget(ui->tabGeneral);
 	utility::ui::pack(ui->tabWidget);
-
 }
 
-void Servotor32ControllerWidget::onUpdateGaitTimer()
-{
-	OC_METHODGATE();
-	//qDebug()<<"----------------------UPDATE GAIT";
-	gait.update();
-	const qreal PI2=M_PI*-2;
-	const quint32 map[]= {7,6,5,11,10,9,15,14,13,16,17,18,20,21,22,24,25,26};
-	int i=0;
-	quint32 flags=0;
-	for(quint32 leg=0; leg<6; ++leg) {
-		const quint32 coxID=map[i++];
-		const quint32 femID=map[i++];
-		const quint32 tibID=map[i++];
-		flags |= (1<<coxID)|(1<<femID)|(1<<tibID);
-		qreal cox=0,fem=0,tib=0;
-		gait.getLimbVars(leg,cox,fem,tib);
-		pos[coxID]=tib/PI2;
-		pos[femID]=fem/PI2;
-		pos[tibID]=cox/PI2;
-	}
-	Pose pose;
-	pose.setValues(pos, sizeof(pos)/sizeof(qreal));
-	if(nullptr!=mController) {
-		mController->move(pose);
-	}
-}
 
 Servotor32ControllerWidget::~Servotor32ControllerWidget()
 {
@@ -82,6 +38,7 @@ Servotor32ControllerWidget::~Servotor32ControllerWidget()
 	delete ui;
 	ui=nullptr;
 }
+
 
 void Servotor32ControllerWidget::onConnectChanged(const TryToggleState last, const TryToggleState current)
 {
@@ -115,105 +72,142 @@ void Servotor32ControllerWidget::onConnectChanged(const TryToggleState last, con
 	}
 }
 
-void Servotor32ControllerWidget::onLimbIKUpdated()
+
+void Servotor32ControllerWidget::onSettingsChanged()
 {
 	OC_METHODGATE();
-	/* duplicate of onUpdateGaitTimer?
-	const int map[]= {7,6,5,11,10,9,15,14,13,16,17,18,20,21,22,24,25,26};
-	quint32 i=0;
-	const quint32 coxID=map[i++];
-	const quint32 femID=map[i++];
-	const quint32 tibID=map[i++];
-	quint32 flags = (1<<coxID)|(1<<femID)|(1<<tibID);
-	qreal cox=0,fem=0,tib=0;
-	ui->widgetLimbIK->getLimbVars(cox,fem,tib);
-	pos[coxID]=tib;
-	pos[femID]=fem;
-	pos[tibID]=cox;
-	serial->move(pos,flags);
-	*/
-}
-
-
-void Servotor32ControllerWidget::onHexySettingsChanged()
-{
-	OC_METHODGATE();
-	if(nullptr!=mController) {
-		const bool e=mController->isConnected();
-		ui->tryToggleConnect->setState(e?ON:OFF);
-		setUILock(false);
+	if(nullptr != mController) {
+		SerialSettings s;
+		s.fromMap(mController->configuration());
+		ui->tabSerial->setSettings(s);
 	}
 }
 
 
-
-void Servotor32ControllerWidget::onHexyConenctionChanged()
+void Servotor32ControllerWidget::onSerialSettingsChanged()
 {
 	OC_METHODGATE();
-	if(nullptr!=mController) {
-		const bool e=mController->isConnected();
-		ui->tryToggleConnect->setState(e?ON:OFF);
-		setUILock(false);
+	if(nullptr != mController) {
+		auto s = mController->configuration();
+		auto ss = ui->tabSerial->settings();
+		s["serial"] = ss.toMap();
+		mController->setConfiguration(s);
 	}
 }
 
 
-
+void Servotor32ControllerWidget::onConnectionChanged()
+{
+	OC_METHODGATE();
+	if(nullptr != mController) {
+		const bool e = mController->isConnected();
+		ui->tryToggleConnect->setState(e?ON:OFF);
+		setUILock(false);
+	}
+}
 
 
 void Servotor32ControllerWidget::onServoMoved(quint32 id, qreal val)
 {
 	OC_METHODGATE();
-	if(id>= HexySerial::SERVO_COUNT) {
+	if(id >= Servotor32Controller::SERVO_COUNT) {
 		return;
 	}
-	pos[id]=(val*2.0)-1.0;
+	mPos[id]=(val*2.0)-1.0;
 	const quint32 bit=1<<id;
 	// TODO: Fix this?
 	Q_UNUSED(bit);
 	//serial->move(pos,bit);
 }
 
-void Servotor32ControllerWidget::onServoKilled(quint32 id)
+
+void Servotor32ControllerWidget::onServoLimped(quint32 id)
 {
 	OC_METHODGATE();
-	if( id>= HexySerial::SERVO_COUNT) {
-		return;
+	if(nullptr != mController) {
+		mController->limp(id, true);
 	}
-	const quint32 bit=1<<id;
-	qDebug()<<"KILL "<<id << " (for )=bit "<<bit<<")";
-	//serial->kill(bit);
 }
-
 
 
 void Servotor32ControllerWidget::configure(Servotor32Controller *c)
 {
 	OC_METHODGATE();
-	if(nullptr!=mController) {
+	if(nullptr != mController) {
 		mController->setConnected(false);
-		if(!disconnect(mController,SIGNAL(settingsChanged()), this, SLOT(onHexySettingsChanged()))) {
-			qWarning()<<"ERROR: could not connect";
-		}
-
-		if(!disconnect(mController,SIGNAL(connectionChanged()), this, SLOT(onHexyConenctionChanged()))) {
-			qWarning()<<"ERROR: could not connect";
+		setHookController(false);
+		auto s = mController->configuration();
+		SerialSettings ss;
+		ss.fromMap(s["serial"].toMap());
+		ui->tabSerial->configure(true, ss);
+		for(int i=0;i<32;++i) {
+			auto si = OC_NEW Servotor32ActuatorWidget(ui->scrollAreaWidgetContents);
+			si->configure(nullptr, i);
 		}
 	}
-	mController=c;
-	if(nullptr!=mController) {
-		if(!connect(mController,SIGNAL(settingsChanged()), this, SLOT(onHexySettingsChanged()), OC_CONTYPE)) {
-			qWarning()<<"ERROR: could not connect";
-		}
+	mController = c;
+	if(nullptr != mController) {
+		setHookController(true);
+		setHookActuators(true);
+	}
+}
 
-		if(!connect(mController,SIGNAL(connectionChanged()), this, SLOT(onHexyConenctionChanged()), OC_CONTYPE)) {
-			qWarning()<<"ERROR: could not connect";
-		}
-		auto sis=ui->scrollAreaWidgetContents->findChildren<Servotor32ActuatorWidget *>();
+
+void Servotor32ControllerWidget::setHookActuators(bool on){
+	if(on){
+		auto sis = ui->scrollAreaWidgetContents->findChildren<Servotor32ActuatorWidget *>();
 		for(Servotor32ActuatorWidget *si:sis) {
 			// TODO: Fix this?
 			Q_UNUSED(si);
 			//		si->configure(settings,i++);
+		}
+	}
+}
+
+void Servotor32ControllerWidget::setHookController(bool on){
+	if(on){
+		if(!connect(mController, &Servotor32Controller::settingsChanged, this, &Servotor32ControllerWidget::onSettingsChanged)) {
+			qWarning() << "ERROR: could not connect";
+		}
+		
+		if(!connect(mController, &Servotor32Controller::connectionChanged, this, &Servotor32ControllerWidget::onConnectionChanged)) {
+			qWarning() << "ERROR: could not connect";
+		}
+	}
+	else{
+		if(!disconnect(mController, &Servotor32Controller::settingsChanged, this, &Servotor32ControllerWidget::onSettingsChanged)) {
+			qWarning() << "ERROR: could not disconnect";
+		}
+		
+		if(!disconnect(mController, &Servotor32Controller::connectionChanged, this, &Servotor32ControllerWidget::onConnectionChanged)) {
+			qWarning() << "ERROR: could not disconnect";
+		}
+	}
+}
+
+void Servotor32ControllerWidget::setHookConnectButton(bool wantConnection){
+	if(wantConnection){
+		if(!connect(ui->tryToggleConnect, &TryToggle::stateChanged, this, &Servotor32ControllerWidget::onConnectChanged)) {
+			qWarning() << "ERROR: could not connect";
+		}
+	}
+	else{
+		if(!disconnect(ui->tryToggleConnect, &TryToggle::stateChanged, this, &Servotor32ControllerWidget::onConnectChanged)) {
+			qWarning() << "ERROR: could not disconnect";
+		}
+	}
+}
+
+
+void Servotor32ControllerWidget::setHookSerialSettings(bool wantSerial){
+	if(wantSerial){
+		if(!connect(ui->tabSerial, &SerialSettingsWidget::settingsChanged, this, &Servotor32ControllerWidget::onSerialSettingsChanged)) {
+			qWarning() << "ERROR: could not connect";
+		}
+	}
+	else{
+		if(!disconnect(ui->tabSerial, &SerialSettingsWidget::settingsChanged, this, &Servotor32ControllerWidget::onSerialSettingsChanged)) {
+			qWarning() << "ERROR: could not disconnect";
 		}
 	}
 }
@@ -224,29 +218,11 @@ void Servotor32ControllerWidget::setUILock(bool lock)
 	OC_METHODGATE();
 	const bool enabled=!lock;
 	ui->tabWidget->setEnabled(enabled);
-	ui->dialFeedrate->setEnabled(enabled);
-	ui->pushButtonDisableAll->setEnabled(enabled);
-	ui->pushButtonGait->setEnabled(enabled);
+	ui->pushButtonLimpAll->setEnabled(enabled);
 }
 
-/*
-void Servotor32ControllerWidget::killAll()
-{OC_METHODGATE();
-	//qDebug()<<"KILL ALL";
-	if(serial->isConnected()) {
-		serial->kill();
-		QList<Servotor32ActuatorWidget *> si=ui->scrollAreaWidgetContents->findChildren<Servotor32ActuatorWidget *>();
-		for(QList<Servotor32ActuatorWidget*>::iterator it=si.begin(),e=si.end(); it!=e; ++it) {
-			Servotor32ActuatorWidget *s=*it;
-			if(nullptr != s) {
-				QSignalBlocker sb(s);
-				s->disableServo();
-			}
-		}
-	}
-}
-*/
-void Servotor32ControllerWidget::on_pushButtonDisableAll_clicked()
+
+void Servotor32ControllerWidget::limpAll()
 {
 	OC_METHODGATE();
 	if(nullptr!=mController) {
@@ -254,24 +230,3 @@ void Servotor32ControllerWidget::on_pushButtonDisableAll_clicked()
 	}
 }
 
-void Servotor32ControllerWidget::on_pushButtonGait_toggled(bool checked)
-{
-	OC_METHODGATE();
-	if(checked) {
-		gaitTimer.start();
-	} else {
-		gaitTimer.stop();
-	}
-}
-
-void Servotor32ControllerWidget::on_dialFeedrate_valueChanged(int value)
-{
-	OC_METHODGATE();
-	Q_UNUSED(value);
-	qreal ma=ui->dialFeedrate->maximum();
-	qreal mi=ui->dialFeedrate->minimum();
-	qreal va=ui->dialFeedrate->value();
-	qreal range=(ma-mi)/2;
-	qreal feedrate=((va-mi)/range);
-	gait.setFeedrate(feedrate);
-}

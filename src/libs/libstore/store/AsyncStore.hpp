@@ -275,15 +275,6 @@ void AsyncStore<T>::activate(const bool on, std::function<void(bool)> callBack)
 				//qDebug()<<"Exiting AsyncStore::QtConcurrent::run::lambda() from thread "<<utility::concurrent::currentThreadID();
 				listEvents();
 			});
-			/*
-			 * NOTE: This was moved to SimpleDataStore and KeyStore as that is more appropriate location
-			// Synchronize to get started
-			synchronize().onFinished([callBack](ASEvent<T> &ase) {
-				if(nullptr!=callBack) {
-					callBack(ase.isSuccessfull());
-				}
-			});
-			*/
 			if(nullptr!=callBack) {
 				callBack(true);
 			}

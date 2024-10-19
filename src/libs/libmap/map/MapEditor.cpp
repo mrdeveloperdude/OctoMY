@@ -7,10 +7,7 @@
 #include "uptime/ConnectionType.hpp"
 
 #include "map/MapControl.hpp"
-#include "map/layers/MapLayer.hpp"
 #include "map/geometries/curves/LineString.hpp"
-#include "map/adapters/OSMMapAdapter.hpp"
-#include "map/adapters/OpenAerialMapAdapter.hpp"
 #include "map/adapters/GoogleMapAdapter.hpp"
 #include "MapLocationEditor.hpp"
 
@@ -63,7 +60,7 @@ MapEditor::~MapEditor()
 void MapEditor::registerMapType(MapType mapType)
 {
 	OC_METHODGATE();
-	mMapTypes[mapType.name]=mapType;
+	mMapTypes[mapType.name] = mapType;
 }
 
 
@@ -102,7 +99,9 @@ void MapEditor::selectMapType(QString name)
 			}
 			mc->enablePersistentCache ( dir, static_cast<int>(mt.persistentCacheMiB));
 			if(!mMapLayer.isNull()) {
-				qDebug()<<"Setting new map type: "<<name;
+				if(mDebug){
+					qDebug() << "Setting new map type: " << name;
+				}
 				mc->removeLayer(mMapLayer);
 				mMapLayer->setMapAdapter(mt.mapAdapter);
 				mc->addLayer(mMapLayer);
@@ -158,9 +157,12 @@ void MapEditor::prepareMap()
 void MapEditor::homeMap()
 {
 	OC_METHODGATE();
-	qmapcontrol::MapControl *mc=ui->widgetMap;
+	ui->toolButtonCenter->setChecked(false);
+	qmapcontrol::MapControl *mc = ui->widgetMap;
 	if(nullptr != mc) {
-		//qDebug()<<"HOME";
+		if(mDebug){
+			qDebug() << "HOME";
+		}
 		QList<QPointF> londalen;
 		londalen <<QPointF(5.452844, 60.385883);
 		londalen <<QPointF(5.457945, 60.380353);
@@ -178,7 +180,9 @@ void MapEditor::onPositionUpdated(QGeoPositionInfo pi)
 			qmapcontrol::MapControl *mc=ui->widgetMap;
 			if(nullptr != mc) {
 				QPointF p(c.longitude(), c.latitude());
-				//qDebug()<<"CENTER";
+				if(mDebug){
+					qDebug() << "CENTER";
+				}
 				QList<QPointF> center;
 				center <<p;
 				center <<p;
@@ -191,7 +195,7 @@ void MapEditor::onPositionUpdated(QGeoPositionInfo pi)
 void MapEditor::onMapControlViewChanged(const QPointF &coordinate, int zoom )
 {
 	OC_METHODGATE();
-	QString str=QString("lat-long: <%1, %2> zoom: %3").arg(coordinate.y()).arg(coordinate.x()).arg(zoom);
+	auto str = QString("lat-long: <%1, %2> zoom: %3").arg(coordinate.y()).arg(coordinate.x()).arg(zoom);
 	ui->labelPosition->setText(str);
 }
 
@@ -200,18 +204,13 @@ void MapEditor::onMapControlViewChanged(const QPointF &coordinate, int zoom )
 void MapEditor::onLocationEditorDone(bool done)
 {
 	OC_METHODGATE();
-	qDebug()<<"DONE: "<<done;
+	if(mDebug){
+		qDebug() << "DONE: " << done;
+	}
 	ui->stackedWidget->setCurrentWidget(ui->pageMapEditor);
 }
 
-void MapEditor::on_toolButtonHome_clicked()
-{
-	OC_METHODGATE();
-	ui->toolButtonCenter->setChecked(false);
-	homeMap();
-}
-
-void MapEditor::on_toolButtonCenter_toggled(bool checked)
+void MapEditor::toggleCenter(bool checked)
 {
 	OC_METHODGATE();
 	if(checked) {
@@ -221,13 +220,13 @@ void MapEditor::on_toolButtonCenter_toggled(bool checked)
 	}
 }
 
-void MapEditor::on_comboBoxMapType_currentIndexChanged(int)
+void MapEditor::setMapType(int)
 {
 	OC_METHODGATE();
 	selectMapType(ui->comboBoxMapType->currentText());
 }
 
-void MapEditor::on_pushButtonCreateLocation_clicked()
+void MapEditor::createLocation()
 {
 	OC_METHODGATE();
 	ui->stackedWidget->setCurrentWidget(ui->pageLocationEditor);

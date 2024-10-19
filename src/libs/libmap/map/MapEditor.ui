@@ -103,14 +103,14 @@
           <string>Position</string>
          </property>
          <property name="textInteractionFlags">
-          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+          <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByKeyboard|Qt::TextInteractionFlag::TextSelectableByMouse</set>
          </property>
         </widget>
        </item>
        <item row="0" column="5">
         <spacer name="horizontalSpacer">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -175,5 +175,76 @@
  <resources>
   <include location="../../libres/resources/icons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>comboBoxMapType</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MapEditor</receiver>
+   <slot>setMapType(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>182</x>
+     <y>12</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>213</x>
+     <y>162</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonCreateLocation</sender>
+   <signal>clicked()</signal>
+   <receiver>MapEditor</receiver>
+   <slot>createLocation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>96</x>
+     <y>12</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>213</x>
+     <y>162</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButtonCenter</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MapEditor</receiver>
+   <slot>toggleCenter(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>35</x>
+     <y>12</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>213</x>
+     <y>162</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>toolButtonHome</sender>
+   <signal>clicked()</signal>
+   <receiver>MapEditor</receiver>
+   <slot>homeMap()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>11</x>
+     <y>12</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>213</x>
+     <y>162</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>homeMap()</slot>
+  <slot>toggleCenter(bool)</slot>
+  <slot>setMapType(int)</slot>
+  <slot>createLocation()</slot>
+ </slots>
 </ui>

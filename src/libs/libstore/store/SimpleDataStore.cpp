@@ -2,11 +2,6 @@
 
 #include "app/Constants.hpp"
 
-#include "uptime/ConnectionType.hpp"
-#include "uptime/New.hpp"
-
-#include "utility/time/HumanTime.hpp"
-
 #include <QTimer>
 #include <QObject>
 
@@ -14,7 +9,8 @@ SimpleDataStoreFrontend::SimpleDataStoreFrontend(QSharedPointer<SimpleDataStore>
 
 SimpleDataStoreFrontend::~SimpleDataStoreFrontend() {}
 
-SimpleDataStore::SimpleDataStore() : mConfigureHelper("SimpleDataStore", true, true, true, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
+SimpleDataStore::SimpleDataStore()
+	: mConfigureHelper("SimpleDataStore", true, true, true, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 //, mMaxSyncInterval(TIMED_SYNC_OFF)
 {
 	OC_METHODGATE();

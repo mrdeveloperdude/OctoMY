@@ -27,6 +27,9 @@ AgentConfigStore::~AgentConfigStore()
 void AgentConfigStore::configure(QString filename)
 {
 	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "AgentConfigStore::configure()" << filename;
+	}
 	SimpleDataStore::configure(filename);
 }
 
@@ -40,6 +43,9 @@ QSharedPointer<AgentConfig> AgentConfigStore::agentConfig() const
 void AgentConfigStore::setAgentConfig(QSharedPointer<AgentConfig> config)
 {
 	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "AgentConfigStore::setAgentConfig()" << config;
+	}
 	mAgentConfig = config;
 }
 
@@ -47,6 +53,9 @@ void AgentConfigStore::setAgentConfig(QSharedPointer<AgentConfig> config)
 bool AgentConfigStore::fromMap(QVariantMap data)
 {
 	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "AgentConfigStore::fromMap()" << data;
+	}
 	if(mAgentConfig.isNull()) {
 		mAgentConfig = QSharedPointer<AgentConfig>::create();
 	}
@@ -65,6 +74,9 @@ QVariantMap AgentConfigStore::toMap()
 	if(!mAgentConfig.isNull()) {
 		map = mAgentConfig->toMap();
 	}
+	if(mDebug){
+		qDebug() << "AgentConfigStore::toMap()" << map;
+	}
 	return map;
 }
 
@@ -72,6 +84,9 @@ QVariantMap AgentConfigStore::toMap()
 bool AgentConfigStore::fromDefault()
 {
 	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "AgentConfigStore::fromDefault()";
+	}
 	mAgentConfig = QSharedPointer<AgentConfig>::create();
 	return true;
 }

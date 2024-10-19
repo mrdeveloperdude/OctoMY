@@ -1,9 +1,11 @@
 #ifndef CLIENTWIDGET_HPP
 #define CLIENTWIDGET_HPP
 
+#include "components/navigation/Activity.hpp"
+
 #include <QWidget>
 
-class ClientWidget : public QWidget
+class ClientWidget : public Activity
 {
 	Q_OBJECT
 public:

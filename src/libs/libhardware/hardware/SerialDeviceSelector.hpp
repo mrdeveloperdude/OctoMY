@@ -32,12 +32,8 @@ public:
 	void configure(QSharedPointer<Agent> agent);
 	void reset();
 
-signals:
-	void done(const QString &controller);
-	
 private slots:
 	void selectController();
-
 
 };
 

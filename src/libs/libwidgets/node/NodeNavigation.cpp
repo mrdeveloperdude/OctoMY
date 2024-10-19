@@ -22,7 +22,9 @@ NodeNavigation::~NodeNavigation()
 
 void NodeNavigation::setState(QString title, bool showBar, bool showBack, bool showMenu){
 	OC_METHODGATE();
-	qDebug()<<"NodeNavigation::setState(title=" << title << ", showBar="<<showBar << ", showBack=" << showBack << ", showMenu=" << showMenu << ")";
+	if(mDebug){
+		qDebug()<<"NodeNavigation::setState(title=" << title << ", showBar="<<showBar << ", showBack=" << showBack << ", showMenu=" << showMenu << ")";
+	}
 	if(showBar){
 		ui->labelTitle->setText(title);
 		ui->pushButtonBack->setVisible(showBack);
@@ -46,13 +48,17 @@ void NodeNavigation::configure(QSharedPointer<Node> node){
 
 void NodeNavigation::onNavigateBack(){
 	OC_METHODGATE();
-	qDebug()<<"NodeNavigation::onNavigateBack()";
+	if(mDebug){
+		qDebug()<<"NodeNavigation::onNavigateBack()";
+	}
 	emit navigateBack();
 }
 
 
 void NodeNavigation::onOpenMenu(){
 	OC_METHODGATE();
-	qDebug()<<"NodeNavigation::onOpenMenu()";
+	if(mDebug){
+		qDebug()<<"NodeNavigation::onOpenMenu()";
+	}
 	emit openMenu();
 }

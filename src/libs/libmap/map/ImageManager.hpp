@@ -49,7 +49,6 @@ class MapNetwork;
 class QMAPCONTROL_EXPORT ImageManager : public QObject
 {
 	Q_OBJECT
-
 private:
 	Q_DISABLE_COPY( ImageManager )
 
@@ -61,6 +60,8 @@ private:
 	QVector<QString> prefetch;
 
 	QHash<QString,QDateTime> failedFetches;
+	
+	bool mDebug{false};
 
 
 public:
