@@ -170,7 +170,7 @@ QDataStream &PoseMapping::send(QDataStream &ds) const
 }
 
 
-QVariantList PoseMapping::toMap() const
+QVariantList PoseMapping::toList() const
 {
 	OC_METHODGATE();
 	QVariantList list;
@@ -187,7 +187,7 @@ QVariantList PoseMapping::toMap() const
 }
 
 
-void PoseMapping::fromMap( QVariantList map)
+void PoseMapping::fromList( QVariantList map)
 {
 	OC_METHODGATE();
 	QVector<quint32> tos;

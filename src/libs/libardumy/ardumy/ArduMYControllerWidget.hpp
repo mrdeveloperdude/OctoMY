@@ -2,6 +2,8 @@
 #define ARDUMYCONTROLLERWIDGET_HPP
 
 #include "components/TryToggleState.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
+
 
 #include <QWidget>
 
@@ -18,14 +20,14 @@ class ArduMYControllerWidget : public QWidget
 	Q_OBJECT
 private:
 	Ui::ArduMYControllerWidget *ui;
-	ArduMYController *mController;
+	QSharedPointer<ArduMYController> mController;
 
 public:
 	explicit ArduMYControllerWidget(QWidget *parent = nullptr);
 	~ArduMYControllerWidget();
 
 public:
-	void configure(ArduMYController *controller);
+	void configure(QSharedPointer<ArduMYController> controller);
 	void setSerialSettings(SerialSettings &s);
 
 private:

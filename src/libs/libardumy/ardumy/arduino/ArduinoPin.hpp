@@ -2,7 +2,7 @@
 #define ARDUINOPIN_HPP
 
 
-#include "ardumy_arduino/ArduMYActuatorFlags.hpp"
+#include "ardumy_arduino/actuator/ArduMYActuatorFlags.hpp"
 
 
 #include <QString>

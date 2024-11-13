@@ -15,15 +15,15 @@ ControllerFactory::ControllerFactory()
 }
 
 
-QSharedPointer<IController> ControllerFactory::controllerFactory(QString type)
+QSharedPointer<IController> ControllerFactory::controllerFactory(const QString &type)
 {
 	OC_METHODGATE();
-	QSharedPointer<IController>	ret;
-	type = type.trimmed().toLower();
-	if("none" == type) {
+	QSharedPointer<IController> ret;
+	auto t = type.trimmed().toLower();
+	if("none" == t) {
 		ret = nullptr;
 	}
-	else if("servotor32" == type) {
+	else if("servotor32" == t) {
 		ret = QSharedPointer<Servotor32Controller>::create();
 	}
 #ifdef OC_USE_FEATURE_ARDUINO

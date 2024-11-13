@@ -1,6 +1,7 @@
 #include "RemoteWindow.hpp"
 #include "delivery/ControlBaptismActivity.hpp"
 #include "delivery/ControlSipAndSeeActivity.hpp"
+#include "remote/AgentSelectActivity.hpp"
 #include "ui_RemoteWindow.h"
 
 #include "agent/MessageActivity.hpp"
@@ -20,7 +21,7 @@
 
 
 #ifdef Q_OS_ANDROID
-#include <QAndroidJniObject>
+#include <QJniObject>
 #endif
 
 RemoteWindow::RemoteWindow(QWidget *parent)
@@ -80,6 +81,10 @@ void RemoteWindow::prepareActivities(){
 		mPairingTrustActivity = OC_NEW PairingTrustActivity();
 		mPairingTrustActivity->configure(r);
 		ui->widgetActivityStack->registerPage(mPairingTrustActivity, true, true, false);
+
+		mAgentSelectActivity = OC_NEW AgentSelectActivity();
+		mAgentSelectActivity->configure(r);
+		ui->widgetActivityStack->registerPage(mAgentSelectActivity, true, true, false);
 		
 		mControl = OC_NEW RemoteController();
 		mControl->configure(r);

@@ -40,6 +40,21 @@ QColor mix(const QColor& color1, const QColor& color2, qreal ratio, bool skipAlp
 }
 
 
+inline float intensity(const QColor &color);
+/**
+ * @brief Return float intensity of color
+ * @param color the input color to find intensity for
+ * @return float intensity
+ */
+float intensity(const QColor &color) {
+	float r = color.redF();
+	float g = color.greenF();
+	float b = color.blueF();
+	float intensity = 0.2126f * r + 0.7152f * g + 0.0722f * b;
+	return qBound(0.0f, intensity, 1.0f);
+}
+
+
 }
 }
 

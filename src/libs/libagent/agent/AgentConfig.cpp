@@ -1,5 +1,7 @@
 #include "AgentConfig.hpp"
+
 #include "uptime/MethodGate.hpp"
+#include "stanza/StanzaBook.hpp"
 
 
 AgentConfig::AgentConfig()
@@ -23,11 +25,12 @@ void AgentConfig::fromMap(const QVariantMap &map)
 	}
 	mControllerName = map["controllerName"].toString();
 	mControllerConfig = map["controllerConfig"].toMap();
-	const auto list = map["poseMapping"].toList();
-	if(mPoseMapping.isNull()) {
-		mPoseMapping = QSharedPointer<PoseMapping>::create(static_cast<quint32>(list.size()));
+	mStanzaName = map["stanzaName"].toString();
+	const auto stanzaList = map["stanzas"].toList();
+	if(mStanzaBook.isNull()) {
+		mStanzaBook = QSharedPointer<StanzaBook>::create();
 	}
-	mPoseMapping->fromMap(list);
+	mStanzaBook->fromList(stanzaList);
 }
 
 
@@ -37,7 +40,8 @@ QVariantMap AgentConfig::toMap()
 	QVariantMap map;
 	map["controllerName"] = mControllerName;
 	map["controllerConfig"] = mControllerConfig;
-	map["poseMapping"] = mPoseMapping.isNull()? QVariantList(): mPoseMapping->toMap();
+	map["stanzas"] = mStanzaBook.isNull()?QVariantList():mStanzaBook->toList();
+	map["stanzaName"] = mStanzaName;
 	if(mDebug){
 		qDebug() << "toMap" << map;
 	}
@@ -62,6 +66,24 @@ void AgentConfig::setControllerName(const QString &n)
 }
 
 
+
+QString AgentConfig::stanzaName()
+{
+	OC_METHODGATE();
+	return mStanzaName;
+}
+
+
+void AgentConfig::setStanzaName(const QString &n)
+{
+	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "setStanzaName" << n;
+	}
+	mStanzaName = n;
+}
+
+
 QVariantMap AgentConfig::controllerConfig()
 {
 	OC_METHODGATE();
@@ -79,20 +101,20 @@ void AgentConfig::setControllerConfig(const QVariantMap &map)
 }
 
 
-QSharedPointer<PoseMapping> AgentConfig::poseMapping()
+QSharedPointer<StanzaBook> AgentConfig::stanzas()
 {
 	OC_METHODGATE();
-	return mPoseMapping;
+	return mStanzaBook;
 }
 
 
-void AgentConfig::setPoseMapping(QSharedPointer<PoseMapping> mapping)
+void AgentConfig::setStanzas(QSharedPointer<StanzaBook> stanzas)
 {
 	OC_METHODGATE();
 	if(mDebug){
-		qDebug() << "setPoseMapping" << mapping;
+		qDebug() << "setStanzas" << stanzas;
 	}
-	mPoseMapping = mapping;
+	mStanzaBook = stanzas;
 }
 
 
@@ -103,7 +125,8 @@ QDebug operator<<(QDebug debug, const AgentConfig &config)
 	debug.nospace() << "AgentConfig(\n"
 					<< "\tControllerName: " << config.mControllerName << "\n"
 					<< "\tControllerConfig: " << config.mControllerConfig << "\n"
-					<< "\tPoseMapping: " << (config.mPoseMapping ? "Valid" : "Null") << "\n"
+					<< "\tStanzaName: " << config.mStanzaName << "\n"
+					<< "\tStanzas: " << config.mStanzaBook << "\n"
 					<< "\tDebug: " << (config.mDebug ? "true" : "false")<<"\n"
 					<< ")\n";
 	return debug;

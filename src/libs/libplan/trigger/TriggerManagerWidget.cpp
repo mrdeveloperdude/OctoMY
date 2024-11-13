@@ -9,10 +9,10 @@
 
 #ifdef OC_USE_FEATURE_MOTORICS
 
-#include "motorics/WheeledMtlobeWidget.hpp"
-#include "motorics/Mtlobe.hpp"
+#include "motorics/WheeledLobeWidget.hpp"
+#include "motorics/Lobe.hpp"
 
-#include "motorics/MtlobeController.hpp"
+#include "motorics/LobeController.hpp"
 
 #endif
 

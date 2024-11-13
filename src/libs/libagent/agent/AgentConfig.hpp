@@ -1,22 +1,23 @@
 #ifndef AGENTCONFIG_HPP
 #define AGENTCONFIG_HPP
 
-//#include "ardumy_arduino/ArduMYActuator.hpp"
-
-#include "pose/PoseMapping.hpp"
-
 #include "uptime/SharedPointerWrapper.hpp"
 
 #include <QVariantList>
 #include <QVariantMap>
 
 
+class StanzaBook;
+class PoseMapping;
+	
 class AgentConfig
 {
 private:
 	QString mControllerName;
+	QString mStanzaName;
 	QVariantMap mControllerConfig;
-	QSharedPointer<PoseMapping> mPoseMapping;
+	QVariantMap mLobeConfig;
+	QSharedPointer<StanzaBook> mStanzaBook;
 	
 	bool mDebug{false};
 
@@ -35,8 +36,11 @@ public:
 	QVariantMap controllerConfig();
 	void setControllerConfig(const QVariantMap &);
 
-	QSharedPointer<PoseMapping> poseMapping();
-	void setPoseMapping(QSharedPointer<PoseMapping> mapping);
+	QString stanzaName();
+	void setStanzaName(const QString &);
+
+	QSharedPointer<StanzaBook> stanzas();
+	void setStanzas(QSharedPointer<StanzaBook> stanzas);
 	
 public:
 	friend QDebug operator<<(QDebug debug, const AgentConfig &config);

@@ -23,7 +23,7 @@ class NameMappingWidget : public QWidget
 
 private:
 	Ui::NameMappingWidget *ui;
-	NameMapping *mMapping;
+	QSharedPointer<NameMapping> mMapping;
 	QStringList mFromList;
 	QStringList mToList;
 	QButtonGroup *mButGroupFrom;
@@ -38,8 +38,8 @@ public:
 	virtual ~NameMappingWidget();
 
 public:
-	void configure(NameMapping &mapping, QStringList fromList, QStringList toList);
-	NameMapping *mapping();
+	void configure(QSharedPointer<NameMapping> mapping, QStringList fromList, QStringList toList);
+	QSharedPointer<NameMapping> mapping();
 	QStringList &fromList();
 	QStringList &toList();
 

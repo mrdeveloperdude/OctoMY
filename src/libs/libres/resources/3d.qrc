@@ -11,5 +11,10 @@
         <file>3d/shaders/stress_test.vert.glsl</file>
         <file>3d/textures/stress_test_cube_green.svg</file>
         <file>3d/textures/stress_test_cube_red.svg</file>
+        <file>3d/shaders/isosurface/triangle_table.glsl</file>
+        <file>3d/shaders/isosurface/geometry.vert</file>
+        <file>3d/shaders/isosurface/geometry.frag</file>
+        <file>3d/shaders/isosurface/geometry.comp</file>
+        <file>3d/shaders/isosurface/common.glsl</file>
     </qresource>
 </RCC>

@@ -86,7 +86,7 @@
       <bool>true</bool>
      </property>
      <property name="correctionMode">
-      <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+      <enum>QAbstractSpinBox::CorrectionMode::CorrectToNearestValue</enum>
      </property>
      <property name="showGroupSeparator" stdset="0">
       <bool>false</bool>
@@ -106,7 +106,7 @@
     </widget>
    </item>
    <item>
-    <widget class="NumberEntry" name="numberEntryServoPosition" native="true">
+    <widget class="IntegerEntry" name="integerEntryServoPosition" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
        <horstretch>0</horstretch>
@@ -127,7 +127,7 @@
       <bool>true</bool>
      </property>
      <property name="correctionMode">
-      <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
+      <enum>QAbstractSpinBox::CorrectionMode::CorrectToNearestValue</enum>
      </property>
      <property name="showGroupSeparator" stdset="0">
       <bool>false</bool>
@@ -170,9 +170,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>NumberEntry</class>
+   <class>IntegerEntry</class>
    <extends>QWidget</extends>
-   <header location="global">components/NumberEntry.hpp</header>
+   <header location="global">components/IntegerEntry.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

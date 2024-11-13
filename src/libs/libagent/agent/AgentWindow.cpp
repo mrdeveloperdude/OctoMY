@@ -1,23 +1,30 @@
 #include "AgentWindow.hpp"
-#include "agent/TransitionActivity.hpp"
-#include "delivery/AgentBaptismActivity.hpp"
-#include "delivery/AgentSipAndSeeActivity.hpp"
-#include "pairing/PairingTrustActivity.hpp"
+#include "pairing/NetworkPairingActivity.hpp"
+#include "stanza/StanzaManagerActivity.hpp"
 #include "ui_AgentWindow.h"
 
 #include "agent/Agent.hpp"
 #include "agent/AgentConfigStore.hpp"
 #include "agent/AgentUnboxingWizard.hpp"
-#include "agent/FaceWidget.hpp"
+#include "agent/FaceActivity.hpp"
 #include "agent/MessageActivity.hpp"
+#include "agent/TransitionActivity.hpp"
 #include "app/Constants.hpp"
+#include "delivery/AgentBaptismActivity.hpp"
 #include "delivery/AgentDeliveryActivity.hpp"
+#include "delivery/AgentSipAndSeeActivity.hpp"
+#include "delivery/IdentityActivity.hpp"
 #include "hardware/ControllerActivity.hpp"
 #include "hardware/ControllerTypeSelector.hpp"
+#include "hardware/HardwareActivity.hpp"
+#include "hardware/LobeTypeSelector.hpp"
 #include "hardware/SerialDeviceSelector.hpp"
 #include "node/NodeNavigation.hpp"
-#include "pairing/PairingActivity.hpp"
 #include "pairing/CameraPairingActivity.hpp"
+#include "pairing/PairingActivity.hpp"
+#include "pairing/PairingTrustActivity.hpp"
+#include "stanza/StanzaEditorActivity.hpp"
+#include "stanza/StanzaEditorActivity.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
@@ -28,7 +35,7 @@
 #include <QAction>
 
 #ifdef Q_OS_ANDROID
-#include <QAndroidJniObject>
+#include <QJniObject>
 #endif
 
 
@@ -36,14 +43,6 @@ AgentWindow::AgentWindow(QWidget *parent)
 	: NodeWindow(parent)
 	, ui(OC_NEW Ui::AgentWindow)
 	, mMenu(OC_NEW QMenu(tr("Menu"), this))
-	, mQuitAction{nullptr}
-	, mStartCameraPairingAction{nullptr}
-	, mStartNormalPairingAction{nullptr}
-	, mHardwareAction{nullptr}
-	, mPlanEditorAction{nullptr}
-	, mToggleOnlineAction{nullptr}
-	
-	, mShowFaceAction{nullptr}
 	, mConfigureHelper("AgentWindow", true, false, false, true)
 {
 	OC_METHODGATE();
@@ -96,6 +95,10 @@ void AgentWindow::prepareActivities(){
 		mDeliveryActivity->configure(a);
 		ui->widgetActivityStack->registerPage(mDeliveryActivity, false, false, false);
 		
+		mIdentityActivity = OC_NEW IdentityActivity();
+		mIdentityActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mIdentityActivity, false, false, false);
+		
 		mControllerTypeSelector = OC_NEW ControllerTypeSelector();
 		mControllerTypeSelector->configure(a);
 		ui->widgetActivityStack->registerPage(mControllerTypeSelector, false, false, false);
@@ -104,26 +107,45 @@ void AgentWindow::prepareActivities(){
 		mSerialDeviceSelector->configure(a);
 		ui->widgetActivityStack->registerPage(mSerialDeviceSelector, false, false, false);
 		
+		mLobeTypeSelectorActivity = OC_NEW LobeTypeSelector();
+		mLobeTypeSelectorActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mLobeTypeSelectorActivity, false, false, false);
+		
+		mStanzaManagerActivity = OC_NEW StanzaManagerActivity();
+		mStanzaManagerActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mStanzaManagerActivity, false, false, false);
+		
+		mStanzaEditorActivity = OC_NEW StanzaEditorActivity();
+		mStanzaEditorActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mStanzaEditorActivity, false, false, false);
+		
 		mControllerConfiguration = OC_NEW ControllerActivity();
 		mControllerConfiguration->configure(a);
 		ui->widgetActivityStack->registerPage(mControllerConfiguration, false, false, false);
 		
+		mHardwareConfiguration = OC_NEW HardwareActivity();
+		mHardwareConfiguration->configure(a);
+		ui->widgetActivityStack->registerPage(mHardwareConfiguration, false, false, false);
+
 		mPairingActivity = OC_NEW PairingActivity();
 		mPairingActivity->configure(a);
 		ui->widgetActivityStack->registerPage(mPairingActivity, false, false, false);
+		
+		mNetworkPairingActivity = OC_NEW NetworkPairingActivity();
+		mNetworkPairingActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mNetworkPairingActivity, true, true, false);
 		
 		mPairingTrustActivity = OC_NEW PairingTrustActivity();
 		mPairingTrustActivity->configure(a);
 		ui->widgetActivityStack->registerPage(mPairingTrustActivity, true, true, false);
 		
-		
 		mCameraPairingActivity = OC_NEW CameraPairingActivity();
 		mCameraPairingActivity->configure(a);
 		ui->widgetActivityStack->registerPage(mCameraPairingActivity, true, true, false);
 		
-		mFaceWidget = OC_NEW FaceWidget();
-		mFaceWidget->configure(a);
-		ui->widgetActivityStack->registerPage(mFaceWidget, true, true, true);
+		mFaceActivity = OC_NEW FaceActivity();
+		mFaceActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mFaceActivity, true, true, true);
 		
 		mUnboxingWizard = OC_NEW AgentUnboxingWizard();
 		mUnboxingWizard->configure(a);
@@ -132,7 +154,7 @@ void AgentWindow::prepareActivities(){
 	if(!connect(ui->widgetActivityStack, &ActivityStack::currentPageChanged, this, &AgentWindow::onPageChanged, OC_CONTYPE)){
 		qWarning()<<"Could not connect to ActivityStack::currentPageChanged";
 	}
-	pushPage(mFaceWidget->objectName());
+	pushPage(mFaceActivity->objectName());
 }
 
 
@@ -174,7 +196,7 @@ void AgentWindow::unboxingWizardDone(){
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()){
 		if(mUnboxingWizard->unboxingDone()){
-			swapPage(mFaceWidget->objectName());
+			swapPage(mFaceActivity->objectName());
 		}
 		else{
 			mUnboxingWizard->updateStage();
@@ -187,7 +209,7 @@ void AgentWindow::unboxingWizardDone(){
 void AgentWindow::updateFaceVisibility()
 {
 	OC_METHODGATE();
-	mFaceWidget->updateVisibility();
+	mFaceActivity->updateVisibility();
 }
 
 
@@ -197,7 +219,7 @@ void AgentWindow::appendLog(const QString& text)
 	if(mDebug){
 		qDebug()<<"AGENT-LOG-APPEND: "<<text;
 	}
-	mFaceWidget->appendLog(text);
+	mFaceActivity->appendLog(text);
 }
 
 
@@ -216,7 +238,7 @@ void AgentWindow::prepareNavigation(){
 	/*
 	addPage(ui->pageConfirmQuit, true, true, false);
 	addPage(ui->pageQuitting, false, false, false);
-	addPage(mFaceWidget, true, true, true);
+	addPage(mFaceActivity, true, true, true);
 	addPage(ui->pageDelivery, false, false, false);
 	addPage(ui->pageHardware, false, false, false);
 	addPage(ui->pagePairing, false, false, false);
@@ -274,7 +296,7 @@ void AgentWindow::openMenu(){
 }
 
 
-void AgentWindow::onNotImplementedYet(){
+void AgentWindow::notImplementedAction(){
 	OC_METHODGATE();
 	qWarning()<<"NOT IMPLEMENTED YET";
 }
@@ -286,7 +308,7 @@ Would you like to quit?
 
 
 
-void AgentWindow::onStartQuitApplication(){
+void AgentWindow::requestApplicationShutdown(){
 	OC_METHODGATE();
 	if(mDebug){
 		qDebug()<<"QUIT ASK";
@@ -295,7 +317,7 @@ void AgentWindow::onStartQuitApplication(){
 }
 
 
-void AgentWindow::quitApplication(){
+void AgentWindow::applicationShutdown(){
 	OC_METHODGATE();
 	if(mDebug){
 		qDebug()<<"QUIT CONFIRM";
@@ -305,31 +327,31 @@ void AgentWindow::quitApplication(){
 }
 
 
-void AgentWindow::onStartCameraPairing(){
-	OC_METHODGATE();
-	pushPage("CameraPairing");
-}
-
-
-void AgentWindow::onStartNormalPairing(){
+void AgentWindow::pairing(){
 	OC_METHODGATE();
 	pushPage("PairingActivity");
 }
 
 
-void AgentWindow::onConfigureHardware(){
+void AgentWindow::identity(){
 	OC_METHODGATE();
-	pushPage("ControllerActivity");
+	pushPage("IdentityActivity");
 }
 
 
-void AgentWindow::onPlanEditor(){
+void AgentWindow::configureHardware(){
+	OC_METHODGATE();
+	pushPage("HardwareActivity");
+}
+
+
+void AgentWindow::editPlan(){
 	OC_METHODGATE();
 	pushPage("PlanEditor");
 }
 
 
-void AgentWindow::onOnlineChanged(){
+void AgentWindow::toggleOnline(bool online){
 	OC_METHODGATE();
 	auto a = agent();
 	if(!a.isNull()) {
@@ -340,22 +362,34 @@ void AgentWindow::onOnlineChanged(){
 }
 
 
-void AgentWindow::onFaceVisibilityChanged(){
+void AgentWindow::face(){
 	OC_METHODGATE();
-	onNotImplementedYet();
+	pushPage("FaceActivity");
 }
 
 
-QAction *AgentWindow::addMenuItem(QString title, QString icon, QString toolTip, void (AgentWindow::*method)() , bool checkable){
+template <typename MethodType>
+QAction* AgentWindow::addMenuItem(QString title, QString icon, QString toolTip, MethodType method, bool checkable) {
 	OC_METHODGATE();
 	QAction *action=OC_NEW QAction(title, this);
 	action->setCheckable(checkable);
-	if(!(connect(action, &QAction::triggered, this, method, OC_CONTYPE))){
-		qWarning() << "Could not connect action method for" << action->text() << "to menu";
-	}else{
-		action->setStatusTip(toolTip);
-		action->setIcon(QIcon(icon));
-		mMenu->addAction(action);
+	if(checkable){
+		if(!(connect(action, &QAction::toggled, this, method, OC_CONTYPE))){
+			qWarning() << "Could not connect action method for" << action->text() << "to menu";
+		}else{
+			action->setStatusTip(toolTip);
+			action->setIcon(QIcon(icon));
+			mMenu->addAction(action);
+		}
+	}
+	else{
+		if(!(connect(action, &QAction::triggered, this, method, OC_CONTYPE))){
+			qWarning() << "Could not connect action method for" << action->text() << "to menu";
+		}else{
+			action->setStatusTip(toolTip);
+			action->setIcon(QIcon(icon));
+			mMenu->addAction(action);
+		}
 	}
 	return action;
 }
@@ -364,13 +398,14 @@ QAction *AgentWindow::addMenuItem(QString title, QString icon, QString toolTip, 
 void AgentWindow::prepareMenu( )
 {
 	OC_METHODGATE();
-	mQuitAction = addMenuItem(tr("Exit"), ":/icons/no.svg", tr("Terminate execution of this Agent"), &AgentWindow::onStartQuitApplication );
-	mStartCameraPairingAction = addMenuItem(tr("Camera Pairing"), ":/icons/eye.svg", tr("Start Camera Pairing"), &AgentWindow::onStartCameraPairing );
-	mStartNormalPairingAction = addMenuItem(tr("Normal Pairing"), ":/icons/pair.svg", tr("Start Normal Pairing"), &AgentWindow::onStartNormalPairing );
-	mHardwareAction = addMenuItem(tr("Configure Hardware"), ":/icons/actuator_control.svg", tr("Connect to the body of the robot"), &AgentWindow::onConfigureHardware );
-	mPlanEditorAction = addMenuItem(tr("Plan Editor"), ":/icons/mandate.svg", tr("Open the Plan editor"), &AgentWindow::onPlanEditor );
-	mToggleOnlineAction = addMenuItem(tr("Go Online"), ":/icons/on.svg", tr("Toggle availability of Agent"), &AgentWindow::onOnlineChanged, true);
-	mShowFaceAction = addMenuItem(tr("Show face"), ":/icons/on.svg", tr("Show the Agent's face in main screen"), &AgentWindow::onFaceVisibilityChanged, true);
+	mQuitAction = addMenuItem(tr("Exit"), ":/icons/no.svg", tr("Terminate execution of this Agent"), &AgentWindow::requestApplicationShutdown );
+	mIdentityAction = addMenuItem(tr("Identification"), ":/icons/identity.svg", tr("Chose identity options"), &AgentWindow::identity );
+	mHardwareAction = addMenuItem(tr("Configuration"), ":/icons/actuator_control.svg", tr("Configure the hardware of the Agent"), &AgentWindow::configureHardware );
+	mPairingAction = addMenuItem(tr("Pairing"), ":/icons/pair.svg", tr("Chose pairing options"), &AgentWindow::pairing );
+	mShowFaceAction = addMenuItem(tr("Face"), ":/icons/on.svg", tr("Show the Agent's face in main screen"), &AgentWindow::face);
+	mPlanEditorAction = addMenuItem(tr("Plan Editor"), ":/icons/mandate.svg", tr("Edit Agent plan"), &AgentWindow::editPlan );
+	
+	mToggleOnlineAction = addMenuItem(tr("Toggle Online"), ":/icons/on.svg", tr("Toggle availability of Agent on networks"), &AgentWindow::toggleOnline, true);
 	
 	/* Other stuff
 	
@@ -381,27 +416,6 @@ void AgentWindow::prepareMenu( )
 	// Show Face
 	//////////////////
 	
-	
-	// Show Log scroll
-	//////////////////
-	mShowLogAction->setStatusTip(tr("Show log in main screen"));
-	mShowLogAction->setCheckable(true);
-	connect(mShowLogAction, &QAction::triggered, this, &AgentWindow::onLogVisibilityChanged);
-	mMenu.addAction(mShowLogAction);
-	
-	// Show Stats
-	//////////////////
-	mShowStatsAction->setStatusTip(tr("Show stats in main screen"));
-	mShowStatsAction->setCheckable(true);
-	connect(mShowStatsAction, &QAction::triggered, this, &AgentWindow::onStatsVisibilityChanged);
-	mMenu.addAction(mShowStatsAction);
-	
-	// Show birth certificate
-	///////////////////////////
-	mShowBirthCertificateAction->setStatusTip(tr("Show the birth certificate of this agent"));
-	mShowBirthCertificateAction->setIcon(QIcon(":/icons/certificate.svg"));
-	connect(mShowBirthCertificateAction, &QAction::triggered, this, &AgentWindow::onStartShowBirthCertificate);
-	mMenu.addAction(mShowBirthCertificateAction);
 	
 	// Unbirth
 	//////////////////

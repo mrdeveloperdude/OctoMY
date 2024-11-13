@@ -240,10 +240,10 @@ void NodeWindow::notifyAndroid(QString s)
 	//TODO: This crashes with some jni exception stuff. Figure out why
 #ifdef Q_OS_ANDROID
 	qDebug()<<"QT: Android NOTIFE: "<<s;
-	QAndroidJniObject::callStaticMethod<void>("org/octomy/Agent/Agent",
+	QJniObject::callStaticMethod<void>("org/octomy/Agent/Agent",
 			"notify",
 			"(Ljava/lang/String;)V",
-			QAndroidJniObject::fromString(s).object<jstring>());
+			QJniObject::fromString(s).object<jstring>());
 #endif
 }
 
@@ -255,9 +255,9 @@ void NodeWindow::toastAndroid(QString s)
 	//TODO: This crashes with some jni exception stuff. Figure out why
 #ifdef Q_OS_ANDROID
 	qDebug()<<"QT: Android TOAST: "<<s;
-	QAndroidJniObject::callStaticMethod<void>("org/octomy/Agent/Agent",
+	QJniObject::callStaticMethod<void>("org/octomy/Agent/Agent",
 			"toast",
 			"(Ljava/lang/String;)V",
-			QAndroidJniObject::fromString(s).object<jstring>());
+			QJniObject::fromString(s).object<jstring>());
 #endif
 }

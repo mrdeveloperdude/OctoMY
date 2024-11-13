@@ -28,7 +28,7 @@ PairingEditButtonDelegate::~PairingEditButtonDelegate()
 }
 
 
-QSizeF PairingEditButtonDelegate::calcSize(QSizeF ds, const qint32 w, const qint32 h, qreal const z)
+static QSizeF calcSize(const QSizeF &ds, const qint32 w, const qint32 h, qreal const z)
 {
 	OC_FUNCTIONGATE();
 	if(w<1 && h<1) {
@@ -41,38 +41,6 @@ QSizeF PairingEditButtonDelegate::calcSize(QSizeF ds, const qint32 w, const qint
 	//qDebug()<<"ORIG: "<<ds<<" ASPECT: "<<da<<" LOW: "<<low<<" HIGH: "<<high;
 	const qreal zoom=(z<0)?0:(z>1)?1:z;
 	const qreal izoom=1.0-zoom;
-	return low*izoom+high*zoom;
-}
-
-
-QPixmap PairingEditButtonDelegate::svgToPixmap(QString fn, const  qint32 w, const qint32 h, const qreal zoom) const
-{
-	OC_METHODGATE();
-	QSvgRenderer svg(fn);
-	QSizeF ds=calcSize(svg.defaultSize(),w,h,zoom);
-	//qDebug()<<"Generating pixmap from identicon with size: "<<ds;
-	QPixmap px(ds.toSize());
-	px.fill(QColor(0,0,0,0));
-	QPainter painter( &px );
-	svg.render( &painter );
-	//px.save("/tmp/px.png");
-	return px;
-}
-
-
-static QSizeF calcSize(QSizeF ds,qint32 w,qint32 h,qreal zoom)
-{
-	OC_FUNCTIONGATE();
-	if(w<1 && h<1) {
-		return ds;
-	}
-	const qreal da=ds.width()/ds.height();
-	//	const qreal ca=((qreal)(w<1?1:w)/(qreal)(h<1?1:h));
-	QSizeF low(w,static_cast<qreal>(h/da));
-	QSizeF high(static_cast<qreal>(w*da),h);
-	//qDebug()<<"ORIG: "<<ds<<" ASPECT: "<<da<<" LOW: "<<low<<" HIGH: "<<high;
-	zoom=(zoom<0)?0:(zoom>1)?1:zoom;
-	qreal izoom=1.0-zoom;
 	return low*izoom+high*zoom;
 }
 
@@ -252,5 +220,5 @@ QSize PairingEditButtonDelegate::sizeHint(const QStyleOptionViewItem &option, co
 {
 	OC_METHODGATE();
 	Q_UNUSED(index);
-	return QSize(option.widget->size().width(),option.widget->size().height()*2/7);
+	return QSize(option.widget->size().width(), 38);
 }

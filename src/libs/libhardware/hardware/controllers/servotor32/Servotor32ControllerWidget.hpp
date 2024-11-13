@@ -38,12 +38,14 @@ private:
 	void setHookController(bool);
 	void setHookConnectButton(bool);
 	void setHookSerialSettings(bool);
+	void appendNotice(const QString &notice);
 
 private slots:
 	void onConnectChanged(const TryToggleState, const TryToggleState);
 	void onSettingsChanged();
 	void onSerialSettingsChanged();
 	void onConnectionChanged();
+	void onErrorOccurred(const QString &error);
 
 	void limpAll();
 

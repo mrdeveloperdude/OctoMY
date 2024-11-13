@@ -3,53 +3,29 @@
 
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
-#include "uptime/ConnectionType.hpp"
 
 #include <QDebug>
 
 PanicButton::PanicButton(QWidget *parent)
 	: QAbstractButton(parent)
 	, ui(OC_NEW Ui::PanicButton)
-	, mFlipFlop(false)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
 
 	mTimer.setInterval(1000/5); //Multiple of 60Hz gives stutter free animation
 	mTimer.setTimerType(Qt::PreciseTimer);
-	connect(&mTimer,SIGNAL(timeout()),this,SLOT(onTimeout()));
+	connect(&mTimer, &QTimer::timeout, this, &PanicButton::timeout);
 
 	//Make panic button RED
-	QPalette p=ui->pushButtonPanic->palette();
+	QPalette p = ui->pushButtonPanic->palette();
 	p.setColor(QPalette::Button, 0x5b0504);
-	mPaletteNormal=p;
+	mPaletteNormal = p;
 	ui->pushButtonPanic->setPalette(p);
 	p.setColor(QPalette::ButtonText, 0xFF0000);
-	mPaletteBlink=p;
-
-	// Forward all the button signals
-
-	if(!connect(ui->pushButtonPanic, &QAbstractButton::pressed, this, &PanicButton::pressed, OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not forward pressed signal for panic button";
-	}
-
-	if(!connect(ui->pushButtonPanic, &QAbstractButton::released, this, &PanicButton::released, OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not forward released signal for panic button";
-	}
-
-	if(!connect(ui->pushButtonPanic, &QAbstractButton::clicked, this, &PanicButton::clicked, OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not forward click signal for panic button";
-	}
-
-	if(!connect(ui->pushButtonPanic, &QAbstractButton::toggled, this, &PanicButton::toggled, OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not forward toggled signal for panic button";
-	}
-
-	if(!connect(ui->pushButtonPanic, &QAbstractButton::toggled, this, &PanicButton::onToggled, OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect toggled signal for panic button";
-	}
-
+	mPaletteBlink = p;
 }
+
 
 PanicButton::~PanicButton()
 {
@@ -59,32 +35,32 @@ PanicButton::~PanicButton()
 }
 
 
-
-void PanicButton::setPanic(bool checked)
-{
-	OC_METHODGATE();
-	ui->pushButtonPanic->setChecked(checked);
-	mFlipFlop=checked;
-	onTimeout();
-	checked?mTimer.start():mTimer.stop();
-}
-
-
 bool PanicButton::panic() const
 {
 	OC_METHODGATE();
-	return ui->pushButtonPanic->isChecked();
+	return mPanic;
 }
 
-void PanicButton::onToggled(bool checked)
+
+void PanicButton::setPanic(bool newPanic)
 {
 	OC_METHODGATE();
-	setPanic(checked);
+	const auto old = mPanic;
+	mPanic = newPanic;
+	qDebug() << "PANIC " << old << " --> " << mPanic;
+	if(old != mPanic){
+		ui->pushButtonPanic->setChecked(mPanic);
+		mPanic ? mTimer.start():mTimer.stop();
+		mFlipFlop = mPanic;
+		timeout();
+		emit panicChanged(mPanic);
+	}
 }
 
-void PanicButton::onTimeout()
+
+void PanicButton::timeout()
 {
 	OC_METHODGATE();
-	ui->pushButtonPanic->setPalette(mFlipFlop?mPaletteBlink:mPaletteNormal);
-	mFlipFlop=!mFlipFlop;
+	ui->pushButtonPanic->setPalette(mFlipFlop ? mPaletteBlink : mPaletteNormal);
+	mFlipFlop =! mFlipFlop;
 }

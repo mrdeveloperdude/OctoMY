@@ -1,10 +1,10 @@
 #include "ControllerActivity.hpp"
-#include "hardware/controllers/IController.hpp"
-#include "ui_ControllerActivity.h"
-
-#include "uptime/MethodGate.hpp"
 
 #include "agent/Agent.hpp"
+#include "hardware/controllers/ControllerHandler.hpp"
+#include "hardware/controllers/IController.hpp"
+#include "ui_ControllerActivity.h"
+#include "uptime/MethodGate.hpp"
 
 
 class IController;
@@ -29,10 +29,14 @@ ControllerActivity::~ControllerActivity()
 void ControllerActivity::updateController(){
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()){
+		QSharedPointer<ControllerHandler> handler;
 		QSharedPointer<IController> ctl;
 		if(!mAgent.isNull()) {
-			mAgent->reloadController();
-			ctl = mAgent->controller();
+			handler = mAgent->controllerHandler();
+			if(!handler.isNull()){
+				handler->reloadController();
+				ctl = handler->controller();
+			}
 		}
 		QWidget *configurationWidget = nullptr;
 		if(!ctl.isNull()) {
@@ -47,6 +51,7 @@ void ControllerActivity::updateController(){
 					qDebug()<<"Configuration UI not found";
 				}
 			}
+			
 		}
 		auto old = ui->scrollAreaControllerActivity->takeWidget();
 		if(old != configurationWidget) {
@@ -73,6 +78,7 @@ void ControllerActivity::updateController(){
 				qDebug() << "No change in settings";
 			}
 		}
+		ui->widgetActuatorManager->configure(handler);
 	}
 }
 
@@ -81,16 +87,33 @@ void ControllerActivity::configure(QSharedPointer<Agent> agent)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()){
-		mAgent = agent;
-		updateController();
+		if(mAgent != agent){
+			mAgent = agent;
+			updateController();
+		}
 	}
 }
 
 
-void ControllerActivity::confirmConfiguration() {
+void ControllerActivity::toggleEnableAll() {
+	OC_METHODGATE();
+	ui->widgetActuatorManager->toggleEnableAll();
+}
+
+
+void ControllerActivity::toggleLimpAll() {
+	OC_METHODGATE();
+	ui->widgetActuatorManager->toggleLimpAll();
+}
+
+
+void ControllerActivity::done() {
 	OC_METHODGATE();
 	if(!mAgent.isNull()) {
-		mAgent->getControllerConfig();
+		auto handler = mAgent->controllerHandler();
+		if(!handler.isNull()){
+			handler->getControllerConfig();
+		}
 	}
 	pop(QStringList());
 }

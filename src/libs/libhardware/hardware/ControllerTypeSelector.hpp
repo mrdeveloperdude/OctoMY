@@ -26,7 +26,7 @@ public:
 	~ControllerTypeSelector();
 
 private:
-	void updateControllerTypeList();
+	void updateList();
 
 public:
 	void configure(QSharedPointer<Agent> agent);

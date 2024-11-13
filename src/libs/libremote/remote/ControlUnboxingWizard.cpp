@@ -84,9 +84,9 @@ void ControlUnboxingWizard::updateStage(){
 		stage = unboxingStage();
 	}
 	switch(stage){
-	case(DELIVERY_STAGE): text = "Start unboxing";break;
-	case(HANDOVER_STAGE): text = "Launch Remote!";break;
-	default:break;
+		case(DELIVERY_STAGE): text = "Start unboxing";break;
+		case(HANDOVER_STAGE): text = "Launch Remote!";break;
+		default:break;
 	}
 	allOK = delivered && paired;
 	ui->widgetDeliveredIdenticon->setVisible(!id.id().isEmpty());
@@ -106,7 +106,8 @@ void ControlUnboxingWizard::nextStageClicked(){
 		switch(stage){
 			case DELIVERY_STAGE: push("ControlDeliveryActivity"); break;
 			case PAIRING_STAGE: push("PairingActivity"); pairing = true; break;
-			case UNBOXING_COMPLETE: push("RemoteController"); break;
+			case UNBOXING_COMPLETE: push("AgentSelectActivity"); break;
+			case HANDOVER_STAGE: push("AgentSelectActivity"); break;
 			default:
 			case UNKNOWN_STAGE: push("ControlUnboxingWizard"); break;
 		}

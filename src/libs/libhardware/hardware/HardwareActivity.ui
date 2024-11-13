@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HardwareActivity</class>
+ <widget class="QWidget" name="HardwareActivity">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>505</width>
+    <height>621</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item row="0" column="1">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>103</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="0">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>112</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="1">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QPushButton" name="pushButtonActuators">
+       <property name="minimumSize">
+        <size>
+         <width>128</width>
+         <height>128</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Configure Actuators for this Agent</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../libres/resources/icons.qrc">
+         <normaloff>:/icons/actuator_control.svg</normaloff>:/icons/actuator_control.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>96</width>
+         <height>96</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="pushButtonSensors">
+       <property name="minimumSize">
+        <size>
+         <width>128</width>
+         <height>128</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Configure Sensors for this Agent</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../libres/resources/icons.qrc">
+         <normaloff>:/icons/sensor_temperature.svg</normaloff>:/icons/sensor_temperature.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>96</width>
+         <height>96</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="pushButtonLobes">
+       <property name="minimumSize">
+        <size>
+         <width>128</width>
+         <height>128</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Configure Lobes for this Agent</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../libres/resources/icons.qrc">
+         <normaloff>:/icons/network.svg</normaloff>:/icons/network.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>96</width>
+         <height>96</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="pushButtonStanzas">
+       <property name="minimumSize">
+        <size>
+         <width>128</width>
+         <height>128</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Configure Stanzas for this Agent</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../libres/resources/icons.qrc">
+         <normaloff>:/icons/pose_control.svg</normaloff>:/icons/pose_control.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>96</width>
+         <height>96</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QPushButton" name="pushButtonController">
+       <property name="minimumSize">
+        <size>
+         <width>128</width>
+         <height>128</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Configure Controller for this Agent</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../libres/resources/icons.qrc">
+         <normaloff>:/icons/control.svg</normaloff>:/icons/control.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>96</width>
+         <height>96</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QPushButton" name="pushButtonDone">
+       <property name="minimumSize">
+        <size>
+         <width>128</width>
+         <height>128</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Done</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../libres/resources/icons.qrc">
+         <normaloff>:/icons/yes.svg</normaloff>:/icons/yes.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>96</width>
+         <height>96</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="2">
+    <spacer name="horizontalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>111</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="2" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>102</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../../libres/resources/icons.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>pushButtonActuators</sender>
+   <signal>clicked()</signal>
+   <receiver>HardwareActivity</receiver>
+   <slot>actuators()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>185</x>
+     <y>176</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>310</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonController</sender>
+   <signal>clicked()</signal>
+   <receiver>HardwareActivity</receiver>
+   <slot>controller()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>185</x>
+     <y>444</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>310</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonDone</sender>
+   <signal>clicked()</signal>
+   <receiver>HardwareActivity</receiver>
+   <slot>done()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>319</x>
+     <y>444</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>310</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonLobes</sender>
+   <signal>clicked()</signal>
+   <receiver>HardwareActivity</receiver>
+   <slot>lobes()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>185</x>
+     <y>310</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>310</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonSensors</sender>
+   <signal>clicked()</signal>
+   <receiver>HardwareActivity</receiver>
+   <slot>sensors()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>319</x>
+     <y>176</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>310</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonStanzas</sender>
+   <signal>clicked()</signal>
+   <receiver>HardwareActivity</receiver>
+   <slot>stanzas()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>319</x>
+     <y>310</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>310</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>actuators()</slot>
+  <slot>lobes()</slot>
+  <slot>sensors()</slot>
+  <slot>controller()</slot>
+  <slot>stanzas()</slot>
+  <slot>done()</slot>
+ </slots>
+</ui>

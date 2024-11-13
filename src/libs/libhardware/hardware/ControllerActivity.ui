@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,1,0">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -40,32 +40,72 @@
     </widget>
    </item>
    <item>
-    <widget class="QScrollArea" name="scrollAreaControllerActivity">
-     <property name="horizontalScrollBarPolicy">
-      <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
      </property>
-     <property name="sizeAdjustPolicy">
-      <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
-     </property>
-     <property name="widgetResizable">
-      <bool>true</bool>
-     </property>
-     <widget class="QWidget" name="scrollAreaWidgetContents">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>1132</width>
-        <height>907</height>
-       </rect>
+     <widget class="QScrollArea" name="scrollAreaControllerActivity">
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
       </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
       </property>
-      <layout class="QGridLayout" name="gridLayout_3">
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>1132</width>
+         <height>244</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="labelControllerConfigPlaceholder">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Controller has no settings</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="widget" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1">
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -78,23 +118,40 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <item row="0" column="0">
-        <widget class="QLabel" name="labelControllerConfigPlaceholder">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Controller has no settings</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="pushButtonToggleEnableAll">
+           <property name="text">
+            <string>Toggle Enable All</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonToggleLimpAll">
+           <property name="text">
+            <string>Toggle Limp All</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="ActuatorManagerWidget" name="widgetActuatorManager" native="true">
+         <layout class="QVBoxLayout" name="verticalLayout"/>
         </widget>
        </item>
       </layout>
@@ -117,9 +174,9 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonConfirm">
+      <widget class="QPushButton" name="pushButtonDone">
        <property name="text">
-        <string>Confirm</string>
+        <string>Done</string>
        </property>
       </widget>
      </item>
@@ -127,13 +184,21 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ActuatorManagerWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">hardware/actuator/ActuatorManagerWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
-   <sender>pushButtonConfirm</sender>
+   <sender>pushButtonDone</sender>
    <signal>clicked()</signal>
    <receiver>ControllerActivity</receiver>
-   <slot>confirmConfiguration()</slot>
+   <slot>done()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>1092</x>
@@ -145,8 +210,42 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButtonToggleEnableAll</sender>
+   <signal>clicked()</signal>
+   <receiver>ControllerActivity</receiver>
+   <slot>toggleEnableAll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>40</x>
+     <y>286</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>566</x>
+     <y>482</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonToggleLimpAll</sender>
+   <signal>clicked()</signal>
+   <receiver>ControllerActivity</receiver>
+   <slot>toggleLimpAll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>126</x>
+     <y>286</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>566</x>
+     <y>482</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>confirmConfiguration()</slot>
+  <slot>done()</slot>
+  <slot>toggleLimpAll()</slot>
+  <slot>toggleEnableAll()</slot>
  </slots>
 </ui>

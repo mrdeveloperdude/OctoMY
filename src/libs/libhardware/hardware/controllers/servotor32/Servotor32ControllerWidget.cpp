@@ -1,5 +1,6 @@
 #include "Servotor32ControllerWidget.hpp"
 #include "Servotor32Controller.hpp"
+#include "components/NoticeLabel.hpp"
 #include "ui_Servotor32ControllerWidget.h"
 
 #include "Servotor32ActuatorWidget.hpp"
@@ -12,6 +13,7 @@
 #include <QSpacerItem>
 
 #include <QtMath>
+#include <qscrollbar.h>
 
 Servotor32ControllerWidget::Servotor32ControllerWidget(QWidget *parent)
 	: QWidget(parent)
@@ -47,27 +49,35 @@ void Servotor32ControllerWidget::onConnectChanged(const TryToggleState last, con
 	if(nullptr!=mController) {
 		ui->scrollAreaServos->setEnabled(ON==current);
 		switch(current) {
-		case(OFF): {
-			mController->limpAll();
-			if(nullptr!=mController) {
-				mController->setConnected(false);
+			case(OFF): {
+				if(nullptr!=mController) {
+					if(mController->isConnected()){
+						mController->toggleLimpAll(true);
+					}
+					mController->setConnected(false);
+				}
+				setUILock(false);
 			}
-			setUILock(false);
-		}
-		break;
-		case(GOING_ON): {
-			setUILock(true);
-			mController->setConnected(true);
-		}
-		break;
-		case(ON): {
-			mController->limpAll();
-			setUILock(false);
-		}
-		break;
-		default:
-		case(GOING_OFF):
 			break;
+			case(GOING_ON): {
+				setUILock(true);
+				if(nullptr!=mController) {
+					mController->setConnected(true);
+				}
+			}
+			break;
+			case(ON): {
+				if(nullptr!=mController) {
+					if(mController->isConnected()){
+						mController->toggleLimpAll(true);
+					}
+				}
+				setUILock(false);
+			}
+			break;
+			default:
+			case(GOING_OFF):
+				break;
 		}
 	}
 }
@@ -102,14 +112,19 @@ void Servotor32ControllerWidget::onConnectionChanged()
 	if(nullptr != mController) {
 		const bool e = mController->isConnected();
 		ui->tryToggleConnect->setState(e?ON:OFF);
-		setUILock(false);
 	}
+}
+
+void Servotor32ControllerWidget::onErrorOccurred(const QString &error){
+	OC_METHODGATE();
+	appendNotice(error);
 }
 
 
 void Servotor32ControllerWidget::onServoMoved(quint32 id, qreal val)
 {
 	OC_METHODGATE();
+	qDebug()<<"Registered actuator move"<<id<<val;
 	if(id >= Servotor32Controller::SERVO_COUNT) {
 		return;
 	}
@@ -123,9 +138,10 @@ void Servotor32ControllerWidget::onServoMoved(quint32 id, qreal val)
 
 void Servotor32ControllerWidget::onServoLimped(quint32 id)
 {
+	qDebug()<<"Registered actuator limp"<<id;
 	OC_METHODGATE();
 	if(nullptr != mController) {
-		mController->limp(id, true);
+		mController->setLimp(id, true);
 	}
 }
 
@@ -133,27 +149,30 @@ void Servotor32ControllerWidget::onServoLimped(quint32 id)
 void Servotor32ControllerWidget::configure(Servotor32Controller *c)
 {
 	OC_METHODGATE();
-	if(nullptr != mController) {
-		mController->setConnected(false);
-		setHookController(false);
-		auto s = mController->configuration();
-		SerialSettings ss;
-		ss.fromMap(s["serial"].toMap());
-		ui->tabSerial->configure(true, ss);
-		for(int i=0;i<32;++i) {
-			auto si = OC_NEW Servotor32ActuatorWidget(ui->scrollAreaWidgetContents);
-			si->configure(nullptr, i);
+	if(c!=mController){
+		if(nullptr != mController) {
+			mController->setConnected(false);
+			setHookController(false);
+			auto s = mController->configuration();
+			SerialSettings ss;
+			ss.fromMap(s["serial"].toMap());
+			ui->tabSerial->configure(true, ss);
+			for(int i=0;i<32;++i) {
+				auto si = OC_NEW Servotor32ActuatorWidget(ui->scrollAreaWidgetContents);
+				si->configure(nullptr, i);
+			}
 		}
-	}
-	mController = c;
-	if(nullptr != mController) {
-		setHookController(true);
-		setHookActuators(true);
+		mController = c;
+		if(nullptr != mController) {
+			setHookController(true);
+			setHookActuators(true);
+		}
 	}
 }
 
 
 void Servotor32ControllerWidget::setHookActuators(bool on){
+	OC_METHODGATE();
 	if(on){
 		auto sis = ui->scrollAreaWidgetContents->findChildren<Servotor32ActuatorWidget *>();
 		for(Servotor32ActuatorWidget *si:sis) {
@@ -165,8 +184,12 @@ void Servotor32ControllerWidget::setHookActuators(bool on){
 }
 
 void Servotor32ControllerWidget::setHookController(bool on){
+	OC_METHODGATE();
 	if(on){
 		if(!connect(mController, &Servotor32Controller::settingsChanged, this, &Servotor32ControllerWidget::onSettingsChanged)) {
+			qWarning() << "ERROR: could not connect";
+		}
+		if(!connect(mController, &Servotor32Controller::errorOccurred, this, &Servotor32ControllerWidget::onErrorOccurred)) {
 			qWarning() << "ERROR: could not connect";
 		}
 		
@@ -178,6 +201,9 @@ void Servotor32ControllerWidget::setHookController(bool on){
 		if(!disconnect(mController, &Servotor32Controller::settingsChanged, this, &Servotor32ControllerWidget::onSettingsChanged)) {
 			qWarning() << "ERROR: could not disconnect";
 		}
+		if(!disconnect(mController, &Servotor32Controller::errorOccurred, this, &Servotor32ControllerWidget::onErrorOccurred)) {
+			qWarning() << "ERROR: could not disconnect";
+		}
 		
 		if(!disconnect(mController, &Servotor32Controller::connectionChanged, this, &Servotor32ControllerWidget::onConnectionChanged)) {
 			qWarning() << "ERROR: could not disconnect";
@@ -186,6 +212,7 @@ void Servotor32ControllerWidget::setHookController(bool on){
 }
 
 void Servotor32ControllerWidget::setHookConnectButton(bool wantConnection){
+	OC_METHODGATE();
 	if(wantConnection){
 		if(!connect(ui->tryToggleConnect, &TryToggle::stateChanged, this, &Servotor32ControllerWidget::onConnectChanged)) {
 			qWarning() << "ERROR: could not connect";
@@ -200,6 +227,7 @@ void Servotor32ControllerWidget::setHookConnectButton(bool wantConnection){
 
 
 void Servotor32ControllerWidget::setHookSerialSettings(bool wantSerial){
+	OC_METHODGATE();
 	if(wantSerial){
 		if(!connect(ui->tabSerial, &SerialSettingsWidget::settingsChanged, this, &Servotor32ControllerWidget::onSerialSettingsChanged)) {
 			qWarning() << "ERROR: could not connect";
@@ -210,6 +238,13 @@ void Servotor32ControllerWidget::setHookSerialSettings(bool wantSerial){
 			qWarning() << "ERROR: could not disconnect";
 		}
 	}
+}
+
+
+void Servotor32ControllerWidget::appendNotice(const QString &notice)
+{
+	OC_METHODGATE();
+	ui->widgetNoticeList->appendNotice(notice);
 }
 
 
@@ -226,7 +261,7 @@ void Servotor32ControllerWidget::limpAll()
 {
 	OC_METHODGATE();
 	if(nullptr!=mController) {
-		mController->limpAll();
+		mController->toggleLimpAll(true);
 	}
 }
 

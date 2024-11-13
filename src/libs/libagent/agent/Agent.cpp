@@ -2,14 +2,14 @@
 
 #include "agent/AgentWindow.hpp"
 
+#include "AgentConfigStore.hpp"
+#include "app/AppContext.hpp"
+#include "hardware/controllers/ControllerHandler.hpp"
+#include "service/ServiceLevel.hpp"
+#include "service/ServiceLevelManager.hpp"
+#include "service/services/AgentConfigService.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
-#include "app/AppContext.hpp"
-
-#include "AgentConfigStore.hpp"
-
-#include "hardware/controllers/IController.hpp"
-#include "hardware/controllers/ControllerFactory.hpp"
 
 #include <QDebug>
 
@@ -29,6 +29,8 @@
 Agent::Agent()
 	: mNodeConfigureHelper("Agent", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
 	, mAgentConfigStore(OC_NEW AgentConfigStore())
+	, mAgentConfigService(OC_NEW AgentConfigService(mAgentConfigStore, QStringList{}))
+	, mControllerHandler(QSharedPointer<ControllerHandler>::create())
 {
 	OC_METHODGATE();
 	//qDebug()<<"Agent()";
@@ -42,6 +44,7 @@ Agent::~Agent()
 	//qDebug()<<"~Agent()";
 }
 
+
 //! \fn void Agent::nodeConfigure()
 void Agent::nodeConfigure()
 {
@@ -52,11 +55,26 @@ void Agent::nodeConfigure()
 		if(!ctx.isNull()) {
 			mAgentConfigStore->configure(ctx->baseDir() + "/agent_config.json");
 		}
+		mAgentConfigService->configure();
+		// Sneak our little service into the cogs of the "bog boy" service management system set up in node
+		auto sm = serviceLevelManager();
+		sm->registerService(mAgentConfigService);
+		auto sl = sm->serviceLevelByName("Always");
+		if(!sl.isNull()){
+			sl->toggleService(mAgentConfigService->name(), true);
+		}
+		else{
+			qWarning() << "";
+		}
+		if(!mControllerHandler.isNull()){
+			mControllerHandler->configure(qSharedPointerCast<Agent>(sharedThis()));
+		}
 	} else {
 		qWarning() << "ERROR: No context, closing";
 		emit nodeRequestExit(EXIT_FAILURE);
 	}
 }
+
 
 //! \fn void Agent::nodeActivate()
 void Agent::nodeActivate(const bool on)
@@ -65,9 +83,6 @@ void Agent::nodeActivate(const bool on)
 	//qDebug()<<"nodeActivate(on="<<on<<")";
 	if(on) {
 		if(mNodeConfigureHelper.activate(on)) {
-			// Initialize Agent Configuration Store
-			mAgentConfigStore->activate(on);
-			mAgentConfigStore->load();
 			emit nodeActivateChanged(on);
 		}
 	} else {
@@ -75,14 +90,11 @@ void Agent::nodeActivate(const bool on)
 			if(!mWindow.isNull()) {
 				mWindow.clear();
 			}
-			mAgentConfigStore->save();
-			mAgentConfigStore->activate(on);
 			emit nodeActivateChanged(on);
 			mNodeConfigureHelper.activate(on);
 		}
 	}
 }
-
 
 
 QSharedPointer<NodeWindow> Agent::nodeWindow()
@@ -123,7 +135,7 @@ NodeType Agent::nodeType()
 QSharedPointer<Node> Agent::sharedThis()
 {
 	OC_METHODGATE();
-	//return QEnableSharedFromThis<Agent>::sharedFromThis();
+	// NOTE: don't cast here, cast at the site of use. This is to make all nodes "shared this compatible"
 	return sharedFromThis();
 }
 
@@ -153,6 +165,7 @@ QSharedPointer<AgentConfigStore> Agent::configurationStore()
 
 
 QSharedPointer<AgentConfig> Agent::configuration(){
+	OC_METHODGATE();
 	auto configStore = configurationStore();
 	if(!configStore.isNull()) {
 		return configStore->agentConfig();
@@ -161,97 +174,8 @@ QSharedPointer<AgentConfig> Agent::configuration(){
 }
 
 
-QSharedPointer<IController> Agent::controller()
-{
+
+QSharedPointer<ControllerHandler> Agent::controllerHandler(){
 	OC_METHODGATE();
-	return mController;
-}
-
-
-QString Agent::controllerName(){
-	auto configStore = configurationStore();
-	if(!configStore.isNull()) {
-		auto config = configStore->agentConfig();
-		if(!config.isNull()) {
-			return config->controllerName();
-		}
-	}
-	return QString();
-}
-
-
-void Agent::unloadController()
-{
-	OC_METHODGATE();
-	// Unload old controller
-	if(nullptr != mController) {
-		//qDebug()<<"Unloading old actuator controller";
-		mController->setConnected(false);
-		mController->deleteLater();
-		mController = nullptr;
-	}
-}
-
-
-void Agent::loadController()
-{
-	OC_METHODGATE();
-	if(mController.isNull()) {
-		if(!mAgentConfigStore.isNull()) {
-			QSharedPointer<AgentConfig> config = mAgentConfigStore->agentConfig();
-			if(!config.isNull()) {
-				QString controllerName = config->controllerName().trimmed();
-				if(!controllerName.isEmpty()) {
-					ControllerFactory factory;
-					mController = factory.controllerFactory(controllerName);
-				} else {
-					qWarning() << "ERROR: No actuator controller named in agent config";
-				}
-			} else {
-				qWarning() << "ERROR: No agent config";
-			}
-		} else {
-			qWarning() << "ERROR: No agent config store";
-		}
-	}
-	setControllerConfig();
-}
-
-void Agent::setControllerConfig(){
-	if(!mController.isNull()) {
-		if(!mAgentConfigStore.isNull()) {
-			QSharedPointer<AgentConfig> config = mAgentConfigStore->agentConfig();
-			if(!config.isNull()) {
-				auto controllerConfig = config->controllerConfig();
-				mController->setConfiguration(controllerConfig);
-			} else {
-				qWarning() << "ERROR: No agent config";
-			}
-		} else {
-			qWarning() << "ERROR: No agent config store";
-		}
-	}
-}
-
-void Agent::getControllerConfig(){
-	if(!mController.isNull()) {
-		if(!mAgentConfigStore.isNull()) {
-			QSharedPointer<AgentConfig> config = mAgentConfigStore->agentConfig();
-			if(!config.isNull()) {
-				auto controllerConfig = mController->configuration();
-				config->setControllerConfig(controllerConfig);
-			} else {
-				qWarning() << "ERROR: No agent config";
-			}
-		} else {
-			qWarning() << "ERROR: No agent config store";
-		}
-	}
-}
-
-void Agent::reloadController()
-{
-	OC_METHODGATE();
-	unloadController();
-	loadController();
+	return mControllerHandler;
 }

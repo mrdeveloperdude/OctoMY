@@ -35,8 +35,8 @@ void PoseMappingView::paintEvent(QPaintEvent *)
 {
 	OC_METHODGATE();
 	if(nullptr!=mWidget) {
-		PoseMapping *mapping=mWidget->mapping();
-		if(nullptr!=mapping) {
+		auto mapping = mWidget->mapping();
+		if(!mapping.isNull()) {
 			// Get buttons so we can use their coordinates
 			QList<QPushButton *> fromButtons = findChildren<QPushButton *>(QRegularExpression("pushButtonFrom.*"));
 			QList<QPushButton *> toButtons = findChildren<QPushButton *>(QRegularExpression("pushButtonTo.*"));

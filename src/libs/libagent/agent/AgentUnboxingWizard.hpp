@@ -10,6 +10,8 @@
 
 
 class Agent;
+class ControllerHandler;
+class IController;
 
 namespace Ui {
 class AgentUnboxingWizard;
@@ -30,11 +32,15 @@ public:
 	
 private:
 	QString controllerName() const;
+	QSharedPointer<ControllerHandler> controllerHandler() const;
+	QSharedPointer<IController> controller() const;
 	bool isDelivered() const;
 	bool isControllerSet() const;
 	bool isControllerConfigured() const;
-	bool isPaierd() const;
-	bool controllerIsSerial() const;
+	int stanzaCount() const;
+	bool isStanzaed() const;
+	int associateCount() const;
+	bool isPaired() const;
 	bool controllerNeedsConfig() const;
 
 	// Virtual activity mechanism

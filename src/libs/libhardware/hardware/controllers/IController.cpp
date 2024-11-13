@@ -5,7 +5,7 @@
 #include <QWidget>
 #include <QBitArray>
 
-IController::IController(QString title, QString description, QString icon, QObject *parent)
+IController::IController(const QString &title, const QString &description, const QString &icon, QObject *parent)
 	: QObject(parent)
 	, mTitle(title)
 	, mDescription(description)
@@ -92,17 +92,43 @@ void IController::setConfiguration(const QVariantMap &map)
 }
 
 
-void IController::limp(const QBitArray &flags){
+void IController::setEnabled(ACTUATOR_INDEX index, bool enabled){
+	OC_METHODGATE();
+	if(mEnabled.size()<=index) {
+		mEnabled.resize(index+1);
+	}
+	mEnabled[index] = enabled;
+}
+
+
+bool IController::isEnabled(ACTUATOR_INDEX index) const {
+	OC_METHODGATE();
+	if(mEnabled.size()<=index) {
+		return false;
+	}
+	return mEnabled[index];
+}
+
+
+ActuatorMotion IController::actuatorMotion(ACTUATOR_INDEX index){
+	OC_METHODGATE();
+	Q_UNUSED(index);
+	return RANGED_MOTION;
+}
+
+
+void IController::setLimp(const QBitArray &flags){
 	OC_METHODGATE();
 	if(isConnected()) {
 		const int sz = flags.size();
 		// Trivial reject: limp ALL
-		if(flags.count(true)==sz) {
-			limpAll();
+		if(flags.count(true) == sz) {
+			toggleLimpAll(true);
+		} else if(flags.count(false) == sz) {
+			toggleLimpAll(false);
 		} else {
-			QString data;
 			for(auto i = 0; i < sz; ++i) {
-				limp(i, flags.testBit(i));
+				setLimp(i, flags.testBit(i));
 			}
 		}
 	} else {
@@ -111,7 +137,7 @@ void IController::limp(const QBitArray &flags){
 }
 
 
-void IController::move(const Pose &pose){
+void IController::setTargetPose(const Pose &pose){
 	OC_METHODGATE();
 	if(isConnected()) {
 		const auto poseSize{static_cast<int>(pose.size())};
@@ -122,7 +148,7 @@ void IController::move(const Pose &pose){
 		for(int i = 0; i < actuatorSize; ++i) {
 			// TODO: Fix float vs int issue
 			const auto value = qBound(-1.0, pose.value(i), 1.0);
-			move(i, value);
+			setTargetValue(i, value);
 		}
 	} else {
 		qWarning() << "ERROR: Trying to move actuators when not connected";
@@ -130,18 +156,18 @@ void IController::move(const Pose &pose){
 }
 
 
-void IController::center(quint8 index){
+void IController::center(ACTUATOR_INDEX index){
 	OC_METHODGATE();
-	move(index, actuatorDefault(index));
+	setTargetValue(index, actuatorDefaultValue(index));
 }
 
 
-void IController::limpAll()
+void IController::toggleLimpAll(bool limp)
 {
 	OC_METHODGATE();
-	const auto count=actuatorCount();
-	QBitArray ar(count,true);
-	limp(ar);
+	const auto count = actuatorCount();
+	QBitArray ar(count, limp);
+	setLimp(ar);
 }
 
 
@@ -149,8 +175,8 @@ void IController::centerAll()
 {
 	OC_METHODGATE();
 	const auto count=actuatorCount();
-	for(quint8 i=0; i<count; ++i) {
-		move(i, actuatorDefault(i));
+	for(ACTUATOR_INDEX i=0; i<count; ++i) {
+		setTargetValue(i, actuatorDefaultValue(i));
 	}
 }
 

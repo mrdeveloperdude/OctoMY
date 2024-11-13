@@ -10,7 +10,7 @@ class ServiceLevel: public QObject
 	Q_OBJECT
 private:
 	const QString mName;
-	const QSet<QString> mServiceNames;
+	QSet<QString> mServiceNames;
 	bool mEnableWanted;
 
 public:
@@ -22,6 +22,7 @@ public:
 	bool enabled() const;
 	QString name() const;
 	QSet<QString> serviceNames() const;
+	void toggleService(const QString &name, bool on = true);
 
 public:
 	void enable(const bool wanted);

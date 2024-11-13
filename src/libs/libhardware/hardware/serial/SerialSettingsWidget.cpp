@@ -16,7 +16,6 @@ static const char blankString[] = QT_TRANSLATE_NOOP("SettingsDialog", "N/A");
 SerialSettingsWidget::SerialSettingsWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::SerialSettingsWidget)
-	, mManualSaveMode(false)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
@@ -214,7 +213,7 @@ void SerialSettingsWidget::updateSettings()
 void SerialSettingsWidget::setSettings(SerialSettings &settings)
 {
 	OC_METHODGATE();
-	qDebug()<< "SERIAL SETTINGS WIDGET RECEIVED SETTINGS: "<<serialSettingsToString(settings);
+	// qDebug()<< "SERIAL SETTINGS WIDGET RECEIVED SETTINGS: "<<serialSettingsToString(settings);
 	ui->serialPortInfoListBox->setCurrentText(settings.name);
 	ui->baudRateBox->setCurrentText(QString::number(settings.baudRate));
 	ui->dataBitsBox->setCurrentIndex(settings.dataBits-5);

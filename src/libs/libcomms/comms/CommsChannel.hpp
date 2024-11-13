@@ -36,7 +36,7 @@
 #define OCTOMY_PROTOCOL_DATASTREAM_VERSION_CURRENT (QDataStream::Qt_5_7)
 
 /*
- * Documentation is here: https://sites.google.com/site/octomyproject/documentation/development/architectual-overview/communications
+ * Documentation is here: https://octomy.org/documentation/architecture/communication
 */
 
 class HubWindow;

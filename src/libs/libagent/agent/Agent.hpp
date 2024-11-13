@@ -12,9 +12,10 @@
 
 class AgentConfig;
 class AgentConfigStore;
+class AgentConfigService;
 class AgentWindow;
 class IAppLauncher;
-class IController;
+class ControllerHandler;
 
 class Agent : public Node//, public QEnableSharedFromThis<Agent>
 {
@@ -33,8 +34,12 @@ private:
 	// The configuration store for this agent. Contains all configuration data in secure asynchronous storage.
 	QSharedPointer<AgentConfigStore> mAgentConfigStore;
 
+	// The service to maintain agent config
+	QSharedPointer<AgentConfigService> mAgentConfigService;
+	
+	
 	// The currently active controller
-	QSharedPointer<IController> mController;
+	QSharedPointer<ControllerHandler> mControllerHandler;
 	
 public:
 	explicit Agent();
@@ -76,22 +81,7 @@ public:
 
 public:
 	// Provide the currently active actuator controller. Options include ardumy, servotor32 etc.
-	QSharedPointer<IController> controller();
-	// Provide the name of the actuator controller selected for this agent
-	QString controllerName();
-
-	
-	
-	// Unload the currently active actuator controller
-	void unloadController();
-	// Load the currently active actuator controller
-	void loadController();
-	// Apply current config to controller
-	void setControllerConfig();
-	// Fetch current config from controller
-	void getControllerConfig();
-	// Unload and reload the currently active actuator controller from the stored configuration
-	void reloadController();
+	QSharedPointer<ControllerHandler> controllerHandler();
 
 };
 

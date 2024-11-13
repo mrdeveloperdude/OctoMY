@@ -14,5 +14,6 @@ enum ControlUnboxingStage{
 
 QString ControlUnboxingStageToSTring(ControlUnboxingStage s);
 
+QDebug operator<<(QDebug debug, ControlUnboxingStage s);
 
 #endif // CONTROLUNBOXINGSTAGE_HPP

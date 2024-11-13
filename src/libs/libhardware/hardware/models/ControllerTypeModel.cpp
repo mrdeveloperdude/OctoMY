@@ -22,25 +22,25 @@ int ControllerTypeModel::rowCount(const QModelIndex &parent) const
 
 QVariant ControllerTypeModel::data(const QModelIndex &index, int role) const
 {
-	if (!index.isValid() || index.row() < 0 || index.row() >= controllerTypes.count())
+	if (!index.isValid() || index.row() < 0 || index.row() >= controllerTypes.count()){
 		return QVariant();
-	
-	const ControllerType &type = controllerTypes.at(index.row());
-	
-	switch (role)
-	{
-	case Qt::DisplayRole:
-		return type.fullName;
-	case Qt::DecorationRole:
-	{
-		QIcon icon;
-		icon.addFile(type.iconURL, QSize(), QIcon::Normal, QIcon::Off);
-		return icon;
 	}
-	case Qt::ToolTipRole:
-		return type.nickName;
-	default:
-		return QVariant();
+	
+	const auto &type = controllerTypes.at(index.row());
+	
+	switch (role){
+		case Qt::DisplayRole:
+			return type.fullName;
+		case Qt::DecorationRole:
+		{
+			QIcon icon;
+			icon.addFile(type.iconURL, QSize(), QIcon::Normal, QIcon::Off);
+			return icon;
+		}
+		case Qt::ToolTipRole:
+			return type.nickName;
+		default:
+			return QVariant();
 	}
 }
 

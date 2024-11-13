@@ -1,5 +1,7 @@
 #include "AgentUnboxingWizard.hpp"
+#include "hardware/controllers/ControllerHandler.hpp"
 #include "hardware/controllers/IController.hpp"
+#include "stanza/StanzaBook.hpp"
 #include "ui_AgentUnboxingWizard.h"
 
 #include "agent/Agent.hpp"
@@ -55,6 +57,26 @@ QString AgentUnboxingWizard::controllerName() const{
 }
 
 
+
+QSharedPointer<ControllerHandler> AgentUnboxingWizard::controllerHandler() const{
+	OC_METHODGATE();
+	if(!mAgent.isNull()){
+		return mAgent->controllerHandler();
+	}
+	return nullptr;
+}
+
+
+QSharedPointer<IController> AgentUnboxingWizard::controller() const{
+	OC_METHODGATE();
+	auto handler = controllerHandler();
+	if(!handler.isNull()){
+		return handler->controller();
+	}
+	return nullptr;
+}
+
+
 bool AgentUnboxingWizard::isControllerSet() const{
 	OC_METHODGATE();
 	auto name = controllerName();
@@ -65,9 +87,10 @@ bool AgentUnboxingWizard::isControllerSet() const{
 
 bool AgentUnboxingWizard::controllerNeedsConfig() const{
 	OC_METHODGATE();
-	const auto controller = mAgent->controller();
-	if(controller){
-		return controller->hasConfigurationWidget();
+	
+	const auto ctl = controller();
+	if(!ctl.isNull()){
+		return ctl->hasConfigurationWidget();
 	}
 	const auto name = controllerName();
 	return (!name.isEmpty()) && name != "none";
@@ -88,22 +111,39 @@ bool AgentUnboxingWizard::isControllerConfigured() const{
 }
 
 
-bool AgentUnboxingWizard::isPaierd() const{
+int AgentUnboxingWizard::stanzaCount() const{
+	OC_METHODGATE();
+	auto config = mAgent->configuration();
+	if(!config.isNull()) {
+		auto stanzas = config->stanzas();
+		if(!stanzas.isNull()){
+			return stanzas->stanzaCount();
+		}
+	}
+	return 0;
+}
+
+
+
+bool AgentUnboxingWizard::isStanzaed() const{
+	OC_METHODGATE();
+	return stanzaCount() > 0;
+}
+
+
+int AgentUnboxingWizard::associateCount() const{
 	OC_METHODGATE();
 	QVector<QueryRule> f;
 	f.append(QueryRule(TYPE_REMOTE, false, true, true));
 	f.append(QueryRule(TYPE_HUB, false, true, true));
-	auto result = mAgent->addressBook()->filter(f);
-	return result.size() > 0;
+	return mAgent->addressBook()->filter(f).size();
 }
 
 
-bool AgentUnboxingWizard::controllerIsSerial() const{
+bool AgentUnboxingWizard::isPaired() const{
 	OC_METHODGATE();
-	return controllerName() == "serial";
+	return associateCount() > 0;
 }
-
-
 
 
 UnboxingStage AgentUnboxingWizard::unboxingStage(){
@@ -121,7 +161,10 @@ UnboxingStage AgentUnboxingWizard::unboxingStage(){
 		else if(controllerNeedsConfig() && !isControllerConfigured()){
 			stage = CONTROLLER_CONFIGURATION_STAGE;
 		}
-		else if(!isPaierd()){
+		else if(!isStanzaed()){
+			stage = STANZA_STAGE;
+		}
+		else if(!isPaired()){
 			stage = PAIRING_STAGE;
 		}
 		else{
@@ -138,6 +181,8 @@ void AgentUnboxingWizard::updateStage(){
 	bool controllerSet{false};
 	bool controllerConfigured{false};
 	bool controllerConfigNeeded{false};
+	int stanzasCt{0};
+	int associateCt{0};
 	bool paired{false};
 	bool allOK{false};
 	QString name;
@@ -152,7 +197,9 @@ void AgentUnboxingWizard::updateStage(){
 		controllerSet = isControllerSet();
 		controllerConfigNeeded = controllerNeedsConfig();
 		controllerConfigured = isControllerConfigured();
-		paired = isPaierd();
+		stanzasCt = isStanzaed();
+		associateCt = associateCount();
+		paired = associateCt > 0;
 		name = controllerName();
 		stage = unboxingStage();
 	}
@@ -169,10 +216,20 @@ void AgentUnboxingWizard::updateStage(){
 	ui->lightWidgetControllerSet->setLightOn(controllerSet);
 	ui->labelControllerName->setText(name);
 	ui->labelControllerSet->setText(controllerSet?"Controller:":"Select Controller");
-	ui->labelControllerConfigured->setText(controllerConfigured?"Configured":"Configure");
-	ui->labelControllerConfigured->setVisible(controllerConfigNeeded);
-	ui->lightWidgetControllerConfigured->setVisible(controllerConfigNeeded);
-	ui->lightWidgetControllerConfigured->setLightOn(controllerConfigured);
+	
+	ui->labelHardwareConfigured->setText(controllerConfigured?"Configured":"");
+	ui->labelHardware->setVisible(controllerConfigNeeded);
+	ui->labelHardwareConfigured->setVisible(controllerConfigNeeded);
+	
+	
+	ui->labelAssociateCount->setText(QString("%1 associates").arg(associateCt));
+	ui->labelStanzasCount->setText(QString("%1 stanzas").arg(stanzasCt));
+
+	
+	ui->lightWidgetHardwareConfigured->setVisible(controllerConfigNeeded);
+	ui->lightWidgetHardwareConfigured->setLightOn(controllerConfigured);
+	
+	ui->lightWidgetStanzasConfigured->setLightOn(stanzasCt >0);
 	ui->lightWidgetPaired->setLightOn(paired);
 	ui->labelPaired->setText(paired?"Paired":"Pairing");
 
@@ -193,13 +250,14 @@ void AgentUnboxingWizard::nextStageClicked(){
 			case DELIVERY_STAGE: push("AgentDeliveryActivity"); break;
 			case CONTROLLER_TYPE_STAGE: push("ControllerTypeSelector"); break;
 			case CONTROLLER_CONFIGURATION_STAGE: push("ControllerActivity"); break;
+			case STANZA_STAGE: push("StanzaManagerActivity"); break;
 			case PAIRING_STAGE: push("PairingActivity"); pairing = true; break;
-			case UNBOXING_COMPLETE: push("FaceWidget"); break;
-			case HANDOVER_STAGE: push("FaceWidget"); break;
+			case UNBOXING_COMPLETE: push("FaceActivity"); break;
+			case HANDOVER_STAGE: push("FaceActivity"); break;
 			default:
 			case UNKNOWN_STAGE: push("UnboxingWizard"); break;
-			}
-			mAgent->discoveryActivate(pairing);
+		}
+		mAgent->discoveryActivate(pairing);
 	}
 }
 
@@ -243,7 +301,10 @@ void AgentUnboxingWizard::popImpl(const QString &returnActivity, const QStringLi
 			const auto controllerType = returnArguments[0];
 			qDebug()<<"Got controller type " << controllerType;
 			window->controllerTypeSelected(controllerType);
-			mAgent->reloadController();
+			auto handler = controllerHandler();
+			if(!handler.isNull()){
+				handler->reloadController();
+			}
 		}
 		else{
 			qWarning()<<"No agent window";
@@ -257,7 +318,7 @@ void AgentUnboxingWizard::popImpl(const QString &returnActivity, const QStringLi
 				if("true" == response){
 					auto window = qSharedPointerCast<AgentWindow>(mAgent->nodeWindow());
 					if(window){
-						window->quitApplication();
+						window->applicationShutdown();
 					}
 					else{
 						qWarning()<<"No agent window";

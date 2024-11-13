@@ -95,8 +95,8 @@ void DeveloperWidget::configure(QSharedPointer<Settings> _settings, QSharedPoint
 		}
 		//TODO: WOW we need to update this
 		//		ui->widgetActuatorControl->configure(5);
-		PoseMapping *pm = OC_NEW PoseMapping(5);
-		ui->widgetPoseMapping->configure(*pm);
+		auto pm = QSharedPointer<PoseMapping>::create(5);
+		ui->widgetPoseMapping->configure(pm);
 		auto h = this->hub();
 		auto cmd = h->context()->commandLine();
 		ui->lineEditBindPort->setText(cmd->localPortOption.valueName());

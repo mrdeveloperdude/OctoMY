@@ -1,7 +1,7 @@
 #include "ArduMYController.hpp"
 
 #include "ardumy/ArduMYControllerWidget.hpp"
-#include "ardumy_arduino/ArduMYParserState.hpp"
+#include "ardumy_arduino/parser/ArduMYParserState.hpp"
 #include "ardumy/ArduMYTypeConversions.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
@@ -39,7 +39,7 @@ ArduMYController::~ArduMYController()
 {
 	OC_METHODGATE();
 	//ASIMOV: Limp all servos before closing shop to avoid frying them if they are trying to reach impossible positions
-	limpAll();
+	toggleLimpAll(true);
 }
 
 
@@ -197,18 +197,18 @@ void ArduMYController::writeData(const QByteArray &data)
 
 
 
-void ArduMYController::onActuatorWidgetMoved(quint32 id, qreal val)
+void ArduMYController::onActuatorWidgetMoved(quint32 id, ACTUATOR_VALUE val)
 {
 	OC_METHODGATE();
 	//qDebug()<<"ARDUMY ACTUATOR WIDGET MOVE"<<id<<" TO "<<val;
-	move(static_cast<quint8>(id), val);
+	setTargetValue(static_cast<ACTUATOR_INDEX>(id), val);
 }
 
 void ArduMYController::onActuatorWidgetLimped(quint32 id, bool l)
 {
 	OC_METHODGATE();
 	qDebug()<<"ARDUMY ACTUATOR WIDGET LIMP "<<id<<" TO "<<l;
-	limp(static_cast<quint8>(id), l);
+	setLimp(static_cast<ACTUATOR_INDEX>(id), l);
 }
 
 void ArduMYController::onActuatorWidgetDeleted(quint32 id)
@@ -275,7 +275,7 @@ ArduMYActuator *ArduMYController::addActuator()
 {
 	OC_METHODGATE();
 	ArduMYActuator *ret=nullptr;
-	const quint8 max=maxActuatorsSupported();
+	const ACTUATOR_INDEX max=maxActuatorsSupported();
 	const auto ct=mActuators.size();
 	if(ct==max) {
 		qWarning()<<"ERROR: Tried to add actuator beyond the maximum count of " <<max;
@@ -297,14 +297,14 @@ void ArduMYController::deleteActuator(quint32 id)
 	emit configurationChanged();
 }
 
-void ArduMYController::setActuatorCount(quint8 ct)
+void ArduMYController::setActuatorCount(ACTUATOR_INDEX ct)
 {
 	OC_METHODGATE();
-	const quint8 max=maxActuatorsSupported();
+	const ACTUATOR_INDEX max=maxActuatorsSupported();
 	if(ct>max) {
 		qWarning()<<"ERROR: Tried to set "<<ct<< " actuators which is more than the maximum of " <<max;
 	} else {
-		const quint8 old=static_cast<quint8>(mActuators.size());
+		const ACTUATOR_INDEX old=static_cast<ACTUATOR_INDEX>(mActuators.size());
 		if(ct!=old) {
 			mActuators.setSize(ct);
 			if(ct>old) {
@@ -450,7 +450,8 @@ void ArduMYController::ardumy_setConfiguration(QVariantMap &configuration)
 	}
 	// Update UI with any changes
 	if(nullptr!=mWidget) {
-		mWidget->configure(this);
+		auto sharedThis = qSharedPointerCast<ArduMYController>(sharedFromThis());
+		mWidget->configure(sharedThis);
 	}
 }
 
@@ -474,7 +475,8 @@ QWidget *ArduMYController::configurationWidget()
 	if(nullptr==mWidget) {
 		mWidget=OC_NEW ArduMYControllerWidget(nullptr);
 		if(nullptr!=mWidget) {
-			mWidget->configure(this);
+			auto sharedThis = qSharedPointerCast<ArduMYController>(sharedFromThis());
+			mWidget->configure(sharedThis);
 		}
 	}
 	return mWidget;
@@ -500,28 +502,28 @@ bool ArduMYController::isConnected()
 }
 
 
-quint8 ArduMYController::maxActuatorsSupported()
+ACTUATOR_INDEX ArduMYController::maxActuatorsSupported()
 {
 	OC_METHODGATE();
 	return 0xFF;
 }
 
 
-quint8 ArduMYController::actuatorCount()
+ACTUATOR_INDEX ArduMYController::actuatorCount()
 {
 	OC_METHODGATE();
-	return static_cast<quint8>(mActuators.size());
+	return static_cast<ACTUATOR_INDEX>(mActuators.size());
 }
 
 
-QString ArduMYController::actuatorName(quint8)
+QString ArduMYController::actuatorName(ACTUATOR_INDEX)
 {
 	OC_METHODGATE();
 	return "IMPLEMENT ME";
 }
 
 
-qreal ArduMYController::actuatorValue(quint8 index)
+ACTUATOR_VALUE ArduMYController::actuatorTargetValue(ACTUATOR_INDEX index)
 {
 	OC_METHODGATE();
 	if(index>=mActuators.size()) {
@@ -531,14 +533,14 @@ qreal ArduMYController::actuatorValue(quint8 index)
 }
 
 
-qreal ArduMYController::actuatorDefault(quint8)
+ACTUATOR_VALUE ArduMYController::actuatorDefaultValue(ACTUATOR_INDEX)
 {
 	OC_METHODGATE();
 	return 0.0;
 }
 
 
-void ArduMYController::limp(quint8 index, bool limp)
+void ArduMYController::setLimp(ACTUATOR_INDEX index, bool limp)
 {
 	OC_METHODGATE();
 	if(isConnected()) {
@@ -556,7 +558,7 @@ void ArduMYController::limp(quint8 index, bool limp)
 }
 
 
-void ArduMYController::move(quint8 i, qreal value)
+void ArduMYController::setTargetValue(ACTUATOR_INDEX i, ACTUATOR_VALUE value)
 {
 	OC_METHODGATE();
 	Q_UNUSED(i);
@@ -576,7 +578,7 @@ void ArduMYController::move(quint8 i, qreal value)
 }
 
 
-void ArduMYController::limp(const QBitArray &flags)
+void ArduMYController::setLimp(const QBitArray &flags)
 {
 	OC_METHODGATE();
 	if(isConnected()) {
@@ -597,11 +599,11 @@ void ArduMYController::limp(const QBitArray &flags)
 
 // NOTE: This will simply collect the latest data. The actual writing is done in syncMove when serial signals there is an opportunity.
 // TODO: look at binary extension introduced in 2.1 version of hexy firmware to improve performance
-void ArduMYController::move(const Pose &pose)
+void ArduMYController::setTargetPose(const Pose &pose)
 {
 	OC_METHODGATE();
 	Q_UNUSED(pose);
-	//qreal pos[1]= {0.0};	quint32 flags;
+	//ACTUATOR_VALUE pos[1]= {0.0};	quint32 flags;
 	if(isConnected()) {
 		/*
 		const quint32 sz=pose.size();

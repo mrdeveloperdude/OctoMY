@@ -21,27 +21,6 @@
 
 const QRegularExpression rePin("^[0-9A-H]{5}$"); // trimmed 5-digit string with 0-9 and A-H as valid characters
 
-/*
-Associate::Associate(const QVariantMap map, bool isPublic)
-	: mKey( map["key"].toMap(), isPublic)
-	, mName( map["name"].toString() )
-	, mGender( map["gender"].toString() )
-	, mRole( nodeRoleFromString( map["role"].toString() ) )
-	, mType( nodeTypeFromString( map["type"].toString() ) )
-	, mTrusts( map["trusts"].toStringList())
-	, mLastSeenMS( utility::time::variantToMs(map["lastSeenMS"]) )
-	, mLastInitiatedHandshakeMS( utility::time::variantToMs(map["lastInitiatedHandshakeMS"]) )
-	, mLastAdherentHandshakeMS( utility::time::variantToMs(map["lastAdherentHandshakeMS"]) )
-	, mBirthDate( utility::time::variantToMs(map["birthDate"]) )
-	, mAddressList( map["addressList"].toList() )
-	  //	, mPins( map["pins"].toStringList())// DONT STORE PINS THEY ARE EPHEMERAL
-
-{
-	OC_METHODGATE();
-	//qDebug()<<"CREATE NodeAssociate(map, isPublic)"<<map<<isPublic;
-}
-*/
-
 Associate::Associate(const QVariantMap map/*, bool isPublic*/)
 	: mID ( map["id"].toString())
 	, mName( map["name"].toString() )
@@ -362,18 +341,18 @@ QString Associate::toString()
 {
 	OC_METHODGATE();
 	return QString() //mKey.toString()
-		   +"name: "+mName
-		   +", id: "+id()
-		   +", gender: "+mGender
-		   +", addressList:"+mAddressList.toString()
-		   +", lastSeenMS:"+utility::string::formattedDateFromMS(mLastSeenMS)
-		   +", lastInitiatedHandshakeMS:"+utility::string::formattedDateFromMS(mLastInitiatedHandshakeMS)
-		   +", lastAdherentHandshakeMS:"+utility::string::formattedDateFromMS(mLastAdherentHandshakeMS)
-		   +", birthDate:"+utility::string::formattedDateFromMS(mBirthDate)
-		   +", role:"+nodeRoleToString(mRole)
-		   +", type:"+nodeTypeToString(mType)
-		   +", pins:"+mPins.join(";")
-		   +", trusts:"+QStringList(mTrusts.begin(), mTrusts.end()).join(";");
+		+"  name: "+mName
+		+", id: "+id()
+		+", gender: "+mGender
+		+", addressList:"+mAddressList.toString()
+		+", lastSeenMS:"+utility::string::formattedDateFromMS(mLastSeenMS)
+		+", lastInitiatedHandshakeMS:"+utility::string::formattedDateFromMS(mLastInitiatedHandshakeMS)
+		+", lastAdherentHandshakeMS:"+utility::string::formattedDateFromMS(mLastAdherentHandshakeMS)
+		+", birthDate:"+utility::string::formattedDateFromMS(mBirthDate)
+		+", role:"+nodeRoleToString(mRole)
+		+", type:"+nodeTypeToString(mType)
+		+", pins:"+mPins.join(";")
+		+", trusts:"+QStringList(mTrusts.begin(), mTrusts.end()).join(";");
 }
 
 

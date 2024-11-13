@@ -19,7 +19,7 @@ class PoseMappingWidget : public QWidget
 	Q_OBJECT
 private:
 	Ui::PoseMappingWidget *ui;
-	PoseMapping *mMapping;
+	QSharedPointer<PoseMapping> mMapping;
 	QButtonGroup *butGroupFrom;
 	QButtonGroup *butGroupTo;
 
@@ -32,8 +32,8 @@ public:
 	virtual ~PoseMappingWidget();
 
 public:
-	void configure(PoseMapping &mapping);
-	PoseMapping *mapping();
+	void configure(QSharedPointer<PoseMapping> mapping);
+	QSharedPointer<PoseMapping>mapping() const;
 
 private:
 	void addButtonPair(quint32 index, QVBoxLayout *hLayout, QString from,QString to, QButtonGroup *butGroupFrom, QButtonGroup *butGroupTo);

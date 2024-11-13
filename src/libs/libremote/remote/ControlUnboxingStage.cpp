@@ -1,7 +1,8 @@
 #include "ControlUnboxingStage.hpp"
 
-
 #include "uptime/MethodGate.hpp"
+
+#include <QDebug>
 
 QString ControlUnboxingStageToSTring(ControlUnboxingStage s)
 {
@@ -17,5 +18,14 @@ QString ControlUnboxingStageToSTring(ControlUnboxingStage s)
 	}
 #undef ControlUnboxingStageToStringCASE
 	return "UNKNOWN";
+}
+
+
+
+
+QDebug operator<<(QDebug debug, ControlUnboxingStage s) {
+	QDebugStateSaver saver(debug); // Saves the current debug state and restores it at the end
+	debug.nospace() << ControlUnboxingStageToSTring(s); // Calls your conversion function
+	return debug;
 }
 

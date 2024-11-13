@@ -9,22 +9,28 @@
 
 
 class Agent;
-class AgentSipAndSeeActivity;
 class AgentBaptismActivity;
 class AgentDeliveryActivity;
 class AgentDeliveryActivity;
+class AgentSipAndSeeActivity;
 class AgentUnboxingWizard;
 class CameraPairingActivity;
 class ControllerActivity;
 class ControllerTypeSelector;
-class FaceWidget;
+class FaceActivity;
+class HardwareActivity;
+class IdentityActivity;
+class LobeTypeSelector;
 class MessageActivity;
+class NetworkPairingActivity;
 class PairingActivity;
 class PairingTrustActivity;
 class QAction;
 class QMenu;
 class QWidget;
 class SerialDeviceSelector;
+class StanzaEditorActivity;
+class StanzaManagerActivity;
 class TransitionActivity;
 struct StackPage;
 
@@ -47,28 +53,34 @@ class AgentWindow : public NodeWindow, public LogDestination
 
 private:
 	Ui::AgentWindow *ui;
-	QMenu *mMenu;
-	QAction *mQuitAction;
-	QAction *mStartCameraPairingAction;
-	QAction *mStartNormalPairingAction;
-	QAction *mHardwareAction;
-	QAction *mPlanEditorAction;
-	QAction *mToggleOnlineAction;
-	QAction *mShowFaceAction;
+	QMenu *mMenu{nullptr};
+	QAction *mQuitAction{nullptr};
+	QAction *mPairingAction{nullptr};
+	QAction *mIdentityAction{nullptr};
+	QAction *mHardwareAction{nullptr};
+	QAction *mPlanEditorAction{nullptr};
+	QAction *mToggleOnlineAction{nullptr};
+	QAction *mShowFaceAction{nullptr};
 	// Activities
-	AgentSipAndSeeActivity * mSipAndSeeActivity{nullptr};
 	AgentBaptismActivity * mBaptismActivity{nullptr};
 	AgentDeliveryActivity * mDeliveryActivity{nullptr};
+	AgentSipAndSeeActivity * mSipAndSeeActivity{nullptr};
 	AgentUnboxingWizard *mUnboxingWizard{nullptr};
+	LobeTypeSelector *mLobeTypeSelectorActivity{nullptr};
 	CameraPairingActivity *mCameraPairingActivity{nullptr};
+	NetworkPairingActivity *mNetworkPairingActivity{nullptr};
 	ControllerActivity * mControllerConfiguration{nullptr};
+	HardwareActivity * mHardwareConfiguration{nullptr};
 	ControllerTypeSelector * mControllerTypeSelector{nullptr};
-	FaceWidget *mFaceWidget{nullptr};
+	FaceActivity *mFaceActivity{nullptr};
+	IdentityActivity *mIdentityActivity{nullptr};
 	MessageActivity * mMessageActivity{nullptr};
-	TransitionActivity * mTransitionActivity{nullptr};
 	PairingActivity *mPairingActivity{nullptr};
 	PairingTrustActivity *mPairingTrustActivity{nullptr};
+	StanzaManagerActivity * mStanzaManagerActivity{nullptr};
 	SerialDeviceSelector * mSerialDeviceSelector{nullptr};
+	StanzaEditorActivity * mStanzaEditorActivity{nullptr};
+	TransitionActivity * mTransitionActivity{nullptr};
 	const static QString mQuitApplicationText;
 
 	bool mDebug{true};
@@ -93,7 +105,9 @@ public:
 
 	// Agent spesific private
 private:
-	QAction *addMenuItem(QString title, QString icon, QString toolTip, void (AgentWindow::*method)(), bool checkable = false);
+	template <typename MethodType>
+	QAction* addMenuItem(QString title, QString icon, QString toolTip, MethodType method, bool checkable = false);
+	
 	void prepareNavigation();
 	void prepareMenu();
 	void prepareActivities();
@@ -103,21 +117,22 @@ public slots:
 	QString popPage();
 	bool pushPage(const QString &title, const QStringList arguments = QStringList());
 	QString swapPage(const QString &title);
-	
+
 public slots:
-	void quitApplication();
+	void applicationShutdown();
 
 private slots:
 	void navigateBack();
 	void openMenu();
-	void onStartQuitApplication();
-	void onNotImplementedYet();
-	void onStartCameraPairing();
-	void onStartNormalPairing();
-	void onConfigureHardware();
-	void onPlanEditor();
-	void onOnlineChanged();
-	void onFaceVisibilityChanged();
+	void requestApplicationShutdown();
+	void notImplementedAction();
+	void pairing();
+	void identity();
+	void configureHardware();
+	void editPlan();
+	
+	void toggleOnline(bool online);
+	void face();
 	void unboxingWizardDone();
 
 public:

@@ -63,20 +63,14 @@ ArduMYControllerWidget::~ArduMYControllerWidget()
 	ui=nullptr;
 }
 
-void ArduMYControllerWidget::configure(ArduMYController *controller)
+void ArduMYControllerWidget::configure(QSharedPointer<ArduMYController> controller)
 {
 	OC_METHODGATE();
 	if(nullptr!=mController ) {
 		mController->setConnected(false);
-		if(!disconnect(mController, SIGNAL(connectionChanged()), this, SLOT(onConnectionChanged())) ) {
-			qWarning()<<"ERROR: could not disconnect";
-		}
 	}
 	mController=controller;
 	if(nullptr!=mController ) {
-		if(!connect(mController, SIGNAL(connectionChanged()), this, SLOT(onConnectionChanged()),OC_CONTYPE) ) {
-			qWarning()<<"ERROR: could not connect";
-		}
 		setSerialSettings(mController->serialSettings());
 		onSerialSettingsChanged();
 		reconnectActuatorWidgets();
@@ -103,7 +97,7 @@ void ArduMYControllerWidget::setUILock(bool lock)
 void ArduMYControllerWidget::reconnectActuatorWidgets()
 {
 	OC_METHODGATE();
-	ui->widgetActuatorManager->configure(mController);
+	//ui->widgetActuatorManager->configure(mController);
 }
 
 
@@ -128,7 +122,7 @@ void ArduMYControllerWidget::onTryConnectChanged(const TryToggleState last, cons
 	OC_METHODGATE();
 	switch(current) {
 	case(OFF): {
-		mController->limpAll();
+		mController->toggleLimpAll(true);
 		if(nullptr!=mController) {
 			mController->setConnected(false);
 		}
@@ -141,7 +135,7 @@ void ArduMYControllerWidget::onTryConnectChanged(const TryToggleState last, cons
 	}
 	break;
 	case(ON): {
-		mController->limpAll();
+		mController->toggleLimpAll(true);
 		setUILock(false);
 	}
 	break;

@@ -40,10 +40,10 @@ PoseMappingWidget::~PoseMappingWidget()
 }
 
 
-void PoseMappingWidget::configure(PoseMapping &mapping)
+void PoseMappingWidget::configure(QSharedPointer<PoseMapping> mapping)
 {
 	OC_METHODGATE();
-	mMapping=&mapping;
+	mMapping = mapping;
 	ui->verticalLayout_2->removeWidget(ui->widgetPoses);
 	ui->widgetPoses->deleteLater();
 	ui->widgetPoses = OC_NEW PoseMappingView(ui->scrollAreaWidgetContents);
@@ -90,7 +90,7 @@ void PoseMappingWidget::configure(PoseMapping &mapping)
 	ui->widgetPoses->configure(*this);
 }
 
-PoseMapping *PoseMappingWidget::mapping()
+QSharedPointer<PoseMapping> PoseMappingWidget::mapping() const
 {
 	OC_METHODGATE();
 	return mMapping;
@@ -123,23 +123,26 @@ void PoseMappingWidget::addButtonPair(quint32 index, QVBoxLayout *hLayout, QStri
 	hLayout->addLayout(horizontalLayoutButtons);
 
 	if(!connect(pushButtonRename,  static_cast<void(QPushButton::*)(bool)>(&QPushButton::clicked), this, [=](bool) {
-	bool ok=false;
-	QString oldName=mMapping->name(index);
-		QString name= QInputDialog::getText(this, tr("Rename"), tr("Please enter new name:"), QLineEdit::Normal,oldName, &ok);
-		if (ok && !name.isEmpty()) {
-			if(mDebug){
-				qDebug() << "RENAME SUCCESSFULL: " << name;
-			}
-			mMapping->setName(index,name);
-			if(nullptr!=pushButtonFrom) {
-				pushButtonFrom->setText(name);
-			}
+		bool ok=false;
+		if(!mMapping.isNull()){
+			QString oldName = mMapping->name(index);
+				QString name= QInputDialog::getText(this, tr("Rename"), tr("Please enter new name:"), QLineEdit::Normal,oldName, &ok);
+				if (ok && !name.isEmpty()) {
+					if(mDebug){
+						qDebug() << "RENAME SUCCESSFULL: " << name;
+					}
+					mMapping->setName(index,name);
+					if(nullptr!=pushButtonFrom) {
+						pushButtonFrom->setText(name);
+					}
+				}
 		}
-
+		else{
+			qWarning() << "ERROR: no mapping";
+		}
 	}, OC_CONTYPE_NON_UNIQUE)) {
 		qWarning() << "ERROR: Could not connect";
 	}
-
 }
 
 
@@ -153,7 +156,12 @@ void PoseMappingWidget::makeConnection()
 			if(mDebug){
 				qDebug() << "SETTING MAPPING from " << fromIndex << " to " << toIndex;
 			}
-			mMapping->setMapping(static_cast<quint32>(fromIndex), static_cast<quint32>(toIndex), true);
+			if(!mMapping.isNull()){
+				mMapping->setMapping(static_cast<quint32>(fromIndex), static_cast<quint32>(toIndex), true);
+			}
+			else{
+				qWarning() << "ERROR: no mapping";
+			}
 		}
 		utility::ui::clearButtonGroupSelection(butGroupFrom);
 		utility::ui::clearButtonGroupSelection(butGroupTo);
@@ -168,11 +176,11 @@ void PoseMappingWidget::makeConnection()
 void PoseMappingWidget::onSpinValueChanged(int size)
 {
 	OC_METHODGATE();
-	if(nullptr!=mMapping) {
+	if(!mMapping.isNull()) {
 		if(mDebug){
 			qDebug() << "RESIZING TO: " << size;
 		}
 		mMapping->resize(static_cast<quint32>(size));
-		configure(*mMapping);
+		configure(mMapping);
 	}
 }

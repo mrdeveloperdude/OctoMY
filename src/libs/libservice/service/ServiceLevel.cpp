@@ -38,6 +38,19 @@ QSet<QString> ServiceLevel::serviceNames() const
 	return mServiceNames;
 }
 
+void ServiceLevel::toggleService(const QString &name, bool wantService){
+	OC_METHODGATE();
+	const auto hadService = (mServiceNames.contains(name));
+	if(hadService != wantService){
+		if(wantService){
+			mServiceNames.insert(name);
+		}
+		else{
+			mServiceNames.remove(name);
+		}
+	}
+}
+
 
 void ServiceLevel::enable(const bool wanted)
 {

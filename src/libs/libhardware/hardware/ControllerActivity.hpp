@@ -48,7 +48,9 @@ public:
 	void updateController();
 
 private slots:
-	void confirmConfiguration();
+	void toggleEnableAll();
+	void toggleLimpAll();
+	void done();
 
 };
 

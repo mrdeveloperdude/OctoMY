@@ -5,7 +5,6 @@
 
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
-#include "uptime/ConnectionType.hpp"
 
 #include <QDebug>
 #include <QtGlobal>
@@ -23,6 +22,7 @@ const int Servotor32Controller::SERVO_COUNT{32};
 
 Servotor32Controller::Servotor32Controller(QObject *parent)
 	: IController("Servotor32", "ArcBotics Servotor32", ":/icons/arcbotics_logo.svg", parent)
+	, mAccumulatedPosition(SERVO_COUNT)
 	, mReads(0)
 	, mWidget(nullptr)
 	, mSerialInterface(OC_NEW QSerialPort(this))
@@ -42,10 +42,19 @@ Servotor32Controller::~Servotor32Controller()
 	OC_METHODGATE();
 	if(isConnected()) {
 		// ASIMOV: Limp all actuators before closing shop to avoid frying them if they are trying to reach impossible positions
-		limpAll();
+		toggleLimpAll(true);
 		s32_closeSerialPort();
 	}
 	s32_setHookSerialSignals(false);
+	if(nullptr != mWidget){
+		mWidget->configure(nullptr);
+		mWidget->deleteLater();
+		mWidget = nullptr;
+	}
+	if(nullptr != mSerialInterface){
+		mSerialInterface->deleteLater();
+		mSerialInterface = nullptr;
+	}
 }
 
 
@@ -63,7 +72,9 @@ SerialSettings Servotor32Controller::s32_defaultSerialSettings(){
 void Servotor32Controller::s32_configureSerial(SerialSettings &serialSettings)
 {
 	OC_METHODGATE();
-	qDebug() << "Servotor32Controller configured with new serial settings: " << serialSettings;
+	if(mDebug){
+		qDebug() << "Servotor32Controller configured with new serial settings: " << serialSettings;
+	}
 	const auto wasConnected{isConnected()};
 	if(wasConnected){
 		s32_closeSerialPort();
@@ -86,13 +97,16 @@ void Servotor32Controller::s32_openSerialPort()
 	mSerialInterface->setStopBits(p.stopBits);
 	mSerialInterface->setFlowControl(p.flowControl);
 	if (mSerialInterface->open(QIODevice::ReadWrite)) {
-		qDebug() << tr("Connected to %1").arg(serialSettingsToString(p));
+		if(mDebug){
+			qDebug() << tr("Connected to %1").arg(serialSettingsToString(p));
+		}
 		s32_writeData("\n");
 		s32_version();
-		emit connectionChanged();
 	} else {
 		qDebug() << "ERROR OPENING: " << serialSettingsToString(p) << ":" << mSerialInterface->errorString();
 	}
+	// We send signal even if we did not open successfully
+	emit connectionChanged();
 }
 
 
@@ -105,7 +119,9 @@ void Servotor32Controller::s32_closeSerialPort()
 		mLastSerialSideVersion = "";
 		emit connectionChanged();
 	}
-	qDebug() << "Disconnected";
+	if(mDebug){
+		qDebug() << "Disconnected";
+	}
 }
 
 
@@ -134,10 +150,20 @@ void Servotor32Controller::s32_setHookSerialSignals(bool hook)
 		}
 	}
 }
+void Servotor32Controller::s32_syncMove()
+{
+	OC_METHODGATE();
+	if(mBinaryMode){
+		s32_syncMoveBinary();
+	}
+	else{
+		s32_syncMoveText();
+	}
+}
 
 // NOTE: This will carry out the actual writing when serial signals there is an opportunity.
 //	     The data for move is accumulated and consolidated by one or more move() commands.
-void Servotor32Controller::s32_syncMove()
+void Servotor32Controller::s32_syncMoveText()
 {
 	OC_METHODGATE();
 	if(isConnected()) {
@@ -155,6 +181,49 @@ void Servotor32Controller::s32_syncMove()
 		qWarning() << "ERROR: Trying to syncMove with serial when not connected";
 	}
 }
+
+void Servotor32Controller::s32_syncMoveBinary()
+{
+	OC_METHODGATE();
+	if (isConnected()) {
+		QByteArray data;
+		data.append(0x24); // Start byte ('$')
+		
+		// Create the 4-byte mask
+		uint32_t mask = 0;
+		const int sz = mAccumulatedPosition.size();
+		for (int i = 0; i < sz; ++i) {
+			if (mDirtyMoveFlags.testBit(i)) {
+				mask |= (1 << i); // Set the bit corresponding to the servo index
+			}
+		}
+		
+		// Append the 4-byte mask to the data array (little-endian)
+		data.append(static_cast<char>(mask & 0xFF));
+		data.append(static_cast<char>((mask >> 8) & 0xFF));
+		data.append(static_cast<char>((mask >> 16) & 0xFF));
+		data.append(static_cast<char>((mask >> 24) & 0xFF));
+		
+		// Append position bytes for each dirty servo
+		for (int i = 0; i < sz; ++i) {
+			if (mDirtyMoveFlags.testBit(i)) {
+				// Ensure position is clamped between 50 and 250 (as per specification)
+				int position = qBound(50, static_cast<int>(round(mAccumulatedPosition[i])), 250);
+				data.append(static_cast<char>(position));
+			}
+		}
+		
+		// Write the binary data to the serial connection
+		s32_writeData(data);
+		
+		// Clear dirty move flags after the move
+		mDirtyMoveFlags.fill(false);
+	} else {
+		qWarning() << "ERROR: Trying to syncMove with serial when not connected";
+	}
+}
+
+
 
 
 void Servotor32Controller::s32_writeData(const QByteArray &data)
@@ -225,7 +294,9 @@ void Servotor32Controller::onSerialReadData()
 		}
 		// Simply skip empty lines
 		else if(0 == lio) {
-			qDebug() << "SKIPPING EMPTY SERIAL IO READ";
+			if(mDebug){
+				qDebug() << "SKIPPING EMPTY SERIAL IO READ";
+			}
 			mInputBuffer = mInputBuffer.mid(sepBaSz);
 		}
 		//TODO:parse and handle data
@@ -256,39 +327,48 @@ void Servotor32Controller::onSerialHandleError(QSerialPort::SerialPortError erro
 	case QSerialPort::NoError:{
 			// No action needed for no error.
 		}break;
-			
+		case QSerialPort::PermissionError:{
+			emit errorOccurred(QString("It seems you need to give this app permission to use the selected serial device: %1").arg(mLastSerialError));
+			qDebug() << "SERVOTOR32 Permission serial error:" << mLastSerialError << ", closing";
+			s32_closeSerialPort();
+		}break;
 		case QSerialPort::ResourceError:
 		case QSerialPort::DeviceNotFoundError:
-		case QSerialPort::PermissionError:
 		case QSerialPort::OpenError:{
 			// Treat these errors as critical and close the port
+			emit errorOccurred(QString("There was a critical error with serial device/connection: %1").arg(mLastSerialError));
 			qDebug() << "SERVOTOR32 Critical serial error:" << mLastSerialError << ", closing";
 			s32_closeSerialPort();
 		}break;
 			
 		case QSerialPort::ReadError:
 		case QSerialPort::WriteError:{
+			emit errorOccurred(QString("Read/write error occurred with serial device/connection: %1").arg(mLastSerialError));
 			// These errors are less critical but still signal communication issues.
 			qDebug() << "SERVOTOR32 Communication error " << error << ": " << mLastSerialError;
 		}break;
 			
 		case QSerialPort::TimeoutError:{
+			emit errorOccurred(QString("Timeout error occurred with serial device/connection: %1").arg(mLastSerialError));
 			// Handle timeout errors differently if necessary
 			qDebug() << "SERVOTOR32 Timeout error: " << mLastSerialError;
 		}break;
 			
 		case QSerialPort::UnsupportedOperationError:{
+			emit errorOccurred(QString("Unsupported operation error occurred with serial device/connection: %1").arg(mLastSerialError));
 			// Handle unsupported operations, maybe just a warning
 			qDebug() << "SERVOTOR32 Unsupported operation: " << mLastSerialError;
 		}break;
 			
 		case QSerialPort::NotOpenError:{
+			emit errorOccurred(QString("Trying to use serial connection that was closed: %1").arg(mLastSerialError));
 			// Not open errors could indicate incorrect usage
 			qDebug() << "SERVOTOR32 Port not open: " << mLastSerialError;
 		}break;
 			
 		default:
 		case QSerialPort::UnknownError:{
+			emit errorOccurred(QString("Unknown serial error: %1").arg(mLastSerialError));
 			// Any other unhandled errors
 			qDebug() << "SERVOTOR32 Unhandled/unknown serial error: " << mLastSerialError;
 		}break;
@@ -363,15 +443,23 @@ void Servotor32Controller::setConfiguration(const QVariantMap &map){
 void Servotor32Controller::setConnected(bool open)
 {
 	OC_METHODGATE();
-	qDebug() << "Status was" << isConnected();
+	if(mDebug){
+		qDebug() << "Status was" << isConnected();
+	}
 	if(open) {
 		s32_openSerialPort();
-		qDebug() << "OPENED servotor32 version " << version();
+		if(mDebug){
+			qDebug() << "OPENED servotor32 version " << version();
+		}
 	} else {
-		qDebug() << "CLOSING servotor32 version " << version();
+		if(mDebug){
+			qDebug() << "CLOSING servotor32 version " << version();
+		}
 		s32_closeSerialPort();
 	}
-	qDebug() << "Status is" << isConnected();
+	if(mDebug){
+		qDebug() << "Status is" << isConnected();
+	}
 }
 
 
@@ -382,39 +470,38 @@ bool Servotor32Controller::isConnected()
 }
 
 
-quint8 Servotor32Controller::maxActuatorsSupported()
+ACTUATOR_INDEX Servotor32Controller::maxActuatorsSupported()
 {
 	OC_METHODGATE();
 	return SERVO_COUNT;
 }
 
 
-quint8 Servotor32Controller::actuatorCount()
+ACTUATOR_INDEX Servotor32Controller::actuatorCount()
 {
 	OC_METHODGATE();
-	return static_cast<quint8>(mAccumulatedPosition.size());
+	return static_cast<ACTUATOR_INDEX>(mAccumulatedPosition.size());
 }
 
 
-QString Servotor32Controller::actuatorName(quint8)
+QString Servotor32Controller::actuatorName(ACTUATOR_INDEX index)
 {
 	OC_METHODGATE();
-	//TODO: Implement
-	return "IMPLEMENT ME!";
+	return QString("Servotor32-%1").arg(index + 1, 2, 10, QChar('0'));
 }
 
 
-qreal Servotor32Controller::actuatorValue(quint8 index)
+ACTUATOR_VALUE Servotor32Controller::actuatorTargetValue(ACTUATOR_INDEX index)
 {
 	OC_METHODGATE();
-	if(index>=mAccumulatedPosition.size()) {
+	if(index >= mAccumulatedPosition.size()) {
 		return 0.0;
 	}
 	return mAccumulatedPosition[index];
 }
 
 
-qreal Servotor32Controller::actuatorDefault(quint8 )
+ACTUATOR_VALUE Servotor32Controller::actuatorDefaultValue(ACTUATOR_INDEX )
 {
 	OC_METHODGATE();
 	//There is no concept of default value so we simply say center
@@ -422,11 +509,23 @@ qreal Servotor32Controller::actuatorDefault(quint8 )
 }
 
 
-void Servotor32Controller::limp(quint8 index, bool limp)
+bool Servotor32Controller::isLimp(ACTUATOR_INDEX index){
+	OC_METHODGATE();
+	if(isConnected()) {
+		if(index < mLimp.size()) {
+			return mLimp[index];
+		}
+	}
+	return true;
+}
+
+
+void Servotor32Controller::setLimp(ACTUATOR_INDEX index, bool limp)
 {
 	OC_METHODGATE();
 	if(isConnected()) {
-		if(index>actuatorCount()) {
+		const auto sz = actuatorCount();
+		if(index > sz) {
 			return;
 		}
 		QString data;
@@ -435,7 +534,13 @@ void Servotor32Controller::limp(quint8 index, bool limp)
 		} else {
 			data += QString::fromLatin1("#") +  QString::number(index) + QString::fromLatin1("P") + QString::number(mAccumulatedPosition[index]) + QString::fromLatin1("\n");
 		}
-		qDebug() << "LIMP SINGLE: "<<data;
+		if(mDebug){
+			qDebug() << "LIMP SINGLE: "<<data;
+		}
+		if(mLimp.size() < sz) {
+			mLimp.resize(sz);
+		}
+		mLimp[index] = limp;
 		s32_writeData(data.toLatin1());
 	} else {
 		qWarning() << "ERROR: Trying to limp single atuator via serial when not connected";
@@ -443,7 +548,7 @@ void Servotor32Controller::limp(quint8 index, bool limp)
 }
 
 
-void Servotor32Controller::move(quint8 i, qreal value)
+void Servotor32Controller::setTargetValue(ACTUATOR_INDEX i, ACTUATOR_VALUE value)
 {
 	OC_METHODGATE();
 	const quint32 p=(qBound(-1.0, value, 1.0)*1000.0+1500.0);
@@ -458,14 +563,16 @@ void Servotor32Controller::move(quint8 i, qreal value)
 }
 
 
-void Servotor32Controller::limp(const QBitArray &flags)
+void Servotor32Controller::setLimp(const QBitArray &flags)
 {
 	OC_METHODGATE();
 	//Trivial reject: limp ALL
 	if(isConnected()) {
 		const int sz=flags.size();
 		if(flags.count(true)==sz) {
-			limpAll();
+			toggleLimpAll(true);
+		} else if(flags.count(false)==sz) {
+			toggleLimpAll(false);
 		} else {
 			QString data;
 			for(int i=0; i<sz; ++i) {
@@ -475,7 +582,9 @@ void Servotor32Controller::limp(const QBitArray &flags)
 					data += QString::fromLatin1("#") +  QString::number(i) + QString::fromLatin1("P") + QString::number(mAccumulatedPosition[i]) + QString::fromLatin1("\n");
 				}
 			}
-			qDebug() << "LIMP: "<<data<<" for "<<flags;
+			if(mDebug){
+				qDebug() << "LIMP: "<<data<<" for "<<flags;
+			}
 			s32_writeData(data.toLatin1());
 		}
 	} else {
@@ -485,11 +594,10 @@ void Servotor32Controller::limp(const QBitArray &flags)
 
 
 // NOTE: This will simply collect the latest data. The actual writing is done in s32_syncMove when serial signals there is an opportunity.
-// TODO: look at binary extension introduced in 2.1 version of hexy firmware to improve performance
-void Servotor32Controller::move(const Pose &pose)
+void Servotor32Controller::setTargetPose(const Pose &pose)
 {
 	OC_METHODGATE();
-	//qreal pos[1]= {0.0};	quint32 flags;
+	//ACTUATOR_VALUE pos[1]= {0.0};	quint32 flags;
 	if(isConnected()) {
 		const int sz=static_cast<int>(pose.size());
 		if(mAccumulatedPosition.size()<sz) {
@@ -515,11 +623,21 @@ void Servotor32Controller::move(const Pose &pose)
 }
 
 
-void Servotor32Controller::limpAll()
+void Servotor32Controller::toggleLimpAll(bool limp)
 {
 	OC_METHODGATE();
 	if(isConnected()) {
-		s32_writeData("K\n");
+		if(limp){
+			s32_writeData("K\n");
+		}
+		else{
+			const auto sz = actuatorCount();
+			QString data;
+			for(int i = 0; i<sz; ++i) {
+				data += QString::fromLatin1("#") +  QString::number(i) + QString::fromLatin1("P") + QString::number(mAccumulatedPosition[i]) + QString::fromLatin1("\n");
+			}
+			s32_writeData(data.toLatin1());
+		}
 	} else {
 		qWarning() << "ERROR: Trying to limp all actuators via serial when not connected";
 	}

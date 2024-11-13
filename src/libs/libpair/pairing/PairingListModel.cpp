@@ -6,8 +6,6 @@
 #include "uptime/MethodGate.hpp"
 
 #include <QDebug>
-#include <QAbstractListModel>
-
 
 
 PairingListModel::PairingListModel(QSharedPointer<AddressBook> store, NodeType typeFilter)

@@ -7,6 +7,7 @@
 #include "remote/ControlUnboxingStage.hpp"
 #include "uptime/ConfigureHelper.hpp"
 
+class AgentSelectActivity;
 class ControlBaptismActivity;
 class ControlDeliveryActivity;
 class ControlSipAndSeeActivity;
@@ -48,6 +49,7 @@ private:
 	MessageActivity * mMessage{nullptr};
 	PairingActivity *mPairing{nullptr};
 	PairingTrustActivity *mPairingTrustActivity{nullptr};
+	AgentSelectActivity *mAgentSelectActivity{nullptr};
 	RemoteController *mControl{nullptr};
 	
 	bool mDebug{false};

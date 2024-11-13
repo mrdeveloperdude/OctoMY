@@ -1,5 +1,8 @@
 #include "MarchingFields.hpp"
 
+#include "HeightWidget.hpp"
+
+#include "uptime/New.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -31,6 +34,7 @@ GLfloat Blobs::density(const GLvector &pt) {
 
 
 GLfloat Blobs::shine(const GLvector &pt) {
+	Q_UNUSED(pt);
 	return 0.0;
 }
 

@@ -188,12 +188,13 @@ QMap<QString, QSharedPointer<Associate>> AddressBook::filter(QVector<QueryRule> 
 		
 		for (auto it = mAssociates.begin(); it != mAssociates.end(); ++it) {
 			auto associate = it.value();
-			bool include = true;
+			bool include = false;
 			for (const auto &rule : rules) {
-				if (associate->type() != rule.type) {
-					include = false;
+				if (associate->type() == rule.type) {
+					include = true;
 					break;
 				}
+				/*
 				if (rule.trustUs) {
 					if (!associate->trusts().hasTrust(TrustList::giveControl)) {
 						include = false;
@@ -210,6 +211,7 @@ QMap<QString, QSharedPointer<Associate>> AddressBook::filter(QVector<QueryRule> 
 					include = false;
 					break;
 				}
+*/
 			}
 			
 			if (include) {

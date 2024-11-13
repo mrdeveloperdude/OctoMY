@@ -1,7 +1,6 @@
 #ifndef PAIRINGLISTMODEL_HPP
 #define PAIRINGLISTMODEL_HPP
 
-#include "node/NodeRole.hpp"
 #include "node/NodeType.hpp"
 
 #include <QDebug>
@@ -23,11 +22,14 @@ public:
 private:
 	bool filter(NodeType &t) const;
 
+	// QAbstractListModel interface
 public:
 	int rowCount(const QModelIndex &) const;
 	int columnCount(const QModelIndex &) const;
 	QVariant data(const QModelIndex &index, int role) const;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+
+public:
 	QString status();
 
 public slots:

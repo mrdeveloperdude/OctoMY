@@ -227,8 +227,8 @@ void ControllerTester::updateActuatorInfo() {
 		mFormLayout->addRow("Actuator count:", new QLabel(QString::number(mController->actuatorCount())));
 		for (quint8 i = 0; i < mController->actuatorCount(); ++i) {
 			mFormLayout->addRow(QString("  Actuator %1:").arg(i), new QLabel(mController->actuatorName(i)));
-			mFormLayout->addRow(QString("  Value:"), new QLabel(QString::number(mController->actuatorValue(i))));
-			mFormLayout->addRow(QString("  Default:"), new QLabel(QString::number(mController->actuatorDefault(i))));
+			mFormLayout->addRow(QString("  Value:"), new QLabel(QString::number(mController->actuatorTargetValue(i))));
+			mFormLayout->addRow(QString("  Default:"), new QLabel(QString::number(mController->actuatorDefaultValue(i))));
 		}
 		mFormLayout->addRow("Title:", new QLabel(mController->controllerTitle()));
 		mFormLayout->addRow("Description:", new QLabel(mController->controllerDescription()));

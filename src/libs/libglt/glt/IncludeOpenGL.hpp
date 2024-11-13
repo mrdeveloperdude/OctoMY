@@ -8,8 +8,8 @@
 // Between these lines is the only place where you get to fiddle my friend!
 ////////////////////////////////////////////////////////////////////////////////
 //
-# define OCTOMY_QT_OGL_VERSION_MAJOR   2
-# define OCTOMY_QT_OGL_VERSION_MINOR   0
+# define OCTOMY_QT_OGL_VERSION_MAJOR   3
+# define OCTOMY_QT_OGL_VERSION_MINOR   2
 # define OCTOMY_QT_OGL_PROFILE         Core
 # define OCTOMY_QT_OGL_DEPTH_BUFFER    24
 # define OCTOMY_QT_OGL_STENSIL_BUFFER  0
@@ -56,8 +56,12 @@
 
 //#include <QOpenGLWidget>
 
+#ifndef ANDROID
+
 // This right here is a result:
 #include STRINGIFY(OCTOMY_QT_OGL_FUNCTIONS_CLASS)
+
+#endif // ANDROID
 
 //#include <QOpenGLFunctions>
 //#include <QtOpenGLExtensions/QtOpenGLExtensions>

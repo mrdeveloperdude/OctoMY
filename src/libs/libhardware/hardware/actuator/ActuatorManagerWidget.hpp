@@ -4,8 +4,11 @@
 #include <QWidget>
 #include <QList>
 
-class IController;
+#include "uptime/SharedPointerWrapper.hpp"
+
+class ControllerHandler;
 class QSpacerItem;
+
 namespace Ui
 {
 class ActuatorManagerWidget;
@@ -17,7 +20,8 @@ class ActuatorManagerWidget : public QWidget
 private:
 	Ui::ActuatorManagerWidget *ui;
 	QList<QWidget *> mWidgets;
-	IController *mController;
+	QSharedPointer<ControllerHandler> mHandler;
+	bool mDebug{true};
 
 public:
 	explicit ActuatorManagerWidget(QWidget *parent = nullptr);
@@ -27,10 +31,11 @@ private:
 	void updateWidgetCount(quint32 num);
 
 public:
-	void configure(IController *);
+	void configure(QSharedPointer<ControllerHandler>);
 
 public slots:
-	void controllerSettingsChanged();
+	void toggleLimpAll();
+	void toggleEnableAll();
 
 };
 

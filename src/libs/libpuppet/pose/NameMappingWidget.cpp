@@ -16,7 +16,6 @@
 NameMappingWidget::NameMappingWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(OC_NEW Ui::NameMappingWidget)
-	, mMapping(nullptr)
 	, mButGroupFrom(nullptr)
 	, mButGroupTo(nullptr)
 	, mCurrentFromButton(nullptr)
@@ -48,8 +47,8 @@ NameMappingWidget::NameMappingWidget(QWidget *parent)
 	})) {
 		qDebug()<<"ERROR: could not connect";
 	};
-
 }
+
 
 NameMappingWidget::~NameMappingWidget()
 {
@@ -146,10 +145,10 @@ OC_FUNCTIONGATE();
 
 }*/
 
-void NameMappingWidget::configure(NameMapping &mapping, QStringList fromList,QStringList toList)
+void NameMappingWidget::configure(QSharedPointer<NameMapping> mapping, QStringList fromList,QStringList toList)
 {
 	OC_METHODGATE();
-	mMapping=&mapping;
+	mMapping=mapping;
 	mFromList=fromList;
 	mToList=toList;
 
@@ -289,7 +288,7 @@ void NameMappingWidget::configure(NameMapping &mapping, QStringList fromList,QSt
 	ui->widgetNames->configure(*this);
 }
 
-NameMapping *NameMappingWidget::mapping()
+QSharedPointer<NameMapping> NameMappingWidget::mapping()
 {
 	OC_METHODGATE();
 	return mMapping;

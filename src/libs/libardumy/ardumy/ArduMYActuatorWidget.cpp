@@ -8,7 +8,7 @@
 //#include "utility/string/String.hpp"
 #include "utility/ui/Ui.hpp"
 
-#include "ardumy_arduino/ArduMYActuator.hpp"
+#include "ardumy_arduino/actuator/ArduMYActuator.hpp"
 #include "ardumy/ArduMYTypeConversions.hpp"
 
 

@@ -191,7 +191,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBoxAddMtlobe">
+          <widget class="QComboBox" name="comboBoxAddLobe">
            <item>
             <property name="text">
              <string>Add motor lobe...</string>

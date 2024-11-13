@@ -13,38 +13,34 @@ class PanicButton;
 class PanicButton : public QAbstractButton
 {
 	Q_OBJECT
+
 private:
 	Ui::PanicButton *ui;
 	QTimer mTimer;
 	QPalette mPaletteNormal;
 	QPalette mPaletteBlink;
-	bool mFlipFlop;
+	bool mPanic{false};
+	bool mFlipFlop{false};
+
 public:
 	explicit PanicButton(QWidget *parent = nullptr);
 	virtual ~PanicButton();
 
-
 public:
-
-	void setPanic(bool);
 	bool panic() const;
 
+public slots:
+	void setPanic(bool);
 
 private slots:
+	void timeout();
 
-	void onToggled(bool checked);
-	void onTimeout();
-/*
 signals:
-	void pressed();
-	void released();
-	void clicked(bool checked = false);
-	void toggled(bool checked);
-*/
-protected:
+	void panicChanged(bool panic);
 	
-	void paintEvent(QPaintEvent *) {};
-
+	// QAbstractButton interface
+protected:
+	void paintEvent(QPaintEvent *) override {};
 };
 
 #endif // PANICBUTTON_HPP

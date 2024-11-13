@@ -19,18 +19,20 @@ ControllerTypeSelector::ControllerTypeSelector(QWidget *parent)
 	, ui(new Ui::ControllerTypeSelector)
 	, mControllerTypeModel(OC_NEW ControllerTypeModel())
 {
+	OC_METHODGATE();
 	ui->setupUi(this);
-	updateControllerTypeList();
+	updateList();
 }
 
 ControllerTypeSelector::~ControllerTypeSelector()
 {
+	OC_METHODGATE();
 	delete ui;
 }
 
 
 
-void ControllerTypeSelector::updateControllerTypeList()
+void ControllerTypeSelector::updateList()
 {
 	OC_METHODGATE();
 	mControllerTypeModel->clear();

@@ -2,9 +2,9 @@
 #define PAIRINGLISTWIDGET_HPP
 
 #include "uptime/ConfigureHelper.hpp"
-
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QWidget>
-#include <QSharedPointer>
+
 
 class Node;
 class PairingListModel;

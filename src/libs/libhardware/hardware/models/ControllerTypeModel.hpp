@@ -2,9 +2,6 @@
 #define CONTROLLERTYPEMODEL_HPP
 
 #include <QAbstractListModel>
-
-
-#include <QAbstractListModel>
 #include <QIcon>
 #include <QString>
 

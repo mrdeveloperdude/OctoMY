@@ -32,7 +32,7 @@
    <item row="1" column="0">
     <widget class="QStackedWidget" name="stackedWidgetControl">
      <property name="currentIndex">
-      <number>0</number>
+      <number>7</number>
      </property>
      <widget class="agent::client::AgentConnectionWidget" name="pageConnection"/>
      <widget class="QWidget" name="pageConnectionOLD">
@@ -428,7 +428,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="FaceWidget" name="widgetFace" native="true">
+          <widget class="FaceActivity" name="widgetFace" native="true">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
              <horstretch>0</horstretch>
@@ -620,9 +620,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FaceWidget</class>
+   <class>PortableIDWidget</class>
    <extends>QWidget</extends>
-   <header location="global">agent/FaceWidget.hpp</header>
+   <header location="global">node/PortableIDWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FaceActivity</class>
+   <extends>QWidget</extends>
+   <header location="global">agent/FaceActivity.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -646,12 +652,6 @@
    <class>ActuatorManagerWidget</class>
    <extends>QWidget</extends>
    <header location="global">hardware/actuator/ActuatorManagerWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>PortableIDWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">node/PortableIDWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

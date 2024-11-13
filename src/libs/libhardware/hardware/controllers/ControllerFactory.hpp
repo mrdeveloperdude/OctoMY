@@ -14,7 +14,7 @@ public:
 	ControllerFactory();
 
 public:
-	QSharedPointer<IController> controllerFactory(QString type);
+	QSharedPointer<IController> controllerFactory(const QString &type);
 	QStringList availableControllers();
 };
 

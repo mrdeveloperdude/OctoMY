@@ -20,7 +20,7 @@ Servotor32ActuatorWidget::Servotor32ActuatorWidget(QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
-	if(!connect(ui->numberEntryServoPosition, SIGNAL(valueChanged(int)), this, SLOT(onServoMoved()), OC_CONTYPE)) {
+	if(!connect(ui->integerEntryServoPosition, SIGNAL(valueChanged(int)), this, SLOT(onServoMoved()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
 
@@ -49,7 +49,7 @@ void Servotor32ActuatorWidget::configure(Settings *s, quint32 id, int low_trim, 
 	m_low_trim=low_trim;
 	m_high_trim=high_trim;
 	m_id=id;
-	ui->numberEntryServoPosition->setValue(1500);
+	ui->integerEntryServoPosition->setValue(1500);
 	reconfigureTrim();
 	ui->labelID->setText(QString("#%1: ").arg(m_id, 2, 10, QChar('0')));
 }
@@ -57,7 +57,7 @@ void Servotor32ActuatorWidget::configure(Settings *s, quint32 id, int low_trim, 
 void Servotor32ActuatorWidget::reconfigureTrim()
 {
 	OC_METHODGATE();
-	ui->numberEntryServoPosition->configure(settings, 500-m_low_trim,2500+m_high_trim,50,ui->numberEntryServoPosition->value()," µs","Servo position","servo_position");
+	ui->integerEntryServoPosition->configure(settings, 500-m_low_trim,2500+m_high_trim,50,ui->integerEntryServoPosition->value()," µs","Servo position","servo_position");
 }
 
 void Servotor32ActuatorWidget::disableServo()
@@ -70,16 +70,16 @@ void Servotor32ActuatorWidget::disableServo()
 void Servotor32ActuatorWidget::on_pushButtonCenter_clicked()
 {
 	OC_METHODGATE();
-	ui->numberEntryServoPosition->setValue((ui->numberEntryServoPosition->minimum()+ui->numberEntryServoPosition->maximum())/2);
+	ui->integerEntryServoPosition->setValue((ui->integerEntryServoPosition->minimum()+ui->integerEntryServoPosition->maximum())/2);
 }
 
 
 void Servotor32ActuatorWidget::onServoMoved()
 {
 	OC_METHODGATE();
-	qreal val=ui->numberEntryServoPosition->value();
-	const qreal min=ui->numberEntryServoPosition->minimum();
-	const qreal max=ui->numberEntryServoPosition->maximum();
+	qreal val=ui->integerEntryServoPosition->value();
+	const qreal min=ui->integerEntryServoPosition->minimum();
+	const qreal max=ui->integerEntryServoPosition->maximum();
 	val-=min;
 	val/=(max-min);
 	ui->checkBoxEnabled->setChecked(true);

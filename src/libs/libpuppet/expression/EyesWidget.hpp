@@ -38,8 +38,9 @@ private:
 	QVector2D lastPress;
 
 	IrisRendrer mIrisRendrer;
-
-	bool mHideEyes;
+	
+	bool mEyesVisible{false};
+	bool mDebug{false};
 
 public:
 	explicit EyesWidget(QWidget *parent = nullptr);

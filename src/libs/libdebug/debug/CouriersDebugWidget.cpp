@@ -204,3 +204,4 @@ void CouriersDebugWidget::onTimer()
 		ui->tableWidgetCouriers->setPalette(p);
 	}
 }
+

@@ -14,7 +14,7 @@ Q_REQUIRED_RESULT constexpr static inline bool fuzzy_is_zero(TGPSReal d)
 {
 	return std::abs(d) <= std::numeric_limits<TGPSReal>::min();
 }
-
+/*
 
 Q_REQUIRED_RESULT constexpr static inline TGPSReal sqrt(TGPSReal d)
 {
@@ -38,7 +38,7 @@ Q_REQUIRED_RESULT constexpr static inline TGPSReal tan(TGPSReal d)
 {
 	return std::tan(d);
 }
-
+*/
 
 Q_REQUIRED_RESULT constexpr static inline TGPSReal min(TGPSReal a, TGPSReal b)
 {
@@ -51,12 +51,12 @@ Q_REQUIRED_RESULT constexpr static inline TGPSReal max(TGPSReal a, TGPSReal b)
 	return std::max(a, b);
 }
 
-
+/*
 Q_REQUIRED_RESULT constexpr static inline TGPSReal atan2(TGPSReal a, TGPSReal b)
 {
 	return std::atan2(a, b);
 }
-
+*/
 
 Q_REQUIRED_RESULT constexpr static inline bool fuzzy_compare(TGPSReal a, TGPSReal b)
 {

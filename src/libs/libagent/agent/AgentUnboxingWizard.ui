@@ -87,7 +87,55 @@
    </item>
    <item row="1" column="1">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="3" column="0">
+     <item row="5" column="0">
+      <widget class="LightWidget" name="lightWidgetAllDone" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="labelDelivered">
+       <property name="text">
+        <string>Delivered</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="LightWidget" name="lightWidgetHardwareConfigured" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLabel" name="labelAllDone">
+       <property name="text">
+        <string>All done</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLabel" name="labelPaired">
+       <property name="text">
+        <string>Paired</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLabel" name="labelControllerName">
+       <property name="text">
+        <string>Controller name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
       <widget class="LightWidget" name="lightWidgetPaired" native="true">
        <property name="minimumSize">
         <size>
@@ -107,30 +155,20 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="LightWidget" name="lightWidgetControllerConfigured" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="LightWidget" name="lightWidgetAllDone" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="1">
-      <widget class="QLabel" name="labelControllerConfigured">
+      <widget class="QLabel" name="labelHardware">
        <property name="text">
-        <string>Controller configured</string>
+        <string>Hardware</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="IdenticonLabel" name="widgetDeliveredIdenticon" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -144,34 +182,6 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="labelDelivered">
-       <property name="text">
-        <string>Delivered</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QLabel" name="labelControllerName">
-       <property name="text">
-        <string>Controller name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLabel" name="labelAllDone">
-       <property name="text">
-        <string>All done</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLabel" name="labelPaired">
-       <property name="text">
-        <string>Paired</string>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="1">
       <widget class="QLabel" name="labelControllerSet">
        <property name="text">
@@ -179,13 +189,41 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
-      <widget class="IdenticonLabel" name="widgetDeliveredIdenticon" native="true">
+     <item row="3" column="1">
+      <widget class="QLabel" name="labelStanzas">
+       <property name="text">
+        <string>Stanzas</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QLabel" name="labelStanzasCount">
+       <property name="text">
+        <string>num stanzas</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <widget class="QLabel" name="labelAssociateCount">
+       <property name="text">
+        <string>num associates</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="LightWidget" name="lightWidgetStanzasConfigured" native="true">
        <property name="minimumSize">
         <size>
-         <width>0</width>
-         <height>0</height>
+         <width>24</width>
+         <height>24</height>
         </size>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QLabel" name="labelHardwareConfigured">
+       <property name="text">
+        <string>Configured</string>
        </property>
       </widget>
      </item>

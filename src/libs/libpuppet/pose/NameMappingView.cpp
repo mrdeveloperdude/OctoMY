@@ -34,8 +34,8 @@ void NameMappingView::paintEvent(QPaintEvent *)
 {
 	OC_METHODGATE();
 	if(nullptr!=mWidget) {
-		NameMapping *mapping=mWidget->mapping();
-		if(nullptr!=mapping) {
+		auto mapping = mWidget->mapping();
+		if(!mapping.isNull()) {
 			// Get buttons so we can use their coordinates
 			QList<QPushButton *> fromButtons = findChildren<QPushButton *>(QRegularExpression("pushButtonFrom.*"));
 			QList<QPushButton *> toButtons = findChildren<QPushButton *>(QRegularExpression("pushButtonTo.*"));
@@ -65,12 +65,13 @@ void NameMappingView::paintEvent(QPaintEvent *)
 			QColor col;
 			QStringList fromList=mWidget->fromList();
 			QStringList toList=mWidget->toList();
-			quint32 keyIndex=0;
-			for(QString key:fromList) {
-				QString val=(*mapping)[key];
+			quint32 keyIndex = 0;
+			for(auto const &key:fromList) {
+				QString val = (*mapping)[key];
 				quint32 valIndex=toList.indexOf(val);
 				//const quint32 m=mapping->map(i);
 				const bool dif=(keyIndex!=valIndex);
+				qDebug()<< "hue"<< hue << "dif"<<dif;
 				col.setHslF(hue,0.5,0.25,dif?1.0:0.3);
 				hue+=step;
 				pen.setColor(col);

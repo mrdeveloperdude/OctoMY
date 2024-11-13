@@ -1,12 +1,11 @@
 #include "ArduMYTypeConversions.hpp"
 
-#include "ardumy_arduino/ArduMYActuatorState.hpp"
-#include "ardumy_arduino/ArduMYActuatorConfig.hpp"
-#include "ardumy_arduino/ArduMYActuator.hpp"
-
-#include "ardumy_arduino/ArduMYActuatorSet.hpp"
-#include "ardumy_arduino/ArduMYCommandSerializer.hpp"
-#include "ardumy_arduino/ArduMYCommandParser.hpp"
+#include "ardumy_arduino/actuator/ArduMYActuatorConfig.hpp"
+#include "ardumy_arduino/actuator/ArduMYActuatorSet.hpp"
+#include "ardumy_arduino/actuator/ArduMYActuatorState.hpp"
+#include "ardumy_arduino/actuator/ArduMYActuator.hpp"
+#include "ardumy_arduino/parser/ArduMYCommandParser.hpp"
+#include "ardumy_arduino/serializer/ArduMYCommandSerializer.hpp"
 
 
 

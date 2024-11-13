@@ -22,7 +22,7 @@ void qsrand(quint32 s){
 float frand()
 {
 	float v=qrand();
-	v/=static_cast<float>(RAND_MAX);
+	v/=static_cast<float>(0xFFFFFFFF);
 	return v;
 }
 

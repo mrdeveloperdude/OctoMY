@@ -30,7 +30,7 @@ private:
 	QIntValidator *mIntValidator;
 	QList<QSerialPortInfo> mAvailablePorts;
 	SerialList mSerialList;
-	bool mManualSaveMode;
+	bool mManualSaveMode{false};
 
 public:
 
@@ -72,7 +72,7 @@ private:
 	
 signals:
 	void settingsChanged();
-	
+
 };
 
 #endif

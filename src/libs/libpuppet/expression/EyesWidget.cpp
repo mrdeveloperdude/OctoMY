@@ -37,8 +37,7 @@ EyesWidget::EyesWidget(QWidget *parent)
 	, mLeftEye(QVector2D(-0.2f, 0.0f), static_cast<float>(-0.1*M_PI) )
 	, mRightEye(QVector2D(0.2f, 0.0f), static_cast<float>(0.1*M_PI) )
 	, mBgBrush("black")
-	, mEyeSteer(0,0)
-	, mHideEyes(true)
+	, mEyeSteer(0, 0)
 {
 	OC_METHODGATE();
 	mTimer.setTimerType(Qt::PreciseTimer);
@@ -58,8 +57,8 @@ EyesWidget::EyesWidget(QWidget *parent)
 void EyesWidget::updateIris()
 {
 	OC_METHODGATE();
-	const float sLeft=mLeftEye.irisRadius() * width() * 2.0f;
-	const int sLefti=static_cast<int>(std::floor(sLeft));
+	const auto sLeft = mLeftEye.irisRadius() * width() * 2.0f;
+	const auto sLefti=static_cast<int>(std::floor(sLeft));
 	QRect rectLeft(0,0, sLefti, sLefti);
 	QSize sizeLeft=rectLeft.size();
 	if(sizeLeft.width() > 0 && sizeLeft.height() > 0 ) {
@@ -69,8 +68,8 @@ void EyesWidget::updateIris()
 		mLeftEye.setIrisImage(img);
 	}
 
-	const float sRight=mRightEye.irisRadius()*width()*2.0f;
-	const int sRighti=static_cast<int>(std::floor(sRight));
+	const auto sRight = mRightEye.irisRadius()*width()*2.0f;
+	const auto sRighti = static_cast<int>(std::floor(sRight));
 	QRect rectRight(0,0, sRighti, sRighti);
 	QSize sizeRight=rectRight.size();
 	if(sizeRight.width() > 0 && sizeRight.height() > 0 ) {
@@ -79,7 +78,6 @@ void EyesWidget::updateIris()
 		mIrisRendrer.draw(rectRight, painter, 1);
 		mRightEye.setIrisImage(img);
 	}
-
 	update();
 }
 
@@ -87,19 +85,24 @@ void EyesWidget::updateIris()
 void EyesWidget::setPortableID(PortableID &pid)
 {
 	OC_METHODGATE();
-	// qDebug()<<"Setting eye colors from PID: "<<pid;
-	QString id=pid.id();
-	const bool oldHideEyes=mHideEyes;
-	mHideEyes=!id.isEmpty();
+	const auto id = pid.id();
+	const auto oldEyesVisible = mEyesVisible;
+	mEyesVisible = !id.isEmpty();
 	PersonalityColors colors(id);
-
+	
 	QColor irisColor=colors.backgroundColorLow();//QColor("#2d8ac9");
 	mLeftEye.setColor(irisColor);
 	mRightEye.setColor(irisColor);
-
-	if((mIrisRendrer.portableID().id() !=pid.id() ) || ( oldHideEyes!=mHideEyes) ) {
+	
+	if((mIrisRendrer.portableID().id() != pid.id() ) || ( oldEyesVisible != mEyesVisible) ) {
 		mIrisRendrer.setPortableID(pid);
 		updateIris();
+	}
+	if(mDebug){
+		qDebug() << "Setting eye colors from PID: " << pid;
+		qDebug() << "Color: " << irisColor;
+		qDebug() << "STATUS" << (oldEyesVisible?"SHOWN":"HIDDEN") << " --> " << (mEyesVisible?"SHOWN":"HIDDEN");
+		
 	}
 }
 
@@ -115,7 +118,19 @@ void EyesWidget::paintEvent(QPaintEvent *)
 	const float h=painter.device()->height();
 	painter.setRenderHint(QPainter::Antialiasing, true);
 
-	if(mHideEyes) {
+	if(mEyesVisible) {
+		painter.setPen(Qt::NoPen);
+		painter.translate(static_cast<qreal>(w/2), static_cast<qreal>(h/2));
+		const qreal s=static_cast<qreal>(w);// Width is most important.
+		//const float fh=h/w;// wee need to know face height
+		painter.scale(s,s);
+		//const float angle=(cycle*M_PI*2.0f)/cycleTime;
+		//painter.drawRect(0,sin(angle)/2,1,0.1);
+		painter.translate(0.2,0);
+		mLeftEye.paint(painter);
+		painter.translate(-0.4,0);
+		mRightEye.paint(painter);
+	} else {
 		// Eyes denied!
 		QPen pen(QColor(192, 64, 32, 128));
 		const int b=5, b2=b*2, b4=b2*2, wi=static_cast<int>(std::floor(w)), hi=static_cast<int>(std::floor(h));
@@ -126,20 +141,6 @@ void EyesWidget::paintEvent(QPaintEvent *)
 		painter.drawRoundedRect(QRect(b2, b2, wi-b4, hi-b4), b4, b4);
 		painter.drawLine(QPoint(b4, b4), QPoint(wi-b4, hi-b4));
 		//painter.drawLine(QPoint(b4, h-b4), QPoint(w-b4, b4));
-	} else {
-		painter.setPen(Qt::NoPen);
-		painter.translate(static_cast<qreal>(w/2), static_cast<qreal>(h/2));
-		const qreal s=static_cast<qreal>(w);// Width is most important.
-		//const float fh=h/w;// wee need to know face height
-		painter.scale(s,s);
-		//const float angle=(cycle*M_PI*2.0f)/cycleTime;
-		//painter.drawRect(0,sin(angle)/2,1,0.1);
-
-
-		painter.translate(0.2,0);
-		mLeftEye.paint(painter);
-		painter.translate(-0.4,0);
-		mRightEye.paint(painter);
 	}
 //qDebug()<<"UPD";
 }
@@ -152,7 +153,7 @@ void EyesWidget::onUpdateTimer()
 	const QVector2D lastEyeSteerSmooth=mEyeSteerSmooth;
 	mEyeSteerSmooth=(mEyeSteerSmooth*static_cast<float>(alpha))+(mEyeSteer*static_cast<float>(beta));
 	QVector2D dif=(mEyeSteerSmooth-mEyeSteer);
-	if(dif.length()<0.001f) {
+	if(dif.length() < 0.001f) {
 		mEyeSteerSmooth=mEyeSteer;
 	}
 

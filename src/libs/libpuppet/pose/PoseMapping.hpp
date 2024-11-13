@@ -32,8 +32,8 @@ public:
 	QDataStream &receive(QDataStream &);
 	QDataStream &send(QDataStream &) const;
 
-	QVariantList toMap() const;
-	void fromMap( QVariantList );
+	QVariantList toList() const;
+	void fromList( QVariantList );
 
 	//Copy data from other instance
 	void set(const PoseMapping &other);

@@ -28,8 +28,9 @@ private:
 	friend class Servotor32ControllerWidget;
 private:
 	static const int SERVO_COUNT;
-	QVector<qreal> mAccumulatedPosition;
+	QVector<ACTUATOR_VALUE> mAccumulatedPosition;
 	QBitArray mDirtyMoveFlags;
+	QBitArray mLimp;
 	QByteArray mInputBuffer;
 	quint32 mReads;
 	Servotor32ControllerWidget *mWidget{nullptr};
@@ -39,6 +40,8 @@ private:
 	QString mLastSerialSideVersion;
 	QString mLastSerialError;
 	bool mAskedVersion{false};
+	bool mBinaryMode{false};
+	bool mDebug{false};
 	ConfigureHelper mConfigureHelper;
 
 public:
@@ -53,6 +56,8 @@ private:
 	void s32_closeSerialPort();
 	void s32_setHookSerialSignals(bool hook);
 	void s32_syncMove();
+	void s32_syncMoveText();
+	void s32_syncMoveBinary();
 	void s32_writeData(const QByteArray &data);
 	void s32_version();
 	void s32_debug();
@@ -78,18 +83,19 @@ public:
 	void setConnected(bool) override;
 	bool isConnected() override;
 	// Actuator definition
-	quint8 maxActuatorsSupported() override;
-	quint8 actuatorCount() override;
-	QString actuatorName(quint8) override;
-	qreal actuatorValue(quint8) override;
-	qreal actuatorDefault(quint8) override;
+	ACTUATOR_INDEX maxActuatorsSupported() override;
+	ACTUATOR_INDEX actuatorCount() override;
+	QString actuatorName(ACTUATOR_INDEX) override;
+	ACTUATOR_VALUE actuatorTargetValue(ACTUATOR_INDEX) override;
+	ACTUATOR_VALUE actuatorDefaultValue(ACTUATOR_INDEX) override;
 	// Mandatory actuator state
-	void limp(quint8 index, bool limp) override;
-	void move(quint8 index, qreal value) override;
+	bool isLimp(ACTUATOR_INDEX index) override;
+	void setLimp(ACTUATOR_INDEX index, bool limp) override;
+	void setTargetValue(ACTUATOR_INDEX index, ACTUATOR_VALUE value) override;
 	// Optional actuator state
-	void limp(const QBitArray &flags) override;
-	void move(const Pose &pose) override;
-	void limpAll() override;
+	void setLimp(const QBitArray &flags) override;
+	void setTargetPose(const Pose &pose) override;
+	void toggleLimpAll(bool limp) override;
 	void centerAll() override;
 	QString debugString() override;
 
@@ -97,7 +103,7 @@ signals:
 	void settingsChanged();
 	void connectionChanged();
 	void readyToWrite();
-
+	void errorOccurred(const QString &error);
 };
 
 
