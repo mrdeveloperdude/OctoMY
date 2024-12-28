@@ -365,7 +365,7 @@ void Layer::moveWidgets(const QPoint mapmiddle_px) const
 	OC_METHODGATE();
 	for( Geometry* geometry: geometries ) {
 		if (geometry->GeometryType == "Point") {
-			Point* point = dynamic_cast<Point*>(geometry);
+			Point* point = static_cast<Point*>(geometry);
 			if (nullptr!=point) {
 				QPoint topleft_relative = QPoint(mapmiddle_px-screenmiddle);
 				point->drawWidget(mapAdapter, topleft_relative);

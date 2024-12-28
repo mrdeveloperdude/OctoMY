@@ -1,3 +1,3 @@
 Lib {
-    localPath: path
+	localPath: path
 }

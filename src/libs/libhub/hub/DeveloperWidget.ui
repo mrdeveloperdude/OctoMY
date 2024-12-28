@@ -32,7 +32,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidgetDevelopment">
      <property name="currentIndex">
-      <number>14</number>
+      <number>11</number>
      </property>
      <property name="documentMode">
       <bool>true</bool>
@@ -363,7 +363,7 @@
          <property name="orientation">
           <enum>Qt::Orientation::Vertical</enum>
          </property>
-         <widget class="ActuatorManagerWidget" name="widgetActuatorControl" native="true"/>
+         <widget class="ActuatorManagementWidget" name="widgetActuatorControl" native="true"/>
          <widget class="PoseMappingWidget" name="widgetPoseMapping" native="true"/>
         </widget>
        </item>
@@ -396,21 +396,27 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>ActuatorManagementWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">hardware/actuator/ActuatorManagementWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>TryToggle</class>
    <extends>QWidget</extends>
    <header location="global">components/TryToggle.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ActuatorManagerWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">hardware/actuator/ActuatorManagerWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>SpeechControlWidget</class>
    <extends>QWidget</extends>
    <header location="global">voice/SpeechControlWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SerialSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">hardware/serial/SerialSettingsWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -423,12 +429,6 @@
    <class>PoseMappingWidget</class>
    <extends>QWidget</extends>
    <header location="global">pose/PoseMappingWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SerialSettingsWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">hardware/serial/SerialSettingsWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

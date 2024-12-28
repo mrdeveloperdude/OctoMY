@@ -86,9 +86,11 @@ void MetaBlobsWidget::renderMetablobs() {
 	float height = canvasBack->height();
 	
 	float epsilon = 0.01f;
+	Q_UNUSED(epsilon);
 	
 	uchar *bits = canvasBack->bits();
 	QVector3D rayOrigin(0.0f, 0.0f, -5.0f);  // Camera at z = -5
+	Q_UNUSED(rayOrigin);
 	for (float y = 0; y < height; ++y) {
 		for (float x = 0; x < width; ++x) {
 			float r=x/width;

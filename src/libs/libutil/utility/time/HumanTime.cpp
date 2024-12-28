@@ -3,8 +3,8 @@
 #include <QCoreApplication>
 
 #include <cmath>
+#include <qtimezone.h>
 //#include <cfloat>
-
 
 namespace utility
 {
@@ -29,10 +29,9 @@ quint64 variantToMs(QVariant v)
 }
 
 
-QVariant msToVariant(quint64 ms)
-{
-	QVariant v=QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(ms), Qt::UTC);
-	return v;
+QVariant msToVariant(quint64 ms) {
+	QDateTime dateTime = QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(ms), QTimeZone::UTC);
+	return QVariant(dateTime);
 }
 
 

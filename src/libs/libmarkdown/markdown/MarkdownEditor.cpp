@@ -3,7 +3,7 @@
 
 #include "markdown/Markdown.hpp"
 #include "markdown/MarkdownHighlighter.hpp"
-#include "markdown/HTMLHighlighter.hpp"
+//#include "markdown/HTMLHighlighter.hpp"
 
 //#include "markdown/HTMLHighlighter.hpp"
 //#include "markdown/UnionHighlighter.hpp"
@@ -48,12 +48,16 @@ MarkdownEditor::MarkdownEditor(QWidget *parent)
 	ui->textEditHTML->setReadOnly(true);
 	ui->textEditPreview->setReadOnly(true);
 	connectScrollbars();
-	if(!connect(ui->plainTextEditMarkdown, SIGNAL(textChanged()), this, SLOT(onTextChanged()), OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect changed";
+	if (!connect(ui->plainTextEditMarkdown, &QPlainTextEdit::textChanged, this, &MarkdownEditor::onTextChanged)) {
+		qWarning() << "ERROR: Could not connect textChanged";
 	}
-	if(!connect(&saveTimer, SIGNAL(timeout()), this, SLOT(save()), OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect save";
-	}
+	
+	/*
+	 * TODO: Why is there no save()? Whould it be onTextChanged()?
+	if (!connect(&saveTimer, &QTimer::timeout, this, &MarkdownEditor::save)) {
+		qWarning() << "ERROR: Could not connect save";
+	}*/
+	
 	/*
 	TODO: Fix this
 	auto uhl = OC_NEW UnionHighlighter(ui->plainTextEditMarkdown->document());
@@ -62,7 +66,7 @@ MarkdownEditor::MarkdownEditor(QWidget *parent)
 	highlighter = uhl;
 	*/
 	highlighter = OC_NEW MarkdownHighlighter(ui->plainTextEditMarkdown->document());
-	auto h2 = OC_NEW HTMLHighlighter(ui->textEditHTML->document());
+	//auto h2 = OC_NEW HTMLHighlighter(ui->textEditHTML->document());
 	ui->plainTextEditMarkdown->setFocus();
 	/* TODO: Load and apply CSS
 	QString css=R"END(

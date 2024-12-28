@@ -30,7 +30,7 @@ FaceActivity::FaceActivity(QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
-	ui->tryToggleConnect->configure("Connect","Connecting...","Connected", "Disconnecting...", Constants::AGENT_CONNECT_BUTTON_COLOR, Constants::AGENT_DISCONNECT_COLOR);
+	ui->tryToggleConnect->configure("Connect", "Connecting...", "Connected", "Disconnecting...", Constants::AGENT_CONNECT_BUTTON_COLOR, Constants::AGENT_DISCONNECT_COLOR);
 }
 
 
@@ -217,16 +217,19 @@ void FaceActivity::onSplitterMoved(int, int)
 
 // An error occurred in comms
 void FaceActivity::onCommsError(QString message){
+	OC_METHODGATE();
 	appendLog("FACE-COMMS: " + message);
 }
 
 // A new comms session was added
 void FaceActivity::onCommsClientAdded(CommsSession *c){
+	OC_METHODGATE();
 	appendLog("FACE-COMMS: session added" + c->address() );
 }
 
 // The connection state changed for comms channel
 void FaceActivity::onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection){
+	OC_METHODGATE();
 	appendLog(QString("FACE-COMMS: connected=%1, wants connection=%2 ").arg(isConnected).arg(needsConnection) );
 	const auto tts = createTryToggleState(isConnected, needsConnection);
 	ui->tryToggleConnect->setState(tts);

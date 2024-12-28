@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ControllerManagementWidget</class>
+ <widget class="QWidget" name="ControllerManagementWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>717</width>
+    <height>649</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="ControllerStatsWidget" name="tabController">
+      <attribute name="title">
+       <string>Controller</string>
+      </attribute>
+     </widget>
+     <widget class="ActuatorManagementWidget" name="tabActuators">
+      <attribute name="title">
+       <string>Actuators</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tabSensors">
+      <attribute name="title">
+       <string>Sensors</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tabLobes">
+      <attribute name="title">
+       <string>Lobes</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ActuatorManagementWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">hardware/actuator/ActuatorManagementWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ControllerStatsWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">hardware/ControllerStatsWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

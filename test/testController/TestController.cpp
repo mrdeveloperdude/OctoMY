@@ -199,7 +199,7 @@ void ControllerTester::updateWidget() {
 		if (widget) {
 			auto controller = qobject_cast<IController *>(widget);
 			if (controller) {
-				connect(controller, &IController::configurationChanged, this, &ControllerTester::configChanged);
+				connect(controller, &IController::definitionsChanged, this, &ControllerTester::configChanged);
 			}
 		}
 		else{
@@ -234,7 +234,7 @@ void ControllerTester::updateActuatorInfo() {
 		mFormLayout->addRow("Description:", new QLabel(mController->controllerDescription()));
 		mFormLayout->addRow("Icon:", new QLabel(mController->controllerIcon()));
 		mFormLayout->addRow("Version 1:", new QLabel(mController->controllerVersion()));
-		mFormLayout->addRow("Version 2:", new QLabel(mController->version()));
+		mFormLayout->addRow("Version 2:", new QLabel(mController->firmwareVersion()));
 		mFormLayout->addRow("Debug:", new QLabel(mController->isDebug()?"ENABLED":"DISABLED"));
 		mFormLayout->addRow("Connected:", new QLabel(mController->isConnected()?"CONNECTED":"DISCONNECTED"));
 		mFormLayout->addRow("Config UI:", new QLabel(mController->hasConfigurationWidget()?"YES":"NO"));

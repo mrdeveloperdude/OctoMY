@@ -22,19 +22,19 @@ Probe{
 		names = (raw || []).filter(function(dir){
 			var ok = true;
 			if(debug){
-				console.info("Checking "+dir+":");
+				console.info("Checking " + dir + ":");
 			}
 			if(folderPrefix !== undefined){
 				ok = ok && dir.startsWith(folderPrefix);
 				if(debug){
-					console.info("Checking folderprefix:"+ok);
+					console.info(" + folderprefix:" + ok);
 				}
 			}
-			if(fileName  !== undefined){
+			if(fileName !== undefined){
 				var fullPath = FileInfo.joinPaths(searchPath, dir, fileName);
 				ok = ok && File.exists(fullPath);
 				if(debug){
-					console.info("Checking fullPath:"+fullPath+" gave:"+ok);
+					console.info(" + is fullPath '" + fullPath + "' exists:" + ok);
 				}
 			}
 			return ok;
@@ -50,7 +50,7 @@ Probe{
 		})
 		found = names.length > 0;
 		if(debug){
-			console.info("Files for '" + name + "':");
+			console.info("Probe Files for '" + name + "':");
 			console.info("    searchDir: " + searchDir);
 			console.info("     fileName: " + fileName);
 			console.info(" folderPrefix: " + folderPrefix);
@@ -63,5 +63,6 @@ Probe{
 			console.info("        files: " + JSON.stringify(files, null, "\t"));
 			console.info("      defines: " + JSON.stringify(defines, null, "\t"));
 		}
+		return true;
 	}
 }

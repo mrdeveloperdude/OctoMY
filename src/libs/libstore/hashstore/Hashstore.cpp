@@ -10,6 +10,9 @@
 
 
 HashstoreRecord::HashstoreRecord(const Hashstore &hs, const QString key){
+	OC_METHODGATE();
+	Q_UNUSED(hs);
+	Q_UNUSED(key);
 }
 
 const quint8 Hashstore::DIR_LEVELS=4;

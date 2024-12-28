@@ -62,8 +62,8 @@ int levenshteinDistance(const QString &source, const QString &target)
 		return 0;
 	}
 	
-	const int sourceCount = source.count();
-	const int targetCount = target.count();
+	const int sourceCount = source.size();
+	const int targetCount = target.size();
 	
 	if (source.isEmpty()) {
 		return targetCount;
@@ -106,8 +106,8 @@ QString longestCommonSubsequence(const QString &source, const QString &target)
 	// Mostly stolen from https://www.geeksforgeeks.org/printing-longest-common-subsequence/
 	
 	QMap<int, QMap<int, int> > l;
-	for (int i = 0; i <= source.count(); i++) {
-		for (int j = 0; j <= target.count(); j++) {
+	for (int i = 0; i <= source.size(); i++) {
+		for (int j = 0; j <= target.size(); j++) {
 			if (i == 0 || j == 0) {
 				l[i][j] = 0;
 			} else if (source.at(i - 1) == target.at(j - 1)) {
@@ -118,9 +118,9 @@ QString longestCommonSubsequence(const QString &source, const QString &target)
 		}
 	}
 	
-	int i = source.count();
-	int j = target.count();
-	int index = l[source.count()][target.count()];
+	int i = source.size();
+	int j = target.size();
+	int index = l[source.size()][target.size()];
 	QString longestCommonSubsequence;
 	while (i > 0 && j > 0) {
 		if (source.at(i - 1) == target.at(j - 1)) {

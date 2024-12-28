@@ -27,7 +27,16 @@ class CommsChannel;
 class ISyncParameter;
 
 
-
+/**
+ * @brief The Client class is the base class for clients, which are running instances
+ * representing nodes on the other side of comms channel.
+ * 
+ * Clients are instanciated from associate that identifies the node on the other side
+ * and maintain state relevant to that node.
+ * 
+ * Sub-classes exist in AgentClient, RemoteClient and HubClient that specializes
+ * the class to spesific node types.
+ */
 
 
 class Client: public QObject, public QEnableSharedFromThis<Client>
@@ -49,7 +58,6 @@ public:
 
 public:
 	void configure(QSharedPointer<Node> node, QSharedPointer<Associate> associate);
-
 
 // Client interface
 public:

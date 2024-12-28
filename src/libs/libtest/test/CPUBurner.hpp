@@ -21,9 +21,9 @@ private:
 public:
 
 	explicit CPUBurner():
-		mwc_z(362436069)
-		,mwc_w(521288629)
-		,stressCPULoopCount(1000)
+		  mwc_z(362436069)
+		, mwc_w(521288629)
+		, stressCPULoopCount(1000)
 	{
 		mwc_reseed();
 	}
@@ -74,25 +74,26 @@ public:
 		qint64 ct=0;
 		volatile double sum=0.0;
 		do {
-			if(stressCPULoopCount>0) {
-				sum+=burnCPU(stressCPULoopCount);
-				sum/=stressCPULoopCount;
+			if(stressCPULoopCount > 0) {
+				sum += burnCPU(stressCPULoopCount);
+				sum /= stressCPULoopCount;
 			}
-			interval=utility::time::currentMsecsSinceEpoch<qint64>()-start;
+			interval = utility::time::currentMsecsSinceEpoch<qint64>() - start;
 			ct++;
 		} while(interval<cpu_ms);
-		qint64 msPer100Cycle=1;
-		if(stressCPULoopCount>0) {
-			msPer100Cycle=((interval*100)/(stressCPULoopCount*ct));
-			if(msPer100Cycle<=0) {
-				msPer100Cycle=1;
+		qint64 msPer100Cycle = 1;
+		if(stressCPULoopCount > 0) {
+			msPer100Cycle = ((interval*100)/(stressCPULoopCount*ct));
+			if(msPer100Cycle <= 0) {
+				msPer100Cycle = 1;
 			}
 		}
-		qint64 nlc = cpu_ms/msPer100Cycle;
-		sum/=2.0;
-		stressCPULoopCount=((stressCPULoopCount*90)+(nlc*10))/100;
-		const qint64 sleep_ms=total_ms-interval;
-		if(sleep_ms>0) {
+		qint64 nlc = cpu_ms / msPer100Cycle;
+		sum /= 2.0;
+		(void)sum;
+		stressCPULoopCount = ((stressCPULoopCount*90)+(nlc*10))/100;
+		const qint64 sleep_ms = total_ms-interval;
+		if(sleep_ms > 0) {
 			QThread::msleep(static_cast<unsigned long>(sleep_ms));
 		}
 	}

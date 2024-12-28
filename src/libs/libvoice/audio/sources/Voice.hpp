@@ -334,9 +334,11 @@ template <typename T, int OUTPUT_CHANNELS>
 bool Voice<T, OUTPUT_CHANNELS>::speak(const PortableID &id, const QString &text) const
 {
 	OC_METHODGATE();
+	Q_UNUSED(id);
 	if (isInitialized()) {
 		qDebug().noquote().nospace() << "I am mute, not speaking \"" << text << "\"\n";
 	}
+	return true;
 }
 
 

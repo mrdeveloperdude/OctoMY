@@ -73,6 +73,7 @@ public:
 	QString controllerTitle() const;
 	QString controllerDescription() const;
 	QString controllerIcon() const;
+	// The version of this driver. \sa firmwareVersion()
 	QString controllerVersion();
 
 	// Debug mode is not virtual
@@ -81,14 +82,14 @@ public:
 
 	// IController interface
 public:
-	// Management of version is mandatory
-	virtual QString version() = 0;
+	// The version reported by the controller firmware. \sa controllerVersion()
+	virtual QString firmwareVersion();
 	
-	// Default to no widget
+	// Configuration widget is opt-in. Default to no widget
 	virtual bool hasConfigurationWidget() const;
 	virtual QWidget *configurationWidget();
 	
-	// Default to no internal configuration processing
+	// Configuration processing is opt-in. Default to no internal configuration processing
 	virtual QVariantMap configuration();
 	virtual void setConfiguration(const QVariantMap &map);
 	
@@ -100,19 +101,20 @@ public:
 	virtual void setConnected(bool) = 0;
 	virtual bool isConnected() = 0;
 	
-	// Management of actuator definitions is mandatory
-	virtual ACTUATOR_INDEX maxActuatorsSupported() = 0;
-	virtual ACTUATOR_INDEX actuatorCount() = 0;
-	virtual QString actuatorName(ACTUATOR_INDEX) = 0;
-	virtual ACTUATOR_VALUE actuatorTargetValue(ACTUATOR_INDEX) = 0;
-	virtual ACTUATOR_VALUE actuatorDefaultValue(ACTUATOR_INDEX) = 0;
-	virtual ActuatorMotion actuatorMotion(ACTUATOR_INDEX);
+	// Management of actuator definitions is opt-in. Default to no actuator support.
+public:
+	virtual ACTUATOR_INDEX maxActuatorsSupported();
+	virtual ACTUATOR_INDEX actuatorCount();
+	virtual QString actuatorName(ACTUATOR_INDEX index);
+	virtual ACTUATOR_VALUE actuatorTargetValue(ACTUATOR_INDEX index);
+	virtual ACTUATOR_VALUE actuatorDefaultValue(ACTUATOR_INDEX index);
+	virtual ActuatorMotion actuatorMotion(ACTUATOR_INDEX index);
 	
-	// Management of basic actuator state is mandatory
+	// Management of basic actuator state is opt-in
 public slots:
-	virtual void setLimp(ACTUATOR_INDEX index, bool limp) = 0;
-	virtual bool isLimp(ACTUATOR_INDEX index) = 0;
-	virtual void setTargetValue(ACTUATOR_INDEX index, ACTUATOR_VALUE value) = 0;
+	virtual bool isLimp(ACTUATOR_INDEX index);
+	virtual void setLimp(ACTUATOR_INDEX index, bool limp);
+	virtual void setTargetValue(ACTUATOR_INDEX index, ACTUATOR_VALUE value);
 	
 	// Optional optimizations that default to a general aproach. Implementation encouraged if it will save resources
 	virtual void setLimp(const QBitArray &flags);
@@ -121,9 +123,28 @@ public slots:
 	virtual void toggleLimpAll(bool limp);
 	virtual void centerAll();
 	virtual QString debugString();
+	
+	// Management of sensor definitions is opt-in. Default to no sensor support.
+public:
+	virtual ACTUATOR_INDEX maxSensorsSupported();
+	virtual ACTUATOR_INDEX sensorCount();
+	virtual QString sensorName(ACTUATOR_INDEX index);
+	// Management of sensor state is opt-in. Default to no sensor support.
+	virtual ACTUATOR_VALUE sensorValue(ACTUATOR_INDEX index);
+	
+	// Management of lobe definitions is opt-in. Default to no lobe support.
+public:
+	virtual bool lobesSupported();
+	virtual bool setLobe(ACTUATOR_INDEX index, const QByteArray &lobeData);
+	virtual QString getLobeTitle(ACTUATOR_INDEX index);
+	virtual QString getLobeVersion(ACTUATOR_INDEX index);
+	virtual QString getLobeID(ACTUATOR_INDEX index);
+	
+	// Management of lobe state is opt-in. Default to no lobe support.
+	virtual void getLobeEnabled(ACTUATOR_INDEX index, bool enabled);
 
 signals:
-	void configurationChanged();
+	void definitionsChanged();
 
 };
 

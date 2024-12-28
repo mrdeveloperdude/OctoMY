@@ -16,12 +16,10 @@ public:
 
 public:
 	// Register/unregister all couriers in this set to their respective comms
-	// TODO: Rename to enable()
-	void enableComms(bool enable);
-	// Return if all (conservative) or more than one (non-conservative) couriers are registered with their respective comms in this set
-	bool commsEnabled(bool conservative=true);
+	void enable(bool enable);
+	// Return if all (conservative) or more than zero (non-conservative) couriers are registered with their respective comms in this set
+	bool isEnabled(bool conservative=true);
 	// Register or unregister courier with this set
-	// TODO: Rename to register()
 	bool registerCourier(QSharedPointer<Courier> courier, bool reg);
 };
 

@@ -86,7 +86,7 @@ public:
 	// IController interface
 public:
 	// Version
-	QString version() override;
+	QString firmwareVersion() override;
 	// UI
 	bool hasConfigurationWidget() const override;
 	QWidget *configurationWidget() override;
@@ -105,8 +105,7 @@ public:
 	// Optional actuator state
 	void setLimp(const QBitArray &flags) override;
 	void setTargetPose(const Pose &pose) override;
-	void centerAll() override;
-	
+
 	
 signals:
 	void settingsChanged();

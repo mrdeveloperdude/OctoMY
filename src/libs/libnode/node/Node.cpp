@@ -463,7 +463,7 @@ void Node::discoveryActivate(const bool on)
 {
 	OC_METHODGATE();
 	if(mAppConfigureHelper.isConfiguredAsExpected()) {
-		mServiceLevelManager->enableLevel(mDiscoveryServiceLevel->name(), true, [=](bool ok) {
+		mServiceLevelManager->enableLevel(mDiscoveryServiceLevel->name(), on, [=](bool ok) {
 			if(mDebug){
 				qDebug() << "discoveryActivate returned: " << (on?"ON":"OFF") << ok;
 			}

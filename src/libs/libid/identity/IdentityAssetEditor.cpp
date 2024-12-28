@@ -35,9 +35,9 @@ void IdentityAssetEditor::appendLog(const QString &str){
 
 void IdentityAssetEditor::configure(QSharedPointer<Settings> _settings, QSharedPointer<Hub> hub){
 	OC_METHODGATE();
+	Q_UNUSED(_settings);
 	if(mConfigureHelper.configure()){
 		mHub = hub;
-		
 	}
 }
 

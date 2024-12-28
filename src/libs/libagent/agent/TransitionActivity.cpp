@@ -22,6 +22,8 @@ TransitionActivity::~TransitionActivity()
 
 void TransitionActivity::popImpl(const QString &returnActivity, const QStringList returnArguments){
 	OC_METHODGATE();
+	Q_UNUSED(returnActivity);
+	Q_UNUSED(returnArguments);
 }
 
 

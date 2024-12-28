@@ -41,7 +41,7 @@ public:
 
 public:
 	QSharedPointer<CommsChannel> comms() const;
-	void setForwardRescheduleSignal(QObject &ob, bool fwd);
+	//void setForwardRescheduleSignal(QObject &ob, bool fwd);
 	quint64 lastOpportunity() const;
 	void  setLastOpportunity(quint64 now);
 	quint32 id() const;
@@ -50,7 +50,7 @@ public:
 	QString toString() const;
 
 signals:
-	void reschedule(quint64);
+	//void reschedule(quint64);
 
 // Courier interface
 public:

@@ -112,7 +112,7 @@ SendingBlob::SendingBlob(const QString name, const quint16 id, const quint32 chu
 	, mNameAcknowleged(false)
 	, mUnsentIndex(0)
 	, mUnacknowlegedIndex(0)
-	, mLastAcknowlegedTime(0)
+//	, mLastAcknowlegedTime(0)
 	, mLastResendTime(0)
 	, mIsSent(mTotalIndecies)
 	, mIsAcknowleged(mTotalIndecies)

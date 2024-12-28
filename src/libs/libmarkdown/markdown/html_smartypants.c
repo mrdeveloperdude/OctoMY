@@ -9,6 +9,8 @@
 #define snprintf _snprintf
 #endif
 
+#define Q_UNUSED(A) (void)A
+
 struct smartypants_data {
 	int in_squote;
 	int in_dquote;
@@ -165,6 +167,8 @@ smartypants_cb__squote(hoedown_buffer *ob, struct smartypants_data *smrt, uint8_
 static size_t
 smartypants_cb__parens(hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
+	Q_UNUSED(smrt);
+	Q_UNUSED(previous_char);
 	if (size >= 3) {
 		uint8_t t1 = tolower(text[1]);
 		uint8_t t2 = tolower(text[2]);
@@ -193,6 +197,9 @@ smartypants_cb__parens(hoedown_buffer *ob, struct smartypants_data *smrt, uint8_
 static size_t
 smartypants_cb__dash(hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
+	Q_UNUSED(ob);
+	Q_UNUSED(smrt);
+	Q_UNUSED(previous_char);
 	if (size >= 3 && text[1] == '-' && text[2] == '-') {
 		HOEDOWN_BUFPUTSL(ob, "&mdash;");
 		return 2;
@@ -233,6 +240,8 @@ smartypants_cb__amp(hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t p
 static size_t
 smartypants_cb__period(hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
+	Q_UNUSED(smrt);
+	Q_UNUSED(previous_char);
 	if (size >= 3 && text[1] == '.' && text[2] == '.') {
 		HOEDOWN_BUFPUTSL(ob, "&hellip;");
 		return 2;
@@ -264,6 +273,7 @@ smartypants_cb__backtick(hoedown_buffer *ob, struct smartypants_data *smrt, uint
 static size_t
 smartypants_cb__number(hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
+	Q_UNUSED(smrt);
 	if (word_boundary(previous_char) && size >= 3) {
 		if (text[0] == '1' && text[1] == '/' && text[2] == '2') {
 			if (size == 3 || word_boundary(text[3])) {
@@ -306,6 +316,8 @@ smartypants_cb__dquote(hoedown_buffer *ob, struct smartypants_data *smrt, uint8_
 static size_t
 smartypants_cb__ltag(hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
+	Q_UNUSED(smrt);
+	Q_UNUSED(previous_char);
 	static const char *skip_tags[] = {
 	  "pre", "code", "var", "samp", "kbd", "math", "script", "style"
 	};
@@ -356,6 +368,8 @@ smartypants_cb__ltag(hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t 
 static size_t
 smartypants_cb__escape(hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
+	Q_UNUSED(smrt);
+	Q_UNUSED(previous_char);
 	if (size < 2)
 		return 0;
 

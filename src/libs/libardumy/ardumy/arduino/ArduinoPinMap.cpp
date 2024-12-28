@@ -127,6 +127,7 @@ void ArduinoPinMap::verifyIntegrity()
 
 QVector<ArduinoPin *> ArduinoPinMap::filter(ArduinoPinFilter &f)
 {
+	Q_UNUSED(f);
 	QVector<ArduinoPin *> out;
 	return out;
 }

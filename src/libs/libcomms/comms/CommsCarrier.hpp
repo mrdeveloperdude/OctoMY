@@ -18,7 +18,7 @@ class QHostAddress;
  *
  * The job of the carrier is to perform RX/TX of data buffers to and from designated carrier-specific addresses.
  *
- * The most importnat carrier subclass is CommsCarrierUDP which imlpements transport over UDP/IP networks.
+ * The most important carrier subclass is CommsCarrierUDP which imlpements transport over UDP/IP networks.
  *
  */
 class CommsCarrier: public QObject

@@ -5,8 +5,10 @@
 
 #include <QWidget>
 
-class ArduMYActuator;
-class ArduMYActuatorConfig;
+#include "hardware/controllers/IController.hpp"
+
+struct ArduMYActuator;
+struct ArduMYActuatorConfig;
 
 namespace Ui
 {
@@ -42,9 +44,9 @@ public:
 	void disableServo();
 
 signals:
-	void actuatorMoved(quint32 id, qreal val);
-	void actuatorLimped(quint32 id, bool l);
-	void actuatorDeleted(quint32 id);
+	void actuatorMoved(ACTUATOR_INDEX id, qreal val);
+	void actuatorLimped(ACTUATOR_INDEX id, bool l);
+	void actuatorDeleted(ACTUATOR_INDEX id);
 
 private slots:
 	void onActuatorMoved();

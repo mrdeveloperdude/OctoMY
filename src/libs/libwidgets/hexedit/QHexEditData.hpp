@@ -157,7 +157,7 @@ public:
 		virtual bool mergeWith(const QUndoCommand* command)
 		{
 			OC_METHODGATE();
-			const InsertCommand* ic = dynamic_cast<const InsertCommand*>(command);
+			const InsertCommand* ic = static_cast<const InsertCommand*>(command);
 
 			if(ic->optimized()) {
 				ModifiedItem* oldmi = nullptr;

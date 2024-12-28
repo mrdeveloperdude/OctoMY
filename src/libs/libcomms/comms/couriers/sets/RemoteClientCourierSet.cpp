@@ -10,6 +10,8 @@ RemoteClientCourierSet::RemoteClientCourierSet(QString fullID, RemoteClient &cli
 
 {
 	OC_METHODGATE();
+	Q_UNUSED(fullID);
+	Q_UNUSED(mClient);
 }
 
 

@@ -66,7 +66,7 @@
      <item>
       <spacer name="horizontalSpacer_6">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -81,7 +81,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tabStatus">
       <attribute name="title">
@@ -140,7 +140,7 @@
        <item row="3" column="0">
         <spacer name="horizontalSpacer">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -156,7 +156,7 @@
           <string>Board:</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -170,7 +170,7 @@
        <item row="3" column="3">
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -186,7 +186,7 @@
           <string>Version:</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -200,7 +200,7 @@
        <item row="5" column="0" colspan="4">
         <spacer name="verticalSpacer">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -235,7 +235,7 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="1" column="0">
-        <widget class="ActuatorManagerWidget" name="widgetActuatorManager" native="true">
+        <widget class="ArduMYActuatorManagementWidget" name="widgetActuatorManager" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -301,7 +301,7 @@
          <item>
           <spacer name="horizontalSpacer_3">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -323,7 +323,7 @@
        <item row="0" column="0">
         <spacer name="horizontalSpacer_5">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -436,7 +436,7 @@
        <item row="0" column="3">
         <spacer name="horizontalSpacer_4">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -449,7 +449,7 @@
        <item row="1" column="2">
         <spacer name="verticalSpacer_2">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -473,12 +473,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ActuatorManagerWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">hardware/actuator/ActuatorManagerWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>SerialSettingsWidget</class>
    <extends>QWidget</extends>
    <header location="global">hardware/serial/SerialSettingsWidget.hpp</header>
@@ -488,6 +482,12 @@
    <class>ArduinoPinSelector</class>
    <extends>QWidget</extends>
    <header location="global">ardumy/arduino/ArduinoPinSelector.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ArduMYActuatorManagementWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">ardumy/ArduMYActuatorManagementWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -37,7 +37,14 @@
     <number>9</number>
    </property>
    <item>
-    <widget class="NodeNavigation" name="widgetNavigation" native="true"/>
+    <widget class="NodeNavigation" name="widgetNavigation" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="ActivityStack" name="widgetActivityStack" native="true"/>

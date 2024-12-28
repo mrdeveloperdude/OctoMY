@@ -73,7 +73,7 @@ private:
 	// Chunk send state
 	int mUnsentIndex;
 	int mUnacknowlegedIndex;
-	quint64 mLastAcknowlegedTime;
+	//quint64 mLastAcknowlegedTime;
 	quint64 mLastResendTime;
 	QBitArray mIsSent;
 

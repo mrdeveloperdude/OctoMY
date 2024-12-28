@@ -7,7 +7,7 @@
 #include <QHostAddress>
 
 class NetworkAddress;
-class AddressEntry;
+struct AddressEntry;
 
 /**
  * @brief The AddressList class is used to keep track of addresses that have been used by an associate.

@@ -66,6 +66,7 @@ int AgentListModel::columnCount(const QModelIndex &) const
 QVariant AgentListModel::data(const QModelIndex &index, int role) const
 {
 	OC_METHODGATE();
+	Q_UNUSED(role);
 	QVariant ret;
 	const auto row = index.row();
 	if(row < 0){

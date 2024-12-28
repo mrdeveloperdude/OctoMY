@@ -55,6 +55,8 @@ Ding<T, OUTPUT_CHANNELS>::Ding(T hz,T sr,T amp,T trem,T trema,T damp):
 {
 	OC_METHODGATE();
 	b1.setBiquad(Biquad<T, OUTPUT_CHANNELS>::BANDPASS, hz/sr, 100.0, 6.0);
+	Q_UNUSED(trem);
+	Q_UNUSED(trema);
 	//tremo.set(hz/trema, trema); // hz/trema, sr, trem, Osc<T, OUTPUT_CHANNELS>::SIN
 }
 
@@ -103,6 +105,7 @@ template <typename T, int OUTPUT_CHANNELS>
 void Ding<T, OUTPUT_CHANNELS>::init(QAudioFormat f)
 {
 	OC_METHODGATE();
+	Q_UNUSED(f);
 	//sr = f.sampleRate();
 }
 

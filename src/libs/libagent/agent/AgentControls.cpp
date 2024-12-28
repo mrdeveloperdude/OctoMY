@@ -43,7 +43,7 @@ void AgentControls::setCommsEnabled(bool enable)
 {
 	OC_METHODGATE();
 	for(AgentCourierSet *set:mCouriers) {
-		set->enableComms(enable);
+		set->enable(enable);
 	}
 }
 

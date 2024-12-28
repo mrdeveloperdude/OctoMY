@@ -187,6 +187,7 @@ bool AddressList::operator== (const AddressList &b) const
 
 bool AddressList::operator!= (const AddressList &b) const
 {
+	Q_UNUSED(b);
 	//TODO: Implement this if it is ever needed
 	return false;
 }

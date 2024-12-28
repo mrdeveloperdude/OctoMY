@@ -38,7 +38,6 @@ Q_REQUIRED_RESULT constexpr static inline TGPSReal tan(TGPSReal d)
 {
 	return std::tan(d);
 }
-*/
 
 Q_REQUIRED_RESULT constexpr static inline TGPSReal min(TGPSReal a, TGPSReal b)
 {
@@ -50,6 +49,7 @@ Q_REQUIRED_RESULT constexpr static inline TGPSReal max(TGPSReal a, TGPSReal b)
 {
 	return std::max(a, b);
 }
+*/
 
 /*
 Q_REQUIRED_RESULT constexpr static inline TGPSReal atan2(TGPSReal a, TGPSReal b)

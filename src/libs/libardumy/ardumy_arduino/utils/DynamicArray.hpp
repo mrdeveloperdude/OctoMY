@@ -135,7 +135,7 @@ void DynamicArray<T>::remove(uint32_t id)
 		return;
 	}
 	const uint32_t newsize=mSize-1;
-	const uint32_t copySize=newsize;
+	//const uint32_t copySize=newsize;
 	T *tmp= new T[newsize];
 	uint32_t i=0;
 	if(nullptr!=mData) {

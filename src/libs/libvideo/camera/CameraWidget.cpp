@@ -352,6 +352,7 @@ void CameraWidget::stop()
 void CameraWidget::setMuted(bool muted)
 {
 	OC_METHODGATE();
+	Q_UNUSED(muted);
 	//mediaRecorder->setMuted(muted);
 }
 
@@ -438,7 +439,7 @@ void CameraWidget::stopCamera()
 void CameraWidget::updateCaptureMode()
 {
 	OC_METHODGATE();
-	int tabIndex = 1; //ui->tabWidgetCapture->currentIndex();
+	//int tabIndex = 1; //ui->tabWidgetCapture->currentIndex();
 	/*
 	QCamera::CaptureModes captureMode = tabIndex == 0 ? QCamera::CaptureStillImage : QCamera::CaptureVideo;
 
@@ -502,6 +503,7 @@ void CameraWidget::updateRecorderState(QMediaRecorder::State state)
 
 void CameraWidget::setExposureCompensation(int index)
 {
+	Q_UNUSED(index);
 	OC_METHODGATE();
 	//camera->exposure()->setExposureCompensation(index*0.5);
 }
@@ -523,6 +525,7 @@ void CameraWidget::displayCameraError()
 void CameraWidget::updateCameraDevice(QListWidgetItem *item)
 {
 	OC_METHODGATE();
+	Q_UNUSED(item);
 	//setCamera(qvariant_cast<QCameraInfo>(item->data(Qt::UserRole)));
 }
 

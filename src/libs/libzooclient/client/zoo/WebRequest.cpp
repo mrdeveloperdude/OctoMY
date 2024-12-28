@@ -160,7 +160,7 @@ void WebRequest::startRequestWorker()
 	}
 	break;
 	case(POST): {
-		if(out.count()>0) {
+		if(out.size()>0) {
 			qDebug() << signature()<<  "OUT POST: " << out.data();
 			req.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, Constants::APPLICATION_JSON_MIME);
 			rep=nam.post(req,out);
@@ -171,7 +171,7 @@ void WebRequest::startRequestWorker()
 	}
 	break;
 	case(PUT): {
-		if(out.count()>0) {
+		if(out.size()>0) {
 			qDebug() << signature()<< "OUT PUT: " << out.data();
 			if(doMultipart) {
 				part.setBody(out);

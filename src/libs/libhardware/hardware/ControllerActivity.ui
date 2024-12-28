@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,1,0">
+  <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,1,0">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -26,6 +26,30 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QPushButton" name="pushButtonChangeController">
+       <property name="text">
+        <string>Change Controller</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
    <item>
     <widget class="QLabel" name="label_6">
      <property name="sizePolicy">
@@ -60,7 +84,7 @@
          <x>0</x>
          <y>0</y>
          <width>1132</width>
-         <height>244</height>
+         <height>670</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -104,8 +128,14 @@
        </layout>
       </widget>
      </widget>
-     <widget class="QWidget" name="widget" native="true">
-      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1">
+     <widget class="ControllerManagementWidget" name="widgetControllerManagement" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>200</height>
+       </size>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -118,42 +148,6 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QPushButton" name="pushButtonToggleEnableAll">
-           <property name="text">
-            <string>Toggle Enable All</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButtonToggleLimpAll">
-           <property name="text">
-            <string>Toggle Limp All</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="ActuatorManagerWidget" name="widgetActuatorManager" native="true">
-         <layout class="QVBoxLayout" name="verticalLayout"/>
-        </widget>
-       </item>
       </layout>
      </widget>
     </widget>
@@ -186,9 +180,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ActuatorManagerWidget</class>
+   <class>ControllerManagementWidget</class>
    <extends>QWidget</extends>
-   <header location="global">hardware/actuator/ActuatorManagerWidget.hpp</header>
+   <header location="global">hardware/ControllerManagementWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
@@ -211,30 +205,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButtonToggleEnableAll</sender>
+   <sender>pushButtonChangeController</sender>
    <signal>clicked()</signal>
    <receiver>ControllerActivity</receiver>
-   <slot>toggleEnableAll()</slot>
+   <slot>changeController()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>40</x>
-     <y>286</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>566</x>
-     <y>482</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButtonToggleLimpAll</sender>
-   <signal>clicked()</signal>
-   <receiver>ControllerActivity</receiver>
-   <slot>toggleLimpAll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>126</x>
-     <y>286</y>
+     <x>56</x>
+     <y>13</y>
     </hint>
     <hint type="destinationlabel">
      <x>566</x>
@@ -245,7 +223,6 @@
  </connections>
  <slots>
   <slot>done()</slot>
-  <slot>toggleLimpAll()</slot>
-  <slot>toggleEnableAll()</slot>
+  <slot>changeController()</slot>
  </slots>
 </ui>

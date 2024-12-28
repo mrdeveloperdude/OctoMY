@@ -71,15 +71,15 @@ void CommsChannel::configure(QSharedPointer<CommsCarrier> carrier, QSharedPointe
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		mCarrier=carrier;
+		mCarrier = carrier;
 		if(!mCarrier.isNull()) {
 			mCarrier->setHookCarrierSignals(*this, true);
 		}
-		mKeystore=keystore;
+		mKeystore = keystore;
 		if(!mKeystore.isNull()) {
 			mSessions.configure(mKeystore);
 		}
-		mAssociates=peers;
+		mAssociates = peers;
 	}
 }
 
@@ -217,7 +217,7 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 
 										session->setAddress(addr);
 										// Generate our syn nonce
-										const SESSION_NONCE_TYPE synNonce=session->createOurSynNonce();
+										//const auto synNonce = session->createOurSynNonce();
 										//qDebug()<<"OUR SYN TX NONCE CREATED: "<<synNonce;
 
 										mSessions.insert(session);
@@ -305,16 +305,16 @@ void CommsChannel::recieveHandshake(PacketReadState &state)
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		if(recieveEncryptedBody(state)) {
 
-			const auto multimagic=static_cast<Multimagic>(state.multimagic);
-			const bool remoteWantsToBeInitiator=( ( MULTIMAGIC_SYN == multimagic ) ||  ( MULTIMAGIC_ACK == multimagic )  );
+			const auto multimagic = static_cast<Multimagic>(state.multimagic);
+			const bool remoteWantsToBeInitiator = ( ( MULTIMAGIC_SYN == multimagic ) ||  ( MULTIMAGIC_ACK == multimagic )  );
 
 
 			// REMOTE FULL-ID
 			state.readEncSenderID();
 			// TODO meta overhead bytes for bytearray from stream
 			if(state.octomyProtocolSenderIDRawSize != state.OCTOMY_SENDER_ID_SIZE) { // Full ID should be OCTOMY_FULL_ID_SIZE bytes, no more, no less
-				QString es="ERROR: OctoMY Protocol Session-Less Sender ID size mismatch: "+QString::number(state.octomyProtocolSenderIDRawSize)+ " vs. "+QString::number(state.OCTOMY_SENDER_ID_SIZE);
-				qWarning()<<es;
+				QString es = "ERROR: OctoMY Protocol Session-Less Sender ID size mismatch: " + QString::number(state.octomyProtocolSenderIDRawSize)+ " vs. "+QString::number(state.OCTOMY_SENDER_ID_SIZE);
+				qWarning() << es;
 				emit commsError(es);
 				return;
 			}
@@ -326,68 +326,68 @@ void CommsChannel::recieveHandshake(PacketReadState &state)
 				// When session is missing and unless this is SYN, we drop the packet
 				if( MULTIMAGIC_SYN != multimagic) {
 					QString es="INFO: Dropping NON-SYN packet since we don't have session";
-					qWarning()<<es;
+					qWarning() << es;
 					emit commsError(es);
 					return;
 				} else {
 					// Create session for remote full ID
-					session=createSession(state.octomyProtocolSenderID, false);
-					if(nullptr==session) {
-						QString es="ERROR: OctoMY Protocol Session could not be created for: " + state.octomyProtocolSenderID+ " in receive handshake";
-						qWarning()<<es;
+					session = createSession(state.octomyProtocolSenderID, false);
+					if(nullptr == session) {
+						QString es = "ERROR: OctoMY Protocol Session could not be created for: " + state.octomyProtocolSenderID+ " in receive handshake";
+						qWarning() << es;
 						emit commsError(es);
 						return;
 					}
 				}
 			}
 			if(!session.isNull() ) {
-				const bool weWantToBeInitiator=session->handshakeState().isInitiator();
+				const bool weWantToBeInitiator = session->handshakeState().isInitiator();
 
 				// We both want to be the same role
 				if(remoteWantsToBeInitiator == weWantToBeInitiator) {
 					//qDebug()<<"DUEL: "<< remoteWantsToBeInitiator << " vs. "<<  weWantToBeInitiator;
 					IDDuel duel(localID(), state.octomyProtocolSenderID);
-					const bool weWin=duel.duel();
+					const bool weWin = duel.duel();
 					// We are the winners, so we simply drop the packet and wait for the remote to get it (or not)
 					if(weWin) {
-						QString es="INFO: Dropping packet due to initiation conflict on the part of the remote";
-						qWarning()<<es;
+						QString es = "INFO: Dropping packet due to initiation conflict on the part of the remote";
+						qWarning() << es;
 						emit commsError(es);
 						return;
 					}
 					// We are the loosers so we simply adapt to the situation and continue as nothing happened.
 					else {
 						session->handshakeState().setInitiator(!weWantToBeInitiator);
-						QString es="INFO: Dropping packet and ajusting due to initiation conflict on our part";
-						qWarning()<<es;
+						QString es = "INFO: Dropping packet and ajusting due to initiation conflict on our part";
+						qWarning() << es;
 						emit commsError(es);
 						return;
 					}
 				}
 
-				const auto step=multimagicToHandshakeStep(multimagic);
-				const bool rxStepOK=(session->handshakeState().expectedStepRX() == step);
+				const auto step = multimagicToHandshakeStep(multimagic);
+				const bool rxStepOK = (session->handshakeState().expectedStepRX() == step);
 				if(rxStepOK) {
-					bool rxOK=false;
+					bool rxOK = false;
 					switch(multimagic) {
 					case(MULTIMAGIC_SYN): {
 						// We received SYN
-						rxOK=recieveSyn(state, session);
+						rxOK = recieveSyn(state, session);
 						// TODO MOVE OK CHECK DOWN SINCE WE NEED OK TO UPDATE STEP
 					}
 					break;
 					case(MULTIMAGIC_SYNACK): {
 						// We received SYN-ACK
-						rxOK=recieveSynAck(state, session);
+						rxOK = recieveSynAck(state, session);
 					}
 					break;
 					case(MULTIMAGIC_ACK): {
 						// We received SYN
-						rxOK=recieveAck(state, session);
+						rxOK = recieveAck(state, session);
 					}
 					break;
 					default: {
-						qWarning()<<"ERROR: Unhandled multimagic of type "<<MultimagicToString(multimagic);
+						qWarning() << "ERROR: Unhandled multimagic of type " << MultimagicToString(multimagic);
 					}
 					break;
 					}
@@ -462,7 +462,7 @@ bool CommsChannel::recieveSyn(PacketReadState &state, QSharedPointer<CommsSessio
 		session->setRemoteSessionID(state.octomyProtocolDesiredRemoteSessionID);
 
 		// (Re)generate our syn-ack nonce
-		const SESSION_NONCE_TYPE synAckNonce=session->createOurSynAckNonce();
+		//const auto synAckNonce=session->createOurSynAckNonce();
 		//qDebug()<<"OUR SYN-ACK TX NONCE CREATED: "<<synAckNonce;
 
 		return true;
@@ -532,7 +532,7 @@ bool CommsChannel::recieveSynAck(PacketReadState &state, QSharedPointer<CommsSes
 		session->setRemoteSessionID(state.octomyProtocolDesiredRemoteSessionID);
 
 		// (Re)generate our ack nonce
-		const SESSION_NONCE_TYPE ackNonce=session->createOurAckNonce();
+		//const auto ackNonce=session->createOurAckNonce();
 		//qDebug()<<"OUR ACK TX NONCE CREATED: "<<ackNonce;
 
 		return true;
@@ -1059,7 +1059,7 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 		}
 		mPendingHandshakes.clear();
 		// Re-schedule couriers (strive to adhere to the mandates set fourth by each courier)
-		for(QSharedPointer<Courier> courier:mCouriers) {
+		for(auto &courier:std::as_const(mCouriers)) {
 			if(!courier.isNull()) {
 				//qDebug()<<" + " << courier->toString();
 				CourierMandate cm=courier->mandate();
@@ -1350,7 +1350,7 @@ void CommsChannel::onCarrierConnectionStatusChanged(const bool connected)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		emit commsConnectionStatusChanged(connected, mCouriers.commsEnabled(false));
+		emit commsConnectionStatusChanged(connected, mCouriers.isEnabled(false));
 	}
 }
 

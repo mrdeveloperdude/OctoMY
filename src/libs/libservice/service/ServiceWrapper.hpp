@@ -62,7 +62,7 @@ void ServiceWrapper<T>::serviceActivateImp(bool on, ServiceActivatedCallback cal
 {
 	OC_METHODGATE();
 	if(!mService.isNull()) {
-		serviceWrapperActivate(mService, on, [this, callBack](bool on, bool ok) {
+		serviceWrapperActivate(mService, on, [callBack](bool on, bool ok) {
 			// Siphon of the value of "activated"
 			if(nullptr!=callBack) {
 				callBack(on, ok);

@@ -35,7 +35,7 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 		}
 		if(mRng->generateReal2()>0.7 || true) {
 			qDebug() << mMyAddress << ":" << mMyPort << " --> " << toPort;
-			QString myID="1234";
+			QString myID = "1234";
 			//CommsSignature sig(myID, NetworkAddress(mMyAddress, toPort));
 			auto tc = QSharedPointer<MockCourier> ::create(mName+"Courier", myID, "This is my humble payload", mCc, mTestCount, mTestCount, this);
 			QVERIFY(!tc.isNull());

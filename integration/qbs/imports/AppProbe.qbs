@@ -4,5 +4,5 @@ BaseProbe{
 	searchDir:"src"
 	fileName: "app.qbs"
 	definePrefix: "OC_APP_"
-	//debug: true
+	debug: false
 }

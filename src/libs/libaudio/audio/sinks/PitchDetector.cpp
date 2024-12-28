@@ -34,6 +34,8 @@ PitchDetector::PitchDetector(QAudioFormat format, QObject *parent)
     , mAnalyzer(new Analyzer(format.sampleRate(), "1"))
 #endif
 {
+	
+	Q_UNUSED(format);
 #ifdef USE_PITCH_1
     //qDebug()<<"Pitch detector CTOR";
     if(!mPyin.isNull()){

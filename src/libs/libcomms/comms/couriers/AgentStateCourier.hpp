@@ -9,7 +9,7 @@
 
 #include "Courier.hpp"
 
-#include "comms/SyncContext.hpp"
+#include "comms/sync/SyncContext.hpp"
 #include "comms/messages/AgentMode.hpp"
 #include "pose/Pose.hpp"
 
@@ -25,7 +25,8 @@ class SyncParameter;
  * \brief The AgentStateCourier class is responsible for synchronizing an Agent's
  * basic state between controller and agent.
  *
- * The state itself is represented by the AgentState class.
+ * The state itself is represented by an instance of SyncContext with parameters
+ * for agent flags, agent mode, target position, target orientation and target pose
  *
  * It is the Agent's responsibility to persist the state and  perform initial
  * sync upon establishment of new connection

@@ -18,7 +18,7 @@ static const size_t sepStrSz = sepStr.size();
 static const QByteArray sepBa(sepStr.toLatin1());
 static const size_t sepBaSz = sepBa.size();
 
-const int Servotor32Controller::SERVO_COUNT{32};
+const ACTUATOR_INDEX Servotor32Controller::SERVO_COUNT{32};
 
 Servotor32Controller::Servotor32Controller(QObject *parent)
 	: IController("Servotor32", "ArcBotics Servotor32", ":/icons/arcbotics_logo.svg", parent)
@@ -393,7 +393,7 @@ void Servotor32Controller::onSerialSettingsChanged()
 
 
 
-QString Servotor32Controller::version()
+QString Servotor32Controller::firmwareVersion()
 {
 	OC_METHODGATE();
 	return mLastSerialSideVersion;
@@ -449,11 +449,11 @@ void Servotor32Controller::setConnected(bool open)
 	if(open) {
 		s32_openSerialPort();
 		if(mDebug){
-			qDebug() << "OPENED servotor32 version " << version();
+			qDebug() << "OPENED servotor32 version " << firmwareVersion();
 		}
 	} else {
 		if(mDebug){
-			qDebug() << "CLOSING servotor32 version " << version();
+			qDebug() << "CLOSING servotor32 version " << firmwareVersion();
 		}
 		s32_closeSerialPort();
 	}

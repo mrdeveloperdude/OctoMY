@@ -29,7 +29,7 @@ private:
 	
 	// Virtual activity mechanism
 protected:
-	virtual void popImpl(const QString &returnActivity, const QStringList returnArguments = QStringList()){Q_UNUSED(returnArguments);}
+	virtual void popImpl(const QString &returnActivity, const QStringList returnArguments = QStringList()){Q_UNUSED(returnActivity);Q_UNUSED(returnArguments);}
 	virtual void pushImpl(const QStringList arguments = QStringList()){Q_UNUSED(arguments);}
 	
 	// Convenience wrappers for activities to use stack

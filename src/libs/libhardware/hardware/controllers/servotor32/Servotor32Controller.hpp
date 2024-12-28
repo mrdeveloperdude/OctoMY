@@ -27,7 +27,7 @@ class Servotor32Controller: public IController
 private:
 	friend class Servotor32ControllerWidget;
 private:
-	static const int SERVO_COUNT;
+	static const ACTUATOR_INDEX SERVO_COUNT;
 	QVector<ACTUATOR_VALUE> mAccumulatedPosition;
 	QBitArray mDirtyMoveFlags;
 	QBitArray mLimp;
@@ -72,7 +72,7 @@ private slots:
 	// IController interface
 public:
 	// Version
-	QString version() override;
+	QString firmwareVersion() override;
 	// UI
 	bool hasConfigurationWidget() const override;
 	QWidget *configurationWidget() override;

@@ -26,6 +26,7 @@ StanzaItemDelegate::~StanzaItemDelegate()
 	OC_METHODGATE();
 }
 
+/*
 
 static QSizeF calcSize(const QSizeF &ds, const qint32 w, const qint32 h, qreal const z)
 {
@@ -44,7 +45,6 @@ static QSizeF calcSize(const QSizeF &ds, const qint32 w, const qint32 h, qreal c
 }
 
 
-
 static void drawSVG(QPainter *p, QString url, qint32 x,qint32 y, qint32 w,qint32 h, qreal zoom=0.0)
 {
 	OC_FUNCTIONGATE();
@@ -58,7 +58,7 @@ static void drawSVG(QPainter *p, QString url, qint32 x,qint32 y, qint32 w,qint32
 		p->drawPixmap(x, y, w, h, px);
 	}
 }
-
+*/
 
 void StanzaItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {

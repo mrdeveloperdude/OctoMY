@@ -121,7 +121,7 @@ void Servotor32ControllerWidget::onErrorOccurred(const QString &error){
 }
 
 
-void Servotor32ControllerWidget::onServoMoved(quint32 id, qreal val)
+void Servotor32ControllerWidget::onServoMoved(ACTUATOR_INDEX id, qreal val)
 {
 	OC_METHODGATE();
 	qDebug()<<"Registered actuator move"<<id<<val;
@@ -129,14 +129,14 @@ void Servotor32ControllerWidget::onServoMoved(quint32 id, qreal val)
 		return;
 	}
 	mPos[id]=(val*2.0)-1.0;
-	const quint32 bit=1<<id;
+	const ACTUATOR_INDEX bit=1<<id;
 	// TODO: Fix this?
 	Q_UNUSED(bit);
 	//serial->move(pos,bit);
 }
 
 
-void Servotor32ControllerWidget::onServoLimped(quint32 id)
+void Servotor32ControllerWidget::onServoLimped(ACTUATOR_INDEX id)
 {
 	qDebug()<<"Registered actuator limp"<<id;
 	OC_METHODGATE();

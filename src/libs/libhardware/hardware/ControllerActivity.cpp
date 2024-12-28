@@ -1,6 +1,7 @@
 #include "ControllerActivity.hpp"
 
 #include "agent/Agent.hpp"
+#include "agent/AgentWindow.hpp"
 #include "hardware/controllers/ControllerHandler.hpp"
 #include "hardware/controllers/IController.hpp"
 #include "ui_ControllerActivity.h"
@@ -30,17 +31,17 @@ void ControllerActivity::updateController(){
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()){
 		QSharedPointer<ControllerHandler> handler;
-		QSharedPointer<IController> ctl;
+		QSharedPointer<IController> controller;
 		if(!mAgent.isNull()) {
 			handler = mAgent->controllerHandler();
 			if(!handler.isNull()){
 				handler->reloadController();
-				ctl = handler->controller();
+				controller = handler->controller();
 			}
 		}
 		QWidget *configurationWidget = nullptr;
-		if(!ctl.isNull()) {
-			auto widget = ctl->configurationWidget();
+		if(!controller.isNull()) {
+			auto widget = controller->configurationWidget();
 			if(nullptr != widget) {
 				if(mDebug){
 					qDebug()<<"Configuration UI found";
@@ -78,7 +79,7 @@ void ControllerActivity::updateController(){
 				qDebug() << "No change in settings";
 			}
 		}
-		ui->widgetActuatorManager->configure(handler);
+		ui->widgetControllerManagement->configure(handler);
 	}
 }
 
@@ -94,16 +95,9 @@ void ControllerActivity::configure(QSharedPointer<Agent> agent)
 	}
 }
 
-
-void ControllerActivity::toggleEnableAll() {
+void ControllerActivity::changeController(){
 	OC_METHODGATE();
-	ui->widgetActuatorManager->toggleEnableAll();
-}
-
-
-void ControllerActivity::toggleLimpAll() {
-	OC_METHODGATE();
-	ui->widgetActuatorManager->toggleLimpAll();
+	push("ControllerTypeSelector");
 }
 
 
@@ -112,7 +106,7 @@ void ControllerActivity::done() {
 	if(!mAgent.isNull()) {
 		auto handler = mAgent->controllerHandler();
 		if(!handler.isNull()){
-			handler->getControllerConfig();
+			handler->storeControllerConfig();
 		}
 	}
 	pop(QStringList());
@@ -134,4 +128,19 @@ void ControllerActivity::popImpl(const QString &returnActivity, const QStringLis
 	OC_METHODGATE();
 	Q_UNUSED(returnActivity);
 	Q_UNUSED(returnArguments);
+	if("ControllerTypeSelector" == returnActivity){
+		auto window = qSharedPointerCast<AgentWindow>(mAgent->nodeWindow());
+		if(window){
+			const auto controllerType = returnArguments[0];
+			qDebug()<<"Got controller type " << controllerType;
+			window->controllerTypeSelected(controllerType);
+			auto handler = mAgent->controllerHandler();
+			if(!handler.isNull()){
+				handler->reloadController();
+			}
+		}
+		else{
+			qWarning()<<"No agent window";
+		}
+	}
 }

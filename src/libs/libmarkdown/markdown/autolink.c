@@ -11,6 +11,8 @@
 #define strncasecmp	_strnicmp
 #endif
 
+#define Q_UNUSED(A) (void)A
+
 int
 hoedown_autolink_is_safe(const uint8_t *data, size_t size)
 {
@@ -36,6 +38,8 @@ hoedown_autolink_is_safe(const uint8_t *data, size_t size)
 static size_t
 autolink_delim(uint8_t *data, size_t link_end, size_t max_rewind, size_t size)
 {
+	Q_UNUSED(max_rewind);
+	Q_UNUSED(size);
 	uint8_t cclose, copen = 0;
 	size_t i;
 
@@ -152,6 +156,7 @@ hoedown_autolink__www(
 	size_t size,
 	unsigned int flags)
 {
+	Q_UNUSED(flags);
 	size_t link_end;
 
 	if (max_rewind > 0 && !ispunct(data[-1]) && !isspace(data[-1]))
@@ -188,6 +193,7 @@ hoedown_autolink__email(
 	size_t size,
 	unsigned int flags)
 {
+	Q_UNUSED(flags);
 	size_t link_end, rewind;
 	int nb = 0, np = 0;
 

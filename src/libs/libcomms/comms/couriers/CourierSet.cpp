@@ -21,7 +21,7 @@ CourierSet::~CourierSet()
 }
 
 
-void CourierSet::enableComms(bool enable)
+void CourierSet::enable(bool enable)
 {
 	OC_METHODGATE();
 	for(QSharedPointer<Courier> courier: *this) {
@@ -35,7 +35,7 @@ void CourierSet::enableComms(bool enable)
 }
 
 
-bool CourierSet::commsEnabled(bool conservative)
+bool CourierSet::isEnabled(bool conservative)
 {
 	OC_METHODGATE();
 	int activeCount=0;

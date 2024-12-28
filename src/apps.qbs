@@ -5,6 +5,7 @@ Project {
 	// Enumerate OctoMY apps
 	AppProbe {
 		id: octomyApps
+		searchDir:"src"
 	}
 	references: octomyApps.files
 }

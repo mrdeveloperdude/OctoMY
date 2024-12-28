@@ -132,7 +132,7 @@ bool Client::courierRegistration()
 	OC_METHODGATE();
 	QSharedPointer<CourierSet> set=courierSet();
 	if(!set.isNull()) {
-		return set->commsEnabled();
+		return set->isEnabled();
 	}
 	return false;
 }
@@ -142,7 +142,7 @@ void Client::registerCouriers(bool reg)
 	OC_METHODGATE();
 	QSharedPointer<CourierSet> set=courierSet();
 	if(!set.isNull()) {
-		set->enableComms(reg);
+		set->enable(reg);
 	}
 }
 

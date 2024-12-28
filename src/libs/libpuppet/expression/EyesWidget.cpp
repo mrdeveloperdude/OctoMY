@@ -26,7 +26,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-
+//TODO: Look at implementing full FACS https://imotions.com/blog/learning/research-fundamentals/facial-action-coding-system/
 
 EyesWidget::EyesWidget(QWidget *parent)
 	: QWidget(parent)

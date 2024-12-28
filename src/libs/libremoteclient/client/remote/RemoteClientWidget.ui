@@ -32,7 +32,7 @@
    <item row="0" column="0">
     <widget class="QStackedWidget" name="stackedWidgetControl">
      <property name="currentIndex">
-      <number>6</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="pageConnection">
       <property name="sizePolicy">
@@ -122,7 +122,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="ActuatorManagerWidget" name="widgetActuatorControl" native="true"/>
+        <widget class="ActuatorManagementWidget" name="widgetActuatorControl" native="true"/>
        </item>
       </layout>
      </widget>
@@ -605,6 +605,12 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>ActuatorManagementWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">hardware/actuator/ActuatorManagementWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>PortableIDWidget</class>
    <extends>QWidget</extends>
    <header location="global">node/PortableIDWidget.hpp</header>
@@ -631,12 +637,6 @@
    <class>PanicButton</class>
    <extends>QPushButton</extends>
    <header location="global">node/PanicButton.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ActuatorManagerWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">hardware/actuator/ActuatorManagerWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

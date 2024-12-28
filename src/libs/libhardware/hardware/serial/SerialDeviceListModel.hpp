@@ -16,16 +16,16 @@ private:
 public:
 	explicit SerialDeviceListModel(QObject *parent = 0);
 	
+	// QAbstractListModel interface
 public:
 	// Header:
 	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-
 	// Basic functionality:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-	int columnCount(const QModelIndex &) const;
-
+	int columnCount(const QModelIndex &) const override;
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 	
+public:
 	QSerialPortInfo deviceInfo(const QModelIndex &index) const;
 	
 public slots:

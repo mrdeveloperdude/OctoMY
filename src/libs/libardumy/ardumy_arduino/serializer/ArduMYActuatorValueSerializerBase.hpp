@@ -9,7 +9,7 @@
 #include "ardumy_arduino/utils/Converter.hpp"
 
 class ArduMYActuatorSet;
-class ArduMYActuator;
+struct ArduMYActuator;
 
 struct ArduMYActuatorValueSerializerBase {
 

@@ -15,6 +15,7 @@ class AgentDeliveryActivity;
 class AgentSipAndSeeActivity;
 class AgentUnboxingWizard;
 class CameraPairingActivity;
+class ConnectionActivity;
 class ControllerActivity;
 class ControllerTypeSelector;
 class FaceActivity;
@@ -61,6 +62,7 @@ private:
 	QAction *mPlanEditorAction{nullptr};
 	QAction *mToggleOnlineAction{nullptr};
 	QAction *mShowFaceAction{nullptr};
+	QAction *mConnectionAction{nullptr};
 	// Activities
 	AgentBaptismActivity * mBaptismActivity{nullptr};
 	AgentDeliveryActivity * mDeliveryActivity{nullptr};
@@ -80,6 +82,7 @@ private:
 	StanzaManagerActivity * mStanzaManagerActivity{nullptr};
 	SerialDeviceSelector * mSerialDeviceSelector{nullptr};
 	StanzaEditorActivity * mStanzaEditorActivity{nullptr};
+	ConnectionActivity * mConnectionActivity{nullptr};
 	TransitionActivity * mTransitionActivity{nullptr};
 	const static QString mQuitApplicationText;
 
@@ -111,7 +114,7 @@ private:
 	void prepareNavigation();
 	void prepareMenu();
 	void prepareActivities();
-	void updateFaceVisibility();
+
 	
 public slots:
 	QString popPage();
@@ -128,6 +131,7 @@ private slots:
 	void notImplementedAction();
 	void pairing();
 	void identity();
+	void connection();
 	void configureHardware();
 	void editPlan();
 	

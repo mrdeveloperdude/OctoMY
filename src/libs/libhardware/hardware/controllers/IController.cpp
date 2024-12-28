@@ -60,10 +60,13 @@ void IController::setDebug(bool doDebug)
 }
 
 
-
-
 // IController interface
 //////////////////////////////////////////////
+
+
+QString IController::firmwareVersion(){
+	return "NOT IMPLEMENTED";
+}
 
 
 bool IController::hasConfigurationWidget() const{
@@ -110,10 +113,64 @@ bool IController::isEnabled(ACTUATOR_INDEX index) const {
 }
 
 
+ACTUATOR_INDEX IController::maxActuatorsSupported(){
+	OC_METHODGATE();
+	return 0;
+}
+
+
+ACTUATOR_INDEX IController::actuatorCount(){
+	OC_METHODGATE();
+	return 0;
+}
+
+
+QString IController::actuatorName(ACTUATOR_INDEX index){
+	Q_UNUSED(index);
+	OC_METHODGATE();
+	return "NOT IMPLEMENTED";
+}
+
+
+ACTUATOR_VALUE IController::actuatorTargetValue(ACTUATOR_INDEX index){
+	Q_UNUSED(index);
+	OC_METHODGATE();
+	return 0;
+}
+
+
+ACTUATOR_VALUE IController::actuatorDefaultValue(ACTUATOR_INDEX index){
+	Q_UNUSED(index);
+	OC_METHODGATE();
+	return 0;
+}
+
+
 ActuatorMotion IController::actuatorMotion(ACTUATOR_INDEX index){
 	OC_METHODGATE();
 	Q_UNUSED(index);
 	return RANGED_MOTION;
+}
+
+
+bool IController::isLimp(ACTUATOR_INDEX index){
+	Q_UNUSED(index);
+	OC_METHODGATE();
+	return true;
+}
+
+
+void IController::setLimp(ACTUATOR_INDEX index, bool limp){
+	Q_UNUSED(index);
+	Q_UNUSED(limp);
+	OC_METHODGATE();
+}
+
+
+void IController::setTargetValue(ACTUATOR_INDEX index, ACTUATOR_VALUE value){
+	Q_UNUSED(index);
+	Q_UNUSED(value);
+	OC_METHODGATE();
 }
 
 
@@ -185,3 +242,92 @@ QString IController::debugString(){
 	OC_METHODGATE();
 	return "No Debug";
 }
+
+
+// Management of sensor definitions
+//////////////////////////////////////////////
+
+
+ACTUATOR_INDEX IController::maxSensorsSupported(){
+	OC_METHODGATE();
+	return 0;
+}
+
+
+ACTUATOR_INDEX IController::sensorCount(){
+	OC_METHODGATE();
+	return 0;
+}
+
+
+QString IController::sensorName(ACTUATOR_INDEX index){
+	Q_UNUSED(index);
+	OC_METHODGATE();
+	return "";
+}
+
+
+// Management of sensor state
+//////////////////////////////////////////////
+
+
+ACTUATOR_VALUE IController::sensorValue(ACTUATOR_INDEX index){
+	Q_UNUSED(index);
+	OC_METHODGATE();
+	return 0;
+}
+
+
+// Management of lobe definitions
+//////////////////////////////////////////////
+
+
+bool IController::lobesSupported(){
+	OC_METHODGATE();
+	return false;
+}
+
+
+bool IController::setLobe(ACTUATOR_INDEX index, const QByteArray &lobeData){
+	Q_UNUSED(index);
+	Q_UNUSED(lobeData);
+	OC_METHODGATE();
+	return false;
+}
+
+
+QString IController::getLobeTitle(ACTUATOR_INDEX index){
+	Q_UNUSED(index);
+	OC_METHODGATE();
+	return "";
+}
+
+
+QString IController::getLobeVersion(ACTUATOR_INDEX index){
+	Q_UNUSED(index);
+	OC_METHODGATE();
+	return "";
+}
+
+
+QString IController::getLobeID(ACTUATOR_INDEX index){
+	Q_UNUSED(index);
+	OC_METHODGATE();
+	return "";
+}
+
+
+// Management of lobe state
+//////////////////////////////////////////////
+
+
+void IController::getLobeEnabled(ACTUATOR_INDEX index, bool enabled){
+	Q_UNUSED(index);
+	Q_UNUSED(enabled);
+	OC_METHODGATE();
+}
+
+
+
+
+

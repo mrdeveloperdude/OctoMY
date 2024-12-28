@@ -6,7 +6,7 @@
 #include "ardumy_arduino/parser/ArduMYActuatorConfigParserStep.hpp"
 
 
-class ArduMYActuatorConfig;
+struct ArduMYActuatorConfig;
 
 struct ArduMYActuatorConfigSerializerBase {
 	ArduMYActuatorConfig *config;

@@ -11,9 +11,9 @@ class AgentClientWidget;
 
 
 /**
- * @brief The AgentClient is a specialization class derivig from Client that represents an agent that the current node has communications with
+ * @brief The AgentClient is a specialization class derived from Client that represents an agent that the current node has communications with
  */
-class AgentClient : public Client//, public QEnableSharedFromThis<AgentClient>  <-- DON'T use this, qSharedPointerCast<AgentClient>( QenableSharedFromThis<Client>::sharedFromThis() instead )
+class AgentClient : public Client//, public QEnableSharedFromThis<AgentClient>  <-- DON'T use this, use qSharedPointerCast<AgentClient>( QenableSharedFromThis<Client>::sharedFromThis() instead )
 {
 	Q_OBJECT
 private:

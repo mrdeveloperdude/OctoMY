@@ -8,7 +8,7 @@
 #include <QWidget>
 
 class ArduMYController;
-class SerialSettings;
+struct SerialSettings;
 
 namespace Ui
 {

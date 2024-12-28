@@ -120,6 +120,7 @@ void ArduMYControllerWidget::onSerialSettingsChanged()
 void ArduMYControllerWidget::onTryConnectChanged(const TryToggleState last, const TryToggleState current)
 {
 	OC_METHODGATE();
+	Q_UNUSED(last);
 	switch(current) {
 	case(OFF): {
 		mController->toggleLimpAll(true);
@@ -139,10 +140,10 @@ void ArduMYControllerWidget::onTryConnectChanged(const TryToggleState last, cons
 		setUILock(false);
 	}
 	break;
+	case GOING_OFF:{
+	}break;
 	}
-
 }
-
 
 void ArduMYControllerWidget::onConnectionChanged()
 {
@@ -173,12 +174,13 @@ void ArduMYControllerWidget::on_pushButtonConfigureActuators_clicked()
 void ArduMYControllerWidget::on_comboBoxAddActuator_currentIndexChanged(int index)
 {
 	OC_METHODGATE();
+	Q_UNUSED(index);
 	if(nullptr==mController) {
 		qWarning()<<"ERROR: No controller";
 		return;
 	}
 	const auto idx=ui->comboBoxAddActuator->currentIndex();
-	auto ct=mController->actuatorCount();
+	//auto ct=mController->actuatorCount();
 	ArduMYActuatorType type=ArduMYActuatorType::TYPE_COUNT;
 	ArduMYActuatorValueRepresentation representation =ArduMYActuatorValueRepresentation::VALREP_WORD;
 

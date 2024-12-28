@@ -83,7 +83,7 @@ void ArduMYCommandParser::parse(const uint8_t in)
 	// Awaiting command
 	case(OCTOMY_AWAITING_COMMAND): {
 		//qDebug()<<"GOT NEW COMMAND BYTE: "<<in;
-		auto oldCommand=currentCommand;
+		//auto oldCommand=currentCommand;
 		currentCommand=prepareCommand(in);
 		//qDebug()<<"GOT NEW COMMAND "<<ardumyParserStateToString(oldCommand)<<" ( "<<oldCommand<<" ) -> "<<ardumyParserStateToString(currentCommand)<<" ( "<<currentCommand<<" )";
 	}

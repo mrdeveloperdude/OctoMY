@@ -258,7 +258,7 @@ void ArduMYController::onSerialSettingsChanged()
 {
 	OC_METHODGATE();
 	{
-		QSignalBlocker(this);
+		QSignalBlocker sb(this);
 		closeSerialPort();
 		openSerialPort();
 	}
@@ -282,7 +282,7 @@ ArduMYActuator *ArduMYController::addActuator()
 	} else {
 		mActuators.setSize(ct+1);
 		mCountDirty=true;
-		emit configurationChanged();
+		emit definitionsChanged();
 	}
 	ret=&mActuators[ct];
 	return ret;
@@ -294,7 +294,7 @@ void ArduMYController::deleteActuator(quint32 id)
 	qDebug()<<"SIZE BEFORE DELETE: "<<mActuators.size();
 	mActuators.remove(id);
 	qDebug()<<"SIZE AFTER DELETE: "<<mActuators.size();
-	emit configurationChanged();
+	emit definitionsChanged();
 }
 
 void ArduMYController::setActuatorCount(ACTUATOR_INDEX ct)
@@ -456,7 +456,7 @@ void ArduMYController::ardumy_setConfiguration(QVariantMap &configuration)
 }
 
 
-QString ArduMYController::version()
+QString ArduMYController::firmwareVersion()
 {
 	OC_METHODGATE();
 	return "VERSION: IMPLEMENT ME";
@@ -488,7 +488,7 @@ void ArduMYController::setConnected(bool open)
 	OC_METHODGATE();
 	if(open) {
 		openSerialPort();
-		qDebug()<<"Opened ArduMY controller version "<<version();
+		qDebug()<<"Opened ArduMY controller version "<<firmwareVersion();
 	} else {
 		closeSerialPort();
 	}

@@ -155,7 +155,7 @@ void ControlUnboxingWizard::popImpl(const QString &returnActivity, const QString
 				if("true" == response){
 					auto window = qSharedPointerCast<RemoteWindow>(mRemote->nodeWindow());
 					if(window){
-						window->quitApplication();
+						window->applicationShutdown();
 					}
 					else{
 						qWarning()<<"No remote window";

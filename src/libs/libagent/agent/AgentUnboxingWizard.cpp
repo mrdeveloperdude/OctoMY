@@ -184,7 +184,6 @@ void AgentUnboxingWizard::updateStage(){
 	int stanzasCt{0};
 	int associateCt{0};
 	bool paired{false};
-	bool allOK{false};
 	QString name;
 	UnboxingStage stage{UNKNOWN_STAGE};
 	PortableID id;
@@ -208,7 +207,6 @@ void AgentUnboxingWizard::updateStage(){
 		case(HANDOVER_STAGE): text = "Launch Agent!";break;
 		default:break;
 	}
-	allOK = delivered && controllerSet && controllerConfigured && paired;
 	ui->widgetDeliveredIdenticon->setVisible(!id.id().isEmpty());
 	ui->widgetDeliveredIdenticon->setPortableID(id, true, true);
 	ui->lightWidgetDelivered->setLightOn(delivered);
@@ -232,9 +230,6 @@ void AgentUnboxingWizard::updateStage(){
 	ui->lightWidgetStanzasConfigured->setLightOn(stanzasCt >0);
 	ui->lightWidgetPaired->setLightOn(paired);
 	ui->labelPaired->setText(paired?"Paired":"Pairing");
-
-	ui->lightWidgetAllDone->setLightOn(allOK);
-	ui->labelAllDone->setText(allOK?"All Done":"Steps Remain");
 	
 	ui->pushButtonNextStep->setText(text);
 }

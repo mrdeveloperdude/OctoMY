@@ -109,7 +109,7 @@ union ArduMYActuatorValue {
 		default:
 		case(ArduMYActuatorValueRepresentation::VALREP_REPRESENTATION_COUNT):
 		case(ArduMYActuatorValueRepresentation::VALREP_QUAD_WORD): {
-			ret=((qreal)quadWord)/0xFFFFFFFFFFFFFFFF;
+			ret=(static_cast<qreal>(quadWord))/static_cast<qreal>(0xFFFFFFFFFFFFFFFF);
 		}
 		break;
 		case(ArduMYActuatorValueRepresentation::VALREP_SINGLE_FLOAT): {

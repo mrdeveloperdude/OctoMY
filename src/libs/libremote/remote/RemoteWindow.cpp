@@ -1,15 +1,16 @@
 #include "RemoteWindow.hpp"
+#include "agent/TransitionActivity.hpp"
+#include "connection/ConnectionActivity.hpp"
 #include "delivery/ControlBaptismActivity.hpp"
 #include "delivery/ControlSipAndSeeActivity.hpp"
+#include "delivery/IdentityActivity.hpp"
 #include "remote/AgentSelectActivity.hpp"
 #include "ui_RemoteWindow.h"
 
 #include "agent/MessageActivity.hpp"
-#include "agent/TransitionActivity.hpp"
 #include "delivery/ControlDeliveryActivity.hpp"
 #include "pairing/PairingActivity.hpp"
 #include "pairing/PairingTrustActivity.hpp"
-#include "remote/ControlUnboxingStage.hpp"
 #include "remote/ControlUnboxingWizard.hpp"
 #include "remote/Remote.hpp"
 #include "remote/RemoteController.hpp"
@@ -18,6 +19,8 @@
 #include "uptime/New.hpp"
 
 #include <QDebug>
+#include <QMenu>
+#include <QAction>
 
 
 #ifdef Q_OS_ANDROID
@@ -27,11 +30,14 @@
 RemoteWindow::RemoteWindow(QWidget *parent)
 	: NodeWindow(parent)
 	, ui(OC_NEW Ui::RemoteWindow)
+	, mMenu(OC_NEW QMenu(tr("Menu"), this))
 	, mConfigureHelper("RemoteWindow", true, false, false, true)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
 	mWaterMark.load(QString(":/images/remote_watermark.svg"));
+	prepareMenu();
+	prepareNavigation();
 }
 
 
@@ -62,6 +68,9 @@ void RemoteWindow::prepareActivities(){
 		mMessage = OC_NEW MessageActivity();
 		ui->widgetActivityStack->registerPage(mMessage, false, false, false);
 		
+		mTransitionActivity = OC_NEW TransitionActivity();
+		ui->widgetActivityStack->registerPage(mTransitionActivity, false, false, false);
+		
 		mSipAndSeeActivity = OC_NEW ControlSipAndSeeActivity();
 		mSipAndSeeActivity->configure(r);
 		ui->widgetActivityStack->registerPage(mSipAndSeeActivity, false, false, false);
@@ -74,14 +83,22 @@ void RemoteWindow::prepareActivities(){
 		mDeliveryActivity->configure(r);
 		ui->widgetActivityStack->registerPage(mDeliveryActivity, false, false, false);
 		
-		mPairing = OC_NEW PairingActivity();
-		mPairing->configure(r);
-		ui->widgetActivityStack->registerPage(mPairing, false, false, false);
+		mIdentityActivity = OC_NEW IdentityActivity();
+		mIdentityActivity->configure(r);
+		ui->widgetActivityStack->registerPage(mIdentityActivity, false, false, false);
+		
+		mPairingActivity = OC_NEW PairingActivity();
+		mPairingActivity->configure(r);
+		ui->widgetActivityStack->registerPage(mPairingActivity, false, false, false);
 		
 		mPairingTrustActivity = OC_NEW PairingTrustActivity();
 		mPairingTrustActivity->configure(r);
 		ui->widgetActivityStack->registerPage(mPairingTrustActivity, true, true, false);
-
+		
+		mConnectionActivity = OC_NEW ConnectionActivity();
+		mConnectionActivity->configure(r);
+		ui->widgetActivityStack->registerPage(mConnectionActivity, true, true, true);
+		
 		mAgentSelectActivity = OC_NEW AgentSelectActivity();
 		mAgentSelectActivity->configure(r);
 		ui->widgetActivityStack->registerPage(mAgentSelectActivity, true, true, false);
@@ -112,7 +129,6 @@ void RemoteWindow::configure()
 			prepareActivities();
 			ui->widgetNavigation->configure(node());
 			updateWindowIcon();
-
 			unboxingWizardDone();
 		} else {
 			qWarning()<<"WARNING: No Remote in remote window configure";
@@ -135,6 +151,69 @@ void RemoteWindow::unboxingWizardDone(){
 }
 
 
+void RemoteWindow::prepareNavigation(){
+	OC_METHODGATE();
+	if(!connect(ui->widgetNavigation, &NodeNavigation::navigateBack, this, &RemoteWindow::navigateBack, OC_CONTYPE)){
+		qWarning()<<"Could not connect to node navigation back button";
+	}
+	if(!connect(ui->widgetNavigation, &NodeNavigation::openMenu, this, &RemoteWindow::openMenu, OC_CONTYPE)){
+		qWarning()<<"Could not connect to node navigation menu button";
+	}
+	ui->widgetNavigation->setState("OctoMY™ Agent", true, true, true);
+	/*
+	addPage(ui->pageConfirmQuit, true, true, false);
+	addPage(ui->pageQuitting, false, false, false);
+	addPage(mFaceActivity, true, true, true);
+	addPage(ui->pageDelivery, false, false, false);
+	addPage(ui->pageHardware, false, false, false);
+	addPage(ui->pagePairing, false, false, false);
+	addPage(ui->pageUnboxing, false, false, false);
+	setCurrentPage("pageFace");
+*/
+}
+
+
+
+template <typename MethodType>
+QAction* RemoteWindow::addMenuItem(QString title, QString icon, QString toolTip, MethodType method, bool checkable) {
+	OC_METHODGATE();
+	QAction *action=OC_NEW QAction(title, this);
+	action->setCheckable(checkable);
+	if(checkable){
+		if(!(connect(action, &QAction::toggled, this, method, OC_CONTYPE))){
+			qWarning() << "Could not connect action method for" << action->text() << "to menu";
+		}else{
+			action->setStatusTip(toolTip);
+			action->setIcon(QIcon(icon));
+			mMenu->addAction(action);
+		}
+	}
+	else{
+		if(!(connect(action, &QAction::triggered, this, method, OC_CONTYPE))){
+			qWarning() << "Could not connect action method for" << action->text() << "to menu";
+		}else{
+			action->setStatusTip(toolTip);
+			action->setIcon(QIcon(icon));
+			mMenu->addAction(action);
+		}
+	}
+	return action;
+}
+
+
+
+
+void RemoteWindow::prepareMenu( )
+{
+	OC_METHODGATE();
+	mQuitAction = addMenuItem(tr("Exit"), ":/icons/no.svg", tr("Terminate execution of this Remote"), &RemoteWindow::requestApplicationShutdown );
+	mIdentityAction = addMenuItem(tr("Identity"), ":/icons/identity.svg", tr("Manage the identity of this Remote"), &RemoteWindow::identity );
+	mPairingAction = addMenuItem(tr("Pairing"), ":/icons/pair.svg", tr("Manage the pairing of this Remote"), &RemoteWindow::pairing );
+	mConnectionAction = addMenuItem(tr("Connection"), ":/icons/network.svg", tr("Manage Remote connection"), &RemoteWindow::connection );
+	mToggleOnlineAction = addMenuItem(tr("Toggle Online"), ":/icons/on.svg", tr("Toggle availability of Remote on networks"), &RemoteWindow::toggleOnline, true);
+}
+
+
 void RemoteWindow::onPageChanged(const StackPage &page){
 	if(mConfigureHelper.isConfiguredAsExpected()){
 		ui->widgetNavigation->setState(page.widget->objectName(), page.headerEnabled, page.backEnabled, page.menuEnabled);
@@ -142,13 +221,42 @@ void RemoteWindow::onPageChanged(const StackPage &page){
 }
 
 
-void RemoteWindow::quitApplication(){
+void RemoteWindow::applicationShutdown(){
 	OC_METHODGATE();
 	if(mDebug){
 		qDebug()<<"QUIT CONFIRM";
 	}
 	pushPage("TransitionActivity", QStringList() << "quit");
 	emit node()->nodeRequestExit(EXIT_SUCCESS);
+}
+
+
+void RemoteWindow::pairing(){
+	OC_METHODGATE();
+	pushPage("PairingActivity");
+}
+
+
+void RemoteWindow::connection(){
+	OC_METHODGATE();
+	pushPage("ConnectionActivity");
+}
+
+
+void RemoteWindow::identity(){
+	OC_METHODGATE();
+	pushPage("IdentityActivity");
+}
+
+
+void RemoteWindow::toggleOnline(bool online){
+	OC_METHODGATE();
+	Q_UNUSED(online);
+	auto r = remote();
+	if(!r.isNull()) {
+	} else {
+		qWarning()<<"WARNING: No Remote";
+	}
 }
 
 
@@ -185,7 +293,24 @@ QString RemoteWindow::swapPage(const QString &title){
 }
 
 
-void RemoteWindow::onStartQuitApplication(){
+void RemoteWindow::navigateBack(){
+	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "BACK";
+	}
+	popPage();
+}
+
+
+void RemoteWindow::openMenu(){
+	OC_METHODGATE();
+	if(mDebug){
+		qDebug()<<"MENU";
+	}
+	mMenu->exec(mapToGlobal(ui->widgetNavigation->menuPos()));
+}
+
+void RemoteWindow::requestApplicationShutdown(){
 	OC_METHODGATE();
 	if(mDebug){
 		qDebug()<<"QUIT ASK";

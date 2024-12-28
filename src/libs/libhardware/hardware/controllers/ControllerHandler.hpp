@@ -30,7 +30,7 @@ public:
 	explicit ControllerHandler(QObject *parent = nullptr);
 	
 public:
-	void configure(QSharedPointer<Agent> controller);
+	void configure(QSharedPointer<Agent> agent);
 	
 	// Provide the name of the actuator controller selected for this agent
 	QString controllerName();
@@ -40,9 +40,9 @@ public:
 	// Load the currently active actuator controller
 	void loadController();
 	// Apply current config to controller
-	void setControllerConfig();
+	void loadControllerConfig();
 	// Fetch current config from controller
-	void getControllerConfig();
+	void storeControllerConfig();
 	// Unload and reload the currently active actuator controller from the stored configuration
 	void reloadController();
 
@@ -56,6 +56,13 @@ public:
 	void toggleLimpAll(bool limp);
 	void toggleEnableAll(bool enable);
 	
+	bool actuatorsSupported();
+	bool sensorsSupported();
+	bool lobesSupported();
+
+signals:
+	void controllerChanged();
+
 };
 
 #endif // CONTROLLERHANDLER_HPP

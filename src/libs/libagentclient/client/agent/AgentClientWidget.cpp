@@ -1,7 +1,7 @@
 #include "AgentClientWidget.hpp"
 #include "ui_AgentClientWidget.h"
 
-#include "app/Constants.hpp".hpp"
+#include "app/Constants.hpp"
 #include "app/Settings.hpp"
 #include "client/agent/AgentClient.hpp"
 #include "comms/CommsChannel.hpp"

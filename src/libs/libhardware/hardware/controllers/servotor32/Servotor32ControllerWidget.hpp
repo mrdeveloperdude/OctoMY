@@ -3,7 +3,6 @@
 
 #include "Servotor32Controller.hpp"
 #include "components/TryToggleState.hpp"
-#include "gait/GaitController.hpp"
 
 #include <QWidget>
 
@@ -50,8 +49,8 @@ private slots:
 	void limpAll();
 
 public slots:
-	void onServoMoved(quint32 id, qreal pos);
-	void onServoLimped(quint32 id);
+	void onServoMoved(ACTUATOR_INDEX id, qreal pos);
+	void onServoLimped(ACTUATOR_INDEX id);
 
 };
 

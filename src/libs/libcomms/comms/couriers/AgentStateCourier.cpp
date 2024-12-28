@@ -6,7 +6,7 @@
 
 #include "AgentStateCourier.hpp"
 
-#include "comms/SyncParameter.hpp"
+#include "comms/sync/SyncParameter.hpp"
 #include "comms/couriers/CourierMandate.hpp"
 
 #include "uptime/MethodGate.hpp"

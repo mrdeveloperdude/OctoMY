@@ -14,6 +14,7 @@ ClientFactory::ClientFactory(AddressBook &ab)
 	: mAddressBook(ab)
 {
 	OC_METHODGATE();
+	Q_UNUSED(mAddressBook);
 }
 
 

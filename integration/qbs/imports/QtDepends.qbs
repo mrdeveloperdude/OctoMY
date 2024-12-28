@@ -1,11 +1,11 @@
-// Add dependency on all Qt modules sued by OctoMY
+// Add dependency on all Qt modules used by OctoMY
 Depends {
 	name: "Qt"
 	enableFallback: false
-	property bool includeTest:false
+	property bool includeTest: false
 	submodules: [].concat([
-		  "bluetooth"
-		, "concurrent"
+		  "concurrent"
+		, "bluetooth"
 		, "core"
 		, "core-private"
 		, "gui"

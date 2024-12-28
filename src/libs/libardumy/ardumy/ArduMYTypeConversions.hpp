@@ -21,12 +21,12 @@
 #include "ardumy_arduino/parser/ArduMYActuatorValuesParserStep.hpp"
 #include "ardumy_arduino/parser/ArduMYParserState.hpp"
 
-class ArduMYActuatorState;
-class ArduMYActuatorConfig;
-class ArduMYActuator;
+struct ArduMYActuatorState;
+struct ArduMYActuatorConfig;
+struct ArduMYActuator;
 class ArduMYActuatorSet;
 class ArduMYCommandSerializer;
-class ArduMYCommandParser;
+struct ArduMYCommandParser;
 
 
 #include <QString>

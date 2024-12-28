@@ -17,14 +17,11 @@ void ControllerHandler::configure(QSharedPointer<Agent> agent)
 {
 	OC_METHODGATE();
 	mAgent = agent;
-	if(!mAgent.isNull()){
-		
-	}
-
 }
 
 
-QString ControllerHandler::controllerName(){
+QString ControllerHandler::controllerName()
+{
 	if(!mAgent.isNull()){
 		auto configStore = mAgent->configurationStore();
 		if(!configStore.isNull()) {
@@ -46,6 +43,7 @@ void ControllerHandler::unloadController()
 		//qDebug()<<"Unloading old actuator controller";
 		mController->setConnected(false);
 		mController = nullptr;
+		emit controllerChanged();
 	}
 }
 
@@ -60,7 +58,15 @@ void ControllerHandler::loadController()
 				QString controllerName = config->controllerName().trimmed();
 				if(!controllerName.isEmpty()) {
 					ControllerFactory factory;
-					mController = factory.controllerFactory(controllerName);
+					auto controller = factory.controllerFactory(controllerName);
+					if(mController != controller){
+						// Store config for old controller
+						storeControllerConfig();
+						mController = controller;
+						// Load config for new controller
+						loadControllerConfig();
+						emit controllerChanged();
+					}
 				} else {
 					qWarning() << "ERROR: No actuator controller named in agent config";
 				}
@@ -71,11 +77,11 @@ void ControllerHandler::loadController()
 			qWarning() << "ERROR: No agent config store";
 		}
 	}
-	setControllerConfig();
 }
 
 
-void ControllerHandler::setControllerConfig(){
+void ControllerHandler::loadControllerConfig()
+{
 	if(!mController.isNull()) {
 		if(!mAgent.isNull()) {
 			auto config = mAgent->configuration();
@@ -92,7 +98,8 @@ void ControllerHandler::setControllerConfig(){
 }
 
 
-void ControllerHandler::getControllerConfig(){
+void ControllerHandler::storeControllerConfig()
+{
 	if(!mController.isNull()) {
 		if(!mAgent.isNull()) {
 			auto config = mAgent->configuration();
@@ -124,9 +131,12 @@ QSharedPointer<IController> ControllerHandler::controller()
 }
 
 
+// Interface
+/////////////////////////////////////////////////////////////////////////
 
 
-ACTUATOR_INDEX ControllerHandler::actuatorCount(bool includeLimp, bool includeUnlimp, bool includeEnabled, bool includeDisabled){
+ACTUATOR_INDEX ControllerHandler::actuatorCount(bool includeLimp, bool includeUnlimp, bool includeEnabled, bool includeDisabled)
+{
 	OC_METHODGATE();
 	ACTUATOR_INDEX ret{0};
 	if(!mController.isNull()){
@@ -143,7 +153,8 @@ ACTUATOR_INDEX ControllerHandler::actuatorCount(bool includeLimp, bool includeUn
 }
 
 
-void ControllerHandler::toggleLimpAll(bool limp){
+void ControllerHandler::toggleLimpAll(bool limp)
+{
 	OC_METHODGATE();
 	if(!mController.isNull()){
 		auto total = mController->actuatorCount();
@@ -154,8 +165,8 @@ void ControllerHandler::toggleLimpAll(bool limp){
 }
 
 
-
-void ControllerHandler::toggleEnableAll(bool enable){
+void ControllerHandler::toggleEnableAll(bool enable)
+{
 	OC_METHODGATE();
 	if(!mController.isNull()){
 		auto total = mController->actuatorCount();
@@ -163,4 +174,34 @@ void ControllerHandler::toggleEnableAll(bool enable){
 			mController->setEnabled(index, enable);
 		}
 	}
+}
+
+
+bool ControllerHandler::actuatorsSupported()
+{
+	OC_METHODGATE();
+	if(!mController.isNull()){
+		return mController->maxActuatorsSupported() > 0;
+	}
+	return false;
+}
+
+
+bool ControllerHandler::sensorsSupported()
+{
+	OC_METHODGATE();
+	if(!mController.isNull()){
+		return mController->maxSensorsSupported() > 0;
+	}
+	return false;
+}
+
+
+bool ControllerHandler::lobesSupported()
+{
+	OC_METHODGATE();
+	if(!mController.isNull()){
+		return mController->lobesSupported();
+	}
+	return false;
 }

@@ -1,4 +1,5 @@
 #include "AgentWindow.hpp"
+#include "connection/ConnectionActivity.hpp"
 #include "pairing/NetworkPairingActivity.hpp"
 #include "stanza/StanzaManagerActivity.hpp"
 #include "ui_AgentWindow.h"
@@ -147,6 +148,10 @@ void AgentWindow::prepareActivities(){
 		mFaceActivity->configure(a);
 		ui->widgetActivityStack->registerPage(mFaceActivity, true, true, true);
 		
+		mConnectionActivity = OC_NEW ConnectionActivity();
+		mConnectionActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mConnectionActivity, true, true, true);
+		
 		mUnboxingWizard = OC_NEW AgentUnboxingWizard();
 		mUnboxingWizard->configure(a);
 		ui->widgetActivityStack->registerPage(mUnboxingWizard, true, true, true);
@@ -166,25 +171,10 @@ void AgentWindow::configure()
 		if(!a.isNull()) {
 			// [...]
 			loadWindowGeometry();
-			
 			prepareActivities();
 			ui->widgetNavigation->configure(node());
-			
 			updateWindowIcon();
-			auto s = a->settings();
-			if(!s.isNull()) {
-				mShowFaceAction->setChecked(s->getCustomSettingBool(Constants::AGENT_FACE_EYES_SHOW));
-				
-				//mOnlineAction->setChecked(s->getCustomSettingBool(Constants::AGENT_CONNECTION_STATUS, false));
-				//mShowOnlineButtonAction->setChecked(s->getCustomSettingBool(Constants::AGENT_CONNECTION_STATUS));
-				//mShowLogAction->setChecked(s->getCustomSettingBool(Constants::AGENT_FACE_LOG_SHOW));
-				//mShowStatsAction->setChecked(s->getCustomSettingBool(Constants::AGENT_FACE_STATS_SHOW));
-			}
-			//updateOnlineStatus();
-			updateWindowIcon();
-
 			unboxingWizardDone();
-
 		} else {
 			qWarning()<<"WARNING: No Agent in agent window configure";
 		}
@@ -203,13 +193,6 @@ void AgentWindow::unboxingWizardDone(){
 			swapPage(mUnboxingWizard->objectName());
 		}
 	}
-}
-
-
-void AgentWindow::updateFaceVisibility()
-{
-	OC_METHODGATE();
-	mFaceActivity->updateVisibility();
 }
 
 
@@ -345,6 +328,11 @@ void AgentWindow::configureHardware(){
 }
 
 
+void AgentWindow::connection(){
+	OC_METHODGATE();
+	pushPage("ConnectionActivity");
+}
+
 void AgentWindow::editPlan(){
 	OC_METHODGATE();
 	pushPage("PlanEditor");
@@ -353,6 +341,7 @@ void AgentWindow::editPlan(){
 
 void AgentWindow::toggleOnline(bool online){
 	OC_METHODGATE();
+	Q_UNUSED(online);
 	auto a = agent();
 	if(!a.isNull()) {
 		
@@ -399,9 +388,10 @@ void AgentWindow::prepareMenu( )
 {
 	OC_METHODGATE();
 	mQuitAction = addMenuItem(tr("Exit"), ":/icons/no.svg", tr("Terminate execution of this Agent"), &AgentWindow::requestApplicationShutdown );
-	mIdentityAction = addMenuItem(tr("Identification"), ":/icons/identity.svg", tr("Chose identity options"), &AgentWindow::identity );
-	mHardwareAction = addMenuItem(tr("Configuration"), ":/icons/actuator_control.svg", tr("Configure the hardware of the Agent"), &AgentWindow::configureHardware );
-	mPairingAction = addMenuItem(tr("Pairing"), ":/icons/pair.svg", tr("Chose pairing options"), &AgentWindow::pairing );
+	mIdentityAction = addMenuItem(tr("Identity"), ":/icons/identity.svg", tr("Manage the identity of this Agent"), &AgentWindow::identity );
+	mHardwareAction = addMenuItem(tr("Configuration"), ":/icons/actuator_control.svg", tr("Manage the configuration of this Agent"), &AgentWindow::configureHardware );
+	mPairingAction = addMenuItem(tr("Pairing"), ":/icons/pair.svg", tr("Manage the pairing of this Agent"), &AgentWindow::pairing );
+	mConnectionAction = addMenuItem(tr("Connection"), ":/icons/network.svg", tr("Manage Agent connection"), &AgentWindow::connection );
 	mShowFaceAction = addMenuItem(tr("Face"), ":/icons/on.svg", tr("Show the Agent's face in main screen"), &AgentWindow::face);
 	mPlanEditorAction = addMenuItem(tr("Plan Editor"), ":/icons/mandate.svg", tr("Edit Agent plan"), &AgentWindow::editPlan );
 	

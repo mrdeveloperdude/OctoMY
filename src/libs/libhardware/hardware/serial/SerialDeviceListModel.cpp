@@ -22,6 +22,9 @@ SerialDeviceListModel::SerialDeviceListModel(QObject *parent)
 QVariant SerialDeviceListModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	OC_METHODGATE();
+	Q_UNUSED(section);
+	Q_UNUSED(orientation);
+	Q_UNUSED(role);
 	//qDebug()<<" header data asked for";
 	return "";
 }
@@ -29,6 +32,7 @@ QVariant SerialDeviceListModel::headerData(int section, Qt::Orientation orientat
 int SerialDeviceListModel::rowCount(const QModelIndex &parent) const
 {
 	OC_METHODGATE();
+	Q_UNUSED(parent);
 	//qDebug()<<" row count asked for: "<<parent;
 	return mList->count();
 }

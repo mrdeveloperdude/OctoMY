@@ -320,12 +320,14 @@ void ArduMYActuatorWidget::on_spinBoxHighTrim_valueChanged(int val)
 void ArduMYActuatorWidget::on_tabWidget_currentChanged(int index)
 {
 	OC_METHODGATE();
+	Q_UNUSED(index);
 	utility::ui::pack(ui->tabWidget);
 }
 
 void ArduMYActuatorWidget::on_comboBoxActuatorType_currentIndexChanged(int index)
 {
 	OC_METHODGATE();
+	Q_UNUSED(index);
 	updateTabsVisibility();
 }
 

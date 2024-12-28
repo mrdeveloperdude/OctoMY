@@ -20,6 +20,8 @@
 
 #define HOEDOWN_LI_END 8	/* internal list flag */
 
+#define Q_UNUSED(A) (void)A
+
 const char *hoedown_find_block_tag(const char *str, unsigned int len);
 
 /***************
@@ -251,6 +253,7 @@ free_link_refs(struct link_ref **references)
 static struct footnote_ref *
 create_footnote_ref(struct footnote_list *list, const uint8_t *name, size_t name_size)
 {
+	Q_UNUSED(list);
 	struct footnote_ref *ref = hoedown_calloc(1, sizeof(struct footnote_ref));
 
 	ref->id = hash_link_ref(name, name_size);
@@ -911,6 +914,7 @@ char_emphasis(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t o
 static size_t
 char_linebreak(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
 {
+	Q_UNUSED(size);
 	if (offset < 2 || data[-1] != ' ' || data[-2] != ' ') {
 		return 0;
 	}
@@ -928,6 +932,7 @@ char_linebreak(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t 
 static size_t
 char_codespan(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
 {
+	Q_UNUSED(offset);
 	hoedown_buffer work = { NULL, 0, 0, 0, NULL, NULL, NULL };
 	size_t end, nb = 0, i, f_begin, f_end;
 
@@ -982,6 +987,7 @@ char_codespan(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t o
 static size_t
 char_quote(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
 {
+	Q_UNUSED(offset);
 	size_t end, nq = 0, i, f_begin, f_end;
 
 	/* counting the number of quotes in the delimiter */
@@ -1083,6 +1089,7 @@ char_escape(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t off
 static size_t
 char_entity(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
 {
+	Q_UNUSED(offset);
 	size_t end = 1;
 	hoedown_buffer work = { 0, 0, 0, 0, NULL, NULL, NULL };
 
@@ -1115,6 +1122,7 @@ char_entity(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t off
 static size_t
 char_langle_tag(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
 {
+	Q_UNUSED(offset);
 	hoedown_buffer work = { NULL, 0, 0, 0, NULL, NULL, NULL };
 	hoedown_autolink_type altype = HOEDOWN_AUTOLINK_NONE;
 	size_t end = tag_length(data, size, &altype);
@@ -1511,6 +1519,7 @@ cleanup:
 static size_t
 char_superscript(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
 {
+	Q_UNUSED(offset);
 	size_t sup_start, sup_len;
 	hoedown_buffer *sup;
 
@@ -2383,6 +2392,7 @@ htmlblock_is_end(
 	uint8_t *data,
 	size_t size)
 {
+	Q_UNUSED(doc);
 	size_t i = tag_len + 3, w;
 
 	/* try to match the end tag */

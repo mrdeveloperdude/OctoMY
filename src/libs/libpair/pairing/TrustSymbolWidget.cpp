@@ -78,6 +78,7 @@ void TrustSymbolWidget::setTrustLevel(TrustLevel level)
 		}
 		break;
 		// default:
+		case(REMOVE):
 		case(IGNORE): {
 			file=":/icons/ignore.svg";
 		}

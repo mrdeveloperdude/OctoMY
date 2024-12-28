@@ -292,7 +292,7 @@ static void drawDial(const QStyleOptionSlider* option, QPainter* painter)
 	buttonColor.setHsv(buttonColor .hue(),
 					   qMin(140, buttonColor .saturation()),
 					   qMax(180, buttonColor.value()));
-	QColor shadowColor(0, 0, 0, 20);
+	//QColor shadowColor(0, 0, 0, 20);
 
 	if (enabled) {
 		// Drop shadow
@@ -1312,7 +1312,7 @@ void OctoStyle::drawControl(ControlElement element, const QStyleOption *option, 
 			QColor dimHighlight(qMin(highlight.red()/2 + 110, 255),
 								qMin(highlight.green()/2 + 110, 255),
 								qMin(highlight.blue()/2 + 110, 255));
-			dimHighlight.setAlpha(widget && widget->isTopLevel() ? 255 : 80);
+			dimHighlight.setAlpha(widget && widget->isWindow() ? 255 : 80);
 			QLinearGradient gradient(rect.topLeft(), QPoint(rect.bottomLeft().x(), rect.bottomLeft().y()));
 			gradient.setColorAt(0, dimHighlight.lighter(120));
 			gradient.setColorAt(1, dimHighlight);
@@ -3238,7 +3238,7 @@ int OctoStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const
 		return 48;
 	case PM_ListViewIconSize:
 		return 24;
-	case PM_DialogButtonsSeparator:
+//	case PM_DialogButtonsSeparator:
 	case PM_ScrollBarSliderMin:
 		return 26;
 	case PM_TitleBarHeight:

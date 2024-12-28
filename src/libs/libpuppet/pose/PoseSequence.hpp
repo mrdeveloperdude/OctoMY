@@ -35,6 +35,7 @@ public:
 			}
 			last=current;
 		}
+		return 0;
 	}
 
 
@@ -53,6 +54,7 @@ public:
 			}
 			last=current;
 		}
+		return 0;
 	}
 
 	Pose interpolate(quint64 time)
@@ -69,6 +71,7 @@ public:
 		const qreal alpha=(qreal)(time-b)/(qreal)(a-b);
 		Pose out=mPoses[b];
 		out.mix(mPoses[a], alpha);
+		return out;
 	}
 };
 

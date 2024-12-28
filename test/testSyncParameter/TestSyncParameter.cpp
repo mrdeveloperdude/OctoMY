@@ -1,7 +1,7 @@
 #include "TestSyncParameter.hpp"
 
 
-#include "comms/SyncParameter.hpp"
+#include "comms/sync/SyncParameter.hpp"
 
 
 template <typename T>

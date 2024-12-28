@@ -346,7 +346,7 @@ public:
 		limbs.resize(limbCount+1);
 		T a=(M_PI*2)/(limbCount*2);
 		T s=0.2;
-		for(int i=0; i<limbCount; ++i) {
+		for(quint32 i=0; i<limbCount; ++i) {
 			T bx=sin(a)*s*0.7;
 			T by=cos(a)*s;
 			limbs[i]=OC_NEW GaitLimb<T>(*this,i,bx,by,a<M_PI?M_PI/2:(M_PI*3/2));

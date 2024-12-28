@@ -20,31 +20,6 @@ RNG::~RNG()
 }
 
 
-inline void RNG::init()
-{
-	OC_METHODGATE();
-	init(0);
-}
-
-// Fallback implementation that continuously re-seeding using random output combined with key input
-inline void RNG::init(quint32 init_key[], size_t key_length)
-{
-	OC_METHODGATE();
-	//qDebug()<<"init: ---------"<<key_length;
-	//Start with "clean slate"
-	init();
-	//Follow up with re-seeding using random output combined with key input
-	if (key_length > 0) {
-		for(size_t i=0; i<key_length; ++i) {
-			quint32 k=init_key[i];
-			quint32 v=generateInt32();
-			quint32 s=(k+1)^v;
-			//qDebug()<<"init: "<<k<<v<<s;
-			init(s);
-		}
-	}
-
-}
 
 static QVector<quint32> byteArrayToIntVector(QByteArray ba)
 {

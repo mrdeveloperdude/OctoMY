@@ -91,12 +91,13 @@ QAudioFormat Speaker::format(){
 }
 
 qint64 Speaker::readData(char *data, qint64 maxlen){
+	Q_UNUSED(data);
 	if(mDoDebug){
 		qDebug()<<"Speaker: Read data"<<maxlen;
 	}
 	qint64 len=0;
 	if(false){
-		auto s=reinterpret_cast<quint16 *>(data);
+		//auto s=reinterpret_cast<quint16 *>(data);
 		//len= mBuffer.write(s, maxlen/2);
 		len=maxlen;
 	}

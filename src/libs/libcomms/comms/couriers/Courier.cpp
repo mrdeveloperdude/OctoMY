@@ -55,7 +55,7 @@ QSharedPointer<CommsChannel> Courier::comms() const
 	return mComms;
 }
 
-
+/* TODO: IS this used?
 void Courier::setForwardRescheduleSignal(QObject &ob, bool fwd)
 {
 	OC_METHODGATE();
@@ -69,7 +69,7 @@ void Courier::setForwardRescheduleSignal(QObject &ob, bool fwd)
 		}
 	}
 }
-
+*/
 
 quint64 Courier::lastOpportunity() const
 {

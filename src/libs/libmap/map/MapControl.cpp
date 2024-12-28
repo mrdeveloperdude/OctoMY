@@ -164,7 +164,7 @@ void MapControl::positionChanged(Geometry* geom)
 		return;
 	}
 
-	Point* point = dynamic_cast<Point*>(geom);
+	Point* point = static_cast<Point*>(geom);
 	if (nullptr!=point) {
 		QPoint start = mLayerManager->layer()->mapadapter()->coordinateToDisplay(currentCoordinate());
 		QPoint dest = mLayerManager->layer()->mapadapter()->coordinateToDisplay(point->coordinate());
@@ -292,7 +292,7 @@ void MapControl::mousePressEvent(QMouseEvent* evnt)
 	if (mLayerManager->layers().size()>0) {
 		if (evnt->button() == 1) {
 			mMousePressed = true;
-			mPreClickPixel = QPoint(evnt->x(), evnt->y());
+			mPreClickPixel = evnt->pos();
 		} else if ( evnt->button() == 2  &&
 					mouseWheelEventsEnabled() &&
 					mMouseMode != None) { // zoom in
@@ -327,15 +327,16 @@ void MapControl::mouseReleaseEvent(QMouseEvent* evnt)
 void MapControl::mouseMoveEvent(QMouseEvent* evnt)
 {
 	OC_METHODGATE();
+	const auto p = evnt->pos();
 	if (mMousePressed && mMouseMode == Panning) {
-		QPoint offset = mPreClickPixel - QPoint(evnt->x(), evnt->y());
+		QPoint offset = mPreClickPixel - p;
 		//mLayerManager->scrollView(offset);
 		scroll(offset);
-		mPreClickPixel = QPoint(evnt->x(), evnt->y());
+		mPreClickPixel = p;
 
 		//emit viewChanged(currentCoordinate(), currentZoom());
 	} else if (mMousePressed && mMouseMode == Dragging) {
-		mCurrentMousePos = QPoint(evnt->x(), evnt->y());
+		mCurrentMousePos = p;
 	}
 
 	update();

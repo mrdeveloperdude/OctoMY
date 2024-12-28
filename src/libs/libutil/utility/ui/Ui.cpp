@@ -392,6 +392,9 @@ void fitContent(QTableView &tv)
 
 void placeInScreen(QWidget &w, QPointF gravity, int pref)
 {
+	Q_UNUSED(w);
+	Q_UNUSED(gravity);
+	Q_UNUSED(pref);
 	OC_FUNCTIONGATE();
 	//TODO: Update to support https://doc.qt.io/qt-6/qscreen.html operations instead
 	/*

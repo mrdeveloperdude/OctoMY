@@ -37,10 +37,10 @@ void RateCalculator::countPacket(quint32 bytes, quint64 now)
 		qreal packetRate=mCountLog;
 		packetRate /= static_cast<qreal>(timeSinceLast);
 		packetRate /= static_cast<qreal>(mLogInterval);
-		qreal byteRate=mBytesLog;
+		auto byteRate=mBytesLog;
 		byteRate /= static_cast<qreal>(timeSinceLast);
 		byteRate /= static_cast<qreal>(mLogInterval);
-		qDebug().noquote() << mName << "Rate " << QString::number(packetRate) << " packets/sec, " << utility::string::humanReadableSize(packetRate) << "/sec, ";
+		qDebug().noquote() << mName << "Rate " << QString::number(packetRate) << " packets/sec, " << utility::string::humanReadableSize(byteRate) << "/sec, ";
 		mLastLog=mLast;
 		mCountLog=0;
 		mBytesLog=0;

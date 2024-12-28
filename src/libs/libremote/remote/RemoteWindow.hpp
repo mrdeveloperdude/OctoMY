@@ -4,20 +4,22 @@
 #include "app/log/LogDestination.hpp"
 #include "node/NodeWindow.hpp"
 
-#include "remote/ControlUnboxingStage.hpp"
 #include "uptime/ConfigureHelper.hpp"
 
 class AgentSelectActivity;
+class ConnectionActivity;
 class ControlBaptismActivity;
 class ControlDeliveryActivity;
 class ControlSipAndSeeActivity;
 class ControlUnboxingWizard;
+class IdentityActivity;
 class MessageActivity;
 class PairingActivity;
 class PairingTrustActivity;
 class Remote;
 class RemoteController;
-class StackPage;
+struct StackPage;
+class TransitionActivity;
 
 
 
@@ -41,16 +43,26 @@ class RemoteWindow : public NodeWindow, public LogDestination
 
 private:
 	Ui::RemoteWindow *ui;
+	QMenu *mMenu{nullptr};
+	QAction *mQuitAction{nullptr};
+	QAction *mPairingAction{nullptr};
+	QAction *mIdentityAction{nullptr};
+	QAction *mConnectionAction{nullptr};
+	QAction *mToggleOnlineAction{nullptr};
+
 	// Activities
 	ControlBaptismActivity * mBaptismActivity{nullptr};
 	ControlDeliveryActivity * mDeliveryActivity{nullptr};
 	ControlSipAndSeeActivity * mSipAndSeeActivity{nullptr};
 	ControlUnboxingWizard *mUnboxingWizard{nullptr};
 	MessageActivity * mMessage{nullptr};
-	PairingActivity *mPairing{nullptr};
+	PairingActivity *mPairingActivity{nullptr};
+	IdentityActivity *mIdentityActivity{nullptr};
 	PairingTrustActivity *mPairingTrustActivity{nullptr};
+	ConnectionActivity *mConnectionActivity{nullptr};
 	AgentSelectActivity *mAgentSelectActivity{nullptr};
 	RemoteController *mControl{nullptr};
+	TransitionActivity * mTransitionActivity{nullptr};
 	
 	bool mDebug{false};
 	
@@ -59,21 +71,29 @@ private:
 public:
 	explicit RemoteWindow(QWidget *parent = nullptr);
 	virtual ~RemoteWindow() override;
-
-private:
-	void prepareActivities();
-
+	
+	// NodeWindow interface
 public:
 	void configure() override;
+
+public:
 	QSharedPointer<Remote> remote();
+
+	// Remote spesific private
+private:
+	template <typename MethodType>
+	QAction* addMenuItem(QString title, QString icon, QString toolTip, MethodType method, bool checkable = false);
 	
-public slots:
-	void quitApplication();
-	
+	void prepareNavigation();
+	void prepareMenu();
+	void prepareActivities();
 
 	// LogDestination interface
 public:
 	void appendLog(const QString& text) override;
+
+public slots:
+	void applicationShutdown();
 
 public slots:
 	QString popPage();
@@ -82,9 +102,16 @@ public slots:
 
 
 private slots:
-	void onStartQuitApplication();
+	void navigateBack();
+	void openMenu();
+	void requestApplicationShutdown();
 	void onPageChanged(const StackPage &page);
 	void unboxingWizardDone();
+	void pairing();
+	void connection();
+	void identity();
+	void toggleOnline(bool online);
+
 };
 
 #endif

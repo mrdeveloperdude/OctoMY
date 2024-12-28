@@ -30,7 +30,7 @@ QString Mustache::renderTemplate(const QString& templateString, const QVariantHa
 static QString escapeHtml(const QString& input)
 {
 	QString escaped(input);
-	for (int i=0; i < escaped.count();) {
+	for (int i=0; i < escaped.size();) {
 		const char* replacement = nullptr;
 		ushort ch = escaped.at(i).unicode();
 		if (ch == '&') {
@@ -102,14 +102,18 @@ QtVariantContext::QtVariantContext(const QVariant& root, PartialResolver* resolv
 	m_contextStack << root;
 }
 
+
 static QVariant variantMapValue(const QVariant& value, const QString& key)
 {
-	if (value.userType() == QVariant::Map) {
+	if (value.userType() == QMetaType::QVariantMap) {
 		return value.toMap().value(key);
-	} else {
+	} else if (value.userType() == QMetaType::QVariantHash) {
 		return value.toHash().value(key);
+	} else {
+		return QVariant(); // Return an invalid QVariant if neither type matches
 	}
 }
+
 
 static QVariant variantMapValueForKeyPath(const QVariant& value, const QStringList keyPath)
 {
@@ -137,6 +141,7 @@ QVariant QtVariantContext::value(const QString& key) const
 	return QVariant();
 }
 
+
 bool QtVariantContext::isFalse(const QString& key) const
 {
 	QVariant value = this->value(key);
@@ -148,27 +153,29 @@ bool QtVariantContext::isFalse(const QString& key) const
 	case QMetaType::UInt:
 	case QMetaType::LongLong:
 	case QMetaType::ULongLong:
-	case QVariant::Bool:
+	case QMetaType::Bool:
 		return !value.toBool();
-	case QVariant::List:
-	case QVariant::StringList:
+	case QMetaType::QVariantList:
+	case QMetaType::QStringList:
 		return value.toList().isEmpty();
-	case QVariant::Hash:
+	case QMetaType::QVariantHash:
 		return value.toHash().isEmpty();
-	case QVariant::Map:
+	case QMetaType::QVariantMap:
 		return value.toMap().isEmpty();
 	default:
 		return value.toString().isEmpty();
 	}
 }
 
+
 QString QtVariantContext::stringValue(const QString& key) const
 {
-	if (isFalse(key) && value(key).userType() != QVariant::Bool) {
+	if (isFalse(key) && value(key).userType() != QMetaType::Bool) {
 		return QString();
 	}
 	return value(key).toString();
 }
+
 
 void QtVariantContext::push(const QString& key, int index)
 {
