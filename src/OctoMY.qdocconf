@@ -1,0 +1,84 @@
+project = OctoMY
+description = Ready-to-run robot software
+#baseurl = https://doc.octomy.org
+url = /
+
+
+#moduleheader = moduleheader.hpp
+moduleheader = 
+sourceencoding = UTF-8
+outputencoding = UTF-8
+generateindex = true
+syntaxhighlighting = true
+tabsize = 3
+version = 1.0
+warninglimit.enabled = false
+
+includepaths = libs/libagent \
+libs/libremote \
+libs/libagentclient \
+libs/libremoteclient \
+libs/libsec \
+libs/libutil
+
+
+headerdirs = libs/libagent \
+			libs/libremote \
+			libs/libagentclient \
+			libs/libremoteclient \
+			libs/libsec \
+			libs/libutil
+
+
+			
+#			remote \
+#			hub \
+#			zoo
+
+sourcedirs = libs/libagent \
+libs/libremote \
+libs/libagentclient \
+libs/libremoteclient \
+libs/libsec \
+libs/libutil
+			
+#			remote \
+#			hub \
+#			zoo
+
+excludedirs = libs/libplot
+
+#exampledirs = ./examples
+#imagedirs = ../integration/qdoc/images
+
+sources.fileextensions = "*.qdoc *.c *.cpp *.qml"
+headers.fileextensions = "*.h *.hpp"
+
+
+examples.fileextensions = "*.cpp *.h *.js *.svg *.ui *.qml"
+examples.imageextensions = "*.png *.*.mng *.svg"
+
+outputdir = /tmp/bob
+outputformats = HTML
+
+
+#HTML.postheader
+#HTML.postpostheader
+#HTML.postheader
+#HTML.footer
+
+#HTML.headerstyles
+#HTML.stylesheets = template/style/style.css
+
+#HTML.scripts = template/scripts/script.js
+
+
+
+navigation.homepage = "index.html"
+navigation.hometitle = "OctoMY"
+navigation.landingpage    = "OctoMY"
+navigation.cppclassespage = "Index"
+navigation.qmltypespage   = "OctoMYQML Types"
+
+
+t7xxTEv7Grp!U@KxU!NU
