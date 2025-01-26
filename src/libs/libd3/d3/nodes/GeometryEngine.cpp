@@ -178,6 +178,23 @@ void GeometryEngine::interConnect(QSharedPointer<Graph> graph, QList<QSharedPoin
 }
 
 
+void GeometryEngine::relax(QSharedPointer<Graph> graph, QList<QSharedPointer<Node> > nodes){
+	const auto size = nodes.size();
+	for(qsizetype i = 0; i< size; ++i){
+		const auto from = nodes[i];
+		if(from->isSelected()){
+			for(qsizetype j = i+1; j< size; ++j){
+				const auto to = nodes[j];
+				if(to->isSelected()){
+					auto connection = graph->connectionFor(from, to, false);
+					if(!connection.isNull()){
+						connection->relax();
+					}
+				}
+			}
+		}
+	}
+}
 
 
 

@@ -80,7 +80,7 @@ void ArcBall::update()
 	const qreal angle = qAcos(qMin(1.0f, QVector3D::dotProduct(u,v)));
 	QVector3D rotAxis = QVector3D::crossProduct(v,u);
 	QMatrix4x4 eye2ObjSpaceMat = rotMat.inverted();
-	QVector3D objSpaceRotAxis = eye2ObjSpaceMat * rotAxis;
+	QVector3D objSpaceRotAxis = eye2ObjSpaceMat.map(rotAxis);
 	rotMat.setToIdentity();
 	rotMat.rotate(qRadiansToDegrees(angle)*4, objSpaceRotAxis);
 	relativeMat=rotMat;

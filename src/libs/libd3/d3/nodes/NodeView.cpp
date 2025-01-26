@@ -2,11 +2,15 @@
 
 #include <QApplication>
 #include <QDebug>
+#include <QDir>
+#include <QFileDialog>
+#include <QFileInfo>
 #include <QImage>
 #include <QMarginsF>
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <QSettings>
+#include <QStandardPaths>
 #include <QTimer>
 #include <QWindow>
 
@@ -14,12 +18,18 @@
 #include "GeometryEngine.hpp"
 #include "Graph.hpp"
 #include "Node.hpp"
+#include "Project.hpp"
 #include "RenameDialog.hpp"
+#include "Settings.hpp"
 #include "Tri.hpp"
+#include "d3/nodes/Player.hpp"
 #include "ui/ConnectionParameterWidget.hpp"
 #include "ui/NodeParameterWidget.hpp"
 #include "ui/TriParameterWidget.hpp"
 
+static const QString SETTINGS_KEY_LAST_FILE_DIR{"node_view_last_file_dir"};
+static const QString FILE_ENDING{".nv"};
+static const QString fileFilter{"node-view files (*"+FILE_ENDING+");;All Files (*.*)"};
 
 void antialiasHints(QPainter &painter){
 	painter.setRenderHint(QPainter::Antialiasing);
@@ -41,14 +51,15 @@ NodeView::NodeView(QWidget *parent)
 	, renameDialogue(new RenameDialog(this))
 {
 	this->setMouseTracking(true);
+	loadSettings();
 	updateSelectNodeMenu();
 }
 
 
 void NodeView::addNodeToSelectNodeMenu(QString type){
-	if(!mGraph){
+	if(!mProject){
 		if(mDebug){
-			qDebug()<<"Graphnt"<<type;
+			qDebug()<<"Projectnt"<<type;
 		}
 		return;
 	}
@@ -65,7 +76,7 @@ void NodeView::addNodeToSelectNodeMenu(QString type){
 void NodeView::updateSelectNodeMenu(){
 	mSelectNodeMenu->clear();
 	mSelectNodeMenu->addSeparator()->setText(tr("Add Node"));
-	if(!mGraph){
+	if(!mProject){
 		return;
 	}
 	QStringList names{"Node"};
@@ -80,7 +91,7 @@ void NodeView::updateSelectNodeMenu(){
 
 void NodeView::updateNodeContextMenu(QSharedPointer<Node> node){
 	mNodeContextMenu->clear();
-	if(!mGraph){
+	if(!mProject){
 		return;
 	}
 	if(!node){
@@ -106,7 +117,7 @@ void NodeView::updateNodeContextMenu(QSharedPointer<Node> node){
 	{
 		QAction *deleteAction = mNodeContextMenu->addAction("&Delete");
 		QObject::connect(deleteAction, &QAction::triggered, this, [=](){
-			mGraph->removeNode(node);
+			mProject->graph()->removeNode(node);
 			update();
 		});
 	}
@@ -115,7 +126,7 @@ void NodeView::updateNodeContextMenu(QSharedPointer<Node> node){
 
 void NodeView::updateConnectionContextMenu(QSharedPointer<Connection> connection){
 	mConnectionContextMenu->clear();
-	if(!mGraph){
+	if(!mProject){
 		return;
 	}
 	if(!connection){
@@ -126,7 +137,7 @@ void NodeView::updateConnectionContextMenu(QSharedPointer<Connection> connection
 	{
 		QAction *deleteAction = mConnectionContextMenu->addAction("&Delete");
 		QObject::connect(deleteAction, &QAction::triggered, this, [=](){
-			mGraph->removeConnection(connection);
+			mProject->graph()->removeConnection(connection);
 			update();
 		});
 	}
@@ -141,7 +152,7 @@ void NodeView::updateConnectionContextMenu(QSharedPointer<Connection> connection
 
 void NodeView::updateTriContextMenu(QSharedPointer<Tri> tri){
 	mTriContextMenu->clear();
-	if(!mGraph){
+	if(!mProject){
 		return;
 	}
 	if(!tri){
@@ -152,27 +163,33 @@ void NodeView::updateTriContextMenu(QSharedPointer<Tri> tri){
 	{
 		QAction *deleteAction = mTriContextMenu->addAction("&Delete");
 		QObject::connect(deleteAction, &QAction::triggered, this, [=](){
-			mGraph->removeTri(tri);
+			mProject->graph()->removeTri(tri);
 			update();
 		});
 	}
 }
 
-
-void NodeView::setGraph(QSharedPointer<Graph> graph){
-	if(mDebug){
-		qDebug()<<"Set graph to" << graph << "(Nodes)";
-	}
-	mGraph = graph;
+void NodeView::onStep(qreal dt){
+	Q_UNUSED(dt);
 	update();
-	if(!mGraph){
+}
+
+
+void NodeView::setProject(QSharedPointer<Project> project){
+	if(mDebug){
+		qDebug()<<"Set project to" << project << "(Node view)";
+	}
+	mProject = project;
+	connect(mProject->player().data(), &Player::step, this, &NodeView::onStep);
+	update();
+	if(!mProject){
 		return;
 	}
 	updateSelectNodeMenu();
 }
 
-QSharedPointer<Graph> NodeView::graph(){
-	return mGraph;
+QSharedPointer<Project> NodeView::project(){
+	return mProject;
 }
 
 void NodeView::setSettings(QSharedPointer<QSettings> settings){
@@ -185,25 +202,13 @@ void NodeView::setSettings(QSharedPointer<QSettings> settings){
 
 
 void NodeView::zoomToFit(const QRectF &target){
-	auto graph = mGraph;
+	auto graph = mProject;
 	if(!graph){
 		return;
 	}
-	graph->zoomToFit(target);
+	mProject->graph()->zoomToFit(target);
 	update();
 }
-
-
-void NodeView::autoArrange(const QRectF &target){
-	auto graph = mGraph;
-	if(!graph){
-		return;
-	}
-	graph->autoArrange(target);
-	//updateSolver();
-	update();
-}
-
 
 
 void NodeView::toggleXRay(bool xray_on){
@@ -217,12 +222,12 @@ void NodeView::addNode(QPointF pos, QString type){
 	if(mDebug){
 		qDebug()<<"ADD "<<type<<"@"<<pos;
 	}
-	if(!mGraph){
+	if(!mProject){
 		return;
 	}
 	nodeCt++;
-	auto node = QSharedPointer<Node>::create(mGraph, QString("%2").arg(nodeCt), pos);
-	mGraph->addNode(node);
+	auto node = QSharedPointer<Node>::create(mProject, QString("%2").arg(nodeCt), pos);
+	mProject->graph()->addNode(node);
 	update();
 }
 
@@ -234,13 +239,13 @@ void NodeView::addNode(QPointF pos, QString type){
 void NodeView::paintEvent(QPaintEvent *){
 	QPainter painter(this);
 	antialiasHints(painter);
-	if(! mGraph){
+	if(! mProject){
 		return;
 	}
-	if(! mGraph){
+	if(! mProject){
 		return;
 	}
-	const auto style = *mGraph->style();
+	const auto style = *mProject->style();
 	painter.fillRect(rect(), style.graphBackground);
 	switch(dragMode){
 		default:
@@ -262,7 +267,7 @@ void NodeView::paintEvent(QPaintEvent *){
 	}
 	painter.save();
 	painter.translate(mNodeViewPan);
-	mGraph->draw(painter, mXray, style);
+	mProject->graph()->draw(painter, mXray, style);
 	painter.restore();
 }
 
@@ -270,7 +275,7 @@ void NodeView::paintEvent(QPaintEvent *){
 
 
 void NodeView::invalidateLinesToNode(QSharedPointer<Node> node){
-	auto connections = mGraph->connectionsForNode(node);
+	auto connections = mProject->graph()->connectionsForNode(node);
 	for(auto &connection: connections){
 		connection->taintLine();
 	}
@@ -283,10 +288,10 @@ void NodeView::syncSelection(bool selected){
 }
 
 void NodeView::invertSelection(){
-	auto nodes = mGraph->nodes();
+	auto nodes = mProject->graph()->nodes();
 	mSelection.clear();
 	for(const auto &node: nodes){
-		const auto selected = !node->selected();
+		const auto selected = !node->isSelected();
 		if(selected){
 			mSelection.append(node);
 		}
@@ -296,19 +301,13 @@ void NodeView::invertSelection(){
 }
 
 
-void NodeView::flipSelection(){
-	if(mSelection.size() != 4){
-		qWarning() << "Cannot flip without exactly 4 nodes selected";
-		return;
-	}
-	auto n1 = mSelection[0];
-	auto n2 = mSelection[1];
-	auto n3 = mSelection[2];
-	auto n4 = mSelection[3];
-	const auto a1 = mGraph->triFor(n1, n2, n3, false);
-	const auto a2 = mGraph->triFor(n1, n3, n4, false);
-	const auto b1 = mGraph->triFor(n2, n3, n4, false);
-	const auto b2 = mGraph->triFor(n2, n4, n1, false);
+bool NodeView::flip(const QSharedPointer<Node> &n1, const QSharedPointer<Node> &n2, const QSharedPointer<Node> &n3, const QSharedPointer<Node> &n4){
+	auto graph = mProject->graph();
+	const auto a1 = graph->triFor(n1, n2, n4, false);
+	const auto a2 = graph->triFor(n2, n3, n4, false);
+	const auto b1 = graph->triFor(n1, n3, n4, false);
+	const auto b2 = graph->triFor(n1, n2, n3, false);
+	
 	const auto a = ((!a1.isNull()) && (!a2.isNull()));
 	const auto b = ((!b1.isNull()) && (!b2.isNull()));
 	qDebug()<<"N1"<<n1->name();
@@ -332,30 +331,52 @@ void NodeView::flipSelection(){
 		else{
 			qWarning() << "Cannot flip, not enough triangles";
 		}
-		return;
+		return false;
 	}
 	if(a){
-		mGraph->removeTri(a1);
-		mGraph->removeTri(a2);
-		mGraph->addTri(n2, n3, n4);
-		mGraph->addTri(n2, n4, n1);
+		graph->removeTri(a1);
+		graph->removeTri(a2);
+		graph->addTri(n1, n2, n3);
+		graph->addTri(n1, n3, n4);
 	}
 	else{
-		mGraph->removeTri(b1);
-		mGraph->removeTri(b2);
-		mGraph->addTri(n1, n2, n3);
-		mGraph->addTri(n1, n3, n4);
+		graph->removeTri(b1);
+		graph->removeTri(b2);
+		graph->addTri(n2, n3, n4);
+		graph->addTri(n2, n4, n1);
 	}
 	update();
+	return true;
+}
+
+bool NodeView::flipSelection(){
+	if(mSelection.size() != 4){
+		qWarning() << "Cannot flip without exactly 4 nodes selected";
+		return false;
+	}
+	const auto n1 = mSelection[0];
+	const auto n2 = mSelection[1];
+	const auto n3 = mSelection[2];
+	const auto n4 = mSelection[3];
+	return flip(n1, n2, n3, n4) || flip(n1, n2, n4, n3);
 }
 
 
-
+bool NodeView::relax(){
+	if(mSelection.size() <= 0){
+		qWarning() << "Cannot relax without any nodes selected";
+		return false;
+	}
+	GeometryEngine ge;
+	ge.relax(mProject->graph(), mSelection);
+	update();
+	return true;
+}
 
 
 void NodeView::interConnectSelected(){
 	GeometryEngine ge;
-	ge.interConnect(mGraph, mSelection);
+	ge.interConnect(mProject->graph(), mSelection);
 	update();
 }
 
@@ -363,7 +384,7 @@ void NodeView::interConnectSelected(){
 
 void NodeView::interTriSelected() {
 	GeometryEngine ge;
-	ge.interTri(mGraph, mSelection);
+	ge.interTri(mProject->graph(), mSelection);
 	update();
 }
 
@@ -372,41 +393,108 @@ void NodeView::interTriSelected() {
 void NodeView::removeSelected(){
 	if(!mSelection.empty()){
 		for(const auto &node: mSelection){
-			mGraph->removeNode(node);
+			mProject->graph()->removeNode(node);
 		}
 		mSelection.clear();
 		update();
 	}
 }
 
+void NodeView::toggleRunning(){
+	mProject->player()->setRunning(!mProject->player()->isRunning());
+	update();
+}
+
+
+void NodeView::loadSettings(){
+	mSettings = Settings::loadSettings();
+}
+
+
+
+
+bool NodeView::clear(){
+	mProject->graph()->clear();
+	return true;
+}
+
+
+void NodeView::save(){
+	QString suggestedName;
+	auto lastPath = mSettings->value(SETTINGS_KEY_LAST_FILE_DIR, QStandardPaths::writableLocation(QStandardPaths::DesktopLocation)).toString();
+	QFileInfo lastPathInfo(lastPath);
+	QString directory = lastPathInfo.absolutePath();
+	QString filename = lastPathInfo.fileName();
+	if (!suggestedName.isEmpty()) {
+		filename = suggestedName;
+	}
+	QDir dir(directory);
+	const auto suggestedFilePath = dir.filePath(filename);
+	QString filePath = QFileDialog::getSaveFileName(this, "Save File", suggestedFilePath, fileFilter);
+	if(mDebug){
+		qDebug() << "SAVE FILES suggested=" << suggestedFilePath << " actual=" << filePath;
+	}
+	if (!filePath.isEmpty()) {
+		if (!filePath.endsWith(FILE_ENDING, Qt::CaseInsensitive)) {
+			filePath += FILE_ENDING;
+		}
+		saveProject(mProject, filePath);
+		mSettings->setValue(SETTINGS_KEY_LAST_FILE_DIR, filePath);
+	}
+}
+
+void NodeView::load(){
+	QString suggestedName;
+	if(!clear()){
+		return;
+	}
+	auto lastPath = mSettings->value(SETTINGS_KEY_LAST_FILE_DIR, QStandardPaths::writableLocation(QStandardPaths::DesktopLocation)).toString();
+	QFileInfo lastPathInfo(lastPath);
+	QString directory = lastPathInfo.absolutePath();
+	QString filename = lastPathInfo.fileName();
+	if (!suggestedName.isEmpty()) {
+		filename = suggestedName;
+	}
+	QDir dir(directory);
+	const auto suggestedFilePath = dir.filePath(filename);
+	QString filePath = QFileDialog::getOpenFileName(this, "Open File", suggestedFilePath, fileFilter);
+	if(mDebug){
+		qDebug() << "LOAD FILES suggested=" << suggestedFilePath << " actual=" << filePath;
+	}
+	if (!filePath.isEmpty()) {
+		loadProject(mProject, filePath);
+		mSettings->setValue(SETTINGS_KEY_LAST_FILE_DIR, filePath);
+	}
+	update();
+}
 
 
 void NodeView::mousePressEvent(QMouseEvent *event){
 	if(mDebug){
 		qDebug()<<"mouse press" << event;
 	}
-	if(!mGraph){
+	if(!mProject){
 		qWarning()<<"no graph";
 		return;
 	}
 	const auto but = event->button();
 	const auto pos = event->pos();
 	if(but == Qt::RightButton){
-		const auto &node = mGraph->nodeAt(pos);
+		const auto &node = mProject->graph()->nodeAt(pos);
 		if(node){
 			updateNodeContextMenu(node);
 			const auto popup_pos = QCursor::pos() - QPoint(mNodeContextMenu->width(), mNodeContextMenu->height())/2;
 			mNodeContextMenu->popup(popup_pos);
 		}
 		else{
-			const auto connection = mGraph->connectionAt(pos);
+			const auto connection = mProject->graph()->connectionAt(pos);
 			if(connection){
 				updateConnectionContextMenu(connection);
 				const auto popup_pos = QCursor::pos() - QPoint(mConnectionContextMenu->width(), mConnectionContextMenu->height())/2;
 				mConnectionContextMenu->popup(popup_pos);
 			}
 			else{
-				const auto tri = mGraph->triAt(pos);
+				const auto tri = mProject->graph()->triAt(pos);
 				if(tri){
 					updateTriContextMenu(tri);
 					const auto popup_pos = QCursor::pos() - QPoint(mTriContextMenu->width(), mTriContextMenu->height())/2;
@@ -420,14 +508,14 @@ void NodeView::mousePressEvent(QMouseEvent *event){
 		}
 	}
 	else if(but == Qt::LeftButton){
-		if(! mGraph){
+		if(! mProject){
 			return;
 		}
 		mDragStartPos = pos;
 		mDragLastPos = pos;
 		mDragEndPos = pos;
 		if(event->modifiers() & Qt::ShiftModifier){
-			auto node = mGraph->nodeAt(pos, EITHER_IS_FINE, MUST_INCLUDE, nullptr);
+			auto node = mProject->graph()->nodeAt(pos);
 			mSourceNode = node;
 			mDestinationNode = nullptr;
 			if(mSourceNode){
@@ -440,7 +528,7 @@ void NodeView::mousePressEvent(QMouseEvent *event){
 			}
 		}
 		else{
-			mSourceNode = mGraph->nodeAt(pos);
+			mSourceNode = mProject->graph()->nodeAt(pos);
 			if(mSourceNode){
 				if (!mSelection.contains(mSourceNode) ){
 					syncSelection(false);
@@ -475,7 +563,7 @@ void NodeView::mousePressEvent(QMouseEvent *event){
 
 
 void NodeView::mouseMoveEvent(QMouseEvent *event){
-	if(!mGraph){
+	if(!mProject){
 		return;
 	}
 	const auto pos = event->pos();
@@ -483,7 +571,7 @@ void NodeView::mouseMoveEvent(QMouseEvent *event){
 		default:
 		case(OFF):{}break;
 		case(CONNECT_NODE):{
-			const auto nodes = mGraph;
+			const auto nodes = mProject->graph();
 			if(! nodes){
 				return;
 			}
@@ -491,7 +579,7 @@ void NodeView::mouseMoveEvent(QMouseEvent *event){
 				if(mDestinationNode){
 					mDestinationNode->deSelect();
 				}
-				mDestinationNode = nodes->nodeAt(pos, MUST_INCLUDE, EITHER_IS_FINE, mSourceNode);
+				mDestinationNode = nodes->nodeAt(pos);
 				if(mDestinationNode){
 					mDestinationNode->select();
 				}
@@ -521,7 +609,7 @@ void NodeView::mouseMoveEvent(QMouseEvent *event){
 			mDragEndPos = pos;
 			const QRectF lasso(mDragStartPos, mDragEndPos);
 			syncSelection(false);
-			mSelection = mGraph->nodesAt(lasso);
+			mSelection = mProject->graph()->nodesAt(lasso);
 			syncSelection(true);
 			update();
 		}break;
@@ -530,7 +618,7 @@ void NodeView::mouseMoveEvent(QMouseEvent *event){
 
 
 void NodeView::mouseReleaseEvent(QMouseEvent *event){
-	if(!mGraph){
+	if(!mProject){
 		return;
 	}
 	//qDebug()<<"mouse release" << event;
@@ -544,7 +632,7 @@ void NodeView::mouseReleaseEvent(QMouseEvent *event){
 			}
 		}break;
 		case(CONNECT_NODE):{
-			const auto nodes = mGraph;
+			const auto nodes = mProject->graph();
 			if(! nodes){
 				return;
 			}
@@ -552,7 +640,7 @@ void NodeView::mouseReleaseEvent(QMouseEvent *event){
 				if(mDestinationNode){
 					mDestinationNode->deSelect();
 				}
-				mDestinationNode = nodes->nodeAt(pos, MUST_INCLUDE, EITHER_IS_FINE, mSourceNode);
+				mDestinationNode = nodes->nodeAt(pos);
 				if(mDestinationNode){
 					mDestinationNode->deSelect();
 				}
@@ -590,7 +678,7 @@ void NodeView::mouseReleaseEvent(QMouseEvent *event){
 			dragMode=OFF;
 			mDragEndPos = pos;
 			mNodeViewPan = mDragEndPos - mDragStartPos;
-			const auto graph = mGraph;
+			const auto graph = mProject->graph();
 			if(! graph){
 				return;
 			}
@@ -658,20 +746,20 @@ QSharedPointer<TriParameterWidget> NodeView::triParameterWidget(QSharedPointer<T
 void NodeView::mouseDoubleClickEvent(QMouseEvent *event) {
 	if (event->button() == Qt::LeftButton) {
 		const auto pos = event->position();
-		const auto clickedNode = mGraph->nodeAt(pos);
+		const auto clickedNode = mProject->graph()->nodeAt(pos);
 		QSharedPointer<QWidget> view{nullptr};
 		if(clickedNode){
 			auto nodeView = nodeParameterWidget(clickedNode);
 			view = nodeView;
 		}
 		else{
-			const auto clickedConnection = mGraph->connectionAt(pos);
+			const auto clickedConnection = mProject->graph()->connectionAt(pos);
 			if(clickedConnection){
 				auto connectionView = connectionParameterWidget(clickedConnection);
 				view = connectionView;
 			}
 			else{
-				const auto clickedTri= mGraph->triAt(pos);
+				const auto clickedTri= mProject->graph()->triAt(pos);
 				if(clickedTri){
 					auto triView = triParameterWidget(clickedTri);
 					view = triView;
@@ -702,7 +790,7 @@ void NodeView::mouseDoubleClickEvent(QMouseEvent *event) {
 void NodeView::wheelEvent(QWheelEvent *event) {
 	const QPointF mousePos = event->position();
 	const double zoomFactor = 1.1;
-	auto nodes = mGraph->nodes();
+	auto nodes = mProject->graph()->nodes();
 	for (auto &node : nodes) {
 		QPointF offset = node->pos() - mousePos;
 		offset *= (event->angleDelta().y() > 0) ? zoomFactor : 1.0 / zoomFactor;
@@ -721,13 +809,9 @@ void NodeView::closeEvent(QCloseEvent *event) {
 
 
 void NodeView::keyPressEvent(QKeyEvent *event) {
-	if (event->key() == Qt::Key_Z) {
+	if (event->key() == Qt::Key_A) {
 		event->accept();
 		zoomToFit(rect());
-	}
-	else if (event->key() == Qt::Key_A) {
-		event->accept();
-		autoArrange(rect());
 	}
 	else if (event->key() == Qt::Key_X) {
 		event->accept();
@@ -752,6 +836,34 @@ void NodeView::keyPressEvent(QKeyEvent *event) {
 	else if (event->key() == Qt::Key_F) {
 		event->accept();
 		flipSelection();
+	}
+	else if (event->key() == Qt::Key_R) {
+		event->accept();
+		relax();
+	}
+	else if (event->key() == Qt::Key_S) {
+		event->accept();
+		save();
+	}
+	else if (event->key() == Qt::Key_L) {
+		event->accept();
+		load();
+	}
+	else if (event->key() == Qt::Key_Space) {
+		event->accept();
+		toggleRunning();
+	}
+	else if (event->key() == Qt::Key_1) {
+		event->accept();
+		auto lastPath = mSettings->value(SETTINGS_KEY_LAST_FILE_DIR, QStandardPaths::writableLocation(QStandardPaths::DesktopLocation)).toString();
+		loadProject(mProject, lastPath);
+		update();
+	}
+	else if (event->key() == Qt::Key_2) {
+		event->accept();
+		auto lastPath = mSettings->value(SETTINGS_KEY_LAST_FILE_DIR, QStandardPaths::writableLocation(QStandardPaths::DesktopLocation)).toString();
+		saveProject(mProject, lastPath);
+		update();
 	}
 	else if (event->key() == Qt::Key_Delete) {
 		event->accept();

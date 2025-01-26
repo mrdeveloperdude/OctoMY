@@ -50,7 +50,7 @@ static quint32 avgColor(const QImage &img)
 	return qRgba(r,g,b,a);
 }
 
-
+/*
 static quint32 avgColor(const QImage &img, const QRect &rect)
 {
 	OC_FUNCTIONGATE();
@@ -77,7 +77,7 @@ static quint32 avgColor(const QImage &img, const QRect &rect)
 	}
 	return qRgba(r,g,b,a);
 }
-
+*/
 
 struct PixelData {
 	QRgb avg;
@@ -148,7 +148,7 @@ struct PixelNode;
 static QDataStream &operator<<(QDataStream &ds, PixelNode &bb);
 static QDataStream &operator>>(QDataStream &ds, PixelNode &bb);
 
-static int rgb2lum(QRgb rgb)
+int rgb2lum(QRgb rgb)
 {
 	OC_FUNCTIONGATE();
 	const int r=qRed(rgb)*29;

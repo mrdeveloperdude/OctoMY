@@ -6,12 +6,12 @@
 #include <QVector2D>
 #include <QtMath>
 
-#include <vector>
 #include <cmath>
 #include <QtMath>
 
 
 #include "Node.hpp"
+#include "Graph.hpp"
 
 Tri::Tri(QSharedPointer<Graph> graph, QSharedPointer<Node> n1, QSharedPointer<Node> n2, QSharedPointer<Node> n3)
 	: mGraph(graph)
@@ -103,7 +103,7 @@ void Tri::draw(QPainter &painter, const Style &style){
 		qWarning()<<"No Tri->node3";
 		return;
 	}
-	const bool selected = mN1->selected() && mN2->selected() && mN3->selected();
+	const bool selected = mN1->isSelected() && mN2->isSelected() && mN3->isSelected();
 	painter.setPen( selected ? style.triOutlineSelectedPen : style.triOutlinePen);
 	painter.setBrush( selected ? style.triFillSelected : style.triFill);
 	const auto tri = insetTriangle(mN1->pos(), mN2->pos(), mN3->pos(), 3.0);
@@ -121,5 +121,11 @@ QDataStream& operator<<(QDataStream& out, const Tri& obj) {
 
 
 QDataStream& operator>>(QDataStream& in, Tri& obj) {
+	QString n1,n2,n3;
+	in >> n1 >> n2 >> n3;
+	obj.mN1 = obj.mGraph->nodeByID(n1);
+	obj.mN2 = obj.mGraph->nodeByID(n2);
+	obj.mN3 = obj.mGraph->nodeByID(n3);
+	qDebug() << "Stream IN Tri: <" << n1 << ", <" << n2 << ", <" << n3 << ">";
 	return in;
 }

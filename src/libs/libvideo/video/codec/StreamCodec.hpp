@@ -4,7 +4,7 @@
 #include <QByteArray>
 #include <QImage>
 
-
+int rgb2lum(QRgb rgb);
 
 class StreamCodec
 {

@@ -1,8 +1,8 @@
 #include "TestFace.hpp"
 
 
-#include "md/nodes/Graph.hpp"
-#include "md/nodes/NodeView.hpp"
+#include "d3/nodes/Project.hpp"
+#include "d3/nodes/NodeView.hpp"
 #include "test/Utility.hpp"
 #include "uptime/New.hpp"
 
@@ -10,10 +10,11 @@
 void TestFace::testFace()
 {
 	Q_INIT_RESOURCE(icons);
-	auto graph = QSharedPointer<Graph>::create();
+	auto project = createProject();
 	auto nv = OC_NEW NodeView();
-	nv->setGraph(graph);
+	nv->setProject(project);
 	nv->show();
+	qDebug()<<"FACE";
 	test::utility::waitForUIEnd(nv);
 }
 

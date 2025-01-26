@@ -45,7 +45,7 @@ QSharedPointer<Response> ExpressionEvaluator::compile(const QString &expression,
 	
 	// Step 3: Compile the expression
 	compiledExpression = QSharedPointer<CompiledExpression>::create();
-	QSharedPointer<Response> compiledResponse = compiledExpression->compile(astRoot);
+	QSharedPointer<Response> compiledResponse = compiledExpression->compile(expression, astRoot);
 	
 	if (compiledResponse && !compiledResponse->success) {
 		return compiledResponse;

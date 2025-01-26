@@ -112,15 +112,6 @@ static void logNodeStack(const QStack<QSharedPointer<ASTNode>> &stack){
 }
 
 
-
-static int functionArity(const QString &functionName){
-	// Add actual function arity resolution logic here
-	if (functionName == "sin") return 1;
-	if (functionName == "pow") return 2;
-	return -1; // Unknown function
-};
-
-
 QSharedPointer<Response> ast(const QQueue<Token> &rpnQueue, QSharedPointer<ASTNode> &astRoot) {
 	QStack<QSharedPointer<ASTNode>> stack;
 	

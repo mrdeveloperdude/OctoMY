@@ -1,7 +1,24 @@
 #include "TestD3.hpp"
 
-void TestD3::test()
+#include "d3/nodes/Project.hpp"
+#include "d3/nodes/NodeView.hpp"
+#include "d3/nodes/ui/SpreadSheet.hpp"
+#include "test/Utility.hpp"
+#include "uptime/New.hpp"
+
+void TestD3::testD3()
 {
+	Q_INIT_RESOURCE(icons);
+	auto project = createProject();
+	auto nv = OC_NEW NodeView();
+	
+	//nv->setProject(project);	nv->show();
+	
+	
+	//SpreadSheet spreadSheet;	spreadSheet.show();
+	
+	qDebug()<<"D3";
+	test::utility::waitForUIEnd(nv);
 }
 
 

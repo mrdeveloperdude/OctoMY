@@ -35,8 +35,8 @@ private:
 #endif
 	//Debug viwer
 //	PixViewer *pv;
-	bool mScaleDown;
-	bool mConvertToGrayscale;
+//	bool mScaleDown;
+	//bool mConvertToGrayscale;
 
 public:
 	ZBarScanner();

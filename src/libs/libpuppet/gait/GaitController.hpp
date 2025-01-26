@@ -626,7 +626,7 @@ public:
 		feedrateTarget=f;
 	}
 
-	void toggleLimb(int limb)
+	void toggleLimb(quint32 limb)
 	{
 
 		if(limb>=1 && limb<=limbCount) {

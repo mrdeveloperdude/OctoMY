@@ -18,7 +18,7 @@ private:
 	
 public:
 	Tri() = default;
-	Tri(QSharedPointer<Graph> graph, QSharedPointer<Node> n1, QSharedPointer<Node> n2, QSharedPointer<Node> n3);
+	Tri(QSharedPointer<Graph> graph=nullptr, QSharedPointer<Node> n1=nullptr, QSharedPointer<Node> n2=nullptr, QSharedPointer<Node> n3=nullptr);
 	
 public:
 	QSharedPointer<Graph> graph() const;

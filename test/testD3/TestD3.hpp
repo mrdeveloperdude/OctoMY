@@ -7,7 +7,7 @@ class TestD3:public QObject
 {
 	Q_OBJECT
 private slots:
-	void test();
+	void testD3();
 
 };
 

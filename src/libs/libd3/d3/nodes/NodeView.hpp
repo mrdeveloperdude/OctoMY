@@ -23,6 +23,7 @@ class RenameDialog;
 class ConnectionParameterWidget;
 class NodeParameterWidget;
 class TriParameterWidget;
+class Project;
 
 void antialiasHints(QPainter &painter);
 
@@ -41,7 +42,7 @@ private:
 	QMenu *mConnectionContextMenu{nullptr};
 	QMenu *mTriContextMenu{nullptr};
 	RenameDialog * renameDialogue{nullptr};
-	QSharedPointer<Graph> mGraph;
+	QSharedPointer<Project> mProject;
 	QSharedPointer<QSettings> mSettings;
 	QPointF mDragStartPos;
 	QPointF mDragEndPos;
@@ -55,9 +56,9 @@ private:
 	QMap<QSharedPointer<Connection>, QSharedPointer<ConnectionParameterWidget> > mConnectionParameterWidgets;
 	QMap<QSharedPointer<Tri>, QSharedPointer<TriParameterWidget> > mTriParameterWidgets;
 	DragMode dragMode{OFF};
-
+	
 	bool mXray{false};
-	bool mDebug{false};
+	bool mDebug{true};
 
 public:
 	explicit NodeView(QWidget *parent = nullptr);
@@ -71,21 +72,27 @@ private:
 	void invalidateLinesToNode(QSharedPointer<Node> node);
 	void syncSelection(bool selected);
 	void invertSelection();
-	void flipSelection();
+	bool flip(const QSharedPointer<Node> &n1, const QSharedPointer<Node> &n2, const QSharedPointer<Node> &n3, const QSharedPointer<Node> &n4);
+	bool flipSelection();
+	bool relax();
 	void interConnectSelected();
 	void interTriSelected();
 	void removeSelected();
+	void toggleRunning();
+	void loadSettings();
+	bool clear();
+	void save();
+	void load();
 	
 	QSharedPointer<NodeParameterWidget> nodeParameterWidget(QSharedPointer<Node> node);
 	QSharedPointer<ConnectionParameterWidget> connectionParameterWidget(QSharedPointer<Connection> connection);
 	QSharedPointer<TriParameterWidget> triParameterWidget(QSharedPointer<Tri> tri);
 
 public:
-	void setGraph(QSharedPointer<Graph> graph);
-	QSharedPointer<Graph> graph();
+	void setProject(QSharedPointer<Project> graph);
+	QSharedPointer<Project> project();
 	void setSettings(QSharedPointer<QSettings> settings);
 	void zoomToFit(const QRectF &rect);
-	void autoArrange(const QRectF &target);
 	void toggleXRay(bool xray_on);
 
 
@@ -102,6 +109,10 @@ protected:
 
 public slots:
 	void addNode(QPointF pos, QString name);
+
+private slots:
+	void onStep(qreal dt);
+
 signals:
 	void navigate(QString destination);
 

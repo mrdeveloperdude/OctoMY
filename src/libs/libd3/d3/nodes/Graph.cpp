@@ -1,8 +1,10 @@
 #include "Graph.hpp"
 
-#include "Node.hpp"
 #include "Connection.hpp"
+#include "Node.hpp"
+#include "Project.hpp"
 #include "Tri.hpp"
+#include "d3/nodes/Player.hpp"
 
 #include <QDebug>
 #include <QFile>
@@ -11,13 +13,12 @@
 #include <QSharedPointer>
 #include <QVector2D>
 
-static const QString MAGIC{"GRAPH"};
-static const quint32 VERSION{1};
 
-Graph::Graph()
-: mStyle(new Style())
+Graph::Graph(QSharedPointer<Project> project)
+	: mProject(project)
 {
 }
+
 
 
 bool Graph::hasCycleWorker(QSharedPointer<Node> node, QSet<QString> &visited, QSet<QString> &recStack, const QSharedPointer<Node> &nodeA, const QSharedPointer<Node> &nodeB) const {
@@ -48,22 +49,16 @@ bool Graph::hasCycleWorker(QSharedPointer<Node> node, QSet<QString> &visited, QS
 
 
 void Graph::taint(const QString &reason){
-	if(mLastTaintReason != reason){
-		//qDebug() << "Graph tainted by" << reason;
-		mLastTaintReason = reason;
-	}
-	mTainted = true;
+	mProject->taint(reason);
 }
 
-
-void Graph::unTaint(const QString &reason){
-	qDebug()<<"Graph un-tainted by"<<reason;
-	mTainted = false;
-}
-
-
-bool Graph::isTainted() const{
-	return mTainted;
+bool Graph::clear(){
+	mConnections.clear();
+	mTris.clear();
+	mNodes.clear();
+	mTopologyChanged = true;
+	taint("clear()");
+	return true;
 }
 
 
@@ -211,26 +206,26 @@ QSharedPointer<Connection> Graph::connectionFor(QSharedPointer<Node> fromNode,QS
 }
 
 
-QSharedPointer<Tri> Graph::triFor(QSharedPointer<Node> n1, QSharedPointer<Node> n2, QSharedPointer<Node> n3, bool directionMatters) const{
-	if(directionMatters){
-		for(auto const &tri:mTris){
-			if((tri->node1() == n1) && (tri->node2() == n2) && (tri->node3() == n3)){
+QSharedPointer<Tri> Graph::triFor(const QSharedPointer<Node> &n1, const QSharedPointer<Node> &n2, const QSharedPointer<Node> &n3, bool orderMatters, bool directionMatters) const{
+	for(auto const &tri:mTris){
+		const auto &t1{tri->node1()};
+		const auto &t2{tri->node2()};
+		const auto &t3{tri->node3()};
+		if((t1 == n1) && (t2 == n2) && (t3 == n3)){
+			return tri;
+		}
+		if(!orderMatters) {
+			if((t1 == n2) && (t2 == n3) && (t3 == n1)){
+				return tri;
+			}
+			if((t1 == n3) && (t2 == n1) && (t3 == n2)){
 				return tri;
 			}
 		}
 	}
-	else{
-		for(auto const &tri:mTris){
-			if((tri->node1() == n1) && (tri->node2() == n2) && (tri->node3() == n3)){
-				return tri;
-			}
-			if((tri->node1() == n2) && (tri->node2() == n3) && (tri->node3() == n1)){
-				return tri;
-			}
-			if((tri->node1() == n3) && (tri->node2() == n1) && (tri->node3() == n2)){
-				return tri;
-			}
-		}
+	if(!directionMatters){
+		// Do it again with alternate direction
+		return triFor(n1, n3, n2, orderMatters, true);
 	}
 	return nullptr;
 }
@@ -272,6 +267,8 @@ QVector<QSharedPointer<Node> > Graph::nodes() const{
 
 
 QVector<QSharedPointer<Node> > Graph::nodesOfType(const QString &type) const{
+	Q_UNUSED(type);
+	// TODO: Implement
 	QVector<QSharedPointer<Node> > nodes;
 	for(auto &node: mNodes){
 		//if(node->processor()->characteristics().typeID == type){
@@ -388,26 +385,9 @@ QVector< QSharedPointer<Connection> > Graph::connectionsForNode(QSharedPointer<N
 }
 
 
-QSharedPointer<Node> Graph::nodeAt(const QPointF &pt, NodeSelector inputSelector, NodeSelector outputSelector, QSharedPointer<Node> exclude) const{
+QSharedPointer<Node> Graph::nodeAt(const QPointF &pt) const{
 	for(auto &node: mNodes){
 		if(node->rect().contains(pt)){
-			/*
-			const auto ti = node->processor()->characteristics().takesAudioInput;
-			switch(inputSelector){
-				case(MUST_INCLUDE):{if(!ti)continue;}break;
-				case(MUST_NOT_INCLUDE):{if(ti)continue;}break;
-				default:break;
-			}
-			const auto go = node->processor()->characteristics().givesAudioOutput;
-			switch(outputSelector){
-				case(MUST_INCLUDE):{if(!go)continue;}break;
-				case(MUST_NOT_INCLUDE):{if(go)continue;}break;
-				default:break;
-			}
-			if(exclude && node == exclude){
-				continue;
-			}
-*/
 			return node;
 		}
 	}
@@ -462,11 +442,11 @@ void Graph::drawStats(QPainter &painter, const Style &style) const{
 	painter.setPen(style.connectionPen);
 	int selected=0;
 	for(const auto &node:mNodes){
-		if(node->selected()){
+		if(node->isSelected()){
 			selected++;
 		}
 	}
-	painter.drawText(QPointF(10, 10), QString("nodes: %1 (%2 selected), connections: %3, tris: %4").arg(mNodes.size()).arg(selected).arg(mConnections.size()).arg(mTris.size()));
+	painter.drawText(QPointF(10, 10), QString("nodes: %1 (%2 selected), connections: %3, tris: %4, running: %5").arg(mNodes.size()).arg(selected).arg(mConnections.size()).arg(mTris.size()).arg(mProject->player()->isRunning()?"TRUE":"FALSE"));
 }
 
 
@@ -494,51 +474,6 @@ void Graph::draw(QPainter &painter, const bool xray, const Style &style) const{
 		}
 	}
 	drawStats(painter, style);
-}
-
-
-
-QDataStream& operator<<(QDataStream& out, const Graph& obj) {
-	const qsizetype nodeSize = obj.mNodes.size();
-	qDebug() << "Stream OUT NodeGraph: nodeSize=" << nodeSize;
-	out << nodeSize;
-	for(auto const &node:obj.mNodes){
-		out << *node;
-	}
-	const qsizetype connectionsSize = obj.mConnections.size();
-	qDebug() << "Stream OUT NodeGraph: connectionsSize=" << connectionsSize;
-	out << connectionsSize;
-	for(auto const &connection:obj.mConnections){
-		out << *connection;
-	}
-	return out;
-}
-
-
-QDataStream& operator>>(QDataStream& in, Graph& obj) {
-	/*
-	qsizetype nodesSize{0};
-	in >> nodesSize;
-	qDebug() << "Stream IN NodeGraph: nodesSize=" << nodesSize;
-	obj.mNodes.clear();
-	obj.mNodes.reserve(nodesSize);
-	for(qsizetype i=0;i<nodesSize;++i){
-		Node *node = new Node(obj.mGraph, "", "", QPoint());
-		in >> *node;
-		obj.mNodes.append(QSharedPointer<Node>(node));
-	}
-	qsizetype connectionSize{0};
-	in >> connectionSize;
-	qDebug() << "Stream IN NodeGraph: nodesSize=" << connectionSize;
-	obj.mConnections.clear();
-	obj.mConnections.reserve(connectionSize);
-	for(qsizetype i=0;i<connectionSize;++i){
-		Connection *connection = new Connection(obj.mGraph, nullptr, nullptr);
-		in >> *connection;
-		obj.mConnections.append(QSharedPointer<Connection>(connection));
-	}
-*/
-	return in;
 }
 
 
@@ -590,167 +525,101 @@ void Graph::zoomToFit(const QRectF &target){
 
 
 
-static void place(QPointF &point, QSharedPointer<Node> node){
-	auto size = node->size();
-	node->setPos(QPointF(point.x(), point.y() * size.height()));
-	auto pos = node->pos();
-	point.setX(pos.x()+size.width());
+void Graph::step(qreal dt) {
+	for (auto &c : mConnections) {
+		auto n1 = c->from();
+		auto n2 = c->to();
+		auto diff = n1->pos() - n2->pos();
+		auto diff2d = QVector3D(diff);
+		auto currentLength = diff2d.length();
+		auto direction = diff2d.normalized();
+		auto rl = c->restLength();
+		auto k = c->stiffness();
+		auto displacement = currentLength - rl;
+		auto springForce = -k * displacement * direction;
+		auto b = c->damping();
+		auto relativeVelocity = n1->velocity() - n2->velocity();
+		auto dampingForce = -b * QVector3D::dotProduct(relativeVelocity, direction) * direction;
+		auto totalForce = springForce + dampingForce;
+		n1->applyForce(totalForce);
+		n2->applyForce(-totalForce);
+	}
+	for (auto &n : mNodes) {
+		n->integrate(dt);
+	}
 }
 
 
-void Graph::autoArrange(const QRectF &boundary) {
-	// Constants for the force-directed algorithm
-	static const int forcePasses{200};
-	static const int adjustPasses{15};
-	static const double iterationSize{0.15};
-	static const double idealNeighbourDistanceFactor{5.0};
-	static const double idealConnectionDistanceFactor{idealNeighbourDistanceFactor*0.3};
-	QVector<QVector2D> forces(mNodes.size(), QVector2D(0, 0));
-	const bool doNeighbourRepel{true};
-	const bool doConnectionAttract{true};
-	const bool doCompact{true};
-	for (int adjustIteration = 0; adjustIteration < adjustPasses; ++adjustIteration) {
-		for (int forceIteration = 0; forceIteration < forcePasses; ++forceIteration) {
-			for (int i = 0; i < mNodes.size(); ++i) {
-				forces[i]=QVector2D(0, 0);
-			}
-			if(doNeighbourRepel){
-				for (int i = 0; i < mNodes.size(); ++i) {
-					for (int j = i + 1; j < mNodes.size(); ++j) {
-						QVector2D delta = QVector2D(mNodes[i]->pos()) - QVector2D(mNodes[j]->pos());
-						double distance = delta.length() + 0.0001;
-						const auto idealDist = ((mNodes[i]->size().width() + mNodes[j]->size().width())*idealNeighbourDistanceFactor) / 2.0;
-						double forceMagnitude = 0.0;
-						if (distance < idealDist) {
-							forceMagnitude = (idealDist - distance) / idealDist;
-						} else {
-							forceMagnitude = -std::exp(-(distance - idealDist));
-						}
-						QVector2D forceDirection = delta.normalized();
-						QVector2D force = forceDirection * forceMagnitude;
-						forces[i] += force;
-						forces[j] -= force;
-					}
-				}
-			}
-			if(doConnectionAttract){
-				for (const auto &connection : mConnections) {
-					int i = mNodes.indexOf(connection->from());
-					int j = mNodes.indexOf(connection->to());
-					if(i == j){
-						qWarning()<<"Identical to and from index for connection" << i;
-						continue;
-					}
-					if(i < 0){
-						qWarning()<<"Zero from index for connection" << i;
-						continue;
-					}
-					if(j < 0){
-						qWarning()<<"Zero to index for connection" << j;
-						continue;
-					}
-					QVector2D delta = QVector2D(mNodes[i]->pos()) - QVector2D(mNodes[j]->pos());
-					const auto distance = delta.length() + 0.0001;
-					const auto idealDist = ((mNodes[i]->size().width() + mNodes[j]->size().width())*idealConnectionDistanceFactor) / 2.0;
-					const auto diff = idealDist-distance;
-					const QVector2D force = diff * delta.normalized();
-					forces[i] += force;
-					forces[j] -= force;
-				}
-			}
-			if(doCompact){
-				const auto center=boundary.center();
-				for (int i = 0; i < mNodes.size(); ++i) {
-					const auto node = mNodes[i];
-					QPointF pos = node->pos();
-					const QVector2D force(center-pos);
-					forces[i] += force*0.001;
-				}
-			}
-			for (int i = 0; i < mNodes.size(); ++i) {
-				QVector2D newPos = QVector2D(mNodes[i]->pos()) + forces[i] * iterationSize;
-				double halfWidth = mNodes[i]->size().width() / 2.0;
-				double halfHeight = mNodes[i]->size().height() / 2.0;
-				newPos.setX(qBound(boundary.left() + halfWidth, newPos.x(), boundary.right() - halfWidth));
-				newPos.setY(qBound(boundary.top() + halfHeight, newPos.y(), boundary.bottom() - halfHeight));
-				mNodes[i]->setPos(newPos.toPointF());
-			}
+
+
+
+QDataStream& operator<<(QDataStream& out, const Graph& obj) {
+	{
+		const qsizetype nodeSize = obj.mNodes.size();
+		qDebug() << "Stream OUT Graph: nodes=" << nodeSize;
+		out << nodeSize;
+		for(auto const &node:obj.mNodes){
+			out << *node;
 		}
-		const qreal m{100.0};
-		adjustNodes(boundary, QMarginsF(m, m, m, m), mNodes);
 	}
+	{
+		const qsizetype connectionsSize = obj.mConnections.size();
+		qDebug() << "Stream OUT Graph: connections=" << connectionsSize;
+		out << connectionsSize;
+		for(auto const &connection:obj.mConnections){
+			out << *connection;
+		}
+	}
+	{
+		const qsizetype triSize = obj.mTris.size();
+		qDebug() << "Stream OUT Graph: tris=" << triSize;
+		out << triSize;
+		for(auto const &tri:obj.mTris){
+			out << *tri;
+		}
+	}
+	return out;
 }
 
 
-
-bool saveGraph(QSharedPointer<Graph> graph, const QString &filename, const bool compress){
-	qDebug() << "Saving "<<filename;
-	if(!graph){
-		qWarning()<<"No Graph to save, skipping...";
-		return false;
+QDataStream& operator>>(QDataStream& in, Graph& obj) {
+	{
+		qsizetype nodesSize{0};
+		in >> nodesSize;
+		qDebug() << "Stream IN Graph: nodes=" << nodesSize;
+		obj.mNodes.clear();
+		obj.mNodes.reserve(nodesSize);
+		for(qsizetype i=0;i<nodesSize;++i){
+			auto node = QSharedPointer<Node>::create(obj.project());
+			in >> *node;
+			obj.mNodes.append(node);
+		}
 	}
-	QFile file(filename);
-	if (!file.open(QIODevice::WriteOnly)) {
-		qWarning()<<"Could not open file for saving, skipping...";
-		return false;
+	{
+		qsizetype connectionSize{0};
+		in >> connectionSize;
+		qDebug() << "Stream IN Graph: connections=" << connectionSize;
+		obj.mConnections.clear();
+		obj.mConnections.reserve(connectionSize);
+		for(qsizetype i=0;i<connectionSize;++i){
+			auto connection = QSharedPointer<Connection>::create(obj.sharedFromThis());
+			in >> *connection;
+			obj.mConnections.append(connection);
+		}
 	}
-	QDataStream out(&file);
-	out.writeRawData(MAGIC.toUtf8().constData(), 4);
-	out << VERSION;
-	out << compress;
-	if (compress) {
-		QByteArray data;
-		QDataStream dataStream(&data, QIODevice::WriteOnly);
-		dataStream << *graph;
-		QByteArray compressedData = qCompress(data);
-		out << compressedData;
-	} else {
-		out << *graph;
+	{
+		qsizetype triSize{0};
+		in >> triSize;
+		qDebug() << "Stream IN Graph: tris=" << triSize;
+		obj.mTris.clear();
+		obj.mTris.reserve(triSize);
+		for(qsizetype i=0;i<triSize;++i){
+			auto tri = QSharedPointer<Tri>::create(obj.sharedFromThis());
+			in >> *tri;
+			obj.mTris.append(tri);
+		}
 	}
-	file.close();
-	graph->unTaint("saveGraph");
-	return true;
-}
-
-
-bool loadGraph(QSharedPointer<Graph> graph, const QString &filename){
-	qDebug() << "Loading "<<filename;
-	if(!graph){
-		qWarning()<<"No Graph to load, skipping...";
-		return false;
-	}
-	QFile file(filename);
-	if (!file.open(QIODevice::ReadOnly)) {
-		qWarning()<<"Could not open file for loading, skipping...";
-		return false;
-	}
-	QDataStream in(&file);
-	char magic[5] = {0};
-	in.readRawData(magic, 4);
-	if (QString::fromUtf8(magic) != MAGIC) {
-		file.close();
-		qWarning()<<"Wrong MAGIC found in file while loading, skipping...";
-		return false;
-	}
-	quint32 version;
-	in >> version;
-	if (version != VERSION) {
-		file.close();
-		qWarning()<<"Wrong VERSION found in file while loading, skipping...";
-		return false;
-	}
-	bool compress{false};
-	in >> compress;
-	if (compress) {
-		QByteArray compressedData;
-		in >> compressedData; 
-		QByteArray data = qUncompress(compressedData);
-		QDataStream dataStream(&data, QIODevice::ReadOnly);
-		dataStream >> *graph;
-	} else {
-		in >> *graph;
-	}
-	graph->unTaint("loadGraph");
-	return true;
+	
+	return in;
 }
 

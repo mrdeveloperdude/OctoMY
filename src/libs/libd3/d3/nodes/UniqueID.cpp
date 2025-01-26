@@ -13,3 +13,23 @@ QString generateUniqueID() {
 	}
 	return uniqueID;
 }
+
+static int idCounter=0;
+
+UniqueID::UniqueID()
+	: mUniqueID(generateUniqueID())
+	, mID(idCounter++)
+{
+}
+
+
+QDataStream& operator<<(QDataStream& out, const UniqueID& obj) {
+	out << obj.mUniqueID;
+	return out;
+}
+
+
+QDataStream& operator>>(QDataStream& in, UniqueID& obj) {
+	in >> obj.mUniqueID;
+	return in;
+}

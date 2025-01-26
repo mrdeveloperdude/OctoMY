@@ -14,6 +14,7 @@ import qbs.FileInfo
 
 StaticLibrary {
 	property string localPath: path
+	property bool lib_debug: false
 	property string lib_prefix: FileInfo.joinPaths(FileInfo.cleanPath(project.sourceDirectory), "src", "libs")
 	name: FileInfo.baseName(localPath)
 	property bool debug_output: {
@@ -27,21 +28,21 @@ StaticLibrary {
 	// Enumerate our libs
 	LibProbe{
 		id: libs
-		debug: false
+		debug: lib_debug
 	}
 	
 	// Enumerate sources for ALL libraries so we create one big combined library (hence the name "libcombined")
 	Sources{
 		name: FileInfo.baseName(localPath) + "_sources"
 		prefix: lib_prefix
-		debug: true
+		debug: lib_debug
 	}
 	
 	// And the same for resources
 	Resources{
 		name: FileInfo.baseName(localPath) + "_resources"
 		prefix: lib_prefix
-		debug: true
+		debug: lib_debug
 	}
 
 	// We depend on C++

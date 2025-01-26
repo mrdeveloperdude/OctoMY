@@ -22,7 +22,11 @@ public:
 	~NodeParameterWidget();
 
 public:
+	void updateNode();
 	void setNode(QSharedPointer<Node> node);
+private slots:
+	void anchoredChanged(bool anchored);
+	void massChanged(double mass);
 };
 
 #endif // NODEPARAMETERWIDGET_HPP

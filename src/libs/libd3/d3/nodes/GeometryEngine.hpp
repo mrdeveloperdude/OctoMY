@@ -30,6 +30,8 @@ public:
 	
 	void interTri(QSharedPointer<Graph> graph, QList<QSharedPointer<Node> > nodes);
 	void interConnect(QSharedPointer<Graph> graph, QList<QSharedPointer<Node> > nodes);
+	
+	void relax(QSharedPointer<Graph> graph, QList<QSharedPointer<Node> > nodes);
 
 };
 

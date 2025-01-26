@@ -10,11 +10,11 @@
 
 // TODO: This entire expression lib is chatgpt slop that needs to be scrutinized and gone over thoroughly
 
-QSharedPointer<Response> CompiledExpression::compile(const QSharedPointer<ASTNode> &astRoot) {
+QSharedPointer<Response> CompiledExpression::compile(const QString &original, const QSharedPointer<ASTNode> &astRoot) {
 	if (!astRoot) {
 		return QSharedPointer<Response>::create("AST root is null.");
 	}
-	
+	this->original = original;
 	// Store the root node for execution
 	rootNode = astRoot;
 	return QSharedPointer<Response>::create();

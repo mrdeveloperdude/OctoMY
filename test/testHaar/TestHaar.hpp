@@ -6,8 +6,12 @@
 class TestHaar:public QObject
 {
 	Q_OBJECT
+private:
+	void testBT601Gray();
+	void testIntegralImage();
+	void testCameraProcessor();
 private slots:
-	void test();
+	void testHaarProcessor();
 
 };
 

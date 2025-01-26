@@ -6,7 +6,7 @@
 class TestFace:public QObject
 {
 	Q_OBJECT
-private:
+private slots:
 	void testFace();
 
 };

@@ -1,7 +1,7 @@
 #include "Node.hpp"
 
-#include "UniqueID.hpp"
 #include "Graph.hpp"
+#include "Project.hpp"
 #include "Style.hpp"
 
 #include <QDataStream>
@@ -11,20 +11,15 @@
 #include <QRegularExpression>
 
 
-static int nodeID=0;
-
 static const QRegularExpression trailingDigitsRe("\\d+$");
 
 
-Node::Node(QSharedPointer<Graph> graph, const QString &name, QPointF pos)
-	: mGraph(graph)
+Node::Node(QSharedPointer<Project> project, const QString &name, QPointF pos)
+	: mProject(project)
 	, mName(name)
-	, mUniqueID(generateUniqueID())
-	, mID(nodeID++)
 	, mPos(pos)
 {
 }
-
 
 
 void Node::draw(QPainter &painter, const bool xray, const Style &style){
@@ -36,13 +31,16 @@ void Node::draw(QPainter &painter, const bool xray, const Style &style){
 		qDebug()<<"draw node"<<r <<fill << outline;
 	}
 	painter.setBrush(fill);
-	painter.fillRect(r, fill);
 	painter.setPen(outline);
-	painter.drawRect(r);
-	
-	
+	if(mAnchored){
+		painter.fillRect(r, fill);
+		painter.drawRect(r);
+	}
+	else{
+		painter.drawEllipse(r);
+	}
 	QRect fr = painter.fontMetrics().boundingRect(mName);
-	auto s = r.size();
+	//auto s = r.size();
 	auto p = r.center().toPoint();
 	fr.moveCenter(p);
 	painter.setPen(outline);
@@ -50,15 +48,11 @@ void Node::draw(QPainter &painter, const bool xray, const Style &style){
 }
 
 
-
-
 void Node::taint(const QString &reason){
-	if(!mGraph.isNull()){
-		mGraph->taint(reason);
+	if(!mProject.isNull()){
+		mProject->taint(reason);
 	}
 }
-
-
 
 
 QString Node::toString() const{
@@ -71,8 +65,11 @@ QDataStream& operator<<(QDataStream& out, const Node& obj) {
 	out << obj.mName;
 	out << obj.mUniqueID;
 	out << obj.mPos;
+	out << obj.mSelected;
+	out << obj.mAnchored;
+	out << obj.mMass;
 	if(obj.mDebug){
-		qDebug() << "Stream OUT TrackerNode: name=" << obj.mName << ", uniqueID=" << obj.id() << ", pos=" << obj.mPos;
+		qDebug() << "Stream OUT TrackerNode: name=" << obj.mName << ", uniqueID=" << obj.id() << ", pos=" << obj.mPos << ", sel=" << obj.mSelected << ", anchored=" << obj.mAnchored << ", mass=" << obj.mMass;
 	}
 	return out;
 }
@@ -82,8 +79,11 @@ QDataStream& operator>>(QDataStream& in, Node& obj) {
 	in >> obj.mName;
 	in >> obj.mUniqueID;
 	in >> obj.mPos;
+	in >> obj.mSelected;
+	in >> obj.mAnchored;
+	in >> obj.mMass;
 	if(obj.mDebug){
-		qDebug() << "Stream IN TrackerNode: name=" << obj.mName << ", uniqueID=" << obj.id() << ", pos=" << obj.mPos;
+		qDebug() << "Stream IN TrackerNode: name=" << obj.mName << ", uniqueID=" << obj.id() << ", pos=" << obj.mPos << ", sel=" << obj.mSelected << ", anchored=" << obj.mAnchored << ", mass=" << obj.mMass;
 	}
 	return in;
 }
