@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RenameDialog</class>
+ <widget class="QWidget" name="RenameDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>343</width>
+    <height>92</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Name</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="lineEditName"/>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButtonRename">
+     <property name="text">
+      <string>Rename</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButtonRename</sender>
+   <signal>clicked()</signal>
+   <receiver>RenameDialog</receiver>
+   <slot>finishRename()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>874</x>
+     <y>310</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>461</x>
+     <y>310</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>finishRename()</slot>
+ </slots>
+</ui>

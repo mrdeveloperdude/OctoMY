@@ -1,0 +1,3 @@
+Lib {
+	localPath: path
+}

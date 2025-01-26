@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/">
+        <file>assets/shaders/ads_fragment.frag</file>
+        <file>assets/shaders/ads_fragment.vert</file>
+        <file>assets/shaders/es_ads_fragment.frag</file>
+        <file>assets/shaders/es_ads_fragment.vert</file>
+        <file>assets/textures/grating_tiled.png</file>
+        <file>assets/shaders/fshader.glsl</file>
+        <file>assets/shaders/vshader.glsl</file>
+        <file>assets/shaders/stress_test.frag.glsl</file>
+        <file>assets/shaders/stress_test.vert.glsl</file>
+        <file>assets/textures/stress_test_cube_green.svg</file>
+        <file>assets/textures/stress_test_cube_red.svg</file>
+        <file>assets/shaders/isosurface/triangle_table.glsl</file>
+        <file>assets/shaders/isosurface/geometry.vert</file>
+        <file>assets/shaders/isosurface/geometry.frag</file>
+        <file>assets/shaders/isosurface/geometry.comp</file>
+        <file>assets/shaders/isosurface/common.glsl</file>
+    </qresource>
+</RCC>
