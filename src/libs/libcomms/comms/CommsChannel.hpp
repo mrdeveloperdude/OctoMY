@@ -15,7 +15,7 @@
 
 #include "utility/time/RateCalculator.hpp"
 #include "CommsSessionDirectory.hpp"
-#include "CommsCarrier.hpp"
+#include "carriers/CommsCarrier.hpp"
 #include "couriers/Courier.hpp"
 #include "couriers/CourierSet.hpp"
 

@@ -6,11 +6,14 @@ Project{
 	references: {
 		var ret = [
 			  "testTest/test.qbs"
-			, "testD3/test.qbs"
-			, "testEval/test.qbs"
-			, "testFace/test.qbs"
-			, "testHaar/test.qbs"
+//			, "testD3/test.qbs"
+//			, "testEval/test.qbs"
+//			, "testFace/test.qbs"
+//			, "testHaar/test.qbs"
 			, "testSplitter/test.qbs"
+			, "testCommsSession/test.qbs"
+			, "testCommsChannel/test.qbs"
+			, "testCommsCarrier/test.qbs"
 //			  "testDiscovery/test.qbs"
 //			, "testActuatorWidget/test.qbs"
 //			, "testAgentConfig/test.qbs"

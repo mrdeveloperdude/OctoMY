@@ -1,7 +1,7 @@
 #ifndef COMMSSESSIONDIRECTORY_HPP
 #define COMMSSESSIONDIRECTORY_HPP
 
-#include "NetworkAddress.hpp"
+#include "address/NetworkAddress.hpp"
 #include "CommsSessionIDType.hpp"
 #include "random/RNG.hpp"
 

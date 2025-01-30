@@ -1,7 +1,8 @@
 #include "TestCommsCarrier.hpp"
 
 #include "comms/CommsChannel.hpp"
-#include "comms/CommsCarrierUDP.hpp"
+#include "comms/carriers/CommsCarrierUDP.hpp"
+#include "comms/carriers/CommsCarrierLocal.hpp"
 
 #include "comms/messages/MessageType.hpp"
 
@@ -12,13 +13,55 @@
 #include "discovery/AddressBook.hpp"
 
 
+#include <QFileInfo>
+#include <QHostAddress>
+#include <QObject>
+#include <QSharedPointer>
+#include <QSignalSpy>
+
 #include "test/Utility.hpp"
 #include "test/UDPTester.hpp"
 #include "test/mock/MockCommsCarrierLog.hpp"
 
-#include <QHostAddress>
-#include <QSignalSpy>
-#include <QFileInfo>
+#include "CommsCarrierTestWidget.hpp"
+/*
+class CommsCarrierTester:public QObject
+{
+	Q_OBJECT
+	
+public:
+	QString mName;
+	QHostAddress mMyAddress;
+	quint16 mMyPort;
+	
+	quint16 mBasePort;
+	quint16 mPortRange;
+	QSharedPointer<CommsCarrierUDP> mCarrier;
+	QSharedPointer<KeyStore> mKeyStore;
+	QSharedPointer<AddressBook> mAssociates;
+	QSharedPointer<CommsChannel> mCc;
+	quint16 mTestCount;
+	
+	RNG *mRng;
+	
+public:
+	explicit CommsCarrierTester(QString name, QHostAddress myAddress, quint16 myPort, quint16 basePort, quint16 portRange, quint16 testCount, QSharedPointer<KeyStore> keyStore, QSharedPointer<AddressBook> peers, QObject *parent=nullptr);
+	virtual ~CommsCarrierTester() {}
+	
+public:
+	QString toString();
+	
+public slots:
+	void startSendTest();
+	void onError(QString);
+	void onReadyRead();
+	
+signals:
+	void finished();
+	
+};
+*/
+
 
 
 void TestCommsCarrier::testBasic()
@@ -31,21 +74,21 @@ void TestCommsCarrier::testBasic()
 	NetworkAddress address(QHostAddress::Any, 8123);
 	UDPTester dataSender(fromAddress, address);
 
-	QCOMPARE(false, commsCarrier.isConnectionMaintained());
+	QCOMPARE(commsCarrier.isConnectionMaintained(), false);
 	commsCarrier.setListenAddress(address);
 	NetworkAddress addressCopy=commsCarrier.address();
 	QCOMPARE(address, addressCopy);
 
 	commsCarrier.maintainConnection(true);
-	QCOMPARE(true, commsCarrier.isConnectionMaintained());
-	QCOMPARE(false, commsCarrier.isConnected());
+	QCOMPARE(commsCarrier.isConnectionMaintained(), true);
+	QCOMPARE(commsCarrier.isConnected(), false);
 
 	auto actualInterval=commsCarrier.setDesiredOpportunityInterval(100);
 	auto tempInterval=commsCarrier.opportunityInterval();
 	qDebug()<<"actualInterval="<<actualInterval<<", tempInterval="<<tempInterval<<"";
 	QCOMPARE(actualInterval, tempInterval);
 
-	QCOMPARE(false, commsCarrier.hasPendingData());
+	QCOMPARE(commsCarrier.hasPendingData(), false);
 
 	// Send some data to the carrier
 	const QByteArray txDatagram="Hello there";
@@ -53,9 +96,9 @@ void TestCommsCarrier::testBasic()
 
 	// Wait for the receive to happen
 	test::utility::testWaitForEvents();
-//	QCOMPARE(true, coca.isConnected());
-	QCOMPARE(true, commsCarrier.isConnectionMaintained());
-	QCOMPARE(true, commsCarrier.hasPendingData());
+//	QCOMPARE(coca.isConnected(), true);
+	QCOMPARE(commsCarrier.isConnectionMaintained(), true);
+	QCOMPARE(commsCarrier.hasPendingData(), true);
 
 	const qint64 supposedRxBytes=commsCarrier.pendingDataSize();
 	QVERIFY(supposedRxBytes > 0);
@@ -79,20 +122,20 @@ void TestCommsCarrier::testBasic()
 	test::utility::testSleep(actualInterval*2, "Connection to be registered");
 
 	// Check that this received data triggered the connection to be complete
-	QCOMPARE(true, commsCarrier.isConnectionMaintained());
-	QCOMPARE(true, commsCarrier.isConnected());
+	QCOMPARE(commsCarrier.isConnectionMaintained(), true);
+	QCOMPARE(commsCarrier.isConnected(), true);
 
 	//Wait for connection to time out
 	const auto timeout=commsCarrier.connectionTimeout();
 	test::utility::testSleep(timeout+1000, "Connection to time out");
 
 	// Check that connection actually timed out
-	QCOMPARE(false, commsCarrier.isConnected());
+	QCOMPARE(commsCarrier.isConnected(), false);
 
 	// Switch off connection and verify that it actually is off
-	QCOMPARE(true, commsCarrier.isConnectionMaintained());
+	QCOMPARE(commsCarrier.isConnectionMaintained(), true);
 	commsCarrier.maintainConnection(false);
-	QCOMPARE(false, commsCarrier.isConnectionMaintained());
+	QCOMPARE(commsCarrier.isConnectionMaintained(), false);
 
 	/*
 		qint64 writeData(const QByteArray &datagram, const NetworkAddress &address);
@@ -113,6 +156,59 @@ void TestCommsCarrier::testConnection()
 {
 
 }
+
+
+void TestCommsCarrier::testInteractive()
+{
+	Q_INIT_RESOURCE(icons);
+	const auto editor = OC_NEW CommsCarrierTestWidget();
+	auto *cA = OC_NEW CommsCarrierLocal();
+	auto *cB = OC_NEW CommsCarrierLocal();
+	MockCommsCarrierLog mocaloA(nullptr, "Alice");
+	MockCommsCarrierLog mocaloB(nullptr, "Bob");
+	connect(&mocaloA, &MockCommsCarrierLog::logMessage, editor, &CommsCarrierTestWidget::log);
+	connect(&mocaloB, &MockCommsCarrierLog::logMessage, editor, &CommsCarrierTestWidget::log);
+	cA->setHookCarrierSignals(mocaloA, true);
+	cB->setHookCarrierSignals(mocaloB, true);
+	connect(editor, &CommsCarrierTestWidget::configureAImpl, this, [=](){
+		cA->configure();
+		editor->log("Alice", QString("configure"));
+	});
+	connect(editor, &CommsCarrierTestWidget::configureBImpl, this, [=](){
+		cB->configure();
+		editor->log("Bob", QString("configure"));
+	});
+	connect(editor, &CommsCarrierTestWidget::connectAImpl, this, [=](bool con){
+		cA->maintainConnection(con);
+		editor->log("Alice", QString("maintain con: %1").arg(con?"YES":"NO"));
+	});
+	connect(editor, &CommsCarrierTestWidget::connectBImpl, this, [=](bool con){
+		cB->maintainConnection(con);
+		editor->log("Bob", QString("maintain con: %1").arg(con?"YES":"NO"));
+	});
+	connect(editor, &CommsCarrierTestWidget::activateAImpl, this, [=](bool con){
+		cA->activate(con);
+		editor->log("Alice", QString("activate: %1").arg(con?"YES":"NO"));
+	});
+	connect(editor, &CommsCarrierTestWidget::activateBImpl, this, [=](bool con){
+		cB->activate(con);
+		editor->log("Bob", QString("activate(con);: %1").arg(con?"YES":"NO"));
+	});
+	connect(editor, &CommsCarrierTestWidget::intervalChangeAImpl, this, [=](int interval){
+		const auto actualInterval = cA->setDesiredOpportunityInterval(interval);
+		editor->log("Alice", QString("interval: %1 (%2)").arg(interval).arg(actualInterval));
+	});
+	connect(editor, &CommsCarrierTestWidget::intervalChangeBImpl, this, [=](int interval){
+		const auto actualInterval = cB->setDesiredOpportunityInterval(interval);
+		editor->log("Bob", QString("interval: %1 (%2)").arg(interval).arg(actualInterval));
+	});
+	editor->show();
+	editor->setWindowTitle("CommsCarrierTestWidget");
+	editor->setMinimumSize(300, 200);
+	test::utility::waitForUIEnd(editor);
+}
+
+
 
 OC_TEST_MAIN(test, TestCommsCarrier)
 

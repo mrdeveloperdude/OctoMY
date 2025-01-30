@@ -1,7 +1,7 @@
 #ifndef CONNECTIONWIDGET_HPP
 #define CONNECTIONWIDGET_HPP
 
-#include "comms/NetworkAddress.hpp"
+#include "comms/address/NetworkAddress.hpp"
 #include "components/TryToggleState.hpp"
 
 #include <QWidget>

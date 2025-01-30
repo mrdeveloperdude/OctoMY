@@ -17,7 +17,6 @@
  *
  * + Hosts change by the whims of the network configuration on the underlying platform/OS
  * + Port changes when user selects a new port from the UI
- *
  */
 
 class NetworkAddress;

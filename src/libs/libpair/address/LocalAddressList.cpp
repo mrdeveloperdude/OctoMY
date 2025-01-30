@@ -6,7 +6,7 @@
 #include "utility/network/Network.hpp"
 
 
-#include "comms/NetworkAddress.hpp"
+#include "comms/address/NetworkAddress.hpp"
 
 
 

@@ -1,7 +1,7 @@
 #ifndef TESTCOMMSCHANNEL_HPP
 #define TESTCOMMSCHANNEL_HPP
 
-#include "comms/NetworkAddress.hpp"
+#include "comms/address/NetworkAddress.hpp"
 #include "node/NodeRole.hpp"
 #include "node/NodeType.hpp"
 #include "security/Key.hpp"

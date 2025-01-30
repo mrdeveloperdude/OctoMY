@@ -1,7 +1,7 @@
 #ifndef MOCKCOMMSCARRIER_HPP
 #define MOCKCOMMSCARRIER_HPP
 
-#include "comms/CommsCarrier.hpp"
+#include "comms/carriers/CommsCarrier.hpp"
 
 #include <QObject>
 #include <QUdpSocket>

@@ -6,10 +6,12 @@
 class TestCommsCarrier:public QObject
 {
 	Q_OBJECT
-
-private slots:
+private:
 	void testBasic();
 	void testConnection();
+	
+private slots:
+	void testInteractive();
 
 };
 

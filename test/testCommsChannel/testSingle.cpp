@@ -1,6 +1,6 @@
  #include "TestCommsChannel.hpp"
 
-#include "comms/CommsCarrierUDP.hpp"
+#include "comms/carriers/CommsCarrierUDP.hpp"
 #include "comms/CommsChannel.hpp"
 #include "discovery/AddressBook.hpp"
 #include "security/KeySecurityPolicy.hpp"

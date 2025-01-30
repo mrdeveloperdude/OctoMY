@@ -17,7 +17,7 @@ struct AddressEntry;
  *
  * It works like this:
  * Everytime a new address is introduced, it is stored with the others with a blank statistic.
- * Whenever a connection is attemted, the failure/success is stored as a timestamp as well as counted into totals for successfull/unsuccessfull.
+ * Whenever a connection is attempted, the failure/success is stored as a timestamp as well as counted into totals for successfull/unsuccessfull.
  *
  * statistics is persisted between runs.
  *

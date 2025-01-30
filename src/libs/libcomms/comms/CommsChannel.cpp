@@ -6,7 +6,7 @@
 
 #include "CommsChannel.hpp"
 
-#include "CommsCarrier.hpp"
+#include "carriers/CommsCarrier.hpp"
 #include "CommsSessionDirectory.hpp"
 
 #include "Multimagic.hpp"
@@ -197,13 +197,13 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 			auto key=mKeystore->pubKeyForID(id);
 			if(nullptr!=key) {
 				if(key->isValid(true)) {
-					SESSION_ID_TYPE localSessionID=mSessions.generateUnusedSessionID();
+					auto localSessionID = mSessions.generateUnusedSessionID();
 					if(localSessionID >= FIRST_STATE_ID ) {
 						QSharedPointer<Associate> associate=mAssociates->associateByID(id);
 						if(nullptr!=associate) {
-							QSharedPointer<AddressEntry>  ae=associate->addressList().highestScore();
+							auto ae=associate->addressList().highestScore();
 							if(!ae.isNull()) {
-								NetworkAddress addr=ae->address;
+								auto addr = ae->address;
 								if(addr.isValid()) {
 									session = QSharedPointer<CommsSession>::create(key);
 									OC_ASSERT(nullptr!=session);

@@ -1,31 +1,33 @@
-#ifndef COMMSCARRIERUDP_HPP
-#define COMMSCARRIERUDP_HPP
+#ifndef COMMSCARRIERLOCAL_HPP
+#define COMMSCARRIERLOCAL_HPP
+
+
+#include <QObject>
+#include <QLocalServer>
+#include <QLocalSocket>
 
 #include "CommsCarrier.hpp"
 
-#include <QObject>
-#include <QUdpSocket>
-
-class CommsCarrierUDP: public CommsCarrier
+/**
+ * @brief The CommsCarrierLocal class is an implementation of CommsCarrier that
+ * uses QLocalSocket and QLocalServer as a quick, easy local transport.
+ */
+class CommsCarrierLocal: public CommsCarrier
 {
 	Q_OBJECT
-
 protected:
-	static const qint32 MAX_UDP_PAYLOAD_SIZE;
+	static const qint32 MAX_PAYLOAD_SIZE;
 
 private:
-	QUdpSocket mUDPSocket;
 	NetworkAddress mLocalAddress;
+	
+	QLocalServer mLocalServer;
+	QLocalSocket *mLocalSocket{nullptr};
+	QString mServerName;
 
 public:
-	explicit CommsCarrierUDP(QObject *parent=nullptr);
-	virtual ~CommsCarrierUDP() override;
-
-
-private slots:
-	void onReadyRead();
-	void onError(QAbstractSocket::SocketError);
-
+	explicit CommsCarrierLocal(QObject *parent=nullptr);
+	virtual ~CommsCarrierLocal() override;
 
 	// CommsCarrier internal interface methods
 protected:
@@ -46,13 +48,10 @@ protected:
 
 	NetworkAddress addressImp() override ;
 
-
 	quint64 minimalPacketIntervalImp() override ;
 	quint64	maximalPacketIntervalImp() override ;
 
-
-
 };
 
-#endif
-// COMMSCARRIERUDP_HPP
+
+#endif // COMMSCARRIERLOCAL_HPP

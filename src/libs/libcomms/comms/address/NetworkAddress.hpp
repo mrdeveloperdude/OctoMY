@@ -1,5 +1,5 @@
-#ifndef NETWORKADDRESS_HPP
-#define NETWORKADDRESS_HPP
+#ifndef NETWORKADDRESS_H
+#define NETWORKADDRESS_H
 
 
 #include <QHostAddress>

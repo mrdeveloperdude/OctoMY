@@ -1,7 +1,7 @@
 #ifndef ADDRESSENTRY_HPP
 #define ADDRESSENTRY_HPP
 
-#include "comms/NetworkAddress.hpp"
+#include "comms/address/NetworkAddress.hpp"
 
 #include "uptime/SharedPointerWrapper.hpp"
 

@@ -2,7 +2,7 @@
 #define CARRIERSERVICE_HPP
 
 
-#include "comms/CommsCarrier.hpp"
+#include "comms/carriers/CommsCarrier.hpp"
 #include "service/ServiceWrapper.hpp"
 #include "uptime/ConfigureHelper.hpp"
 

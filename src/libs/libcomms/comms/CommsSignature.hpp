@@ -4,7 +4,7 @@
 /*
 #include <QHostAddress>
 
-#include "comms/NetworkAddress.hpp"
+#include "comms/address/NetworkAddress.hpp"
 
 class CommsSession;
 

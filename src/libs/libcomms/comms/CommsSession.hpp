@@ -4,7 +4,7 @@
 #include "ReliabilitySystem.hpp"
 #include "FlowControl.hpp"
 //#include "messages/SensorsMessage.hpp"
-#include "NetworkAddress.hpp"
+#include "address/NetworkAddress.hpp"
 #include "CommsSessionIDType.hpp" // For SESSION_ID_TYPE
 #include "HandshakeState.hpp"
 

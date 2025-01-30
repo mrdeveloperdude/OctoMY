@@ -3,7 +3,7 @@
 
 #include "PairingEditButtonDelegate.hpp"
 #include "address/Associate.hpp"
-#include "comms/NetworkAddress.hpp"
+#include "comms/address/NetworkAddress.hpp"
 #include "discovery/DiscoveryClient.hpp"
 #include "node/Node.hpp"
 #include "pairing/PairingListModel.hpp"

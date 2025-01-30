@@ -1,7 +1,7 @@
 #ifndef COMMSCARRIER_HPP
 #define COMMSCARRIER_HPP
 
-#include "NetworkAddress.hpp"
+#include "../address/NetworkAddress.hpp"
 
 #include "utility/time/RateCalculator.hpp"
 

@@ -10,9 +10,10 @@ class MockCommsCarrierLog: public QObject
 private:
 	quint64 mLastPrint;
 	quint64 mOpportunityCount;
+	QString mSender;
 
 public:
-	explicit MockCommsCarrierLog(QObject *parent=nullptr);
+	explicit MockCommsCarrierLog(QObject *parent=nullptr, const QString &sender = QString("Unknown"));
 	virtual ~MockCommsCarrierLog();
 
 public slots:
@@ -20,6 +21,9 @@ public slots:
 	void onCarrierError(const QString err);
 	void onCarrierSendingOpportunity(const quint64 now);
 	void onCarrierConnectionStatusChanged(const bool connected);
+	
+signals:
+	void logMessage(const QString &sender, const QString &message, const QString &type);
 
 };
 

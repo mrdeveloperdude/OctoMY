@@ -3,7 +3,7 @@
 
 #include "security/KeyStore.hpp"
 #include "comms/CommsChannel.hpp"
-#include "comms/CommsCarrierUDP.hpp"
+#include "comms/carriers/CommsCarrierUDP.hpp"
 
 #include <QObject>
 #include <QHostAddress>

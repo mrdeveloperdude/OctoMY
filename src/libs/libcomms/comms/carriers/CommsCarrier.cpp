@@ -347,7 +347,7 @@ quint64 CommsCarrier::setDesiredOpportunityInterval(quint64 desiredInterval)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
-		const quint64 actualInterval=qBound(maximalPacketInterval(), desiredInterval, minimalPacketInterval());
+		const quint64 actualInterval=qBound(minimalPacketInterval(), desiredInterval, maximalPacketInterval());
 		//qDebug()<<"NEW SCHEDULE DELAY: "<<actualInterval<<" ("<<desiredInterval<<")";
 		mSendingTimer.setInterval(static_cast<int>(actualInterval));
 		return actualInterval;

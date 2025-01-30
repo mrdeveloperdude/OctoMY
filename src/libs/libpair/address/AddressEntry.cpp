@@ -33,7 +33,7 @@ AddressEntry::AddressEntry(QVariantMap map)
 	OC_METHODGATE();
 }
 
-//TODO: Implement this compeltel,y and write test for it, lazy basterd
+// TODO: Implement this completely and write test for it, lazy basterd
 
 quint64 AddressEntry::score(QHostAddress dgw) const
 {
@@ -80,7 +80,7 @@ quint64 AddressEntry::last() const
 void AddressEntry::tried(bool successful, quint64 now)
 {
 	OC_METHODGATE();
-	if(0==now) {
+	if(0 == now) {
 		now = utility::time::currentMsecsSinceEpoch<quint64>();
 	}
 	if(successful) {
