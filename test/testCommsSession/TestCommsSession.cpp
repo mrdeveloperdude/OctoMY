@@ -1,9 +1,9 @@
 #include "TestCommsSession.hpp"
 
 #include "comms/CommsSession.hpp"
+#include "comms/address/CarrierAddressUDP.hpp"
 #include "security/Key.hpp"
 #include "uptime/New.hpp"
-
 
 void TestCommsSession::test()
 {
@@ -158,16 +158,16 @@ void TestCommsSession::test()
 
 
 	/////////////////////////////////////////////////
-	// NetworkAddress address() const;
+	// CarrierAddress address() const;
 	/////////////////////////////////////////////////
-	// void setAddress(const NetworkAddress &address);
+	// void setAddress(const CarrierAddress &address);
 	{
-		const NetworkAddress na1=sess.address();
-		const NetworkAddress netAddr(QHostAddress("127.0.0.1"), 1234);
-		QVERIFY(na1!=netAddr);
+		const auto na1 = sess.address();
+		const auto netAddr = QSharedPointer<CarrierAddressUDP>::create(QHostAddress("127.0.0.1"), 1234);
+		QVERIFY(*na1 != *netAddr);
 		sess.setAddress(netAddr);
-		const NetworkAddress na2=sess.address();
-		QVERIFY(na2==netAddr);
+		const auto na2 = sess.address();
+		QVERIFY(*na2 == *netAddr);
 	}
 
 

@@ -1,7 +1,7 @@
 #ifndef COMMSSESSIONDIRECTORY_HPP
 #define COMMSSESSIONDIRECTORY_HPP
 
-#include "address/NetworkAddress.hpp"
+#include "address/CarrierAddress.hpp"
 #include "CommsSessionIDType.hpp"
 #include "random/RNG.hpp"
 
@@ -48,7 +48,7 @@ public:
 	void remove(QSharedPointer<CommsSession> c);
 	QSharedPointer<CommsSession> bySessionID(const SESSION_ID_TYPE id) const;
 	QSharedPointer<CommsSession> byFullID(const QString &id) const;
-	QSharedPointer<CommsSession> byAddress(const NetworkAddress &address) const;
+	QSharedPointer<CommsSession> byAddress(QSharedPointer<CarrierAddress> address) const;
 	QSet<QSharedPointer<CommsSession> > byActiveTime(quint64 lastActiveTime) const;
 	QSet<QSharedPointer<CommsSession> > byIdleTime(quint64 lastActiveTime) const;
 	QSet<QSharedPointer<CommsSession> > all() const;

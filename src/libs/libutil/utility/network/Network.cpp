@@ -12,7 +12,7 @@ namespace network
 {
 
 
-QList<QHostAddress> allLocalNetworkAddresses()
+QList<QHostAddress> allLocalCarrierAddresses()
 {
 	QList<QHostAddress> out;
 	QList<QNetworkInterface> list= QNetworkInterface::allInterfaces();
@@ -32,7 +32,7 @@ QList<QHostAddress> allLocalNetworkAddresses()
 
 QString localAddress()
 {
-	QList<QHostAddress> list=allLocalNetworkAddresses();
+	QList<QHostAddress> list=allLocalCarrierAddresses();
 	for(QHostAddress adr:list) {
 		if((QAbstractSocket::IPv4Protocol==adr.protocol()) && (!adr.isLoopback()) ) {
 			return adr.toString();

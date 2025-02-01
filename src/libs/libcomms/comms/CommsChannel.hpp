@@ -104,7 +104,7 @@ protected:
 public:
 	QSharedPointer<CommsCarrier> carrier();
 	CommsSessionDirectory &sessions();
-	NetworkAddress localAddress();
+	QSharedPointer<CarrierAddress> localAddress();
 	QString localID();
 
 	QString getSummary();
@@ -115,7 +115,7 @@ public:
 	void registerCourier(QSharedPointer<Courier>, bool);
 	CourierSet couriers();
 
-	qint64 sendRawData(QByteArray datagram, NetworkAddress address);
+	qint64 sendRawData(QByteArray datagram, QSharedPointer<CarrierAddress> address);
 
 	void setHoneymoonEnd(quint64 hEndMS);
 	bool honeymoon(quint64 now=0);

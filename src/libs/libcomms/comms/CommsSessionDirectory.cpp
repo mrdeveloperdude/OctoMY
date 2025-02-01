@@ -36,17 +36,17 @@ void CommsSessionDirectory::insert(QSharedPointer<CommsSession> c)
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		//CommsSignature &sig=c->signature();
-		SESSION_ID_TYPE id=c->localSessionID();
-		QString fullID=c->fullID();
-		QString address=c->address().toString();
+		const auto id=c->localSessionID();
+		const auto fullID=c->fullID();
+		const auto address = c->address()->toString();
 		if(nullptr==c) {
-			qWarning()<<"ERROR: Trying to insert nullptr session";
-		} else if(!c->address().isValid()) {
-			qWarning()<<"ERROR: Trying to insert session with invalid address";
+			qWarning() << "ERROR: Trying to insert nullptr session";
+		} else if(!c->address()->isValid()) {
+			qWarning() << "ERROR: Trying to insert session with invalid address";
 		} else if (mBySessionID.contains(id)) {
-			qWarning()<<"ERROR: Trying to insert session with id "<<id<<" a second time";
+			qWarning() << "ERROR: Trying to insert session with id " << id << " a second time";
 		} else if(mByAddress.contains(address)) {
-			qWarning()<<"ERROR: Trying to insert session with address "<<address<<" a second time";
+			qWarning() << "ERROR: Trying to insert session with address " << address << " a second time";
 		} else {
 			mBySessionID.insert(id, c);
 			mByFullID.insert(fullID, c);
@@ -62,7 +62,7 @@ void CommsSessionDirectory::remove(QSharedPointer<CommsSession> c)
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		if(nullptr!=c) {
-			mByAddress.remove(c->address().toString());
+			mByAddress.remove(c->address()->toString());
 			mByFullID.remove(c->fullID());
 			mBySessionID.remove(c->localSessionID());
 			mAll.remove(c);
@@ -100,16 +100,19 @@ QSharedPointer<CommsSession> CommsSessionDirectory::byFullID(const QString &id) 
 	return nullptr;
 }
 
-QSharedPointer<CommsSession> CommsSessionDirectory::byAddress(const NetworkAddress &address) const
+QSharedPointer<CommsSession> CommsSessionDirectory::byAddress(QSharedPointer<CarrierAddress> address) const
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		// Never accept bad address
-		if(!address.isValid(false,false)) {
+		if(address.isNull()){
 			return QSharedPointer<CommsSession>(nullptr);
 		}
-		QHash<QString, QSharedPointer<CommsSession> >::const_iterator it=mByAddress.find(address.toString());
-		if(mByAddress.end()==it) {
+		if(!address->isValid()) {
+			return QSharedPointer<CommsSession>(nullptr);
+		}
+		auto it = mByAddress.find(address->toString());
+		if(mByAddress.end() == it) {
 			return QSharedPointer<CommsSession>(nullptr);
 		}
 		return it.value();
@@ -224,10 +227,11 @@ quint32 CommsSessionDirectory::prune()
 	quint32 ret=0;
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		for (QSet<QSharedPointer<CommsSession> >::iterator it=mAll.begin(); it!=mAll.end(); ) {
-			QSharedPointer<CommsSession> c=*it;
+			QSharedPointer<CommsSession> c = *it;
 			if(nullptr!=c) {
-				if(c->lastActiveTime() <= c->timeoutAccumulator()) {
-					mByAddress.remove(c->address().toString());
+				auto address = c->address();
+				if(!address.isNull() && (c->lastActiveTime() <= c->timeoutAccumulator())) {
+					mByAddress.remove(address->toString());
 					mByFullID.remove(c->fullID());
 					mBySessionID.remove(c->localSessionID());
 					it = mAll.erase(it);

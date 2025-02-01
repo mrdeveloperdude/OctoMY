@@ -5,6 +5,8 @@
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
+#include "comms/address/CarrierAddress.hpp"
+#include "comms/address/CarrierAddressUDP.hpp"
 //#include "agent/AgentConstants.hpp"
 
 ConnectionWidget::ConnectionWidget(QWidget *parent)
@@ -31,19 +33,23 @@ ConnectionWidget::~ConnectionWidget()
 }
 
 
-void ConnectionWidget::configure(NetworkAddress &localAddress, NetworkAddress &remoteAddress){
+void ConnectionWidget::configure(QSharedPointer<CarrierAddress> localAddress, QSharedPointer<CarrierAddress> remoteAddress){
 	OC_METHODGATE();
-	mLocalAddress=localAddress;
-	mRemoteAddress=remoteAddress;
-
-	//Local
-	ui->comboBoxLocalAddress->setCurrentText(mLocalAddress.ip().toString());
-	ui->lineEditLocalPort->setText(QString::number(mLocalAddress.port()));
-
-	//Target
-	ui->lineEditTargetAddress->setText(mRemoteAddress.ip().toString());
-	ui->lineEditTargetPort->setText(QString::number(mRemoteAddress.port()));
-
+	mLocalAddress = localAddress;
+	mRemoteAddress = remoteAddress;
+	// TODO: Update widget to handle all address types
+	auto localAddressUDP = qSharedPointerDynamicCast<CarrierAddressUDP>(mLocalAddress);
+	if(!localAddressUDP.isNull()){
+		//Local
+		ui->comboBoxLocalAddress->setCurrentText(localAddressUDP->ip().toString());
+		ui->lineEditLocalPort->setText(QString::number(localAddressUDP->port()));
+	}
+	auto remoteAddressUDP = qSharedPointerDynamicCast<CarrierAddressUDP>(mRemoteAddress);
+	if(!remoteAddressUDP.isNull()){
+		//Target
+		ui->lineEditTargetAddress->setText(remoteAddressUDP->ip().toString());
+		ui->lineEditTargetPort->setText(QString::number(remoteAddressUDP->port()));
+	}
 	setEditsEnabled(true);
 }
 

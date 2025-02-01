@@ -15,6 +15,8 @@ Product{
 						, "**/docker-*"
 						, "**/Make*"
 						, "**/README*"
+						, "**/MANDATE*"
+						, "**/LICENSE*"
 						, "**/VERSION*"
 						, "**/CHANGE*"
 			];

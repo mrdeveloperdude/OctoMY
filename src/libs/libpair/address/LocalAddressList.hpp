@@ -3,6 +3,7 @@
 
 
 #include "uptime/ConfigureHelper.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QList>
 #include <QHostAddress>
@@ -19,7 +20,7 @@
  * + Port changes when user selects a new port from the UI
  */
 
-class NetworkAddress;
+class CarrierAddress;
 
 class LocalAddressList: public QList<QHostAddress>
 {
@@ -49,7 +50,7 @@ public:
 
 
 
-	NetworkAddress currentNetworkAddress() const;
+	QSharedPointer<CarrierAddress> currentCarrierAddress() const;
 	QHostAddress currentAddress() const;
 
 	bool isUpdateNeeded();

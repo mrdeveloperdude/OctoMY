@@ -1,17 +1,18 @@
 #ifndef CONNECTIONWIDGET_HPP
 #define CONNECTIONWIDGET_HPP
 
-#include "comms/address/NetworkAddress.hpp"
 #include "components/TryToggleState.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
-#include <QWidget>
 #include <QHostAddress>
+#include <QWidget>
 
 namespace Ui {
 	class ConnectionWidget;
 }
 
 class Settings;
+class CarrierAddress;
 
 class ConnectionWidget : public QWidget
 {
@@ -19,15 +20,15 @@ class ConnectionWidget : public QWidget
 	private:
 		Ui::ConnectionWidget *ui;
 
-		NetworkAddress mLocalAddress;
-		NetworkAddress mRemoteAddress;
+		QSharedPointer<CarrierAddress> mLocalAddress;
+		QSharedPointer<CarrierAddress> mRemoteAddress;
 
 	public:
 		explicit ConnectionWidget(QWidget *parent = nullptr);
 		virtual ~ConnectionWidget();
 
 	public:
-		void configure(NetworkAddress &localAddress, NetworkAddress &remoteAddress);
+		void configure(QSharedPointer<CarrierAddress> localAddress, QSharedPointer<CarrierAddress> remoteAddress);
 		quint16 getLocalPort();
 		QHostAddress getLocalAddress();
 		quint16 getTargetPort();

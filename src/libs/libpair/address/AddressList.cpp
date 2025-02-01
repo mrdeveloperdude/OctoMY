@@ -1,9 +1,11 @@
 #include "AddressList.hpp"
 
 #include "AddressEntry.hpp"
+#include "comms/address/CarrierAddress.hpp"
+#include "comms/address/CarrierAddressUDP.hpp"
 #include "uptime/MethodGate.hpp"
-#include "utility/time/HumanTime.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
+#include "utility/time/HumanTime.hpp"
 
 #include <QDateTime>
 #include <QList>
@@ -27,7 +29,7 @@ void AddressList::add(QSharedPointer<AddressEntry> address)
 {
 	OC_METHODGATE();
 	if(!address.isNull() ) {
-		if(!address->address.isValid()) {
+		if(!address->address->isValid()) {
 			qWarning()<<"WARNING: Not adding invalid address: "<<address->address;
 		} else {
 			*this<<address;
@@ -35,12 +37,16 @@ void AddressList::add(QSharedPointer<AddressEntry> address)
 	}
 }
 
-void AddressList::merge(NetworkAddress adr, QString description, quint64 now)
+void AddressList::merge(QSharedPointer<CarrierAddress> adr, QString description, quint64 now)
 {
 	OC_METHODGATE();
 	//Never put bad addresses into the list
-	if(!adr.isValid()) {
-		qWarning()<<"WARNING: Skipping bad address "<<adr.toString()<<" while merging";
+	if(adr.isNull()) {
+		qWarning()<<"WARNING: Skipping null address while merging";
+		return;
+	}
+	if(!adr->isValid()) {
+		qWarning()<<"WARNING: Skipping bad address "<<adr->toString()<<" while merging";
 		return;
 	}
 	if(0==now) {
@@ -89,14 +95,14 @@ QMap<quint64, QSharedPointer<AddressEntry> > AddressList::scoreMap(QHostAddress 
 }
 
 
-NetworkAddress AddressList::bestAddress() const
+QSharedPointer<CarrierAddress> AddressList::bestAddress() const
 {
 	OC_METHODGATE();
 	QSharedPointer<AddressEntry>  hs = highestScore();
 	if(!hs.isNull()) {
 		return hs->address;
 	}
-	return NetworkAddress();
+	return nullptr;
 
 }
 
@@ -149,25 +155,40 @@ bool AddressList::isValid(bool allMustBeValid, bool allowLoopback, bool allowMul
 		return false;
 	}
 	int ct=0;
-	for(QSharedPointer<AddressEntry> entry:*this) {
+	for(auto entry:*this) {
 		if(entry.isNull()) {
 			continue;
 		} else {
-			if(!entry->address.isValid(allowLoopback, allowMulticast, allowIPv6)) {
+			auto address = entry->address;
+			if(address.isNull()){
 				continue;
-			} else {
-				ct++;
 			}
+			switch(address->type()){
+				case UDP:{
+					auto udp_address = qSharedPointerCast<CarrierAddressUDP>(address);
+					if(!udp_address->isValidIP(allowLoopback, allowMulticast, allowIPv6)){
+						continue;
+					}
+				}break;
+				default:
+				case LOCAL:
+				case INVALID_CARRIER_ADDRESS:{
+					if (!entry->address->isValid()) {
+						continue;
+					}
+				}break;
+			}
+			ct++;
 		}
 	}
 	if(allMustBeValid) {
-		if(ct!=sz) {
-			qWarning()<<"ct("<<ct<<") != list.sz("<<sz<<")";
+		if(ct != sz) {
+			qWarning() << "ct(" << ct << ") != list.sz(" << sz << ")";
 			return false;
 		}
 	} else {
 		if(ct<1) {
-			qWarning()<<"ct("<<ct<<") < 1";
+			qWarning() << "ct(" << ct << ") < 1";
 			return false;
 		}
 	}

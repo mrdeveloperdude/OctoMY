@@ -1,16 +1,16 @@
 #include "NetworkSettingsWidget.hpp"
 #include "ui_NetworkSettingsWidget.h"
 
+#include "address/LocalAddressList.hpp"
+#include "comms/address/CarrierAddress.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 #include "utility/network/Network.hpp"
 
-#include "address/LocalAddressList.hpp"
-
 #include <QComboBox>
+#include <QIntValidator>
 #include <QMessageBox>
 #include <QWidget>
-#include <QIntValidator>
 
 Q_DECLARE_METATYPE(QHostAddress)
 
@@ -77,6 +77,14 @@ void NetworkSettingsWidget::configure(QSharedPointer<LocalAddressList> localAddr
 		qWarning() << "ERROR: No local addresses";
 	}
 	mMuteSignals = false;
+}
+
+
+bool NetworkSettingsWidget::setCarrierAddress(QSharedPointer<CarrierAddress> address){
+	OC_METHODGATE();
+	Q_UNUSED(address);
+	// TODO: Implement
+	return false;
 }
 
 

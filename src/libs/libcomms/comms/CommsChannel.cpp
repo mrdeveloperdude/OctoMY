@@ -204,7 +204,7 @@ QSharedPointer<CommsSession> CommsChannel::createSession(QString id, bool initia
 							auto ae=associate->addressList().highestScore();
 							if(!ae.isNull()) {
 								auto addr = ae->address;
-								if(addr.isValid()) {
+								if(addr->isValid()) {
 									session = QSharedPointer<CommsSession>::create(key);
 									OC_ASSERT(nullptr!=session);
 									if(nullptr!=session) {
@@ -729,13 +729,17 @@ void CommsChannel::doSendWithSession(PacketSendState &state)
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		// Send data in stream
-		if(nullptr==state.session) {
+		if(nullptr == state.session) {
 			qWarning()<<"ERROR: session was null in doSend";
 			return;
 		}
-		const NetworkAddress na=state.session->address();
-		if(!na.isValid(true,false)) {
-			qWarning()<<"ERROR: invalid address: "	<<na;
+		const auto na = state.session->address();
+		if(na.isNull()) {
+			qWarning()<<"ERROR: null address";
+			return;
+		}
+		if(!na->isValid()) {
+			qWarning()<<"ERROR: invalid address: "	<< na;
 			return;
 		}
 		const quint32 sz=static_cast<quint32>(state.datagram.size());
@@ -746,10 +750,10 @@ void CommsChannel::doSendWithSession(PacketSendState &state)
 		const qint64 written=mCarrier->writeData(state.datagram, na);
 		//qDebug()<<"WROTE "<<written<<" bytes to "<<na.ip()<<":"<<na.port();
 		if(written<0) {
-			qDebug()<<"ERROR: while writing "<<sz<<" bytes for UDP SOCKET:"<<mCarrier->errorString()<< " for destination "<< na.toString()<<localID();
+			qDebug() << "ERROR: while writing " << sz << " bytes for UDP SOCKET:" << mCarrier->errorString() << " for destination " << (na.isNull()?"NULL":na->toString()) << localID();
 			return;
 		} else if(written<sz) {
-			qDebug()<<"ERROR: Only " << written << " of " <<sz<<" bytes of idle packet written to UDP SOCKET:"<<mCarrier->errorString()<< " for destination "<< na.toString()<<localID();
+			qDebug() << "ERROR: Only " << written << " of " << sz <<" bytes of idle packet written to UDP SOCKET:" << mCarrier->errorString() << " for destination " << (na.isNull()?"NULL":na->toString()) << localID();
 			return;
 		}
 		//qDebug()<<"WROTE "<<written<<" BYTES TO UDP SOCKET FOR "<<na.toString();
@@ -1133,7 +1137,7 @@ quint64 CommsChannel::rescheduleSending(quint64 now)
 
 // NOTE: This is only for testing purposes! Real data should pass through the courier system
 // and be dispatched by logic in sending timer
-qint64 CommsChannel::sendRawData(QByteArray datagram, NetworkAddress address)
+qint64 CommsChannel::sendRawData(QByteArray datagram, QSharedPointer<CarrierAddress> address)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
@@ -1218,13 +1222,13 @@ void CommsChannel::updateConnection()
 }
 
 
-NetworkAddress CommsChannel::localAddress()
+QSharedPointer<CarrierAddress> CommsChannel::localAddress()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		return mCarrier->address();
 	}
-	return NetworkAddress();
+	return nullptr;
 }
 
 

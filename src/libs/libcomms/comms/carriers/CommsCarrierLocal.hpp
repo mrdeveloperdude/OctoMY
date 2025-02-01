@@ -8,6 +8,8 @@
 
 #include "CommsCarrier.hpp"
 
+#include "comms/address/CarrierAddressLocal.hpp"
+
 /**
  * @brief The CommsCarrierLocal class is an implementation of CommsCarrier that
  * uses QLocalSocket and QLocalServer as a quick, easy local transport.
@@ -19,7 +21,7 @@ protected:
 	static const qint32 MAX_PAYLOAD_SIZE;
 
 private:
-	NetworkAddress mLocalAddress;
+	QSharedPointer<CarrierAddressLocal> mLocalAddress;
 	
 	QLocalServer mLocalServer;
 	QLocalSocket *mLocalSocket{nullptr};
@@ -34,11 +36,11 @@ protected:
 	void configureImp() override;
 	bool activateImp(const bool on) override;
 
-	void setAddressImp(NetworkAddress address) override;
+	void setAddressImp(QSharedPointer<CarrierAddress> address) override;
 
 	bool isActiveImp() const override;
 
-	qint64 writeDataImp(const QByteArray &datagram, const NetworkAddress &address) override;
+	qint64 writeDataImp(const QByteArray &datagram, QSharedPointer<CarrierAddress>address) override;
 	qint64 readDataImp(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr) override;
 
 	bool hasPendingDataImp() override ;
@@ -46,7 +48,7 @@ protected:
 
 	QString errorStringImp() override ;
 
-	NetworkAddress addressImp() override ;
+	QSharedPointer<CarrierAddress> addressImp() override ;
 
 	quint64 minimalPacketIntervalImp() override ;
 	quint64	maximalPacketIntervalImp() override ;

@@ -1,11 +1,13 @@
 #include "UDPTester.hpp"
 
-UDPTester::UDPTester(NetworkAddress fromAddr, NetworkAddress toAddr)
+#include "comms/address/CarrierAddressUDP.hpp"
+
+UDPTester::UDPTester(QSharedPointer<CarrierAddressUDP> fromAddr, QSharedPointer<CarrierAddressUDP> toAddr)
 	: mFromAddr(fromAddr)
 	, mToAddr(toAddr)
 {
-	const bool success = mSocket.bind(mFromAddr.ip(), mFromAddr.port());
-	qDebug()<<"Data sender bound to"<< mFromAddr.toString()<< (success?" succeeded": (" failed with '"+mSocket.errorString()+"'") );
+	const bool success = mSocket.bind(mFromAddr->ip(), mFromAddr->port());
+	qDebug()<<"Data sender bound to"<< mFromAddr->toString()<< (success?" succeeded": (" failed with '"+mSocket.errorString()+"'") );
 }
 
 qint64 UDPTester::send(QByteArray data)
@@ -13,7 +15,7 @@ qint64 UDPTester::send(QByteArray data)
 	if(!mSocket.isWritable()) {
 		qWarning()<<"Socket not writable";
 	}
-	const qint64 bytes=mSocket.writeDatagram(data, mToAddr.ip(), mToAddr.port());
+	const qint64 bytes=mSocket.writeDatagram(data, mToAddr->ip(), mToAddr->port());
 	if(bytes<0) {
 		qWarning()<<"Error senfing datagram. errorString="<<mSocket.errorString();
 	}

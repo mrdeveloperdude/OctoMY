@@ -175,7 +175,7 @@ QString CommsSession::fullID() const
 	return id;
 }
 
-NetworkAddress CommsSession::address() const
+QSharedPointer<CarrierAddress> CommsSession::address() const
 {
 	OC_METHODGATE();
 	return mAddress;
@@ -199,7 +199,7 @@ void CommsSession::setRemoteSessionID(SESSION_ID_TYPE s)
 SESSION_NONCE_TYPE CommsSession::createOurSynNonce()
 {
 	OC_METHODGATE();
-	// TODO: Use proper secure prng here
+	// SECURITY: Use proper secure prng here
 	mOurSynNonce=static_cast<SESSION_NONCE_TYPE>((utility::random::qrand()>>(1<<sizeof(int)))|utility::random::qrand());
 	return mOurSynNonce;
 }
@@ -207,8 +207,8 @@ SESSION_NONCE_TYPE CommsSession::createOurSynNonce()
 SESSION_NONCE_TYPE CommsSession::createOurSynAckNonce()
 {
 	OC_METHODGATE();
-	// TODO: Use proper secure prng here
-	mOurSynAckNonce=static_cast<SESSION_NONCE_TYPE>((utility::random::qrand()>>(1<<sizeof(int)))|utility::random::qrand());
+	// SECURITY: Use proper secure prng here
+	mOurSynAckNonce = static_cast<SESSION_NONCE_TYPE>((utility::random::qrand()>>(1<<sizeof(int)))|utility::random::qrand());
 	return mOurSynAckNonce;
 }
 
@@ -216,8 +216,8 @@ SESSION_NONCE_TYPE CommsSession::createOurSynAckNonce()
 SESSION_NONCE_TYPE CommsSession::createOurAckNonce()
 {
 	OC_METHODGATE();
-	// TODO: Use proper secure prng here
-	mOurAckNonce=static_cast<SESSION_NONCE_TYPE>((utility::random::qrand()>>(1<<sizeof(int)))|utility::random::qrand());
+	// SECURITY: Use proper secure prng here
+	mOurAckNonce = static_cast<SESSION_NONCE_TYPE>((utility::random::qrand()>>(1<<sizeof(int)))|utility::random::qrand());
 	return mOurAckNonce;
 }
 
@@ -242,7 +242,7 @@ SESSION_NONCE_TYPE CommsSession::ourAckNonce() const
 void CommsSession::setTheirLastNonce(SESSION_NONCE_TYPE theirNonce)
 {
 	OC_METHODGATE();
-	mTheirLastNonce=theirNonce;
+	mTheirLastNonce = theirNonce;
 }
 
 SESSION_NONCE_TYPE CommsSession::theirLastNonce() const
@@ -253,16 +253,16 @@ SESSION_NONCE_TYPE CommsSession::theirLastNonce() const
 
 
 
-void CommsSession::setAddress(const NetworkAddress &address)
+void CommsSession::setAddress(QSharedPointer<CarrierAddress> address)
 {
 	OC_METHODGATE();
-	mAddress=address;
+	mAddress = address;
 }
 
 void CommsSession::setExpired()
 {
 	OC_METHODGATE();
-	mExpired=true;
+	mExpired = true;
 }
 
 
@@ -328,7 +328,12 @@ bool CommsSession::idle()
 const QString CommsSession::signatureToString() const
 {
 	OC_METHODGATE();
-	return QString::number(mLocalSessionID,16)+"-"+mAddress.toString()+"("+fullID()+")";
+	return QString::number(mLocalSessionID, 16)
+		   + "-"
+		   + (mAddress.isNull()?"NULL":mAddress->toString())
+		   + "("
+		   + fullID()
+		   + ")";
 }
 
 QString CommsSession::summary(QString sep) const
@@ -336,20 +341,32 @@ QString CommsSession::summary(QString sep) const
 	OC_METHODGATE();
 	QString out;
 	QTextStream ts(&out);
-	ts << "ID: "<< signatureToString();
-	ts << ", NET: "<<mAddress.toString();
-	ts << ", DELTA: "<<mDeltaTime<<sep;
-	ts << ", TOA: "<<mDisconnectTimeoutAccumulator<<sep;
+	ts << "ID: " << signatureToString();
+	ts << ", NET: " << (mAddress.isNull()?"NULL":mAddress->toString());
+	ts << ", DELTA: " << mDeltaTime << sep;
+	ts << ", TOA: " << mDisconnectTimeoutAccumulator << sep;
 	ts << mFlowControl.toString(sep);
 	return out;
 }
+
 
 QString CommsSession::toString() const
 {
 	OC_METHODGATE();
 	QString out;
 	QTextStream ts(&out);
-	ts << "sig="<< QString::number(mLocalSessionID,16)<<"-"<<mAddress.toString()<<"("<<fullID()<<")"<<", delta: "<<mDeltaTime<<", TOA: "<<mDisconnectTimeoutAccumulator;
+	ts
+		<< "sig="
+		<< QString::number(mLocalSessionID, 16)
+		<< "-"
+		<< (mAddress.isNull()?"NULL":mAddress->toString())
+		<< "("
+		<< fullID()
+		<< ")"
+		<< ", delta: "
+		<< mDeltaTime
+		<< ", TOA: "
+		<< mDisconnectTimeoutAccumulator;
 	return out;
 }
 

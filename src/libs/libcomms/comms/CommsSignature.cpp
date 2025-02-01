@@ -14,7 +14,7 @@ CommsSignature::CommsSignature(const CommsSignature &other)
 
 }
 
-CommsSignature::CommsSignature(const quint64 &shortHandID, const NetworkAddress &address)
+CommsSignature::CommsSignature(const quint64 &shortHandID, const CarrierAddress &address)
 	: mShortHandID(shortHandID)
 	, mAddress(address)
 {
@@ -22,7 +22,7 @@ CommsSignature::CommsSignature(const quint64 &shortHandID, const NetworkAddress 
 
 
 
-CommsSignature::CommsSignature(const QString &fullID, const NetworkAddress &address)
+CommsSignature::CommsSignature(const QString &fullID, const CarrierAddress &address)
 	: mShortHandID(fullID.mid(0,16).toULongLong(nullptr,16))
 	, mFullID(fullID)
 	, mAddress(address)
@@ -54,13 +54,13 @@ QString CommsSignature::fullID() const
 }
 
 
-NetworkAddress CommsSignature::address() const
+CarrierAddress CommsSignature::address() const
 {
 	return mAddress;
 }
 
 
-void CommsSignature::setAddress(const NetworkAddress &address)
+void CommsSignature::setAddress(const CarrierAddress &address)
 {
 	mAddress=address;
 }

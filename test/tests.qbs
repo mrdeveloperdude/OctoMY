@@ -14,6 +14,7 @@ Project{
 			, "testCommsSession/test.qbs"
 			, "testCommsChannel/test.qbs"
 			, "testCommsCarrier/test.qbs"
+			, "testCarrierAddress/test.qbs"
 //			  "testDiscovery/test.qbs"
 //			, "testActuatorWidget/test.qbs"
 //			, "testAgentConfig/test.qbs"

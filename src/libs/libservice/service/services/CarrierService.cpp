@@ -1,6 +1,8 @@
 #include "CarrierService.hpp"
 
 #include "node/Node.hpp"
+#include "comms/address/CarrierAddressUDP.hpp"
+
 
 CarrierService::CarrierService(QSharedPointer<CommsCarrier> carrier, QStringList dependencies)
 	: ServiceWrapper<CommsCarrier>(carrier, "Carrier", dependencies)
@@ -22,18 +24,19 @@ void CarrierService::configure(QSharedPointer<Node> node)
 void CarrierService::serviceWrapperActivate(QSharedPointer<CommsCarrier> carrier, bool on, ServiceActivatedCallback callBack)
 {
 	OC_METHODGATE();
-	bool ok=false;
+	bool ok{false};
 	if(mConfigureHelper.activate(on)) {
-		if(nullptr!= carrier) {
+		if(nullptr != carrier) {
 			auto localAddressList=mNode->localAddressList();
 			if(!localAddressList.isNull()) {
-				const NetworkAddress listenAddress(QHostAddress::Any, localAddressList->port());
+				// TODO: Handle any address type
+				const auto listenAddress=QSharedPointer<CarrierAddressUDP>::create(QHostAddress::Any, localAddressList->port());
 				carrier->setListenAddress(listenAddress);
 				ok=carrier->activate(on);
 			}
 		}
 	}
-	if(nullptr!=callBack) {
+	if(nullptr != callBack) {
 		callBack(on, ok);
 	}
 }

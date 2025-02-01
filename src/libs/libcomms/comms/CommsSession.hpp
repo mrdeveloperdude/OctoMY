@@ -4,7 +4,7 @@
 #include "ReliabilitySystem.hpp"
 #include "FlowControl.hpp"
 //#include "messages/SensorsMessage.hpp"
-#include "address/NetworkAddress.hpp"
+#include "address/CarrierAddress.hpp"
 #include "CommsSessionIDType.hpp" // For SESSION_ID_TYPE
 #include "HandshakeState.hpp"
 
@@ -43,7 +43,7 @@ private:
 	QSharedPointer<Key> mKey;
 	SESSION_ID_TYPE mLocalSessionID; // What the local side of this session has decided is the ID for itself
 	SESSION_ID_TYPE mRemoteSessionID; // What the remote side of this session has decided is the ID for itself
-	NetworkAddress mAddress;
+	QSharedPointer<CarrierAddress> mAddress;
 
 
 	ReliabilitySystem mReliabilitySystem;
@@ -132,7 +132,7 @@ public:
 	SESSION_ID_TYPE localSessionID() const;
 	SESSION_ID_TYPE remoteSessionID() const;
 	QString fullID() const;
-	NetworkAddress address() const;
+	QSharedPointer<CarrierAddress> address() const;
 
 	void setLocalSessionID(SESSION_ID_TYPE );
 	void setRemoteSessionID(SESSION_ID_TYPE );
@@ -151,7 +151,7 @@ public:
 
 public:
 
-	void setAddress(const NetworkAddress &address);
+	void setAddress(QSharedPointer<CarrierAddress> address);
 
 	void setExpired();
 

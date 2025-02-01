@@ -4,6 +4,9 @@
 #include "address/Associate.hpp"
 #include "app/AppContext.hpp"
 #include "app/Constants.hpp"
+#include "app/Settings.hpp"
+#include "comms/address/CarrierAddressFactory.hpp"
+#include "comms/address/CarrierAddressUDP.hpp"
 #include "qhttp/qhttpserver.hpp"
 #include "qhttp/qhttpserverconnection.hpp"
 #include "qhttp/qhttpserverrequest.hpp"
@@ -12,11 +15,9 @@
 #include "template/Mustache.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
-#include "uptime/SharedPointerWrapper.hpp"
 #include "utility/file/File.hpp"
 #include "utility/network/Network.hpp"
 #include "utility/time/HumanTime.hpp"
-
 
 #include <QtNetwork/QHostAddress>
 #include <QJsonDocument>
@@ -100,14 +101,16 @@ void ZooServer::configure(QSharedPointer<AppContext> context)
 
 
 
-NetworkAddress ZooServer::serverAddress() const
+QSharedPointer<CarrierAddressUDP> ZooServer::serverAddress() const
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		QTcpServer *tc=tcpServer();
-		return (nullptr!=tc)?NetworkAddress (QHostAddress(tc->serverAddress().toString()), tc->serverPort()): NetworkAddress();
+		auto tc = tcpServer();
+		if(nullptr!=tc){
+			return QSharedPointer<CarrierAddressUDP>::create(QHostAddress(tc->serverAddress().toString()), tc->serverPort());
+		}
 	}
-	return NetworkAddress();
+	return nullptr;
 }
 
 
@@ -127,7 +130,7 @@ void ZooServer::logUsefullStuff() const
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		const QHostAddress defaultGateway=utility::network::defaultGatewayAddress();
-		QList<QHostAddress> local=utility::network::allLocalNetworkAddresses();
+		QList<QHostAddress> local=utility::network::allLocalCarrierAddresses();
 		const QHostAddress closest=utility::network::closestAddress(local, defaultGateway);
 		qDebug().noquote().nospace()<<"ADDRESSES";
 		qDebug().noquote().nospace()<<" + gateway: "<<defaultGateway;
@@ -400,6 +403,7 @@ void ZooServer::serveAdmin(qhttp::server::QHttpRequest* req, qhttp::server::QHtt
 
 // Part of the server API
 // Handles incomming discovery escrow request
+// NOTE: Byt its very nature, ZooServer deals only in UDP addresses. Any other address type will be ignored.
 void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res)
 {
 	OC_METHODGATE();
@@ -412,26 +416,31 @@ void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp
 			return;
 		}
 		QVariantList addressList=root["addressList"].toList();
-		QList<NetworkAddress> addresses;
+		QList<QSharedPointer<CarrierAddress>> addresses;
+		CarrierAddressFactory caf;
 		for(QVariant a:addressList) {
-			auto am=a.toMap();
-			NetworkAddress nadr(am);
-			if(nadr.isValid(false,false)) {
-				qDebug()<<"ADDRESS FETCHED: "<<nadr.toString()<<" FROM "<<am;
+			auto am = a.toMap();
+			auto nadr = qSharedPointerDynamicCast<CarrierAddressUDP>(caf.fromMap(am));
+			if(nadr.isNull()){
+				qDebug() << "NULL ADDRESS SKIPPED FROM " << am;
+				continue;
+			}
+			if(nadr->isValidIP(false, false)) {
+				qDebug() << "ADDRESS FETCHED: " << nadr->toString() << " FROM " << am;
 				addresses << nadr;
 			} else {
-				qDebug()<<"INVALID ADDRESS SKIPPED: "<<nadr.toString()<<" FROM "<<am;
+				qDebug() << "INVALID ADDRESS SKIPPED: " << nadr->toString() << " FROM " << am;
 			}
 		}
-		const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
+		const quint64 now = utility::time::currentMsecsSinceEpoch<quint64>();
 		auto associate = QSharedPointer<Associate>::create(root);
 		if(!associate.isNull()) {
 			auto key = QSharedPointer<Key> ::create(root.value("key").toMap(), true);
 			if(!key.isNull()) {
-				if(key->id()==associate->id()) {
-					qDebug()<<"GOT PARTICIPANT "<<associate->name()<<"(type="<<nodeTypeToString(associate->type())<<", gender="<<associate->gender()<<", id="<<associate->id()<<", id2="<<key->id()<<", addresses="<<associate->addressList().toString()<<")";
-					NetworkAddress na(QHostAddress(req->remoteAddress()), req->remotePort());
-					qDebug()<<"Attaching visible address "<<na.toString() <<" to participant";
+				if(key->id() == associate->id()) {
+					qDebug() << "GOT PARTICIPANT " << associate->name() << "(type=" << nodeTypeToString(associate->type()) << ", gender=" << associate->gender() << ", id=" << associate->id() << ", id2=" << key->id() << ", addresses=" << associate->addressList().toString() << ")";
+					auto na = QSharedPointer<CarrierAddressUDP>::create(QHostAddress(req->remoteAddress()), req->remotePort());
+					qDebug() << "Attaching visible address " << na->toString() << " to participant";
 					associate->addressList().add(QSharedPointer<AddressEntry>(new AddressEntry(na, "public", now)));
 					for(auto nad:addresses) {
 						associate->addressList().add(QSharedPointer<AddressEntry>(new AddressEntry(nad, "local", now)));
@@ -448,13 +457,13 @@ void ZooServer::handleDiscoveryEscrow(QVariantMap &root, QVariantMap &map, qhttp
 						map["message"] = "ERROR: No session";
 					}
 				} else {
-					qWarning().noquote().nospace()<<"ERROR: key id '"<<key->id()<<"' different from associate id '"<<associate->id()<<"'";
+					qWarning().noquote().nospace() << "ERROR: key id '" << key->id() << "' different from associate id '" << associate->id() << "'";
 				}
 			} else {
-				qWarning()<<"ERROR: key was null";
+				qWarning() << "ERROR: key was null";
 			}
 		} else {
-			qWarning()<<"ERROR: associate was null";
+			qWarning() << "ERROR: associate was null";
 		}
 	}
 }
@@ -480,7 +489,7 @@ void ZooServer::onKeystoreReady(bool ok)
 				auto id=key->id().left(ZOO_MINIMAL_ADMIN_ID_LENGTH);
 				mAdminURLPath="/"+id;
 				const QHostAddress defaultGateway=utility::network::defaultGatewayAddress();
-				QList<QHostAddress> local=utility::network::allLocalNetworkAddresses();
+				QList<QHostAddress> local=utility::network::allLocalCarrierAddresses();
 				const QHostAddress closest=utility::network::closestAddress(local, defaultGateway);
 				qDebug().nospace().noquote()<<"KEYSTORE READY. ADMIN URL PATH IS: 'http://"<<closest.toString()<<":"<< serverPort()<<mAdminURLPath<<"'";
 				logUsefullStuff();

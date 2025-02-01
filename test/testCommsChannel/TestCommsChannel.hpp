@@ -1,7 +1,7 @@
 #ifndef TESTCOMMSCHANNEL_HPP
 #define TESTCOMMSCHANNEL_HPP
 
-#include "comms/address/NetworkAddress.hpp"
+#include "comms/address/CarrierAddress.hpp"
 #include "node/NodeRole.hpp"
 #include "node/NodeType.hpp"
 #include "security/Key.hpp"
@@ -26,7 +26,7 @@ private slots:
 };
 
 
-QSharedPointer<Associate> generatePart(QString name, QSharedPointer<Key> key, NetworkAddress addr, NodeRole role, NodeType type );
+QSharedPointer<Associate> generatePart(QString name, QSharedPointer<Key> key, QSharedPointer<CarrierAddress> addr, NodeRole role, NodeType type );
 
 #endif
 // TESTCOMMSCHANNEL_HPP

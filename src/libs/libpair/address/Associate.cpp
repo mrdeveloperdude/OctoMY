@@ -208,13 +208,6 @@ AddressList &Associate::addressList()
 }
 
 
-QBluetoothAddress Associate::bluetoothAddress() const
-{
-	OC_METHODGATE();
-	return mBluetoothAddress;
-}
-
-
 void Associate::setLastSeen(quint64 when)
 {
 	OC_METHODGATE();

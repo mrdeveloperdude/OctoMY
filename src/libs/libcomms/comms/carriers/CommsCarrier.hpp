@@ -1,7 +1,7 @@
 #ifndef COMMSCARRIER_HPP
 #define COMMSCARRIER_HPP
 
-#include "../address/NetworkAddress.hpp"
+#include "../address/CarrierAddress.hpp"
 
 #include "utility/time/RateCalculator.hpp"
 
@@ -87,9 +87,9 @@ private slots:
 public slots:
 	quint64 connectionTimeout();
 	void setHookCarrierSignals(QObject &ob, bool hook);
-	void setListenAddress(NetworkAddress address);
+	void setListenAddress(QSharedPointer<CarrierAddress> address);
 
-	qint64 writeData(const QByteArray &datagram, const NetworkAddress &address);
+	qint64 writeData(const QByteArray &datagram, QSharedPointer<CarrierAddress> address);
 	qint64 readData(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr);
 
 	bool hasPendingData();
@@ -97,7 +97,7 @@ public slots:
 
 	// Return the last error string, if any
 	QString errorString();
-	NetworkAddress address();
+	QSharedPointer<CarrierAddress> address();
 
 	quint64 minimalPacketInterval();
 	quint64 maximalPacketInterval();
@@ -110,22 +110,22 @@ protected:
 	virtual void configureImp() =0;
 	virtual bool activateImp(const bool on) =0;
 
-	virtual void setAddressImp(NetworkAddress address) =0;
+	virtual void setAddressImp(QSharedPointer<CarrierAddress> address) = 0;
 
 	virtual bool isActiveImp() const =0 ;
 
-	virtual qint64 writeDataImp(const QByteArray &datagram, const NetworkAddress &address) =0 ;
-	virtual qint64 readDataImp(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr) =0 ;
+	virtual qint64 writeDataImp(const QByteArray &datagram, QSharedPointer<CarrierAddress> address) = 0;
+	virtual qint64 readDataImp(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr) = 0;
 
-	virtual bool hasPendingDataImp() =0 ;
-	virtual qint64 pendingDataSizeImp() =0 ;
+	virtual bool hasPendingDataImp() = 0;
+	virtual qint64 pendingDataSizeImp() = 0;
 
-	virtual QString errorStringImp() =0 ;
+	virtual QString errorStringImp() = 0;
 
-	virtual NetworkAddress addressImp() =0;
+	virtual QSharedPointer<CarrierAddress> addressImp() = 0;
 
-	virtual quint64 minimalPacketIntervalImp() =0;
-	virtual quint64 maximalPacketIntervalImp() =0;
+	virtual quint64 minimalPacketIntervalImp() = 0;
+	virtual quint64 maximalPacketIntervalImp() = 0;
 
 	// CommsCarrier interface signals
 signals:

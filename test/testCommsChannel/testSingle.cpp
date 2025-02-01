@@ -1,5 +1,6 @@
  #include "TestCommsChannel.hpp"
 
+#include "comms/address/CarrierAddressUDP.hpp"
 #include "comms/carriers/CommsCarrierUDP.hpp"
 #include "comms/CommsChannel.hpp"
 #include "discovery/AddressBook.hpp"
@@ -67,7 +68,7 @@ void TestCommsChannel::testSingle()
 
 	QString idA=keyA->id();
 	qDebug()<<"Keystore A :"<<idA<<QFileInfo(keyStoreA->filename()).absoluteFilePath();
-	NetworkAddress addrA(local, basePort + 0);
+	auto addrA = qSharedPointerDynamicCast<CarrierAddress>(QSharedPointer<CarrierAddressUDP>::create(local, basePort + 0));
 	QString peersFilenameA="peersFileA.json";
 	QFile peersFileA(peersFilenameA);
 	if(peersFileA.exists()) {
@@ -105,7 +106,7 @@ void TestCommsChannel::testSingle()
 
 	QString idB=keyB->id();
 	qDebug()<<"Keystore B :"<<idB<<QFileInfo(keyStoreB->filename()).absoluteFilePath();
-	NetworkAddress addrB(local, basePort + 1);
+	auto addrB = qSharedPointerDynamicCast<CarrierAddress>(QSharedPointer<CarrierAddressUDP>::create(local, basePort + 1));
 	QString peersFilenameB="peersFileB.json";
 	QFile peersFileB(peersFilenameB);
 	if(peersFileB.exists()) {
@@ -117,7 +118,7 @@ void TestCommsChannel::testSingle()
 	peersB->configure(peersFilenameB);
 
 	QString nameB="PARTY B";
-	QVariantMap addrBMap=addrB.toVariantMap();
+	QVariantMap addrBMap=addrB->toVariantMap();
 	QCOMPARE(addrBMap.size(), 2);
 	QSharedPointer<Associate> partB=generatePart(nameB, keyB, addrB, ROLE_CONTROL, TYPE_REMOTE);
 
@@ -202,8 +203,8 @@ void TestCommsChannel::testSingle()
 	sessA->setLocalSessionID(sessDirA.generateUnusedSessionID());
 	sessB->setLocalSessionID(sessDirB.generateUnusedSessionID());
 
-	QVERIFY(sessA->address().isValid());
-	QVERIFY(sessB->address().isValid());
+	QVERIFY(sessA->address()->isValid());
+	QVERIFY(sessB->address()->isValid());
 
 	sessDirA.insert(sessB);
 	sessDirB.insert(sessA);

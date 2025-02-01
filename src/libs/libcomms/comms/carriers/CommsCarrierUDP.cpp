@@ -6,8 +6,9 @@
 
 #include "CommsCarrierUDP.hpp"
 
-#include "uptime/MethodGate.hpp"
+#include "comms/address/CarrierAddressUDP.hpp"
 #include "uptime/ConnectionType.hpp"
+#include "uptime/MethodGate.hpp"
 #include "utility/string/String.hpp"
 
 // It seems that 30 seconds would be a "safe" minimal UDP rate to avoid routers closing our "connection"
@@ -35,8 +36,6 @@ CommsCarrierUDP::CommsCarrierUDP(QObject *parent)
 	if(!QObject::connect(&mUDPSocket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)), OC_CONTYPE)) {
 		qWarning()<<"Could not connect UDP error";
 	}
-	
-
 }
 
 
@@ -80,7 +79,7 @@ bool CommsCarrierUDP::activateImp(const bool on)
 	OC_METHODGATE();
 	bool success=true;
 	if(on) {
-		success = mUDPSocket.bind(mLocalAddress.ip(), mLocalAddress.port());
+		success = (!mLocalAddressUDP.isNull()) && mUDPSocket.bind(mLocalAddressUDP->ip(), mLocalAddressUDP->port());
 		//qDebug()<<"----- comms bind "<< mLocalAddress.toString()<< " with interval "<<utility::string::humanReadableElapsedMS(mSendingTimer.interval()) <<(success?" succeeded": (" failed with '"+mUDPSocket.errorString()+"'") );
 
 	} else {
@@ -91,11 +90,12 @@ bool CommsCarrierUDP::activateImp(const bool on)
 }
 
 
-void CommsCarrierUDP::setAddressImp(NetworkAddress address)
+void CommsCarrierUDP::setAddressImp(QSharedPointer<CarrierAddress> address)
 {
 	OC_METHODGATE();
-	mLocalAddress=address;
+	mLocalAddressUDP = qSharedPointerCast<CarrierAddressUDP>(address);
 }
+
 
 bool CommsCarrierUDP::isActiveImp() const
 {
@@ -104,10 +104,20 @@ bool CommsCarrierUDP::isActiveImp() const
 }
 
 
-qint64 CommsCarrierUDP::writeDataImp(const QByteArray &datagram, const NetworkAddress &address)
+qint64 CommsCarrierUDP::writeDataImp(const QByteArray &datagram, QSharedPointer<CarrierAddress> toAddress)
 {
 	OC_METHODGATE();
-	const qint64 ret=mUDPSocket.writeDatagram(datagram, address.ip(), address.port());
+	auto toAddressUDP = qSharedPointerCast<CarrierAddressUDP>(toAddress);
+	if(toAddressUDP.isNull()){
+		if(toAddress.isNull()){
+			qWarning()<<"ERROR: No to-address specified";
+		}
+		else{
+			qWarning()<<"ERROR: To-address wrong type: " << CarrierAddressTypeToString(toAddress->type());
+		}
+		return -1;
+	}
+	const qint64 ret = mUDPSocket.writeDatagram(datagram, toAddressUDP->ip(), toAddressUDP->port());
 	if(ret<0) {
 		qWarning()<<"ERROR: Writing data to UDB socket: "<<mUDPSocket.errorString();
 	}
@@ -144,11 +154,10 @@ QString CommsCarrierUDP::errorStringImp()
 }
 
 
-
-NetworkAddress CommsCarrierUDP::addressImp()
+QSharedPointer<CarrierAddress> CommsCarrierUDP::addressImp()
 {
 	OC_METHODGATE();
-	return mLocalAddress;
+	return qSharedPointerCast<CarrierAddress>(mLocalAddressUDP);
 }
 
 
@@ -157,6 +166,7 @@ quint64 CommsCarrierUDP::minimalPacketIntervalImp()
 	OC_METHODGATE();
 	return OCTOMY_UDP_MINIMAL_PACKET_RATE;
 }
+
 
 quint64	CommsCarrierUDP::maximalPacketIntervalImp()
 {

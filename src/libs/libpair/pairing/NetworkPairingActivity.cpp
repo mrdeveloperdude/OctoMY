@@ -3,7 +3,7 @@
 
 #include "PairingEditButtonDelegate.hpp"
 #include "address/Associate.hpp"
-#include "comms/address/NetworkAddress.hpp"
+#include "comms/address/CarrierAddress.hpp"
 #include "discovery/DiscoveryClient.hpp"
 #include "node/Node.hpp"
 #include "pairing/PairingListModel.hpp"
@@ -165,9 +165,8 @@ void NetworkPairingActivity::configure(QSharedPointer<Node> n)
 				}
 				
 				
-				const auto nadr = lal->currentNetworkAddress();
-				
-				ui->widgetNetworkSettings->setHostAddress(nadr.ip(), nadr.port());
+				const auto nadr = lal->currentCarrierAddress();
+				ui->widgetNetworkSettings->setCarrierAddress(nadr);
 				
 			} else {
 				qWarning()<<"ERROR: No local ass";

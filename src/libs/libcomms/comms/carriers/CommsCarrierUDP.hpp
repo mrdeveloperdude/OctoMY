@@ -2,9 +2,12 @@
 #define COMMSCARRIERUDP_H
 
 #include "CommsCarrier.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QObject>
 #include <QUdpSocket>
+
+class CarrierAddressUDP;
 
 class CommsCarrierUDP: public CommsCarrier
 {
@@ -15,7 +18,7 @@ protected:
 
 private:
 	QUdpSocket mUDPSocket;
-	NetworkAddress mLocalAddress;
+	QSharedPointer<CarrierAddressUDP> mLocalAddressUDP;
 
 public:
 	explicit CommsCarrierUDP(QObject *parent=nullptr);
@@ -30,11 +33,11 @@ protected:
 	void configureImp() override;
 	bool activateImp(const bool on) override;
 
-	void setAddressImp(NetworkAddress address) override;
+	void setAddressImp(QSharedPointer<CarrierAddress> address) override;
 
 	bool isActiveImp() const override;
 
-	qint64 writeDataImp(const QByteArray &datagram, const NetworkAddress &address) override;
+	qint64 writeDataImp(const QByteArray &datagram, QSharedPointer<CarrierAddress> address) override;
 	qint64 readDataImp(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr) override;
 
 	bool hasPendingDataImp() override ;
@@ -42,7 +45,7 @@ protected:
 
 	QString errorStringImp() override ;
 
-	NetworkAddress addressImp() override ;
+	QSharedPointer<CarrierAddress> addressImp() override ;
 
 	quint64 minimalPacketIntervalImp() override ;
 	quint64	maximalPacketIntervalImp() override ;

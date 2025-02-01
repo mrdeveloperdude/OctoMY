@@ -72,10 +72,10 @@ bool CommsCarrierLocal::activateImp(const bool on)
 	return true;
 }
 
-void CommsCarrierLocal::setAddressImp(NetworkAddress address)
+void CommsCarrierLocal::setAddressImp(QSharedPointer<CarrierAddress> address)
 {
 	OC_METHODGATE();
-	mServerName = address.toString(); // Server name is used instead of IP/port
+	mLocalAddress = qSharedPointerDynamicCast<CarrierAddressLocal>(address);
 }
 
 bool CommsCarrierLocal::isActiveImp() const
@@ -84,7 +84,7 @@ bool CommsCarrierLocal::isActiveImp() const
 	return mLocalServer.isListening();
 }
 
-qint64 CommsCarrierLocal::writeDataImp(const QByteArray &datagram, const NetworkAddress &address)
+qint64 CommsCarrierLocal::writeDataImp(const QByteArray &datagram, QSharedPointer<CarrierAddress> toAddress)
 {
 	OC_METHODGATE();
 	if (!mLocalSocket || mLocalSocket->state() != QLocalSocket::ConnectedState) {
@@ -123,11 +123,11 @@ QString CommsCarrierLocal::errorStringImp()
 	return mLocalSocket ? mLocalSocket->errorString() : QString();
 }
 
-NetworkAddress CommsCarrierLocal::addressImp()
+QSharedPointer<CarrierAddress> CommsCarrierLocal::addressImp()
 {
 	OC_METHODGATE();
-	//return NetworkAddress(mServerName, 0);
-	return NetworkAddress(); 
+	//return CarrierAddress(mServerName, 0);
+	return mLocalAddress;
 }
 
 quint64 CommsCarrierLocal::minimalPacketIntervalImp()

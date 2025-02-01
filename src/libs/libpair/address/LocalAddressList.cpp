@@ -1,12 +1,13 @@
 #include "LocalAddressList.hpp"
 
-#include "uptime/MethodGate.hpp"
+#include "comms/address/CarrierAddressUDP.hpp"
 #include "uptime/ConnectionType.hpp"
+#include "uptime/MethodGate.hpp"
 
 #include "utility/network/Network.hpp"
 
 
-#include "comms/address/NetworkAddress.hpp"
+#include "comms/address/CarrierAddress.hpp"
 
 
 
@@ -98,13 +99,13 @@ void LocalAddressList::setCurrent(QHostAddress address, quint16 port)
 
 
 
-NetworkAddress LocalAddressList::currentNetworkAddress() const
+QSharedPointer<CarrierAddress> LocalAddressList::currentCarrierAddress() const
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		return NetworkAddress(currentAddress(), port());
+		return QSharedPointer<CarrierAddressUDP>::create(currentAddress(), port());
 	}
-	return NetworkAddress();
+	return QSharedPointer<CarrierAddressUDP>::create();
 }
 
 QHostAddress LocalAddressList::currentAddress() const
@@ -124,7 +125,7 @@ bool LocalAddressList::isUpdateNeeded()
 	OC_METHODGATE();
 	bool updateNeeded=false;
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		QList<QHostAddress> local=utility::network::allLocalNetworkAddresses();
+		QList<QHostAddress> local=utility::network::allLocalCarrierAddresses();
 		if(local.size() != size()) {
 			updateNeeded=true;
 		}
@@ -175,7 +176,7 @@ void LocalAddressList::updateAddresses(bool keepCurrent)
 		const bool lastIsGood=!last.isNull();
 		clear();
 		const QHostAddress defaultGateway=utility::network::defaultGatewayAddress();
-		QList<QHostAddress> local=utility::network::allLocalNetworkAddresses();
+		QList<QHostAddress> local=utility::network::allLocalCarrierAddresses();
 		//qDebug().noquote().nospace()<<"UPDATING LOCAL ADDRESSES: ";
 		//qDebug().noquote().nospace()<<" + last: "<<last;
 		//qDebug().noquote().nospace()<<" + gateway: "<<dgw;

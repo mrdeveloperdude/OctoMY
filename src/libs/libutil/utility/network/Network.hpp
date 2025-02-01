@@ -15,7 +15,7 @@ namespace utility
 namespace network
 {
 
-QList<QHostAddress> allLocalNetworkAddresses();
+QList<QHostAddress> allLocalCarrierAddresses();
 QString localAddress();
 bool checkUDPAddress(QHostAddress address, quint16 port);
 quint16	freeUDPPortForAddress(QHostAddress adr);

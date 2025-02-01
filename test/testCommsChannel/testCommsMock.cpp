@@ -2,6 +2,7 @@
 
 #include "comms/PacketReadState.hpp"
 #include "comms/PacketSendState.hpp"
+#include "comms/address/CarrierAddressUDP.hpp"
 #include "discovery/AddressBook.hpp"
 #include "security/KeySecurityPolicy.hpp"
 #include "security/KeyStore.hpp"
@@ -119,7 +120,7 @@ void TestCommsChannel::testCommsMock()
 	//qDebug() << keyA->toString();
 	QString idA=keyA->id();
 	qDebug()<<"Keystore A :"<<idA<<QFileInfo(keyStoreA->filename()).absoluteFilePath();
-	NetworkAddress addrA(local, basePort + 0);
+	auto addrA = QSharedPointer<CarrierAddressUDP>::create(local, basePort + 0);
 	QString peersFilenameA="peersFileA.json";
 	QFile peersFileA(peersFilenameA);
 	if(peersFileA.exists()) {
@@ -146,7 +147,7 @@ void TestCommsChannel::testCommsMock()
 
 	QString idB=keyB->id();
 	qDebug()<<"Keystore B :"<<idB<<QFileInfo(keyStoreB.filename()).absoluteFilePath();
-	NetworkAddress addrB(local, basePort + 1);
+	auto addrB = QSharedPointer<CarrierAddressUDP>::create(local, basePort + 1);
 	QString peersFilenameB="peersFileB.json";
 	QFile peersFileB(peersFilenameB);
 	if(peersFileB.exists()) {
@@ -158,7 +159,7 @@ void TestCommsChannel::testCommsMock()
 
 	QVariantMap peerMapB;
 	QString nameB="PARTY B";
-	QVariantMap addrBMap=addrB.toVariantMap();
+	QVariantMap addrBMap=addrB->toVariantMap();
 	QSharedPointer<Associate> partB=generatePart(nameB, keyB, addrB, ROLE_CONTROL, TYPE_REMOTE);
 
 	test::utility::testHeading("BIND PARTY A to B");/////////////////////////////////////////////////////
@@ -182,7 +183,7 @@ void TestCommsChannel::testCommsMock()
 	test::utility::testHeading("Preparing lots of test data");/////////////////////////////////////////////////////
 	quint64 time=utility::time::currentMsecsSinceEpoch<quint64>();
 	const quint64 stepMS=1000;
-	NetworkAddress na(QHostAddress("127.0.0.1"), 8123);
+	auto na = QSharedPointer<CarrierAddressUDP>::create(QHostAddress("127.0.0.1"), 8123);
 	carrierA->mockSetOverrideSendingtimer(true);
 	chanA->carrier()->setListenAddress(na);
 	chanA->carrier()->maintainConnection(true);
@@ -192,8 +193,8 @@ void TestCommsChannel::testCommsMock()
 	sessA->setLocalSessionID(sessAID);
 	sessA->setAddress(na);
 	sessDirA.insert(sessA);
-	NetworkAddress unknownAddress;
-	unknownAddress.fromString("1.2.3.4:5434");
+	auto unknownAddress = QSharedPointer<CarrierAddressUDP>::create();
+	unknownAddress->fromString("1.2.3.4:5434");
 	QByteArray garbledPacket=QString("This is garbled").toUtf8();
 	const SESSION_ID_TYPE localSessionID=1337;
 	const SESSION_NONCE_TYPE synNonce=1111;
@@ -238,7 +239,7 @@ void TestCommsChannel::testCommsMock()
 		test::utility::testHeading("Looking for return SYN-ACK "+QString::number(i));/////////////////////////////////////////////////////
 		carrierA->mockTriggerSendingOpportunity(time+=stepMS);
 		QByteArray data=carrierA->mockReadMock(addrB);
-		PacketReadState rstate(data, addrB.ip(), addrB.port());
+		PacketReadState rstate(data, addrB->ip(), addrB->port());
 		// MULTIMAGIC
 		rstate.readMultimagic();
 		Multimagic mm=static_cast<Multimagic>(rstate.multimagic);

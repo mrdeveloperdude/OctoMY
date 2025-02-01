@@ -172,7 +172,7 @@ void PairingTrustActivity::pushImpl(const QStringList arguments)
 					auto addresses = peer->addressList();
 					QStringList list;
 					for(auto &address:addresses) {
-						list << address->description + "=" + address->address.toString();
+						list << address->description + "=" + (address->address.isNull()?"NULL":address->address->toString());
 					}
 					ui->labelStats->setText("Addresses for '" + peer->identifier() + "': [ " + list.join(", ") + " ]");
 					auto level = peer->trusts().toTrustLevel(peer->type());

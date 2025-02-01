@@ -1,11 +1,14 @@
 #ifndef NETWORKSETTINGSWIDGET_HPP
 #define NETWORKSETTINGSWIDGET_HPP
 
+#include "uptime/SharedPointerWrapper.hpp"
+
 #include <QWidget>
 #include <QHostAddress>
 
 
 class LocalAddressList;
+class CarrierAddress;
 
 namespace Ui
 {
@@ -39,6 +42,8 @@ private:
 	bool verifyAndSet(bool sendSignal=true, bool doCorrection=true);
 
 public:
+	bool setCarrierAddress(QSharedPointer<CarrierAddress> address);
+	// TODO: Support all address types
 	bool setHostAddress(QHostAddress naddr, quint16 nport, bool verify=true, bool sendSignal=true);
 	bool setAddress(QHostAddress address, bool verify=true, bool sendSignal=true);
 	bool setPort(quint16 port, bool verify=true, bool sendSignal=true);

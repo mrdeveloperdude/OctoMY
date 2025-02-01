@@ -79,7 +79,8 @@ void ConnectionActivity::onCommsError(QString message){
 // A new comms session was added
 void ConnectionActivity::onCommsClientAdded(CommsSession *c){
 	OC_METHODGATE();
-	appendLog("CONNECTION-COMMS: session added" + c->address() );
+	auto address = c->address();
+	appendLog("CONNECTION-COMMS: session added" + (address.isNull()?"NULL":address->toString()) );
 }
 
 // The connection state changed for comms channel

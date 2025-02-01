@@ -243,7 +243,7 @@ void CommsCarrier::setHookCarrierSignals(QObject &ob, bool hook)
 }
 
 
-void CommsCarrier::setListenAddress(NetworkAddress address)
+void CommsCarrier::setListenAddress(QSharedPointer<CarrierAddress> address)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
@@ -257,7 +257,7 @@ void CommsCarrier::setListenAddress(NetworkAddress address)
 
 
 
-qint64 CommsCarrier::writeData(const QByteArray &datagram, const NetworkAddress &address)
+qint64 CommsCarrier::writeData(const QByteArray &datagram, QSharedPointer<CarrierAddress> address)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
@@ -313,13 +313,13 @@ QString CommsCarrier::errorString()
 }
 
 
-NetworkAddress CommsCarrier::address()
+QSharedPointer<CarrierAddress> CommsCarrier::address()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
 		return addressImp();
 	}
-	return NetworkAddress();
+	return nullptr;
 }
 
 

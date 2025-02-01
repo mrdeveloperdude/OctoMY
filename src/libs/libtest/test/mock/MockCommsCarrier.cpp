@@ -1,6 +1,7 @@
 #include "MockCommsCarrier.hpp"
 
 #include "comms/PacketSendState.hpp"
+#include "comms/address/CarrierAddressFactory.hpp"
 
 #include <QHostAddress>
 
@@ -29,11 +30,11 @@ MockCommsCarrier::~MockCommsCarrier()
 ////////////////////////// Mock interface
 
 
-void MockCommsCarrier::mockWriteMock(QByteArray data, const NetworkAddress &address, bool sendReadyReadSignal)
+void MockCommsCarrier::mockWriteMock(QByteArray data, QSharedPointer<CarrierAddress> address, bool sendReadyReadSignal)
 {
-	QString key=address.toString();
+	QString key = address.isNull()?"":address->toString();
 	mMockReadData.append(QPair<QString, QByteArray>(key, data));
-	qDebug()<<"Mock-writing "<< data.size() << "bytes of data to be read from "<<key;
+	qDebug()<<"Mock-writing "<< data.size() << "bytes of data to be read from '" << key << "'";
 	if(sendReadyReadSignal) {
 		mHasPendingData=true;
 		emit carrierReadyRead();
@@ -41,12 +42,12 @@ void MockCommsCarrier::mockWriteMock(QByteArray data, const NetworkAddress &addr
 }
 
 
-QByteArray MockCommsCarrier::mockReadMock(const NetworkAddress &address)
+QByteArray MockCommsCarrier::mockReadMock(QSharedPointer<CarrierAddress> address)
 {
-	const QString key=address.toString();
+	const QString key = address.isNull()?"":address->toString();
 	if(mMockWriteData.contains(key) && ! mMockWriteData[key].isEmpty()) {
 		QByteArray out = mMockWriteData[key].takeFirst();
-		qDebug()<<"Mock-reading "<< out.size() << "bytes of data to be written to "<<key;
+		qDebug()<<"Mock-reading "<< out.size() << "bytes of data to be written to '" << key << "'";
 		return out;
 	}
 	return QByteArray();
@@ -70,35 +71,35 @@ void MockCommsCarrier::mockSetWriteBatchSize(qint64 writeBatchSize)
 void MockCommsCarrier::mockSetStartFail(bool startFail)
 {
 	qDebug()<<"Mock-Setting StartFail to "<< startFail;
-	mStartFail=	startFail;
+	mStartFail =	startFail;
 }
 
 
 void MockCommsCarrier::mockSetMinimalPacketInterval(quint64 size)
 {
 	qDebug()<<"Mock-Setting MinimalPacketInterval to "<< size;
-	mMinimalPacketInterval=size;
+	mMinimalPacketInterval = size;
 }
 
 
 void MockCommsCarrier::mockSetMaximalPacketIntervalImp(quint64 size)
 {
 	qDebug()<<"Mock-Setting MaximalPacketInterval to "<< size;
-	mMaximalPacketInterval=size;
+	mMaximalPacketInterval = size;
 }
 
 
-void MockCommsCarrier::mockSetAddress(NetworkAddress addr)
+void MockCommsCarrier::mockSetAddress(QSharedPointer<CarrierAddress> addr)
 {
-	qDebug()<<"Mock-Setting OurAddress to "<< addr;
-	mOurAddress=addr;
+	qDebug() << "Mock-Setting OurAddress to "<< (addr.isNull()?"NULL":addr->toString());
+	mOurAddress = addr;
 }
 
 
 void MockCommsCarrier::mockSetOverrideSendingtimer(bool override)
 {
 	qDebug()<<"Mock-Setting override sending timer from "<<mOverrideStartStop<<" to "<<override;
-	mOverrideStartStop=override;
+	mOverrideStartStop = override;
 }
 
 
@@ -148,7 +149,7 @@ void MockCommsCarrier::mockTriggerConnectionStatusChanged(bool connected)
 ////////////////////////// CommsCarrier overrides to take countrol over sending opportunity timer
 
 
-bool MockCommsCarrier::start(NetworkAddress address)
+bool MockCommsCarrier::start(QSharedPointer<CarrierAddress> address)
 {
 	if(mOverrideStartStop) {
 		return isConnectionMaintained();
@@ -186,15 +187,16 @@ bool MockCommsCarrier::activateImp(bool start)
 	} else {
 		mIsStarted=false;
 	}
-	qDebug() << "activate() called with start= "<<start<<" for address "<< mOurAddress.toString() << " with mock-fail=" << mStartFail << " and isStarted " << oldIsStarted << " --> " << mIsStarted;
+	
+	qDebug() << "activate() called with start= "<<start<<" for address " << (mOurAddress.isNull()?"":mOurAddress->toString()) << " with mock-fail=" << mStartFail << " and isStarted " << oldIsStarted << " --> " << mIsStarted;
 	return mIsStarted;
 }
 
 
-void MockCommsCarrier::setAddressImp(NetworkAddress address)
+void MockCommsCarrier::setAddressImp(QSharedPointer<CarrierAddress> address)
 {
-	qDebug() << "setAddress() called for address "<< address.toString();
-	mOurAddress=address;
+	qDebug() << "setAddress() called for address " << (address.isNull()?"":address->toString());
+	mOurAddress = address;
 }
 
 
@@ -205,16 +207,20 @@ bool MockCommsCarrier::isActiveImp() const
 }
 
 
-qint64 MockCommsCarrier::writeDataImp(const QByteArray &datagram, const NetworkAddress &address)
+qint64 MockCommsCarrier::writeDataImp(const QByteArray &datagram, QSharedPointer<CarrierAddress> address)
 {
+	if(address.isNull()){
+		qWarning() << "write() called. No address, wrote 0.";
+		return 0;
+	}
 	const qint64 sz=datagram.size();
 	const qint64 written=(mWriteBatchSize>=0)?qMin(mWriteBatchSize, sz):sz;
 	if(written > 0) {
 		auto l=datagram.left(static_cast<int>(written));
-		QString key=address.toString();
+		QString key=address->toString();
 		mMockWriteData[key].append(l);
 	}
-	qDebug() << "write() called. wrote "<<written << " of "<< sz <<"bytes to address="<<address.toString()<<" (mock batch size=" << ( (mWriteBatchSize<0)?"no batch":QString::number(mWriteBatchSize)) << ")";
+	qDebug() << "write() called. wrote " << written << " of " << sz << "bytes to address=" << (address.isNull()?"":address->toString()) << " (mock batch size=" << ( (mWriteBatchSize<0)?"no batch":QString::number(mWriteBatchSize)) << ")";
 	return written;
 }
 
@@ -226,33 +232,37 @@ qint64 MockCommsCarrier::readDataImp(char *data, qint64 maxlen, QHostAddress *ho
 		qDebug() << "read() returning 0 bytes as no data was available";
 		return 0;
 	}
-	QPair<QString, QByteArray> pair=mMockReadData.takeFirst();
-	const QString &key=pair.first;
-	NetworkAddress na;
-	na.fromString(key);
-	QByteArray all=pair.second;
-	const qint64 sz=all.size();
-	const quint64 bytesRead=static_cast<quint64>(qMin(maxlen, sz));
-	QByteArray send=all.left(static_cast<int>(bytesRead));
+	QPair<QString, QByteArray> pair = mMockReadData.takeFirst();
+	const QString &key = pair.first;
+	CarrierAddressFactory caf;
+	auto na = caf.fromString(key);
+	QByteArray all = pair.second;
+	const qint64 sz = all.size();
+	const quint64 bytesRead = static_cast<quint64>(qMin(maxlen, sz));
+	QByteArray send = all.left(static_cast<int>(bytesRead));
 	// Toss back the remaining data if any
-	QByteArray keep=all.right(static_cast<qint64>(sz-bytesRead));
+	QByteArray keep = all.right(static_cast<qint64>(sz-bytesRead));
 	if(keep.size()>0) {
-		pair.second=keep;
-		qDebug()<<"PREPENDING REST";
+		pair.second = keep;
+		qDebug() << "PREPENDING REST";
 		mMockReadData.prepend(pair);
 	}
+	
+	
+	//TODO: Fix this after CarrierAddress refactor
+	/*
 	// Send the requested number of bytes
-	if(nullptr!=all && bytesRead > 0) {
+	if(nullptr != all && bytesRead > 0) {
 		memcpy(data, send.constData(), bytesRead);
 	}
 	// Send the host
-	if(nullptr!=host) {
-		*host=QHostAddress(na.ip());
+	if(nullptr != host) {
+		*host=QHostAddress(na->ip());
 	}
 	// Send the port
-	if(nullptr!=port) {
-		*port=na.port();
-	}
+	if(nullptr != port) {
+		*port=na->port();
+	}*/
 	qDebug() << "read() returning bytesRead="<<bytesRead<<", host="<<(nullptr!=host?host->toString():"nullptr")<<" and port="<<(nullptr!=port?QString::number(*port):"nullptr");
 	return static_cast<qint64>(bytesRead);
 }
@@ -281,7 +291,7 @@ QString MockCommsCarrier::errorStringImp()
 }
 
 
-NetworkAddress MockCommsCarrier::addressImp()
+QSharedPointer<CarrierAddress> MockCommsCarrier::addressImp()
 {
 	return mOurAddress;
 }

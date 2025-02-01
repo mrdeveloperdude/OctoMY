@@ -23,7 +23,7 @@ private:
 	QString mLastError;
 	quint64 mMinimalPacketInterval;
 	quint64	mMaximalPacketInterval;
-	NetworkAddress mOurAddress;
+	QSharedPointer<CarrierAddress> mOurAddress;
 	bool mOverrideStartStop;
 
 public:
@@ -32,14 +32,14 @@ public:
 
 	////////////////////////// Mock interface
 public:
-	void mockWriteMock(QByteArray data, const NetworkAddress &address, bool sendReadyReadSignal=true);
-	QByteArray mockReadMock(const NetworkAddress &address);
+	void mockWriteMock(QByteArray data, QSharedPointer<CarrierAddress> address, bool sendReadyReadSignal=true);
+	QByteArray mockReadMock(QSharedPointer<CarrierAddress> address);
 	void mockSetHasPendingData(bool hasPendingData);
 	void mockSetWriteBatchSize(qint64 writeBatchSize=-1);
 	void mockSetStartFail(bool startFail=true);
 	void mockSetMinimalPacketInterval(quint64 size);
 	void mockSetMaximalPacketIntervalImp(quint64 size);
-	void mockSetAddress(NetworkAddress addr);
+	void mockSetAddress(QSharedPointer<CarrierAddress> addr);
 	void mockSetOverrideSendingtimer(bool override);
 
 	void mockStartSendingTimer();
@@ -53,7 +53,7 @@ public:
 
 	// CommsCarrier overrides to take countrol over sending opportunity timer
 public slots:
-	bool start(NetworkAddress address);
+	bool start(QSharedPointer<CarrierAddress> address);
 	void stop();
 
 
@@ -63,12 +63,12 @@ protected:
 	void configureImp() override;
 	bool activateImp(bool) override;
 
-	void setAddressImp(NetworkAddress address) override;
+	void setAddressImp(QSharedPointer<CarrierAddress> address) override;
 
 
 	bool isActiveImp() const override;
 
-	qint64 writeDataImp(const QByteArray &datagram, const NetworkAddress &address) override;
+	qint64 writeDataImp(const QByteArray &datagram, QSharedPointer<CarrierAddress> address) override;
 	qint64 readDataImp(char *data, qint64 maxlen, QHostAddress *host = nullptr, quint16 *port = nullptr) override;
 
 	bool hasPendingDataImp() override ;
@@ -76,7 +76,7 @@ protected:
 
 	QString errorStringImp() override ;
 
-	NetworkAddress addressImp() override ;
+	QSharedPointer<CarrierAddress> addressImp() override ;
 
 
 	quint64 minimalPacketIntervalImp() override ;

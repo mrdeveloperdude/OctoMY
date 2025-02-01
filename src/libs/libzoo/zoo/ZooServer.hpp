@@ -1,17 +1,15 @@
 #ifndef ZOOSERVER_HPP
 #define ZOOSERVER_HPP
 
-#include "qhttp/qhttpserver.hpp"
-#include "identity/Identicon.hpp"
 
-#include "hashstore/Hashstore.hpp"
-#include "discovery/DiscoveryServer.hpp"
-
-#include "app/Settings.hpp"
-#include "security/KeyStore.hpp"
 #include "client/zoo/PunchRegistry.hpp"
-
+#include "discovery/DiscoveryServer.hpp"
+#include "hashstore/Hashstore.hpp"
+#include "identity/Identicon.hpp"
+#include "qhttp/qhttpserver.hpp"
+#include "security/KeyStore.hpp"
 #include "uptime/ConfigureHelper.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QString>
 #include <QTimer>
@@ -23,6 +21,7 @@ class QCommandLineParser;
 class QProcessEnvironment;
 
 class AppContext;
+class CarrierAddressUDP;
 
 
 class ZooServer : public qhttp::server::QHttpServer
@@ -56,7 +55,7 @@ public:
 	void configure(QSharedPointer<AppContext> context);
 
 private:
-	NetworkAddress serverAddress() const;
+	QSharedPointer<CarrierAddressUDP> serverAddress() const;
 	quint16 serverPort() const;
 	void logUsefullStuff() const;
 

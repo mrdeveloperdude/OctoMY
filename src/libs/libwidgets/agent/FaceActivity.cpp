@@ -224,7 +224,8 @@ void FaceActivity::onCommsError(QString message){
 // A new comms session was added
 void FaceActivity::onCommsClientAdded(CommsSession *c){
 	OC_METHODGATE();
-	appendLog("FACE-COMMS: session added" + c->address() );
+	auto address = c->address();
+	appendLog("FACE-COMMS: session added" + (address.isNull()?"NULL":address->toString()) );
 }
 
 // The connection state changed for comms channel

@@ -1,17 +1,9 @@
 #include "TestCommsCarrier.hpp"
 
-#include "comms/CommsChannel.hpp"
-#include "comms/carriers/CommsCarrierUDP.hpp"
+#include "comms/address/CarrierAddressUDP.hpp"
 #include "comms/carriers/CommsCarrierLocal.hpp"
-
-#include "comms/messages/MessageType.hpp"
-
-#include "random/RNG.hpp"
-
-#include "security/KeyStore.hpp"
-#include "address/Associate.hpp"
-#include "discovery/AddressBook.hpp"
-
+#include "comms/carriers/CommsCarrierUDP.hpp"
+#include "uptime/New.hpp"
 
 #include <QFileInfo>
 #include <QHostAddress>
@@ -70,13 +62,14 @@ void TestCommsCarrier::testBasic()
 	MockCommsCarrierLog mocalo;
 	commsCarrier.setHookCarrierSignals(mocalo, true);
 
-	NetworkAddress fromAddress(QHostAddress::Any, 8124);
-	NetworkAddress address(QHostAddress::Any, 8123);
+	auto fromAddress = QSharedPointer<CarrierAddressUDP>::create(QHostAddress::Any, 8124);
+	auto address = QSharedPointer<CarrierAddressUDP>::create(QHostAddress::Any, 8123);
 	UDPTester dataSender(fromAddress, address);
 
 	QCOMPARE(commsCarrier.isConnectionMaintained(), false);
-	commsCarrier.setListenAddress(address);
-	NetworkAddress addressCopy=commsCarrier.address();
+
+	commsCarrier.setListenAddress(qSharedPointerDynamicCast<CarrierAddress>(address));
+	auto addressCopy = commsCarrier.address();
 	QCOMPARE(address, addressCopy);
 
 	commsCarrier.maintainConnection(true);
@@ -114,7 +107,7 @@ void TestCommsCarrier::testBasic()
 	qDebug()<<"supposedRxBytes="<<supposedRxBytes<<", txDatagram.size()="<<txDatagram.size()<<", rxBytes="<<rxBytes<<", rxDatagram.size()="<<rxDatagram.size();
 
 	// Check the received data
-	QCOMPARE(fromAddress.port(), rxPort);
+	QCOMPARE(fromAddress->port(), rxPort);
 	QCOMPARE(rxDatagram.size(), txDatagram.size());
 	QCOMPARE(rxDatagram.size(), rxBytes);
 	QCOMPARE(supposedRxBytes, rxBytes);
@@ -138,7 +131,7 @@ void TestCommsCarrier::testBasic()
 	QCOMPARE(commsCarrier.isConnectionMaintained(), false);
 
 	/*
-		qint64 writeData(const QByteArray &datagram, const NetworkAddress &address);
+		qint64 writeData(const QByteArray &datagram, const CarrierAddress &address);
 
 		bool hasPendingData();
 		qint64 pendingDataSize();
@@ -150,6 +143,7 @@ void TestCommsCarrier::testBasic()
 	*/
 
 }
+
 
 
 void TestCommsCarrier::testConnection()

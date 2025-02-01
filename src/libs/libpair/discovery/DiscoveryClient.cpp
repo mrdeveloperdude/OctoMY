@@ -162,7 +162,7 @@ void DiscoveryClient::discover()
 						auto al=mNode->localAddressList();
 						if(!al.isNull()) {
 							QVariantList alist;
-							alist << al->currentNetworkAddress().toVariantMap();
+							alist << al->currentCarrierAddress()->toVariantMap();
 							cmd["addressList"] = alist;
 						} else {
 							qWarning() << "ERROR: no al";

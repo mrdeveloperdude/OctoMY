@@ -1,19 +1,22 @@
 #ifndef UDPTESTER_HPP
 #define UDPTESTER_HPP
 
-#include "comms/address/NetworkAddress.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QUdpSocket>
+
+class CarrierAddressUDP;
+
 
 class UDPTester
 {
 private:
-	NetworkAddress mFromAddr;
-	NetworkAddress mToAddr;
+	QSharedPointer<CarrierAddressUDP> mFromAddr;
+	QSharedPointer<CarrierAddressUDP> mToAddr;
 	QUdpSocket mSocket;
 
 public:
-	UDPTester(NetworkAddress fromAddr, NetworkAddress toAddr);
+	UDPTester(QSharedPointer<CarrierAddressUDP> fromAddr, QSharedPointer<CarrierAddressUDP> toAddr);
 
 public:
 	qint64 send(QByteArray data);

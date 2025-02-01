@@ -4,7 +4,7 @@
 /*
 #include <QHostAddress>
 
-#include "comms/address/NetworkAddress.hpp"
+#include "comms/address/CarrierAddress.hpp"
 
 class CommsSession;
 
@@ -33,22 +33,22 @@ private:
 
 	quint64 mShortHandID;
 	QString mFullID;
-	NetworkAddress mAddress;
+	CarrierAddress mAddress;
 
 public:
 	explicit CommsSignature();
 	CommsSignature(const CommsSignature &other);
-	explicit CommsSignature(const quint64 &shortHandID, const NetworkAddress &address);
-	explicit CommsSignature(const QString &fullID, const NetworkAddress &address);
+	explicit CommsSignature(const quint64 &shortHandID, const CarrierAddress &address);
+	explicit CommsSignature(const QString &fullID, const CarrierAddress &address);
 	explicit CommsSignature(const QString &fullID);
 
 	const QString toString() const;
 
 	quint64 shortHandID() const;
 	QString fullID() const;
-	NetworkAddress address() const;
+	CarrierAddress address() const;
 
-	void setAddress(const NetworkAddress &address);
+	void setAddress(const CarrierAddress &address);
 	void setShortHandID(const quint64 &shortHandID);
 	void setFullID(const QString &fullID);
 

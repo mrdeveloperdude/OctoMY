@@ -6,7 +6,7 @@
 #include <QString>
 #include <QHostAddress>
 
-class NetworkAddress;
+class CarrierAddress;
 struct AddressEntry;
 
 /**
@@ -31,11 +31,11 @@ public:
 
 public:
 	void add(QSharedPointer<AddressEntry> address);
-	void merge(NetworkAddress adr, QString description="", quint64 now=0);
-	QSharedPointer<AddressEntry> highestScore(QHostAddress dgw=QHostAddress())  const;
+	void merge(QSharedPointer<CarrierAddress> adr, QString description="", quint64 now=0);
+	QSharedPointer<AddressEntry> highestScore(QHostAddress dgw = QHostAddress())  const;
 	QMap<quint64, QSharedPointer<AddressEntry>> scoreMap(QHostAddress dgw=QHostAddress())  const;
 
-	NetworkAddress bestAddress() const;
+	QSharedPointer<CarrierAddress> bestAddress() const;
 
 	QVariantList toVariantList() const;
 	void  fromVariantList(QVariantList list);

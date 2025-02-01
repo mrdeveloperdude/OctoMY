@@ -55,10 +55,8 @@ private:
 	quint64 mLastAdherentHandshakeMS;
 	// The birthdate of this associate
 	quint64 mBirthDate;
-	// The network addresses this associate has been known to be reachable by
+	// The carrier addresses this associate has been known to be reachable by
 	AddressList mAddressList;
-	// The bluetooth address this associate has been known to use
-	QBluetoothAddress mBluetoothAddress;
 	// The NFC address this associate has been known to use
 	QByteArray mNFCAddress;
 	// The pins this associate knows (for multi factor auth)
@@ -97,12 +95,8 @@ public:
 	// Determine if this associate is is usable for storing details for the zoo server
 	bool isValidForServer();
 
-	// Provide the list of network addresses used by this associate
+	// Provide the list of carrier addresses used by this associate
 	AddressList &addressList();
-
-	// Provide the bluetooth address used by this associate
-	// TODO: Merge into NetworkAddress?
-	QBluetoothAddress bluetoothAddress() const;
 
 	// Update the last seen timestamp. If when is 0 then current timestamp will be used
 	void setLastSeen(quint64 when=0);
