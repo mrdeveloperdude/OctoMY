@@ -28,7 +28,6 @@ class HubWindow: public NodeWindow
 	Q_OBJECT
 private:
 	Ui::HubWindow *ui;
-	QSharedPointer<Hub> mHub;
 	quint64 mLastTime;
 	qreal mAngle=0.0;
 

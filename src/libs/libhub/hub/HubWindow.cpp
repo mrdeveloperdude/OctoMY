@@ -16,7 +16,6 @@
 #include <QNetworkInterface>
 #include <QProcess>
 #include <QScrollBar>
-#include <QSplashScreen>
 #include <QString>
 #include <QStringList>
 #include <QTextStream>
@@ -56,8 +55,6 @@ void HubWindow::configure()
 		QSharedPointer<Settings>  s=h->settings();
 		auto settings=s.data();
 		restoreGeometry(settings->getCustomSettingByteArray("window.geometry"));
-		QSplashScreen *splash=OC_NEW QSplashScreen(this->screen(), QPixmap(":/images/hub_butterfly.svg"), Qt::WindowStaysOnTopHint);
-		splash->show();
 		ui->widgetPairing->configure(h);
 		/*
 		QAbstractItemModel *data = OC_NEW ClientModel(hub->getComms()->getClients(), this);
@@ -82,8 +79,6 @@ void HubWindow::configure()
 		ui->widgetPlanEditor->configure("hub.plan");
 		//updateClientsList();
 		appendLog("READY");
-		QTimer::singleShot(1500,splash,SLOT(deleteLater()));
-		splash=nullptr;
 		ui->tabDevelopment->updateIdentityWidgets();
 	} else {
 		qWarning()<<"WARNING: No Agent in agent window configure";
@@ -94,7 +89,7 @@ void HubWindow::configure()
 QSharedPointer<Hub> HubWindow::hub()
 {
 	OC_METHODGATE();
-	QSharedPointer<Node> n=node();
+	QSharedPointer<Node> n = node();
 	if(n.isNull()) {
 		qWarning()<<"WARNING: No node in hub()";
 	}
@@ -105,9 +100,12 @@ QSharedPointer<Hub> HubWindow::hub()
 void HubWindow::appendLog(const QString& text)
 {
 	OC_METHODGATE();
-	auto logStorage = mHub->logStorage();
-	if(logStorage){
-		logStorage->appendLog(text);
+	auto h = hub();
+	if(h){
+		auto logStorage = h->logStorage();
+		if(logStorage){
+			logStorage->appendLog(text);
+		}
 	}
 }
 

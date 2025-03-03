@@ -7,6 +7,7 @@
 #include <QSvgRenderer>
 
 class Node;
+class SplashScreen;
 
 class NodeWindow : public QWidget, public QEnableSharedFromThis<NodeWindow>
 {
@@ -17,6 +18,7 @@ protected:
 	QSvgRenderer mWaterMark;
 	QPixmap mWatermarkCache;
 	QSize mWatermarkLastSize;
+	SplashScreen *mSplash;
 	
 public:
 	explicit NodeWindow(QWidget *parent = nullptr);

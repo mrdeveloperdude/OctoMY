@@ -1,10 +1,11 @@
 #include "NodeWindow.hpp"
 
-#include "uptime/MethodGate.hpp"
 #include "app/Settings.hpp"
-#include "node/Node.hpp"
-
 #include "identity/Identicon.hpp"
+#include "node/Node.hpp"
+#include "splash/SplashScreen.hpp"
+#include "uptime/MethodGate.hpp"
+#include "node/NodeType.hpp"
 
 #include <QApplication>
 #include <QDebug>
@@ -21,6 +22,7 @@ NodeWindow::NodeWindow(QWidget *parent)
 	: QWidget(parent)
 	, mNode(nullptr)
 	, mWaterMark(QString(":/images/agent_watermark.svg"), this)
+	, mSplash(OC_NEW SplashScreen())
 {
 	OC_METHODGATE();
 }
@@ -81,7 +83,12 @@ void NodeWindow::nodeWindowConfigure(QSharedPointer<Node> node)
 	if(!mNode.isNull()) {
 
 // [...]
+		
+		auto typeName = nodeTypeToString(mNode->nodeType()).toLower();
+
+		mSplash->configure(this, QString(":/icons/%1.svg").arg(typeName));
 		configure();
+		QTimer::singleShot(1600, mSplash, &SplashScreen::done);
 	} else {
 		qWarning()<<"WARNING: No Agent in agent window";
 	}
