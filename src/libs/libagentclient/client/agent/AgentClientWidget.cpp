@@ -25,9 +25,10 @@ AgentClientWidget::AgentClientWidget(QSharedPointer<AgentClient> client, QWidget
 	qDebug()<<"CREATING AGENT CLIENT WIDGET AgentClient="<<(!mAgentClient.isNull()?mAgentClient->node()->nodeIdentity()->name():"NULL")<<", parent="<<parent;
 	ui->widgetBirthCertificate->configure(false,true);
 	if(!mAgentClient.isNull()) {
-		QSharedPointer<Node> node=mAgentClient->node();
+		auto node=mAgentClient->node();
 		if(!node.isNull()) {
 			node->setHookCommsSignals(*mAgentClient.data(), true);
+			ui->widgetSpeechControl->configure(node);
 		} else {
 			qWarning()<<"ERROR: no associate";
 		}

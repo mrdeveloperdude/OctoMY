@@ -33,6 +33,7 @@ RemoteClientWidget::RemoteClientWidget(QSharedPointer<RemoteClient> client, QWid
 	if(!mRemoteClient.isNull()) {
 		QSharedPointer<Node> node=mRemoteClient->node();
 		if(!node.isNull()) {
+			ui->widgetSpeechControl->configure(node);
 			QSharedPointer<Associate> nodeAssociate=node->nodeIdentity();
 			if(!nodeAssociate.isNull()) {
 				ui->widgetBirthCertificate->setPortableID(nodeAssociate->toPortableID());

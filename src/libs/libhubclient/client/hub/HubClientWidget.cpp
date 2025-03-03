@@ -33,6 +33,7 @@ HubClientWidget::HubClientWidget(QSharedPointer<HubClient> client, QWidget *pare
 	if(!mHubClient.isNull()) {
 		QSharedPointer<Node> node=mHubClient->node();
 		if(!node.isNull()) {
+			ui->widgetSpeechControl->configure(node);
 			QSharedPointer<Associate> nodeAssociate=node->nodeIdentity();
 			if(!nodeAssociate.isNull()) {
 				ui->widgetBirthCertificate->setPortableID(nodeAssociate->toPortableID());

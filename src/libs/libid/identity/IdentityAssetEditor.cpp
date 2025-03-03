@@ -4,7 +4,7 @@
 #include "security/Key.hpp"
 #include "uptime/MethodGate.hpp"
 #include "utility/random/Random.hpp"
-#include "node/LogDevice.hpp"
+#include "log/LogDevice.hpp"
 
 #include <qfiledialog.h>
 #include <qpainter.h>

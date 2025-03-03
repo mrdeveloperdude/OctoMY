@@ -2,7 +2,6 @@
 #define AGENTWINDOW_HPP
 
 #include "agent/UnboxingStage.hpp"
-#include "app/log/LogDestination.hpp"
 #include "node/NodeWindow.hpp"
 #include "uptime/ConfigureHelper.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
@@ -48,7 +47,7 @@ class AgentWindow;
  * This is useful for when your robots has no screen and/or is running on
  * resource constrained hardware.
  */
-class AgentWindow : public NodeWindow, public LogDestination
+class AgentWindow : public NodeWindow
 {
 	Q_OBJECT
 
@@ -101,9 +100,8 @@ public:
 public:
 	QSharedPointer<Agent> agent();
 
-	// LogDestination interface
 public:
-	void appendLog(const QString& text) override;
+	void appendLog(const QString& text);
 
 
 	// Agent spesific private

@@ -1,7 +1,6 @@
 #ifndef CONNECTIONACTIVITY_HPP
 #define CONNECTIONACTIVITY_HPP
 
-#include "app/log/LogDestination.hpp"
 #include "components/TryToggleState.hpp"
 #include "components/navigation/Activity.hpp"
 #include "uptime/ConfigureHelper.hpp"
@@ -15,7 +14,7 @@ namespace Ui {
 class ConnectionActivity;
 }
 
-class ConnectionActivity : public Activity, public LogDestination
+class ConnectionActivity : public Activity
 {
 	Q_OBJECT
 private:
@@ -33,11 +32,9 @@ public:
 	// Connection
 private slots:
 	void tryConnectChanged(const TryToggleState last, const TryToggleState current);
-	
-	
-	// LogDestination interface
+
 public:
-	void appendLog(const QString& text) override;
+	void appendLog(const QString& text);
 
 	// Virtual activity mechanism
 protected:

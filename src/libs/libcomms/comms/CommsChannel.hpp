@@ -8,16 +8,13 @@
 #define COMMSCHANNEL_HPP
 
 
-#include "uptime/SharedPointerWrapper.hpp"
-#include "app/log/LogDestination.hpp"
-#include "security/Key.hpp"
-
-
-#include "utility/time/RateCalculator.hpp"
 #include "CommsSessionDirectory.hpp"
 #include "carriers/CommsCarrier.hpp"
 #include "couriers/Courier.hpp"
 #include "couriers/CourierSet.hpp"
+#include "security/Key.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
+#include "utility/time/RateCalculator.hpp"
 
 
 #include <QObject>
@@ -127,7 +124,7 @@ public:
 
 
 protected:
-	void appendLog(QString);
+	void appendLog(const QString &text);
 	void doSendWithSession( PacketSendState &state);
 	void sendHandshake(const quint64 &now, const QString handShakeID);
 	void sendSyn(PacketSendState &state);

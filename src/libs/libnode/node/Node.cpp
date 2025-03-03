@@ -36,6 +36,7 @@
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 #include "utility/time/ScopedTimer.hpp"
+#include "log/LogStorage.hpp"
 
 #include <QCommandLineParser>
 #include <QAccelerometerReading>
@@ -52,6 +53,7 @@ static const QString NODE_ONLINE_STATUS_BASE_KEY("octomy.node.online.");
 Node::Node()
 	: QObject(nullptr)
 	, mAppConfigureHelper("node", true, true, false, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
+	, mLogStorage(OC_NEW LogStorage())
 	, mKeyStore(OC_NEW KeyStore())
 	, mLocalIdentityStore(OC_NEW LocalIdentityStore())
 	, mLocalAddressList(OC_NEW LocalAddressList())
@@ -117,7 +119,9 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 
 				// Configure all services
 				//////////////////////////////////
-
+				
+				mLogStorage->configure(baseDir + "/logs");
+				
 				mKeyStore->configure(baseDir + "/keystore.json", false);
 				mKeyStoreService->configure();
 
@@ -243,6 +247,11 @@ QSharedPointer<NodeWindow> Node::appWindow()
 	return nullptr;
 }
 
+
+QSharedPointer<LogStorage> Node::logStorage() const{
+	OC_METHODGATE();
+	return mLogStorage;
+}
 
 QSharedPointer<IAppLauncher> Node::launcher()
 {
@@ -392,6 +401,23 @@ QUrl Node::serverURL()
 		return mServerURL;
 	}
 	return QUrl();
+}
+
+
+void Node::setPanic(bool panic)
+{
+	OC_METHODGATE();
+	if(mPanic != panic) {
+		mPanic = panic;
+		//qWarning() << "Panic set to: " << mPanic;
+	}
+}
+
+
+bool Node::panic()
+{
+	OC_METHODGATE();
+	return mPanic;
 }
 
 

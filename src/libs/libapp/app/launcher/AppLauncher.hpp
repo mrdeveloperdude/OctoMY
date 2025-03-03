@@ -6,7 +6,7 @@
 
 #include "app/style/StyleManager.hpp"
 #include "app/Settings.hpp"
-#include "app/log/LogHandler.hpp"
+#include "log/LogHandler.hpp"
 #include "app/launcher/AppRenderingSettingsProvider.hpp"
 #include "app/launcher/AppCommandLineParser.hpp"
 #include "app/AppContext.hpp"

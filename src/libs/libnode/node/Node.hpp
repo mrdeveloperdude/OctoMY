@@ -21,6 +21,8 @@
 #include <QHostAddress>
 #include <QUrl>
 
+class LogStorage;
+
 class CommsCarrier;
 class CommsChannel;
 class ZooClient;
@@ -77,6 +79,8 @@ private:
 	QSharedPointer<IAppLauncher> mLauncher;
 	// Helper to keep track of appConfigure() and appActivate() state
 	ConfigureHelper mAppConfigureHelper;
+	// The storage for application logs
+	QSharedPointer<LogStorage> mLogStorage;
 	// Our key store
 	QSharedPointer<KeyStore> mKeyStore;
 	// Our local identity storage
@@ -139,6 +143,9 @@ private:
 	
 	// Output debug log
 	bool mDebug{false};
+	
+	// The current state of panic mode. If enabled the node will engage safety measures such as limping all actuators and blinking warning lights
+	bool mPanic;
 
 
 public:
@@ -180,6 +187,9 @@ public:
 	// Provide type
 	virtual NodeType nodeType()=0;
 
+
+public:
+	QSharedPointer<LogStorage> logStorage() const;
 
 	// Selectors
 public:
@@ -231,7 +241,16 @@ public:
 protected:
 	// Provide local identity. Only for internal use, use nodeIdentity() as a user
 	QSharedPointer<LocalIdentityStore> localIdentityStore();
-
+	
+	
+	
+	
+public:
+	// Accept triggering or un-triggering of panic state
+	void setPanic(bool panic);
+	// Get panic state
+	bool panic();
+	
 
 	// Actions
 public:

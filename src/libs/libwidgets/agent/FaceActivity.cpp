@@ -5,6 +5,7 @@
  */
 
 #include "FaceActivity.hpp"
+#include "log/LogModel.hpp"
 #include "ui_FaceActivity.h"
 
 #include "address/Associate.hpp"
@@ -13,8 +14,7 @@
 #include "app/Constants.hpp"
 #include "comms/CommsSession.hpp"
 #include "comms/couriers/sets/AgentCourierSet.hpp"
-#include "utility/random/Random.hpp"
-#include "utility/color/Color.hpp"
+
 #include "utility/ui/Ui.hpp"
 
 
@@ -24,13 +24,14 @@
 FaceActivity::FaceActivity(QWidget *parent)
 	: Activity(parent)
 	, ui(OC_NEW Ui::FaceActivity)
-	, mAgent(nullptr)
 	, mConfigureHelper("FaceActivity", true, false, true, true, false)
 
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
-	ui->tryToggleConnect->configure("Connect", "Connecting...", "Connected", "Disconnecting...", Constants::AGENT_CONNECT_BUTTON_COLOR, Constants::AGENT_DISCONNECT_COLOR);
+	connect(ui->widgetConnectionStatus, &ConnectionStatusWidget::openConnectionSettings, this, [this](){
+		push("ConnectionActivity");
+	});
 }
 
 
@@ -106,7 +107,13 @@ void FaceActivity::updateVisibility()
 void FaceActivity::appendLog(const QString& text)
 {
 	OC_METHODGATE();
-	ui->logScroll->appendLog(text);
+	
+	if(!mAgent.isNull()){
+		auto logStorage = mAgent->logStorage();
+		if(logStorage){
+			logStorage->appendLog(text);
+		}
+	}
 }
 
 
@@ -118,6 +125,7 @@ void FaceActivity::configure(QSharedPointer<Agent> a)
 		if(!mAgent.isNull()){
 			mAgent->setHookCommsSignals(*this, true);
 			mAgent->setHookColorSignals(*this, true);
+			ui->logScroll->configure(mAgent);
 		}
 		ui->widgetRealtimeValues->setAgent(mAgent);
 		auto s = settings();
@@ -138,7 +146,7 @@ void FaceActivity::configure(QSharedPointer<Agent> a)
 		}
 		updateEyes();
 		updateVisibility();
-		connect(ui->pushButtonPanic, &PanicButton::panicChanged, this, & FaceActivity::panicChanged);
+		ui->widgetConnectionStatus->configure(a);
 	}
 }
 
@@ -163,47 +171,6 @@ void FaceActivity::onSyncParameterChanged(ISyncParameter *sp)
 }
 
 
-void FaceActivity::randomizeColor()
-{
-	OC_METHODGATE();
-	QPalette p = ui->pushButtonRandomizeColor->palette();
-	QColor col;
-	const auto hue = utility::random::frand();
-	col.setHslF(hue, 1.0f, 0.5f);
-	qDebug() << "Red:" << col.red() << "Green:" << col.green() << "Blue:" << col.blue()<< "Hue:"<< hue;
-	p.setColor(QPalette::Button, col);
-	p.setColor(QPalette::ButtonText, utility::color::intensity(col) > 0.5f?Qt::black:Qt::white);
-	ui->pushButtonRandomizeColor->setPalette(p);
-	appendLog(QString("New color: %1").arg(col.name()));
-	emit colorChanged(col);
-}
-
-
-void FaceActivity::panicChanged(bool panic)
-{
-	OC_METHODGATE();
-	if(mConfigureHelper.isConfiguredAsExpected()){
-		ui->pushButtonPanic->setPanic(panic);
-		if(!mAgent.isNull()) {
-			mAgent->setPanic(panic);
-			if(panic) {
-				QString str="P A N I C !";
-				qWarning()<<str;
-				appendLog(str);
-			} else {
-				QString str="Panic averted";
-				qWarning()<<str;
-				appendLog(str);
-			}
-		}
-		else{
-			QString str="Panic could not be propegated :-|";
-			qWarning()<<str;
-			appendLog(str);
-		}
-	}
-}
-
 
 void FaceActivity::onSplitterMoved(int, int)
 {
@@ -225,6 +192,7 @@ void FaceActivity::onCommsError(QString message){
 void FaceActivity::onCommsClientAdded(CommsSession *c){
 	OC_METHODGATE();
 	auto address = c->address();
+	// TODO: With the new logging system ,this localized logging should no longer be necessary
 	appendLog("FACE-COMMS: session added" + (address.isNull()?"NULL":address->toString()) );
 }
 
@@ -232,8 +200,6 @@ void FaceActivity::onCommsClientAdded(CommsSession *c){
 void FaceActivity::onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection){
 	OC_METHODGATE();
 	appendLog(QString("FACE-COMMS: connected=%1, wants connection=%2 ").arg(isConnected).arg(needsConnection) );
-	const auto tts = createTryToggleState(isConnected, needsConnection);
-	ui->tryToggleConnect->setState(tts);
 }
 
 

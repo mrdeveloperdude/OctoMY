@@ -4,7 +4,7 @@
 #include "app/Constants.hpp"
 #include "gait/GaitController.hpp"
 #include "hub/Hub.hpp"
-#include "node/LogDevice.hpp"
+#include "log/LogDevice.hpp"
 #include "pose/PoseMapping.hpp"
 
 #include "uptime/ConnectionType.hpp"
@@ -85,6 +85,9 @@ void DeveloperWidget::configure(QSharedPointer<Settings> _settings, QSharedPoint
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()){
 		mHub = hub;
+		if(mHub){
+			ui->widgetSpeechControl->configure(mHub);
+		}
 		auto settings = _settings.data();
 		ui->tabWidgetDevelopment->setCurrentWidget(ui->tabComms);
 		ui->comboBoxLocalAddress->configure(settings, "hub-listen-address", "Local address");

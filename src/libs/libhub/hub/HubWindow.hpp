@@ -1,7 +1,7 @@
 #ifndef HUBWINDOW_HPP
 #define HUBWINDOW_HPP
 
-#include "app/log/LogDestination.hpp"
+
 #include "node/NodeWindow.hpp"
 
 
@@ -23,7 +23,7 @@ class HubWindow;
 }
 
 
-class HubWindow: public NodeWindow, public LogDestination
+class HubWindow: public NodeWindow
 {
 	Q_OBJECT
 private:
@@ -43,9 +43,8 @@ public:
 public:
 	QSharedPointer<Hub> hub();
 
-	// LogDestination
 public:
-	void appendLog(const QString& text) override;
+	void appendLog(const QString& text);
 
 	// CommsChannel slots
 public slots:

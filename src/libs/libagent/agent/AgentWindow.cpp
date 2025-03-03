@@ -1,7 +1,4 @@
 #include "AgentWindow.hpp"
-#include "connection/ConnectionActivity.hpp"
-#include "pairing/NetworkPairingActivity.hpp"
-#include "stanza/StanzaManagerActivity.hpp"
 #include "ui_AgentWindow.h"
 
 #include "agent/Agent.hpp"
@@ -11,6 +8,7 @@
 #include "agent/MessageActivity.hpp"
 #include "agent/TransitionActivity.hpp"
 #include "app/Constants.hpp"
+#include "connection/ConnectionActivity.hpp"
 #include "delivery/AgentBaptismActivity.hpp"
 #include "delivery/AgentDeliveryActivity.hpp"
 #include "delivery/AgentSipAndSeeActivity.hpp"
@@ -20,12 +18,15 @@
 #include "hardware/HardwareActivity.hpp"
 #include "hardware/LobeTypeSelector.hpp"
 #include "hardware/SerialDeviceSelector.hpp"
+#include "log/LogStorage.hpp"
 #include "node/NodeNavigation.hpp"
 #include "pairing/CameraPairingActivity.hpp"
+#include "pairing/NetworkPairingActivity.hpp"
 #include "pairing/PairingActivity.hpp"
 #include "pairing/PairingTrustActivity.hpp"
 #include "stanza/StanzaEditorActivity.hpp"
 #include "stanza/StanzaEditorActivity.hpp"
+#include "stanza/StanzaManagerActivity.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
@@ -199,10 +200,16 @@ void AgentWindow::unboxingWizardDone(){
 void AgentWindow::appendLog(const QString& text)
 {
 	OC_METHODGATE();
+	auto a = agent();
+	if(a){
+		auto logStorage = a->logStorage();
+		if(logStorage){
+			logStorage->appendLog(text);
+		}
+	}
 	if(mDebug){
 		qDebug()<<"AGENT-LOG-APPEND: "<<text;
 	}
-	mFaceActivity->appendLog(text);
 }
 
 

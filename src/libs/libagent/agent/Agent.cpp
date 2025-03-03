@@ -140,23 +140,6 @@ QSharedPointer<Node> Agent::sharedThis()
 }
 
 
-void Agent::setPanic(bool panic)
-{
-	OC_METHODGATE();
-	if(mPanic != panic) {
-		mPanic = panic;
-		//qWarning()<<"Panic set to: "<<mPanic;
-	}
-}
-
-
-bool Agent::panic()
-{
-	OC_METHODGATE();
-	return mPanic;
-}
-
-
 QSharedPointer<AgentConfigStore> Agent::configurationStore()
 {
 	OC_METHODGATE();

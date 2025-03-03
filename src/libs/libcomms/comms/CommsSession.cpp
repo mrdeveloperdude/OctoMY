@@ -1,16 +1,12 @@
 #include "CommsSession.hpp"
 
-#include "uptime/MethodGate.hpp"
-#include "utility/time/HumanTime.hpp"
-#include "utility/random/Random.hpp"
-
-#include "app/log/LogDestination.hpp"
 #include "CommsChannel.hpp"
 #include "security/Key.hpp"
-
+#include "uptime/MethodGate.hpp"
+#include "utility/random/Random.hpp"
+#include "utility/time/HumanTime.hpp"
 
 #include <QDateTime>
-
 #include <QtGlobal>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -270,16 +266,16 @@ void CommsSession::setExpired()
 void CommsSession::countSend(qint64 written)
 {
 	OC_METHODGATE();
-	const qint64 now=utility::time::currentMsecsSinceEpoch<qint64>();
-	if(mLastSendTime<=0) {
-		mLastSendTime=now-1;
+	const qint64 now = utility::time::currentMsecsSinceEpoch<qint64>();
+	if(mLastSendTime <= 0) {
+		mLastSendTime = now-1;
 	}
-	const qint64 delta=now-mLastSendTime;
-	mLastSendTime=now;
-	mDeltaTime=delta/1000.0f;
+	const qint64 delta = now-mLastSendTime;
+	mLastSendTime = now;
+	mDeltaTime = delta/1000.0f;
 	// TODO: Normalize qreal vs float vs all the types
 	mDisconnectTimeoutAccumulator += static_cast<qreal>(mDeltaTime);
-	mExpireTimeoutAccumulator+=static_cast<quint64>(qMax(0LL, delta));
+	mExpireTimeoutAccumulator += static_cast<quint64>(qMax(0LL, delta));
 	if (mConnected && ( mDisconnectTimeoutAccumulator > mDisconnectTimeout )) {
 		qDebug()<<"SESSION "<< signatureToString() <<" disconnected";
 		mConnected=false;
@@ -303,10 +299,10 @@ void CommsSession::countSend(qint64 written)
 void CommsSession::receive()
 {
 	OC_METHODGATE();
-	mLastReceiveTime=utility::time::currentMsecsSinceEpoch<qint64>();
-	mConnected=true;
+	mLastReceiveTime = utility::time::currentMsecsSinceEpoch<qint64>();
+	mConnected = true;
 	mDisconnectTimeoutAccumulator = 0.0;
-	mExpireTimeoutAccumulator=0;
+	mExpireTimeoutAccumulator = 0;
 }
 
 bool CommsSession::idle()

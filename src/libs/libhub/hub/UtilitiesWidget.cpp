@@ -5,7 +5,7 @@
 #include "hexedit/QHexEditData.hpp"
 #include "zbar/ZBarScanner.hpp"
 
-#include "node/LogDevice.hpp"
+#include "log/LogDevice.hpp"
 
 #include "app/Settings.hpp"
 #include "hub/Hub.hpp"

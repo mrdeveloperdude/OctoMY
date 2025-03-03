@@ -28,9 +28,6 @@ private:
 	// The window that represents this agent
 	QSharedPointer<AgentWindow> mWindow;
 
-	// The current state of panic mode. If enabled the agent will engage safety measures such as limping all actuators and blinking warning lights
-	bool mPanic;
-
 	// The configuration store for this agent. Contains all configuration data in secure asynchronous storage.
 	QSharedPointer<AgentConfigStore> mAgentConfigStore;
 
@@ -66,11 +63,6 @@ public:
 public:
 	QSharedPointer<Node> sharedThis() override;
 
-public:
-	// Accept triggering or un-triggering of panic state
-	void setPanic(bool panic);
-	// Get panic state
-	bool panic();
 
 public:
 	// Provide the currently active configuration store for this agent

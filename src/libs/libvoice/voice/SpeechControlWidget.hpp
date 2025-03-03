@@ -3,6 +3,10 @@
 
 #include <QWidget>
 
+#include "uptime/SharedPointerWrapper.hpp"
+
+class Node;
+
 namespace Ui
 {
 class SpeechControlWidget;
@@ -14,11 +18,13 @@ class SpeechControlWidget : public QWidget
 
 private:
 	Ui::SpeechControlWidget *ui;
-
+	QSharedPointer<Node> mNode;
 public:
 	explicit SpeechControlWidget(QWidget *parent = nullptr);
 	~SpeechControlWidget();
 	
+public:
+	void configure(QSharedPointer<Node> node);
 private:
 	void setSpeechAvailable(const bool available);
 

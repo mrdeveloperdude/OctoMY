@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>357</width>
+    <width>350</width>
     <height>428</height>
    </rect>
   </property>
@@ -93,7 +93,7 @@
      <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Orientation::Vertical</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -119,15 +119,15 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>LogWidget</class>
+   <extends>QPlainTextEdit</extends>
+   <header location="global">log/LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
    <class>LightWidget</class>
    <extends>QWidget</extends>
    <header location="global">components/LightWidget.hpp</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LogWidget</class>
-   <extends>QPlainTextEdit</extends>
-   <header location="global">node/LogWidget.hpp</header>
   </customwidget>
  </customwidgets>
  <resources/>

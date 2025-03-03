@@ -2,9 +2,6 @@
 #define MOCKAPPWINDOW_HPP
 
 #include "node/NodeWindow.hpp"
-
-#include "app/log/LogDestination.hpp"
-
 #include "uptime/SharedPointerWrapper.hpp"
 
 class MockApp;
@@ -14,7 +11,7 @@ namespace Ui
 class MockAppWindow;
 }
 
-class MockAppWindow: public NodeWindow, public LogDestination
+class MockAppWindow: public NodeWindow
 {
 	Q_OBJECT
 
@@ -32,9 +29,8 @@ public:
 public:
 	QSharedPointer<MockApp> mockApp();
 
-	// LogDestination interface
 public:
-	void appendLog(const QString& text) override;
+	void appendLog(const QString& text);
 
 
 };

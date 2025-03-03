@@ -1,12 +1,12 @@
 #ifndef COMMSSESSION_HPP
 #define COMMSSESSION_HPP
 
-#include "ReliabilitySystem.hpp"
-#include "FlowControl.hpp"
-//#include "messages/SensorsMessage.hpp"
-#include "address/CarrierAddress.hpp"
 #include "CommsSessionIDType.hpp" // For SESSION_ID_TYPE
+#include "FlowControl.hpp"
 #include "HandshakeState.hpp"
+#include "ReliabilitySystem.hpp"
+#include "address/CarrierAddress.hpp"
+//#include "messages/SensorsMessage.hpp"
 
 #include <QHostAddress>
 #include <QMap>

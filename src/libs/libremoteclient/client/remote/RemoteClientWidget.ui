@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>403</width>
+    <width>411</width>
     <height>535</height>
    </rect>
   </property>
@@ -32,7 +32,7 @@
    <item row="0" column="0">
     <widget class="QStackedWidget" name="stackedWidgetControl">
      <property name="currentIndex">
-      <number>1</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="pageConnection">
       <property name="sizePolicy">
@@ -605,6 +605,29 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>TryToggle</class>
+   <extends>QWidget</extends>
+   <header location="global">components/TryToggle.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LogWidget</class>
+   <extends>QPlainTextEdit</extends>
+   <header location="global">log/LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>PanicButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">node/PanicButton.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MapEditor</class>
+   <extends>QWidget</extends>
+   <header location="global">map/MapEditor.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>ActuatorManagementWidget</class>
    <extends>QWidget</extends>
    <header location="global">hardware/actuator/ActuatorManagementWidget.hpp</header>
@@ -620,29 +643,6 @@
    <class>FaceActivity</class>
    <extends>QWidget</extends>
    <header location="global">agent/FaceActivity.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LogWidget</class>
-   <extends>QPlainTextEdit</extends>
-   <header location="global">node/LogWidget.hpp</header>
-  </customwidget>
-  <customwidget>
-   <class>TryToggle</class>
-   <extends>QWidget</extends>
-   <header location="global">components/TryToggle.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>PanicButton</class>
-   <extends>QPushButton</extends>
-   <header location="global">node/PanicButton.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>MapEditor</class>
-   <extends>QWidget</extends>
-   <header location="global">map/MapEditor.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

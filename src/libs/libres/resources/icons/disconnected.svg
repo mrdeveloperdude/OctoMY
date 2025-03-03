@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="64.000008"
+   height="64.000008"
+   viewBox="0 0 16.933335 16.933335"
+   version="1.1"
+   id="svg636829"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="disconnected.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview636831"
+     pagecolor="#ffffff"
+     bordercolor="#111111"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="0.93806818"
+     inkscape:cx="98.073895"
+     inkscape:cy="-89.54573"
+     inkscape:window-width="3792"
+     inkscape:window-height="2111"
+     inkscape:window-x="3888"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs636826" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-45.969208,-172.3282)">
+    <g
+       id="g636590"
+       transform="translate(1156.9296,5072.8336)"
+       style="display:inline">
+      <path
+         id="path636586"
+         style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.246687;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke"
+         d="m -1101.4804,-4894.7306 v 1.4942 h -1.2294 v 1.2293 h 1.2294 v 1.4939 h 6.1474 v -4.2174 z"
+         sodipodi:nodetypes="ccccccccc" />
+      <path
+         id="path636588"
+         style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.246687;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke"
+         d="m -1109.6543,-4894.7306 v 4.2174 h 6.1474 v -1.2293 h -1.2296 v -1.7585 h 1.2296 v -1.2296 z"
+         sodipodi:nodetypes="ccccccccc" />
+    </g>
+  </g>
+</svg>

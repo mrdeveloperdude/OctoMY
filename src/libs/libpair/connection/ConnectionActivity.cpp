@@ -1,12 +1,14 @@
 #include "ConnectionActivity.hpp"
-#include "service/ServiceLevelManager.hpp"
 #include "ui_ConnectionActivity.h"
 
 #include "app/Constants.hpp"
 #include "comms/CommsSession.hpp"
+#include "log/LogStorage.hpp"
 #include "node/Node.hpp"
+#include "service/ServiceLevelManager.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
+
 
 ConnectionActivity::ConnectionActivity(QWidget *parent)
 	: Activity(parent)
@@ -66,7 +68,12 @@ void ConnectionActivity::tryConnectChanged(const TryToggleState last, const TryT
 void ConnectionActivity::appendLog(const QString& text)
 {
 	OC_METHODGATE();
-	ui->logScroll->appendLog(text);
+	if(mNode){
+		auto logStorage = mNode->logStorage();
+		if(logStorage){
+			logStorage->appendLog(text);
+		}
+	}
 }
 
 

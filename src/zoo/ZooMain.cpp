@@ -1,7 +1,7 @@
 #include "ZooMain.hpp"
 #include "zoo/ZooServer.hpp"
 
-#include "app/log/LogHandler.hpp"
+#include "log/LogHandler.hpp"
 
 #include "app/AppContext.hpp"
 #include "app/Constants.hpp"

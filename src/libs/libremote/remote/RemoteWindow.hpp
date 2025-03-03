@@ -1,7 +1,6 @@
 #ifndef REMOTEWINDOW_HPP
 #define REMOTEWINDOW_HPP
 
-#include "app/log/LogDestination.hpp"
 #include "node/NodeWindow.hpp"
 
 #include "uptime/ConfigureHelper.hpp"
@@ -37,7 +36,7 @@ class RemoteWindow;
  * similar situations where the UI may not be needed.
  */
 
-class RemoteWindow : public NodeWindow, public LogDestination
+class RemoteWindow : public NodeWindow
 {
 	Q_OBJECT
 
@@ -90,7 +89,7 @@ private:
 
 	// LogDestination interface
 public:
-	void appendLog(const QString& text) override;
+	void appendLog(const QString& text);
 
 public slots:
 	void applicationShutdown();

@@ -7,6 +7,7 @@
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsSession.hpp"
 #include "hub/NodesManagementWidget.hpp"
+#include "log/LogStorage.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 
@@ -104,7 +105,10 @@ QSharedPointer<Hub> HubWindow::hub()
 void HubWindow::appendLog(const QString& text)
 {
 	OC_METHODGATE();
-	ui->logScroll->appendLog(text);
+	auto logStorage = mHub->logStorage();
+	if(logStorage){
+		logStorage->appendLog(text);
+	}
 }
 
 void HubWindow::on_pushButtonSendData_clicked()

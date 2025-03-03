@@ -7,11 +7,10 @@
 #ifndef FACEACTIVITY_H
 #define FACEACTIVITY_H
 
-#include "app/log/LogDestination.hpp"
 #include "components/TryToggleState.hpp"
+#include "components/navigation/Activity.hpp"
 #include "security/PortableID.hpp"
 #include "uptime/ConfigureHelper.hpp"
-#include "components/navigation/Activity.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
 
 #include <QWidget>
@@ -26,7 +25,7 @@ namespace Ui
 class FaceActivity;
 }
 
-class FaceActivity : public Activity, public LogDestination
+class FaceActivity : public Activity
 {
 	Q_OBJECT
 private:
@@ -43,15 +42,12 @@ protected:
 	QSharedPointer<Agent> agent();
 	QSharedPointer<Settings> settings();
 
-	// LogDestination interface
-public:
-	void appendLog(const QString& text) override;
-
 public:
 	void updateEyes();
 	void updateVisibility();
+	
+	void appendLog(const QString& text);
 	void configure(QSharedPointer<Agent>);
-	void setPanic(bool panic);
 
 	// Virtual activity mechanism
 protected:
@@ -60,14 +56,12 @@ protected:
 
 signals:
 	void connectionStateChanged(const TryToggleState last, const TryToggleState current);
-	void colorChanged(QColor);
+
 
 public slots:
 	void onSyncParameterChanged(ISyncParameter *);
 
 private slots:
-	void randomizeColor();
-	void panicChanged(bool panic);
 	void onSplitterMoved(int pos, int index);
 
 	// CommsChannel slots (via setHookCommsSignals in AgentWindow)

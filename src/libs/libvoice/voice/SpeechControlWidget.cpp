@@ -1,19 +1,20 @@
 #include "SpeechControlWidget.hpp"
 #include "ui_SpeechControlWidget.h"
 
-#include "uptime/MethodGate.hpp"
-#include "uptime/New.hpp"
-
-#include "utility/time/HumanTime.hpp"
-
+#include "log/LogStorage.hpp"
+#include "node/Node.hpp"
 #include "security/PortableID.hpp"
 #include "security/SecurityConstants.hpp"
-#include "voice/VoiceManager.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+#include "utility/time/HumanTime.hpp"
 #include "utility/ui/GenericKeyEventHandler.hpp"
+#include "voice/VoiceManager.hpp"
 
 
 #include <QCryptographicHash>
 #include <QDateTime>
+#include <QSharedPointer>
 
 
 SpeechControlWidget::SpeechControlWidget(QWidget *parent) :
@@ -22,7 +23,7 @@ SpeechControlWidget::SpeechControlWidget(QWidget *parent) :
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
-	ui->logScrollHistory->setDirection(true);
+	ui->logScrollHistory->setLogDirection(true);
 
 	GenericKeyEventHandler *gkh=OC_NEW GenericKeyEventHandler(ui->plainTextEditSpeechText);
 	gkh->setEventProcessor([=](QObject *o, QKeyEvent *keyEvent) {
@@ -54,6 +55,12 @@ SpeechControlWidget::~SpeechControlWidget()
 }
 
 
+void SpeechControlWidget::configure(QSharedPointer<Node> node){
+	OC_METHODGATE();
+	mNode = node;
+}
+
+
 void SpeechControlWidget::setSpeechAvailable(const bool available){
 	ui->widgetVoiceEnabledStatus->setLightColor(available?LightWidget::sDefaultOKColor:LightWidget::sDefaultErrorColor);
 	ui->widgetVoiceEnabledStatus->setLightOn(true);
@@ -65,7 +72,12 @@ void SpeechControlWidget::setSpeechAvailable(const bool available){
 void SpeechControlWidget::appendSpeechHistory(const QString& text)
 {
 	OC_METHODGATE();
-	ui->logScrollHistory->appendLog(text.trimmed());
+	if(mNode){
+		auto logStorage = mNode->logStorage();
+		if(logStorage){
+			logStorage->appendLog(text.trimmed());
+		}
+	}
 }
 
 //#include "random/RNG.hpp" RNG *rng=RNG::sourceFactory("mt");

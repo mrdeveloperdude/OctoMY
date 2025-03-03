@@ -137,5 +137,11 @@
         <file>icons/synchronize.svg</file>
         <file>icons/clear.svg</file>
         <file>icons/delivery.svg</file>
+        <file>icons/connected.svg</file>
+        <file>icons/disconnected.svg</file>
+        <file>icons/wifi.svg</file>
+        <file>icons/hud.svg</file>
+        <file>icons/audio.svg</file>
+        <file>icons/lobe.svg</file>
     </qresource>
 </RCC>

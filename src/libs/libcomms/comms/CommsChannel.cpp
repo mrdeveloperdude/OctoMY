@@ -1359,12 +1359,12 @@ void CommsChannel::onCarrierConnectionStatusChanged(const bool connected)
 }
 
 
-void CommsChannel::appendLog(QString msg)
+void CommsChannel::appendLog(const QString &text)
 {
 	OC_METHODGATE();
-	Q_UNUSED(msg);
+	Q_UNUSED(text);
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		//qDebug()<<"COMMS_CHANNEL_LOG: "<<msg;
+		qDebug()<<"COMMS_CHANNEL_LOG: "<<text; // TODO: Hook up to node log mechanism
 	}
 }
 

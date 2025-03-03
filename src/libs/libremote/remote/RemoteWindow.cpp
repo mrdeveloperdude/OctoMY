@@ -1,16 +1,18 @@
 #include "RemoteWindow.hpp"
+#include "ui_RemoteWindow.h"
+
+
+#include "agent/MessageActivity.hpp"
 #include "agent/TransitionActivity.hpp"
 #include "connection/ConnectionActivity.hpp"
 #include "delivery/ControlBaptismActivity.hpp"
+#include "delivery/ControlDeliveryActivity.hpp"
 #include "delivery/ControlSipAndSeeActivity.hpp"
 #include "delivery/IdentityActivity.hpp"
-#include "remote/AgentSelectActivity.hpp"
-#include "ui_RemoteWindow.h"
-
-#include "agent/MessageActivity.hpp"
-#include "delivery/ControlDeliveryActivity.hpp"
+#include "log/LogStorage.hpp"
 #include "pairing/PairingActivity.hpp"
 #include "pairing/PairingTrustActivity.hpp"
+#include "remote/AgentSelectActivity.hpp"
 #include "remote/ControlUnboxingWizard.hpp"
 #include "remote/Remote.hpp"
 #include "remote/RemoteController.hpp"
@@ -53,7 +55,7 @@ RemoteWindow::~RemoteWindow()
 QSharedPointer<Remote> RemoteWindow::remote()
 {
 	OC_METHODGATE();
-	QSharedPointer<Node> n=node();
+	QSharedPointer<Node> n = node();
 	if(n.isNull()) {
 		qWarning()<<"WARNING: No node in remote()";
 	}
@@ -63,7 +65,7 @@ QSharedPointer<Remote> RemoteWindow::remote()
 
 
 void RemoteWindow::prepareActivities(){
-	auto r=remote();
+	auto r = remote();
 	if(!r.isNull()) {
 		mMessage = OC_NEW MessageActivity();
 		ui->widgetActivityStack->registerPage(mMessage, false, false, false);
@@ -263,7 +265,13 @@ void RemoteWindow::toggleOnline(bool online){
 void RemoteWindow::appendLog(const QString& text)
 {
 	OC_METHODGATE();
-	qDebug()<<"REMOTE-LOG-APPEND: "<<text;
+	auto r = remote();
+	if(!r.isNull()) {
+		auto logStorage = r->logStorage();
+		if(logStorage){
+			logStorage->appendLog(text);
+		}
+	}
 }
 
 
