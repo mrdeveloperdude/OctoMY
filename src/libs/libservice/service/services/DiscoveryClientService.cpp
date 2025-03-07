@@ -15,7 +15,7 @@ void DiscoveryClientService::configure(QSharedPointer<Node> node)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		mNode=node;
+		mNode = node;
 	}
 }
 

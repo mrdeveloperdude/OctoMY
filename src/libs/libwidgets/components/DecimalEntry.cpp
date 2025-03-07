@@ -49,7 +49,7 @@ void DecimalEntry::configure(qreal min, qreal max, qreal val, QString suf, QStri
 	ui->horizontalSlider->setPageStep(static_cast<int>(range()/dec));
 	ui->horizontalSlider->setToolTip(tip);
 	setValue(val);
-	qDebug() << "DecimalEntry" << min<<max<<val << suf << tip<<mMinValue<<mMaxValue<<value()<<minimum()<<maximum();
+	//qDebug() << "DecimalEntry" << min<<max<<val << suf << tip<<mMinValue<<mMaxValue<<value()<<minimum()<<maximum();
 }
 
 

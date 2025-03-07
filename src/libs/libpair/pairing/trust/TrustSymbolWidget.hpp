@@ -1,5 +1,5 @@
-#ifndef TRUSTSYMBOLWIDGET_HPP
-#define TRUSTSYMBOLWIDGET_HPP
+#ifndef TRUSTSYMBOLWIDGET_H
+#define TRUSTSYMBOLWIDGET_H
 
 #include "components/SvgWidget.hpp"
 #include "uptime/ConfigureHelper.hpp"

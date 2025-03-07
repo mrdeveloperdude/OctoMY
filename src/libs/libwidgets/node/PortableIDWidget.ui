@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>209</width>
-    <height>174</height>
+    <width>625</width>
+    <height>390</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -41,7 +41,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="pageCertificate">
       <property name="sizePolicy">
@@ -162,7 +162,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButtonToggleView">
+             <widget class="QPushButton" name="pushButtonShowNameplate">
               <property name="minimumSize">
                <size>
                 <width>32</width>
@@ -170,7 +170,7 @@
                </size>
               </property>
               <property name="toolTip">
-               <string>View full birth certificate</string>
+               <string>View nameplate only</string>
               </property>
               <property name="text">
                <string/>
@@ -436,7 +436,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButtonToggleViewNameplate">
+          <widget class="QPushButton" name="pushButtonShowCertificate">
            <property name="minimumSize">
             <size>
              <width>32</width>
@@ -528,5 +528,42 @@
  <resources>
   <include location="../../libres/resources/icons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButtonShowNameplate</sender>
+   <signal>clicked()</signal>
+   <receiver>PortableIDWidget</receiver>
+   <slot>showNameplate()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>604</x>
+     <y>39</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>312</x>
+     <y>194</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonShowCertificate</sender>
+   <signal>clicked()</signal>
+   <receiver>PortableIDWidget</receiver>
+   <slot>showCertificate()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>607</x>
+     <y>16</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>312</x>
+     <y>194</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>showNameplate()</slot>
+  <slot>showCertificate()</slot>
+ </slots>
 </ui>

@@ -21,7 +21,7 @@ static const QString GEOMETRY_SETTINGS_KEY("window.geometry");
 NodeWindow::NodeWindow(QWidget *parent)
 	: QWidget(parent)
 	, mNode(nullptr)
-	, mWaterMark(QString(":/images/agent_watermark.svg"), this)
+	, mWaterMark(QString(), this)
 	, mSplash(OC_NEW SplashScreen())
 {
 	OC_METHODGATE();
@@ -85,10 +85,11 @@ void NodeWindow::nodeWindowConfigure(QSharedPointer<Node> node)
 // [...]
 		
 		auto typeName = nodeTypeToString(mNode->nodeType()).toLower();
-
-		mSplash->configure(this, QString(":/icons/%1.svg").arg(typeName));
+		mWaterMark.load(QString(":/images/%1_watermark.svg").arg(typeName));
+		auto splash_time{1000};
+		mSplash->configure(this, QString(":/icons/%1.svg").arg(typeName), splash_time, splash_time/4, 0.7);
 		configure();
-		QTimer::singleShot(1600, mSplash, &SplashScreen::done);
+		QTimer::singleShot((splash_time*3/4), mSplash, &SplashScreen::done);
 	} else {
 		qWarning()<<"WARNING: No Agent in agent window";
 	}

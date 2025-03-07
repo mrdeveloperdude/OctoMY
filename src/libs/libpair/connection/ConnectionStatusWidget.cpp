@@ -1,7 +1,6 @@
 #include "ConnectionStatusWidget.hpp"
 #include "ui_ConnectionStatusWidget.h"
 
-#include "log/LogStorage.hpp"
 #include "app/Constants.hpp"
 #include "comms/CommsSession.hpp"
 #include "node/Node.hpp"
@@ -15,7 +14,6 @@ ConnectionStatusWidget::ConnectionStatusWidget(QWidget *parent)
 	, mConfigureHelper("ConnectionStatusWidget", true, false, false, true, false)
 {
 	ui->setupUi(this);
-	ui->tryToggleConnect->configure("Connect", "Connecting...", "Connected", "Disconnecting...", Constants::AGENT_CONNECT_BUTTON_COLOR, Constants::AGENT_DISCONNECT_COLOR);
 }
 
 
@@ -25,16 +23,12 @@ ConnectionStatusWidget::~ConnectionStatusWidget()
 }
 
 
-void ConnectionStatusWidget::appendLog(const QString &text){
+void ConnectionStatusWidget::log(const QString &text, LogType type) const{
 	OC_METHODGATE();
-	if(mNode){
-		auto logStorage = mNode->logStorage();
-		if(logStorage){
-			logStorage->appendLog(text);
-		}
+	if(!mNode.isNull()){
+		mNode->log(text, type);
 	}
 }
-
 
 
 bool ConnectionStatusWidget::connecting() const{
@@ -42,14 +36,6 @@ bool ConnectionStatusWidget::connecting() const{
 }
 
 
-void ConnectionStatusWidget::connectToggled(bool connect){
-	emit tryConnect(connect);
-}
-
-
-void ConnectionStatusWidget::openSettings(){
-	emit openConnectionSettings();
-}
 
 
 // An error occurred in comms
@@ -73,6 +59,15 @@ void ConnectionStatusWidget::onCommsConnectionStatusChanged(const bool isConnect
 
 
 
+void ConnectionStatusWidget::toggleConnect(bool connect){
+	emit tryConnect(connect);
+}
+
+
+void ConnectionStatusWidget::openSettings(){
+	emit openConnectionSettings();
+}
+
 void ConnectionStatusWidget::randomizeColor()
 {
 	OC_METHODGATE();
@@ -84,13 +79,39 @@ void ConnectionStatusWidget::randomizeColor()
 	p.setColor(QPalette::Button, col);
 	p.setColor(QPalette::ButtonText, utility::color::intensity(col) > 0.5f?Qt::black:Qt::white);
 	ui->pushButtonRandomizeColor->setPalette(p);
-	appendLog(QString("New color: %1").arg(col.name()));
+	log(QString("New color: %1").arg(col.name()));
 	emit colorChanged(col);
 }
 
 
+void ConnectionStatusWidget::startCamera()
+{
+	OC_METHODGATE();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		//push("CameraPairingActivity");
+	}
+}
 
-void ConnectionStatusWidget::panicChanged(bool panic)
+void ConnectionStatusWidget::toggleAudio(const bool on)
+{
+	OC_METHODGATE();
+	log(QString("Toggling audio pairing %1").arg(on?"ON":"OFF"));
+}
+
+void ConnectionStatusWidget::toggleBluetooth(const bool on)
+{
+	OC_METHODGATE();
+	log(QString("Toggling bluetooth pairing %1").arg(on?"ON":"OFF"));
+}
+
+void ConnectionStatusWidget::toggleNetwork(const bool on)
+{
+	OC_METHODGATE();
+	log(QString("Toggling network pairing %1").arg(on?"ON":"OFF"));
+}
+
+
+void ConnectionStatusWidget::togglePanic(bool panic)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()){
@@ -100,20 +121,21 @@ void ConnectionStatusWidget::panicChanged(bool panic)
 			if(panic) {
 				QString str="P A N I C !";
 				qWarning()<<str;
-				appendLog(str);
+				log(str);
 			} else {
 				QString str="Panic averted";
 				qWarning()<<str;
-				appendLog(str);
+				log(str);
 			}
 		}
 		else{
 			QString str="Panic could not be propegated :-|";
 			qWarning()<<str;
-			appendLog(str);
+			log(str);
 		}
 	}
 }
+
 
 
 
@@ -122,11 +144,11 @@ void ConnectionStatusWidget::configure(QSharedPointer<Node> n)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()){
+		ui->tryToggleConnect->configure("Connect", "Connecting...", "Connected", "Disconnecting...", Constants::AGENT_CONNECT_BUTTON_COLOR, Constants::AGENT_DISCONNECT_COLOR);
 		mNode = n;
 		if(!mNode.isNull()){
 			mNode->setHookCommsSignals(*this, true);
 			mNode->setHookColorSignals(*this, true);
 		}
-		connect(ui->pushButtonPanic, &PanicButton::panicChanged, this, & ConnectionStatusWidget::panicChanged);
 	}
 }

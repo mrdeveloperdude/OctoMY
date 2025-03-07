@@ -4,7 +4,7 @@
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 
-#include "pairing/PairingListModel.hpp"
+#include "pairing/list/PairingListModel.hpp"
 #include "PairingEditButtonDelegate.hpp"
 
 #include "discovery/DiscoveryClient.hpp"

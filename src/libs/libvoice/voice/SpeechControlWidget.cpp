@@ -73,10 +73,7 @@ void SpeechControlWidget::appendSpeechHistory(const QString& text)
 {
 	OC_METHODGATE();
 	if(mNode){
-		auto logStorage = mNode->logStorage();
-		if(logStorage){
-			logStorage->appendLog(text.trimmed());
-		}
+		mNode->log(text);
 	}
 }
 

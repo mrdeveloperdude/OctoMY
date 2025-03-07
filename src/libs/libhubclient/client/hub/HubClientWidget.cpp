@@ -28,7 +28,7 @@ HubClientWidget::HubClientWidget(QSharedPointer<HubClient> client, QWidget *pare
 
 	ui->setupUi(this);
 
-	ui->widgetBirthCertificate->configure(false,true);
+	ui->widgetBirthCertificate->configure(nullptr, false, true);
 
 	if(!mHubClient.isNull()) {
 		QSharedPointer<Node> node=mHubClient->node();

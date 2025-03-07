@@ -11,7 +11,8 @@
 class Node;
 
 /**
- * @brief The DiscoveryClientService class is what it says on the tin; basically a wrapper to make DiscoveryClient appear as a service.
+ * @brief The DiscoveryClientService class is what it says on the tin; basically
+ * a wrapper to make DiscoveryClient appear as a service.
  */
 
 class DiscoveryClientService: public ServiceWrapper<DiscoveryClient>

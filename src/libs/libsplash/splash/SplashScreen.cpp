@@ -78,7 +78,7 @@ SplashScreen::~SplashScreen() {
 	delete ui;
 }
 
-void SplashScreen::configure(QWidget *parent, const QString &imagePath, const quint16 fadeTime, const qreal lowSize) {
+void SplashScreen::configure(QWidget *parent, const QString &imagePath, const quint16 pulseTime, const quint16 fadeTime, const qreal lowSize) {
 	if (parent) {
 		// Make this widget a child of the given parent and cover its entire area.
 		setParent(parent);
@@ -86,16 +86,13 @@ void SplashScreen::configure(QWidget *parent, const QString &imagePath, const qu
 		// Update geometry on parent resize.
 		parent->installEventFilter(this);
 	}
-	
 	ui->labelImage->setSvg(imagePath);
-	
-	// Start pulsating animation (scaling the image).
-	pulseAnimation->start();
-	
-	fadeOut->setDuration(fadeTime);  // e.g., 5000 ms.
+	fadeOut->setDuration(fadeTime);
 	forwardAnim->setStartValue(lowSize);
 	backwardAnim->setEndValue(lowSize);
-	
+	forwardAnim->setDuration(pulseTime/2);
+	backwardAnim->setDuration(pulseTime/2);
+	pulseAnimation->start();
 	show();
 }
 

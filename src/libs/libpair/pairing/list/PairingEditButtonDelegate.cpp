@@ -1,6 +1,6 @@
 #include "PairingEditButtonDelegate.hpp"
 
-#include "PairingActivity.hpp"
+#include "../PairingMenuActivity.hpp"
 #include "identity/Identicon.hpp"
 #include "security/PortableID.hpp"
 

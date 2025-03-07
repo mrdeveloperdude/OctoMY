@@ -29,7 +29,7 @@ public:
 	~SplashScreen();
 	
 	// Configure the splash screen; note the fadeTime is in milliseconds
-	void configure(QWidget *parent, const QString &imagePath, const quint16 fadeTime=500, const qreal lowSize=0.90);
+	void configure(QWidget *parent, const QString &imagePath, const quint16 pulseTime=500, const quint16 fadeTime=500, const qreal lowSize=0.90);
 	
 public slots:
 	void setProgressPercentage(quint8 percentage);

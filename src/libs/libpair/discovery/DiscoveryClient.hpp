@@ -19,6 +19,8 @@ namespace qhttp
 namespace client
 {
 class QHttpClient;
+class QHttpRequest;
+class QHttpResponse;
 }
 }
 
@@ -49,7 +51,7 @@ class QHttpClient;
 		d. Zoo: posting expiring gps coordinates together with pairing signature
 		e. LAN: Identify common gateway
 	2. Pairing signatures and pubkeys are exchanged
-	3. Pairing challenge/responses are exchanged to verify legitimity of signature/pubkeys
+	3. Pairing challenge/responses are exchanged to verify legitimacy of signature/pubkeys
 	4. Identicon for signatures is shown in list on each node for user to verify
 	5. Optionally: multifactor authentications are conducted to improve security further
 	6. The list of nodes is updated to show the "security level" of each node
@@ -62,7 +64,7 @@ class QHttpClient;
 
 	Glossary:
 
-	+ Discovery: A comlpetely automatic process whereby nodes find eachother and
+	+ Discovery: A completely automatic process whereby nodes find eachother and
 	  exchange the necessary details to be able to unmistakably verify the
 	  identity of eachother in the future. May be aided by manual process like
 	  camera discovery. NOTE: discovery is the hard part, pairing is just UI.
@@ -141,6 +143,8 @@ public:
 	bool isLogging() const;
 
 private slots:
+	void requestHandler(qhttp::client::QHttpRequest* req);
+	void responseHandler(qhttp::client::QHttpResponse* res);
 	void onTimer();
 
 signals:

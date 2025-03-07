@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>568</width>
-    <height>64</height>
+    <width>684</width>
+    <height>56</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,65 +20,92 @@
    <string>Form</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
    <item>
-    <widget class="QLabel" name="labelLAN">
+    <widget class="QPushButton" name="pushButtonNetwork">
+     <property name="toolTip">
+      <string>Use this to pair manually using camera/QR-code</string>
+     </property>
      <property name="text">
       <string/>
      </property>
-     <property name="pixmap">
-      <pixmap resource="../../libres/resources/icons.qrc">:/icons/lan.svg</pixmap>
+     <property name="icon">
+      <iconset resource="../../libres/resources/icons.qrc">
+       <normaloff>:/icons/network.svg</normaloff>:/icons/network.svg</iconset>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="labelBluetooth">
+    <widget class="QPushButton" name="pushButtonBluetooth">
+     <property name="toolTip">
+      <string>Use this to pair manually using camera/QR-code</string>
+     </property>
      <property name="text">
       <string/>
      </property>
-     <property name="pixmap">
-      <pixmap resource="../../libres/resources/icons.qrc">:/icons/bluetooth.svg</pixmap>
+     <property name="icon">
+      <iconset resource="../../libres/resources/icons.qrc">
+       <normaloff>:/icons/bluetooth.svg</normaloff>:/icons/bluetooth.svg</iconset>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="labelAudio">
+    <widget class="QPushButton" name="pushButtonAudio">
+     <property name="toolTip">
+      <string>Use this to pair manually using camera/QR-code</string>
+     </property>
      <property name="text">
       <string/>
      </property>
-     <property name="pixmap">
-      <pixmap resource="../../libres/resources/icons.qrc">:/icons/audio.svg</pixmap>
+     <property name="icon">
+      <iconset resource="../../libres/resources/icons.qrc">
+       <normaloff>:/icons/audio.svg</normaloff>:/icons/audio.svg</iconset>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
    <item>
-    <spacer name="horizontalSpacer">
+    <spacer name="horizontalSpacer_3">
      <property name="orientation">
       <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>40</width>
+       <width>109</width>
        <height>20</height>
       </size>
      </property>
@@ -89,7 +116,7 @@
      <property name="minimumSize">
       <size>
        <width>100</width>
-       <height>0</height>
+       <height>32</height>
       </size>
      </property>
     </widget>
@@ -104,7 +131,7 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>48</width>
+       <width>32</width>
        <height>32</height>
       </size>
      </property>
@@ -121,8 +148,8 @@
     <widget class="QPushButton" name="pushButtonRandomizeColor">
      <property name="minimumSize">
       <size>
-       <width>0</width>
-       <height>20</height>
+       <width>32</width>
+       <height>32</height>
       </size>
      </property>
      <property name="maximumSize">
@@ -140,6 +167,48 @@
     </widget>
    </item>
    <item>
+    <widget class="PanicButton" name="pushButtonPanic">
+     <property name="minimumSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Panic</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButtonCamera">
+     <property name="toolTip">
+      <string>Use this to pair manually using camera/QR-code</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../libres/resources/icons.qrc">
+       <normaloff>:/icons/qrcode.svg</normaloff>:/icons/qrcode.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="TryToggle" name="tryToggleConnect" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -149,8 +218,8 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>10</width>
-       <height>20</height>
+       <width>32</width>
+       <height>32</height>
       </size>
      </property>
      <property name="maximumSize">
@@ -158,19 +227,6 @@
        <width>16777215</width>
        <height>32</height>
       </size>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="PanicButton" name="pushButtonPanic">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Panic</string>
      </property>
     </widget>
    </item>
@@ -216,9 +272,111 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButtonAudio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ConnectionStatusWidget</receiver>
+   <slot>toggleAudio(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>162</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>586</x>
+     <y>302</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonBluetooth</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ConnectionStatusWidget</receiver>
+   <slot>toggleBluetooth(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>112</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>586</x>
+     <y>302</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonCamera</sender>
+   <signal>clicked()</signal>
+   <receiver>ConnectionStatusWidget</receiver>
+   <slot>startCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>809</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>586</x>
+     <y>302</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonNetwork</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ConnectionStatusWidget</receiver>
+   <slot>toggleNetwork(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>62</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>586</x>
+     <y>302</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonPanic</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ConnectionStatusWidget</receiver>
+   <slot>togglePanic(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>741</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>586</x>
+     <y>302</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonRandomizeColor</sender>
+   <signal>clicked()</signal>
+   <receiver>ConnectionStatusWidget</receiver>
+   <slot>randomizeColor()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>655</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>586</x>
+     <y>302</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>connectToggled(bool)</slot>
+  <slot>toggledConnected(bool)</slot>
   <slot>openSettings()</slot>
+  <slot>toggleNetwork(bool)</slot>
+  <slot>toggleBluetooth(bool)</slot>
+  <slot>toggleAudio(bool)</slot>
+  <slot>randomizeColor()</slot>
+  <slot>togglePanic(bool)</slot>
+  <slot>startCamera()</slot>
  </slots>
 </ui>

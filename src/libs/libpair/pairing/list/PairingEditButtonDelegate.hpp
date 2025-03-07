@@ -1,11 +1,11 @@
-#ifndef PAIRINGEDITBUTTONDELEGATE_HPP
-#define PAIRINGEDITBUTTONDELEGATE_HPP
+#ifndef PAIRINGEDITBUTTONDELEGATE_H
+#define PAIRINGEDITBUTTONDELEGATE_H
 
 #include <QSizeF>
 #include <QPixmap>
 #include <QItemDelegate>
 
-class PairingActivity;
+class PairingMenuActivity;
 class QPainter;
 
 

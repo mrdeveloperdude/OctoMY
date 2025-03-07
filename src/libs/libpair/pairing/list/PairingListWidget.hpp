@@ -1,5 +1,5 @@
-#ifndef PAIRINGLISTWIDGET_HPP
-#define PAIRINGLISTWIDGET_HPP
+#ifndef PAIRINGLISTWIDGET_H
+#define PAIRINGLISTWIDGET_H
 
 #include "uptime/ConfigureHelper.hpp"
 #include "uptime/SharedPointerWrapper.hpp"

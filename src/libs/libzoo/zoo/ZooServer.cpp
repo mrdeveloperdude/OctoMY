@@ -141,6 +141,31 @@ void ZooServer::logUsefullStuff() const
 }
 
 
+void ZooServer::connectionHandler(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res){
+	OC_METHODGATE();
+	req->collectData(Constants::OCTOMY_WEB_COLLECT_AT_MOST);
+	req->onEnd([this, req, res]() {
+		qDebug()<<req;
+		QString path=req->url().path();
+		//qDebug()<<"URL: "<<path;
+		if("/"==path) {
+			serveIndex(req,res);
+			return;
+		} else if(path.startsWith("/identicon") || path.startsWith("/favicon.ico")) {
+			serveIdenticon(req,res);
+			return;
+		} else if(path.startsWith("/api")) {
+			serveAPI(req,res);
+			return;
+		} else if( !mAdminURLPath.isEmpty() && path.startsWith(mAdminURLPath)) {
+			serveAdmin(req,res);
+			return;
+		} else {
+			serveFallback(req,res);
+		}
+	});
+}
+
 bool ZooServer::start(const QString pathOrPortNumber)
 {
 	OC_METHODGATE();
@@ -148,33 +173,13 @@ bool ZooServer::start(const QString pathOrPortNumber)
 		OC_METHODGATE();
 		if(!connect(this,  &QHttpServer::newConnection, [](qhttp::server::QHttpConnection*) {
 		//qDebug()<<"a new connection was made!\n";
-	})) {
+		})) {
 			Q_UNUSED(this);
 			qWarning()<<"ERROR: Could not connect";
 		}
 		mBackgroundTimer.start();
 		qhttp::server::TServerHandler conHandler=[this](qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res) {
-			req->collectData(Constants::OCTOMY_WEB_COLLECT_AT_MOST);
-			req->onEnd([this, req, res]() {
-				qDebug()<<req;
-				QString path=req->url().path();
-				//qDebug()<<"URL: "<<path;
-				if("/"==path) {
-					serveIndex(req,res);
-					return;
-				} else if(path.startsWith("/identicon") || path.startsWith("/favicon.ico")) {
-					serveIdenticon(req,res);
-					return;
-				} else if(path.startsWith("/api")) {
-					serveAPI(req,res);
-					return;
-				} else if( !mAdminURLPath.isEmpty() && path.startsWith(mAdminURLPath)) {
-					serveAdmin(req,res);
-					return;
-				} else {
-					serveFallback(req,res);
-				}
-			});
+			connectionHandler(req, res);
 		};
 
 		const bool isListening = listen(pathOrPortNumber, conHandler);

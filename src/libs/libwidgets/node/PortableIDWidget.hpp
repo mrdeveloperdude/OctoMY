@@ -11,6 +11,8 @@ namespace Ui
 class PortableIDWidget;
 }
 
+class Activity;
+
 class PortableIDWidget : public QWidget
 {
 	Q_OBJECT
@@ -18,19 +20,22 @@ private:
 	Ui::PortableIDWidget *ui;
 	PortableID mID;
 	ConfigureHelper mConfigureHelper;
+	bool mInlineCertificate{true};
+	Activity *mExternalCertificateActivity{nullptr};
 
 public:
 	explicit PortableIDWidget(QWidget *parent = nullptr);
 	virtual ~PortableIDWidget();
 
 public:
-	void configure(bool showCertificateFirst=true, bool userCanChange=true);
+	// If the activity is set we lean on the separate identity activity for showing the certificate rather than using the internal display
+	void configure(Activity *externalCertificateActivity, bool showCertificateFirst, bool userCanChange);
 	void setPortableID(PortableID id);
 	PortableID getPortableID();
 
 private slots:
-	void on_pushButtonToggleViewNameplate_clicked();
-	void on_pushButtonToggleView_clicked();
+	void showCertificate();
+	void showNameplate();
 
 };
 

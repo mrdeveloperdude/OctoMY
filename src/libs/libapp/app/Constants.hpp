@@ -82,7 +82,7 @@ public:
 	static const QString dateFMTMinute;
 	static const QString dateFMTSecond;
 	static const QString dateFMTMillisecond;
-	static const QString dateFMTPortable;
+	static const QString dateFMTPortableID;
 
 	static const QString OC_NODE_TYPE_AGENT_NAME;
 	static const QString OC_NODE_TYPE_REMOTE_NAME;

@@ -1,28 +1,26 @@
 #include "NetworkPairingActivity.hpp"
 #include "ui_NetworkPairingActivity.h"
 
-#include "PairingEditButtonDelegate.hpp"
 #include "address/Associate.hpp"
-#include "comms/address/CarrierAddress.hpp"
 #include "discovery/DiscoveryClient.hpp"
 #include "node/Node.hpp"
-#include "pairing/PairingListModel.hpp"
+#include "pairing/list/PairingEditButtonDelegate.hpp"
+#include "pairing/list/PairingListModel.hpp"
 #include "security/PortableID.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 
 #include <QDebug>
-#include <QRegularExpression>
 #include <QDesktopServices>
-#include <QUrl>
-
-#include <QWidget>
 #include <QItemDelegate>
+#include <QMessageBox>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QRegularExpression>
 #include <QSvgRenderer>
-#include <QMessageBox>
+#include <QUrl>
+#include <QWidget>
 
 // QDesktopServices::openUrl(QUrl("https://www.youtube.com/watch?v=mTiqZm-Ea70", QUrl::TolerantMode));
 
@@ -121,7 +119,7 @@ void NetworkPairingActivity::configure(QSharedPointer<Node> n)
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
 		mNode = n;
-		ui->widgetMyCertificate->configure(false, true);
+		ui->widgetMyCertificate->configure(this, false, true);
 		mTemplate = ui->labelBodyPair->text();
 		ui->labelBodyPair->setText("<h1>Please wait...</h1>");
 		hookStartEdit();

@@ -1,11 +1,11 @@
 #ifndef CONNECTIONSTATUSWIDGET_HPP
 #define CONNECTIONSTATUSWIDGET_HPP
 
-#include <QWidget>
-
-
+#include "log/LogType.hpp"
 #include "uptime/ConfigureHelper.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
+
+#include <QWidget>
 
 class CommsSession;
 class Node;
@@ -28,17 +28,13 @@ public:
 	~ConnectionStatusWidget();
 	
 private:
-	void appendLog(const QString &text);
+	void log(const QString &text, LogType type=LOG_TYPE_INFO) const;
 
 public:
 	bool connecting() const;
 	void configure(QSharedPointer<Node>);
 	void setPanic(bool panic);
 
-private slots:
-	void connectToggled(bool connect);
-	void openSettings();
-	
 	// CommsChannel slots (via setHookCommsSignals in AgentWindow)
 public slots:
 	// An error occurred in comms
@@ -47,11 +43,16 @@ public slots:
 	void onCommsClientAdded(CommsSession *c);
 	// The connection state changed for comms channel
 	void onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection);
-
-
+	
 private slots:
+	void toggleConnect(bool connect);
+	void openSettings();
 	void randomizeColor();
-	void panicChanged(bool panic);
+	void startCamera();
+	void toggleAudio(const bool on);
+	void toggleBluetooth(const bool on);
+	void toggleNetwork(const bool on);
+	void togglePanic(bool panic);
 
 signals:
 	bool tryConnect(bool connect);

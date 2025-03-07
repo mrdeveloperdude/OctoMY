@@ -17,7 +17,7 @@ class DiscoveryServerEntry;
  * match in the discovery server. The discovery server will limit communications
  * so that only participants in the same session may exchange data via the server.
  *
- * The participants are expected to provide authentication  tokens such as pins
+ * The participants are expected to provide authentication tokens such as pins
  * and GPS coordinates that allow the discovery server to shard participants into
  * the correct session.
  *
@@ -25,7 +25,7 @@ class DiscoveryServerEntry;
  *  + We don't want to see all the world's nodes in one list when pairing
  *  + We don't want to allow unknown possibly adversarial nodes
  *
- * Beyond the automatic ceration of sessions it offers registration and lookup
+ * Beyond the automatic creation of sessions it offers registration and lookup
  * of participants together with a pruning method to get rid of expired entries.
  *
  */

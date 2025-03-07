@@ -43,7 +43,7 @@ void PairingTrustActivity::configure(QSharedPointer<Node> n)
 	if(mConfigureHelper.configure()) {
 		mNode = n;
 		ui->widgetTrustLevel->configure();
-		ui->widgetParticipantCertificate->configure(false, true);
+		ui->widgetParticipantCertificate->configure(nullptr, false, true);
 		if(!connect(ui->buttonGroupTrust, &QButtonGroup::buttonClicked, this, &PairingTrustActivity::onTrustButtonClicked, OC_CONTYPE)) {
 			qWarning() << "ERROR: Could not connect ";
 		}

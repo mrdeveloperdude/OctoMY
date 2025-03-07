@@ -28,7 +28,7 @@ RemoteClientWidget::RemoteClientWidget(QSharedPointer<RemoteClient> client, QWid
 
 	ui->setupUi(this);
 
-	ui->widgetBirthCertificate->configure(false,true);
+	ui->widgetBirthCertificate->configure(nullptr, false,true);
 
 	if(!mRemoteClient.isNull()) {
 		QSharedPointer<Node> node=mRemoteClient->node();

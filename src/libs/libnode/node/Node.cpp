@@ -253,6 +253,17 @@ QSharedPointer<LogStorage> Node::logStorage() const{
 	return mLogStorage;
 }
 
+
+void Node::log(const QString &text, LogType type) const{
+	OC_METHODGATE();
+	if(mLogStorage){
+		mLogStorage->appendLog(text);
+	}
+	else{
+		qDebug() << type << ": " << text;
+	}
+}
+
 QSharedPointer<IAppLauncher> Node::launcher()
 {
 	OC_METHODGATE();

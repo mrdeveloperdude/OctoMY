@@ -6,7 +6,7 @@
 #include "uptime/MethodGate.hpp"
 #include "uptime/ConnectionType.hpp"
 
-#include "pairing/PairingTrustActivity.hpp"
+#include "pairing/trust/PairingTrustActivity.hpp"
 
 
 PairingDebugWidget::PairingDebugWidget(QWidget *parent)

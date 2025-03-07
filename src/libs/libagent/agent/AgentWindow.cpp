@@ -7,23 +7,23 @@
 #include "agent/FaceActivity.hpp"
 #include "agent/MessageActivity.hpp"
 #include "agent/TransitionActivity.hpp"
-#include "app/Constants.hpp"
 #include "connection/ConnectionActivity.hpp"
 #include "delivery/AgentBaptismActivity.hpp"
 #include "delivery/AgentDeliveryActivity.hpp"
 #include "delivery/AgentSipAndSeeActivity.hpp"
-#include "delivery/IdentityActivity.hpp"
+#include "delivery/IdentityMenuActivity.hpp"
 #include "hardware/ControllerActivity.hpp"
 #include "hardware/ControllerTypeSelector.hpp"
 #include "hardware/HardwareActivity.hpp"
 #include "hardware/LobeTypeSelector.hpp"
 #include "hardware/SerialDeviceSelector.hpp"
-#include "log/LogStorage.hpp"
+#include "identity/IdentityActivity.hpp"
 #include "node/NodeNavigation.hpp"
-#include "pairing/CameraPairingActivity.hpp"
-#include "pairing/NetworkPairingActivity.hpp"
 #include "pairing/PairingActivity.hpp"
-#include "pairing/PairingTrustActivity.hpp"
+#include "pairing/PairingMenuActivity.hpp"
+#include "pairing/camera/CameraPairingActivity.hpp"
+#include "pairing/network/NetworkPairingActivity.hpp"
+#include "pairing/trust/PairingTrustActivity.hpp"
 #include "stanza/StanzaEditorActivity.hpp"
 #include "stanza/StanzaEditorActivity.hpp"
 #include "stanza/StanzaManagerActivity.hpp"
@@ -49,7 +49,6 @@ AgentWindow::AgentWindow(QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
-	mWaterMark.load(QString(":/images/agent_watermark.svg"));
 	prepareMenu();
 	prepareNavigation();
 }
@@ -97,10 +96,6 @@ void AgentWindow::prepareActivities(){
 		mDeliveryActivity->configure(a);
 		ui->widgetActivityStack->registerPage(mDeliveryActivity, false, false, false);
 		
-		mIdentityActivity = OC_NEW IdentityActivity();
-		mIdentityActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mIdentityActivity, false, false, false);
-		
 		mControllerTypeSelector = OC_NEW ControllerTypeSelector();
 		mControllerTypeSelector->configure(a);
 		ui->widgetActivityStack->registerPage(mControllerTypeSelector, false, false, false);
@@ -128,7 +123,19 @@ void AgentWindow::prepareActivities(){
 		mHardwareConfiguration = OC_NEW HardwareActivity();
 		mHardwareConfiguration->configure(a);
 		ui->widgetActivityStack->registerPage(mHardwareConfiguration, false, false, false);
-
+		
+		mIdentityActivity = OC_NEW IdentityActivity();
+		mIdentityActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mIdentityActivity, false, false, false);
+		
+		mIdentityMenuActivity = OC_NEW IdentityMenuActivity();
+		mIdentityMenuActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mIdentityMenuActivity, false, false, false);
+		
+		mPairingMenuActivity = OC_NEW PairingMenuActivity();
+		mPairingMenuActivity->configure(a);
+		ui->widgetActivityStack->registerPage(mPairingMenuActivity, false, false, false);
+		
 		mPairingActivity = OC_NEW PairingActivity();
 		mPairingActivity->configure(a);
 		ui->widgetActivityStack->registerPage(mPairingActivity, false, false, false);
@@ -202,10 +209,7 @@ void AgentWindow::appendLog(const QString& text)
 	OC_METHODGATE();
 	auto a = agent();
 	if(a){
-		auto logStorage = a->logStorage();
-		if(logStorage){
-			logStorage->appendLog(text);
-		}
+		a->log(text);
 	}
 	if(mDebug){
 		qDebug()<<"AGENT-LOG-APPEND: "<<text;

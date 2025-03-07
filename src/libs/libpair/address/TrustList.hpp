@@ -2,7 +2,7 @@
 #define TRUSTLIST_HPP
 
 #include "node/NodeType.hpp"
-#include "pairing/TrustLevel.hpp"
+#include "pairing/trust/TrustLevel.hpp"
 
 #include <QSet>
 #include <QString>

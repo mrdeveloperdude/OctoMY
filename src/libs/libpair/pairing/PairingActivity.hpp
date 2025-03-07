@@ -1,41 +1,74 @@
-#ifndef PAIRINGACTIVITY_H
-#define PAIRINGACTIVITY_H
+#ifndef PAIRINGACTIVITY_HPP
+#define PAIRINGACTIVITY_HPP
 
-#include "uptime/ConfigureHelper.hpp"
+
 #include "components/navigation/Activity.hpp"
+#include "log/LogType.hpp"
+#include "node/NodeType.hpp"
+#include "uptime/ConfigureHelper.hpp"
 
 #include <QWidget>
 #include <QHostAddress>
 
-namespace Ui
-{
+Q_DECLARE_METATYPE(QHostAddress)
+Q_DECLARE_METATYPE(QHostAddress *)
+
+
+namespace Ui {
 class PairingActivity;
 }
 
+
 class Node;
+class PairingTable;
+class PairingListModel;
+
+class PairingEditButtonDelegate;
+class QAbstractButton;
+
+class AddressBook;
+class LocalAddressList;
+
 
 
 /**
- * @brief The PairingActivity class is a menu for the user to select between the
- * different ways of performing pairing. Currently this includes:
- * Network Pairing
- * Camera Pairing
+ * @brief The PairingActivity class is a scree where the user can assign 
+ * trust to each associate that has been found through the discovery process.
+ * 
+ * This builds on the NetworkPairingActivity which did the same but only for 
+ * nodes discovered over IP networks.
+  *
+ * The widget has 3 main components:
+ * + network settings - A widget to select address and port for communicating with associates
+ * + associate list - A list of all associates found through discovery so far
+ * + trust editor - A screen that allows user to edit trust for one individual associate
+ *
+ * It also has a display of our current birth certificate and initiation of several 2-factor methods
  */
 
-class PairingActivity : public Activity
+
+class PairingActivity: public Activity
 {
 	Q_OBJECT
-
+	
 private:
 	Ui::PairingActivity *ui;
 	QSharedPointer<Node> mNode;
+	PairingListModel *mList{nullptr};
+	PairingEditButtonDelegate *mDelegate{nullptr};
+	QString mTemplate;
+	QString mCurrentlyEditingID;
+	static const QString mEncouragmentTextControl;
+	static const QString mEncouragmentTextAgent;
+	bool mDebug{false};
+	
 	ConfigureHelper mConfigureHelper;
-
-
+	
+	
 public:
 	explicit PairingActivity(QWidget *parent = nullptr);
 	virtual ~PairingActivity() override;
-
+	
 public:
 	void configure(QSharedPointer<Node> node);
 	
@@ -43,12 +76,35 @@ public:
 protected:
 	void popImpl(const QString &returnActivity, const QStringList returnArguments = QStringList()) override;
 	void pushImpl(const QStringList arguments = QStringList()) override;
-
+	
+	// Convenience selectors
+private:
+	QSharedPointer<AddressBook> addressBook();
+	QSharedPointer<LocalAddressList> localAddressList();
+	bool isPaierd() const;
+	
+	// Helpers
+private:
+	void replaceText(NodeType type);
+	void hookStartEdit();
+	void log(const QString &text, LogType type=LOG_TYPE_INFO) const;
+	
+public:
+	void startEdit(const QString &id);
+	QSharedPointer<Node> node();
+	void updateNetworkSettings();
+	
+protected:
+	void showEvent(QShowEvent *) override;
+	void hideEvent(QHideEvent *) override;
+	
 private slots:
-	void done();
-	void networkPairing();
-	void cameraPairing();
+	void onNetworkSettingsChange(QHostAddress address, quint16 port, bool valid);
+	
+private slots:
+	void complete();
+	void refresh();
+
 };
 
-#endif
-// PairingActivity_HPP
+#endif // PAIRINGACTIVITY_HPP

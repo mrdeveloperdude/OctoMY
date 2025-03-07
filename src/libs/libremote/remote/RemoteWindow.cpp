@@ -8,10 +8,11 @@
 #include "delivery/ControlBaptismActivity.hpp"
 #include "delivery/ControlDeliveryActivity.hpp"
 #include "delivery/ControlSipAndSeeActivity.hpp"
-#include "delivery/IdentityActivity.hpp"
-#include "log/LogStorage.hpp"
+#include "delivery/IdentityMenuActivity.hpp"
+#include "identity/IdentityActivity.hpp"
 #include "pairing/PairingActivity.hpp"
-#include "pairing/PairingTrustActivity.hpp"
+#include "pairing/PairingMenuActivity.hpp"
+#include "pairing/trust/PairingTrustActivity.hpp"
 #include "remote/AgentSelectActivity.hpp"
 #include "remote/ControlUnboxingWizard.hpp"
 #include "remote/Remote.hpp"
@@ -37,7 +38,6 @@ RemoteWindow::RemoteWindow(QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
-	mWaterMark.load(QString(":/images/remote_watermark.svg"));
 	prepareMenu();
 	prepareNavigation();
 }
@@ -88,6 +88,14 @@ void RemoteWindow::prepareActivities(){
 		mIdentityActivity = OC_NEW IdentityActivity();
 		mIdentityActivity->configure(r);
 		ui->widgetActivityStack->registerPage(mIdentityActivity, false, false, false);
+
+		mIdentityMenuActivity = OC_NEW IdentityMenuActivity();
+		mIdentityMenuActivity->configure(r);
+		ui->widgetActivityStack->registerPage(mIdentityMenuActivity, false, false, false);
+		
+		mPairingMenuActivity = OC_NEW PairingMenuActivity();
+		mPairingMenuActivity->configure(r);
+		ui->widgetActivityStack->registerPage(mPairingMenuActivity, false, false, false);
 		
 		mPairingActivity = OC_NEW PairingActivity();
 		mPairingActivity->configure(r);
@@ -267,10 +275,7 @@ void RemoteWindow::appendLog(const QString& text)
 	OC_METHODGATE();
 	auto r = remote();
 	if(!r.isNull()) {
-		auto logStorage = r->logStorage();
-		if(logStorage){
-			logStorage->appendLog(text);
-		}
+		r->log(text);
 	}
 }
 

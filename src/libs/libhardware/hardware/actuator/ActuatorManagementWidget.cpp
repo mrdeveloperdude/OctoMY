@@ -125,10 +125,10 @@ void ActuatorManagementWidget::configure(QSharedPointer<ControllerHandler> handl
 					auto actuatorWidget = qobject_cast<ActuatorWidget *>(mWidgets[i]);
 					if (nullptr != actuatorWidget)  {
 						actuatorWidget->configure(controller, i);
-						if(!connect(actuatorWidget, &ActuatorWidget::moved, controller.data(), &IController::setTargetValue, OC_CONTYPE)) {
+						if(!connect(actuatorWidget, &ActuatorWidget::moved, controller.get(), &IController::setTargetValue, OC_CONTYPE)) {
 							qWarning()<<"ERROR: could not connect";
 						}
-						if(!connect(actuatorWidget, &ActuatorWidget::limpChanged, controller.data(), static_cast<void (IController::*)(ACTUATOR_INDEX, bool)>(&IController::setLimp), OC_CONTYPE )) {
+						if(!connect(actuatorWidget, &ActuatorWidget::limpChanged, controller.get(), static_cast<void (IController::*)(ACTUATOR_INDEX, bool)>(&IController::setLimp), OC_CONTYPE )) {
 							qWarning()<<"ERROR: could not connect";
 						}
 					}

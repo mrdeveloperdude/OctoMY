@@ -1,5 +1,5 @@
-#ifndef TRUSTLEVEL_HPP
-#define TRUSTLEVEL_HPP
+#ifndef TRUSTLEVEL_H
+#define TRUSTLEVEL_H
 
 #include <QString>
 #include <QDebug>

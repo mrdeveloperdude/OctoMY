@@ -39,35 +39,35 @@ PortableID::~PortableID()
 void PortableID::setName(QString name)
 {
 	OC_METHODGATE();
-	mName=name;
+	mName = name;
 }
 
 
 void PortableID::setGender(QString gender)
 {
 	OC_METHODGATE();
-	mGender=gender;
+	mGender = gender;
 }
 
 
 void PortableID::setID(QString id)
 {
 	OC_METHODGATE();
-	mID=id;
+	mID = id;
 }
 
 
 void PortableID::setBirthDate(quint64 birthDate)
 {
 	OC_METHODGATE();
-	mBirthDate=birthDate;
+	mBirthDate = birthDate;
 }
 
 
 void PortableID::setType(NodeType type)
 {
 	OC_METHODGATE();
-	mType=type;
+	mType = type;
 }
 
 
@@ -121,15 +121,15 @@ bool PortableID::fromPortableString(QString s)
 {
 	OC_METHODGATE();
 	QStringList parts = s.split(sepRE);
-	if(parts.size()!=5) {
+	if(parts.size() != 5) {
+		qWarning() << "portable sting '" << s << "' did not have exactly 5 elements";
 		return false;
 	}
-	mName=parts.at(0).trimmed();
-	mGender=parts.at(1).trimmed();
-	mID=parts.at(2).trimmed();
-	mBirthDate=static_cast<quint64>(QDateTime::fromString(parts.at(3).trimmed(), Constants::dateFMTPortable).toMSecsSinceEpoch());
-	mType=nodeTypeFromString(parts.at(4).trimmed());
-	//qDebug()<<"from "<<s<<" gave birth="<<mBirthDate;
+	mName = parts.at(0).trimmed();
+	mGender = parts.at(1).trimmed();
+	mID = parts.at(2).trimmed();
+	mBirthDate = static_cast<quint64>(QDateTime::fromString(parts.at(3).trimmed(), Constants::dateFMTPortableID).toMSecsSinceEpoch());
+	mType = nodeTypeFromString(parts.at(4).trimmed());
 	return true;
 }
 
@@ -137,7 +137,7 @@ bool PortableID::fromPortableString(QString s)
 QString PortableID::toPortableString() const
 {
 	OC_METHODGATE();
-	QString dateString=QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(mBirthDate)).toString(Constants::dateFMTPortable);
+	QString dateString=QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(mBirthDate)).toString(Constants::dateFMTPortableID);
 	//qDebug()<<"birth="<<mBirthDate<<" to str="<<dateString;
 	return mName + SEP + mGender + SEP + mID + SEP + dateString + SEP + nodeTypeToString(mType);
 }

@@ -11,6 +11,7 @@
 #include "app/Settings.hpp"
 #include "client/ClientList.hpp"
 #include "discovery/AddressBook.hpp"
+#include "log/LogType.hpp"
 #include "node/LocalIdentityStore.hpp"
 #include "node/NodeRole.hpp"
 #include "node/NodeType.hpp"
@@ -190,6 +191,7 @@ public:
 
 public:
 	QSharedPointer<LogStorage> logStorage() const;
+	void log(const QString &text, LogType type=LOG_TYPE_INFO) const;
 
 	// Selectors
 public:

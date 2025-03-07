@@ -30,7 +30,7 @@ void DeliveryDebugWidget::configure(QSharedPointer <Node> node)
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
 		mNode = node;
-		ui->widgetBirthCertificate->configure();
+		ui->widgetBirthCertificate->configure(nullptr, true, true);
 		mBirthControl.configure(mNode);
 		updateUI();
 		if(nullptr != ui->tryToggleBirth) {

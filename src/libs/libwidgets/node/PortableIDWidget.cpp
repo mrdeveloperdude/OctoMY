@@ -4,6 +4,7 @@
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 #include "app/Constants.hpp"
+#include "components/navigation/Activity.hpp"
 
 #include <QDateTime>
 
@@ -25,12 +26,13 @@ PortableIDWidget::~PortableIDWidget()
 }
 
 
-void PortableIDWidget::configure(bool showCertificateFirst, bool userCanChange)
+void PortableIDWidget::configure(Activity *externalCertificateActivity, bool showCertificateFirst, bool userCanChange)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		ui->pushButtonToggleView->setVisible(userCanChange);
-		ui->pushButtonToggleView->setChecked(showCertificateFirst);
+		mExternalCertificateActivity = externalCertificateActivity;
+		ui->pushButtonShowCertificate->setVisible(userCanChange);
+		ui->pushButtonShowNameplate->setVisible(userCanChange);
 		ui->stackedWidget->setCurrentWidget(showCertificateFirst?ui->pageCertificate:ui->pageNameplate);
 	}
 }
@@ -40,7 +42,7 @@ void PortableIDWidget::setPortableID(PortableID id)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		//qDebug()<<"-----------###==== PortableIDWidget was updated with "<<id;
+		qDebug()<<"-----------###==== PortableIDWidget was updated with "<<id;
 		mID=id;
 		const NodeType type=mID.type();
 		const bool isAgent = TYPE_AGENT == type;
@@ -64,7 +66,7 @@ void PortableIDWidget::setPortableID(PortableID id)
 		ui->widgetIdenticon->setPortableID(mID);
 		ui->widgetQR->setQRData(mID.id());
 		const quint64 ts = mID.birthDate();
-		if(ts>0) {
+		if(ts > 0) {
 			ui->labelBirthdate->setVisible(true);
 			ui->labelBirthdateCaption->setVisible(true);
 			ui->labelBirthdate->setText(QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(ts)).toString(Constants::dateFMTDay));
@@ -95,19 +97,28 @@ PortableID PortableIDWidget::getPortableID()
 }
 
 
-void PortableIDWidget::on_pushButtonToggleViewNameplate_clicked()
+void PortableIDWidget::showCertificate()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		ui->stackedWidget->setCurrentWidget(ui->pageCertificate);
+		if(nullptr != mExternalCertificateActivity){
+			qDebug()<<"showing birth certificate externally with " << mExternalCertificateActivity->objectName();
+			//emit showBirthCertificate(mID.toPortableString());
+			mExternalCertificateActivity->push("IdentityActivity", QStringList() << mID.toPortableString());
+		}
+		else{
+			qDebug()<<"showing birth certificate internally";
+			ui->stackedWidget->setCurrentWidget(ui->pageCertificate);
+		}
 	}
 }
 
 
-void PortableIDWidget::on_pushButtonToggleView_clicked()
+void PortableIDWidget::showNameplate()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
+		qDebug()<<"showing nameplate internally";
 		ui->stackedWidget->setCurrentWidget(ui->pageNameplate);
 	}
 }

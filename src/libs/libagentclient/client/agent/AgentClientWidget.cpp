@@ -23,7 +23,7 @@ AgentClientWidget::AgentClientWidget(QSharedPointer<AgentClient> client, QWidget
 	OC_METHODGATE();
 	ui->setupUi(this);
 	qDebug()<<"CREATING AGENT CLIENT WIDGET AgentClient="<<(!mAgentClient.isNull()?mAgentClient->node()->nodeIdentity()->name():"NULL")<<", parent="<<parent;
-	ui->widgetBirthCertificate->configure(false,true);
+	ui->widgetBirthCertificate->configure(nullptr, false, true);
 	if(!mAgentClient.isNull()) {
 		auto node=mAgentClient->node();
 		if(!node.isNull()) {

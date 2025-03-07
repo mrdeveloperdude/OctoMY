@@ -25,7 +25,7 @@ void ControlSipAndSeeActivity::configure(QSharedPointer<Node> n)
 	if(mConfigureHelper.configure()) {
 		if(mNode != n) {
 			mNode = n;
-			ui->widgetBirthCertificate->configure(false,true);
+			ui->widgetBirthCertificate->configure(this, false, true);
 			reset();
 		}
 		if(mNode.isNull()) {

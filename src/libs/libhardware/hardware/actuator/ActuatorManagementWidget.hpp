@@ -21,7 +21,7 @@ private:
 	Ui::ActuatorManagerWidget *ui;
 	QList<QWidget *> mWidgets;
 	QSharedPointer<ControllerHandler> mHandler;
-	bool mDebug{true};
+	bool mDebug{false};
 
 public:
 	explicit ActuatorManagementWidget(QWidget *parent = nullptr);

@@ -4,28 +4,24 @@
 #include "address/Associate.hpp"
 #include "node/Node.hpp"
 #include "uptime/MethodGate.hpp"
-#include "uptime/New.hpp"
+#include "security/PortableID.hpp"
 
-#include <QDebug>
 
 IdentityActivity::IdentityActivity(QWidget *parent)
 	: Activity(parent)
-	, ui(OC_NEW Ui::IdentityActivity)
+	, ui(new Ui::IdentityActivity)
 	, mConfigureHelper("IdentityActivity", true, false, false, true, false)
-	
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
 }
 
-
 IdentityActivity::~IdentityActivity()
 {
 	OC_METHODGATE();
 	delete ui;
-	ui=nullptr;
+	ui = nullptr;
 }
-
 
 
 
@@ -34,38 +30,12 @@ void IdentityActivity::configure(QSharedPointer<Node> n)
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
 		mNode = n;
+		// NOTE: activity must be nullptr here or else we will wind into an infinite loop
+		ui->widgetMyCertificate->configure(nullptr, true, false);
 	}
 }
 
 
-void IdentityActivity::done(){
-	OC_METHODGATE();
-	pop();
-}
-
-
-void IdentityActivity::birthCertificate(){
-	OC_METHODGATE();
-	if(mConfigureHelper.isConfiguredAsExpected()) {
-		swap("NetworkIdentityActivity");
-	}
-}
-
-
-void IdentityActivity::abortion(){
-	OC_METHODGATE();
-	if(mConfigureHelper.isConfiguredAsExpected()) {
-		swap("CameraIdentityActivity");
-	}
-}
-
-
-void IdentityActivity::delivery(){
-	OC_METHODGATE();
-	if(mConfigureHelper.isConfiguredAsExpected()) {
-		swap("AgentDeliveryActivity");
-	}
-}
 
 void IdentityActivity::popImpl(const QString &returnActivity, const QStringList returnArguments)
 {
@@ -73,7 +43,7 @@ void IdentityActivity::popImpl(const QString &returnActivity, const QStringList 
 	Q_UNUSED(returnArguments);
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-
+		
 	}
 }
 
@@ -82,8 +52,22 @@ void IdentityActivity::pushImpl(const QStringList arguments)
 {
 	Q_UNUSED(arguments);
 	OC_METHODGATE();
+	qDebug() << "PUSH IDENTITY ACTIVITY: "<<arguments;
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-
+		PortableID pid;
+		if(arguments.size() > 0){
+			pid.fromPortableString(arguments[0]);
+		}
+		else{
+			if(!mNode.isNull()){
+				auto nodeIdentity = mNode->nodeIdentity();
+				if(!nodeIdentity.isNull()){
+					pid = nodeIdentity->toPortableID();
+				}
+			}
+		}
+		qDebug() << "PUSH IDENTITY ACTIVITY ID: " << pid;
+		ui->widgetMyCertificate->setPortableID(pid);
 	}
 }
 

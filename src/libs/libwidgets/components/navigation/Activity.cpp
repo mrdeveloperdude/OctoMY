@@ -90,3 +90,4 @@ void Activity::swap(const QString &activity, const QStringList arguments){
 		}
 	}
 }
+

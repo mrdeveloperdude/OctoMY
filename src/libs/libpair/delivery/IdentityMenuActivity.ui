@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>IdentityActivity</class>
- <widget class="QWidget" name="IdentityActivity">
+ <class>IdentityMenuActivity</class>
+ <widget class="QWidget" name="IdentityMenuActivity">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -207,7 +207,7 @@
   <connection>
    <sender>pushButtonBirthCertificate</sender>
    <signal>clicked()</signal>
-   <receiver>IdentityActivity</receiver>
+   <receiver>IdentityMenuActivity</receiver>
    <slot>birthCertificate()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -223,7 +223,7 @@
   <connection>
    <sender>pushButtonDone</sender>
    <signal>clicked()</signal>
-   <receiver>IdentityActivity</receiver>
+   <receiver>IdentityMenuActivity</receiver>
    <slot>done()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -239,7 +239,7 @@
   <connection>
    <sender>pushButtonDelivery</sender>
    <signal>clicked()</signal>
-   <receiver>IdentityActivity</receiver>
+   <receiver>IdentityMenuActivity</receiver>
    <slot>delivery()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -255,7 +255,7 @@
   <connection>
    <sender>pushButtonAbortion</sender>
    <signal>clicked()</signal>
-   <receiver>IdentityActivity</receiver>
+   <receiver>IdentityMenuActivity</receiver>
    <slot>abortion()</slot>
    <hints>
     <hint type="sourcelabel">

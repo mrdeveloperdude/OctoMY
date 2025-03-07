@@ -5,7 +5,7 @@
 #include <QPixmap>
 #include <QItemDelegate>
 
-class PairingActivity;
+class PairingMenuActivity;
 class QPainter;
 
 

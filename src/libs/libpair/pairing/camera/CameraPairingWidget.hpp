@@ -1,5 +1,5 @@
-#ifndef CAMERAPAIRINGWIDGET_HPP
-#define CAMERAPAIRINGWIDGET_HPP
+#ifndef CAMERAPAIRINGWIDGET_H
+#define CAMERAPAIRINGWIDGET_H
 
 #include "security/PortableID.hpp"
 

@@ -58,6 +58,7 @@ private:
 	QSharedPointer<CarrierAddressUDP> serverAddress() const;
 	quint16 serverPort() const;
 	void logUsefullStuff() const;
+	void connectionHandler(qhttp::server::QHttpRequest* req, qhttp::server::QHttpResponse* res);
 
 public:
 	bool start(const QString pathOrPortNumber);

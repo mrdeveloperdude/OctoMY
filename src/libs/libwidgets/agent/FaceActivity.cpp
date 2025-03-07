@@ -109,10 +109,7 @@ void FaceActivity::appendLog(const QString& text)
 	OC_METHODGATE();
 	
 	if(!mAgent.isNull()){
-		auto logStorage = mAgent->logStorage();
-		if(logStorage){
-			logStorage->appendLog(text);
-		}
+		mAgent->log(text);
 	}
 }
 

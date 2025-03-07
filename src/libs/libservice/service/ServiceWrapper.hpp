@@ -10,10 +10,13 @@
 #include <QDebug>
 
 /**
- * @brief The ServiceWrapper class is meant to make it possible to wrap any existing class as a serive unintrusively.
- * As an example ,we don't want classes such as KeyStore to be dependent on Service and ServiceManager, because they will not always be used as a service.
- * So instead of imposing a dependency, we make a class KeyStoreService which wraps around KeyStore. ServiceWrapper encapsulates the basics and
- * serves as a general base class for quickly being able to create consistent wrapper classes.
+ * @brief The ServiceWrapper class is meant to make it possible to wrap any
+ * existing class as a service unintrusively. As an example, we don't want
+ * classes such as KeyStore to be dependent on Service and ServiceManager,
+ * because they will not always be used as a service. So instead of imposing a
+ * dependency, we make a class KeyStoreService which wraps around KeyStore.
+ * ServiceWrapper encapsulates the basics and serves as a general base class for
+ * quickly being able to create consistent wrapper classes.
  */
 
 template <class T>

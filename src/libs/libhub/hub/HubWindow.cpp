@@ -29,7 +29,6 @@ HubWindow::HubWindow(QWidget *parent)
 	OC_METHODGATE();
 	setObjectName("HubWindow");
 	ui->setupUi(this);
-	mWaterMark.load(QString(":/images/hub_watermark.svg"));
 }
 
 
@@ -102,10 +101,7 @@ void HubWindow::appendLog(const QString& text)
 	OC_METHODGATE();
 	auto h = hub();
 	if(h){
-		auto logStorage = h->logStorage();
-		if(logStorage){
-			logStorage->appendLog(text);
-		}
+		h->log(text);
 	}
 }
 

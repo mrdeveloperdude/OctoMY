@@ -13,11 +13,11 @@ class LogStorage : public QObject {
 private:
 	QFile m_logFile;
 	QString m_logDir;
+	qint64 m_maxSize {0};
+	uchar *m_mapPtr {nullptr};
 	QByteArray m_mappedData;
-	QVector<qint64> m_offsets; // Log entry positions
-	qint64 m_maxSize;
-	int m_fd;
-	void *m_mapPtr;
+	QVector<qint64> m_offsets;
+	qint64 m_currentOffset {0};
 
 public:
 	explicit LogStorage(QObject *parent = nullptr);

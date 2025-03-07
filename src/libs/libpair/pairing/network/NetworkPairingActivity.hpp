@@ -8,8 +8,6 @@
 #include <QWidget>
 #include <QHostAddress>
 
-Q_DECLARE_METATYPE(QHostAddress)
-Q_DECLARE_METATYPE(QHostAddress *)
 
 namespace Ui
 {
@@ -29,9 +27,12 @@ class LocalAddressList;
 
 
 /**
- * @brief The NetworkPairingActivity class is a widget that is used by the nodes' UI when
- * they want input from user on what trust should be placed on each associate
- * that has been found through the discovery process.
+ * @brief The NetworkPairingActivity class is a scree where the user can assign 
+ * trust to each associate that has been found through the discovery process
+ * with explicit focus on nodes discovered via IP networks (wifi/lan/zoo).
+ * 
+ * NOTE: This will be superceeded by PairingActivity which aims to incorporate
+ *       all nodes discovered via any carrier.
  *
  * The widget has 3 main components:
  * + network settings - A widget to select address and port for communicating with associates

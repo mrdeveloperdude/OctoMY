@@ -9,30 +9,30 @@
 
 namespace Ui
 {
-class IdentityActivity;
+class IdentityMenuActivity;
 }
 
 class Node;
 
 
 /**
- * @brief The IdentityActivity class is a menu for the user to select between 
+ * @brief The IdentityMenuActivity class is a menu for the user to select between 
  * available identity management screens
  */
 
-class IdentityActivity : public Activity
+class IdentityMenuActivity : public Activity
 {
 	Q_OBJECT
 
 private:
-	Ui::IdentityActivity *ui;
+	Ui::IdentityMenuActivity *ui;
 	QSharedPointer<Node> mNode;
 	ConfigureHelper mConfigureHelper;
 
 
 public:
-	explicit IdentityActivity(QWidget *parent = nullptr);
-	virtual ~IdentityActivity() override;
+	explicit IdentityMenuActivity(QWidget *parent = nullptr);
+	virtual ~IdentityMenuActivity() override;
 
 public:
 	void configure(QSharedPointer<Node> node);

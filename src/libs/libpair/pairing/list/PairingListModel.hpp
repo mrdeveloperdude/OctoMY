@@ -1,5 +1,5 @@
-#ifndef PAIRINGLISTMODEL_HPP
-#define PAIRINGLISTMODEL_HPP
+#ifndef PAIRINGLISTMODEL_H
+#define PAIRINGLISTMODEL_H
 
 #include "node/NodeType.hpp"
 
