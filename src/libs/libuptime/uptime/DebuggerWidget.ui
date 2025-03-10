@@ -93,7 +93,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/expand_all.svg</normaloff>:/icons/expand_all.svg</iconset>
+         <normaloff>:/icons/app/expand_all.svg</normaloff>:/icons/app/expand_all.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -923,55 +923,55 @@
   <customwidget>
    <class>LocalIdentityDebugWidget</class>
    <extends>QWidget</extends>
-   <header location="global">debug/LocalIdentityDebugWidget.hpp</header>
+   <header location="global">debug/identity/LocalIdentityDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>KeyStoreDebugWidget</class>
    <extends>QWidget</extends>
-   <header location="global">debug/KeyStoreDebugWidget.hpp</header>
+   <header location="global">debug/keystore/KeyStoreDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>LocalAddressesDebugWidget</class>
    <extends>QWidget</extends>
-   <header location="global">debug/LocalAddressesDebugWidget.hpp</header>
+   <header location="global">debug/address/LocalAddressesDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>ServicesDebugWidget</class>
    <extends>QWidget</extends>
-   <header location="global">debug/ServicesDebugWidget.hpp</header>
+   <header location="global">debug/services/ServicesDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>CommsDebugWidget</class>
    <extends>QWidget</extends>
-   <header location="global">debug/CommsDebugWidget.hpp</header>
+   <header location="global">debug/comms/CommsDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>CarrierDebugWidget</class>
    <extends>QWidget</extends>
-   <header location="global">debug/CarrierDebugWidget.hpp</header>
+   <header location="global">debug/carrier/CarrierDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>DiscoveryClientDebugWidget</class>
    <extends>QWidget</extends>
-   <header location="global">debug/DiscoveryClientDebugWidget.hpp</header>
+   <header location="global">debug/discovery/DiscoveryClientDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PairingDebugWidget</class>
    <extends>QWidget</extends>
-   <header location="global">debug/PairingDebugWidget.hpp</header>
+   <header location="global">debug/pairing/PairingDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>DeliveryDebugWidget</class>
    <extends>QWidget</extends>
-   <header location="global">debug/DeliveryDebugWidget.hpp</header>
+   <header location="global">debug/delivery/DeliveryDebugWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

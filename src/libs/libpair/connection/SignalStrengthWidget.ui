@@ -41,7 +41,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../../libres/resources/icons.qrc">:/icons/connection_off.svg</pixmap>
+      <pixmap resource="../../libres/resources/icons.qrc">:/icons/comms/connection_off.svg</pixmap>
      </property>
      <property name="scaledContents">
       <bool>false</bool>

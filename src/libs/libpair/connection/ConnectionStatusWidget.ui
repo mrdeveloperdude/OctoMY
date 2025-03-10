@@ -21,6 +21,32 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
+    <widget class="QPushButton" name="pushButtonZoo">
+     <property name="toolTip">
+      <string>Use this to pair manually using camera/QR-code</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../libres/resources/icons.qrc">
+       <normaloff>:/icons/pairing/bluetooth.svg</normaloff>:/icons/pairing/bluetooth.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QPushButton" name="pushButtonNetwork">
      <property name="toolTip">
       <string>Use this to pair manually using camera/QR-code</string>
@@ -30,7 +56,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/network.svg</normaloff>:/icons/network.svg</iconset>
+       <normaloff>:/icons/controller/network.svg</normaloff>:/icons/controller/network.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -56,7 +82,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/bluetooth.svg</normaloff>:/icons/bluetooth.svg</iconset>
+       <normaloff>:/icons/pairing/bluetooth.svg</normaloff>:/icons/pairing/bluetooth.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -82,7 +108,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/audio.svg</normaloff>:/icons/audio.svg</iconset>
+       <normaloff>:/icons/pairing/audio.svg</normaloff>:/icons/pairing/audio.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -140,7 +166,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/settings.svg</normaloff>:/icons/settings.svg</iconset>
+       <normaloff>:/icons/app/settings.svg</normaloff>:/icons/app/settings.svg</iconset>
      </property>
     </widget>
    </item>
@@ -195,7 +221,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/qrcode.svg</normaloff>:/icons/qrcode.svg</iconset>
+       <normaloff>:/icons/pairing/qrcode.svg</normaloff>:/icons/pairing/qrcode.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -368,6 +394,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButtonZoo</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ConnectionStatusWidget</receiver>
+   <slot>toggleZoo(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>30</x>
+     <y>27</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>341</x>
+     <y>27</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>toggledConnected(bool)</slot>
@@ -378,5 +420,6 @@
   <slot>randomizeColor()</slot>
   <slot>togglePanic(bool)</slot>
   <slot>startCamera()</slot>
+  <slot>toggleZoo(bool)</slot>
  </slots>
 </ui>

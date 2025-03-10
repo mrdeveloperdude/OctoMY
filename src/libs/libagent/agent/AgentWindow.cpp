@@ -398,15 +398,15 @@ QAction* AgentWindow::addMenuItem(QString title, QString icon, QString toolTip, 
 void AgentWindow::prepareMenu( )
 {
 	OC_METHODGATE();
-	mQuitAction = addMenuItem(tr("Exit"), ":/icons/no.svg", tr("Terminate execution of this Agent"), &AgentWindow::requestApplicationShutdown );
-	mIdentityAction = addMenuItem(tr("Identity"), ":/icons/identity.svg", tr("Manage the identity of this Agent"), &AgentWindow::identity );
-	mHardwareAction = addMenuItem(tr("Configuration"), ":/icons/actuator_control.svg", tr("Manage the configuration of this Agent"), &AgentWindow::configureHardware );
-	mPairingAction = addMenuItem(tr("Pairing"), ":/icons/pair.svg", tr("Manage the pairing of this Agent"), &AgentWindow::pairing );
-	mConnectionAction = addMenuItem(tr("Connection"), ":/icons/network.svg", tr("Manage Agent connection"), &AgentWindow::connection );
-	mShowFaceAction = addMenuItem(tr("Face"), ":/icons/on.svg", tr("Show the Agent's face in main screen"), &AgentWindow::face);
-	mPlanEditorAction = addMenuItem(tr("Plan Editor"), ":/icons/mandate.svg", tr("Edit Agent plan"), &AgentWindow::editPlan );
+	mQuitAction = addMenuItem(tr("Exit"), ":/icons/app/no.svg", tr("Terminate execution of this Agent"), &AgentWindow::requestApplicationShutdown );
+	mIdentityAction = addMenuItem(tr("Identity"), ":/icons/pairing/identity.svg", tr("Manage the identity of this Agent"), &AgentWindow::identity );
+	mHardwareAction = addMenuItem(tr("Configuration"), ":/icons/controller/actuator_control.svg", tr("Manage the configuration of this Agent"), &AgentWindow::configureHardware );
+	mPairingAction = addMenuItem(tr("Pairing"), ":/icons/pairing/pair.svg", tr("Manage the pairing of this Agent"), &AgentWindow::pairing );
+	mConnectionAction = addMenuItem(tr("Connection"), ":/icons/controller/network.svg", tr("Manage Agent connection"), &AgentWindow::connection );
+	mShowFaceAction = addMenuItem(tr("Face"), ":/icons/general/on.svg", tr("Show the Agent's face in main screen"), &AgentWindow::face);
+	mPlanEditorAction = addMenuItem(tr("Plan Editor"), ":/icons/plan/mandate.svg", tr("Edit Agent plan"), &AgentWindow::editPlan );
 	
-	mToggleOnlineAction = addMenuItem(tr("Toggle Online"), ":/icons/on.svg", tr("Toggle availability of Agent on networks"), &AgentWindow::toggleOnline, true);
+	mToggleOnlineAction = addMenuItem(tr("Toggle Online"), ":/icons/general/on.svg", tr("Toggle availability of Agent on networks"), &AgentWindow::toggleOnline, true);
 	
 	/* Other stuff
 	

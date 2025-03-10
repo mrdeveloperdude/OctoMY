@@ -123,7 +123,7 @@
         </property>
         <property name="icon">
          <iconset resource="../resources/icons.qrc">
-          <normaloff>:/icons/trash.svg</normaloff>:/icons/trash.svg</iconset>
+          <normaloff>:/icons/app/trash.svg</normaloff>:/icons/app/trash.svg</iconset>
         </property>
        </widget>
       </item>
@@ -146,7 +146,7 @@
         </property>
         <property name="icon">
          <iconset resource="../resources/icons.qrc">
-          <normaloff>:/icons/edit.svg</normaloff>:/icons/edit.svg</iconset>
+          <normaloff>:/icons/app/edit.svg</normaloff>:/icons/app/edit.svg</iconset>
         </property>
        </widget>
       </item>

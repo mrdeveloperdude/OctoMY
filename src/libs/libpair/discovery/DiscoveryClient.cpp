@@ -18,6 +18,7 @@
 #include "utility/data/Data.hpp"
 #include "utility/string/String.hpp"
 #include "utility/time/HumanTime.hpp"
+#include "DiscoveryMandate.hpp"
 
 #include <QDebug>
 #include <QDateTime>
@@ -28,14 +29,15 @@
 static const QString zeroID=utility::string::toHash("", OCTOMY_KEY_HASH);
 
 
+
 DiscoveryClient::DiscoveryClient()
 	: QObject(nullptr)
 	, mLastZooPair(0)
-	, mClient(OC_NEW qhttp::client::QHttpClient(this))
+	, mZooClient(OC_NEW qhttp::client::QHttpClient(this))
 	, mDebug(false)
-	, mConfigureHelper("DiscoveryClient", true, true, false, true, false)
 	, mRXRate("RX")
 	, mTXRate("TX")
+	, mConfigureHelper("DiscoveryClient", true, true, false, true, false)
 {
 	OC_METHODGATE();
 }
@@ -70,7 +72,7 @@ void DiscoveryClient::activate(bool on)
 	OC_METHODGATE();
 	if(mConfigureHelper.activate(on)) {
 		if(mDebug) {
-			qDebug().noquote().nospace() << "DISCOVERY CLIENT " << QString(on?"ACTIVATED":"DEACTICVATED");
+			qDebug().noquote().nospace() << "DISCOVERY CLIENT " << QString(on?"ACTIVATED":"DEACTICVATED") << "WITH MANDATE" << mMandate;
 		}
 		if(on) {
 			mHoneymoonScheduler.trigger();
@@ -106,20 +108,42 @@ QSharedPointer<Key> DiscoveryClient::localKey() const
 }
 
 
-void DiscoveryClient::setURL(const QUrl& serverURL)
+void DiscoveryClient::setZooURL(const QUrl& serverURL)
 {
 	OC_METHODGATE();
-	mServerURL  = serverURL;
+	mZooURL  = serverURL;
 	if(mDebug) {
-		qDebug().noquote().nospace() << "DISCOVERY CLIENT	Using new URL: " << mServerURL;
+		qDebug().noquote().nospace() << "DISCOVERY CLIENT	Using new URL: " << mZooURL;
 	}
 }
 
 
-QUrl DiscoveryClient::URL() const
+QUrl DiscoveryClient::zooURL() const
 {
 	OC_METHODGATE();
-	return mServerURL;
+	return mZooURL;
+}
+
+
+void DiscoveryClient::setMandate(QSharedPointer<const DiscoveryMandate> mandate){
+	OC_METHODGATE();
+	mMandate = mandate;
+}
+
+
+QSharedPointer<const DiscoveryMandate> DiscoveryClient::mandate() const{
+	OC_METHODGATE();
+	return mMandate;
+}
+
+
+const RateCalculator &DiscoveryClient::rxRate() const{
+	return mRXRate;
+}
+
+
+const RateCalculator &DiscoveryClient::txRate() const{
+	return mTXRate;
 }
 
 
@@ -248,30 +272,58 @@ void DiscoveryClient::responseHandler(qhttp::client::QHttpResponse* res){
 }
 
 
+void DiscoveryClient::discoverZoo(){
+	OC_METHODGATE();
+	if(mZooURL.isEmpty()){
+		qWarning().noquote().nospace() << "Invalid discovery server URL: '" << mZooURL << "'";
+		emit discoverResponse(false);
+		return;
+	}
+	if(mDebug) {
+		qDebug().noquote().nospace() << "DISCOVERY CLIENT Zoo discovery for '" << mZooURL << "'";
+	}
+	qhttp::client::TRequstHandler reqHandler = [this](qhttp::client::QHttpRequest* req) {
+		requestHandler(req);
+	};
+	
+	qhttp::client::TResponseHandler resHandler = [this](qhttp::client::QHttpResponse* res) {
+		responseHandler(res);
+	};
+	const auto ret = mZooClient->request(qhttp::EHTTP_POST, mZooURL, reqHandler, resHandler);
+	if(!ret) {
+		qWarning().noquote().nospace() << "ERROR: Could not execute discovery request to '" << mZooURL << "'";
+		emit discoverResponse(false);
+	}
+}
+
+
+void DiscoveryClient::discoverNetwork(){
+	OC_METHODGATE();
+	
+}
+
+
+void DiscoveryClient::discoverBluetooth(){
+	OC_METHODGATE();
+	if(mConfigureHelper.isActivatedAsExpected()) {
+		
+	}
+}
+
+
 void DiscoveryClient::discover()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isActivatedAsExpected()) {
-		if(mServerURL.isEmpty()){
-			qWarning().noquote().nospace() << "Invalid discovery server URL: '" << mServerURL << "'";
+		emit discoverRequest();
+		if(mMandate.isNull()){
+			qWarning().noquote().nospace() << "Invalid discovery mandate";
 			emit discoverResponse(false);
 			return;
 		}
-		if(mDebug) {
-			qDebug().noquote().nospace() << "DISCOVERY CLIENT Discovery for '" << mServerURL << "'";
-		}
-		qhttp::client::TRequstHandler reqHandler = [this](qhttp::client::QHttpRequest* req) {
-			requestHandler(req);
-		};
-
-		qhttp::client::TResponseHandler resHandler = [this](qhttp::client::QHttpResponse* res) {
-			responseHandler(res);
-		};
-		const auto ret = mClient->request(qhttp::EHTTP_POST, mServerURL, reqHandler, resHandler);
-		emit discoverRequest();
-		if(!ret) {
-			qWarning().noquote().nospace() << "ERROR: Could not execute discovery request to '" << mServerURL << "'";
-			emit discoverResponse(false);
+		const auto &m{*mMandate};
+		if(m.useZoo){
+			discoverZoo();
 		}
 	}
 }
@@ -394,11 +446,11 @@ bool DiscoveryClient::isLogging() const
 void DiscoveryClient::onTimer()
 {
 	OC_METHODGATE();
-	const quint64 now=utility::time::currentMsecsSinceEpoch<quint64>();
-	const quint64 interval=mHoneymoonScheduler.currentValue(now);
-	if(now>(interval+mLastZooPair)) {
+	const quint64 now = utility::time::currentMsecsSinceEpoch<quint64>();
+	const quint64 interval = mHoneymoonScheduler.currentValue(now);
+	if(now > (interval + mLastZooPair)) {
 		//qDebug() << "ZOO PAIR TIME WITH INTERVAL " << interval;
-		mLastZooPair=now;
+		mLastZooPair = now;
 		discover();
 		//TODO: node.getComms()->unregisterCourier(courier); <-- remove old unused and timed out couriers
 	}

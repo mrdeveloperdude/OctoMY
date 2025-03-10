@@ -112,7 +112,7 @@
   <action name="actionAddAgent">
    <property name="icon">
     <iconset resource="../../libres/resources/icons.qrc">
-     <normaloff>:/icons/agent.svg</normaloff>:/icons/agent.svg</iconset>
+     <normaloff>:/icons/app/window/agent.svg</normaloff>:/icons/app/window/agent.svg</iconset>
    </property>
    <property name="text">
     <string>Agent</string>
@@ -127,7 +127,7 @@
   <action name="actionAddRemote">
    <property name="icon">
     <iconset resource="../../libres/resources/icons.qrc">
-     <normaloff>:/icons/remote.svg</normaloff>:/icons/remote.svg</iconset>
+     <normaloff>:/icons/app/window/remote.svg</normaloff>:/icons/app/window/remote.svg</iconset>
    </property>
    <property name="text">
     <string>Remote</string>

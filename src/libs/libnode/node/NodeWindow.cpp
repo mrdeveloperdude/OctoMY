@@ -87,7 +87,7 @@ void NodeWindow::nodeWindowConfigure(QSharedPointer<Node> node)
 		auto typeName = nodeTypeToString(mNode->nodeType()).toLower();
 		mWaterMark.load(QString(":/images/%1_watermark.svg").arg(typeName));
 		auto splash_time{1000};
-		mSplash->configure(this, QString(":/icons/%1.svg").arg(typeName), splash_time, splash_time/4, 0.7);
+		mSplash->configure(this, QString(":/icons/app/window/%1.svg").arg(typeName), splash_time, splash_time/4, 0.7);
 		configure();
 		QTimer::singleShot((splash_time*3/4), mSplash, &SplashScreen::done);
 	} else {

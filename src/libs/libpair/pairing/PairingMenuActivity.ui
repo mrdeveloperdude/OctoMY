@@ -70,7 +70,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/lan.svg</normaloff>:/icons/lan.svg</iconset>
+         <normaloff>:/icons/pairing/lan.svg</normaloff>:/icons/pairing/lan.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -99,7 +99,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/snap.svg</normaloff>:/icons/snap.svg</iconset>
+         <normaloff>:/icons/pairing/snap.svg</normaloff>:/icons/pairing/snap.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -128,7 +128,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/yes.svg</normaloff>:/icons/yes.svg</iconset>
+         <normaloff>:/icons/app/yes.svg</normaloff>:/icons/app/yes.svg</iconset>
        </property>
        <property name="iconSize">
         <size>

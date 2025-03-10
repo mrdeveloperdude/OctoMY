@@ -177,7 +177,7 @@
               </property>
               <property name="icon">
                <iconset resource="../../libres/resources/icons.qrc">
-                <normaloff>:/icons/identity.svg</normaloff>:/icons/identity.svg</iconset>
+                <normaloff>:/icons/pairing/identity.svg</normaloff>:/icons/pairing/identity.svg</iconset>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -451,7 +451,7 @@
            </property>
            <property name="icon">
             <iconset resource="../../libres/resources/icons.qrc">
-             <normaloff>:/icons/identity.svg</normaloff>:/icons/identity.svg</iconset>
+             <normaloff>:/icons/pairing/identity.svg</normaloff>:/icons/pairing/identity.svg</iconset>
            </property>
            <property name="checkable">
             <bool>false</bool>

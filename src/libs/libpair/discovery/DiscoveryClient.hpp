@@ -13,6 +13,7 @@
 
 
 class Node;
+class DiscoveryMandate;
 
 namespace qhttp
 {
@@ -90,25 +91,23 @@ class DiscoveryClient: public QObject
 private:
 	QTimer										mTimer;
 	quint64										mLastZooPair;
-	QUrl										mServerURL;
-	QSharedPointer<qhttp::client::QHttpClient>	mClient;
+	QUrl										mZooURL;
+	QSharedPointer<qhttp::client::QHttpClient>	mZooClient;
 	QSharedPointer<Node>						mNode;
 	QSharedPointer<Key>							mKey;
 	bool										mDebug;
 	HoneymoonScheduler<quint64>					mHoneymoonScheduler;
+	RateCalculator								mRXRate;
+	RateCalculator								mTXRate;
+	QSharedPointer<const DiscoveryMandate>		mMandate;
 	ConfigureHelper								mConfigureHelper;
-
-	// TODO: Encapsulate
-public:
-	RateCalculator mRXRate;
-	RateCalculator mTXRate;
 
 
 private:
 	void registerPossibleAssociate(QVariantMap map);
 
 public:
-	explicit DiscoveryClient();
+	DiscoveryClient();
 	virtual ~DiscoveryClient();
 
 public:
@@ -122,25 +121,35 @@ public:
 	// Convenience selectors
 private:
 	QSharedPointer<Key> localKey() const;
+	
+private:
+	void discoverZoo();
+	void discoverNetwork();
+	void discoverBluetooth();
 
 public:
 	void activate(bool start);
 	bool isActive() const;
-
-	void setURL(const QUrl&);
-	QUrl URL() const;
-
-
+	
+	void setZooURL(const QUrl&);
+	QUrl zooURL() const;
+	
+	void setMandate(QSharedPointer<const DiscoveryMandate> mandate);
+	QSharedPointer<const DiscoveryMandate> mandate() const;
+	
+	const RateCalculator &rxRate() const;
+	const RateCalculator &txRate() const;
+	
+	QSharedPointer<Node> node() const;
+	
+	quint64 lastZooPairTime() const;
+	
+	void setLogging(const bool logging);
+	bool isLogging() const;
+	
 	// Perform one shot discovery by invoking discovery request to discovery server
 	// NOTE: This should only be invoked from internal timer for normal operation.
 	void discover();
-
-	QSharedPointer<Node> node() const;
-
-	quint64 lastZooPairTime() const;
-
-	void setLogging(const bool logging);
-	bool isLogging() const;
 
 private slots:
 	void requestHandler(qhttp::client::QHttpRequest* req);

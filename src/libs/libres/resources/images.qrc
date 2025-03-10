@@ -1,12 +1,11 @@
 <RCC>
-    <qresource prefix="/">
-        <file>images/birth.jpeg</file>
-        <file>images/hub_butterfly.svg</file>
-        <file>images/ardumy_badge.svg</file>
-        <file>images/octomy_watermark.svg</file>
-        <file>images/hub_watermark.svg</file>
-        <file>images/agent_watermark.svg</file>
-        <file>images/remote_watermark.svg</file>
-        <file>icons/on.svg</file>
-    </qresource>
+	<qresource prefix="/">
+		<file>images/birth.jpeg</file>
+		<file>images/hub_butterfly.svg</file>
+		<file>images/ardumy_badge.svg</file>
+		<file>images/octomy_watermark.svg</file>
+		<file>images/hub_watermark.svg</file>
+		<file>images/agent_watermark.svg</file>
+		<file>images/remote_watermark.svg</file>
+	</qresource>
 </RCC>

@@ -153,13 +153,13 @@ void Identicon::regenerateIdenticon()
 		switch(mID.type()) {
 		default:
 		case(TYPE_AGENT):
-			url=":/icons/agent.svg";
+			url=":/icons/app/window/agent.svg";
 			break;
 		case(TYPE_REMOTE):
-			url=":/icons/remote.svg";
+			url=":/icons/app/window/remote.svg";
 			break;
 		case(TYPE_HUB):
-			url=":/icons/hub.svg";
+			url=":/icons/app/window/hub.svg";
 			break;
 		case(TYPE_ZOO):
 			url=":/icons/zoo.svg";

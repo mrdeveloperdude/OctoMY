@@ -55,7 +55,7 @@
          </property>
          <property name="icon">
           <iconset resource="../../libres/resources/icons.qrc">
-           <normaloff>:/icons/home.svg</normaloff>:/icons/home.svg</iconset>
+           <normaloff>:/icons/map/home.svg</normaloff>:/icons/map/home.svg</iconset>
          </property>
         </widget>
        </item>
@@ -69,7 +69,7 @@
          </property>
          <property name="icon">
           <iconset resource="../../libres/resources/icons.qrc">
-           <normaloff>:/icons/center.svg</normaloff>:/icons/center.svg</iconset>
+           <normaloff>:/icons/map/center.svg</normaloff>:/icons/map/center.svg</iconset>
          </property>
          <property name="checkable">
           <bool>true</bool>

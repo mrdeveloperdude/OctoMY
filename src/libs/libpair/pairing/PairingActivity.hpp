@@ -19,16 +19,14 @@ class PairingActivity;
 }
 
 
-class Node;
-class PairingTable;
-class PairingListModel;
-
-class PairingEditButtonDelegate;
-class QAbstractButton;
-
 class AddressBook;
+class DiscoveryClient;
 class LocalAddressList;
-
+class Node;
+class PairingEditButtonDelegate;
+class PairingListModel;
+class PairingTable;
+class QAbstractButton;
 
 
 /**
@@ -54,6 +52,7 @@ class PairingActivity: public Activity
 private:
 	Ui::PairingActivity *ui;
 	QSharedPointer<Node> mNode;
+	QSharedPointer<DiscoveryClient> mDiscoveryClient;
 	PairingListModel *mList{nullptr};
 	PairingEditButtonDelegate *mDelegate{nullptr};
 	QString mTemplate;
@@ -87,6 +86,7 @@ private:
 private:
 	void replaceText(NodeType type);
 	void hookStartEdit();
+	void updateDiscoveryMandate();
 	void log(const QString &text, LogType type=LOG_TYPE_INFO) const;
 	
 public:

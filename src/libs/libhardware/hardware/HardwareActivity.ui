@@ -70,7 +70,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/actuator_control.svg</normaloff>:/icons/actuator_control.svg</iconset>
+         <normaloff>:/icons/controller/actuator_control.svg</normaloff>:/icons/controller/actuator_control.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -99,7 +99,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/sensor_temperature.svg</normaloff>:/icons/sensor_temperature.svg</iconset>
+         <normaloff>:/icons/actuators/sensor_temperature.svg</normaloff>:/icons/actuators/sensor_temperature.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -128,7 +128,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/network.svg</normaloff>:/icons/network.svg</iconset>
+         <normaloff>:/icons/controller/network.svg</normaloff>:/icons/controller/network.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -157,7 +157,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/pose_control.svg</normaloff>:/icons/pose_control.svg</iconset>
+         <normaloff>:/icons/controller/pose_control.svg</normaloff>:/icons/controller/pose_control.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -186,7 +186,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/control.svg</normaloff>:/icons/control.svg</iconset>
+         <normaloff>:/icons/controller/control.svg</normaloff>:/icons/controller/control.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -215,7 +215,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/yes.svg</normaloff>:/icons/yes.svg</iconset>
+         <normaloff>:/icons/app/yes.svg</normaloff>:/icons/app/yes.svg</iconset>
        </property>
        <property name="iconSize">
         <size>

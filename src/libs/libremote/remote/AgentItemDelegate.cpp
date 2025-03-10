@@ -139,7 +139,7 @@ void AgentItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 		// Draw the edit button to the far right
 		icX = 0;
 		drawButton(*painter, r, icX, border, buttonSize, QIcon(":/icons/control.svg"), option.state | QStyle::State_Enabled);
-		drawButton(*painter, r, icX, border, buttonSize, QIcon(":/icons/edit.svg"), option.state | QStyle::State_Enabled);
+		drawButton(*painter, r, icX, border, buttonSize, QIcon(":/icons/app/edit.svg"), option.state | QStyle::State_Enabled);
 	}
 }
 

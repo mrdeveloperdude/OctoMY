@@ -70,7 +70,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/certificate.svg</normaloff>:/icons/certificate.svg</iconset>
+         <normaloff>:/icons/delivery/certificate.svg</normaloff>:/icons/delivery/certificate.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -99,7 +99,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/delivery.svg</normaloff>:/icons/delivery.svg</iconset>
+         <normaloff>:/icons/delivery/delivery.svg</normaloff>:/icons/delivery/delivery.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -128,7 +128,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/yes.svg</normaloff>:/icons/yes.svg</iconset>
+         <normaloff>:/icons/app/yes.svg</normaloff>:/icons/app/yes.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -157,7 +157,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/kill.svg</normaloff>:/icons/kill.svg</iconset>
+         <normaloff>:/icons/general/kill.svg</normaloff>:/icons/general/kill.svg</iconset>
        </property>
        <property name="iconSize">
         <size>

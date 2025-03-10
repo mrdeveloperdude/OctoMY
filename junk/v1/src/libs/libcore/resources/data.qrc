@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>data/completion_wordlist.txt</file>
-    </qresource>
-</RCC>

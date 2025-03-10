@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>kernels/metaballs.cl</file>
-    </qresource>
-</RCC>

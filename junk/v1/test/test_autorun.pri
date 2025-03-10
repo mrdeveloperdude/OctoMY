@@ -1,6 +1,0 @@
-TEST_BINARY=$$shadowed($$_PRO_FILE_PWD_)/$${TARGET}
-#message("------ ADDING TEST TO RUN POST LINK: " $$TEST_BINARY)
-#QMAKE_POST_LINK += $$TEST_BINARY
-
-
-

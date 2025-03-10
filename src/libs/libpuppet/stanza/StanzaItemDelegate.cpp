@@ -101,7 +101,7 @@ void StanzaItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
 		button.text.clear();
 		button.state = QStyle::State_Enabled;
 		button.iconSize=QSize(buttonSize*3/4,buttonSize*3/4);
-		button.icon=QIcon(":/icons/edit.svg");
+		button.icon=QIcon(":/icons/app/edit.svg");
 		button.state = option.state | QStyle::State_Enabled;
 		QApplication::style()->drawControl( QStyle::CE_PushButton, &button, painter);
 	}

@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../../libres/resources/icons.qrc">
-    <normaloff>:/icons/hub.svg</normaloff>:/icons/hub.svg</iconset>
+    <normaloff>:/icons/app/window/hub.svg</normaloff>:/icons/app/window/hub.svg</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_23">
    <item>
@@ -72,7 +72,7 @@
        </property>
        <attribute name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/agent.svg</normaloff>:/icons/agent.svg</iconset>
+         <normaloff>:/icons/app/window/agent.svg</normaloff>:/icons/app/window/agent.svg</iconset>
        </attribute>
        <attribute name="title">
         <string>Nodes</string>
@@ -125,7 +125,7 @@
        </property>
        <attribute name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/map.svg</normaloff>:/icons/map.svg</iconset>
+         <normaloff>:/icons/map/map.svg</normaloff>:/icons/map/map.svg</iconset>
        </attribute>
        <attribute name="title">
         <string>Map</string>
@@ -134,7 +134,7 @@
       <widget class="QWidget" name="tabPlan">
        <attribute name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/mandate.svg</normaloff>:/icons/mandate.svg</iconset>
+         <normaloff>:/icons/plan/mandate.svg</normaloff>:/icons/plan/mandate.svg</iconset>
        </attribute>
        <attribute name="title">
         <string>Plan</string>
@@ -158,7 +158,7 @@
       <widget class="markdown::MarkdownEditor" name="tabWeb">
        <attribute name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/edit.svg</normaloff>:/icons/edit.svg</iconset>
+         <normaloff>:/icons/app/edit.svg</normaloff>:/icons/app/edit.svg</iconset>
        </attribute>
        <attribute name="title">
         <string>Web</string>

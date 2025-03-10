@@ -52,7 +52,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/save.svg</normaloff>:/icons/save.svg</iconset>
+       <normaloff>:/icons/app/save.svg</normaloff>:/icons/app/save.svg</iconset>
      </property>
     </widget>
    </item>

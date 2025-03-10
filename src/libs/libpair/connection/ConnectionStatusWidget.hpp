@@ -8,6 +8,7 @@
 #include <QWidget>
 
 class CommsSession;
+struct DiscoveryMandate;
 class Node;
 
 namespace Ui {
@@ -31,9 +32,18 @@ private:
 	void log(const QString &text, LogType type=LOG_TYPE_INFO) const;
 
 public:
-	bool connecting() const;
 	void configure(QSharedPointer<Node>);
 	void setPanic(bool panic);
+	QSharedPointer<DiscoveryMandate> discoveryMandate();
+	
+	bool connecting() const;
+	bool audioOn() const;
+	bool cameraOn() const;
+	bool bluetoothOn() const;
+	bool NFCOn() const;
+	bool networkOn() const;
+	bool zooOn() const;
+	bool panicOn() const;
 
 	// CommsChannel slots (via setHookCommsSignals in AgentWindow)
 public slots:

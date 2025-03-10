@@ -266,7 +266,7 @@
             </property>
             <property name="icon">
              <iconset resource="../../libres/resources/icons.qrc">
-              <normaloff>:/icons/rc_servo.svg</normaloff>:/icons/rc_servo.svg</iconset>
+              <normaloff>:/icons/actuators/rc_servo.svg</normaloff>:/icons/actuators/rc_servo.svg</iconset>
             </property>
            </item>
            <item>
@@ -275,7 +275,7 @@
             </property>
             <property name="icon">
              <iconset resource="../../libres/resources/icons.qrc">
-              <normaloff>:/icons/stepper_motor.svg</normaloff>:/icons/stepper_motor.svg</iconset>
+              <normaloff>:/icons/actuators/stepper_motor.svg</normaloff>:/icons/actuators/stepper_motor.svg</iconset>
             </property>
            </item>
            <item>
@@ -284,7 +284,7 @@
             </property>
             <property name="icon">
              <iconset resource="../../libres/resources/icons.qrc">
-              <normaloff>:/icons/dc_motor.svg</normaloff>:/icons/dc_motor.svg</iconset>
+              <normaloff>:/icons/actuators/dc_motor.svg</normaloff>:/icons/actuators/dc_motor.svg</iconset>
             </property>
            </item>
            <item>
@@ -293,7 +293,7 @@
             </property>
             <property name="icon">
              <iconset resource="../../libres/resources/icons.qrc">
-              <normaloff>:/icons/relay.svg</normaloff>:/icons/relay.svg</iconset>
+              <normaloff>:/icons/actuators/relay.svg</normaloff>:/icons/actuators/relay.svg</iconset>
             </property>
            </item>
           </widget>

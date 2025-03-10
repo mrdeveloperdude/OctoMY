@@ -203,7 +203,7 @@
             </property>
             <property name="icon">
              <iconset resource="../../libres/resources/icons.qrc">
-              <normaloff>:/icons/wheels.svg</normaloff>:/icons/wheels.svg</iconset>
+              <normaloff>:/icons/lobes/wheels.svg</normaloff>:/icons/lobes/wheels.svg</iconset>
             </property>
            </item>
            <item>
@@ -212,7 +212,7 @@
             </property>
             <property name="icon">
              <iconset resource="../../libres/resources/icons.qrc">
-              <normaloff>:/icons/threads.svg</normaloff>:/icons/threads.svg</iconset>
+              <normaloff>:/icons/lobes/threads.svg</normaloff>:/icons/lobes/threads.svg</iconset>
             </property>
            </item>
            <item>
@@ -221,7 +221,7 @@
             </property>
             <property name="icon">
              <iconset resource="../../libres/resources/icons.qrc">
-              <normaloff>:/icons/hexapod.svg</normaloff>:/icons/hexapod.svg</iconset>
+              <normaloff>:/icons/lobes/hexapod.svg</normaloff>:/icons/lobes/hexapod.svg</iconset>
             </property>
            </item>
            <item>
@@ -230,7 +230,7 @@
             </property>
             <property name="icon">
              <iconset resource="../../libres/resources/icons.qrc">
-              <normaloff>:/icons/quadcopter.svg</normaloff>:/icons/quadcopter.svg</iconset>
+              <normaloff>:/icons/lobes/quadcopter.svg</normaloff>:/icons/lobes/quadcopter.svg</iconset>
             </property>
            </item>
           </widget>
@@ -303,7 +303,7 @@
           </property>
           <property name="icon">
            <iconset resource="../../libres/resources/icons.qrc">
-            <normaloff>:/icons/serial.svg</normaloff>:/icons/serial.svg</iconset>
+            <normaloff>:/icons/pairing/serial.svg</normaloff>:/icons/pairing/serial.svg</iconset>
           </property>
          </item>
         </widget>

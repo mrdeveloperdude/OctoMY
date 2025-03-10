@@ -91,7 +91,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../../libres/resources/icons.qrc">
-         <normaloff>:/icons/qrcode.svg</normaloff>:/icons/qrcode.svg</iconset>
+         <normaloff>:/icons/pairing/qrcode.svg</normaloff>:/icons/pairing/qrcode.svg</iconset>
        </property>
       </widget>
      </item>

@@ -126,7 +126,7 @@ QIcon AppStyle::icon()
 	if(!mResourcesInitialized){
 		qWarning()<<"Potentially loading icon from resources before they are loaded";
 	}
-	QIcon icon(":/icons/agent.svg");
+	QIcon icon(":/icons/app/window/agent.svg");
 	return icon;
 }
 

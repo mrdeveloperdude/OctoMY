@@ -32,7 +32,7 @@
       </property>
       <property name="icon">
        <iconset resource="../../libres/resources/icons.qrc">
-        <normaloff>:/icons/map_point.svg</normaloff>:/icons/map_point.svg</iconset>
+        <normaloff>:/icons/map/map_point.svg</normaloff>:/icons/map/map_point.svg</iconset>
       </property>
      </item>
      <item>
@@ -41,7 +41,7 @@
       </property>
       <property name="icon">
        <iconset resource="../../libres/resources/icons.qrc">
-        <normaloff>:/icons/map_area.svg</normaloff>:/icons/map_area.svg</iconset>
+        <normaloff>:/icons/map/map_area.svg</normaloff>:/icons/map/map_area.svg</iconset>
       </property>
      </item>
     </widget>

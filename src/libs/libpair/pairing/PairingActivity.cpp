@@ -112,6 +112,16 @@ void PairingActivity::hookStartEdit()
 }
 
 
+void PairingActivity::updateDiscoveryMandate(){
+	if(!mDiscoveryClient.isNull()){
+		mDiscoveryClient->setMandate(ui->widgetConnectionStatus->discoveryMandate());
+	}
+	else{
+		qWarning()<<"No discovey client while updating mandate";
+	}
+}
+
+
 void PairingActivity::log(const QString &text, LogType type) const{
 	OC_METHODGATE();
 	if(!mNode.isNull()){
@@ -166,6 +176,20 @@ void PairingActivity::configure(QSharedPointer<Node> n)
 				
 			} else {
 				qWarning()<<"ERROR: No local ass";
+			}
+			mDiscoveryClient = mNode->discoveryClient();
+			if(!mDiscoveryClient.isNull()){
+				connect(mDiscoveryClient.get(), &DiscoveryClient::discoverRequest, this, [=](){
+					qDebug() << "PING";
+					ui->widgetPings->ping(0xFF66FF22, true);
+				});
+				connect(mDiscoveryClient.get(), &DiscoveryClient::discoverResponse, this, [=](const bool ok){
+					qDebug() << "PONG" << ok;
+					ui->widgetPings->ping(ok?0xFF2266FF:0xFFFF0000, false);
+				});
+			}
+			else {
+				qWarning()<<"ERROR: No discovery client";
 			}
 			
 		} else {

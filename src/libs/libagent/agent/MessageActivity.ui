@@ -81,7 +81,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../../libres/resources/icons.qrc">:/icons/warning.svg</pixmap>
+        <pixmap resource="../../libres/resources/icons.qrc">:/icons/app/warning.svg</pixmap>
        </property>
       </widget>
      </item>

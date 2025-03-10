@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>images/birth.jpeg</file>
-        <file>images/hub_butterfly.svg</file>
-        <file>images/ardumy_badge.svg</file>
-        <file>images/octomy_watermark.svg</file>
-    </qresource>
-</RCC>

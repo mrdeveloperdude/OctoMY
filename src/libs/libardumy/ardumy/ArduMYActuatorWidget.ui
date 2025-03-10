@@ -73,7 +73,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/center.svg</normaloff>:/icons/center.svg</iconset>
+         <normaloff>:/icons/map/center.svg</normaloff>:/icons/mapcenter.svg</iconset>
        </property>
       </widget>
      </item>
@@ -112,7 +112,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/settings.svg</normaloff>:/icons/settings.svg</iconset>
+         <normaloff>:/icons/app/settings.svg</normaloff>:/icons/app/settings.svg</iconset>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -138,7 +138,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/trash.svg</normaloff>:/icons/trash.svg</iconset>
+         <normaloff>:/icons/app/trash.svg</normaloff>:/icons/app/trash.svg</iconset>
        </property>
       </widget>
      </item>
@@ -221,7 +221,7 @@
           </property>
           <property name="icon">
            <iconset resource="../../libres/resources/icons.qrc">
-            <normaloff>:/icons/rc_servo.svg</normaloff>:/icons/rc_servo.svg</iconset>
+            <normaloff>:/icons/actuators/rc_servo.svg</normaloff>:/icons/actuators/rc_servo.svg</iconset>
           </property>
          </item>
          <item>
@@ -230,7 +230,7 @@
           </property>
           <property name="icon">
            <iconset resource="../../libres/resources/icons.qrc">
-            <normaloff>:/icons/dc_motor.svg</normaloff>:/icons/dc_motor.svg</iconset>
+            <normaloff>:/icons/actuators/dc_motor.svg</normaloff>:/icons/actuators/dc_motor.svg</iconset>
           </property>
          </item>
          <item>
@@ -239,7 +239,7 @@
           </property>
           <property name="icon">
            <iconset resource="../../libres/resources/icons.qrc">
-            <normaloff>:/icons/stepper_motor.svg</normaloff>:/icons/stepper_motor.svg</iconset>
+            <normaloff>:/icons/actuators/stepper_motor.svg</normaloff>:/icons/actuators/stepper_motor.svg</iconset>
           </property>
          </item>
          <item>
@@ -248,7 +248,7 @@
           </property>
           <property name="icon">
            <iconset resource="../../libres/resources/icons.qrc">
-            <normaloff>:/icons/relay.svg</normaloff>:/icons/relay.svg</iconset>
+            <normaloff>:/icons/actuators/relay.svg</normaloff>:/icons/actuators/relay.svg</iconset>
           </property>
          </item>
         </widget>
@@ -270,7 +270,7 @@
           </property>
           <property name="icon">
            <iconset resource="../../libres/resources/icons.qrc">
-            <normaloff>:/icons/bit.svg</normaloff>:/icons/bit.svg</iconset>
+            <normaloff>:/icons/types/bit.svg</normaloff>:/icons/types/bit.svg</iconset>
           </property>
          </item>
          <item>
@@ -279,7 +279,7 @@
           </property>
           <property name="icon">
            <iconset resource="../../libres/resources/icons.qrc">
-            <normaloff>:/icons/byte.svg</normaloff>:/icons/byte.svg</iconset>
+            <normaloff>:/icons/types/byte.svg</normaloff>:/icons/types/byte.svg</iconset>
           </property>
          </item>
          <item>
@@ -288,7 +288,7 @@
           </property>
           <property name="icon">
            <iconset resource="../../libres/resources/icons.qrc">
-            <normaloff>:/icons/word.svg</normaloff>:/icons/word.svg</iconset>
+            <normaloff>:/icons/types/word.svg</normaloff>:/icons/types/word.svg</iconset>
           </property>
          </item>
          <item>
@@ -297,7 +297,7 @@
           </property>
           <property name="icon">
            <iconset resource="../../libres/resources/icons.qrc">
-            <normaloff>:/icons/double_word.svg</normaloff>:/icons/double_word.svg</iconset>
+            <normaloff>:/icons/types/double_word.svg</normaloff>:/icons/types/double_word.svg</iconset>
           </property>
          </item>
          <item>
@@ -306,7 +306,7 @@
           </property>
           <property name="icon">
            <iconset resource="../../libres/resources/icons.qrc">
-            <normaloff>:/icons/quad_word.svg</normaloff>:/icons/quad_word.svg</iconset>
+            <normaloff>:/icons/types/quad_word.svg</normaloff>:/icons/types/quad_word.svg</iconset>
           </property>
          </item>
          <item>
@@ -315,7 +315,7 @@
           </property>
           <property name="icon">
            <iconset resource="../../libres/resources/icons.qrc">
-            <normaloff>:/icons/float.svg</normaloff>:/icons/float.svg</iconset>
+            <normaloff>:/icons/types/float.svg</normaloff>:/icons/types/float.svg</iconset>
           </property>
          </item>
          <item>
@@ -324,7 +324,7 @@
           </property>
           <property name="icon">
            <iconset resource="../../libres/resources/icons.qrc">
-            <normaloff>:/icons/double_float.svg</normaloff>:/icons/double_float.svg</iconset>
+            <normaloff>:/icons/types/double_float.svg</normaloff>:/icons/types/double_float.svg</iconset>
           </property>
          </item>
         </widget>

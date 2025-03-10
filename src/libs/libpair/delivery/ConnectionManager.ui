@@ -23,7 +23,7 @@
        </property>
        <property name="icon">
         <iconset resource="../resources/icons.qrc">
-         <normaloff>:/icons/arrow_left.svg</normaloff>:/icons/arrow_left.svg</iconset>
+         <normaloff>:/icons/app/arrow_left.svg</normaloff>:/icons/app/arrow_left.svg</iconset>
        </property>
       </widget>
      </item>
@@ -47,7 +47,7 @@
        </property>
        <property name="icon">
         <iconset resource="../resources/icons.qrc">
-         <normaloff>:/icons/pair.svg</normaloff>:/icons/pair.svg</iconset>
+         <normaloff>:/icons/pairing/pair.svg</normaloff>:/icons/pairing/pair.svg</iconset>
        </property>
       </widget>
      </item>

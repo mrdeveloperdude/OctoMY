@@ -17,6 +17,7 @@ Project{
 			, "testCarrierAddress/test.qbs"
 			, "testSplashScreen/test.qbs"
 			, "testDiscovery/test.qbs"
+			, "testPingWidget/test.qbs"
 //			  "testDiscovery/test.qbs"
 //			, "testActuatorWidget/test.qbs"
 //			, "testAgentConfig/test.qbs"

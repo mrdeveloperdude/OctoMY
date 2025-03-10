@@ -46,7 +46,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/identity.svg</normaloff>:/icons/identity.svg</iconset>
+       <normaloff>:/icons/pairing/identity.svg</normaloff>:/icons/pairing/identity.svg</iconset>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -89,7 +89,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/sensor_camera.svg</normaloff>:/icons/sensor_camera.svg</iconset>
+       <normaloff>:/icons/sensors/sensor_camera.svg</normaloff>:/icons/sensors/sensor_camera.svg</iconset>
      </property>
      <property name="checkable">
       <bool>true</bool>

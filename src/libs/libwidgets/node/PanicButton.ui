@@ -54,7 +54,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/panic.svg</normaloff>:/icons/panic.svg</iconset>
+       <normaloff>:/icons/controller/panic.svg</normaloff>:/icons/controller/panic.svg</iconset>
      </property>
      <property name="checkable">
       <bool>true</bool>

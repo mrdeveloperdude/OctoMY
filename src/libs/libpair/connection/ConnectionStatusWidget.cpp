@@ -3,6 +3,7 @@
 
 #include "app/Constants.hpp"
 #include "comms/CommsSession.hpp"
+#include "discovery/DiscoveryMandate.hpp"
 #include "node/Node.hpp"
 #include "uptime/MethodGate.hpp"
 #include "utility/color/Color.hpp"
@@ -31,11 +32,44 @@ void ConnectionStatusWidget::log(const QString &text, LogType type) const{
 }
 
 
-bool ConnectionStatusWidget::connecting() const{
+bool ConnectionStatusWidget::connecting() const {
 	return ui->tryToggleConnect->isPositive();
 }
 
 
+bool ConnectionStatusWidget::audioOn() const {
+	return ui->pushButtonAudio->isChecked();
+}
+
+
+bool ConnectionStatusWidget::cameraOn() const {
+	return ui->pushButtonAudio->isChecked();
+}
+
+
+bool ConnectionStatusWidget::bluetoothOn() const {
+	return ui->pushButtonAudio->isChecked();
+}
+
+
+bool ConnectionStatusWidget::NFCOn() const {
+	return ui->pushButtonAudio->isChecked();
+}
+
+
+bool ConnectionStatusWidget::networkOn() const {
+	return ui->pushButtonAudio->isChecked();
+}
+
+
+bool ConnectionStatusWidget::zooOn() const {
+	return ui->pushButtonAudio->isChecked();
+}
+
+
+bool ConnectionStatusWidget::panicOn() const {
+	return ui->pushButtonAudio->isChecked();
+}
 
 
 // An error occurred in comms
@@ -137,6 +171,10 @@ void ConnectionStatusWidget::togglePanic(bool panic)
 }
 
 
+QSharedPointer<DiscoveryMandate> ConnectionStatusWidget::discoveryMandate(){
+	// TODO: Research viability of shared "ConnectionMandate" object that combines discovery mandate with connection status.
+	return QSharedPointer<DiscoveryMandate>::create(connecting(), zooOn(), networkOn(), bluetoothOn(), audioOn(), NFCOn(), cameraOn());
+}
 
 
 

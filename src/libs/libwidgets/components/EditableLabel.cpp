@@ -13,7 +13,7 @@ EditableLabel::EditableLabel(QWidget *parent)
 	
 	// Initialize QLabel for edit icon and set the icon
 	iconLabel = new QLabel(this);
-	iconLabel->setPixmap(QIcon(":/icons/edit.svg").pixmap(16, 16));  // Set the edit icon size
+	iconLabel->setPixmap(QIcon(":/icons/app/edit.svg").pixmap(16, 16));  // Set the edit icon size
 	
 	// Set up layout to hold text and icon
 	layout = new QHBoxLayout(this);

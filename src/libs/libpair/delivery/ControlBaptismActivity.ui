@@ -82,7 +82,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/roll_dice.svg</normaloff>:/icons/roll_dice.svg</iconset>
+         <normaloff>:/icons/pairing/roll_dice.svg</normaloff>:/icons/pairing/roll_dice.svg</iconset>
        </property>
       </widget>
      </item>

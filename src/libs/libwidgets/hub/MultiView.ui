@@ -122,7 +122,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/view_grid.png</normaloff>:/icons/view_grid.png</iconset>
+       <normaloff>:/icons/app/view_grid.png</normaloff>:/icons/app/view_grid.png</iconset>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -148,7 +148,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/view_list.png</normaloff>:/icons/view_list.png</iconset>
+       <normaloff>:/icons/app/view_list.png</normaloff>:/icons/app/view_list.png</iconset>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -168,7 +168,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/view_details.png</normaloff>:/icons/view_details.png</iconset>
+       <normaloff>:/icons/app/view_details.png</normaloff>:/icons/app/view_details.png</iconset>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -188,7 +188,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/view_tree.png</normaloff>:/icons/view_tree.png</iconset>
+       <normaloff>:/icons/app/view_tree.png</normaloff>:/icons/app/view_tree.png</iconset>
      </property>
      <property name="checkable">
       <bool>true</bool>

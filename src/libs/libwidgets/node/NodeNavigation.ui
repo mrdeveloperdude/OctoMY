@@ -24,7 +24,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/arrow_left.svg</normaloff>:/icons/arrow_left.svg</iconset>
+       <normaloff>:/icons/app/arrow_left.svg</normaloff>:/icons/app/arrow_left.svg</iconset>
      </property>
     </widget>
    </item>
@@ -60,7 +60,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/test.svg</normaloff>:/icons/test.svg</iconset>
+       <normaloff>:/icons/app/window/test.svg</normaloff>:/icons/app/window/test.svg</iconset>
      </property>
     </widget>
    </item>
@@ -74,7 +74,7 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/menu.svg</normaloff>:/icons/menu.svg</iconset>
+       <normaloff>:/icons/app/menu.svg</normaloff>:/icons/app/menu.svg</iconset>
      </property>
     </widget>
    </item>

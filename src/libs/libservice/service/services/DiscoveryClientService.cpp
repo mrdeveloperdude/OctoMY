@@ -26,7 +26,7 @@ void DiscoveryClientService::serviceWrapperActivate(QSharedPointer<DiscoveryClie
 	if(mConfigureHelper.activate(on)) {
 		if(on) {
 			if(!mNode.isNull()) {
-				discoveryClient->setURL(mNode->serverURL());
+				discoveryClient->setZooURL(mNode->serverURL());
 				// qDebug()<<"SET URL: " << discoveryClient->URL();
 				ok = true;
 			} else {

@@ -632,7 +632,7 @@
            </property>
            <property name="icon">
             <iconset resource="../../libres/resources/icons.qrc">
-             <normaloff>:/icons/focus.svg</normaloff>:/icons/focus.svg</iconset>
+             <normaloff>:/icons/media/focus.svg</normaloff>:/icons/media/focus.svg</iconset>
            </property>
           </widget>
          </item>
@@ -646,7 +646,7 @@
            </property>
            <property name="icon">
             <iconset resource="../../libres/resources/icons.qrc">
-             <normaloff>:/icons/snap.svg</normaloff>:/icons/snap.svg</iconset>
+             <normaloff>:/icons/media/snap.svg</normaloff>:/icons/media/snap.svg</iconset>
            </property>
           </widget>
          </item>
@@ -660,7 +660,7 @@
            </property>
            <property name="icon">
             <iconset resource="../../libres/resources/icons.qrc">
-             <normaloff>:/icons/record.svg</normaloff>:/icons/record.svg</iconset>
+             <normaloff>:/icons/media/record.svg</normaloff>:/icons/media/record.svg</iconset>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -677,7 +677,7 @@
            </property>
            <property name="icon">
             <iconset resource="../../libres/resources/icons.qrc">
-             <normaloff>:/icons/pause.svg</normaloff>:/icons/pause.svg</iconset>
+             <normaloff>:/icons/media/pause.svg</normaloff>:/icons/media/pause.svg</iconset>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -704,7 +704,7 @@
            </property>
            <property name="icon">
             <iconset resource="../../libres/resources/icons.qrc">
-             <normaloff>:/icons/settings.svg</normaloff>:/icons/settings.svg</iconset>
+             <normaloff>:/icons/app/settings.svg</normaloff>:/icons/app/settings.svg</iconset>
            </property>
           </widget>
          </item>
@@ -830,7 +830,7 @@
              </property>
              <property name="icon">
               <iconset resource="../../libres/resources/icons.qrc">
-               <normaloff>:/icons/arrow_left.svg</normaloff>:/icons/arrow_left.svg</iconset>
+               <normaloff>:/icons/app/arrow_left.svg</normaloff>:/icons/app/arrow_left.svg</iconset>
              </property>
             </widget>
            </item>

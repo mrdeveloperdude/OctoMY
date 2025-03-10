@@ -135,7 +135,7 @@
            </property>
            <property name="icon">
             <iconset resource="../../libres/resources/icons.qrc">
-             <normaloff>:/icons/yes.svg</normaloff>:/icons/yes.svg</iconset>
+             <normaloff>:/icons/app/yes.svg</normaloff>:/icons/app/yes.svg</iconset>
            </property>
            <property name="checkable">
             <bool>false</bool>

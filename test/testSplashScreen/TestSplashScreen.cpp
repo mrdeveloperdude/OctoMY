@@ -175,7 +175,7 @@ void TestSplashScreen::test() {
 	// Create dummy test window
 	auto dummy = createDummyWindow();
 	dummy->show();
-	QString imagePath(":/icons/agent.svg");
+	QString imagePath(":/icons/app/window/agent.svg");
 	// Create and configure splash screen over the dummy window
 	SplashScreen *splash = OC_NEW SplashScreen();
 	splash->configure(dummy, imagePath);
