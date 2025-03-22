@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QAudioFormat>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QAudioInput>
 #include <QBuffer>
 

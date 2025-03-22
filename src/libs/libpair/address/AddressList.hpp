@@ -10,9 +10,11 @@ class CarrierAddress;
 struct AddressEntry;
 
 /**
- * @brief The AddressList class is used to keep track of addresses that have been used by an associate.
- * It provides the means to iterate through the addresses based on a score calculated from
- * how many successfull vs. unsuccessfull connections have been made with this address and how long ago this occurred.
+ * @brief The AddressList class is used to keep track of carrier addresses that
+ * have been used by an associate. It provides the means to iterate through the
+ * addresses based on a score calculated from how many successfull vs.
+ * unsuccessfull connections have been made with this address and how long ago
+ * this occurred.
  *
  *
  * It works like this:

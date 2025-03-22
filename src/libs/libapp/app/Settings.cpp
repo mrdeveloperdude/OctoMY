@@ -231,6 +231,26 @@ void Settings::setCustomSettingBool(const QString &sub,bool val)
 	}
 }
 
+
+
+QRect Settings::getCustomSettingRect(const QString &sub, QRect def){
+	OC_METHODGATE();
+	if(nullptr==mSettings) {
+		return def;
+	}
+	return mSettings->value(KEY_CUSTOM_SETTING_BASE+sub, def).toRect();
+}
+
+
+void Settings::setCustomSettingRect(const QString &sub, QRect val){
+	if(nullptr!=mSettings) {
+		mSettings->setValue(KEY_CUSTOM_SETTING_BASE+sub,val);
+		//		qDebug()<<(KEY_CUSTOM_SETTING_BASE+sub)<<"="<<val;
+		sync();
+	}
+}
+
+
 bool Settings::hasCustomSetting(const QString &sub)
 {
 	OC_METHODGATE();

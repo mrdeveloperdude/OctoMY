@@ -99,7 +99,10 @@ public:
 	static const QColor OC_NODE_TYPE_HUB_COLOR;
 	static const QColor OC_NODE_TYPE_ZOO_COLOR;
 	static const QColor OC_NODE_TYPE_UNKNOWN_COLOR;
-
+	
+	
+	static const QString SETTINGS_KEY_PAIRING_SKIPPED;
+	
 };
 
 #endif // CONSTANTS_HPP

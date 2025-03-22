@@ -6,7 +6,7 @@
 #include <QMap>
 #include <QList>
 #include <QString>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 class Service;
 

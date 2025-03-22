@@ -13,6 +13,7 @@ NodeNavigation::NodeNavigation(QWidget *parent) :
 	setState("", false, false, false);
 }
 
+
 NodeNavigation::~NodeNavigation()
 {
 	OC_METHODGATE();

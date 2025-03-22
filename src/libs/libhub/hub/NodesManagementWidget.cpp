@@ -52,6 +52,12 @@ void NodesManagementWidget::configure(QSharedPointer<Settings>  settings){
 	if(!connect(&mSummaryTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";
 	}
+	
+	/*
+	QAbstractItemModel *data = OC_NEW ClientModel(hub->getComms()->getClients(), this);
+	ui->widgetIncommingNodes->configure("Icons","hubwindiow-clients-list");
+	ui->widgetIncommingNodes->setModel(data);
+*/	
 }
 
 

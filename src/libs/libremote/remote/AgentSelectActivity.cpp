@@ -1,8 +1,8 @@
 #include "AgentSelectActivity.hpp"
 #include "ui_AgentSelectActivity.h"
 
-#include "remote/Remote.hpp"
 #include "AgentItemDelegate.hpp"
+#include "node/Node.hpp"
 #include "remote/AgentListModel.hpp"
 #include "uptime/MethodGate.hpp"
 
@@ -23,15 +23,15 @@ AgentSelectActivity::~AgentSelectActivity()
 }
 
 
-void AgentSelectActivity::configure(QSharedPointer<Remote> remote)
+void AgentSelectActivity::configure(QSharedPointer<Node> node)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		mRemote = remote;
-		if(!mRemote.isNull()){
+		mNode = node;
+		if(!mNode.isNull()){
 			if(nullptr == ui->listViewAgents->model()) {
 				if(nullptr == mList) {
-					mList = OC_NEW AgentListModel(mRemote->addressBook());
+					mList = OC_NEW AgentListModel(mNode->addressBook());
 				}
 				ui->listViewAgents->setModel(mList);
 				if(nullptr == mDelegate) {

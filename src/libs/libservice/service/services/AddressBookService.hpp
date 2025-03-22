@@ -6,7 +6,7 @@
 #include "service/ServiceWrapper.hpp"
 #include "uptime/ConfigureHelper.hpp"
 
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 /**
  * @brief The AddressBookService class is what it says on the tin; basically a wrapper to make AddressBook appear as a service.

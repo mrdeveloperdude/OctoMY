@@ -6,7 +6,7 @@
 #include "components/navigation/Activity.hpp"
 
 
-class Remote;
+class Node;
 class AgentListModel;
 class AgentItemDelegate;
 
@@ -19,7 +19,7 @@ class AgentSelectActivity : public Activity
 	Q_OBJECT
 private:
 	Ui::AgentSelectActivity *ui;
-	QSharedPointer<Remote> mRemote;
+	QSharedPointer<Node> mNode;
 	AgentListModel *mList{nullptr};
 	AgentItemDelegate *mDelegate{nullptr};
 	bool mDebug{false};
@@ -32,7 +32,7 @@ public:
 	~AgentSelectActivity();
 
 public:
-	void configure(QSharedPointer<Remote> remote);
+	void configure(QSharedPointer<Node> node);
 	void updateList();
 
 	// Virtual activity mechanism

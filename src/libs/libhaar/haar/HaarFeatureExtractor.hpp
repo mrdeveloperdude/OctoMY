@@ -5,7 +5,7 @@
 #include "IntegralImage.hpp"
 
 #include <QImage>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 class HaarFeatureExtractor {
 private:

@@ -104,6 +104,7 @@ QColor calculateStressColor(qreal stress) {
 
 
 void Connection::draw(QPainter &painter, const Style &style) {
+	Q_UNUSED(style);
 	if (!mFrom) {
 		qWarning() << "No connection->from";
 		return;

@@ -6,7 +6,7 @@
 
 
 #include <QElapsedTimer>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QColor>
 
 

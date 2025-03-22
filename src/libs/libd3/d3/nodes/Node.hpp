@@ -12,7 +12,7 @@
 #include <QPointF>
 #include <QVector3D>
 #include <QRectF>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QSizeF>
 #include <QString>
 

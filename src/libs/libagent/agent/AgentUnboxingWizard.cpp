@@ -146,6 +146,17 @@ bool AgentUnboxingWizard::isPaired() const{
 }
 
 
+bool AgentUnboxingWizard::isPairingSkipped() const{
+	OC_METHODGATE();
+	auto s{mAgent->settings()};
+	if(!s){
+		qWarning() << "No settings";
+		return false;
+	}
+	return (s->getCustomSettingBool(Constants::SETTINGS_KEY_PAIRING_SKIPPED, false));
+}
+
+
 UnboxingStage AgentUnboxingWizard::unboxingStage(){
 	OC_METHODGATE();
 	auto stage = UNKNOWN_STAGE;
@@ -164,7 +175,7 @@ UnboxingStage AgentUnboxingWizard::unboxingStage(){
 		else if(!isStanzaed()){
 			stage = STANZA_STAGE;
 		}
-		else if(!isPaired()){
+		else if(!isPaired() && !isPairingSkipped()){
 			stage = PAIRING_STAGE;
 		}
 		else{
@@ -184,6 +195,7 @@ void AgentUnboxingWizard::updateStage(){
 	int stanzasCt{0};
 	int associateCt{0};
 	bool paired{false};
+	bool pairingSkipped{false};
 	QString name;
 	UnboxingStage stage{UNKNOWN_STAGE};
 	PortableID id;
@@ -199,6 +211,7 @@ void AgentUnboxingWizard::updateStage(){
 		stanzasCt = isStanzaed();
 		associateCt = associateCount();
 		paired = associateCt > 0;
+		pairingSkipped = isPairingSkipped();
 		name = controllerName();
 		stage = unboxingStage();
 	}
@@ -228,7 +241,10 @@ void AgentUnboxingWizard::updateStage(){
 	ui->lightWidgetHardwareConfigured->setLightOn(controllerConfigured);
 	
 	ui->lightWidgetStanzasConfigured->setLightOn(stanzasCt >0);
-	ui->lightWidgetPaired->setLightOn(paired);
+	
+	ui->lightWidgetPaired->setLightOn(paired || pairingSkipped);
+	ui->lightWidgetPaired->setLightColor(paired?Qt::green:Qt::yellow);
+	
 	ui->labelPaired->setText(paired?"Paired":"Pairing");
 	
 	ui->pushButtonNextStep->setText(text);

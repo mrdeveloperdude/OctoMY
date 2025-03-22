@@ -13,7 +13,7 @@
 
 
 class Node;
-class DiscoveryMandate;
+struct DiscoveryMandate;
 
 namespace qhttp
 {

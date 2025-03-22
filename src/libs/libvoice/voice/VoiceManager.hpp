@@ -4,7 +4,7 @@
 #include "audio/sources/CreepyVoice.hpp"
 
 #include <QObject>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 class PortableID;
 

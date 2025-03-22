@@ -3,7 +3,7 @@
 
 #include <QAbstractListModel>
 #include <QImage>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include "HaarCascade.hpp"
 
 class HaarCascadeModel : public QAbstractListModel {

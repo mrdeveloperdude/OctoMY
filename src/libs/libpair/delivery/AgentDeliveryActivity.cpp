@@ -1,10 +1,8 @@
 #include "AgentDeliveryActivity.hpp"
 #include "ui_AgentDeliveryActivity.h"
 
-#include "app/Settings.hpp"
 #include "components/WaitingSpinnerWidget.hpp"
 #include "node/Node.hpp"
-#include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 

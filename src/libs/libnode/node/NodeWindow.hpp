@@ -30,15 +30,15 @@ private:
 
 public:
 	void nodeWindowConfigure(QSharedPointer<Node> node);
-	virtual void configure()=0;
+	virtual void configure() = 0;
 
-	QSharedPointer<Node> node();
+	QSharedPointer<Node> node() const;
 
 	void focus();
 
 	// Lifecycle stuff
 protected:
-	void nodeWindowRequestExit(const int returnValue=EXIT_SUCCESS);
+	void nodeWindowRequestExit(const int returnValue = EXIT_SUCCESS);
 
 	// Desktop stuff
 protected:

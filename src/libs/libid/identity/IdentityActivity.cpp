@@ -52,7 +52,7 @@ void IdentityActivity::pushImpl(const QStringList arguments)
 {
 	Q_UNUSED(arguments);
 	OC_METHODGATE();
-	qDebug() << "PUSH IDENTITY ACTIVITY: "<<arguments;
+	qDebug() << "PUSH IDENTITY ACTIVITY: " << arguments;
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		PortableID pid;
 		if(arguments.size() > 0){

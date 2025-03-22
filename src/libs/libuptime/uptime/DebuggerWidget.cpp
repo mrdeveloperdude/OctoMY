@@ -488,7 +488,7 @@ void DebuggerWidget::updateExpandButton()
 		const EnabledCount count=numEnabled();
 		const bool allOn=count.allIs(true);
 		QIcon icon;
-		icon.addFile(allOn?QStringLiteral(":/icons/collapse_all.svg"):QStringLiteral(":/icons/expand_all.svg"), QSize(), QIcon::Normal, QIcon::Off);
+		icon.addFile(allOn?QStringLiteral(":/icons/app/collapse_all.svg"):QStringLiteral(":/icons/app/expand_all.svg"), QSize(), QIcon::Normal, QIcon::Off);
 		ui->pushButtonExpandOrCollapseAll->setIcon(icon);
 		ui->pushButtonExpandOrCollapseAll->setToolTip(allOn?"Collapse all":"Expand all");
 	}

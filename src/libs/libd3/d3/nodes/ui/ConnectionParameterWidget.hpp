@@ -2,7 +2,7 @@
 #define CONNECTIONPARAMETERWIDGET_HPP
 
 #include <QWidget>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 class Connection;
 

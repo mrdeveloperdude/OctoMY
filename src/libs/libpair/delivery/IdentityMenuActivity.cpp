@@ -1,39 +1,36 @@
 #include "IdentityMenuActivity.hpp"
-#include "ui_IdentityMenuActivity.h"
 
 #include "address/Associate.hpp"
 #include "node/Node.hpp"
 #include "uptime/MethodGate.hpp"
-#include "uptime/New.hpp"
 
 #include <QDebug>
 
 IdentityMenuActivity::IdentityMenuActivity(QWidget *parent)
-	: Activity(parent)
-	, ui(OC_NEW Ui::IdentityMenuActivity)
+	: MenuActivity(parent, "IdentityMenu")
 	, mConfigureHelper("IdentityMenuActivity", true, false, false, true, false)
 	
 {
 	OC_METHODGATE();
-	ui->setupUi(this);
 }
 
 
 IdentityMenuActivity::~IdentityMenuActivity()
 {
 	OC_METHODGATE();
-	delete ui;
-	ui = nullptr;
 }
-
-
 
 
 void IdentityMenuActivity::configure(QSharedPointer<Node> n)
 {
+	Q_UNUSED(n);
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		mNode = n;
+		addButton(tr("Birth Certificate"), ":/icons/delivery/certificate.svg",  tr("Show birth certifictate"), &IdentityMenuActivity::birthCertificate, this);
+		addButton(tr("Delivery"),          ":/icons/delivery/delivery.svg",     tr("Deliver new node"), &IdentityMenuActivity::delivery, this);
+		addButton(tr("Abort"),             ":/icons/general/kill.svg",          tr("Abort node"), &IdentityMenuActivity::delivery, this);
+		addSpacer();
+		addButton(tr("Done"),              ":/icons/app/yes.svg",               tr("Go back"), &IdentityMenuActivity::done, this);
 	}
 }
 
@@ -66,24 +63,3 @@ void IdentityMenuActivity::delivery(){
 		swap("AgentDeliveryActivity");
 	}
 }
-
-void IdentityMenuActivity::popImpl(const QString &returnActivity, const QStringList returnArguments)
-{
-	Q_UNUSED(returnActivity);
-	Q_UNUSED(returnArguments);
-	OC_METHODGATE();
-	if(mConfigureHelper.isConfiguredAsExpected()) {
-
-	}
-}
-
-
-void IdentityMenuActivity::pushImpl(const QStringList arguments)
-{
-	Q_UNUSED(arguments);
-	OC_METHODGATE();
-	if(mConfigureHelper.isConfiguredAsExpected()) {
-
-	}
-}
-

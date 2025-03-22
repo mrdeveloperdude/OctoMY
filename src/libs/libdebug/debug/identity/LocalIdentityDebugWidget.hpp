@@ -6,7 +6,7 @@
 #include "uptime/ConfigureHelper.hpp"
 
 #include <QMap>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 class Node;
 

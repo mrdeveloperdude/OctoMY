@@ -1,0 +1,3 @@
+Test {
+	localPath: path
+}

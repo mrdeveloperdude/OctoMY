@@ -2,7 +2,7 @@
 #define HAARLOADER_HPP
 
 #include <QString>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include "HaarCascade.hpp"
 
 class HaarLoader {

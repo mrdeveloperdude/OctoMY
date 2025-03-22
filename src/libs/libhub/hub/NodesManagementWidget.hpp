@@ -1,7 +1,7 @@
 #ifndef NODESMANAGEMENTWIDGET_HPP
 #define NODESMANAGEMENTWIDGET_HPP
 
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QThread>
 #include <QTimer>
 #include <QWidget>

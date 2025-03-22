@@ -4,7 +4,7 @@
 #include "uptime/ConfigureHelper.hpp"
 
 #include <QPushButton>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 class DebuggerWidget;
 class Node;

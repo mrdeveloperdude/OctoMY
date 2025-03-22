@@ -4,8 +4,8 @@
 #include "comms/address/CarrierAddress.hpp"
 #include "comms/address/CarrierAddressUDP.hpp"
 #include "uptime/MethodGate.hpp"
-#include "uptime/SharedPointerWrapper.hpp"
 #include "utility/time/HumanTime.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QDateTime>
 #include <QList>
@@ -28,7 +28,7 @@ AddressList::AddressList(QVariantList list)
 void AddressList::add(QSharedPointer<AddressEntry> address)
 {
 	OC_METHODGATE();
-	if(!address.isNull() ) {
+	if(!address.isNull() && !address->address.isNull() ) {
 		if(!address->address->isValid()) {
 			qWarning()<<"WARNING: Not adding invalid address: "<<address->address;
 		} else {
@@ -49,10 +49,10 @@ void AddressList::merge(QSharedPointer<CarrierAddress> adr, QString description,
 		qWarning()<<"WARNING: Skipping bad address "<<adr->toString()<<" while merging";
 		return;
 	}
-	if(0==now) {
-		now=utility::time::currentMsecsSinceEpoch<quint64>();
+	if(0 == now) {
+		now = utility::time::currentMsecsSinceEpoch<quint64>();
 	}
-	for(QSharedPointer<AddressEntry> entry:*this) {
+	for(auto &entry:*this) {
 		if(!entry.isNull()) {
 			// Already inn, no need to continue
 			if(entry->address == adr) {
@@ -68,7 +68,7 @@ QSharedPointer<AddressEntry> AddressList::highestScore(QHostAddress dgw) const
 	OC_METHODGATE();
 	quint64 highestScore=0;
 	QSharedPointer<AddressEntry> highestEntry;
-	for(QSharedPointer<AddressEntry> entry:*this) {
+	for(auto &entry:*this) {
 		if(!entry.isNull()) {
 			const quint64 score = entry->score(dgw);
 			if(score > highestScore) {
@@ -85,7 +85,7 @@ QMap<quint64, QSharedPointer<AddressEntry> > AddressList::scoreMap(QHostAddress 
 	OC_METHODGATE();
 	QMap<quint64, QSharedPointer<AddressEntry> > map;
 
-	for(QSharedPointer<AddressEntry> entry:*this) {
+	for(auto &entry:*this) {
 		if(!entry.isNull()) {
 			const quint64 score = entry->score(dgw);
 			map.insert(score, entry);
@@ -112,7 +112,7 @@ QVariantList AddressList::toVariantList() const
 {
 	OC_METHODGATE();
 	QVariantList list;
-	for(QSharedPointer<AddressEntry> entry:*this) {
+	for(auto &entry:*this) {
 		if(!entry.isNull()) {
 			list<< entry->toVariantMap();
 		}
@@ -124,8 +124,8 @@ void AddressList::fromVariantList(QVariantList list)
 {
 	OC_METHODGATE();
 	clear();
-	for(QVariant var:list) {
-		QVariantMap map=var.toMap();
+	for(auto &var:list) {
+		auto map{var.toMap()};
 		add(QSharedPointer<AddressEntry>(new AddressEntry(map)));
 	}
 }
@@ -135,7 +135,7 @@ QString AddressList::toString()
 {
 	OC_METHODGATE();
 	QString out="";
-	for(QSharedPointer<AddressEntry> entry:*this) {
+	for(auto &entry:*this) {
 		if(entry.isNull()) {
 			out+="null, ";
 		} else {

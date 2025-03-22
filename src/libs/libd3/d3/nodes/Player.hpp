@@ -3,7 +3,7 @@
 
 #include <QTimer>
 #include <QElapsedTimer>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 
 class Project;

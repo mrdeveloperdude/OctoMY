@@ -4,7 +4,7 @@
 #include "utility/time/HumanTime.hpp"
 #include "discovery/AddressBook.hpp"
 
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 /*
 Sets up X commchannels and have them sending data
 via courier to a random but deterministically selected subset of X.

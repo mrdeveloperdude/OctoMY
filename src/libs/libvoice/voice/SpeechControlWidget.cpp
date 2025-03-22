@@ -14,7 +14,7 @@
 
 #include <QCryptographicHash>
 #include <QDateTime>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 
 SpeechControlWidget::SpeechControlWidget(QWidget *parent) :

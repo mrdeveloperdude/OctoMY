@@ -10,7 +10,7 @@
 #include <QDebug>
 #include <QVariantMap>
 #include <QString>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QEnableSharedFromThis>
 
 class SimpleDataStore;

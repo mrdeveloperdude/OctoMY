@@ -5,7 +5,7 @@
 #include "agent/AgentConfigStore.hpp"
 #include "agent/AgentUnboxingWizard.hpp"
 #include "agent/FaceActivity.hpp"
-#include "agent/MessageActivity.hpp"
+#include "activities/MessageActivity.hpp"
 #include "agent/TransitionActivity.hpp"
 #include "connection/ConnectionActivity.hpp"
 #include "delivery/AgentBaptismActivity.hpp"
@@ -78,91 +78,91 @@ void AgentWindow::prepareActivities(){
 	OC_METHODGATE();
 	auto a = agent();
 	if(!a.isNull()) {
-		mMessageActivity = OC_NEW MessageActivity();
-		ui->widgetActivityStack->registerPage(mMessageActivity, false, false, false);
+		mMessageActivity = QSharedPointer<MessageActivity>::create();
+		ui->widgetActivityStack->registerActivity(mMessageActivity, false, false, false);
 		
-		mTransitionActivity = OC_NEW TransitionActivity();
-		ui->widgetActivityStack->registerPage(mTransitionActivity, false, false, false);
+		mTransitionActivity = QSharedPointer<TransitionActivity>::create();
+		ui->widgetActivityStack->registerActivity(mTransitionActivity, false, false, false);
 		
-		mSipAndSeeActivity = OC_NEW AgentSipAndSeeActivity();
+		mSipAndSeeActivity = QSharedPointer<AgentSipAndSeeActivity>::create();
 		mSipAndSeeActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mSipAndSeeActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mSipAndSeeActivity, false, false, false);
 		
-		mBaptismActivity = OC_NEW AgentBaptismActivity();
+		mBaptismActivity = QSharedPointer<AgentBaptismActivity>::create();
 		mBaptismActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mBaptismActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mBaptismActivity, false, false, false);
 		
-		mDeliveryActivity = OC_NEW AgentDeliveryActivity();
+		mDeliveryActivity = QSharedPointer<AgentDeliveryActivity>::create();
 		mDeliveryActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mDeliveryActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mDeliveryActivity, false, false, false);
 		
-		mControllerTypeSelector = OC_NEW ControllerTypeSelector();
+		mControllerTypeSelector = QSharedPointer<ControllerTypeSelector>::create();
 		mControllerTypeSelector->configure(a);
-		ui->widgetActivityStack->registerPage(mControllerTypeSelector, false, false, false);
+		ui->widgetActivityStack->registerActivity(mControllerTypeSelector, false, false, false);
 		
-		mSerialDeviceSelector = OC_NEW SerialDeviceSelector();
+		mSerialDeviceSelector = QSharedPointer<SerialDeviceSelector>::create();
 		mSerialDeviceSelector->configure(a);
-		ui->widgetActivityStack->registerPage(mSerialDeviceSelector, false, false, false);
+		ui->widgetActivityStack->registerActivity(mSerialDeviceSelector, false, false, false);
 		
-		mLobeTypeSelectorActivity = OC_NEW LobeTypeSelector();
+		mLobeTypeSelectorActivity = QSharedPointer<LobeTypeSelector>::create();
 		mLobeTypeSelectorActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mLobeTypeSelectorActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mLobeTypeSelectorActivity, false, false, false);
 		
-		mStanzaManagerActivity = OC_NEW StanzaManagerActivity();
+		mStanzaManagerActivity = QSharedPointer<StanzaManagerActivity>::create();
 		mStanzaManagerActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mStanzaManagerActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mStanzaManagerActivity, false, false, false);
 		
-		mStanzaEditorActivity = OC_NEW StanzaEditorActivity();
+		mStanzaEditorActivity = QSharedPointer<StanzaEditorActivity>::create();
 		mStanzaEditorActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mStanzaEditorActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mStanzaEditorActivity, false, false, false);
 		
-		mControllerConfiguration = OC_NEW ControllerActivity();
+		mControllerConfiguration = QSharedPointer<ControllerActivity>::create();
 		mControllerConfiguration->configure(a);
-		ui->widgetActivityStack->registerPage(mControllerConfiguration, false, false, false);
+		ui->widgetActivityStack->registerActivity(mControllerConfiguration, false, false, false);
 		
-		mHardwareConfiguration = OC_NEW HardwareActivity();
+		mHardwareConfiguration = QSharedPointer<HardwareActivity>::create();
 		mHardwareConfiguration->configure(a);
-		ui->widgetActivityStack->registerPage(mHardwareConfiguration, false, false, false);
+		ui->widgetActivityStack->registerActivity(mHardwareConfiguration, false, false, false);
 		
-		mIdentityActivity = OC_NEW IdentityActivity();
+		mIdentityActivity = QSharedPointer<IdentityActivity>::create();
 		mIdentityActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mIdentityActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mIdentityActivity, false, false, false);
 		
-		mIdentityMenuActivity = OC_NEW IdentityMenuActivity();
+		mIdentityMenuActivity = QSharedPointer<IdentityMenuActivity>::create();
 		mIdentityMenuActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mIdentityMenuActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mIdentityMenuActivity, false, false, false);
 		
-		mPairingMenuActivity = OC_NEW PairingMenuActivity();
+		mPairingMenuActivity = QSharedPointer<PairingMenuActivity>::create();
 		mPairingMenuActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mPairingMenuActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mPairingMenuActivity, false, false, false);
 		
-		mPairingActivity = OC_NEW PairingActivity();
+		mPairingActivity = QSharedPointer<PairingActivity>::create();
 		mPairingActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mPairingActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mPairingActivity, false, false, false);
 		
-		mNetworkPairingActivity = OC_NEW NetworkPairingActivity();
+		mNetworkPairingActivity = QSharedPointer<NetworkPairingActivity>::create();
 		mNetworkPairingActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mNetworkPairingActivity, true, true, false);
+		ui->widgetActivityStack->registerActivity(mNetworkPairingActivity, true, true, false);
 		
-		mPairingTrustActivity = OC_NEW PairingTrustActivity();
+		mPairingTrustActivity = QSharedPointer<PairingTrustActivity>::create();
 		mPairingTrustActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mPairingTrustActivity, true, true, false);
+		ui->widgetActivityStack->registerActivity(mPairingTrustActivity, true, true, false);
 		
-		mCameraPairingActivity = OC_NEW CameraPairingActivity();
+		mCameraPairingActivity = QSharedPointer<CameraPairingActivity>::create();
 		mCameraPairingActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mCameraPairingActivity, true, true, false);
+		ui->widgetActivityStack->registerActivity(mCameraPairingActivity, true, true, false);
 		
-		mFaceActivity = OC_NEW FaceActivity();
+		mFaceActivity = QSharedPointer<FaceActivity>::create();
 		mFaceActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mFaceActivity, true, true, true);
+		ui->widgetActivityStack->registerActivity(mFaceActivity, true, true, true);
 		
-		mConnectionActivity = OC_NEW ConnectionActivity();
+		mConnectionActivity = QSharedPointer<ConnectionActivity>::create();
 		mConnectionActivity->configure(a);
-		ui->widgetActivityStack->registerPage(mConnectionActivity, true, true, true);
+		ui->widgetActivityStack->registerActivity(mConnectionActivity, true, true, true);
 		
-		mUnboxingWizard = OC_NEW AgentUnboxingWizard();
+		mUnboxingWizard = QSharedPointer<AgentUnboxingWizard>::create();
 		mUnboxingWizard->configure(a);
-		ui->widgetActivityStack->registerPage(mUnboxingWizard, true, true, true);
+		ui->widgetActivityStack->registerActivity(mUnboxingWizard, true, true, true);
 	}
 	if(!connect(ui->widgetActivityStack, &ActivityStack::currentPageChanged, this, &AgentWindow::onPageChanged, OC_CONTYPE)){
 		qWarning()<<"Could not connect to ActivityStack::currentPageChanged";
@@ -307,7 +307,7 @@ void AgentWindow::requestApplicationShutdown(){
 	if(mDebug){
 		qDebug()<<"QUIT ASK";
 	}
-	pushPage("MessageActivity", QStringList() << "quit" << "Quit" << mQuitApplicationText << ":/icons/warning.svg" << "true");
+	pushPage("MessageActivity", QStringList() << "quit" << "Quit" << mQuitApplicationText << ":/icons/app/warning.svg" << "true");
 }
 
 
@@ -398,7 +398,7 @@ QAction* AgentWindow::addMenuItem(QString title, QString icon, QString toolTip, 
 void AgentWindow::prepareMenu( )
 {
 	OC_METHODGATE();
-	mQuitAction = addMenuItem(tr("Exit"), ":/icons/app/no.svg", tr("Terminate execution of this Agent"), &AgentWindow::requestApplicationShutdown );
+	mToggleOnlineAction = addMenuItem(tr("Toggle Online"), ":/icons/general/on.svg", tr("Toggle availability of Agent on networks"), &AgentWindow::toggleOnline, true);
 	mIdentityAction = addMenuItem(tr("Identity"), ":/icons/pairing/identity.svg", tr("Manage the identity of this Agent"), &AgentWindow::identity );
 	mHardwareAction = addMenuItem(tr("Configuration"), ":/icons/controller/actuator_control.svg", tr("Manage the configuration of this Agent"), &AgentWindow::configureHardware );
 	mPairingAction = addMenuItem(tr("Pairing"), ":/icons/pairing/pair.svg", tr("Manage the pairing of this Agent"), &AgentWindow::pairing );
@@ -406,7 +406,8 @@ void AgentWindow::prepareMenu( )
 	mShowFaceAction = addMenuItem(tr("Face"), ":/icons/general/on.svg", tr("Show the Agent's face in main screen"), &AgentWindow::face);
 	mPlanEditorAction = addMenuItem(tr("Plan Editor"), ":/icons/plan/mandate.svg", tr("Edit Agent plan"), &AgentWindow::editPlan );
 	
-	mToggleOnlineAction = addMenuItem(tr("Toggle Online"), ":/icons/general/on.svg", tr("Toggle availability of Agent on networks"), &AgentWindow::toggleOnline, true);
+	
+	mQuitAction = addMenuItem(tr("Exit"), ":/icons/app/no.svg", tr("Terminate execution of this Agent"), &AgentWindow::requestApplicationShutdown );
 	
 	/* Other stuff
 	

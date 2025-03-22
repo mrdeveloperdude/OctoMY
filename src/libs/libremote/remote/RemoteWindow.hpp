@@ -3,6 +3,7 @@
 
 #include "node/NodeWindow.hpp"
 
+#include "log/LogType.hpp"
 #include "uptime/ConfigureHelper.hpp"
 
 class AgentSelectActivity;
@@ -52,20 +53,20 @@ private:
 	QAction *mToggleOnlineAction{nullptr};
 
 	// Activities
-	ControlBaptismActivity * mBaptismActivity{nullptr};
-	ControlDeliveryActivity * mDeliveryActivity{nullptr};
-	ControlSipAndSeeActivity * mSipAndSeeActivity{nullptr};
-	ControlUnboxingWizard *mUnboxingWizard{nullptr};
-	MessageActivity * mMessage{nullptr};
-	PairingActivity *mPairingActivity{nullptr};
-	PairingMenuActivity *mPairingMenuActivity{nullptr};
-	IdentityActivity *mIdentityActivity{nullptr};
-	IdentityMenuActivity *mIdentityMenuActivity{nullptr};
-	PairingTrustActivity *mPairingTrustActivity{nullptr};
-	ConnectionActivity *mConnectionActivity{nullptr};
-	AgentSelectActivity *mAgentSelectActivity{nullptr};
-	RemoteController *mControl{nullptr};
-	TransitionActivity * mTransitionActivity{nullptr};
+	QSharedPointer<ControlBaptismActivity> mBaptismActivity;
+	QSharedPointer<ControlDeliveryActivity> mDeliveryActivity;
+	QSharedPointer<ControlSipAndSeeActivity> mSipAndSeeActivity;
+	QSharedPointer<ControlUnboxingWizard> mUnboxingWizard;
+	QSharedPointer<MessageActivity> mMessage;
+	QSharedPointer<PairingActivity> mPairingActivity;
+	QSharedPointer<PairingMenuActivity> mPairingMenuActivity;
+	QSharedPointer<IdentityActivity> mIdentityActivity;
+	QSharedPointer<IdentityMenuActivity> mIdentityMenuActivity;
+	QSharedPointer<PairingTrustActivity> mPairingTrustActivity;
+	QSharedPointer<ConnectionActivity> mConnectionActivity;
+	QSharedPointer<AgentSelectActivity> mAgentSelectActivity;
+	QSharedPointer<RemoteController> mControl;
+	QSharedPointer<TransitionActivity> mTransitionActivity;
 	
 	bool mDebug{false};
 	
@@ -80,7 +81,7 @@ public:
 	void configure() override;
 
 public:
-	QSharedPointer<Remote> remote();
+	QSharedPointer<Remote> remote()  const;
 
 	// Remote spesific private
 private:
@@ -93,7 +94,7 @@ private:
 
 	// LogDestination interface
 public:
-	void appendLog(const QString& text);
+	void log(const QString &text, LogType type=LOG_TYPE_INFO) const;
 
 public slots:
 	void applicationShutdown();

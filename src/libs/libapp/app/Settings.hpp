@@ -1,11 +1,14 @@
 #ifndef SETTINGS_HPP
 #define SETTINGS_HPP
 
+#include <QByteArray>
+#include <QFile>
+#include <QRect>
 #include <QSettings>
 #include <QString>
-#include <QFile>
 #include <QTimer>
-#include <QByteArray>
+
+
 
 class Settings: public QObject
 {
@@ -48,6 +51,8 @@ public:
 	qint64  getCustomSettingLong(const QString &sub, qint64 def=0);
 	void setCustomSettingLong(const QString &sub,qint64  val);
 	void setCustomSettingBool(const QString &sub,bool val);
+	QRect getCustomSettingRect(const QString &sub, QRect def=QRect());
+	void setCustomSettingRect(const QString &sub, QRect val);
 	bool hasCustomSetting(const QString &sub);
 
 private slots:

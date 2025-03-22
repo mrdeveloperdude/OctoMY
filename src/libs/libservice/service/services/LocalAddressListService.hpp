@@ -5,7 +5,7 @@
 #include "service/ServiceWrapper.hpp"
 #include "uptime/ConfigureHelper.hpp"
 
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 /**
  * @brief The LocalAddressListService class is what it says on the tin; basically a wrapper to make LocalAddressList appear as a service.

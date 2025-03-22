@@ -7,7 +7,7 @@
 
 #include <QObject>
 #include <QHostAddress>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 
 class RNG;

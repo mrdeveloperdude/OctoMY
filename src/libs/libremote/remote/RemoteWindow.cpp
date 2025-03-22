@@ -2,7 +2,7 @@
 #include "ui_RemoteWindow.h"
 
 
-#include "agent/MessageActivity.hpp"
+#include "activities/MessageActivity.hpp"
 #include "agent/TransitionActivity.hpp"
 #include "connection/ConnectionActivity.hpp"
 #include "delivery/ControlBaptismActivity.hpp"
@@ -37,6 +37,7 @@ RemoteWindow::RemoteWindow(QWidget *parent)
 	, mConfigureHelper("RemoteWindow", true, false, false, true)
 {
 	OC_METHODGATE();
+	setObjectName("RemoteWindow");
 	ui->setupUi(this);
 	prepareMenu();
 	prepareNavigation();
@@ -52,7 +53,19 @@ RemoteWindow::~RemoteWindow()
 }
 
 
-QSharedPointer<Remote> RemoteWindow::remote()
+
+void RemoteWindow::log(const QString &text, LogType type) const
+{
+	OC_METHODGATE();
+	auto r = remote();
+	if(!r.isNull()) {
+		r->log(text, type);
+	}
+}
+
+
+
+QSharedPointer<Remote> RemoteWindow::remote() const
 {
 	OC_METHODGATE();
 	QSharedPointer<Node> n = node();
@@ -67,59 +80,59 @@ QSharedPointer<Remote> RemoteWindow::remote()
 void RemoteWindow::prepareActivities(){
 	auto r = remote();
 	if(!r.isNull()) {
-		mMessage = OC_NEW MessageActivity();
-		ui->widgetActivityStack->registerPage(mMessage, false, false, false);
+		mMessage = QSharedPointer<MessageActivity>::create();
+		ui->widgetActivityStack->registerActivity(mMessage, false, false, false);
 		
-		mTransitionActivity = OC_NEW TransitionActivity();
-		ui->widgetActivityStack->registerPage(mTransitionActivity, false, false, false);
+		mTransitionActivity = QSharedPointer<TransitionActivity>::create();
+		ui->widgetActivityStack->registerActivity(mTransitionActivity, false, false, false);
 		
-		mSipAndSeeActivity = OC_NEW ControlSipAndSeeActivity();
+		mSipAndSeeActivity = QSharedPointer<ControlSipAndSeeActivity>::create();
 		mSipAndSeeActivity->configure(r);
-		ui->widgetActivityStack->registerPage(mSipAndSeeActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mSipAndSeeActivity, false, false, false);
 		
-		mBaptismActivity = OC_NEW ControlBaptismActivity();
+		mBaptismActivity = QSharedPointer<ControlBaptismActivity>::create();
 		mBaptismActivity->configure(r);
-		ui->widgetActivityStack->registerPage(mBaptismActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mBaptismActivity, false, false, false);
 		
-		mDeliveryActivity = OC_NEW ControlDeliveryActivity();
+		mDeliveryActivity = QSharedPointer<ControlDeliveryActivity>::create();
 		mDeliveryActivity->configure(r);
-		ui->widgetActivityStack->registerPage(mDeliveryActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mDeliveryActivity, false, false, false);
 		
-		mIdentityActivity = OC_NEW IdentityActivity();
+		mIdentityActivity = QSharedPointer<IdentityActivity>::create();
 		mIdentityActivity->configure(r);
-		ui->widgetActivityStack->registerPage(mIdentityActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mIdentityActivity, false, false, false);
 
-		mIdentityMenuActivity = OC_NEW IdentityMenuActivity();
+		mIdentityMenuActivity = QSharedPointer<IdentityMenuActivity>::create();
 		mIdentityMenuActivity->configure(r);
-		ui->widgetActivityStack->registerPage(mIdentityMenuActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mIdentityMenuActivity, false, false, false);
 		
-		mPairingMenuActivity = OC_NEW PairingMenuActivity();
+		mPairingMenuActivity = QSharedPointer<PairingMenuActivity>::create();
 		mPairingMenuActivity->configure(r);
-		ui->widgetActivityStack->registerPage(mPairingMenuActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mPairingMenuActivity, false, false, false);
 		
-		mPairingActivity = OC_NEW PairingActivity();
+		mPairingActivity = QSharedPointer<PairingActivity>::create();
 		mPairingActivity->configure(r);
-		ui->widgetActivityStack->registerPage(mPairingActivity, false, false, false);
+		ui->widgetActivityStack->registerActivity(mPairingActivity, false, false, false);
 		
-		mPairingTrustActivity = OC_NEW PairingTrustActivity();
+		mPairingTrustActivity = QSharedPointer<PairingTrustActivity>::create();
 		mPairingTrustActivity->configure(r);
-		ui->widgetActivityStack->registerPage(mPairingTrustActivity, true, true, false);
+		ui->widgetActivityStack->registerActivity(mPairingTrustActivity, true, true, false);
 		
-		mConnectionActivity = OC_NEW ConnectionActivity();
+		mConnectionActivity = QSharedPointer<ConnectionActivity>::create();
 		mConnectionActivity->configure(r);
-		ui->widgetActivityStack->registerPage(mConnectionActivity, true, true, true);
+		ui->widgetActivityStack->registerActivity(mConnectionActivity, true, true, true);
 		
-		mAgentSelectActivity = OC_NEW AgentSelectActivity();
+		mAgentSelectActivity = QSharedPointer<AgentSelectActivity>::create();
 		mAgentSelectActivity->configure(r);
-		ui->widgetActivityStack->registerPage(mAgentSelectActivity, true, true, false);
+		ui->widgetActivityStack->registerActivity(mAgentSelectActivity, true, true, false);
 		
-		mControl = OC_NEW RemoteController();
+		mControl = QSharedPointer<RemoteController>::create();
 		mControl->configure(r);
-		ui->widgetActivityStack->registerPage(mControl, true, true, true);
+		ui->widgetActivityStack->registerActivity(mControl, true, true, true);
 		
-		mUnboxingWizard = OC_NEW ControlUnboxingWizard();
+		mUnboxingWizard = QSharedPointer<ControlUnboxingWizard>::create();
 		mUnboxingWizard->configure(r);
-		ui->widgetActivityStack->registerPage(mUnboxingWizard, true, true, true);
+		ui->widgetActivityStack->registerActivity(mUnboxingWizard, true, true, true);
 	}
 	if(!connect(ui->widgetActivityStack, &ActivityStack::currentPageChanged, this, &RemoteWindow::onPageChanged, OC_CONTYPE)){
 		qWarning()<<"Could not connect to ActivityStack::currentPageChanged";
@@ -169,7 +182,7 @@ void RemoteWindow::prepareNavigation(){
 	if(!connect(ui->widgetNavigation, &NodeNavigation::openMenu, this, &RemoteWindow::openMenu, OC_CONTYPE)){
 		qWarning()<<"Could not connect to node navigation menu button";
 	}
-	ui->widgetNavigation->setState("OctoMY™ Agent", true, true, true);
+	ui->widgetNavigation->setState("OctoMY™ Remote", true, true, true);
 	/*
 	addPage(ui->pageConfirmQuit, true, true, false);
 	addPage(ui->pageQuitting, false, false, false);
@@ -270,16 +283,6 @@ void RemoteWindow::toggleOnline(bool online){
 }
 
 
-void RemoteWindow::appendLog(const QString& text)
-{
-	OC_METHODGATE();
-	auto r = remote();
-	if(!r.isNull()) {
-		r->log(text);
-	}
-}
-
-
 QString RemoteWindow::popPage(){
 	OC_METHODGATE();
 	const auto ret = ui->widgetActivityStack->pop();
@@ -328,7 +331,7 @@ void RemoteWindow::requestApplicationShutdown(){
 	if(mDebug){
 		qDebug()<<"QUIT ASK";
 	}
-	pushPage("MessageActivity", QStringList() << "quit" << "Quit" << "Would you like to quit?" << ":/icons/warning.svg" << "true");
+	pushPage("MessageActivity", QStringList() << "quit" << "Quit" << "Would you like to quit?" << ":/icons/app/warning.svg" << "true");
 }
 
 

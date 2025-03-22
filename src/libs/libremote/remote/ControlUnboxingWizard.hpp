@@ -7,7 +7,7 @@
 
 #include <QWidget>
 
-class Remote;
+class Node;
 
 namespace Ui {
 class ControlUnboxingWizard;
@@ -18,7 +18,7 @@ class ControlUnboxingWizard : public Activity
 	Q_OBJECT
 private:
 	Ui::ControlUnboxingWizard *ui;
-	QSharedPointer<Remote> mRemote;
+	QSharedPointer<Node> mNode;
 	ConfigureHelper mConfigureHelper;
 	
 public:
@@ -27,7 +27,8 @@ public:
 
 private:
 	bool isDelivered() const;
-	bool isPaierd() const;
+	bool isPaired() const;
+	bool isPairingSkipped() const;
 
 	// Virtual activity mechanism
 protected:
@@ -37,7 +38,7 @@ protected:
 public:
 	ControlUnboxingStage unboxingStage();
 	bool unboxingDone();
-	void configure(QSharedPointer<Remote> remote);
+	void configure(QSharedPointer<Node> node);
 	
 public slots:
 	void updateStage();

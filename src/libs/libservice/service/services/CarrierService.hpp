@@ -6,7 +6,7 @@
 #include "service/ServiceWrapper.hpp"
 #include "uptime/ConfigureHelper.hpp"
 
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 class Node;
 

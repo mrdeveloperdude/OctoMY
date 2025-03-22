@@ -2,7 +2,7 @@
 #define GEOMETRYENGINE_HPP
 
 #include <QPointF>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 class Graph;
 class Node;

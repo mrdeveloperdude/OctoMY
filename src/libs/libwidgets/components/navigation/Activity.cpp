@@ -3,8 +3,9 @@
 
 #include "ActivityStack.hpp"
 
-Activity::Activity(QWidget *parent)
+Activity::Activity(QWidget *parent, const QString &name)
 	: QWidget{parent}
+	, mActivityName(name)
 	, mConfigureHelperActivity("Activity", true, false, false, true, false)
 {
 	OC_METHODGATE();
@@ -32,7 +33,6 @@ void Activity::popImpl_(const QString &returnActivity, const QStringList returnA
 	}
 }
 
-
 void Activity::pushImpl_(const QStringList arguments){
 	OC_METHODGATE();
 	if(mConfigureHelperActivity.isConfiguredAsExpected()) {
@@ -42,6 +42,26 @@ void Activity::pushImpl_(const QStringList arguments){
 		pushImpl(arguments);
 	}
 }
+
+
+void Activity::popImpl(const QString &returnActivity, const QStringList returnArguments){
+	OC_METHODGATE();
+	Q_UNUSED(returnActivity);
+	Q_UNUSED(returnArguments);
+}
+
+
+void Activity::pushImpl(const QStringList arguments){
+	OC_METHODGATE();
+	Q_UNUSED(arguments);
+}
+
+
+QString Activity::activityName() const{
+	OC_METHODGATE();
+	return mActivityName.isNull() ? objectName() : mActivityName;
+}
+
 
 
 void Activity::pop(const QStringList returnArguments){

@@ -2,17 +2,13 @@
 #define PAIRINGMENUACTIVITY_H
 
 #include "uptime/ConfigureHelper.hpp"
-#include "components/navigation/Activity.hpp"
+#include "navigation/MenuActivity.hpp"
 
 #include <QWidget>
 #include <QHostAddress>
 
 class Node;
 
-namespace Ui
-{
-class PairingMenuActivity;
-}
 
 /**
  * @brief The PairingMenuActivity class is a menu for the user to select between the
@@ -21,15 +17,12 @@ class PairingMenuActivity;
  * Camera Pairing
  */
 
-class PairingMenuActivity : public Activity
+class PairingMenuActivity : public MenuActivity
 {
 	Q_OBJECT
 
 private:
-	Ui::PairingMenuActivity *ui;
-	QSharedPointer<Node> mNode;
 	ConfigureHelper mConfigureHelper;
-
 
 public:
 	explicit PairingMenuActivity(QWidget *parent = nullptr);
@@ -37,11 +30,6 @@ public:
 
 public:
 	void configure(QSharedPointer<Node> node);
-	
-	// Virtual activity mechanism
-protected:
-	void popImpl(const QString &returnActivity, const QStringList returnArguments = QStringList()) override;
-	void pushImpl(const QStringList arguments = QStringList()) override;
 
 private slots:
 	void done();

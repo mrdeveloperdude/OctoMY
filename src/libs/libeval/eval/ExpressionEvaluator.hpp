@@ -6,7 +6,7 @@
 
 #include <QMap>
 #include <QVector>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QString>
 
 class Response;

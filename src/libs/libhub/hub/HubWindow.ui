@@ -23,156 +23,46 @@
    <iconset resource="../../libres/resources/icons.qrc">
     <normaloff>:/icons/app/window/hub.svg</normaloff>:/icons/app/window/hub.svg</iconset>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_23">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
-    <widget class="QSplitter" name="splitterLog">
-     <property name="lineWidth">
-      <number>0</number>
+    <widget class="NodeNavigation" name="widgetNavigation" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <property name="orientation">
-      <enum>Qt::Orientation::Vertical</enum>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
      </property>
-     <property name="opaqueResize">
-      <bool>false</bool>
+    </widget>
+   </item>
+   <item>
+    <widget class="ActivityStack" name="widgetActivityStack" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <property name="handleWidth">
-      <number>8</number>
-     </property>
-     <property name="childrenCollapsible">
-      <bool>true</bool>
-     </property>
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="toolTip">
-       <string/>
-      </property>
-      <property name="tabPosition">
-       <enum>QTabWidget::TabPosition::West</enum>
-      </property>
-      <property name="tabShape">
-       <enum>QTabWidget::TabShape::Rounded</enum>
-      </property>
-      <property name="currentIndex">
-       <number>2</number>
-      </property>
-      <property name="documentMode">
-       <bool>true</bool>
-      </property>
-      <property name="tabsClosable">
-       <bool>false</bool>
-      </property>
-      <property name="movable">
-       <bool>false</bool>
-      </property>
-      <property name="tabBarAutoHide">
-       <bool>true</bool>
-      </property>
-      <widget class="NodesManagementWidget" name="tabNodes">
-       <property name="toolTip">
-        <string>Look for incomming / unauthenticated remotes and agents</string>
-       </property>
-       <attribute name="icon">
-        <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/app/window/agent.svg</normaloff>:/icons/app/window/agent.svg</iconset>
-       </attribute>
-       <attribute name="title">
-        <string>Nodes</string>
-       </attribute>
-      </widget>
-      <widget class="DeveloperWidget" name="tabDevelopment">
-       <attribute name="title">
-        <string>Development</string>
-       </attribute>
-      </widget>
-      <widget class="QWidget" name="tabPairing">
-       <attribute name="title">
-        <string>Pairing</string>
-       </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_6">
-        <item>
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>337</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="PairingActivity" name="widgetPairing" native="true"/>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>337</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </widget>
-      <widget class="MapEditor" name="tabMap">
-       <property name="toolTip">
-        <string>View agents and remotes in map</string>
-       </property>
-       <attribute name="icon">
-        <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/map/map.svg</normaloff>:/icons/map/map.svg</iconset>
-       </attribute>
-       <attribute name="title">
-        <string>Map</string>
-       </attribute>
-      </widget>
-      <widget class="QWidget" name="tabPlan">
-       <attribute name="icon">
-        <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/plan/mandate.svg</normaloff>:/icons/plan/mandate.svg</iconset>
-       </attribute>
-       <attribute name="title">
-        <string>Plan</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_19">
-        <item>
-         <widget class="QSplitter" name="splitter_2">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
-          </property>
-          <widget class="plan::PlanEditor" name="widgetPlanEditor" native="true"/>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="UtilitiesWidget" name="tabUtilities">
-       <attribute name="title">
-        <string>Utilities</string>
-       </attribute>
-      </widget>
-      <widget class="markdown::MarkdownEditor" name="tabWeb">
-       <attribute name="icon">
-        <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/app/edit.svg</normaloff>:/icons/app/edit.svg</iconset>
-       </attribute>
-       <attribute name="title">
-        <string>Web</string>
-       </attribute>
-      </widget>
-     </widget>
-     <widget class="LogWidget" name="logScroll">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
     </widget>
    </item>
   </layout>
@@ -180,50 +70,15 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>LogWidget</class>
-   <extends>QPlainTextEdit</extends>
-   <header location="global">log/LogWidget.hpp</header>
-  </customwidget>
-  <customwidget>
-   <class>MapEditor</class>
+   <class>NodeNavigation</class>
    <extends>QWidget</extends>
-   <header location="global">map/MapEditor.hpp</header>
+   <header location="global">node/NodeNavigation.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PairingActivity</class>
+   <class>ActivityStack</class>
    <extends>QWidget</extends>
-   <header location="global">pairing/PairingActivity.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>plan::PlanEditor</class>
-   <extends>QWidget</extends>
-   <header location="global">plan/PlanEditor.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>markdown::MarkdownEditor</class>
-   <extends>QWidget</extends>
-   <header location="global">markdown/MarkdownEditor.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>NodesManagementWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">hub/NodesManagementWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>DeveloperWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">hub/DeveloperWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>UtilitiesWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">hub/UtilitiesWidget.hpp</header>
+   <header location="global">components/navigation/ActivityStack.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

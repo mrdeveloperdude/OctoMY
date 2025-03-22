@@ -2,7 +2,7 @@
 #define TRI_HPP
 
 #include <QDataStream>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 class Graph;
 class Node;

@@ -6,7 +6,6 @@
 #include <QDataStream>
 #include <QVector>
 
-//Ctor
 RNG::RNG(QString name)
 	: name (name)
 	, ok(true)
@@ -14,11 +13,11 @@ RNG::RNG(QString name)
 	OC_METHODGATE();
 }
 
+
 RNG::~RNG()
 {
 	OC_METHODGATE();
 }
-
 
 
 static QVector<quint32> byteArrayToIntVector(QByteArray ba)

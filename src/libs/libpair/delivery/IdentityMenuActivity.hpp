@@ -2,15 +2,10 @@
 #define IDENTITY_ACTIVITY_HPP
 
 #include "uptime/ConfigureHelper.hpp"
-#include "components/navigation/Activity.hpp"
+#include "navigation/MenuActivity.hpp"
 
 #include <QWidget>
 #include <QHostAddress>
-
-namespace Ui
-{
-class IdentityMenuActivity;
-}
 
 class Node;
 
@@ -20,15 +15,12 @@ class Node;
  * available identity management screens
  */
 
-class IdentityMenuActivity : public Activity
+class IdentityMenuActivity : public MenuActivity
 {
 	Q_OBJECT
 
 private:
-	Ui::IdentityMenuActivity *ui;
-	QSharedPointer<Node> mNode;
 	ConfigureHelper mConfigureHelper;
-
 
 public:
 	explicit IdentityMenuActivity(QWidget *parent = nullptr);
@@ -36,11 +28,6 @@ public:
 
 public:
 	void configure(QSharedPointer<Node> node);
-	
-	// Virtual activity mechanism
-protected:
-	void popImpl(const QString &returnActivity, const QStringList returnArguments = QStringList()) override;
-	void pushImpl(const QStringList arguments = QStringList()) override;
 
 private slots:
 	void birthCertificate();

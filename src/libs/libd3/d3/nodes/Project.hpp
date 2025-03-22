@@ -5,7 +5,7 @@
 #include "Style.hpp"
 #include "ExpressionsRegistry.hpp"
 
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QObject>
 
 class Player;

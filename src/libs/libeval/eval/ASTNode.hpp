@@ -5,7 +5,7 @@
 
 #include <QString>
 #include <QVector>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 struct ASTNode {
 	ASTNodeType type;

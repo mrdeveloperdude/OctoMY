@@ -5,7 +5,7 @@
 
 
 #include <QWidget>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 class Node;
 

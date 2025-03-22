@@ -1,7 +1,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QSettings>
 
 class QSettings;

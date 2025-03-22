@@ -4,7 +4,7 @@
 #include <QMap>
 #include <QStringList>
 #include <QWidget>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 namespace Ui {
 class CommandWidget;

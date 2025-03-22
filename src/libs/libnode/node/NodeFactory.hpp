@@ -2,7 +2,7 @@
 #define NODEFACTORY_HPP
 
 
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QThread>
 #include <QTimer>
 #include <QWidget>

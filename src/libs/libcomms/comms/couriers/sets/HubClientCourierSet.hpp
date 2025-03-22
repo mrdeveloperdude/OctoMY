@@ -5,7 +5,7 @@
 
 
 #include <QDataStream>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 class HubClient;
 

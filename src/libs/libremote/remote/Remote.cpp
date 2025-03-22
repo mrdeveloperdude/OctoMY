@@ -9,7 +9,7 @@
 #include <QDebug>
 /*
 #include <QDataStream>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QAccelerometerReading>
 #include <QGyroscopeReading>
 #include <QGeoPositionInfo>

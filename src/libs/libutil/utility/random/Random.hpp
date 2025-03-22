@@ -17,6 +17,7 @@ float frand();
 double dfrand();
 
 QByteArray randomByteArray(int size);
+QString randomString(int size, int base=62);
 
 
 }

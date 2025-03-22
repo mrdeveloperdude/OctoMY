@@ -1,8 +1,15 @@
 #include "utility/random/Random.hpp"
 
+#include <QString>
 #include <QtMath>
 #include <QRandomGenerator>
 
+
+/*
+
+
+SEE ALSO: librng/random/* 
+*/
 namespace utility
 {
 
@@ -33,8 +40,6 @@ double dfrand()
 	return v;
 }
 
-
-
 static int ipow(int base, int exp)
 {
 	int result = 1;
@@ -48,6 +53,7 @@ static int ipow(int base, int exp)
 
 	return result;
 }
+
 QByteArray randomByteArray(int size)
 {
 	QByteArray out;
@@ -60,6 +66,22 @@ QByteArray randomByteArray(int size)
 }
 
 
+QString randomString(int size, int base)
+{
+	static const QString alphabet{"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"};
+	if (base > alphabet.size())
+		base = alphabet.size();
+	QString out;
+	for (int i = 0; i < size; ++i)
+	{
+		int index = QRandomGenerator::global()->bounded(base);
+		out.append(alphabet.at(index));
+	}
+	return out;
+}
+
+
 }
 
 }
+

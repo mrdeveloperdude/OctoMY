@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>811</width>
-    <height>399</height>
+    <height>66</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,6 +16,12 @@
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <widget class="QPushButton" name="pushButtonBack">
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
      <property name="toolTip">
       <string>Go Back</string>
      </property>
@@ -25,6 +31,9 @@
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
        <normaloff>:/icons/app/arrow_left.svg</normaloff>:/icons/app/arrow_left.svg</iconset>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -52,6 +61,12 @@
    </item>
    <item>
     <widget class="DebuggerButton" name="pushButtonDebugger">
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
      <property name="toolTip">
       <string>Open Debugger</string>
      </property>
@@ -60,12 +75,21 @@
      </property>
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/app/window/test.svg</normaloff>:/icons/app/window/test.svg</iconset>
+       <normaloff>:/icons/app/window/development.svg</normaloff>:/icons/app/window/development.svg</iconset>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QPushButton" name="pushButtonMenu">
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
      <property name="toolTip">
       <string>Main Menu</string>
      </property>
@@ -75,6 +99,9 @@
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
        <normaloff>:/icons/app/menu.svg</normaloff>:/icons/app/menu.svg</iconset>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

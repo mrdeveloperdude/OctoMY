@@ -5,7 +5,7 @@
 
 #include <QPainter>
 #include <QPoint>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QVector>
 
 class Tri;

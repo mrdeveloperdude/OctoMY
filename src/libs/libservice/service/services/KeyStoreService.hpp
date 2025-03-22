@@ -5,7 +5,7 @@
 #include "service/ServiceWrapper.hpp"
 #include "uptime/ConfigureHelper.hpp"
 
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 /**
  * @brief The KeyStoreService class is what it says on the tin; basically a wrapper to make KeyStore appear as a service.

@@ -2,7 +2,7 @@
 #define DISCOVERYSERVERENTRY_HPP
 
 
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 class Associate;
 class Key;

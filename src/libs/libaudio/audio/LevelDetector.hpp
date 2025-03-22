@@ -2,7 +2,7 @@
 #define LEVELDETECTOR_H
 
 #include <QObject>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QAudioFormat>
 
 class LevelDetector:public QObject{

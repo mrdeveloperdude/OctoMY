@@ -6,7 +6,7 @@
 #include "uptime/New.hpp"
 
 #include <QDebug>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 ServiceManager::ServiceManager()
 	: QObject (nullptr)

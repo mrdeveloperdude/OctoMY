@@ -646,7 +646,7 @@
            </property>
            <property name="icon">
             <iconset resource="../../libres/resources/icons.qrc">
-             <normaloff>:/icons/media/snap.svg</normaloff>:/icons/media/snap.svg</iconset>
+             <normaloff>:/icons/pairing/snap.svg</normaloff>:/icons/pairing/snap.svg</iconset>
            </property>
           </widget>
          </item>

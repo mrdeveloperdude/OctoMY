@@ -41,6 +41,7 @@ private:
 	bool isStanzaed() const;
 	int associateCount() const;
 	bool isPaired() const;
+	bool isPairingSkipped() const;
 	bool controllerNeedsConfig() const;
 
 	// Virtual activity mechanism

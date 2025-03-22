@@ -10,7 +10,7 @@
 #include <QFile>
 #include <QIODevice>
 #include <QRandomGenerator>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QVector2D>
 
 

@@ -3,7 +3,7 @@
 
 
 #include <QString>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 
 struct ASTNode;

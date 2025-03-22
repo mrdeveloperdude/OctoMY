@@ -14,12 +14,13 @@ class Activity : public QWidget
 	Q_OBJECT
 private:
 	friend class ActivityStack;
+	QString mActivityName;
 	ActivityStack *mStack{nullptr};
 	bool mDebug{false};
 	ConfigureHelper mConfigureHelperActivity;
 
 public:
-	explicit Activity(QWidget *parent = nullptr);
+	explicit Activity(QWidget *parent = nullptr, const QString &name=QString());
 
 	// Internal activity mechanism
 private:
@@ -29,8 +30,10 @@ private:
 	
 	// Virtual activity mechanism
 protected:
-	virtual void popImpl(const QString &returnActivity, const QStringList returnArguments = QStringList()){Q_UNUSED(returnActivity);Q_UNUSED(returnArguments);}
-	virtual void pushImpl(const QStringList arguments = QStringList()){Q_UNUSED(arguments);}
+	virtual void popImpl(const QString &returnActivity, const QStringList returnArguments = QStringList());
+	virtual void pushImpl(const QStringList arguments = QStringList());
+public:
+	virtual QString activityName() const;
 	
 	// Convenience wrappers for activities to use stack
 public:

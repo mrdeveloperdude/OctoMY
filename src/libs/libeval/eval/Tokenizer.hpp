@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QVector>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include "Token.hpp"
 class Response;

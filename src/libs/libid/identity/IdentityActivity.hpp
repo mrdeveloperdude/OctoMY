@@ -7,12 +7,11 @@
 
 #include <QWidget>
 
+class Node;
+
 namespace Ui {
 class IdentityActivity;
 }
-
-class Node;
-
 
 /**
  * @brief The IdentityActivity class is a screen that shows all the details

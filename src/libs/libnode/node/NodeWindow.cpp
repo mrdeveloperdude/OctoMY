@@ -3,9 +3,10 @@
 #include "app/Settings.hpp"
 #include "identity/Identicon.hpp"
 #include "node/Node.hpp"
+#include "node/NodeType.hpp"
+#include "screen/ScreenManager.hpp"
 #include "splash/SplashScreen.hpp"
 #include "uptime/MethodGate.hpp"
-#include "node/NodeType.hpp"
 
 #include <QApplication>
 #include <QDebug>
@@ -98,7 +99,7 @@ void NodeWindow::nodeWindowConfigure(QSharedPointer<Node> node)
 }
 
 
-QSharedPointer<Node> NodeWindow::node()
+QSharedPointer<Node> NodeWindow::node() const
 {
 	OC_METHODGATE();
 	return mNode;
@@ -132,24 +133,12 @@ void NodeWindow::loadWindowGeometry()
 #ifdef Q_OS_ANDROID
 	showFullScreen();
 #else
-	QByteArray geometry;
 	if(!mNode.isNull()) {
 		QSharedPointer<Settings> s=mNode->settings();
-		geometry = s->getCustomSettingByteArray(GEOMETRY_SETTINGS_KEY, QByteArray());
-		//qDebug()<<"#*#*#*#*#*#*#*#* LOADED GEOMETRY WAS "<<geometry;
-		if (geometry.isEmpty()) {
-			qDebug()<<"WARNING: No window geometry found in settings";
-			//TODO: Verify this Qt6 conversion
-			//const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
-			auto screen = QApplication::primaryScreen();
-			const QRect availableGeometry = screen->availableGeometry();
-			resize(availableGeometry.width() / 3, availableGeometry.height() / 2);
-			move((availableGeometry.width() - width()) / 2,
-				 (availableGeometry.height() - height()) / 2);
-		} else {
-			//qDebug()<<"Window geometry found in settings, restoring.";
-			restoreGeometry(geometry);
-		}
+		auto sm = ScreenManager::instance();
+		sm->configure(s);
+		auto geometry = sm->restore("node", {WindowType::Primary, this->geometry().size()});
+		setGeometry(geometry);
 	} else {
 		qWarning()<<"ERROR: No node while loading window geometry from settings";
 	}
@@ -160,10 +149,8 @@ void NodeWindow::saveWindowGeometry()
 {
 	OC_METHODGATE();
 	if(!mNode.isNull()) {
-		QSharedPointer<Settings> s=mNode->settings();
-		QByteArray geometry = saveGeometry();
-		//qDebug()<<"#*#*#*#*#*#*#*#* SAVING GEOMETRY "<<geometry;
-		s->setCustomSettingByteArray(GEOMETRY_SETTINGS_KEY, geometry);
+		auto sm = ScreenManager::instance();
+		sm->save("node", geometry());
 	}
 }
 
@@ -176,7 +163,7 @@ void NodeWindow::updateWindowIcon()
 	OC_METHODGATE();
 	PortableID pid;
 	if(!mNode.isNull()) {
-		QSharedPointer<Associate>nid=mNode->nodeIdentity();
+		auto nid = mNode->nodeIdentity();
 		if(!nid.isNull()) {
 			pid=nid->toPortableID();
 		}

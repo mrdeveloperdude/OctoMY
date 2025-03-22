@@ -1,12 +1,15 @@
 #ifndef AUDIOPREVIEWBASE_HPP
 #define AUDIOPREVIEWBASE_HPP
 
-#include <QWidget>
+
+#include "uptime/SharedPointerWrapper.hpp"
+
+#include <QAudioFormat>
 #include <QAudioInput>
 #include <QBuffer>
 #include <QTime>
-#include <QAudioFormat>
-#include <QSharedPointer>
+#include <QWidget>
+
 
 class QMouseEvent;
 class Microphone;

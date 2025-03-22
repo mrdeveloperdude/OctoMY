@@ -305,10 +305,10 @@ void NetworkPairingActivity::complete()
 		else{
 			switch(mNode->nodeRole()){
 			case ROLE_AGENT:
-				push("MessageActivity", QStringList() << "encouragement" << "" << mEncouragmentTextAgent << ":/icons/warning.svg" << "true");
+				push("MessageActivity", QStringList() << "encouragement" << "" << mEncouragmentTextAgent << ":/icons/app/warning.svg" << "true");
 				break;
 			case ROLE_CONTROL:
-				push("MessageActivity", QStringList() << "encouragement" << "" << mEncouragmentTextControl << ":/icons/warning.svg" << "true");
+				push("MessageActivity", QStringList() << "encouragement" << "" << mEncouragmentTextControl << ":/icons/app/warning.svg" << "true");
 				break;
 			default:
 			case ROLE_UNKNOWN:

@@ -2,7 +2,7 @@
 #define TRIPARAMETERWIDGET_HPP
 
 #include <QWidget>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 
 class Tri;
 

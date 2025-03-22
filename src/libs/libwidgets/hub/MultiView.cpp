@@ -136,21 +136,21 @@ void MultiView::configure(QSharedPointer<Settings> settings, QString val, QStrin
 {
 	OC_METHODGATE();
 
-	k=key.trimmed();
-	if(""!=k && nullptr!=settings) {
+	k = key.trimmed();
+	if("" != k && nullptr != settings) {
 		val=settings->getCustomSetting(k,val);
 	}
 	QAbstractButton *but=nullptr;
-	if("Grid"==val) {
-		but=ui->pushButtonViewGrid;
-	} else if("List"==val) {
-		but=ui->pushButtonViewList;
-	} else if("Details"==val) {
-		but=ui->pushButtonViewDetails;
-	} else if("Tree"==val) {
-		but=ui->pushButtonViewTree;
+	if("Grid" == val) {
+		but = ui->pushButtonViewGrid;
+	} else if("List" == val) {
+		but = ui->pushButtonViewList;
+	} else if("Details" == val) {
+		but = ui->pushButtonViewDetails;
+	} else if("Tree" == val) {
+		but = ui->pushButtonViewTree;
 	} else {
-		qDebug()<<"ERROR: NO SUITABLE BUTTON NAME FOUDND FOR "<<val;
+		qWarning() << "ERROR: NO SUITABLE BUTTON NAME FOUND FOR " << val;
 		return;
 	}
 	// TODO: Should this be enabled?

@@ -1,28 +1,33 @@
 #include "ControlUnboxingWizard.hpp"
-#include "remote/Remote.hpp"
+#include "node/Node.hpp"
 #include "remote/RemoteWindow.hpp"
 #include "ui_ControlUnboxingWizard.h"
 
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 
+#include "app/Constants.hpp"
+
 ControlUnboxingWizard::ControlUnboxingWizard(QWidget *parent)
 	: Activity(parent)
 	, ui(new Ui::ControlUnboxingWizard)
 	, mConfigureHelper("ControlUnboxingWizard", true, false, true)
 {
+	OC_METHODGATE();
 	ui->setupUi(this);
 }
 
 
 ControlUnboxingWizard::~ControlUnboxingWizard()
 {
+	OC_METHODGATE();
 	delete ui;
 }
 
 
 bool ControlUnboxingWizard::isDelivered() const{
-	auto keystore = mRemote->keyStore();
+	OC_METHODGATE();
+	auto keystore = mNode->keyStore();
 	if(!keystore.isNull()) {
 		auto key = keystore->localKey();
 		if(!key.isNull()) {
@@ -40,27 +45,41 @@ bool ControlUnboxingWizard::isDelivered() const{
 }
 
 
-bool ControlUnboxingWizard::isPaierd() const{
+bool ControlUnboxingWizard::isPaired() const{
+	OC_METHODGATE();
 	QVector<QueryRule> f;
 	f.append(QueryRule(TYPE_AGENT, false, true, true));
-	auto result = mRemote->addressBook()->filter(f);
+	auto result = mNode->addressBook()->filter(f);
 	return result.size() > 0;
 }
+
+
+
+bool ControlUnboxingWizard::isPairingSkipped() const{
+	OC_METHODGATE();
+	auto s{mNode->settings()};
+	if(!s){
+		qWarning() << "No settings";
+		return false;
+	}
+	return (s->getCustomSettingBool(Constants::SETTINGS_KEY_PAIRING_SKIPPED, false));
+}
+
 
 
 ControlUnboxingStage ControlUnboxingWizard::unboxingStage(){
 	OC_METHODGATE();
 	auto stage = UNKNOWN_STAGE;
 	if(mConfigureHelper.isConfiguredAsExpected()){
-		auto identity = mRemote->nodeIdentity();
+		auto identity = mNode->nodeIdentity();
 		if(!isDelivered()){
 			stage = DELIVERY_STAGE;
 		}
-		else if(!isPaierd()){
+		else if(!isPaired() && !isPairingSkipped()){
 			stage = PAIRING_STAGE;
 		}
 		else{
-			stage = HANDOVER_STAGE;
+			stage = UNBOXING_COMPLETE;
 		}
 	}
 	return stage;
@@ -68,8 +87,10 @@ ControlUnboxingStage ControlUnboxingWizard::unboxingStage(){
 
 
 void ControlUnboxingWizard::updateStage(){
+	OC_METHODGATE();
 	bool delivered{false};
 	bool paired{false};
+	bool pairingSkipped{false};
 	bool allOK{false};
 	QString name;
 	ControlUnboxingStage stage{UNKNOWN_STAGE};
@@ -78,9 +99,10 @@ void ControlUnboxingWizard::updateStage(){
 	if(mConfigureHelper.isConfiguredAsExpected()){
 		delivered = isDelivered();
 		if(delivered){
-			id = mRemote->nodeIdentity()->toPortableID();
+			id = mNode->nodeIdentity()->toPortableID();
 		}
-		paired = isPaierd();
+		paired = isPaired();
+		pairingSkipped = isPairingSkipped();
 		stage = unboxingStage();
 	}
 	switch(stage){
@@ -88,20 +110,23 @@ void ControlUnboxingWizard::updateStage(){
 		case(HANDOVER_STAGE): text = "Launch Remote!";break;
 		default:break;
 	}
-	allOK = delivered && paired;
+	allOK = delivered && (paired || pairingSkipped);
 	ui->widgetDeliveredIdenticon->setVisible(!id.id().isEmpty());
 	ui->widgetDeliveredIdenticon->setPortableID(id);
 	ui->lightWidgetDelivered->setLightOn(delivered);
-	ui->lightWidgetPaired->setLightOn(paired);
+	ui->lightWidgetPaired->setLightOn(paired || pairingSkipped);
+	ui->lightWidgetPaired->setLightColor(paired?Qt::green:Qt::yellow);
 	ui->lightWidgetAllDone->setLightOn(allOK);
+	ui->lightWidgetAllDone->setLightColor(paired?Qt::green:Qt::yellow);
 	ui->pushButtonNextStep->setText(text);
 }
 
 
 void ControlUnboxingWizard::nextStageClicked(){
+	OC_METHODGATE();
 	const auto stage = unboxingStage();
 	qDebug()<<"CLICKED STAGE"<<stage;
-	if(!mRemote.isNull()) {
+	if(!mNode.isNull()) {
 		bool pairing{false};
 		switch(stage){
 			case DELIVERY_STAGE: push("ControlDeliveryActivity"); break;
@@ -111,21 +136,23 @@ void ControlUnboxingWizard::nextStageClicked(){
 			default:
 			case UNKNOWN_STAGE: push("ControlUnboxingWizard"); break;
 		}
-		mRemote->discoveryActivate(pairing);
+		mNode->discoveryActivate(pairing);
 	}
 }
 
 
 bool ControlUnboxingWizard::unboxingDone(){
+	OC_METHODGATE();
 	return unboxingStage() == UNBOXING_COMPLETE;
 }
 
 
-void ControlUnboxingWizard::configure(QSharedPointer<Remote> remote){
+void ControlUnboxingWizard::configure(QSharedPointer<Node> node){
+	OC_METHODGATE();
 	if(mConfigureHelper.configure()){
-		mRemote = remote;
-		if(!mRemote.isNull()) {
-			if(!connect(mRemote.data(), &Node::identityChanged, this, [this]() {
+		mNode = node;
+		if(!mNode.isNull()) {
+			if(!connect(mNode.data(), &Node::identityChanged, this, [this]() {
 					updateStage();
 				},OC_CONTYPE_NON_UNIQUE)) {
 				qWarning()<<"ERROR: Could not connect";
@@ -153,9 +180,10 @@ void ControlUnboxingWizard::popImpl(const QString &returnActivity, const QString
 			const auto response = returnArguments[1];
 			if("quit" == id){
 				if("true" == response){
-					auto window = qSharedPointerCast<RemoteWindow>(mRemote->nodeWindow());
+					auto window = mNode->nodeWindow();
 					if(window){
-						window->applicationShutdown();
+						// TODO: refactor activity system into nodewindow
+						// window->applicationShutdown();
 					}
 					else{
 						qWarning()<<"No remote window";

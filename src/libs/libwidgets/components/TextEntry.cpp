@@ -20,7 +20,7 @@ TextEntry::~TextEntry()
 
 
 
-void TextEntry::configure(Settings *s,QString val, QString key, QString tip)
+void TextEntry::configure(QSharedPointer<Settings> s,QString val, QString key, QString tip)
 {
 	OC_METHODGATE();
 	settings=s;

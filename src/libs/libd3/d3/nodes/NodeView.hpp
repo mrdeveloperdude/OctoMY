@@ -8,7 +8,7 @@
 #include <QPainter>
 #include <QPen>
 #include <QPointF>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QString>
 #include <QVector>
 #include <QWidget>

@@ -87,3 +87,6 @@ const QColor Constants::OC_NODE_TYPE_REMOTE_COLOR(0x36bee8);
 const QColor Constants::OC_NODE_TYPE_HUB_COLOR(0x36e843);
 const QColor Constants::OC_NODE_TYPE_ZOO_COLOR(0xd18000);
 const QColor Constants::OC_NODE_TYPE_UNKNOWN_COLOR("yellow");
+
+
+const QString Constants::SETTINGS_KEY_PAIRING_SKIPPED{"pairing.skipped"};

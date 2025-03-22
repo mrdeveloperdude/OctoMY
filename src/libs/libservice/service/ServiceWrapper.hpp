@@ -6,7 +6,7 @@
 #include "uptime/MethodGate.hpp"
 
 
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QDebug>
 
 /**

@@ -4,7 +4,7 @@
 #include "audio/utils/MedianFilter.hpp"
 
 #include <QObject>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QAudioFormat>
 
 #ifdef USE_PITCH_1

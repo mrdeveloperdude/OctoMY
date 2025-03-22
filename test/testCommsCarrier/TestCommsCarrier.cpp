@@ -8,7 +8,7 @@
 #include <QFileInfo>
 #include <QHostAddress>
 #include <QObject>
-#include <QSharedPointer>
+#include "uptime/SharedPointerWrapper.hpp"
 #include <QSignalSpy>
 
 #include "test/Utility.hpp"
