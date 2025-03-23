@@ -44,6 +44,9 @@ StaticLibrary {
 		prefix: lib_prefix
 		debug: lib_debug
 	}
+	
+	// Use custom module to build shaders into spir-v binaries that are automatically assembled as resource into the binary
+	Depends { name: "Shaders" }
 
 	// We depend on C++
 	Depends{ name: "cpp" }

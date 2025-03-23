@@ -171,6 +171,7 @@ void ScreenManager::selectScreen(){
 }
 
 void ScreenManager::screenSelected(QScreen *screen){
+	Q_UNUSED(screen);
 	for(auto &selector:mScreenSelectors){
 		selector->hide();
 		selector->deleteLater();

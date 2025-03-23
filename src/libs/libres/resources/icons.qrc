@@ -171,5 +171,7 @@
         <file>icons/general/illustration.svg</file>
         <file>icons/debug/development.svg</file>
         <file>icons/general/tools.svg</file>
+        <file>icons/general/splitter.svg</file>
+        <file>icons/general/construct.svg</file>
     </qresource>
 </RCC>

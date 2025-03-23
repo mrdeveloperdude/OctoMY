@@ -42,6 +42,7 @@ void UtilitiesMenuActivity::configure(QSharedPointer<Node> n)
 		addButton(tr("HUD"),                ":/icons/controller/hud.svg",              tr("Work with heads-up display (HUD)"),                 "HUDActivity");
 		addButton(tr("Log"),                ":/icons/general/log.svg",                 tr("Inspect logs"),                                     "LogActivity");
 		addButton(tr("Actuator"),           ":/icons/controller/actuator_control.svg", tr("Work with actuators"),                              "ActuatorActivity");
+		addButton(tr("Splitter"),           ":/icons/general/splitter.svg",            tr("Work with splitter"),                               "SplitterActivity");
 
 
 		addSpacer();

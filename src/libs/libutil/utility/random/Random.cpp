@@ -8,7 +8,7 @@
 /*
 
 
-SEE ALSO: librng/random/* 
+SEE ALSO: librng/random/ * 
 */
 namespace utility
 {

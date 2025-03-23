@@ -26,7 +26,7 @@ PKIManager::~PKIManager()
 
 
 
-void PKIManager::on_pushButtonGenerateKeyPair_clicked()
+void PKIManager::generateKey()
 {
 	OC_METHODGATE();
 	qpolarssl::Pki pki;
@@ -43,13 +43,13 @@ void PKIManager::on_pushButtonGenerateKeyPair_clicked()
 
 }
 
-void PKIManager::on_pushButtonSaveKeyPair_clicked()
+void PKIManager::saveKey()
 {
 	OC_METHODGATE();
 	qDebug()<<"TODO: Implement SAVE";
 }
 
-void PKIManager::on_pushButtonLoadKeyPair_clicked()
+void PKIManager::loadKey()
 {
 	OC_METHODGATE();
 	qDebug()<<"TODO: Implement LOAD";

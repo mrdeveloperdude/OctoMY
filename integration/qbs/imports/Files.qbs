@@ -1,6 +1,7 @@
 Group{
 	name: "unnamed"
-	prefix: ""
+	//prefix: ""
+	prefix: project.sourceDirectory
 	excludeFiles: "/**/internal/**/*"
 	property stringList types: []
 	property stringList bases: ['/**/*.', '/*.']

@@ -1,11 +1,10 @@
-#version 430
+#version 450
 
-in vec2 coord;
-in vec3 color;
-//in vec3 normal_worldspace;
+layout(location = 0) in vec2 coord;
+layout(location = 1) in vec3 color;
 
-out vec4 p3d_FragColor;
+layout(location = 0) out vec4 p3d_FragColor;
 
 void main() {
-	p3d_FragColor = vec4(color, 1);
+	p3d_FragColor = vec4(color, 1.0);
 }

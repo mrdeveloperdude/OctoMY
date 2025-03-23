@@ -99,7 +99,6 @@ void AppStyle::initializeResources()
 	Q_INIT_RESOURCE(icons);
 	Q_INIT_RESOURCE(fonts);
 	Q_INIT_RESOURCE(images);
-	Q_INIT_RESOURCE(3d);
 	Q_INIT_RESOURCE(style);
 	Q_INIT_RESOURCE(data);
 	mResourcesInitialized = true;

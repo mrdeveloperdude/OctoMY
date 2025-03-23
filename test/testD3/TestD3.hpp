@@ -6,8 +6,9 @@
 class TestD3:public QObject
 {
 	Q_OBJECT
+	void testNodes();
 private slots:
-	void testD3();
+	void testSpreadsheet();
 
 };
 

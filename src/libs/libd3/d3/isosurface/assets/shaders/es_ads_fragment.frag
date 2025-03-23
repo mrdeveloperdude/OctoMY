@@ -1,57 +1,49 @@
-#version 120
+#version 450
 
-// Light information
-uniform highp vec4 lightPosition;
-uniform highp vec3 lightIntensity;
+layout(set = 0, binding = 1) uniform LightInfo {
+	vec4 lightPosition;
+	vec3 lightIntensity;
+};
 
-// Material information
-uniform lowp vec3 Ka;
-uniform lowp vec3 Kd;
-uniform lowp vec3 Ks;
-uniform lowp float shininess;
+layout(set = 0, binding = 2) uniform MaterialInfo {
+	vec3 Ka;
+	vec3 Kd;
+	vec3 Ks;
+	float shininess;
+};
 
-// Input variables coming from vertex shader, interpolated to this fragment
-varying highp vec3 interpolatedPosition;
-varying highp vec3 interpolatedNormal;
+// Add explicit locations to inputs
+layout(location = 0) in vec3 interpolatedPosition;
+layout(location = 1) in vec3 interpolatedNormal;
+
+layout(location = 0) out vec4 fragColor;
 
 void main()
 {
-    // normal has been interpolated, so we need to normalize it
-    highp vec3 normalVector = normalize(interpolatedNormal);
+	// Normalize the interpolated normal vector
+	vec3 normalVector = normalize(interpolatedNormal);
 
-    // Calculate light source vector
-    highp vec3 lightSourceVector = normalize( lightPosition.xyz - interpolatedPosition);
+	// Calculate light source vector
+	vec3 lightSourceVector = normalize(lightPosition.xyz - interpolatedPosition);
 
-    // Calculate the view vector
-    highp vec3 viewVector = normalize( -interpolatedPosition.xyz );
+	// Calculate view vector (from the fragment to the eye)
+	vec3 viewVector = normalize(-interpolatedPosition);
 
-    // Ambient contribution
-    highp vec3 ambientContribution = Ka;
+	// Ambient contribution
+	vec3 ambientContribution = Ka;
 
-    // Default black diffuse and specular contributions
-    highp vec3 diffuseContribution = highp vec3(0.0);
-    highp vec3 specularContribution = highp vec3(0.0);
+	// Default black diffuse and specular contributions
+	vec3 diffuseContribution = vec3(0.0);
+	vec3 specularContribution = vec3(0.0);
 
-    // Dot product of two normalized vectors gives us a value
-    // indicating how close they are to each other,
-    // A value of -1 means they are pointing in opposite directions
-    // while a value of 1 means they are pointing in the same direction.
-    // A value of 0 means they are perpendicular to each other.
-    // So if value is negative, there won't be any diffuse or specular contributions
-    // since the light source cannot hit those areas
-    if( dot( lightSourceVector, normalVector ) > 0.0 ) {
+	// Only contribute if the light is facing the surface
+	if (dot(lightSourceVector, normalVector) > 0.0) {
+		// Diffuse contribution
+		diffuseContribution = Kd * dot(lightSourceVector, normalVector);
+		// Halfway vector for specular contribution
+		vec3 halfwayVector = normalize(viewVector + lightSourceVector);
+		specularContribution = Ks * pow(dot(halfwayVector, normalVector), shininess);
+	}
 
-        // Diffuse Contribution
-        diffuseContribution = Kd * dot( lightSourceVector, normalVector);
-
-        // halfway vector, reduces the need for calculating a reflected vector,
-        // which improvies performance slightly
-        highp vec3 halfwayVector = normalize( viewVector + lightSourceVector);
-
-        // Specular contribution
-        specularContribution = Ks * pow( dot(halfwayVector, normalVector), shininess);
-    }
-
-    // Calculate final color
-    gl_FragColor = highp vec4(lightIntensity * (ambientContribution + diffuseContribution + specularContribution), 1.0);
+	fragColor = vec4(lightIntensity * (ambientContribution + diffuseContribution + specularContribution), 1.0);
 }

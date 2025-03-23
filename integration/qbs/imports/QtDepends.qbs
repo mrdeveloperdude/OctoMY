@@ -2,13 +2,14 @@
 Depends {
 	name: "Qt"
 	enableFallback: false
-	property bool includeTest: false
+	property bool includeTest: true
 	submodules: [].concat([
 		  "concurrent"
 		, "bluetooth"
 		, "core"
 		, "core-private"
 		, "gui"
+		, "gui-private"
 		, "multimedia"
 		, "multimediawidgets"
 		, "openglwidgets"

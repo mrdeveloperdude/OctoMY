@@ -87,6 +87,7 @@ bool CommsCarrierLocal::isActiveImp() const
 qint64 CommsCarrierLocal::writeDataImp(const QByteArray &datagram, QSharedPointer<CarrierAddress> toAddress)
 {
 	OC_METHODGATE();
+	Q_UNUSED(toAddress);
 	if (!mLocalSocket || mLocalSocket->state() != QLocalSocket::ConnectedState) {
 		qWarning() << "No active connection to write data";
 		return -1;

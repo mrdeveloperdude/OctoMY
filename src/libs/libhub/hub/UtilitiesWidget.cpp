@@ -3,7 +3,6 @@
 
 #include "app/Settings.hpp"
 #include "hub/Hub.hpp"
-#include "log/LogDevice.hpp"
 
 UtilitiesWidget::UtilitiesWidget(QWidget *parent)
 	: QWidget(parent)
@@ -27,10 +26,11 @@ QSharedPointer<Hub> UtilitiesWidget::hub(){
 
 void UtilitiesWidget::configure(QSharedPointer<Settings> _settings, QSharedPointer<Hub> hub){
 	OC_METHODGATE();
+	Q_UNUSED(_settings);
 	mHub = hub;
-	auto settings = _settings.data();
-	auto h = this->hub();
-	auto cmd = h->context()->commandLine();
+	//auto settings = _settings.data();
+	//auto h = this->hub();
+	//auto cmd = h->context()->commandLine();
 }
 
 

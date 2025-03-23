@@ -1,45 +1,29 @@
-#version 430
-
+#version 450
 
 struct Vertex {
-    vec3 pos;
-    float scale;
-    vec3 normal;
-    float size;
+	vec3 pos;
+	float scale;
+	vec3 normal;
+	float size;
 };
 
-layout(std430, binding=1) buffer GeomBuffer {
-    Vertex vertices[];
+layout(std430, binding = 1) buffer GeomBuffer {
+	Vertex vertices[];
 };
 
+layout(set = 0, binding = 0) uniform Matrices {
+	mat4 p3d_ModelViewMatrix;
+	mat4 p3d_ProjectionMatrix;
+};
 
-uniform mat4 p3d_ModelViewMatrix;
-uniform mat4 p3d_ProjectionMatrix;
-
-//in vec3 p3d_Normal;
-
-out vec2 coord;
-out vec3 color;
-
-out vec3 normal_worldspace;
+layout(location = 0) out vec2 coord;
+layout(location = 1) out vec3 color;
+layout(location = 2) out vec3 normal_worldspace;
 
 void main() {
-	//int triID = gl_VertexID / 3;
-
-	vec4 pos = p3d_ModelViewMatrix * vec4(vertices[gl_VertexID].pos, 1);
-
-	/*int vtxID = gl_VertexID % 3;
-	if( vtxID == 0 )
-	color = vec3(1, 1, 1);
-	else if( vtxID == 1 )
-	color = vec3(1, 1, 0.5);
-	else
-	color = vec3(1, 0.5, 1);*/
-
-	//color = vertices[gl_VertexID].pos;
-	color = vertices[gl_VertexID].normal;
-	//color = vec3(1, 0.5, 1);
-	//normal_worldspace = vertices[gl_VertexID].normal;
-
+	vec4 pos = p3d_ModelViewMatrix * vec4(vertices[gl_VertexIndex].pos, 1.0);
+	coord = vec2(0.0); // Default value if unused
+	color = vertices[gl_VertexIndex].normal;
+	normal_worldspace = vertices[gl_VertexIndex].normal;
 	gl_Position = p3d_ProjectionMatrix * pos;
 }

@@ -9,20 +9,18 @@ namespace Ui {
 
 class PKIManager : public QWidget
 {
-		Q_OBJECT
+	Q_OBJECT
+private:
+	Ui::PKIManager *ui;
 
-	public:
-		explicit PKIManager(QWidget *parent = nullptr);
-		~PKIManager();
+public:
+	explicit PKIManager(QWidget *parent = nullptr);
+	~PKIManager();
 
-	private:
-		Ui::PKIManager *ui;
-	public slots:
-
-		void on_pushButtonGenerateKeyPair_clicked();
-	private slots:
-		void on_pushButtonSaveKeyPair_clicked();
-		void on_pushButtonLoadKeyPair_clicked();
+public slots:
+	void generateKey();
+	void saveKey();
+	void loadKey();
 };
 
 #endif // PKIMANAGER_HPP

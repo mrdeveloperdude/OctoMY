@@ -6,19 +6,22 @@
 #include "test/Utility.hpp"
 #include "uptime/New.hpp"
 
-void TestD3::testD3()
+void TestD3::testNodes()
 {
 	Q_INIT_RESOURCE(icons);
 	auto project = createProject();
 	auto nv = OC_NEW NodeView();
-	
-	//nv->setProject(project);	nv->show();
-	
-	
-	//SpreadSheet spreadSheet;	spreadSheet.show();
-	
-	qDebug()<<"D3";
+	nv->setProject(project);	nv->show();
+	qDebug()<<"D3 nodes";
 	test::utility::waitForUIEnd(nv);
+}
+
+void TestD3::testSpreadsheet()
+{
+	Q_INIT_RESOURCE(icons);
+	auto spreadSheet = OC_NEW SpreadSheet();	spreadSheet->show();
+	qDebug()<<"D3 Spreadsheet";
+	test::utility::waitForUIEnd(spreadSheet);
 }
 
 

@@ -44,11 +44,17 @@ void HubMainMenu::configure(QSharedPointer<Node> n)
 		addButton(tr("Pairing"),            ":/icons/pairing/pair.svg",        tr("Manage the pairing of this Remote"),         &HubWindow::pairing, hw);
 		addButton(tr("Connection"),         ":/icons/controller/network.svg",  tr("Manage Remote connection"),                  &HubWindow::connection, hw);
 		
+		
 		////////////////////////////////////////////////////////////////////////
 		addGroup(tr("Utilities"));
 		
 		addButton(tr("Development"),        ":/icons/debug/development.svg",   tr("Development tools"),                         "DevelopmentMenuActivity");
 		addButton(tr("Utilities"),          ":/icons/general/tools.svg",       tr("Useful utilities"),                          "UtilitiesMenuActivity");
+
+		////////////////////////////////////////////////////////////////////////
+		addGroup(tr("Tools"));
+		
+		addButton(tr("Construct"),          ":/icons/general/construct.svg",   tr("Manage virtual spatial environments"),       "ConstructActivity");
 		
 		////////////////////////////////////////////////////////////////////////
 		addSpacer();

@@ -6,8 +6,8 @@ Project{
 	references: {
 		var ret = [
 			  "testTest/test.qbs"
-//			, "testD3/test.qbs"
-//			, "testEval/test.qbs"
+			, "testD3/test.qbs"
+			, "testEval/test.qbs"
 //			, "testFace/test.qbs"
 //			, "testHaar/test.qbs"
 //			, "testSplitter/test.qbs"
@@ -22,6 +22,7 @@ Project{
 			, "testScreen/test.qbs"
 			, "testFlowLayout/test.qbs"
 			, "testMenuActivity/test.qbs"
+			, "testConstruct/test.qbs"
 //			  "testDiscovery/test.qbs"
 //			, "testActuatorWidget/test.qbs"
 //			, "testAgentConfig/test.qbs"

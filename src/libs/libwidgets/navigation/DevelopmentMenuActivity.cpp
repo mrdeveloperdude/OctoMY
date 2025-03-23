@@ -28,7 +28,7 @@ void DevelopmentMenuActivity::configure(QSharedPointer<Node> n)
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
 		auto hubWindow = qSharedPointerCast<HubWindow>(n->nodeWindow());
-		auto hw = hubWindow.data();
+		//auto hw = hubWindow.data();
 		////////////////////////////////////////////////////////////////////////
 		addGroup(tr("Development"));
 		

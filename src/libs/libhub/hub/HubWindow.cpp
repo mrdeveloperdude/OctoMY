@@ -3,25 +3,27 @@
 #include "ui_HubWindow.h"
 
 // TODO: Relocate the activities that are clearly malplaced
-#include "activities/CameraActivity.hpp"
-#include "activities/PlanActivity.hpp"
-#include "activities/MapActivity.hpp"
-#include "activities/HUDActivity.hpp"
 #include "activities/ActuatorActivity.hpp"
-#include "activities/WidgetIllustrationActivity.hpp"
-#include "activities/SerialActivity.hpp"
+#include "activities/CameraActivity.hpp"
+#include "activities/construct/ConstructActivity.hpp"
 #include "activities/ComputeActivity.hpp"
-#include "activities/VoiceActivity.hpp"
-#include "activities/MarkdownActivity.hpp"
+#include "activities/GaitActivity.hpp"
+#include "activities/HUDActivity.hpp"
+#include "activities/InternalResourcesActivity.hpp"
 #include "activities/LogActivity.hpp"
+#include "activities/MapActivity.hpp"
+#include "activities/MarkdownActivity.hpp"
+#include "activities/MessageActivity.hpp"
 #include "activities/NetworkUtilsActivity.hpp"
 #include "activities/NodesManagementActivity.hpp"
-#include "activities/GaitActivity.hpp"
-#include "activities/InternalResourcesActivity.hpp"
-#include "activities/MessageActivity.hpp"
 #include "activities/PKIManagerActivity.hpp"
+#include "activities/PlanActivity.hpp"
 #include "activities/QRUtilityActivity.hpp"
+#include "activities/SerialActivity.hpp"
+#include "activities/SplitterActivity.hpp"
 #include "activities/TriggerManagerActivity.hpp"
+#include "activities/VoiceActivity.hpp"
+#include "activities/WidgetIllustrationActivity.hpp"
 #include "agent/TransitionActivity.hpp"
 #include "comms/CommsChannel.hpp"
 #include "connection/ConnectionActivity.hpp"
@@ -31,9 +33,9 @@
 #include "delivery/IdentityMenuActivity.hpp"
 #include "hub/Hub.hpp"
 #include "hub/HubMainMenu.hpp"
+#include "identity/IdentityActivity.hpp"
 #include "navigation/DevelopmentMenuActivity.hpp"
 #include "navigation/UtilitiesMenuActivity.hpp"
-#include "identity/IdentityActivity.hpp"
 #include "pairing/PairingActivity.hpp"
 #include "pairing/PairingMenuActivity.hpp"
 #include "pairing/trust/PairingTrustActivity.hpp"
@@ -201,6 +203,10 @@ void HubWindow::prepareActivities(){
 		mCameraActivity->configure();
 		ui->widgetActivityStack->registerActivity(mCameraActivity, true, true, true);
 		
+		mConstructActivity = QSharedPointer<ConstructActivity>::create();
+		mConstructActivity->configure(h);
+		ui->widgetActivityStack->registerActivity(mConstructActivity, true, true, true);
+		
 		mPlanActivity = QSharedPointer<PlanActivity>::create();
 		mPlanActivity->configure(h);
 		ui->widgetActivityStack->registerActivity(mPlanActivity, true, true, true);
@@ -240,6 +246,10 @@ void HubWindow::prepareActivities(){
 		mLogActivity = QSharedPointer<LogActivity>::create();
 		mLogActivity->configure(h);
 		ui->widgetActivityStack->registerActivity(mLogActivity, true, true, true);
+		
+		mSplitterActivity = QSharedPointer<SplitterActivity>::create();
+		mSplitterActivity->configure(h);
+		ui->widgetActivityStack->registerActivity(mSplitterActivity, true, true, true);
 		
 		mNetworkUtilsActivity = QSharedPointer<NetworkUtilsActivity>::create();
 		mNetworkUtilsActivity->configure(h);

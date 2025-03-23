@@ -44,7 +44,7 @@
       <item>
        <spacer name="verticalSpacer_2">
         <property name="orientation">
-         <enum>Qt::Vertical</enum>
+         <enum>Qt::Orientation::Vertical</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -80,5 +80,59 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButtonGenerateKeyPair</sender>
+   <signal>clicked()</signal>
+   <receiver>PKIManager</receiver>
+   <slot>generateKey()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>60</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>454</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonLoadKeyPair</sender>
+   <signal>clicked()</signal>
+   <receiver>PKIManager</receiver>
+   <slot>loadKey()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>60</x>
+     <y>115</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>454</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonSaveKeyPair</sender>
+   <signal>clicked()</signal>
+   <receiver>PKIManager</receiver>
+   <slot>saveKey()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>60</x>
+     <y>84</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>454</x>
+     <y>276</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>saveKey()</slot>
+  <slot>loadKey()</slot>
+  <slot>generateKey()</slot>
+ </slots>
 </ui>

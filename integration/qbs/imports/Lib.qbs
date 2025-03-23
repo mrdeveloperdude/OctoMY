@@ -17,6 +17,13 @@ StaticLibrary {
 		}
 		return false;
 	}
+	
+	// Tag shaders
+	Files{
+		name: "shaders"
+		types: ['vert', 'frag', 'comp', 'tesc', 'tese', 'geom']
+		fileTags: ["shader_source"]
+	}
 
 	// Enumerate sources for ALL libraries so we create one big combined library (hence the name "libcombined")
 	Sources{
@@ -30,6 +37,8 @@ StaticLibrary {
 		prefix: lib_prefix
 		debug: lib_debug
 	}
+	
+	Depends { name: "Shaders" }
 
 	// We depend on C++
 	Depends{ name: "cpp" }
