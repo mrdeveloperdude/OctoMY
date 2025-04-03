@@ -281,11 +281,12 @@ void DebuggerWidget::tuck(bool attach, QWidget *movedWindow)
 			//Place us to the right of main window
 			auto nodeWindow=mNode->nodeWindow();
 			if(!nodeWindow.isNull()) {
-				if(nullptr==movedWindow){
-					movedWindow=this;
+				if(nullptr == movedWindow){
+					movedWindow = this;
 				}
-				if(movedWindow==this) {
+				if(movedWindow == this) {
 					placeRelative(this, nodeWindow.data(), attach?QPoint(5,0):QPoint(20,((utility::random::qrand()%30)-15)), false);
+					nodeWindow->focus();
 				} else {
 					// TODO: Figure out how to circumvent the buggy movement when this is enabled
 					// placeRelative(nodeWindow.data(), this, attach?QPoint(5,0):QPoint(20,((qrand()%30)-15)), true);

@@ -28,6 +28,8 @@ public:
 private:
 	QPushButton* createButton(const QString &title, const QString &iconPath = QString(":/icons/controller/unknown.svg"), const QString &toolTip=QString(), bool checkable=false, bool enabled=true);
 public:
+	
+	void configure();
 	QPushButton* addButton(const QString &title, const QString &iconPath = QString(":/icons/controller/unknown.svg"), const QString &toolTip=QString(), const QString &activityName = QString(), bool checkable=false, bool enabled=true);
 
 	//template <typename MethodType>

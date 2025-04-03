@@ -6,6 +6,7 @@
         <file>icons/actuators/servo.svg</file>
         <file>icons/actuators/stepper_motor.svg</file>
         <file>icons/air/aviation.svg</file>
+        <file>icons/app/add.svg</file>
         <file>icons/app/arrow_down.svg</file>
         <file>icons/app/arrow_left.svg</file>
         <file>icons/app/arrow_right.svg</file>
@@ -18,16 +19,20 @@
         <file>icons/app/error_message.svg</file>
         <file>icons/app/expand.svg</file>
         <file>icons/app/expand_all.svg</file>
+        <file>icons/app/folder.svg</file>
         <file>icons/app/load.svg</file>
         <file>icons/app/menu.svg</file>
         <file>icons/app/no.svg</file>
         <file>icons/app/reload.svg</file>
+        <file>icons/app/remove.svg</file>
         <file>icons/app/save.svg</file>
         <file>icons/app/security_warning.svg</file>
         <file>icons/app/settings.svg</file>
         <file>icons/app/sleep.svg</file>
         <file>icons/app/synchronize.svg</file>
+        <file>icons/app/transparent.svg</file>
         <file>icons/app/trash.svg</file>
+        <file>icons/app/unboxing.svg</file>
         <file>icons/app/under_construction.svg</file>
         <file>icons/app/update.svg</file>
         <file>icons/app/update_auto.svg</file>
@@ -38,6 +43,7 @@
         <file>icons/app/view_tree.png</file>
         <file>icons/app/warning.svg</file>
         <file>icons/app/window/agent.svg</file>
+        <file>icons/app/window/development.svg</file>
         <file>icons/app/window/hub.svg</file>
         <file>icons/app/window/remote.svg</file>
         <file>icons/app/window/stress.svg</file>
@@ -75,11 +81,19 @@
         <file>icons/controller/stats.svg</file>
         <file>icons/controller/unknown.svg</file>
         <file>icons/debug/bug.svg</file>
+        <file>icons/debug/development.svg</file>
         <file>icons/delivery/certificate.svg</file>
         <file>icons/delivery/delivery.svg</file>
+        <file>icons/general/compute.svg</file>
+        <file>icons/general/construct.svg</file>
         <file>icons/general/encryption.svg</file>
+        <file>icons/general/illustration.svg</file>
         <file>icons/general/kill.svg</file>
+        <file>icons/general/log.svg</file>
         <file>icons/general/on.svg</file>
+        <file>icons/general/splitter.svg</file>
+        <file>icons/general/tools.svg</file>
+        <file>icons/identity/key.svg</file>
         <file>icons/lobes/biped.svg</file>
         <file>icons/lobes/helicopter.svg</file>
         <file>icons/lobes/hexapod.svg</file>
@@ -97,18 +111,21 @@
         <file>icons/map/map.svg</file>
         <file>icons/map/map_area.svg</file>
         <file>icons/map/map_point.svg</file>
+        <file>icons/media/camera.svg</file>
+        <file>icons/media/cameramicrophone.svg</file>
         <file>icons/media/fast_forward.svg</file>
         <file>icons/media/focus.svg</file>
+        <file>icons/media/microphone.svg</file>
         <file>icons/media/next.svg</file>
         <file>icons/media/pause.svg</file>
         <file>icons/media/play.svg</file>
         <file>icons/media/play_reverse.svg</file>
         <file>icons/media/previous.svg</file>
         <file>icons/media/record.svg</file>
-        <file>icons/media/record.svg</file>
         <file>icons/media/rewind.svg</file>
         <file>icons/media/stop.svg</file>
         <file>icons/media/types/youtube.svg</file>
+        <file>icons/nodes/nodes.svg</file>
         <file>icons/octomy_logo.svg</file>
         <file>icons/pairing/audio.svg</file>
         <file>icons/pairing/bluetooth.svg</file>
@@ -127,7 +144,9 @@
         <file>icons/pairing/usb.svg</file>
         <file>icons/pairing/wifi.svg</file>
         <file>icons/plan/execute.svg</file>
+        <file>icons/plan/flock.svg</file>
         <file>icons/plan/mandate.svg</file>
+        <file>icons/plan/markdown.svg</file>
         <file>icons/plan/parse.svg</file>
         <file>icons/plan/protocol.svg</file>
         <file>icons/plan/tidy.svg</file>
@@ -142,6 +161,9 @@
         <file>icons/sensors/sensor_light.svg</file>
         <file>icons/sensors/sensor_temperature.svg</file>
         <file>icons/sensors/timer.svg</file>
+        <file>icons/trigger/action.svg</file>
+        <file>icons/trigger/condition.svg</file>
+        <file>icons/trigger/trigger.svg</file>
         <file>icons/types/bit.svg</file>
         <file>icons/types/byte.svg</file>
         <file>icons/types/double_float.svg</file>
@@ -153,25 +175,5 @@
         <file>icons/types/quad_word.svg</file>
         <file>icons/types/quadruple_float.svg</file>
         <file>icons/types/word.svg</file>
-        <file>icons/trigger/action.svg</file>
-        <file>icons/trigger/condition.svg</file>
-        <file>icons/trigger/trigger.svg</file>
-        <file>icons/app/add.svg</file>
-        <file>icons/app/remove.svg</file>
-        <file>icons/app/transparent.svg</file>
-        <file>icons/app/window/development.svg</file>
-        <file>icons/app/unboxing.svg</file>
-        <file>icons/identity/key.svg</file>
-        <file>icons/plan/flock.svg</file>
-        <file>icons/app/folder.svg</file>
-        <file>icons/nodes/nodes.svg</file>
-        <file>icons/general/log.svg</file>
-        <file>icons/plan/markdown.svg</file>
-        <file>icons/general/compute.svg</file>
-        <file>icons/general/illustration.svg</file>
-        <file>icons/debug/development.svg</file>
-        <file>icons/general/tools.svg</file>
-        <file>icons/general/splitter.svg</file>
-        <file>icons/general/construct.svg</file>
     </qresource>
 </RCC>

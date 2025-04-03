@@ -101,6 +101,7 @@ void AppStyle::initializeResources()
 	Q_INIT_RESOURCE(images);
 	Q_INIT_RESOURCE(style);
 	Q_INIT_RESOURCE(data);
+	Q_INIT_RESOURCE(libcombined);
 	mResourcesInitialized = true;
 }
 
@@ -173,10 +174,15 @@ QPalette AppStyle::palette(QColor tinge)
 	const QColor light=   QColor::fromHslF(h, s,   0.2,   1.0).toRgb();
 	const QColor dark=    QColor::fromHslF(h, s*2, 0.05,  1.0).toRgb();
 	const QColor darkest= QColor::fromHslF(h, s*8, 0.0125,1.0).toRgb();
+	
+	
+	
+	QColor transparentBase(0, 0, 0, 64); // semi-transparent black
+	
 	//qDebug()<<"COLORMIX: "<<hh<<" -> "<<h<<" tinge="<<tinge<<",  light="<<light<<",  dark="<<dark<<", ";
 	palette.setColor(QPalette::Window, light);
 	palette.setColor(QPalette::WindowText, lightest);
-	palette.setColor(QPalette::Base, dark);
+	palette.setColor(QPalette::Base, transparentBase); //dark);
 	palette.setColor(QPalette::AlternateBase, light);
 	palette.setColor(QPalette::ToolTipBase, light);
 	palette.setColor(QPalette::ToolTipText, lightest);

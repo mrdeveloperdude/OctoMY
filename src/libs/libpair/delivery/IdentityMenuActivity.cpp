@@ -26,6 +26,7 @@ void IdentityMenuActivity::configure(QSharedPointer<Node> n)
 	Q_UNUSED(n);
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
+		MenuActivity::configure();
 		addButton(tr("Birth Certificate"), ":/icons/delivery/certificate.svg",  tr("Show birth certifictate"), &IdentityMenuActivity::birthCertificate, this);
 		addButton(tr("Delivery"),          ":/icons/delivery/delivery.svg",     tr("Deliver new node"), &IdentityMenuActivity::delivery, this);
 		addButton(tr("Abort"),             ":/icons/general/kill.svg",          tr("Abort node"), &IdentityMenuActivity::delivery, this);
@@ -37,7 +38,9 @@ void IdentityMenuActivity::configure(QSharedPointer<Node> n)
 
 void IdentityMenuActivity::done(){
 	OC_METHODGATE();
-	pop();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		pop();
+	}
 }
 
 

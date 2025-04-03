@@ -42,7 +42,9 @@ void PortableIDWidget::setPortableID(PortableID id)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		qDebug()<<"-----------###==== PortableIDWidget was updated with "<<id;
+		if(mDebug){
+			qDebug()<<"-----------###==== PortableIDWidget was updated with "<<id;
+		}
 		mID=id;
 		const NodeType type=mID.type();
 		const bool isAgent = TYPE_AGENT == type;
@@ -102,12 +104,16 @@ void PortableIDWidget::showCertificate()
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		if(nullptr != mExternalCertificateActivity){
-			qDebug()<<"showing birth certificate externally with " << mExternalCertificateActivity->objectName();
+			if(mDebug){
+				qDebug()<<"showing birth certificate externally with " << mExternalCertificateActivity->objectName();
+			}
 			//emit showBirthCertificate(mID.toPortableString());
 			mExternalCertificateActivity->push("IdentityActivity", QStringList() << mID.toPortableString());
 		}
 		else{
-			qDebug()<<"showing birth certificate internally";
+			if(mDebug){
+				qDebug()<<"showing birth certificate internally";
+			}
 			ui->stackedWidget->setCurrentWidget(ui->pageCertificate);
 		}
 	}
@@ -118,7 +124,9 @@ void PortableIDWidget::showNameplate()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		qDebug()<<"showing nameplate internally";
+		if(mDebug){
+			qDebug()<<"showing nameplate internally";
+		}
 		ui->stackedWidget->setCurrentWidget(ui->pageNameplate);
 	}
 }

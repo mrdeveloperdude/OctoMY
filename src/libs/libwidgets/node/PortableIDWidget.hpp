@@ -19,9 +19,10 @@ class PortableIDWidget : public QWidget
 private:
 	Ui::PortableIDWidget *ui;
 	PortableID mID;
-	ConfigureHelper mConfigureHelper;
 	bool mInlineCertificate{true};
 	Activity *mExternalCertificateActivity{nullptr};
+	bool mDebug{false};
+	ConfigureHelper mConfigureHelper;
 
 public:
 	explicit PortableIDWidget(QWidget *parent = nullptr);

@@ -1,6 +1,8 @@
 #ifndef MARKDOWNEDITOR_HPP
 #define MARKDOWNEDITOR_HPP
 
+#include "uptime/ConfigureHelper.hpp"
+
 #include <QWidget>
 #include <QTimer>
 #include <QKeyEvent>
@@ -34,6 +36,7 @@ private:
 	QDir lastDir;
 	QFileSystemModel filesystemModel;
 	QFileIconProvider iconProvider;
+	ConfigureHelper mConfigureHelper;
 	
 public:
 	explicit MarkdownEditor(QWidget *parent = nullptr);
@@ -57,12 +60,12 @@ public slots:
 	void onTextChanged();
 	
 private slots:
-	void on_pushButtonExportPDF_clicked();
+	void exportPDF();
 	
-	void on_pushButtonToggleTree_toggled(bool checked);
-	void on_pushButtonToggleSource_toggled(bool checked);
-	void on_pushButtonTogglePreview_toggled(bool checked);
-	void on_pushButtonToggleHTML_toggled(bool checked);
+	void toggleTree(bool checked);
+	void toggleSource(bool checked);
+	void togglePreview(bool checked);
+	void toggleHTML(bool checked);
 };
 
 }

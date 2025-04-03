@@ -29,19 +29,6 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <item row="0" column="2">
-    <widget class="QPushButton" name="pushButtonToggleHTML">
-     <property name="text">
-      <string>HTML</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0">
     <widget class="QPushButton" name="pushButtonExportPDF">
      <property name="toolTip">
@@ -53,6 +40,32 @@
      <property name="icon">
       <iconset resource="../../libres/resources/icons.qrc">
        <normaloff>:/icons/app/save.svg</normaloff>:/icons/app/save.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="5">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="4">
+    <widget class="QPushButton" name="pushButtonTogglePreview">
+     <property name="text">
+      <string>Preview</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -69,26 +82,13 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="3">
-    <widget class="QPushButton" name="pushButtonTogglePreview">
-     <property name="text">
-      <string>Preview</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="5">
+   <item row="1" column="0" colspan="6">
     <widget class="QSplitter" name="splitter">
      <property name="lineWidth">
       <number>0</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <widget class="QTreeView" name="treeViewFilesystem">
       <property name="sizePolicy">
@@ -554,10 +554,10 @@
        </font>
       </property>
       <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
+       <enum>QFrame::Shape::NoFrame</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Plain</enum>
+       <enum>QFrame::Shadow::Plain</enum>
       </property>
       <property name="plainText">
        <string/>
@@ -566,8 +566,7 @@
        <double>30.000000000000000</double>
       </property>
      </widget>
-     <widget class="QTextEdit" name="textEditHTML">
-     </widget>
+     <widget class="QTextEdit" name="textEditHTML"/>
      <widget class="QTextEdit" name="textEditPreview">
       <property name="palette">
        <palette>
@@ -1012,10 +1011,10 @@
        </palette>
       </property>
       <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
+       <enum>QFrame::Shape::NoFrame</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Plain</enum>
+       <enum>QFrame::Shadow::Plain</enum>
       </property>
       <property name="lineWidth">
        <number>0</number>
@@ -1023,18 +1022,31 @@
      </widget>
     </widget>
    </item>
-   <item row="0" column="4">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+   <item row="0" column="3">
+    <widget class="QPushButton" name="pushButtonToggleHTML">
+     <property name="text">
+      <string>HTML</string>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
+     <property name="checkable">
+      <bool>true</bool>
      </property>
-    </spacer>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QPushButton" name="pushButtonToggleSource">
+     <property name="text">
+      <string>Source</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -1048,5 +1060,93 @@
  <resources>
   <include location="../../libres/resources/icons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButtonExportPDF</sender>
+   <signal>clicked()</signal>
+   <receiver>MarkdownEditor</receiver>
+   <slot>exportPDF()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>13</x>
+     <y>11</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>341</x>
+     <y>245</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonToggleHTML</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MarkdownEditor</receiver>
+   <slot>toggleHTML(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>227</x>
+     <y>12</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>341</x>
+     <y>245</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonTogglePreview</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MarkdownEditor</receiver>
+   <slot>togglePreview(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>307</x>
+     <y>12</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>341</x>
+     <y>245</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonToggleSource</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MarkdownEditor</receiver>
+   <slot>toggleSource(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>147</x>
+     <y>12</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>341</x>
+     <y>245</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonToggleTree</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MarkdownEditor</receiver>
+   <slot>toggleTree(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>67</x>
+     <y>12</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>341</x>
+     <y>245</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>toggleHTML(bool)</slot>
+  <slot>toggleTree(bool)</slot>
+  <slot>togglePreview(bool)</slot>
+  <slot>exportPDF()</slot>
+  <slot>toggleSource(bool)</slot>
+ </slots>
 </ui>

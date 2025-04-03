@@ -61,7 +61,7 @@ static void drawTrustSymbol(QPainter &painter, const QVariantList &trust, const 
 	OC_FUNCTIONGATE();
 	const QString trustSymbol=
 	(trust.contains("take-control") || trust.contains("give-control"))
-	?":/icons/trust.svg"
+	?":/icons/pairing/trust.svg"
 	:(
 		  trust.contains("block")
 			  ?":/icons/block.svg"

@@ -27,6 +27,7 @@ void DevelopmentMenuActivity::configure(QSharedPointer<Node> n)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
+		MenuActivity::configure();
 		auto hubWindow = qSharedPointerCast<HubWindow>(n->nodeWindow());
 		//auto hw = hubWindow.data();
 		////////////////////////////////////////////////////////////////////////
@@ -44,7 +45,7 @@ void DevelopmentMenuActivity::configure(QSharedPointer<Node> n)
 		addButton(tr("Illustration"),       ":/icons/general/illustration.svg",    tr("Work with illustrating widgets for documentation"), "WidgetIllustrationActivity");
 		addButton(tr("Key Management"),     ":/icons/identity/key.svg",            tr("Manage Cryptographic Keys"),                        "PKIManagerActivity");
 		addButton(tr("QR Utility"),         ":/icons/pairing/qrcode.svg",          tr("Work with QR codes"),                               "QRUtilityActivity");
-		addButton(tr("Camera"),             ":/icons/pairing/snap.svg",            tr("Work with camera"),                                 "CameraActivity");
+		addButton(tr("Media"),             ":/icons/media/cameramicrophone.svg",   tr("Work with media devices"),                          "MediaDeviceActivity");
 		addButton(tr("Compute"),            ":/icons/general/compute.svg",         tr("Work with compute"),                                "ComputeActivity");
 		addButton(tr("Serial"),             ":/icons/pairing/serial.svg",          tr("Work with serial communications"),                  "SerialActivity");
 

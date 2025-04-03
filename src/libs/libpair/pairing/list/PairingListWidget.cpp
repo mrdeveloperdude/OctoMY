@@ -64,7 +64,7 @@ void PairingListWidget::configure(QSharedPointer<Node> node)
 				auto client=mNode->discoveryClient();
 				if(!client.isNull()) {
 					if(!connect(client.data(), &DiscoveryClient::nodeDiscovered, [=](QString partID) {
-					Q_UNUSED(partID);
+						Q_UNUSED(partID);
 						//qDebug()<<"PAIRING WIZARD partID: "<<partID;
 						ui->listViewNodes->update();
 					}

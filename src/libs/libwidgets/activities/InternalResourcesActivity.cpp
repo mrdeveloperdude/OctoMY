@@ -1,7 +1,6 @@
 #include "InternalResourcesActivity.hpp"
 #include "ui_InternalResourcesActivity.h"
 
-#include "manager/InternalResourceManager.hpp"
 
 #include "uptime/MethodGate.hpp"
 

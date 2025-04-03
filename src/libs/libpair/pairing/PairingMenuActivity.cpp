@@ -25,6 +25,7 @@ void PairingMenuActivity::configure(QSharedPointer<Node> n)
 	Q_UNUSED(n);
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
+		MenuActivity::configure();
 		addButton(tr("Network"),     ":/icons/pairing/lan.svg",  tr("Go to network pairing"), &PairingMenuActivity::cameraPairing, this);
 		addButton(tr("Camera"),      ":/icons/pairing/snap.svg", tr("Go to camera pairing"), &PairingMenuActivity::cameraPairing, this);
 		addSpacer();
@@ -35,7 +36,9 @@ void PairingMenuActivity::configure(QSharedPointer<Node> n)
 
 void PairingMenuActivity::done(){
 	OC_METHODGATE();
-	pop();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		pop();
+	}
 }
 
 

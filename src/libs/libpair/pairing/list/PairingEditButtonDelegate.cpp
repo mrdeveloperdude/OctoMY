@@ -65,20 +65,20 @@ static QString connectionStrengthToSymbol(int s)
 	QString onlineSymbol="";
 	switch(s) {
 	case(0):
-		onlineSymbol=":/icons/connection_full.svg";
+		onlineSymbol=":/icons/comms/connection_full.svg";
 		break;
 	case(1):
-		onlineSymbol=":/icons/connection_high.svg";
+		onlineSymbol=":/icons/comms/connection_high.svg";
 		break;
 	case(2):
-		onlineSymbol=":/icons/connection_medium.svg";
+		onlineSymbol=":/icons/comms/connection_medium.svg";
 		break;
 	case(3):
-		onlineSymbol=":/icons/connection_low.svg";
+		onlineSymbol=":/icons/comms/connection_low.svg";
 		break;
 	default:
 	case(4):
-		onlineSymbol=":/icons/connection_off.svg";
+		onlineSymbol=":/icons/comms/connection_off.svg";
 		break;
 	}
 	return onlineSymbol;
@@ -135,7 +135,7 @@ void PairingEditButtonDelegate::paint(QPainter *painter, const QStyleOptionViewI
 		const QString trustSymbol=
 
 			(list.contains("take-control") || list.contains("give-control"))
-			?":/icons/trust.svg"
+			?":/icons/pairing/trust.svg"
 			:(
 				list.contains("block")
 				?":/icons/block.svg"

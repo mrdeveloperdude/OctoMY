@@ -217,16 +217,14 @@ QPoint LayerManager::getMapmiddle_px() const
 QRectF LayerManager::getViewport() const
 {
 	if ( !layer() ) {
-		qDebug() << "LayerManager::getViewport() - no layers configured";
+		//qDebug() << "LayerManager::getViewport() - no layers configured";
 		return QRectF();
 	}
 
 	if ( !layer()->mapadapter() ) {
-		qDebug() << "LayerManager::getViewport() - no mapadapter";
+		//qDebug() << "LayerManager::getViewport() - no mapadapter";
 		return QRectF();
 	}
-
-
 
 	QPoint upperLeft = QPoint(mMapMiddlePixels.x()-mScreenMiddle.x(), mMapMiddlePixels.y()+mScreenMiddle.y());
 	QPoint lowerRight = QPoint(mMapMiddlePixels.x()+mScreenMiddle.x(), mMapMiddlePixels.y()-mScreenMiddle.y());
@@ -261,7 +259,7 @@ void LayerManager::addLayer(QSharedPointer<Layer> layer)
 
 void LayerManager::clearLayers ()
 {
-	for(auto layer: mylayers) {
+	for(auto &layer: mylayers) {
 		removeLayer(layer);
 	}
 }

@@ -14,7 +14,7 @@ class CommsSession;
 
 class ActuatorActivity;
 class AgentSelectActivity;
-class CameraActivity;
+class MediaDeviceActivity;
 class ConstructActivity;
 class ComputeActivity;
 class ConnectionActivity;
@@ -85,7 +85,7 @@ private:
 	// Activities
 	QSharedPointer<ActuatorActivity> mActuatorActivity;
 	QSharedPointer<AgentSelectActivity> mAgentSelectActivity;
-	QSharedPointer<CameraActivity> mCameraActivity;
+	QSharedPointer<MediaDeviceActivity> mMediaDeviceActivity;
 	QSharedPointer<ConstructActivity> mConstructActivity;
 	QSharedPointer<ComputeActivity> mComputeActivity;
 	QSharedPointer<ConnectionActivity> mConnectionActivity;

@@ -24,6 +24,10 @@ void WidgetIllustrationEditor::configure()
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()){
 		ui->lineEditWidgetIlilustrationPath->setText(mWidgetIllustrationOutputDir.absolutePath());
+		ui->widgetWidgetIllustrationPairing->configure(nullptr);
+		ui->widgetWidgetIllustrationIdenticon->configure(true);
+		//ui->widgetWidgetIllustrationGait
+		//ui->widgetWidgetIllustrationMapEditor
 	}
 }
 

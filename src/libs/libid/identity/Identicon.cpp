@@ -162,7 +162,7 @@ void Identicon::regenerateIdenticon()
 			url=":/icons/app/window/hub.svg";
 			break;
 		case(TYPE_ZOO):
-			url=":/icons/zoo.svg";
+			url=":/icons/app/window/zoo.svg";
 			break;
 		}
 

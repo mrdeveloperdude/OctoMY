@@ -27,6 +27,7 @@ void HubMainMenu::configure(QSharedPointer<Node> n)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
+		MenuActivity::configure();
 		auto hubWindow = qSharedPointerCast<HubWindow>(n->nodeWindow());
 		auto hw = hubWindow.data();
 		bool devMode{true};

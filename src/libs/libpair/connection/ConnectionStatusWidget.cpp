@@ -170,6 +170,11 @@ void ConnectionStatusWidget::togglePanic(bool panic)
 	}
 }
 
+void ConnectionStatusWidget::toggleZoo(bool on){
+	OC_METHODGATE();
+	log(QString("Toggling zoo pairing %1").arg(on?"ON":"OFF"));
+}
+
 
 QSharedPointer<DiscoveryMandate> ConnectionStatusWidget::discoveryMandate(){
 	// TODO: Research viability of shared "ConnectionMandate" object that combines discovery mandate with connection status.

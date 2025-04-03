@@ -38,9 +38,16 @@ StaticLibrary {
 		debug: lib_debug
 	}
 	
-	// And the same for resources
+	// The same for resources
 	Resources{
 		name: FileInfo.baseName(localPath) + "_resources"
+		prefix: lib_prefix
+		debug: lib_debug
+	}
+
+	// And the same for qdoc
+	Documentation{
+		name: FileInfo.baseName(localPath) + "_qdoc"
 		prefix: lib_prefix
 		debug: lib_debug
 	}

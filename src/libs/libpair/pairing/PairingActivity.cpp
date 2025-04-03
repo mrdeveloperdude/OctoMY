@@ -58,7 +58,8 @@ PairingActivity::~PairingActivity()
 }
 
 
-
+static const QRegularExpression rxSource ("\\[SOURCE\\]");
+static const QRegularExpression rxDests ("\\[DESTS\\]");
 
 void PairingActivity::replaceText(NodeType type)
 {
@@ -68,15 +69,15 @@ void PairingActivity::replaceText(NodeType type)
 	case(TYPE_ZOO):
 	case(TYPE_UNKNOWN):
 	case(TYPE_AGENT): {
-		ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Agent").replace(QRegularExpression("\\[DEST\\]"), "Control"));
+		ui->labelBodyPair->setText(mTemplate.replace(rxSource, "Agent").replace(rxDests, "Controls"));
 	}
 	break;
 	case(TYPE_REMOTE): {
-		ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Remote").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
+		ui->labelBodyPair->setText(mTemplate.replace(rxSource, "Remote").replace(rxDests, "Agents"));
 	}
 	break;
 	case(TYPE_HUB): {
-		ui->labelBodyPair->setText(mTemplate.replace(QRegularExpression("\\[SOURCE\\]"), "Hub").replace(QRegularExpression("\\[DEST\\]"), "Agent"));
+		ui->labelBodyPair->setText(mTemplate.replace(rxSource, "Hub").replace(rxDests, "Agents"));
 	}
 	break;
 	}
@@ -92,20 +93,7 @@ void PairingActivity::hookStartEdit()
 			qDebug()<<"EDIT HOOKED";
 		}
 		ui->widgetPairingList->configure(mNode);
-		if(!connect(ui->widgetPairingList, &PairingListWidget::startEdit, this, [this](const QString id) {
-				if(mDebug){
-					qDebug()<<"Start EDIT";
-				}
-				const auto addressBook = mNode->addressBook();
-				if(!addressBook.isNull()) {
-					const auto ass = addressBook->associateByID(id);
-					if(!ass.isNull()) {
-						startEdit(id);
-					} else {
-						qWarning()<<"ERROR: No ass";
-					}
-				}
-			}, OC_CONTYPE_NON_UNIQUE)) {
+		if(!connect(ui->widgetPairingList, &PairingListWidget::startEdit, this, &PairingActivity::startEdit)){
 			qWarning()<<"ERROR: Could not connect";
 		}
 	}
@@ -179,14 +167,8 @@ void PairingActivity::configure(QSharedPointer<Node> n)
 			}
 			mDiscoveryClient = mNode->discoveryClient();
 			if(!mDiscoveryClient.isNull()){
-				connect(mDiscoveryClient.get(), &DiscoveryClient::discoverRequest, this, [=](){
-					qDebug() << "PING";
-					ui->widgetPings->ping(0xFF66FF22, true);
-				});
-				connect(mDiscoveryClient.get(), &DiscoveryClient::discoverResponse, this, [=](const bool ok){
-					qDebug() << "PONG" << ok;
-					ui->widgetPings->ping(ok?0xFF2266FF:0xFFFF0000, false);
-				});
+				connect(mDiscoveryClient.get(), &DiscoveryClient::discoverRequest, this, &PairingActivity::discoveryRequest);
+				connect(mDiscoveryClient.get(), &DiscoveryClient::discoverResponse, this, &PairingActivity::discoveryResponse);
 			}
 			else {
 				qWarning()<<"ERROR: No discovery client";
@@ -225,7 +207,8 @@ void PairingActivity::updateNetworkSettings()
 				//TODO: Only attemt to start discovery client when address is valid
 				//const bool valid=true;//mNode->localAddresses().currentAddress().isValid()
 				client->activate(visible);
-				ui->progressBarSearching->setVisible(visible);
+				//ui->widgetPings->setActive(visible);
+				//ui->progressBarSearching->setVisible(visible);
 			}
 		}
 	}
@@ -279,6 +262,8 @@ void PairingActivity::startEdit(const QString &id)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected("startEdit")) {
+						 
+		
 		if(mDebug){
 			qDebug() << "STARTING EDIT FOR " << id;
 		}
@@ -314,6 +299,27 @@ void PairingActivity::hideEvent(QHideEvent *)
 		updateNetworkSettings();
 	}
 }
+
+
+
+
+void PairingActivity::discoveryRequest(){
+	OC_METHODGATE();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		qDebug() << "PING";
+		ui->widgetPings->ping(0xFF66FF22, true);
+	}
+}
+
+
+void PairingActivity::discoveryResponse(bool ok){
+	OC_METHODGATE();
+	if(mConfigureHelper.isConfiguredAsExpected()) {
+		qDebug() << "PONG" << ok;
+		ui->widgetPings->ping(ok?0xFF2266FF:0xFFFF0000, false);
+	}
+}
+
 
 
 void PairingActivity::complete()

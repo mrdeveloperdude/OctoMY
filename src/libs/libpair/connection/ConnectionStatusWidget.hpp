@@ -63,6 +63,7 @@ private slots:
 	void toggleBluetooth(const bool on);
 	void toggleNetwork(const bool on);
 	void togglePanic(bool panic);
+	void toggleZoo(bool panic);
 
 signals:
 	bool tryConnect(bool connect);

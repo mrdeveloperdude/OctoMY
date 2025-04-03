@@ -4,7 +4,7 @@
 
 // TODO: Relocate the activities that are clearly malplaced
 #include "activities/ActuatorActivity.hpp"
-#include "activities/CameraActivity.hpp"
+#include "activities/MediaDeviceActivity.hpp"
 #include "activities/construct/ConstructActivity.hpp"
 #include "activities/ComputeActivity.hpp"
 #include "activities/GaitActivity.hpp"
@@ -199,9 +199,9 @@ void HubWindow::prepareActivities(){
 		mGaitActivity->configure();
 		ui->widgetActivityStack->registerActivity(mGaitActivity, true, true, true);
 		
-		mCameraActivity = QSharedPointer<CameraActivity>::create();
-		mCameraActivity->configure();
-		ui->widgetActivityStack->registerActivity(mCameraActivity, true, true, true);
+		mMediaDeviceActivity = QSharedPointer<MediaDeviceActivity>::create();
+		mMediaDeviceActivity->configure(h);
+		ui->widgetActivityStack->registerActivity(mMediaDeviceActivity, true, true, true);
 		
 		mConstructActivity = QSharedPointer<ConstructActivity>::create();
 		mConstructActivity->configure(h);
@@ -426,7 +426,8 @@ void HubWindow::unboxing(){
 
 void HubWindow::pairing(){
 	OC_METHODGATE();
-	pushPage(mPairingMenuActivity->activityName());
+	pushPage(mPairingActivity->activityName());
+	//pushPage(mPairingMenuActivity->activityName());
 }
 
 

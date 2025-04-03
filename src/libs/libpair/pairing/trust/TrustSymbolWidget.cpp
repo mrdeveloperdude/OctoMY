@@ -70,7 +70,7 @@ void TrustSymbolWidget::setTrustLevel(TrustLevel level)
 		QString file;
 		switch(level) {
 		case(TRUST): {
-			file=":/icons/trust.svg";
+			file=":/icons/pairing/trust.svg";
 		}
 		break;
 		case(BLOCK): {

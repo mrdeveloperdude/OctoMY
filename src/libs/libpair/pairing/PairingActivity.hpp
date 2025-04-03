@@ -101,7 +101,8 @@ protected:
 private slots:
 	void onNetworkSettingsChange(QHostAddress address, quint16 port, bool valid);
 	
-private slots:
+	void discoveryRequest();
+	void discoveryResponse(bool ok);
 	void complete();
 	void refresh();
 
