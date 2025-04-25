@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QSvgRenderer>
 
+class ActivityStack;
 class Node;
 class SplashScreen;
 
@@ -18,7 +19,9 @@ protected:
 	QSvgRenderer mWaterMark;
 	QPixmap mWatermarkCache;
 	QSize mWatermarkLastSize;
-	SplashScreen *mSplash;
+	SplashScreen *mSplash{nullptr};
+	ActivityStack *mActivityStack{nullptr};
+	bool mDebug{true};
 	
 public:
 	explicit NodeWindow(QWidget *parent = nullptr);
@@ -48,6 +51,8 @@ protected:
 	void saveWindowGeometry();
 
 	void updateWindowIcon();
+	
+	void setActivityStack(ActivityStack *activityStack);
 
 	// QWidget interface
 public:
@@ -55,7 +60,14 @@ public:
 	virtual	void closeEvent(QCloseEvent *) override;
 	virtual	void moveEvent(QMoveEvent *) override;
 	virtual	void paintEvent(QPaintEvent *event) override;
-
+	
+	// Activity stuff
+public slots:
+	QString popPage();
+	bool pushPage(const QString &title, const QStringList arguments = QStringList());
+	QString swapPage(const QString &title);
+	
+	
 	// Android stuff
 protected:
 	// Make a "normal" notification

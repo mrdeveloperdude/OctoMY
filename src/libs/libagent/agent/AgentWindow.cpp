@@ -1,11 +1,12 @@
 #include "AgentWindow.hpp"
+#include "agent/AgentMainMenu.hpp"
 #include "ui_AgentWindow.h"
 
+#include "activities/MessageActivity.hpp"
 #include "agent/Agent.hpp"
 #include "agent/AgentConfigStore.hpp"
 #include "agent/AgentUnboxingWizard.hpp"
 #include "agent/FaceActivity.hpp"
-#include "activities/MessageActivity.hpp"
 #include "agent/TransitionActivity.hpp"
 #include "connection/ConnectionActivity.hpp"
 #include "delivery/AgentBaptismActivity.hpp"
@@ -44,13 +45,12 @@
 AgentWindow::AgentWindow(QWidget *parent)
 	: NodeWindow(parent)
 	, ui(OC_NEW Ui::AgentWindow)
-	, mMenu(OC_NEW QMenu(tr("Menu"), this))
 	, mConfigureHelper("AgentWindow", true, false, false, true)
 {
 	OC_METHODGATE();
+	setObjectName("AgentWindow");
 	ui->setupUi(this);
-	prepareMenu();
-	prepareNavigation();
+	setActivityStack(ui->widgetActivityStack);
 }
 
 
@@ -72,6 +72,21 @@ QSharedPointer<Agent> AgentWindow::agent()
 	}
 	return qSharedPointerCast<Agent> (n);
 }
+
+
+
+void AgentWindow::prepareNavigation(){
+	OC_METHODGATE();
+	if(!connect(ui->widgetNavigation, &NodeNavigation::navigateBack, this, &AgentWindow::navigateBack, OC_CONTYPE)){
+		qWarning()<<"Could not connect to node navigation back button";
+	}
+	if(!connect(ui->widgetNavigation, &NodeNavigation::openMenu, this, &AgentWindow::menu, OC_CONTYPE)){
+		qWarning()<<"Could not connect to node navigation menu button";
+	}
+	ui->widgetNavigation->setState("OctoMY™ Agent", true, true, true);
+}
+
+
 
 
 void AgentWindow::prepareActivities(){
@@ -128,14 +143,6 @@ void AgentWindow::prepareActivities(){
 		mIdentityActivity->configure(a);
 		ui->widgetActivityStack->registerActivity(mIdentityActivity, false, false, false);
 		
-		mIdentityMenuActivity = QSharedPointer<IdentityMenuActivity>::create();
-		mIdentityMenuActivity->configure(a);
-		ui->widgetActivityStack->registerActivity(mIdentityMenuActivity, false, false, false);
-		
-		mPairingMenuActivity = QSharedPointer<PairingMenuActivity>::create();
-		mPairingMenuActivity->configure(a);
-		ui->widgetActivityStack->registerActivity(mPairingMenuActivity, false, false, false);
-		
 		mPairingActivity = QSharedPointer<PairingActivity>::create();
 		mPairingActivity->configure(a);
 		ui->widgetActivityStack->registerActivity(mPairingActivity, false, false, false);
@@ -163,6 +170,19 @@ void AgentWindow::prepareActivities(){
 		mUnboxingWizard = QSharedPointer<AgentUnboxingWizard>::create();
 		mUnboxingWizard->configure(a);
 		ui->widgetActivityStack->registerActivity(mUnboxingWizard, true, true, true);
+		
+		// Menus
+		mMainMenu = QSharedPointer<AgentMainMenu>::create();
+		mMainMenu->configure(a);
+		ui->widgetActivityStack->registerActivity(mMainMenu, true, true, true);
+		
+		mIdentityMenuActivity = QSharedPointer<IdentityMenuActivity>::create();
+		mIdentityMenuActivity->configure(a);
+		ui->widgetActivityStack->registerActivity(mIdentityMenuActivity, false, false, false);
+		
+		mPairingMenuActivity = QSharedPointer<PairingMenuActivity>::create();
+		mPairingMenuActivity->configure(a);
+		ui->widgetActivityStack->registerActivity(mPairingMenuActivity, false, false, false);
 	}
 	if(!connect(ui->widgetActivityStack, &ActivityStack::currentPageChanged, this, &AgentWindow::onPageChanged, OC_CONTYPE)){
 		qWarning()<<"Could not connect to ActivityStack::currentPageChanged";
@@ -179,6 +199,7 @@ void AgentWindow::configure()
 		if(!a.isNull()) {
 			// [...]
 			loadWindowGeometry();
+			prepareNavigation();
 			prepareActivities();
 			ui->widgetNavigation->configure(node());
 			updateWindowIcon();
@@ -220,57 +241,6 @@ void AgentWindow::appendLog(const QString& text)
 //////////////////
 
 
-void AgentWindow::prepareNavigation(){
-	OC_METHODGATE();
-	if(!connect(ui->widgetNavigation, &NodeNavigation::navigateBack, this, &AgentWindow::navigateBack, OC_CONTYPE)){
-		qWarning()<<"Could not connect to node navigation back button";
-	}
-	if(!connect(ui->widgetNavigation, &NodeNavigation::openMenu, this, &AgentWindow::openMenu, OC_CONTYPE)){
-		qWarning()<<"Could not connect to node navigation menu button";
-	}
-	ui->widgetNavigation->setState("OctoMY™ Agent", true, true, true);
-	/*
-	addPage(ui->pageConfirmQuit, true, true, false);
-	addPage(ui->pageQuitting, false, false, false);
-	addPage(mFaceActivity, true, true, true);
-	addPage(ui->pageDelivery, false, false, false);
-	addPage(ui->pageHardware, false, false, false);
-	addPage(ui->pagePairing, false, false, false);
-	addPage(ui->pageUnboxing, false, false, false);
-	setCurrentPage("pageFace");
-*/
-}
-
-
-QString AgentWindow::popPage(){
-	OC_METHODGATE();
-	const auto ret = ui->widgetActivityStack->pop();
-	if(mDebug){
-		qDebug()<<"POP PAGE " << ret;
-	}
-	return ret;
-}
-
-
-bool AgentWindow::pushPage(const QString &title, const QStringList arguments){
-	OC_METHODGATE();
-	const auto ret = ui->widgetActivityStack->push(title, arguments);
-	if(mDebug){
-		qDebug()<<"PUSH PAGE " << title << arguments << ret;
-	}
-	return ret;
-}
-
-
-QString AgentWindow::swapPage(const QString &title){
-	OC_METHODGATE();
-	const auto ret = ui->widgetActivityStack->swap(title);
-	if(mDebug){
-		qDebug()<<"SWAP PAGE " << ret << "-->" << title;
-	}
-	return ret;
-}
-
 
 void AgentWindow::navigateBack(){
 	OC_METHODGATE();
@@ -281,12 +251,12 @@ void AgentWindow::navigateBack(){
 }
 
 
-void AgentWindow::openMenu(){
+void AgentWindow::menu(){
 	OC_METHODGATE();
 	if(mDebug){
 		qDebug()<<"MENU";
 	}
-	mMenu->exec(mapToGlobal(ui->widgetNavigation->menuPos()));
+	pushPage(mMainMenu->activityName());
 }
 
 
@@ -311,13 +281,20 @@ void AgentWindow::requestApplicationShutdown(){
 }
 
 
+void AgentWindow::unboxing(){
+	OC_METHODGATE();
+	pushPage(mUnboxingWizard->activityName());
+}
+
 void AgentWindow::applicationShutdown(){
 	OC_METHODGATE();
 	if(mDebug){
 		qDebug()<<"QUIT CONFIRM";
 	}
 	pushPage("TransitionActivity", QStringList() << "quit");
-	emit node()->nodeRequestExit(EXIT_SUCCESS);
+	QTimer::singleShot(1000, this, [this](){
+		emit node()->nodeRequestExit(EXIT_SUCCESS);
+	});
 }
 
 
@@ -365,67 +342,6 @@ void AgentWindow::toggleOnline(bool online){
 void AgentWindow::face(){
 	OC_METHODGATE();
 	pushPage("FaceActivity");
-}
-
-
-template <typename MethodType>
-QAction* AgentWindow::addMenuItem(QString title, QString icon, QString toolTip, MethodType method, bool checkable) {
-	OC_METHODGATE();
-	QAction *action=OC_NEW QAction(title, this);
-	action->setCheckable(checkable);
-	if(checkable){
-		if(!(connect(action, &QAction::toggled, this, method, OC_CONTYPE))){
-			qWarning() << "Could not connect action method for" << action->text() << "to menu";
-		}else{
-			action->setStatusTip(toolTip);
-			action->setIcon(QIcon(icon));
-			mMenu->addAction(action);
-		}
-	}
-	else{
-		if(!(connect(action, &QAction::triggered, this, method, OC_CONTYPE))){
-			qWarning() << "Could not connect action method for" << action->text() << "to menu";
-		}else{
-			action->setStatusTip(toolTip);
-			action->setIcon(QIcon(icon));
-			mMenu->addAction(action);
-		}
-	}
-	return action;
-}
-
-
-void AgentWindow::prepareMenu( )
-{
-	OC_METHODGATE();
-	mToggleOnlineAction = addMenuItem(tr("Toggle Online"), ":/icons/general/on.svg", tr("Toggle availability of Agent on networks"), &AgentWindow::toggleOnline, true);
-	mIdentityAction = addMenuItem(tr("Identity"), ":/icons/pairing/identity.svg", tr("Manage the identity of this Agent"), &AgentWindow::identity );
-	mHardwareAction = addMenuItem(tr("Configuration"), ":/icons/controller/actuator_control.svg", tr("Manage the configuration of this Agent"), &AgentWindow::configureHardware );
-	mPairingAction = addMenuItem(tr("Pairing"), ":/icons/pairing/pair.svg", tr("Manage the pairing of this Agent"), &AgentWindow::pairing );
-	mConnectionAction = addMenuItem(tr("Connection"), ":/icons/controller/network.svg", tr("Manage Agent connection"), &AgentWindow::connection );
-	mShowFaceAction = addMenuItem(tr("Face"), ":/icons/general/on.svg", tr("Show the Agent's face in main screen"), &AgentWindow::face);
-	mPlanEditorAction = addMenuItem(tr("Plan Editor"), ":/icons/plan/mandate.svg", tr("Edit Agent plan"), &AgentWindow::editPlan );
-	
-	
-	mQuitAction = addMenuItem(tr("Exit"), ":/icons/app/no.svg", tr("Terminate execution of this Agent"), &AgentWindow::requestApplicationShutdown );
-	
-	/* Other stuff
-	
-		mShowOnlineButtonAction->setStatusTip(tr("Show connect button in main screen"));
-		mShowOnlineButtonAction->setCheckable(true);
-		connect(mShowOnlineButtonAction, &QAction::triggered, this, &AgentWindow::onOnlineButtonVisibilityChanged);
-		mMenu.addAction(mShowOnlineButtonAction);
-	// Show Face
-	//////////////////
-	
-	
-	// Unbirth
-	//////////////////
-	mUnbirthAction->setStatusTip(tr("Delete the identity of this agent to restart birth"));
-	mUnbirthAction->setIcon(QIcon(":/icons/kill.svg"));
-	connect(mUnbirthAction, &QAction::triggered, this, &AgentWindow::onStartUnbirth);
-	mMenu.addAction(mUnbirthAction);
-	*/
 }
 
 

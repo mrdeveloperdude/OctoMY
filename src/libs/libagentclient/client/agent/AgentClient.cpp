@@ -1,6 +1,8 @@
 #include "AgentClient.hpp"
 
 #include "AgentClientWidget.hpp"
+#include "uptime/MethodGate.hpp"
+
 
 AgentClient::AgentClient(QObject *parent)
 	: Client(parent)

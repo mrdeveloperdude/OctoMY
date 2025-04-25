@@ -1,10 +1,10 @@
 #include "TransitionActivity.hpp"
-#include "ui_Quitting.h"
+#include "ui_TransitionActivity.h"
 #include "uptime/MethodGate.hpp"
 
 TransitionActivity::TransitionActivity(QWidget *parent)
 	: Activity(parent)
-	, ui(new Ui::Quitting)
+	, ui(new Ui::TransitionActivity)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
@@ -19,7 +19,6 @@ TransitionActivity::~TransitionActivity()
 
 
 
-
 void TransitionActivity::popImpl(const QString &returnActivity, const QStringList returnArguments){
 	OC_METHODGATE();
 	Q_UNUSED(returnActivity);
@@ -29,7 +28,7 @@ void TransitionActivity::popImpl(const QString &returnActivity, const QStringLis
 
 void TransitionActivity::pushImpl(const QStringList arguments){
 	OC_METHODGATE();
+	qDebug()<<"TRANSITION "<< arguments;
 	if(arguments.size()>0){
-		
 	}
 }

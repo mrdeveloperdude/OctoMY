@@ -1,13 +1,15 @@
 #ifndef PACKETSENDSTATE_HPP
 #define PACKETSENDSTATE_HPP
 
-#include "CommsChannel.hpp"
 
 #include "Multimagic.hpp"
-
 #include "uptime/SharedPointerWrapper.hpp"
 
 #include <QString>
+
+class ReliabilitySystem;
+class CommsSession;
+
 
 struct PacketSendState {
 public:

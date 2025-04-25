@@ -1,19 +1,14 @@
 #include "ClientList.hpp"
 
-
-#include "utility/time/HumanTime.hpp"
-#include "uptime/MethodGate.hpp"
-#include "uptime/ConnectionType.hpp"
-
-#include "discovery/AddressBook.hpp"
-
-#include "comms/CommsSessionDirectory.hpp"
-
-#include "comms/CommsSession.hpp"
 #include "address/Associate.hpp"
-
+#include "comms/CommsSession.hpp"
+#include "comms/CommsSessionDirectory.hpp"
+#include "discovery/AddressBook.hpp"
 #include "node/Node.hpp"
-
+#include "security/Key.hpp"
+#include "uptime/ConnectionType.hpp"
+#include "uptime/MethodGate.hpp"
+#include "utility/time/HumanTime.hpp"
 
 
 ClientList::ClientList()

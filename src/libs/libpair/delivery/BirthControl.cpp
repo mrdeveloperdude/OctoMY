@@ -1,6 +1,7 @@
 #include "BirthControl.hpp"
 
 #include "node/Node.hpp"
+#include "security/KeyStore.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "utility/time/HumanTime.hpp"

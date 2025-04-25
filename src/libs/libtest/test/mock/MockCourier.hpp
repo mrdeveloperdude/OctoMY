@@ -3,9 +3,11 @@
 
 #include "comms/couriers/Courier.hpp"
 
-#include "QObject"
+#include <QObject>
 
+class Comms;
 class CommsTester;
+
 class MockCourier:public Courier
 {
 	Q_OBJECT
@@ -22,7 +24,7 @@ public:
 	CourierMandate mMandate;
 
 public:
-	explicit MockCourier(QString name, QString dest, QByteArray datagram, QSharedPointer<CommsChannel> comms, const qint32 mMaxSends=1, const qint32 mMaxRecs=1, CommsTester *parent = nullptr);
+	explicit MockCourier(QString name, QString dest, QByteArray datagram, QSharedPointer<Comms> comms, const qint32 mMaxSends=1, const qint32 mMaxRecs=1, CommsTester *parent = nullptr);
 	virtual ~MockCourier() override;
 
 public:

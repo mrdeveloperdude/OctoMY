@@ -3,7 +3,6 @@
 #include "address/Associate.hpp"
 #include "hub/HubWindow.hpp"
 #include "node/Node.hpp"
-#include "node/NodeFactory.hpp"
 #include "uptime/MethodGate.hpp"
 
 #include <QDebug>

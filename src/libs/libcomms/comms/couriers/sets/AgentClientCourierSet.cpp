@@ -1,17 +1,16 @@
 #include "AgentClientCourierSet.hpp"
 
-#include "comms/CommsSignature.hpp"
+
+#include "client/agent/AgentClient.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/blob/BlobCourier.hpp"
 
-#include "client/agent/AgentClient.hpp"
 
 AgentClientCourierSet::AgentClientCourierSet()
 	: CourierSet()
 {
 	OC_METHODGATE();
-
 }
 
 
@@ -26,7 +25,7 @@ void AgentClientCourierSet::configure(QString fullID, QSharedPointer<AgentClient
 	OC_METHODGATE();
 	mClient=client;
 	if(!mClient.isNull()) {
-		QSharedPointer<CommsChannel> cc=mClient->comms();
+		auto cc = mClient->comms();
 		if(!cc.isNull()) {
 			mAgentStateCourier = QSharedPointer<AgentStateCourier>::create(&mDatastream, cc);
 			mSensorsCourier = QSharedPointer<SensorsCourier>::create(cc);

@@ -4,8 +4,12 @@ Properties {
 	//cpp.cxxFlags: cpp.cxxFlags.concat(["-fno-exceptions", "-fno-rtti"])
 	//cpp.enableExceptions: false;
 	//cpp.enableRtti: false;
+	
+	
+		condition: qbs.buildVariant === "release";
+		cpp.optimization: "small";
+	
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

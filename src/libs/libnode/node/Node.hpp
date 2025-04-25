@@ -10,12 +10,10 @@
 #include "address/LocalAddressList.hpp"
 #include "app/Settings.hpp"
 #include "client/ClientList.hpp"
-#include "discovery/AddressBook.hpp"
+
 #include "log/LogType.hpp"
-#include "node/LocalIdentityStore.hpp"
 #include "node/NodeRole.hpp"
 #include "node/NodeType.hpp"
-#include "security/KeyStore.hpp"
 #include "uptime/ConfigureHelper.hpp"
 
 #include <QObject>
@@ -44,6 +42,10 @@ class AppContext;
 class SensorsCourier;
 class BlobCourier;
 class BlobFuture;
+class AddressBook;
+class KeyStore;
+class PlanBook;
+class LocalIdentityStore;
 
 class IAppLauncher;
 class Associate;
@@ -55,9 +57,11 @@ class KeyStoreService;
 class LocalIdentityStoreService;
 class LocalAddressListService;
 class AddressBookService;
+class PlanBookService;
 class DiscoveryClientService;
 class CarrierService;
 class CommsService;
+class Comms;
 
 class NodeWindow;
 
@@ -90,16 +94,20 @@ private:
 	QSharedPointer<LocalAddressList> mLocalAddressList;
 	// Clients address book (clients are nodes we communicate with)
 	QSharedPointer<AddressBook> mAddressBook;
+	// Plan book (centralized plans management)
+	QSharedPointer<PlanBook> mPlanBook;
 	// Client instances
 	QSharedPointer<ClientList> mClients;
 	// Our identity
 	QSharedPointer<Associate> mNodeIdentity;
 	// Discovery service to automatically discover other nodes
 	QSharedPointer<DiscoveryClient> mDiscovery;
+	// Comms handler for managing all communications for this node
+	QSharedPointer<Comms> mComms;
 	// Comms channel carrier the underlying carrier such as udb/bluetooth/eth for comms
-	QSharedPointer<CommsCarrier> mCarrier;
+	//QSharedPointer<CommsCarrier> mCarrier;
 	// Comms channel used to communicate with other nodes
-	QSharedPointer<CommsChannel> mComms;
+	//QSharedPointer<CommsChannel> mComms;
 	// The zoo client is used to exchange data via the central repository server (zoo)
 	QSharedPointer<ZooClient> mZooClient;
 	// Helper to access all sensors available via Qt's sensor API
@@ -128,6 +136,8 @@ private:
 	QSharedPointer<LocalAddressListService> mLocalAddressListService;
 	// Service wrapper for AddressBook
 	QSharedPointer<AddressBookService> mAddressBookService;
+	// Service wrapper for PlanBook
+	QSharedPointer<PlanBookService> mPlanBookService;
 	// Service wrapper for Discovery
 	QSharedPointer<DiscoveryClientService> mDiscoveryService;
 
@@ -211,15 +221,17 @@ public:
 	// Convenience wrapper to get context's settings
 	QSharedPointer<Settings> settings();
 	
-	
 	// Provide the address book
 	QSharedPointer<AddressBook> addressBook();
+	
+	// Provide the plan book
+	QSharedPointer<PlanBook> planBook();
 	
 	//Provide the client list
 	QSharedPointer<ClientList> clientList();
 	
-	// Provide the comms channel
-	QSharedPointer<CommsChannel> comms();
+	// Provide the comms handler
+	QSharedPointer<Comms> comms();
 	
 	// Provide the discovery client
 	QSharedPointer<DiscoveryClient> discoveryClient();

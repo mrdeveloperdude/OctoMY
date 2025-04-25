@@ -1,14 +1,18 @@
 #include "AgentUnboxingWizard.hpp"
-#include "hardware/controllers/ControllerHandler.hpp"
-#include "hardware/controllers/IController.hpp"
-#include "stanza/StanzaBook.hpp"
 #include "ui_AgentUnboxingWizard.h"
+
 
 #include "agent/Agent.hpp"
 #include "agent/AgentConfigStore.hpp"
 #include "agent/AgentWindow.hpp"
+#include "discovery/AddressBook.hpp"
+#include "hardware/controllers/ControllerHandler.hpp"
+#include "hardware/controllers/IController.hpp"
+#include "security/KeyStore.hpp"
+#include "stanza/StanzaBook.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
+
 
 AgentUnboxingWizard::AgentUnboxingWizard(QWidget *parent)
 	: Activity(parent)
@@ -133,9 +137,9 @@ bool AgentUnboxingWizard::isStanzaed() const{
 
 int AgentUnboxingWizard::associateCount() const{
 	OC_METHODGATE();
-	QVector<QueryRule> f;
-	f.append(QueryRule(TYPE_REMOTE, false, true, true));
-	f.append(QueryRule(TYPE_HUB, false, true, true));
+	QVector<AddressQueryRule> f;
+	f.append(AddressQueryRule(TYPE_REMOTE, false, true, true));
+	f.append(AddressQueryRule(TYPE_HUB, false, true, true));
 	return mAgent->addressBook()->filter(f).size();
 }
 
@@ -243,7 +247,7 @@ void AgentUnboxingWizard::updateStage(){
 	ui->lightWidgetStanzasConfigured->setLightOn(stanzasCt >0);
 	
 	ui->lightWidgetPaired->setLightOn(paired || pairingSkipped);
-	ui->lightWidgetPaired->setLightColor(paired?Qt::green:Qt::yellow);
+	ui->lightWidgetPaired->setLightColor(paired?Qt::green:QColorConstants::Svg::orange);
 	
 	ui->labelPaired->setText(paired?"Paired":"Pairing");
 	

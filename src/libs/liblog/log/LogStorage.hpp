@@ -30,7 +30,14 @@ public:
 	void configure(const QString &logDir, qint64 maxSize = 10 * 1024 * 1024);
 	void appendLog(const QString &text);
 	QStringList readLogs(qint64 maxEntries = 100);
-
+	
+	/// Truncate current log file and remap it
+	bool clearLogs();
+	/// Re-open (remap) current log file without clearing
+	bool reloadLogs();
+	
+signals:
+	void logChanged();
 };
 
 #endif // LOGSTORAGE_H

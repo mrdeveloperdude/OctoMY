@@ -37,7 +37,7 @@ Associate::Associate(const QVariantMap map/*, bool isPublic*/)
 
 {
 	OC_METHODGATE();
-	//qDebug()<<"CREATE NodeAssociate(map, isPublic)"<<map<<isPublic;
+	//qDebug()<<"CREATE Associate(map, isPublic)"<<map<<isPublic;
 }
 
 
@@ -410,6 +410,6 @@ bool Associate::operator!=(Associate &o)
 const QDebug &operator<<(QDebug &d, Associate &ass)
 {
 	OC_FUNCTIONGATE();
-	d.nospace() << "NodeAssociate("<<ass.toString()<<")";
+	d.nospace() << "Associate("<<ass.toString()<<")";
 	return d.maybeSpace();
 }

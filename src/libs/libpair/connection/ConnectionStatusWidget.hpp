@@ -44,18 +44,8 @@ public:
 	bool networkOn() const;
 	bool zooOn() const;
 	bool panicOn() const;
-
-	// CommsChannel slots (via setHookCommsSignals in AgentWindow)
-public slots:
-	// An error occurred in comms
-	void onCommsError(QString message);
-	// A new comms session was added
-	void onCommsClientAdded(CommsSession *c);
-	// The connection state changed for comms channel
-	void onCommsConnectionStatusChanged(const bool isConnected, const bool needsConnection);
 	
 private slots:
-	void toggleConnect(bool connect);
 	void openSettings();
 	void randomizeColor();
 	void startCamera();
@@ -66,9 +56,9 @@ private slots:
 	void toggleZoo(bool panic);
 
 signals:
-	bool tryConnect(bool connect);
 	bool openConnectionSettings();
 	void colorChanged(QColor color);
+	bool panic(bool p);
 };
 
 #endif // CONNECTIONSTATUSWIDGET_HPP

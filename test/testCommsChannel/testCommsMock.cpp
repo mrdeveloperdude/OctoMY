@@ -1,5 +1,8 @@
 #include "TestCommsChannel.hpp"
 
+#include "comms/Comms.hpp"
+#include "comms/CommsChannel.hpp"
+#include "comms/CommsSession.hpp"
 #include "comms/PacketReadState.hpp"
 #include "comms/PacketSendState.hpp"
 #include "comms/address/CarrierAddressUDP.hpp"
@@ -78,7 +81,7 @@ static QByteArray handshakeAckPacket(QSharedPointer<CommsSession> sessA, QString
 }
 
 /*
-Test CommsChannel with a mock carrier
+Test CommsChannel with a mock getCarrier
 
 Allowes fine-grained control over when each event occurs which in turn allows for fine grained validity checks
 
@@ -169,13 +172,15 @@ void TestCommsChannel::testCommsMock()
 	keyStoreA->setPubKeyForID(keyB->pubKey());
 
 	test::utility::testHeading("INITIALIZING COMMS FOR PARTY A");/////////////////////////////////////////////////////
-	QSharedPointer<MockCommsCarrier> carrierA(OC_NEW MockCommsCarrier());
+	auto carrierA = QSharedPointer<MockCommsCarrier>::create();
+	auto commsA = QSharedPointer<Comms>::create();
+	auto chanA = QSharedPointer<CommsChannel>::create();
 	carrierA->configure();
-	QSharedPointer<CommsChannel> chanA(OC_NEW CommsChannel());
-	chanA->configure(carrierA, keyStoreA, peersA);
+	commsA->configure(keyStoreA, peersA);
+	chanA->configure(commsA, carrierA);
 	CommsSignalLogger sigLogA("LOG-A");
 	chanA->hookCommsSignals(sigLogA, true);
-	QSharedPointer<MockCourier> courA1(OC_NEW MockCourier("Courier A1",idB, "This is datagram A1 123", chanA, maxSends, maxRecs));
+	auto courA1 = QSharedPointer<MockCourier>::create("Courier A1",idB, "This is datagram A1 123", commsA, maxSends, maxRecs);
 	chanA->registerCourier(courA1, true);
 	//TestCourier courA2("Courier A2", commSigB, "This is datagram A2 uvw xyz", maxSends, maxRecs); chanA.setCourierRegistered(courA2, true);
 	qDebug()<<"SUMMARY: "<<chanA->getSummary();
@@ -185,8 +190,8 @@ void TestCommsChannel::testCommsMock()
 	const quint64 stepMS=1000;
 	auto na = QSharedPointer<CarrierAddressUDP>::create(QHostAddress("127.0.0.1"), 8123);
 	carrierA->mockSetOverrideSendingtimer(true);
-	chanA->carrier()->setListenAddress(na);
-	chanA->carrier()->maintainConnection(true);
+	chanA->getCarrier()->setListenAddress(na);
+	chanA->getCarrier()->maintainConnection(true);
 	CommsSessionDirectory & sessDirA=chanA->sessions();
 	QSharedPointer<CommsSession> sessA=QSharedPointer<CommsSession> (OC_NEW CommsSession(keyStoreA->localKey()));
 	auto sessAID=sessDirA.generateUnusedSessionID();
@@ -277,7 +282,7 @@ void TestCommsChannel::testCommsMock()
 	courA1->writeSummary();
 
 	test::utility::testHeading("STOP 1st time with no sessions");/////////////////////////////////////////////////////
-	chanA->carrier()->maintainConnection(false);
+	chanA->getCarrier()->maintainConnection(false);
 
 	test::utility::testHeading("DELETING");
 	test::utility::testWaitForEvents();

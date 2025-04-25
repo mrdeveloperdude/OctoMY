@@ -2,11 +2,10 @@
 #define PAIRINGDEBUGWIDGET_H
 
 #include "uptime/ConfigureHelper.hpp"
-
-
-#include <QWidget>
 #include "uptime/SharedPointerWrapper.hpp"
+
 #include <QTimer>
+#include <QWidget>
 
 class Node;
 class PairingTrustActivity;

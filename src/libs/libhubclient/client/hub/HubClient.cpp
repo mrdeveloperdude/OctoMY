@@ -1,6 +1,8 @@
 #include "HubClient.hpp"
 
 #include "HubClientWidget.hpp"
+#include "uptime/MethodGate.hpp"
+
 
 HubClient::HubClient(QObject *parent)
 	: Client(parent)

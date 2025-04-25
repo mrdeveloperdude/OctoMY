@@ -11,6 +11,7 @@ class QCompleter;
 class QAbstractItemModel;
 
 namespace plan{
+namespace editor{
 
 class CodeEditor : public QPlainTextEdit
 {
@@ -47,6 +48,7 @@ private slots:
 	void updateLineNumberArea(const QRect &, int);
 };
 
+}
 }
 
 #endif

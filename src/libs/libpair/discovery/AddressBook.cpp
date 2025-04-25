@@ -51,12 +51,12 @@ bool AddressBook::isActivated() const
 }
 
 
-bool AddressBook::fromMap(QVariantMap data)
+bool AddressBook::fromMap(QVariantMap map)
 {
 	OC_METHODGATE();
 	if (mConfigureHelper.isConfiguredAsExpected()) {
 		mAssociates.clear();
-		QVariantList peers = data["peers"].toList();
+		QVariantList peers = map["peers"].toList();
 		for (QVariantList::iterator b = peers.begin(), e = peers.end(); b != e; ++b) {
 			auto peer = QSharedPointer<Associate>::create((*b).toMap());
 			upsertAssociate(peer);
@@ -160,8 +160,9 @@ void AddressBook::upsertAssociate(QSharedPointer<Associate> associate)
 				emit associateAdded(id);
 			} else {
 				// TODO: Should we detect changes here?
-				emit associatesChanged();
 			}
+			// Allways emit change
+			emit associatesChanged();
 
 		} else {
 			qWarning() << "ASSOCIATE WAS NULL";
@@ -180,7 +181,7 @@ QMap<QString, QSharedPointer<Associate>> AddressBook::all()
 }
 
 
-QMap<QString, QSharedPointer<Associate>> AddressBook::filter(QVector<QueryRule> rules)
+QMap<QString, QSharedPointer<Associate>> AddressBook::filter(QVector<AddressQueryRule> rules)
 {
 	OC_METHODGATE();
 	QMap<QString, QSharedPointer<Associate>> ret;

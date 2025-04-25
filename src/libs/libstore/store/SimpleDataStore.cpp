@@ -9,21 +9,31 @@ SimpleDataStoreFrontend::SimpleDataStoreFrontend(QSharedPointer<SimpleDataStore>
 
 SimpleDataStoreFrontend::~SimpleDataStoreFrontend() {}
 
-SimpleDataStore::SimpleDataStore()
+SimpleDataStore::SimpleDataStore(bool debug)
 	: mConfigureHelper("SimpleDataStore", true, true, true, Constants::OC_LOG_CONFIGURE_HELPER_WARNINGS, Constants::OC_LOG_CONFIGURE_HELPER_CHANGES)
+	, mDebug(debug)
 //, mMaxSyncInterval(TIMED_SYNC_OFF)
 {
 	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "SimpleDataStore ctor with debug";
+	}
 }
 
 SimpleDataStore::~SimpleDataStore()
 {
 	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "SimpleDataStore dtor with debug";
+	}
 }
 
 void SimpleDataStore::configure(QString filename)
 {
 	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "SimpleDataStore configure "<< filename;
+	}
 	auto f = sharedFromThis();
 	if (!f.isNull()) {
 		if (mConfigureHelper.configure()) {
@@ -55,6 +65,9 @@ void SimpleDataStore::configure(QString filename)
 void SimpleDataStore::activate(const bool on, std::function<void(bool)> callBack)
 {
 	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "SimpleDataStore activate "<< on;
+	}
 	if (on) {
 		if (mConfigureHelper.activate(on)) {
 			if (!mStore.isNull()) {
@@ -102,6 +115,9 @@ bool SimpleDataStore::fromDefault()
 void SimpleDataStore::clear()
 {
 	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "SimpleDataStore clear";
+	}
 	if (mConfigureHelper.isActivatedAsExpected()) {
 		clear([](QSharedPointer<SimpleDataStore>, bool) {});
 	}
@@ -110,6 +126,9 @@ void SimpleDataStore::clear()
 void SimpleDataStore::save()
 {
 	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "SimpleDataStore save";
+	}
 	if (mConfigureHelper.isActivatedAsExpected()) {
 		save([](QSharedPointer<SimpleDataStore>, bool) {});
 	}
@@ -118,6 +137,9 @@ void SimpleDataStore::save()
 void SimpleDataStore::load()
 {
 	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "SimpleDataStore load";
+	}
 	if (mConfigureHelper.isActivatedAsExpected()) {
 		load([](QSharedPointer<SimpleDataStore>, bool) {});
 	}
@@ -126,6 +148,9 @@ void SimpleDataStore::load()
 void SimpleDataStore::synchronize()
 {
 	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "SimpleDataStore synchronize";
+	}
 	if (mConfigureHelper.isActivatedAsExpected()) {
 		synchronize([](QSharedPointer<SimpleDataStore>, bool) {});
 	}
@@ -134,6 +159,9 @@ void SimpleDataStore::synchronize()
 void SimpleDataStore::setSynchronousMode(bool s)
 {
 	OC_METHODGATE();
+	if(mDebug){
+		qDebug() << "SimpleDataStore setSynchronousMode" << s;
+	}
 	if (mConfigureHelper.isConfiguredAsExpected()) {
 		mStore->setSynchronousMode(s);
 	}
@@ -202,13 +230,18 @@ bool SimpleDataStore::ready()
 bool SimpleDataStoreFrontend::setFrontend(QVariantMap map)
 {
 	OC_METHODGATE();
+	if(mDataStore->debug()){
+		qDebug() << "SimpleDataStore setFrontend" << map;
+	}
 	return mDataStore->fromMap(map);
 }
 
 QVariantMap SimpleDataStoreFrontend::getFrontend(bool &ok)
 {
 	OC_METHODGATE();
-
+	if(mDataStore->debug()){
+		qDebug() << "SimpleDataStore getFrontend";
+	}
 	ok = true;
 	return mDataStore->toMap();
 }
@@ -216,7 +249,9 @@ QVariantMap SimpleDataStoreFrontend::getFrontend(bool &ok)
 bool SimpleDataStoreFrontend::generateFrontend()
 {
 	OC_METHODGATE();
-
+	if(mDataStore->debug()){
+		qDebug() << "SimpleDataStore generateFrontend";
+	}
 	bool def = mDataStore->fromDefault();
 	qDebug() << "Default generated was " << def;
 	return def;
@@ -225,6 +260,9 @@ bool SimpleDataStoreFrontend::generateFrontend()
 bool SimpleDataStoreFrontend::clearFrontend()
 {
 	OC_METHODGATE();
+	if(mDataStore->debug()){
+		qDebug() << "SimpleDataStore clearFrontend";
+	}
 	const auto ret = mDataStore->fromMap(QVariantMap());
 	return ret;
 }

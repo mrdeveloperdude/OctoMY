@@ -25,8 +25,6 @@ class CommsSessionDirectory: public QObject
 {
 	Q_OBJECT
 private:
-	// TODO: Maybe this dependency on keystore could be dropped?
-	QSharedPointer<KeyStore> mKeyStore;
 	QHash<SESSION_ID_TYPE, QSharedPointer<CommsSession> > mBySessionID;
 	QHash<QString, QSharedPointer<CommsSession> > mByFullID;
 	QHash<QString, QSharedPointer<CommsSession> > mByAddress;
@@ -41,7 +39,7 @@ public:
 	virtual ~CommsSessionDirectory();
 
 public:
-	void configure(QSharedPointer<KeyStore> keyStore);
+	void configure();
 
 public:
 	void insert(QSharedPointer<CommsSession> c);

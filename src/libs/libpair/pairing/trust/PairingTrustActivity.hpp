@@ -5,8 +5,8 @@
 #include "components/navigation/Activity.hpp"
 #include "uptime/ConfigureHelper.hpp"
 
-#include <QWidget>
 #include <QTimer>
+#include <QWidget>
 
 class Node;
 class QAbstractButton;

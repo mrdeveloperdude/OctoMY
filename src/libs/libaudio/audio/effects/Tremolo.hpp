@@ -77,7 +77,7 @@ void Tremolo<T, OUTPUT_CHANNELS>::set(T freq,T amp)
 	step=freq/(sr*M_PI*2.0);
 	ampSR=amp*sr;
 	size=(static_cast<size_t>(std::floor(ampSR)))+1;
-	qDebug()<<"TREM SIZE:"<<size<<" AMP:"<<amp<<" AMP-SR:"<<ampSR<<" STEP:"<<step<<" SR:"<<sr;
+	//qDebug()<<"TREM SIZE:"<<size<<" AMP:"<<amp<<" AMP-SR:"<<ampSR<<" STEP:"<<step<<" SR:"<<sr;
 	index=0;
 	delete[] buf;
 	buf=nullptr;

@@ -1,17 +1,13 @@
 #include "CouriersDebugWidget.hpp"
-
 #include "ui_CouriersDebugWidget.h"
 
-#include "uptime/MethodGate.hpp"
-#include "uptime/ConnectionType.hpp"
-
-#include "utility/time/HumanTime.hpp"
-#include "utility/color/Color.hpp"
-
-#include "node/Node.hpp"
-
-#include "comms/CommsChannel.hpp"
+#include "comms/Comms.hpp"
 #include "comms/couriers/Courier.hpp"
+#include "node/Node.hpp"
+#include "uptime/ConnectionType.hpp"
+#include "uptime/MethodGate.hpp"
+#include "utility/color/Color.hpp"
+#include "utility/time/HumanTime.hpp"
 
 CouriersDebugWidget::CouriersDebugWidget(QWidget *parent)
 	: QWidget(parent)
@@ -43,7 +39,7 @@ void CouriersDebugWidget::configure(QSharedPointer <Node> node)
 			ui->tableWidgetCouriers->setRowCount(1);
 			auto cc=mNode->comms();
 			if(!cc.isNull()) {
-				auto couriers=cc->couriers();
+				//auto couriers=cc->couriers();
 
 				/*
 				if(!connect(slm.data(), &ServiceLevelManager::CouriersChanged, this, &CouriersDebugWidget::onCouriersChanged, OC_CONTYPE)) {
@@ -135,9 +131,9 @@ void CouriersDebugWidget::updateServiceTable()
 	QString sig="";
 	ui->tableWidgetCouriers->setRowCount(1);
 	if(!mNode.isNull()) {
-		auto cc=mNode->comms();
+		auto cc{mNode->comms()};
 		if(!cc.isNull()) {
-			auto couriers=cc->couriers();
+			auto couriers{cc->couriers()};
 			auto ct=couriers.count();
 			if(ct>0) {
 				ui->tableWidgetCouriers->setRowCount(ct);

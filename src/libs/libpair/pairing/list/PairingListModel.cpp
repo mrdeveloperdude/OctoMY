@@ -1,6 +1,7 @@
 #include "PairingListModel.hpp"
 
 #include "address/Associate.hpp"
+#include "discovery/AddressBook.hpp"
 #include "node/Node.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"

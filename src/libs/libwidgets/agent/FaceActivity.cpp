@@ -5,7 +5,6 @@
  */
 
 #include "FaceActivity.hpp"
-#include "log/LogModel.hpp"
 #include "ui_FaceActivity.h"
 
 #include "address/Associate.hpp"
@@ -14,7 +13,8 @@
 #include "app/Constants.hpp"
 #include "comms/CommsSession.hpp"
 #include "comms/couriers/sets/AgentCourierSet.hpp"
-
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 #include "utility/ui/Ui.hpp"
 
 
@@ -29,6 +29,7 @@ FaceActivity::FaceActivity(QWidget *parent)
 {
 	OC_METHODGATE();
 	ui->setupUi(this);
+	ui->logScroll->setEnableFilter(false);
 	connect(ui->widgetConnectionStatus, &ConnectionStatusWidget::openConnectionSettings, this, [this](){
 		push("ConnectionActivity");
 	});
@@ -98,7 +99,7 @@ void FaceActivity::updateVisibility()
 	if(!s.isNull()) {
 		ui->widgetEyes->setVisible(s->getCustomSettingBool(Constants::AGENT_FACE_EYES_SHOW, true));
 		ui->logScroll->setVisible(s->getCustomSettingBool(Constants::AGENT_FACE_LOG_SHOW, true));
-		ui->widgetRealtimeValues->setVisible(s->getCustomSettingBool(Constants::AGENT_FACE_STATS_SHOW, true));
+		ui->widgetRealtimeValues->setVisible(s->getCustomSettingBool(Constants::AGENT_FACE_STATS_SHOW, false));
 		//ui->widgetConnect->setVisible(s->getCustomSettingBool(Constants::AGENT_FACE_ONLINE_BUTTON_SHOW, true));
 	}
 }

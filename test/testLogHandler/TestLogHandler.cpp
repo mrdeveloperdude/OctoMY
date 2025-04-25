@@ -1,6 +1,6 @@
 #include "TestLogHandler.hpp"
 
-#include "app/log/LogHandler.hpp"
+#include "log/LogHandler.hpp"
 
 #include <QDateTime>
 #include <QDate>

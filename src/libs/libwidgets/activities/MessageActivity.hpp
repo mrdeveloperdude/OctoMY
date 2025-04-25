@@ -20,7 +20,8 @@ private:
 public:
 	explicit MessageActivity(QWidget *parent = nullptr);
 	~MessageActivity();
-
+	
+	void end(bool status);
 	// Virtual activity mechanism
 protected:
 	void pushImpl(const QStringList arguments = QStringList()) override;

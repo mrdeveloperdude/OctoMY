@@ -45,8 +45,8 @@ int AgentListModel::rowCount(const QModelIndex &) const
 	OC_METHODGATE();
 	int ret=0;
 	if(!mStore.isNull()) {
-		QVector<QueryRule> f;
-		f.append(QueryRule(TYPE_AGENT, false, true, true));
+		QVector<AddressQueryRule> f;
+		f.append(AddressQueryRule(TYPE_AGENT, false, true, true));
 		auto participants = mStore->filter(f);
 		ret = participants.size();
 	} else {
@@ -73,8 +73,8 @@ QVariant AgentListModel::data(const QModelIndex &index, int role) const
 		return ret;
 	}
 	if(!mStore.isNull()) {
-		QVector<QueryRule> f;
-		f.append(QueryRule(TYPE_AGENT, false, true, true));
+		QVector<AddressQueryRule> f;
+		f.append(AddressQueryRule(TYPE_AGENT, false, true, true));
 		auto participants = mStore->filter(f);
 		if(row >= participants.size()){
 			return ret;

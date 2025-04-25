@@ -1,12 +1,11 @@
 #ifndef COURIERSDEBUGWIDGET_H
 #define COURIERSDEBUGWIDGET_H
 
-
 #include "uptime/ConfigureHelper.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QWidget>
 #include <QTimer>
-#include "uptime/SharedPointerWrapper.hpp"
 
 class QTableWidgetItem;
 class Node;

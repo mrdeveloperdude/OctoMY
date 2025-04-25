@@ -1,11 +1,9 @@
 #ifndef COMMSCARRIER_HPP
 #define COMMSCARRIER_HPP
 
-#include "../address/CarrierAddress.hpp"
-
-#include "utility/time/RateCalculator.hpp"
-
+#include "comms/address/CarrierAddress.hpp"
 #include "uptime/ConfigureHelper.hpp"
+#include "utility/time/RateCalculator.hpp"
 
 #include <QObject>
 #include <QTimer>
@@ -18,7 +16,8 @@ class QHostAddress;
  *
  * The job of the carrier is to perform RX/TX of data buffers to and from designated carrier-specific addresses.
  *
- * The most important carrier subclass is CommsCarrierUDP which imlpements transport over UDP/IP networks.
+ * CommsCarrierUDP imlpements transport over UDP/IP networks.
+ * Other carriers will handle other networks like bluetooth, NFC etc.
  *
  */
 class CommsCarrier: public QObject

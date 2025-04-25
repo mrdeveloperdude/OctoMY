@@ -17,7 +17,8 @@
 #include "activities/NetworkUtilsActivity.hpp"
 #include "activities/NodesManagementActivity.hpp"
 #include "activities/PKIManagerActivity.hpp"
-#include "activities/PlanActivity.hpp"
+#include "plan/book/PlanBookActivity.hpp"
+#include "plan/editor/PlanEditorActivity.hpp"
 #include "activities/QRUtilityActivity.hpp"
 #include "activities/SerialActivity.hpp"
 #include "activities/SplitterActivity.hpp"
@@ -65,6 +66,7 @@ HubWindow::HubWindow(QWidget *parent)
 	OC_METHODGATE();
 	setObjectName("HubWindow");
 	ui->setupUi(this);
+	setActivityStack(ui->widgetActivityStack);
 }
 
 
@@ -207,9 +209,13 @@ void HubWindow::prepareActivities(){
 		mConstructActivity->configure(h);
 		ui->widgetActivityStack->registerActivity(mConstructActivity, true, true, true);
 		
-		mPlanActivity = QSharedPointer<PlanActivity>::create();
-		mPlanActivity->configure(h);
-		ui->widgetActivityStack->registerActivity(mPlanActivity, true, true, true);
+		mPlanBookActivity = QSharedPointer<PlanBookActivity>::create();
+		mPlanBookActivity->configure(h);
+		ui->widgetActivityStack->registerActivity(mPlanBookActivity, true, true, true);
+		
+		mPlanEditorActivity = QSharedPointer<PlanEditorActivity>::create();
+		mPlanEditorActivity->configure(h);
+		ui->widgetActivityStack->registerActivity(mPlanEditorActivity, true, true, true);
 		
 		mMapActivity = QSharedPointer<MapActivity>::create();
 		mMapActivity->configure(h);

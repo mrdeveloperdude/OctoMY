@@ -2,38 +2,33 @@
 
 #include "identity/Personality.hpp"
 #include "identity/PersonalityColors.hpp"
-#include "identity/Identicon.hpp"
 #include "security/PortableID.hpp"
-
-#include "uptime/MethodGate.hpp"
 #include "uptime/ConnectionType.hpp"
-
+#include "uptime/MethodGate.hpp"
 #include "utility/time/HumanTime.hpp"
 
+#include <QCursor>
 #include <QDateTime>
+#include <QDebug>
+#include <QImage>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QRect>
-#include <QSize>
-#include <QImage>
-#include <QDebug>
-#include <QVector2D>
-#include <QMouseEvent>
 #include <QRectF>
+#include <QSize>
 #include <QSizeF>
+#include <QVector2D>
 
 #include <QtMath>
 
+static const QVector2D centerEyeSteer(0,0);
 
-////////////////////////////////////////////////////////////////////////////////
 
 //TODO: Look at implementing full FACS https://imotions.com/blog/learning/research-fundamentals/facial-action-coding-system/
 
 EyesWidget::EyesWidget(QWidget *parent)
 	: QWidget(parent)
 	, mStartTime(utility::time::currentMsecsSinceEpoch<quint64>())
-	, mLastTime(0)
-	, mBlink(0.0)
-	, mCycle(0.0)
 	, mLeftEye(QVector2D(-0.2f, 0.0f), static_cast<float>(-0.1*M_PI) )
 	, mRightEye(QVector2D(0.2f, 0.0f), static_cast<float>(0.1*M_PI) )
 	, mBgBrush("black")
@@ -45,16 +40,35 @@ EyesWidget::EyesWidget(QWidget *parent)
 		qWarning()<<"ERROR: Could not connect";
 	}
 	//	qDebug()<<"BUT: "<<but<<" squint "<< squint;
-	mLeftEye.setExpression(lowerLidSteer,upperLidSteer,squintSteer);
-	mRightEye.setExpression(lowerLidSteer,upperLidSteer,squintSteer);
-	mLeftEye.setSteer(mEyeSteer);
-	mRightEye.setSteer(mEyeSteer);
+	updateEyeShape();
 	onUpdateTimer();
-	updateIris();
+	updateIrisImage();
 }
 
+void EyesWidget::updateSteerFromGlobal()
+{
+	auto gpos = QCursor::pos();
+	auto lpos = mapFromGlobal(gpos);
+	auto sz = size();
+	if (sz.width() <= 0 || sz.height() <= 0){
+		return;
+	}
+	auto clampedX = std::clamp(lpos.x(), 0, sz.width());
+	auto clampedY = std::clamp(lpos.y(), 0, sz.height());
+	QVector2D center(sz.width()  / 2.0f, sz.height() / 2.0f);
+	QVector2D p(clampedX, clampedY);
+	QVector2D m = (p - center) / QVector2D(sz.width(), sz.height());
+	mEyeSteer = m * 0.1f;
+}
 
-void EyesWidget::updateIris()
+void EyesWidget::updateEyeShape(){
+	OC_METHODGATE();
+	mLeftEye.setExpression(mLowerLidSteer,mUpperLidSteer,mSquintSteer);
+	mRightEye.setExpression(mLowerLidSteer,mUpperLidSteer,mSquintSteer);
+	mLeftEye.setSteer(mEyeSteer);
+	mRightEye.setSteer(mEyeSteer);
+}
+void EyesWidget::updateIrisImage()
 {
 	OC_METHODGATE();
 	const auto sLeft = mLeftEye.irisRadius() * width() * 2.0f;
@@ -96,7 +110,7 @@ void EyesWidget::setPortableID(PortableID &pid)
 	
 	if((mIrisRendrer.portableID().id() != pid.id() ) || ( oldEyesVisible != mEyesVisible) ) {
 		mIrisRendrer.setPortableID(pid);
-		updateIris();
+		updateIrisImage();
 	}
 	if(mDebug){
 		qDebug() << "Setting eye colors from PID: " << pid;
@@ -114,8 +128,8 @@ void EyesWidget::paintEvent(QPaintEvent *)
 	mRightEye.update();
 
 	QPainter painter(this);
-	const float w=painter.device()->width();
-	const float h=painter.device()->height();
+	const auto w=painter.device()->width();
+	const auto h=painter.device()->height();
 	painter.setRenderHint(QPainter::Antialiasing, true);
 
 	if(mEyesVisible) {
@@ -145,17 +159,37 @@ void EyesWidget::paintEvent(QPaintEvent *)
 //qDebug()<<"UPD";
 }
 
+void EyesWidget::updateAttention(){
+	static const auto alpha=0.97f;
+	static const auto beta=1.0f-alpha;
+	auto gpos = QCursor::pos();
+	auto lpos = mapFromGlobal(gpos);
+	auto c = size()/2;
+	QPointF center(c.width(), c.height());
+	auto delta = lpos - center;
+	auto dist = delta.manhattanLength()/qMax(c.width(), c.height())*2;
+	auto attention = qMax(0.0, 4.0-dist);
+	mAttention = mAttention * alpha + attention * beta;
+	// qDebug()<< dist<< attention << mAttention;
+}
 
 void EyesWidget::onUpdateTimer()
 {
 	OC_METHODGATE();
-	const float alpha=0.8f, beta=1.0f-alpha;
-	const QVector2D lastEyeSteerSmooth=mEyeSteerSmooth;
-	mEyeSteerSmooth=(mEyeSteerSmooth*static_cast<float>(alpha))+(mEyeSteer*static_cast<float>(beta));
-	QVector2D dif=(mEyeSteerSmooth-mEyeSteer);
-	if(dif.length() < 0.001f) {
-		mEyeSteerSmooth=mEyeSteer;
+	const auto alpha=0.8f;
+	const auto beta=1.0f-alpha;
+	if (!underMouse()) {
+		updateSteerFromGlobal();
 	}
+	updateAttention();
+	const auto lastEyeSteerSmooth = mEyeSteerSmooth;
+	mEyeSteerSmooth=(mEyeSteerSmooth*alpha)+(mEyeSteer*beta);
+	
+	const auto alphaSteer = qMin(mAttention,1.0);
+	const auto betaSteer=1.0-alphaSteer;
+	auto alphaAttentionSteer = mEyeSteer*alphaSteer + centerEyeSteer * betaSteer;
+	
+	mEyeSteerSmooth=alphaAttentionSteer;
 
 	if(lastEyeSteerSmooth!=mEyeSteerSmooth) {
 		//qDebug()<<"SMOOTH STEER: "<<eyeSteer<<", "<<eyeSteerSmooth<<", "<<dif.length();
@@ -166,11 +200,11 @@ void EyesWidget::onUpdateTimer()
 	//const quint64 sinceStart=now-startTime;
 	const quint64 sinceLastTime=now-mLastTime;
 	mLastTime=now;
-	const float cycleTime=7.0;
-	mCycle+=(static_cast<float>(sinceLastTime))/1000.0f;
+	const auto cycleTime{7.0};
+	mCycle+=(static_cast<qreal>(sinceLastTime))/1000.0f;
 	mCycle=std::fmod(mCycle,cycleTime);
-	float lastBlink=mBlink;
-	const float blinkTime=0.2f;
+	const auto lastBlink=mBlink;
+	const auto blinkTime{0.2f};
 	if(mCycle<blinkTime) {
 		mBlink=mCycle/blinkTime;
 	} else {
@@ -220,20 +254,20 @@ void EyesWidget::mouseMoveEvent(QMouseEvent *e)
 	QVector2D m=(p-(s/2))/s;//+lastPress;
 	Qt::MouseButtons but=e->buttons();
 	if(but & Qt::MiddleButton) {
-		squintSteer=m;
+		mSquintSteer=m;
 	} else if(but & Qt::LeftButton) {
-		lowerLidSteer=m;
+		mLowerLidSteer=m;
 	} else if(but & Qt::RightButton) {
-		upperLidSteer=m;
+		mUpperLidSteer=m;
 	}
 	mEyeSteer=m * 0.1f;
 
 
 	//	qDebug()<<"BUT: "<<but<<" squint "<< squint;
 	if(lastPress.x()>0) {
-		mLeftEye.setExpression(lowerLidSteer,upperLidSteer,squintSteer);
+		mLeftEye.setExpression(mLowerLidSteer,mUpperLidSteer,mSquintSteer);
 	} else {
-		mRightEye.setExpression(lowerLidSteer,upperLidSteer,squintSteer);
+		mRightEye.setExpression(mLowerLidSteer,mUpperLidSteer,mSquintSteer);
 	}
 }
 
@@ -242,7 +276,8 @@ void EyesWidget::mouseMoveEvent(QMouseEvent *e)
 void EyesWidget::leaveEvent(QEvent *)
 {
 	OC_METHODGATE();
-	mEyeSteer=QVector2D(0,0);
+	//mEyeSteer=QVector2D(0,0);
+	updateSteerFromGlobal();
 }
 
 
@@ -250,5 +285,5 @@ void EyesWidget::resizeEvent(QResizeEvent *)
 {
 	OC_METHODGATE();
 	// TODO: Limit frequency in a smart way
-	updateIris();
+	updateIrisImage();
 }

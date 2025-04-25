@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>403</width>
-    <height>295</height>
+    <width>1038</width>
+    <height>860</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,17 +29,10 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <item row="0" column="3">
-    <widget class="QPushButton" name="pushButtonTest">
-     <property name="text">
-      <string>default</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="4">
+   <item row="0" column="9">
     <spacer name="horizontalSpacer">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
@@ -49,15 +42,89 @@
      </property>
     </spacer>
    </item>
-   <item row="1" column="0" colspan="5">
+   <item row="0" column="5">
+    <widget class="QLabel" name="labelCreatedTimestamp">
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>N/A</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="4">
+    <widget class="QLabel" name="label_2">
+     <property name="minimumSize">
+      <size>
+       <width>70</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Created:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QPushButton" name="pushButtonTidy">
+     <property name="toolTip">
+      <string>Tidy up formatting of text</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../../libres/resources/icons.qrc">
+       <normaloff>:/icons/plan/tidy.svg</normaloff>:/icons/plan/tidy.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="8">
+    <widget class="QPushButton" name="pushButtonLoadDefault">
+     <property name="text">
+      <string>default</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="6">
+    <widget class="QLabel" name="label_4">
+     <property name="minimumSize">
+      <size>
+       <width>70</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Updated:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="10">
     <widget class="QSplitter" name="splitter">
      <property name="lineWidth">
       <number>0</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
-     <widget class="plan::CodeEditor" name="plainTextEditPlan">
+     <widget class="plan::editor::CodeEditor" name="plainTextEditPlan">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
@@ -513,10 +580,10 @@
        </font>
       </property>
       <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
+       <enum>QFrame::Shape::NoFrame</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Plain</enum>
+       <enum>QFrame::Shadow::Plain</enum>
       </property>
       <property name="plainText">
        <string/>
@@ -969,10 +1036,10 @@
        </palette>
       </property>
       <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
+       <enum>QFrame::Shape::NoFrame</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Plain</enum>
+       <enum>QFrame::Shadow::Plain</enum>
       </property>
       <property name="lineWidth">
        <number>0</number>
@@ -992,22 +1059,8 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../libres/resources/icons.qrc">
+      <iconset resource="../../../libres/resources/icons.qrc">
        <normaloff>:/icons/app/save.svg</normaloff>:/icons/app/save.svg</iconset>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QPushButton" name="pushButtonTidy">
-     <property name="toolTip">
-      <string>Tidy up formatting of text</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../../libres/resources/icons.qrc">
-       <normaloff>:/icons/plan/tidy.svg</normaloff>:/icons/plan/tidy.svg</iconset>
      </property>
     </widget>
    </item>
@@ -1020,8 +1073,32 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../libres/resources/icons.qrc">
+      <iconset resource="../../../libres/resources/icons.qrc">
        <normaloff>:/icons/plan/parse.svg</normaloff>:/icons/plan/parse.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QLineEdit" name="lineEditPlanName"/>
+   </item>
+   <item row="0" column="7">
+    <widget class="QLabel" name="labelUpdatedTimestamp">
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>N/A</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
      </property>
     </widget>
    </item>
@@ -1029,13 +1106,101 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>plan::CodeEditor</class>
+   <class>plan::editor::CodeEditor</class>
    <extends>QPlainTextEdit</extends>
-   <header location="global">plan/CodeEditor.hpp</header>
+   <header location="global">plan/editor/CodeEditor.hpp</header>
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../../libres/resources/icons.qrc"/>
+  <include location="../../../libres/resources/icons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButtonTidy</sender>
+   <signal>clicked()</signal>
+   <receiver>PlanEditor</receiver>
+   <slot>tidyPlan()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>41</x>
+     <y>11</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>518</x>
+     <y>429</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonSave</sender>
+   <signal>clicked()</signal>
+   <receiver>PlanEditor</receiver>
+   <slot>synchronizePlan()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>13</x>
+     <y>11</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>518</x>
+     <y>429</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonParse</sender>
+   <signal>clicked()</signal>
+   <receiver>PlanEditor</receiver>
+   <slot>parsePlan()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>69</x>
+     <y>11</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>518</x>
+     <y>429</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonLoadDefault</sender>
+   <signal>clicked()</signal>
+   <receiver>PlanEditor</receiver>
+   <slot>loadDefaultPlan()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>560</x>
+     <y>12</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>518</x>
+     <y>429</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lineEditPlanName</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>PlanEditor</receiver>
+   <slot>setPlanName(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>302</x>
+     <y>12</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>518</x>
+     <y>429</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>synchronizePlan()</slot>
+  <slot>tidyPlan()</slot>
+  <slot>parsePlan()</slot>
+  <slot>loadDefaultPlan()</slot>
+  <slot>setPlanName(QString)</slot>
+ </slots>
 </ui>

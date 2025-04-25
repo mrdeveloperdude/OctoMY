@@ -1,6 +1,6 @@
-#include "plan/CodeEditor.hpp"
+#include "plan/editor/CodeEditor.hpp"
 
-#include "plan/LineNumberArea.hpp"
+#include "plan/editor/LineNumberArea.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
@@ -17,8 +17,10 @@
 #include <QTextBlock>
 #include <QTextDocumentFragment>
 #include <QTimer>
+#include <QWidget>
 
 namespace plan{
+namespace editor{
 
 CodeEditor::CodeEditor(QWidget *parent)
 	: QPlainTextEdit(parent)
@@ -420,5 +422,6 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
 	m_completer->complete(cr); // popup it up!
 }
 
+}
 }
 

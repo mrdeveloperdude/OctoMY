@@ -11,8 +11,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "qhttpbase.hpp"
-#include "../qhttpserverrequest.hpp"
-#include "../qhttpserverconnection.hpp"
+#include "qhttp/qhttpserverrequest.hpp"
+#include "qhttp/qhttpserverconnection.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {

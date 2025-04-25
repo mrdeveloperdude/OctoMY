@@ -1,12 +1,14 @@
 #include "NodeWindow.hpp"
 
 #include "app/Settings.hpp"
+#include "components/navigation/ActivityStack.hpp"
 #include "identity/Identicon.hpp"
 #include "node/Node.hpp"
 #include "node/NodeType.hpp"
 #include "screen/ScreenManager.hpp"
 #include "splash/SplashScreen.hpp"
 #include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 
 #include <QApplication>
 #include <QDebug>
@@ -176,27 +178,22 @@ void NodeWindow::updateWindowIcon()
 }
 
 
+void NodeWindow::setActivityStack(ActivityStack *activityStack){
+	OC_METHODGATE();
+	mActivityStack = activityStack;
+}
+
 
 
 
 void NodeWindow::keyReleaseEvent(QKeyEvent *e)
 {
 	OC_METHODGATE();
-	if(Qt::Key_Back==e->key()) {
-		/*
-		if(ui->pageRunning==ui->stackedWidget->currentWidget()) {
-			appendLog("GOING TO CONFIRM QUIT SCREEN ON BACK BUTTON");
-			onStartQuitApplication();
-		} else if(ui->pageConfirmQuit==ui->stackedWidget->currentWidget()) {
-			appendLog("GOING TO RUNNING SCREEN ON BACK BUTTON");
-			setCurrentPage(ui->pageRunning);
-		} else {
-			appendLog("ERROR ON BACK BUTTON");
+	if(mActivityStack){
+		if(Qt::Key_Back==e->key()) {
+			mActivityStack->pop();
+			e->accept();
 		}
-		*/
-		e->accept();
-	} else {
-		//appendLog("UNKNOWN BUTTON: "+QString::number(e->key()));
 	}
 }
 
@@ -225,6 +222,41 @@ void NodeWindow::paintEvent(QPaintEvent *event) {
 	QWidget::paintEvent(event);
 	drawWatermark();
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+QString NodeWindow::popPage(){
+	OC_METHODGATE();
+	const auto ret = mActivityStack->pop();
+	if(mDebug){
+		qDebug()<<"POP PAGE " << ret;
+	}
+	return ret;
+}
+
+
+bool NodeWindow::pushPage(const QString &title, const QStringList arguments){
+	OC_METHODGATE();
+	const auto ret = mActivityStack->push(title, arguments);
+	if(mDebug){
+		qDebug()<<"PUSH PAGE " << title << arguments << ret;
+	}
+	return ret;
+}
+
+
+QString NodeWindow::swapPage(const QString &title){
+	OC_METHODGATE();
+	const auto ret = mActivityStack->swap(title);
+	if(mDebug){
+		qDebug()<<"SWAP PAGE " << ret << "-->" << title;
+	}
+	return ret;
+}
+
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 

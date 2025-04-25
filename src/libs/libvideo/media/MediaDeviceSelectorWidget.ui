@@ -72,7 +72,7 @@
   <customwidget>
    <class>MultiView</class>
    <extends>QWidget</extends>
-   <header location="global">hub/MultiView.hpp</header>
+   <header location="global">components/MultiView.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

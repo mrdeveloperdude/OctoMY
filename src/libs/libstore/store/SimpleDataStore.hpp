@@ -2,15 +2,14 @@
 #define SIMPLEDATASTORE_HPP
 
 #include "AsyncStore.hpp"
-
 #include "JsonAsyncBackend.hpp"
 #include "uptime/ConfigureHelper.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
 
 #include <QDebug>
 #include <QVariantMap>
 #include <QString>
-#include "uptime/SharedPointerWrapper.hpp"
 #include <QEnableSharedFromThis>
 
 class SimpleDataStore;
@@ -40,7 +39,6 @@ public:
 
 class SimpleDataStore: public QEnableSharedFromThis<SimpleDataStore>
 {
-
 private:
 	QSharedPointer<JsonAsyncBackend> mJsonBackend;
 	QSharedPointer<SimpleDataStoreFrontend > mSimpleFrontend;
@@ -49,13 +47,18 @@ private:
 	ConfigureHelper mConfigureHelper;
 
 public:
-	explicit SimpleDataStore();
+	explicit SimpleDataStore(bool debug=false);
 	virtual ~SimpleDataStore();
 
-// ConfigureHelper interface
+	// ConfigureHelper interface
 public:
 	void configure(QString filename);
 	void activate(const bool on, std::function<void(bool)> callBack=nullptr);
+	
+	// Debug
+public:
+	void setDebug(bool debug){mDebug = debug; };
+	bool debug() const {return mDebug; };
 
 	// SimpleDataStore interface
 public:

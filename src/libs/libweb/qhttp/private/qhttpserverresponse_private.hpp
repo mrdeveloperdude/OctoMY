@@ -10,9 +10,9 @@
 #define QHTTPSERVER_RESPONSE_PRIVATE_HPP
 ///////////////////////////////////////////////////////////////////////////////
 #include "qhttpbase.hpp"
-#include "../qhttpserverresponse.hpp"
-#include "../qhttpserver.hpp"
-#include "../qhttpserverconnection.hpp"
+#include "qhttp/qhttpserverresponse.hpp"
+#include "qhttp/qhttpserver.hpp"
+#include "qhttp/qhttpserverconnection.hpp"
 
 #include <QDateTime>
 #include <QLocale>

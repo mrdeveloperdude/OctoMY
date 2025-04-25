@@ -1,10 +1,12 @@
 #include "WidgetIllustrationEditor.hpp"
 #include "ui_WidgetIllustrationEditor.h"
 
+
 #include "uptime/MethodGate.hpp"
 #include "utility/graphics/WidgetCaptureTool.hpp"
 
 #include <QFileDialog>
+#include <QSharedPointer>
 
 WidgetIllustrationEditor::WidgetIllustrationEditor(QWidget *parent)
 	: QWidget(parent)
@@ -19,12 +21,12 @@ WidgetIllustrationEditor::~WidgetIllustrationEditor()
 	delete ui;
 }
 
-void WidgetIllustrationEditor::configure()
+void WidgetIllustrationEditor::configure(QSharedPointer<Node> node)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()){
 		ui->lineEditWidgetIlilustrationPath->setText(mWidgetIllustrationOutputDir.absolutePath());
-		ui->widgetWidgetIllustrationPairing->configure(nullptr);
+		ui->widgetWidgetIllustrationPairing->configure(node);
 		ui->widgetWidgetIllustrationIdenticon->configure(true);
 		//ui->widgetWidgetIllustrationGait
 		//ui->widgetWidgetIllustrationMapEditor

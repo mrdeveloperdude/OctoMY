@@ -1,21 +1,21 @@
 #include "SensorsCourier.hpp"
 
-#include "utility/network/SerialSize.hpp"
+#include "comms/Comms.hpp"
 #include "uptime/MethodGate.hpp"
+#include "utility/network/SerialSize.hpp"
 
-#include <QDebug>
-#include <QSensor>
 #include <QAccelerometer>
-#include <QCompass>
-#include <QGyroscope>
-
-#include <QGeoPositionInfo>
-#include <QCompassReading>
 #include <QAccelerometerReading>
+#include <QCompass>
+#include <QCompassReading>
+#include <QDebug>
+#include <QGeoPositionInfo>
+#include <QGyroscope>
 #include <QGyroscopeReading>
+#include <QSensor>
 
 
-SensorsCourier::SensorsCourier(QSharedPointer<CommsChannel> comms, QObject *parent)
+SensorsCourier::SensorsCourier(QSharedPointer<Comms> comms, QObject *parent)
 	: Courier("Sensors", Courier::FIRST_USER_ID+3, comms, parent)
 	, mMandate(400)
 

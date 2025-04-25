@@ -12,8 +12,8 @@
 #include "utility/string/String.hpp"
 
 // It seems that 30 seconds would be a "safe" minimal UDP rate to avoid routers closing our "connection"
-#define OCTOMY_UDP_MAXIMAL_PACKET_RATE (1000)
-#define OCTOMY_UDP_MINIMAL_PACKET_RATE (5000)
+#define OCTOMY_UDP_MINIMAL_PACKET_RATE (1000)
+#define OCTOMY_UDP_MAXIMAL_PACKET_RATE (5000)
 
 
 // NOTE: We use 512 as the maximum practical UDP size for ipv4 over the internet

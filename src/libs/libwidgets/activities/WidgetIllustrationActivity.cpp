@@ -28,7 +28,7 @@ void WidgetIllustrationActivity::configure(QSharedPointer<Node> n){
 		mNode = n;
 		auto s = mNode->settings();
 		//log("SETTING UP WIDGET ILLUSTRATION");
-		ui->widgetIllustration->configure();
+		ui->widgetIllustration->configure(n);
 	}
 }
 

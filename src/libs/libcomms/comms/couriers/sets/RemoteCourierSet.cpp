@@ -1,11 +1,9 @@
 #include "RemoteCourierSet.hpp"
 
-#include "comms/CommsSignature.hpp"
+#include "client/remote/RemoteClient.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/blob/BlobCourier.hpp"
-
-#include "client/remote/RemoteClient.hpp"
 #include "node/Node.hpp"
 
 
@@ -28,7 +26,7 @@ void RemoteCourierSet::configure(QString fullID, QSharedPointer<RemoteClient> cl
 	mRemoteClient=client;
 	if(!mRemoteClient.isNull()) {
 		QSharedPointer<Node> node=mRemoteClient->node();
-		QSharedPointer<CommsChannel> cc;
+		QSharedPointer<Comms> cc;
 		if(!node.isNull()) {
 			cc=node->comms();
 		}

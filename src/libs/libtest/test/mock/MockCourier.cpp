@@ -1,10 +1,11 @@
 #include "MockCourier.hpp"
 
 #include "test/CommsTester.hpp"
+#include "comms/Comms.hpp"
 
 #include <QTest>
 
-MockCourier::MockCourier(QString name, QString  dest, QByteArray datagram, QSharedPointer<CommsChannel> comms, const qint32 maxSends , const qint32 maxRecs, CommsTester *parent)
+MockCourier::MockCourier(QString name, QString  dest, QByteArray datagram, QSharedPointer<Comms> comms, const qint32 maxSends , const qint32 maxRecs, CommsTester *parent)
 	: Courier(name, Courier::FIRST_USER_ID+313, comms, parent)
 	, mCt(parent)
 	, mSoFar(0)

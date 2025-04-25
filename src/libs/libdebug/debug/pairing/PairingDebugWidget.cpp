@@ -2,11 +2,12 @@
 #include "ui_PairingDebugWidget.h"
 
 
+#include "discovery/AddressBook.hpp"
 #include "node/Node.hpp"
-#include "uptime/MethodGate.hpp"
-#include "uptime/ConnectionType.hpp"
-
 #include "pairing/trust/PairingTrustActivity.hpp"
+#include "uptime/ConnectionType.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 
 
 PairingDebugWidget::PairingDebugWidget(QWidget *parent)

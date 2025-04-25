@@ -1,16 +1,16 @@
 #ifndef TESTCOMMSCHANNEL_HPP
 #define TESTCOMMSCHANNEL_HPP
 
-#include "comms/address/CarrierAddress.hpp"
 #include "node/NodeRole.hpp"
 #include "node/NodeType.hpp"
-#include "security/Key.hpp"
 
 #include <QHostAddress>
 #include <QSignalSpy>
 #include <QFileInfo>
 
 class Associate;
+class CarrierAddress;
+class Key;
 
 class TestCommsChannel:public QObject
 {

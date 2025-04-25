@@ -31,7 +31,7 @@ MediaDeviceSelectorWidget::~MediaDeviceSelectorWidget()
 void MediaDeviceSelectorWidget::configure(QSharedPointer<Node> node){
 	OC_METHODGATE();
 	mNode = node;
-	ui->widgeMediaDevices->configure(node->settings(), "alla", "balla");
+	ui->widgeMediaDevices->configure(node->settings());
 	ui->widgeMediaDevices->setModel(mModel.data());
 }
 

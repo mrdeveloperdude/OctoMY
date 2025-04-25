@@ -10,8 +10,8 @@
 #define QHTTPCLIENT_REQUEST_PRIVATE_HPP
 ///////////////////////////////////////////////////////////////////////////////
 #include "qhttpbase.hpp"
-#include "../qhttpclient.hpp"
-#include "../qhttpclientrequest.hpp"
+#include "qhttp/qhttpclient.hpp"
+#include "qhttp/qhttpclientrequest.hpp"
 
 #include <QTcpSocket>
 

@@ -10,26 +10,21 @@
 #include <QObject>
 #include <QTimer>
 
-/**
- * @brief The Client class is the base class of clients. Clients represent the
- * state of an associate at runtime. It is what enables many-to-many in comms .
- *
- * Subclasses include RemoteClient and AgentClient.
- */
-
-class Node;
-class CommsSession;
-class CourierSet;
 class ClientConnectionStatus;
 class ClientWidget;
+class Comms;
 class CommsChannel;
-
+class CommsSession;
+class CourierSet;
 class ISyncParameter;
+class Node;
 
 
 /**
  * @brief The Client class is the base class for clients, which are running instances
  * representing nodes on the other side of comms channel.
+ * Clients represent the state of an associate at runtime. It is what enables
+ * many-to-many in comms.
  * 
  * Clients are instanciated from associate that identifies the node on the other side
  * and maintain state relevant to that node.
@@ -76,7 +71,7 @@ public:
 public:
 	void initTimer();
 	QSharedPointer<Node> node();
-	QSharedPointer<CommsChannel> comms();
+	QSharedPointer<Comms> comms();
 	QSharedPointer<Associate> associate();
 	bool courierRegistration();
 	void registerCouriers(bool reg);

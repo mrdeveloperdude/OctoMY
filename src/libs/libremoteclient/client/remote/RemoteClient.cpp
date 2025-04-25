@@ -2,6 +2,7 @@
 
 #include "RemoteClientWidget.hpp"
 #include "comms/couriers/sets/RemoteCourierSet.hpp"
+#include "uptime/MethodGate.hpp"
 
 
 RemoteClient::RemoteClient(QObject *parent)

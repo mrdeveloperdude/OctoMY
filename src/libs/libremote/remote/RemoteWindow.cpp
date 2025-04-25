@@ -17,6 +17,7 @@
 #include "remote/ControlUnboxingWizard.hpp"
 #include "remote/Remote.hpp"
 #include "remote/RemoteController.hpp"
+#include "remote/RemoteMainMenu.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
@@ -33,14 +34,12 @@
 RemoteWindow::RemoteWindow(QWidget *parent)
 	: NodeWindow(parent)
 	, ui(OC_NEW Ui::RemoteWindow)
-	, mMenu(OC_NEW QMenu(tr("Menu"), this))
 	, mConfigureHelper("RemoteWindow", true, false, false, true)
 {
 	OC_METHODGATE();
 	setObjectName("RemoteWindow");
 	ui->setupUi(this);
-	prepareMenu();
-	prepareNavigation();
+	setActivityStack(ui->widgetActivityStack);
 }
 
 
@@ -101,14 +100,6 @@ void RemoteWindow::prepareActivities(){
 		mIdentityActivity = QSharedPointer<IdentityActivity>::create();
 		mIdentityActivity->configure(r);
 		ui->widgetActivityStack->registerActivity(mIdentityActivity, false, false, false);
-
-		mIdentityMenuActivity = QSharedPointer<IdentityMenuActivity>::create();
-		mIdentityMenuActivity->configure(r);
-		ui->widgetActivityStack->registerActivity(mIdentityMenuActivity, false, false, false);
-		
-		mPairingMenuActivity = QSharedPointer<PairingMenuActivity>::create();
-		mPairingMenuActivity->configure(r);
-		ui->widgetActivityStack->registerActivity(mPairingMenuActivity, false, false, false);
 		
 		mPairingActivity = QSharedPointer<PairingActivity>::create();
 		mPairingActivity->configure(r);
@@ -133,6 +124,21 @@ void RemoteWindow::prepareActivities(){
 		mUnboxingWizard = QSharedPointer<ControlUnboxingWizard>::create();
 		mUnboxingWizard->configure(r);
 		ui->widgetActivityStack->registerActivity(mUnboxingWizard, true, true, true);
+		
+		
+		// Menus
+		mMainMenu = QSharedPointer<RemoteMainMenu>::create();
+		mMainMenu->configure(r);
+		ui->widgetActivityStack->registerActivity(mMainMenu, true, true, true);
+		
+		mIdentityMenuActivity = QSharedPointer<IdentityMenuActivity>::create();
+		mIdentityMenuActivity->configure(r);
+		ui->widgetActivityStack->registerActivity(mIdentityMenuActivity, false, false, false);
+		
+		mPairingMenuActivity = QSharedPointer<PairingMenuActivity>::create();
+		mPairingMenuActivity->configure(r);
+		ui->widgetActivityStack->registerActivity(mPairingMenuActivity, false, false, false);
+		
 	}
 	if(!connect(ui->widgetActivityStack, &ActivityStack::currentPageChanged, this, &RemoteWindow::onPageChanged, OC_CONTYPE)){
 		qWarning()<<"Could not connect to ActivityStack::currentPageChanged";
@@ -149,6 +155,7 @@ void RemoteWindow::configure()
 		if(!r.isNull()) {
 	// [...]
 			loadWindowGeometry();
+			prepareNavigation();
 			prepareActivities();
 			ui->widgetNavigation->configure(node());
 			updateWindowIcon();
@@ -179,62 +186,13 @@ void RemoteWindow::prepareNavigation(){
 	if(!connect(ui->widgetNavigation, &NodeNavigation::navigateBack, this, &RemoteWindow::navigateBack, OC_CONTYPE)){
 		qWarning()<<"Could not connect to node navigation back button";
 	}
-	if(!connect(ui->widgetNavigation, &NodeNavigation::openMenu, this, &RemoteWindow::openMenu, OC_CONTYPE)){
+	if(!connect(ui->widgetNavigation, &NodeNavigation::openMenu, this, &RemoteWindow::menu, OC_CONTYPE)){
 		qWarning()<<"Could not connect to node navigation menu button";
 	}
 	ui->widgetNavigation->setState("OctoMY™ Remote", true, true, true);
-	/*
-	addPage(ui->pageConfirmQuit, true, true, false);
-	addPage(ui->pageQuitting, false, false, false);
-	addPage(mFaceActivity, true, true, true);
-	addPage(ui->pageDelivery, false, false, false);
-	addPage(ui->pageHardware, false, false, false);
-	addPage(ui->pagePairing, false, false, false);
-	addPage(ui->pageUnboxing, false, false, false);
-	setCurrentPage("pageFace");
-*/
+
 }
 
-
-
-template <typename MethodType>
-QAction* RemoteWindow::addMenuItem(QString title, QString icon, QString toolTip, MethodType method, bool checkable) {
-	OC_METHODGATE();
-	QAction *action=OC_NEW QAction(title, this);
-	action->setCheckable(checkable);
-	if(checkable){
-		if(!(connect(action, &QAction::toggled, this, method, OC_CONTYPE))){
-			qWarning() << "Could not connect action method for" << action->text() << "to menu";
-		}else{
-			action->setStatusTip(toolTip);
-			action->setIcon(QIcon(icon));
-			mMenu->addAction(action);
-		}
-	}
-	else{
-		if(!(connect(action, &QAction::triggered, this, method, OC_CONTYPE))){
-			qWarning() << "Could not connect action method for" << action->text() << "to menu";
-		}else{
-			action->setStatusTip(toolTip);
-			action->setIcon(QIcon(icon));
-			mMenu->addAction(action);
-		}
-	}
-	return action;
-}
-
-
-
-
-void RemoteWindow::prepareMenu( )
-{
-	OC_METHODGATE();
-	mQuitAction = addMenuItem(tr("Exit"), ":/icons/app/no.svg", tr("Terminate execution of this Remote"), &RemoteWindow::requestApplicationShutdown );
-	mIdentityAction = addMenuItem(tr("Identity"), ":/icons/pairing/identity.svg", tr("Manage the identity of this Remote"), &RemoteWindow::identity );
-	mPairingAction = addMenuItem(tr("Pairing"), ":/icons/pairing/pair.svg", tr("Manage the pairing of this Remote"), &RemoteWindow::pairing );
-	mConnectionAction = addMenuItem(tr("Connection"), ":/icons/controller/network.svg", tr("Manage Remote connection"), &RemoteWindow::connection );
-	mToggleOnlineAction = addMenuItem(tr("Toggle Online"), ":/icons/general/on.svg", tr("Toggle availability of Remote on networks"), &RemoteWindow::toggleOnline, true);
-}
 
 
 void RemoteWindow::onPageChanged(const StackPage &page){
@@ -283,32 +241,6 @@ void RemoteWindow::toggleOnline(bool online){
 }
 
 
-QString RemoteWindow::popPage(){
-	OC_METHODGATE();
-	const auto ret = ui->widgetActivityStack->pop();
-	qWarning()<<"POP PAGE " << ret;
-	return ret;
-}
-
-
-bool RemoteWindow::pushPage(const QString &title, const QStringList arguments){
-	OC_METHODGATE();
-	const auto ret = ui->widgetActivityStack->push(title, arguments);
-	if(mDebug){
-		qDebug()<<"PUSH PAGE " << title << arguments << ret;
-	}
-	return ret;
-}
-
-
-QString RemoteWindow::swapPage(const QString &title){
-	OC_METHODGATE();
-	const auto ret = ui->widgetActivityStack->swap(title);
-	qWarning()<<"SWAP PAGE " << ret << "-->" << title;
-	return ret;
-}
-
-
 void RemoteWindow::navigateBack(){
 	OC_METHODGATE();
 	if(mDebug){
@@ -318,12 +250,12 @@ void RemoteWindow::navigateBack(){
 }
 
 
-void RemoteWindow::openMenu(){
+void RemoteWindow::menu(){
 	OC_METHODGATE();
 	if(mDebug){
 		qDebug()<<"MENU";
 	}
-	mMenu->exec(mapToGlobal(ui->widgetNavigation->menuPos()));
+	pushPage(mMainMenu->activityName());
 }
 
 void RemoteWindow::requestApplicationShutdown(){
@@ -334,6 +266,9 @@ void RemoteWindow::requestApplicationShutdown(){
 	pushPage("MessageActivity", QStringList() << "quit" << "Quit" << "Would you like to quit?" << ":/icons/app/warning.svg" << "true");
 }
 
-
+void RemoteWindow::unboxing(){
+	OC_METHODGATE();
+	pushPage(mUnboxingWizard->activityName());
+}
 
 

@@ -4,7 +4,6 @@
 #include "client/Client.hpp"
 #include "comms/couriers/sets/HubClientCourierSet.hpp"
 
-
 #include <QtGlobal>
 
 class HubClientWidget;

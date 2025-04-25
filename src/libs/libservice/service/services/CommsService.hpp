@@ -7,27 +7,27 @@
 
 #include "uptime/SharedPointerWrapper.hpp"
 
-class CommsChannel;
+class Comms;
 class Node;
 
 /**
- * @brief The CommsService class is what it says on the tin; basically a wrapper to make CommsChannel appear as a service.
+ * @brief The CommsService class is what it says on the tin; basically a wrapper to make Comms appear as a service.
  */
 
-class CommsService: public ServiceWrapper<CommsChannel>
+class CommsService: public ServiceWrapper<Comms>
 {
 private:
 	ConfigureHelper mConfigureHelper;
 
 public:
-	CommsService(QSharedPointer<CommsChannel> comms, QStringList dependencies= {});
+	CommsService(QSharedPointer<Comms> comms, QStringList dependencies= {});
 
 public:
 	void configure(/*QSharedPointer<Node> node*/);
 
 	// ServiceWapper interface.
 public:
-	void serviceWrapperActivate(QSharedPointer<CommsChannel> wrapee, bool on, ServiceActivatedCallback callBack) override;
+	void serviceWrapperActivate(QSharedPointer<Comms> wrapee, bool on, ServiceActivatedCallback callBack) override;
 
 };
 

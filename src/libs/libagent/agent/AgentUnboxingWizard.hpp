@@ -1,13 +1,14 @@
 #ifndef AGENTUNBOXINGWIZARD_HPP
 #define AGENTUNBOXINGWIZARD_HPP
 
-#include <QWidget>
 
-#include "uptime/ConfigureHelper.hpp"
-#include "uptime/SharedPointerWrapper.hpp"
 #include "UnboxingStage.hpp"
 #include "components/navigation/Activity.hpp"
+#include "uptime/ConfigureHelper.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
+
+#include <QWidget>
 
 class Agent;
 class ControllerHandler;

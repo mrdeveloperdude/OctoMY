@@ -1,13 +1,13 @@
-#ifndef COURIER
-#define COURIER
+#ifndef COURIER_HPP
+#define COURIER_HPP
 
-#include "comms/CommsSession.hpp"
 #include "CourierMandate.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QObject>
 #include <QDataStream>
 
-class CommsChannel;
+class Comms;
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -19,7 +19,7 @@ private:
 	//Destination
 	QString mDestination;
 	//Channel
-	QSharedPointer<CommsChannel> mComms;
+	QSharedPointer<Comms> mComms;
 	//Identification
 	QString mName;
 	quint32 mID;
@@ -32,7 +32,7 @@ public:
 	static const quint32 FIRST_USER_ID;
 
 public:
-	explicit Courier(QString name, quint32 id, QSharedPointer<CommsChannel> comms, QObject *parent=nullptr);
+	explicit Courier(QString name, quint32 id, QSharedPointer<Comms> comms, QObject *parent=nullptr);
 	virtual	~Courier() override;
 
 public:
@@ -40,17 +40,13 @@ public:
 	const QString  &destination() const;
 
 public:
-	QSharedPointer<CommsChannel> comms() const;
-	//void setForwardRescheduleSignal(QObject &ob, bool fwd);
+	QSharedPointer<Comms> comms() const;
 	quint64 lastOpportunity() const;
 	void  setLastOpportunity(quint64 now);
 	quint32 id() const;
 	QString name() const;
 	quint32 serial() const;
 	QString toString() const;
-
-signals:
-	//void reschedule(quint64);
 
 // Courier interface
 public:
@@ -72,4 +68,4 @@ public:
 };
 
 #endif
-// COURIER
+// COURIER_HPP

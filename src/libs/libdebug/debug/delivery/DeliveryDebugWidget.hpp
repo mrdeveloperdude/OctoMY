@@ -1,9 +1,9 @@
 #ifndef DELIVERYDEBUGWIDGET_H
 #define DELIVERYDEBUGWIDGET_H
 
-#include "uptime/SharedPointerWrapper.hpp"
-#include "uptime/ConfigureHelper.hpp"
 #include "delivery/BirthControl.hpp"
+#include "uptime/ConfigureHelper.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QWidget>
 

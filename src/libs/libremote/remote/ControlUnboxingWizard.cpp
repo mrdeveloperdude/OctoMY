@@ -1,12 +1,14 @@
 #include "ControlUnboxingWizard.hpp"
-#include "node/Node.hpp"
-#include "remote/RemoteWindow.hpp"
 #include "ui_ControlUnboxingWizard.h"
 
+#include "app/Constants.hpp"
+#include "discovery/AddressBook.hpp"
+#include "node/Node.hpp"
+#include "remote/RemoteWindow.hpp"
+#include "security/KeyStore.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 
-#include "app/Constants.hpp"
 
 ControlUnboxingWizard::ControlUnboxingWizard(QWidget *parent)
 	: Activity(parent)
@@ -47,8 +49,8 @@ bool ControlUnboxingWizard::isDelivered() const{
 
 bool ControlUnboxingWizard::isPaired() const{
 	OC_METHODGATE();
-	QVector<QueryRule> f;
-	f.append(QueryRule(TYPE_AGENT, false, true, true));
+	QVector<AddressQueryRule> f;
+	f.append(AddressQueryRule(TYPE_AGENT, false, true, true));
 	auto result = mNode->addressBook()->filter(f);
 	return result.size() > 0;
 }

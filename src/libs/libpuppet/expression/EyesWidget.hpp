@@ -12,28 +12,43 @@
 #include <QImage>
 
 
+/*
+Inspiration for next version:
+
+marble https://www.shadertoy.com/view/Mlj3zW
+cartoon eyes https://www.shadertoy.com/view/4tlXWX
+realistic blitz games https://www.shadertoy.com/view/XsfGWj
+petrification https://www.shadertoy.com/view/MsKBDG
+alien cute https://www.shadertoy.com/view/Wss3Df
+
+*/
+
+
 class Personality;
 class PortableID;
 class Identicon;
+
 
 class EyesWidget : public QWidget
 {
 	Q_OBJECT
 private:
 	QTimer mTimer;
-	quint64 mStartTime;
-	quint64 mLastTime;
-	float mBlink;
-	float mCycle;
+	quint64 mStartTime{0};
+	quint64 mLastTime{0};
+	qreal mBlink{0.0};
+	qreal mCycle{0.0};
 	EyeRendrer mLeftEye;
 	EyeRendrer mRightEye;
 	QBrush mBgBrush;
-
-	QVector2D upperLidSteer;
-	QVector2D lowerLidSteer;
+	qreal mAttention{0.0};
+	
+	QVector2D mUpperLidSteer;
+	QVector2D mLowerLidSteer;
+	QVector2D mAttentionEyeSteer;
 	QVector2D mEyeSteer;
 	QVector2D mEyeSteerSmooth;
-	QVector2D squintSteer;
+	QVector2D mSquintSteer;
 
 	QVector2D lastPress;
 
@@ -46,8 +61,11 @@ public:
 	explicit EyesWidget(QWidget *parent = nullptr);
 
 public:
-	void updateIris();
 	void setPortableID(PortableID &pid);
+	void updateIrisImage();
+	void updateSteerFromGlobal();
+	void updateAttention();
+	void updateEyeShape();
 
 protected:
 	void paintEvent(QPaintEvent *) override;

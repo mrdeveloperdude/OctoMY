@@ -185,7 +185,7 @@ private:
 	// Bootstrap data into memory
 	bool generateSync();
 
-	// Save, load  or bootstrap data depending on wether memory or disk is newest
+	// Save, load or bootstrap data depending on wether memory or disk is newest
 	bool synchronizeSync();
 
 	// Internal transaction to stop transaction processing thread

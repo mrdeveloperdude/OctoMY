@@ -175,5 +175,6 @@
         <file>icons/types/quad_word.svg</file>
         <file>icons/types/quadruple_float.svg</file>
         <file>icons/types/word.svg</file>
+        <file>icons/pairing/zoo.svg</file>
     </qresource>
 </RCC>

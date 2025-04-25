@@ -5,6 +5,8 @@
 #include "node/Node.hpp"
 #include "remote/AgentListModel.hpp"
 #include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+
 
 AgentSelectActivity::AgentSelectActivity(QWidget *parent)
 	: Activity(parent)

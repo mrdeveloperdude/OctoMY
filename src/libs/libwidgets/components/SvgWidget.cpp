@@ -18,7 +18,7 @@ SvgWidget::SvgWidget(QWidget *parent)
 	, mSilhouetteBackground(mTransparentColor)
 	, mFailColor("red")
 	, mDirty(true)
-	, mConfigureHelperSvg("SvgWidget", true, false, false, true, false)
+	, mConfigureHelperSvg("SvgWidget", true, false, true, true, false)
 {
 	OC_METHODGATE();
 }

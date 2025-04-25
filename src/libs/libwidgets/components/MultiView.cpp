@@ -2,7 +2,7 @@
 #include "ui_MultiView.h"
 
 #include "app/Settings.hpp"
-#include "hub/MultiViewFilter.hpp"
+#include "components/MultiViewFilter.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
@@ -16,10 +16,11 @@
 #include <QTreeView>
 #include <QWheelEvent>
 
-const static QString GRID_KEY("Grid");
-const static QString LIST_KEY("List");
-const static QString DETAILS_KEY("Details");
-const static QString TREE_KEY("Tree");
+const QString MultiView::DETAILS_KEY("Details");
+const QString MultiView::GRID_KEY("Grid");
+const QString MultiView::LIST_KEY("List");
+const QString MultiView::TREE_KEY("Tree");
+
 
 MultiView::MultiView(QWidget *parent)
 	: QWidget(parent)
@@ -40,6 +41,8 @@ MultiView::MultiView(QWidget *parent)
 		list->setAttribute(Qt::WA_MacShowFocusRect, false);
 		// Set a base icon size.
 		list->setIconSize(QSize(64, 64));
+		connect(list, &QListView::doubleClicked, this, &MultiView::handleDoubleClicked);
+		
 	}
 	QTableView *table = ui->tableView;
 	if (nullptr != table) {
@@ -50,6 +53,7 @@ MultiView::MultiView(QWidget *parent)
 		table->setIconSize(QSize(64, 64));
 		// Make columns stretch to fill the available width.
 		table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+		connect(table, &QTableView::doubleClicked, this, &MultiView::handleDoubleClicked);
 	}
 	QTreeView *tree = ui->treeView;
 	if (nullptr != tree) {
@@ -61,6 +65,7 @@ MultiView::MultiView(QWidget *parent)
 		tree->setIconSize(QSize(64, 64));
 		// Stretch all columns in the tree view.
 		tree->header()->setSectionResizeMode(QHeaderView::Stretch);
+		connect(tree, &QTreeView::doubleClicked, this, &MultiView::handleDoubleClicked);
 	}
 	setModel(nullptr);
 	if(ui->listView){
@@ -87,37 +92,43 @@ MultiView::~MultiView()
 	ui = nullptr;
 }
 
+// This prevents a nullpointer crash
+static void gracefulSelectionModelSwap(QAbstractItemView *view, QAbstractItemModel *model, QItemSelectionModel *selection){
+	OC_FUNCTIONGATE();
+	auto oldSel = view->selectionModel();
+	view->setModel(model);
+	delete oldSel;
+	oldSel = nullptr;
+	if (nullptr != selection){
+		view->setSelectionModel(selection);
+	}
+}
+
 void MultiView::setModel(QAbstractItemModel *model)
 {
 	OC_METHODGATE();
-	auto selections = (nullptr == model ? nullptr : OC_NEW QItemSelectionModel(model));
-	mFilter->setSourceModel(model);
+	mModel = model;
+	mFilter->setSourceModel(mModel);
+	delete mSelectionModel;
+	mSelectionModel = nullptr;
+	if(mModel != nullptr){
+		mSelectionModel = new QItemSelectionModel(mFilter);
+	}
 	if (ui->listView != nullptr) {
-		auto oldSel = ui->listView->selectionModel();
-		delete oldSel;
-		oldSel = nullptr;
-		if (nullptr != selections){
-			ui->listView->setSelectionModel(selections);
-		}
+		gracefulSelectionModelSwap(ui->listView, mFilter, mSelectionModel);
 	}
 	if (ui->tableView != nullptr) {
-		auto oldSel = ui->tableView->selectionModel();
-		ui->tableView->setModel(model);
-		delete oldSel;
-		oldSel = nullptr;
-		if (nullptr != selections){
-			ui->tableView->setSelectionModel(selections);
-		}
+		gracefulSelectionModelSwap(ui->tableView, mFilter, mSelectionModel);
 	}
 	if (ui->treeView != nullptr) {
-		auto oldSel = ui->treeView->selectionModel();
-		ui->treeView->setModel(model);
-		delete oldSel;
-		oldSel = nullptr;
-		if (nullptr != selections){
-			ui->treeView->setSelectionModel(selections);
-		}
+		gracefulSelectionModelSwap(ui->treeView, mFilter, mSelectionModel);
 	}
+}
+
+
+QItemSelectionModel *MultiView::selectionModel() const{
+	OC_METHODGATE();
+	return mSelectionModel;
 }
 
 void MultiView::onViewButtonClicked(QAbstractButton* but)
@@ -236,4 +247,10 @@ void MultiView::refreshView(){
 void MultiView::filterChanged(const QString &filter){
 	OC_METHODGATE();
 	mFilter->setFilterFixedString(filter);
+}
+
+void MultiView::handleDoubleClicked(const QModelIndex &index)
+{
+	OC_METHODGATE();
+	emit itemDoubleClicked(index);
 }

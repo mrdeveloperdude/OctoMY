@@ -57,7 +57,7 @@ public:
 	bool needConnection();
 
 public:
-	QSharedPointer<CommsChannel> comms();
+	QSharedPointer<Comms> comms();
 	QSharedPointer<Associate> nodeAssociate();
 	QSharedPointer<Node> controller();
 

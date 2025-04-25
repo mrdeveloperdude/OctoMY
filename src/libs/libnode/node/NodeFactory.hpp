@@ -1,14 +1,12 @@
 #ifndef NODEFACTORY_HPP
 #define NODEFACTORY_HPP
 
-
+#include "node/NodeType.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
+
 #include <QThread>
 #include <QTimer>
 #include <QWidget>
-
-#include "node/NodeType.hpp"
-
 
 
 class ForkThread : public QThread {

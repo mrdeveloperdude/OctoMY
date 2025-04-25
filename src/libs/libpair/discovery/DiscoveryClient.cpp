@@ -1,10 +1,13 @@
 #include "DiscoveryClient.hpp"
 
+#include "DiscoveryMandate.hpp"
 #include "address/Associate.hpp"
 #include "app/Constants.hpp"
 #include "client/zoo/ZooClient.hpp"
+#include "comms/Comms.hpp"
 #include "comms/CommsChannel.hpp"
 #include "comms/couriers/DiscoveryCourier.hpp"
+#include "discovery/AddressBook.hpp"
 #include "node/Node.hpp"
 #include "qhttp/qhttpclient.hpp"
 #include "qhttp/qhttpclientrequest.hpp"
@@ -18,7 +21,6 @@
 #include "utility/data/Data.hpp"
 #include "utility/string/String.hpp"
 #include "utility/time/HumanTime.hpp"
-#include "DiscoveryMandate.hpp"
 
 #include <QDebug>
 #include <QDateTime>
@@ -370,7 +372,7 @@ void DiscoveryClient::registerPossibleAssociate(QVariantMap map)
 							part = QSharedPointer<Associate>::create(map.value("associate").toMap());
 							if(!part.isNull()) {
 								if(part->isValidForClient()) {
-									QSharedPointer<CommsChannel> comms = mNode->comms();
+									auto comms = mNode->comms();
 									if(!comms.isNull()) {
 										auto courier = QSharedPointer<DiscoveryCourier>::create(part, comms);
 										if(!courier.isNull()) {

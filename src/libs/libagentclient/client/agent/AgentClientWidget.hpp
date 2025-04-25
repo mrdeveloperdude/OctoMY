@@ -4,8 +4,8 @@
 
 #include "address/Associate.hpp"
 #include "client/ClientWidget.hpp"
-#include "node/Node.hpp"
 #include "components/TryToggleState.hpp"
+#include "node/Node.hpp"
 
 #include <QWidget>
 #include <QTimer>
@@ -59,7 +59,7 @@ private:
 
 public:
 
-	QSharedPointer<CommsChannel> comms();
+	QSharedPointer<Comms> comms();
 	QSharedPointer<Associate> nodeAssociate() const;
 	QSharedPointer<Node> controller();
 

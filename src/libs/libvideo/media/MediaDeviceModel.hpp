@@ -1,9 +1,10 @@
 #ifndef MEDIADEVICEMODEL_HPP
 #define MEDIADEVICEMODEL_HPP
 
+#include "MediaDeviceManager.hpp"
+
 #include <QAbstractTableModel>
 #include <QSharedPointer>
-#include "MediaDeviceManager.hpp"
 
 enum class DeviceTypeFilter {
 	Any,
@@ -16,13 +17,16 @@ class MediaDevice;
 
 class MediaDeviceModel : public QAbstractTableModel {
 	Q_OBJECT
+private:
+	QSharedPointer<MediaDeviceManager> m_manager;
+	DeviceTypeFilter m_filter = DeviceTypeFilter::Any;
+
 public:
 	// Define custom roles.
 	enum CustomRoles {
 		DevicePointerRole = Qt::UserRole + 100
 		, PreviewActiveRole
 	};
-	// We now use a table model with multiple columns.
 	// Columns:
 	// 0: Icon & Name
 	// 1: Audio Channels
@@ -32,7 +36,8 @@ public:
 	explicit MediaDeviceModel(const QSharedPointer<MediaDeviceManager>& manager, QObject* parent = nullptr);
 	~MediaDeviceModel() override;
 	
-	// QAbstractTableModel overrides.
+	// QAbstractTableModel interface
+public:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 	int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
@@ -50,8 +55,6 @@ private slots:
 	
 private:
 	QList<MediaDevice*> filteredDevices() const;
-	QSharedPointer<MediaDeviceManager> m_manager;
-	DeviceTypeFilter m_filter = DeviceTypeFilter::Any;
 };
 
 #endif // MEDIADEVICEMODEL_HPP

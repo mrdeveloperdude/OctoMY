@@ -3,6 +3,7 @@
 
 #include "node/Node.hpp"
 #include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 #include "zbar/ZBarScanner.hpp"
 
 #include <QPainter>

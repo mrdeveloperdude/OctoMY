@@ -5,6 +5,7 @@
  */
 
 #include "Node.hpp"
+
 #include "NodeWindow.hpp"
 #include "address/Associate.hpp"
 #include "app/AppContext.hpp"
@@ -13,15 +14,18 @@
 #include "app/style/StyleManager.hpp"
 #include "client/ClientList.hpp"
 #include "client/zoo/ZooClient.hpp"
-#include "comms/carriers/CommsCarrierUDP.hpp"
+#include "comms/Comms.hpp"
 #include "comms/CommsChannel.hpp"
 #include "comms/CommsSession.hpp"
+#include "comms/carriers/CommsCarrierUDP.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/blob/BlobCourier.hpp"
 #include "delivery/BirthControl.hpp"
 #include "discovery/AddressBook.hpp"
 #include "discovery/DiscoveryClient.hpp"
 #include "hardware/sensors/SensorInput.hpp"
+#include "log/LogStorage.hpp"
+#include "node/LocalIdentityStore.hpp"
 #include "security/KeyStore.hpp"
 #include "service/ServiceLevel.hpp"
 #include "service/ServiceLevelManager.hpp"
@@ -32,18 +36,18 @@
 #include "service/services/KeyStoreService.hpp"
 #include "service/services/LocalAddressListService.hpp"
 #include "service/services/LocalIdentityStoreService.hpp"
+#include "service/services/PlanBookService.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 #include "utility/time/ScopedTimer.hpp"
-#include "log/LogStorage.hpp"
 
-#include <QCommandLineParser>
 #include <QAccelerometerReading>
-#include <QGyroscopeReading>
-#include <QGeoPositionInfo>
-#include <QStandardPaths>
+#include <QCommandLineParser>
 #include <QDir>
+#include <QGeoPositionInfo>
+#include <QGyroscopeReading>
+#include <QStandardPaths>
 
 
 static const QString NODE_ONLINE_STATUS_BASE_KEY("octomy.node.online.");
@@ -58,10 +62,12 @@ Node::Node()
 	, mLocalIdentityStore(OC_NEW LocalIdentityStore())
 	, mLocalAddressList(OC_NEW LocalAddressList())
 	, mAddressBook(OC_NEW AddressBook())
+	, mPlanBook(OC_NEW PlanBook())
 	, mClients(OC_NEW ClientList())
 	, mDiscovery(OC_NEW DiscoveryClient())
-	, mCarrier(OC_NEW CommsCarrierUDP())
-	, mComms(OC_NEW CommsChannel())
+	//, mCarrier(OC_NEW CommsCarrierUDP())
+	//, mComms(OC_NEW CommsChannel())
+	, mComms(OC_NEW Comms())
 	, mLastStatusSend (0)
 	, mServerURL(QString("http://zoo.octomy.org:%1/api").arg(Constants::OCTOMY_UDP_DEFAULT_PORT_ZOO)) //pointed to localhost using /etc/hosts
 	, mActivationTimer(nullptr)
@@ -70,12 +76,13 @@ Node::Node()
 	, mLocalIdentityStoreService(OC_NEW LocalIdentityStoreService(mLocalIdentityStore, QStringList{mKeyStoreService->name()}))
 	, mLocalAddressListService(OC_NEW LocalAddressListService(mLocalAddressList, QStringList{mLocalIdentityStoreService->name()}))
 	, mAddressBookService(OC_NEW AddressBookService(mAddressBook, QStringList{mLocalIdentityStoreService->name()}))
+	, mPlanBookService(OC_NEW PlanBookService(mPlanBook, QStringList{mLocalIdentityStoreService->name()}))
 	, mDiscoveryService(OC_NEW DiscoveryClientService(mDiscovery, QStringList{mLocalIdentityStoreService->name()}))
-	, mCarrierService(OC_NEW CarrierService(mCarrier, QStringList{mLocalIdentityStoreService->name()}))
-	, mCommsService(OC_NEW CommsService(mComms, QStringList{mCarrierService->name(), mKeyStoreService->name(), mAddressBookService->name()}))
+//	, mCarrierService(OC_NEW CarrierService(mCarrier, QStringList{mLocalIdentityStoreService->name()}))
+	, mCommsService(OC_NEW CommsService(mComms, QStringList{mKeyStoreService->name(), mAddressBookService->name()}))
 	, mAlwaysServiceLevel(OC_NEW ServiceLevel("Always",
 {
-	mKeyStoreService->name(), mLocalIdentityStoreService->name(), mLocalAddressListService->name(), mAddressBookService->name(), mCommsService->name()
+												  mKeyStoreService->name(), mLocalIdentityStoreService->name(), mLocalAddressListService->name(), mAddressBookService->name(), mPlanBookService->name(), mCommsService->name()
 }))
 , mDiscoveryServiceLevel(OC_NEW ServiceLevel("Discovery", {
 	mDiscoveryService->name()
@@ -133,14 +140,17 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 
 				mAddressBook->configure(baseDir + "/addressbook.json");
 				mAddressBookService->configure(sharedThis());
+				
+				mPlanBook->configure(baseDir + "/planbook.json");
+				mPlanBookService->configure(sharedThis());
 
 				mDiscovery->configure(sharedThis(), 1000, 60000, 20000, 40000);
 				mDiscoveryService->configure(sharedThis());
 
-				mCarrier->configure();
-				mCarrierService->configure(sharedThis());
+				//mCarrier->configure();
+				//mCarrierService->configure(sharedThis());
 
-				mComms->configure(mCarrier, mKeyStore, mAddressBook);
+				mComms->configure(mKeyStore, mAddressBook);
 				mCommsService->configure();
 
 
@@ -153,6 +163,7 @@ void Node::appConfigure(QSharedPointer<IAppLauncher> launcher)
 				mServiceLevelManager->registerService(mLocalIdentityStoreService);
 				mServiceLevelManager->registerService(mLocalAddressListService);
 				mServiceLevelManager->registerService(mAddressBookService);
+				mServiceLevelManager->registerService(mPlanBookService);
 				mServiceLevelManager->registerService(mDiscoveryService);
 				//mServiceLevelManager->registerService(mCarrierService);
 				//mServiceLevelManager->registerService(mCommsService);
@@ -335,6 +346,16 @@ QSharedPointer<AddressBook> Node::addressBook()
 }
 
 
+QSharedPointer<PlanBook> Node::planBook()
+{
+	OC_METHODGATE();
+	if(mAppConfigureHelper.isConfiguredAsExpected()) {
+		return  mPlanBook;
+	}
+	return nullptr;
+}
+
+
 QSharedPointer<ClientList> Node::clientList()
 {
 	OC_METHODGATE();
@@ -345,7 +366,7 @@ QSharedPointer<ClientList> Node::clientList()
 }
 
 
-QSharedPointer<CommsChannel> Node::comms()
+QSharedPointer<Comms> Node::comms()
 {
 	OC_METHODGATE();
 	if(mAppConfigureHelper.isConfiguredAsExpected()) {
@@ -440,6 +461,7 @@ void Node::unbirth()
 		mKeyStore->clear();
 		mLocalIdentityStore->clear();
 		mAddressBook->clear();
+		mPlanBook->clear();
 		mClients->clear();
 	}
 }
@@ -452,6 +474,7 @@ void Node::scrape()
 		QFile(mKeyStore->store().filename()).remove();
 		QFile(mLocalIdentityStore->filename()).remove();
 		QFile(mAddressBook->filename()).remove();
+		QFile(mPlanBook->filename()).remove();
 	}
 }
 
@@ -750,7 +773,8 @@ void Node::setHookCommsSignals(QObject &o, bool hook)
 {
 	OC_METHODGATE();
 	if(!mComms.isNull()) {
-		mComms->hookCommsSignals(o, hook);
+		// TODO: Figure out if this is useful
+		//mComms->hookCommsSignals(o, hook);
 	}
 }
 

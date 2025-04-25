@@ -3,8 +3,7 @@
 #include "node/NodeWindow.hpp"
 #include "remote/RemoteWindow.hpp"
 #include "uptime/MethodGate.hpp"
-#include "uptime/New.hpp"
-#include "app/AppContext.hpp"
+#include "app/Constants.hpp"
 
 #include <QDebug>
 /*

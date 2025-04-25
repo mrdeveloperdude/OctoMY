@@ -99,7 +99,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../libres/resources/icons.qrc">
-         <normaloff>:/icons/actuators/sensor_temperature.svg</normaloff>:/icons/actuators/sensor_temperature.svg</iconset>
+         <normaloff>:/icons/sensors/sensor_temperature.svg</normaloff>:/icons/sensors/sensor_temperature.svg</iconset>
        </property>
        <property name="iconSize">
         <size>

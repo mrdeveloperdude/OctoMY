@@ -1,12 +1,9 @@
 #ifndef HUBCLIENTWIDGET_HPP
 #define HUBCLIENTWIDGET_HPP
 
-#include "comms/CommsSession.hpp"
-
-#include "components/TryToggle.hpp"
-#include "node/Node.hpp"
-#include "comms/couriers/sets/RemoteCourierSet.hpp"
 #include "client/ClientWidget.hpp"
+#include "components/TryToggleState.hpp"
+#include "node/Node.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
 
 #include <QWidget>
@@ -64,7 +61,7 @@ public:
 
 // Selectors
 public:
-	QSharedPointer<CommsChannel> comms();
+	QSharedPointer<Comms> comms();
 	QSharedPointer<Associate> nodeAssociate() const;
 	QSharedPointer<Node> controller();
 

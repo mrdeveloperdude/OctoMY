@@ -38,11 +38,12 @@ public:
 	
 	void addSpacer();
 	void addGroup(const QString &title);
-
+/*
 	// Virtual activity mechanism
 protected:
 	void popImpl(const QString &returnActivity, const QStringList returnArguments = QStringList()) override;
 	void pushImpl(const QStringList arguments = QStringList()) override;
+*/
 };
 
 

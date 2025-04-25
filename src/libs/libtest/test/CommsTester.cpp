@@ -1,12 +1,14 @@
 #include "CommsTester.hpp"
 
+#include "comms/Comms.hpp"
 #include "comms/address/CarrierAddressUDP.hpp"
 #include "mock/MockCourier.hpp"
 #include "random/RNG.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/New.hpp"
-
 #include "uptime/SharedPointerWrapper.hpp"
+
+
 #include <QTest>
 
 CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, quint16 basePort, quint16 portRange, quint16 testCount, QSharedPointer<KeyStore> keyStore, QSharedPointer<AddressBook> peers, QObject *parent)
@@ -23,7 +25,9 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 	, mTestCount(testCount)
 	, mRng(RNG::sourceFactory("mt"))
 {
-	mCc->configure(mCarrier, mKeyStore, mAssociates);
+	auto comms = QSharedPointer<Comms>::create();
+	comms->configure(mKeyStore, mAssociates);
+	mCc->configure(comms, mCarrier);
 	QVERIFY(nullptr!=mRng);
 	mRng->init(mMyPort);
 	QVERIFY(mMyPort>=mBasePort);
@@ -37,7 +41,7 @@ CommsTester::CommsTester(QString name, QHostAddress myAddress, quint16 myPort, q
 			qDebug() << mMyAddress << ":" << mMyPort << " --> " << toPort;
 			QString myID = "1234";
 			//CommsSignature sig(myID, CarrierAddress(mMyAddress, toPort));
-			auto tc = QSharedPointer<MockCourier> ::create(mName+"Courier", myID, "This is my humble payload", mCc, mTestCount, mTestCount, this);
+			auto tc = QSharedPointer<MockCourier> ::create(mName+"Courier", myID, "This is my humble payload", comms, mTestCount, mTestCount, this);
 			QVERIFY(!tc.isNull());
 			mCc->registerCourier(tc, true);
 		} else {
@@ -63,8 +67,8 @@ void CommsTester::onReadyRead()
 void CommsTester::startSendTest()
 {
 	qDebug()<<"Starting test for "<<toString();
-	mCc->carrier()->setListenAddress(QSharedPointer<CarrierAddressUDP>::create(mMyAddress, mMyPort));
-	mCc->carrier()->maintainConnection(true);
+	mCc->getCarrier()->setListenAddress(QSharedPointer<CarrierAddressUDP>::create(mMyAddress, mMyPort));
+	mCc->getCarrier()->maintainConnection(true);
 }
 
 

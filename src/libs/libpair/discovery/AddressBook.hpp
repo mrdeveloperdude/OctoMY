@@ -9,12 +9,12 @@
 #include <QObject>
 
 
-struct QueryRule{
+struct AddressQueryRule{
 	NodeType type;
 	bool trustUs;
 	bool trustThem;
 	bool include;
-	QueryRule(NodeType type, bool trustUs=true, bool trustThem=true, bool include=true):
+	AddressQueryRule(NodeType type, bool trustUs=true, bool trustThem=true, bool include=true):
 		  type(type)
 		, trustUs(trustUs)
 		, trustThem(trustThem)
@@ -55,7 +55,7 @@ public:
 
 	// SimpleDataStore interface
 public:
-	bool fromMap(QVariantMap data) override;
+	bool fromMap(QVariantMap map) override;
 	QVariantMap toMap() override;
 	bool fromDefault() override;
 
@@ -66,7 +66,7 @@ public:
 	QSharedPointer<Associate> removeAssociate(const QString &id);
 	void upsertAssociate(QSharedPointer<Associate> associate);
 	QMap<QString, QSharedPointer<Associate>> all();
-	QMap<QString, QSharedPointer<Associate>> filter(QVector<QueryRule> rules);
+	QMap<QString, QSharedPointer<Associate>> filter(QVector<AddressQueryRule> rules);
 	void hookSignals(QObject &ob, bool hook);
 
 signals:

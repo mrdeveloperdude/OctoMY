@@ -10,7 +10,7 @@
 class Agent;
 class AgentBaptismActivity;
 class AgentDeliveryActivity;
-class AgentDeliveryActivity;
+class AgentMainMenu;
 class AgentSipAndSeeActivity;
 class AgentUnboxingWizard;
 class CameraPairingActivity;
@@ -55,15 +55,6 @@ class AgentWindow : public NodeWindow
 
 private:
 	Ui::AgentWindow *ui;
-	QMenu *mMenu{nullptr};
-	QAction *mQuitAction{nullptr};
-	QAction *mPairingAction{nullptr};
-	QAction *mIdentityAction{nullptr};
-	QAction *mHardwareAction{nullptr};
-	QAction *mPlanEditorAction{nullptr};
-	QAction *mToggleOnlineAction{nullptr};
-	QAction *mShowFaceAction{nullptr};
-	QAction *mConnectionAction{nullptr};
 	// Activities
 	QSharedPointer<AgentBaptismActivity> mBaptismActivity;
 	QSharedPointer<AgentDeliveryActivity> mDeliveryActivity;
@@ -77,16 +68,21 @@ private:
 	QSharedPointer<IdentityActivity> mIdentityActivity;
 	QSharedPointer<ControllerTypeSelector> mControllerTypeSelector;
 	QSharedPointer<FaceActivity> mFaceActivity;
-	QSharedPointer<IdentityMenuActivity> mIdentityMenuActivity;
 	QSharedPointer<MessageActivity> mMessageActivity;
-	QSharedPointer<PairingMenuActivity> mPairingMenuActivity;
 	QSharedPointer<PairingActivity> mPairingActivity;
 	QSharedPointer<PairingTrustActivity> mPairingTrustActivity;
 	QSharedPointer<StanzaManagerActivity> mStanzaManagerActivity;
 	QSharedPointer<SerialDeviceSelector> mSerialDeviceSelector;
 	QSharedPointer<StanzaEditorActivity> mStanzaEditorActivity;
 	QSharedPointer<ConnectionActivity> mConnectionActivity;
+	
+	// Menus
+	QSharedPointer<AgentMainMenu> mMainMenu;
+	QSharedPointer<IdentityMenuActivity> mIdentityMenuActivity;
+	QSharedPointer<PairingMenuActivity> mPairingMenuActivity;
 	QSharedPointer<TransitionActivity> mTransitionActivity;
+
+	
 	const static QString mQuitApplicationText;
 
 	bool mDebug{true};
@@ -106,30 +102,21 @@ public:
 
 public:
 	void appendLog(const QString& text);
-
+	
 
 	// Agent spesific private
 private:
-	template <typename MethodType>
-	QAction* addMenuItem(QString title, QString icon, QString toolTip, MethodType method, bool checkable = false);
-	
 	void prepareNavigation();
-	void prepareMenu();
 	void prepareActivities();
-
-	
-public slots:
-	QString popPage();
-	bool pushPage(const QString &title, const QStringList arguments = QStringList());
-	QString swapPage(const QString &title);
 
 public slots:
 	void applicationShutdown();
 
-private slots:
+public slots:
 	void navigateBack();
-	void openMenu();
+	void menu();
 	void requestApplicationShutdown();
+	void unboxing();
 	void notImplementedAction();
 	void pairing();
 	void identity();

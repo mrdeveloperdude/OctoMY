@@ -2,7 +2,8 @@
 #include "ui_RealtimeValuesWidget.h"
 
 #include "agent/Agent.hpp"
-
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 
 #include <QAccelerometerReading>
 #include <QCompassReading>

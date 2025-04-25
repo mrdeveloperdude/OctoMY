@@ -46,8 +46,8 @@ NodesManagementWidget::~NodesManagementWidget()
 
 void NodesManagementWidget::configure(QSharedPointer<Settings>  settings){
 	OC_METHODGATE();
-	ui->widgetActiveNodes->configure(settings,"active_nodes","List");
-	ui->widgetIncommingNodes->configure(settings,"incomming_nodes","List");
+	ui->widgetActiveNodes->configure(settings, MultiView::LIST_KEY, "active_nodes");
+	ui->widgetIncommingNodes->configure(settings, MultiView::LIST_KEY, "incomming_nodes");
 	
 	if(!connect(&mSummaryTimer,SIGNAL(timeout()),this,SLOT(onSummaryTimer()), OC_CONTYPE)) {
 		qWarning()<<"ERROR: Could not connect";

@@ -1,13 +1,10 @@
 #include "DiscoveryCourier.hpp"
 
+#include "address/AddressEntry.hpp"
+#include "address/Associate.hpp"
+#include "comms/Comms.hpp"
 #include "uptime/MethodGate.hpp"
 #include "utility/time/HumanTime.hpp"
-
-#include "address/Associate.hpp"
-#include "comms/messages/MessageType.hpp"
-#include "address/AddressEntry.hpp"
-
-#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QString>
 
@@ -16,7 +13,7 @@ const QByteArray DiscoveryCourier::sLooperBuf=QString("lsdfjghsdklfjghklsdfjklsd
 const LoopingBuffer DiscoveryCourier::sLooper(DiscoveryCourier::sLooperBuf);
 
 
-DiscoveryCourier::DiscoveryCourier(QSharedPointer<Associate> ass, QSharedPointer<CommsChannel> comms, QObject *parent)
+DiscoveryCourier::DiscoveryCourier(QSharedPointer<Associate> ass, QSharedPointer<Comms> comms, QObject *parent)
 	: Courier("Discovery", Courier::FIRST_USER_ID+1, comms, parent)
 	, mAss(ass)
 	, mLastSend(0)
@@ -33,7 +30,7 @@ DiscoveryCourier::~DiscoveryCourier()
 }
 
 
-// Let the CommsChannel know what we want
+// Let the Comms know what we want
 CourierMandate DiscoveryCourier::mandate() const
 {
 	OC_METHODGATE();

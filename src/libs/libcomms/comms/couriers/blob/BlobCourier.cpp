@@ -49,7 +49,7 @@ const QDataStream &operator>>(QDataStream &d, BlobCourier::Ack &a)
 }
 
 
-BlobCourier::BlobCourier(QSharedPointer<CommsChannel> comms, QObject *parent)
+BlobCourier::BlobCourier(QSharedPointer<Comms> comms, QObject *parent)
 	: Courier("Blob",(Courier::FIRST_USER_ID+4), comms, parent)
 	, mTotalSendingBlobDataSize(0)
 	, mTotalReceivingBlobDataSize(0)

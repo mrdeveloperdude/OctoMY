@@ -2,7 +2,6 @@
 #define CLIENTLIST_HPP
 
 #include "Client.hpp"
-
 #include "uptime/SharedPointerWrapper.hpp"
 
 #include <QList>

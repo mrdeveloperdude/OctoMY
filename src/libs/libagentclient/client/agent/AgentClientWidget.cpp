@@ -10,6 +10,7 @@
 #include "node/CarSteeringWidget.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 //#include "agent/AgentConstants.hpp"
 
 #include <QScrollBar>
@@ -196,7 +197,7 @@ void AgentClientWidget::init()
 }
 
 
-QSharedPointer<CommsChannel> AgentClientWidget::comms()
+QSharedPointer<Comms> AgentClientWidget::comms()
 {
 	OC_METHODGATE();
 	if(!mAgentClient.isNull() && !mAgentClient->node().isNull()) {

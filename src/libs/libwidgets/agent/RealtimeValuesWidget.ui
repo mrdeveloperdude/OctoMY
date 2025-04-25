@@ -20,7 +20,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../resources/icons.qrc">:/icons/controller/network.svg</pixmap>
+      <pixmap resource="../../libres/resources/icons.qrc">:/icons/controller/network.svg</pixmap>
      </property>
      <property name="margin">
       <number>10</number>
@@ -33,7 +33,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../resources/icons.qrc">:/icons/sensors/sensor_gps.svg</pixmap>
+      <pixmap resource="../../libres/resources/icons.qrc">:/icons/sensors/sensor_gps.svg</pixmap>
      </property>
      <property name="margin">
       <number>10</number>
@@ -62,7 +62,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../resources/icons.qrc">:/icons/sensors/sensor_compass.svg</pixmap>
+      <pixmap resource="../../libres/resources/icons.qrc">:/icons/sensors/sensor_compass.svg</pixmap>
      </property>
      <property name="margin">
       <number>10</number>
@@ -88,7 +88,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../resources/icons.qrc">:/icons/sensors/sensor_accellerometer.svg</pixmap>
+      <pixmap resource="../../libres/resources/icons.qrc">:/icons/sensors/sensor_accellerometer.svg</pixmap>
      </property>
      <property name="margin">
       <number>10</number>
@@ -114,7 +114,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../resources/icons.qrc">:/icons/sensors/sensor_gyroscope.svg</pixmap>
+      <pixmap resource="../../libres/resources/icons.qrc">:/icons/sensors/sensor_gyroscope.svg</pixmap>
      </property>
      <property name="margin">
       <number>10</number>
@@ -163,7 +163,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../resources/icons.qrc"/>
+  <include location="../../libres/resources/icons.qrc"/>
  </resources>
  <connections/>
 </ui>

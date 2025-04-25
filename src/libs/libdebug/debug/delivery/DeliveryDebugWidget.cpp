@@ -1,9 +1,10 @@
 #include "DeliveryDebugWidget.hpp"
 #include "ui_DeliveryDebugWidget.h"
 
-#include "uptime/MethodGate.hpp"
-#include "uptime/ConnectionType.hpp"
 #include "node/Node.hpp"
+#include "security/Key.hpp"
+#include "uptime/ConnectionType.hpp"
+#include "uptime/MethodGate.hpp"
 
 DeliveryDebugWidget::DeliveryDebugWidget(QWidget *parent)
 	: QWidget(parent)

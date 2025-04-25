@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PlanActivity</class>
- <widget class="QWidget" name="PlanActivity">
+ <class>PlanEditorActivity</class>
+ <widget class="QWidget" name="PlanEditorActivity">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -30,15 +30,15 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="plan::PlanEditor" name="widgetPlanEditor" native="true"/>
+    <widget class="plan::editor::PlanEditor" name="widgetPlanEditor" native="true"/>
    </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>plan::PlanEditor</class>
+   <class>plan::editor::PlanEditor</class>
    <extends>QWidget</extends>
-   <header location="global">plan/PlanEditor.hpp</header>
+   <header location="global">plan/editor/PlanEditor.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

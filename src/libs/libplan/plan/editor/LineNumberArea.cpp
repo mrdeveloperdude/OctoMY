@@ -2,8 +2,10 @@
 
 #include "CodeEditor.hpp"
 
+#include <QWidget>
 
 namespace plan{
+namespace editor{
 
 
 LineNumberArea::LineNumberArea(CodeEditor *editor)
@@ -22,4 +24,5 @@ void LineNumberArea::paintEvent(QPaintEvent *event) {
 	codeEditor->lineNumberAreaPaintEvent(event);
 }
 
+}
 }

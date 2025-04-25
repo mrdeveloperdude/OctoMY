@@ -37,7 +37,7 @@ void UtilitiesMenuActivity::configure(QSharedPointer<Node> n)
 		addButton(tr("Triggers"),           ":/icons/trigger/condition.svg",           tr("Work with triggers"),                               "TriggerManagerActivity");
 		addButton(tr("Gait"),               ":/icons/controller/gait_control.svg",     tr("Work with gaits and leg motion"),                   "GaitActivity");
 		addButton(tr("Map"),                ":/icons/map/map.svg",                     tr("Work with map"),                                    "MapActivity");
-		addButton(tr("Plan"),               ":/icons/plan/mandate.svg",                tr("Work with plans"),                                  "PlanActivity");
+		addButton(tr("Plans"),               ":/icons/plan/mandate.svg",                tr("Work with plans"),                                 "PlanBookActivity");
 		addButton(tr("Editor"),             ":/icons/plan/markdown.svg",               tr("Work with markdown text"),                          "MarkdownActivity");
 		addButton(tr("Voice"),              ":/icons/controller/speech.svg",           tr("Work with voice and speech"),                       "VoiceActivity");
 		addButton(tr("HUD"),                ":/icons/controller/hud.svg",              tr("Work with heads-up display (HUD)"),                 "HUDActivity");

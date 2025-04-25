@@ -14,6 +14,13 @@ private:
 	
 public:
 	explicit LogModel(QSharedPointer<LogStorage> storage, QObject *parent = nullptr);
+	
+public:
+	void setStorage(QSharedPointer<LogStorage> storage);
+	
+	
+	// List model interface:
+public:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 	void updateLogs();

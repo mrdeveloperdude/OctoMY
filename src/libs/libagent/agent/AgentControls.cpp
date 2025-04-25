@@ -1,9 +1,9 @@
 #include "AgentControls.hpp"
 
+#include "Agent.hpp"
 #include "comms/couriers/sets/AgentCourierSet.hpp"
 #include "uptime/MethodGate.hpp"
-
-#include "Agent.hpp"
+#include "uptime/New.hpp"
 
 
 AgentControls::AgentControls(Agent &agent)

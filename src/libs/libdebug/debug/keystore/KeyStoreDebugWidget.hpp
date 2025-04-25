@@ -2,11 +2,10 @@
 #define KEYSTOREDEBUGWIDGET_H
 
 #include "debug/table/SimpleTableDebugWidget.hpp"
-
 #include "uptime/ConfigureHelper.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QMap>
-#include "uptime/SharedPointerWrapper.hpp"
 
 class Node;
 

@@ -3,9 +3,8 @@
 
 #include "Courier.hpp"
 #include "address/Associate.hpp"
-#include "utility/data/LoopingBuffer.hpp"
-
 #include "uptime/SharedPointerWrapper.hpp"
+#include "utility/data/LoopingBuffer.hpp"
 
 #include <QList>
 #include <QMap>
@@ -30,7 +29,7 @@ private:
 	static const LoopingBuffer sLooper;
 
 public:
-	explicit DiscoveryCourier(QSharedPointer<Associate> ass, QSharedPointer<CommsChannel> comms, QObject *parent = nullptr);
+	explicit DiscoveryCourier(QSharedPointer<Associate> ass, QSharedPointer<Comms> comms, QObject *parent = nullptr);
 	virtual ~DiscoveryCourier() override;
 
 // Courier interface
@@ -39,7 +38,7 @@ public:
 	CourierMandate mandate() const override;
 
 	//Override to act on sending opportunity.
-	//Return nubmer of bytes sent ( >0 ) if you took advantage of the opportunity
+	//Return number of bytes sent ( >0 ) if you took advantage of the opportunity
 	quint16 sendingOpportunity(QDataStream &ds) override;
 
 	//Override to act on data received

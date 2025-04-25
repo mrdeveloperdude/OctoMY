@@ -7,11 +7,11 @@
 #include "comms/CommsChannel.hpp"
 #include "components/WaitingSpinnerWidget.hpp"
 #include "node/CarSteeringWidget.hpp"
-//#include "security/PortableID.hpp"
 #include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
 //#include "agent/AgentConstants.hpp"
+//#include "security/PortableID.hpp"
 
 #include <QScrollBar>
 
@@ -184,7 +184,7 @@ void HubClientWidget::init()
 }
 
 
-QSharedPointer<CommsChannel> HubClientWidget::comms()
+QSharedPointer<Comms> HubClientWidget::comms()
 {
 	OC_METHODGATE();
 	if(!mHubClient.isNull() && !mHubClient->node().isNull()) {

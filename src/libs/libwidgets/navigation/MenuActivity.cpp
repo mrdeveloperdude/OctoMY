@@ -101,7 +101,7 @@ void MenuActivity::addGroup(const QString &title){
 }
 
 
-
+/*
 
 void MenuActivity::popImpl(const QString &returnActivity, const QStringList returnArguments)
 {
@@ -109,7 +109,6 @@ void MenuActivity::popImpl(const QString &returnActivity, const QStringList retu
 	Q_UNUSED(returnActivity);
 	Q_UNUSED(returnArguments);
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		
 	}
 }
 
@@ -118,8 +117,9 @@ void MenuActivity::pushImpl(const QStringList arguments)
 {
 	OC_METHODGATE();
 	Q_UNUSED(arguments);
-	qDebug() << "PUSH HUB MAIN MENU ACTIVITY: " << arguments;
+	//qDebug() << "PUSH HUB MAIN MENU ACTIVITY: " << arguments;
 	if(mConfigureHelper.isConfiguredAsExpected()) {
 		
 	}
 }
+*/

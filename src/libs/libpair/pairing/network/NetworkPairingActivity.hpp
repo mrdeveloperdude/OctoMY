@@ -1,12 +1,12 @@
 #ifndef NETWORKPAIRINGACTIVITY_H
 #define NETWORKPAIRINGACTIVITY_H
 
-#include "uptime/ConfigureHelper.hpp"
-#include "node/NodeType.hpp"
 #include "components/navigation/Activity.hpp"
+#include "node/NodeType.hpp"
+#include "uptime/ConfigureHelper.hpp"
 
-#include <QWidget>
 #include <QHostAddress>
+#include <QWidget>
 
 
 namespace Ui

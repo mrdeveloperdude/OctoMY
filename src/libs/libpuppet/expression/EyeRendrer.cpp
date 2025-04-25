@@ -2,9 +2,11 @@
 
 #include "uptime/MethodGate.hpp"
 
-#include <QPainter>
 #include <QDebug>
+#include <QPainter>
+#include <QPainterPath>
 #include <QtMath>
+
 
 EyeRendrer::EyeRendrer(QVector2D center, float slant, QColor irisColor)
 	: mCenter(center)
@@ -135,36 +137,39 @@ void EyeRendrer::setIrisImage(QImage irisImage)
 void EyeRendrer::paint(QPainter &painter)
 {
 	OC_METHODGATE();
-	//painter.setBrush(lidBrush);
-	//painter.drawPolygon(lowerMask);
-	//painter.drawPolygon(upperMask);
 
 	painter.setBrush(mScaleraBrush);
 	painter.drawPolygon(mScaleraPolygon);
-
-
+	
+	// draw the iris outline (optional—polygonal)
 	painter.setBrush(mIrisBrush);
-	//painter.drawPolygon(irisPolygon); //TODO: Use this instead
-	const qreal ir=static_cast<qreal>(mIrisRadius);
-	const qreal pr=static_cast<qreal>(mPupilRadius);
-	painter.drawEllipse((mEyeSteer-mCenter).toPointF(), ir, ir);
-
-	painter.setBrush(mPupilBrush);
-	painter.drawEllipse((mEyeSteer-mCenter).toPointF(), pr, pr);
-
-	if(!mIrisImage.isNull()) {
-		//qDebug()<<"DRAWING IRIS IMAGE "<<mIrisImage;
-		QPointF ppt((mEyeSteer-mCenter).toPointF()-QPointF(ir, ir));
-		QSizeF psz(ir*2, ir*2);
-		QRectF rect(ppt, psz);
-		painter.drawImage(rect, mIrisImage);
+	const qreal ir = static_cast<qreal>(mIrisRadius);
+	const QPointF center = (mEyeSteer - mCenter).toPointF();
+	
+	// prepare a clipping path from the sclera polygon
+	QPainterPath clipPath;
+	clipPath.addPolygon(mScaleraPolygon);
+	painter.save();
+	painter.setClipPath(clipPath);
+	
+	// draw the iris image clipped to the eyeball
+	if (!mIrisImage.isNull()) {
+		QRectF irisRect( center.x() - ir, center.y() - ir, ir * 2, ir * 2 );
+		painter.drawImage(irisRect, mIrisImage);
+		painter.setBrush(mPupilBrush);
+		const auto pr = static_cast<qreal>(mPupilRadius);
+		painter.drawEllipse(center, pr, pr);
+		painter.setBrush(mSpecularBrush);
+		painter.drawEllipse(( mSpecPos1 * 0.1f).toPointF(), 0.1 * 0.15, 0.1 * 0.15);
+		painter.drawEllipse(( mSpecPos2 * 0.1f).toPointF(), 0.1 * 0.08, 0.1 * 0.08);
+	} else {
+		painter.drawEllipse(center, ir, ir);
 	}
-
-	painter.setBrush(mSpecularBrush);
-	painter.drawEllipse((mEyeSteer-mCenter+mSpecPos1*0.1f).toPointF(),0.1*0.15,0.1*0.15);
-	painter.drawEllipse((mEyeSteer-mCenter+mSpecPos2*0.1f).toPointF(),0.1*0.08,0.1*0.08);
+	painter.restore();
 
 }
+
+
 
 float EyeRendrer::irisRadius()
 {

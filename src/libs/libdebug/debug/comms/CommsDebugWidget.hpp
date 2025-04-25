@@ -2,10 +2,10 @@
 #define COMMSDEBUGWIDGET_H
 
 #include "uptime/ConfigureHelper.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
 
 #include <QWidget>
-#include "uptime/SharedPointerWrapper.hpp"
 
 class Node;
 namespace Ui

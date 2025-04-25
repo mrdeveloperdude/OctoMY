@@ -4,9 +4,9 @@
 
 #include "uptime/ConfigureHelper.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
-#include <QWidget>
 
 #include <QEnableSharedFromThis>
+#include <QWidget>
 
 class QPushButton;
 class Node;

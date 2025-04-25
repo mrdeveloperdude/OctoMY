@@ -1,13 +1,13 @@
 #include "CarrierDebugWidget.hpp"
 #include "ui_CarrierDebugWidget.h"
 
+#include "comms/Comms.hpp"
+#include "comms/carriers/CommsCarrier.hpp"
 #include "node/Node.hpp"
-#include "uptime/MethodGate.hpp"
 #include "uptime/ConnectionType.hpp"
-
+#include "uptime/MethodGate.hpp"
 #include "utility/string/String.hpp"
 
-#include "comms/CommsChannel.hpp"
 
 CarrierDebugWidget::CarrierDebugWidget(QWidget *parent)
 	: QWidget(parent)
@@ -34,6 +34,7 @@ void CarrierDebugWidget::configure(QSharedPointer <Node> node)
 		if(!mNode.isNull()) {
 			auto cc=mNode->comms();
 			if(!cc.isNull()) {
+				/*
 				auto car=cc->carrier();
 				if(!car.isNull()) {
 
@@ -74,6 +75,7 @@ void CarrierDebugWidget::configure(QSharedPointer <Node> node)
 				} else {
 					qWarning()<<"ERROR: No car";
 				}
+*/
 			} else {
 				qWarning()<<"ERROR: No comms";
 			}

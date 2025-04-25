@@ -1,9 +1,8 @@
 #include "CourierSet.hpp"
 
-#include "uptime/MethodGate.hpp"
-
+#include "comms/Comms.hpp"
 #include "comms/couriers/Courier.hpp"
-#include "comms/CommsChannel.hpp"
+#include "uptime/MethodGate.hpp"
 
 
 #define MAX_CONCURRENT_COURIERS (100)
@@ -24,9 +23,9 @@ CourierSet::~CourierSet()
 void CourierSet::enable(bool enable)
 {
 	OC_METHODGATE();
-	for(QSharedPointer<Courier> courier: *this) {
+	for(auto &courier: *this) {
 		if(!courier.isNull()) {
-			QSharedPointer<CommsChannel> cc=courier->comms();
+			auto cc=courier->comms();
 			if(!cc.isNull()) {
 				cc->registerCourier(courier, enable);
 			}
@@ -39,9 +38,9 @@ bool CourierSet::isEnabled(bool conservative)
 {
 	OC_METHODGATE();
 	int activeCount=0;
-	for(QSharedPointer<Courier> courier: *this) {
+	for(auto &courier: *this) {
 		if(!courier.isNull()) {
-			QSharedPointer<CommsChannel> cc=courier->comms();
+			auto cc=courier->comms();
 			if(!cc.isNull()) {
 				if(cc->couriers().contains(courier)) {
 					activeCount++;

@@ -8,7 +8,6 @@
 
 
 class RemoteClient;
-
 class AgentStateCourier;
 class SensorsCourier;
 class BlobCourier;

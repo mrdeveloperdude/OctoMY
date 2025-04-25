@@ -5,6 +5,7 @@
 
 
 namespace plan{
+namespace editor{
 
 class CodeEditor;
 
@@ -21,6 +22,7 @@ class LineNumberArea : public QWidget{
 		CodeEditor *codeEditor;
 };
 
+}
 }
 
 #endif // LINENUMBERAREA_HPP

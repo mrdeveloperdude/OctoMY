@@ -109,7 +109,7 @@ public:
 	quint64 mLastSend;
 
 public:
-	explicit BlobCourier(QSharedPointer<CommsChannel> comms, QObject *parent=nullptr);
+	explicit BlobCourier(QSharedPointer<Comms> comms, QObject *parent=nullptr);
 
 private:
 

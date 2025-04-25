@@ -1,18 +1,10 @@
 #include "TestCommsChannel.hpp"
 
-
 #include "address/Associate.hpp"
+#include "comms/address/CarrierAddress.hpp"
+#include "security/Key.hpp"
 #include "test/Common.hpp"
 #include "uptime/New.hpp"
-/*
-#include "comms/CommsCarrierUDP.hpp"
-#include "comms/CommsChannel.hpp"
-#include "comms/messages/MessageType.hpp"
-
-#include "random/RNG.hpp"
-#include "security/KeyStore.hpp"
-#include "test/CommsSignalLogger.hpp"
-*/
 
 
 #include <QString>

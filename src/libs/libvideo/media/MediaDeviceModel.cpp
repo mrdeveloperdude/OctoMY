@@ -1,6 +1,10 @@
 #include "MediaDeviceModel.hpp"
-#include "MediaDeviceManager.hpp"
+
 #include "MediaDevice.hpp"
+#include "MediaDeviceManager.hpp"
+#include "uptime/ConnectionType.hpp"
+#include "uptime/MethodGate.hpp"
+
 #include <QDebug>
 #include <QIcon>
 
@@ -8,35 +12,50 @@ MediaDeviceModel::MediaDeviceModel(const QSharedPointer<MediaDeviceManager>& man
 	: QAbstractTableModel(parent)
 	, m_manager(manager)
 {
-	// When devices change, update the model.
-	connect(m_manager.data(), &MediaDeviceManager::devicesChanged, this, &MediaDeviceModel::onDevicesChanged);
+	OC_METHODGATE();
+	if(!m_manager.isNull()) {
+		if(!connect(m_manager.data(), &MediaDeviceManager::devicesChanged, this, &MediaDeviceModel::onDevicesChanged, OC_CONTYPE)) {
+			//if(!connect(&mStore, SIGNAL(peersChanged()), this, SLOT(onPlanBookChanged()), OC_CONTYPE)) {
+			qWarning()<<"ERROR: Could not connect ";
+		}
+	}
+	else{
+		qWarning()<<"ERROR: No MediaDeviceManager";
+	}
 	onDevicesChanged();
 }
 
+
 MediaDeviceModel::~MediaDeviceModel()
 {
+	OC_METHODGATE();
 }
+
 
 int MediaDeviceModel::rowCount(const QModelIndex &parent) const
 {
+	OC_METHODGATE();
 	Q_UNUSED(parent);
 	return filteredDevices().size();
 }
 
+
 int MediaDeviceModel::columnCount(const QModelIndex &parent) const
 {
+	OC_METHODGATE();
 	Q_UNUSED(parent);
-	// We define six columns.
 	return 5;
 }
 
+
 QVariant MediaDeviceModel::data(const QModelIndex &index, int role) const
 {
+	OC_METHODGATE();
 	auto devices = filteredDevices();
 	if (!index.isValid() || index.row() < 0 || index.row() >= devices.size()){
 		return QVariant();
 	}
-	MediaDevice* device = devices.at(index.row());
+	auto device = devices.at(index.row());
 	
 	// For the first column, provide an icon in DecorationRole.
 	if (role == Qt::DecorationRole && index.column() == 0) {
@@ -116,6 +135,7 @@ QVariant MediaDeviceModel::data(const QModelIndex &index, int role) const
 
 QVariant MediaDeviceModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
+	OC_METHODGATE();
 	if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
 		switch (section) {
 		case 0: return QString("Device");
@@ -131,6 +151,7 @@ QVariant MediaDeviceModel::headerData(int section, Qt::Orientation orientation, 
 
 void MediaDeviceModel::setFilter(DeviceTypeFilter filter)
 {
+	OC_METHODGATE();
 	if (m_filter != filter) {
 		beginResetModel();
 		m_filter = filter;
@@ -140,11 +161,13 @@ void MediaDeviceModel::setFilter(DeviceTypeFilter filter)
 
 DeviceTypeFilter MediaDeviceModel::filter() const
 {
+	OC_METHODGATE();
 	return m_filter;
 }
 
 void MediaDeviceModel::setPreviewActive(bool active)
 {
+	OC_METHODGATE();
 	// Update preview status for each device in the filtered list.
 	auto devices = filteredDevices();
 	for (auto &device : std::as_const(devices)) {
@@ -156,6 +179,7 @@ void MediaDeviceModel::setPreviewActive(bool active)
 
 void MediaDeviceModel::onDevicesChanged()
 {
+	OC_METHODGATE();
 	beginResetModel();
 	endResetModel();
 	
@@ -170,6 +194,7 @@ void MediaDeviceModel::onDevicesChanged()
 
 void MediaDeviceModel::onDevicePreviewChanged()
 {
+	OC_METHODGATE();
 	MediaDevice* device = qobject_cast<MediaDevice*>(sender());
 	if (!device) {
 		qWarning() << "Could not decipher sender";
@@ -184,6 +209,7 @@ void MediaDeviceModel::onDevicePreviewChanged()
 
 QList<MediaDevice*> MediaDeviceModel::filteredDevices() const
 {
+	OC_METHODGATE();
 	auto allDevices = m_manager->devices();
 	QList<MediaDevice*> filtered;
 	for (const auto &device : std::as_const(allDevices)) {

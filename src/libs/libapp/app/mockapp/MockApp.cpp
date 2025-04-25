@@ -1,8 +1,8 @@
 #include "MockApp.hpp"
 
-#include "uptime/New.hpp"
-
 #include "app/mockapp/MockAppWindow.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 
 #include <QObject>
 #include <QLayout>

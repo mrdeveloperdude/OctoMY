@@ -1,19 +1,16 @@
 #include "PairingTrustActivity.hpp"
 #include "ui_PairingTrustActivity.h"
 
+#include "address/AddressEntry.hpp"
+#include "address/AddressList.hpp"
+#include "address/Associate.hpp"
+#include "address/TrustList.hpp"
+#include "discovery/AddressBook.hpp"
+#include "node/Node.hpp"
+#include "uptime/ConnectionType.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
-#include "uptime/ConnectionType.hpp"
-
 #include "utility/ui/Ui.hpp"
-
-#include "address/Associate.hpp"
-#include "address/AddressList.hpp"
-#include "address/AddressEntry.hpp"
-
-#include "node/Node.hpp"
-
-#include "address/TrustList.hpp"
 
 #include <QMessageBox>
 

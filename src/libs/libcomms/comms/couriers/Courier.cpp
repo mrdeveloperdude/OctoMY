@@ -1,9 +1,7 @@
 #include "Courier.hpp"
 
-#include "comms/CommsChannel.hpp"
-
+#include "comms/Comms.hpp"
 #include "uptime/MethodGate.hpp"
-#include "uptime/ConnectionType.hpp"
 
 
 #include <QString>
@@ -17,7 +15,7 @@ const quint32 Courier::FIRST_USER_ID=1024;
 quint32 Courier::mCt=0;
 
 
-Courier::Courier(QString name, quint32 id, QSharedPointer<CommsChannel> cc, QObject *parent)
+Courier::Courier(QString name, quint32 id, QSharedPointer<Comms> cc, QObject *parent)
 	: QObject(parent)
 	, mComms(cc)
 	, mName(name)
@@ -49,27 +47,11 @@ const QString  &Courier::destination() const
 }
 
 
-QSharedPointer<CommsChannel> Courier::comms() const
+QSharedPointer<Comms> Courier::comms() const
 {
 	OC_METHODGATE();
 	return mComms;
 }
-
-/* TODO: IS this used?
-void Courier::setForwardRescheduleSignal(QObject &ob, bool fwd)
-{
-	OC_METHODGATE();
-	if(fwd) {
-		if(!connect(&ob, SIGNAL(reschedule(quint64)), this,SIGNAL(reschedule(quint64)), OC_CONTYPE)) {
-			qWarning()<<"ERROR: Could not connect "<<ob.objectName();
-		}
-	} else {
-		if(!disconnect(&ob, SIGNAL(reschedule(quint64)), this, SIGNAL(reschedule(quint64)))) {
-			qWarning()<<"ERROR: Could not disconnect "<<ob.objectName();
-		}
-	}
-}
-*/
 
 quint64 Courier::lastOpportunity() const
 {

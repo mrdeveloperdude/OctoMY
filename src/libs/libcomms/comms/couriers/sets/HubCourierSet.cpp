@@ -1,6 +1,5 @@
 #include "HubCourierSet.hpp"
 
-#include "comms/CommsSignature.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/blob/BlobCourier.hpp"
@@ -20,7 +19,7 @@ HubCourierSet::HubCourierSet(QString fullID, HubClient &client)
 
 	auto ctl=mHubClient.node();
 
-	QSharedPointer<CommsChannel> cc=nullptr;
+	QSharedPointer<Comms> cc=nullptr;
 	if(!ctl.isNull()) {
 		cc=ctl->comms();
 	}

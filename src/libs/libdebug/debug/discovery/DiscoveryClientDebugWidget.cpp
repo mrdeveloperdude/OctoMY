@@ -1,13 +1,12 @@
 #include "DiscoveryClientDebugWidget.hpp"
 #include "ui_DiscoveryClientDebugWidget.h"
 
-#include "node/Node.hpp"
-#include "uptime/MethodGate.hpp"
-#include "uptime/ConnectionType.hpp"
-
-#include "utility/string/String.hpp"
-
+#include "app/Constants.hpp"
 #include "discovery/DiscoveryClient.hpp"
+#include "node/Node.hpp"
+#include "uptime/ConnectionType.hpp"
+#include "uptime/MethodGate.hpp"
+#include "utility/string/String.hpp"
 
 
 DiscoveryClientDebugWidget::DiscoveryClientDebugWidget(QWidget *parent)

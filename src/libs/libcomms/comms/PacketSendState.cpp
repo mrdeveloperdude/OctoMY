@@ -1,8 +1,10 @@
 #include "PacketSendState.hpp"
 
+#include "comms/CommsSession.hpp"
+#include "comms/ProtocolMagic.hpp"
+#include "security/Key.hpp"
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
-
 
 const int PacketSendState::OCTOMY_SENDER_ID_SIZE=20;
 const int PacketSendState::OCTOMY_ENCRYPTED_MESSAGE_SIZE=20;

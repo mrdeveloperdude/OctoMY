@@ -3,20 +3,24 @@
 
 #include <QWidget>
 
-namespace Ui {
-class SignalStrengthWidget;
-}
-
 class SignalStrengthWidget : public QWidget
 {
 	Q_OBJECT
-
+private:
+	int mStrength{-1};
 public:
 	explicit SignalStrengthWidget(QWidget *parent = nullptr);
 	~SignalStrengthWidget();
+	
+	QIcon icon();
+	// QWidget interface:
+protected:
+	void paintEvent(QPaintEvent *e) override;
+	
+	
+public slots:
+	void signalStrengthChanged(int strength);
 
-private:
-	Ui::SignalStrengthWidget *ui;
 };
 
 #endif // SIGNALSTRENGTHWIDGET_HPP

@@ -2,14 +2,16 @@
 #include "ui_NetworkUtilsActivity.h"
 
 #include "app/AppContext.hpp"
+#include "app/Constants.hpp"
 #include "app/launcher/AppCommandLineParser.hpp"
 #include "hexedit/QHexEdit.hpp"
 #include "hexedit/QHexEditData.hpp"
 #include "node/Node.hpp"
 #include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
 
-#include <QHostAddress>
 #include <QCommandLineParser>
+#include <QHostAddress>
 
 NetworkUtilsActivity::NetworkUtilsActivity(QWidget *parent)
 	: Activity(parent)
@@ -36,7 +38,7 @@ void NetworkUtilsActivity::configureSend(){
 	ui->lineEditRemotePort->configure(settings, "","hub-port","The port of the remote host");
 	
 	ui->lineEditRemotePort->setText(cmd->remotePortOption.valueName());
-	qDebug()<<"OVERRIDING REMOTE PORT WITH VALUE FROM CMDLINE: "<<ui->lineEditRemotePort->text();
+	//qDebug()<<"OVERRIDING REMOTE PORT WITH VALUE FROM CMDLINE: "<<ui->lineEditRemotePort->text();
 	
 	ui->lineEditRemotePort->setValidator( OC_NEW QIntValidator(0, 65535, this) );
 	

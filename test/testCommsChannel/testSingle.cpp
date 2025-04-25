@@ -1,8 +1,10 @@
  #include "TestCommsChannel.hpp"
 
+#include "comms/Comms.hpp"
+#include "comms/CommsChannel.hpp"
+#include "comms/CommsSession.hpp"
 #include "comms/address/CarrierAddressUDP.hpp"
 #include "comms/carriers/CommsCarrierUDP.hpp"
-#include "comms/CommsChannel.hpp"
 #include "discovery/AddressBook.hpp"
 #include "security/KeySecurityPolicy.hpp"
 #include "security/KeyStore.hpp"
@@ -52,10 +54,12 @@ void TestCommsChannel::testSingle()
 
 	QSharedPointer<KeyStore> keyStoreA(OC_NEW KeyStore());
 	keyStoreA->configure(keyStoreFilenameA, true, quickAndInsecurePolicy);
-
-
+	
+	
+	
 	QVERIFY(!keyStoreFileA.exists());
-
+	
+	keyStoreA->activate(true);
 	keyStoreA->waitForSync();
 	QVERIFY(keyStoreFileA.exists());
 
@@ -93,7 +97,7 @@ void TestCommsChannel::testSingle()
 
 
 	QVERIFY(!keyStoreFileB.exists());
-
+	keyStoreB->activate(true);
 	keyStoreB->waitForSync();
 	QVERIFY(keyStoreFileB.exists());
 
@@ -118,8 +122,9 @@ void TestCommsChannel::testSingle()
 	peersB->configure(peersFilenameB);
 
 	QString nameB="PARTY B";
-	QVariantMap addrBMap=addrB->toVariantMap();
-	QCOMPARE(addrBMap.size(), 2);
+	auto addrBMap = addrB->toVariantMap();
+	qDebug()<<"addrmap"<<addrBMap;
+	QCOMPARE(addrBMap.size(), 3);
 	QSharedPointer<Associate> partB=generatePart(nameB, keyB, addrB, ROLE_CONTROL, TYPE_REMOTE);
 
 
@@ -139,11 +144,13 @@ void TestCommsChannel::testSingle()
 	test::utility::testHeading("INITIALIZING COMMS FOR PARTY A");///////////////////////////////////
 	QSharedPointer<CommsCarrierUDP> carrierA(OC_NEW CommsCarrierUDP());
 	carrierA->configure();
-	QSharedPointer<CommsChannel> chanA(OC_NEW CommsChannel());
-	chanA->configure(carrierA,keyStoreA, peersA);
+	auto commsA = QSharedPointer<Comms>::create();
+	commsA->configure(keyStoreA, peersA);
+	auto  chanA = QSharedPointer<CommsChannel>::create();
+	chanA->configure(commsA, carrierA);
 	CommsSignalLogger sigLogA("LOG-A");
 	chanA->hookCommsSignals(sigLogA, true);
-	QSharedPointer<MockCourier> courA1(OC_NEW MockCourier("Courier A1",idB, "This is datagram A1 123", chanA, maxSends, maxRecs));
+	QSharedPointer<MockCourier> courA1(OC_NEW MockCourier("Courier A1",idB, "This is datagram A1 123", commsA, maxSends, maxRecs));
 	chanA->registerCourier(courA1, true);
 
 	//TestCourier courA2("Courier A2", commSigB, "This is datagram A2 uvw xyz", maxSends, maxRecs); chanA.setCourierRegistered(courA2, true);
@@ -152,22 +159,26 @@ void TestCommsChannel::testSingle()
 	test::utility::testHeading ("INITIALIZING COMMS FOR PARTY B");//////////////////////////////////
 	QSharedPointer<CommsCarrierUDP> carrierB(OC_NEW CommsCarrierUDP());
 	carrierB->configure();
-	QSharedPointer<CommsChannel> chanB(OC_NEW CommsChannel());
-	chanB->configure(carrierB, keyStoreB, peersB);
+	auto commsB = QSharedPointer<Comms>::create();
+	commsB->configure(keyStoreB, peersB);
+	auto  chanB = QSharedPointer<CommsChannel>::create();
+	chanA->configure(commsB, carrierB);
 	CommsSignalLogger sigLogB("LOG-B");
 	chanA->hookCommsSignals(sigLogB, true);
-	QSharedPointer<MockCourier> courB1(OC_NEW MockCourier("Courier B1", idA, "This is datagram B1 æøåä", chanB, maxSends, maxRecs));
+	QSharedPointer<MockCourier> courB1(OC_NEW MockCourier("Courier B1", idA, "This is datagram B1 æøåä", commsB, maxSends, maxRecs));
 	chanB->registerCourier(courB1, true);
 	//TestCourier courB2("Courier B2", commSigA, "This is datagram B2 Q", maxSends, maxRecs); chanB.setCourierRegistered(courB2, true);
 	qDebug()<<"SUMMARY: "<<chanB->getSummary();
 
 	test::utility::testHeading("STARTING 1st time with no sessions","#");//////////////////////////////////
+	chanA->getCarrier()->activate(true);
 	chanA->rescheduleSending(now);
-	chanA->carrier()->setListenAddress(addrA);
-	chanA->carrier()->maintainConnection(true);
+	chanA->getCarrier()->setListenAddress(addrA);
+	chanA->getCarrier()->maintainConnection(true);
+	chanB->getCarrier()->activate(true);
 	chanB->rescheduleSending(now+1000);
-	chanB->carrier()->setListenAddress(addrB);
-	chanB->carrier()->maintainConnection(true);
+	chanB->getCarrier()->setListenAddress(addrB);
+	chanB->getCarrier()->maintainConnection(true);
 
 	test::utility::testHeading("WAITING 1st time with no sessions");///////////////////////////////
 	{
@@ -185,8 +196,8 @@ void TestCommsChannel::testSingle()
 	courB1->writeSummary();
 
 	test::utility::testHeading("STOP 1st time with no sessions");///////////////////////////////////
-	chanA->carrier()->maintainConnection(false);
-	chanB->carrier()->maintainConnection(false);
+	chanA->getCarrier()->maintainConnection(false);
+	chanB->getCarrier()->maintainConnection(false);
 
 	CommsSessionDirectory & sessDirA=chanA->sessions();
 	CommsSessionDirectory & sessDirB=chanB->sessions();
@@ -216,14 +227,14 @@ void TestCommsChannel::testSingle()
 
 	test::utility::testHeading("STARTING 2nd time with sessions","#");///////////////////////////////////////////
 	chanA->rescheduleSending(now);
-	chanA->carrier()->setListenAddress(addrA);
-	chanA->carrier()->maintainConnection(true);
-	QVERIFY(chanA->carrier()->isConnectionMaintained());
+	chanA->getCarrier()->setListenAddress(addrA);
+	chanA->getCarrier()->maintainConnection(true);
+	QVERIFY(chanA->getCarrier()->isConnectionMaintained());
 
 	chanB->rescheduleSending(now);
-	chanB->carrier()->setListenAddress(addrB);
-	chanB->carrier()->maintainConnection(true);
-	QVERIFY(chanB->carrier()->isConnectionMaintained());
+	chanB->getCarrier()->setListenAddress(addrB);
+	chanB->getCarrier()->maintainConnection(true);
+	QVERIFY(chanB->getCarrier()->isConnectionMaintained());
 
 	qDebug()<<"";
 	qDebug()<<"####################################### WAITING 2nd time with sessions";

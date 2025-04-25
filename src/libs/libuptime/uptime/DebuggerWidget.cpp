@@ -1,19 +1,17 @@
 #include "DebuggerWidget.hpp"
 #include "ui_DebuggerWidget.h"
 
-#include "node/Node.hpp"
-#include "node/NodeWindow.hpp"
-
-#include "uptime/MethodGate.hpp"
-#include "uptime/ConnectionType.hpp"
-#include "utility/time/HumanTime.hpp"
-#include "utility/random/Random.hpp"
-
-#include "service/ServiceLevelManager.hpp"
-#include "service/ServiceManager.hpp"
-
 #include "name/AgentNameGenerator.hpp"
 #include "name/GenderGenerator.hpp"
+#include "node/Node.hpp"
+#include "node/NodeWindow.hpp"
+#include "security/KeyStore.hpp"
+#include "service/ServiceLevelManager.hpp"
+#include "service/ServiceManager.hpp"
+#include "uptime/ConnectionType.hpp"
+#include "uptime/MethodGate.hpp"
+#include "utility/random/Random.hpp"
+#include "utility/time/HumanTime.hpp"
 
 #include <QTableWidgetItem>
 #include <QWidget>

@@ -1,37 +1,43 @@
-#ifndef PLANACTIVITY_HPP
-#define PLANACTIVITY_HPP
+#ifndef PLANBOOKACTIVITY_HPP
+#define PLANBOOKACTIVITY_HPP
+
 
 #include "components/navigation/Activity.hpp"
 #include "uptime/SharedPointerWrapper.hpp"
 
 class Node;
+class Plan;
 
 namespace Ui {
-class PlanActivity;
+class PlanBookActivity;
 }
 
 
-class PlanActivity : public Activity
+class PlanBookActivity : public Activity
 {
 	Q_OBJECT
-
+	
 private:
-	Ui::PlanActivity *ui;
+	Ui::PlanBookActivity *ui;
 	QSharedPointer<Node> mNode;
 	ConfigureHelper mConfigureHelper;
-
+	
 public:
-	explicit PlanActivity(QWidget *parent = nullptr);
-	~PlanActivity();
+	explicit PlanBookActivity(QWidget *parent = nullptr);
+	~PlanBookActivity();
 	
 public:
 	void configure(QSharedPointer<Node> n);
 	
-
+	
 	// Virtual activity mechanism
 protected:
 	void pushImpl(const QStringList arguments = QStringList()) override;
 	void popImpl(const QString &returnActivity, const QStringList returnArguments = QStringList()) override;
+	
+private slots:
+	void planSelected(QSharedPointer<Plan> plan);
 };
 
-#endif // PLANACTIVITY_HPP
+
+#endif // PLANBOOKACTIVITY_HPP

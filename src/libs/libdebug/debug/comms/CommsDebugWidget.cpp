@@ -1,12 +1,10 @@
 #include "CommsDebugWidget.hpp"
 #include "ui_CommsDebugWidget.h"
 
+#include "comms/Comms.hpp"
 #include "node/Node.hpp"
-#include "uptime/MethodGate.hpp"
 #include "uptime/ConnectionType.hpp"
-
-
-#include "comms/CommsChannel.hpp"
+#include "uptime/MethodGate.hpp"
 
 CommsDebugWidget::CommsDebugWidget(QWidget *parent)
 	: QWidget(parent)
@@ -34,7 +32,7 @@ void CommsDebugWidget::configure(QSharedPointer <Node> node)
 			ui->widgetCouriersDebug->configure(mNode);
 			auto cc=mNode->comms();
 			if(!cc.isNull()) {
-				if(!connect(cc.data(), &CommsChannel::commsConnectionStatusChanged, this, [this](const bool isConnected, const bool needsConnection) {
+				if(!connect(cc.data(), &Comms::commsConnectionStatusChanged, this, [this](const bool isConnected, const bool needsConnection) {
 				qDebug().noquote().nospace()<<"Connection status changed: isConnected="<<isConnected<<", isConnected="<<needsConnection;
 
 					ui->widgetStatusConnectionActual->setLightOn(isConnected);

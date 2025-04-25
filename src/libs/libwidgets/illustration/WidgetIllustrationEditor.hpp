@@ -2,9 +2,12 @@
 #define WIDGETILLUSTRATIONEDITOR_HPP
 
 #include "uptime/ConfigureHelper.hpp"
+#include "uptime/SharedPointerWrapper.hpp"
 
-#include <QWidget>
 #include <QDir>
+#include <QWidget>
+
+class Node;
 
 namespace Ui {
 class WidgetIllustrationEditor;
@@ -26,7 +29,7 @@ public:
 	~WidgetIllustrationEditor();
 	
 public:
-	void configure();
+	void configure(QSharedPointer<Node> node);
 	
 public slots:
 	void on_pushButtonWidgetIllustrationBrowse_clicked();

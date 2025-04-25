@@ -22,15 +22,21 @@ MessageActivity::~MessageActivity()
 }
 
 
+void MessageActivity::end(bool status){
+	OC_METHODGATE();
+	qWarning()<< "Message for '"<< mID <<"' ended with status "<< status;
+	pop(QStringList() << mID << (status?"true":"false") );
+}
+
 void MessageActivity::confirmed(){
 	OC_METHODGATE();
-	pop(QStringList() << mID << "true");
+	end(true);
 }
 
 
 void MessageActivity::canceled(){
 	OC_METHODGATE();
-	pop(QStringList() << mID << "false");
+	end(false);
 }
 
 
@@ -76,36 +82,4 @@ void MessageActivity::popImpl(const QString &returnActivity, const QStringList r
 	OC_METHODGATE();
 	Q_UNUSED(returnActivity);
 	Q_UNUSED(returnArguments);
-/*
-	if(returnArguments.size() != 1){
-		qWarning() << "Invalid number of return args in pop";
-		return;
-	}
-	auto levelString = returnArguments[0];
-	auto level = trustLevelFromString(levelString);
-	qDebug() << "SAVING AFTER EDIT OF " << mCurrentlyEditingID;
-	auto peers = addressBook();
-	if(!mNode.isNull() && !peers.isNull()) {
-		if(REMOVE == level){
-			peers->removeAssociate(mCurrentlyEditingID);
-		}
-		else{
-			auto peer = peers->associateByID(mCurrentlyEditingID);
-			if(peer){
-				NodeType type = peer->type();
-				peer->trusts().applyTrustLevel(level, type);
-				qDebug() << "EDITING ENDS WITH trusts: " << peer->trusts().toStringList();
-				peers->save();
-			}
-			else{
-				qWarning() << "ERROR: No peer";
-			}
-		}
-		//ui->listViewNodes->update();
-		setCurrentPage(ui->pagePairWithPeers);
-	} else {
-		qWarning() << "ERROR: No node or peers while saving trust edits";
-	}
-	mCurrentlyEditingID = "";
-*/
 }

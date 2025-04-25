@@ -22,11 +22,11 @@ CommsSessionDirectory::~CommsSessionDirectory()
 }
 
 
-void CommsSessionDirectory::configure(QSharedPointer<KeyStore> keystore)
+void CommsSessionDirectory::configure()
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		mKeyStore=keystore;
+		
 	}
 }
 

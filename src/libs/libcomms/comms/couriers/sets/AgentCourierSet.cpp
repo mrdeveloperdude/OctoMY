@@ -1,10 +1,10 @@
 #include "AgentCourierSet.hpp"
 
 #include "agent/Agent.hpp"
-#include "comms/CommsSignature.hpp"
 #include "comms/couriers/AgentStateCourier.hpp"
 #include "comms/couriers/SensorsCourier.hpp"
 #include "comms/couriers/blob/BlobCourier.hpp"
+
 
 AgentCourierSet::AgentCourierSet(QString &fullID, Agent &agent)
 	: CourierSet()
@@ -15,7 +15,7 @@ AgentCourierSet::AgentCourierSet(QString &fullID, Agent &agent)
 {
 	OC_METHODGATE();
 
-	QSharedPointer<CommsChannel> cc=mAgent.comms();
+	auto cc=mAgent.comms();
 	if(nullptr!=cc) {
 		mAgentStateCourier = QSharedPointer<AgentStateCourier>::create(nullptr, cc, &mAgent);
 		mSensorsCourier = QSharedPointer<SensorsCourier>::create(cc, &mAgent);
@@ -46,13 +46,10 @@ AgentCourierSet::AgentCourierSet(QString &fullID, Agent &agent)
 }
 
 
-
-
 AgentCourierSet::~AgentCourierSet()
 {
 	OC_METHODGATE();
 }
-
 
 
 QSharedPointer<AgentStateCourier> AgentCourierSet::agentStateCourier()

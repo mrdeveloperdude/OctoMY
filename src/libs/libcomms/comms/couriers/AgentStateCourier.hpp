@@ -11,7 +11,7 @@
 
 #include "comms/sync/SyncContext.hpp"
 #include "comms/messages/AgentMode.hpp"
-#include "pose/Pose.hpp"
+
 
 #include <QObject>
 #include <QDebug>
@@ -20,6 +20,9 @@
 
 template <typename T>
 class SyncParameter;
+
+class QGeoCoordinate;
+class Pose;
 
 /*!
  * \brief The AgentStateCourier class is responsible for synchronizing an Agent's
@@ -72,7 +75,7 @@ private:
 //TODO: Somehow encode desired speed, direction and more
 
 public:
-	explicit AgentStateCourier(QDataStream *initialization, QSharedPointer<CommsChannel> comms, QObject *parent = nullptr);
+	explicit AgentStateCourier(QDataStream *initialization, QSharedPointer<Comms> comms, QObject *parent = nullptr);
 	virtual	~AgentStateCourier() override;
 
 public:

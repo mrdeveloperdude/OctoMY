@@ -1,12 +1,10 @@
 #include "PairingEditButtonDelegate.hpp"
 
-#include "../PairingMenuActivity.hpp"
 #include "identity/Identicon.hpp"
 #include "security/PortableID.hpp"
-
 #include "uptime/MethodGate.hpp"
-#include "utility/time/HumanTime.hpp"
 #include "utility/graphics/Graphics.hpp"
+#include "utility/time/HumanTime.hpp"
 
 #include <QSvgRenderer>
 #include <QPainter>

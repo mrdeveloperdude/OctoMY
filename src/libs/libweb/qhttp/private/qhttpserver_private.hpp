@@ -10,10 +10,10 @@
 #define QHTTPSERVER_PRIVATE_HPP
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "../qhttpserver.hpp"
-#include "../qhttpserverconnection.hpp"
-#include "../qhttpserverrequest.hpp"
-#include "../qhttpserverresponse.hpp"
+#include "qhttp/qhttpserver.hpp"
+#include "qhttp/qhttpserverconnection.hpp"
+#include "qhttp/qhttpserverrequest.hpp"
+#include "qhttp/qhttpserverresponse.hpp"
 
 #include <QTcpServer>
 #include <QLocalServer>

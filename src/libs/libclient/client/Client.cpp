@@ -2,7 +2,7 @@
 
 #include "node/Node.hpp"
 #include "comms/CommsSession.hpp"
-#include "comms/CommsChannel.hpp"
+#include "comms/Comms.hpp"
 
 #include "uptime/MethodGate.hpp"
 #include "uptime/ConnectionType.hpp"
@@ -64,12 +64,12 @@ void Client::setNeedsConnection(const bool current)
 	OC_METHODGATE();
 	qDebug()<<"CLIENT::set needs connection: "<<current;
 	if(!mNode.isNull()) {
-		const QString key=CLIENT_ONLINE_STATUS_BASE_KEY+associate()->id();
-		const bool last=needsConnection();
+		const auto key=CLIENT_ONLINE_STATUS_BASE_KEY+associate()->id();
+		const auto last=needsConnection();
 		if(current!=last) {
 			mNode->settings()->setCustomSettingBool(key, current);
 			updateCourierRegistration();
-			QSharedPointer<CommsChannel> comms=mNode->comms();
+			auto  comms=mNode->comms();
 			if(!comms.isNull()) {
 				comms->updateConnection();
 			}
@@ -110,7 +110,7 @@ QSharedPointer<Node> Client::node()
 }
 
 
-QSharedPointer<CommsChannel> Client::comms()
+QSharedPointer<Comms> Client::comms()
 {
 	OC_METHODGATE();
 	return mNode.isNull()?nullptr:mNode->comms();

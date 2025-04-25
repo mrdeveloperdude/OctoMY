@@ -2,6 +2,7 @@
 #include "ui_NetworkPairingActivity.h"
 
 #include "address/Associate.hpp"
+#include "discovery/AddressBook.hpp"
 #include "discovery/DiscoveryClient.hpp"
 #include "node/Node.hpp"
 #include "pairing/list/PairingEditButtonDelegate.hpp"
@@ -236,14 +237,14 @@ QSharedPointer<LocalAddressList> NetworkPairingActivity::localAddressList()
 
 
 bool NetworkPairingActivity::isPaierd() const{
-	QVector<QueryRule> f;
+	QVector<AddressQueryRule> f;
 	switch(mNode->nodeRole()){
 		case ROLE_AGENT:
-			f.append(QueryRule(TYPE_REMOTE, false, true, true));
-			f.append(QueryRule(TYPE_HUB, false, true, true));
+			f.append(AddressQueryRule(TYPE_REMOTE, false, true, true));
+			f.append(AddressQueryRule(TYPE_HUB, false, true, true));
 			break;
 		case ROLE_CONTROL:
-			f.append(QueryRule(TYPE_AGENT, false, true, true));
+			f.append(AddressQueryRule(TYPE_AGENT, false, true, true));
 			break;
 		default:
 		case ROLE_UNKNOWN:

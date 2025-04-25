@@ -1,14 +1,15 @@
 #include "NodeFactory.hpp"
 
-#include <QProcess>
-#include <QThread>
 
 #include "agent/Agent.hpp"
 #include "hub/Hub.hpp"
 #include "remote/Remote.hpp"
-
 #include "uptime/MethodGate.hpp"
 #include "uptime/New.hpp"
+
+#include <QProcess>
+#include <QRandomGenerator>
+#include <QThread>
 
 #include <csignal>
 #include <fcntl.h>

@@ -2,13 +2,11 @@
 #define AGENTCOURIERSET_HPP
 
 #include "comms/couriers/CourierSet.hpp"
-
 #include "uptime/SharedPointerWrapper.hpp"
 
 #include <QDataStream>
 
 class Agent;
-
 class AgentStateCourier;
 class SensorsCourier;
 class BlobCourier;
@@ -28,8 +26,8 @@ public:
 	virtual ~AgentCourierSet();
 
 public:
-
 	QSharedPointer<AgentStateCourier> agentStateCourier();
+
 };
 
 #endif

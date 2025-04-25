@@ -1,6 +1,11 @@
 #include "SplitterPane.hpp"
 #include "ui_SplitterPane.h"
 
+#include "command/CommandWidget.hpp"
+#include "splitter/SplitterWidget.hpp"
+#include "uptime/MethodGate.hpp"
+#include "uptime/New.hpp"
+
 #include <QDrag>
 #include <QEvent>
 #include <QMenu>
@@ -11,9 +16,6 @@
 #include <QSplitter>
 #include <QStyle>
 
-#include "command/CommandWidget.hpp"
-#include "splitter/SplitterWidget.hpp"
-#include "uptime/New.hpp"
 
 
 /*
@@ -69,6 +71,7 @@ static int n{0};
 static const auto DRAG_MIME{"application/x-splitterpane-source"};
 
 static void replaceWidgetInSplitter(QSplitter *splitter, QWidget *oldWidget, QWidget *newWidget) {
+	OC_FUNCTIONGATE();
 	const auto index = splitter->indexOf(oldWidget);
 	if (index == -1) {
 		qWarning() << "Widget not found in the splitter.";
@@ -81,6 +84,7 @@ static void replaceWidgetInSplitter(QSplitter *splitter, QWidget *oldWidget, QWi
 
 
 static void addAfterWidgetInSplitter(QSplitter *splitter, QWidget *existingWidget, QWidget *newWidget) {
+	OC_FUNCTIONGATE();
 	const auto index = splitter->indexOf(existingWidget);
 	if (index == -1 || existingWidget == nullptr) {
 		splitter->addWidget(newWidget);
@@ -97,6 +101,7 @@ static void addAfterWidgetInSplitter(QSplitter *splitter, QWidget *existingWidge
 
 
 static void setSplitterEqualSizes(QSplitter *splitter) {
+	OC_FUNCTIONGATE();
 	const auto count = splitter->count();
 	if (count == 0){
 		return;
@@ -106,6 +111,7 @@ static void setSplitterEqualSizes(QSplitter *splitter) {
 
 
 static Edge closestEdge(const QPoint &mousePos, const QRect &rect, bool allowVertical=true, bool allowHorizontal=true) {
+	OC_FUNCTIONGATE();
 	const auto TOO_FAR{9999999999};
 	const auto leftDist = allowHorizontal?std::abs(mousePos.x() - rect.left()):TOO_FAR;
 	const auto rightDist = allowHorizontal?std::abs(mousePos.x() - rect.right()):TOO_FAR;
@@ -139,6 +145,7 @@ SplitterPane::SplitterPane(
 	, splitterWidget(splitterWidget)
 	, mMenu(new QMenu(this))
 {
+	OC_METHODGATE();
 	ui->setupUi(this);
 	ui->stackedWidgetContent->setCurrentWidget(ui->pageMenu);
 	auto name = QString("Pane %1").arg(n++);
@@ -159,6 +166,7 @@ SplitterPane::SplitterPane(
 
 SplitterPane::~SplitterPane()
 {
+	OC_METHODGATE();
 	delete ui;
 	if(splitterWidget && splitterWidget->focusedPane() == this){
 		splitterWidget->setFocusedPane(nullptr);
@@ -167,6 +175,7 @@ SplitterPane::~SplitterPane()
 
 
 SplitterPane *SplitterPane::splitPane(Qt::Orientation orientation) {
+	OC_METHODGATE();
 	auto pSplitter = parentSplitter();
 	if(!pSplitter){
 		qWarning() << "Could not find parent splitter";
@@ -200,16 +209,19 @@ SplitterPane *SplitterPane::splitPane(Qt::Orientation orientation) {
 
 
 SplitterPane *SplitterPane::splitPaneVertically(){
+	OC_METHODGATE();
 	return splitPane(Qt::Vertical);
 }
 
 
 SplitterPane *SplitterPane::splitPaneHorizontally(){
+	OC_METHODGATE();
 	return splitPane(Qt::Horizontal);
 }
 
 
 void SplitterPane::arrangeSplitter(){
+	OC_METHODGATE();
 	auto pSplitter = parentSplitter();
 	if (!pSplitter) {
 		qWarning() << "Could not find parent splitter";
@@ -221,6 +233,7 @@ void SplitterPane::arrangeSplitter(){
 
 
 SplitterPane* SplitterPane::detachPane() {
+	OC_METHODGATE();
 	qDebug() << "Detaching " << objectName();
 	auto pSplitter = parentSplitter();
 	if (!pSplitter) {
@@ -263,6 +276,7 @@ SplitterPane* SplitterPane::detachPane() {
 
 
 void SplitterPane::closePane() {
+	OC_METHODGATE();
 	qDebug()<<"Closing " << objectName();
 	auto replacement = detachPane();
 	deleteLater();
@@ -271,6 +285,7 @@ void SplitterPane::closePane() {
 
 
 bool SplitterPane::movePane(SplitterPane *targetPane, Edge targetDropEdge) {
+	OC_METHODGATE();
 	SplitterPane *sourcePane{this};
 	if (None == targetDropEdge) {
 		qWarning() << "No target drop edge";
@@ -331,6 +346,7 @@ bool SplitterPane::movePane(SplitterPane *targetPane, Edge targetDropEdge) {
 
 
 void SplitterPane::setPaneFocused(bool focused){
+	OC_METHODGATE();
 	mPanelFocused = focused;
 	mEdge = None;
 	updateFocusVisual();
@@ -338,13 +354,17 @@ void SplitterPane::setPaneFocused(bool focused){
 
 
 void SplitterPane::setFrameStyle(const QString &style){
-	const auto s = QString("#%1 QFrame#frame {%2}").arg(objectName()).arg(style);
-	// qDebug()<<"Setting style: "<< s;
-	ui->frame->setStyleSheet(s);
+	OC_METHODGATE();
+	if(ui && ui->frame){
+		const auto s = QString("#%1 QFrame#frame {%2}").arg(objectName()).arg(style);
+		// qDebug()<<"Setting style: "<< s;
+		ui->frame->setStyleSheet(s);
+	}
 }
 
 
 void SplitterPane::updateFocusVisual() {
+	OC_METHODGATE();
 	QString style;
 	if (mPanelFocused) {
 		style = "border: 3px solid palette(Highlight);";
@@ -364,6 +384,7 @@ void SplitterPane::updateFocusVisual() {
 
 
 void SplitterPane::updateDropIndicator(const QPoint &mousePos) {
+	OC_METHODGATE();
 	QRect rect = ui->frame->geometry();
 	mEdge = None;
 	const auto pSplitter = parentSplitter();
@@ -376,6 +397,7 @@ void SplitterPane::updateDropIndicator(const QPoint &mousePos) {
 
 
 void SplitterPane::setContentWidget(QWidget *newWidget) {
+	OC_METHODGATE();
 	if (!ui->pageContent) {
 		qWarning() << "pageContent is not initialized.";
 		return;
@@ -404,6 +426,7 @@ void SplitterPane::setContentWidget(QWidget *newWidget) {
 
 
 void SplitterPane::buildMenu(){
+	OC_METHODGATE();
 	mMenu->clear();
 	mMenu->addSeparator()->setText(QString("Tools"));
 	{
@@ -418,12 +441,14 @@ void SplitterPane::buildMenu(){
 
 
 void SplitterPane::showMenu(){
+	OC_METHODGATE();
 	const auto popup_pos = QCursor::pos() - QPoint(mMenu->width(), mMenu->height())/2;
 	mMenu->popup(popup_pos);
 }
 
 
 void SplitterPane::startDrag(){
+	OC_METHODGATE();
 	qDebug()<<"Drag started from" << objectName();
 	auto drag = new QDrag(this);
 	auto mimeData = new QMimeData;
@@ -443,6 +468,7 @@ void SplitterPane::startDrag(){
 
 
 void SplitterPane::dragEnterEvent(QDragEnterEvent *event) {
+	OC_METHODGATE();
 	if (event->mimeData()->hasFormat(DRAG_MIME) && Qt::MoveAction == event->proposedAction()) {
 		event->acceptProposedAction();
 		updateDropIndicator(event->position().toPoint());
@@ -453,12 +479,14 @@ void SplitterPane::dragEnterEvent(QDragEnterEvent *event) {
 
 
 void SplitterPane::dragMoveEvent(QDragMoveEvent *event) {
+	OC_METHODGATE();
 	updateDropIndicator(event->position().toPoint());
 	event->acceptProposedAction();
 }
 
 
 void SplitterPane::dragLeaveEvent(QDragLeaveEvent *event) {
+	OC_METHODGATE();
 	mEdge = None;
 	updateFocusVisual();
 	event->accept();
@@ -466,6 +494,7 @@ void SplitterPane::dragLeaveEvent(QDragLeaveEvent *event) {
 
 
 void SplitterPane::dropEvent(QDropEvent *event) {
+	OC_METHODGATE();
 	if (event->mimeData()->hasFormat(DRAG_MIME) && Qt::MoveAction == event->proposedAction()) {
 		QString sourceName = QString::fromUtf8(event->mimeData()->data("application/x-splitterpane-source"));
 		auto sourcePane = splitterWidget->findChild<SplitterPane *>(sourceName);
@@ -495,6 +524,7 @@ void SplitterPane::dropEvent(QDropEvent *event) {
 
 
 bool SplitterPane::eventFilter(QObject *watched, QEvent *event) {
+	OC_METHODGATE();
 	const auto type = event->type();
 	if (type == QEvent::MouseButtonPress || type == QEvent::MouseButtonDblClick) {
 		QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
@@ -507,6 +537,7 @@ bool SplitterPane::eventFilter(QObject *watched, QEvent *event) {
 
 
 Qt::Orientation SplitterPane::orientation() const{
+	OC_METHODGATE();
 	auto pSplitter = parentSplitter();
 	if(pSplitter){
 		return pSplitter->count()>1? pSplitter->orientation():UndecidedOrientation;
@@ -516,11 +547,13 @@ Qt::Orientation SplitterPane::orientation() const{
 
 
 QSplitter* SplitterPane::parentSplitter() const {
+	OC_METHODGATE();
 	return qobject_cast<QSplitter*>(this->parentWidget());
 }
 
 
 void SplitterPane::mousePressEvent(QMouseEvent *event) {
+	OC_METHODGATE();
 	if (event->button() == Qt::LeftButton) {
 		dragStartPosition = event->pos();
 	}
@@ -528,6 +561,7 @@ void SplitterPane::mousePressEvent(QMouseEvent *event) {
 
 
 void SplitterPane::mouseMoveEvent(QMouseEvent *event) {
+	OC_METHODGATE();
 	if (event->buttons() & Qt::LeftButton) {
 		const auto distance = (event->pos() - dragStartPosition).manhattanLength();
 		if (distance < QApplication::startDragDistance()){

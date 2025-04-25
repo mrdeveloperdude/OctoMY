@@ -95,10 +95,10 @@ void HoneymoonScheduler<T>::configure(T maxOutput, quint64 gracePeriod, quint64 
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.configure()) {
-		mTriggeredOutput=maxOutput;
-		mGracePeriod=gracePeriod;
-		mDecayPeriod=decayPeriod;
-		mIdleOutput=minOutput;
+		mTriggeredOutput = maxOutput;
+		mGracePeriod = gracePeriod;
+		mDecayPeriod = decayPeriod;
+		mIdleOutput = minOutput;
 	}
 }
 
@@ -122,11 +122,11 @@ void HoneymoonScheduler<T>::reset(quint64 now)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		if(0==now) {
+		if(0 == now) {
 			now=utility::time::currentMsecsSinceEpoch<quint64>();
 		}
 		// Simply skip past the honeymoon by moving last trigger beyond the grace and decay period combined
-		mLastTrigger=now - (mGracePeriod + mDecayPeriod + 1);
+		mLastTrigger = now - (mGracePeriod + mDecayPeriod + 1);
 	}
 }
 
@@ -136,32 +136,32 @@ T HoneymoonScheduler<T>::currentValue(quint64 now)
 {
 	OC_METHODGATE();
 	if(mConfigureHelper.isConfiguredAsExpected()) {
-		if(0==now) {
-			now=utility::time::currentMsecsSinceEpoch<quint64>();
+		if(0 == now) {
+			now = utility::time::currentMsecsSinceEpoch<quint64>();
 		}
 		// Last trigger is in the future, preten everything is fine
-		if(mLastTrigger>=now) {
+		if(mLastTrigger >= now) {
 			return mTriggeredOutput;
 		}
 		// Calcualte time since last trigger
-		quint64 iv=now-mLastTrigger;
+		auto iv = now - mLastTrigger;
 		// We are in the honeymoon phase
-		if(iv<mGracePeriod) {
+		if(iv < mGracePeriod) {
 			return mTriggeredOutput;
 		}
 		// No skip past grace period
-		iv-=mGracePeriod;
+		iv -= mGracePeriod;
 		// We are past the decay period
-		if(iv>mDecayPeriod) {
+		if(iv > mDecayPeriod) {
 			return mIdleOutput;
 		}
 		// We are in the decay period, so calculate linear decay value
 		//iv=mDecayPeriod-iv;
-		const T range=(mIdleOutput-mTriggeredOutput);
-		T ret=mTriggeredOutput;
-		const T dp=static_cast<T>(mDecayPeriod);
-		T t=(iv * range);
-		t/=dp;
+		const auto range=(mIdleOutput-mTriggeredOutput);
+		auto ret=mTriggeredOutput;
+		const auto dp=static_cast<T>(mDecayPeriod);
+		auto t{iv * range};
+		t /= dp;
 		ret += t;
 		return ret;
 	}

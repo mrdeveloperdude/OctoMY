@@ -6,7 +6,7 @@
 #include "components/navigation/Activity.hpp"
 
 namespace Ui {
-class Quitting;
+class TransitionActivity;
 }
 
 class TransitionActivity : public Activity
@@ -14,7 +14,7 @@ class TransitionActivity : public Activity
 	Q_OBJECT
 	
 private:
-	Ui::Quitting *ui;
+	Ui::TransitionActivity *ui;
 
 public:
 	explicit TransitionActivity(QWidget *parent = nullptr);

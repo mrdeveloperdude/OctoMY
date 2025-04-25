@@ -6,24 +6,22 @@
 
 #include "AgentStateCourier.hpp"
 
-#include "comms/sync/SyncParameter.hpp"
 #include "comms/couriers/CourierMandate.hpp"
-
+#include "comms/sync/SyncParameter.hpp"
+#include "pose/Pose.hpp"
 #include "uptime/MethodGate.hpp"
-#include "uptime/ConnectionType.hpp"
-
 #include "utility/time/HumanTime.hpp"
 
-#include <QDebug>
 #include <QDataStream>
 #include <QDateTime>
+#include <QDebug>
 
 
 
 const quint32 AgentStateCourier::AGENT_STATE_COURIER_ID=(Courier::FIRST_USER_ID + 5);
 
 // Agent side constructor
-AgentStateCourier::AgentStateCourier(QDataStream *initialization, QSharedPointer<CommsChannel> comms, QObject *parent)
+AgentStateCourier::AgentStateCourier(QDataStream *initialization, QSharedPointer<Comms> comms, QObject *parent)
 	: Courier("AgentState", AGENT_STATE_COURIER_ID, comms, parent)
 	, mAgentSide(nullptr!=initialization)
 	, mParams(100)
@@ -37,16 +35,7 @@ AgentStateCourier::AgentStateCourier(QDataStream *initialization, QSharedPointer
 {
 	OC_METHODGATE();
 	initParams(initialization);
-	//mParams.forceSync(utility::time::currentMsecsSinceEpoch<quint64>());
 	mParams.update(utility::time::currentMsecsSinceEpoch<quint64>());
-
-	//setForwardRescheduleSignal(mParams, true);
-
-	if(!connect(&mParams,SIGNAL(reschedule(quint64)),this,SIGNAL(reschedule(quint64)),OC_CONTYPE)) {
-		qWarning()<<"ERROR: Could not connect "<<mParams;
-	}
-
-
 }
 
 AgentStateCourier::~AgentStateCourier()

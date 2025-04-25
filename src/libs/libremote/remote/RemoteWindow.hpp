@@ -12,16 +12,17 @@ class ControlBaptismActivity;
 class ControlDeliveryActivity;
 class ControlSipAndSeeActivity;
 class ControlUnboxingWizard;
-class IdentityMenuActivity;
 class IdentityActivity;
+class IdentityMenuActivity;
 class MessageActivity;
 class PairingActivity;
 class PairingMenuActivity;
 class PairingTrustActivity;
 class Remote;
 class RemoteController;
-struct StackPage;
+class RemoteMainMenu;
 class TransitionActivity;
+struct StackPage;
 
 
 
@@ -45,12 +46,6 @@ class RemoteWindow : public NodeWindow
 
 private:
 	Ui::RemoteWindow *ui;
-	QMenu *mMenu{nullptr};
-	QAction *mQuitAction{nullptr};
-	QAction *mPairingAction{nullptr};
-	QAction *mIdentityAction{nullptr};
-	QAction *mConnectionAction{nullptr};
-	QAction *mToggleOnlineAction{nullptr};
 
 	// Activities
 	QSharedPointer<ControlBaptismActivity> mBaptismActivity;
@@ -59,13 +54,16 @@ private:
 	QSharedPointer<ControlUnboxingWizard> mUnboxingWizard;
 	QSharedPointer<MessageActivity> mMessage;
 	QSharedPointer<PairingActivity> mPairingActivity;
-	QSharedPointer<PairingMenuActivity> mPairingMenuActivity;
 	QSharedPointer<IdentityActivity> mIdentityActivity;
-	QSharedPointer<IdentityMenuActivity> mIdentityMenuActivity;
 	QSharedPointer<PairingTrustActivity> mPairingTrustActivity;
 	QSharedPointer<ConnectionActivity> mConnectionActivity;
 	QSharedPointer<AgentSelectActivity> mAgentSelectActivity;
 	QSharedPointer<RemoteController> mControl;
+	
+	// Menus
+	QSharedPointer<RemoteMainMenu> mMainMenu;
+	QSharedPointer<IdentityMenuActivity> mIdentityMenuActivity;
+	QSharedPointer<PairingMenuActivity> mPairingMenuActivity;
 	QSharedPointer<TransitionActivity> mTransitionActivity;
 	
 	bool mDebug{false};
@@ -89,7 +87,6 @@ private:
 	QAction* addMenuItem(QString title, QString icon, QString toolTip, MethodType method, bool checkable = false);
 	
 	void prepareNavigation();
-	void prepareMenu();
 	void prepareActivities();
 
 	// LogDestination interface
@@ -99,16 +96,12 @@ public:
 public slots:
 	void applicationShutdown();
 
+
 public slots:
-	QString popPage();
-	bool pushPage(const QString &title, const QStringList arguments = QStringList());
-	QString swapPage(const QString &title);
-
-
-private slots:
 	void navigateBack();
-	void openMenu();
+	void menu();
 	void requestApplicationShutdown();
+	void unboxing();
 	void onPageChanged(const StackPage &page);
 	void unboxingWizardDone();
 	void pairing();

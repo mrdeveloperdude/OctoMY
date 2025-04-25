@@ -19,7 +19,7 @@ private:
 	CourierMandate mMandate;
 	SensorsMessage mMessage;
 public:
-	SensorsCourier(QSharedPointer<CommsChannel> comms, QObject *parent = nullptr);
+	SensorsCourier(QSharedPointer<Comms> comms, QObject *parent = nullptr);
 
 	// Courier interface
 public:
