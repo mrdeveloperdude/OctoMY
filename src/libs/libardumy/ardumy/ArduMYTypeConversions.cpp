@@ -416,7 +416,7 @@ QString ardumyActuatorSetToString(const ArduMYActuatorSet &set)
 	return ret;
 }
 
-
+/*
 QString ardumyActuatorNameToString(const ArduMYActuatorConfig &c)
 {
 	QString name;
@@ -428,12 +428,50 @@ QString ardumyActuatorNameToString(const ArduMYActuatorConfig &c)
 		if ('\0' == ch) {
 			break;
 		}
-		name[i] = QChar(ch);
+        name[i] = static_cast<int8_t>(QChar(ch));
 	}
 	return name;
 }
+*/
+
+QString ardumyActuatorNameToString(const ArduMYActuatorConfig &config)
+{
+    constexpr int arraySize     = sizeof(config.nickName) / sizeof(config.nickName[0]);
+    constexpr int maxCharacters = arraySize - 1; // leave room for '\0'
+    QString result;
+    result.reserve(maxCharacters);
+
+    for (int i = 0; i < maxCharacters; ++i) {
+        int8_t ch = config.nickName[i];
+        if (ch == 0) {
+            break;
+        }
+        unsigned char uch = static_cast<unsigned char>(ch);
+        QChar qc = QChar::fromLatin1(uch);
+        if (!qc.isPrint()) {
+            continue;  // drop control or non-printable
+        }
+        result.append(qc);
+    }
+
+    return result;
+}
 
 
+
+void ardumyActuatorNameFromString(ArduMYActuatorConfig &config, const QString &name)
+{
+    // toLatin1() returns a QByteArray whose constData() is always '\0'-terminated
+    QByteArray ba = name.toLatin1();
+
+    // qstrncpy(dest, src, n) copies at most n-1 chars and then forces dest[n-1]='\0'
+    qstrncpy(
+        reinterpret_cast<char*>(config.nickName),
+        ba.constData(),
+        sizeof config.nickName
+        );
+}
+/*
 void ardumyActuatorNameFromString(ArduMYActuatorConfig &config, const QString &name)
 {
 	const quint32 maxSz = (sizeof(ArduMYActuatorConfig::nickName) / sizeof(int8_t)) - 1; // NOTE: -1 means we make space for the null-terminator character
@@ -448,6 +486,8 @@ void ardumyActuatorNameFromString(ArduMYActuatorConfig &config, const QString &n
 		config.nickName[i] = '\0';
 	}
 }
+*/
+
 /*
 ArduMYActuatorSet &actuators;
 ArduMYParserState currentCommand;

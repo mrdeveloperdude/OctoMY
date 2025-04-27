@@ -3,11 +3,11 @@
 
 
 #include "CommsSessionIDType.hpp"
-
+#include "uptime/SharedPointerWrapper.hpp"
 
 #include <QByteArray>
 #include <QHostAddress>
-
+#include <QDataStream>
 
 class Key;
 class QDataStream;

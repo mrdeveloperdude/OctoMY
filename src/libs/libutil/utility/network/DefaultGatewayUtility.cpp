@@ -1,5 +1,6 @@
 #include "Network.hpp"
 
+#include <QDebug>
 #include <QHostAddress>
 // FROM https://forum.qt.io/topic/7328/how-can-i-get-the-default-gateway-ip-using-qt/13
 #if defined(Q_OS_WIN) && defined(_MSC_VER)

@@ -4,6 +4,17 @@
 
 #include "uptime/New.hpp"
 
+
+
+#include <QtCore/qglobal.h>      // for Q_CORE_EXPORT, Q_DISABLE_COPY, Q_DECL_NOTHROW, Q_ASSERT_X, Q_LIKELY, quintptr
+
+#include <QtCore/qmutex.h>       // for QMutex, QRecursiveMutex and QT_MUTEX_LOCK_NOEXCEPT
+
+#ifndef QT_MUTEX_LOCK_NOEXCEPT
+#  define QT_MUTEX_LOCK_NOEXCEPT Q_DECL_NOTHROW
+#endif
+
+
 #include <QCoreApplication>
 
 #include <QRecursiveMutex>
@@ -54,7 +65,7 @@ void postToThread(F && functor, QThread * thread = qApp->thread())
 class Q_CORE_EXPORT MutexTryLocker
 {
 private:
-	Q_DISABLE_COPY(MutexTryLocker)
+    Q_DISABLE_COPY(MutexTryLocker);
 	quintptr val;
 
 public:

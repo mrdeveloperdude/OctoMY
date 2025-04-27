@@ -9,22 +9,5 @@
 
 #include   <QSharedPointer>
 
-
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-const-variable"
-#endif
-
-inline int sharedPointerWrapperDummyFunction() {
-	QSharedPointer<int> dummy;
-	(void)dummy;
-	return 0;
-}
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
-
-
 #endif
 // SHAREDPOINTERWRAPPER_HPP
