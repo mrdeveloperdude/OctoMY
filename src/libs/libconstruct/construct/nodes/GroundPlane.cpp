@@ -111,9 +111,8 @@ void GroundPlane::initialize(RhiContext &context)
 	}
 }
 
-
-static inline void matcpy(const QMatrix4x4 &mat, std::array<float, 16> &out){
-	std::copy(mat.constData(), mat.constData() + 16, out.begin());
+static inline void matcpy(const QMatrix4x4 &mat, float *out){
+    std::copy(mat.constData(), mat.constData() + 16, out);
 }
 
 void GroundPlane::update(RhiContext &context, qint64 interval)
@@ -128,10 +127,10 @@ void GroundPlane::update(RhiContext &context, qint64 interval)
 	auto inv_projection = projectionMatrix.inverted();
 	
 	uniforms.camera_position = camera->position().toVector4D();
-	matcpy(mvp, uniforms.mvp);
-	matcpy(inv_view_matrix, uniforms.inv_view_matrix);
-	matcpy(inv_projection, uniforms.inv_projection);
-	
+    matcpy(mvp, uniforms.mvp.data());
+    matcpy(inv_view_matrix, uniforms.inv_view_matrix.data());
+    matcpy(inv_projection, uniforms.inv_projection.data());
+
 	context.ensureResourceUpdates();
 	//qDebug()<<uniforms;
 	context.resourceUpdates->updateDynamicBuffer(m_ubuf.get(), 0, sizeof(GroundPlaneUniforms), &uniforms);
